@@ -1,0 +1,77 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build x64 with Clang",
+            "type": "shell",
+            "command": "buildx64.bat",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build x86 with Clang",
+            "type": "shell",
+            "command": "buildx86.bat",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build Static Libraries with Clang",
+            "type": "shell",
+            "command": "exportLibs.bat",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+        /*
+        {
+            "label": "Build x64 with Clang",
+            "type": "shell",
+            "command": "clang",
+            "args": [
+                "-g",
+                "-std=c++17",
+                "-stdlib=libc++",
+                "%WLIBPATH64%",
+                "%WLIBVALUES%",
+                "src/*.cpp",
+                "-o",
+                "bin/x64/${workspaceFolderBasename}.exe"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build x86 with Clang",
+            "type": "shell",
+            "command": "C:/Program FIles (x86)/LLVM/bin/clang",
+            "args": [
+                "-g",
+                "-std=c++17",
+                "-stdlib=libc++",
+                "%WLIBPATH32%",
+                "%WLIBVALUES%",
+                "src/*.cpp",
+                "-o",
+                "bin/x86/${workspaceFolderBasename}.exe"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+        */
+    ]
+}

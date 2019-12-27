@@ -1,0 +1,47 @@
+# Include variables for this build
+include ./build/varsx86.ninja
+
+## for getting object files
+## This also gets dependencies
+rule buildToObject
+   command = $compiler $compilerFlags $inc $in -o $out -MMD -MF $out.d
+   depfile = $out.d
+   deps = gcc
+
+## build all of the objects and the executable
+build $objDir/BezierCurve.o: buildToObject src/BezierCurve.cpp
+build $objDir/BinarySet.o: buildToObject src/BinarySet.cpp
+build $objDir/Class.o: buildToObject src/Class.cpp
+build $objDir/ColorPalette.o: buildToObject src/ColorPalette.cpp
+build $objDir/ComplexNumber.o: buildToObject src/ComplexNumber.cpp
+build $objDir/Compression.o: buildToObject src/Compression.cpp
+build $objDir/Font.o: buildToObject src/Font.cpp
+build $objDir/GamepadDInput.o: buildToObject src/GamepadDInput.cpp
+build $objDir/GamepadXInput.o: buildToObject src/GamepadXInput.cpp
+build $objDir/GeneralVector.o: buildToObject src/GeneralVector.cpp
+build $objDir/Graphics.o: buildToObject src/Graphics.cpp
+build $objDir/GuiManager.o: buildToObject src/GuiManager.cpp
+build $objDir/Image.o: buildToObject src/Image.cpp
+build $objDir/Input.o: buildToObject src/Input.cpp
+build $objDir/Line.o: buildToObject src/Line.cpp
+build $objDir/Main.o: buildToObject src/Main.cpp
+build $objDir/Mat2f.o: buildToObject src/Mat2f.cpp
+build $objDir/Mat3f.o: buildToObject src/Mat3f.cpp
+build $objDir/Mat4f.o: buildToObject src/Mat4f.cpp
+build $objDir/MathExt.o: buildToObject src/MathExt.cpp
+build $objDir/Matrix.o: buildToObject src/Matrix.cpp
+build $objDir/networking.o: buildToObject src/networking.cpp
+build $objDir/Object.o: buildToObject src/Object.cpp
+build $objDir/PossibleMathFunctions.o: buildToObject src/PossibleMathFunctions.cpp
+build $objDir/Shape.o: buildToObject src/Shape.cpp
+build $objDir/SimpleDir.o: buildToObject src/SimpleDir.cpp
+build $objDir/SimpleFile.o: buildToObject src/SimpleFile.cpp
+build $objDir/Sprite.o: buildToObject src/Sprite.cpp
+build $objDir/StringTools.o: buildToObject src/StringTools.cpp
+build $objDir/System.o: buildToObject src/System.cpp
+build $objDir/Vec2f.o: buildToObject src/Vec2f.cpp
+build $objDir/Vec3f.o: buildToObject src/Vec3f.cpp
+build $objDir/Vec4f.o: buildToObject src/Vec4f.cpp
+build $objDir/VectorGraphic.o: buildToObject src/VectorGraphic.cpp
+build $objDir/WavAudio.o: buildToObject src/WavAudio.cpp
+build $objDir/WndWindow.o: buildToObject src/WndWindow.cpp
