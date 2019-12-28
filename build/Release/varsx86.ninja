@@ -1,0 +1,5 @@
+inc = -I ./include %WLIBPATH32%
+objDir = ./bin/Release/x86/obj
+exeDir = ./bin/Release/x86
+compiler = cmd /c "C:\Program Files (x86)\LLVM\bin\clang"
+compilerFlags = -c -O3 -std=c++17 -Wno-unused-command-line-argument

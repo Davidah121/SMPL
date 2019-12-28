@@ -1,5 +1,0 @@
-inc = -I ./include %WLIBPATH64%
-objDir = ./bin/x64/obj
-exeDir = ./bin/x64
-compiler = cmd /c clang
-compilerFlags = -c -g -std=c++17 -Wno-unused-command-line-argument

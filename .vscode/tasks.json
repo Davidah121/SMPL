@@ -2,9 +2,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build x64 with Clang",
+            "label": "Build Debug x64 with Clang",
             "type": "shell",
-            "command": "buildx64.bat",
+            "command": "${workspaceFolder}/build/Debug/buildx64.bat",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -12,9 +12,29 @@
             "problemMatcher": []
         },
         {
-            "label": "Build x86 with Clang",
+            "label": "Build Debug x86 with Clang",
             "type": "shell",
-            "command": "buildx86.bat",
+            "command": "${workspaceFolder}/build/Debug/buildx86.bat",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build Release x64 with Clang",
+            "type": "shell",
+            "command": "${workspaceFolder}/build/Release/buildx64.bat",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build Release x86 with Clang",
+            "type": "shell",
+            "command": "${workspaceFolder}/build/Release/buildx86.bat",
             "group": {
                 "kind": "build",
                 "isDefault": true
