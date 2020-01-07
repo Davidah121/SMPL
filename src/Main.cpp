@@ -33,10 +33,25 @@
 /**
  * Things being worked on currently:
  *      Compression - Deflate decompression and compression.
- *          Currently, decompression on mode 1 works. Mode 0 and 2 needs work.
- *          Compression should work on both mode 0, 1, and 2. None implemented so far.
+ *          Test Deflate decompression. Multiple points of potential failure.
+ *              Mostly on the dynamic part
  *          After decompression is done, work on loading pngs
  *          Also, after all compression and decompression methods are done, work on saving images.
+ *      
+ *      Image - Load PNG, JPEG, DDS
+ *          Also be able to save to the different formats
+ *          These must be implemented through this library to maintain cross platform use.
+ *          Not relying on additional tools and only the c++ library is required and not much of the c++ library.
+ *      
+ *      Vector Graphics - Load vector graphics files
+ *          Must be implemented in this library and not use external tools.
+ * 
+ *      WavAudio - Must load and play audio from .wav files and .ogg files
+ *          .mp3 files are under patents and therefore can not be used for our purposes.
+ *          Perhaps allowing them to be loaded for personal uses would be acceptable
+ *          Name of the class should also be changed.
+ *          Must play audio in real time.
+ *          Must have audio objects.
  */
 
 /**
@@ -46,9 +61,8 @@
  *      Work on Graphics class by adding more functions
  *      Work on MathExt class by adding more functions. (DCT, etc.)
  *      Work on VectorGraphic class by actually finishing it.
- *      Work on BezierCurve class by actually finishing it.
  *      Work on WavAudio so that it plays audio correctly.
- * 
+ *      
  *      Lastly
  *      Work on making the library portable
  */
@@ -96,7 +110,6 @@ void compressionTesting()
     {
         std::cout << (int)output[i] << std::endl;
     }
-    
 }
 
 int main()

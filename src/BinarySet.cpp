@@ -288,6 +288,24 @@ bool BinarySet::getBit(int index)
 	return false;
 }
 
+int BinarySet::getBits(int indexStart, int indexEnd)
+{
+	int value = 0;
+	if(indexStart > 0 && indexStart < set.size())
+	{
+		if(indexEnd > 0 && indexEnd < set.size())
+		{
+			int totalSize = indexEnd-indexStart;
+			for(int i=0; i<totalSize; i++)
+			{
+				value += (int)getBit(indexStart+i) << i;
+			}
+		}
+	}
+
+	return value;
+}
+
 std::vector<unsigned char> BinarySet::toBytes(bool reverse)
 {
 	bool extraByte = ((set.size() % 8) != 0);

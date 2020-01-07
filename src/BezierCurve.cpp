@@ -54,9 +54,9 @@ Vec2f BezierCurve::blendPoints(int i, double time)
 {
 	if (i < points.size()-1)
 	{
-		return points[i] * (1-time) + blendPoints(i - 1, time) * time;
+		return points[i] * (1-time) + blendPoints(i + 1, time) * time;
 	}
-	else
+	else if(i == points.size()-1)
 	{
 		return points[i];
 	}

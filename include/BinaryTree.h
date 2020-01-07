@@ -19,6 +19,8 @@ public:
 	void setLeftNode(BinaryTreeNode<T>* parent, BinaryTreeNode<T>* leftChild);
 	void setRightNode(BinaryTreeNode<T>* parent, BinaryTreeNode<T>* rightChild);
 
+	BinaryTreeNode<T>* traverse(BinaryTreeNode<T>* startNode, int value, int length);
+
 	BinaryTreeNode<T>* getRoot();
 
 	int getSize();
@@ -85,6 +87,42 @@ inline void BinaryTree<T>::setRootNode(BinaryTreeNode<T>* parent)
 		cleanUp(rootNode);
 
 	rootNode = parent;
+}
+
+template<typename T>
+inline BinaryTreeNode<T>* BinaryTree<T>::traverse(BinaryTreeNode<T>* startNode, int value, int length)
+{
+	BinaryTreeNode<T>* currNode = startNode;
+	int currLength = 0;
+
+	int maxLength = length;
+	if(maxLength<0)
+	{
+		maxLength = 0;
+	}
+	if(maxLength>32)
+	{
+		maxLength = 32;
+	}
+	
+	while(currNode!=nullptr && currLength<length)
+	{
+		bool side = ((value >> (31-currLength)) & 0x01) == true;
+
+		if(side == true)
+		{
+			//right side
+			currNode = currNode->rightChild;
+		}
+		else
+		{
+			//left side
+			currNode = currNode->leftChild;
+		}
+		currLength++;
+	}
+	
+	return currNode;
 }
 
 template<typename T>

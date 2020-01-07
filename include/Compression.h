@@ -54,9 +54,15 @@ public:
 private:
 	static BinaryTree<HuffmanNode>* buildHuffmanTree(unsigned char* data, int size);
 	static void fillHuffmanTable(BinaryTreeNode<HuffmanNode>* treeNode, unsigned int* table, int length, int code);
+
 	static BinaryTree<HuffmanNode>* buildDeflateDefaultTree();
+	static BinaryTree<HuffmanNode>** buildDynamicDeflateTree(BinarySet* data, int* currentLocation);
+
 	static void getCopyLengthInformation(int code, int* baseValue, int* extraBits);
 	static void getBackDistanceInformation(int code, int* baseValue, int* extraBits);
+
+
+	static BinaryTree<HuffmanNode>* buildCanonicalHuffmanTree(int* dataValue, int* codeLength, int size);
 	
 };
 
