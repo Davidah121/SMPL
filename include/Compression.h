@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include "BinaryTree.h"
+#include "BinarySet.h"
 
 struct HuffmanNode
 {
@@ -62,7 +63,7 @@ private:
 	static void getBackDistanceInformation(int code, int* baseValue, int* extraBits);
 
 
-	static BinaryTree<HuffmanNode>* buildCanonicalHuffmanTree(int* dataValue, int* codeLength, int size);
+	static BinaryTree<HuffmanNode>* buildCanonicalHuffmanTree(int* dataValue, int* codeLength, int size, bool reversed);
 	
 };
 

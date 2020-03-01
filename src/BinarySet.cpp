@@ -288,7 +288,7 @@ bool BinarySet::getBit(int index)
 	return false;
 }
 
-int BinarySet::getBits(int indexStart, int indexEnd)
+int BinarySet::getBits(int indexStart, int indexEnd, bool reverse)
 {
 	int value = 0;
 	if(indexStart > 0 && indexStart < set.size())
@@ -296,10 +296,22 @@ int BinarySet::getBits(int indexStart, int indexEnd)
 		if(indexEnd > 0 && indexEnd < set.size())
 		{
 			int totalSize = indexEnd-indexStart;
-			for(int i=0; i<totalSize; i++)
+
+			if(reverse==false)
 			{
-				value += (int)getBit(indexStart+i) << i;
+				for(int i=0; i<totalSize; i++)
+				{
+					value += (int)getBit(indexStart+i) << i;
+				}
 			}
+			else
+			{
+				for(int i=0; i<totalSize; i++)
+				{
+					value += (int)getBit(indexEnd-i) << i;
+				}
+			}
+			
 		}
 	}
 

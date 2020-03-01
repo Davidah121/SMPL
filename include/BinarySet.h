@@ -23,7 +23,7 @@ public:
 	void add(unsigned long v, int amountOfBits = 64, int offset = 0, bool reverse = false);
 
 	bool getBit(int index);
-	int getBits(int indexStart, int indexEnd);
+	int getBits(int indexStart, int indexEnd, bool reverse = false);
 	
 	std::vector<unsigned char> toBytes(bool reverse=false);
 

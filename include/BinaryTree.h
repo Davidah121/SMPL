@@ -3,8 +3,8 @@
 template<typename T>
 struct BinaryTreeNode
 {
-	BinaryTreeNode<T>* leftChild;
-	BinaryTreeNode<T>* rightChild;
+	BinaryTreeNode<T>* leftChild = nullptr;
+	BinaryTreeNode<T>* rightChild = nullptr;
 	T data;
 };
 
@@ -19,7 +19,7 @@ public:
 	void setLeftNode(BinaryTreeNode<T>* parent, BinaryTreeNode<T>* leftChild);
 	void setRightNode(BinaryTreeNode<T>* parent, BinaryTreeNode<T>* rightChild);
 
-	BinaryTreeNode<T>* traverse(BinaryTreeNode<T>* startNode, int value, int length);
+	BinaryTreeNode<T>* traverse(BinaryTreeNode<T>* startNode, int value, int length, bool reverse=false);
 
 	BinaryTreeNode<T>* getRoot();
 
@@ -90,7 +90,7 @@ inline void BinaryTree<T>::setRootNode(BinaryTreeNode<T>* parent)
 }
 
 template<typename T>
-inline BinaryTreeNode<T>* BinaryTree<T>::traverse(BinaryTreeNode<T>* startNode, int value, int length)
+inline BinaryTreeNode<T>* BinaryTree<T>::traverse(BinaryTreeNode<T>* startNode, int value, int length, bool reverse)
 {
 	BinaryTreeNode<T>* currNode = startNode;
 	int currLength = 0;
@@ -105,10 +105,15 @@ inline BinaryTreeNode<T>* BinaryTree<T>::traverse(BinaryTreeNode<T>* startNode, 
 		maxLength = 32;
 	}
 	
-	while(currNode!=nullptr && currLength<length)
+	while(currNode!=nullptr && currLength<maxLength)
 	{
-		bool side = ((value >> (31-currLength)) & 0x01) == true;
+		bool side=false;
 
+		if(reverse)
+			side = ((value >> (currLength)) & 0x01);
+		else
+			side = ((value >> (31-currLength)) & 0x01);
+		
 		if(side == true)
 		{
 			//right side
@@ -142,7 +147,7 @@ inline void BinaryTree<T>::cleanUp(BinaryTreeNode<T>* currentNode)
 
 			cleanUp(currentNode->leftChild);
 
-			delete currentNode->leftChild;
+			//delete currentNode->leftChild;
 		}
 
 		if (currentNode->rightChild != nullptr)
@@ -151,7 +156,7 @@ inline void BinaryTree<T>::cleanUp(BinaryTreeNode<T>* currentNode)
 
 			cleanUp(currentNode->rightChild);
 
-			delete currentNode->rightChild;
+			//delete currentNode->rightChild;
 		}
 
 		delete currentNode;

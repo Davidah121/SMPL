@@ -4,6 +4,7 @@
 #include "LinkedList.h"
 #include "BinarySet.h"
 #include "Sort.h"
+#include "StringTools.h"
 
 #define min(a,b) (a<b)? a:b
 #define max(a,b) (a>b)? a:b
@@ -311,7 +312,7 @@ std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int s
 							}
 							else
 							{
-								std::cout << "Error in getting last index, " << lastIndex << std::endl;
+								//StringTools::out << "Error in getting last index, " << lastIndex << StringTools::lineBreak;
 								//There is an error in the data
 								break;
 							}
@@ -334,7 +335,7 @@ std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int s
 						else
 						{
 							//There is an error in the data
-							std::cout << "Error in getting last index, " << lastIndex << std::endl;
+							//StringTools::out << "Error in getting last index, " << lastIndex << StringTools::lineBreak;
 							break;
 						}
 					}
@@ -460,7 +461,7 @@ std::vector<unsigned char> Compression::compressLZ77(unsigned char* data, int si
 		
 		if (i <= size)
 		{
-			//std::cout << oldTuplev1 << ',' << oldTuplev2 << ',' << (int)data[i - 1] << std::endl;
+			//StringTools::out << oldTuplev1 << ',' << oldTuplev2 << ',' << (int)data[i - 1] << StringTools::lineBreak;
 			for(int b=0; b<bytesForRef; b++)
 			{
 				int shiftVal = (8 * (bytesForRef - b - 1));
@@ -475,7 +476,7 @@ std::vector<unsigned char> Compression::compressLZ77(unsigned char* data, int si
 		}
 		else
 		{
-			//std::cout << oldTuplev1 << ',' << oldTuplev2 << ',' << (int)data[i - 2] << std::endl;
+			//StringTools::out << oldTuplev1 << ',' << oldTuplev2 << ',' << (int)data[i - 2] << StringTools::lineBreak;
 			for (int b = 0; b < bytesForRef; b++)
 			{
 				int shiftVal = (8 * (bytesForRef - b - 1));
@@ -739,9 +740,9 @@ std::vector<unsigned char> Compression::decompressLZSS(unsigned char* data, int 
 			if (offsetLoc < 0)
 			{
 				//something went wrong
-				std::cout << "Error decompressing LZSS on reference: " << std::endl;
-				std::cout << "Reference Location goes back farther than the size of your buffer." << std::endl;
-				std::cout << "RefLoc: " << (int)refLoc << ", CurrentBufferSize: " << (int)output.size() << ", MessageLen: " << (int)copyLen << std::endl;
+				//StringTools::out << "Error decompressing LZSS on reference: " << StringTools::lineBreak;
+				//StringTools::out << "Reference Location goes back farther than the size of your buffer." << StringTools::lineBreak;
+				//StringTools::out << "RefLoc: " << (int)refLoc << ", CurrentBufferSize: " << (int)output.size() << ", MessageLen: " << (int)copyLen << StringTools::lineBreak;
 				break;
 			}
 
@@ -761,6 +762,13 @@ std::vector<unsigned char> Compression::decompressLZSS(unsigned char* data, int 
 #pragma endregion
 
 #pragma region HUFFMAN
+
+struct dataLengthCombo
+{
+	int data;
+	int length;
+	int code;
+};
 
 std::vector<unsigned char> Compression::compressHuffman(std::vector<unsigned char> data, BinaryTree<HuffmanNode>* tree)
 {
@@ -847,8 +855,8 @@ std::vector<unsigned char> Compression::decompressHuffman(unsigned char* data, i
 				}
 				else
 				{
-					std::cout << "HUFFMAN DECODING ERROR ON TREE: CAN'T GO LEFT AT CURRENT POSITION" << std::endl;
-					std::cout << "index: " << (input.size() - i) << std::endl;
+					//StringTools::out << "HUFFMAN DECODING ERROR ON TREE: CAN'T GO LEFT AT CURRENT POSITION" << StringTools::lineBreak;
+					//StringTools::out << "index: " << (input.size() - i) << StringTools::lineBreak;
 					break;
 				}
 			}
@@ -862,8 +870,8 @@ std::vector<unsigned char> Compression::decompressHuffman(unsigned char* data, i
 				}
 				else
 				{
-					std::cout << "HUFFMAN DECODING ERROR ON TREE: CAN'T GO RIGHT AT CURRENT POSITION" << std::endl;
-					std::cout << "index: " << (input.size() - i) << std::endl;
+					//StringTools::out << "HUFFMAN DECODING ERROR ON TREE: CAN'T GO RIGHT AT CURRENT POSITION" << StringTools::lineBreak;
+					//StringTools::out << "index: " << (input.size() - i) << StringTools::lineBreak;
 					break;
 				}
 			}
@@ -879,7 +887,7 @@ std::vector<unsigned char> Compression::decompressHuffman(unsigned char* data, i
 	}
 	else
 	{
-		std::cout << "HUFFMAN DECODING, TREE ERROR: ROOT IS INVALID" << std::endl;
+		//StringTools::out << "HUFFMAN DECODING, TREE ERROR: ROOT IS INVALID" << StringTools::lineBreak;
 	}
 	
 	return output;
@@ -1011,7 +1019,7 @@ BinaryTree<HuffmanNode>* Compression::buildHuffmanTree(unsigned char* data, int 
 
 void Compression::fillHuffmanTable(BinaryTreeNode<HuffmanNode>* treeNode, unsigned int* table, int length, int code)
 {
-	//std::cout << treeNode << std::endl;
+	//StringTools::out << treeNode << StringTools::lineBreak;
 	if (treeNode != nullptr)
 	{
 		if (treeNode->leftChild != nullptr)
@@ -1034,39 +1042,37 @@ void Compression::fillHuffmanTable(BinaryTreeNode<HuffmanNode>* treeNode, unsign
 			int finalValue = (length << 16) + code;
 			table[treeNode->data.value] = finalValue;
 
-			//std::cout << treeNode->data.value << ", " << length << ", " << code << std::endl;
-			//std::cout << table[treeNode->data.value] << std::endl;
+			//StringTools::out << treeNode->data.value << ", " << length << ", " << code << StringTools::lineBreak;
+			//StringTools::out << table[treeNode->data.value] << StringTools::lineBreak;
 		}
 	}
 }
 
-BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues, int* lengths, int size)
+BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues, int* lengths, int size, bool reversed=false)
 {
-	BinaryTree<HuffmanNode>* tree = new BinaryTree<HuffmanNode>();
-
 	//We must sort first before building the huffman code
 	//Since this is C++ and we can use structures, we can use MergeSort while keeping the
 	//correct location for each length and dataValue.
 
 	//first, convert
-	struct dataLengthCombo
-	{
-		int data;
-		int length;
-		int code;
-	};
-
+	
 	dataLengthCombo* arr = new dataLengthCombo[size];
+
 	for(int i=0; i<size; i++)
 	{
-		arr[i] = {dataValues[i], lengths[i]};
+		arr[i] = {dataValues[i], lengths[i], 0};
 	}
 
 	//now sort
 	//We use lambda expressions here so we only compare the length values. We could have overriden the comparison
 	//operator in dataLengthCombo, but I wanted to use lambda expressions.
-	Sort::mergeSort<dataLengthCombo>(arr, size, [](dataLengthCombo a, dataLengthCombo b){ return a.length < b.length; } );
 
+	std::function compareFunc = [](const dataLengthCombo & a, const dataLengthCombo & b) -> bool { if(a.length == b.length)
+																										return a.data < b.data;
+																									else
+																										return a.length < b.length; };
+	Sort::mergeSort<dataLengthCombo>(arr, size, compareFunc);
+	
 	//now, we can start building the codes.
 	int startCode = 0;
 	int preLength = 0;
@@ -1074,32 +1080,62 @@ BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues,
 	{
 		if(arr[i].length>0)
 		{
-			if(preLength!=arr[i].length)
+			if(preLength==0)
 			{
-				//add zeros to the end of the code
-				startCode << (arr[i].length-preLength);
+				preLength = arr[i].length;
 			}
-			preLength = arr[i].length;
-			arr[i].code = startCode;
+			else
+			{
+				//add 1 to the value of the code.
+				startCode++;
 
-			//add 1 to the value of the code.
-			startCode++;
+				int shiftAmount = arr[i].length-preLength;
+				//add zeros to the end of the code
+				startCode = startCode << shiftAmount;
+
+				preLength = arr[i].length;
+			}
+
+			arr[i].code = startCode;
 		}
+		
 	}
+	
+	/*
+	for(int i=0; i<size; i++)
+	{
+		BinarySet k = BinarySet();
+		k.add(arr[i].code);
+		StringTools::out << "Value: " << arr[i].data << ", Length: " << arr[i].length << ", Code: ";
+		for(int i=0; i<k.size(); i++)
+		{
+			StringTools::out << (int)k.getBit(i);
+		}
+		StringTools::println("");
+	}
+	*/
 
 	//now, we build a tree with this information.
+	BinaryTree<HuffmanNode>* tree = new BinaryTree<HuffmanNode>();
 	tree->setRootNode( new BinaryTreeNode<HuffmanNode>() );
 	BinaryTreeNode<HuffmanNode>* currNode = tree->getRoot();
 
 	for(int i=0; i<size; i++)
 	{
+
 		for(int i2=0; i2<arr[i].length; i2++)
 		{
-			int v = arr[i].code >> (arr[i].length-1 - i2) & 0x01;
+			int v = 0;
+
+			if(reversed==false)
+				v = arr[i].code >> (i2) & 0x01;
+			else
+				v = arr[i].code >> (arr[i].length-1 - i2) & 0x01;
+			
 			if(v==0)
 			{
 				//left
-				if(currNode->leftChild)
+				if(currNode->leftChild == nullptr)
 					currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
 
 				currNode = currNode->leftChild;
@@ -1107,13 +1143,14 @@ BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues,
 			else
 			{
 				//right
-				if(currNode->rightChild)
+				if(currNode->rightChild == nullptr)
 					currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
 
 				currNode = currNode->rightChild;
 			}
 			
 		}
+
 		currNode->data.frequency=1;
 		currNode->data.value = arr[i].data;
 
@@ -1188,11 +1225,13 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 		if(binData.getBit(currLoc)==0)
 		{
 			//not last block
+			//StringTools::out << "Not Last block" << StringTools::lineBreak;
 		}
 		else
 		{
 			//last block
 			lastBlock = true;
+			//StringTools::out << "Last block" << StringTools::lineBreak;
 		}
 		currLoc++;
 
@@ -1206,6 +1245,7 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 			else
 			{
 				//custom compression on this block
+				//StringTools::out << "Custom Compression block" << StringTools::lineBreak;
 				mode = 2;
 			}
 		}
@@ -1275,24 +1315,37 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 			if(mode==1)
 			{
 				//make the default tree
+				//StringTools::out << "Making Default tree" << StringTools::lineBreak;
 				mTree = Compression::buildDeflateDefaultTree();
 			}
 			else
 			{
 				//make the dynamic tree
+				//StringTools::out << "Making dynamic tree" << StringTools::lineBreak;
 				BinaryTree<HuffmanNode>** dynTrees = nullptr;
 				dynTrees = Compression::buildDynamicDeflateTree(&binData, &currLoc);
-				mTree = dynTrees[0];
-				backTree = dynTrees[1];
+				if(dynTrees!=nullptr)
+				{
+					mTree = dynTrees[0];
+					backTree = dynTrees[1];
+				}
+				else
+				{
+					//StringTools::out << "Error creating dynamic tree" << StringTools::lineBreak;
+					break;
+				}
+				//StringTools::out << "Finished Tree" << StringTools::lineBreak;
 			}
 			
 			BinaryTreeNode<HuffmanNode>* currNode = mTree->getRoot();
 			bool hitGood = false;
+
 			while(blockEnded==false)
 			{
 				if(hitGood!=true)
 				{
 					//traverse per bit
+
 					if(binData.getBit(currLoc) == 0)
 					{
 						currNode = currNode->leftChild;
@@ -1305,7 +1358,14 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 					if(currNode->leftChild == nullptr && currNode->rightChild == nullptr)
 					{
 						//must be the correct value
+						//StringTools::out << "Hit value with value - " << currNode->data.value << StringTools::lineBreak;
+						/*
+						StringTools::out << "Hit value with value - " << currNode->data.value << ", and bitvalue - ";
+						test.printVals();
+						*/
+
 						hitGood = true;
+						
 					}
 					currLoc+=1;
 				}
@@ -1314,30 +1374,29 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 					if(currNode->data.value <= 255)
 					{
 						//literal
+						//StringTools::out << "Literal" << StringTools::lineBreak;
 						finalData.push_back(currNode->data.value);
 					}
 					else if(currNode->data.value == 256)
 					{
 						//end of block
+						//StringTools::out << "End of block" << StringTools::lineBreak;
 						blockEnded = true;
 						break;
 					}
 					else
 					{
-						std::cout << "Reference Pair" << std::endl;
+						//StringTools::out << "Reference Pair" << StringTools::lineBreak;
 						
 						//reference pair
 						int baseCopyLength = 0;
 						int copyExtraBits = 0;
 						Compression::getCopyLengthInformation(currNode->data.value, &baseCopyLength, &copyExtraBits);
 
+						
 						//get the value of the extra bits
-						int copyExtraVal = 0;
-						for(int i=copyExtraBits-1; i>=0; i--)
-						{
-							copyExtraVal += ((int)binData.getBit(currLoc) << i);
-							currLoc+=1;
-						}
+						int copyExtraVal = binData.getBits(currLoc, currLoc+copyExtraBits);
+						currLoc+=copyExtraBits;
 
 						int finalCopyLength = baseCopyLength + copyExtraVal;
 
@@ -1363,7 +1422,7 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 
 							while(true)
 							{
-								backNode = backTree->traverse(backNode, (int)binData.getBit(currLoc), 1);
+								backNode = backTree->traverse(backNode, (int)binData.getBit(currLoc), 1, true);
 								currLoc+=1;
 
 								if(backNode->leftChild==nullptr && backNode->rightChild==nullptr)
@@ -1378,16 +1437,11 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 						Compression::getBackDistanceInformation(backRefCode, &baseBackLength, &backRefExtraBits);
 
 						//get the value of the extra bits
-						int backExtraVal = 0;
-						for(int i=backRefExtraBits-1; i>=0; i--)
-						{
-							backExtraVal += ((int)binData.getBit(currLoc) << i);
-							currLoc+=1;
-						}
-						
-
+						int backExtraVal = binData.getBits(currLoc, currLoc+backRefExtraBits);
+						currLoc+=backRefExtraBits;
 						int finalBackRef = baseBackLength + backExtraVal;
 						
+						//StringTools::out << "Length is: " << finalCopyLength << ", Dist is: " << finalBackRef << StringTools::lineBreak;
 						//with finalCopyLength and finalBackRef, copy into the finalData
 						int startPos = finalData.size()-finalBackRef;
 
@@ -1404,15 +1458,15 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 				
 			}
 
-			if(lastBlock)
-			{
-				break;
-			}
-
 			if(mTree!=nullptr)
 				delete mTree;
 			if(backTree!=nullptr)
 				delete backTree;
+			
+			if(lastBlock)
+			{
+				break;
+			}
 		}
 		
 	}
@@ -1583,12 +1637,17 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 
 	for(int i=0; i<19; i++)
 	{
+		hcLengths[i] = 0;
+	}
+
+	for(int i=0; i<amountOfCodeLengthCodes; i++)
+	{
 		hcLengths[i] = data->getBits(*location, *location+3);
 		*location+=3;
 	}
 	
-
-	BinaryTree<HuffmanNode>* tempTree = Compression::buildCanonicalHuffmanTree(hcValues, hcLengths, 19);
+	
+	BinaryTree<HuffmanNode>* tempTree = Compression::buildCanonicalHuffmanTree(hcValues, hcLengths, amountOfCodeLengthCodes, true);
 
 	//next, we use this tree to find the code lengths for our data set.
 	//Due to how we get the codes, we store them in a single array at first.
@@ -1596,23 +1655,28 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 	//the start point and the length.
 
 	int* allCodes = new int[totalCodes];
+	for(int i=0; i<totalCodes; i++)
+	{
+		allCodes[i] = 0;
+	}
 
 	BinaryTreeNode<HuffmanNode>* currNode = tempTree->getRoot();
 
 	int codes = 0;
+	int tempCode = 0;
+
 	while(codes < totalCodes)
 	{
-		int tempCode = 0;
 		tempCode = (data->getBit(*location)==true) ? 1 : 0;
-		*location+=1;
-		currNode = tempTree->traverse(currNode, tempCode, 1);
+		*location+=1;		
+		currNode = tempTree->traverse(currNode, tempCode, 1, true);
 
 		if(currNode->leftChild == nullptr && currNode->rightChild == nullptr)
 		{
 			//hit a value
 			int actualValue = currNode->data.value;
-
-			if(actualValue < 15)
+			
+			if(actualValue < 16)
 			{
 				allCodes[codes]=actualValue;
 				codes++;
@@ -1669,6 +1733,9 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 	//the value 256 must have a valid code
 	if(allCodes[256] == 0)
 	{
+		delete[] allCodes;
+		delete tempTree;
+		delete[] trees;
 		return nullptr;
 	}
 
@@ -1684,8 +1751,8 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 		distValues[i] = i;
 	}
 
-	trees[0] = Compression::buildCanonicalHuffmanTree(lenLengthValues, &allCodes[0], amountOfLitCodes);
-	trees[1] = Compression::buildCanonicalHuffmanTree(distValues, &allCodes[amountOfLitCodes], amountOfDistCodes);
+	trees[0] = Compression::buildCanonicalHuffmanTree(lenLengthValues, &allCodes[0], amountOfLitCodes, true);
+	trees[1] = Compression::buildCanonicalHuffmanTree(distValues, &allCodes[amountOfLitCodes], amountOfDistCodes, true);
 
 	delete[] lenLengthValues;
 	delete[] distValues;

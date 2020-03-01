@@ -656,13 +656,14 @@ void WndWindow::drawImage(Image* g)
 			unsigned char* wndPixelsStart = wndPixels;
 			unsigned char* wndPixelsEnd = wndPixels + (width * height * 3);
 
-			int addAmount = MathExt::abs(g->getWidth() - width);
+			int addAmount = g->getWidth() - width;
+			int absAddAmount = MathExt::abs(g->getWidth() - width);
 
 			if (addAmount > 0)
 			{
 				//img width > window width
 				int x = 0;
-				while (wndPixelsStart != wndPixelsEnd)
+				while (wndPixelsStart < wndPixelsEnd)
 				{
 					*wndPixelsStart = (*imgPixelsStart).blue;
 					*(wndPixelsStart + 1) = (*imgPixelsStart).green;
@@ -672,7 +673,7 @@ void WndWindow::drawImage(Image* g)
 					
 					if (x >= width)
 					{
-						imgPixelsStart += addAmount;
+						imgPixelsStart += absAddAmount;
 						x = 0;
 					}
 					else
@@ -685,7 +686,7 @@ void WndWindow::drawImage(Image* g)
 			else
 			{
 				//img width < window width
-				while (wndPixelsStart != wndPixelsEnd)
+				while (wndPixelsStart < wndPixelsEnd)
 				{
 
 					*wndPixelsStart = (*imgPixelsStart).blue;
@@ -696,7 +697,7 @@ void WndWindow::drawImage(Image* g)
 
 					if (x >= g->getWidth())
 					{
-						wndPixelsStart += addAmount*3;
+						wndPixelsStart += absAddAmount*3;
 						x = 0;
 					}
 					else

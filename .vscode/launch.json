@@ -14,7 +14,8 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/src",
             "environment": [],
-            "externalConsole": false
+            "externalConsole": true,
+
         },
         {
             "name": "(Windows) Debug Launch x86",
@@ -25,7 +26,7 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/src",
             "environment": [],
-            "externalConsole": false
+            "externalConsole": true
         },
         {
             "name": "(Windows) Release Launch x64",

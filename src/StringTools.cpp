@@ -75,7 +75,7 @@ char * StringTools::toCString(wchar_t * text)
 	char* temp = new char[stringLength(text)];
 	for (int i = 0; i <= stringLength(text); i++)
 	{
-		temp[i] = text[i] & 0xFF;
+		temp[i] = (char)(text[i] & 0xFF);
 	}
 	return temp;
 }
@@ -85,7 +85,7 @@ char * StringTools::toCString(const wchar_t * text)
 	char* temp = new char[stringLength(text)];
 	for (int i = 0; i <= stringLength(text); i++)
 	{
-		temp[i] = text[i] & 0xFF;
+		temp[i] = (char)(text[i] & 0xFF);
 	}
 	return temp;
 }
@@ -95,7 +95,7 @@ std::string StringTools::toCString(std::wstring text)
 	std::string finalText = "";
 	for (int i = 0; i < text.size(); i++)
 	{
-		finalText += (char)text[i];
+		finalText += (char)(text[i] & 0xFF);
 	}
 
 	return finalText;
@@ -123,30 +123,10 @@ int StringTools::stringLength(const wchar_t * text)
 
 char StringTools::valueToBase16(char val)
 {
-	switch (val)
-	{
-	default:
-		return (char)(48 + val);
-		break;
-	case 10:
-		return 'A';
-		break;
-	case 11:
-		return 'B';
-		break;
-	case 12:
-		return 'C';
-		break;
-	case 13:
-		return 'D';
-		break;
-	case 14:
-		return 'E';
-		break;
-	case 15:
-		return 'F';
-		break;
-	}
+	if(val<10)
+		return (char)(48+val);
+	else
+		return (char)(65+val-10);
 }
 
 std::vector<std::string> StringTools::splitString(std::string s, const char delim)
@@ -279,7 +259,7 @@ std::string StringTools::getString()
 
 		std::getline(in, temp);
 
-		std::string text = (char*)temp.c_str();
+		std::string text = StringTools::toCString(temp);
 
 		return text;
 	}

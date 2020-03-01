@@ -77,6 +77,30 @@ public:
 			StringTools::out << text << StringTools::lineBreak;
 	}
 
+	static void print(std::string text)
+	{
+		if(hasInit)
+			StringTools::out << toWideString(text);
+	}
+
+	static void println(std::string text)
+	{
+		if(hasInit)
+			StringTools::out << toWideString(text) << StringTools::lineBreak;
+	}
+	
+	static void print(const char* text)
+	{
+		if(hasInit)
+			StringTools::out << toWideString(text);
+	}
+
+	static void println(const char* text)
+	{
+		if(hasInit)
+			StringTools::out << toWideString(text) << StringTools::lineBreak;
+	}
+
 	static std::wostream out;
 	static std::wistream in;
 	static std::wostream err;

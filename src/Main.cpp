@@ -4,6 +4,8 @@
 #include <iostream>
 #include "Compression.h"
 #include "BinarySet.h"
+#include "SimpleFile.h"
+#include "StringTools.h"
 
 /**
  * Purpose:
@@ -63,6 +65,8 @@
  *      Work on VectorGraphic class by actually finishing it.
  *      Work on WavAudio so that it plays audio correctly.
  *      
+ *      Work on Image class by supporting interlacing on png and gif files.
+ * 
  *      Lastly
  *      Work on making the library portable
  */
@@ -112,8 +116,156 @@ void compressionTesting()
     }
 }
 
+void compressionTesting2()
+{
+    SimpleFile f = SimpleFile("C:\\Users\\Alan\\source\\repos\\ImageLibrary\\TestImages\\PNG\\Varying bit sizes and types\\basn0g01.png", SimpleFile::READ);
+    if(f.isOpen())
+    {
+        std::vector<unsigned char> fileData = f.readFullFileAsBytes();
+        f.close();
+
+        std::vector<unsigned char> output = Compression::decompressDeflate(&fileData[0x3B], 0x97 - 0x3B);
+
+        
+        std::cout << "Information: Size-" << output.size() << ", is 1 bit, is 32x32, 1024 values" << std::endl;
+        
+        for(int i=0; i<output.size(); i++)
+        {
+            std::cout << (int)output[i] << std::endl;
+            
+        }
+        
+    }
+    else
+    {
+        std::cout << "No file" << std::endl;
+    }
+    
+}
+
+void thingTest()
+{
+    StringTools::init();
+    StringTools::println("Loading C:/Users/Alan/Documents/GitHub/Mia/CupTexture.png");
+    
+    std::string filename = "C:/Users/Alan/Documents/GitHub/Mia/CupTexture.png";
+    int amount = 0;
+    Image** kImgs = Image::loadImage(filename, &amount);
+
+    if(amount > 0)
+    {
+        StringTools::println("Successful Load.");
+        StringTools::out << "Width is: " << kImgs[0]->getWidth() << ", Height is: " << kImgs[0]->getHeight() << StringTools::lineBreak;
+    }
+    else
+    {
+        StringTools::println("Unsuccessful Load.");
+    }
+    
+    for(int i=0; i<amount; i++)
+    {
+        delete kImgs[i];
+    }
+    delete[] kImgs;
+    
+    system("pause");
+}
+
+void testImageLoader()
+{
+    StringTools::init();
+    //StringTools::println("Enter the png file to load.");
+    //std::string filename = StringTools::getString();
+
+    StringTools::println("Loading C:/Users/Alan/Documents/GitHub/Mia/CupTexture.png");
+    
+    std::string filename = "C:/Users/Alan/Documents/GitHub/Mia/CupTexture.png";
+    int amount = 0;
+    Image** kImgs = Image::loadImage(filename, &amount);
+
+    if(amount > 0)
+    {
+        StringTools::println("Successful Load.");
+        StringTools::out << "Width is: " << kImgs[0]->getWidth() << ", Height is: " << kImgs[0]->getHeight() << StringTools::lineBreak;
+    }
+    else
+    {
+        StringTools::println("Unsuccessful Load. Closing");
+        system("pause");
+        exit(0);
+    }
+
+    while(true)
+    {
+        StringTools::println("Enter the x and y coordinates to check a pixel (use commas). Empty string to quit.");
+        std::string input = StringTools::getString();
+
+        if(input=="")
+        {
+            break;
+        }
+        else
+        {
+            std::vector<std::string> split = StringTools::splitString(input, ',');
+            int x = std::stoi(split[0]);
+            int y = std::stoi(split[1]);
+
+            Color c = kImgs[0]->getPixel(x,y);
+
+            StringTools::out << "The color at (" << x << ", " << y << ") is " << c.red << ", " << c.green << ", " << c.blue << ", " << c.alpha << StringTools::lineBreak;
+        }
+    }
+    
+    for(int i=0; i<amount; i++)
+    {
+        delete kImgs[i];
+    }
+    delete[] kImgs;
+}
+
+void testDrawingImage()
+{
+    StringTools::init();
+
+    WndWindow k = WndWindow("CupTexture", 512, 512);
+
+    /*
+    StringTools::println("Loading C:/Users/Alan/Documents/GitHub/Mia/CupTexture.png");
+    
+    std::string filename = "C:/Users/Alan/Documents/GitHub/Mia/CupTexture.png";
+    int amount = 0;
+    Image** kImgs = Image::loadImage(filename, &amount);
+    */
+    int amount = 1;
+    Image** kImgs = new Image*[1];
+    kImgs[0] = new Image(512,512);
+    Graphics::setColor({200,100,150,255});
+    kImgs[0]->drawRect(32,32,400,400,false);
+
+    if(amount > 0)
+    {
+        StringTools::println("Successful Load.");
+        StringTools::out << "Width is: " << kImgs[0]->getWidth() << ", Height is: " << kImgs[0]->getHeight() << StringTools::lineBreak;
+
+        while(k.getRunning())
+        {
+            k.drawImage(kImgs[0]);
+            k.repaint();
+        }
+    }
+    else
+    {
+        StringTools::println("Unsuccessful Load.");
+    }
+    
+    for(int i=0; i<amount; i++)
+    {
+        delete kImgs[i];
+    }
+    delete[] kImgs;
+}
 int main()
 {
-    compressionTesting();
+    testDrawingImage();
     return 0;
 }

@@ -27,57 +27,20 @@ private:
 #pragma region MERGESORT
 
 template<typename T>
-inline void Sort::mergeSort(T* list, int size, std::function<bool(T,T)> compareFunc = nullptr)
+inline void Sort::mergeSort(T* list, int size, std::function<bool(T,T)> compareFunc)
 {
-    mergeSortRecursive(list, 0, size-1, compareFunc);
+    Sort::mergeSortRecursive<T>(list, 0, size, compareFunc);
 }
 
 template<typename T>
 inline void Sort::mergeSortRecursive(T* list, int start, int end, std::function<bool(T,T)> compareFunc)
 {
-    if(end-start == 0)
-    {
-        //same element, do nothing
-    }
-    else if(end-start == 1)
-    {
-        //two elements, swap manually
-        //Assume compare function tells which is less than
-        if(compareFunc!=nullptr)
-        {
-            if(compareFunc(list[end], list[start]))
-            {
-                T* temp = list[start];
-                list[start] = list[end];
-                list[end] = temp;
-            }
-            else
-            {
-                //In the correct order.
-            }
-        }
-        else
-        {
-            if(list[end] < list[start])
-            {
-                T* temp = list[start];
-                list[start] = list[end];
-                list[end] = temp;
-            }
-            else
-            {
-                //In the correct order.
-            }
-        }
-        
-        
-    }
-    else if(end - start > 1)
+    if(end-start>1)
     {
         //do the merge sorting thing
         int midIndex = (end+start)/2;
         mergeSortRecursive(list, start, midIndex, compareFunc);
-        mergeSortRecursive(list, midIndex+1, end, compareFunc);
+        mergeSortRecursive(list, midIndex, end, compareFunc);
         merge(list, start, midIndex, end, compareFunc);
     }
 }
@@ -85,91 +48,62 @@ inline void Sort::mergeSortRecursive(T* list, int start, int end, std::function<
 template<typename T>
 inline void Sort::merge(T* list, int start, int mid, int end, std::function<bool(T,T)> compareFunc)
 {
-    //create two temp arrays
-    int lSize = mid-start;
-    int rSize = end-mid+1;
+    int leftSize = mid-start;
+    int rightSize = end-mid;
     int totalSize = end-start;
-    T leftArr[lSize];
-    T rightArr[rSize];
 
-    for(int i=0; i<lSize; i++)
+    T* leftSide = new T[mid-start];
+    T* rightSide = new T[end-mid];
+
+    for(int i=0; i<leftSize; i++)
     {
-        leftArr[i] = list[start+i];
+        leftSide[i] = list[start+i];
     }
-    for(int i=0; i<rSize; i++)
+    for(int i=0; i<rightSize; i++)
     {
-        rightArr[i] = list[mid+i+1];
+        rightSide[i] = list[mid+i];
     }
 
-    //merge
-    int lIndex = 0;
-    int rIndex = 0;
-    if(compareFunc!=nullptr)
+    int lI = 0;
+    int rI = 0;
+    int index = 0;
+    while(true)
     {
-        for(int i=0; i<totalSize; i++)
+        if(lI < leftSize && rI < rightSize)
         {
-            //compare the index on the left to the right
-            if(lIndex < lSize && rIndex < rSize)
+            if(compareFunc(leftSide[lI], rightSide[rI]))
             {
-                if(compareFunc(leftArr[lIndex], rIndex[rIndex])
-                {
-                    list[i] = leftArr[lIndex];
-                    lIndex++;
-                }
-                else
-                {
-                    list[i] = rightArr[rIndex];
-                    rIndex++;
-                }
+                list[start+index] = leftSide[lI];
+                lI++;
             }
             else
             {
-                if(lIndex < lSize)
-                {
-                    list[i] = leftArr[lIndex];
-                    lIndex++;
-                }
-                else
-                {
-                    list[i] = rightArr[rIndex];
-                    rIndex++;
-                }
+                list[start+index] = rightSide[rI];
+                rI++;
             }
         }
-    }
-    else
-    {
-        for(int i=0; i<totalSize; i++)
+        else if(lI < leftSize)
         {
-            //compare the index on the left to the right
-            if(lIndex < lSize && rIndex < rSize)
-            {
-                if(leftArr[lIndex] < rIndex[rIndex])
-                {
-                    list[i] = leftArr[lIndex];
-                    lIndex++;
-                }
-                else
-                {
-                    list[i] = rightArr[rIndex];
-                    rIndex++;
-                }
-            }
-            else
-            {
-                if(lIndex < lSize)
-                {
-                    list[i] = leftArr[lIndex];
-                    lIndex++;
-                }
-                else
-                {
-                    list[i] = rightArr[rIndex];
-                    rIndex++;
-                }
-            }
+            list[start+index] = leftSide[lI];
+            lI++;
         }
+        else if(rI < rightSize)
+        {
+            list[start+index] = rightSide[rI];
+            rI++;
+        }
+        else
+        {
+            break;
+        }
+        index++;
+
+        if(index>totalSize)
+            break;
     }
+
+    delete[] leftSide;
+    delete[] rightSide;
 }
 
 #pragma endregion
