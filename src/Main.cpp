@@ -72,6 +72,7 @@
  */
 
 WndWindow* windowPointer;
+Image* img;
 
 void function1()
 {
@@ -89,12 +90,20 @@ void function2()
 {
     if(windowPointer!=nullptr)
     {
-        Image img = Image(320, 240);
+        Image img = Image(400, 300);
         img.clearImage();
         Graphics::setColor({255,255,255,255});
         img.drawCircle(img.getWidth()/2, img.getHeight()/2, 32, false);
-
         windowPointer->drawImage(&img);
+    }
+}
+
+void function3()
+{
+    if(windowPointer!=nullptr)
+    {
+        Graphics::setColor({255,255,255,255});
+        windowPointer->drawImage(img);
     }
 }
 
@@ -264,8 +273,23 @@ void testDrawingImage()
     }
     delete[] kImgs;
 }
+
 int main()
 {
-    testDrawingImage();
+    int amount = 0;
+    img = Image::loadImage("C:/Users/Alan/Documents/GitHub/Mia/CupTexture.png", &amount)[0];
+    
+    windowPointer = new WndWindow("Title", 600, 600);
+    windowPointer->setPaintFunction(function3);
+
+    while(windowPointer->getRunning())
+    {
+        windowPointer->repaint();
+        System::sleep(16, 666);
+    }
+    
+    delete windowPointer;
+    delete img;
+
     return 0;
 }

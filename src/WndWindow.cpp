@@ -525,6 +525,7 @@ std::wstring WndWindow::getTitle()
 void WndWindow::repaint()
 {
 	//draw the gui first
+	
 	if (gui != nullptr)
 	{
 		gui->updateGuiElements();
@@ -653,57 +654,54 @@ void WndWindow::drawImage(Image* g)
 		else
 		{
 			Color* imgPixelsStart = g->getPixels();
+			Color* imgPixelsEnd = imgPixelsStart + (g->getWidth()*g->getHeight());
+
 			unsigned char* wndPixelsStart = wndPixels;
 			unsigned char* wndPixelsEnd = wndPixels + (width * height * 3);
 
-			int addAmount = g->getWidth() - width;
+			int side = g->getWidth() - width;
 			int absAddAmount = MathExt::abs(g->getWidth() - width);
+			
+			int tX = 0;
 
-			if (addAmount > 0)
+			if (side > 0)
 			{
 				//img width > window width
-				int x = 0;
-				while (wndPixelsStart < wndPixelsEnd)
+				
+				while (wndPixelsStart < wndPixelsEnd && imgPixelsStart < imgPixelsEnd)
 				{
 					*wndPixelsStart = (*imgPixelsStart).blue;
 					*(wndPixelsStart + 1) = (*imgPixelsStart).green;
 					*(wndPixelsStart + 2) = (*imgPixelsStart).red;
 
+					imgPixelsStart++;
 					wndPixelsStart += 3;
+					tX++;
 					
-					if (x >= width)
+					if (tX >= width)
 					{
 						imgPixelsStart += absAddAmount;
-						x = 0;
-					}
-					else
-					{
-						imgPixelsStart++;
-						x++;
+						tX = 0;
 					}
 				}
 			}
 			else
 			{
 				//img width < window width
-				while (wndPixelsStart < wndPixelsEnd)
+				while (wndPixelsStart < wndPixelsEnd && imgPixelsStart < imgPixelsEnd)
 				{
-
 					*wndPixelsStart = (*imgPixelsStart).blue;
 					*(wndPixelsStart + 1) = (*imgPixelsStart).green;
 					*(wndPixelsStart + 2) = (*imgPixelsStart).red;
 
 					imgPixelsStart++;
+					wndPixelsStart += 3;
+					tX++;
 
-					if (x >= g->getWidth())
+					if (tX >= g->getWidth())
 					{
 						wndPixelsStart += absAddAmount*3;
-						x = 0;
-					}
-					else
-					{
-						wndPixelsStart += 3;
-						x++;
+						tX = 0;
 					}
 				}
 			}
