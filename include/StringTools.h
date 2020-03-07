@@ -92,13 +92,19 @@ public:
 	static void print(const char* text)
 	{
 		if(hasInit)
-			StringTools::out << toWideString(text);
+		{
+			std::string k = text;
+			StringTools::out << toWideString(k);
+		}
 	}
 
 	static void println(const char* text)
 	{
 		if(hasInit)
-			StringTools::out << toWideString(text) << StringTools::lineBreak;
+		{
+			std::string k = text;
+			StringTools::out << toWideString(k) << StringTools::lineBreak;
+		}
 	}
 
 	static std::wostream out;

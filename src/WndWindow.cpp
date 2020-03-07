@@ -143,7 +143,7 @@ LRESULT _stdcall WndWindow::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 		}
 	}
 
-	return DefWindowProc(hwnd, msg, wparam, lparam);
+	return DefWindowProcW(hwnd, msg, wparam, lparam);
 }
 
 WndWindow::WndWindow()
@@ -306,7 +306,9 @@ void WndWindow::dispose()
 		DeleteObject(bitmap);
 		DeleteDC(myHDC);
 
-		delete gui;
+		if(gui!=nullptr)
+			delete gui;
+			
 		WndWindow::removeWindowFromList(this);
 	}
 }
@@ -356,7 +358,7 @@ void WndWindow::init(int x, int y, int width, int height, std::wstring title)
 			setRunning(false);
 
 			setFinishInit(true);
-			std::cout << "Failed window creation" << std::endl;
+			//std::cout << "Failed window creation" << std::endl;
 		}
 	}
 	else
@@ -368,8 +370,8 @@ void WndWindow::init(int x, int y, int width, int height, std::wstring title)
 		setRunning(false);
 
 		setFinishInit(true);
-		std::cout << "Failed class creation" << std::endl;
-		std::cout << GetLastError() << std::endl;
+		//std::cout << "Failed class creation" << std::endl;
+		//std::cout << GetLastError() << std::endl;
 	}
 
 }

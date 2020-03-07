@@ -70,12 +70,12 @@ SimpleFile::SimpleFile(std::string filename, char type)
 
 		this->file = new fstream(filename, fstream::in | fstream::binary);
 
-		this->wideFileName = (wchar_t*)filename.c_str();
+		this->wideFileName = StringTools::toWideString(filename);
 		break;
 	case SimpleFile::WRITE:
 		//
 		this->file = new fstream(filename, fstream::out | fstream::binary);
-		this->wideFileName = (wchar_t*)filename.c_str();
+		this->wideFileName = StringTools::toWideString(filename);
 		break;
 	case SimpleFile::WRITE_APPEND:
 		//
@@ -84,7 +84,7 @@ SimpleFile::SimpleFile(std::string filename, char type)
 		file->close();
 
 		this->file = new fstream(filename, fstream::out | fstream::app | fstream::binary);
-		this->wideFileName = (wchar_t*)filename.c_str();
+		this->wideFileName = StringTools::toWideString(filename);
 		break;
 	default:
 		this->file = new fstream(filename, fstream::in | fstream::ate | fstream::binary);
@@ -92,7 +92,7 @@ SimpleFile::SimpleFile(std::string filename, char type)
 		file->close();
 
 		this->file = new fstream(filename, fstream::in | fstream::binary);
-		this->wideFileName = (wchar_t*)filename.c_str();
+		this->wideFileName = StringTools::toWideString(filename);
 		break;
 	}
 

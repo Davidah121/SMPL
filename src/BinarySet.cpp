@@ -1,7 +1,6 @@
 #include "BinarySet.h"
 #include <iostream>
 
-
 const Class* BinarySet::myClass = new Class("BinarySet", {Object::myClass});
 const Class* BinarySet::getClass()
 {
@@ -20,298 +19,279 @@ BinarySet::~BinarySet()
 
 void BinarySet::add(bool v)
 {
-	this->set.push_back(v);
+	int byteLocation = bitNumber / 8;
+	int bitLocation = bitNumber % 8;
+
+	if (this->set.size() <= 0)
+	{
+		this->set.push_back(0);
+	}
+
+	if (byteLocation > this->set.size())
+	{
+		this->set.push_back(0);
+	}
+
+	this->set[byteLocation] += (1 << (bitLocation));
+
+	bitNumber++;
 }
 
-void BinarySet::add(char v, int amountOfBits, int offset, bool reverse)
+void BinarySet::add(char v, int amountOfBits, int offset)
 {
-	if (amountOfBits >= 8)
+	int actualAmount = amountOfBits;
+	if (amountOfBits > 8)
 	{
-		for (int i = 0; i < 8; i++)
+		actualAmount = 8;
+	}
+
+	if (offset + actualAmount < 8)
+	{
+		for (int i = offset; i < offset + actualAmount; i++)
 		{
-			if (reverse)
-			{
-				this->set.push_back((v >> (i+offset) ) & 1);
-			}
-			else
-			{
-				this->set.push_back((v >> (7 - (i+offset) )) & 1);
-			}
+			this->add(((v >> i) & 0x01) == 1);
 		}
 	}
 	else
 	{
-		for (int i = 0; i < amountOfBits; i++)
+		for (int i = offset; i < 8; i++)
 		{
-			if (reverse)
-			{
-				this->set.push_back((v >> (i + offset)) & 1);
-			}
-			else
-			{
-				this->set.push_back((v >> (7 - (i + offset))) & 1);
-			}
+			this->add(((v >> i) & 0x01) == 1);
 		}
 	}
 }
 
-void BinarySet::add(unsigned char v, int amountOfBits, int offset, bool reverse)
+void BinarySet::add(unsigned char v, int amountOfBits, int offset)
 {
-	if (amountOfBits >= 8)
+	int actualAmount = amountOfBits;
+	if (amountOfBits > 8)
 	{
-		for (int i = 0; i < 8; i++)
+		actualAmount = 8;
+	}
+
+	if (offset + actualAmount < 8)
+	{
+		for (int i = offset; i < offset + actualAmount; i++)
 		{
-			if (reverse)
-			{
-				this->set.push_back((v >> (i + offset)) & 1);
-			}
-			else
-			{
-				this->set.push_back((v >> (7 - (i + offset))) & 1);
-			}
+			this->add(((v >> i) & 0x01) == 1);
 		}
 	}
 	else
 	{
-		for (int i = 0; i < amountOfBits; i++)
+		for (int i = offset; i < 8; i++)
 		{
-			if (reverse)
-			{
-				this->set.push_back((v >> (i + offset)) & 1);
-			}
-			else
-			{
-				this->set.push_back((v >> (7 - (i + offset))) & 1);
-			}
+			this->add(((v >> i) & 0x01) == 1);
 		}
 	}
 }
 
-void BinarySet::add(short v, int amountOfBits, int offset, bool reverse)
+void BinarySet::add(short v, int amountOfBits, int offset)
 {
-	if (amountOfBits >= 16)
+	int actualAmount = amountOfBits;
+	if (amountOfBits > 16)
 	{
-		for (int i = 0; i < 16; i++)
+		actualAmount = 16;
+	}
+
+	if (offset + actualAmount < 16)
+	{
+		for (int i = offset; i < offset + actualAmount; i++)
 		{
-			if (reverse)
-			{
-				this->set.push_back((v >> (i + offset)) & 1);
-			}
-			else
-			{
-				this->set.push_back((v >> (15 - (i + offset))) & 1);
-			}
+			this->add(((v >> i) & 0x01) == 1);
 		}
 	}
 	else
 	{
-		for (int i = 0; i < amountOfBits; i++)
+		for (int i = offset; i < 16; i++)
 		{
-			if (reverse)
-			{
-				this->set.push_back((v >> (i + offset)) & 1);
-			}
-			else
-			{
-				this->set.push_back((v >> (15 - (i + offset))) & 1);
-			}
+			this->add(((v >> i) & 0x01) == 1);
 		}
 	}
 }
 
-void BinarySet::add(unsigned short v, int amountOfBits, int offset, bool reverse)
+void BinarySet::add(unsigned short v, int amountOfBits, int offset)
 {
-	if (amountOfBits >= 16)
+	int actualAmount = amountOfBits;
+	if (amountOfBits > 16)
 	{
-		for (int i = 0; i < 16; i++)
+		actualAmount = 16;
+	}
+
+	if (offset + actualAmount < 16)
+	{
+		for (int i = offset; i < offset + actualAmount; i++)
 		{
-			if (reverse)
-			{
-				this->set.push_back((v >> (i + offset)) & 1);
-			}
-			else
-			{
-				this->set.push_back((v >> (15 - (i + offset))) & 1);
-			}
+			this->add(((v >> i) & 0x01) == 1);
 		}
 	}
 	else
 	{
-		for (int i = 0; i < amountOfBits; i++)
+		for (int i = offset; i < 16; i++)
 		{
-			if (reverse)
-			{
-				this->set.push_back((v >> (i + offset)) & 1);
-			}
-			else
-			{
-				this->set.push_back((v >> (15 - (i + offset))) & 1);
-			}
+			this->add(((v >> i) & 0x01) == 1);
 		}
 	}
 }
 
-void BinarySet::add(int v, int amountOfBits, int offset, bool reverse)
+void BinarySet::add(int v, int amountOfBits, int offset)
 {
-	if (amountOfBits >= 32)
+	int actualAmount = amountOfBits;
+	if (amountOfBits > 32)
 	{
-		for (int i = 0; i < 32; i++)
+		actualAmount = 32;
+	}
+
+	if (offset + actualAmount < 32)
+	{
+		for (int i = offset; i < offset + actualAmount; i++)
 		{
-			if (reverse)
-			{
-				this->set.push_back((v >> (i + offset)) & 1);
-			}
-			else
-			{
-				this->set.push_back((v >> (31 - (i + offset))) & 1);
-			}
+			this->add(((v >> i) & 0x01) == 1);
 		}
 	}
 	else
 	{
-		for (int i = 0; i < amountOfBits; i++)
+		for (int i = offset; i < 32; i++)
 		{
-			if (reverse)
-			{
-				this->set.push_back((v >> (i + offset)) & 1);
-			}
-			else
-			{
-				this->set.push_back((v >> (31 - (i + offset))) & 1);
-			}
+			this->add(((v >> i) & 0x01) == 1);
 		}
 	}
 }
 
-void BinarySet::add(unsigned int v, int amountOfBits, int offset, bool reverse)
+void BinarySet::add(unsigned int v, int amountOfBits, int offset)
 {
-	if (amountOfBits >= 32)
+	int actualAmount = amountOfBits;
+	if (amountOfBits > 32)
 	{
-		for (int i = 0; i < 32; i++)
+		actualAmount = 32;
+	}
+
+	if (offset + actualAmount < 32)
+	{
+		for (int i = offset; i < offset + actualAmount; i++)
 		{
-			if (reverse)
-			{
-				this->set.push_back((v >> (i + offset)) & 1);
-			}
-			else
-			{
-				this->set.push_back((v >> (31 - (i + offset))) & 1);
-			}
+			this->add(((v >> i) & 0x01) == 1);
 		}
 	}
 	else
 	{
-		for (int i = 0; i < amountOfBits; i++)
+		for (int i = offset; i < 32; i++)
 		{
-			if (reverse)
-			{
-				this->set.push_back((v >> (i + offset)) & 1);
-			}
-			else
-			{
-				this->set.push_back((v >> (31 - (i + offset))) & 1);
-			}
+			this->add(((v >> i) & 0x01) == 1);
 		}
 	}
 }
 
-void BinarySet::add(long v, int amountOfBits, int offset, bool reverse)
+void BinarySet::add(long v, int amountOfBits, int offset)
 {
-	if (amountOfBits >= 64)
+	int actualAmount = amountOfBits;
+	if (amountOfBits > 32)
 	{
-		for (int i = 0; i < 64; i++)
+		actualAmount = 32;
+	}
+
+	if (offset + actualAmount < 32)
+	{
+		for (int i = offset; i < offset + actualAmount; i++)
 		{
-			if (reverse)
-			{
-				this->set.push_back((v >> (i + offset)) & 1);
-			}
-			else
-			{
-				this->set.push_back((v >> (63 - (i + offset))) & 1);
-			}
+			this->add(((v >> i) & 0x01) == 1);
 		}
 	}
 	else
 	{
-		for (int i = 0; i < amountOfBits; i++)
+		for (int i = offset; i < 32; i++)
 		{
-			if (reverse)
-			{
-				this->set.push_back((v >> (i + offset)) & 1);
-			}
-			else
-			{
-				this->set.push_back((v >> (63 - (i + offset))) & 1);
-			}
+			this->add(((v >> i) & 0x01) == 1);
 		}
 	}
 }
 
-void BinarySet::add(unsigned long v, int amountOfBits, int offset, bool reverse)
+void BinarySet::add(unsigned long v, int amountOfBits, int offset)
 {
-	if (amountOfBits >= 64)
+	int actualAmount = amountOfBits;
+	if (amountOfBits > 32)
 	{
-		for (int i = 0; i < 64; i++)
+		actualAmount = 32;
+	}
+
+	if (offset + actualAmount < 32)
+	{
+		for (int i = offset; i < offset + actualAmount; i++)
 		{
-			if (reverse)
-			{
-				this->set.push_back((v >> (i + offset)) & 1);
-			}
-			else
-			{
-				this->set.push_back((v >> (63 - (i + offset))) & 1);
-			}
+			this->add(((v >> i) & 0x01) == 1);
 		}
 	}
 	else
 	{
-		for (int i = 0; i < amountOfBits; i++)
+		for (int i = offset; i < 32; i++)
 		{
-			if (reverse)
-			{
-				this->set.push_back((v >> (i + offset)) & 1);
-			}
-			else
-			{
-				this->set.push_back((v >> (63 - (i + offset))) & 1);
-			}
+			this->add(((v >> i) & 0x01) == 1);
 		}
 	}
+}
+
+void BinarySet::add(char* v, int size)
+{
+	for (int i = 0; i < size; i++)
+	{
+		this->add(v[i]);
+	}
+}
+
+void BinarySet::add(unsigned char* v, int size)
+{
+	for (int i = 0; i < size; i++)
+	{
+		this->add(v[i]);
+	}
+}
+
+void BinarySet::setValues(char* v, int size)
+{
+	set.assign((unsigned char*)v, (unsigned char*)v + size);
+	bitNumber = size * 8;
+}
+
+void BinarySet::setValues(unsigned char* v, int size)
+{
+	set.assign(v, v + size);
+	bitNumber = size * 8;
 }
 
 bool BinarySet::getBit(int index)
 {
-	if (index < set.size())
+	int byteLocation = index / 8;
+	int bitLocation = index % 8;
+
+	if (MSB == BinarySet::LMSB)
 	{
-		return this->set[set.size() - index - 1];
+		if (index < bitNumber)
+		{
+			return ((this->set[byteLocation] >> bitLocation) & 0x01)==1;
+		}
 	}
+	else
+	{
+		if (index < bitNumber)
+		{
+			return ((this->set[byteLocation] >> (7-bitLocation)) & 0x01)==1;
+		}
+	}
+	
 	return false;
 }
 
 int BinarySet::getBits(int indexStart, int indexEnd, bool reverse)
 {
 	int value = 0;
-	if(indexStart > 0 && indexStart < set.size())
+	if(indexStart > 0 && indexStart < bitNumber)
 	{
-		if(indexEnd > 0 && indexEnd < set.size())
+		if(indexEnd > 0 && indexEnd < bitNumber)
 		{
 			int totalSize = indexEnd-indexStart;
-
-			if(reverse==false)
+			for (int i = 0; i < totalSize; i++)
 			{
-				for(int i=0; i<totalSize; i++)
-				{
-					value += (int)getBit(indexStart+i) << i;
-				}
+				value += (int)getBit(indexStart + i) << i;
 			}
-			else
-			{
-				for(int i=0; i<totalSize; i++)
-				{
-					value += (int)getBit(indexEnd-i) << i;
-				}
-			}
-			
 		}
 	}
 
@@ -320,57 +300,12 @@ int BinarySet::getBits(int indexStart, int indexEnd, bool reverse)
 
 std::vector<unsigned char> BinarySet::toBytes(bool reverse)
 {
-	bool extraByte = ((set.size() % 8) != 0);
-	int amountOfBytes = (set.size() + (set.size()%8)) / 8; //Rounds up to the next byte
-
-	std::vector<unsigned char> output = std::vector<unsigned char>();
-
-	unsigned char curByte = 0;
-	int shift = 0;
-
-	if (reverse == false)
-	{
-		for (int i = 0; i < set.size(); i++)
-		{
-			curByte += ((int)set[i]) << shift;
-
-			shift++;
-			if (shift >= 8)
-			{
-				output.push_back(curByte);
-				shift = 0;
-				curByte = 0;
-			}
-		}
-	}
-	else
-	{
-		int shift = 7;
-		for (int i = 0; i < set.size(); i++)
-		{
-			curByte += ((int)set[i]) << shift;
-
-			shift--;
-			if (shift <0)
-			{
-				output.push_back(curByte);
-				shift = 7;
-				curByte = 0;
-			}
-		}
-	}
-
-	if (extraByte)
-	{
-		output.push_back(curByte);
-	}
-
-	return output;
+	return set;
 }
 
 int BinarySet::size()
 {
-	return set.size();
+	return bitNumber;
 }
 
 void BinarySet::printVals(bool reverse)
@@ -410,4 +345,9 @@ void BinarySet::printVals(bool reverse)
 void BinarySet::clear()
 {
 	set.clear();
+}
+
+void BinarySet::setBitOrder(bool bitOrder)
+{
+	MSB = bitOrder;
 }

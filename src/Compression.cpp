@@ -156,12 +156,13 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 		//We are using a custom class BinarySet that does the
 		//conversion for us.
 		BinarySet binData = BinarySet();
+		binData.setBitOrder(BinarySet::LMSB);
 
 		std::string lastString = "";
 		std::string newString = "";
 		int preIndex = 0;
 
-		binData.add(clearDictionaryLocation, currBits, 0, true);
+		binData.add(clearDictionaryLocation, currBits, 0);
 
 		int i = 0;
 		while(i<size)
@@ -186,7 +187,7 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 			}
 			else
 			{
-				binData.add(preIndex, currBits, 0, true);
+				binData.add(preIndex, currBits, 0);
 				newDictionary.push_back(newString);
 				currBits = (int)ceil(log2(newDictionary.size()));
 
@@ -200,10 +201,10 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 
 		if (newString != "")
 		{
-			binData.add(preIndex, currBits, 0, true);
+			binData.add(preIndex, currBits, 0);
 		}
 
-		binData.add(EndOfDataLocation, currBits, 0, true);
+		binData.add(EndOfDataLocation, currBits, 0);
 
 		output = binData.toBytes();
 	}
@@ -251,11 +252,9 @@ std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int s
 		//Next, we load all of our data into a more friendly format
 		//for dealing with binary data directly.
 		BinarySet binData = BinarySet();
+		binData.setBitOrder(BinarySet::LMSB);
 
-		for (int i = 0; i < size; i++)
-		{
-			binData.add(data[i], 8, 0, true);
-		}
+		binData.setValues(data, size);
 
 		//Our data is oriented in an odd way. We read bits and add onto
 		//end of the value. kinda like a queue.
@@ -548,6 +547,7 @@ std::vector<unsigned char> Compression::compressLZSS(std::vector<unsigned char> 
 std::vector<unsigned char> Compression::compressLZSS(unsigned char* data, int size, int maxBufferSize)
 {
 	BinarySet bin = BinarySet();
+	bin.setBitOrder(BinarySet::LMSB);
 
 	//unlike lz77, we need to deal with raw binary. We will use our BinarySet
 	//class since it provides an easy way to deal with binary and std::vector
@@ -687,12 +687,11 @@ std::vector<unsigned char> Compression::decompressLZSS(std::vector<unsigned char
 std::vector<unsigned char> Compression::decompressLZSS(unsigned char* data, int size, int maxBufferSize)
 {
 	BinarySet bin = BinarySet();
+	bin.setBitOrder(BinarySet::LMSB);
+
 	std::vector<unsigned char> output = std::vector<unsigned char>();
 
-	for (int i = 0; i < size; i++)
-	{
-		bin.add(data[i]);
-	}
+	bin.setValues(data, size);
 	
 	int bitsForRef = ceil(log2(maxBufferSize)); //Since we are working in binary
 
@@ -778,6 +777,7 @@ std::vector<unsigned char> Compression::compressHuffman(std::vector<unsigned cha
 std::vector<unsigned char> Compression::compressHuffman(unsigned char* data, int size, BinaryTree<HuffmanNode>* tree)
 {
 	BinarySet output = BinarySet();
+	output.setBitOrder(BinarySet::LMSB);
 
 	//First, build a huffmanTree.
 	//We have created a function to do this since it takes up
@@ -828,11 +828,10 @@ std::vector<unsigned char> Compression::decompressHuffman(unsigned char* data, i
 	std::vector<unsigned char> output = std::vector<unsigned char>();
 
 	BinarySet input = BinarySet();
+	input.setBitOrder(BinarySet::LMSB);
+	
 	//first, fill the BinarySet
-	for (int i = 0; i < size; i++)
-	{
-		input.add(data[i]);
-	}
+	input.setValues(data, size);
 
 	input.printVals(true);
 
@@ -1067,12 +1066,12 @@ BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues,
 	//We use lambda expressions here so we only compare the length values. We could have overriden the comparison
 	//operator in dataLengthCombo, but I wanted to use lambda expressions.
 
-	std::function compareFunc = [](const dataLengthCombo & a, const dataLengthCombo & b) -> bool { if(a.length == b.length)
+	std::function<bool(dataLengthCombo, dataLengthCombo)> compareFunc = [](const dataLengthCombo & a, const dataLengthCombo & b) -> bool { if(a.length == b.length)
 																										return a.data < b.data;
 																									else
 																										return a.length < b.length; };
 	Sort::mergeSort<dataLengthCombo>(arr, size, compareFunc);
-	
+
 	//now, we can start building the codes.
 	int startCode = 0;
 	int preLength = 0;
@@ -1100,20 +1099,6 @@ BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues,
 		}
 		
 	}
-	
-	/*
-	for(int i=0; i<size; i++)
-	{
-		BinarySet k = BinarySet();
-		k.add(arr[i].code);
-		StringTools::out << "Value: " << arr[i].data << ", Length: " << arr[i].length << ", Code: ";
-		for(int i=0; i<k.size(); i++)
-		{
-			StringTools::out << (int)k.getBit(i);
-		}
-		StringTools::println("");
-	}
-	*/
 
 	//now, we build a tree with this information.
 	BinaryTree<HuffmanNode>* tree = new BinaryTree<HuffmanNode>();
@@ -1206,14 +1191,14 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 
 	BinarySet binData = BinarySet();
 	
-	//getBit(0) starts at the very right of the data.
-	//getBit(n) is the very left of the data.
-	for(int i=size-1; i>=0; i--)
-	{
-		binData.add(data[i]);
-	}
+	//set data in binarySet
+	binData.setBitOrder(BinarySet::LMSB);
+	binData.setValues(data, size);
+
+	StringTools::out << "BinSize " << binData.size() << StringTools::lineBreak;
 
 	int currLoc = 0;
+	bool invalid = false;
 
 	while(currLoc<binData.size())
 	{
@@ -1311,6 +1296,7 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 		{
 			BinaryTree<HuffmanNode>* mTree = nullptr;
 			BinaryTree<HuffmanNode>* backTree = nullptr;
+			BinaryTree<HuffmanNode>** dynTrees = nullptr;
 
 			if(mode==1)
 			{
@@ -1322,7 +1308,7 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 			{
 				//make the dynamic tree
 				//StringTools::out << "Making dynamic tree" << StringTools::lineBreak;
-				BinaryTree<HuffmanNode>** dynTrees = nullptr;
+				
 				dynTrees = Compression::buildDynamicDeflateTree(&binData, &currLoc);
 				if(dynTrees!=nullptr)
 				{
@@ -1355,19 +1341,28 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 						currNode = currNode->rightChild;
 					}
 
-					if(currNode->leftChild == nullptr && currNode->rightChild == nullptr)
+					if (currNode != nullptr)
 					{
-						//must be the correct value
-						//StringTools::out << "Hit value with value - " << currNode->data.value << StringTools::lineBreak;
-						/*
-						StringTools::out << "Hit value with value - " << currNode->data.value << ", and bitvalue - ";
-						test.printVals();
-						*/
+						if (currNode->leftChild == nullptr && currNode->rightChild == nullptr)
+						{
+							//must be the correct value
+							//StringTools::out << "Hit value with value - " << currNode->data.value << StringTools::lineBreak;
+							/*
+							StringTools::out << "Hit value with value - " << currNode->data.value << ", and bitvalue - ";
+							test.printVals();
+							*/
 
-						hitGood = true;
-						
+							hitGood = true;
+
+						}
+						currLoc += 1;
 					}
-					currLoc+=1;
+					else
+					{
+						//error
+						invalid = true;
+						break;
+					}
 				}
 				else
 				{
@@ -1463,7 +1458,15 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 			if(backTree!=nullptr)
 				delete backTree;
 			
+			if(dynTrees!=nullptr)
+				delete[] dynTrees;
+				
 			if(lastBlock)
+			{
+				break;
+			}
+
+			if (invalid)
 			{
 				break;
 			}
@@ -1614,7 +1617,7 @@ BinaryTree<HuffmanNode>* Compression::buildDeflateDefaultTree()
 
 BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, int* location)
 {
-	BinaryTree<HuffmanNode>** trees = new BinaryTree<HuffmanNode>*[2];
+	BinaryTree<HuffmanNode>** trees = new BinaryTree<HuffmanNode> * [2]{};
 
 	int HLIT = data->getBits(*location, *location+5);
 	*location+=5;
@@ -1655,10 +1658,7 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 	//the start point and the length.
 
 	int* allCodes = new int[totalCodes];
-	for(int i=0; i<totalCodes; i++)
-	{
-		allCodes[i] = 0;
-	}
+	std::memset(allCodes, 0, totalCodes);
 
 	BinaryTreeNode<HuffmanNode>* currNode = tempTree->getRoot();
 
@@ -1720,7 +1720,8 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 
 				for(int i=0; i<copyLen; i++)
 				{
-					allCodes[codes+i] = 0;
+					if(codes+i < totalCodes)
+						allCodes[codes+i] = 0;
 				}
 				codes+=copyLen;
 			}
@@ -1733,9 +1734,20 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 	//the value 256 must have a valid code
 	if(allCodes[256] == 0)
 	{
-		delete[] allCodes;
-		delete tempTree;
-		delete[] trees;
+		if(allCodes!=nullptr)
+			delete[] allCodes;
+		if(tempTree!=nullptr)
+			delete tempTree;
+		if(trees!=nullptr)
+		{
+			if(trees[0]!=nullptr)
+				delete trees[0];
+			if(trees[1]!=nullptr)
+				delete trees[1];
+			
+			delete[] trees;
+		}
+			
 		return nullptr;
 	}
 
@@ -1754,10 +1766,15 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 	trees[0] = Compression::buildCanonicalHuffmanTree(lenLengthValues, &allCodes[0], amountOfLitCodes, true);
 	trees[1] = Compression::buildCanonicalHuffmanTree(distValues, &allCodes[amountOfLitCodes], amountOfDistCodes, true);
 
-	delete[] lenLengthValues;
-	delete[] distValues;
-	delete[] allCodes;
-	delete tempTree;
+	if(lenLengthValues!=nullptr)
+		delete[] lenLengthValues;
+	if(distValues!=nullptr)
+		delete[] distValues;
+	if(allCodes!=nullptr)
+		delete[] allCodes;
+
+	if(tempTree!=nullptr)
+		delete tempTree;
 
 	return trees;
 }

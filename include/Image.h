@@ -55,7 +55,6 @@ private:
 	static Image** loadBMP(std::vector<unsigned char> fileData, int* amountOfImages);
 	static Image** loadGIF(std::vector<unsigned char> fileData, int* amountOfImages);
 	static Image** loadPNG(std::vector<unsigned char> fileData, int* amountOfImages);
-	static Color PNGFiltering(std::vector<unsigned char> &byteData, int index, int filterType, Image* img, int x, int y, int bytesToRead);
 
 	static Image** loadJPG(std::vector<unsigned char> fileData, int* amountOfImages);
 	

@@ -21,28 +21,30 @@ StringTools::StringTools()
 
 }
 
-
 StringTools::~StringTools()
 {
 }
 
 void StringTools::init()
 {
-	std::ios_base::sync_with_stdio(false);
+	StringTools::out.rdbuf(std::wcout.rdbuf());
+	StringTools::in.rdbuf(std::wcin.rdbuf());
+	StringTools::err.rdbuf(std::wcerr.rdbuf());
+
+	std::ios_base::sync_with_stdio(true);
 	int outRet = _setmode(_fileno(stdout), _O_U16TEXT);
 	int inRet = _setmode(_fileno(stdin), _O_U16TEXT);
 	int errRet = _setmode(_fileno(stderr), _O_U16TEXT);
 
-	StringTools::out.rdbuf(std::wcout.rdbuf());
-	StringTools::in.rdbuf(std::wcin.rdbuf());
-	StringTools::err.rdbuf(std::wcerr.rdbuf());
 	hasInit = true;
 }
 
 wchar_t * StringTools::toWideString(char * text)
 {
-	wchar_t* temp = new wchar_t[ stringLength(text) ];
-	for (int i = 0; i <= stringLength(text); i++)
+	int len = stringLength(text);
+
+	wchar_t* temp = new wchar_t[len];
+	for (int i = 0; i < len; i++)
 	{
 		temp[i] = (wchar_t)text[i];
 	}
@@ -51,8 +53,10 @@ wchar_t * StringTools::toWideString(char * text)
 
 wchar_t * StringTools::toWideString(const char * text)
 {
-	wchar_t* temp = new wchar_t[stringLength(text)];
-	for (int i = 0; i <= stringLength(text); i++)
+	int len = stringLength(text);
+
+	wchar_t* temp = new wchar_t[len];
+	for (int i = 0; i < len; i++)
 	{
 		temp[i] = (wchar_t)text[i];
 	}
@@ -72,8 +76,9 @@ std::wstring StringTools::toWideString(std::string text)
 
 char * StringTools::toCString(wchar_t * text)
 {
-	char* temp = new char[stringLength(text)];
-	for (int i = 0; i <= stringLength(text); i++)
+	int len = stringLength(text);
+	char* temp = new char[len];
+	for (int i = 0; i < len; i++)
 	{
 		temp[i] = (char)(text[i] & 0xFF);
 	}
@@ -82,8 +87,9 @@ char * StringTools::toCString(wchar_t * text)
 
 char * StringTools::toCString(const wchar_t * text)
 {
-	char* temp = new char[stringLength(text)];
-	for (int i = 0; i <= stringLength(text); i++)
+	int len = stringLength(text);
+	char* temp = new char[len];
+	for (int i = 0; i < len; i++)
 	{
 		temp[i] = (char)(text[i] & 0xFF);
 	}

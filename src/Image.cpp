@@ -934,7 +934,8 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 			{
 				//invalid for now
 				//Doesn't support 16 bitdepth. Maybe later using ColorHiDef
-				std::cout << "Does not support 16 bit depth images" << std::endl;
+				
+				//std::cout << "Does not support 16 bit depth images" << std::endl;
 				valid = false;
 				break;
 			}
@@ -1042,7 +1043,13 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 			valid = false;
 			if(amountOfImages!=nullptr)
 				*amountOfImages=0;
-			delete tImg;
+
+			if(tImg!=nullptr)
+				delete tImg;
+
+			if(images!=nullptr)
+				delete[] images;
+			
 			return nullptr;
 		}
 
@@ -1066,7 +1073,6 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 		int moveBackVal = 1;
 		if(bitDepth>8)
 		{
-			
 			moveBackVal = bitDepth/8;
 		}
 		int scanLineBytes = (tImg->getWidth() * (8.0/bitDepth));
@@ -1373,6 +1379,7 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 			else {
 
 			}
+
 			#pragma endregion FillImage
 
 			preScanLine = scanLine;
@@ -1381,8 +1388,7 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 
 	if(*amountOfImages == 1)
 	{
-		images = new Image* [*amountOfImages];
-		images[0] = tImg;
+		images = new Image* [1]{tImg};
 	}
 	
 	StringTools::println("FINISHED");

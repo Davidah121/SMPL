@@ -117,7 +117,7 @@ void compressionTesting()
     //Expected Output:
     // 00 00 00 00 FF FF FF FF FF FF 00 FF FF FF 00 00 00 FF FF FF 00 FF FF FF FF FF FF FF FF FF 00 FF FF FF FF FF FF FF FF FF 00 FF FF FF FF FF FF FF FF FF
 
-    std::vector<unsigned char> output = Compression::decompressDeflate(new unsigned char[]{0x63, 0x00, 0x82, 0xFF, 0x60, 0x00, 0xA2, 0x20, 0x1C, 0xA8, 0x00, 0x10, 0x60, 0xB2, 0xFE, 0xFF, 0x07, 0x00, 0x68, 0xF3, 0x26, 0xDA, 0x8B, 0xA3, 0xF8, 0xF8, 0x00, 0x00, 0x00, 0x00}, 30);
+    std::vector<unsigned char> output = Compression::decompressDeflate(new unsigned char[30]{0x63, 0x00, 0x82, 0xFF, 0x60, 0x00, 0xA2, 0x20, 0x1C, 0xA8, 0x00, 0x10, 0x60, 0xB2, 0xFE, 0xFF, 0x07, 0x00, 0x68, 0xF3, 0x26, 0xDA, 0x8B, 0xA3, 0xF8, 0xF8, 0x00, 0x00, 0x00, 0x00}, 30);
 
     for(int i=0; i<output.size(); i++)
     {
@@ -236,50 +236,11 @@ void testDrawingImage()
 {
     StringTools::init();
 
-    WndWindow k = WndWindow("CupTexture", 512, 512);
-
-    /*
-    StringTools::println("Loading C:/Users/Alan/Documents/GitHub/Mia/CupTexture.png");
-    
-    std::string filename = "C:/Users/Alan/Documents/GitHub/Mia/CupTexture.png";
-    int amount = 0;
-    Image** kImgs = Image::loadImage(filename, &amount);
-    */
-    int amount = 1;
-    Image** kImgs = new Image*[1];
-    kImgs[0] = new Image(512,512);
-    Graphics::setColor({200,100,150,255});
-    kImgs[0]->drawRect(32,32,400,400,false);
-
-    if(amount > 0)
-    {
-        StringTools::println("Successful Load.");
-        StringTools::out << "Width is: " << kImgs[0]->getWidth() << ", Height is: " << kImgs[0]->getHeight() << StringTools::lineBreak;
-
-        while(k.getRunning())
-        {
-            k.drawImage(kImgs[0]);
-            k.repaint();
-        }
-    }
-    else
-    {
-        StringTools::println("Unsuccessful Load.");
-    }
-    
-    for(int i=0; i<amount; i++)
-    {
-        delete kImgs[i];
-    }
-    delete[] kImgs;
-}
-
-int main()
-{
     int amount = 0;
     img = Image::loadImage("C:/Users/Alan/Documents/GitHub/Mia/CupTexture.png", &amount)[0];
+	//img = Image::loadImage("C:\\Users\\Alan\\source\\repos\\ImageLibrary\\TestImages\\PNG\\FilterTest\\f00n2c08.png", &amount)[0];
     
-    windowPointer = new WndWindow("Title", 600, 600);
+    windowPointer = new WndWindow(L"Displaying CupTexture", 600, 600);
     windowPointer->setPaintFunction(function3);
 
     while(windowPointer->getRunning())
@@ -288,8 +249,18 @@ int main()
         System::sleep(16, 666);
     }
     
-    delete windowPointer;
-    delete img;
+    if(windowPointer!=nullptr)
+        delete windowPointer;
+    
 
+    if(img!=nullptr)
+        delete img;
+
+}
+
+int main()
+{
+    testDrawingImage();
+    
     return 0;
 }

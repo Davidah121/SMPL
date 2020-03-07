@@ -10,6 +10,9 @@ public:
     template<typename T>
     static void mergeSort(T* list, int size, std::function<bool(T,T)> compareFunc);
 
+    template<typename T>
+    static void insertionSort(T* list, int size, std::function<bool(T,T)> compareFunc);
+
     /*
     template<typename T>
     static void quickSort(T* list, int size, std::function<bool(T,T)> compareFunc);
@@ -102,8 +105,35 @@ inline void Sort::merge(T* list, int start, int mid, int end, std::function<bool
             break;
     }
 
-    delete[] leftSide;
-    delete[] rightSide;
+    if(leftSide!=nullptr)
+        delete[] leftSide;
+    if(rightSide!=nullptr)
+        delete[] rightSide;
 }
 
+#pragma endregion
+
+#pragma region INSERTIONSORT
+template<typename T>
+inline void Sort::insertionSort(T* list, int size, std::function<bool(T,T)> compareFunc)
+{
+    for(int i=1; i<size; i++)
+    {
+        for(int j=i; j>=1; j--)
+        {
+            //if (list[j] < list[i])
+            if(compareFunc(list[j], list[j-1]))
+            {
+                //swap
+                T temp = list[j-1];
+                list[j-1] = list[j];
+                list[j] = temp;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+}
 #pragma endregion
