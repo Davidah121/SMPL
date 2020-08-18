@@ -47,6 +47,9 @@ public:
 	void operator*=(float other);
 	void operator/=(float other);
 
+	bool operator==(Vec2f other);
+	bool operator!=(Vec2f other);
+
 	Vec2f operator-();
 
 	Vec2f operator*(int value);

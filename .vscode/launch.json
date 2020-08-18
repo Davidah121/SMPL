@@ -29,6 +29,16 @@
             "externalConsole": true
         },
         {
+            "name": "(LLDB) Debug Launch x64",
+            "type": "lldb",
+            "request":"launch",
+            "program": "${workspaceFolder}/bin/Debug/x64/${workspaceFolderBasename}.exe",
+            "args": [],
+            "stopOnEntry": false,
+            "cwd": "${workspaceFolder}/src",
+            "console": "externalTerminal"
+        },
+        {
             "name": "(Windows) Release Launch x64",
             "type": "cppvsdbg",
             "request": "launch",

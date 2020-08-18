@@ -459,17 +459,17 @@ Image* System::getScreenShot(HWND hwnd)
 	return finalImage;
 }
 
-void saveScreenShotDesktop(std::string filename)
+void System::saveScreenShotDesktop(std::string filename)
 {
 	System::saveScreenShot(GetDesktopWindow(), filename);
 }
 
-void saveScreenShotDesktop(std::wstring filename)
+void System::saveScreenShotDesktop(std::wstring filename)
 {
 	System::saveScreenShot(GetDesktopWindow(), filename);
 }
 
-Image* getScreenShotDesktop(std::string filename)
+Image* System::getScreenShotDesktop()
 {
 	return System::getScreenShot(GetDesktopWindow());
 }

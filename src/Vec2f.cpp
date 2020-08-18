@@ -131,6 +131,17 @@ void Vec2f::operator/=(float other)
 	x /= other;
 	y /= other;
 }
+
+bool Vec2f::operator==(Vec2f other)
+{
+	return (x==other.x) && (y==other.y);
+}
+
+bool Vec2f::operator!=(Vec2f other)
+{
+	return (x!=other.x) || (y!=other.y);
+}
+
 Vec2f Vec2f::operator-()
 {
 	return Vec2f(-x, -y);

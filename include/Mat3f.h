@@ -5,6 +5,7 @@ class Mat3f : public Matrix
 {
 public:
 	Mat3f();
+	~Mat3f();
 
 	//Object and Class Stuff
 	const Class* getClass();

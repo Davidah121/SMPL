@@ -1,0 +1,54 @@
+ax^3 + bx^2 + cx + d = 0
+
+p = c/a - (b^2)/(3a^2)
+q = (2b^3)/(27a^3) - (bc)/(3a^2) + d/a
+
+Assuming: x^3 + px + q = 0
+
+x = cubeRoot(-q/2 - sqrt( q^2 / 4 + p^3 / 27) ) 
+	+ cubeRoot(-q/2 + sqrt( q^2 / 4 + p^3 / 27) )
+
+
+Find convert complex number to polar form
+
+x = cubeRoot( length*(cos(angle)-isin(angle))) 
+	+ cubeRoot( length*cos(angle)+isin(angle)))
+
+x = cubeRoot(length) * (cos(angle/3) - isin(angle/3))
+	+ cubeRoot(length) * (cos(angle/3) + isin(angle/3))
+
+x = 2*cubeRoot(length) * cos(angle/3)
+
+//all points are equally spaced apart and form a 360 degree angle
+x1 = 2*cubeRoot(length) * cos(angle/3)
+x2 = 2*cubeRoot(length) * cos(angle/3 + 2pi/3)
+x3 = 2*cubeRoot(length) * cos(angle/3 + 4pi/3)
+
+Instructions taken
+
+(Some notes, constants like 2pi/3 and 4pi/3 can be converted into a preprocessor.
+We only need the coefficients for the last part so we solve for those instead.
+Example, we don't use the angle but we use the angle divided by 3 so find that instead.)
+
+SETUP:
+Finding shift = 2 mult + 1 div
+Finding P = 3 mul + 2 div+ 1 sub
+
+SOLVING:
+Finding Q = 9 mul + 3 div + 1 sub + 1 add
+Finding LengthCoefficient = 5 mult + 1 add + 1 sqrt + 1 cuberoot
+Finding AngleCoefficient = 1 arccos + 2 division
+Finding 3 points = 3 mult + 3 cos + 2 add
+
+6 problem instructions.
+
+Times needed for a cubic bezier curve:
+
+For a cubic bezier curve, we have to solve for each y so Y will represent the distance from
+the top to the bottom.
+
+SETUP + Y*SOLVING
+This assumes that 3 points exist.
+
+of course, you could split the curve into smaller parts and approxiamate those
+using a lot of t values

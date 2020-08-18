@@ -1,0 +1,23 @@
+A = 2 Trig + 4 Sqr+ 2 Div + 1 Add = 9ops
+B = 2 Sqr + 2 Div + 1 Sub + 4 Mult = 9ops
+C = 2 Trig + 4 Sqr+ 2 Div + 1 Add = 9ops
+
+Q = 6 Mult + 2 Add + 1 Div = 9ops
+D = 7 Mult + 2 Sqr + 3 Add + 1 Div = 13ops
+
+n1= 2 Mult + 1Sqr + 1 Add + 1 Sub = 5ops
+n2 = 4 Mult + 1 Add = 5ops
+n3 = 1 Mult + 1 Sqr + 1 Sub = 3ops
+
+
+Total Ops to convert to solvable format = 9+9+9+9+13+5+5+3 = 62ops
+
+Solving for the points
+y1 = 5Mult + 1Add + 1Sqrt + 1Sqr + 1Div = 9ops
+y2 = 5Mult + 1Sub + 1Sqrt + 1Sqr + 1Div = 9ops
+
+x1 = 2Mult + 1Add = 3ops
+x2 = 2Mult + 1Add = 3ops
+
+
+Total Ops not including if statements = 86ops

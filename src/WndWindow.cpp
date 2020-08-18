@@ -397,7 +397,13 @@ void WndWindow::initBitmap()
 	bitInfo.bmiColors->rgbBlue = 0;
 	bitInfo.bmiColors->rgbReserved = 0;
 
-	wndPixels = new unsigned char[width * height * 3];
+	scanLinePadding = width%4;
+
+	wndPixelsSize = (width*3 + scanLinePadding) * height;
+
+	wndPixels = new unsigned char[wndPixelsSize];
+
+	std::memset(wndPixels,0,wndPixelsSize);
 	myHDC = GetDC(windowHandle);
 
 	bitmap = CreateCompatibleBitmap(myHDC, width, height);
@@ -524,6 +530,11 @@ std::wstring WndWindow::getTitle()
 	return title;
 }
 
+int WndWindow::getImageSize()
+{
+	return wndPixelsSize;
+}
+
 void WndWindow::repaint()
 {
 	//draw the gui first
@@ -541,7 +552,7 @@ void WndWindow::repaint()
 		paintFunction();
 
 	int value = SetDIBits(myHDC, bitmap, 0, height, &wndPixels[0], &bitInfo, DIB_RGB_COLORS);
-
+	
 	setDonePainting(false);
 	RedrawWindow(windowHandle, NULL, NULL, RDW_INVALIDATE);
 
@@ -641,7 +652,10 @@ void WndWindow::drawImage(Image* g)
 			//same size
 			Color* imgPixelsStart = g->getPixels();
 			unsigned char* wndPixelsStart = wndPixels;
-			unsigned char* wndPixelsEnd = wndPixels + (width * height * 3);
+			unsigned char* wndPixelsEnd = wndPixels + wndPixelsSize;
+			
+			int x = 0;
+			int scanLineNum = 0;
 
 			while (wndPixelsStart < wndPixelsEnd)
 			{
@@ -651,6 +665,14 @@ void WndWindow::drawImage(Image* g)
 
 				wndPixelsStart += 3;
 				imgPixelsStart++;
+				x++;
+
+				if(x>=width)
+				{
+					scanLineNum++;
+					x=0;
+					wndPixelsStart += scanLinePadding;
+				}
 			}
 		}
 		else
@@ -659,17 +681,17 @@ void WndWindow::drawImage(Image* g)
 			Color* imgPixelsEnd = imgPixelsStart + (g->getWidth()*g->getHeight());
 
 			unsigned char* wndPixelsStart = wndPixels;
-			unsigned char* wndPixelsEnd = wndPixels + (width * height * 3);
+			unsigned char* wndPixelsEnd = wndPixels + wndPixelsSize;
 
 			int side = g->getWidth() - width;
 			int absAddAmount = MathExt::abs(g->getWidth() - width);
 			
 			int tX = 0;
+			int x = width;
 
 			if (side > 0)
 			{
 				//img width > window width
-				
 				while (wndPixelsStart < wndPixelsEnd && imgPixelsStart < imgPixelsEnd)
 				{
 					*wndPixelsStart = (*imgPixelsStart).blue;
@@ -679,6 +701,13 @@ void WndWindow::drawImage(Image* g)
 					imgPixelsStart++;
 					wndPixelsStart += 3;
 					tX++;
+					x++;
+
+					if(x==width)
+					{
+						wndPixelsStart += scanLinePadding;
+						x=0;
+					}
 					
 					if (tX >= width)
 					{
@@ -690,6 +719,7 @@ void WndWindow::drawImage(Image* g)
 			else
 			{
 				//img width < window width
+				int scanLineWrite = 0;
 				while (wndPixelsStart < wndPixelsEnd && imgPixelsStart < imgPixelsEnd)
 				{
 					*wndPixelsStart = (*imgPixelsStart).blue;
@@ -702,7 +732,8 @@ void WndWindow::drawImage(Image* g)
 
 					if (tX >= g->getWidth())
 					{
-						wndPixelsStart += absAddAmount*3;
+						scanLineWrite++;
+						wndPixelsStart += absAddAmount*3 + scanLinePadding;
 						tX = 0;
 					}
 				}

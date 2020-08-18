@@ -6,6 +6,8 @@
 #include "BinarySet.h"
 #include "SimpleFile.h"
 #include "StringTools.h"
+#include "Sort.h"
+#include "VectorGraphic.h"
 
 /**
  * Purpose:
@@ -66,11 +68,16 @@
  *      Work on WavAudio so that it plays audio correctly.
  *      
  *      Work on Image class by supporting interlacing on png and gif files.
- * 
+ *      Fix StringTools at some point. Especially the conversion between char* to wchar_t*
  *      Lastly
  *      Work on making the library portable
  */
 
+/**
+ * Current Objective:
+ *      VectorGraphic
+ * 
+ */
 WndWindow* windowPointer;
 Image* img;
 
@@ -258,9 +265,375 @@ void testDrawingImage()
 
 }
 
+void testSort()
+{
+    int* list = new int[8]{10,80,30,90,40,50,70,20};
+    std::function compare = [](int a,int b) -> bool { return a < b; };
+
+    Sort::quickSort<int>(list, 8, compare);
+
+    for(int i=0; i<8; i++)
+    {
+        std::cout << list[i] << std::endl;
+    }
+}
+
+void tPaint()
+{
+    if(windowPointer!=nullptr)
+    {
+        StringTools::println("AP");
+        Graphics::setColor({255,255,255,255});
+        VectorGraphic m = VectorGraphic(320, 240);
+        m.getImageBuffer()->clearImage();
+        /*
+        VectorRectangle r = VectorRectangle();
+        r.setX(32);
+        r.setY(32);
+        r.setWidth(128);
+        r.setHeight(128);
+        r.setRX(8);
+        r.setRY(8);
+        r.setFillColor({255,0,0,255});
+        r.setStrokeColor({0,0,0,255});
+        r.setStrokeWidth(1);
+
+        VectorRectangle r2 = VectorRectangle();
+        r2.setX(32);
+        r2.setY(32);
+        r2.setWidth(128);
+        r2.setHeight(128);
+        r2.setFillColor({0,0,0,0});
+        r2.setStrokeColor({0,0,0,255});
+        r2.setStrokeWidth(1);
+        */
+
+        /*
+        //Start with polygons
+        VectorPolygon r = VectorPolygon();
+        r.addPoint(50, 5);
+        r.addPoint(21, 95);
+        r.addPoint(98, 40);
+        r.addPoint(2, 40);
+        r.addPoint(79, 95);
+        r.setFillColor({255,0,0,255});
+        r.setStrokeWidth(1);
+        r.setStrokeColor({0,0,0,255});
+        r.setFillMethod(VectorShape::EVEN_ODD_RULE);
+
+        //Rectangle with Paths
+        VectorPath p1 = VectorPath();
+        StringTools::println("C1");
+        p1.addMoveTo(10,10);
+        StringTools::println("C2");
+        p1.addHorizontalToRel(80);
+        StringTools::println("C3");
+        p1.addVerticalToRel(80);
+        StringTools::println("C4");
+        p1.addHorizontalToRel(-80);
+        StringTools::println("C5");
+        p1.addClosePath();
+        StringTools::println("Done");
+        p1.setFillColor({0,0,0,255});
+        */
+        
+        //Quadratic test with Paths
+        VectorPath p1 = VectorPath();
+        StringTools::println("C1");
+        p1.addMoveTo(10,80);
+        StringTools::println("C2");
+        p1.addCubicTo(40,10, 65,10, 95,80);
+        StringTools::println("C3");
+        p1.addCubicToShort(150,150, 180,80);
+
+        p1.setFillColor({0,0,0,255});
+        p1.setFillMethod(VectorShape::NON_ZERO);
+
+        VectorPolyline p2 = VectorPolyline();
+        p2.addPoint(10,80);
+        p2.addPoint(40,10);
+        p2.addPoint(65,10);
+        p2.addPoint(95,80);
+        p2.addPoint(125,150);
+        p2.addPoint(150,150);
+        p2.addPoint(180,80);
+
+        p2.setFillColor({0,0,0,0});
+        p2.setStrokeWidth(1);
+        p2.setStrokeColor({255,0,0,255});
+
+        /*
+        VectorPolygon r2 = VectorPolygon();
+        r2.addPoint(150, 0);
+        r2.addPoint(121, 90);
+        r2.addPoint(198, 35);
+        r2.addPoint(102, 35);
+        r2.addPoint(179, 90);
+        r2.setFillColor({0,0,0,255});
+        r2.setStrokeWidth(2);
+        r2.setStrokeColor({255,0,0,255});
+        r2.setFillMethod(VectorShape::EVEN_ODD_RULE);
+        */
+        /** 
+         * Looks like this in svg 
+         * 
+         * <svg width="320" height="240">
+         *      <rect x="32" y="32" rx="8" ry="8" width="128" height="128" fill="rgb(255,0,0)" fill-opacity="1" stroke="black" stroke-width="1"/>
+         * </svg>
+         */
+        
+        m.addShape(&p1);
+        m.addShape(&p2);
+        //m.addShape(&r);
+        //m.addShape(&r2);
+        //m.addShape(&r3);
+
+        m.draw();
+
+        Image* img = m.getImageBuffer();
+        
+        Graphics::setColor({0,255,0,255});
+        img->drawLine(0,0,320,0);
+
+        Graphics::setColor({255,0,0,255});
+        //img->drawRect(100,10,180,90,false);
+        /*
+        img->drawPixel(10, 10, {255,0,0,255});
+        img->drawPixel(10, 90, {255,0,0,255});
+        img->drawPixel(90, 90, {255,0,0,255});
+        img->drawPixel(90, 10, {255,0,0,255});
+        */
+        windowPointer->drawImage(img);
+    }
+}
+
+void polygonTesting()
+{
+    if(windowPointer!=nullptr)
+    {
+        Image img = Image(640, 480);
+        img.clearImage();
+        
+        Graphics::setColor({255,255,255,255});
+        img.drawRect(0,0,320,240,false);
+
+        Graphics::setColor({255,0,0,255});
+        
+        Graphics::setFillRule( Graphics::FILL_EVEN_ODD );
+        
+        Vec2f* points = new Vec2f[4];
+        /*
+        points[0] = Vec2f(30, 34);
+        points[1] = Vec2f(95, 99);
+        points[2] = Vec2f(99, 95);
+        points[3] = Vec2f(34, 30);
+        */
+
+        points[0] = Vec2f(9.10557, 10.44721);
+        points[1] = Vec2f(49.10557, 60.44721);
+        points[2] = Vec2f(50.89442, 59.55278);
+        points[3] = Vec2f(10.89442, 9.55278);
+        
+        img.drawPolygon(points, 4);
+        
+
+        windowPointer->drawImage(&img);
+    }
+}
+
+void fullSVGNoArc()
+{
+    if(windowPointer!=nullptr)
+    {
+        VectorGraphic g = VectorGraphic(512,512);
+        Graphics::setColor({255,255,255,255});
+        g.getImageBuffer()->clearImage();
+        
+        VectorPath p = VectorPath();
+        p.addMoveTo(256, 32);
+        p.addCubicToRel(-88.004,0, -160,70.557, -160,156.801);
+        p.addCubicTo(96,306.4, 256,480, 256,480);
+        p.addCubicToShortRel(160,-173.6, 160,-291.199);
+        p.addCubicTo(416,102.557, 344.004,32, 256,32);
+        p.addClosePath();
+        
+        p.addMoveToRel(0,212.801);
+        p.addCubicToRel(-31.996,0, -57.144,-24.645, -57.144,-56);
+        p.addCubicToRel(0,-31.357, 25.147,-56, 57.144,-56);
+        p.addCubicToShortRel(57.144,24.643, 57.144,56);
+        p.addCubicToRel(0,31.355, -25.148,56, -57.144,56);
+        p.addClosePath();
+        
+
+        p.setFillColor({0,0,0,255});
+
+        g.addShape(&p);
+
+        g.draw();
+
+        windowPointer->drawImage(g.getImageBuffer());
+    }
+}
+
+void horizontalPathStuff()
+{
+    if(windowPointer!=nullptr)
+    {
+        VectorGraphic g = VectorGraphic(512,512);
+        Graphics::setColor({255,255,255,255});
+        g.getImageBuffer()->clearImage();
+        
+        VectorPath p = VectorPath();
+
+        p.addMoveTo(32,32);
+        p.addLineTo(64,32);
+        p.addLineTo(64,64);
+        p.addLineTo(32,64);
+        p.addClosePath();
+
+        p.setFillColor({0,0,0,255});
+        p.setStrokeColor({255,0,0,255});
+        p.setStrokeWidth(2);
+
+        g.addShape(&p);
+
+        g.draw();
+
+        Graphics::setColor({0,255,0,255});
+        g.getImageBuffer()->drawLine(32,32,64,32);
+        g.getImageBuffer()->drawLine(32,32,32,64);
+        g.getImageBuffer()->drawLine(32,64,64,64);
+        g.getImageBuffer()->drawLine(64,32,64,64);
+
+
+        windowPointer->drawImage(g.getImageBuffer());
+    }
+}
+
+void strokePathTest()
+{
+    if(windowPointer!=nullptr)
+    {
+        VectorGraphic g = VectorGraphic(512,512);
+        Graphics::setColor({255,255,255,255});
+        g.getImageBuffer()->clearImage();
+        
+        VectorPath p = VectorPath();
+
+        p.addMoveTo(10,30);
+        p.addLineTo(10,60);
+        p.addLineToRel(30,0);
+        p.addClosePath();
+        //p.addQuadTo(30,10,50,30);
+
+        p.setFillColor({0,0,0,255});
+        p.setStrokeColor({0,0,255,255});
+        //p.setStrokeWidth(1);
+
+        g.addShape(&p);
+
+        g.draw();
+
+
+        windowPointer->drawImage(g.getImageBuffer());
+    }
+}
+
+void arcTest()
+{
+    if(windowPointer!=nullptr)
+    {
+        VectorGraphic g = VectorGraphic(325,325);
+        Graphics::setColor({255,255,255,255});
+        g.getImageBuffer()->clearImage();
+        
+        VectorPath p = VectorPath();
+        p.addMoveTo(80,80);
+        p.addArcTo(45,45,0,false,false,125,125);
+        p.addLineTo(125,80);
+        p.addClosePath();
+        p.setFillColor({0,255,0,255});
+        g.addShape(&p);
+        
+        VectorPath p2 = VectorPath();
+        p2.addMoveTo(230,80);
+        p2.addArcTo(45,45,0,true,false,275,125);
+        p2.addLineTo(275,80);
+        p2.addClosePath();
+        p2.setFillColor({255,0,0,255});
+        g.addShape(&p2);
+
+        VectorPath p3 = VectorPath();
+        p3.addMoveTo(80,230);
+        p3.addArcTo(45,45,0,false,true,125,275);
+        p3.addLineTo(125,230);
+        p3.addClosePath();
+        p3.setFillColor({255,0,255,255});
+        g.addShape(&p3);
+        
+        VectorPath p4 = VectorPath();
+        p4.addMoveTo(230,230);
+        p4.addArcTo(45,45,0,true,true,275,275);
+        p4.addLineTo(275,230);
+        p4.addClosePath();
+        p4.setFillColor({0,0,255,255});
+        g.addShape(&p4);
+        
+        g.draw();
+
+        windowPointer->drawImage(g.getImageBuffer());
+    }
+}
+
+void arcTest2()
+{
+    if(windowPointer!=nullptr)
+    {
+        VectorGraphic g = VectorGraphic(320,320);
+        Graphics::setColor({255,255,255,255});
+        g.getImageBuffer()->clearImage();
+
+        VectorPath p = VectorPath();
+        p.addMoveTo(10,315);
+        p.addLineTo(110, 215);
+        p.addArcTo(30,50,0,false,true,162.55,162.45);
+        p.addLineTo(172.55,152.45);
+        p.addArcTo(30,50,-45,false,true,215.1,109.9);
+        p.addLineTo(315,10);
+        
+        p.setFillColor({0,128,0,128});
+
+        g.addShape(&p);
+
+        g.draw();
+
+        windowPointer->drawImage(g.getImageBuffer());
+    }
+}
+void testRect()
+{
+    StringTools::init();
+
+    windowPointer = new WndWindow(L"Displaying Path Arcs", 325, 325);
+    windowPointer->setPaintFunction(arcTest2);
+
+    windowPointer->repaint();
+
+    while(windowPointer->getRunning())
+    {
+    }
+    
+    if(windowPointer!=nullptr)
+        delete windowPointer;
+    
+
+    if(img!=nullptr)
+        delete img;
+}
+
 int main()
 {
-    testDrawingImage();
-    
+    testRect();
+    system("pause");
     return 0;
 }

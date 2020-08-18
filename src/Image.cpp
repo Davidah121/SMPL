@@ -27,6 +27,7 @@ Image::Image(int width, int height)
 	this->width = width;
 	this->height = height;
 	pixels = new Color[width * height];
+	memset(pixels, 0, width*height*sizeof(Color));
 }
 
 Image::Image(const Image& other)
@@ -38,22 +39,21 @@ Image::Image(const Image& other)
 	pixels = new Color[width * height];
 
 	memcpy(pixels, other.pixels, width * height * sizeof(Color));
-	/*
-	Color* temp = pixels;
-	Color* tempEnd = pixels + (width * height);
-	Color* otherTemp = other.pixels;
-
-	while (temp < tempEnd)
-	{
-		*temp = *otherTemp;
-		temp++;
-		otherTemp++;
-	}
-	*/
 
 	p = other.p;
 }
 
+void Image::operator=(const Image& other)
+{
+	this->~Image();
+	this->width = other.width;
+	this->height = other.height;
+	pixels = new Color[width * height];
+
+	memcpy(pixels, other.pixels, width * height * sizeof(Color));
+
+	p = other.p;
+}
 
 Image::~Image()
 {
@@ -96,24 +96,7 @@ void Image::setPixel(int x, int y, Color c)
 	{
 		if (y >= 0 && y < height)
 		{
-			//Add some alpha blending
-			//finalRGB = thisRGB * thisAlpha + baseRGB
-			//finalAlpha = thisAlpha + baseAlpha
-
-			float blend = (float)c.alpha / 255;
-			Color baseCol = pixels[y * width + x];
-
-			int red = ((float)baseCol.red*(1.0-blend) + (float)c.red * blend);
-			int green = ((float)baseCol.green * (1.0 - blend) + (float)c.green * blend);
-			int blue = ((float)baseCol.blue * (1.0 - blend) + (float)c.blue * blend);
-			int alpha = baseCol.alpha + c.alpha;
-			
-			Color nCol = { (unsigned char)min(red, 255),
-							(unsigned char)min(green, 255),
-							(unsigned char)min(blue, 255), 
-							(unsigned char)min(alpha, 255) };
-
-			pixels[y * width + x] = nCol;
+			pixels[y * width + x] = c;
 		}
 	}
 }
@@ -154,6 +137,55 @@ ColorPalette Image::getPalette()
 {
 	return p;
 }
+
+#pragma region GRAPHICS_WRAPPER
+
+void Image::clearImage()
+{
+	Graphics::clearImage(this);
+}
+
+void Image::drawRect(int x, int y, int x2, int y2, bool outline)
+{
+	Graphics::drawRect(x, y, x2, y2, outline, this);
+}
+
+void Image::drawLine(int x, int y, int x2, int y2)
+{
+	Graphics::drawLine(x, y, x2, y2, this);
+}
+
+void Image::drawCircle(int x, int y, int radius, bool outline)
+{
+	Graphics::drawCircle(x, y, radius, outline, this);
+}
+
+void Image::drawPolygon(Vec2f* points, int size)
+{
+	Graphics::drawPolygon(points, size, this);
+}
+
+void Image::drawSprite(Image* img, int x, int y)
+{
+	Graphics::drawSprite(img, x, y, this);
+}
+
+void Image::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH)
+{
+	Graphics::drawSpritePart(img, x, y, imgX, imgY, imgW, imgH, this);
+}
+
+void Image::drawText(std::string str, int x, int y)
+{
+	Graphics::drawText(str, x, y, this);
+}
+
+void Image::drawPixel(int x, int y, Color c)
+{
+	Graphics::drawPixel(x, y, c, this);
+}
+
+#pragma endregion
 
 Image** Image::loadImage(std::string filename, int* amountOfImages)
 {
@@ -241,41 +273,6 @@ Image** Image::loadImage(std::wstring filename, int* amountOfImages)
 	}
 
 	return nullptr;
-}
-
-void Image::clearImage()
-{
-	Graphics::clearImage(this);
-}
-
-void Image::drawRect(int x, int y, int x2, int y2, bool outline)
-{
-	Graphics::drawRect(x, y, x2, y2, outline, this);
-}
-
-void Image::drawLine(int x, int y, int x2, int y2)
-{
-	Graphics::drawLine(x, y, x2, y2, this);
-}
-
-void Image::drawCircle(int x, int y, int radius, bool outline)
-{
-	Graphics::drawCircle(x, y, radius, outline, this);
-}
-
-void Image::drawSprite(Image* img, int x, int y)
-{
-	Graphics::drawSprite(img, x, y, this);
-}
-
-void Image::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH)
-{
-	Graphics::drawSpritePart(img, x, y, imgX, imgY, imgW, imgH, this);
-}
-
-void Image::drawText(std::string str, int x, int y)
-{
-	Graphics::drawText(str, x, y, this);
 }
 
 #pragma region BITMAP_CODE

@@ -1,0 +1,7 @@
+*(DONE) Finish Arc drawing in VectorGraphics
+        (Fix arcInfo Function to return correct positions always)
+*(DONE) Add AntiAliasing (Percentages and junk) (Only x values for now)
+Add AntiAliasing on scanlines
+Add Strokes to VectorGraphics
+Add SVG Loader
+Add SVG Text Loader

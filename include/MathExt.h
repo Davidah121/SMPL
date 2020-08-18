@@ -51,14 +51,26 @@ public:
 	static double ceil(double a);
 	static double round(double a);
 
+	static double frac(double a);
+	static float frac(float a);
+
 	static int sqr(int a);
 	static float sqr(float a);
 	static double sqr(double a);
 	static long sqr(long a);
 	
+	static int cube(int a);
+	static float cube(float a);
+	static double cube(double a);
+	static long cube(long a);
+
 	static double sqrt(int a);
 	static float sqrt(float a);
 	static double sqrt(double a);
+
+	static double cubeRoot(int a);
+	static float cubeRoot(float a);
+	static double cubeRoot(double a);
 
 	static float pow(float value, float power);
 	static double pow(double value, double power);
@@ -132,16 +144,41 @@ public:
 	static Vec2f normalize(Vec2f v1);
 	static Vec3f normalize(Vec3f v1);
 	static Vec4f normalize(Vec4f v1);
-	static GeneralVector normalized(GeneralVector v1);
+	static GeneralVector normalize(GeneralVector v1);
+
+	static Vec2f inverseVec(Vec2f f);
+
+	static double dotNorm(Vec2f v1, Vec2f v2);
+	static double dotNorm(Vec3f v1, Vec3f v2);
+	static double dotNorm(Vec4f v1, Vec4f v2);
+	static double dotNorm(GeneralVector v1, GeneralVector v2);
+
+	static double distanceTo(double x1, double y1, double x2, double y2);
+
+	static double distanceTo(Vec2f p1, Vec2f p2);
+	static double distanceTo(Vec3f p1, Vec3f p2);
+	static double distanceTo(Vec4f p1, Vec4f p2);
+	static double distanceTo(GeneralVector p1, GeneralVector p2);
+	
+	static std::vector<double> solveLinear(double A, double B);
+	static std::vector<ComplexNumber> solveQuadratic(double A, double B, double C);
+	static std::vector<ComplexNumber> solveCubic(double A, double B, double C, double D);
+
+	static std::vector<double> solveQuadraticReal(double A, double B, double C);
+	static std::vector<double> solveCubicReal(double A, double B, double C, double D);
+
+	static std::vector<double> reducePolynomial(std::vector<double> constants, double zero);
+	
+	static double binomialCoefficient(int n, int k);
 
 	static double logisticsSigmoid(double x);
-	static ComplexNumber discreteFouierTransform(double* arr, int size, double x);
+	static ComplexNumber discreteFourierTransform(double* arr, int size, double x);
+	static ComplexNumber discreteFastFourierTransform(double* arr, int size, double x);
+	static ComplexNumber* fourierTransform(double* arr, int size);
+	static ComplexNumber* fastFourierTransform(double* arr, int size);
 
 private:
-	static unsigned long seed;
-	static unsigned long mod;
-	static unsigned long incr;
-	static unsigned long mult;
-	static unsigned long preValue;
+
+	static ComplexNumber doFFT(double* arr, int size, int index, int globalSize, int multVal, double value);
 };
 

@@ -1,0 +1,32 @@
+//first, determine the distance from the start to end
+//if that distance is greater than radius*2, expand radius enough to equal it
+//solve system to find both x,y
+
+(startX - x)^2 / xRad   +    (startY - y)^2 / yRad   =   1
+(endX - x)^2 / xRad   +    (endY - y)^2 / yRad   =   1
+
+//when expanding radius, the ratio between the x and y radius should be the same
+
+Example:
+r = 50
+
+((110-x)^2)/(r*0.6)^2 + ((215-y)^2)/(r) = 1
+
+(r)^2(110-x)^2 + (r*0.6)^2(215-y)^2 = r^2 * (r*0.6)^2
+(r)^2(162.55-x)^2 + (r*0.6)^2(162.45-y)^2 = r^2 * (r*0.6)^2
+
+r^2 ( (110-x)^2 + (0.6^2)(215-y)^2 = r^2 * r^2 * 0.6^2
+r^2 ( (162.55-x)^2 + (0.6^2)(162.45-y)^2 = r^2 * r^2 * 0.6^2
+
+(110-x)^2 + 0.36(215-y)^2 = 0.36(r^2)
+(162.55-x)^2 + 0.36(162.45-y)^2 = 0.36(r^2)
+
+(110-x)^2 + 0.36(215-y)^2 = (162.55-x)^2 + 0.36(162.45-y)^2
+
+(110-x)^2 - (162.55-x)^2  = 0.36(162.45-y)^2 - 0.36(215-y)^2
+
+110^2 -220x + x^2   162.55^2 -220x + x^2
+
+
+30/50 = 0.6
+36/60 = 0.6

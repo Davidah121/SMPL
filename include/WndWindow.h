@@ -41,6 +41,8 @@ public:
 
 	std::wstring getTitle();
 
+	int getImageSize();
+
 	void repaint();
 
 	bool getValid();
@@ -98,6 +100,8 @@ private:
 	std::wstring title = L"";
 
 	unsigned char* wndPixels;
+	int wndPixelsSize;
+	int scanLinePadding;
 
 	std::thread* wndThread;
 	std::mutex myMutex;

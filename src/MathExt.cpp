@@ -1,15 +1,9 @@
 #include "MathExt.h"
 #include "System.h"
+#include "StringTools.h"
 
 #undef max
 #undef min
-
-unsigned long MathExt::seed = 0xFFFF0000;
-unsigned long MathExt::mod = 0xFFFFFFFF;
-unsigned long MathExt::incr = 2531011;
-unsigned long MathExt::mult = 214013;
-
-unsigned long MathExt::preValue = 0xFFFF0000;
 
 MathExt::MathExt()
 {
@@ -188,6 +182,16 @@ double MathExt::round(double a)
 	return std::round(a);
 }
 
+double MathExt::frac(double a)
+{
+	return (a - MathExt::floor(a));
+}
+
+float MathExt::frac(float a)
+{
+	return (a - MathExt::floor(a));
+}
+
 int MathExt::sqr(int a)
 {
 	return a*a;
@@ -208,6 +212,26 @@ long MathExt::sqr(long a)
 	return a*a;
 }
 
+int MathExt::cube(int a)
+{
+	return a*a*a;
+}
+
+float MathExt::cube(float a)
+{
+	return a*a*a;
+}
+
+double MathExt::cube(double a)
+{
+	return a*a*a;
+}
+
+long MathExt::cube(long a)
+{
+	return a*a*a;
+}
+
 double MathExt::sqrt(int a)
 {
 	return std::sqrt(a);
@@ -221,6 +245,21 @@ float MathExt::sqrt(float a)
 double MathExt::sqrt(double a)
 {
 	return std::sqrt(a);
+}
+
+double MathExt::cubeRoot(int a)
+{
+	return std::cbrt(a);
+}
+
+float MathExt::cubeRoot(float a)
+{
+	return std::cbrtf(a);
+}
+
+double MathExt::cubeRoot(double a)
+{
+	return std::cbrt(a);
 }
 
 float MathExt::pow(float value, float power)
@@ -265,9 +304,7 @@ long MathExt::abs(long a)
 
 unsigned int MathExt::random()
 {
-	preValue = (mult*preValue + incr) % mod;
-	return (int)preValue;
-	//return std::rand();
+	return std::rand();
 }
 
 int MathExt::randomRange(int min, int max)
@@ -572,7 +609,7 @@ Vec4f MathExt::normalize(Vec4f v1)
 		return Vec4f(0, 0, 0, 0);
 }
 
-GeneralVector MathExt::normalized(GeneralVector v1)
+GeneralVector MathExt::normalize(GeneralVector v1)
 {
 	double len = 0;
 	for (int i = 0; i < v1.getSize(); i++)
@@ -588,8 +625,253 @@ GeneralVector MathExt::normalized(GeneralVector v1)
 		{
 			k.setValue(v1.getValue(i) / len, i);
 		}
+		return k;
 	}
-	return GeneralVector();
+
+	return GeneralVector(v1.getSize());
+}
+
+Vec2f MathExt::inverseVec(Vec2f f)
+{
+	return Vec2f(-f.y, f.x);
+}
+
+double MathExt::dotNorm(Vec2f v1, Vec2f v2)
+{
+	Vec2f normV1 = MathExt::normalize(v1);
+	Vec2f normV2 = MathExt::normalize(v2);
+	
+	return normV1.x*normV2.x + normV1.y*normV2.y;
+}
+
+double MathExt::dotNorm(Vec3f v1, Vec3f v2)
+{
+	Vec3f normV1 = MathExt::normalize(v1);
+	Vec3f normV2 = MathExt::normalize(v2);
+	
+	return normV1.x*normV2.x + normV1.y*normV2.y + normV1.z*normV2.z;
+}
+
+double MathExt::dotNorm(Vec4f v1, Vec4f v2)
+{
+	Vec4f normV1 = MathExt::normalize(v1);
+	Vec4f normV2 = MathExt::normalize(v2);
+	
+	return normV1.x*normV2.x + normV1.y*normV2.y + normV1.z*normV2.z + normV1.w*normV2.w;
+}
+
+double MathExt::dotNorm(GeneralVector v1, GeneralVector v2)
+{
+	GeneralVector normV1 = MathExt::normalize(v1);
+	GeneralVector normV2 = MathExt::normalize(v2);
+	double result = 0;
+	if (normV1.getSize() == normV2.getSize())
+	{
+		for (int i = 0; i < normV1.getSize(); i++)
+		{
+			result += normV1.getValue(i) * normV2.getValue(i);
+		}
+	}
+
+	return result;
+}
+
+double MathExt::distanceTo(double x1, double y1, double x2, double y2)
+{
+	return MathExt::sqrt(MathExt::sqr(x2-x1) + MathExt::sqr(y2-y1));
+}
+
+double MathExt::distanceTo(Vec2f p1, Vec2f p2)
+{
+	Vec2f disVec = p2-p1;
+	return MathExt::sqrt(MathExt::sqr(disVec.x) + MathExt::sqr(disVec.y));
+}
+
+double MathExt::distanceTo(Vec3f p1, Vec3f p2)
+{
+	Vec3f disVec = p2-p1;
+	return MathExt::sqrt(MathExt::sqr(disVec.x) + MathExt::sqr(disVec.y) + MathExt::sqr(disVec.z));
+}
+
+double MathExt::distanceTo(Vec4f p1, Vec4f p2)
+{
+	Vec4f disVec = p2-p1;
+	return MathExt::sqrt(MathExt::sqr(disVec.x) + MathExt::sqr(disVec.y) + MathExt::sqr(disVec.z) + MathExt::sqr(disVec.w));
+}
+
+double MathExt::distanceTo(GeneralVector p1, GeneralVector p2)
+{
+	if(p1.getSize() == p2.getSize())
+	{
+		GeneralVector disVec = p2-p1;
+		double sqrLen = 0;
+		for(int i=0; i<p1.getSize(); i++)
+		{
+			sqrLen += MathExt::sqr(disVec.getValue(i));
+		}
+
+		return MathExt::sqrt(sqrLen);
+	}
+
+	return -1;
+}
+
+std::vector<double> MathExt::solveLinear(double A, double B)
+{
+	// f(x) = Ax + B
+	// 0 = Ax + B
+
+	if(A!=0)
+	{
+		return {-B/A};
+	}
+	else
+	{
+		return {};
+	}
+}
+
+std::vector<ComplexNumber> MathExt::solveQuadratic(double A, double B, double C)
+{
+	ComplexNumber k1;
+	ComplexNumber k2;
+
+	if( MathExt::sqr(B) - 4*A*C > 0)
+	{
+		k1.real = (-B + MathExt::sqrt( MathExt::sqr(B) - 4*A*C )) / 2;
+		k2.real = (-B - MathExt::sqrt( MathExt::sqr(B) - 4*A*C )) / 2;
+	}
+	else
+	{
+		k1.real = -B/2;
+		k2.real = -B/2;
+		
+		k1.imaginary = MathExt::sqrt( MathExt::sqr(B) + 4*A*C ) / 2;
+		k1.imaginary = -MathExt::sqrt( MathExt::sqr(B) + 4*A*C ) / 2;
+	}
+
+	return {k1, k2};
+}
+
+std::vector<ComplexNumber> MathExt::solveCubic(double A, double B, double C, double D)
+{
+	//later
+	return {};
+}
+
+std::vector<double> MathExt::solveQuadraticReal(double A, double B, double C)
+{
+	double k1;
+	double k2;
+
+	if( MathExt::sqr(B) - 4*A*C >= 0)
+	{
+		k1 = (-B + MathExt::sqrt( MathExt::sqr(B) - 4*A*C )) / (2*A);
+		k2 = (-B - MathExt::sqrt( MathExt::sqr(B) - 4*A*C )) / (2*A);
+		
+		return {k1, k2};
+	}
+
+	return {};
+}
+
+std::vector<double> MathExt::solveCubicReal(double A, double B, double C, double D)
+{
+	if(A!=0)
+	{
+		double p = (3.0*A*C - MathExt::sqr(B))/ (3.0*MathExt::sqr(A));
+		double q = (2.0*MathExt::cube(B) - 9.0*A*B*C + 27.0*MathExt::sqr(A)*D) / (27.0*MathExt::cube(A));
+
+		double p3 = MathExt::cube(p);
+		double q2 = MathExt::sqr(q);
+		//new quadratic X^3 + Px + Q = 0
+		//If (4P^3 + 27Q^2 < 0)
+		//		use trig then reduce
+		//else
+		//		use formula, only one solution
+		//resolve for real solutions since we transformed the cubic
+
+		double testForSolutions = 4.0*p3 + 27.0*q2;
+
+		if(testForSolutions < 0)
+		{
+			//StringTools::println("3 Solution");
+			//could find all solutions this way, but we have to use arccos multiple times
+			double temp1 = 2.0*MathExt::sqrt(-p/3.0);
+			double temp2 = ((3.0*q)/(2.0*p)) * MathExt::sqrt(-3.0/p);
+
+			double solution1 = temp1 * MathExt::cos(MathExt::arccos(temp2)/3.0);
+
+			double actualSolution = solution1 - (B/(3.0*A));
+
+			std::vector<double> quadratic = MathExt::reducePolynomial({A,B,C,D}, actualSolution);
+
+			//solve quadratic
+			std::vector<double> otherSolutions = solveQuadraticReal(quadratic[0], quadratic[1], quadratic[2]);
+
+			//combine solutions into one
+			return {actualSolution, otherSolutions[0], otherSolutions[1]};
+		}
+		else if(testForSolutions > 0)
+		{
+			//StringTools::println("1 Solution");
+			//doesn't matter in this case whether we use + or -
+			double temp = (-q - MathExt::sqrt(q2 + 4.0*p3/27.0))/2.0;
+			double w = MathExt::cubeRoot(temp);
+			double solution = w - p/3.0*w;
+			double actualSolution = solution + B/(3.0*A);
+			
+			return {actualSolution};
+		}
+		else
+		{
+			//they equal zero and therfore have 3 solutions, but they can be solved
+			//easier than the other ones.
+			if(p==0)
+			{
+				return {0.0,0.0,0.0};
+			}
+			else
+			{
+				
+				double sol1 = (3.0*q/p) - B/(3.0*A);
+				double sol2 = ((-3.0*q)/(2.0*p)) - B/(3.0*A);
+				return {sol1,sol2,sol2};
+			}
+			
+		}
+	}
+	else
+	{
+		//its just a quadratic
+		return MathExt::solveQuadraticReal(B,C,D);
+	}
+}
+
+std::vector<double> MathExt::reducePolynomial(std::vector<double> constants, double zero)
+{
+	//using synthetic division
+	std::vector<double> newConstants = std::vector<double>(constants.size()-1);
+	if(constants.size()>0)
+	{
+		newConstants[0] = constants[0];
+		for(int i=1; i<constants.size()-1; i++)
+		{
+			newConstants[i] = constants[i] + newConstants[i-1] * zero;
+		}
+	}
+	return newConstants;
+}
+
+double MathExt::binomialCoefficient(int n, int k)
+{
+	double value = 1;
+
+	for(int i=1; i<k; i++)
+	{
+		value *= (n+1-i)/i;
+	}
+	return value;
 }
 
 double MathExt::logisticsSigmoid(double x)
@@ -605,7 +887,7 @@ double MathExt::logisticsSigmoid(double x)
 	}
 }
 
-ComplexNumber MathExt::discreteFouierTransform(double* arr, int size, double x)
+ComplexNumber MathExt::discreteFourierTransform(double* arr, int size, double x)
 {
 	//Xk = sumFrom 0 to N-1 of ( xn * e ^ -(i2pi*kn)/N )
 	//or
@@ -623,4 +905,53 @@ ComplexNumber MathExt::discreteFouierTransform(double* arr, int size, double x)
 	}
 
 	return finalAnswer;
+}
+
+
+ComplexNumber* MathExt::fourierTransform(double* arr, int size)
+{
+	ComplexNumber* output = new ComplexNumber[size];
+	for(int i=0; i<size; i++)
+	{
+		output[i] = MathExt::discreteFourierTransform(arr, size, (double)i);
+	}
+
+	return output;
+}
+
+ComplexNumber* MathExt::fastFourierTransform(double* arr, int size)
+{
+	//cooley tukey algorithm
+	//Could be a bit faster. The second half may be completely reflective of the first half.
+	//The second half can not be used regardless due to nyquist limit.
+	ComplexNumber* output = new ComplexNumber[size];
+
+	for(int i=0; i<size; i++)
+	{
+		ComplexNumber frequency = MathExt::doFFT(arr, size, 0, size, 1, i);
+		output[i] = frequency;
+	}
+
+	return output;
+}
+
+ComplexNumber MathExt::doFFT(double* arr, int size, int index, int globalSize, int multVal, double value)
+{
+	//divide by 2 and do thing
+
+	if(size>1)
+	{
+		int newSize = size/2;
+		double anglePart = (-2*PI*value)/globalSize;
+
+		ComplexNumber split1 = doFFT(arr, newSize, index, 2*multVal, globalSize, value);
+		ComplexNumber cConst = ComplexNumber(MathExt::cos(anglePart), MathExt::sin(anglePart));
+		ComplexNumber split2 = doFFT(arr, newSize, index + 1, 2*multVal, globalSize, value) * cConst;
+
+		return split1 + split2;
+	}
+	else
+	{
+		return ComplexNumber(arr[index], 0);
+	}
 }

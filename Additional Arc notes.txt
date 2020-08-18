@@ -1,0 +1,2 @@
+When the radius is not large enough, the center of both ellipsi are the mid point between the collisions
+from there, the radius is just enough to hit both points

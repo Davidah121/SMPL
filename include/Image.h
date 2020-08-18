@@ -1,6 +1,7 @@
 #pragma once
 #include "ColorPalette.h"
 #include <string>
+#include "Vec2f.h"
 
 class Image : public Object
 {
@@ -8,6 +9,7 @@ public:
 	Image();
 	Image(int width, int height);
 	Image(const Image& other);
+	void operator=(const Image& other);
 	~Image();
 
 	//Object and Class Stuff
@@ -40,11 +42,13 @@ public:
 	void drawRect(int x, int y, int x2, int y2, bool outline);
 	void drawLine(int x, int y, int x2, int y2);
 	void drawCircle(int x, int y, int radius, bool outline);
+	void drawPolygon(Vec2f* points, int size);
 
 	void drawSprite(Image* img, int x, int y);
 	void drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH);
 
 	void drawText(std::string str, int x, int y);
+	void drawPixel(int x, int y, Color c);
 
 private:
 	int width = 0;

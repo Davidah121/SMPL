@@ -61,12 +61,14 @@
         "xstring": "cpp",
         "xtr1common": "cpp",
         "*.rh": "cpp",
-        "iterator": "cpp"
+        "iterator": "cpp",
+        "concepts": "cpp"
     },
     "files.exclude": {
         "**/.classpath": true,
         "**/.project": true,
         "**/.settings": true,
         "**/.factorypath": true
-    }
+    },
+    "svg.preview.background": "transparent"
 }

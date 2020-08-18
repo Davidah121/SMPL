@@ -7,7 +7,11 @@ public:
 	Matrix();
 	Matrix(int rows, int cols);
 	Matrix(const Matrix& c);
+	Matrix& operator=(const Matrix& o);
+
 	~Matrix();
+
+	void copy(const Matrix& o);
 
 	//Object and Class Stuff
 	const Class* getClass();
@@ -38,7 +42,7 @@ public:
 	double get(int col, int row);
 
 protected:
-	double** data;
+	double** data = nullptr;
 	int rows;
 	int columns;
 

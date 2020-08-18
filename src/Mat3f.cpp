@@ -10,6 +10,11 @@ Mat3f::Mat3f() : Matrix(3, 3)
 {
 }
 
+Mat3f::~Mat3f()
+{
+
+}
+
 Mat3f Mat3f::getIdentity()
 {
 	Mat3f k = Mat3f();

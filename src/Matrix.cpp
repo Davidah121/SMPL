@@ -31,33 +31,66 @@ Matrix::Matrix(int cols, int rows)
 	}
 }
 
-Matrix::Matrix(const Matrix & c)
+Matrix::Matrix(const Matrix& c)
 {
+	this->copy(c);
+}
+
+Matrix& Matrix::operator=(const Matrix& c)
+{
+	this->copy(c);
+	return *this;
+}
+
+void Matrix::copy(const Matrix& c)
+{
+	if(data!=nullptr)
+	{
+		//clear first
+		for (int i = 0; i < rows; i++)
+		{
+			if(data[i]!=nullptr)
+				delete[] data[i];
+		}
+
+		if(data!=nullptr)
+			delete[] data;
+	}
+
+	valid = c.valid;
 	rows = c.rows;
 	columns = c.columns;
 
-	data = new double*[rows];
-	for (int i = 0; i < rows; i++)
+	if(c.data!=nullptr)
 	{
-		data[i] = new double[columns];
-	}
-
-	for (int i = 0; i < rows; i++)
-	{
-		for (int i2 = 0; i2 < columns; i2++)
+		data = new double*[rows];
+		for (int i = 0; i < rows; i++)
 		{
-			data[i][i2] = c.data[i][i2];
+			data[i] = new double[columns];
+		}
+
+		for (int i = 0; i < rows; i++)
+		{
+			for (int i2 = 0; i2 < columns; i2++)
+			{
+				data[i][i2] = c.data[i][i2];
+			}
 		}
 	}
 }
 
 Matrix::~Matrix()
 {
+	
 	for (int i = 0; i < rows; i++)
 	{
-		delete[] data[i];
+		if(data[i]!=nullptr)
+			delete[] data[i];
 	}
-	delete[] data;
+
+	if(data!=nullptr)
+		delete[] data;
+
 }
 
 double * Matrix::operator[](int row)
