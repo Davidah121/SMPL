@@ -113,6 +113,9 @@ std::vector<double> BezierCurve::findTimeForY(double Y)
 		A = points[0].y - 2*points[1].y + points[2].y;
 		B = -2*points[0].y + 2*points[1].y;
 		C = points[0].y - Y;
+		A = MathExt::roundToDecimal(A, 10);
+		B = MathExt::roundToDecimal(B, 10);
+		C = MathExt::roundToDecimal(C, 10);
 		timeValues = MathExt::solveQuadraticReal(A,B,C);
 		break;
 	case 4:
@@ -122,6 +125,10 @@ std::vector<double> BezierCurve::findTimeForY(double Y)
 		B = 3*points[0].y - 6*points[1].y + 3*points[2].y;
 		C = -3*points[0].y + 3*points[1].y;
 		D = points[0].y - Y;
+		A = MathExt::roundToDecimal(A, 10);
+		B = MathExt::roundToDecimal(B, 10);
+		C = MathExt::roundToDecimal(C, 10);
+		D = MathExt::roundToDecimal(D, 10);
 		timeValues = MathExt::solveCubicReal(A,B,C,D);
 		break;
 	default:

@@ -5,9 +5,12 @@
 #include "Compression.h"
 #include "BinarySet.h"
 #include "SimpleFile.h"
+
 #include "StringTools.h"
 #include "Sort.h"
 #include "VectorGraphic.h"
+
+#include "SimpleXml.h"
 
 /**
  * Purpose:
@@ -610,6 +613,7 @@ void arcTest2()
         windowPointer->drawImage(g.getImageBuffer());
     }
 }
+
 void testRect()
 {
     StringTools::init();
@@ -631,9 +635,130 @@ void testRect()
         delete img;
 }
 
-int main()
+void printNodeInfo(int indent, XmlNode* node)
 {
-    testRect();
+    for(int i=0; i<indent; i++)
+    {
+        StringTools::print("\t");
+    }
+
+    StringTools::out << "<" << node->title.c_str();
+    for(XmlAttribute a : node->attributes)
+    {
+        StringTools::out << " " << a.name.c_str() << "=\"" << a.value.c_str() << "\"";
+    }
+
+    if(node->value != "")
+    {
+        StringTools::out << ">" << node->value.c_str();
+        StringTools::out << "</" << node->title.c_str() << ">" << StringTools::lineBreak;
+        return;
+    }
+    else
+    {
+        if(node->childNodes.size()==0)
+        {
+            StringTools::out << "/>" << StringTools::lineBreak;
+            return;
+        }
+        else
+        {
+            StringTools::out << ">" << node->value.c_str();
+            StringTools::out << StringTools::lineBreak;
+        }
+    }
+        
+    
+    for(XmlNode* otherNodes : node->childNodes)
+    {
+        printNodeInfo(indent+1, otherNodes);
+    }
+
+    for(int i=0; i<indent; i++)
+    {
+        StringTools::print("\t");
+    }
+    StringTools::out << "</" << node->title.c_str() << ">" << StringTools::lineBreak;
+}
+
+void printNodeInfoTree(int indent, XmlNode* n)
+{
+    for(int i=0; i<indent; i++)
+    {
+        StringTools::print("\t");
+    }
+    StringTools::out << n->title.c_str() << StringTools::lineBreak;
+
+    for(XmlNode* node : n->childNodes)
+    {
+        printNodeInfoTree(indent+1, node);
+    }
+}
+
+void testSimpleXml(std::string file)
+{
+    SimpleXml xml = SimpleXml();
+    xml.load(file);
+    
+    for(XmlNode* node : xml.nodes)
+    {
+        printNodeInfo(0, node);
+    }
+}
+
+void testXmlTreeStruct(std::string file)
+{
+    SimpleXml xml = SimpleXml();
+    xml.load(file);
+    
+    for(XmlNode* node : xml.nodes)
+    {
+        printNodeInfoTree(0, node);
+    }
+}
+
+VectorGraphic shape = VectorGraphic();
+
+void svgTest()
+{
+    if(windowPointer!=nullptr)
+    {
+        Graphics::setColor({255,255,255,255});
+        shape.getImageBuffer()->clearImage();
+
+        shape.draw();
+
+        windowPointer->drawImage(shape.getImageBuffer());
+    }
+}
+
+void drawLoadedSvg(std::string file)
+{
+    StringTools::init();
+    shape.load(file);
+
+    windowPointer = new WndWindow(L"Displaying Path Arcs", shape.getWidth(), shape.getHeight());
+    
+    windowPointer->setPaintFunction(svgTest);
+
+    windowPointer->repaint();
+
+    while(windowPointer->getRunning())
+    {
+    }
+    
+    if(windowPointer!=nullptr)
+        delete windowPointer;
+    
+
+    if(img!=nullptr)
+        delete img;
+}
+
+int main(int argc, char** argv)
+{
+    StringTools::init();
+    drawLoadedSvg("C:/Users/Alan/Documents/VSCodeProjects/GLib/SVGs/_ionicons_svg_md-mail.svg");
     system("pause");
     return 0;
 }

@@ -54,6 +54,9 @@ public:
 	static double frac(double a);
 	static float frac(float a);
 
+	static float roundToDecimal(float a, int decimalPlaces=6);
+	static float roundToDecimal(double a, int decimalPlaces=6);
+
 	static int sqr(int a);
 	static float sqr(float a);
 	static double sqr(double a);

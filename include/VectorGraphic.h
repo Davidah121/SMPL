@@ -1,5 +1,6 @@
 #pragma once
 #include<vector>
+#include<map>
 #include "Image.h"
 #include "MathExt.h"
 
@@ -18,7 +19,8 @@ public:
 	 * 		< ... fill="_COLOR" fill-opacity="_ALPHA" stroke="_COLOR" 
 	 * 				stroke-opacity="_ALPHA" stroke-width="_VALUE"
 	 * 				stroke-linecap="TYPE" stroke-linejoin="TYPE"
-	 * 				stroke-dasharray="TYPE" fill-rule="TYPE"
+	 * 				stroke-dasharray="Array" stroke-dashoffset="VALUE"
+	 * 				fill-rule="TYPE"
 	 * 				transform="_TRANSFORMS">
 	 * 		_COLOR can be in multiple formats:
 	 * 			RGB TRIPLET = rgb(r,g,b) in int,float,percent
@@ -42,6 +44,8 @@ public:
 	 * 			butt, square, round
 	 * 		FOR linejoin, valid types are:
 	 * 			miter, round, bevel
+	 * 		For stroke-dasharray, the format is as follows:
+	 * 			dash length, gap length, dash length, gap length, ...
 	 * 		FOR fill-rule, valid types are:
 	 * 			evenodd, nonzero
 	 * 		
@@ -70,6 +74,7 @@ public:
 	static const Class* myClass;
 
 	virtual void draw(Image* buffer, int globalWidth, int globalHeight);
+	virtual void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 
 	void setFillMethod(bool value);
 	bool getFillMethod();
@@ -93,8 +98,8 @@ public:
 	Mat3f getTransform();
 
 private:
-	Color fill;
-	Color strokeColor;
+	Color fill = {0,0,0,255};
+	Color strokeColor = {0,0,0,0};
 	double strokeWidth = 0;
 	bool fillMethod = false;
 	char lineCap = 0;
@@ -130,6 +135,7 @@ public:
 	static const Class* myClass;
 
 	void draw(Image* buffer, int globalWidth, int globalHeight);
+	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 
 	void setX(double x);
 	double getX();
@@ -181,6 +187,7 @@ public:
 	static const Class* myClass;
 
 	void draw(Image* img, int globalWidth, int globalHeight);
+	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 	
 	void setX(double x);
 	double getX();
@@ -221,6 +228,7 @@ public:
 	static const Class* myClass;
 
 	void draw(Image* img, int globalWidth, int globalHeight);
+	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 	
 	void setX(double x);
 	double getX();
@@ -265,6 +273,7 @@ public:
 	static const Class* myClass;
 
 	void draw(Image* img, int globalWidth, int globalHeight);
+	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 	
 	void setX1(double x1);
 	double getX1();
@@ -314,6 +323,7 @@ public:
 	static const Class* myClass;
 
 	void draw(Image* img, int globalWidth, int globalHeight);
+	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 	
 	void addPoint(double x, double y);
 	void addPoint(Vec2f p);
@@ -357,6 +367,7 @@ public:
 	static const Class* myClass;
 
 	void draw(Image* img, int globalWidth, int globalHeight);
+	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 	
 	void addPoint(double x, double y);
 	void addPoint(Vec2f p);
@@ -442,7 +453,8 @@ public:
 	static const Class* myClass;
 
 	void draw(Image* img, int globalWidth, int globalHeight);
-	
+	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
+
 	void addMoveTo(double x, double y);
 	void addMoveTo(Vec2f p);
 	void addMoveToRel(double x, double y);
@@ -572,6 +584,12 @@ public:
 
 	Image* getImageBuffer();
 
+	int getWidth();
+	int getHeight();
+
+	void save(std::string filename);
+	void load(std::string filename);
+
 private:
 	std::vector<VectorShape*> shapes = std::vector<VectorShape*>();
 
@@ -582,5 +600,8 @@ private:
 	//transforms
 	Mat3f transform = Mat3f::getIdentity();
 	Mat3f viewBox = Mat3f::getIdentity();
+
+	static double toNumber(std::string value, bool* percentage);
+	static Color toColor(std::string value);
 };
 

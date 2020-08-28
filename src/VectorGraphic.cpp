@@ -3,6 +3,8 @@
 #include "Sort.h"
 #include "StringTools.h"
 #include "BezierCurve.h"
+#include "SimpleXml.h"
+#include "ColorNameConverter.h"
 
 
 #pragma region VectorShape
@@ -14,6 +16,11 @@ const Class* VectorShape::getClass()
 }
 
 void VectorShape::draw(Image* buffer, int globalWidth, int globalHeight)
+{
+	std::cout << "Basic one" << std::endl;
+}
+
+void VectorShape::drawStroke(Image* buffer, int globalWidth, int globalHeight)
 {
 	std::cout << "Basic one" << std::endl;
 }
@@ -238,6 +245,11 @@ void VectorRectangle::draw(Image* buffer, int globalWidth, int globalHeight)
 	}
 }
 
+void VectorRectangle::drawStroke(Image* buffer, int globalWidth, int globalHeight)
+{
+	
+}
+
 void VectorRectangle::setX(double x)
 {
 	this->x = x;
@@ -355,6 +367,11 @@ void VectorCircle::draw(Image* buffer, int globalWidth, int globalHeight)
 	}
 }
 
+void VectorCircle::drawStroke(Image* buffer, int globalWidth, int globalHeight)
+{
+	
+}
+
 void VectorCircle::setX(double x)
 {
 	this->cx = x;
@@ -451,6 +468,11 @@ void VectorLine::draw(Image* buffer, int globalWidth, int globalHeight)
 
 		buffer->drawPolygon(new Vec2f[4]{newPoint1, newPoint2, newPoint3, newPoint4}, 4);
 	}
+	
+}
+
+void VectorLine::drawStroke(Image* buffer, int globalWidth, int globalHeight)
+{
 	
 }
 
@@ -557,6 +579,11 @@ void VectorEllipse::draw(Image* buffer, int globalWidth, int globalHeight)
 			
 		}
 	}
+}
+
+void VectorEllipse::drawStroke(Image* buffer, int globalWidth, int globalHeight)
+{
+	
 }
 
 void VectorEllipse::setX(double x)
@@ -678,6 +705,11 @@ void VectorPolygon::draw(Image* buffer, int globalWidth, int globalHeight)
 	}
 }
 
+void VectorPolygon::drawStroke(Image* buffer, int globalWidth, int globalHeight)
+{
+	
+}
+
 void VectorPolygon::addPoint(double x, double y)
 {
 	points.push_back(Vec2f(x,y));
@@ -761,6 +793,11 @@ void VectorPolyline::draw(Image* buffer, int globalWidth, int globalHeight)
 			buffer->drawPolygon(new Vec2f[4]{newPoint1, newPoint2, newPoint3, newPoint4}, 4);
 		}
 	}
+}
+
+void VectorPolyline::drawStroke(Image* buffer, int globalWidth, int globalHeight)
+{
+	
 }
 
 void VectorPolyline::addPoint(double x, double y)
@@ -1190,6 +1227,9 @@ void VectorPath::draw(Image* img, int globalWidth, int globalHeight)
 		
 	}
 	*/
+}
+void VectorPath::drawStroke(Image* buffer, int globalWidth, int globalHeight)
+{
 }
 
 #pragma region PATH_DRAW_FUNCTIONS
@@ -2192,7 +2232,6 @@ void VectorGraphic::draw()
 		Mat3f globalTransform = viewBox * transform;
 		Mat3f temp = Mat3f::getIdentity();
 		Mat3f finalTransform;
-
 		
 		for (int i = 0; i < shapes.size(); i++)
 		{
@@ -2203,6 +2242,7 @@ void VectorGraphic::draw()
 			shapes[i]->setTransform(finalTransform);
 
 			shapes[i]->draw(this->buffer, this->width, this->height);
+			shapes[i]->drawStroke(this->buffer, this->width, this->height);
 
 			shapes[i]->setTransform(temp);
 			
@@ -2223,7 +2263,8 @@ void VectorGraphic::draw(Image* buffer)
 		shapes[i]->setTransform(finalTransform);
 		
 		shapes[i]->draw(buffer, this->width, this->height);
-
+		shapes[i]->drawStroke(buffer, this->width, this->height);
+		
 		shapes[i]->setTransform(temp);
 	}
 }
@@ -2253,6 +2294,608 @@ Image* VectorGraphic::getImageBuffer()
 	return buffer;
 }
 
+int VectorGraphic::getWidth()
+{
+	return width;
+}
+
+int VectorGraphic::getHeight()
+{
+	return height;
+}
+
+void VectorGraphic::save(std::string filename)
+{
+
+}
+
+void VectorGraphic::load(std::string filename)
+{
+	SimpleXml xmlFile = SimpleXml();
+	bool valid = xmlFile.load(filename);
+	if(valid)
+	{
+		XmlNode* parentNode = xmlFile.nodes[0];
+		
+		for(XmlAttribute attrib : parentNode->attributes)
+		{
+			if(StringTools::equalsIgnoreCase("width", attrib.name))
+			{
+				this->width = stoi(attrib.value);
+			}
+			else if(StringTools::equalsIgnoreCase("height", attrib.name))
+			{
+				this->height = stoi(attrib.value);
+			}
+			else if(StringTools::equalsIgnoreCase("viewbox", attrib.name))
+			{
+				//for now, if width and height have not been defined, set them here
+				std::vector<std::string> split = StringTools::splitString(attrib.value, ' ');
+				if(width==0)
+				{
+					width = stoi(split[2]);
+				}
+				if(height==0)
+				{
+					height = stoi(split[3]);
+				}
+			}
+		}
+
+		if(width*height>0 && width>0)
+		{
+			if(buffer!=nullptr)
+			{
+				delete[] buffer;
+			}
+			buffer = new Image(width, height);
+		}
+
+		for(XmlNode* childNode : parentNode->childNodes)
+		{
+			VectorShape* shape;
+			bool percentValue = false;
+			double value = 0;
+			double diagonalLength = 0;
+						
+			if(StringTools::equalsIgnoreCase(childNode->title, "rect"))
+			{
+				//rectangle
+				VectorRectangle* g = new VectorRectangle();
+
+				for(XmlAttribute attrib : childNode->attributes)
+				{
+					if(StringTools::equalsIgnoreCase(attrib.name, "x"))
+					{
+						value = toNumber(attrib.value, &percentValue);
+						if(percentValue)
+							g->setX( width*value );
+						else
+							g->setX( value );
+					}
+					else if(StringTools::equalsIgnoreCase(attrib.name, "y"))
+					{
+						value = toNumber(attrib.value, &percentValue);
+						if(percentValue)
+							g->setY( height*value );
+						else
+							g->setY( value );
+					}
+					else if(StringTools::equalsIgnoreCase(attrib.name, "rx"))
+					{
+						value = toNumber(attrib.value, &percentValue);
+						if(percentValue)
+							g->setRX( width*value );
+						else
+							g->setRX( value );
+					}
+					else if(StringTools::equalsIgnoreCase(attrib.name, "ry"))
+					{
+						value = toNumber(attrib.value, &percentValue);
+						if(percentValue)
+							g->setRY( height*value );
+						else
+							g->setRY( value );
+					}
+					else if(StringTools::equalsIgnoreCase(attrib.name, "width"))
+					{
+						value = toNumber(attrib.value, &percentValue);
+						if(percentValue)
+							g->setWidth( width*value );
+						else
+							g->setWidth( value );
+					}
+					else if(StringTools::equalsIgnoreCase(attrib.name, "height"))
+					{
+						value = toNumber(attrib.value, &percentValue);
+						if(percentValue)
+							g->setHeight( height*value );
+						else
+							g->setHeight( value );
+					}
+				}
+
+				shape = (VectorShape*)g;
+			}
+			else if(StringTools::equalsIgnoreCase(childNode->title, "circle"))
+			{
+				//circle
+				VectorCircle* g = new VectorCircle();
+
+				for(XmlAttribute attrib : childNode->attributes)
+				{
+					if(StringTools::equalsIgnoreCase(attrib.name, "cx"))
+					{
+						value = toNumber(attrib.value, &percentValue);
+						if(percentValue)
+							g->setX( width*value );
+						else
+							g->setX( value );
+					}
+					else if(StringTools::equalsIgnoreCase(attrib.name, "cy"))
+					{
+						value = toNumber(attrib.value, &percentValue);
+						if(percentValue)
+							g->setY( height*value );
+						else
+							g->setY( value );
+					}
+					else if(StringTools::equalsIgnoreCase(attrib.name, "r"))
+					{
+						value = toNumber(attrib.value, &percentValue);
+						if(percentValue)
+							g->setRadius( width*value );
+						else
+							g->setRadius( value );
+					}
+				}
+
+				shape = (VectorShape*)g;
+			}
+			else if(StringTools::equalsIgnoreCase(childNode->title, "ellipse"))
+			{
+				//ellipse
+				VectorEllipse* g = new VectorEllipse();
+
+				for(XmlAttribute attrib : childNode->attributes)
+				{
+					if(StringTools::equalsIgnoreCase(attrib.name, "cx"))
+					{
+						value = toNumber(attrib.value, &percentValue);
+						if(percentValue)
+							g->setX( width*value );
+						else
+							g->setX( value );
+					}
+					else if(StringTools::equalsIgnoreCase(attrib.name, "cy"))
+					{
+						value = toNumber(attrib.value, &percentValue);
+						if(percentValue)
+							g->setY( height*value );
+						else
+							g->setY( value );
+					}
+					else if(StringTools::equalsIgnoreCase(attrib.name, "rx"))
+					{
+						value = toNumber(attrib.value, &percentValue);
+						if(percentValue)
+							g->setXRadius( width*value );
+						else
+							g->setXRadius( value );
+					}
+					else if(StringTools::equalsIgnoreCase(attrib.name, "ry"))
+					{
+						value = toNumber(attrib.value, &percentValue);
+						if(percentValue)
+							g->setYRadius( height*value );
+						else
+							g->setYRadius( value );
+					}
+				}
+
+				shape = (VectorShape*)g;
+			}
+			else if(StringTools::equalsIgnoreCase(childNode->title, "line"))
+			{
+				//line
+				VectorLine* g = new VectorLine();
+
+				for(XmlAttribute attrib : childNode->attributes)
+				{
+					if(StringTools::equalsIgnoreCase(attrib.name, "x1"))
+					{
+						value = toNumber(attrib.value, &percentValue);
+						if(percentValue)
+							g->setX1( width*value );
+						else
+							g->setX1( value );
+					}
+					else if(StringTools::equalsIgnoreCase(attrib.name, "y1"))
+					{
+						value = toNumber(attrib.value, &percentValue);
+						if(percentValue)
+							g->setY1( height*value );
+						else
+							g->setY1( value );
+					}
+					else if(StringTools::equalsIgnoreCase(attrib.name, "x2"))
+					{
+						value = toNumber(attrib.value, &percentValue);
+						if(percentValue)
+							g->setX2( width*value );
+						else
+							g->setX2( value );
+					}
+					else if(StringTools::equalsIgnoreCase(attrib.name, "y2"))
+					{
+						value = toNumber(attrib.value, &percentValue);
+						if(percentValue)
+							g->setY2( height*value );
+						else
+							g->setY2( value );
+					}
+				}
+
+				shape = (VectorShape*)g;
+			}
+			else if(StringTools::equalsIgnoreCase(childNode->title, "polygon"))
+			{
+				//polygon
+				VectorPolygon* g = new VectorPolygon();
+				for(XmlAttribute attrib : childNode->attributes)
+				{
+					if(StringTools::equalsIgnoreCase(attrib.name, "points"))
+					{
+						std::vector<std::string> splits = StringTools::splitString(attrib.value, ' ');
+						for(std::string point : splits)
+						{
+							std::vector<std::string> pointSplit = StringTools::splitString(point, ',');
+							if(pointSplit.size()==2)
+								g->addPoint( std::stod(pointSplit[0]), std::stod(pointSplit[1]) );
+						}
+					}
+				}
+				shape = (VectorShape*)g;
+			}
+			else if(StringTools::equalsIgnoreCase(childNode->title, "polyline"))
+			{
+				//polyline
+				VectorPolyline* g = new VectorPolyline();
+				for(XmlAttribute attrib : childNode->attributes)
+				{
+					if(StringTools::equalsIgnoreCase(attrib.name, "points"))
+					{
+						std::vector<std::string> splits = StringTools::splitString(attrib.value, ' ');
+						for(std::string point : splits)
+						{
+							std::vector<std::string> pointSplit = StringTools::splitString(point, ',');
+							if(pointSplit.size()==2)
+								g->addPoint( std::stod(pointSplit[0]), std::stod(pointSplit[1]) );
+						}
+					}
+				}
+				shape = (VectorShape*)g;
+			}
+			else if(StringTools::equalsIgnoreCase(childNode->title, "path"))
+			{
+				//path
+				VectorPath* g = new VectorPath();
+				for(XmlAttribute attrib : childNode->attributes)
+				{
+					if(StringTools::equalsIgnoreCase(attrib.name, "d"))
+					{
+						//Method: Separate Letters from values
+						//separate letters first
+						std::vector<char> instructions = std::vector<char>();
+						std::string numbers = "";
+						int argNum = 0;
+						int parsedArgs = 0;
+						for(char c : attrib.value)
+						{
+							if(c>=65 && c<=90 || c>=97 && c<=127)
+							{
+								instructions.push_back(c);
+								switch (std::tolower(c))
+								{
+								case 'm':
+									argNum = 2;
+									break;
+								case 'l':
+									argNum = 2;
+									break;
+								case 'h':
+									argNum = 1;
+									break;
+								case 'v':
+									argNum = 1;
+									break;
+								case 'z':
+									argNum = 0;
+									break;
+								case 'c':
+									argNum = 6;
+									break;
+								case 's':
+									argNum = 4;
+									break;
+								case 'q':
+									argNum = 4;
+									break;
+								case 't':
+									argNum = 2;
+									break;
+								case 'a':
+									argNum = 7;
+									break;
+								default:
+									argNum = -1;
+									break;
+								}
+								parsedArgs = 0;
+								numbers += ' ';
+							}
+							else if(c>=32)
+							{
+								if(c==32)
+								{
+									parsedArgs++;
+								}
+								if(c=='-' && numbers[ numbers.size()-1]!=' ')
+								{
+									numbers += ' ';
+									parsedArgs++;
+								}
+								numbers += c;
+
+								if(parsedArgs>argNum)
+								{
+									parsedArgs = 0;
+									instructions.push_back( instructions.back() );
+								}
+							}
+						}
+
+						std::vector<std::string> splitNumbers = StringTools::splitString(numbers, ' ');
+						
+						int numberIndex = 0;
+						for(char c : instructions)
+						{
+							switch (c)
+							{
+								case 'M':
+									//move to
+									g->addMoveTo( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]) );
+									numberIndex += 2;
+									break;
+								case 'm':
+									//move to relative
+									g->addMoveToRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]) );
+									numberIndex += 2;
+									break;
+								case 'L':
+									//Line to
+									g->addLineTo( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]) );
+									numberIndex += 2;
+									break;
+								case 'l':
+									//Line to relative
+									g->addLineToRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]) );
+									numberIndex += 2;
+									break;
+								case 'H':
+									//Horizontal to
+									g->addHorizontalTo( std::stod(splitNumbers[numberIndex]) );
+									numberIndex += 1;
+									break;
+								case 'h':
+									//horizontal to relative
+									g->addHorizontalToRel( std::stod(splitNumbers[numberIndex]) );
+									numberIndex += 1;
+									break;
+								case 'V':
+									//Vertical to
+									g->addVerticalTo( std::stod(splitNumbers[numberIndex]) );
+									numberIndex += 1;
+									break;
+								case 'v':
+									//vertical to relative
+									g->addVerticalToRel( std::stod(splitNumbers[numberIndex]) );
+									numberIndex += 1;
+									break;
+								case 'Z':
+									g->addClosePath();
+									break;
+								case 'z':
+									g->addClosePath();
+									break;
+								case 'Q':
+									g->addQuadTo( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), std::stod(splitNumbers[numberIndex+3]));
+									numberIndex += 4;
+									break;
+								case 'q':
+									g->addQuadToRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), std::stod(splitNumbers[numberIndex+3]));
+									numberIndex += 4;
+									break;
+								case 'T':
+									g->addQuadToShort( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]));
+									numberIndex += 2;
+									break;
+								case 't':
+									g->addQuadToShortRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]));
+									numberIndex += 2;
+									break;
+								case 'C':
+									g->addCubicTo( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), std::stod(splitNumbers[numberIndex+3]), std::stod(splitNumbers[numberIndex+4]), std::stod(splitNumbers[numberIndex+5]));
+									numberIndex += 6;
+									break;
+								case 'c':
+									g->addCubicToRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), std::stod(splitNumbers[numberIndex+3]), std::stod(splitNumbers[numberIndex+4]), std::stod(splitNumbers[numberIndex+5]));
+									numberIndex += 6;
+									break;
+								case 'S':
+									g->addCubicToShort( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), std::stod(splitNumbers[numberIndex+3]));
+									numberIndex += 4;
+									break;
+								case 's':
+									g->addCubicToShortRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), std::stod(splitNumbers[numberIndex+3]));
+									numberIndex += 4;
+									break;
+								case 'A':
+									g->addArcTo( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), splitNumbers[numberIndex+3]=="1", splitNumbers[numberIndex+4]=="1", std::stod(splitNumbers[numberIndex+5]), std::stod(splitNumbers[numberIndex+6]));
+									numberIndex += 7;
+									break;
+								case 'a':
+									g->addArcToRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), splitNumbers[numberIndex+3]=="1", splitNumbers[numberIndex+4]=="1", std::stod(splitNumbers[numberIndex+5]), std::stod(splitNumbers[numberIndex+6]));
+									numberIndex += 7;
+									break;
+								default:
+									break;
+							}
+						}
+					}
+				}
+
+				shape = (VectorShape*)g;
+			}
+
+			for(XmlAttribute attrib : childNode->attributes)
+			{
+				if(StringTools::equalsIgnoreCase(attrib.name, "fill"))
+				{
+					Color c = toColor(attrib.value);
+					shape->setFillColor( c );
+				}
+				else if(StringTools::equalsIgnoreCase(attrib.name, "fill-opacity"))
+				{
+					Color c = shape->getFillColor();
+					value = toNumber(attrib.value, &percentValue);
+					c.alpha = (unsigned char)(255*value);
+					shape->setFillColor( c );
+				}
+				else if(StringTools::equalsIgnoreCase(attrib.name, "fill-rule"))
+				{
+					if(StringTools::equalsIgnoreCase(attrib.value, "nonzero"))
+					{
+						shape->setFillMethod(VectorShape::NON_ZERO);
+					}
+					else
+					{
+						shape->setFillMethod(VectorShape::EVEN_ODD_RULE);
+					}
+				}
+				else if(StringTools::equalsIgnoreCase(attrib.name, "stroke"))
+				{
+					Color c = toColor(attrib.value);
+					shape->setStrokeColor( c );
+				}
+				else if(StringTools::equalsIgnoreCase(attrib.name, "stroke-opacity"))
+				{
+					Color c = shape->getStrokeColor();
+					value = toNumber(attrib.value, &percentValue);
+					c.alpha = (unsigned char)(255*value);
+					shape->setStrokeColor( c );
+				}
+				else if(StringTools::equalsIgnoreCase(attrib.name, "stroke-width"))
+				{
+					value = toNumber(attrib.value, &percentValue);
+					if(percentValue)
+						shape->setStrokeWidth( width* value );
+					else
+						shape->setStrokeWidth( value );
+				}
+				else if(StringTools::equalsIgnoreCase(attrib.name, "stroke-linecap"))
+				{
+				}
+				else if(StringTools::equalsIgnoreCase(attrib.name, "stroke-linejoin"))
+				{
+				}
+				else if(StringTools::equalsIgnoreCase(attrib.name, "stroke-dasharray"))
+				{
+				}
+				else if(StringTools::equalsIgnoreCase(attrib.name, "transform"))
+				{
+				}
+			}
+
+			this->addShape(shape);
+		}
+	}
+}
+
+double VectorGraphic::toNumber(std::string value, bool* percentage)
+{
+	//could be a percentage, number, or number with a unit (Ignored)
+	//parsing stops when invalid character is found so substrings are not
+	//used here.
+	if(value[ value.size()-1 ] == '%')
+	{
+		//percentage
+		*percentage = true;
+		return std::stod(value) / 100.0;
+	}
+	else
+	{
+		//normal number. May have a unit associated with it.
+		*percentage = false;
+		return std::stod(value);
+	}
+	
+	return 0;
+}
+
+Color VectorGraphic::toColor(std::string value)
+{
+	//could be 	rgb(number, number, number),
+	//			hex value
+	//			color name
+	Color c = {0,0,0,255};
+	if(value[0] == '#')
+	{
+		//hex value
+		c.red = (unsigned char)( StringTools::base16ToBase10(value[1])*16 + StringTools::base16ToBase10(value[2]) );
+		c.green = (unsigned char)( StringTools::base16ToBase10(value[3])*16 + StringTools::base16ToBase10(value[4]) );
+		c.blue = (unsigned char)( StringTools::base16ToBase10(value[5])*16 + StringTools::base16ToBase10(value[6]) );
+	}
+	else
+	{
+		std::string first4 = value.substr(0, 4);
+
+		if( StringTools::equalsIgnoreCase(first4, "rgb(") && value[value.size()-1] == ')' )
+		{
+			//rgb value
+			std::string actualValues = value.substr(4, value.size() - 5);
+			std::vector<std::string> splitNumbers = StringTools::splitString(actualValues, ',');
+			if(splitNumbers.size()==3)
+			{
+				bool isPercent = false;
+				double value = VectorGraphic::toNumber(splitNumbers[0], &isPercent);
+				if(isPercent)
+					c.red = (unsigned char) MathExt::clamp((255.0 * value), 0.0, 255.0);
+				else
+					c.red = (unsigned char) MathExt::clamp(value, 0.0, 255.0);
+				
+				value = VectorGraphic::toNumber(splitNumbers[1], &isPercent);
+				if(isPercent)
+					c.green = (unsigned char) MathExt::clamp((255.0 * value), 0.0, 255.0);
+				else
+					c.green = (unsigned char) MathExt::clamp(value, 0.0, 255.0);
+				
+				value = VectorGraphic::toNumber(splitNumbers[2], &isPercent);
+				if(isPercent)
+					c.blue = (unsigned char) MathExt::clamp((255.0 * value), 0.0, 255.0);
+				else
+					c.blue = (unsigned char) MathExt::clamp(value, 0.0, 255.0);
+			}
+		}
+		else
+		{
+			//color name
+			c = ColorNameConverter::NameToColor(value);
+		}
+	}
+	
+	return c;
+}
 #pragma endregion
 
 

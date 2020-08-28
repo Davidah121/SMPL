@@ -36,6 +36,7 @@ build $objDir/PossibleMathFunctions.o: buildToObject src/PossibleMathFunctions.c
 build $objDir/Shape.o: buildToObject src/Shape.cpp
 build $objDir/SimpleDir.o: buildToObject src/SimpleDir.cpp
 build $objDir/SimpleFile.o: buildToObject src/SimpleFile.cpp
+build $objDir/SimpleXml.o: buildToObject src/SimpleXml.cpp
 build $objDir/Sprite.o: buildToObject src/Sprite.cpp
 build $objDir/StringTools.o: buildToObject src/StringTools.cpp
 build $objDir/System.o: buildToObject src/System.cpp

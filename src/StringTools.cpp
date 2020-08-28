@@ -127,7 +127,55 @@ int StringTools::stringLength(const wchar_t * text)
 	return std::wcslen(text);
 }
 
-char StringTools::valueToBase16(char val)
+bool StringTools::equalsIgnoreCase(std::string a, std::string b)
+{
+	if(a.size() == b.size())
+	{
+		for(int i=0; i<a.size(); i++)
+		{
+			if( toupper(a[i]) != toupper(b[i]))
+			{
+				return false;
+			}
+		}
+	}
+	else
+	{
+		return false;
+	}
+	
+	return true;
+}
+
+bool StringTools::isAlphaNumerial(char v, bool underScoreAllowed, bool dashAllowed)
+{
+	if(v >= 48 && v <=57)
+	{
+		return true;
+	}
+	if(v >= 65 && v <=90)
+	{
+		return true;
+	}
+	if(v >= 97 && v <=122)
+	{
+		return true;
+	}
+
+	if(dashAllowed && v=='-')
+	{
+		return true;
+	}
+
+	if(underScoreAllowed && v=='_')
+	{
+		return true;
+	}
+
+	return false;
+}
+
+char StringTools::charToBase16(char val)
 {
 	if(val<10)
 		return (char)(48+val);
@@ -135,7 +183,23 @@ char StringTools::valueToBase16(char val)
 		return (char)(65+val-10);
 }
 
-std::vector<std::string> StringTools::splitString(std::string s, const char delim)
+int StringTools::base16ToBase10(char val)
+{
+	if(val >= '0' && val <= '9')
+	{
+		return (int)(val-'0');
+	}
+	else if(val >= 'A' && val <='F')
+	{
+		return ((int)(val-'A')) + 10;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+std::vector<std::string> StringTools::splitString(std::string s, const char delim, bool removeEmpty)
 {
 	std::vector<std::string> stringArray = std::vector<std::string>();
 
@@ -150,7 +214,16 @@ std::vector<std::string> StringTools::splitString(std::string s, const char deli
 		}
 		else
 		{
-			stringArray.push_back(temp);
+			if(removeEmpty)
+			{
+				if(temp!="")
+					stringArray.push_back(temp);
+			}
+			else
+			{
+				stringArray.push_back(temp);
+			}
+			
 			temp = "";
 		}
 		i++;
@@ -161,7 +234,7 @@ std::vector<std::string> StringTools::splitString(std::string s, const char deli
 	return stringArray;
 }
 
-std::vector<std::string> StringTools::splitString(std::string s, const char* delim)
+std::vector<std::string> StringTools::splitString(std::string s, const char* delim, bool removeEmpty)
 {
 	std::vector<std::string> stringArray = std::vector<std::string>();
 
@@ -204,7 +277,16 @@ std::vector<std::string> StringTools::splitString(std::string s, const char* del
 			if (count == dSize)
 			{
 				//Found subString
-				stringArray.push_back(temp);
+				if(removeEmpty)
+				{
+					if(temp!="")
+						stringArray.push_back(temp);
+				}
+				else
+				{
+					stringArray.push_back(temp);
+				}
+				
 				temp = "";
 				i += count;
 

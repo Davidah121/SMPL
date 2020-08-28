@@ -192,6 +192,20 @@ float MathExt::frac(float a)
 	return (a - MathExt::floor(a));
 }
 
+
+float MathExt::roundToDecimal(float a, int decimalPlaces)
+{
+	float b = a * MathExt::pow(10.0f, decimalPlaces);
+	b = MathExt::round(b);
+	return b * MathExt::pow(10.0f, -decimalPlaces);
+}
+float MathExt::roundToDecimal(double a, int decimalPlaces)
+{
+	double b = a * MathExt::pow(10.0, decimalPlaces);
+	b = MathExt::round(b);
+	return b * MathExt::pow(10.0, -decimalPlaces);
+}
+
 int MathExt::sqr(int a)
 {
 	return a*a;
@@ -803,9 +817,9 @@ std::vector<double> MathExt::solveCubicReal(double A, double B, double C, double
 			double solution1 = temp1 * MathExt::cos(MathExt::arccos(temp2)/3.0);
 
 			double actualSolution = solution1 - (B/(3.0*A));
-
+			
 			std::vector<double> quadratic = MathExt::reducePolynomial({A,B,C,D}, actualSolution);
-
+			
 			//solve quadratic
 			std::vector<double> otherSolutions = solveQuadraticReal(quadratic[0], quadratic[1], quadratic[2]);
 
