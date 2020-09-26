@@ -1,36 +1,51 @@
 #pragma once
 #include "Image.h"
 #include "Object.h"
+#include "MathExt.h"
+
+struct FontCharInfo
+{
+	int unicodeValue;
+	int x;
+	int y;
+	int width;
+	int height;
+	int horizAdv;
+};
 
 class Font : public Object
 {
 public:
-	Font(std::string filename);
+	Font();
 	~Font();
 
 	//Object and Class Stuff
 	const Class* getClass();
 	static const Class* myClass;
 	
-	int getCharX(int c);
-	int getCharY(int c);
+	FontCharInfo getFontCharInfo(int index);
 
-	int getCharWidth(int c);
-	int getCharHeight(int c);
+	Image* getImage(int index);
 
-	Image* getImage();
-private:
+	void setFontSize(int value);
+	int getFontSize();
 
-	Image* img = nullptr;
+	void setFontTransform(Mat4f mat);
+	Mat4f getFontTransform();
 
-	int getCharIndex(int c);
-
-	std::vector<int> charNum = std::vector<int>();
-	std::vector<int> charX = std::vector<int>();
-	std::vector<int> charY = std::vector<int>();
-	std::vector<int> charWidth = std::vector<int>();
-	std::vector<int> charHeight = std::vector<int>();
-
+	std::vector<FontCharInfo> getListOfFontCharInfo();
 	
+protected:
+	std::vector<FontCharInfo> charInfoList = std::vector<FontCharInfo>();
+
+    int maxHorizAdv = 0;
+    int ascent = 0;
+    int descent = 0;
+
+	int fontSize = 0;
+	Mat4f fontTransform = Mat4f::getIdentity();
+
+private:
+	int getCharIndex(int c);
 };
 

@@ -593,56 +593,74 @@ double MathExt::dot(GeneralVector v1, GeneralVector v2)
 	return result;
 }
 
+double MathExt::vecLength(Vec2f v1)
+{
+	return sqrt(sqr(v1.x) + sqr(v1.y));
+}
+double MathExt::vecLength(Vec3f v1)
+{
+	return sqrt(sqr(v1.x) + sqr(v1.y) + sqr(v1.z));
+}
+double MathExt::vecLength(Vec4f v1)
+{
+	return sqrt(sqr(v1.x) + sqr(v1.y) + sqr(v1.z) + sqr(v1.w));
+}
+double MathExt::vecLength(GeneralVector v1)
+{
+	double lengthSum = 0;
+	for(int i=0; i<v1.getSize(); i++)
+	{
+		lengthSum += MathExt::sqr(v1.getValue(i));
+	}
+	return sqrt(lengthSum);
+}
+
 Vec2f MathExt::normalize(Vec2f v1)
 {
-	double length = sqrt(sqr(v1.x) + sqr(v1.y));
-
+	double length = vecLength(v1);
 	if (length != 0)
-		return Vec2f(v1.x / length, v1.y / length);
+		return v1/length;
 	else
-		return Vec2f(0, 0);
+		return Vec2f();
 }
 
 Vec3f MathExt::normalize(Vec3f v1)
 {
-	double length = sqrt(sqr(v1.x) + sqr(v1.y) + sqr(v1.z));
+	double length = vecLength(v1);
 
 	if (length != 0)
-		return Vec3f(v1.x / length, v1.y / length, v1.z / length);
+		return v1/length;
 	else
-		return Vec3f(0, 0, 0);
+		return Vec3f();
 }
 
 Vec4f MathExt::normalize(Vec4f v1)
 {
-	double length = sqrt(sqr(v1.x) + sqr(v1.y) + sqr(v1.z) + sqr(v1.w));
+	double length = vecLength(v1);
 
 	if (length != 0)
-		return Vec4f(v1.x / length, v1.y / length, v1.z / length, v1.w / length);
+		return v1/length;
 	else
-		return Vec4f(0, 0, 0, 0);
+		return Vec4f();
 }
 
 GeneralVector MathExt::normalize(GeneralVector v1)
 {
-	double len = 0;
-	for (int i = 0; i < v1.getSize(); i++)
-	{
-		len += MathExt::sqr(v1.getValue(i));
-	}
-	len = MathExt::sqrt(len);
+	double len = vecLength(v1);
 
 	if (len != 0)
-	{
-		GeneralVector k = GeneralVector(v1.getSize());
-		for (int i = 0; i < k.getSize(); i++)
-		{
-			k.setValue(v1.getValue(i) / len, i);
-		}
-		return k;
-	}
+		return v1/len;
+	else
+		return GeneralVector(v1.getSize());
+}
 
-	return GeneralVector(v1.getSize());
+Quaternion MathExt::normalize(Quaternion q1)
+{
+	double len = MathExt::sqrt( MathExt::sqr(q1.a) + MathExt::sqr(q1.b) + MathExt::sqr(q1.c) + MathExt::sqr(q1.d));
+	if(len!=0)
+		return q1/len;
+	else
+		return Quaternion();
 }
 
 Vec2f MathExt::inverseVec(Vec2f f)
@@ -729,6 +747,325 @@ double MathExt::distanceTo(GeneralVector p1, GeneralVector p2)
 
 	return -1;
 }
+
+#pragma region Transformations_2D
+Mat3f MathExt::rotation2D(double rotation, double x, double y)
+{
+	return rotation2D(rotation, Vec2f(x,y));
+}
+
+Mat3f MathExt::rotation2D(double rotation, Vec2f pos)
+{
+	Mat3f mat = Mat3f();
+
+	mat[0][0] = MathExt::cos(rotation);
+	mat[0][1] = -MathExt::sin(rotation);
+	mat[0][2] = 0;
+
+	mat[1][0] = MathExt::sin(rotation);
+	mat[1][1] = MathExt::cos(rotation);
+	mat[1][2] = 0;
+
+	mat[2][0] = -pos.x*MathExt::cos(rotation) + pos.y*MathExt::sin(rotation) + pos.x;
+	mat[2][1] = -pos.x*MathExt::sin(rotation) - pos.y*MathExt::cos(rotation) + pos.y;
+	mat[2][2] = 1;
+	
+	return mat;
+}
+	
+Mat3f MathExt::translation2D(double x, double y)
+{
+	return MathExt::translation2D(Vec2f(x,y));
+}
+
+Mat3f MathExt::translation2D(Vec2f trans)
+{
+	Mat3f mat = Mat3f();
+
+	mat[0][0] = 1;
+	mat[0][1] = 0;
+	mat[0][2] = trans.x;
+
+	mat[1][0] = 0;
+	mat[1][1] = 1;
+	mat[1][2] = trans.y;
+
+	mat[2][0] = 0;
+	mat[2][1] = 0;
+	mat[2][2] = 1;
+	
+	return mat;
+}
+
+Mat3f MathExt::scale2D(double x, double y)
+{
+	return MathExt::scale2D(Vec2f(x,y));
+}
+
+Mat3f MathExt::scale2D(Vec2f scale)
+{
+	Mat3f mat = Mat3f();
+
+	mat[0][0] = scale.x;
+	mat[0][1] = 0;
+	mat[0][2] = 0;
+
+	mat[1][0] = 0;
+	mat[1][1] = scale.y;
+	mat[1][2] = 0;
+
+	mat[2][0] = 0;
+	mat[2][1] = 0;
+	mat[2][2] = 1;
+	
+	return mat;
+}
+
+Mat3f MathExt::skew2D(double x, double y)
+{
+	return MathExt::skew2D(Vec2f(x,y));
+}
+
+Mat3f MathExt::skew2D(Vec2f skew)
+{
+	Mat3f mat = Mat3f();
+
+	mat[0][0] = 1;
+	mat[0][1] = skew.x;
+	mat[0][2] = 0;
+
+	mat[1][0] = skew.y;
+	mat[1][1] = 1;
+	mat[1][2] = 0;
+
+	mat[2][0] = 0;
+	mat[2][1] = 0;
+	mat[2][2] = 1;
+	
+	return mat;
+}
+#pragma endregion
+
+#pragma region Transformations_3D
+
+Quaternion MathExt::getRotationQuaternion(double rotation, double xAxis, double yAxis, double zAxis)
+{
+	return getRotationQuaternion(rotation, Vec3f(xAxis, yAxis, zAxis));
+}
+
+Quaternion MathExt::getRotationQuaternion(double rotation, Vec3f rotationAxis)
+{
+	double halfAngle = rotation/2;
+	double cosHalfAngle = MathExt::cos(halfAngle);
+	Vec3f axisVals = rotationAxis * MathExt::sin(halfAngle);
+	
+	return Quaternion(cosHalfAngle, axisVals.x, axisVals.y, axisVals.z);
+}
+
+Mat4f MathExt::QuaternionToMatrix(Quaternion q)
+{
+	Mat4f matrix = Mat4f();
+	
+	matrix[0][0] = q.a;
+	matrix[0][1] = -q.b;
+	matrix[0][2] = -q.c;
+	matrix[0][3] = -q.d;
+	
+	matrix[1][0] = q.b;
+	matrix[1][1] = q.a;
+	matrix[1][2] = -q.d;
+	matrix[1][3] = q.c;
+	
+	matrix[2][0] = q.c;
+	matrix[2][1] = q.d;
+	matrix[2][2] = q.a;
+	matrix[2][3] = -q.b;
+	
+	matrix[3][0] = q.d;
+	matrix[3][1] = -q.c;
+	matrix[3][2] = q.b;
+	matrix[3][3] = q.a;
+
+	return matrix;
+}
+
+Mat4f MathExt::rotation3DX(double rotation)
+{
+	Mat4f mat = Mat4f();
+
+	mat[0][0] = 1;
+	mat[0][1] = 0;
+	mat[0][2] = 0;
+	mat[0][3] = 0;
+
+	mat[1][0] = 0;
+	mat[1][1] = MathExt::cos(rotation);
+	mat[1][2] = -MathExt::sin(rotation);
+	mat[1][3] = 0;
+
+	mat[2][0] = 0;
+	mat[2][1] = MathExt::sin(rotation);
+	mat[2][2] = MathExt::cos(rotation);
+	mat[2][3] = 0;
+	
+	mat[3][0] = 0;
+	mat[3][1] = 0;
+	mat[3][2] = 0;
+	mat[3][3] = 1;
+	
+	return mat;
+}
+
+Mat4f MathExt::rotation3DY(double rotation)
+{
+	Mat4f mat = Mat4f();
+
+	mat[0][0] = MathExt::cos(rotation);
+	mat[0][1] = 0;
+	mat[0][2] = MathExt::sin(rotation);
+	mat[0][3] = 0;
+
+	mat[1][0] = 0;
+	mat[1][1] = 1;
+	mat[1][2] = 0;
+	mat[1][3] = 0;
+
+	mat[2][0] = -MathExt::sin(rotation);
+	mat[2][1] = 0;
+	mat[2][2] = MathExt::cos(rotation);
+	mat[2][3] = 0;
+	
+	mat[3][0] = 0;
+	mat[3][1] = 0;
+	mat[3][2] = 0;
+	mat[3][3] = 1;
+	
+	return mat;
+}
+
+Mat4f MathExt::rotation3DZ(double rotation)
+{
+	Mat4f mat = Mat4f();
+
+	mat[0][0] = MathExt::cos(rotation);
+	mat[0][1] = -MathExt::sin(rotation);
+	mat[0][2] = 0;
+	mat[0][3] = 0;
+
+	mat[1][0] = MathExt::sin(rotation);
+	mat[1][1] = MathExt::cos(rotation);
+	mat[1][2] = 0;
+	mat[1][3] = 0;
+
+	mat[2][0] = 0;
+	mat[2][1] = 0;
+	mat[2][2] = 1;
+	mat[2][3] = 0;
+	
+	mat[3][0] = 0;
+	mat[3][1] = 0;
+	mat[3][2] = 0;
+	mat[3][3] = 1;
+	
+	return mat;
+}
+
+Mat4f MathExt::translation3D(double x, double y, double z)
+{
+	return MathExt::translation3D(Vec3f(x,y,z));
+}
+
+Mat4f MathExt::translation3D(Vec3f trans)
+{
+	Mat4f mat = Mat4f();
+
+	mat[0][0] = 1;
+	mat[0][1] = 0;
+	mat[0][2] = 0;
+	mat[0][3] = trans.x;
+
+	mat[1][0] = 0;
+	mat[1][1] = 1;
+	mat[1][2] = 0;
+	mat[1][3] = trans.y;
+
+	mat[2][0] = 0;
+	mat[2][1] = 0;
+	mat[2][2] = 1;
+	mat[2][3] = trans.z;
+	
+	mat[3][0] = 0;
+	mat[3][1] = 0;
+	mat[3][2] = 0;
+	mat[3][3] = 1;
+	
+	return mat;
+}
+
+Mat4f MathExt::scale3D(double x, double y, double z)
+{
+	return MathExt::scale3D(Vec3f(x,y,z));
+}
+
+Mat4f MathExt::scale3D(Vec3f scale)
+{
+	Mat4f mat = Mat4f();
+
+	mat[0][0] = scale.x;
+	mat[0][1] = 0;
+	mat[0][2] = 0;
+	mat[0][3] = 0;
+
+	mat[1][0] = 0;
+	mat[1][1] = scale.y;
+	mat[1][2] = 0;
+	mat[1][3] = 0;
+
+	mat[2][0] = 0;
+	mat[2][1] = 0;
+	mat[2][2] = scale.z;
+	mat[2][3] = 0;
+	
+	mat[3][0] = 0;
+	mat[3][1] = 0;
+	mat[3][2] = 0;
+	mat[3][3] = 1;
+	
+	return mat;
+}
+
+Mat4f MathExt::skew3D(double x, double y, double z)
+{
+	return MathExt::skew3D(Vec3f(x,y,z));
+}
+
+Mat4f MathExt::skew3D(Vec3f skew)
+{
+	Mat4f mat = Mat4f();
+
+	mat[0][0] = 1;
+	mat[0][1] = -skew.z;
+	mat[0][2] = skew.y;
+	mat[0][3] = 0;
+
+	mat[1][0] = skew.z;
+	mat[1][1] = 1;
+	mat[1][2] = -skew.x;
+	mat[1][3] = 0;
+
+	mat[2][0] = -skew.y;
+	mat[2][1] = skew.x;
+	mat[2][2] = 1;
+	mat[2][3] = 0;
+	
+	mat[3][0] = 0;
+	mat[3][1] = 0;
+	mat[3][2] = 0;
+	mat[3][3] = 1;
+	
+	return mat;
+}
+#pragma endregion
 
 std::vector<double> MathExt::solveLinear(double A, double B)
 {

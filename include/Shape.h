@@ -29,6 +29,8 @@ protected:
 
 };
 
+#pragma region SHAPES_2D
+
 class Point2D : public Shape
 {
 public:
@@ -157,6 +159,37 @@ private:
 	Vec2f v2;
 	Vec2f v3;
 };
+
+#pragma endregion
+
+#pragma SHAPES_3D
+
+class Sphere : public Shape
+{
+
+};
+
+class Box3D : public Shape
+{
+
+};
+
+class Point3D : public Shape
+{
+
+};
+
+class Line3D : public Shape
+{
+
+};
+
+class Triangle3D : public Shape
+{
+
+};
+
+#pragma endregion
 
 class CollisionMaster
 {

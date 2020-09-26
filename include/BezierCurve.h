@@ -19,6 +19,8 @@ public:
 	Vec2f getFuctionAt(double time);
 	Vec2f getDerivativeAt(double time);
 	Vec2f getSimpleDerivativeAt(double time);
+	double getArcLengthAt(double time);
+	double getArcLengthAt(double startTime, double endTime);
 	void clear();
 	int size();
 

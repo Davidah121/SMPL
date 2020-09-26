@@ -1,3 +1,4 @@
+#pragma once
 #include "SimpleFile.h"
 
 class XmlAttribute
@@ -15,6 +16,7 @@ class XmlNode
 public:
     XmlNode();
     ~XmlNode();
+    XmlNode(const XmlNode &other);
 
     bool isEndOfSection();
 
@@ -40,8 +42,12 @@ public:
     void dispose();
 
     std::vector<XmlNode*> nodes = std::vector<XmlNode*>();
+    static char parseEscapeString(std::string escString);
+    
 private:
     XmlNode* parseXmlLine(std::string line);
+
+    void fixParseOnNode(XmlNode* n);
 
     void saveNode(SimpleFile* f, XmlNode* node);
     void deleteNode(XmlNode* node);

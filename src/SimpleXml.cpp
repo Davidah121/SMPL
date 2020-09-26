@@ -1,5 +1,6 @@
 #include "SimpleXml.h"
 #include "StringTools.h"
+#include "MathExt.h"
 
 #pragma region XML_ATTRIBUTE
 
@@ -31,6 +32,21 @@ XmlNode::~XmlNode()
     }
     childNodes.clear();
     attributes.clear();
+}
+
+
+XmlNode::XmlNode(const XmlNode &other)
+{
+    this->title = other.title;
+    this->value = other.value;
+    this->attributes = other.attributes;
+    this->isEnd = other.isEnd;
+    this->parentNode = other.parentNode;
+    
+    for(XmlNode* cNode : other.childNodes)
+    {
+        this->childNodes.push_back( new XmlNode(*cNode) );
+    }
 }
 
 bool XmlNode::isEndOfSection()
@@ -223,7 +239,7 @@ bool SimpleXml::load(std::string filename)
                 {
                     if(parsingNode)
                     {
-                        if( StringTools::isAlphaNumerial(byte, true, false) || byte == '/')
+                        if( StringTools::isAlphaNumerial(byte, true, false) || byte == '/' || byte == '?')
                         {
                             isRecordingText=true;
                             innerNodeText += byte;
@@ -231,7 +247,7 @@ bool SimpleXml::load(std::string filename)
                         else
                         {
                             //error has occurred
-                            //Must a number, letter, /, or _ at the start
+                            //Must a number, letter, /, or _ at the start or ?
                             dispose();
                             return false;
                         }
@@ -248,6 +264,11 @@ bool SimpleXml::load(std::string filename)
                 }
                 
             }
+        }
+
+        for(XmlNode* node : nodes)
+        {
+            fixParseOnNode(node);
         }
 
     }
@@ -283,12 +304,16 @@ std::vector<unsigned char> SimpleXml::removeCommentsAndInvalidChars(std::vector<
                 {
                     if(fileBytes[i] >= 32)
                         newBytes.push_back(fileBytes[i]);
+                    else if(fileBytes[i]==0x0D || fileBytes[i]==0x0A)
+                        newBytes.push_back(' ');
                 }
             }
             else
             {
                 if(fileBytes[i] >= 32)
                     potentialBytes += fileBytes[i];
+                else if(fileBytes[i]==0x0D || fileBytes[i]==0x0A)
+                    potentialBytes += ' ';
 
                 if(potentialBytes.size() == 4)
                 {
@@ -324,6 +349,10 @@ std::vector<unsigned char> SimpleXml::removeCommentsAndInvalidChars(std::vector<
             {
                 if(fileBytes[i] >= 32)
                     potentialBytes += fileBytes[i];
+                else if(fileBytes[i]==0x0D || fileBytes[i]==0x0A)
+                    potentialBytes += ' ';
+                
+                
 
                 if(potentialBytes.size()==3)
                 {
@@ -375,6 +404,13 @@ XmlNode* SimpleXml::parseXmlLine(std::string line)
             attribString.pop_back();
             title = attribString.substr(0, indexOfFirstSpace);
         }
+    }
+    else if(line[0] == '?' && line[line.size()-1] == '?')
+    {
+        //xml declaration
+        node->isEnd = true;
+        title = line.substr(1, indexOfFirstSpace);
+        attribString.pop_back();
     }
 
     node->title = title;
@@ -461,6 +497,155 @@ XmlNode* SimpleXml::parseXmlLine(std::string line)
     }
     
     return node;
+}
+
+char SimpleXml::parseEscapeString(std::string escString)
+{
+    //Format: &----;
+    
+    if(escString.front()=='&' && escString.back()==';')
+    {
+        //valid format
+        std::string internalString = escString.substr(1, escString.size()-2);
+        if(internalString.front() == '#')
+        {
+            internalString = internalString.substr(1, internalString.size()-1);
+            if(internalString.front() == 'x')
+            {
+                //hex value
+                int multiple = 0;
+                int charVal = 0;
+                for(int i=internalString.size()-1; i>=1; i--, multiple++)
+                {
+                    charVal += StringTools::base16ToBase10(internalString[i]) * (int)MathExt::pow(16.0, multiple);
+                }
+
+                //charVal could be any unicode value. Change later.
+                return (char)charVal;
+            }
+            else
+            {
+                //decimal number
+                return (char)std::stoi( internalString );
+            }
+        }
+        else
+        {
+            //name
+            //only XML predefined names
+            if(internalString == "quot")
+            {
+                return '"';
+            }
+            else if(internalString == "amp")
+            {
+                return '&';
+            }
+            else if(internalString == "apos")
+            {
+                return '\'';
+            }
+            else if(internalString == "lt")
+            {
+                return '<';
+            }
+            else if(internalString == "gt")
+            {
+                return '>';
+            }
+        }
+        
+    }
+
+    return '\0';
+}
+
+void SimpleXml::fixParseOnNode(XmlNode* n)
+{
+    std::string actualString = "";
+    std::string tempString = "";
+    bool proc = false;
+    for(XmlAttribute& k : n->attributes)
+    {
+        actualString = "";
+        tempString = "";
+        proc = false;
+        for(char c : k.value)
+        {
+            if(!proc)
+            {
+                if(c != '&')
+                {
+                    actualString += c;
+                }
+                else
+                {
+                    tempString += c;
+                    proc=true;
+                }
+            }
+            else
+            {
+                if(c==';')
+                {
+                    tempString += ';';
+                    char t = parseEscapeString(tempString);
+                    actualString += t;
+                    proc=false;
+                    tempString = "";
+                }
+                else
+                {
+                    tempString += c;
+                }
+            }
+        }
+        actualString += tempString;
+        k.value = actualString;
+    }
+
+
+    //repeat for the value of the node if it has one
+    actualString = "";
+    tempString = "";
+    proc = false;
+    for(char c : n->value)
+    {
+        if(!proc)
+        {
+            if(c != '&')
+            {
+                actualString += c;
+            }
+            else
+            {
+                tempString += c;
+                proc=true;
+            }
+        }
+        else
+        {
+            if(c==';')
+            {
+                tempString += ';';
+                char t = parseEscapeString(tempString);
+                actualString += t;
+                proc=false;
+                tempString = "";
+            }
+            else
+            {
+                tempString += c;
+            }
+        }
+    }
+    actualString += tempString;
+    n->value = actualString;
+    
+    for(XmlNode* q : n->childNodes)
+    {
+        fixParseOnNode(q);
+    }
 }
 
 #pragma endregion

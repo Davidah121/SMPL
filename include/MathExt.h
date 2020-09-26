@@ -8,6 +8,7 @@
 #include "Mat2f.h"
 #include "Mat3f.h"
 #include "Mat4f.h"
+#include "Quaternion.h"
 #include "GeneralVector.h"
 #include "ComplexNumber.h"
 
@@ -144,10 +145,16 @@ public:
 	static double dot(Vec4f v1, Vec4f v2);
 	static double dot(GeneralVector v1, GeneralVector v2);
 
+	static double vecLength(Vec2f v);
+	static double vecLength(Vec3f v);
+	static double vecLength(Vec4f v);
+	static double vecLength(GeneralVector v);
+	
 	static Vec2f normalize(Vec2f v1);
 	static Vec3f normalize(Vec3f v1);
 	static Vec4f normalize(Vec4f v1);
 	static GeneralVector normalize(GeneralVector v1);
+	static Quaternion normalize(Quaternion q1);
 
 	static Vec2f inverseVec(Vec2f f);
 
@@ -162,6 +169,38 @@ public:
 	static double distanceTo(Vec3f p1, Vec3f p2);
 	static double distanceTo(Vec4f p1, Vec4f p2);
 	static double distanceTo(GeneralVector p1, GeneralVector p2);
+
+	//2D transformations
+	static Mat3f rotation2D(double rotation, double x = 0, double y = 0);
+	static Mat3f rotation2D(double rotation, Vec2f pos = Vec2f());
+	
+	static Mat3f translation2D(double x, double y);
+	static Mat3f translation2D(Vec2f trans);
+
+	static Mat3f scale2D(double x, double y);
+	static Mat3f scale2D(Vec2f trans);
+
+	static Mat3f skew2D(double x, double y);
+	static Mat3f skew2D(Vec2f skew);
+
+	//3D transformations
+	static Quaternion getRotationQuaternion(double rotation, double xAxis, double yAxis, double zAxis);
+	static Quaternion getRotationQuaternion(double rotation, Vec3f rotationAxis);
+	
+	static Mat4f QuaternionToMatrix(Quaternion q);
+	
+	static Mat4f rotation3DX(double rotation);
+	static Mat4f rotation3DY(double rotation);
+	static Mat4f rotation3DZ(double rotation);
+
+	static Mat4f translation3D(double x, double y, double z);
+	static Mat4f translation3D(Vec3f trans);
+
+	static Mat4f scale3D(double x, double y, double z);
+	static Mat4f scale3D(Vec3f trans);
+
+	static Mat4f skew3D(double x, double y, double z);
+	static Mat4f skew3D(Vec3f trans);
 	
 	static std::vector<double> solveLinear(double A, double B);
 	static std::vector<ComplexNumber> solveQuadratic(double A, double B, double C);

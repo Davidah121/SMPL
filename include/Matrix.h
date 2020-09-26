@@ -7,7 +7,7 @@ public:
 	Matrix();
 	Matrix(int rows, int cols);
 	Matrix(const Matrix& c);
-	Matrix& operator=(const Matrix& o);
+	void operator=(const Matrix& o);
 
 	~Matrix();
 

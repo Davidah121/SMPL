@@ -1,4 +1,5 @@
 #include "Matrix.h"
+#include "StringTools.h"
 
 const Class* Matrix::myClass = new Class("Matrix", {Object::myClass});
 const Class* Matrix::getClass()
@@ -36,10 +37,9 @@ Matrix::Matrix(const Matrix& c)
 	this->copy(c);
 }
 
-Matrix& Matrix::operator=(const Matrix& c)
+void Matrix::operator=(const Matrix& c)
 {
 	this->copy(c);
-	return *this;
 }
 
 void Matrix::copy(const Matrix& c)
@@ -60,7 +60,7 @@ void Matrix::copy(const Matrix& c)
 	valid = c.valid;
 	rows = c.rows;
 	columns = c.columns;
-
+	
 	if(c.data!=nullptr)
 	{
 		data = new double*[rows];
@@ -81,7 +81,6 @@ void Matrix::copy(const Matrix& c)
 
 Matrix::~Matrix()
 {
-	
 	for (int i = 0; i < rows; i++)
 	{
 		if(data[i]!=nullptr)
@@ -90,7 +89,6 @@ Matrix::~Matrix()
 
 	if(data!=nullptr)
 		delete[] data;
-
 }
 
 double * Matrix::operator[](int row)

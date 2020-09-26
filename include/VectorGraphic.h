@@ -3,6 +3,7 @@
 #include<map>
 #include "Image.h"
 #include "MathExt.h"
+#include "SimpleXml.h"
 
 struct criticalPoint
 {
@@ -69,6 +70,9 @@ public:
 	static const char LINE_JOIN_ROUND = 1;
 	static const char LINE_JOIN_BEVEL = 2;
 
+	VectorShape();
+	~VectorShape();
+	
 	//Object and Class Stuff
 	const Class* getClass();
 	static const Class* myClass;
@@ -104,7 +108,7 @@ private:
 	bool fillMethod = false;
 	char lineCap = 0;
 	char lineJoin = 0;
-	Mat3f transform = Mat3f::getIdentity();
+	Mat3f transform = Mat3f();
 };
 
 class VectorRectangle : public VectorShape
@@ -446,6 +450,8 @@ public:
 	 * 		!! Line join does affect this object !!
 	 */ 
 	VectorPath();
+	VectorPath(const VectorPath& other);
+	void operator=(VectorPath& other);
 	~VectorPath();
 
 	//Object and Class Stuff
@@ -521,6 +527,7 @@ private:
 	void drawArcTo(Vec2f currentPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative);
 	void drawCloseTo(Vec2f currentPos, Vec2f closePoint, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines);
 	
+	void copy(VectorPath& other);
 };
 
 class VectorGraphic : public Object
@@ -563,7 +570,8 @@ public:
 	static const unsigned char IMAGE = 9;
 
 	VectorGraphic(int width=0, int height=0);
-	VectorGraphic(const VectorGraphic& c);
+	VectorGraphic(const VectorGraphic& other);
+	void operator=(const VectorGraphic& other);
 	~VectorGraphic();
 
 	//Object and Class Stuff
@@ -587,11 +595,18 @@ public:
 	int getWidth();
 	int getHeight();
 
-	void save(std::string filename);
-	void load(std::string filename);
+	//save and load with Xml File
+	bool save(std::string filename);
+	bool load(std::string filename);
+
+	//save and load with XmlNode
+	bool load(XmlNode* svgParentNode);
+	XmlNode* writeAsXmlNode();
 
 private:
 	std::vector<VectorShape*> shapes = std::vector<VectorShape*>();
+
+	void copy(const VectorGraphic& other);
 
 	int width = 0;
 	int height = 0;

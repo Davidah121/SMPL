@@ -234,6 +234,54 @@ std::vector<std::string> StringTools::splitString(std::string s, const char deli
 	return stringArray;
 }
 
+std::vector<std::string> StringTools::splitStringMultipleDeliminators(std::string s, const char* delim, bool removeEmpty)
+{
+	std::vector<std::string> stringArray = std::vector<std::string>();
+
+	std::string temp = "";
+
+	int i = 0;
+	int dSize = std::strlen(delim);
+
+	while (i < s.size())
+	{
+		bool valid = true;
+
+		for(int x=0; x<dSize; x++)
+		{
+			if (s.at(i) == delim[x])
+			{
+				valid = false;
+			}
+		}
+
+		if (valid)
+		{
+			temp += s.at(i);
+		}
+		else
+		{
+			if(removeEmpty)
+			{
+				if(temp!="")
+					stringArray.push_back(temp);
+			}
+			else
+			{
+				stringArray.push_back(temp);
+			}
+			
+			temp = "";
+		}
+		
+		i++;
+	}
+
+	stringArray.push_back(temp);
+
+	return stringArray;
+}
+
 std::vector<std::string> StringTools::splitString(std::string s, const char* delim, bool removeEmpty)
 {
 	std::vector<std::string> stringArray = std::vector<std::string>();

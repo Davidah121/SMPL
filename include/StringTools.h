@@ -54,7 +54,8 @@ public:
 
 	static std::vector<std::string> splitString(std::string s, const char delim, bool removeEmpty=true);
 	static std::vector<std::string> splitString(std::string s, const char* delim, bool removeEmpty=true);
-
+	static std::vector<std::string> splitStringMultipleDeliminators(std::string s, const char* delim, bool removeEmpty=true);
+	
 	static int toInt(std::string s);
 	static long toLong(std::string s);
 	static double toDouble(std::string s);

@@ -1,0 +1,117 @@
+#include "VectorGraphic.h"
+#include "Graphics.h"
+#include "Sort.h"
+#include "StringTools.h"
+#include "BezierCurve.h"
+#include "ColorNameConverter.h"
+
+#pragma region VectorPolygon
+
+const Class* VectorPolygon::myClass = new Class("VectorPolygon", {VectorShape::myClass});
+const Class* VectorPolygon::getClass()
+{
+	return VectorPolygon::myClass;
+}
+
+VectorPolygon::VectorPolygon() : VectorShape()
+{
+}
+
+VectorPolygon::~VectorPolygon()
+{
+}
+
+void VectorPolygon::draw(Image* buffer, int globalWidth, int globalHeight)
+{
+	//Everything done here has been moved to the Graphics class
+	//Hence, we will use that method which will be optimized
+	//separately.
+	Graphics::setColor(getFillColor());
+	Graphics::setFillRule(getFillMethod());
+
+	buffer->drawPolygon(points.data(), points.size());
+
+	if(getStrokeWidth()==1)
+	{
+		Graphics::setColor(getStrokeColor());
+		Graphics::setFillRule(Graphics::FILL_EVEN_ODD);
+		for(int i=0; i<points.size(); i++)
+		{
+			if(i<points.size()-1)
+			{
+				buffer->drawLine(points[i].x, points[i].y, points[i+1].x, points[i+1].y);
+			}
+			else
+			{
+				buffer->drawLine(points[i].x, points[i].y, points[0].x, points[0].y);
+			}
+		}
+	}
+	else if(getStrokeWidth()>1)
+	{
+		Graphics::setColor(getStrokeColor());
+		Graphics::setFillRule(Graphics::FILL_EVEN_ODD);
+		for(int i=0; i<points.size(); i++)
+		{
+			if(i<points.size()-1)
+			{
+				//create the 4 points
+				Vec2f toEndPoint = Vec2f(points[i+1].x-points[i].x, points[i+1].y-points[i].y);
+				Vec2f toEndPointScaled = MathExt::normalize(toEndPoint) * getStrokeWidth()/2;
+				
+				Vec2f newPoint1 = Vec2f( points[i].x-toEndPointScaled.y, points[i].y+toEndPointScaled.x);
+				Vec2f newPoint2 = Vec2f( points[i].x+toEndPointScaled.y, points[i].y-toEndPointScaled.x);
+				Vec2f newPoint3 = newPoint2 + toEndPoint;
+				Vec2f newPoint4 = newPoint1 + toEndPoint;
+				
+				buffer->drawPolygon(new Vec2f[4]{newPoint1, newPoint2, newPoint3, newPoint4}, 4);
+			}
+			else
+			{
+				Vec2f toEndPoint = Vec2f(points[0].x-points[i].x, points[0].y-points[i].y);
+				Vec2f toEndPointScaled = MathExt::normalize(toEndPoint) * getStrokeWidth()/2;
+				
+				Vec2f newPoint1 = Vec2f( points[i].x-toEndPointScaled.y, points[i].y+toEndPointScaled.x);
+				Vec2f newPoint2 = Vec2f( points[i].x+toEndPointScaled.y, points[i].y-toEndPointScaled.x);
+				Vec2f newPoint3 = newPoint2 + toEndPoint;
+				Vec2f newPoint4 = newPoint1 + toEndPoint;
+				
+				buffer->drawPolygon(new Vec2f[4]{newPoint1, newPoint2, newPoint3, newPoint4}, 4);
+			}
+		}
+	}
+}
+
+void VectorPolygon::drawStroke(Image* buffer, int globalWidth, int globalHeight)
+{
+	
+}
+
+void VectorPolygon::addPoint(double x, double y)
+{
+	points.push_back(Vec2f(x,y));
+}
+void VectorPolygon::addPoint(Vec2f v)
+{
+	points.push_back(v);
+}
+
+Vec2f VectorPolygon::getPoint(int index)
+{
+	return points[index];
+}
+double VectorPolygon::getPointX(int index)
+{
+	return points[index].x;
+}
+double VectorPolygon::getPointY(int index)
+{
+	return points[index].y;
+}
+
+int VectorPolygon::size()
+{
+	return points.size();
+}
+
+#pragma endregion
