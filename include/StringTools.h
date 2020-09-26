@@ -26,7 +26,11 @@ public:
 	static int stringLength(const char* text);
 	static int stringLength(const wchar_t* text);
 
-	static char valueToBase16(char v);
+	static bool equalsIgnoreCase(std::string a, std::string b);
+	static bool isAlphaNumerial(char v, bool underScoreAllowed = false, bool dashAllowed = false);
+
+	static char charToBase16(char v);
+	static int base16ToBase10(char v);
 
 	template<class T>
 	static char* toHexString(T value)
@@ -40,7 +44,7 @@ public:
 		
 		for(int i=0; i<size; i++)
 		{
-			hexString[size-i-1] = valueToBase16((convertedValue >> (i*4)) & 0xF);
+			hexString[size-i-1] = charToBase16((convertedValue >> (i*4)) & 0xF);
 		}
 
 		hexString[size] = '\0';
@@ -48,9 +52,10 @@ public:
 		return hexString;
 	}
 
-	static std::vector<std::string> splitString(std::string s, const char delim);
-	static std::vector<std::string> splitString(std::string s, const char* delim);
-
+	static std::vector<std::string> splitString(std::string s, const char delim, bool removeEmpty=true);
+	static std::vector<std::string> splitString(std::string s, const char* delim, bool removeEmpty=true);
+	static std::vector<std::string> splitStringMultipleDeliminators(std::string s, const char* delim, bool removeEmpty=true);
+	
 	static int toInt(std::string s);
 	static long toLong(std::string s);
 	static double toDouble(std::string s);

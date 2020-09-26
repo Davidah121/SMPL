@@ -12,7 +12,7 @@
             "program": "${workspaceFolder}/bin/Debug/x64/${workspaceFolderBasename}.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/src",
+            "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": true,
 
@@ -24,7 +24,7 @@
             "program": "${workspaceFolder}/bin/Debug/x86/${workspaceFolderBasename}.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/src",
+            "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": true
         },
@@ -35,7 +35,7 @@
             "program": "${workspaceFolder}/bin/Debug/x64/${workspaceFolderBasename}.exe",
             "args": [],
             "stopOnEntry": false,
-            "cwd": "${workspaceFolder}/src",
+            "cwd": "${workspaceFolder}",
             "console": "externalTerminal"
         },
         {
@@ -45,7 +45,7 @@
             "program": "${workspaceFolder}/bin/Release/x64/${workspaceFolderBasename}.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/src",
+            "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false
         },
@@ -56,7 +56,7 @@
             "program": "${workspaceFolder}/bin/Release/x86/${workspaceFolderBasename}.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/src",
+            "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false
         }

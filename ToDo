@@ -3,5 +3,6 @@
 *(DONE) Add AntiAliasing (Percentages and junk) (Only x values for now)
 Add AntiAliasing on scanlines
 Add Strokes to VectorGraphics
-Add SVG Loader
+*(DONE) Add SVG Loader (Mostly)
 Add SVG Text Loader
+Add SVG Sprite (Collection of SVG Images)

@@ -1,6 +1,6 @@
 #pragma once
 #include "Image.h"
-#include "Font.h"
+#include "BitmapFont.h"
 
 class Graphics
 {
@@ -50,8 +50,8 @@ public:
 	static void setColor(Color c);
 	static Color getColor();
 
-	static void setFont(Font* f);
-	static Font* getFont();
+	static void setFont(BitmapFont* f);
+	static BitmapFont* getFont();
 	
 	static void setCompositeRule(unsigned char b);
 	static void setBlendMode(unsigned char b);
@@ -60,7 +60,7 @@ public:
 
 private:
 	static Image* activeImage;
-	static Font* activeFont;
+	static BitmapFont* activeFont;
 	static Color activeColor;
 	static unsigned char compositeRule;
 	static unsigned char blendMode;

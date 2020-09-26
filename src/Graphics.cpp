@@ -5,7 +5,7 @@
 #include "StringTools.h"
 
 Color Graphics::activeColor = { 0, 0, 0, 255 };
-Font* Graphics::activeFont = nullptr;
+BitmapFont* Graphics::activeFont = nullptr;
 Image* Graphics::activeImage = nullptr;
 unsigned char Graphics::compositeRule = Graphics::COMPOSITE_SRC_OVER;
 unsigned char Graphics::blendMode = Graphics::BLEND_NORMAL;
@@ -844,12 +844,12 @@ Color Graphics::getColor()
 	return activeColor;
 }
 
-void Graphics::setFont(Font* f)
+void Graphics::setFont(BitmapFont* f)
 {
 	activeFont = f;
 }
 
-Font* Graphics::getFont()
+BitmapFont* Graphics::getFont()
 {
 	return activeFont;
 }

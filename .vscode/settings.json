@@ -62,7 +62,9 @@
         "xtr1common": "cpp",
         "*.rh": "cpp",
         "iterator": "cpp",
-        "concepts": "cpp"
+        "concepts": "cpp",
+        "map": "cpp",
+        "xtree": "cpp"
     },
     "files.exclude": {
         "**/.classpath": true,
@@ -70,5 +72,6 @@
         "**/.settings": true,
         "**/.factorypath": true
     },
-    "svg.preview.background": "transparent"
+    "svg.preview.background": "transparent",
+    "svg-font-previewer.autoOpenPreview": false
 }

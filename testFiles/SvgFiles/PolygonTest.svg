@@ -1,5 +1,5 @@
 <svg width="320" height="240" xmlns="http://www.w3.org/2000/svg" version="1.1">
-    <rect width="320" height="240" fill="rgb(255,255,255)"/>
+    <rect width="320" height="240" fill="rgb(255,128,255)"/>
     
     <!-- 
     <polygon fill-rule="nonzero" stroke="red"
@@ -9,6 +9,5 @@
   <polygon fill-rule="evenodd" 
    points="150,5 121,95 198,40 102,40 179,95"/>
    -->
-
-    <polygon points="40,40 40,80 80,80 80,40" fill-rule="nonzero"/>
+    <polygon points="40,40 40,80 80,80 80,40" fill="MediumSpringGreen" fill-rule="nonzero"/>
 </svg>

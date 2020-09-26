@@ -74,6 +74,59 @@ Vec2f BezierCurve::getSimpleDerivativeAt(double time)
 	return points[currentSegment+1] - points[currentSegment];
 }
 
+double BezierCurve::getArcLengthAt(double time)
+{
+	return getArcLengthAt(0, time);
+}
+
+double BezierCurve::getArcLengthAt(double startTime, double endTime)
+{
+	//Using Simpson's rule for anything above degree 1
+	double arcLength = 0;
+	int subdivisions = 2 * points.size();
+	double totalTime = endTime-startTime;
+	double deltaX = totalTime/subdivisions;
+	Vec2f derVec = Vec2f(); //Derivative
+
+	switch (points.size())
+	{
+	case 0:
+		//no points
+		break;
+	case 1:
+		//one point
+		arcLength = 0;
+		break;
+	case 2:
+		//line
+		arcLength = MathExt::distanceTo(points[0], points[1]) * totalTime;
+		break;
+	default:
+		//Simpson's rule
+		//subdivisions = 4 * points.size()
+		//each time section is approximated by Simpson's rule of n = 4
+		derVec = getDerivativeAt(startTime);
+		arcLength += MathExt::vecLength(derVec);
+
+		for(int i=1; i<subdivisions-1; i++)
+		{
+			derVec = getDerivativeAt(startTime + deltaX*i);
+			if(i%2 == 1)
+				arcLength += 4 * MathExt::vecLength(derVec);
+			else
+				arcLength += 2 * MathExt::vecLength(derVec);
+		}
+
+		derVec = getDerivativeAt(endTime);
+		arcLength += MathExt::vecLength(derVec);
+		
+		arcLength *= deltaX/3.0;
+		break;
+	}
+
+	return arcLength;
+}
+
 void BezierCurve::clear()
 {
 	points.clear();
@@ -113,6 +166,9 @@ std::vector<double> BezierCurve::findTimeForY(double Y)
 		A = points[0].y - 2*points[1].y + points[2].y;
 		B = -2*points[0].y + 2*points[1].y;
 		C = points[0].y - Y;
+		A = MathExt::roundToDecimal(A, 10);
+		B = MathExt::roundToDecimal(B, 10);
+		C = MathExt::roundToDecimal(C, 10);
 		timeValues = MathExt::solveQuadraticReal(A,B,C);
 		break;
 	case 4:
@@ -122,6 +178,10 @@ std::vector<double> BezierCurve::findTimeForY(double Y)
 		B = 3*points[0].y - 6*points[1].y + 3*points[2].y;
 		C = -3*points[0].y + 3*points[1].y;
 		D = points[0].y - Y;
+		A = MathExt::roundToDecimal(A, 10);
+		B = MathExt::roundToDecimal(B, 10);
+		C = MathExt::roundToDecimal(C, 10);
+		D = MathExt::roundToDecimal(D, 10);
 		timeValues = MathExt::solveCubicReal(A,B,C,D);
 		break;
 	default:

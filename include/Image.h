@@ -50,6 +50,10 @@ public:
 	void drawText(std::string str, int x, int y);
 	void drawPixel(int x, int y, Color c);
 
+	void saveBMP(std::string filename);
+	void saveGIF(std::string filename);
+	void savePNG(std::string filename);
+	void saveJPG(std::string filename);
 private:
 	int width = 0;
 	int height = 0;
@@ -59,8 +63,6 @@ private:
 	static Image** loadBMP(std::vector<unsigned char> fileData, int* amountOfImages);
 	static Image** loadGIF(std::vector<unsigned char> fileData, int* amountOfImages);
 	static Image** loadPNG(std::vector<unsigned char> fileData, int* amountOfImages);
-
 	static Image** loadJPG(std::vector<unsigned char> fileData, int* amountOfImages);
-	
 };
 

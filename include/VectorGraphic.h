@@ -1,7 +1,9 @@
 #pragma once
 #include<vector>
+#include<map>
 #include "Image.h"
 #include "MathExt.h"
+#include "SimpleXml.h"
 
 struct criticalPoint
 {
@@ -18,7 +20,8 @@ public:
 	 * 		< ... fill="_COLOR" fill-opacity="_ALPHA" stroke="_COLOR" 
 	 * 				stroke-opacity="_ALPHA" stroke-width="_VALUE"
 	 * 				stroke-linecap="TYPE" stroke-linejoin="TYPE"
-	 * 				stroke-dasharray="TYPE" fill-rule="TYPE"
+	 * 				stroke-dasharray="Array" stroke-dashoffset="VALUE"
+	 * 				fill-rule="TYPE"
 	 * 				transform="_TRANSFORMS">
 	 * 		_COLOR can be in multiple formats:
 	 * 			RGB TRIPLET = rgb(r,g,b) in int,float,percent
@@ -42,6 +45,8 @@ public:
 	 * 			butt, square, round
 	 * 		FOR linejoin, valid types are:
 	 * 			miter, round, bevel
+	 * 		For stroke-dasharray, the format is as follows:
+	 * 			dash length, gap length, dash length, gap length, ...
 	 * 		FOR fill-rule, valid types are:
 	 * 			evenodd, nonzero
 	 * 		
@@ -65,11 +70,15 @@ public:
 	static const char LINE_JOIN_ROUND = 1;
 	static const char LINE_JOIN_BEVEL = 2;
 
+	VectorShape();
+	~VectorShape();
+	
 	//Object and Class Stuff
 	const Class* getClass();
 	static const Class* myClass;
 
 	virtual void draw(Image* buffer, int globalWidth, int globalHeight);
+	virtual void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 
 	void setFillMethod(bool value);
 	bool getFillMethod();
@@ -93,13 +102,13 @@ public:
 	Mat3f getTransform();
 
 private:
-	Color fill;
-	Color strokeColor;
+	Color fill = {0,0,0,255};
+	Color strokeColor = {0,0,0,0};
 	double strokeWidth = 0;
 	bool fillMethod = false;
 	char lineCap = 0;
 	char lineJoin = 0;
-	Mat3f transform = Mat3f::getIdentity();
+	Mat3f transform = Mat3f();
 };
 
 class VectorRectangle : public VectorShape
@@ -130,6 +139,7 @@ public:
 	static const Class* myClass;
 
 	void draw(Image* buffer, int globalWidth, int globalHeight);
+	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 
 	void setX(double x);
 	double getX();
@@ -181,6 +191,7 @@ public:
 	static const Class* myClass;
 
 	void draw(Image* img, int globalWidth, int globalHeight);
+	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 	
 	void setX(double x);
 	double getX();
@@ -221,6 +232,7 @@ public:
 	static const Class* myClass;
 
 	void draw(Image* img, int globalWidth, int globalHeight);
+	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 	
 	void setX(double x);
 	double getX();
@@ -265,6 +277,7 @@ public:
 	static const Class* myClass;
 
 	void draw(Image* img, int globalWidth, int globalHeight);
+	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 	
 	void setX1(double x1);
 	double getX1();
@@ -314,6 +327,7 @@ public:
 	static const Class* myClass;
 
 	void draw(Image* img, int globalWidth, int globalHeight);
+	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 	
 	void addPoint(double x, double y);
 	void addPoint(Vec2f p);
@@ -357,6 +371,7 @@ public:
 	static const Class* myClass;
 
 	void draw(Image* img, int globalWidth, int globalHeight);
+	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 	
 	void addPoint(double x, double y);
 	void addPoint(Vec2f p);
@@ -435,6 +450,8 @@ public:
 	 * 		!! Line join does affect this object !!
 	 */ 
 	VectorPath();
+	VectorPath(const VectorPath& other);
+	void operator=(VectorPath& other);
 	~VectorPath();
 
 	//Object and Class Stuff
@@ -442,7 +459,8 @@ public:
 	static const Class* myClass;
 
 	void draw(Image* img, int globalWidth, int globalHeight);
-	
+	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
+
 	void addMoveTo(double x, double y);
 	void addMoveTo(Vec2f p);
 	void addMoveToRel(double x, double y);
@@ -509,6 +527,7 @@ private:
 	void drawArcTo(Vec2f currentPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative);
 	void drawCloseTo(Vec2f currentPos, Vec2f closePoint, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines);
 	
+	void copy(VectorPath& other);
 };
 
 class VectorGraphic : public Object
@@ -551,7 +570,8 @@ public:
 	static const unsigned char IMAGE = 9;
 
 	VectorGraphic(int width=0, int height=0);
-	VectorGraphic(const VectorGraphic& c);
+	VectorGraphic(const VectorGraphic& other);
+	void operator=(const VectorGraphic& other);
 	~VectorGraphic();
 
 	//Object and Class Stuff
@@ -572,8 +592,21 @@ public:
 
 	Image* getImageBuffer();
 
+	int getWidth();
+	int getHeight();
+
+	//save and load with Xml File
+	bool save(std::string filename);
+	bool load(std::string filename);
+
+	//save and load with XmlNode
+	bool load(XmlNode* svgParentNode);
+	XmlNode* writeAsXmlNode();
+
 private:
 	std::vector<VectorShape*> shapes = std::vector<VectorShape*>();
+
+	void copy(const VectorGraphic& other);
 
 	int width = 0;
 	int height = 0;
@@ -582,5 +615,8 @@ private:
 	//transforms
 	Mat3f transform = Mat3f::getIdentity();
 	Mat3f viewBox = Mat3f::getIdentity();
+
+	static double toNumber(std::string value, bool* percentage);
+	static Color toColor(std::string value);
 };
 
