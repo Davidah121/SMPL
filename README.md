@@ -1,5 +1,5 @@
 # GLib
- A static C++ library that encompasses all of the classes I have made.
+ A static C++ library that encompasses many of the tools I have made to make development easier.
 
 <h1>What Changed</h1>
 <p>Redone using a simple directory structure, <br>using Clang as the compiler, <br>and ninja as the build system along with some batch code to make my life easier.</p>
