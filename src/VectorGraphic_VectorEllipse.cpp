@@ -23,6 +23,14 @@ VectorEllipse::~VectorEllipse()
 
 void VectorEllipse::draw(Image* buffer, int globalWidth, int globalHeight)
 {
+	double preX,preY,preRX,preRY;
+	preX = cx;
+	preY = cy;
+	preRX = rx;
+	preRY = ry;
+
+	applyTransform();
+
 	//first, calc bounding box
 	int x1 = cx-rx;
 	int x2 = cx+rx;
@@ -66,6 +74,11 @@ void VectorEllipse::draw(Image* buffer, int globalWidth, int globalHeight)
 			
 		}
 	}
+
+	cx = preX;
+	cy = preY;
+	rx = preRX;
+	ry = preRY;
 }
 
 void VectorEllipse::drawStroke(Image* buffer, int globalWidth, int globalHeight)
@@ -113,4 +126,17 @@ double VectorEllipse::getYRadius()
 	return this->ry;
 }
 
+void VectorEllipse::applyTransform()
+{
+	Vec3f pos = Vec3f(cx, cy, 1.0);
+	Vec3f r = Vec3f(rx, ry, 0.0);
+	
+	Vec3f newPos = getTransform() * pos;
+	Vec3f newR = getTransform() * r;
+
+	cx = newPos.x;
+	cy = newPos.y;
+
+	//deal with radius later
+}
 #pragma endregion

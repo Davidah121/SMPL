@@ -15,6 +15,16 @@ Mat3f::~Mat3f()
 
 }
 
+Mat3f::Mat3f(const Mat3f& c)
+{
+	this->copy(c);
+}
+
+void Mat3f::operator=(const Mat3f& o)
+{
+	this->copy(o);
+}
+
 Mat3f Mat3f::getIdentity()
 {
 	Mat3f k = Mat3f();
@@ -58,7 +68,8 @@ Mat3f Mat3f::operator*(Mat3f other)
 
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 3; j++)
-			v[i][j] = data[i][j] * other[j][i];
+			for(int k=0; k < 3; k++)
+				v[i][j] += data[i][k] * other[k][j];
 
 	return v;
 }
@@ -129,4 +140,14 @@ void Mat3f::operator-=(Mat3f other)
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 3; j++)
 			data[i][j] -= other[i][j];
+}
+
+Vec3f Mat3f::operator*(Vec3f other)
+{
+	Vec3f v = Vec3f();
+	v.x = data[0][0] * other.x + data[0][1]*other.y + data[0][2]*other.z;
+	v.y = data[1][0] * other.x + data[1][1]*other.y + data[1][2]*other.z;
+	v.z = data[2][0] * other.x + data[2][1]*other.y + data[2][2]*other.z;
+	
+	return v;
 }

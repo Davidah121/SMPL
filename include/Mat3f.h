@@ -1,11 +1,15 @@
 #pragma once
 #include "Matrix.h"
+#include "Vec3f.h"
 
 class Mat3f : public Matrix
 {
 public:
 	Mat3f();
 	~Mat3f();
+
+	Mat3f(const Mat3f& c);
+	void operator=(const Mat3f& o);
 
 	//Object and Class Stuff
 	const Class* getClass();
@@ -29,6 +33,8 @@ public:
 
 	void operator+=(Mat3f other);
 	void operator-=(Mat3f other);
+
+	Vec3f operator*(Vec3f other);
 
 };
 

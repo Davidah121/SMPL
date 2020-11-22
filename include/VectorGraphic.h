@@ -100,6 +100,9 @@ public:
 
 	void setTransform(Mat3f m);
 	Mat3f getTransform();
+	
+protected:
+	void applyTransform();
 
 private:
 	Color fill = {0,0,0,255};
@@ -158,6 +161,10 @@ public:
 
 	void setHeight(double height);
 	double getHeight();
+
+protected:
+	void applyTransform();
+
 private:
 
 	double x = 0;
@@ -201,7 +208,12 @@ public:
 
 	void setRadius(double r);
 	double getRadius();
+
+protected:
+	void applyTransform();
+
 private:
+
 	double cx = 0;
 	double cy = 0;
 	double radius = 0;
@@ -245,6 +257,10 @@ public:
 
 	void setYRadius(double ry);
 	double getYRadius();
+
+protected:
+	void applyTransform();
+
 private:
 	double cx = 0;
 	double cy = 0;
@@ -290,6 +306,10 @@ public:
 
 	void setY2(double y2);
 	double getY2();
+
+protected:
+	void applyTransform();
+
 private:
 	double x1 = 0;
 	double x2 = 0;
@@ -338,6 +358,9 @@ public:
 	void clear();
 	int size();
 
+protected:
+	void applyTransform();
+	
 private:
 	std::vector<Vec2f> points = std::vector<Vec2f>();
 };
@@ -382,6 +405,9 @@ public:
 	void clear();
 	int size();
 
+protected:
+	void applyTransform();
+	
 private:
 	std::vector<Vec2f> points = std::vector<Vec2f>();
 };
@@ -508,10 +534,12 @@ public:
 	void addArcToRel(double rx, double ry, double angle, bool largeArcFlag, bool sweepFlag, double x, double y);
 	void addArcToRel(Vec2f radi, double angle, bool largeArcFlag, bool sweepFlag, Vec2f p);
 	
-
 	void clear();
 	int size();
 
+protected:
+	void applyTransform();
+	
 private:
 	std::vector<PathCommand> commands = std::vector<PathCommand>();
 	std::vector<Vec2f> getArcStuff(Vec2f radi, double angle, Vec2f p1, Vec2f p2);
@@ -607,6 +635,8 @@ private:
 	std::vector<VectorShape*> shapes = std::vector<VectorShape*>();
 
 	void copy(const VectorGraphic& other);
+
+	void loadNode(XmlNode* parentNode);
 
 	int width = 0;
 	int height = 0;

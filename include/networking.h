@@ -8,11 +8,11 @@
 
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 
-class networking
+class Networking
 {
 public:
-	networking();
-	~networking();
+	Networking();
+	~Networking();
 
 	static void init(bool value);
 

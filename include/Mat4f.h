@@ -1,10 +1,15 @@
 #pragma once
 #include "Matrix.h"
+#include "Vec4f.h"
 
 class Mat4f : public Matrix
 {
 public:
 	Mat4f();
+	Mat4f(const Mat4f& c);
+	void operator=(const Mat4f& o);
+
+	~Mat4f();
 
 	//Object and Class Stuff
 	const Class* getClass();
@@ -28,6 +33,8 @@ public:
 
 	void operator+=(Mat4f other);
 	void operator-=(Mat4f other);
+
+	Vec4f operator*(Vec4f other);
 
 };
 

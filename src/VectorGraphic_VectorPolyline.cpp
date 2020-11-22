@@ -30,6 +30,9 @@ void VectorPolyline::draw(Image* buffer, int globalWidth, int globalHeight)
 	Graphics::setColor(getFillColor());
 	Graphics::setFillRule(getFillMethod());
 
+	std::vector<Vec2f> prePoints = points;
+	applyTransform();
+
 	buffer->drawPolygon(points.data(), points.size());
 
 	if(getStrokeWidth()==1)
@@ -59,6 +62,8 @@ void VectorPolyline::draw(Image* buffer, int globalWidth, int globalHeight)
 			buffer->drawPolygon(new Vec2f[4]{newPoint1, newPoint2, newPoint3, newPoint4}, 4);
 		}
 	}
+	
+	points = prePoints;
 }
 
 void VectorPolyline::drawStroke(Image* buffer, int globalWidth, int globalHeight)
@@ -91,6 +96,16 @@ double VectorPolyline::getPointY(int index)
 int VectorPolyline::size()
 {
 	return points.size();
+}
+
+void VectorPolyline::applyTransform()
+{
+	for(int i=0; i<points.size(); i++)
+	{
+		Vec3f pos = Vec3f(points[i].x, points[i].y, 1.0);
+		Vec3f transPos = getTransform() * pos;
+		points[i] = Vec2f(transPos.x, transPos.y);
+	}
 }
 
 #pragma endregion

@@ -1,29 +1,29 @@
-#include "networking.h"
+#include "Networking.h"
 #include "StringTools.h"
 
-WSADATA networking::wsaData;
-SOCKET networking::sock;
-SOCKADDR_IN networking::socketAddress;
-int networking::sizeAddress = 0;
+WSADATA Networking::wsaData;
+SOCKET Networking::sock;
+SOCKADDR_IN Networking::socketAddress;
+int Networking::sizeAddress = 0;
 
-std::vector<SOCKET> networking::connections;
-std::vector<SOCKADDR_IN> networking::connectionAddress;
+std::vector<SOCKET> Networking::connections;
+std::vector<SOCKADDR_IN> Networking::connectionAddress;
 
-bool networking::TYPE_SERVER = false;
-bool networking::TYPE_CLIENT = true;
+bool Networking::TYPE_SERVER = false;
+bool Networking::TYPE_CLIENT = true;
 
-bool networking::type = false;
+bool Networking::type = false;
 
-networking::networking()
+Networking::Networking()
 {
 }
 
 
-networking::~networking()
+Networking::~Networking()
 {
 }
 
-void networking::init(bool value)
+void Networking::init(bool value)
 {
 	type = value;
 
@@ -48,7 +48,7 @@ void networking::init(bool value)
 	}
 }
 
-void networking::createSocket()
+void Networking::createSocket()
 {
 	sock = socket(AF_INET, SOCK_STREAM, NULL);
 }
@@ -60,14 +60,14 @@ void networking::createSocket(int af, int type, int protocol)
 }
 */
 
-void networking::setupSocket(int port)
+void Networking::setupSocket(int port)
 {
 	socketAddress.sin_port = htons(port);
 	socketAddress.sin_family = AF_INET;
 	socketAddress.sin_addr.S_un.S_addr = INADDR_ANY;
 }
 
-void networking::setupSocket(int port, char* ipAddress)
+void Networking::setupSocket(int port, char* ipAddress)
 {
 	socketAddress.sin_port = htons(port);
 	socketAddress.sin_family = AF_INET;
@@ -77,9 +77,9 @@ void networking::setupSocket(int port, char* ipAddress)
 	sizeAddress = sizeof(socketAddress);
 }
 
-bool networking::bindSocket()
+bool Networking::bindSocket()
 {
-	if (type == networking::TYPE_SERVER)
+	if (type == Networking::TYPE_SERVER)
 	{
 		int error = bind(sock, (SOCKADDR*)(&socketAddress), sizeAddress);
 
@@ -98,9 +98,9 @@ bool networking::bindSocket()
 	return false;
 }
 
-void networking::listen(int amount)
+void Networking::listen(int amount)
 {
-	if (type == networking::TYPE_SERVER)
+	if (type == Networking::TYPE_SERVER)
 	{
 		::listen(sock, SOMAXCONN);
 	}
@@ -110,9 +110,9 @@ void networking::listen(int amount)
 	}
 }
 
-void networking::acceptConnection()
+void Networking::acceptConnection()
 {
-	if (type == networking::TYPE_SERVER)
+	if (type == Networking::TYPE_SERVER)
 	{
 		SOCKET tempSock = NULL;
 
@@ -133,7 +133,7 @@ void networking::acceptConnection()
 	
 }
 
-void networking::closeSocket()
+void Networking::closeSocket()
 {
 	for (int i = 0; i < connections.size(); i++)
 	{
@@ -142,9 +142,9 @@ void networking::closeSocket()
 	closesocket(sock);
 }
 
-void networking::connect()
+void Networking::connect()
 {
-	if (type == networking::TYPE_CLIENT)
+	if (type == Networking::TYPE_CLIENT)
 	{
 		int status = ::connect(sock, (SOCKADDR*)(&socketAddress), sizeAddress);
 		if (status != 0)
@@ -162,7 +162,7 @@ void networking::connect()
 	}
 }
 
-void networking::sendMessage(char * message, int messageSize)
+void Networking::sendMessage(char * message, int messageSize)
 {
 	if (type == TYPE_CLIENT)
 		send(sock, message, messageSize, 0);
@@ -198,7 +198,7 @@ void networking::sendMessage(char * message, int messageSize)
 	*/
 }
 
-void networking::receiveMessage(char * buffer, int bufferSize)
+void Networking::receiveMessage(char * buffer, int bufferSize)
 {
 	
 	if (type == TYPE_CLIENT)
@@ -233,7 +233,7 @@ void networking::receiveMessage(char * buffer, int bufferSize)
 	*/
 }
 
-void networking::dispose()
+void Networking::dispose()
 {
 	int status = WSACleanup();
 	if (status != 0)

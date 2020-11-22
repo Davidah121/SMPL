@@ -170,7 +170,7 @@ void drawLoadedSvg(std::string file)
 {
     StringTools::init();
     shape.load(file);
-    shape.setTransform( MathExt::translation2D(32,0) );
+    shape.setTransform( MathExt::translation2D(0,0) );
 
     windowPointer = new WndWindow(L"Displaying Path Arcs", shape.getWidth(), shape.getHeight());
     
@@ -215,7 +215,9 @@ void testFontSVG(std::string filename)
     
     shape = *g;
 
-    windowPointer = new WndWindow("Titty", g->getWidth(), g->getHeight());
+    shape.setTransform( MathExt::translation2D(500, 500) * MathExt::scale2D(0.25, 0.25) );
+
+    windowPointer = new WndWindow("two", g->getWidth(), g->getHeight());
     windowPointer->setPaintFunction(svgTest);
     windowPointer->repaint();
 
@@ -226,16 +228,55 @@ void testFontSVG(std::string filename)
 }
 
 
+void testMatrixStuff()
+{
+    Mat3f q = MathExt::scale2D(2, 3);
+    Mat3f p = MathExt::translation2D(32, 32);
+    
+    Mat3f x = q*p;
+
+    for(int i=0; i<q.getRows(); i++)
+    {
+        for(int j=0; j<q.getCols(); j++)
+        {
+            StringTools::out << q[i][j] << ", ";
+        }
+        StringTools::println("");
+    }
+
+    for(int i=0; i<p.getRows(); i++)
+    {
+        for(int j=0; j<p.getCols(); j++)
+        {
+            StringTools::out << p[i][j] << ", ";
+        }
+        StringTools::println("");
+    }
+
+    for(int i=0; i<x.getRows(); i++)
+    {
+        for(int j=0; j<x.getCols(); j++)
+        {
+            StringTools::out << x[i][j] << ", ";
+        }
+        StringTools::println("");
+    }
+}
+
 int main(int argc, char** argv)
 {
     
     StringTools::init();
     //testImageLoader();
-    //testFontSVG("C:\\Users\\Alan\\Documents\\VSCodeProjects\\GLib\\SVGFonts\\My Font - SVG Font - 2020.8.12-21.40.21.svg");
+    testFontSVG("C:\\Users\\Alan\\Documents\\VSCodeProjects\\GLib\\SVGFonts\\My Font - SVG Font - 2020.8.12-21.40.21.svg");
 
     //testXML("C:/Users/Alan/Documents/VSCodeProjects/GLib/testFiles/XmlFiles/test2.xml");
-    drawLoadedSvg("C:/Users/Alan/Documents/VSCodeProjects/GLib/SVGs/_ionicons_svg_md-mail.svg");
+    //drawLoadedSvg("C:/Users/Alan/Documents/VSCodeProjects/GLib/SVGs/_ionicons_svg_md-mail.svg");
+    //testXML("C:/Users/Alan/Documents/VSCodeProjects/GLib/SVGs/_ionicons_svg_md-mail.svg");
     //drawLoadedSvg("C:/Users/Alan/Documents/VSCodeProjects/GLib/testFiles/SvgFiles/Five Pointed Star.svg");
+    //drawLoadedSvg("testFiles/SvgFiles/transforms.svg");
+    //testMatrixStuff();
+
     system("pause");
     return 0;
 }

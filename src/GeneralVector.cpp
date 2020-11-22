@@ -209,6 +209,11 @@ void GeneralVector::operator-=(GeneralVector o)
 	}
 }
 
+double& GeneralVector::operator[](int index)
+{
+	return values[index];
+}
+
 int GeneralVector::getSize()
 {
 	return size;

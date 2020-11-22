@@ -37,6 +37,8 @@ public:
 	void operator+=(GeneralVector o);
 	void operator-=(GeneralVector o);
 
+	double& operator[](int index);
+
 	int getSize();
 private:
 
