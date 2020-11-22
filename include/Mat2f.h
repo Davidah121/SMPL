@@ -1,11 +1,16 @@
 #pragma once
 #include "Matrix.h"
+#include "Vec2f.h"
 
 ///A special Matrix that is a 2x2 matrix. Commonly used
 class Mat2f : public Matrix
 {
 public:
 	Mat2f();
+	Mat2f(const Mat2f& c);
+	void operator=(const Mat2f& o);
+
+	~Mat2f();
 	
 	//Object and Class Stuff
 	const Class* getClass();
@@ -30,6 +35,8 @@ public:
 	void operator-=(Mat2f other);
 
 	Mat2f operator*(Mat2f other);
+
+	Vec2f operator*(Vec2f other);
 
 };
 

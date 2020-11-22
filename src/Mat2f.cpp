@@ -10,6 +10,21 @@ Mat2f::Mat2f() : Matrix(2,2)
 {
 }
 
+Mat2f::Mat2f(const Mat2f& c)
+{
+	this->copy(c);
+}
+
+void Mat2f::operator=(const Mat2f& o)
+{
+	this->copy(o);
+}
+
+Mat2f::~Mat2f()
+{
+
+}
+
 Mat2f Mat2f::getIdentity()
 {
 	Mat2f k = Mat2f();
@@ -129,4 +144,13 @@ Mat2f Mat2f::operator*(Mat2f other)
 	n[1][1] = data[0][1] * other[1][0] + data[1][1] * other[1][1];
 
 	return n;
+}
+
+Vec2f Mat2f::operator*(Vec2f other)
+{
+	Vec2f v = Vec2f();
+	v.x = data[0][0] * other.x + data[0][1]*other.y;
+	v.y = data[1][0] * other.x + data[1][1]*other.y;
+	
+	return v;
 }

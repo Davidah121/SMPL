@@ -10,6 +10,21 @@ Mat4f::Mat4f() : Matrix(4, 4)
 {
 }
 
+Mat4f::Mat4f(const Mat4f& c)
+{
+	this->copy(c);
+}
+
+void Mat4f::operator=(const Mat4f& o)
+{
+	this->copy(o);
+}
+
+Mat4f::~Mat4f()
+{
+
+}
+
 Mat4f Mat4f::getIdentity()
 {
 	Mat4f k = Mat4f();
@@ -54,7 +69,8 @@ Mat4f Mat4f::operator*(Mat4f other)
 
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++)
-			v[i][j] = data[i][j] * other[j][i];
+			for(int k=0; k < 4; k++)
+				v[i][j] += data[i][k] * other[k][j];
 
 	return v;
 }
@@ -125,4 +141,15 @@ void Mat4f::operator-=(Mat4f other)
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++)
 			data[i][j] -= other[i][j];
+}
+
+Vec4f Mat4f::operator*(Vec4f other)
+{
+	Vec4f v = Vec4f();
+	v.x = data[0][0] * other.x + data[0][1]*other.y + data[0][2]*other.z + data[0][3]*other.w;
+	v.y = data[1][0] * other.x + data[1][1]*other.y + data[1][2]*other.z + data[1][3]*other.w;
+	v.z = data[2][0] * other.x + data[2][1]*other.y + data[2][2]*other.z + data[2][3]*other.w;
+	v.w = data[3][0] * other.x + data[3][1]*other.y + data[3][2]*other.z + data[3][3]*other.w;
+	
+	return v;
 }

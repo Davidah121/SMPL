@@ -133,9 +133,15 @@ public:
 
 	static float arctan(float value);
 	static double arctan(double value);
+	
+	static float arctan2(float y, float x);
+	static double arctan2(double y, double x);
 
 	static float darctan(float value);
 	static double darctan(double value);
+
+	static float darctan2(float y, float x);
+	static double darctan2(double y, double x);
 
 	static double dirToPoint(double x, double y, double x2, double y2);
 	static double dirToPointDeg(double x, double y, double x2, double y2);

@@ -23,6 +23,14 @@ VectorCircle::~VectorCircle()
 
 void VectorCircle::draw(Image* buffer, int globalWidth, int globalHeight)
 {
+
+	double preCX, preCY, preR;
+	preCX = cx;
+	preCY = cy;
+	preR = radius;
+
+	applyTransform();
+
 	//first, calc bounding box
 	int x1 = cx-radius;
 	int x2 = cx+radius;
@@ -54,10 +62,13 @@ void VectorCircle::draw(Image* buffer, int globalWidth, int globalHeight)
 					//fill
 					buffer->drawPixel(i, j, getFillColor());
 				}
-				
 			}
 		}
 	}
+
+	cx = preCX;
+	cy = preCY;
+	radius = preR;
 }
 
 void VectorCircle::drawStroke(Image* buffer, int globalWidth, int globalHeight)
@@ -93,6 +104,20 @@ void VectorCircle::setRadius(double r)
 double VectorCircle::getRadius()
 {
 	return this->radius;
+}
+
+void VectorCircle::applyTransform()
+{
+	Vec3f pos = Vec3f(cx, cy, 1.0);
+	Vec3f r = Vec3f(radius, radius, 0.0);
+	
+	Vec3f newPos = getTransform() * pos;
+	Vec3f newR = getTransform() * r;
+
+	cx = newPos.x;
+	cy = newPos.y;
+
+	//deal with radius later
 }
 
 #pragma endregion

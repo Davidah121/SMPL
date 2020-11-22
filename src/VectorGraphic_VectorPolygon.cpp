@@ -29,6 +29,9 @@ void VectorPolygon::draw(Image* buffer, int globalWidth, int globalHeight)
 	Graphics::setColor(getFillColor());
 	Graphics::setFillRule(getFillMethod());
 
+	std::vector<Vec2f> prePoints = points;
+	applyTransform();
+
 	buffer->drawPolygon(points.data(), points.size());
 
 	if(getStrokeWidth()==1)
@@ -80,6 +83,8 @@ void VectorPolygon::draw(Image* buffer, int globalWidth, int globalHeight)
 			}
 		}
 	}
+
+	points = prePoints;
 }
 
 void VectorPolygon::drawStroke(Image* buffer, int globalWidth, int globalHeight)
@@ -112,6 +117,16 @@ double VectorPolygon::getPointY(int index)
 int VectorPolygon::size()
 {
 	return points.size();
+}
+
+void VectorPolygon::applyTransform()
+{
+	for(int i=0; i<points.size(); i++)
+	{
+		Vec3f pos = Vec3f(points[i].x, points[i].y, 1.0);
+		Vec3f transPos = getTransform() * pos;
+		points[i] = Vec2f(transPos.x, transPos.y);
+	}
 }
 
 #pragma endregion

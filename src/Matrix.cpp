@@ -28,6 +28,7 @@ Matrix::Matrix(int cols, int rows)
 		for (int i = 0; i < rows; i++)
 		{
 			data[i] = new double[cols];
+			memset(data[i], 0, sizeof(double)*cols);
 		}
 	}
 }
@@ -76,6 +77,7 @@ void Matrix::copy(const Matrix& c)
 				data[i][i2] = c.data[i][i2];
 			}
 		}
+		
 	}
 }
 
@@ -139,6 +141,52 @@ Matrix Matrix::operator*(float value)
 	}
 
 	return m;
+}
+
+Matrix Matrix::operator*(Matrix other)
+{
+	if(this->getRows() == other.getCols())
+	{
+		Matrix m = Matrix(this->getCols(), other.getRows());
+
+		for (int i = 0; i < rows; i++)
+		{
+			for (int i2 = 0; i2 < columns; i2++)
+			{
+				for(int i3=0; i3<rows; i3++)
+				{
+					m[i][i2] += data[i][i3] * other[i3][i2];
+				}
+			}
+		}
+
+		return m;
+	}
+
+	return Matrix();
+}
+
+GeneralVector Matrix::operator*(GeneralVector other)
+{
+	if(other.getSize() == this->getRows())
+	{
+		//treat vector as column matrix
+		GeneralVector v = GeneralVector(other.getSize());
+		for (int i = 0; i < rows; i++)
+		{
+			for(int i3=0; i3 < rows; i3++)
+			{
+				v[i] += data[i][i3] * other[i3];
+			}
+		}
+
+		return v;
+	}
+	else
+	{
+		return GeneralVector();
+	}
+	
 }
 
 void Matrix::operator*=(double value)

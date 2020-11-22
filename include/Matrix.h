@@ -1,5 +1,6 @@
 #pragma once
 #include "Object.h"
+#include "GeneralVector.h"
 
 class Matrix : public Object
 {
@@ -22,6 +23,9 @@ public:
 	Matrix operator*(double value);
 	Matrix operator*(int value);
 	Matrix operator*(float value);
+
+	Matrix operator*(Matrix other);
+	GeneralVector operator*(GeneralVector other);
 
 	void operator*=(double value);
 	void operator*=(int value);

@@ -218,4 +218,17 @@ double VectorRectangle::getHeight()
 	return height;
 }
 
+void VectorRectangle::applyTransform()
+{
+	Vec3f pos = getTransform() * Vec3f(x,y,1.0);
+	Vec3f scale = getTransform() * Vec3f(width,height,0.0);
+	Vec3f rScale = getTransform() * Vec3f(rx,ry,0.0);
+	
+	//Not correct
+	x = pos.x;
+	y = pos.y;
+	width = scale.x;
+	height = scale.y;
+}
+
 #pragma endregion

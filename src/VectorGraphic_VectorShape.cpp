@@ -104,4 +104,8 @@ Mat3f VectorShape::getTransform()
 	return transform;
 }
 
+void VectorShape::applyTransform()
+{
+}
+
 #pragma endregion

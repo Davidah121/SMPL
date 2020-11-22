@@ -500,14 +500,34 @@ double MathExt::arctan(double value)
 	return std::atan(value);
 }
 
+float MathExt::arctan2(float y, float x)
+{
+	return std::atan2f(y, x);
+}
+
+double MathExt::arctan2(double y, double x)
+{
+	return std::atan2(y, x);
+}
+
 float MathExt::darctan(float value)
 {
-	return std::atanf(toRad(value));
+	return toDeg(std::atanf(value));
 }
 
 double MathExt::darctan(double value)
 {
-	return std::atan(toRad(value));
+	return toDeg(std::atan(value));
+}
+
+float MathExt::darctan2(float y, float x)
+{
+	return toDeg(std::atan2f(y,x));
+}
+
+double MathExt::darctan2(double y, double x)
+{
+	return toDeg(std::atan2(y,x));
 }
 
 double MathExt::dirToPoint(double x, double y, double x2, double y2)

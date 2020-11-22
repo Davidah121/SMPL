@@ -45,6 +45,14 @@ void VectorLine::draw(Image* buffer, int globalWidth, int globalHeight)
 	 * 		around each valid point. Can extend farther than the
 	 * 		endpoints. Valid when both endpoints are the same.
 	 */
+
+	double preX1, preY1, preX2, preY2;
+	preX1 = x1;
+	preY1 = y1;
+	preX2 = x2;
+	preY2 = y2;
+
+	applyTransform();
 	
 	if(getStrokeWidth()==1)
 	{
@@ -70,6 +78,10 @@ void VectorLine::draw(Image* buffer, int globalWidth, int globalHeight)
 		buffer->drawPolygon(new Vec2f[4]{newPoint1, newPoint2, newPoint3, newPoint4}, 4);
 	}
 	
+	x1 = preX1;
+	y1 = preY1;
+	x2 = preX2;
+	y2 = preY2;
 }
 
 void VectorLine::drawStroke(Image* buffer, int globalWidth, int globalHeight)
@@ -115,6 +127,21 @@ void VectorLine::setY2(double y)
 double VectorLine::getY2()
 {
 	return y2;
+}
+
+void VectorLine::applyTransform()
+{
+	Vec3f pos1 = Vec3f(x1, y1, 1.0);
+	Vec3f pos2 = Vec3f(x2, y2, 1.0);
+	
+	Vec3f newPos1 = getTransform() * pos1;
+	Vec3f newPos2 = getTransform() * pos2;
+
+	x1 = newPos1.x;
+	y1 = newPos1.y;
+
+	x2 = newPos2.x;
+	y2 = newPos2.y;
 }
 
 #pragma endregion

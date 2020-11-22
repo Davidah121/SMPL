@@ -19,19 +19,19 @@ VectorPath::VectorPath() : VectorShape()
 
 VectorPath::VectorPath(const VectorPath& other) : VectorShape()
 {
-	StringTools::println("Copy Constructor");
+	//StringTools::println("Copy Constructor");
 	copy((VectorPath&)other);
 }
 
 void VectorPath::operator=(VectorPath& other)
 {
-	StringTools::println("Assignment Operator");
+	//StringTools::println("Assignment Operator");
 	copy(other);
 }
 
 void VectorPath::copy(VectorPath& other)
 {
-	StringTools::println("Copy Function");
+	//StringTools::println("Copy Function");
 	this->setFillColor( other.getFillColor() );
 	this->setStrokeColor( other.getStrokeColor() );
 	this->setFillMethod( other.getFillMethod() );
@@ -90,6 +90,11 @@ VectorPath::~VectorPath()
 
 void VectorPath::draw(Image* img, int globalWidth, int globalHeight)
 {
+	//copy to old vectorpath
+	VectorPath copyVal = VectorPath(*this);
+
+	applyTransform();
+
 	Vec2f currentPos;
 	Vec2f extraPos;
 	Vec2f closeTo;
@@ -478,7 +483,10 @@ void VectorPath::draw(Image* img, int globalWidth, int globalHeight)
 		
 	}
 	*/
+
+	copy(copyVal);
 }
+
 void VectorPath::drawStroke(Image* buffer, int globalWidth, int globalHeight)
 {
 }
@@ -1423,6 +1431,74 @@ std::vector<Vec2f> VectorPath::getArcStuff(Vec2f radi, double angle, Vec2f p1, V
 	}
 	
 	return {};
+}
+
+void VectorPath::applyTransform()
+{
+	for(PathCommand com : commands)
+	{
+		Vec3f pos;
+		switch ( std::tolower(com.c) )
+		{
+		case 'm':
+			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, 1.0 ));
+			com.points[0] = Vec2f(pos.x, pos.y);
+			break;
+		case 'l':
+			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, 1.0 ));
+			com.points[0] = Vec2f(pos.x, pos.y);
+			break;
+		case 'h':
+			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, 1.0 ));
+			com.points[0] = Vec2f(pos.x, pos.y);
+			break;
+		case 'v':
+			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, 1.0 ));
+			com.points[0] = Vec2f(pos.x, pos.y);
+			break;
+		case 'q':
+			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, 1.0 ));
+			com.points[0] = Vec2f(pos.x, pos.y);
+			pos = (getTransform() * Vec3f( com.points[1].x, com.points[1].y, 1.0 ));
+			com.points[1] = Vec2f(pos.x, pos.y);
+			break;
+		case 't':
+			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, 1.0 ));
+			com.points[0] = Vec2f(pos.x, pos.y);
+			break;
+		case 'c':
+			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, 1.0 ));
+			com.points[0] = Vec2f(pos.x, pos.y);
+			pos = (getTransform() * Vec3f( com.points[1].x, com.points[1].y, 1.0 ));
+			com.points[1] = Vec2f(pos.x, pos.y);
+			pos = (getTransform() * Vec3f( com.points[2].x, com.points[2].y, 1.0 ));
+			com.points[2] = Vec2f(pos.x, pos.y);
+			break;
+		case 's':
+			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, 1.0 ));
+			com.points[0] = Vec2f(pos.x, pos.y);
+			pos = (getTransform() * Vec3f( com.points[1].x, com.points[1].y, 1.0 ));
+			com.points[1] = Vec2f(pos.x, pos.y);
+			break;
+		case 'a':
+			//Do thing
+			pos = (getTransform() * Vec3f(com.points[0].x, com.points[0].y, 0.0));
+			com.points[0] = Vec2f(pos.x, pos.y);
+
+			pos = (getTransform() * Vec3f(1.0, 0.0, 0.0));
+			com.points[1] = Vec2f(MathExt::darctan2(pos.y, pos.x), com.points[1].y);
+			
+			pos = (getTransform() * Vec3f(com.points[2].x, com.points[2].y, 1.0));
+			com.points[2] = Vec2f(pos.x, pos.y);
+			break;
+		case 'z':
+			//Do nothing
+			break;
+		default:
+			break;
+		}
+
+	}
 }
 
 #pragma endregion
