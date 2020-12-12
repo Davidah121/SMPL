@@ -4,7 +4,6 @@
 #include "Compression.h"
 #include "Graphics.h"
 #include <iostream>
-#include "StringTools.h"
 
 void Image::saveGIF(std::string filename)
 {
@@ -44,7 +43,6 @@ Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
 		int startIndex = 13;
 		if (hasGlobalColorTable)
 		{
-
 			for (int i = 0; i < sizeOfGlobalTable; i++)
 			{
 				int tempIndex = i * 3;
@@ -104,7 +102,6 @@ Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
 
 				if (hasLocalTable)
 				{
-
 					for (int i = 0; i < sizeOfLocalTable; i++)
 					{
 						int tempIndex = i * 3;
@@ -148,29 +145,82 @@ Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
 					startIndex += blockSize;
 				}
 
-				std::vector<unsigned char> pixValues =
-					Compression::decompressLZW(valuesToDecompress, localTable.getSize());
-
+				std::vector<unsigned char> pixValues;
+				if(colorRes!=1)
+					pixValues = Compression::decompressLZW(valuesToDecompress, localTable.getSize());
+				else
+					pixValues = Compression::decompressLZW(valuesToDecompress, localTable.getSize()+2);
+				
 				if (localTable.getSize() != 0)
 				{
-					int j = 0;
-					while (j < pixValues.size())
+					if(interlaced==false)
 					{
-						int paletteIndex = pixValues[j];
-						Color c = localTable.getColor(paletteIndex);
-						if (paletteIndex == transparentColorIndex)
+						int j = 0;
+						while (j < pixValues.size())
 						{
-							c.alpha = 0;
+							int paletteIndex = pixValues[j];
+							Color c = localTable.getColor(paletteIndex);
+							if (paletteIndex == transparentColorIndex)
+							{
+								c.alpha = 0;
+							}
+
+							tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
+							j++;
+
+							x++;
+							if (x >= lWidth)
+							{
+								y++;
+								x = 0;
+							}
 						}
-
-						tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
-						j++;
-
-						x++;
-						if (x >= lWidth)
+					}
+					else
+					{
+						int j = 0;
+						int incVal = 8;
+						int startY = 0;
+						while (j < pixValues.size())
 						{
-							y++;
-							x = 0;
+							int paletteIndex = pixValues[j];
+							Color c = localTable.getColor(paletteIndex);
+							if (paletteIndex == transparentColorIndex)
+							{
+								c.alpha = 0;
+							}
+
+							tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
+							j++;
+
+							x++;
+							if (x >= lWidth)
+							{
+								//Interlacing Portion
+								y+=incVal;
+								if(y>=lHeight)
+								{
+									switch (startY)
+									{
+									case 0:
+										incVal=8;
+										startY=4;
+										break;
+									case 4:
+										incVal=4;
+										startY=2;
+										break;
+									case 2:
+										incVal=2;
+										startY=1;
+										break;
+									default:
+										break;
+									}
+									y = startY;
+								}
+								x = 0;
+							}
 						}
 					}
 				}

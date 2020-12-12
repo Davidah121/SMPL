@@ -27,12 +27,12 @@ void BinarySet::add(bool v)
 		this->set.push_back(0);
 	}
 
-	if (byteLocation > this->set.size())
+	if (byteLocation >= this->set.size())
 	{
 		this->set.push_back(0);
 	}
 
-	this->set[byteLocation] += (1 << (bitLocation));
+	this->set[byteLocation] += (v << (bitLocation));
 
 	bitNumber++;
 }
@@ -283,9 +283,9 @@ bool BinarySet::getBit(int index)
 int BinarySet::getBits(int indexStart, int indexEnd, bool reverse)
 {
 	int value = 0;
-	if(indexStart > 0 && indexStart < bitNumber)
+	if(indexStart >= 0 && indexStart <= bitNumber)
 	{
-		if(indexEnd > 0 && indexEnd < bitNumber)
+		if(indexEnd >= 0 && indexEnd <= bitNumber)
 		{
 			int totalSize = indexEnd-indexStart;
 			for (int i = 0; i < totalSize; i++)

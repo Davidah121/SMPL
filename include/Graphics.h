@@ -40,6 +40,8 @@ public:
 	static void drawLine(int x, int y, int x2, int y2, Image* surf = nullptr);
 	static void drawCircle(int x, int y, int radius, bool outline, Image* surf = nullptr);
 
+	static void drawImage(Image* img, int x, int y, Image* surf = nullptr);
+	
 	static void drawSprite(Image* img, int x, int y, Image* surf = nullptr);
 	static void drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH, Image* surf = nullptr);
 
