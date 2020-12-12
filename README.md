@@ -1,7 +1,14 @@
 # GLib
  A static C++ library that encompasses many of the tools I have made to make development easier.
 
-<h1>What Changed</h1>
+<h1>Library Port</h1>
+<p>This library will be available for use for Windows and Linux environments using as much of what the OS offers for the most compatibility.</p>
+<p>Much of the library will use the C++ Standard Library for maximum compatibility. This means that the library could be used for different systems other than what is listed here with some changes.</p>
+
+<h1>The Future</h1>
+<p>Potentially adding support for hardware accelerated graphics using OpenGL, DirectX, or Vulkan.</p>
+
+<h1>What Changed from the previous GLIB</h1>
 <p>Redone using a simple directory structure, <br>using Clang as the compiler, <br>and ninja as the build system along with some batch code to make my life easier.</p>
 
 <h1>Clang</h1>
