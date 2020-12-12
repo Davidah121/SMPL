@@ -498,7 +498,7 @@ void Graphics::drawCircle(int x, int y, int radius, bool outline, Image* surf)
 }
 
 //Works properly now
-void Graphics::drawSprite(Image* img, int x, int y, Image* surf)
+void Graphics::drawImage(Image* img, int x, int y, Image* surf)
 {
 	Image* otherImg;
 	if (surf == nullptr)
@@ -532,6 +532,55 @@ void Graphics::drawSprite(Image* img, int x, int y, Image* surf)
 		while (startPoint < endPoint)
 		{
 			*startPoint = *otherStartPoint;
+
+			startPoint++;
+			otherStartPoint++;
+			tX++;
+
+			if (tX >= offWidth)
+			{
+				tX = 0;
+				startPoint += addAmount;
+				otherStartPoint += otherAddAmount;
+			}
+		}
+	}
+}
+
+void Graphics::drawSprite(Image* img, int x, int y, Image* surf)
+{
+	Image* otherImg;
+	if (surf == nullptr)
+		otherImg = activeImage;
+	else
+		otherImg = surf;
+
+	if (otherImg != nullptr)
+	{
+		int tempWidth = otherImg->getWidth();
+
+		int minX = MathExt::clamp(x, 0, tempWidth);
+		int maxX = MathExt::clamp(x+img->getWidth(), 0, tempWidth);
+
+		int tempHeight = otherImg->getHeight();
+
+		int minY = MathExt::clamp(y, 0, tempHeight);
+		int maxY = MathExt::clamp(y+img->getHeight(), 0, tempHeight);
+
+		Color* startPoint = otherImg->getPixels() + minX + (minY * tempWidth);
+		Color* endPoint = otherImg->getPixels() + maxX + ((maxY-1) * tempWidth);
+		
+		int offWidth = maxX - minX;
+		int addAmount = tempWidth - offWidth;
+
+		Color* otherStartPoint = img->getPixels();
+		int otherAddAmount = 0;
+
+		int tX = 0;
+
+		while (startPoint < endPoint)
+		{
+			*startPoint = blend(*otherStartPoint, *startPoint);
 
 			startPoint++;
 			otherStartPoint++;

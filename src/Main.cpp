@@ -263,13 +263,86 @@ void testMatrixStuff()
     }
 }
 
+void paintFunction()
+{
+    if(windowPointer!=nullptr)
+    {
+        Graphics::setColor({255,204,0,255});
+        Image background = Image(img->getWidth(), img->getHeight());
+        background.clearImage();
+        background.drawSprite(img, 0, 0);
+
+        windowPointer->drawImage(&background);
+    }
+}
+void testImageDisplay()
+{
+    StringTools::out << "Enter image name: ";
+    std::string filename = StringTools::getString();
+
+    int amountOfImages = 0;
+    Image** imgArr = Image::loadImage(filename, &amountOfImages);
+
+    if(amountOfImages==0 || imgArr == nullptr)
+    {
+        StringTools::out << filename.c_str() << " was not able to be loaded." << StringTools::lineBreak;
+        return;
+    }
+    img = imgArr[0];
+
+    windowPointer = new WndWindow("Image Tester", 320,240);
+//C:\Users\Alan\Pictures\Screenshots\Screenshot (195).gif
+//C:\Users\Alan\source\repos\ImageLibrary\TestImages\PNG\Varying bit sizes and types
+//C:\Users\Alan\source\repos\ImageLibrary\TestImages\PNG\Interlacing
+
+
+    windowPointer->setPaintFunction( paintFunction );
+
+    while(windowPointer->getRunning())
+    {
+        windowPointer->repaint();
+        System::sleep(16,666);
+    }
+
+    delete windowPointer;
+    delete[] imgArr;
+}
+
+void testLZW()
+{
+    //string A B A A B A C B C C B A B C
+    std::vector<unsigned char> data = Compression::decompressLZW({0x43, 0x50, 0x90, 0x10, 0x2D, 0x21}, 3);
+
+    for(unsigned char c : data)
+    {
+        StringTools::println( c );
+    }
+
+    //string A B A A B A C B C C B A B C
+    std::string text = "ABAABACBCCBABC";
+    std::vector<unsigned char> textConv = std::vector<unsigned char>();
+    for(char c : text)
+    {
+        textConv.push_back((unsigned char) c);
+    }
+    std::vector<unsigned char> data2 = Compression::compressLZW(textConv);
+
+    for(unsigned char c : data2)
+    {
+        StringTools::println( (int)c );
+    }
+}
+
 int main(int argc, char** argv)
 {
     
     StringTools::init();
     //testImageLoader();
-    testFontSVG("C:\\Users\\Alan\\Documents\\VSCodeProjects\\GLib\\SVGFonts\\My Font - SVG Font - 2020.8.12-21.40.21.svg");
-
+    //testFontSVG("C:\\Users\\Alan\\Documents\\VSCodeProjects\\GLib\\SVGFonts\\My Font - SVG Font - 2020.8.12-21.40.21.svg");
+    
+    //testLZW();
+    testImageDisplay();
+    
     //testXML("C:/Users/Alan/Documents/VSCodeProjects/GLib/testFiles/XmlFiles/test2.xml");
     //drawLoadedSvg("C:/Users/Alan/Documents/VSCodeProjects/GLib/SVGs/_ionicons_svg_md-mail.svg");
     //testXML("C:/Users/Alan/Documents/VSCodeProjects/GLib/SVGs/_ionicons_svg_md-mail.svg");

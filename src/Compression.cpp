@@ -109,6 +109,7 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 {
 	std::vector<unsigned char> output = std::vector<unsigned char>();
 
+	//change to limit to max bit read of 12. Currently, no maximum.
 	if (size > 0)
 	{
 		//First make the base dictionary
@@ -149,8 +150,8 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 
 		//Compress
 		//First note how many bits to use
-		int amountOfBits = (int)ceil(log2(newDictionary.size()));
-		int currBits = amountOfBits;
+		int baseBits = (int)ceil(log2(newDictionary.size()));
+		int currBits = baseBits;
 
 		//Now store the values as a binary string of sorts
 		//We are using a custom class BinarySet that does the
@@ -162,7 +163,7 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 		std::string newString = "";
 		int preIndex = 0;
 
-		binData.add(clearDictionaryLocation, currBits, 0);
+		binData.add(clearDictionaryLocation, currBits);
 
 		int i = 0;
 		while(i<size)
@@ -187,7 +188,8 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 			}
 			else
 			{
-				binData.add(preIndex, currBits, 0);
+				binData.add(preIndex, currBits);
+				
 				newDictionary.push_back(newString);
 				currBits = (int)ceil(log2(newDictionary.size()));
 
@@ -196,6 +198,13 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 				lastString = "";
 			}
 
+			if(newDictionary.size() == 4096)
+			{
+				//clear Dictionary and start over
+				binData.add(clearDictionaryLocation, currBits);
+				currBits = baseBits;
+				newDictionary = baseDictionary;
+			}
 			
 		}
 
@@ -205,8 +214,7 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 		}
 
 		binData.add(EndOfDataLocation, currBits, 0);
-
-		output = binData.toBytes();
+		output = binData.toBytes(true);
 	}
 
 	return output;
@@ -266,7 +274,7 @@ std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int s
 
 		//We choose to handle the clear dictionary symbol now since it
 		//is simple to do.
-		for (int i = binData.size() - 1; i >= 0; i--)
+		for (int i = 0; i < binData.size(); i++)
 		{
 			index += ((int)binData.getBit(i) << shift);
 			shift++;
@@ -275,14 +283,17 @@ std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int s
 			{
 				if (index == clearSymLoc)
 				{
+					//StringTools::out << "ClearSym at " << i << " of " << binData.size() << StringTools::lineBreak;
+					
 					newDictionary = std::vector<std::string>(baseDictionary);
 					lastIndex = -1;
-					bitsToRead = (int)ceil(log2(baseDictionary.size()));
+					bitsToRead = baseBitsToRead;
 					shift = 0;
 					index = 0;
 				}
 				else if (index == endSymLoc)
 				{
+					//StringTools::out << "EndofSym at " << i << " of " << binData.size() << StringTools::lineBreak;
 					break;
 				}
 				else
@@ -307,11 +318,15 @@ std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int s
 							{
 								std::string newEntry = newDictionary[lastIndex] + newDictionary[index][0];
 								newDictionary.push_back(newEntry);
-								bitsToRead = (int)ceil(log2(newDictionary.size() + 1));
+								int tempBits = (int)ceil(log2(newDictionary.size() + 1));
+								if(tempBits<=12)
+									bitsToRead = tempBits;
+								else
+									newDictionary.pop_back();
 							}
 							else
 							{
-								//StringTools::out << "Error in getting last index, " << lastIndex << StringTools::lineBreak;
+								//StringTools::out << "L317 Error in getting last index, " << lastIndex << ", Index=" << index << " dictionary: " << newDictionary.size() << StringTools::lineBreak;
 								//There is an error in the data
 								break;
 							}
@@ -325,7 +340,7 @@ std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int s
 							std::string newEntry = lastEntry + lastEntry[0];
 							newDictionary.push_back(newEntry);
 							bitsToRead = (int)ceil(log2(newDictionary.size() + 1));
-
+					
 							for (int j = 0; j < newEntry.size(); j++)
 							{
 								output.push_back((unsigned char)newEntry[j]);
@@ -334,7 +349,7 @@ std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int s
 						else
 						{
 							//There is an error in the data
-							//StringTools::out << "Error in getting last index, " << lastIndex << StringTools::lineBreak;
+							//StringTools::out << "L340 Error in getting last index, " << lastIndex << ", Index=" << index << " dictionary: " << newDictionary.size() << StringTools::lineBreak;
 							break;
 						}
 					}

@@ -91,6 +91,13 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 				break;
 			}
 
+			if(interlace==true)
+			{
+				//invalid for now
+				valid = false;
+				break;
+			}
+
 			tImg = new Image(width, height);
 			
 		}
@@ -226,7 +233,8 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 		{
 			moveBackVal = bitDepth/8;
 		}
-		int scanLineBytes = (tImg->getWidth() * (8.0/bitDepth));
+
+		int scanLineBytes = (tImg->getWidth() * (bitDepth/8.0));
 
 		switch(colorType)
 		{
@@ -260,9 +268,8 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 			int filterMethod = decompressedData[index];
 			index++;
 			
-			//StringTools::out << "FilterMethod: " <<filterMethod<<StringTools::lineBreak;
-
 			#pragma region unfilterScanLine
+			StringTools::out << "FilterMethod : " << filterMethod << StringTools::lineBreak;
 
 			if(filterMethod==0)
 			{
@@ -391,6 +398,7 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 			Color* rawPixs = tImg->getPixels();
 			if(interlace==false)
 			{
+				
 				if(colorType==0)
 				{
 					//Greyscale
@@ -399,22 +407,24 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 
 					if(bitDepth<8)
 					{
+						StringTools::out << "Color type 0 with bitdepth < 8" << StringTools::lineBreak;
+			
+						BinarySet pixelBits = BinarySet();
+						pixelBits.setValues(scanLine.data(), scanLineBytes);
+						
 						//Increase Color Amount
-						double ICA = 255.0/bitDepth;
-
-						for(int i = 0; i<scanLine.size(); i++)
+						double ICA = 255.0 / ((2<<(bitDepth-1)) - 1);
+						
+						for(int i = 0; i<pixelBits.size(); i+=bitDepth)
 						{
-							for(int bit=0; bit<8; bit+=bitDepth)
-							{
-								Color c;
-								c.red = (unsigned char)(ICA * (scanLine[i]>>(7-bit) & bitDepth) );
-								c.green = c.red;
-								c.blue = c.red;
-								c.alpha = 255;
+							Color c;
+							c.red = (unsigned char)(ICA * pixelBits.getBits(i, i + bitDepth));
+							c.green = c.red;
+							c.blue = c.red;
+							c.alpha = 255;
 
-								rawPixs[rawIndex] = c;
-								rawIndex++;
-							}
+							rawPixs[rawIndex] = c;
+							rawIndex++;
 						}
 					}
 					else if(bitDepth==8)
@@ -461,16 +471,16 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 					int paletteIndex = 0;
 					if(bitDepth<8)
 					{
-						for(int i = 0; i<scanLine.size(); i++)
+						BinarySet pixelBits = BinarySet();
+						pixelBits.setValues(scanLine.data(), scanLineBytes);
+						
+						for(int i = 0; i<pixelBits.size(); i+=bitDepth)
 						{
-							for(int bit=0; bit<8; bit+=bitDepth)
-							{
-								paletteIndex = (scanLine[i]>>(7-bit) & bitDepth);
+							paletteIndex = pixelBits.getBits(i, i+bitDepth);
 
-								Color c = p.getColor(paletteIndex);
-								rawPixs[rawIndex] = c;
-								rawIndex++;
-							}
+							Color c = p.getColor(paletteIndex);
+							rawPixs[rawIndex] = c;
+							rawIndex++;
 						}
 					}
 					else if(bitDepth==8)
@@ -537,6 +547,10 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 		}
 	}
 
+	for(int i=0; i<32; i++)
+	{
+		//StringTools::out << tImg->getPixel(i, 0).red << ", " << tImg->getPixel(i, 0).alpha << StringTools::lineBreak;
+	}
 	if(*amountOfImages == 1)
 	{
 		images = new Image* [1]{tImg};
