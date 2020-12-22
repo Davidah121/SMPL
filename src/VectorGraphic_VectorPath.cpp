@@ -14,7 +14,7 @@ const Class* VectorPath::getClass()
 
 VectorPath::VectorPath() : VectorShape()
 {
-	
+	addMoveTo(0,0);
 }
 
 VectorPath::VectorPath(const VectorPath& other) : VectorShape()
@@ -134,23 +134,27 @@ void VectorPath::draw(Image* img, int globalWidth, int globalHeight)
 				break;
 			case 'H':
 				//no drawing
-				drawHorizontalTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
-				currentPos.x = commands[i].points->x;
+				//drawHorizontalTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
+				drawLineTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
+				currentPos += *(commands[i].points);
 				break;
 			case 'h':
 				//no drawing
-				drawHorizontalTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
-				currentPos.x += commands[i].points->x;
+				//drawHorizontalTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
+				drawLineTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
+				currentPos += *(commands[i].points);
 				break;
 			case 'V':
 				//record
-				drawVerticalTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
-				currentPos.y = commands[i].points->y;
+				//drawVerticalTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
+				drawLineTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
+				currentPos += *(commands[i].points);
 				break;
 			case 'v':
 				//record
-				drawVerticalTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
-				currentPos.y += commands[i].points->y;
+				//drawVerticalTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
+				drawLineTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
+				currentPos += *(commands[i].points);
 				break;
 			case 'Q':
 				//record
@@ -352,27 +356,23 @@ void VectorPath::draw(Image* img, int globalWidth, int globalHeight)
 				for(int i=0; i<actualSize; i+=2)
 				{
 					//fill between spots
-					double fracStartX = 1-MathExt::frac(scanLines[j][i].xValue);
-					double fracEndX = MathExt::frac(scanLines[j][i+1].xValue);
-					
-					int startX = MathExt::floor(scanLines[j][i].xValue);
-					int endX = MathExt::floor(scanLines[j][i+1].xValue) + 1;
+					double startX = scanLines[j][i].xValue;
+					double endX = scanLines[j][i+1].xValue;
 
-					int fillX = startX;
-					Color middleCol = getFillColor();
-					Color startLineCol = middleCol;
-					Color endLineCol = middleCol;
-					startLineCol.alpha = (unsigned char)(startLineCol.alpha*fracStartX);
-					endLineCol.alpha = (unsigned char)(endLineCol.alpha*fracEndX);
+					int fillX = MathExt::floor(scanLines[j][i].xValue);
+					double yVal = j+minY;
+					int intYVal = (int)j+minY;
+
+					Color col = getFillColor();
 					
-					img->drawPixel(startX, j+minY, startLineCol);
+					img->drawPixel(startX, yVal, col);
 					fillX++;
 					while(fillX < endX)
 					{
-						img->drawPixel(fillX, j+minY, middleCol);
+						img->drawPixel(fillX, intYVal, col);
 						fillX++;
 					}
-					img->drawPixel(endX, j+minY, endLineCol);
+					img->drawPixel(endX, yVal, col);
 				}
 			}
 		}
@@ -390,13 +390,13 @@ void VectorPath::draw(Image* img, int globalWidth, int globalHeight)
 				for(int i=0; i<scanLines[j].size()-1; i++)
 				{
 					//fill between spots
-					double fracStartX = 1-MathExt::frac(scanLines[j][i].xValue);
-					double fracEndX = MathExt::frac(scanLines[j][i+1].xValue);
-					
-					int startX = MathExt::floor(scanLines[j][i].xValue);
-					int endX = MathExt::floor(scanLines[j][i+1].xValue) + 1;
+					double startX = scanLines[j][i].xValue;
+					double endX = scanLines[j][i+1].xValue;
 
 					bool dir = scanLines[j][i].isYPositive;
+
+					double yVal = j+minY;
+					int intYVal = (int)j+minY;
 
 					if(dir == true)
 					{
@@ -412,20 +412,16 @@ void VectorPath::draw(Image* img, int globalWidth, int globalHeight)
 					if(passCounter!=0)
 					{
 						int fillX = startX;
-						Color middleCol = getFillColor();
-						Color startLineCol = middleCol;
-						Color endLineCol = middleCol;
-						startLineCol.alpha = (unsigned char)(startLineCol.alpha*fracStartX);
-						endLineCol.alpha = (unsigned char)(endLineCol.alpha*fracEndX);
+						Color col = getFillColor();
 						
-						img->drawPixel(startX, j+minY, startLineCol);
+						img->drawPixel(startX, yVal, col);
 						fillX++;
 						while(fillX < endX)
 						{
-							img->drawPixel(fillX, j+minY, middleCol);
+							img->drawPixel(fillX, intYVal, col);
 							fillX++;
 						}
-						img->drawPixel(endX, j+minY, endLineCol);
+						img->drawPixel(endX, yVal, col);
 					}
 				}
 			}
@@ -1438,46 +1434,50 @@ void VectorPath::applyTransform()
 	for(PathCommand com : commands)
 	{
 		Vec3f pos;
+		double translationToo = 1.0;
+		if( std::islower(com.c) )
+			translationToo = 0.0;
+
 		switch ( std::tolower(com.c) )
 		{
 		case 'm':
-			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, 1.0 ));
+			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
 			com.points[0] = Vec2f(pos.x, pos.y);
 			break;
 		case 'l':
-			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, 1.0 ));
+			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
 			com.points[0] = Vec2f(pos.x, pos.y);
 			break;
 		case 'h':
-			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, 1.0 ));
+			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
 			com.points[0] = Vec2f(pos.x, pos.y);
 			break;
 		case 'v':
-			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, 1.0 ));
+			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
 			com.points[0] = Vec2f(pos.x, pos.y);
 			break;
 		case 'q':
-			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, 1.0 ));
+			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
 			com.points[0] = Vec2f(pos.x, pos.y);
-			pos = (getTransform() * Vec3f( com.points[1].x, com.points[1].y, 1.0 ));
+			pos = (getTransform() * Vec3f( com.points[1].x, com.points[1].y, translationToo ));
 			com.points[1] = Vec2f(pos.x, pos.y);
 			break;
 		case 't':
-			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, 1.0 ));
+			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
 			com.points[0] = Vec2f(pos.x, pos.y);
 			break;
 		case 'c':
-			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, 1.0 ));
+			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
 			com.points[0] = Vec2f(pos.x, pos.y);
-			pos = (getTransform() * Vec3f( com.points[1].x, com.points[1].y, 1.0 ));
+			pos = (getTransform() * Vec3f( com.points[1].x, com.points[1].y, translationToo ));
 			com.points[1] = Vec2f(pos.x, pos.y);
-			pos = (getTransform() * Vec3f( com.points[2].x, com.points[2].y, 1.0 ));
+			pos = (getTransform() * Vec3f( com.points[2].x, com.points[2].y, translationToo ));
 			com.points[2] = Vec2f(pos.x, pos.y);
 			break;
 		case 's':
-			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, 1.0 ));
+			pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
 			com.points[0] = Vec2f(pos.x, pos.y);
-			pos = (getTransform() * Vec3f( com.points[1].x, com.points[1].y, 1.0 ));
+			pos = (getTransform() * Vec3f( com.points[1].x, com.points[1].y, translationToo ));
 			com.points[1] = Vec2f(pos.x, pos.y);
 			break;
 		case 'a':
@@ -1488,7 +1488,7 @@ void VectorPath::applyTransform()
 			pos = (getTransform() * Vec3f(1.0, 0.0, 0.0));
 			com.points[1] = Vec2f(MathExt::darctan2(pos.y, pos.x), com.points[1].y);
 			
-			pos = (getTransform() * Vec3f(com.points[2].x, com.points[2].y, 1.0));
+			pos = (getTransform() * Vec3f(com.points[2].x, com.points[2].y, translationToo));
 			com.points[2] = Vec2f(pos.x, pos.y);
 			break;
 		case 'z':

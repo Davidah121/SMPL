@@ -214,7 +214,7 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 		}
 
 		binData.add(EndOfDataLocation, currBits, 0);
-		output = binData.toBytes(true);
+		output = binData.toBytes();
 	}
 
 	return output;
@@ -691,7 +691,7 @@ std::vector<unsigned char> Compression::compressLZSS(unsigned char* data, int si
 
 	//bin.printVals(true);
 	
-	return bin.toBytes(true);
+	return bin.toBytes();
 }
 
 std::vector<unsigned char> Compression::decompressLZSS(std::vector<unsigned char> data, int maxBufferSize)
@@ -830,7 +830,7 @@ std::vector<unsigned char> Compression::compressHuffman(unsigned char* data, int
 		output.add(code, length, 32-length);
 	}
 
-	return output.toBytes(true);
+	return output.toBytes();
 }
 
 std::vector<unsigned char> Compression::decompressHuffman(std::vector<unsigned char> data, int messageSize, BinaryTree<HuffmanNode>* tree)

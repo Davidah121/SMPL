@@ -165,6 +165,11 @@ void Image::drawPolygon(Vec2f* points, int size)
 	Graphics::drawPolygon(points, size, this);
 }
 
+void Image::drawImage(Image* img, int x, int y)
+{
+	Graphics::drawImage(img, x, y, this);
+}
+
 void Image::drawSprite(Image* img, int x, int y)
 {
 	Graphics::drawSprite(img, x, y, this);
@@ -181,6 +186,11 @@ void Image::drawText(std::string str, int x, int y)
 }
 
 void Image::drawPixel(int x, int y, Color c)
+{
+	Graphics::drawPixel(x, y, c, this);
+}
+
+void Image::drawPixel(double x, double y, Color c)
 {
 	Graphics::drawPixel(x, y, c, this);
 }

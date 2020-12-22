@@ -177,8 +177,9 @@ public:
 	static double distanceTo(GeneralVector p1, GeneralVector p2);
 
 	//2D transformations
-	static Mat3f rotation2D(double rotation, double x = 0, double y = 0);
-	static Mat3f rotation2D(double rotation, Vec2f pos = Vec2f());
+	static Mat3f rotation2D(double rotation);
+	static Mat3f rotation2D(double rotation, double x, double y);
+	static Mat3f rotation2D(double rotation, Vec2f pos);
 	
 	static Mat3f translation2D(double x, double y);
 	static Mat3f translation2D(Vec2f trans);

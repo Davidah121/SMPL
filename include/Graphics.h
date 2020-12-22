@@ -33,6 +33,7 @@ public:
 	//Drawing functions
 	static void clearImage(Image* surf = nullptr);
 	static void drawPixel(int x, int y, Color c, Image* surf = nullptr);
+	static void drawPixel(double x, double y, Color c, Image* surf = nullptr);
 
 	static Color blend(Color c1, Color c2);
 
