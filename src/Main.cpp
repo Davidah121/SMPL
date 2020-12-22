@@ -162,6 +162,9 @@ void svgTest()
 
         shape.draw();
 
+        Graphics::setColor({0,0,0,255});
+        shape.getImageBuffer()->drawCircle(25, 24, 2, false);
+
         windowPointer->drawImage(shape.getImageBuffer());
     }
 }
@@ -170,7 +173,17 @@ void drawLoadedSvg(std::string file)
 {
     StringTools::init();
     shape.load(file);
-    shape.setTransform( MathExt::translation2D(0,0) );
+    shape.setTransform(MathExt::rotation2D( MathExt::toRad(90.0), 51.0/2, 48.0/2) );
+    Mat3f viewBoxMat = shape.getTransform();
+
+    for(int i=0; i<3; i++)
+    {
+        for(int i2=0; i2<3; i2++)
+        {
+            StringTools::out << viewBoxMat[i][i2] << ", ";
+        }
+        StringTools::out << StringTools::lineBreak;
+    }
 
     windowPointer = new WndWindow(L"Displaying Path Arcs", shape.getWidth(), shape.getHeight());
     

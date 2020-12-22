@@ -769,6 +769,11 @@ double MathExt::distanceTo(GeneralVector p1, GeneralVector p2)
 }
 
 #pragma region Transformations_2D
+Mat3f MathExt::rotation2D(double rotation)
+{
+	return rotation2D(rotation, 0, 0);
+}
+
 Mat3f MathExt::rotation2D(double rotation, double x, double y)
 {
 	return rotation2D(rotation, Vec2f(x,y));
@@ -779,17 +784,18 @@ Mat3f MathExt::rotation2D(double rotation, Vec2f pos)
 	Mat3f mat = Mat3f();
 
 	mat[0][0] = MathExt::cos(rotation);
-	mat[0][1] = -MathExt::sin(rotation);
-	mat[0][2] = 0;
+	mat[0][1] = MathExt::sin(rotation);
+	mat[0][2] = -pos.x*MathExt::cos(rotation) - pos.y*MathExt::sin(rotation) + pos.x;
 
-	mat[1][0] = MathExt::sin(rotation);
+	mat[1][0] = -MathExt::sin(rotation);
 	mat[1][1] = MathExt::cos(rotation);
-	mat[1][2] = 0;
+	mat[1][2] = pos.x*MathExt::sin(rotation) - pos.y*MathExt::cos(rotation) + pos.y;
 
-	mat[2][0] = -pos.x*MathExt::cos(rotation) + pos.y*MathExt::sin(rotation) + pos.x;
-	mat[2][1] = -pos.x*MathExt::sin(rotation) - pos.y*MathExt::cos(rotation) + pos.y;
+	mat[2][0] = 0;
+	mat[2][1] = 0;
 	mat[2][2] = 1;
 	
+
 	return mat;
 }
 	

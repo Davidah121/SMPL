@@ -37,6 +37,34 @@ void Graphics::clearImage(Image* surf)
 	}
 }
 
+void Graphics::drawPixel(double x, double y, Color c, Image* surf)
+{
+	//convert into four separate pixels
+	Vec2f p1 = Vec2f(floor(x), floor(y));
+	Vec2f p2 = Vec2f(ceil(x), ceil(y));
+
+	float xAlpha = 1.0f - (x-p1.x);
+	float yAlpha = 1.0f - (y-p1.y);
+
+	Color c1, c2, c3, c4;
+	c1 = c;
+	c1.alpha = (unsigned char) (c1.alpha * xAlpha * yAlpha);
+
+	c2 = c;
+	c2.alpha = (unsigned char) (c2.alpha * (1-xAlpha) * yAlpha);
+	
+	c3 = c;
+	c3.alpha = (unsigned char) (c3.alpha * (1-xAlpha) * (1-yAlpha));
+	
+	c4 = c;
+	c4.alpha = (unsigned char) (c4.alpha * xAlpha * (1-yAlpha));
+	
+	drawPixel( (int)p1.x, (int)p1.y, c1, surf);
+	drawPixel( (int)p2.x, (int)p1.y, c2, surf);
+	drawPixel( (int)p2.x, (int)p2.y, c3, surf);
+	drawPixel( (int)p1.x, (int)p2.y, c4, surf);
+}
+
 void Graphics::drawPixel(int x, int y, Color c, Image* surf)
 {
 	Image* otherImg;

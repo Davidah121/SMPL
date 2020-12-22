@@ -35,7 +35,7 @@ public:
 	bool getBit(int index);
 	int getBits(int indexStart, int indexEnd, bool reverse = false);
 	
-	std::vector<unsigned char> toBytes(bool reverse=false);
+	std::vector<unsigned char> toBytes();
 
 	int size();
 	void printVals(bool reverse=false);

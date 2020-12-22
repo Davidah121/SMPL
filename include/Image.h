@@ -44,11 +44,13 @@ public:
 	void drawCircle(int x, int y, int radius, bool outline);
 	void drawPolygon(Vec2f* points, int size);
 
+	void drawImage(Image* img, int x, int y);
 	void drawSprite(Image* img, int x, int y);
 	void drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH);
 
 	void drawText(std::string str, int x, int y);
 	void drawPixel(int x, int y, Color c);
+	void drawPixel(double x, double y, Color c);
 
 	void saveBMP(std::string filename);
 	void saveGIF(std::string filename);
