@@ -24,6 +24,8 @@ public:
 	void addNewColor(Color c);
 	Color getColor(int index);
 	Color* getColorRef(int index);
+	Color getClosestColor(Color c);
+	int getClosestColorIndex(Color c);
 	int getSize();
 	std::vector<Color> getPalette();
 	std::vector<Color>* getPaletteRef();
@@ -34,7 +36,5 @@ public:
 
 private:
 	std::vector<Color> palette = std::vector<Color>();
-
-	static Color* medianCutColors(Color* colorArray, int size);
 };
 

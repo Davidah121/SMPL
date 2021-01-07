@@ -25,8 +25,8 @@ public:
 	static std::vector<unsigned char> decompressLZW(std::vector<unsigned char> data, int dictionarySize);
 	static std::vector<unsigned char> decompressLZW(unsigned char* data, int size, int dictionarySize);
 
-	static std::vector<unsigned char> compressLZW(std::vector<unsigned char> data);
-	static std::vector<unsigned char> compressLZW(unsigned char* data, int size);
+	static std::vector<unsigned char> compressLZW(std::vector<unsigned char> data, int codeSize = -1);
+	static std::vector<unsigned char> compressLZW(unsigned char* data, int size, int codeSize = -1);
 
 	static std::vector<unsigned char> compressLZ77(std::vector<unsigned char> data, int maxBufferSize);
 	static std::vector<unsigned char> compressLZ77(unsigned char* data, int size, int maxBufferSize);

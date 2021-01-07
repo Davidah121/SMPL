@@ -98,7 +98,9 @@ void SimpleXml::saveNode(SimpleFile* f, XmlNode* node)
     std::string line = "";
 
     line += "<";
-    if(node->childNodes.size()==0 && node->attributes.size()==0)
+
+    //has no child nodes, no attributes, and no value
+    if(node->childNodes.size()==0 && node->attributes.size()==0 && node->value=="")
     {
         line+="/";
     }
@@ -114,21 +116,29 @@ void SimpleXml::saveNode(SimpleFile* f, XmlNode* node)
         line += "\"";
     }
     
-    if(node->childNodes.size()==0 && node->attributes.size()>0)
+    //has no child nodes and no value, but has at least one attribute
+    if(node->childNodes.size()==0 && node->attributes.size()>0 && node->value=="")
     {
         line += "/";
     }
     line += ">";
 
     f->writeString(line);
-    f->writeLineBreak();
 
+    if(node->value=="" && node->childNodes.size()>0)
+        f->writeLineBreak();
+    else if(node->value!="")
+        f->writeString(node->value);
+    else
+        f->writeLineBreak();
+    
+    
     for (XmlNode* v : node->childNodes)
     {
         saveNode(f, v);
     }
 
-    if(node->childNodes.size()!=0)
+    if(node->childNodes.size()>0 || node->value!="")
     {
         line = "</";
         line += node->title;

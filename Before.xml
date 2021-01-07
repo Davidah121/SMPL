@@ -1,0 +1,97 @@
+<NeuralNetwork>
+<Layer LayerNumber="0">
+<LayerBias>
+<BiasValue BiasNumber="0">-0.750500</BiasValue>
+<BiasValue BiasNumber="1">-4.922500</BiasValue>
+<BiasValue BiasNumber="2">1.737500</BiasValue>
+<BiasValue BiasNumber="3">-0.562500</BiasValue>
+</LayerBias>
+<Neuron NeuronNumber="0">
+<NeuronWeights>
+<WeightValue WeightNumber="0">-5.273000</WeightValue>
+<WeightValue WeightNumber="1">4.815000</WeightValue>
+<WeightValue WeightNumber="2">1.175000</WeightValue>
+<WeightValue WeightNumber="3">5.375000</WeightValue>
+</NeuronWeights>
+</Neuron>
+<Neuron NeuronNumber="1">
+<NeuronWeights>
+<WeightValue WeightNumber="0">5.451000</WeightValue>
+<WeightValue WeightNumber="1">-7.405000</WeightValue>
+<WeightValue WeightNumber="2">5.275000</WeightValue>
+<WeightValue WeightNumber="3">-0.125000</WeightValue>
+</NeuronWeights>
+</Neuron>
+</Layer>
+<Layer LayerNumber="1">
+<LayerBias>
+<BiasValue BiasNumber="0">-1.058000</BiasValue>
+<BiasValue BiasNumber="1">-1.010000</BiasValue>
+<BiasValue BiasNumber="2">1.550000</BiasValue>
+<BiasValue BiasNumber="3">4.750000</BiasValue>
+</LayerBias>
+<Neuron NeuronNumber="0">
+<NeuronWeights>
+<WeightValue WeightNumber="0">3.701000</WeightValue>
+<WeightValue WeightNumber="1">8.845000</WeightValue>
+<WeightValue WeightNumber="2">-8.475000</WeightValue>
+<WeightValue WeightNumber="3">-3.875000</WeightValue>
+</NeuronWeights>
+</Neuron>
+<Neuron NeuronNumber="1">
+<NeuronWeights>
+<WeightValue WeightNumber="0">-3.701000</WeightValue>
+<WeightValue WeightNumber="1">-8.845000</WeightValue>
+<WeightValue WeightNumber="2">8.475000</WeightValue>
+<WeightValue WeightNumber="3">3.875000</WeightValue>
+</NeuronWeights>
+</Neuron>
+<Neuron NeuronNumber="2">
+<NeuronWeights>
+<WeightValue WeightNumber="0">-9.781000</WeightValue>
+<WeightValue WeightNumber="1">-6.445000</WeightValue>
+<WeightValue WeightNumber="2">-3.525000</WeightValue>
+<WeightValue WeightNumber="3">3.875000</WeightValue>
+</NeuronWeights>
+</Neuron>
+<Neuron NeuronNumber="3">
+<NeuronWeights>
+<WeightValue WeightNumber="0">-3.137000</WeightValue>
+<WeightValue WeightNumber="1">-6.265000</WeightValue>
+<WeightValue WeightNumber="2">-1.425000</WeightValue>
+<WeightValue WeightNumber="3">8.375000</WeightValue>
+</NeuronWeights>
+</Neuron>
+</Layer>
+<Layer LayerNumber="2">
+<LayerBias>
+<BiasValue BiasNumber="0">-2.773500</BiasValue>
+</LayerBias>
+<Neuron NeuronNumber="0">
+<NeuronWeights>
+<WeightValue WeightNumber="0">-2.838000</WeightValue>
+</NeuronWeights>
+</Neuron>
+<Neuron NeuronNumber="1">
+<NeuronWeights>
+<WeightValue WeightNumber="0">-1.306000</WeightValue>
+</NeuronWeights>
+</Neuron>
+<Neuron NeuronNumber="2">
+<NeuronWeights>
+<WeightValue WeightNumber="0">2.552000</WeightValue>
+</NeuronWeights>
+</Neuron>
+<Neuron NeuronNumber="3">
+<NeuronWeights>
+<WeightValue WeightNumber="0">-8.175000</WeightValue>
+</NeuronWeights>
+</Neuron>
+</Layer>
+<Layer LayerNumber="3">
+</LayerBias>
+<Neuron NeuronNumber="0">
+</NeuronWeights>
+</Neuron>
+</Layer>
+</NeuralNetwork>

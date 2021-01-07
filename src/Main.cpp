@@ -13,6 +13,9 @@
 #include "SimpleXml.h"
 #include "VectorFont.h"
 
+#include "LCG.h"
+#include "NeuralNetwork.h"
+
 /**
  * Purpose:
  *      Provide a port to other systems
@@ -303,7 +306,7 @@ void testImageDisplay()
     }
     img = imgArr[0];
 
-    windowPointer = new WndWindow("Image Tester", 320,240);
+    windowPointer = new WndWindow("Image Tester", 1000,1000);
 //C:\Users\Alan\Pictures\Screenshots\Screenshot (195).gif
 //C:\Users\Alan\source\repos\ImageLibrary\TestImages\PNG\Varying bit sizes and types
 //C:\Users\Alan\source\repos\ImageLibrary\TestImages\PNG\Interlacing
@@ -317,6 +320,7 @@ void testImageDisplay()
         System::sleep(16,666);
     }
 
+    img->saveGIF("File.gif");
     delete windowPointer;
     delete[] imgArr;
 }
@@ -346,9 +350,136 @@ void testLZW()
     }
 }
 
+void testNeuralNetwork()
+{
+    //neural network to recognize when a point is inside a circle of radius 1.
+
+    srand(time(NULL));
+    StringTools::println("Creating Network");
+    /*
+    NeuralNetwork network = NeuralNetwork();
+    network.addLayerToEnd(2); //Input Layer
+    network.addLayerToEnd(2); //Hidden Layer
+    network.addLayerToEnd(2); //Output Layer
+
+    network.resetNetwork(); //Set all of the weights and bias values
+    network.setLearningRate(0.5);
+
+    NeuralLayer* nLayer = network.getStartLayer();
+    nLayer->getNeuron(0).setWeight(0, 0.15);
+    nLayer->getNeuron(0).setWeight(1, 0.25);
+    nLayer->getNeuron(1).setWeight(0, 0.20);
+    nLayer->getNeuron(1).setWeight(1, 0.3);
+    nLayer->setBiasValue(0, 0.35);
+    nLayer->setBiasValue(1, 0.35);
+    nLayer = nLayer->getNextLayer();
+    
+    nLayer->getNeuron(0).setWeight(0, 0.40);
+    nLayer->getNeuron(0).setWeight(1, 0.50);
+    nLayer->getNeuron(1).setWeight(0, 0.45);
+    nLayer->getNeuron(1).setWeight(1, 0.55);
+    nLayer->setBiasValue(0, 0.6);
+    nLayer->setBiasValue(1, 0.6);
+
+    std::vector< std::vector<double> > trainingInputs = std::vector< std::vector<double> >();
+    std::vector< std::vector<double> > trainingOutputs = std::vector< std::vector<double> >();
+
+    for(int i=0; i<1; i++)
+    {
+        trainingInputs.push_back( {0.05,0.1} );
+        trainingOutputs.push_back( {0.01,0.99} );
+    }
+    */
+
+    NeuralNetwork network = NeuralNetwork();
+    network.addLayerToEnd(2); //Input Layer
+    network.addLayerToEnd(4); //Hidden Layer
+    network.addLayerToEnd(4); //Hidden Layer
+    network.addLayerToEnd(1); //Output Layer
+
+    network.resetNetwork(); //Set all of the weights and bias values
+    network.setLearningRate(0.5);
+    network.exportTestInformation("Before.xml");
+
+    std::vector< std::vector<double> > trainingInputs = std::vector< std::vector<double> >();
+    std::vector< std::vector<double> > trainingOutputs = std::vector< std::vector<double> >();
+
+    for(int i=0; i<10; i++)
+    {
+        trainingInputs.push_back( {0,0} );
+        trainingOutputs.push_back( {0} );
+    }
+
+    StringTools::println("Training Network");
+    
+    int modV = 1000000;
+    LCG r = LCG(rand(), 12354, 0, modV);
+
+    StringTools::out << "output for 0,0: " << network.run({0,0})[0] << StringTools::lineBreak;
+    
+    for(int i=0; i<100000; i++)
+    {
+        //fill trainingInputs and Outputs
+        for(int i2=0; i2<1; i2++)
+        {
+            double w1 = (double)r.get()/modV;
+            double w2 = (double)r.get()/modV;
+
+            double nx = (w1-0.5)*3;
+            double ny = (w2-0.5)*3;
+
+            if(i==0)
+            {
+                StringTools::out << w1 << ", " << w2 << ", " << nx << ", " << ny << StringTools::lineBreak;
+                StringTools::out << MathExt::distanceTo(0,0,nx,ny) << StringTools::lineBreak;
+            }
+
+            double r = (MathExt::distanceTo(0,0,nx,ny) <= 1) ? 1.0 : 0.0;
+            
+            trainingInputs[i2][0] = w1;
+            trainingInputs[i2][1] = w2;
+            trainingOutputs[i2][0] = r;
+        }
+
+        network.train(trainingInputs, trainingOutputs);
+    }
+
+
+    network.exportTestInformation("After.xml");
+    
+    StringTools::println("Testing Network");
+    while(true)
+    {
+        StringTools::println("Enter the x and y coordinates to check if in circle of radius 1 (use commas). Empty string to quit.");
+        StringTools::println("Note that the maximum and minimum values allowed are -1.5 and 1.5 respectfully.");
+
+        std::string input = StringTools::getString();
+
+        if(input=="")
+        {
+            StringTools::println("\n");
+            break;
+        }
+        else
+        {
+            std::vector<std::string> split = StringTools::splitString(input, ',');
+            if(split.size()==2)
+            {
+                double x = MathExt::clamp( (std::stod(split[0]) + 1.5) / 3.0, 0.0, 1.0);
+                double y = MathExt::clamp( (std::stod(split[1]) + 1.5) / 3.0, 0.0, 1.0);
+
+                std::vector<double> inputs = {x, y};
+                std::vector<double> output = network.run(inputs);
+
+                StringTools::out << "The network states that it believes that the point is in the circle with " << output[0] << " probability.\n" << StringTools::lineBreak;
+            }
+        }
+    }
+
+}
+
 int main(int argc, char** argv)
 {
-    
     StringTools::init();
     //testImageLoader();
     //testFontSVG("C:\\Users\\Alan\\Documents\\VSCodeProjects\\GLib\\SVGFonts\\My Font - SVG Font - 2020.8.12-21.40.21.svg");
@@ -362,6 +493,8 @@ int main(int argc, char** argv)
     //drawLoadedSvg("C:/Users/Alan/Documents/VSCodeProjects/GLib/testFiles/SvgFiles/Five Pointed Star.svg");
     //drawLoadedSvg("testFiles/SvgFiles/transforms.svg");
     //testMatrixStuff();
+
+    //testNeuralNetwork();
 
     system("pause");
     return 0;
