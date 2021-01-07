@@ -100,12 +100,13 @@ std::vector<unsigned char> Compression::decompressRLE(unsigned char* data, int s
 
 #pragma region LZW
 
-std::vector<unsigned char> Compression::compressLZW(std::vector<unsigned char> data)
+std::vector<unsigned char> Compression::compressLZW(std::vector<unsigned char> data, int codeSize)
 {
-	return Compression::compressLZW(data.data(), data.size());
+	return Compression::compressLZW(data.data(), data.size(), codeSize);
 }
 
-std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int size)
+
+std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int size, int codeSize)
 {
 	std::vector<unsigned char> output = std::vector<unsigned char>();
 
@@ -115,29 +116,43 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 		//First make the base dictionary
 		std::vector<std::string> baseDictionary = std::vector<std::string>();
 		
-		for (int i = 0; i < size; i++)
+		if(codeSize <= 0)
 		{
-			std::string temp = "";
-			temp += data[i];
-			bool canInsert = true;
-
-			for (int j = 0; j < baseDictionary.size(); j++)
+			for (int i = 0; i < size; i++)
 			{
-				if (baseDictionary[j] == temp)
+				std::string temp = "";
+				temp += data[i];
+				bool canInsert = true;
+
+				for (int j = 0; j < baseDictionary.size(); j++)
 				{
-					canInsert = false;
-					break;
+					if (baseDictionary[j] == temp)
+					{
+						canInsert = false;
+						break;
+					}
+				}
+
+				if (canInsert)
+				{
+					baseDictionary.push_back(temp);
 				}
 			}
-
-			if (canInsert)
+		}
+		else
+		{
+			int s = 1 << codeSize;
+			for(int i=0; i < s; i++)
 			{
-				baseDictionary.push_back(temp);
+				std::string k = "";
+				k += (char)i;
+				baseDictionary.push_back(k);
 			}
 		}
+		
 
 		//Add the clearDictionary and endOfData values.
-		//We need to store the location so that we don't say that we can exclude it
+		//We need to store the location so that it can be excluded in compression
 		//when we compare what data is in the dictionary.
 
 		int clearDictionaryLocation = baseDictionary.size();
@@ -204,6 +219,9 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 				binData.add(clearDictionaryLocation, currBits);
 				currBits = baseBits;
 				newDictionary = baseDictionary;
+				preIndex = -1;
+				newString = "";
+				lastString = "";
 			}
 			
 		}

@@ -4,10 +4,148 @@
 #include "Compression.h"
 #include "Graphics.h"
 #include <iostream>
+#include "StringTools.h"
 
 void Image::saveGIF(std::string filename)
 {
+	SimpleFile f = SimpleFile(filename, SimpleFile::WRITE);
 
+	if(!f.isOpen())
+		return; //invalid so return from function
+	
+	std::string gifType = "GIF87a";
+	std::string gifHeaderInfo = "";
+	ColorPalette tempPalette = p;
+	unsigned char* pixs = new unsigned char[width*height];
+
+	// StringTools::println("Before optimal palette");
+	if(p.getSize() == 0 || p.getSize() > 256)
+	{
+		//no palette, create a palette but no dithering
+		tempPalette = ColorPalette::createColorPalette(6,7,6);
+		//tempPalette = ColorPalette::generateOptimalPalette(pixels, width*height, 4);
+	}
+	
+	// StringTools::println("Before fixed colors");
+	
+	for(int i=0; i<width*height; i++)
+	{
+		if(pixels[i].alpha <= 127)
+		{
+			pixs[i] = (unsigned char)tempPalette.getClosestColorIndex( {0,0,0,0} );
+		}
+		else
+		{
+			pixs[i] = (unsigned char)tempPalette.getClosestColorIndex( pixels[i] );
+		}
+	}
+
+	//width
+	gifHeaderInfo += (char)((width) & 0xFF);
+	gifHeaderInfo += (char)((width>>8) & 0xFF);
+
+	//height
+	gifHeaderInfo += (char)((height) & 0xFF);
+	gifHeaderInfo += (char)((height>>8) & 0xFF);
+
+	//packed data
+		int paletteSize = (MathExt::ceil( MathExt::log( (double)tempPalette.getSize(), 2.0) - 1 ) );
+		char c = 0;
+		//paletteSize
+		c += (char)paletteSize;
+		//paletteSorted
+		c += (char)(0 << 3);
+		//colorRes
+		c += (char)(paletteSize << 4);
+		//hasGlobalColorTable
+		c += (char)(1 << 7);
+	gifHeaderInfo += c;
+
+	//backgroundColorIndex
+	gifHeaderInfo += (char)0;
+
+	//aspect ratio
+	gifHeaderInfo += (char)0;
+
+
+	//addPalette
+	int padding = (1 << (paletteSize+1)) - tempPalette.getSize();
+	
+	for(int i=0; i<tempPalette.getSize(); i++)
+	{
+		Color c = tempPalette.getColor(i);
+		gifHeaderInfo += c.red;
+		gifHeaderInfo += c.green;
+		gifHeaderInfo += c.blue;
+	}
+
+	for(int i=0; i<padding; i++)
+	{
+		gifHeaderInfo += (char)0;
+		gifHeaderInfo += (char)0;
+		gifHeaderInfo += (char)0;
+	}
+
+	//Image Descriptor
+	gifHeaderInfo += 0x2C;
+
+	//x
+	gifHeaderInfo += (char)0;
+	gifHeaderInfo += (char)0;
+
+	//y
+	gifHeaderInfo += (char)0;
+	gifHeaderInfo += (char)0;
+
+	//width
+	gifHeaderInfo += (char)((width) & 0xFF);
+	gifHeaderInfo += (char)((width>>8) & 0xFF);
+
+	//height
+	gifHeaderInfo += (char)((height) & 0xFF);
+	gifHeaderInfo += (char)((height>>8) & 0xFF);
+
+	//packedInfo
+	gifHeaderInfo += (char)0;
+
+	//min code size
+	gifHeaderInfo += (char)paletteSize+1;
+	
+	// StringTools::out << "Size: " << tempPalette.getSize() << StringTools::lineBreak;
+	// StringTools::out << "color res: " << paletteSize << StringTools::lineBreak;
+	// StringTools::out << "minCodeSize: " << paletteSize+1 << StringTools::lineBreak;
+	// StringTools::out << "padding: " << padding << StringTools::lineBreak;
+	
+	//compress data
+	std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, paletteSize+1);
+	
+	for(int i=0; i<compressedData.size(); i++)
+	{
+		if(i % 255 == 0)
+		{
+			if(compressedData.size() - i >= 255)
+			{
+				gifHeaderInfo += 0xFF;
+			}
+			else
+			{
+				gifHeaderInfo += (compressedData.size() - i);
+			}
+		}
+
+		gifHeaderInfo += compressedData[i];
+	}
+
+	//end of image data
+	gifHeaderInfo += (char)0;
+
+	//end of data
+	gifHeaderInfo += (char)0x3B;
+
+	f.writeString(gifType);
+	f.writeString(gifHeaderInfo);
+
+	f.close();
 }
 
 Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
