@@ -154,3 +154,45 @@ Vec2f Mat2f::operator*(Vec2f other)
 	
 	return v;
 }
+
+bool Mat2f::operator==(Mat2f other)
+{
+	bool same = true;
+	for(int y=0; y<2; y++)
+	{
+		for(int x=0; x<2; x++)
+		{
+			if(data[y][x] != other.data[y][x])
+			{
+				same = false;
+				break;
+			}
+		}
+		if(same==false)
+		{
+			break;
+		}
+	}
+	return same;
+}
+
+bool Mat2f::operator!=(Mat2f other)
+{
+	bool notSame = true;
+	for(int y=0; y<2; y++)
+	{
+		for(int x=0; x<2; x++)
+		{
+			if(data[y][x] == other.data[y][x])
+			{
+				notSame = false;
+				break;
+			}
+		}
+		if(notSame==false)
+		{
+			break;
+		}
+	}
+	return notSame;
+}

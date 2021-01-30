@@ -37,6 +37,9 @@ public:
 	Matrix operator-(Matrix other);
 	void operator-=(Matrix other);
 
+	bool operator==(Matrix other);
+	bool operator!=(Matrix other);
+
 	double** getData();
 
 	int getRows();

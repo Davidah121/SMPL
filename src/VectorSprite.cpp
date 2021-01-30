@@ -18,12 +18,12 @@ VectorSprite::~VectorSprite()
 void VectorSprite::load(std::string filename)
 {
     SimpleXml file = SimpleXml();
-    bool valid = file.load(filename);
+    bool valid = file.load(StringTools::toWideString(filename));
     if(valid)
     {
         for(XmlNode* n : file.nodes)
         {
-            if(StringTools::equalsIgnoreCase(n->title, "svg"))
+            if(StringTools::equalsIgnoreCase(n->title, L"svg"))
             {
                 VectorGraphic* g = new VectorGraphic();
                 g->load(n);
@@ -41,7 +41,7 @@ void VectorSprite::save(std::string filename)
         XmlNode* n = vectorGraphicList[i]->writeAsXmlNode();
         f.nodes.push_back(n);
     }
-    f.save(filename);
+    f.save(StringTools::toWideString(filename));
 }
 
 Mat3f VectorSprite::getTransform()

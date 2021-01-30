@@ -2,9 +2,9 @@
 #include <vector>
 #include "SimpleFile.h"
 #include "Compression.h"
-#include "Graphics.h"
-#include <iostream>
 #include "StringTools.h"
+#include "MathExt.h"
+#include "Graphics.h"
 
 void Image::saveGIF(std::string filename)
 {
@@ -15,28 +15,38 @@ void Image::saveGIF(std::string filename)
 	
 	std::string gifType = "GIF87a";
 	std::string gifHeaderInfo = "";
-	ColorPalette tempPalette = p;
+	ColorPalette tempPalette;
 	unsigned char* pixs = new unsigned char[width*height];
 
-	// StringTools::println("Before optimal palette");
-	if(p.getSize() == 0 || p.getSize() > 256)
-	{
-		//no palette, create a palette but no dithering
-		tempPalette = ColorPalette::createColorPalette(6,7,6);
-		//tempPalette = ColorPalette::generateOptimalPalette(pixels, width*height, 4);
-	}
-	
-	// StringTools::println("Before fixed colors");
-	
+	bool containsTransparency = false;
+	//determine if it contains transparency first
 	for(int i=0; i<width*height; i++)
 	{
-		if(pixels[i].alpha <= 127)
+		if(pixels[i].alpha != 255)
 		{
-			pixs[i] = (unsigned char)tempPalette.getClosestColorIndex( {0,0,0,0} );
+			containsTransparency = true;
+			break;
+		}
+	}
+
+	if(p.getSize() == 0 || p.getSize() > 256)
+	{
+		//no palette or the palette is not suitable, create a palette
+		if(containsTransparency)
+			tempPalette = ColorPalette::generateOptimalPalette(pixels, width*height, 255, ColorPalette::MEAN_CUT);
+		else
+			tempPalette = ColorPalette::generateOptimalPalette(pixels, width*height, 256, ColorPalette::MEAN_CUT);
+	}
+
+	for(int i=0; i<width*height; i++)
+	{
+		if(pixels[i].alpha != 255)
+		{
+			pixs[i] = 0xFF;
 		}
 		else
 		{
-			pixs[i] = (unsigned char)tempPalette.getClosestColorIndex( pixels[i] );
+			pixs[i] = (unsigned char)tempPalette.getClosestColorIndex(pixels[i]);
 		}
 	}
 
@@ -86,8 +96,32 @@ void Image::saveGIF(std::string filename)
 		gifHeaderInfo += (char)0;
 	}
 
+	//Graphic Control Extension
+	gifHeaderInfo += (char)0x21;
+	
+	//Label
+	gifHeaderInfo += (char)0xF9;
+
+	//BlockSize
+	gifHeaderInfo += (char)0x04;
+
+	//PackedField
+		//Note that most of this is reserved
+		//0x00 = no transparency | 0x01 = has transparency
+		gifHeaderInfo += (char)containsTransparency;
+	
+	//Delay Time
+	gifHeaderInfo += (char)0x00;
+	gifHeaderInfo += (char)0x00;
+
+	//Transparent Color Index, will always be the last value
+	gifHeaderInfo += (char)0xFF;
+
+	//Block Terminator
+	gifHeaderInfo += (char)0x00;
+
 	//Image Descriptor
-	gifHeaderInfo += 0x2C;
+	gifHeaderInfo += (char)0x2C;
 
 	//x
 	gifHeaderInfo += (char)0;
@@ -106,26 +140,21 @@ void Image::saveGIF(std::string filename)
 	gifHeaderInfo += (char)((height>>8) & 0xFF);
 
 	//packedInfo
-	gifHeaderInfo += (char)0;
+	gifHeaderInfo += (char)0x00;
 
 	//min code size
 	gifHeaderInfo += (char)paletteSize+1;
 	
-	// StringTools::out << "Size: " << tempPalette.getSize() << StringTools::lineBreak;
-	// StringTools::out << "color res: " << paletteSize << StringTools::lineBreak;
-	// StringTools::out << "minCodeSize: " << paletteSize+1 << StringTools::lineBreak;
-	// StringTools::out << "padding: " << padding << StringTools::lineBreak;
-	
 	//compress data
 	std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, paletteSize+1);
-	
+
 	for(int i=0; i<compressedData.size(); i++)
 	{
 		if(i % 255 == 0)
 		{
 			if(compressedData.size() - i >= 255)
 			{
-				gifHeaderInfo += 0xFF;
+				gifHeaderInfo += (char)0xFF;
 			}
 			else
 			{
@@ -137,7 +166,7 @@ void Image::saveGIF(std::string filename)
 	}
 
 	//end of image data
-	gifHeaderInfo += (char)0;
+	gifHeaderInfo += (char)0x00;
 
 	//end of data
 	gifHeaderInfo += (char)0x3B;
@@ -153,6 +182,7 @@ Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
 	std::vector<Image*>* images = new std::vector<Image*>();
 
 	ColorPalette globalColorTable = ColorPalette();
+	globalColorTable.setPaletteMode(false);
 
 	std::string gifType = "";
 	gifType += fileData[0];	gifType += fileData[1];	gifType += fileData[2];
@@ -186,7 +216,7 @@ Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
 				int tempIndex = i * 3;
 				Color c = { fileData[startIndex + tempIndex], fileData[startIndex + tempIndex + 1], fileData[startIndex + tempIndex + 2], 255 };
 
-				globalColorTable.getPaletteRef()->push_back(c);
+				globalColorTable.getPalette().push_back(c);
 			}
 
 			startIndex += sizeOfGlobalTable * 3;
@@ -237,6 +267,7 @@ Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
 				startIndex += 10;
 
 				ColorPalette localTable = ColorPalette();
+				localTable.setPaletteMode(false);
 
 				if (hasLocalTable)
 				{
@@ -245,7 +276,7 @@ Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
 						int tempIndex = i * 3;
 						Color c = { fileData[startIndex + tempIndex], fileData[startIndex + tempIndex + 1], fileData[startIndex + tempIndex + 2], 255 };
 
-						localTable.getPaletteRef()->push_back(c);
+						localTable.getPalette().push_back(c);
 					}
 
 					startIndex += sizeOfLocalTable * 3;

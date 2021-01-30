@@ -6,6 +6,7 @@ class GeneralVector : public Object
 public:
 	GeneralVector(int size=0);
 	GeneralVector(const GeneralVector& o);
+	void operator=(const GeneralVector& o);
 	~GeneralVector();
 
 	//Object and Class Stuff
@@ -39,10 +40,14 @@ public:
 
 	double& operator[](int index);
 
+	bool operator==(GeneralVector other);
+	bool operator!=(GeneralVector other);
+
 	int getSize();
 private:
-
-	int size = 0;
+	
+	void copy(const GeneralVector& o);
+	unsigned char size = 0;
 	double* values = nullptr;
 };
 

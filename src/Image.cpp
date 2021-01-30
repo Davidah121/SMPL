@@ -133,9 +133,32 @@ void Image::setPalette(ColorPalette p)
 	this->p = p;
 }
 
-ColorPalette Image::getPalette()
+ColorPalette& Image::getPalette()
 {
 	return p;
+}
+
+void Image::enforcePalette()
+{
+	if(p.getSize()>0)
+	{
+		Color* start = pixels;
+		Color* end = pixels + (width * height);
+		while (start < end)
+		{
+			if(start->alpha>127)
+			{
+				Color oldColor = *start;
+				*start = p.getClosestColor(*start);
+			}
+			else
+			{
+				*start = {0,0,0,0};
+			}
+			
+			start++;
+		}
+	}
 }
 
 #pragma region GRAPHICS_WRAPPER

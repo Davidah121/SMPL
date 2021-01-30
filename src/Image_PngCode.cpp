@@ -34,6 +34,7 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 
 	Image* tImg = nullptr;
 	ColorPalette p = ColorPalette();
+	p.setPaletteMode(false);
 	
 
 	if(amountOfImages!=nullptr)
@@ -96,8 +97,7 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 		{
 			if(blockSize%3 == 0)
 			{
-				p.clearPalette();
-				std::vector<Color>* palette = p.getPaletteRef();
+				//std::vector<Color> palette = std::vector<Color>();
 				for(int i=0; i<blockSize; i+=3)
 				{
 					Color c;
@@ -106,8 +106,12 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 					c.blue = fileData[location+i+2];
 					c.alpha = 255;
 
-					palette->push_back(c);
+					p.addNewColor(c);
+					
+					//palette.push_back(c);
 				}
+				tImg->setPalette(p);
+				//p.setPalette( palette );
 			}
 			else
 			{

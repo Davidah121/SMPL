@@ -153,3 +153,45 @@ Vec4f Mat4f::operator*(Vec4f other)
 	
 	return v;
 }
+
+bool Mat4f::operator==(Mat4f other)
+{
+	bool same = true;
+	for(int y=0; y<4; y++)
+	{
+		for(int x=0; x<4; x++)
+		{
+			if(data[y][x] != other.data[y][x])
+			{
+				same = false;
+				break;
+			}
+		}
+		if(same==false)
+		{
+			break;
+		}
+	}
+	return same;
+}
+
+bool Mat4f::operator!=(Mat4f other)
+{
+	bool notSame = true;
+	for(int y=0; y<4; y++)
+	{
+		for(int x=0; x<4; x++)
+		{
+			if(data[y][x] == other.data[y][x])
+			{
+				notSame = false;
+				break;
+			}
+		}
+		if(notSame==false)
+		{
+			break;
+		}
+	}
+	return notSame;
+}

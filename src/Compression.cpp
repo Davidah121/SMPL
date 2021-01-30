@@ -206,7 +206,22 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 				binData.add(preIndex, currBits);
 				
 				newDictionary.push_back(newString);
-				currBits = (int)ceil(log2(newDictionary.size()));
+				int shifts = 0;
+				int v = 1;
+				while(shifts<32)
+				{
+					if(newDictionary.size() > v)
+					{
+						v = v << 1;
+						shifts++;
+					}
+					else
+					{
+						break;
+					}
+				}
+
+				currBits = shifts;
 
 				preIndex = -1;
 				newString = "";
@@ -1228,7 +1243,7 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 	binData.setBitOrder(BinarySet::LMSB);
 	binData.setValues(data, size);
 
-	StringTools::out << "BinSize " << binData.size() << StringTools::lineBreak;
+	//StringTools::out << "BinSize " << binData.size() << StringTools::lineBreak;
 
 	int currLoc = 0;
 	bool invalid = false;

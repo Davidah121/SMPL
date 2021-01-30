@@ -53,6 +53,8 @@ public:
 	void operator*=(float other);
 	void operator/=(float other);
 
+	bool operator==(Vec3f other);
+	bool operator!=(Vec3f other);
 
 	Vec3f operator*(int value);
 	Vec3f operator*(float value);

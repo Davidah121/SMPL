@@ -35,6 +35,7 @@ public:
 
 	std::vector<FontCharInfo> getListOfFontCharInfo();
 	
+	int getCharIndex(int c);
 protected:
 	std::vector<FontCharInfo> charInfoList = std::vector<FontCharInfo>();
 
@@ -46,6 +47,5 @@ protected:
 	Mat4f fontTransform = Mat4f::getIdentity();
 
 private:
-	int getCharIndex(int c);
 };
 

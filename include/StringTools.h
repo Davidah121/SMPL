@@ -27,6 +27,7 @@ public:
 	static int stringLength(const wchar_t* text);
 
 	static bool equalsIgnoreCase(std::string a, std::string b);
+	static bool equalsIgnoreCase(std::wstring a, std::wstring b);
 	static bool isAlphaNumerial(char v, bool underScoreAllowed = false, bool dashAllowed = false);
 
 	static char charToBase16(char v);
@@ -56,6 +57,10 @@ public:
 	static std::vector<std::string> splitString(std::string s, const char* delim, bool removeEmpty=true);
 	static std::vector<std::string> splitStringMultipleDeliminators(std::string s, const char* delim, bool removeEmpty=true);
 	
+	static std::vector<std::wstring> splitString(std::wstring s, const wchar_t delim, bool removeEmpty=true);
+	static std::vector<std::wstring> splitString(std::wstring s, const wchar_t* delim, bool removeEmpty=true);
+	static std::vector<std::wstring> splitStringMultipleDeliminators(std::wstring s, const wchar_t* delim, bool removeEmpty=true);
+
 	static int toInt(std::string s);
 	static long toLong(std::string s);
 	static double toDouble(std::string s);

@@ -17,11 +17,6 @@ VectorGraphic::VectorGraphic(int width, int height)
 {
 	this->width = width;
 	this->height = height;
-
-	if(width!=0 && height!=0)
-	{
-		buffer = new Image(width, height);
-	}
 	//invalid otherwise and will morph to the image it will be drawn upon.
 }
 
@@ -40,11 +35,6 @@ void VectorGraphic::copy(const VectorGraphic& c)
 	//StringTools::println("Copy Function _ VG");
 	this->width = c.width;
 	this->height = c.height;
-
-	if(width!=0 && height!=0)
-	{
-		buffer = new Image(width, height);
-	}
 
 	for(int i=0; i<c.shapes.size(); i++)
 	{
@@ -96,8 +86,6 @@ void VectorGraphic::copy(const VectorGraphic& c)
 VectorGraphic::~VectorGraphic()
 {
 	clearShapes();
-	if(buffer!=nullptr)
-		delete buffer;
 }
 
 void VectorGraphic::addShape(VectorShape* k)
@@ -108,14 +96,6 @@ void VectorGraphic::addShape(VectorShape* k)
 void VectorGraphic::clearShapes()
 {
 	shapes.clear();
-}
-
-void VectorGraphic::draw()
-{
-	if(this->buffer!=nullptr)
-	{
-		draw(this->buffer);
-	}
 }
 
 void VectorGraphic::draw(Image* buffer)
@@ -134,8 +114,8 @@ void VectorGraphic::draw(Image* buffer)
 
 			shapes[i]->setTransform(finalTransform);
 
-			shapes[i]->draw(this->buffer, this->width, this->height);
-			shapes[i]->drawStroke(this->buffer, this->width, this->height);
+			shapes[i]->draw(buffer, this->width, this->height);
+			shapes[i]->drawStroke(buffer, this->width, this->height);
 
 			shapes[i]->setTransform(temp);
 		}
@@ -162,11 +142,6 @@ Mat3f VectorGraphic::getViewBox()
 	return viewBox;
 }
 
-Image* VectorGraphic::getImageBuffer()
-{
-	return buffer;
-}
-
 int VectorGraphic::getWidth()
 {
 	return width;
@@ -186,7 +161,7 @@ bool VectorGraphic::save(std::string filename)
 bool VectorGraphic::load(std::string filename)
 {
 	SimpleXml file = SimpleXml();
-	bool valid = file.load(filename);
+	bool valid = file.load(StringTools::toWideString(filename));
 
 	if(valid)
 	{
@@ -211,7 +186,7 @@ bool VectorGraphic::load(XmlNode* svgParentNode)
 	bool valid = svgParentNode!=nullptr;
 
 	if(valid)
-		valid = StringTools::equalsIgnoreCase(svgParentNode->title, "svg");
+		valid = StringTools::equalsIgnoreCase(svgParentNode->title, L"svg");
 
 	if(valid)
 	{
@@ -219,38 +194,38 @@ bool VectorGraphic::load(XmlNode* svgParentNode)
 		
 		for(XmlAttribute attrib : parentNode->attributes)
 		{
-			if(StringTools::equalsIgnoreCase("width", attrib.name))
+			if(StringTools::equalsIgnoreCase(L"width", attrib.name))
 			{
 				bool percent = false;
-				double value = toNumber(attrib.value, &percent);
+				double value = toNumber(StringTools::toCString(attrib.value), &percent);
 				if(percent)
 					this->width = (int)MathExt::ceil(this->width * value);
 				else
 					this->width = (int)MathExt::ceil(value);
 				
 			}
-			else if(StringTools::equalsIgnoreCase("height", attrib.name))
+			else if(StringTools::equalsIgnoreCase(L"height", attrib.name))
 			{
 				bool percent = false;
-				double value = toNumber(attrib.value, &percent);
+				double value = toNumber(StringTools::toCString(attrib.value), &percent);
 				if(percent)
 					this->height = (int)MathExt::ceil(this->height * value);
 				else
 					this->height = (int)MathExt::ceil(value);
 			}
-			else if(StringTools::equalsIgnoreCase("viewbox", attrib.name))
+			else if(StringTools::equalsIgnoreCase(L"viewbox", attrib.name))
 			{
 				//for now, if width and height have not been defined, set them here
-				std::vector<std::string> split = StringTools::splitString(attrib.value, ' ');
+				std::vector<std::wstring> split = StringTools::splitString(attrib.value, L' ');
 				bool percent = false;
 				if(width==0)
 				{
-					double value = toNumber(split[2], &percent);
+					double value = toNumber(StringTools::toCString(split[2]), &percent);
 					this->width = (int)MathExt::ceil(value);
 				}
 				if(height==0)
 				{
-					double value = toNumber(split[3], &percent);
+					double value = toNumber(StringTools::toCString(split[3]), &percent);
 					this->height = (int)MathExt::ceil(value);
 				}
 			}
@@ -258,11 +233,7 @@ bool VectorGraphic::load(XmlNode* svgParentNode)
 
 		if(height>0 && width>0)
 		{
-			if(buffer!=nullptr)
-			{
-				delete buffer;
-			}
-			buffer = new Image(width, height);
+			
 		}
 		else
 		{
@@ -280,7 +251,7 @@ void VectorGraphic::loadNode(XmlNode* parentNode)
 	Mat3f groupTransform = Mat3f::getIdentity();
 	VectorShape groupShape = VectorShape();
 
-	if(parentNode->title == "g")
+	if(parentNode->title == L"g")
 	{
 		//group. Probably has a transform or color
 
@@ -288,21 +259,21 @@ void VectorGraphic::loadNode(XmlNode* parentNode)
 		{
 			double value = 0;
 			bool percentValue = false;
-			if(StringTools::equalsIgnoreCase(attrib.name, "fill"))
+			if(StringTools::equalsIgnoreCase(attrib.name, L"fill"))
 			{
-				Color c = toColor(attrib.value);
+				Color c = toColor(StringTools::toCString(attrib.value));
 				groupShape.setFillColor( c );
 			}
-			else if(StringTools::equalsIgnoreCase(attrib.name, "fill-opacity"))
+			else if(StringTools::equalsIgnoreCase(attrib.name, L"fill-opacity"))
 			{
 				Color c = groupShape.getFillColor();
-				value = toNumber(attrib.value, &percentValue);
+				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				c.alpha = (unsigned char)(255*value);
 				groupShape.setFillColor( c );
 			}
-			else if(StringTools::equalsIgnoreCase(attrib.name, "fill-rule"))
+			else if(StringTools::equalsIgnoreCase(attrib.name, L"fill-rule"))
 			{
-				if(StringTools::equalsIgnoreCase(attrib.value, "nonzero"))
+				if(StringTools::equalsIgnoreCase(attrib.value, L"nonzero"))
 				{
 					groupShape.setFillMethod(VectorShape::NON_ZERO);
 				}
@@ -311,80 +282,80 @@ void VectorGraphic::loadNode(XmlNode* parentNode)
 					groupShape.setFillMethod(VectorShape::EVEN_ODD_RULE);
 				}
 			}
-			else if(StringTools::equalsIgnoreCase(attrib.name, "stroke"))
+			else if(StringTools::equalsIgnoreCase(attrib.name, L"stroke"))
 			{
-				Color c = toColor(attrib.value);
+				Color c = toColor(StringTools::toCString(attrib.value));
 				groupShape.setStrokeColor( c );
 			}
-			else if(StringTools::equalsIgnoreCase(attrib.name, "stroke-opacity"))
+			else if(StringTools::equalsIgnoreCase(attrib.name, L"stroke-opacity"))
 			{
 				Color c = groupShape.getStrokeColor();
-				value = toNumber(attrib.value, &percentValue);
+				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				c.alpha = (unsigned char)(255*value);
 				groupShape.setStrokeColor( c );
 			}
-			else if(StringTools::equalsIgnoreCase(attrib.name, "stroke-width"))
+			else if(StringTools::equalsIgnoreCase(attrib.name, L"stroke-width"))
 			{
-				value = toNumber(attrib.value, &percentValue);
+				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
 					groupShape.setStrokeWidth( width* value );
 				else
 					groupShape.setStrokeWidth( value );
 			}
-			else if(StringTools::equalsIgnoreCase(attrib.name, "stroke-linecap"))
+			else if(StringTools::equalsIgnoreCase(attrib.name, L"stroke-linecap"))
 			{
-				if(attrib.value=="butt")
+				if(attrib.value==L"butt")
 				{
 					groupShape.setLineCap(VectorShape::LINE_CAP_BUTT);
 				}
-				else if(attrib.value=="square")
+				else if(attrib.value==L"square")
 				{
 					groupShape.setLineCap(VectorShape::LINE_CAP_SQUARE);
 				}
-				else if(attrib.value=="round")
+				else if(attrib.value==L"round")
 				{
 					groupShape.setLineCap(VectorShape::LINE_CAP_ROUND);
 				}
 			}
-			else if(StringTools::equalsIgnoreCase(attrib.name, "stroke-linejoin"))
+			else if(StringTools::equalsIgnoreCase(attrib.name, L"stroke-linejoin"))
 			{
-				if(attrib.value=="arcs")
+				if(attrib.value==L"arcs")
 				{
 					//groupShape.setLineCap(NULL);
 				}
-				else if(attrib.value=="bevel")
+				else if(attrib.value==L"bevel")
 				{
 					groupShape.setLineJoin(VectorShape::LINE_JOIN_BEVEL);
 				}
-				else if(attrib.value=="miter")
+				else if(attrib.value==L"miter")
 				{
 					groupShape.setLineJoin(VectorShape::LINE_JOIN_MITER);
 				}
-				else if(attrib.value=="miter-clip")
+				else if(attrib.value==L"miter-clip")
 				{
 					//groupShape.setLineCap(NULL);
 				}
-				else if(attrib.value=="round")
+				else if(attrib.value==L"round")
 				{
 					groupShape.setLineJoin(VectorShape::LINE_JOIN_ROUND);
 				}
 			}
-			else if(StringTools::equalsIgnoreCase(attrib.name, "stroke-dasharray"))
+			else if(StringTools::equalsIgnoreCase(attrib.name, L"stroke-dasharray"))
 			{
 			}
-			else if(StringTools::equalsIgnoreCase(attrib.name, "transform"))
+			else if(StringTools::equalsIgnoreCase(attrib.name, L"transform"))
 			{
 				Mat3f thisTransform = Mat3f::getIdentity();
-				std::vector<std::string> splitString = StringTools::splitString(attrib.value, ' ');
-				for(std::string transformName : splitString)
+				std::vector<std::wstring> splitString = StringTools::splitString(attrib.value, ' ');
+				for(std::wstring transformName : splitString)
 				{
 					int indexOfArgs = transformName.find('(', 0);
-					std::string subName = transformName.substr(0, indexOfArgs);
-					std::string subArgs = transformName.substr(indexOfArgs+1, transformName.length()-indexOfArgs-2);
+					std::wstring subName = transformName.substr(0, indexOfArgs);
+					std::wstring subArgs = transformName.substr(indexOfArgs+1, transformName.length()-indexOfArgs-2);
 
-					std::vector<std::string> args = StringTools::splitString(subArgs, ',');
+					std::vector<std::wstring> args = StringTools::splitString(subArgs, ',');
 
-					if(subName == "translate")
+					if(subName == L"translate")
 					{
 						switch(args.size())
 						{
@@ -398,7 +369,7 @@ void VectorGraphic::loadNode(XmlNode* parentNode)
 								break;
 						}
 					}
-					else if(subName == "scale")
+					else if(subName == L"scale")
 					{
 						switch(args.size())
 						{
@@ -412,7 +383,7 @@ void VectorGraphic::loadNode(XmlNode* parentNode)
 								break;
 						}
 					}
-					else if(subName == "rotate")
+					else if(subName == L"rotate")
 					{
 						switch(args.size())
 						{
@@ -426,21 +397,21 @@ void VectorGraphic::loadNode(XmlNode* parentNode)
 								break;
 						}
 					}
-					else if(subName == "skewX")
+					else if(subName == L"skewX")
 					{
 						if(args.size() == 1)
 						{
 							thisTransform = MathExt::scale2D( std::stod(args[0]), 0) * thisTransform;
 						}
 					}
-					else if(subName == "skewY")
+					else if(subName == L"skewY")
 					{
 						if(args.size() == 1)
 						{
 							thisTransform = MathExt::skew2D( 0, std::stod(args[0])) * thisTransform;
 						}
 					}
-					else if(subName == "matrix")
+					else if(subName == L"matrix")
 					{
 						if(args.size() == 6)
 						{
@@ -473,61 +444,61 @@ void VectorGraphic::loadNode(XmlNode* parentNode)
 		bool percentValue = false;
 		double value = 0;
 		double diagonalLength = 0;
-		if(StringTools::equalsIgnoreCase(childNode->title, "g"))
+		if(StringTools::equalsIgnoreCase(childNode->title, L"g"))
 		{
 			//group
 			loadNode(childNode);
 		}
-		else if(StringTools::equalsIgnoreCase(childNode->title, "rect"))
+		else if(StringTools::equalsIgnoreCase(childNode->title, L"rect"))
 		{
 			//rectangle
 			VectorRectangle* g = new VectorRectangle();
 
 			for(XmlAttribute attrib : childNode->attributes)
 			{
-				if(StringTools::equalsIgnoreCase(attrib.name, "x"))
+				if(StringTools::equalsIgnoreCase(attrib.name, L"x"))
 				{
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					if(percentValue)
 						g->setX( width*value );
 					else
 						g->setX( value );
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "y"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"y"))
 				{
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					if(percentValue)
 						g->setY( height*value );
 					else
 						g->setY( value );
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "rx"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"rx"))
 				{
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					if(percentValue)
 						g->setRX( width*value );
 					else
 						g->setRX( value );
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "ry"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"ry"))
 				{
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					if(percentValue)
 						g->setRY( height*value );
 					else
 						g->setRY( value );
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "width"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"width"))
 				{
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					if(percentValue)
 						g->setWidth( width*value );
 					else
 						g->setWidth( value );
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "height"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"height"))
 				{
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					if(percentValue)
 						g->setHeight( height*value );
 					else
@@ -537,32 +508,32 @@ void VectorGraphic::loadNode(XmlNode* parentNode)
 
 			shape = (VectorShape*)g;
 		}
-		else if(StringTools::equalsIgnoreCase(childNode->title, "circle"))
+		else if(StringTools::equalsIgnoreCase(childNode->title, L"circle"))
 		{
 			//circle
 			VectorCircle* g = new VectorCircle();
 
 			for(XmlAttribute attrib : childNode->attributes)
 			{
-				if(StringTools::equalsIgnoreCase(attrib.name, "cx"))
+				if(StringTools::equalsIgnoreCase(attrib.name, L"cx"))
 				{
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					if(percentValue)
 						g->setX( width*value );
 					else
 						g->setX( value );
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "cy"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"cy"))
 				{
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					if(percentValue)
 						g->setY( height*value );
 					else
 						g->setY( value );
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "r"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"r"))
 				{
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					if(percentValue)
 						g->setRadius( width*value );
 					else
@@ -572,40 +543,40 @@ void VectorGraphic::loadNode(XmlNode* parentNode)
 
 			shape = (VectorShape*)g;
 		}
-		else if(StringTools::equalsIgnoreCase(childNode->title, "ellipse"))
+		else if(StringTools::equalsIgnoreCase(childNode->title, L"ellipse"))
 		{
 			//ellipse
 			VectorEllipse* g = new VectorEllipse();
 
 			for(XmlAttribute attrib : childNode->attributes)
 			{
-				if(StringTools::equalsIgnoreCase(attrib.name, "cx"))
+				if(StringTools::equalsIgnoreCase(attrib.name, L"cx"))
 				{
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					if(percentValue)
 						g->setX( width*value );
 					else
 						g->setX( value );
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "cy"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"cy"))
 				{
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					if(percentValue)
 						g->setY( height*value );
 					else
 						g->setY( value );
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "rx"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"rx"))
 				{
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					if(percentValue)
 						g->setXRadius( width*value );
 					else
 						g->setXRadius( value );
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "ry"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"ry"))
 				{
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					if(percentValue)
 						g->setYRadius( height*value );
 					else
@@ -615,40 +586,40 @@ void VectorGraphic::loadNode(XmlNode* parentNode)
 
 			shape = (VectorShape*)g;
 		}
-		else if(StringTools::equalsIgnoreCase(childNode->title, "line"))
+		else if(StringTools::equalsIgnoreCase(childNode->title, L"line"))
 		{
 			//line
 			VectorLine* g = new VectorLine();
 
 			for(XmlAttribute attrib : childNode->attributes)
 			{
-				if(StringTools::equalsIgnoreCase(attrib.name, "x1"))
+				if(StringTools::equalsIgnoreCase(attrib.name, L"x1"))
 				{
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					if(percentValue)
 						g->setX1( width*value );
 					else
 						g->setX1( value );
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "y1"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"y1"))
 				{
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					if(percentValue)
 						g->setY1( height*value );
 					else
 						g->setY1( value );
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "x2"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"x2"))
 				{
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					if(percentValue)
 						g->setX2( width*value );
 					else
 						g->setX2( value );
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "y2"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"y2"))
 				{
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					if(percentValue)
 						g->setY2( height*value );
 					else
@@ -658,18 +629,18 @@ void VectorGraphic::loadNode(XmlNode* parentNode)
 
 			shape = (VectorShape*)g;
 		}
-		else if(StringTools::equalsIgnoreCase(childNode->title, "polygon"))
+		else if(StringTools::equalsIgnoreCase(childNode->title, L"polygon"))
 		{
 			//polygon
 			VectorPolygon* g = new VectorPolygon();
 			for(XmlAttribute attrib : childNode->attributes)
 			{
-				if(StringTools::equalsIgnoreCase(attrib.name, "points"))
+				if(StringTools::equalsIgnoreCase(attrib.name, L"points"))
 				{
-					std::vector<std::string> splits = StringTools::splitString(attrib.value, ' ');
-					for(std::string point : splits)
+					std::vector<std::wstring> splits = StringTools::splitString(attrib.value, ' ');
+					for(std::wstring point : splits)
 					{
-						std::vector<std::string> pointSplit = StringTools::splitString(point, ',');
+						std::vector<std::wstring> pointSplit = StringTools::splitString(point, ',');
 						if(pointSplit.size()==2)
 							g->addPoint( std::stod(pointSplit[0]), std::stod(pointSplit[1]) );
 					}
@@ -677,18 +648,18 @@ void VectorGraphic::loadNode(XmlNode* parentNode)
 			}
 			shape = (VectorShape*)g;
 		}
-		else if(StringTools::equalsIgnoreCase(childNode->title, "polyline"))
+		else if(StringTools::equalsIgnoreCase(childNode->title, L"polyline"))
 		{
 			//polyline
 			VectorPolyline* g = new VectorPolyline();
 			for(XmlAttribute attrib : childNode->attributes)
 			{
-				if(StringTools::equalsIgnoreCase(attrib.name, "points"))
+				if(StringTools::equalsIgnoreCase(attrib.name, L"points"))
 				{
-					std::vector<std::string> splits = StringTools::splitString(attrib.value, ' ');
-					for(std::string point : splits)
+					std::vector<std::wstring> splits = StringTools::splitString(attrib.value, ' ');
+					for(std::wstring point : splits)
 					{
-						std::vector<std::string> pointSplit = StringTools::splitString(point, ',');
+						std::vector<std::wstring> pointSplit = StringTools::splitString(point, ',');
 						if(pointSplit.size()==2)
 							g->addPoint( std::stod(pointSplit[0]), std::stod(pointSplit[1]) );
 					}
@@ -696,13 +667,13 @@ void VectorGraphic::loadNode(XmlNode* parentNode)
 			}
 			shape = (VectorShape*)g;
 		}
-		else if(StringTools::equalsIgnoreCase(childNode->title, "path"))
+		else if(StringTools::equalsIgnoreCase(childNode->title, L"path"))
 		{
 			//path
 			VectorPath* g = new VectorPath();
 			for(XmlAttribute attrib : childNode->attributes)
 			{
-				if(StringTools::equalsIgnoreCase(attrib.name, "d"))
+				if(StringTools::equalsIgnoreCase(attrib.name, L"d"))
 				{
 					//Method: Separate Letters from values
 					//separate letters first
@@ -912,21 +883,21 @@ void VectorGraphic::loadNode(XmlNode* parentNode)
 			
 			for(XmlAttribute attrib : childNode->attributes)
 			{
-				if(StringTools::equalsIgnoreCase(attrib.name, "fill"))
+				if(StringTools::equalsIgnoreCase(attrib.name, L"fill"))
 				{
-					Color c = toColor(attrib.value);
+					Color c = toColor(StringTools::toCString(attrib.value));
 					shape->setFillColor( c );
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "fill-opacity"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"fill-opacity"))
 				{
 					Color c = shape->getFillColor();
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					c.alpha = (unsigned char)(255*value);
 					shape->setFillColor( c );
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "fill-rule"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"fill-rule"))
 				{
-					if(StringTools::equalsIgnoreCase(attrib.value, "nonzero"))
+					if(StringTools::equalsIgnoreCase(attrib.value, L"nonzero"))
 					{
 						shape->setFillMethod(VectorShape::NON_ZERO);
 					}
@@ -935,80 +906,80 @@ void VectorGraphic::loadNode(XmlNode* parentNode)
 						shape->setFillMethod(VectorShape::EVEN_ODD_RULE);
 					}
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "stroke"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"stroke"))
 				{
-					Color c = toColor(attrib.value);
+					Color c = toColor(StringTools::toCString(attrib.value));
 					shape->setStrokeColor( c );
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "stroke-opacity"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"stroke-opacity"))
 				{
 					Color c = shape->getStrokeColor();
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					c.alpha = (unsigned char)(255*value);
 					shape->setStrokeColor( c );
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "stroke-width"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"stroke-width"))
 				{
-					value = toNumber(attrib.value, &percentValue);
+					value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 					if(percentValue)
 						shape->setStrokeWidth( width* value );
 					else
 						shape->setStrokeWidth( value );
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "stroke-linecap"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"stroke-linecap"))
 				{
-					if(attrib.value=="butt")
+					if(attrib.value==L"butt")
 					{
 						shape->setLineCap(VectorShape::LINE_CAP_BUTT);
 					}
-					else if(attrib.value=="square")
+					else if(attrib.value==L"square")
 					{
 						shape->setLineCap(VectorShape::LINE_CAP_SQUARE);
 					}
-					else if(attrib.value=="round")
+					else if(attrib.value==L"round")
 					{
 						shape->setLineCap(VectorShape::LINE_CAP_ROUND);
 					}
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "stroke-linejoin"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"stroke-linejoin"))
 				{
-					if(attrib.value=="arcs")
+					if(attrib.value==L"arcs")
 					{
 						//shape->setLineCap(NULL);
 					}
-					else if(attrib.value=="bevel")
+					else if(attrib.value==L"bevel")
 					{
 						shape->setLineJoin(VectorShape::LINE_JOIN_BEVEL);
 					}
-					else if(attrib.value=="miter")
+					else if(attrib.value==L"miter")
 					{
 						shape->setLineJoin(VectorShape::LINE_JOIN_MITER);
 					}
-					else if(attrib.value=="miter-clip")
+					else if(attrib.value==L"miter-clip")
 					{
 						//shape->setLineCap(NULL);
 					}
-					else if(attrib.value=="round")
+					else if(attrib.value==L"round")
 					{
 						shape->setLineJoin(VectorShape::LINE_JOIN_ROUND);
 					}
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "stroke-dasharray"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"stroke-dasharray"))
 				{
 				}
-				else if(StringTools::equalsIgnoreCase(attrib.name, "transform"))
+				else if(StringTools::equalsIgnoreCase(attrib.name, L"transform"))
 				{
 					Mat3f thisTransform = Mat3f::getIdentity();
-					std::vector<std::string> splitString = StringTools::splitString(attrib.value, ' ');
-					for(std::string transformName : splitString)
+					std::vector<std::wstring> splitString = StringTools::splitString(attrib.value, ' ');
+					for(std::wstring transformName : splitString)
 					{
 						int indexOfArgs = transformName.find('(', 0);
-						std::string subName = transformName.substr(0, indexOfArgs);
-						std::string subArgs = transformName.substr(indexOfArgs+1, transformName.length()-indexOfArgs-2);
+						std::wstring subName = transformName.substr(0, indexOfArgs);
+						std::wstring subArgs = transformName.substr(indexOfArgs+1, transformName.length()-indexOfArgs-2);
 
-						std::vector<std::string> args = StringTools::splitString(subArgs, ',');
+						std::vector<std::wstring> args = StringTools::splitString(subArgs, ',');
 
-						if(subName == "translate")
+						if(subName == L"translate")
 						{
 							switch(args.size())
 							{
@@ -1022,7 +993,7 @@ void VectorGraphic::loadNode(XmlNode* parentNode)
 									break;
 							}
 						}
-						else if(subName == "scale")
+						else if(subName == L"scale")
 						{
 							switch(args.size())
 							{
@@ -1036,7 +1007,7 @@ void VectorGraphic::loadNode(XmlNode* parentNode)
 									break;
 							}
 						}
-						else if(subName == "rotate")
+						else if(subName == L"rotate")
 						{
 							switch(args.size())
 							{
@@ -1050,21 +1021,21 @@ void VectorGraphic::loadNode(XmlNode* parentNode)
 									break;
 							}
 						}
-						else if(subName == "skewX")
+						else if(subName == L"skewX")
 						{
 							if(args.size() == 1)
 							{
 								thisTransform = MathExt::scale2D( std::stod(args[0]), 0) * thisTransform;
 							}
 						}
-						else if(subName == "skewY")
+						else if(subName == L"skewY")
 						{
 							if(args.size() == 1)
 							{
 								thisTransform = MathExt::skew2D( 0, std::stod(args[0])) * thisTransform;
 							}
 						}
-						else if(subName == "matrix")
+						else if(subName == L"matrix")
 						{
 							if(args.size() == 6)
 							{

@@ -38,5 +38,7 @@ public:
 
 	Vec2f operator*(Vec2f other);
 
+	bool operator==(Mat2f other);
+	bool operator!=(Mat2f other);
 };
 

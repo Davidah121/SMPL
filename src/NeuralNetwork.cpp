@@ -63,26 +63,26 @@ XmlNode* Neuron::exportTestInformation(int count)
 {
     //Neuron header information
     XmlNode* neuronHeader = new XmlNode();
-    neuronHeader->title = "Neuron";
+    neuronHeader->title = L"Neuron";
 
     XmlAttribute neuronAttrib = XmlAttribute();
-    neuronAttrib.name = "NeuronNumber";
-    neuronAttrib.value = std::to_string(count);
+    neuronAttrib.name = L"NeuronNumber";
+    neuronAttrib.value = std::to_wstring(count);
     neuronHeader->attributes.push_back( neuronAttrib );
 
     XmlNode* neuronWeights = new XmlNode();
-    neuronWeights->title = "NeuronWeights";
+    neuronWeights->title = L"NeuronWeights";
     
     for(int i=0; i<weightsToConnections.size(); i++)
     {
         XmlNode* weightValue = new XmlNode();
         
-        weightValue->title = "WeightValue";
-        weightValue->value = std::to_string(weightsToConnections[i]);
+        weightValue->title = L"WeightValue";
+        weightValue->value = std::to_wstring(weightsToConnections[i]);
 
         XmlAttribute weightAttrib = XmlAttribute();
-        weightAttrib.name = "WeightNumber";
-        weightAttrib.value = std::to_string(i);
+        weightAttrib.name = L"WeightNumber";
+        weightAttrib.value = std::to_wstring(i);
 
         weightValue->attributes.push_back(weightAttrib);
 
@@ -233,28 +233,28 @@ XmlNode* NeuralLayer::exportTestInformation(int count)
 {
     //layer header information
     XmlNode* layerHeader = new XmlNode();
-    layerHeader->title = "Layer";
+    layerHeader->title = L"Layer";
 
     XmlAttribute layerAttrib = XmlAttribute();
-    layerAttrib.name = "LayerNumber";
-    layerAttrib.value = std::to_string(count);
+    layerAttrib.name = L"LayerNumber";
+    layerAttrib.value = std::to_wstring(count);
     layerHeader->attributes.push_back( layerAttrib );
 
     XmlNode* layerBias = new XmlNode();
-    layerBias->title = "LayerBias";
+    layerBias->title = L"LayerBias";
     
     for(int i=0; i<biasToConnections.size(); i++)
     {
         XmlNode* biasValue = new XmlNode();
 
         XmlAttribute biasAttrib = XmlAttribute();
-        biasAttrib.name = "BiasNumber";
-        biasAttrib.value = std::to_string(i);
+        biasAttrib.name = L"BiasNumber";
+        biasAttrib.value = std::to_wstring(i);
 
         biasValue->attributes.push_back(biasAttrib);
 
-        biasValue->title = "BiasValue";
-        biasValue->value = std::to_string( biasToConnections[i] );
+        biasValue->title = L"BiasValue";
+        biasValue->value = std::to_wstring( biasToConnections[i] );
 
         layerBias->childNodes.push_back(biasValue);
     }
@@ -495,7 +495,7 @@ void NeuralNetwork::setLearningRate(double v)
 void NeuralNetwork::exportTestInformation(std::string filename)
 {
     XmlNode* header = new XmlNode();
-    header->title = "NeuralNetwork";
+    header->title = L"NeuralNetwork";
 
     int count = 0;
     NeuralLayer* l = startLayer;
@@ -509,7 +509,7 @@ void NeuralNetwork::exportTestInformation(std::string filename)
 
    SimpleXml file = SimpleXml();
    file.nodes.push_back(header);
-   file.save(filename);
+   file.save(StringTools::toWideString(filename));
 }
 
 NeuralLayer* NeuralNetwork::getStartLayer()

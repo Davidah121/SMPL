@@ -173,6 +173,8 @@ private:
 	double ry = 0;
 	double width = 0;
 	double height = 0;
+	void drawTransformed(Image* buffer, int globalWidth, int globalHeight);
+
 };
 
 class VectorCircle : public VectorShape
@@ -217,6 +219,8 @@ private:
 	double cx = 0;
 	double cy = 0;
 	double radius = 0;
+	void drawTransformed(Image* buffer, int globalWidth, int globalHeight);
+
 };
 
 class VectorEllipse : public VectorShape
@@ -260,12 +264,14 @@ public:
 
 protected:
 	void applyTransform();
-
+	
 private:
 	double cx = 0;
 	double cy = 0;
 	double rx = 0;
 	double ry = 0;
+	void drawTransformed(Image* buffer, int globalWidth, int globalHeight);
+
 };
 
 class VectorLine : public VectorShape
@@ -609,7 +615,6 @@ public:
 	void addShape(VectorShape* k);
 	void clearShapes();
 
-	void draw();
 	void draw(Image* buffer);
 
 	void setTransform(Mat3f m);
@@ -617,8 +622,6 @@ public:
 
 	void setViewBox(Mat3f m);
 	Mat3f getViewBox();
-
-	Image* getImageBuffer();
 
 	int getWidth();
 	int getHeight();
@@ -640,7 +643,6 @@ private:
 
 	int width = 0;
 	int height = 0;
-	Image* buffer;
 
 	//transforms
 	Mat3f transform = Mat3f::getIdentity();

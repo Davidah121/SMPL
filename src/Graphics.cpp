@@ -4,6 +4,8 @@
 #include "Sort.h"
 #include "StringTools.h"
 
+#pragma region DRAWING_FUNCTIONS
+
 Color Graphics::activeColor = { 0, 0, 0, 255 };
 BitmapFont* Graphics::activeFont = nullptr;
 Image* Graphics::activeImage = nullptr;
@@ -606,9 +608,15 @@ void Graphics::drawSprite(Image* img, int x, int y, Image* surf)
 
 		int tX = 0;
 
+		Vec4f colorMult = Vec4f((double)Graphics::activeColor.red / 255.0, (double)Graphics::activeColor.green / 255.0, (double)Graphics::activeColor.blue / 255.0, (double)Graphics::activeColor.alpha / 255.0);
+
 		while (startPoint < endPoint)
 		{
-			*startPoint = blend(*otherStartPoint, *startPoint);
+			Color drawC = { (unsigned char) (otherStartPoint->red * colorMult.x),
+							(unsigned char) (otherStartPoint->green * colorMult.y),
+							(unsigned char) (otherStartPoint->blue * colorMult.z), 
+							(unsigned char) (otherStartPoint->alpha * colorMult.w) };
+			*startPoint = blend(drawC, *startPoint);
 
 			startPoint++;
 			otherStartPoint++;
@@ -656,10 +664,16 @@ void Graphics::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int 
 		int otherAddAmount = img->getWidth() - imgW;
 
 		int tX = 0;
+		
+		Vec4f colorMult = Vec4f((double)Graphics::activeColor.red / 255.0, (double)Graphics::activeColor.green / 255.0, (double)Graphics::activeColor.blue / 255.0, (double)Graphics::activeColor.alpha / 255.0);
 
 		while (startPoint < endPoint)
 		{
-			*startPoint = *otherStartPoint;
+			Color drawC = { (unsigned char) (otherStartPoint->red * colorMult.x),
+							(unsigned char) (otherStartPoint->green * colorMult.y),
+							(unsigned char) (otherStartPoint->blue * colorMult.z), 
+							(unsigned char) (otherStartPoint->alpha * colorMult.w) };
+			*startPoint = blend(drawC, *startPoint);
 
 			startPoint++;
 			otherStartPoint++;
@@ -683,8 +697,22 @@ void Graphics::drawText(std::string str, int x, int y, Image* surf)
 	else
 		otherImg = surf;
 
-	if (otherImg != nullptr)
+	if (otherImg != nullptr && activeFont != nullptr)
 	{
+		int currX = x;
+		for(int i=0; i<str.length(); i++)
+		{
+			int charIndex = activeFont->getCharIndex(str[i]);
+			Image* charImg = activeFont->getImage(charIndex);
+			FontCharInfo fci = activeFont->getFontCharInfo(charIndex);
+			
+			if(fci.x!=0 || fci.y!=0 || fci.width != charImg->getWidth() || fci.height != charImg->getHeight())
+				drawSpritePart(charImg, currX, y, fci.x, fci.y, fci.width, fci.height, otherImg);
+			else
+				drawSprite(charImg, currX, y, otherImg);
+			
+			currX += fci.horizAdv;
+		}
 	}
 }
 
@@ -940,3 +968,188 @@ void Graphics::setAntiAliasing(bool v)
 {
 	Graphics::antiAliasing = v;
 }
+
+#pragma endregion
+
+#pragma region IMAGE_MANIPULATION
+int Graphics::ditherMatrixSize = 2;
+
+void Graphics::replaceColor(Image* img, Color oldColor, Color newColor, bool ignoreAlpha)
+{
+	if(img!=nullptr)
+	{
+		Color* startPix = img->getPixels();
+		Color* endPix = startPix + (img->getWidth() * img->getHeight());
+		while(startPix < endPix)
+		{
+			bool same = true;
+
+			if(startPix->red != oldColor.red)
+				same = false;
+			if(startPix->green != oldColor.green)
+				same = false;
+			if(startPix->blue != oldColor.blue)
+				same = false;
+			
+			if(!ignoreAlpha)
+			{
+				if(startPix->alpha != oldColor.alpha)
+					same = false;
+			}
+
+			if(!same)
+			{
+				*startPix = newColor;
+			}
+			startPix++;
+		}
+	}
+}
+
+void Graphics::ditherImage(Image* img, unsigned char method)
+{
+	if(img!=nullptr)
+	{
+		if(img->getPalette().getSize()>0)
+		{
+			switch (method)
+			{
+			case ORDERED_DITHER_BAYER:
+				orderedBayerDithering(img);
+				break;
+			case FLOYD_DITHER:
+				floydSteinburgDithering(img);
+				break;
+			default:
+				img->enforcePalette();
+				break;
+			}
+		}
+	}
+}
+
+void Graphics::floydSteinburgDithering(Image* img)
+{
+	int wid = img->getWidth();
+	int hei = img->getHeight();
+	Vec3f* error = new Vec3f[wid*hei];
+	for(int y=0; y<hei; y++)
+	{
+		for(int x=0; x<wid; x++)
+		{
+			Color c = img->getPixel(x,y);
+			c.red = (unsigned char)MathExt::clamp((int) ((double)c.red + error[x+y*wid].x), 0, 255);
+			c.green = (unsigned char)MathExt::clamp((int) ((double)c.green + error[x+y*wid].y), 0, 255);
+			c.blue = (unsigned char)MathExt::clamp((int) ((double)c.blue + error[x+y*wid].z), 0, 255);
+			
+			Color c2 = img->getPalette().getClosestColor( c );
+			c2.alpha = c.alpha;
+			
+			img->setPixel(x,y,c2);
+			Vec3f v1 = Vec3f();
+			v1.x = (int)c.red - (int)c2.red;
+			v1.y = (int)c.green - (int)c2.green;
+			v1.z = (int)c.blue - (int)c2.blue;
+			
+			if(x!=wid-1)
+			{
+				error[(x + 1) + y*wid] += v1*(7.0/16.0);
+
+				if(y!=hei-1)
+					error[(x + 1) + (y+1)*wid] += v1*(1.0/16.0);
+			}
+
+			if(y!=hei-1)
+			{
+				error[x + (y+1)*wid] += v1*(5.0/16.0);
+
+				if(x!=0)
+					error[(x - 1) + (y+1)*wid] += v1*(3.0/16.0);
+			}
+
+		}
+	}
+
+	delete[] error;
+}
+
+void Graphics::orderedBayerDithering(Image* img)
+{
+	int rows = (int)MathExt::ceil(MathExt::sqrt(img->getPalette().getSize()));
+	int size = (int)MathExt::sqr(rows);
+	double exp = MathExt::log(size, 2.0);
+
+	Matrix bayerMatrix = generateBayerMatrix(Matrix(), rows);
+
+	bayerMatrix *= 1.0/size;
+	double r = 255.0/((double)exp/3.0);
+
+	for(int y=0; y<img->getHeight(); y++)
+	{
+		for(int x=0; x<img->getWidth(); x++)
+		{
+			int matX = x%rows;
+			int matY = y%rows;
+
+			Color c = img->getPixel(x,y);
+			double multVal = bayerMatrix[matY][matX] - 0.5;
+			double addVal = r * multVal;
+
+			c.red = (unsigned char)MathExt::clamp((int) ((double)c.red + addVal), 0, 255);
+			c.green = (unsigned char)MathExt::clamp((int) ((double)c.green + addVal), 0, 255);
+			c.blue = (unsigned char)MathExt::clamp((int) ((double)c.blue + addVal), 0, 255);
+			
+			Color c2 = img->getPalette().getClosestColor( c );
+			
+			img->setPixel(x,y,c2);
+		}
+	}
+}
+
+Image* Graphics::scaleImage(Image* img, double xScale, double yScale, unsigned char filterMethod)
+{
+
+	return nullptr;
+}
+
+Matrix Graphics::generateBayerMatrix(Matrix mat, int rowSize)
+{
+	Matrix mat2;
+	if(mat.getCols() == 0 || mat.getRows() == 0)
+	{
+		mat2 = Matrix(2, 2);
+		mat2[0][0] = 0;
+		mat2[0][1] = 2;
+		mat2[1][0] = 3;
+		mat2[1][1] = 1;
+	}
+	else
+	{
+		mat2 = Matrix(mat.getRows()*2, mat.getCols()*2);
+
+		int inc = mat.getRows();
+		for(int y=0; y<mat.getRows(); y++)
+		{
+			for(int x=0; x<mat.getCols(); x++)
+			{
+				mat2[y][x] = 4*mat[y][x] + 0;
+				mat2[y][x+inc] = 4*mat[y][x] + 2;
+				mat2[y+inc][x] = 4*mat[y][x] + 3;
+				mat2[y+inc][x+inc] = 4*mat[y][x] + 1;
+			}
+		}
+	}
+
+	if(mat2.getRows() == rowSize)
+	{
+		return mat2;
+	}
+	else
+	{
+		return generateBayerMatrix(mat2, rowSize);
+	}
+	
+
+}
+
+#pragma endregion

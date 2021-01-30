@@ -23,13 +23,22 @@ VectorCircle::~VectorCircle()
 
 void VectorCircle::draw(Image* buffer, int globalWidth, int globalHeight)
 {
-
 	double preCX, preCY, preR;
 	preCX = cx;
 	preCY = cy;
 	preR = radius;
 
-	applyTransform();
+	if(Mat3f::getIdentity() != getTransform())
+	{
+		//A interesting note for transforms is that it does not have to
+		//change into a path. An Ellipse could also be used in some situations
+		//and translation does not require a change. Skew, and in some situations,
+		//rotation and scale require a change
+		
+		//Note that this function draws a path version of the shape
+		drawTransformed(buffer, globalWidth, globalHeight);
+		return;
+	}
 
 	//first, calc bounding box
 	int x1 = cx-radius;
@@ -119,5 +128,29 @@ void VectorCircle::applyTransform()
 
 	//deal with radius later
 }
+
+void VectorCircle::drawTransformed(Image* buffer, int globalWidth, int globalHeight)
+{
+	//convert to path then transform
+	VectorPath p = VectorPath();
+
+	p.setFillColor(getFillColor());
+	p.setFillMethod(getFillMethod());
+	p.setStrokeWidth(getStrokeWidth());
+	p.setStrokeColor(getStrokeColor());
+	p.setTransform(getTransform());
+	p.setLineCap(getLineCap());
+	p.setLineJoin(getLineJoin());
+
+	//
+	p.addMoveTo(cx-radius, cy);
+	p.addArcTo(radius, radius, 0, false, false, cx+radius, cy);
+
+	p.addMoveTo(cx-radius, cy);
+	p.addArcTo(radius, radius, 0, false, true, cx+radius, cy);
+
+	p.draw(buffer, globalWidth, globalHeight);
+}
+
 
 #pragma endregion

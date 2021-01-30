@@ -10,11 +10,29 @@ GeneralVector::GeneralVector(int size)
 {
 	this->size = size;
 	if (size > 0)
+	{
 		values = new double[size];
+		for(int i=0; i<size; i++)
+		{
+			values[i] = 0;
+		}
+	}
 }
 
 GeneralVector::GeneralVector(const GeneralVector& o)
 {
+	copy(o);
+}
+
+void GeneralVector::operator=(const GeneralVector& o)
+{
+	copy(o);
+}
+
+void GeneralVector::copy(const GeneralVector& o)
+{
+	this->~GeneralVector();
+
 	this->size = o.size;
 	if(size>0)
 	{
@@ -29,7 +47,10 @@ GeneralVector::GeneralVector(const GeneralVector& o)
 GeneralVector::~GeneralVector()
 {
 	if (size > 0)
+	{
 		delete[] values;
+		values = nullptr;
+	}
 }
 
 double GeneralVector::getValue(int location)
@@ -208,6 +229,43 @@ void GeneralVector::operator-=(GeneralVector o)
 		}
 	}
 }
+
+bool GeneralVector::operator!=(GeneralVector other)
+{
+	if(other.getSize() == size)
+	{
+		bool notSame = false;
+		for(int i=0; i<size; i++)
+		{
+			if(other.values[i] != values[i])
+			{
+				notSame = true;
+				break;
+			}
+		}
+		return notSame;
+	}
+	return true;
+}
+
+bool GeneralVector::operator==(GeneralVector other)
+{
+	if(other.getSize() == size)
+	{
+		bool same = true;
+		for(int i=0; i<size; i++)
+		{
+			if(other.values[i] != values[i])
+			{
+				same = false;
+				break;
+			}
+		}
+		return same;
+	}
+	return false;
+}
+
 
 double& GeneralVector::operator[](int index)
 {

@@ -44,7 +44,7 @@
         {
             "label": "Build Static Libraries with Clang",
             "type": "shell",
-            "command": "exportLibs.bat",
+            "command": "${workspaceFolder}/libs/exportAllLibs.bat",
             "group": {
                 "kind": "build",
                 "isDefault": true

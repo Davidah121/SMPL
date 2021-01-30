@@ -27,15 +27,12 @@ public:
 	void copyImage(Image* v);
 
 	void setPalette(ColorPalette p);
-	ColorPalette getPalette();
+	ColorPalette& getPalette();
+
+	void enforcePalette();
 
 	static Image** loadImage(std::string filename, int* amountOfImages);
 	static Image** loadImage(std::wstring filename, int* amountOfImages);
-
-	//static Image* orderedDither(Image* img, int size);
-	//static Image* floydSteinburgDither(Image* img);
-	//static Image* reduceColorPalette(Image* img, Palette palatte);
-
 
 	//Wrapper around the graphics class for images
 	void clearImage();

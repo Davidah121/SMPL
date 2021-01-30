@@ -294,6 +294,58 @@ void Matrix::operator-=(Matrix other)
 	}
 }
 
+bool Matrix::operator==(Matrix other)
+{
+	if(rows != other.rows || columns != other.columns)
+	{
+		return false;
+	}
+
+	bool same = true;
+	for(int y=0; y<other.rows; y++)
+	{
+		for(int x=0; x<other.columns; x++)
+		{
+			if(data[y][x] != other.data[y][x])
+			{
+				same = false;
+				break;
+			}
+		}
+		if(same==false)
+		{
+			break;
+		}
+	}
+	return same;
+}
+
+bool Matrix::operator!=(Matrix other)
+{
+	if(rows != other.rows || columns != other.columns)
+	{
+		return true;
+	}
+	
+	bool notSame = true;
+	for(int y=0; y<2; y++)
+	{
+		for(int x=0; x<2; x++)
+		{
+			if(data[y][x] == other.data[y][x])
+			{
+				notSame = false;
+				break;
+			}
+		}
+		if(notSame==false)
+		{
+			break;
+		}
+	}
+	return notSame;
+}
+
 double** Matrix::getData()
 {
 	return data;

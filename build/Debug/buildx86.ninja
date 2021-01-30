@@ -15,6 +15,7 @@ build $objDir/BitmapFont.o: buildToObject src/BitmapFont.cpp
 build $objDir/Class.o: buildToObject src/Class.cpp
 build $objDir/ColorNameConverter.o: buildToObject src/ColorNameConverter.cpp
 build $objDir/ColorPalette.o: buildToObject src/ColorPalette.cpp
+build $objDir/ColorSpaceConverter.o: buildToObject src/ColorSpaceConverter.cpp
 build $objDir/ComplexNumber.o: buildToObject src/ComplexNumber.cpp
 build $objDir/Compression.o: buildToObject src/Compression.cpp
 build $objDir/Font.o: buildToObject src/Font.cpp

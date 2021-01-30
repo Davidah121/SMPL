@@ -1,6 +1,9 @@
 #include "MathExt.h"
 #include "System.h"
 #include "StringTools.h"
+#include "Sort.h"
+#include "LCG.h"
+#include <float.h>
 
 #undef max
 #undef min
@@ -1332,3 +1335,392 @@ ComplexNumber MathExt::doFFT(double* arr, int size, int index, int globalSize, i
 		return ComplexNumber(arr[index], 0);
 	}
 }
+
+
+std::vector<std::vector<GeneralVector>> MathExt::meanCut(std::vector<GeneralVector> arr, int clusters, bool meansOnly)
+{
+	int dimensions = arr[0].getSize();
+	struct BoxInfo
+	{
+		std::vector<GeneralVector> arr = std::vector<GeneralVector>();
+		GeneralVector error;
+		GeneralVector averageVal;
+		bool beenSet = false;
+	};
+
+	std::vector< BoxInfo > boxes = std::vector< BoxInfo >();
+	boxes.push_back( BoxInfo() );
+
+	boxes[0].arr = arr;
+	boxes[0].error = GeneralVector(dimensions);
+	boxes[0].averageVal = GeneralVector(dimensions);
+
+	while(true)
+	{
+		for(BoxInfo& f : boxes)
+		{
+			if(!f.beenSet)
+			{
+				//first, find mean value
+				GeneralVector meanVal = GeneralVector(dimensions);
+				double meanMult = 1.0/f.arr.size();
+				for(int i=0; i<f.arr.size(); i++)
+				{
+					GeneralVector v = f.arr[i];
+					for(int k=0; k<dimensions; k++)
+					{
+						meanVal[k] += v[k] * meanMult;
+					}
+				}
+
+				//then find error^2 for all dimensions
+				GeneralVector error = GeneralVector(dimensions);
+				for(int i=0; i<f.arr.size(); i++)
+				{
+					GeneralVector v = f.arr[i];
+					for(int k=0; k<dimensions; k++)
+					{
+						error[k] += MathExt::sqr(meanVal[k] - v[k]);
+					}
+				}
+
+				f.averageVal = meanVal;
+				f.error = error;
+				f.beenSet = true;
+			}
+		}
+
+		if(boxes.size() >= clusters)
+		{
+			break;
+		}
+
+		int indexOfMostError = 0;
+		double mostError = 0;
+
+		for(int i=0; i<boxes.size(); i++)
+		{
+			GeneralVector errVec = boxes[i].error;
+			double sumError = 0;
+			for(int k=0; k<dimensions; k++)
+			{
+				sumError += errVec[k];
+			}
+
+			if(sumError > mostError)
+			{
+				mostError = sumError;
+				indexOfMostError = i;
+			}
+		}
+		
+		if(boxes[indexOfMostError].arr.size() <= 1)
+		{
+			//can't split
+			break;
+		}
+
+		BoxInfo box = boxes[indexOfMostError];
+
+		GeneralVector avg = box.averageVal;
+		
+		std::vector<GeneralVector> split1 = std::vector<GeneralVector>();
+		std::vector<GeneralVector> split2 = std::vector<GeneralVector>();
+		
+		//split the box along the part with the most error
+		int dimensionWithMostError = 0;
+		double dimensionMostError = 0;
+		for(int i=0; i<dimensions; i++)
+		{
+			if(box.error[i] > dimensionMostError)
+			{
+				dimensionWithMostError = i;
+				dimensionMostError = box.error[i];
+			}
+		}
+
+		for(int i=0; i<box.arr.size(); i++)
+		{
+			GeneralVector c = box.arr[i];
+			if(c[dimensionWithMostError] < avg[dimensionWithMostError])
+			{
+				split1.push_back(c);
+			}
+			else
+			{
+				split2.push_back(c);
+			}
+		}
+
+		boxes[indexOfMostError].arr = split1;
+		boxes[indexOfMostError].beenSet = false;
+		
+		boxes.push_back( BoxInfo() );
+		boxes.back().arr = split2;
+		boxes.back().beenSet = false;
+
+		//after split, you have 2 boxes. repeat algorithm on all boxes.
+		//Split on the box with the most error which is the sum of all of the boxes x,y,z error
+		//Insures that you end up with the amount of boxes you need to get the appropriate amount of clusters
+		//Average the clusters on each box to get the final paletteArr.
+	}
+
+	
+	std::vector< std::vector<GeneralVector>> finalGroups = std::vector<std::vector<GeneralVector>>();
+	if(meansOnly)
+	{
+		for(BoxInfo b : boxes)
+		{
+			//push averages as groups
+			finalGroups.push_back( {b.averageVal} );
+		}
+	}
+	else
+	{
+		for(BoxInfo b : boxes)
+		{
+			//push groups
+			finalGroups.push_back( b.arr );
+		}
+	}
+
+	return finalGroups;
+}
+
+std::vector<std::vector<GeneralVector>> MathExt::medianCut(std::vector<GeneralVector> arr, int clusters, bool meansOnly)
+{
+	int dimensions = arr[0].getSize();
+	std::vector<int> endPos = std::vector<int>();
+	std::vector<GeneralVector> sortArray = std::vector<GeneralVector>(arr);
+
+	endPos.push_back(arr.size());
+
+	while(endPos.size() < clusters)
+	{
+		int currentSize = endPos.size();
+		for(int i=0; i<currentSize; i++)
+		{
+			int start = 0;
+			int end = endPos[i];
+			if(i!=0)
+			{
+				start = endPos[i-1];
+			}
+
+			//sort by most range
+			
+			GeneralVector minVals = sortArray[start];
+			GeneralVector maxVals = sortArray[start];
+			GeneralVector ranges = GeneralVector(dimensions);
+			int dimensionToSortBy = 0;
+			
+			for(int i=start; i<end; i++)
+			{
+				for(int k=0; k<dimensions; k++)
+				{
+					if(sortArray[i][k] < minVals[k])
+					{
+						minVals[k] = sortArray[i][k];
+					}
+					if(sortArray[i][k] > maxVals[k])
+					{
+						maxVals[k] = sortArray[i][k];
+					}
+				}
+			}
+
+			ranges[0] = maxVals[0] - minVals[0];
+			double maxRange = ranges[0];
+			for(int k=1; k<dimensions; k++)
+			{
+				ranges[k] = maxVals[k] - minVals[k];
+				if(ranges[k] > maxRange)
+				{
+					maxRange = ranges[k];
+					dimensionToSortBy = k;
+				}
+			}
+
+			Sort::mergeSort<GeneralVector>(sortArray.data()+start, end-start, [dimensionToSortBy](GeneralVector a, GeneralVector b) -> bool{
+				return a[dimensionToSortBy] < b[dimensionToSortBy];
+			});
+		}
+
+		std::vector<int> newEndPos = std::vector<int>();
+
+		newEndPos.push_back(endPos[0]/2);
+		newEndPos.push_back(endPos[0]);
+
+		for(int i=1; i<currentSize; i++)
+		{
+			int midIndex = (endPos[i-1] + endPos[i])/2;
+			
+			newEndPos.push_back(midIndex);
+			newEndPos.push_back(endPos[i]);
+		}
+
+		endPos = newEndPos;
+	}
+
+
+	//average out each sections for the final set of clusters
+	std::vector<std::vector<GeneralVector>> finalclusters = std::vector<std::vector<GeneralVector>>();
+
+	if(meansOnly)
+	{
+		for(int i=0; i<endPos.size(); i++)
+		{
+			int start = 0;
+			int end = endPos[i];
+			if(i!=0)
+			{
+				start = endPos[i-1];
+			}
+
+			GeneralVector avgVal = GeneralVector(dimensions);
+			int divVal = end-start;
+			for(int k=start; k<end; k++)
+			{
+				GeneralVector c = sortArray[k];
+				avgVal += c;
+			}
+
+			avgVal/=divVal;
+
+
+			finalclusters.push_back( {avgVal} );
+		}
+	}
+	else
+	{
+		for(int i=0; i<endPos.size(); i++)
+		{
+			int start = 0;
+			int end = endPos[i];
+			if(i!=0)
+			{
+				start = endPos[i-1];
+			}
+
+			std::vector<GeneralVector> group = std::vector<GeneralVector>();
+			for(int k=start; k<end; k++)
+			{
+				group.push_back(sortArray[k]);
+			}
+
+			finalclusters.push_back( group );
+		}
+	}
+
+	return finalclusters;
+}
+
+std::vector<std::vector<GeneralVector>> MathExt::kMeans(std::vector<GeneralVector> arr, int clusters, int maxIterations, bool meansOnly)
+{
+	int dimensions = arr[0].getSize();
+	struct BoxInfo
+	{
+		std::vector<GeneralVector> clusters = std::vector<GeneralVector>();
+		GeneralVector averageVal = GeneralVector();
+	};
+
+	//pick k means
+	std::vector< BoxInfo > groups = std::vector< BoxInfo >();
+	
+	//pick randomly
+	unsigned int currentAmount = 0;
+	LCG lcg = LCG( (unsigned int)System::getCurrentTimeNano(), 12354, 0, arr.size());
+
+	for(int i=0; i<clusters; i++)
+	{
+		int v = lcg.get();
+		BoxInfo b = BoxInfo();
+		b.averageVal = arr[v];
+
+		groups.push_back( b );
+	}
+
+	//do k-means
+	
+	for(int i=0; i<maxIterations; i++)
+	{
+		//clear all groups
+		for(int k=0; k<groups.size(); k++)
+		{
+			groups[k].clusters.clear();
+		}
+
+		//group into k groups
+		for(int k=0; k<arr.size(); k++)
+		{
+			int minIndex = -1;
+			double minDis = DBL_MAX;
+
+			//measure distance from all means
+			for(int j=0; j<groups.size(); j++)
+			{
+				double thisDis = 0;
+				GeneralVector lengthVec = GeneralVector(dimensions);
+				lengthVec = groups[j].averageVal - arr[k];
+
+				thisDis = MathExt::vecLength(lengthVec);
+
+				if(thisDis < minDis)
+				{
+					minIndex = j;
+					minDis = thisDis;
+				}
+			}
+
+			if(minIndex >= 0)
+			{
+				groups[minIndex].clusters.push_back( arr[k] );
+			}
+		}
+
+		//recompute average
+		bool same = true;
+		for(int j=0; j<groups.size(); j++)
+		{
+			GeneralVector avg = GeneralVector(dimensions);
+			double divVal = 1.0 / groups[j].clusters.size();
+
+			for(GeneralVector c : groups[j].clusters)
+			{
+				avg += c * divVal;
+			}
+
+			if(groups[j].averageVal != avg)
+			{
+				same = false;
+			}
+
+			groups[j].averageVal = avg;
+		}
+
+		if(same)
+		{
+			break;
+		}
+	}
+
+	std::vector<std::vector<GeneralVector>> finalGroups = std::vector<std::vector<GeneralVector>>();
+
+	if(meansOnly)
+	{
+		for(BoxInfo k : groups)
+		{
+			finalGroups.push_back( {k.averageVal} );
+		}
+	}
+	else
+	{
+		for(BoxInfo k : groups)
+		{
+			finalGroups.push_back( k.clusters );
+		}
+	}
+
+	return finalGroups;
+}
+
