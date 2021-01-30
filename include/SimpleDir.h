@@ -5,8 +5,6 @@
 
 #include "Object.h"
 
-using namespace std;
-
 class SimpleDir : public Object
 {
 public:
@@ -43,7 +41,7 @@ public:
 	wchar_t* getLocation();
 
 private:
-	std::vector<filesystem::directory_entry> names = std::vector<filesystem::directory_entry>();
+	std::vector<std::filesystem::directory_entry> names = std::vector<std::filesystem::directory_entry>();
 	bool exists = false;
 	std::wstring location = L"";
 };

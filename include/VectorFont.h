@@ -13,9 +13,9 @@ public:
     const Class* getClass();
     static const Class* myClass;
 
-    bool load(std::string filename);
+    bool load(std::wstring filename);
 
-    Image* getImage(int index);
+    VectorGraphic* getGraphic(int index);
     VectorSprite* getVectorSprite();
 
 private:

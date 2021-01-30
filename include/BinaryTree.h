@@ -1,4 +1,5 @@
 #pragma once
+#include "StringTools.h"
 
 template<typename T>
 struct BinaryTreeNode

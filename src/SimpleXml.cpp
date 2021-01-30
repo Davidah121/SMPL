@@ -78,7 +78,7 @@ void SimpleXml::dispose()
 }
 
 
-void SimpleXml::save(std::string filename)
+void SimpleXml::save(std::wstring filename)
 {
     SimpleFile f = SimpleFile(filename, SimpleFile::WRITE);
 
@@ -95,40 +95,40 @@ void SimpleXml::save(std::string filename)
 
 void SimpleXml::saveNode(SimpleFile* f, XmlNode* node)
 {
-    std::string line = "";
+    std::wstring line = L"";
 
-    line += "<";
+    line += L"<";
 
     //has no child nodes, no attributes, and no value
-    if(node->childNodes.size()==0 && node->attributes.size()==0 && node->value=="")
+    if(node->childNodes.size()==0 && node->attributes.size()==0 && node->value==L"")
     {
-        line+="/";
+        line+=L"/";
     }
 
     line += node->title;
 
     for(XmlAttribute a : node->attributes)
     {
-        line += " ";
+        line += L" ";
         line += a.name;
-        line += "=\"";
+        line += L"=\"";
         line += a.value;
-        line += "\"";
+        line += L"\"";
     }
     
     //has no child nodes and no value, but has at least one attribute
-    if(node->childNodes.size()==0 && node->attributes.size()>0 && node->value=="")
+    if(node->childNodes.size()==0 && node->attributes.size()>0 && node->value==L"")
     {
-        line += "/";
+        line += L"/";
     }
-    line += ">";
+    line += L">";
 
-    f->writeString(line);
+    f->writeWideString(line);
 
-    if(node->value=="" && node->childNodes.size()>0)
+    if(node->value==L"" && node->childNodes.size()>0)
         f->writeLineBreak();
-    else if(node->value!="")
-        f->writeString(node->value);
+    else if(node->value!=L"")
+        f->writeWideString(node->value);
     else
         f->writeLineBreak();
     
@@ -138,13 +138,13 @@ void SimpleXml::saveNode(SimpleFile* f, XmlNode* node)
         saveNode(f, v);
     }
 
-    if(node->childNodes.size()>0 || node->value!="")
+    if(node->childNodes.size()>0 || node->value!=L"")
     {
-        line = "</";
+        line = L"</";
         line += node->title;
-        line += ">";
+        line += L">";
 
-        f->writeString(line);
+        f->writeWideString(line);
         f->writeLineBreak();
     }
 }
@@ -153,12 +153,12 @@ void SimpleXml::saveNode(SimpleFile* f, XmlNode* node)
  * No Error Checking currently.
  * Currently Adding error checking and failures
  */
-bool SimpleXml::load(std::string filename)
+bool SimpleXml::load(std::wstring filename)
 {
     SimpleFile f = SimpleFile(filename, SimpleFile::READ);
 
     bool parsingNode = false;
-    std::string innerNodeText = "";
+    std::wstring innerNodeText = L"";
 
     XmlNode* parentNode = nullptr;
     bool isRecordingText = false;
@@ -180,7 +180,7 @@ bool SimpleXml::load(std::string filename)
                 {
                     parentNode->value = innerNodeText;
                 }
-                innerNodeText = "";
+                innerNodeText = L"";
                 isRecordingText = false;
                 parsingNode = true;
                 hitEnd=false;
@@ -198,7 +198,7 @@ bool SimpleXml::load(std::string filename)
                     return false;
                 }
 
-                innerNodeText = "";
+                innerNodeText = L"";
                 isRecordingText = false;
                 if(parentNode==nullptr)
                 {
@@ -249,7 +249,7 @@ bool SimpleXml::load(std::string filename)
                 {
                     if(parsingNode)
                     {
-                        if( StringTools::isAlphaNumerial(byte, true, false) || byte == '/' || byte == '?')
+                        if( StringTools::isAlphaNumerial(byte, true, false) || byte == '/' || byte == '?' || byte == '!')
                         {
                             isRecordingText=true;
                             innerNodeText += byte;
@@ -257,7 +257,7 @@ bool SimpleXml::load(std::string filename)
                         else
                         {
                             //error has occurred
-                            //Must a number, letter, /, or _ at the start or ?
+                            //Must a number, letter, /, or _ at the start or ? or !
                             dispose();
                             return false;
                         }
@@ -390,15 +390,15 @@ std::vector<unsigned char> SimpleXml::removeCommentsAndInvalidChars(std::vector<
     return newBytes;
 }
 
-XmlNode* SimpleXml::parseXmlLine(std::string line)
+XmlNode* SimpleXml::parseXmlLine(std::wstring line)
 {
     //first, get the title. Will always be first and separated by a space from everything else
     XmlNode* node;
 
     size_t indexOfFirstSpace = line.find_first_of(' ');
-    std::string title = line.substr(0, indexOfFirstSpace);
+    std::wstring title = line.substr(0, indexOfFirstSpace);
 
-    std::string attribString = line;
+    std::wstring attribString = line;
 
     node = new XmlNode();
 
@@ -415,7 +415,7 @@ XmlNode* SimpleXml::parseXmlLine(std::string line)
             title = attribString.substr(0, indexOfFirstSpace);
         }
     }
-    else if(line[0] == '?' && line[line.size()-1] == '?')
+    else if((line[0] == '?' && line[line.size()-1] == '?') || line[0] == '!')
     {
         //xml declaration
         node->isEnd = true;
@@ -456,7 +456,7 @@ XmlNode* SimpleXml::parseXmlLine(std::string line)
                     attrib.value+=attribString[i];
                 }
 
-                if(attrib.name != "")
+                if(attrib.name != L"")
                     node->attributes.push_back(attrib);
                 
                 attrib = XmlAttribute();
@@ -509,14 +509,14 @@ XmlNode* SimpleXml::parseXmlLine(std::string line)
     return node;
 }
 
-char SimpleXml::parseEscapeString(std::string escString)
+int SimpleXml::parseEscapeString(std::wstring escString)
 {
     //Format: &----;
     
     if(escString.front()=='&' && escString.back()==';')
     {
         //valid format
-        std::string internalString = escString.substr(1, escString.size()-2);
+        std::wstring internalString = escString.substr(1, escString.size()-2);
         if(internalString.front() == '#')
         {
             internalString = internalString.substr(1, internalString.size()-1);
@@ -531,35 +531,35 @@ char SimpleXml::parseEscapeString(std::string escString)
                 }
 
                 //charVal could be any unicode value. Change later.
-                return (char)charVal;
+                return charVal;
             }
             else
             {
                 //decimal number
-                return (char)std::stoi( internalString );
+                return std::stoi( internalString );
             }
         }
         else
         {
             //name
             //only XML predefined names
-            if(internalString == "quot")
+            if(internalString == L"quot")
             {
                 return '"';
             }
-            else if(internalString == "amp")
+            else if(internalString == L"amp")
             {
                 return '&';
             }
-            else if(internalString == "apos")
+            else if(internalString == L"apos")
             {
                 return '\'';
             }
-            else if(internalString == "lt")
+            else if(internalString == L"lt")
             {
                 return '<';
             }
-            else if(internalString == "gt")
+            else if(internalString == L"gt")
             {
                 return '>';
             }
@@ -572,13 +572,13 @@ char SimpleXml::parseEscapeString(std::string escString)
 
 void SimpleXml::fixParseOnNode(XmlNode* n)
 {
-    std::string actualString = "";
-    std::string tempString = "";
+    std::wstring actualString = L"";
+    std::wstring tempString = L"";
     bool proc = false;
     for(XmlAttribute& k : n->attributes)
     {
-        actualString = "";
-        tempString = "";
+        actualString = L"";
+        tempString = L"";
         proc = false;
         for(char c : k.value)
         {
@@ -599,10 +599,10 @@ void SimpleXml::fixParseOnNode(XmlNode* n)
                 if(c==';')
                 {
                     tempString += ';';
-                    char t = parseEscapeString(tempString);
+                    int t = parseEscapeString(tempString);
                     actualString += t;
                     proc=false;
-                    tempString = "";
+                    tempString = L"";
                 }
                 else
                 {
@@ -616,8 +616,8 @@ void SimpleXml::fixParseOnNode(XmlNode* n)
 
 
     //repeat for the value of the node if it has one
-    actualString = "";
-    tempString = "";
+    actualString = L"";
+    tempString = L"";
     proc = false;
     for(char c : n->value)
     {
@@ -638,10 +638,10 @@ void SimpleXml::fixParseOnNode(XmlNode* n)
             if(c==';')
             {
                 tempString += ';';
-                char t = parseEscapeString(tempString);
+                int t = parseEscapeString(tempString);
                 actualString += t;
                 proc=false;
-                tempString = "";
+                tempString = L"";
             }
             else
             {

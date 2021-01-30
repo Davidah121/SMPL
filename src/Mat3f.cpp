@@ -151,3 +151,45 @@ Vec3f Mat3f::operator*(Vec3f other)
 	
 	return v;
 }
+
+bool Mat3f::operator==(Mat3f other)
+{
+	bool same = true;
+	for(int y=0; y<3; y++)
+	{
+		for(int x=0; x<3; x++)
+		{
+			if(data[y][x] != other.data[y][x])
+			{
+				same = false;
+				break;
+			}
+		}
+		if(same==false)
+		{
+			break;
+		}
+	}
+	return same;
+}
+
+bool Mat3f::operator!=(Mat3f other)
+{
+	bool notSame = true;
+	for(int y=0; y<3; y++)
+	{
+		for(int x=0; x<3; x++)
+		{
+			if(data[y][x] == other.data[y][x])
+			{
+				notSame = false;
+				break;
+			}
+		}
+		if(notSame==false)
+		{
+			break;
+		}
+	}
+	return notSame;
+}

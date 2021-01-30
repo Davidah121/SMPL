@@ -147,6 +147,26 @@ bool StringTools::equalsIgnoreCase(std::string a, std::string b)
 	return true;
 }
 
+bool StringTools::equalsIgnoreCase(std::wstring a, std::wstring b)
+{
+	if(a.size() == b.size())
+	{
+		for(int i=0; i<a.size(); i++)
+		{
+			if( toupper(a[i]) != toupper(b[i]))
+			{
+				return false;
+			}
+		}
+	}
+	else
+	{
+		return false;
+	}
+	
+	return true;
+}
+
 bool StringTools::isAlphaNumerial(char v, bool underScoreAllowed, bool dashAllowed)
 {
 	if(v >= 48 && v <=57)
@@ -353,6 +373,163 @@ std::vector<std::string> StringTools::splitString(std::string s, const char* del
 
 	return stringArray;
 }
+
+
+std::vector<std::wstring> StringTools::splitString(std::wstring s, const wchar_t delim, bool removeEmpty)
+{
+	std::vector<std::wstring> stringArray = std::vector<std::wstring>();
+
+	std::wstring temp = L"";
+
+	int i = 0;
+	while (i < s.size())
+	{
+		if (s.at(i) != delim)
+		{
+			temp += s.at(i);
+		}
+		else
+		{
+			if(removeEmpty)
+			{
+				if(temp!=L"")
+					stringArray.push_back(temp);
+			}
+			else
+			{
+				stringArray.push_back(temp);
+			}
+			
+			temp = L"";
+		}
+		i++;
+	}
+
+	stringArray.push_back(temp);
+
+	return stringArray;
+}
+
+std::vector<std::wstring> StringTools::splitStringMultipleDeliminators(std::wstring s, const wchar_t* delim, bool removeEmpty)
+{
+	std::vector<std::wstring> stringArray = std::vector<std::wstring>();
+
+	std::wstring temp = L"";
+
+	int i = 0;
+	int dSize = std::wcslen(delim);
+
+	while (i < s.size())
+	{
+		bool valid = true;
+
+		for(int x=0; x<dSize; x++)
+		{
+			if (s.at(i) == delim[x])
+			{
+				valid = false;
+			}
+		}
+
+		if (valid)
+		{
+			temp += s.at(i);
+		}
+		else
+		{
+			if(removeEmpty)
+			{
+				if(temp!=L"")
+					stringArray.push_back(temp);
+			}
+			else
+			{
+				stringArray.push_back(temp);
+			}
+			
+			temp = L"";
+		}
+		
+		i++;
+	}
+
+	stringArray.push_back(temp);
+
+	return stringArray;
+}
+
+std::vector<std::wstring> StringTools::splitString(std::wstring s, const wchar_t* delim, bool removeEmpty)
+{
+	std::vector<std::wstring> stringArray = std::vector<std::wstring>();
+
+	std::wstring temp = L"";
+	std::wstring otherString = L"";
+
+	int dSize = std::wcslen(delim);
+
+	int i = 0;
+	int count = 0;
+
+	while (i < s.size())
+	{
+		if (s.at(i) != delim[0])
+		{
+			temp += s.at(i);
+			i++;
+		}
+		else
+		{
+			if (dSize + i <= s.size())
+			{
+				//possible that it could still contain
+				//the substring
+
+			}
+			while (count < dSize)
+			{
+				if (s.at(i + count) == delim[count])
+				{
+					otherString += delim[count];
+				}
+				else
+				{
+					break;
+				}
+				count++;
+			}
+
+			if (count == dSize)
+			{
+				//Found subString
+				if(removeEmpty)
+				{
+					if(temp!=L"")
+						stringArray.push_back(temp);
+				}
+				else
+				{
+					stringArray.push_back(temp);
+				}
+				
+				temp = L"";
+				i += count;
+
+				count = 0;
+				otherString = L"";
+			}
+			else
+			{
+				temp += otherString;
+			}
+
+		}
+	}
+
+	stringArray.push_back(temp);
+
+	return stringArray;
+}
+
 
 int StringTools::toInt(std::string s)
 {

@@ -152,6 +152,16 @@ Vec4f Vec4f::operator-()
 	return Vec4f(-x, -y, -z, -w);
 }
 
+bool Vec4f::operator==(Vec4f other)
+{
+	return (x==other.x) && (y==other.y) && (z==other.z) && (w==other.w);
+}
+
+bool Vec4f::operator!=(Vec4f other)
+{
+	return (x!=other.x) || (y!=other.y) || (z!=other.z) || (w!=other.w);
+}
+
 void Vec4f::operator+=(Vec4f other)
 {
 	x += other.x;

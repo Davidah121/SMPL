@@ -15,7 +15,7 @@ SimpleDir::SimpleDir(wchar_t* directory)
 {
 	try
 	{
-		exists = filesystem::is_directory(directory);
+		exists = std::filesystem::is_directory(directory);
 		location = directory;
 
 		if (exists == true)
@@ -46,7 +46,7 @@ SimpleDir::~SimpleDir()
 void SimpleDir::update()
 {
 	names.clear();
-	for (auto& entry: filesystem::directory_iterator(location))
+	for (auto& entry: std::filesystem::directory_iterator(location))
 	{
 		names.push_back(entry);
 	}
@@ -93,7 +93,7 @@ unsigned int SimpleDir::fileSize(int index)
 {
 	if (index >= 0 && index < names.size())
 	{
-		return (unsigned int)filesystem::file_size(names[index]);
+		return (unsigned int)std::filesystem::file_size(names[index]);
 	}
 	else
 	{
@@ -110,7 +110,7 @@ time_t SimpleDir::getLastChangeTime(int index)
 {
 	if (index >= 0 && index < names.size())
 	{
-		filesystem::file_time_type ftime = filesystem::last_write_time(names[index].path());
+		std::filesystem::file_time_type ftime = std::filesystem::last_write_time(names[index].path());
 		
 		std::time_t t = std::chrono::duration_cast<std::chrono::seconds>(ftime.time_since_epoch()).count();
 		
@@ -131,7 +131,7 @@ bool SimpleDir::referenceIsDirectory(int index)
 {
 	if (index >= 0 && index < names.size())
 	{
-		return filesystem::is_directory( names[index].path() );
+		return std::filesystem::is_directory( names[index].path() );
 	}
 	else
 	{
@@ -155,7 +155,7 @@ void SimpleDir::renameResource(wchar_t * newName, int index)
 
 		try
 		{
-			filesystem::rename(names[index], temp);
+			std::filesystem::rename(names[index], temp);
 		}
 		catch (...)
 		{
@@ -179,11 +179,11 @@ void SimpleDir::deleteResource(int index)
 		{
 			if (!this->referenceIsDirectory(index))
 			{
-				filesystem::remove(names[index]); //Just a file
+				std::filesystem::remove(names[index]); //Just a file
 			}
 			else
 			{
-				filesystem::remove_all(names[index]); //A directory
+				std::filesystem::remove_all(names[index]); //A directory
 			}
 		}
 		catch(...)
@@ -218,7 +218,7 @@ void SimpleDir::copyResource(wchar_t * newName, int index)
 		
 		try
 		{
-			filesystem::copy(names[index], oth);
+			std::filesystem::copy(names[index], oth);
 		}
 		catch (...)
 		{
@@ -310,7 +310,7 @@ bool SimpleDir::doesExist()
 void SimpleDir::createDirectory()
 {
 	if(!doesExist())
-		filesystem::create_directory(location);
+		std::filesystem::create_directory(location);
 }
 
 /*

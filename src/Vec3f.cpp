@@ -96,6 +96,16 @@ Vec3f Vec3f::operator-()
 	return Vec3f(-x, -y, -z);
 }
 
+bool Vec3f::operator==(Vec3f other)
+{
+	return (x==other.x) && (y==other.y) && (z==other.z);
+}
+
+bool Vec3f::operator!=(Vec3f other)
+{
+	return (x!=other.x) || (y!=other.y) || (z!=other.z);
+}
+
 void Vec3f::operator+=(Vec3f other)
 {
 	x += other.x;

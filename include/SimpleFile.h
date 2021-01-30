@@ -4,8 +4,6 @@
 #include<fstream>
 #include "Object.h"
 
-using namespace std;
-
 class SimpleFile : public Object
 {
 public:
@@ -30,16 +28,16 @@ public:
 	wchar_t readWideChar(); //Unicode capable
 	const char* readLine();
 	const wchar_t* readWideLine();
-	string readString();
-	wstring readWideString();
+	std::string readString();
+	std::wstring readWideString();
 
-	vector<const char*> readFullFile();
-	vector<const wchar_t*> readFullFileWide();
+	std::vector<const char*> readFullFile();
+	std::vector<const wchar_t*> readFullFileWide();
 
-	vector<string> readFullFileString();
-	vector<wstring> readFullFileStringWide();
+	std::vector<std::string> readFullFileString();
+	std::vector<std::wstring> readFullFileStringWide();
 
-	vector<unsigned char> readFullFileAsBytes();
+	std::vector<unsigned char> readFullFileAsBytes();
 
 	//Write functions
 	void writeByte(char c);
@@ -49,8 +47,8 @@ public:
 
 	void writeBytes(unsigned char* data, int size);
 
-	void writeString(string line);
-	void writeWideString(wstring line); //Unicode capable
+	void writeString(std::string line);
+	void writeWideString(std::wstring line); //Unicode capable
 
 	void writeLineBreak();
 
@@ -58,7 +56,7 @@ public:
 	bool isOpen();
 	void close();
 	bool isEndOfFile();
-	wstring getFileName();
+	std::wstring getFileName();
 
 	int getSize();
 	int getBytesLeft();
@@ -66,7 +64,7 @@ public:
 private:
 	std::wstring wideFileName; //Unicode capable
 	char type;
-	fstream* file;
+	std::fstream* file;
 	int size;
 	
 };

@@ -17,7 +17,7 @@ VectorFont::~VectorFont()
     
 }
 
-bool VectorFont::load(std::string filename)
+bool VectorFont::load(std::wstring filename)
 {
     SimpleXml f = SimpleXml();
     if(!f.load(filename))
@@ -27,17 +27,17 @@ bool VectorFont::load(std::string filename)
 
     for(XmlNode* n : f.nodes)
     {
-        if(StringTools::equalsIgnoreCase(n->title, "svg"))
+        if(StringTools::equalsIgnoreCase(n->title, L"svg"))
         {
             XmlNode* cNode;
             for(int index=0; index<n->childNodes.size(); index++)
             {
                 cNode = n->childNodes[index];
-                if( StringTools::equalsIgnoreCase(cNode->title, "defs") )
+                if( StringTools::equalsIgnoreCase(cNode->title, L"defs") )
                 {
                     for(XmlNode* q : cNode->childNodes)
                     {
-                        if( StringTools::equalsIgnoreCase(q->title, "font") )
+                        if( StringTools::equalsIgnoreCase(q->title, L"font") )
                         {
                             cNode = q;
                             break;
@@ -47,11 +47,11 @@ bool VectorFont::load(std::string filename)
                 }
             }
 
-            if( StringTools::equalsIgnoreCase(cNode->title, "font") )
+            if( StringTools::equalsIgnoreCase(cNode->title, L"font") )
             {
                 for(XmlAttribute a : cNode->attributes)
                 {
-                    if( StringTools::equalsIgnoreCase(a.name, "horiz-adv-x") )
+                    if( StringTools::equalsIgnoreCase(a.name, L"horiz-adv-x") )
                     {
                         baseHorizontalAdvance = MathExt::ceil( stod(a.value));
                     }
@@ -62,21 +62,22 @@ bool VectorFont::load(std::string filename)
                 int height = 0;
                 
                 XmlNode parentNode = XmlNode();
-                parentNode.title = "svg";
+                parentNode.title = L"svg";
                 XmlAttribute widthAttrib = XmlAttribute();
-                widthAttrib.name = "width";
-                widthAttrib.value = to_string(width);
+                widthAttrib.name = L"width";
+                widthAttrib.value = std::to_wstring(width);
                 XmlAttribute heightAttrib = XmlAttribute();
-                heightAttrib.name = "height";
-                heightAttrib.value = to_string(height);
+                heightAttrib.name = L"height";
+                heightAttrib.value = std::to_wstring(height);
                 
                 parentNode.attributes.push_back( widthAttrib );
                 parentNode.attributes.push_back( heightAttrib );
                 
                 //process font information
-                for(XmlNode* fontChildren : cNode->childNodes)
+                for(int i=0; i<cNode->childNodes.size(); i++)
                 {
-                    if(StringTools::equalsIgnoreCase(fontChildren->title, "glyph") || StringTools::equalsIgnoreCase(fontChildren->title, "missing-glyph"))
+                    XmlNode* fontChildren = cNode->childNodes[i];
+                    if(StringTools::equalsIgnoreCase(fontChildren->title, L"glyph") || StringTools::equalsIgnoreCase(fontChildren->title, L"missing-glyph"))
                     {
                         FontCharInfo fc;
                         fc.x=0;
@@ -88,18 +89,38 @@ bool VectorFont::load(std::string filename)
 
                         for(XmlAttribute a : fontChildren->attributes)
                         {
-                            if(StringTools::equalsIgnoreCase(a.name, "unicode"))
+                            if(StringTools::equalsIgnoreCase(a.name, L"unicode"))
                             {
-                                int unicodeVal = a.value.front();
+                                //StringTools::println(a.value);
+
+                                if(a.value.front() == '&' && a.value.back() == ';')
+                                {
+                                    fc.unicodeValue = SimpleXml::parseEscapeString(a.value);
+                                }
+                                else
+                                {
+                                    
+                                    if(a.value == L"A")
+                                    {
+                                        StringTools::println(a.value);
+                                        StringTools::println(a.name);
+                                        StringTools::println(i);
+                                        StringTools::println(fontChildren->attributes[0].value);
+                                        fc.unicodeValue = 65;
+                                    }
+                                    else
+                                        fc.unicodeValue = (unsigned char) a.value.front();
+                                }
+                                
+                            
                                 /**
                                 for(int i=3, k=0; i>=0 || k<a.value.size(); i--, k++)
                                 {
                                     unicodeVal += a.value[k] << (i*8);
                                 }
                                 **/
-                                fc.unicodeValue = unicodeVal;
                             }
-                            else if(StringTools::equalsIgnoreCase(a.name, "horiz-adv-x"))
+                            else if(StringTools::equalsIgnoreCase(a.name, L"horiz-adv-x"))
                             {
                                 fc.horizAdv = (int)MathExt::ceil( stod(a.value));
                             }
@@ -109,7 +130,7 @@ bool VectorFont::load(std::string filename)
                         VectorGraphic* fontGraphic = new VectorGraphic(width, height);
                         
                         XmlNode parsedNode = XmlNode(*fontChildren);
-                        parsedNode.title = "path";
+                        parsedNode.title = L"path";
                         parentNode.childNodes.push_back(&parsedNode);
 
                         fontGraphic->load(&parentNode);
@@ -118,19 +139,32 @@ bool VectorFont::load(std::string filename)
 
                         this->charInfoList.push_back(fc);
                         this->fontSprite.addGraphic(fontGraphic);
+                        
                     }
-                    else if(StringTools::equalsIgnoreCase(fontChildren->title, "font-face"))
+                    else if(StringTools::equalsIgnoreCase(fontChildren->title, L"font-face"))
                     {
                         for(XmlAttribute a : fontChildren->attributes)
                         {
-                            if( StringTools::equalsIgnoreCase(a.name, "bbox"))
+                            if( StringTools::equalsIgnoreCase(a.name, L"bbox"))
                             {
-                                std::vector<std::string> split = StringTools::splitString(a.value, ',');
-                                width = (int) MathExt::ceil(stod(split[2]) - stod(split[0]));
-                                height = (int) MathExt::ceil(stod(split[3]) - stod(split[1]));
+                                StringTools::println(a.value);
 
-                                parentNode.attributes[0].value = to_string(width);
-                                parentNode.attributes[1].value = to_string(height);
+                                std::vector<std::wstring> split = StringTools::splitStringMultipleDeliminators(a.value, L", ");
+                                
+                                if(split.size()==4)
+                                {
+                                    width = (int) MathExt::ceil(stod(split[2]) - stod(split[0]));
+                                    height = (int) MathExt::ceil(stod(split[3]) - stod(split[1]));
+
+                                    parentNode.attributes[0].value = std::to_wstring(width);
+                                    parentNode.attributes[1].value = std::to_wstring(height);
+                                }
+                                else
+                                {
+                                    //something went wrong
+                                    StringTools::out << "Something is wrong with the split size of a.value: " << split.size() << StringTools::lineBreak;
+                                }
+                                
                                 
                             }
                         }
@@ -145,9 +179,9 @@ bool VectorFont::load(std::string filename)
     return true;
 }
 
-Image* VectorFont::getImage(int index)
+VectorGraphic* VectorFont::getGraphic(int index)
 {
-    return fontSprite.getGraphic(index)->getImageBuffer();
+    return fontSprite.getGraphic(index);
 }
 
 VectorSprite* VectorFont::getVectorSprite()

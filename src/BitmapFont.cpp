@@ -31,38 +31,59 @@ BitmapFont::BitmapFont(std::string filename)
 		std::vector<std::string> fileInfo = file.readFullFileString();
 		file.close();
 		int fontSize = StringTools::toInt(fileInfo[2]);
-
-		index = fileInfo[3].find_last_not_of("\\");
-		std::string imageFile = fileInfo[3].substr(0, index);
-
-		img = Image::loadImage(imageFile, NULL)[0];
+		std::string imageFile = dir + "/" + fileInfo[3];
+		int amountOfImages = 0;
+		Image** tempImgPointer = Image::loadImage(imageFile, &amountOfImages);
+		if(amountOfImages>0)
+		{
+			StringTools::println("Image loaded");
+			img = tempImgPointer[0];
+		}
+		else
+		{
+			StringTools::out << StringTools::toWideString(imageFile) << " was not loaded" << StringTools::lineBreak;
+		}
+		
 
 		int startIndex = 5;
 		while (startIndex < fileInfo.size())
 		{
 			if (fileInfo[startIndex] == "endl;")
 			{
+				StringTools::println("End of file");
 				break;
 			}
 			else
 			{
 				std::vector<std::string> splitString = StringTools::splitString(fileInfo[startIndex], ",");
-				//char num, x, y, width, height
-				FontCharInfo fc;
-				fc.unicodeValue = StringTools::toInt(splitString[0]);
-				fc.x = StringTools::toInt(splitString[1]);
-				fc.y = StringTools::toInt(splitString[2]);
-				fc.width = StringTools::toInt(splitString[3]);
-				fc.height = StringTools::toInt(splitString[4]);
-				charInfoList.push_back(fc);
+				if(splitString.size() == 5)
+				{
+					//char num, x, y, width, height
+					FontCharInfo fc;
+					fc.unicodeValue = StringTools::toInt(splitString[0]);
+					fc.x = StringTools::toInt(splitString[1]);
+					fc.y = StringTools::toInt(splitString[2]);
+					fc.width = StringTools::toInt(splitString[3]);
+					fc.height = StringTools::toInt(splitString[4]);
+					fc.horizAdv = fc.width;
+					charInfoList.push_back(fc);
+				}
+				else
+				{
+					StringTools::out << "Invalid string: " << StringTools::toWideString(fileInfo[startIndex]) << "| with size: " << fileInfo.size() << StringTools::lineBreak;
+				}
+				
 			}
 			startIndex++;
 		}
 
-		//pngs have explicit alpha were gifs have 1 alpha value and bmp
-		//generally will not have alpha. when they do, it is explicit
-		if ( imageFile.substr(imageFile.size() - 3, 3) != "png" )
+		//pngs have explicit alpha, gifs have 1 alpha value
+		//and bmp will not have alpha. Treat the intensity as the alpha.
+		//should change the format to YCaCb to do this later so colors still work.
+		if ( imageFile.substr(imageFile.size() - 3, 3) != "png" && imageFile.substr(imageFile.size() - 3, 3) != "gif")
 		{
+			
+			StringTools::println("Not png or gif");
 			Color* imgPixels = img->getPixels();
 			Color* endPixels = img->getPixels() + img->getWidth() * img->getHeight();
 

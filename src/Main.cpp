@@ -16,6 +16,7 @@
 #include "LCG.h"
 #include "NeuralNetwork.h"
 
+#include "ColorSpaceConverter.h"
 /**
  * Purpose:
  *      Provide a port to other systems
@@ -43,13 +44,9 @@
 
 /**
  * Things being worked on currently:
- *      Compression - Deflate decompression and compression.
- *          Test Deflate decompression. Multiple points of potential failure.
- *              Mostly on the dynamic part
- *          After decompression is done, work on loading pngs
- *          Also, after all compression and decompression methods are done, work on saving images.
- *      
- *      Image - Load PNG, JPEG, DDS
+ *      Compression - Deflate compression.
+ *          
+ *      Image - Load JPEG, DDS
  *          Also be able to save to the different formats
  *          These must be implemented through this library to maintain cross platform use.
  *          Not relying on additional tools and only the c++ library is required and not much of the c++ library.
@@ -74,19 +71,14 @@
  *      Work on VectorGraphic class by actually finishing it.
  *      Work on WavAudio so that it plays audio correctly.
  *      
- *      Work on Image class by supporting interlacing on png and gif files.
  *      Fix StringTools at some point. Especially the conversion between char* to wchar_t*
  *      Lastly
  *      Work on making the library portable
  */
 
-/**
- * Current Objective:
- *      VectorGraphic
- * 
- */
 WndWindow* windowPointer;
 Image* img;
+std::string globalString = "";
 
 void function1()
 {
@@ -161,14 +153,13 @@ void svgTest()
     if(windowPointer!=nullptr)
     {
         Graphics::setColor({255,255,255,255});
-        shape.getImageBuffer()->clearImage();
+        img->clearImage();
 
-        shape.draw();
+        shape.draw(img);
 
         Graphics::setColor({0,0,0,255});
-        shape.getImageBuffer()->drawCircle(25, 24, 2, false);
 
-        windowPointer->drawImage(shape.getImageBuffer());
+        windowPointer->drawImage(img);
     }
 }
 
@@ -206,7 +197,7 @@ void drawLoadedSvg(std::string file)
         delete img;
 }
 
-void testXML(std::string filename)
+void testXML(std::wstring filename)
 {
     SimpleXml x = SimpleXml();
     x.load(filename);
@@ -215,25 +206,29 @@ void testXML(std::string filename)
     StringTools::println(x.nodes[0]->value);
 }
 
-void testFontSVG(std::string filename)
+void testFontSVG(std::wstring filename)
 {
     VectorFont ft = VectorFont();
     ft.load(filename);
 
+    /*
     for(FontCharInfo fci : ft.getListOfFontCharInfo())
     {
         StringTools::out << fci.x << ", " << fci.y << ", ";
         StringTools::out << fci.width << ", " << fci.height << ", ";
         StringTools::out << fci.horizAdv << ", " << fci.unicodeValue << StringTools::lineBreak;
     }
-
-    VectorGraphic* g = ft.getVectorSprite()->getGraphic(2);
+    */
+    
+    
+    VectorGraphic* g = ft.getVectorSprite()->getGraphic(ft.getCharIndex('A'));
     
     shape = *g;
 
-    shape.setTransform( MathExt::translation2D(500, 500) * MathExt::scale2D(0.25, 0.25) );
+    img = new Image(800, 800);
+    shape.setTransform( MathExt::translation2D(300, 200) * MathExt::scale2D(0.25, 0.25) );
 
-    windowPointer = new WndWindow("two", g->getWidth(), g->getHeight());
+    windowPointer = new WndWindow("two", img->getWidth(), img->getHeight());
     windowPointer->setPaintFunction(svgTest);
     windowPointer->repaint();
 
@@ -243,6 +238,37 @@ void testFontSVG(std::string filename)
     
 }
 
+void paintFont()
+{
+    if(windowPointer!=nullptr)
+    {
+        Graphics::setColor({255,255,255,255});
+        img->clearImage();
+        Graphics::setColor({0,0,0,255});
+        img->drawText(globalString, 0, img->getHeight()/2);
+
+        windowPointer->drawImage(img);
+    }
+}
+
+void testFontGraphics()
+{
+    BitmapFont font = BitmapFont("./testFiles/BitmapFontFiles/bmpFont.ft");
+    Graphics::setFont(&font);
+    
+    img = new Image(640, 480);
+
+    windowPointer = new WndWindow("font testing", img->getWidth(), img->getHeight());
+    windowPointer->setPaintFunction(paintFont);
+    windowPointer->repaint();
+
+    while(windowPointer->getRunning())
+    {
+        windowPointer->repaint();
+        StringTools::println("Enter String");
+        globalString = StringTools::getString();
+    }
+}
 
 void testMatrixStuff()
 {
@@ -283,7 +309,7 @@ void paintFunction()
 {
     if(windowPointer!=nullptr)
     {
-        Graphics::setColor({255,204,0,255});
+        Graphics::setColor({255,255,255,255});
         Image background = Image(img->getWidth(), img->getHeight());
         background.clearImage();
         background.drawSprite(img, 0, 0);
@@ -291,6 +317,7 @@ void paintFunction()
         windowPointer->drawImage(&background);
     }
 }
+
 void testImageDisplay()
 {
     StringTools::out << "Enter image name: ";
@@ -320,7 +347,7 @@ void testImageDisplay()
         System::sleep(16,666);
     }
 
-    img->saveGIF("File.gif");
+    //img->saveGIF("File.gif");
     delete windowPointer;
     delete[] imgArr;
 }
@@ -478,14 +505,102 @@ void testNeuralNetwork()
 
 }
 
+void testColorPalette()
+{
+    StringTools::out << "Enter image name: ";
+    std::string filename = StringTools::getString();
+    //C:\Users\Alan\source\repos\ImageLibrary\TestImages\PNG\Varying bit sizes and types
+    int amountOfImages = 0;
+    Image** imgArray = Image::loadImage(filename, &amountOfImages);
+
+    Image* img = nullptr;
+    if(amountOfImages>0)
+    {
+        img = imgArray[0];
+
+        StringTools::out << "Enter number of colors: ";
+        std::string colorNumber = StringTools::getString();
+
+        int num = StringTools::toInt(colorNumber);
+
+        ColorPalette temp;
+
+        StringTools::out << "Quantization method? 1=meanCut, 2=medianCut, 3=kMeans: ";
+        std::string method = StringTools::getString();
+        int mNum = StringTools::toInt(method);
+
+        StringTools::out << "Unique only? y=yes, n=no: ";
+        bool unique = StringTools::getChar() == 'y';
+
+        StringTools::out << "Convert to LAB before Conversion? y=yes, n=no: ";
+        bool labSpace = StringTools::getChar() == 'y';
+
+        if(mNum == 2)
+        {
+            temp = ColorPalette::generateOptimalPalette(img->getPixels(), img->getWidth() * img->getHeight(), num, ColorPalette::MEDIAN_CUT, labSpace, unique);
+        }
+        else if(mNum == 3)
+        {
+            temp = ColorPalette::generateOptimalPalette(img->getPixels(), img->getWidth() * img->getHeight(), num, ColorPalette::K_MEANS, labSpace, unique);
+        }
+        else
+        {
+            temp = ColorPalette::generateOptimalPalette(img->getPixels(), img->getWidth() * img->getHeight(), num, ColorPalette::MEAN_CUT, labSpace, unique);
+        }
+        
+        img->setPalette(temp);
+
+        StringTools::out << "Dither Image? y=yes n=no: ";
+        bool ditherConfirm = StringTools::getChar() == 'y';
+        if(ditherConfirm)
+            Graphics::ditherImage(img, Graphics::FLOYD_DITHER);
+        else
+            img->enforcePalette();
+
+        img->saveBMP("paletteTest.bmp");
+    }
+    else
+    {
+        StringTools::println("Error on load Image");
+    }
+
+    delete img;
+    delete[] imgArray;
+}
+
+void testColorConvert()
+{
+    Color c = Color{109, 128, 192, 255};
+
+    Color xyz = ColorSpaceConverter::convert(c, ColorSpaceConverter::RGB_TO_XYZ);
+    Color rgb = ColorSpaceConverter::convert(xyz, ColorSpaceConverter::XYZ_TO_RGB);
+    Color lab = ColorSpaceConverter::convert(c, ColorSpaceConverter::RGB_TO_LAB);
+    Color lrgb = ColorSpaceConverter::convert(lab, ColorSpaceConverter::LAB_TO_RGB);
+
+    StringTools::out << "ORIGINAL: " << c.red << ", " << c.green << ", " << c.blue << StringTools::lineBreak;
+    StringTools::out << "XYZ: " << xyz.red << ", " << xyz.green << ", " << xyz.blue << StringTools::lineBreak;
+    StringTools::out << "RGB: " << rgb.red << ", " << rgb.green << ", " << rgb.blue << StringTools::lineBreak;
+
+    StringTools::out << "lab: " << lab.red << ", " << lab.green << ", " << lab.blue << StringTools::lineBreak;
+    StringTools::out << "lrgb: " << lrgb.red << ", " << lrgb.green << ", " << lrgb.blue << StringTools::lineBreak;
+}
+
 int main(int argc, char** argv)
 {
     StringTools::init();
+
+    //testQuickSort();
+    testColorPalette();
+    //testColorConvert();
+
     //testImageLoader();
     //testFontSVG("C:\\Users\\Alan\\Documents\\VSCodeProjects\\GLib\\SVGFonts\\My Font - SVG Font - 2020.8.12-21.40.21.svg");
     
+    //testFontGraphics();
+
+    //testFontSVG(L"C:\\Users\\Alan\\Documents\\VSCodeProjects\\GLib\\SVGFonts\\AnyConv.com__consolab.svg");
     //testLZW();
-    testImageDisplay();
+    //testImageDisplay();
     
     //testXML("C:/Users/Alan/Documents/VSCodeProjects/GLib/testFiles/XmlFiles/test2.xml");
     //drawLoadedSvg("C:/Users/Alan/Documents/VSCodeProjects/GLib/SVGs/_ionicons_svg_md-mail.svg");

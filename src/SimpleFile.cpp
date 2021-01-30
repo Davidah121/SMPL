@@ -21,34 +21,34 @@ SimpleFile::SimpleFile(std::wstring filename, char type)
 	{
 	case SimpleFile::READ:
 		//
-		this->file = new fstream(filename, fstream::in | fstream::ate | fstream::binary);
+		this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
 		size = (int)file->tellg();
 		file->close();
 
-		this->file = new fstream(filename, fstream::in | fstream::binary);
+		this->file = new std::fstream(filename, std::fstream::in | std::fstream::binary);
 
 		this->wideFileName = filename;
 		break;
 	case SimpleFile::WRITE:
 		//
-		this->file = new fstream(filename, fstream::out | fstream::binary);
+		this->file = new std::fstream(filename, std::fstream::out | std::fstream::binary);
 		this->wideFileName = filename;
 		break;
 	case SimpleFile::WRITE_APPEND:
 		//
-		this->file = new fstream(filename, fstream::in | fstream::ate | fstream::binary);
+		this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
 		size = (int)file->tellg();
 		file->close();
 
-		this->file = new fstream(filename, fstream::out | fstream::app | fstream::binary);
+		this->file = new std::fstream(filename, std::fstream::out | std::fstream::app | std::fstream::binary);
 		this->wideFileName = filename;
 		break;
 	default:
-		this->file = new fstream(filename, fstream::in | fstream::ate | fstream::binary);
+		this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
 		size = (int)file->tellg();
 		file->close();
 
-		this->file = new fstream(filename, fstream::in | fstream::binary);
+		this->file = new std::fstream(filename, std::fstream::in | std::fstream::binary);
 		this->wideFileName = filename;
 		break;
 	}
@@ -64,34 +64,34 @@ SimpleFile::SimpleFile(std::string filename, char type)
 	{
 	case SimpleFile::READ:
 		//
-		this->file = new fstream(filename, fstream::in | fstream::ate | fstream::binary);
+		this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
 		size = (int)file->tellg();
 		file->close();
 
-		this->file = new fstream(filename, fstream::in | fstream::binary);
+		this->file = new std::fstream(filename, std::fstream::in | std::fstream::binary);
 
 		this->wideFileName = StringTools::toWideString(filename);
 		break;
 	case SimpleFile::WRITE:
 		//
-		this->file = new fstream(filename, fstream::out | fstream::binary);
+		this->file = new std::fstream(filename, std::fstream::out | std::fstream::binary);
 		this->wideFileName = StringTools::toWideString(filename);
 		break;
 	case SimpleFile::WRITE_APPEND:
 		//
-		this->file = new fstream(filename, fstream::in | fstream::ate | fstream::binary);
+		this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
 		size = (int)file->tellg();
 		file->close();
 
-		this->file = new fstream(filename, fstream::out | fstream::app | fstream::binary);
+		this->file = new std::fstream(filename, std::fstream::out | std::fstream::app | std::fstream::binary);
 		this->wideFileName = StringTools::toWideString(filename);
 		break;
 	default:
-		this->file = new fstream(filename, fstream::in | fstream::ate | fstream::binary);
+		this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
 		size = (int)file->tellg();
 		file->close();
 
-		this->file = new fstream(filename, fstream::in | fstream::binary);
+		this->file = new std::fstream(filename, std::fstream::in | std::fstream::binary);
 		this->wideFileName = StringTools::toWideString(filename);
 		break;
 	}
@@ -159,7 +159,7 @@ wchar_t SimpleFile::readWideChar()
 
 const char * SimpleFile::readLine()
 {
-	string p = "";
+	std::string p = "";
 	char c = '\0';
 
 	if (isOpen() && type == SimpleFile::READ && !isEndOfFile())
@@ -209,7 +209,7 @@ const char * SimpleFile::readLine()
 
 const wchar_t * SimpleFile::readWideLine()
 {
-	wstring p = L"";
+	std::wstring p = L"";
 	wchar_t c = L'\0';
 	unsigned char p1;
 	unsigned char p2;
@@ -265,44 +265,44 @@ const wchar_t * SimpleFile::readWideLine()
 	return nullptr;
 }
 
-string SimpleFile::readString()
+std::string SimpleFile::readString()
 {
-	string p = "";
+	std::string p = "";
 	char c = '\0';
 
-	if (isOpen() && type == SimpleFile::READ && !isEndOfFile())
+	if (isOpen() && type == SimpleFile::READ)
 	{
 		while (!isEndOfFile())
 		{
 			c = file->get();
 
-			if (c != LINE_BREAK[0])
+			if(!isEndOfFile())
 			{
-				p += c;
-			}
-			else
-			{
-				if (!isEndOfFile())
-				{
-					c = file->get();
-					if (c == LINE_BREAK[1])
-					{
-						//Hit a line break
-						break;
-					}
-					else
-					{
-						//Hit something else.
-						//Fix later I guess.
-						p += 13;
-						p += c;
-					}
-				}
-				else
+				if (c != LINE_BREAK[0])
 				{
 					p += c;
 				}
+				else
+				{
+					c = file->get();
+					if(!isEndOfFile())
+					{
+						if (c == LINE_BREAK[1])
+						{
+							//Hit a line break
+							break;
+						}
+						else
+						{
+							//Hit something else.
+							//Fix later I guess.
+							p += 13;
+							p += c;
+						}
+					}
+				}
 			}
+			
 		}
 	}
 	else
@@ -313,9 +313,9 @@ string SimpleFile::readString()
 	return p;
 }
 
-wstring SimpleFile::readWideString()
+std::wstring SimpleFile::readWideString()
 {
-	wstring p = L"";
+	std::wstring p = L"";
 	wchar_t c = L'\0';
 	unsigned char p1;
 	unsigned char p2;
@@ -370,9 +370,9 @@ wstring SimpleFile::readWideString()
 	return p;
 }
 
-vector<const char*> SimpleFile::readFullFile()
+std::vector<const char*> SimpleFile::readFullFile()
 {
-	vector<const char*> info = vector<const char*>();
+	std::vector<const char*> info = std::vector<const char*>();
 
 	while (!isEndOfFile())
 	{
@@ -382,10 +382,10 @@ vector<const char*> SimpleFile::readFullFile()
 	return info;
 }
 
-vector<const wchar_t*> SimpleFile::readFullFileWide()
+std::vector<const wchar_t*> SimpleFile::readFullFileWide()
 {
 	//Read the first two bytes to determine if the file is a unicode file
-	vector<const wchar_t*> info = vector<const wchar_t*>();
+	std::vector<const wchar_t*> info = std::vector<const wchar_t*>();
 
 	unsigned char c1 = file->get();
 	unsigned char c2 = file->get();
@@ -400,12 +400,12 @@ vector<const wchar_t*> SimpleFile::readFullFileWide()
 		}
 	}
 
-	return vector<const wchar_t*>();
+	return std::vector<const wchar_t*>();
 }
 
-vector<string> SimpleFile::readFullFileString()
+std::vector<std::string> SimpleFile::readFullFileString()
 {
-	vector<string> info = vector<string>();
+	std::vector<std::string> info = std::vector<std::string>();
 
 	while (!isEndOfFile())
 	{
@@ -415,10 +415,10 @@ vector<string> SimpleFile::readFullFileString()
 	return info;
 }
 
-vector<wstring> SimpleFile::readFullFileStringWide()
+std::vector<std::wstring> SimpleFile::readFullFileStringWide()
 {
 	//Read the first two bytes to determine if the file is a unicode file
-	vector<wstring> info = vector<wstring>();
+	std::vector<std::wstring> info = std::vector<std::wstring>();
 
 	unsigned char c1 = file->get();
 	unsigned char c2 = file->get();
@@ -436,9 +436,9 @@ vector<wstring> SimpleFile::readFullFileStringWide()
 	return info;
 }
 
-vector<unsigned char> SimpleFile::readFullFileAsBytes()
+std::vector<unsigned char> SimpleFile::readFullFileAsBytes()
 {
-	vector<unsigned char> info = vector<unsigned char>();
+	std::vector<unsigned char> info = std::vector<unsigned char>();
 
 	while (!isEndOfFile())
 	{
@@ -553,7 +553,7 @@ void SimpleFile::writeBytes(unsigned char* data, int size)
 	}
 }
 
-void SimpleFile::writeString(string line)
+void SimpleFile::writeString(std::string line)
 {
 	if (isOpen())
 	{
@@ -575,7 +575,7 @@ void SimpleFile::writeString(string line)
 	}
 }
 
-void SimpleFile::writeWideString(wstring line)
+void SimpleFile::writeWideString(std::wstring line)
 {
 	if (isOpen())
 	{
@@ -632,7 +632,7 @@ bool SimpleFile::isEndOfFile()
 	return file->eof();
 }
 
-wstring SimpleFile::getFileName()
+std::wstring SimpleFile::getFileName()
 {
 	return wideFileName;
 }

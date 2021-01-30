@@ -48,6 +48,8 @@ public:
 	Vec4f operator*(float other);
 	Vec4f operator*(int other);
 
+	bool operator==(Vec4f other);
+	bool operator!=(Vec4f other);
 	Vec4f operator-();
 
 	void operator+=(Vec4f other);

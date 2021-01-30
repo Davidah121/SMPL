@@ -1,9 +1,12 @@
 #pragma once
-#include<chrono>
-#include<functional>
-#include<string>
+
+#include <Windows.h>
+
+#include <chrono>
+#include <functional>
+#include <string>
 #include "Image.h"
-#include<Windows.h>
+
 
 class System
 {

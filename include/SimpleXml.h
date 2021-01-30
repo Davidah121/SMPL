@@ -7,8 +7,8 @@ public:
     XmlAttribute();
     ~XmlAttribute();
 
-    std::string name;
-    std::string value;
+    std::wstring name;
+    std::wstring value;
 };
 
 class XmlNode
@@ -20,11 +20,11 @@ public:
 
     bool isEndOfSection();
 
-    std::string title;
+    std::wstring title;
     std::vector<XmlAttribute> attributes = std::vector<XmlAttribute>();
     std::vector<XmlNode*> childNodes = std::vector<XmlNode*>();
     XmlNode* parentNode = nullptr;
-    std::string value;
+    std::wstring value;
 private:
     friend class SimpleXml;
     bool isEnd = false;
@@ -36,16 +36,16 @@ public:
     SimpleXml();
     ~SimpleXml();
 
-    bool load(std::string filename);
-    void save(std::string filename);
+    bool load(std::wstring filename);
+    void save(std::wstring filename);
 
     void dispose();
 
     std::vector<XmlNode*> nodes = std::vector<XmlNode*>();
-    static char parseEscapeString(std::string escString);
+    static int parseEscapeString(std::wstring escString);
     
 private:
-    XmlNode* parseXmlLine(std::string line);
+    XmlNode* parseXmlLine(std::wstring line);
 
     void fixParseOnNode(XmlNode* n);
 

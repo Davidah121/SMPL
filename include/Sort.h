@@ -171,7 +171,8 @@ size_t Sort::quickSortPartition(T* list, size_t start, size_t end, std::function
     //pick a pivot
     //way to divide and not have an infinite loop
         //size_t pivotLocation = ((end+start) / 3) + ((end+start)%3);
-    size_t pivotLocation = end;
+    
+    size_t pivotLocation = (end+start)/2;
     T pivotValue = list[pivotLocation];
     size_t j = start-1;
 
@@ -200,14 +201,17 @@ size_t Sort::quickSortPartition(T* list, size_t start, size_t end, std::function
         {
             //go left
             j++;
-            //swap
-            T temp = list[i];
-            list[i] = list[j];
-            list[j] = temp;
-
-            if(j == pivotLocation)
+            if(j!=i)
             {
-                pivotLocation = i;
+                //swap
+                T temp = list[i];
+                list[i] = list[j];
+                list[j] = temp;
+
+                if(j == pivotLocation)
+                {
+                    pivotLocation = i;
+                }
             }
         }
         else
@@ -217,12 +221,9 @@ size_t Sort::quickSortPartition(T* list, size_t start, size_t end, std::function
         }
     }
 
-    if(j+1 != pivotLocation)
-    {
-        T temp = list[pivotLocation];
-        list[pivotLocation] = list[j+1];
-        list[j+1] = temp;
-    }
+    T temp = list[pivotLocation];
+    list[pivotLocation] = list[j+1];
+    list[j+1] = temp;
 
     return j+1;
 }

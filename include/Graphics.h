@@ -60,8 +60,24 @@ public:
 	static void setBlendMode(unsigned char b);
 	static void setFillRule(bool b);
 	static void setAntiAliasing(bool b);
+	
+	//Image Manipulation
+	static const unsigned char THRESHOLD = 0;
+	static const unsigned char ORDERED_DITHER_BAYER = 1;
+	static const unsigned char FLOYD_DITHER = 2;
 
+	static const unsigned char NEAREST_NEIGHBOR_FILTER = 0;
+	static const unsigned char BILINEAR_FILTER = 1;
+	static const unsigned char BICUBIC_FILTER = 2;
+
+	static void replaceColor(Image* img, Color oldColor, Color newColor, bool ignoreAlpha = false);
+	static void ditherImage(Image* img, unsigned char method = 0);
+	static Image* scaleImage(Image* img, double xScale, double yScale, unsigned char filterMethod = 0);
 private:
+	static void floydSteinburgDithering(Image* img);
+	static void orderedBayerDithering(Image* img);
+	static Matrix generateBayerMatrix(Matrix m, int rowSize);
+	
 	static Image* activeImage;
 	static BitmapFont* activeFont;
 	static Color activeColor;
@@ -69,5 +85,7 @@ private:
 	static unsigned char blendMode;
 	static bool fillRule;
 	static bool antiAliasing;
+
+	static int ditherMatrixSize;
 };
 

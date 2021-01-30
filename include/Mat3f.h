@@ -36,5 +36,7 @@ public:
 
 	Vec3f operator*(Vec3f other);
 
+	bool operator==(Mat3f other);
+	bool operator!=(Mat3f other);
 };
 

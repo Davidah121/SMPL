@@ -36,6 +36,7 @@ void Image::saveBMP(std::string filename)
         infoHeader.biXPelsPerMeter = 0;
         infoHeader.biYPelsPerMeter = 0;
         infoHeader.biSizeImage = 0;
+		infoHeader.biPlanes = 1;
 
         //start from the bottom up
         //calculate additional bytes on a scanline for padding
@@ -52,9 +53,18 @@ void Image::saveBMP(std::string filename)
             for(int x=0; x<width; x++)
             {
                 Color c = getPixel(x,y);
-                outPixels[i] = c.blue;
-                outPixels[i+1] = c.green;
-                outPixels[i+2] = c.red;
+				if(c.alpha>0)
+				{
+					outPixels[i] = c.blue;
+					outPixels[i+1] = c.green;
+					outPixels[i+2] = c.red;
+				}
+				else
+				{
+					outPixels[i] = 0;
+					outPixels[i+1] = 0;
+					outPixels[i+2] = 0;
+				}
                 i+=3;
             }
             for(int x=0; x<padding; x++)
@@ -99,6 +109,7 @@ Image** Image::loadBMP(std::vector<unsigned char> fileData, int* amountOfImages)
 	//Load palette if it exists
 
 	ColorPalette cPalette = ColorPalette();
+	cPalette.setPaletteMode(false);
 
 	if (colorsInPalette > 0)
 	{
