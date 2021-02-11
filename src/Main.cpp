@@ -17,6 +17,11 @@
 #include "NeuralNetwork.h"
 
 #include "ColorSpaceConverter.h"
+#include "Compression.h"
+
+#include "Audio.h"
+#include "Sound.h"
+
 /**
  * Purpose:
  *      Provide a port to other systems
@@ -509,7 +514,7 @@ void testColorPalette()
 {
     StringTools::out << "Enter image name: ";
     std::string filename = StringTools::getString();
-    //C:\Users\Alan\source\repos\ImageLibrary\TestImages\PNG\Varying bit sizes and types
+    //C:\Users\Alan\source\repos\ImageLibrary\TestImages\PNG\Varying bit sizes and types\basn3p08.png
     int amountOfImages = 0;
     Image** imgArray = Image::loadImage(filename, &amountOfImages);
 
@@ -535,6 +540,7 @@ void testColorPalette()
         StringTools::out << "Convert to LAB before Conversion? y=yes, n=no: ";
         bool labSpace = StringTools::getChar() == 'y';
 
+        
         if(mNum == 2)
         {
             temp = ColorPalette::generateOptimalPalette(img->getPixels(), img->getWidth() * img->getHeight(), num, ColorPalette::MEDIAN_CUT, labSpace, unique);
@@ -548,16 +554,25 @@ void testColorPalette()
             temp = ColorPalette::generateOptimalPalette(img->getPixels(), img->getWidth() * img->getHeight(), num, ColorPalette::MEAN_CUT, labSpace, unique);
         }
         
+        //./TestImages/GIF/Varying Bit size and type/basn3p08.gif
+        
+        temp.reBalance();
         img->setPalette(temp);
 
         StringTools::out << "Dither Image? y=yes n=no: ";
         bool ditherConfirm = StringTools::getChar() == 'y';
+        unsigned long t1 = System::getCurrentTimeMicro();
+
         if(ditherConfirm)
             Graphics::ditherImage(img, Graphics::FLOYD_DITHER);
         else
             img->enforcePalette();
-
-        img->saveBMP("paletteTest.bmp");
+        
+        unsigned long t2 = System::getCurrentTimeMicro();
+        StringTools::out << "Time taken: " << (t2-t1) << StringTools::lineBreak;
+        
+        //img->saveBMP("paletteTest.bmp");
+        img->savePNG("paletteTest.png");
     }
     else
     {
@@ -585,11 +600,249 @@ void testColorConvert()
     StringTools::out << "lrgb: " << lrgb.red << ", " << lrgb.green << ", " << lrgb.blue << StringTools::lineBreak;
 }
 
+void testFourierTransform()
+{
+    int samplesPerSec = 10;
+    int size = 16;
+    int padding = size-samplesPerSec;
+
+    double* arr = new double[size];
+    
+    double frequency = 4; //A4
+    double mult = 2.0*PI*frequency;
+
+    for(int i=0; i<samplesPerSec; i++)
+    {
+        arr[i] = sin( mult * (double)i/samplesPerSec );
+    }
+    
+    unsigned t1 = System::getCurrentTimeNano();
+    std::vector<ComplexNumber> normalFourier = MathExt::fourierTransform(arr, size, samplesPerSec);
+    unsigned t2 = System::getCurrentTimeNano();
+
+    StringTools::println("normalFourier done");
+    StringTools::out << "Took: " << (t2-t1) << StringTools::lineBreak;
+
+    t1 = System::getCurrentTimeNano();
+    std::vector<ComplexNumber> fastFourier = MathExt::fastFourierTransform(arr, size);
+    t2 = System::getCurrentTimeNano();
+
+    StringTools::println("fastFourier done");
+    StringTools::out << "Took: " << (t2-t1) << StringTools::lineBreak;
+    
+    //save as a .csv
+
+    SimpleFile f = SimpleFile("results.csv", SimpleFile::WRITE);
+
+    std::string header = "Normal, Fast";
+    f.writeString(header);
+    f.writeLineBreak();
+    
+    for(int i=0; i<samplesPerSec/2; i++)
+    {
+        double length1 = 2 * MathExt::sqrt(MathExt::sqr(normalFourier[i].real) + MathExt::sqr(normalFourier[i].imaginary));
+        double length2 = 2 * MathExt::sqrt(MathExt::sqr(fastFourier[i].real) + MathExt::sqr(fastFourier[i].imaginary));
+        
+        // length1/=samplesPerSec;
+        // length2/=samplesPerSec;
+        
+        std::string finalString = "";
+        finalString += (std::to_string(length1) + ", ") + std::to_string(length2);
+
+        f.writeString(finalString);
+        f.writeLineBreak();
+    }
+
+    f.close();
+}
+
+void testAudio()
+{
+    Sound s = Sound();
+    s.loadSound("./testFiles/Audio/At DEWM's GATE.wav");
+    s.setLoop(true);
+    s.setLoopStart(18.0);
+    s.setLoopEnd(54.0);
+
+    Sound s2 = Sound();
+    s2.loadSound("./testFiles/Audio/Explosion.wav");
+    
+    Audio::init();
+    Audio::addSound(&s);
+    Audio::addSound(&s2);
+
+    Audio::setVolume(1);
+    
+    while(true)
+    {
+        StringTools::print("type stuff: ");
+        std::string line = StringTools::getString();
+        if(line == "end")
+        {
+            break;
+        }
+        else if(line == "play_s1")
+        {
+            s.play();
+        }
+        else if(line == "play_s2")
+        {
+            s2.play();
+        }
+        else if(line == "stop_s1")
+        {
+            s.stop();
+        }
+        else if(line == "stop_s2")
+        {
+            s2.stop();
+        }
+        else if(line == "pause_s1")
+        {
+            s.pause();
+        }
+        else if(line == "pause_s2")
+        {
+            s2.pause();
+        }
+        else if(line == "volume")
+        {
+            StringTools::println("Enter volume");
+            double v = std::stod(StringTools::getString());
+            Audio::setVolume(v);
+        }
+    }
+
+    Audio::dispose();
+}
+
+void imageExtenderThing()
+{
+    //always extend to 1920 x 1080
+    Image newImg = Image(1920, 1080);
+
+    int amountOfImages = 0;
+    Image** loadImg = Image::loadImage("abc123d.png", &amountOfImages);
+
+    if(amountOfImages<=0)
+    {
+        StringTools::println("Couldn't load image");
+        return;
+    }
+
+    Image* otherImg = loadImg[0];
+
+    //extend out into white
+    //let 8 be the maximum allowed pixels till white
+    int xDis = newImg.getWidth() - otherImg->getWidth();
+    int yDis = newImg.getHeight() - otherImg->getHeight();
+
+    int pixsToWhiteX = MathExt::clamp(xDis, 0, xDis/2);
+    int pixsToWhiteY = MathExt::clamp(yDis, 0, 8);
+    
+
+    int x1 = xDis/2;
+    int y1 = yDis/2;
+    int x2 = x1 + otherImg->getWidth() - 1;
+    int y2 = y1 + otherImg->getHeight() - 1;
+
+    float xF, yF;
+
+    for(int y=0; y<newImg.getHeight(); y++)
+    {
+        int yVal = y;
+        yVal = MathExt::clamp(yVal, y1, y2);
+
+        yVal -= y1;
+        if(y < y1)
+        {
+            //up
+            yF = 1.0 - ((double)MathExt::clamp( y1-y, 0, pixsToWhiteY) / pixsToWhiteY );
+        }
+        else if(y > y2)
+        {
+            //down
+            yF = 1.0 - ((double)MathExt::clamp( y-y2, 0, pixsToWhiteY) / pixsToWhiteY );
+        }
+        else
+        {
+            yF = 1.0;
+        }
+
+        for(int x=0; x<newImg.getWidth(); x++)
+        {
+            int xVal = x;
+            xVal = MathExt::clamp(xVal, x1, x2);
+
+            xVal -= x1;
+            
+            Color c1 = otherImg->getPixel(xVal, yVal);
+            Color c2 = {255, 255, 255, 255};
+
+            if(x < x1)
+            {
+                //left
+                xF = 1.0 - ((double)MathExt::clamp( x1-x, 0, pixsToWhiteX) / pixsToWhiteX );
+            }
+            else if(x > x2)
+            {
+                //right
+                xF = 1.0 - ((double)MathExt::clamp( x-x2, 0, pixsToWhiteX) / pixsToWhiteX );
+            }
+            else
+            {
+                xF = 1.0;
+            }
+
+            Color finalColor = Graphics::lerp(c2, c1, xF * yF);
+            newImg.setPixel(x, y, finalColor);
+        }
+    }
+
+    newImg.saveBMP("thingTest.bmp");
+
+    delete otherImg;
+    delete[] loadImg;
+}
+
+void testPNGSave()
+{
+    int amountOfImages = 0;
+    Image** imgAr = Image::loadImage("C:/Users/Alan/source/repos/ImageLibrary/TestImages/PNG/Varying bit sizes and types/basn3p08.png", &amountOfImages);
+    if(amountOfImages<=0)
+    {
+        StringTools::println("ERROR ON LOAD");
+        return;
+    }
+
+    imgAr[0]->savePNG("test1234.png");
+
+    delete[] imgAr;
+}
+
+void testCRC()
+{
+    unsigned char* data = new unsigned char[9]{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39};
+
+    unsigned int remainder = Compression::crc(data, 9, Compression::CRC_8);
+
+    StringTools::println( StringTools::toHexString(remainder & 0xFF));
+    delete[] data;
+}
+
 int main(int argc, char** argv)
 {
     StringTools::init();
 
-    //testQuickSort();
+    //testAudio();
+
+    //imageExtenderThing();
+    
+    //testFourierTransform();
+
+    //testCRC();
+    //testPNGSave();
+
     testColorPalette();
     //testColorConvert();
 

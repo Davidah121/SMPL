@@ -19,6 +19,8 @@ public:
     KDTreeNode<T> searchNearest(T* data);
 private:
     BinaryTreeNode<KDTreeNode<T>>* searchRecursive(BinaryTreeNode<KDTreeNode<T>>* tNode, T* data, int* minDistance, BinaryTreeNode<KDTreeNode<T>>* returnVal, int axis, bool backwards);
+    void cleanUp(BinaryTreeNode<KDTreeNode<T>>* node);
+
     int dimensions = 0;
     BinaryTree< KDTreeNode<T> > binTree;
 };
@@ -32,6 +34,23 @@ inline KDTree<T>::KDTree(int dimensions)
 template<typename T>
 inline KDTree<T>::~KDTree()
 {
+    cleanUp(binTree.getRoot());
+}
+
+template<typename T>
+inline void KDTree<T>::cleanUp(BinaryTreeNode<KDTreeNode<T>>* node)
+{
+    if(node!=nullptr)
+    {
+        KDTreeNode<T> n = (KDTreeNode<T>)node->data;
+        delete[] n.data;
+
+        if(node->leftChild != nullptr)
+            cleanUp(node->leftChild);
+        
+        if(node->rightChild != nullptr)
+            cleanUp(node->rightChild);
+    }
 }
 
 template<typename T>
@@ -291,33 +310,34 @@ inline BinaryTreeNode<KDTreeNode<T>>* KDTree<T>::searchRecursive(BinaryTreeNode<
     BinaryTreeNode<KDTreeNode<T>>* myVal = returnVal;
     KDTreeNode<T> oKDNode = tNode->data;
 
-    bool side = false;
+    bool leftSide = false;
+    bool rightSide = false;
 
     if(backwards == false)
     {
         if(data[axis] < oKDNode.data[axis])
         {
-            side = false;
+            leftSide = true;
             //go left
             if(tNode->leftChild != nullptr)
                 myVal = searchRecursive(tNode->leftChild, data, minDistance, tNode->leftChild, (axis+1) % dimensions, false);
         }
         else
         {
-            side = true;
+            rightSide = true;
             //go right
             if(tNode->rightChild != nullptr)
-                myVal = searchRecursive(tNode->rightChild, data, minDistance, tNode->leftChild, (axis+1) % dimensions, false);
+                myVal = searchRecursive(tNode->rightChild, data, minDistance, tNode->rightChild, (axis+1) % dimensions, false);
         }
     }
 
     //now we go backwards
     //update min dis
 
-    int currDis = 0;
+    double currDis = 0;
     for(int i=0; i<this->dimensions; i++)
     {
-        currDis += MathExt::sqr(data[i] - oKDNode.data[i]);
+        currDis += MathExt::sqr((double)data[i] - (double)oKDNode.data[i]);
     }
 
     if(currDis < *minDistance)
@@ -326,26 +346,45 @@ inline BinaryTreeNode<KDTreeNode<T>>* KDTree<T>::searchRecursive(BinaryTreeNode<
         *minDistance = currDis;
     }
     
-    int dis1 = MathExt::sqr( (int)data[axis] - (int)oKDNode.data[axis] );
+    double disToAxis = MathExt::sqr( (double)data[axis] - (double)oKDNode.data[axis] );
 
-    if(dis1 < *minDistance)
+    int tempAxis = (axis+1) % dimensions;
+    
+    if(*minDistance > disToAxis)
     {
-        if(side==false)
+        //potentially on both sides
+
+        //left side
+        if(tNode->leftChild != nullptr && !leftSide)
         {
-            //right side
-            if(tNode->rightChild != nullptr)
+            myVal = searchRecursive(tNode->leftChild, data, minDistance, myVal, tempAxis, true);
+        }
+
+        //right side
+        if(tNode->rightChild != nullptr && !rightSide)
+        {
+            myVal = searchRecursive(tNode->rightChild, data, minDistance, myVal, tempAxis, true);
+        }
+    }
+    else
+    {
+        //potentially only on one side
+        //traverse down like normal I think
+            
+        if(data[axis] < oKDNode.data[axis])
+        {
+            //go left
+            if(tNode->leftChild != nullptr && !leftSide)
             {
-                int tempAxis = (axis+1) % dimensions;
-                myVal = searchRecursive(tNode->rightChild, data, minDistance, myVal, tempAxis, true);
+                myVal = searchRecursive(tNode->leftChild, data, minDistance, myVal, tempAxis, true);
             }
         }
         else
         {
-            //left side
-            if(tNode->leftChild != nullptr)
+            //go right
+            if(tNode->rightChild != nullptr && !rightSide)
             {
-                int tempAxis = (axis+1) % dimensions;
-                myVal = searchRecursive(tNode->leftChild, data, minDistance, myVal, tempAxis, true);
+                myVal = searchRecursive(tNode->rightChild, data, minDistance, myVal, tempAxis, true);
             }
         }
     }

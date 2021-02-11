@@ -45,6 +45,8 @@ public:
 
 	static ColorPalette generateOptimalPalette(Color* colorArray, int size, int colors, unsigned char type, bool convertToLab = false, bool uniqueOnly = false);
 
+	void reBalance();
+
 private:
 	void copy(const ColorPalette& other);
 

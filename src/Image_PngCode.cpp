@@ -8,7 +8,99 @@
 
 void Image::savePNG(std::string filename)
 {
-    
+	SimpleFile f = SimpleFile(filename, SimpleFile::WRITE);
+
+	unsigned int crcVal;
+	std::string fileHeader = {(char)0x89, (char)0x50, (char)0x4e, (char)0x47, (char)0x0d, (char)0x0a, (char)0x1a, (char)0x0a};
+
+	std::string IHDRHeader = {(char)0, (char)0, (char)0, (char)0x0D, 'I', 'H', 'D', 'R'};
+	
+	//width
+	IHDRHeader += (char)((width >> 24) & 0xFF);
+	IHDRHeader += (char)((width >> 16) & 0xFF);
+	IHDRHeader += (char)((width >> 8) & 0xFF);
+	IHDRHeader += (char)((width >> 0) & 0xFF);
+	//height
+	IHDRHeader += (char)((height >> 24) & 0xFF);
+	IHDRHeader += (char)((height >> 16) & 0xFF);
+	IHDRHeader += (char)((height >> 8) & 0xFF);
+	IHDRHeader += (char)((height >> 0) & 0xFF);
+	//bitDepth
+	IHDRHeader += (char)0x08;
+	//ColourType
+	IHDRHeader += (char)0x06;
+	//Compresssion Method
+	IHDRHeader += (char)0x00;
+	//Filter Method
+	IHDRHeader += (char)0x00;
+	//Interlace Method
+	IHDRHeader += (char)0x00;
+
+	//CRC
+	crcVal = Compression::crc((unsigned char*)IHDRHeader.data()+4, IHDRHeader.size()-4);
+	IHDRHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
+
+
+	std::string IENDHeader = {(char)0, (char)0, (char)0, (char)0, 'I', 'E', 'N', 'D'};
+	
+	//CRC
+	crcVal = Compression::crc((unsigned char*)IENDHeader.data()+4, IENDHeader.size()-4);
+	IENDHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
+
+	std::vector<unsigned char> scanLines = std::vector<unsigned char>();
+	for(int i=0; i<height; i++)
+	{
+		scanLines.push_back(0);
+		for(int k=0; k<width; k++)
+		{
+			Color c = pixels[k + i*width];
+			scanLines.push_back(c.red);
+			scanLines.push_back(c.green);
+			scanLines.push_back(c.blue);
+			scanLines.push_back(c.alpha);
+		}
+	}
+
+	crcVal = Compression::adler32(scanLines);
+
+	std::vector<unsigned char> pixCompressed = Compression::compressDeflate(scanLines);
+
+	int fullSize = pixCompressed.size()+2+4;
+	std::string IDATHeader = "";
+
+	//length
+	IDATHeader += (fullSize>>24) & 0xFF;
+	IDATHeader += (fullSize>>16) & 0xFF;
+	IDATHeader += (fullSize>>8) & 0xFF;
+	IDATHeader += (fullSize>>0) & 0xFF;
+	//ID
+	IDATHeader += "IDAT";
+	
+	//ZLIB STUFF
+	IDATHeader += 0b01111000;
+	IDATHeader += 0b00000001;
+
+	for(int i=0; i<pixCompressed.size(); i++)
+	{
+		IDATHeader += pixCompressed[i];
+	}
+
+	//adler
+	IDATHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
+
+	//crc
+	crcVal = Compression::crc((unsigned char*)IDATHeader.data()+4, IDATHeader.size()-4);
+	IDATHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
+
+
+	f.writeString(fileHeader);
+	f.writeString(IHDRHeader);
+
+	f.writeString(IDATHeader);
+
+	f.writeString(IENDHeader);
+
+	f.close();
 }
 
 Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)

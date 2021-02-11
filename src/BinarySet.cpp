@@ -45,19 +45,20 @@ void BinarySet::add(char v, int amountOfBits, int offset)
 		actualAmount = 8;
 	}
 
+	int end = 8;
 	if (offset + actualAmount < 8)
 	{
-		for (int i = offset; i < offset + actualAmount; i++)
-		{
-			this->add(((v >> i) & 0x01) == 1);
-		}
+		end = offset+actualAmount;
 	}
-	else
+
+	for (int i = offset; i < end; i++)
 	{
-		for (int i = offset; i < 8; i++)
+		int h = i;
+		if(addBitOrder==RMSB)
 		{
-			this->add(((v >> i) & 0x01) == 1);
+			h = (actualAmount-1) - h;
 		}
+		this->add(((v >> h) & 0x01) == 1);
 	}
 }
 
@@ -69,19 +70,20 @@ void BinarySet::add(unsigned char v, int amountOfBits, int offset)
 		actualAmount = 8;
 	}
 
+	int end = 8;
 	if (offset + actualAmount < 8)
 	{
-		for (int i = offset; i < offset + actualAmount; i++)
-		{
-			this->add(((v >> i) & 0x01) == 1);
-		}
+		end = offset+actualAmount;
 	}
-	else
+
+	for (int i = offset; i < end; i++)
 	{
-		for (int i = offset; i < 8; i++)
+		int h = i;
+		if(addBitOrder==RMSB)
 		{
-			this->add(((v >> i) & 0x01) == 1);
+			h = (actualAmount-1) - h;
 		}
+		this->add(((v >> h) & 0x01) == 1);
 	}
 }
 
@@ -93,19 +95,20 @@ void BinarySet::add(short v, int amountOfBits, int offset)
 		actualAmount = 16;
 	}
 
+	int end = 16;
 	if (offset + actualAmount < 16)
 	{
-		for (int i = offset; i < offset + actualAmount; i++)
-		{
-			this->add(((v >> i) & 0x01) == 1);
-		}
+		end = offset+actualAmount;
 	}
-	else
+
+	for (int i = offset; i < end; i++)
 	{
-		for (int i = offset; i < 16; i++)
+		int h = i;
+		if(addBitOrder==RMSB)
 		{
-			this->add(((v >> i) & 0x01) == 1);
+			h = (actualAmount-1) - h;
 		}
+		this->add(((v >> h) & 0x01) == 1);
 	}
 }
 
@@ -117,19 +120,20 @@ void BinarySet::add(unsigned short v, int amountOfBits, int offset)
 		actualAmount = 16;
 	}
 
+	int end = 16;
 	if (offset + actualAmount < 16)
 	{
-		for (int i = offset; i < offset + actualAmount; i++)
-		{
-			this->add(((v >> i) & 0x01) == 1);
-		}
+		end = offset+actualAmount;
 	}
-	else
+
+	for (int i = offset; i < end; i++)
 	{
-		for (int i = offset; i < 16; i++)
+		int h = i;
+		if(addBitOrder==RMSB)
 		{
-			this->add(((v >> i) & 0x01) == 1);
+			h = (actualAmount-1) - h;
 		}
+		this->add(((v >> h) & 0x01) == 1);
 	}
 }
 
@@ -141,19 +145,20 @@ void BinarySet::add(int v, int amountOfBits, int offset)
 		actualAmount = 32;
 	}
 
+	int end = 32;
 	if (offset + actualAmount < 32)
 	{
-		for (int i = offset; i < offset + actualAmount; i++)
-		{
-			this->add(((v >> i) & 0x01) == 1);
-		}
+		end = offset+actualAmount;
 	}
-	else
+
+	for (int i = offset; i < end; i++)
 	{
-		for (int i = offset; i < 32; i++)
+		int h = i;
+		if(addBitOrder==RMSB)
 		{
-			this->add(((v >> i) & 0x01) == 1);
+			h = (actualAmount-1) - h;
 		}
+		this->add(((v >> h) & 0x01) == 1);
 	}
 }
 
@@ -165,67 +170,70 @@ void BinarySet::add(unsigned int v, int amountOfBits, int offset)
 		actualAmount = 32;
 	}
 
+	int end = 32;
 	if (offset + actualAmount < 32)
 	{
-		for (int i = offset; i < offset + actualAmount; i++)
-		{
-			this->add(((v >> i) & 0x01) == 1);
-		}
+		end = offset+actualAmount;
 	}
-	else
+
+	for (int i = offset; i < end; i++)
 	{
-		for (int i = offset; i < 32; i++)
+		int h = i;
+		if(addBitOrder==RMSB)
 		{
-			this->add(((v >> i) & 0x01) == 1);
+			h = (actualAmount-1) - h;
 		}
+		this->add(((v >> h) & 0x01) == 1);
 	}
 }
 
 void BinarySet::add(long v, int amountOfBits, int offset)
 {
 	int actualAmount = amountOfBits;
-	if (amountOfBits > 32)
+	if (amountOfBits > 64)
 	{
-		actualAmount = 32;
+		actualAmount = 64;
 	}
 
-	if (offset + actualAmount < 32)
+	int end = 64;
+	if (offset + actualAmount < 64)
 	{
-		for (int i = offset; i < offset + actualAmount; i++)
-		{
-			this->add(((v >> i) & 0x01) == 1);
-		}
+		end = offset+actualAmount;
 	}
-	else
+
+	for (int i = offset; i < end; i++)
 	{
-		for (int i = offset; i < 32; i++)
+		int h = i;
+		if(addBitOrder==RMSB)
 		{
-			this->add(((v >> i) & 0x01) == 1);
+			h = (actualAmount-1) - h;
 		}
+		this->add(((v >> h) & 0x01) == 1);
 	}
 }
 
 void BinarySet::add(unsigned long v, int amountOfBits, int offset)
 {
 	int actualAmount = amountOfBits;
-	if (amountOfBits > 32)
+	if (amountOfBits > 64)
 	{
-		actualAmount = 32;
+		actualAmount = 64;
 	}
 
-	if (offset + actualAmount < 32)
+	int end = 64;
+	if (offset + actualAmount < 64)
 	{
-		for (int i = offset; i < offset + actualAmount; i++)
-		{
-			this->add(((v >> i) & 0x01) == 1);
-		}
+		end = offset+actualAmount;
 	}
-	else
+
+	for (int i = offset; i < end; i++)
 	{
-		for (int i = offset; i < 32; i++)
+		int h = i;
+		if(addBitOrder==RMSB)
 		{
-			this->add(((v >> i) & 0x01) == 1);
+			h = (actualAmount-1) - h;
 		}
+		this->add(((v >> h) & 0x01) == 1);
 	}
 }
 
@@ -309,6 +317,32 @@ int BinarySet::getBits(int indexStart, int indexEnd, bool reverse)
 	return value;
 }
 
+void BinarySet::setBit(bool value, int index)
+{
+	if(index >= bitNumber)
+	{
+		return;
+	}
+
+	int byteLocation = index / 8;
+	int bitLocation = index % 8;
+
+	unsigned char byte = 0;
+	for(int i=0; i<8; i++)
+	{
+		if(i!=bitLocation)
+		{
+			byte += this->set[byteLocation] & ( 1 << i);
+		}
+		else
+		{
+			byte += ( value << i);
+		}
+	}
+
+	this->set[byteLocation] = byte;
+}
+
 std::vector<unsigned char> BinarySet::toBytes()
 {
 	return set;
@@ -319,40 +353,6 @@ int BinarySet::size()
 	return bitNumber;
 }
 
-void BinarySet::printVals(bool reverse)
-{
-	if (reverse)
-	{
-		int sp = 0;
-		for (int i = 0; i < set.size(); i++)
-		{
-			std::cout << (int)set[i];
-			sp++;
-			if (sp >= 8)
-			{
-				sp = 0;
-				std::cout << " ";
-			}
-		}
-	}
-	else
-	{
-		int sp = 0;
-		for (int i = set.size() - 1; i >= 0; i--)
-		{
-			std::cout << (int)set[i];
-			sp++;
-			if (sp >= 8)
-			{
-				sp = 0;
-				std::cout << " ";
-			}
-		}
-	}
-
-	std::cout << std::endl;
-}
-
 void BinarySet::clear()
 {
 	set.clear();
@@ -361,4 +361,9 @@ void BinarySet::clear()
 void BinarySet::setBitOrder(bool bitOrder)
 {
 	MSB = bitOrder;
+}
+
+void BinarySet::setAddBitOrder(bool bitOrder)
+{
+	addBitOrder = bitOrder;
 }

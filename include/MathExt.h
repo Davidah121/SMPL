@@ -221,10 +221,11 @@ public:
 	static double binomialCoefficient(int n, int k);
 
 	static double logisticsSigmoid(double x);
-	static ComplexNumber discreteFourierTransform(double* arr, int size, double x);
-	static ComplexNumber discreteFastFourierTransform(double* arr, int size, double x);
-	static ComplexNumber* fourierTransform(double* arr, int size);
-	static ComplexNumber* fastFourierTransform(double* arr, int size);
+
+
+	static ComplexNumber discreteFourierTransform(double* arr, int size, double x, int samples);
+	static std::vector<ComplexNumber> fourierTransform(double* arr, int size, int samples);
+	static std::vector<ComplexNumber> fastFourierTransform(double* arr, int size);
 
 	//Clustering algorigthms
 	static std::vector<std::vector<GeneralVector>> meanCut(std::vector<GeneralVector> arr, int clusters, bool meansOnly = false);
@@ -232,7 +233,6 @@ public:
 	static std::vector<std::vector<GeneralVector>> kMeans(std::vector<GeneralVector> arr, int clusters, int maxIterations, bool meansOnly = false);
 	
 private:
-
-	static ComplexNumber doFFT(double* arr, int size, int index, int globalSize, int multVal, double value);
+	static std::vector<ComplexNumber> doFFT(double* arr, int size);
 };
 

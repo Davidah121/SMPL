@@ -440,10 +440,12 @@ std::vector<unsigned char> SimpleFile::readFullFileAsBytes()
 {
 	std::vector<unsigned char> info = std::vector<unsigned char>();
 
-	while (!isEndOfFile())
+	int i=0;
+	while (i < size)
 	{
 		//read
 		info.push_back(file->get());
+		i++;
 	}
 
 	return info;
