@@ -52,6 +52,16 @@ public:
 	static std::vector<unsigned char> decompressDeflate(std::vector<unsigned char> data);
 	static std::vector<unsigned char> decompressDeflate(unsigned char* data, int size);
 
+	static unsigned int adler32(std::vector<unsigned char> data);
+	static unsigned int adler32(unsigned char* data, int size);
+
+	static const unsigned char CRC_8 = 0;
+	static const unsigned char CRC_16 = 1;
+	static const unsigned char CRC_32 = 2;
+	
+	static unsigned int crc(std::vector<unsigned char> data, unsigned char type = CRC_32);
+	static unsigned int crc(unsigned char* data, int size, unsigned char type = CRC_32);
+
 private:
 	static BinaryTree<HuffmanNode>* buildHuffmanTree(unsigned char* data, int size);
 	static void fillHuffmanTable(BinaryTreeNode<HuffmanNode>* treeNode, unsigned int* table, int length, int code);

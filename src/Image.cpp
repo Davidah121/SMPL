@@ -146,16 +146,10 @@ void Image::enforcePalette()
 		Color* end = pixels + (width * height);
 		while (start < end)
 		{
-			if(start->alpha>127)
-			{
-				Color oldColor = *start;
-				*start = p.getClosestColor(*start);
-			}
-			else
-			{
-				*start = {0,0,0,0};
-			}
-			
+			Color oldColor = *start;
+			*start = p.getClosestColor(*start);
+
+			(*start).alpha = oldColor.alpha;
 			start++;
 		}
 	}

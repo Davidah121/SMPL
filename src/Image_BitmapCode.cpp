@@ -231,6 +231,11 @@ Image** Image::loadBMP(std::vector<unsigned char> fileData, int* amountOfImages)
 				y--;
 				i += padding;
 				x = 0;
+
+				if(y<0)
+				{
+					break;
+				}
 			}
 			i += 1;
 		}
@@ -266,6 +271,11 @@ Image** Image::loadBMP(std::vector<unsigned char> fileData, int* amountOfImages)
 				y--;
 				i += padding;
 				x = 0;
+
+				if(y<0)
+				{
+					break;
+				}
 			}
 			i += 1;
 		}
@@ -301,6 +311,11 @@ Image** Image::loadBMP(std::vector<unsigned char> fileData, int* amountOfImages)
 				y--;
 				i += padding;
 				x = 0;
+
+				if(y<0)
+				{
+					break;
+				}
 			}
 			i += 1;
 		}
@@ -325,6 +340,11 @@ Image** Image::loadBMP(std::vector<unsigned char> fileData, int* amountOfImages)
 				y--;
 				i += padding;
 				x = 0;
+
+				if(y<0)
+				{
+					break;
+				}
 			}
 			i += 1;
 		}
@@ -357,6 +377,11 @@ Image** Image::loadBMP(std::vector<unsigned char> fileData, int* amountOfImages)
 				y--;
 				i += padding;
 				x = 0;
+
+				if(y<0)
+				{
+					break;
+				}
 			}
 			i += 2;
 		}
@@ -374,9 +399,8 @@ Image** Image::loadBMP(std::vector<unsigned char> fileData, int* amountOfImages)
 
 		while (i < pixsDataSize)
 		{
-			tImg->pixels[y * width + x].blue = pixData[i];
-			tImg->pixels[y * width + x].green = pixData[i + 1];
-			tImg->pixels[y * width + x].red = pixData[i + 2];
+			Color c = {pixData[i+2], pixData[i+1], pixData[i], 255};
+			tImg->pixels[y * width + x] = c;
 
 			x++;
 			if (x >= width)
@@ -384,6 +408,11 @@ Image** Image::loadBMP(std::vector<unsigned char> fileData, int* amountOfImages)
 				y--;
 				i += padding;
 				x = 0;
+
+				if(y<0)
+				{
+					break;
+				}
 			}
 			i += 3;
 		}
@@ -402,10 +431,8 @@ Image** Image::loadBMP(std::vector<unsigned char> fileData, int* amountOfImages)
 
 		while (i < pixsDataSize)
 		{
-			tImg->pixels[y * width + x].blue = pixData[i];
-			tImg->pixels[y * width + x].green = pixData[i + 1];
-			tImg->pixels[y * width + x].red = pixData[i + 2];
-			tImg->pixels[y * width + x].alpha = pixData[i + 3];
+			Color c = {pixData[i+2], pixData[i+1], pixData[i], pixData[i+3]};
+			tImg->pixels[y * width + x] = c;
 
 			x++;
 			if (x >= width)
@@ -413,6 +440,11 @@ Image** Image::loadBMP(std::vector<unsigned char> fileData, int* amountOfImages)
 				y--;
 				i += padding;
 				x = 0;
+
+				if(y<0)
+				{
+					break;
+				}
 			}
 			i += 4;
 		}

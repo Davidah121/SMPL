@@ -30,20 +30,17 @@ ComplexNumber::~ComplexNumber()
 
 ComplexNumber ComplexNumber::operator+(ComplexNumber other)
 {
-	ComplexNumber k = *this;
-	k.real += other.real;
-	k.imaginary += other.imaginary;
-
-	return k;
+	return ComplexNumber(real+other.real, imaginary+other.imaginary);
 }
 
 ComplexNumber ComplexNumber::operator-(ComplexNumber other)
 {
-	ComplexNumber k = *this;
-	k.real -= other.real;
-	k.imaginary -= other.imaginary;
+	return ComplexNumber(real-other.real, imaginary-other.imaginary);
+}
 
-	return k;
+ComplexNumber ComplexNumber::operator-()
+{
+	return ComplexNumber(-real, -imaginary);
 }
 
 ComplexNumber ComplexNumber::operator*(ComplexNumber other)
@@ -54,10 +51,30 @@ ComplexNumber ComplexNumber::operator*(ComplexNumber other)
 	//imag = a*d + b*c
 
 	ComplexNumber k = ComplexNumber();
-	k.real = real * other.real - imaginary * other.imaginary;
-	k.imaginary = real*other.imaginary + imaginary*other.real;
+	k.real = (real*other.real) - (imaginary*other.imaginary);
+	k.imaginary = (real*other.imaginary) + (imaginary*other.real);
 
 	return k;
+}
+
+ComplexNumber ComplexNumber::operator*(Vec2f other)
+{
+	return ComplexNumber(real*other.x,imaginary*other.y);
+}
+
+ComplexNumber ComplexNumber::operator*(int other)
+{
+	return ComplexNumber(real*other,imaginary*other);
+}
+
+ComplexNumber ComplexNumber::operator*(float other)
+{
+	return ComplexNumber(real*other,imaginary*other);
+}
+
+ComplexNumber ComplexNumber::operator*(double other)
+{
+	return ComplexNumber(real*other,imaginary*other);
 }
 
 void ComplexNumber::operator+=(ComplexNumber other)
@@ -74,9 +91,33 @@ void ComplexNumber::operator-=(ComplexNumber other)
 
 void ComplexNumber::operator*=(ComplexNumber other)
 {
-	double newReal = real * other.real - imaginary * other.imaginary;
-	double newImag = real * other.imaginary + imaginary * other.real;
+	double newReal = (real*other.real) - (imaginary*other.imaginary);
+	double newImag = (real*other.imaginary) + (imaginary*other.real);
 
 	real = newReal;
 	imaginary = newImag;
+}
+
+void ComplexNumber::operator*=(Vec2f other)
+{
+	real*=other.x;
+	imaginary*=other.y;
+}
+
+void ComplexNumber::operator*=(int other)
+{
+	real*=other;
+	imaginary*=other;
+}
+
+void ComplexNumber::operator*=(float other)
+{
+	real*=other;
+	imaginary*=other;
+}
+
+void ComplexNumber::operator*=(double other)
+{
+	real*=other;
+	imaginary*=other;
 }

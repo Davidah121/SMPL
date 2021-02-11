@@ -1267,7 +1267,7 @@ double MathExt::logisticsSigmoid(double x)
 	}
 }
 
-ComplexNumber MathExt::discreteFourierTransform(double* arr, int size, double x)
+ComplexNumber MathExt::discreteFourierTransform(double* arr, int size, double x, int samples)
 {
 	//Xk = sumFrom 0 to N-1 of ( xn * e ^ -(i2pi*kn)/N )
 	//or
@@ -1276,63 +1276,90 @@ ComplexNumber MathExt::discreteFourierTransform(double* arr, int size, double x)
 
 	ComplexNumber finalAnswer = ComplexNumber();
 
-	double xFactor = (2.0 * PI * x)/size;
+	double xFactor = (-2.0*PI*x)/samples;
 
-	for (int n = 0; n < size-1; n++)
+	for (int n = 0; n < size; n++)
 	{
-		finalAnswer.real += arr[n] * cos(-xFactor * n);
-		finalAnswer.imaginary += arr[n] * sin(-xFactor * n);
+		finalAnswer.real += arr[n] * MathExt::cos(xFactor * n);
+		finalAnswer.imaginary += arr[n] * MathExt::sin(xFactor * n);
 	}
 
 	return finalAnswer;
 }
 
-
-ComplexNumber* MathExt::fourierTransform(double* arr, int size)
+std::vector<ComplexNumber> MathExt::fourierTransform(double* arr, int size, int samples)
 {
-	ComplexNumber* output = new ComplexNumber[size];
-	for(int i=0; i<size; i++)
+	std::vector<ComplexNumber> output = std::vector<ComplexNumber>(size);
+	int s2 = size/2;
+
+	for(int i=0; i<s2; i++)
 	{
-		output[i] = MathExt::discreteFourierTransform(arr, size, (double)i);
+		ComplexNumber frequency = MathExt::discreteFourierTransform(arr, size, (double)i, samples);
+		ComplexNumber f2 = ComplexNumber(-frequency.real, -frequency.imaginary);
+		output[i] = frequency;
+		output[i+s2] = f2;
 	}
 
 	return output;
 }
 
-ComplexNumber* MathExt::fastFourierTransform(double* arr, int size)
+std::vector<ComplexNumber> MathExt::fastFourierTransform(double* arr, int size)
 {
 	//cooley tukey algorithm
-	//Could be a bit faster. The second half may be completely reflective of the first half.
-	//The second half can not be used regardless due to nyquist limit.
-	ComplexNumber* output = new ComplexNumber[size];
+	//must be a power of 2
 
-	for(int i=0; i<size; i++)
+	int powerSize = 1 << (int)MathExt::ceil(log2(size));
+	std::vector<ComplexNumber> output;
+
+	if(size < powerSize)
 	{
-		ComplexNumber frequency = MathExt::doFFT(arr, size, 0, size, 1, i);
-		output[i] = frequency;
-	}
-
-	return output;
-}
-
-ComplexNumber MathExt::doFFT(double* arr, int size, int index, int globalSize, int multVal, double value)
-{
-	//divide by 2 and do thing
-
-	if(size>1)
-	{
-		int newSize = size/2;
-		double anglePart = (-2*PI*value)/globalSize;
-
-		ComplexNumber split1 = doFFT(arr, newSize, index, 2*multVal, globalSize, value);
-		ComplexNumber cConst = ComplexNumber(MathExt::cos(anglePart), MathExt::sin(anglePart));
-		ComplexNumber split2 = doFFT(arr, newSize, index + 1, 2*multVal, globalSize, value) * cConst;
-
-		return split1 + split2;
+		//can't do unless it is a power of 2
+		return output;
 	}
 	else
 	{
-		return ComplexNumber(arr[index], 0);
+		output = MathExt::doFFT(arr, size);
+	}
+
+	return output;
+}
+
+std::vector<ComplexNumber> MathExt::doFFT(double* arr, int size)
+{
+	//split into even and odd indicies.
+	//regroup them by adding them with a root of unity multiplied to the odd indicies.
+	//root of unity chosen is e^(2*PI*j/N)
+
+	if(size>1)
+	{
+		int newSize = (size/2);
+
+		double* evens = new double[newSize];
+		double* odds = new double[newSize];
+
+		for(int i=0; i<newSize; i++)
+		{
+			evens[i] = arr[2*i];
+			odds[i] = arr[2*i + 1];
+		}
+
+		std::vector<ComplexNumber> split1 = doFFT(evens, newSize);
+		std::vector<ComplexNumber> split2 = doFFT(odds, newSize);
+		
+		double angle = (-2.0*PI)/size;
+		std::vector<ComplexNumber> output = std::vector<ComplexNumber>(size);
+		
+		for(int i=0; i<newSize; i++)
+		{
+			ComplexNumber multiplier = ComplexNumber( MathExt::cos(angle*i), MathExt::sin(angle*i) );
+			output[i] = split1[i] + (split2[i]*multiplier);
+			output[i+newSize] = split1[i] - (split2[i]*multiplier);
+		}
+		return output;
+	}
+	else
+	{
+		return {ComplexNumber(arr[0], 0)};
 	}
 }
 

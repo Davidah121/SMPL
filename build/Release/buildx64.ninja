@@ -9,6 +9,7 @@ rule buildToObject
    deps = gcc
 
 ## build all of the objects and the executable
+build $objDir/Audio.o: buildToObject src/Audio.cpp
 build $objDir/BezierCurve.o: buildToObject src/BezierCurve.cpp
 build $objDir/BinarySet.o: buildToObject src/BinarySet.cpp
 build $objDir/BitmapFont.o: buildToObject src/BitmapFont.cpp
@@ -46,6 +47,7 @@ build $objDir/Shape.o: buildToObject src/Shape.cpp
 build $objDir/SimpleDir.o: buildToObject src/SimpleDir.cpp
 build $objDir/SimpleFile.o: buildToObject src/SimpleFile.cpp
 build $objDir/SimpleXml.o: buildToObject src/SimpleXml.cpp
+build $objDir/Sound.o: buildToObject src/Sound.cpp
 build $objDir/Sprite.o: buildToObject src/Sprite.cpp
 build $objDir/StringTools.o: buildToObject src/StringTools.cpp
 build $objDir/System.o: buildToObject src/System.cpp
@@ -63,5 +65,4 @@ build $objDir/VectorGraphic_VectorPolyline.o: buildToObject src/VectorGraphic_Ve
 build $objDir/VectorGraphic_VectorRectangle.o: buildToObject src/VectorGraphic_VectorRectangle.cpp
 build $objDir/VectorGraphic_VectorShape.o: buildToObject src/VectorGraphic_VectorShape.cpp
 build $objDir/VectorSprite.o: buildToObject src/VectorSprite.cpp
-build $objDir/WavAudio.o: buildToObject src/WavAudio.cpp
 build $objDir/WndWindow.o: buildToObject src/WndWindow.cpp

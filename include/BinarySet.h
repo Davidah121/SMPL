@@ -34,19 +34,21 @@ public:
 
 	bool getBit(int index);
 	int getBits(int indexStart, int indexEnd, bool reverse = false);
+
+	void setBit(bool value, int index);
 	
 	std::vector<unsigned char> toBytes();
 
 	int size();
-	void printVals(bool reverse=false);
-
 	void clear();
 
 	void setBitOrder(bool bitOrder);
+	void setAddBitOrder(bool order);
 
 private:
 	std::vector<unsigned char> set = std::vector<unsigned char>();
 	bool MSB = true;
+	bool addBitOrder = LMSB;
 	long bitNumber = 0;
 };
 

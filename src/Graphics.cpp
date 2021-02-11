@@ -251,6 +251,20 @@ Color Graphics::blend(Color c1, Color c2)
 	return {redB,greenB,blueB,alphaB};
 
 }
+
+Color Graphics::lerp(Color c1, Color c2, float lerpVal)
+{
+	Vec4f v1 = Vec4f(c1.red, c1.green, c1.blue, c1.alpha);
+	Vec4f v2 = Vec4f(c2.red, c2.green, c2.blue, c2.alpha);
+	
+	Vec4f v3 = v1*(1.0-lerpVal) + v2*(lerpVal);
+
+	return {(unsigned char)MathExt::clamp(v3.x, 0.0, 255.0),
+			(unsigned char)MathExt::clamp(v3.y, 0.0, 255.0),
+			(unsigned char)MathExt::clamp(v3.z, 0.0, 255.0),
+			(unsigned char)MathExt::clamp(v3.w, 0.0, 255.0) };
+}
+
 //works properly now
 void Graphics::drawRect(int x, int y, int x2, int y2, bool outline, Image* surf)
 {

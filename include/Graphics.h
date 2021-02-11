@@ -36,6 +36,7 @@ public:
 	static void drawPixel(double x, double y, Color c, Image* surf = nullptr);
 
 	static Color blend(Color c1, Color c2);
+	static Color lerp(Color c1, Color c2, float lerpVal);
 
 	static void drawRect(int x, int y, int x2, int y2, bool outline, Image* surf = nullptr);
 	static void drawLine(int x, int y, int x2, int y2, Image* surf = nullptr);

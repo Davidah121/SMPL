@@ -5,6 +5,7 @@
 #include "BinarySet.h"
 #include "Sort.h"
 #include "StringTools.h"
+#include "MathExt.h"
 
 #define min(a,b) (a<b)? a:b
 #define max(a,b) (a>b)? a:b
@@ -16,6 +17,8 @@ Compression::Compression()
 Compression::~Compression()
 {
 }
+
+
 
 #pragma region RLE
 
@@ -416,6 +419,7 @@ std::vector<unsigned char> Compression::compressLZ77(unsigned char* data, int si
 
 	int tuplev1 = 0;//How far to go back
 	int tuplev2 = 0;//length of string
+	
 
 	//has to be at least 2 repeated values. We are using a greedy version
 	//meaning that we search for the best possible match not regarding performance.
@@ -881,7 +885,7 @@ std::vector<unsigned char> Compression::decompressHuffman(unsigned char* data, i
 	//first, fill the BinarySet
 	input.setValues(data, size);
 
-	input.printVals(true);
+	//input.printVals(true);
 
 	int i = input.size() - 1;
 	int m = 0;
@@ -1210,7 +1214,202 @@ std::vector<unsigned char> Compression::compressDeflate(std::vector<unsigned cha
 std::vector<unsigned char> Compression::compressDeflate(unsigned char* data, int size)
 {
 	//probably will only use default trees and stuff
-	return std::vector<unsigned char>();
+	struct lengthPair
+	{
+		bool literal;
+		int v1;	//if literal, this is the value else it is length
+		int v2;	//backwards distance if not literal; otherwise 0
+	};
+	int maxDistance = 32768;
+
+	std::vector<lengthPair> info = std::vector<lengthPair>();
+
+	int i = 0;
+	int tempLength = 0;
+	int tempBackwards = 0;
+
+	while(i < size)
+	{
+		tempLength = 0;
+		tempBackwards = 0;
+		int lowestPoint = max(i-maxDistance, 0);
+
+		for(int k=i-1; k>=lowestPoint; k--)
+		{
+			//potentially a length pair
+			int j = 0;
+			int highestPoint = min(size-i, 258);
+
+			//highestPoint also can't add to k to be i
+			highestPoint = min(i-k, highestPoint);
+
+			for(j=0; j<highestPoint; j++)
+			{
+				if(data[i+j] != data[k+j])
+				{
+					break;
+				}
+			}
+
+			if(j >= 3)
+			{
+				if( j > tempLength )
+				{
+					tempLength = j;
+					tempBackwards = i - k;
+				}
+			}
+		}
+
+		if(tempLength<3)
+		{
+			info.push_back( {true, data[i], 0} );
+			i++;
+		}
+		else
+		{
+			info.push_back( {false, tempLength, tempBackwards} );
+			i += tempLength;
+		}
+	}
+	
+
+	BinarySet bin = BinarySet();
+
+	bin.setBitOrder(BinarySet::LMSB);
+	bin.setAddBitOrder(BinarySet::LMSB);
+
+	bin.add(true);
+	bin.add(1, 2);
+
+	bin.setAddBitOrder(BinarySet::RMSB);
+	//should incorporate block ends
+	for(lengthPair lp : info)
+	{
+		if(lp.literal)
+		{
+			if(lp.v1 <= 143)
+			{
+				bin.add(48 + lp.v1, 8);
+			}
+			else
+			{
+				bin.add(256 + lp.v1, 9);
+			}
+		}
+		else
+		{
+			int codeVal = 0;
+			int addVal = 0;
+			int additionalBits = 0;
+			int bitsRequired = 7;
+			
+			if(lp.v1 <= 10)
+			{
+				codeVal = lp.v1-2; //codeVal 0 is reserved so start at 1
+				additionalBits = 0;
+			}
+			else if(lp.v1 <= 18)
+			{
+				double incVal = 1.0/2.0;
+				codeVal = 9 + (int) (incVal * (lp.v1-11));
+
+				addVal = (lp.v1-11)%2;
+				additionalBits = 1;
+			}
+			else if(lp.v1 <= 34)
+			{
+				double incVal = 1.0/4.0;
+				codeVal = 13 + (int) (incVal * (lp.v1-19));
+
+				addVal = (lp.v1-19)%4;
+				additionalBits = 2;
+			}
+			else if(lp.v1 <= 66)
+			{
+				double incVal = 1.0/8.0;
+				codeVal = 17 + (int) (incVal * (lp.v1-35));
+
+				addVal = (lp.v1-35)%8;
+				additionalBits = 3;
+			}
+			else if(lp.v1 <= 130)
+			{
+				double incVal = 1.0/16.0;
+				codeVal = (int) (incVal * (lp.v1-67));
+
+				addVal = (lp.v1-67)%16;
+				additionalBits = 4;
+				if(lp.v1 < 115)
+				{
+					codeVal += 21;
+				}
+				else
+				{
+					codeVal = 0b11000000;
+					bitsRequired = 8;
+				}
+			}
+			else if(lp.v1 <= 257)
+			{
+				double incVal = 1.0/32.0;
+				codeVal = 193 + (int) (incVal * (lp.v1-131));
+
+				addVal = (lp.v1-131)%32;
+				additionalBits = 5;
+				bitsRequired = 8;
+			}
+			else if(lp.v1 <= 258)
+			{
+				codeVal = 0b11000101;
+				additionalBits = 0;
+				bitsRequired = 8;
+			}
+			
+			bin.add(codeVal, bitsRequired);
+			if(additionalBits>0)
+			{
+				bin.setAddBitOrder(BinarySet::LMSB);
+				bin.add(addVal, additionalBits);
+				bin.setAddBitOrder(BinarySet::RMSB);
+			}
+
+			//now add the extrabits for the backwards distance.
+			//Just like the length stuff above.
+			codeVal = 0;
+			addVal = 0;
+			bitsRequired = 5;
+			additionalBits = 0;
+
+			if(lp.v2 <= 4)
+			{
+				codeVal = lp.v2 - 1; //codeVal 0 is reserved so start at 1
+				additionalBits = 0;
+			}
+			else
+			{
+				additionalBits = MathExt::ceil(log2(lp.v2)) - 2;
+				int expV = (1 << additionalBits);
+				double incVal = 1.0 / expV;
+				int tempV = 1 + expV*2;
+
+				codeVal = (2 + (2*additionalBits)) + (int) (incVal * (lp.v2 - tempV));
+				addVal = lp.v2 - tempV;
+			}
+
+			bin.add(codeVal, bitsRequired);
+			if(additionalBits>0)
+			{
+				bin.setAddBitOrder(BinarySet::LMSB);
+				bin.add(addVal, additionalBits);
+				bin.setAddBitOrder(BinarySet::RMSB);
+			}
+		}
+	}
+	
+	bin.add(0, 7); //end of block
+	
+	return bin.toBytes();
 }
 
 std::vector<unsigned char> Compression::decompressDeflate(std::vector<unsigned char> data)
@@ -1943,3 +2142,88 @@ void Compression::getBackDistanceInformation(int code, int* baseValue, int* extr
 
 #pragma endregion
 
+#pragma region CHECKSUMS
+
+unsigned int Compression::adler32(std::vector<unsigned char> data)
+{
+	return Compression::adler32(data.data(), data.size());
+}
+
+unsigned int Compression::adler32(unsigned char* data, int size)
+{
+	unsigned long sumA = 1;
+	unsigned long sumB = 0;
+
+	for(int i=0; i<size; i++)
+	{
+		sumA += data[i];
+		sumB += sumA;
+	}
+
+	unsigned int A = sumA % 65521;
+	unsigned int B = sumB % 65521;
+
+	return B*65536 + A;
+}
+
+unsigned int Compression::crc(std::vector<unsigned char> data, unsigned char type)
+{
+	return Compression::crc(data.data(), data.size(), type);
+}
+
+unsigned int Compression::crc(unsigned char* data, int size, unsigned char type)
+{
+	unsigned long crcTable[256];
+	unsigned long polynomial = 0;
+	unsigned int crcValue = 0xFFFFFFFF;
+
+	switch(type)
+	{
+		case CRC_8:
+			polynomial = 0xE0;
+			crcValue = crcValue & 0xFF;
+			break;
+		case CRC_16:
+			polynomial = 0xA001;
+			crcValue = crcValue & 0xFFFF;
+			break;
+		case CRC_32:
+			polynomial = 0xEDB88320;
+			crcValue = crcValue & 0xFFFFFFFF;
+			break;
+		default:
+			polynomial = 0xEDB88320;
+			crcValue = crcValue & 0xFFFFFFFF;
+			break;
+	}
+
+	//fill table
+	for(int i=0; i<256; i++)
+	{
+		unsigned long remainder = i;
+		for(int b=0; b<8; b++)
+		{
+			if(remainder & 0x01)
+			{
+				remainder = (remainder >> 1) ^ polynomial;
+			}
+			else
+			{
+				remainder = (remainder >> 1);
+			}
+		}
+
+		crcTable[i] = remainder;
+	}
+
+	for(int i=0; i<size; i++)
+	{
+		crcValue = crcTable[ (data[i] ^ crcValue)&0xFF] ^ (crcValue>>8);
+	}
+
+	return ~crcValue;
+}
+
+
+
+#pragma endregion

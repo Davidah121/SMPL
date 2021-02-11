@@ -42,7 +42,13 @@ void ColorPalette::operator=(const ColorPalette& other)
 
 void ColorPalette::copy(const ColorPalette& other)
 {
+
 	uniquePalette = other.uniquePalette;
+	
+	paletteArr.clear();
+	delete paletteTree;
+	paletteTree = new KDTree<unsigned char>(3);
+
 	for(Color c : other.paletteArr)
 	{
 		addNewColor(c);
@@ -189,9 +195,10 @@ Color ColorPalette::getClosestColor(Color c)
 
 int ColorPalette::getClosestColorIndex(Color c)
 {
-	unsigned int distance = 0xFFFFFFFF;
 	int index = 0;
-
+	
+	/*
+	unsigned int distance = 0xFFFFFFFF;
 	for(int i=0; i<paletteArr.size(); i++)
 	{
 		int redDis = (int)paletteArr[i].red - (int)c.red;
@@ -209,32 +216,108 @@ int ColorPalette::getClosestColorIndex(Color c)
 		}
 	}
 
-	/*
+	return index;
+	*/
+	
 	KDTreeNode<unsigned char> node = paletteTree->searchNearest((unsigned char*)&c);
 	ColorNode* k = (ColorNode*)node.data;
 	if(k!=nullptr)
-	{
-		StringTools::out << index << ", " << k->arrayIndex << " with distances: ";
-
-		int redDis = (int)paletteArr[k->arrayIndex].red - (int)c.red;
-		int greenDis = (int)paletteArr[k->arrayIndex].green - (int)c.green;
-		int blueDis = (int)paletteArr[k->arrayIndex].blue - (int)c.blue;
-
-		unsigned int distance2 = MathExt::sqr(redDis) + MathExt::sqr(greenDis) + MathExt::sqr(blueDis);
-		StringTools::out << distance << ", " << distance2 << StringTools::lineBreak;
-
-
-		return k->arrayIndex;
-	}
-	else
-	{
-		StringTools::out << index << ", " << StringTools::lineBreak;
-		return 0;
-	}
-	*/
-	
+		index = k->arrayIndex;
 
 	return index;
+}
+
+void ColorPalette::reBalance()
+{
+	//sort elements by red, green, blue, red, green, blue, ...etc
+	//dividing the list into halfs selecting the median of each list to add to the list next.
+	//takes O(n*log(n)*log(n)) where n is the amount of colors
+
+	struct Range
+	{
+		int start;
+		int end;
+	};
+
+	std::vector<ColorNode> tempPalette = std::vector<ColorNode>();
+	std::vector<ColorNode> addInOrder = std::vector<ColorNode>();
+	std::vector<Range> ranges = std::vector<Range>();
+	std::vector<Range> ranges2 = std::vector<Range>();
+
+	for(int i=0; i<getSize(); i++)
+	{
+		tempPalette.push_back( { paletteArr[i], i} );
+	}
+
+	delete paletteTree;
+	paletteTree = new KDTree<unsigned char>(3);
+
+	int sortBy = 0;
+	int size = tempPalette.size();
+
+	ranges.push_back({0, size});
+	
+	while(addInOrder.size() < size)
+	{
+		for(Range r : ranges)
+		{
+			int rSize = (r.end - r.start);
+
+			if(rSize > 1)
+			{
+				Sort::mergeSort<ColorNode>(tempPalette.data()+r.start, rSize, [sortBy](ColorNode a, ColorNode b) -> bool{
+					if(sortBy == 0)
+					{
+						return a.c.red < b.c.red;
+					}
+					else if(sortBy == 1)
+					{
+						return a.c.green < b.c.green;
+					}
+					else
+					{
+						return a.c.blue < b.c.blue;
+					}
+				});
+
+				int midIndex = (r.start + r.end)/2;
+				addInOrder.push_back(tempPalette[midIndex]);
+
+				ranges2.push_back( {r.start, midIndex-1} );
+				ranges2.push_back( {midIndex+1, r.end} );
+			}
+			else if (rSize==0)
+			{
+				addInOrder.push_back(tempPalette[r.start]);
+			}
+			else if (rSize==1)
+			{
+				addInOrder.push_back(tempPalette[r.start]);
+				if(r.end != size)
+				{
+					addInOrder.push_back(tempPalette[r.end]);
+				}
+			}
+		}
+
+		ranges = ranges2;
+		ranges2.clear();
+		
+		sortBy = (sortBy+1) % 3;
+	}
+
+	//after everything above done
+	for(int i=0; i<addInOrder.size(); i++)
+	{
+		ColorNode* k = new ColorNode();
+		k->arrayIndex = addInOrder[i].arrayIndex;
+		k->c = addInOrder[i].c;
+
+		if(uniquePalette)
+			paletteTree->addUnique( (unsigned char*)k );
+		else
+			paletteTree->add( (unsigned char*)k );
+	}
 }
 
 ColorPalette ColorPalette::generateOptimalPalette(Color* colorArray, int size, int colors, unsigned char type, bool convertToLab, bool uniqueOnly)

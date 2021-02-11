@@ -11,7 +11,7 @@
                 "UNICODE",
                 "_UNICODE"
             ],
-            "windowsSdkVersion": "10.0.18362.0",
+            "windowsSdkVersion": "10.0.19041.0",
             "cStandard": "c11",
             "intelliSenseMode": "msvc-x64",
             "cppStandard": "c++17"
