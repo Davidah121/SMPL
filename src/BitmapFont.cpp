@@ -41,7 +41,7 @@ BitmapFont::BitmapFont(std::string filename)
 		}
 		else
 		{
-			StringTools::out << StringTools::toWideString(imageFile) << " was not loaded" << StringTools::lineBreak;
+			StringTools::println("%s was not loaded", imageFile.c_str());
 		}
 		
 
@@ -70,7 +70,7 @@ BitmapFont::BitmapFont(std::string filename)
 				}
 				else
 				{
-					StringTools::out << "Invalid string: " << StringTools::toWideString(fileInfo[startIndex]) << "| with size: " << fileInfo.size() << StringTools::lineBreak;
+					StringTools::println("Invalid string: %s| with size: %d", fileInfo[startIndex].c_str(), fileInfo.size());
 				}
 				
 			}

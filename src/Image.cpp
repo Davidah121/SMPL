@@ -8,6 +8,10 @@
 
 #define min(a,b) ((a<b) ? a:b)
 
+bool Image::IMAGE_SAVE_ALPHA = false;
+unsigned char Image::IMAGE_ALPHA_THRESHOLD = 128;
+bool Image::IMAGE_GREYSCALE = false;
+
 const Class* Image::myClass = new Class("Image", {Object::myClass});
 const Class* Image::getClass()
 {
@@ -114,18 +118,14 @@ void Image::setAllPixels(Color c)
 
 void Image::copyImage(Image* v)
 {
-	width = v->getWidth();
-	height = v->getHeight();
-	p = v->getPalette();
+	this->~Image();
+	this->width = v->width;
+	this->height = v->height;
+	pixels = new Color[width * height];
 
-	Color* otherPixels = v->getPixels();
-	Color* thesePixels = pixels;
-	Color* endPixels = pixels + (width * height);
+	memcpy(pixels, v->pixels, width * height * sizeof(Color));
 
-	for (thesePixels = pixels; thesePixels < endPixels; thesePixels++, otherPixels++)
-	{
-		*thesePixels = *otherPixels;
-	}
+	p = v->p;
 }
 
 void Image::setPalette(ColorPalette p)

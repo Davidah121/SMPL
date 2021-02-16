@@ -7,9 +7,9 @@ std::wistream StringTools::in(std::wcin.rdbuf);
 std::wostream StringTools::err(std::wcerr.rdbuf);
 */
 
-std::wostream StringTools::out(nullptr);
-std::wistream StringTools::in(nullptr);
-std::wostream StringTools::err(nullptr);
+// std::wostream StringTools::out(nullptr);
+// std::wistream StringTools::in(nullptr);
+// std::wostream StringTools::err(nullptr);
 
 bool StringTools::hasInit = false;
 
@@ -27,14 +27,14 @@ StringTools::~StringTools()
 
 void StringTools::init()
 {
-	StringTools::out.rdbuf(std::wcout.rdbuf());
-	StringTools::in.rdbuf(std::wcin.rdbuf());
-	StringTools::err.rdbuf(std::wcerr.rdbuf());
+	// StringTools::out.rdbuf(std::wcout.rdbuf());
+	// StringTools::in.rdbuf(std::wcin.rdbuf());
+	// StringTools::err.rdbuf(std::wcerr.rdbuf());
 
 	std::ios_base::sync_with_stdio(true);
-	int outRet = _setmode(_fileno(stdout), _O_U16TEXT);
-	int inRet = _setmode(_fileno(stdin), _O_U16TEXT);
-	int errRet = _setmode(_fileno(stderr), _O_U16TEXT);
+	// int outRet = _setmode(_fileno(stdout), _O_U16TEXT);
+	// int inRet = _setmode(_fileno(stdin), _O_U16TEXT);
+	// int errRet = _setmode(_fileno(stderr), _O_U16TEXT);
 
 	hasInit = true;
 }
@@ -557,7 +557,7 @@ std::wstring StringTools::getWideString()
 	{
 		std::wstring temp = L"";
 
-		std::getline(in, temp);
+		std::getline(std::wcin, temp);
 
 		return temp;
 	}
@@ -570,7 +570,7 @@ std::string StringTools::getString()
 	{
 		std::wstring temp = L"";
 
-		std::getline(in, temp);
+		std::getline(std::wcin, temp);
 
 		std::string text = StringTools::toCString(temp);
 
@@ -584,7 +584,7 @@ char StringTools::getChar()
 	if (hasInit)
 	{
 		std::wstring temp = L"";
-		std::getline(in, temp);
+		std::getline(std::wcin, temp);
 
 		return (char)temp.at(0);
 	}
@@ -596,7 +596,7 @@ wchar_t StringTools::getWideChar()
 	if (hasInit)
 	{
 		std::wstring temp = L"";
-		std::getline(in, temp);
+		std::getline(std::wcin, temp);
 
 		return temp.at(0);
 	}
@@ -606,7 +606,93 @@ wchar_t StringTools::getWideChar()
 int StringTools::getInt()
 {
 	if(hasInit)
-		return in.get();
+		return std::wcin.get();
 
 	return 0;
+}
+
+void StringTools::findLongestMatch(std::string base, std::string match, int* length, int* index)
+{
+	findLongestMatch((char*)base.c_str(), base.size(), (char*)match.c_str(), match.size(), length, index);
+}
+
+void StringTools::findLongestMatch(char* base, int sizeOfBase, char* match, int sizeOfMatch, int* length, int* index)
+{
+	if(length!=nullptr && index!=nullptr)
+	{
+		int maxVal = 0;
+		int indexOfMax = 0;
+
+		int x = 0;
+		int y = 0;
+
+		int currSize = 0;
+		int currStartIndex = -1;
+
+		int nextPossibleIndex = -1;
+
+		char* sB = base;
+		char* sM = match;
+
+		char startValue = match[0];
+		
+		while(x < sizeOfBase)
+		{
+			if(*sB == *sM)
+			{
+				if(currStartIndex!=-1)
+				{
+					if(*sB == startValue)
+					{
+						nextPossibleIndex = x; 
+					}
+				}
+
+				if(currStartIndex==-1)
+					currStartIndex = x;
+				
+				currSize++;
+				sM++;
+
+				if(currSize >= sizeOfMatch)
+				{
+					maxVal = currSize;
+					indexOfMax = currStartIndex;
+					break;
+				}
+			}
+			else
+			{
+				if(currSize >= maxVal)
+				{
+					maxVal = currSize;
+					indexOfMax = currStartIndex;
+				}
+
+				if(nextPossibleIndex>0)
+				{
+					x = nextPossibleIndex;
+					sB = base + nextPossibleIndex;
+				}
+
+				currSize = 0;
+				currStartIndex = -1;
+				nextPossibleIndex = -1;
+
+				sM = match;
+			}
+
+			sB++;
+			x++;
+		}
+		
+		if(currSize >= maxVal)
+		{
+			maxVal = currSize;
+			indexOfMax = currStartIndex;
+		}
+		
+		*length = maxVal;
+		*index = indexOfMax;
+	}
 }

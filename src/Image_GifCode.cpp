@@ -18,16 +18,7 @@ void Image::saveGIF(std::string filename)
 	ColorPalette tempPalette;
 	unsigned char* pixs = new unsigned char[width*height];
 
-	bool containsTransparency = false;
-	//determine if it contains transparency first
-	for(int i=0; i<width*height; i++)
-	{
-		if(pixels[i].alpha != 255)
-		{
-			containsTransparency = true;
-			break;
-		}
-	}
+	bool containsTransparency = IMAGE_SAVE_ALPHA;
 
 	if(p.getSize() == 0 || p.getSize() > 256)
 	{
@@ -37,14 +28,28 @@ void Image::saveGIF(std::string filename)
 		else
 			tempPalette = ColorPalette::generateOptimalPalette(pixels, width*height, 256, ColorPalette::MEAN_CUT);
 	}
-
-	for(int i=0; i<width*height; i++)
+	else
 	{
-		if(pixels[i].alpha != 255)
+		tempPalette = p;
+	}
+
+	if(containsTransparency)
+	{
+		for(int i=0; i<width*height; i++)
 		{
-			pixs[i] = 0xFF;
+			if(pixels[i].alpha <= IMAGE_ALPHA_THRESHOLD)
+			{
+				pixs[i] = 0xFF;
+			}
+			else
+			{
+				pixs[i] = (unsigned char)tempPalette.getClosestColorIndex(pixels[i]);
+			}
 		}
-		else
+	}
+	else
+	{
+		for(int i=0; i<width*height; i++)
 		{
 			pixs[i] = (unsigned char)tempPalette.getClosestColorIndex(pixels[i]);
 		}
@@ -194,6 +199,11 @@ Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
 	{
 		valid = true;
 	}
+
+	int disposeMethod = 0;
+	int nextDisposeMethod = 0;
+	int indexOfLastNotDisposed = -1;
+	bool hasTransparency = false;
 	
 	if (valid == true)
 	{
@@ -223,23 +233,22 @@ Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
 		}
 
 		int transparentColorIndex = -1;
+		int backgroundTile = -1;
 
 		while (startIndex < fileData.size())
 		{
 			if (fileData[startIndex] == 0x2C)
 			{
 				Image* tempImage = new Image(globalWidth, globalHeight);
-
+				
 				if (images->size() > 0)
 				{
-					tempImage->copyImage(images->at(images->size() - 1));
+					tempImage->copyImage(images->back());
 				}
-				else
+
+				if(disposeMethod==0 || disposeMethod==1)
 				{
-					if (backgroundColorIndex >= 0 && backgroundColorIndex < sizeOfGlobalTable && hasGlobalColorTable==true)
-					{
-						tempImage->setAllPixels(globalColorTable.getColor(backgroundColorIndex));
-					}
+					indexOfLastNotDisposed = images->size()-1;
 				}
 
 				//Image Descriptor
@@ -334,7 +343,38 @@ Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
 								c.alpha = 0;
 							}
 
-							tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
+							if(c.alpha!=0)
+							{
+								tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
+							}
+							else
+							{
+								if(disposeMethod==0)
+								{
+									tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
+								}
+								else if(disposeMethod==2)
+								{
+									Color c;
+									
+									c = localTable.getColor(backgroundColorIndex);
+									if (backgroundColorIndex == transparentColorIndex && hasTransparency)
+									{
+										c.alpha = 0;
+									}
+									
+									tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
+								}
+								else if(disposeMethod==3)
+								{
+									if(indexOfLastNotDisposed>0)
+									{
+										Color c = (images->at(indexOfLastNotDisposed))->getPixel(x + leftScreenPos, y + topScreenPos);
+										
+										tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
+									}
+								}
+							}
 							j++;
 
 							x++;
@@ -358,8 +398,43 @@ Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
 							{
 								c.alpha = 0;
 							}
+							else
+							{
+								c.alpha = 255;
+							}
 
-							tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
+							if(c.alpha!=0)
+							{
+								tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
+							}
+							else
+							{
+								if(disposeMethod==0)
+								{
+									tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
+								}
+								else if(disposeMethod==2)
+								{
+									Color c;
+									
+									c = localTable.getColor(backgroundColorIndex);
+									if (backgroundColorIndex == transparentColorIndex && hasTransparency)
+									{
+										c.alpha = 0;
+									}
+									
+									tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
+								}
+								else if(disposeMethod==3)
+								{
+									if(indexOfLastNotDisposed>0)
+									{
+										Color c = (images->at(indexOfLastNotDisposed))->getPixel(x + leftScreenPos, y + topScreenPos);
+										
+										tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
+									}
+								}
+							}
 							j++;
 
 							x++;
@@ -395,7 +470,7 @@ Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
 				}
 
 				images->push_back(tempImage);
-				break;
+				disposeMethod = nextDisposeMethod;
 			}
 			else if (fileData[startIndex] == 0x21)
 			{
@@ -404,41 +479,35 @@ Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
 				if (fileData[startIndex+1] == 0xF9)
 				{
 					//GCE
-					
 					int blockSize = fileData[startIndex + 2];
-					bool hasTransparentColor = (fileData[startIndex + 3] & 0x01) == 1;
-					
+					hasTransparency = (fileData[startIndex + 3] & 0x01) == 1;
+					nextDisposeMethod = (fileData[startIndex + 3] >> 2) & 7;
+
 					//DelayTime in 1/100 seconds
 					int delayTime = (int)fileData[startIndex + 4] + (((int)fileData[startIndex + 5]) << 8);
 
+					
 					transparentColorIndex = fileData[startIndex + 6];
+					
+					startIndex += 3; //controlExtenstion + type + blockSize
+					startIndex += blockSize;
 
-					startIndex += 6;
-
-					for (int i = 4; i < blockSize; i++)
-					{
-						startIndex++;
-					}
-					startIndex++;
-				}
-				else if (fileData[startIndex + 1] == 0xFF)
-				{
-					startIndex += 13;
-
-					while (fileData[startIndex] != 0x00)
-					{
-						startIndex++;
-					}
-
-					startIndex++;
+					startIndex++;//block terminator
 				}
 				else 
 				{
-					while (fileData[startIndex] != 0x00)
-					{
-						startIndex++;
-					}
+					
+					int blockSize = fileData[startIndex + 2];
 
+					startIndex += 3; //controlExtenstion + type + blockSize
+					startIndex += blockSize;
+					
+					while(fileData[startIndex]!=0x00)
+					{
+						//datablock probably
+						blockSize = fileData[startIndex];
+						startIndex+=blockSize+1;
+					}
 					startIndex++;
 				}
 			}
@@ -449,7 +518,8 @@ Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
 			}
 			else
 			{
-				startIndex++;
+				//error
+				break;
 			}
 		}
 	}

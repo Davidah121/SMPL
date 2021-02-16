@@ -50,6 +50,7 @@ public:
 	static void drawText(std::string str, int x, int y, Image* surf = nullptr);
 
 	static void drawPolygon(Vec2f* points, int size, Image* surf = nullptr);
+	static void drawTexturedPolygon(Vec2f* points, Vec2f* textureCoords, int size, Image* surf = nullptr);
 
 	static void setColor(Color c);
 	static Color getColor();
@@ -58,9 +59,16 @@ public:
 	static BitmapFont* getFont();
 	
 	static void setCompositeRule(unsigned char b);
+	static unsigned char getCompositeRule();
+
 	static void setBlendMode(unsigned char b);
+	static unsigned char getBlendMode();
+
 	static void setFillRule(bool b);
+	static bool getFillRule();
+
 	static void setAntiAliasing(bool b);
+	static bool getAntiAliasing();
 	
 	//Image Manipulation
 	static const unsigned char THRESHOLD = 0;
@@ -74,10 +82,17 @@ public:
 	static void replaceColor(Image* img, Color oldColor, Color newColor, bool ignoreAlpha = false);
 	static void ditherImage(Image* img, unsigned char method = 0);
 	static Image* scaleImage(Image* img, double xScale, double yScale, unsigned char filterMethod = 0);
+
+
 private:
 	static void floydSteinburgDithering(Image* img);
 	static void orderedBayerDithering(Image* img);
 	static Matrix generateBayerMatrix(Matrix m, int rowSize);
+
+	static Image* scaleNearestNeighbor(Image* img, double xScale, double yScale);
+	static Image* scaleBilinear(Image* img, double xScale, double yScale);
+	static Image* scaleBicubic(Image* img, double xScale, double yScale);
+	
 	
 	static Image* activeImage;
 	static BitmapFont* activeFont;

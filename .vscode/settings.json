@@ -66,7 +66,10 @@
         "map": "cpp",
         "xtree": "cpp",
         "complex": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "atomic": "cpp",
+        "compare": "cpp",
+        "puff.h": "c"
     },
     "files.exclude": {
         "**/.classpath": true,

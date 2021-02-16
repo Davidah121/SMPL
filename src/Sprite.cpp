@@ -13,6 +13,20 @@ Sprite::Sprite()
 
 Sprite::~Sprite()
 {
+	dispose();
+}
+
+void Sprite::dispose()
+{
+	for(int i=0; i<images.size(); i++)
+	{
+		if(images[i]!=nullptr)
+		{
+			delete images[i];
+		}
+	}
+
+	images.clear();
 }
 
 Image* Sprite::getImage(int index)
@@ -44,6 +58,8 @@ void Sprite::removeImage(int index)
 		{
 			if (i != index)
 				newImages.push_back(images[i]);
+			else
+				delete images[i];
 		}
 
 		images = newImages;
@@ -52,6 +68,7 @@ void Sprite::removeImage(int index)
 
 void Sprite::loadImage(std::string filename)
 {
+	dispose();
 	int amountOfImages = 0;
 
 	Image** imgs = Image::loadImage(filename, &amountOfImages);
@@ -64,6 +81,7 @@ void Sprite::loadImage(std::string filename)
 
 void Sprite::loadImage(std::wstring filename)
 {
+	dispose();
 	int amountOfImages = 0;
 
 	Image** imgs = Image::loadImage(filename, &amountOfImages);

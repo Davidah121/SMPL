@@ -104,7 +104,7 @@ bool VectorFont::load(std::wstring filename)
                                     {
                                         StringTools::println(a.value);
                                         StringTools::println(a.name);
-                                        StringTools::println(i);
+                                        StringTools::println("%d",i);
                                         StringTools::println(fontChildren->attributes[0].value);
                                         fc.unicodeValue = 65;
                                     }
@@ -162,7 +162,7 @@ bool VectorFont::load(std::wstring filename)
                                 else
                                 {
                                     //something went wrong
-                                    StringTools::out << "Something is wrong with the split size of a.value: " << split.size() << StringTools::lineBreak;
+                                    StringTools::println("Something is wrong with the split size of a.value: %d", split.size());
                                 }
                                 
                                 

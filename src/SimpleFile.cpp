@@ -110,11 +110,7 @@ int SimpleFile::readInt()
 	}
 	else
 	{
-		StringTools::out << (int)isOpen() << StringTools::lineBreak;
-		StringTools::out << (int)type << StringTools::lineBreak;
-		StringTools::out << (int)isEndOfFile() << StringTools::lineBreak;
-
-		StringTools::out << "Is not opened for reading" << StringTools::lineBreak;
+		//File is not opened for reading
 	}
 	return 0;
 }
@@ -127,7 +123,7 @@ char SimpleFile::readByte()
 	}
 	else
 	{
-		StringTools::out << "Is not opened for reading" << StringTools::lineBreak;
+		//File is not opened for reading
 	}
 	return '\0';
 }
@@ -201,7 +197,7 @@ const char * SimpleFile::readLine()
 	}
 	else
 	{
-		StringTools::out << "Is not opened for reading" << StringTools::lineBreak;
+		//File is not opened for reading
 	}
 
 	return nullptr;
@@ -259,7 +255,7 @@ const wchar_t * SimpleFile::readWideLine()
 	}
 	else
 	{
-		StringTools::out << "Is not opened for reading" << StringTools::lineBreak;
+		//File is not opened for reading
 	}
 
 	return nullptr;
@@ -307,7 +303,7 @@ std::string SimpleFile::readString()
 	}
 	else
 	{
-		StringTools::out << "Is not opened for reading" << StringTools::lineBreak;
+		//File is not opened for reading
 	}
 
 	return p;
@@ -364,7 +360,7 @@ std::wstring SimpleFile::readWideString()
 	}
 	else
 	{
-		StringTools::out << "Is not opened for reading" << StringTools::lineBreak;
+		//File is not opened for reading
 	}
 
 	return p;
@@ -461,12 +457,12 @@ void SimpleFile::writeByte(char c)
 		}
 		else
 		{
-			StringTools::out << "Is not opened for writing" << StringTools::lineBreak;
+			//File is not opened for writing
 		}
 	}
 	else
 	{
-		StringTools::out << "File is not opened" << StringTools::lineBreak;
+		//File is not opened
 	}
 }
 
@@ -480,12 +476,12 @@ void SimpleFile::writeWideChar(wchar_t c)
 		}
 		else
 		{
-			StringTools::out << "Is not opened for writing" << StringTools::lineBreak;
+			//File is not opened for writing
 		}
 	}
 	else
 	{
-		StringTools::out << "File is not opened" << StringTools::lineBreak;
+		//File is not opened
 	}
 }
 
@@ -502,12 +498,12 @@ void SimpleFile::writeLine(char * line)
 		}
 		else
 		{
-			StringTools::out << "Is not opened for writing" << StringTools::lineBreak;
+			//File is not opened for writing
 		}
 	}
 	else
 	{
-		StringTools::out << "File is not opened" << StringTools::lineBreak;
+		//File is not opened
 	}
 }
 
@@ -524,12 +520,12 @@ void SimpleFile::writeWideLine(wchar_t * line)
 		}
 		else
 		{
-			StringTools::out << "Is not opened for writing" << StringTools::lineBreak;
+			//File is not opened for writing
 		}
 	}
 	else
 	{
-		StringTools::out << "File is not opened" << StringTools::lineBreak;
+		//File is not opened
 	}
 }
 
@@ -546,12 +542,12 @@ void SimpleFile::writeBytes(unsigned char* data, int size)
 		}
 		else
 		{
-			StringTools::out << "Is not opened for writing" << StringTools::lineBreak;
+			//File is not opened for writing
 		}
 	}
 	else
 	{
-		StringTools::out << "File is not opened" << StringTools::lineBreak;
+		//File is not opened
 	}
 }
 
@@ -568,12 +564,12 @@ void SimpleFile::writeString(std::string line)
 		}
 		else
 		{
-			StringTools::out << "Is not opened for writing" << StringTools::lineBreak;
+			//File is not opened for writing
 		}
 	}
 	else
 	{
-		StringTools::out << "File is not opened" << StringTools::lineBreak;
+		//File is not opened
 	}
 }
 
@@ -590,12 +586,12 @@ void SimpleFile::writeWideString(std::wstring line)
 		}
 		else
 		{
-			StringTools::out << "Is not opened for writing" << StringTools::lineBreak;
+			//File is not opened for writing
 		}
 	}
 	else
 	{
-		StringTools::out << "File is not opened" << StringTools::lineBreak;
+		//File is not opened
 	}
 }
 
@@ -610,12 +606,12 @@ void SimpleFile::writeLineBreak()
 		}
 		else
 		{
-			StringTools::out << "Is not opened for writing" << StringTools::lineBreak;
+			//File is not opened for writing
 		}
 	}
 	else
 	{
-		StringTools::out << "File is not opened" << StringTools::lineBreak;
+		//File is not opened
 	}
 }
 

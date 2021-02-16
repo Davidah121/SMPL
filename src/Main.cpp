@@ -22,6 +22,9 @@
 #include "Audio.h"
 #include "Sound.h"
 
+#include "Sprite.h"
+#include "Input.h"
+
 /**
  * Purpose:
  *      Provide a port to other systems
@@ -97,60 +100,6 @@ void function1()
 
 }
 
-void testImageLoader()
-{
-    StringTools::init();
-    //StringTools::println("Enter the png file to load.");
-    //std::string filename = StringTools::getString();
-
-    std::string filename = "C:/Users/Alan/source/repos/ImageLibrary/TestImages/PNG/FilterTest/f99n0c04.png";
-    StringTools::print("Loading ");
-    StringTools::println(filename);
-    
-    int amount = 0;
-    Image** kImgs = Image::loadImage(filename, &amount);
-
-    if(amount > 0)
-    {
-        StringTools::println("Successful Load.");
-        StringTools::out << "Width is: " << kImgs[0]->getWidth() << ", Height is: " << kImgs[0]->getHeight() << StringTools::lineBreak;
-    }
-    else
-    {
-        StringTools::println("Unsuccessful Load. Closing");
-        system("pause");
-        exit(0);
-    }
-    
-    while(true)
-    {
-        StringTools::println("Enter the x and y coordinates to check a pixel (use commas). Empty string to quit.");
-        std::string input = StringTools::getString();
-
-        if(input=="")
-        {
-            break;
-        }
-        else
-        {
-            std::vector<std::string> split = StringTools::splitString(input, ',');
-            int x = std::stoi(split[0]);
-            int y = std::stoi(split[1]);
-
-            Color c = kImgs[0]->getPixel(x,y);
-
-            StringTools::out << "The color at (" << x << ", " << y << ") is " << c.red << ", " << c.green << ", " << c.blue << ", " << c.alpha << StringTools::lineBreak;
-        }
-    }
-    
-    kImgs[0]->saveBMP("test1.bmp");
-    for(int i=0; i<amount; i++)
-    {
-        delete kImgs[i];
-    }
-    delete[] kImgs;
-}
-
 VectorGraphic shape = VectorGraphic();
 
 void svgTest()
@@ -179,9 +128,9 @@ void drawLoadedSvg(std::string file)
     {
         for(int i2=0; i2<3; i2++)
         {
-            StringTools::out << viewBoxMat[i][i2] << ", ";
+            StringTools::print("%d, ",viewBoxMat[i][i2]);
         }
-        StringTools::out << StringTools::lineBreak;
+        StringTools::println("");
     }
 
     windowPointer = new WndWindow(L"Displaying Path Arcs", shape.getWidth(), shape.getHeight());
@@ -200,15 +149,6 @@ void drawLoadedSvg(std::string file)
 
     if(img!=nullptr)
         delete img;
-}
-
-void testXML(std::wstring filename)
-{
-    SimpleXml x = SimpleXml();
-    x.load(filename);
-
-    StringTools::println(x.nodes[0]->title);
-    StringTools::println(x.nodes[0]->value);
 }
 
 void testFontSVG(std::wstring filename)
@@ -275,41 +215,6 @@ void testFontGraphics()
     }
 }
 
-void testMatrixStuff()
-{
-    Mat3f q = MathExt::scale2D(2, 3);
-    Mat3f p = MathExt::translation2D(32, 32);
-    
-    Mat3f x = q*p;
-
-    for(int i=0; i<q.getRows(); i++)
-    {
-        for(int j=0; j<q.getCols(); j++)
-        {
-            StringTools::out << q[i][j] << ", ";
-        }
-        StringTools::println("");
-    }
-
-    for(int i=0; i<p.getRows(); i++)
-    {
-        for(int j=0; j<p.getCols(); j++)
-        {
-            StringTools::out << p[i][j] << ", ";
-        }
-        StringTools::println("");
-    }
-
-    for(int i=0; i<x.getRows(); i++)
-    {
-        for(int j=0; j<x.getCols(); j++)
-        {
-            StringTools::out << x[i][j] << ", ";
-        }
-        StringTools::println("");
-    }
-}
-
 void paintFunction()
 {
     if(windowPointer!=nullptr)
@@ -323,64 +228,6 @@ void paintFunction()
     }
 }
 
-void testImageDisplay()
-{
-    StringTools::out << "Enter image name: ";
-    std::string filename = StringTools::getString();
-
-    int amountOfImages = 0;
-    Image** imgArr = Image::loadImage(filename, &amountOfImages);
-
-    if(amountOfImages==0 || imgArr == nullptr)
-    {
-        StringTools::out << filename.c_str() << " was not able to be loaded." << StringTools::lineBreak;
-        return;
-    }
-    img = imgArr[0];
-
-    windowPointer = new WndWindow("Image Tester", 1000,1000);
-//C:\Users\Alan\Pictures\Screenshots\Screenshot (195).gif
-//C:\Users\Alan\source\repos\ImageLibrary\TestImages\PNG\Varying bit sizes and types
-//C:\Users\Alan\source\repos\ImageLibrary\TestImages\PNG\Interlacing
-
-
-    windowPointer->setPaintFunction( paintFunction );
-
-    while(windowPointer->getRunning())
-    {
-        windowPointer->repaint();
-        System::sleep(16,666);
-    }
-
-    //img->saveGIF("File.gif");
-    delete windowPointer;
-    delete[] imgArr;
-}
-
-void testLZW()
-{
-    //string A B A A B A C B C C B A B C
-    std::vector<unsigned char> data = Compression::decompressLZW({0x43, 0x50, 0x90, 0x10, 0x2D, 0x21}, 3);
-
-    for(unsigned char c : data)
-    {
-        StringTools::println( c );
-    }
-
-    //string A B A A B A C B C C B A B C
-    std::string text = "ABAABACBCCBABC";
-    std::vector<unsigned char> textConv = std::vector<unsigned char>();
-    for(char c : text)
-    {
-        textConv.push_back((unsigned char) c);
-    }
-    std::vector<unsigned char> data2 = Compression::compressLZW(textConv);
-
-    for(unsigned char c : data2)
-    {
-        StringTools::println( (int)c );
-    }
-}
 
 void testNeuralNetwork()
 {
@@ -447,7 +294,7 @@ void testNeuralNetwork()
     int modV = 1000000;
     LCG r = LCG(rand(), 12354, 0, modV);
 
-    StringTools::out << "output for 0,0: " << network.run({0,0})[0] << StringTools::lineBreak;
+    StringTools::println("output for 0,0: %d", network.run({0,0})[0]);
     
     for(int i=0; i<100000; i++)
     {
@@ -462,8 +309,8 @@ void testNeuralNetwork()
 
             if(i==0)
             {
-                StringTools::out << w1 << ", " << w2 << ", " << nx << ", " << ny << StringTools::lineBreak;
-                StringTools::out << MathExt::distanceTo(0,0,nx,ny) << StringTools::lineBreak;
+                StringTools::println("%d, %d, %d, %d", w1, w2, nx, ny);
+                StringTools::println("%d", MathExt::distanceTo(0,0,nx,ny));
             }
 
             double r = (MathExt::distanceTo(0,0,nx,ny) <= 1) ? 1.0 : 0.0;
@@ -503,7 +350,7 @@ void testNeuralNetwork()
                 std::vector<double> inputs = {x, y};
                 std::vector<double> output = network.run(inputs);
 
-                StringTools::out << "The network states that it believes that the point is in the circle with " << output[0] << " probability.\n" << StringTools::lineBreak;
+                StringTools::println("The network states that it believes that the point is in the circle with %d probability.\n", output[0]);
             }
         }
     }
@@ -512,7 +359,7 @@ void testNeuralNetwork()
 
 void testColorPalette()
 {
-    StringTools::out << "Enter image name: ";
+    StringTools::print("Enter image name: ");
     std::string filename = StringTools::getString();
     //C:\Users\Alan\source\repos\ImageLibrary\TestImages\PNG\Varying bit sizes and types\basn3p08.png
     int amountOfImages = 0;
@@ -523,24 +370,24 @@ void testColorPalette()
     {
         img = imgArray[0];
 
-        StringTools::out << "Enter number of colors: ";
+        StringTools::print("Enter number of colors: ");
         std::string colorNumber = StringTools::getString();
 
         int num = StringTools::toInt(colorNumber);
 
         ColorPalette temp;
 
-        StringTools::out << "Quantization method? 1=meanCut, 2=medianCut, 3=kMeans: ";
+        StringTools::print("Quantization method? 1=meanCut, 2=medianCut, 3=kMeans: ");
         std::string method = StringTools::getString();
         int mNum = StringTools::toInt(method);
 
-        StringTools::out << "Unique only? y=yes, n=no: ";
+        StringTools::print("Unique only? y=yes, n=no: ");
         bool unique = StringTools::getChar() == 'y';
 
-        StringTools::out << "Convert to LAB before Conversion? y=yes, n=no: ";
+        StringTools::print("Convert to LAB before Conversion? y=yes, n=no: ");
         bool labSpace = StringTools::getChar() == 'y';
 
-        
+        unsigned long t1 = System::getCurrentTimeNano();
         if(mNum == 2)
         {
             temp = ColorPalette::generateOptimalPalette(img->getPixels(), img->getWidth() * img->getHeight(), num, ColorPalette::MEDIAN_CUT, labSpace, unique);
@@ -553,26 +400,24 @@ void testColorPalette()
         {
             temp = ColorPalette::generateOptimalPalette(img->getPixels(), img->getWidth() * img->getHeight(), num, ColorPalette::MEAN_CUT, labSpace, unique);
         }
+        unsigned long t2 = System::getCurrentTimeNano();
+
+        StringTools::println("TimeTaken: %u", t2-t1);
         
         //./TestImages/GIF/Varying Bit size and type/basn3p08.gif
         
         temp.reBalance();
         img->setPalette(temp);
 
-        StringTools::out << "Dither Image? y=yes n=no: ";
+        StringTools::print("Dither Image? y=yes n=no: ");
         bool ditherConfirm = StringTools::getChar() == 'y';
-        unsigned long t1 = System::getCurrentTimeMicro();
-
+        
         if(ditherConfirm)
             Graphics::ditherImage(img, Graphics::FLOYD_DITHER);
         else
             img->enforcePalette();
         
-        unsigned long t2 = System::getCurrentTimeMicro();
-        StringTools::out << "Time taken: " << (t2-t1) << StringTools::lineBreak;
-        
-        //img->saveBMP("paletteTest.bmp");
-        img->savePNG("paletteTest.png");
+        img->saveBMP("paletteTest.bmp");
     }
     else
     {
@@ -592,12 +437,11 @@ void testColorConvert()
     Color lab = ColorSpaceConverter::convert(c, ColorSpaceConverter::RGB_TO_LAB);
     Color lrgb = ColorSpaceConverter::convert(lab, ColorSpaceConverter::LAB_TO_RGB);
 
-    StringTools::out << "ORIGINAL: " << c.red << ", " << c.green << ", " << c.blue << StringTools::lineBreak;
-    StringTools::out << "XYZ: " << xyz.red << ", " << xyz.green << ", " << xyz.blue << StringTools::lineBreak;
-    StringTools::out << "RGB: " << rgb.red << ", " << rgb.green << ", " << rgb.blue << StringTools::lineBreak;
-
-    StringTools::out << "lab: " << lab.red << ", " << lab.green << ", " << lab.blue << StringTools::lineBreak;
-    StringTools::out << "lrgb: " << lrgb.red << ", " << lrgb.green << ", " << lrgb.blue << StringTools::lineBreak;
+    StringTools::println("ORIGINAL: %d, %d, %d", c.red, c.green, c.blue);
+    StringTools::println("XYZ: %d, %d, %d", xyz.red, xyz.green, xyz.blue);
+    StringTools::println("RGB: %d, %d, %d", rgb.red, rgb.green, rgb.blue);
+    StringTools::println("LAB: %d, %d, %d", lab.red, lab.green, lab.blue);
+    StringTools::println("lRGB: %d, %d, %d", lrgb.red, lrgb.green, lrgb.blue);
 }
 
 void testFourierTransform()
@@ -621,14 +465,14 @@ void testFourierTransform()
     unsigned t2 = System::getCurrentTimeNano();
 
     StringTools::println("normalFourier done");
-    StringTools::out << "Took: " << (t2-t1) << StringTools::lineBreak;
+    StringTools::println("Took: %d",(t2-t1));
 
     t1 = System::getCurrentTimeNano();
     std::vector<ComplexNumber> fastFourier = MathExt::fastFourierTransform(arr, size);
     t2 = System::getCurrentTimeNano();
 
     StringTools::println("fastFourier done");
-    StringTools::out << "Took: " << (t2-t1) << StringTools::lineBreak;
+    StringTools::println("Took: ",(t2-t1));
     
     //save as a .csv
 
@@ -808,13 +652,19 @@ void imageExtenderThing()
 void testPNGSave()
 {
     int amountOfImages = 0;
-    Image** imgAr = Image::loadImage("C:/Users/Alan/source/repos/ImageLibrary/TestImages/PNG/Varying bit sizes and types/basn3p08.png", &amountOfImages);
+    Image** imgAr = Image::loadImage("abc123d.png", &amountOfImages);
+    //Image** imgAr = Image::loadImage("paletteTest.png", &amountOfImages);
     if(amountOfImages<=0)
     {
         StringTools::println("ERROR ON LOAD");
         return;
     }
+    else
+    {
+        StringTools::println("Loaded %d images", amountOfImages);
+    }
 
+    Image::IMAGE_SAVE_ALPHA = true;
     imgAr[0]->savePNG("test1234.png");
 
     delete[] imgAr;
@@ -830,9 +680,177 @@ void testCRC()
     delete[] data;
 }
 
+void testScale()
+{
+    int amountOfImages = 0;
+    Image** imgAr = Image::loadImage("./ScaleTest/abc123d.png", &amountOfImages);
+    if(amountOfImages<=0)
+    {
+        StringTools::println("ERROR ON LOAD");
+        return;
+    }
+
+    Image* img1 = Graphics::scaleImage(imgAr[0], 1.3, 1.1, Graphics::NEAREST_NEIGHBOR_FILTER);
+    StringTools::println("Finished NN");
+    img1->savePNG("./ScaleTest/test/img_NN.png");
+    StringTools::println("Finished saving NN");
+    delete img1;
+    
+    Image* img2 = Graphics::scaleImage(imgAr[0], 1.5, 1.15, Graphics::BILINEAR_FILTER);
+    StringTools::println("Finished BL");
+    img2->savePNG("./ScaleTest/test/img_BL.png");
+    StringTools::println("Finished saving BL");
+    delete img2;
+
+    Image* img3 = Graphics::scaleImage(imgAr[0], 1.7, 1.25, Graphics::BICUBIC_FILTER);
+    StringTools::println("Finished BC");
+    img3->savePNG("./ScaleTest/test/img_BC.png");
+    StringTools::println("Finished saving BC");
+    delete img3;
+
+    delete imgAr[0];
+    delete[] imgAr;
+}
+
+/*
+void printThing1(const wchar_t* fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+
+    vwprintf(fmt, args);
+
+    va_end(args);
+}
+
+void printThing2(const char* fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+
+    vprintf(fmt, args);
+
+    va_end(args);
+}
+*/
+
+void drawAnimation()
+{
+    if(windowPointer!=nullptr)
+    {
+        Graphics::setColor({255,255,255,255});
+        Image background = Image(windowPointer->getWidth(), windowPointer->getHeight());
+        background.clearImage();
+
+        if(img!=nullptr)
+            background.drawSprite(img, 0, 0);
+
+        windowPointer->drawImage(&background);
+    }
+}
+
+void testAnimatedImages()
+{
+    windowPointer = new WndWindow("Title", 1280, 720);
+    windowPointer->setPaintFunction(drawAnimation);
+
+    int amountOfImages = 0;
+    Sprite s = Sprite();
+    int currTime = 0;
+    int currIndex = 0;
+    int time = -1;
+
+    int stepsToChange = -1;
+
+    StringTools::println("Controls: F=changeFile, T=changeTime, Q=Quit");
+
+    while(windowPointer->getRunning())
+    {
+        Input::pollInput();
+        if(Input::getKeyPressed('F'))
+        {
+            //Change file input
+            StringTools::print("Input Image Name: ");
+            std::string command = StringTools::getString();
+            s.loadImage(command);
+
+            StringTools::println("Loaded %d Images", s.getSize());
+
+            currIndex = 0;
+            time = -1;
+            stepsToChange = -1;
+            img = s.getImage(currIndex);
+        }
+        else if (Input::getKeyPressed('T'))
+        {
+            StringTools::print("Input frames per second (max of 60): ");
+            std::string command = StringTools::getString();
+
+            if(s.getSize()>0)
+            {
+                time = MathExt::min(stoi(command), 60);
+                stepsToChange = 60 / time;
+            }
+        }
+        else if (Input::getKeyPressed('V'))
+        {
+            StringTools::print("Set frame: ");
+            std::string command = StringTools::getString();
+            int frame = stoi(command);
+            if(s.getSize()>0)
+            {
+                time = -1;
+                stepsToChange=-1;
+                currIndex = 0;
+                img = s.getImage(frame % s.getSize());
+            }
+        }
+        else if (Input::getKeyPressed('Q'))
+        {
+            windowPointer->close();
+            break;
+        }
+
+        currTime++;
+
+        if(stepsToChange>0)
+        {
+            if(currTime>=stepsToChange)
+            {
+                currTime = 0;
+                currIndex = (currIndex+1) % s.getSize();
+                
+                img = s.getImage(currIndex);
+            }
+        }
+        
+        windowPointer->repaint();
+        System::sleep(16,666);
+    }
+
+    delete windowPointer;
+}
+
+void testGIF()
+{
+    int imgs = 0;
+    Image** arr = Image::loadImage("fuavs6gs0w801.gif", &imgs);
+
+    if(imgs>0)
+    {
+        StringTools::println("Images %d", imgs);
+        for(int i=0; i<imgs; i++)
+        {
+            delete arr[i];
+        }
+        delete[] arr;
+    }
+}
+
 int main(int argc, char** argv)
 {
     StringTools::init();
+    //testScale();
 
     //testAudio();
 
@@ -842,6 +860,8 @@ int main(int argc, char** argv)
 
     //testCRC();
     //testPNGSave();
+    //testAnimatedImages();
+    //testGIF();
 
     testColorPalette();
     //testColorConvert();

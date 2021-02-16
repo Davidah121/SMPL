@@ -1,4 +1,5 @@
 #pragma once
+#include<stdarg.h>
 #include<iostream>
 #include<io.h>
 #include<vector>
@@ -53,6 +54,25 @@ public:
 		return hexString;
 	}
 
+	template<class T>
+	static char* toBinaryString(T value, int bits, bool LMSB = true)
+	{
+		int size = sizeof(T);
+		char* binString = new char[bits+1];
+
+		BinarySet b = BinarySet();
+		b.setBitOrder(LMSB);
+		b.setValues((char*)&value, size);
+
+		for(int i=0; i<bits; i++)
+		{
+			binString[bits-i-1] = (b.getBit(i)==false) ? '0':'1';
+		}
+		binString[bits] = '\0';
+
+		return binString;
+	}
+
 	static std::vector<std::string> splitString(std::string s, const char delim, bool removeEmpty=true);
 	static std::vector<std::string> splitString(std::string s, const char* delim, bool removeEmpty=true);
 	static std::vector<std::string> splitStringMultipleDeliminators(std::string s, const char* delim, bool removeEmpty=true);
@@ -73,53 +93,78 @@ public:
 	static wchar_t getWideChar();
 	static int getInt();
 
-	template<class T>
-	static void print(T text)
+	static void findLongestMatch(std::string base, std::string match, int* length, int* index);
+	static void findLongestMatch(char* base, int sizeOfBase, char* match, int sizeOfMatch, int* length, int* index);
+
+	static void print(std::string text, ...)
 	{
-		if(hasInit)
-			StringTools::out << text;
+		va_list args;
+		va_start(args, text);
+		vprintf(text.c_str(), args);
+		va_end(args);
 	}
 
-	template<class T>
-	static void println(T text)
+	static void println(std::string text, ...)
 	{
-		if(hasInit)
-			StringTools::out << text << StringTools::lineBreak;
-	}
-
-	static void print(std::string text)
-	{
-		if(hasInit)
-			StringTools::out << toWideString(text);
-	}
-
-	static void println(std::string text)
-	{
-		if(hasInit)
-			StringTools::out << toWideString(text) << StringTools::lineBreak;
+		va_list args;
+		va_start(args, text);
+		vprintf((text+'\n').c_str(), args);
+		va_end(args);
 	}
 	
-	static void print(const char* text)
+	static void print(const char* text, ...)
 	{
-		if(hasInit)
-		{
-			std::string k = text;
-			StringTools::out << toWideString(k);
-		}
+		va_list args;
+		va_start(args, text);
+		vprintf(text, args);
+		va_end(args);
 	}
 
-	static void println(const char* text)
+	static void println(const char* text, ...)
 	{
-		if(hasInit)
-		{
-			std::string k = text;
-			StringTools::out << toWideString(k) << StringTools::lineBreak;
-		}
+		std::string k = text;
+		k+='\n';
+
+		va_list args;
+		va_start(args, text);
+		vprintf(k.c_str(), args);
+		va_end(args);
 	}
 
-	static std::wostream out;
-	static std::wistream in;
-	static std::wostream err;
+	static void print(std::wstring text, ...)
+	{
+		va_list args;
+		va_start(args, text);
+		vwprintf(text.c_str(), args);
+		va_end(args);
+	}
+
+	static void println(std::wstring text, ...)
+	{
+		va_list args;
+		va_start(args, text);
+		vwprintf((text+lineBreak).c_str(), args);
+		va_end(args);
+	}
+	
+	static void print(const wchar_t* text, ...)
+	{
+		va_list args;
+		va_start(args, text);
+		vwprintf(text, args);
+		va_end(args);
+	}
+
+	static void println(const wchar_t* text, ...)
+	{
+		std::wstring k = text;
+		k+=lineBreak;
+		
+		va_list args;
+		va_start(args, text);
+		vwprintf(k.c_str(), args);
+		va_end(args);
+	}
 
 	static const wchar_t lineBreak;
 

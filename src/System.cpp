@@ -80,48 +80,6 @@ unsigned long System::endTimeMeasurement()
 	return (unsigned long)t.count();
 }
 
-void System::benchmark(void (*function)(), int times)
-{
-	long totalTime = 0;
-	long t1 = 0;
-	double increaseRate = 100.0 / times;
-
-	StringTools::println("Benchmarking ---- Please Wait");
-
-	for (int i = 0; i < times; i++)
-	{
-		t1 = getCurrentTimeNano();
-		function();
-		totalTime += ( (getCurrentTimeNano() - t1) / times );
-		
-		StringTools::out << (char)0x0D << "Percentage: " << (int)((i+1)*increaseRate) << '%';
-	}
-	StringTools::println("");
-
-	StringTools::out << "Average Time it took the function to run " << times << " times is " << totalTime << " Nanoseconds" << StringTools::lineBreak;
-}
-
-void System::benchmark(std::function<void()> function, int times)
-{
-	long totalTime = 0;
-	long t1 = 0;
-	double increaseRate = 100.0 / times;
-
-	StringTools::println("Benchmarking ---- Please Wait");
-
-	for (int i = 0; i < times; i++)
-	{
-		t1 = getCurrentTimeNano();
-		function();
-		totalTime += ((getCurrentTimeNano() - t1) / times);
-
-		StringTools::out << (char)0x0D << "Percentage: " << (int)((i + 1) * increaseRate) << '%';
-	}
-	StringTools::println("");
-
-	StringTools::out << "Average Time it took the function to run " << times << " times is " << totalTime << " Nanoseconds" << StringTools::lineBreak;
-}
-
 unsigned int System::getNumberOfThreads()
 {
 	return numberOfThreads;
