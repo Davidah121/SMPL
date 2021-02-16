@@ -6,6 +6,9 @@
 #include "Sort.h"
 #include "StringTools.h"
 #include "MathExt.h"
+#include "System.h"
+#include <thread>
+#include "SimpleFile.h"
 
 #define min(a,b) (a<b)? a:b
 #define max(a,b) (a>b)? a:b
@@ -1206,208 +1209,201 @@ BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues,
 //EndOfBlock is 256
 //286 and 287 never occur
 
-std::vector<unsigned char> Compression::compressDeflate(std::vector<unsigned char> data)
+void Compression::compressDeflateSubFunction(unsigned char* data, int size, std::vector<lengthPair>* outputData)
 {
-	return Compression::compressDeflate(data.data(), data.size());
-}
-
-std::vector<unsigned char> Compression::compressDeflate(unsigned char* data, int size)
-{
-	//probably will only use default trees and stuff
-	struct lengthPair
-	{
-		bool literal;
-		int v1;	//if literal, this is the value else it is length
-		int v2;	//backwards distance if not literal; otherwise 0
-	};
-	int maxDistance = 32768;
-
-	std::vector<lengthPair> info = std::vector<lengthPair>();
-
 	int i = 0;
-	int tempLength = 0;
-	int tempBackwards = 0;
+	int maxDistance = 32768;
 
 	while(i < size)
 	{
-		tempLength = 0;
-		tempBackwards = 0;
 		int lowestPoint = max(i-maxDistance, 0);
+		int baseSize = i - lowestPoint;
 
-		for(int k=i-1; k>=lowestPoint; k--)
-		{
-			//potentially a length pair
-			int j = 0;
-			int highestPoint = min(size-i, 258);
+		int lengthMax = min(size-i, 258);
 
-			//highestPoint also can't add to k to be i
-			highestPoint = min(i-k, highestPoint);
+		char* startBase = (char*)(data+lowestPoint);
+		char* startMatch = (char*)(data+i);
 
-			for(j=0; j<highestPoint; j++)
-			{
-				if(data[i+j] != data[k+j])
-				{
-					break;
-				}
-			}
+		int matchLength = 0;
+		int matchStartIndex = 0;
 
-			if(j >= 3)
-			{
-				if( j > tempLength )
-				{
-					tempLength = j;
-					tempBackwards = i - k;
-				}
-			}
-		}
+		StringTools::findLongestMatch(startBase, baseSize, startMatch, lengthMax, &matchLength, &matchStartIndex);
+
+		int tempLength = matchLength;
+		int tempBackwards = i - (lowestPoint + matchStartIndex);
 
 		if(tempLength<3)
 		{
-			info.push_back( {true, data[i], 0} );
+			outputData->push_back( {true, data[i], 0} );
 			i++;
 		}
 		else
 		{
-			info.push_back( {false, tempLength, tempBackwards} );
+			outputData->push_back( {false, tempLength, tempBackwards} );
 			i += tempLength;
 		}
 	}
+}
+
+std::vector<unsigned char> Compression::compressDeflate(std::vector<unsigned char> data, int blocks)
+{
+	return Compression::compressDeflate(data.data(), data.size(), blocks);
+}
+
+std::vector<unsigned char> Compression::compressDeflate(unsigned char* data, int size, int blocks)
+{
+	//probably will only use default trees and stuff
 	
+	int tSize = System::getNumberOfThreads();
+	std::vector<std::vector<lengthPair>> info = std::vector<std::vector<lengthPair>>(blocks);
+	std::vector<std::thread> threads = std::vector<std::thread>( tSize );
 
 	BinarySet bin = BinarySet();
 
 	bin.setBitOrder(BinarySet::LMSB);
-	bin.setAddBitOrder(BinarySet::LMSB);
-
-	bin.add(true);
-	bin.add(1, 2);
-
 	bin.setAddBitOrder(BinarySet::RMSB);
-	//should incorporate block ends
-	for(lengthPair lp : info)
+
+	int sizeOfBlock = size/blocks;
+
+	for(int block=0; block<blocks; block++)
 	{
-		if(lp.literal)
+		int nSize = sizeOfBlock;
+		unsigned char* nData = data + block*sizeOfBlock;
+		if(block == blocks-1)
 		{
-			if(lp.v1 <= 143)
-			{
-				bin.add(48 + lp.v1, 8);
-			}
-			else
-			{
-				bin.add(256 + lp.v1, 9);
-			}
+			nSize = size - (block*sizeOfBlock);
+		}
+
+		if(block<tSize)
+		{
+			info[block].clear();
+			threads[ block%tSize ] = std::thread(compressDeflateSubFunction, nData, nSize, &info[block]);
 		}
 		else
 		{
-			int codeVal = 0;
-			int addVal = 0;
-			int additionalBits = 0;
-			int bitsRequired = 7;
-			
-			if(lp.v1 <= 10)
-			{
-				codeVal = lp.v1-2; //codeVal 0 is reserved so start at 1
-				additionalBits = 0;
-			}
-			else if(lp.v1 <= 18)
-			{
-				double incVal = 1.0/2.0;
-				codeVal = 9 + (int) (incVal * (lp.v1-11));
+			if(threads[block%tSize].joinable())
+				threads[block%tSize].join();
 
-				addVal = (lp.v1-11)%2;
-				additionalBits = 1;
-			}
-			else if(lp.v1 <= 34)
-			{
-				double incVal = 1.0/4.0;
-				codeVal = 13 + (int) (incVal * (lp.v1-19));
+			info[block].clear();
+			threads[ block%tSize ] = std::thread(compressDeflateSubFunction, nData, nSize, &info[block]);
+		}
+	}
 
-				addVal = (lp.v1-19)%4;
-				additionalBits = 2;
-			}
-			else if(lp.v1 <= 66)
-			{
-				double incVal = 1.0/8.0;
-				codeVal = 17 + (int) (incVal * (lp.v1-35));
+	for(int t=0; t<tSize; t++)
+	{
+		if(threads[t].joinable())
+			threads[t].join();
+	}
 
-				addVal = (lp.v1-35)%8;
-				additionalBits = 3;
-			}
-			else if(lp.v1 <= 130)
-			{
-				double incVal = 1.0/16.0;
-				codeVal = (int) (incVal * (lp.v1-67));
+	for(int block=0; block<blocks; block++)
+	{
+		bin.setAddBitOrder(BinarySet::LMSB);
+		bin.add(block == blocks-1);
+		bin.add(1, 2);
 
-				addVal = (lp.v1-67)%16;
-				additionalBits = 4;
-				if(lp.v1 < 115)
+		bin.setAddBitOrder(BinarySet::RMSB);
+		//should incorporate block ends
+		for(lengthPair lp : info[block])
+		{
+			if(lp.literal)
+			{
+				if(lp.v1 <= 143)
 				{
-					codeVal += 21;
+					bin.add(48 + lp.v1, 8);
 				}
 				else
 				{
-					codeVal = 0b11000000;
-					bitsRequired = 8;
+					bin.add(256 + lp.v1, 9);
 				}
-			}
-			else if(lp.v1 <= 257)
-			{
-				double incVal = 1.0/32.0;
-				codeVal = 193 + (int) (incVal * (lp.v1-131));
-
-				addVal = (lp.v1-131)%32;
-				additionalBits = 5;
-				bitsRequired = 8;
-			}
-			else if(lp.v1 <= 258)
-			{
-				codeVal = 0b11000101;
-				additionalBits = 0;
-				bitsRequired = 8;
-			}
-			
-			bin.add(codeVal, bitsRequired);
-			if(additionalBits>0)
-			{
-				bin.setAddBitOrder(BinarySet::LMSB);
-				bin.add(addVal, additionalBits);
-				bin.setAddBitOrder(BinarySet::RMSB);
-			}
-
-			//now add the extrabits for the backwards distance.
-			//Just like the length stuff above.
-			codeVal = 0;
-			addVal = 0;
-			bitsRequired = 5;
-			additionalBits = 0;
-
-			if(lp.v2 <= 4)
-			{
-				codeVal = lp.v2 - 1; //codeVal 0 is reserved so start at 1
-				additionalBits = 0;
 			}
 			else
 			{
-				additionalBits = MathExt::ceil(log2(lp.v2)) - 2;
-				int expV = (1 << additionalBits);
-				double incVal = 1.0 / expV;
-				int tempV = 1 + expV*2;
+				int codeVal = 0;
+				int addVal = 0;
+				int additionalBits = 0;
+				int bitsRequired = 7;
+				
+				if(lp.v1 <= 10)
+				{
+					codeVal = lp.v1-2; //codeVal 0 is reserved so start at 1
+					additionalBits = 0;
+				}
+				else if(lp.v1 < 258)
+				{
+					additionalBits = MathExt::ceil(log2(lp.v1-2)) - 3;
+					int expV = (1 << additionalBits);
+					double incVal = 1.0 / expV;
+					int tempV = 3 + expV*4;
+					int add1 = (int) (incVal * (lp.v1 - tempV));
 
-				codeVal = (2 + (2*additionalBits)) + (int) (incVal * (lp.v2 - tempV));
-				addVal = lp.v2 - tempV;
-			}
+					codeVal = (261 + (4*additionalBits)) + add1;
+					addVal = (lp.v1-tempV) % expV;
 
-			bin.add(codeVal, bitsRequired);
-			if(additionalBits>0)
-			{
-				bin.setAddBitOrder(BinarySet::LMSB);
-				bin.add(addVal, additionalBits);
-				bin.setAddBitOrder(BinarySet::RMSB);
+					if(codeVal < 280)
+					{
+						codeVal = codeVal - 256;
+						bitsRequired = 7;
+					}
+					else
+					{
+						codeVal = codeVal - 280 + 0b11000000;
+						bitsRequired = 8;
+					}
+				}
+				else if(lp.v1 == 258)
+				{
+					codeVal = 0b11000101;
+					additionalBits = 0;
+					bitsRequired = 8;
+				}
+				
+				bin.add(codeVal, bitsRequired);
+				if(additionalBits>0)
+				{
+					bin.setAddBitOrder(BinarySet::LMSB);
+					bin.add(addVal, additionalBits);
+					bin.setAddBitOrder(BinarySet::RMSB);
+				}
+
+				//now add the extrabits for the backwards distance.
+				//Just like the length stuff above.
+				codeVal = 0;
+				addVal = 0;
+				bitsRequired = 5;
+				additionalBits = 0;
+
+				if(lp.v2 <= 4)
+				{
+					codeVal = lp.v2 - 1; //codeVal 0 is reserved so start at 1
+					additionalBits = 0;
+				}
+				else
+				{
+					additionalBits = MathExt::ceil(log2(lp.v2)) - 2;
+					int expV = (1 << additionalBits);
+					double incVal = 1.0 / expV;
+					int tempV = 1 + expV*2;
+					int add1 = (int) (incVal * (lp.v2 - tempV));
+
+					codeVal = (2 + (2*additionalBits)) + add1;
+
+					addVal = (lp.v2-tempV) % expV;
+				}
+				
+				bin.add(codeVal, bitsRequired);
+				if(additionalBits>0)
+				{
+					bin.setAddBitOrder(BinarySet::LMSB);
+					bin.add(addVal, additionalBits);
+					bin.setAddBitOrder(BinarySet::RMSB);
+				}
 			}
 		}
+		
+		bin.add(0, 7); //end of block
 	}
-	
-	bin.add(0, 7); //end of block
+
+	bin.setAddBitOrder(BinarySet::LMSB);
 	
 	return bin.toBytes();
 }
@@ -1651,11 +1647,8 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 
 						if(backTree==nullptr)
 						{
-							for(int i=4; i>=0; i--)
-							{
-								backRefCode += ((int)binData.getBit(currLoc) << i);
-								currLoc+=1;
-							}
+							backRefCode = binData.getBits(currLoc, currLoc+5, true);
+							currLoc+=5;
 						}
 						else
 						{
@@ -2156,14 +2149,11 @@ unsigned int Compression::adler32(unsigned char* data, int size)
 
 	for(int i=0; i<size; i++)
 	{
-		sumA += data[i];
-		sumB += sumA;
+		sumA = (sumA + data[i]) % 65521;
+		sumB = (sumB + sumA) % 65521;
 	}
 
-	unsigned int A = sumA % 65521;
-	unsigned int B = sumB % 65521;
-
-	return B*65536 + A;
+	return sumB*65536 + sumA;
 }
 
 unsigned int Compression::crc(std::vector<unsigned char> data, unsigned char type)

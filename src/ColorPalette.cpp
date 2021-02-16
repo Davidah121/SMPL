@@ -344,48 +344,74 @@ ColorPalette ColorPalette::generateOptimalPalette(Color* colorArray, int size, i
 		}
 		else
 		{
-
-			std::vector<Color> p;
-
-			std::vector<Color> labColors = std::vector<Color>(f.getSize());
-			for(int i=0; i<f.getSize(); i++)
+			if(!convertToLab)
 			{
-				if(convertToLab)
+				std::vector<Color> p;
+				std::vector<Color> pColors = std::vector<Color>(f.getSize());
+				for(int i=0; i<f.getSize(); i++)
 				{
-					Color a = ColorSpaceConverter::convert(f.getColor(i), ColorSpaceConverter::RGB_TO_LAB);
-					labColors[i] = a;
+					pColors[i] = f.getColor(i);
 				}
-				else
+
+				switch(type)
 				{
-					labColors[i] = f.getColor(i);
+					case MEAN_CUT:
+						p = meanCut(pColors, colors);
+						break;
+					case MEDIAN_CUT:
+						p = medianCut(pColors, colors);
+						break;
+					case K_MEANS:
+						p = kMeans(pColors, colors, 10);
+						break;
+					default:
+						p = meanCut(pColors, colors);
+						break;
+				}
+
+				for(Color c : p)
+				{
+					temp.addNewColor(c);
 				}
 			}
-
-			switch(type)
+			else
 			{
-				case MEAN_CUT:
-					p = meanCut(labColors, colors);
-					break;
-				case MEDIAN_CUT:
-					p = medianCut(labColors, colors);
-					break;
-				case K_MEANS:
-					p = kMeans(labColors, colors, 10);
-					break;
-				default:
-					p = meanCut(labColors, colors);
-					break;
-			}
-
-			for(Color c : p)
-			{
-				if(convertToLab)
+				std::vector<std::vector<Vec3f>> p;
+				std::vector<Vec3f> pColors = std::vector<Vec3f>(f.getSize());
+				for(int i=0; i<f.getSize(); i++)
 				{
-					Color a = ColorSpaceConverter::convert(c, ColorSpaceConverter::LAB_TO_RGB);
-					temp.addNewColor(a);
+					Color c = f.getColor(i);
+					Vec3f beforeConvert = Vec3f(c.red, c.green, c.blue);
+					Vec3f afterConvert = ColorSpaceConverter::convert(beforeConvert, ColorSpaceConverter::RGB_TO_LAB);
+
+					pColors[i] = afterConvert;
 				}
-				else
+
+				switch(type)
 				{
+					case MEAN_CUT:
+						p = MathExt::meanCut(pColors, colors, true);
+						break;
+					case MEDIAN_CUT:
+						p = MathExt::medianCut(pColors, colors, true);
+						break;
+					case K_MEANS:
+						p = MathExt::kMeans(pColors, colors, 10, true);
+						break;
+					default:
+						p = MathExt::meanCut(pColors, colors, true);
+						break;
+				}
+				
+				for(std::vector<Vec3f> g : p)
+				{
+					Color c;
+					Vec3f afterConvert = ColorSpaceConverter::convert(g[0], ColorSpaceConverter::LAB_TO_RGB);
+
+					c.red = (unsigned char)MathExt::clamp(afterConvert.x, 0.0, 255.0);
+					c.green = (unsigned char)MathExt::clamp(afterConvert.y, 0.0, 255.0);
+					c.blue = (unsigned char)MathExt::clamp(afterConvert.z, 0.0, 255.0);
+					
 					temp.addNewColor(c);
 				}
 			}
@@ -394,46 +420,74 @@ ColorPalette ColorPalette::generateOptimalPalette(Color* colorArray, int size, i
 	else
 	{
 		temp.setPaletteMode(false);
-		std::vector<Color> p;
-		std::vector<Color> labColors = std::vector<Color>(size);
-		for(int i=0; i<size; i++)
+		if(!convertToLab)
 		{
-			if(convertToLab)
+			std::vector<Color> p;
+			std::vector<Color> pColors = std::vector<Color>(size);
+			for(int i=0; i<size; i++)
 			{
-				Color a = ColorSpaceConverter::convert(colorArray[i], ColorSpaceConverter::RGB_TO_LAB);
-				labColors[i] = a;
+				pColors[i] = colorArray[i];
 			}
-			else
+
+			switch(type)
 			{
-				labColors[i] = colorArray[i];
+				case MEAN_CUT:
+					p = meanCut(pColors, colors);
+					break;
+				case MEDIAN_CUT:
+					p = medianCut(pColors, colors);
+					break;
+				case K_MEANS:
+					p = kMeans(pColors, colors, 10);
+					break;
+				default:
+					p = meanCut(pColors, colors);
+					break;
+			}
+
+			for(Color c : p)
+			{
+				temp.addNewColor(c);
 			}
 		}
-
-		switch(type)
+		else
 		{
-			case MEAN_CUT:
-				p = meanCut(labColors, colors);
-				break;
-			case MEDIAN_CUT:
-				p = medianCut(labColors, colors);
-				break;
-			case K_MEANS:
-				p = kMeans(labColors, colors, 10);
-				break;
-			default:
-				p = meanCut(labColors, colors);
-				break;
-		}
-
-		for(Color c : p)
-		{
-			if(convertToLab)
+			std::vector<std::vector<Vec3f>> p;
+			std::vector<Vec3f> pColors = std::vector<Vec3f>(size);
+			for(int i=0; i<size; i++)
 			{
-				Color a = ColorSpaceConverter::convert(c, ColorSpaceConverter::LAB_TO_RGB);
-				temp.addNewColor(a);
+				Color c = colorArray[i];
+				Vec3f beforeConvert = Vec3f(c.red, c.green, c.blue);
+				Vec3f afterConvert = ColorSpaceConverter::convert(beforeConvert, ColorSpaceConverter::RGB_TO_LAB);
+				
+				pColors[i] = afterConvert;
 			}
-			else
+
+			switch(type)
 			{
+				case MEAN_CUT:
+					p = MathExt::meanCut(pColors, colors, true);
+					break;
+				case MEDIAN_CUT:
+					p = MathExt::medianCut(pColors, colors, true);
+					break;
+				case K_MEANS:
+					p = MathExt::kMeans(pColors, colors, 10, true);
+					break;
+				default:
+					p = MathExt::meanCut(pColors, colors, true);
+					break;
+			}
+			
+			for(std::vector<Vec3f> g : p)
+			{
+				Color c;
+				Vec3f afterConvert = ColorSpaceConverter::convert(g[0], ColorSpaceConverter::LAB_TO_RGB);
+
+				c.red = (unsigned char)MathExt::clamp(afterConvert.x, 0.0, 255.0);
+				c.green = (unsigned char)MathExt::clamp(afterConvert.y, 0.0, 255.0);
+				c.blue = (unsigned char)MathExt::clamp(afterConvert.z, 0.0, 255.0);
+				
 				temp.addNewColor(c);
 			}
 		}

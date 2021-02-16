@@ -6,6 +6,21 @@
 #include <iostream>
 #include "StringTools.h"
 
+struct fctlData
+{
+	unsigned int sequence_number=0;
+	unsigned int width=0;
+	unsigned int height=0;
+	unsigned int x_offset=0;
+	unsigned int y_offset=0;
+	unsigned short delay_num=0;
+	unsigned short delay_den=0;
+	unsigned char dispose_op=0;
+	unsigned char blend_op=0;
+
+	std::vector<unsigned char> compressedData = std::vector<unsigned char>();
+};
+
 void Image::savePNG(std::string filename)
 {
 	SimpleFile f = SimpleFile(filename, SimpleFile::WRITE);
@@ -27,8 +42,34 @@ void Image::savePNG(std::string filename)
 	IHDRHeader += (char)((height >> 0) & 0xFF);
 	//bitDepth
 	IHDRHeader += (char)0x08;
-	//ColourType
-	IHDRHeader += (char)0x06;
+
+	if(Image::IMAGE_SAVE_ALPHA==true)
+	{
+		if(Image::IMAGE_GREYSCALE==true)
+		{
+			//ColourType
+			IHDRHeader += (char)0x04;
+		}
+		else
+		{
+			//ColourType
+			IHDRHeader += (char)0x06;
+		}
+	}
+	else
+	{
+		if(Image::IMAGE_GREYSCALE==true)
+		{
+			//ColourType
+			IHDRHeader += (char)0x00;
+		}
+		else
+		{
+			//ColourType
+			IHDRHeader += (char)0x02;
+		}
+	}
+	
 	//Compresssion Method
 	IHDRHeader += (char)0x00;
 	//Filter Method
@@ -54,18 +95,30 @@ void Image::savePNG(std::string filename)
 		for(int k=0; k<width; k++)
 		{
 			Color c = pixels[k + i*width];
-			scanLines.push_back(c.red);
-			scanLines.push_back(c.green);
-			scanLines.push_back(c.blue);
-			scanLines.push_back(c.alpha);
+
+			if(Image::IMAGE_GREYSCALE)
+			{
+				scanLines.push_back(c.red);
+			}
+			else
+			{
+				scanLines.push_back(c.red);
+				scanLines.push_back(c.green);
+				scanLines.push_back(c.blue);
+			}
+			
+			if(Image::IMAGE_SAVE_ALPHA)
+				scanLines.push_back(c.alpha);
 		}
 	}
 
 	crcVal = Compression::adler32(scanLines);
 
-	std::vector<unsigned char> pixCompressed = Compression::compressDeflate(scanLines);
+	int blocks = MathExt::ceil((double)scanLines.size() / (1<<16));
 
-	int fullSize = pixCompressed.size()+2+4;
+	std::vector<unsigned char> compressedData = Compression::compressDeflate(scanLines, blocks);
+	
+	int fullSize = compressedData.size()+2+4;
 	std::string IDATHeader = "";
 
 	//length
@@ -80,9 +133,9 @@ void Image::savePNG(std::string filename)
 	IDATHeader += 0b01111000;
 	IDATHeader += 0b00000001;
 
-	for(int i=0; i<pixCompressed.size(); i++)
+	for(int i=0; i<compressedData.size(); i++)
 	{
-		IDATHeader += pixCompressed[i];
+		IDATHeader += (char)compressedData[i];
 	}
 
 	//adler
@@ -102,6 +155,572 @@ void Image::savePNG(std::string filename)
 
 	f.close();
 }
+
+#pragma region LOADING_PNG_SUBFUNCTION
+
+Image* processData(fctlData* imgData, int colorType, int bitDepth, bool interlace, ColorPalette* p)
+{
+	//Pretty sure it is always a zlib stream
+	//read first 2 bytes
+	Image* tImg = nullptr;
+	unsigned char CMF = imgData->compressedData[0];
+	unsigned char FLG = imgData->compressedData[1]; //not necessary
+	int compressionMethod = CMF & 0b00001111;
+	if(compressionMethod!=8)
+	{
+		return nullptr;
+	}
+
+	tImg = new Image(imgData->width, imgData->height);
+
+	std::vector<unsigned char> decompressedData = Compression::decompressDeflate(&imgData->compressedData.data()[2], imgData->compressedData.size()-4);
+	//note that when reading different bit depths, they are packed into bytes
+	//instead of taking up an entire byte.
+	//Example, 32 pixels on a scanline with a bit depth of 1 has 4 bytes.
+
+	//defilter the scanline
+	int x = 0;
+	int y = 0;
+
+	int index = 0;
+	int rawIndex = 0;
+
+	int moveBackVal = 1;
+	if(bitDepth>8)
+	{
+		moveBackVal = bitDepth/8;
+	}
+
+	int scanLineBytes = MathExt::ceil(imgData->width * (bitDepth/8.0));
+
+	switch(colorType)
+	{
+		case 2:
+			//3 values per pixel
+			moveBackVal*=3;
+			scanLineBytes*=3;
+			break;
+		case 4:
+			//2 values per pixel
+			moveBackVal*=2;
+			scanLineBytes*=2;
+			break;
+		case 6:
+			//4 values per pixel
+			moveBackVal*=4;
+			scanLineBytes*=4;
+			break;
+		default:
+			break;
+	}
+
+	std::vector<unsigned char> preScanLine = std::vector<unsigned char>(scanLineBytes);
+	std::vector<unsigned char> scanLine = std::vector<unsigned char>(scanLineBytes);
+	
+	int imageSize = imgData->width * imgData->height;
+	
+	//For interlacing, the amount of values in the scanline is the only thing that changes. It doubles on every even pass
+	//The scanlines that are affected are doubled on every odd pass. There can be padding on the scanlines to make it them an even amount.
+
+	//potential equations
+	//xGrids = ceil(width/8)
+	//yGrids = ceil(height/8)
+	//
+	//for each grid
+	//	do adam7 interlacing
+	//	filter based on size of scanline at the time
+	//	fill based on adam7 interlacing
+
+	int xGrids = imgData->width;
+	int yGrids = imgData->height;
+	int pass = 1;
+	int scanlinesDone = 0;
+	int yGridsNeeded = 0;
+	if(interlace)
+	{
+		xGrids = (int)MathExt::ceil((double)xGrids / 8.0);
+		yGrids = (int)MathExt::ceil((double)yGrids / 8.0);
+		
+		scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0));
+		yGridsNeeded = yGrids;
+
+		//note that scanLineBytes was changed to a completely new value
+		//so adjustments are needed to account for color planes
+		//moveBackVal does not need adjustments
+		switch(colorType)
+		{
+			case 2:
+				//3 values per pixel
+				scanLineBytes*=3;
+				break;
+			case 4:
+				//2 values per pixel
+				scanLineBytes*=2;
+				break;
+			case 6:
+				//4 values per pixel
+				scanLineBytes*=4;
+				break;
+			default:
+				break;
+		}
+	}
+
+	while(index < decompressedData.size())
+	{
+		//read first byte in scanline for the filter method
+		int filterMethod = decompressedData[index];
+		index++;
+		
+		#pragma region unfilterScanLine
+
+		if(interlace)
+		{
+			if(scanlinesDone>=yGridsNeeded)
+			{
+				scanlinesDone = 0;
+				pass++;
+
+				switch (pass)
+				{
+					case 1:
+						scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0));
+						yGridsNeeded = yGrids;
+						break;
+					case 2:
+						scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0));
+						yGridsNeeded = yGrids;
+						break;
+					case 3:
+						scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0) * 2);
+						yGridsNeeded = yGrids;
+						break;
+					case 4:
+						scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0) * 2);
+						yGridsNeeded = yGrids*2;
+						break;
+					case 5:
+						scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0) * 4);
+						yGridsNeeded = yGrids*2;
+						break;
+					case 6:
+						scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0) * 4);
+						yGridsNeeded = yGrids*4;
+						break;
+					case 7:
+						scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0) * 8);
+						yGridsNeeded = yGrids*4;
+						break;
+					default:
+						scanLineBytes = 0;
+						yGridsNeeded = 0;
+						break;
+				}
+
+				//note that scanLineBytes was changed to a completely new value
+				//so adjustments are needed to account for color planes
+				//moveBackVal does not need adjustments
+				switch(colorType)
+				{
+					case 2:
+						//3 values per pixel
+						scanLineBytes*=3;
+						break;
+					case 4:
+						//2 values per pixel
+						scanLineBytes*=2;
+						break;
+					case 6:
+						//4 values per pixel
+						scanLineBytes*=4;
+						break;
+					default:
+						break;
+				}
+			}
+
+			scanlinesDone++;
+		}
+
+		if(filterMethod==0)
+		{
+			//do nothing
+			while(x < scanLineBytes)
+			{
+				scanLine[x] = decompressedData[index];
+				x++;
+				index++;
+			}
+		}
+		else if(filterMethod==1)
+		{
+			//Subtractive
+			//the raw byte is equal to the previous + the current
+			while(x < scanLineBytes)
+			{
+				if(x<moveBackVal)
+				{
+					scanLine[x] = decompressedData[index];
+				}
+				else
+				{
+					scanLine[x] = scanLine[x-moveBackVal] + decompressedData[index];
+				}
+				x++;
+				index++;
+			}
+		}
+		else if(filterMethod==2)
+		{
+			//Upward
+			//the raw byte is equal to the previous upward + the current
+			while(x < scanLineBytes)
+			{
+				if(y==0)
+				{
+					scanLine[x] = decompressedData[index];
+				}
+				else
+				{
+					scanLine[x] = preScanLine[x] + decompressedData[index];
+				}
+				x++;
+				index++;
+			}
+		}
+		else if(filterMethod==3)
+		{
+			//Average
+			//the raw byte is equal to the currentByte + (previous unfiltered + upward unfiltered)/2
+			while(x < scanLineBytes)
+			{
+				if(x<moveBackVal)
+				{
+					if(y==0)
+						scanLine[x] = decompressedData[index];
+					else
+						scanLine[x] = decompressedData[index] + (preScanLine[x])/2;
+				}
+				else
+				{
+					if(y==0)
+						scanLine[x] = decompressedData[index] + (scanLine[x-moveBackVal])/2;
+					else
+						scanLine[x] = decompressedData[index] + (scanLine[x-moveBackVal] + preScanLine[x])/2;
+				}
+				x++;
+				index++;
+			}
+		}
+		else if(filterMethod==4)
+		{
+			//Paeth
+			//the raw byte is equal to the currentByte + PaethPredictor(previous unfiltered, upward unfiltered, up back unfiltered)
+			while(x < scanLineBytes)
+			{
+				int p, a, b, c;
+				int pa, pb, pc;
+
+				if(x>=moveBackVal)
+					a = scanLine[x-moveBackVal];
+				else
+					a = 0;
+				
+				if(y!=0)
+					b = preScanLine[x];
+				else
+					b = 0;
+
+				if(x>=moveBackVal && y!=0)
+					c = preScanLine[x-moveBackVal];
+				else
+					c = 0;
+				
+				p = a+b-c;
+				pa = std::abs(p-a);
+				pb = std::abs(p-b);
+				pc = std::abs(p-c);
+				
+				if(pa <= pb && pa <= pc)
+				{
+					scanLine[x] = decompressedData[index] + a;
+				}
+				else if(pb <= pc)
+				{
+					scanLine[x] = decompressedData[index] + b;
+				}
+				else
+				{
+					scanLine[x] = decompressedData[index] + c;
+				}
+				x++;
+				index++;
+			}
+		}
+
+		x=0;
+		y++;
+		#pragma endregion unfilterScanLine
+
+		#pragma region FillImage
+
+		//Take the unfiltered scanline and put into image
+		//For now, only when not interlaced
+		Color* rawPixs = tImg->getPixels();
+		
+		int interlacedX = 0;
+		int interlacedY = 0;
+		int incVal = 1;
+
+		if(interlace)
+		{
+			switch (pass)
+			{
+			case 1:
+				interlacedX = 0;
+				incVal = 8;
+				interlacedY = (scanlinesDone-1)*8;
+				break;
+			case 2:
+				interlacedX = 4;
+				incVal = 8;
+				interlacedY = (scanlinesDone-1)*8;
+				break;
+			case 3:
+				interlacedX = 0;
+				incVal = 4;
+				interlacedY = 4 + (scanlinesDone-1)*8;
+				break;
+			case 4:
+				interlacedX = 2;
+				incVal = 4;
+				interlacedY = (scanlinesDone-1)*4;
+				break;
+			case 5:
+				interlacedX = 0;
+				incVal = 2;
+				interlacedY = 2 + (scanlinesDone-1)*4;
+				break;
+			case 6:
+				interlacedX = 1;
+				incVal = 2;
+				interlacedY = (scanlinesDone-1)*2;
+				break;
+			case 7:
+				interlacedX = 0;
+				incVal = 1;
+				interlacedY = 1 + (scanlinesDone-1)*2;
+				break;
+			default:
+				break;
+			}
+
+		}
+
+		if(colorType==0)
+		{
+			//Greyscale
+				//(R)
+				//possible bit depths are 1,2,4,8,16
+
+			if(bitDepth<8)
+			{
+				BinarySet pixelBits = BinarySet();
+				pixelBits.setValues(scanLine.data(), scanLineBytes);
+
+				pixelBits.setBitOrder(BinarySet::RMSB);
+				
+				//Increase Color Amount
+				double ICA = 255.0 / ((2<<(bitDepth-1)) - 1);
+
+				for(int i = 0; i<pixelBits.size(); i+=bitDepth)
+				{
+					Color c;
+					c.red = (unsigned char)(ICA * pixelBits.getBits(i, i + bitDepth, true));
+					c.green = c.red;
+					c.blue = c.red;
+					c.alpha = 255;
+
+					if(!interlace)
+					{
+						rawPixs[rawIndex] = c;
+						rawIndex++;
+					}
+					else
+					{
+						tImg->setPixel(interlacedX, interlacedY, c);
+						interlacedX += incVal;
+					}
+					
+				}
+			}
+			else if(bitDepth==8)
+			{
+				for(int i = 0; i<scanLine.size(); i++)
+				{
+					Color c;
+					c.red = scanLine[i];
+					c.green = c.red;
+					c.blue = c.red;
+					c.alpha = 255;
+
+					if(!interlace)
+					{
+						rawPixs[rawIndex] = c;
+						rawIndex++;
+					}
+					else
+					{
+						tImg->setPixel(interlacedX, interlacedY, c);
+						interlacedX += incVal;
+					}
+				}
+			}
+		}
+		else if(colorType==2)
+		{
+			//TrueColor
+				//(R,G,B)
+				//Possible bit depth value are 8, 16
+			if(bitDepth==8)
+			{
+				for(int i = 0; i<scanLine.size(); i+=3)
+				{
+					Color c;
+					c.red = scanLine[i];
+					c.green = scanLine[i+1];
+					c.blue = scanLine[i+2];
+					c.alpha = 255;
+
+					if(!interlace)
+					{
+						rawPixs[rawIndex] = c;
+						rawIndex++;
+					}
+					else
+					{
+						tImg->setPixel(interlacedX, interlacedY, c);
+						interlacedX += incVal;
+					}
+				}
+			}
+			
+		}
+		else if(colorType==3)
+		{
+			//Palette
+				//(P)
+				//Possible bit depth value are 1, 2, 4, 8
+			int paletteIndex = 0;
+			if(bitDepth<8)
+			{
+				BinarySet pixelBits = BinarySet();
+				pixelBits.setValues(scanLine.data(), scanLineBytes);
+				pixelBits.setBitOrder(BinarySet::RMSB);
+				
+				for(int i = 0; i<pixelBits.size(); i+=bitDepth)
+				{
+					paletteIndex = pixelBits.getBits(i, i+bitDepth, true);
+
+					Color c = p->getColor(paletteIndex);
+					if(!interlace)
+					{
+						rawPixs[rawIndex] = c;
+						rawIndex++;
+					}
+					else
+					{
+						tImg->setPixel(interlacedX, interlacedY, c);
+						interlacedX += incVal;
+					}
+				}
+			}
+			else if(bitDepth==8)
+			{
+				for(int i = 0; i<scanLine.size(); i++)
+				{
+					paletteIndex = scanLine[i];
+
+					Color c = p->getColor(paletteIndex);
+					if(!interlace)
+					{
+						rawPixs[rawIndex] = c;
+						rawIndex++;
+					}
+					else
+					{
+						tImg->setPixel(interlacedX, interlacedY, c);
+						interlacedX += incVal;
+					}
+				}
+			}
+		}
+		else if(colorType==4)
+		{
+			//GreyScale With Alpha
+				//(R,A)
+				//Possible bit depth value are 8, 16
+			if(bitDepth==8)
+			{
+				for(int i = 0; i<scanLine.size(); i+=2)
+				{
+					Color c;
+					c.red = scanLine[i];
+					c.green = c.red;
+					c.blue = c.red;
+					c.alpha = scanLine[i+1];
+
+					if(!interlace)
+					{
+						rawPixs[rawIndex] = c;
+						rawIndex++;
+					}
+					else
+					{
+						tImg->setPixel(interlacedX, interlacedY, c);
+						interlacedX += incVal;
+					}
+				}
+			}
+		}
+		else if(colorType==6)
+		{
+			//Truecolor With Alpha
+				//(R,G,B,A)
+				//Possible bit depth value are 8, 16
+			if(bitDepth==8)
+			{
+				for(int i = 0; i<scanLine.size(); i+=4)
+				{
+					Color c;
+					c.red = scanLine[i];
+					c.green = scanLine[i+1];
+					c.blue = scanLine[i+2];
+					c.alpha = scanLine[i+3];
+
+					if(!interlace)
+					{
+						rawPixs[rawIndex] = c;
+						rawIndex++;
+					}
+					else
+					{
+						tImg->setPixel(interlacedX, interlacedY, c);
+						interlacedX += incVal;
+					}
+				}
+			}
+		}
+
+		#pragma endregion FillImage
+
+		preScanLine = scanLine;
+	}
+
+	return tImg;
+}
+
+#pragma endregion
 
 Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 {
@@ -124,10 +743,8 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 		return nullptr;
 	}
 
-	Image* tImg = nullptr;
 	ColorPalette p = ColorPalette();
 	p.setPaletteMode(false);
-	
 
 	if(amountOfImages!=nullptr)
 		*amountOfImages = 0;
@@ -140,8 +757,13 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 
 	int x=0;
 	int y=0;
+	unsigned int globalWidth = 0;
+	unsigned int globalHeight = 0;
 
-	std::vector<unsigned char> compressedData;
+	int currImg = 0;
+	int actualCount = 0;
+
+	std::vector<fctlData> imgData = std::vector<fctlData>();
 
 	//passed header check, now we read blocks
 	while(location < fileSize)
@@ -155,11 +777,10 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 		std::string blockID = {(char)fileData[location], (char)fileData[location+1], (char)fileData[location+2], (char)fileData[location+3]};
 		location+=4;
 		
-		//read n bytes for the data
 		if(blockID=="IHDR")
 		{
-			int width = (int)(fileData[location]<<24) + (int)(fileData[location+1]<<16) + (int)(fileData[location+2]<<8) + (int)fileData[location+3];
-			int height = (int)(fileData[location+4]<<24) + (int)(fileData[location+5]<<16) + (int)(fileData[location+6]<<8) + (int)fileData[location+7];
+			globalWidth = (unsigned int)(fileData[location]<<24) + (unsigned int)(fileData[location+1]<<16) + (unsigned int)(fileData[location+2]<<8) + (unsigned int)fileData[location+3];
+			globalHeight = (unsigned int)(fileData[location+4]<<24) + (unsigned int)(fileData[location+5]<<16) + (unsigned int)(fileData[location+6]<<8) + (unsigned int)fileData[location+7];
 			bitDepth = fileData[location+8];
 			colorType = fileData[location+9];
 			int compressionMethod = fileData[location+10];
@@ -182,8 +803,11 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 				break;
 			}
 
-			tImg = new Image(width, height);
-			
+			fctlData d = fctlData();
+			d.width = globalWidth;
+			d.height = globalHeight;
+
+			imgData.push_back( d );
 		}
 		else if(blockID=="PLTE")
 		{
@@ -202,7 +826,6 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 					
 					//palette.push_back(c);
 				}
-				tImg->setPalette(p);
 				//p.setPalette( palette );
 			}
 			else
@@ -212,14 +835,59 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 				break;
 			}
 		}
+		else if(blockID=="acTL")
+		{
+			//animation control chunk
+			//size = 8
+			unsigned int numFrame = (unsigned int)(fileData[location]<<24) + (unsigned int)(fileData[location+1]<<16) + (unsigned int)(fileData[location+2]<<8) + (unsigned int)(fileData[location+3]);
+			unsigned int numPlays = (unsigned int)(fileData[location+4]<<24) + (unsigned int)(fileData[location+5]<<16) + (unsigned int)(fileData[location+6]<<8) + (unsigned int)(fileData[location+7]);
+
+			for(int i=0; i<numFrame-1; i++)
+			{
+				imgData.push_back( fctlData() );
+			}
+		}
+		else if(blockID=="fcTL")
+		{
+			//Frame Control Chunk
+			//size = 26
+			fctlData chunk = fctlData();
+
+			chunk.sequence_number = (unsigned int)(fileData[location]<<24) + (unsigned int)(fileData[location+1]<<16) + (unsigned int)(fileData[location+2]<<8) + (unsigned int)(fileData[location+3]);
+			chunk.width = (unsigned int)(fileData[location+4]<<24) + (unsigned int)(fileData[location+5]<<16) + (unsigned int)(fileData[location+6]<<8) + (unsigned int)(fileData[location+7]);
+			chunk.height = (unsigned int)(fileData[location+8]<<24) + (unsigned int)(fileData[location+9]<<16) + (unsigned int)(fileData[location+10]<<8) + (unsigned int)(fileData[location+11]);
+			chunk.x_offset = (unsigned int)(fileData[location+12]<<24) + (unsigned int)(fileData[location+13]<<16) + (unsigned int)(fileData[location+14]<<8) + (unsigned int)(fileData[location+15]);
+			chunk.y_offset = (unsigned int)(fileData[location+16]<<24) + (unsigned int)(fileData[location+17]<<16) + (unsigned int)(fileData[location+18]<<8) + (unsigned int)(fileData[location+19]);
+			chunk.delay_num = (unsigned short)(fileData[location+20]<<8) + (unsigned short)(fileData[location+21]);
+			chunk.delay_den = (unsigned short)(fileData[location+22]<<8) + (unsigned short)(fileData[location+23]);
+			chunk.dispose_op = fileData[location+24];
+			chunk.blend_op = fileData[location+25];
+			chunk.compressedData = std::vector<unsigned char>();
+
+			if(actualCount < imgData.size())
+			{
+				imgData[actualCount] = chunk;
+				actualCount++;
+			}
+		}
 		else if(blockID=="IDAT")
 		{
 			//Concatinate the IDAT data into one block.
 			for(int i=0; i<blockSize; i++)
 			{
-				compressedData.push_back(fileData[location+i]);
+				imgData[0].compressedData.push_back(fileData[location+i]);
 			}
+			currImg++;
 			//skip the ADLER32 bytes
+		}
+		else if(blockID=="fdAT")
+		{
+			unsigned int imgLoc = (unsigned int)(fileData[location]<<24) + (unsigned int)(fileData[location+1]<<16) + (unsigned int)(fileData[location+2]<<8) + (unsigned int)(fileData[location+3]);
+
+			for(int i=0; i<blockSize-4; i++)
+			{
+				imgData[actualCount-1].compressedData.push_back(fileData[location+4+i]);
+			}
 		}
 		else if(blockID=="IEND")
 		{
@@ -277,576 +945,99 @@ Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages)
 	//didn't fail the other necessary parts
 	if(valid)
 	{
-		//Pretty sure it is always a zlib stream
-		//read first 2 bytes
-		unsigned char CMF = compressedData[0];
-		unsigned char FLG = compressedData[1]; //not necessary
-		int compressionMethod = CMF & 0b00001111;
-		if(compressionMethod!=8)
+		if(images==nullptr)
 		{
-			//invalid, must be deflate compression method
-			valid = false;
-			if(amountOfImages!=nullptr)
-				*amountOfImages=0;
-
-			if(tImg!=nullptr)
-				delete tImg;
-
-			if(images!=nullptr)
-				delete[] images;
-			
-			return nullptr;
+			*amountOfImages = imgData.size();
+			images = new Image*[*amountOfImages];
 		}
 
-		std::vector<unsigned char> decompressedData = Compression::decompressDeflate(&compressedData.data()[2], compressedData.size()-2);
-
-		//note that when reading different bit depths, they are packed into bytes
-		//instead of taking up an entire byte.
-		//Example, 32 pixels on a scanline with a bit depth of 1 has 4 bytes.
-
-		//defilter the scanline
-		int x = 0;
-		int y = 0;
-
-		int index = 0;
-		int rawIndex = 0;
-
-		int moveBackVal = 1;
-		if(bitDepth>8)
+		for(int i=0; i<*amountOfImages; i++)
 		{
-			moveBackVal = bitDepth/8;
-		}
-
-		int scanLineBytes = MathExt::ceil(tImg->getWidth() * (bitDepth/8.0));
-
-		switch(colorType)
-		{
-			case 2:
-				//3 values per pixel
-				moveBackVal*=3;
-				scanLineBytes*=3;
-				break;
-			case 4:
-				//2 values per pixel
-				moveBackVal*=2;
-				scanLineBytes*=2;
-				break;
-			case 6:
-				//4 values per pixel
-				moveBackVal*=4;
-				scanLineBytes*=4;
-				break;
-			default:
-				break;
-		}
-
-		std::vector<unsigned char> preScanLine = std::vector<unsigned char>(scanLineBytes);
-		std::vector<unsigned char> scanLine = std::vector<unsigned char>(scanLineBytes);
-		
-		int imageSize = tImg->getWidth() * tImg->getHeight();
-		
-		//For interlacing, the amount of values in the scanline is the only thing that changes. It doubles on every even pass
-		//The scanlines that are affected are doubled on every odd pass. There can be padding on the scanlines to make it them an even amount.
-
-		//potential equations
-		//xGrids = ceil(width/8)
-		//yGrids = ceil(height/8)
-		//
-		//for each grid
-		//	do adam7 interlacing
-		//	filter based on size of scanline at the time
-		//	fill based on adam7 interlacing
-
-		int xGrids = tImg->getWidth();
-		int yGrids = tImg->getHeight();
-		int pass = 1;
-		int scanlinesDone = 0;
-		int yGridsNeeded = 0;
-		if(interlace)
-		{
-			xGrids = (int)MathExt::ceil((double)xGrids / 8.0);
-			yGrids = (int)MathExt::ceil((double)yGrids / 8.0);
-			
-			scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0));
-			yGridsNeeded = yGrids;
-
-			//note that scanLineBytes was changed to a completely new value
-			//so adjustments are needed to account for color planes
-			//moveBackVal does not need adjustments
-			switch(colorType)
+			Image* tImg = processData(&imgData[i], colorType, bitDepth, interlace, &p);
+			if(tImg != nullptr)
 			{
-				case 2:
-					//3 values per pixel
-					scanLineBytes*=3;
-					break;
-				case 4:
-					//2 values per pixel
-					scanLineBytes*=2;
-					break;
-				case 6:
-					//4 values per pixel
-					scanLineBytes*=4;
-					break;
-				default:
-					break;
+				if(i==0)
+				{
+					images[i] = tImg;
+				}
+				else
+				{
+					//draw tImg onto a new image if the previous image at the x,y position with the blend options
+					Image* actualImg = nullptr;
+					if(imgData[i-1].dispose_op == 0)
+					{
+						actualImg = new Image( *(images[i-1]) );
+					}
+					else if(imgData[i-1].dispose_op == 1)
+					{
+						actualImg = new Image( globalWidth, globalHeight );
+					}
+					else if(imgData[i-1].dispose_op == 2)
+					{
+						if(i>=2)
+							actualImg = new Image( *(images[i-2]) );
+						else
+							actualImg = new Image( globalWidth, globalHeight );
+					}
+					else
+					{
+						//error
+						valid = false;
+						delete tImg;
+						break;
+					}
+					
+					if(imgData[i].blend_op == 0)
+					{
+						actualImg->drawImage(tImg, imgData[i].x_offset, imgData[i].y_offset);
+					}
+					else if(imgData[i].blend_op == 1)
+					{
+						Color oldColor = Graphics::getColor();
+						unsigned char oldCompositeRule = Graphics::getCompositeRule();
+
+						Graphics::setColor( {255,255,255,255} );
+						Graphics::setCompositeRule( Graphics::COMPOSITE_SRC_OVER );
+
+						actualImg->drawSprite(tImg, imgData[i].x_offset, imgData[i].y_offset);
+
+						Graphics::setColor(oldColor);
+						Graphics::setCompositeRule(oldCompositeRule);
+					}
+					else
+					{
+						//error
+						valid = false;
+						delete tImg;
+						delete actualImg;
+						break;
+					}
+
+					images[i] = actualImg;
+				}
+			}
+			else
+			{
+				//error has occured
+				valid = false;
+				break;
 			}
 		}
 
-		while(index < decompressedData.size())
+		if(!valid)
 		{
-			//read first byte in scanline for the filter method
-			int filterMethod = decompressedData[index];
-			index++;
-			
-			#pragma region unfilterScanLine
-
-			if(interlace)
+			for(int i=0; i<*amountOfImages; i++)
 			{
-				if(scanlinesDone>=yGridsNeeded)
-				{
-					scanlinesDone = 0;
-					pass++;
-
-					switch (pass)
-					{
-						case 1:
-							scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0));
-							yGridsNeeded = yGrids;
-							break;
-						case 2:
-							scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0));
-							yGridsNeeded = yGrids;
-							break;
-						case 3:
-							scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0) * 2);
-							yGridsNeeded = yGrids;
-							break;
-						case 4:
-							scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0) * 2);
-							yGridsNeeded = yGrids*2;
-							break;
-						case 5:
-							scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0) * 4);
-							yGridsNeeded = yGrids*2;
-							break;
-						case 6:
-							scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0) * 4);
-							yGridsNeeded = yGrids*4;
-							break;
-						case 7:
-							scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0) * 8);
-							yGridsNeeded = yGrids*4;
-							break;
-						default:
-							scanLineBytes = 0;
-							yGridsNeeded = 0;
-							break;
-					}
-
-					//note that scanLineBytes was changed to a completely new value
-					//so adjustments are needed to account for color planes
-					//moveBackVal does not need adjustments
-					switch(colorType)
-					{
-						case 2:
-							//3 values per pixel
-							scanLineBytes*=3;
-							break;
-						case 4:
-							//2 values per pixel
-							scanLineBytes*=2;
-							break;
-						case 6:
-							//4 values per pixel
-							scanLineBytes*=4;
-							break;
-						default:
-							break;
-					}
-				}
-
-				scanlinesDone++;
-			}
-
-			if(filterMethod==0)
-			{
-				//do nothing
-				while(x < scanLineBytes)
-				{
-					scanLine[x] = decompressedData[index];
-					x++;
-					index++;
-				}
-			}
-			else if(filterMethod==1)
-			{
-				//Subtractive
-				//the raw byte is equal to the previous + the current
-				while(x < scanLineBytes)
-				{
-					if(x<moveBackVal)
-					{
-						scanLine[x] = decompressedData[index];
-					}
-					else
-					{
-						scanLine[x] = scanLine[x-moveBackVal] + decompressedData[index];
-					}
-					x++;
-					index++;
-				}
-			}
-			else if(filterMethod==2)
-			{
-				//Upward
-				//the raw byte is equal to the previous upward + the current
-				while(x < scanLineBytes)
-				{
-					if(y==0)
-					{
-						scanLine[x] = decompressedData[index];
-					}
-					else
-					{
-						scanLine[x] = preScanLine[x] + decompressedData[index];
-					}
-					x++;
-					index++;
-				}
-			}
-			else if(filterMethod==3)
-			{
-				//Average
-				//the raw byte is equal to the currentByte + (previous unfiltered + upward unfiltered)/2
-				while(x < scanLineBytes)
-				{
-					if(x<moveBackVal)
-					{
-						if(y==0)
-							scanLine[x] = decompressedData[index];
-						else
-							scanLine[x] = decompressedData[index] + (preScanLine[x])/2;
-					}
-					else
-					{
-						if(y==0)
-							scanLine[x] = decompressedData[index] + (scanLine[x-moveBackVal])/2;
-						else
-							scanLine[x] = decompressedData[index] + (scanLine[x-moveBackVal] + preScanLine[x])/2;
-					}
-					x++;
-					index++;
-				}
-			}
-			else if(filterMethod==4)
-			{
-				//Paeth
-				//the raw byte is equal to the currentByte + PaethPredictor(previous unfiltered, upward unfiltered, up back unfiltered)
-				while(x < scanLineBytes)
-				{
-					int p, a, b, c;
-					int pa, pb, pc;
-
-					if(x>=moveBackVal)
-						a = scanLine[x-moveBackVal];
-					else
-						a = 0;
-					
-					if(y!=0)
-						b = preScanLine[x];
-					else
-						b = 0;
-
-					if(x>=moveBackVal && y!=0)
-						c = preScanLine[x-moveBackVal];
-					else
-						c = 0;
-					
-					p = a+b-c;
-					pa = std::abs(p-a);
-					pb = std::abs(p-b);
-					pc = std::abs(p-c);
-					
-					if(pa <= pb && pa <= pc)
-					{
-						scanLine[x] = decompressedData[index] + a;
-					}
-					else if(pb <= pc)
-					{
-						scanLine[x] = decompressedData[index] + b;
-					}
-					else
-					{
-						scanLine[x] = decompressedData[index] + c;
-					}
-					x++;
-					index++;
-				}
-			}
-
-			x=0;
-			y++;
-			#pragma endregion unfilterScanLine
-
-			#pragma region FillImage
-
-			//Take the unfiltered scanline and put into image
-			//For now, only when not interlaced
-			Color* rawPixs = tImg->getPixels();
-			
-			int interlacedX = 0;
-			int interlacedY = 0;
-			int incVal = 1;
-
-			if(interlace)
-			{
-				switch (pass)
-				{
-				case 1:
-					interlacedX = 0;
-					incVal = 8;
-					interlacedY = (scanlinesDone-1)*8;
-					break;
-				case 2:
-					interlacedX = 4;
-					incVal = 8;
-					interlacedY = (scanlinesDone-1)*8;
-					break;
-				case 3:
-					interlacedX = 0;
-					incVal = 4;
-					interlacedY = 4 + (scanlinesDone-1)*8;
-					break;
-				case 4:
-					interlacedX = 2;
-					incVal = 4;
-					interlacedY = (scanlinesDone-1)*4;
-					break;
-				case 5:
-					interlacedX = 0;
-					incVal = 2;
-					interlacedY = 2 + (scanlinesDone-1)*4;
-					break;
-				case 6:
-					interlacedX = 1;
-					incVal = 2;
-					interlacedY = (scanlinesDone-1)*2;
-					break;
-				case 7:
-					interlacedX = 0;
-					incVal = 1;
-					interlacedY = 1 + (scanlinesDone-1)*2;
-					break;
-				default:
-					break;
-				}
-
-			}
-
-			if(colorType==0)
-			{
-				//Greyscale
-					//(R)
-					//possible bit depths are 1,2,4,8,16
-
-				if(bitDepth<8)
-				{
-					BinarySet pixelBits = BinarySet();
-					pixelBits.setValues(scanLine.data(), scanLineBytes);
-
-					pixelBits.setBitOrder(BinarySet::RMSB);
-					
-					//Increase Color Amount
-					double ICA = 255.0 / ((2<<(bitDepth-1)) - 1);
-
-					for(int i = 0; i<pixelBits.size(); i+=bitDepth)
-					{
-						Color c;
-						c.red = (unsigned char)(ICA * pixelBits.getBits(i, i + bitDepth, true));
-						c.green = c.red;
-						c.blue = c.red;
-						c.alpha = 255;
-
-						if(!interlace)
-						{
-							rawPixs[rawIndex] = c;
-							rawIndex++;
-						}
-						else
-						{
-							tImg->setPixel(interlacedX, interlacedY, c);
-							interlacedX += incVal;
-						}
-						
-					}
-				}
-				else if(bitDepth==8)
-				{
-					for(int i = 0; i<scanLine.size(); i++)
-					{
-						Color c;
-						c.red = scanLine[i];
-						c.green = c.red;
-						c.blue = c.red;
-						c.alpha = 255;
-
-						if(!interlace)
-						{
-							rawPixs[rawIndex] = c;
-							rawIndex++;
-						}
-						else
-						{
-							tImg->setPixel(interlacedX, interlacedY, c);
-							interlacedX += incVal;
-						}
-					}
-				}
-			}
-			else if(colorType==2)
-			{
-				//TrueColor
-					//(R,G,B)
-					//Possible bit depth value are 8, 16
-				if(bitDepth==8)
-				{
-					for(int i = 0; i<scanLine.size(); i+=3)
-					{
-						Color c;
-						c.red = scanLine[i];
-						c.green = scanLine[i+1];
-						c.blue = scanLine[i+2];
-						c.alpha = 255;
-
-						if(!interlace)
-						{
-							rawPixs[rawIndex] = c;
-							rawIndex++;
-						}
-						else
-						{
-							tImg->setPixel(interlacedX, interlacedY, c);
-							interlacedX += incVal;
-						}
-					}
-				}
+				if(images[i]!=nullptr)
+					delete images[i];
 				
+				images[i] = nullptr;
 			}
-			else if(colorType==3)
-			{
-				//Palette
-					//(P)
-					//Possible bit depth value are 1, 2, 4, 8
-				int paletteIndex = 0;
-				if(bitDepth<8)
-				{
-					BinarySet pixelBits = BinarySet();
-					pixelBits.setValues(scanLine.data(), scanLineBytes);
-					pixelBits.setBitOrder(BinarySet::RMSB);
-					
-					for(int i = 0; i<pixelBits.size(); i+=bitDepth)
-					{
-						paletteIndex = pixelBits.getBits(i, i+bitDepth, true);
+			delete[] images;
+			images = nullptr;
 
-						Color c = p.getColor(paletteIndex);
-						if(!interlace)
-						{
-							rawPixs[rawIndex] = c;
-							rawIndex++;
-						}
-						else
-						{
-							tImg->setPixel(interlacedX, interlacedY, c);
-							interlacedX += incVal;
-						}
-					}
-				}
-				else if(bitDepth==8)
-				{
-					for(int i = 0; i<scanLine.size(); i++)
-					{
-						paletteIndex = scanLine[i];
-
-						Color c = p.getColor(paletteIndex);
-						if(!interlace)
-						{
-							rawPixs[rawIndex] = c;
-							rawIndex++;
-						}
-						else
-						{
-							tImg->setPixel(interlacedX, interlacedY, c);
-							interlacedX += incVal;
-						}
-					}
-				}
-			}
-			else if(colorType==4)
-			{
-				//GreyScale With Alpha
-					//(R,A)
-					//Possible bit depth value are 8, 16
-				if(bitDepth==8)
-				{
-					for(int i = 0; i<scanLine.size(); i+=2)
-					{
-						Color c;
-						c.red = scanLine[i];
-						c.green = c.red;
-						c.blue = c.red;
-						c.alpha = scanLine[i+1];
-
-						if(!interlace)
-						{
-							rawPixs[rawIndex] = c;
-							rawIndex++;
-						}
-						else
-						{
-							tImg->setPixel(interlacedX, interlacedY, c);
-							interlacedX += incVal;
-						}
-					}
-				}
-			}
-			else if(colorType==6)
-			{
-				//Truecolor With Alpha
-					//(R,G,B,A)
-					//Possible bit depth value are 8, 16
-				if(bitDepth==8)
-				{
-					for(int i = 0; i<scanLine.size(); i+=4)
-					{
-						Color c;
-						c.red = scanLine[i];
-						c.green = scanLine[i+1];
-						c.blue = scanLine[i+2];
-						c.alpha = scanLine[i+3];
-
-						if(!interlace)
-						{
-							rawPixs[rawIndex] = c;
-							rawIndex++;
-						}
-						else
-						{
-							tImg->setPixel(interlacedX, interlacedY, c);
-							interlacedX += incVal;
-						}
-					}
-				}
-			}
-
-			#pragma endregion FillImage
-
-			preScanLine = scanLine;
+			*amountOfImages = 0;
 		}
-	}
-
-	if(*amountOfImages == 1)
-	{
-		images = new Image* [1]{tImg};
 	}
 	
 	return images;

@@ -22,6 +22,8 @@ public:
 	void loadImage(std::string filename);
 	void loadImage(std::wstring filename);
 
+	void dispose();
+
 private:
 	std::vector<Image*> images = std::vector<Image*>();
 };

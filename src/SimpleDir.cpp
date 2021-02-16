@@ -25,9 +25,8 @@ SimpleDir::SimpleDir(wchar_t* directory)
 	}
 	catch (...)
 	{
-		StringTools::out << "Failed to initialize." << StringTools::lineBreak;
-		StringTools::out << "An invalid character may have been used." << StringTools::lineBreak;
-
+		StringTools::println("Failed to initialize.");
+		StringTools::println("An invalid character may have been used.");
 	}
 }
 
@@ -36,7 +35,6 @@ SimpleDir::SimpleDir(wchar_t* directory)
 */
 SimpleDir::~SimpleDir()
 {
-	std::wcout << L"Destroying" << L'\n';
 }
 
 /*
@@ -67,7 +65,6 @@ std::wstring SimpleDir::getReferenceName(int index)
 	}
 	else
 	{
-		StringTools::out << "Out of bounds error" << StringTools::lineBreak;
 		return L"";
 	}
 }
@@ -80,7 +77,6 @@ std::wstring SimpleDir::getReferenceFullPath(int index)
 	}
 	else
 	{
-		StringTools::out << "Out of bounds error" << StringTools::lineBreak;
 		return L"";
 	}
 }
@@ -97,10 +93,9 @@ unsigned int SimpleDir::fileSize(int index)
 	}
 	else
 	{
-		StringTools::out << "Out of bounds error" << StringTools::lineBreak;
-		return 0;
+		return -1;
 	}
-	return 0;
+	return -1;
 }
 
 /*
@@ -118,7 +113,6 @@ time_t SimpleDir::getLastChangeTime(int index)
 	}
 	else
 	{
-		StringTools::out << "Out of bounds error" << StringTools::lineBreak;
 		return 0;
 	}
 }
@@ -135,7 +129,6 @@ bool SimpleDir::referenceIsDirectory(int index)
 	}
 	else
 	{
-		StringTools::out << "Out of bounds error" << StringTools::lineBreak;
 		return false;
 	}
 }
@@ -159,12 +152,12 @@ void SimpleDir::renameResource(wchar_t * newName, int index)
 		}
 		catch (...)
 		{
-			StringTools::out << "Error on Rename" << StringTools::lineBreak;
+			StringTools::println("Error on Rename");
 		}
 	}
 	else
 	{
-		StringTools::out << "Out of bounds error" << StringTools::lineBreak;
+		//error
 	}
 }
 
@@ -188,12 +181,12 @@ void SimpleDir::deleteResource(int index)
 		}
 		catch(...)
 		{
-			StringTools::out << "Error on delete" << StringTools::lineBreak;
+			StringTools::println("Error on delete");
 		}
 	}
 	else
 	{
-		StringTools::out << "Out of bounds error" << StringTools::lineBreak;
+		//error
 	}
 }
 
@@ -212,7 +205,7 @@ void SimpleDir::copyResource(wchar_t * newName, int index)
 		
 		if (oth.at(oth.size() - 1) == L'\\')
 		{
-			StringTools::out << "IS FOLDER" << StringTools::lineBreak;
+			//Is folder
 			oth += getReferenceName(index);
 		}
 		
@@ -222,12 +215,12 @@ void SimpleDir::copyResource(wchar_t * newName, int index)
 		}
 		catch (...)
 		{
-			StringTools::out << "Error on Copy" << StringTools::lineBreak;
+			StringTools::println("Error on Copy");
 		}
 	}
 	else
 	{
-		StringTools::out << "Out of bounds error" << StringTools::lineBreak;
+		//error
 	}
 }
 

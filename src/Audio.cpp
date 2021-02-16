@@ -93,7 +93,7 @@ void Audio::submitData(short* buffer, int b)
 		{
 			//error has occured
 			dispose();
-			StringTools::out << "AUDIO ERROR: " << (int) wResult << StringTools::lineBreak;
+			StringTools::println("AUDIO ERROR: ", (int) wResult);
 		}
 	}
 }

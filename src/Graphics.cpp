@@ -978,9 +978,39 @@ void Graphics::setFillRule(bool v)
 	Graphics::fillRule = v;
 }
 
+bool Graphics::getFillRule()
+{
+	return fillRule;
+}
+
 void Graphics::setAntiAliasing(bool v)
 {
 	Graphics::antiAliasing = v;
+}
+
+bool Graphics::getAntiAliasing()
+{
+	return antiAliasing;
+}
+
+void Graphics::setCompositeRule(unsigned char b)
+{
+	compositeRule = b;
+}
+
+unsigned char Graphics::getCompositeRule()
+{
+	return compositeRule;
+}
+
+void Graphics::setBlendMode(unsigned char b)
+{
+	blendMode = b;
+}
+
+unsigned char Graphics::getBlendMode()
+{
+	return blendMode;
 }
 
 #pragma endregion
@@ -1120,12 +1150,6 @@ void Graphics::orderedBayerDithering(Image* img)
 	}
 }
 
-Image* Graphics::scaleImage(Image* img, double xScale, double yScale, unsigned char filterMethod)
-{
-
-	return nullptr;
-}
-
 Matrix Graphics::generateBayerMatrix(Matrix mat, int rowSize)
 {
 	Matrix mat2;
@@ -1162,8 +1186,209 @@ Matrix Graphics::generateBayerMatrix(Matrix mat, int rowSize)
 	{
 		return generateBayerMatrix(mat2, rowSize);
 	}
-	
-
 }
+
+Image* Graphics::scaleImage(Image* img, double xScale, double yScale, unsigned char filterMethod)
+{
+	switch(filterMethod)
+	{
+		case NEAREST_NEIGHBOR_FILTER:
+			return scaleNearestNeighbor(img, xScale, yScale);
+			break;
+		case BILINEAR_FILTER:
+			return scaleBilinear(img, xScale, yScale);
+			break;
+		case BICUBIC_FILTER:
+			return scaleBicubic(img, xScale, yScale);
+			break;
+		default:
+			return scaleBilinear(img, xScale, yScale);
+			break;
+	}
+
+	return nullptr;
+}
+
+Image* Graphics::scaleNearestNeighbor(Image* img, double xScale, double yScale)
+{
+	if(img!=nullptr)
+	{
+		int nWidth = img->getWidth() * xScale;
+		int nHeight = img->getHeight() * yScale;
+		Image* sImg = new Image( nWidth, nHeight );
+
+		//position top left of image so that it has an equal amount of distance from edges
+		//divide distance by size of image to find offset
+
+		double xOffset = (double)(nWidth - img->getWidth())/ (2*img->getWidth());
+		double yOffset = (double)(nHeight - img->getHeight())/ (2*img->getHeight());
+
+		for(int i=0; i<nHeight; i++)
+		{
+			double yP = ((double)(i-yOffset) / nHeight) * img->getHeight();
+			int nearY = MathExt::clamp(MathExt::round(yP), 0.0, (double)img->getHeight()-1);
+			
+			for(int i2=0; i2<nWidth; i2++)
+			{
+				double xP = ((double)(i2-xOffset) / nWidth) * img->getWidth();
+				int nearX = MathExt::clamp(MathExt::round(xP), 0.0, (double)img->getWidth()-1);
+				
+				sImg->setPixel(i2, i, img->getPixel(nearX, nearY));
+			}
+		}
+
+		return sImg;
+	}
+	return nullptr;
+}
+
+Image* Graphics::scaleBilinear(Image* img, double xScale, double yScale)
+{
+	if(img!=nullptr)
+	{
+		int nWidth = img->getWidth() * xScale;
+		int nHeight = img->getHeight() * yScale;
+		
+		//position top left of image so that it has an equal amount of distance from edges
+		//divide distance by size of image to find offset
+
+		double xOffset = (double)(nWidth - img->getWidth())/ (2*img->getWidth());
+		double yOffset = (double)(nHeight - img->getHeight())/ (2*img->getHeight());
+
+		Image* sImg = new Image( nWidth, nHeight );
+
+		for(int i=0; i<nHeight; i++)
+		{
+			double yP = ((double)(i-yOffset) / nHeight) * img->getHeight();
+			//yP -= yOffset;
+
+			double yFrac = MathExt::frac(yP);
+
+			int y1 = MathExt::clamp(MathExt::floor(yP), 0.0, (double)img->getHeight()-1);
+			int y2 = MathExt::clamp(MathExt::ceil(yP), 0.0, (double)img->getHeight()-1);
+			
+			for(int i2=0; i2<nWidth; i2++)
+			{
+				double xP = ((double)(i2-xOffset) / nWidth) * img->getWidth();
+				//xP -= xOffset;
+				double xFrac = MathExt::frac(xP);
+
+				int x1 = MathExt::clamp(MathExt::floor(xP), 0.0, (double)img->getWidth()-1);
+				int x2 = MathExt::clamp(MathExt::ceil(xP), 0.0, (double)img->getWidth()-1);
+				
+				Color c1 = lerp( img->getPixel(x1, y1), img->getPixel(x2, y1), xFrac);
+				Color c2 = lerp( img->getPixel(x1, y2), img->getPixel(x2, y2), xFrac);
+				Color c3 = lerp( c1, c2, yFrac);
+
+				sImg->setPixel(i2, i, c3);
+			}
+		}
+
+		return sImg;
+	}
+	return nullptr;
+}
+
+Image* Graphics::scaleBicubic(Image* img, double xScale, double yScale)
+{
+	if(img!=nullptr)
+	{
+		int nWidth = img->getWidth() * xScale;
+		int nHeight = img->getHeight() * yScale;
+		
+		//position top left of image so that it has an equal amount of distance from edges
+		//divide distance by size of image to find offset
+
+		double xOffset = (double)(nWidth - img->getWidth())/ (2*img->getWidth());
+		double yOffset = (double)(nHeight - img->getHeight())/ (2*img->getHeight());
+
+
+		Image* sImg = new Image( nWidth, nHeight );
+
+		for(int i=0; i<nHeight; i++)
+		{
+			double yP = ((double)(i-yOffset) / nHeight) * img->getHeight();
+			double yFrac = MathExt::frac(yP);
+
+			int yPoints[4];
+			yPoints[1] = MathExt::clamp(MathExt::floor(yP), 0.0, (double)img->getHeight()-1);
+			yPoints[0] = MathExt::clamp(yPoints[1]-1, 0, img->getHeight()-1);
+			yPoints[2] = MathExt::clamp(MathExt::ceil(yP), 0.0, (double)img->getHeight()-1);
+			yPoints[3] = MathExt::clamp(yPoints[2]+1, 0, img->getHeight()-1);
+
+			if(yPoints[0]<0)
+			{
+				yPoints[0] = 0;
+			}
+			if(yPoints[3]>=img->getHeight())
+			{
+				yPoints[3] = img->getHeight()-1;
+			}
+			
+			for(int i2=0; i2<nWidth; i2++)
+			{
+				double xP = ((double)(i2-xOffset) / nWidth) * img->getWidth();
+
+				double xFrac = MathExt::frac(xP);
+
+				int xPoints[4];
+				xPoints[1] = MathExt::clamp(MathExt::floor(xP), 0.0, (double)img->getWidth()-1);
+				xPoints[0] = MathExt::clamp(xPoints[1]-1, 0, img->getWidth()-1);
+				xPoints[2] = MathExt::clamp(MathExt::ceil(xP), 0.0, (double)img->getWidth()-1);
+				xPoints[3] = MathExt::clamp(xPoints[2]+1, 0, img->getWidth()-1);
+
+				if(xPoints[0]<0)
+				{
+					xPoints[0] = 0;
+				}
+				if(xPoints[3]>=img->getWidth())
+				{
+					xPoints[3] = img->getWidth()-1;
+				}
+				
+				Vec4f arr[16];
+				for(int j=0; j<16; j++)
+				{
+					int xV = j%4;
+					int yV = j/4;
+					Color c = img->getPixel(xPoints[xV], yPoints[yV]);
+					arr[j] = Vec4f(c.red, c.green, c.blue, c.alpha);
+				}
+
+				Vec4f polys[4];
+				for(int j=0; j<4; j++)
+				{
+					Vec4f a, b, c, d;
+					a = (arr[j*4 + 0]*-0.5) + (arr[j*4 + 1]*1.5) + (arr[j*4 + 2]*-1.5) + (arr[j*4 + 3]*0.5);
+					b = (arr[j*4 + 0]) + (arr[j*4 + 1]*-2.5) + (arr[j*4 + 2]*2) + (arr[j*4 + 3]*-0.5);
+					c = (arr[j*4 + 0]*-0.5) + (arr[j*4 + 2]*0.5);
+					d = arr[j*4 + 1];
+
+					polys[j] = ((a*xFrac + b)*xFrac + c)*xFrac + d;
+				}
+				
+				Vec4f a, b, c, d;
+				a = (polys[0]*-0.5) + (polys[1]*1.5) + (polys[2]*-1.5) + (polys[3]*0.5);
+				b = (polys[0]) + (polys[1]*-2.5) + (polys[2]*2) + (polys[3]*-0.5);
+				c = (polys[0]*-0.5) + (polys[2]*0.5);
+				d = polys[1];
+
+				Vec4f finalC = ((a*yFrac + b)*yFrac + c)*yFrac + d;
+				
+				unsigned char red = (unsigned char)MathExt::clamp(finalC.x, 0.0, 255.0);
+				unsigned char green = (unsigned char)MathExt::clamp(finalC.y, 0.0, 255.0);
+				unsigned char blue = (unsigned char)MathExt::clamp(finalC.z, 0.0, 255.0);
+				unsigned char alpha = (unsigned char)MathExt::clamp(finalC.w, 0.0, 255.0);
+				
+				sImg->setPixel(i2, i, {red,green,blue,alpha});
+			}
+		}
+
+		return sImg;
+	}
+	return nullptr;
+}
+
+
 
 #pragma endregion

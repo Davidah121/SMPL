@@ -284,7 +284,7 @@ bool SimpleXml::load(std::wstring filename)
     }
     else
     {
-        StringTools::out << "Could not open file" << StringTools::lineBreak;
+        //StringTools::out << "Could not open file" << StringTools::lineBreak;
         return false;
     }
 

@@ -21,12 +21,7 @@ void BinarySet::add(bool v)
 {
 	int byteLocation = bitNumber / 8;
 	int bitLocation = bitNumber % 8;
-
-	if (this->set.size() <= 0)
-	{
-		this->set.push_back(0);
-	}
-
+	
 	if (byteLocation >= this->set.size())
 	{
 		this->set.push_back(0);

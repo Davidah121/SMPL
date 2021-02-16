@@ -36,9 +36,6 @@ public:
 	static void startTimeMeasurement();
 	static unsigned long endTimeMeasurement();
 
-	static void benchmark(void (*function)(), int times);
-	static void benchmark(std::function<void()> function, int times);
-
 	static unsigned int getNumberOfThreads();
 
 	static void dispose();

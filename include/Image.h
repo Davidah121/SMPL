@@ -49,6 +49,10 @@ public:
 	void drawPixel(int x, int y, Color c);
 	void drawPixel(double x, double y, Color c);
 
+	static bool IMAGE_SAVE_ALPHA;
+	static unsigned char IMAGE_ALPHA_THRESHOLD;
+	static bool IMAGE_GREYSCALE;
+
 	void saveBMP(std::string filename);
 	void saveGIF(std::string filename);
 	void savePNG(std::string filename);

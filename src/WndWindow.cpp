@@ -148,7 +148,6 @@ LRESULT _stdcall WndWindow::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 
 WndWindow::WndWindow()
 {
-	
 	x = screenWidth / 2 - 160;
 	y = screenHeight / 2 - 120;
 	width = 320;
@@ -175,17 +174,18 @@ WndWindow::WndWindow(std::wstring title, int width, int height, int x, int y)
 	this->width = width;
 	this->height = height;
 
-	if (this->x < 0)
-		this->x = screenWidth / 2 - 160;
-
-	if (this->y < 0)
-		this->y = screenHeight / 2 - 120;
-
 	if (this->width < 0)
 		this->width = 320;
 
 	if (this->height < 0)
 		this->height = 240;
+
+	if (this->x < 0)
+		this->x = screenWidth / 2 - (width/2);
+
+	if (this->y < 0)
+		this->y = screenHeight / 2 - (height/2);
+
 
 	setAllFunctionsToNull();
 	gui = new GuiManager(&this->x, &this->y, new Image(this->width, this->height));
@@ -207,17 +207,17 @@ WndWindow::WndWindow(std::string title, int width, int height, int x, int y)
 	this->width = width;
 	this->height = height;
 
-	if (this->x < 0)
-		this->x = screenWidth / 2 - 160;
-
-	if (this->y < 0)
-		this->y = screenHeight / 2 - 120;
-
 	if (this->width < 0)
 		this->width = 320;
 
 	if (this->height < 0)
 		this->height = 240;
+
+	if (this->x < 0)
+		this->x = screenWidth / 2 - (width/2);
+
+	if (this->y < 0)
+		this->y = screenHeight / 2 - (height/2);
 
 	setAllFunctionsToNull();
 	gui = new GuiManager(&this->x, &this->y, new Image(this->width, this->height));
@@ -279,6 +279,7 @@ void WndWindow::close()
 	if(closingFunction!=nullptr)
 		closingFunction();
 	
+	setRunning(false);
 	dispose();
 }
 
@@ -295,6 +296,8 @@ void WndWindow::dispose()
 		{
 			if (wndThread->joinable())
 				wndThread->join();
+			
+			wndThread = nullptr;
 		}
 
 		if (IsWindow(windowHandle))
@@ -308,6 +311,7 @@ void WndWindow::dispose()
 
 		if(gui!=nullptr)
 			delete gui;
+		gui = nullptr;
 			
 		WndWindow::removeWindowFromList(this);
 	}
@@ -593,6 +597,7 @@ void WndWindow::setAllFunctionsToNull()
 	mouseMovedFunction = nullptr;
 	closingFunction = nullptr;
 }
+
 void WndWindow::setPaintFunction(void(*function)(void))
 {
 	paintFunction = function;
