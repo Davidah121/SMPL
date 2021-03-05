@@ -24,6 +24,11 @@ public:
 	ComplexNumber operator*(float other);
 	ComplexNumber operator*(double other);
 
+	ComplexNumber operator/(Vec2f other);
+	ComplexNumber operator/(int other);
+	ComplexNumber operator/(float other);
+	ComplexNumber operator/(double other);
+
 	void operator+=(ComplexNumber other);
 	void operator-=(ComplexNumber other);
 	void operator*=(ComplexNumber other);
@@ -33,6 +38,15 @@ public:
 	void operator*=(float other);
 	void operator*=(double other);
 
+	void operator/=(Vec2f other);
+	void operator/=(int other);
+	void operator/=(float other);
+	void operator/=(double other);
+
+	//logic operators
+	bool operator==(ComplexNumber other);
+	bool operator!=(ComplexNumber other);
+	
 	double real = 0;
 	double imaginary = 0;
 private:

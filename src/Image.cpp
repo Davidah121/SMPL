@@ -242,7 +242,7 @@ Image** Image::loadImage(std::string filename, int* amountOfImages)
 		{
 			return loadPNG(fileData, amountOfImages);
 		}
-		else if (fileType == "jpg" || fileType2 == "jpeg")
+		else if (fileType == "jpg" || fileType2 == "jpeg" || fileType2 == "jfif")
 		{
 			return loadJPG(fileData, amountOfImages);
 		}

@@ -84,7 +84,7 @@ Point2D::~Point2D()
 	}
 	#pragma endregion
 
-Box2D::Box2D(double leftBound, double topBound, double rightBound, double bottomBound)
+Box2D::Box2D(float leftBound, float topBound, float rightBound, float bottomBound)
 {
 }
 
@@ -92,38 +92,38 @@ Box2D::~Box2D()
 {
 }
 
-void Box2D::setLeftBound(double lb)
+void Box2D::setLeftBound(float lb)
 {
 }
 
-double Box2D::getLeftBound()
-{
-	return 0.0;
-}
-
-void Box2D::setTopBound(double tb)
-{
-}
-
-double Box2D::getTopBound()
+float Box2D::getLeftBound()
 {
 	return 0.0;
 }
 
-void Box2D::setRightBound(double rb)
+void Box2D::setTopBound(float tb)
 {
 }
 
-double Box2D::getRightBound()
+float Box2D::getTopBound()
 {
 	return 0.0;
 }
 
-void Box2D::setBottomBound(double bb)
+void Box2D::setRightBound(float rb)
 {
 }
 
-double Box2D::getBottomBound()
+float Box2D::getRightBound()
+{
+	return 0.0;
+}
+
+void Box2D::setBottomBound(float bb)
+{
+}
+
+float Box2D::getBottomBound()
 {
 	return 0.0;
 }
@@ -140,7 +140,7 @@ double Box2D::getBottomBound()
 	}
 	#pragma endregion
 
-Circle::Circle(double rad)
+Circle::Circle(float rad)
 {
 	radius = rad;
 }
@@ -149,12 +149,12 @@ Circle::~Circle()
 {
 }
 
-double Circle::getRadius()
+float Circle::getRadius()
 {
 	return radius;
 }
 
-void Circle::setRadius(double rad)
+void Circle::setRadius(float rad)
 {
 	radius = rad;
 }
@@ -171,7 +171,7 @@ void Circle::setRadius(double rad)
 	}
 	#pragma endregion
 
-Line2D::Line2D(double x1, double y1, double x2, double y2)
+Line2D::Line2D(float x1, float y1, float x2, float y2)
 {
 	v1.x = x1;
 	v1.y = y1;
@@ -194,7 +194,7 @@ void Line2D::setPoint1(Vec2f p)
 	v1 = p;
 }
 
-void Line2D::setPoint1(double x, double y)
+void Line2D::setPoint1(float x, float y)
 {
 	v1.x = x;
 	v1.y = y;
@@ -205,7 +205,7 @@ void Line2D::setPoint2(Vec2f p)
 	v2 = p;
 }
 
-void Line2D::setPoint2(double x, double y)
+void Line2D::setPoint2(float x, float y)
 {
 	v2.x = x;
 	v2.y = y;
@@ -221,7 +221,7 @@ Vec2f Line2D::getPoint2()
 	return v2;
 }
 
-double Line2D::getSlope()
+float Line2D::getSlope()
 {
 	if (v2.x - v1.x != 0)
 	{
@@ -230,7 +230,7 @@ double Line2D::getSlope()
 	return 0.0;
 }
 
-double Line2D::getSlopeRelativeY()
+float Line2D::getSlopeRelativeY()
 {
 	if (v2.y - v1.y != 0)
 	{
@@ -239,32 +239,32 @@ double Line2D::getSlopeRelativeY()
 	return 0.0;
 }
 
-double Line2D::getYInt()
+float Line2D::getYInt()
 {
 	return v1.y - getSlope()*v1.x;
 }
 
-double Line2D::getXInt()
+float Line2D::getXInt()
 {
 	return v1.x - getSlopeRelativeY() * v1.y;
 }
 
-double Line2D::getMinX()
+float Line2D::getMinX()
 {
 	return MathExt::min(v1.x, v2.x);
 }
 
-double Line2D::getMaxX()
+float Line2D::getMaxX()
 {
 	return MathExt::max(v1.x, v2.x);
 }
 
-double Line2D::getMinY()
+float Line2D::getMinY()
 {
 	return MathExt::min(v1.y, v2.y);
 }
 
-double Line2D::getMaxY()
+float Line2D::getMaxY()
 {
 	return MathExt::max(v1.y, v2.y);
 }
@@ -288,7 +288,7 @@ Triangle2D::Triangle2D(Vec2f p1, Vec2f p2, Vec2f p3)
 	v3 = p3;
 }
 
-Triangle2D::Triangle2D(double x1, double y1, double x2, double y2, double x3, double y3)
+Triangle2D::Triangle2D(float x1, float y1, float x2, float y2, float x3, float y3)
 {
 	v1.x = x1;
 	v1.y = y1;
@@ -307,7 +307,7 @@ void Triangle2D::setVertex1(Vec2f p)
 	v1 = p;
 }
 
-void Triangle2D::setVertex1(double x, double y)
+void Triangle2D::setVertex1(float x, float y)
 {
 	v1.x = x;
 	v1.y = y;
@@ -318,7 +318,7 @@ void Triangle2D::setVertex2(Vec2f p)
 	v2 = p;
 }
 
-void Triangle2D::setVertex2(double x, double y)
+void Triangle2D::setVertex2(float x, float y)
 {
 	v2.x = x;
 	v2.y = y;
@@ -329,7 +329,7 @@ void Triangle2D::setVertex3(Vec2f p)
 	v3 = p;
 }
 
-void Triangle2D::setVertex3(double x, double y)
+void Triangle2D::setVertex3(float x, float y)
 {
 	v3.x = x;
 	v3.y = y;
@@ -563,8 +563,8 @@ bool CollisionMaster::collisionMethod(Point2D* a, Point2D* b)
 
 bool CollisionMaster::collisionMethod(Point2D* a, Circle* b)
 {
-	double dX = MathExt::sqr(a->getPosition()->x - b->getPosition()->x);
-	double dY = MathExt::sqr(a->getPosition()->x - b->getPosition()->x);
+	float dX = MathExt::sqr(a->getPosition()->x - b->getPosition()->x);
+	float dY = MathExt::sqr(a->getPosition()->x - b->getPosition()->x);
 
 	if (dX + dY <= MathExt::sqr(b->getRadius()))
 	{
@@ -629,7 +629,7 @@ bool CollisionMaster::collisionMethod(Point2D* a, Line2D* b)
 	}
 	else
 	{
-		double yNeeded = (a->getPosition()->x * b->getSlope()) + b->getYInt();
+		float yNeeded = (a->getPosition()->x * b->getSlope()) + b->getYInt();
 
 		if (yNeeded == a->getPosition()->y)
 		{
@@ -662,10 +662,10 @@ bool CollisionMaster::collisionMethod(Box2D* a, Box2D* b)
 
 bool CollisionMaster::collisionMethod(Box2D* a, Circle* b)
 {
-	double curX = MathExt::clamp(b->getPosition()->x, a->getLeftBound(), a->getRightBound());
-	double curY = MathExt::clamp(b->getPosition()->y, a->getTopBound(), a->getBottomBound());
+	float curX = MathExt::clamp(b->getPosition()->x, a->getLeftBound(), a->getRightBound());
+	float curY = MathExt::clamp(b->getPosition()->y, a->getTopBound(), a->getBottomBound());
 
-	double length = MathExt::sqr(curX - b->getPosition()->x) + MathExt::sqr(curY - b->getPosition()->y);
+	float length = MathExt::sqr(curX - b->getPosition()->x) + MathExt::sqr(curY - b->getPosition()->y);
 	
 	if (length <= MathExt::sqr(b->getRadius()))
 	{
@@ -696,17 +696,17 @@ bool CollisionMaster::collisionMethod(Box2D* a, Line2D* b)
 	}
 	else
 	{
-		double yNeeded1 = (a->getLeftBound() * b->getSlope()) + b->getYInt();
-		double yNeeded2 = (a->getRightBound() * b->getSlope()) + b->getYInt();
+		float yNeeded1 = (a->getLeftBound() * b->getSlope()) + b->getYInt();
+		float yNeeded2 = (a->getRightBound() * b->getSlope()) + b->getYInt();
 
-		double maY = MathExt::max(yNeeded1, yNeeded2);
-		double miY = MathExt::min(yNeeded1, yNeeded2);
+		float maY = MathExt::max(yNeeded1, yNeeded2);
+		float miY = MathExt::min(yNeeded1, yNeeded2);
 
 		maY = MathExt::clamp(maY, b->getMinY(), b->getMaxY());
 		miY = MathExt::clamp(miY, b->getMinY(), b->getMaxY());
 		
-		double maX = MathExt::clamp(a->getLeftBound(), b->getMinX(), b->getMaxX());
-		double miX = MathExt::clamp(a->getRightBound(), b->getMinX(), b->getMaxX());
+		float maX = MathExt::clamp(a->getLeftBound(), b->getMinX(), b->getMaxX());
+		float miX = MathExt::clamp(a->getRightBound(), b->getMinX(), b->getMaxX());
 
 		if (a->getLeftBound() <= maX && a->getRightBound() >= miX)
 		{
@@ -730,11 +730,11 @@ bool CollisionMaster::collisionMethod(Box2D* a, Line2D* b)
 
 bool CollisionMaster::collisionMethod(Circle* a, Circle* b)
 {
-	double disX = MathExt::sqr(a->getPosition()->x - b->getPosition()->x);
-	double disY = MathExt::sqr(a->getPosition()->y - b->getPosition()->y);
-	double len1 = disX + disY;
+	float disX = MathExt::sqr(a->getPosition()->x - b->getPosition()->x);
+	float disY = MathExt::sqr(a->getPosition()->y - b->getPosition()->y);
+	float len1 = disX + disY;
 
-	double len2 = MathExt::sqr(a->getRadius()) + MathExt::sqr(b->getRadius());
+	float len2 = MathExt::sqr(a->getRadius()) + MathExt::sqr(b->getRadius());
 
 	if (len1 <= len2)
 	{
@@ -773,15 +773,15 @@ bool CollisionMaster::collisionMethod(Circle* a, Line2D* b)
 		// y = (py + slope*px - slope*b) / (1+slope*slope)
 
 		//find the point with the minimum distance
-		double y = (a->getPosition()->y + b->getSlopeRelativeY() * (a->getPosition()->x - b->getXInt())) / (1 + MathExt::sqr(b->getSlopeRelativeY()));
+		float y = (a->getPosition()->y + b->getSlopeRelativeY() * (a->getPosition()->x - b->getXInt())) / (1 + MathExt::sqr(b->getSlopeRelativeY()));
 
 		//clamp it down to the max or min possible x value then solve for y
 		y = MathExt::clamp(y, b->getMinY(), b->getMaxY());
-		double x = y * b->getSlopeRelativeY() + b->getXInt();
+		float x = y * b->getSlopeRelativeY() + b->getXInt();
 
 		//now solve distance
-		double disX = MathExt::sqr(a->getPosition()->x - x);
-		double disY = MathExt::sqr(a->getPosition()->y - y);
+		float disX = MathExt::sqr(a->getPosition()->x - x);
+		float disY = MathExt::sqr(a->getPosition()->y - y);
 
 		if (disX + disY <= MathExt::sqr(a->getRadius()))
 		{
@@ -798,15 +798,15 @@ bool CollisionMaster::collisionMethod(Circle* a, Line2D* b)
 		// x = (px + slope*py - slope*b) / (1 + slope * slope)
 
 		//find the point with the minimum distance
-		double x = (a->getPosition()->x + b->getSlope() * (a->getPosition()->y - b->getYInt())) / (1 + MathExt::sqr(b->getSlope()));
+		float x = (a->getPosition()->x + b->getSlope() * (a->getPosition()->y - b->getYInt())) / (1 + MathExt::sqr(b->getSlope()));
 
 		//clamp it down to the max or min possible x value then solve for y
 		x = MathExt::clamp(x, b->getMinX(), b->getMaxX());
-		double y = x * b->getSlope() + b->getYInt();
+		float y = x * b->getSlope() + b->getYInt();
 
 		//now solve distance
-		double disX = MathExt::sqr(a->getPosition()->x - x);
-		double disY = MathExt::sqr(a->getPosition()->y - y);
+		float disX = MathExt::sqr(a->getPosition()->x - x);
+		float disY = MathExt::sqr(a->getPosition()->y - y);
 
 		if (disX + disY <= MathExt::sqr(a->getRadius()))
 		{
@@ -840,8 +840,8 @@ bool CollisionMaster::collisionMethod(Line2D* a, Line2D* b)
 			//x(m-m2) = b2-b
 			//x = (b2-b)/(m-m2)
 
-			double x = (b->getYInt() - a->getYInt()) / (a->getSlope() - b->getSlope());
-			double y = (a->getSlope() * x) + a->getYInt();
+			float x = (b->getYInt() - a->getYInt()) / (a->getSlope() - b->getSlope());
+			float y = (a->getSlope() * x) + a->getYInt();
 
 			//now check that the value is in both a's and b's domain
 
@@ -856,11 +856,11 @@ bool CollisionMaster::collisionMethod(Line2D* a, Line2D* b)
 		else
 		{
 			//b is vertical
-			double x = b->getMinX();
+			float x = b->getMinX();
 
 			if (x >= a->getMinX() && x <= a->getMaxX())
 			{
-				double y = a->getSlope() * x + a->getYInt();
+				float y = a->getSlope() * x + a->getYInt();
 				if (y >= b->getMinY() && y <= b->getMaxY())
 				{
 					return true;
@@ -874,11 +874,11 @@ bool CollisionMaster::collisionMethod(Line2D* a, Line2D* b)
 		if (b->getMinX() != b->getMinX())
 		{
 			//b is a normal line
-			double x = a->getMinX();
+			float x = a->getMinX();
 
 			if (x >= b->getMinX() && x <= b->getMaxX())
 			{
-				double y = b->getSlope() * x + b->getYInt();
+				float y = b->getSlope() * x + b->getYInt();
 				if (y >= a->getMinY() && y <= a->getMaxY())
 				{
 					return true;

@@ -77,6 +77,26 @@ ComplexNumber ComplexNumber::operator*(double other)
 	return ComplexNumber(real*other,imaginary*other);
 }
 
+ComplexNumber ComplexNumber::operator/(Vec2f other)
+{
+	return ComplexNumber(real/other.x,imaginary/other.y);
+}
+
+ComplexNumber ComplexNumber::operator/(int other)
+{
+	return ComplexNumber(real/other,imaginary/other);
+}
+
+ComplexNumber ComplexNumber::operator/(float other)
+{
+	return ComplexNumber(real/other,imaginary/other);
+}
+
+ComplexNumber ComplexNumber::operator/(double other)
+{
+	return ComplexNumber(real/other,imaginary/other);
+}
+
 void ComplexNumber::operator+=(ComplexNumber other)
 {
 	real += other.real;
@@ -120,4 +140,38 @@ void ComplexNumber::operator*=(double other)
 {
 	real*=other;
 	imaginary*=other;
+}
+
+void ComplexNumber::operator/=(Vec2f other)
+{
+	real/=other.x;
+	imaginary/=other.y;
+}
+
+void ComplexNumber::operator/=(int other)
+{
+	real/=other;
+	imaginary/=other;
+}
+
+void ComplexNumber::operator/=(float other)
+{
+	real/=other;
+	imaginary/=other;
+}
+
+void ComplexNumber::operator/=(double other)
+{
+	real/=other;
+	imaginary/=other;
+}
+
+bool ComplexNumber::operator==(ComplexNumber other)
+{
+	return (real==other.real && imaginary==other.imaginary);
+}
+
+bool ComplexNumber::operator!=(ComplexNumber other)
+{
+	return (real!=other.real || imaginary!=other.imaginary);
 }

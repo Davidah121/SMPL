@@ -5,7 +5,7 @@
 class Vec2f : public Object
 {
 public:
-	Vec2f(double x, double y);
+	Vec2f(float x, float y);
 	Vec2f();
 	~Vec2f();
 
@@ -13,16 +13,14 @@ public:
 	const Class* getClass();
 	static const Class* myClass;
 
-	double x = 0;
-	double y = 0;
+	float x = 0;
+	float y = 0;
 
-	double getX();
-	double getY();
-	float getFloatX();
-	float getFloatY();
+	float getX();
+	float getY();
 
-	void setX(double value);
-	void setY(double value);
+	void setX(float value);
+	void setY(float value);
 
 	void setValues(Vec2f other);
 

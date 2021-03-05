@@ -49,6 +49,8 @@ public:
 	static std::vector<unsigned char> compressHuffman(std::vector<unsigned char> data, BinaryTree<HuffmanNode>* tree);
 	static std::vector<unsigned char> compressHuffman(unsigned char* data, int size, BinaryTree<HuffmanNode>* tree);
 
+	static BinaryTree<HuffmanNode>* buildCanonicalHuffmanTree(int* dataValue, int sizeOfData, int* codeLength, int sizeOfCodeLengths, bool separateCodes = true, bool reversed = false);
+
 	static std::vector<unsigned char> decompressHuffman(std::vector<unsigned char> data, int messageSize, BinaryTree<HuffmanNode>* tree);
 	static std::vector<unsigned char> decompressHuffman(unsigned char* data, int size, int messageSize, BinaryTree<HuffmanNode>* tree);
 
@@ -79,9 +81,6 @@ private:
 	static void getBackDistanceInformation(int code, int* baseValue, int* extraBits);
 
 	static void compressDeflateSubFunction(unsigned char* data, int size, std::vector<lengthPair>* outputData);
-
-
-	static BinaryTree<HuffmanNode>* buildCanonicalHuffmanTree(int* dataValue, int* codeLength, int size, bool reversed);
 	
 };
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "Image.h"
 #include "BitmapFont.h"
+#include "Model.h"
 
 class Graphics
 {
@@ -35,13 +36,16 @@ public:
 	static void drawPixel(int x, int y, Color c, Image* surf = nullptr);
 	static void drawPixel(double x, double y, Color c, Image* surf = nullptr);
 
-	static Color blend(Color c1, Color c2);
-	static Color lerp(Color c1, Color c2, float lerpVal);
+	static Color blend(Color src, Color dest);
+	static Color lerp(Color src, Color dest, float lerpVal);
 
 	static void drawRect(int x, int y, int x2, int y2, bool outline, Image* surf = nullptr);
 	static void drawLine(int x, int y, int x2, int y2, Image* surf = nullptr);
 	static void drawCircle(int x, int y, int radius, bool outline, Image* surf = nullptr);
 
+	static void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline, Image* surf = nullptr);
+	static void drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture = nullptr, Image* surf = nullptr);
+	
 	static void drawImage(Image* img, int x, int y, Image* surf = nullptr);
 	
 	static void drawSprite(Image* img, int x, int y, Image* surf = nullptr);
@@ -50,8 +54,8 @@ public:
 	static void drawText(std::string str, int x, int y, Image* surf = nullptr);
 
 	static void drawPolygon(Vec2f* points, int size, Image* surf = nullptr);
-	static void drawTexturedPolygon(Vec2f* points, Vec2f* textureCoords, int size, Image* surf = nullptr);
-
+	
+	static void drawModel(Model* model, Image* texture = nullptr, Image* surf = nullptr);
 	static void setColor(Color c);
 	static Color getColor();
 
