@@ -37,10 +37,13 @@ build $objDir/Mat2f.o: buildToObject src/Mat2f.cpp
 build $objDir/Mat3f.o: buildToObject src/Mat3f.cpp
 build $objDir/Mat4f.o: buildToObject src/Mat4f.cpp
 build $objDir/MathExt.o: buildToObject src/MathExt.cpp
+build $objDir/MathExt_Clustering.o: buildToObject src/MathExt_Clustering.cpp
 build $objDir/Matrix.o: buildToObject src/Matrix.cpp
+build $objDir/Model.o: buildToObject src/Model.cpp
 build $objDir/Networking.o: buildToObject src/Networking.cpp
 build $objDir/NeuralNetwork.o: buildToObject src/NeuralNetwork.cpp
 build $objDir/Object.o: buildToObject src/Object.cpp
+build $objDir/PolarCoordinate.o: buildToObject src/PolarCoordinate.cpp
 build $objDir/Quaternion.o: buildToObject src/Quaternion.cpp
 build $objDir/Shape.o: buildToObject src/Shape.cpp
 build $objDir/SimpleDir.o: buildToObject src/SimpleDir.cpp

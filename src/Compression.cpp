@@ -1102,7 +1102,7 @@ void Compression::fillHuffmanTable(BinaryTreeNode<HuffmanNode>* treeNode, unsign
 	}
 }
 
-BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues, int* lengths, int size, bool reversed=false)
+BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues, int sizeOfData, int* lengths, int sizeOfCodeLengths, bool separateCodeLengths, bool reversed)
 {
 	//We must sort first before building the huffman code
 	//Since this is C++ and we can use structures, we can use MergeSort while keeping the
@@ -1110,27 +1110,79 @@ BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues,
 
 	//first, convert
 	
-	dataLengthCombo* arr = new dataLengthCombo[size];
+	dataLengthCombo* arr = new dataLengthCombo[sizeOfData];
 
-	for(int i=0; i<size; i++)
+	if(!separateCodeLengths)
 	{
-		arr[i] = {dataValues[i], lengths[i], 0};
+		if(sizeOfData==sizeOfCodeLengths)
+		{
+			for(int i=0; i<sizeOfData; i++)
+			{
+				arr[i] = {dataValues[i], lengths[i], 0};
+			}
+		}
+		else
+		{
+			//invalid size data
+			delete[] arr;
+			return nullptr;
+		}
+	}
+	else
+	{
+		int j = 0;
+		int leng = 0;
+		int i = 0;
+		int* actualCodeLengths = new int[sizeOfData];
+		int count = 0;
+		while(i < sizeOfCodeLengths)
+		{
+			if(leng == 0)
+			{
+				leng = lengths[i];
+			}
+
+			if(leng>0)
+			{
+				if(j<sizeOfData)
+				{
+					count++;
+					actualCodeLengths[j] = i;
+				}
+				else
+				{
+					//error has occured
+					delete[] actualCodeLengths;
+					delete[] arr;
+					return nullptr;
+				}
+				j++;
+				leng--;
+			}
+			if(leng<=0)
+			{
+				i++;
+			}
+		}
+		for(i=0; i<sizeOfData; i++)
+		{
+			arr[i] = {dataValues[i], actualCodeLengths[i], 0};
+		}
+
+		delete[] actualCodeLengths;
 	}
 
 	//now sort
 	//We use lambda expressions here so we only compare the length values. We could have overriden the comparison
 	//operator in dataLengthCombo, but I wanted to use lambda expressions.
 
-	std::function<bool(dataLengthCombo, dataLengthCombo)> compareFunc = [](const dataLengthCombo & a, const dataLengthCombo & b) -> bool { if(a.length == b.length)
-																										return a.data < b.data;
-																									else
-																										return a.length < b.length; };
-	Sort::mergeSort<dataLengthCombo>(arr, size, compareFunc);
+	std::function<bool(dataLengthCombo, dataLengthCombo)> compareFunc = [](const dataLengthCombo & a, const dataLengthCombo & b) -> bool { return a.length < b.length; };
+	Sort::insertionSort<dataLengthCombo>(arr, sizeOfData, compareFunc);
 
 	//now, we can start building the codes.
 	int startCode = 0;
 	int preLength = 0;
-	for(int i=0; i<size; i++)
+	for(int i=0; i<sizeOfData; i++)
 	{
 		if(arr[i].length>0)
 		{
@@ -1160,7 +1212,7 @@ BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues,
 	tree->setRootNode( new BinaryTreeNode<HuffmanNode>() );
 	BinaryTreeNode<HuffmanNode>* currNode = tree->getRoot();
 
-	for(int i=0; i<size; i++)
+	for(int i=0; i<sizeOfData; i++)
 	{
 
 		for(int i2=0; i2<arr[i].length; i2++)
@@ -1196,6 +1248,8 @@ BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues,
 
 		currNode = tree->getRoot();
 	}
+
+	delete[] arr;
 
 	return tree;
 }
@@ -1657,7 +1711,14 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 
 							while(true)
 							{
-								backNode = backTree->traverse(backNode, (int)binData.getBit(currLoc), 1, true);
+								if(binData.getBit(currLoc)==false)
+								{
+									backNode = backNode->leftChild;
+								}
+								else
+								{
+									backNode = backNode->rightChild;
+								}
 								currLoc+=1;
 
 								if(backNode->leftChild==nullptr && backNode->rightChild==nullptr)
@@ -1890,7 +1951,7 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 	}
 	
 	
-	BinaryTree<HuffmanNode>* tempTree = Compression::buildCanonicalHuffmanTree(hcValues, hcLengths, amountOfCodeLengthCodes, true);
+	BinaryTree<HuffmanNode>* tempTree = Compression::buildCanonicalHuffmanTree(hcValues, amountOfCodeLengthCodes, hcLengths, amountOfCodeLengthCodes, false, true);
 
 	//next, we use this tree to find the code lengths for our data set.
 	//Due to how we get the codes, we store them in a single array at first.
@@ -1908,8 +1969,16 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 	while(codes < totalCodes)
 	{
 		tempCode = (data->getBit(*location)==true) ? 1 : 0;
-		*location+=1;		
-		currNode = tempTree->traverse(currNode, tempCode, 1, true);
+		*location+=1;
+
+		if(tempCode==0)
+		{
+			currNode = currNode->leftChild;
+		}
+		else
+		{
+			currNode = currNode->rightChild;
+		}
 
 		if(currNode->leftChild == nullptr && currNode->rightChild == nullptr)
 		{
@@ -2003,8 +2072,8 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 		distValues[i] = i;
 	}
 
-	trees[0] = Compression::buildCanonicalHuffmanTree(lenLengthValues, &allCodes[0], amountOfLitCodes, true);
-	trees[1] = Compression::buildCanonicalHuffmanTree(distValues, &allCodes[amountOfLitCodes], amountOfDistCodes, true);
+	trees[0] = Compression::buildCanonicalHuffmanTree(lenLengthValues, amountOfLitCodes, &allCodes[0], amountOfLitCodes, false, true);
+	trees[1] = Compression::buildCanonicalHuffmanTree(distValues, amountOfDistCodes, &allCodes[amountOfLitCodes], amountOfDistCodes, false, true);
 
 	if(lenLengthValues!=nullptr)
 		delete[] lenLengthValues;

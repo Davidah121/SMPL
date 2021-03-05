@@ -1,5 +1,7 @@
 #pragma once
 #include "StringTools.h"
+#include <vector>
+#include "BinarySet.h"
 
 template<typename T>
 struct BinaryTreeNode
@@ -20,16 +22,20 @@ public:
 	void setLeftNode(BinaryTreeNode<T>* parent, BinaryTreeNode<T>* leftChild);
 	void setRightNode(BinaryTreeNode<T>* parent, BinaryTreeNode<T>* rightChild);
 
-	BinaryTreeNode<T>* traverse(BinaryTreeNode<T>* startNode, int value, int length, bool reverse=false);
+	BinaryTreeNode<T>* traverse(BinarySet bin);
 
 	BinaryTreeNode<T>* getRoot();
 
 	int getSize();
 
+	std::vector<T> getAllElements();
+
 private:
 	BinaryTreeNode<T>* rootNode = nullptr;
 	void cleanUp(BinaryTreeNode<T>* node);
 	int traverseCount(BinaryTreeNode<T>* node);
+	void getElementsRecursive(std::vector<T>* data, BinaryTreeNode<T>* startNode);
+
 };
 
 template<typename T>
@@ -91,29 +97,14 @@ inline void BinaryTree<T>::setRootNode(BinaryTreeNode<T>* parent)
 }
 
 template<typename T>
-inline BinaryTreeNode<T>* BinaryTree<T>::traverse(BinaryTreeNode<T>* startNode, int value, int length, bool reverse)
+inline BinaryTreeNode<T>* BinaryTree<T>::traverse(BinarySet bin)
 {
-	BinaryTreeNode<T>* currNode = startNode;
-	int currLength = 0;
-
-	int maxLength = length;
-	if(maxLength<0)
-	{
-		maxLength = 0;
-	}
-	if(maxLength>32)
-	{
-		maxLength = 32;
-	}
+	BinaryTreeNode<T>* currNode = rootNode;
 	
-	while(currNode!=nullptr && currLength<maxLength)
+	int i=0;
+	while(currNode!=nullptr && i < bin.size())
 	{
-		bool side=false;
-
-		if(reverse)
-			side = ((value >> (currLength)) & 0x01);
-		else
-			side = ((value >> (31-currLength)) & 0x01);
+		bool side = bin.getBit(i)==1;
 		
 		if(side == true)
 		{
@@ -125,7 +116,7 @@ inline BinaryTreeNode<T>* BinaryTree<T>::traverse(BinaryTreeNode<T>* startNode, 
 			//left side
 			currNode = currNode->leftChild;
 		}
-		currLength++;
+		i++;
 	}
 	
 	return currNode;
@@ -173,15 +164,36 @@ inline int BinaryTree<T>::traverseCount(BinaryTreeNode<T>* node)
 
 		if (node->leftChild != nullptr)
 		{
-			v += traverse(node->leftChild);
+			v += traverseCount(node->leftChild);
 		}
 
 		if (node->rightChild != nullptr)
 		{
-			v += traverse(node->rightChild);
+			v += traverseCount(node->rightChild);
 		}
 
 		return v;
 	}
 	return 0;
+}
+
+template<typename T>
+inline std::vector<T> BinaryTree<T>::getAllElements()
+{
+	std::vector<T> arr = std::vector<T>();
+
+	getElementsRecursive(&arr, rootNode);
+
+	return arr;
+}
+
+template<typename T>
+inline void BinaryTree<T>::getElementsRecursive(std::vector<T>* arr, BinaryTreeNode<T>* node)
+{
+	if(node!=nullptr)
+	{
+		arr->push_back(node->data);
+		getElementsRecursive(arr, node->leftChild);
+		getElementsRecursive(arr, node->rightChild);
+	}
 }

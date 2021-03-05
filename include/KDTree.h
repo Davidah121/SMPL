@@ -1,9 +1,11 @@
+#pragma once
 #include "BinaryTree.h"
 
 template<typename T>
 struct KDTreeNode
 {
     T* data;
+    int splitDimension = -1;
 };
 
 template<typename T>
@@ -13,10 +15,11 @@ public:
     KDTree(int dimensions);
     ~KDTree();
 
-    void add(T* data);
-    bool addUnique(T* data);
+    void add(T* data, int split = -1);
+    bool addUnique(T* data, int split = -1);
     KDTreeNode<T> search(T* data);
     KDTreeNode<T> searchNearest(T* data);
+    void balance();
 private:
     BinaryTreeNode<KDTreeNode<T>>* searchRecursive(BinaryTreeNode<KDTreeNode<T>>* tNode, T* data, int* minDistance, BinaryTreeNode<KDTreeNode<T>>* returnVal, int axis, bool backwards);
     void cleanUp(BinaryTreeNode<KDTreeNode<T>>* node);
@@ -54,9 +57,10 @@ inline void KDTree<T>::cleanUp(BinaryTreeNode<KDTreeNode<T>>* node)
 }
 
 template<typename T>
-inline void KDTree<T>::add(T* data)
+inline void KDTree<T>::add(T* data, int split)
 {
-    KDTreeNode<T> kdnode = {data};
+
+    KDTreeNode<T> kdnode = {data, split%dimensions };
 
     BinaryTreeNode< KDTreeNode<T> >* node = new BinaryTreeNode< KDTreeNode<T> >();
     node->data = kdnode;
@@ -75,6 +79,11 @@ inline void KDTree<T>::add(T* data)
         {
             KDTreeNode<T> oKDNode = currentTreeNode->data;
             indexToTest = depth % dimensions;
+
+            if(oKDNode.splitDimension >=0 )
+            {
+                indexToTest = oKDNode.splitDimension;
+            }
 
             if(kdnode.data[indexToTest] < oKDNode.data[indexToTest])
             {
@@ -109,9 +118,9 @@ inline void KDTree<T>::add(T* data)
 }
 
 template<typename T>
-inline bool KDTree<T>::addUnique(T* data)
+inline bool KDTree<T>::addUnique(T* data, int split)
 {
-    KDTreeNode<T> kdnode = {data};
+    KDTreeNode<T> kdnode = {data, split%dimensions};
 
     BinaryTreeNode< KDTreeNode<T> >* node = new BinaryTreeNode< KDTreeNode<T> >();
     node->data = kdnode;
@@ -132,6 +141,11 @@ inline bool KDTree<T>::addUnique(T* data)
             KDTreeNode<T> oKDNode = currentTreeNode->data;
             indexToTest = depth % dimensions;
             
+            if(oKDNode.splitDimension >=0 )
+            {
+                indexToTest = oKDNode.splitDimension;
+            }
+
             bool same = std::memcmp(data, oKDNode.data, dimensions*sizeof(T)) == 0;
 
             if(same)
@@ -185,6 +199,11 @@ inline KDTreeNode<T> KDTree<T>::search(T* data)
         KDTreeNode<T> oKDNode = currentTreeNode->data;
         indexToTest = depth % dimensions;
         
+        if(oKDNode.splitDimension >=0 )
+        {
+            indexToTest = oKDNode.splitDimension;
+        }
+        
         bool same = std::memcmp(data, oKDNode.data, dimensions*sizeof(T)) == 0;
 
         if(same)
@@ -223,83 +242,13 @@ inline KDTreeNode<T> KDTree<T>::searchNearest(T* data)
 
     int minDistance = 1 << 30;
     KDTreeNode<T> returnNode = currentTreeNode->data;
-
-    struct TreeThing
-    {
-        BinaryTreeNode< KDTreeNode<T> >* node;
-        int indexToTest;
-    };
     
-    //BinaryTreeNode<KDTreeNode<T>>* finalNode = recursiveFunc(currentTreeNode, &minDistance, currentTreeNode, 0);
-    BinaryTreeNode<KDTreeNode<T>>* finalNode = searchRecursive(currentTreeNode, data, &minDistance, currentTreeNode, 0, false);
-
-    /*
-
-    std::vector< TreeThing > processThese = std::vector< TreeThing >();
-
-    while(currentTreeNode!=nullptr)
+    if(returnNode.splitDimension >=0 )
     {
-        KDTreeNode<T> oKDNode = currentTreeNode->data;
-        indexToTest = depth % dimensions;
-        
-        processThese.push_back( {currentTreeNode, indexToTest} );
-
-        if(data[indexToTest] < oKDNode.data[indexToTest])
-        {
-            //go left
-            currentTreeNode = currentTreeNode->leftChild;
-        }
-        else
-        {
-            //go right
-            currentTreeNode = currentTreeNode->rightChild;
-        }
-
-        depth++;
+        indexToTest = returnNode.splitDimension;
     }
 
-    while(true)
-    {
-        TreeThing cNode = processThese.back();
-        processThese.pop_back();
-
-        indexToTest = cNode.indexToTest;
-        KDTreeNode<T> oKDNode = cNode.node->data;
-
-        //determine distance
-        unsigned int currDis = 0;
-        for(int i=0; i<dimensions; i++)
-        {
-            currDis += MathExt::sqr(data[i] - oKDNode[i]);
-        }
-
-        if(currDis < minDistance)
-        {
-            minDistance = currDis;
-            returnNode = oKDNode;
-        }
-
-        //check distance to split axis for the child if they exist
-        if(cNode.node->leftChild != nullptr)
-        {
-            KDTreeNode<T> leftSide = cNode.node->leftChild->data;
-            int leftIndex = indexToTest - 1;
-            if(leftIndex < 0)
-            {
-                leftIndex = dimensions-1;
-            }
-        }
-        if(cNode.node->rightChild != nullptr)
-        {
-            KDTreeNode<T> rightSide = cNode.node->rightChild->data;
-            int rightIndex = indexToTest - 1;
-            if(rightIndex < 0)
-            {
-                rightIndex = dimensions-1;
-            }
-        }
-    }
-    */
+    BinaryTreeNode<KDTreeNode<T>>* finalNode = searchRecursive(currentTreeNode, data, &minDistance, currentTreeNode, indexToTest, false);
 
     return {finalNode->data};
 }
@@ -315,19 +264,33 @@ inline BinaryTreeNode<KDTreeNode<T>>* KDTree<T>::searchRecursive(BinaryTreeNode<
 
     if(backwards == false)
     {
+        int nAxis = (axis+1) % dimensions;
+
         if(data[axis] < oKDNode.data[axis])
         {
             leftSide = true;
             //go left
             if(tNode->leftChild != nullptr)
-                myVal = searchRecursive(tNode->leftChild, data, minDistance, tNode->leftChild, (axis+1) % dimensions, false);
+            {
+                KDTreeNode<T> childNode = tNode->leftChild->data;
+                if(childNode.splitDimension>=0)
+                    nAxis = childNode.splitDimension;
+                
+                myVal = searchRecursive(tNode->leftChild, data, minDistance, tNode->leftChild, nAxis, false);
+            }
         }
         else
         {
             rightSide = true;
             //go right
             if(tNode->rightChild != nullptr)
-                myVal = searchRecursive(tNode->rightChild, data, minDistance, tNode->rightChild, (axis+1) % dimensions, false);
+            {
+                KDTreeNode<T> childNode = tNode->rightChild->data;
+                if(childNode.splitDimension>=0)
+                    nAxis = childNode.splitDimension;
+                
+                myVal = searchRecursive(tNode->rightChild, data, minDistance, tNode->rightChild, nAxis, false);
+            }
         }
     }
 
@@ -357,12 +320,21 @@ inline BinaryTreeNode<KDTreeNode<T>>* KDTree<T>::searchRecursive(BinaryTreeNode<
         //left side
         if(tNode->leftChild != nullptr && !leftSide)
         {
+            KDTreeNode<T> childNode = tNode->leftChild->data;
+            if(childNode.splitDimension>=0)
+                tempAxis = childNode.splitDimension;
+                
             myVal = searchRecursive(tNode->leftChild, data, minDistance, myVal, tempAxis, true);
         }
-
+        
+        tempAxis = (axis+1) % dimensions;
         //right side
         if(tNode->rightChild != nullptr && !rightSide)
         {
+            KDTreeNode<T> childNode = tNode->rightChild->data;
+            if(childNode.splitDimension>=0)
+                tempAxis = childNode.splitDimension;
+            
             myVal = searchRecursive(tNode->rightChild, data, minDistance, myVal, tempAxis, true);
         }
     }
@@ -376,6 +348,10 @@ inline BinaryTreeNode<KDTreeNode<T>>* KDTree<T>::searchRecursive(BinaryTreeNode<
             //go left
             if(tNode->leftChild != nullptr && !leftSide)
             {
+                KDTreeNode<T> childNode = tNode->leftChild->data;
+                if(childNode.splitDimension>=0)
+                    tempAxis = childNode.splitDimension;
+               
                 myVal = searchRecursive(tNode->leftChild, data, minDistance, myVal, tempAxis, true);
             }
         }
@@ -384,10 +360,122 @@ inline BinaryTreeNode<KDTreeNode<T>>* KDTree<T>::searchRecursive(BinaryTreeNode<
             //go right
             if(tNode->rightChild != nullptr && !rightSide)
             {
+                KDTreeNode<T> childNode = tNode->rightChild->data;
+                if(childNode.splitDimension>=0)
+                    tempAxis = childNode.splitDimension;
+               
                 myVal = searchRecursive(tNode->rightChild, data, minDistance, myVal, tempAxis, true);
             }
         }
     }
     
     return myVal;
+}
+
+template<class T>
+void KDTree<T>::balance()
+{
+    //sort elements by dimension with the most variance
+	//dividing the list into halfs selecting the median of each list to add to the list next.
+	//takes O(n*log(n)*log(n)) where n is the amount of values
+
+	struct Range
+	{
+		int start;
+		int end;
+	};
+
+	std::vector< KDTreeNode<T> > tempPalette = binTree.getAllElements();
+	std::vector< KDTreeNode<T> > addInOrder = std::vector< KDTreeNode<T> >();
+	std::vector<Range> ranges = std::vector<Range>();
+	std::vector<Range> ranges2 = std::vector<Range>();
+
+	int sortBy = 0;
+	int size = tempPalette.size();
+
+	ranges.push_back({0, size});
+	
+	while(addInOrder.size() < size)
+	{
+		for(Range r : ranges)
+		{
+			int rSize = (r.end - r.start);
+
+			if(rSize > 1)
+			{
+                //sort by dimension with the most variance
+                double* means = new double[dimensions];
+                double* variance = new double[dimensions];
+                double mult = 1.0/rSize;
+                
+                //find mean
+                for(int i=r.start; i<r.end; i++)
+                {
+                    for(int d=0; d<dimensions; d++)
+                    {
+                        means[d] += ((KDTreeNode<T>)tempPalette[i]).data[d] * mult;
+                    }
+                }
+
+                //find variance
+                for(int i=r.start; i<r.end; i++)
+                {
+                    for(int d=0; d<dimensions; d++)
+                    {
+                        double m = (means[d] - ((KDTreeNode<T>)tempPalette[i]).data[d]);
+                        variance[d] += m*m;
+                    }
+                }
+
+                //sortby = index of max variance
+                sortBy = 0;
+                double preMax = variance[0];
+                for(int d=0; d<dimensions; d++)
+                {
+                    if(variance[d] > preMax)
+                    {
+                        preMax = variance[d];
+                        sortBy = d;
+                    }
+                }
+
+				Sort::mergeSort<KDTreeNode<T>>(tempPalette.data()+r.start, rSize, [sortBy](KDTreeNode<T> a, KDTreeNode<T> b) -> bool{
+					return a.data[sortBy] < b.data[sortBy];
+				});
+
+				int midIndex = (r.start + r.end)/2;
+
+                KDTreeNode<T> kdt = (KDTreeNode<T>)tempPalette[midIndex];
+                kdt.splitDimension = sortBy;
+
+				addInOrder.push_back(kdt);
+
+				ranges2.push_back( {r.start, midIndex-1} );
+				ranges2.push_back( {midIndex+1, r.end} );
+			}
+			else if (rSize==0)
+			{
+				addInOrder.push_back(tempPalette[r.start]);
+			}
+			else if (rSize==1)
+			{
+				addInOrder.push_back(tempPalette[r.start]);
+				if(r.end != size)
+				{
+					addInOrder.push_back(tempPalette[r.end]);
+				}
+			}
+		}
+
+		ranges = ranges2;
+		ranges2.clear();
+	}
+
+	//after everything above done
+    binTree = BinaryTree< KDTreeNode<T> >();
+	for(int i=0; i<addInOrder.size(); i++)
+	{
+        KDTreeNode<T> k = addInOrder[i];
+		add( k.data, k.splitDimension );
+	}
 }

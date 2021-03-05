@@ -1,5 +1,6 @@
 #pragma once
-#include<cmath>
+#include <limits>
+#include <cmath>
 #include "Line.h"
 #include "Vec2f.h"
 #include "Vec3f.h"
@@ -11,6 +12,7 @@
 #include "Quaternion.h"
 #include "GeneralVector.h"
 #include "ComplexNumber.h"
+#include "PolarCoordinate.h"
 
 #undef max
 #undef min
@@ -176,6 +178,8 @@ public:
 	static double distanceTo(Vec4f p1, Vec4f p2);
 	static double distanceTo(GeneralVector p1, GeneralVector p2);
 
+	static double distanceTo(PolarCoordinate p1, PolarCoordinate p2);
+	
 	//2D transformations
 	static Mat3f rotation2D(double rotation);
 	static Mat3f rotation2D(double rotation, double x, double y);
@@ -223,9 +227,17 @@ public:
 	static double logisticsSigmoid(double x);
 
 
-	static ComplexNumber discreteFourierTransform(double* arr, int size, double x, int samples);
-	static std::vector<ComplexNumber> fourierTransform(double* arr, int size, int samples);
-	static std::vector<ComplexNumber> fastFourierTransform(double* arr, int size);
+	static ComplexNumber discreteFourierTransform(ComplexNumber* arr, int size, double x, bool inverse=false);
+	static std::vector<ComplexNumber> fourierTransform(ComplexNumber* arr, int size, bool inverse=false);
+	static std::vector<ComplexNumber> fastFourierTransform(ComplexNumber* arr, int size, bool inverse=false);
+
+	static double discreteCosineTransform(double*, int size, int u, bool inverse=false);
+	static double* cosineTransform(double* arr, int size, bool inverse=false);
+	static double* fastCosineTransform(double* arr, int size, bool inverse=false);
+
+	static double discreteCosineTransform2D(Matrix arr, int u, int v, bool inverse=false);
+	static Matrix cosineTransform2D(Matrix arr, bool inverse=false);
+	static Matrix fastCosineTransform2D(Matrix arr, bool inverse=false);
 
 	//Clustering algorigthms
 	static std::vector<std::vector<Vec2f>> meanCut(std::vector<Vec2f> arr, int clusters, bool meansOnly = false);
@@ -245,6 +257,8 @@ public:
 	static std::vector<std::vector<GeneralVector>> kMeans(std::vector<GeneralVector> arr, int clusters, int maxIterations, bool meansOnly = false);
 	
 private:
-	static std::vector<ComplexNumber> doFFT(double* arr, int size);
+	static std::vector<ComplexNumber> doFFT(ComplexNumber* arr, int size, bool inverse=false);
+	static std::vector<std::vector<ComplexNumber>> doFFT2D(ComplexNumber* arr, int size, bool inverse=false);
+	
 };
 

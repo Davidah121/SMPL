@@ -407,17 +407,25 @@ void testColorPalette()
         //./TestImages/GIF/Varying Bit size and type/basn3p08.gif
         
         temp.reBalance();
+
         img->setPalette(temp);
 
         StringTools::print("Dither Image? y=yes n=no: ");
         bool ditherConfirm = StringTools::getChar() == 'y';
         
+        t1 = System::getCurrentTimeNano();
+
         if(ditherConfirm)
             Graphics::ditherImage(img, Graphics::FLOYD_DITHER);
         else
             img->enforcePalette();
+
+        t2 = System::getCurrentTimeNano();
+
+        StringTools::println("TimeTaken: %u", t2-t1);
         
-        img->saveBMP("paletteTest.bmp");
+        Image::IMAGE_SAVE_ALPHA = false;
+        img->savePNG("paletteTest.png");
     }
     else
     {
@@ -450,18 +458,21 @@ void testFourierTransform()
     int size = 16;
     int padding = size-samplesPerSec;
 
-    double* arr = new double[size];
+    ComplexNumber* arr = new ComplexNumber[size];
     
     double frequency = 4; //A4
     double mult = 2.0*PI*frequency;
 
     for(int i=0; i<samplesPerSec; i++)
     {
-        arr[i] = sin( mult * (double)i/samplesPerSec );
+        arr[i].real = sin( mult * (double)i/samplesPerSec );
+        arr[i].imaginary = 0;
+
+        StringTools::println("Value: %f + i%f", arr[i].real, arr[i].imaginary);
     }
     
     unsigned t1 = System::getCurrentTimeNano();
-    std::vector<ComplexNumber> normalFourier = MathExt::fourierTransform(arr, size, samplesPerSec);
+    std::vector<ComplexNumber> normalFourier = MathExt::fourierTransform(arr, size, false);
     unsigned t2 = System::getCurrentTimeNano();
 
     StringTools::println("normalFourier done");
@@ -472,10 +483,21 @@ void testFourierTransform()
     t2 = System::getCurrentTimeNano();
 
     StringTools::println("fastFourier done");
-    StringTools::println("Took: ",(t2-t1));
-    
-    //save as a .csv
+    StringTools::println("Took: %d",(t2-t1));
 
+    std::vector<ComplexNumber> inverseFunc = MathExt::fourierTransform(fastFourier.data(), fastFourier.size(), true);
+    
+    for(int i=0; i<samplesPerSec; i++)
+    {
+        if(inverseFunc[i] != arr[i])
+        {
+            
+        }
+        StringTools::println("Value: %f + i%f", inverseFunc[i].real, inverseFunc[i].imaginary);
+    }
+
+    //save as a .csv
+    /*
     SimpleFile f = SimpleFile("results.csv", SimpleFile::WRITE);
 
     std::string header = "Normal, Fast";
@@ -498,6 +520,53 @@ void testFourierTransform()
     }
 
     f.close();
+    */
+}
+
+void testCosineTransform2D()
+{
+    
+    Matrix m = Matrix(8, 8);
+    // m[0][0] = -76; m[0][1] = -73; m[0][2] = -67; m[0][3] = -62; m[0][4] = -58; m[0][5] = -67; m[0][6] = -64; m[0][7] = -55;
+    // m[1][0] = -65; m[1][1] = -69; m[1][2] = -73; m[1][3] = -38; m[1][4] = -19; m[1][5] = -43; m[1][6] = -59; m[1][7] = -56;
+    // m[2][0] = -66; m[2][1] = -69; m[2][2] = -60; m[2][3] = -15; m[2][4] = 16; m[2][5] = -24; m[2][6] = -62; m[2][7] = -55;
+    // m[3][0] = -65; m[3][1] = -70; m[3][2] = -57; m[3][3] = -6; m[3][4] = 26; m[3][5] = -22; m[3][6] = -58; m[3][7] = -59;
+    // m[4][0] = -61; m[4][1] = -67; m[4][2] = -60; m[4][3] = -24; m[4][4] = -2; m[4][5] = -40; m[4][6] = -60; m[4][7] = -58;
+    // m[5][0] = -49; m[5][1] = -63; m[5][2] = -68; m[5][3] = -58; m[5][4] = -51; m[5][5] = -60; m[5][6] = -70; m[5][7] = -53;
+    // m[6][0] = -43; m[6][1] = -57; m[6][2] = -64; m[6][3] = -69; m[6][4] = -73; m[6][5] = -67; m[6][6] = -63; m[6][7] = -45;
+    // m[7][0] = -41; m[7][1] = -49; m[7][2] = -59; m[7][3] = -60; m[7][4] = -63; m[7][5] = -52; m[7][6] = -50; m[7][7] = -34;
+
+    m[0][0] = 127; m[0][1] = 127; m[0][2] = 127; m[0][3] = 127; m[0][4] = 127; m[0][5] = 127; m[0][6] = 127; m[0][7] = 127;
+    m[1][0] = 127; m[1][1] = 127; m[1][2] = 127; m[1][3] = 127; m[1][4] = 127; m[1][5] = 127; m[1][6] = 127; m[1][7] = 127;
+    m[2][0] = 127; m[2][1] = 127; m[2][2] = 127; m[2][3] = 127; m[2][4] = 127; m[2][5] = 127; m[2][6] = 127; m[2][7] = 127;
+    m[3][0] = 127; m[3][1] = 127; m[3][2] = 127; m[3][3] = 127; m[3][4] = 127; m[3][5] = 127; m[3][6] = 127; m[3][7] = 127;
+    m[4][0] = 127; m[4][1] = 127; m[4][2] = 127; m[4][3] = 127; m[4][4] = 127; m[4][5] = 127; m[4][6] = 127; m[4][7] = 127;
+    m[5][0] = 127; m[5][1] = 127; m[5][2] = 127; m[5][3] = 127; m[5][4] = 127; m[5][5] = 127; m[5][6] = 127; m[5][7] = 127;
+    m[6][0] = 127; m[6][1] = 127; m[6][2] = 127; m[6][3] = 127; m[6][4] = 127; m[6][5] = 127; m[6][6] = 127; m[6][7] = 127;
+    m[7][0] = 127; m[7][1] = 127; m[7][2] = 127; m[7][3] = 127; m[7][4] = 127; m[7][5] = 127; m[7][6] = 127; m[7][7] = 127;
+    Matrix nM = MathExt::cosineTransform2D(m);
+
+    for(int y=0; y<8; y++)
+    {
+        for(int x=0; x<8; x++)
+        {
+            StringTools::print("%.2f\t",nM[y][x]);
+        }
+        StringTools::println("");
+    }
+    StringTools::println("");
+
+    Matrix orgM = MathExt::cosineTransform2D(nM, true);
+
+    for(int y=0; y<8; y++)
+    {
+        for(int x=0; x<8; x++)
+        {
+            StringTools::print("%.2f\t",orgM[y][x]);
+        }
+        StringTools::println("");
+    }
+    
 }
 
 void testAudio()
@@ -847,6 +916,164 @@ void testGIF()
     }
 }
 
+void testHuffmanStuff()
+{
+    int* dataValue = new int[12]{0,1,2,3,4,5,6,7,8,9,10,11};
+    int* codeLengths = new int[12]{0,1,5,1,1,1,1,1,1,0,0,0};
+    
+    BinaryTree<HuffmanNode>* tree = Compression::buildCanonicalHuffmanTree(dataValue, 12, codeLengths, 12, true, false);
+
+    //verify correct
+    while(true)
+    {
+        StringTools::print("CodeLength: ");
+        std::string len = StringTools::getString();
+        int actualLen = std::stoi(len);
+        
+        if(actualLen == 0)
+        {
+            break;
+        }
+
+        StringTools::print("CodeValue: ");
+        std::string val = StringTools::getString();
+        int actualVal = std::stoi(val);
+
+        BinarySet bin = BinarySet();
+        bin.add(actualVal, actualLen);
+
+        for(int i=0; i<actualLen; i++)
+        {
+            StringTools::print( (bin.getBit(i)==0) ? "0":"1" );
+        }
+        StringTools::println("");
+
+        BinaryTreeNode<HuffmanNode>* node = tree->traverse(bin);
+
+        if(node!=nullptr && node->data.frequency!=0)
+            StringTools::println("Found value %d", node->data.value);
+        else
+            StringTools::println("Didn't find a value");
+        
+    }
+}
+
+void testJPEG()
+{
+    int amountOfImages = 0;
+    StringTools::println("ENTER JPEG FILE");
+    std::string filename = StringTools::getString();
+
+    Image** imgArr = Image::loadImage(filename, &amountOfImages);
+
+    if(amountOfImages>0)
+    {
+        // do stuff
+        imgArr[0]->saveBMP("testJPEGStuff.bmp");
+    }
+    else
+    {
+        StringTools::println("Error loading Image");
+    }
+
+    if(imgArr!=nullptr)
+    {
+        for(int i=0; i<amountOfImages; i++)
+        {
+            if(imgArr[i]!=nullptr)
+                delete imgArr[i];
+            
+            imgArr[i] = nullptr;
+        }
+
+        delete[] imgArr;
+        imgArr = nullptr;
+    }
+}
+
+double rot = 0;
+
+void drawTextureFunction()
+{
+    if(windowPointer!=nullptr)
+    {
+        Image drwImg = Image(1280, 720);
+        Graphics::setColor({127,127,127,255});
+        drwImg.clearImage();
+
+        Mat3f rotMat = MathExt::rotation2D( MathExt::toRad(rot), 300,300);
+        Vec3f p1 = Vec3f(0,0,1);
+        Vec3f p2 = Vec3f(600,0,1);
+        Vec3f p3 = Vec3f(600,600,1);
+        Vec3f p4 = Vec3f(0,600,1);
+        p1 = rotMat*p1;
+        p2 = rotMat*p2;
+        p3 = rotMat*p3;
+        p4 = rotMat*p4;
+
+        Vec4f finalP1 = Vec4f(p1.x, p1.y, 0, 0);
+        Vec4f finalP2 = Vec4f(p2.x, p2.y, 1, 0);
+        Vec4f finalP3 = Vec4f(p3.x, p3.y, 1, 1);
+        Vec4f finalP4 = Vec4f(p4.x, p4.y, 0, 1);
+        
+        Graphics::setColor({255,255,255,255});
+        // Graphics::drawTriangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, false, &drwImg);
+        // Graphics::drawTriangle(p1.x, p1.y, p3.x, p3.y, p4.x, p4.y, false, &drwImg);
+        
+        Graphics::drawTexturedTriangle(finalP1, finalP2, finalP3, img, &drwImg);
+        Graphics::drawTexturedTriangle(finalP1, finalP3, finalP4, img, &drwImg);
+        
+        windowPointer->drawImage(&drwImg);
+        rot+=1;
+        if(rot>360)
+        {
+            rot-=360;
+        }
+    }
+}
+
+void drawWind()
+{
+    //CgprO7UUoAAhiKx.jpg
+    int amountOfImages = 0;
+    std::string filename = "C:/Users/Alan/Pictures/CgprO7UUoAAhiKx.jpg";
+    Image** imgArr = Image::loadImage(filename, &amountOfImages);
+
+    if(amountOfImages>0)
+    {
+        // do stuff
+        img = imgArr[0];
+        windowPointer = new WndWindow("ROTATE IMAGE", 1280, 720);
+        windowPointer->setPaintFunction(drawTextureFunction);
+
+        while(windowPointer->getRunning())
+        {
+            System::sleep(16,666);
+            windowPointer->repaint();
+        }
+
+        delete windowPointer;
+    }
+    else
+    {
+        StringTools::println("Error loading Image");
+    }
+
+    if(imgArr!=nullptr)
+    {
+        for(int i=0; i<amountOfImages; i++)
+        {
+            if(imgArr[i]!=nullptr)
+                delete imgArr[i];
+            
+            imgArr[i] = nullptr;
+        }
+
+        delete[] imgArr;
+        imgArr = nullptr;
+    }
+}
+
 int main(int argc, char** argv)
 {
     StringTools::init();
@@ -857,13 +1084,22 @@ int main(int argc, char** argv)
     //imageExtenderThing();
     
     //testFourierTransform();
+    //testCosineTransform2D();
 
     //testCRC();
     //testPNGSave();
     //testAnimatedImages();
     //testGIF();
 
-    testColorPalette();
+    //testJPEG();
+    drawWind();
+    
+    //StringTools::println("\n");
+    //testCosineTransform2D();
+
+    //testHuffmanStuff();
+
+    //testColorPalette();
     //testColorConvert();
 
     //testImageLoader();

@@ -5,8 +5,8 @@
 class ColorSpaceConverter
 {
 public:
-    static const int RGB_TO_YCACB = 0;
-    static const int YCACB_TO_RGB = 1;
+    static const int RGB_TO_YCBCR = 0;
+    static const int YCBCR_TO_RGB = 1;
 
     static const int RGB_TO_LAB = 2;
     static const int LAB_TO_RGB = 3;

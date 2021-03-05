@@ -5,7 +5,7 @@
 class Vec3f : public Object
 {
 public:
-	Vec3f(double x, double y, double z);
+	Vec3f(float x, float y, float z);
 	Vec3f();
 	Vec3f(Vec2f other);
 	~Vec3f();
@@ -14,21 +14,17 @@ public:
 	const Class* getClass();
 	static const Class* myClass;
 
-	double x = 0;
-	double y = 0;
-	double z = 0;
+	float x = 0;
+	float y = 0;
+	float z = 0;
 
-	double getX();
-	double getY();
-	double getZ();
+	float getX();
+	float getY();
+	float getZ();
 
-	float getFloatX();
-	float getFloatY();
-	float getFloatZ();
-
-	void setX(double value);
-	void setY(double value);
-	void setZ(double value);
+	void setX(float value);
+	void setY(float value);
+	void setZ(float value);
 
 	void setValues(Vec3f other);
 

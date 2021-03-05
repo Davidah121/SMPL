@@ -196,8 +196,9 @@ Color ColorPalette::getClosestColor(Color c)
 int ColorPalette::getClosestColorIndex(Color c)
 {
 	int index = 0;
-	
 	/*
+	int index2 = 0;
+	
 	unsigned int distance = 0xFFFFFFFF;
 	for(int i=0; i<paletteArr.size(); i++)
 	{
@@ -210,29 +211,24 @@ int ColorPalette::getClosestColorIndex(Color c)
 		if(distance2 < distance)
 		{
 			distance = distance2;
-			index = i;
+			index2 = i;
 			if(distance2==0)
 				break;
 		}
 	}
-
-	return index;
 	*/
 	
 	KDTreeNode<unsigned char> node = paletteTree->searchNearest((unsigned char*)&c);
 	ColorNode* k = (ColorNode*)node.data;
 	if(k!=nullptr)
 		index = k->arrayIndex;
-
+	
 	return index;
 }
 
 void ColorPalette::reBalance()
 {
-	//sort elements by red, green, blue, red, green, blue, ...etc
-	//dividing the list into halfs selecting the median of each list to add to the list next.
-	//takes O(n*log(n)*log(n)) where n is the amount of colors
-
+	/*
 	struct Range
 	{
 		int start;
@@ -318,6 +314,9 @@ void ColorPalette::reBalance()
 		else
 			paletteTree->add( (unsigned char*)k );
 	}
+	*/
+
+	paletteTree->balance();
 }
 
 ColorPalette ColorPalette::generateOptimalPalette(Color* colorArray, int size, int colors, unsigned char type, bool convertToLab, bool uniqueOnly)
@@ -408,9 +407,9 @@ ColorPalette ColorPalette::generateOptimalPalette(Color* colorArray, int size, i
 					Color c;
 					Vec3f afterConvert = ColorSpaceConverter::convert(g[0], ColorSpaceConverter::LAB_TO_RGB);
 
-					c.red = (unsigned char)MathExt::clamp(afterConvert.x, 0.0, 255.0);
-					c.green = (unsigned char)MathExt::clamp(afterConvert.y, 0.0, 255.0);
-					c.blue = (unsigned char)MathExt::clamp(afterConvert.z, 0.0, 255.0);
+					c.red = (unsigned char)MathExt::clamp(afterConvert.x, 0.0f, 255.0f);
+					c.green = (unsigned char)MathExt::clamp(afterConvert.y, 0.0f, 255.0f);
+					c.blue = (unsigned char)MathExt::clamp(afterConvert.z, 0.0f, 255.0f);
 					
 					temp.addNewColor(c);
 				}
@@ -484,9 +483,9 @@ ColorPalette ColorPalette::generateOptimalPalette(Color* colorArray, int size, i
 				Color c;
 				Vec3f afterConvert = ColorSpaceConverter::convert(g[0], ColorSpaceConverter::LAB_TO_RGB);
 
-				c.red = (unsigned char)MathExt::clamp(afterConvert.x, 0.0, 255.0);
-				c.green = (unsigned char)MathExt::clamp(afterConvert.y, 0.0, 255.0);
-				c.blue = (unsigned char)MathExt::clamp(afterConvert.z, 0.0, 255.0);
+				c.red = (unsigned char)MathExt::clamp(afterConvert.x, 0.0f, 255.0f);
+				c.green = (unsigned char)MathExt::clamp(afterConvert.y, 0.0f, 255.0f);
+				c.blue = (unsigned char)MathExt::clamp(afterConvert.z, 0.0f, 255.0f);
 				
 				temp.addNewColor(c);
 			}
@@ -669,9 +668,9 @@ std::vector<Color> ColorPalette::meanCut(std::vector<Color> uniqueColors, int co
 		//avg color for each box has already been found
 		Vec3f meanColor = b.averageColor;
 		//round
-		double cr = MathExt::clamp(MathExt::round(meanColor.x), 0.0, 255.0);
-		double cg = MathExt::clamp(MathExt::round(meanColor.y), 0.0, 255.0);
-		double cb = MathExt::clamp(MathExt::round(meanColor.z), 0.0, 255.0);
+		double cr = MathExt::clamp(MathExt::round(meanColor.x), 0.0f, 255.0f);
+		double cg = MathExt::clamp(MathExt::round(meanColor.y), 0.0f, 255.0f);
+		double cb = MathExt::clamp(MathExt::round(meanColor.z), 0.0f, 255.0f);
 
 		finalColors.push_back( {(unsigned char)cr, (unsigned char)cg, (unsigned char)cb, 255} );
 	}
@@ -698,90 +697,40 @@ std::vector<Color> ColorPalette::medianCut(std::vector<Color> colorArray, int co
 				start = endPos[i-1];
 			}
 
-			//sort by most range
+			//sort by most variance
 			
-			Vec3f minVals = Vec3f(255,255,255);
-			Vec3f maxVals = Vec3f(0,0,0);
+			Vec3f mean = Vec3f();
+			Vec3f variance = Vec3f();
+
+			double meanMult = 1.0 / (end-start);
 			
-			for(int i=start; i<end; i++)
+			for(int v=start; v<end; v++)
 			{
-				if(sortArray[i].red < minVals.x)
-					minVals.x = sortArray[i].red;
-				if(sortArray[i].red > maxVals.x)
-					maxVals.x = sortArray[i].red;
-
-				if(sortArray[i].green < minVals.y)
-					minVals.y = sortArray[i].green;
-				if(sortArray[i].green > maxVals.y)
-					maxVals.y = sortArray[i].green;
-
-				if(sortArray[i].blue < minVals.z)
-					minVals.x = sortArray[i].blue;
-				if(sortArray[i].blue > maxVals.z)
-					maxVals.x = sortArray[i].blue;
+				mean.x += meanMult * sortArray[v].red;
+				mean.y += meanMult * sortArray[v].green;
+				mean.z += meanMult * sortArray[v].blue;
 			}
 
-			int rRange = maxVals.x - minVals.x;
-			int gRange = maxVals.y - minVals.y;
-			int bRange = maxVals.z - minVals.z;
+			for(int v=start; v<end; v++)
+			{
+				variance.x = MathExt::sqr( mean.x - sortArray[v].red);
+				variance.y = MathExt::sqr( mean.y - sortArray[v].green);
+				variance.z = MathExt::sqr( mean.z - sortArray[v].blue);
+			}
 
-			int sort1,sort2,sort3;
-			
-			if(rRange>gRange && rRange>bRange)
+			int sortBy = 2;
+			if(variance.x > variance.y && variance.x > variance.z)
 			{
-				if(gRange>bRange)
-				{
-					//r,g,b
-					sort1=16;
-					sort2=8;
-					sort3=0;
-				}
-				else
-				{
-					//r,b,g
-					sort1=16;
-					sort2=0;
-					sort3=8;
-				}
+				sortBy = 0;
 			}
-			else if(gRange>rRange && gRange>bRange)
+			else if(variance.y > variance.x && variance.y > variance.z)
 			{
-				if(rRange>bRange)
-				{
-					//g,r,b
-					sort1=8;
-					sort2=16;
-					sort3=0;
-				}
-				else
-				{
-					//g,b,r
-					sort1=0;
-					sort2=16;
-					sort3=8;
-				}
-			}
-			else
-			{
-				if(rRange>gRange)
-				{
-					//b,r,g
-					sort1=8;
-					sort2=0;
-					sort3=16;
-				}
-				else
-				{
-					//b,g,r
-					sort1=0;
-					sort2=8;
-					sort3=16;
-				}
+				sortBy = 1;
 			}
 			
-			Sort::mergeSort<Color>(sortArray.data()+start, end-start, [sort1, sort2, sort3](Color a, Color b) -> bool{
-				int v = ((int)a.red<<sort1) + ((int)a.green<<sort2) + ((int)a.blue<<sort3);
-				int v2 = ((int)b.red<<sort1) + ((int)b.green<<sort2) + ((int)b.blue<<sort3);
+			Sort::mergeSort<Color>(sortArray.data()+start, end-start, [sortBy](Color a, Color b) -> bool{
+				unsigned char v = ((unsigned char*)&a)[sortBy];
+				unsigned char v2 = ((unsigned char*)&b)[sortBy];
 
 				return v<v2;
 			});
@@ -827,9 +776,9 @@ std::vector<Color> ColorPalette::medianCut(std::vector<Color> colorArray, int co
 		avgVal/=divVal;
 
 		//round
-		double cr = MathExt::clamp(MathExt::round(avgVal.x), 0.0, 255.0);
-		double cg = MathExt::clamp(MathExt::round(avgVal.y), 0.0, 255.0);
-		double cb = MathExt::clamp(MathExt::round(avgVal.z), 0.0, 255.0);
+		double cr = MathExt::clamp(MathExt::round(avgVal.x), 0.0f, 255.0f);
+		double cg = MathExt::clamp(MathExt::round(avgVal.y), 0.0f, 255.0f);
+		double cb = MathExt::clamp(MathExt::round(avgVal.z), 0.0f, 255.0f);
 
 		finalColors.push_back( {(unsigned char)cr, (unsigned char)cg, (unsigned char)cb, 255} );
 	}
@@ -861,12 +810,39 @@ std::vector<Color> ColorPalette::kMeans(std::vector<Color> colorArray, int color
 		groups.push_back( b );
 	}
 
+	struct importantData
+	{
+		double a;
+		double b;
+		double c;
+		int location;
+	};
+
 	//do k-means
 	for(int i=0; i<maxIterations; i++)
 	{
+		//make kdtree for speed
+		KDTree<double> meanTree = KDTree<double>(3);
+		for(int k=0; k<groups.size(); k++)
+		{
+			importantData* tmp = new importantData();
+			tmp->a = groups[k].averageColor.x;
+			tmp->b = groups[k].averageColor.y;
+			tmp->c = groups[k].averageColor.z;
+			tmp->location = k;
+
+			meanTree.add((double*)tmp);
+		}
+
 		//group into k groups
 		for(int k=0; k<colorArray.size(); k++)
 		{
+			double* testData = new double[3]{(double)colorArray[k].red, (double)colorArray[k].green, (double)colorArray[k].blue};
+			
+			KDTreeNode<double> nearest = meanTree.searchNearest(testData);
+			importantData* actualData = (importantData*)nearest.data;
+			groups[actualData->location].colors.push_back( colorArray[k] );
+			/*
 			int minIndex = -1;
 			double minDis = 16777216;
 			//measure distance from all means
@@ -889,6 +865,7 @@ std::vector<Color> ColorPalette::kMeans(std::vector<Color> colorArray, int color
 			{
 				groups[minIndex].colors.push_back( colorArray[k] );
 			}
+			*/
 		}
 
 		//recompute average
@@ -924,9 +901,9 @@ std::vector<Color> ColorPalette::kMeans(std::vector<Color> colorArray, int color
 	for(ColorBoxInfo k : groups)
 	{
 		//round
-		double cr = MathExt::clamp(MathExt::round(k.averageColor.x), 0.0, 255.0);
-		double cg = MathExt::clamp(MathExt::round(k.averageColor.y), 0.0, 255.0);
-		double cb = MathExt::clamp(MathExt::round(k.averageColor.z), 0.0, 255.0);
+		double cr = MathExt::clamp(MathExt::round(k.averageColor.x), 0.0f, 255.0f);
+		double cg = MathExt::clamp(MathExt::round(k.averageColor.y), 0.0f, 255.0f);
+		double cb = MathExt::clamp(MathExt::round(k.averageColor.z), 0.0f, 255.0f);
 
 		avgColors.push_back( {(unsigned char)cr, (unsigned char)cg, (unsigned char)cb, 255} );
 	}

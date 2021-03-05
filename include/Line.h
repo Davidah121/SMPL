@@ -11,6 +11,8 @@ public:
 	Line(double x1, double y1, double x2, double y2);
 	Line(Vec2f p1, Vec2f p2);
 
+	~Line();
+
 	//Object and Class Stuff
 	const Class* getClass();
 	static const Class* myClass;
@@ -25,10 +27,23 @@ public:
 	double getMinY();
 	double getMaxY();
 
-	~Line();
+	double getSlope();
+	double getSlopeRelativeY();
+
+	double getYInt();
+	double getXInt();
+
+	double solveForX(double y);
+	double solveForY(double x);
 
 private:
 	void setMinMax();
+	void setSlopeStuff();
+
+	double slope = 0;
+	double slopeRelY = 0;
+	double xInt = 0;
+	double yInt = 0;
 
 	Vec2f point1 = Vec2f(0,0);
 	Vec2f point2 = Vec2f(0, 0);
