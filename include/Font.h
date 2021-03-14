@@ -11,6 +11,8 @@ struct FontCharInfo
 	int width;
 	int height;
 	int horizAdv;
+	int xOffset;
+	int yOffset;
 };
 
 class Font : public Object
@@ -25,7 +27,7 @@ public:
 	
 	FontCharInfo getFontCharInfo(int index);
 
-	Image* getImage(int index);
+	virtual Image* getImage(int index);
 
 	void setFontSize(int value);
 	int getFontSize();

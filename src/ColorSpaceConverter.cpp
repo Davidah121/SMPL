@@ -28,9 +28,9 @@ Color ColorSpaceConverter::convert(Color a, int type)
 
     Color out;
     out.alpha = a.alpha;
-    out.red = (unsigned char)MathExt::clamp( MathExt::round(finalColor.x), 0.0f, 255.0f);
-    out.green = (unsigned char)MathExt::clamp( MathExt::round(finalColor.y), 0.0f, 255.0f);
-    out.blue = (unsigned char)MathExt::clamp( MathExt::round(finalColor.z), 0.0f, 255.0f);
+    out.red = (unsigned char)MathExt::clamp( MathExt::round(finalColor.x), 0.0, 255.0);
+    out.green = (unsigned char)MathExt::clamp( MathExt::round(finalColor.y), 0.0, 255.0);
+    out.blue = (unsigned char)MathExt::clamp( MathExt::round(finalColor.z), 0.0, 255.0);
 
     return out;
 }
@@ -76,17 +76,17 @@ Vec3f ColorSpaceConverter::convert(Vec3f c, int type)
             if(finalColor.x <= 0.0031308)
                 finalColor.x *= 12.92;
             else
-                finalColor.x = (1.055 * MathExt::pow(finalColor.x, 1.0f/2.4f)) - 0.055;
+                finalColor.x = (1.055 * MathExt::pow(finalColor.x, 1.0/2.4)) - 0.055;
 
             if(finalColor.y <= 0.0031308)
                 finalColor.y *= 12.92;
             else
-                finalColor.y = (1.055 * MathExt::pow(finalColor.y, 1.0f/2.4f)) - 0.055;
+                finalColor.y = (1.055 * MathExt::pow(finalColor.y, 1.0/2.4)) - 0.055;
                 
             if(finalColor.z <= 0.0031308)
                 finalColor.z *= 12.92;
             else
-                finalColor.z = (1.055 * MathExt::pow(finalColor.z, 1.0f/2.4f)) - 0.055;
+                finalColor.z = (1.055 * MathExt::pow(finalColor.z, 1.0/2.4)) - 0.055;
             
             finalColor *= 255;
             break;

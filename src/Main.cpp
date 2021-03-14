@@ -25,6 +25,9 @@
 #include "Sprite.h"
 #include "Input.h"
 
+#include "BitmapFont.h"
+#include "ColorNameConverter.h"
+
 /**
  * Purpose:
  *      Provide a port to other systems
@@ -997,37 +1000,47 @@ void drawTextureFunction()
 {
     if(windowPointer!=nullptr)
     {
-        Image drwImg = Image(1280, 720);
+        Image drwImg = Image(1920, 1080);
         Graphics::setColor({127,127,127,255});
         drwImg.clearImage();
 
-        Mat3f rotMat = MathExt::rotation2D( MathExt::toRad(rot), 300,300);
+        //Mat3f rotMat = MathExt::rotation2D( MathExt::toRad(rot), 300,300);
         Vec3f p1 = Vec3f(0,0,1);
-        Vec3f p2 = Vec3f(600,0,1);
-        Vec3f p3 = Vec3f(600,600,1);
-        Vec3f p4 = Vec3f(0,600,1);
-        p1 = rotMat*p1;
-        p2 = rotMat*p2;
-        p3 = rotMat*p3;
-        p4 = rotMat*p4;
+        Vec3f p2 = Vec3f(1920,0,1);
+        Vec3f p3 = Vec3f(1920,1080,1);
+        Vec3f p4 = Vec3f(0,1080,1);
+        
+        // p1 = rotMat*p1;
+        // p2 = rotMat*p2;
+        // p3 = rotMat*p3;
+        // p4 = rotMat*p4;
 
-        Vec4f finalP1 = Vec4f(p1.x, p1.y, 0, 0);
-        Vec4f finalP2 = Vec4f(p2.x, p2.y, 1, 0);
-        Vec4f finalP3 = Vec4f(p3.x, p3.y, 1, 1);
-        Vec4f finalP4 = Vec4f(p4.x, p4.y, 0, 1);
+        // Vec4f finalP1 = Vec4f(p1.x, p1.y, 0, 0);
+        // Vec4f finalP2 = Vec4f(p2.x, p2.y, 1, 0);
+        // Vec4f finalP3 = Vec4f(p3.x, p3.y, 1, 1);
+        // Vec4f finalP4 = Vec4f(p4.x, p4.y, 0, 1);
         
         Graphics::setColor({255,255,255,255});
-        // Graphics::drawTriangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, false, &drwImg);
+
+        unsigned long time1 = System::getCurrentTimeNano();
+        Graphics::drawTriangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, false, &drwImg);
+        unsigned long time2 = System::getCurrentTimeNano();
+
+        StringTools::println("TimeTaken: %u", (time2-time1));
         // Graphics::drawTriangle(p1.x, p1.y, p3.x, p3.y, p4.x, p4.y, false, &drwImg);
         
-        Graphics::drawTexturedTriangle(finalP1, finalP2, finalP3, img, &drwImg);
-        Graphics::drawTexturedTriangle(finalP1, finalP3, finalP4, img, &drwImg);
+        //Graphics::drawTexturedTriangle(finalP1, finalP2, finalP3, img, &drwImg);
+        //Graphics::drawTexturedTriangle(finalP1, finalP3, finalP4, img, &drwImg);
         
         windowPointer->drawImage(&drwImg);
-        rot+=1;
+        rot-=1;
         if(rot>360)
         {
             rot-=360;
+        }
+        if(rot<0)
+        {
+            rot+=360;
         }
     }
 }
@@ -1048,8 +1061,15 @@ void drawWind()
 
         while(windowPointer->getRunning())
         {
-            System::sleep(16,666);
+
+            unsigned long t1 = System::getCurrentTimeNano();
             windowPointer->repaint();
+            unsigned long t2 = System::getCurrentTimeNano();
+            while((t2-t1) < 16666666)
+            {
+                t2 = System::getCurrentTimeNano();
+            }
+
         }
 
         delete windowPointer;
@@ -1074,9 +1094,71 @@ void drawWind()
     }
 }
 
+void testGui()
+{
+    Graphics::setDefaultFont(Graphics::LARGE_FONT);
+    WndWindow wnd = WndWindow("GuiTest", 1280, 720);
+    GuiManager* manager = wnd.getGuiManager();
+
+    GuiContainer container = GuiContainer();
+
+    GuiTextBox textBox1 = GuiTextBox(32,32,96,32);
+    textBox1.setBackgroundColor( ColorNameConverter::NameToColor("Gray") );
+    textBox1.setOutlineColor( ColorNameConverter::NameToColor("Black") );
+    textBox1.setActiveOutlineColor( ColorNameConverter::NameToColor("Aqua") );
+
+
+    GuiRectangleButton but1 = GuiRectangleButton(32, 68, 96, 32);
+    but1.setBackgroundColor( ColorNameConverter::NameToColor("Gray") );
+    but1.setOutlineColor( ColorNameConverter::NameToColor("Black") );
+    but1.setActiveOutlineColor( ColorNameConverter::NameToColor("Aqua") );
+
+    GuiTextBlock but1Text = GuiTextBlock(0, 0, 96, 32);     //No offset because it will be the child of but1
+    but1Text.setText("Button1");
+    but1Text.setTextColor( ColorNameConverter::NameToColor("lightgray") );
+
+    but1.addChild(&but1Text);
+    
+    Sprite k = Sprite();
+
+    k.loadImage(L"C:/Users/Alan/Pictures/fuavs6gs0w801.gif");
+    
+    GuiImage img1 = GuiImage();
+    img1.setImage(k.getImage(0));
+
+    img1.setBaseX(0);
+    img1.setBaseY(0);
+
+    container.addChild(&img1);
+    container.addChild(&but1);
+    container.addChild(&textBox1);
+
+    manager->addElement(&container);
+
+    int pos = 0;
+
+    while(wnd.getRunning())
+    {
+        unsigned long t1 = System::getCurrentTimeNano();
+        wnd.repaint();
+        pos++;
+        if(pos>64)
+        {
+            pos=0;
+        }
+        container.setBaseX(pos);
+        unsigned long t2 = System::getCurrentTimeNano();
+        while((t2-t1) < 16666666)
+        {
+            t2 = System::getCurrentTimeNano();
+        }
+    }
+}
+
 int main(int argc, char** argv)
 {
     StringTools::init();
+    Graphics::init();
     //testScale();
 
     //testAudio();
@@ -1092,7 +1174,13 @@ int main(int argc, char** argv)
     //testGIF();
 
     //testJPEG();
-    drawWind();
+
+    //New Stuff
+
+        //drawWind();
+        testGui();
+
+    //End of New Stuff
     
     //StringTools::println("\n");
     //testCosineTransform2D();

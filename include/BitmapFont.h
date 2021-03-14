@@ -1,6 +1,6 @@
 #pragma once
 #include "Font.h"
-#include "Image.h"
+#include "Sprite.h"
 
 class BitmapFont : public Font
 {
@@ -14,6 +14,10 @@ public:
 	
 	Image* getImage(int index);
 private:
-	Image* img = nullptr;
+	void loadFT(std::string filename);
+	void loadFNT(std::string filename);
+	Sprite img = Sprite();
+
+	std::vector<int> imgPage = std::vector<int>();
 };
 

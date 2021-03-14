@@ -243,7 +243,8 @@ Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
 				
 				if (images->size() > 0)
 				{
-					tempImage->copyImage(images->back());
+					if(disposeMethod!=0)
+						tempImage->copyImage(images->back());
 				}
 
 				if(disposeMethod==0 || disposeMethod==1)
@@ -342,6 +343,10 @@ Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
 							{
 								c.alpha = 0;
 							}
+							else
+							{
+								c.alpha = 255;
+							}
 
 							if(c.alpha!=0)
 							{
@@ -351,6 +356,7 @@ Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
 							{
 								if(disposeMethod==0)
 								{
+									c.alpha=255;
 									tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
 								}
 								else if(disposeMethod==2)
@@ -411,6 +417,7 @@ Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages)
 							{
 								if(disposeMethod==0)
 								{
+									c.alpha=255;
 									tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
 								}
 								else if(disposeMethod==2)

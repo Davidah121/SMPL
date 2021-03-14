@@ -8,6 +8,8 @@ class Sprite : public Object
 public:
 	Sprite();
 	~Sprite();
+	Sprite(const Sprite& o);
+	void operator=(const Sprite& o);
 
 	//Object and Class Stuff
 	const Class* getClass();
@@ -25,6 +27,7 @@ public:
 	void dispose();
 
 private:
+	bool ownership = false;
 	std::vector<Image*> images = std::vector<Image*>();
 };
 

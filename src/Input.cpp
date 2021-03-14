@@ -1,8 +1,8 @@
 #include "Input.h"
 #include <Windows.h>
 
-bool* Input::preKeyState = new bool[255];
-bool* Input::keyState = new bool[255];
+bool* Input::preKeyState = new bool[256];
+bool* Input::keyState = new bool[256];
 
 bool* Input::preMouseState = new bool[3];
 bool* Input::mouseState = new bool[3];
@@ -14,8 +14,14 @@ bool Input::mouseClicked = false;
 int Input::mouseX = -1;
 int Input::mouseY = -1;
 
+int Input::lastKeyPressed = -1;
+int Input::lastKeyDown = -1;
+int Input::lastKeyUp = -1;
+
 void Input::pollInput()
 {
+	lastKeyPressed = -1;
+	lastKeyUp = -1;
 	mouseMoved = false;
 	keyChanged = false;
 	mouseClicked = false;
@@ -35,7 +41,7 @@ void Input::pollInput()
 	mouseX = (int)p.x;
 	mouseY = (int)p.y;
 
-	for (int i = 0; i < 255; i++)
+	for (int i = 0; i < 256; i++)
 	{
 		bool keyValue = (GetKeyState(i) >> 15 & 0x01) == 1;
 
@@ -45,6 +51,19 @@ void Input::pollInput()
 		if (keyState[i] != preKeyState[i])
 		{
 			keyChanged = true;
+
+			if(preKeyState[i] == false)
+			{
+				lastKeyPressed = i;
+				lastKeyDown = i;
+			}
+			if(preKeyState[i] == true)
+			{
+				lastKeyUp = i;
+
+				if(i==lastKeyDown)
+					lastKeyDown = -1;
+			}
 		}
 	}
 	preMouseState[0] = mouseState[0];
@@ -118,4 +137,19 @@ bool Input::getKeyChanged()
 bool Input::getMouseMoved()
 {
 	return mouseMoved;
+}
+
+int Input::getLastKeyPressed()
+{
+	return lastKeyPressed;
+}
+
+int Input::getLastKeyDown()
+{
+	return lastKeyDown;
+}
+
+int Input::getLastKeyReleased()
+{
+	return lastKeyUp;
 }

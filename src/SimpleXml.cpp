@@ -77,6 +77,10 @@ void SimpleXml::dispose()
     nodes.clear();
 }
 
+void SimpleXml::save(std::string filename)
+{
+    save(StringTools::toWideString(filename));
+}
 
 void SimpleXml::save(std::wstring filename)
 {
@@ -147,6 +151,11 @@ void SimpleXml::saveNode(SimpleFile* f, XmlNode* node)
         f->writeWideString(line);
         f->writeLineBreak();
     }
+}
+
+bool SimpleXml::load(std::string filename)
+{
+    return load( StringTools::toWideString(filename) );
 }
 
 /**

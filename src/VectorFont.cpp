@@ -7,7 +7,7 @@ const Class* VectorFont::getClass()
     return VectorFont::myClass;
 }
 
-VectorFont::VectorFont()
+VectorFont::VectorFont() : Font()
 {
 
 }

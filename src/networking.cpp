@@ -114,9 +114,9 @@ void Networking::acceptConnection()
 {
 	if (type == Networking::TYPE_SERVER)
 	{
-		SOCKET tempSock = NULL;
+		SOCKET tempSock = INVALID_SOCKET;
 
-		while (tempSock == NULL)
+		while (tempSock == INVALID_SOCKET)
 		{
 			tempSock = accept(sock, (SOCKADDR*)&socketAddress, &sizeAddress);
 		}

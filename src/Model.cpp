@@ -24,7 +24,7 @@ void Model::addVertexFormatInfo(int type, int usage)
         return;
     }
 
-    orderInfo.push_back({type, usage});
+    orderInfo.push_back({(unsigned char)type, (unsigned char)usage});
     sizeOfVertex += type+1;
 }
 

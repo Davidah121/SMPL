@@ -59,6 +59,7 @@ LRESULT _stdcall WndWindow::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 	HDC mem;
 	BITMAP img;
 	HGDIOBJ oldImg;
+	RECT* rect = nullptr;
 
 	if (currentWindow != nullptr)
 	{
@@ -138,6 +139,86 @@ LRESULT _stdcall WndWindow::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 			if (currentWindow->mouseMovedFunction != nullptr)
 				currentWindow->mouseMovedFunction();
 			break;
+		case WM_MOVING:
+			rect = (RECT*)lparam;
+			currentWindow->x = rect->left;
+			currentWindow->y = rect->top;
+			
+			currentWindow->width = rect->right - rect->left;
+			currentWindow->height = rect->bottom - rect->top;
+			break;
+		case WM_ENTERSIZEMOVE:
+			currentWindow->setResizing(true);
+			
+			break;
+		case WM_SIZING:
+			rect = (RECT*)lparam;
+			currentWindow->x = rect->left;
+			currentWindow->y = rect->top;
+			
+			currentWindow->width = rect->right - rect->left;
+			currentWindow->height = rect->bottom - rect->top;
+			break;
+		case WM_SIZE:
+			if(wparam == SIZE_MAXIMIZED)
+			{
+				//FIX LATER
+				if(currentWindow->getResizing())
+				{
+					currentWindow->preX = currentWindow->x;
+					currentWindow->preY = currentWindow->y;
+
+					currentWindow->x = 0;
+					currentWindow->y = 0;
+
+					currentWindow->width = LOWORD(lparam);
+					currentWindow->height = HIWORD(lparam);
+				}
+				else
+				{
+					currentWindow->setResizeMe(true);
+
+					currentWindow->preX = currentWindow->x;
+					currentWindow->preY = currentWindow->y;
+
+					currentWindow->x = 0;
+					currentWindow->y = 0;
+
+					currentWindow->width = LOWORD(lparam);
+					currentWindow->height = HIWORD(lparam);
+				}
+			}
+			else if(wparam == SIZE_RESTORED)
+			{
+				//FIX LATER
+				if(currentWindow->getResizing())
+				{
+					currentWindow->x = currentWindow->preX;
+					currentWindow->y = currentWindow->preY;
+
+					currentWindow->width = LOWORD(lparam);
+					currentWindow->height = HIWORD(lparam);
+				}
+				else
+				{
+					currentWindow->setResizeMe(true);
+
+					currentWindow->x = currentWindow->preX;
+					currentWindow->y = currentWindow->preY;
+
+					currentWindow->width = LOWORD(lparam);
+					currentWindow->height = HIWORD(lparam);
+				}
+			}
+			break;
+		case WM_EXITSIZEMOVE:
+			currentWindow->initBitmap();
+			currentWindow->setResizing(false);
+			break;
+		case WM_MDIMAXIMIZE:
+			break;
+		case WM_SETCURSOR:
+			SetCursor( LoadCursor(NULL, IDC_ARROW) );
 		default:
 			break;
 		}
@@ -156,7 +237,7 @@ WndWindow::WndWindow()
 
 	setAllFunctionsToNull();
 
-	gui = new GuiManager(&this->x, &this->y, new Image(this->width, this->height));
+	gui = new GuiManager(new Image(this->width, this->height), true);
 
 	wndThread = new std::thread(&WndWindow::init, this, x, y, width, height, title);
 
@@ -188,7 +269,7 @@ WndWindow::WndWindow(std::wstring title, int width, int height, int x, int y)
 
 
 	setAllFunctionsToNull();
-	gui = new GuiManager(&this->x, &this->y, new Image(this->width, this->height));
+	gui = new GuiManager(new Image(this->width, this->height), true);
 	
 	this->title = title;
 
@@ -220,7 +301,7 @@ WndWindow::WndWindow(std::string title, int width, int height, int x, int y)
 		this->y = screenHeight / 2 - (height/2);
 
 	setAllFunctionsToNull();
-	gui = new GuiManager(&this->x, &this->y, new Image(this->width, this->height));
+	gui = new GuiManager(new Image(this->width, this->height), true);
 
 	this->title = StringTools::toWideString(title);
 
@@ -382,6 +463,11 @@ void WndWindow::init(int x, int y, int width, int height, std::wstring title)
 
 void WndWindow::initBitmap()
 {
+	while(!getDonePainting())
+	{
+		std::this_thread::yield();
+	}
+
 	bitInfo.bmiHeader.biSize = sizeof(bitInfo.bmiHeader);
 	bitInfo.bmiHeader.biWidth = width;
 	bitInfo.bmiHeader.biHeight = -height;
@@ -405,12 +491,24 @@ void WndWindow::initBitmap()
 
 	wndPixelsSize = (width*3 + scanLinePadding) * height;
 
+	if(wndPixels != nullptr)
+	{
+		DeleteObject(bitmap);
+		DeleteDC(myHDC);
+		delete[] wndPixels;
+	}
+
 	wndPixels = new unsigned char[wndPixelsSize];
 
 	std::memset(wndPixels,0,wndPixelsSize);
 	myHDC = GetDC(windowHandle);
 
 	bitmap = CreateCompatibleBitmap(myHDC, width, height);
+
+	if(gui!=nullptr)
+	{
+		gui->resizeImage(width, height);
+	}
 }
 
 void WndWindow::setRunning(bool value)
@@ -451,6 +549,20 @@ void WndWindow::setDonePainting(bool value)
 	myMutex.unlock();
 }
 
+void WndWindow::setResizing(bool value)
+{
+	myMutex.lock();
+	resizing = value;
+	myMutex.unlock();
+}
+
+void WndWindow::setResizeMe(bool value)
+{
+	myMutex.lock();
+	resizeMe = value;
+	myMutex.unlock();
+}
+
 bool WndWindow::getFinishInit()
 {
 	bool v;
@@ -471,6 +583,26 @@ bool WndWindow::getDonePainting()
 	return v;
 }
 
+bool WndWindow::getResizing()
+{
+	bool v;
+	myMutex.lock();
+	v = resizing;
+	myMutex.unlock();
+
+	return v;
+}
+
+bool WndWindow::getResizeMe()
+{
+	bool v;
+	myMutex.lock();
+	v = resizeMe;
+	myMutex.unlock();
+
+	return v;
+}
+
 void WndWindow::setVisible(bool value)
 {
 	if (value == true)
@@ -482,41 +614,49 @@ void WndWindow::setVisible(bool value)
 void WndWindow::setX(int x)
 {
 	SetWindowPos(windowHandle, HWND_TOP, x, this->y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+	this->x = x;
 }
 
 void WndWindow::setY(int y)
 {
 	SetWindowPos(windowHandle, HWND_TOP, this->x, y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+	this->y = y;
 }
 
 void WndWindow::setPosition(int x, int y)
 {
 	SetWindowPos(windowHandle, HWND_TOP, x, y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+	this->x = x;
+	this->y = y;
 }
 
 void WndWindow::setWidth(int width)
 {
 	SetWindowPos(windowHandle, HWND_TOP, this->x, this->y, width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+	this->width = width;
 }
 
 void WndWindow::setHeight(int height)
 {
 	SetWindowPos(windowHandle, HWND_TOP, this->x, this->y, this->width, height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+	this->height = height;
 }
 
 void WndWindow::setSize(int width, int height)
 {
 	SetWindowPos(windowHandle, HWND_TOP, this->x, this->y, width, height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+	this->width = width;
+	this->height = height;
 }
 
 int WndWindow::getMouseX()
 {
-	return Input::getMouseX() - x;
+	return Input::getMouseX() - (x+16);
 }
 
 int WndWindow::getMouseY()
 {
-	return Input::getMouseY() - y;
+	return Input::getMouseY() - (y+40);
 }
 
 int WndWindow::getWidth()
@@ -542,31 +682,50 @@ int WndWindow::getImageSize()
 void WndWindow::repaint()
 {
 	//draw the gui first
-	
+
+	if(getResizing())
+	{
+		return;
+	}
+
+	if(getResizeMe())
+	{
+		initBitmap();
+		setResizeMe(false);
+	}
+
+	setDonePainting(false);
+
+	if (paintFunction != nullptr)
+		paintFunction();
+
 	if (gui != nullptr)
 	{
+		gui->setWindowX(x+8);
+		gui->setWindowY(y+32);
+
 		gui->updateGuiElements();
 		gui->renderGuiElements();
 		Image* img = gui->getImage();
 
 		drawImage(img);
 	}
-
-	if (paintFunction != nullptr)
-		paintFunction();
-
+	
 	int value = SetDIBits(myHDC, bitmap, 0, height, &wndPixels[0], &bitInfo, DIB_RGB_COLORS);
 	
-	setDonePainting(false);
 	RedrawWindow(windowHandle, NULL, NULL, RDW_INVALIDATE);
 
 	while (getDonePainting() == false && getRunning())
 	{
 		std::this_thread::yield();
 	}
+
+	if(getResizeMe())
+	{
+		initBitmap();
+		setResizeMe(false);
+	}
 }
-
-
 
 bool WndWindow::getValid()
 {
@@ -690,9 +849,10 @@ void WndWindow::drawImage(Image* g)
 
 			int side = g->getWidth() - width;
 			int absAddAmount = MathExt::abs(g->getWidth() - width);
+
+			//FIX WIDTH AND HEIGHT ADJUST
 			
 			int tX = 0;
-			int x = width;
 
 			if (side > 0)
 			{
@@ -706,16 +866,10 @@ void WndWindow::drawImage(Image* g)
 					imgPixelsStart++;
 					wndPixelsStart += 3;
 					tX++;
-					x++;
-
-					if(x==width)
-					{
-						wndPixelsStart += scanLinePadding;
-						x=0;
-					}
 					
 					if (tX >= width)
 					{
+						wndPixelsStart += scanLinePadding;
 						imgPixelsStart += absAddAmount;
 						tX = 0;
 					}
@@ -723,8 +877,8 @@ void WndWindow::drawImage(Image* g)
 			}
 			else
 			{
+				//FIX WIDTH AND HEIGHT ADJUST
 				//img width < window width
-				int scanLineWrite = 0;
 				while (wndPixelsStart < wndPixelsEnd && imgPixelsStart < imgPixelsEnd)
 				{
 					*wndPixelsStart = (*imgPixelsStart).blue;
@@ -737,7 +891,6 @@ void WndWindow::drawImage(Image* g)
 
 					if (tX >= g->getWidth())
 					{
-						scanLineWrite++;
 						wndPixelsStart += absAddAmount*3 + scanLinePadding;
 						tX = 0;
 					}
@@ -758,5 +911,6 @@ void WndWindow::run()
 			TranslateMessage(&m);
 			DispatchMessage(&m);
 		}
+		
 	}
 }

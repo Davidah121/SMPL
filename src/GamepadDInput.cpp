@@ -440,6 +440,22 @@ bool GamepadDInput::init(HWND windowHandle, bool Foreground = true, bool Exclusi
 	return true;
 }
 
+void GamepadDInput::refindDevices()
+{
+	for (int i = 0; i < devices.size(); i++)
+	{
+		devices[i].gamepadDevice->Unacquire();
+		devices[i].gamepadDevice->Release();
+	}
+
+	currentState.clear();
+	previousState.clear();
+	connected.clear();
+	devices.clear();
+
+	findDevices();
+}
+
 void GamepadDInput::dispose()
 {
 	for (int i = 0; i < devices.size(); i++)
@@ -448,7 +464,11 @@ void GamepadDInput::dispose()
 		devices[i].gamepadDevice->Release();
 	}
 
+	currentState.clear();
+	previousState.clear();
+	connected.clear();
 	devices.clear();
+
 	inface->Release();
 }
 

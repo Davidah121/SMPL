@@ -1,6 +1,6 @@
 #pragma once
 #include "Image.h"
-#include "BitmapFont.h"
+#include "Font.h"
 #include "Model.h"
 
 class Graphics
@@ -27,9 +27,13 @@ public:
 	static const unsigned char BLEND_NORMAL = 0;
 	static const unsigned char BLEND_MULT = 1;
 	static const unsigned char BLEND_SCREEN = 2;
-	
-	static void setImage(Image* img);
-	static Image* getImage();
+
+	//Parameters and initialization:
+	static const unsigned char NORMAL_FONT = 0;
+	static const unsigned char LARGE_FONT = 1;
+
+	static void init();
+	static void dispose();
 
 	//Drawing functions
 	static void clearImage(Image* surf = nullptr);
@@ -37,7 +41,7 @@ public:
 	static void drawPixel(double x, double y, Color c, Image* surf = nullptr);
 
 	static Color blend(Color src, Color dest);
-	static Color lerp(Color src, Color dest, float lerpVal);
+	static Color lerp(Color src, Color dest, double lerpVal);
 
 	static void drawRect(int x, int y, int x2, int y2, bool outline, Image* surf = nullptr);
 	static void drawLine(int x, int y, int x2, int y2, Image* surf = nullptr);
@@ -52,16 +56,25 @@ public:
 	static void drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH, Image* surf = nullptr);
 
 	static void drawText(std::string str, int x, int y, Image* surf = nullptr);
+	static void drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, Image* surf = nullptr);
 
 	static void drawPolygon(Vec2f* points, int size, Image* surf = nullptr);
 	
 	static void drawModel(Model* model, Image* texture = nullptr, Image* surf = nullptr);
+	
+	//Getters and Setters
+	static void setImage(Image* img);
+	static Image* getImage();
+
 	static void setColor(Color c);
 	static Color getColor();
 
-	static void setFont(BitmapFont* f);
-	static BitmapFont* getFont();
+	static void setFont(Font* f);
+	static Font* getFont();
 	
+	static void setDefaultFont(unsigned char type);
+	static Font* getDefaultFont(unsigned char type);
+
 	static void setCompositeRule(unsigned char b);
 	static unsigned char getCompositeRule();
 
@@ -87,7 +100,6 @@ public:
 	static void ditherImage(Image* img, unsigned char method = 0);
 	static Image* scaleImage(Image* img, double xScale, double yScale, unsigned char filterMethod = 0);
 
-
 private:
 	static void floydSteinburgDithering(Image* img);
 	static void orderedBayerDithering(Image* img);
@@ -97,9 +109,13 @@ private:
 	static Image* scaleBilinear(Image* img, double xScale, double yScale);
 	static Image* scaleBicubic(Image* img, double xScale, double yScale);
 	
+	static unsigned char defaultFontValue;
+
+	static Font* defaultFont;
+	static Font* defaultFontLarge;
 	
 	static Image* activeImage;
-	static BitmapFont* activeFont;
+	static Font* activeFont;
 	static Color activeColor;
 	static unsigned char compositeRule;
 	static unsigned char blendMode;
