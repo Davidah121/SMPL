@@ -36,6 +36,9 @@ public:
     SimpleXml();
     ~SimpleXml();
 
+    bool load(std::string filename);
+    void save(std::string filename);
+
     bool load(std::wstring filename);
     void save(std::wstring filename);
 

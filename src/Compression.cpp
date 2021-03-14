@@ -329,6 +329,7 @@ std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int s
 					bitsToRead = baseBitsToRead;
 					shift = 0;
 					index = 0;
+					continue;
 				}
 				else if (index == endSymLoc)
 				{
@@ -357,7 +358,7 @@ std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int s
 							{
 								std::string newEntry = newDictionary[lastIndex] + newDictionary[index][0];
 								newDictionary.push_back(newEntry);
-								int tempBits = (int)ceil(log2(newDictionary.size() + 1));
+								int tempBits = (int)ceil(log2(newDictionary.size()+1));
 								if(tempBits<=12)
 									bitsToRead = tempBits;
 								else
@@ -365,7 +366,7 @@ std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int s
 							}
 							else
 							{
-								//StringTools::out << "L317 Error in getting last index, " << lastIndex << ", Index=" << index << " dictionary: " << newDictionary.size() << StringTools::lineBreak;
+								//StringTools::println("L317 ERROR: %d", newDictionary.size());
 								//There is an error in the data
 								break;
 							}
@@ -378,7 +379,12 @@ std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int s
 							std::string lastEntry = newDictionary[lastIndex];
 							std::string newEntry = lastEntry + lastEntry[0];
 							newDictionary.push_back(newEntry);
-							bitsToRead = (int)ceil(log2(newDictionary.size() + 1));
+							int tempBits = (int)ceil(log2(newDictionary.size()+1));
+
+							if(tempBits<=12)
+								bitsToRead = tempBits;
+							else
+								newDictionary.pop_back();
 					
 							for (int j = 0; j < newEntry.size(); j++)
 							{
@@ -387,7 +393,7 @@ std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int s
 						}
 						else
 						{
-							//There is an error in the data
+							//StringTools::println("L340 ERROR");
 							//StringTools::out << "L340 Error in getting last index, " << lastIndex << ", Index=" << index << " dictionary: " << newDictionary.size() << StringTools::lineBreak;
 							break;
 						}
@@ -1176,8 +1182,13 @@ BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues,
 	//We use lambda expressions here so we only compare the length values. We could have overriden the comparison
 	//operator in dataLengthCombo, but I wanted to use lambda expressions.
 
-	std::function<bool(dataLengthCombo, dataLengthCombo)> compareFunc = [](const dataLengthCombo & a, const dataLengthCombo & b) -> bool { return a.length < b.length; };
-	Sort::insertionSort<dataLengthCombo>(arr, sizeOfData, compareFunc);
+	std::function<bool(dataLengthCombo, dataLengthCombo)> compareFunc = [](const dataLengthCombo & a, const dataLengthCombo & b) -> bool { 
+		if(a.length==b.length)
+			return a.data < b.data;
+		else
+			return a.length < b.length; };
+
+	Sort::mergeSort<dataLengthCombo>(arr, sizeOfData, compareFunc);
 
 	//now, we can start building the codes.
 	int startCode = 0;

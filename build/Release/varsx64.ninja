@@ -2,5 +2,5 @@ inc = -I ./include %WLIBPATH64%
 objDir = ./bin/Release/x64/obj
 exeDir = ./bin/Release/x64
 compiler = cmd /c clang
-CXXFLAGS = -march=native -O2 -pipe -std=c++17
+CXXFLAGS = -march=native -O3 -pipe -std=c++17
 compilerFlags = -c $CXXFLAGS -Wno-unused-command-line-argument

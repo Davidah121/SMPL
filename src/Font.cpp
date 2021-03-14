@@ -45,3 +45,28 @@ int Font::getCharIndex(int c)
 	}
 	return index;
 }
+
+Image* Font::getImage(int index)
+{
+	return nullptr;
+}
+
+void Font::setFontSize(int value)
+{
+	fontSize = value;
+}
+
+int Font::getFontSize()
+{
+	return fontSize;
+}
+
+void Font::setFontTransform(Mat4f mat)
+{
+	fontTransform = mat;
+}
+
+Mat4f Font::getFontTransform()
+{
+	return fontTransform;
+}

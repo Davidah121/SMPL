@@ -30,7 +30,8 @@ public:
 	static bool equalsIgnoreCase(std::string a, std::string b);
 	static bool equalsIgnoreCase(std::wstring a, std::wstring b);
 	static bool isAlphaNumerial(char v, bool underScoreAllowed = false, bool dashAllowed = false);
-
+	static bool isValidChar(int v);
+	
 	static char charToBase16(char v);
 	static int base16ToBase10(char v);
 
@@ -85,6 +86,11 @@ public:
 	static long toLong(std::string s);
 	static double toDouble(std::string s);
 	static float toFloat(std::string s);
+
+	static int toInt(std::wstring s);
+	static long toLong(std::wstring s);
+	static double toDouble(std::wstring s);
+	static float toFloat(std::wstring s);
 
 	static std::wstring getWideString();
 	static std::string getString();

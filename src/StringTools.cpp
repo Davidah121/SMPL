@@ -195,6 +195,11 @@ bool StringTools::isAlphaNumerial(char v, bool underScoreAllowed, bool dashAllow
 	return false;
 }
 
+bool StringTools::isValidChar(int v)
+{
+	return v>=32 && v<=126;
+}
+
 char StringTools::charToBase16(char val)
 {
 	if(val<10)
@@ -547,6 +552,26 @@ double StringTools::toDouble(std::string s)
 }
 
 float StringTools::toFloat(std::string s)
+{
+	return std::stof(s.c_str());
+}
+
+int StringTools::toInt(std::wstring s)
+{
+	return std::stoi(s.c_str());
+}
+
+long StringTools::toLong(std::wstring s)
+{
+	return std::stol(s.c_str());
+}
+
+double StringTools::toDouble(std::wstring s)
+{
+	return std::stod(s.c_str());
+}
+
+float StringTools::toFloat(std::wstring s)
 {
 	return std::stof(s.c_str());
 }

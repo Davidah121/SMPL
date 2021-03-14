@@ -75,6 +75,8 @@ public:
 	static bool getButtonUp(int id, int button);
 	static float getAxisValue(int id, int axis);
 
+	static void refindDevices();
+
 private:
 	static BOOL CALLBACK EnumerateDeviceCallback(LPCDIDEVICEINSTANCE lpddi, LPVOID uselessJunk);
 	static BOOL IsXInputDevice(const GUID* pGuidProductFromDirectInput);

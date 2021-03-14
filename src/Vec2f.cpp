@@ -6,7 +6,7 @@ const Class* Vec2f::getClass()
 	return Vec2f::myClass;
 }
 
-Vec2f::Vec2f(float x, float y)
+Vec2f::Vec2f(double x, double y)
 {
 	this->x = x;
 	this->y = y;
@@ -20,23 +20,23 @@ Vec2f::~Vec2f()
 {
 }
 
-float Vec2f::getX()
+double Vec2f::getX()
 {
 	return x;
 }
 
-float Vec2f::getY()
+double Vec2f::getY()
 {
 	return y;
 }
 
 
-void Vec2f::setX(float value)
+void Vec2f::setX(double value)
 {
 	x = value;
 }
 
-void Vec2f::setY(float value)
+void Vec2f::setY(double value)
 {
 	y = value;
 }

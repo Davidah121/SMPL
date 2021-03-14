@@ -16,13 +16,28 @@ Sprite::~Sprite()
 	dispose();
 }
 
+Sprite::Sprite(const Sprite& o)
+{
+	ownership = false;
+	images = o.images;
+}
+
+void Sprite::operator=(const Sprite& o)
+{
+	ownership = false;
+	images = o.images;
+}
+
 void Sprite::dispose()
 {
-	for(int i=0; i<images.size(); i++)
+	if(ownership)
 	{
-		if(images[i]!=nullptr)
+		for(int i=0; i<images.size(); i++)
 		{
-			delete images[i];
+			if(images[i]!=nullptr)
+			{
+				delete images[i];
+			}
 		}
 	}
 
@@ -69,6 +84,7 @@ void Sprite::removeImage(int index)
 void Sprite::loadImage(std::string filename)
 {
 	dispose();
+	ownership = true;
 	int amountOfImages = 0;
 
 	Image** imgs = Image::loadImage(filename, &amountOfImages);
@@ -82,6 +98,7 @@ void Sprite::loadImage(std::string filename)
 void Sprite::loadImage(std::wstring filename)
 {
 	dispose();
+	ownership = true;
 	int amountOfImages = 0;
 
 	Image** imgs = Image::loadImage(filename, &amountOfImages);

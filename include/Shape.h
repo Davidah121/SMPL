@@ -13,20 +13,40 @@ public:
 	const Class* getClass();
 	static const Class* myClass;
 
-	void setPosition(Vec3f* posPointer);
-	Vec3f* getPosition();
+	void setPosition(Vec3f posPointer);
+	Vec3f getPosition();
 
-	void setScale(Vec3f* posScale);
-	Vec3f* getScale();
+	void setScale(Vec3f posScale);
+	Vec3f getScale();
 
-	void setRotation(Vec3f* posRotation);
-	Vec3f* getRotation();
+	void setRotation(Vec3f posRotation);
+	Vec3f getRotation();
+
+	virtual void transform();
 	
 protected:
-	Vec3f* position = new Vec3f();
-	Vec3f* scale = new Vec3f();
-	Vec3f* rotation = new Vec3f();
+	Vec3f position = Vec3f();
+	Vec3f scale = Vec3f();
+	Vec3f rotation = Vec3f();
 
+};
+
+class CombinationShape : public Shape
+{
+public:
+	CombinationShape();
+	~CombinationShape();
+
+	//Object and Class Stuff
+	const Class* getClass();
+	static const Class* myClass;
+	
+	void addShape(Shape s);
+	Shape getShape(int i);
+	int size();
+
+private:
+	std::vector<Shape> shapes = std::vector<Shape>();
 };
 
 #pragma region SHAPES_2D
@@ -45,42 +65,42 @@ public:
 class Box2D : public Shape
 {
 public:
-	Box2D(float leftBound, float topBound, float rightBound, float bottomBound);
+	Box2D(double leftBound, double topBound, double rightBound, double bottomBound);
 	~Box2D();
 	
 	//Object and Class Stuff
 	const Class* getClass();
 	static const Class* myClass;
 	
-	void setLeftBound(float lb);
-	float getLeftBound();
+	void setLeftBound(double lb);
+	double getLeftBound();
 
-	void setTopBound(float tb);
-	float getTopBound();
+	void setTopBound(double tb);
+	double getTopBound();
 
-	void setRightBound(float rb);
-	float getRightBound();
+	void setRightBound(double rb);
+	double getRightBound();
 
-	void setBottomBound(float bb);
-	float getBottomBound();
+	void setBottomBound(double bb);
+	double getBottomBound();
 
 	
 private:
 	
-	float lBound = 0;
-	float rBound = 0;
-	float tBound = 0;
-	float bBound = 0;
+	double lBound = 0;
+	double rBound = 0;
+	double tBound = 0;
+	double bBound = 0;
 };
 
 class Circle : public Shape
 {
 public:
-	Circle(float rad);
+	Circle(double rad);
 	~Circle();
 
-	float getRadius();
-	void setRadius(float rad);
+	double getRadius();
+	void setRadius(double rad);
 
 	//Object and Class Stuff
 	const Class* getClass();
@@ -88,13 +108,13 @@ public:
 	
 private:
 
-	float radius = 0;
+	double radius = 0;
 };
 
 class Line2D : public Shape
 {
 public:
-	Line2D(float x1, float y1, float x2, float y2);
+	Line2D(double x1, double y1, double x2, double y2);
 	Line2D(Vec2f p1, Vec2f p2);
 	~Line2D();
 
@@ -103,23 +123,23 @@ public:
 	static const Class* myClass;
 	
 	void setPoint1(Vec2f p);
-	void setPoint1(float x, float y);
+	void setPoint1(double x, double y);
 
 	void setPoint2(Vec2f p);
-	void setPoint2(float x, float y);
+	void setPoint2(double x, double y);
 
 	Vec2f getPoint1();
 	Vec2f getPoint2();
 
-	float getSlope();
-	float getSlopeRelativeY();
-	float getYInt();
-	float getXInt();
+	double getSlope();
+	double getSlopeRelativeY();
+	double getYInt();
+	double getXInt();
 
-	float getMinX();
-	float getMaxX();
-	float getMinY();
-	float getMaxY();
+	double getMinX();
+	double getMaxX();
+	double getMinY();
+	double getMaxY();
 
 private:
 
@@ -131,7 +151,7 @@ class Triangle2D : public Shape
 {
 public:
 	Triangle2D(Vec2f p1, Vec2f p2, Vec2f p3);
-	Triangle2D(float x1, float y1, float x2, float y2, float x3, float y3);
+	Triangle2D(double x1, double y1, double x2, double y2, double x3, double y3);
 	~Triangle2D();
 
 	//Object and Class Stuff
@@ -140,13 +160,13 @@ public:
 	
 
 	void setVertex1(Vec2f p);
-	void setVertex1(float x, float y);
+	void setVertex1(double x, double y);
 
 	void setVertex2(Vec2f p);
-	void setVertex2(float x, float y);
+	void setVertex2(double x, double y);
 
 	void setVertex3(Vec2f p);
-	void setVertex3(float x, float y);
+	void setVertex3(double x, double y);
 
 	Vec2f getVertex1();
 	Vec2f getVertex2();

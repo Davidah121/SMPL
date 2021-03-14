@@ -86,9 +86,14 @@ private:
 	void setValid(bool value);
 	void setFinishInit(bool value);
 	void setDonePainting(bool value);
+	void setResizing(bool value);
+	void setResizeMe(bool value);
 
 	bool getFinishInit();
 	bool getDonePainting();
+
+	bool getResizing();
+	bool getResizeMe();
 	
 	void run();
 	void dispose();
@@ -97,9 +102,13 @@ private:
 	int y = 0;
 	int width = 320;
 	int height = 240;
+
+	int preX = 0;
+	int preY = 0;
+	
 	std::wstring title = L"";
 
-	unsigned char* wndPixels;
+	unsigned char* wndPixels = nullptr;
 	int wndPixelsSize;
 	int scanLinePadding;
 
@@ -118,6 +127,9 @@ private:
 	bool valid = true;
 	bool running = true;
 	bool donePainting = true;
+
+	bool resizing = false;
+	bool resizeMe = false;
 
 	bool finishedInit = false;
 

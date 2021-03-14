@@ -6,7 +6,7 @@ const Class* Vec3f::getClass()
 	return Vec3f::myClass;
 }
 
-Vec3f::Vec3f(float x, float y, float z)
+Vec3f::Vec3f(double x, double y, double z)
 {
 	this->x = x;
 	this->y = y;
@@ -29,32 +29,32 @@ Vec3f::~Vec3f()
 }
 
 
-float Vec3f::getX()
+double Vec3f::getX()
 {
 	return x;
 }
 
-float Vec3f::getY()
+double Vec3f::getY()
 {
 	return y;
 }
 
-float Vec3f::getZ()
+double Vec3f::getZ()
 {
 	return z;
 }
 
-void Vec3f::setX(float value)
+void Vec3f::setX(double value)
 {
 	x = value;
 }
 
-void Vec3f::setY(float value)
+void Vec3f::setY(double value)
 {
 	y = value;
 }
 
-void Vec3f::setZ(float value)
+void Vec3f::setZ(double value)
 {
 	z = value;
 }

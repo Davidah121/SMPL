@@ -148,7 +148,7 @@ double Line::solveForX(double y)
 	if(toPoint.y!=0)
 		return (slopeRelY*y) + xInt;
 	else
-		return (y==point1.y) ? point1.x : FLT_MAX;
+		return point1.x;
 }
 
 double Line::solveForY(double x)
@@ -156,7 +156,7 @@ double Line::solveForY(double x)
 	if(toPoint.x!=0)
 		return (slope*x) + yInt;
 	else
-		return (x==point1.x) ? point1.y : FLT_MAX;
+		return point1.y;
 }
 
 void Line::setSlopeStuff()
@@ -175,7 +175,7 @@ void Line::setSlopeStuff()
 	if(toPoint.y != 0)
 	{
 		slopeRelY = toPoint.x / toPoint.y;
-		xInt = point1.x - slope*point1.y;
+		xInt = point1.x - slopeRelY*point1.y;
 	}
 	else
 	{

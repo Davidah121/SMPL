@@ -407,9 +407,9 @@ ColorPalette ColorPalette::generateOptimalPalette(Color* colorArray, int size, i
 					Color c;
 					Vec3f afterConvert = ColorSpaceConverter::convert(g[0], ColorSpaceConverter::LAB_TO_RGB);
 
-					c.red = (unsigned char)MathExt::clamp(afterConvert.x, 0.0f, 255.0f);
-					c.green = (unsigned char)MathExt::clamp(afterConvert.y, 0.0f, 255.0f);
-					c.blue = (unsigned char)MathExt::clamp(afterConvert.z, 0.0f, 255.0f);
+					c.red = (unsigned char)MathExt::clamp(afterConvert.x, 0.0, 255.0);
+					c.green = (unsigned char)MathExt::clamp(afterConvert.y, 0.0, 255.0);
+					c.blue = (unsigned char)MathExt::clamp(afterConvert.z, 0.0, 255.0);
 					
 					temp.addNewColor(c);
 				}
@@ -483,9 +483,9 @@ ColorPalette ColorPalette::generateOptimalPalette(Color* colorArray, int size, i
 				Color c;
 				Vec3f afterConvert = ColorSpaceConverter::convert(g[0], ColorSpaceConverter::LAB_TO_RGB);
 
-				c.red = (unsigned char)MathExt::clamp(afterConvert.x, 0.0f, 255.0f);
-				c.green = (unsigned char)MathExt::clamp(afterConvert.y, 0.0f, 255.0f);
-				c.blue = (unsigned char)MathExt::clamp(afterConvert.z, 0.0f, 255.0f);
+				c.red = (unsigned char)MathExt::clamp(afterConvert.x, 0.0, 255.0);
+				c.green = (unsigned char)MathExt::clamp(afterConvert.y, 0.0, 255.0);
+				c.blue = (unsigned char)MathExt::clamp(afterConvert.z, 0.0, 255.0);
 				
 				temp.addNewColor(c);
 			}
@@ -668,9 +668,9 @@ std::vector<Color> ColorPalette::meanCut(std::vector<Color> uniqueColors, int co
 		//avg color for each box has already been found
 		Vec3f meanColor = b.averageColor;
 		//round
-		double cr = MathExt::clamp(MathExt::round(meanColor.x), 0.0f, 255.0f);
-		double cg = MathExt::clamp(MathExt::round(meanColor.y), 0.0f, 255.0f);
-		double cb = MathExt::clamp(MathExt::round(meanColor.z), 0.0f, 255.0f);
+		double cr = MathExt::clamp(MathExt::round(meanColor.x), 0.0, 255.0);
+		double cg = MathExt::clamp(MathExt::round(meanColor.y), 0.0, 255.0);
+		double cb = MathExt::clamp(MathExt::round(meanColor.z), 0.0, 255.0);
 
 		finalColors.push_back( {(unsigned char)cr, (unsigned char)cg, (unsigned char)cb, 255} );
 	}
@@ -776,9 +776,9 @@ std::vector<Color> ColorPalette::medianCut(std::vector<Color> colorArray, int co
 		avgVal/=divVal;
 
 		//round
-		double cr = MathExt::clamp(MathExt::round(avgVal.x), 0.0f, 255.0f);
-		double cg = MathExt::clamp(MathExt::round(avgVal.y), 0.0f, 255.0f);
-		double cb = MathExt::clamp(MathExt::round(avgVal.z), 0.0f, 255.0f);
+		double cr = MathExt::clamp(MathExt::round(avgVal.x), 0.0, 255.0);
+		double cg = MathExt::clamp(MathExt::round(avgVal.y), 0.0, 255.0);
+		double cb = MathExt::clamp(MathExt::round(avgVal.z), 0.0, 255.0);
 
 		finalColors.push_back( {(unsigned char)cr, (unsigned char)cg, (unsigned char)cb, 255} );
 	}
@@ -901,9 +901,9 @@ std::vector<Color> ColorPalette::kMeans(std::vector<Color> colorArray, int color
 	for(ColorBoxInfo k : groups)
 	{
 		//round
-		double cr = MathExt::clamp(MathExt::round(k.averageColor.x), 0.0f, 255.0f);
-		double cg = MathExt::clamp(MathExt::round(k.averageColor.y), 0.0f, 255.0f);
-		double cb = MathExt::clamp(MathExt::round(k.averageColor.z), 0.0f, 255.0f);
+		double cr = MathExt::clamp(MathExt::round(k.averageColor.x), 0.0, 255.0);
+		double cg = MathExt::clamp(MathExt::round(k.averageColor.y), 0.0, 255.0);
+		double cb = MathExt::clamp(MathExt::round(k.averageColor.z), 0.0, 255.0);
 
 		avgColors.push_back( {(unsigned char)cr, (unsigned char)cg, (unsigned char)cb, 255} );
 	}

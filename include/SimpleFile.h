@@ -7,11 +7,12 @@
 class SimpleFile : public Object
 {
 public:
-	static char const READ;
-	static char const WRITE;
-	static char const WRITE_APPEND;
+	static const char READ = 0;
+	static const char WRITE = 1;
+	static const char WRITE_APPEND = 2;
 
-	static char* const LINE_BREAK;
+	static const char LINE_BREAK_1 = 13;
+	static const char LINE_BREAK_2 = 10;
 
 	SimpleFile(std::wstring filename, char type);
 	SimpleFile(std::string filename, char type);

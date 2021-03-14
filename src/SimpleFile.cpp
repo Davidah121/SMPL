@@ -1,11 +1,6 @@
 #include "SimpleFile.h"
 #include "StringTools.h"
 
-char* const SimpleFile::LINE_BREAK = new char[2]{ (char)13, (char)10 };
-char const SimpleFile::READ = 0;
-char const SimpleFile::WRITE = 1;
-char const SimpleFile::WRITE_APPEND = 2;
-
 const Class* SimpleFile::myClass = new Class("SimpleFile", {Object::myClass});
 const Class* SimpleFile::getClass()
 {
@@ -164,7 +159,7 @@ const char * SimpleFile::readLine()
 		{
 			c = file->get();
 
-			if (c != LINE_BREAK[0])
+			if (c != LINE_BREAK_1)
 			{
 				p += c;
 			}
@@ -173,7 +168,7 @@ const char * SimpleFile::readLine()
 				if (!isEndOfFile())
 				{
 					c = file->get();
-					if (c == LINE_BREAK[1])
+					if (c == LINE_BREAK_2)
 					{
 						//Hit a line break
 						break;
@@ -219,7 +214,7 @@ const wchar_t * SimpleFile::readWideLine()
 			p1 = file->get();
 			c = toWideChar(p1, p2);
 
-			if (c != LINE_BREAK[0])
+			if (c != LINE_BREAK_1)
 			{
 				p += c;
 			}
@@ -231,7 +226,7 @@ const wchar_t * SimpleFile::readWideLine()
 					p1 = file->get();
 					n = toWideChar(p1, p2);
 
-					if (n == LINE_BREAK[1])
+					if (n == LINE_BREAK_2)
 					{
 						//Hit a line break
 						break;
@@ -274,7 +269,7 @@ std::string SimpleFile::readString()
 
 			if(!isEndOfFile())
 			{
-				if (c != LINE_BREAK[0])
+				if (c != LINE_BREAK_1)
 				{
 					p += c;
 				}
@@ -283,7 +278,7 @@ std::string SimpleFile::readString()
 					c = file->get();
 					if(!isEndOfFile())
 					{
-						if (c == LINE_BREAK[1])
+						if (c == LINE_BREAK_2)
 						{
 							//Hit a line break
 							break;
@@ -325,7 +320,7 @@ std::wstring SimpleFile::readWideString()
 			p1 = file->get();
 			c = toWideChar(p1, p2);
 
-			if (c != LINE_BREAK[0])
+			if (c != LINE_BREAK_1)
 			{
 				p += c;
 			}
@@ -337,7 +332,7 @@ std::wstring SimpleFile::readWideString()
 					p1 = file->get();
 					n = toWideChar(p1, p2);
 
-					if (n == LINE_BREAK[1])
+					if (n == LINE_BREAK_2)
 					{
 						//Hit a line break
 						break;
@@ -601,8 +596,8 @@ void SimpleFile::writeLineBreak()
 	{
 		if (type == WRITE || type == WRITE_APPEND)
 		{
-			file->put(LINE_BREAK[0]);
-			file->put(LINE_BREAK[1]);
+			file->put(LINE_BREAK_1);
+			file->put(LINE_BREAK_2);
 		}
 		else
 		{

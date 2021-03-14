@@ -11,7 +11,7 @@ Vec4f::Vec4f()
 {
 }
 
-Vec4f::Vec4f(float x, float y, float z, float w)
+Vec4f::Vec4f(double x, double y, double z, double w)
 {
 	this->x = x;
 	this->y = y;
@@ -36,42 +36,42 @@ Vec4f::~Vec4f()
 {
 }
 
-float Vec4f::getX()
+double Vec4f::getX()
 {
 	return x;
 }
 
-float Vec4f::getY()
+double Vec4f::getY()
 {
 	return y;
 }
 
-float Vec4f::getZ()
+double Vec4f::getZ()
 {
 	return z;
 }
 
-float Vec4f::getW()
+double Vec4f::getW()
 {
 	return w;
 }
 
-void Vec4f::setX(float value)
+void Vec4f::setX(double value)
 {
 	x = value;
 }
 
-void Vec4f::setY(float value)
+void Vec4f::setY(double value)
 {
 	y = value;
 }
 
-void Vec4f::setZ(float value)
+void Vec4f::setZ(double value)
 {
 	z = value;
 }
 
-void Vec4f::setW(float value)
+void Vec4f::setW(double value)
 {
 	w = value;
 }

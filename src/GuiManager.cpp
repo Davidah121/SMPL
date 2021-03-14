@@ -1,6 +1,8 @@
 #include "GuiManager.h"
 #include "Input.h"
 #include "MathExt.h"
+#include "Sort.h"
+#include "WndWindow.h"
 
 #pragma region GUI_INSTANCE_CLASS
 
@@ -20,6 +22,8 @@ GuiInstance::GuiInstance(std::string name, bool vis)
 
 GuiInstance::~GuiInstance()
 {
+	children.clear();
+	manager = nullptr;
 }
 
 void GuiInstance::update()
@@ -28,6 +32,18 @@ void GuiInstance::update()
 
 void GuiInstance::render(Image* surf)
 {
+}
+
+void GuiInstance::addChild(GuiInstance* ins)
+{
+	ins->priority = this->priority + 1;
+	ins->setOffset( &x, &y );
+	children.push_back(ins);
+}
+
+std::vector<GuiInstance*> GuiInstance::getChildren()
+{
+	return children;
 }
 
 void GuiInstance::setName(std::string name)
@@ -70,12 +86,46 @@ bool GuiInstance::getActive()
 
 int GuiInstance::getOffsetX()
 {
-	return *offX + 8;
+	if(offX!=nullptr)
+		return *offX;
+	return 0;
 }
 
 int GuiInstance::getOffsetY()
 {
-	return *offY + 32;
+	if(offY!=nullptr)
+		return *offY;
+	return 0;
+}
+
+void GuiInstance::setBaseX(int x)
+{
+	baseX = x;
+}
+
+int GuiInstance::getBaseX()
+{
+	return baseX;
+}
+
+void GuiInstance::setBaseY(int y)
+{
+	baseY = y;
+}
+
+int GuiInstance::getBaseY()
+{
+	return baseY;
+}
+
+int GuiInstance::getX()
+{
+	return x;
+}
+
+int GuiInstance::getY()
+{
+	return y;
 }
 
 void GuiInstance::setOnActivateFunction(void (*func)(void))
@@ -96,6 +146,9 @@ void GuiInstance::setOffset(int* offX, int* offY)
 
 const void GuiInstance::baseUpdate()
 {
+	x = getOffsetX() + baseX;
+	y = getOffsetY() + baseY;
+	
 	if (shouldCallA)
 		if(onActivateFunction!=nullptr)
 			onActivateFunction();
@@ -106,6 +159,281 @@ const void GuiInstance::baseUpdate()
 
 	shouldCallA = false;
 	shouldCallV = false;
+}
+
+int GuiInstance::getPriority()
+{
+	return priority;
+}
+
+void GuiInstance::setManager(GuiManager* m)
+{
+	manager = m;
+}
+
+GuiManager* GuiInstance::getManager()
+{
+	return manager;
+}
+
+#pragma endregion
+
+#pragma region GUI_CONTAINER_CLASS
+
+const Class* GuiContainer::myClass = new Class("GuiContainer", {GuiInstance::myClass});
+const Class* GuiContainer::getClass()
+{
+	return GuiContainer::myClass;
+}
+
+GuiContainer::GuiContainer()
+{
+	
+}
+
+GuiContainer::~GuiContainer()
+{
+	
+}
+
+void GuiContainer::update()
+{
+	
+}
+
+void GuiContainer::render(Image* surf)
+{
+	
+}
+
+#pragma endregion
+
+#pragma region GUI_IMAGE_CLASS
+
+const Class* GuiImage::myClass = new Class("GuiImage", {GuiInstance::myClass});
+const Class* GuiImage::getClass()
+{
+	return GuiImage::myClass;
+}
+
+GuiImage::GuiImage(Image* img)
+{
+	this->img = img;
+}
+
+GuiImage::~GuiImage()
+{
+	
+}
+
+void GuiImage::update()
+{
+	
+}
+
+void GuiImage::render(Image* surf)
+{
+	if(surf!=nullptr)
+	{
+		if(img!=nullptr)
+		{
+			Graphics::drawImage(img, x, y, surf);
+		}
+	}
+}
+
+void GuiImage::setImage(Image* img)
+{
+	this->img = img;
+}
+
+Image* GuiImage::getImage()
+{
+	return img;
+}
+
+#pragma endregion
+
+#pragma region GUI_SPRITE_CLASS
+
+const Class* GuiSprite::myClass = new Class("GuiSprite", {GuiInstance::myClass});
+const Class* GuiSprite::getClass()
+{
+	return GuiSprite::myClass;
+}
+
+GuiSprite::GuiSprite()
+{
+
+}
+
+GuiSprite::~GuiSprite()
+{
+	
+}
+
+void GuiSprite::update()
+{
+	
+	if(timer>=fps)
+	{
+		timer=0;
+		index++;
+		if(index>=img.getSize())
+		{
+			if(shouldLoop)
+				index = 0;
+		}
+	}
+	timer++;
+}
+
+void GuiSprite::render(Image* surf)
+{
+	if(surf!=nullptr)
+	{
+		if(img.getImage(index)!=nullptr)
+		{
+			Graphics::setColor(imgColor);
+			Graphics::drawSprite(img.getImage(index), x, y, surf);
+		}
+	}
+}
+
+void GuiSprite::setSprite(Sprite img)
+{
+	this->img = img;
+}
+
+Sprite& GuiSprite::getSprite()
+{
+	return img;
+}
+
+void GuiSprite::setAnimationTimer(int framesPerSecond)
+{
+	fps = framesPerSecond;
+}
+int GuiSprite::getAnimationTimer()
+{
+	return fps;
+}
+
+void GuiSprite::setLoop(bool loop)
+{
+	shouldLoop = loop;
+}
+
+bool GuiSprite::getLoop()
+{
+	return shouldLoop;
+}
+
+void GuiSprite::setColor(Color c)
+{
+	imgColor = c;
+}
+
+Color GuiSprite::getColor()
+{
+	return imgColor;
+}
+
+#pragma endregion
+
+#pragma region GUI_TEXTBLOCK_CLASS
+
+const Class* GuiTextBlock::myClass = new Class("GuiTextBlock", {GuiInstance::myClass});
+const Class* GuiTextBlock::getClass()
+{
+	return GuiTextBlock::myClass;
+}
+
+GuiTextBlock::GuiTextBlock(int x, int y, int width, int height)
+{
+	setBaseX(x);
+	setBaseY(y);
+	this->width = width;
+	this->height = height;
+}
+
+GuiTextBlock::~GuiTextBlock()
+{
+	
+}
+
+void GuiTextBlock::update()
+{
+	
+}
+
+void GuiTextBlock::render(Image* surf)
+{
+	if(surf!=nullptr)
+	{
+		Font* oldFont = Graphics::getFont();
+
+		if(textFont!=nullptr)
+			Graphics::setFont(textFont);
+
+		Graphics::setColor(textColor);
+		Graphics::drawTextLimits(text, x, y, width, height, surf);
+
+		Graphics::setFont(oldFont);
+	}
+}
+
+void GuiTextBlock::setTextColor(Color c)
+{
+	textColor = c;
+}
+
+Color GuiTextBlock::getTextColor()
+{
+	return textColor;
+}
+
+std::string GuiTextBlock::getText()
+{
+	return text;
+}
+
+std::string& GuiTextBlock::getTextRef()
+{
+	return text;
+}
+
+void GuiTextBlock::setText(std::string s)
+{
+	text = s;
+}
+
+void GuiTextBlock::setFont(Font* f)
+{
+	textFont = f;
+}
+
+Font* GuiTextBlock::getFont()
+{
+	return textFont;
+}
+
+void GuiTextBlock::setWidth(int v)
+{
+	width = v;
+}
+void GuiTextBlock::setHeight(int v)
+{
+	height = v;
+}
+
+int GuiTextBlock::getWidth()
+{
+	return width;
+}
+int GuiTextBlock::getHeight()
+{
+	return height;
 }
 
 #pragma endregion
@@ -120,12 +448,15 @@ const Class* GuiTextBox::getClass()
 
 GuiTextBox::GuiTextBox(int x, int y, int width, int height) : GuiInstance()
 {
-	this->x = x;
-	this->y = y;
+	setBaseX(x);
+	setBaseY(y);
 	this->width = width;
 	this->height = height;
 	onEnterPressedFunction = nullptr;
 	onKeyPressFunction = nullptr;
+
+	textElement = GuiTextBlock(0,0,width,height);
+	addChild( &textElement );
 }
 
 GuiTextBox::~GuiTextBox()
@@ -159,45 +490,74 @@ void GuiTextBox::setActiveOutlineColor(Color c)
 
 void GuiTextBox::render(Image* surf)
 {
-	//draw a rectangle
-	Graphics::setColor(backgroundColor);
-	surf->drawRect(x, y, x + width, y + height, false);
+	if(surf!=nullptr)
+	{
+		//draw a rectangle
+		Graphics::setColor(backgroundColor);
+		surf->drawRect(x, y, x + width, y + height, false);
 
-	if (getActive() == false)
-		Graphics::setColor(outlineColor);
-	else
-		Graphics::setColor(activeOutlineColor);
-
-	surf->drawRect(x, y, x + width, y + height, true);
+		if (getActive() == false)
+			Graphics::setColor(outlineColor);
+		else
+			Graphics::setColor(activeOutlineColor);
+		
+		surf->drawRect(x, y, x + width, y + height, true);
+	}
 }
 
 void GuiTextBox::update()
 {
 	if (getActive())
 	{
-		if (Input::getKeyChanged())
+		if (Input::getKeyChanged() && Input::getKeyPressed(0x0D)!=true )
 		{
+			//General Key
 			if (onKeyPressFunction != nullptr)
 			{
 				onKeyPressFunction();
 			}
 		}
 
-		if (Input::getKeyPressed(0x0D)) // Enter key
+		if (Input::getKeyPressed(0x0D))
 		{
+			 //Enter key
 			if (onEnterPressedFunction != nullptr)
 			{
 				onEnterPressedFunction();
 			}
 		}
+
+		//Do something like this
+		if( Input::getKeyPressed(0x08))
+		{
+			if(textElement.getTextRef().size()>0)
+				textElement.getTextRef().pop_back();
+		}
+
+		if( StringTools::isValidChar( Input::getLastKeyPressed() ) )
+		{
+			if(Input::getKeyDown( VK_SHIFT ))
+				textElement.getTextRef() += (char)Input::getLastKeyPressed();
+			else
+				textElement.getTextRef() += (char)std::tolower(Input::getLastKeyPressed());
+		}
+	}
+
+	int mouseX = Input::getMouseX();
+	int mouseY = Input::getMouseY();
+	
+	if(getManager()!=nullptr)
+	{
+		mouseX -= getManager()->getWindowX();
+		mouseY -= getManager()->getWindowY();
 	}
 
 	if (Input::getMousePressed(Input::LEFT_MOUSE_BUTTON))
 	{
 		setActive(false);
-		if (Input::getMouseX() - getOffsetX() >= x && Input::getMouseX() - getOffsetX() <= x + width)
+		if (mouseX >= x && mouseX <= x + width)
 		{
-			if (Input::getMouseY() - getOffsetY() >= y && Input::getMouseY() - getOffsetY() <= y + height)
+			if (mouseY >= y && mouseY <= y + height)
 			{
 				setActive(true);
 			}
@@ -205,6 +565,29 @@ void GuiTextBox::update()
 	}
 
 }
+
+GuiTextBlock* GuiTextBox::getTextBlockElement()
+{
+	return &textElement;
+}
+
+void GuiTextBox::setWidth(int v)
+{
+	width = v;
+}
+void GuiTextBox::setHeight(int v)
+{
+	height = v;
+}
+int GuiTextBox::getWidth()
+{
+	return width;
+}
+int GuiTextBox::getHeight()
+{
+	return height;
+}
+
 #pragma endregion
 
 #pragma region GUI_RECTANGLE_BUTTON
@@ -217,8 +600,8 @@ const Class* GuiRectangleButton::getClass()
 
 GuiRectangleButton::GuiRectangleButton(int x, int y, int width, int height) : GuiInstance()
 {
-	this->x = x;
-	this->y = y;
+	setBaseX(x);
+	setBaseY(y);
 	this->width = width;
 	this->height = height;
 	onClickFunction = nullptr;
@@ -230,15 +613,23 @@ GuiRectangleButton::~GuiRectangleButton()
 
 void GuiRectangleButton::update()
 {
+	int mouseX = Input::getMouseX();
+	int mouseY = Input::getMouseY();
 	
+	if(getManager()!=nullptr)
+	{
+		mouseX -= getManager()->getWindowX();
+		mouseY -= getManager()->getWindowY();
+	}
+
 	if (Input::getMousePressed(Input::LEFT_MOUSE_BUTTON))
 	{
 		setActive(false);
-		if (Input::getMouseX() - getOffsetX() >= x && Input::getMouseX() - getOffsetX() <= x + width)
+		if (mouseX >= x && mouseX <= x + width)
 		{
-
-			if (Input::getMouseY() - getOffsetY() >= y && Input::getMouseY() - getOffsetY() <= y + height)
+			if (mouseY >= y && mouseY <= y + height)
 			{
+				StringTools::println("BUTT");
 				setActive(true);
 
 				if (onClickFunction != nullptr)
@@ -250,16 +641,19 @@ void GuiRectangleButton::update()
 
 void GuiRectangleButton::render(Image* surf)
 {
-	//draw a rectangle
-	Graphics::setColor(backgroundColor);
-	surf->drawRect(x, y, x + width, y + height, false);
+	if(surf!=nullptr)
+	{
+		//draw a rectangle
+		Graphics::setColor(backgroundColor);
+		surf->drawRect(x, y, x + width, y + height, false);
 
-	if (getActive() == false)
-		Graphics::setColor(outlineColor);
-	else
-		Graphics::setColor(activeOutlineColor);
+		if (getActive() == false)
+			Graphics::setColor(outlineColor);
+		else
+			Graphics::setColor(activeOutlineColor);
 
-	surf->drawRect(x, y, x + width, y + height, true);
+		surf->drawRect(x, y, x + width, y + height, true);
+	}
 }
 
 void GuiRectangleButton::setOnClickFunction(void(*func)(void))
@@ -282,6 +676,23 @@ void GuiRectangleButton::setActiveOutlineColor(Color c)
 	activeOutlineColor = c;
 }
 
+void GuiRectangleButton::setWidth(int v)
+{
+	width = v;
+}
+void GuiRectangleButton::setHeight(int v)
+{
+	height = v;
+}
+int GuiRectangleButton::getWidth()
+{
+	return width;
+}
+int GuiRectangleButton::getHeight()
+{
+	return height;
+}
+
 #pragma endregion
 
 #pragma region GUI_CIRCLE_BUTTON
@@ -294,8 +705,8 @@ const Class* GuiCircleButton::getClass()
 
 GuiCircleButton::GuiCircleButton(int x, int y, int radius) : GuiInstance()
 {
-	this->x = x;
-	this->y = y;
+	setBaseX(x);
+	setBaseY(y);
 	this->radius = radius;
 	onClickFunction = nullptr;
 }
@@ -306,11 +717,20 @@ GuiCircleButton::~GuiCircleButton()
 
 void GuiCircleButton::update()
 {
+	int mouseX = Input::getMouseX();
+	int mouseY = Input::getMouseY();
+	
+	if(getManager()!=nullptr)
+	{
+		mouseX -= getManager()->getWindowX();
+		mouseY -= getManager()->getWindowY();
+	}
+
 	if (Input::getMousePressed(Input::LEFT_MOUSE_BUTTON))
 	{
 		setActive(false);
 		double radSqr = MathExt::sqr(radius);
-		double otherRad = MathExt::sqr((double)Input::getMouseX() - getOffsetX() - x) + MathExt::sqr((double)Input::getMouseY() - getOffsetY() - y);
+		double otherRad = MathExt::sqr((double)mouseX - x) + MathExt::sqr((double)mouseY - y);
 
 		if (otherRad <= radSqr)
 		{
@@ -323,16 +743,19 @@ void GuiCircleButton::update()
 
 void GuiCircleButton::render(Image* surf)
 {
-	//draw a rectangle
-	Graphics::setColor(backgroundColor);
-	surf->drawCircle(x, y, radius, false);
+	if(surf!=nullptr)
+	{
+		//draw a circle
+		Graphics::setColor(backgroundColor);
+		surf->drawCircle(x, y, radius, false);
 
-	if (getActive() == false)
-		Graphics::setColor(outlineColor);
-	else
-		Graphics::setColor(activeOutlineColor);
+		if (getActive() == false)
+			Graphics::setColor(outlineColor);
+		else
+			Graphics::setColor(activeOutlineColor);
 
-	surf->drawCircle(x, y, radius, true);
+		surf->drawCircle(x, y, radius, true);
+	}
 }
 
 void GuiCircleButton::setOnClickFunction(void(*func)(void))
@@ -355,6 +778,15 @@ void GuiCircleButton::setActiveOutlineColor(Color c)
 	activeOutlineColor = c;
 }
 
+void GuiCircleButton::setRadius(int v)
+{
+	radius = v;
+}
+int GuiCircleButton::getRadius()
+{
+	return radius;
+}
+
 #pragma endregion
 
 #pragma region GUI_MANAGER
@@ -365,38 +797,53 @@ const Class* GuiManager::getClass()
 	return GuiManager::myClass;
 }
 
-GuiManager::GuiManager(int* offsetX, int* offsetY)
+GuiManager::GuiManager()
 {
-	offX = offsetX;
-	offY = offsetY;
 }
 
-GuiManager::GuiManager(int* offsetX, int* offsetY, Image* img)
+GuiManager::GuiManager(Image* img, bool ownership)
 {
-	offX = offsetX;
-	offY = offsetY;
+	ownsImage = ownership;
 	surf = img;
 }
 
 GuiManager::GuiManager(const GuiManager& k)
 {
+	ownsImage = false;
 	surf = k.surf;
 	objects = std::vector<GuiInstance*>(k.objects);
 }
 
 GuiManager::~GuiManager()
 {
-	for (int i = 0; i < objects.size(); i++)
-	{
-		delete objects[i];
-	}
 	objects.clear();
+
+	if(ownsImage)
+	{
+		if(surf!=nullptr)
+		{
+			delete surf;
+		}
+	}
+
+	surf = nullptr;
 }
 
 void GuiManager::addElement(GuiInstance* k)
 {
-	k->setOffset(offX, offY);
-	objects.push_back(k);
+	if(k->getManager() == nullptr)
+	{
+		k->setManager(this);
+		objects.push_back(k);
+
+		for(GuiInstance* c : k->getChildren())
+		{
+			if(c->getManager() == nullptr)
+			{
+				addElement(c);
+			}
+		}
+	}
 }
 
 void GuiManager::deleteElement(GuiInstance* k)
@@ -422,11 +869,23 @@ void GuiManager::deleteElement(GuiInstance* k)
 		objects.pop_back();
 	}
 
-	delete k;
+	//delete children as well
+	for(GuiInstance* o : k->getChildren())
+	{
+		deleteElement(o);
+	}
+}
+
+void GuiManager::sortElements()
+{
+	Sort::insertionSort<GuiInstance*>(objects.data(), objects.size(), [](GuiInstance* a, GuiInstance* b)->bool{
+		return a->getPriority() < b->getPriority();
+	});
 }
 
 void GuiManager::updateGuiElements()
 {
+	sortElements();
 	Input::pollInput();
 	for (int i = 0; i < objects.size(); i++)
 	{
@@ -467,6 +926,38 @@ Image* GuiManager::getImage()
 size_t GuiManager::getSize()
 {
 	return objects.size();
+}
+
+void GuiManager::resizeImage(int width, int height)
+{
+	if(ownsImage)
+	{
+		if(surf!=nullptr)
+		{
+			delete surf;
+		}
+		surf = new Image(width, height);
+	}
+}
+
+void GuiManager::setWindowX(int v)
+{
+	windowX = v;
+}
+
+void GuiManager::setWindowY(int v)
+{
+	windowY = v;
+}
+
+int GuiManager::getWindowX()
+{
+	return windowX;
+}
+
+int GuiManager::getWindowY()
+{
+	return windowY;
 }
 
 #pragma endregion
