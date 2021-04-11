@@ -19,141 +19,141 @@ MathExt::~MathExt()
 }
 
 
-int MathExt::max(int a, int b)
-{
-	return ((a > b) ? a : b);
-}
+// int MathExt::max(int a, int b)
+// {
+// 	return ((a > b) ? a : b);
+// }
 
-double MathExt::max(double a, double b)
-{
-	return ((a > b) ? a : b);
-}
+// double MathExt::max(double a, double b)
+// {
+// 	return ((a > b) ? a : b);
+// }
 
-float MathExt::max(float a, float b)
-{
-	return ((a > b) ? a : b);
-}
+// float MathExt::max(float a, float b)
+// {
+// 	return ((a > b) ? a : b);
+// }
 
-long MathExt::max(long a, long b)
-{
-	return ((a > b) ? a : b);
-}
+// long MathExt::max(long a, long b)
+// {
+// 	return ((a > b) ? a : b);
+// }
 
-int MathExt::max(int * ar, int size)
-{
-	int maxValue = ar[0];
+// int MathExt::max(int * ar, int size)
+// {
+// 	int maxValue = ar[0];
 
-	for (int i = 1; i < size; i++)
-	{
-		maxValue = max(ar[i], maxValue);
-	}
+// 	for (int i = 1; i < size; i++)
+// 	{
+// 		maxValue = max(ar[i], maxValue);
+// 	}
 
-	return maxValue;
-}
+// 	return maxValue;
+// }
 
-double MathExt::max(double * ar, int size)
-{
-	double maxValue = ar[0];
+// double MathExt::max(double * ar, int size)
+// {
+// 	double maxValue = ar[0];
 
-	for (int i = 1; i < size; i++)
-	{
-		maxValue = max(ar[i], maxValue);
-	}
+// 	for (int i = 1; i < size; i++)
+// 	{
+// 		maxValue = max(ar[i], maxValue);
+// 	}
 
-	return maxValue;
-}
+// 	return maxValue;
+// }
 
-float MathExt::max(float * ar, int size)
-{
-	float maxValue = ar[0];
+// float MathExt::max(float * ar, int size)
+// {
+// 	float maxValue = ar[0];
 
-	for (int i = 1; i < size; i++)
-	{
-		maxValue = max(ar[i], maxValue);
-	}
+// 	for (int i = 1; i < size; i++)
+// 	{
+// 		maxValue = max(ar[i], maxValue);
+// 	}
 
-	return maxValue;
-}
+// 	return maxValue;
+// }
 
-long MathExt::max(long * ar, int size)
-{
-	long maxValue = ar[0];
+// long MathExt::max(long * ar, int size)
+// {
+// 	long maxValue = ar[0];
 
-	for (int i = 1; i < size; i++)
-	{
-		maxValue = max(ar[i], maxValue);
-	}
+// 	for (int i = 1; i < size; i++)
+// 	{
+// 		maxValue = max(ar[i], maxValue);
+// 	}
 
-	return maxValue;
-}
+// 	return maxValue;
+// }
 
-int MathExt::min(int a, int b)
-{
-	return ((a < b) ? a : b);
-}
+// int MathExt::min(int a, int b)
+// {
+// 	return ((a < b) ? a : b);
+// }
 
-double MathExt::min(double a, double b)
-{
-	return ((a < b) ? a : b);
-}
+// double MathExt::min(double a, double b)
+// {
+// 	return ((a < b) ? a : b);
+// }
 
-float MathExt::min(float a, float b)
-{
-	return ((a < b) ? a : b);
-}
+// float MathExt::min(float a, float b)
+// {
+// 	return ((a < b) ? a : b);
+// }
 
-long MathExt::min(long a, long b)
-{
-	return ((a < b) ? a : b);
-}
+// long MathExt::min(long a, long b)
+// {
+// 	return ((a < b) ? a : b);
+// }
 
-int MathExt::min(int * ar, int size)
-{
-	int minValue = ar[0];
+// int MathExt::min(int * ar, int size)
+// {
+// 	int minValue = ar[0];
 
-	for (int i = 1; i < size; i++)
-	{
-		minValue = min(ar[i], minValue);
-	}
+// 	for (int i = 1; i < size; i++)
+// 	{
+// 		minValue = min(ar[i], minValue);
+// 	}
 
-	return minValue;
-}
+// 	return minValue;
+// }
 
-double MathExt::min(double * ar, int size)
-{
-	double minValue = ar[0];
+// double MathExt::min(double * ar, int size)
+// {
+// 	double minValue = ar[0];
 
-	for (int i = 1; i < size; i++)
-	{
-		minValue = min(ar[i], minValue);
-	}
+// 	for (int i = 1; i < size; i++)
+// 	{
+// 		minValue = min(ar[i], minValue);
+// 	}
 
-	return minValue;
-}
+// 	return minValue;
+// }
 
-float MathExt::min(float * ar, int size)
-{
-	float minValue = ar[0];
+// float MathExt::min(float * ar, int size)
+// {
+// 	float minValue = ar[0];
 
-	for (int i = 1; i < size; i++)
-	{
-		minValue = min(ar[i], minValue);
-	}
+// 	for (int i = 1; i < size; i++)
+// 	{
+// 		minValue = min(ar[i], minValue);
+// 	}
 
-	return minValue;
-}
+// 	return minValue;
+// }
 
-long MathExt::min(long * ar, int size)
-{
-	long minValue = ar[0];
+// long MathExt::min(long * ar, int size)
+// {
+// 	long minValue = ar[0];
 
-	for (int i = 1; i < size; i++)
-	{
-		minValue = min(ar[i], minValue);
-	}
+// 	for (int i = 1; i < size; i++)
+// 	{
+// 		minValue = min(ar[i], minValue);
+// 	}
 
-	return minValue;
-}
+// 	return minValue;
+// }
 
 float MathExt::floor(float a)
 {
@@ -209,45 +209,45 @@ float MathExt::roundToDecimal(double a, int decimalPlaces)
 	return b * MathExt::pow(10.0, -decimalPlaces);
 }
 
-int MathExt::sqr(int a)
-{
-	return a*a;
-}
+// int MathExt::sqr(int a)
+// {
+// 	return a*a;
+// }
 
-float MathExt::sqr(float a)
-{
-	return a*a;
-}
+// float MathExt::sqr(float a)
+// {
+// 	return a*a;
+// }
 
-double MathExt::sqr(double a)
-{
-	return a*a;
-}
+// double MathExt::sqr(double a)
+// {
+// 	return a*a;
+// }
 
-long MathExt::sqr(long a)
-{
-	return a*a;
-}
+// long MathExt::sqr(long a)
+// {
+// 	return a*a;
+// }
 
-int MathExt::cube(int a)
-{
-	return a*a*a;
-}
+// int MathExt::cube(int a)
+// {
+// 	return a*a*a;
+// }
 
-float MathExt::cube(float a)
-{
-	return a*a*a;
-}
+// float MathExt::cube(float a)
+// {
+// 	return a*a*a;
+// }
 
-double MathExt::cube(double a)
-{
-	return a*a*a;
-}
+// double MathExt::cube(double a)
+// {
+// 	return a*a*a;
+// }
 
-long MathExt::cube(long a)
-{
-	return a*a*a;
-}
+// long MathExt::cube(long a)
+// {
+// 	return a*a*a;
+// }
 
 double MathExt::sqrt(int a)
 {
@@ -297,6 +297,14 @@ float MathExt::log(float value, float base)
 double MathExt::log(double value, double base)
 {
 	return std::log(value)/std::log(base);
+}
+float MathExt::lerp(float a, float b, float blend)
+{
+	return (a * (1-blend) + b * blend);
+}
+double MathExt::lerp(double a, double b, double blend)
+{
+	return (a * (1-blend) + b * blend);
 }
 
 int MathExt::abs(int a)

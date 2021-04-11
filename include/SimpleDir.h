@@ -8,7 +8,7 @@
 class SimpleDir : public Object
 {
 public:
-	SimpleDir(wchar_t* directory);
+	SimpleDir(std::wstring directory);
 	~SimpleDir();
 
 	//Object and Class Stuff
@@ -24,21 +24,21 @@ public:
 	time_t getLastChangeTime(int index); //Gets the last time the reference at that index was updated
 	bool referenceIsDirectory(int index); //Gets whether the reference is a directory or not
 	
-	void renameResource(wchar_t* newName, int index); //
+	void renameResource(std::wstring newName, int index); //
 	void deleteResource(int index); //Delete Resouce
-	void copyResource(wchar_t* newName, int index); //
+	void copyResource(std::wstring newName, int index); //
 
-	int getReferenceLocation(wchar_t* name);
+	int getReferenceLocation(std::wstring name);
 
 	//Directory Stuff
 	int getSize(); //Returns the amount of items in this directory
-	std::vector<wchar_t*> getFolders(); //Returns all of the folders
-	std::vector<wchar_t*> getFiles(); //Returns the files with a particular attribute
+	std::vector<std::wstring> getFolders(); //Returns all of the folders
+	std::vector<std::wstring> getFiles(); //Returns the files with a particular attribute
 
 	bool doesExist(); //Determines if this is currently a directory
 	void createDirectory(); //Creates a directory at that location
 
-	wchar_t* getLocation();
+	std::wstring getLocation();
 
 private:
 	std::vector<std::filesystem::directory_entry> names = std::vector<std::filesystem::directory_entry>();

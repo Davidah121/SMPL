@@ -1,7 +1,8 @@
 #pragma once
 #include "ColorPalette.h"
 #include <string>
-#include "Vec2f.h"
+#include "MathExt.h"
+#include "Opti.h"
 
 class Image : public Object
 {
@@ -20,7 +21,7 @@ public:
 	int getHeight();
 	Color* getPixels();
 
-	Color getPixel(int x, int y);
+	Color getPixel(int x, int y, bool clamp = false);
 	void setPixel(int x, int y, Color c);
 	void setAllPixels(Color c);
 	
@@ -46,16 +47,17 @@ public:
 	void drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH);
 
 	void drawText(std::string str, int x, int y);
+	void drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight);
+	
+	void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline);
+	void drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture);
+
 	void drawPixel(int x, int y, Color c);
 	void drawPixel(double x, double y, Color c);
 
-	static bool IMAGE_SAVE_ALPHA;
-	static unsigned char IMAGE_ALPHA_THRESHOLD;
-	static bool IMAGE_GREYSCALE;
-
-	void saveBMP(std::string filename);
-	void saveGIF(std::string filename);
-	void savePNG(std::string filename);
+	void saveBMP(std::string filename, unsigned char alphaThreshold = 255, bool greyscale = false);
+	void saveGIF(std::string filename, int paletteSize = 256, bool saveAlpha = true, unsigned char alphaThreshold = 127, bool greyscale = false);
+	void savePNG(std::string filename, bool saveAlpha = true, unsigned char alphaThreshold = 127, bool greyscale = false);
 	void saveJPG(std::string filename);
 private:
 	int width = 0;

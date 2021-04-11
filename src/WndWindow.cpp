@@ -699,7 +699,7 @@ void WndWindow::repaint()
 	if (paintFunction != nullptr)
 		paintFunction();
 
-	if (gui != nullptr)
+	if (gui != nullptr && activateGui)
 	{
 		gui->setWindowX(x+8);
 		gui->setWindowY(y+32);
@@ -805,6 +805,16 @@ void WndWindow::setClosingFunction(void(*function)(void))
 GuiManager* WndWindow::getGuiManager()
 {
 	return gui;
+}
+
+void WndWindow::setActivateGui(bool v)
+{
+	activateGui = v;
+}
+
+bool WndWindow::getActivateGui()
+{
+	return activateGui;
 }
 
 void WndWindow::drawImage(Image* g)

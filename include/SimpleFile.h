@@ -7,12 +7,17 @@
 class SimpleFile : public Object
 {
 public:
-	static const char READ = 0;
-	static const char WRITE = 1;
-	static const char WRITE_APPEND = 2;
+	static const char READ = 0x00;
+	static const char WRITE = 0x01;
+	static const char WRITE_APPEND = 0x02;
 
 	static const char LINE_BREAK_1 = 13;
 	static const char LINE_BREAK_2 = 10;
+
+	static const char ASCII = 0x00;
+	static const char WIDECHAR = 0x10;
+	static const char UTF8 = 0x20;
+	
 
 	SimpleFile(std::wstring filename, char type);
 	SimpleFile(std::string filename, char type);
@@ -26,14 +31,11 @@ public:
 	//Read functions
 	char readByte();
 	int readInt();
-	wchar_t readWideChar(); //Unicode capable
-	const char* readLine();
-	const wchar_t* readWideLine();
+	wchar_t readWideChar();
 	std::string readString();
 	std::wstring readWideString();
 
-	std::vector<const char*> readFullFile();
-	std::vector<const wchar_t*> readFullFileWide();
+	int readUTF8Char();
 
 	std::vector<std::string> readFullFileString();
 	std::vector<std::wstring> readFullFileStringWide();
@@ -42,14 +44,12 @@ public:
 
 	//Write functions
 	void writeByte(char c);
-	void writeWideChar(wchar_t c); //Unicode capable
-	void writeLine(char* line);
-	void writeWideLine(wchar_t* line); //Unicode capable
+	void writeWideChar(wchar_t c);
 
 	void writeBytes(unsigned char* data, int size);
 
 	void writeString(std::string line);
-	void writeWideString(std::wstring line); //Unicode capable
+	void writeWideString(std::wstring line);
 
 	void writeLineBreak();
 
@@ -63,8 +63,12 @@ public:
 	int getBytesLeft();
 
 private:
-	std::wstring wideFileName; //Unicode capable
-	char type;
+	void init(std::wstring filename, char type);
+	int getChar();
+
+	std::wstring wideFileName;
+	char type=0;
+	char dataType=0;
 	std::fstream* file;
 	int size;
 	

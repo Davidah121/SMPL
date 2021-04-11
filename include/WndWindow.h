@@ -65,6 +65,9 @@ public:
 	void setClosingFunction(void(*function)(void));
 
 	GuiManager* getGuiManager();
+	void setActivateGui(bool v);
+	bool getActivateGui();
+	
 	void drawImage(Image* g);
 
 private:
@@ -123,6 +126,7 @@ private:
 	HDC myHDC;
 
 	GuiManager* gui;
+	bool activateGui = true;
 
 	bool valid = true;
 	bool running = true;

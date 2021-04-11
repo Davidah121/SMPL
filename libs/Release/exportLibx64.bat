@@ -1,2 +1,3 @@
 @echo OFF
-ar -rcs libs/Release/x64/GLIB.lib bin/Release/x64/obj/*.o
+del bin/Release/x64/obj/Main.o
+llvm-ar -rcs libs/Release/x64/GLIB.lib bin/Release/x64/obj/*.o

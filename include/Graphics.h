@@ -2,10 +2,12 @@
 #include "Image.h"
 #include "Font.h"
 #include "Model.h"
+#include "Opti.h"
 
 class Graphics
 {
 public:
+	static const unsigned char NO_COMPOSITE = 255;
 	static const unsigned char COMPOSITE_CLEAR = 0;
 	static const unsigned char COMPOSITE_COPY = 1;
 	static const unsigned char COMPOSITE_DEST = 2;
@@ -41,6 +43,15 @@ public:
 	static void drawPixel(double x, double y, Color c, Image* surf = nullptr);
 
 	static Color blend(Color src, Color dest);
+
+	#if (OPTI>=1)
+		static __m128i blend(__m128i src, __m128i dest);
+	#endif
+
+	#if (OPTI>=2)
+		static __m256i blend(__m256i src, __m256i dest);
+	#endif
+
 	static Color lerp(Color src, Color dest, double lerpVal);
 
 	static void drawRect(int x, int y, int x2, int y2, bool outline, Image* surf = nullptr);

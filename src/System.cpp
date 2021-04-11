@@ -4,9 +4,8 @@
 #include <thread>
 #include <Windows.h>
 #include "SimpleFile.h"
+#include <TlHelp32.h>
 
-std::chrono::high_resolution_clock::time_point System::startTime;
-std::chrono::high_resolution_clock::time_point System::endTime;
 unsigned int System::numberOfThreads = std::thread::hardware_concurrency();
 
 System::System()
@@ -18,28 +17,28 @@ System::~System()
 {
 }
 
-unsigned long System::getCurrentTimeMillis()
+size_t System::getCurrentTimeMillis()
 {
 	auto t = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now());
 	auto value = std::chrono::duration_cast<std::chrono::milliseconds>(t.time_since_epoch());
 
-	return (unsigned long)value.count();
+	return value.count();
 }
 
-unsigned long System::getCurrentTimeMicro()
+size_t System::getCurrentTimeMicro()
 {
 	auto t = std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now());
 	auto value = std::chrono::duration_cast<std::chrono::microseconds>(t.time_since_epoch());
 
-	return (unsigned long)value.count();
+	return value.count();
 }
 
-unsigned long System::getCurrentTimeNano()
+size_t System::getCurrentTimeNano()
 {
 	auto t = std::chrono::time_point_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now());
 	auto value = std::chrono::duration_cast<std::chrono::nanoseconds>(t.time_since_epoch());
 
-	return (unsigned long)value.count();
+	return value.count();
 }
 
 void System::sleep(int millis, int micros)
@@ -64,20 +63,6 @@ void System::delayRun(std::function<void()> function, int millis, int micros)
 {
 	sleep(millis, micros);
 	function();
-}
-
-void System::startTimeMeasurement()
-{
-	startTime = std::chrono::high_resolution_clock::now();
-}
-
-unsigned long System::endTimeMeasurement()
-{
-	endTime = std::chrono::high_resolution_clock::now();
-
-	auto t = std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime);
-
-	return (unsigned long)t.count();
 }
 
 unsigned int System::getNumberOfThreads()
@@ -396,23 +381,23 @@ Image* System::getScreenShot(HWND hwnd)
 
 	Image* finalImage = new Image(bmi.bmiHeader.biWidth, bmi.bmiHeader.biHeight);
 
-	Color* startPixels = finalImage->getPixels();
 	unsigned char* startP = pixels;
 	unsigned char* endP = pixels + size;
-	while(startP < endP)
+	for(int y=finalImage->getHeight()-1; y>=0; y--)
 	{
-		(*startPixels).alpha = 255;
+		for(int x=0; x<finalImage->getWidth(); x++)
+		{
+			Color c = {0,0,0,255};
+			c.blue = *startP;
+			startP++;
+			c.green = *startP;
+			startP++;
+			c.red = *startP;
+			startP++;
 
-		(*startPixels).blue = *startP;
-		startP++;
-		(*startPixels).green = *startP;
-		startP++;
-		(*startPixels).red = *startP;
-		startP++;
-
-		startPixels++;
+			finalImage->setPixel(x,y,c);
+		}
 	}
-			
 	
 	return finalImage;
 }
@@ -490,4 +475,38 @@ void System::paintImageToWindow(HWND hwnd, Image* img, int startX, int startY)
 void System::paintImageToDesktop(Image* img, int startX, int startY)
 {
 	System::paintImageToWindow(GetDesktopWindow(), img, startX, startY);
+}
+
+unsigned long System::getProcessID(std::wstring processName)
+{
+	DWORD pid = 0;
+	HANDLE hndl = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS | TH32CS_SNAPMODULE, 0);
+	if (hndl)
+	{
+		PROCESSENTRY32W  process = { sizeof(PROCESSENTRY32W) };
+		Process32FirstW(hndl, &process);
+		do
+		{
+			std::wstring thisProcess = process.szExeFile;
+			if (thisProcess == processName)
+			{
+				pid = process.th32ProcessID;
+				break;
+			}
+			
+		} while (Process32NextW(hndl, &process));
+
+		CloseHandle(hndl);
+	}
+
+	return pid;
+}
+
+HWND System::getProcessWindow(std::wstring windowName)
+{
+	HWND hwnd = FindWindowW(NULL, windowName.c_str());
+	if(hwnd == 0)
+		hwnd = FindWindowW(windowName.c_str(), NULL);
+
+	return hwnd;
 }

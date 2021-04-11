@@ -6,6 +6,8 @@
 #include <iostream>
 #include "StringTools.h"
 
+#include "ColorSpaceConverter.h"
+
 struct fctlData
 {
 	unsigned int sequence_number=0;
@@ -21,7 +23,7 @@ struct fctlData
 	std::vector<unsigned char> compressedData = std::vector<unsigned char>();
 };
 
-void Image::savePNG(std::string filename)
+void Image::savePNG(std::string filename, bool saveAlpha, unsigned char alphaThreshold, bool greyscale)
 {
 	SimpleFile f = SimpleFile(filename, SimpleFile::WRITE);
 
@@ -43,9 +45,9 @@ void Image::savePNG(std::string filename)
 	//bitDepth
 	IHDRHeader += (char)0x08;
 
-	if(Image::IMAGE_SAVE_ALPHA==true)
+	if(saveAlpha==true)
 	{
-		if(Image::IMAGE_GREYSCALE==true)
+		if(greyscale==true)
 		{
 			//ColourType
 			IHDRHeader += (char)0x04;
@@ -58,7 +60,7 @@ void Image::savePNG(std::string filename)
 	}
 	else
 	{
-		if(Image::IMAGE_GREYSCALE==true)
+		if(greyscale==true)
 		{
 			//ColourType
 			IHDRHeader += (char)0x00;
@@ -96,9 +98,18 @@ void Image::savePNG(std::string filename)
 		{
 			Color c = pixels[k + i*width];
 
-			if(Image::IMAGE_GREYSCALE)
+			if(!saveAlpha)
 			{
-				scanLines.push_back(c.red);
+				if(c.alpha < alphaThreshold)
+				{
+					continue;
+				}
+			}
+			
+			if(greyscale)
+			{
+				Color ycbcr = ColorSpaceConverter::convert(c, ColorSpaceConverter::RGB_TO_YCBCR);
+				scanLines.push_back(ycbcr.red);
 			}
 			else
 			{
@@ -107,7 +118,7 @@ void Image::savePNG(std::string filename)
 				scanLines.push_back(c.blue);
 			}
 			
-			if(Image::IMAGE_SAVE_ALPHA)
+			if(saveAlpha)
 				scanLines.push_back(c.alpha);
 		}
 	}

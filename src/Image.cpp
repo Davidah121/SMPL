@@ -8,10 +8,6 @@
 
 #define min(a,b) ((a<b) ? a:b)
 
-bool Image::IMAGE_SAVE_ALPHA = false;
-unsigned char Image::IMAGE_ALPHA_THRESHOLD = 128;
-bool Image::IMAGE_GREYSCALE = false;
-
 const Class* Image::myClass = new Class("Image", {Object::myClass});
 const Class* Image::getClass()
 {
@@ -82,15 +78,27 @@ Color* Image::getPixels()
 	return pixels;
 }
 
-Color Image::getPixel(int x, int y)
+Color Image::getPixel(int x, int y, bool clamp)
 {
-	if (x >= 0 && x < width)
+	if(!clamp)
 	{
-		if (y >= 0 && y < height)
+		if (x >= 0 && x < width)
 		{
-			return pixels[y * width + x];
+			if (y >= 0 && y < height)
+			{
+				return pixels[y * width + x];
+			}
 		}
 	}
+	else
+	{
+		int tX, tY;
+		tX = MathExt::clamp(x, 0, width-1);
+		tY = MathExt::clamp(y, 0, height-1);
+		
+		return pixels[tY * width + tX];
+	}
+	
 	return Color();
 }
 
@@ -107,13 +115,68 @@ void Image::setPixel(int x, int y, Color c)
 
 void Image::setAllPixels(Color c)
 {
-	Color* start = pixels;
-	Color* end = pixels + (width * height);
-	while (start < end)
-	{
-		*start = c;
-		start++;
-	}
+	#if (OPTI >= 2)
+		int m = *((int*)&c);
+		__m256i* startPixsSSE = (__m256i*)pixels;
+
+		int size = (width*height) >> 3;
+		int leftOver = (width*height) % 8;
+
+		__m256i* endPixsSSE = startPixsSSE + size;
+		__m256i value = _mm256_set1_epi32(m);
+
+		while (startPixsSSE < endPixsSSE)
+		{
+			_mm256_store_si256(startPixsSSE, value);
+			startPixsSSE++;
+		}
+		
+		Color* leftOverPixsEnd = pixels + (width*height);
+		Color* leftOverPixs = leftOverPixsEnd - leftOver;
+		
+		while(leftOverPixs < leftOverPixsEnd)
+		{
+			*leftOverPixs = c;
+			leftOverPixs++;
+		}
+		
+	#elif (OPTI >= 1)
+
+		int m = *((int*)&c);
+		__m128i* startPixsSSE = (__m128i*)pixels;
+
+		int size = (width*height) >> 2;
+		int leftOver = (width*height) % 4;
+
+		__m128i* endPixsSSE = startPixsSSE + size;
+		__m128i value = _mm_set1_epi32(m);
+
+		while (startPixsSSE < endPixsSSE)
+		{
+			_mm_store_si128(startPixsSSE, value);
+			startPixsSSE++;
+		}
+		
+		Color* leftOverPixsEnd = pixels + (width*height);
+		Color* leftOverPixs = leftOverPixsEnd - leftOver;
+		
+		while(leftOverPixs < leftOverPixsEnd)
+		{
+			*leftOverPixs = c;
+			leftOverPixs++;
+		}
+		
+	#else
+
+		Color* start = pixels;
+		Color* end = pixels + (width * height);
+		while (start < end)
+		{
+			*start = c;
+			start++;
+		}
+
+	#endif
 }
 
 void Image::copyImage(Image* v)
@@ -200,6 +263,21 @@ void Image::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int img
 void Image::drawText(std::string str, int x, int y)
 {
 	Graphics::drawText(str, x, y, this);
+}
+
+void Image::drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight)
+{
+	Graphics::drawTextLimits(str, x, y, maxWidth, maxHeight, this);
+}
+
+void Image::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline)
+{
+	Graphics::drawTriangle(x1, y1, x2, y2, x3, y3, outline, this);
+}
+
+void Image::drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture)
+{
+	Graphics::drawTexturedTriangle(p1, p2, p3, texture, this);
 }
 
 void Image::drawPixel(int x, int y, Color c)

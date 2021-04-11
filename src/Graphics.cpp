@@ -98,6 +98,12 @@ void Graphics::drawPixel(int x, int y, Color c, Image* surf)
 	else
 		otherImg = surf;
 
+	if(compositeRule == NO_COMPOSITE)
+	{
+		otherImg->setPixel(x, y, c);
+		return;
+	}
+
 	float Fa = 0;
 	float Fb = 0;
 
@@ -189,6 +195,11 @@ void Graphics::drawPixel(int x, int y, Color c, Image* surf)
 
 Color Graphics::blend(Color src, Color dest)
 {
+	if(compositeRule == NO_COMPOSITE)
+	{
+		return src;
+	}
+
 	float Fa = 0;
 	float Fb = 0;
 
@@ -275,6 +286,390 @@ Color Graphics::blend(Color src, Color dest)
 
 }
 
+#pragma region SSE_AND_AVX_BLENDS
+
+#if (OPTI>=1)
+__m128i Graphics::blend(__m128i src, __m128i dest)
+{
+	if(compositeRule == NO_COMPOSITE)
+	{
+		return src;
+	}
+
+	__m128 Fa;
+	__m128 Fb;
+
+	Color* c1 = (Color*)&src;
+	Color* c2 = (Color*)&dest;
+
+	__m128 srcRed, srcGreen, srcBlue, srcAlpha;
+	__m128 destRed, destGreen, destBlue, destAlpha;
+	
+	srcRed = _mm_set_ps(
+		((float)c1[3].red),
+		((float)c1[2].red),
+		((float)c1[1].red),
+		((float)c1[0].red)
+	);
+
+	srcGreen = _mm_set_ps(
+		((float)c1[3].green),
+		((float)c1[2].green),
+		((float)c1[1].green),
+		((float)c1[0].green)
+	);
+
+	srcBlue = _mm_set_ps(
+		((float)c1[3].blue),
+		((float)c1[2].blue),
+		((float)c1[1].blue),
+		((float)c1[0].blue)
+	);
+
+	srcAlpha = _mm_set_ps(
+		((float)c1[3].alpha)/255,
+		((float)c1[2].alpha)/255,
+		((float)c1[1].alpha)/255,
+		((float)c1[0].alpha)/255
+	);
+
+	destRed = _mm_set_ps(
+		((float)c2[3].red),
+		((float)c2[2].red),
+		((float)c2[1].red),
+		((float)c2[0].red)
+	);
+
+	destGreen = _mm_set_ps(
+		((float)c2[3].green),
+		((float)c2[2].green),
+		((float)c2[1].green),
+		((float)c2[0].green)
+	);
+
+	destBlue = _mm_set_ps(
+		((float)c2[3].blue),
+		((float)c2[2].blue),
+		((float)c2[1].blue),
+		((float)c2[0].blue)
+	);
+
+	destAlpha = _mm_set_ps(
+		((float)c2[3].alpha)/255,
+		((float)c2[2].alpha)/255,
+		((float)c2[1].alpha)/255,
+		((float)c2[0].alpha)/255
+	);
+
+	//other stuff to
+
+	switch(compositeRule)
+	{
+		case COMPOSITE_CLEAR:
+			Fa = _mm_set1_ps(0);
+			Fb = _mm_set1_ps(0);
+			break;
+		case COMPOSITE_COPY:
+			Fa = _mm_set1_ps(1);
+			Fb = _mm_set1_ps(0);
+			break;
+		case COMPOSITE_DEST:
+			Fa = _mm_set1_ps(0);
+			Fb = _mm_set1_ps(1);
+			break;
+		case COMPOSITE_SRC_OVER:
+			Fa = _mm_set1_ps(1);
+			Fb = _mm_sub_ps(_mm_set1_ps(1), srcAlpha);
+			break;
+		case COMPOSITE_DEST_OVER:
+			Fa = _mm_sub_ps(_mm_set1_ps(1), destAlpha);
+			Fb = _mm_set1_ps(1);
+			break;
+		case COMPOSITE_SRC_IN:
+			Fa = destAlpha;
+			Fb = _mm_set1_ps(0);
+			break;
+		case COMPOSITE_DEST_IN:
+			Fa = _mm_set1_ps(0);
+			Fb = srcAlpha;
+			break;
+		case COMPOSITE_SRC_OUT:
+			Fa = _mm_sub_ps(_mm_set1_ps(1), destAlpha);
+			Fb = _mm_set1_ps(0);
+			break;
+		case COMPOSITE_DEST_OUT:
+			Fa = _mm_set1_ps(0);
+			Fb = _mm_sub_ps(_mm_set1_ps(1), srcAlpha);
+			break;
+		case COMPOSITE_SRC_ATOP:
+			Fa = destAlpha;
+			Fb = _mm_sub_ps(_mm_set1_ps(1), srcAlpha);
+			break;
+		case COMPOSITE_DEST_ATOP:
+			Fa = _mm_sub_ps(_mm_set1_ps(1), destAlpha);
+			Fb = srcAlpha;
+			break;
+		case COMPOSITE_XOR:
+			Fa = _mm_sub_ps(_mm_set1_ps(1), destAlpha);
+			Fb = _mm_sub_ps(_mm_set1_ps(1), srcAlpha);
+			break;
+		case COMPOSITE_LIGHTER:
+			Fa = _mm_set1_ps(1);
+			Fb = _mm_set1_ps(1);
+			break;
+		default:
+			Fa = _mm_set1_ps(0);
+			Fb = _mm_set1_ps(0);
+			break;
+	}
+
+	__m128 nRed, nGreen, nBlue, nAlpha;
+
+	__m128 nSrcAlpha = _mm_mul_ps(Fa, srcAlpha);
+	__m128 nDestAlpha = _mm_mul_ps(Fb, destAlpha);
+	
+	nRed = _mm_add_ps( _mm_mul_ps(srcRed, nSrcAlpha), _mm_mul_ps(destRed, nDestAlpha) );
+	nGreen = _mm_add_ps( _mm_mul_ps(srcGreen, nSrcAlpha), _mm_mul_ps(destGreen, nDestAlpha) );
+	nBlue = _mm_add_ps( _mm_mul_ps(srcBlue, nSrcAlpha), _mm_mul_ps(destBlue, nDestAlpha) );
+	nAlpha = _mm_mul_ps(_mm_add_ps( nSrcAlpha, nDestAlpha ), _mm_set1_ps(255));
+
+	__m128i finalRGB;
+
+	//note only if composite lighter is used
+	nRed = _mm_min_ps( nRed, _mm_set1_ps(255));
+	nGreen = _mm_min_ps( nGreen, _mm_set1_ps(255));
+	nBlue = _mm_min_ps( nBlue, _mm_set1_ps(255));
+	nAlpha = _mm_min_ps( nAlpha, _mm_set1_ps(255));
+
+	float* r = (float*)&nRed;
+	float* g = (float*)&nGreen;
+	float* b = (float*)&nBlue;
+	float* a = (float*)&nAlpha;
+	
+	finalRGB = _mm_set_epi8(
+		(unsigned char)a[3], (unsigned char)b[3], (unsigned char)g[3], (unsigned char)r[3], 
+		(unsigned char)a[2], (unsigned char)b[2], (unsigned char)g[2], (unsigned char)r[2],
+		(unsigned char)a[1], (unsigned char)b[1], (unsigned char)g[1], (unsigned char)r[1],
+		(unsigned char)a[0], (unsigned char)b[0], (unsigned char)g[0], (unsigned char)r[0]
+	);
+
+	return finalRGB;
+
+}
+#endif
+
+#if (OPTI>=2)
+__m256i Graphics::blend(__m256i src, __m256i dest)
+{
+	if(compositeRule == NO_COMPOSITE)
+	{
+		return src;
+	}
+
+	__m256 Fa;
+	__m256 Fb;
+
+	Color* c1 = (Color*)&src;
+	Color* c2 = (Color*)&dest;
+
+	__m256 srcRed, srcGreen, srcBlue, srcAlpha;
+	__m256 destRed, destGreen, destBlue, destAlpha;
+	
+	srcRed = _mm256_set_ps(
+		((float)c1[7].red),
+		((float)c1[6].red),
+		((float)c1[5].red),
+		((float)c1[4].red),
+		((float)c1[3].red),
+		((float)c1[2].red),
+		((float)c1[1].red),
+		((float)c1[0].red)
+	);
+
+	srcGreen = _mm256_set_ps(
+		((float)c1[7].green),
+		((float)c1[6].green),
+		((float)c1[5].green),
+		((float)c1[4].green),
+		((float)c1[3].green),
+		((float)c1[2].green),
+		((float)c1[1].green),
+		((float)c1[0].green)
+	);
+
+	srcBlue = _mm256_set_ps(
+		((float)c1[7].blue),
+		((float)c1[6].blue),
+		((float)c1[5].blue),
+		((float)c1[4].blue),
+		((float)c1[3].blue),
+		((float)c1[2].blue),
+		((float)c1[1].blue),
+		((float)c1[0].blue)
+	);
+
+	srcAlpha = _mm256_set_ps(
+		((float)c1[7].alpha),
+		((float)c1[6].alpha),
+		((float)c1[5].alpha),
+		((float)c1[4].alpha),
+		((float)c1[3].alpha),
+		((float)c1[2].alpha),
+		((float)c1[1].alpha),
+		((float)c1[0].alpha)
+	);
+
+	destRed = _mm256_set_ps(
+		((float)c2[7].red),
+		((float)c2[6].red),
+		((float)c2[5].red),
+		((float)c2[4].red),
+		((float)c2[3].red),
+		((float)c2[2].red),
+		((float)c2[1].red),
+		((float)c2[0].red)
+	);
+
+	destGreen = _mm256_set_ps(
+		((float)c2[7].green),
+		((float)c2[6].green),
+		((float)c2[5].green),
+		((float)c2[4].green),
+		((float)c2[3].green),
+		((float)c2[2].green),
+		((float)c2[1].green),
+		((float)c2[0].green)
+	);
+
+	destBlue = _mm256_set_ps(
+		((float)c2[7].blue),
+		((float)c2[6].blue),
+		((float)c2[5].blue),
+		((float)c2[4].blue),
+		((float)c2[3].blue),
+		((float)c2[2].blue),
+		((float)c2[1].blue),
+		((float)c2[0].blue)
+	);
+
+	destAlpha = _mm256_set_ps(
+		((float)c2[7].alpha),
+		((float)c2[6].alpha),
+		((float)c2[5].alpha),
+		((float)c2[4].alpha),
+		((float)c2[3].alpha),
+		((float)c2[2].alpha),
+		((float)c2[1].alpha),
+		((float)c2[0].alpha)
+	);
+	
+	srcAlpha = _mm256_div_ps( srcAlpha, _mm256_set1_ps(255));
+	destAlpha = _mm256_div_ps( destAlpha, _mm256_set1_ps(255));
+
+	//other stuff to
+
+	switch(compositeRule)
+	{
+		case COMPOSITE_CLEAR:
+			Fa = _mm256_set1_ps(0);
+			Fb = _mm256_set1_ps(0);
+			break;
+		case COMPOSITE_COPY:
+			Fa = _mm256_set1_ps(1);
+			Fb = _mm256_set1_ps(0);
+			break;
+		case COMPOSITE_DEST:
+			Fa = _mm256_set1_ps(0);
+			Fb = _mm256_set1_ps(1);
+			break;
+		case COMPOSITE_SRC_OVER:
+			Fa = _mm256_set1_ps(1);
+			Fb = _mm256_sub_ps(_mm256_set1_ps(1), srcAlpha);
+			break;
+		case COMPOSITE_DEST_OVER:
+			Fa = _mm256_sub_ps(_mm256_set1_ps(1), destAlpha);
+			Fb = _mm256_set1_ps(1);
+			break;
+		case COMPOSITE_SRC_IN:
+			Fa = destAlpha;
+			Fb = _mm256_set1_ps(0);
+			break;
+		case COMPOSITE_DEST_IN:
+			Fa = _mm256_set1_ps(0);
+			Fb = srcAlpha;
+			break;
+		case COMPOSITE_SRC_OUT:
+			Fa = _mm256_sub_ps(_mm256_set1_ps(1), destAlpha);
+			Fb = _mm256_set1_ps(0);
+			break;
+		case COMPOSITE_DEST_OUT:
+			Fa = _mm256_set1_ps(0);
+			Fb = _mm256_sub_ps(_mm256_set1_ps(1), srcAlpha);
+			break;
+		case COMPOSITE_SRC_ATOP:
+			Fa = destAlpha;
+			Fb = _mm256_sub_ps(_mm256_set1_ps(1), srcAlpha);
+			break;
+		case COMPOSITE_DEST_ATOP:
+			Fa = _mm256_sub_ps(_mm256_set1_ps(1), destAlpha);
+			Fb = srcAlpha;
+			break;
+		case COMPOSITE_XOR:
+			Fa = _mm256_sub_ps(_mm256_set1_ps(1), destAlpha);
+			Fb = _mm256_sub_ps(_mm256_set1_ps(1), srcAlpha);
+			break;
+		case COMPOSITE_LIGHTER:
+			Fa = _mm256_set1_ps(1);
+			Fb = _mm256_set1_ps(1);
+			break;
+		default:
+			Fa = _mm256_set1_ps(0);
+			Fb = _mm256_set1_ps(0);
+			break;
+	}
+
+	__m256 nRed, nGreen, nBlue, nAlpha;
+
+	__m256 nSrcAlpha = _mm256_mul_ps(Fa, srcAlpha);
+	__m256 nDestAlpha = _mm256_mul_ps(Fb, destAlpha);
+	
+	nRed = _mm256_add_ps( _mm256_mul_ps(srcRed, nSrcAlpha), _mm256_mul_ps(destRed, nDestAlpha) );
+	nGreen = _mm256_add_ps( _mm256_mul_ps(srcGreen, nSrcAlpha), _mm256_mul_ps(destGreen, nDestAlpha) );
+	nBlue = _mm256_add_ps( _mm256_mul_ps(srcBlue, nSrcAlpha), _mm256_mul_ps(destBlue, nDestAlpha) );
+	nAlpha = _mm256_mul_ps(_mm256_add_ps( nSrcAlpha, nDestAlpha ), _mm256_set1_ps(255));
+
+	__m256i finalRGB;
+
+	//note only if composite lighter is used
+	nRed = _mm256_min_ps( nRed, _mm256_set1_ps(255));
+	nGreen = _mm256_min_ps( nGreen, _mm256_set1_ps(255));
+	nBlue = _mm256_min_ps( nBlue, _mm256_set1_ps(255));
+	nAlpha = _mm256_min_ps( nAlpha, _mm256_set1_ps(255));
+
+	float* r = (float*)&nRed;
+	float* g = (float*)&nGreen;
+	float* b = (float*)&nBlue;
+	float* a = (float*)&nAlpha;
+	
+	finalRGB = _mm256_set_epi8(
+		(unsigned char)a[7], (unsigned char)b[7], (unsigned char)g[7], (unsigned char)r[7], 
+		(unsigned char)a[6], (unsigned char)b[6], (unsigned char)g[6], (unsigned char)r[6],
+		(unsigned char)a[5], (unsigned char)b[5], (unsigned char)g[5], (unsigned char)r[5],
+		(unsigned char)a[4], (unsigned char)b[4], (unsigned char)g[4], (unsigned char)r[4],
+		(unsigned char)a[3], (unsigned char)b[3], (unsigned char)g[3], (unsigned char)r[3], 
+		(unsigned char)a[2], (unsigned char)b[2], (unsigned char)g[2], (unsigned char)r[2],
+		(unsigned char)a[1], (unsigned char)b[1], (unsigned char)g[1], (unsigned char)r[1],
+		(unsigned char)a[0], (unsigned char)b[0], (unsigned char)g[0], (unsigned char)r[0]
+	);
+
+	return finalRGB;
+
+}
+
+#endif
+
+#pragma endregion
+
 Color Graphics::lerp(Color src, Color dest, double lerpVal)
 {
 	Vec4f v1 = Vec4f(src.red, src.green, src.blue, src.alpha);
@@ -291,7 +686,7 @@ Color Graphics::lerp(Color src, Color dest, double lerpVal)
 //works properly now
 void Graphics::drawRect(int x, int y, int x2, int y2, bool outline, Image* surf)
 {
-	//Will pointers for modifying the data
+	int currentComposite = compositeRule;
 	Image* otherImg;
 	if (surf == nullptr)
 		otherImg = activeImage;
@@ -310,73 +705,204 @@ void Graphics::drawRect(int x, int y, int x2, int y2, bool outline, Image* surf)
 		int minY = MathExt::clamp(MathExt::min(y, y2), 0, tempHeight);
 		int maxY = MathExt::clamp(MathExt::max(y, y2), 0, tempHeight);
 
-		Color* startPoint = otherImg->getPixels() + minX + (minY * tempWidth);
-		Color* endPoint = otherImg->getPixels() + maxX + ((maxY-1) * tempWidth);
-
-		int offWidth = maxX - minX;
-		int addAmount = tempWidth - offWidth;
-
-
-		int tX = 0;
-
-		int actualX = minX;
-		int actualY = minY;
-		if (outline == false)
+		if(outline == false)
 		{
-			while (startPoint < endPoint)
-			{
+			#if(OPTI>=2)
 
-				*startPoint = blend(activeColor, *startPoint);
+				__m256i* avxPoint;
+				
+				Color* startPoint = (otherImg->getPixels() + minX + (minY * tempWidth));
+				Color* endPoint = (otherImg->getPixels() + maxX + ((maxY-1) * tempWidth));
+				
+				//int startOffset = (maxX - minX) % 4;
+				
+				int offWidth = (maxX - minX)>>3;
+				int remainder = (maxX - minX) - (offWidth<<3);
+				int addAmount = (tempWidth - (maxX-minX));
 
-				startPoint++;
-				tX++;
-				actualX++;
+				int tX = 0;
 
-				if (tX >= offWidth)
+				int actualX = minX;
+				int actualY = minY;
+
+				__m256i avxColor = _mm256_set1_epi32( *((int*)&activeColor) );
+				
+				if(currentComposite == NO_COMPOSITE)
 				{
-					tX = 0;
-					actualX = minX;
-					actualY++;
-					startPoint += addAmount;
-				}
-			}
-		}
-		else
-		{
-			int tY = minY;
-			while (startPoint < endPoint)
-			{
-				if (tY == minY || tY == maxY-1)
-				{
-					*startPoint = blend(activeColor, *startPoint);
+					while (startPoint < endPoint)
+					{
+						avxPoint = (__m256i*)startPoint;
+						for(int i=0; i<offWidth; i++)
+						{
+							_mm256_storeu_si256(avxPoint, avxColor);
+							avxPoint++;
+						}
+
+						//fill remainder
+						startPoint += offWidth<<3;
+
+						for(int i=0; i<remainder; i++)
+						{
+							*startPoint = activeColor;
+							startPoint++;
+						}
+
+						startPoint += addAmount;
+					}
 				}
 				else
 				{
-					*startPoint = blend(activeColor, *startPoint);
-					tX += offWidth-1;
-					startPoint += offWidth-1;
-					*startPoint = activeColor;
+					while (startPoint < endPoint)
+					{
+						avxPoint = (__m256i*)startPoint;
+						for(int i=0; i<offWidth; i++)
+						{
+							__m256i currentColors = _mm256_loadu_si256(avxPoint);
+							__m256i blendC = blend(avxColor, currentColors);
+							_mm256_storeu_si256(avxPoint, blendC );
+							avxPoint++;
+						}
+
+						//fill remainder
+						startPoint += offWidth<<3;
+
+						for(int i=0; i<remainder; i++)
+						{
+							*startPoint = blend(activeColor, *startPoint);
+							startPoint++;
+						}
+
+						startPoint += addAmount;
+					}
+					
 				}
 
-				startPoint++;
-				tX++;
-				actualX++;
+			#elif (OPTI>=1)
 
-				if (tX >= offWidth)
+				__m128i* ssePoint;
+				
+				Color* startPoint = (otherImg->getPixels() + minX + (minY * tempWidth));
+				Color* endPoint = (otherImg->getPixels() + maxX + ((maxY-1) * tempWidth));
+				
+				//int startOffset = (maxX - minX) % 4;
+				
+				int offWidth = (maxX - minX)/4;
+				int remainder = (maxX - minX) - (offWidth*4);
+				int addAmount = (tempWidth - (maxX-minX));
+
+				int tX = 0;
+
+				int actualX = minX;
+				int actualY = minY;
+
+				__m128i sseColor = _mm_set1_epi32( *((int*)&activeColor) );
+				
+				if(currentComposite == NO_COMPOSITE)
 				{
-					tX = 0;
-					actualX=minX;
-					startPoint += addAmount;
-					tY++;
-					actualY++;
+					while (startPoint < endPoint)
+					{
+						ssePoint = (__m128i*)startPoint;
+						for(int i=0; i<offWidth; i++)
+						{
+							_mm_storeu_si128(ssePoint, sseColor);
+							ssePoint++;
+						}
+
+						//fill remainder
+						startPoint += offWidth<<2;
+
+						for(int i=0; i<remainder; i++)
+						{
+							*startPoint = activeColor;
+							startPoint++;
+						}
+
+						startPoint += addAmount;
+					}
 				}
-			}
+				else
+				{
+					while (startPoint < endPoint)
+					{
+						ssePoint = (__m128i*)startPoint;
+						for(int i=0; i<offWidth; i++)
+						{
+							__m128i currentColors = _mm_loadu_si128(ssePoint);
+							__m128i blendC = blend(sseColor, currentColors);
+							_mm_storeu_si128(ssePoint, blendC );
+							ssePoint++;
+						}
+
+						//fill remainder
+						startPoint += offWidth<<2;
+
+						for(int i=0; i<remainder; i++)
+						{
+							*startPoint = blend(activeColor, *startPoint);
+							startPoint++;
+						}
+
+						startPoint += addAmount;
+					}
+					
+				}
+				
+			#else
+
+				Color* startPoint = otherImg->getPixels() + minX + (minY * tempWidth);
+				Color* endPoint = otherImg->getPixels() + maxX + ((maxY-1) * tempWidth);
+				
+				int offWidth = maxX - minX;
+				int addAmount = tempWidth - offWidth;
+
+				int tX = 0;
+
+				int actualX = minX;
+				int actualY = minY;
+				
+				if(currentComposite == NO_COMPOSITE)
+				{
+					while (startPoint < endPoint)
+					{
+						for(int i=0; i<offWidth; i++)
+						{
+							*startPoint = activeColor;
+							startPoint++;
+						}
+						startPoint += addAmount;
+					}
+				}
+				else
+				{
+					while (startPoint < endPoint)
+					{
+						for(int i=0; i<offWidth; i++)
+						{
+							*startPoint = blend(activeColor, *startPoint);
+							startPoint++;
+						}
+						startPoint += addAmount;
+					}
+				}
+
+			#endif
+		}
+		else
+		{
+			//horizontal lines
+			drawLine(minX, minY, maxX, minY, otherImg);
+			drawLine(minX, maxY, maxX, maxY, otherImg);
+
+			//vertical lines
+			drawLine(minX, minY, minX, maxY, otherImg);
+			drawLine(maxX, minY, maxX, maxY, otherImg);
 		}
 	}
 }
 
 void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 {
+	int currentComposite = compositeRule;
 	//Will pointers for modifying the data
 	Image* otherImg;
 	if (surf == nullptr)
@@ -403,6 +929,7 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 			{
 				//VERTICAL BASED
 				int minY, maxY;
+				bool dir = (P1>0 || P2>0);
 				if(y1 <= y2)
 				{
 					minY = MathExt::clamp(y1, 0, otherImg->getHeight()-1);
@@ -413,18 +940,33 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 					minY = MathExt::clamp(y2, 0, otherImg->getHeight()-1);
 					maxY = MathExt::clamp(y1, 0, otherImg->getHeight()-1);
 				}
-				for(int i=minY; i<=maxY; i++)
+
+				if(currentComposite == NO_COMPOSITE)
 				{
-					//solve with respect to x
-					double val = -(con+P2*i) / (double)P1;
-					int actualX = MathExt::round(val);
-					otherImg->drawPixel(actualX, i, Graphics::activeColor);
+					for(int i=minY; i<=maxY; i++)
+					{
+						//solve with respect to x
+						double val = -(con+P2*i) / (double)P1;
+						int actualX = (dir) ? MathExt::floor(val+0.5) : MathExt::ceil(val-0.5);
+						otherImg->setPixel(actualX, i, Graphics::activeColor);
+					}
+				}
+				else
+				{
+					for(int i=minY; i<=maxY; i++)
+					{
+						//solve with respect to x
+						double val = -(con+P2*i) / (double)P1;
+						int actualX = (dir) ? MathExt::floor(val+0.5) : MathExt::ceil(val-0.5);
+						otherImg->drawPixel(actualX, i, Graphics::activeColor);
+					}
 				}
 			}
 			else
 			{
 				//HORIZONTAL BASED
 				int minX, maxX;
+				bool dir = (P1>0);
 				if(x1 <= x2)
 				{
 					minX = MathExt::clamp(x1, 0, otherImg->getWidth()-1);
@@ -435,12 +977,27 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 					minX = MathExt::clamp(x2, 0, otherImg->getWidth()-1);
 					maxX = MathExt::clamp(x1, 0, otherImg->getWidth()-1);
 				}
-				for(int i=minX; i<=maxX; i++)
+
+				if(currentComposite == NO_COMPOSITE)
 				{
-					//solve with respect to y
-					double val = -(con+P1*i) / (double)P2;
-					int actualY = MathExt::round(val);
-					otherImg->drawPixel(i, actualY, Graphics::activeColor);
+					for(int i=minX; i<=maxX; i++)
+					{
+						//solve with respect to y
+						double val = -(con+P1*i) / (double)P2;
+						int actualY = (dir) ? MathExt::floor(val+0.5) : MathExt::ceil(val-0.5);
+						otherImg->setPixel(i, actualY, Graphics::activeColor);
+					}
+				}
+				else
+				{
+					for(int i=minX; i<=maxX; i++)
+					{
+						//solve with respect to y
+						double val = -(con+P1*i) / (double)P2;
+						int actualY = (dir) ? MathExt::floor(val+0.5) : MathExt::ceil(val-0.5);
+						otherImg->drawPixel(i, actualY, Graphics::activeColor);
+					}
+
 				}
 			}
 		}
@@ -459,9 +1016,19 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 				maxY = MathExt::clamp(y1, 0, otherImg->getHeight()-1);
 			}
 
-			for(int i=minY; i<=maxY; i++)
+			if(currentComposite == NO_COMPOSITE)
 			{
-				otherImg->drawPixel(x1, i, Graphics::activeColor);
+				for(int i=minY; i<=maxY; i++)
+				{
+					otherImg->setPixel(x1, i, Graphics::activeColor);
+				}
+			}
+			else
+			{
+				for(int i=minY; i<=maxY; i++)
+				{
+					otherImg->drawPixel(x1, i, Graphics::activeColor);
+				}
 			}
 		}
 		else if(P1==0)
@@ -479,9 +1046,157 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 				maxX = MathExt::clamp(x1, 0, otherImg->getWidth()-1);
 			}
 
-			for(int i=minX; i<=maxX; i++)
+			if(currentComposite == NO_COMPOSITE)
 			{
-				otherImg->drawPixel(i, y1, Graphics::activeColor);
+				#if(OPTI>=2)
+
+					int avxWidth = (maxX-minX) >> 3;
+					int remainder = 8 - (maxX-minX)%8;
+
+					Color* startColor = otherImg->getPixels() + minX + (y1*otherImg->getWidth());
+					__m256i* startAVX = (__m256i*)startColor;
+					__m256i* endAVX = startAVX + avxWidth;
+					
+					if(remainder == 8)
+					{
+						remainder = 0;
+					}
+
+					__m256i avxColor = _mm256_set1_epi32( *((int*)&Graphics::activeColor) );
+					
+					while(startAVX < endAVX)
+					{
+						_mm256_storeu_si256(startAVX, avxColor);
+						startAVX++;
+					}
+
+					//fill remainder
+					startColor += avxWidth<<3;
+					for(int i=0; i<remainder; i++)
+					{
+						*startColor = Graphics::activeColor;
+						startColor++;
+					}
+
+				#elif(OPTI>=1)
+					
+					int sseWidth = (maxX-minX) >> 2;
+					int remainder = 4 - (maxX-minX)%4;
+
+					Color* startColor = otherImg->getPixels() + minX + (y1*otherImg->getWidth());
+					__m128i* startSSE = (__m128i*)startColor;
+					__m128i* endSSE = startSSE + sseWidth;
+					
+					if(remainder == 4)
+					{
+						remainder = 0;
+					}
+
+					__m128i sseColor = _mm_set1_epi32( *((int*)&Graphics::activeColor) );
+					
+					while(startSSE < endSSE)
+					{
+						_mm_storeu_si128(startSSE, sseColor);
+						startSSE++;
+					}
+
+					//fill remainder
+					startColor += sseWidth<<2;
+					for(int i=0; i<remainder; i++)
+					{
+						*startColor = Graphics::activeColor;
+						startColor++;
+					}
+
+				#else
+
+					Color* startColor = otherImg->getPixels() + minX + (y1*otherImg->getWidth());
+					Color* endColor = startColor + maxX;
+					while(startColor <= endColor)
+					{
+						*startColor = Graphics::activeColor;
+						startColor++;
+					}
+
+				#endif
+			}
+			else
+			{
+				#if(OPTI>=2)
+
+					int avxWidth = (maxX-minX) >> 3;
+					int remainder = 8 - (maxX-minX)%8;
+
+					Color* startColor = otherImg->getPixels() + minX + (y1*otherImg->getWidth());
+					__m256i* startAVX = (__m256i*)startColor;
+					__m256i* endAVX = startAVX + avxWidth;
+					
+					if(remainder == 8)
+					{
+						remainder = 0;
+					}
+
+					__m256i avxColor = _mm256_set1_epi32( *((int*)&Graphics::activeColor) );
+					
+					while(startAVX < endAVX)
+					{
+						__m256i currentColor = _mm256_loadu_si256(startAVX);
+						__m256i blendC = blend(avxColor, currentColor);
+						_mm256_storeu_si256(startAVX, blendC);
+						startAVX++;
+					}
+
+					//fill remainder
+					startColor += avxWidth<<3;
+					for(int i=0; i<remainder; i++)
+					{
+						*startColor = Graphics::activeColor;
+						startColor++;
+					}
+
+				#elif(OPTI>=1)
+				
+				int sseWidth = (maxX-minX) >> 2;
+				int remainder = 4 - (maxX-minX)%4;
+				
+				Color* startColor = otherImg->getPixels() + minX + (y1*otherImg->getWidth());
+				__m128i* startSSE = (__m128i*)startColor;
+				__m128i* endSSE = startSSE + sseWidth;
+				
+				if(remainder == 4)
+				{
+					remainder = 0;
+				}
+
+				__m128i sseColor = _mm_set1_epi32( *((int*)&Graphics::activeColor) );
+				
+				while(startSSE < endSSE)
+				{
+					__m128i currentColor = _mm_loadu_si128(startSSE);
+					__m128i blendC = blend(sseColor, currentColor);
+					_mm_storeu_si128(startSSE, blendC);
+					startSSE++;
+				}
+
+				//fill remainder
+				startColor += sseWidth<<2;
+				for(int i=0; i<remainder; i++)
+				{
+					*startColor = blend(Graphics::activeColor, *startColor);
+					startColor++;
+				}
+
+				#else
+
+				Color* startColor = otherImg->getPixels() + minX + (y1*otherImg->getWidth());
+				Color* endColor = startColor + maxX;
+				while(startColor <= endColor)
+				{
+					*startColor = blend(Graphics::activeColor, *startColor);
+					startColor++;
+				}
+
+				#endif
 			}
 		}
 
@@ -490,7 +1205,8 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 
 void Graphics::drawCircle(int x, int y, int radius, bool outline, Image* surf)
 {
-	//Will pointers for modifying the data
+	int currentComposite = compositeRule;
+
 	Image* otherImg;
 	if (surf == nullptr)
 		otherImg = activeImage;
@@ -499,75 +1215,358 @@ void Graphics::drawCircle(int x, int y, int radius, bool outline, Image* surf)
 
 	if (otherImg != nullptr)
 	{
+		int fakeRad = radius-1;
 		int tempWidth = otherImg->getWidth();
 
-		int minX = MathExt::clamp(MathExt::min(x-radius, x+radius), 0, tempWidth);
-		int maxX = MathExt::clamp(MathExt::max(x-radius, x+radius), 0, tempWidth);
+		int minX = MathExt::clamp(MathExt::min(x-fakeRad, x+fakeRad), 0, tempWidth);
+		int maxX = MathExt::clamp(MathExt::max(x-fakeRad, x+fakeRad), 0, tempWidth);
 
 		int tempHeight = otherImg->getHeight();
 
-		int minY = MathExt::clamp(MathExt::min(y-radius, y+radius), 0, tempHeight);
-		int maxY = MathExt::clamp(MathExt::max(y-radius, y+radius), 0, tempHeight);
-
-		Color* startPoint = otherImg->getPixels() + minX + (minY * tempWidth);
-		Color* endPoint = otherImg->getPixels() + maxX + (maxY * tempWidth);
-
-		int offWidth = maxX - minX;
-		int addAmount = tempWidth - offWidth;
-
+		int minY = MathExt::clamp(MathExt::min(y-fakeRad, y+fakeRad), 0, tempHeight);
+		int maxY = MathExt::clamp(MathExt::max(y-fakeRad, y+fakeRad), 0, tempHeight);
+		
 		int tX = minX;
 		int tY = minY;
-		double radSqr = MathExt::sqr(radius);
-
+		double radSqr = MathExt::sqr(fakeRad);
+		
 		if (outline == false)
 		{
-			while (startPoint < endPoint)
+			#if(OPTI>=2)
+
+				Color* startPoint = otherImg->getPixels() + (minY * tempWidth);
+				Color* endPoint = otherImg->getPixels() + maxX + (maxY * tempWidth);
+
+				__m256i* ssePoint;
+				
+				__m256i sseColor = _mm256_set1_epi32( *((int*)&activeColor) );
+				if(currentComposite == NO_COMPOSITE)
+				{
+					while (startPoint < endPoint)
+					{
+						double xDisToCenter = MathExt::sqrt( radSqr - MathExt::sqr(tY - y) ) + 0.5;
+
+						int x1 = MathExt::clamp( (int)MathExt::ceil(x-xDisToCenter), 0, tempWidth-1);
+						int x2 = MathExt::clamp( (int)MathExt::floor(x+xDisToCenter), 0, tempWidth-1);
+
+						int addAmount = x1;
+						int addAmount2 = tempWidth-x2;
+
+						if(xDisToCenter==0)
+						{
+							startPoint += addAmount;
+							*startPoint = activeColor;
+							startPoint += addAmount2;
+							tY++;
+							continue;
+						}
+
+						int wid = ((x2-x1) >> 3);
+						int remainder = (x2-x1) - (wid<<3);
+
+						startPoint += addAmount;
+						ssePoint = (__m256i*)startPoint;
+
+						for(int i=0; i<wid; i++)
+						{
+							_mm256_storeu_si256(ssePoint, sseColor);
+							ssePoint++;
+						}
+
+						startPoint += wid<<3;
+
+						for(int i=0; i<remainder; i++)
+						{
+							*startPoint = activeColor;
+							startPoint++;
+						}
+
+						tY++;
+						startPoint += addAmount2;
+					}
+				}
+				else
+				{
+					while (startPoint < endPoint)
+					{
+						double xDisToCenter = MathExt::sqrt( radSqr - MathExt::sqr(tY - y) ) + 0.5;
+
+						int x1 = MathExt::clamp( (int)MathExt::ceil(x-xDisToCenter), 0, tempWidth-1);
+						int x2 = MathExt::clamp( (int)MathExt::floor(x+xDisToCenter), 0, tempWidth-1);
+
+						int addAmount = x1;
+						int addAmount2 = tempWidth-x2;
+
+						if(xDisToCenter==0)
+						{
+							startPoint += addAmount;
+							*startPoint = blend(activeColor, *startPoint);
+							startPoint += addAmount2;
+							tY++;
+							continue;
+						}
+
+						int wid = ((x2-x1) >> 3);
+						int remainder = (x2-x1) - (wid<<3);
+
+						startPoint += addAmount;
+						ssePoint = (__m256i*)startPoint;
+
+						for(int i=0; i<wid; i++)
+						{
+							__m256i currentColor = _mm256_loadu_si256(ssePoint);
+							__m256i blendC = blend(sseColor, currentColor);
+							_mm256_storeu_si256(ssePoint, blendC);
+							ssePoint++;
+						}
+
+						startPoint += wid<<3;
+
+						for(int i=0; i<remainder; i++)
+						{
+							*startPoint = blend(activeColor, *startPoint);
+							startPoint++;
+						}
+
+						tY++;
+						startPoint += addAmount2;
+					}
+				}
+
+			#elif(OPTI>=1)
+
+				Color* startPoint = otherImg->getPixels() + (minY * tempWidth);
+				Color* endPoint = otherImg->getPixels() + maxX + (maxY * tempWidth);
+
+				__m128i* ssePoint;
+				
+				__m128i sseColor = _mm_set1_epi32( *((int*)&activeColor) );
+				if(currentComposite == NO_COMPOSITE)
+				{
+					while (startPoint < endPoint)
+					{
+						double xDisToCenter = MathExt::sqrt( radSqr - MathExt::sqr(tY - y) ) + 0.5;
+
+						int x1 = MathExt::clamp( (int)MathExt::ceil(x-xDisToCenter), 0, tempWidth-1);
+						int x2 = MathExt::clamp( (int)MathExt::floor(x+xDisToCenter), 0, tempWidth-1);
+
+						int addAmount = x1;
+						int addAmount2 = tempWidth-x2;
+
+						if(xDisToCenter==0)
+						{
+							startPoint += addAmount;
+							*startPoint = activeColor;
+							startPoint += addAmount2;
+							tY++;
+							continue;
+						}
+
+						int wid = ((x2-x1) >> 2);
+						int remainder = (x2-x1) - (wid<<2);
+
+						startPoint += addAmount;
+						ssePoint = (__m128i*)startPoint;
+
+						for(int i=0; i<wid; i++)
+						{
+							_mm_storeu_si128(ssePoint, sseColor);
+							ssePoint++;
+						}
+
+						startPoint += wid<<2;
+
+						for(int i=0; i<remainder; i++)
+						{
+							*startPoint = activeColor;
+							startPoint++;
+						}
+
+						tY++;
+						startPoint += addAmount2;
+					}
+				}
+				else
+				{
+					while (startPoint < endPoint)
+					{
+						double xDisToCenter = MathExt::sqrt( radSqr - MathExt::sqr(tY - y) ) + 0.5;
+
+						int x1 = MathExt::clamp( (int)MathExt::ceil(x-xDisToCenter), 0, tempWidth-1);
+						int x2 = MathExt::clamp( (int)MathExt::floor(x+xDisToCenter), 0, tempWidth-1);
+
+						int addAmount = x1;
+						int addAmount2 = tempWidth-x2;
+
+						if(xDisToCenter==0)
+						{
+							startPoint += addAmount;
+							*startPoint = blend(activeColor, *startPoint);
+							startPoint += addAmount2;
+							tY++;
+							continue;
+						}
+
+						int wid = ((x2-x1) >> 2);
+						int remainder = (x2-x1) - (wid<<2);
+
+						startPoint += addAmount;
+						ssePoint = (__m128i*)startPoint;
+
+						for(int i=0; i<wid; i++)
+						{
+							__m128i currentColor = _mm_loadu_si128(ssePoint);
+							__m128i blendC = blend(sseColor, currentColor);
+							_mm_storeu_si128(ssePoint, blendC);
+							ssePoint++;
+						}
+
+						startPoint += wid<<2;
+
+						for(int i=0; i<remainder; i++)
+						{
+							*startPoint = blend(activeColor, *startPoint);
+							startPoint++;
+						}
+
+						tY++;
+						startPoint += addAmount2;
+					}
+				}
+
+			#else
+
+				Color* startPoint = otherImg->getPixels() + (minY * tempWidth);
+				Color* endPoint = otherImg->getPixels() + maxX + (maxY * tempWidth);
+
+				if(currentComposite == NO_COMPOSITE)
+				{
+					while (startPoint < endPoint)
+					{
+						double xDisToCenter = MathExt::sqrt( radSqr - MathExt::sqr(tY - y) ) + 0.5;
+
+						int x1 = MathExt::clamp( (int)MathExt::ceil(x-xDisToCenter), 0, tempWidth-1);
+						int x2 = MathExt::clamp( (int)MathExt::floor(x+xDisToCenter), 0, tempWidth-1);
+
+						int addAmount = x1;
+						int addAmount2 = tempWidth-x2;
+
+						startPoint += addAmount;
+						for(int i=x1; i<=x2; i++)
+						{
+							*startPoint = activeColor;
+							startPoint++;
+						}
+
+						tY++;
+						startPoint += addAmount-1;
+					}
+				}
+				else
+				{
+					while (startPoint < endPoint)
+					{
+						double xDisToCenter = MathExt::sqrt( radSqr - MathExt::sqr(tY - y) ) + 0.5;
+
+						int x1 = MathExt::clamp( (int)MathExt::ceil(x-xDisToCenter), 0, tempWidth-1);
+						int x2 = MathExt::clamp( (int)MathExt::floor(x+xDisToCenter), 0, tempWidth-1);
+
+						int addAmount = x1;
+						int addAmount2 = tempWidth-x2;
+
+						startPoint += addAmount;
+						for(int i=x1; i<=x2; i++)
+						{
+							*startPoint = blend(activeColor, *startPoint);
+							startPoint++;
+						}
+
+						tY++;
+						startPoint += addAmount2-1;
+					}
+				}
+
+			#endif
+
+			//draw outline to fill areas not gotten by the normal fill
+			int preX1 = -1;
+			int preX2 = -1;
+			tY = minY;
+
+			while (tY <= maxY)
 			{
-				double dis = MathExt::sqr(tX + 0.5 - x) + MathExt::sqr(tY + 0.5 - y);
+				double xDisToCenter = MathExt::sqrt( radSqr - MathExt::sqr(tY - y) );
 
-				if (dis <= radSqr)
+				int x1 = MathExt::clamp( (int)MathExt::round(x-xDisToCenter), 0, tempWidth-1);
+				int x2 = MathExt::clamp( (int)MathExt::round(x+xDisToCenter), 0, tempWidth-1);
+				
+				if(tY != minY)
 				{
-					Color c = blend(activeColor, *startPoint);
-					*startPoint = c;
+					//Done for symmetry
+					if(tY<y)
+					{
+						//fill from preX1 to X1
+						Graphics::drawLine(preX1, tY-1, x1, tY, otherImg);
+						//fill from preX2 to X2
+						Graphics::drawLine(preX2, tY-1, x2, tY, otherImg);
+					}
+					else
+					{
+						//fill from X1 to preX1
+						Graphics::drawLine(x1, tY, preX1, tY-1, otherImg);
+						//fill from X2 to preX2
+						Graphics::drawLine(x2, tY, preX2, tY-1, otherImg);
+					}
 				}
-				startPoint++;
-				tX++;
 
-				if (tX >= maxX)
-				{
-					tX = minX;
-					tY++;
-					startPoint += addAmount;
-				}
+				preX1 = x1;
+				preX2 = x2;
+				tY++;
 			}
 		}
 		else
 		{
-			while (startPoint < endPoint)
+			int preX1 = -1;
+			int preX2 = -1;
+
+			while (tY <= maxY)
 			{
-				int dis = MathExt::sqr(tX + 0.5 - x) + MathExt::sqr(tY + 0.5 - y);
+				double xDisToCenter = MathExt::sqrt( radSqr - MathExt::sqr(tY - y) );
 
-				if (dis <= radSqr)
+				int x1 = MathExt::clamp( (int)MathExt::round(x-xDisToCenter), 0, tempWidth-1);
+				int x2 = MathExt::clamp( (int)MathExt::round(x+xDisToCenter), 0, tempWidth-1);
+				
+				if(tY != minY)
 				{
-					Color c = blend(activeColor, *startPoint);
-					*startPoint = c;
+					//Done for symmetry
+					if(tY<y)
+					{
+						//fill from preX1 to X1
+						Graphics::drawLine(preX1, tY-1, x1, tY, otherImg);
+						//fill from preX2 to X2
+						Graphics::drawLine(preX2, tY-1, x2, tY, otherImg);
+					}
+					else
+					{
+						//fill from X1 to preX1
+						Graphics::drawLine(x1, tY, preX1, tY-1, otherImg);
+						//fill from X2 to preX2
+						Graphics::drawLine(x2, tY, preX2, tY-1, otherImg);
+					}
 				}
-				startPoint++;
-				tX++;
 
-				if (tX >= maxX)
-				{
-					tX = minX;
-					tY++;
-					startPoint += addAmount;
-				}
+				preX1 = x1;
+				preX2 = x2;
+				tY++;
 			}
+
 		}
 	}
 }
 
 void Graphics::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline, Image* surf)
 {
+	int currentComposite = compositeRule;
 	Image* otherImg;
 	if(surf==nullptr)
 		otherImg = activeImage;
@@ -639,13 +1638,17 @@ void Graphics::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool
 			}
 		}
 
-		int startY = MathExt::clamp(minY, 0, otherImg->getHeight());
-		int endY = MathExt::clamp(maxY, 0, otherImg->getHeight());
+		int startY = MathExt::clamp(minY, 0, otherImg->getHeight()-1);
+		int endY = MathExt::clamp(maxY, 0, otherImg->getHeight()-1);
+
+		bool dir1 = (constLine.getToPoint().y < 0) || (constLine.getToPoint().x > 0);
+		bool dir2 = (sLine.getToPoint().y < 0) || (sLine.getToPoint().x > 0);
+		bool swapPivot = false;
 
 		for(int y=startY; y<endY; y++)
 		{
-			int cX1 = 0;
-			int cX2 = 0;
+			double cX1 = 0;
+			double cX2 = 0;
 
 			if(y<pivot.y)
 			{
@@ -654,64 +1657,166 @@ void Graphics::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool
 			}
 			else
 			{
+				if(!swapPivot)
+				{
+					dir2 = (eLine.getToPoint().y < 0) || (eLine.getToPoint().x > 0);
+					swapPivot=true;
+				}
+
 				cX1 = constLine.solveForX(y);
 				cX2 = eLine.solveForX(y);
 			}
 
 			if(cX1>cX2)
 			{
-				int old = cX2;
+				double old = cX2;
 				cX2 = cX1;
 				cX1 = old;
 			}
 
-			cX1 = MathExt::clamp(cX1, 0, otherImg->getWidth());
-			cX2 = MathExt::clamp(cX2, 0, otherImg->getWidth());
+			int startX = (dir1) ? MathExt::floor(cX1+0.5) : MathExt::ceil(cX1-0.5);
+			int endX = (dir2) ? MathExt::floor(cX2+0.5) : MathExt::ceil(cX2-0.5);
 
-			Color* startFill = otherImg->getPixels() + cX1 + y*otherImg->getWidth();
-			Color* endFill = startFill + (cX2-cX1);
+			startX = MathExt::clamp( startX, 0, otherImg->getWidth()-1);
+			endX = MathExt::clamp( endX, 0, otherImg->getWidth()-1);
 
-			//fill from cX1 to cX2
-			while(startFill < endFill)
+			if(startX > endX)
 			{
-				Color destColor = *startFill;
-				Color finalColor = blend(activeColor, destColor);
-				*startFill = finalColor;
-
-				startFill++;
+				//outside the drawing area
+				continue;
 			}
+
+			#if(OPTI>=2)
+
+				int avxWidth = (endX-startX)>>3;
+				int remainder = (endX-startX) - (avxWidth<<3);
+
+				Color* startFill = otherImg->getPixels() + startX + y*otherImg->getWidth();
+				Color* endFill = startFill + (endX-startX);
+
+				__m256i* avxFill = (__m256i*)startFill;
+				__m256i* avxEnd = avxFill + avxWidth;
+				__m256i avxColor = _mm256_set1_epi32( *((int*)&Graphics::activeColor) );
+
+				//fill from cX1 to cX2
+				if(currentComposite == NO_COMPOSITE)
+				{
+					while(avxFill < avxEnd)
+					{
+						_mm256_storeu_si256(avxFill, avxColor);
+						avxFill++;
+					}
+
+					//fill remainder
+					startFill += avxWidth<<3;
+					for(int i=0; i<remainder; i++)
+					{
+						*startFill = Graphics::activeColor;
+						startFill++;
+					}
+				}
+				else
+				{
+					while(avxFill < avxEnd)
+					{
+						__m256i currentColor = _mm256_loadu_si256(avxFill);
+						__m256i blendC = blend(avxColor, currentColor);
+						_mm256_storeu_si256(avxFill, blendC);
+						avxFill++;
+					}
+
+					//fill remainder
+					startFill += avxWidth<<3;
+					for(int i=0; i<remainder; i++)
+					{
+						*startFill = blend(Graphics::activeColor, *startFill);
+						startFill++;
+					}
+				}
+
+			#elif(OPTI>=1)
+
+				int sseWidth = (endX-startX)>>2;
+				int remainder = (endX-startX) - (sseWidth<<2);
+
+				Color* startFill = otherImg->getPixels() + startX + y*otherImg->getWidth();
+				Color* endFill = startFill + (endX-startX);
+
+				__m128i* sseFill = (__m128i*)startFill;
+				__m128i* sseEnd = sseFill + sseWidth;
+				__m128i sseColor = _mm_set1_epi32( *((int*)&Graphics::activeColor) );
+
+				//fill from cX1 to cX2
+				if(compositeRule == NO_COMPOSITE)
+				{
+					while(sseFill < sseEnd)
+					{
+						_mm_storeu_si128(sseFill, sseColor);
+						sseFill++;
+					}
+
+					//fill remainder
+					startFill += sseWidth<<2;
+					for(int i=0; i<remainder; i++)
+					{
+						*startFill = Graphics::activeColor;
+						startFill++;
+					}
+				}
+				else
+				{
+					while(sseFill < sseEnd)
+					{
+						__m128i currentColor = _mm_loadu_si128(sseFill);
+						__m128i blendC = blend(sseColor, currentColor);
+						_mm_storeu_si128(sseFill, blendC);
+						sseFill++;
+					}
+
+					//fill remainder
+					startFill += sseWidth<<2;
+					for(int i=0; i<remainder; i++)
+					{
+						*startFill = blend(Graphics::activeColor, *startFill);
+						startFill++;
+					}
+				}
+
+			#else
+
+				Color* startFill = otherImg->getPixels() + startX + y*otherImg->getWidth();
+				Color* endFill = startFill + (endX-startX);
+
+				//fill from cX1 to cX2
+				if(compositeRule == NO_COMPOSITE)
+				{
+					while(startFill <= endFill)
+					{
+						*startFill = activeColor;
+						startFill++;
+					}
+				}
+				else
+				{
+					while(startFill <= endFill)
+					{
+						Color destColor = *startFill;
+						Color finalColor = blend(activeColor, destColor);
+						*startFill = finalColor;
+
+						startFill++;
+					}
+				}
+
+			#endif
 		}
-
-		// int arr[3] = {x1, x2, x3};
-		// int minX = MathExt::clamp(MathExt::min( arr, 3 ), 0, otherImg->getWidth());
-		// int maxX = MathExt::clamp(MathExt::max( arr, 3 ), 0, otherImg->getWidth());
-		
-		// arr[0] = y1; arr[1] = y2; arr[2] = y3;
-		// int minY = MathExt::clamp(MathExt::min( arr, 3 ), 0, otherImg->getHeight());
-		// int maxY = MathExt::clamp(MathExt::max( arr, 3 ), 0, otherImg->getHeight());
-
-		// for(int y=minY; y<maxY; y++)
-		// {
-		// 	for(int x=minX; x<maxX; x++)
-		// 	{
-		// 		double w2 = (y-y3)*(x1-x3) - (x-x3)*(y1-y3);
-		// 		w2 /= (y2-y3)*(x1-x3) - (x2-x3)*(y1-y3);
-
-		// 		double w1 = (x - w2*(x2-x3) - x3) / (x1-x3);
-		// 		double w3 = 1.0 - w2 - w1;
-
-		// 		if(w1>=0 && w2>=0 && w3>=0)
-		// 		{
-		// 			drawPixel(x,y,activeColor,otherImg);
-		// 		}
-		// 	}
-		// }
 		
 	}
 }
 
 void Graphics::drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture, Image* surf)
 {
+	int currentComposite = compositeRule;
 	Image* otherImg;
 	if(surf==nullptr)
 		otherImg = activeImage;
@@ -784,13 +1889,17 @@ void Graphics::drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture
 			}
 		}
 
-		int startY = MathExt::clamp( (int)MathExt::ceil(minY), 0, otherImg->getHeight());
-		int endY = MathExt::clamp( (int)maxY, 0, otherImg->getHeight());
+		int startY = MathExt::clamp( (int)MathExt::floor(minY), 0, otherImg->getHeight());
+		int endY = MathExt::clamp( (int)MathExt::ceil(maxY), 0, otherImg->getHeight());
 
 		double det = (p2.y-p3.y)*(p1.x-p3.x) + (p3.x-p2.x)*(p1.y-p3.y);
 		Color* texturePixels = texture->getPixels();
 
-		for(int y=startY; y<endY; y++)
+		bool dir1 = (constLine.getToPoint().y < 0) || (constLine.getToPoint().x > 0);
+		bool dir2 = (sLine.getToPoint().y < 0) || (sLine.getToPoint().x > 0);
+		bool swapPivot = false;
+
+		for(int y=startY; y<=endY; y++)
 		{
 			double cX1 = 0;
 			double cX2 = 0;
@@ -802,6 +1911,12 @@ void Graphics::drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture
 			}
 			else
 			{
+				if(!swapPivot)
+				{
+					dir2 = (eLine.getToPoint().y < 0) || (eLine.getToPoint().x > 0);
+					swapPivot=true;
+				}
+
 				cX1 = constLine.solveForX(y);
 				cX2 = eLine.solveForX(y);
 			}
@@ -813,92 +1928,357 @@ void Graphics::drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture
 				cX1 = old;
 			}
 
-			int startX = MathExt::clamp( (int)MathExt::ceil(cX1), 0, otherImg->getWidth());
-			int endX = MathExt::clamp( (int)cX2, 0, otherImg->getWidth());
-			
-			if(startX >= endX)
+			int startX = (dir1) ? MathExt::floor(cX1+0.5) : MathExt::ceil(cX1-0.5);
+			int endX = (dir2) ? MathExt::floor(cX2+0.5) : MathExt::ceil(cX2-0.5);
+
+			startX = MathExt::clamp( startX, 0, otherImg->getWidth()-1);
+			endX = MathExt::clamp( endX, 0, otherImg->getWidth()-1);
+
+			if(startX > endX)
 			{
+				//outside the drawing area
 				continue;
 			}
-			
-			int x = startX;
 
-			Color* startFill = otherImg->getPixels() + startX + y*otherImg->getWidth();
-			Color* endFill = startFill + (endX-startX);
-			
-			//fill from cX1 to cX2
-			while(startFill < endFill)
+			if(startX == endX)
 			{
-				double w1 = ((p2.y-p3.y)*(x-p3.x) + (p3.x-p2.x)*(y-p3.y)) / det;
-				double w2 = ((p3.y-p1.y)*(x-p3.x) + (p1.x-p3.x)*(y-p3.y)) / det;
-				
+				//draw one pixel
+				double w1 = ((p2.y-p3.y)*(startX-p3.x) + (p3.x-p2.x)*(y-p3.y)) / det;
+				double w2 = ((p3.y-p1.y)*(startX-p3.x) + (p1.x-p3.x)*(y-p3.y)) / det;
 				double w3 = 1.0 - w1 - w2;
 
 				double u = p1.z*w1 + p2.z*w2 + p3.z*w3;
 				double v = p1.w*w1 + p2.w*w2 + p3.w*w3;
 				
-				int uInt = (int)(u * texture->getWidth()-1);
-				int vInt = (int)(v * texture->getHeight()-1);
+				int uInt = (int) MathExt::round(u * (texture->getWidth()));
+				int vInt = (int) MathExt::round(v * (texture->getHeight()));
 
+				Color c = texture->getPixel(uInt, vInt, false);
 
-				if(uInt<0 || uInt>texture->getWidth()-1 || vInt<0 || vInt>texture->getHeight()-1)
+				if(compositeRule==NO_COMPOSITE)
 				{
-					//error
-					//StringTools::println("Error with uv: %.3f, %.3f, %.3f, %.3f, %.3f, %d, %d", w1, w2, w3, u,v, uInt, vInt);
-					startFill++;
-					x++;
-					continue;
+					otherImg->setPixel(startX, y, c);
+				}
+				else
+				{
+					Color destColor = otherImg->getPixel(startX, y);
+					Color finalColor = blend(c, destColor);
+
+					otherImg->setPixel(startX, y, finalColor);
 				}
 
-				Color c = texturePixels[uInt + vInt*texture->getWidth()];
-
-				Color destColor = *startFill;
-				Color finalColor = blend(c, destColor);
-				*startFill = finalColor;
-				
-				startFill++;
-				x++;
+				continue;
 			}
+
+			Color* startFill = otherImg->getPixels() + startX + y*otherImg->getWidth();
+			Color* endFill = startFill + (endX-startX);
+			
+			double s1 = ((p2.y-p3.y)*(startX-p3.x) + (p3.x-p2.x)*(y-p3.y)) / det;
+			double s2 = ((p3.y-p1.y)*(startX-p3.x) + (p1.x-p3.x)*(y-p3.y)) / det;
+			double s3 = 1.0 - s1 - s2;
+
+			double e1 = ((p2.y-p3.y)*(endX-p3.x) + (p3.x-p2.x)*(y-p3.y)) / det;
+			double e2 = ((p3.y-p1.y)*(endX-p3.x) + (p1.x-p3.x)*(y-p3.y)) / det;
+			double e3 = 1.0 - e1 - e2;
+
+
+			int x = 0;
+			int dis = (endX - startX);
+
+			#if(OPTI>=2)
+
+				int avxWidth = (dis+1)>>3;
+				int remainder = (dis+1) - (avxWidth<<3);
+
+				__m256i* avxFill = (__m256i*)startFill;
+				__m256i* avxEnd = avxFill + avxWidth;
+				__m256i avxColor = _mm256_set1_epi32( *((int*)&Graphics::activeColor) );
+
+				__m256 startWeights1 = _mm256_set1_ps((float)s1);
+				__m256 startWeights2 = _mm256_set1_ps((float)s2);
+				__m256 startWeights3 = _mm256_set1_ps((float)s3);
+
+				__m256 endWeights1 = _mm256_set1_ps((float)e1);
+				__m256 endWeights2 = _mm256_set1_ps((float)e2);
+				__m256 endWeights3 = _mm256_set1_ps((float)e3);
+
+				__m256 texCoordsU1 = _mm256_set1_ps( p1.z );
+				__m256 texCoordsU2 = _mm256_set1_ps( p2.z );
+				__m256 texCoordsU3 = _mm256_set1_ps( p3.z );
+
+				__m256 texCoordsV1 = _mm256_set1_ps( p1.w );
+				__m256 texCoordsV2 = _mm256_set1_ps( p2.w );
+				__m256 texCoordsV3 = _mm256_set1_ps( p3.w );
+
+				while(avxFill < avxEnd)
+				{
+					__m256 blendValues = _mm256_set_ps(
+						((float)(x+7))/dis,
+						((float)(x+6))/dis,
+						((float)(x+5))/dis,
+						((float)(x+4))/dis,
+						((float)(x+3))/dis,
+						((float)(x+2))/dis,
+						((float)(x+1))/dis,
+						((float)x)/dis
+					);
+
+					__m256 blendValuesInv = _mm256_sub_ps( _mm256_set1_ps(1.0f), blendValues);
+					__m256 uValues, vValues, w1Values, w2Values, w3Values, uInt, vInt;
+					
+					w1Values = _mm256_add_ps(_mm256_mul_ps( startWeights1, blendValuesInv), _mm256_mul_ps( endWeights1, blendValues));
+					w2Values = _mm256_add_ps(_mm256_mul_ps( startWeights2, blendValuesInv), _mm256_mul_ps( endWeights2, blendValues));
+					w3Values = _mm256_add_ps(_mm256_mul_ps( startWeights3, blendValuesInv), _mm256_mul_ps( endWeights3, blendValues));
+
+					uValues = _mm256_add_ps(_mm256_mul_ps( texCoordsU1, w1Values), _mm256_mul_ps( texCoordsU2, w2Values));
+					uValues = _mm256_add_ps(uValues, _mm256_mul_ps( texCoordsU3, w3Values));
+
+					vValues = _mm256_add_ps(_mm256_mul_ps( texCoordsV1, w1Values), _mm256_mul_ps( texCoordsV2, w2Values));
+					vValues = _mm256_add_ps(vValues, _mm256_mul_ps( texCoordsV3, w3Values));
+
+					uValues = _mm256_mul_ps( uValues, _mm256_set1_ps( texture->getWidth()) );
+					vValues = _mm256_mul_ps( vValues, _mm256_set1_ps( texture->getHeight()) );
+					
+					uValues = _mm256_round_ps( uValues, _MM_ROUND_NEAREST );
+					vValues = _mm256_round_ps( vValues, _MM_ROUND_NEAREST );
+					
+					
+					uInt = _mm256_cvtps_epi32(uValues);
+					vInt = _mm256_cvtps_epi32(vValues);
+					
+					int* xCoords = (int*)&uInt;
+					int* yCoords = (int*)&vInt;
+					
+					Color c1 = texture->getPixel(xCoords[0], yCoords[0], false);
+					Color c2 = texture->getPixel(xCoords[1], yCoords[1], false);
+					Color c3 = texture->getPixel(xCoords[2], yCoords[2], false);
+					Color c4 = texture->getPixel(xCoords[3], yCoords[3], false);
+					Color c5 = texture->getPixel(xCoords[4], yCoords[4], false);
+					Color c6 = texture->getPixel(xCoords[5], yCoords[5], false);
+					Color c7 = texture->getPixel(xCoords[6], yCoords[6], false);
+					Color c8 = texture->getPixel(xCoords[7], yCoords[7], false);
+					
+					__m256i finalColors = _mm256_set_epi32(
+						*(int*)&c8,
+						*(int*)&c7,
+						*(int*)&c6,
+						*(int*)&c5,
+						*(int*)&c4,
+						*(int*)&c3,
+						*(int*)&c2,
+						*(int*)&c1
+					);
+
+					if(currentComposite == NO_COMPOSITE)
+					{
+						_mm256_storeu_si256(avxFill, finalColors);
+					}
+					else
+					{
+						__m256i currentColor = _mm256_loadu_si256(avxFill);
+						__m256i blendC = blend(finalColors, currentColor);
+						_mm256_storeu_si256(avxFill, blendC);
+					}
+					
+					avxFill++;
+					x+=8;
+				}
+
+				startFill += avxWidth<<3;
+
+				//fill remainder
+				for(int i=0; i<remainder; i++)
+				{
+					double blendValue = (double)x / dis;
+
+					double w1 = MathExt::lerp(s1, e1, blendValue);
+					double w2 = MathExt::lerp(s2, e2, blendValue);
+					double w3 = MathExt::lerp(s3, e3, blendValue);
+
+					double u = p1.z*w1 + p2.z*w2 + p3.z*w3;
+					double v = p1.w*w1 + p2.w*w2 + p3.w*w3;
+					
+					int uInt = (int) MathExt::round(u * (texture->getWidth()));
+					int vInt = (int) MathExt::round(v * (texture->getHeight()));
+
+					Color c = texture->getPixel(uInt, vInt, false);
+					
+					if(currentComposite == NO_COMPOSITE)
+					{
+						*startFill = c;
+					}
+					else
+					{
+						*startFill = blend(c, *startFill);
+					}
+					
+					startFill++;
+					x++;
+				}
+			
+			#elif(OPTI>=1)
+
+				int sseWidth = (dis+1)>>2;
+				int remainder = (dis+1) - (sseWidth<<2);
+
+				__m128i* sseFill = (__m128i*)startFill;
+				__m128i* sseEnd = sseFill + sseWidth;
+				__m128i sseColor = _mm_set1_epi32( *((int*)&Graphics::activeColor) );
+
+				__m128 startWeights1 = _mm_set1_ps((float)s1);
+				__m128 startWeights2 = _mm_set1_ps((float)s2);
+				__m128 startWeights3 = _mm_set1_ps((float)s3);
+
+				__m128 endWeights1 = _mm_set1_ps((float)e1);
+				__m128 endWeights2 = _mm_set1_ps((float)e2);
+				__m128 endWeights3 = _mm_set1_ps((float)e3);
+
+				__m128 texCoordsU1 = _mm_set1_ps( p1.z );
+				__m128 texCoordsU2 = _mm_set1_ps( p2.z );
+				__m128 texCoordsU3 = _mm_set1_ps( p3.z );
+
+				__m128 texCoordsV1 = _mm_set1_ps( p1.w );
+				__m128 texCoordsV2 = _mm_set1_ps( p2.w );
+				__m128 texCoordsV3 = _mm_set1_ps( p3.w );
+
+
+				while(sseFill < sseEnd)
+				{
+					__m128 blendValues = _mm_set_ps(
+						((float)(x+3))/dis,
+						((float)(x+2))/dis,
+						((float)(x+1))/dis,
+						((float)x)/dis
+					);
+
+					__m128 blendValuesInv = _mm_sub_ps( _mm_set1_ps(1.0f), blendValues);
+					__m128 uValues, vValues, w1Values, w2Values, w3Values, uInt, vInt;
+					
+					w1Values = _mm_add_ps(_mm_mul_ps( startWeights1, blendValuesInv), _mm_mul_ps( endWeights1, blendValues));
+					w2Values = _mm_add_ps(_mm_mul_ps( startWeights2, blendValuesInv), _mm_mul_ps( endWeights2, blendValues));
+					w3Values = _mm_add_ps(_mm_mul_ps( startWeights3, blendValuesInv), _mm_mul_ps( endWeights3, blendValues));
+
+					uValues = _mm_add_ps(_mm_mul_ps( texCoordsU1, w1Values), _mm_mul_ps( texCoordsU2, w2Values));
+					uValues = _mm_add_ps(uValues, _mm_mul_ps( texCoordsU3, w3Values));
+
+					vValues = _mm_add_ps(_mm_mul_ps( texCoordsV1, w1Values), _mm_mul_ps( texCoordsV2, w2Values));
+					vValues = _mm_add_ps(vValues, _mm_mul_ps( texCoordsV3, w3Values));
+
+					uValues = _mm_mul_ps( uValues, _mm_set1_ps( texture->getWidth()) );
+					vValues = _mm_mul_ps( vValues, _mm_set1_ps( texture->getHeight()) );
+
+					uValues = _mm_round_ps( uValues, _MM_ROUND_NEAREST );
+					vValues = _mm_round_ps( vValues, _MM_ROUND_NEAREST );
+					
+					
+					uInt = _mm_cvtps_epi32(uValues);
+					vInt = _mm_cvtps_epi32(vValues);
+					
+					int* xCoords = (int*)&uInt;
+					int* yCoords = (int*)&vInt;
+					
+					Color c1 = texture->getPixel(xCoords[0], yCoords[0], true);
+					Color c2 = texture->getPixel(xCoords[1], yCoords[1], true);
+					Color c3 = texture->getPixel(xCoords[2], yCoords[2], true);
+					Color c4 = texture->getPixel(xCoords[3], yCoords[3], true);
+					
+					__m128i finalColors = _mm_set_epi32(
+						*(int*)&c4,
+						*(int*)&c3,
+						*(int*)&c2,
+						*(int*)&c1
+					);
+
+					if(currentComposite == NO_COMPOSITE)
+					{
+						_mm_storeu_si128(sseFill, finalColors);
+					}
+					else
+					{
+						__m128i currentColor = _mm_loadu_si128(sseFill);
+						__m128i blendC = blend(finalColors, currentColor);
+						_mm_storeu_si128(sseFill, blendC);
+					}
+					
+					sseFill++;
+					x+=4;
+				}
+
+				startFill += sseWidth<<2;
+
+				//fill remainder
+				for(int i=0; i<remainder; i++)
+				{
+					double blendValue = (double)x / dis;
+
+					double w1 = MathExt::lerp(s1, e1, blendValue);
+					double w2 = MathExt::lerp(s2, e2, blendValue);
+					double w3 = MathExt::lerp(s3, e3, blendValue);
+
+					double u = p1.z*w1 + p2.z*w2 + p3.z*w3;
+					double v = p1.w*w1 + p2.w*w2 + p3.w*w3;
+					
+					int uInt = (int) MathExt::round(u * (texture->getWidth()));
+					int vInt = (int) MathExt::round(v * (texture->getHeight()));
+
+					Color c = texture->getPixel(uInt, vInt, false);
+					
+					if(currentComposite == NO_COMPOSITE)
+					{
+						*startFill = c;
+					}
+					else
+					{
+						*startFill = blend(c, *startFill);
+					}
+						
+					startFill++;
+					x++;
+				}
+			
+			#else
+
+				while(startFill <= endFill)
+				{
+					double blendValue = (double)x / dis;
+
+					double w1 = MathExt::lerp(s1, e1, blendValue);
+					double w2 = MathExt::lerp(s2, e2, blendValue);
+					double w3 = MathExt::lerp(s3, e3, blendValue);
+
+					double u = p1.z*w1 + p2.z*w2 + p3.z*w3;
+					double v = p1.w*w1 + p2.w*w2 + p3.w*w3;
+					
+					int uInt = (int) MathExt::round(u * (texture->getWidth()));
+					int vInt = (int) MathExt::round(v * (texture->getHeight()));
+
+					Color c = texture->getPixel(uInt, vInt, false);
+					
+					if(currentComposite == NO_COMPOSITE)
+					{
+						*startFill = c;
+					}
+					else
+					{
+						*startFill = blend(c, *startFill);
+					}
+					
+					startFill++;
+					x++;
+				}
+
+			#endif
+			
 		}
 
-		// int arr[3] = {(int)p1.x, (int)p2.x, (int)p3.x};
-		// int minX = MathExt::clamp(MathExt::min( arr, 3 ), 0, otherImg->getWidth());
-		// int maxX = MathExt::clamp(MathExt::max( arr, 3 ), 0, otherImg->getWidth());
-		
-		// arr[0] = (int)p1.y; arr[1] = (int)p2.y; arr[2] = (int)p3.y;
-		// int minY = MathExt::clamp(MathExt::min( arr, 3 ), 0, otherImg->getHeight());
-		// int maxY = MathExt::clamp(MathExt::max( arr, 3 ), 0, otherImg->getHeight());
-
-		// for(int y=minY; y<maxY; y++)
-		// {
-		// 	for(int x=minX; x<maxX; x++)
-		// 	{
-		// 		double w2 = (y-p3.y)*(p1.x-p3.x) - (x-p3.x)*(p1.y-p3.y);
-		// 		w2 /= (p2.y-p3.y)*(p1.x-p3.x) - (p2.x-p3.x)*(p1.y-p3.y);
-
-		// 		double w1 = (x - w2*(p2.x-p3.x) - p3.x) / (p1.x-p3.x);
-		// 		double w3 = 1.0 - w2 - w1;
-
-		// 		if(w1>=0 && w2>=0 && w3>=0)
-		// 		{
-		// 			double u = p1.z*w1 + p2.z*w2 + p3.z*w3;
-		// 			double v = p1.w*w1 + p2.w*w2 + p3.w*w3;
-					
-		// 			u *= texture->getWidth()-1;
-		// 			v *= texture->getHeight()-1;
-
-		// 			Color c = texture->getPixel(u, v);
-
-		// 			drawPixel(x,y,c,otherImg);
-		// 		}
-		// 	}
-		// }
 	}
 }
 
 //Works properly now
 void Graphics::drawImage(Image* img, int x, int y, Image* surf)
 {
+	int currentComposite = compositeRule;
+
 	Image* otherImg;
 	if (surf == nullptr)
 		otherImg = activeImage;
@@ -928,27 +2308,186 @@ void Graphics::drawImage(Image* img, int x, int y, Image* surf)
 
 		int tX = 0;
 
-		while (startPoint < endPoint)
-		{
-			*startPoint = *drawImgStart;
+		#if(OPTI>=2)
 
-			startPoint++;
-			drawImgStart++;
-			tX++;
+			int avxWidth = (maxX-minX) >> 3;
+			int remainder = (maxX-minX) - (avxWidth<<3);
 
-			if (tX >= drawImgWidth)
+			if(currentComposite == NO_COMPOSITE)
 			{
-				tX = 0;
-				startPoint += otherImgAddX;
-				drawImgStart += drawImgAddX;
-			}
-		}
+				while (startPoint < endPoint)
+				{
+					__m256i* avxPoint = (__m256i*)startPoint;
+					__m256i* imgPoint = (__m256i*)drawImgStart;
 
+					for(int i=0; i<avxWidth; i++)
+					{
+						__m256i avxColor = _mm256_loadu_si256(imgPoint);
+						_mm256_storeu_si256(avxPoint, avxColor);
+						avxPoint++;
+						imgPoint++;
+					}
+
+					startPoint += avxWidth<<3;
+					drawImgStart += avxWidth<<3;
+
+					//fill remainder
+					for(int i=0; i<remainder; i++)
+					{
+						*startPoint = *drawImgStart;
+						startPoint++;
+						drawImgStart++;
+					}
+
+					startPoint += otherImgAddX;
+					drawImgStart += drawImgAddX;
+				}
+			}
+			else
+			{
+				while (startPoint < endPoint)
+				{
+					__m256i* avxPoint = (__m256i*)startPoint;
+					__m256i* imgPoint = (__m256i*)drawImgStart;
+
+					for(int i=0; i<avxWidth; i++)
+					{
+						__m256i avxColor = _mm256_loadu_si256(imgPoint);
+						__m256i currentColor = _mm256_loadu_si256(avxPoint);
+						__m256i blendC = blend(avxColor, currentColor);
+						_mm256_storeu_si256(avxPoint, blendC);
+						avxPoint++;
+						imgPoint++;
+					}
+
+					startPoint += avxWidth<<3;
+					drawImgStart += avxWidth<<3;
+
+					//fill remainder
+					for(int i=0; i<remainder; i++)
+					{
+						*startPoint = blend(*drawImgStart, *startPoint);
+						startPoint++;
+						drawImgStart++;
+					}
+					
+					startPoint += otherImgAddX;
+					drawImgStart += drawImgAddX;
+				}
+			}
+
+		#elif(OPTI>=1)
+
+			int sseWidth = (maxX-minX) >> 2;
+			int remainder = (maxX-minX) - (sseWidth<<2);
+
+			if(currentComposite == NO_COMPOSITE)
+			{
+				while (startPoint < endPoint)
+				{
+					__m128i* ssePoint = (__m128i*)startPoint;
+					__m128i* imgPoint = (__m128i*)drawImgStart;
+
+					for(int i=0; i<sseWidth; i++)
+					{
+						__m128i sseColor = _mm_loadu_si128(imgPoint);
+						_mm_storeu_si128(ssePoint, sseColor);
+						ssePoint++;
+						imgPoint++;
+					}
+
+					startPoint += sseWidth<<2;
+					drawImgStart += sseWidth<<2;
+
+					//fill remainder
+					for(int i=0; i<remainder; i++)
+					{
+						*startPoint = *drawImgStart;
+						startPoint++;
+						drawImgStart++;
+					}
+
+					startPoint += otherImgAddX;
+					drawImgStart += drawImgAddX;
+				}
+			}
+			else
+			{
+				while (startPoint < endPoint)
+				{
+					__m128i* ssePoint = (__m128i*)startPoint;
+					__m128i* imgPoint = (__m128i*)drawImgStart;
+
+					for(int i=0; i<sseWidth; i++)
+					{
+						__m128i sseColor = _mm_loadu_si128(imgPoint);
+						__m128i currentColor = _mm_loadu_si128(ssePoint);
+						__m128i blendC = blend(sseColor, currentColor);
+						_mm_storeu_si128(ssePoint, blendC);
+						ssePoint++;
+						imgPoint++;
+					}
+
+					startPoint += sseWidth<<2;
+					drawImgStart += sseWidth<<2;
+
+					//fill remainder
+					for(int i=0; i<remainder; i++)
+					{
+						*startPoint = blend(*drawImgStart, *startPoint);
+						startPoint++;
+						drawImgStart++;
+					}
+					
+					startPoint += otherImgAddX;
+					drawImgStart += drawImgAddX;
+				}
+			}
+
+		#else
+
+			if(currentComposite == NO_COMPOSITE)
+			{
+				while (startPoint < endPoint)
+				{
+					for(int i=0; i<drawImgWidth; i++)
+					{
+						*startPoint = *drawImgStart;
+
+						startPoint++;
+						drawImgStart++;
+					}
+				
+					startPoint += otherImgAddX;
+					drawImgStart += drawImgAddX;
+				
+				}
+			}
+			else
+			{
+				while (startPoint < endPoint)
+				{
+					for(int i=0; i<drawImgWidth; i++)
+					{
+						*startPoint = blend(*drawImgStart, *startPoint);
+
+						startPoint++;
+						drawImgStart++;
+					}
+				
+					startPoint += otherImgAddX;
+					drawImgStart += drawImgAddX;
+				
+				}
+			}
+
+		#endif
 	}
 }
 
 void Graphics::drawSprite(Image* img, int x, int y, Image* surf)
 {
+	int currentComposite = compositeRule;
 	Image* otherImg;
 	if (surf == nullptr)
 		otherImg = activeImage;
@@ -978,31 +2517,357 @@ void Graphics::drawSprite(Image* img, int x, int y, Image* surf)
 
 		int tX = 0;
 
-		Vec4f colorMult = Vec4f((double)Graphics::activeColor.red / 255.0, (double)Graphics::activeColor.green / 255.0, (double)Graphics::activeColor.blue / 255.0, (double)Graphics::activeColor.alpha / 255.0);
+		
 
-		while (startPoint < endPoint)
-		{
-			Color drawC = { (unsigned char) (drawImgStart->red * colorMult.x),
-							(unsigned char) (drawImgStart->green * colorMult.y),
-							(unsigned char) (drawImgStart->blue * colorMult.z), 
-							(unsigned char) (drawImgStart->alpha * colorMult.w) };
-			*startPoint = blend(drawC, *startPoint);
+		#if(OPTI>=2)
+			
+			int avxWidth = (maxX-minX) >> 3;
+			int remainder = (maxX-minX) - (avxWidth<<3);
 
-			startPoint++;
-			drawImgStart++;
-			tX++;
+			__m256 colorMultRed = _mm256_set1_ps( ((float)Graphics::activeColor.red) / 255.0 );
+			__m256 colorMultGreen = _mm256_set1_ps( ((float)Graphics::activeColor.green) / 255.0 );
+			__m256 colorMultBlue = _mm256_set1_ps( ((float)Graphics::activeColor.blue) / 255.0 );
+			__m256 colorMultAlpha = _mm256_set1_ps( ((float)Graphics::activeColor.alpha) / 255.0 );
 
-			if (tX >= drawImgWidth)
+			if(currentComposite == NO_COMPOSITE)
 			{
-				tX = 0;
-				startPoint += otherImgAddX;
-				drawImgStart += drawImgAddX;
+				while (startPoint < endPoint)
+				{
+					__m256i* avxPoint = (__m256i*)startPoint;
+					__m256i* imgPoint = (__m256i*)drawImgStart;
+
+					for(int i=0; i<avxWidth; i++)
+					{
+						__m256i avxColor = _mm256_loadu_si256(imgPoint);
+						
+						Color* colors = (Color*)&avxColor;
+
+						__m256 reds = _mm256_set_ps(
+							(float)colors[7].red, (float)colors[6].red, (float)colors[5].red, (float)colors[4].red,
+							(float)colors[3].red, (float)colors[2].red, (float)colors[1].red, (float)colors[0].red
+						);
+						__m256 greens = _mm256_set_ps(
+							(float)colors[7].green, (float)colors[6].green, (float)colors[5].green, (float)colors[4].green,
+							(float)colors[3].green, (float)colors[2].green, (float)colors[1].green, (float)colors[0].green
+						);
+						__m256 blues = _mm256_set_ps(
+							(float)colors[7].blue, (float)colors[6].blue, (float)colors[5].blue, (float)colors[4].blue,
+							(float)colors[3].blue, (float)colors[2].blue, (float)colors[1].blue, (float)colors[0].blue
+						);
+						__m256 alphas = _mm256_set_ps(
+							(float)colors[7].alpha, (float)colors[6].alpha, (float)colors[5].alpha, (float)colors[4].alpha,
+							(float)colors[3].alpha, (float)colors[2].alpha, (float)colors[1].alpha, (float)colors[0].alpha
+						);
+
+						reds = _mm256_mul_ps(reds, colorMultRed);
+						greens = _mm256_mul_ps(greens, colorMultGreen);
+						blues = _mm256_mul_ps(blues, colorMultBlue);
+						alphas = _mm256_mul_ps(alphas, colorMultAlpha);
+
+						float* rFloats = (float*)&reds;
+						float* gFloats = (float*)&greens;
+						float* bFloats = (float*)&blues;
+						float* aFloats = (float*)&alphas;
+
+						__m256i finalColor = _mm256_set_epi8(
+							(unsigned char)aFloats[7], (unsigned char)bFloats[7], (unsigned char)gFloats[7], (unsigned char)rFloats[7],
+							(unsigned char)aFloats[6], (unsigned char)bFloats[6], (unsigned char)gFloats[6], (unsigned char)rFloats[6],
+							(unsigned char)aFloats[5], (unsigned char)bFloats[5], (unsigned char)gFloats[5], (unsigned char)rFloats[5],
+							(unsigned char)aFloats[4], (unsigned char)bFloats[4], (unsigned char)gFloats[4], (unsigned char)rFloats[4],
+							(unsigned char)aFloats[3], (unsigned char)bFloats[3], (unsigned char)gFloats[3], (unsigned char)rFloats[3],
+							(unsigned char)aFloats[2], (unsigned char)bFloats[2], (unsigned char)gFloats[2], (unsigned char)rFloats[2],
+							(unsigned char)aFloats[1], (unsigned char)bFloats[1], (unsigned char)gFloats[1], (unsigned char)rFloats[1],
+							(unsigned char)aFloats[0], (unsigned char)bFloats[0], (unsigned char)gFloats[0], (unsigned char)rFloats[0]
+						);
+
+
+						_mm256_storeu_si256(avxPoint, avxColor);
+						avxPoint++;
+						imgPoint++;
+					}
+
+					startPoint += avxWidth<<3;
+					drawImgStart += avxWidth<<3;
+
+					//fill remainder
+					for(int i=0; i<remainder; i++)
+					{
+						*startPoint = *drawImgStart;
+						startPoint++;
+						drawImgStart++;
+					}
+
+					startPoint += otherImgAddX;
+					drawImgStart += drawImgAddX;
+				}
 			}
-		}
+			else
+			{
+				while (startPoint < endPoint)
+				{
+					__m256i* avxPoint = (__m256i*)startPoint;
+					__m256i* imgPoint = (__m256i*)drawImgStart;
+
+					for(int i=0; i<avxWidth; i++)
+					{
+						__m256i avxColor = _mm256_loadu_si256(imgPoint);
+						__m256i currentColor = _mm256_loadu_si256(avxPoint);
+						
+						Color* colors = (Color*)&avxColor;
+
+						__m256 reds = _mm256_set_ps(
+							(float)colors[7].red, (float)colors[6].red, (float)colors[5].red, (float)colors[4].red,
+							(float)colors[3].red, (float)colors[2].red, (float)colors[1].red, (float)colors[0].red
+						);
+						__m256 greens = _mm256_set_ps(
+							(float)colors[7].green, (float)colors[6].green, (float)colors[5].green, (float)colors[4].green,
+							(float)colors[3].green, (float)colors[2].green, (float)colors[1].green, (float)colors[0].green
+						);
+						__m256 blues = _mm256_set_ps(
+							(float)colors[7].blue, (float)colors[6].blue, (float)colors[5].blue, (float)colors[4].blue,
+							(float)colors[3].blue, (float)colors[2].blue, (float)colors[1].blue, (float)colors[0].blue
+						);
+						__m256 alphas = _mm256_set_ps(
+							(float)colors[7].alpha, (float)colors[6].alpha, (float)colors[5].alpha, (float)colors[4].alpha,
+							(float)colors[3].alpha, (float)colors[2].alpha, (float)colors[1].alpha, (float)colors[0].alpha
+						);
+
+						reds = _mm256_mul_ps(reds, colorMultRed);
+						greens = _mm256_mul_ps(greens, colorMultGreen);
+						blues = _mm256_mul_ps(blues, colorMultBlue);
+						alphas = _mm256_mul_ps(alphas, colorMultAlpha);
+
+						float* rFloats = (float*)&reds;
+						float* gFloats = (float*)&greens;
+						float* bFloats = (float*)&blues;
+						float* aFloats = (float*)&alphas;
+
+						__m256i finalColor = _mm256_set_epi8(
+							(unsigned char)aFloats[7], (unsigned char)bFloats[7], (unsigned char)gFloats[7], (unsigned char)rFloats[7],
+							(unsigned char)aFloats[6], (unsigned char)bFloats[6], (unsigned char)gFloats[6], (unsigned char)rFloats[6],
+							(unsigned char)aFloats[5], (unsigned char)bFloats[5], (unsigned char)gFloats[5], (unsigned char)rFloats[5],
+							(unsigned char)aFloats[4], (unsigned char)bFloats[4], (unsigned char)gFloats[4], (unsigned char)rFloats[4],
+							(unsigned char)aFloats[3], (unsigned char)bFloats[3], (unsigned char)gFloats[3], (unsigned char)rFloats[3],
+							(unsigned char)aFloats[2], (unsigned char)bFloats[2], (unsigned char)gFloats[2], (unsigned char)rFloats[2],
+							(unsigned char)aFloats[1], (unsigned char)bFloats[1], (unsigned char)gFloats[1], (unsigned char)rFloats[1],
+							(unsigned char)aFloats[0], (unsigned char)bFloats[0], (unsigned char)gFloats[0], (unsigned char)rFloats[0]
+						);
+
+						__m256i blendC = blend(finalColor, currentColor);
+						_mm256_storeu_si256(avxPoint, blendC);
+						avxPoint++;
+						imgPoint++;
+					}
+
+					startPoint += avxWidth<<3;
+					drawImgStart += avxWidth<<3;
+
+					//fill remainder
+					for(int i=0; i<remainder; i++)
+					{
+						*startPoint = blend(*drawImgStart, *startPoint);
+						startPoint++;
+						drawImgStart++;
+					}
+					
+					startPoint += otherImgAddX;
+					drawImgStart += drawImgAddX;
+				}
+			}
+
+		#elif(OPTI>=1)
+
+			int sseWidth = (maxX-minX) >> 2;
+			int remainder = (maxX-minX) - (sseWidth<<2);
+
+			__m128 colorMultRed = _mm_set1_ps( ((float)Graphics::activeColor.red) / 255.0 );
+			__m128 colorMultGreen = _mm_set1_ps( ((float)Graphics::activeColor.green) / 255.0 );
+			__m128 colorMultBlue = _mm_set1_ps( ((float)Graphics::activeColor.blue) / 255.0 );
+			__m128 colorMultAlpha = _mm_set1_ps( ((float)Graphics::activeColor.alpha) / 255.0 );
+
+			if(currentComposite == NO_COMPOSITE)
+			{
+				while (startPoint < endPoint)
+				{
+					__m128i* ssePoint = (__m128i*)startPoint;
+					__m128i* imgPoint = (__m128i*)drawImgStart;
+
+					for(int i=0; i<sseWidth; i++)
+					{
+						__m128i sseColor = _mm_loadu_si128(imgPoint);
+						
+						Color* colors = (Color*)&sseColor;
+
+						__m128 reds = _mm_set_ps(
+							(float)colors[3].red, (float)colors[2].red, (float)colors[1].red, (float)colors[0].red
+						);
+						__m128 greens = _mm_set_ps(
+							(float)colors[3].green, (float)colors[2].green, (float)colors[1].green, (float)colors[0].green
+						);
+						__m128 blues = _mm_set_ps(
+							(float)colors[3].blue, (float)colors[2].blue, (float)colors[1].blue, (float)colors[0].blue
+						);
+						__m128 alphas = _mm_set_ps(
+							(float)colors[3].alpha, (float)colors[2].alpha, (float)colors[1].alpha, (float)colors[0].alpha
+						);
+
+						reds = _mm_mul_ps(reds, colorMultRed);
+						greens = _mm_mul_ps(greens, colorMultGreen);
+						blues = _mm_mul_ps(blues, colorMultBlue);
+						alphas = _mm_mul_ps(alphas, colorMultAlpha);
+
+						float* rFloats = (float*)&reds;
+						float* gFloats = (float*)&greens;
+						float* bFloats = (float*)&blues;
+						float* aFloats = (float*)&alphas;
+
+						__m128i finalColor = _mm_set_epi8(
+							(unsigned char)aFloats[3], (unsigned char)bFloats[3], (unsigned char)gFloats[3], (unsigned char)rFloats[3],
+							(unsigned char)aFloats[2], (unsigned char)bFloats[2], (unsigned char)gFloats[2], (unsigned char)rFloats[2],
+							(unsigned char)aFloats[1], (unsigned char)bFloats[1], (unsigned char)gFloats[1], (unsigned char)rFloats[1],
+							(unsigned char)aFloats[0], (unsigned char)bFloats[0], (unsigned char)gFloats[0], (unsigned char)rFloats[0]
+						);
+
+
+						_mm_storeu_si128(ssePoint, sseColor);
+						ssePoint++;
+						imgPoint++;
+					}
+
+					startPoint += sseWidth<<2;
+					drawImgStart += sseWidth<<2;
+
+					//fill remainder
+					for(int i=0; i<remainder; i++)
+					{
+						*startPoint = *drawImgStart;
+						startPoint++;
+						drawImgStart++;
+					}
+
+					startPoint += otherImgAddX;
+					drawImgStart += drawImgAddX;
+				}
+			}
+			else
+			{
+				while (startPoint < endPoint)
+				{
+					__m128i* ssePoint = (__m128i*)startPoint;
+					__m128i* imgPoint = (__m128i*)drawImgStart;
+
+					for(int i=0; i<sseWidth; i++)
+					{
+						__m128i sseColor = _mm_loadu_si128(imgPoint);
+						__m128i currentColor = _mm_loadu_si128(ssePoint);
+						
+						Color* colors = (Color*)&sseColor;
+
+						__m128 reds = _mm_set_ps(
+							(float)colors[3].red, (float)colors[2].red, (float)colors[1].red, (float)colors[0].red
+						);
+						__m128 greens = _mm_set_ps(
+							(float)colors[3].green, (float)colors[2].green, (float)colors[1].green, (float)colors[0].green
+						);
+						__m128 blues = _mm_set_ps(
+							(float)colors[3].blue, (float)colors[2].blue, (float)colors[1].blue, (float)colors[0].blue
+						);
+						__m128 alphas = _mm_set_ps(
+							(float)colors[3].alpha, (float)colors[2].alpha, (float)colors[1].alpha, (float)colors[0].alpha
+						);
+
+						reds = _mm_mul_ps(reds, colorMultRed);
+						greens = _mm_mul_ps(greens, colorMultGreen);
+						blues = _mm_mul_ps(blues, colorMultBlue);
+						alphas = _mm_mul_ps(alphas, colorMultAlpha);
+
+						float* rFloats = (float*)&reds;
+						float* gFloats = (float*)&greens;
+						float* bFloats = (float*)&blues;
+						float* aFloats = (float*)&alphas;
+
+						__m128i finalColor = _mm_set_epi8(
+							(unsigned char)aFloats[3], (unsigned char)bFloats[3], (unsigned char)gFloats[3], (unsigned char)rFloats[3],
+							(unsigned char)aFloats[2], (unsigned char)bFloats[2], (unsigned char)gFloats[2], (unsigned char)rFloats[2],
+							(unsigned char)aFloats[1], (unsigned char)bFloats[1], (unsigned char)gFloats[1], (unsigned char)rFloats[1],
+							(unsigned char)aFloats[0], (unsigned char)bFloats[0], (unsigned char)gFloats[0], (unsigned char)rFloats[0]
+						);
+
+						__m128i blendC = blend(finalColor, currentColor);
+						_mm_storeu_si128(ssePoint, blendC);
+						ssePoint++;
+						imgPoint++;
+					}
+
+					startPoint += sseWidth<<2;
+					drawImgStart += sseWidth<<2;
+
+					//fill remainder
+					for(int i=0; i<remainder; i++)
+					{
+						*startPoint = blend(*drawImgStart, *startPoint);
+						startPoint++;
+						drawImgStart++;
+					}
+					
+					startPoint += otherImgAddX;
+					drawImgStart += drawImgAddX;
+				}
+			}
+
+		#else
+
+			Vec4f colorMult = Vec4f((double)Graphics::activeColor.red / 255.0, (double)Graphics::activeColor.green / 255.0, (double)Graphics::activeColor.blue / 255.0, (double)Graphics::activeColor.alpha / 255.0);
+
+			if(currentComposite == NO_COMPOSITE)
+			{
+				while (startPoint < endPoint)
+				{
+					for(int i=0; i<drawImgWidth; i++)
+					{
+						Color drawC = { (unsigned char) (drawImgStart->red * colorMult.x),
+										(unsigned char) (drawImgStart->green * colorMult.y),
+										(unsigned char) (drawImgStart->blue * colorMult.z), 
+										(unsigned char) (drawImgStart->alpha * colorMult.w) };
+						*startPoint = drawC;
+
+						startPoint++;
+						drawImgStart++;
+					}
+
+					startPoint += otherImgAddX;
+					drawImgStart += drawImgAddX;
+				
+				}
+			}
+			else
+			{
+				while (startPoint < endPoint)
+				{
+					for(int i=0; i<drawImgWidth; i++)
+					{
+						Color drawC = { (unsigned char) (drawImgStart->red * colorMult.x),
+										(unsigned char) (drawImgStart->green * colorMult.y),
+										(unsigned char) (drawImgStart->blue * colorMult.z), 
+										(unsigned char) (drawImgStart->alpha * colorMult.w) };
+						*startPoint = blend(drawC, *startPoint);
+
+						startPoint++;
+						drawImgStart++;
+					}
+				
+					startPoint += otherImgAddX;
+					drawImgStart += drawImgAddX;
+				
+				}
+			}
+
+		#endif
 	}
 }
 
 //Test to see if it works properly later
+/*
 void Graphics::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH, Image* surf)
 {
 	Image* otherImg;
@@ -1056,6 +2921,389 @@ void Graphics::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int 
 				otherStartPoint += otherAddAmount;
 			}
 		}
+	}
+}
+*/
+
+void Graphics::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH, Image* surf)
+{
+	int currentComposite = compositeRule;
+	Image* otherImg;
+	if (surf == nullptr)
+		otherImg = activeImage;
+	else
+		otherImg = surf;
+
+	if (otherImg != nullptr && img!=nullptr)
+	{
+		int tempWidth = otherImg->getWidth();
+
+		int clampImgW = MathExt::clamp(imgW, 0, img->getWidth());
+		int clampImgH = MathExt::clamp(imgH, 0, img->getHeight());
+		
+		int minX = MathExt::clamp(x, 0, tempWidth);
+		int maxX = MathExt::clamp(x+clampImgW, 0, tempWidth);
+
+		int tempHeight = otherImg->getHeight();
+
+		int minY = MathExt::clamp(y, 0, tempHeight);
+		int maxY = MathExt::clamp(y+clampImgH, 0, tempHeight);
+
+		Color* startPoint = otherImg->getPixels() + minX + (minY * tempWidth);
+		Color* endPoint = otherImg->getPixels() + maxX + ((maxY-1) * tempWidth);
+		
+		int drawImgWidth = maxX - minX;
+		int otherImgAddX = tempWidth - drawImgWidth;
+
+		Color* drawImgStart = img->getPixels() + imgX + (imgY*img->getWidth());
+		int drawImgAddX = img->getWidth() - drawImgWidth;
+
+		int tX = 0;
+
+		#if(OPTI>=2)
+			
+			int avxWidth = (maxX-minX) >> 3;
+			int remainder = (maxX-minX) - (avxWidth<<3);
+
+			__m256 colorMultRed = _mm256_set1_ps( ((float)Graphics::activeColor.red) / 255.0 );
+			__m256 colorMultGreen = _mm256_set1_ps( ((float)Graphics::activeColor.green) / 255.0 );
+			__m256 colorMultBlue = _mm256_set1_ps( ((float)Graphics::activeColor.blue) / 255.0 );
+			__m256 colorMultAlpha = _mm256_set1_ps( ((float)Graphics::activeColor.alpha) / 255.0 );
+
+			if(currentComposite == NO_COMPOSITE)
+			{
+				while (startPoint < endPoint)
+				{
+					__m256i* avxPoint = (__m256i*)startPoint;
+					__m256i* imgPoint = (__m256i*)drawImgStart;
+
+					for(int i=0; i<avxWidth; i++)
+					{
+						__m256i avxColor = _mm256_loadu_si256(imgPoint);
+						
+						Color* colors = (Color*)&avxColor;
+
+						__m256 reds = _mm256_set_ps(
+							(float)colors[7].red, (float)colors[6].red, (float)colors[5].red, (float)colors[4].red,
+							(float)colors[3].red, (float)colors[2].red, (float)colors[1].red, (float)colors[0].red
+						);
+						__m256 greens = _mm256_set_ps(
+							(float)colors[7].green, (float)colors[6].green, (float)colors[5].green, (float)colors[4].green,
+							(float)colors[3].green, (float)colors[2].green, (float)colors[1].green, (float)colors[0].green
+						);
+						__m256 blues = _mm256_set_ps(
+							(float)colors[7].blue, (float)colors[6].blue, (float)colors[5].blue, (float)colors[4].blue,
+							(float)colors[3].blue, (float)colors[2].blue, (float)colors[1].blue, (float)colors[0].blue
+						);
+						__m256 alphas = _mm256_set_ps(
+							(float)colors[7].alpha, (float)colors[6].alpha, (float)colors[5].alpha, (float)colors[4].alpha,
+							(float)colors[3].alpha, (float)colors[2].alpha, (float)colors[1].alpha, (float)colors[0].alpha
+						);
+
+						reds = _mm256_mul_ps(reds, colorMultRed);
+						greens = _mm256_mul_ps(greens, colorMultGreen);
+						blues = _mm256_mul_ps(blues, colorMultBlue);
+						alphas = _mm256_mul_ps(alphas, colorMultAlpha);
+
+						float* rFloats = (float*)&reds;
+						float* gFloats = (float*)&greens;
+						float* bFloats = (float*)&blues;
+						float* aFloats = (float*)&alphas;
+
+						__m256i finalColor = _mm256_set_epi8(
+							(unsigned char)aFloats[7], (unsigned char)bFloats[7], (unsigned char)gFloats[7], (unsigned char)rFloats[7],
+							(unsigned char)aFloats[6], (unsigned char)bFloats[6], (unsigned char)gFloats[6], (unsigned char)rFloats[6],
+							(unsigned char)aFloats[5], (unsigned char)bFloats[5], (unsigned char)gFloats[5], (unsigned char)rFloats[5],
+							(unsigned char)aFloats[4], (unsigned char)bFloats[4], (unsigned char)gFloats[4], (unsigned char)rFloats[4],
+							(unsigned char)aFloats[3], (unsigned char)bFloats[3], (unsigned char)gFloats[3], (unsigned char)rFloats[3],
+							(unsigned char)aFloats[2], (unsigned char)bFloats[2], (unsigned char)gFloats[2], (unsigned char)rFloats[2],
+							(unsigned char)aFloats[1], (unsigned char)bFloats[1], (unsigned char)gFloats[1], (unsigned char)rFloats[1],
+							(unsigned char)aFloats[0], (unsigned char)bFloats[0], (unsigned char)gFloats[0], (unsigned char)rFloats[0]
+						);
+
+
+						_mm256_storeu_si256(avxPoint, avxColor);
+						avxPoint++;
+						imgPoint++;
+					}
+
+					startPoint += avxWidth<<3;
+					drawImgStart += avxWidth<<3;
+
+					//fill remainder
+					for(int i=0; i<remainder; i++)
+					{
+						*startPoint = *drawImgStart;
+						startPoint++;
+						drawImgStart++;
+					}
+
+					startPoint += otherImgAddX;
+					drawImgStart += drawImgAddX;
+				}
+			}
+			else
+			{
+				while (startPoint < endPoint)
+				{
+					__m256i* avxPoint = (__m256i*)startPoint;
+					__m256i* imgPoint = (__m256i*)drawImgStart;
+
+					for(int i=0; i<avxWidth; i++)
+					{
+						__m256i avxColor = _mm256_loadu_si256(imgPoint);
+						__m256i currentColor = _mm256_loadu_si256(avxPoint);
+						
+						Color* colors = (Color*)&avxColor;
+
+						__m256 reds = _mm256_set_ps(
+							(float)colors[7].red, (float)colors[6].red, (float)colors[5].red, (float)colors[4].red,
+							(float)colors[3].red, (float)colors[2].red, (float)colors[1].red, (float)colors[0].red
+						);
+						__m256 greens = _mm256_set_ps(
+							(float)colors[7].green, (float)colors[6].green, (float)colors[5].green, (float)colors[4].green,
+							(float)colors[3].green, (float)colors[2].green, (float)colors[1].green, (float)colors[0].green
+						);
+						__m256 blues = _mm256_set_ps(
+							(float)colors[7].blue, (float)colors[6].blue, (float)colors[5].blue, (float)colors[4].blue,
+							(float)colors[3].blue, (float)colors[2].blue, (float)colors[1].blue, (float)colors[0].blue
+						);
+						__m256 alphas = _mm256_set_ps(
+							(float)colors[7].alpha, (float)colors[6].alpha, (float)colors[5].alpha, (float)colors[4].alpha,
+							(float)colors[3].alpha, (float)colors[2].alpha, (float)colors[1].alpha, (float)colors[0].alpha
+						);
+
+						reds = _mm256_mul_ps(reds, colorMultRed);
+						greens = _mm256_mul_ps(greens, colorMultGreen);
+						blues = _mm256_mul_ps(blues, colorMultBlue);
+						alphas = _mm256_mul_ps(alphas, colorMultAlpha);
+
+						float* rFloats = (float*)&reds;
+						float* gFloats = (float*)&greens;
+						float* bFloats = (float*)&blues;
+						float* aFloats = (float*)&alphas;
+
+						__m256i finalColor = _mm256_set_epi8(
+							(unsigned char)aFloats[7], (unsigned char)bFloats[7], (unsigned char)gFloats[7], (unsigned char)rFloats[7],
+							(unsigned char)aFloats[6], (unsigned char)bFloats[6], (unsigned char)gFloats[6], (unsigned char)rFloats[6],
+							(unsigned char)aFloats[5], (unsigned char)bFloats[5], (unsigned char)gFloats[5], (unsigned char)rFloats[5],
+							(unsigned char)aFloats[4], (unsigned char)bFloats[4], (unsigned char)gFloats[4], (unsigned char)rFloats[4],
+							(unsigned char)aFloats[3], (unsigned char)bFloats[3], (unsigned char)gFloats[3], (unsigned char)rFloats[3],
+							(unsigned char)aFloats[2], (unsigned char)bFloats[2], (unsigned char)gFloats[2], (unsigned char)rFloats[2],
+							(unsigned char)aFloats[1], (unsigned char)bFloats[1], (unsigned char)gFloats[1], (unsigned char)rFloats[1],
+							(unsigned char)aFloats[0], (unsigned char)bFloats[0], (unsigned char)gFloats[0], (unsigned char)rFloats[0]
+						);
+
+						__m256i blendC = blend(finalColor, currentColor);
+						_mm256_storeu_si256(avxPoint, blendC);
+						avxPoint++;
+						imgPoint++;
+					}
+
+					startPoint += avxWidth<<3;
+					drawImgStart += avxWidth<<3;
+
+					//fill remainder
+					for(int i=0; i<remainder; i++)
+					{
+						*startPoint = blend(*drawImgStart, *startPoint);
+						startPoint++;
+						drawImgStart++;
+					}
+					
+					startPoint += otherImgAddX;
+					drawImgStart += drawImgAddX;
+				}
+			}
+
+		#elif(OPTI>=1)
+
+			int sseWidth = (maxX-minX) >> 2;
+			int remainder = (maxX-minX) - (sseWidth<<2);
+
+			__m128 colorMultRed = _mm_set1_ps( ((float)Graphics::activeColor.red) / 255.0 );
+			__m128 colorMultGreen = _mm_set1_ps( ((float)Graphics::activeColor.green) / 255.0 );
+			__m128 colorMultBlue = _mm_set1_ps( ((float)Graphics::activeColor.blue) / 255.0 );
+			__m128 colorMultAlpha = _mm_set1_ps( ((float)Graphics::activeColor.alpha) / 255.0 );
+
+			if(currentComposite == NO_COMPOSITE)
+			{
+				while (startPoint < endPoint)
+				{
+					__m128i* ssePoint = (__m128i*)startPoint;
+					__m128i* imgPoint = (__m128i*)drawImgStart;
+
+					for(int i=0; i<sseWidth; i++)
+					{
+						__m128i sseColor = _mm_loadu_si128(imgPoint);
+						
+						Color* colors = (Color*)&sseColor;
+
+						__m128 reds = _mm_set_ps(
+							(float)colors[3].red, (float)colors[2].red, (float)colors[1].red, (float)colors[0].red
+						);
+						__m128 greens = _mm_set_ps(
+							(float)colors[3].green, (float)colors[2].green, (float)colors[1].green, (float)colors[0].green
+						);
+						__m128 blues = _mm_set_ps(
+							(float)colors[3].blue, (float)colors[2].blue, (float)colors[1].blue, (float)colors[0].blue
+						);
+						__m128 alphas = _mm_set_ps(
+							(float)colors[3].alpha, (float)colors[2].alpha, (float)colors[1].alpha, (float)colors[0].alpha
+						);
+
+						reds = _mm_mul_ps(reds, colorMultRed);
+						greens = _mm_mul_ps(greens, colorMultGreen);
+						blues = _mm_mul_ps(blues, colorMultBlue);
+						alphas = _mm_mul_ps(alphas, colorMultAlpha);
+
+						float* rFloats = (float*)&reds;
+						float* gFloats = (float*)&greens;
+						float* bFloats = (float*)&blues;
+						float* aFloats = (float*)&alphas;
+
+						__m128i finalColor = _mm_set_epi8(
+							(unsigned char)aFloats[3], (unsigned char)bFloats[3], (unsigned char)gFloats[3], (unsigned char)rFloats[3],
+							(unsigned char)aFloats[2], (unsigned char)bFloats[2], (unsigned char)gFloats[2], (unsigned char)rFloats[2],
+							(unsigned char)aFloats[1], (unsigned char)bFloats[1], (unsigned char)gFloats[1], (unsigned char)rFloats[1],
+							(unsigned char)aFloats[0], (unsigned char)bFloats[0], (unsigned char)gFloats[0], (unsigned char)rFloats[0]
+						);
+
+
+						_mm_storeu_si128(ssePoint, sseColor);
+						ssePoint++;
+						imgPoint++;
+					}
+
+					startPoint += sseWidth<<2;
+					drawImgStart += sseWidth<<2;
+
+					//fill remainder
+					for(int i=0; i<remainder; i++)
+					{
+						*startPoint = *drawImgStart;
+						startPoint++;
+						drawImgStart++;
+					}
+
+					startPoint += otherImgAddX;
+					drawImgStart += drawImgAddX;
+				}
+			}
+			else
+			{
+				while (startPoint < endPoint)
+				{
+					__m128i* ssePoint = (__m128i*)startPoint;
+					__m128i* imgPoint = (__m128i*)drawImgStart;
+
+					for(int i=0; i<sseWidth; i++)
+					{
+						__m128i sseColor = _mm_loadu_si128(imgPoint);
+						__m128i currentColor = _mm_loadu_si128(ssePoint);
+						
+						Color* colors = (Color*)&sseColor;
+
+						__m128 reds = _mm_set_ps(
+							(float)colors[3].red, (float)colors[2].red, (float)colors[1].red, (float)colors[0].red
+						);
+						__m128 greens = _mm_set_ps(
+							(float)colors[3].green, (float)colors[2].green, (float)colors[1].green, (float)colors[0].green
+						);
+						__m128 blues = _mm_set_ps(
+							(float)colors[3].blue, (float)colors[2].blue, (float)colors[1].blue, (float)colors[0].blue
+						);
+						__m128 alphas = _mm_set_ps(
+							(float)colors[3].alpha, (float)colors[2].alpha, (float)colors[1].alpha, (float)colors[0].alpha
+						);
+
+						reds = _mm_mul_ps(reds, colorMultRed);
+						greens = _mm_mul_ps(greens, colorMultGreen);
+						blues = _mm_mul_ps(blues, colorMultBlue);
+						alphas = _mm_mul_ps(alphas, colorMultAlpha);
+
+						float* rFloats = (float*)&reds;
+						float* gFloats = (float*)&greens;
+						float* bFloats = (float*)&blues;
+						float* aFloats = (float*)&alphas;
+
+						__m128i finalColor = _mm_set_epi8(
+							(unsigned char)aFloats[3], (unsigned char)bFloats[3], (unsigned char)gFloats[3], (unsigned char)rFloats[3],
+							(unsigned char)aFloats[2], (unsigned char)bFloats[2], (unsigned char)gFloats[2], (unsigned char)rFloats[2],
+							(unsigned char)aFloats[1], (unsigned char)bFloats[1], (unsigned char)gFloats[1], (unsigned char)rFloats[1],
+							(unsigned char)aFloats[0], (unsigned char)bFloats[0], (unsigned char)gFloats[0], (unsigned char)rFloats[0]
+						);
+
+						__m128i blendC = blend(finalColor, currentColor);
+						_mm_storeu_si128(ssePoint, blendC);
+						ssePoint++;
+						imgPoint++;
+					}
+
+					startPoint += sseWidth<<2;
+					drawImgStart += sseWidth<<2;
+
+					//fill remainder
+					for(int i=0; i<remainder; i++)
+					{
+						*startPoint = blend(*drawImgStart, *startPoint);
+						startPoint++;
+						drawImgStart++;
+					}
+					
+					startPoint += otherImgAddX;
+					drawImgStart += drawImgAddX;
+				}
+			}
+
+		#else
+
+			Vec4f colorMult = Vec4f((double)Graphics::activeColor.red / 255.0, (double)Graphics::activeColor.green / 255.0, (double)Graphics::activeColor.blue / 255.0, (double)Graphics::activeColor.alpha / 255.0);
+
+			if(currentComposite == NO_COMPOSITE)
+			{
+				while (startPoint < endPoint)
+				{
+					for(int i=0; i<drawImgWidth; i++)
+					{
+						Color drawC = { (unsigned char) (drawImgStart->red * colorMult.x),
+										(unsigned char) (drawImgStart->green * colorMult.y),
+										(unsigned char) (drawImgStart->blue * colorMult.z), 
+										(unsigned char) (drawImgStart->alpha * colorMult.w) };
+						*startPoint = drawC;
+
+						startPoint++;
+						drawImgStart++;
+					}
+
+					startPoint += otherImgAddX;
+					drawImgStart += drawImgAddX;
+				
+				}
+			}
+			else
+			{
+				while (startPoint < endPoint)
+				{
+					for(int i=0; i<drawImgWidth; i++)
+					{
+						Color drawC = { (unsigned char) (drawImgStart->red * colorMult.x),
+										(unsigned char) (drawImgStart->green * colorMult.y),
+										(unsigned char) (drawImgStart->blue * colorMult.z), 
+										(unsigned char) (drawImgStart->alpha * colorMult.w) };
+						*startPoint = blend(drawC, *startPoint);
+
+						startPoint++;
+						drawImgStart++;
+					}
+				
+					startPoint += otherImgAddX;
+					drawImgStart += drawImgAddX;
+				
+				}
+			}
+
+		#endif
 	}
 }
 
@@ -1477,7 +3725,7 @@ Font* Graphics::getFont()
 
 void Graphics::setDefaultFont(unsigned char byte)
 {
-	defaultFontValue = MathExt::max(byte, 1);
+	defaultFontValue = MathExt::max(byte, (unsigned char)1);
 }
 
 Font* Graphics::getDefaultFont(unsigned char byte)

@@ -629,7 +629,6 @@ void GuiRectangleButton::update()
 		{
 			if (mouseY >= y && mouseY <= y + height)
 			{
-				StringTools::println("BUTT");
 				setActive(true);
 
 				if (onClickFunction != nullptr)

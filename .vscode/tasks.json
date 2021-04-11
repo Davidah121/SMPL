@@ -12,29 +12,9 @@
             "problemMatcher": []
         },
         {
-            "label": "Build Debug x86 with Clang",
-            "type": "shell",
-            "command": "${workspaceFolder}/build/Debug/buildx86.bat",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": []
-        },
-        {
             "label": "Build Release x64 with Clang",
             "type": "shell",
             "command": "${workspaceFolder}/build/Release/buildx64.bat",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "Build Release x86 with Clang",
-            "type": "shell",
-            "command": "${workspaceFolder}/build/Release/buildx86.bat",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -50,6 +30,15 @@
                 "isDefault": true
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Run Debug x64",
+            "type": "shell",
+            "command": "start cmd.exe @cmd /k \"${workspaceFolder}/bin/Debug/x64/${workspaceFolderBasename}.exe\"",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
         }
         /*
         {
