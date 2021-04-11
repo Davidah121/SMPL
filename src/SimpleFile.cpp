@@ -9,53 +9,21 @@ const Class* SimpleFile::getClass()
 
 SimpleFile::SimpleFile(std::wstring filename, char type)
 {
-	this->type = type;
-	this->size = 0;
-
-	switch (type)
-	{
-	case SimpleFile::READ:
-		//
-		this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
-		size = (int)file->tellg();
-		file->close();
-
-		this->file = new std::fstream(filename, std::fstream::in | std::fstream::binary);
-
-		this->wideFileName = filename;
-		break;
-	case SimpleFile::WRITE:
-		//
-		this->file = new std::fstream(filename, std::fstream::out | std::fstream::binary);
-		this->wideFileName = filename;
-		break;
-	case SimpleFile::WRITE_APPEND:
-		//
-		this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
-		size = (int)file->tellg();
-		file->close();
-
-		this->file = new std::fstream(filename, std::fstream::out | std::fstream::app | std::fstream::binary);
-		this->wideFileName = filename;
-		break;
-	default:
-		this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
-		size = (int)file->tellg();
-		file->close();
-
-		this->file = new std::fstream(filename, std::fstream::in | std::fstream::binary);
-		this->wideFileName = filename;
-		break;
-	}
-
+	init(filename, type);
 }
 
 SimpleFile::SimpleFile(std::string filename, char type)
 {
-	this->type = type;
+	init( StringTools::toWideString(filename), type);
+}
+
+void SimpleFile::init(std::wstring filename, char type)
+{
+	this->type = type&0x0F;
+	this->dataType = type&0xF0;
 	this->size = 0;
 
-	switch (type)
+	switch (this->type)
 	{
 	case SimpleFile::READ:
 		//
@@ -65,12 +33,47 @@ SimpleFile::SimpleFile(std::string filename, char type)
 
 		this->file = new std::fstream(filename, std::fstream::in | std::fstream::binary);
 
-		this->wideFileName = StringTools::toWideString(filename);
+		//remove signifier
+		if(dataType==WIDECHAR)
+		{
+			int c1 = file->get();
+			int c2 = file->get();
+
+			if(c1 == 0xFE && c2 == 0xFF)
+			{
+				//utf-16 file
+			}
+			else
+			{
+				//no header
+				file->putback(c2);
+				file->putback(c1);
+			}
+		}
+		else if(dataType==UTF8)
+		{
+			int c1 = file->get();
+			int c2 = file->get();
+			int c3 = file->get();
+
+			if(c1 == 0xEF && c2 == 0xBB && c3 == 0xBF)
+			{
+				//utf-8 file
+			}
+			else
+			{
+				//no header
+				file->putback(c3);
+				file->putback(c2);
+				file->putback(c1);
+			}
+		}
+		this->wideFileName = filename;
 		break;
 	case SimpleFile::WRITE:
 		//
 		this->file = new std::fstream(filename, std::fstream::out | std::fstream::binary);
-		this->wideFileName = StringTools::toWideString(filename);
+		this->wideFileName = filename;
 		break;
 	case SimpleFile::WRITE_APPEND:
 		//
@@ -79,18 +82,16 @@ SimpleFile::SimpleFile(std::string filename, char type)
 		file->close();
 
 		this->file = new std::fstream(filename, std::fstream::out | std::fstream::app | std::fstream::binary);
-		this->wideFileName = StringTools::toWideString(filename);
+		this->wideFileName = filename;
 		break;
 	default:
 		this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
 		size = (int)file->tellg();
 		file->close();
 
-		this->file = new std::fstream(filename, std::fstream::in | std::fstream::binary);
-		this->wideFileName = StringTools::toWideString(filename);
+		this->wideFileName = filename;
 		break;
 	}
-
 }
 
 SimpleFile::~SimpleFile()
@@ -140,158 +141,66 @@ wchar_t SimpleFile::readWideChar()
 	unsigned char p2;
 	if (isOpen() && type == SimpleFile::READ && !isEndOfFile())
 	{
-		p2 = file->get();
 		p1 = file->get();
+		p2 = file->get();
 
 		return toWideChar(p1, p2);
 	}
 	return L'\0';
 }
 
-const char * SimpleFile::readLine()
+int SimpleFile::getChar()
 {
-	std::string p = "";
-	char c = '\0';
-
-	if (isOpen() && type == SimpleFile::READ && !isEndOfFile())
-	{
-		while (!isEndOfFile())
-		{
-			c = file->get();
-
-			if (c != LINE_BREAK_1)
-			{
-				p += c;
-			}
-			else
-			{
-				if (!isEndOfFile())
-				{
-					c = file->get();
-					if (c == LINE_BREAK_2)
-					{
-						//Hit a line break
-						break;
-					}
-					else
-					{
-						//Hit something else.
-						//Fix later I guess.
-						p += 13;
-						p += c;
-					}
-				}
-				else
-				{
-					p += c;
-				}
-			}
-		}
-
-		return p.c_str();
-	}
-	else
-	{
-		//File is not opened for reading
-	}
-
-	return nullptr;
-}
-
-const wchar_t * SimpleFile::readWideLine()
-{
-	std::wstring p = L"";
-	wchar_t c = L'\0';
-	unsigned char p1;
-	unsigned char p2;
-	wchar_t n;
-
-	if (isOpen() && type == SimpleFile::READ && !isEndOfFile())
-	{
-		while (!isEndOfFile())
-		{
-			p2 = file->get();
-			p1 = file->get();
-			c = toWideChar(p1, p2);
-
-			if (c != LINE_BREAK_1)
-			{
-				p += c;
-			}
-			else
-			{
-				if (!isEndOfFile())
-				{
-					p2 = file->get();
-					p1 = file->get();
-					n = toWideChar(p1, p2);
-
-					if (n == LINE_BREAK_2)
-					{
-						//Hit a line break
-						break;
-					}
-					else
-					{
-						//Hit something else.
-						//Fix later I guess.
-						p += c;
-						p += n;
-					}
-				}
-				else
-				{
-					p += c;
-				}
-			}
-		}
-
-		return p.c_str();
-	}
-	else
-	{
-		//File is not opened for reading
-	}
-
-	return nullptr;
+	if(dataType==SimpleFile::ASCII)
+		return readByte();
+	else if(dataType==SimpleFile::WIDECHAR)
+		return readWideChar();
+	else if(dataType==SimpleFile::UTF8)
+		return readUTF8Char();
+	
+	return 0;
 }
 
 std::string SimpleFile::readString()
 {
 	std::string p = "";
-	char c = '\0';
+	int c = '\0';
 
 	if (isOpen() && type == SimpleFile::READ)
 	{
 		while (!isEndOfFile())
 		{
-			c = file->get();
-
-			if(!isEndOfFile())
+			c = getChar();
+			if(isEndOfFile())
 			{
-				if (c != LINE_BREAK_1)
+				break;
+			}
+
+			if (c != LINE_BREAK_1)
+			{
+				p += c;
+			}
+			else
+			{
+				c = getChar();
+				if(isEndOfFile())
 				{
-					p += c;
+					break;
+				}
+
+				if (c == LINE_BREAK_2)
+				{
+					//Hit a line break
+					break;
 				}
 				else
 				{
-					c = file->get();
-					if(!isEndOfFile())
-					{
-						if (c == LINE_BREAK_2)
-						{
-							//Hit a line break
-							break;
-						}
-						else
-						{
-							//Hit something else.
-							//Fix later I guess.
-							p += 13;
-							p += c;
-						}
-					}
+					//Hit something else.
+					//Fix later I guess.
+					p += LINE_BREAK_1;
+					p += c;
 				}
+				
 			}
 			
 		}
@@ -316,9 +225,12 @@ std::wstring SimpleFile::readWideString()
 	{
 		while (!isEndOfFile())
 		{
-			p2 = file->get();
-			p1 = file->get();
-			c = toWideChar(p1, p2);
+			c = getChar();
+
+			if(isEndOfFile())
+			{
+				break;
+			}
 
 			if (c != LINE_BREAK_1)
 			{
@@ -326,28 +238,24 @@ std::wstring SimpleFile::readWideString()
 			}
 			else
 			{
-				if (!isEndOfFile())
-				{
-					p2 = file->get();
-					p1 = file->get();
-					n = toWideChar(p1, p2);
+				n = getChar();
 
-					if (n == LINE_BREAK_2)
-					{
-						//Hit a line break
-						break;
-					}
-					else
-					{
-						//Hit something else.
-						//Fix later I guess.
-						p += c;
-						p += n;
-					}
+				if(isEndOfFile())
+				{
+					break;
+				}
+
+				if (n == LINE_BREAK_2)
+				{
+					//Hit a line break
+					break;
 				}
 				else
 				{
+					//Hit something else.
+					//Fix later I guess.
 					p += c;
+					p += n;
 				}
 			}
 		}
@@ -361,46 +269,72 @@ std::wstring SimpleFile::readWideString()
 	return p;
 }
 
-std::vector<const char*> SimpleFile::readFullFile()
+int SimpleFile::readUTF8Char()
 {
-	std::vector<const char*> info = std::vector<const char*>();
-
-	while (!isEndOfFile())
+	if (isOpen() && type == SimpleFile::READ && !isEndOfFile())
 	{
-		info.push_back(readLine());
-	}
-
-	return info;
-}
-
-std::vector<const wchar_t*> SimpleFile::readFullFileWide()
-{
-	//Read the first two bytes to determine if the file is a unicode file
-	std::vector<const wchar_t*> info = std::vector<const wchar_t*>();
-
-	unsigned char c1 = file->get();
-	unsigned char c2 = file->get();
-
-	if (c1 == 0xFF && c2 == 0xFE)
-	{
-		//Is unicode, proceed to read
-		while (!isEndOfFile())
+		std::vector<unsigned char> chars = std::vector<unsigned char>();
+		unsigned char c1 = file->get();
+		
+		if(c1>>7 == 0)
 		{
-			//read
-			info.push_back(readWideLine());
+			return c1;
+		}
+		else if( ((c1 >> 5) & 0x01) == 0)
+		{
+			chars.push_back(c1);
+			c1 = file->get();
+			if( (c1 >> 7) == 1 && ((c1 >> 6) & 0x01) == 0)
+			{
+				//valid utf8
+				chars.push_back( c1 );
+				return StringTools::utf8ToChar(chars);
+			}
+			else
+			{
+				//invalid
+				file->putback(c1);
+				return chars[0];
+			}
+		}
+		else if( ((c1 >> 4) & 0x01) == 0)
+		{
+			chars.push_back(c1);
+			chars.push_back( (unsigned char)file->get() );
+			chars.push_back( (unsigned char)file->get() );
+			return StringTools::utf8ToChar(chars);
+		}
+		else if( ((c1 >> 3) & 0x01) == 0)
+		{
+			chars.push_back(c1);
+			chars.push_back( (unsigned char)file->get() );
+			chars.push_back( (unsigned char)file->get() );
+			chars.push_back( (unsigned char)file->get() );
+			return StringTools::utf8ToChar(chars);
+		}
+		else
+		{
+			//not utf8
+			return c1;
 		}
 	}
-
-	return std::vector<const wchar_t*>();
+	else
+	{
+		//File is not opened for reading
+	}
+	return 0;
 }
 
 std::vector<std::string> SimpleFile::readFullFileString()
 {
 	std::vector<std::string> info = std::vector<std::string>();
 
-	while (!isEndOfFile())
+	if(isOpen())
 	{
-		info.push_back(readString());
+		while (!isEndOfFile())
+		{
+			info.push_back(readString());
+		}
 	}
 
 	return info;
@@ -408,21 +342,21 @@ std::vector<std::string> SimpleFile::readFullFileString()
 
 std::vector<std::wstring> SimpleFile::readFullFileStringWide()
 {
-	//Read the first two bytes to determine if the file is a unicode file
 	std::vector<std::wstring> info = std::vector<std::wstring>();
 
-	unsigned char c1 = file->get();
-	unsigned char c2 = file->get();
+	// Sometimes contains a header that reads FF FE. 
+	// unsigned char c1 = file->get();
+	// unsigned char c2 = file->get();
 
-	if (c1 == 0xFF && c2 == 0xFE)
+	if(isOpen())
 	{
-		//Is unicode, proceed to read
 		while (!isEndOfFile())
 		{
 			//read
 			info.push_back(readWideString());
 		}
 	}
+
 
 	return info;
 }
@@ -431,12 +365,15 @@ std::vector<unsigned char> SimpleFile::readFullFileAsBytes()
 {
 	std::vector<unsigned char> info = std::vector<unsigned char>();
 
-	int i=0;
-	while (i < size)
+	if(isOpen())
 	{
-		//read
-		info.push_back(file->get());
-		i++;
+		int i=0;
+		while (i < size)
+		{
+			//read
+			info.push_back(file->get());
+			i++;
+		}
 	}
 
 	return info;
@@ -448,7 +385,20 @@ void SimpleFile::writeByte(char c)
 	{
 		if (type == WRITE || type == WRITE_APPEND)
 		{
-			file->put(c);
+			if(dataType == ASCII)
+			{
+				file->put(c);
+			}
+			else if(dataType == WIDECHAR)
+			{
+				file->put(0);
+				file->put(c);
+			}
+			else
+			{
+				std::vector<unsigned char> bytes = StringTools::toUTF8(c);
+				file->write((char*)bytes.data(), bytes.size());
+			}
 		}
 		else
 		{
@@ -467,50 +417,21 @@ void SimpleFile::writeWideChar(wchar_t c)
 	{
 		if (type == WRITE || type == WRITE_APPEND)
 		{
-			file->put(c);
-		}
-		else
-		{
-			//File is not opened for writing
-		}
-	}
-	else
-	{
-		//File is not opened
-	}
-}
-
-void SimpleFile::writeLine(char * line)
-{
-	if (isOpen())
-	{
-		if (type == WRITE || type == WRITE_APPEND)
-		{
-			for (int i = 0; i < strlen(line); i++)
+			if(dataType == ASCII)
 			{
-				file->put(line[i]);
+				file->put(c);
 			}
-		}
-		else
-		{
-			//File is not opened for writing
-		}
-	}
-	else
-	{
-		//File is not opened
-	}
-}
-
-void SimpleFile::writeWideLine(wchar_t * line)
-{
-	if (isOpen())
-	{
-		if (type == WRITE || type == WRITE_APPEND)
-		{
-			for (int i = 0; i < wcslen(line); i++)
+			else if(dataType == WIDECHAR)
 			{
-				file->put(line[i]);
+				unsigned char c1 = c>>8;
+				unsigned char c2 = c & 0xFF;
+				file->put(c1);
+				file->put(c2);
+			}
+			else
+			{
+				std::vector<unsigned char> bytes = StringTools::toUTF8(c);
+				file->write((char*)bytes.data(), bytes.size());
 			}
 		}
 		else
@@ -530,9 +451,25 @@ void SimpleFile::writeBytes(unsigned char* data, int size)
 	{
 		if (type == WRITE || type == WRITE_APPEND)
 		{
-			for (int i = 0; i < size; i++)
+			if(dataType == ASCII)
 			{
-				file->put(data[i]);
+				file->write((char*)data, size);
+			}
+			else if(dataType == WIDECHAR)
+			{
+				for(int i=0; i<size; i++)
+				{
+					file->put( 0 );
+					file->put( data[i] );
+				}
+			}
+			else
+			{
+				for(int i=0; i<size; i++)
+				{
+					std::vector<unsigned char> bytes = StringTools::toUTF8(data[i]);
+					file->write((char*)bytes.data(), bytes.size());
+				}
 			}
 		}
 		else
@@ -552,9 +489,25 @@ void SimpleFile::writeString(std::string line)
 	{
 		if (type == WRITE || type == WRITE_APPEND)
 		{
-			for (int i = 0; i < line.size(); i++)
+			if(dataType == ASCII)
 			{
-				file->put(line[i]);
+				file->write(line.c_str(), line.size());
+			}
+			else if(dataType == WIDECHAR)
+			{
+				for (int i = 0; i < line.size(); i++)
+				{
+					file->put(0);
+					file->put(line[i]);
+				}
+			}
+			else
+			{
+				for (int i = 0; i < line.size(); i++)
+				{
+					std::vector<unsigned char> bytes = StringTools::toUTF8(line[i]);
+					file->write((char*)bytes.data(), bytes.size());
+				}
 			}
 		}
 		else
@@ -574,9 +527,30 @@ void SimpleFile::writeWideString(std::wstring line)
 	{
 		if (type == WRITE || type == WRITE_APPEND)
 		{
-			for (int i = 0; i < line.size(); i++)
+			if(dataType == ASCII)
 			{
-				file->put(line[i]);
+				for (int i = 0; i < line.size(); i++)
+				{
+					file->put(line[i]);
+				}
+			}
+			else if(dataType == WIDECHAR)
+			{
+				for (int i = 0; i < line.size(); i++)
+				{
+					unsigned char c1 = line[i]>>8;
+					unsigned char c2 = line[i] & 0xFF;
+					file->put(c1);
+					file->put(c2);
+				}
+			}
+			else
+			{
+				for (int i = 0; i < line.size(); i++)
+				{
+					std::vector<unsigned char> bytes = StringTools::toUTF8(line[i]);
+					file->write((char*)bytes.data(), bytes.size());
+				}
 			}
 		}
 		else
@@ -596,8 +570,19 @@ void SimpleFile::writeLineBreak()
 	{
 		if (type == WRITE || type == WRITE_APPEND)
 		{
-			file->put(LINE_BREAK_1);
-			file->put(LINE_BREAK_2);
+			if(dataType == ASCII || dataType == UTF8)
+			{
+				file->put(LINE_BREAK_1);
+				file->put(LINE_BREAK_2);
+			}
+			else
+			{
+				file->put(0);
+				file->put(LINE_BREAK_1);
+				
+				file->put(0);
+				file->put(LINE_BREAK_2);
+			}
 		}
 		else
 		{

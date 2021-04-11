@@ -1,6 +1,6 @@
 {
     "C_Cpp.default.cppStandard": "c++17",
-    "C_Cpp.default.intelliSenseMode": "msvc-x64",
+    "C_Cpp.default.intelliSenseMode": "windows-clang-x64",
     "C_Cpp.intelliSenseEngine": "Default",
     "files.associations": {
         "filesystem": "cpp",
@@ -69,7 +69,8 @@
         "sstream": "cpp",
         "atomic": "cpp",
         "compare": "cpp",
-        "puff.h": "c"
+        "puff.h": "c",
+        "cstdarg": "cpp"
     },
     "files.exclude": {
         "**/.classpath": true,
@@ -78,5 +79,9 @@
         "**/.factorypath": true
     },
     "svg.preview.background": "transparent",
-    "svg-font-previewer.autoOpenPreview": false
+    "svg-font-previewer.autoOpenPreview": false,
+    "lldb.showDisassembly": "auto",
+    "lldb.dereferencePointers": false,
+    "C_Cpp.clang_format_fallbackStyle": "LLVM",
+    "lldb.displayFormat": "auto"
 }

@@ -1,19 +1,21 @@
 {
     "configurations": [
-        
         {
             "name": "Clang LLVM",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/include/*"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
             ],
+            "browse": {
+                
+            },
             "windowsSdkVersion": "10.0.19041.0",
             "cStandard": "c11",
-            "intelliSenseMode": "msvc-x64",
+            "intelliSenseMode": "windows-clang-x64",
             "cppStandard": "c++17"
         }
     ],

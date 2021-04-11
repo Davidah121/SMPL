@@ -14,11 +14,21 @@
 #include "ComplexNumber.h"
 #include "PolarCoordinate.h"
 
-#undef max
-#undef min
+#ifdef max
+	#undef max
+#endif
 
-#define PI 3.1415927
-#define E 2.7182818
+#ifdef min
+	#undef min
+#endif
+
+#ifndef PI
+	#define PI 3.1415927
+#endif
+
+#ifndef E
+	#define E 2.7182818
+#endif
 
 class MathExt
 {
@@ -26,25 +36,79 @@ public:
 	MathExt();
 	~MathExt();
 
-	static int max(int a, int b);
-	static double max(double a, double b);
-	static float max(float a, float b);
-	static long max(long a, long b);
+	template<typename T>
+	static T max(T a, T b)
+	{
+		return ((a>b)? a:b);
+	}
+	
+	template<typename T>
+	static T max(T* a, int count)
+	{
+		T max = a[0];
+		for(int i=0; i<count; i++)
+		{
+			if(a[i] > max)
+				max = a[i];
+		}
+		return max;
+	}
 
-	static int max(int* ar, int size);
-	static double max(double* ar, int size);
-	static float max(float* ar, int size);
-	static long max(long* ar, int size);
+	template<typename T>
+	static T max( std::initializer_list<T> list)
+	{
+		T max;
+		bool first = true;
+		for(T elem : list)
+		{	
+			if(first)
+			{
+				max = elem;
+				first = false;
+			}
+			
+			if(elem > max)
+				max = elem;
+		}
+		return max;
+	}
 
-	static int min(int a, int b);
-	static double min(double a, double b);
-	static float min(float a, float b);
-	static long min(long a, long b);
+	template<typename T>
+	static T min(T a, T b)
+	{
+		return ((a<b)? a:b);
+	}
 
-	static int min(int* ar, int size);
-	static double min(double* ar, int size);
-	static float min(float* ar, int size);
-	static long min(long* ar, int size);
+	template<typename T>
+	static T min(T* a, int count)
+	{
+		T min = a[0];
+		for(int i=0; i<count; i++)
+		{
+			if(a[i] < min)
+				min = a[i];
+		}
+		return min;
+	}
+
+	template<typename T>
+	static T min( std::initializer_list<T> list)
+	{
+		T min;
+		bool first = true;
+		for(T elem : list)
+		{
+			if(first)
+			{
+				min = elem;
+				first = false;
+			}
+
+			if(elem < min)
+				min = elem;
+		}
+		return min;
+	}
 	
 	static float floor(float a);
 	static float ceil(float a);
@@ -60,15 +124,27 @@ public:
 	static float roundToDecimal(float a, int decimalPlaces=6);
 	static float roundToDecimal(double a, int decimalPlaces=6);
 
-	static int sqr(int a);
-	static float sqr(float a);
-	static double sqr(double a);
-	static long sqr(long a);
+	template<typename T>
+	static T sqr(T a)
+	{
+		return a*a;
+	}
+
+	template<typename T>
+	static T cube(T a)
+	{
+		return a*a*a;
+	}
+
+	// static int sqr(int a);
+	// static float sqr(float a);
+	// static double sqr(double a);
+	// static long sqr(long a);
 	
-	static int cube(int a);
-	static float cube(float a);
-	static double cube(double a);
-	static long cube(long a);
+	// static int cube(int a);
+	// static float cube(float a);
+	// static double cube(double a);
+	// static long cube(long a);
 
 	static double sqrt(int a);
 	static float sqrt(float a);
@@ -83,6 +159,9 @@ public:
 	
 	static float log(float value, float base = 10.0f);
 	static double log(double value, double base = 10.0);
+
+	static float lerp(float a, float b, float blend);
+	static double lerp(double a, double b, double blend);
 
 	static int abs(int a);
 	static double abs(double a);

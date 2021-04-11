@@ -10,8 +10,13 @@
 #include <thread>
 #include "SimpleFile.h"
 
-#define min(a,b) (a<b)? a:b
-#define max(a,b) (a>b)? a:b
+#ifndef min
+	#define min(a,b) (a<b)? a:b
+#endif
+
+#ifndef max
+	#define max(a,b) (a>b)? a:b
+#endif
 
 Compression::Compression()
 {

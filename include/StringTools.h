@@ -1,9 +1,12 @@
 #pragma once
-#include<stdarg.h>
 #include<iostream>
 #include<io.h>
 #include<vector>
 #include<fcntl.h>
+#include "BinarySet.h"
+
+#include <stdarg.h>
+#include <initializer_list>
 
 class StringTools
 {
@@ -13,13 +16,12 @@ public:
 
 	static void init();
 
-	static wchar_t* toWideString(char* text);
-	static wchar_t* toWideString(const char* text);
 	static std::wstring toWideString(std::string text);
 
-	static char* toCString(wchar_t* text);
-	static char* toCString(const wchar_t* text);
 	static std::string toCString(std::wstring text);
+
+	static std::vector<unsigned char> toUTF8(int c);
+	static int utf8ToChar(std::vector<unsigned char> utf8Char);
 
 	static int stringLength(char* text);
 	static int stringLength(wchar_t* text);
@@ -75,12 +77,12 @@ public:
 	}
 
 	static std::vector<std::string> splitString(std::string s, const char delim, bool removeEmpty=true);
-	static std::vector<std::string> splitString(std::string s, const char* delim, bool removeEmpty=true);
-	static std::vector<std::string> splitStringMultipleDeliminators(std::string s, const char* delim, bool removeEmpty=true);
+	static std::vector<std::string> splitString(std::string s, std::string delim, bool removeEmpty=true);
+	static std::vector<std::string> splitStringMultipleDeliminators(std::string s, std::string delim, bool removeEmpty=true);
 	
 	static std::vector<std::wstring> splitString(std::wstring s, const wchar_t delim, bool removeEmpty=true);
-	static std::vector<std::wstring> splitString(std::wstring s, const wchar_t* delim, bool removeEmpty=true);
-	static std::vector<std::wstring> splitStringMultipleDeliminators(std::wstring s, const wchar_t* delim, bool removeEmpty=true);
+	static std::vector<std::wstring> splitString(std::wstring s, std::wstring delim, bool removeEmpty=true);
+	static std::vector<std::wstring> splitStringMultipleDeliminators(std::wstring s, std::wstring delim, bool removeEmpty=true);
 
 	static int toInt(std::string s);
 	static long toLong(std::string s);
@@ -102,74 +104,48 @@ public:
 	static void findLongestMatch(std::string base, std::string match, int* length, int* index);
 	static void findLongestMatch(char* base, int sizeOfBase, char* match, int sizeOfMatch, int* length, int* index);
 
-	static void print(std::string text, ...)
-	{
-		va_list args;
-		va_start(args, text);
-		vprintf(text.c_str(), args);
-		va_end(args);
-	}
+	static std::string formatString(std::string text, ...);
+	static std::wstring formatWideString(std::wstring text, ...);
 
-	static void println(std::string text, ...)
-	{
-		va_list args;
-		va_start(args, text);
-		vprintf((text+'\n').c_str(), args);
-		va_end(args);
-	}
 	
-	static void print(const char* text, ...)
+	static void print(std::string fmt, ...)
 	{
 		va_list args;
-		va_start(args, text);
-		vprintf(text, args);
+		va_start(args, fmt);
+		std::wstring finalString = formatWideStringInternal( StringTools::toWideString(fmt), args);
 		va_end(args);
+
+		std::wcout << finalString;
 	}
 
-	static void println(const char* text, ...)
+	static void println(std::string fmt, ...)
 	{
-		std::string k = text;
-		k+='\n';
-
 		va_list args;
-		va_start(args, text);
-		vprintf(k.c_str(), args);
+		va_start(args, fmt);
+		std::wstring finalString = formatWideStringInternal( StringTools::toWideString(fmt), args);
 		va_end(args);
+
+		std::wcout << finalString << L"\n";
 	}
 
-	static void print(std::wstring text, ...)
+	static void print(std::wstring fmt, ...)
 	{
 		va_list args;
-		va_start(args, text);
-		vwprintf(text.c_str(), args);
+		va_start(args, fmt);
+		std::wstring finalString = formatWideStringInternal(fmt, args);
 		va_end(args);
+
+		std::wcout << finalString;
 	}
 
-	static void println(std::wstring text, ...)
+	static void println(std::wstring fmt, ...)
 	{
 		va_list args;
-		va_start(args, text);
-		vwprintf((text+lineBreak).c_str(), args);
+		va_start(args, fmt);
+		std::wstring finalString = formatWideStringInternal(fmt, args);
 		va_end(args);
-	}
-	
-	static void print(const wchar_t* text, ...)
-	{
-		va_list args;
-		va_start(args, text);
-		vwprintf(text, args);
-		va_end(args);
-	}
 
-	static void println(const wchar_t* text, ...)
-	{
-		std::wstring k = text;
-		k+=lineBreak;
-		
-		va_list args;
-		va_start(args, text);
-		vwprintf(k.c_str(), args);
-		va_end(args);
+		std::wcout << finalString << L"\n";
 	}
 
 	static const wchar_t lineBreak;
@@ -177,7 +153,9 @@ public:
 	static void reroutOutput(std::wofstream file);
 
 private:
-	static bool hasInit;
+	static std::string formatStringInternal(std::string text, va_list orgArgs);
+	static std::wstring formatWideStringInternal(std::wstring text, va_list orgArgs);
 
+	static bool hasInit;
 };
 

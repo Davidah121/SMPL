@@ -427,7 +427,6 @@ void testColorPalette()
 
         StringTools::println("TimeTaken: %u", t2-t1);
         
-        Image::IMAGE_SAVE_ALPHA = false;
         img->savePNG("paletteTest.png");
     }
     else
@@ -735,8 +734,7 @@ void testPNGSave()
     {
         StringTools::println("Loaded %d images", amountOfImages);
     }
-
-    Image::IMAGE_SAVE_ALPHA = true;
+    
     imgAr[0]->savePNG("test1234.png");
 
     delete[] imgAr;
@@ -994,21 +992,21 @@ void testJPEG()
     }
 }
 
-double rot = 0;
+double rot = 360;
+Image* drwImg = new Image(1920, 1080);
 
 void drawTextureFunction()
 {
     if(windowPointer!=nullptr)
     {
-        Image drwImg = Image(1920, 1080);
         Graphics::setColor({127,127,127,255});
-        drwImg.clearImage();
+        drwImg->clearImage();
 
-        //Mat3f rotMat = MathExt::rotation2D( MathExt::toRad(rot), 300,300);
-        Vec3f p1 = Vec3f(0,0,1);
-        Vec3f p2 = Vec3f(1920,0,1);
-        Vec3f p3 = Vec3f(1920,1080,1);
-        Vec3f p4 = Vec3f(0,1080,1);
+        // Mat3f rotMat = MathExt::rotation2D( MathExt::toRad(rot), 300,300);
+        // Vec3f p1 = Vec3f(0,0,1);
+        // Vec3f p2 = Vec3f(600,0,1);
+        // Vec3f p3 = Vec3f(600,600,1);
+        // Vec3f p4 = Vec3f(0,600,1);
         
         // p1 = rotMat*p1;
         // p2 = rotMat*p2;
@@ -1022,25 +1020,31 @@ void drawTextureFunction()
         
         Graphics::setColor({255,255,255,255});
 
-        unsigned long time1 = System::getCurrentTimeNano();
-        Graphics::drawTriangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, false, &drwImg);
-        unsigned long time2 = System::getCurrentTimeNano();
-
-        StringTools::println("TimeTaken: %u", (time2-time1));
+        // Graphics::drawTriangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, false, &drwImg);
         // Graphics::drawTriangle(p1.x, p1.y, p3.x, p3.y, p4.x, p4.y, false, &drwImg);
+        // Graphics::drawRect(0, 0, 1920, 1080, false, &drwImg);
         
-        //Graphics::drawTexturedTriangle(finalP1, finalP2, finalP3, img, &drwImg);
-        //Graphics::drawTexturedTriangle(finalP1, finalP3, finalP4, img, &drwImg);
-        
-        windowPointer->drawImage(&drwImg);
-        rot-=1;
-        if(rot>360)
+        // Graphics::drawTexturedTriangle(finalP1, finalP2, finalP3, img, &drwImg);
+        // Graphics::drawTexturedTriangle(finalP1, finalP3, finalP4, img, &drwImg);
+        //Graphics::setCompositeRule( Graphics::NO_COMPOSITE );
+
+        size_t t1 = System::getCurrentTimeNano();
+        for(int i=0; i<52; i++)
         {
-            rot-=360;
+            Graphics::drawTriangle(0, 0, 1920, 0, 1920, 1080, false, drwImg);
+            Graphics::drawTriangle(0, 0, 1920, 1080, 0, 1080, false, drwImg);
+            
+            // Graphics::drawRect(0, 0, 1920, 1080, false, drwImg);
         }
-        if(rot<0)
+        size_t t2 = System::getCurrentTimeNano();
+
+        StringTools::println("Time: %u", t2-t1);
+        
+        windowPointer->drawImage(drwImg);
+        rot-=1;
+        if(rot<=0)
         {
-            rot+=360;
+            rot=360;
         }
     }
 }
@@ -1056,8 +1060,12 @@ void drawWind()
     {
         // do stuff
         img = imgArr[0];
-        windowPointer = new WndWindow("ROTATE IMAGE", 1280, 720);
+        windowPointer = new WndWindow("ROTATE IMAGE", 1920, 1080);
         windowPointer->setPaintFunction(drawTextureFunction);
+        windowPointer->setActivateGui(false);
+
+        int frames = 0;
+        unsigned long timePassed = 0;
 
         while(windowPointer->getRunning())
         {
@@ -1070,6 +1078,16 @@ void drawWind()
                 t2 = System::getCurrentTimeNano();
             }
 
+            timePassed += (t2-t1);
+            frames++;
+
+            if(timePassed >= 1000000000)
+            {
+                //1 second has passed
+                StringTools::println("FPS: %d", frames);
+                timePassed = 0;
+                frames = 0;
+            }
         }
 
         delete windowPointer;
@@ -1078,6 +1096,8 @@ void drawWind()
     {
         StringTools::println("Error loading Image");
     }
+
+    delete drwImg;
 
     if(imgArr!=nullptr)
     {
@@ -1155,6 +1175,99 @@ void testGui()
     }
 }
 
+void testProcessAndWindowStuff()
+{
+    unsigned long id = System::getProcessID(L"notepad.exe");
+    HWND windowHandle = System::getProcessWindow(L"Notepad");
+
+    StringTools::println("ID %u, WindowID %u", id, windowHandle);
+}
+
+void testSSEStuff()
+{
+    //Testing done on a Image of 1920x1080. Done 100 times and an average was taken.
+    //TIME OPTI0 = 800533
+    //TIME OPTI1 = 799866
+    //TIME OPTI2 = 837930
+    //More or less within the margin of error.
+
+    //TIME OPTI0 = 36100437, 36490849
+    //TIME OPTI1 = 26971808, 27931464
+    //TIME OPTI2 = 24793675, 25102215
+    Image img = Image(1920, 1080);
+    Sprite sprite = Sprite();
+    sprite.loadImage("./basn6a08.png");
+
+
+    Graphics::setColor( {0, 0, 0, 255} );
+    img.clearImage();
+
+    Graphics::setColor( {255, 255, 255, 255} );
+    
+    time_t t1 = System::getCurrentTimeNano();
+    for(int i=0; i<1; i++)
+    {
+        //Graphics::drawRect(0, 0, 1920, 1080, false, &img);
+        Graphics::drawSpritePart(sprite.getImage(0), 32, 8, 8, 4, 16, 24, &img);
+        //Graphics::drawTexturedTriangle(Vec4f(0, 0, 0, 0), Vec4f(1920, 0, 1, 0), Vec4f(1920, 1080, 1, 1), sprite.getImage(0), &img);
+        //Graphics::drawTexturedTriangle(Vec4f(0, 0, 0, 0), Vec4f(1920, 1080, 1, 1), Vec4f(0, 1080, 0, 1), sprite.getImage(0), &img);
+        //Graphics::drawImage(sprite.getImage(0), 0, 0, &img);
+    }
+    time_t t2 = System::getCurrentTimeNano();
+    //OPTI0 = 1016513
+    //OPTI1 = 845185
+    //OPTI2 = 825369
+
+    //1920 x 1080 metrics
+    //OPTI0 = 31753929
+    //OPTI1 = 26732193
+    //OPTI2 = 26351291
+    StringTools::println("Time taken = %llu", (t2-t1)/1);
+
+    Graphics::setColor( {255, 0, 0, 255} );
+    // Graphics::drawCircle(320, 240, 16, true, &img);
+
+    // Graphics::drawLine(320, 225, 314, 226, &img);
+
+    // Graphics::drawLine(313, 227+16, 315, 226+16, &img);
+    
+
+    img.saveBMP("sseTest.bmp");
+}
+
+void testUTF()
+{
+    //expected CE A9
+    //01110 101001
+    //937
+    SimpleFile file = SimpleFile("Test1.txt", SimpleFile::READ | SimpleFile::UTF8);
+    std::vector<std::wstring> data = file.readFullFileStringWide();
+    file.close();
+
+    SimpleFile f = SimpleFile("out1.txt", SimpleFile::WRITE | SimpleFile::UTF8);
+    for(std::wstring k : data)
+    {
+        f.writeWideString(k);
+        f.writeLineBreak();
+        StringTools::println(k);
+    }
+    f.close();
+
+    StringTools::println("This is a string: %s; This is a wide string: %ls ", "const ", L"Constア");
+    StringTools::println("As Dec and as Hex: %d, %x", 1010, 1010);
+
+    int a = MathExt::max(2, 3);
+    int b = MathExt::min( {4,5,6} );
+    size_t arr[4] = {10, 212, 201, 4};
+    int k = MathExt::max(arr, 4);
+    
+    std::wstring fmt = StringTools::formatWideString(L"format this (%d, %d) + %s + %ls", 'c', SIZE_MAX, "String", L"This is japanese とうほう");
+    std::string fmt2 = StringTools::formatString("format this (%d, %d) + %s + %ls", 'c', SIZE_MAX, "String", L"This is japanese とうほう");
+    
+    StringTools::println(fmt);
+    StringTools::println(fmt2.c_str());
+}
+
 int main(int argc, char** argv)
 {
     StringTools::init();
@@ -1178,7 +1291,10 @@ int main(int argc, char** argv)
     //New Stuff
 
         //drawWind();
-        testGui();
+        //testGui();
+        //testProcessAndWindowStuff();
+        testSSEStuff();
+        //testUTF();
 
     //End of New Stuff
     

@@ -292,7 +292,7 @@ void Audio::removeSound(Sound* s)
 void Audio::prepareSounds()
 {
 	copySounds.clear();
-	int maxSize = MathExt::min(amtOfSoundsAllowed, sounds.size());
+	int maxSize = MathExt::min(amtOfSoundsAllowed, (int)sounds.size());
 	int i=0;
 	for(Sound* s : sounds)
 	{

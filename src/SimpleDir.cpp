@@ -1,5 +1,6 @@
 #include "SimpleDir.h"
 #include "StringTools.h"
+#include <iomanip>
 
 const Class* SimpleDir::myClass = new Class("SimpleDir", {Object::myClass});
 const Class* SimpleDir::getClass()
@@ -11,7 +12,7 @@ const Class* SimpleDir::getClass()
 	Creates an object that will hold information about a directory
 	such as the folders and files in it.
 */
-SimpleDir::SimpleDir(wchar_t* directory)
+SimpleDir::SimpleDir(std::wstring directory)
 {
 	try
 	{
@@ -107,9 +108,13 @@ time_t SimpleDir::getLastChangeTime(int index)
 	{
 		std::filesystem::file_time_type ftime = std::filesystem::last_write_time(names[index].path());
 		
-		std::time_t t = std::chrono::duration_cast<std::chrono::seconds>(ftime.time_since_epoch()).count();
-		
-		return t;
+		auto sctp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+			ftime - 
+			std::filesystem::file_time_type::clock::now() +
+			std::chrono::system_clock::now()
+		);
+
+		return std::chrono::system_clock::to_time_t(sctp);
 	}
 	else
 	{
@@ -138,7 +143,7 @@ bool SimpleDir::referenceIsDirectory(int index)
 	Changes the name to the new name specified.
 	The new name should not contain the path.
 */
-void SimpleDir::renameResource(wchar_t * newName, int index)
+void SimpleDir::renameResource(std::wstring newName, int index)
 {
 	if (index >= 0 && index < names.size())
 	{
@@ -196,7 +201,7 @@ void SimpleDir::deleteResource(int index)
 	ends with a / or \, then it will use the current name of the file.
 	Otherwise, it will use the name and file extension you specify.
 */
-void SimpleDir::copyResource(wchar_t * newName, int index)
+void SimpleDir::copyResource(std::wstring newName, int index)
 {
 	if (index >= 0 && index < names.size())
 	{
@@ -228,12 +233,12 @@ void SimpleDir::copyResource(wchar_t * newName, int index)
 	Attempts to get a reference with the specified name.
 	Returns -1 if the reference does not exist.
 */
-int SimpleDir::getReferenceLocation(wchar_t * name)
+int SimpleDir::getReferenceLocation(std::wstring name)
 {
 	int index = -1;
 	for (int i = 0; i < names.size(); i++)
 	{
-		if ( std::wcscmp(name, getReferenceName(i).c_str() ) == 0 )
+		if ( name == getReferenceName(i) )
 		{
 			index = i;
 			break;
@@ -255,15 +260,15 @@ int SimpleDir::getSize()
 	Gets all of the folders in this directory and returns them as
 	a vector of wide character pointers.
 */
-std::vector<wchar_t*> SimpleDir::getFolders()
+std::vector<std::wstring> SimpleDir::getFolders()
 {
-	std::vector<wchar_t*> dirs = std::vector<wchar_t*>();
+	std::vector<std::wstring> dirs = std::vector<std::wstring>();
 
 	for (int i = 0; i < getSize(); i++)
 	{
 		if (referenceIsDirectory(i))
 		{
-			dirs.push_back((wchar_t*)getReferenceFullPath(i).c_str());
+			dirs.push_back(getReferenceFullPath(i));
 		}
 	}
 
@@ -274,15 +279,15 @@ std::vector<wchar_t*> SimpleDir::getFolders()
 	Gets all of the files in this directory and returns them as
 	a vector of wide character pointers.
 */
-std::vector<wchar_t*> SimpleDir::getFiles()
+std::vector<std::wstring> SimpleDir::getFiles()
 {
-	std::vector<wchar_t*> files = std::vector<wchar_t*>();
+	std::vector<std::wstring> files = std::vector<std::wstring>();
 
 	for (int i = 0; i < getSize(); i++)
 	{
 		if (!referenceIsDirectory(i))
 		{
-			files.push_back((wchar_t*)getReferenceFullPath(i).c_str());
+			files.push_back(getReferenceFullPath(i));
 		}
 	}
 
@@ -309,7 +314,7 @@ void SimpleDir::createDirectory()
 /*
 	Returns a string that represents the location of the directory
 */
-wchar_t* SimpleDir::getLocation()
+std::wstring SimpleDir::getLocation()
 {
-	return (wchar_t*)location.c_str();
+	return location;
 }

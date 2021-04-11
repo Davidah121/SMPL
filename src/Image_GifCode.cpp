@@ -6,7 +6,9 @@
 #include "MathExt.h"
 #include "Graphics.h"
 
-void Image::saveGIF(std::string filename)
+#include "ColorSpaceConverter.h"
+
+void Image::saveGIF(std::string filename, int paletteSize, bool saveAlpha, unsigned char alphaThreshold, bool greyscale)
 {
 	SimpleFile f = SimpleFile(filename, SimpleFile::WRITE);
 
@@ -18,15 +20,30 @@ void Image::saveGIF(std::string filename)
 	ColorPalette tempPalette;
 	unsigned char* pixs = new unsigned char[width*height];
 
-	bool containsTransparency = IMAGE_SAVE_ALPHA;
+	Color* nPixels = pixels;
 
-	if(p.getSize() == 0 || p.getSize() > 256)
+	if(greyscale)
+	{
+		nPixels = new Color[width*height];
+		Color* startPixs = nPixels;
+		Color* endPixs = nPixels + (width*height);
+
+		while(startPixs < endPixs)
+		{
+			Color ycbcr = ColorSpaceConverter::convert(*startPixs, ColorSpaceConverter::RGB_TO_YCBCR);
+			*startPixs = {ycbcr.red, ycbcr.red, ycbcr.red, ycbcr.alpha};
+		}
+	}
+
+	bool containsTransparency = saveAlpha;
+
+	if(p.getSize() == 0 || p.getSize() > paletteSize)
 	{
 		//no palette or the palette is not suitable, create a palette
 		if(containsTransparency)
-			tempPalette = ColorPalette::generateOptimalPalette(pixels, width*height, 255, ColorPalette::MEAN_CUT);
+			tempPalette = ColorPalette::generateOptimalPalette(nPixels, width*height, paletteSize-1, ColorPalette::MEAN_CUT);
 		else
-			tempPalette = ColorPalette::generateOptimalPalette(pixels, width*height, 256, ColorPalette::MEAN_CUT);
+			tempPalette = ColorPalette::generateOptimalPalette(nPixels, width*height, paletteSize, ColorPalette::MEAN_CUT);
 	}
 	else
 	{
@@ -37,13 +54,13 @@ void Image::saveGIF(std::string filename)
 	{
 		for(int i=0; i<width*height; i++)
 		{
-			if(pixels[i].alpha <= IMAGE_ALPHA_THRESHOLD)
+			if(nPixels[i].alpha <= alphaThreshold)
 			{
 				pixs[i] = 0xFF;
 			}
 			else
 			{
-				pixs[i] = (unsigned char)tempPalette.getClosestColorIndex(pixels[i]);
+				pixs[i] = (unsigned char)tempPalette.getClosestColorIndex(nPixels[i]);
 			}
 		}
 	}
@@ -51,7 +68,7 @@ void Image::saveGIF(std::string filename)
 	{
 		for(int i=0; i<width*height; i++)
 		{
-			pixs[i] = (unsigned char)tempPalette.getClosestColorIndex(pixels[i]);
+			pixs[i] = (unsigned char)tempPalette.getClosestColorIndex(nPixels[i]);
 		}
 	}
 
@@ -64,14 +81,14 @@ void Image::saveGIF(std::string filename)
 	gifHeaderInfo += (char)((height>>8) & 0xFF);
 
 	//packed data
-		int paletteSize = (MathExt::ceil( MathExt::log( (double)tempPalette.getSize(), 2.0) - 1 ) );
+		int paletteSizeP2 = (MathExt::ceil( MathExt::log( (double)tempPalette.getSize(), 2.0) - 1 ) );
 		char c = 0;
 		//paletteSize
-		c += (char)paletteSize;
+		c += (char)paletteSizeP2;
 		//paletteSorted
 		c += (char)(0 << 3);
 		//colorRes
-		c += (char)(paletteSize << 4);
+		c += (char)(paletteSizeP2 << 4);
 		//hasGlobalColorTable
 		c += (char)(1 << 7);
 	gifHeaderInfo += c;
@@ -84,7 +101,7 @@ void Image::saveGIF(std::string filename)
 
 
 	//addPalette
-	int padding = (1 << (paletteSize+1)) - tempPalette.getSize();
+	int padding = (1 << (paletteSizeP2+1)) - tempPalette.getSize();
 	
 	for(int i=0; i<tempPalette.getSize(); i++)
 	{
@@ -148,10 +165,10 @@ void Image::saveGIF(std::string filename)
 	gifHeaderInfo += (char)0x00;
 
 	//min code size
-	gifHeaderInfo += (char)paletteSize+1;
+	gifHeaderInfo += (char)paletteSizeP2+1;
 	
 	//compress data
-	std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, paletteSize+1);
+	std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, paletteSizeP2+1);
 
 	for(int i=0; i<compressedData.size(); i++)
 	{

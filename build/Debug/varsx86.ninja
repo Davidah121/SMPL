@@ -1,6 +1,0 @@
-inc = -I ./include %WLIBPATH32%
-objDir = ./bin/Debug/x86/obj
-exeDir = ./bin/Debug/x86
-compiler = cmd /c "C:\Program Files (x86)\LLVM\bin\clang"
-CXXFLAGS = -march=native -g -pipe -std=c++17
-compilerFlags = -c $CXXFLAGS -Wno-unused-command-line-argument -fsanitize=address

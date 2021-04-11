@@ -24,17 +24,14 @@ public:
 	static const int X1_MOUSE_BUTTON = 7;
 	static const int X2_MOUSE_BUTTON = 8;
 
-	static unsigned long getCurrentTimeMillis();
-	static unsigned long getCurrentTimeMicro();
-	static unsigned long getCurrentTimeNano();
+	static size_t getCurrentTimeMillis();
+	static size_t getCurrentTimeMicro();
+	static size_t getCurrentTimeNano();
 
 	static void sleep(int millis, int micros=0);
 
 	static void delayRun(void (*function)(), int millis, int micros = 0);
 	static void delayRun(std::function<void()> function, int millis, int micros = 0);
-
-	static void startTimeMeasurement();
-	static unsigned long endTimeMeasurement();
 
 	static unsigned int getNumberOfThreads();
 
@@ -76,9 +73,10 @@ public:
 	static void paintImageToDesktop(Image* img, int startX = 0, int startY = 0);
 	static void paintImageToWindow(HWND window, Image* img, int startX = 0, int startY = 0);
 
+	static unsigned long getProcessID(std::wstring processName);
+	static HWND getProcessWindow(std::wstring windowName);
+	
 private:
-	static std::chrono::high_resolution_clock::time_point startTime;
-	static std::chrono::high_resolution_clock::time_point endTime;
 	static unsigned int numberOfThreads;
 };
 

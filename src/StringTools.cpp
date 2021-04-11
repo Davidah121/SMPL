@@ -1,20 +1,8 @@
 #include "StringTools.h"
-#include<string>
-
-/*
-std::wostream StringTools::out(std::wcout.rdbuf);
-std::wistream StringTools::in(std::wcin.rdbuf);
-std::wostream StringTools::err(std::wcerr.rdbuf);
-*/
-
-// std::wostream StringTools::out(nullptr);
-// std::wistream StringTools::in(nullptr);
-// std::wostream StringTools::err(nullptr);
+#include <string>
 
 bool StringTools::hasInit = false;
-
-wchar_t const StringTools::lineBreak = '\n';
-
+wchar_t const StringTools::lineBreak = L'\n';
 
 StringTools::StringTools()
 {
@@ -27,40 +15,13 @@ StringTools::~StringTools()
 
 void StringTools::init()
 {
-	// StringTools::out.rdbuf(std::wcout.rdbuf());
-	// StringTools::in.rdbuf(std::wcin.rdbuf());
-	// StringTools::err.rdbuf(std::wcerr.rdbuf());
+	int outRet = _setmode(_fileno(stdout), _O_U16TEXT);
+	int inRet = _setmode(_fileno(stdin), _O_U16TEXT);
+	int errRet = _setmode(_fileno(stderr), _O_U16TEXT);
 
 	std::ios_base::sync_with_stdio(true);
-	// int outRet = _setmode(_fileno(stdout), _O_U16TEXT);
-	// int inRet = _setmode(_fileno(stdin), _O_U16TEXT);
-	// int errRet = _setmode(_fileno(stderr), _O_U16TEXT);
 
 	hasInit = true;
-}
-
-wchar_t * StringTools::toWideString(char * text)
-{
-	int len = stringLength(text);
-
-	wchar_t* temp = new wchar_t[len];
-	for (int i = 0; i < len; i++)
-	{
-		temp[i] = (wchar_t)text[i];
-	}
-	return temp;
-}
-
-wchar_t * StringTools::toWideString(const char * text)
-{
-	int len = stringLength(text);
-
-	wchar_t* temp = new wchar_t[len];
-	for (int i = 0; i < len; i++)
-	{
-		temp[i] = (wchar_t)text[i];
-	}
-	return temp;
 }
 
 std::wstring StringTools::toWideString(std::string text)
@@ -72,28 +33,6 @@ std::wstring StringTools::toWideString(std::string text)
 	}
 
 	return finalText;
-}
-
-char * StringTools::toCString(wchar_t * text)
-{
-	int len = stringLength(text);
-	char* temp = new char[len];
-	for (int i = 0; i < len; i++)
-	{
-		temp[i] = (char)(text[i] & 0xFF);
-	}
-	return temp;
-}
-
-char * StringTools::toCString(const wchar_t * text)
-{
-	int len = stringLength(text);
-	char* temp = new char[len];
-	for (int i = 0; i < len; i++)
-	{
-		temp[i] = (char)(text[i] & 0xFF);
-	}
-	return temp;
 }
 
 std::string StringTools::toCString(std::wstring text)
@@ -224,6 +163,81 @@ int StringTools::base16ToBase10(char val)
 	}
 }
 
+std::vector<unsigned char> StringTools::toUTF8(int c)
+{
+	if(c <= 0x7F)
+	{
+		return {(unsigned char)c};
+	}
+	else if(c <= 0x7FF)
+	{
+		unsigned char c1 = 0b11000000;
+		unsigned char c2 = 0b10000000;
+		c1 += (c >> 6);
+		c2 += c & 0b00111111;
+
+		return {c1, c2};
+	}
+	else if(c <= 0xFFFF)
+	{
+		unsigned char c1 = 0b11100000;
+		unsigned char c2 = 0b10000000;
+		unsigned char c3 = 0b10000000;
+		c1 += (c >> 12);
+		c2 += (c >> 6) & 0b00111111;
+		c3 += c & 0b00111111;
+		return {c1, c2, c3};
+	}
+	else
+	{
+		unsigned char c1 = 0b11110000;
+		unsigned char c2 = 0b10000000;
+		unsigned char c3 = 0b10000000;
+		unsigned char c4 = 0b10000000;
+
+		c1 += (c >> 18);
+		c2 += (c >> 12) & 0b00111111;
+		c3 += (c >> 6) & 0b00111111;
+		c4 += c & 0b00111111;
+		return {c1, c2, c3, c4};
+	}
+}
+
+int StringTools::utf8ToChar(std::vector<unsigned char> utf8Char)
+{
+	BinarySet b;
+	b.setBitOrder(BinarySet::RMSB);
+	b.setValues(utf8Char.data(), utf8Char.size());
+
+	BinarySet result;
+
+	int i = 0;
+
+	while(i<b.size())
+	{
+		if(!b.getBit(i))
+		{
+			i++;
+			int count = 8 - (i % 8);
+
+			for(int k=0; k<count; k++)
+			{
+				result.add( b.getBit(i) );
+				i++;
+			}
+		}
+		else
+		{
+			i++;
+		}
+	}
+
+	if(result.size()>0)
+		return result.getBits(0, result.size(), true);
+	else
+		return 0;
+}
+
 std::vector<std::string> StringTools::splitString(std::string s, const char delim, bool removeEmpty)
 {
 	std::vector<std::string> stringArray = std::vector<std::string>();
@@ -259,14 +273,14 @@ std::vector<std::string> StringTools::splitString(std::string s, const char deli
 	return stringArray;
 }
 
-std::vector<std::string> StringTools::splitStringMultipleDeliminators(std::string s, const char* delim, bool removeEmpty)
+std::vector<std::string> StringTools::splitStringMultipleDeliminators(std::string s, std::string delim, bool removeEmpty)
 {
 	std::vector<std::string> stringArray = std::vector<std::string>();
 
 	std::string temp = "";
 
 	int i = 0;
-	int dSize = std::strlen(delim);
+	int dSize = delim.size();
 
 	while (i < s.size())
 	{
@@ -307,14 +321,14 @@ std::vector<std::string> StringTools::splitStringMultipleDeliminators(std::strin
 	return stringArray;
 }
 
-std::vector<std::string> StringTools::splitString(std::string s, const char* delim, bool removeEmpty)
+std::vector<std::string> StringTools::splitString(std::string s, std::string delim, bool removeEmpty)
 {
 	std::vector<std::string> stringArray = std::vector<std::string>();
 
 	std::string temp = "";
 	std::string otherString = "";
 
-	int dSize = std::strlen(delim);
+	int dSize = delim.size();
 
 	int i = 0;
 	int count = 0;
@@ -328,12 +342,13 @@ std::vector<std::string> StringTools::splitString(std::string s, const char* del
 		}
 		else
 		{
-			if (dSize + i <= s.size())
+			if (dSize + i > s.size())
 			{
-				//possible that it could still contain
-				//the substring
-
+				//can't contain the substring.
+				temp+=s.at(i);
+				continue;
 			}
+
 			while (count < dSize)
 			{
 				if (s.at(i + count) == delim[count])
@@ -369,6 +384,9 @@ std::vector<std::string> StringTools::splitString(std::string s, const char* del
 			else
 			{
 				temp += otherString;
+				i += count;
+				count = 0;
+				otherString = "";
 			}
 
 		}
@@ -415,14 +433,14 @@ std::vector<std::wstring> StringTools::splitString(std::wstring s, const wchar_t
 	return stringArray;
 }
 
-std::vector<std::wstring> StringTools::splitStringMultipleDeliminators(std::wstring s, const wchar_t* delim, bool removeEmpty)
+std::vector<std::wstring> StringTools::splitStringMultipleDeliminators(std::wstring s, std::wstring delim, bool removeEmpty)
 {
 	std::vector<std::wstring> stringArray = std::vector<std::wstring>();
 
 	std::wstring temp = L"";
 
 	int i = 0;
-	int dSize = std::wcslen(delim);
+	int dSize = delim.size();
 
 	while (i < s.size())
 	{
@@ -463,14 +481,14 @@ std::vector<std::wstring> StringTools::splitStringMultipleDeliminators(std::wstr
 	return stringArray;
 }
 
-std::vector<std::wstring> StringTools::splitString(std::wstring s, const wchar_t* delim, bool removeEmpty)
+std::vector<std::wstring> StringTools::splitString(std::wstring s, std::wstring delim, bool removeEmpty)
 {
 	std::vector<std::wstring> stringArray = std::vector<std::wstring>();
 
 	std::wstring temp = L"";
 	std::wstring otherString = L"";
 
-	int dSize = std::wcslen(delim);
+	int dSize = delim.size();
 
 	int i = 0;
 	int count = 0;
@@ -484,12 +502,13 @@ std::vector<std::wstring> StringTools::splitString(std::wstring s, const wchar_t
 		}
 		else
 		{
-			if (dSize + i <= s.size())
+			if (dSize + i > s.size())
 			{
-				//possible that it could still contain
-				//the substring
-
+				//can't contain the substring.
+				temp+=s.at(i);
+				continue;
 			}
+
 			while (count < dSize)
 			{
 				if (s.at(i + count) == delim[count])
@@ -525,6 +544,9 @@ std::vector<std::wstring> StringTools::splitString(std::wstring s, const wchar_t
 			else
 			{
 				temp += otherString;
+				i += count;
+				count = 0;
+				otherString = L"";
 			}
 
 		}
@@ -720,4 +742,222 @@ void StringTools::findLongestMatch(char* base, int sizeOfBase, char* match, int 
 		*length = maxVal;
 		*index = indexOfMax;
 	}
+}
+
+std::string StringTools::formatStringInternal(std::string text, va_list orgArgs)
+{
+	std::string finalText = "";
+	std::vector<std::string> splits = splitString(text, "%ls", false);
+
+	va_list args;
+	va_copy(args, orgArgs);
+
+	for(int i=0; i<splits.size(); i++)
+	{
+		std::string str = splits[i];
+
+		int size = vsnprintf(nullptr, 0, str.c_str(), args);
+		size++;
+
+		char* nText = new char[size];
+		
+		vsnprintf(nText, size, str.c_str(), args);
+		finalText += nText;
+
+		delete[] nText;
+		
+		int count = 0;
+		size_t loc = 0;
+		
+		while(true)
+		{
+			size_t nLoc = str.find('%', loc);
+			if(nLoc != SIZE_MAX)
+			{
+				loc = nLoc;
+				
+				while(true)
+				{
+					loc++;
+					//read till flag
+					if(str[loc] == 'd' || str[loc] == 'i' || str[loc] == 'u' || str[loc] == 'o'
+					|| str[loc] == 'x' || str[loc] == 'X' || str[loc] == 'c')
+					{
+						va_arg(args, size_t);
+						count++;
+						break;
+					}
+					else if(str[loc] == 'f' || str[loc] == 'F' || str[loc] == 'e' || str[loc] == 'E'
+					|| str[loc] == 'g' || str[loc] == 'G' || str[loc] == 'a' || str[loc] == 'A')
+					{
+						va_arg(args, long double);
+						count++;
+						break;
+					}
+					else if(str[loc] == 's')
+					{
+						//should always be char*
+						va_arg(args, char*);
+						count++;
+						break;
+					}
+					else if(str[loc] == 'p')
+					{
+						va_arg(args, void*);
+						count++;
+						break;
+					}
+					else if(str[loc] == 'n')
+					{
+						va_arg(args, void*);
+						count++;
+						break;
+					}
+					else if(str[loc] == '*')
+					{
+						va_arg(args, int);
+						count++;
+					}
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		if(i < splits.size()-1)
+		{
+			std::wstring delayedStr = va_arg(args, wchar_t*);
+			finalText += StringTools::toCString(delayedStr);
+			count++;
+		}
+	}
+
+	va_end(args);
+
+	return finalText;
+}
+
+std::string StringTools::formatString(std::string text, ...)
+{
+	std::string finalText = "";
+
+	va_list args;
+	va_start(args, text);
+
+	finalText = StringTools::formatStringInternal(text, args);
+
+	va_end(args);
+
+	return finalText;
+}
+
+std::wstring StringTools::formatWideStringInternal(std::wstring text, va_list orgArgs)
+{
+	std::wstring finalText = L"";
+	std::vector<std::wstring> splits = splitString(text, L"%s", false);
+
+	va_list args;
+	va_copy(args, orgArgs);
+
+	for(int i=0; i<splits.size(); i++)
+	{
+		std::wstring str = splits[i];
+
+		int size = vswprintf(nullptr, 0, str.c_str(), args);
+		size++;
+
+		wchar_t* nText = new wchar_t[size];
+		
+		vswprintf(nText, size, str.c_str(), args);
+		finalText += nText;
+
+		delete[] nText;
+		
+		int count = 0;
+		size_t loc = 0;
+		
+		while(true)
+		{
+			size_t nLoc = str.find(L'%', loc);
+			if(nLoc != SIZE_MAX)
+			{
+				loc = nLoc;
+				
+				while(true)
+				{
+					loc++;
+					//read till flag
+					if(str[loc] == L'd' || str[loc] == L'i' || str[loc] == L'u' || str[loc] == L'o'
+					|| str[loc] == L'x' || str[loc] == L'X' || str[loc] == L'c')
+					{
+						va_arg(args, size_t);
+						count++;
+						break;
+					}
+					else if(str[loc] == L'f' || str[loc] == L'F' || str[loc] == L'e' || str[loc] == L'E'
+					|| str[loc] == L'g' || str[loc] == L'G' || str[loc] == L'a' || str[loc] == L'A')
+					{
+						va_arg(args, long double);
+						count++;
+						break;
+					}
+					else if(str[loc] == L's')
+					{
+						//should always be wchar_t*
+						va_arg(args, wchar_t*);
+						count++;
+						break;
+					}
+					else if(str[loc] == L'p')
+					{
+						va_arg(args, void*);
+						count++;
+						break;
+					}
+					else if(str[loc] == L'n')
+					{
+						va_arg(args, void*);
+						count++;
+						break;
+					}
+					else if(str[loc] == L'*')
+					{
+						va_arg(args, int);
+						count++;
+					}
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		if(i < splits.size()-1)
+		{
+			std::string delayedStr = va_arg(args, char*);
+			finalText += StringTools::toWideString(delayedStr);
+			count++;
+		}
+	}
+
+	va_end(args);
+
+	return finalText;
+}
+
+std::wstring StringTools::formatWideString(std::wstring text, ...)
+{
+	std::wstring finalText = L"";
+
+	va_list args;
+	va_start(args, text);
+
+	finalText = StringTools::formatWideStringInternal(text, args);
+
+	va_end(args);
+
+	return finalText;
 }

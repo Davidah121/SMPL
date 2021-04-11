@@ -8,8 +8,10 @@
 #include <iostream>
 #include "StringTools.h"
 
+#include "ColorSpaceConverter.h"
 
-void Image::saveBMP(std::string filename)
+
+void Image::saveBMP(std::string filename, unsigned char alphaThreshold, bool greyscale)
 {
     //save header
     //save pixel data
@@ -53,11 +55,22 @@ void Image::saveBMP(std::string filename)
             for(int x=0; x<width; x++)
             {
                 Color c = getPixel(x,y);
-				if(c.alpha>0)
+				if(c.alpha >= alphaThreshold)
 				{
-					outPixels[i] = c.blue;
-					outPixels[i+1] = c.green;
-					outPixels[i+2] = c.red;
+					if(!greyscale)
+					{
+						outPixels[i] = c.blue;
+						outPixels[i+1] = c.green;
+						outPixels[i+2] = c.red;
+					}
+					else
+					{
+						Color ycbcr = ColorSpaceConverter::convert(c, ColorSpaceConverter::RGB_TO_YCBCR);
+
+						outPixels[i] = ycbcr.red;
+						outPixels[i+1] = ycbcr.red;
+						outPixels[i+2] = ycbcr.red;
+					}
 				}
 				else
 				{
