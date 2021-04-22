@@ -658,90 +658,9 @@ int StringTools::getInt()
 	return 0;
 }
 
-void StringTools::findLongestMatch(std::string base, std::string match, int* length, int* index)
+void StringTools::findLongestMatch(std::string base, std::string match, int* index, int* length)
 {
-	findLongestMatch((char*)base.c_str(), base.size(), (char*)match.c_str(), match.size(), length, index);
-}
-
-void StringTools::findLongestMatch(char* base, int sizeOfBase, char* match, int sizeOfMatch, int* length, int* index)
-{
-	if(length!=nullptr && index!=nullptr)
-	{
-		int maxVal = 0;
-		int indexOfMax = 0;
-
-		int x = 0;
-		int y = 0;
-
-		int currSize = 0;
-		int currStartIndex = -1;
-
-		int nextPossibleIndex = -1;
-
-		char* sB = base;
-		char* sM = match;
-
-		char startValue = match[0];
-		
-		while(x < sizeOfBase)
-		{
-			if(*sB == *sM)
-			{
-				if(currStartIndex!=-1)
-				{
-					if(*sB == startValue)
-					{
-						nextPossibleIndex = x; 
-					}
-				}
-
-				if(currStartIndex==-1)
-					currStartIndex = x;
-				
-				currSize++;
-				sM++;
-
-				if(currSize >= sizeOfMatch)
-				{
-					maxVal = currSize;
-					indexOfMax = currStartIndex;
-					break;
-				}
-			}
-			else
-			{
-				if(currSize >= maxVal)
-				{
-					maxVal = currSize;
-					indexOfMax = currStartIndex;
-				}
-
-				if(nextPossibleIndex>0)
-				{
-					x = nextPossibleIndex;
-					sB = base + nextPossibleIndex;
-				}
-
-				currSize = 0;
-				currStartIndex = -1;
-				nextPossibleIndex = -1;
-
-				sM = match;
-			}
-
-			sB++;
-			x++;
-		}
-		
-		if(currSize >= maxVal)
-		{
-			maxVal = currSize;
-			indexOfMax = currStartIndex;
-		}
-		
-		*length = maxVal;
-		*index = indexOfMax;
-	}
+	StringTools::KMP(base.c_str(), base.size(), match.c_str(), match.size(), index, length);
 }
 
 std::string StringTools::formatStringInternal(std::string text, va_list orgArgs)

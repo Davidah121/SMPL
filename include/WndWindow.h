@@ -70,8 +70,11 @@ public:
 	
 	void drawImage(Image* g);
 
-private:
+	static void setMouseVWheelValuePointer(int* v);
+	static void setMouseHWheelValuePointer(int* v);
 
+private:
+	
 	static std::vector<WndWindow*> windowList;
 	static int screenWidth;
 	static int screenHeight;
@@ -100,6 +103,10 @@ private:
 	
 	void run();
 	void dispose();
+
+	static int* mouseVWheelPointer;
+	static int* mouseHWheelPointer;
+	
 	
 	int x = 0;
 	int y = 0;

@@ -6,6 +6,7 @@
 #include <iostream>
 #include "StringTools.h"
 
+#include "System.h"
 #include "ColorSpaceConverter.h"
 
 struct fctlData
@@ -98,24 +99,50 @@ void Image::savePNG(std::string filename, bool saveAlpha, unsigned char alphaThr
 		{
 			Color c = pixels[k + i*width];
 
-			if(!saveAlpha)
-			{
-				if(c.alpha < alphaThreshold)
-				{
-					continue;
-				}
-			}
-			
 			if(greyscale)
 			{
-				Color ycbcr = ColorSpaceConverter::convert(c, ColorSpaceConverter::RGB_TO_YCBCR);
-				scanLines.push_back(ycbcr.red);
+				if(!saveAlpha)
+				{
+					if(c.alpha < alphaThreshold)
+					{
+						scanLines.push_back(0);
+					}
+					else
+					{
+						Color ycbcr = ColorSpaceConverter::convert(c, ColorSpaceConverter::RGB_TO_YCBCR);
+						scanLines.push_back(ycbcr.red);
+					}
+				}
+				else
+				{
+					Color ycbcr = ColorSpaceConverter::convert(c, ColorSpaceConverter::RGB_TO_YCBCR);
+					scanLines.push_back(ycbcr.red);
+				}
 			}
 			else
 			{
-				scanLines.push_back(c.red);
-				scanLines.push_back(c.green);
-				scanLines.push_back(c.blue);
+				if(!saveAlpha)
+				{
+					if(c.alpha < alphaThreshold)
+					{
+						scanLines.push_back(0);
+						scanLines.push_back(0);
+						scanLines.push_back(0);
+					}
+					else
+					{
+						scanLines.push_back(c.red);
+						scanLines.push_back(c.green);
+						scanLines.push_back(c.blue);
+					}
+				}
+				else
+				{
+					scanLines.push_back(c.red);
+					scanLines.push_back(c.green);
+					scanLines.push_back(c.blue);
+				}
+				
 			}
 			
 			if(saveAlpha)
@@ -127,7 +154,7 @@ void Image::savePNG(std::string filename, bool saveAlpha, unsigned char alphaThr
 
 	int blocks = MathExt::ceil((double)scanLines.size() / (1<<16));
 
-	std::vector<unsigned char> compressedData = Compression::compressDeflate(scanLines, blocks);
+	std::vector<unsigned char> compressedData = Compression::compressDeflate(scanLines, blocks, 7);
 	
 	int fullSize = compressedData.size()+2+4;
 	std::string IDATHeader = "";

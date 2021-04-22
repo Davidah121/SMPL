@@ -7,6 +7,7 @@
 #include "Shape.h"
 #include "Sprite.h"
 
+#include <functional>
 
 class GuiInstance : public Object
 {
@@ -26,8 +27,13 @@ public:
 
 	const void baseUpdate();
 
-	void setOnActivateFunction(void (*func)(void));
-	void setOnVisibleFunction(void (*func)(void));
+	void setOnActivateFunction(std::function<void(GuiInstance*)> func);
+	void setOnVisibleFunction(std::function<void(GuiInstance*)> func);
+
+	void setOnDeActivateFunction(std::function<void(GuiInstance*)> func);
+	void setOnInvisibleFunction(std::function<void(GuiInstance*)> func);
+
+	void setOnChangedFunction(std::function<void(GuiInstance*)> func);
 
 	void setOffset(int* offX, int* offY);
 
@@ -42,13 +48,17 @@ public:
 	int getX();
 	int getY();
 
-protected:
-	void setName(std::string name);
-	std::string getName();
 	void setVisible(bool is);
 	bool getVisible();
 	void setActive(bool is);
 	bool getActive();
+
+protected:
+
+	std::function<void(GuiInstance*)> onChangedFunction;
+
+	void setName(std::string name);
+	std::string getName();
 
 	int getOffsetX();
 	int getOffsetY();
@@ -75,9 +85,14 @@ private:
 	
 	bool shouldCallA = false;
 	bool shouldCallV = false;
+	bool shouldCallA2 = false;
+	bool shouldCallV2 = false;
 
-	void (*onActivateFunction)(void) = nullptr;
-	void (*onVisibleFunction)(void) = nullptr;
+	std::function<void(GuiInstance*)> onActivateFunction;
+	std::function<void(GuiInstance*)> onVisibleFunction;
+
+	std::function<void(GuiInstance*)> onDeActivateFunction;
+	std::function<void(GuiInstance*)> onInvisibleFunction;
 
 	std::vector<GuiInstance*> children = std::vector<GuiInstance*>();
 	GuiManager* manager = nullptr;
@@ -206,8 +221,8 @@ public:
 	void update();
 	void render(Image* surf);
 
-	void setOnEnterPressedFunction(void (*func)(void));
-	void setOnKeyPressFunction(void (*func)(void));
+	void setOnEnterPressedFunction(std::function<void(GuiInstance*)> func);
+	void setOnKeyPressFunction(std::function<void(GuiInstance*)> func);
 
 	void setBackgroundColor(Color c);
 	void setOutlineColor(Color c);
@@ -221,9 +236,10 @@ public:
 	int getWidth();
 	int getHeight();
 private:
+	
+	std::function<void(GuiInstance*)> onEnterPressedFunction;
+	std::function<void(GuiInstance*)> onKeyPressFunction;
 
-	void (*onEnterPressedFunction)(void) = nullptr;
-	void (*onKeyPressFunction)(void) = nullptr;
 
 	int width = 0;
 	int height = 0;
@@ -248,7 +264,7 @@ public:
 	void update();
 	void render(Image* surf);
 
-	void setOnClickFunction(void (*func)(void));
+	void setOnClickFunction(std::function<void(GuiInstance*)> func);
 
 	void setBackgroundColor(Color c);
 	void setOutlineColor(Color c);
@@ -256,7 +272,7 @@ public:
 
 private:
 	
-	void (*onClickFunction)(void) = nullptr;
+	std::function<void(GuiInstance*)> onClickFunction;
 
 	CombinationShape* collisionMap = nullptr;
 	VectorGraphic* shape = nullptr;
@@ -279,7 +295,8 @@ public:
 	void update();
 	void render(Image* surf);
 
-	void setOnClickFunction(void (*func)(void));
+	void setOnClickFunction(std::function<void(GuiInstance*)> func);
+	void setOnClickHoldFunction(std::function<void(GuiInstance*)> func);
 
 	void setBackgroundColor(Color c);
 	void setOutlineColor(Color c);
@@ -292,7 +309,8 @@ public:
 	int getHeight();
 
 private:
-	void (*onClickFunction)(void) = nullptr;
+	std::function<void(GuiInstance*)> onClickFunction;
+	std::function<void(GuiInstance*)> onClickHoldFunction;
 
 	int width = 0;
 	int height = 0;
@@ -315,7 +333,8 @@ public:
 	void update();
 	void render(Image* surf);
 
-	void setOnClickFunction(void (*func)(void));
+	void setOnClickFunction(std::function<void(GuiInstance*)> func);
+	void setOnClickHoldFunction(std::function<void(GuiInstance*)> func);
 
 	void setBackgroundColor(Color c);
 	void setOutlineColor(Color c);
@@ -325,13 +344,105 @@ public:
 	int getRadius();
 
 private:
-	void (*onClickFunction)(void) = nullptr;
+	std::function<void(GuiInstance*)> onClickFunction;
+	std::function<void(GuiInstance*)> onClickHoldFunction;
 
 	int radius = 0;
 
 	Color backgroundColor = { 180, 180, 180, 255 };
 	Color outlineColor = { 0, 0, 0, 255 };
 	Color activeOutlineColor = { 0, 0, 255, 255 };
+};
+
+class GuiScrollBar : public GuiInstance
+{
+	public:
+	GuiScrollBar(int startX, int startY, int endX, int endY);
+	~GuiScrollBar();
+
+	//Object and Class Stuff
+	const Class* getClass();
+	static const Class* myClass;
+
+	void update();
+	void render(Image* surf);
+
+	void setOnSlideFunction( std::function<void(GuiInstance*)> func);
+
+	void setBackgroundColor(Color c);
+	Color getBackgroundColor();
+
+	void setOutlineColor(Color c);
+	Color getOutlineColor();
+
+	void setStartX(int x);
+	int getStartX();
+
+	void setStartY(int y);
+	int getStartY();
+
+	void setEndX(int x);
+	int getEndX();
+
+	void setEndY(int y);
+	int getEndY();
+
+	void setMinWidth(int w);
+	int getMinWidth();
+
+	void setMinHeight(int h);
+	int getMinHeight();
+
+	void setSteps(int s);
+	int getSteps();
+
+	void setCurrentStep(int s);
+	int getCurrentStep();
+
+	void setHorizontalBar(bool v);
+	bool getHorizontalBar();
+
+	void setShowScrollButtons(bool v);
+	bool getShowScrollButtons();
+
+	void increaseScroll();
+	void decreaseScroll();
+
+	GuiRectangleButton* getButtonElement();
+	GuiRectangleButton* getDecreaseButtonElement();
+	GuiRectangleButton* getIncreaseButtonElement();
+
+private:
+
+	int startX = 0;
+	int endX = 0;
+	int startY = 0;
+	int endY = 0;
+
+	int steps = 0;
+	int currStep = 0;
+
+	int minWidth = 12;
+	int minHeight = 12;
+
+	bool isHorizontal = false;
+	bool showScrollButtons = true;
+
+	//holdButtonFunction variables
+	std::function<void(GuiInstance*)> onSlideFunction;
+	void holdButtonFunction(GuiInstance* a);
+	int preMouseX = 0;
+	int preMouseY = 0;
+	int preButtonX = 0;
+	int preButtonY = 0;
+
+	Color backgroundColor = { 180, 180, 180, 255 };
+	Color outlineColor = { 0, 0, 0, 255 };
+
+	GuiRectangleButton buttonElement = GuiRectangleButton(0,0,0,0);
+
+	GuiRectangleButton decreaseButtonElement = GuiRectangleButton(0,0,0,0);
+	GuiRectangleButton increaseButtonElement = GuiRectangleButton(0,0,0,0);
 };
 
 class GuiManager : public Object

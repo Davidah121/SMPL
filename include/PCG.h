@@ -4,7 +4,7 @@
 class PCG
 {
 public:
-    PCG(uint64_t seed, uint64_t mulitplier, uint64_t increment)
+    PCG(uint64_t seed = 0x4d595df4d0f33173, uint64_t mulitplier = 6364136223846793005u, uint64_t increment = 1442695040888963407u)
     {
         this->seed = seed;
         this->multiplier = mulitplier;

@@ -8,7 +8,9 @@
 
 #include "ColorSpaceConverter.h"
 
-void Image::saveGIF(std::string filename, int paletteSize, bool saveAlpha, unsigned char alphaThreshold, bool greyscale)
+#include "System.h"
+
+void Image::saveGIF(std::string filename, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold, bool greyscale)
 {
 	SimpleFile f = SimpleFile(filename, SimpleFile::WRITE);
 
@@ -18,13 +20,15 @@ void Image::saveGIF(std::string filename, int paletteSize, bool saveAlpha, unsig
 	std::string gifType = "GIF87a";
 	std::string gifHeaderInfo = "";
 	ColorPalette tempPalette;
+	Image tempImg = Image();
+	tempImg.copyImage(this);
+
 	unsigned char* pixs = new unsigned char[width*height];
 
-	Color* nPixels = pixels;
+	Color* nPixels = tempImg.getPixels();
 
 	if(greyscale)
 	{
-		nPixels = new Color[width*height];
 		Color* startPixs = nPixels;
 		Color* endPixs = nPixels + (width*height);
 
@@ -37,17 +41,37 @@ void Image::saveGIF(std::string filename, int paletteSize, bool saveAlpha, unsig
 
 	bool containsTransparency = saveAlpha;
 
-	if(p.getSize() == 0 || p.getSize() > paletteSize)
+	if(containsTransparency)
 	{
-		//no palette or the palette is not suitable, create a palette
-		if(containsTransparency)
-			tempPalette = ColorPalette::generateOptimalPalette(nPixels, width*height, paletteSize-1, ColorPalette::MEAN_CUT);
+		if(tempImg.getPalette().getSize() > 0 && tempImg.getPalette().getSize() < paletteSize)
+		{
+			tempPalette = tempImg.getPalette();
+			tempPalette.setPaletteMode(false);
+			tempPalette.addNewColor( {0,0,0,0} );
+		}
 		else
-			tempPalette = ColorPalette::generateOptimalPalette(nPixels, width*height, paletteSize, ColorPalette::MEAN_CUT);
+		{
+			//palette too big
+			tempPalette = ColorPalette::generateOptimalPalette(nPixels, width*height, paletteSize-1, ColorPalette::MEAN_CUT);
+		}
 	}
 	else
 	{
-		tempPalette = p;
+		if(tempImg.getPalette().getSize() > 0 && tempImg.getPalette().getSize() <= paletteSize)
+		{
+			tempPalette = tempImg.getPalette();
+		}
+		else
+		{
+			//palette too big
+			tempPalette = ColorPalette::generateOptimalPalette(nPixels, width*height, paletteSize, ColorPalette::MEAN_CUT);
+		}
+	}
+
+	if(dither)
+	{
+		tempImg.setPalette(tempPalette);
+		Graphics::ditherImage(&tempImg, Graphics::FLOYD_DITHER);
 	}
 
 	if(containsTransparency)
@@ -81,7 +105,7 @@ void Image::saveGIF(std::string filename, int paletteSize, bool saveAlpha, unsig
 	gifHeaderInfo += (char)((height>>8) & 0xFF);
 
 	//packed data
-		int paletteSizeP2 = (MathExt::ceil( MathExt::log( (double)tempPalette.getSize(), 2.0) - 1 ) );
+		int paletteSizeP2 = (MathExt::ceil( MathExt::log( (double)paletteSize, 2.0) - 1 ) );
 		char c = 0;
 		//paletteSize
 		c += (char)paletteSizeP2;
@@ -169,7 +193,7 @@ void Image::saveGIF(std::string filename, int paletteSize, bool saveAlpha, unsig
 	
 	//compress data
 	std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, paletteSizeP2+1);
-
+	
 	for(int i=0; i<compressedData.size(); i++)
 	{
 		if(i % 255 == 0)

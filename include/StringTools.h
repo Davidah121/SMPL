@@ -7,7 +7,6 @@
 
 #include <stdarg.h>
 #include <initializer_list>
-
 class StringTools
 {
 public:
@@ -101,8 +100,13 @@ public:
 	static wchar_t getWideChar();
 	static int getInt();
 
-	static void findLongestMatch(std::string base, std::string match, int* length, int* index);
-	static void findLongestMatch(char* base, int sizeOfBase, char* match, int sizeOfMatch, int* length, int* index);
+	template<class T>
+	static std::vector<int> longestPrefixSubstring(T* array, int size);
+
+	static void findLongestMatch(std::string base, std::string match, int* index, int* length);
+
+	template<class T>
+	static void findLongestMatch(T* base, int baseSize, T* match, int matchSize, int* index, int* length);
 
 	static std::string formatString(std::string text, ...);
 	static std::wstring formatWideString(std::wstring text, ...);
@@ -152,10 +156,178 @@ public:
 
 	static void reroutOutput(std::wofstream file);
 
+	
+
 private:
 	static std::string formatStringInternal(std::string text, va_list orgArgs);
 	static std::wstring formatWideStringInternal(std::wstring text, va_list orgArgs);
 
+	template<class T>
+	static void KMP(T* base, int baseSize,T* match, int matchSize, int* index, int* length);
+
+	template<class T>
+	static void NaivePatternSearch(T* base, int baseSize, T* match, int matchSize, int* index, int* length);
+
 	static bool hasInit;
 };
 
+template<class T>
+inline std::vector<int> StringTools::longestPrefixSubstring(T* array, int size)
+{
+	std::vector<int> lps = std::vector<int>(size);
+
+	int m = 0;
+	lps[0] = 0;
+
+	for(int pos=1; pos<size; pos++)
+	{
+		while(m>0 && array[pos] != array[m])
+		{
+			m = lps[m-1];
+		}
+
+		if(array[pos] == array[m])
+		{
+			m++;
+		}
+
+		lps[pos] = m;
+	}
+	
+	for(int i=0; i<size; i++)
+	{
+		lps[i] -= 1;
+	}
+
+	return lps;
+}
+
+template<class T>
+inline void StringTools::KMP(T* base, int baseSize,T* match, int matchSize, int* index, int* length)
+{
+	//preprocess match
+	std::vector<int> lps = longestPrefixSubstring(match, matchSize);
+
+	int i = 0;
+	int j = -1;
+
+	int currMaxLength = 0;
+	
+	while(i < baseSize)
+	{
+		if(base[i] == match[j+1])
+		{
+			j++;
+			i++;
+
+			if((j+1)>=currMaxLength)
+			{
+				currMaxLength = j+1;
+				*index = i-currMaxLength;
+				*length = currMaxLength;
+			}
+		}
+		else
+		{
+			if(j>=0)
+				j = lps[j];
+			else
+				i++;
+		}
+
+		if(currMaxLength==matchSize)
+		{
+			//found match
+			break;
+		}
+	}
+
+}
+
+template<class T>
+inline void StringTools::NaivePatternSearch(T* base, int baseSize, T* match, int matchSize, int* index, int* length)
+{
+	if(length!=nullptr && index!=nullptr)
+	{
+		int maxVal = 0;
+		int indexOfMax = 0;
+
+		int x = 0;
+		int y = 0;
+
+		int currSize = 0;
+		int currStartIndex = -1;
+
+		int nextPossibleIndex = -1;
+
+		T* sB = base;
+		T* sM = match;
+
+		char startValue = match[0];
+		
+		while(x < baseSize)
+		{
+			if(*sB == *sM)
+			{
+				if(currStartIndex!=-1)
+				{
+					if(*sB == startValue)
+					{
+						nextPossibleIndex = x; 
+					}
+				}
+
+				if(currStartIndex==-1)
+					currStartIndex = x;
+				
+				currSize++;
+				sM++;
+
+				if(currSize >= matchSize)
+				{
+					maxVal = currSize;
+					indexOfMax = currStartIndex;
+					break;
+				}
+			}
+			else
+			{
+				if(currSize >= maxVal)
+				{
+					maxVal = currSize;
+					indexOfMax = currStartIndex;
+				}
+
+				if(nextPossibleIndex>0)
+				{
+					x = nextPossibleIndex;
+					sB = base + nextPossibleIndex;
+				}
+
+				currSize = 0;
+				currStartIndex = -1;
+				nextPossibleIndex = -1;
+
+				sM = match;
+			}
+
+			sB++;
+			x++;
+		}
+		
+		if(currSize >= maxVal)
+		{
+			maxVal = currSize;
+			indexOfMax = currStartIndex;
+		}
+		
+		*length = maxVal;
+		*index = indexOfMax;
+	}
+}
+
+template<class T>
+inline void StringTools::findLongestMatch(T* base, int baseSize, T* match, int matchSize, int* index, int* length)
+{
+	StringTools::KMP(base, baseSize, match, matchSize, index, length);
+}
