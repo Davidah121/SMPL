@@ -10,6 +10,9 @@ std::vector<WndWindow*> WndWindow::windowList = std::vector<WndWindow*>();
 int WndWindow::screenWidth = System::getDesktopWidth();
 int WndWindow::screenHeight = System::getDesktopHeight();
 
+int* WndWindow::mouseVWheelPointer = nullptr;
+int* WndWindow::mouseHWheelPointer = nullptr;
+
 const Class* WndWindow::myClass = new Class("WndWindow", {Object::myClass});
 const Class* WndWindow::getClass()
 {
@@ -129,11 +132,17 @@ LRESULT _stdcall WndWindow::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 			break;
 		case WM_MOUSEWHEEL:
 			if (currentWindow->mouseWheelFunction != nullptr)
-				currentWindow->mouseWheelFunction((wparam >> 16));
+				currentWindow->mouseWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
+			
+			if(WndWindow::mouseVWheelPointer)
+				*WndWindow::mouseVWheelPointer = GET_WHEEL_DELTA_WPARAM(wparam)/120;
 			break;
 		case WM_MOUSEHWHEEL:
 			if (currentWindow->mouseHWheelFunction != nullptr)
-				currentWindow->mouseHWheelFunction((wparam >> 16));
+				currentWindow->mouseHWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
+			
+			if(WndWindow::mouseHWheelPointer)
+				*WndWindow::mouseHWheelPointer = GET_WHEEL_DELTA_WPARAM(wparam)/120;
 			break;
 		case WM_MOUSEMOVE:
 			if (currentWindow->mouseMovedFunction != nullptr)
@@ -651,12 +660,16 @@ void WndWindow::setSize(int width, int height)
 
 int WndWindow::getMouseX()
 {
-	return Input::getMouseX() - (x+16);
+	POINT p;
+	GetCursorPos(&p);
+	return p.x - (x+16);
 }
 
 int WndWindow::getMouseY()
 {
-	return Input::getMouseY() - (y+40);
+	POINT p;
+	GetCursorPos(&p);
+	return p.y - (y+40);
 }
 
 int WndWindow::getWidth()
@@ -815,6 +828,16 @@ void WndWindow::setActivateGui(bool v)
 bool WndWindow::getActivateGui()
 {
 	return activateGui;
+}
+
+void WndWindow::setMouseVWheelValuePointer(int* v)
+{
+	WndWindow::mouseVWheelPointer = v;
+}
+
+void WndWindow::setMouseHWheelValuePointer(int* v)
+{
+	WndWindow::mouseHWheelPointer = v;
 }
 
 void WndWindow::drawImage(Image* g)

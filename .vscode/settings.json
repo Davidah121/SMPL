@@ -70,7 +70,8 @@
         "atomic": "cpp",
         "compare": "cpp",
         "puff.h": "c",
-        "cstdarg": "cpp"
+        "cstdarg": "cpp",
+        "hash_map": "cpp"
     },
     "files.exclude": {
         "**/.classpath": true,

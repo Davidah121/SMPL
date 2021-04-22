@@ -56,7 +56,7 @@ public:
 	void drawPixel(double x, double y, Color c);
 
 	void saveBMP(std::string filename, unsigned char alphaThreshold = 255, bool greyscale = false);
-	void saveGIF(std::string filename, int paletteSize = 256, bool saveAlpha = true, unsigned char alphaThreshold = 127, bool greyscale = false);
+	void saveGIF(std::string filename, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127, bool greyscale = false);
 	void savePNG(std::string filename, bool saveAlpha = true, unsigned char alphaThreshold = 127, bool greyscale = false);
 	void saveJPG(std::string filename);
 private:

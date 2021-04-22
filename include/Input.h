@@ -12,6 +12,9 @@ public:
 	static bool getMouseDown(int v);
 	static bool getMouseUp(int v);
 
+	static int getMouseScrollVertical();
+	static int getMouseScrollHorizontal();
+
 	static int getMouseX();
 	static int getMouseY();
 
@@ -27,11 +30,17 @@ public:
 	const static int RIGHT_MOUSE_BUTTON = 2;
 
 private:
-	static bool* keyState;
-	static bool* mouseState;
+	static bool keyState[256];
+	static bool mouseState[3];
 
-	static bool* preKeyState;
-	static bool* preMouseState;
+	static bool preKeyState[256];
+	static bool preMouseState[3];
+	
+	static int verticalScrollValue;
+	static int horizontalScrollValue;
+
+	static int nVerticalScrollValue;
+	static int nHorizontalScrollValue;
 
 	static int mouseX;
 	static int mouseY;

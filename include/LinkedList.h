@@ -28,7 +28,8 @@ public:
 
 	void clear();
 private:
-	LinkNode<T>* rootNode;
+	LinkNode<T>* rootNode = nullptr;
+	LinkNode<T>* lastNode = nullptr;
 };
 
 template<typename T>
@@ -44,19 +45,22 @@ inline LinkedList<T>::~LinkedList()
 template<typename T>
 inline void LinkedList<T>::addNode(T n)
 {
-	LinkNode<T>* lastNode = getLastNode();
+	LinkNode<T>* lNode = getLastNode();
 
 	LinkNode<T>* newNode = new LinkNode<T>;
 	newNode->value = n;
 
-	if (lastNode != nullptr)
+	if (lNode != nullptr)
 	{
-		lastNode->nextNode = newNode;
-		newNode->parentNode = lastNode;
+		lNode->nextNode = newNode;
+		newNode->parentNode = lNode;
+
+		lastNode = newNode;
 	}
 	else
 	{
 		rootNode = newNode;
+		lastNode = newNode;
 	}
 }
 
@@ -84,14 +88,21 @@ inline void LinkedList<T>::removeNode(LinkNode<T>* n)
 		{
 			rootNode = next;
 			next->parentNode = nullptr;
+
 		}
 		else
 		{
 			//blank node
+			lastNode = nullptr;
 		}
 	}
 	else
 	{
+		if(lastNode == n)
+		{
+			lastNode = n->parentNode;
+		}
+		
 		if (next != nullptr)
 		{
 			parent->nextNode = next;
@@ -120,14 +131,6 @@ inline LinkNode<T>* LinkedList<T>::getRootNode()
 template<typename T>
 inline LinkNode<T>* LinkedList<T>::getLastNode()
 {
-	LinkNode<T>* lastNode = rootNode;
-	if (lastNode != nullptr)
-	{
-		while (lastNode->nextNode != nullptr)
-		{
-			lastNode = lastNode->nextNode;
-		}
-	}
 	return lastNode;
 }
 
@@ -135,14 +138,14 @@ template<typename T>
 inline int LinkedList<T>::size()
 {
 	int i = 0;
-	LinkNode<T>* lastNode = rootNode;
+	LinkNode<T>* lNode = rootNode;
 
-	if (lastNode != nullptr)
+	if (lNode != nullptr)
 	{
 		i = 1;
-		while (lastNode->nextNode != nullptr)
+		while (lNode->nextNode != nullptr)
 		{
-			lastNode = lastNode->nextNode;
+			lNode = lNode->nextNode;
 			i++;
 		}
 	}
@@ -152,15 +155,18 @@ inline int LinkedList<T>::size()
 template<typename T>
 inline void LinkedList<T>::clear()
 {
-	LinkNode<T>* lastNode = getLastNode();
+	LinkNode<T>* lNode = getLastNode();
 
-	while (lastNode->parentNode != nullptr)
+	while (lNode->parentNode != nullptr)
 	{
-		LinkNode<T>* nNode = lastNode;
-		lastNode = nNode->parentNode;
+		LinkNode<T>* nNode = lNode;
+		lNode = nNode->parentNode;
 
 		delete nNode;
 	}
 
 	delete rootNode;
+
+	lastNode = nullptr;
+	rootNode = nullptr;
 }

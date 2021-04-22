@@ -890,12 +890,12 @@ void Graphics::drawRect(int x, int y, int x2, int y2, bool outline, Image* surf)
 		else
 		{
 			//horizontal lines
-			drawLine(minX, minY, maxX, minY, otherImg);
-			drawLine(minX, maxY, maxX, maxY, otherImg);
+			drawLine(x, y, x2, y, otherImg);
+			drawLine(x, y2, x2, y2, otherImg);
 
 			//vertical lines
-			drawLine(minX, minY, minX, maxY, otherImg);
-			drawLine(maxX, minY, maxX, maxY, otherImg);
+			drawLine(x, y, x, y2, otherImg);
+			drawLine(x2, y, x2, y2, otherImg);
 		}
 	}
 }
@@ -1016,6 +1016,11 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 				maxY = MathExt::clamp(y1, 0, otherImg->getHeight()-1);
 			}
 
+			if(x1 < 0 || x1 >= otherImg->getWidth())
+			{
+				return;
+			}
+
 			if(currentComposite == NO_COMPOSITE)
 			{
 				for(int i=minY; i<=maxY; i++)
@@ -1046,24 +1051,29 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 				maxX = MathExt::clamp(x1, 0, otherImg->getWidth()-1);
 			}
 
-			if(currentComposite == NO_COMPOSITE)
+			if(y1 < 0 || y1 >= otherImg->getHeight())
 			{
-				#if(OPTI>=2)
+				return;
+			}
 
-					int avxWidth = (maxX-minX) >> 3;
-					int remainder = 8 - (maxX-minX)%8;
+			#if(OPTI>=2)
 
-					Color* startColor = otherImg->getPixels() + minX + (y1*otherImg->getWidth());
-					__m256i* startAVX = (__m256i*)startColor;
-					__m256i* endAVX = startAVX + avxWidth;
-					
-					if(remainder == 8)
-					{
-						remainder = 0;
-					}
+				int avxWidth = (maxX-minX) >> 3;
+				int remainder = 8 - (maxX-minX)%8;
 
-					__m256i avxColor = _mm256_set1_epi32( *((int*)&Graphics::activeColor) );
-					
+				Color* startColor = otherImg->getPixels() + minX + (y1*otherImg->getWidth());
+				__m256i* startAVX = (__m256i*)startColor;
+				__m256i* endAVX = startAVX + avxWidth;
+				
+				if(remainder == 8)
+				{
+					remainder = 0;
+				}
+
+				__m256i avxColor = _mm256_set1_epi32( *((int*)&Graphics::activeColor) );
+				
+				if(currentComposite == NO_COMPOSITE)
+				{
 					while(startAVX < endAVX)
 					{
 						_mm256_storeu_si256(startAVX, avxColor);
@@ -1077,67 +1087,9 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 						*startColor = Graphics::activeColor;
 						startColor++;
 					}
-
-				#elif(OPTI>=1)
-					
-					int sseWidth = (maxX-minX) >> 2;
-					int remainder = 4 - (maxX-minX)%4;
-
-					Color* startColor = otherImg->getPixels() + minX + (y1*otherImg->getWidth());
-					__m128i* startSSE = (__m128i*)startColor;
-					__m128i* endSSE = startSSE + sseWidth;
-					
-					if(remainder == 4)
-					{
-						remainder = 0;
-					}
-
-					__m128i sseColor = _mm_set1_epi32( *((int*)&Graphics::activeColor) );
-					
-					while(startSSE < endSSE)
-					{
-						_mm_storeu_si128(startSSE, sseColor);
-						startSSE++;
-					}
-
-					//fill remainder
-					startColor += sseWidth<<2;
-					for(int i=0; i<remainder; i++)
-					{
-						*startColor = Graphics::activeColor;
-						startColor++;
-					}
-
-				#else
-
-					Color* startColor = otherImg->getPixels() + minX + (y1*otherImg->getWidth());
-					Color* endColor = startColor + maxX;
-					while(startColor <= endColor)
-					{
-						*startColor = Graphics::activeColor;
-						startColor++;
-					}
-
-				#endif
-			}
-			else
-			{
-				#if(OPTI>=2)
-
-					int avxWidth = (maxX-minX) >> 3;
-					int remainder = 8 - (maxX-minX)%8;
-
-					Color* startColor = otherImg->getPixels() + minX + (y1*otherImg->getWidth());
-					__m256i* startAVX = (__m256i*)startColor;
-					__m256i* endAVX = startAVX + avxWidth;
-					
-					if(remainder == 8)
-					{
-						remainder = 0;
-					}
-
-					__m256i avxColor = _mm256_set1_epi32( *((int*)&Graphics::activeColor) );
-					
+				}
+				else
+				{
 					while(startAVX < endAVX)
 					{
 						__m256i currentColor = _mm256_loadu_si256(startAVX);
@@ -1153,12 +1105,13 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 						*startColor = Graphics::activeColor;
 						startColor++;
 					}
+				}
 
-				#elif(OPTI>=1)
+			#elif(OPTI>=1)
 				
 				int sseWidth = (maxX-minX) >> 2;
 				int remainder = 4 - (maxX-minX)%4;
-				
+
 				Color* startColor = otherImg->getPixels() + minX + (y1*otherImg->getWidth());
 				__m128i* startSSE = (__m128i*)startColor;
 				__m128i* endSSE = startSSE + sseWidth;
@@ -1170,34 +1123,65 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 
 				__m128i sseColor = _mm_set1_epi32( *((int*)&Graphics::activeColor) );
 				
-				while(startSSE < endSSE)
+				if(currentComposite == NO_COMPOSITE)
 				{
-					__m128i currentColor = _mm_loadu_si128(startSSE);
-					__m128i blendC = blend(sseColor, currentColor);
-					_mm_storeu_si128(startSSE, blendC);
-					startSSE++;
+					while(startSSE < endSSE)
+					{
+						_mm_storeu_si128(startSSE, sseColor);
+						startSSE++;
+					}
+
+					//fill remainder
+					startColor += sseWidth<<2;
+					for(int i=0; i<remainder; i++)
+					{
+						*startColor = Graphics::activeColor;
+						startColor++;
+					}
+				}
+				else
+				{
+					while(startSSE < endSSE)
+					{
+						__m128i currentColor = _mm_loadu_si128(startSSE);
+						__m128i blendC = blend(sseColor, currentColor);
+						_mm_storeu_si128(startSSE, blendC);
+						startSSE++;
+					}
+
+					//fill remainder
+					startColor += sseWidth<<2;
+					for(int i=0; i<remainder; i++)
+					{
+						*startColor = blend(Graphics::activeColor, *startColor);
+						startColor++;
+					}
 				}
 
-				//fill remainder
-				startColor += sseWidth<<2;
-				for(int i=0; i<remainder; i++)
-				{
-					*startColor = blend(Graphics::activeColor, *startColor);
-					startColor++;
-				}
-
-				#else
+			#else
 
 				Color* startColor = otherImg->getPixels() + minX + (y1*otherImg->getWidth());
-				Color* endColor = startColor + maxX;
-				while(startColor <= endColor)
+				Color* endColor = otherImg->getPixels() + maxX + (y1*otherImg->getWidth());
+
+				if(currentComposite == NO_COMPOSITE)
 				{
-					*startColor = blend(Graphics::activeColor, *startColor);
-					startColor++;
+					while(startColor <= endColor)
+					{
+						*startColor = Graphics::activeColor;
+						startColor++;
+					}
+				}
+				else
+				{
+					while(startColor <= endColor)
+					{
+						*startColor = blend(Graphics::activeColor, *startColor);
+						startColor++;
+					}
 				}
 
-				#endif
-			}
+			#endif
+			
 		}
 
 	}

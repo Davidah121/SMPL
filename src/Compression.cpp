@@ -10,6 +10,8 @@
 #include <thread>
 #include "SimpleFile.h"
 
+#include "SimpleHashMap.h"
+
 #ifndef min
 	#define min(a,b) (a<b)? a:b
 #endif
@@ -120,34 +122,21 @@ std::vector<unsigned char> Compression::compressLZW(std::vector<unsigned char> d
 std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int size, int codeSize)
 {
 	std::vector<unsigned char> output = std::vector<unsigned char>();
-
-	//change to limit to max bit read of 12. Currently, no maximum.
 	if (size > 0)
 	{
 		//First make the base dictionary
-		std::vector<std::string> baseDictionary = std::vector<std::string>();
-		
+		SimpleHashMap<std::string, int> baseDictionary = SimpleHashMap<std::string, int>();
+
 		if(codeSize <= 0)
 		{
+			int bSize = 0;
 			for (int i = 0; i < size; i++)
 			{
 				std::string temp = "";
 				temp += data[i];
-				bool canInsert = true;
 
-				for (int j = 0; j < baseDictionary.size(); j++)
-				{
-					if (baseDictionary[j] == temp)
-					{
-						canInsert = false;
-						break;
-					}
-				}
-
-				if (canInsert)
-				{
-					baseDictionary.push_back(temp);
-				}
+				baseDictionary.add( temp, bSize );
+				bSize++;
 			}
 		}
 		else
@@ -157,7 +146,7 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 			{
 				std::string k = "";
 				k += (char)i;
-				baseDictionary.push_back(k);
+				baseDictionary.add( k, i );
 			}
 		}
 		
@@ -169,14 +158,13 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 		int clearDictionaryLocation = baseDictionary.size();
 		int EndOfDataLocation = baseDictionary.size()+1;
 
-		baseDictionary.push_back("");//For the clearDictionary
-		baseDictionary.push_back("");//For the EndOfData
+		baseDictionary.rehash();
 
-		std::vector<std::string> newDictionary = std::vector<std::string>(baseDictionary);
+		SimpleHashMap<std::string, int> newDictionary = baseDictionary;
 
 		//Compress
 		//First note how many bits to use
-		int baseBits = (int)ceil(log2(newDictionary.size()));
+		int baseBits = (int)ceil(log2(newDictionary.size()+2));
 		int currBits = baseBits;
 
 		//Now store the values as a binary string of sorts
@@ -195,20 +183,14 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 		while(i<size)
 		{
 			newString += data[i];
-			bool exists = false;
 
-			for (int j = 0; j < newDictionary.size(); j++)
-			{
-				if (newString == newDictionary[j])
-				{
-					preIndex = j;
-					exists = true;
-					break;
-				}
-			}
+			HashPair<std::string, int>* itr = newDictionary.get(newString);
+			
+			bool exists = (itr != nullptr);
 
 			if (exists == true)
 			{
+				preIndex = itr->data;
 				lastString = newString;
 				i++;
 			}
@@ -216,12 +198,13 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 			{
 				binData.add(preIndex, currBits);
 				
-				newDictionary.push_back(newString);
+				newDictionary.add( newString, newDictionary.size()+2 );
+
 				int shifts = 0;
 				int v = 1;
 				while(shifts<32)
 				{
-					if(newDictionary.size() > v)
+					if(newDictionary.size()+2 > v)
 					{
 						v = v << 1;
 						shifts++;
@@ -239,7 +222,7 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 				lastString = "";
 			}
 
-			if(newDictionary.size() == 4096)
+			if(newDictionary.size()+2 == 4096)
 			{
 				//clear Dictionary and start over
 				binData.add(clearDictionaryLocation, currBits);
@@ -1279,48 +1262,380 @@ BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues,
 //EndOfBlock is 256
 //286 and 287 never occur
 
-void Compression::compressDeflateSubFunction(unsigned char* data, int size, std::vector<lengthPair>* outputData)
+void Compression::compressDeflateSubFunction(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel)
 {
-	int i = 0;
-	int maxDistance = 32768;
-
-	while(i < size)
+	int maxDistance = 1<<15;
+	switch(compressionLevel)
 	{
-		int lowestPoint = max(i-maxDistance, 0);
-		int baseSize = i - lowestPoint;
+		case 7:
+			maxDistance = 1<<15;
+			break;
+		case 6:
+			maxDistance = 1<<14;
+			break;
+		case 5:
+			maxDistance = 1<<13;
+			break;
+		case 4:
+			maxDistance = 1<<12;
+			break;
+		case 3:
+			maxDistance = 1<<11;
+			break;
+		case 2:
+			maxDistance = 1<<10;
+			break;
+		case 1:
+			maxDistance = 1<<9;
+			break;
+		case 0:
+			maxDistance = 1<<8;
+			break;
+		default:
+			maxDistance = 1<<15;
+			break;
+	}
 
-		int lengthMax = min(size-i, 258);
+	
+	
+	//for all bytes, try to match it in the hashmap.
+	//Get 3 bytes and try to find it in the hashmap. If found, try and find match.
+	//If not found, add the 3 values to the hashmap and write the first byte to the output
 
-		char* startBase = (char*)(data+lowestPoint);
-		char* startMatch = (char*)(data+i);
+	//Method 5 - SIMPLE_HASH_MAP : Best Performance and Good Size. Memory Hog. Could potentially crash due to memory constraints.
+	//The rehash function should be reworked to use less memory as it basically doubles the memory used. It is also the slowest part I believe.
+	
+	SimpleHashMap<int, int> map = SimpleHashMap<int, int>( SimpleHashMap<int, int>::MODE_REMOVE_LAST_FROM_BUCKET, 0xFFFF );
+	map.setMaxOfSameKey(15);
+	
+	int i = 0;
+	while(i < size-2)
+	{
+		int key = data[i] + ((int)data[i+1]<<8) + ((int)data[i+2]<<16);
+		
+		std::vector<HashPair<int, int>*> k = map.getAll(key);
 
-		int matchLength = 0;
-		int matchStartIndex = 0;
-
-		StringTools::findLongestMatch(startBase, baseSize, startMatch, lengthMax, &matchLength, &matchStartIndex);
-
-		int tempLength = matchLength;
-		int tempBackwards = i - (lowestPoint + matchStartIndex);
-
-		if(tempLength<3)
+		if(k.size()==0)
 		{
+			//not found or size too small
+			//always insert
+			map.add(key, i);
+
 			outputData->push_back( {true, data[i], 0} );
 			i++;
 		}
 		else
 		{
-			outputData->push_back( {false, tempLength, tempBackwards} );
-			i += tempLength;
+			int lowestPoint = max(i-maxDistance, 0);
+			int bestLength = 0;
+			int bestLocation = 0;
+
+			for(HashPair<int, int>* it : k)
+			{
+				int locationOfMatch = it->data;
+
+				if(locationOfMatch < lowestPoint)
+				{
+					//maximum backwards distance reached
+					continue;
+				}
+
+				int lengthMax = min(size-i, 258);
+				
+				unsigned char* startBase = (data+locationOfMatch);
+				unsigned char* startMatch = (data+i);
+
+				int len = 3;
+				
+				for(len=3; len<lengthMax; len++)
+				{
+					if(startMatch[len] != startBase[len])
+					{
+						break;
+					}
+				}
+
+				if(len>=bestLength)
+				{
+					bestLength = len;
+					bestLocation = locationOfMatch;
+				}
+
+				if(bestLength>=lengthMax)
+				{
+					break;
+				}
+			}
+
+			//always insert
+			map.add( key, i );
+
+			int backwardsDis = i - bestLocation;
+			
+			if(bestLength>0)
+			{
+				outputData->push_back( {false, bestLength, backwardsDis} );
+				i += bestLength;
+			}
+			else
+			{
+				//couldn't find match within max allowed distance
+				outputData->push_back( {true, data[i], 0} );
+				i++;
+			}
 		}
+
 	}
+
+	int remainder = size - i;
+	for(int j=0; j<remainder; j++)
+	{
+		outputData->push_back( {true, data[i+j], 0} );
+	}
+
+	map.clear();
+
+	//Method 4 - HASHED_LINKED_LIST : same as Method 3 but slow delete time causing slower overall time
+	
+	// //deleting the map is the slowest part.
+	// //It for whatever reason takes around 90% of the time just to delete.
+	// std::unordered_multimap<int, int> map = std::unordered_multimap<int, int>();
+
+	// time_t findTime = 0;
+	// time_t searchTime = 0;
+	// time_t insertDNE = 0;
+	// time_t insertExists = 0;
+	
+	// int i = 0;
+	// while(i < size-2)
+	// {
+	// 	int key = data[i] + ((int)data[i+1]<<8) + ((int)data[i+2]<<16);
+		
+	// 	time_t t1 = System::getCurrentTimeMicro();
+	// 	//adjust the find part because it is the second slowest part
+	// 	auto k = map.equal_range(key);
+	// 	time_t t2 = System::getCurrentTimeMicro();
+
+	// 	findTime += t2-t1;
+
+	// 	if(k.first == k.second)
+	// 	{
+	// 		//not found
+
+	// 		//always insert
+	// 		t1 = System::getCurrentTimeMicro();
+	// 		map.insert( {key, i } );
+	// 		t2 = System::getCurrentTimeMicro();
+
+	// 		insertDNE += t2-t1;
+
+	// 		outputData->push_back( {true, data[i], 0} );
+	// 		i++;
+	// 	}
+	// 	else
+	// 	{
+	// 		int lowestPoint = max(i-maxDistance, 0);
+	// 		int bestLength = 0;
+	// 		int bestLocation = 0;
+
+	// 		t1 = System::getCurrentTimeMicro();
+
+	// 		for(auto it = k.first; it != k.second; it++)
+	// 		{
+	// 			int locationOfMatch = it->second;
+
+	// 			if(locationOfMatch < lowestPoint)
+	// 			{
+	// 				//maximum backwards distance reached
+	// 				continue;
+	// 			}
+
+	// 			int lengthMax = min(size-i, 258);
+				
+	// 			unsigned char* startBase = (data+locationOfMatch);
+	// 			unsigned char* startMatch = (data+i);
+
+	// 			int len = 3;
+				
+	// 			for(len=3; len<lengthMax; len++)
+	// 			{
+	// 				if(startMatch[len] != startBase[len])
+	// 				{
+	// 					break;
+	// 				}
+	// 			}
+
+	// 			if(len>bestLength)
+	// 			{
+	// 				bestLength = len;
+	// 				bestLocation = locationOfMatch;
+	// 			}
+
+	// 			if(bestLength>=lengthMax)
+	// 			{
+	// 				break;
+	// 			}
+	// 		}
+	// 		t2 = System::getCurrentTimeMicro();
+
+	// 		searchTime += t2-t1;
+
+	// 		//always insert
+	// 		t1 = System::getCurrentTimeMicro();
+	// 		map.insert( {key, i } );
+	// 		t2 = System::getCurrentTimeMicro();
+
+	// 		insertExists += t2-t1;
+
+	// 		int backwardsDis = i - bestLocation;
+			
+	// 		if(bestLength>0)
+	// 		{
+	// 			outputData->push_back( {false, bestLength, backwardsDis} );
+	// 			i += bestLength;
+	// 		}
+	// 		else
+	// 		{
+	// 			//couldn't find match within max allowed distance
+	// 			outputData->push_back( {true, data[i], 0} );
+	// 			i++;
+	// 		}
+	// 	}
+
+	// }
+
+	// int remainder = size - i;
+	// for(int j=0; j<remainder; j++)
+	// {
+	// 	outputData->push_back( {true, data[i+j], 0} );
+	// }
+
+	// StringTools::println("FindTime: %llu", findTime);
+	// StringTools::println("SearchTime: %llu", searchTime);
+	// StringTools::println("InsertDNE: %llu", insertDNE);
+	// StringTools::println("InsertExists: %llu", insertExists);
+
+	// StringTools::println("SizeOfContainer: %lu", map.size());
+
+	// time_t t1 = System::getCurrentTimeMicro();
+	// map.clear();
+	// time_t t2 = System::getCurrentTimeMicro();
+
+	// StringTools::println("Time to clear: %lu", t2-t1);
+
+	//Method 2 - Fast, near smallest size
+	// std::unordered_map<std::string, int> map = std::unordered_map<std::string, int>();
+	// int i = 0;
+	// while(i < size)
+	// {
+	// 	std::string key = "";
+	// 	key += data[i]; key += data[i+1]; key += data[i+2];
+		
+	// 	auto k = map.find(key);
+
+	// 	//always insert / set new data.
+		
+	// 	map.insert( {key, i} );
+	// 	//map[key] = i;
+
+	// 	if(k == map.end())
+	// 	{
+	// 		//not found
+	// 		outputData->push_back( {true, data[i], 0} );
+	// 		i++;
+	// 		//map.insert( {key, i} );
+	// 	}
+	// 	else
+	// 	{
+	// 		//found potential match
+	// 		//map[key] = i;
+
+	// 		//lazy matching. If location is outside the bounds allowed by the maximum distance, it no exist
+	// 		int locationOfMatch = k->second;
+			
+	// 		int lowestPoint = max(i-maxDistance, 0);
+
+	// 		if(locationOfMatch < lowestPoint)
+	// 		{
+	// 			//no exist
+	// 			// outputData->push_back( {true, data[i], 0} );
+	// 			// i++;
+	// 			// continue;
+	// 		}
+	// 		else
+	// 		{
+	// 			lowestPoint = locationOfMatch;
+	// 		}
+
+	// 		int baseSize = i - lowestPoint;
+
+	// 		int lengthMax = min(size-i, 258);
+
+	// 		unsigned char* startBase = (data+lowestPoint);
+	// 		unsigned char* startMatch = (data+i);
+
+	// 		int matchLength = 0;
+	// 		int matchStartIndex = 0;
+
+	// 		StringTools::findLongestMatch(startBase, baseSize, startMatch, lengthMax, &matchStartIndex, &matchLength);
+
+	// 		int tempLength = matchLength;
+	// 		int tempBackwards = i - (lowestPoint + matchStartIndex);
+
+	// 		if(tempLength<3)
+	// 		{
+	// 			outputData->push_back( {true, data[i], 0} );
+	// 			i++;
+	// 		}
+	// 		else
+	// 		{
+	// 			outputData->push_back( {false, tempLength, tempBackwards} );
+	// 			i += tempLength;
+	// 		}
+	// 	}
+
+	// }
+	
+	//Old Method - smallest size
+	// int i = 0;
+	// while(i < size)
+	// {
+	// 	int lowestPoint = max(i-maxDistance, 0);
+	// 	int baseSize = i - lowestPoint;
+
+	// 	int lengthMax = min(size-i, 258);
+
+	// 	unsigned char* startBase = (data+lowestPoint);
+	// 	unsigned char* startMatch = (data+i);
+
+	// 	int matchLength = 0;
+	// 	int matchStartIndex = 0;
+
+	// 	StringTools::findLongestMatch(startBase, baseSize, startMatch, lengthMax, &matchStartIndex, &matchLength);
+
+	// 	int tempLength = matchLength;
+	// 	int tempBackwards = i - (lowestPoint + matchStartIndex);
+
+	// 	if(tempLength<3)
+	// 	{
+	// 		outputData->push_back( {true, data[i], 0} );
+	// 		i++;
+	// 	}
+	// 	else
+	// 	{
+	// 		outputData->push_back( {false, tempLength, tempBackwards} );
+	// 		i += tempLength;
+	// 	}
+	// }
+	
 }
 
-std::vector<unsigned char> Compression::compressDeflate(std::vector<unsigned char> data, int blocks)
+std::vector<unsigned char> Compression::compressDeflate(std::vector<unsigned char> data, int blocks, int compressionLevel)
 {
-	return Compression::compressDeflate(data.data(), data.size(), blocks);
+	return Compression::compressDeflate(data.data(), data.size(), blocks, compressionLevel);
 }
 
-std::vector<unsigned char> Compression::compressDeflate(unsigned char* data, int size, int blocks)
+std::vector<unsigned char> Compression::compressDeflate(unsigned char* data, int size, int blocks, int compressionLevel)
 {
 	//probably will only use default trees and stuff
 	
@@ -1347,7 +1662,7 @@ std::vector<unsigned char> Compression::compressDeflate(unsigned char* data, int
 		if(block<tSize)
 		{
 			info[block].clear();
-			threads[ block%tSize ] = std::thread(compressDeflateSubFunction, nData, nSize, &info[block]);
+			threads[ block%tSize ] = std::thread(compressDeflateSubFunction, nData, nSize, &info[block], compressionLevel);
 		}
 		else
 		{
@@ -1355,7 +1670,7 @@ std::vector<unsigned char> Compression::compressDeflate(unsigned char* data, int
 				threads[block%tSize].join();
 
 			info[block].clear();
-			threads[ block%tSize ] = std::thread(compressDeflateSubFunction, nData, nSize, &info[block]);
+			threads[ block%tSize ] = std::thread(compressDeflateSubFunction, nData, nSize, &info[block], compressionLevel);
 		}
 	}
 

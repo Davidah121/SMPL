@@ -1,0 +1,4 @@
+Method5 : 1,967,381 bytes - 2,126,871 microseconds
+Method4 : 2,012,323 bytes - 10,489,539 microseconds
+Method2 : 1,818,937 bytes - 5,892,667 microseconds
+Method1 : 1,786,968 bytes - 14,702,694 microseconds

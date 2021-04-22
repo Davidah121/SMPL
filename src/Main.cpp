@@ -28,6 +28,8 @@
 #include "BitmapFont.h"
 #include "ColorNameConverter.h"
 
+#include "SimpleHashMap.h"
+
 /**
  * Purpose:
  *      Provide a port to other systems
@@ -735,7 +737,17 @@ void testPNGSave()
         StringTools::println("Loaded %d images", amountOfImages);
     }
     
-    imgAr[0]->savePNG("test1234.png");
+    time_t t1 = System::getCurrentTimeMicro();
+    imgAr[0]->savePNG("test1234.png", true, 0);
+    time_t t2 = System::getCurrentTimeMicro();
+    
+    StringTools::println("Time taken = %u", (t2-t1));
+
+    t1 = System::getCurrentTimeMicro();
+    imgAr[0]->saveGIF("test1234.gif", 256, true, false);
+    t2 = System::getCurrentTimeMicro();
+
+    StringTools::println("Time taken = %u", (t2-t1));
 
     delete[] imgAr;
 }
@@ -781,28 +793,6 @@ void testScale()
     delete imgAr[0];
     delete[] imgAr;
 }
-
-/*
-void printThing1(const wchar_t* fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-
-    vwprintf(fmt, args);
-
-    va_end(args);
-}
-
-void printThing2(const char* fmt, ...)
-{
-    va_list args;
-    va_start(args, fmt);
-
-    vprintf(fmt, args);
-
-    va_end(args);
-}
-*/
 
 void drawAnimation()
 {
@@ -1149,23 +1139,37 @@ void testGui()
     img1.setBaseX(0);
     img1.setBaseY(0);
 
+    GuiScrollBar bar = GuiScrollBar(480-8, 32, 480+8, 96);
+    bar.setHorizontalBar(false);
+    // GuiScrollBar bar = GuiScrollBar(32, 480-32, 96, 480+32);
+    // bar.setHorizontalBar(true);
+    bar.setSteps(8);
+
+    bar.getButtonElement()->setBackgroundColor( {255,255,0,255} );
+    bar.getButtonElement()->setOutlineColor( {255,0,0,255} );
+
+    bar.getDecreaseButtonElement()->setBackgroundColor( {132,132,132,255} );
+    bar.getIncreaseButtonElement()->setBackgroundColor( {132,132,132,255} );
+    
+
     container.addChild(&img1);
     container.addChild(&but1);
     container.addChild(&textBox1);
 
     manager->addElement(&container);
+    manager->addElement(&bar);
 
     int pos = 0;
+
+    bar.setOnSlideFunction( [&pos](GuiInstance* a) -> void{
+        GuiScrollBar* d = (GuiScrollBar*)a;
+        pos = d->getCurrentStep()*2;
+    });
 
     while(wnd.getRunning())
     {
         unsigned long t1 = System::getCurrentTimeNano();
         wnd.repaint();
-        pos++;
-        if(pos>64)
-        {
-            pos=0;
-        }
         container.setBaseX(pos);
         unsigned long t2 = System::getCurrentTimeNano();
         while((t2-t1) < 16666666)
@@ -1235,6 +1239,69 @@ void testSSEStuff()
     img.saveBMP("sseTest.bmp");
 }
 
+void patternMatching()
+{
+    int index = 0;
+    int length = 0;
+    std::string base = "ababcabcabababd";
+    std::string pattern = "ababd";
+    StringTools::findLongestMatch(base, pattern, &index, &length);
+
+    if(index>0 && length>0)
+    {
+        std::string subString = base.substr(index, length);
+
+        StringTools::println("Found %s at %d with length %d", subString.c_str(), index, length);
+    }
+
+    StringTools::println("LPS for abcababcdlbcd");
+    std::string nBase = "abcababcdlbcd";
+    std::vector<int> preStuff = StringTools::longestPrefixSubstring(nBase.c_str(), nBase.size());
+    int preValue = -1;
+    std::string factorString = "";
+
+    std::vector<std::string> factors = std::vector<std::string>();
+
+    for(int i=0; i<preStuff.size(); i++)
+    {
+        StringTools::println("%d- (%d)", i, preStuff[i]);
+
+        if(preStuff[i] <= preValue && preValue != -1)
+        {
+            //new factor string
+            factors.push_back(factorString);
+            factorString = "";
+        }
+        
+        if(preStuff[i] >= 0)
+            factorString += nBase[ preStuff[i] ];
+        else
+            factorString += nBase[ i ];
+
+        if(preStuff[i] == -1)
+        {
+            //new factor string
+            factors.push_back(factorString);
+            factorString = "";
+        }
+
+        preValue = preStuff[i];
+    }
+
+    for(std::string a : factors)
+    {
+        StringTools::println("%s", a.c_str());
+    }
+
+    //a
+    //b
+    //c
+    //ab
+    //abc
+    //d
+    
+}
+
 void testUTF()
 {
     //expected CE A9
@@ -1268,6 +1335,106 @@ void testUTF()
     StringTools::println(fmt2.c_str());
 }
 
+void testHashThing()
+{
+    // SimpleHashMap<std::string, int> k;
+    // k.add("map", 0);
+    // k.add("stri", 30);
+    // k.add("loc", 10);
+    // k.add("loc", 504);
+    // k.add("mv", -12);
+    
+
+    // HashPair<std::string, int>* p = k.get("map");
+    // if(p!=nullptr)
+    //     StringTools::println("map = %d", p->data);
+    // else
+    //     StringTools::println("map = N/A");
+
+    // p = k.get("stri");
+    // if(p!=nullptr)
+    //     StringTools::println("stri = %d", p->data);
+    // else
+    //     StringTools::println("stri = N/A");
+
+    // p = k.get("loc");
+    // if(p!=nullptr)
+    //     StringTools::println("loc = %d", p->data);
+    // else
+    //     StringTools::println("loc = N/A");
+
+    // p = k.get("loc");
+    // if(p!=nullptr)
+    //     StringTools::println("loc = %d", p->data);
+    // else
+    //     StringTools::println("loc = N/A");
+
+    // p = k.get("mv");
+    // if(p!=nullptr)
+    //     StringTools::println("mv = %d", p->data);
+    // else
+    //     StringTools::println("mv = N/A");
+
+    
+    // std::vector<HashPair<std::string, int>*> list = k.getAll("loc");
+    // for(HashPair<std::string, int>* pairs : list)
+    // {
+    //     StringTools::println("Found %d for loc", pairs->data);
+    // }
+    
+    // k.clear();
+
+
+    SimpleHashMap<int, int> k;
+    time_t t1, t2;
+    LCG randGenerator = LCG(System::getCurrentTimeMicro());
+
+    t1 = System::getCurrentTimeNano();
+    for(int i=0; i<0xFFFFFF; i++)
+    {
+        int key = randGenerator.get();
+        int value = i;
+        k.add(key, value);
+    }
+
+    k.add(0xF1243, 2013);
+    t2 = System::getCurrentTimeNano();
+
+    StringTools::println("Time to insert: %u", t2-t1);
+
+    std::vector<HashPair<int,int>*> list = k.getAll(0xF1243);
+    if(list.size()==0)
+    {
+        StringTools::println("ERROR OCCURED. COULD NOT FIND VALUE WITH KEY 0xF1243");
+    }
+    else
+    {
+        for(int i=0; i<list.size(); i++)
+        {
+            StringTools::println("Found value with key 0xF1243: %d", list[i]->data);
+        }
+    }
+
+    t1 = System::getCurrentTimeNano();
+    std::vector<HashPair<int, int>*> allList = k.getData();
+    t2 = System::getCurrentTimeNano();
+
+    StringTools::println("Time to getAllData: %u", t2-t1);
+    StringTools::println("Got %u values", allList.size());
+    
+    t1 = System::getCurrentTimeNano();
+    k.clear();
+    t2 = System::getCurrentTimeNano();
+
+    k.add(1, 2);
+    HashPair<int, int>* tempPair = k.get(1);
+
+    StringTools::println("Time to clear: %u", t2-t1);
+
+    StringTools::println("Temp value for testing: %p", tempPair);
+    k.clear();
+}
+
 int main(int argc, char** argv)
 {
     StringTools::init();
@@ -1290,11 +1457,13 @@ int main(int argc, char** argv)
 
     //New Stuff
 
+        //testHashThing();
         //drawWind();
-        //testGui();
+        testGui();
         //testProcessAndWindowStuff();
-        testSSEStuff();
+        //testSSEStuff();
         //testUTF();
+        //patternMatching();
 
     //End of New Stuff
     

@@ -1,11 +1,11 @@
 #include "Input.h"
-#include <Windows.h>
+#include "WndWindow.h"
 
-bool* Input::preKeyState = new bool[256];
-bool* Input::keyState = new bool[256];
+bool Input::preKeyState[256];
+bool Input::keyState[256];
 
-bool* Input::preMouseState = new bool[3];
-bool* Input::mouseState = new bool[3];
+bool Input::preMouseState[3];
+bool Input::mouseState[3];
 
 bool Input::mouseMoved = false;
 bool Input::keyChanged = false;
@@ -18,8 +18,24 @@ int Input::lastKeyPressed = -1;
 int Input::lastKeyDown = -1;
 int Input::lastKeyUp = -1;
 
+int Input::verticalScrollValue = 0;
+int Input::horizontalScrollValue = 0;
+
+int Input::nVerticalScrollValue = 0;
+int Input::nHorizontalScrollValue = 0;
+
 void Input::pollInput()
 {
+	//get mouse wheel from current active window
+	WndWindow::setMouseVWheelValuePointer(&nVerticalScrollValue);
+	WndWindow::setMouseHWheelValuePointer(&nHorizontalScrollValue);
+
+	verticalScrollValue = nVerticalScrollValue;
+	horizontalScrollValue = nHorizontalScrollValue;
+
+	nVerticalScrollValue = 0;
+	nHorizontalScrollValue = 0;
+
 	lastKeyPressed = -1;
 	lastKeyUp = -1;
 	mouseMoved = false;
@@ -127,6 +143,16 @@ int Input::getMouseX()
 int Input::getMouseY()
 {
 	return mouseY;
+}
+
+int Input::getMouseScrollVertical()
+{
+	return verticalScrollValue;
+}
+
+int Input::getMouseScrollHorizontal()
+{
+	return horizontalScrollValue;
 }
 
 bool Input::getKeyChanged()
