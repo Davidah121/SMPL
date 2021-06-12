@@ -5,6 +5,6 @@ class Object
 {
 public:
 	virtual const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 };
 

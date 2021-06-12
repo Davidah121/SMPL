@@ -8,10 +8,10 @@
 
 #define min(a,b) ((a<b) ? a:b)
 
-const Class* Image::myClass = new Class("Image", {Object::myClass});
+const Class Image::myClass = Class("Image", {&Object::myClass});
 const Class* Image::getClass()
 {
-	return Image::myClass;
+	return &Image::myClass;
 }
 
 Image::Image()
@@ -19,7 +19,6 @@ Image::Image()
 	width = 0;
 	height = 0;
 	pixels = nullptr;
-	
 }
 
 Image::Image(int width, int height)
@@ -265,9 +264,9 @@ void Image::drawText(std::string str, int x, int y)
 	Graphics::drawText(str, x, y, this);
 }
 
-void Image::drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight)
+void Image::drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowLineBreak)
 {
-	Graphics::drawTextLimits(str, x, y, maxWidth, maxHeight, this);
+	Graphics::drawTextLimits(str, x, y, maxWidth, maxHeight, allowLineBreak, this);
 }
 
 void Image::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline)

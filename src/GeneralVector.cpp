@@ -1,9 +1,9 @@
 #include "GeneralVector.h"
 
-const Class* GeneralVector::myClass = new Class("GeneralVector", {Object::myClass});
+const Class GeneralVector::myClass = Class("GeneralVector", {&Object::myClass});
 const Class* GeneralVector::getClass()
 {
-	return GeneralVector::myClass;
+	return &GeneralVector::myClass;
 }
 
 GeneralVector::GeneralVector(int size)

@@ -243,6 +243,13 @@ public:
 	static GeneralVector normalize(GeneralVector v1);
 	static Quaternion normalize(Quaternion q1);
 
+	static Vec3f crossProduct(Vec3f v1, Vec3f v2);
+
+	static Vec2f reflect(Vec2f v1, Vec2f v2);
+	static Vec3f reflect(Vec3f v1, Vec3f v2);
+	static Vec4f reflect(Vec4f v1, Vec4f v2);
+	static GeneralVector reflect(GeneralVector v1, GeneralVector v2);
+
 	static Vec2f inverseVec(Vec2f f);
 
 	static double dotNorm(Vec2f v1, Vec2f v2);
@@ -309,14 +316,29 @@ public:
 	static ComplexNumber discreteFourierTransform(ComplexNumber* arr, int size, double x, bool inverse=false);
 	static std::vector<ComplexNumber> fourierTransform(ComplexNumber* arr, int size, bool inverse=false);
 	static std::vector<ComplexNumber> fastFourierTransform(ComplexNumber* arr, int size, bool inverse=false);
+	static std::vector<ComplexNumber> fastFourierTransformTest(ComplexNumber* arr, int size, bool inverse=false);
 
 	static double discreteCosineTransform(double*, int size, int u, bool inverse=false);
-	static double* cosineTransform(double* arr, int size, bool inverse=false);
-	static double* fastCosineTransform(double* arr, int size, bool inverse=false);
+	static std::vector<double> cosineTransform(double* arr, int size, bool inverse=false);
+	static std::vector<double> fastCosineTransform(double* arr, int size, bool inverse=false);
 
 	static double discreteCosineTransform2D(Matrix arr, int u, int v, bool inverse=false);
 	static Matrix cosineTransform2D(Matrix arr, bool inverse=false);
 	static Matrix fastCosineTransform2D(Matrix arr, bool inverse=false);
+	
+	
+	//Special Case for JPEG
+	static void FCT8(double* arr, double* output, bool inverse=false);
+	static void FCT8x8(Matrix arr, Matrix* output, bool inverse=false);
+
+
+	static double discreteSineTransform(double*, int size, int u, bool inverse=false);
+	static std::vector<double> sineTransform(double* arr, int size, bool inverse=false);
+	static std::vector<double> fastSineTransform(double* arr, int size, bool inverse=false);
+
+	static double discreteSineTransform2D(Matrix arr, int u, int v, bool inverse=false);
+	static Matrix sineTransform2D(Matrix arr, bool inverse=false);
+	static Matrix fastSineTransform2D(Matrix arr, bool inverse=false);
 
 	//Clustering algorigthms
 	static std::vector<std::vector<Vec2f>> meanCut(std::vector<Vec2f> arr, int clusters, bool meansOnly = false);
@@ -337,7 +359,7 @@ public:
 	
 private:
 	static std::vector<ComplexNumber> doFFT(ComplexNumber* arr, int size, bool inverse=false);
-	static std::vector<std::vector<ComplexNumber>> doFFT2D(ComplexNumber* arr, int size, bool inverse=false);
+	static void doFFTTest(ComplexNumber* output, int size, int incVal, bool inverse=false, ComplexNumber* tempData=nullptr);
 	
 };
 

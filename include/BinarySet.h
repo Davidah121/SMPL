@@ -10,7 +10,7 @@ public:
 	
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 
 	//CONSTANTS
 	static const bool LMSB = true; //Left bit is the most significant in a byte

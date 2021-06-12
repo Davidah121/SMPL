@@ -2,7 +2,7 @@
 #include <vector>
 #include "Vec2f.h"
 #include "Object.h"
-
+#include "GeneralExceptions.h"
 class BezierCurve : public Object
 {
 public:
@@ -12,7 +12,13 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
+
+	//Exception Stuff
+	struct BlendPointsError : public std::exception
+	{
+		const char* what() noexcept { return "ERROR ON BLENDING POINTS"; }
+	};
 
 	void addPoint(Vec2f p);
 	Vec2f getPoint(int index);

@@ -111,6 +111,7 @@ public:
 	static std::string formatString(std::string text, ...);
 	static std::wstring formatWideString(std::wstring text, ...);
 
+	static int convertKeyToAscii(int keyVal, bool shiftHeld);
 	
 	static void print(std::string fmt, ...)
 	{

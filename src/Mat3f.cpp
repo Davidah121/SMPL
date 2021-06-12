@@ -1,13 +1,28 @@
 #include "Mat3f.h"
 
-const Class* Mat3f::myClass = new Class("Mat3f", {Matrix::myClass});
+const Class Mat3f::myClass = Class("Mat3f", {&Matrix::myClass});
 const Class* Mat3f::getClass()
 {
-	return Mat3f::myClass;
+	return &Mat3f::myClass;
 }
 
 Mat3f::Mat3f() : Matrix(3, 3)
 {
+}
+
+Mat3f::Mat3f(double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8, double v9) : Matrix(3,3)
+{
+	data[0][0] = v1;
+	data[0][1] = v2;
+	data[0][2] = v3;
+	
+	data[1][0] = v4;
+	data[1][1] = v5;
+	data[1][2] = v6;
+
+	data[2][0] = v7;
+	data[2][1] = v8;
+	data[2][2] = v9;
 }
 
 Mat3f::~Mat3f()

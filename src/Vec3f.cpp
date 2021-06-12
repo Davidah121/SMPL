@@ -1,9 +1,9 @@
 #include "Vec3f.h"
 
-const Class* Vec3f::myClass = new Class("Vec3f", {Object::myClass});
+const Class Vec3f::myClass = Class("Vec3f", {&Object::myClass});
 const Class* Vec3f::getClass()
 {
-	return Vec3f::myClass;
+	return &Vec3f::myClass;
 }
 
 Vec3f::Vec3f(double x, double y, double z)

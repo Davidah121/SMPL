@@ -1,10 +1,11 @@
 #include "SimpleFile.h"
 #include "StringTools.h"
+#include "SimpleDir.h"
 
-const Class* SimpleFile::myClass = new Class("SimpleFile", {Object::myClass});
+const Class SimpleFile::myClass = Class("SimpleFile", {&Object::myClass});
 const Class* SimpleFile::getClass()
 {
-	return SimpleFile::myClass;
+	return &SimpleFile::myClass;
 }
 
 SimpleFile::SimpleFile(std::wstring filename, char type)
@@ -26,12 +27,30 @@ void SimpleFile::init(std::wstring filename, char type)
 	switch (this->type)
 	{
 	case SimpleFile::READ:
-		//
+		
+		//try to open
 		this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
+
+		#ifdef USE_EXCEPTIONS
+		if(!this->file->is_open())
+		{
+			//not open. could be file access or the file may not exist.
+			throw SimpleFile::FileOpenErrorException();
+		}
+		#endif
+
 		size = (int)file->tellg();
 		file->close();
 
-		this->file = new std::fstream(filename, std::fstream::in | std::fstream::binary);
+		this->file->open(filename, std::fstream::in | std::fstream::binary);
+
+		#ifdef USE_EXCEPTIONS
+		if(!this->file->is_open())
+		{
+			//not open. could be file access or the file may not exist.
+			throw SimpleFile::FileOpenErrorException();
+		}
+		#endif
 
 		//remove signifier
 		if(dataType==WIDECHAR)
@@ -74,28 +93,56 @@ void SimpleFile::init(std::wstring filename, char type)
 		//
 		this->file = new std::fstream(filename, std::fstream::out | std::fstream::binary);
 		this->wideFileName = filename;
+
+		#ifdef USE_EXCEPTIONS
+		if(!this->file->is_open())
+		{
+			//not open. could be file access or the file may not exist.
+			throw SimpleFile::FileOpenErrorException();
+		}
+		#endif
+
 		break;
 	case SimpleFile::WRITE_APPEND:
 		//
 		this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
+
+		#ifdef USE_EXCEPTIONS
+		if(!this->file->is_open())
+		{
+			//not open. could be file access or the file may not exist.
+			throw SimpleFile::FileOpenErrorException();
+		}
+		#endif
+
 		size = (int)file->tellg();
 		file->close();
 
-		this->file = new std::fstream(filename, std::fstream::out | std::fstream::app | std::fstream::binary);
+		this->file->open(filename, std::fstream::out | std::fstream::app | std::fstream::binary);
+
+		#ifdef USE_EXCEPTIONS
+		if(!this->file->is_open())
+		{
+			//not open. could be file access or the file may not exist.
+			throw SimpleFile::FileOpenErrorException();
+		}
+		#endif
+
 		this->wideFileName = filename;
 		break;
 	default:
-		this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
-		size = (int)file->tellg();
-		file->close();
-
-		this->wideFileName = filename;
 		break;
 	}
 }
 
 SimpleFile::~SimpleFile()
 {
+	if(isOpen())
+	{
+		close();
+	}
+	
+	delete file;
 }
 
 int SimpleFile::readInt()
@@ -107,6 +154,13 @@ int SimpleFile::readInt()
 	else
 	{
 		//File is not opened for reading
+
+		#ifdef USE_EXCEPTIONS
+
+		//not open for reading. could be file access or the file may not exist.
+		throw SimpleFile::FileReadException();
+
+		#endif
 	}
 	return 0;
 }
@@ -120,6 +174,12 @@ char SimpleFile::readByte()
 	else
 	{
 		//File is not opened for reading
+		#ifdef USE_EXCEPTIONS
+
+		//not open for reading. could be file access or the file may not exist.
+		throw SimpleFile::FileReadException();
+
+		#endif
 	}
 	return '\0';
 }
@@ -145,6 +205,15 @@ wchar_t SimpleFile::readWideChar()
 		p2 = file->get();
 
 		return toWideChar(p1, p2);
+	}
+	else
+	{
+		#ifdef USE_EXCEPTIONS
+		
+		//not open for reading. could be file access or the file may not exist.
+		throw SimpleFile::FileReadException();
+
+		#endif
 	}
 	return L'\0';
 }
@@ -208,6 +277,12 @@ std::string SimpleFile::readString()
 	else
 	{
 		//File is not opened for reading
+		#ifdef USE_EXCEPTIONS
+		
+		//not open for reading. could be file access or the file may not exist.
+		throw SimpleFile::FileReadException();
+
+		#endif
 	}
 
 	return p;
@@ -264,6 +339,12 @@ std::wstring SimpleFile::readWideString()
 	else
 	{
 		//File is not opened for reading
+		#ifdef USE_EXCEPTIONS
+		
+		//not open for reading. could be file access or the file may not exist.
+		throw SimpleFile::FileReadException();
+
+		#endif
 	}
 
 	return p;
@@ -321,6 +402,12 @@ int SimpleFile::readUTF8Char()
 	else
 	{
 		//File is not opened for reading
+		#ifdef USE_EXCEPTIONS
+		
+		//not open for reading. could be file access or the file may not exist.
+		throw SimpleFile::FileReadException();
+
+		#endif
 	}
 	return 0;
 }
@@ -329,12 +416,21 @@ std::vector<std::string> SimpleFile::readFullFileString()
 {
 	std::vector<std::string> info = std::vector<std::string>();
 
-	if(isOpen())
+	if(isOpen() && type == SimpleFile::READ)
 	{
 		while (!isEndOfFile())
 		{
 			info.push_back(readString());
 		}
+	}
+	else
+	{
+		#ifdef USE_EXCEPTIONS
+		
+		//not open for reading. could be file access or the file may not exist.
+		throw SimpleFile::FileReadException();
+
+		#endif
 	}
 
 	return info;
@@ -348,13 +444,22 @@ std::vector<std::wstring> SimpleFile::readFullFileStringWide()
 	// unsigned char c1 = file->get();
 	// unsigned char c2 = file->get();
 
-	if(isOpen())
+	if(isOpen() && type == SimpleFile::READ)
 	{
 		while (!isEndOfFile())
 		{
 			//read
 			info.push_back(readWideString());
 		}
+	}
+	else
+	{
+		#ifdef USE_EXCEPTIONS
+		
+		//not open for reading. could be file access or the file may not exist.
+		throw SimpleFile::FileReadException();
+
+		#endif
 	}
 
 
@@ -365,7 +470,7 @@ std::vector<unsigned char> SimpleFile::readFullFileAsBytes()
 {
 	std::vector<unsigned char> info = std::vector<unsigned char>();
 
-	if(isOpen())
+	if(isOpen() && type == SimpleFile::READ)
 	{
 		int i=0;
 		while (i < size)
@@ -374,6 +479,15 @@ std::vector<unsigned char> SimpleFile::readFullFileAsBytes()
 			info.push_back(file->get());
 			i++;
 		}
+	}
+	else
+	{
+		#ifdef USE_EXCEPTIONS
+		
+		//not open for reading. could be file access or the file may not exist.
+		throw SimpleFile::FileReadException();
+
+		#endif
 	}
 
 	return info;
@@ -403,11 +517,22 @@ void SimpleFile::writeByte(char c)
 		else
 		{
 			//File is not opened for writing
+			#ifdef USE_EXCEPTIONS
+			
+			throw SimpleFile::FileWriteException();
+
+			#endif
 		}
 	}
 	else
 	{
 		//File is not opened
+		#ifdef USE_EXCEPTIONS
+
+		//not open for writing. could be file access or the file may not exist.
+		throw SimpleFile::FileWriteException();
+
+		#endif
 	}
 }
 
@@ -437,11 +562,22 @@ void SimpleFile::writeWideChar(wchar_t c)
 		else
 		{
 			//File is not opened for writing
+			#ifdef USE_EXCEPTIONS
+			
+			throw SimpleFile::FileWriteException();
+
+			#endif
 		}
 	}
 	else
 	{
 		//File is not opened
+		#ifdef USE_EXCEPTIONS
+
+		//not open for writing. could be file access or the file may not exist.
+		throw SimpleFile::FileWriteException();
+
+		#endif
 	}
 }
 
@@ -475,11 +611,22 @@ void SimpleFile::writeBytes(unsigned char* data, int size)
 		else
 		{
 			//File is not opened for writing
+			#ifdef USE_EXCEPTIONS
+			
+			throw SimpleFile::FileWriteException();
+
+			#endif
 		}
 	}
 	else
 	{
 		//File is not opened
+		#ifdef USE_EXCEPTIONS
+
+		//not open for writing. could be file access or the file may not exist.
+		throw SimpleFile::FileWriteException();
+
+		#endif
 	}
 }
 
@@ -513,11 +660,22 @@ void SimpleFile::writeString(std::string line)
 		else
 		{
 			//File is not opened for writing
+			#ifdef USE_EXCEPTIONS
+			
+			throw SimpleFile::FileWriteException();
+
+			#endif
 		}
 	}
 	else
 	{
 		//File is not opened
+		#ifdef USE_EXCEPTIONS
+
+		//not open for writing. could be file access or the file may not exist.
+		throw SimpleFile::FileWriteException();
+
+		#endif
 	}
 }
 
@@ -556,11 +714,22 @@ void SimpleFile::writeWideString(std::wstring line)
 		else
 		{
 			//File is not opened for writing
+			#ifdef USE_EXCEPTIONS
+			
+			throw SimpleFile::FileWriteException();
+
+			#endif
 		}
 	}
 	else
 	{
 		//File is not opened
+		#ifdef USE_EXCEPTIONS
+
+		//not open for writing. could be file access or the file may not exist.
+		throw SimpleFile::FileWriteException();
+
+		#endif
 	}
 }
 
@@ -587,27 +756,55 @@ void SimpleFile::writeLineBreak()
 		else
 		{
 			//File is not opened for writing
+			#ifdef USE_EXCEPTIONS
+			
+			throw SimpleFile::FileWriteException();
+
+			#endif
 		}
 	}
 	else
 	{
 		//File is not opened
+		#ifdef USE_EXCEPTIONS
+
+		//not open for writing. could be file access or the file may not exist.
+		throw SimpleFile::FileWriteException();
+
+		#endif
 	}
 }
 
 bool SimpleFile::isOpen()
 {
-	return file->is_open();
+	if(file != nullptr)
+	{
+		return file->is_open();
+	}
+	else
+	{
+		return false;
+	}
 }
 
 void SimpleFile::close()
 {
-	file->close();
+	if(file != nullptr)
+	{
+		file->close();
+	}
 }
 
 bool SimpleFile::isEndOfFile()
 {
-	return file->eof();
+	if(file != nullptr)
+	{
+		return file->eof();
+	}
+	else
+	{
+		return true;
+	}
 }
 
 std::wstring SimpleFile::getFileName()
@@ -622,5 +819,12 @@ int SimpleFile::getSize()
 
 int SimpleFile::getBytesLeft()
 {
-	return (int)(size - file->tellg());
+	if(isOpen())
+	{
+		return (int)(size - file->tellg());
+	}
+	else
+	{
+		return -1;
+	}
 }

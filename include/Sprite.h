@@ -13,7 +13,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 
 	Image* getImage(int index);
 	int getSize();

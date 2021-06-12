@@ -6,10 +6,10 @@
 #include "ColorNameConverter.h"
 
 #pragma region VectorPath
-const Class* VectorPath::myClass = new Class("VectorPath", {VectorShape::myClass});
+const Class VectorPath::myClass = Class("VectorPath", {&VectorShape::myClass});
 const Class* VectorPath::getClass()
 {
-	return VectorPath::myClass;
+	return &VectorPath::myClass;
 }
 
 VectorPath::VectorPath() : VectorShape()

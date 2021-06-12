@@ -48,6 +48,7 @@ template<typename T>
 inline BinaryTree<T>::~BinaryTree()
 {
 	cleanUp(rootNode);
+	rootNode = nullptr;
 }
 
 

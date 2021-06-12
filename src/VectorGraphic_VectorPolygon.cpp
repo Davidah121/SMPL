@@ -7,10 +7,10 @@
 
 #pragma region VectorPolygon
 
-const Class* VectorPolygon::myClass = new Class("VectorPolygon", {VectorShape::myClass});
+const Class VectorPolygon::myClass = Class("VectorPolygon", {&VectorShape::myClass});
 const Class* VectorPolygon::getClass()
 {
-	return VectorPolygon::myClass;
+	return &VectorPolygon::myClass;
 }
 
 VectorPolygon::VectorPolygon() : VectorShape()

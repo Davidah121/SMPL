@@ -1,10 +1,10 @@
 #include "BinarySet.h"
 #include <iostream>
 
-const Class* BinarySet::myClass = new Class("BinarySet", {Object::myClass});
+const Class BinarySet::myClass = Class("BinarySet", {&Object::myClass});
 const Class* BinarySet::getClass()
 {
-	return BinarySet::myClass;
+	return &BinarySet::myClass;
 }
 
 

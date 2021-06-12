@@ -11,7 +11,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 
 	void setPosition(Vec3f posPointer);
 	Vec3f getPosition();
@@ -39,7 +39,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 	
 	void addShape(Shape s);
 	Shape getShape(int i);
@@ -59,7 +59,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 };
 
 class Box2D : public Shape
@@ -70,7 +70,7 @@ public:
 	
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 	
 	void setLeftBound(double lb);
 	double getLeftBound();
@@ -86,7 +86,6 @@ public:
 
 	
 private:
-	
 	double lBound = 0;
 	double rBound = 0;
 	double tBound = 0;
@@ -104,7 +103,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 	
 private:
 
@@ -120,7 +119,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 	
 	void setPoint1(Vec2f p);
 	void setPoint1(double x, double y);
@@ -156,7 +155,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 	
 
 	void setVertex1(Vec2f p);

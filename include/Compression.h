@@ -4,6 +4,8 @@
 #include "BinaryTree.h"
 #include "BinarySet.h"
 
+#include "GeneralExceptions.h"
+
 struct HuffmanNode
 {
 	int frequency = 0;
@@ -28,6 +30,16 @@ public:
 	static std::vector<unsigned char> decompressRLE(std::vector<unsigned char> data);
 	static std::vector<unsigned char> decompressRLE(unsigned char* data, int size);
 
+	struct LZW_ERROR_L317 : public std::exception
+	{
+		const char* what() noexcept { return "Error Code L317 when decompressing LZW data."; }
+	};
+
+	struct LZW_ERROR_L340 : public std::exception
+	{
+		const char* what() noexcept { return "Error Code L340 when decompressing LZW data."; }
+	};
+
 	static std::vector<unsigned char> decompressLZW(std::vector<unsigned char> data, int dictionarySize);
 	static std::vector<unsigned char> decompressLZW(unsigned char* data, int size, int dictionarySize);
 
@@ -40,14 +52,29 @@ public:
 	static std::vector<unsigned char> decompressLZ77(std::vector<unsigned char> data, int maxBufferSize);
 	static std::vector<unsigned char> decompressLZ77(unsigned char* data, int size, int maxBufferSize);
 
+	struct LZSS_ERROR : public std::exception
+	{
+		const char* what() noexcept { return "Error when decompressing LZSS data."; }
+	};
+
 	static std::vector<unsigned char> compressLZSS(std::vector<unsigned char> data, int maxBufferSize);
 	static std::vector<unsigned char> compressLZSS(unsigned char* data, int size, int maxBufferSize);
 
 	static std::vector<unsigned char> decompressLZSS(std::vector<unsigned char> data, int maxBufferSize);
 	static std::vector<unsigned char> decompressLZSS(unsigned char* data, int size, int maxBufferSize);
 
+	struct HUFFMAN_TREE_ERROR : public std::exception
+	{
+		const char* what() noexcept { return "Invalid Huffman tree used."; }
+	};
+
 	static std::vector<unsigned char> compressHuffman(std::vector<unsigned char> data, BinaryTree<HuffmanNode>* tree);
 	static std::vector<unsigned char> compressHuffman(unsigned char* data, int size, BinaryTree<HuffmanNode>* tree);
+
+	struct HUFFMAN_CANONICAL_ERROR : public std::exception
+	{
+		const char* what() noexcept { return "Error creating Cannonical Huffman Tree."; }
+	};
 
 	static BinaryTree<HuffmanNode>* buildCanonicalHuffmanTree(int* dataValue, int sizeOfData, int* codeLength, int sizeOfCodeLengths, bool separateCodes = true, bool reversed = false);
 
@@ -57,6 +84,11 @@ public:
 	static std::vector<unsigned char> compressDeflate(std::vector<unsigned char> data, int blocks, int compressionLevel = 7);
 	static std::vector<unsigned char> compressDeflate(unsigned char* data, int size, int blocks, int compressionLevel = 7);
 
+	struct DEFLATE_INVALID_MODE : public std::exception
+	{
+		const char* what() noexcept { return "Error when decompressing deflate block. Invalid compression mode found."; }
+	};
+	
 	static std::vector<unsigned char> decompressDeflate(std::vector<unsigned char> data);
 	static std::vector<unsigned char> decompressDeflate(unsigned char* data, int size);
 

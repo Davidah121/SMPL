@@ -8,10 +8,10 @@
 
 #pragma region VectorShape
 
-const Class* VectorShape::myClass = new Class("VectorShape", {Object::myClass});
+const Class VectorShape::myClass = Class("VectorShape", {&Object::myClass});
 const Class* VectorShape::getClass()
 {
-	return VectorShape::myClass;
+	return &VectorShape::myClass;
 }
 
 VectorShape::VectorShape()

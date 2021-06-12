@@ -42,6 +42,14 @@ std::vector<unsigned char> Compression::compressRLE(unsigned char* data, int siz
 	//Runs that are 1 byte in size and data that is 1 byte in size
 	std::vector<unsigned char> output = std::vector<unsigned char>();
 
+	if(data == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return output;
+	}
+
 	if (size > 0)
 	{
 		unsigned char lastValue = data[0];
@@ -78,6 +86,12 @@ std::vector<unsigned char> Compression::compressRLE(unsigned char* data, int siz
 		output.push_back((unsigned char)run);
 		output.push_back(lastValue);
 	}
+	else
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidSizeError();
+		#endif
+	}
 
 	return output;
 }
@@ -92,6 +106,21 @@ std::vector<unsigned char> Compression::decompressRLE(unsigned char* data, int s
 	std::vector<unsigned char> uncompressedData = std::vector<unsigned char>();
 
 	int i = 0;
+
+	if(size<=0)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidSizeError();
+		#endif
+	}
+
+	if(data == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return uncompressedData;
+	}
 
 	while (i < size)
 	{
@@ -118,131 +147,144 @@ std::vector<unsigned char> Compression::compressLZW(std::vector<unsigned char> d
 	return Compression::compressLZW(data.data(), data.size(), codeSize);
 }
 
-
 std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int size, int codeSize)
 {
 	std::vector<unsigned char> output = std::vector<unsigned char>();
-	if (size > 0)
+
+	if(size <= 0)
 	{
-		//First make the base dictionary
-		SimpleHashMap<std::string, int> baseDictionary = SimpleHashMap<std::string, int>();
+		#ifdef USE_EXCEPTIONS
+		throw InvalidSizeError();
+		#endif
+	}
 
-		if(codeSize <= 0)
+	if(data == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return output;
+	}
+	
+	//First make the base dictionary
+	SimpleHashMap<std::string, int> baseDictionary = SimpleHashMap<std::string, int>();
+
+	if(codeSize <= 0)
+	{
+		int bSize = 0;
+		for (int i = 0; i < size; i++)
 		{
-			int bSize = 0;
-			for (int i = 0; i < size; i++)
-			{
-				std::string temp = "";
-				temp += data[i];
+			std::string temp = "";
+			temp += data[i];
 
-				baseDictionary.add( temp, bSize );
-				bSize++;
-			}
+			baseDictionary.add( temp, bSize );
+			bSize++;
+		}
+	}
+	else
+	{
+		int s = 1 << codeSize;
+		for(int i=0; i < s; i++)
+		{
+			std::string k = "";
+			k += (char)i;
+			baseDictionary.add( k, i );
+		}
+	}
+	
+
+	//Add the clearDictionary and endOfData values.
+	//We need to store the location so that it can be excluded in compression
+	//when we compare what data is in the dictionary.
+
+	int clearDictionaryLocation = baseDictionary.size();
+	int EndOfDataLocation = baseDictionary.size()+1;
+
+	baseDictionary.rehash();
+
+	SimpleHashMap<std::string, int> newDictionary = baseDictionary;
+
+	//Compress
+	//First note how many bits to use
+	int baseBits = (int)ceil(log2(newDictionary.size()+2));
+	int currBits = baseBits;
+
+	//Now store the values as a binary string of sorts
+	//We are using a custom class BinarySet that does the
+	//conversion for us.
+	BinarySet binData = BinarySet();
+	binData.setBitOrder(BinarySet::LMSB);
+
+	std::string lastString = "";
+	std::string newString = "";
+	int preIndex = 0;
+
+	binData.add(clearDictionaryLocation, currBits);
+
+	int i = 0;
+	while(i<size)
+	{
+		newString += data[i];
+
+		HashPair<std::string, int>* itr = newDictionary.get(newString);
+		
+		bool exists = (itr != nullptr);
+
+		if (exists == true)
+		{
+			preIndex = itr->data;
+			lastString = newString;
+			i++;
 		}
 		else
 		{
-			int s = 1 << codeSize;
-			for(int i=0; i < s; i++)
+			binData.add(preIndex, currBits);
+			
+			newDictionary.add( newString, newDictionary.size()+2 );
+
+			int shifts = 0;
+			int v = 1;
+			while(shifts<32)
 			{
-				std::string k = "";
-				k += (char)i;
-				baseDictionary.add( k, i );
+				if(newDictionary.size()+2 > v)
+				{
+					v = v << 1;
+					shifts++;
+				}
+				else
+				{
+					break;
+				}
 			}
+
+			currBits = shifts;
+
+			preIndex = -1;
+			newString = "";
+			lastString = "";
+		}
+
+		if(newDictionary.size()+2 == 4096)
+		{
+			//clear Dictionary and start over
+			binData.add(clearDictionaryLocation, currBits);
+			currBits = baseBits;
+			newDictionary = baseDictionary;
+			preIndex = -1;
+			newString = "";
+			lastString = "";
 		}
 		
-
-		//Add the clearDictionary and endOfData values.
-		//We need to store the location so that it can be excluded in compression
-		//when we compare what data is in the dictionary.
-
-		int clearDictionaryLocation = baseDictionary.size();
-		int EndOfDataLocation = baseDictionary.size()+1;
-
-		baseDictionary.rehash();
-
-		SimpleHashMap<std::string, int> newDictionary = baseDictionary;
-
-		//Compress
-		//First note how many bits to use
-		int baseBits = (int)ceil(log2(newDictionary.size()+2));
-		int currBits = baseBits;
-
-		//Now store the values as a binary string of sorts
-		//We are using a custom class BinarySet that does the
-		//conversion for us.
-		BinarySet binData = BinarySet();
-		binData.setBitOrder(BinarySet::LMSB);
-
-		std::string lastString = "";
-		std::string newString = "";
-		int preIndex = 0;
-
-		binData.add(clearDictionaryLocation, currBits);
-
-		int i = 0;
-		while(i<size)
-		{
-			newString += data[i];
-
-			HashPair<std::string, int>* itr = newDictionary.get(newString);
-			
-			bool exists = (itr != nullptr);
-
-			if (exists == true)
-			{
-				preIndex = itr->data;
-				lastString = newString;
-				i++;
-			}
-			else
-			{
-				binData.add(preIndex, currBits);
-				
-				newDictionary.add( newString, newDictionary.size()+2 );
-
-				int shifts = 0;
-				int v = 1;
-				while(shifts<32)
-				{
-					if(newDictionary.size()+2 > v)
-					{
-						v = v << 1;
-						shifts++;
-					}
-					else
-					{
-						break;
-					}
-				}
-
-				currBits = shifts;
-
-				preIndex = -1;
-				newString = "";
-				lastString = "";
-			}
-
-			if(newDictionary.size()+2 == 4096)
-			{
-				//clear Dictionary and start over
-				binData.add(clearDictionaryLocation, currBits);
-				currBits = baseBits;
-				newDictionary = baseDictionary;
-				preIndex = -1;
-				newString = "";
-				lastString = "";
-			}
-			
-		}
-
-		if (newString != "")
-		{
-			binData.add(preIndex, currBits, 0);
-		}
-
-		binData.add(EndOfDataLocation, currBits, 0);
-		output = binData.toBytes();
 	}
+
+	if (newString != "")
+	{
+		binData.add(preIndex, currBits, 0);
+	}
+
+	binData.add(EndOfDataLocation, currBits, 0);
+	output = binData.toBytes();
+
 
 	return output;
 }
@@ -260,6 +302,14 @@ std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int s
 	//This way, you don't need to provide the dictionary for
 	//your data, but just the size.
 	std::vector<unsigned char> output = std::vector<unsigned char>();
+
+	if(data == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return output;
+	}
 
 	if (size > 0 && dictionarySize > 0)
 	{
@@ -354,6 +404,9 @@ std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int s
 							}
 							else
 							{
+								#ifdef USE_EXCEPTIONS
+								throw Compression::LZW_ERROR_L317();
+								#endif
 								//StringTools::println("L317 ERROR: %d", newDictionary.size());
 								//There is an error in the data
 								break;
@@ -381,6 +434,9 @@ std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int s
 						}
 						else
 						{
+							#ifdef USE_EXCEPTIONS
+							throw Compression::LZW_ERROR_L340();
+							#endif
 							//StringTools::println("L340 ERROR");
 							//StringTools::out << "L340 Error in getting last index, " << lastIndex << ", Index=" << index << " dictionary: " << newDictionary.size() << StringTools::lineBreak;
 							break;
@@ -416,7 +472,22 @@ std::vector<unsigned char> Compression::compressLZ77(unsigned char* data, int si
 
 	int tuplev1 = 0;//How far to go back
 	int tuplev2 = 0;//length of string
-	
+
+	if(size<=0 || maxBufferSize<=0)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidSizeError();
+		#endif
+		return output;
+	}
+
+	if(data == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return output;
+	}
 
 	//has to be at least 2 repeated values. We are using a greedy version
 	//meaning that we search for the best possible match not regarding performance.
@@ -556,6 +627,22 @@ std::vector<unsigned char> Compression::decompressLZ77(unsigned char* data, int 
 	int t1 = 0;
 	int t2 = 0;
 
+	if(size<=0 || maxBufferSize<=0)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidSizeError();
+		#endif
+		return output;
+	}
+
+	if(data == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return output;
+	}
+
 	//readTuple then put into buffer
 	for (int i = 0; i < size; i+=3)
 	{
@@ -612,6 +699,22 @@ std::vector<unsigned char> Compression::compressLZSS(unsigned char* data, int si
 	int tuplev2 = 0;//length of string
 
 	int bitsForRef = ceil(log2(maxBufferSize)); //Since we are working in binary
+
+	if(size<=0 || maxBufferSize<=0)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidSizeError();
+		#endif
+		return std::vector<unsigned char>();
+	}
+
+	if(data == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return std::vector<unsigned char>();
+	}
 
 	int i = 0;
 	while (i < size)
@@ -744,6 +847,22 @@ std::vector<unsigned char> Compression::decompressLZSS(unsigned char* data, int 
 	
 	int bitsForRef = ceil(log2(maxBufferSize)); //Since we are working in binary
 
+	if(size<=0 || maxBufferSize<=0)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidSizeError();
+		#endif
+		return std::vector<unsigned char>();
+	}
+
+	if(data == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return std::vector<unsigned char>();
+	}
+
 	int i = bin.size()-1;
 	while(i>=0)
 	{
@@ -791,7 +910,12 @@ std::vector<unsigned char> Compression::decompressLZSS(unsigned char* data, int 
 				//StringTools::out << "Error decompressing LZSS on reference: " << StringTools::lineBreak;
 				//StringTools::out << "Reference Location goes back farther than the size of your buffer." << StringTools::lineBreak;
 				//StringTools::out << "RefLoc: " << (int)refLoc << ", CurrentBufferSize: " << (int)output.size() << ", MessageLen: " << (int)copyLen << StringTools::lineBreak;
-				break;
+					
+				#ifdef USE_EXCEPTIONS
+				throw Compression::LZSS_ERROR();
+				#endif
+
+				return std::vector<unsigned char>();
 			}
 
 			for (int k = 0; k < copyLen; k++)
@@ -825,6 +949,14 @@ std::vector<unsigned char> Compression::compressHuffman(std::vector<unsigned cha
 
 std::vector<unsigned char> Compression::compressHuffman(unsigned char* data, int size, BinaryTree<HuffmanNode>* tree)
 {
+	if(data == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return std::vector<unsigned char>();
+	}
+
 	BinarySet output = BinarySet();
 	output.setBitOrder(BinarySet::LMSB);
 
@@ -834,6 +966,12 @@ std::vector<unsigned char> Compression::compressHuffman(unsigned char* data, int
 	//better performance.
 
 	*tree = *Compression::buildHuffmanTree(data, size);
+
+	if(tree == nullptr)
+	{
+		//error
+		return std::vector<unsigned char>();
+	}
 
 	//Next, store our values. We need to store the length and code.
 	//We will use a table of 256 values and initialize every thing to 0.
@@ -876,6 +1014,30 @@ std::vector<unsigned char> Compression::decompressHuffman(unsigned char* data, i
 {
 	std::vector<unsigned char> output = std::vector<unsigned char>();
 
+	if(size <= 0 || messageSize <= 0)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidSizeError();
+		#endif
+		return output;
+	}
+
+	if(tree == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw HUFFMAN_TREE_ERROR();
+		#endif
+		return output;
+	}
+
+	if(data == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return output;
+	}
+
 	BinarySet input = BinarySet();
 	input.setBitOrder(BinarySet::LMSB);
 	
@@ -892,7 +1054,6 @@ std::vector<unsigned char> Compression::decompressHuffman(unsigned char* data, i
 	{
 		while (m < messageSize || i < 0)
 		{
-
 			if (input.getBit(i) == 0)
 			{
 				//go left
@@ -905,6 +1066,9 @@ std::vector<unsigned char> Compression::decompressHuffman(unsigned char* data, i
 				{
 					//StringTools::out << "HUFFMAN DECODING ERROR ON TREE: CAN'T GO LEFT AT CURRENT POSITION" << StringTools::lineBreak;
 					//StringTools::out << "index: " << (input.size() - i) << StringTools::lineBreak;
+					#ifdef USE_EXCEPTIONS
+					throw HUFFMAN_TREE_ERROR();
+					#endif
 					break;
 				}
 			}
@@ -920,6 +1084,9 @@ std::vector<unsigned char> Compression::decompressHuffman(unsigned char* data, i
 				{
 					//StringTools::out << "HUFFMAN DECODING ERROR ON TREE: CAN'T GO RIGHT AT CURRENT POSITION" << StringTools::lineBreak;
 					//StringTools::out << "index: " << (input.size() - i) << StringTools::lineBreak;
+					#ifdef USE_EXCEPTIONS
+					throw HUFFMAN_TREE_ERROR();
+					#endif
 					break;
 				}
 			}
@@ -935,6 +1102,10 @@ std::vector<unsigned char> Compression::decompressHuffman(unsigned char* data, i
 	}
 	else
 	{
+		#ifdef USE_EXCEPTIONS
+		throw HUFFMAN_TREE_ERROR();
+		#endif
+		return output;
 		//StringTools::out << "HUFFMAN DECODING, TREE ERROR: ROOT IS INVALID" << StringTools::lineBreak;
 	}
 	
@@ -943,6 +1114,22 @@ std::vector<unsigned char> Compression::decompressHuffman(unsigned char* data, i
 
 BinaryTree<HuffmanNode>* Compression::buildHuffmanTree(unsigned char* data, int size)
 {
+	if(size <= 0)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidSizeError();
+		#endif
+		return nullptr;
+	}
+
+	if(data == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return nullptr;
+	}
+
 	//First pass is to fill the frequency table
 	FrequencyTable<unsigned char> freqTable = FrequencyTable<unsigned char>();
 	for (int i = 0; i < size; i++)
@@ -1102,6 +1289,20 @@ BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues,
 	//Since this is C++ and we can use structures, we can use MergeSort while keeping the
 	//correct location for each length and dataValue.
 
+	if(sizeOfData <= 0 || sizeOfCodeLengths <= 0)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidSizeError();
+		#endif
+	}
+
+	if(dataValues == nullptr || lengths == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+	}
+
 	//first, convert
 	
 	dataLengthCombo* arr = new dataLengthCombo[sizeOfData];
@@ -1119,6 +1320,11 @@ BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues,
 		{
 			//invalid size data
 			delete[] arr;
+
+			#ifdef USE_EXCEPTIONS
+			throw InvalidSizeError();
+			#endif
+
 			return nullptr;
 		}
 	}
@@ -1148,6 +1354,11 @@ BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues,
 					//error has occured
 					delete[] actualCodeLengths;
 					delete[] arr;
+
+					#ifdef USE_EXCEPTIONS
+					throw HUFFMAN_CANONICAL_ERROR();
+					#endif
+
 					return nullptr;
 				}
 				j++;
@@ -1296,7 +1507,21 @@ void Compression::compressDeflateSubFunction(unsigned char* data, int size, std:
 			break;
 	}
 
+	if(data == nullptr || outputData == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return;
+	}
 	
+	if(size <= 0)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidSizeError();
+		#endif
+		return;
+	}
 	
 	//for all bytes, try to match it in the hashmap.
 	//Get 3 bytes and try to find it in the hashmap. If found, try and find match.
@@ -1395,6 +1620,7 @@ void Compression::compressDeflateSubFunction(unsigned char* data, int size, std:
 
 	map.clear();
 
+	#pragma region OLD_CODE
 	//Method 4 - HASHED_LINKED_LIST : same as Method 3 but slow delete time causing slower overall time
 	
 	// //deleting the map is the slowest part.
@@ -1627,6 +1853,7 @@ void Compression::compressDeflateSubFunction(unsigned char* data, int size, std:
 	// 		i += tempLength;
 	// 	}
 	// }
+	#pragma endregion
 	
 }
 
@@ -1638,6 +1865,22 @@ std::vector<unsigned char> Compression::compressDeflate(std::vector<unsigned cha
 std::vector<unsigned char> Compression::compressDeflate(unsigned char* data, int size, int blocks, int compressionLevel)
 {
 	//probably will only use default trees and stuff
+
+	if(data == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return std::vector<unsigned char>();
+	}
+
+	if(size <=0 || blocks <=0 )
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidSizeError();
+		#endif
+		return std::vector<unsigned char>();
+	}
 	
 	int tSize = System::getNumberOfThreads();
 	std::vector<std::vector<lengthPair>> info = std::vector<std::vector<lengthPair>>(blocks);
@@ -1815,6 +2058,23 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 	//first, get everything into a BinarySet
 	//load it in reverse order so we may read with no
 	//jumping around
+
+	if(data == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return std::vector<unsigned char>();
+	}
+
+	if(size <= 0)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidSizeError();
+		#endif
+		return std::vector<unsigned char>();
+	}
+
 	std::vector<unsigned char> finalData = std::vector<unsigned char>();
 
 	BinarySet binData = BinarySet();
@@ -1826,7 +2086,9 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 	//StringTools::out << "BinSize " << binData.size() << StringTools::lineBreak;
 
 	int currLoc = 0;
-	bool invalid = false;
+
+	//always create default tree
+	BinaryTree<HuffmanNode>* defaultTree = buildDeflateDefaultTree();
 
 	while(currLoc<binData.size())
 	{
@@ -1873,7 +2135,12 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 			{
 				//invalid option
 				mode = 3;
-				break;
+
+				#ifdef USE_EXCEPTIONS
+				throw Compression::DEFLATE_INVALID_MODE();
+				#endif
+
+				return finalData;
 			}
 		}
 		currLoc += 2;
@@ -1930,7 +2197,7 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 			{
 				//make the default tree
 				//StringTools::out << "Making Default tree" << StringTools::lineBreak;
-				mTree = Compression::buildDeflateDefaultTree();
+				mTree = defaultTree;
 			}
 			else
 			{
@@ -1988,8 +2255,20 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 					else
 					{
 						//error
-						invalid = true;
-						break;
+
+						if(mTree!=nullptr)
+							delete mTree;
+						if(backTree!=nullptr)
+							delete backTree;
+						
+						if(dynTrees!=nullptr)
+							delete[] dynTrees;
+
+						#ifdef USE_EXCEPTIONS
+						throw Compression::HUFFMAN_TREE_ERROR();
+						#endif
+						
+						return finalData;
 					}
 				}
 				else
@@ -2085,6 +2364,11 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 				
 			}
 
+			if(mode == 1)
+			{
+				mTree = nullptr;
+			}
+
 			if(mTree!=nullptr)
 				delete mTree;
 			if(backTree!=nullptr)
@@ -2092,20 +2376,21 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 			
 			if(dynTrees!=nullptr)
 				delete[] dynTrees;
+
+			mTree = nullptr;
+			backTree = nullptr;
+			dynTrees = nullptr;
 				
 			if(lastBlock)
-			{
-				break;
-			}
-
-			if (invalid)
 			{
 				break;
 			}
 		}
 		
 	}
-	
+
+	delete defaultTree;
+	defaultTree = nullptr;
 
 	return finalData;
 }
@@ -2249,6 +2534,14 @@ BinaryTree<HuffmanNode>* Compression::buildDeflateDefaultTree()
 
 BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, int* location)
 {
+	if(data == nullptr || location == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return nullptr;
+	}
+
 	BinaryTree<HuffmanNode>** trees = new BinaryTree<HuffmanNode> * [2]{};
 
 	int HLIT = data->getBits(*location, *location+5);
@@ -2421,6 +2714,14 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 
 void Compression::getCopyLengthInformation(int code, int* baseValue, int* extraBits)
 {
+	if(baseValue == nullptr || extraBits == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return;
+	}
+
 	int loc = code-257;
 	if(loc<=7)
 	{
@@ -2461,6 +2762,14 @@ void Compression::getCopyLengthInformation(int code, int* baseValue, int* extraB
 
 void Compression::getBackDistanceInformation(int code, int* baseValue, int* extraBits)
 {
+	if(baseValue == nullptr || extraBits == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return;
+	}
+
 	if(code<=3)
 	{
 		*extraBits = 0;
@@ -2544,6 +2853,22 @@ unsigned int Compression::adler32(std::vector<unsigned char> data)
 
 unsigned int Compression::adler32(unsigned char* data, int size)
 {
+	if(size <= 0)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidSizeError();
+		#endif
+		return 0;
+	}
+
+	if(data == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return 0;
+	}
+
 	unsigned long sumA = 1;
 	unsigned long sumB = 0;
 
@@ -2563,6 +2888,22 @@ unsigned int Compression::crc(std::vector<unsigned char> data, unsigned char typ
 
 unsigned int Compression::crc(unsigned char* data, int size, unsigned char type)
 {
+	if(size <= 0)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidSizeError();
+		#endif
+		return 0;
+	}
+
+	if(data == nullptr)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw InvalidDataError();
+		#endif
+		return 0;
+	}
+	
 	unsigned long crcTable[256];
 	unsigned long polynomial = 0;
 	unsigned int crcValue = 0xFFFFFFFF;

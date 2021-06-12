@@ -4,10 +4,10 @@
 
 
 	#pragma region ClassStuff
-	const Class* Shape::myClass = new Class("Shape", {Object::myClass});
+	const Class Shape::myClass = Class("Shape", {&Object::myClass});
 	const Class* Shape::getClass()
 	{
-		return Shape::myClass;
+		return &Shape::myClass;
 	}
 	#pragma endregion
 
@@ -60,10 +60,10 @@ void Shape::transform()
 #pragma region POINT2D
 
 	#pragma region ClassStuff
-	const Class* Point2D::myClass = new Class("Point2D", { Shape::myClass });
+	const Class Point2D::myClass = Class("Point2D", { &Shape::myClass });
 	const Class* Point2D::getClass()
 	{
-		return Point2D::myClass;
+		return &Point2D::myClass;
 	}
 	#pragma endregion
 
@@ -82,15 +82,19 @@ Point2D::~Point2D()
 #pragma region Box2D
 
 	#pragma region ClassStuff
-	const Class* Box2D::myClass = new Class("Box2D", { Shape::myClass });
+	const Class Box2D::myClass = Class("Box2D", { &Shape::myClass });
 	const Class* Box2D::getClass()
 	{
-		return Box2D::myClass;
+		return &Box2D::myClass;
 	}
 	#pragma endregion
 
 Box2D::Box2D(double leftBound, double topBound, double rightBound, double bottomBound)
 {
+	this->lBound = leftBound;
+	this->tBound = topBound;
+	this->rBound = rightBound;
+	this->bBound = bottomBound;
 }
 
 Box2D::~Box2D()
@@ -99,38 +103,42 @@ Box2D::~Box2D()
 
 void Box2D::setLeftBound(double lb)
 {
+	lBound = lb;
 }
 
 double Box2D::getLeftBound()
 {
-	return 0.0;
+	return lBound;
 }
 
 void Box2D::setTopBound(double tb)
 {
+	tBound = tb;
 }
 
 double Box2D::getTopBound()
 {
-	return 0.0;
+	return tBound;
 }
 
 void Box2D::setRightBound(double rb)
 {
+	rBound = rb;
 }
 
 double Box2D::getRightBound()
 {
-	return 0.0;
+	return rBound;
 }
 
 void Box2D::setBottomBound(double bb)
 {
+	bBound = bb;
 }
 
 double Box2D::getBottomBound()
 {
-	return 0.0;
+	return bBound;
 }
 
 #pragma endregion
@@ -138,10 +146,10 @@ double Box2D::getBottomBound()
 #pragma region CIRCLE
 
 	#pragma region ClassStuff
-	const Class* Circle::myClass = new Class("Circle", { Shape::myClass });
+	const Class Circle::myClass = Class("Circle", { &Shape::myClass });
 	const Class* Circle::getClass()
 	{
-		return Circle::myClass;
+		return &Circle::myClass;
 	}
 	#pragma endregion
 
@@ -169,10 +177,10 @@ void Circle::setRadius(double rad)
 #pragma region LINE2D
 
 	#pragma region ClassStuff
-	const Class* Line2D::myClass = new Class("Line2D", { Shape::myClass });
+	const Class Line2D::myClass = Class("Line2D", { &Shape::myClass });
 	const Class* Line2D::getClass()
 	{
-		return Line2D::myClass;
+		return &Line2D::myClass;
 	}
 	#pragma endregion
 
@@ -279,10 +287,10 @@ double Line2D::getMaxY()
 #pragma region TRIANGLE2D
 
 	#pragma region ClassStuff
-	const Class* Triangle2D::myClass = new Class("Triangle2D", { Shape::myClass });
+	const Class Triangle2D::myClass = Class("Triangle2D", { &Shape::myClass });
 	const Class* Triangle2D::getClass()
 	{
-		return Triangle2D::myClass;
+		return &Triangle2D::myClass;
 	}
 	#pragma endregion
 

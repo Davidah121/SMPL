@@ -75,7 +75,7 @@ public:
 	
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 
 	virtual void draw(Image* buffer, int globalWidth, int globalHeight);
 	virtual void drawStroke(Image* buffer, int globalWidth, int globalHeight);
@@ -139,7 +139,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 
 	void draw(Image* buffer, int globalWidth, int globalHeight);
 	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
@@ -197,7 +197,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 
 	void draw(Image* img, int globalWidth, int globalHeight);
 	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
@@ -245,7 +245,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 
 	void draw(Image* img, int globalWidth, int globalHeight);
 	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
@@ -296,7 +296,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 
 	void draw(Image* img, int globalWidth, int globalHeight);
 	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
@@ -350,7 +350,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 
 	void draw(Image* img, int globalWidth, int globalHeight);
 	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
@@ -397,7 +397,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 
 	void draw(Image* img, int globalWidth, int globalHeight);
 	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
@@ -488,7 +488,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 
 	void draw(Image* img, int globalWidth, int globalHeight);
 	void drawStroke(Image* buffer, int globalWidth, int globalHeight);
@@ -610,7 +610,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 
 	void addShape(VectorShape* k);
 	void clearShapes();

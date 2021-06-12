@@ -5,8 +5,14 @@
 #include <Windows.h>
 #include "SimpleFile.h"
 #include <TlHelp32.h>
+#include <ShlObj.h>
 
 unsigned int System::numberOfThreads = std::thread::hardware_concurrency();
+const FileFilter System::ALL_FILTER = {L"All Files", L"."};
+const FileFilter System::IMAGE_FILTER = {L"Image", L".bmp;.gif;.png;.jpg;.jpeg"};;
+const FileFilter System::TEXT_FILTER = {L"Text", L".txt"};
+const FileFilter System::SOUND_FILTER = {L"Sound", L".wav;.ogg;.mp3"};
+const FileFilter System::VIDEO_FILTER = {L"Video", L".mp4;.flv;.m4a;.wmv"};
 
 System::System()
 {
@@ -43,13 +49,8 @@ size_t System::getCurrentTimeNano()
 
 void System::sleep(int millis, int micros)
 {
-	unsigned long startTime = getCurrentTimeMicro();
-
-	unsigned long finalTime = millis * 1000 + micros;
-	while ((getCurrentTimeMicro() - startTime) < finalTime)
-	{
-		std::this_thread::yield();
-	}
+	std::chrono::microseconds timespan(millis*1000 + micros);
+	std::this_thread::sleep_for(timespan);
 }
 
 
@@ -357,18 +358,32 @@ Image* System::getScreenShot(HWND hwnd)
 	HWND wndHandle = hwnd;
 	HDC hdc = GetDC(wndHandle);
 
-	HBITMAP bitmap = CreateCompatibleBitmap(hdc, getDesktopWidth(), getDesktopHeight());
+	RECT rect;
+	GetWindowRect(hwnd, &rect);
+
+	int windowWidth = rect.right - rect.left;
+	int windowHeight = rect.bottom - rect.top;
+
+	HBITMAP bitmap = CreateCompatibleBitmap(hdc, windowWidth, windowHeight);
 	BITMAPINFO bmi;
 	ZeroMemory(&bmi, sizeof(BITMAPINFO));
 	bmi.bmiHeader.biBitCount = 24;
-	bmi.bmiHeader.biHeight = getDesktopHeight();
-	bmi.bmiHeader.biWidth = getDesktopWidth();
+	bmi.bmiHeader.biHeight = windowHeight;
+	bmi.bmiHeader.biWidth = windowWidth;
 	bmi.bmiHeader.biPlanes = 1;
 	bmi.bmiHeader.biSizeImage = 0;
 	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	bmi.bmiHeader.biCompression = BI_RGB;
 
-	int size = bmi.bmiHeader.biHeight * bmi.bmiHeader.biWidth * 3;
+	int scanLinePadding = windowWidth%4;
+
+	int size = (windowWidth*3 + scanLinePadding) * windowHeight;
+
+	if(size <= 0)
+	{
+		return nullptr;
+	}
+	
 	unsigned char* pixels = new unsigned char[size];
 
 	HDC capDC = CreateCompatibleDC(hdc);
@@ -377,12 +392,13 @@ Image* System::getScreenShot(HWND hwnd)
 	SelectObject(capDC, hOld);
 	DeleteDC(capDC);
 
-	int returnVal = GetDIBits(hdc, bitmap, 0, getDesktopHeight(), pixels, &bmi, DIB_RGB_COLORS);
+	int returnVal = GetDIBits(hdc, bitmap, 0, windowHeight, pixels, &bmi, DIB_RGB_COLORS);
 
 	Image* finalImage = new Image(bmi.bmiHeader.biWidth, bmi.bmiHeader.biHeight);
 
 	unsigned char* startP = pixels;
 	unsigned char* endP = pixels + size;
+	
 	for(int y=finalImage->getHeight()-1; y>=0; y--)
 	{
 		for(int x=0; x<finalImage->getWidth(); x++)
@@ -397,6 +413,7 @@ Image* System::getScreenShot(HWND hwnd)
 
 			finalImage->setPixel(x,y,c);
 		}
+		startP += scanLinePadding;
 	}
 	
 	return finalImage;
@@ -449,7 +466,7 @@ void System::paintImageToWindow(HWND hwnd, Image* img, int startX, int startY)
 	unsigned char* startP = pixels;
 
 	//copy image into pixels
-	for(int y = 0; y<hei; y++)
+	for(int y = hei-1; y>=0; y--)
 	{
 		for(int x = 0; x<wid; x++)
 		{
@@ -509,4 +526,136 @@ HWND System::getProcessWindow(std::wstring windowName)
 		hwnd = FindWindowW(windowName.c_str(), NULL);
 
 	return hwnd;
+}
+
+std::wstring System::fileDialogBox(unsigned char type, std::vector<FileFilter> filters, std::wstring startDir)
+{
+	//older win32 method. Works just fine so I'm keeping it.
+	
+	//build the filter text
+	std::vector<wchar_t> filterText;
+	
+	for(int i=0; i<filters.size(); i++)
+	{
+		for(int k=0; k<filters[i].name.size(); k++)
+		{
+			filterText.push_back(filters[i].name[k]);
+		}
+		filterText.push_back(L'\0');
+
+		std::vector<std::wstring> exts = StringTools::splitString(filters[i].extensions, L',');
+		for(int j=0; j<exts.size(); i++)
+		{
+			if(j>0)
+			{
+				filterText.push_back( L';' );
+			}
+			filterText.push_back(L'*');
+			for(int k=0; k<exts[j].size(); k++)
+			{
+				filterText.push_back(exts[j][k]);
+			}
+		}
+		filterText.push_back(L'\0');
+	}
+
+	if(filters.size()==0)
+	{
+	}
+
+	wchar_t* initDir = nullptr;
+	if(!startDir.empty())
+	{
+		initDir = startDir.data();
+	}
+
+	if(type==TYPE_OPEN_FILE)
+	{
+		OPENFILENAMEW resStruct = {0};
+		wchar_t* stringArray = new wchar_t[MAX_PATH]{0};
+
+		resStruct.lStructSize = sizeof(OPENFILENAMEW);
+		resStruct.lpstrFile = stringArray;
+		resStruct.nMaxFile = MAX_PATH;
+		resStruct.lpstrFilter = filterText.data();
+		resStruct.nFilterIndex = 1;
+		resStruct.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+		resStruct.lpstrInitialDir = initDir;
+
+		bool result = GetOpenFileNameW(&resStruct);
+		
+		std::wstring finalString = stringArray;
+		delete[] stringArray;
+
+		return finalString;
+	}
+	else if(type==TYPE_OPEN_FOLDER)
+	{
+		std::wstring finalString = L"";
+		HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | 
+        COINIT_DISABLE_OLE1DDE);
+
+		if (SUCCEEDED(hr))
+		{
+			IFileOpenDialog *pFileOpen;
+
+			// Create the FileOpenDialog object.
+			hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, 
+					IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileOpen));
+
+			if (SUCCEEDED(hr))
+			{
+				DWORD flags;
+				pFileOpen->GetOptions(&flags);
+				pFileOpen->SetOptions(flags | FOS_PICKFOLDERS);
+				// Show the Open dialog box.
+				hr = pFileOpen->Show(NULL);
+
+				// Get the file name from the dialog box.
+				if (SUCCEEDED(hr))
+				{
+					IShellItem *pItem;
+					hr = pFileOpen->GetResult(&pItem);
+					if (SUCCEEDED(hr))
+					{
+						PWSTR pszFilePath;
+						hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
+
+						// Display the file name to the user.
+						if (SUCCEEDED(hr))
+						{
+							finalString = pszFilePath;
+							CoTaskMemFree(pszFilePath);
+						}
+						pItem->Release();
+					}
+				}
+				pFileOpen->Release();
+			}
+			CoUninitialize();
+		}
+		return finalString;
+	}
+	else if(type==TYPE_SAVE_FILE)
+	{
+		OPENFILENAMEW resStruct = {0};
+		wchar_t* stringArray = new wchar_t[MAX_PATH]{0};
+
+		resStruct.lStructSize = sizeof(OPENFILENAMEW);
+		resStruct.lpstrFile = stringArray;
+		resStruct.nMaxFile = MAX_PATH;
+		resStruct.lpstrFilter = filterText.data();
+		resStruct.nFilterIndex = 1;
+		resStruct.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
+		resStruct.lpstrInitialDir = initDir;
+
+		bool result = GetSaveFileNameW(&resStruct);
+		
+		std::wstring finalString = stringArray;
+		delete[] stringArray;
+
+		return finalString;
+	}
+
+	return L"";
 }

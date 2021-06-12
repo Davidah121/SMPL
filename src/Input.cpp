@@ -59,7 +59,7 @@ void Input::pollInput()
 
 	for (int i = 0; i < 256; i++)
 	{
-		bool keyValue = (GetKeyState(i) >> 15 & 0x01) == 1;
+		bool keyValue = (GetAsyncKeyState(i) >> 15 & 0x01) == 1;
 
 		preKeyState[i] = keyState[i];
 		keyState[i] = keyValue;
@@ -83,11 +83,11 @@ void Input::pollInput()
 		}
 	}
 	preMouseState[0] = mouseState[0];
-	mouseState[0] = (GetKeyState(VK_LBUTTON) >> 15 & 0x01) == 1;
+	mouseState[0] = (GetAsyncKeyState(VK_LBUTTON) >> 15 & 0x01) == 1;
 	preMouseState[1] = mouseState[1];
-	mouseState[1] = (GetKeyState(VK_MBUTTON) >> 15 & 0x01) == 1;
+	mouseState[1] = (GetAsyncKeyState(VK_MBUTTON) >> 15 & 0x01) == 1;
 	preMouseState[2] = mouseState[2];
-	mouseState[2] = (GetKeyState(VK_RBUTTON) >> 15 & 0x01) == 1;
+	mouseState[2] = (GetAsyncKeyState(VK_RBUTTON) >> 15 & 0x01) == 1;
 
 	if (preMouseState[0] != mouseState[0]
 		|| preMouseState[1] != mouseState[1]

@@ -1,13 +1,39 @@
 #include "Mat4f.h"
 
-const Class* Mat4f::myClass = new Class("Mat4f", {Matrix::myClass});
+const Class Mat4f::myClass = Class("Mat4f", {&Matrix::myClass});
 const Class* Mat4f::getClass()
 {
-	return Mat4f::myClass;
+	return &Mat4f::myClass;
 }
 
 Mat4f::Mat4f() : Matrix(4, 4)
 {
+}
+
+Mat4f::Mat4f(double v1, double v2, double v3, double v4, 
+		double v5, double v6, double v7, double v8,
+		double v9, double v10, double v11, double v12, 
+		double v13, double v14, double v15, double v16) : Matrix(4, 4)
+{
+	data[0][0] = v1;
+	data[0][1] = v2;
+	data[0][2] = v3;
+	data[0][3] = v4;
+	
+	data[1][0] = v5;
+	data[1][1] = v6;
+	data[1][2] = v7;
+	data[1][3] = v8;
+
+	data[2][0] = v9;
+	data[2][1] = v10;
+	data[2][2] = v11;
+	data[2][3] = v12;
+
+	data[3][0] = v13;
+	data[3][1] = v14;
+	data[3][2] = v15;
+	data[3][3] = v16;
 }
 
 Mat4f::Mat4f(const Mat4f& c)

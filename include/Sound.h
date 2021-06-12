@@ -162,10 +162,15 @@ public:
     void setLoopEnd(int index);
 	void setLoopEnd(double time);
 
+	void setData(Vec2f* data, int size, bool isShallowCopy=false);
+	void copyData(Vec2f* data, int size);
+
 	void loadSound(std::string filename);
+	void saveWAV(std::string filename);
 
 private:
 	void loadWAV(std::vector<unsigned char> data);
+	
 	void dispose();
 
 	void deepCopy(const Sound& other);

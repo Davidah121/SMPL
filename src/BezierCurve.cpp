@@ -2,10 +2,10 @@
 #include "MathExt.h"
 #include "StringTools.h"
 
-const Class* BezierCurve::myClass = new Class("BezierCurve", {Object::myClass});
+const Class BezierCurve::myClass = Class("BezierCurve", {&Object::myClass});
 const Class* BezierCurve::getClass()
 {
-	return BezierCurve::myClass;
+	return &BezierCurve::myClass;
 }
 
 
@@ -38,7 +38,12 @@ Vec2f BezierCurve::getPoint(int index)
 	if (index >= 0 && index < points.size())
 		return points[index];
 	else
-		return Vec2f();
+	{
+		#ifdef USE_EXCEPTIONS
+		throw OutOfBoundsError();
+		#endif
+	}
+	return Vec2f();
 }
 
 Vec2f BezierCurve::getFuctionAt(double time)
@@ -274,6 +279,10 @@ Vec2f BezierCurve::blendPointsRecursive(int start, int end, double time)
 			//(p1*(1-t) + p2*t)*(1-t) + (p2*(1-t) + p3*t)*t
 			//p1*(1-t)^2 + 2*p2*t*(1-t) + p3*t^2
 
+	#ifdef USE_EXCEPTIONS
+	throw BezierCurve::BlendPointsError();
+	#endif
+
 	return Vec2f();
 }
 
@@ -306,5 +315,9 @@ Vec2f BezierCurve::blendPointsDerivativeRecursive(int start, int end, double tim
 		return Vec2f(0,0);
 	}
 
+	#ifdef USE_EXCEPTIONS
+	throw BezierCurve::BlendPointsError();
+	#endif
+	
 	return Vec2f();
 }

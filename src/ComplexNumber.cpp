@@ -1,10 +1,10 @@
 #include "ComplexNumber.h"
 
 #pragma region ClassStuff
-const Class* ComplexNumber::myClass = new Class("ComplexNumber", {Object::myClass});
+const Class ComplexNumber::myClass = Class("ComplexNumber", {&Object::myClass});
 const Class* ComplexNumber::getClass()
 {
-	return ComplexNumber::myClass;
+	return &ComplexNumber::myClass;
 }
 #pragma endregion
 

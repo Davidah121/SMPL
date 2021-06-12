@@ -21,7 +21,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 	
 	void addNewColor(Color c);
 	Color getColor(int index);

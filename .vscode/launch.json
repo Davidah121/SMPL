@@ -15,12 +15,32 @@
             "console": "externalTerminal"
         },
         {
+            "name": "(MVSC) Debug Launch x64",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/Debug/x64/${workspaceFolderBasename}.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal"
+        },
+        {
             "name": "(LLDB) Release Launch x64",
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/bin/Release/x64/${workspaceFolderBasename}.exe",
             "args": [],
             "stopOnEntry": false,
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal"
+        },
+        {
+            "name": "(MVSC) Release Launch x64",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/Release/x64/${workspaceFolderBasename}.exe",
+            "args": [],
+            "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "console": "externalTerminal"
         }
