@@ -11,7 +11,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 
 	double getValue(int location);
 	void setValue(double value, int location);

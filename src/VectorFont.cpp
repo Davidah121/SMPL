@@ -1,10 +1,10 @@
 #include "VectorFont.h"
 #include "StringTools.h"
 
-const Class* VectorFont::myClass = new Class("VectorFont", {Font::myClass});
+const Class VectorFont::myClass = Class("VectorFont", {&Font::myClass});
 const Class* VectorFont::getClass()
 {
-    return VectorFont::myClass;
+    return &VectorFont::myClass;
 }
 
 VectorFont::VectorFont() : Font()

@@ -1,10 +1,10 @@
 #include "Matrix.h"
 #include "StringTools.h"
 
-const Class* Matrix::myClass = new Class("Matrix", {Object::myClass});
+const Class Matrix::myClass = Class("Matrix", {&Object::myClass});
 const Class* Matrix::getClass()
 {
-	return Matrix::myClass;
+	return &Matrix::myClass;
 }
 
 Matrix::Matrix()

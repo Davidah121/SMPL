@@ -15,7 +15,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 
 	int getWidth();
 	int getHeight();
@@ -47,7 +47,7 @@ public:
 	void drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH);
 
 	void drawText(std::string str, int x, int y);
-	void drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight);
+	void drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowLineBreak);
 	
 	void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline);
 	void drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture);

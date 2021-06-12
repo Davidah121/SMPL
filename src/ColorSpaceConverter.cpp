@@ -1,6 +1,6 @@
 #include "ColorSpaceConverter.h"
 
-Color ColorSpaceConverter::convert(Color a, int type)
+Color ColorSpaceConverter::convert(Color a, unsigned char type)
 {
     Vec3f c = Vec3f((double)a.red, (double)a.green, (double)a.blue);
     switch (type)
@@ -35,7 +35,7 @@ Color ColorSpaceConverter::convert(Color a, int type)
     return out;
 }
 
-Vec3f ColorSpaceConverter::convert(Vec3f c, int type)
+Vec3f ColorSpaceConverter::convert(Vec3f c, unsigned char type)
 {
     Vec3f finalColor = Vec3f();
     Vec3f o = Vec3f();

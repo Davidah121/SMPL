@@ -7,10 +7,10 @@
 
 #pragma region VectorGraphic
 
-const Class* VectorGraphic::myClass = new Class("VectorGraphic", {Object::myClass});
+const Class VectorGraphic::myClass = Class("VectorGraphic", {&Object::myClass});
 const Class* VectorGraphic::getClass()
 {
-	return VectorGraphic::myClass;
+	return &VectorGraphic::myClass;
 }
 
 VectorGraphic::VectorGraphic(int width, int height)
@@ -38,43 +38,43 @@ void VectorGraphic::copy(const VectorGraphic& c)
 
 	for(int i=0; i<c.shapes.size(); i++)
 	{
-		if(c.shapes[i]->getClass()->getClassName() == VectorRectangle::myClass->getClassName())
+		if(c.shapes[i]->getClass()->getClassName() == VectorRectangle::myClass.getClassName())
 		{
 			//rectangle
 			VectorRectangle* g = new VectorRectangle(*(VectorRectangle*)c.shapes[i]);
 			shapes.push_back(g);
 		}
-		else if(c.shapes[i]->getClass()->getClassName() == VectorLine::myClass->getClassName())
+		else if(c.shapes[i]->getClass()->getClassName() == VectorLine::myClass.getClassName())
 		{
 			//line
 			VectorLine* g = new VectorLine(*(VectorLine*)c.shapes[i]);
 			shapes.push_back(g);
 		}
-		else if(c.shapes[i]->getClass()->getClassName() == VectorCircle::myClass->getClassName())
+		else if(c.shapes[i]->getClass()->getClassName() == VectorCircle::myClass.getClassName())
 		{
 			//circle
 			VectorCircle* g = new VectorCircle(*(VectorCircle*)c.shapes[i]);
 			shapes.push_back(g);
 		}
-		else if(c.shapes[i]->getClass()->getClassName() == VectorEllipse::myClass->getClassName())
+		else if(c.shapes[i]->getClass()->getClassName() == VectorEllipse::myClass.getClassName())
 		{
 			//ellipse
 			VectorEllipse* g = new VectorEllipse(*(VectorEllipse*)c.shapes[i]);
 			shapes.push_back(g);
 		}
-		else if(c.shapes[i]->getClass()->getClassName() == VectorPolygon::myClass->getClassName())
+		else if(c.shapes[i]->getClass()->getClassName() == VectorPolygon::myClass.getClassName())
 		{
 			//polygon
 			VectorPolygon* g = new VectorPolygon(*(VectorPolygon*)c.shapes[i]);
 			shapes.push_back(g);
 		}
-		else if(c.shapes[i]->getClass()->getClassName() == VectorPolyline::myClass->getClassName())
+		else if(c.shapes[i]->getClass()->getClassName() == VectorPolyline::myClass.getClassName())
 		{
 			//polyline
 			VectorPolyline* g = new VectorPolyline(*(VectorPolyline*)c.shapes[i]);
 			shapes.push_back(g);
 		}
-		else if(c.shapes[i]->getClass()->getClassName() == VectorPath::myClass->getClassName())
+		else if(c.shapes[i]->getClass()->getClassName() == VectorPath::myClass.getClassName())
 		{
 			//path
 			//StringTools::println("PATH");

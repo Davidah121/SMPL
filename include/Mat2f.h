@@ -7,6 +7,7 @@ class Mat2f : public Matrix
 {
 public:
 	Mat2f();
+	Mat2f(double v1, double v2, double v3, double v4);
 	Mat2f(const Mat2f& c);
 	void operator=(const Mat2f& o);
 
@@ -14,7 +15,7 @@ public:
 	
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 
 	static Mat2f getIdentity();
 

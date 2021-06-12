@@ -3,10 +3,10 @@
 #include "StringTools.h"
 #include "SimpleXml.h"
 
-const Class* BitmapFont::myClass = new Class("BitmapFont", {Font::myClass});
+const Class BitmapFont::myClass = Class("BitmapFont", {&Font::myClass});
 const Class* BitmapFont::getClass()
 {
-	return BitmapFont::myClass;
+	return &BitmapFont::myClass;
 }
 
 BitmapFont::BitmapFont(std::string filename) : Font()
@@ -25,6 +25,9 @@ BitmapFont::BitmapFont(std::string filename) : Font()
 	else
 	{
 		//error
+		#ifdef USE_EXCEPTIONS
+		throw BitmapFont::InvalidFileFormat;
+		#endif
 	}
 }
 
@@ -37,7 +40,13 @@ Image* BitmapFont::getImage(int index)
 	if(index>=0 && index<imgPage.size())
 		return img.getImage( imgPage[index] );
 	else
-		return nullptr;
+	{
+		#ifdef USE_EXCEPTIONS
+		throw OutOfBoundsError();
+		#endif
+	}
+
+	return nullptr;
 }
 
 void BitmapFont::loadFT(std::string filename)
@@ -57,11 +66,28 @@ void BitmapFont::loadFT(std::string filename)
 	int index = filename.find_last_of('/');
 	std::string dir = filename.substr(0, index);
 
-	SimpleFile file = SimpleFile(filename, SimpleFile::READ);
-	if (file.isOpen())
+	std::vector<std::string> fileInfo;
+
+	try
 	{
-		std::vector<std::string> fileInfo = file.readFullFileString();
+		/* code */
+		SimpleFile file = SimpleFile(filename, SimpleFile::READ);
+		if(file.isOpen())
+		{
+			fileInfo = file.readFullFileString();
+		}
 		file.close();
+	}
+	catch(SimpleFile::FileOpenErrorException& e)
+	{
+		//could not open file or an error occured while reading.
+		std::cerr << e.what() << '\n';
+		return;
+	}
+	
+	
+	if (fileInfo.size()>0)
+	{
 		int fontSize = StringTools::toInt(fileInfo[2]);
 		std::string imageFile = dir + "/" + fileInfo[3];
 		int amountOfImages = 0;
@@ -108,6 +134,11 @@ void BitmapFont::loadFT(std::string filename)
 				}
 				else
 				{
+					//invalid split size
+					#ifdef USE_EXCEPTIONS
+					throw BitmapFont::InvalidFileFormat();
+					#endif
+					break;
 					//StringTools::println("Invalid string: %s| with size: %d", fileInfo[startIndex].c_str(), fileInfo.size());
 				}
 				
@@ -135,10 +166,7 @@ void BitmapFont::loadFT(std::string filename)
 			}
 		}
 	}
-	else
-	{
-		//not a valid file
-	}
+
 }
 
 void BitmapFont::loadFNT(std::string filename)
@@ -178,9 +206,38 @@ void BitmapFont::loadFNT(std::string filename)
 			}
 		}
 
+		if(root==nullptr)
+		{
+			//invalid
+			#ifdef USE_EXCEPTIONS
+			throw InvalidFileFormat();
+			#endif
+			return;
+		}
+
 		for(XmlNode* n : root->childNodes)
 		{
-			if(n->title == L"pages")
+			if(n->title == L"info")
+			{
+				for(XmlAttribute attrib : n->attributes)
+				{
+					if(attrib.name == L"size")
+					{
+						fontSize = std::stoi(attrib.value);
+					}
+				}
+			}
+			else if(n->title == L"common")
+			{
+				for(XmlAttribute attrib : n->attributes)
+				{
+					if(attrib.name == L"lineHeight")
+					{
+						verticalAdv = std::stoi(attrib.value);
+					}
+				}
+			}
+			else if(n->title == L"pages")
 			{
 				for(XmlNode* n2 : n->childNodes)
 				{
@@ -257,6 +314,10 @@ void BitmapFont::loadFNT(std::string filename)
 	}
 	else
 	{
-		StringTools::println("ERROR ON LOAD FONT FNT");
+		//invalid
+		#ifdef USE_EXCEPTIONS
+		throw InvalidFileFormat();
+		#endif
+		return;
 	}
 }

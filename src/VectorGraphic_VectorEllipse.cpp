@@ -7,10 +7,10 @@
 
 #pragma region VectorEllipse
 
-const Class* VectorEllipse::myClass = new Class("VectorEllipse", {VectorShape::myClass});
+const Class VectorEllipse::myClass = Class("VectorEllipse", {&VectorShape::myClass});
 const Class* VectorEllipse::getClass()
 {
-	return VectorEllipse::myClass;
+	return &VectorEllipse::myClass;
 }
 
 VectorEllipse::VectorEllipse() : VectorShape()

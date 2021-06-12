@@ -40,7 +40,9 @@ void Image::saveGIF(std::string filename, int paletteSize, bool dither, bool sav
 	}
 
 	bool containsTransparency = saveAlpha;
+	time_t t1, t2;
 
+	t1 = System::getCurrentTimeMillis();
 	if(containsTransparency)
 	{
 		if(tempImg.getPalette().getSize() > 0 && tempImg.getPalette().getSize() < paletteSize)
@@ -67,6 +69,9 @@ void Image::saveGIF(std::string filename, int paletteSize, bool dither, bool sav
 			tempPalette = ColorPalette::generateOptimalPalette(nPixels, width*height, paletteSize, ColorPalette::MEAN_CUT);
 		}
 	}
+	t2 = System::getCurrentTimeMillis();
+
+	StringTools::println("Time to get palette: %u", t2-t1);
 
 	if(dither)
 	{
@@ -74,6 +79,7 @@ void Image::saveGIF(std::string filename, int paletteSize, bool dither, bool sav
 		Graphics::ditherImage(&tempImg, Graphics::FLOYD_DITHER);
 	}
 
+	t1 = System::getCurrentTimeMillis();
 	if(containsTransparency)
 	{
 		for(int i=0; i<width*height; i++)
@@ -95,6 +101,10 @@ void Image::saveGIF(std::string filename, int paletteSize, bool dither, bool sav
 			pixs[i] = (unsigned char)tempPalette.getClosestColorIndex(nPixels[i]);
 		}
 	}
+
+	t2 = System::getCurrentTimeMillis();
+
+	StringTools::println("Time to set palette: %u", t2-t1);
 
 	//width
 	gifHeaderInfo += (char)((width) & 0xFF);
@@ -192,8 +202,12 @@ void Image::saveGIF(std::string filename, int paletteSize, bool dither, bool sav
 	gifHeaderInfo += (char)paletteSizeP2+1;
 	
 	//compress data
+	t1 = System::getCurrentTimeMillis();
 	std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, paletteSizeP2+1);
-	
+	t2 = System::getCurrentTimeMillis();
+
+	StringTools::println("Time to compress: %u", t2-t1);
+
 	for(int i=0; i<compressedData.size(); i++)
 	{
 		if(i % 255 == 0)

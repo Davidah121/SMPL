@@ -694,6 +694,40 @@ Quaternion MathExt::normalize(Quaternion q1)
 		return Quaternion();
 }
 
+Vec3f MathExt::crossProduct(Vec3f v1, Vec3f v2)
+{
+	Vec3f cross = Vec3f();
+	cross.x = v1.y*v2.z - v1.z*v2.y;
+	cross.y = v1.z*v2.x - v1.x*v2.z;
+	cross.z = v1.x*v2.y - v1.y*v2.x;
+	
+	return cross;
+}
+
+Vec2f MathExt::reflect(Vec2f v1, Vec2f v2)
+{
+	Vec2f n = MathExt::normalize(v2);
+	return v1 - (n * (MathExt::dot(v1,n) * 2));
+}
+
+Vec3f MathExt::reflect(Vec3f v1, Vec3f v2)
+{
+	Vec3f n = MathExt::normalize(v2);
+	return v1 - (n * (MathExt::dot(v1,n) * 2));
+}
+
+Vec4f MathExt::reflect(Vec4f v1, Vec4f v2)
+{
+	Vec4f n = MathExt::normalize(v2);
+	return v1 - (n * (MathExt::dot(v1,n) * 2));
+}
+
+GeneralVector MathExt::reflect(GeneralVector v1, GeneralVector v2)
+{
+	GeneralVector n = MathExt::normalize(v2);
+	return v1 - (n * (MathExt::dot(v1,n) * 2));
+}
+
 Vec2f MathExt::inverseVec(Vec2f f)
 {
 	return Vec2f(-f.y, f.x);
@@ -802,22 +836,11 @@ Mat3f MathExt::rotation2D(double rotation, double x, double y)
 
 Mat3f MathExt::rotation2D(double rotation, Vec2f pos)
 {
-	Mat3f mat = Mat3f();
-
-	mat[0][0] = MathExt::cos(rotation);
-	mat[0][1] = MathExt::sin(rotation);
-	mat[0][2] = -pos.x*MathExt::cos(rotation) - pos.y*MathExt::sin(rotation) + pos.x;
-
-	mat[1][0] = -MathExt::sin(rotation);
-	mat[1][1] = MathExt::cos(rotation);
-	mat[1][2] = pos.x*MathExt::sin(rotation) - pos.y*MathExt::cos(rotation) + pos.y;
-
-	mat[2][0] = 0;
-	mat[2][1] = 0;
-	mat[2][2] = 1;
-	
-
-	return mat;
+	return Mat3f(
+		MathExt::cos(rotation), MathExt::sin(rotation), -pos.x*MathExt::cos(rotation) - pos.y*MathExt::sin(rotation) + pos.x,
+		-MathExt::sin(rotation), MathExt::cos(rotation), pos.x*MathExt::sin(rotation) - pos.y*MathExt::cos(rotation) + pos.y,
+		0, 0, 1
+	);
 }
 	
 Mat3f MathExt::translation2D(double x, double y)
@@ -827,21 +850,11 @@ Mat3f MathExt::translation2D(double x, double y)
 
 Mat3f MathExt::translation2D(Vec2f trans)
 {
-	Mat3f mat = Mat3f();
-
-	mat[0][0] = 1;
-	mat[0][1] = 0;
-	mat[0][2] = trans.x;
-
-	mat[1][0] = 0;
-	mat[1][1] = 1;
-	mat[1][2] = trans.y;
-
-	mat[2][0] = 0;
-	mat[2][1] = 0;
-	mat[2][2] = 1;
-	
-	return mat;
+	return Mat3f(
+		1, 0, trans.x,
+		0, 1, trans.y,
+		0, 0, 1
+	);
 }
 
 Mat3f MathExt::scale2D(double x, double y)
@@ -851,21 +864,11 @@ Mat3f MathExt::scale2D(double x, double y)
 
 Mat3f MathExt::scale2D(Vec2f scale)
 {
-	Mat3f mat = Mat3f();
-
-	mat[0][0] = scale.x;
-	mat[0][1] = 0;
-	mat[0][2] = 0;
-
-	mat[1][0] = 0;
-	mat[1][1] = scale.y;
-	mat[1][2] = 0;
-
-	mat[2][0] = 0;
-	mat[2][1] = 0;
-	mat[2][2] = 1;
-	
-	return mat;
+	return Mat3f(
+		scale.x, 0, 0,
+		0, scale.y, 0,
+		0, 0, 1
+	);
 }
 
 Mat3f MathExt::skew2D(double x, double y)
@@ -875,21 +878,11 @@ Mat3f MathExt::skew2D(double x, double y)
 
 Mat3f MathExt::skew2D(Vec2f skew)
 {
-	Mat3f mat = Mat3f();
-
-	mat[0][0] = 1;
-	mat[0][1] = skew.x;
-	mat[0][2] = 0;
-
-	mat[1][0] = skew.y;
-	mat[1][1] = 1;
-	mat[1][2] = 0;
-
-	mat[2][0] = 0;
-	mat[2][1] = 0;
-	mat[2][2] = 1;
-	
-	return mat;
+	return Mat3f(
+		1, skew.x, 0,
+		skew.y, 1, 0,
+		0, 0, 1
+	);
 }
 #pragma endregion
 
@@ -911,110 +904,42 @@ Quaternion MathExt::getRotationQuaternion(double rotation, Vec3f rotationAxis)
 
 Mat4f MathExt::QuaternionToMatrix(Quaternion q)
 {
-	Mat4f matrix = Mat4f();
-	
-	matrix[0][0] = q.a;
-	matrix[0][1] = -q.b;
-	matrix[0][2] = -q.c;
-	matrix[0][3] = -q.d;
-	
-	matrix[1][0] = q.b;
-	matrix[1][1] = q.a;
-	matrix[1][2] = -q.d;
-	matrix[1][3] = q.c;
-	
-	matrix[2][0] = q.c;
-	matrix[2][1] = q.d;
-	matrix[2][2] = q.a;
-	matrix[2][3] = -q.b;
-	
-	matrix[3][0] = q.d;
-	matrix[3][1] = -q.c;
-	matrix[3][2] = q.b;
-	matrix[3][3] = q.a;
-
-	return matrix;
+	return Mat4f(
+		q.a, -q.b, -q.c, -q.d,
+		q.b, q.a, -q.d, q.c,
+		q.c, q.d, q.a, -q.b,
+		q.d, -q.c, q.b, q.a
+	);
 }
 
 Mat4f MathExt::rotation3DX(double rotation)
 {
-	Mat4f mat = Mat4f();
-
-	mat[0][0] = 1;
-	mat[0][1] = 0;
-	mat[0][2] = 0;
-	mat[0][3] = 0;
-
-	mat[1][0] = 0;
-	mat[1][1] = MathExt::cos(rotation);
-	mat[1][2] = -MathExt::sin(rotation);
-	mat[1][3] = 0;
-
-	mat[2][0] = 0;
-	mat[2][1] = MathExt::sin(rotation);
-	mat[2][2] = MathExt::cos(rotation);
-	mat[2][3] = 0;
-	
-	mat[3][0] = 0;
-	mat[3][1] = 0;
-	mat[3][2] = 0;
-	mat[3][3] = 1;
-	
-	return mat;
+	return Mat4f(
+		1, 0, 0, 0,
+		0, MathExt::cos(rotation), -MathExt::sin(rotation), 0,
+		0, MathExt::sin(rotation), MathExt::cos(rotation), 0,
+		0, 0, 0, 1
+	);
 }
 
 Mat4f MathExt::rotation3DY(double rotation)
-{
-	Mat4f mat = Mat4f();
-
-	mat[0][0] = MathExt::cos(rotation);
-	mat[0][1] = 0;
-	mat[0][2] = MathExt::sin(rotation);
-	mat[0][3] = 0;
-
-	mat[1][0] = 0;
-	mat[1][1] = 1;
-	mat[1][2] = 0;
-	mat[1][3] = 0;
-
-	mat[2][0] = -MathExt::sin(rotation);
-	mat[2][1] = 0;
-	mat[2][2] = MathExt::cos(rotation);
-	mat[2][3] = 0;
-	
-	mat[3][0] = 0;
-	mat[3][1] = 0;
-	mat[3][2] = 0;
-	mat[3][3] = 1;
-	
-	return mat;
+{	
+	return Mat4f(
+		MathExt::cos(rotation), 0, MathExt::sin(rotation), 0,
+		0, 1, 0, 0,
+		-MathExt::sin(rotation), 0, MathExt::cos(rotation), 0,
+		0, 0, 0, 1
+	);
 }
 
 Mat4f MathExt::rotation3DZ(double rotation)
 {
-	Mat4f mat = Mat4f();
-
-	mat[0][0] = MathExt::cos(rotation);
-	mat[0][1] = -MathExt::sin(rotation);
-	mat[0][2] = 0;
-	mat[0][3] = 0;
-
-	mat[1][0] = MathExt::sin(rotation);
-	mat[1][1] = MathExt::cos(rotation);
-	mat[1][2] = 0;
-	mat[1][3] = 0;
-
-	mat[2][0] = 0;
-	mat[2][1] = 0;
-	mat[2][2] = 1;
-	mat[2][3] = 0;
-	
-	mat[3][0] = 0;
-	mat[3][1] = 0;
-	mat[3][2] = 0;
-	mat[3][3] = 1;
-	
-	return mat;
+	return Mat4f(
+		MathExt::cos(rotation), -MathExt::sin(rotation), 0, 0,
+		MathExt::sin(rotation), MathExt::cos(rotation), 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	);
 }
 
 Mat4f MathExt::translation3D(double x, double y, double z)
@@ -1023,30 +948,13 @@ Mat4f MathExt::translation3D(double x, double y, double z)
 }
 
 Mat4f MathExt::translation3D(Vec3f trans)
-{
-	Mat4f mat = Mat4f();
-
-	mat[0][0] = 1;
-	mat[0][1] = 0;
-	mat[0][2] = 0;
-	mat[0][3] = trans.x;
-
-	mat[1][0] = 0;
-	mat[1][1] = 1;
-	mat[1][2] = 0;
-	mat[1][3] = trans.y;
-
-	mat[2][0] = 0;
-	mat[2][1] = 0;
-	mat[2][2] = 1;
-	mat[2][3] = trans.z;
-	
-	mat[3][0] = 0;
-	mat[3][1] = 0;
-	mat[3][2] = 0;
-	mat[3][3] = 1;
-	
-	return mat;
+{	
+	return Mat4f(
+		1, 0, 0, trans.x,
+		0, 1, 0, trans.y,
+		0, 0, 1, trans.z,
+		0, 0, 0, 1
+	);
 }
 
 Mat4f MathExt::scale3D(double x, double y, double z)
@@ -1055,30 +963,13 @@ Mat4f MathExt::scale3D(double x, double y, double z)
 }
 
 Mat4f MathExt::scale3D(Vec3f scale)
-{
-	Mat4f mat = Mat4f();
-
-	mat[0][0] = scale.x;
-	mat[0][1] = 0;
-	mat[0][2] = 0;
-	mat[0][3] = 0;
-
-	mat[1][0] = 0;
-	mat[1][1] = scale.y;
-	mat[1][2] = 0;
-	mat[1][3] = 0;
-
-	mat[2][0] = 0;
-	mat[2][1] = 0;
-	mat[2][2] = scale.z;
-	mat[2][3] = 0;
-	
-	mat[3][0] = 0;
-	mat[3][1] = 0;
-	mat[3][2] = 0;
-	mat[3][3] = 1;
-	
-	return mat;
+{	
+	return Mat4f(
+		scale.x, 0, 0, 0,
+		0, scale.y, 0, 0,
+		0, 0, scale.z, 0,
+		0, 0, 0, 1
+	);
 }
 
 Mat4f MathExt::skew3D(double x, double y, double z)
@@ -1088,29 +979,12 @@ Mat4f MathExt::skew3D(double x, double y, double z)
 
 Mat4f MathExt::skew3D(Vec3f skew)
 {
-	Mat4f mat = Mat4f();
-
-	mat[0][0] = 1;
-	mat[0][1] = -skew.z;
-	mat[0][2] = skew.y;
-	mat[0][3] = 0;
-
-	mat[1][0] = skew.z;
-	mat[1][1] = 1;
-	mat[1][2] = -skew.x;
-	mat[1][3] = 0;
-
-	mat[2][0] = -skew.y;
-	mat[2][1] = skew.x;
-	mat[2][2] = 1;
-	mat[2][3] = 0;
-	
-	mat[3][0] = 0;
-	mat[3][1] = 0;
-	mat[3][2] = 0;
-	mat[3][3] = 1;
-	
-	return mat;
+	return Mat4f(
+		1, -skew.z, skew.y, 0,
+		skew.z, 1, -skew.x, 0,
+		-skew.y, skew.x, 1, 0,
+		0, 0, 0, 1
+	);
 }
 #pragma endregion
 
@@ -1348,6 +1222,39 @@ std::vector<ComplexNumber> MathExt::fastFourierTransform(ComplexNumber* arr, int
 	return output;
 }
 
+std::vector<ComplexNumber> MathExt::fastFourierTransformTest(ComplexNumber* arr, int size, bool inverse)
+{
+	//cooley tukey algorithm
+	//must be a power of 2
+
+	int powerSize = 1 << (int)MathExt::ceil(log2(size));
+	std::vector<ComplexNumber> output;
+
+	if(size < powerSize)
+	{
+		//can't do unless it is a power of 2
+		return output;
+	}
+	else
+	{
+		// output = MathExt::doFFT(arr, size, inverse);
+
+		output = std::vector<ComplexNumber>(size);
+		for(int i=0; i<size; i++)
+		{
+			output[i] = arr[i];
+		}
+
+		std::vector<ComplexNumber> tempData = std::vector<ComplexNumber>(size);
+
+		doFFTTest(output.data(), size, 1, inverse, tempData.data());
+	}
+
+	return output;
+}
+
+//Should run faster. It still is faster than the normal naive way, but it is not
+//on par with other modern implementations
 std::vector<ComplexNumber> MathExt::doFFT(ComplexNumber* arr, int size, bool inverse)
 {
 	//split into even and odd indicies.
@@ -1406,6 +1313,53 @@ std::vector<ComplexNumber> MathExt::doFFT(ComplexNumber* arr, int size, bool inv
 	}
 }
 
+void MathExt::doFFTTest(ComplexNumber* output, int size, int incVal, bool inverse, ComplexNumber* tempData)
+{
+	//split into even and odd indicies.
+	//regroup them by adding them with a root of unity multiplied to the odd indicies.
+	//root of unity chosen is e^(2*PI*j/N)
+	
+	if(size>1)
+	{
+		ComplexNumber* split1 = output;
+		ComplexNumber* split2 = output+incVal;
+		
+		int newSize = (size/2);
+		int newInc = incVal*2;
+
+		doFFTTest(split1, newSize, newInc, inverse, tempData);
+		doFFTTest(split2, newSize, newInc, inverse, tempData);
+		
+		double angle = 0;
+		if(!inverse)
+			angle = (-2.0*PI)/size;
+		else
+			angle = (2.0*PI)/size;
+
+		for(int i=0; i<newSize; i++)
+		{
+			ComplexNumber sp1 = split1[i*newInc];
+			ComplexNumber sp2 = split2[i*newInc];
+			
+			ComplexNumber multiplier = ComplexNumber( MathExt::cos(angle*i), MathExt::sin(angle*i) );
+			output[i*incVal] = sp1 + (sp2*multiplier);
+			tempData[(i+newSize)*incVal] = sp1 - (sp2*multiplier);
+
+			if(inverse)
+			{
+				output[i*incVal] /= 2;
+				tempData[(i+newSize)*incVal] /= 2;
+			}
+		}
+
+		//copy tempData to output
+		for(int i=0; i<newSize; i++)
+		{
+			output[(i+newSize)*incVal] = tempData[(i+newSize)*incVal];
+		}
+	}
+}
+
 #pragma endregion
 
 #pragma region COSINE_TRANSFORM_1D
@@ -1441,9 +1395,9 @@ double MathExt::discreteCosineTransform(double* arr, int size, int u, bool inver
 	return sum * MathExt::sqrt(2.0/size);
 }
 
-double* MathExt::cosineTransform(double* arr, int size, bool inverse)
+std::vector<double> MathExt::cosineTransform(double* arr, int size, bool inverse)
 {
-	double* newArr = new double[size];
+	std::vector<double> newArr = std::vector<double>(size);
 
 	for(int u=0; u<size; u++)
 	{
@@ -1453,9 +1407,11 @@ double* MathExt::cosineTransform(double* arr, int size, bool inverse)
 	return newArr;
 }
 
-double* MathExt::fastCosineTransform(double* arr, int size, bool inverse)
+//should be a fast version of the normal discreteCosineTransform
+std::vector<double> MathExt::fastCosineTransform(double* arr, int size, bool inverse)
 {
-	return nullptr;
+	
+	return std::vector<double>();
 }
 
 #pragma endregion
@@ -1538,34 +1494,30 @@ Matrix MathExt::cosineTransform2D(Matrix arr, bool inverse)
 	for(int v=0; v<arr.getRows(); v++)
 	{
 		double* passArr = arr[v];
-		double* newArr = MathExt::cosineTransform(passArr, arr.getCols(), inverse);
+		std::vector<double> newArr = MathExt::cosineTransform(passArr, arr.getCols(), inverse);
 
 		for(int i=0; i<arr.getCols(); i++)
 		{
 			finalArr[v][i] = newArr[i];
 		}
-		delete[] newArr;
 	}
 
 	//for each column
 	for(int u=0; u<arr.getCols(); u++)
 	{
-		double* passArr = new double[arr.getRows()];
+		std::vector<double> passArr = std::vector<double>(arr.getRows());
 
 		for(int i=0; i<arr.getRows(); i++)
 		{
 			passArr[i] = finalArr[i][u];
 		}
 
-		double* newArr = MathExt::cosineTransform(passArr, arr.getCols(), inverse);
+		std::vector<double> newArr = MathExt::cosineTransform(passArr.data(), arr.getCols(), inverse);
 
 		for(int i=0; i<arr.getRows(); i++)
 		{
 			finalArr[i][u] = newArr[i];
 		}
-
-		delete[] passArr;
-		delete[] newArr;
 	}
 
 	return finalArr;
@@ -1574,6 +1526,167 @@ Matrix MathExt::cosineTransform2D(Matrix arr, bool inverse)
 Matrix MathExt::fastCosineTransform2D(Matrix arr, bool inverse)
 {
 	return Matrix();
+}
+
+#pragma endregion
+
+#pragma region DCT8x8
+
+//Special Case for JPEG
+const double S[8] = { 1.0/(2.0*MathExt::sqrt(2)),
+					  1.0/(4.0*MathExt::cos(PI/16)),
+					  1.0/(4.0*MathExt::cos(2*PI/16)),
+					  1.0/(4.0*MathExt::cos(3*PI/16)),
+					  1.0/(4.0*MathExt::cos(4*PI/16)),
+					  1.0/(4.0*MathExt::cos(5*PI/16)),
+					  1.0/(4.0*MathExt::cos(6*PI/16)),
+					  1.0/(4.0*MathExt::cos(7*PI/16))
+					};
+
+const double A[6] = { 0,
+					  MathExt::cos(4*PI/16),
+					  MathExt::cos(2*PI/16) - MathExt::cos(6*PI/16),
+					  MathExt::cos(4*PI/16),
+					  MathExt::cos(6*PI/16) + MathExt::cos(2*PI/16),
+					  MathExt::cos(6*PI/16),
+					};
+
+void MathExt::FCT8(double* arr, double* output, bool inverse)
+{
+	//assume arr has a size of 8
+	double v[29];
+
+	if(!inverse)
+	{
+		v[0] = arr[0]+arr[7];
+		v[1] = arr[1]+arr[6];
+		v[2] = arr[2]+arr[5];
+		v[3] = arr[3]+arr[4];
+		v[4] = arr[3]-arr[4];
+		v[5] = arr[2]-arr[5];
+		v[6] = arr[1]-arr[6];
+		v[7] = arr[0]-arr[7];
+
+		v[8] = v[0] + v[3];
+		v[9] = v[1] + v[2];
+		v[10] = v[1] - v[2];
+		v[11] = v[0] - v[3];
+		v[12] = -v[4] - v[5];
+		v[13] = (v[5]+v[6]) * A[3];
+		v[14] = v[6] + v[7];
+
+		v[15] = v[8] + v[9];
+		v[16] = v[8] - v[9];
+		v[17] = (v[10] + v[11]) * A[1];
+		v[18] = (v[12] + v[14]) * A[5];
+		
+		v[19] = -v[12]*A[2] - v[18];
+		v[20] = v[14]*A[4] - v[18];
+
+		v[21] = v[17] + v[11];
+		v[22] = v[11] - v[17];
+		v[23] = v[13] + v[7];
+		v[24] = v[7] - v[13];
+
+		v[25] = v[19] + v[24];
+		v[26] = v[23] + v[20];
+		v[27] = v[23] - v[20];
+		v[28] = v[24] - v[19];
+
+		output[0] = S[0] * v[15];
+		output[1] = S[1] * v[26];
+		output[2] = S[2] * v[21];
+		output[3] = S[3] * v[28];
+		output[4] = S[4] * v[16];
+		output[5] = S[5] * v[25];
+		output[6] = S[6] * v[22];
+		output[7] = S[7] * v[27];
+	}
+	else
+	{
+		v[15] = arr[0]/S[0];
+		v[26] = arr[1]/S[1];
+		v[21] = arr[2]/S[2];
+		v[28] = arr[3]/S[3];
+		v[16] = arr[4]/S[4];
+		v[25] = arr[5]/S[5];
+		v[22] = arr[6]/S[6];
+		v[27] = arr[7]/S[7];
+
+		v[19] = (v[25]-v[28])/2;
+		v[20] = (v[26]-v[27])/2;
+		v[23] = (v[26]+v[27])/2;
+		v[24] = (v[25]+v[28])/2;
+
+		v[7] = (v[23]+v[24])/2;
+		v[11] = (v[21]+v[22])/2;
+		v[13] = (v[23]-v[24])/2;
+		v[17] = (v[21]-v[22])/2;
+
+		v[8] = (v[15]+v[16])/2;
+		v[9] = (v[15]-v[16])/2;
+
+		v[18] = (v[19]-v[20]) * A[5];
+		v[12] = (v[19]*A[4] - v[18]) / (A[2]*A[5] - A[2]*A[4] - A[4]*A[5]);
+		v[14] = (v[18]-v[20] * A[2]) / (A[2]*A[5] - A[2]*A[4] - A[4]*A[5]);
+
+		v[6] = v[14] - v[7];
+		v[5] = v[13] / A[3] - v[6];
+		v[4] = -v[5] - v[12];
+		v[10] = v[17] / A[1] - v[11];
+
+		v[0] = (v[8]+v[11])/2;
+		v[1] = (v[9]+v[10])/2;
+		v[2] = (v[9]-v[10])/2;
+		v[3] = (v[8]-v[11])/2;
+
+		output[0] = (v[0] + v[7]) / 2;
+		output[1] = (v[1] + v[6]) / 2;
+		output[2] = (v[2] + v[5]) / 2;
+		output[3] = (v[3] + v[4]) / 2;
+		output[4] = (v[3] - v[4]) / 2;
+		output[5] = (v[2] - v[5]) / 2;
+		output[6] = (v[1] - v[6]) / 2;
+		output[7] = (v[0] - v[7]) / 2;
+	}
+}
+
+void MathExt::FCT8x8(Matrix arr, Matrix* output, bool inverse)
+{
+	//for each row
+	double** finalArr = output->getData();
+	double* newArr = new double[8];
+	double* passArr = new double[8];
+
+	for(int v=0; v<arr.getRows(); v++)
+	{
+		double* passArr = arr[v];
+		MathExt::FCT8(passArr, newArr, inverse);
+
+		for(int i=0; i<arr.getCols(); i++)
+		{
+			finalArr[v][i] = newArr[i];
+		}
+	}
+
+	//for each column
+	for(int u=0; u<arr.getCols(); u++)
+	{
+		for(int i=0; i<arr.getRows(); i++)
+		{
+			passArr[i] = finalArr[i][u];
+		}
+
+		MathExt::FCT8(passArr, newArr, inverse);
+
+		for(int i=0; i<arr.getRows(); i++)
+		{
+			finalArr[i][u] = newArr[i];
+		}
+	}
+
+	delete[] newArr;
+	delete[] passArr;
 }
 
 #pragma endregion

@@ -1,8 +1,35 @@
-*(DONE) Finish Arc drawing in VectorGraphics
-        (Fix arcInfo Function to return correct positions always)
-*(DONE) Add AntiAliasing (Percentages and junk) (Only x values for now)
-Add AntiAliasing on scanlines
-Add Strokes to VectorGraphics
-*(DONE) Add SVG Loader (Mostly)
-Add SVG Text Loader
-Add SVG Sprite (Collection of SVG Images)
+Error Reporting using exceptions
+
+TODO:
+Font
+
+GamepadDInput (Potentially)
+GamepadXInput (Potentially)
+GeneralVector (Potentially)
+Graphics (Potentially)
+GuiManager (Potentially)
+Image
+KDTree
+LinkedList
+MathExt
+Matrix
+Model (Potentially)
+Networking
+NeuralNetwork
+SimpleHashMap
+SimpleXml
+Sound
+StringTools
+System
+VectorFont
+VectorGraphic
+WndWindow
+
+DONE:
+BezierCurve
+SimpleFile
+SimpleDir
+Audio
+BitmapFont
+Compression
+FrequencyTable

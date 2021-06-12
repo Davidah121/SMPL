@@ -1,5 +1,6 @@
 #include "StringTools.h"
 #include <string>
+#include "Input.h"
 
 bool StringTools::hasInit = false;
 wchar_t const StringTools::lineBreak = L'\n';
@@ -138,6 +139,68 @@ bool StringTools::isValidChar(int v)
 {
 	return v>=32 && v<=126;
 }
+
+int StringTools::convertKeyToAscii(int keyVal, bool shiftHeld)
+{
+	if(keyVal>='A' && keyVal<='Z')
+	{
+		if(shiftHeld)
+			return keyVal;
+		else
+			return keyVal+0x20;
+	}
+	else if(keyVal>='0' && keyVal<='9')
+	{
+		if(shiftHeld)
+		{
+			char conversionTable[10] = {')', '!', '@', '#', '$', '%', '^', '&', '*', '('};
+			return conversionTable[ keyVal-'0' ];
+		}
+		else
+		{
+			return keyVal;
+		}
+	}
+	else if(keyVal>=Input::KEY_NUMPAD0 && keyVal<=Input::KEY_NUMPAD9)
+	{
+		return '0'+(keyVal-Input::KEY_NUMPAD0);
+	}
+	else if(keyVal==Input::KEY_PLUS)
+	{
+		if(shiftHeld)
+			return '+';
+		else
+			return '=';
+	}
+	else if(keyVal==Input::KEY_COMMA)
+	{
+		if(shiftHeld)
+			return '<';
+		else
+			return ',';
+	}
+	else if(keyVal==Input::KEY_PERIOD)
+	{
+		if(shiftHeld)
+			return '>';
+		else
+			return '.';
+	}
+	else if(keyVal==Input::KEY_MINUS)
+	{
+		if(shiftHeld)
+			return '-';
+		else
+			return '_';
+	}
+	else if(keyVal==Input::KEY_SPACE)
+	{
+		return ' ';
+	}
+
+	return -1;
+}
+	
 
 char StringTools::charToBase16(char val)
 {
@@ -346,6 +409,7 @@ std::vector<std::string> StringTools::splitString(std::string s, std::string del
 			{
 				//can't contain the substring.
 				temp+=s.at(i);
+				i++;
 				continue;
 			}
 
@@ -506,6 +570,7 @@ std::vector<std::wstring> StringTools::splitString(std::wstring s, std::wstring 
 			{
 				//can't contain the substring.
 				temp+=s.at(i);
+				i++;
 				continue;
 			}
 

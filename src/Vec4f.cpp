@@ -1,10 +1,10 @@
 #include "Vec4f.h"
 #include "MathExt.h"
 
-const Class* Vec4f::myClass = new Class("Vec4f", {Object::myClass});
+const Class Vec4f::myClass = Class("Vec4f", {&Object::myClass});
 const Class* Vec4f::getClass()
 {
-	return Vec4f::myClass;
+	return &Vec4f::myClass;
 }
 
 Vec4f::Vec4f()

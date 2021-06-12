@@ -1,3 +1,3 @@
 @echo OFF
-"libs/Debug/exportLibx64.bat"
-"libs/Debug/exportLibx64.bat"
+call "libs/Debug/exportLibx64.bat"
+call "libs/Release/exportLibx64.bat"

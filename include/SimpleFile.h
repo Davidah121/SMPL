@@ -3,9 +3,13 @@
 #include<vector>
 #include<fstream>
 #include "Object.h"
+#include<exception>
+
+
 
 class SimpleFile : public Object
 {
+
 public:
 	static const char READ = 0x00;
 	static const char WRITE = 0x01;
@@ -18,6 +22,20 @@ public:
 	static const char WIDECHAR = 0x10;
 	static const char UTF8 = 0x20;
 	
+	struct FileOpenErrorException : public std::exception
+	{
+		const char* what() const throw() { return "Error opening file"; }
+	};
+
+	struct FileReadException : public std::exception
+	{
+		const char* what() const throw() { return "File not opened for reading"; }
+	};
+
+	struct FileWriteException : public std::exception
+	{
+		const char* what() const throw() { return "File not opened for writing"; }
+	};
 
 	SimpleFile(std::wstring filename, char type);
 	SimpleFile(std::string filename, char type);
@@ -26,7 +44,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 
 	//Read functions
 	char readByte();
@@ -69,7 +87,7 @@ private:
 	std::wstring wideFileName;
 	char type=0;
 	char dataType=0;
-	std::fstream* file;
+	std::fstream* file = nullptr;
 	int size;
 	
 };

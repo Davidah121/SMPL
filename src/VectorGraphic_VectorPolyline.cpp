@@ -7,10 +7,10 @@
 
 #pragma region VectorPolyline
 
-const Class* VectorPolyline::myClass = new Class("VectorPolyline", {VectorShape::myClass});
+const Class VectorPolyline::myClass = Class("VectorPolyline", {&VectorShape::myClass});
 const Class* VectorPolyline::getClass()
 {
-	return VectorPolyline::myClass;
+	return &VectorPolyline::myClass;
 }
 
 VectorPolyline::VectorPolyline() : VectorShape()

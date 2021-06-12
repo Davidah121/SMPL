@@ -40,56 +40,42 @@
  *      System - Just a few utility functions
  *      Input - PollInput needs to change
  *      Networking - Most of it needs work
- *      GamepadXInput - May not be able to use other OS
- *      GamepadDInput - May not be able to use other OS
+ *      GamepadXInput - May not be able to use in other OS
+ *      GamepadDInput - May not be able to use in other OS
  *      WavAudio - Needs work, but not much has to change
  */
 
 /**
  * Things to test that also need to be changed:
  *      GamepadDInput - Works, but look at the axis values more
- *      WndWindow - Mostly works except the gui and other drawing methods not yet done
- *      Input
- *      Networking
- *      System - Needs
- *      WavAudio - Needs lots of work before conversion
  */
 
 /**
  * Things being worked on currently:
- *      Compression - Deflate compression.
- *          
- *      Image - Load JPEG, DDS
+ *      Image - Load DDS
  *          Also be able to save to the different formats
  *          These must be implemented through this library to maintain cross platform use.
  *          Not relying on additional tools and only the c++ library is required and not much of the c++ library.
  *      
  *      Vector Graphics - Load vector graphics files
  *          Must be implemented in this library and not use external tools.
- * 
- *      WavAudio - Must load and play audio from .wav files and .ogg files
- *          .mp3 files are under patents and therefore can not be used for our purposes.
- *          Perhaps allowing them to be loaded for personal uses would be acceptable
- *          Name of the class should also be changed.
- *          Must play audio in real time.
- *          Must have audio objects.
+ *          Missing a few features such as stroke, transforms, different fills
  */
 
 /**
  * Todo List:
  *      Work on shape class by adding more collision methods.
- *      Work on GuiManager class by adding more gui objects and interactions
  *      Work on Graphics class by adding more functions
- *      Work on MathExt class by adding more functions. (DCT, etc.)
  *      Work on VectorGraphic class by actually finishing it.
- *      Work on WavAudio so that it plays audio correctly.
  *      
- *      Fix StringTools at some point. Especially the conversion between char* to wchar_t*
- *      Lastly
+ *      Update all sleep functions
+ *      Work on MathExt to avoid deleting memory
+ *      Work on JPEG loader for invalid images in test image folder
  *      Work on making the library portable
  */
 
 WndWindow* windowPointer;
+Image* imgPointer;
 Image* img;
 std::string globalString = "";
 
@@ -219,20 +205,6 @@ void testFontGraphics()
         globalString = StringTools::getString();
     }
 }
-
-void paintFunction()
-{
-    if(windowPointer!=nullptr)
-    {
-        Graphics::setColor({255,255,255,255});
-        Image background = Image(img->getWidth(), img->getHeight());
-        background.clearImage();
-        background.drawSprite(img, 0, 0);
-
-        windowPointer->drawImage(&background);
-    }
-}
-
 
 void testNeuralNetwork()
 {
@@ -456,272 +428,6 @@ void testColorConvert()
     StringTools::println("lRGB: %d, %d, %d", lrgb.red, lrgb.green, lrgb.blue);
 }
 
-void testFourierTransform()
-{
-    int samplesPerSec = 10;
-    int size = 16;
-    int padding = size-samplesPerSec;
-
-    ComplexNumber* arr = new ComplexNumber[size];
-    
-    double frequency = 4; //A4
-    double mult = 2.0*PI*frequency;
-
-    for(int i=0; i<samplesPerSec; i++)
-    {
-        arr[i].real = sin( mult * (double)i/samplesPerSec );
-        arr[i].imaginary = 0;
-
-        StringTools::println("Value: %f + i%f", arr[i].real, arr[i].imaginary);
-    }
-    
-    unsigned t1 = System::getCurrentTimeNano();
-    std::vector<ComplexNumber> normalFourier = MathExt::fourierTransform(arr, size, false);
-    unsigned t2 = System::getCurrentTimeNano();
-
-    StringTools::println("normalFourier done");
-    StringTools::println("Took: %d",(t2-t1));
-
-    t1 = System::getCurrentTimeNano();
-    std::vector<ComplexNumber> fastFourier = MathExt::fastFourierTransform(arr, size);
-    t2 = System::getCurrentTimeNano();
-
-    StringTools::println("fastFourier done");
-    StringTools::println("Took: %d",(t2-t1));
-
-    std::vector<ComplexNumber> inverseFunc = MathExt::fourierTransform(fastFourier.data(), fastFourier.size(), true);
-    
-    for(int i=0; i<samplesPerSec; i++)
-    {
-        if(inverseFunc[i] != arr[i])
-        {
-            
-        }
-        StringTools::println("Value: %f + i%f", inverseFunc[i].real, inverseFunc[i].imaginary);
-    }
-
-    //save as a .csv
-    /*
-    SimpleFile f = SimpleFile("results.csv", SimpleFile::WRITE);
-
-    std::string header = "Normal, Fast";
-    f.writeString(header);
-    f.writeLineBreak();
-    
-    for(int i=0; i<samplesPerSec/2; i++)
-    {
-        double length1 = 2 * MathExt::sqrt(MathExt::sqr(normalFourier[i].real) + MathExt::sqr(normalFourier[i].imaginary));
-        double length2 = 2 * MathExt::sqrt(MathExt::sqr(fastFourier[i].real) + MathExt::sqr(fastFourier[i].imaginary));
-        
-        // length1/=samplesPerSec;
-        // length2/=samplesPerSec;
-        
-        std::string finalString = "";
-        finalString += (std::to_string(length1) + ", ") + std::to_string(length2);
-
-        f.writeString(finalString);
-        f.writeLineBreak();
-    }
-
-    f.close();
-    */
-}
-
-void testCosineTransform2D()
-{
-    
-    Matrix m = Matrix(8, 8);
-    // m[0][0] = -76; m[0][1] = -73; m[0][2] = -67; m[0][3] = -62; m[0][4] = -58; m[0][5] = -67; m[0][6] = -64; m[0][7] = -55;
-    // m[1][0] = -65; m[1][1] = -69; m[1][2] = -73; m[1][3] = -38; m[1][4] = -19; m[1][5] = -43; m[1][6] = -59; m[1][7] = -56;
-    // m[2][0] = -66; m[2][1] = -69; m[2][2] = -60; m[2][3] = -15; m[2][4] = 16; m[2][5] = -24; m[2][6] = -62; m[2][7] = -55;
-    // m[3][0] = -65; m[3][1] = -70; m[3][2] = -57; m[3][3] = -6; m[3][4] = 26; m[3][5] = -22; m[3][6] = -58; m[3][7] = -59;
-    // m[4][0] = -61; m[4][1] = -67; m[4][2] = -60; m[4][3] = -24; m[4][4] = -2; m[4][5] = -40; m[4][6] = -60; m[4][7] = -58;
-    // m[5][0] = -49; m[5][1] = -63; m[5][2] = -68; m[5][3] = -58; m[5][4] = -51; m[5][5] = -60; m[5][6] = -70; m[5][7] = -53;
-    // m[6][0] = -43; m[6][1] = -57; m[6][2] = -64; m[6][3] = -69; m[6][4] = -73; m[6][5] = -67; m[6][6] = -63; m[6][7] = -45;
-    // m[7][0] = -41; m[7][1] = -49; m[7][2] = -59; m[7][3] = -60; m[7][4] = -63; m[7][5] = -52; m[7][6] = -50; m[7][7] = -34;
-
-    m[0][0] = 127; m[0][1] = 127; m[0][2] = 127; m[0][3] = 127; m[0][4] = 127; m[0][5] = 127; m[0][6] = 127; m[0][7] = 127;
-    m[1][0] = 127; m[1][1] = 127; m[1][2] = 127; m[1][3] = 127; m[1][4] = 127; m[1][5] = 127; m[1][6] = 127; m[1][7] = 127;
-    m[2][0] = 127; m[2][1] = 127; m[2][2] = 127; m[2][3] = 127; m[2][4] = 127; m[2][5] = 127; m[2][6] = 127; m[2][7] = 127;
-    m[3][0] = 127; m[3][1] = 127; m[3][2] = 127; m[3][3] = 127; m[3][4] = 127; m[3][5] = 127; m[3][6] = 127; m[3][7] = 127;
-    m[4][0] = 127; m[4][1] = 127; m[4][2] = 127; m[4][3] = 127; m[4][4] = 127; m[4][5] = 127; m[4][6] = 127; m[4][7] = 127;
-    m[5][0] = 127; m[5][1] = 127; m[5][2] = 127; m[5][3] = 127; m[5][4] = 127; m[5][5] = 127; m[5][6] = 127; m[5][7] = 127;
-    m[6][0] = 127; m[6][1] = 127; m[6][2] = 127; m[6][3] = 127; m[6][4] = 127; m[6][5] = 127; m[6][6] = 127; m[6][7] = 127;
-    m[7][0] = 127; m[7][1] = 127; m[7][2] = 127; m[7][3] = 127; m[7][4] = 127; m[7][5] = 127; m[7][6] = 127; m[7][7] = 127;
-    Matrix nM = MathExt::cosineTransform2D(m);
-
-    for(int y=0; y<8; y++)
-    {
-        for(int x=0; x<8; x++)
-        {
-            StringTools::print("%.2f\t",nM[y][x]);
-        }
-        StringTools::println("");
-    }
-    StringTools::println("");
-
-    Matrix orgM = MathExt::cosineTransform2D(nM, true);
-
-    for(int y=0; y<8; y++)
-    {
-        for(int x=0; x<8; x++)
-        {
-            StringTools::print("%.2f\t",orgM[y][x]);
-        }
-        StringTools::println("");
-    }
-    
-}
-
-void testAudio()
-{
-    Sound s = Sound();
-    s.loadSound("./testFiles/Audio/At DEWM's GATE.wav");
-    s.setLoop(true);
-    s.setLoopStart(18.0);
-    s.setLoopEnd(54.0);
-
-    Sound s2 = Sound();
-    s2.loadSound("./testFiles/Audio/Explosion.wav");
-    
-    Audio::init();
-    Audio::addSound(&s);
-    Audio::addSound(&s2);
-
-    Audio::setVolume(1);
-    
-    while(true)
-    {
-        StringTools::print("type stuff: ");
-        std::string line = StringTools::getString();
-        if(line == "end")
-        {
-            break;
-        }
-        else if(line == "play_s1")
-        {
-            s.play();
-        }
-        else if(line == "play_s2")
-        {
-            s2.play();
-        }
-        else if(line == "stop_s1")
-        {
-            s.stop();
-        }
-        else if(line == "stop_s2")
-        {
-            s2.stop();
-        }
-        else if(line == "pause_s1")
-        {
-            s.pause();
-        }
-        else if(line == "pause_s2")
-        {
-            s2.pause();
-        }
-        else if(line == "volume")
-        {
-            StringTools::println("Enter volume");
-            double v = std::stod(StringTools::getString());
-            Audio::setVolume(v);
-        }
-    }
-
-    Audio::dispose();
-}
-
-void imageExtenderThing()
-{
-    //always extend to 1920 x 1080
-    Image newImg = Image(1920, 1080);
-
-    int amountOfImages = 0;
-    Image** loadImg = Image::loadImage("abc123d.png", &amountOfImages);
-
-    if(amountOfImages<=0)
-    {
-        StringTools::println("Couldn't load image");
-        return;
-    }
-
-    Image* otherImg = loadImg[0];
-
-    //extend out into white
-    //let 8 be the maximum allowed pixels till white
-    int xDis = newImg.getWidth() - otherImg->getWidth();
-    int yDis = newImg.getHeight() - otherImg->getHeight();
-
-    int pixsToWhiteX = MathExt::clamp(xDis, 0, xDis/2);
-    int pixsToWhiteY = MathExt::clamp(yDis, 0, 8);
-    
-
-    int x1 = xDis/2;
-    int y1 = yDis/2;
-    int x2 = x1 + otherImg->getWidth() - 1;
-    int y2 = y1 + otherImg->getHeight() - 1;
-
-    float xF, yF;
-
-    for(int y=0; y<newImg.getHeight(); y++)
-    {
-        int yVal = y;
-        yVal = MathExt::clamp(yVal, y1, y2);
-
-        yVal -= y1;
-        if(y < y1)
-        {
-            //up
-            yF = 1.0 - ((double)MathExt::clamp( y1-y, 0, pixsToWhiteY) / pixsToWhiteY );
-        }
-        else if(y > y2)
-        {
-            //down
-            yF = 1.0 - ((double)MathExt::clamp( y-y2, 0, pixsToWhiteY) / pixsToWhiteY );
-        }
-        else
-        {
-            yF = 1.0;
-        }
-
-        for(int x=0; x<newImg.getWidth(); x++)
-        {
-            int xVal = x;
-            xVal = MathExt::clamp(xVal, x1, x2);
-
-            xVal -= x1;
-            
-            Color c1 = otherImg->getPixel(xVal, yVal);
-            Color c2 = {255, 255, 255, 255};
-
-            if(x < x1)
-            {
-                //left
-                xF = 1.0 - ((double)MathExt::clamp( x1-x, 0, pixsToWhiteX) / pixsToWhiteX );
-            }
-            else if(x > x2)
-            {
-                //right
-                xF = 1.0 - ((double)MathExt::clamp( x-x2, 0, pixsToWhiteX) / pixsToWhiteX );
-            }
-            else
-            {
-                xF = 1.0;
-            }
-
-            Color finalColor = Graphics::lerp(c2, c1, xF * yF);
-            newImg.setPixel(x, y, finalColor);
-        }
-    }
-
-    newImg.saveBMP("thingTest.bmp");
-
-    delete otherImg;
-    delete[] loadImg;
-}
-
 void testPNGSave()
 {
     int amountOfImages = 0;
@@ -752,744 +458,410 @@ void testPNGSave()
     delete[] imgAr;
 }
 
-void testCRC()
+void gifSize()
 {
-    unsigned char* data = new unsigned char[9]{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39};
+    Sprite k = Sprite();
+    time_t t1 = System::getCurrentTimeMicro();
+    k.loadImage("Screenshot (409).png");
+    time_t t2 = System::getCurrentTimeMicro();
+    StringTools::println("Time to load: %u", t2-t1);
 
-    unsigned int remainder = Compression::crc(data, 9, Compression::CRC_8);
-
-    StringTools::println( StringTools::toHexString(remainder & 0xFF));
-    delete[] data;
-}
-
-void testScale()
-{
-    int amountOfImages = 0;
-    Image** imgAr = Image::loadImage("./ScaleTest/abc123d.png", &amountOfImages);
-    if(amountOfImages<=0)
+    if(k.getSize()>0)
     {
-        StringTools::println("ERROR ON LOAD");
-        return;
-    }
-
-    Image* img1 = Graphics::scaleImage(imgAr[0], 1.3, 1.1, Graphics::NEAREST_NEIGHBOR_FILTER);
-    StringTools::println("Finished NN");
-    img1->savePNG("./ScaleTest/test/img_NN.png");
-    StringTools::println("Finished saving NN");
-    delete img1;
-    
-    Image* img2 = Graphics::scaleImage(imgAr[0], 1.5, 1.15, Graphics::BILINEAR_FILTER);
-    StringTools::println("Finished BL");
-    img2->savePNG("./ScaleTest/test/img_BL.png");
-    StringTools::println("Finished saving BL");
-    delete img2;
-
-    Image* img3 = Graphics::scaleImage(imgAr[0], 1.7, 1.25, Graphics::BICUBIC_FILTER);
-    StringTools::println("Finished BC");
-    img3->savePNG("./ScaleTest/test/img_BC.png");
-    StringTools::println("Finished saving BC");
-    delete img3;
-
-    delete imgAr[0];
-    delete[] imgAr;
-}
-
-void drawAnimation()
-{
-    if(windowPointer!=nullptr)
-    {
-        Graphics::setColor({255,255,255,255});
-        Image background = Image(windowPointer->getWidth(), windowPointer->getHeight());
-        background.clearImage();
-
-        if(img!=nullptr)
-            background.drawSprite(img, 0, 0);
-
-        windowPointer->drawImage(&background);
-    }
-}
-
-void testAnimatedImages()
-{
-    windowPointer = new WndWindow("Title", 1280, 720);
-    windowPointer->setPaintFunction(drawAnimation);
-
-    int amountOfImages = 0;
-    Sprite s = Sprite();
-    int currTime = 0;
-    int currIndex = 0;
-    int time = -1;
-
-    int stepsToChange = -1;
-
-    StringTools::println("Controls: F=changeFile, T=changeTime, Q=Quit");
-
-    while(windowPointer->getRunning())
-    {
-        Input::pollInput();
-        if(Input::getKeyPressed('F'))
-        {
-            //Change file input
-            StringTools::print("Input Image Name: ");
-            std::string command = StringTools::getString();
-            s.loadImage(command);
-
-            StringTools::println("Loaded %d Images", s.getSize());
-
-            currIndex = 0;
-            time = -1;
-            stepsToChange = -1;
-            img = s.getImage(currIndex);
-        }
-        else if (Input::getKeyPressed('T'))
-        {
-            StringTools::print("Input frames per second (max of 60): ");
-            std::string command = StringTools::getString();
-
-            if(s.getSize()>0)
-            {
-                time = MathExt::min(stoi(command), 60);
-                stepsToChange = 60 / time;
-            }
-        }
-        else if (Input::getKeyPressed('V'))
-        {
-            StringTools::print("Set frame: ");
-            std::string command = StringTools::getString();
-            int frame = stoi(command);
-            if(s.getSize()>0)
-            {
-                time = -1;
-                stepsToChange=-1;
-                currIndex = 0;
-                img = s.getImage(frame % s.getSize());
-            }
-        }
-        else if (Input::getKeyPressed('Q'))
-        {
-            windowPointer->close();
-            break;
-        }
-
-        currTime++;
-
-        if(stepsToChange>0)
-        {
-            if(currTime>=stepsToChange)
-            {
-                currTime = 0;
-                currIndex = (currIndex+1) % s.getSize();
-                
-                img = s.getImage(currIndex);
-            }
-        }
+        t1 = System::getCurrentTimeMicro();
         
-        windowPointer->repaint();
-        System::sleep(16,666);
+        k.getImage(0)->saveGIF("nSizeGif.gif", 256, false, false);
+        t2 = System::getCurrentTimeMicro();
+
+        StringTools::println("Time to save: %u", t2-t1);
+        //k.getImage(0)->saveGIF("nSizeGifDither.gif", 256, true, false);
     }
 
-    delete windowPointer;
+    t1 = System::getCurrentTimeMicro();
 }
 
-void testGIF()
+void currentTest()
 {
-    int imgs = 0;
-    Image** arr = Image::loadImage("fuavs6gs0w801.gif", &imgs);
+    // AudioOut::init();
 
-    if(imgs>0)
-    {
-        StringTools::println("Images %d", imgs);
-        for(int i=0; i<imgs; i++)
-        {
-            delete arr[i];
-        }
-        delete[] arr;
-    }
-}
-
-void testHuffmanStuff()
-{
-    int* dataValue = new int[12]{0,1,2,3,4,5,6,7,8,9,10,11};
-    int* codeLengths = new int[12]{0,1,5,1,1,1,1,1,1,0,0,0};
+    // Sound s = Sound();
+    // s.loadSound("./testFiles/Audio/TetrisTheme.wav");
     
-    BinaryTree<HuffmanNode>* tree = Compression::buildCanonicalHuffmanTree(dataValue, 12, codeLengths, 12, true, false);
+    // AudioOut::addSound(&s);
 
-    //verify correct
+    // while(true)
+    // {
+    //     char c = StringTools::getChar();
+
+    //     if(c == 'p')
+    //     {
+    //         s.play();
+    //     }
+    //     else if(c == 's')
+    //     {
+    //         s.stop();
+    //     }
+    //     else if(c == 'x')
+    //     {
+    //         AudioOut::dispose();
+    //         break;
+    //     }
+    // }
+
+
+    AudioIn::init();
+
     while(true)
     {
-        StringTools::print("CodeLength: ");
-        std::string len = StringTools::getString();
-        int actualLen = std::stoi(len);
-        
-        if(actualLen == 0)
+        char c = StringTools::getChar();
+
+        if(c == 'r')
         {
+            AudioIn::record();
+        }
+        else if(c == 's')
+        {
+            AudioIn::stop();
+        }
+        else if(c == 'x')
+        {
+            AudioIn::stop();
             break;
         }
+    }
 
-        StringTools::print("CodeValue: ");
-        std::string val = StringTools::getString();
-        int actualVal = std::stoi(val);
+    Sound s = Sound();
+    s.copyData(AudioIn::getAudioData().data(), AudioIn::getAudioData().size());
+    s.saveWAV("recordedWav.wav");
 
-        BinarySet bin = BinarySet();
-        bin.add(actualVal, actualLen);
+    AudioIn::dispose();
+}
 
-        for(int i=0; i<actualLen; i++)
+void gradientTest()
+{
+    int wid, hei;
+
+    Sprite img = Sprite();
+    img.loadImage("./testFiles/edgeImg.png");
+    
+    Graphics::convertToColorSpace(img.getImage(0), ColorSpaceConverter::RGB_TO_YCBCR);
+
+    wid = img.getImage(0)->getWidth();
+    hei = img.getImage(0)->getHeight();
+    
+    std::vector<std::vector<Vec2f>> imgGrad = Graphics::calculateGradient(img.getImage(0), Graphics::RED_CHANNEL);
+
+    //save as 3 images.
+
+    //x gradient
+    Image k = Image(wid,hei);
+    for(int y=0; y<hei; y++)
+    {
+        for(int x=0; x<wid; x++)
         {
-            StringTools::print( (bin.getBit(i)==0) ? "0":"1" );
+            Color c;
+            c.red = (unsigned char)MathExt::clamp(imgGrad[y][x].x, 0.0, 255.0);
+            c.green = c.red;
+            c.blue = c.red;
+            c.alpha = 255;
+            k.setPixel(x,y,c);
         }
-        StringTools::println("");
+    }
 
-        BinaryTreeNode<HuffmanNode>* node = tree->traverse(bin);
+    k.savePNG("xGradImg.png");
 
-        if(node!=nullptr && node->data.frequency!=0)
-            StringTools::println("Found value %d", node->data.value);
-        else
-            StringTools::println("Didn't find a value");
-        
+    //y gradient
+    Image k2 = Image(wid,hei);
+    for(int y=0; y<hei; y++)
+    {
+        for(int x=0; x<wid; x++)
+        {
+            Color c;
+            c.red = (unsigned char)MathExt::clamp(imgGrad[y][x].y, 0.0, 255.0);
+            c.green = c.red;
+            c.blue = c.red;
+            c.alpha = 255;
+            k2.setPixel(x,y,c);
+        }
+    }
+
+    k2.savePNG("yGradImg.png");
+
+    //x+y gradient
+    Image k3 = Image(wid,hei);
+    for(int y=0; y<hei; y++)
+    {
+        for(int x=0; x<wid; x++)
+        {
+            Color c;
+            c.red = (unsigned char)MathExt::clamp(MathExt::vecLength(imgGrad[y][x]), 0.0, 255.0);
+            c.green = c.red;
+            c.blue = c.red;
+            c.alpha = 255;
+            k3.setPixel(x,y,c);
+        }
+    }
+
+    k3.savePNG("xyGradImg.png");
+}
+
+void fileTest()
+{
+    Image k = Image(640, 480);
+
+    Graphics::setClippingRect( Box2D(64, 64, 128, 128) );
+    Graphics::setColor({255,0,0,255});
+
+    k.drawCircle(64,64,64,false);
+    k.savePNG("clippingTest.png");
+}
+
+void testGui()
+{
+    WndWindow w = WndWindow("test", 640, 480, -1, -1, WndWindow::NORMAL_WINDOW);
+    
+    GuiContainer mainContainer;
+
+    GuiRectangleButton applyBut = GuiRectangleButton(640-64, 480-52, 64, 24);
+    GuiTextBlock applyText = GuiTextBlock(0, 0, 64, 24);
+
+    applyBut.setOnClickFunction([](GuiInstance* ins)->void{
+        std::wstring info = System::fileDialogBox(System::TYPE_SAVE_FILE);
+        StringTools::println("GOT: %ls", info.c_str());
+    });
+
+    GuiRectangleButton resetBut = GuiRectangleButton(640-64, 480-26, 64, 24);
+    GuiTextBlock resetText = GuiTextBlock(0, 0, 64, 24);
+
+    resetBut.setOnClickFunction([](GuiInstance* ins)->void{
+        std::wstring info = System::fileDialogBox(System::TYPE_OPEN_FOLDER);
+        StringTools::println("GOT: %ls", info.c_str());
+    });
+
+    GuiRectangleButton loadBut = GuiRectangleButton(12, 12, 64, 24);
+    GuiTextBlock loadText = GuiTextBlock(0, 0, 64, 24);
+
+    loadBut.setOnClickFunction([](GuiInstance* ins)->void{
+        std::wstring info = System::fileDialogBox(System::TYPE_OPEN_FILE);
+        StringTools::println("GOT: %ls", info.c_str());
+    });
+
+    mainContainer.addChild(&applyBut);
+    mainContainer.addChild(&resetBut);
+    mainContainer.addChild(&loadBut);
+
+    w.getGuiManager()->addElement(&mainContainer);
+
+    w.setThreadAutoRepaint(true);
+    w.setThreadUpdateTime(16);
+
+    w.waitTillClose();
+}
+
+void ssePaint()
+{
+    //must test every draw function in graphics to ensure same results under SSE and AVX instructions
+    Image img = Image(640, 640);
+
+    Graphics::setColor({255,0,0,224});
+    Color verifyColor = {0,255,255,128};
+
+    #pragma region DRAW_RECT
+
+    Graphics::drawRect(32, 32, 64, 64, false, &img);
+    img.drawPixel(32,32,verifyColor);
+    img.drawPixel(64,32,verifyColor);
+    img.drawPixel(64,64,verifyColor);
+    img.drawPixel(32,64,verifyColor);
+
+    Graphics::drawRect(67, 33, 78, 41, false, &img);
+    img.drawPixel(67,33,verifyColor);
+    img.drawPixel(78,33,verifyColor);
+    img.drawPixel(78,41,verifyColor);
+    img.drawPixel(67,41,verifyColor);
+
+    #pragma endregion
+
+    #pragma region DRAW_LINE
+
+    Graphics::drawLine(96, 32, 128, 32, &img);
+    img.drawPixel(96,32,verifyColor);
+    img.drawPixel(128,32,verifyColor);
+
+    Graphics::drawLine(96, 35, 127, 35, &img);
+    img.drawPixel(96,35,verifyColor);
+    img.drawPixel(127,35,verifyColor);
+
+    Graphics::drawLine(99, 37, 125, 37, &img);
+    img.drawPixel(99,37,verifyColor);
+    img.drawPixel(125,37,verifyColor);
+
+    #pragma endregion
+
+    #pragma region DRAW_CIRCLE
+
+    Graphics::drawCircle(160, 32, 16, false, &img);
+    Graphics::drawCircle(160, 64, 11, false, &img);
+    
+    #pragma endregion
+
+    #pragma region DRAW_IMG
+    Sprite testDrawImg = Sprite();
+    testDrawImg.loadImage("m4o2z38ykg801.png");
+
+    Graphics::drawSprite(testDrawImg.getImage(0), 127, 128, &img);
+    
+    #pragma endregion
+
+    #pragma region DRAW_TRIANGLE
+    
+    Graphics::drawTriangle(250, 25, 280, 26, 270, 47, false, &img);
+    img.drawPixel(250,25,verifyColor);
+    img.drawPixel(280,26,verifyColor);
+    img.drawPixel(270,47,verifyColor);
+
+    Graphics::setColor({0,255,0,128});
+    Graphics::drawTriangle(250, 24, 280, 25, 270, 4, false, &img);
+    img.drawPixel(250,24,verifyColor);
+    img.drawPixel(280,25,verifyColor);
+    img.drawPixel(270,4,verifyColor);
+
+    #pragma endregion
+
+    img.savePNG("SSE & AVX Test.png");
+}
+
+void testGui2()
+{
+    WndWindow guiWindow = WndWindow("GUI", 640, 480);
+    guiWindow.setActivateGui(true);
+
+    GuiRectangleButton startBut = GuiRectangleButton(320-32, 240-12, 64, 24);
+    GuiTextBlock startText = GuiTextBlock(0, 0, 64, 24);
+    startText.setText("START");
+    startBut.addChild(&startText);
+
+    GuiRectangleButton stopBut = GuiRectangleButton(320-32, 272-12, 64, 24);
+    GuiTextBlock stopText = GuiTextBlock(0, 0, 64, 24);
+    stopText.setText("STOP");
+    stopBut.addChild(&stopText);
+
+    guiWindow.getGuiManager()->addElement(&startBut);
+    guiWindow.getGuiManager()->addElement(&stopBut);
+
+    while(guiWindow.getRunning())
+    {
+        guiWindow.repaint();
+        System::sleep(10);
+    }
+
+}
+
+void testNewFFT()
+{
+    std::vector<double> baseData = std::vector<double>(8);
+    // baseData[0] = ComplexNumber(MathExt::cos(0.0 * 3.0/8.0), 0);
+    // baseData[1] = ComplexNumber(MathExt::cos(1.0 * 3.0/8.0), 0);
+    // baseData[2] = ComplexNumber(MathExt::cos(2.0 * 3.0/8.0), 0);
+    // baseData[3] = ComplexNumber(MathExt::cos(3.0 * 3.0/8.0), 0);
+    // baseData[4] = ComplexNumber(MathExt::cos(4.0 * 3.0/8.0), 0);
+    // baseData[5] = ComplexNumber(MathExt::cos(5.0 * 3.0/8.0), 0);
+    // baseData[6] = ComplexNumber(MathExt::cos(6.0 * 3.0/8.0), 0);
+    // baseData[7] = ComplexNumber(MathExt::cos(7.0 * 3.0/8.0), 0);
+    for(int i=0; i<baseData.size(); i++)
+    {
+        baseData[i] = i;
+    }
+
+
+    time_t t1, t2;
+    t1 = System::getCurrentTimeNano();
+    std::vector<double> referenceValues = MathExt::cosineTransform(baseData.data(), baseData.size(), false);
+    t2 = System::getCurrentTimeNano();
+
+    StringTools::println("Time for base: %llu", t2-t1);
+
+    std::vector<double> referenceFastValues = std::vector<double>(8);
+    t1 = System::getCurrentTimeNano();
+    
+    MathExt::FCT8(baseData.data(), referenceFastValues.data(), false);
+    t2 = System::getCurrentTimeNano();
+
+    StringTools::println("Time for fft: %llu", t2-t1);
+    
+    // t1 = System::getCurrentTimeNano();
+    // std::vector<ComplexNumber> testFastValues = MathExt::fastFourierTransformTest(baseData.data(), baseData.size(), false);
+    // t2 = System::getCurrentTimeNano();
+
+    // StringTools::println("Time for nfft: %llu", t2-t1);
+    
+    StringTools::println("DCT   |   FDCT");
+    for(int i=0; i<baseData.size(); i++)
+    {
+        StringTools::println("%.3f | %.3f", referenceValues[i], referenceFastValues[i]);
     }
 }
 
 void testJPEG()
 {
-    int amountOfImages = 0;
-    StringTools::println("ENTER JPEG FILE");
-    std::string filename = StringTools::getString();
-
-    Image** imgArr = Image::loadImage(filename, &amountOfImages);
-
-    if(amountOfImages>0)
-    {
-        // do stuff
-        imgArr[0]->saveBMP("testJPEGStuff.bmp");
-    }
-    else
-    {
-        StringTools::println("Error loading Image");
-    }
-
-    if(imgArr!=nullptr)
-    {
-        for(int i=0; i<amountOfImages; i++)
-        {
-            if(imgArr[i]!=nullptr)
-                delete imgArr[i];
-            
-            imgArr[i] = nullptr;
-        }
-
-        delete[] imgArr;
-        imgArr = nullptr;
-    }
-}
-
-double rot = 360;
-Image* drwImg = new Image(1920, 1080);
-
-void drawTextureFunction()
-{
-    if(windowPointer!=nullptr)
-    {
-        Graphics::setColor({127,127,127,255});
-        drwImg->clearImage();
-
-        // Mat3f rotMat = MathExt::rotation2D( MathExt::toRad(rot), 300,300);
-        // Vec3f p1 = Vec3f(0,0,1);
-        // Vec3f p2 = Vec3f(600,0,1);
-        // Vec3f p3 = Vec3f(600,600,1);
-        // Vec3f p4 = Vec3f(0,600,1);
-        
-        // p1 = rotMat*p1;
-        // p2 = rotMat*p2;
-        // p3 = rotMat*p3;
-        // p4 = rotMat*p4;
-
-        // Vec4f finalP1 = Vec4f(p1.x, p1.y, 0, 0);
-        // Vec4f finalP2 = Vec4f(p2.x, p2.y, 1, 0);
-        // Vec4f finalP3 = Vec4f(p3.x, p3.y, 1, 1);
-        // Vec4f finalP4 = Vec4f(p4.x, p4.y, 0, 1);
-        
-        Graphics::setColor({255,255,255,255});
-
-        // Graphics::drawTriangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, false, &drwImg);
-        // Graphics::drawTriangle(p1.x, p1.y, p3.x, p3.y, p4.x, p4.y, false, &drwImg);
-        // Graphics::drawRect(0, 0, 1920, 1080, false, &drwImg);
-        
-        // Graphics::drawTexturedTriangle(finalP1, finalP2, finalP3, img, &drwImg);
-        // Graphics::drawTexturedTriangle(finalP1, finalP3, finalP4, img, &drwImg);
-        //Graphics::setCompositeRule( Graphics::NO_COMPOSITE );
-
-        size_t t1 = System::getCurrentTimeNano();
-        for(int i=0; i<52; i++)
-        {
-            Graphics::drawTriangle(0, 0, 1920, 0, 1920, 1080, false, drwImg);
-            Graphics::drawTriangle(0, 0, 1920, 1080, 0, 1080, false, drwImg);
-            
-            // Graphics::drawRect(0, 0, 1920, 1080, false, drwImg);
-        }
-        size_t t2 = System::getCurrentTimeNano();
-
-        StringTools::println("Time: %u", t2-t1);
-        
-        windowPointer->drawImage(drwImg);
-        rot-=1;
-        if(rot<=0)
-        {
-            rot=360;
-        }
-    }
-}
-
-void drawWind()
-{
-    //CgprO7UUoAAhiKx.jpg
-    int amountOfImages = 0;
-    std::string filename = "C:/Users/Alan/Pictures/CgprO7UUoAAhiKx.jpg";
-    Image** imgArr = Image::loadImage(filename, &amountOfImages);
-
-    if(amountOfImages>0)
-    {
-        // do stuff
-        img = imgArr[0];
-        windowPointer = new WndWindow("ROTATE IMAGE", 1920, 1080);
-        windowPointer->setPaintFunction(drawTextureFunction);
-        windowPointer->setActivateGui(false);
-
-        int frames = 0;
-        unsigned long timePassed = 0;
-
-        while(windowPointer->getRunning())
-        {
-
-            unsigned long t1 = System::getCurrentTimeNano();
-            windowPointer->repaint();
-            unsigned long t2 = System::getCurrentTimeNano();
-            while((t2-t1) < 16666666)
-            {
-                t2 = System::getCurrentTimeNano();
-            }
-
-            timePassed += (t2-t1);
-            frames++;
-
-            if(timePassed >= 1000000000)
-            {
-                //1 second has passed
-                StringTools::println("FPS: %d", frames);
-                timePassed = 0;
-                frames = 0;
-            }
-        }
-
-        delete windowPointer;
-    }
-    else
-    {
-        StringTools::println("Error loading Image");
-    }
-
-    delete drwImg;
-
-    if(imgArr!=nullptr)
-    {
-        for(int i=0; i<amountOfImages; i++)
-        {
-            if(imgArr[i]!=nullptr)
-                delete imgArr[i];
-            
-            imgArr[i] = nullptr;
-        }
-
-        delete[] imgArr;
-        imgArr = nullptr;
-    }
-}
-
-void testGui()
-{
-    Graphics::setDefaultFont(Graphics::LARGE_FONT);
-    WndWindow wnd = WndWindow("GuiTest", 1280, 720);
-    GuiManager* manager = wnd.getGuiManager();
-
-    GuiContainer container = GuiContainer();
-
-    GuiTextBox textBox1 = GuiTextBox(32,32,96,32);
-    textBox1.setBackgroundColor( ColorNameConverter::NameToColor("Gray") );
-    textBox1.setOutlineColor( ColorNameConverter::NameToColor("Black") );
-    textBox1.setActiveOutlineColor( ColorNameConverter::NameToColor("Aqua") );
-
-
-    GuiRectangleButton but1 = GuiRectangleButton(32, 68, 96, 32);
-    but1.setBackgroundColor( ColorNameConverter::NameToColor("Gray") );
-    but1.setOutlineColor( ColorNameConverter::NameToColor("Black") );
-    but1.setActiveOutlineColor( ColorNameConverter::NameToColor("Aqua") );
-
-    GuiTextBlock but1Text = GuiTextBlock(0, 0, 96, 32);     //No offset because it will be the child of but1
-    but1Text.setText("Button1");
-    but1Text.setTextColor( ColorNameConverter::NameToColor("lightgray") );
-
-    but1.addChild(&but1Text);
-    
     Sprite k = Sprite();
+    Sprite k2 = Sprite();
+    Sprite k3 = Sprite();
 
-    k.loadImage(L"C:/Users/Alan/Pictures/fuavs6gs0w801.gif");
-    
-    GuiImage img1 = GuiImage();
-    img1.setImage(k.getImage(0));
+    time_t t1 = System::getCurrentTimeMicro();
+    k.loadImage("./TestImages/JPEG/61eY5p914hL._AC_SX466_.jpg");
+    time_t t2 = System::getCurrentTimeMicro();
 
-    img1.setBaseX(0);
-    img1.setBaseY(0);
+    StringTools::println("TimeTaken: %u", t2-t1);
 
-    GuiScrollBar bar = GuiScrollBar(480-8, 32, 480+8, 96);
-    bar.setHorizontalBar(false);
-    // GuiScrollBar bar = GuiScrollBar(32, 480-32, 96, 480+32);
-    // bar.setHorizontalBar(true);
-    bar.setSteps(8);
+    t1 = System::getCurrentTimeMicro();
+    k2.loadImage("background.bmp");
+    t2 = System::getCurrentTimeMicro();
 
-    bar.getButtonElement()->setBackgroundColor( {255,255,0,255} );
-    bar.getButtonElement()->setOutlineColor( {255,0,0,255} );
+    StringTools::println("TimeTaken: %u", t2-t1);
 
-    bar.getDecreaseButtonElement()->setBackgroundColor( {132,132,132,255} );
-    bar.getIncreaseButtonElement()->setBackgroundColor( {132,132,132,255} );
-    
+    t1 = System::getCurrentTimeMicro();
+    k3.loadImage("background.png");
+    t2 = System::getCurrentTimeMicro();
 
-    container.addChild(&img1);
-    container.addChild(&but1);
-    container.addChild(&textBox1);
+    StringTools::println("TimeTaken: %u", t2-t1);
 
-    manager->addElement(&container);
-    manager->addElement(&bar);
-
-    int pos = 0;
-
-    bar.setOnSlideFunction( [&pos](GuiInstance* a) -> void{
-        GuiScrollBar* d = (GuiScrollBar*)a;
-        pos = d->getCurrentStep()*2;
-    });
-
-    while(wnd.getRunning())
-    {
-        unsigned long t1 = System::getCurrentTimeNano();
-        wnd.repaint();
-        container.setBaseX(pos);
-        unsigned long t2 = System::getCurrentTimeNano();
-        while((t2-t1) < 16666666)
-        {
-            t2 = System::getCurrentTimeNano();
-        }
-    }
-}
-
-void testProcessAndWindowStuff()
-{
-    unsigned long id = System::getProcessID(L"notepad.exe");
-    HWND windowHandle = System::getProcessWindow(L"Notepad");
-
-    StringTools::println("ID %u, WindowID %u", id, windowHandle);
-}
-
-void testSSEStuff()
-{
-    //Testing done on a Image of 1920x1080. Done 100 times and an average was taken.
-    //TIME OPTI0 = 800533
-    //TIME OPTI1 = 799866
-    //TIME OPTI2 = 837930
-    //More or less within the margin of error.
-
-    //TIME OPTI0 = 36100437, 36490849
-    //TIME OPTI1 = 26971808, 27931464
-    //TIME OPTI2 = 24793675, 25102215
-    Image img = Image(1920, 1080);
-    Sprite sprite = Sprite();
-    sprite.loadImage("./basn6a08.png");
-
-
-    Graphics::setColor( {0, 0, 0, 255} );
-    img.clearImage();
-
-    Graphics::setColor( {255, 255, 255, 255} );
-    
-    time_t t1 = System::getCurrentTimeNano();
-    for(int i=0; i<1; i++)
-    {
-        //Graphics::drawRect(0, 0, 1920, 1080, false, &img);
-        Graphics::drawSpritePart(sprite.getImage(0), 32, 8, 8, 4, 16, 24, &img);
-        //Graphics::drawTexturedTriangle(Vec4f(0, 0, 0, 0), Vec4f(1920, 0, 1, 0), Vec4f(1920, 1080, 1, 1), sprite.getImage(0), &img);
-        //Graphics::drawTexturedTriangle(Vec4f(0, 0, 0, 0), Vec4f(1920, 1080, 1, 1), Vec4f(0, 1080, 0, 1), sprite.getImage(0), &img);
-        //Graphics::drawImage(sprite.getImage(0), 0, 0, &img);
-    }
-    time_t t2 = System::getCurrentTimeNano();
-    //OPTI0 = 1016513
-    //OPTI1 = 845185
-    //OPTI2 = 825369
-
-    //1920 x 1080 metrics
-    //OPTI0 = 31753929
-    //OPTI1 = 26732193
-    //OPTI2 = 26351291
-    StringTools::println("Time taken = %llu", (t2-t1)/1);
-
-    Graphics::setColor( {255, 0, 0, 255} );
-    // Graphics::drawCircle(320, 240, 16, true, &img);
-
-    // Graphics::drawLine(320, 225, 314, 226, &img);
-
-    // Graphics::drawLine(313, 227+16, 315, 226+16, &img);
-    
-
-    img.saveBMP("sseTest.bmp");
-}
-
-void patternMatching()
-{
-    int index = 0;
-    int length = 0;
-    std::string base = "ababcabcabababd";
-    std::string pattern = "ababd";
-    StringTools::findLongestMatch(base, pattern, &index, &length);
-
-    if(index>0 && length>0)
-    {
-        std::string subString = base.substr(index, length);
-
-        StringTools::println("Found %s at %d with length %d", subString.c_str(), index, length);
-    }
-
-    StringTools::println("LPS for abcababcdlbcd");
-    std::string nBase = "abcababcdlbcd";
-    std::vector<int> preStuff = StringTools::longestPrefixSubstring(nBase.c_str(), nBase.size());
-    int preValue = -1;
-    std::string factorString = "";
-
-    std::vector<std::string> factors = std::vector<std::string>();
-
-    for(int i=0; i<preStuff.size(); i++)
-    {
-        StringTools::println("%d- (%d)", i, preStuff[i]);
-
-        if(preStuff[i] <= preValue && preValue != -1)
-        {
-            //new factor string
-            factors.push_back(factorString);
-            factorString = "";
-        }
-        
-        if(preStuff[i] >= 0)
-            factorString += nBase[ preStuff[i] ];
-        else
-            factorString += nBase[ i ];
-
-        if(preStuff[i] == -1)
-        {
-            //new factor string
-            factors.push_back(factorString);
-            factorString = "";
-        }
-
-        preValue = preStuff[i];
-    }
-
-    for(std::string a : factors)
-    {
-        StringTools::println("%s", a.c_str());
-    }
-
-    //a
-    //b
-    //c
-    //ab
-    //abc
-    //d
-    
-}
-
-void testUTF()
-{
-    //expected CE A9
-    //01110 101001
-    //937
-    SimpleFile file = SimpleFile("Test1.txt", SimpleFile::READ | SimpleFile::UTF8);
-    std::vector<std::wstring> data = file.readFullFileStringWide();
-    file.close();
-
-    SimpleFile f = SimpleFile("out1.txt", SimpleFile::WRITE | SimpleFile::UTF8);
-    for(std::wstring k : data)
-    {
-        f.writeWideString(k);
-        f.writeLineBreak();
-        StringTools::println(k);
-    }
-    f.close();
-
-    StringTools::println("This is a string: %s; This is a wide string: %ls ", "const ", L"Constア");
-    StringTools::println("As Dec and as Hex: %d, %x", 1010, 1010);
-
-    int a = MathExt::max(2, 3);
-    int b = MathExt::min( {4,5,6} );
-    size_t arr[4] = {10, 212, 201, 4};
-    int k = MathExt::max(arr, 4);
-    
-    std::wstring fmt = StringTools::formatWideString(L"format this (%d, %d) + %s + %ls", 'c', SIZE_MAX, "String", L"This is japanese とうほう");
-    std::string fmt2 = StringTools::formatString("format this (%d, %d) + %s + %ls", 'c', SIZE_MAX, "String", L"This is japanese とうほう");
-    
-    StringTools::println(fmt);
-    StringTools::println(fmt2.c_str());
-}
-
-void testHashThing()
-{
-    // SimpleHashMap<std::string, int> k;
-    // k.add("map", 0);
-    // k.add("stri", 30);
-    // k.add("loc", 10);
-    // k.add("loc", 504);
-    // k.add("mv", -12);
-    
-
-    // HashPair<std::string, int>* p = k.get("map");
-    // if(p!=nullptr)
-    //     StringTools::println("map = %d", p->data);
-    // else
-    //     StringTools::println("map = N/A");
-
-    // p = k.get("stri");
-    // if(p!=nullptr)
-    //     StringTools::println("stri = %d", p->data);
-    // else
-    //     StringTools::println("stri = N/A");
-
-    // p = k.get("loc");
-    // if(p!=nullptr)
-    //     StringTools::println("loc = %d", p->data);
-    // else
-    //     StringTools::println("loc = N/A");
-
-    // p = k.get("loc");
-    // if(p!=nullptr)
-    //     StringTools::println("loc = %d", p->data);
-    // else
-    //     StringTools::println("loc = N/A");
-
-    // p = k.get("mv");
-    // if(p!=nullptr)
-    //     StringTools::println("mv = %d", p->data);
-    // else
-    //     StringTools::println("mv = N/A");
-
-    
-    // std::vector<HashPair<std::string, int>*> list = k.getAll("loc");
-    // for(HashPair<std::string, int>* pairs : list)
-    // {
-    //     StringTools::println("Found %d for loc", pairs->data);
-    // }
-    
-    // k.clear();
-
-
-    SimpleHashMap<int, int> k;
-    time_t t1, t2;
-    LCG randGenerator = LCG(System::getCurrentTimeMicro());
-
-    t1 = System::getCurrentTimeNano();
-    for(int i=0; i<0xFFFFFF; i++)
-    {
-        int key = randGenerator.get();
-        int value = i;
-        k.add(key, value);
-    }
-
-    k.add(0xF1243, 2013);
-    t2 = System::getCurrentTimeNano();
-
-    StringTools::println("Time to insert: %u", t2-t1);
-
-    std::vector<HashPair<int,int>*> list = k.getAll(0xF1243);
-    if(list.size()==0)
-    {
-        StringTools::println("ERROR OCCURED. COULD NOT FIND VALUE WITH KEY 0xF1243");
-    }
-    else
-    {
-        for(int i=0; i<list.size(); i++)
-        {
-            StringTools::println("Found value with key 0xF1243: %d", list[i]->data);
-        }
-    }
-
-    t1 = System::getCurrentTimeNano();
-    std::vector<HashPair<int, int>*> allList = k.getData();
-    t2 = System::getCurrentTimeNano();
-
-    StringTools::println("Time to getAllData: %u", t2-t1);
-    StringTools::println("Got %u values", allList.size());
-    
-    t1 = System::getCurrentTimeNano();
-    k.clear();
-    t2 = System::getCurrentTimeNano();
-
-    k.add(1, 2);
-    HashPair<int, int>* tempPair = k.get(1);
-
-    StringTools::println("Time to clear: %u", t2-t1);
-
-    StringTools::println("Temp value for testing: %p", tempPair);
-    k.clear();
+    if(k.getImage(0)!=nullptr)
+        k.getImage(0)->saveBMP("testJPEG.bmp");
 }
 
 int main(int argc, char** argv)
 {
     StringTools::init();
     Graphics::init();
-    //testScale();
 
-    //testAudio();
+    testJPEG();
+    //testNewFFT();
+    //testGui2();
+    //ssePaint();
+    //testGui();
 
-    //imageExtenderThing();
-    
-    //testFourierTransform();
-    //testCosineTransform2D();
+    //fileTest();
 
-    //testCRC();
+    //gradientTest();
+    //currentTest();
+
+    //gifSize();
+
     //testPNGSave();
-    //testAnimatedImages();
-    //testGIF();
-
-    //testJPEG();
-
-    //New Stuff
-
-        //testHashThing();
-        //drawWind();
-        testGui();
-        //testProcessAndWindowStuff();
-        //testSSEStuff();
-        //testUTF();
-        //patternMatching();
-
-    //End of New Stuff
-    
-    //StringTools::println("\n");
-    //testCosineTransform2D();
-
-    //testHuffmanStuff();
 
     //testColorPalette();
     //testColorConvert();
 
-    //testImageLoader();
     //testFontSVG("C:\\Users\\Alan\\Documents\\VSCodeProjects\\GLib\\SVGFonts\\My Font - SVG Font - 2020.8.12-21.40.21.svg");
     
     //testFontGraphics();
 
     //testFontSVG(L"C:\\Users\\Alan\\Documents\\VSCodeProjects\\GLib\\SVGFonts\\AnyConv.com__consolab.svg");
-    //testLZW();
-    //testImageDisplay();
     
-    //testXML("C:/Users/Alan/Documents/VSCodeProjects/GLib/testFiles/XmlFiles/test2.xml");
     //drawLoadedSvg("C:/Users/Alan/Documents/VSCodeProjects/GLib/SVGs/_ionicons_svg_md-mail.svg");
-    //testXML("C:/Users/Alan/Documents/VSCodeProjects/GLib/SVGs/_ionicons_svg_md-mail.svg");
     //drawLoadedSvg("C:/Users/Alan/Documents/VSCodeProjects/GLib/testFiles/SvgFiles/Five Pointed Star.svg");
     //drawLoadedSvg("testFiles/SvgFiles/transforms.svg");
-    //testMatrixStuff();
 
     //testNeuralNetwork();
 

@@ -1,10 +1,10 @@
 #include "Quaternion.h"
 #include "MathExt.h"
 
-const Class* Quaternion::myClass = new Class("Quaternion", {Object::myClass});
+const Class Quaternion::myClass = Class("Quaternion", {&Object::myClass});
 const Class* Quaternion::getClass()
 {
-    return Quaternion::myClass;
+    return &Quaternion::myClass;
 }
 
 Quaternion::Quaternion()

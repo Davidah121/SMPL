@@ -4,6 +4,7 @@
 #include "Sort.h"
 #include "StringTools.h"
 #include "BitmapFont.h"
+#include "ColorSpaceConverter.h"
 
 #pragma region DRAWING_FUNCTIONS
 
@@ -15,13 +16,17 @@ unsigned char Graphics::blendMode = Graphics::BLEND_NORMAL;
 bool Graphics::fillRule = Graphics::FILL_EVEN_ODD;
 bool Graphics::antiAliasing = false;
 
-unsigned char Graphics::defaultFontValue = Graphics::NORMAL_FONT;
+unsigned char Graphics::defaultFontValue = Graphics::MEDIUM_FONT;
 Font* Graphics::defaultFont = nullptr;
+Font* Graphics::defaultFontMedium = nullptr;
 Font* Graphics::defaultFontLarge = nullptr;
+
+Box2D Graphics::clippingRect = Box2D(0, 0, 0xFFFF, 0xFFFF);
 
 void Graphics::init()
 {
 	Graphics::defaultFont = new BitmapFont("./Resources/DefaultFont.fnt");
+	Graphics::defaultFontMedium = new BitmapFont("./Resources/DefaultFontMedium.fnt");
 	Graphics::defaultFontLarge = new BitmapFont("./Resources/DefaultFontLarge.fnt");
 }
 
@@ -29,11 +34,15 @@ void Graphics::dispose()
 {
 	if(defaultFont!=nullptr)
 		delete defaultFont;
-	
+
+	if(defaultFontMedium!=nullptr)
+		delete defaultFontMedium;
+
 	if(defaultFontLarge!=nullptr)
 		delete defaultFontLarge;
 	
 	defaultFont = nullptr;
+	defaultFontMedium = nullptr;
 	defaultFontLarge = nullptr;
 }
 
@@ -695,15 +704,24 @@ void Graphics::drawRect(int x, int y, int x2, int y2, bool outline, Image* surf)
 
 	if (otherImg != nullptr)
 	{
+		if(otherImg->getWidth()<=0 || otherImg->getHeight()<=0)
+		{
+			return;
+		}
 		int tempWidth = otherImg->getWidth();
-
-		int minX = MathExt::clamp(MathExt::min(x, x2), 0, tempWidth);
-		int maxX = MathExt::clamp(MathExt::max(x, x2), 0, tempWidth);
-
 		int tempHeight = otherImg->getHeight();
 
-		int minY = MathExt::clamp(MathExt::min(y, y2), 0, tempHeight);
-		int maxY = MathExt::clamp(MathExt::max(y, y2), 0, tempHeight);
+		int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
+		int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+
+		int maxXBound = MathExt::min(tempWidth-1, (int)clippingRect.getRightBound());
+		int maxYBound = MathExt::min(tempHeight-1, (int)clippingRect.getBottomBound());
+
+		int minX = MathExt::clamp(MathExt::min(x, x2), minXBound, maxXBound);
+		int maxX = MathExt::clamp(MathExt::max(x, x2), minXBound, maxXBound);
+
+		int minY = MathExt::clamp(MathExt::min(y, y2), minYBound, maxYBound);
+		int maxY = MathExt::clamp(MathExt::max(y, y2), minYBound, maxYBound);
 
 		if(outline == false)
 		{
@@ -712,13 +730,13 @@ void Graphics::drawRect(int x, int y, int x2, int y2, bool outline, Image* surf)
 				__m256i* avxPoint;
 				
 				Color* startPoint = (otherImg->getPixels() + minX + (minY * tempWidth));
-				Color* endPoint = (otherImg->getPixels() + maxX + ((maxY-1) * tempWidth));
+				Color* endPoint = (otherImg->getPixels() + maxX + (maxY * tempWidth));
 				
 				//int startOffset = (maxX - minX) % 4;
 				
-				int offWidth = (maxX - minX)>>3;
-				int remainder = (maxX - minX) - (offWidth<<3);
-				int addAmount = (tempWidth - (maxX-minX));
+				int offWidth = (1+maxX - minX)>>3;
+				int remainder = (1+maxX - minX) - (offWidth<<3);
+				int addAmount = (tempWidth - (maxX-minX)-1);
 
 				int tX = 0;
 
@@ -782,13 +800,13 @@ void Graphics::drawRect(int x, int y, int x2, int y2, bool outline, Image* surf)
 				__m128i* ssePoint;
 				
 				Color* startPoint = (otherImg->getPixels() + minX + (minY * tempWidth));
-				Color* endPoint = (otherImg->getPixels() + maxX + ((maxY-1) * tempWidth));
+				Color* endPoint = (otherImg->getPixels() + maxX + (maxY * tempWidth));
 				
 				//int startOffset = (maxX - minX) % 4;
 				
-				int offWidth = (maxX - minX)/4;
-				int remainder = (maxX - minX) - (offWidth*4);
-				int addAmount = (tempWidth - (maxX-minX));
+				int offWidth = (1+maxX - minX)>>2;
+				int remainder = (1+maxX - minX) - (offWidth<<2);
+				int addAmount = (tempWidth - (maxX-minX)-1);
 
 				int tX = 0;
 
@@ -850,10 +868,10 @@ void Graphics::drawRect(int x, int y, int x2, int y2, bool outline, Image* surf)
 			#else
 
 				Color* startPoint = otherImg->getPixels() + minX + (minY * tempWidth);
-				Color* endPoint = otherImg->getPixels() + maxX + ((maxY-1) * tempWidth);
+				Color* endPoint = otherImg->getPixels() + maxX + (maxY * tempWidth);
 				
 				int offWidth = maxX - minX;
-				int addAmount = tempWidth - offWidth;
+				int addAmount = (tempWidth - offWidth)-1;
 
 				int tX = 0;
 
@@ -864,7 +882,7 @@ void Graphics::drawRect(int x, int y, int x2, int y2, bool outline, Image* surf)
 				{
 					while (startPoint < endPoint)
 					{
-						for(int i=0; i<offWidth; i++)
+						for(int i=0; i<=offWidth; i++)
 						{
 							*startPoint = activeColor;
 							startPoint++;
@@ -876,7 +894,7 @@ void Graphics::drawRect(int x, int y, int x2, int y2, bool outline, Image* surf)
 				{
 					while (startPoint < endPoint)
 					{
-						for(int i=0; i<offWidth; i++)
+						for(int i=0; i<=offWidth; i++)
 						{
 							*startPoint = blend(activeColor, *startPoint);
 							startPoint++;
@@ -912,7 +930,10 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 
 	if (otherImg != nullptr)
 	{
-		
+		if(otherImg->getWidth()<=0 || otherImg->getHeight()<=0)
+		{
+			return;
+		}
 		//determine if it is on the line
 		//Using general equation
 		//Ax + By = C
@@ -930,15 +951,25 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 				//VERTICAL BASED
 				int minY, maxY;
 				bool dir = (P1>0 || P2>0);
+
+				int tempWidth = otherImg->getWidth()-1;
+				int tempHeight = otherImg->getHeight()-1;
+
+				int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
+				int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+
+				int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
+				int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
+
 				if(y1 <= y2)
 				{
-					minY = MathExt::clamp(y1, 0, otherImg->getHeight()-1);
-					maxY = MathExt::clamp(y2, 0, otherImg->getHeight()-1);
+					minY = MathExt::clamp(y1, minYBound, maxYBound);
+					maxY = MathExt::clamp(y2, minYBound, maxYBound);
 				}
 				else
 				{
-					minY = MathExt::clamp(y2, 0, otherImg->getHeight()-1);
-					maxY = MathExt::clamp(y1, 0, otherImg->getHeight()-1);
+					minY = MathExt::clamp(y2, minYBound, maxYBound);
+					maxY = MathExt::clamp(y1, minYBound, maxYBound);
 				}
 
 				if(currentComposite == NO_COMPOSITE)
@@ -948,7 +979,9 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 						//solve with respect to x
 						double val = -(con+P2*i) / (double)P1;
 						int actualX = (dir) ? MathExt::floor(val+0.5) : MathExt::ceil(val-0.5);
-						otherImg->setPixel(actualX, i, Graphics::activeColor);
+						
+						if(actualX >= minXBound && actualX <= maxXBound)
+							otherImg->setPixel(actualX, i, Graphics::activeColor); //change later
 					}
 				}
 				else
@@ -958,7 +991,8 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 						//solve with respect to x
 						double val = -(con+P2*i) / (double)P1;
 						int actualX = (dir) ? MathExt::floor(val+0.5) : MathExt::ceil(val-0.5);
-						otherImg->drawPixel(actualX, i, Graphics::activeColor);
+						if(actualX >= minXBound && actualX <= maxXBound)
+							otherImg->drawPixel(actualX, i, Graphics::activeColor); //change later
 					}
 				}
 			}
@@ -967,15 +1001,25 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 				//HORIZONTAL BASED
 				int minX, maxX;
 				bool dir = (P1>0);
+				
+				int tempWidth = otherImg->getWidth()-1;
+				int tempHeight = otherImg->getHeight()-1;
+
+				int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
+				int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+
+				int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
+				int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
+
 				if(x1 <= x2)
 				{
-					minX = MathExt::clamp(x1, 0, otherImg->getWidth()-1);
-					maxX = MathExt::clamp(x2, 0, otherImg->getWidth()-1);
+					minX = MathExt::clamp(x1, minXBound, maxXBound);
+					maxX = MathExt::clamp(x2, minXBound, maxXBound);
 				}
 				else
 				{
-					minX = MathExt::clamp(x2, 0, otherImg->getWidth()-1);
-					maxX = MathExt::clamp(x1, 0, otherImg->getWidth()-1);
+					minX = MathExt::clamp(x2, minXBound, maxXBound);
+					maxX = MathExt::clamp(x1, minXBound, maxXBound);
 				}
 
 				if(currentComposite == NO_COMPOSITE)
@@ -985,7 +1029,9 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 						//solve with respect to y
 						double val = -(con+P1*i) / (double)P2;
 						int actualY = (dir) ? MathExt::floor(val+0.5) : MathExt::ceil(val-0.5);
-						otherImg->setPixel(i, actualY, Graphics::activeColor);
+
+						if(actualY >= minYBound && actualY <= maxYBound)
+							otherImg->setPixel(i, actualY, Graphics::activeColor); //change later
 					}
 				}
 				else
@@ -995,7 +1041,8 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 						//solve with respect to y
 						double val = -(con+P1*i) / (double)P2;
 						int actualY = (dir) ? MathExt::floor(val+0.5) : MathExt::ceil(val-0.5);
-						otherImg->drawPixel(i, actualY, Graphics::activeColor);
+						if(actualY >= minYBound && actualY <= maxYBound)
+							otherImg->drawPixel(i, actualY, Graphics::activeColor); //change later
 					}
 
 				}
@@ -1005,21 +1052,33 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 		{
 			//VERTICAL LINE
 			int minY, maxY;
+
+			int tempWidth = otherImg->getWidth()-1;
+			int tempHeight = otherImg->getHeight()-1;
+
+			int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
+			int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+
+			int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
+			int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
+			
 			if(y1 <= y2)
 			{
-				minY = MathExt::clamp(y1, 0, otherImg->getHeight()-1);
-				maxY = MathExt::clamp(y2, 0, otherImg->getHeight()-1);
+				minY = MathExt::clamp(y1, minYBound, maxYBound);
+				maxY = MathExt::clamp(y2, minYBound, maxYBound);
 			}
 			else
 			{
-				minY = MathExt::clamp(y2, 0, otherImg->getHeight()-1);
-				maxY = MathExt::clamp(y1, 0, otherImg->getHeight()-1);
+				minY = MathExt::clamp(y2, minYBound, maxYBound);
+				maxY = MathExt::clamp(y1, minYBound, maxYBound);
 			}
 
-			if(x1 < 0 || x1 >= otherImg->getWidth())
+			if(x1 < minXBound || x1 > maxXBound)
 			{
 				return;
 			}
+
+			//fix later. Currently will always draw 1 pixel at either the maxYBound or maxYBound as long as x1 is between the x bounds
 
 			if(currentComposite == NO_COMPOSITE)
 			{
@@ -1040,35 +1099,40 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 		{
 			//HORIZONTAL LINE
 			int minX, maxX;
+
+			int tempWidth = otherImg->getWidth()-1;
+			int tempHeight = otherImg->getHeight()-1;
+
+			int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
+			int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+
+			int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
+			int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
+
 			if(x1 <= x2)
 			{
-				minX = MathExt::clamp(x1, 0, otherImg->getWidth()-1);
-				maxX = MathExt::clamp(x2, 0, otherImg->getWidth()-1);
+				minX = MathExt::clamp(x1, minXBound, maxXBound);
+				maxX = MathExt::clamp(x2, minXBound, maxXBound);
 			}
 			else
 			{
-				minX = MathExt::clamp(x2, 0, otherImg->getWidth()-1);
-				maxX = MathExt::clamp(x1, 0, otherImg->getWidth()-1);
+				minX = MathExt::clamp(x2, minXBound, maxXBound);
+				maxX = MathExt::clamp(x1, minXBound, maxXBound);
 			}
 
-			if(y1 < 0 || y1 >= otherImg->getHeight())
+			if(y1 < minYBound || y1 > maxYBound)
 			{
 				return;
 			}
 
 			#if(OPTI>=2)
-
-				int avxWidth = (maxX-minX) >> 3;
-				int remainder = 8 - (maxX-minX)%8;
+				int avxWidth = (1+maxX-minX) >> 3;
+				int remainder = (1+maxX - minX) - (avxWidth<<3);
 
 				Color* startColor = otherImg->getPixels() + minX + (y1*otherImg->getWidth());
 				__m256i* startAVX = (__m256i*)startColor;
 				__m256i* endAVX = startAVX + avxWidth;
 				
-				if(remainder == 8)
-				{
-					remainder = 0;
-				}
 
 				__m256i avxColor = _mm256_set1_epi32( *((int*)&Graphics::activeColor) );
 				
@@ -1109,17 +1173,13 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 
 			#elif(OPTI>=1)
 				
-				int sseWidth = (maxX-minX) >> 2;
-				int remainder = 4 - (maxX-minX)%4;
+				int sseWidth = (1+maxX-minX) >> 2;
+				int remainder = (1+maxX - minX) - (sseWidth<<2);
 
 				Color* startColor = otherImg->getPixels() + minX + (y1*otherImg->getWidth());
 				__m128i* startSSE = (__m128i*)startColor;
 				__m128i* endSSE = startSSE + sseWidth;
-				
-				if(remainder == 4)
-				{
-					remainder = 0;
-				}
+
 
 				__m128i sseColor = _mm_set1_epi32( *((int*)&Graphics::activeColor) );
 				
@@ -1199,20 +1259,31 @@ void Graphics::drawCircle(int x, int y, int radius, bool outline, Image* surf)
 
 	if (otherImg != nullptr)
 	{
+		if(otherImg->getWidth()<=0 || otherImg->getHeight()<=0)
+		{
+			return;
+		}
 		int fakeRad = radius-1;
+		int absFakeRad = MathExt::abs(fakeRad);
+
 		int tempWidth = otherImg->getWidth();
-
-		int minX = MathExt::clamp(MathExt::min(x-fakeRad, x+fakeRad), 0, tempWidth);
-		int maxX = MathExt::clamp(MathExt::max(x-fakeRad, x+fakeRad), 0, tempWidth);
-
 		int tempHeight = otherImg->getHeight();
 
-		int minY = MathExt::clamp(MathExt::min(y-fakeRad, y+fakeRad), 0, tempHeight);
-		int maxY = MathExt::clamp(MathExt::max(y-fakeRad, y+fakeRad), 0, tempHeight);
+		int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
+		int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+
+		int maxXBound = MathExt::min(tempWidth-1, (int)clippingRect.getRightBound());
+		int maxYBound = MathExt::min(tempHeight-1, (int)clippingRect.getBottomBound());
+
+		int minX = MathExt::clamp(x-absFakeRad, minXBound, maxXBound);
+		int maxX = MathExt::clamp(x+absFakeRad, minXBound, maxXBound);
+
+		int minY = MathExt::clamp(y-absFakeRad, minYBound, maxYBound);
+		int maxY = MathExt::clamp(y+absFakeRad, minYBound, maxYBound);
 		
 		int tX = minX;
 		int tY = minY;
-		double radSqr = MathExt::sqr(fakeRad);
+		double radSqr = MathExt::sqr(absFakeRad);
 		
 		if (outline == false)
 		{
@@ -1230,8 +1301,8 @@ void Graphics::drawCircle(int x, int y, int radius, bool outline, Image* surf)
 					{
 						double xDisToCenter = MathExt::sqrt( radSqr - MathExt::sqr(tY - y) ) + 0.5;
 
-						int x1 = MathExt::clamp( (int)MathExt::ceil(x-xDisToCenter), 0, tempWidth-1);
-						int x2 = MathExt::clamp( (int)MathExt::floor(x+xDisToCenter), 0, tempWidth-1);
+						int x1 = MathExt::clamp( (int)MathExt::ceil(x-xDisToCenter), minX, maxX);
+						int x2 = MathExt::clamp( (int)MathExt::floor(x+xDisToCenter), minX, maxX);
 
 						int addAmount = x1;
 						int addAmount2 = tempWidth-x2;
@@ -1275,8 +1346,8 @@ void Graphics::drawCircle(int x, int y, int radius, bool outline, Image* surf)
 					{
 						double xDisToCenter = MathExt::sqrt( radSqr - MathExt::sqr(tY - y) ) + 0.5;
 
-						int x1 = MathExt::clamp( (int)MathExt::ceil(x-xDisToCenter), 0, tempWidth-1);
-						int x2 = MathExt::clamp( (int)MathExt::floor(x+xDisToCenter), 0, tempWidth-1);
+						int x1 = MathExt::clamp( (int)MathExt::ceil(x-xDisToCenter), minX, maxX);
+						int x2 = MathExt::clamp( (int)MathExt::floor(x+xDisToCenter), minX, maxX);
 
 						int addAmount = x1;
 						int addAmount2 = tempWidth-x2;
@@ -1331,8 +1402,8 @@ void Graphics::drawCircle(int x, int y, int radius, bool outline, Image* surf)
 					{
 						double xDisToCenter = MathExt::sqrt( radSqr - MathExt::sqr(tY - y) ) + 0.5;
 
-						int x1 = MathExt::clamp( (int)MathExt::ceil(x-xDisToCenter), 0, tempWidth-1);
-						int x2 = MathExt::clamp( (int)MathExt::floor(x+xDisToCenter), 0, tempWidth-1);
+						int x1 = MathExt::clamp( (int)MathExt::ceil(x-xDisToCenter), minX, maxX);
+						int x2 = MathExt::clamp( (int)MathExt::floor(x+xDisToCenter), minX, maxX);
 
 						int addAmount = x1;
 						int addAmount2 = tempWidth-x2;
@@ -1376,8 +1447,8 @@ void Graphics::drawCircle(int x, int y, int radius, bool outline, Image* surf)
 					{
 						double xDisToCenter = MathExt::sqrt( radSqr - MathExt::sqr(tY - y) ) + 0.5;
 
-						int x1 = MathExt::clamp( (int)MathExt::ceil(x-xDisToCenter), 0, tempWidth-1);
-						int x2 = MathExt::clamp( (int)MathExt::floor(x+xDisToCenter), 0, tempWidth-1);
+						int x1 = MathExt::clamp( (int)MathExt::ceil(x-xDisToCenter), minX, maxX);
+						int x2 = MathExt::clamp( (int)MathExt::floor(x+xDisToCenter), minX, maxX);
 
 						int addAmount = x1;
 						int addAmount2 = tempWidth-x2;
@@ -1429,8 +1500,8 @@ void Graphics::drawCircle(int x, int y, int radius, bool outline, Image* surf)
 					{
 						double xDisToCenter = MathExt::sqrt( radSqr - MathExt::sqr(tY - y) ) + 0.5;
 
-						int x1 = MathExt::clamp( (int)MathExt::ceil(x-xDisToCenter), 0, tempWidth-1);
-						int x2 = MathExt::clamp( (int)MathExt::floor(x+xDisToCenter), 0, tempWidth-1);
+						int x1 = MathExt::clamp( (int)MathExt::ceil(x-xDisToCenter), minX, maxX);
+						int x2 = MathExt::clamp( (int)MathExt::floor(x+xDisToCenter), minX, maxX);
 
 						int addAmount = x1;
 						int addAmount2 = tempWidth-x2;
@@ -1452,8 +1523,8 @@ void Graphics::drawCircle(int x, int y, int radius, bool outline, Image* surf)
 					{
 						double xDisToCenter = MathExt::sqrt( radSqr - MathExt::sqr(tY - y) ) + 0.5;
 
-						int x1 = MathExt::clamp( (int)MathExt::ceil(x-xDisToCenter), 0, tempWidth-1);
-						int x2 = MathExt::clamp( (int)MathExt::floor(x+xDisToCenter), 0, tempWidth-1);
+						int x1 = MathExt::clamp( (int)MathExt::ceil(x-xDisToCenter), minX, maxX);
+						int x2 = MathExt::clamp( (int)MathExt::floor(x+xDisToCenter), minX, maxX);
 
 						int addAmount = x1;
 						int addAmount2 = tempWidth-x2;
@@ -1481,8 +1552,8 @@ void Graphics::drawCircle(int x, int y, int radius, bool outline, Image* surf)
 			{
 				double xDisToCenter = MathExt::sqrt( radSqr - MathExt::sqr(tY - y) );
 
-				int x1 = MathExt::clamp( (int)MathExt::round(x-xDisToCenter), 0, tempWidth-1);
-				int x2 = MathExt::clamp( (int)MathExt::round(x+xDisToCenter), 0, tempWidth-1);
+				int x1 = MathExt::clamp( (int)MathExt::round(x-xDisToCenter), minX, maxX);
+				int x2 = MathExt::clamp( (int)MathExt::round(x+xDisToCenter), minX, maxX);
 				
 				if(tY != minY)
 				{
@@ -1517,8 +1588,8 @@ void Graphics::drawCircle(int x, int y, int radius, bool outline, Image* surf)
 			{
 				double xDisToCenter = MathExt::sqrt( radSqr - MathExt::sqr(tY - y) );
 
-				int x1 = MathExt::clamp( (int)MathExt::round(x-xDisToCenter), 0, tempWidth-1);
-				int x2 = MathExt::clamp( (int)MathExt::round(x+xDisToCenter), 0, tempWidth-1);
+				int x1 = MathExt::clamp( (int)MathExt::round(x-xDisToCenter), minX, maxX);
+				int x2 = MathExt::clamp( (int)MathExt::round(x+xDisToCenter), minX, maxX);
 				
 				if(tY != minY)
 				{
@@ -1559,6 +1630,19 @@ void Graphics::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool
 	
 	if(otherImg!=nullptr)
 	{
+		if(otherImg->getWidth()<=0 || otherImg->getHeight()<=0)
+		{
+			return;
+		}
+
+		if(outline)
+		{
+			drawLine(x1,y1,x2,y2,surf);
+			drawLine(x2,y2,x3,y3,surf);
+			drawLine(x3,y3,x1,y1,surf);
+			return;
+		}
+
 		Line l1 = Line(x1, y1, x2, y2);
 		Line l2 = Line(x2, y2, x3, y3);
 		Line l3 = Line(x3, y3, x1, y1);
@@ -1622,22 +1706,31 @@ void Graphics::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool
 			}
 		}
 
-		int startY = MathExt::clamp(minY, 0, otherImg->getHeight()-1);
-		int endY = MathExt::clamp(maxY, 0, otherImg->getHeight()-1);
+		int tempWidth = otherImg->getWidth()-1;
+		int tempHeight = otherImg->getHeight()-1;
+
+		int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
+		int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+
+		int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
+		int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
+
+		int startY = MathExt::clamp(minY, minYBound, maxYBound);
+		int endY = MathExt::clamp(maxY, minYBound, maxYBound);
 
 		bool dir1 = (constLine.getToPoint().y < 0) || (constLine.getToPoint().x > 0);
 		bool dir2 = (sLine.getToPoint().y < 0) || (sLine.getToPoint().x > 0);
 		bool swapPivot = false;
 
-		for(int y=startY; y<endY; y++)
+		for(int y=startY; y<=endY; y++)
 		{
 			double cX1 = 0;
 			double cX2 = 0;
 
-			if(y<pivot.y)
+			if(y<=pivot.y)
 			{
-				cX1 = constLine.solveForX(y);
-				cX2 = sLine.solveForX(y);
+				cX1 = constLine.solveForX(y+0.5);
+				cX2 = sLine.solveForX(y+0.5);
 			}
 			else
 			{
@@ -1647,8 +1740,8 @@ void Graphics::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool
 					swapPivot=true;
 				}
 
-				cX1 = constLine.solveForX(y);
-				cX2 = eLine.solveForX(y);
+				cX1 = constLine.solveForX(y-0.5);
+				cX2 = eLine.solveForX(y-0.5);
 			}
 
 			if(cX1>cX2)
@@ -1661,19 +1754,13 @@ void Graphics::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool
 			int startX = (dir1) ? MathExt::floor(cX1+0.5) : MathExt::ceil(cX1-0.5);
 			int endX = (dir2) ? MathExt::floor(cX2+0.5) : MathExt::ceil(cX2-0.5);
 
-			startX = MathExt::clamp( startX, 0, otherImg->getWidth()-1);
-			endX = MathExt::clamp( endX, 0, otherImg->getWidth()-1);
-
-			if(startX > endX)
-			{
-				//outside the drawing area
-				continue;
-			}
+			startX = MathExt::clamp( startX, minXBound, maxXBound);
+			endX = MathExt::clamp( endX, minXBound, maxXBound);
 
 			#if(OPTI>=2)
 
-				int avxWidth = (endX-startX)>>3;
-				int remainder = (endX-startX) - (avxWidth<<3);
+				int avxWidth = (1+endX-startX)>>3;
+				int remainder = (1+endX-startX) - (avxWidth<<3);
 
 				Color* startFill = otherImg->getPixels() + startX + y*otherImg->getWidth();
 				Color* endFill = startFill + (endX-startX);
@@ -1720,8 +1807,8 @@ void Graphics::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool
 
 			#elif(OPTI>=1)
 
-				int sseWidth = (endX-startX)>>2;
-				int remainder = (endX-startX) - (sseWidth<<2);
+				int sseWidth = (1+endX-startX)>>2;
+				int remainder = (1+endX-startX) - (sseWidth<<2);
 
 				Color* startFill = otherImg->getPixels() + startX + y*otherImg->getWidth();
 				Color* endFill = startFill + (endX-startX);
@@ -1809,7 +1896,10 @@ void Graphics::drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture
 	
 	if(otherImg!=nullptr && texture!=nullptr)
 	{
-		
+		if(otherImg->getWidth()<=0 || otherImg->getHeight()<=0)
+		{
+			return;
+		}
 		Line l1 = Line(p1.x, p1.y, p2.x, p2.y);
 		Line l2 = Line(p2.x, p2.y, p3.x, p3.y);
 		Line l3 = Line(p3.x, p3.y, p1.x, p1.y);
@@ -1873,8 +1963,17 @@ void Graphics::drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture
 			}
 		}
 
-		int startY = MathExt::clamp( (int)MathExt::floor(minY), 0, otherImg->getHeight());
-		int endY = MathExt::clamp( (int)MathExt::ceil(maxY), 0, otherImg->getHeight());
+		int tempWidth = otherImg->getWidth()-1;
+		int tempHeight = otherImg->getHeight()-1;
+
+		int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
+		int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+
+		int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
+		int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
+
+		int startY = MathExt::clamp( (int)MathExt::floor(minY), minYBound, maxYBound);
+		int endY = MathExt::clamp( (int)MathExt::ceil(maxY), minYBound, maxYBound);
 
 		double det = (p2.y-p3.y)*(p1.x-p3.x) + (p3.x-p2.x)*(p1.y-p3.y);
 		Color* texturePixels = texture->getPixels();
@@ -1915,8 +2014,8 @@ void Graphics::drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture
 			int startX = (dir1) ? MathExt::floor(cX1+0.5) : MathExt::ceil(cX1-0.5);
 			int endX = (dir2) ? MathExt::floor(cX2+0.5) : MathExt::ceil(cX2-0.5);
 
-			startX = MathExt::clamp( startX, 0, otherImg->getWidth()-1);
-			endX = MathExt::clamp( endX, 0, otherImg->getWidth()-1);
+			startX = MathExt::clamp( startX, minXBound, maxXBound);
+			endX = MathExt::clamp( endX, minXBound, maxXBound);
 
 			if(startX > endX)
 			{
@@ -2271,15 +2370,28 @@ void Graphics::drawImage(Image* img, int x, int y, Image* surf)
 
 	if (otherImg != nullptr && img!=nullptr)
 	{
+		if(otherImg->getWidth()<=0 || otherImg->getHeight()<=0)
+		{
+			return;
+		}
+		if(img->getWidth()<=0 || img->getHeight()<=0)
+		{
+			return;
+		}
 		int tempWidth = otherImg->getWidth();
-
-		int minX = MathExt::clamp(x, 0, tempWidth);
-		int maxX = MathExt::clamp(x+img->getWidth(), 0, tempWidth);
-
 		int tempHeight = otherImg->getHeight();
 
-		int minY = MathExt::clamp(y, 0, tempHeight);
-		int maxY = MathExt::clamp(y+img->getHeight(), 0, tempHeight);
+		int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
+		int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+
+		int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
+		int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
+
+		int minX = MathExt::clamp(x, minXBound, maxXBound);
+		int maxX = MathExt::clamp(x+img->getWidth(), minXBound, maxXBound);
+
+		int minY = MathExt::clamp(y, minYBound, maxYBound);
+		int maxY = MathExt::clamp(y+img->getHeight(), minYBound, maxYBound);
 
 		Color* startPoint = otherImg->getPixels() + minX + (minY * tempWidth);
 		Color* endPoint = otherImg->getPixels() + maxX + ((maxY-1) * tempWidth);
@@ -2480,15 +2592,28 @@ void Graphics::drawSprite(Image* img, int x, int y, Image* surf)
 
 	if (otherImg != nullptr && img!=nullptr)
 	{
+		if(otherImg->getWidth()<=0 || otherImg->getHeight()<=0)
+		{
+			return;
+		}
+		if(img->getWidth()<=0 || img->getHeight()<=0)
+		{
+			return;
+		}
 		int tempWidth = otherImg->getWidth();
-
-		int minX = MathExt::clamp(x, 0, tempWidth);
-		int maxX = MathExt::clamp(x+img->getWidth(), 0, tempWidth);
-
 		int tempHeight = otherImg->getHeight();
 
-		int minY = MathExt::clamp(y, 0, tempHeight);
-		int maxY = MathExt::clamp(y+img->getHeight(), 0, tempHeight);
+		int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
+		int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+
+		int maxXBound = MathExt::min(tempWidth-1, (int)clippingRect.getRightBound());
+		int maxYBound = MathExt::min(tempHeight-1, (int)clippingRect.getBottomBound());
+
+		int minX = MathExt::clamp(x, minXBound, maxXBound);
+		int maxX = MathExt::clamp(x+img->getWidth(), minXBound, maxXBound);
+
+		int minY = MathExt::clamp(y, minYBound, maxYBound);
+		int maxY = MathExt::clamp(y+img->getHeight(), minYBound, maxYBound);
 
 		Color* startPoint = otherImg->getPixels() + minX + (minY * tempWidth);
 		Color* endPoint = otherImg->getPixels() + maxX + ((maxY-1) * tempWidth);
@@ -2500,8 +2625,7 @@ void Graphics::drawSprite(Image* img, int x, int y, Image* surf)
 		Color* drawImgStart = img->getPixels();
 
 		int tX = 0;
-
-		
+		Vec4f colorMult = Vec4f((double)Graphics::activeColor.red / 255.0, (double)Graphics::activeColor.green / 255.0, (double)Graphics::activeColor.blue / 255.0, (double)Graphics::activeColor.alpha / 255.0);
 
 		#if(OPTI>=2)
 			
@@ -2576,7 +2700,11 @@ void Graphics::drawSprite(Image* img, int x, int y, Image* surf)
 					//fill remainder
 					for(int i=0; i<remainder; i++)
 					{
-						*startPoint = *drawImgStart;
+						Color drawC = { (unsigned char) (drawImgStart->red * colorMult.x),
+										(unsigned char) (drawImgStart->green * colorMult.y),
+										(unsigned char) (drawImgStart->blue * colorMult.z), 
+										(unsigned char) (drawImgStart->alpha * colorMult.w) };
+						*startPoint = drawC;
 						startPoint++;
 						drawImgStart++;
 					}
@@ -2649,7 +2777,11 @@ void Graphics::drawSprite(Image* img, int x, int y, Image* surf)
 					//fill remainder
 					for(int i=0; i<remainder; i++)
 					{
-						*startPoint = blend(*drawImgStart, *startPoint);
+						Color drawC = { (unsigned char) (drawImgStart->red * colorMult.x),
+										(unsigned char) (drawImgStart->green * colorMult.y),
+										(unsigned char) (drawImgStart->blue * colorMult.z), 
+										(unsigned char) (drawImgStart->alpha * colorMult.w) };
+						*startPoint = blend(drawC, *startPoint);
 						startPoint++;
 						drawImgStart++;
 					}
@@ -2724,7 +2856,11 @@ void Graphics::drawSprite(Image* img, int x, int y, Image* surf)
 					//fill remainder
 					for(int i=0; i<remainder; i++)
 					{
-						*startPoint = *drawImgStart;
+						Color drawC = { (unsigned char) (drawImgStart->red * colorMult.x),
+										(unsigned char) (drawImgStart->green * colorMult.y),
+										(unsigned char) (drawImgStart->blue * colorMult.z), 
+										(unsigned char) (drawImgStart->alpha * colorMult.w) };
+						*startPoint = drawC;
 						startPoint++;
 						drawImgStart++;
 					}
@@ -2789,7 +2925,11 @@ void Graphics::drawSprite(Image* img, int x, int y, Image* surf)
 					//fill remainder
 					for(int i=0; i<remainder; i++)
 					{
-						*startPoint = blend(*drawImgStart, *startPoint);
+						Color drawC = { (unsigned char) (drawImgStart->red * colorMult.x),
+										(unsigned char) (drawImgStart->green * colorMult.y),
+										(unsigned char) (drawImgStart->blue * colorMult.z), 
+										(unsigned char) (drawImgStart->alpha * colorMult.w) };
+						*startPoint = blend(drawC, *startPoint);
 						startPoint++;
 						drawImgStart++;
 					}
@@ -2800,9 +2940,6 @@ void Graphics::drawSprite(Image* img, int x, int y, Image* surf)
 			}
 
 		#else
-
-			Vec4f colorMult = Vec4f((double)Graphics::activeColor.red / 255.0, (double)Graphics::activeColor.green / 255.0, (double)Graphics::activeColor.blue / 255.0, (double)Graphics::activeColor.alpha / 255.0);
-
 			if(currentComposite == NO_COMPOSITE)
 			{
 				while (startPoint < endPoint)
@@ -2850,65 +2987,6 @@ void Graphics::drawSprite(Image* img, int x, int y, Image* surf)
 	}
 }
 
-//Test to see if it works properly later
-/*
-void Graphics::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH, Image* surf)
-{
-	Image* otherImg;
-	if (surf == nullptr)
-		otherImg = activeImage;
-	else
-		otherImg = surf;
-
-	if (otherImg != nullptr)
-	{
-		int tempWidth = otherImg->getWidth();
-
-		int minX = MathExt::clamp(x, 0, tempWidth);
-		int maxX = MathExt::clamp(x + imgW, 0, tempWidth);
-
-		int tempHeight = otherImg->getHeight();
-
-		int minY = MathExt::clamp(y, 0, tempHeight);
-		int maxY = MathExt::clamp(y + imgH, 0, tempHeight);
-
-		Color* startPoint = otherImg->getPixels() + minX + (minY * tempWidth);
-		Color* endPoint = otherImg->getPixels() + maxX + ((maxY - 1) * tempWidth);
-
-		int offWidth = maxX - minX;
-		int addAmount = tempWidth - offWidth;
-
-		Color* otherStartPoint = img->getPixels() + imgX + (imgY*img->getWidth());
-		
-		int otherAddAmount = img->getWidth() - imgW;
-
-		int tX = 0;
-		
-		Vec4f colorMult = Vec4f((double)Graphics::activeColor.red / 255.0, (double)Graphics::activeColor.green / 255.0, (double)Graphics::activeColor.blue / 255.0, (double)Graphics::activeColor.alpha / 255.0);
-
-		while (startPoint < endPoint)
-		{
-			Color drawC = { (unsigned char) (otherStartPoint->red * colorMult.x),
-							(unsigned char) (otherStartPoint->green * colorMult.y),
-							(unsigned char) (otherStartPoint->blue * colorMult.z), 
-							(unsigned char) (otherStartPoint->alpha * colorMult.w) };
-			*startPoint = blend(drawC, *startPoint);
-
-			startPoint++;
-			otherStartPoint++;
-			tX++;
-
-			if (tX >= offWidth)
-			{
-				tX = 0;
-				startPoint += addAmount;
-				otherStartPoint += otherAddAmount;
-			}
-		}
-	}
-}
-*/
-
 void Graphics::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH, Image* surf)
 {
 	int currentComposite = compositeRule;
@@ -2920,18 +2998,31 @@ void Graphics::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int 
 
 	if (otherImg != nullptr && img!=nullptr)
 	{
+		if(otherImg->getWidth()<=0 || otherImg->getHeight()<=0)
+		{
+			return;
+		}
+		if(img->getWidth()<=0 || img->getHeight()<=0)
+		{
+			return;
+		}
 		int tempWidth = otherImg->getWidth();
-
-		int clampImgW = MathExt::clamp(imgW, 0, img->getWidth());
-		int clampImgH = MathExt::clamp(imgH, 0, img->getHeight());
-		
-		int minX = MathExt::clamp(x, 0, tempWidth);
-		int maxX = MathExt::clamp(x+clampImgW, 0, tempWidth);
-
 		int tempHeight = otherImg->getHeight();
 
-		int minY = MathExt::clamp(y, 0, tempHeight);
-		int maxY = MathExt::clamp(y+clampImgH, 0, tempHeight);
+		int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
+		int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+
+		int maxXBound = MathExt::min(tempWidth-1, (int)clippingRect.getRightBound());
+		int maxYBound = MathExt::min(tempHeight-1, (int)clippingRect.getBottomBound());
+
+		int clampImgW = MathExt::clamp(imgW, 0, img->getWidth()-1);
+		int clampImgH = MathExt::clamp(imgH, 0, img->getHeight()-1);
+		
+		int minX = MathExt::clamp(x, minXBound, maxXBound);
+		int maxX = MathExt::clamp(x+clampImgW, minXBound, maxXBound);
+
+		int minY = MathExt::clamp(y, minYBound, maxYBound);
+		int maxY = MathExt::clamp(y+clampImgH, minYBound, maxYBound);
 
 		Color* startPoint = otherImg->getPixels() + minX + (minY * tempWidth);
 		Color* endPoint = otherImg->getPixels() + maxX + ((maxY-1) * tempWidth);
@@ -2943,6 +3034,7 @@ void Graphics::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int 
 		int drawImgAddX = img->getWidth() - drawImgWidth;
 
 		int tX = 0;
+		Vec4f colorMult = Vec4f((double)Graphics::activeColor.red / 255.0, (double)Graphics::activeColor.green / 255.0, (double)Graphics::activeColor.blue / 255.0, (double)Graphics::activeColor.alpha / 255.0);
 
 		#if(OPTI>=2)
 			
@@ -3017,7 +3109,11 @@ void Graphics::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int 
 					//fill remainder
 					for(int i=0; i<remainder; i++)
 					{
-						*startPoint = *drawImgStart;
+						Color drawC = { (unsigned char) (drawImgStart->red * colorMult.x),
+										(unsigned char) (drawImgStart->green * colorMult.y),
+										(unsigned char) (drawImgStart->blue * colorMult.z), 
+										(unsigned char) (drawImgStart->alpha * colorMult.w) };
+						*startPoint = drawC;
 						startPoint++;
 						drawImgStart++;
 					}
@@ -3090,7 +3186,11 @@ void Graphics::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int 
 					//fill remainder
 					for(int i=0; i<remainder; i++)
 					{
-						*startPoint = blend(*drawImgStart, *startPoint);
+						Color drawC = { (unsigned char) (drawImgStart->red * colorMult.x),
+										(unsigned char) (drawImgStart->green * colorMult.y),
+										(unsigned char) (drawImgStart->blue * colorMult.z), 
+										(unsigned char) (drawImgStart->alpha * colorMult.w) };
+						*startPoint = blend(drawC, *startPoint);
 						startPoint++;
 						drawImgStart++;
 					}
@@ -3165,7 +3265,11 @@ void Graphics::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int 
 					//fill remainder
 					for(int i=0; i<remainder; i++)
 					{
-						*startPoint = *drawImgStart;
+						Color drawC = { (unsigned char) (drawImgStart->red * colorMult.x),
+										(unsigned char) (drawImgStart->green * colorMult.y),
+										(unsigned char) (drawImgStart->blue * colorMult.z), 
+										(unsigned char) (drawImgStart->alpha * colorMult.w) };
+						*startPoint = drawC;
 						startPoint++;
 						drawImgStart++;
 					}
@@ -3230,7 +3334,11 @@ void Graphics::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int 
 					//fill remainder
 					for(int i=0; i<remainder; i++)
 					{
-						*startPoint = blend(*drawImgStart, *startPoint);
+						Color drawC = { (unsigned char) (drawImgStart->red * colorMult.x),
+										(unsigned char) (drawImgStart->green * colorMult.y),
+										(unsigned char) (drawImgStart->blue * colorMult.z), 
+										(unsigned char) (drawImgStart->alpha * colorMult.w) };
+						*startPoint = blend(drawC, *startPoint);
 						startPoint++;
 						drawImgStart++;
 					}
@@ -3241,9 +3349,6 @@ void Graphics::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int 
 			}
 
 		#else
-
-			Vec4f colorMult = Vec4f((double)Graphics::activeColor.red / 255.0, (double)Graphics::activeColor.green / 255.0, (double)Graphics::activeColor.blue / 255.0, (double)Graphics::activeColor.alpha / 255.0);
-
 			if(currentComposite == NO_COMPOSITE)
 			{
 				while (startPoint < endPoint)
@@ -3299,24 +3404,14 @@ void Graphics::drawText(std::string str, int x, int y, Image* surf)
 	else
 		otherImg = surf;
 
-	Font* tFont = activeFont;
-	if(tFont == nullptr)
-	{
-		switch (defaultFontValue)
-		{
-		case Graphics::NORMAL_FONT:
-			tFont = defaultFont;
-			break;
-		case Graphics::LARGE_FONT:
-			tFont = defaultFontLarge;
-			break;
-		default:
-			break;
-		}
-	}
+	Font* tFont = getFont();
 
 	if (otherImg != nullptr && tFont != nullptr)
 	{
+		if(otherImg->getWidth()<=0 || otherImg->getHeight()<=0)
+		{
+			return;
+		}
 		int currX = x;
 		int currY = y;
 		for(int i=0; i<str.length(); i++)
@@ -3325,7 +3420,7 @@ void Graphics::drawText(std::string str, int x, int y, Image* surf)
 			Image* charImg = tFont->getImage(charIndex);
 			FontCharInfo fci = tFont->getFontCharInfo(str[i]);
 			
-			if(charImg == nullptr)
+			if(charImg == nullptr && str[i] != '\n')
 			{
 				continue;
 			}
@@ -3333,7 +3428,7 @@ void Graphics::drawText(std::string str, int x, int y, Image* surf)
 			if(str[i] == '\n')
 			{
 				currX = x;
-				currY += fci.height;
+				currY += tFont->getVerticalAdvance();
 				continue;
 			}
 
@@ -3353,7 +3448,7 @@ void Graphics::drawText(std::string str, int x, int y, Image* surf)
 	}
 }
 
-void Graphics::drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, Image* surf)
+void Graphics::drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, Image* surf)
 {
 	Image* otherImg;
 	if (surf == nullptr)
@@ -3361,24 +3456,14 @@ void Graphics::drawTextLimits(std::string str, int x, int y, int maxWidth, int m
 	else
 		otherImg = surf;
 
-	Font* tFont = activeFont;
-	if(tFont == nullptr)
-	{
-		switch (defaultFontValue)
-		{
-		case Graphics::NORMAL_FONT:
-			tFont = defaultFont;
-			break;
-		case Graphics::LARGE_FONT:
-			tFont = defaultFontLarge;
-			break;
-		default:
-			break;
-		}
-	}
+	Font* tFont = getFont();
 
 	if (otherImg != nullptr && tFont != nullptr)
 	{
+		if(otherImg->getWidth()<=0 || otherImg->getHeight()<=0)
+		{
+			return;
+		}
 		int currX = x;
 		int currY = y;
 		int currW = 0;
@@ -3390,7 +3475,7 @@ void Graphics::drawTextLimits(std::string str, int x, int y, int maxWidth, int m
 			Image* charImg = tFont->getImage(charIndex);
 			FontCharInfo fci = tFont->getFontCharInfo(str[i]);
 			
-			if(charImg == nullptr)
+			if(charImg == nullptr && str[i] != '\n')
 			{
 				continue;
 			}
@@ -3399,10 +3484,18 @@ void Graphics::drawTextLimits(std::string str, int x, int y, int maxWidth, int m
 			{
 				currX = x;
 				currW = 0;
-				currH += fci.height;
-				currY += fci.height;
 
-				if(currH >= maxHeight)
+				if(useLineBreak)
+				{
+					currH += tFont->getVerticalAdvance();
+					currY += tFont->getVerticalAdvance();
+
+					if(currH >= maxHeight)
+					{
+						break;
+					}
+				}
+				else
 				{
 					break;
 				}
@@ -3438,13 +3531,21 @@ void Graphics::drawTextLimits(std::string str, int x, int y, int maxWidth, int m
 			{
 				currW = 0;
 				currX = x;
-				currH += fci.height;
-				currY += fci.height;
-			}
 
-			if(currH >= maxHeight)
-			{
-				break;
+				if(useLineBreak)
+				{
+					currH += tFont->getVerticalAdvance();
+					currY += tFont->getVerticalAdvance();
+
+					if(currH >= maxHeight)
+					{
+						break;
+					}
+				}
+				else
+				{
+					break;
+				}
 			}
 		}
 	}
@@ -3460,6 +3561,10 @@ void Graphics::drawPolygon(Vec2f* points, int size, Image* surf)
 
 	if (otherImg != nullptr)
 	{
+		if(otherImg->getWidth()<=0 || otherImg->getHeight()<=0)
+		{
+			return;
+		}
 		//similar in nature to the vector graphic version
 		//always connects the last point to the first
 
@@ -3675,16 +3780,225 @@ void Graphics::drawPolygon(Vec2f* points, int size, Image* surf)
 
 void Graphics::drawModel(Model* model, Image* texture, Image* surf)
 {
-	Image* otherImg = surf;
-	if(otherImg==nullptr)
-	{
+	Image* otherImg;
+	if (surf == nullptr)
 		otherImg = activeImage;
-	}
+	else
+		otherImg = surf;
 
-	if(otherImg!=nullptr)
+	if (otherImg != nullptr)
 	{
+		if(otherImg->getWidth()<=0 || otherImg->getHeight()<=0)
+		{
+			return;
+		}
 
+		std::vector<double> modelVertices = model->getAllVertices();
+		std::vector<VertexFormat> modelVertFormat = model->getVertexFormatInfomation();
+
+		int startOfPosition = -1; //must be >= 0
+		int startOfTexture = -1; //Can be -1 but must be >= 0 for textures to work
+		int sizeOfPosition = 0; //must be 2 for this function
+		int sizeOfTexture = 0; //must be 2 for textures to work
+
+		for(int i=0; i<modelVertFormat.size(); i++)
+		{
+			if(modelVertFormat[i].usage == Model::USAGE_POSITION)
+			{
+				if(modelVertFormat[i].type == Model::TYPE_VEC2)
+				{
+					startOfPosition = i;
+					sizeOfPosition = 2;
+				}
+			}
+
+			if(modelVertFormat[i].usage == Model::USAGE_TEXTURE)
+			{
+				if(modelVertFormat[i].type == Model::TYPE_VEC2)
+				{
+					startOfTexture = i;
+					sizeOfTexture = 2;
+				}
+			}
+		}
+
+		int amtVert = model->getVerticies();
+
+		if(startOfPosition==-1)
+		{
+			return;
+		}
+
+		switch (model->getModelFormat())
+		{
+		case Model::POINTS:
+			//draw pixel at point x,y
+			for(int i=0; i<amtVert; i++)
+			{
+				int vertLoc = i*modelVertFormat.size();
+				int posLoc = vertLoc + startOfPosition;
+				Vec2f pos = Vec2f( modelVertices[posLoc], modelVertices[posLoc+1] );
+				surf->drawPixel(pos.x, pos.y, Graphics::activeColor);
+			}
+			break;
+		case Model::LINES:
+			//draw lines at point x,y to point x2,y2
+			amtVert -= amtVert%2;
+			for(int i=0; i<amtVert; i+=2)
+			{
+				int vertLoc = i*modelVertFormat.size();
+				int posLoc = vertLoc + startOfPosition;
+				Vec2f pos = Vec2f( modelVertices[posLoc], modelVertices[posLoc+1] );
+
+				int vertLoc2 = (i+1)*modelVertFormat.size();
+				int posLoc2 = vertLoc2 + startOfPosition;
+				Vec2f pos2 = Vec2f( modelVertices[posLoc2], modelVertices[posLoc2+1] );
+
+				surf->drawLine((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y);
+			}
+			break;
+		case Model::TRIANGLES:
+			//draw triangles at point x,y to point x2,y2 to point x3,y3
+			amtVert -= amtVert%3;
+			for(int i=0; i<amtVert; i+=3)
+			{
+				int vertLoc = i*modelVertFormat.size();
+				int vertLoc2 = (i+1)*modelVertFormat.size();
+				int vertLoc3 = (i+2)*modelVertFormat.size();
+				
+				int posLoc = vertLoc + startOfPosition;
+				int posLoc2 = vertLoc2 + startOfPosition;
+				int posLoc3 = vertLoc3 + startOfPosition;
+				
+				if(startOfTexture<0)
+				{
+					Vec2f pos = Vec2f( modelVertices[posLoc], modelVertices[posLoc+1] );
+					Vec2f pos2 = Vec2f( modelVertices[posLoc2], modelVertices[posLoc2+1] );
+					Vec2f pos3 = Vec2f( modelVertices[posLoc3], modelVertices[posLoc3+1] );
+
+					surf->drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false);
+				}
+				else
+				{
+					int texLoc = vertLoc + startOfTexture;
+					int texLoc2 = vertLoc2 + startOfTexture;
+					int texLoc3 = vertLoc3 + startOfTexture;
+					
+					Vec4f pos = Vec4f( modelVertices[posLoc], modelVertices[posLoc+1], modelVertices[texLoc], modelVertices[texLoc+1] );
+					Vec4f pos2 = Vec4f( modelVertices[posLoc2], modelVertices[posLoc2+1], modelVertices[texLoc2], modelVertices[texLoc2+1] );
+					Vec4f pos3 = Vec4f( modelVertices[posLoc3], modelVertices[posLoc3+1], modelVertices[texLoc3], modelVertices[texLoc3+1] );
+
+					surf->drawTexturedTriangle(pos, pos2, pos3, texture);
+				}
+			}
+			break;
+		case Model::TRIANGLE_FAN:
+			//draw triangles using first point to point x2,y2 to point x3,y3
+			amtVert -= (amtVert-1)%2;
+			for(int i=1; i<amtVert; i+=2)
+			{
+				int vertLoc = 0;
+				int vertLoc2 = (i)*modelVertFormat.size();
+				int vertLoc3 = (i+1)*modelVertFormat.size();
+				
+				int posLoc = vertLoc + startOfPosition;
+				int posLoc2 = vertLoc2 + startOfPosition;
+				int posLoc3 = vertLoc3 + startOfPosition;
+				
+				if(startOfTexture<0)
+				{
+					Vec2f pos = Vec2f( modelVertices[posLoc], modelVertices[posLoc+1] );
+					Vec2f pos2 = Vec2f( modelVertices[posLoc2], modelVertices[posLoc2+1] );
+					Vec2f pos3 = Vec2f( modelVertices[posLoc3], modelVertices[posLoc3+1] );
+
+					surf->drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false);
+				}
+				else
+				{
+					int texLoc = vertLoc + startOfTexture;
+					int texLoc2 = vertLoc2 + startOfTexture;
+					int texLoc3 = vertLoc3 + startOfTexture;
+					
+					Vec4f pos = Vec4f( modelVertices[posLoc], modelVertices[posLoc+1], modelVertices[texLoc], modelVertices[texLoc+1] );
+					Vec4f pos2 = Vec4f( modelVertices[posLoc2], modelVertices[posLoc2+1], modelVertices[texLoc2], modelVertices[texLoc2+1] );
+					Vec4f pos3 = Vec4f( modelVertices[posLoc3], modelVertices[posLoc3+1], modelVertices[texLoc3], modelVertices[texLoc3+1] );
+
+					surf->drawTexturedTriangle(pos, pos2, pos3, texture);
+				}
+			}
+			break;
+		case Model::QUADS:
+			//draw 2 triangles using 4 points
+			amtVert -= amtVert%4;
+			for(int i=0; i<amtVert; i+=4)
+			{
+				int vertLoc = i*modelVertFormat.size();
+				int vertLoc2 = (i+1)*modelVertFormat.size();
+				int vertLoc3 = (i+2)*modelVertFormat.size();
+				int vertLoc4 = (i+3)*modelVertFormat.size();
+				
+				int posLoc = vertLoc + startOfPosition;
+				int posLoc2 = vertLoc2 + startOfPosition;
+				int posLoc3 = vertLoc3 + startOfPosition;
+				int posLoc4 = vertLoc3 + startOfPosition;
+				
+				if(startOfTexture<0)
+				{
+					Vec2f pos = Vec2f( modelVertices[posLoc], modelVertices[posLoc+1] );
+					Vec2f pos2 = Vec2f( modelVertices[posLoc2], modelVertices[posLoc2+1] );
+					Vec2f pos3 = Vec2f( modelVertices[posLoc3], modelVertices[posLoc3+1] );
+
+					surf->drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false);
+
+					pos = Vec2f( modelVertices[posLoc], modelVertices[posLoc+1] );
+					pos2 = Vec2f( modelVertices[posLoc3], modelVertices[posLoc3+1] );
+					pos3 = Vec2f( modelVertices[posLoc4], modelVertices[posLoc4+1] );
+
+					surf->drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false);
+				}
+				else
+				{
+					int texLoc = vertLoc + startOfTexture;
+					int texLoc2 = vertLoc2 + startOfTexture;
+					int texLoc3 = vertLoc3 + startOfTexture;
+					int texLoc4 = vertLoc4 + startOfTexture;
+					
+					Vec4f pos = Vec4f( modelVertices[posLoc], modelVertices[posLoc+1], modelVertices[texLoc], modelVertices[texLoc+1] );
+					Vec4f pos2 = Vec4f( modelVertices[posLoc2], modelVertices[posLoc2+1], modelVertices[texLoc2], modelVertices[texLoc2+1] );
+					Vec4f pos3 = Vec4f( modelVertices[posLoc3], modelVertices[posLoc3+1], modelVertices[texLoc3], modelVertices[texLoc3+1] );
+
+					surf->drawTexturedTriangle(pos, pos2, pos3, texture);
+
+					pos = Vec4f( modelVertices[posLoc], modelVertices[posLoc+1], modelVertices[texLoc], modelVertices[texLoc+1] );
+					pos2 = Vec4f( modelVertices[posLoc3], modelVertices[posLoc3+1], modelVertices[texLoc3], modelVertices[texLoc3+1] );
+					pos3 = Vec4f( modelVertices[posLoc4], modelVertices[posLoc4+1], modelVertices[texLoc4], modelVertices[texLoc4+1] );
+
+					surf->drawTexturedTriangle(pos, pos2, pos3, texture);
+				}
+			}
+			break;
+		default:
+			break;
+		}
 	}
+}
+void Graphics::setClippingRect(Box2D b)
+{
+	clippingRect = b;
+}
+
+Box2D Graphics::getClippingRect()
+{
+	return clippingRect;
+}
+
+void Graphics::resetClippingPlane()
+{
+	clippingRect.setLeftBound(0);
+	clippingRect.setRightBound(0xFFFF);
+	clippingRect.setTopBound(0);
+	clippingRect.setBottomBound(0xFFF);
+	
 }
 
 void Graphics::setColor(Color c)
@@ -3704,12 +4018,17 @@ void Graphics::setFont(Font* f)
 
 Font* Graphics::getFont()
 {
-	return activeFont;
+	if(activeFont!=nullptr)
+		return activeFont;
+	else
+	{
+		return Graphics::getDefaultFont(defaultFontValue);
+	}
 }
 
 void Graphics::setDefaultFont(unsigned char byte)
 {
-	defaultFontValue = MathExt::max(byte, (unsigned char)1);
+	defaultFontValue = MathExt::clamp(byte, 0, 2);
 }
 
 Font* Graphics::getDefaultFont(unsigned char byte)
@@ -3719,13 +4038,16 @@ Font* Graphics::getDefaultFont(unsigned char byte)
 	case NORMAL_FONT:
 		return defaultFont;
 		break;
+	case MEDIUM_FONT:
+		return defaultFontMedium;
+		break;
 	case LARGE_FONT:
 		return defaultFontLarge;
 		break;
 	default:
 		break;
 	}
-	return nullptr;
+	return defaultFont;
 }
 
 void Graphics::setFillRule(bool v)
@@ -3773,6 +4095,16 @@ unsigned char Graphics::getBlendMode()
 #pragma region IMAGE_MANIPULATION
 int Graphics::ditherMatrixSize = 2;
 
+Image* Graphics::crop(Image* img, int x1, int y1, int x2, int y2)
+{
+	return nullptr;
+}
+
+Image* Graphics::crop(Image* img, Shape s)
+{
+	return nullptr;
+}
+
 void Graphics::replaceColor(Image* img, Color oldColor, Color newColor, bool ignoreAlpha)
 {
 	if(img!=nullptr)
@@ -3803,6 +4135,205 @@ void Graphics::replaceColor(Image* img, Color oldColor, Color newColor, bool ign
 			startPix++;
 		}
 	}
+}
+
+void Graphics::filterOutColor(Image* img, Color c1)
+{
+	if(img != nullptr)
+	{
+		int* pixs = (int*)img->getPixels();
+		int* endPixs = (int*)img->getPixels()+(img->getWidth()*img->getHeight());
+		int colAsInt = *((int*)&c1);
+		while(pixs < endPixs)
+		{
+			if(*pixs != colAsInt)
+			{
+				*pixs = 0;
+			}
+			pixs++;
+		}
+	}
+}
+
+void Graphics::filterOutColorRange(Image* img, Color c1, Color c2)
+{
+	if(img != nullptr)
+	{
+		Color* pixs = img->getPixels();
+		Color* endPixs = img->getPixels()+(img->getWidth()*img->getHeight());
+		while(pixs < endPixs)
+		{
+			if(pixs->red < c1.red || pixs->red > c2.red)
+			{
+				*pixs = {0, 0, 0, 0};
+			}
+			if(pixs->green < c1.green || pixs->green > c2.green)
+			{
+				*pixs = {0, 0, 0, 0};
+			}
+			if(pixs->blue < c1.blue || pixs->blue > c2.blue)
+			{
+				*pixs = {0, 0, 0, 0};
+			}
+			if(pixs->alpha < c1.alpha || pixs->alpha > c2.alpha)
+			{
+				*pixs = {0, 0, 0, 0};
+			}
+			pixs++;
+		}
+	}
+}
+
+void Graphics::convertToColorSpace(Image* img, unsigned char colorSpace)
+{
+	if(img != nullptr)
+	{
+		Color* pixs = img->getPixels();
+		Color* endPixs = pixs + (img->getWidth()*img->getHeight());
+
+		while(pixs < endPixs)
+		{
+			*pixs = ColorSpaceConverter::convert(*pixs, colorSpace);
+			pixs++;
+		}
+	}
+}
+
+void Graphics::boxBlur(Image* img, int boxSize)
+{
+	if(img != nullptr)
+	{
+		double multVal = 1.0/(boxSize*boxSize);
+		Color* pixs = img->getPixels();
+		for(int y=0; y<img->getHeight(); y++)
+		{
+			for(int x=0; x<img->getWidth(); x++)
+			{
+				//average out the pixels in the box
+				double red = 0;
+				double green = 0;
+				double blue = 0;
+				double alpha = 0;
+				for(int i=-boxSize; i<boxSize; i++)
+				{
+					int nY = MathExt::clamp(y+i, 0, img->getHeight()-1);
+					for(int j=-boxSize; j<boxSize; j++)
+					{
+						int nX = MathExt::clamp(x+j, 0, img->getWidth()-1);
+						Color c = pixs[nX + nY*img->getWidth()];
+						red += c.red * multVal;
+						green += c.green * multVal;
+						blue += c.blue * multVal;
+						alpha += c.alpha * multVal;
+					}
+				}
+
+				Color blurColor;
+				blurColor.red = (unsigned char)red;
+				blurColor.green = (unsigned char)green;
+				blurColor.blue = (unsigned char)blue;
+				blurColor.alpha = (unsigned char)alpha;
+				
+				pixs[x + y*img->getWidth()] = blurColor;
+			}
+		}
+	}
+}
+
+void Graphics::gaussianBlur(Image* img, double stdDeviation)
+{
+	//1 2 1
+	//1 4 6 4 1
+	//Binomial Theorem
+}
+
+void Graphics::uncannyEdgeFilter(Image* img)
+{
+
+}
+
+void Graphics::sobelEdgeFilter(Image* img)
+{
+
+}
+
+std::vector<std::vector<Vec2f>> Graphics::calculateGradient(Image* img, unsigned char type)
+{
+	std::vector< std::vector<Vec2f> > gradientImage;
+	if(img!=nullptr)
+	{
+		gradientImage = std::vector< std::vector<Vec2f> >(img->getHeight());
+
+		for(int y=0; y<img->getHeight(); y++)
+		{
+			for(int x=0; x<img->getWidth(); x++)
+			{
+				Vec2f grad;
+				Color c1, c2;
+				switch(type)
+				{
+					case RED_CHANNEL:
+						//central x difference
+						c1 = img->getPixel(x-1, y, true);
+						c2 = img->getPixel(x+1, y, true);
+						
+						grad.x = (double)(c2.red - c1.red)/2.0;
+
+						//central y difference
+						c1 = img->getPixel(x, y-1, true);
+						c2 = img->getPixel(x, y+1, true);
+						
+						grad.y = (double)(c2.red - c1.red)/2.0;
+						break;
+					case GREEN_CHANNEL:
+						//central x difference
+						c1 = img->getPixel(x-1, y, true);
+						c2 = img->getPixel(x+1, y, true);
+						
+						grad.x = (double)(c2.green - c1.green)/2.0;
+
+						//central y difference
+						c1 = img->getPixel(x, y-1, true);
+						c2 = img->getPixel(x, y+1, true);
+						
+						grad.y = (double)(c2.green - c1.green)/2.0;
+						break;
+					case BLUE_CHANNEL:
+						//central x difference
+						c1 = img->getPixel(x-1, y, true);
+						c2 = img->getPixel(x+1, y, true);
+						
+						grad.x = (double)(c2.blue - c1.blue)/2.0;
+
+						//central y difference
+						c1 = img->getPixel(x, y-1, true);
+						c2 = img->getPixel(x, y+1, true);
+						
+						grad.y = (double)(c2.blue - c1.blue)/2.0;
+						break;
+					case ALPHA_CHANNEL:
+						//central x difference
+						c1 = img->getPixel(x-1, y, true);
+						c2 = img->getPixel(x+1, y, true);
+						
+						grad.x = (double)(c2.alpha - c1.alpha)/2.0;
+
+						//central y difference
+						c1 = img->getPixel(x, y-1, true);
+						c2 = img->getPixel(x, y+1, true);
+						
+						grad.y = (double)(c2.alpha - c1.alpha)/2.0;
+						break;
+					default:
+						break;
+				}
+				
+				gradientImage[y].push_back(grad);
+			}
+		}
+	}
+
+	return gradientImage;
 }
 
 void Graphics::ditherImage(Image* img, unsigned char method)

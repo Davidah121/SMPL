@@ -3,17 +3,37 @@
 #include<vector>
 #include<filesystem>
 
+#include "GeneralExceptions.h"
 #include "Object.h"
 
 class SimpleDir : public Object
 {
 public:
+	SimpleDir(std::string directory);
 	SimpleDir(std::wstring directory);
 	~SimpleDir();
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
+
+	//Exceptions
+	struct ExistanceError : public std::exception
+	{
+		const char* what() noexcept { return "File or Directory could not be found."; }
+	};
+	struct CopyError : public std::exception
+	{
+		const char* what() noexcept { return "File or Directory could not be copied."; }
+	};
+	struct DeleteError : public std::exception
+	{
+		const char* what() noexcept { return "File or Directory could not be deleted."; }
+	};
+	struct RenameError : public std::exception
+	{
+		const char* what() noexcept { return "File or Directory could not be renamed."; }
+	};
 
 	void update(); //Update the references in this directory
 

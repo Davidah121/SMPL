@@ -8,10 +8,10 @@
 #include "ColorSpaceConverter.h"
 
 #pragma region ClassStuff
-const Class* ColorPalette::myClass = new Class("ColorPalette", {Object::myClass});
+const Class ColorPalette::myClass = Class("ColorPalette", {&Object::myClass});
 const Class* ColorPalette::getClass()
 {
-	return ColorPalette::myClass;
+	return &ColorPalette::myClass;
 }
 #pragma endregion
 

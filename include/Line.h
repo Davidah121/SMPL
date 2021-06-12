@@ -15,7 +15,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 
 	Vec2f getPoint1();
 	Vec2f getPoint2();

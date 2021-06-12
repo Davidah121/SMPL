@@ -1,13 +1,21 @@
 #include "Mat2f.h"
 
-const Class* Mat2f::myClass = new Class("Mat2f", {Matrix::myClass});
+const Class Mat2f::myClass = Class("Mat2f", {&Matrix::myClass});
 const Class* Mat2f::getClass()
 {
-	return Mat2f::myClass;
+	return &Mat2f::myClass;
 }
 
 Mat2f::Mat2f() : Matrix(2,2)
 {
+}
+
+Mat2f::Mat2f(double v1, double v2, double v3, double v4) : Matrix(2,2)
+{
+	data[0][0] = v1;
+	data[0][1] = v2;
+	data[1][0] = v3;
+	data[1][1] = v4;
 }
 
 Mat2f::Mat2f(const Mat2f& c)

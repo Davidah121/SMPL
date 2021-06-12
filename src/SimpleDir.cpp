@@ -2,10 +2,32 @@
 #include "StringTools.h"
 #include <iomanip>
 
-const Class* SimpleDir::myClass = new Class("SimpleDir", {Object::myClass});
+const Class SimpleDir::myClass = Class("SimpleDir", {&Object::myClass});
 const Class* SimpleDir::getClass()
 {
-	return SimpleDir::myClass;
+	return &SimpleDir::myClass;
+}
+
+SimpleDir::SimpleDir(std::string directory)
+{
+	std::wstring convDir = StringTools::toWideString(directory);
+
+	try
+	{
+		exists = std::filesystem::is_directory(convDir);
+		location = convDir;
+
+		if (exists == true)
+		{
+			update();
+		}
+	}
+	catch (...)
+	{
+		#ifdef USE_EXCEPTIONS
+		throw SimpleDir::ExistanceError();
+		#endif
+	}
 }
 
 /*
@@ -26,8 +48,9 @@ SimpleDir::SimpleDir(std::wstring directory)
 	}
 	catch (...)
 	{
-		StringTools::println("Failed to initialize.");
-		StringTools::println("An invalid character may have been used.");
+		#ifdef USE_EXCEPTIONS
+		throw SimpleDir::ExistanceError();
+		#endif
 	}
 }
 
@@ -66,6 +89,10 @@ std::wstring SimpleDir::getReferenceName(int index)
 	}
 	else
 	{
+		#ifdef USE_EXCEPTIONS
+		throw SimpleDir::OutOfBoundsError();
+		#endif
+
 		return L"";
 	}
 }
@@ -78,6 +105,9 @@ std::wstring SimpleDir::getReferenceFullPath(int index)
 	}
 	else
 	{
+		#ifdef USE_EXCEPTIONS
+		throw SimpleDir::OutOfBoundsError();
+		#endif
 		return L"";
 	}
 }
@@ -94,9 +124,11 @@ unsigned int SimpleDir::fileSize(int index)
 	}
 	else
 	{
+		#ifdef USE_EXCEPTIONS
+		throw SimpleDir::OutOfBoundsError();
+		#endif
 		return -1;
 	}
-	return -1;
 }
 
 /*
@@ -118,6 +150,9 @@ time_t SimpleDir::getLastChangeTime(int index)
 	}
 	else
 	{
+		#ifdef USE_EXCEPTIONS
+		throw SimpleDir::OutOfBoundsError();
+		#endif
 		return 0;
 	}
 }
@@ -134,6 +169,9 @@ bool SimpleDir::referenceIsDirectory(int index)
 	}
 	else
 	{
+		#ifdef USE_EXCEPTIONS
+		throw SimpleDir::OutOfBoundsError();
+		#endif
 		return false;
 	}
 }
@@ -157,12 +195,17 @@ void SimpleDir::renameResource(std::wstring newName, int index)
 		}
 		catch (...)
 		{
-			StringTools::println("Error on Rename");
+			#ifdef USE_EXCEPTIONS
+			throw SimpleDir::RenameError();
+			#endif
 		}
 	}
 	else
 	{
 		//error
+		#ifdef USE_EXCEPTIONS
+		throw SimpleDir::OutOfBoundsError();
+		#endif
 	}
 }
 
@@ -186,12 +229,17 @@ void SimpleDir::deleteResource(int index)
 		}
 		catch(...)
 		{
-			StringTools::println("Error on delete");
+			#ifdef USE_EXCEPTIONS
+			throw SimpleDir::DeleteError();
+			#endif
 		}
 	}
 	else
 	{
 		//error
+		#ifdef USE_EXCEPTIONS
+		throw SimpleDir::OutOfBoundsError();
+		#endif
 	}
 }
 
@@ -220,12 +268,17 @@ void SimpleDir::copyResource(std::wstring newName, int index)
 		}
 		catch (...)
 		{
-			StringTools::println("Error on Copy");
+			#ifdef USE_EXCEPTIONS
+			throw SimpleDir::CopyError();
+			#endif
 		}
 	}
 	else
 	{
 		//error
+		#ifdef USE_EXCEPTIONS
+		throw SimpleDir::OutOfBoundsError();
+		#endif
 	}
 }
 

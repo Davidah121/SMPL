@@ -7,10 +7,10 @@
 
 #pragma region VectorRectangle
 
-const Class* VectorRectangle::myClass = new Class("VectorRectangle", {VectorShape::myClass});
+const Class VectorRectangle::myClass = Class("VectorRectangle", {&VectorShape::myClass});
 const Class* VectorRectangle::getClass()
 {
-	return VectorRectangle::myClass;
+	return &VectorRectangle::myClass;
 }
 
 VectorRectangle::VectorRectangle() : VectorShape()

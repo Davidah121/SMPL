@@ -1,10 +1,10 @@
 #include "Line.h"
 #include "MathExt.h"
 
-const Class* Line::myClass = new Class("Line", {Object::myClass});
+const Class Line::myClass = Class("Line", {&Object::myClass});
 const Class* Line::getClass()
 {
-	return Line::myClass;
+	return &Line::myClass;
 }
 
 Line::Line()

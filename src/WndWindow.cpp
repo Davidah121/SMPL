@@ -13,10 +13,10 @@ int WndWindow::screenHeight = System::getDesktopHeight();
 int* WndWindow::mouseVWheelPointer = nullptr;
 int* WndWindow::mouseHWheelPointer = nullptr;
 
-const Class* WndWindow::myClass = new Class("WndWindow", {Object::myClass});
+const Class WndWindow::myClass = Class("WndWindow", {&Object::myClass});
 const Class* WndWindow::getClass()
 {
-	return WndWindow::myClass;
+	return &WndWindow::myClass;
 }
 
 WndWindow* WndWindow::getWindowByHandle(HWND handle)
@@ -81,8 +81,6 @@ LRESULT _stdcall WndWindow::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 
 			DeleteDC(mem);
 			EndPaint(hwnd, &ps);
-
-			currentWindow->setDonePainting(true);
 			break;
 		case WM_CLOSE:
 			if (currentWindow->closingFunction != nullptr)
@@ -158,19 +156,23 @@ LRESULT _stdcall WndWindow::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 			break;
 		case WM_ENTERSIZEMOVE:
 			currentWindow->setResizing(true);
-			
 			break;
 		case WM_SIZING:
 			rect = (RECT*)lparam;
+			
+			currentWindow->preX = rect->left;
+			currentWindow->preY = rect->top;
+
 			currentWindow->x = rect->left;
 			currentWindow->y = rect->top;
-			
+
 			currentWindow->width = rect->right - rect->left;
 			currentWindow->height = rect->bottom - rect->top;
 			break;
 		case WM_SIZE:
 			if(wparam == SIZE_MAXIMIZED)
 			{
+				currentWindow->windowState = STATE_MAXIMIZED;
 				//FIX LATER
 				if(currentWindow->getResizing())
 				{
@@ -199,6 +201,7 @@ LRESULT _stdcall WndWindow::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 			}
 			else if(wparam == SIZE_RESTORED)
 			{
+				currentWindow->windowState = STATE_NORMAL;
 				//FIX LATER
 				if(currentWindow->getResizing())
 				{
@@ -219,12 +222,38 @@ LRESULT _stdcall WndWindow::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 					currentWindow->height = HIWORD(lparam);
 				}
 			}
+			else if(wparam == SIZE_MINIMIZED)
+			{
+				currentWindow->preX = currentWindow->x;
+				currentWindow->preY = currentWindow->y;
+
+				currentWindow->width = LOWORD(lparam);
+				currentWindow->height = HIWORD(lparam);
+
+				currentWindow->windowState = STATE_MINIMIZED;
+			}
 			break;
 		case WM_EXITSIZEMOVE:
 			currentWindow->initBitmap();
 			currentWindow->setResizing(false);
 			break;
 		case WM_MDIMAXIMIZE:
+			break;
+		case WM_SYSCOMMAND:
+			if(wparam == SC_MOVE)
+			{
+				if(!currentWindow->getMovable())
+				{
+					return 0;
+				}
+			}
+			else if(wparam == SC_SIZE)
+			{
+				if(!currentWindow->getResizable())
+				{
+					return 0;
+				}
+			}
 			break;
 		case WM_SETCURSOR:
 			SetCursor( LoadCursor(NULL, IDC_ARROW) );
@@ -248,21 +277,27 @@ WndWindow::WndWindow()
 
 	gui = new GuiManager(new Image(this->width, this->height), true);
 
-	wndThread = new std::thread(&WndWindow::init, this, x, y, width, height, title);
+	int threadManaged = windowType & 0b0100;
+	
+	if(threadManaged == TYPE_THREAD_MANAGED)
+		wndThread = new std::thread(&WndWindow::init, this, this->x, this->y, this->width, this->height, this->title, this->windowType);
+	else
+		init(this->x, this->y, this->width, this->height, this->title, this->windowType);
 
 	while (getFinishInit() != true)
 	{
 		std::this_thread::yield();
 	}
-	//init(x,y,width,height,title);
 }
 
-WndWindow::WndWindow(std::wstring title, int width, int height, int x, int y)
+WndWindow::WndWindow(std::wstring title, int width, int height, int x, int y, unsigned char windowType)
 {
 	this->x = x;
 	this->y = y;
 	this->width = width;
 	this->height = height;
+
+	this->windowType = windowType;
 
 	if (this->width < 0)
 		this->width = 320;
@@ -282,7 +317,12 @@ WndWindow::WndWindow(std::wstring title, int width, int height, int x, int y)
 	
 	this->title = title;
 
-	wndThread = new std::thread(&WndWindow::init, this, this->x, this->y, this->width, this->height, this->title);
+	int threadManaged = windowType & 0b0100;
+	
+	if(threadManaged == TYPE_THREAD_MANAGED)
+		wndThread = new std::thread(&WndWindow::init, this, this->x, this->y, this->width, this->height, this->title, this->windowType);
+	else
+		init(this->x, this->y, this->width, this->height, this->title, this->windowType);
 
 	while (getFinishInit() != true)
 	{
@@ -290,12 +330,14 @@ WndWindow::WndWindow(std::wstring title, int width, int height, int x, int y)
 	}
 }
 
-WndWindow::WndWindow(std::string title, int width, int height, int x, int y)
+WndWindow::WndWindow(std::string title, int width, int height, int x, int y, unsigned char windowType)
 {
 	this->x = x;
 	this->y = y;
 	this->width = width;
 	this->height = height;
+	
+	this->windowType = windowType;
 
 	if (this->width < 0)
 		this->width = 320;
@@ -314,49 +356,17 @@ WndWindow::WndWindow(std::string title, int width, int height, int x, int y)
 
 	this->title = StringTools::toWideString(title);
 
-	wndThread = new std::thread(&WndWindow::init, this, this->x, this->y, this->width, this->height, this->title);
+	int threadManaged = windowType & 0b0100;
+
+	if(threadManaged == TYPE_THREAD_MANAGED)
+		wndThread = new std::thread(&WndWindow::init, this, this->x, this->y, this->width, this->height, this->title, this->windowType);
+	else
+		init(this->x, this->y, this->width, this->height, this->title, this->windowType);
 
 	while (getFinishInit() != true)
 	{
 		std::this_thread::yield();
 	}
-	//init(x,y,width,height,title);
-}
-
-WndWindow::WndWindow(const WndWindow& other)
-{
-	x = other.x;
-	y = other.y;
-	width = other.width;
-	height = other.height;
-	title = other.title;
-	wndPixels = other.wndPixels;
-	wndThread = other.wndThread;
-
-	windowHandle = other.windowHandle;
-	wndClass = other.wndClass;
-	hins = other.hins;
-	bitmap = other.bitmap;
-	bitInfo = other.bitInfo;
-	myHDC = other.myHDC;
-
-	gui = other.gui;
-	valid = other.valid;
-	running = other.running;
-	finishedInit = other.finishedInit;
-
-	paintFunction = other.paintFunction;
-	keyUpFunction = other.keyUpFunction;
-	keyDownFunction = other.keyDownFunction;
-
-	mouseDoubleClickFunction = other.mouseDoubleClickFunction;
-	mouseButtonDownFunction = other.mouseButtonDownFunction;
-	mouseButtonUpFunction = other.mouseButtonUpFunction;
-	mouseWheelFunction = other.mouseWheelFunction;
-	mouseHWheelFunction = other.mouseHWheelFunction;
-	mouseMovedFunction = other.mouseMovedFunction;
-
-	closingFunction = other.closingFunction;
 }
 
 WndWindow::~WndWindow()
@@ -380,8 +390,6 @@ void WndWindow::dispose()
 		std::wstring text = title;
 		text += L"_CLASS";
 
-		setValid(false);
-
 		if (wndThread != nullptr)
 		{
 			if (wndThread->joinable())
@@ -389,6 +397,8 @@ void WndWindow::dispose()
 			
 			wndThread = nullptr;
 		}
+
+		setValid(false);
 
 		if (IsWindow(windowHandle))
 		{
@@ -402,12 +412,17 @@ void WndWindow::dispose()
 		if(gui!=nullptr)
 			delete gui;
 		gui = nullptr;
+
+		if(wndPixels!=nullptr)
+			delete[] wndPixels;
+		
+		wndPixels = nullptr;
 			
 		WndWindow::removeWindowFromList(this);
 	}
 }
 
-void WndWindow::init(int x, int y, int width, int height, std::wstring title)
+void WndWindow::init(int x, int y, int width, int height, std::wstring title, unsigned char windowType)
 {
 	std::wstring text = title;
 	text += L"_CLASS";
@@ -427,9 +442,41 @@ void WndWindow::init(int x, int y, int width, int height, std::wstring title)
 	wndClass.lpszMenuName = NULL;
 	wndClass.style = CS_HREDRAW | CS_VREDRAW;
 
+	int trueWidth = width;
+	int trueHeight = height;
+
 	if (RegisterClassExW(&wndClass) != NULL)
 	{
-		windowHandle = CreateWindowExW(NULL, text.c_str(), title.c_str(), WS_OVERLAPPEDWINDOW, x, y, width + 16, height + 40, NULL, NULL, hins, NULL);
+		int wType = windowType & 0b0001;
+		int focusable = windowType & 0b0010;
+		int threadManaged = windowType & 0b0100;
+
+		DWORD style = 0;
+
+		switch(windowType)
+		{
+			case WndWindow::NORMAL_WINDOW:
+				style = WS_OVERLAPPEDWINDOW;
+				trueWidth += 16;
+				trueHeight += 40;
+				break;
+			case WndWindow::BORDERLESS_WINDOW:
+				style = WS_POPUP|WS_VISIBLE|WS_SYSMENU;
+				break;
+			default:
+				style = WS_OVERLAPPEDWINDOW;
+				trueWidth += 16;
+				trueHeight += 40;
+				break;
+		}
+
+		if(focusable==TYPE_NONFOCUSABLE)
+		{
+			style |= WS_EX_NOACTIVATE;
+		}
+
+		windowHandle = CreateWindowExW(NULL, text.c_str(), title.c_str(), style, x, y, trueWidth, trueHeight, NULL, NULL, hins, NULL);
+		
 
 		if (windowHandle != NULL)
 		{
@@ -441,7 +488,9 @@ void WndWindow::init(int x, int y, int width, int height, std::wstring title)
 			WndWindow::windowList.push_back(this);
 
 			setFinishInit(true);
-			run();
+
+			if(threadManaged == TYPE_THREAD_MANAGED)
+				run();
 		}
 		else
 		{
@@ -472,11 +521,6 @@ void WndWindow::init(int x, int y, int width, int height, std::wstring title)
 
 void WndWindow::initBitmap()
 {
-	while(!getDonePainting())
-	{
-		std::this_thread::yield();
-	}
-
 	bitInfo.bmiHeader.biSize = sizeof(bitInfo.bmiHeader);
 	bitInfo.bmiHeader.biWidth = width;
 	bitInfo.bmiHeader.biHeight = -height;
@@ -551,13 +595,6 @@ void WndWindow::setFinishInit(bool value)
 	myMutex.unlock();
 }
 
-void WndWindow::setDonePainting(bool value)
-{
-	myMutex.lock();
-	donePainting = value;
-	myMutex.unlock();
-}
-
 void WndWindow::setResizing(bool value)
 {
 	myMutex.lock();
@@ -582,16 +619,6 @@ bool WndWindow::getFinishInit()
 	return v;
 }
 
-bool WndWindow::getDonePainting()
-{
-	bool v;
-	myMutex.lock();
-	v = donePainting;
-	myMutex.unlock();
-
-	return v;
-}
-
 bool WndWindow::getResizing()
 {
 	bool v;
@@ -610,6 +637,34 @@ bool WndWindow::getResizeMe()
 	myMutex.unlock();
 
 	return v;
+}
+
+bool WndWindow::getRepaint()
+{
+	bool v;
+	myMutex.lock();
+	if(autoRepaint)
+		v = true;
+	else
+		v = shouldRepaint;
+	myMutex.unlock();
+
+	return v;
+}
+
+void WndWindow::setThreadAutoRepaint(bool v)
+{
+	myMutex.lock();
+	autoRepaint = v;
+	myMutex.unlock();
+}
+
+void WndWindow::waitTillClose()
+{
+	while(getRunning())
+	{
+		System::sleep(1);
+	}
 }
 
 void WndWindow::setVisible(bool value)
@@ -662,14 +717,42 @@ int WndWindow::getMouseX()
 {
 	POINT p;
 	GetCursorPos(&p);
-	return p.x - (x+16);
+
+	switch (windowType)
+	{
+	case WndWindow::NORMAL_WINDOW:
+		return p.x-(x+16);
+		break;
+	case WndWindow::BORDERLESS_WINDOW:
+		return p.x-x;
+		break;
+	default:
+		return p.x-(x+16);
+		break;
+	}
+
+	return 0;
 }
 
 int WndWindow::getMouseY()
 {
 	POINT p;
 	GetCursorPos(&p);
-	return p.y - (y+40);
+
+	switch (windowType)
+	{
+	case WndWindow::NORMAL_WINDOW:
+		return p.y-(y+40);
+		break;
+	case WndWindow::BORDERLESS_WINDOW:
+		return p.y-y;
+		break;
+	default:
+		return p.y-(y+40);
+		break;
+	}
+
+	return 0;
 }
 
 int WndWindow::getWidth()
@@ -690,54 +773,6 @@ std::wstring WndWindow::getTitle()
 int WndWindow::getImageSize()
 {
 	return wndPixelsSize;
-}
-
-void WndWindow::repaint()
-{
-	//draw the gui first
-
-	if(getResizing())
-	{
-		return;
-	}
-
-	if(getResizeMe())
-	{
-		initBitmap();
-		setResizeMe(false);
-	}
-
-	setDonePainting(false);
-
-	if (paintFunction != nullptr)
-		paintFunction();
-
-	if (gui != nullptr && activateGui)
-	{
-		gui->setWindowX(x+8);
-		gui->setWindowY(y+32);
-
-		gui->updateGuiElements();
-		gui->renderGuiElements();
-		Image* img = gui->getImage();
-
-		drawImage(img);
-	}
-	
-	int value = SetDIBits(myHDC, bitmap, 0, height, &wndPixels[0], &bitInfo, DIB_RGB_COLORS);
-	
-	RedrawWindow(windowHandle, NULL, NULL, RDW_INVALIDATE);
-
-	while (getDonePainting() == false && getRunning())
-	{
-		std::this_thread::yield();
-	}
-
-	if(getResizeMe())
-	{
-		initBitmap();
-		setResizeMe(false);
-	}
 }
 
 bool WndWindow::getValid()
@@ -840,6 +875,72 @@ void WndWindow::setMouseHWheelValuePointer(int* v)
 	WndWindow::mouseHWheelPointer = v;
 }
 
+void WndWindow::setFocus(bool v)
+{
+	if(canFocus)
+	{
+		setShouldFocus(v);
+	}
+}
+
+bool WndWindow::getFocus()
+{
+	return GetFocus()==windowHandle;
+}
+
+bool WndWindow::getCanFocus()
+{
+	return canFocus;
+}
+
+void WndWindow::setShouldFocus(bool v)
+{
+	myMutex.lock();
+	shouldFocus = v;
+	myMutex.unlock();
+}
+
+void WndWindow::threadSetFocus()
+{
+	SetFocus(windowHandle);
+}
+
+bool WndWindow::getShouldFocus()
+{
+	myMutex.lock();
+	bool v = shouldFocus;
+	myMutex.unlock();
+	return v;
+}
+
+void WndWindow::setResizable(bool v)
+{
+	canResize = v;
+}
+
+bool WndWindow::getResizable()
+{
+	return canResize;
+}
+
+void WndWindow::setMovable(bool v)
+{
+	canMove = v;
+}
+
+bool WndWindow::getMovable()
+{
+	return canMove;
+}
+
+void WndWindow::setThreadUpdateTime(unsigned int millis, unsigned int micros)
+{
+	myMutex.lock();
+	sleepTimeMillis = millis;
+	sleepTimeMicros = micros;
+	myMutex.unlock();
+}
+
 void WndWindow::drawImage(Image* g)
 {
 	if (g != nullptr)
@@ -937,13 +1038,141 @@ void WndWindow::run()
 {
 	while (getRunning())
 	{
-		MSG m;
-		ZeroMemory(&m, sizeof(MSG));
-		while(PeekMessage(&m, windowHandle, NULL, NULL, PM_REMOVE))
-		{
-			TranslateMessage(&m);
-			DispatchMessage(&m);
-		}
+		time_t t1 = System::getCurrentTimeMicro();
 		
+		threadUpdate();
+		threadGuiUpdate();
+
+		if(getRepaint())
+			threadRepaint();
+
+		time_t timeNeeded = 0;
+		myMutex.lock();
+		timeNeeded = sleepTimeMillis*1000 + sleepTimeMicros;
+		myMutex.unlock();
+
+		time_t t2 = System::getCurrentTimeMicro();
+		time_t timePassed = t2-t1;
+		
+		time_t waitTime = timeNeeded - timePassed;
+
+		System::sleep(waitTime/1000, waitTime%1000);
+	}
+}
+
+void WndWindow::threadUpdate()
+{
+	MSG m;
+	ZeroMemory(&m, sizeof(MSG));
+	while(PeekMessage(&m, windowHandle, NULL, NULL, PM_REMOVE))
+	{
+		TranslateMessage(&m);
+		DispatchMessage(&m);
+	}
+	
+	if(getShouldFocus())
+	{
+		threadSetFocus();
+	}
+}
+
+void WndWindow::threadGuiUpdate()
+{
+	Input::pollInput();
+	if(windowState != STATE_MINIMIZED)
+	{
+		if (gui != nullptr && activateGui)
+		{
+			if(windowType == WndWindow::NORMAL_WINDOW)
+			{
+				if(windowState != STATE_MAXIMIZED)
+				{
+					gui->setWindowX(x+8);
+					gui->setWindowY(y+32);
+				}
+				else
+				{
+					gui->setWindowX(x);
+					gui->setWindowY(y+24);
+				}
+			}
+			else
+			{
+				gui->setWindowX(x);
+				gui->setWindowY(y);
+			}
+
+			gui->updateGuiElements();
+		}
+	}
+}
+
+void WndWindow::threadRender()
+{
+	if(windowState != STATE_MINIMIZED)
+	{
+		if (gui != nullptr && activateGui)
+		{
+			gui->renderGuiElements();
+			drawImage(gui->getImage());
+		}
+	}
+
+	if (paintFunction != nullptr)
+		paintFunction();
+}
+
+void WndWindow::threadRepaint()
+{
+	//draw and send redraw message
+	if(getResizing())
+	{
+		return;
+	}
+
+	if(getResizeMe())
+	{
+		initBitmap();
+		setResizeMe(false);
+	}
+
+	if(windowState != STATE_MINIMIZED)
+	{
+		threadRender();
+		int value = SetDIBits(myHDC, bitmap, 0, height, &wndPixels[0], &bitInfo, DIB_RGB_COLORS);
+		
+		RedrawWindow(windowHandle, NULL, NULL, RDW_INVALIDATE);
+	}
+}
+
+
+void WndWindow::update()
+{
+	//call guiUpdate do the resizing stuff
+	if(threadOwnership==false)
+	{
+		threadUpdate();
+	}
+}
+
+void WndWindow::repaint()
+{
+	if(threadOwnership)
+	{
+		threadRepaint();
+	}
+	else
+	{
+		myMutex.lock();
+		shouldRepaint=true;
+		myMutex.unlock();
+	}
+}
+
+void WndWindow::guiUpdate()
+{
+	if(threadOwnership==false)
+	{
+		threadGuiUpdate();
 	}
 }

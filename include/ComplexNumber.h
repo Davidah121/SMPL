@@ -12,7 +12,7 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
 	
 	ComplexNumber operator+(ComplexNumber other);
 	ComplexNumber operator-(ComplexNumber other);

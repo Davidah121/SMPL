@@ -9,7 +9,8 @@ rule buildToObject
    deps = gcc
 
 ## build all of the objects and the executable
-build $objDir/Audio.o: buildToObject src/Audio.cpp
+build $objDir/AudioIn.o: buildToObject src/AudioIn.cpp
+build $objDir/AudioOut.o: buildToObject src/AudioOut.cpp
 build $objDir/BezierCurve.o: buildToObject src/BezierCurve.cpp
 build $objDir/BinarySet.o: buildToObject src/BinarySet.cpp
 build $objDir/BitmapFont.o: buildToObject src/BitmapFont.cpp
@@ -19,6 +20,7 @@ build $objDir/ColorPalette.o: buildToObject src/ColorPalette.cpp
 build $objDir/ColorSpaceConverter.o: buildToObject src/ColorSpaceConverter.cpp
 build $objDir/ComplexNumber.o: buildToObject src/ComplexNumber.cpp
 build $objDir/Compression.o: buildToObject src/Compression.cpp
+build $objDir/File.o: buildToObject src/File.cpp
 build $objDir/Font.o: buildToObject src/Font.cpp
 build $objDir/GamepadDInput.o: buildToObject src/GamepadDInput.cpp
 build $objDir/GamepadXInput.o: buildToObject src/GamepadXInput.cpp

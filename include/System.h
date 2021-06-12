@@ -8,6 +8,12 @@
 #include "Image.h"
 
 
+struct FileFilter
+{
+	std::wstring name;
+	std::wstring extensions;
+};
+
 class System
 {
 public:
@@ -75,6 +81,19 @@ public:
 
 	static unsigned long getProcessID(std::wstring processName);
 	static HWND getProcessWindow(std::wstring windowName);
+
+	static const unsigned char TYPE_OPEN_FILE = 0;
+	static const unsigned char TYPE_OPEN_FOLDER = 1;
+	static const unsigned char TYPE_SAVE_FILE = 2;
+
+	static const FileFilter ALL_FILTER;
+	static const FileFilter IMAGE_FILTER;
+	static const FileFilter TEXT_FILTER;
+	static const FileFilter SOUND_FILTER;
+	static const FileFilter VIDEO_FILTER;
+	
+	
+	static std::wstring fileDialogBox(unsigned char type = TYPE_OPEN_FILE, std::vector<FileFilter> filters = {}, std::wstring startDir = L"./");
 	
 private:
 	static unsigned int numberOfThreads;

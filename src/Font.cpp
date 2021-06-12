@@ -2,10 +2,10 @@
 #include "SimpleFile.h"
 #include "StringTools.h"
 
-const Class* Font::myClass = new Class("Font", {Object::myClass});
+const Class Font::myClass = Class("Font", {&Object::myClass});
 const Class* Font::getClass()
 {
-	return Font::myClass;
+	return &Font::myClass;
 }
 
 Font::Font()
@@ -69,4 +69,33 @@ void Font::setFontTransform(Mat4f mat)
 Mat4f Font::getFontTransform()
 {
 	return fontTransform;
+}
+
+int Font::getVerticalAdvance()
+{
+	return verticalAdv;
+}
+
+int Font::getWidthOfString(std::string text)
+{
+	int totalWidth = 0;
+	for(int i=0; i<text.size(); i++)
+	{
+		FontCharInfo fci = getFontCharInfo(text[i]);
+		totalWidth += fci.horizAdv;
+	}
+
+	return totalWidth;
+}
+
+int Font::getWidthOfString(std::wstring text)
+{
+	int totalWidth = 0;
+	for(int i=0; i<text.size(); i++)
+	{
+		FontCharInfo fci = getFontCharInfo(text[i]);
+		totalWidth += fci.horizAdv;
+	}
+
+	return totalWidth;
 }

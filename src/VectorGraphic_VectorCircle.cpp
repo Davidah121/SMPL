@@ -7,10 +7,10 @@
 
 #pragma region VectorCircle
 
-const Class* VectorCircle::myClass = new Class("VectorCircle", {VectorShape::myClass});
+const Class VectorCircle::myClass = Class("VectorCircle", {&VectorShape::myClass});
 const Class* VectorCircle::getClass()
 {
-	return VectorCircle::myClass;
+	return &VectorCircle::myClass;
 }
 
 VectorCircle::VectorCircle() : VectorShape()

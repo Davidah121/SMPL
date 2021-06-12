@@ -9,7 +9,7 @@ public:
     Quaternion(double a, double b, double c, double d);
     ~Quaternion();
 
-    static const Class* myClass;
+    static const Class myClass;
     const Class* getClass();
 
     Quaternion operator*(double val);

@@ -335,6 +335,26 @@ void Sound::setLoopEnd(double time)
     loopEnd = MathExt::clamp(actualIndex, 0, length);
 }
 
+void Sound::setData(Vec2f* data, int size, bool isShallowCopy)
+{
+    dispose();
+    this->data = data;
+    this->length = size;
+    this->isShallowCopy = isShallowCopy;
+}
+
+void Sound::copyData(Vec2f* data, int size)
+{
+    dispose();
+    this->data = new Vec2f[size];
+    for(int i=0; i<size; i++)
+    {
+        this->data[i] = data[i];
+    }
+    this->length = size;
+    isShallowCopy = false;
+}
+
 void Sound::loadSound(std::string filename)
 {
     //load uncompressed .WAV
@@ -460,7 +480,7 @@ void Sound::loadWAV(std::vector<unsigned char> bytes)
         return;
     }
 
-    int divVal = 1 << formatStuff.bitsPerSample;
+    int divVal = 1 << (formatStuff.bitsPerSample-1);
     int incVal = (formatStuff.bitsPerSample/8) * (formatStuff.numChannels);
 
     data = new Vec2f[audioData.subchunkSize / incVal];
@@ -508,4 +528,92 @@ void Sound::loadWAV(std::vector<unsigned char> bytes)
     }
 
     length = d;
+}
+
+void Sound::saveWAV(std::string filename)
+{
+    //Structures that could potentially help
+    struct RIFF_HEADER
+    {
+        std::string chunkID;
+        int chunkSize;
+        std::string format;
+    };
+
+    struct FMT_HEADER
+    {
+        std::string subchunkID;
+        int subchunkSize;
+        short audioFormat;
+        short numChannels;
+        int sampleRate;
+        int byteRate;
+        short blockAlign;
+        short bitsPerSample;
+    };
+
+    struct DATA_HEADER
+    {
+        std::string subchunkID;
+        int subchunkSize;
+        std::vector<unsigned char> data;
+    };
+
+    SimpleFile f = SimpleFile(filename, SimpleFile::WRITE | SimpleFile::ASCII);
+
+    if(f.isOpen())
+    {
+        unsigned int totalSize = 4 + 4+16 + 4+length*2*2;
+
+        //RIFF HEADER
+        RIFF_HEADER rHeader;
+        rHeader.chunkID = "RIFF";
+        rHeader.chunkSize = totalSize;
+        rHeader.format = "WAVE";
+
+        f.writeString(rHeader.chunkID);
+        f.writeBytes((unsigned char*)&rHeader.chunkSize, 4);
+        f.writeString(rHeader.format);
+
+        //FMT HEADER
+        FMT_HEADER formatStuff;
+
+        formatStuff.subchunkID = "fmt ";
+        formatStuff.subchunkSize = 16;
+
+        formatStuff.audioFormat = 1; //WAVE_FORMAT_PCM = 1
+        formatStuff.numChannels = 2;
+        formatStuff.bitsPerSample = 16;
+        formatStuff.sampleRate = 44100;
+        formatStuff.blockAlign = (formatStuff.bitsPerSample * formatStuff.numChannels) / 8;
+        formatStuff.byteRate = formatStuff.blockAlign * formatStuff.sampleRate;
+        
+        f.writeString(formatStuff.subchunkID);
+        f.writeBytes((unsigned char*)&formatStuff + sizeof(std::string), 4+formatStuff.subchunkSize);
+
+        DATA_HEADER audioData;
+
+        audioData.subchunkID = "data";
+        audioData.subchunkSize = length*2*2;
+
+        f.writeString(audioData.subchunkID);
+        f.writeBytes((unsigned char*)&audioData.subchunkSize, 4);
+
+        short* dataBlock = new short[length*2];
+        int multVal = 1 << (formatStuff.bitsPerSample-1);
+        int k = 0;
+
+        for(int i=0; i<length; i++)
+        {
+            dataBlock[k] = (short)(data[i].x * multVal);
+            dataBlock[k+1] = (short)(data[i].y * multVal);
+            k+=2;
+        }
+
+        f.writeBytes((unsigned char*)dataBlock, audioData.subchunkSize);
+
+        delete[] dataBlock;
+    }
+
+    f.close();
 }

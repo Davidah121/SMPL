@@ -1,9 +1,9 @@
 #include "Vec2f.h"
 
-const Class* Vec2f::myClass = new Class("Vec2f", {Object::myClass});
+const Class Vec2f::myClass = Class("Vec2f", {&Object::myClass});
 const Class* Vec2f::getClass()
 {
-	return Vec2f::myClass;
+	return &Vec2f::myClass;
 }
 
 Vec2f::Vec2f(double x, double y)

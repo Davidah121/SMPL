@@ -7,10 +7,10 @@
 
 #pragma region VectorLine
 
-const Class* VectorLine::myClass = new Class("VectorLine", {VectorShape::myClass});
+const Class VectorLine::myClass = Class("VectorLine", {&VectorShape::myClass});
 const Class* VectorLine::getClass()
 {
-	return VectorLine::myClass;
+	return &VectorLine::myClass;
 }
 
 VectorLine::VectorLine() : VectorShape()

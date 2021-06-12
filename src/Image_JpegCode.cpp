@@ -7,6 +7,7 @@
 #include "StringTools.h"
 #include "Sort.h"
 #include "ColorSpaceConverter.h"
+#include "System.h"
 
 struct huffThing
 {
@@ -106,16 +107,20 @@ void progressiveProcessEnd(Image* img, Vec3f** imgMat)
 	int offX = 0;
 	int offY = 0;
 
+	Matrix q1 = Matrix(8,8);
+	Matrix q2 = Matrix(8,8);
+	Matrix q3 = Matrix(8,8);
+
+	Matrix yMat = Matrix(8,8);
+	Matrix cbMat = Matrix(8,8);
+	Matrix crMat = Matrix(8,8);
+
 	//assuming imgMat is correctly setup
 	for(int y=0; y<img->getHeight(); y+=8)
 	{
 		offX = 0;
 		for(int x=0; x<img->getWidth(); x+=8)
 		{
-			Matrix yMat = Matrix(8,8);
-			Matrix cbMat = Matrix(8,8);
-			Matrix crMat = Matrix(8,8);
-
 			for(int k=0; k<64; k++)
 			{
 				int pos = getZigZagPos(k);
@@ -139,10 +144,9 @@ void progressiveProcessEnd(Image* img, Vec3f** imgMat)
 				}
 			}
 
-
-			Matrix q1 = MathExt::cosineTransform2D(yMat, true);
-			Matrix q2 = MathExt::cosineTransform2D(cbMat, true);
-			Matrix q3 = MathExt::cosineTransform2D(crMat, true);
+			MathExt::FCT8x8(yMat, &q1, true);
+			MathExt::FCT8x8(cbMat, &q2, true);
+			MathExt::FCT8x8(crMat, &q3, true);
 
 			for(int y2=0; y2<8; y2++)
 			{
@@ -825,6 +829,7 @@ void progressiveProcessRefine(Image* img, Vec3f** imgMat, int selectionStart, in
 
 void baselineProcess(Image* img)
 {
+	time_t totalTime = 0;
 	if(img!=nullptr)
 	{
 		//process image data
@@ -835,6 +840,8 @@ void baselineProcess(Image* img)
 		//grab a single grid and process that first
 		int matFilled = 0;
 		Vec3f blockAdd = Vec3f();
+		Matrix q = Matrix(8,8);
+		Matrix m = Matrix(8,8);
 
 		int actualX = 0;
 		int actualY = 0;
@@ -998,8 +1005,7 @@ void baselineProcess(Image* img)
 						bitNum += category;
 					}
 				}
-
-				Matrix m = Matrix(8,8);
+				
 				int r=0;
 				int c=0;
 				bool zig=false;
@@ -1012,7 +1018,7 @@ void baselineProcess(Image* img)
 					m[r][c] = decompData[y] * quantizationTables[quanTable][r][c];
 				}
 
-				Matrix q = MathExt::cosineTransform2D(m, true);
+				MathExt::FCT8x8(m, &q, true);
 
 				for(int y=0; y<8; y++)
 				{

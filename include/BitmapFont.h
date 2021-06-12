@@ -1,6 +1,7 @@
 #pragma once
 #include "Font.h"
 #include "Sprite.h"
+#include "GeneralExceptions.h"
 
 class BitmapFont : public Font
 {
@@ -10,7 +11,13 @@ public:
 
 	//Object and Class Stuff
 	const Class* getClass();
-	static const Class* myClass;
+	static const Class myClass;
+
+	struct InvalidFileFormat : public std::exception
+	{
+		const char* what() noexcept { return "File format can not be read."; }
+	};
+
 	
 	Image* getImage(int index);
 private:

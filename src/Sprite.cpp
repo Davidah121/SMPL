@@ -1,9 +1,9 @@
 #include "Sprite.h"
 
-const Class* Sprite::myClass = new Class("Sprite", {Object::myClass});
+const Class Sprite::myClass = Class("Sprite", {&Object::myClass});
 const Class* Sprite::getClass()
 {
-	return Sprite::myClass;
+	return &Sprite::myClass;
 }
 
 Sprite::Sprite()

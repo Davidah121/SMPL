@@ -1,5 +1,6 @@
 #pragma once
 #include<vector>
+#include "GeneralExceptions.h"
 
 template<typename T>
 class FrequencyTable
@@ -81,7 +82,13 @@ inline T FrequencyTable<T>::getValueAtLocation(int location)
 {
 	if (location >= 0 && location < values.size())
 		return values[location];
-
+	else
+	{
+		#ifdef USE_EXCEPTIONS
+		throw OutOfBoundsError();
+		#endif
+	}
+	
 	return T();
 }
 
@@ -90,6 +97,12 @@ inline int FrequencyTable<T>::getFrequencyAtLocation(int location)
 {
 	if (location >= 0 && location < frequency.size())
 		return frequency[location];
+	else
+	{
+		#ifdef USE_EXCEPTIONS
+		throw OutOfBoundsError();
+		#endif
+	}
 
 	return 0;
 }
