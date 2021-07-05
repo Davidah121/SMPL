@@ -24,7 +24,12 @@ struct fctlData
 	std::vector<unsigned char> compressedData = std::vector<unsigned char>();
 };
 
-void Image::savePNG(std::string filename, bool saveAlpha, unsigned char alphaThreshold, bool greyscale)
+void Image::savePNG(std::string filename, bool saveAlpha, bool greyscale, bool strongCompression)
+{
+	Image::savePNG(StringTools::toWideString(filename), saveAlpha, greyscale, strongCompression);
+}
+
+void Image::savePNG(std::wstring filename, bool saveAlpha, bool greyscale, bool strongCompression)
 {
 	SimpleFile f = SimpleFile(filename, SimpleFile::WRITE);
 
@@ -94,55 +99,99 @@ void Image::savePNG(std::string filename, bool saveAlpha, unsigned char alphaThr
 	std::vector<unsigned char> scanLines = std::vector<unsigned char>();
 	for(int i=0; i<height; i++)
 	{
-		scanLines.push_back(0);
+		//Find approximate distance from zero
+		//pick the one with a smaller sum
+		//just the red pixel as a test
+		unsigned long subDisFromZero = 0;
+		unsigned long upDisFromZero = 0;
+
+		unsigned char scanlineFilter = 0;
+
+		for(int k=0; k<width; k++)
+		{
+			if(k!=0)
+				subDisFromZero += MathExt::abs((int)pixels[k + i*width].red - pixels[k-1 + i*width].red);
+			else
+				subDisFromZero += pixels[k + i*width].red;
+			
+			if(i!=0)
+				upDisFromZero += MathExt::abs((int)pixels[k + i*width].red - pixels[k + (i-1)*width].red);
+			else
+				upDisFromZero += 255;
+		}
+
+		if(subDisFromZero < upDisFromZero)
+		{
+			//subtractiveFilter
+			scanlineFilter = 1;
+		}
+		else
+		{
+			//upwardFilter
+			if(i!=0)
+				scanlineFilter = 2;
+		}
+		
+		scanLines.push_back(scanlineFilter);
 		for(int k=0; k<width; k++)
 		{
 			Color c = pixels[k + i*width];
-
-			if(greyscale)
+			if(!greyscale)
 			{
-				if(!saveAlpha)
+				if(scanlineFilter==1)
 				{
-					if(c.alpha < alphaThreshold)
+					if(k!=0)
 					{
-						scanLines.push_back(0);
-					}
-					else
-					{
-						Color ycbcr = ColorSpaceConverter::convert(c, ColorSpaceConverter::RGB_TO_YCBCR);
-						scanLines.push_back(ycbcr.red);
+						Color preColor = pixels[(k-1) + i*width];
+						c.red -= preColor.red;
+						c.green -= preColor.green;
+						c.blue -= preColor.blue;
+						c.alpha -= preColor.alpha;
 					}
 				}
-				else
+				else if(scanlineFilter==2)
 				{
-					Color ycbcr = ColorSpaceConverter::convert(c, ColorSpaceConverter::RGB_TO_YCBCR);
-					scanLines.push_back(ycbcr.red);
+					Color preColor = pixels[k + (i-1)*width];
+					c.red -= preColor.red;
+					c.green -= preColor.green;
+					c.blue -= preColor.blue;
+					c.alpha -= preColor.alpha;
 				}
 			}
 			else
 			{
-				if(!saveAlpha)
+				c = ColorSpaceConverter::convert(c, ColorSpaceConverter::RGB_TO_YCBCR);
+
+				if(scanlineFilter==1)
 				{
-					if(c.alpha < alphaThreshold)
-					{
-						scanLines.push_back(0);
-						scanLines.push_back(0);
-						scanLines.push_back(0);
-					}
-					else
-					{
-						scanLines.push_back(c.red);
-						scanLines.push_back(c.green);
-						scanLines.push_back(c.blue);
-					}
+					Color preColor = pixels[(k-1) + i*width];
+					preColor = ColorSpaceConverter::convert(preColor, ColorSpaceConverter::RGB_TO_YCBCR);
+
+					c.red -= preColor.red;
+					c.green -= preColor.green;
+					c.blue -= preColor.blue;
+					c.alpha -= preColor.alpha;
 				}
-				else
+				else if(scanlineFilter==2)
 				{
-					scanLines.push_back(c.red);
-					scanLines.push_back(c.green);
-					scanLines.push_back(c.blue);
+					Color preColor = pixels[k + (i-1)*width];
+					preColor = ColorSpaceConverter::convert(preColor, ColorSpaceConverter::RGB_TO_YCBCR);
+					c.red -= preColor.red;
+					c.green -= preColor.green;
+					c.blue -= preColor.blue;
+					c.alpha -= preColor.alpha;
 				}
-				
+			}
+
+			if(greyscale)
+			{
+				scanLines.push_back(c.red);
+			}
+			else
+			{
+				scanLines.push_back(c.red);
+				scanLines.push_back(c.green);
+				scanLines.push_back(c.blue);
 			}
 			
 			if(saveAlpha)
@@ -152,9 +201,9 @@ void Image::savePNG(std::string filename, bool saveAlpha, unsigned char alphaThr
 
 	crcVal = Compression::adler32(scanLines);
 
-	int blocks = MathExt::ceil((double)scanLines.size() / (1<<16));
+	int blocks = MathExt::ceil((double)height/24);
 
-	std::vector<unsigned char> compressedData = Compression::compressDeflate(scanLines, blocks, 7);
+	std::vector<unsigned char> compressedData = Compression::compressDeflate(scanLines, blocks, 7, strongCompression);
 	
 	int fullSize = compressedData.size()+2+4;
 	std::string IDATHeader = "";

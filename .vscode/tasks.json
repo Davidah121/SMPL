@@ -1,86 +1,35 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "Build Debug x64 with Clang",
-            "type": "shell",
-            "command": "${workspaceFolder}/build/Debug/buildx64.bat",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "Build Release x64 with Clang",
-            "type": "shell",
-            "command": "${workspaceFolder}/build/Release/buildx64.bat",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "Build Static Libraries with Clang",
-            "type": "shell",
-            "command": "${workspaceFolder}/libs/exportAllLibs.bat",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "Run Debug x64",
-            "type": "shell",
-            "command": "start cmd.exe @cmd /k \"${workspaceFolder}/bin/Debug/x64/${workspaceFolderBasename}.exe\"",
-            "group": {
-                "kind": "test",
-                "isDefault": true
-            }
-        }
-        /*
-        {
-            "label": "Build x64 with Clang",
-            "type": "shell",
-            "command": "clang",
-            "args": [
-                "-g",
-                "-std=c++17",
-                "-stdlib=libc++",
-                "%WLIBPATH64%",
-                "%WLIBVALUES%",
-                "src/*.cpp",
-                "-o",
-                "bin/x64/${workspaceFolderBasename}.exe"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "Build x86 with Clang",
-            "type": "shell",
-            "command": "C:/Program FIles (x86)/LLVM/bin/clang",
-            "args": [
-                "-g",
-                "-std=c++17",
-                "-stdlib=libc++",
-                "%WLIBPATH32%",
-                "%WLIBVALUES%",
-                "src/*.cpp",
-                "-o",
-                "bin/x86/${workspaceFolderBasename}.exe"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": []
-        }
-        */
-    ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build Debug x64 with Clang",
+			"type": "shell",
+			"command": "${workspaceFolder}/build/Debug/buildx64.bat",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Build Release x64 with Clang",
+			"type": "shell",
+			"command": "${workspaceFolder}/build/Release/buildx64.bat",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Export Static Libraries",
+			"type": "shell",
+			"command": "${workspaceFolder}/libs/exportAllLibs.bat",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": []
+		}
+	]
 }

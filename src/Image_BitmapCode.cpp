@@ -10,8 +10,12 @@
 
 #include "ColorSpaceConverter.h"
 
-
 void Image::saveBMP(std::string filename, unsigned char alphaThreshold, bool greyscale)
+{
+	Image::saveBMP(StringTools::toWideString(filename), alphaThreshold, greyscale);
+}
+
+void Image::saveBMP(std::wstring filename, unsigned char alphaThreshold, bool greyscale)
 {
     //save header
     //save pixel data

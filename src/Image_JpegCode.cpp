@@ -1005,7 +1005,7 @@ void baselineProcess(Image* img)
 						bitNum += category;
 					}
 				}
-				
+
 				int r=0;
 				int c=0;
 				bool zig=false;
@@ -1113,6 +1113,11 @@ void baselineProcess(Image* img)
 
 void Image::saveJPG(std::string filename)
 {
+    Image::saveJPG(StringTools::toWideString(filename));
+}
+
+void Image::saveJPG(std::wstring filename)
+{
     
 }
 
@@ -1151,8 +1156,6 @@ Image** Image::loadJPG(std::vector<unsigned char> fileData, int* amountOfImages)
 	{
 		unsigned short header = (((unsigned short)fileData[index])<<8) + fileData[index+1];
 		index += 2;
-
-		//StringTools::println("header %x", header);
 		
 		if(header == 0xFFD8)
 		{
@@ -1608,40 +1611,34 @@ Image** Image::loadJPG(std::vector<unsigned char> fileData, int* amountOfImages)
 		//subsample in the x
 		for(int y=0; y<img->getHeight(); y++)
 		{
-			for(int x=0; x<img->getWidth()-1; x++)
+			for(int x=1; x<img->getWidth()-1; x++)
 			{
-				if(x%2 == 1)
-				{
-					Color c = img->getPixel(x,y);
-					Color c2 = img->getPixel(x+1,y);
-					Color f = {c.red, 0, 0, 255};
+				Color c = img->getPixel(x-1,y);
+				Color c2 = img->getPixel(x+1,y);
+				Color f = img->getPixel(x,y);
 
-					f.green = (unsigned char)(((int)c.green+(int)c2.green)/2);
-					f.blue = (unsigned char)(((int)c.blue+(int)c2.blue)/2);
+				f.green = (unsigned char)MathExt::round(((double)c.green+(double)c2.green)/2.0);
+				f.blue = (unsigned char)MathExt::round(((double)c.blue+(double)c2.blue)/2.0);
 
-					img->setPixel(x,y,f);
-				}
+				img->setPixel(x,y,f);
 			}
 		}
 	}
 	if((samplingRate[0]&0x0F) != 1)
 	{
 		//subsample in the y
-		for(int y=0; y<img->getHeight()-1; y++)
+		for(int y=1; y<img->getHeight()-1; y++)
 		{
-			if(y%2 == 0)
+			for(int x=0; x<img->getWidth(); x++)
 			{
-				for(int x=0; x<img->getWidth(); x++)
-				{
-					Color c = img->getPixel(x,y);
-					Color c2 = img->getPixel(x,y+1);
-					Color f = {c.red, 0, 0, 255};
+				Color c = img->getPixel(x,y-1);
+				Color c2 = img->getPixel(x,y+1);
+				Color f = img->getPixel(x,y);
 
-					f.green = (unsigned char)(((int)c.green+(int)c2.green)/2);
-					f.blue = (unsigned char)(((int)c.blue+(int)c2.blue)/2);
+				f.green = (unsigned char)MathExt::round(((double)c.green+(double)c2.green)/2.0);
+				f.blue = (unsigned char)MathExt::round(((double)c.blue+(double)c2.blue)/2.0);
 
-					img->setPixel(x,y,f);
-				}
+				img->setPixel(x,y,f);
 			}
 		}
 	}

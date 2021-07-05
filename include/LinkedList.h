@@ -20,6 +20,7 @@ public:
 	void removeNode(int position);
 	void removeNode(LinkNode<T>* n);
 	LinkNode<T>* getNode(int position);
+	void swapNodes(LinkNode<T>* n1, LinkNode<T>* n2);
 
 	LinkNode<T>* getRootNode();
 	LinkNode<T>* getLastNode();
@@ -114,6 +115,73 @@ inline void LinkedList<T>::removeNode(LinkNode<T>* n)
 		}
 	}
 
+}
+
+template<typename T>
+inline void LinkedList<T>::swapNodes(LinkNode<T>* n1, LinkNode<T>* n2)
+{
+	if(n1!=nullptr && n2!=nullptr)
+	{
+		if(n1->nextNode == n2)
+		{
+			//Swap parent relation ship then swap next
+			LinkNode<T>* tempParent = n1->parentNode;
+			LinkNode<T>* tempNext = n2->nextNode;
+
+			n1->parentNode = n2;
+			n1->nextNode = tempNext;
+
+			n2->nextNode = n1;
+			n2->parentNode = tempParent;
+		}
+		else if(n1->parentNode == n2)
+		{
+			//Swap parent relation ship then swap next
+			LinkNode<T>* tempParent = n2->parentNode;
+			LinkNode<T>* tempNext = n1->nextNode;
+
+			n1->parentNode = tempParent;
+			n1->nextNode = n2;
+			
+			n2->parentNode = n1;
+			n2->nextNode = tempNext;
+		}
+		else
+		{
+			//Complete swap
+			LinkNode<T>* tempParent = n1->parentNode;
+			LinkNode<T>* tempNext = n1->nextNode;
+
+			n1->parentNode = n2->parentNode;
+			n1->nextNode = n2->nextNode;
+
+			n2->parentNode = tempParent;
+			n2->nextNode = tempNext;
+		}
+
+		if(n1->parentNode!=nullptr)
+			n1->parentNode->nextNode = n1;
+		
+		if(n2->nextNode!=nullptr)
+			n1->nextNode->parentNode = n1;
+
+		if(n2->parentNode!=nullptr)
+			n2->parentNode->nextNode = n2;
+
+		if(n2->nextNode!=nullptr)
+			n2->nextNode->parentNode = n2;
+
+		if(lastNode == n1)
+			lastNode = n2;
+		else if(lastNode == n2)
+			lastNode = n1;
+
+		if(rootNode == n1)
+			rootNode = n2;
+		else if(rootNode == n2)
+			rootNode = n1;
+		
+	}
 }
 
 template<typename T>

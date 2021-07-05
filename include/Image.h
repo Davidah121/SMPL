@@ -57,8 +57,13 @@ public:
 
 	void saveBMP(std::string filename, unsigned char alphaThreshold = 255, bool greyscale = false);
 	void saveGIF(std::string filename, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127, bool greyscale = false);
-	void savePNG(std::string filename, bool saveAlpha = true, unsigned char alphaThreshold = 127, bool greyscale = false);
+	void savePNG(std::string filename, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false);
 	void saveJPG(std::string filename);
+
+	void saveBMP(std::wstring filename, unsigned char alphaThreshold = 255, bool greyscale = false);
+	void saveGIF(std::wstring filename, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127, bool greyscale = false);
+	void savePNG(std::wstring filename, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false);
+	void saveJPG(std::wstring filename);
 private:
 	int width = 0;
 	int height = 0;

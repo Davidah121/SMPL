@@ -322,23 +322,23 @@ public:
 	static std::vector<double> cosineTransform(double* arr, int size, bool inverse=false);
 	static std::vector<double> fastCosineTransform(double* arr, int size, bool inverse=false);
 
-	static double discreteCosineTransform2D(Matrix arr, int u, int v, bool inverse=false);
-	static Matrix cosineTransform2D(Matrix arr, bool inverse=false);
-	static Matrix fastCosineTransform2D(Matrix arr, bool inverse=false);
+	static double discreteCosineTransform2D(Matrix& arr, int u, int v, bool inverse=false);
+	static Matrix cosineTransform2D(Matrix& arr, bool inverse=false);
+	static Matrix fastCosineTransform2D(Matrix& arr, bool inverse=false);
 	
 	
 	//Special Case for JPEG
 	static void FCT8(double* arr, double* output, bool inverse=false);
-	static void FCT8x8(Matrix arr, Matrix* output, bool inverse=false);
+	static void FCT8x8(Matrix& arr, Matrix* output, bool inverse=false);
 
 
 	static double discreteSineTransform(double*, int size, int u, bool inverse=false);
 	static std::vector<double> sineTransform(double* arr, int size, bool inverse=false);
 	static std::vector<double> fastSineTransform(double* arr, int size, bool inverse=false);
 
-	static double discreteSineTransform2D(Matrix arr, int u, int v, bool inverse=false);
-	static Matrix sineTransform2D(Matrix arr, bool inverse=false);
-	static Matrix fastSineTransform2D(Matrix arr, bool inverse=false);
+	static double discreteSineTransform2D(Matrix& arr, int u, int v, bool inverse=false);
+	static Matrix sineTransform2D(Matrix& arr, bool inverse=false);
+	static Matrix fastSineTransform2D(Matrix& arr, bool inverse=false);
 
 	//Clustering algorigthms
 	static std::vector<std::vector<Vec2f>> meanCut(std::vector<Vec2f> arr, int clusters, bool meansOnly = false);

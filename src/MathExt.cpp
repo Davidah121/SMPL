@@ -1418,7 +1418,7 @@ std::vector<double> MathExt::fastCosineTransform(double* arr, int size, bool inv
 
 #pragma region COSINE_TRANSFORM_2D
 
-double MathExt::discreteCosineTransform2D(Matrix arr, int u, int v, bool inverse)
+double MathExt::discreteCosineTransform2D(Matrix& arr, int u, int v, bool inverse)
 {
 	double xCoeff = 0;
 	double yCoeff = 0;
@@ -1486,7 +1486,7 @@ double MathExt::discreteCosineTransform2D(Matrix arr, int u, int v, bool inverse
 	return sum;
 }
 
-Matrix MathExt::cosineTransform2D(Matrix arr, bool inverse)
+Matrix MathExt::cosineTransform2D(Matrix& arr, bool inverse)
 {
 	Matrix finalArr = Matrix(arr.getRows(), arr.getCols());
 
@@ -1523,7 +1523,7 @@ Matrix MathExt::cosineTransform2D(Matrix arr, bool inverse)
 	return finalArr;
 }
 
-Matrix MathExt::fastCosineTransform2D(Matrix arr, bool inverse)
+Matrix MathExt::fastCosineTransform2D(Matrix& arr, bool inverse)
 {
 	return Matrix();
 }
@@ -1651,7 +1651,7 @@ void MathExt::FCT8(double* arr, double* output, bool inverse)
 	}
 }
 
-void MathExt::FCT8x8(Matrix arr, Matrix* output, bool inverse)
+void MathExt::FCT8x8(Matrix& arr, Matrix* output, bool inverse)
 {
 	//for each row
 	double** finalArr = output->getData();

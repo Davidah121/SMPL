@@ -12,6 +12,11 @@
 
 void Image::saveGIF(std::string filename, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold, bool greyscale)
 {
+	Image::saveGIF(StringTools::toWideString(filename), paletteSize, dither, saveAlpha, alphaThreshold, greyscale);
+}
+
+void Image::saveGIF(std::wstring filename, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold, bool greyscale)
+{
 	SimpleFile f = SimpleFile(filename, SimpleFile::WRITE);
 
 	if(!f.isOpen())
@@ -134,8 +139,10 @@ void Image::saveGIF(std::string filename, int paletteSize, bool dither, bool sav
 	gifHeaderInfo += (char)0;
 
 
+	
+	int codeSize = paletteSizeP2+1;
 	//addPalette
-	int padding = (1 << (paletteSizeP2+1)) - tempPalette.getSize();
+	int padding = (1 << (codeSize)) - tempPalette.getSize();
 	
 	for(int i=0; i<tempPalette.getSize(); i++)
 	{
@@ -199,11 +206,11 @@ void Image::saveGIF(std::string filename, int paletteSize, bool dither, bool sav
 	gifHeaderInfo += (char)0x00;
 
 	//min code size
-	gifHeaderInfo += (char)paletteSizeP2+1;
+	gifHeaderInfo += (char)codeSize;
 	
 	//compress data
 	t1 = System::getCurrentTimeMillis();
-	std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, paletteSizeP2+1);
+	std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, &codeSize);
 	t2 = System::getCurrentTimeMillis();
 
 	StringTools::println("Time to compress: %u", t2-t1);

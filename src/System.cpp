@@ -265,47 +265,7 @@ int System::getAmountOfMonitors()
 
 void System::saveScreenShot(HWND hwnd, std::string filename)
 {
-	HWND wndHandle = hwnd;
-	HDC hdc = GetDC(wndHandle);
-
-	HBITMAP bitmap = CreateCompatibleBitmap(hdc, getDesktopWidth(), getDesktopHeight());
-	BITMAPINFO bmi;
-	ZeroMemory(&bmi, sizeof(BITMAPINFO));
-	bmi.bmiHeader.biBitCount = 24;
-	bmi.bmiHeader.biHeight = getDesktopHeight();
-	bmi.bmiHeader.biWidth = getDesktopWidth();
-	bmi.bmiHeader.biPlanes = 1;
-	bmi.bmiHeader.biSizeImage = 0;
-	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	bmi.bmiHeader.biCompression = BI_RGB;
-
-	int size = bmi.bmiHeader.biHeight * bmi.bmiHeader.biWidth * 3;
-	unsigned char* pixels = new unsigned char[size];
-
-	HDC capDC = CreateCompatibleDC(hdc);
-	HGDIOBJ hOld = SelectObject(capDC, bitmap);
-	BitBlt(capDC, 0, 0, bmi.bmiHeader.biWidth, bmi.bmiHeader.biHeight, hdc, 0, 0, SRCCOPY);
-	SelectObject(capDC, hOld);
-	DeleteDC(capDC);
-
-	int returnVal = GetDIBits(hdc, bitmap, 0, getDesktopHeight(), pixels, &bmi, DIB_RGB_COLORS);
-
-	BITMAPFILEHEADER bmfh;
-	bmfh.bfType = ((WORD)'M' << 8) + (WORD)'B';
-	bmfh.bfReserved1 = 0;
-	bmfh.bfReserved2 = 0;
-	bmfh.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
-	bmfh.bfSize = bmfh.bfOffBits + size;
-	
-	SimpleFile f = SimpleFile(filename, SimpleFile::WRITE);
-
-	if (f.isOpen())
-	{
-		f.writeBytes((unsigned char*)& bmfh, sizeof(BITMAPFILEHEADER));
-		f.writeBytes((unsigned char*)& bmi.bmiHeader, sizeof(BITMAPINFOHEADER));
-		f.writeBytes(pixels, size);
-		f.close();
-	}
+	System::saveScreenShot(hwnd, StringTools::toWideString(filename));
 }
 
 void System::saveScreenShot(HWND hwnd, std::wstring filename)
@@ -324,7 +284,12 @@ void System::saveScreenShot(HWND hwnd, std::wstring filename)
 	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	bmi.bmiHeader.biCompression = BI_RGB;
 
-	int size = bmi.bmiHeader.biHeight * bmi.bmiHeader.biWidth * 3;
+	int windowWidth = bmi.bmiHeader.biWidth;
+	int windowHeight = bmi.bmiHeader.biHeight;
+
+	int scanLinePadding = windowWidth%4;
+	int size = (windowWidth*3 + scanLinePadding) * windowHeight;
+
 	unsigned char* pixels = new unsigned char[size];
 
 	HDC capDC = CreateCompatibleDC(hdc);
@@ -351,6 +316,9 @@ void System::saveScreenShot(HWND hwnd, std::wstring filename)
 		f.writeBytes(pixels, size);
 		f.close();
 	}
+
+	DeleteObject(bitmap);
+	delete[] pixels;
 }
 
 Image* System::getScreenShot(HWND hwnd)
@@ -381,6 +349,7 @@ Image* System::getScreenShot(HWND hwnd)
 
 	if(size <= 0)
 	{
+		DeleteObject(bitmap);
 		return nullptr;
 	}
 	
@@ -415,6 +384,9 @@ Image* System::getScreenShot(HWND hwnd)
 		}
 		startP += scanLinePadding;
 	}
+
+	DeleteObject(bitmap);
+	delete[] pixels;
 	
 	return finalImage;
 }
@@ -461,7 +433,9 @@ void System::paintImageToWindow(HWND hwnd, Image* img, int startX, int startY)
 	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	bmi.bmiHeader.biCompression = BI_RGB;
 
-	int size = bmi.bmiHeader.biHeight * bmi.bmiHeader.biWidth * 3;
+	int scanLinePadding = windowWidth%4;
+	int size = (windowWidth*3 + scanLinePadding) * windowHeight;
+
 	unsigned char* pixels = new unsigned char[size];
 	unsigned char* startP = pixels;
 
@@ -478,6 +452,7 @@ void System::paintImageToWindow(HWND hwnd, Image* img, int startX, int startY)
 			*startP = c.red;
 			startP++;
 		}
+		startP += scanLinePadding;
 	}
 
 	SetDIBits(hdc, bitmap, 0, hei, &pixels[0], &bmi, DIB_RGB_COLORS);
@@ -487,6 +462,9 @@ void System::paintImageToWindow(HWND hwnd, Image* img, int startX, int startY)
 	GetObject(bitmap, sizeof(BITMAP), &bimg);
 	BitBlt(hdc, startX, startY, bimg.bmWidth, bimg.bmHeight, mem, 0, 0, SRCCOPY);
 	DeleteDC(mem);
+
+	DeleteObject(bitmap);
+	delete[] pixels;
 }
 
 void System::paintImageToDesktop(Image* img, int startX, int startY)

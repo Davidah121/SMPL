@@ -14,6 +14,10 @@
 class GuiInstance : public Object
 {
 public:
+	static const int MAX_PRIORITY_VALUE = 9999;
+	static const int MIN_PRIORITY_VALUE = 0;
+	static const int CANVAS_PRIORITY_VALUE = -10000;
+
 	GuiInstance();
 	GuiInstance(const GuiInstance& other);
 	void operator=(const GuiInstance& other);
@@ -98,14 +102,9 @@ protected:
 	GuiManager* getManager();
 
 private:
-
-	void setParentVisible(bool is);
-	void setParentActive(bool is);
+	void updatePriority();
 
 	int priority = 0;
-
-	bool parentVisible = true;
-	bool parentActive = true;
 
 	bool visible = true;
 	bool active = true;
@@ -135,6 +134,7 @@ private:
 	std::vector<GuiInstance*> children = std::vector<GuiInstance*>();
 	GuiManager* manager = nullptr;
 	Image* canvas = nullptr;
+	GuiInstance* parent = nullptr;
 };
 
 class GuiContainer : public GuiInstance
@@ -415,6 +415,7 @@ public:
 
 	void setOnClickFunction(std::function<void(GuiInstance*)> func);
 	void setOnClickHoldFunction(std::function<void(GuiInstance*)> func);
+	void setOnClickReleaseFunction(std::function<void(GuiInstance*)> func);
 
 	void setBackgroundColor(Color c);
 	void setOutlineColor(Color c);
@@ -432,6 +433,7 @@ public:
 private:
 	std::function<void(GuiInstance*)> onClickFunction;
 	std::function<void(GuiInstance*)> onClickHoldFunction;
+	std::function<void(GuiInstance*)> onClickReleaseFunction;
 
 	int width = 0;
 	int height = 0;

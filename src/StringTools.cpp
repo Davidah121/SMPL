@@ -189,13 +189,86 @@ int StringTools::convertKeyToAscii(int keyVal, bool shiftHeld)
 	else if(keyVal==Input::KEY_MINUS)
 	{
 		if(shiftHeld)
-			return '-';
-		else
 			return '_';
+		else
+			return '-';
 	}
 	else if(keyVal==Input::KEY_SPACE)
 	{
 		return ' ';
+	}
+	else if(keyVal==Input::KEY_FORWARD_SLASH)
+	{
+		if(shiftHeld)
+			return '?';
+		else
+			return '/';
+	}
+	else if(keyVal==Input::KEY_TILDE)
+	{
+		if(shiftHeld)
+			return '~';
+		else
+			return '`';
+	}
+	else if(keyVal==Input::KEY_SEMICOLON)
+	{
+		if(shiftHeld)
+			return ':';
+		else
+			return ';';
+	}
+	else if(keyVal==Input::KEY_LEFT_SQUARE_BRACKET)
+	{
+		if(shiftHeld)
+			return '{';
+		else
+			return '[';
+	}
+	else if(keyVal==Input::KEY_RIGHT_SQUARE_BRACKET)
+	{
+		if(shiftHeld)
+			return '}';
+		else
+			return ']';
+	}
+	else if(keyVal==Input::KEY_BACK_SLASH)
+	{
+		if(shiftHeld)
+			return '|';
+		else
+			return '\\';
+	}
+	else if(keyVal==Input::KEY_SINGLE_QUOTE)
+	{
+		if(shiftHeld)
+			return '"';
+		else
+			return '\'';
+	}
+	else if(keyVal==Input::KEY_NUMPAD_ADD)
+	{
+		return '+';
+	}
+	else if(keyVal==Input::KEY_NUMPAD_SUBTRACT)
+	{
+		return '-';
+	}
+	else if(keyVal==Input::KEY_NUMPAD_DECIMAL)
+	{
+		return '.';
+	}
+	else if(keyVal==Input::KEY_NUMPAD_MULTIPLY)
+	{
+		return '*';
+	}
+	else if(keyVal==Input::KEY_NUMPAD_DIVIDE)
+	{
+		return '/';
+	}
+	else if(keyVal==Input::KEY_NUMPAD_DECIMAL)
+	{
+		return '.';
 	}
 
 	return -1;
