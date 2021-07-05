@@ -1,9 +1,8 @@
 #include "Compression.h"
 #include <iostream>
-#include "FrequencyTable.h"
 #include "LinkedList.h"
 #include "BinarySet.h"
-#include "Sort.h"
+#include "Algorithms.h"
 #include "StringTools.h"
 #include "MathExt.h"
 #include "System.h"
@@ -142,12 +141,12 @@ std::vector<unsigned char> Compression::decompressRLE(unsigned char* data, int s
 
 #pragma region LZW
 
-std::vector<unsigned char> Compression::compressLZW(std::vector<unsigned char> data, int codeSize)
+std::vector<unsigned char> Compression::compressLZW(std::vector<unsigned char> data, int* codeSizePointer)
 {
-	return Compression::compressLZW(data.data(), data.size(), codeSize);
+	return Compression::compressLZW(data.data(), data.size(), codeSizePointer);
 }
 
-std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int size, int codeSize)
+std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int size, int* codeSizePointer)
 {
 	std::vector<unsigned char> output = std::vector<unsigned char>();
 
@@ -169,6 +168,12 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 	//First make the base dictionary
 	SimpleHashMap<std::string, int> baseDictionary = SimpleHashMap<std::string, int>();
 
+	int codeSize = -1;
+	if(codeSizePointer!=nullptr)
+	{
+		codeSize = *codeSizePointer;
+	}
+
 	if(codeSize <= 0)
 	{
 		int bSize = 0;
@@ -180,6 +185,9 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 			baseDictionary.add( temp, bSize );
 			bSize++;
 		}
+
+		if(codeSizePointer!=nullptr)
+			*codeSizePointer = (int)ceil(log2(baseDictionary.size()));
 	}
 	else
 	{
@@ -1112,87 +1120,79 @@ std::vector<unsigned char> Compression::decompressHuffman(unsigned char* data, i
 	return output;
 }
 
-BinaryTree<HuffmanNode>* Compression::buildHuffmanTree(unsigned char* data, int size)
+
+BinaryTree<HuffmanNode>* Compression::buildHuffmanTreeSubFunc(FrequencyTable<int>* freqTable)
 {
-	if(size <= 0)
-	{
-		#ifdef USE_EXCEPTIONS
-		throw InvalidSizeError();
-		#endif
-		return nullptr;
-	}
-
-	if(data == nullptr)
-	{
-		#ifdef USE_EXCEPTIONS
-		throw InvalidDataError();
-		#endif
-		return nullptr;
-	}
-
-	//First pass is to fill the frequency table
-	FrequencyTable<unsigned char> freqTable = FrequencyTable<unsigned char>();
-	for (int i = 0; i < size; i++)
-	{
-		freqTable.add(data[i]);
-	}
-
 	//Next pass is to build the huffmanTree
 	//First sort it
-	freqTable.sort();
-	int fSize = freqTable.size();
-	int maxFrequency = freqTable.sumOfFrequencies();
+	freqTable->sort();
+	int fSize = freqTable->size();
+	int maxFrequency = freqTable->sumOfFrequencies();
 
-	LinkedList< BinaryTreeNode<HuffmanNode>* > nodes = LinkedList<BinaryTreeNode<HuffmanNode>*>();
+	std::vector<BinaryTreeNode<HuffmanNode>*> nodes = std::vector<BinaryTreeNode<HuffmanNode>*>();
+
+	//LinkedList< BinaryTreeNode<HuffmanNode>* > nodes = LinkedList<BinaryTreeNode<HuffmanNode>*>();
 
 	//Next, make the nodes
 	for (int i = 0; i < fSize; i++)
 	{
-		BinaryTreeNode<HuffmanNode>* test = new BinaryTreeNode<HuffmanNode>;
-		test->data = { freqTable.getFrequencyAtLocation(i), freqTable.getValueAtLocation(i) };
+		BinaryTreeNode<HuffmanNode>* test = new BinaryTreeNode<HuffmanNode>();
+		test->data = { freqTable->getFrequencyAtLocation(i), freqTable->getValueAtLocation(i) };
 		test->leftChild = nullptr;
 		test->rightChild = nullptr;
 
-		nodes.addNode(test);
+		nodes.push_back(test);
 	}
 
 	//Then, group based on min freq.
 	//We build these from the bottom up. Eliminating nodes as we go
-	//A linked list would be good for thisin that case since we can easily
+	//A linked list would be good for this since we can easily
 	//delete things and we still have to check each indiviually anyway.
 
 	BinaryTree<HuffmanNode>* huffmanTree = new BinaryTree<HuffmanNode>();
 
+	if(fSize<=1)
+	{
+		//must be have at least 2 nodes
+		BinaryTreeNode<HuffmanNode>* rNode = new BinaryTreeNode<HuffmanNode>();
+
+		rNode->data.frequency = maxFrequency;
+		rNode->leftChild = nodes[0];
+		rNode->rightChild = nullptr;
+
+		huffmanTree->setRootNode( rNode );
+		return huffmanTree;
+	}
+
 	while (true)
 	{
 		//Find the two lowest and group them together as a treeNode.
-		LinkNode<BinaryTreeNode<HuffmanNode>*>* min = nodes.getLastNode();
-		LinkNode<BinaryTreeNode<HuffmanNode>*>* min2 = min->parentNode;
+		BinaryTreeNode<HuffmanNode>* min = nodes[ nodes.size()-1 ];
+		BinaryTreeNode<HuffmanNode>* min2 = nodes[ nodes.size()-2 ];
 		
 		BinaryTreeNode<HuffmanNode>* newTreeNode = new BinaryTreeNode<HuffmanNode>;
 
-		if (min2->value->leftChild == nullptr && min2->value->rightChild == nullptr)
+		if (min2->leftChild == nullptr && min2->rightChild == nullptr)
 		{
-			newTreeNode->leftChild = min2->value;
-			newTreeNode->rightChild = min->value;
+			newTreeNode->leftChild = min2;
+			newTreeNode->rightChild = min;
 		}
 		else
 		{
-			newTreeNode->leftChild = min->value;
-			newTreeNode->rightChild = min2->value;
+			newTreeNode->leftChild = min;
+			newTreeNode->rightChild = min2;
 		}
 
-		newTreeNode->data.frequency = min2->value->data.frequency + min->value->data.frequency;
+		newTreeNode->data.value = 0xFFFFFFFF;
+		newTreeNode->data.frequency = min2->data.frequency + min->data.frequency;
 		
 		//Next, remove the previous mins from the node since they are now
 		//combined in a new tree node. Add the new node to the end.
 		//Check if we are done
-		nodes.removeNode(min);
-		nodes.removeNode(min2);
+		nodes.pop_back();
+		nodes.pop_back();
 
-		nodes.addNode(newTreeNode);
-
-		LinkNode<BinaryTreeNode<HuffmanNode>*>* temp = nodes.getLastNode();
+		nodes.push_back(newTreeNode);
 		
 		if (newTreeNode->data.frequency == maxFrequency)
 		{
@@ -1203,58 +1203,70 @@ BinaryTree<HuffmanNode>* Compression::buildHuffmanTree(unsigned char* data, int 
 		//Next, re-sort the nodes. This is simple since only one node is unsorted
 		//and it is the last node that is unsorted.
 
-		LinkNode<BinaryTreeNode<HuffmanNode>*>* currNode = nodes.getLastNode();
-
-		while (true)
+		Sort::insertionSort<BinaryTreeNode<HuffmanNode>*>(nodes.data(), nodes.size(), [](BinaryTreeNode<HuffmanNode>* a, BinaryTreeNode<HuffmanNode>* b) ->bool
 		{
-			LinkNode<BinaryTreeNode<HuffmanNode>*>* parentNode = currNode->parentNode;
-			LinkNode<BinaryTreeNode<HuffmanNode>*>* childNode = currNode->nextNode;
-			LinkNode<BinaryTreeNode<HuffmanNode>*>* grandParentNode = nullptr;
-
-			if (parentNode != nullptr)
-				LinkNode<BinaryTreeNode<HuffmanNode>*>* grandParentNode = parentNode->parentNode;
-
-			if (parentNode != nullptr)
-			{
-				if (currNode->value->data.frequency <= parentNode->value->data.frequency)
-				{
-					//Done sorting
-					break;
-				}
-				else
-				{
-					if (grandParentNode != nullptr)
-					{
-						//not the start of the list
-						grandParentNode->nextNode = currNode;
-					}
-
-					currNode->parentNode = grandParentNode;
-					currNode->nextNode = parentNode;
-					parentNode->parentNode = currNode;
-					parentNode->nextNode = childNode;
-
-					if (childNode != nullptr)
-					{
-						//Not at the end of the list
-						childNode->parentNode = parentNode;
-					}
-				}
-			}
-			else
-			{
-				//start of list
-				break;
-			}
-		}
+			return (a->data.frequency > b->data.frequency);
+		});
 	}
 
 	return huffmanTree;
 }
 
+
+BinaryTree<HuffmanNode>* Compression::buildLimitedHuffmanTreeSubFunc(FrequencyTable<int>* freqTable, int maxCodeLength)
+{
+	//setup
+	int totalRepresentable = 1 << maxCodeLength;
+	if(freqTable->size() > totalRepresentable)
+	{
+		//Error. Max Code Length not usable to represent the entire set of values.
+		//Throw error if enabled
+		return nullptr;
+	}
+
+	//Use Package merge with adjusted weights and widths. Done on a different computer.
+
+	std::vector<int> dataValues = std::vector<int>(freqTable->size());
+	std::vector<int> codeLengths = std::vector<int>(freqTable->size());
+
+	for(int i=0; i<freqTable->size(); i++)
+	{
+		dataValues[i] = freqTable->getValueAtLocation(i);
+	}
+
+	std::vector<Grouping> nList;
+	for(int j=0; j<maxCodeLength; j++)
+	{
+		for(int i=0; i<freqTable->size(); i++)
+		{
+			Grouping k;
+			k.valid = true;
+			k.ids = { i };
+			k.weight = freqTable->getFrequencyAtLocation(i);
+			k.width = 1;
+			k.width <<= (31-j);
+
+			nList.push_back(k);
+		}
+	}
+
+	size_t val1 = 0x100000000;
+
+	std::vector<Grouping> results = Algorithms::packageMergeAlgorithm(nList, val1 * (freqTable->size()-1)); //copying the results and deleting the list grouping list causes slowness
+
+	for(Grouping& g : results)
+	{
+		for(int& id : g.ids)
+		{
+			codeLengths[id]++;
+		}
+	}
+	
+	return Compression::buildCanonicalHuffmanTree(dataValues.data(), dataValues.size(), codeLengths.data(), codeLengths.size(), false, true);
+}
+
 void Compression::fillHuffmanTable(BinaryTreeNode<HuffmanNode>* treeNode, unsigned int* table, int length, int code)
 {
-	//StringTools::out << treeNode << StringTools::lineBreak;
 	if (treeNode != nullptr)
 	{
 		if (treeNode->leftChild != nullptr)
@@ -1304,11 +1316,12 @@ BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues,
 	}
 
 	//first, convert
-	
 	dataLengthCombo* arr = new dataLengthCombo[sizeOfData];
 
 	if(!separateCodeLengths)
 	{
+		//There is a one to one pairing for data and lengths.
+		//each length refers to how many bits the data at the same spot takes up.
 		if(sizeOfData==sizeOfCodeLengths)
 		{
 			for(int i=0; i<sizeOfData; i++)
@@ -1330,6 +1343,9 @@ BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues,
 	}
 	else
 	{
+		//There is not a one to one pairing of lengths to data.
+		//Length specifies how many data values have this length and the order of
+		//data values matters in this case. Length is usually less than 16 values.
 		int j = 0;
 		int leng = 0;
 		int i = 0;
@@ -1382,13 +1398,11 @@ BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues,
 	//operator in dataLengthCombo, but I wanted to use lambda expressions.
 
 	std::function<bool(dataLengthCombo, dataLengthCombo)> compareFunc = [](const dataLengthCombo & a, const dataLengthCombo & b) -> bool { 
-		if(a.length==b.length)
-			return a.data < b.data;
-		else
-			return a.length < b.length; };
+		return a.length < b.length;
+	};
 
-	Sort::mergeSort<dataLengthCombo>(arr, sizeOfData, compareFunc);
-
+	Sort::insertionSort<dataLengthCombo>(arr, sizeOfData, compareFunc);
+	
 	//now, we can start building the codes.
 	int startCode = 0;
 	int preLength = 0;
@@ -1463,6 +1477,7 @@ BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues,
 
 	return tree;
 }
+
 
 #pragma endregion
 
@@ -1857,12 +1872,573 @@ void Compression::compressDeflateSubFunction(unsigned char* data, int size, std:
 	
 }
 
-std::vector<unsigned char> Compression::compressDeflate(std::vector<unsigned char> data, int blocks, int compressionLevel)
+void Compression::compressDeflateSubFunction2(std::vector<lengthPair>* block, BinarySet* output, bool dynamic, bool lastBlock)
 {
-	return Compression::compressDeflate(data.data(), data.size(), blocks, compressionLevel);
+	output->setAddBitOrder(BinarySet::LMSB);
+	output->add(lastBlock);
+
+	if(!dynamic)
+	{
+		output->add(1, 2);
+
+		output->setAddBitOrder(BinarySet::RMSB);
+		//should incorporate block ends
+		for(int i=0; i<block->size(); i++)
+		{
+			lengthPair lp = block->at(i);
+			if(lp.literal)
+			{
+				if(lp.v1 <= 143)
+				{
+					output->add(48 + lp.v1, 8);
+				}
+				else
+				{
+					output->add(256 + lp.v1, 9);
+				}
+			}
+			else
+			{
+				int codeVal = 0;
+				int addVal = 0;
+				int additionalBits = 0;
+				int bitsRequired = 7;
+				
+				if(lp.v1 <= 10)
+				{
+					codeVal = lp.v1-2; //codeVal 0 is reserved so start at 1
+					additionalBits = 0;
+				}
+				else if(lp.v1 < 258)
+				{
+					additionalBits = MathExt::ceil(log2(lp.v1-2)) - 3;
+					int expV = (1 << additionalBits);
+					double incVal = 1.0 / expV;
+					int tempV = 3 + expV*4;
+					int add1 = (int) (incVal * (lp.v1 - tempV));
+
+					codeVal = (261 + (4*additionalBits)) + add1;
+					addVal = (lp.v1-tempV) % expV;
+
+					if(codeVal < 280)
+					{
+						codeVal = codeVal - 256;
+						bitsRequired = 7;
+					}
+					else
+					{
+						codeVal = codeVal - 280 + 0b11000000;
+						bitsRequired = 8;
+					}
+				}
+				else if(lp.v1 == 258)
+				{
+					codeVal = 0b11000101;
+					additionalBits = 0;
+					bitsRequired = 8;
+				}
+				
+				output->add(codeVal, bitsRequired);
+				if(additionalBits>0)
+				{
+					output->setAddBitOrder(BinarySet::LMSB);
+					output->add(addVal, additionalBits);
+					output->setAddBitOrder(BinarySet::RMSB);
+				}
+
+				//now add the extrabits for the backwards distance.
+				//Just like the length stuff above.
+				codeVal = 0;
+				addVal = 0;
+				bitsRequired = 5;
+				additionalBits = 0;
+
+				if(lp.v2 <= 4)
+				{
+					codeVal = lp.v2 - 1; //codeVal 0 is reserved so start at 1
+					additionalBits = 0;
+				}
+				else
+				{
+					additionalBits = MathExt::ceil(log2(lp.v2)) - 2;
+					int expV = (1 << additionalBits);
+					double incVal = 1.0 / expV;
+					int tempV = 1 + expV*2;
+					int add1 = (int) (incVal * (lp.v2 - tempV));
+
+					codeVal = (2 + (2*additionalBits)) + add1;
+
+					addVal = (lp.v2-tempV) % expV;
+				}
+				
+				output->add(codeVal, bitsRequired);
+				if(additionalBits>0)
+				{
+					output->setAddBitOrder(BinarySet::LMSB);
+					output->add(addVal, additionalBits);
+					output->setAddBitOrder(BinarySet::RMSB);
+				}
+			}
+		}
+		
+		output->add(0, 7); //end of block
+	}
+	else
+	{
+		output->add(2, 2);
+
+		output->setAddBitOrder(BinarySet::RMSB);
+		//should incorporate block ends
+
+		//Helpful structure for sorting
+		struct HCStruct
+		{
+			int value;
+			int length;
+		};
+
+		//generate canonical huffman tables for the literals
+		#pragma region GENERATE_CANONICAL_TABLES_FOR_DATA
+
+		std::vector<int> dataToBuildHuffTree = std::vector<int>(block->size()+1);
+		std::vector<int> dataToBuildDistHuffTree = std::vector<int>();
+
+		for(int index=0; index<block->size(); index++)
+		{
+			lengthPair lp = block->at(index);
+			if(lp.literal)
+			{
+				dataToBuildHuffTree[index] = lp.v1;
+			}
+			else
+			{
+				if(lp.v1<=10)
+					dataToBuildHuffTree[index] = 254 + lp.v1;
+				else if(lp.v1<=18)
+					dataToBuildHuffTree[index] = 265 + ((lp.v1-11)>>1);
+				else if(lp.v1<=34)
+					dataToBuildHuffTree[index] = 269 + ((lp.v1-19)>>2);
+				else if(lp.v1<=66)
+					dataToBuildHuffTree[index] = 273 + ((lp.v1-35)>>3);
+				else if(lp.v1<=130)
+					dataToBuildHuffTree[index] = 277 + ((lp.v1-67)>>4);
+				else if(lp.v1<=257)
+					dataToBuildHuffTree[index] = 281 + ((lp.v1-131)>>5);
+				else if(lp.v1==258)
+					dataToBuildHuffTree[index] = 285;
+				
+				if(lp.v2<=4)
+					dataToBuildDistHuffTree.push_back( lp.v2-1);
+				else if(lp.v2<=8)
+					dataToBuildDistHuffTree.push_back( 4 + ((lp.v2-5)>>1) );
+				else if(lp.v2<=16)
+					dataToBuildDistHuffTree.push_back( 6 + ((lp.v2-9)>>2) );
+				else if(lp.v2<=32)
+					dataToBuildDistHuffTree.push_back( 8 + ((lp.v2-17)>>3) );
+				else if(lp.v2<=64)
+					dataToBuildDistHuffTree.push_back( 10 + ((lp.v2-33)>>4) );
+				else if(lp.v2<=128)
+					dataToBuildDistHuffTree.push_back( 12 + ((lp.v2-65)>>5) );
+				else if(lp.v2<=256)
+					dataToBuildDistHuffTree.push_back( 14 + ((lp.v2-129)>>6) );
+				else if(lp.v2<=512)
+					dataToBuildDistHuffTree.push_back( 16 + ((lp.v2-257)>>7) );
+				else if(lp.v2<=1024)
+					dataToBuildDistHuffTree.push_back( 18 + ((lp.v2-513)>>8) );
+				else if(lp.v2<=2048)
+					dataToBuildDistHuffTree.push_back( 20 + ((lp.v2-1025)>>9) );
+				else if(lp.v2<=4096)
+					dataToBuildDistHuffTree.push_back( 22 + ((lp.v2-2049)>>10) );
+				else if(lp.v2<=8192)
+					dataToBuildDistHuffTree.push_back( 24 + ((lp.v2-4097)>>11) );
+				else if(lp.v2<=16384)
+					dataToBuildDistHuffTree.push_back( 26 + ((lp.v2-8193)>>12) );
+				else if(lp.v2<=32768)
+					dataToBuildDistHuffTree.push_back( 28 + ((lp.v2-16385)>>13) );
+			}
+		}
+		dataToBuildHuffTree.back() = 256;
+
+		//Check later if can eliminate stuff below to generate canonical version since this is the canonical version.
+		BinaryTree<HuffmanNode>* huffTreeLit = Compression::buildHuffmanTree(dataToBuildHuffTree.data(), dataToBuildHuffTree.size(), 15);
+		BinaryTree<HuffmanNode>* huffTreeDist = Compression::buildHuffmanTree(dataToBuildDistHuffTree.data(), dataToBuildDistHuffTree.size(), 15);
+
+		int HLIT = 29;
+		int HDIST = 29;
+		int HCLEN = 15;
+
+		int amountOfLitCodes = 257+HLIT;
+		int amountOfDistCodes = 1+HDIST;
+		int totalCodes = amountOfLitCodes+amountOfDistCodes;
+
+		HCStruct* litStuff = new HCStruct[amountOfLitCodes];
+		int* litDataValues = new int[amountOfLitCodes];
+		int* litLengths = new int[amountOfLitCodes];
+
+		HCStruct* distStuff = new HCStruct[amountOfDistCodes];
+		int* distDataValues = new int[amountOfDistCodes];
+		int* distLengths = new int[amountOfDistCodes];
+
+		memset(litStuff, 0, sizeof(HCStruct)*amountOfLitCodes);
+		memset(litDataValues, 0, sizeof(int)*amountOfLitCodes);
+		memset(litLengths, 0, sizeof(int)*amountOfLitCodes);
+
+		memset(distStuff, 0, sizeof(HCStruct)*amountOfDistCodes);
+		memset(distDataValues, 0, sizeof(int)*amountOfDistCodes);
+		memset(distLengths, 0, sizeof(int)*amountOfDistCodes);
+
+
+		std::vector<TraverseInfo<HuffmanNode>> litTreeTraversal = huffTreeLit->getTraversalInformation(true);
+		std::vector<TraverseInfo<HuffmanNode>> distTreeTraversal = huffTreeDist->getTraversalInformation(true);
+
+		for(TraverseInfo<HuffmanNode>& tInfo : litTreeTraversal)
+		{
+			litStuff[tInfo.node->data.value] = {tInfo.node->data.value, tInfo.path.size()};
+		}
+	
+		Sort::quickSort<HCStruct>(litStuff, amountOfLitCodes, [](HCStruct a, HCStruct b) -> bool{
+			if(a.length!=b.length)
+				return a.length < b.length;
+			else
+				return a.value < b.value;
+		});
+
+		for(int i=0; i<amountOfLitCodes; i++)
+		{
+			litDataValues[i] = litStuff[i].value;
+			litLengths[i] = litStuff[i].length;
+		}
+
+		for(TraverseInfo<HuffmanNode>& tInfo : distTreeTraversal)
+		{
+			distStuff[tInfo.node->data.value] = {tInfo.node->data.value, tInfo.path.size()};
+		}
+
+		Sort::quickSort<HCStruct>(distStuff, amountOfDistCodes, [](HCStruct a, HCStruct b) -> bool{
+			if(a.length!=b.length)
+				return a.length < b.length;
+			else
+				return a.value < b.value;
+		});
+
+		for(int i=0; i<amountOfDistCodes; i++)
+		{
+			distDataValues[i] = distStuff[i].value;
+			distLengths[i] = distStuff[i].length;
+		}
+
+		
+		//generate canonical huffman tables for the distance values
+		BinaryTree<HuffmanNode>* litCanonicalTree = Compression::buildCanonicalHuffmanTree(litDataValues, amountOfLitCodes, litLengths, amountOfLitCodes, false, true);
+		BinaryTree<HuffmanNode>* distCanonicalTree = Compression::buildCanonicalHuffmanTree(distDataValues, amountOfDistCodes, distLengths, amountOfDistCodes, false, true);
+
+		//may not need litData and the other arrays
+		delete[] litStuff;
+		delete[] litDataValues;
+		delete[] litLengths;
+
+		delete[] distStuff;
+		delete[] distDataValues;
+		delete[] distLengths;
+
+		delete huffTreeLit;
+		delete huffTreeDist;
+		
+		#pragma endregion
+
+		#pragma region GENERATE_CANONICAL_TABLE_FOR_HC_RECREATION
+
+		std::vector<TraverseInfo<HuffmanNode>> nLitCanonicalTraversal = litCanonicalTree->getTraversalInformation(true);
+		std::vector<TraverseInfo<HuffmanNode>> nDistCanonicalTraversal = distCanonicalTree->getTraversalInformation(true);
+
+		int* allCodeLengths = new int[totalCodes];
+		memset(allCodeLengths, 0, sizeof(int)*totalCodes);
+
+		//lazy method of putting all literals
+		for(TraverseInfo<HuffmanNode>& tInfo : nLitCanonicalTraversal)
+		{
+			allCodeLengths[ tInfo.node->data.value ] = tInfo.path.size();
+		}
+
+		for(TraverseInfo<HuffmanNode>& tInfo : nDistCanonicalTraversal)
+		{
+			allCodeLengths[ amountOfLitCodes + tInfo.node->data.value ] = tInfo.path.size();
+		}
+
+		//Now we have an array of all the possible values that can appear with their code lengths
+		//Next, we generate a huffman tree with this data, and record the code lengths, then put them into a special array,
+		//sort, and generate a canonical huffman tree.
+
+		BinaryTree<HuffmanNode>* codeRecreateTree = Compression::buildHuffmanTree(allCodeLengths, totalCodes, 7);
+
+		//Get code Lengths
+		std::vector<TraverseInfo<HuffmanNode>> codeRecreateTreeInfo = codeRecreateTree->getTraversalInformation(true);
+
+		//now form the HCLength stuff. Lazy method of not using the codes 16,17,18
+		HCStruct* hcStuff = new HCStruct[19]{ {16,0}, {17,0}, {18,0}, {0,0}, {8,0}, {7,0}, {9,0}, {6,0}, {10,0}, {5,0}, {11,0}, {4,0}, {12,0}, {3,0}, {13,0}, {2,0}, {14,0}, {1,0}, {15,0} };
+		int indexingArray[19] = {3,17,15,13,11,9,7,5,4,6,8,10,12,14,16,18,0,1,2};
+		int hcValues[19];
+		int hcLengths[19];
+		for(TraverseInfo<HuffmanNode>& tInfo : codeRecreateTreeInfo)
+		{
+			int codeLengthForBigTree = tInfo.node->data.value;
+			int codeLengthForHCTree = tInfo.path.size();
+			
+			int index = indexingArray[codeLengthForBigTree];
+			hcStuff[index].length = codeLengthForHCTree;
+		}
+
+		Sort::quickSort<HCStruct>(hcStuff, 19, [](HCStruct a, HCStruct b) -> bool{
+			if(a.length!=b.length)
+				return a.length < b.length;
+			else
+				return a.value < b.value;
+		});
+
+		for(int i=0; i<19; i++)
+		{
+			hcValues[i] = hcStuff[i].value;
+			hcLengths[i] = hcStuff[i].length;
+		}
+
+		BinaryTree<HuffmanNode>* tempTree = Compression::buildCanonicalHuffmanTree(hcValues, 19, hcLengths, 19, false, true);
+
+		std::vector<TraverseInfo<HuffmanNode>> hcTraversalInfo = tempTree->getTraversalInformation(true);
+
+		//write HLIT, HDIST, HCLEN
+		output->setAddBitOrder(BinarySet::LMSB);
+
+		output->add(HLIT, 5);
+		output->add(HDIST, 5);
+		output->add(HCLEN, 4);
+		
+		
+		//write hcStuff. 3 bits per value. In the original order without sorting
+		BinarySet* hcLengthsUnSorted = new BinarySet[19];
+		for(TraverseInfo<HuffmanNode>& tInfo : hcTraversalInfo)
+		{
+			hcLengthsUnSorted[ indexingArray[tInfo.node->data.value] ] = tInfo.path;
+		}
+
+		for(int i=0; i<19; i++)
+		{
+			output->add(hcLengthsUnSorted[i].size(), 3); //ERROR HERE. TRYING TO RECORD VALUE OF 8 WHICH IS IMPOSSIBLE
+		}
+		
+		for(int i=0; i<totalCodes; i++)
+		{
+			int index = indexingArray[allCodeLengths[i]];
+			output->add( hcLengthsUnSorted[index] );
+		}
+		
+		output->setAddBitOrder(BinarySet::RMSB);
+		
+		delete[] allCodeLengths;
+		delete[] hcLengthsUnSorted;
+		delete codeRecreateTree;
+
+		delete[] hcStuff;
+		delete tempTree;
+
+
+		#pragma endregion
+		
+		#pragma region ADD_DATA_USING_TREES
+
+		//add data
+		for(int i=0; i<block->size(); i++)
+		{
+			lengthPair lp = block->at(i);
+
+			if(lp.literal)
+			{
+				//find value in tree info
+				bool found = false;
+				for(TraverseInfo<HuffmanNode>& n : nLitCanonicalTraversal)
+				{
+					if(lp.v1 == n.node->data.value)
+					{
+						output->add( n.path );
+						found = true;
+						break;
+					}
+				}
+				
+				if(found==false)
+				{
+					//error
+					StringTools::println("Error finding literal %d in traversal information.", lp.v1);
+				}
+			}
+			else
+			{
+				int codeWord = -1;
+				int additionalBits = 0;
+				int addVal = 0;
+				int adjustedVal = 0;
+
+				if(lp.v1<=10)
+				{
+					adjustedVal = lp.v1;
+					additionalBits = 0;
+					addVal = 0;
+					codeWord = 254 + adjustedVal;
+				}
+				else if(lp.v1<=18)
+				{
+					additionalBits = 1;
+					adjustedVal = (lp.v1-11) >> additionalBits;
+					addVal = (lp.v1-11) % 2;
+					codeWord = 265 + adjustedVal;
+				}
+				else if(lp.v1<=34)
+				{
+					additionalBits = 2;
+					adjustedVal = (lp.v1-19) >> additionalBits;
+					addVal = (lp.v1-19) % 4;
+					codeWord = 269 + adjustedVal;
+				}
+				else if(lp.v1<=66)
+				{
+					additionalBits = 3;
+					adjustedVal = (lp.v1-35) >> additionalBits;
+					addVal = (lp.v1-35) % 8;
+					codeWord = 273 + adjustedVal;
+				}
+				else if(lp.v1<=130)
+				{
+					additionalBits = 4;
+					adjustedVal = (lp.v1-67) >> additionalBits;
+					addVal = (lp.v1-67) % 16;
+					codeWord = 277 + adjustedVal;
+				}
+				else if(lp.v1<=257)
+				{
+					additionalBits = 5;
+					adjustedVal = (lp.v1-131) >> additionalBits;
+					addVal = (lp.v1-131) % 32;
+					codeWord = 281 + adjustedVal;
+				}
+				else if(lp.v1==258)
+				{
+					additionalBits = 0;
+					addVal = 0;
+					codeWord = 285;
+				}
+				else
+					StringTools::println("ERROR: Length is too long");
+
+				bool found = false;
+				for(TraverseInfo<HuffmanNode>& n : nLitCanonicalTraversal)
+				{
+					if(codeWord == n.node->data.value)
+					{
+						// StringTools::println("Writing Literal %d with value %s", codeWord, StringTools::toBinaryString(n.path.toBytes()[0], n.path.size()));
+						output->add( n.path );
+						found = true;
+						break;
+					}
+				}
+
+				if(additionalBits>0)
+				{
+					// StringTools::println("Writing additional bits with value %s", StringTools::toBinaryString(addVal, additionalBits));
+						
+					output->setAddBitOrder(BinarySet::LMSB);
+					output->add(addVal, additionalBits);
+					output->setAddBitOrder(BinarySet::RMSB);
+				}
+				
+				if(found==false)
+				{
+					//error
+					StringTools::println("Error finding Length %d with code %d in traversal information.", lp.v1, codeWord);
+				}
+				
+				found = false;
+				codeWord = -1;
+				
+				if(lp.v2<=4)
+				{
+					additionalBits = 0;
+					addVal = 0;
+					codeWord = lp.v2-1;
+				}
+				else if(lp.v2<=32768)
+				{
+					additionalBits = (int)MathExt::ceil(MathExt::log(lp.v2, 2.0)-2);
+					int subVal = 1 + (1<<(additionalBits+1));
+					int expVal = 1 << additionalBits;
+
+					adjustedVal = (lp.v2-subVal) >> additionalBits;
+					addVal = (lp.v2-subVal) % expVal;
+					codeWord = (1+additionalBits)*2 + adjustedVal;
+				}
+				else
+					StringTools::println("ERROR: backwards distance too long");
+
+				for(TraverseInfo<HuffmanNode>& n : nDistCanonicalTraversal)
+				{
+					if(codeWord == n.node->data.value)
+					{
+						// StringTools::println("Writing Distance %d with value %s", codeWord, StringTools::toBinaryString(n.path.toBytes()[0], n.path.size()));
+						output->add( n.path );
+						found = true;
+						break;
+					}
+				}
+
+				if(additionalBits>0)
+				{
+					// StringTools::println("Writing additional bits with value %s", StringTools::toBinaryString(addVal, additionalBits));
+					output->setAddBitOrder(BinarySet::LMSB);
+					output->add(addVal, additionalBits);
+					output->setAddBitOrder(BinarySet::RMSB);
+				}
+				
+				if(found==false)
+				{
+					//error
+					StringTools::println("Error finding Distance %d with code %d in traversal information.", lp.v2, codeWord);
+				}
+			}
+		}
+
+		//add end of block.
+		bool found = false;
+		for(TraverseInfo<HuffmanNode>& n : nLitCanonicalTraversal)
+		{
+			if(256 == n.node->data.value)
+			{
+				// StringTools::println("Writing %d with value %s", 256, StringTools::toBinaryString(n.path.toBytes()[0], n.path.size()));
+				output->add( n.path );
+				found = true;
+				break;
+			}
+		}
+
+		if(found == false)
+		{
+			//error
+			StringTools::println("Error finding value 256 to end the block. Invalid deflate stream.");
+		}
+
+		delete litCanonicalTree;
+		delete distCanonicalTree;
+
+		#pragma endregion
+
+	}
+	output->setAddBitOrder(BinarySet::LMSB);
 }
 
-std::vector<unsigned char> Compression::compressDeflate(unsigned char* data, int size, int blocks, int compressionLevel)
+
+std::vector<unsigned char> Compression::compressDeflate(std::vector<unsigned char> data, int blocks, int compressionLevel, bool customTable)
+{
+	return Compression::compressDeflate(data.data(), data.size(), blocks, compressionLevel, customTable);
+}
+
+std::vector<unsigned char> Compression::compressDeflate(unsigned char* data, int size, int blocks, int compressionLevel, bool customTable)
 {
 	//probably will only use default trees and stuff
 
@@ -1923,112 +2499,32 @@ std::vector<unsigned char> Compression::compressDeflate(unsigned char* data, int
 			threads[t].join();
 	}
 
+	std::vector<BinarySet> threadBinData = std::vector<BinarySet>(blocks);
+
 	for(int block=0; block<blocks; block++)
 	{
-		bin.setAddBitOrder(BinarySet::LMSB);
-		bin.add(block == blocks-1);
-		bin.add(1, 2);
+		if(threads[block%tSize].joinable())
+			threads[block%tSize].join();
+			
+		threads[ block%tSize ] = std::thread(compressDeflateSubFunction2, &info[block], &threadBinData[block], customTable, block == (blocks-1) );
+	}
+	for(int t=0; t<tSize; t++)
+	{
+		if(threads[t].joinable())
+			threads[t].join();
+	}
 
-		bin.setAddBitOrder(BinarySet::RMSB);
-		//should incorporate block ends
-		for(lengthPair lp : info[block])
-		{
-			if(lp.literal)
-			{
-				if(lp.v1 <= 143)
-				{
-					bin.add(48 + lp.v1, 8);
-				}
-				else
-				{
-					bin.add(256 + lp.v1, 9);
-				}
-			}
-			else
-			{
-				int codeVal = 0;
-				int addVal = 0;
-				int additionalBits = 0;
-				int bitsRequired = 7;
-				
-				if(lp.v1 <= 10)
-				{
-					codeVal = lp.v1-2; //codeVal 0 is reserved so start at 1
-					additionalBits = 0;
-				}
-				else if(lp.v1 < 258)
-				{
-					additionalBits = MathExt::ceil(log2(lp.v1-2)) - 3;
-					int expV = (1 << additionalBits);
-					double incVal = 1.0 / expV;
-					int tempV = 3 + expV*4;
-					int add1 = (int) (incVal * (lp.v1 - tempV));
+	// for(int block=0; block<blocks; block++)
+	// {
+	// 	StringTools::println("BLOCK = %d", block);
+	// 	compressDeflateSubFunction2(&info[block], &threadBinData[block], customTable, block == (blocks-1)); //for debugging purposes
+	// 	StringTools::println("");
+	// }
 
-					codeVal = (261 + (4*additionalBits)) + add1;
-					addVal = (lp.v1-tempV) % expV;
-
-					if(codeVal < 280)
-					{
-						codeVal = codeVal - 256;
-						bitsRequired = 7;
-					}
-					else
-					{
-						codeVal = codeVal - 280 + 0b11000000;
-						bitsRequired = 8;
-					}
-				}
-				else if(lp.v1 == 258)
-				{
-					codeVal = 0b11000101;
-					additionalBits = 0;
-					bitsRequired = 8;
-				}
-				
-				bin.add(codeVal, bitsRequired);
-				if(additionalBits>0)
-				{
-					bin.setAddBitOrder(BinarySet::LMSB);
-					bin.add(addVal, additionalBits);
-					bin.setAddBitOrder(BinarySet::RMSB);
-				}
-
-				//now add the extrabits for the backwards distance.
-				//Just like the length stuff above.
-				codeVal = 0;
-				addVal = 0;
-				bitsRequired = 5;
-				additionalBits = 0;
-
-				if(lp.v2 <= 4)
-				{
-					codeVal = lp.v2 - 1; //codeVal 0 is reserved so start at 1
-					additionalBits = 0;
-				}
-				else
-				{
-					additionalBits = MathExt::ceil(log2(lp.v2)) - 2;
-					int expV = (1 << additionalBits);
-					double incVal = 1.0 / expV;
-					int tempV = 1 + expV*2;
-					int add1 = (int) (incVal * (lp.v2 - tempV));
-
-					codeVal = (2 + (2*additionalBits)) + add1;
-
-					addVal = (lp.v2-tempV) % expV;
-				}
-				
-				bin.add(codeVal, bitsRequired);
-				if(additionalBits>0)
-				{
-					bin.setAddBitOrder(BinarySet::LMSB);
-					bin.add(addVal, additionalBits);
-					bin.setAddBitOrder(BinarySet::RMSB);
-				}
-			}
-		}
-		
-		bin.add(0, 7); //end of block
+	//Construct
+	for(int block=0; block<blocks; block++)
+	{
+		bin.add( threadBinData[block] );
 	}
 
 	bin.setAddBitOrder(BinarySet::LMSB);
@@ -2229,10 +2725,12 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 
 					if(binData.getBit(currLoc) == 0)
 					{
+						// StringTools::print("0");
 						currNode = currNode->leftChild;
 					}
 					else
 					{
+						// StringTools::print("1");
 						currNode = currNode->rightChild;
 					}
 
@@ -2276,6 +2774,7 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 					if(currNode->data.value <= 255)
 					{
 						//literal
+						// StringTools::println(" Got literal with value %d", currNode->data.value);
 						//StringTools::out << "Literal" << StringTools::lineBreak;
 						finalData.push_back(currNode->data.value);
 					}
@@ -2301,6 +2800,9 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 						currLoc+=copyExtraBits;
 
 						int finalCopyLength = baseCopyLength + copyExtraVal;
+
+						
+						// StringTools::println(" Got length with code %d and final length %d", currNode->data.value, finalCopyLength);
 
 						int backRefCode = 0;
 						int baseBackLength = 0;
@@ -2346,6 +2848,9 @@ std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, i
 						int backExtraVal = binData.getBits(currLoc, currLoc+backRefExtraBits);
 						currLoc+=backRefExtraBits;
 						int finalBackRef = baseBackLength + backExtraVal;
+
+						// StringTools::println(" Got Distance with code %d and final length %d", backRefCode, finalBackRef);
+
 						
 						//StringTools::out << "Length is: " << finalCopyLength << ", Dist is: " << finalBackRef << StringTools::lineBreak;
 						//with finalCopyLength and finalBackRef, copy into the finalData
@@ -2559,21 +3064,41 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 	//we must build up the codes to find the codes
 	//The order of the values are defined in the deflate specs
 	//Do some canonical huffman coding stuff.
-	
-	int hcValues[19] = {16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
-	int hcLengths[19];
 
-	for(int i=0; i<19; i++)
+	struct HCStruct
 	{
-		hcLengths[i] = 0;
-	}
+		int value;
+		int length;
+	};
+	
+	HCStruct* hcStuff = new HCStruct[19]{ {16,0}, {17,0}, {18,0}, {0,0}, {8,0}, {7,0}, {9,0}, {6,0}, {10,0}, {5,0}, {11,0}, {4,0}, {12,0}, {3,0}, {13,0}, {2,0}, {14,0}, {1,0}, {15,0} };
+
+	int hcValues[19];
+	int hcLengths[19];
 
 	for(int i=0; i<amountOfCodeLengthCodes; i++)
 	{
-		hcLengths[i] = data->getBits(*location, *location+3);
+		hcStuff[i].length = data->getBits(*location, *location+3);
 		*location+=3;
 	}
-	
+
+	for(int i=0; i<19; i++)
+	{
+		StringTools::println("%d, %d", i, hcStuff[i].length);
+	}
+
+	Sort::insertionSort<HCStruct>(hcStuff, amountOfCodeLengthCodes, [](HCStruct a, HCStruct b) -> bool{
+		if(a.length!=b.length)
+			return a.length < b.length;
+		else
+			return a.value < b.value;
+	});
+
+	for(int i=0; i<amountOfCodeLengthCodes; i++)
+	{
+		hcValues[i] = hcStuff[i].value;
+		hcLengths[i] = hcStuff[i].length;
+	}
 	
 	BinaryTree<HuffmanNode>* tempTree = Compression::buildCanonicalHuffmanTree(hcValues, amountOfCodeLengthCodes, hcLengths, amountOfCodeLengthCodes, false, true);
 
@@ -2582,14 +3107,15 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 	//Since this is c++, we don't have to explicitly separate our array. Just set
 	//the start point and the length.
 
-	int* allCodes = new int[totalCodes];
-	std::memset(allCodes, 0, totalCodes);
+	delete[] hcStuff;
+	hcStuff = new HCStruct[totalCodes];
+	std::memset(hcStuff, 0, totalCodes*sizeof(HCStruct));
 
 	BinaryTreeNode<HuffmanNode>* currNode = tempTree->getRoot();
 
 	int codes = 0;
 	int tempCode = 0;
-
+	
 	while(codes < totalCodes)
 	{
 		tempCode = (data->getBit(*location)==true) ? 1 : 0;
@@ -2611,7 +3137,7 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 			
 			if(actualValue < 16)
 			{
-				allCodes[codes]=actualValue;
+				hcStuff[codes].length = actualValue;
 				codes++;
 			}
 			else if(actualValue==16)
@@ -2622,10 +3148,10 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 
 				int copyLen = extra + 3;
 
-				int preVal = allCodes[codes-1];
+				int preVal = hcStuff[codes-1].length;
 				for(int i=0; i<copyLen; i++)
 				{
-					allCodes[codes+i] = preVal;
+					hcStuff[codes+i].length = preVal;
 				}
 				codes+=copyLen;
 			}
@@ -2639,7 +3165,7 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 
 				for(int i=0; i<copyLen; i++)
 				{
-					allCodes[codes+i] = 0;
+					hcStuff[codes+i].length = 0;
 				}
 				codes+=copyLen;
 			}
@@ -2654,7 +3180,7 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 				for(int i=0; i<copyLen; i++)
 				{
 					if(codes+i < totalCodes)
-						allCodes[codes+i] = 0;
+						hcStuff[codes+i].length = 0;
 				}
 				codes+=copyLen;
 			}
@@ -2665,10 +3191,10 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 
 	//requirements
 	//the value 256 must have a valid code
-	if(allCodes[256] == 0)
+	if(hcStuff[256].length == 0)
 	{
-		if(allCodes!=nullptr)
-			delete[] allCodes;
+		if(hcStuff!=nullptr)
+			delete[] hcStuff;
 		if(tempTree!=nullptr)
 			delete tempTree;
 		if(trees!=nullptr)
@@ -2684,17 +3210,47 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 		return nullptr;
 	}
 
-	int* lenLengthValues = new int[amountOfLitCodes];
-	int* distValues = new int[amountOfDistCodes];
-
 	for(int i=0; i<amountOfLitCodes; i++)
 	{
-		lenLengthValues[i] = i;
+		hcStuff[i].value = i;
 	}
 	for(int i=0; i<amountOfDistCodes; i++)
 	{
-		distValues[i] = i;
+		hcStuff[i+amountOfLitCodes].value = i;
 	}
+
+	Sort::insertionSort<HCStruct>(&hcStuff[0], amountOfLitCodes, [](HCStruct a, HCStruct b) -> bool{
+		if(a.length!=b.length)
+			return a.length < b.length;
+		else
+			return a.value < b.value;
+	});
+
+	Sort::insertionSort<HCStruct>(&hcStuff[amountOfLitCodes], amountOfDistCodes, [](HCStruct a, HCStruct b) -> bool{
+		if(a.length!=b.length)
+			return a.length < b.length;
+		else
+			return a.value < b.value;
+	});
+
+	int* allCodes = new int[totalCodes];
+	int* lenLengthValues = new int[amountOfLitCodes];
+	int* distValues = new int[amountOfDistCodes];
+
+	for(int i=0; i<totalCodes; i++)
+	{
+		allCodes[i] = hcStuff[i].length;
+	}
+	for(int i=0; i<amountOfLitCodes; i++)
+	{
+		lenLengthValues[i] = hcStuff[i].value;
+	}
+	for(int i=0; i<amountOfDistCodes; i++)
+	{
+		distValues[i] = hcStuff[i+amountOfLitCodes].value;
+	}
+
+	delete[] hcStuff;
 
 	trees[0] = Compression::buildCanonicalHuffmanTree(lenLengthValues, amountOfLitCodes, &allCodes[0], amountOfLitCodes, false, true);
 	trees[1] = Compression::buildCanonicalHuffmanTree(distValues, amountOfDistCodes, &allCodes[amountOfLitCodes], amountOfDistCodes, false, true);
@@ -2840,6 +3396,103 @@ void Compression::getBackDistanceInformation(int code, int* baseValue, int* extr
 		*extraBits = 13;
 		*baseValue = 16385 + (code-28)*(std::pow(2, *extraBits));
 	}
+}
+
+#pragma endregion
+
+#pragma region ARITHMETIC
+
+double Compression::compressArithmetic(std::vector<unsigned char> data, std::vector<double>& percentages)
+{
+	//generate percentages
+	percentages.clear();
+	percentages = std::vector<double>(256);
+
+	int total = data.size();
+
+	std::vector<double> percentageRangeVals = std::vector<double>();
+	
+	for(int i=0; i<data.size(); i++)
+	{
+		percentages[data[i]] += 1;
+	}
+
+	percentageRangeVals.push_back(0);
+	for(int i=0; i<256; i++)
+	{
+		percentages[i] /= total;
+		percentageRangeVals.push_back(percentages[i] + percentageRangeVals.back());
+	}
+
+	double oldMinPer = 0.0;
+	double oldMaxPer = 1.0;
+	
+	for(int i=0; i<data.size(); i++)
+	{
+		int index = data[i];
+		double minPercentage = percentageRangeVals[index];
+		double maxPercentage = percentageRangeVals[index+1];
+
+		double nMinPer = oldMinPer + (oldMaxPer-oldMinPer) * minPercentage;
+		double nMaxPer = oldMinPer + (oldMaxPer-oldMinPer) * maxPercentage;
+
+		StringTools::println("%c : range %f to %f", data[i], minPercentage, maxPercentage);
+		StringTools::println("%c : new range %f to %f", data[i], nMinPer, nMaxPer);
+
+		oldMinPer = nMinPer;
+		oldMaxPer = nMaxPer;
+	}
+
+	double finalValue = (oldMinPer + oldMaxPer)/2.0;
+
+	StringTools::println("FinalValue: %f", finalValue);
+	return finalValue;
+}
+
+std::vector<unsigned char> Compression::decompressArithmetic(double data, int messageSize, std::vector<double> percentages)
+{
+	//generate percentageRanges
+
+	std::vector<double> percentageRangeVals = std::vector<double>();
+	percentageRangeVals.push_back(0);
+	for(int i=0; i<256; i++)
+	{
+		percentageRangeVals.push_back(percentages[i] + percentageRangeVals.back());
+	}
+
+	double oldMinPer = 0.0;
+	double oldMaxPer = 1.0;
+
+	std::vector<unsigned char> message = std::vector<unsigned char>();
+	while(message.size() < messageSize)
+	{
+		bool valid = false;
+		for(int i=1; i<percentageRangeVals.size(); i++)
+		{
+			double minPercentage = percentageRangeVals[i-1];
+			double maxPercentage = percentageRangeVals[i];
+
+			double nMinPer = oldMinPer + (oldMaxPer-oldMinPer) * minPercentage;
+			double nMaxPer = oldMinPer + (oldMaxPer-oldMinPer) * maxPercentage;
+			
+			if(data >= nMinPer && data < nMaxPer)
+			{
+				oldMinPer = nMinPer;
+				oldMaxPer = nMaxPer;
+				message.push_back((unsigned char)(i-1));
+				valid = true;
+				break;
+			}
+		}
+
+		if(valid==false)
+		{
+			StringTools::println("Error finding data");
+			break;
+		}
+	}
+	
+	return message;
 }
 
 #pragma endregion

@@ -119,14 +119,14 @@ void Image::setAllPixels(Color c)
 		__m256i* startPixsSSE = (__m256i*)pixels;
 
 		int size = (width*height) >> 3;
-		int leftOver = (width*height) % 8;
+		int leftOver = (width*height) - (size<<3);
 
 		__m256i* endPixsSSE = startPixsSSE + size;
 		__m256i value = _mm256_set1_epi32(m);
 
 		while (startPixsSSE < endPixsSSE)
 		{
-			_mm256_store_si256(startPixsSSE, value);
+			_mm256_storeu_si256(startPixsSSE, value);
 			startPixsSSE++;
 		}
 		
@@ -145,14 +145,14 @@ void Image::setAllPixels(Color c)
 		__m128i* startPixsSSE = (__m128i*)pixels;
 
 		int size = (width*height) >> 2;
-		int leftOver = (width*height) % 4;
+		int leftOver = (width*height) - (size<<2);
 
 		__m128i* endPixsSSE = startPixsSSE + size;
 		__m128i value = _mm_set1_epi32(m);
 
 		while (startPixsSSE < endPixsSSE)
 		{
-			_mm_store_si128(startPixsSSE, value);
+			_mm_storeu_si128(startPixsSSE, value);
 			startPixsSSE++;
 		}
 		

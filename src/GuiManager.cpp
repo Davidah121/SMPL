@@ -41,9 +41,6 @@ void GuiInstance::copy(const GuiInstance& other)
 
 	priority = other.priority;
 
-	parentVisible = other.parentVisible;
-	parentActive = other.parentActive;
-
 	visible = other.visible;
 	active = other.active;
 	focus = other.focus;
@@ -62,7 +59,19 @@ void GuiInstance::copy(const GuiInstance& other)
 
 	shouldCallF = other.shouldCallF;
 
-	children = other.children;
+	//children = other.children;
+	
+	if(other.parent!=nullptr)
+	{
+		other.parent->addChild(this);
+	}
+	
+	for(GuiInstance* child : children)
+	{
+		child->parent = nullptr;
+		addChild(child);
+	}
+
 	manager = other.manager;
 	canvas = other.canvas;
 	
@@ -78,6 +87,22 @@ void GuiInstance::copy(const GuiInstance& other)
 
 GuiInstance::~GuiInstance()
 {
+	if(parent!=nullptr)
+	{
+		parent->removeChild(this);
+	}
+	if(manager!=nullptr)
+	{
+		manager->deleteElement(this);
+	}
+
+	for(GuiInstance* ins : children)
+	{
+		ins->parent = nullptr;
+		ins->setOffset(nullptr, nullptr);
+	}
+
+	parent = nullptr;
 	children.clear();
 	manager = nullptr;
 
@@ -98,9 +123,21 @@ void GuiInstance::render(Image* surf)
 
 void GuiInstance::addChild(GuiInstance* ins)
 {
-	ins->priority = this->priority + 1;
+	if(ins->parent!=nullptr)
+	{
+		ins->parent->removeChild(ins);
+	}
+	
+	ins->parent = this;
+	ins->updatePriority();
 	ins->setOffset( &x, &y );
 	children.push_back(ins);
+
+	if(manager!=nullptr && manager!=ins->manager)
+	{
+		//add to manager
+		manager->addElement(ins);
+	}
 }
 
 void GuiInstance::removeChild(GuiInstance* ins)
@@ -115,6 +152,8 @@ void GuiInstance::removeChild(GuiInstance* ins)
 	}
 
 	children = m;
+
+	ins->parent = nullptr;
 }
 
 std::vector<GuiInstance*> GuiInstance::getChildren()
@@ -135,30 +174,12 @@ void GuiInstance::setVisible(bool is)
 		shouldCallV2 = true;
 		shouldCallV = false;
 	}
-
-	//set children visibility
-	for(GuiInstance* ins : children)
-	{
-		if(ins!=nullptr)
-			ins->setParentVisible(is);
-	}
-}
-
-void GuiInstance::setParentVisible(bool is)
-{
-	parentVisible = is;
-	
-	//set children visibility
-	for(GuiInstance* ins : children)
-	{
-		if(ins!=nullptr)
-			ins->setParentVisible(is);
-	}
 }
 
 bool GuiInstance::getVisible()
 {
-	return visible;
+	bool finalVisibility = (parent!=nullptr) ? (visible && parent->getVisible()) : visible;
+	return finalVisibility;
 }
 
 void GuiInstance::setActive(bool is)
@@ -174,30 +195,12 @@ void GuiInstance::setActive(bool is)
 		shouldCallA2 = true;
 		shouldCallA = false;
 	}
-
-	//set children active
-	for(GuiInstance* ins : children)
-	{
-		if(ins!=nullptr)
-			ins->setParentActive(is);
-	}
-}
-
-void GuiInstance::setParentActive(bool is)
-{
-	parentActive = is;
-	
-	//set children active
-	for(GuiInstance* ins : children)
-	{
-		if(ins!=nullptr)
-			ins->setParentActive(is);
-	}
 }
 
 bool GuiInstance::getActive()
 {
-	return active;
+	bool finalActivity = (parent!=nullptr) ? (active && parent->getActive()) : active;
+	return finalActivity;
 }
 
 void GuiInstance::setFocus(bool is)
@@ -379,7 +382,30 @@ int GuiInstance::getPriority()
 
 void GuiInstance::setPriority(int value)
 {
-	priority = value;
+	if(value!=CANVAS_PRIORITY_VALUE)
+	{
+		priority = MathExt::clamp(value, GuiInstance::MIN_PRIORITY_VALUE, GuiInstance::MAX_PRIORITY_VALUE);
+	}
+	else
+	{
+		priority = MathExt::abs(GuiInstance::CANVAS_PRIORITY_VALUE);
+	}
+	
+	for(GuiInstance* child : children)
+	{
+		child->updatePriority();
+	}
+}
+
+void GuiInstance::updatePriority()
+{
+	if(parent!=nullptr)
+		priority = max(priority, parent->priority+1);
+	
+	for(GuiInstance* insChildren : children)
+	{
+		insChildren->updatePriority();
+	}
 }
 
 void GuiInstance::setManager(GuiManager* m)
@@ -482,7 +508,7 @@ void GuiCanvas::setInstanceCanvas(GuiInstance* ins)
 {
 	ins->setCanvas(&myImage);
 	ins->setRenderOffset(&x, &y);
-	setPriority( max(getPriority(), ins->getPriority()+1) );
+	setPriority( GuiInstance::CANVAS_PRIORITY_VALUE );
 
 	for(GuiInstance* o : ins->getChildren())
 	{
@@ -957,7 +983,7 @@ void GuiTextBox::keyInput()
 			}
 		}
 
-		if (Input::getKeyPressed(Input::KEY_ENTER))
+		if (Input::getKeyPressed(Input::KEY_ENTER) || Input::getKeyPressed(Input::KEY_NUMPAD_ENTER))
 		{
 			//Enter key
 			if (onEnterPressedFunction != nullptr)
@@ -1061,11 +1087,14 @@ void GuiTextBox::keyInput()
 
 			if(value!=-1)
 			{
-				std::string prefix = textElement.getText().substr(0, cursorLocation);
-				std::string suffix = textElement.getText().substr(cursorLocation);
+				int minSelect = min(selectStart, selectEnd);
+				int maxSelect = max(selectStart, selectEnd);
+				
+				std::string prefix = textElement.getText().substr(0, minSelect);
+				std::string suffix = textElement.getText().substr(maxSelect);
 
 				textElement.setText( (prefix + (char)value) + suffix );
-				cursorLocation++;
+				cursorLocation = minSelect+1;
 				selectStart = cursorLocation;
 				selectEnd = cursorLocation;
 			}
@@ -1193,6 +1222,11 @@ void GuiTextBox::selectionCleanup()
 
 void GuiTextBox::update()
 {
+	selectEnd = MathExt::clamp(selectEnd, 0, textElement.getTextRef().size());
+	selectStart = MathExt::clamp(selectStart, 0, textElement.getTextRef().size());
+	cursorLocation = MathExt::clamp(cursorLocation, 0, textElement.getTextRef().size());
+	startStringIndex = MathExt::clamp(startStringIndex, 0, textElement.getTextRef().size());
+	
 	keyInput();
 	mouseInput();
 	selectionCleanup();
@@ -1309,6 +1343,11 @@ void GuiRectangleButton::update()
 
 	if(Input::getMouseUp(Input::LEFT_MOUSE_BUTTON))
 	{
+		if(hover && getFocus())
+		{
+			if(onClickReleaseFunction != nullptr)
+				onClickReleaseFunction(this);
+		}
 		setFocus(false);
 	}
 
@@ -1355,6 +1394,11 @@ void GuiRectangleButton::setOnClickFunction(std::function<void(GuiInstance*)> fu
 void GuiRectangleButton::setOnClickHoldFunction(std::function<void(GuiInstance*)> func)
 {
 	onClickHoldFunction = func;
+}
+
+void GuiRectangleButton::setOnClickReleaseFunction(std::function<void(GuiInstance*)> func)
+{
+	onClickReleaseFunction = func;
 }
 
 void GuiRectangleButton::setBackgroundColor(Color c)
@@ -1679,10 +1723,6 @@ void GuiScrollBar::copy(const GuiScrollBar& other)
 	decreaseButtonElement.setOnClickFunction(scrollDecrease);
 	increaseButtonElement.setOnClickFunction(scrollIncrease);
 
-	removeChild((GuiInstance*)&other.buttonElement);
-	removeChild((GuiInstance*)&other.decreaseButtonElement);
-	removeChild((GuiInstance*)&other.increaseButtonElement);
-	
 	addChild(&buttonElement);
 	addChild(&decreaseButtonElement);
 	addChild(&increaseButtonElement);
@@ -1695,19 +1735,12 @@ GuiScrollBar::~GuiScrollBar()
 void GuiScrollBar::decreaseScroll()
 {
 	setCurrentStep( currStep - 1 );
-	if(onSlideFunction!=nullptr)
-	{
-		onSlideFunction(this);
-	}
 }
 
 void GuiScrollBar::increaseScroll()
 {
 	setCurrentStep( currStep + 1 );
-	if(onSlideFunction!=nullptr)
-	{
-		onSlideFunction(this);
-	}
+
 }
 
 void GuiScrollBar::update()
@@ -1778,6 +1811,8 @@ void GuiScrollBar::holdButtonFunction(GuiInstance* ins)
 	int nEX = endX + x;
 	int nEY = endY + y;
 
+	int oldStep = currStep;
+
 	if(!isHorizontal)
 	{
 		//adjust so that the end of the button does not pass the bounds
@@ -1809,9 +1844,12 @@ void GuiScrollBar::holdButtonFunction(GuiInstance* ins)
 		currStep = MathExt::clamp((int)MathExt::round(t), 0, steps);
 	}
 
-	if(onSlideFunction!=nullptr)
+	if(oldStep!=currStep)
 	{
-		onSlideFunction(this);
+		if(onSlideFunction!=nullptr)
+		{
+			onSlideFunction(this);
+		}
 	}
 }
 
@@ -1981,8 +2019,7 @@ void GuiScrollBar::setSteps(int s)
 	{
 		int width = (endX-startX);
 		
-		if(steps!=0)
-			width = (int)MathExt::round((double)width/steps);
+		width = (int)MathExt::round((double)width/(steps+1));
 
 		buttonElement.setWidth( max(width, minWidth) );
 	}
@@ -1990,8 +2027,7 @@ void GuiScrollBar::setSteps(int s)
 	{
 		int height = (endY-startY);
 
-		if(steps!=0)
-			height = (int)MathExt::round((double)height/steps);
+		height = (int)MathExt::round((double)height/(steps+1));
 
 		buttonElement.setHeight( max(height, minHeight) );
 	}
@@ -2004,6 +2040,7 @@ int GuiScrollBar::getSteps()
 
 void GuiScrollBar::setCurrentStep(int s)
 {
+	int oldStep = currStep;
 	currStep = MathExt::clamp(s, 0, steps);
 
 	if(isHorizontal)
@@ -2031,6 +2068,14 @@ void GuiScrollBar::setCurrentStep(int s)
 		int yPos = MathExt::clamp((int)MathExt::round(t), startY, endY-butHeight);
 
 		buttonElement.setBaseY( yPos );
+	}
+
+	if(oldStep!=currStep)
+	{
+		if(onSlideFunction!=nullptr)
+		{
+			onSlideFunction(this);
+		}
 	}
 }
 
@@ -2083,6 +2128,12 @@ GuiManager::GuiManager(const GuiManager& k)
 
 GuiManager::~GuiManager()
 {
+	for(GuiInstance* ins : objects)
+	{
+		if(ins!=nullptr)
+			ins->manager = nullptr;
+	}
+	
 	objects.clear();
 
 	if(ownsImage)
@@ -2119,31 +2170,36 @@ void GuiManager::addElement(GuiInstance* k)
 
 void GuiManager::deleteElement(GuiInstance* k)
 {
-	int startIndex = -1;
-	int orgSize = getSize();
-
-	for (int i = 0; i < orgSize; i++)
+	if(k->manager == this)
 	{
-		if (objects[i] == k)
+		int startIndex = -1;
+		int orgSize = getSize();
+
+		for (int i = 0; i < orgSize; i++)
 		{
-			startIndex = i;
-			break;
+			if (objects[i] == k)
+			{
+				startIndex = i;
+				break;
+			}
 		}
-	}
 
-	if (startIndex >= 0)
-	{
-		for (int i = startIndex; i < orgSize - 1; i++)
+		if (startIndex >= 0)
 		{
-			objects[i] = objects[i + 1];
+			for (int i = startIndex; i < orgSize - 1; i++)
+			{
+				objects[i] = objects[i + 1];
+			}
+			objects.pop_back();
 		}
-		objects.pop_back();
-	}
 
-	//delete children as well
-	for(GuiInstance* o : k->getChildren())
-	{
-		deleteElement(o);
+		k->manager = nullptr;
+
+		//delete children as well
+		for(GuiInstance* o : k->getChildren())
+		{
+			deleteElement(o);
+		}
 	}
 }
 
@@ -2165,7 +2221,7 @@ void GuiManager::updateGuiElements()
 	{
 		if (objects[i] != nullptr)
 		{
-			if(objects[i]->getActive() && objects[i]->parentActive)
+			if(objects[i]->getActive())
 			{
 				currActiveObjects.push_back(objects[i]);
 			}
@@ -2187,7 +2243,7 @@ void GuiManager::renderGuiElements()
 	{
 		if (objects[i] != nullptr)
 		{
-			if(objects[i]->getVisible() && objects[i]->parentVisible)
+			if(objects[i]->getVisible())
 			{
 				currVisibleObjects.push_back(objects[i]);
 			}

@@ -12,6 +12,13 @@ struct BinaryTreeNode
 };
 
 template<typename T>
+struct TraverseInfo
+{
+	BinarySet path = BinarySet();
+	BinaryTreeNode<T>* node = nullptr;
+};
+
+template<typename T>
 class BinaryTree
 {
 public:
@@ -24,6 +31,8 @@ public:
 
 	BinaryTreeNode<T>* traverse(BinarySet bin);
 
+	std::vector<TraverseInfo<T>> getTraversalInformation(bool leafOnly = false);
+
 	BinaryTreeNode<T>* getRoot();
 
 	int getSize();
@@ -35,6 +44,8 @@ private:
 	void cleanUp(BinaryTreeNode<T>* node);
 	int traverseCount(BinaryTreeNode<T>* node);
 	void getElementsRecursive(std::vector<T>* data, BinaryTreeNode<T>* startNode);
+
+	void getTraversalInfoRecursive(std::vector<TraverseInfo<T>>* data, BinaryTreeNode<T>* startNode, BinarySet binPath, bool leafOnly = false);
 
 };
 
@@ -124,6 +135,15 @@ inline BinaryTreeNode<T>* BinaryTree<T>::traverse(BinarySet bin)
 }
 
 template<typename T>
+inline std::vector<TraverseInfo<T>> BinaryTree<T>::getTraversalInformation(bool leafOnly)
+{
+	std::vector<TraverseInfo<T>> arr = std::vector<TraverseInfo<T>>();
+
+	getTraversalInfoRecursive(&arr, rootNode, BinarySet(), leafOnly);
+	return arr;
+}
+
+template<typename T>
 inline int BinaryTree<T>::getSize()
 {
 	return traverseCount(rootNode);
@@ -196,5 +216,33 @@ inline void BinaryTree<T>::getElementsRecursive(std::vector<T>* arr, BinaryTreeN
 		arr->push_back(node->data);
 		getElementsRecursive(arr, node->leftChild);
 		getElementsRecursive(arr, node->rightChild);
+	}
+}
+
+template<typename T>
+inline void BinaryTree<T>::getTraversalInfoRecursive(std::vector<TraverseInfo<T>>* data, BinaryTreeNode<T>* node, BinarySet binPath, bool leafOnly)
+{
+	if(node!=nullptr)
+	{
+		if(leafOnly)
+		{
+			if(node->leftChild == nullptr && node->rightChild == nullptr)
+			{
+				data->push_back( {binPath, node} );
+			}
+		}
+		else
+		{
+			data->push_back( {binPath, node} );
+		}
+
+		BinarySet m1 = binPath;
+		BinarySet m2 = binPath;
+
+		m1.add(false);
+		m2.add(true);
+		
+		getTraversalInfoRecursive(data, node->leftChild, m1, leafOnly);
+		getTraversalInfoRecursive(data, node->rightChild, m2, leafOnly);
 	}
 }

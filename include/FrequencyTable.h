@@ -135,7 +135,7 @@ inline int FrequencyTable<T>::size()
 template<typename T>
 inline void FrequencyTable<T>::sort()
 {
-	//selection sort
+	//Insertion sort
 	for (int i = 0; i < values.size(); i++)
 	{
 		for (int j = i; j > 0; j--)

@@ -166,7 +166,7 @@ private:
 	std::mutex myMutex = std::mutex();
 	bool threadOwnership = true;
 	bool shouldRepaint = false;
-	bool autoRepaint = false;
+	bool autoRepaint = true;
 	unsigned int sleepTimeMillis = 16;
 	unsigned int sleepTimeMicros = 0;
 

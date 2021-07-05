@@ -38,12 +38,12 @@ public:
 	static const unsigned char KEY_NUMPAD8 = 0x68;
 	static const unsigned char KEY_NUMPAD9 = 0x69;
 
-	static const unsigned char KEY_MULTIPLY = 0x6A;
-	static const unsigned char KEY_ADD = 0x6B;
-	static const unsigned char KEY_SEPARATOR = 0x6C;
-	static const unsigned char KEY_SUBTRACT = 0x6D;
-	static const unsigned char KEY_DECIMAL = 0x6E;
-	static const unsigned char KEY_DIVIDE = 0x6F;
+	static const unsigned char KEY_NUMPAD_MULTIPLY = 0x6A;
+	static const unsigned char KEY_NUMPAD_ADD = 0x6B;
+	static const unsigned char KEY_NUMPAD_ENTER = 0x6C;
+	static const unsigned char KEY_NUMPAD_SUBTRACT = 0x6D;
+	static const unsigned char KEY_NUMPAD_DECIMAL = 0x6E;
+	static const unsigned char KEY_NUMPAD_DIVIDE = 0x6F;
 
 	static const unsigned char KEY_F1 = 0x70;
 	static const unsigned char KEY_F2 = 0x71;
@@ -82,6 +82,15 @@ public:
 	static const unsigned char KEY_COMMA = 0xBC;
 	static const unsigned char KEY_MINUS = 0xBD;
 	static const unsigned char KEY_PERIOD = 0xBE;
+
+	static const unsigned char KEY_FORWARD_SLASH = 0xBF;
+	static const unsigned char KEY_TILDE = 0xC0;
+	static const unsigned char KEY_SEMICOLON = 0xBA;
+	static const unsigned char KEY_LEFT_SQUARE_BRACKET = 0xDB;
+	static const unsigned char KEY_BACK_SLASH = 0xDC;
+	static const unsigned char KEY_RIGHT_SQUARE_BRACKET = 0xDD;
+	static const unsigned char KEY_SINGLE_QUOTE = 0xDE;
+	
 	
 	static void pollInput();
 

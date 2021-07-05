@@ -248,6 +248,14 @@ void BinarySet::add(unsigned char* v, int size)
 	}
 }
 
+void BinarySet::add(BinarySet& other)
+{
+	for(int i=0; i<other.size(); i++)
+	{
+		add( other.getBit(i) );
+	}
+}
+
 void BinarySet::setValues(char* v, int size)
 {
 	set.assign((unsigned char*)v, (unsigned char*)v + size);

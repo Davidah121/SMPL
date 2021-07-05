@@ -72,7 +72,14 @@
         "puff.h": "c",
         "cstdarg": "cpp",
         "hash_map": "cpp",
-        "array": "cpp"
+        "array": "cpp",
+        "bit": "cpp",
+        "charconv": "cpp",
+        "clocale": "cpp",
+        "forward_list": "cpp",
+        "format": "cpp",
+        "optional": "cpp",
+        "stop_token": "cpp"
     },
     "files.exclude": {
         "**/.classpath": true,

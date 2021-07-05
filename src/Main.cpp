@@ -30,6 +30,8 @@
 
 #include "SimpleHashMap.h"
 
+#include "Algorithms.h"
+
 /**
  * Purpose:
  *      Provide a port to other systems
@@ -70,7 +72,7 @@
  *      
  *      Update all sleep functions
  *      Work on MathExt to avoid deleting memory
- *      Work on JPEG loader for invalid images in test image folder
+ *      Adjust Chroma Subsampling for JPEGs to have more consistent results with other loaders.
  *      Work on making the library portable
  */
 
@@ -706,15 +708,22 @@ void ssePaint()
     #pragma endregion
 
     #pragma region DRAW_IMG
+
     Sprite testDrawImg = Sprite();
     testDrawImg.loadImage("m4o2z38ykg801.png");
 
-    Graphics::drawSprite(testDrawImg.getImage(0), 127, 128, &img);
-    
+    testDrawImg.getImage(0)->saveBMP("ImgLoadTest.bmp");
+
+    Graphics::drawImage(testDrawImg.getImage(0), 127, 128, &img);
+
+    Graphics::setColor({255,255,255,255});
+    Graphics::drawSpritePart(testDrawImg.getImage(0), 127, 128, 0, 0, 128, 128, &img);
+
     #pragma endregion
 
     #pragma region DRAW_TRIANGLE
     
+    Graphics::setColor({255,0,0,224});
     Graphics::drawTriangle(250, 25, 280, 26, 270, 47, false, &img);
     img.drawPixel(250,25,verifyColor);
     img.drawPixel(280,26,verifyColor);
@@ -733,28 +742,24 @@ void ssePaint()
 
 void testGui2()
 {
+    Graphics::setDefaultFont(Graphics::MEDIUM_FONT);
     WndWindow guiWindow = WndWindow("GUI", 640, 480);
-    guiWindow.setActivateGui(true);
 
-    GuiRectangleButton startBut = GuiRectangleButton(320-32, 240-12, 64, 24);
-    GuiTextBlock startText = GuiTextBlock(0, 0, 64, 24);
-    startText.setText("START");
-    startBut.addChild(&startText);
+    GuiScrollBar endBut = GuiScrollBar(320-24, 24, 320, 480-24);
+    GuiScrollBar startBut = endBut;
+    startBut.setSteps(18-12);
 
-    GuiRectangleButton stopBut = GuiRectangleButton(320-32, 272-12, 64, 24);
-    GuiTextBlock stopText = GuiTextBlock(0, 0, 64, 24);
-    stopText.setText("STOP");
-    stopBut.addChild(&stopText);
+    GuiContainer c = GuiContainer();
+    c.addChild(&startBut);
 
-    guiWindow.getGuiManager()->addElement(&startBut);
-    guiWindow.getGuiManager()->addElement(&stopBut);
+    c.setVisible(false);
+    c.setActive(false);
 
-    while(guiWindow.getRunning())
-    {
-        guiWindow.repaint();
-        System::sleep(10);
-    }
+    c.setVisible(true);
+    c.setActive(true);
 
+    guiWindow.getGuiManager()->addElement(&c);
+    guiWindow.waitTillClose();
 }
 
 void testNewFFT()
@@ -809,7 +814,7 @@ void testJPEG()
     Sprite k3 = Sprite();
 
     time_t t1 = System::getCurrentTimeMicro();
-    k.loadImage("./TestImages/JPEG/61eY5p914hL._AC_SX466_.jpg");
+    k.loadImage("./TestImages/JPEG/09eb8a92164ef9210a3020e421a51acdfea1f149.jpg");
     time_t t2 = System::getCurrentTimeMicro();
 
     StringTools::println("TimeTaken: %u", t2-t1);
@@ -830,12 +835,92 @@ void testJPEG()
         k.getImage(0)->saveBMP("testJPEG.bmp");
 }
 
+void testArithmeticCoding()
+{
+    std::vector<unsigned char> data = {'W', 'I', 'K', 'I'};
+    std::vector<double> percentages;
+
+    double compValue = Compression::compressArithmetic(data, percentages);
+
+    std::vector<unsigned char> decompMessage = Compression::decompressArithmetic(compValue, 4, percentages);
+
+    for(int i=0; i<decompMessage.size(); i++)
+    {
+        StringTools::println("%c : %d", decompMessage[i], decompMessage[i]);
+    }
+}
+
+void testDeflateCompressionMethods()
+{
+    // //Set baseline data
+    // std::string baselineData = "ABAABACBCCBABC";
+
+    // //Compress with static huffman tree compression
+    // std::vector<unsigned char> baselineCompression = Compression::compressDeflate((unsigned char*)baselineData.c_str(), baselineData.size()+1, 1, 7, false);
+
+    // //Compress with dynamic huffman tree compression
+    // std::vector<unsigned char> dynamicCompression = Compression::compressDeflate((unsigned char*)baselineData.c_str(), baselineData.size()+1, 1, 7, true);
+
+    // //Test decompression
+    // std::vector<unsigned char> baselineVerifier = Compression::decompressDeflate(baselineCompression);
+
+    // std::vector<unsigned char> dynamicDecompressed = Compression::decompressDeflate(dynamicCompression);
+
+    // //Verify results
+    // std::string verifyString1 = (char*)baselineVerifier.data();
+    // std::string verifyString2 = (char*)dynamicDecompressed.data();
+    
+    // bool result1 = baselineData == verifyString1;
+    // bool result2 = baselineData == verifyString2;
+
+    // StringTools::println("Match1=%d, Match2=%d with sizes %llu, %llu", result1, result2, baselineCompression.size(), dynamicCompression.size());
+
+    Sprite k = Sprite();
+    k.loadImage("test1234.png");
+
+    time_t t1 = System::getCurrentTimeNano();
+
+    if(k.getSize()>0)
+        k.getImage(0)->savePNG("outputCustom.png", false, false, true);
+
+    StringTools::println("Time to save optimized PNG: %llu", System::getCurrentTimeNano()-t1);
+    // Sprite m = Sprite();
+    // m.loadImage("outputCustom.png");
+
+    // Image k = Image(8,8);
+    // k.setAllPixels({255,255,255,255});
+
+    // k.savePNG("outputCustom.png", true);
+
+    // Sprite m = Sprite();
+    // m.loadImage("outputCustom.png");
+
+    // if(m.getSize()>0)
+    //     m.getImage(0)->saveBMP("VERIFY.bmp");
+
+    // std::vector<Grouping> list = { {2, 0b100, {0} }, {2, 0b1000, {1} }, {1, 0b10000, {2} }, {1, 0b1, {3} }, {1, 0b1, {4} } };
+
+    // std::vector<Grouping> results = Algorithms::packageMergeAlgorithm(list, 5);
+
+    // StringTools::println("Use these items with IDs: ");
+    // for(Grouping& g : results)
+    // {
+    //     for(int& id : g.ids)
+    //     {
+    //         StringTools::print("%d, ", id);
+    //     }
+    // }
+    // StringTools::println("");
+}
+
 int main(int argc, char** argv)
 {
     StringTools::init();
-    Graphics::init();
+    //Graphics::init();
 
-    testJPEG();
+    testDeflateCompressionMethods();
+    //testArithmeticCoding();
+    //testJPEG();
     //testNewFFT();
     //testGui2();
     //ssePaint();

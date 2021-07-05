@@ -29,6 +29,8 @@ public:
 	void add(char* v, int size);
 	void add(unsigned char* v, int size);
 
+	void add(BinarySet& other);
+
 	void setValues(char* v, int size);
 	void setValues(unsigned char* v, int size);
 

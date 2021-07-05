@@ -280,9 +280,15 @@ WndWindow::WndWindow()
 	int threadManaged = windowType & 0b0100;
 	
 	if(threadManaged == TYPE_THREAD_MANAGED)
+	{
+		threadOwnership = true;
 		wndThread = new std::thread(&WndWindow::init, this, this->x, this->y, this->width, this->height, this->title, this->windowType);
+	}
 	else
+	{
+		threadOwnership = false;
 		init(this->x, this->y, this->width, this->height, this->title, this->windowType);
+	}
 
 	while (getFinishInit() != true)
 	{
@@ -320,9 +326,15 @@ WndWindow::WndWindow(std::wstring title, int width, int height, int x, int y, un
 	int threadManaged = windowType & 0b0100;
 	
 	if(threadManaged == TYPE_THREAD_MANAGED)
+	{
+		threadOwnership = true;
 		wndThread = new std::thread(&WndWindow::init, this, this->x, this->y, this->width, this->height, this->title, this->windowType);
+	}
 	else
+	{
+		threadOwnership = false;
 		init(this->x, this->y, this->width, this->height, this->title, this->windowType);
+	}
 
 	while (getFinishInit() != true)
 	{
@@ -359,9 +371,15 @@ WndWindow::WndWindow(std::string title, int width, int height, int x, int y, uns
 	int threadManaged = windowType & 0b0100;
 
 	if(threadManaged == TYPE_THREAD_MANAGED)
+	{
+		threadOwnership = true;
 		wndThread = new std::thread(&WndWindow::init, this, this->x, this->y, this->width, this->height, this->title, this->windowType);
+	}
 	else
+	{
+		threadOwnership = false;
 		init(this->x, this->y, this->width, this->height, this->title, this->windowType);
+	}
 
 	while (getFinishInit() != true)
 	{
@@ -390,6 +408,8 @@ void WndWindow::dispose()
 		std::wstring text = title;
 		text += L"_CLASS";
 
+		setValid(false);
+
 		if (wndThread != nullptr)
 		{
 			if (wndThread->joinable())
@@ -397,9 +417,7 @@ void WndWindow::dispose()
 			
 			wndThread = nullptr;
 		}
-
-		setValid(false);
-
+		
 		if (IsWindow(windowHandle))
 		{
 			CloseWindow(windowHandle);
@@ -597,46 +615,27 @@ void WndWindow::setFinishInit(bool value)
 
 void WndWindow::setResizing(bool value)
 {
-	myMutex.lock();
 	resizing = value;
-	myMutex.unlock();
 }
 
 void WndWindow::setResizeMe(bool value)
 {
-	myMutex.lock();
 	resizeMe = value;
-	myMutex.unlock();
 }
 
 bool WndWindow::getFinishInit()
 {
-	bool v;
-	myMutex.lock();
-	v = finishedInit;
-	myMutex.unlock();
-
-	return v;
+	return finishedInit;
 }
 
 bool WndWindow::getResizing()
 {
-	bool v;
-	myMutex.lock();
-	v = resizing;
-	myMutex.unlock();
-
-	return v;
+	return resizing;
 }
 
 bool WndWindow::getResizeMe()
 {
-	bool v;
-	myMutex.lock();
-	v = resizeMe;
-	myMutex.unlock();
-
-	return v;
+	return resizeMe;
 }
 
 bool WndWindow::getRepaint()
@@ -1148,7 +1147,6 @@ void WndWindow::threadRepaint()
 
 void WndWindow::update()
 {
-	//call guiUpdate do the resizing stuff
 	if(threadOwnership==false)
 	{
 		threadUpdate();
@@ -1157,7 +1155,7 @@ void WndWindow::update()
 
 void WndWindow::repaint()
 {
-	if(threadOwnership)
+	if(threadOwnership==false)
 	{
 		threadRepaint();
 	}

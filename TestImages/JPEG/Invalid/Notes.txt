@@ -1,3 +1,0 @@
-Both are Baseline DCT
-Both fail traversing tree
-Both fail early
