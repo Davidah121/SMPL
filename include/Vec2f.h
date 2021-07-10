@@ -54,11 +54,13 @@ public:
 	Vec2f operator*(float value);
 	Vec2f operator*(double value);
 	Vec2f operator*(long value);
+	Vec2f operator*(Vec2f other);
 
 	Vec2f operator/(int value);
 	Vec2f operator/(float value);
 	Vec2f operator/(double value);
 	Vec2f operator/(long value);
+	Vec2f operator/(Vec2f other);
 
 	//casting to generic vector
 	GeneralVector toGeneralVector();

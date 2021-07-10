@@ -191,6 +191,11 @@ Vec3f Vec3f::operator*(long value)
 	return Vec3f(x*value, y*value, z*value);
 }
 
+Vec3f Vec3f::operator*(Vec3f value)
+{
+	return Vec3f(x*value.x, y*value.y, z*value.z);
+}
+
 Vec3f Vec3f::operator/(int value)
 {
 	return Vec3f(x/value, y/value, z/value);
@@ -209,6 +214,11 @@ Vec3f Vec3f::operator/(double value)
 Vec3f Vec3f::operator/(long value)
 {
 	return Vec3f(x/value, y/value, z/value);
+}
+
+Vec3f Vec3f::operator/(Vec3f value)
+{
+	return Vec3f(x/value.x, y/value.y, z/value.z);
 }
 
 GeneralVector Vec3f::toGeneralVector()

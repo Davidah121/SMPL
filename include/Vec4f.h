@@ -42,6 +42,7 @@ public:
 	Vec4f operator*(double other);
 	Vec4f operator*(float other);
 	Vec4f operator*(int other);
+	Vec4f operator*(Vec4f other);
 
 	bool operator==(Vec4f other);
 	bool operator!=(Vec4f other);
@@ -68,6 +69,7 @@ public:
 	Vec4f operator/(double other);
 	Vec4f operator/(float other);
 	Vec4f operator/(int other);
+	Vec4f operator/(Vec4f other);
 
 	GeneralVector toGeneralVector();
 	operator GeneralVector() const;

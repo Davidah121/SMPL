@@ -47,7 +47,7 @@ void Image::saveGIF(std::wstring filename, int paletteSize, bool dither, bool sa
 	bool containsTransparency = saveAlpha;
 	time_t t1, t2;
 
-	t1 = System::getCurrentTimeMillis();
+	t1 = System::getCurrentTimeMicro();
 	if(containsTransparency)
 	{
 		if(tempImg.getPalette().getSize() > 0 && tempImg.getPalette().getSize() < paletteSize)
@@ -74,9 +74,9 @@ void Image::saveGIF(std::wstring filename, int paletteSize, bool dither, bool sa
 			tempPalette = ColorPalette::generateOptimalPalette(nPixels, width*height, paletteSize, ColorPalette::MEAN_CUT);
 		}
 	}
-	t2 = System::getCurrentTimeMillis();
+	// t2 = System::getCurrentTimeMicro();
 
-	StringTools::println("Time to get palette: %u", t2-t1);
+	// StringTools::println("Time to get palette: %u", t2-t1);
 
 	if(dither)
 	{
@@ -84,7 +84,7 @@ void Image::saveGIF(std::wstring filename, int paletteSize, bool dither, bool sa
 		Graphics::ditherImage(&tempImg, Graphics::FLOYD_DITHER);
 	}
 
-	t1 = System::getCurrentTimeMillis();
+	t1 = System::getCurrentTimeMicro();
 	if(containsTransparency)
 	{
 		for(int i=0; i<width*height; i++)
@@ -107,9 +107,9 @@ void Image::saveGIF(std::wstring filename, int paletteSize, bool dither, bool sa
 		}
 	}
 
-	t2 = System::getCurrentTimeMillis();
+	// t2 = System::getCurrentTimeMicro();
 
-	StringTools::println("Time to set palette: %u", t2-t1);
+	// StringTools::println("Time to set palette: %u", t2-t1);
 
 	//width
 	gifHeaderInfo += (char)((width) & 0xFF);
@@ -209,11 +209,11 @@ void Image::saveGIF(std::wstring filename, int paletteSize, bool dither, bool sa
 	gifHeaderInfo += (char)codeSize;
 	
 	//compress data
-	t1 = System::getCurrentTimeMillis();
+	t1 = System::getCurrentTimeMicro();
 	std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, &codeSize);
-	t2 = System::getCurrentTimeMillis();
+	// t2 = System::getCurrentTimeMicro();
 
-	StringTools::println("Time to compress: %u", t2-t1);
+	// StringTools::println("Time to compress: %u", t2-t1);
 
 	for(int i=0; i<compressedData.size(); i++)
 	{

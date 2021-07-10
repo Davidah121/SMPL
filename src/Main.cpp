@@ -876,12 +876,12 @@ void testDeflateCompressionMethods()
     // StringTools::println("Match1=%d, Match2=%d with sizes %llu, %llu", result1, result2, baselineCompression.size(), dynamicCompression.size());
 
     Sprite k = Sprite();
-    k.loadImage("test1234.png");
+    k.loadImage("background.bmp");
 
     time_t t1 = System::getCurrentTimeNano();
 
     if(k.getSize()>0)
-        k.getImage(0)->savePNG("outputCustom.png", false, false, true);
+        k.getImage(0)->savePNG("backgroundTest.png", false, false, true);
 
     StringTools::println("Time to save optimized PNG: %llu", System::getCurrentTimeNano()-t1);
     // Sprite m = Sprite();

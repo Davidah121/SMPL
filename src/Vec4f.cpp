@@ -127,6 +127,11 @@ Vec4f Vec4f::operator*(int other)
 	return Vec4f(x*other, y*other, z*other, w*other);
 }
 
+Vec4f Vec4f::operator*(Vec4f other)
+{
+	return Vec4f(x * other.x, y * other.y, z * other.z, w * other.w);
+}
+
 Vec4f Vec4f::operator-()
 {
 	return Vec4f(-x, -y, -z, -w);
@@ -251,6 +256,11 @@ Vec4f Vec4f::operator/(float other)
 Vec4f Vec4f::operator/(int other)
 {
 	return Vec4f(x / other, y / other, z / other, w / other);
+}
+
+Vec4f Vec4f::operator/(Vec4f other)
+{
+	return Vec4f(x / other.x, y / other.y, z / other.z, w / other.w);
 }
 
 GeneralVector Vec4f::toGeneralVector()

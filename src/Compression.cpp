@@ -182,7 +182,7 @@ std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int siz
 			std::string temp = "";
 			temp += data[i];
 
-			baseDictionary.add( temp, bSize );
+			baseDictionary.add( temp, bSize ); //fix
 			bSize++;
 		}
 
@@ -3081,12 +3081,7 @@ BinaryTree<HuffmanNode>** Compression::buildDynamicDeflateTree(BinarySet* data, 
 		hcStuff[i].length = data->getBits(*location, *location+3);
 		*location+=3;
 	}
-
-	for(int i=0; i<19; i++)
-	{
-		StringTools::println("%d, %d", i, hcStuff[i].length);
-	}
-
+	
 	Sort::insertionSort<HCStruct>(hcStuff, amountOfCodeLengthCodes, [](HCStruct a, HCStruct b) -> bool{
 		if(a.length!=b.length)
 			return a.length < b.length;

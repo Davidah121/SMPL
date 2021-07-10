@@ -56,11 +56,13 @@ public:
 	Vec3f operator*(float value);
 	Vec3f operator*(double value);
 	Vec3f operator*(long value);
+	Vec3f operator*(Vec3f other);
 
 	Vec3f operator/(int value);
 	Vec3f operator/(float value);
 	Vec3f operator/(double value);
 	Vec3f operator/(long value);
+	Vec3f operator/(Vec3f other);
 
 	GeneralVector toGeneralVector();
 	operator GeneralVector() const;

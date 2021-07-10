@@ -158,6 +158,11 @@ Vec2f Vec2f::operator*(long value)
 	return Vec2f(x*value, y*value);
 }
 
+Vec2f Vec2f::operator*(Vec2f value)
+{
+	return Vec2f(x * value.x, y * value.y);
+}
+
 Vec2f Vec2f::operator/(int value)
 {
 	return Vec2f(x/value, y/value);
@@ -176,6 +181,11 @@ Vec2f Vec2f::operator/(double value)
 Vec2f Vec2f::operator/(long value)
 {
 	return Vec2f(x / value, y / value);
+}
+
+Vec2f Vec2f::operator/(Vec2f value)
+{
+	return Vec2f(x / value.x, y / value.y);
 }
 
 GeneralVector Vec2f::toGeneralVector()

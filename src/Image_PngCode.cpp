@@ -107,6 +107,8 @@ void Image::savePNG(std::wstring filename, bool saveAlpha, bool greyscale, bool 
 
 		unsigned char scanlineFilter = 0;
 
+		if(!true)
+		{
 		for(int k=0; k<width; k++)
 		{
 			if(k!=0)
@@ -130,6 +132,7 @@ void Image::savePNG(std::wstring filename, bool saveAlpha, bool greyscale, bool 
 			//upwardFilter
 			if(i!=0)
 				scanlineFilter = 2;
+		}
 		}
 		
 		scanLines.push_back(scanlineFilter);
