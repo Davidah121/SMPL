@@ -1,10 +1,14 @@
 #pragma once
 #include "Class.h"
 
-class Object
+namespace glib
 {
-public:
-	virtual const Class* getClass();
-	static const Class myClass;
-};
 
+	class Object
+	{
+	public:
+		virtual const Class* getClass();
+		static const Class myClass;
+	};
+
+} //NAMESPACE glib END

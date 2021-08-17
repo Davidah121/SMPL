@@ -3,28 +3,32 @@
 #include "Sprite.h"
 #include "GeneralExceptions.h"
 
-class BitmapFont : public Font
+namespace glib
 {
-public:
-	BitmapFont(std::string filename);
-	~BitmapFont();
-
-	//Object and Class Stuff
-	const Class* getClass();
-	static const Class myClass;
-
-	struct InvalidFileFormat : public std::exception
+	
+	class BitmapFont : public Font
 	{
-		const char* what() noexcept { return "File format can not be read."; }
+	public:
+		BitmapFont(std::string filename);
+		~BitmapFont();
+
+		//Object and Class Stuff
+		const Class* getClass();
+		static const Class myClass;
+
+		struct InvalidFileFormat : public std::exception
+		{
+			const char* what() noexcept { return "File format can not be read."; }
+		};
+
+		
+		Image* getImage(int index);
+	private:
+		void loadFT(std::string filename);
+		void loadFNT(std::string filename);
+		Sprite img = Sprite();
+
+		std::vector<int> imgPage = std::vector<int>();
 	};
 
-	
-	Image* getImage(int index);
-private:
-	void loadFT(std::string filename);
-	void loadFNT(std::string filename);
-	Sprite img = Sprite();
-
-	std::vector<int> imgPage = std::vector<int>();
-};
-
+}  //NAMESPACE glib END

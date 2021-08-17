@@ -2,44 +2,48 @@
 #include "Matrix.h"
 #include "Vec2f.h"
 
-///A special Matrix that is a 2x2 matrix. Commonly used
-class Mat2f : public Matrix
+namespace glib
 {
-public:
-	Mat2f();
-	Mat2f(double v1, double v2, double v3, double v4);
-	Mat2f(const Mat2f& c);
-	void operator=(const Mat2f& o);
 
-	~Mat2f();
-	
-	//Object and Class Stuff
-	const Class* getClass();
-	static const Class myClass;
+	///A special Matrix that is a 2x2 matrix. Commonly used
+	class Mat2f : public Matrix
+	{
+	public:
+		Mat2f();
+		Mat2f(double v1, double v2, double v3, double v4);
+		Mat2f(const Mat2f& c);
+		void operator=(const Mat2f& o);
 
-	static Mat2f getIdentity();
+		~Mat2f();
+		
+		//Object and Class Stuff
+		const Class* getClass();
+		static const Class myClass;
 
-	double* operator[](int row);
+		static Mat2f getIdentity();
 
-	Mat2f operator*(double value);
-	Mat2f operator*(int value);
-	Mat2f operator*(float value);
+		double* operator[](int row);
 
-	void operator*=(double value);
-	void operator*=(int value);
-	void operator*=(float value);
+		Mat2f operator*(double value);
+		Mat2f operator*(int value);
+		Mat2f operator*(float value);
 
-	Mat2f operator+(Mat2f other);
-	void operator+=(Mat2f other);
+		void operator*=(double value);
+		void operator*=(int value);
+		void operator*=(float value);
 
-	Mat2f operator-(Mat2f other);
-	void operator-=(Mat2f other);
+		Mat2f operator+(Mat2f other);
+		void operator+=(Mat2f other);
 
-	Mat2f operator*(Mat2f other);
+		Mat2f operator-(Mat2f other);
+		void operator-=(Mat2f other);
 
-	Vec2f operator*(Vec2f other);
+		Mat2f operator*(Mat2f other);
 
-	bool operator==(Mat2f other);
-	bool operator!=(Mat2f other);
-};
+		Vec2f operator*(Vec2f other);
 
+		bool operator==(Mat2f other);
+		bool operator!=(Mat2f other);
+	};
+
+} //NAMESPACE glib END

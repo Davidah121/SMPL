@@ -3,31 +3,39 @@
 #include <string>
 #include "Object.h"
 
-class Sprite : public Object
+namespace glib
 {
-public:
-	Sprite();
-	~Sprite();
-	Sprite(const Sprite& o);
-	void operator=(const Sprite& o);
 
-	//Object and Class Stuff
-	const Class* getClass();
-	static const Class myClass;
+	class Sprite : public Object
+	{
+	public:
+		Sprite();
+		~Sprite();
+		Sprite(const Sprite& o);
+		void operator=(const Sprite& o);
 
-	Image* getImage(int index);
-	int getSize();
+		//Object and Class Stuff
+		const Class* getClass();
+		static const Class myClass;
 
-	void addImage(Image* p);
-	void removeImage(int index);
+		Image* getImage(int index);
+		int getDelayTime(int index);
+		int getSize();
 
-	void loadImage(std::string filename);
-	void loadImage(std::wstring filename);
+		void addImage(Image* p, int microSecondsDelay = 0);
+		void setDelayTime(int index, int microSecondsDelay);
+		void removeImage(int index);
 
-	void dispose();
+		void loadImage(std::string filename);
+		void loadImage(std::wstring filename);
 
-private:
-	bool ownership = false;
-	std::vector<Image*> images = std::vector<Image*>();
-};
+		void dispose();
 
+	private:
+		bool ownership = false;
+		bool loops = true;
+		std::vector<Image*> images = std::vector<Image*>();
+		std::vector<int> delayTimeForFrame = std::vector<int>();
+	};
+
+} //NAMESPACE glib END

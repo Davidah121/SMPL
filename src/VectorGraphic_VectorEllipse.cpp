@@ -5,138 +5,199 @@
 #include "BezierCurve.h"
 #include "ColorNameConverter.h"
 
-#pragma region VectorEllipse
-
-const Class VectorEllipse::myClass = Class("VectorEllipse", {&VectorShape::myClass});
-const Class* VectorEllipse::getClass()
+namespace glib
 {
-	return &VectorEllipse::myClass;
-}
+		
+	#pragma region VectorEllipse
 
-VectorEllipse::VectorEllipse() : VectorShape()
-{
-}
-
-VectorEllipse::~VectorEllipse()
-{
-}
-
-void VectorEllipse::draw(Image* buffer, int globalWidth, int globalHeight)
-{
-	double preX,preY,preRX,preRY;
-	preX = cx;
-	preY = cy;
-	preRX = rx;
-	preRY = ry;
-
-	applyTransform();
-
-	//first, calc bounding box
-	int x1 = cx-rx;
-	int x2 = cx+rx;
-	int y1 = cy-ry;
-	int y2 = cy+ry;
-
-	x1 = MathExt::clamp(x1, 0, globalWidth);
-	y1 = MathExt::clamp(y1, 0, globalHeight);
-	x2 = MathExt::clamp(x2, 0, globalWidth);
-	y2 = MathExt::clamp(y2, 0, globalHeight);
-
-	double radXSqr = MathExt::sqr(rx);
-	double radYSqr = MathExt::sqr(ry);
-	double strokeXRad = MathExt::sqr(rx-this->getStrokeWidth());
-	double strokeYRad = MathExt::sqr(ry-this->getStrokeWidth());
-
-	for(int j=y1; j<y2; j++)
+	const Class VectorEllipse::myClass = Class("VectorEllipse", {&VectorShape::myClass});
+	const Class* VectorEllipse::getClass()
 	{
-		for(int i=x1; i<x2; i++)
+		return &VectorEllipse::myClass;
+	}
+
+	VectorEllipse::VectorEllipse() : VectorShape()
+	{
+	}
+
+	VectorEllipse::~VectorEllipse()
+	{
+	}
+
+	void VectorEllipse::draw(Image* buffer, int globalWidth, int globalHeight)
+	{
+
+		if(Mat3f::getIdentity() != getTransform())
 		{
-			double ySide = MathExt::sqr(cy-j) / radYSqr;
-			double xSide = MathExt::sqr(cx-i) / radXSqr;
-
-			if(xSide+ySide == 1)
-			{
-
-				double yRadSide = MathExt::sqr(cy-j) / strokeXRad;
-				double xRadSide = MathExt::sqr(cx-i) / strokeYRad;
-
-				if(xRadSide+yRadSide != 1)
-				{
-					//stroke
-					buffer->drawPixel(i, j, getStrokeColor());
-				}
-				else
-				{
-					//fill
-					buffer->drawPixel(i, j, getFillColor());
-				}
-			}
+			//A interesting note for transforms is that it does not have to
+			//change into a path. An Ellipse could also be used in some situations
+			//and translation does not require a change. Skew, and in some situations,
+			//rotation and scale require a change
 			
+			//Note that this function draws a path version of the shape
+			drawTransformed(buffer, globalWidth, globalHeight);
+			return;
+		}
+
+		double preX,preY,preRX,preRY;
+		preX = cx;
+		preY = cy;
+		preRX = rx;
+		preRY = ry;
+
+		//first, calc bounding box
+		int x1 = cx-rx;
+		int x2 = cx+rx;
+		int y1 = cy-ry;
+		int y2 = cy+ry;
+
+		x1 = MathExt::clamp(x1, 0, globalWidth);
+		y1 = MathExt::clamp(y1, 0, globalHeight);
+		x2 = MathExt::clamp(x2, 0, globalWidth);
+		y2 = MathExt::clamp(y2, 0, globalHeight);
+
+		double radXSqr = MathExt::sqr(rx);
+		double radYSqr = MathExt::sqr(ry);
+		double strokeXRad = MathExt::sqr(rx-this->getStrokeWidth());
+		double strokeYRad = MathExt::sqr(ry-this->getStrokeWidth());
+
+		for(int j=y1; j<y2; j++)
+		{
+			for(int i=x1; i<x2; i++)
+			{
+				double ySide = MathExt::sqr(cy-j) / radYSqr;
+				double xSide = MathExt::sqr(cx-i) / radXSqr;
+
+				if(xSide+ySide <= 1)
+				{
+
+					// double yRadSide = MathExt::sqr(cy-j) / strokeXRad;
+					// double xRadSide = MathExt::sqr(cx-i) / strokeYRad;
+
+					// if(xRadSide+yRadSide != 1)
+					// {
+					// 	//stroke
+					// 	buffer->drawPixel(i, j, getStrokeColor());
+					// }
+					// else
+					// {
+						//fill
+						buffer->drawPixel(i, j, getFillColor());
+					// }
+				}
+				
+			}
+		}
+
+		cx = preX;
+		cy = preY;
+		rx = preRX;
+		ry = preRY;
+	}
+
+	void VectorEllipse::drawStroke(Image* buffer, int globalWidth, int globalHeight)
+	{
+		if(Mat3f::getIdentity() != getTransform())
+		{
+			//A interesting note for transforms is that it does not have to
+			//change into a path. An Ellipse could also be used in some situations
+			//and translation does not require a change. Skew, and in some situations,
+			//rotation and scale require a change
+			
+			//Note that this function draws a path version of the shape
+			drawStrokeTransformed(buffer, globalWidth, globalHeight);
+			return;
 		}
 	}
 
-	cx = preX;
-	cy = preY;
-	rx = preRX;
-	ry = preRY;
-}
+	void VectorEllipse::setX(double x)
+	{
+		this->cx = x;
+	}
 
-void VectorEllipse::drawStroke(Image* buffer, int globalWidth, int globalHeight)
-{
-	
-}
+	double VectorEllipse::getX()
+	{
+		return cx;
+	}
 
-void VectorEllipse::setX(double x)
-{
-	this->cx = x;
-}
+	void VectorEllipse::setY(double y)
+	{
+		this->cy = y;
+	}
 
-double VectorEllipse::getX()
-{
-	return cx;
-}
+	double VectorEllipse::getY()
+	{
+		return cy;
+	}
 
-void VectorEllipse::setY(double y)
-{
-	this->cy = y;
-}
+	void VectorEllipse::setXRadius(double r)
+	{
+		this->rx = r;
+	}
 
-double VectorEllipse::getY()
-{
-	return cy;
-}
+	double VectorEllipse::getXRadius()
+	{
+		return this->rx;
+	}
 
-void VectorEllipse::setXRadius(double r)
-{
-	this->rx = r;
-}
+	void VectorEllipse::setYRadius(double r)
+	{
+		this->ry = r;
+	}
 
-double VectorEllipse::getXRadius()
-{
-	return this->rx;
-}
+	double VectorEllipse::getYRadius()
+	{
+		return this->ry;
+	}
 
-void VectorEllipse::setYRadius(double r)
-{
-	this->ry = r;
-}
+	void VectorEllipse::applyTransform()
+	{
+		//Does nothing
+	}
 
-double VectorEllipse::getYRadius()
-{
-	return this->ry;
-}
+	void VectorEllipse::drawTransformed(Image* buffer, int globalWidth, int globalHeight)
+	{
+		//convert to path then transform
+		VectorPath p = VectorPath();
 
-void VectorEllipse::applyTransform()
-{
-	Vec3f pos = Vec3f(cx, cy, 1.0);
-	Vec3f r = Vec3f(rx, ry, 0.0);
-	
-	Vec3f newPos = getTransform() * pos;
-	Vec3f newR = getTransform() * r;
+		p.setFillColor(getFillColor());
+		p.setFillMethod(getFillMethod());
+		p.setStrokeWidth(getStrokeWidth());
+		p.setStrokeColor(getStrokeColor());
+		p.setTransform(getTransform());
+		p.setLineCap(getLineCap());
+		p.setLineJoin(getLineJoin());
 
-	cx = newPos.x;
-	cy = newPos.y;
+		//
+		p.addMoveTo(cx-rx, cy);
+		p.addArcTo(rx, ry, 0, false, false, cx+rx, cy);
+		p.addArcTo(rx, ry, 0, false, false, cx-rx, cy);
+		p.addClosePath();
 
-	//deal with radius later
-}
-#pragma endregion
+		p.draw(buffer, globalWidth, globalHeight);
+	}
+
+	void VectorEllipse::drawStrokeTransformed(Image* buffer, int globalWidth, int globalHeight)
+	{
+		//convert to path then transform
+		VectorPath p = VectorPath();
+
+		p.setFillColor(getFillColor());
+		p.setFillMethod(getFillMethod());
+		p.setStrokeWidth(getStrokeWidth());
+		p.setStrokeColor(getStrokeColor());
+		p.setTransform(getTransform());
+		p.setLineCap(getLineCap());
+		p.setLineJoin(getLineJoin());
+
+		//
+		p.addMoveTo(cx-rx, cy);
+		p.addArcTo(rx, ry, 0, false, false, cx+rx, cy);
+		p.addArcTo(rx, ry, 0, false, false, cx-rx, cy);
+		p.addClosePath();
+
+		p.drawStroke(buffer, globalWidth, globalHeight);
+	}
+	#pragma endregion
+
+} //NAMESPACE glib END

@@ -1,18 +1,23 @@
 #pragma once
 #include "Vec2f.h"
 
-class PolarCoordinate
+namespace glib
 {
-public:
-    PolarCoordinate();
-    PolarCoordinate(double length, double angle);
-    PolarCoordinate(Vec2f point);
-    ~PolarCoordinate();
 
-    double getLength();
-    double getAngle();
-    
-private:
-    double length;
-    double angle;
-};
+    class PolarCoordinate
+    {
+    public:
+        PolarCoordinate();
+        PolarCoordinate(double length, double angle);
+        PolarCoordinate(Vec2f point);
+        ~PolarCoordinate();
+
+        double getLength();
+        double getAngle();
+        
+    private:
+        double length;
+        double angle;
+    };
+
+} //NAMESPACE glib END

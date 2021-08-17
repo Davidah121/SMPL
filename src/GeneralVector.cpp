@@ -1,278 +1,283 @@
 #include "GeneralVector.h"
 
-const Class GeneralVector::myClass = Class("GeneralVector", {&Object::myClass});
-const Class* GeneralVector::getClass()
+namespace glib
 {
-	return &GeneralVector::myClass;
-}
 
-GeneralVector::GeneralVector(int size)
-{
-	this->size = size;
-	if (size > 0)
+	const Class GeneralVector::myClass = Class("GeneralVector", {&Object::myClass});
+	const Class* GeneralVector::getClass()
 	{
-		values = new double[size];
-		for(int i=0; i<size; i++)
+		return &GeneralVector::myClass;
+	}
+
+	GeneralVector::GeneralVector(int size)
+	{
+		this->size = size;
+		if (size > 0)
 		{
-			values[i] = 0;
+			values = new double[size];
+			for(int i=0; i<size; i++)
+			{
+				values[i] = 0;
+			}
 		}
 	}
-}
 
-GeneralVector::GeneralVector(const GeneralVector& o)
-{
-	copy(o);
-}
-
-void GeneralVector::operator=(const GeneralVector& o)
-{
-	copy(o);
-}
-
-void GeneralVector::copy(const GeneralVector& o)
-{
-	this->~GeneralVector();
-
-	this->size = o.size;
-	if(size>0)
+	GeneralVector::GeneralVector(const GeneralVector& o)
 	{
-		values = new double[size];
-		for (int i = 0; i < size; i++)
+		copy(o);
+	}
+
+	void GeneralVector::operator=(const GeneralVector& o)
+	{
+		copy(o);
+	}
+
+	void GeneralVector::copy(const GeneralVector& o)
+	{
+		this->~GeneralVector();
+
+		this->size = o.size;
+		if(size>0)
 		{
-			values[i] = o.values[i];
+			values = new double[size];
+			for (int i = 0; i < size; i++)
+			{
+				values[i] = o.values[i];
+			}
 		}
 	}
-}
 
-GeneralVector::~GeneralVector()
-{
-	if (size > 0)
+	GeneralVector::~GeneralVector()
 	{
-		delete[] values;
-		values = nullptr;
+		if (size > 0)
+		{
+			delete[] values;
+			values = nullptr;
+		}
 	}
-}
 
-double GeneralVector::getValue(int location)
-{
-	if (location >= 0 && location < size)
+	double GeneralVector::getValue(int location)
 	{
-		return values[location];
+		if (location >= 0 && location < size)
+		{
+			return values[location];
+		}
+		return 0.0;
 	}
-	return 0.0;
-}
 
-void GeneralVector::setValue(double value, int location)
-{
-	if (location >= 0 && location < size)
+	void GeneralVector::setValue(double value, int location)
 	{
-		values[location] = value;
+		if (location >= 0 && location < size)
+		{
+			values[location] = value;
+		}
 	}
-}
 
-GeneralVector GeneralVector::operator*(double value)
-{
-	GeneralVector k = GeneralVector(size);
-	for (int i = 0; i < size; i++)
-	{
-		k.values[i] = values[i]*value;
-	}
-	return k;
-}
-
-GeneralVector GeneralVector::operator*(float value)
-{
-	GeneralVector k = GeneralVector(size);
-	for (int i = 0; i < size; i++)
-	{
-		k.values[i] = values[i] * value;
-	}
-	return k;
-}
-
-GeneralVector GeneralVector::operator*(int value)
-{
-	GeneralVector k = GeneralVector(size);
-	for (int i = 0; i < size; i++)
-	{
-		k.values[i] = values[i] * value;
-	}
-	return k;
-}
-
-GeneralVector GeneralVector::operator/(double value)
-{
-	GeneralVector k = GeneralVector(size);
-	for (int i = 0; i < size; i++)
-	{
-		k.values[i] = values[i] / value;
-	}
-	return k;
-}
-
-GeneralVector GeneralVector::operator/(float value)
-{
-	GeneralVector k = GeneralVector(size);
-	for (int i = 0; i < size; i++)
-	{
-		k.values[i] = values[i] / value;
-	}
-	return k;
-}
-
-GeneralVector GeneralVector::operator/(int value)
-{
-	GeneralVector k = GeneralVector(size);
-	for (int i = 0; i < size; i++)
-	{
-		k.values[i] = values[i] / value;
-	}
-	return k;
-}
-
-GeneralVector GeneralVector::operator+(GeneralVector o)
-{
-	if (size == o.size)
+	GeneralVector GeneralVector::operator*(double value)
 	{
 		GeneralVector k = GeneralVector(size);
 		for (int i = 0; i < size; i++)
 		{
-			k.values[i] = values[i] + o.values[i];
+			k.values[i] = values[i]*value;
 		}
 		return k;
 	}
-	
-	return GeneralVector();
-}
 
-GeneralVector GeneralVector::operator-(GeneralVector o)
-{
-	if (size == o.size)
+	GeneralVector GeneralVector::operator*(float value)
 	{
 		GeneralVector k = GeneralVector(size);
 		for (int i = 0; i < size; i++)
 		{
-			k.values[i] = values[i] - o.values[i];
+			k.values[i] = values[i] * value;
 		}
 		return k;
 	}
 
-	return GeneralVector();
-}
-
-void GeneralVector::operator*=(double value)
-{
-	for (int i = 0; i < size; i++)
+	GeneralVector GeneralVector::operator*(int value)
 	{
-		values[i] *= value;
+		GeneralVector k = GeneralVector(size);
+		for (int i = 0; i < size; i++)
+		{
+			k.values[i] = values[i] * value;
+		}
+		return k;
 	}
-}
 
-void GeneralVector::operator*=(float value)
-{
-	for (int i = 0; i < size; i++)
+	GeneralVector GeneralVector::operator/(double value)
 	{
-		values[i] *= value;
+		GeneralVector k = GeneralVector(size);
+		for (int i = 0; i < size; i++)
+		{
+			k.values[i] = values[i] / value;
+		}
+		return k;
 	}
-}
 
-void GeneralVector::operator*=(int value)
-{
-	for (int i = 0; i < size; i++)
+	GeneralVector GeneralVector::operator/(float value)
 	{
-		values[i] *= value;
+		GeneralVector k = GeneralVector(size);
+		for (int i = 0; i < size; i++)
+		{
+			k.values[i] = values[i] / value;
+		}
+		return k;
 	}
-}
 
-void GeneralVector::operator/=(double value)
-{
-	for (int i = 0; i < size; i++)
+	GeneralVector GeneralVector::operator/(int value)
 	{
-		values[i] /= value;
+		GeneralVector k = GeneralVector(size);
+		for (int i = 0; i < size; i++)
+		{
+			k.values[i] = values[i] / value;
+		}
+		return k;
 	}
-}
 
-void GeneralVector::operator/=(float value)
-{
-	for (int i = 0; i < size; i++)
+	GeneralVector GeneralVector::operator+(GeneralVector o)
 	{
-		values[i] /= value;
+		if (size == o.size)
+		{
+			GeneralVector k = GeneralVector(size);
+			for (int i = 0; i < size; i++)
+			{
+				k.values[i] = values[i] + o.values[i];
+			}
+			return k;
+		}
+		
+		return GeneralVector();
 	}
-}
 
-void GeneralVector::operator/=(int value)
-{
-	for (int i = 0; i < size; i++)
+	GeneralVector GeneralVector::operator-(GeneralVector o)
 	{
-		values[i] /= value;
-	}
-}
+		if (size == o.size)
+		{
+			GeneralVector k = GeneralVector(size);
+			for (int i = 0; i < size; i++)
+			{
+				k.values[i] = values[i] - o.values[i];
+			}
+			return k;
+		}
 
-void GeneralVector::operator+=(GeneralVector o)
-{
-	if (size == o.size)
+		return GeneralVector();
+	}
+
+	void GeneralVector::operator*=(double value)
 	{
 		for (int i = 0; i < size; i++)
 		{
-			values[i] += o.values[i];
+			values[i] *= value;
 		}
 	}
-}
 
-void GeneralVector::operator-=(GeneralVector o)
-{
-	if (size == o.size)
+	void GeneralVector::operator*=(float value)
 	{
 		for (int i = 0; i < size; i++)
 		{
-			values[i] -= o.values[i];
+			values[i] *= value;
 		}
 	}
-}
 
-bool GeneralVector::operator!=(GeneralVector other)
-{
-	if(other.getSize() == size)
+	void GeneralVector::operator*=(int value)
 	{
-		bool notSame = false;
-		for(int i=0; i<size; i++)
+		for (int i = 0; i < size; i++)
 		{
-			if(other.values[i] != values[i])
+			values[i] *= value;
+		}
+	}
+
+	void GeneralVector::operator/=(double value)
+	{
+		for (int i = 0; i < size; i++)
+		{
+			values[i] /= value;
+		}
+	}
+
+	void GeneralVector::operator/=(float value)
+	{
+		for (int i = 0; i < size; i++)
+		{
+			values[i] /= value;
+		}
+	}
+
+	void GeneralVector::operator/=(int value)
+	{
+		for (int i = 0; i < size; i++)
+		{
+			values[i] /= value;
+		}
+	}
+
+	void GeneralVector::operator+=(GeneralVector o)
+	{
+		if (size == o.size)
+		{
+			for (int i = 0; i < size; i++)
 			{
-				notSame = true;
-				break;
+				values[i] += o.values[i];
 			}
 		}
-		return notSame;
 	}
-	return true;
-}
 
-bool GeneralVector::operator==(GeneralVector other)
-{
-	if(other.getSize() == size)
+	void GeneralVector::operator-=(GeneralVector o)
 	{
-		bool same = true;
-		for(int i=0; i<size; i++)
+		if (size == o.size)
 		{
-			if(other.values[i] != values[i])
+			for (int i = 0; i < size; i++)
 			{
-				same = false;
-				break;
+				values[i] -= o.values[i];
 			}
 		}
-		return same;
 	}
-	return false;
-}
+
+	bool GeneralVector::operator!=(GeneralVector other)
+	{
+		if(other.getSize() == size)
+		{
+			bool notSame = false;
+			for(int i=0; i<size; i++)
+			{
+				if(other.values[i] != values[i])
+				{
+					notSame = true;
+					break;
+				}
+			}
+			return notSame;
+		}
+		return true;
+	}
+
+	bool GeneralVector::operator==(GeneralVector other)
+	{
+		if(other.getSize() == size)
+		{
+			bool same = true;
+			for(int i=0; i<size; i++)
+			{
+				if(other.values[i] != values[i])
+				{
+					same = false;
+					break;
+				}
+			}
+			return same;
+		}
+		return false;
+	}
 
 
-double& GeneralVector::operator[](int index)
-{
-	return values[index];
-}
+	double& GeneralVector::operator[](int index)
+	{
+		return values[index];
+	}
 
-int GeneralVector::getSize()
-{
-	return size;
-}
+	int GeneralVector::getSize()
+	{
+		return size;
+	}
+
+} //NAMESPACE glib END

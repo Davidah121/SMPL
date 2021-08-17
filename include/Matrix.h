@@ -2,58 +2,62 @@
 #include "Object.h"
 #include "GeneralVector.h"
 
-class Matrix : public Object
+namespace glib
 {
-public:
-	Matrix();
-	Matrix(int rows, int cols);
-	Matrix(const Matrix& c);
-	void operator=(const Matrix& o);
 
-	~Matrix();
+	class Matrix : public Object
+	{
+	public:
+		Matrix();
+		Matrix(int rows, int cols);
+		Matrix(const Matrix& c);
+		void operator=(const Matrix& o);
 
-	void copy(const Matrix& o);
+		~Matrix();
 
-	//Object and Class Stuff
-	const Class* getClass();
-	static const Class myClass;
+		void copy(const Matrix& o);
 
-	double* operator[](int row);
+		//Object and Class Stuff
+		const Class* getClass();
+		static const Class myClass;
 
-	Matrix operator*(double value);
-	Matrix operator*(int value);
-	Matrix operator*(float value);
+		double* operator[](int row);
 
-	Matrix operator*(Matrix other);
-	GeneralVector operator*(GeneralVector other);
+		Matrix operator*(double value);
+		Matrix operator*(int value);
+		Matrix operator*(float value);
 
-	void operator*=(double value);
-	void operator*=(int value);
-	void operator*=(float value);
+		Matrix operator*(Matrix other);
+		GeneralVector operator*(GeneralVector other);
 
-	Matrix operator+(Matrix other);
-	void operator+=(Matrix other);
+		void operator*=(double value);
+		void operator*=(int value);
+		void operator*=(float value);
 
-	Matrix operator-(Matrix other);
-	void operator-=(Matrix other);
+		Matrix operator+(Matrix other);
+		void operator+=(Matrix other);
 
-	bool operator==(Matrix other);
-	bool operator!=(Matrix other);
+		Matrix operator-(Matrix other);
+		void operator-=(Matrix other);
 
-	double** getData();
+		bool operator==(Matrix other);
+		bool operator!=(Matrix other);
 
-	int getRows();
-	int getCols();
-	bool getValid();
+		double** getData();
 
-	double get(int col, int row);
+		int getRows();
+		int getCols();
+		bool getValid();
 
-protected:
-	double** data = nullptr;
-	int rows;
-	int columns;
+		double get(int col, int row);
 
-	bool valid = true;
+	protected:
+		double** data = nullptr;
+		int rows;
+		int columns;
 
-};
+		bool valid = true;
 
+	};
+
+} //NAMESPACE glib END

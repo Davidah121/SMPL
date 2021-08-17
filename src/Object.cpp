@@ -1,8 +1,12 @@
 #include "Object.h"
 
-const Class Object::myClass = Class("Object", {});
-
-const Class* Object::getClass()
+namespace glib
 {
-	return &Object::myClass;
-}
+
+	const Class Object::myClass = Class("Object", {});
+	const Class* Object::getClass()
+	{
+		return &Object::myClass;
+	}
+
+} //NAMESPACE glib END

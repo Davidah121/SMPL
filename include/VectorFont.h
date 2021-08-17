@@ -3,24 +3,29 @@
 #include "Font.h"
 #include "VectorSprite.h"
 
-class VectorFont : public Font
+namespace glib
 {
-public:
-    VectorFont();
-    ~VectorFont();
 
-    //Object and Class Stuff
-    const Class* getClass();
-    static const Class myClass;
+    class VectorFont : public Font
+    {
+    public:
+        VectorFont();
+        ~VectorFont();
 
-    bool load(std::wstring filename);
+        //Object and Class Stuff
+        const Class* getClass();
+        static const Class myClass;
 
-    VectorGraphic* getGraphic(int index);
-    VectorSprite* getVectorSprite();
+        bool load(std::wstring filename);
 
-private:
-    //FontCharInfo should have a direct 1-to-1 mapping to fontSprite to avoid
-    //saving the sprite index information and stuff.
-    VectorSprite fontSprite = VectorSprite();
-    int baseHorizontalAdvance = 0;
-};
+        VectorGraphic* getGraphic(int index);
+        VectorSprite* getVectorSprite();
+
+    private:
+        //FontCharInfo should have a direct 1-to-1 mapping to fontSprite to avoid
+        //saving the sprite index information and stuff.
+        VectorSprite fontSprite = VectorSprite();
+        int baseHorizontalAdvance = 0;
+    };
+
+} //NAMESPACE glib END
