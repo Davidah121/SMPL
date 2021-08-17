@@ -1,213 +1,223 @@
 #pragma once
-#include <Windows.h>
-#include <thread>
-#include <vector>
-#include <mutex>
 #include "Image.h"
 #include "GuiManager.h"
 
-class WndWindow : public Object
+#ifndef WIN32_LEAN_AND_MEAN
+	#define WIN32_LEAN_AND_MEAN
+#endif
+#include <Windows.h>
+
+#include <thread>
+#include <vector>
+#include <mutex>
+
+namespace glib
 {
-public:
-	static const unsigned char MOUSE_LEFT = 0x00;
-	static const unsigned char MOUSE_MIDDLE = 0x01;
-	static const unsigned char MOUSE_RIGHT = 0x02;
 
-	static const unsigned char NORMAL_WINDOW = 0b0000;
-	static const unsigned char BORDERLESS_WINDOW = 0b0001;
+	class WndWindow : public Object
+	{
+	public:
+		static const unsigned char MOUSE_LEFT = 0x00;
+		static const unsigned char MOUSE_MIDDLE = 0x01;
+		static const unsigned char MOUSE_RIGHT = 0x02;
 
-	static const unsigned char STATE_NORMAL = 0x00;
-	static const unsigned char STATE_MAXIMIZED = 0x01;
-	static const unsigned char STATE_MINIMIZED = 0x02;
-	
-	static const unsigned char TYPE_FOCUSABLE = 0b0000;
-	static const unsigned char TYPE_NONFOCUSABLE = 0b0010;
+		static const unsigned char NORMAL_WINDOW = 0b0000;
+		static const unsigned char BORDERLESS_WINDOW = 0b0001;
 
-	static const unsigned char TYPE_THREAD_MANAGED = 0b0000;
-	static const unsigned char TYPE_USER_MANAGED = 0b0100;
-	
+		static const unsigned char STATE_NORMAL = 0x00;
+		static const unsigned char STATE_MAXIMIZED = 0x01;
+		static const unsigned char STATE_MINIMIZED = 0x02;
+		
+		static const unsigned char TYPE_FOCUSABLE = 0b0000;
+		static const unsigned char TYPE_NONFOCUSABLE = 0b0010;
 
-	WndWindow();
-	WndWindow(std::wstring title, int width = 320, int height = 240, int x = -1, int y = -1, unsigned char windowType = 0);
-	WndWindow(std::string title, int width = 320, int height = 240, int x = -1, int y = -1, unsigned char windowType = 0);
-	~WndWindow();
+		static const unsigned char TYPE_THREAD_MANAGED = 0b0000;
+		static const unsigned char TYPE_USER_MANAGED = 0b0100;
+		
 
-	//Object and Class Stuff
-	const Class* getClass();
-	static const Class myClass;
+		WndWindow();
+		WndWindow(std::wstring title, int width = 320, int height = 240, int x = -1, int y = -1, unsigned char windowType = 0);
+		WndWindow(std::string title, int width = 320, int height = 240, int x = -1, int y = -1, unsigned char windowType = 0);
+		~WndWindow();
 
-	void setVisible(bool value);
+		//Object and Class Stuff
+		const Class* getClass();
+		static const Class myClass;
 
-	void setX(int x);
-	void setY(int y);
-	void setPosition(int x, int y);
+		void setVisible(bool value);
 
-	void setWidth(int width);
-	void setHeight(int height);
-	void setSize(int width, int height);
+		void setX(int x);
+		void setY(int y);
+		void setPosition(int x, int y);
 
-	int getMouseX();
-	int getMouseY();
+		void setWidth(int width);
+		void setHeight(int height);
+		void setSize(int width, int height);
 
-	int getWidth();
-	int getHeight();
+		int getMouseX();
+		int getMouseY();
 
-	std::wstring getTitle();
+		int getWidth();
+		int getHeight();
 
-	int getImageSize();
+		std::wstring getTitle();
 
-	bool getValid();
-	bool getRunning();
+		int getImageSize();
 
-	void close();
+		bool getValid();
+		bool getRunning();
 
-	HWND getWindowHandle();
+		void close();
 
-	void setPaintFunction(void(*function)(void));
-	void setKeyUpFunction(void(*function)(WPARAM, LPARAM));
-	void setKeyDownFunction(void(*function)(WPARAM, LPARAM));
+		HWND getWindowHandle();
 
-	void setMouseButtonDownFunction(void(*function)(int));
-	void setMouseButtonUpFunction(void(*function)(int));
-	void setMouseHWheelFunction(void(*function)(int));
-	void setMouseWheelFunction(void(*function)(int));
-	void setMouseButtonMovedFunction(void(*function)(void));
+		void setPaintFunction(void(*function)(void));
+		void setKeyUpFunction(void(*function)(WPARAM, LPARAM));
+		void setKeyDownFunction(void(*function)(WPARAM, LPARAM));
 
-	void setClosingFunction(void(*function)(void));
+		void setMouseButtonDownFunction(void(*function)(int));
+		void setMouseButtonUpFunction(void(*function)(int));
+		void setMouseHWheelFunction(void(*function)(int));
+		void setMouseWheelFunction(void(*function)(int));
+		void setMouseButtonMovedFunction(void(*function)(void));
 
-	GuiManager* getGuiManager();
-	void setActivateGui(bool v);
-	bool getActivateGui();
-	
-	void drawImage(Image* g);
+		void setClosingFunction(void(*function)(void));
 
-	void guiUpdate();
-	void update();
-	void repaint();
+		GuiManager* getGuiManager();
+		void setActivateGui(bool v);
+		bool getActivateGui();
+		
+		void drawImage(Image* g);
 
-	void setThreadAutoRepaint(bool v);
-	void setThreadUpdateTime(unsigned int millis, unsigned int micros = 0);
+		void guiUpdate();
+		void update();
+		void repaint();
 
-	void waitTillClose();
+		void setThreadAutoRepaint(bool v);
+		void setThreadUpdateTime(unsigned int millis, unsigned int micros = 0);
 
-	//adjustment stuff
-	void setFocus(bool v);
-	bool getFocus();
+		void waitTillClose();
 
-	bool getCanFocus();
+		//adjustment stuff
+		void setFocus(bool v);
+		bool getFocus();
 
-	void setResizable(bool v);
-	bool getResizable();
+		bool getCanFocus();
 
-	void setMovable(bool v);
-	bool getMovable();
+		void setResizable(bool v);
+		bool getResizable();
 
-	static void setMouseVWheelValuePointer(int* v);
-	static void setMouseHWheelValuePointer(int* v);
+		void setMovable(bool v);
+		bool getMovable();
 
-private:
-	
-	static std::vector<WndWindow*> windowList;
-	static int screenWidth;
-	static int screenHeight;
-	static WndWindow* getWindowByHandle(HWND value);
-	static void removeWindowFromList(WndWindow* value);
-	static LRESULT _stdcall wndProc(HWND hwnd, UINT uint, WPARAM wparam, LPARAM lparam);
+		static void setMouseVWheelValuePointer(int* v);
+		static void setMouseHWheelValuePointer(int* v);
 
-	void init(int x, int y, int width, int height, std::wstring title, unsigned char windowType);
-	
-	void setAllFunctionsToNull();
-	
-	void initBitmap();
+	private:
+		
+		static std::vector<WndWindow*> windowList;
+		static int screenWidth;
+		static int screenHeight;
+		static WndWindow* getWindowByHandle(HWND value);
+		static void removeWindowFromList(WndWindow* value);
+		static LRESULT _stdcall wndProc(HWND hwnd, UINT uint, WPARAM wparam, LPARAM lparam);
 
-	void setRunning(bool value);
-	void setValid(bool value);
-	void setFinishInit(bool value);
-	void setResizing(bool value);
-	void setResizeMe(bool value);
+		void init(int x, int y, int width, int height, std::wstring title, unsigned char windowType);
+		
+		void setAllFunctionsToNull();
+		
+		void initBitmap();
 
-	bool getFinishInit();
+		void setRunning(bool value);
+		void setValid(bool value);
+		void setFinishInit(bool value);
+		void setResizing(bool value);
+		void setResizeMe(bool value);
 
-	bool getResizing();
-	bool getResizeMe();
-	bool getRepaint();
+		bool getFinishInit();
 
-	void run();
-	void dispose();
+		bool getResizing();
+		bool getResizeMe();
+		bool getRepaint();
 
-	bool shouldFocus = false;
-	void threadSetFocus();
-	void setShouldFocus(bool v);
-	bool getShouldFocus();
+		void run();
+		void dispose();
 
-	static int* mouseVWheelPointer;
-	static int* mouseHWheelPointer;
-	
-	
-	int x = 0;
-	int y = 0;
-	int width = 320;
-	int height = 240;
+		bool shouldFocus = false;
+		void threadSetFocus();
+		void setShouldFocus(bool v);
+		bool getShouldFocus();
 
-	unsigned char windowState = STATE_NORMAL;
-	unsigned char windowType = NORMAL_WINDOW;
+		static int* mouseVWheelPointer;
+		static int* mouseHWheelPointer;
+		
+		
+		int x = 0;
+		int y = 0;
+		int width = 320;
+		int height = 240;
 
-	int preX = 0;
-	int preY = 0;
-	
-	std::wstring title = L"";
+		unsigned char windowState = STATE_NORMAL;
+		unsigned char windowType = NORMAL_WINDOW;
 
-	unsigned char* wndPixels = nullptr;
+		int preX = 0;
+		int preY = 0;
+		
+		std::wstring title = L"";
 
-	int wndPixelsSize;
-	int scanLinePadding;
+		unsigned char* wndPixels = nullptr;
 
-	std::thread* wndThread = nullptr;
-	std::mutex myMutex = std::mutex();
-	bool threadOwnership = true;
-	bool shouldRepaint = false;
-	bool autoRepaint = true;
-	unsigned int sleepTimeMillis = 16;
-	unsigned int sleepTimeMicros = 0;
+		int wndPixelsSize;
+		int scanLinePadding;
 
-	void threadUpdate();
-	void threadGuiUpdate();
-	void threadRender();
-	void threadRepaint();
+		std::thread* wndThread = nullptr;
+		std::mutex myMutex = std::mutex();
+		bool threadOwnership = true;
+		bool shouldRepaint = false;
+		bool autoRepaint = true;
+		unsigned int sleepTimeMillis = 16;
+		unsigned int sleepTimeMicros = 0;
 
-	HWND windowHandle;
-	WNDCLASSEXW wndClass;
-	HINSTANCE hins;
-	HBITMAP bitmap;
-	BITMAPINFO bitInfo;
-	HDC myHDC;
+		void threadUpdate();
+		void threadGuiUpdate();
+		void threadRender();
+		void threadRepaint();
 
-	GuiManager* gui = nullptr;
-	bool activateGui = true;
+		HWND windowHandle;
+		WNDCLASSEXW wndClass;
+		HINSTANCE hins;
+		HBITMAP bitmap;
+		BITMAPINFO bitInfo;
+		HDC myHDC;
 
-	bool valid = true;
-	bool running = true;
+		GuiManager* gui = nullptr;
+		bool activateGui = true;
 
-	bool resizing = false;
-	bool resizeMe = false;
+		bool valid = true;
+		bool running = true;
 
-	bool finishedInit = false;
+		bool resizing = false;
+		bool resizeMe = false;
 
-	bool focused = false;
-	bool canFocus = true;
-	bool canResize = true;
-	bool canMove = true;
+		bool finishedInit = false;
 
-	void (*paintFunction)(void);
-	void (*keyUpFunction)(WPARAM, LPARAM);
-	void (*keyDownFunction)(WPARAM, LPARAM);
+		bool focused = false;
+		bool canFocus = true;
+		bool canResize = true;
+		bool canMove = true;
 
-	void (*mouseDoubleClickFunction)(int);
-	void (*mouseButtonDownFunction)(int);
-	void (*mouseButtonUpFunction)(int);
-	void (*mouseWheelFunction)(int);
-	void (*mouseHWheelFunction)(int);
-	void (*mouseMovedFunction)(void);
+		void (*paintFunction)(void);
+		void (*keyUpFunction)(WPARAM, LPARAM);
+		void (*keyDownFunction)(WPARAM, LPARAM);
 
-	void (*closingFunction)(void);
-};
+		void (*mouseDoubleClickFunction)(int);
+		void (*mouseButtonDownFunction)(int);
+		void (*mouseButtonUpFunction)(int);
+		void (*mouseWheelFunction)(int);
+		void (*mouseHWheelFunction)(int);
+		void (*mouseMovedFunction)(void);
+
+		void (*closingFunction)(void);
+	};
+
+} //NAMESPACE glib END

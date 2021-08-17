@@ -6,106 +6,111 @@
 #include "SimpleXml.h"
 #include "ColorNameConverter.h"
 
-#pragma region VectorShape
-
-const Class VectorShape::myClass = Class("VectorShape", {&Object::myClass});
-const Class* VectorShape::getClass()
+namespace glib
 {
-	return &VectorShape::myClass;
-}
+		
+	#pragma region VectorShape
 
-VectorShape::VectorShape()
-{
-	transform = Mat3f::getIdentity();
-}
+	const Class VectorShape::myClass = Class("VectorShape", {&Object::myClass});
+	const Class* VectorShape::getClass()
+	{
+		return &VectorShape::myClass;
+	}
 
-VectorShape::~VectorShape()
-{
-	
-}
+	VectorShape::VectorShape()
+	{
+		transform = Mat3f::getIdentity();
+	}
 
-void VectorShape::draw(Image* buffer, int globalWidth, int globalHeight)
-{
-	StringTools::println("Basic one");
-}
+	VectorShape::~VectorShape()
+	{
+		
+	}
 
-void VectorShape::drawStroke(Image* buffer, int globalWidth, int globalHeight)
-{
-	StringTools::println("Basic one");
-}
+	void VectorShape::draw(Image* buffer, int globalWidth, int globalHeight)
+	{
+		StringTools::println("Basic one");
+	}
 
-void VectorShape::setFillMethod(bool value)
-{
-	fillMethod = value;
-}
+	void VectorShape::drawStroke(Image* buffer, int globalWidth, int globalHeight)
+	{
+		StringTools::println("Basic one");
+	}
 
-bool VectorShape::getFillMethod()
-{
-	return fillMethod;
-}
+	void VectorShape::setFillMethod(bool value)
+	{
+		fillMethod = value;
+	}
 
-void VectorShape::setFillColor(Color k)
-{
-	fill = k;
-}
+	bool VectorShape::getFillMethod()
+	{
+		return fillMethod;
+	}
 
-Color VectorShape::getFillColor()
-{
-	return fill;
-}
+	void VectorShape::setFillColor(Color k)
+	{
+		fill = k;
+	}
 
-void VectorShape::setStrokeColor(Color k)
-{
-	strokeColor = k;
-}
+	Color VectorShape::getFillColor()
+	{
+		return fill;
+	}
 
-Color VectorShape::getStrokeColor()
-{
-	return strokeColor;
-}
+	void VectorShape::setStrokeColor(Color k)
+	{
+		strokeColor = k;
+	}
 
-void VectorShape::setStrokeWidth(double k)
-{
-	strokeWidth = k;
-}
+	Color VectorShape::getStrokeColor()
+	{
+		return strokeColor;
+	}
 
-double VectorShape::getStrokeWidth()
-{
-	return strokeWidth;
-}
+	void VectorShape::setStrokeWidth(double k)
+	{
+		strokeWidth = k;
+	}
 
-void VectorShape::setLineCap(char c)
-{
-	lineCap = c;
-}
+	double VectorShape::getStrokeWidth()
+	{
+		return strokeWidth;
+	}
 
-char VectorShape::getLineCap()
-{
-	return lineCap;
-}
+	void VectorShape::setLineCap(char c)
+	{
+		lineCap = c;
+	}
 
-void VectorShape::setLineJoin(char c)
-{
-	lineJoin = c;
-}
+	char VectorShape::getLineCap()
+	{
+		return lineCap;
+	}
 
-char VectorShape::getLineJoin()
-{
-	return lineJoin;
-}
+	void VectorShape::setLineJoin(char c)
+	{
+		lineJoin = c;
+	}
 
-void VectorShape::setTransform(Mat3f m)
-{
-	transform = m;
-}
+	char VectorShape::getLineJoin()
+	{
+		return lineJoin;
+	}
 
-Mat3f VectorShape::getTransform()
-{
-	return transform;
-}
+	void VectorShape::setTransform(Mat3f m)
+	{
+		transform = m;
+	}
 
-void VectorShape::applyTransform()
-{
-}
+	Mat3f VectorShape::getTransform()
+	{
+		return transform;
+	}
 
-#pragma endregion
+	void VectorShape::applyTransform()
+	{
+	}
+
+	#pragma endregion
+
+} //NAMESPACE glib END

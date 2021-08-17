@@ -32,6 +32,8 @@
 
 #include "Algorithms.h"
 
+using namespace glib;
+
 /**
  * Purpose:
  *      Provide a port to other systems
@@ -81,131 +83,99 @@ Image* imgPointer;
 Image* img;
 std::string globalString = "";
 
-void function1()
-{
-    #ifdef WINDOWS
-        std::cout << "I AM A WINDOWS" << std::endl;
-    #elif LINUX
-        std::cout << "I AM A LINUX" << std::endl;
-    #elif MAC
-        std::cout << "I AM A MAC" << std::endl;
-    #endif
-
-}
-
 VectorGraphic shape = VectorGraphic();
 
-void svgTest()
+void testAntiAliasingSVG()
 {
-    if(windowPointer!=nullptr)
-    {
-        Graphics::setColor({255,255,255,255});
-        img->clearImage();
+    // VectorRectangle rect = VectorRectangle();
+    // rect.setX(64);
+    // rect.setY(64);
+    // rect.setWidth(64);
+    // rect.setHeight(64);
+    // rect.setFillColor({0,0,0,255});
+    
+    // rect.setRX(8);
+    // rect.setRY(8);
+    // shape.addShape(&rect);
 
-        shape.draw(img);
+    // VectorEllipse ellipse = VectorEllipse();
+    // ellipse.setX(32);
+    // ellipse.setY(32);
+    // ellipse.setXRadius(8);
+    // ellipse.setYRadius(16);
+    // ellipse.setFillColor({0,0,255,64});
+    // shape.addShape(&ellipse);
 
-        Graphics::setColor({0,0,0,255});
 
-        windowPointer->drawImage(img);
-    }
+    VectorCircle circle = VectorCircle();
+    circle.setX(64);
+    circle.setY(64);
+    circle.setRadius(16);
+    circle.setFillColor({255,255,255,255});
+    shape.addShape(&circle);
+
+    // VectorPath p = VectorPath();
+    // p.addMoveTo(32,32);
+    // p.addArcToRel(16,16,0,0,0,16,-16);
+    // p.addClosePath();
+
+    // p.addMoveTo(96,32);
+    // p.addArcToRel(16,16,0,0,1,16,-16);
+    // p.addClosePath();
+
+    // p.addMoveTo(32,96);
+    // p.addArcToRel(16,16,0,1,0,16,-16);
+    // p.addClosePath();
+
+    // p.addMoveTo(96,96);
+    // p.addArcToRel(16,16,0,1,1,16,-16);
+    // p.addClosePath();
+
+    // shape.addShape(&p);
+
+
+    Image drawImg = Image(128, 128);
+    drawImg.setAllPixels({0,0,0,255});
+    VectorGraphic::setAALevel(2);
+    shape.draw(&drawImg);
+
+    // Graphics::setColor({64,0,0,255});
+    // drawImg.drawCircle(32,32,16,false);
+
+    drawImg.savePNG("testAntiAliasing.png");
 }
 
 void drawLoadedSvg(std::string file)
 {
-    StringTools::init();
     shape.load(file);
-    shape.setTransform(MathExt::rotation2D( MathExt::toRad(90.0), 51.0/2, 48.0/2) );
-    Mat3f viewBoxMat = shape.getTransform();
+    Mat3f viewBoxMat = shape.getViewBox();
 
     for(int i=0; i<3; i++)
     {
         for(int i2=0; i2<3; i2++)
         {
-            StringTools::print("%d, ",viewBoxMat[i][i2]);
+            StringTools::print("%.3f, ",viewBoxMat[i][i2]);
         }
         StringTools::println("");
     }
 
-    windowPointer = new WndWindow(L"Displaying Path Arcs", shape.getWidth(), shape.getHeight());
+    Image nImg = Image(shape.getWidth(), shape.getHeight());
+    img = &nImg;
+
+    shape.draw(&nImg);
+
+    nImg.savePNG("testSVGDraw.png");
+
+    // windowPointer = new WndWindow(L"Displaying Path Arcs", shape.getWidth(), shape.getHeight());
+    // windowPointer->setActivateGui(false);
+    // windowPointer->setPaintFunction(svgTest);
+    // windowPointer->setThreadAutoRepaint(false);
+
+    // windowPointer->repaint();
+    // windowPointer->waitTillClose();
     
-    windowPointer->setPaintFunction(svgTest);
-
-    windowPointer->repaint();
-
-    while(windowPointer->getRunning())
-    {
-    }
-    
-    if(windowPointer!=nullptr)
-        delete windowPointer;
-    
-
-    if(img!=nullptr)
-        delete img;
-}
-
-void testFontSVG(std::wstring filename)
-{
-    VectorFont ft = VectorFont();
-    ft.load(filename);
-
-    /*
-    for(FontCharInfo fci : ft.getListOfFontCharInfo())
-    {
-        StringTools::out << fci.x << ", " << fci.y << ", ";
-        StringTools::out << fci.width << ", " << fci.height << ", ";
-        StringTools::out << fci.horizAdv << ", " << fci.unicodeValue << StringTools::lineBreak;
-    }
-    */
-    
-    
-    VectorGraphic* g = ft.getVectorSprite()->getGraphic(ft.getCharIndex('A'));
-    
-    shape = *g;
-
-    img = new Image(800, 800);
-    shape.setTransform( MathExt::translation2D(300, 200) * MathExt::scale2D(0.25, 0.25) );
-
-    windowPointer = new WndWindow("two", img->getWidth(), img->getHeight());
-    windowPointer->setPaintFunction(svgTest);
-    windowPointer->repaint();
-
-    while(windowPointer->getRunning())
-    {
-    }
-    
-}
-
-void paintFont()
-{
-    if(windowPointer!=nullptr)
-    {
-        Graphics::setColor({255,255,255,255});
-        img->clearImage();
-        Graphics::setColor({0,0,0,255});
-        img->drawText(globalString, 0, img->getHeight()/2);
-
-        windowPointer->drawImage(img);
-    }
-}
-
-void testFontGraphics()
-{
-    BitmapFont font = BitmapFont("./testFiles/BitmapFontFiles/bmpFont.ft");
-    Graphics::setFont(&font);
-    
-    img = new Image(640, 480);
-
-    windowPointer = new WndWindow("font testing", img->getWidth(), img->getHeight());
-    windowPointer->setPaintFunction(paintFont);
-    windowPointer->repaint();
-
-    while(windowPointer->getRunning())
-    {
-        windowPointer->repaint();
-        StringTools::println("Enter String");
-        globalString = StringTools::getString();
-    }
+    // if(windowPointer!=nullptr)
+    //     delete windowPointer;
 }
 
 void testNeuralNetwork()
@@ -336,153 +306,7 @@ void testNeuralNetwork()
 
 }
 
-void testColorPalette()
-{
-    StringTools::print("Enter image name: ");
-    std::string filename = StringTools::getString();
-    //C:\Users\Alan\source\repos\ImageLibrary\TestImages\PNG\Varying bit sizes and types\basn3p08.png
-    int amountOfImages = 0;
-    Image** imgArray = Image::loadImage(filename, &amountOfImages);
-
-    Image* img = nullptr;
-    if(amountOfImages>0)
-    {
-        img = imgArray[0];
-
-        StringTools::print("Enter number of colors: ");
-        std::string colorNumber = StringTools::getString();
-
-        int num = StringTools::toInt(colorNumber);
-
-        ColorPalette temp;
-
-        StringTools::print("Quantization method? 1=meanCut, 2=medianCut, 3=kMeans: ");
-        std::string method = StringTools::getString();
-        int mNum = StringTools::toInt(method);
-
-        StringTools::print("Unique only? y=yes, n=no: ");
-        bool unique = StringTools::getChar() == 'y';
-
-        StringTools::print("Convert to LAB before Conversion? y=yes, n=no: ");
-        bool labSpace = StringTools::getChar() == 'y';
-
-        unsigned long t1 = System::getCurrentTimeNano();
-        if(mNum == 2)
-        {
-            temp = ColorPalette::generateOptimalPalette(img->getPixels(), img->getWidth() * img->getHeight(), num, ColorPalette::MEDIAN_CUT, labSpace, unique);
-        }
-        else if(mNum == 3)
-        {
-            temp = ColorPalette::generateOptimalPalette(img->getPixels(), img->getWidth() * img->getHeight(), num, ColorPalette::K_MEANS, labSpace, unique);
-        }
-        else
-        {
-            temp = ColorPalette::generateOptimalPalette(img->getPixels(), img->getWidth() * img->getHeight(), num, ColorPalette::MEAN_CUT, labSpace, unique);
-        }
-        unsigned long t2 = System::getCurrentTimeNano();
-
-        StringTools::println("TimeTaken: %u", t2-t1);
-        
-        //./TestImages/GIF/Varying Bit size and type/basn3p08.gif
-        
-        temp.reBalance();
-
-        img->setPalette(temp);
-
-        StringTools::print("Dither Image? y=yes n=no: ");
-        bool ditherConfirm = StringTools::getChar() == 'y';
-        
-        t1 = System::getCurrentTimeNano();
-
-        if(ditherConfirm)
-            Graphics::ditherImage(img, Graphics::FLOYD_DITHER);
-        else
-            img->enforcePalette();
-
-        t2 = System::getCurrentTimeNano();
-
-        StringTools::println("TimeTaken: %u", t2-t1);
-        
-        img->savePNG("paletteTest.png");
-    }
-    else
-    {
-        StringTools::println("Error on load Image");
-    }
-
-    delete img;
-    delete[] imgArray;
-}
-
-void testColorConvert()
-{
-    Color c = Color{109, 128, 192, 255};
-
-    Color xyz = ColorSpaceConverter::convert(c, ColorSpaceConverter::RGB_TO_XYZ);
-    Color rgb = ColorSpaceConverter::convert(xyz, ColorSpaceConverter::XYZ_TO_RGB);
-    Color lab = ColorSpaceConverter::convert(c, ColorSpaceConverter::RGB_TO_LAB);
-    Color lrgb = ColorSpaceConverter::convert(lab, ColorSpaceConverter::LAB_TO_RGB);
-
-    StringTools::println("ORIGINAL: %d, %d, %d", c.red, c.green, c.blue);
-    StringTools::println("XYZ: %d, %d, %d", xyz.red, xyz.green, xyz.blue);
-    StringTools::println("RGB: %d, %d, %d", rgb.red, rgb.green, rgb.blue);
-    StringTools::println("LAB: %d, %d, %d", lab.red, lab.green, lab.blue);
-    StringTools::println("lRGB: %d, %d, %d", lrgb.red, lrgb.green, lrgb.blue);
-}
-
-void testPNGSave()
-{
-    int amountOfImages = 0;
-    Image** imgAr = Image::loadImage("abc123d.png", &amountOfImages);
-    //Image** imgAr = Image::loadImage("paletteTest.png", &amountOfImages);
-    if(amountOfImages<=0)
-    {
-        StringTools::println("ERROR ON LOAD");
-        return;
-    }
-    else
-    {
-        StringTools::println("Loaded %d images", amountOfImages);
-    }
-    
-    time_t t1 = System::getCurrentTimeMicro();
-    imgAr[0]->savePNG("test1234.png", true, 0);
-    time_t t2 = System::getCurrentTimeMicro();
-    
-    StringTools::println("Time taken = %u", (t2-t1));
-
-    t1 = System::getCurrentTimeMicro();
-    imgAr[0]->saveGIF("test1234.gif", 256, true, false);
-    t2 = System::getCurrentTimeMicro();
-
-    StringTools::println("Time taken = %u", (t2-t1));
-
-    delete[] imgAr;
-}
-
-void gifSize()
-{
-    Sprite k = Sprite();
-    time_t t1 = System::getCurrentTimeMicro();
-    k.loadImage("Screenshot (409).png");
-    time_t t2 = System::getCurrentTimeMicro();
-    StringTools::println("Time to load: %u", t2-t1);
-
-    if(k.getSize()>0)
-    {
-        t1 = System::getCurrentTimeMicro();
-        
-        k.getImage(0)->saveGIF("nSizeGif.gif", 256, false, false);
-        t2 = System::getCurrentTimeMicro();
-
-        StringTools::println("Time to save: %u", t2-t1);
-        //k.getImage(0)->saveGIF("nSizeGifDither.gif", 256, true, false);
-    }
-
-    t1 = System::getCurrentTimeMicro();
-}
-
-void currentTest()
+void audioTest()
 {
     // AudioOut::init();
 
@@ -539,229 +363,6 @@ void currentTest()
     AudioIn::dispose();
 }
 
-void gradientTest()
-{
-    int wid, hei;
-
-    Sprite img = Sprite();
-    img.loadImage("./testFiles/edgeImg.png");
-    
-    Graphics::convertToColorSpace(img.getImage(0), ColorSpaceConverter::RGB_TO_YCBCR);
-
-    wid = img.getImage(0)->getWidth();
-    hei = img.getImage(0)->getHeight();
-    
-    std::vector<std::vector<Vec2f>> imgGrad = Graphics::calculateGradient(img.getImage(0), Graphics::RED_CHANNEL);
-
-    //save as 3 images.
-
-    //x gradient
-    Image k = Image(wid,hei);
-    for(int y=0; y<hei; y++)
-    {
-        for(int x=0; x<wid; x++)
-        {
-            Color c;
-            c.red = (unsigned char)MathExt::clamp(imgGrad[y][x].x, 0.0, 255.0);
-            c.green = c.red;
-            c.blue = c.red;
-            c.alpha = 255;
-            k.setPixel(x,y,c);
-        }
-    }
-
-    k.savePNG("xGradImg.png");
-
-    //y gradient
-    Image k2 = Image(wid,hei);
-    for(int y=0; y<hei; y++)
-    {
-        for(int x=0; x<wid; x++)
-        {
-            Color c;
-            c.red = (unsigned char)MathExt::clamp(imgGrad[y][x].y, 0.0, 255.0);
-            c.green = c.red;
-            c.blue = c.red;
-            c.alpha = 255;
-            k2.setPixel(x,y,c);
-        }
-    }
-
-    k2.savePNG("yGradImg.png");
-
-    //x+y gradient
-    Image k3 = Image(wid,hei);
-    for(int y=0; y<hei; y++)
-    {
-        for(int x=0; x<wid; x++)
-        {
-            Color c;
-            c.red = (unsigned char)MathExt::clamp(MathExt::vecLength(imgGrad[y][x]), 0.0, 255.0);
-            c.green = c.red;
-            c.blue = c.red;
-            c.alpha = 255;
-            k3.setPixel(x,y,c);
-        }
-    }
-
-    k3.savePNG("xyGradImg.png");
-}
-
-void fileTest()
-{
-    Image k = Image(640, 480);
-
-    Graphics::setClippingRect( Box2D(64, 64, 128, 128) );
-    Graphics::setColor({255,0,0,255});
-
-    k.drawCircle(64,64,64,false);
-    k.savePNG("clippingTest.png");
-}
-
-void testGui()
-{
-    WndWindow w = WndWindow("test", 640, 480, -1, -1, WndWindow::NORMAL_WINDOW);
-    
-    GuiContainer mainContainer;
-
-    GuiRectangleButton applyBut = GuiRectangleButton(640-64, 480-52, 64, 24);
-    GuiTextBlock applyText = GuiTextBlock(0, 0, 64, 24);
-
-    applyBut.setOnClickFunction([](GuiInstance* ins)->void{
-        std::wstring info = System::fileDialogBox(System::TYPE_SAVE_FILE);
-        StringTools::println("GOT: %ls", info.c_str());
-    });
-
-    GuiRectangleButton resetBut = GuiRectangleButton(640-64, 480-26, 64, 24);
-    GuiTextBlock resetText = GuiTextBlock(0, 0, 64, 24);
-
-    resetBut.setOnClickFunction([](GuiInstance* ins)->void{
-        std::wstring info = System::fileDialogBox(System::TYPE_OPEN_FOLDER);
-        StringTools::println("GOT: %ls", info.c_str());
-    });
-
-    GuiRectangleButton loadBut = GuiRectangleButton(12, 12, 64, 24);
-    GuiTextBlock loadText = GuiTextBlock(0, 0, 64, 24);
-
-    loadBut.setOnClickFunction([](GuiInstance* ins)->void{
-        std::wstring info = System::fileDialogBox(System::TYPE_OPEN_FILE);
-        StringTools::println("GOT: %ls", info.c_str());
-    });
-
-    mainContainer.addChild(&applyBut);
-    mainContainer.addChild(&resetBut);
-    mainContainer.addChild(&loadBut);
-
-    w.getGuiManager()->addElement(&mainContainer);
-
-    w.setThreadAutoRepaint(true);
-    w.setThreadUpdateTime(16);
-
-    w.waitTillClose();
-}
-
-void ssePaint()
-{
-    //must test every draw function in graphics to ensure same results under SSE and AVX instructions
-    Image img = Image(640, 640);
-
-    Graphics::setColor({255,0,0,224});
-    Color verifyColor = {0,255,255,128};
-
-    #pragma region DRAW_RECT
-
-    Graphics::drawRect(32, 32, 64, 64, false, &img);
-    img.drawPixel(32,32,verifyColor);
-    img.drawPixel(64,32,verifyColor);
-    img.drawPixel(64,64,verifyColor);
-    img.drawPixel(32,64,verifyColor);
-
-    Graphics::drawRect(67, 33, 78, 41, false, &img);
-    img.drawPixel(67,33,verifyColor);
-    img.drawPixel(78,33,verifyColor);
-    img.drawPixel(78,41,verifyColor);
-    img.drawPixel(67,41,verifyColor);
-
-    #pragma endregion
-
-    #pragma region DRAW_LINE
-
-    Graphics::drawLine(96, 32, 128, 32, &img);
-    img.drawPixel(96,32,verifyColor);
-    img.drawPixel(128,32,verifyColor);
-
-    Graphics::drawLine(96, 35, 127, 35, &img);
-    img.drawPixel(96,35,verifyColor);
-    img.drawPixel(127,35,verifyColor);
-
-    Graphics::drawLine(99, 37, 125, 37, &img);
-    img.drawPixel(99,37,verifyColor);
-    img.drawPixel(125,37,verifyColor);
-
-    #pragma endregion
-
-    #pragma region DRAW_CIRCLE
-
-    Graphics::drawCircle(160, 32, 16, false, &img);
-    Graphics::drawCircle(160, 64, 11, false, &img);
-    
-    #pragma endregion
-
-    #pragma region DRAW_IMG
-
-    Sprite testDrawImg = Sprite();
-    testDrawImg.loadImage("m4o2z38ykg801.png");
-
-    testDrawImg.getImage(0)->saveBMP("ImgLoadTest.bmp");
-
-    Graphics::drawImage(testDrawImg.getImage(0), 127, 128, &img);
-
-    Graphics::setColor({255,255,255,255});
-    Graphics::drawSpritePart(testDrawImg.getImage(0), 127, 128, 0, 0, 128, 128, &img);
-
-    #pragma endregion
-
-    #pragma region DRAW_TRIANGLE
-    
-    Graphics::setColor({255,0,0,224});
-    Graphics::drawTriangle(250, 25, 280, 26, 270, 47, false, &img);
-    img.drawPixel(250,25,verifyColor);
-    img.drawPixel(280,26,verifyColor);
-    img.drawPixel(270,47,verifyColor);
-
-    Graphics::setColor({0,255,0,128});
-    Graphics::drawTriangle(250, 24, 280, 25, 270, 4, false, &img);
-    img.drawPixel(250,24,verifyColor);
-    img.drawPixel(280,25,verifyColor);
-    img.drawPixel(270,4,verifyColor);
-
-    #pragma endregion
-
-    img.savePNG("SSE & AVX Test.png");
-}
-
-void testGui2()
-{
-    Graphics::setDefaultFont(Graphics::MEDIUM_FONT);
-    WndWindow guiWindow = WndWindow("GUI", 640, 480);
-
-    GuiScrollBar endBut = GuiScrollBar(320-24, 24, 320, 480-24);
-    GuiScrollBar startBut = endBut;
-    startBut.setSteps(18-12);
-
-    GuiContainer c = GuiContainer();
-    c.addChild(&startBut);
-
-    c.setVisible(false);
-    c.setActive(false);
-
-    c.setVisible(true);
-    c.setActive(true);
-
-    guiWindow.getGuiManager()->addElement(&c);
-    guiWindow.waitTillClose();
-}
-
 void testNewFFT()
 {
     std::vector<double> baseData = std::vector<double>(8);
@@ -807,34 +408,6 @@ void testNewFFT()
     }
 }
 
-void testJPEG()
-{
-    Sprite k = Sprite();
-    Sprite k2 = Sprite();
-    Sprite k3 = Sprite();
-
-    time_t t1 = System::getCurrentTimeMicro();
-    k.loadImage("./TestImages/JPEG/09eb8a92164ef9210a3020e421a51acdfea1f149.jpg");
-    time_t t2 = System::getCurrentTimeMicro();
-
-    StringTools::println("TimeTaken: %u", t2-t1);
-
-    t1 = System::getCurrentTimeMicro();
-    k2.loadImage("background.bmp");
-    t2 = System::getCurrentTimeMicro();
-
-    StringTools::println("TimeTaken: %u", t2-t1);
-
-    t1 = System::getCurrentTimeMicro();
-    k3.loadImage("background.png");
-    t2 = System::getCurrentTimeMicro();
-
-    StringTools::println("TimeTaken: %u", t2-t1);
-
-    if(k.getImage(0)!=nullptr)
-        k.getImage(0)->saveBMP("testJPEG.bmp");
-}
-
 void testArithmeticCoding()
 {
     std::vector<unsigned char> data = {'W', 'I', 'K', 'I'};
@@ -850,106 +423,141 @@ void testArithmeticCoding()
     }
 }
 
-void testDeflateCompressionMethods()
+void testCollision()
 {
-    // //Set baseline data
-    // std::string baselineData = "ABAABACBCCBABC";
+    Polygon2D k = Polygon2D();
+    k.addVertex(Vec2f(0,0));
+    k.addVertex(Vec2f(200,200));
+    k.addVertex(Vec2f(400,0));
 
-    // //Compress with static huffman tree compression
-    // std::vector<unsigned char> baselineCompression = Compression::compressDeflate((unsigned char*)baselineData.c_str(), baselineData.size()+1, 1, 7, false);
+    Polygon2D k2 = Polygon2D();
+    k2.addVertex(Vec2f(25,10));
+    k2.addVertex(Vec2f(40,30));
+    k2.addVertex(Vec2f(50,20));
 
-    // //Compress with dynamic huffman tree compression
-    // std::vector<unsigned char> dynamicCompression = Compression::compressDeflate((unsigned char*)baselineData.c_str(), baselineData.size()+1, 1, 7, true);
+    Vec2f pos1, pos2;
 
-    // //Test decompression
-    // std::vector<unsigned char> baselineVerifier = Compression::decompressDeflate(baselineCompression);
-
-    // std::vector<unsigned char> dynamicDecompressed = Compression::decompressDeflate(dynamicCompression);
-
-    // //Verify results
-    // std::string verifyString1 = (char*)baselineVerifier.data();
-    // std::string verifyString2 = (char*)dynamicDecompressed.data();
+    pos1 = Vec2f(32,32);
+    pos2 = Vec2f(128,256);
     
-    // bool result1 = baselineData == verifyString1;
-    // bool result2 = baselineData == verifyString2;
+    GuiCustomObject cus = GuiCustomObject();
+    cus.setUpdateFunction([&pos1,&pos2]()->void{
+        Input::pollInput();
+        if(Input::getKeyDown('W'))
+        {
+            pos1.y-=1;
+        }
+        else if(Input::getKeyDown('S'))
+        {
+            pos1.y+=1;
+        }
+        if(Input::getKeyDown('A'))
+        {
+            pos1.x-=1;
+        }
+        else if(Input::getKeyDown('D'))
+        {
+            pos1.x+=1;
+        }
 
-    // StringTools::println("Match1=%d, Match2=%d with sizes %llu, %llu", result1, result2, baselineCompression.size(), dynamicCompression.size());
+        if(Input::getKeyDown(Input::KEY_UP))
+        {
+            pos2.y-=1;
+        }
+        else if(Input::getKeyDown(Input::KEY_DOWN))
+        {
+            pos2.y+=1;
+        }
+        if(Input::getKeyDown(Input::KEY_LEFT))
+        {
+            pos2.x-=1;
+        }
+        else if(Input::getKeyDown(Input::KEY_RIGHT))
+        {
+            pos2.x+=1;
+        }
 
-    Sprite k = Sprite();
-    k.loadImage("test1234.png");
+        
+    });
 
-    time_t t1 = System::getCurrentTimeNano();
+    cus.setRenderFunction([&pos1,&pos2, &k, &k2](Image* surf)->void{
+        VectorGraphic g = VectorGraphic();
 
-    if(k.getSize()>0)
-        k.getImage(0)->savePNG("outputCustom.png", false, false, true);
+        k.setPosition(pos1);
+        k2.setPosition(pos2);
 
-    StringTools::println("Time to save optimized PNG: %llu", System::getCurrentTimeNano()-t1);
-    // Sprite m = Sprite();
-    // m.loadImage("outputCustom.png");
+        VectorPolygon r = VectorPolygon();
+        r.setFillColor({255,255,255,128});
+        r.addPoint(k.getVertex(0));
+        r.addPoint(k.getVertex(1));
+        r.addPoint(k.getVertex(2));
 
-    // Image k = Image(8,8);
-    // k.setAllPixels({255,255,255,255});
+        VectorPolygon e = VectorPolygon();
+        e.setFillColor({255,0,255,128});
+        e.addPoint(k2.getVertex(0));
+        e.addPoint(k2.getVertex(1));
+        e.addPoint(k2.getVertex(2));
 
-    // k.savePNG("outputCustom.png", true);
+        g.addShape(&r);
+        g.addShape(&e);
 
-    // Sprite m = Sprite();
-    // m.loadImage("outputCustom.png");
+        g.draw(surf);
 
-    // if(m.getSize()>0)
-    //     m.getImage(0)->saveBMP("VERIFY.bmp");
+        bool collision = CollisionMaster::SeparatingAxisTheorem(&k, &k2);
+        if(!collision)
+            Graphics::setColor({255,255,255,255});
+        else
+            Graphics::setColor({255,0,0,255});
+        surf->drawRect(0, 0, 32, 32, false);
 
-    // std::vector<Grouping> list = { {2, 0b100, {0} }, {2, 0b1000, {1} }, {1, 0b10000, {2} }, {1, 0b1, {3} }, {1, 0b1, {4} } };
+        Graphics::setColor({0,128,64,255});
+        surf->drawRect(k.getCenterPoint().x-4, k.getCenterPoint().y-4, k.getCenterPoint().x+4, k.getCenterPoint().y+4, false);
+        surf->drawRect(k2.getCenterPoint().x-4, k2.getCenterPoint().y-4, k2.getCenterPoint().x+4, k2.getCenterPoint().y+4, false);
+        
+        surf->drawLine(k.getCenterPoint().x, k.getCenterPoint().y, k.getVertex(0).x, k.getVertex(0).y);
+        surf->drawLine(k.getCenterPoint().x, k.getCenterPoint().y, k.getVertex(1).x, k.getVertex(1).y);
+        surf->drawLine(k.getCenterPoint().x, k.getCenterPoint().y, k.getVertex(2).x, k.getVertex(2).y);
+        
+    });
 
-    // std::vector<Grouping> results = Algorithms::packageMergeAlgorithm(list, 5);
+    WndWindow window = WndWindow("TT)", 640,480);
+    window.getGuiManager()->addElement(&cus);
+    window.waitTillClose();
+}
 
-    // StringTools::println("Use these items with IDs: ");
-    // for(Grouping& g : results)
-    // {
-    //     for(int& id : g.ids)
-    //     {
-    //         StringTools::print("%d, ", id);
-    //     }
-    // }
-    // StringTools::println("");
+void testSVGTransforms()
+{
+    GuiCustomObject cus = GuiCustomObject();
+
+    cus.setRenderFunction([](Image* surf)->void{
+        VectorRectangle r = VectorRectangle();
+        r.setFillColor({255,0,0,255});
+        r.setX(64);
+        r.setY(64);
+        r.setRX(16);
+        r.setRY(16);
+        r.setWidth(64);
+        r.setHeight(64);
+
+        r.setTransform( MathExt::rotation2D(PI/6, 96, 96) );
+
+        r.draw(surf, surf->getWidth(), surf->getHeight());
+
+        Graphics::setColor({255,255,255,255});
+        Graphics::drawCircle(96, 96, 3, false, surf);
+    });
+
+    WndWindow window = WndWindow("SVG Transforms", 640,480);
+    window.getGuiManager()->addElement(&cus);
+    window.waitTillClose();
 }
 
 int main(int argc, char** argv)
 {
     StringTools::init();
     //Graphics::init();
+    testSVGTransforms();
 
-    testDeflateCompressionMethods();
-    //testArithmeticCoding();
-    //testJPEG();
-    //testNewFFT();
-    //testGui2();
-    //ssePaint();
-    //testGui();
-
-    //fileTest();
-
-    //gradientTest();
-    //currentTest();
-
-    //gifSize();
-
-    //testPNGSave();
-
-    //testColorPalette();
-    //testColorConvert();
-
-    //testFontSVG("C:\\Users\\Alan\\Documents\\VSCodeProjects\\GLib\\SVGFonts\\My Font - SVG Font - 2020.8.12-21.40.21.svg");
-    
-    //testFontGraphics();
-
-    //testFontSVG(L"C:\\Users\\Alan\\Documents\\VSCodeProjects\\GLib\\SVGFonts\\AnyConv.com__consolab.svg");
-    
-    //drawLoadedSvg("C:/Users/Alan/Documents/VSCodeProjects/GLib/SVGs/_ionicons_svg_md-mail.svg");
-    //drawLoadedSvg("C:/Users/Alan/Documents/VSCodeProjects/GLib/testFiles/SvgFiles/Five Pointed Star.svg");
-    //drawLoadedSvg("testFiles/SvgFiles/transforms.svg");
-
-    //testNeuralNetwork();
-
-    system("pause");
+    //system("pause");
     return 0;
 }

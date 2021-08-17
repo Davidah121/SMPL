@@ -1,10 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
-    <rect width="128" height="128" />
-    <g transform="rotate(45) skewX(45)">
-        <path d="M10,10 A 30,50,0,0,0,80,80 Z" fill="aliceblue" stroke-width="1" stroke="green" /> 
-        <circle cx="10" cy="10" r="1" fill="red" />
-        <circle cx="80" cy="80" r="1" fill="red" />
-    </g>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256">
+
+        <rect width="128" height="128" />
+        
+        <!-- <path d="M10,10 A 30,50,0,0,0,80,80 Z" fill="aliceblue" stroke-width="1" stroke="green" /> 
+        <circle cx="10" cy="10" r="2" fill="red" />
+        <circle cx="80" cy="80" r="2" fill="red" /> -->
+    
+        <path d="M64,64 A 16,16,0,0,0,96,64 A 16,16,0,0,0,64,64 Z" fill="aliceblue" /> 
+        <circle cx="32" cy="32" r="16" fill="red" />
+
+        <!-- <circle cx="45" cy="45" r="1" fill="red" />
+        <circle cx="45" cy="10" r="1" fill="blue" />
+        <circle cx="45" cy="113" r="1" fill="blue" />
+        <ellipse cx="45" cy="45" rx="40.8" ry="68" stroke="blue" /> -->
+        
+
 
     <!-- Scale(0.25,0.25) -->
     <!-- <path d="M2.5,2.5 A 7.5,12.5,0,0,0,20,20 Z" fill="blue" fill-opacity="0.25" stroke-width="0.25" stroke="magenta" />
@@ -12,10 +22,10 @@
     <!-- Translate(80,0) rotate(45) -->
     <!-- <path d="M80,14.1421 A 30,50,45,0,0,80,113.137 Z" fill="aqua" stroke-width="1" stroke="magenta" /> 
     -->
-    <path d="M7.071,21.2132 A 21.2132,91.9239,45,0,0,56.5685,169.7056 Z" fill="aqua" stroke-width="1" stroke="magenta" /> 
+    <!-- <path d="M7.071,21.2132 A 21.2132,91.9239,45,0,0,56.5685,169.7056 Z" fill="aqua" stroke-width="1" stroke="magenta" /> 
     
     <circle cx="7.071" cy="21.2132" r="1" fill="red" />
-    <circle cx="56.5685" cy="169.7056" r="1" fill="red" />
+    <circle cx="56.5685" cy="169.7056" r="1" fill="red" /> -->
 
 
 </svg>

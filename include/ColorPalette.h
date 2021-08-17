@@ -3,59 +3,63 @@
 #include "Object.h"
 #include "KDTree.h"
 
-struct Color
+namespace glib
 {
-	unsigned char red = 0;
-	unsigned char green = 0;
-	unsigned char blue = 0;
-	unsigned char alpha = 0;
-};
 
-class ColorPalette : public Object
-{
-public:
-	ColorPalette();
-	~ColorPalette();
-	ColorPalette(const ColorPalette& other);
-	void operator=(const ColorPalette& other);
+	struct Color
+	{
+		unsigned char red = 0;
+		unsigned char green = 0;
+		unsigned char blue = 0;
+		unsigned char alpha = 0;
+	};
 
-	//Object and Class Stuff
-	const Class* getClass();
-	static const Class myClass;
-	
-	void addNewColor(Color c);
-	Color getColor(int index);
-	Color* getColorRef(int index);
-	int getColorIndex(Color c);
-	
-	Color getClosestColor(Color c);
-	int getClosestColorIndex(Color c);
-	int getSize();
-	std::vector<Color>& getPalette();
-	void setPalette(std::vector<Color> p);
+	class ColorPalette : public Object
+	{
+	public:
+		ColorPalette();
+		~ColorPalette();
+		ColorPalette(const ColorPalette& other);
+		void operator=(const ColorPalette& other);
 
-	void clearPalette();
-	void setPaletteMode(bool uniqueOnly);
+		//Object and Class Stuff
+		const Class* getClass();
+		static const Class myClass;
+		
+		void addNewColor(Color c);
+		Color getColor(int index);
+		Color* getColorRef(int index);
+		int getColorIndex(Color c);
+		
+		Color getClosestColor(Color c);
+		int getClosestColorIndex(Color c);
+		int getSize();
+		std::vector<Color>& getPalette();
+		void setPalette(std::vector<Color> p);
 
-	static ColorPalette createColorPalette(int reds, int greens, int blues);
+		void clearPalette();
+		void setPaletteMode(bool uniqueOnly);
 
-	static const unsigned char MEAN_CUT = 0;
-	static const unsigned char MEDIAN_CUT = 1;
-	static const unsigned char K_MEANS = 2;
+		static ColorPalette createColorPalette(int reds, int greens, int blues);
 
-	static ColorPalette generateOptimalPalette(Color* colorArray, int size, int colors, unsigned char type, bool convertToLab = false, bool uniqueOnly = false);
+		static const unsigned char MEAN_CUT = 0;
+		static const unsigned char MEDIAN_CUT = 1;
+		static const unsigned char K_MEANS = 2;
 
-	void reBalance();
+		static ColorPalette generateOptimalPalette(Color* colorArray, int size, int colors, unsigned char type, bool convertToLab = false, bool uniqueOnly = false);
 
-private:
-	void copy(const ColorPalette& other);
+		void reBalance();
 
-	static std::vector<Color> meanCut(std::vector<Color> colorArray, int colors);
-	static std::vector<Color> medianCut(std::vector<Color> colorArray, int colors);
-	static std::vector<Color> kMeans(std::vector<Color> colorArray, int colors, int maxIterations);
-	
-	std::vector<Color> paletteArr = std::vector<Color>();
-	KDTree<unsigned char>* paletteTree = new KDTree<unsigned char>(3);
-	bool uniquePalette = true;
-};
+	private:
+		void copy(const ColorPalette& other);
 
+		static std::vector<Color> meanCut(std::vector<Color> colorArray, int colors);
+		static std::vector<Color> medianCut(std::vector<Color> colorArray, int colors);
+		static std::vector<Color> kMeans(std::vector<Color> colorArray, int colors, int maxIterations);
+		
+		std::vector<Color> paletteArr = std::vector<Color>();
+		KDTree<unsigned char>* paletteTree = new KDTree<unsigned char>(3);
+		bool uniquePalette = true;
+	};
+
+}

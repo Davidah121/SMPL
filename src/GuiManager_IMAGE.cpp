@@ -1,0 +1,52 @@
+#include "InternalGuiManagerHeader.h"
+
+namespace glib
+{
+    
+	#pragma region GUI_IMAGE_CLASS
+
+	const Class GuiImage::myClass = Class("GuiImage", {&GuiInstance::myClass});
+	const Class* GuiImage::getClass()
+	{
+		return &GuiImage::myClass;
+	}
+
+	GuiImage::GuiImage(Image* img)
+	{
+		this->img = img;
+	}
+
+	GuiImage::~GuiImage()
+	{
+		
+	}
+
+	void GuiImage::update()
+	{
+		
+	}
+
+	void GuiImage::render(Image* surf)
+	{
+		if(surf!=nullptr)
+		{
+			if(img!=nullptr)
+			{
+				Graphics::drawImage(img, renderX, renderY, surf);
+			}
+		}
+	}
+
+	void GuiImage::setImage(Image* img)
+	{
+		this->img = img;
+	}
+
+	Image* GuiImage::getImage()
+	{
+		return img;
+	}
+
+	#pragma endregion
+
+} //NAMESPACE glib END

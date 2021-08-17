@@ -1,19 +1,23 @@
 #include "MathExt.h"
 #include "Sort.h"
 
-struct Grouping
+namespace glib
 {
-    bool valid = true;
-    size_t width = 0;
-    size_t weight = 0;
-    std::vector<int> ids = std::vector<int>();
-};
+    struct Grouping
+    {
+        bool valid = true;
+        size_t width = 0;
+        size_t weight = 0;
+        std::vector<int> ids = std::vector<int>();
+    };
 
-class Algorithms
-{
-public:
-    static std::vector<Grouping> packageMergeAlgorithm(std::vector<Grouping> baseItems, size_t desiredTotal);
+    class Algorithms
+    {
+    public:
+        static std::vector<Grouping> packageMergeAlgorithm(std::vector<Grouping> baseItems, size_t desiredTotal);
 
-private:
+    private:
 
-};
+    };
+    
+} //NAMESPACE glib END

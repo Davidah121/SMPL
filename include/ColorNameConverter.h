@@ -3,14 +3,19 @@
 #include <unordered_map>
 #include "ColorPalette.h"
 
-class ColorNameConverter
+namespace glib
 {
-public:
-	ColorNameConverter();
-	~ColorNameConverter();
 
-	static std::string ColorToName(Color c);
-	static Color NameToColor(std::string n);
-private:
-    static const std::unordered_map<std::string, Color> colorNamePair;
-};
+	class ColorNameConverter
+	{
+	public:
+		ColorNameConverter();
+		~ColorNameConverter();
+
+		static std::string ColorToName(Color c);
+		static Color NameToColor(std::string n);
+	private:
+		static const std::unordered_map<std::string, Color> colorNamePair;
+	};
+
+}  //NAMESPACE glib END

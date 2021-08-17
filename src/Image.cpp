@@ -8,374 +8,378 @@
 
 #define min(a,b) ((a<b) ? a:b)
 
-const Class Image::myClass = Class("Image", {&Object::myClass});
-const Class* Image::getClass()
+namespace glib
 {
-	return &Image::myClass;
-}
 
-Image::Image()
-{
-	width = 0;
-	height = 0;
-	pixels = nullptr;
-}
+	const Class Image::myClass = Class("Image", {&Object::myClass});
+	const Class* Image::getClass()
+	{
+		return &Image::myClass;
+	}
 
-Image::Image(int width, int height)
-{
-	this->width = width;
-	this->height = height;
-	pixels = new Color[width * height];
-	memset(pixels, 0, width*height*sizeof(Color));
-}
+	Image::Image()
+	{
+		width = 0;
+		height = 0;
+		pixels = nullptr;
+	}
 
-Image::Image(const Image& other)
-{
-	this->~Image();
+	Image::Image(int width, int height)
+	{
+		this->width = width;
+		this->height = height;
+		pixels = new Color[width * height];
+		memset(pixels, 0, width*height*sizeof(Color));
+	}
 
-	this->width = other.width;
-	this->height = other.height;
-	pixels = new Color[width * height];
+	Image::Image(const Image& other)
+	{
+		this->~Image();
 
-	memcpy(pixels, other.pixels, width * height * sizeof(Color));
+		this->width = other.width;
+		this->height = other.height;
+		pixels = new Color[width * height];
 
-	p = other.p;
-}
+		memcpy(pixels, other.pixels, width * height * sizeof(Color));
 
-void Image::operator=(const Image& other)
-{
-	this->~Image();
-	this->width = other.width;
-	this->height = other.height;
-	pixels = new Color[width * height];
+		p = other.p;
+	}
 
-	memcpy(pixels, other.pixels, width * height * sizeof(Color));
+	void Image::operator=(const Image& other)
+	{
+		this->~Image();
+		this->width = other.width;
+		this->height = other.height;
+		pixels = new Color[width * height];
 
-	p = other.p;
-}
+		memcpy(pixels, other.pixels, width * height * sizeof(Color));
 
-Image::~Image()
-{
-	if(pixels!=nullptr)
-		delete[] pixels;
+		p = other.p;
+	}
 
-	p.~ColorPalette();
-}
+	Image::~Image()
+	{
+		if(pixels!=nullptr)
+			delete[] pixels;
 
-int Image::getWidth()
-{
-	return width;
-}
+		p.~ColorPalette();
+	}
 
-int Image::getHeight()
-{
-	return height;
-}
+	int Image::getWidth()
+	{
+		return width;
+	}
 
-Color* Image::getPixels()
-{
-	return pixels;
-}
+	int Image::getHeight()
+	{
+		return height;
+	}
 
-Color Image::getPixel(int x, int y, bool clamp)
-{
-	if(!clamp)
+	Color* Image::getPixels()
+	{
+		return pixels;
+	}
+
+	Color Image::getPixel(int x, int y, bool clamp)
+	{
+		if(!clamp)
+		{
+			if (x >= 0 && x < width)
+			{
+				if (y >= 0 && y < height)
+				{
+					return pixels[y * width + x];
+				}
+			}
+		}
+		else
+		{
+			int tX, tY;
+			tX = MathExt::clamp(x, 0, width-1);
+			tY = MathExt::clamp(y, 0, height-1);
+			
+			return pixels[tY * width + tX];
+		}
+		
+		return Color();
+	}
+
+	void Image::setPixel(int x, int y, Color c)
 	{
 		if (x >= 0 && x < width)
 		{
 			if (y >= 0 && y < height)
 			{
-				return pixels[y * width + x];
+				pixels[y * width + x] = c;
 			}
 		}
 	}
-	else
+
+	void Image::setAllPixels(Color c)
 	{
-		int tX, tY;
-		tX = MathExt::clamp(x, 0, width-1);
-		tY = MathExt::clamp(y, 0, height-1);
-		
-		return pixels[tY * width + tX];
+		#if (OPTI >= 2)
+			int m = *((int*)&c);
+			__m256i* startPixsSSE = (__m256i*)pixels;
+
+			int size = (width*height) >> 3;
+			int leftOver = (width*height) - (size<<3);
+
+			__m256i* endPixsSSE = startPixsSSE + size;
+			__m256i value = _mm256_set1_epi32(m);
+
+			while (startPixsSSE < endPixsSSE)
+			{
+				_mm256_storeu_si256(startPixsSSE, value);
+				startPixsSSE++;
+			}
+			
+			Color* leftOverPixsEnd = pixels + (width*height);
+			Color* leftOverPixs = leftOverPixsEnd - leftOver;
+			
+			while(leftOverPixs < leftOverPixsEnd)
+			{
+				*leftOverPixs = c;
+				leftOverPixs++;
+			}
+			
+		#elif (OPTI >= 1)
+
+			int m = *((int*)&c);
+			__m128i* startPixsSSE = (__m128i*)pixels;
+
+			int size = (width*height) >> 2;
+			int leftOver = (width*height) - (size<<2);
+
+			__m128i* endPixsSSE = startPixsSSE + size;
+			__m128i value = _mm_set1_epi32(m);
+
+			while (startPixsSSE < endPixsSSE)
+			{
+				_mm_storeu_si128(startPixsSSE, value);
+				startPixsSSE++;
+			}
+			
+			Color* leftOverPixsEnd = pixels + (width*height);
+			Color* leftOverPixs = leftOverPixsEnd - leftOver;
+			
+			while(leftOverPixs < leftOverPixsEnd)
+			{
+				*leftOverPixs = c;
+				leftOverPixs++;
+			}
+			
+		#else
+
+			Color* start = pixels;
+			Color* end = pixels + (width * height);
+			while (start < end)
+			{
+				*start = c;
+				start++;
+			}
+
+		#endif
 	}
-	
-	return Color();
-}
 
-void Image::setPixel(int x, int y, Color c)
-{
-	if (x >= 0 && x < width)
+	void Image::copyImage(Image* v)
 	{
-		if (y >= 0 && y < height)
-		{
-			pixels[y * width + x] = c;
-		}
+		this->~Image();
+		this->width = v->width;
+		this->height = v->height;
+		pixels = new Color[width * height];
+
+		memcpy(pixels, v->pixels, width * height * sizeof(Color));
+
+		p = v->p;
 	}
-}
 
-void Image::setAllPixels(Color c)
-{
-	#if (OPTI >= 2)
-		int m = *((int*)&c);
-		__m256i* startPixsSSE = (__m256i*)pixels;
-
-		int size = (width*height) >> 3;
-		int leftOver = (width*height) - (size<<3);
-
-		__m256i* endPixsSSE = startPixsSSE + size;
-		__m256i value = _mm256_set1_epi32(m);
-
-		while (startPixsSSE < endPixsSSE)
-		{
-			_mm256_storeu_si256(startPixsSSE, value);
-			startPixsSSE++;
-		}
-		
-		Color* leftOverPixsEnd = pixels + (width*height);
-		Color* leftOverPixs = leftOverPixsEnd - leftOver;
-		
-		while(leftOverPixs < leftOverPixsEnd)
-		{
-			*leftOverPixs = c;
-			leftOverPixs++;
-		}
-		
-	#elif (OPTI >= 1)
-
-		int m = *((int*)&c);
-		__m128i* startPixsSSE = (__m128i*)pixels;
-
-		int size = (width*height) >> 2;
-		int leftOver = (width*height) - (size<<2);
-
-		__m128i* endPixsSSE = startPixsSSE + size;
-		__m128i value = _mm_set1_epi32(m);
-
-		while (startPixsSSE < endPixsSSE)
-		{
-			_mm_storeu_si128(startPixsSSE, value);
-			startPixsSSE++;
-		}
-		
-		Color* leftOverPixsEnd = pixels + (width*height);
-		Color* leftOverPixs = leftOverPixsEnd - leftOver;
-		
-		while(leftOverPixs < leftOverPixsEnd)
-		{
-			*leftOverPixs = c;
-			leftOverPixs++;
-		}
-		
-	#else
-
-		Color* start = pixels;
-		Color* end = pixels + (width * height);
-		while (start < end)
-		{
-			*start = c;
-			start++;
-		}
-
-	#endif
-}
-
-void Image::copyImage(Image* v)
-{
-	this->~Image();
-	this->width = v->width;
-	this->height = v->height;
-	pixels = new Color[width * height];
-
-	memcpy(pixels, v->pixels, width * height * sizeof(Color));
-
-	p = v->p;
-}
-
-void Image::setPalette(ColorPalette p)
-{
-	this->p = p;
-}
-
-ColorPalette& Image::getPalette()
-{
-	return p;
-}
-
-void Image::enforcePalette()
-{
-	if(p.getSize()>0)
+	void Image::setPalette(ColorPalette p)
 	{
-		Color* start = pixels;
-		Color* end = pixels + (width * height);
-		while (start < end)
-		{
-			Color oldColor = *start;
-			*start = p.getClosestColor(*start);
+		this->p = p;
+	}
 
-			(*start).alpha = oldColor.alpha;
-			start++;
+	ColorPalette& Image::getPalette()
+	{
+		return p;
+	}
+
+	void Image::enforcePalette()
+	{
+		if(p.getSize()>0)
+		{
+			Color* start = pixels;
+			Color* end = pixels + (width * height);
+			while (start < end)
+			{
+				Color oldColor = *start;
+				*start = p.getClosestColor(*start);
+
+				(*start).alpha = oldColor.alpha;
+				start++;
+			}
 		}
 	}
-}
 
-#pragma region GRAPHICS_WRAPPER
+	#pragma region GRAPHICS_WRAPPER
 
-void Image::clearImage()
-{
-	Graphics::clearImage(this);
-}
-
-void Image::drawRect(int x, int y, int x2, int y2, bool outline)
-{
-	Graphics::drawRect(x, y, x2, y2, outline, this);
-}
-
-void Image::drawLine(int x, int y, int x2, int y2)
-{
-	Graphics::drawLine(x, y, x2, y2, this);
-}
-
-void Image::drawCircle(int x, int y, int radius, bool outline)
-{
-	Graphics::drawCircle(x, y, radius, outline, this);
-}
-
-void Image::drawPolygon(Vec2f* points, int size)
-{
-	Graphics::drawPolygon(points, size, this);
-}
-
-void Image::drawImage(Image* img, int x, int y)
-{
-	Graphics::drawImage(img, x, y, this);
-}
-
-void Image::drawSprite(Image* img, int x, int y)
-{
-	Graphics::drawSprite(img, x, y, this);
-}
-
-void Image::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH)
-{
-	Graphics::drawSpritePart(img, x, y, imgX, imgY, imgW, imgH, this);
-}
-
-void Image::drawText(std::string str, int x, int y)
-{
-	Graphics::drawText(str, x, y, this);
-}
-
-void Image::drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowLineBreak)
-{
-	Graphics::drawTextLimits(str, x, y, maxWidth, maxHeight, allowLineBreak, this);
-}
-
-void Image::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline)
-{
-	Graphics::drawTriangle(x1, y1, x2, y2, x3, y3, outline, this);
-}
-
-void Image::drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture)
-{
-	Graphics::drawTexturedTriangle(p1, p2, p3, texture, this);
-}
-
-void Image::drawPixel(int x, int y, Color c)
-{
-	Graphics::drawPixel(x, y, c, this);
-}
-
-void Image::drawPixel(double x, double y, Color c)
-{
-	Graphics::drawPixel(x, y, c, this);
-}
-
-#pragma endregion
-
-Image** Image::loadImage(std::string filename, int* amountOfImages)
-{
-	SimpleFile file(filename, SimpleFile::READ);
-
-	if (file.isOpen())
+	void Image::clearImage()
 	{
-		std::vector<unsigned char> fileData = file.readFullFileAsBytes();
+		Graphics::clearImage(this);
+	}
 
-		file.close();
+	void Image::drawRect(int x, int y, int x2, int y2, bool outline)
+	{
+		Graphics::drawRect(x, y, x2, y2, outline, this);
+	}
 
-		std::string fileType = filename.substr(filename.size() - 3, 3);
-		std::string fileType2 = filename.substr(filename.size() - 4, 4);
+	void Image::drawLine(int x, int y, int x2, int y2)
+	{
+		Graphics::drawLine(x, y, x2, y2, this);
+	}
 
-		if (fileType == "bmp")
+	void Image::drawCircle(int x, int y, int radius, bool outline)
+	{
+		Graphics::drawCircle(x, y, radius, outline, this);
+	}
+
+	void Image::drawPolygon(Vec2f* points, int size)
+	{
+		Graphics::drawPolygon(points, size, this);
+	}
+
+	void Image::drawImage(Image* img, int x, int y)
+	{
+		Graphics::drawImage(img, x, y, this);
+	}
+
+	void Image::drawSprite(Image* img, int x, int y)
+	{
+		Graphics::drawSprite(img, x, y, this);
+	}
+
+	void Image::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH)
+	{
+		Graphics::drawSpritePart(img, x, y, imgX, imgY, imgW, imgH, this);
+	}
+
+	void Image::drawText(std::string str, int x, int y)
+	{
+		Graphics::drawText(str, x, y, this);
+	}
+
+	void Image::drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowLineBreak)
+	{
+		Graphics::drawTextLimits(str, x, y, maxWidth, maxHeight, allowLineBreak, this);
+	}
+
+	void Image::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline)
+	{
+		Graphics::drawTriangle(x1, y1, x2, y2, x3, y3, outline, this);
+	}
+
+	void Image::drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture)
+	{
+		Graphics::drawTexturedTriangle(p1, p2, p3, texture, this);
+	}
+
+	void Image::drawPixel(int x, int y, Color c)
+	{
+		Graphics::drawPixel(x, y, c, this);
+	}
+
+	void Image::drawPixel(double x, double y, Color c)
+	{
+		Graphics::drawPixel(x, y, c, this);
+	}
+
+	#pragma endregion
+
+	Image** Image::loadImage(std::string filename, int* amountOfImages, std::vector<int>* extraData)
+	{
+		SimpleFile file(filename, SimpleFile::READ);
+
+		if (file.isOpen())
+		{
+			std::vector<unsigned char> fileData = file.readFullFileAsBytes();
+
+			file.close();
+
+			std::string fileType = filename.substr(filename.size() - 3, 3);
+			std::string fileType2 = filename.substr(filename.size() - 4, 4);
+
+			if (fileType == "bmp")
+			{
+				if (amountOfImages != nullptr)
+					*amountOfImages = 1;
+
+				return loadBMP(fileData, amountOfImages, extraData);
+			}
+			else if (fileType == "gif")
+			{
+				return loadGIF(fileData, amountOfImages, extraData);
+			}
+			else if (fileType == "png")
+			{
+				return loadPNG(fileData, amountOfImages, extraData);
+			}
+			else if (fileType == "jpg" || fileType2 == "jpeg" || fileType2 == "jfif")
+			{
+				return loadJPG(fileData, amountOfImages, extraData);
+			}
+
+			return nullptr;
+		}
+		else
+		{
+			if(amountOfImages!=nullptr)
+				*amountOfImages = 0;
+
+			return nullptr;
+		}
+	}
+
+	Image** Image::loadImage(std::wstring filename, int* amountOfImages, std::vector<int>* extraData)
+	{
+		SimpleFile file(filename, SimpleFile::READ);
+
+		if (file.isOpen())
+		{
+			std::vector<unsigned char> fileData = file.readFullFileAsBytes();
+
+			file.close();
+
+			std::wstring fileType = filename.substr(filename.size() - 3, 3);
+			std::wstring fileType2 = filename.substr(filename.size() - 4, 4);
+
+			if (fileType == L"bmp")
+			{
+				if (amountOfImages != nullptr)
+					* amountOfImages = 1;
+
+				return loadBMP(fileData, amountOfImages, extraData);
+			}
+			else if (fileType == L"gif")
+			{
+				return loadGIF(fileData, amountOfImages, extraData);
+			}
+			else if (fileType == L"png")
+			{
+				return loadPNG(fileData, amountOfImages, extraData);
+			}
+			else if (fileType == L"jpg" || fileType2 == L"jpeg" || fileType2 == L"jfif")
+			{
+				return loadJPG(fileData, amountOfImages, extraData);
+			}
+		}
+		else
 		{
 			if (amountOfImages != nullptr)
-				*amountOfImages = 1;
+				* amountOfImages = 0;
 
-			return loadBMP(fileData, amountOfImages);
-		}
-		else if (fileType == "gif")
-		{
-			return loadGIF(fileData, amountOfImages);
-		}
-		else if (fileType == "png")
-		{
-			return loadPNG(fileData, amountOfImages);
-		}
-		else if (fileType == "jpg" || fileType2 == "jpeg" || fileType2 == "jfif")
-		{
-			return loadJPG(fileData, amountOfImages);
+			return nullptr;
 		}
 
 		return nullptr;
 	}
-	else
-	{
-		if(amountOfImages!=nullptr)
-			*amountOfImages = 0;
 
-		return nullptr;
-	}
-}
-
-Image** Image::loadImage(std::wstring filename, int* amountOfImages)
-{
-	SimpleFile file(filename, SimpleFile::READ);
-
-	if (file.isOpen())
-	{
-		std::vector<unsigned char> fileData = file.readFullFileAsBytes();
-
-		file.close();
-
-		std::wstring fileType = filename.substr(filename.size() - 3, 3);
-		std::wstring fileType2 = filename.substr(filename.size() - 4, 4);
-
-		if (fileType == L"bmp")
-		{
-			if (amountOfImages != nullptr)
-				* amountOfImages = 1;
-
-			return loadBMP(fileData, amountOfImages);
-		}
-		else if (fileType == L"gif")
-		{
-			return loadGIF(fileData, amountOfImages);
-		}
-		else if (fileType == L"png")
-		{
-			return loadPNG(fileData, amountOfImages);
-		}
-		else if (fileType == L"jpg" || fileType2 == L"jpeg")
-		{
-			return loadJPG(fileData, amountOfImages);
-		}
-	}
-	else
-	{
-		if (amountOfImages != nullptr)
-			* amountOfImages = 0;
-
-		return nullptr;
-	}
-
-	return nullptr;
-}
-
+} //NAMESPACE glib END

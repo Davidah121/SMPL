@@ -2,92 +2,97 @@
 #include <vector>
 #include "SimpleXml.h"
 
-class Neuron
+namespace glib
 {
-public:
-    Neuron();
-    ~Neuron();
 
-    void setActivation(double v);
-    double getActivation();
+    class Neuron
+    {
+    public:
+        Neuron();
+        ~Neuron();
 
-    double getWeight(int index);
-    void setWeight(int index, double v);
+        void setActivation(double v);
+        double getActivation();
 
-    void resetWeights(int size);
+        double getWeight(int index);
+        void setWeight(int index, double v);
 
-    double& operator[](int index);
+        void resetWeights(int size);
 
-    int size();
+        double& operator[](int index);
 
-    XmlNode* exportTestInformation(int count);
-private:
-    double activation = 0.0;
-    std::vector<double> weightsToConnections = std::vector<double>();
-};
+        int size();
 
-class NeuralLayer
-{
-public:
-    NeuralLayer(int size, NeuralLayer* nextLayer, NeuralLayer* previousLayer);
-    ~NeuralLayer();
+        XmlNode* exportTestInformation(int count);
+    private:
+        double activation = 0.0;
+        std::vector<double> weightsToConnections = std::vector<double>();
+    };
 
-    NeuralLayer* getNextLayer();
-    NeuralLayer* getPreviousLayer();
+    class NeuralLayer
+    {
+    public:
+        NeuralLayer(int size, NeuralLayer* nextLayer, NeuralLayer* previousLayer);
+        ~NeuralLayer();
 
-    void setNextLayer(NeuralLayer* n);
-    void setPreviousLayer(NeuralLayer* n);
-    
-    void setNeuronActivation(int index, float activation);
-    double getNeuronActivation(int index);
+        NeuralLayer* getNextLayer();
+        NeuralLayer* getPreviousLayer();
 
-    Neuron& getNeuron(int index);
+        void setNextLayer(NeuralLayer* n);
+        void setPreviousLayer(NeuralLayer* n);
+        
+        void setNeuronActivation(int index, float activation);
+        double getNeuronActivation(int index);
 
-    std::vector<Neuron> getListOfNeurons();
+        Neuron& getNeuron(int index);
 
-    double activationFunction(double value);
-    double derivativeActivationFunction(double value, bool outputOfActivation = false);
+        std::vector<Neuron> getListOfNeurons();
 
-    void run();
-    int size();
+        double activationFunction(double value);
+        double derivativeActivationFunction(double value, bool outputOfActivation = false);
 
-    void resetWeightsBias();
-    void setBiasValue(int index, double value);
-    int getBiasSize();
+        void run();
+        int size();
 
-    XmlNode* exportTestInformation(int count);
+        void resetWeightsBias();
+        void setBiasValue(int index, double value);
+        int getBiasSize();
 
-    Neuron& operator[](int index);
-private:
-    int length = 0;
-    std::vector<Neuron> neurons = std::vector<Neuron>();
-    NeuralLayer* nextLayer = nullptr;
-    NeuralLayer* previousLayer = nullptr;
-    
-    std::vector<double> biasToConnections = std::vector<double>();
-};
+        XmlNode* exportTestInformation(int count);
 
-class NeuralNetwork
-{
-public:
-    NeuralNetwork();
-    ~NeuralNetwork();
+        Neuron& operator[](int index);
+    private:
+        int length = 0;
+        std::vector<Neuron> neurons = std::vector<Neuron>();
+        NeuralLayer* nextLayer = nullptr;
+        NeuralLayer* previousLayer = nullptr;
+        
+        std::vector<double> biasToConnections = std::vector<double>();
+    };
 
-    void addLayerToEnd(int sizeOfLayer);
-    std::vector<double> run(std::vector<double> inputs);
-    void train(std::vector<std::vector<double>> inputs, std::vector<std::vector<double>> expectedOutput);
-    void resetNetwork();
+    class NeuralNetwork
+    {
+    public:
+        NeuralNetwork();
+        ~NeuralNetwork();
 
-    int size();
-    double getLearningRate();
-    void setLearningRate(double v);
-    
-    void exportTestInformation(std::string filename);
+        void addLayerToEnd(int sizeOfLayer);
+        std::vector<double> run(std::vector<double> inputs);
+        void train(std::vector<std::vector<double>> inputs, std::vector<std::vector<double>> expectedOutput);
+        void resetNetwork();
 
-    NeuralLayer* getStartLayer();
-    NeuralLayer* getEndLayer();
-private:
-    NeuralLayer* startLayer = nullptr;
-    NeuralLayer* endLayer = nullptr;
-    double learningRate = 0.5;
-};
+        int size();
+        double getLearningRate();
+        void setLearningRate(double v);
+        
+        void exportTestInformation(std::string filename);
+
+        NeuralLayer* getStartLayer();
+        NeuralLayer* getEndLayer();
+    private:
+        NeuralLayer* startLayer = nullptr;
+        NeuralLayer* endLayer = nullptr;
+        double learningRate = 0.5;
+    };
+
+} //NAMESPACE glib END

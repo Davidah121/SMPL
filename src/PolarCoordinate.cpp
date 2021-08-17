@@ -1,34 +1,39 @@
 #include "PolarCoordinate.h"
 #include "MathExt.h"
 
-PolarCoordinate::PolarCoordinate()
+namespace glib
 {
+        
+    PolarCoordinate::PolarCoordinate()
+    {
 
-}
+    }
 
-PolarCoordinate::PolarCoordinate(double length, double angle)
-{
-    this->length = length;
-    this->angle = angle;
-}
+    PolarCoordinate::PolarCoordinate(double length, double angle)
+    {
+        this->length = length;
+        this->angle = angle;
+    }
 
-PolarCoordinate::PolarCoordinate(Vec2f coord)
-{
-    length = MathExt::vecLength(coord);
-    angle = MathExt::dirToPoint(0, 0, coord.x, coord.y);
-}
+    PolarCoordinate::PolarCoordinate(Vec2f coord)
+    {
+        length = MathExt::vecLength(coord);
+        angle = MathExt::dirToPoint(0, 0, coord.x, coord.y);
+    }
 
-PolarCoordinate::~PolarCoordinate()
-{
-    
-}
+    PolarCoordinate::~PolarCoordinate()
+    {
+        
+    }
 
-double PolarCoordinate::getLength()
-{
-    return length;
-}
+    double PolarCoordinate::getLength()
+    {
+        return length;
+    }
 
-double PolarCoordinate::getAngle()
-{
-    return angle;
-}
+    double PolarCoordinate::getAngle()
+    {
+        return angle;
+    }
+
+} //NAMESPACE glib END
