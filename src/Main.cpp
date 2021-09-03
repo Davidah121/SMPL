@@ -529,27 +529,38 @@ void testSVGTransforms()
 {
     GuiCustomObject cus = GuiCustomObject();
 
-    cus.setRenderFunction([](Image* surf)->void{
-        VectorRectangle r = VectorRectangle();
-        r.setFillColor({255,0,0,255});
-        r.setX(64);
-        r.setY(64);
-        r.setRX(16);
-        r.setRY(16);
-        r.setWidth(64);
-        r.setHeight(64);
+    double rot = 0;
+    cus.setRenderFunction([&rot](Image* surf)->void{
+        VectorPath p = VectorPath();
+        p.setFillColor(ColorNameConverter::NameToColor("blue"));
+        p.addMoveTo(64,64);
+        p.addQuadToRel(32,32,64,0);
+        p.addQuadToShortRel(32,32);
+        p.addClosePath();
 
-        r.setTransform( MathExt::rotation2D(PI/6, 96, 96) );
+        p.setTransform(MathExt::scale2D(2,3)*MathExt::rotation2D(MathExt::toRad(90.0),96,96));
 
-        r.draw(surf, surf->getWidth(), surf->getHeight());
-
-        Graphics::setColor({255,255,255,255});
-        Graphics::drawCircle(96, 96, 3, false, surf);
+        p.draw(surf, surf->getWidth(), surf->getHeight());
     });
 
-    WndWindow window = WndWindow("SVG Transforms", 640,480);
+    WndWindow window = WndWindow("SVG Transforms", 640,480, -1, -1, WndWindow::TYPE_USER_MANAGED);
     window.getGuiManager()->addElement(&cus);
-    window.waitTillClose();
+
+    bool first = false;
+    while(window.getRunning())
+    {
+        window.update();
+        window.guiUpdate();
+
+        if(!first)
+        {
+            window.repaint();
+            first = false;
+        }
+
+        System::sleep(10,0);
+    }
+    // window.waitTillClose();
 }
 
 int main(int argc, char** argv)

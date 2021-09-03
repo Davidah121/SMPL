@@ -26,6 +26,7 @@ namespace glib
 		Vec3f getRotation();
 
 		virtual void transform();
+		virtual double generateBoundingRadius();
 		
 	protected:
 		Vec3f position = Vec3f();
@@ -63,6 +64,8 @@ namespace glib
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
+
+		double generateBoundingRadius();
 	};
 
 	class Box2D : public Shape
@@ -88,7 +91,7 @@ namespace glib
 		void setBottomBound(double bb);
 		double getBottomBound();
 
-		
+		double generateBoundingRadius();
 	private:
 		double lBound = 0;
 		double rBound = 0;
@@ -109,6 +112,8 @@ namespace glib
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
+
+		double generateBoundingRadius();
 		
 	private:
 		double radius = 0;
@@ -130,6 +135,7 @@ namespace glib
 		const Class* getClass();
 		static const Class myClass;
 		
+		double generateBoundingRadius();
 	private:
 		double xRadius = 0;
 		double yRadius = 0;
@@ -167,6 +173,8 @@ namespace glib
 		double getMinY();
 		double getMaxY();
 
+		double generateBoundingRadius();
+
 	private:
 
 		Vec2f v1;
@@ -199,6 +207,7 @@ namespace glib
 		Vec2f getVertex2();
 		Vec2f getVertex3();
 
+		double generateBoundingRadius();
 	private:
 
 		Vec2f v1;
@@ -223,6 +232,8 @@ namespace glib
 		size_t size();
 
 		bool getConvex();
+
+		double generateBoundingRadius();
 	private:
 		void checkConcave();
 		std::vector<Vec2f> points;

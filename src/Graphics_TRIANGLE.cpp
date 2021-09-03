@@ -2,6 +2,53 @@
 
 namespace glib
 {
+	void Graphics::testDrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, Image* surf)
+	{
+		int currentComposite = compositeRule;
+		Image* otherImg;
+		if(surf==nullptr)
+			otherImg = activeImage;
+		else
+			otherImg = surf;
+		
+		if(otherImg!=nullptr)
+		{
+			if(otherImg->getWidth()<=0 || otherImg->getHeight()<=0)
+			{
+				return;
+			}
+			int minY = MathExt::min( {y1,y2,y3} );
+			int maxY = MathExt::max( {y1,y2,y3} );
+			int minX = MathExt::min( {x1,x2,x3} );
+			int maxX = MathExt::max( {x1,x2,x3} );
+
+			Line l1 = Line(x1,y1,x2,y2);
+			Line l2 = Line(x2,y2,x3,y3);
+			Line l3 = Line(x3,y3,x1,y1);
+			
+			for(int y=minY; y<maxY; y++)
+			{
+				double xv1 = l1.solveForX(y+0.5);
+				double xv2 = l2.solveForX(y+0.5);
+				double xv3 = l3.solveForX(y+0.5);
+
+				std::vector<double> solvedVals = {MathExt::round(xv1), MathExt::round(xv2), MathExt::round(xv3)};
+
+				Sort::insertionSort<double>(solvedVals.data(), 3, [](double a, double b) -> bool{
+					return a < b;
+				});
+
+				int guessedMin = solvedVals[0];
+				int guessedMax = solvedVals[1];
+				
+				for(int x=guessedMin; x<guessedMax; x++)
+				{
+					drawPixel(x,y,Graphics::getColor(), surf);
+				}
+			}
+		}
+	}
+
 	void Graphics::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline, Image* surf)
 	{
 		int currentComposite = compositeRule;
@@ -30,120 +77,40 @@ namespace glib
 			Line l2 = Line(x2, y2, x3, y3);
 			Line l3 = Line(x3, y3, x1, y1);
 			
-			int arr[3] = {x1, x2, x3};
-			int minX = MathExt::min( arr, 3 );
-			int maxX = MathExt::max( arr, 3 );
+			int minY = MathExt::min( {y1,y2,y3} );
+			int maxY = MathExt::max( {y1,y2,y3} );
+			int minX = MathExt::min( {x1,x2,x3} );
+			int maxX = MathExt::max( {x1,x2,x3} );
+
+			minY = MathExt::clamp(minY, (int)Graphics::getClippingRect().getTopBound(), (int)Graphics::getClippingRect().getBottomBound());
+			maxY = MathExt::clamp(maxY, (int)Graphics::getClippingRect().getTopBound(), (int)Graphics::getClippingRect().getBottomBound());
 			
-			arr[0] = y1; arr[1] = y2; arr[2] = y3;
-			int minY = MathExt::min( arr, 3 );
-			int maxY = MathExt::max( arr, 3 );
+			minX = MathExt::clamp(minX, (int)Graphics::getClippingRect().getLeftBound(), (int)Graphics::getClippingRect().getRightBound());
+			maxX = MathExt::clamp(maxX, (int)Graphics::getClippingRect().getLeftBound(), (int)Graphics::getClippingRect().getRightBound());
 			
-			Line constLine;
-			Line sLine;
-			Line eLine;
-			Vec2f pivot = Vec2f();
 			
-			if( l1.getMinY() == minY && l1.getMaxY() == maxY )
+			for(int y=minY; y<maxY; y++)
 			{
-				constLine = l1;
-				pivot = Vec2f(x3, y3);
-				if(y2 < y1)
-				{
-					sLine = l2;
-					eLine = l3;
-				}
-				else
-				{
-					sLine = l3;
-					eLine = l2;
-				}
-			}
-			else if( l2.getMinY() == minY && l2.getMaxY() == maxY )
-			{
-				constLine = l2;
-				pivot = Vec2f(x1, y1);
-				if(y3 < y2)
-				{
-					sLine = l3;
-					eLine = l1;
-				}
-				else
-				{
-					sLine = l1;
-					eLine = l3;
-				}
-			}
-			else
-			{
-				constLine = l3;
-				pivot = Vec2f(x2, y2);
-				if(y1 < y3)
-				{
-					sLine = l1;
-					eLine = l2;
-				}
-				else
-				{
-					sLine = l2;
-					eLine = l1;
-				}
-			}
+				double xv1 = l1.solveForX(y+0.5);
+				double xv2 = l2.solveForX(y+0.5);
+				double xv3 = l3.solveForX(y+0.5);
 
-			int tempWidth = otherImg->getWidth()-1;
-			int tempHeight = otherImg->getHeight()-1;
+				std::vector<double> solvedVals = {MathExt::round(xv1), MathExt::round(xv2), MathExt::round(xv3)};
 
-			int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
-			int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+				Sort::insertionSort<double>(solvedVals.data(), 3, [](double a, double b) -> bool{
+					return a < b;
+				});
 
-			int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
-			int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
+				int startX = solvedVals[0];
+				int endX = solvedVals[1];
 
-			int startY = MathExt::clamp(minY, minYBound, maxYBound);
-			int endY = MathExt::clamp(maxY, minYBound, maxYBound);
-
-			bool dir1 = (constLine.getToPoint().y < 0) || (constLine.getToPoint().x > 0);
-			bool dir2 = (sLine.getToPoint().y < 0) || (sLine.getToPoint().x > 0);
-			bool swapPivot = false;
-
-			for(int y=startY; y<=endY; y++)
-			{
-				double cX1 = 0;
-				double cX2 = 0;
-
-				if(y<=pivot.y)
-				{
-					cX1 = constLine.solveForX(y+0.5);
-					cX2 = sLine.solveForX(y+0.5);
-				}
-				else
-				{
-					if(!swapPivot)
-					{
-						dir2 = (eLine.getToPoint().y < 0) || (eLine.getToPoint().x > 0);
-						swapPivot=true;
-					}
-
-					cX1 = constLine.solveForX(y-0.5);
-					cX2 = eLine.solveForX(y-0.5);
-				}
-
-				if(cX1>cX2)
-				{
-					double old = cX2;
-					cX2 = cX1;
-					cX1 = old;
-				}
-
-				int startX = (dir1) ? MathExt::floor(cX1+0.5) : MathExt::ceil(cX1-0.5);
-				int endX = (dir2) ? MathExt::floor(cX2+0.5) : MathExt::ceil(cX2-0.5);
-
-				startX = MathExt::clamp( startX, minXBound, maxXBound);
-				endX = MathExt::clamp( endX, minXBound, maxXBound);
+				startX = MathExt::clamp( startX, minX, maxX);
+				endX = MathExt::clamp( endX, minX, maxX);
 
 				#if(OPTI>=2)
 
-					int avxWidth = (1+endX-startX)>>3;
-					int remainder = (1+endX-startX) - (avxWidth<<3);
+					int avxWidth = (endX-startX)>>3;
+					int remainder = (endX-startX) - (avxWidth<<3);
 
 					Color* startFill = otherImg->getPixels() + startX + y*otherImg->getWidth();
 					Color* endFill = startFill + (endX-startX);
@@ -190,8 +157,8 @@ namespace glib
 
 				#elif(OPTI>=1)
 
-					int sseWidth = (1+endX-startX)>>2;
-					int remainder = (1+endX-startX) - (sseWidth<<2);
+					int sseWidth = (endX-startX)>>2;
+					int remainder = (endX-startX) - (sseWidth<<2);
 
 					Color* startFill = otherImg->getPixels() + startX + y*otherImg->getWidth();
 					Color* endFill = startFill + (endX-startX);
@@ -244,7 +211,7 @@ namespace glib
 					//fill from cX1 to cX2
 					if(compositeRule == NO_COMPOSITE)
 					{
-						while(startFill <= endFill)
+						while(startFill < endFill)
 						{
 							*startFill = activeColor;
 							startFill++;
@@ -252,7 +219,7 @@ namespace glib
 					}
 					else
 					{
-						while(startFill <= endFill)
+						while(startFill < endFill)
 						{
 							Color destColor = *startFill;
 							Color finalColor = blend(activeColor, destColor);
@@ -283,122 +250,41 @@ namespace glib
 			{
 				return;
 			}
+
 			Line l1 = Line(p1.x, p1.y, p2.x, p2.y);
 			Line l2 = Line(p2.x, p2.y, p3.x, p3.y);
 			Line l3 = Line(p3.x, p3.y, p1.x, p1.y);
-
-
-			double arr[3] = {p1.x, p2.x, p3.x};
-			double minX = MathExt::min( arr, 3 );
-			double maxX = MathExt::max( arr, 3 );
 			
-			arr[0] = p1.y; arr[1] = p2.y; arr[2] = p3.y;
-			double minY = MathExt::min( arr, 3 );
-			double maxY = MathExt::max( arr, 3 );
+			int minY = MathExt::min( {p1.y,p2.y,p3.y} );
+			int maxY = MathExt::max( {p1.y,p2.y,p3.y} );
+			int minX = MathExt::min( {p1.x,p2.x,p3.x} );
+			int maxX = MathExt::max( {p1.x,p2.x,p3.x} );
+
+			minY = MathExt::clamp(minY, (int)Graphics::getClippingRect().getTopBound(), (int)Graphics::getClippingRect().getBottomBound());
+			maxY = MathExt::clamp(maxY, (int)Graphics::getClippingRect().getTopBound(), (int)Graphics::getClippingRect().getBottomBound());
 			
-			Line constLine;
-			Line sLine;
-			Line eLine;
-			Vec2f pivot = Vec2f();
-			if(l1.getMinY() == minY && l1.getMaxY() == maxY)
-			{
-				constLine = l1;
-				pivot = Vec2f(p3.x, p3.y);
-				if(p2.y < p1.y)
-				{
-					sLine = l2;
-					eLine = l3;
-				}
-				else
-				{
-					sLine = l3;
-					eLine = l2;
-				}
-			}
-			else if(l2.getMinY() == minY && l2.getMaxY() == maxY)
-			{
-				constLine = l2;
-				pivot = Vec2f(p1.x, p1.y);
-				if(p3.y < p2.y)
-				{
-					sLine = l3;
-					eLine = l1;
-				}
-				else
-				{
-					sLine = l1;
-					eLine = l3;
-				}
-			}
-			else
-			{
-				constLine = l3;
-				pivot = Vec2f(p2.x, p2.y);
-				if(p1.y < p3.y)
-				{
-					sLine = l1;
-					eLine = l2;
-				}
-				else
-				{
-					sLine = l2;
-					eLine = l1;
-				}
-			}
-
-			int tempWidth = otherImg->getWidth()-1;
-			int tempHeight = otherImg->getHeight()-1;
-
-			int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
-			int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
-
-			int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
-			int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
-
-			int startY = MathExt::clamp( (int)MathExt::floor(minY), minYBound, maxYBound);
-			int endY = MathExt::clamp( (int)MathExt::ceil(maxY), minYBound, maxYBound);
-
+			minX = MathExt::clamp(minX, (int)Graphics::getClippingRect().getLeftBound(), (int)Graphics::getClippingRect().getRightBound());
+			maxX = MathExt::clamp(maxX, (int)Graphics::getClippingRect().getLeftBound(), (int)Graphics::getClippingRect().getRightBound());
+			
 			double det = (p2.y-p3.y)*(p1.x-p3.x) + (p3.x-p2.x)*(p1.y-p3.y);
-			Color* texturePixels = texture->getPixels();
 
-			bool dir1 = (constLine.getToPoint().y < 0) || (constLine.getToPoint().x > 0);
-			bool dir2 = (sLine.getToPoint().y < 0) || (sLine.getToPoint().x > 0);
-			bool swapPivot = false;
-
-			for(int y=startY; y<=endY; y++)
+			for(int y=minY; y<maxY; y++)
 			{
-				double cX1 = 0;
-				double cX2 = 0;
+				double xv1 = l1.solveForX(y+0.5);
+				double xv2 = l2.solveForX(y+0.5);
+				double xv3 = l3.solveForX(y+0.5);
 
-				if(y<pivot.y)
-				{
-					cX1 = constLine.solveForX(y);
-					cX2 = sLine.solveForX(y);
-				}
-				else
-				{
-					if(!swapPivot)
-					{
-						dir2 = (eLine.getToPoint().y < 0) || (eLine.getToPoint().x > 0);
-						swapPivot=true;
-					}
+				std::vector<double> solvedVals = {MathExt::round(xv1), MathExt::round(xv2), MathExt::round(xv3)};
 
-					cX1 = constLine.solveForX(y);
-					cX2 = eLine.solveForX(y);
-				}
+				Sort::insertionSort<double>(solvedVals.data(), 3, [](double a, double b) -> bool{
+					return a < b;
+				});
 
-				if(cX1>cX2)
-				{
-					double old = cX2;
-					cX2 = cX1;
-					cX1 = old;
-				}
+				int startX = solvedVals[0];
+				int endX = solvedVals[1];
 
-				int startX = (dir1) ? MathExt::floor(cX1+0.5) : MathExt::ceil(cX1-0.5);
-				int endX = (dir2) ? MathExt::floor(cX2+0.5) : MathExt::ceil(cX2-0.5);
-
-				startX = MathExt::clamp( startX, minXBound, maxXBound);
-				endX = MathExt::clamp( endX, minXBound, maxXBound);
+				startX = MathExt::clamp( startX, minX, maxX);
+				endX = MathExt::clamp( endX, minX, maxX);
 
 				if(startX > endX)
 				{
@@ -453,8 +339,8 @@ namespace glib
 
 				#if(OPTI>=2)
 
-					int avxWidth = (dis+1)>>3;
-					int remainder = (dis+1) - (avxWidth<<3);
+					int avxWidth = (dis)>>3;
+					int remainder = (dis) - (avxWidth<<3);
 
 					__m256i* avxFill = (__m256i*)startFill;
 					__m256i* avxEnd = avxFill + avxWidth;
@@ -515,14 +401,14 @@ namespace glib
 						int* xCoords = (int*)&uInt;
 						int* yCoords = (int*)&vInt;
 						
-						Color c1 = texture->getPixel(xCoords[0], yCoords[0], false);
-						Color c2 = texture->getPixel(xCoords[1], yCoords[1], false);
-						Color c3 = texture->getPixel(xCoords[2], yCoords[2], false);
-						Color c4 = texture->getPixel(xCoords[3], yCoords[3], false);
-						Color c5 = texture->getPixel(xCoords[4], yCoords[4], false);
-						Color c6 = texture->getPixel(xCoords[5], yCoords[5], false);
-						Color c7 = texture->getPixel(xCoords[6], yCoords[6], false);
-						Color c8 = texture->getPixel(xCoords[7], yCoords[7], false);
+						Color c1 = texture->getPixel(xCoords[0], yCoords[0], true);
+						Color c2 = texture->getPixel(xCoords[1], yCoords[1], true);
+						Color c3 = texture->getPixel(xCoords[2], yCoords[2], true);
+						Color c4 = texture->getPixel(xCoords[3], yCoords[3], true);
+						Color c5 = texture->getPixel(xCoords[4], yCoords[4], true);
+						Color c6 = texture->getPixel(xCoords[5], yCoords[5], true);
+						Color c7 = texture->getPixel(xCoords[6], yCoords[6], true);
+						Color c8 = texture->getPixel(xCoords[7], yCoords[7], true);
 						
 						__m256i finalColors = _mm256_set_epi32(
 							*(int*)&c8,
@@ -567,7 +453,7 @@ namespace glib
 						int uInt = (int) MathExt::round(u * (texture->getWidth()));
 						int vInt = (int) MathExt::round(v * (texture->getHeight()));
 
-						Color c = texture->getPixel(uInt, vInt, false);
+						Color c = texture->getPixel(uInt, vInt, true);
 						
 						if(currentComposite == NO_COMPOSITE)
 						{
@@ -584,8 +470,8 @@ namespace glib
 				
 				#elif(OPTI>=1)
 
-					int sseWidth = (dis+1)>>2;
-					int remainder = (dis+1) - (sseWidth<<2);
+					int sseWidth = (dis)>>2;
+					int remainder = (dis) - (sseWidth<<2);
 
 					__m128i* sseFill = (__m128i*)startFill;
 					__m128i* sseEnd = sseFill + sseWidth;
@@ -687,7 +573,7 @@ namespace glib
 						int uInt = (int) MathExt::round(u * (texture->getWidth()));
 						int vInt = (int) MathExt::round(v * (texture->getHeight()));
 
-						Color c = texture->getPixel(uInt, vInt, false);
+						Color c = texture->getPixel(uInt, vInt, true);
 						
 						if(currentComposite == NO_COMPOSITE)
 						{
@@ -704,7 +590,7 @@ namespace glib
 				
 				#else
 
-					while(startFill <= endFill)
+					while(startFill < endFill)
 					{
 						double blendValue = (double)x / dis;
 
@@ -718,7 +604,7 @@ namespace glib
 						int uInt = (int) MathExt::round(u * (texture->getWidth()));
 						int vInt = (int) MathExt::round(v * (texture->getHeight()));
 
-						Color c = texture->getPixel(uInt, vInt, false);
+						Color c = texture->getPixel(uInt, vInt, true);
 						
 						if(currentComposite == NO_COMPOSITE)
 						{

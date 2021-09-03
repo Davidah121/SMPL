@@ -47,8 +47,8 @@ namespace glib
 			{
 				int actualS, actualE;
 
-				actualS = MathExt::clamp(startHighlight, 0, text.size());
-				actualE = MathExt::clamp(endHighlight, 0, text.size());
+				actualS = MathExt::clamp(startHighlight, 0, (int)text.size());
+				actualE = MathExt::clamp(endHighlight, 0, (int)text.size());
 
 				if(actualS > actualE)
 				{

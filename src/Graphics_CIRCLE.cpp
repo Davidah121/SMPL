@@ -195,7 +195,7 @@ namespace glib
 							int addAmount = x1;
 							int addAmount2 = tempWidth-x2;
 
-							if(xDisToCenter==0)
+							if(x1==x2)
 							{
 								startPoint += addAmount;
 								*startPoint = activeColor;
@@ -251,7 +251,7 @@ namespace glib
 							int addAmount = x1;
 							int addAmount2 = tempWidth-x2;
 
-							if(xDisToCenter==0)
+							if(x1==x2)
 							{
 								startPoint += addAmount;
 								*startPoint = blend(activeColor, *startPoint);

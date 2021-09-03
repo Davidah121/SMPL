@@ -45,6 +45,8 @@ namespace glib
 					int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
 					int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
 
+					double offsetVal = (dir) ? -0.5 : 0.5;
+
 					if(y1 <= y2)
 					{
 						minY = MathExt::clamp(y1, minYBound, maxYBound);
@@ -58,11 +60,12 @@ namespace glib
 
 					if(currentComposite == NO_COMPOSITE)
 					{
+						
 						for(int i=minY; i<=maxY; i++)
 						{
 							//solve with respect to x
-							double val = -(con+P2*i) / (double)P1;
-							int actualX = (dir) ? MathExt::floor(val+0.5) : MathExt::ceil(val-0.5);
+							double val = -(con+P2*(i+offsetVal)) / (double)P1;
+							int actualX = MathExt::round(val);
 							
 							if(actualX >= minXBound && actualX <= maxXBound)
 								otherImg->setPixel(actualX, i, Graphics::activeColor); //change later
@@ -73,8 +76,8 @@ namespace glib
 						for(int i=minY; i<=maxY; i++)
 						{
 							//solve with respect to x
-							double val = -(con+P2*i) / (double)P1;
-							int actualX = (dir) ? MathExt::floor(val+0.5) : MathExt::ceil(val-0.5);
+							double val = -(con+P2*(i+offsetVal)) / (double)P1;
+							int actualX = MathExt::round(val);
 							if(actualX >= minXBound && actualX <= maxXBound)
 								otherImg->drawPixel(actualX, i, Graphics::activeColor); //change later
 						}
@@ -95,6 +98,8 @@ namespace glib
 					int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
 					int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
 
+					double offsetVal = (dir) ? -0.5 : 0.5;
+
 					if(x1 <= x2)
 					{
 						minX = MathExt::clamp(x1, minXBound, maxXBound);
@@ -111,8 +116,8 @@ namespace glib
 						for(int i=minX; i<=maxX; i++)
 						{
 							//solve with respect to y
-							double val = -(con+P1*i) / (double)P2;
-							int actualY = (dir) ? MathExt::floor(val+0.5) : MathExt::ceil(val-0.5);
+							double val = -(con+P1*(i+offsetVal)) / (double)P2;
+							int actualY = MathExt::round(val);
 
 							if(actualY >= minYBound && actualY <= maxYBound)
 								otherImg->setPixel(i, actualY, Graphics::activeColor); //change later
@@ -123,8 +128,8 @@ namespace glib
 						for(int i=minX; i<=maxX; i++)
 						{
 							//solve with respect to y
-							double val = -(con+P1*i) / (double)P2;
-							int actualY = (dir) ? MathExt::floor(val+0.5) : MathExt::ceil(val-0.5);
+							double val = -(con+P1*(i+offsetVal)) / (double)P2;
+							int actualY = MathExt::round(val);
 							if(actualY >= minYBound && actualY <= maxYBound)
 								otherImg->drawPixel(i, actualY, Graphics::activeColor); //change later
 						}

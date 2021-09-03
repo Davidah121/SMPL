@@ -59,6 +59,11 @@ namespace glib
 		
 	}
 
+	double Shape::generateBoundingRadius()
+	{
+		return 0;
+	}
+
 	#pragma endregion
 
 	#pragma region POINT2D
@@ -84,6 +89,11 @@ namespace glib
 
 	Point2D::~Point2D()
 	{
+	}
+
+	double Point2D::generateBoundingRadius()
+	{
+		return 0;
 	}
 
 	#pragma endregion
@@ -155,6 +165,11 @@ namespace glib
 		return bBound;
 	}
 
+	double Box2D::generateBoundingRadius()
+	{
+		return 0;
+	}
+
 	#pragma endregion
 
 	#pragma region CIRCLE
@@ -189,6 +204,11 @@ namespace glib
 	void Circle::setRadius(double rad)
 	{
 		radius = rad;
+	}
+
+	double Circle::generateBoundingRadius()
+	{
+		return 0;
 	}
 
 	#pragma endregion
@@ -233,6 +253,11 @@ namespace glib
 	void Ellipse::setYRadius(double rad)
 	{
 		yRadius = rad;
+	}
+
+	double Ellipse::generateBoundingRadius()
+	{
+		return 0;
 	}
 
 	#pragma endregion
@@ -350,6 +375,11 @@ namespace glib
 		return MathExt::max(v1.y, v2.y);
 	}
 
+	double Line2D::generateBoundingRadius()
+	{
+		return 0;
+	}
+
 	#pragma endregion
 
 	#pragma region TRIANGLE2D
@@ -434,6 +464,11 @@ namespace glib
 	Vec2f Triangle2D::getVertex3()
 	{
 		return v3;
+	}
+
+	double Triangle2D::generateBoundingRadius()
+	{
+		return 0;
 	}
 
 	#pragma endregion
@@ -556,6 +591,11 @@ namespace glib
 		{
 			isConvex = true;
 		}
+	}
+
+	double Polygon2D::generateBoundingRadius()
+	{
+		return 0;
 	}
 
 	#pragma endregion

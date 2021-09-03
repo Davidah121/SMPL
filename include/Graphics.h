@@ -63,6 +63,7 @@ namespace glib
 		static void drawLine(int x, int y, int x2, int y2, Image* surf = nullptr);
 		static void drawCircle(int x, int y, int radius, bool outline, Image* surf = nullptr);
 
+		static void testDrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, Image* surf = nullptr);
 		static void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline, Image* surf = nullptr);
 		static void drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture = nullptr, Image* surf = nullptr);
 		
