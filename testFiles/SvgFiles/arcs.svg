@@ -1,21 +1,7 @@
 <?xml version="1.0" standalone="no"?>
-<svg width="12cm" height="5.3cm" viewBox="0 0 120 40"
+<svg width="512" height="512"
      xmlns="http://www.w3.org/2000/svg" version="1.1">
 
-    <path d="M 45 30 h -15 a 15 15 0 0 0 5 -5 z"
-        fill="red" stroke="blue" stroke-width="0.2" />
-    
-    <circle cx="45" cy="30" r="0.5" fill="green" />
-    <circle cx="35" cy="10" r="0.5" fill="green" />
-
-    <line x1="30" y1="30" x2="45" y2="15" stroke="white" stroke-width="0.1"/>
-    
-    <line x1="45" y1="30" x2="30" y2="15" stroke="yellow" stroke-width="0.1"/>
-    
-    <ellipse cx="35" cy="10" rx="15" ry="15" fill="green" fill-opacity="0.3"/>
-    <ellipse cx="45" cy="30" rx="15" ry="15" fill="green" fill-opacity="0.3" stroke="black" stroke-width="0.3"/>
-    
-    <circle cx="35" cy="30" r="0.5" fill="green" />
-    <circle cx="45" cy="10" r="0.5" fill="green" />
+    <path d="M64,64 q32,32,64,0 t32,32 Z" fill="blue" transform="scale(2,3), rotate(90,96,96)"/>
 
 </svg>

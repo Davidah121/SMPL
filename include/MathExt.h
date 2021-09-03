@@ -23,11 +23,16 @@
 #endif
 
 #ifndef PI
-	#define PI 3.1415927
+	#define PI 3.14159265359
 #endif
 
 #ifndef E
-	#define E 2.7182818
+	#define E 2.718281828459
+#endif
+
+//Temporary location
+#ifndef LOGIC_XOR
+	#define LOGIC_XOR(a,b) ((!(a)) != (!(b)))
 #endif
 
 namespace glib
@@ -125,7 +130,7 @@ namespace glib
 		static float frac(float a);
 
 		static float roundToDecimal(float a, int decimalPlaces=6);
-		static float roundToDecimal(double a, int decimalPlaces=6);
+		static double roundToDecimal(double a, int decimalPlaces=6);
 
 		template<typename T>
 		static T sqr(T a)
@@ -149,13 +154,23 @@ namespace glib
 		// static double cube(double a);
 		// static long cube(long a);
 
-		static double sqrt(int a);
 		static float sqrt(float a);
 		static double sqrt(double a);
 
-		static double cubeRoot(int a);
+		template<typename T>
+		static double sqrt(T a)
+		{
+			return std::sqrt(a);
+		}
+		
 		static float cubeRoot(float a);
 		static double cubeRoot(double a);
+		
+		template<typename T>
+		static double cubeRoot(T a)
+		{
+			return std::cbrt(a);
+		}
 
 		static float pow(float value, float power);
 		static double pow(double value, double power);
@@ -174,10 +189,15 @@ namespace glib
 		static unsigned int random();
 		static int randomRange(int min, int max);
 		
-		static int clamp(int value, int min, int max);
-		static float clamp(float value, float min, float max);
-		static double clamp(double value, double min, double max);
-		static long clamp(long value, long min, long max);
+		template<typename T>
+		static T clamp(T value, T min, T max)
+		{
+			if(value <= min)
+				return min;
+			if(value >= max)
+				return max;
+			return value;
+		}
 
 		static float toDeg(float rad);
 		static double toDeg(double rad);
@@ -185,6 +205,9 @@ namespace glib
 		static float toRad(float deg);
 		static double toRad(double deg);
 
+		static float angleToStandardRange(float angle, bool isDegree);
+		static double angleToStandardRange(double angle, bool isDegree);
+		
 		static float cos(float value);
 		static double cos(double value);
 
@@ -229,6 +252,17 @@ namespace glib
 
 		static double dirToPoint(double x, double y, double x2, double y2);
 		static double dirToPointDeg(double x, double y, double x2, double y2);
+
+		static bool angleBetween(double testAngle, double startAngle, double endAngle, bool clockwise);
+		static bool angleBetweenDeg(double testAngle, double startAngle, double endAngle, bool clockwise);
+		
+		static double closestAngle(double testAngle, double angle1, double angle2);
+		static double closestAngleDeg(double testAngle, double angle1, double angle2);
+		
+		static double angleClamp(double testAngle, double startAngle, double endAngle, bool clockwise);
+		static double angleClampDeg(double testAngle, double startAngle, double endAngle, bool clockwise);
+		
+		static Vec2f lengthDir(double length, double direction);
 
 		static double dot(Vec2f v1, Vec2f v2);
 		static double dot(Vec3f v1, Vec3f v2);

@@ -160,14 +160,14 @@ namespace glib
 			else if (Input::getKeyPressed(Input::KEY_LEFT))
 			{
 				//Move cursor back
-				cursorLocation = MathExt::clamp(cursorLocation-1, 0, textElement.getTextRef().size());
+				cursorLocation = MathExt::clamp(cursorLocation-1, 0, (int)textElement.getTextRef().size());
 				selectStart = cursorLocation;
 				selectEnd = cursorLocation;
 			}
 			else if (Input::getKeyPressed(Input::KEY_RIGHT))
 			{
 				//Move cursor forward
-				cursorLocation = MathExt::clamp(cursorLocation+1, 0, textElement.getTextRef().size());
+				cursorLocation = MathExt::clamp(cursorLocation+1, 0, (int)textElement.getTextRef().size());
 				selectStart = cursorLocation;
 				selectEnd = cursorLocation;
 			}
@@ -388,10 +388,10 @@ namespace glib
 
 	void GuiTextBox::update()
 	{
-		selectEnd = MathExt::clamp(selectEnd, 0, textElement.getTextRef().size());
-		selectStart = MathExt::clamp(selectStart, 0, textElement.getTextRef().size());
-		cursorLocation = MathExt::clamp(cursorLocation, 0, textElement.getTextRef().size());
-		startStringIndex = MathExt::clamp(startStringIndex, 0, textElement.getTextRef().size());
+		selectEnd = MathExt::clamp(selectEnd, 0, (int)textElement.getTextRef().size());
+		selectStart = MathExt::clamp(selectStart, 0, (int)textElement.getTextRef().size());
+		cursorLocation = MathExt::clamp(cursorLocation, 0, (int)textElement.getTextRef().size());
+		startStringIndex = MathExt::clamp(startStringIndex, 0, (int)textElement.getTextRef().size());
 		
 		keyInput();
 		mouseInput();

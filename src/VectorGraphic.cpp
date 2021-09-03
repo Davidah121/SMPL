@@ -1163,7 +1163,7 @@ namespace glib
 
 	void VectorGraphic::setAALevel(unsigned char level)
 	{
-		AA_LEVEL = MathExt::clamp(level, 0, 3);
+		AA_LEVEL = MathExt::clamp(level, (unsigned char)0, (unsigned char)3);
 	}
 
 	unsigned char VectorGraphic::getAALevel()

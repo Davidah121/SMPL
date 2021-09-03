@@ -285,7 +285,7 @@ namespace glib
 							}
 							else
 							{
-								if(scanLines[i][j-1].xValue == scanLines[i][j].xValue)
+								if(MathExt::round(scanLines[i][j-1].xValue) == MathExt::round(scanLines[i][j].xValue))
 								{
 									skipped = true;
 								}
@@ -629,8 +629,8 @@ namespace glib
 		BezierCurve b = BezierCurve();
 		b.addPoint(currentPos);
 
-		int actualMinY = MathExt::ceil(currentPos.y);
-		int actualMaxY = MathExt::floor(currentPos.y);
+		int actualMinY = MathExt::round(currentPos.y);
+		int actualMaxY = MathExt::round(currentPos.y);
 
 		for(int j=0; j<2; j++)
 		{
@@ -639,11 +639,11 @@ namespace glib
 				b.addPoint(command.points[j]);
 				if(command.points[j].y < actualMinY)
 				{
-					actualMinY = MathExt::ceil(command.points[j].y);
+					actualMinY = MathExt::round(command.points[j].y);
 				}
 				if(command.points[j].y > actualMaxY)
 				{
-					actualMaxY = MathExt::floor(command.points[j].y);
+					actualMaxY = MathExt::round(command.points[j].y);
 				}
 			}
 			else
@@ -651,11 +651,11 @@ namespace glib
 				b.addPoint(currentPos+command.points[j]);
 				if(currentPos.y+command.points[j].y < actualMinY)
 				{
-					actualMinY = MathExt::ceil(currentPos.y+command.points[j].y);
+					actualMinY = MathExt::round(currentPos.y+command.points[j].y);
 				}
 				if(currentPos.y+command.points[j].y > actualMaxY)
 				{
-					actualMaxY = MathExt::floor(currentPos.y+command.points[j].y);
+					actualMaxY = MathExt::round(currentPos.y+command.points[j].y);
 				}
 			}
 		}
@@ -839,6 +839,7 @@ namespace glib
 		bool slopeDir = dirVec.y<=0;
 		
 		double midPointX = (currentPos.x + arcEndPos.x)/2;
+
 		//solves arc system. Returns an array of vectors
 		//arcInfo[0] is the final radi of the ellipse. If it did not need to be expanded, this will be the same
 		//arcInfo[1] is one of the position for the 2 ellipses
@@ -851,12 +852,6 @@ namespace glib
 		bool isLargeArc = command.points[1].y >= 2.0;
 		bool isSweep = (command.points[1].y==1.0 || command.points[1].y==3.0);
 
-		// if( dirVec.x<=0  )
-		// {
-		// 	isSweep = !isSweep;
-		// }
-
-		// StringTools::println("ArcInfo Radi=(%.3f, %.3f) Pos1=(%.3f, %.3f) Pos2=(%.3f, %.3f)", arcInfo[0].x, arcInfo[0].y, arcInfo[1].x, arcInfo[1].y, arcInfo[2].x, arcInfo[2].y);
 		if(isSweep)
 		{
 			//counter-clockwise
@@ -871,7 +866,7 @@ namespace glib
 				}
 				else
 				{
-					if(arcInfo[1].x > midPointX)
+					if(arcInfo[1].x >= midPointX)
 						finalArcPosition = arcInfo[1];
 					else
 						finalArcPosition = arcInfo[2];
@@ -881,7 +876,7 @@ namespace glib
 			{
 				if(slopeDir)
 				{
-					if(arcInfo[1].x > midPointX)
+					if(arcInfo[1].x >= midPointX)
 						finalArcPosition = arcInfo[1];
 					else
 						finalArcPosition = arcInfo[2];
@@ -902,7 +897,7 @@ namespace glib
 			{
 				if(slopeDir)
 				{
-					if(arcInfo[1].x > midPointX)
+					if(arcInfo[1].x >= midPointX)
 						finalArcPosition = arcInfo[1];
 					else
 						finalArcPosition = arcInfo[2];
@@ -926,7 +921,7 @@ namespace glib
 				}
 				else
 				{
-					if(arcInfo[1].x > midPointX)
+					if(arcInfo[1].x >= midPointX)
 						finalArcPosition = arcInfo[1];
 					else
 						finalArcPosition = arcInfo[2];
@@ -937,45 +932,58 @@ namespace glib
 		int actualMinY, actualMaxY, radiY;
 		double floatMinY, floatMaxY;
 		
-		//check if both solutions are the same
-		if(arcInfo[1] == arcInfo[2])
-		{
-			//will always be a large arc
-			bool adjustedSweep = dirVec.x>=0 ? isSweep : !isSweep;
-			if(adjustedSweep)
-			{
-				floatMinY = finalArcPosition.y-MathExt::max(arcInfo[0].y, arcInfo[0].x);
-				floatMaxY = MathExt::max(currentPos.y, arcEndPos.y);
-			}
-			else
-			{
-				floatMinY = MathExt::min(currentPos.y, arcEndPos.y);
-				floatMaxY = finalArcPosition.y+MathExt::max(arcInfo[0].y, arcInfo[0].x);
-			}
-		}
-		else
-		{
-			if(!isLargeArc)
-			{
-				floatMinY = MathExt::min(currentPos.y, arcEndPos.y);
-				floatMaxY = MathExt::max(currentPos.y, arcEndPos.y);
-			}
-			else
-			{
-				floatMinY = finalArcPosition.y-MathExt::max(arcInfo[0].y, arcInfo[0].x);
-				floatMaxY = finalArcPosition.y+MathExt::max(arcInfo[0].y, arcInfo[0].x);
-			}
-		}
+		///FIX LATER
+		//Finds the min and max y values allowed for the arc.
+		//Finds the angles that will produce the absolute min and max y bounds for the ellipse
+		//	then clamps it down to the allowed range picking the closest angle. That angle is used
+		//	to find the min and max y values. (Note that the arc angle is added to the ranges. It works for some reason.)
 
-		actualMinY = (int)MathExt::ceil(floatMinY);
-		actualMaxY = (int)MathExt::floor(floatMaxY);
+		double ang1 = MathExt::dirToPointDeg(finalArcPosition.x, finalArcPosition.y, currentPos.x, currentPos.y);
+		double ang2 = MathExt::dirToPointDeg(finalArcPosition.x, finalArcPosition.y, arcEndPos.x, arcEndPos.y);
+		
+		ang1 += arcAngle;
+		ang2 += arcAngle;
+
+		double minYAngleThing, maxYAngleThing;
+
+		double absoluteMinYAngle, absoluteMaxYAngle;
+
+		absoluteMinYAngle = MathExt::darctan2(-arcInfo[0].y*MathExt::dcos(arcAngle), arcInfo[0].x*MathExt::dsin(arcAngle));
+
+		absoluteMinYAngle = MathExt::angleToStandardRange(absoluteMinYAngle, true);
+		absoluteMaxYAngle = MathExt::angleToStandardRange(absoluteMinYAngle + 180, true);
+
+		minYAngleThing = MathExt::angleClampDeg(absoluteMinYAngle, ang1, ang2, !isSweep);
+		maxYAngleThing = MathExt::angleClampDeg(absoluteMaxYAngle, ang1, ang2, !isSweep);
+		
+		floatMinY = arcInfo[0].y*MathExt::dsin(minYAngleThing)*MathExt::dcos(arcAngle) - 
+				arcInfo[0].x*MathExt::dcos(minYAngleThing)*MathExt::dsin(arcAngle);
+
+		floatMaxY = arcInfo[0].y*MathExt::dsin(maxYAngleThing)*MathExt::dcos(arcAngle) - 
+			arcInfo[0].x*MathExt::dcos(maxYAngleThing)*MathExt::dsin(arcAngle);
+
+		floatMinY += finalArcPosition.y;
+		floatMaxY += finalArcPosition.y;
+
+		if(floatMinY > floatMaxY)
+		{
+			double tempMin = floatMinY;
+			floatMinY = floatMaxY;
+			floatMaxY = tempMin;
+		}
+		
+		actualMinY = (int)MathExt::round(floatMinY);
+		actualMaxY = (int)MathExt::round(floatMaxY);
+
+		// StringTools::println("ArcAngles %.3f, %.3f, %.3f, %.3f, %.3f, %.3f", ang1, ang2, absoluteMinYAngle, absoluteMaxYAngle, minYAngleThing, maxYAngleThing);
+		// StringTools::println("MinMaxY (%d, %d) - Position (%.3f,%.3f)", actualMinY, actualMaxY, finalArcPosition.x, finalArcPosition.y);
 		
 		actualMinY = MathExt::clamp(actualMinY, minY, maxY);
 		actualMaxY = MathExt::clamp(actualMaxY, minY, maxY);
 
 		BezierCurve separatingLine = BezierCurve();
-		separatingLine.addPoint(currentPos);
-		separatingLine.addPoint(arcEndPos);
+		separatingLine.addPoint(Vec2f(MathExt::round(currentPos.x), MathExt::round(currentPos.y)));
+		separatingLine.addPoint(Vec2f(MathExt::round(arcEndPos.x), MathExt::round(arcEndPos.y)));
 
 		bool minSide = (arcEndPos - currentPos).y < 0;
 		bool slopeOfSeparatingLine = !minSide;
@@ -990,10 +998,6 @@ namespace glib
 
 		double yAdjustmentMin = 1-MathExt::frac(floatMinY);
 		double yAdjustmentMax = 1-MathExt::frac(floatMaxY);
-
-		// StringTools::println("ActualMin and Max Y values : %.3f, %.3f", floatMinY, floatMaxY);
-		// StringTools::println("Radius Values: (%.3f, %.3f)", arcRadi.x, arcRadi.y);
-		// StringTools::println("midPoint: (%.3f, %.3f)", finalArcPosition.x, finalArcPosition.y);
 
 		for(int y=actualMinY; y<=actualMaxY; y++, radiY++)
 		{
@@ -1035,64 +1039,42 @@ namespace glib
 				
 				std::vector<double> times = separatingLine.findTimeForY(y);
 
-				if(minSide)
+				if(times.size()>0)
 				{
-					//change max x
-					bool isPos = minX>finalArcPosition.x;
-					
-					if(times.size() > 0)
+					double solveX = separatingLine.getFuctionAt(times[0]).x;
+					if(!minSide)
 					{
-						double solveX = separatingLine.getFuctionAt(times[0]).x;
-
-						if((int)MathExt::ceil(minX) <= solveX)
+						if(solveX > minX)
 						{
-							scanLines[y].push_back({minX, isPos});
-							//scanLines[y].push_back({solveX, !isPos, 1});
+							scanLines[y].push_back({maxX, true});
 						}
 						else
 						{
-							scanLines[y].push_back({solveX, isPos});
-							//scanLines[y].push_back({solveX, !isPos, 1});
+							scanLines[y].push_back({minX, false});
+							scanLines[y].push_back({maxX, true});
 						}
 					}
 					else
 					{
-						scanLines[y].push_back({minX, isPos});
-						scanLines[y].push_back({maxX, !isPos});
+						if(solveX < maxX)
+						{
+							scanLines[y].push_back({minX, false});
+						}
+						else
+						{
+							scanLines[y].push_back({minX, false});
+							scanLines[y].push_back({maxX, true});
+						}
 					}
+					
 				}
 				else
 				{
-					//change min x
-					bool isPos = maxX>finalArcPosition.x;
-
-					if(times.size() > 0)
-					{
-						double solveX = separatingLine.getFuctionAt(times[0]).x;
-
-						if((int)MathExt::ceil(maxX) >= solveX)
-						{
-							scanLines[y].push_back({maxX, isPos});
-							//scanLines[y].push_back({solveX, !isPos, 1});
-						}
-						else
-						{
-							scanLines[y].push_back({solveX, isPos});
-							//scanLines[y].push_back({solveX, !isPos, 1});
-						}
-					}
-					else
-					{
-						scanLines[y].push_back({maxX, isPos});
-						scanLines[y].push_back({minX, !isPos});
-					}
+					scanLines[y].push_back({minX, false});
+					scanLines[y].push_back({maxX, true});
 				}
-				
 			}
-			else
-			{
-				//Outside of the bounds of the ellipse. Do nothing.
-			}
+			
 		}				
 	}
 
@@ -1330,7 +1312,8 @@ namespace glib
 			double l2 = B*dir.x + 2.0*C*dir.y;
 			double l3 = -(A*MathExt::sqr(dir.x)+ B*dir.x*dir.y + C*MathExt::sqr(dir.y));
 
-			if(l1!=0)
+			//Helps to avoid floating point errors due to very low values close to 0
+			if(MathExt::abs(l1) > MathExt::abs(l2) && l1 != 0)
 			{
 				//solve with respect to y
 				double Q = -l2/l1;
@@ -1422,15 +1405,15 @@ namespace glib
 		Vec2f currentPos;
 		for(PathCommand& com : commands)
 		{
-			Vec3f pos;
 			double translationToo = 1.0;
 			if( std::islower(com.c) )
 				translationToo = 0.0;
 
-			switch ( std::tolower(com.c) )
+			int commandVal = std::tolower(com.c);
+
+			if(commandVal == 'm')
 			{
-			case 'm':
-				pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
+				Vec3f pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
 
 				if(translationToo==1.0)
 					currentPos = com.points[0];
@@ -1438,9 +1421,10 @@ namespace glib
 					currentPos += com.points[0];
 
 				com.points[0] = Vec2f(pos.x, pos.y);
-				break;
-			case 'l':
-				pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
+			}
+			else if(commandVal == 'l')
+			{
+				Vec3f pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
 
 				if(translationToo==1.0)
 					currentPos = com.points[0];
@@ -1448,8 +1432,10 @@ namespace glib
 					currentPos += com.points[0];
 					
 				com.points[0] = Vec2f(pos.x, pos.y);
-				break;
-			case 'h':
+			}
+			else if(commandVal == 'h')
+			{
+				Vec3f pos;
 				if(translationToo==1.0)
 				{
 					pos = (getTransform() * Vec3f( com.points[0].x, currentPos.y, translationToo ));
@@ -1463,9 +1449,10 @@ namespace glib
 					
 				com.points[0] = Vec2f(pos.x, pos.y);
 				com.c = (translationToo==0.0) ? 'l' : 'L';
-				break;
-			case 'v':
-
+			}
+			else if(commandVal == 'v')
+			{
+				Vec3f pos;
 				if(translationToo==1.0)
 				{
 					pos = (getTransform() * Vec3f( currentPos.x, com.points[0].y, translationToo ));
@@ -1479,21 +1466,23 @@ namespace glib
 				
 				com.points[0] = Vec2f(pos.x, pos.y);
 				com.c = (translationToo==0.0) ? 'l' : 'L';
-				break;
-			case 'q':
-				pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
+			}
+			else if(commandVal == 'q')
+			{
+				Vec3f pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
 				com.points[0] = Vec2f(pos.x, pos.y);
 				pos = (getTransform() * Vec3f( com.points[1].x, com.points[1].y, translationToo ));
-							
+					
 				if(translationToo==1.0)
 					currentPos = com.points[1];
 				else
 					currentPos += com.points[1];
 					
 				com.points[1] = Vec2f(pos.x, pos.y);
-				break;
-			case 't':
-				pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
+			}
+			else if(commandVal == 't')
+			{
+				Vec3f pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
 				
 				if(translationToo==1.0)
 					currentPos = com.points[0];
@@ -1501,9 +1490,10 @@ namespace glib
 					currentPos += com.points[0];
 
 				com.points[0] = Vec2f(pos.x, pos.y);
-				break;
-			case 'c':
-				pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
+			}
+			else if(commandVal == 'c')
+			{
+				Vec3f pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
 				com.points[0] = Vec2f(pos.x, pos.y);
 				pos = (getTransform() * Vec3f( com.points[1].x, com.points[1].y, translationToo ));
 				com.points[1] = Vec2f(pos.x, pos.y);
@@ -1515,9 +1505,10 @@ namespace glib
 					currentPos += com.points[2];
 
 				com.points[2] = Vec2f(pos.x, pos.y);
-				break;
-			case 's':
-				pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
+			}
+			else if(commandVal == 's')
+			{
+				Vec3f pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
 				com.points[0] = Vec2f(pos.x, pos.y);
 				pos = (getTransform() * Vec3f( com.points[1].x, com.points[1].y, translationToo ));
 				
@@ -1527,29 +1518,27 @@ namespace glib
 					currentPos += com.points[1];
 
 				com.points[1] = Vec2f(pos.x, pos.y);
-				break;
-			case 'a':
-				//Do thing
-				pos = (getTransform() * Vec3f(1.0, 0.0, 0.0));
-				com.points[1] = Vec2f(MathExt::darctan2(pos.y, pos.x), com.points[1].y);
+			}
+			else if(commandVal == 'a')
+			{
+				Mat3f transformMat = getTransform();
 
-				pos = (Vec3f(com.points[0].x, com.points[0].y, 0.0) * MathExt::vecLength(pos));
-				com.points[0] = Vec2f(pos.x, pos.y);
+				double xScale = MathExt::vecLength(Vec2f(transformMat[0][0], transformMat[0][1]));
+				double yScale = MathExt::vecLength(Vec2f(transformMat[1][0], transformMat[1][1]));
+				Vec3f rotPos = transformMat * Vec3f(1,0,0); 
 				
-				pos = (getTransform() * Vec3f(com.points[2].x, com.points[2].y, translationToo));
+				com.points[0] = Vec2f(com.points[0].x*xScale, com.points[0].y*yScale);
+				com.points[1] = Vec2f(MathExt::angleToStandardRange(com.points[1].x + MathExt::darctan2(rotPos.y, rotPos.x), true), com.points[1].y);
+				
+				Vec3f pos = (transformMat * Vec3f(com.points[2].x, com.points[2].y, translationToo));
 
+				//StringTools::println("Position: (%.3f, %.3f)", pos.x, pos.y);
 				if(translationToo==1.0)
 					currentPos = com.points[2];
 				else
 					currentPos += com.points[2];
 
 				com.points[2] = Vec2f(pos.x, pos.y);
-				break;
-			case 'z':
-				//Do nothing
-				break;
-			default:
-				break;
 			}
 
 		}

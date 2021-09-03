@@ -734,7 +734,7 @@ namespace glib
 
 	void Graphics::setDefaultFont(unsigned char byte)
 	{
-		defaultFontValue = MathExt::clamp(byte, 0, 2);
+		defaultFontValue = MathExt::clamp(byte, (unsigned char)0, (unsigned char)2);
 	}
 
 	Font* Graphics::getDefaultFont(unsigned char byte)

@@ -67,16 +67,12 @@ namespace glib
 		b = MathExt::round(b);
 		return b * MathExt::pow(10.0f, -decimalPlaces);
 	}
-	float MathExt::roundToDecimal(double a, int decimalPlaces)
+
+	double MathExt::roundToDecimal(double a, int decimalPlaces)
 	{
 		double b = a * MathExt::pow(10.0, decimalPlaces);
 		b = MathExt::round(b);
 		return b * MathExt::pow(10.0, -decimalPlaces);
-	}
-
-	double MathExt::sqrt(int a)
-	{
-		return std::sqrt(a);
 	}
 
 	float MathExt::sqrt(float a)
@@ -87,11 +83,6 @@ namespace glib
 	double MathExt::sqrt(double a)
 	{
 		return std::sqrt(a);
-	}
-
-	double MathExt::cubeRoot(int a)
-	{
-		return std::cbrt(a);
 	}
 
 	float MathExt::cubeRoot(float a)
@@ -166,46 +157,6 @@ namespace glib
 		return value;
 	}
 
-	int MathExt::clamp(int value, int min, int max)
-	{
-		if (value <= min)
-			return min;
-		else if (value >= max)
-			return max;
-		else
-			return value;
-	}
-
-	double MathExt::clamp(double value, double min, double max)
-	{
-		if (value <= min)
-			return min;
-		else if (value >= max)
-			return max;
-		else
-			return value;
-	}
-
-	float MathExt::clamp(float value, float min, float max)
-	{
-		if (value <= min)
-			return min;
-		else if (value >= max)
-			return max;
-		else
-			return value;
-	}
-
-	long MathExt::clamp(long value, long min, long max)
-	{
-		if (value <= min)
-			return min;
-		else if (value >= max)
-			return max;
-		else
-			return value;
-	}
-
 	float MathExt::toDeg(float rad)
 	{
 		return 180 * rad / PI;
@@ -225,6 +176,68 @@ namespace glib
 	{
 		return PI * deg / 180;
 	}
+
+	float MathExt::angleToStandardRange(float angle, bool isDegree)
+	{
+		float v = angle;
+		if(isDegree)
+		{
+			while(true)
+			{
+				if(v >= 360)
+					v -= 360;
+				else if(v < 0)
+					v += 360;
+				else
+					break;
+			}
+		}
+		else
+		{
+			while(true)
+			{
+				if( v >= 2*PI)
+					v -= 2*PI;
+				else if(v < 0)
+					v += 2*PI;
+				else
+					break;
+			}
+		}
+		return v;
+	}
+
+	double MathExt::angleToStandardRange(double angle, bool isDegree)
+	{
+		double v = angle;
+		if(isDegree)
+		{
+			while(true)
+			{
+				if(v >= 360)
+					v -= 360;
+				else if(v < 0)
+					v += 360;
+				else
+					break;
+			}
+		}
+		else
+		{
+			while(true)
+			{
+				if( v >= 2*PI)
+					v -= 2*PI;
+				else if(v < 0)
+					v += 2*PI;
+				else
+					break;
+			}
+		}
+		return v;
+	}
+
+	
 
 	float MathExt::cos(float value)
 	{
@@ -410,6 +423,9 @@ namespace glib
 			}
 		}
 
+		if(degVal >= 2*PI)
+			degVal -= 2*PI;
+
 		return degVal;
 	}
 
@@ -418,6 +434,123 @@ namespace glib
 		double radVal = dirToPoint(x, y, x2, y2);
 
 		return toDeg(radVal);
+	}
+
+	bool MathExt::angleBetween(double testAngle, double startAngle, double endAngle, bool clockwise)
+	{
+		double tA = MathExt::angleToStandardRange(testAngle, false);
+		double sA = MathExt::angleToStandardRange(startAngle, false);
+		double eA = MathExt::angleToStandardRange(endAngle, false);
+
+		bool returnVal = true;
+		double minAngle = MathExt::min(sA, eA);
+		double maxAngle = MathExt::max(sA, eA);
+
+		if(sA > eA)
+			returnVal = false;
+
+		if(tA >= minAngle && tA <= maxAngle)
+		{
+			return (!clockwise) ? returnVal : !returnVal;
+		}
+		else
+		{
+			return (!clockwise) ? !returnVal : returnVal;
+		}
+	}
+
+	bool MathExt::angleBetweenDeg(double testAngle, double startAngle, double endAngle, bool clockwise)
+	{
+		double tA = MathExt::angleToStandardRange(testAngle, true);
+		double sA = MathExt::angleToStandardRange(startAngle, true);
+		double eA = MathExt::angleToStandardRange(endAngle, true);
+
+		bool returnVal = true;
+		double minAngle = MathExt::min(sA, eA);
+		double maxAngle = MathExt::max(sA, eA);
+
+		if(sA > eA)
+			returnVal = false;
+
+		if(tA >= minAngle && tA <= maxAngle)
+		{
+			return (!clockwise) ? returnVal : !returnVal;
+		}
+		else
+		{
+			return (!clockwise) ? !returnVal : returnVal;
+		}
+	}
+
+	double MathExt::closestAngle(double testAngle, double angle1, double angle2)
+	{
+		double tA = MathExt::angleToStandardRange(testAngle, false);
+		double sA = MathExt::angleToStandardRange(angle1, false);
+		double eA = MathExt::angleToStandardRange(angle2, false);
+
+		double dis1 = MathExt::abs(sA-tA);
+		double dis2 = 2*PI - dis1;
+
+		double dis3 = MathExt::abs(eA-tA);
+		double dis4 = 2*PI - dis3;
+		
+		double minDis1 = MathExt::min( {dis1, dis2} );
+		double minDis2 = MathExt::min( {dis3, dis4} );
+
+		if(minDis1 < minDis2)
+			return sA;
+		else
+			return eA;
+	}
+
+	double MathExt::closestAngleDeg(double testAngle, double angle1, double angle2)
+	{
+		double tA = MathExt::angleToStandardRange(testAngle, true);
+		double sA = MathExt::angleToStandardRange(angle1, true);
+		double eA = MathExt::angleToStandardRange(angle2, true);
+
+		double dis1 = MathExt::abs(sA-tA);
+		double dis2 = 360 - dis1;
+
+		double dis3 = MathExt::abs(eA-tA);
+		double dis4 = 360 - dis3;
+		
+		double minDis1 = MathExt::min( {dis1, dis2} );
+		double minDis2 = MathExt::min( {dis3, dis4} );
+
+		if(minDis1 < minDis2)
+			return sA;
+		else
+			return eA;
+	}
+
+	double MathExt::angleClamp(double testAngle, double startAngle, double endAngle, bool clockwise)
+	{
+		double tA = MathExt::angleToStandardRange(testAngle, false);
+		double sA = MathExt::angleToStandardRange(startAngle, false);
+		double eA = MathExt::angleToStandardRange(endAngle, false);
+
+		if(angleBetween(tA, sA, eA, clockwise))
+			return tA;
+		else
+			return closestAngle(tA, sA, eA);
+	}
+
+	double MathExt::angleClampDeg(double testAngle, double startAngle, double endAngle, bool clockwise)
+	{
+		double tA = MathExt::angleToStandardRange(testAngle, true);
+		double sA = MathExt::angleToStandardRange(startAngle, true);
+		double eA = MathExt::angleToStandardRange(endAngle, true);
+
+		if(angleBetweenDeg(tA, sA, eA, clockwise))
+			return tA;
+		else
+			return closestAngleDeg(tA, sA, eA);
+	}
+	
+	Vec2f MathExt::lengthDir(double length, double direction)
+	{
+		return Vec2f(MathExt::cos( toRad(direction)) * length, -MathExt::sin( toRad(direction))*length);
 	}
 
 	double MathExt::dot(Vec2f v1, Vec2f v2)
@@ -678,9 +811,14 @@ namespace glib
 
 	Mat3f MathExt::rotation2D(double rotation, Vec2f pos)
 	{
+		// return Mat3f(
+		// 	MathExt::cos(rotation), -MathExt::sin(rotation), -pos.x*MathExt::cos(rotation) - pos.y*MathExt::sin(rotation) + pos.x,
+		// 	MathExt::sin(rotation), MathExt::cos(rotation), pos.x*MathExt::sin(rotation) - pos.y*MathExt::cos(rotation) + pos.y,
+		// 	0, 0, 1
+		// );
 		return Mat3f(
-			MathExt::cos(rotation), MathExt::sin(rotation), -pos.x*MathExt::cos(rotation) - pos.y*MathExt::sin(rotation) + pos.x,
-			-MathExt::sin(rotation), MathExt::cos(rotation), pos.x*MathExt::sin(rotation) - pos.y*MathExt::cos(rotation) + pos.y,
+			MathExt::cos(rotation), -MathExt::sin(rotation), -pos.x*MathExt::cos(rotation) + pos.y*MathExt::sin(rotation) + pos.x,
+			MathExt::sin(rotation), MathExt::cos(rotation), -pos.x*MathExt::sin(rotation) - pos.y*MathExt::cos(rotation) + pos.y,
 			0, 0, 1
 		);
 	}
@@ -850,6 +988,11 @@ namespace glib
 		ComplexNumber k1;
 		ComplexNumber k2;
 
+		if(A == 0)
+		{
+			//FIX LATER
+		}
+		
 		if( MathExt::sqr(B) - 4*A*C > 0)
 		{
 			k1.real = (-B + MathExt::sqrt( MathExt::sqr(B) - 4*A*C )) / 2;
@@ -877,6 +1020,9 @@ namespace glib
 	{
 		double k1;
 		double k2;
+
+		if(A == 0)
+			return solveLinear(B, C);
 
 		if( MathExt::sqr(B) - 4*A*C >= 0)
 		{
