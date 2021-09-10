@@ -14,14 +14,24 @@ namespace glib
 
 	BitmapFont::BitmapFont(std::string filename) : Font()
 	{
+		init( StringTools::toWideString(filename) );
+	}
+
+	BitmapFont::BitmapFont(std::wstring filename) : Font()
+	{
+		init( filename );
+	}
+
+	void BitmapFont::init(std::wstring filename)
+	{
 		size_t lastDot = filename.find_last_of('.');
 
-		std::string extension = filename.substr(lastDot, filename.size()-lastDot);
-		if(extension == ".ft")
+		std::wstring extension = filename.substr(lastDot, filename.size()-lastDot);
+		if(extension == L".ft")
 		{
 			loadFT(filename);
 		}
-		else if(extension == ".fnt")
+		else if(extension == L".fnt")
 		{
 			loadFNT(filename);
 		}
@@ -52,7 +62,7 @@ namespace glib
 		return nullptr;
 	}
 
-	void BitmapFont::loadFT(std::string filename)
+	void BitmapFont::loadFT(std::wstring filename)
 	{
 		//Load an .ft file
 		//Rough Format
@@ -67,7 +77,7 @@ namespace glib
 
 		//We won't store the font name, and attributes
 		int index = filename.find_last_of('/');
-		std::string dir = filename.substr(0, index);
+		std::wstring dir = filename.substr(0, index);
 
 		std::vector<std::string> fileInfo;
 
@@ -92,7 +102,7 @@ namespace glib
 		if (fileInfo.size()>0)
 		{
 			int fontSize = StringTools::toInt(fileInfo[2]);
-			std::string imageFile = dir + "/" + fileInfo[3];
+			std::wstring imageFile = dir + L"/" + StringTools::toWideString(fileInfo[3]);
 			int amountOfImages = 0;
 			Image** tempImgPointer = Image::loadImage(imageFile, &amountOfImages);
 			if(amountOfImages>0)
@@ -132,7 +142,8 @@ namespace glib
 						fc.horizAdv = fc.width-1;
 						fc.xOffset = 0;
 						fc.yOffset = 0;
-						charInfoList.push_back(fc);
+
+						this->addChar(fc);
 						imgPage.push_back(0);
 					}
 					else
@@ -142,17 +153,19 @@ namespace glib
 						throw BitmapFont::InvalidFileFormat();
 						#endif
 						break;
-						//StringTools::println("Invalid string: %s| with size: %d", fileInfo[startIndex].c_str(), fileInfo.size());
+						//StringTools::println("Invalid wstring: %s| with size: %d", fileInfo[startIndex].c_str(), fileInfo.size());
 					}
 					
 				}
 				startIndex++;
 			}
 
+			this->sortList(false);
+
 			//pngs have explicit alpha, gifs have 1 alpha value
 			//and bmp will not have alpha. Treat the intensity as the alpha.
 			//should change the format to YCaCb to do this later so colors still work.
-			if ( imageFile.substr(imageFile.size() - 3, 3) != "png" && imageFile.substr(imageFile.size() - 3, 3) != "gif")
+			if ( imageFile.substr(imageFile.size() - 3, 3) != L"png" && imageFile.substr(imageFile.size() - 3, 3) != L"gif")
 			{
 				Image* tImg = img.getImage(0);
 				Color* imgPixels = tImg->getPixels();
@@ -172,7 +185,7 @@ namespace glib
 
 	}
 
-	void BitmapFont::loadFNT(std::string filename)
+	void BitmapFont::loadFNT(std::wstring filename)
 	{
 		//note, expects xml format
 		SimpleXml file = SimpleXml();
@@ -195,7 +208,7 @@ namespace glib
 			finalIndex = index2;
 		}
 
-		std::string path = filename.substr(0, finalIndex+1);
+		std::wstring path = filename.substr(0, finalIndex+1);
 
 		if(valid)
 		{
@@ -309,11 +322,13 @@ namespace glib
 							}
 						}
 
-						charInfoList.push_back(fci);
+						this->addChar(fci);
 						imgPage.push_back(page);
 					}
 				}
 			}
+
+			this->sortList(false);
 		}
 		else
 		{

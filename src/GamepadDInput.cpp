@@ -405,15 +405,6 @@ namespace glib
 		inface->EnumDevices(DI8DEVCLASS_GAMECTRL, GamepadDInput::EnumerateDeviceCallback, 0, DIEDFL_ATTACHEDONLY);
 	}
 
-	GamepadDInput::GamepadDInput()
-	{
-	}
-
-	GamepadDInput::~GamepadDInput()
-	{
-		dispose();
-	}
-
 	bool GamepadDInput::init(HWND windowHandle, bool Foreground = true, bool Exclusive = true)
 	{
 		if (windowHandle != NULL)

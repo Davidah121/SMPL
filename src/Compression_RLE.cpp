@@ -68,12 +68,12 @@ namespace glib
 		return output;
 	}
 
-	std::vector<unsigned char> Compression::decompressRLE(std::vector<unsigned char> data)
+	std::vector<unsigned char> Compression::decompressRLE(std::vector<unsigned char> data, size_t expectedSize)
 	{
-		return decompressRLE(data.data(), data.size());
+		return decompressRLE(data.data(), data.size(), expectedSize);
 	}
 
-	std::vector<unsigned char> Compression::decompressRLE(unsigned char* data, int size)
+	std::vector<unsigned char> Compression::decompressRLE(unsigned char* data, int size, size_t expectedSize)
 	{
 		std::vector<unsigned char> uncompressedData = std::vector<unsigned char>();
 
@@ -105,6 +105,14 @@ namespace glib
 			}
 
 			i += 2;
+
+			if(uncompressedData.size() > expectedSize)
+			{
+				#ifdef USE_EXCEPTIONS
+				throw ExceededExpectedSizeError();
+				#endif
+				return std::vector<unsigned char>();
+			}
 		}
 
 		return uncompressedData;

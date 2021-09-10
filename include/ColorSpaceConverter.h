@@ -23,7 +23,29 @@ namespace glib
         static const unsigned char RGB_TO_XYZ = 8;
         static const unsigned char XYZ_TO_RGB = 9;
         
+        /**
+         * @brief Converts a Color to a different color space specifed by the
+         *      available constants.
+         * @param a
+         *      The color to convert.
+         * @param type
+         *      The type of conversion to do.
+         * @return Color
+         *      Returns the converted color. Clipping may have occured due to Color
+         *      using bytes for each color channel.
+         */
         static Color convert(Color a, unsigned char type);
+
+        /**
+         * @brief Converts a Color to a different color space specifed by the
+         *      available constants.
+         * @param a
+         *      The color to convert as a Vec3f.
+         * @param type
+         *      The type of conversion to do.
+         * @return Vec3f
+         *      Returns the converted color.
+         */
         static Vec3f convert(Vec3f a, unsigned char type);
     };
 

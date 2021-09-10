@@ -28,28 +28,6 @@ namespace glib
 		hasInit = true;
 	}
 
-	std::wstring StringTools::toWideString(std::string text)
-	{
-		std::wstring finalText = L"";
-		for (int i = 0; i < text.size(); i++)
-		{
-			finalText += (wchar_t)text[i];
-		}
-
-		return finalText;
-	}
-
-	std::string StringTools::toCString(std::wstring text)
-	{
-		std::string finalText = "";
-		for (int i = 0; i < text.size(); i++)
-		{
-			finalText += (char)(text[i] & 0xFF);
-		}
-
-		return finalText;
-	}
-
 	int StringTools::stringLength(char * text)
 	{
 		return std::strlen(text);
@@ -68,46 +46,6 @@ namespace glib
 	int StringTools::stringLength(const wchar_t * text)
 	{
 		return std::wcslen(text);
-	}
-
-	bool StringTools::equalsIgnoreCase(std::string a, std::string b)
-	{
-		if(a.size() == b.size())
-		{
-			for(int i=0; i<a.size(); i++)
-			{
-				if( toupper(a[i]) != toupper(b[i]))
-				{
-					return false;
-				}
-			}
-		}
-		else
-		{
-			return false;
-		}
-		
-		return true;
-	}
-
-	bool StringTools::equalsIgnoreCase(std::wstring a, std::wstring b)
-	{
-		if(a.size() == b.size())
-		{
-			for(int i=0; i<a.size(); i++)
-			{
-				if( toupper(a[i]) != toupper(b[i]))
-				{
-					return false;
-				}
-			}
-		}
-		else
-		{
-			return false;
-		}
-		
-		return true;
 	}
 
 	bool StringTools::isAlphaNumerial(char v, bool underScoreAllowed, bool dashAllowed)

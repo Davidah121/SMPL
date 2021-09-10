@@ -25,21 +25,91 @@ namespace glib
 	class BinaryTree
 	{
 	public:
+		/**
+		 * @brief Creates a template BinaryTree object.
+		 * 		Uses the template BinaryTreeNode structure for each node.
+		 */
 		BinaryTree();
+
+		/**
+		 * @brief Destroys the BinaryTree Object and cleans up all memory.
+		 * 		Note that it deletes all BinaryTreeNode pointers but not the data they store.
+		 * 		This should be done by the user or pointers should be avoided unless they are
+		 * 		smart pointers.
+		 */
 		~BinaryTree();
 
+		/**
+		 * @brief Sets the root node of the tree to the specified node pointer.
+		 * @param node
+		 * 		The node to become the new root node.
+		 */
 		void setRootNode(BinaryTreeNode<T>* node);
+
+		/**
+		 * @brief Sets the left node of the specified parent node.
+		 * @param parent
+		 * 		The node to have its left child node modified.
+		 * @param leftChild
+		 * 		The node to set as the left child.
+		 */
 		void setLeftNode(BinaryTreeNode<T>* parent, BinaryTreeNode<T>* leftChild);
+
+		/**
+		 * @brief Sets the right node of the specified parent node.
+		 * @param parent
+		 * 		The node to have its right child node modified.
+		 * @param rightChild
+		 * 		The node to set as the right child.
+		 */
 		void setRightNode(BinaryTreeNode<T>* parent, BinaryTreeNode<T>* rightChild);
 
+		/**
+		 * @brief Traverses the tree to get a BinaryTreeNode using a BinarySet.
+		 * 		Each bit is used to traverse the tree where 0 = goLeft | 1 = goRight
+		 * @param bin
+		 * 		The BinarySet to use for traversal. Starts at index 0.
+		 * @return BinaryTreeNode<T>*
+		 * 		Returns a pointer to the BinaryTreeNode found. If no node was found,
+		 * 		returns a nullptr.
+		 */
 		BinaryTreeNode<T>* traverse(BinarySet bin);
 
+		/**
+		 * @brief Gets traversal information for the nodes in the tree.
+		 * 		A BinarySet is used to keep track of the path taken to get to
+		 * 		the node.
+		 * @param leafOnly
+		 * 		Set to only get leaf nodes.
+		 * @return std::vector<TraverseInfo<T>>
+		 * 		Returns a list of all traversal data. Each contains the node and the path.
+		 */
 		std::vector<TraverseInfo<T>> getTraversalInformation(bool leafOnly = false);
 
+		/**
+		 * @brief Returns the root of the tree.
+		 * @return BinaryTreeNode<T>*
+		 * 		Can be nullptr
+		 */
 		BinaryTreeNode<T>* getRoot();
 
+		/**
+		 * @brief Returns the amount of nodes in the tree.
+		 * 		Includes all nodes. Not just leaf nodes.
+		 * @return int
+		 */
 		int getSize();
 
+		/**
+		 * @brief Returns the height of the tree.
+		 * @return int
+		 */
+		int getHeight();
+
+		/**
+		 * @brief Returns all of the data in all of the nodes as a list.
+		 * @return std::vector<T>
+		 */
 		std::vector<T> getAllElements();
 
 	private:
@@ -49,7 +119,7 @@ namespace glib
 		void getElementsRecursive(std::vector<T>* data, BinaryTreeNode<T>* startNode);
 
 		void getTraversalInfoRecursive(std::vector<TraverseInfo<T>>* data, BinaryTreeNode<T>* startNode, BinarySet binPath, bool leafOnly = false);
-
+		int getHeightRecursive(BinaryTreeNode<T>* node, int currMaxHeight);
 	};
 
 	template<typename T>
@@ -150,6 +220,33 @@ namespace glib
 	inline int BinaryTree<T>::getSize()
 	{
 		return traverseCount(rootNode);
+	}
+
+	template<typename T>
+	inline int BinaryTree<T>::getHeight()
+	{
+		return getHeightRecursive(rootNode, 0);
+	}
+
+	template<typename T>
+	inline int BinaryTree<T>::getHeightRecursive(BinaryTreeNode<T>* node, int currMaxHeight)
+	{
+		if(node != nullptr)
+		{
+			int nHeight = currMaxHeight+1;
+
+			int leftHeight = nHeight;
+			int rightHeight = nHeight;
+
+			leftHeight = getHeightRecursive(node->leftChild, nHeight);
+			rightHeight = getHeightRecursive(node->rightChild, nHeight);
+
+			return (leftHeight > rightHeight) ? leftHeight : rightHeight;
+		}
+		else
+		{
+			return currMaxHeight;
+		}
 	}
 
 	template<typename T>

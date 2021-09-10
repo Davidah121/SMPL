@@ -7,11 +7,9 @@ namespace glib
 
 	Color Graphics::activeColor = { 0, 0, 0, 255 };
 	Font* Graphics::activeFont = nullptr;
-	Image* Graphics::activeImage = nullptr;
 	unsigned char Graphics::compositeRule = Graphics::COMPOSITE_SRC_OVER;
 	unsigned char Graphics::blendMode = Graphics::BLEND_NORMAL;
 	bool Graphics::fillRule = Graphics::FILL_EVEN_ODD;
-	bool Graphics::antiAliasing = false;
 
 	unsigned char Graphics::defaultFontValue = Graphics::MEDIUM_FONT;
 	Font* Graphics::defaultFont = nullptr;
@@ -43,26 +41,9 @@ namespace glib
 		defaultFontLarge = nullptr;
 	}
 
-	void Graphics::setImage(Image* img)
-	{
-		activeImage = img;
-	}
-
-	Image* Graphics::getImage()
-	{
-		return activeImage;
-	}
-
 	void Graphics::clearImage(Image* surf)
 	{
-		if (surf == nullptr)
-		{
-			if (activeImage != nullptr)
-			{
-				activeImage->setAllPixels(activeColor);
-			}
-		}
-		else
+		if (surf != nullptr)
 		{
 			surf->setAllPixels(activeColor);
 		}
@@ -99,10 +80,9 @@ namespace glib
 	void Graphics::drawPixel(int x, int y, Color c, Image* surf)
 	{
 		Image* otherImg;
+
 		if (surf == nullptr)
-			otherImg = activeImage;
-		else
-			otherImg = surf;
+			return;
 
 		if(compositeRule == NO_COMPOSITE)
 		{
@@ -123,80 +103,78 @@ namespace glib
 		Color otherColor = otherImg->getPixel(x,y);
 		float tAlpha2 = (float)otherColor.alpha/255;
 
-		if (otherImg != nullptr)
+		switch(compositeRule)
 		{
-			switch(compositeRule)
-			{
-				case COMPOSITE_CLEAR:
-					Fa=0;
-					Fb=0;
-					break;
-				case COMPOSITE_COPY:
-					Fa = 1;
-					Fb = 0;
-					break;
-				case COMPOSITE_DEST:
-					Fa = 0;
-					Fb = 1;
-					break;
-				case COMPOSITE_SRC_OVER:
-					Fa = 1;
-					Fb = 1-tAlpha1;
-					break;
-				case COMPOSITE_DEST_OVER:
-					Fa = 1-tAlpha2;
-					Fb = 1;
-					break;
-				case COMPOSITE_SRC_IN:
-					Fa = tAlpha2;
-					Fb = 0;
-					break;
-				case COMPOSITE_DEST_IN:
-					Fa = 0;
-					Fb = tAlpha1;
-					break;
-				case COMPOSITE_SRC_OUT:
-					Fa = 1-tAlpha2;
-					Fb = 0;
-					break;
-				case COMPOSITE_DEST_OUT:
-					Fa = 0;
-					Fb = 1-tAlpha1;
-					break;
-				case COMPOSITE_SRC_ATOP:
-					Fa = tAlpha2;
-					Fb = 1-tAlpha1;
-					break;
-				case COMPOSITE_DEST_ATOP:
-					Fa = 1-tAlpha2;
-					Fb = tAlpha1;
-					break;
-				case COMPOSITE_XOR:
-					Fa = 1-tAlpha2;
-					Fb = 1-tAlpha1;
-					break;
-				case COMPOSITE_LIGHTER:
-					Fa = 1;
-					Fb = 1;
-					break;
-				default:
-					Fa = 0;
-					Fb = 0;
-					break;
-			}
-
-			red = (tAlpha1 * c.red * Fa) + (tAlpha2 * otherColor.red * Fb);
-			green = (tAlpha1 * c.green * Fa) + (tAlpha2 * otherColor.green * Fb);
-			blue = (tAlpha1 * c.blue * Fa) + (tAlpha2 * otherColor.blue * Fb);
-			alpha = (c.alpha * Fa) + (otherColor.alpha * Fb);
-
-			unsigned char redB = (unsigned char)MathExt::min(red, 255);
-			unsigned char greenB = (unsigned char)MathExt::min(green, 255);
-			unsigned char blueB = (unsigned char)MathExt::min(blue, 255);
-			unsigned char alphaB = (unsigned char)MathExt::min(alpha, 255);
-
-			otherImg->setPixel(x,y,{redB,greenB,blueB,alphaB});
+			case COMPOSITE_CLEAR:
+				Fa=0;
+				Fb=0;
+				break;
+			case COMPOSITE_COPY:
+				Fa = 1;
+				Fb = 0;
+				break;
+			case COMPOSITE_DEST:
+				Fa = 0;
+				Fb = 1;
+				break;
+			case COMPOSITE_SRC_OVER:
+				Fa = 1;
+				Fb = 1-tAlpha1;
+				break;
+			case COMPOSITE_DEST_OVER:
+				Fa = 1-tAlpha2;
+				Fb = 1;
+				break;
+			case COMPOSITE_SRC_IN:
+				Fa = tAlpha2;
+				Fb = 0;
+				break;
+			case COMPOSITE_DEST_IN:
+				Fa = 0;
+				Fb = tAlpha1;
+				break;
+			case COMPOSITE_SRC_OUT:
+				Fa = 1-tAlpha2;
+				Fb = 0;
+				break;
+			case COMPOSITE_DEST_OUT:
+				Fa = 0;
+				Fb = 1-tAlpha1;
+				break;
+			case COMPOSITE_SRC_ATOP:
+				Fa = tAlpha2;
+				Fb = 1-tAlpha1;
+				break;
+			case COMPOSITE_DEST_ATOP:
+				Fa = 1-tAlpha2;
+				Fb = tAlpha1;
+				break;
+			case COMPOSITE_XOR:
+				Fa = 1-tAlpha2;
+				Fb = 1-tAlpha1;
+				break;
+			case COMPOSITE_LIGHTER:
+				Fa = 1;
+				Fb = 1;
+				break;
+			default:
+				Fa = 0;
+				Fb = 0;
+				break;
 		}
+
+		red = (tAlpha1 * c.red * Fa) + (tAlpha2 * otherColor.red * Fb);
+		green = (tAlpha1 * c.green * Fa) + (tAlpha2 * otherColor.green * Fb);
+		blue = (tAlpha1 * c.blue * Fa) + (tAlpha2 * otherColor.blue * Fb);
+		alpha = (c.alpha * Fa) + (otherColor.alpha * Fb);
+
+		unsigned char redB = (unsigned char)MathExt::min(red, 255);
+		unsigned char greenB = (unsigned char)MathExt::min(green, 255);
+		unsigned char blueB = (unsigned char)MathExt::min(blue, 255);
+		unsigned char alphaB = (unsigned char)MathExt::min(alpha, 255);
+
+		otherImg->setPixel(x,y,{redB,greenB,blueB,alphaB});
+	
 	}
 
 	Color Graphics::blend(Color src, Color dest)
@@ -704,7 +682,7 @@ namespace glib
 		clippingRect.setLeftBound(0);
 		clippingRect.setRightBound(0xFFFF);
 		clippingRect.setTopBound(0);
-		clippingRect.setBottomBound(0xFFF);
+		clippingRect.setBottomBound(0xFFFF);
 	}
 
 	void Graphics::setColor(Color c)
@@ -764,16 +742,6 @@ namespace glib
 	bool Graphics::getFillRule()
 	{
 		return fillRule;
-	}
-
-	void Graphics::setAntiAliasing(bool v)
-	{
-		Graphics::antiAliasing = v;
-	}
-
-	bool Graphics::getAntiAliasing()
-	{
-		return antiAliasing;
 	}
 
 	void Graphics::setCompositeRule(unsigned char b)

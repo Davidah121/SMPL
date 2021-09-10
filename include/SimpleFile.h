@@ -4,6 +4,7 @@
 #include<fstream>
 #include "Object.h"
 #include<exception>
+#include "File.h"
 
 namespace glib
 {
@@ -40,6 +41,7 @@ namespace glib
 
 		SimpleFile(std::wstring filename, char type);
 		SimpleFile(std::string filename, char type);
+		SimpleFile(File file, char type);
 
 		~SimpleFile();
 

@@ -75,16 +75,16 @@ namespace glib
 		return output.toBytes();
 	}
 
-	std::vector<unsigned char> Compression::decompressHuffman(std::vector<unsigned char> data, int messageSize, BinaryTree<HuffmanNode>* tree)
+	std::vector<unsigned char> Compression::decompressHuffman(std::vector<unsigned char> data, BinaryTree<HuffmanNode>* tree, size_t expectedSize)
 	{
-		return decompressHuffman(data.data(), data.size(), messageSize, tree);
+		return decompressHuffman(data.data(), data.size(), tree, expectedSize);
 	}
 
-	std::vector<unsigned char> Compression::decompressHuffman(unsigned char* data, int size, int messageSize, BinaryTree<HuffmanNode>* tree)
+	std::vector<unsigned char> Compression::decompressHuffman(unsigned char* data, int size, BinaryTree<HuffmanNode>* tree, size_t expectedSize)
 	{
 		std::vector<unsigned char> output = std::vector<unsigned char>();
 
-		if(size <= 0 || messageSize <= 0)
+		if(size <= 0)
 		{
 			#ifdef USE_EXCEPTIONS
 			throw InvalidSizeError();
@@ -117,12 +117,11 @@ namespace glib
 		//input.printVals(true);
 
 		int i = input.size() - 1;
-		int m = 0;
 		BinaryTreeNode<HuffmanNode>* currNode = tree->getRoot();
 
 		if (currNode != nullptr)
 		{
-			while (m < messageSize || i < 0)
+			while (i < 0)
 			{
 				if (input.getBit(i) == 0)
 				{
@@ -139,7 +138,7 @@ namespace glib
 						#ifdef USE_EXCEPTIONS
 						throw HUFFMAN_TREE_ERROR();
 						#endif
-						break;
+						return std::vector<unsigned char>();
 					}
 				}
 				else
@@ -157,16 +156,23 @@ namespace glib
 						#ifdef USE_EXCEPTIONS
 						throw HUFFMAN_TREE_ERROR();
 						#endif
-						break;
+						return std::vector<unsigned char>();
 					}
 				}
 
 				if (currNode->leftChild == nullptr && currNode->rightChild == nullptr)
 				{
 					//leaf node
-					m++;
 					output.push_back(currNode->data.value);
 					currNode = tree->getRoot();
+
+					if(output.size() > expectedSize)
+					{
+						#ifdef USE_EXCEPTIONS
+						throw ExceededExpectedSizeError();
+						#endif
+						return std::vector<unsigned char>();
+					}
 				}
 			}
 		}
@@ -175,7 +181,7 @@ namespace glib
 			#ifdef USE_EXCEPTIONS
 			throw HUFFMAN_TREE_ERROR();
 			#endif
-			return output;
+			return std::vector<unsigned char>();
 			//StringTools::out << "HUFFMAN DECODING, TREE ERROR: ROOT IS INVALID" << StringTools::lineBreak;
 		}
 		
@@ -357,7 +363,7 @@ namespace glib
 		}
 	}
 
-	BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues, int sizeOfData, int* lengths, int sizeOfCodeLengths, bool separateCodeLengths, bool reversed)
+	BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues, int sizeOfData, int* lengths, int sizeOfCodeLengths, bool separateCodeLengths, bool rmsb)
 	{
 		//We must sort first before building the huffman code
 		//Since this is C++ and we can use structures, we can use MergeSort while keeping the
@@ -505,7 +511,7 @@ namespace glib
 			{
 				int v = 0;
 
-				if(reversed==false)
+				if(rmsb==false)
 					v = arr[i].code >> (i2) & 0x01;
 				else
 					v = arr[i].code >> (arr[i].length-1 - i2) & 0x01;

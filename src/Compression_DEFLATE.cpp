@@ -1060,12 +1060,12 @@ namespace glib
 		return bin.toBytes();
 	}
 
-	std::vector<unsigned char> Compression::decompressDeflate(std::vector<unsigned char> data)
+	std::vector<unsigned char> Compression::decompressDeflate(std::vector<unsigned char> data, size_t expectedSize)
 	{
-		return Compression::decompressDeflate(data.data(), data.size());
+		return Compression::decompressDeflate(data.data(), data.size(), expectedSize);
 	}
 
-	std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, int size)
+	std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, int size, size_t expectedSize)
 	{
 		//determine if it is case 0, 1, or 2
 		//if case 0, or 1, we can deal with it
@@ -1200,6 +1200,13 @@ namespace glib
 					
 					//now add the non-compressed literal data to the final data
 					//and adjust the location for the bits.
+
+					//Size check for security
+					if(finalData.size()+length > expectedSize)
+					{
+						return std::vector<unsigned char>();
+					}
+
 					for(int i=0; i<length; i++)
 					{
 						finalData.push_back(data[byteLocation + i]);
@@ -1305,6 +1312,12 @@ namespace glib
 							// StringTools::println(" Got literal with value %d", currNode->data.value);
 							//StringTools::out << "Literal" << StringTools::lineBreak;
 							finalData.push_back(currNode->data.value);
+
+							//Size check for security
+							if(finalData.size() > expectedSize)
+							{
+								return std::vector<unsigned char>();
+							}
 						}
 						else if(currNode->data.value == 256)
 						{
@@ -1383,6 +1396,12 @@ namespace glib
 							//StringTools::out << "Length is: " << finalCopyLength << ", Dist is: " << finalBackRef << StringTools::lineBreak;
 							//with finalCopyLength and finalBackRef, copy into the finalData
 							int startPos = finalData.size()-finalBackRef;
+
+							//Size check for security
+							if(finalData.size()+finalCopyLength > expectedSize)
+							{
+								return std::vector<unsigned char>();
+							}
 
 							for(int i=0; i<finalCopyLength; i++)
 							{

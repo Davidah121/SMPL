@@ -39,8 +39,7 @@ namespace glib
 		};
 
 		/**
-		 * @brief 
-		 * 		Opens a device specified by the deviceID value to output audio too.
+		 * @brief Opens a device specified by the deviceID value to output audio too.
 		 * 		Spawns a thread to process that audio and output audio.
 		 * 		Can not be recalled until dispose() is called and successfully returned.
 		 * @param deviceID 
@@ -52,15 +51,13 @@ namespace glib
 		static void init(unsigned int deviceID = -1);
 
 		/**
-		 * @brief 
-		 * 		Ends output of audio.
+		 * @brief Ends output of audio.
 		 * 		Closes the audio thread that processes and outputs audio.
 		 */
 		static void dispose();
 
 		/**
-		 * @brief 
-		 * 		Sets the Global Volume which will be applied to every sound that is
+		 * @brief Sets the Global Volume which will be applied to every sound that is
 		 * 		output.
 		 * @param v 
 		 * 		The volume value that must be between 0.0 and 1.0.
@@ -69,27 +66,23 @@ namespace glib
 		static void setVolume(double v);
 
 		/**
-		 * @brief
-		 * 		Returns the global volume value.
+		 * @brief Returns the global volume value.
 		 * @return double 
 		 */
 		static double getVolume();
 
 		/**
-		 * @brief 
-		 * 		Pauses all sounds.
+		 * @brief Pauses all sounds.
 		 */
 		static void pauseAll();
 
 		/**
-		 * @brief 
-		 * 		Stops all sounds.
+		 * @brief Stops all sounds.
 		 */
 		static void stopAll();
 
 		/**
-		 * @brief
-		 * 		Set the amount of simultaneous sounds allowed to be played.
+		 * @brief Set the amount of simultaneous sounds allowed to be played.
 		 * 		The default value is set to 16.
 		 * 		Note that sounds are sorted by their priority with insertion sort.
 		 * @param s 
@@ -98,15 +91,13 @@ namespace glib
 		static void setAmountOfSimultaneousSounds(int s);
 
 		/**
-		 * @brief 
-		 * 		Returns the amount of simultaneous sounds allowed
+		 * @brief Returns the amount of simultaneous sounds allowed
 		 * @return int 
 		 */
 		static int getAmountOfSimultaneousSounds();
 
 		/**
-		 * @brief 
-		 * 		Adds a sound to be played.
+		 * @brief Adds a sound to be played.
 		 * 		The sound is referenced by a pointer.
 		 * 		Note that sounds are sorted by their priority with insertion sort.
 		 * @param s 
@@ -116,8 +107,7 @@ namespace glib
 		static void addSound(Sound* s);
 
 		/**
-		 * @brief 
-		 * 		Removes a sound from the playable sounds.
+		 * @brief Removes a sound from the playable sounds.
 		 * 		A sound should be removed before it is deleted to avoid
 		 * 		memory access violations.
 		 * 		Note that all sounds with the same pointer will be removed.
@@ -127,8 +117,7 @@ namespace glib
 		static void removeSound(Sound* s);
 
 		/**
-		 * @brief
-		 * 		Set the amount of buffers for playing audio.
+		 * @brief Set the amount of buffers for playing audio.
 		 * 		The default is 2 buffers.
 		 * 		Must be set before calling init.
 		 * @param b 
@@ -139,15 +128,13 @@ namespace glib
 		static void setBuffers(int b);
 
 		/**
-		 * @brief
-		 * 		Return the amount of buffers 
+		 * @brief Return the amount of buffers 
 		 * @return int 
 		 */
 		static int getBuffers();
 
 		/**
-		 * @brief
-		 * 		Sets the size of the individual buffers.
+		 * @brief Sets the size of the individual buffers.
 		 * 		The default is 2205 samples.
 		 * 		Must be set before calling init.
 		 * @param b 
@@ -161,8 +148,7 @@ namespace glib
 		static void setSizeOfBuffer(int b);
 
 		/**
-		 * @brief
-		 * 		Returns the number of samples for each buffer.
+		 * @brief Returns the number of samples for each buffer.
 		 * @return int 
 		 */
 		static int getSizeOfBuffer();
@@ -214,8 +200,7 @@ namespace glib
 		};
 
 		/**
-		 * @brief 
-		 * 		Opens a device specified by the deviceID value to get audio input from.
+		 * @brief Opens a device specified by the deviceID value to get audio input from.
 		 * 		Spawns a thread to retrieve the audio.
 		 * 		Can not be recalled until dispose() is called and successfully returned.
 		 * @param deviceID 
@@ -227,35 +212,30 @@ namespace glib
 		static void init(unsigned int device = -1);
 
 		/**
-		 * @brief 
-		 * 		Ends input of audio.
+		 * @brief Ends input of audio.
 		 * 		Closes the audio thread that retrieves input audio.
 		 */
 		static void dispose();
 
 		/**
-		 * @brief 
-		 * 		Starts recording of audio from the audio device.
+		 * @brief Starts recording of audio from the audio device.
 		 */
 		static void record();
 
 		/**
-		 * @brief
-		 * 		Returns whether or not the class is recording audio from a device.
+		 * @brief Returns whether or not the class is recording audio from a device.
 		 * @return true 
 		 * @return false 
 		 */
 		static bool getRecording();
 
 		/**
-		 * @brief 
-		 * 		Stops recording of audio from the audio device.
+		 * @brief Stops recording of audio from the audio device.
 		 */
 		static void stop();
 
 		/**
-		 * @brief
-		 * 		Gets the current recorded data.
+		 * @brief Gets the current recorded data.
 		 * 		Does not clear the recorded data. That must be done with
 		 * 		clearAudioData()
 		 * @return std::vector<Vec2f> 
@@ -264,15 +244,13 @@ namespace glib
 		static std::vector<Vec2f> getAudioData();
 
 		/**
-		 * @brief 
-		 * 		Clears the current recorded audio.
+		 * @brief Clears the current recorded audio.
 		 * 		This should be called to remove audio that you no longer need.
 		 */
 		static void clearAudioData();
 
 		/**
-		 * @brief
-		 * 		Set the amount of buffers for playing audio.
+		 * @brief Set the amount of buffers for playing audio.
 		 * 		The default is 2 buffers.
 		 * 		Must be set before calling init.
 		 * @param b 
@@ -283,15 +261,13 @@ namespace glib
 		static void setBuffers(int b);
 
 		/**
-		 * @brief
-		 * 		Return the amount of buffers 
+		 * @brief Return the amount of buffers 
 		 * @return int 
 		 */
 		static int getBuffers();
 
 		/**
-		 * @brief
-		 * 		Sets the size of the individual buffers.
+		 * @brief Sets the size of the individual buffers.
 		 * 		The default is 2205 samples.
 		 * 		Must be set before calling init.
 		 * @param b 
@@ -301,8 +277,7 @@ namespace glib
 		static void setSizeOfBuffer(int b);
 
 		/**
-		 * @brief
-		 * 		Returns the number of samples for each buffer.
+		 * @brief Returns the number of samples for each buffer.
 		 * @return int 
 		 */
 		static int getSizeOfBuffer();

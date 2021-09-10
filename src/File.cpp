@@ -4,13 +4,8 @@
 
 namespace glib
 {
-
-    File::File(std::string filename)
-    {
-        init(StringTools::toWideString(filename));
-    }
-
-    File::File(std::wstring filename)
+    template<typename T>
+    File::File(std::basic_string<T> filename)
     {
         init(filename);
     }
@@ -20,7 +15,8 @@ namespace glib
         
     }
 
-    void File::init(std::wstring filename)
+    template<typename T>
+    void File::init(std::basic_string<T> filename)
     {
         locationOfExtension = filename.find_last_of(L'.');
         size_t v1 = filename.find_last_of(L'/');
@@ -38,7 +34,13 @@ namespace glib
         {
             locationOfFileName = 0;
         }
-        fullFileName = filename;
+
+        fullFileName = L"";
+
+        for(T& c : filename)
+        {
+            fullFileName += (wchar_t)c;
+        }
     }
 
     std::wstring File::getFileName()

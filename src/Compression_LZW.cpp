@@ -161,12 +161,12 @@ namespace glib
 		return output;
 	}
 
-	std::vector<unsigned char> Compression::decompressLZW(std::vector<unsigned char> data, int dictionarySize)
+	std::vector<unsigned char> Compression::decompressLZW(std::vector<unsigned char> data, int dictionarySize, size_t expectedSize)
 	{
-		return Compression::decompressLZW(data.data(), data.size(), dictionarySize);
+		return Compression::decompressLZW(data.data(), data.size(), dictionarySize, expectedSize);
 	}
 
-	std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int size, int dictionarySize)
+	std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int size, int dictionarySize, size_t expectedSize)
 	{
 		//Must know the dictionary size. Do not include the clear dictionary 
 		//and end data symbols
@@ -319,6 +319,14 @@ namespace glib
 						index = 0;
 						shift = 0;
 					}
+				}
+
+				if(output.size() > expectedSize)
+				{
+					#ifdef USE_EXCEPTIONS
+					throw ExceededExpectedSizeError();
+					#endif
+					return std::vector<unsigned char>();
 				}
 			}
 		}

@@ -10,8 +10,21 @@ namespace glib
 	class BezierCurve : public Object
 	{
 	public:
+		/**
+		 *	@brief Creates a BezierCurve Object.
+		 * 		A Bezier Curve is a parametric curve valid from t=0 to t=1
+		 * 		The first and last points are end points and all other points are control points.
+		 */
 		BezierCurve();
+
+		/**
+		 *	@brief Creates a BezierCurve Object from another BezierCurve Object
+		 */
 		BezierCurve(const BezierCurve& o);
+
+		/**
+		 * @brief Destroys a BezierCurve Object freeing its memory usage
+		 */
 		~BezierCurve();
 
 		//Object and Class Stuff
@@ -24,17 +37,129 @@ namespace glib
 			const char* what() noexcept { return "ERROR ON BLENDING POINTS"; }
 		};
 
+		/**
+		 * @brief Adds a point to the list of points for the Bezier Curve.
+		 * 		Note that duplicate points are allowed.
+		 * @param p
+		 * 		A Vec2f containing the point.
+		 */
 		void addPoint(Vec2f p);
+
+		/**
+		 * @brief Adds a point to the list of points for the Bezier Curve.
+		 * 		Note that duplicate points are allowed.
+		 * @param x
+		 * 		A double representing the x value for the point
+		 * @param y
+		 * 		A double representing the y value for the point
+		 */
+		void addPoint(double x, double y);
+
+		/**
+		 * @brief Gets a point from the Bezier Curve.
+		 * @param index
+		 * 		The index of the point in the list.
+		 * @return Vec2f
+		 * 		returns the point as a Vec2f if index was valid.
+		 * 		If index was invalid and USE_EXCEPTIONS is defined, an
+		 * 		OutOfBoundsError will be thrown.
+		 * 		Otherwise, the default Vec2f is returned.
+		 */
 		Vec2f getPoint(int index);
+
+		/**
+		 * @brief Solves the BezierCurve for the given time. Note that any time
+		 * 		value can be used even if outside of the bounds [0,1]
+		 * @param time
+		 * 		The time value to solve for.
+		 * @return Vec2f
+		 * 		returns the point as a Vec2f.
+		 */
 		Vec2f getFuctionAt(double time);
+
+		/**
+		 * @brief Solves the derivative of BezierCurve for the given time. Note that any time
+		 * 		value can be used even if outside of the bounds [0,1]
+		 * @param time
+		 * 		The time value to solve for.
+		 * @return Vec2f
+		 * 		returns the derivative as a Vec2f.
+		 */
 		Vec2f getDerivativeAt(double time);
+
+		/**
+		 * @brief Solves for the simple derivative of BezierCurve for the given time.
+		 * 		Note that any time value can be used even if outside of the bounds [0,1].
+		 * 		
+		 * 		The simple derivative is just the next point minus the previous point where time
+		 * 		determines which points to use. This is useful if you just need to know if the function
+		 * 		is increasing at the time given instead of the actual derivative.
+		 * @param time
+		 * 		The time value to solve for.
+		 * @return Vec2f
+		 * 		returns the simple derivative as a Vec2f.
+		 */
 		Vec2f getSimpleDerivativeAt(double time);
+
+		/**
+		 * @brief Solves for the Arc Length of the Bezier curve from 0 to the given time.
+		 * 		Note for all bezier curves above degree 2 (not a line) the arc length is
+		 * 		approximated using Simpson's rule.
+		 * 		The Bezier curve is divided into segments and each segement is approximated and
+		 * 		added together to get the total arc length.
+		 * @param time
+		 * 		The end time to measure arc length to. 
+		 * @return double
+		 * 		returns the measured arc length.
+		 */
 		double getArcLengthAt(double time);
+
+		/**
+		 * @brief Solves for the Arc Length of the Bezier curve from start time to end time.
+		 * 		Note for all bezier curves above degree 2 (not a line) the arc length is
+		 * 		approximated using Simpson's rule.
+		 * 		The Bezier curve is divided into segments and each segement is approximated and
+		 * 		added together to get the total arc length.
+		 * @param startTime
+		 * 		The time to begin measuring arc length from.
+		 * @param endTime
+		 * 		The end time to measure arc length to. 
+		 * @return double
+		 * 		returns the measured arc length.
+		 */
 		double getArcLengthAt(double startTime, double endTime);
+
+		/**
+		 * @brief Clears all points from the BezierCurve's list of points
+		 */
 		void clear();
+
+		/**
+		 * @brief Returns the amount of points the bezier curve has.
+		 * @return int
+		 */
 		int size();
 
+		/**
+		 * @brief Solves the function all times where the solution has the specified y value.
+		 * 		Currently only works for BezierCurves with 4 or less points.
+		 * 	@param y
+		 * 		The y value to solve for.
+		 * @return std::vector<double>
+		 * 		returns a list of all solutions. Can return an empty list if there is no
+		 * 		solution.
+		 */
 		std::vector<double> findTimeForY(double y);
+
+		/**
+		 * @brief Solves the function all times where the solution has the specified x value.
+		 * 		Currently only works for BezierCurves with 4 or less points.
+		 * 	@param x
+		 * 		The x value to solve for.
+		 * @return std::vector<double>
+		 * 		returns a list of all solutions. Can return an empty list if there is no
+		 * 		solution.
+		 */
 		std::vector<double> findTimeForX(double x);
 
 	private:
