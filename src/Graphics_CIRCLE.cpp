@@ -8,7 +8,7 @@ namespace glib
 
 		Image* otherImg;
 		if (surf == nullptr)
-			otherImg = activeImage;
+			return;
 		else
 			otherImg = surf;
 

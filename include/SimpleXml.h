@@ -45,6 +45,9 @@ namespace glib
         bool load(std::wstring filename);
         void save(std::wstring filename);
 
+        bool load(File filename);
+        void save(File filename);
+
         void dispose();
 
         std::vector<XmlNode*> nodes = std::vector<XmlNode*>();

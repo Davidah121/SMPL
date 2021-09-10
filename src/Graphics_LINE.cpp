@@ -8,7 +8,7 @@ namespace glib
 		//Will pointers for modifying the data
 		Image* otherImg;
 		if (surf == nullptr)
-			otherImg = activeImage;
+			return;
 		else
 			otherImg = surf;
 

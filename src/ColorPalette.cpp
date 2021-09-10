@@ -144,20 +144,45 @@ namespace glib
 
 	Color ColorPalette::getColor(int index)
 	{
-		return paletteArr[index];
+		if(index >= 0 && index < paletteArr.size())
+			return paletteArr[index];
+		else
+		{
+			#ifdef USE_EXCEPTIONS
+			throw OutOfBoundsError;
+			#endif
+
+			return Color();
+		}
 	}
 
 	Color* ColorPalette::getColorRef(int index)
 	{
-		return &paletteArr[index];
+		if(index >= 0 && index < paletteArr.size())
+			return &paletteArr[index];
+		else
+		{
+			#ifdef USE_EXCEPTIONS
+			throw OutOfBoundsError;
+			#endif
+
+			return nullptr;
+		}
 	}
 
 	int ColorPalette::getColorIndex(Color c)
 	{
 		KDTreeNode<unsigned char> node = paletteTree->search( (unsigned char*)&c );
 
-		ColorNode* k = (ColorNode*)node.data;
-		return k->arrayIndex;
+		if(node.data != nullptr)
+		{
+			ColorNode* k = (ColorNode*)node.data;
+			return k->arrayIndex;
+		}
+		else
+		{
+			return -1;
+		}
 	}
 
 	int ColorPalette::getSize()
@@ -238,6 +263,26 @@ namespace glib
 	ColorPalette ColorPalette::generateOptimalPalette(Color* colorArray, int size, int colors, unsigned char type, bool convertToLab, bool uniqueOnly)
 	{
 		ColorPalette temp = ColorPalette();
+		if(colorArray == nullptr)
+		{
+			return temp;
+		}
+
+		if(size <= 0)
+		{
+			return temp;
+		}
+
+		if(colors <= 0)
+		{
+			return temp;
+		}
+
+		if(type != MEAN_CUT || type != MEDIAN_CUT || type != K_MEANS)
+		{
+			return temp;
+		}
+
 		if(uniqueOnly)
 		{
 			ColorPalette f = ColorPalette();

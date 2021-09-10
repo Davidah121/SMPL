@@ -36,6 +36,11 @@ namespace glib
 		points.push_back(p);
 	}
 
+	void BezierCurve::addPoint(double x, double y)
+	{
+		points.push_back(Vec2f(x, y));
+	}
+
 	Vec2f BezierCurve::getPoint(int index)
 	{
 		if (index >= 0 && index < points.size())

@@ -19,9 +19,29 @@ namespace glib
 
 		static void init();
 
-		static std::wstring toWideString(std::string text);
+		template<typename T>
+		static std::wstring toWideString(std::basic_string<T> text)
+		{
+			std::wstring finalText = L"";
+			for (int i = 0; i < text.size(); i++)
+			{
+				finalText += (wchar_t)text[i];
+			}
 
-		static std::string toCString(std::wstring text);
+			return finalText;
+		}
+
+		template<typename T>
+		static std::string toCString(std::basic_string<T> text)
+		{
+			std::string finalText = "";
+			for (int i = 0; i < text.size(); i++)
+			{
+				finalText += (char)text[i];
+			}
+
+			return finalText;
+		}
 
 		static std::vector<unsigned char> toUTF8(int c);
 		static int utf8ToChar(std::vector<unsigned char> utf8Char);
@@ -32,8 +52,25 @@ namespace glib
 		static int stringLength(const char* text);
 		static int stringLength(const wchar_t* text);
 
-		static bool equalsIgnoreCase(std::string a, std::string b);
-		static bool equalsIgnoreCase(std::wstring a, std::wstring b);
+		template<typename T>
+		static bool equalsIgnoreCase(std::basic_string<T> a, std::basic_string<T> b)
+		{
+			if(a.size() == b.size())
+			{
+				for(int i=0; i<a.size(); i++)
+				{
+					if( toupper(a[i]) != toupper(b[i]))
+						return false;
+				}
+			}
+			else
+			{
+				return false;
+			}
+			
+			return true;
+		}
+
 		static bool isAlphaNumerial(char v, bool underScoreAllowed = false, bool dashAllowed = false);
 		static bool isValidChar(int v);
 		

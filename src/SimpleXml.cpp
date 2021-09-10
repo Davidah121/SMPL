@@ -85,6 +85,11 @@ namespace glib
         save(StringTools::toWideString(filename));
     }
 
+    void SimpleXml::save(File filename)
+    {
+        save(filename.getFullFileName());
+    }
+
     void SimpleXml::save(std::wstring filename)
     {
         SimpleFile f = SimpleFile(filename, SimpleFile::WRITE);
@@ -159,6 +164,11 @@ namespace glib
     bool SimpleXml::load(std::string filename)
     {
         return load( StringTools::toWideString(filename) );
+    }
+
+    bool SimpleXml::load(File filename)
+    {
+        return load( filename.getFullFileName() );
     }
 
     /**

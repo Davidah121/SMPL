@@ -160,12 +160,12 @@ namespace glib
 		return output;
 	}
 
-	std::vector<unsigned char> Compression::decompressLZ77(std::vector<unsigned char> data, int maxBufferSize)
+	std::vector<unsigned char> Compression::decompressLZ77(std::vector<unsigned char> data, int maxBufferSize, size_t expectedSize)
 	{
-		return decompressLZ77(data.data(), data.size(), maxBufferSize);
+		return decompressLZ77(data.data(), data.size(), maxBufferSize, expectedSize);
 	}
 
-	std::vector<unsigned char> Compression::decompressLZ77(unsigned char* data, int size, int maxBufferSize)
+	std::vector<unsigned char> Compression::decompressLZ77(unsigned char* data, int size, int maxBufferSize, size_t expectedSize)
 	{
 		std::vector<unsigned char> output = std::vector<unsigned char>();
 
@@ -206,6 +206,15 @@ namespace glib
 			unsigned char t3 = data[i + 2*bytesForRef]; //value to add on afterwards
 
 			int startLoc = output.size() - t1;
+
+			if(output.size()+t2 > expectedSize)
+			{
+				#ifdef USE_EXCEPTIONS
+				throw ExceededExpectedSizeError();
+				#endif
+				return std::vector<unsigned char>();
+			}
+
 			//copy stuff
 			for (int j = 0; j < t2; j++)
 			{
@@ -213,6 +222,14 @@ namespace glib
 			}
 
 			output.push_back(t3);
+
+			if(output.size() > expectedSize)
+			{
+				#ifdef USE_EXCEPTIONS
+				throw ExceededExpectedSizeError();
+				#endif
+				return std::vector<unsigned char>();
+			}
 		}
 
 		return output;

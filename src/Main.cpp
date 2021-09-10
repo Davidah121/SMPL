@@ -546,6 +546,8 @@ void testSVGTransforms()
     WndWindow window = WndWindow("SVG Transforms", 640,480, -1, -1, WndWindow::TYPE_USER_MANAGED);
     window.getGuiManager()->addElement(&cus);
 
+    BinarySet k = BinarySet();
+
     bool first = false;
     while(window.getRunning())
     {

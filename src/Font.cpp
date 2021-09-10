@@ -1,6 +1,7 @@
 #include "Font.h"
 #include "SimpleFile.h"
 #include "StringTools.h"
+#include "Sort.h"
 
 namespace glib
 {
@@ -27,10 +28,14 @@ namespace glib
 		{
 			return charInfoList[index];
 		}
+		
+		#ifdef USE_EXCEPTIONS
+		throw OutOfBoundsError();
+		#endif
 		return {};
 	}
 
-	std::vector<FontCharInfo> Font::getListOfFontCharInfo()
+	std::vector<FontCharInfo>& Font::getListOfFontCharInfo()
 	{
 		return charInfoList;
 	}
@@ -38,14 +43,40 @@ namespace glib
 	int Font::getCharIndex(int c)
 	{
 		int index = -1;
-		for (int i = 0; i < charInfoList.size(); i++)
+
+		if(sorted)
 		{
-			if (charInfoList[i].unicodeValue == c)
+			//binary search
+			int l = 0;
+			int r = charInfoList.size()-1;
+
+			while(l < r)
 			{
-				index = i;
-				break;
+				int m = (l+r) / 2;
+				int uniVal = charInfoList[m].unicodeValue;
+				
+				if(uniVal == c)
+					return m;
+				else if( c < uniVal)
+					r = m;
+				else if( c > uniVal)
+					l = m;
 			}
 		}
+		else
+		{
+			//linear search
+			for (int i = 0; i < charInfoList.size(); i++)
+			{
+				if (charInfoList[i].unicodeValue == c)
+				{
+					index = i;
+					break;
+				}
+			}
+		}
+		
+		
 		return index;
 	}
 
@@ -64,14 +95,9 @@ namespace glib
 		return fontSize;
 	}
 
-	void Font::setFontTransform(Mat4f mat)
+	int Font::getOriginalFontSize()
 	{
-		fontTransform = mat;
-	}
-
-	Mat4f Font::getFontTransform()
-	{
-		return fontTransform;
+		return originalFontSize;
 	}
 
 	int Font::getVerticalAdvance()
@@ -101,6 +127,30 @@ namespace glib
 		}
 
 		return totalWidth;
+	}
+
+	void Font::addChar(FontCharInfo a)
+	{
+		charInfoList.push_back(a);
+		sorted = false;
+	}
+
+	void Font::sortList(bool insertionSort)
+	{
+		if(insertionSort)
+		{
+			sorted = true;
+			Sort::insertionSort<FontCharInfo>(charInfoList.data(), charInfoList.size(), [](FontCharInfo a, FontCharInfo b) -> bool{
+				return a.unicodeValue < b.unicodeValue;
+			});
+		}
+		else
+		{
+			sorted = true;
+			Sort::mergeSort<FontCharInfo>(charInfoList.data(), charInfoList.size(), [](FontCharInfo a, FontCharInfo b) -> bool{
+				return a.unicodeValue < b.unicodeValue;
+			});
+		}
 	}
 
 } //NAMESPACE glib END

@@ -21,6 +21,11 @@ namespace glib
 		init( StringTools::toWideString(filename), type);
 	}
 
+	SimpleFile::SimpleFile(File filename, char type)
+	{
+		init( filename.getFullFileName(), type);
+	}
+
 	void SimpleFile::init(std::wstring filename, char type)
 	{
 		this->type = type&0x0F;

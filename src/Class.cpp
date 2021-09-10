@@ -26,12 +26,15 @@ namespace glib
 	bool Class::isParentClass(const Class* k) const
 	{
 		bool is = false;
-		for (int i = 0; i < parentClasses.size(); i++)
+		if(k != nullptr)
 		{
-			if (k == parentClasses[i])
+			for (int i = 0; i < parentClasses.size(); i++)
 			{
-				is = true;
-				break;
+				if (k == parentClasses[i])
+				{
+					is = true;
+					break;
+				}
 			}
 		}
 		return is;
@@ -68,9 +71,10 @@ namespace glib
 		}
 		else
 		{
-			std::cerr << "CLASS " << k->getClassName() << " IS INVALID." << std::endl;
-			std::cerr << "ONE OR MORE CLASSES HAVE THE SAME NAME" << std::endl;
-			//We will not exit on fail.
+			#ifdef USE_EXCEPTIONS
+			throw ClassMaster::InvalidClassName;
+			#endif
+			//No exit of fail
 		}
 
 		return can;
