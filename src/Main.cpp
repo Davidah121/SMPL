@@ -547,7 +547,7 @@ void testSVGTransforms()
     window.getGuiManager()->addElement(&cus);
 
     BinarySet k = BinarySet();
-
+    
     bool first = false;
     while(window.getRunning())
     {

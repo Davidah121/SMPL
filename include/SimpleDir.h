@@ -12,8 +12,29 @@ namespace glib
 	class SimpleDir : public Object
 	{
 	public:
+
+		/**
+		 * @brief Construct a new SimpleDir object
+		 * 		Uses the C++ filesystem 
+		 * 		Contains information about a directory and its files.
+		 * 
+		 * @param directory 
+		 */
 		SimpleDir(std::string directory);
+
+		/**
+		 * @brief Construct a new SimpleDir object
+		 * 		Uses the C++ filesystem 
+		 * 		Contains information about a directory and its files.
+		 * 
+		 * @param directory 
+		 */
 		SimpleDir(std::wstring directory);
+
+		/**
+		 * @brief Destroy the SimpleDir object
+		 * 
+		 */
 		~SimpleDir();
 
 		//Object and Class Stuff
@@ -38,29 +59,145 @@ namespace glib
 			const char* what() noexcept { return "File or Directory could not be renamed."; }
 		};
 
-		void update(); //Update the references in this directory
+		/**
+		 * @brief Updates all of the references for the directory.
+		 * 		(Meaning what files and folders are in it if there was some change)
+		 * 
+		 */
+		void update();
 
 		//Reference Stuff
-		std::wstring getReferenceName(int index); //Get the name of a thing in the directory
-		std::wstring getReferenceFullPath(int index); //Gets the full path to a thing in the directory
-		unsigned int fileSize(int index); //Gets the size of the file at that index
-		time_t getLastChangeTime(int index); //Gets the last time the reference at that index was updated
+
+		/**
+		 * @brief Gets the Reference Name at the specified index.
+		 * 		May be a file or folder.
+		 * 		If USE_EXCEPTIONS is defined, an OutOfBounds Error may be thrown.
+		 * 
+		 * @param index 
+		 * @return std::wstring 
+		 */
+		std::wstring getReferenceName(int index);
+
+		/**
+		 * @brief Gets the Reference Full Path at the specified index.
+		 * 		May be a file or folder.
+		 * 		If USE_EXCEPTIONS is defined, an OutOfBounds Error may be thrown.
+		 * 
+		 * @param index 
+		 * @return std::wstring 
+		 */
+		std::wstring getReferenceFullPath(int index);
+
+		/**
+		 * @brief Returns the size of the file or folder at the index.
+		 * 		If USE_EXCEPTIONS is defined, an OutOfBounds Error may be thrown.
+		 * @param index 
+		 * @return unsigned int 
+		 */
+		unsigned int fileSize(int index);
+
+		/**
+		 * @brief Gets the Last Change Time for the file or folder at the index.
+		 * 		If USE_EXCEPTIONS is defined, an OutOfBounds Error may be thrown.
+		 * 
+		 * @param index 
+		 * @return time_t 
+		 */
+		time_t getLastChangeTime(int index);
+
+		/**
+		 * @brief Returns if the reference at the specified index is a directory.
+		 * 		If USE_EXCEPTIONS is defined, an OutOfBounds Error may be thrown.
+		 * 
+		 * @param index 
+		 * @return true 
+		 * @return false 
+		 */
 		bool referenceIsDirectory(int index); //Gets whether the reference is a directory or not
 		
-		void renameResource(std::wstring newName, int index); //
-		void deleteResource(int index); //Delete Resouce
-		void copyResource(std::wstring newName, int index); //
+		/**
+		 * @brief Attempts to rename the reference at the index.
+		 * 		The function may fail to rename the resource.
+		 * 		If USE_EXCEPTIONS is defined, an RenameError may be thrown.
+		 * 		If USE_EXCEPTIONS is defined, an OutOfBoundsError may be thrown.
+		 * 
+		 * @param newFileName 
+		 * @param index 
+		 */
+		void renameResource(std::wstring newFileName, int index);
 
+		/**
+		 * @brief Attempts to delete the reference at the index.
+		 * 		The function may fail to delete the resource.
+		 * 		If USE_EXCEPTIONS is defined, an DeleteError may be thrown.
+		 * 		If USE_EXCEPTIONS is defined, an OutOfBoundsError may be thrown.
+		 * 
+		 * 		Note that deleting in this way will not move the data to the recycle bin.
+		 * @param index 
+		 */
+		void deleteResource(int index);
+
+		/**
+		 * @brief Attempts to copy the reference at the index.
+		 * 		The function may fail to copy the resource.
+		 * 		If USE_EXCEPTIONS is defined, an CopyError may be thrown.
+		 * 		If USE_EXCEPTIONS is defined, an OutOfBoundsError may be thrown.
+		 * @param newFileName 
+		 * @param index 
+		 */
+		void copyResource(std::wstring newFileName, int index);
+
+		/**
+		 * @brief Gets the Reference Location by its name.
+		 * 
+		 * @param name 
+		 * @return int 
+		 */
 		int getReferenceLocation(std::wstring name);
 
 		//Directory Stuff
-		int getSize(); //Returns the amount of items in this directory
-		std::vector<std::wstring> getFolders(); //Returns all of the folders
-		std::vector<std::wstring> getFiles(); //Returns the files with a particular attribute
 
-		bool doesExist(); //Determines if this is currently a directory
-		void createDirectory(); //Creates a directory at that location
+		/**
+		 * @brief Gets the amount of items in the directory.
+		 * 
+		 * @return int 
+		 */
+		int getSize();
 
+		/**
+		 * @brief Returns a list of all the folders.
+		 * 
+		 * @return std::vector<std::wstring> 
+		 */
+		std::vector<std::wstring> getFolders();
+
+		/**
+		 * @brief Returns a list of all the files.
+		 * 
+		 * @return std::vector<std::wstring> 
+		 */
+		std::vector<std::wstring> getFiles();
+
+		/**
+		 * @brief Determines if the directory specified exists.
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
+		bool doesExist();
+
+		/**
+		 * @brief Creates a Directory with the path that the object was created with.
+		 * 
+		 */
+		void createDirectory();
+
+		/**
+		 * @brief Gets the name of the directory.
+		 * 		It is the string used to create the object.
+		 * 
+		 * @return std::wstring 
+		 */
 		std::wstring getLocation();
 
 	private:

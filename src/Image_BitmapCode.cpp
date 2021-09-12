@@ -16,6 +16,11 @@ namespace glib
 		Image::saveBMP(StringTools::toWideString(filename), alphaThreshold, greyscale);
 	}
 
+	void Image::saveBMP(File file, unsigned char alphaThreshold, bool greyscale)
+	{
+		Image::saveBMP(file.getFullFileName(), alphaThreshold, greyscale);
+	}
+
 	void Image::saveBMP(std::wstring filename, unsigned char alphaThreshold, bool greyscale)
 	{
 		//save header

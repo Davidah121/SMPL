@@ -269,22 +269,22 @@ namespace glib
         return data;
     }
 
-    Vec2f& Sound::operator[](int index)
+    Vec2f& Sound::operator[](unsigned int index)
     {
         return data[index];
     }
 
-    Vec2f Sound::get(int index)
+    Vec2f Sound::get(unsigned int index)
     {
         return Vec2f(data[index].x * volume.x, data[index].y * volume.y);
     }
 
-    int Sound::getPosition()
+    unsigned int Sound::getPosition()
     {
         return position;
     }
 
-    void Sound::setPosition(int index)
+    void Sound::setPosition(unsigned int index)
     {
         position = index;
     }
@@ -299,46 +299,46 @@ namespace glib
         return priority;
     }
 
-    int Sound::getLength()
+    unsigned int Sound::getLength()
     {
         return length;
     }
 
-    int Sound::getLoopStart()
+    unsigned int Sound::getLoopStart()
     {
         return loopStart;
     }
 
-    int Sound::getLoopEnd()
+    unsigned int Sound::getLoopEnd()
     {
         return loopEnd;
     }
 
-    void Sound::setLoopStart(int index)
+    void Sound::setLoopStart(unsigned int index)
     {
-        loopStart = MathExt::clamp(index, 0, length);
+        loopStart = MathExt::clamp(index, (unsigned int)0, length);
     }
 
     void Sound::setLoopStart(double time)
     {
         //time in seconds
-        int actualIndex = (int)(time * 44100);
-        loopStart = MathExt::clamp(actualIndex, 0, length);
+        unsigned int actualIndex = (unsigned int)(time * 44100);
+        loopStart = MathExt::clamp(actualIndex, (unsigned int)0, length);
     }
 
-    void Sound::setLoopEnd(int index)
+    void Sound::setLoopEnd(unsigned int index)
     {
-        loopEnd = MathExt::clamp(index, 0, length);
+        loopEnd = MathExt::clamp(index, (unsigned int)0, length);
     }
 
     void Sound::setLoopEnd(double time)
     {
         //time in seconds
-        int actualIndex = (int)(time * 44100);
-        loopEnd = MathExt::clamp(actualIndex, 0, length);
+        unsigned int actualIndex = (unsigned int)(time * 44100);
+        loopEnd = MathExt::clamp(actualIndex, (unsigned int)0, length);
     }
 
-    void Sound::setData(Vec2f* data, int size, bool isShallowCopy)
+    void Sound::setData(Vec2f* data, unsigned int size, bool isShallowCopy)
     {
         dispose();
         this->data = data;
@@ -346,7 +346,7 @@ namespace glib
         this->isShallowCopy = isShallowCopy;
     }
 
-    void Sound::copyData(Vec2f* data, int size)
+    void Sound::copyData(Vec2f* data, unsigned int size)
     {
         dispose();
         this->data = new Vec2f[size];

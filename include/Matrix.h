@@ -8,13 +8,49 @@ namespace glib
 	class Matrix : public Object
 	{
 	public:
+		/**
+		 * @brief Construct a new Matrix object
+		 * 		A matrix with rows = 0 or columns = 0 is considered invalid.
+		 */
 		Matrix();
+
+		/**
+		 * @brief Construct a new Matrix object
+		 * 		A matrix with rows = 0 or columns = 0 is considered invalid.
+		 * 
+		 * @param rows 
+		 * @param cols 
+		 */
 		Matrix(int rows, int cols);
-		Matrix(const Matrix& c);
+
+		/**
+		 * @brief Construct a new Matrix object from another Matrix object
+		 * 
+		 * @param o
+		 * 		The matrix to copy.
+		 */
+		Matrix(const Matrix& o);
+
+		/**
+		 * @brief Copies a Matrix object
+		 * 
+		 * @param o
+		 * 		The matrix to copy.
+		 */
 		void operator=(const Matrix& o);
 
+		/**
+		 * @brief Destroy the Matrix object
+		 * 
+		 */
 		~Matrix();
 
+		/**
+		 * @brief Copies a Matrix object
+		 * 
+		 * @param o
+		 * 		The matrix to copy.
+		 */
 		void copy(const Matrix& o);
 
 		//Object and Class Stuff
@@ -43,12 +79,41 @@ namespace glib
 		bool operator==(Matrix other);
 		bool operator!=(Matrix other);
 
+		/**
+		 * @brief Returns the 2D array representing the data in the matrix.
+		 * 
+		 * @return double** 
+		 */
 		double** getData();
 
+		/**
+		 * @brief Returns the amount of rows.
+		 * 
+		 * @return int 
+		 */
 		int getRows();
+
+		/**
+		 * @brief Returns the amount of columns.
+		 * 
+		 * @return int 
+		 */
 		int getCols();
+
+		/**
+		 * @brief Returns if the matrix is valid
+		 * 
+		 * @return bool
+		 */
 		bool getValid();
 
+		/**
+		 * @brief Returns the value of the matrix at the specified location
+		 * 
+		 * @param col 
+		 * @param row 
+		 * @return double 
+		 */
 		double get(int col, int row);
 
 	protected:

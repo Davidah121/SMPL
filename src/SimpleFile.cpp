@@ -827,7 +827,7 @@ namespace glib
 
 	int SimpleFile::getBytesLeft()
 	{
-		if(isOpen())
+		if(isOpen() && type == READ)
 		{
 			return (int)(size - file->tellg());
 		}

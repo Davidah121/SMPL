@@ -7,31 +7,60 @@ namespace glib
     class Sort
     {
     public:
-        Sort();
-        ~Sort();
 
+        /**
+         * @brief Performs Merge Sort on the data.
+         * 
+         * @param list 
+         * @param size 
+         * @param compareFunc 
+         *      If set to nullptr, performs a < b.
+         *          a < b must be defined for the the template type T.
+         *      Default is nullptr.
+         */
         template<typename T>
-        static void mergeSort(T* list, size_t size, std::function<bool(T,T)> compareFunc);
+        static void mergeSort(T* list, size_t size, std::function<bool(T,T)> compareFunc = nullptr);
 
+        /**
+         * @brief Performs Insertion Sort on the data.
+         * 
+         * @param list 
+         * @param size 
+         * @param compareFunc 
+         *      If set to nullptr, performs a < b.
+         *          a < b must be defined for the the template type T.
+         *      Default is nullptr.
+         */
         template<typename T>
-        static void insertionSort(T* list, size_t size, std::function<bool(T,T)> compareFunc);
+        static void insertionSort(T* list, size_t size, std::function<bool(T,T)> compareFunc = nullptr);
 
+        /**
+         * @brief Performs Quick Sort on the data.
+         *      This version of quick sort is not very good and should be updated.
+         * 
+         * @param list 
+         * @param size 
+         * @param compareFunc 
+         *      If set to nullptr, performs a < b.
+         *          a < b must be defined for the the template type T.
+         *      Default is nullptr.
+         */
         template<typename T>
-        static void quickSort(T* list, size_t size, std::function<bool(T,T)> compareFunc);
+        static void quickSort(T* list, size_t size, std::function<bool(T,T)> compareFunc = nullptr);
     
     private:
 
         template<typename T>
-        static void mergeSortRecursive(T* list, size_t start, size_t end, std::function<bool(T,T)> compareFunc);
+        static void mergeSortRecursive(T* list, size_t start, size_t end, std::function<bool(T,T)> compareFunc = nullptr);
         
         template<typename T>
-        static void merge(T* list, size_t start, size_t mid, size_t end, std::function<bool(T,T)> compareFunc);
+        static void merge(T* list, size_t start, size_t mid, size_t end, std::function<bool(T,T)> compareFunc = nullptr);
 
         template<typename T>
-        static void quickSortRecursive(T* list, size_t start, size_t end, std::function<bool(T,T)> compareFunc);
+        static void quickSortRecursive(T* list, size_t start, size_t end, std::function<bool(T,T)> compareFunc = nullptr);
         
         template<typename T>
-        static size_t quickSortPartition(T* list, size_t start, size_t end, std::function<bool(T,T)> compareFunc);
+        static size_t quickSortPartition(T* list, size_t start, size_t end, std::function<bool(T,T)> compareFunc = nullptr);
     };
 
     #pragma region MERGESORT
@@ -77,39 +106,80 @@ namespace glib
         size_t lI = 0;
         size_t rI = 0;
         size_t index = 0;
-        while(true)
+
+        if(compareFunc != nullptr)
         {
-            if(lI < leftSize && rI < rightSize)
+            while(true)
             {
-                if(compareFunc(leftSide[lI], rightSide[rI]))
+                if(lI < leftSize && rI < rightSize)
+                {
+                    if(compareFunc(leftSide[lI], rightSide[rI]))
+                    {
+                        list[start+index] = leftSide[lI];
+                        lI++;
+                    }
+                    else
+                    {
+                        list[start+index] = rightSide[rI];
+                        rI++;
+                    }
+                }
+                else if(lI < leftSize)
                 {
                     list[start+index] = leftSide[lI];
                     lI++;
                 }
-                else
+                else if(rI < rightSize)
                 {
                     list[start+index] = rightSide[rI];
                     rI++;
                 }
-            }
-            else if(lI < leftSize)
-            {
-                list[start+index] = leftSide[lI];
-                lI++;
-            }
-            else if(rI < rightSize)
-            {
-                list[start+index] = rightSide[rI];
-                rI++;
-            }
-            else
-            {
-                break;
-            }
-            index++;
+                else
+                {
+                    break;
+                }
+                index++;
 
-            if(index>totalSize)
-                break;
+                if(index>totalSize)
+                    break;
+            }
+        }
+        else
+        {
+            while(true)
+            {
+                if(lI < leftSize && rI < rightSize)
+                {
+                    if(leftSide[lI] < rightSide[rI])
+                    {
+                        list[start+index] = leftSide[lI];
+                        lI++;
+                    }
+                    else
+                    {
+                        list[start+index] = rightSide[rI];
+                        rI++;
+                    }
+                }
+                else if(lI < leftSize)
+                {
+                    list[start+index] = leftSide[lI];
+                    lI++;
+                }
+                else if(rI < rightSize)
+                {
+                    list[start+index] = rightSide[rI];
+                    rI++;
+                }
+                else
+                {
+                    break;
+                }
+                index++;
+
+                if(index>totalSize)
+                    break;
+            }
         }
 
         if(leftSide!=nullptr)
@@ -124,21 +194,43 @@ namespace glib
     template<typename T>
     inline void Sort::insertionSort(T* list, size_t size, std::function<bool(T,T)> compareFunc)
     {
-        for(size_t i=1; i<size; i++)
+        if(compareFunc != nullptr)
         {
-            for(size_t j=i; j>=1; j--)
+            for(size_t i=1; i<size; i++)
             {
-                //if (list[j] < list[i])
-                if(compareFunc(list[j], list[j-1]))
+                for(size_t j=i; j>=1; j--)
                 {
-                    //swap
-                    T temp = list[j-1];
-                    list[j-1] = list[j];
-                    list[j] = temp;
+                    if(compareFunc(list[j], list[j-1]))
+                    {
+                        //swap
+                        T temp = list[j-1];
+                        list[j-1] = list[j];
+                        list[j] = temp;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
-                else
+            }
+        }
+        else
+        {
+            for(size_t i=1; i<size; i++)
+            {
+                for(size_t j=i; j>=1; j--)
                 {
-                    break;
+                    if(list[j] < list[j-1])
+                    {
+                        //swap
+                        T temp = list[j-1];
+                        list[j-1] = list[j];
+                        list[j] = temp;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
         }
@@ -198,29 +290,61 @@ namespace glib
         //0,3,2     _4_     8,7
 
         //swap based on pivot
-        for(int i=start; i<=end; i++)
-        {
-            if(compareFunc(list[i], pivotValue))
-            {
-                //go left
-                j++;
-                if(j!=i)
-                {
-                    //swap
-                    T temp = list[i];
-                    list[i] = list[j];
-                    list[j] = temp;
 
-                    if(j == pivotLocation)
+        if(compareFunc != nullptr)
+        {
+            for(int i=start; i<=end; i++)
+            {
+                if(compareFunc(list[i], pivotValue))
+                {
+                    //go left
+                    j++;
+                    if(j!=i)
                     {
-                        pivotLocation = i;
+                        //swap
+                        T temp = list[i];
+                        list[i] = list[j];
+                        list[j] = temp;
+
+                        if(j == pivotLocation)
+                        {
+                            pivotLocation = i;
+                        }
                     }
                 }
+                else
+                {
+                    //go right
+                    //do nothing
+                }
             }
-            else
+        }
+        else
+        {
+            for(int i=start; i<=end; i++)
             {
-                //go right
-                //do nothing
+                if(list[i] < pivotValue)
+                {
+                    //go left
+                    j++;
+                    if(j!=i)
+                    {
+                        //swap
+                        T temp = list[i];
+                        list[i] = list[j];
+                        list[j] = temp;
+
+                        if(j == pivotLocation)
+                        {
+                            pivotLocation = i;
+                        }
+                    }
+                }
+                else
+                {
+                    //go right
+                    //do nothing
+                }
             }
         }
 

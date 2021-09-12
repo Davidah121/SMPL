@@ -32,6 +32,11 @@ namespace glib
 		Image::savePNG(StringTools::toWideString(filename), saveAlpha, greyscale, strongCompression);
 	}
 
+	void Image::savePNG(File file, bool saveAlpha, bool greyscale, bool strongCompression)
+	{
+		Image::savePNG(file.getFullFileName(), saveAlpha, greyscale, strongCompression);
+	}
+
 	void Image::savePNG(std::wstring filename, bool saveAlpha, bool greyscale, bool strongCompression)
 	{
 		SimpleFile f = SimpleFile(filename, SimpleFile::WRITE);

@@ -11,15 +11,6 @@
 namespace glib
 {
 
-	MathExt::MathExt()
-	{
-		
-	}
-
-	MathExt::~MathExt()
-	{
-	}
-
 	float MathExt::floor(float a)
 	{
 		return std::floorf(a);
@@ -148,11 +139,11 @@ namespace glib
 		return std::rand();
 	}
 
-	int MathExt::randomRange(int min, int max)
+	unsigned int MathExt::randomRange(unsigned int min, unsigned int max)
 	{
-		int dis = max - min;
+		unsigned int dis = max - min;
 
-		int value = (std::rand() % dis) + min;
+		unsigned int value = (std::rand() % dis) + min;
 
 		return value;
 	}
@@ -550,7 +541,8 @@ namespace glib
 	
 	Vec2f MathExt::lengthDir(double length, double direction)
 	{
-		return Vec2f(MathExt::cos( toRad(direction)) * length, -MathExt::sin( toRad(direction))*length);
+		return Vec2f( MathExt::cos( toRad(direction)) * length, 
+					-MathExt::sin( toRad(direction)) * length );
 	}
 
 	double MathExt::dot(Vec2f v1, Vec2f v2)

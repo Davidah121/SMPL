@@ -9,17 +9,56 @@ namespace glib
 	class Mat2f : public Matrix
 	{
 	public:
+		/**
+		 * @brief Construct a new Mat2f object
+		 * 		The class is a subclass of the Matrix class.
+		 * 		It is an implementation of a 2x2 Matrix as they are commonly used.
+		 */
 		Mat2f();
+
+		/**
+		 * @brief Construct a new Mat2f object
+		 * 		The class is a subclass of the Matrix class.
+		 * 		It is an implementation of a 2x2 Matrix as they are commonly used.
+		 * 
+		 * @param v1 
+		 * @param v2 
+		 * @param v3 
+		 * @param v4 
+		 */
 		Mat2f(double v1, double v2, double v3, double v4);
-		Mat2f(const Mat2f& c);
+
+		/**
+		 * @brief Construct a new Mat2f object from another.
+		 * 
+		 * @param o 
+		 * 		The other Mat2f to copy.
+		 */
+		Mat2f(const Mat2f& o);
+
+		/**
+		 * @brief Copies a Mat2f object.
+		 * 
+		 * @param o 
+		 * 		The other Mat2f to copy.
+		 */
 		void operator=(const Mat2f& o);
 
+		/**
+		 * @brief Destroys the Mat2f object
+		 * 
+		 */
 		~Mat2f();
 		
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
 
+		/**
+		 * @brief Returns the Identity 2x2 matrix
+		 * 
+		 * @return Mat2f 
+		 */
 		static Mat2f getIdentity();
 
 		double* operator[](int row);

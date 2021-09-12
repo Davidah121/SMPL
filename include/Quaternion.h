@@ -8,8 +8,27 @@ namespace glib
     class Quaternion : public Object
     {
     public:
+        /**
+         * @brief Construct a new Quaternion object
+         * 
+         */
         Quaternion();
+
+        /**
+         * @brief Construct a new Quaternion object.
+         *      Takes the form ai + bj + ck + d
+         * 
+         * @param a 
+         * @param b 
+         * @param c 
+         * @param d 
+         */
         Quaternion(double a, double b, double c, double d);
+
+        /**
+         * @brief Destroy the Quaternion object
+         * 
+         */
         ~Quaternion();
 
         static const Class myClass;
@@ -31,7 +50,18 @@ namespace glib
         
         Vec3f operator*(Vec3f other);
 
+        /**
+         * @brief Gets the Conjugate of the quaternion
+         * 
+         * @return Quaternion 
+         */
         Quaternion getConjugate();
+
+        /**
+         * @brief Gets the Inverse of the quaternion
+         * 
+         * @return Quaternion 
+         */
         Quaternion getInverse();
 
         double a=0;

@@ -125,50 +125,254 @@ namespace glib
 		static const float A8_SHARP;
 		static const float B8;
 
+		/**
+		 * @brief Construct a new Sound object
+		 * 		Contains the data for stereo sound.
+		 * 		Can be a shallow copy or deep copy.
+		 * 
+		 * 		Assumes all data is stereo and uses 44100 samples per sec.
+		 * 
+		 */
 		Sound();
+
+		/**
+		 * @brief Construct a new Sound object from another Sound object
+		 * 		Contains the data for stereo sound.
+		 * 		Performs a shallow copy.
+		 * 		Assumes all data is stereo and uses 44100 samples per sec.
+		 * 
+		 * @param other
+		 */
 		Sound(const Sound& other);
+
+		/**
+		 * @brief Copies a Sound object.
+		 * 		Performs a shallow copy.
+		 * 		Assumes all data is stereo and uses 44100 samples per sec.
+		 * 
+		 * @param other
+		 */
 		void operator=(const Sound& other);
+
+		/**
+		 * @brief Destroy the Sound object
+		 * 		Deletes the original data if it is not a shallow copy.
+		 * 
+		 */
 		~Sound();
 
+		/**
+		 * @brief Copies another sound object.
+		 * 
+		 * @param shallowCopy 
+		 * 		Whether this should be a shallow copy or deep copy.
+		 * @return Sound 
+		 */
 		Sound copy(bool shallowCopy);
 
+		/**
+		 * @brief Sets whether the sound should be playing.
+		 * 		Only plays if it has been added to AudioOut sound list
+		 * 
+		 */
 		void play();
+
+		/**
+		 * @brief Returns whether the is currently playing.
+		 * 		Only plays if it has been added to AudioOut sound list
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
 		bool getPlaying();
+
+		/**
+		 * @brief Stops playback of the sound.
+		 * 		Sets the position back to 0.
+		 */
 		void stop();
+
+		/**
+		 * @brief Pauses the playback of the sound.
+		 * 		Maintains the current sound position.
+		 */
 		void pause();
 
+		/**
+		 * @brief Sets the left and right channel volumes.
+		 * 
+		 * @param left 
+		 * @param right 
+		 */
 		void setVolume(double left, double right);
+
+		/**
+		 * @brief Sets the left and right channel volumes.
+		 * 
+		 * @param v
+		 */
 		void setVolume(Vec2f v);
+
+		/**
+		 * @brief Gets the Volume of the sound for both channels
+		 * 
+		 * @return Vec2f 
+		 */
 		Vec2f getVolume();
 
+		/**
+		 * @brief Sets if the sound should loop.
+		 * 		Loops based on the loop start point and loop end point.
+		 * @param l 
+		 */
 		void setLoop(bool l);
+
+		/**
+		 * @brief Gets if the sound should loop.
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
 		bool getLoop();
 
+		/**
+		 * @brief Gets the raw sound data.
+		 * 
+		 * @return Vec2f* 
+		 */
 		Vec2f* getData();
-		Vec2f& operator[](int index);
-		Vec2f get(int index);
 
-		int getPosition();
-		void setPosition(int index);
+		/**
+		 * @brief Gets the sound data at the specified index.
+		 * 
+		 * @param index 
+		 * @return Vec2f& 
+		 */
+		Vec2f& operator[](unsigned int index);
 
+		/**
+		 * @brief Gets the sound data at the specified index.
+		 * 
+		 * @param index 
+		 * @return Vec2f
+		 */
+		Vec2f get(unsigned int index);
+
+		/**
+		 * @brief Gets the time position in the audio.
+		 * 
+		 * @return unsigned int 
+		 */
+		unsigned int getPosition();
+
+		/**
+		 * @brief Sets the time position in the audio.
+		 * 
+		 * @param index 
+		 */
+		void setPosition(unsigned int index);
+
+		/**
+		 * @brief Sets the Priority of the sound. Higher Priority sounds are less likely to be cut when 
+		 * 		the amount of sounds allowed has been exceeded.
+		 * 
+		 * @param v 
+		 */
 		void setPriority(int v);
+
+		/**
+		 * @brief Gets the Priority of the sound.
+		 * 
+		 * @return int 
+		 */
 		int getPriority();
 
-		int getLength();
+		/**
+		 * @brief Get the Length of the sound.
+		 * 		Returns the amount of samples.
+		 * 
+		 * @return unsigned int 
+		 */
+		unsigned int getLength();
 
-		int getLoopStart();
-		int getLoopEnd();
+		/**
+		 * @brief Gets the time for Loop Start
+		 * 
+		 * @return unsigned int 
+		 */
+		unsigned int getLoopStart();
 
-		void setLoopStart(int index);
+		/**
+		 * @brief Gets the time for Loop End
+		 * 
+		 * @return unsigned int 
+		 */
+		unsigned int getLoopEnd();
+
+		/**
+		 * @brief Sets the time for Loop Start
+		 * 
+		 * @param index 
+		 */
+		void setLoopStart(unsigned int index);
+
+		/**
+		 * @brief Sets the time for Loop Start
+		 * 		Converts back to samples per second.
+		 * @param time 
+		 */
 		void setLoopStart(double time);
 
-		void setLoopEnd(int index);
+		/**
+		 * @brief Sets the time for Loop End
+		 * 
+		 * @param index 
+		 */
+		void setLoopEnd(unsigned int index);
+
+		/**
+		 * @brief Sets the time for Loop End
+		 * 		Converts back to samples per second.
+		 * @param time 
+		 */
 		void setLoopEnd(double time);
 
-		void setData(Vec2f* data, int size, bool isShallowCopy=false);
-		void copyData(Vec2f* data, int size);
+		/**
+		 * @brief Set the raw sound data.
+		 * 		Assumes all data is stereo and uses 44100 samples per sec.
+		 * 
+		 * @param data 
+		 * @param size 
+		 * @param isShallowCopy 
+		 * 		Whether it will be a shallow copy of the data or take ownership of the data.
+		 * 		Default is false
+		 */
+		void setData(Vec2f* data, unsigned int size, bool isShallowCopy=false);
 
+		/**
+		 * @brief Makes a copy of the raw sound data.
+		 * 		Assumes all data is stereo and uses 44100 samples per sec.
+		 * 
+		 * @param data 
+		 * @param size 
+		 */
+		void copyData(Vec2f* data, unsigned int size);
+
+		/**
+		 * @brief Loads a sound from a file.
+		 * 		Valid file types are .wav
+		 * 		Assumes all data is stereo and uses 44100 samples per sec.
+		 * 
+		 * @param filename 
+		 */
 		void loadSound(std::string filename);
+
+		/**
+		 * @brief Saves a sound as a wav file.
+		 * 		Assumes all data is stereo and uses 44100 samples per sec.
+		 * 
+		 * @param filename 
+		 */
 		void saveWAV(std::string filename);
 
 	private:
@@ -184,14 +388,15 @@ namespace glib
 		Vec2f volume = Vec2f(1.0, 1.0);
 
 		bool isShallowCopy = false;
+
 		Vec2f* data = nullptr;
 		
-		int priority = 0;
-		int position = 0;
-		int length = 0;
+		unsigned int priority = 0;
+		unsigned int position = 0;
+		unsigned int length = 0;
 
-		int loopStart = 0;
-		int loopEnd = 0;
+		unsigned int loopStart = 0;
+		unsigned int loopEnd = 0;
 	};
 
 } //NAMESPACE glib END

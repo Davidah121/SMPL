@@ -18,6 +18,11 @@ namespace glib
 		Image::saveGIF(StringTools::toWideString(filename), paletteSize, dither, saveAlpha, alphaThreshold, greyscale);
 	}
 
+	void Image::saveGIF(File file, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold, bool greyscale)
+	{
+		Image::saveGIF(file.getFullFileName(), paletteSize, dither, saveAlpha, alphaThreshold, greyscale);
+	}
+
 	void Image::saveGIF(std::wstring filename, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold, bool greyscale)
 	{
 		SimpleFile f = SimpleFile(filename, SimpleFile::WRITE);

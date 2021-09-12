@@ -63,7 +63,7 @@ namespace glib
     {
         std::vector<double> rValue = std::vector<double>(sizeOfVertex);
 
-        if(i>=getVerticies())
+        if(i>=size())
         {
             return rValue;
         }
@@ -90,7 +90,7 @@ namespace glib
         return vertexInfo;
     }
 
-    int Model::getVerticies()
+    int Model::size()
     {
         return vertexInfo.size()/sizeOfVertex;
     }

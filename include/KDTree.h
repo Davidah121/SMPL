@@ -8,20 +8,75 @@ namespace glib
     struct KDTreeNode
     {
         T* data;
-        int splitDimension = -1;
     };
 
     template<typename T>
     class KDTree
     {
     public:
+        /**
+         * @brief Construct a new KDTree object
+         *      A K Dimensional tree stores data in a BinaryTree.
+         *      The items are placed based on the dimension value.
+         *      The class expectes the data to be an array of values of atleast the size of the dimension.
+         * 
+         * @param dimensions 
+         *      The dimension of the KDTree.
+         */
         KDTree(int dimensions);
+
+        /**
+         * @brief Destroy the KDTree object
+         * 
+         */
         ~KDTree();
 
-        void add(T* data, int split = -1);
-        bool addUnique(T* data, int split = -1);
+        /**
+         * @brief Adds data to the KDTree.
+         * 
+         * @param data 
+         *      The data to add.
+         *      It is expected to be an array of at least the dimension size.
+         */
+        void add(T* data);
+
+        /**
+         * @brief Adds data to the KDTree if it does not already exist.
+         * 
+         * @param data 
+         *      The data to add.
+         *      It is expected to be an array of at least the dimension size.
+         * @return bool
+         *      Returns true if successful.
+         */
+        bool addUnique(T* data);
+
+        /**
+         * @brief Searches for the data in the tree.
+         * 
+         * @param data 
+         *      The data to search for.
+         *      It is expected to be an array of at least the dimension size.
+         * @return KDTreeNode<T> 
+         */
         KDTreeNode<T> search(T* data);
+
+        /**
+         * @brief Searches for the data in the tree.
+         *      If not found, finds the closest thing to it.
+         *      Average run time is O(LogN)
+         * 
+         * @param data 
+         *      The data to search for.
+         *      It is expected to be an array of at least the dimension size.
+         * @return KDTreeNode<T> 
+         */
         KDTreeNode<T> searchNearest(T* data);
+
+        /**
+         * @brief Balances the KDTree to better achieve the average run time of O(LogN)
+         * 
+         */
         void balance();
     private:
         BinaryTreeNode<KDTreeNode<T>>* searchRecursive(BinaryTreeNode<KDTreeNode<T>>* tNode, T* data, int* minDistance, BinaryTreeNode<KDTreeNode<T>>* returnVal, int axis, bool backwards);
@@ -34,7 +89,7 @@ namespace glib
     template<typename T>
     inline KDTree<T>::KDTree(int dimensions)
     {
-        this->dimensions = dimensions;
+        this->dimensions = MathExt::max(0, dimensions);
     }
 
     template<typename T>
@@ -60,10 +115,10 @@ namespace glib
     }
 
     template<typename T>
-    inline void KDTree<T>::add(T* data, int split)
+    inline void KDTree<T>::add(T* data)
     {
 
-        KDTreeNode<T> kdnode = {data, split%dimensions };
+        KDTreeNode<T> kdnode = {data};
 
         BinaryTreeNode< KDTreeNode<T> >* node = new BinaryTreeNode< KDTreeNode<T> >();
         node->data = kdnode;
@@ -82,11 +137,6 @@ namespace glib
             {
                 KDTreeNode<T> oKDNode = currentTreeNode->data;
                 indexToTest = depth % dimensions;
-
-                if(oKDNode.splitDimension >=0 )
-                {
-                    indexToTest = oKDNode.splitDimension;
-                }
 
                 if(kdnode.data[indexToTest] < oKDNode.data[indexToTest])
                 {
@@ -121,9 +171,9 @@ namespace glib
     }
 
     template<typename T>
-    inline bool KDTree<T>::addUnique(T* data, int split)
+    inline bool KDTree<T>::addUnique(T* data)
     {
-        KDTreeNode<T> kdnode = {data, split%dimensions};
+        KDTreeNode<T> kdnode = {data};
 
         BinaryTreeNode< KDTreeNode<T> >* node = new BinaryTreeNode< KDTreeNode<T> >();
         node->data = kdnode;
@@ -143,11 +193,6 @@ namespace glib
             {
                 KDTreeNode<T> oKDNode = currentTreeNode->data;
                 indexToTest = depth % dimensions;
-                
-                if(oKDNode.splitDimension >=0 )
-                {
-                    indexToTest = oKDNode.splitDimension;
-                }
 
                 bool same = std::memcmp(data, oKDNode.data, dimensions*sizeof(T)) == 0;
 
