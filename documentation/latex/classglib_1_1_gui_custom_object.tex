@@ -1,0 +1,115 @@
+\hypertarget{classglib_1_1_gui_custom_object}{}\doxysection{glib\+::Gui\+Custom\+Object Class Reference}
+\label{classglib_1_1_gui_custom_object}\index{glib::GuiCustomObject@{glib::GuiCustomObject}}
+Inheritance diagram for glib\+::Gui\+Custom\+Object\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classglib_1_1_gui_custom_object}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_custom_object_a6722f695bdc49a7c8ea213187b2264bf}\label{classglib_1_1_gui_custom_object_a6722f695bdc49a7c8ea213187b2264bf}} 
+{\bfseries Gui\+Custom\+Object} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_gui_custom_object}{Gui\+Custom\+Object}} object Utilizes std\+::function to allow custom update and render functions without having to create a new class. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gui_custom_object_a4278f879a5762f49af0a7835afe08d69}\label{classglib_1_1_gui_custom_object_a4278f879a5762f49af0a7835afe08d69}} 
+{\bfseries $\sim$\+Gui\+Custom\+Object} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_gui_custom_object}{Gui\+Custom\+Object}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_gui_custom_object_a8f08a8a5ede4904c2b9914c1f0706507}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_gui_custom_object_aa851b71e667e9bc60b3cdb49e6a52c84}{update}} ()
+\begin{DoxyCompactList}\small\item\em Calls the update function that has been set. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_custom_object_ae3e7cd99c49d663d0728e798a9201feb}{render}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Calls the render function that has been set. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_custom_object_ac6f6229b7e8911550f16c8047b181605}{set\+Update\+Function}} (std\+::function$<$ void()$>$ func)
+\begin{DoxyCompactList}\small\item\em Sets the Update Function for the \mbox{\hyperlink{classglib_1_1_gui_custom_object}{Gui\+Custom\+Object}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_custom_object_aa9ec363d1779bc13a535b9734d3510e8}{set\+Render\+Function}} (std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$)$>$ func)
+\begin{DoxyCompactList}\small\item\em Sets the Render Function for the \mbox{\hyperlink{classglib_1_1_gui_custom_object}{Gui\+Custom\+Object}}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_custom_object_a233f4ade2faa5672e60461a8657c2c7f}\label{classglib_1_1_gui_custom_object_a233f4ade2faa5672e60461a8657c2c7f}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_gui_custom_object_a8f08a8a5ede4904c2b9914c1f0706507}\label{classglib_1_1_gui_custom_object_a8f08a8a5ede4904c2b9914c1f0706507}} 
+\index{glib::GuiCustomObject@{glib::GuiCustomObject}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::GuiCustomObject@{glib::GuiCustomObject}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Gui\+Custom\+Object\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance}{glib\+::\+Gui\+Instance}}.
+
+\mbox{\Hypertarget{classglib_1_1_gui_custom_object_ae3e7cd99c49d663d0728e798a9201feb}\label{classglib_1_1_gui_custom_object_ae3e7cd99c49d663d0728e798a9201feb}} 
+\index{glib::GuiCustomObject@{glib::GuiCustomObject}!render@{render}}
+\index{render@{render}!glib::GuiCustomObject@{glib::GuiCustomObject}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Custom\+Object\+::render (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Calls the render function that has been set. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em surf} & \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance_a303d9dc4dedc8e5cf2027bb02c7015c8}{glib\+::\+Gui\+Instance}}.
+
+\mbox{\Hypertarget{classglib_1_1_gui_custom_object_aa9ec363d1779bc13a535b9734d3510e8}\label{classglib_1_1_gui_custom_object_aa9ec363d1779bc13a535b9734d3510e8}} 
+\index{glib::GuiCustomObject@{glib::GuiCustomObject}!setRenderFunction@{setRenderFunction}}
+\index{setRenderFunction@{setRenderFunction}!glib::GuiCustomObject@{glib::GuiCustomObject}}
+\doxysubsubsection{\texorpdfstring{setRenderFunction()}{setRenderFunction()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Custom\+Object\+::set\+Render\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$)$>$}]{func }\end{DoxyParamCaption})}
+
+
+
+Sets the Render Function for the \mbox{\hyperlink{classglib_1_1_gui_custom_object}{Gui\+Custom\+Object}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_custom_object_ac6f6229b7e8911550f16c8047b181605}\label{classglib_1_1_gui_custom_object_ac6f6229b7e8911550f16c8047b181605}} 
+\index{glib::GuiCustomObject@{glib::GuiCustomObject}!setUpdateFunction@{setUpdateFunction}}
+\index{setUpdateFunction@{setUpdateFunction}!glib::GuiCustomObject@{glib::GuiCustomObject}}
+\doxysubsubsection{\texorpdfstring{setUpdateFunction()}{setUpdateFunction()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Custom\+Object\+::set\+Update\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ void()$>$}]{func }\end{DoxyParamCaption})}
+
+
+
+Sets the Update Function for the \mbox{\hyperlink{classglib_1_1_gui_custom_object}{Gui\+Custom\+Object}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_custom_object_aa851b71e667e9bc60b3cdb49e6a52c84}\label{classglib_1_1_gui_custom_object_aa851b71e667e9bc60b3cdb49e6a52c84}} 
+\index{glib::GuiCustomObject@{glib::GuiCustomObject}!update@{update}}
+\index{update@{update}!glib::GuiCustomObject@{glib::GuiCustomObject}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Custom\+Object\+::update (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Calls the update function that has been set. 
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance_adb20e1eac37428a48802ad39cf4c2cb0}{glib\+::\+Gui\+Instance}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Gui\+Manager.\+h\end{DoxyCompactItemize}

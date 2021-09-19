@@ -1,0 +1,152 @@
+\hypertarget{classglib_1_1_gui_canvas}{}\doxysection{glib\+::Gui\+Canvas Class Reference}
+\label{classglib_1_1_gui_canvas}\index{glib::GuiCanvas@{glib::GuiCanvas}}
+Inheritance diagram for glib\+::Gui\+Canvas\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classglib_1_1_gui_canvas}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_canvas_a1a6acce610925aaec4f90666ba834f89}\label{classglib_1_1_gui_canvas_a1a6acce610925aaec4f90666ba834f89}} 
+{\bfseries Gui\+Canvas} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_gui_canvas}{Gui\+Canvas}} object A canvas object allows other objects to redirect their drawing to this object. Specifically, their render function draws to the image contained in this object. Default \mbox{\hyperlink{classglib_1_1_image}{Image}} is created with no width or height (An invalid image). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_gui_canvas_a30a7f7316f0d71d9a0dd51638f799c4c}{Gui\+Canvas}} (int width, int height)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_gui_canvas}{Gui\+Canvas}} object A canvas object allows other objects to redirect their drawing to this object. Specifically, their render function draws to the image contained in this object. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gui_canvas_a73956f0baed8b2c119241168f341fae2}\label{classglib_1_1_gui_canvas_a73956f0baed8b2c119241168f341fae2}} 
+{\bfseries $\sim$\+Gui\+Canvas} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_gui_canvas}{Gui\+Canvas}} object Deletes the image as well. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_gui_canvas_a77026cf398808ba506aa309b79bca6aa}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_gui_canvas_a3f90873b1e88b91b324d51ff8834099f}{update}} ()
+\begin{DoxyCompactList}\small\item\em Updates the \mbox{\hyperlink{classglib_1_1_gui_canvas}{Gui\+Canvas}} object Specifically, clears the image. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_canvas_a9e147a1f05a18f88d54e4f1590023e2b}{render}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Draws the \mbox{\hyperlink{classglib_1_1_gui_canvas}{Gui\+Canvas}}\textquotesingle{}s \mbox{\hyperlink{classglib_1_1_image}{Image}} on the surface at the objects x and y location. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_canvas_aac5f1740e218c741da43afc096faa5a4}{set\+Instance\+Canvas}} (\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$ins)
+\begin{DoxyCompactList}\small\item\em Sets the specified \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}\textquotesingle{}s canvas to this canvas. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_canvas_a025e05380f9496f179fe9afc6a81db5f}{get\+Clear\+Color}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Clear \mbox{\hyperlink{structglib_1_1_color}{Color}} for the image. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_canvas_a64f944b54a2eacad2fad9927a3557111}{set\+Clear\+Color}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Sets the Clear \mbox{\hyperlink{structglib_1_1_color}{Color}} for the image. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_canvas_a3d2fccf209942d39adba59205021ed58}\label{classglib_1_1_gui_canvas_a3d2fccf209942d39adba59205021ed58}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_gui_canvas_a30a7f7316f0d71d9a0dd51638f799c4c}\label{classglib_1_1_gui_canvas_a30a7f7316f0d71d9a0dd51638f799c4c}} 
+\index{glib::GuiCanvas@{glib::GuiCanvas}!GuiCanvas@{GuiCanvas}}
+\index{GuiCanvas@{GuiCanvas}!glib::GuiCanvas@{glib::GuiCanvas}}
+\doxysubsubsection{\texorpdfstring{GuiCanvas()}{GuiCanvas()}}
+{\footnotesize\ttfamily glib\+::\+Gui\+Canvas\+::\+Gui\+Canvas (\begin{DoxyParamCaption}\item[{int}]{width,  }\item[{int}]{height }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_gui_canvas}{Gui\+Canvas}} object A canvas object allows other objects to redirect their drawing to this object. Specifically, their render function draws to the image contained in this object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em width} & Width of the image. \\
+\hline
+{\em height} & Height of the image. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_gui_canvas_a77026cf398808ba506aa309b79bca6aa}\label{classglib_1_1_gui_canvas_a77026cf398808ba506aa309b79bca6aa}} 
+\index{glib::GuiCanvas@{glib::GuiCanvas}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::GuiCanvas@{glib::GuiCanvas}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Gui\+Canvas\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance}{glib\+::\+Gui\+Instance}}.
+
+\mbox{\Hypertarget{classglib_1_1_gui_canvas_a025e05380f9496f179fe9afc6a81db5f}\label{classglib_1_1_gui_canvas_a025e05380f9496f179fe9afc6a81db5f}} 
+\index{glib::GuiCanvas@{glib::GuiCanvas}!getClearColor@{getClearColor}}
+\index{getClearColor@{getClearColor}!glib::GuiCanvas@{glib::GuiCanvas}}
+\doxysubsubsection{\texorpdfstring{getClearColor()}{getClearColor()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structglib_1_1_color}{Color}} glib\+::\+Gui\+Canvas\+::get\+Clear\+Color (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Clear \mbox{\hyperlink{structglib_1_1_color}{Color}} for the image. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_color}{Color}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_canvas_a9e147a1f05a18f88d54e4f1590023e2b}\label{classglib_1_1_gui_canvas_a9e147a1f05a18f88d54e4f1590023e2b}} 
+\index{glib::GuiCanvas@{glib::GuiCanvas}!render@{render}}
+\index{render@{render}!glib::GuiCanvas@{glib::GuiCanvas}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Canvas\+::render (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Draws the \mbox{\hyperlink{classglib_1_1_gui_canvas}{Gui\+Canvas}}\textquotesingle{}s \mbox{\hyperlink{classglib_1_1_image}{Image}} on the surface at the objects x and y location. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em surf} & \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance_a303d9dc4dedc8e5cf2027bb02c7015c8}{glib\+::\+Gui\+Instance}}.
+
+\mbox{\Hypertarget{classglib_1_1_gui_canvas_a64f944b54a2eacad2fad9927a3557111}\label{classglib_1_1_gui_canvas_a64f944b54a2eacad2fad9927a3557111}} 
+\index{glib::GuiCanvas@{glib::GuiCanvas}!setClearColor@{setClearColor}}
+\index{setClearColor@{setClearColor}!glib::GuiCanvas@{glib::GuiCanvas}}
+\doxysubsubsection{\texorpdfstring{setClearColor()}{setClearColor()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Canvas\+::set\+Clear\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Sets the Clear \mbox{\hyperlink{structglib_1_1_color}{Color}} for the image. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_canvas_aac5f1740e218c741da43afc096faa5a4}\label{classglib_1_1_gui_canvas_aac5f1740e218c741da43afc096faa5a4}} 
+\index{glib::GuiCanvas@{glib::GuiCanvas}!setInstanceCanvas@{setInstanceCanvas}}
+\index{setInstanceCanvas@{setInstanceCanvas}!glib::GuiCanvas@{glib::GuiCanvas}}
+\doxysubsubsection{\texorpdfstring{setInstanceCanvas()}{setInstanceCanvas()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Canvas\+::set\+Instance\+Canvas (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$}]{ins }\end{DoxyParamCaption})}
+
+
+
+Sets the specified \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}\textquotesingle{}s canvas to this canvas. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ins} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_canvas_a3f90873b1e88b91b324d51ff8834099f}\label{classglib_1_1_gui_canvas_a3f90873b1e88b91b324d51ff8834099f}} 
+\index{glib::GuiCanvas@{glib::GuiCanvas}!update@{update}}
+\index{update@{update}!glib::GuiCanvas@{glib::GuiCanvas}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Canvas\+::update (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Updates the \mbox{\hyperlink{classglib_1_1_gui_canvas}{Gui\+Canvas}} object Specifically, clears the image. 
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance_adb20e1eac37428a48802ad39cf4c2cb0}{glib\+::\+Gui\+Instance}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Gui\+Manager.\+h\end{DoxyCompactItemize}

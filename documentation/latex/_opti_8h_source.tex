@@ -1,0 +1,46 @@
+\hypertarget{_opti_8h_source}{}\doxysection{Opti.\+h}
+\label{_opti_8h_source}\index{include/Opti.h@{include/Opti.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 }
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#ifndef OPTI}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#define OPTI 0}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{6 }
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include <immintrin.h>}}
+\DoxyCodeLine{8 }
+\DoxyCodeLine{9 \textcolor{comment}{//Note that the following includes are due to intellisense not working properly.}}
+\DoxyCodeLine{10 \textcolor{comment}{//These will be included by immintrin.h if the proper preprocessors are defined. In}}
+\DoxyCodeLine{11 \textcolor{comment}{//the case that intellisense properly includes the necessary files, this should be}}
+\DoxyCodeLine{12 \textcolor{comment}{//moved above immintrin.h and the includes should be removed.}}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#if (OPTI>=1)}}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16 \textcolor{preprocessor}{\#ifndef \_\_SSE3\_\_}}
+\DoxyCodeLine{17 \textcolor{preprocessor}{    \#define \_\_SSE3\_\_ 1}}
+\DoxyCodeLine{18 \textcolor{preprocessor}{    \#include <pmmintrin.h>}}
+\DoxyCodeLine{19 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{20 }
+\DoxyCodeLine{21 \textcolor{preprocessor}{\#ifndef \_\_SSE4\_2\_\_}}
+\DoxyCodeLine{22 \textcolor{preprocessor}{    \#define \_\_SSE4\_2\_\_ 1}}
+\DoxyCodeLine{23 \textcolor{preprocessor}{    \#include <smmintrin.h>}}
+\DoxyCodeLine{24 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{26 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{27 }
+\DoxyCodeLine{28 \textcolor{preprocessor}{\#if (OPTI>=2)}}
+\DoxyCodeLine{29 }
+\DoxyCodeLine{30 \textcolor{preprocessor}{\#ifndef \_\_AVX\_\_}}
+\DoxyCodeLine{31 \textcolor{preprocessor}{    \#define \_\_AVX\_\_ 1}}
+\DoxyCodeLine{32 \textcolor{preprocessor}{    \#include <avxintrin.h>}}
+\DoxyCodeLine{33 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{34 }
+\DoxyCodeLine{35 \textcolor{preprocessor}{\#ifndef \_\_AVX2\_\_}}
+\DoxyCodeLine{36 \textcolor{preprocessor}{    \#define \_\_AVX2\_\_ 1}}
+\DoxyCodeLine{37 \textcolor{preprocessor}{    \#include <avx2intrin.h>}}
+\DoxyCodeLine{38 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{39 }
+\DoxyCodeLine{40 \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

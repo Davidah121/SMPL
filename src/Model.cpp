@@ -120,18 +120,11 @@ namespace glib
         return sizeOfVertex;
     }
 
-    void Model::loadModel(std::string filename)
+    void Model::loadModel(File file)
     {
-        Model::loadModel( StringTools::toWideString(filename) );
-    }
-
-    void Model::loadModel(std::wstring filename)
-    {
-        File h = File(filename);
-        
-        if(h.getExtension() == L".obj")
+        if(file.getExtension() == L".obj")
         {
-            loadOBJ(filename);
+            loadOBJ(file);
         }
         else
         {
@@ -139,12 +132,12 @@ namespace glib
         }
     }
 
-    void Model::loadOBJ(std::wstring filename)
+    void Model::loadOBJ(File file)
     {
-        SimpleFile s = SimpleFile(filename, SimpleFile::READ);
+        SimpleFile s = SimpleFile(file, SimpleFile::READ);
         if(s.isOpen())
         {
-            std::vector<std::string> fileData = s.readFullFileString();
+            std::vector<std::string> file = s.readFullFileString();
             s.close();
 
             //do stuff

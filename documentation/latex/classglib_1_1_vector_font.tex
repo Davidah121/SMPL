@@ -1,0 +1,113 @@
+\hypertarget{classglib_1_1_vector_font}{}\doxysection{glib\+::Vector\+Font Class Reference}
+\label{classglib_1_1_vector_font}\index{glib::VectorFont@{glib::VectorFont}}
+Inheritance diagram for glib\+::Vector\+Font\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classglib_1_1_vector_font}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_vector_font_ae5f2ac208337936d77a56ba6a9ef8ed8}{Vector\+Font}} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_vector_font}{Vector\+Font}} object A vector font uses vector graphics to display fonts. This allows for accurate rendering regardless of rotation, scaling, and other transforms. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_vector_font_a092aa774693d693be0695b53819c876c}\label{classglib_1_1_vector_font_a092aa774693d693be0695b53819c876c}} 
+{\bfseries $\sim$\+Vector\+Font} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_vector_font}{Vector\+Font}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_vector_font_ab95efe73c0072777355a2b794405d838}{get\+Class}} ()
+\item 
+bool \mbox{\hyperlink{classglib_1_1_vector_font_a0831f4779441535877197e526b8cbdb7}{load}} (\mbox{\hyperlink{classglib_1_1_file}{File}} file)
+\begin{DoxyCompactList}\small\item\em Loads a vector font from an .svg file. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} $\ast$ \mbox{\hyperlink{classglib_1_1_vector_font_a5659dfe3e94c19ef0df2d75b07d6cc6e}{get\+Graphic}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets a \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} at the specified index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vector_sprite}{Vector\+Sprite}} $\ast$ \mbox{\hyperlink{classglib_1_1_vector_font_abd56e9496a9ea3253a348eb855a8f835}{get\+Vector\+Sprite}} ()
+\begin{DoxyCompactList}\small\item\em Get the \mbox{\hyperlink{classglib_1_1_vector_sprite}{Vector\+Sprite}} used to manage the Vector\+Graphics. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_font_a3e6d611380f36d04fa639b981fc1e633}\label{classglib_1_1_vector_font_a3e6d611380f36d04fa639b981fc1e633}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_vector_font_ae5f2ac208337936d77a56ba6a9ef8ed8}\label{classglib_1_1_vector_font_ae5f2ac208337936d77a56ba6a9ef8ed8}} 
+\index{glib::VectorFont@{glib::VectorFont}!VectorFont@{VectorFont}}
+\index{VectorFont@{VectorFont}!glib::VectorFont@{glib::VectorFont}}
+\doxysubsubsection{\texorpdfstring{VectorFont()}{VectorFont()}}
+{\footnotesize\ttfamily glib\+::\+Vector\+Font\+::\+Vector\+Font (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_vector_font}{Vector\+Font}} object A vector font uses vector graphics to display fonts. This allows for accurate rendering regardless of rotation, scaling, and other transforms. 
+
+(NOTE, NOT COMPLETE) 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_vector_font_ab95efe73c0072777355a2b794405d838}\label{classglib_1_1_vector_font_ab95efe73c0072777355a2b794405d838}} 
+\index{glib::VectorFont@{glib::VectorFont}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::VectorFont@{glib::VectorFont}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Vector\+Font\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_font}{glib\+::\+Font}}.
+
+\mbox{\Hypertarget{classglib_1_1_vector_font_a5659dfe3e94c19ef0df2d75b07d6cc6e}\label{classglib_1_1_vector_font_a5659dfe3e94c19ef0df2d75b07d6cc6e}} 
+\index{glib::VectorFont@{glib::VectorFont}!getGraphic@{getGraphic}}
+\index{getGraphic@{getGraphic}!glib::VectorFont@{glib::VectorFont}}
+\doxysubsubsection{\texorpdfstring{getGraphic()}{getGraphic()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} $\ast$ glib\+::\+Vector\+Font\+::get\+Graphic (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets a \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} at the specified index. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Vector\+Graphic$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_font_abd56e9496a9ea3253a348eb855a8f835}\label{classglib_1_1_vector_font_abd56e9496a9ea3253a348eb855a8f835}} 
+\index{glib::VectorFont@{glib::VectorFont}!getVectorSprite@{getVectorSprite}}
+\index{getVectorSprite@{getVectorSprite}!glib::VectorFont@{glib::VectorFont}}
+\doxysubsubsection{\texorpdfstring{getVectorSprite()}{getVectorSprite()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vector_sprite}{Vector\+Sprite}} $\ast$ glib\+::\+Vector\+Font\+::get\+Vector\+Sprite (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the \mbox{\hyperlink{classglib_1_1_vector_sprite}{Vector\+Sprite}} used to manage the Vector\+Graphics. 
+
+\begin{DoxyReturn}{Returns}
+Vector\+Sprite$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_font_a0831f4779441535877197e526b8cbdb7}\label{classglib_1_1_vector_font_a0831f4779441535877197e526b8cbdb7}} 
+\index{glib::VectorFont@{glib::VectorFont}!load@{load}}
+\index{load@{load}!glib::VectorFont@{glib::VectorFont}}
+\doxysubsubsection{\texorpdfstring{load()}{load()}}
+{\footnotesize\ttfamily bool glib\+::\+Vector\+Font\+::load (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_file}{File}}}]{file }\end{DoxyParamCaption})}
+
+
+
+Loads a vector font from an .svg file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Vector\+Font.\+h\end{DoxyCompactItemize}

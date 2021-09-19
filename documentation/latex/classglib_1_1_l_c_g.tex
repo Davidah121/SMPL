@@ -1,0 +1,74 @@
+\hypertarget{classglib_1_1_l_c_g}{}\doxysection{glib\+::LCG Class Reference}
+\label{classglib_1_1_l_c_g}\index{glib::LCG@{glib::LCG}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_l_c_g_a301f417e68665393d21ec63d28dbf713}{LCG}} (unsigned int seed=0x\+FFFF, unsigned int multiplier=48271, unsigned int increment=0, unsigned int mod=0x\+FFFFFFFF)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_l_c_g}{LCG}} (Linear Congruential Generator) for random numbers. Generates psudo random numbers using the seed, multiplier, increment, and modulus value. Fast but not secure due to repeated values. The functions period is based on the parameters. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_l_c_g_ae5551aac4859741378062c990eac708a}\label{classglib_1_1_l_c_g_ae5551aac4859741378062c990eac708a}} 
+{\bfseries $\sim$\+LCG} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_l_c_g}{LCG}} object. \end{DoxyCompactList}\item 
+unsigned int \mbox{\hyperlink{classglib_1_1_l_c_g_a13f12a0e519966360bda7ca7d9b33600}{get}} ()
+\begin{DoxyCompactList}\small\item\em Returns the next random number. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_l_c_g_a3a389d81800b83e300135ae7ccf3c0c5}{set\+Seed}} (unsigned int seed)
+\begin{DoxyCompactList}\small\item\em Sets the Seed to a different seed. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_l_c_g_a301f417e68665393d21ec63d28dbf713}\label{classglib_1_1_l_c_g_a301f417e68665393d21ec63d28dbf713}} 
+\index{glib::LCG@{glib::LCG}!LCG@{LCG}}
+\index{LCG@{LCG}!glib::LCG@{glib::LCG}}
+\doxysubsubsection{\texorpdfstring{LCG()}{LCG()}}
+{\footnotesize\ttfamily glib\+::\+LCG\+::\+LCG (\begin{DoxyParamCaption}\item[{unsigned int}]{seed = {\ttfamily 0xFFFF},  }\item[{unsigned int}]{multiplier = {\ttfamily 48271},  }\item[{unsigned int}]{increment = {\ttfamily 0},  }\item[{unsigned int}]{mod = {\ttfamily 0xFFFFFFFF} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_l_c_g}{LCG}} (Linear Congruential Generator) for random numbers. Generates psudo random numbers using the seed, multiplier, increment, and modulus value. Fast but not secure due to repeated values. The functions period is based on the parameters. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em seed} & The starting seed. Default is 65535 \\
+\hline
+{\em multiplier} & The multiplier Default is 48271 \\
+\hline
+{\em increment} & The increment Default is 0 \\
+\hline
+{\em mod} & The modulus value to use. Default is the maximum of a unsigned integer. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_l_c_g_a13f12a0e519966360bda7ca7d9b33600}\label{classglib_1_1_l_c_g_a13f12a0e519966360bda7ca7d9b33600}} 
+\index{glib::LCG@{glib::LCG}!get@{get}}
+\index{get@{get}!glib::LCG@{glib::LCG}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}}
+{\footnotesize\ttfamily unsigned int glib\+::\+LCG\+::get (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the next random number. 
+
+\begin{DoxyReturn}{Returns}
+unsigned int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_l_c_g_a3a389d81800b83e300135ae7ccf3c0c5}\label{classglib_1_1_l_c_g_a3a389d81800b83e300135ae7ccf3c0c5}} 
+\index{glib::LCG@{glib::LCG}!setSeed@{setSeed}}
+\index{setSeed@{setSeed}!glib::LCG@{glib::LCG}}
+\doxysubsubsection{\texorpdfstring{setSeed()}{setSeed()}}
+{\footnotesize\ttfamily void glib\+::\+LCG\+::set\+Seed (\begin{DoxyParamCaption}\item[{unsigned int}]{seed }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the Seed to a different seed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em seed} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/LCG.\+h\end{DoxyCompactItemize}

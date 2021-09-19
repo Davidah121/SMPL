@@ -1,0 +1,95 @@
+\hypertarget{_gamepad_x_input_8h_source}{}\doxysection{Gamepad\+XInput.\+h}
+\label{_gamepad_x_input_8h_source}\index{include/GamepadXInput.h@{include/GamepadXInput.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 }
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#pragma comment(lib, "{}XInput.lib"{}})}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#ifndef WIN32\_LEAN\_AND\_MEAN}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{    \#define WIN32\_LEAN\_AND\_MEAN}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{8 }
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#include <Windows.h>}}
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#include <Xinput.h>}}
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#include <iostream>}}
+\DoxyCodeLine{12 }
+\DoxyCodeLine{13 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{14 \{}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gamepad_x_input}{GamepadXInput}}}
+\DoxyCodeLine{17     \{}
+\DoxyCodeLine{18     \textcolor{keyword}{public}:}
+\DoxyCodeLine{19 }
+\DoxyCodeLine{25         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gamepad_x_input_aea65ac13716a71157d0ec30a8fa99c8e}{init}}();}
+\DoxyCodeLine{26 }
+\DoxyCodeLine{32         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gamepad_x_input_af35ae5a5ce4731f5f64b858fced07955}{dispose}}();}
+\DoxyCodeLine{33 }
+\DoxyCodeLine{39         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gamepad_x_input_a33824e6c0d5b694f9ee6716c2ae36a36}{update}}();}
+\DoxyCodeLine{40 }
+\DoxyCodeLine{47         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gamepad_x_input_afdff0cf46640e4a22b0ec2b27b7b1d81}{isConnected}}(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id});}
+\DoxyCodeLine{48 }
+\DoxyCodeLine{58         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gamepad_x_input_a0cc30c138cf56d443f8f80789f47b135}{getButtonPressed}}(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id}, \textcolor{keywordtype}{int} button);}
+\DoxyCodeLine{59 }
+\DoxyCodeLine{68         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gamepad_x_input_a8e4a0517e6c2f7c02a656a47f9273e4e}{getButtonDown}}(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id}, \textcolor{keywordtype}{int} button);}
+\DoxyCodeLine{69 }
+\DoxyCodeLine{79         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gamepad_x_input_a9de0073aeaf89d460b7b732856a88587}{getButtonUp}}(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id}, \textcolor{keywordtype}{int} button);}
+\DoxyCodeLine{80 }
+\DoxyCodeLine{90         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_gamepad_x_input_a01a1a7ad618245b0146163ebc9c4498a}{getAxisValue}}(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id}, \textcolor{keywordtype}{int} axis);}
+\DoxyCodeLine{91 }
+\DoxyCodeLine{98         \textcolor{keyword}{static} XINPUT\_STATE \mbox{\hyperlink{classglib_1_1_gamepad_x_input_ab94b8a1b5a677f01ed47fd4b189341de}{getState}}(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id});}
+\DoxyCodeLine{99 }
+\DoxyCodeLine{108         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gamepad_x_input_a84d5e7ad814bb2ff95d46f0328dcfdbc}{setVibration}}(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id}, \textcolor{keywordtype}{float} intensity);}
+\DoxyCodeLine{109 }
+\DoxyCodeLine{120         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gamepad_x_input_ab28360623b5a6a5ff04c84634ea866f6}{setVibration}}(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id}, \textcolor{keywordtype}{float} leftIntensity, \textcolor{keywordtype}{float} rightIntensity);}
+\DoxyCodeLine{121         }
+\DoxyCodeLine{122         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} BUTTONS\_PER\_CONTROLLER = 14;}
+\DoxyCodeLine{123         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} AXIES\_PER\_CONTROLLER = 6;}
+\DoxyCodeLine{124 }
+\DoxyCodeLine{125         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} A\_BUTTON = 0;}
+\DoxyCodeLine{126         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} B\_BUTTON = 1;}
+\DoxyCodeLine{127         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} X\_BUTTON = 2;}
+\DoxyCodeLine{128         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} Y\_BUTTON = 3;}
+\DoxyCodeLine{129 }
+\DoxyCodeLine{130         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} DPAD\_UP\_BUTTON = -\/4;}
+\DoxyCodeLine{131         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} DPAD\_DOWN\_BUTTON = -\/5;}
+\DoxyCodeLine{132         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} DPAD\_LEFT\_BUTTON = -\/6;}
+\DoxyCodeLine{133         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} DPAD\_RIGHT\_BUTTON = -\/7;}
+\DoxyCodeLine{134 }
+\DoxyCodeLine{135         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} LB\_BUTTON = 8;}
+\DoxyCodeLine{136         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} RB\_BUTTON = 9;}
+\DoxyCodeLine{137         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} LEFT\_STICK\_BUTTON = 10;}
+\DoxyCodeLine{138         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} RIGHT\_STICK\_BUTTON = 11;}
+\DoxyCodeLine{139 }
+\DoxyCodeLine{140         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} START\_BUTTON = 12;}
+\DoxyCodeLine{141         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} BACK\_BUTTON = 13;}
+\DoxyCodeLine{142 }
+\DoxyCodeLine{143         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} LEFT\_X\_AXIS = 0;}
+\DoxyCodeLine{144         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} LEFT\_Y\_AXIS = 1;}
+\DoxyCodeLine{145         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} RIGHT\_X\_AXIS = 2;}
+\DoxyCodeLine{146         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} RIGHT\_Y\_AXIS = 3;}
+\DoxyCodeLine{147         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} LEFT\_TRIGGER = 4;}
+\DoxyCodeLine{148         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} RIGHT\_TRIGGER = 5;}
+\DoxyCodeLine{149 }
+\DoxyCodeLine{150         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} AXIS\_DIVIDE\_VALUE = 32767;}
+\DoxyCodeLine{151         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} TRIGGER\_DIVIDE\_VALUE = 255;}
+\DoxyCodeLine{152 }
+\DoxyCodeLine{153         \textcolor{keyword}{static} \textcolor{keywordtype}{int} DEAD\_ZONE;}
+\DoxyCodeLine{154 }
+\DoxyCodeLine{155     \textcolor{keyword}{private}:}
+\DoxyCodeLine{156         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} buttonPressed[56];}
+\DoxyCodeLine{157         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} buttonDown[56];}
+\DoxyCodeLine{158         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} buttonUp[56];}
+\DoxyCodeLine{159 }
+\DoxyCodeLine{160         \textcolor{keyword}{static} \textcolor{keywordtype}{float} axisValue[24];}
+\DoxyCodeLine{161         }
+\DoxyCodeLine{162         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} gamepadConnected[4];}
+\DoxyCodeLine{163 }
+\DoxyCodeLine{164         \textcolor{keyword}{static} \textcolor{keywordtype}{void} setButtonDown(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id}, \textcolor{keywordtype}{int} button);}
+\DoxyCodeLine{165         \textcolor{keyword}{static} \textcolor{keywordtype}{void} setButtonUp(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id}, \textcolor{keywordtype}{int} button);}
+\DoxyCodeLine{166         \textcolor{keyword}{static} \textcolor{keywordtype}{void} setAxis(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id}, \textcolor{keywordtype}{int} axis, \textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{167     \};}
+\DoxyCodeLine{168 }
+\DoxyCodeLine{169 \}  \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

@@ -1,0 +1,35 @@
+\hypertarget{classglib_1_1_algorithms}{}\doxysection{glib\+::Algorithms Class Reference}
+\label{classglib_1_1_algorithms}\index{glib::Algorithms@{glib::Algorithms}}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_grouping}{Grouping}} $>$ \mbox{\hyperlink{classglib_1_1_algorithms_a2a0f4061b01d347eeada48d115bfb3ed}{package\+Merge\+Algorithm}} (std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_grouping}{Grouping}} $>$ base\+Items, size\+\_\+t desired\+Total)
+\begin{DoxyCompactList}\small\item\em The Package Merge Algorithm is a subset of the knapsack problem that can be solved in sudo linear time. This implementation is not the fastest since it requires sorting. It is primarily used to solve for length limited huffman codes. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_algorithms_a2a0f4061b01d347eeada48d115bfb3ed}\label{classglib_1_1_algorithms_a2a0f4061b01d347eeada48d115bfb3ed}} 
+\index{glib::Algorithms@{glib::Algorithms}!packageMergeAlgorithm@{packageMergeAlgorithm}}
+\index{packageMergeAlgorithm@{packageMergeAlgorithm}!glib::Algorithms@{glib::Algorithms}}
+\doxysubsubsection{\texorpdfstring{packageMergeAlgorithm()}{packageMergeAlgorithm()}}
+{\footnotesize\ttfamily static std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_grouping}{Grouping}} $>$ glib\+::\+Algorithms\+::package\+Merge\+Algorithm (\begin{DoxyParamCaption}\item[{std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_grouping}{Grouping}} $>$}]{base\+Items,  }\item[{size\+\_\+t}]{desired\+Total }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+The Package Merge Algorithm is a subset of the knapsack problem that can be solved in sudo linear time. This implementation is not the fastest since it requires sorting. It is primarily used to solve for length limited huffman codes. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em base\+Items} & A vector of \mbox{\hyperlink{structglib_1_1_grouping}{Grouping}} structs. Width is the value and weight is the cost of using the item. Width must be a power of 2. valid is an internal tool and should be left as true. unique ids should be set by the user. This allows the user to get the selected items. Only one should be set per item. \\
+\hline
+{\em desired\+Total} & The desired total to hit.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$\+Grouping$>$ The algorithm returns a list of a single \mbox{\hyperlink{structglib_1_1_grouping}{Grouping}} if successful. The \mbox{\hyperlink{structglib_1_1_grouping}{Grouping}} contains the total weight and the ids of all items used. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Algorithms.\+h\end{DoxyCompactItemize}

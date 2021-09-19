@@ -1,0 +1,59 @@
+\hypertarget{_mat4f_8h_source}{}\doxysection{Mat4f.\+h}
+\label{_mat4f_8h_source}\index{include/Mat4f.h@{include/Mat4f.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include "{}Matrix.h"{}}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}Vec4f.h"{}}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{6 \{}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}}}
+\DoxyCodeLine{9     \{}
+\DoxyCodeLine{10     \textcolor{keyword}{public}:}
+\DoxyCodeLine{16         \mbox{\hyperlink{classglib_1_1_mat4f_a4d281af20293142cfbb46f6969b1c17e}{Mat4f}}();}
+\DoxyCodeLine{17 }
+\DoxyCodeLine{40         \mbox{\hyperlink{classglib_1_1_mat4f_a6de8d033d802ad5177b3ce5f50855922}{Mat4f}}(\textcolor{keywordtype}{double} v1, \textcolor{keywordtype}{double} v2, \textcolor{keywordtype}{double} v3, \textcolor{keywordtype}{double} v4, }
+\DoxyCodeLine{41             \textcolor{keywordtype}{double} v5, \textcolor{keywordtype}{double} v6, \textcolor{keywordtype}{double} v7, \textcolor{keywordtype}{double} v8,}
+\DoxyCodeLine{42             \textcolor{keywordtype}{double} v9, \textcolor{keywordtype}{double} v10, \textcolor{keywordtype}{double} v11, \textcolor{keywordtype}{double} v12, }
+\DoxyCodeLine{43             \textcolor{keywordtype}{double} v13, \textcolor{keywordtype}{double} v14, \textcolor{keywordtype}{double} v15, \textcolor{keywordtype}{double} v16);}
+\DoxyCodeLine{44 }
+\DoxyCodeLine{51         \mbox{\hyperlink{classglib_1_1_mat4f_ac2693eb44efa34a3e144084394bb26f2}{Mat4f}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}}\& o);}
+\DoxyCodeLine{52 }
+\DoxyCodeLine{59         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_mat4f_a77ba8d3b977ffb2a4318afb025fd3dab}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}}\& o);}
+\DoxyCodeLine{60 }
+\DoxyCodeLine{65         \mbox{\hyperlink{classglib_1_1_mat4f_ae33480470b0cd39d12b5de3e50b48da2}{\string~Mat4f}}();}
+\DoxyCodeLine{66 }
+\DoxyCodeLine{67         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{68         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{69         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{76         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_mat4f_ace1bbf8215de3666cc401130ea009b6c}{getIdentity}}();}
+\DoxyCodeLine{77 }
+\DoxyCodeLine{78         \textcolor{keywordtype}{double}* operator[](\textcolor{keywordtype}{int} row);}
+\DoxyCodeLine{79 }
+\DoxyCodeLine{80         \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} operator+(\mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} other);}
+\DoxyCodeLine{81         \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} operator-\/(\mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} other);}
+\DoxyCodeLine{82         \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} operator*(\mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} other);}
+\DoxyCodeLine{83 }
+\DoxyCodeLine{84         \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} operator*(\textcolor{keywordtype}{int} other);}
+\DoxyCodeLine{85         \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} operator*(\textcolor{keywordtype}{float} other);}
+\DoxyCodeLine{86         \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} operator*(\textcolor{keywordtype}{double} other);}
+\DoxyCodeLine{87 }
+\DoxyCodeLine{88         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{int} other);}
+\DoxyCodeLine{89         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{float} other);}
+\DoxyCodeLine{90         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{double} other);}
+\DoxyCodeLine{91 }
+\DoxyCodeLine{92         \textcolor{keywordtype}{void} operator+=(\mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} other);}
+\DoxyCodeLine{93         \textcolor{keywordtype}{void} operator-\/=(\mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} other);}
+\DoxyCodeLine{94 }
+\DoxyCodeLine{95         \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} operator*(\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} other);}
+\DoxyCodeLine{96 }
+\DoxyCodeLine{97         \textcolor{keywordtype}{bool} operator==(\mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} other);}
+\DoxyCodeLine{98         \textcolor{keywordtype}{bool} operator!=(\mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} other);}
+\DoxyCodeLine{99     \};}
+\DoxyCodeLine{100 }
+\DoxyCodeLine{101 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

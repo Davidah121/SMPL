@@ -1,0 +1,302 @@
+\hypertarget{classglib_1_1_color_palette}{}\doxysection{glib\+::Color\+Palette Class Reference}
+\label{classglib_1_1_color_palette}\index{glib::ColorPalette@{glib::ColorPalette}}
+Inheritance diagram for glib\+::Color\+Palette\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classglib_1_1_color_palette}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_color_palette_a89476caaeb79b3cd3d161fc49ee8975a}\label{classglib_1_1_color_palette_a89476caaeb79b3cd3d161fc49ee8975a}} 
+{\bfseries Color\+Palette} ()
+\begin{DoxyCompactList}\small\item\em Create a \mbox{\hyperlink{classglib_1_1_color_palette}{Color\+Palette}} \mbox{\hyperlink{classglib_1_1_object}{Object}}. It is a list of colors that can also be efficiently search over for the closest color by using KD-\/\+Trees for any given image. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_color_palette_ac1cc7fd421f1ce1a37ceb9ff8ad3da0e}\label{classglib_1_1_color_palette_ac1cc7fd421f1ce1a37ceb9ff8ad3da0e}} 
+{\bfseries Color\+Palette} (const \mbox{\hyperlink{classglib_1_1_color_palette}{Color\+Palette}} \&other)
+\begin{DoxyCompactList}\small\item\em Copies a valid \mbox{\hyperlink{classglib_1_1_color_palette}{Color\+Palette}} object. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_color_palette_ae14c5d290f2edacad03dde7aaafe056a}\label{classglib_1_1_color_palette_ae14c5d290f2edacad03dde7aaafe056a}} 
+void {\bfseries operator=} (const \mbox{\hyperlink{classglib_1_1_color_palette}{Color\+Palette}} \&other)
+\begin{DoxyCompactList}\small\item\em Copies a valid \mbox{\hyperlink{classglib_1_1_color_palette}{Color\+Palette}} object. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_color_palette_aef3bd39ec28a9d9e9e122d4edb32c63d}\label{classglib_1_1_color_palette_aef3bd39ec28a9d9e9e122d4edb32c63d}} 
+{\bfseries $\sim$\+Color\+Palette} ()
+\begin{DoxyCompactList}\small\item\em Destroys a \mbox{\hyperlink{classglib_1_1_color_palette}{Color\+Palette}} \mbox{\hyperlink{classglib_1_1_object}{Object}}. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_color_palette_a8da6e3bf8a9c49ac33cac6cd63769e6a}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_color_palette_a5283272afdc9af01be0cde215801612c}{add\+New\+Color}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Adds a new color to the palette. Duplicates may be allowed if palette mode has been set to false. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_color_palette_a784427b06eef26f5e4a1d01c2e8b6823}{get\+Color}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets a color by its index in the palette. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_color}{Color}} $\ast$ \mbox{\hyperlink{classglib_1_1_color_palette_a30708fadd6366021b10d563791f7e6d4}{get\+Color\+Ref}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets a color by its index in the palette. Returns the reference to the color. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_color_palette_ae15445579788b17a2975e5c1794d50a6}{get\+Color\+Index}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Gets the index of the color in the palette if it exists. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_color_palette_a8714385399707ca174e1c670d0d50903}{get\+Closest\+Color}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Returns the color in the palette closest to the desired color. It uses the Euclidean distance as the measure. KD-\/\+Trees are used to speed this operation up and performs with O(\+Log(\+N)) on average. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_color_palette_ad2e81d81bec2dbc90403508e1b2086e7}{get\+Closest\+Color\+Index}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Returns the index of the color in the palette closest to the desired color. It uses the Euclidean distance as the measure. KD-\/\+Trees are used to speed this operation up and performs with O(\+Log(\+N)) on average. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_color_palette_a8ee7aa2c0748f085516fa2ccb2195cbe}{get\+Size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the amount of colors in the palette. \end{DoxyCompactList}\item 
+std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_color}{Color}} $>$ \& \mbox{\hyperlink{classglib_1_1_color_palette_a196f7d5eb4f564f7058a2ad6c29a62a4}{get\+Palette}} ()
+\begin{DoxyCompactList}\small\item\em Returns the palette used as a vector. It is a reference to avoid copying data. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_color_palette_ad1271a3cd99099b3f132c1d0ebb45529}{set\+Palette}} (std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_color}{Color}} $>$ p)
+\begin{DoxyCompactList}\small\item\em Sets the palette to the specified list of colors. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_color_palette_a821d9260787199e79122a2667f5a9098}\label{classglib_1_1_color_palette_a821d9260787199e79122a2667f5a9098}} 
+void {\bfseries clear\+Palette} ()
+\begin{DoxyCompactList}\small\item\em Clears the palette. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_color_palette_a3f337d33aa676d7714eef3e679dd3e7d}{set\+Palette\+Mode}} (bool unique\+Only)
+\begin{DoxyCompactList}\small\item\em Sets the palette mode to be either unique colors only or all colors. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_color_palette_ae54e8e0318ffe4488f5f5bab2ead9ec0}\label{classglib_1_1_color_palette_ae54e8e0318ffe4488f5f5bab2ead9ec0}} 
+void {\bfseries re\+Balance} ()
+\begin{DoxyCompactList}\small\item\em Rebalances the KD-\/\+Tree for color searching. Best called after adding all colors to the palette or when large changes are made and color searching is needed to maintain the speed of the color searching. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \mbox{\hyperlink{classglib_1_1_color_palette}{Color\+Palette}} \mbox{\hyperlink{classglib_1_1_color_palette_a3953ce396b3ad53f2a71fada05bccec9}{create\+Color\+Palette}} (int reds, int greens, int blues)
+\begin{DoxyCompactList}\small\item\em Creates a color palette using a specified amount of red, green and blue colors. The total size of the palette is equal to\+: reds$\ast$greens$\ast$blues Each color channel is divided evenly by the number of colors in it. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classglib_1_1_color_palette}{Color\+Palette}} \mbox{\hyperlink{classglib_1_1_color_palette_af59f0589467485fc782bcb1356a428cd}{generate\+Optimal\+Palette}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} $\ast$color\+Array, int size, int colors, unsigned char type, bool convert\+To\+Lab=false, bool unique\+Only=false)
+\begin{DoxyCompactList}\small\item\em Creates an optimal color palette using 1 of 3 possible algorithms. MEAN\+\_\+\+CUT\+: It is a custom created method that produces results close to K\+\_\+\+MEANS but is the fastest of the algorithms available. MEDIAN\+\_\+\+CUT\+: A slower less accurate method. 2nd fastest algorithm. K\+\_\+\+MEANS\+: A simple implementation of KMeans is used. It is the most accurate of the 3 methods but is slower and its results are a bit random. 10 iterations are used. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_color_palette_a82c4ff79390f93fc137c665c5535fb3b}\label{classglib_1_1_color_palette_a82c4ff79390f93fc137c665c5535fb3b}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\item 
+\mbox{\Hypertarget{classglib_1_1_color_palette_a9ed132ddc2fa620d53d24a116c6d3050}\label{classglib_1_1_color_palette_a9ed132ddc2fa620d53d24a116c6d3050}} 
+static const unsigned char {\bfseries MEAN\+\_\+\+CUT} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_color_palette_a53c22d6622ddbb6df41606de19e0a923}\label{classglib_1_1_color_palette_a53c22d6622ddbb6df41606de19e0a923}} 
+static const unsigned char {\bfseries MEDIAN\+\_\+\+CUT} = 1
+\item 
+\mbox{\Hypertarget{classglib_1_1_color_palette_a55e447de96677f8cb4fb3a1ece5ce8a2}\label{classglib_1_1_color_palette_a55e447de96677f8cb4fb3a1ece5ce8a2}} 
+static const unsigned char {\bfseries K\+\_\+\+MEANS} = 2
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_color_palette_a5283272afdc9af01be0cde215801612c}\label{classglib_1_1_color_palette_a5283272afdc9af01be0cde215801612c}} 
+\index{glib::ColorPalette@{glib::ColorPalette}!addNewColor@{addNewColor}}
+\index{addNewColor@{addNewColor}!glib::ColorPalette@{glib::ColorPalette}}
+\doxysubsubsection{\texorpdfstring{addNewColor()}{addNewColor()}}
+{\footnotesize\ttfamily void glib\+::\+Color\+Palette\+::add\+New\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Adds a new color to the palette. Duplicates may be allowed if palette mode has been set to false. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & The color to add. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_color_palette_a3953ce396b3ad53f2a71fada05bccec9}\label{classglib_1_1_color_palette_a3953ce396b3ad53f2a71fada05bccec9}} 
+\index{glib::ColorPalette@{glib::ColorPalette}!createColorPalette@{createColorPalette}}
+\index{createColorPalette@{createColorPalette}!glib::ColorPalette@{glib::ColorPalette}}
+\doxysubsubsection{\texorpdfstring{createColorPalette()}{createColorPalette()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_color_palette}{Color\+Palette}} glib\+::\+Color\+Palette\+::create\+Color\+Palette (\begin{DoxyParamCaption}\item[{int}]{reds,  }\item[{int}]{greens,  }\item[{int}]{blues }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Creates a color palette using a specified amount of red, green and blue colors. The total size of the palette is equal to\+: reds$\ast$greens$\ast$blues Each color channel is divided evenly by the number of colors in it. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em reds} & The amount of red colors in the red color channel. \\
+\hline
+{\em greens} & The amount of green colors in the green color channel. \\
+\hline
+{\em blue} & The amount of blue colors in the blue color channel. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_color_palette}{Color\+Palette}} returns the created color palette. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_color_palette_af59f0589467485fc782bcb1356a428cd}\label{classglib_1_1_color_palette_af59f0589467485fc782bcb1356a428cd}} 
+\index{glib::ColorPalette@{glib::ColorPalette}!generateOptimalPalette@{generateOptimalPalette}}
+\index{generateOptimalPalette@{generateOptimalPalette}!glib::ColorPalette@{glib::ColorPalette}}
+\doxysubsubsection{\texorpdfstring{generateOptimalPalette()}{generateOptimalPalette()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_color_palette}{Color\+Palette}} glib\+::\+Color\+Palette\+::generate\+Optimal\+Palette (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}} $\ast$}]{color\+Array,  }\item[{int}]{size,  }\item[{int}]{colors,  }\item[{unsigned char}]{type,  }\item[{bool}]{convert\+To\+Lab = {\ttfamily false},  }\item[{bool}]{unique\+Only = {\ttfamily false} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Creates an optimal color palette using 1 of 3 possible algorithms. MEAN\+\_\+\+CUT\+: It is a custom created method that produces results close to K\+\_\+\+MEANS but is the fastest of the algorithms available. MEDIAN\+\_\+\+CUT\+: A slower less accurate method. 2nd fastest algorithm. K\+\_\+\+MEANS\+: A simple implementation of KMeans is used. It is the most accurate of the 3 methods but is slower and its results are a bit random. 10 iterations are used. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em color\+Array} & The array of colors to generate the palette over. Generally just the images pixels. Note that the expected color space is the RGB color space however, any color space can be used. \\
+\hline
+{\em size} & The size the array. \\
+\hline
+{\em colors} & The amount of colors to generate for the palette. \\
+\hline
+{\em type} & Must be MEAN\+\_\+\+CUT, MEDIAN\+\_\+\+CUT, or K\+\_\+\+MEANS \\
+\hline
+{\em convert\+To\+Lab} & Whether to convert from RGB color space to LAB color space for generating the palette. May not work properly if the color\+Array is not in the RGB color space. By default, it is set to false. \\
+\hline
+{\em unique\+Only} & Whether to use only unique colors from the array or allow duplicate colors from the array when generating the palette. By default, it is set to false. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_color_palette}{Color\+Palette}} Returns a color palette in the same color space as the input if successful. Otherwise, returns an empty color palette. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_color_palette_a8da6e3bf8a9c49ac33cac6cd63769e6a}\label{classglib_1_1_color_palette_a8da6e3bf8a9c49ac33cac6cd63769e6a}} 
+\index{glib::ColorPalette@{glib::ColorPalette}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::ColorPalette@{glib::ColorPalette}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Color\+Palette\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
+
+\mbox{\Hypertarget{classglib_1_1_color_palette_a8714385399707ca174e1c670d0d50903}\label{classglib_1_1_color_palette_a8714385399707ca174e1c670d0d50903}} 
+\index{glib::ColorPalette@{glib::ColorPalette}!getClosestColor@{getClosestColor}}
+\index{getClosestColor@{getClosestColor}!glib::ColorPalette@{glib::ColorPalette}}
+\doxysubsubsection{\texorpdfstring{getClosestColor()}{getClosestColor()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structglib_1_1_color}{Color}} glib\+::\+Color\+Palette\+::get\+Closest\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Returns the color in the palette closest to the desired color. It uses the Euclidean distance as the measure. KD-\/\+Trees are used to speed this operation up and performs with O(\+Log(\+N)) on average. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & The desired color \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_color}{Color}} The closest color found in the palette. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_color_palette_ad2e81d81bec2dbc90403508e1b2086e7}\label{classglib_1_1_color_palette_ad2e81d81bec2dbc90403508e1b2086e7}} 
+\index{glib::ColorPalette@{glib::ColorPalette}!getClosestColorIndex@{getClosestColorIndex}}
+\index{getClosestColorIndex@{getClosestColorIndex}!glib::ColorPalette@{glib::ColorPalette}}
+\doxysubsubsection{\texorpdfstring{getClosestColorIndex()}{getClosestColorIndex()}}
+{\footnotesize\ttfamily int glib\+::\+Color\+Palette\+::get\+Closest\+Color\+Index (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Returns the index of the color in the palette closest to the desired color. It uses the Euclidean distance as the measure. KD-\/\+Trees are used to speed this operation up and performs with O(\+Log(\+N)) on average. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & The desired color \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int The index of the closest color found in the palette. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_color_palette_a784427b06eef26f5e4a1d01c2e8b6823}\label{classglib_1_1_color_palette_a784427b06eef26f5e4a1d01c2e8b6823}} 
+\index{glib::ColorPalette@{glib::ColorPalette}!getColor@{getColor}}
+\index{getColor@{getColor}!glib::ColorPalette@{glib::ColorPalette}}
+\doxysubsubsection{\texorpdfstring{getColor()}{getColor()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structglib_1_1_color}{Color}} glib\+::\+Color\+Palette\+::get\+Color (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets a color by its index in the palette. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The index to check. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_color}{Color}} returns a valid color if index is valid. If index is invalid and USE\+\_\+\+EXCEPTIONS is defined, an Out\+Of\+Bounds error is thrown. Otherwise, the default \mbox{\hyperlink{structglib_1_1_color}{Color}} is returned. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_color_palette_ae15445579788b17a2975e5c1794d50a6}\label{classglib_1_1_color_palette_ae15445579788b17a2975e5c1794d50a6}} 
+\index{glib::ColorPalette@{glib::ColorPalette}!getColorIndex@{getColorIndex}}
+\index{getColorIndex@{getColorIndex}!glib::ColorPalette@{glib::ColorPalette}}
+\doxysubsubsection{\texorpdfstring{getColorIndex()}{getColorIndex()}}
+{\footnotesize\ttfamily int glib\+::\+Color\+Palette\+::get\+Color\+Index (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Gets the index of the color in the palette if it exists. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & The color to check. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int returns a valid index if the color was found. -\/1 is returned otherwise. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_color_palette_a30708fadd6366021b10d563791f7e6d4}\label{classglib_1_1_color_palette_a30708fadd6366021b10d563791f7e6d4}} 
+\index{glib::ColorPalette@{glib::ColorPalette}!getColorRef@{getColorRef}}
+\index{getColorRef@{getColorRef}!glib::ColorPalette@{glib::ColorPalette}}
+\doxysubsubsection{\texorpdfstring{getColorRef()}{getColorRef()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structglib_1_1_color}{Color}} $\ast$ glib\+::\+Color\+Palette\+::get\+Color\+Ref (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets a color by its index in the palette. Returns the reference to the color. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The index to check. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_color}{Color}} returns a valid color pointer if index is valid. If index is invalid and USE\+\_\+\+EXCEPTIONS is defined, an Out\+Of\+Bounds error is thrown. Otherwise, a nullptr is returned. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_color_palette_a196f7d5eb4f564f7058a2ad6c29a62a4}\label{classglib_1_1_color_palette_a196f7d5eb4f564f7058a2ad6c29a62a4}} 
+\index{glib::ColorPalette@{glib::ColorPalette}!getPalette@{getPalette}}
+\index{getPalette@{getPalette}!glib::ColorPalette@{glib::ColorPalette}}
+\doxysubsubsection{\texorpdfstring{getPalette()}{getPalette()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_color}{Color}} $>$ \& glib\+::\+Color\+Palette\+::get\+Palette (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the palette used as a vector. It is a reference to avoid copying data. 
+
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$\+Color$>$\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_color_palette_a8ee7aa2c0748f085516fa2ccb2195cbe}\label{classglib_1_1_color_palette_a8ee7aa2c0748f085516fa2ccb2195cbe}} 
+\index{glib::ColorPalette@{glib::ColorPalette}!getSize@{getSize}}
+\index{getSize@{getSize}!glib::ColorPalette@{glib::ColorPalette}}
+\doxysubsubsection{\texorpdfstring{getSize()}{getSize()}}
+{\footnotesize\ttfamily int glib\+::\+Color\+Palette\+::get\+Size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the amount of colors in the palette. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_color_palette_ad1271a3cd99099b3f132c1d0ebb45529}\label{classglib_1_1_color_palette_ad1271a3cd99099b3f132c1d0ebb45529}} 
+\index{glib::ColorPalette@{glib::ColorPalette}!setPalette@{setPalette}}
+\index{setPalette@{setPalette}!glib::ColorPalette@{glib::ColorPalette}}
+\doxysubsubsection{\texorpdfstring{setPalette()}{setPalette()}}
+{\footnotesize\ttfamily void glib\+::\+Color\+Palette\+::set\+Palette (\begin{DoxyParamCaption}\item[{std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_color}{Color}} $>$}]{p }\end{DoxyParamCaption})}
+
+
+
+Sets the palette to the specified list of colors. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & The list of colors. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_color_palette_a3f337d33aa676d7714eef3e679dd3e7d}\label{classglib_1_1_color_palette_a3f337d33aa676d7714eef3e679dd3e7d}} 
+\index{glib::ColorPalette@{glib::ColorPalette}!setPaletteMode@{setPaletteMode}}
+\index{setPaletteMode@{setPaletteMode}!glib::ColorPalette@{glib::ColorPalette}}
+\doxysubsubsection{\texorpdfstring{setPaletteMode()}{setPaletteMode()}}
+{\footnotesize\ttfamily void glib\+::\+Color\+Palette\+::set\+Palette\+Mode (\begin{DoxyParamCaption}\item[{bool}]{unique\+Only }\end{DoxyParamCaption})}
+
+
+
+Sets the palette mode to be either unique colors only or all colors. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em unique\+Only} & false = Duplicates allowed $\vert$ true = Only unique colors \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Color\+Palette.\+h\end{DoxyCompactItemize}

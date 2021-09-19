@@ -1,5 +1,6 @@
 #pragma once
 #include "Vec2f.h"
+#include "File.h"
 
 namespace glib
 {
@@ -363,17 +364,17 @@ namespace glib
 		 * 		Valid file types are .wav
 		 * 		Assumes all data is stereo and uses 44100 samples per sec.
 		 * 
-		 * @param filename 
+		 * @param file 
 		 */
-		void loadSound(std::string filename);
+		void loadSound(File file);
 
 		/**
 		 * @brief Saves a sound as a wav file.
 		 * 		Assumes all data is stereo and uses 44100 samples per sec.
 		 * 
-		 * @param filename 
+		 * @param file 
 		 */
-		void saveWAV(std::string filename);
+		void saveWAV(File file);
 
 	private:
 		void loadWAV(std::vector<unsigned char> data);

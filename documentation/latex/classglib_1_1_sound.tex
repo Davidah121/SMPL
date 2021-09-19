@@ -1,0 +1,829 @@
+\hypertarget{classglib_1_1_sound}{}\doxysection{glib\+::Sound Class Reference}
+\label{classglib_1_1_sound}\index{glib::Sound@{glib::Sound}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_sound_aaabfd17608303902c2f977608b7004ae}{Sound}} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_sound}{Sound}} object Contains the data for stereo sound. Can be a shallow copy or deep copy. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_sound_a63402345e7cb95377dae43b3dcdd4905}{Sound}} (const \mbox{\hyperlink{classglib_1_1_sound}{Sound}} \&other)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_sound}{Sound}} object from another \mbox{\hyperlink{classglib_1_1_sound}{Sound}} object Contains the data for stereo sound. Performs a shallow copy. Assumes all data is stereo and uses 44100 samples per sec. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sound_a2a2bd0a578e1eefb99a3f4d2155b9cfc}{operator=}} (const \mbox{\hyperlink{classglib_1_1_sound}{Sound}} \&other)
+\begin{DoxyCompactList}\small\item\em Copies a \mbox{\hyperlink{classglib_1_1_sound}{Sound}} object. Performs a shallow copy. Assumes all data is stereo and uses 44100 samples per sec. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a67ddb16656d3de56ab1a6d1a7cca8873}\label{classglib_1_1_sound_a67ddb16656d3de56ab1a6d1a7cca8873}} 
+{\bfseries $\sim$\+Sound} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_sound}{Sound}} object Deletes the original data if it is not a shallow copy. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_sound}{Sound}} \mbox{\hyperlink{classglib_1_1_sound_a2ca8145bcdf907125129e7bfcfdbc348}{copy}} (bool shallow\+Copy)
+\begin{DoxyCompactList}\small\item\em Copies another sound object. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a756f707cbe793612a9bcbf83b02b6e5a}\label{classglib_1_1_sound_a756f707cbe793612a9bcbf83b02b6e5a}} 
+void {\bfseries play} ()
+\begin{DoxyCompactList}\small\item\em Sets whether the sound should be playing. Only plays if it has been added to \mbox{\hyperlink{classglib_1_1_audio_out}{Audio\+Out}} sound list. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_sound_a24e751f42ec44083ee5bdb1281295289}{get\+Playing}} ()
+\begin{DoxyCompactList}\small\item\em Returns whether the is currently playing. Only plays if it has been added to \mbox{\hyperlink{classglib_1_1_audio_out}{Audio\+Out}} sound list. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a506dfa5aa9320637bef956e9102f8596}\label{classglib_1_1_sound_a506dfa5aa9320637bef956e9102f8596}} 
+void {\bfseries stop} ()
+\begin{DoxyCompactList}\small\item\em Stops playback of the sound. Sets the position back to 0. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_sound_aaa5b8bfd4e2c8b83869cdb175da66853}\label{classglib_1_1_sound_aaa5b8bfd4e2c8b83869cdb175da66853}} 
+void {\bfseries pause} ()
+\begin{DoxyCompactList}\small\item\em Pauses the playback of the sound. Maintains the current sound position. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sound_aca4b81b11e8823b48c2c45e536d3fbac}{set\+Volume}} (double left, double right)
+\begin{DoxyCompactList}\small\item\em Sets the left and right channel volumes. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sound_a571f9ec19be5ba0a49286c5ed3fa5641}{set\+Volume}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} v)
+\begin{DoxyCompactList}\small\item\em Sets the left and right channel volumes. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_sound_aacd936ad36dc853279e37f049fa491e7}{get\+Volume}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Volume of the sound for both channels. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sound_a7148c9f5481d91a13500f40ad0692f1d}{set\+Loop}} (bool l)
+\begin{DoxyCompactList}\small\item\em Sets if the sound should loop. Loops based on the loop start point and loop end point. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_sound_aeaefe6c7dfbd3bc3fe64037cfe4d7ea7}{get\+Loop}} ()
+\begin{DoxyCompactList}\small\item\em Gets if the sound should loop. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} $\ast$ \mbox{\hyperlink{classglib_1_1_sound_ac9a1135320aa07f478c0c3ea34f43d2d}{get\+Data}} ()
+\begin{DoxyCompactList}\small\item\em Gets the raw sound data. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \& \mbox{\hyperlink{classglib_1_1_sound_a748b6f3fda91841fe216cef9c968e960}{operator\mbox{[}$\,$\mbox{]}}} (unsigned int index)
+\begin{DoxyCompactList}\small\item\em Gets the sound data at the specified index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_sound_a115ea4127c7f80640414e4968cce3e7b}{get}} (unsigned int index)
+\begin{DoxyCompactList}\small\item\em Gets the sound data at the specified index. \end{DoxyCompactList}\item 
+unsigned int \mbox{\hyperlink{classglib_1_1_sound_a698eb7d750826561ac9fecd3ceff9996}{get\+Position}} ()
+\begin{DoxyCompactList}\small\item\em Gets the time position in the audio. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sound_a81a8bd5c2a76e1a97baeff76c44a92d9}{set\+Position}} (unsigned int index)
+\begin{DoxyCompactList}\small\item\em Sets the time position in the audio. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sound_aff0545e182593fe2ed9fa79419215ea5}{set\+Priority}} (int v)
+\begin{DoxyCompactList}\small\item\em Sets the Priority of the sound. Higher Priority sounds are less likely to be cut when the amount of sounds allowed has been exceeded. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_sound_a23510555f8fdf792af03ad232aebf2b1}{get\+Priority}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Priority of the sound. \end{DoxyCompactList}\item 
+unsigned int \mbox{\hyperlink{classglib_1_1_sound_a0b8acd64064924c105d7f2b8848efa4b}{get\+Length}} ()
+\begin{DoxyCompactList}\small\item\em Get the Length of the sound. Returns the amount of samples. \end{DoxyCompactList}\item 
+unsigned int \mbox{\hyperlink{classglib_1_1_sound_ace3a4afb2235fa7242d0bcca29ab5b45}{get\+Loop\+Start}} ()
+\begin{DoxyCompactList}\small\item\em Gets the time for Loop Start. \end{DoxyCompactList}\item 
+unsigned int \mbox{\hyperlink{classglib_1_1_sound_a78de7358e1a11d7a257e0a1c6ade3ef1}{get\+Loop\+End}} ()
+\begin{DoxyCompactList}\small\item\em Gets the time for Loop End. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sound_aca66d5d39a5606ddc7d0fad7567155a0}{set\+Loop\+Start}} (unsigned int index)
+\begin{DoxyCompactList}\small\item\em Sets the time for Loop Start. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sound_a15362daf18072c7a2bdcf4d965e3257e}{set\+Loop\+Start}} (double time)
+\begin{DoxyCompactList}\small\item\em Sets the time for Loop Start Converts back to samples per second. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sound_a3003c7e24c8465122cb818c0dc81c509}{set\+Loop\+End}} (unsigned int index)
+\begin{DoxyCompactList}\small\item\em Sets the time for Loop End. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sound_a9bd98bd9e2381cad1dae1156f07c5254}{set\+Loop\+End}} (double time)
+\begin{DoxyCompactList}\small\item\em Sets the time for Loop End Converts back to samples per second. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sound_a1abfd2986eda879c46d53c066e00e8f4}{set\+Data}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} $\ast$data, unsigned int size, bool is\+Shallow\+Copy=false)
+\begin{DoxyCompactList}\small\item\em Set the raw sound data. Assumes all data is stereo and uses 44100 samples per sec. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sound_ae4a206c92f1ae6ccf1603813f3bf7b03}{copy\+Data}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} $\ast$data, unsigned int size)
+\begin{DoxyCompactList}\small\item\em Makes a copy of the raw sound data. Assumes all data is stereo and uses 44100 samples per sec. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sound_af602fedaa829e049ebcf5931027a12a7}{load\+Sound}} (\mbox{\hyperlink{classglib_1_1_file}{File}} file)
+\begin{DoxyCompactList}\small\item\em Loads a sound from a file. Valid file types are .wav Assumes all data is stereo and uses 44100 samples per sec. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sound_a72465c3b0811aff409c3f629ce52bc45}{save\+WAV}} (\mbox{\hyperlink{classglib_1_1_file}{File}} file)
+\begin{DoxyCompactList}\small\item\em Saves a sound as a wav file. Assumes all data is stereo and uses 44100 samples per sec. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a12e427fee63dd699877461f4fe712dcb}\label{classglib_1_1_sound_a12e427fee63dd699877461f4fe712dcb}} 
+static const float {\bfseries C0}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_aecac30a4f57ebd05e41003774457a990}\label{classglib_1_1_sound_aecac30a4f57ebd05e41003774457a990}} 
+static const float {\bfseries C0\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_acd17008b46fed1b651c55b57d06cf0df}\label{classglib_1_1_sound_acd17008b46fed1b651c55b57d06cf0df}} 
+static const float {\bfseries D0}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_adf46e08ee11d882b59471af18bbb3252}\label{classglib_1_1_sound_adf46e08ee11d882b59471af18bbb3252}} 
+static const float {\bfseries D0\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a593a149331b32f6920d453da477e3130}\label{classglib_1_1_sound_a593a149331b32f6920d453da477e3130}} 
+static const float {\bfseries E0}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_aaa9ac07f5e7b320aeb5b2866e560870c}\label{classglib_1_1_sound_aaa9ac07f5e7b320aeb5b2866e560870c}} 
+static const float {\bfseries F0}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a47c8a12054de4a7f7b60605772224610}\label{classglib_1_1_sound_a47c8a12054de4a7f7b60605772224610}} 
+static const float {\bfseries F0\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a3895695aef670fe7173bfda1a1fa8a88}\label{classglib_1_1_sound_a3895695aef670fe7173bfda1a1fa8a88}} 
+static const float {\bfseries G0}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a7cef1fb0587995f44e81a2542123bfb6}\label{classglib_1_1_sound_a7cef1fb0587995f44e81a2542123bfb6}} 
+static const float {\bfseries G0\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_aa8fdca4a78400b49d3f5e688fae1e41c}\label{classglib_1_1_sound_aa8fdca4a78400b49d3f5e688fae1e41c}} 
+static const float {\bfseries A0}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a90608ab68c2eb1616b78d2479a12dfe4}\label{classglib_1_1_sound_a90608ab68c2eb1616b78d2479a12dfe4}} 
+static const float {\bfseries A0\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a73fc4930348ade79d9bbc03e409d3ecc}\label{classglib_1_1_sound_a73fc4930348ade79d9bbc03e409d3ecc}} 
+static const float {\bfseries B0}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a4e6b4bc6662e9597acc3ebb7c6104037}\label{classglib_1_1_sound_a4e6b4bc6662e9597acc3ebb7c6104037}} 
+static const float {\bfseries C1}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a3f510b20b82f31c5519759c58ae1851b}\label{classglib_1_1_sound_a3f510b20b82f31c5519759c58ae1851b}} 
+static const float {\bfseries C1\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a3618c907d6872dee55105aae0db7930a}\label{classglib_1_1_sound_a3618c907d6872dee55105aae0db7930a}} 
+static const float {\bfseries D1}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a4cd33dd8847df459484abe0a8ca49313}\label{classglib_1_1_sound_a4cd33dd8847df459484abe0a8ca49313}} 
+static const float {\bfseries D1\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ad6bfb48463942b2ad5865c201f4c9c53}\label{classglib_1_1_sound_ad6bfb48463942b2ad5865c201f4c9c53}} 
+static const float {\bfseries E1}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ac107d7021aaea936f7c6c9aecfc81937}\label{classglib_1_1_sound_ac107d7021aaea936f7c6c9aecfc81937}} 
+static const float {\bfseries F1}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a2dbf59261a53d615866f240b0dbaff3d}\label{classglib_1_1_sound_a2dbf59261a53d615866f240b0dbaff3d}} 
+static const float {\bfseries F1\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a57bf12aab33ba0b8d7c69df8b9444dbc}\label{classglib_1_1_sound_a57bf12aab33ba0b8d7c69df8b9444dbc}} 
+static const float {\bfseries G1}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a891498ff402dac5f03bd22fba5d4d1bd}\label{classglib_1_1_sound_a891498ff402dac5f03bd22fba5d4d1bd}} 
+static const float {\bfseries G1\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a72a5101d109234eba82376cc416e9f04}\label{classglib_1_1_sound_a72a5101d109234eba82376cc416e9f04}} 
+static const float {\bfseries A1}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_afff44511c98305ac26726867ea959d61}\label{classglib_1_1_sound_afff44511c98305ac26726867ea959d61}} 
+static const float {\bfseries A1\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a10efa162e43b2f461e10bd702b46ff0b}\label{classglib_1_1_sound_a10efa162e43b2f461e10bd702b46ff0b}} 
+static const float {\bfseries B1}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a9473243c6ac3ee4f20c258d7a5543c23}\label{classglib_1_1_sound_a9473243c6ac3ee4f20c258d7a5543c23}} 
+static const float {\bfseries C2}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ae3a6be4bef6b151a65ac1c5b13ec4cb5}\label{classglib_1_1_sound_ae3a6be4bef6b151a65ac1c5b13ec4cb5}} 
+static const float {\bfseries C2\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ac8b4d9c8ee419713a3d87587be346626}\label{classglib_1_1_sound_ac8b4d9c8ee419713a3d87587be346626}} 
+static const float {\bfseries D2}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_aeb8eaa3cb71d458e382089a4883c9a53}\label{classglib_1_1_sound_aeb8eaa3cb71d458e382089a4883c9a53}} 
+static const float {\bfseries D2\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_aacd5eda8c483003338d254743d1681f4}\label{classglib_1_1_sound_aacd5eda8c483003338d254743d1681f4}} 
+static const float {\bfseries E2}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_abe370d204a2bd42fc74eebaf19af0796}\label{classglib_1_1_sound_abe370d204a2bd42fc74eebaf19af0796}} 
+static const float {\bfseries F2}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a0f63736b2ea8d6c642ae55c17fc88986}\label{classglib_1_1_sound_a0f63736b2ea8d6c642ae55c17fc88986}} 
+static const float {\bfseries F2\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ad541396b15d46e9ebd8b1f3b0f9b11ed}\label{classglib_1_1_sound_ad541396b15d46e9ebd8b1f3b0f9b11ed}} 
+static const float {\bfseries G2}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a6c87a57e50aabb2762065d447667f141}\label{classglib_1_1_sound_a6c87a57e50aabb2762065d447667f141}} 
+static const float {\bfseries G2\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a5e744b04ac2ee3961e6e2d872be43279}\label{classglib_1_1_sound_a5e744b04ac2ee3961e6e2d872be43279}} 
+static const float {\bfseries A2}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a8e8d921d163598459b70cff836bb3797}\label{classglib_1_1_sound_a8e8d921d163598459b70cff836bb3797}} 
+static const float {\bfseries A2\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a428e7b91f51b17de4397e2243b9bf6db}\label{classglib_1_1_sound_a428e7b91f51b17de4397e2243b9bf6db}} 
+static const float {\bfseries B2}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a5a21099071696389db56e815c92be0b5}\label{classglib_1_1_sound_a5a21099071696389db56e815c92be0b5}} 
+static const float {\bfseries C3}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a091276161b9de3f53827342e59d295f2}\label{classglib_1_1_sound_a091276161b9de3f53827342e59d295f2}} 
+static const float {\bfseries C3\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_af7e41542d208360a90265bd007e45d14}\label{classglib_1_1_sound_af7e41542d208360a90265bd007e45d14}} 
+static const float {\bfseries D3}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a27ba2280121c961949d82e72aea74382}\label{classglib_1_1_sound_a27ba2280121c961949d82e72aea74382}} 
+static const float {\bfseries D3\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a09d9a4040c8d1c614a235c47ad98bb0e}\label{classglib_1_1_sound_a09d9a4040c8d1c614a235c47ad98bb0e}} 
+static const float {\bfseries E3}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ae03e105305a2420e414939f1c8a8d21b}\label{classglib_1_1_sound_ae03e105305a2420e414939f1c8a8d21b}} 
+static const float {\bfseries F3}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a50b2e0a62530bbb9275dd10d6228e0d2}\label{classglib_1_1_sound_a50b2e0a62530bbb9275dd10d6228e0d2}} 
+static const float {\bfseries F3\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_abdd2789de47801da15d7f873af120efc}\label{classglib_1_1_sound_abdd2789de47801da15d7f873af120efc}} 
+static const float {\bfseries G3}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a1636d318682e306f4a356934038ebc7f}\label{classglib_1_1_sound_a1636d318682e306f4a356934038ebc7f}} 
+static const float {\bfseries G3\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ae3db6e33f8afb8fa98b32d7a269388a0}\label{classglib_1_1_sound_ae3db6e33f8afb8fa98b32d7a269388a0}} 
+static const float {\bfseries A3}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a5311dcc261c82ee73e517ad07b36a608}\label{classglib_1_1_sound_a5311dcc261c82ee73e517ad07b36a608}} 
+static const float {\bfseries A3\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ad2cf208646cc96d1653e23256f201b65}\label{classglib_1_1_sound_ad2cf208646cc96d1653e23256f201b65}} 
+static const float {\bfseries B3}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ad4e448bd7914350309116efc415b075c}\label{classglib_1_1_sound_ad4e448bd7914350309116efc415b075c}} 
+static const float {\bfseries C4}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_abd62541df10ffed1ce4c78ad3d919524}\label{classglib_1_1_sound_abd62541df10ffed1ce4c78ad3d919524}} 
+static const float {\bfseries C4\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_aae486ad4e35ae93f3e3f346c1e4d634b}\label{classglib_1_1_sound_aae486ad4e35ae93f3e3f346c1e4d634b}} 
+static const float {\bfseries D4}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a51ed4f410a64e228551a6b406c54fb2d}\label{classglib_1_1_sound_a51ed4f410a64e228551a6b406c54fb2d}} 
+static const float {\bfseries D4\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a1cf12f2acdff6d785fa5336b4b231082}\label{classglib_1_1_sound_a1cf12f2acdff6d785fa5336b4b231082}} 
+static const float {\bfseries E4}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a01e5449a0d16e11535254e5abe350a93}\label{classglib_1_1_sound_a01e5449a0d16e11535254e5abe350a93}} 
+static const float {\bfseries F4}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a797c7132fed1d38f266abcd25b12eed9}\label{classglib_1_1_sound_a797c7132fed1d38f266abcd25b12eed9}} 
+static const float {\bfseries F4\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ae0c37825cd14dd7a264e5a9657f15e48}\label{classglib_1_1_sound_ae0c37825cd14dd7a264e5a9657f15e48}} 
+static const float {\bfseries G4}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a3ac94b27b08797febb30503e66dfbf78}\label{classglib_1_1_sound_a3ac94b27b08797febb30503e66dfbf78}} 
+static const float {\bfseries G4\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_aed30146f00d663e90f6a4b3c19f9fda2}\label{classglib_1_1_sound_aed30146f00d663e90f6a4b3c19f9fda2}} 
+static const float {\bfseries A4}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_aa980085b08d2f5cd023950de891640d1}\label{classglib_1_1_sound_aa980085b08d2f5cd023950de891640d1}} 
+static const float {\bfseries A4\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a8fad5f92377788babc3f7b57eebf0007}\label{classglib_1_1_sound_a8fad5f92377788babc3f7b57eebf0007}} 
+static const float {\bfseries B4}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_aec1b99fa938b00a9ddd7327affb9a2a3}\label{classglib_1_1_sound_aec1b99fa938b00a9ddd7327affb9a2a3}} 
+static const float {\bfseries C5}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a3f2565938c611852c99197b482ca63ca}\label{classglib_1_1_sound_a3f2565938c611852c99197b482ca63ca}} 
+static const float {\bfseries C5\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a42a16ca642d11acdabb463e4601842a9}\label{classglib_1_1_sound_a42a16ca642d11acdabb463e4601842a9}} 
+static const float {\bfseries D5}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a944996c86bc106476583d5ae4a9e052a}\label{classglib_1_1_sound_a944996c86bc106476583d5ae4a9e052a}} 
+static const float {\bfseries D5\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a23f65e0b6dffb597bbf449128223887c}\label{classglib_1_1_sound_a23f65e0b6dffb597bbf449128223887c}} 
+static const float {\bfseries E5}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a60adc088c41cc4d0627f84ee3c99f4e5}\label{classglib_1_1_sound_a60adc088c41cc4d0627f84ee3c99f4e5}} 
+static const float {\bfseries F5}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ada0365266aedfe6b473cf60d4439ff4f}\label{classglib_1_1_sound_ada0365266aedfe6b473cf60d4439ff4f}} 
+static const float {\bfseries F5\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ab2c418ce289523ed6e58d43d972af8d7}\label{classglib_1_1_sound_ab2c418ce289523ed6e58d43d972af8d7}} 
+static const float {\bfseries G5}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a26f774f4cc6c51398a826cf84718ac12}\label{classglib_1_1_sound_a26f774f4cc6c51398a826cf84718ac12}} 
+static const float {\bfseries G5\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_aed1068d01cf43ab3f69e69c5f4fb2c82}\label{classglib_1_1_sound_aed1068d01cf43ab3f69e69c5f4fb2c82}} 
+static const float {\bfseries A5}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a3e43bc747bb082796251558749b2f239}\label{classglib_1_1_sound_a3e43bc747bb082796251558749b2f239}} 
+static const float {\bfseries A5\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a05c02a4177d9e1de5b3259d67a053c6a}\label{classglib_1_1_sound_a05c02a4177d9e1de5b3259d67a053c6a}} 
+static const float {\bfseries B5}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a6999a2be37328345f169be8950cd7c25}\label{classglib_1_1_sound_a6999a2be37328345f169be8950cd7c25}} 
+static const float {\bfseries C6}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_afa587b92f80f50897005a9024e6f94d4}\label{classglib_1_1_sound_afa587b92f80f50897005a9024e6f94d4}} 
+static const float {\bfseries C6\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a385b78683a4236b6fce9eae66172673a}\label{classglib_1_1_sound_a385b78683a4236b6fce9eae66172673a}} 
+static const float {\bfseries D6}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_af6ee6492b37c4e1d72f63f2123e5450f}\label{classglib_1_1_sound_af6ee6492b37c4e1d72f63f2123e5450f}} 
+static const float {\bfseries D6\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ace11dbc18f9738e69720927854447da5}\label{classglib_1_1_sound_ace11dbc18f9738e69720927854447da5}} 
+static const float {\bfseries E6}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ae00d32d77018243075405d3c91ac661a}\label{classglib_1_1_sound_ae00d32d77018243075405d3c91ac661a}} 
+static const float {\bfseries F6}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a7784c0297d8d355eba35c7109380fb4e}\label{classglib_1_1_sound_a7784c0297d8d355eba35c7109380fb4e}} 
+static const float {\bfseries F6\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a4714a87ae0b4ade08d7e0233ab91db50}\label{classglib_1_1_sound_a4714a87ae0b4ade08d7e0233ab91db50}} 
+static const float {\bfseries G6}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a5addf682dae0fb0612237eecf8b76d3d}\label{classglib_1_1_sound_a5addf682dae0fb0612237eecf8b76d3d}} 
+static const float {\bfseries G6\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ac185afe553845884012d96837c2e17b6}\label{classglib_1_1_sound_ac185afe553845884012d96837c2e17b6}} 
+static const float {\bfseries A6}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a81b096c67e05fb15db198ee6adda4b74}\label{classglib_1_1_sound_a81b096c67e05fb15db198ee6adda4b74}} 
+static const float {\bfseries A6\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a1e385cadc2619608658cfd0bafbeab9f}\label{classglib_1_1_sound_a1e385cadc2619608658cfd0bafbeab9f}} 
+static const float {\bfseries B6}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a01a85c1235fe9fcc9c415142059ebb16}\label{classglib_1_1_sound_a01a85c1235fe9fcc9c415142059ebb16}} 
+static const float {\bfseries C7}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a7915651ba9691188d258a6802a3cf817}\label{classglib_1_1_sound_a7915651ba9691188d258a6802a3cf817}} 
+static const float {\bfseries C7\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_abf63e25ebc64c25f2cff7e7797c56112}\label{classglib_1_1_sound_abf63e25ebc64c25f2cff7e7797c56112}} 
+static const float {\bfseries D7}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a0a39797d17498869b4dc9386581a435b}\label{classglib_1_1_sound_a0a39797d17498869b4dc9386581a435b}} 
+static const float {\bfseries D7\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a6dc8b275c42389f3b18e56c8aa5a4444}\label{classglib_1_1_sound_a6dc8b275c42389f3b18e56c8aa5a4444}} 
+static const float {\bfseries E7}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_afee1be5cf57db8e418fb5992b5a1cb73}\label{classglib_1_1_sound_afee1be5cf57db8e418fb5992b5a1cb73}} 
+static const float {\bfseries F7}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_aedcedce277dfac3fd7c39a8ba79c9eaf}\label{classglib_1_1_sound_aedcedce277dfac3fd7c39a8ba79c9eaf}} 
+static const float {\bfseries F7\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_acb1908c1ab793e2570c099b813e5840b}\label{classglib_1_1_sound_acb1908c1ab793e2570c099b813e5840b}} 
+static const float {\bfseries G7}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ac0b370e67f5ba67ba66770dc8224652c}\label{classglib_1_1_sound_ac0b370e67f5ba67ba66770dc8224652c}} 
+static const float {\bfseries G7\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a7330360250d2caffb76a8b0c22b2103d}\label{classglib_1_1_sound_a7330360250d2caffb76a8b0c22b2103d}} 
+static const float {\bfseries A7}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ab44d5a8b99080fce972014f62b1d2657}\label{classglib_1_1_sound_ab44d5a8b99080fce972014f62b1d2657}} 
+static const float {\bfseries A7\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ad306a22248c80dc486b32b2f40bd3a6a}\label{classglib_1_1_sound_ad306a22248c80dc486b32b2f40bd3a6a}} 
+static const float {\bfseries B7}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a0697f50da59de20e88510cf4baf7383f}\label{classglib_1_1_sound_a0697f50da59de20e88510cf4baf7383f}} 
+static const float {\bfseries C8}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ae27d20f95d046af7b171b793abc41125}\label{classglib_1_1_sound_ae27d20f95d046af7b171b793abc41125}} 
+static const float {\bfseries C8\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ad11ce9a3f364080bcc0fc0017279e841}\label{classglib_1_1_sound_ad11ce9a3f364080bcc0fc0017279e841}} 
+static const float {\bfseries D8}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a544ba49cb006ccc335bd4678e41ac3ac}\label{classglib_1_1_sound_a544ba49cb006ccc335bd4678e41ac3ac}} 
+static const float {\bfseries D8\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ac6b8a74726c54219ee3cd1c3350d320a}\label{classglib_1_1_sound_ac6b8a74726c54219ee3cd1c3350d320a}} 
+static const float {\bfseries E8}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_ae71f116d5d5d3dcd208bd0d25c8b3196}\label{classglib_1_1_sound_ae71f116d5d5d3dcd208bd0d25c8b3196}} 
+static const float {\bfseries F8}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a0ba146c0e0dc8410d97a9a39121c4d81}\label{classglib_1_1_sound_a0ba146c0e0dc8410d97a9a39121c4d81}} 
+static const float {\bfseries F8\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a056281f9ee1d13e7cdeb74d64d3b74c0}\label{classglib_1_1_sound_a056281f9ee1d13e7cdeb74d64d3b74c0}} 
+static const float {\bfseries G8}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a3c892a2c45f035800d2b0151142eccb5}\label{classglib_1_1_sound_a3c892a2c45f035800d2b0151142eccb5}} 
+static const float {\bfseries G8\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a08b4bb997065ca021edb1359af9ab3e0}\label{classglib_1_1_sound_a08b4bb997065ca021edb1359af9ab3e0}} 
+static const float {\bfseries A8}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a05dd9749b62c40cb169fda8f2c54956a}\label{classglib_1_1_sound_a05dd9749b62c40cb169fda8f2c54956a}} 
+static const float {\bfseries A8\+\_\+\+SHARP}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sound_a61efc21afa7f1ec141db09834cdc6fbb}\label{classglib_1_1_sound_a61efc21afa7f1ec141db09834cdc6fbb}} 
+static const float {\bfseries B8}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_sound_aaabfd17608303902c2f977608b7004ae}\label{classglib_1_1_sound_aaabfd17608303902c2f977608b7004ae}} 
+\index{glib::Sound@{glib::Sound}!Sound@{Sound}}
+\index{Sound@{Sound}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{Sound()}{Sound()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily glib\+::\+Sound\+::\+Sound (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_sound}{Sound}} object Contains the data for stereo sound. Can be a shallow copy or deep copy. 
+
+Assumes all data is stereo and uses 44100 samples per sec. \mbox{\Hypertarget{classglib_1_1_sound_a63402345e7cb95377dae43b3dcdd4905}\label{classglib_1_1_sound_a63402345e7cb95377dae43b3dcdd4905}} 
+\index{glib::Sound@{glib::Sound}!Sound@{Sound}}
+\index{Sound@{Sound}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{Sound()}{Sound()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily glib\+::\+Sound\+::\+Sound (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_sound}{Sound}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_sound}{Sound}} object from another \mbox{\hyperlink{classglib_1_1_sound}{Sound}} object Contains the data for stereo sound. Performs a shallow copy. Assumes all data is stereo and uses 44100 samples per sec. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_sound_a2ca8145bcdf907125129e7bfcfdbc348}\label{classglib_1_1_sound_a2ca8145bcdf907125129e7bfcfdbc348}} 
+\index{glib::Sound@{glib::Sound}!copy@{copy}}
+\index{copy@{copy}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{copy()}{copy()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_sound}{Sound}} glib\+::\+Sound\+::copy (\begin{DoxyParamCaption}\item[{bool}]{shallow\+Copy }\end{DoxyParamCaption})}
+
+
+
+Copies another sound object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em shallow\+Copy} & Whether this should be a shallow copy or deep copy. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_sound}{Sound}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_sound_ae4a206c92f1ae6ccf1603813f3bf7b03}\label{classglib_1_1_sound_ae4a206c92f1ae6ccf1603813f3bf7b03}} 
+\index{glib::Sound@{glib::Sound}!copyData@{copyData}}
+\index{copyData@{copyData}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{copyData()}{copyData()}}
+{\footnotesize\ttfamily void glib\+::\+Sound\+::copy\+Data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} $\ast$}]{data,  }\item[{unsigned int}]{size }\end{DoxyParamCaption})}
+
+
+
+Makes a copy of the raw sound data. Assumes all data is stereo and uses 44100 samples per sec. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & \\
+\hline
+{\em size} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sound_a115ea4127c7f80640414e4968cce3e7b}\label{classglib_1_1_sound_a115ea4127c7f80640414e4968cce3e7b}} 
+\index{glib::Sound@{glib::Sound}!get@{get}}
+\index{get@{get}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} glib\+::\+Sound\+::get (\begin{DoxyParamCaption}\item[{unsigned int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets the sound data at the specified index. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_sound_ac9a1135320aa07f478c0c3ea34f43d2d}\label{classglib_1_1_sound_ac9a1135320aa07f478c0c3ea34f43d2d}} 
+\index{glib::Sound@{glib::Sound}!getData@{getData}}
+\index{getData@{getData}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{getData()}{getData()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} $\ast$ glib\+::\+Sound\+::get\+Data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the raw sound data. 
+
+\begin{DoxyReturn}{Returns}
+Vec2f$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_sound_a0b8acd64064924c105d7f2b8848efa4b}\label{classglib_1_1_sound_a0b8acd64064924c105d7f2b8848efa4b}} 
+\index{glib::Sound@{glib::Sound}!getLength@{getLength}}
+\index{getLength@{getLength}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{getLength()}{getLength()}}
+{\footnotesize\ttfamily unsigned int glib\+::\+Sound\+::get\+Length (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the Length of the sound. Returns the amount of samples. 
+
+\begin{DoxyReturn}{Returns}
+unsigned int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_sound_aeaefe6c7dfbd3bc3fe64037cfe4d7ea7}\label{classglib_1_1_sound_aeaefe6c7dfbd3bc3fe64037cfe4d7ea7}} 
+\index{glib::Sound@{glib::Sound}!getLoop@{getLoop}}
+\index{getLoop@{getLoop}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{getLoop()}{getLoop()}}
+{\footnotesize\ttfamily bool glib\+::\+Sound\+::get\+Loop (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets if the sound should loop. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_sound_a78de7358e1a11d7a257e0a1c6ade3ef1}\label{classglib_1_1_sound_a78de7358e1a11d7a257e0a1c6ade3ef1}} 
+\index{glib::Sound@{glib::Sound}!getLoopEnd@{getLoopEnd}}
+\index{getLoopEnd@{getLoopEnd}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{getLoopEnd()}{getLoopEnd()}}
+{\footnotesize\ttfamily unsigned int glib\+::\+Sound\+::get\+Loop\+End (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the time for Loop End. 
+
+\begin{DoxyReturn}{Returns}
+unsigned int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_sound_ace3a4afb2235fa7242d0bcca29ab5b45}\label{classglib_1_1_sound_ace3a4afb2235fa7242d0bcca29ab5b45}} 
+\index{glib::Sound@{glib::Sound}!getLoopStart@{getLoopStart}}
+\index{getLoopStart@{getLoopStart}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{getLoopStart()}{getLoopStart()}}
+{\footnotesize\ttfamily unsigned int glib\+::\+Sound\+::get\+Loop\+Start (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the time for Loop Start. 
+
+\begin{DoxyReturn}{Returns}
+unsigned int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_sound_a24e751f42ec44083ee5bdb1281295289}\label{classglib_1_1_sound_a24e751f42ec44083ee5bdb1281295289}} 
+\index{glib::Sound@{glib::Sound}!getPlaying@{getPlaying}}
+\index{getPlaying@{getPlaying}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{getPlaying()}{getPlaying()}}
+{\footnotesize\ttfamily bool glib\+::\+Sound\+::get\+Playing (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns whether the is currently playing. Only plays if it has been added to \mbox{\hyperlink{classglib_1_1_audio_out}{Audio\+Out}} sound list. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_sound_a698eb7d750826561ac9fecd3ceff9996}\label{classglib_1_1_sound_a698eb7d750826561ac9fecd3ceff9996}} 
+\index{glib::Sound@{glib::Sound}!getPosition@{getPosition}}
+\index{getPosition@{getPosition}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{getPosition()}{getPosition()}}
+{\footnotesize\ttfamily unsigned int glib\+::\+Sound\+::get\+Position (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the time position in the audio. 
+
+\begin{DoxyReturn}{Returns}
+unsigned int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_sound_a23510555f8fdf792af03ad232aebf2b1}\label{classglib_1_1_sound_a23510555f8fdf792af03ad232aebf2b1}} 
+\index{glib::Sound@{glib::Sound}!getPriority@{getPriority}}
+\index{getPriority@{getPriority}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{getPriority()}{getPriority()}}
+{\footnotesize\ttfamily int glib\+::\+Sound\+::get\+Priority (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Priority of the sound. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_sound_aacd936ad36dc853279e37f049fa491e7}\label{classglib_1_1_sound_aacd936ad36dc853279e37f049fa491e7}} 
+\index{glib::Sound@{glib::Sound}!getVolume@{getVolume}}
+\index{getVolume@{getVolume}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{getVolume()}{getVolume()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} glib\+::\+Sound\+::get\+Volume (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Volume of the sound for both channels. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_sound_af602fedaa829e049ebcf5931027a12a7}\label{classglib_1_1_sound_af602fedaa829e049ebcf5931027a12a7}} 
+\index{glib::Sound@{glib::Sound}!loadSound@{loadSound}}
+\index{loadSound@{loadSound}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{loadSound()}{loadSound()}}
+{\footnotesize\ttfamily void glib\+::\+Sound\+::load\+Sound (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_file}{File}}}]{file }\end{DoxyParamCaption})}
+
+
+
+Loads a sound from a file. Valid file types are .wav Assumes all data is stereo and uses 44100 samples per sec. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sound_a2a2bd0a578e1eefb99a3f4d2155b9cfc}\label{classglib_1_1_sound_a2a2bd0a578e1eefb99a3f4d2155b9cfc}} 
+\index{glib::Sound@{glib::Sound}!operator=@{operator=}}
+\index{operator=@{operator=}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily void glib\+::\+Sound\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_sound}{Sound}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Copies a \mbox{\hyperlink{classglib_1_1_sound}{Sound}} object. Performs a shallow copy. Assumes all data is stereo and uses 44100 samples per sec. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sound_a748b6f3fda91841fe216cef9c968e960}\label{classglib_1_1_sound_a748b6f3fda91841fe216cef9c968e960}} 
+\index{glib::Sound@{glib::Sound}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \& glib\+::\+Sound\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{unsigned int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets the sound data at the specified index. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_sound_a72465c3b0811aff409c3f629ce52bc45}\label{classglib_1_1_sound_a72465c3b0811aff409c3f629ce52bc45}} 
+\index{glib::Sound@{glib::Sound}!saveWAV@{saveWAV}}
+\index{saveWAV@{saveWAV}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{saveWAV()}{saveWAV()}}
+{\footnotesize\ttfamily void glib\+::\+Sound\+::save\+WAV (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_file}{File}}}]{file }\end{DoxyParamCaption})}
+
+
+
+Saves a sound as a wav file. Assumes all data is stereo and uses 44100 samples per sec. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sound_a1abfd2986eda879c46d53c066e00e8f4}\label{classglib_1_1_sound_a1abfd2986eda879c46d53c066e00e8f4}} 
+\index{glib::Sound@{glib::Sound}!setData@{setData}}
+\index{setData@{setData}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{setData()}{setData()}}
+{\footnotesize\ttfamily void glib\+::\+Sound\+::set\+Data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} $\ast$}]{data,  }\item[{unsigned int}]{size,  }\item[{bool}]{is\+Shallow\+Copy = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+Set the raw sound data. Assumes all data is stereo and uses 44100 samples per sec. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & \\
+\hline
+{\em size} & \\
+\hline
+{\em is\+Shallow\+Copy} & Whether it will be a shallow copy of the data or take ownership of the data. Default is false \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sound_a7148c9f5481d91a13500f40ad0692f1d}\label{classglib_1_1_sound_a7148c9f5481d91a13500f40ad0692f1d}} 
+\index{glib::Sound@{glib::Sound}!setLoop@{setLoop}}
+\index{setLoop@{setLoop}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{setLoop()}{setLoop()}}
+{\footnotesize\ttfamily void glib\+::\+Sound\+::set\+Loop (\begin{DoxyParamCaption}\item[{bool}]{l }\end{DoxyParamCaption})}
+
+
+
+Sets if the sound should loop. Loops based on the loop start point and loop end point. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em l} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sound_a9bd98bd9e2381cad1dae1156f07c5254}\label{classglib_1_1_sound_a9bd98bd9e2381cad1dae1156f07c5254}} 
+\index{glib::Sound@{glib::Sound}!setLoopEnd@{setLoopEnd}}
+\index{setLoopEnd@{setLoopEnd}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{setLoopEnd()}{setLoopEnd()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Sound\+::set\+Loop\+End (\begin{DoxyParamCaption}\item[{double}]{time }\end{DoxyParamCaption})}
+
+
+
+Sets the time for Loop End Converts back to samples per second. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em time} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sound_a3003c7e24c8465122cb818c0dc81c509}\label{classglib_1_1_sound_a3003c7e24c8465122cb818c0dc81c509}} 
+\index{glib::Sound@{glib::Sound}!setLoopEnd@{setLoopEnd}}
+\index{setLoopEnd@{setLoopEnd}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{setLoopEnd()}{setLoopEnd()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Sound\+::set\+Loop\+End (\begin{DoxyParamCaption}\item[{unsigned int}]{index }\end{DoxyParamCaption})}
+
+
+
+Sets the time for Loop End. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sound_a15362daf18072c7a2bdcf4d965e3257e}\label{classglib_1_1_sound_a15362daf18072c7a2bdcf4d965e3257e}} 
+\index{glib::Sound@{glib::Sound}!setLoopStart@{setLoopStart}}
+\index{setLoopStart@{setLoopStart}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{setLoopStart()}{setLoopStart()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Sound\+::set\+Loop\+Start (\begin{DoxyParamCaption}\item[{double}]{time }\end{DoxyParamCaption})}
+
+
+
+Sets the time for Loop Start Converts back to samples per second. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em time} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sound_aca66d5d39a5606ddc7d0fad7567155a0}\label{classglib_1_1_sound_aca66d5d39a5606ddc7d0fad7567155a0}} 
+\index{glib::Sound@{glib::Sound}!setLoopStart@{setLoopStart}}
+\index{setLoopStart@{setLoopStart}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{setLoopStart()}{setLoopStart()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Sound\+::set\+Loop\+Start (\begin{DoxyParamCaption}\item[{unsigned int}]{index }\end{DoxyParamCaption})}
+
+
+
+Sets the time for Loop Start. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sound_a81a8bd5c2a76e1a97baeff76c44a92d9}\label{classglib_1_1_sound_a81a8bd5c2a76e1a97baeff76c44a92d9}} 
+\index{glib::Sound@{glib::Sound}!setPosition@{setPosition}}
+\index{setPosition@{setPosition}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{setPosition()}{setPosition()}}
+{\footnotesize\ttfamily void glib\+::\+Sound\+::set\+Position (\begin{DoxyParamCaption}\item[{unsigned int}]{index }\end{DoxyParamCaption})}
+
+
+
+Sets the time position in the audio. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sound_aff0545e182593fe2ed9fa79419215ea5}\label{classglib_1_1_sound_aff0545e182593fe2ed9fa79419215ea5}} 
+\index{glib::Sound@{glib::Sound}!setPriority@{setPriority}}
+\index{setPriority@{setPriority}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{setPriority()}{setPriority()}}
+{\footnotesize\ttfamily void glib\+::\+Sound\+::set\+Priority (\begin{DoxyParamCaption}\item[{int}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets the Priority of the sound. Higher Priority sounds are less likely to be cut when the amount of sounds allowed has been exceeded. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sound_aca4b81b11e8823b48c2c45e536d3fbac}\label{classglib_1_1_sound_aca4b81b11e8823b48c2c45e536d3fbac}} 
+\index{glib::Sound@{glib::Sound}!setVolume@{setVolume}}
+\index{setVolume@{setVolume}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{setVolume()}{setVolume()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Sound\+::set\+Volume (\begin{DoxyParamCaption}\item[{double}]{left,  }\item[{double}]{right }\end{DoxyParamCaption})}
+
+
+
+Sets the left and right channel volumes. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em left} & \\
+\hline
+{\em right} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sound_a571f9ec19be5ba0a49286c5ed3fa5641}\label{classglib_1_1_sound_a571f9ec19be5ba0a49286c5ed3fa5641}} 
+\index{glib::Sound@{glib::Sound}!setVolume@{setVolume}}
+\index{setVolume@{setVolume}!glib::Sound@{glib::Sound}}
+\doxysubsubsection{\texorpdfstring{setVolume()}{setVolume()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Sound\+::set\+Volume (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets the left and right channel volumes. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Sound.\+h\end{DoxyCompactItemize}

@@ -44,45 +44,7 @@ namespace glib
 		 * 		The type specifies whether to read or write to a file.
 		 * 		The type also specifies whether to use ASCII, UTF8, or UTF16
 		 * 
-		 * @param filename 
-		 * @param type 
-		 * 		Follows the format ACCESS_TYPE | CHAR_TYPE
-		 * 		Valid Access types are:
-		 * 			READ
-		 * 			WRITE
-		 * 			WRITE_APPEND
-		 * 		Valid Char types are:
-		 * 			ASCII
-		 * 			WIDECHAR
-		 * 			UTF8
-		 */
-		SimpleFile(std::wstring filename, char type);
-
-		/**
-		 * @brief Construct a new SimpleFile object
-		 * 		The type specifies whether to read or write to a file.
-		 * 		The type also specifies whether to use ASCII, UTF8, or UTF16
-		 * 
-		 * @param filename 
-		 * @param type 
-		 * 		Follows the format ACCESS_TYPE | CHAR_TYPE
-		 * 		Valid Access types are:
-		 * 			READ
-		 * 			WRITE
-		 * 			WRITE_APPEND
-		 * 		Valid Char types are:
-		 * 			ASCII
-		 * 			WIDECHAR
-		 * 			UTF8
-		 */
-		SimpleFile(std::string filename, char type);
-
-		/**
-		 * @brief Construct a new SimpleFile object
-		 * 		The type specifies whether to read or write to a file.
-		 * 		The type also specifies whether to use ASCII, UTF8, or UTF16
-		 * 
-		 * @param filename 
+		 * @param file 
 		 * @param type 
 		 * 		Follows the format ACCESS_TYPE | CHAR_TYPE
 		 * 		Valid Access types are:

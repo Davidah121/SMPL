@@ -1,0 +1,244 @@
+\hypertarget{classglib_1_1_sprite}{}\doxysection{glib\+::Sprite Class Reference}
+\label{classglib_1_1_sprite}\index{glib::Sprite@{glib::Sprite}}
+Inheritance diagram for glib\+::Sprite\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classglib_1_1_sprite}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sprite_a6a4b38b4c182e4e0a78b05d7f8c6f82d}\label{classglib_1_1_sprite_a6a4b38b4c182e4e0a78b05d7f8c6f82d}} 
+{\bfseries Sprite} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} object A sprite in this case is a collection of images. They can be used for animation and each image can have a unique delay time between the next image. Can be used as a wrapper for the \mbox{\hyperlink{classglib_1_1_image}{Image}} Loading functions. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_sprite_a19b52f7f77d1d0e7a26559538d988c6d}{Sprite}} (const \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} \&o)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} object from another \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sprite_a250875362b214d53fa65e9276160f994}{operator=}} (const \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} \&o)
+\begin{DoxyCompactList}\small\item\em Copies a \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} object. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_sprite_ac7b79dd08f256fd560ee8ebd87cb3bef}\label{classglib_1_1_sprite_ac7b79dd08f256fd560ee8ebd87cb3bef}} 
+{\bfseries $\sim$\+Sprite} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_sprite_a2f939b9d357908a23d1d18815dfe0424}{get\+Class}} ()
+\item 
+\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ \mbox{\hyperlink{classglib_1_1_sprite_aa2778779e8ba6fbb99758f34293652a4}{get\+Image}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets an image from the sprite at the specified index. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_sprite_a20d91c0c464a8176a45494f76ec11d5c}{get\+Delay\+Time}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets the Delay Time for the image. Specifies how long before showing the next image in microseconds. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_sprite_afa33b3f4567bad44e2d56439e75a6b45}{get\+Size}} ()
+\begin{DoxyCompactList}\small\item\em Gets the amount of images in the sprite. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sprite_a0d7422de9a1961e2032bb03638b286cc}{add\+Image}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$p, int micro\+Seconds\+Delay=0)
+\begin{DoxyCompactList}\small\item\em Adds a new image to the sprite with a delay value. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sprite_a86ebcc799940f84154b32c5f504cea48}{set\+Delay\+Time}} (int index, int micro\+Seconds\+Delay)
+\begin{DoxyCompactList}\small\item\em Set the Delay Time for an image in the sprite specified by the index. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sprite_a745fdb1d800f14b72fdb189df4428d41}{remove\+Image}} (int index)
+\begin{DoxyCompactList}\small\item\em Removes an image from the sprite. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sprite_a20fc19557fbabdb5952c685f14c0259e}{load\+Image}} (\mbox{\hyperlink{classglib_1_1_file}{File}} file)
+\begin{DoxyCompactList}\small\item\em Loads an image from a file. If the file contains multiple images, they will be loaded as well. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_sprite_a4d2d7825859d125e563ff2ff3e537388}\label{classglib_1_1_sprite_a4d2d7825859d125e563ff2ff3e537388}} 
+void {\bfseries dispose} ()
+\begin{DoxyCompactList}\small\item\em Deletes the images from the sprite. Any images added to the sprite, including those that were loaded, will all be considered invalid. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_sprite_a70fd0dc11b5bc81a11dc9abbb48a208e}{should\+Loop}} ()
+\begin{DoxyCompactList}\small\item\em Returns if the animation for the sprite should loop. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_sprite_acaaa05daadb1fb88f501ffa0af78b843}{set\+Should\+Loop}} (bool v)
+\begin{DoxyCompactList}\small\item\em Sets whether the sprite should loop. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_sprite_a2d35fb02b3bb4c5c8f092ec4fd8056c6}\label{classglib_1_1_sprite_a2d35fb02b3bb4c5c8f092ec4fd8056c6}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_sprite_a19b52f7f77d1d0e7a26559538d988c6d}\label{classglib_1_1_sprite_a19b52f7f77d1d0e7a26559538d988c6d}} 
+\index{glib::Sprite@{glib::Sprite}!Sprite@{Sprite}}
+\index{Sprite@{Sprite}!glib::Sprite@{glib::Sprite}}
+\doxysubsubsection{\texorpdfstring{Sprite()}{Sprite()}}
+{\footnotesize\ttfamily glib\+::\+Sprite\+::\+Sprite (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} \&}]{o }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} object from another \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em o} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_sprite_a0d7422de9a1961e2032bb03638b286cc}\label{classglib_1_1_sprite_a0d7422de9a1961e2032bb03638b286cc}} 
+\index{glib::Sprite@{glib::Sprite}!addImage@{addImage}}
+\index{addImage@{addImage}!glib::Sprite@{glib::Sprite}}
+\doxysubsubsection{\texorpdfstring{addImage()}{addImage()}}
+{\footnotesize\ttfamily void glib\+::\+Sprite\+::add\+Image (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{p,  }\item[{int}]{micro\+Seconds\+Delay = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Adds a new image to the sprite with a delay value. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+{\em micro\+Seconds\+Delay} & Default value is 0 \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sprite_a2f939b9d357908a23d1d18815dfe0424}\label{classglib_1_1_sprite_a2f939b9d357908a23d1d18815dfe0424}} 
+\index{glib::Sprite@{glib::Sprite}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::Sprite@{glib::Sprite}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Sprite\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
+
+\mbox{\Hypertarget{classglib_1_1_sprite_a20d91c0c464a8176a45494f76ec11d5c}\label{classglib_1_1_sprite_a20d91c0c464a8176a45494f76ec11d5c}} 
+\index{glib::Sprite@{glib::Sprite}!getDelayTime@{getDelayTime}}
+\index{getDelayTime@{getDelayTime}!glib::Sprite@{glib::Sprite}}
+\doxysubsubsection{\texorpdfstring{getDelayTime()}{getDelayTime()}}
+{\footnotesize\ttfamily int glib\+::\+Sprite\+::get\+Delay\+Time (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets the Delay Time for the image. Specifies how long before showing the next image in microseconds. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_sprite_aa2778779e8ba6fbb99758f34293652a4}\label{classglib_1_1_sprite_aa2778779e8ba6fbb99758f34293652a4}} 
+\index{glib::Sprite@{glib::Sprite}!getImage@{getImage}}
+\index{getImage@{getImage}!glib::Sprite@{glib::Sprite}}
+\doxysubsubsection{\texorpdfstring{getImage()}{getImage()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ glib\+::\+Sprite\+::get\+Image (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets an image from the sprite at the specified index. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Image$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_sprite_afa33b3f4567bad44e2d56439e75a6b45}\label{classglib_1_1_sprite_afa33b3f4567bad44e2d56439e75a6b45}} 
+\index{glib::Sprite@{glib::Sprite}!getSize@{getSize}}
+\index{getSize@{getSize}!glib::Sprite@{glib::Sprite}}
+\doxysubsubsection{\texorpdfstring{getSize()}{getSize()}}
+{\footnotesize\ttfamily int glib\+::\+Sprite\+::get\+Size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the amount of images in the sprite. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_sprite_a20fc19557fbabdb5952c685f14c0259e}\label{classglib_1_1_sprite_a20fc19557fbabdb5952c685f14c0259e}} 
+\index{glib::Sprite@{glib::Sprite}!loadImage@{loadImage}}
+\index{loadImage@{loadImage}!glib::Sprite@{glib::Sprite}}
+\doxysubsubsection{\texorpdfstring{loadImage()}{loadImage()}}
+{\footnotesize\ttfamily void glib\+::\+Sprite\+::load\+Image (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_file}{File}}}]{file }\end{DoxyParamCaption})}
+
+
+
+Loads an image from a file. If the file contains multiple images, they will be loaded as well. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sprite_a250875362b214d53fa65e9276160f994}\label{classglib_1_1_sprite_a250875362b214d53fa65e9276160f994}} 
+\index{glib::Sprite@{glib::Sprite}!operator=@{operator=}}
+\index{operator=@{operator=}!glib::Sprite@{glib::Sprite}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily void glib\+::\+Sprite\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} \&}]{o }\end{DoxyParamCaption})}
+
+
+
+Copies a \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em o} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sprite_a745fdb1d800f14b72fdb189df4428d41}\label{classglib_1_1_sprite_a745fdb1d800f14b72fdb189df4428d41}} 
+\index{glib::Sprite@{glib::Sprite}!removeImage@{removeImage}}
+\index{removeImage@{removeImage}!glib::Sprite@{glib::Sprite}}
+\doxysubsubsection{\texorpdfstring{removeImage()}{removeImage()}}
+{\footnotesize\ttfamily void glib\+::\+Sprite\+::remove\+Image (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Removes an image from the sprite. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sprite_a86ebcc799940f84154b32c5f504cea48}\label{classglib_1_1_sprite_a86ebcc799940f84154b32c5f504cea48}} 
+\index{glib::Sprite@{glib::Sprite}!setDelayTime@{setDelayTime}}
+\index{setDelayTime@{setDelayTime}!glib::Sprite@{glib::Sprite}}
+\doxysubsubsection{\texorpdfstring{setDelayTime()}{setDelayTime()}}
+{\footnotesize\ttfamily void glib\+::\+Sprite\+::set\+Delay\+Time (\begin{DoxyParamCaption}\item[{int}]{index,  }\item[{int}]{micro\+Seconds\+Delay }\end{DoxyParamCaption})}
+
+
+
+Set the Delay Time for an image in the sprite specified by the index. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+{\em micro\+Seconds\+Delay} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sprite_acaaa05daadb1fb88f501ffa0af78b843}\label{classglib_1_1_sprite_acaaa05daadb1fb88f501ffa0af78b843}} 
+\index{glib::Sprite@{glib::Sprite}!setShouldLoop@{setShouldLoop}}
+\index{setShouldLoop@{setShouldLoop}!glib::Sprite@{glib::Sprite}}
+\doxysubsubsection{\texorpdfstring{setShouldLoop()}{setShouldLoop()}}
+{\footnotesize\ttfamily void glib\+::\+Sprite\+::set\+Should\+Loop (\begin{DoxyParamCaption}\item[{bool}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets whether the sprite should loop. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sprite_a70fd0dc11b5bc81a11dc9abbb48a208e}\label{classglib_1_1_sprite_a70fd0dc11b5bc81a11dc9abbb48a208e}} 
+\index{glib::Sprite@{glib::Sprite}!shouldLoop@{shouldLoop}}
+\index{shouldLoop@{shouldLoop}!glib::Sprite@{glib::Sprite}}
+\doxysubsubsection{\texorpdfstring{shouldLoop()}{shouldLoop()}}
+{\footnotesize\ttfamily bool glib\+::\+Sprite\+::should\+Loop (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns if the animation for the sprite should loop. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Sprite.\+h\end{DoxyCompactItemize}

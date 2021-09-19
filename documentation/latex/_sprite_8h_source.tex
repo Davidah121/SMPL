@@ -1,0 +1,55 @@
+\hypertarget{_sprite_8h_source}{}\doxysection{Sprite.\+h}
+\label{_sprite_8h_source}\index{include/Sprite.h@{include/Sprite.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include"{}Image.h"{}}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}Object.h"{}}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{6 \{}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
+\DoxyCodeLine{9     \{}
+\DoxyCodeLine{10     \textcolor{keyword}{public}:}
+\DoxyCodeLine{17         \mbox{\hyperlink{classglib_1_1_sprite_a6a4b38b4c182e4e0a78b05d7f8c6f82d}{Sprite}}();}
+\DoxyCodeLine{18 }
+\DoxyCodeLine{24         \mbox{\hyperlink{classglib_1_1_sprite_a19b52f7f77d1d0e7a26559538d988c6d}{Sprite}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}}\& o);}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{31         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sprite_a250875362b214d53fa65e9276160f994}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}}\& o);}
+\DoxyCodeLine{32 }
+\DoxyCodeLine{37         \mbox{\hyperlink{classglib_1_1_sprite_ac7b79dd08f256fd560ee8ebd87cb3bef}{\string~Sprite}}();}
+\DoxyCodeLine{38 }
+\DoxyCodeLine{39         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{40         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{41         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{42 }
+\DoxyCodeLine{49         \mbox{\hyperlink{classglib_1_1_image}{Image}}* \mbox{\hyperlink{classglib_1_1_sprite_aa2778779e8ba6fbb99758f34293652a4}{getImage}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{50 }
+\DoxyCodeLine{58         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_sprite_a20d91c0c464a8176a45494f76ec11d5c}{getDelayTime}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{59 }
+\DoxyCodeLine{65         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_sprite_afa33b3f4567bad44e2d56439e75a6b45}{getSize}}();}
+\DoxyCodeLine{66 }
+\DoxyCodeLine{74         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sprite_a0d7422de9a1961e2032bb03638b286cc}{addImage}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* p, \textcolor{keywordtype}{int} microSecondsDelay = 0);}
+\DoxyCodeLine{75 }
+\DoxyCodeLine{82         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sprite_a86ebcc799940f84154b32c5f504cea48}{setDelayTime}}(\textcolor{keywordtype}{int} index, \textcolor{keywordtype}{int} microSecondsDelay);}
+\DoxyCodeLine{83 }
+\DoxyCodeLine{89         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sprite_a745fdb1d800f14b72fdb189df4428d41}{removeImage}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{90         }
+\DoxyCodeLine{96         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sprite_a20fc19557fbabdb5952c685f14c0259e}{loadImage}}(\mbox{\hyperlink{classglib_1_1_file}{File}} file);}
+\DoxyCodeLine{97 }
+\DoxyCodeLine{103         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sprite_a4d2d7825859d125e563ff2ff3e537388}{dispose}}();}
+\DoxyCodeLine{104 }
+\DoxyCodeLine{111         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_sprite_a70fd0dc11b5bc81a11dc9abbb48a208e}{shouldLoop}}();}
+\DoxyCodeLine{112 }
+\DoxyCodeLine{118         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sprite_acaaa05daadb1fb88f501ffa0af78b843}{setShouldLoop}}(\textcolor{keywordtype}{bool} v);}
+\DoxyCodeLine{119 }
+\DoxyCodeLine{120     \textcolor{keyword}{private}:}
+\DoxyCodeLine{121         \textcolor{keywordtype}{bool} loops = \textcolor{keyword}{true};}
+\DoxyCodeLine{122         std::vector<Image*> images = std::vector<Image*>();}
+\DoxyCodeLine{123         std::vector<int> delayTimeForFrame = std::vector<int>();}
+\DoxyCodeLine{124     \};}
+\DoxyCodeLine{125 }
+\DoxyCodeLine{126 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

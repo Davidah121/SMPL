@@ -1,0 +1,514 @@
+\hypertarget{_simple_hash_map_8h_source}{}\doxysection{Simple\+Hash\+Map.\+h}
+\label{_simple_hash_map_8h_source}\index{include/SimpleHashMap.h@{include/SimpleHashMap.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 }
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include <functional>}}
+\DoxyCodeLine{5 }
+\DoxyCodeLine{6 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{7 \{}
+\DoxyCodeLine{8 }
+\DoxyCodeLine{9     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{10     \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_hash_pair}{HashPair}}}
+\DoxyCodeLine{11     \{}
+\DoxyCodeLine{12         K key;}
+\DoxyCodeLine{13         T data;}
+\DoxyCodeLine{14     \};}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{17     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_simple_hash_map}{SimpleHashMap}}}
+\DoxyCodeLine{18     \{}
+\DoxyCodeLine{19     \textcolor{keyword}{public}:}
+\DoxyCodeLine{43         \mbox{\hyperlink{classglib_1_1_simple_hash_map_ab0b7f8dde951f2d567c7ee8dd8e3ea8b}{SimpleHashMap}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} mode = MODE\_KEEP\_ALL, \textcolor{keywordtype}{int} initBuckets = 20, \textcolor{keywordtype}{int} maxSizeOfBuckets = 20);}
+\DoxyCodeLine{44 }
+\DoxyCodeLine{50         \mbox{\hyperlink{classglib_1_1_simple_hash_map_ab0b7f8dde951f2d567c7ee8dd8e3ea8b}{SimpleHashMap}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_simple_hash_map}{SimpleHashMap<K, T>}}\& other);}
+\DoxyCodeLine{51 }
+\DoxyCodeLine{57         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_a8cd306ab4460f624b9cf7948982b0232}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_simple_hash_map}{SimpleHashMap<K, T>}}\& other);}
+\DoxyCodeLine{58 }
+\DoxyCodeLine{63         \mbox{\hyperlink{classglib_1_1_simple_hash_map_a2d68fe52a24b602912ceafe8d7f237a9}{\string~SimpleHashMap}}();}
+\DoxyCodeLine{64 }
+\DoxyCodeLine{65         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} MODE\_UNIQUE\_KEY = 0;}
+\DoxyCodeLine{66         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} MODE\_REMOVE\_LAST\_FROM\_BUCKET = 1;}
+\DoxyCodeLine{67         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} MODE\_KEEP\_ALL = 2;}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{73         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_acb11889ced76f351d1583b3cafb0af1b}{clear}}();}
+\DoxyCodeLine{74 }
+\DoxyCodeLine{81         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_a76e6d28fdcb0752229db9e3dc68ab932}{add}}(K key, T value);}
+\DoxyCodeLine{82 }
+\DoxyCodeLine{88         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_acbb675cacc8007edd5510a19a564887c}{removeFirst}}(K key);}
+\DoxyCodeLine{89 }
+\DoxyCodeLine{95         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_a78283261033834ca46405a38497c2dfa}{removeLast}}(K key);}
+\DoxyCodeLine{96 }
+\DoxyCodeLine{102         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_a670b1e618313b3b39c2e3b52e5721e99}{removeAll}}(K key);}
+\DoxyCodeLine{103 }
+\DoxyCodeLine{110         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_aec02b54cd0f7dfe46ed08113b04a6d21}{remove}}(\mbox{\hyperlink{structglib_1_1_hash_pair}{HashPair<K, T>}}* rm);}
+\DoxyCodeLine{111 }
+\DoxyCodeLine{118         \mbox{\hyperlink{structglib_1_1_hash_pair}{HashPair<K, T>}}* \mbox{\hyperlink{classglib_1_1_simple_hash_map_a0a650c6bc82473caa76f4c1bfbeb8a6d}{get}}(K key);}
+\DoxyCodeLine{119 }
+\DoxyCodeLine{126         std::vector<HashPair<K, T>*> \mbox{\hyperlink{classglib_1_1_simple_hash_map_a608b33e5857f89aa5c0b6ac0d2f88026}{getAll}}(K key);}
+\DoxyCodeLine{127 }
+\DoxyCodeLine{133         \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_simple_hash_map_ab7fe7fe28844272af2ba8853e62cd951}{size}}();}
+\DoxyCodeLine{134 }
+\DoxyCodeLine{140         \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_simple_hash_map_a26d2845f1a6ef240897335298177816e}{totalSize}}();}
+\DoxyCodeLine{141 }
+\DoxyCodeLine{147         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_aaa2976b083edf4a8e1037f57c931b32d}{rehash}}();}
+\DoxyCodeLine{148 }
+\DoxyCodeLine{154         std::vector< HashPair<K, T>* > \mbox{\hyperlink{classglib_1_1_simple_hash_map_aa9257ccaef2d52c34d65636bc60ff251}{getData}}();}
+\DoxyCodeLine{155 }
+\DoxyCodeLine{156 }
+\DoxyCodeLine{169         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_a4e923bcb6dd59707c1ba4f2ee52d6912}{setMode}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} v);}
+\DoxyCodeLine{170 }
+\DoxyCodeLine{177         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_a40ad52feea170fd6242c0fd6732d1c6b}{setMaxOfSameKey}}(\textcolor{keywordtype}{int} v);}
+\DoxyCodeLine{178 }
+\DoxyCodeLine{179     \textcolor{keyword}{private}:}
+\DoxyCodeLine{180         std::hash<K> hashFunction;}
+\DoxyCodeLine{181 }
+\DoxyCodeLine{182         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} type = MODE\_KEEP\_ALL;}
+\DoxyCodeLine{183         \textcolor{keywordtype}{int} maxBucketSize = 20;}
+\DoxyCodeLine{184         \textcolor{keywordtype}{int} maxOfSameKey = 10;}
+\DoxyCodeLine{185         \textcolor{keywordtype}{size\_t} count = 0;}
+\DoxyCodeLine{186         }
+\DoxyCodeLine{187         }
+\DoxyCodeLine{188         std::vector< int > sizeOfBucket;}
+\DoxyCodeLine{189         std::vector< HashPair<K, T>* > data;}
+\DoxyCodeLine{190     \};}
+\DoxyCodeLine{191 }
+\DoxyCodeLine{192     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{193     \textcolor{keyword}{inline} \mbox{\hyperlink{classglib_1_1_simple_hash_map_ab0b7f8dde951f2d567c7ee8dd8e3ea8b}{SimpleHashMap<K, T>::SimpleHashMap}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} mode, \textcolor{keywordtype}{int} initBuckets, \textcolor{keywordtype}{int} maxSizeOfBuckets)}
+\DoxyCodeLine{194     \{}
+\DoxyCodeLine{195         type = mode;}
+\DoxyCodeLine{196         maxBucketSize = maxSizeOfBuckets;}
+\DoxyCodeLine{197         sizeOfBucket = std::vector<int>(initBuckets);}
+\DoxyCodeLine{198         data = std::vector< HashPair<K, T>* >(initBuckets*maxBucketSize);}
+\DoxyCodeLine{199     \}}
+\DoxyCodeLine{200 }
+\DoxyCodeLine{201     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{202     \textcolor{keyword}{inline} \mbox{\hyperlink{classglib_1_1_simple_hash_map_ab0b7f8dde951f2d567c7ee8dd8e3ea8b}{SimpleHashMap<K, T>::SimpleHashMap}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_simple_hash_map}{SimpleHashMap<K, T>}}\& other)}
+\DoxyCodeLine{203     \{}
+\DoxyCodeLine{204         type = other.type;}
+\DoxyCodeLine{205         maxBucketSize = other.maxBucketSize;}
+\DoxyCodeLine{206         maxOfSameKey = other.maxOfSameKey;}
+\DoxyCodeLine{207         count = other.count;}
+\DoxyCodeLine{208 }
+\DoxyCodeLine{209         sizeOfBucket = other.sizeOfBucket;}
+\DoxyCodeLine{210         data = std::vector< HashPair<K, T>* >(other.data.size());}
+\DoxyCodeLine{211 }
+\DoxyCodeLine{212         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<sizeOfBucket.size(); i++)}
+\DoxyCodeLine{213         \{}
+\DoxyCodeLine{214             \textcolor{keywordtype}{int} bucketLocation = i*maxBucketSize;}
+\DoxyCodeLine{215             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} k=0; k<sizeOfBucket[i]; k++)}
+\DoxyCodeLine{216             \{}
+\DoxyCodeLine{217                 \textcolor{keywordflow}{if}(other.data[bucketLocation + k] != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{218                 \{}
+\DoxyCodeLine{219                     data[bucketLocation + k] = \textcolor{keyword}{new} \mbox{\hyperlink{structglib_1_1_hash_pair}{HashPair<K, T>}}();}
+\DoxyCodeLine{220                     data[bucketLocation + k]-\/>key = other.data[bucketLocation + k]-\/>key;}
+\DoxyCodeLine{221                     data[bucketLocation + k]-\/>data = other.data[bucketLocation + k]-\/>data;}
+\DoxyCodeLine{222                 \}}
+\DoxyCodeLine{223             \}}
+\DoxyCodeLine{224         \}}
+\DoxyCodeLine{225     \}}
+\DoxyCodeLine{226 }
+\DoxyCodeLine{227     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{228     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_a8cd306ab4460f624b9cf7948982b0232}{SimpleHashMap<K, T>::operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_simple_hash_map}{SimpleHashMap<K, T>}}\& other)}
+\DoxyCodeLine{229     \{}
+\DoxyCodeLine{230         type = other.type;}
+\DoxyCodeLine{231         maxBucketSize = other.maxBucketSize;}
+\DoxyCodeLine{232         maxOfSameKey = other.maxOfSameKey;}
+\DoxyCodeLine{233         count = other.count;}
+\DoxyCodeLine{234 }
+\DoxyCodeLine{235         sizeOfBucket = other.sizeOfBucket;}
+\DoxyCodeLine{236         data = std::vector< HashPair<K, T>* >(other.data.size());}
+\DoxyCodeLine{237 }
+\DoxyCodeLine{238         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<sizeOfBucket.size(); i++)}
+\DoxyCodeLine{239         \{}
+\DoxyCodeLine{240             \textcolor{keywordtype}{int} bucketLocation = i*maxBucketSize;}
+\DoxyCodeLine{241             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} k=0; k<sizeOfBucket[i]; k++)}
+\DoxyCodeLine{242             \{}
+\DoxyCodeLine{243                 \textcolor{keywordflow}{if}(other.data[bucketLocation + k] != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{244                 \{}
+\DoxyCodeLine{245                     data[bucketLocation + k] = \textcolor{keyword}{new} \mbox{\hyperlink{structglib_1_1_hash_pair}{HashPair<K, T>}}();}
+\DoxyCodeLine{246                     data[bucketLocation + k]-\/>key = other.data[bucketLocation + k]-\/>key;}
+\DoxyCodeLine{247                     data[bucketLocation + k]-\/>data = other.data[bucketLocation + k]-\/>data;}
+\DoxyCodeLine{248                 \}}
+\DoxyCodeLine{249             \}}
+\DoxyCodeLine{250         \}}
+\DoxyCodeLine{251     \}}
+\DoxyCodeLine{252 }
+\DoxyCodeLine{253     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{254     \textcolor{keyword}{inline} \mbox{\hyperlink{classglib_1_1_simple_hash_map_a2d68fe52a24b602912ceafe8d7f237a9}{SimpleHashMap<K, T>::\string~SimpleHashMap}}()}
+\DoxyCodeLine{255     \{}
+\DoxyCodeLine{256         clear();}
+\DoxyCodeLine{257     \}}
+\DoxyCodeLine{258 }
+\DoxyCodeLine{259     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{260     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_acb11889ced76f351d1583b3cafb0af1b}{SimpleHashMap<K, T>::clear}}()}
+\DoxyCodeLine{261     \{}
+\DoxyCodeLine{262         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<sizeOfBucket.size(); i++)}
+\DoxyCodeLine{263         \{}
+\DoxyCodeLine{264             \textcolor{keywordtype}{int} bucketLocation = i*maxBucketSize;}
+\DoxyCodeLine{265             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} k=0; k<sizeOfBucket[i]; k++)}
+\DoxyCodeLine{266             \{}
+\DoxyCodeLine{267                 \textcolor{keywordflow}{if}(data[bucketLocation+k]!=\textcolor{keyword}{nullptr})}
+\DoxyCodeLine{268                     \textcolor{keyword}{delete} data[bucketLocation+k];}
+\DoxyCodeLine{269                 }
+\DoxyCodeLine{270                 data[bucketLocation+k] = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{271             \}}
+\DoxyCodeLine{272         \}}
+\DoxyCodeLine{273 }
+\DoxyCodeLine{274         sizeOfBucket.clear();}
+\DoxyCodeLine{275         data.clear();}
+\DoxyCodeLine{276         maxBucketSize = 20;}
+\DoxyCodeLine{277     \}}
+\DoxyCodeLine{278 }
+\DoxyCodeLine{279     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{280     \textcolor{keyword}{inline} \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_simple_hash_map_ab7fe7fe28844272af2ba8853e62cd951}{SimpleHashMap<K, T>::size}}()}
+\DoxyCodeLine{281     \{}
+\DoxyCodeLine{282         \textcolor{keywordflow}{return} count;}
+\DoxyCodeLine{283     \}}
+\DoxyCodeLine{284 }
+\DoxyCodeLine{285     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{286     \textcolor{keyword}{inline} \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_simple_hash_map_a26d2845f1a6ef240897335298177816e}{SimpleHashMap<K, T>::totalSize}}()}
+\DoxyCodeLine{287     \{}
+\DoxyCodeLine{288         \textcolor{keywordflow}{return} data.capacity();}
+\DoxyCodeLine{289     \}}
+\DoxyCodeLine{290 }
+\DoxyCodeLine{291     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{292     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_a4e923bcb6dd59707c1ba4f2ee52d6912}{SimpleHashMap<K, T>::setMode}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} c)}
+\DoxyCodeLine{293     \{}
+\DoxyCodeLine{294         \textcolor{keywordflow}{if}(c >= 0 \&\& c <= 2)}
+\DoxyCodeLine{295         \{}
+\DoxyCodeLine{296             mode = c;}
+\DoxyCodeLine{297         \}}
+\DoxyCodeLine{298         \textcolor{keywordflow}{else}}
+\DoxyCodeLine{299         \{}
+\DoxyCodeLine{300             mode = MODE\_KEEP\_ALL;}
+\DoxyCodeLine{301         \}}
+\DoxyCodeLine{302     \}}
+\DoxyCodeLine{303 }
+\DoxyCodeLine{304     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{305     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_a40ad52feea170fd6242c0fd6732d1c6b}{SimpleHashMap<K, T>::setMaxOfSameKey}}(\textcolor{keywordtype}{int} v)}
+\DoxyCodeLine{306     \{}
+\DoxyCodeLine{307         \textcolor{keywordflow}{if}(v>0)}
+\DoxyCodeLine{308             maxOfSameKey = v;}
+\DoxyCodeLine{309         \textcolor{keywordflow}{else}}
+\DoxyCodeLine{310             maxOfSameKey = 1;}
+\DoxyCodeLine{311     \}}
+\DoxyCodeLine{312 }
+\DoxyCodeLine{313     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{314     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_a76e6d28fdcb0752229db9e3dc68ab932}{SimpleHashMap<K, T>::add}}(K key, T value)}
+\DoxyCodeLine{315     \{}
+\DoxyCodeLine{316         \textcolor{keywordtype}{size\_t} location = hashFunction(key);}
+\DoxyCodeLine{317         count++;}
+\DoxyCodeLine{318 }
+\DoxyCodeLine{319         \textcolor{keywordflow}{if}(sizeOfBucket.size() <= 0)}
+\DoxyCodeLine{320         \{}
+\DoxyCodeLine{321             \textcolor{comment}{//init buckets to a size of atleast ceil(count * 1.75)}}
+\DoxyCodeLine{322             \textcolor{keywordtype}{size\_t} nSize = (size\_t)\mbox{\hyperlink{classglib_1_1_math_ext_af279a4153b652f056e5f53645d02ea38}{MathExt::ceil}}((\textcolor{keywordtype}{double})count * 1.75);}
+\DoxyCodeLine{323             sizeOfBucket = std::vector<int>(nSize);}
+\DoxyCodeLine{324             data = std::vector<HashPair<K,T>*>(nSize*maxBucketSize);}
+\DoxyCodeLine{325         \}}
+\DoxyCodeLine{326 }
+\DoxyCodeLine{327         \textcolor{keywordtype}{size\_t} actualLocation = location \% sizeOfBucket.size();}
+\DoxyCodeLine{328         \textcolor{keywordtype}{size\_t} finalLocation = (actualLocation*maxBucketSize) + sizeOfBucket[actualLocation];}
+\DoxyCodeLine{329 }
+\DoxyCodeLine{330         \textcolor{keywordflow}{if}(type == MODE\_REMOVE\_LAST\_FROM\_BUCKET)}
+\DoxyCodeLine{331         \{}
+\DoxyCodeLine{332             \textcolor{keywordflow}{if}(sizeOfBucket[actualLocation] == maxBucketSize -\/ 1)}
+\DoxyCodeLine{333             \{}
+\DoxyCodeLine{334                 \textcolor{keywordtype}{bool} found = \textcolor{keyword}{false};}
+\DoxyCodeLine{335                 std::vector<HashPair<K,T>*> tempBucket = std::vector<HashPair<K,T>*>();}
+\DoxyCodeLine{336                 \textcolor{keywordtype}{int} k = 0;}
+\DoxyCodeLine{337                 \textcolor{keywordtype}{int} amountFound = 0;}
+\DoxyCodeLine{338 }
+\DoxyCodeLine{339                 \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<sizeOfBucket[actualLocation]; i++)}
+\DoxyCodeLine{340                 \{}
+\DoxyCodeLine{341                     \textcolor{keywordflow}{if}(data[actualLocation*maxBucketSize + i]-\/>key == key)}
+\DoxyCodeLine{342                     \{}
+\DoxyCodeLine{343                         amountFound++;}
+\DoxyCodeLine{344                     \}}
+\DoxyCodeLine{345                 \}}
+\DoxyCodeLine{346 }
+\DoxyCodeLine{347                 \textcolor{keywordflow}{if}(amountFound>=maxOfSameKey)}
+\DoxyCodeLine{348                 \{}
+\DoxyCodeLine{349                     \textcolor{keywordtype}{int} deletions = amountFound -\/ maxOfSameKey;}
+\DoxyCodeLine{350                     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<deletions; i++)}
+\DoxyCodeLine{351                     \{}
+\DoxyCodeLine{352                         removeFirst(key);}
+\DoxyCodeLine{353                     \}}
+\DoxyCodeLine{354                 \}}
+\DoxyCodeLine{355                 }
+\DoxyCodeLine{356                 k = sizeOfBucket[actualLocation];}
+\DoxyCodeLine{357 }
+\DoxyCodeLine{358                 data[actualLocation*maxBucketSize + k] = \textcolor{keyword}{new} \mbox{\hyperlink{structglib_1_1_hash_pair}{HashPair<K, T>}}();}
+\DoxyCodeLine{359                 data[actualLocation*maxBucketSize + k]-\/>key = key;}
+\DoxyCodeLine{360                 data[actualLocation*maxBucketSize + k]-\/>data = value;}
+\DoxyCodeLine{361                 }
+\DoxyCodeLine{362                 sizeOfBucket[actualLocation]++;}
+\DoxyCodeLine{363             \}}
+\DoxyCodeLine{364             \textcolor{keywordflow}{else}}
+\DoxyCodeLine{365             \{}
+\DoxyCodeLine{366                 data[finalLocation] = \textcolor{keyword}{new} \mbox{\hyperlink{structglib_1_1_hash_pair}{HashPair<K, T>}}();}
+\DoxyCodeLine{367                 data[finalLocation]-\/>key = key;}
+\DoxyCodeLine{368                 data[finalLocation]-\/>data = value;}
+\DoxyCodeLine{369 }
+\DoxyCodeLine{370                 sizeOfBucket[actualLocation]++;}
+\DoxyCodeLine{371             \}}
+\DoxyCodeLine{372         \}}
+\DoxyCodeLine{373         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(type == MODE\_UNIQUE\_KEY)}
+\DoxyCodeLine{374         \{}
+\DoxyCodeLine{375             \textcolor{keywordtype}{bool} found = \textcolor{keyword}{false};}
+\DoxyCodeLine{376             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<sizeOfBucket[actualLocation]; i++)}
+\DoxyCodeLine{377             \{}
+\DoxyCodeLine{378                 \textcolor{keywordflow}{if}(data[actualLocation*maxBucketSize + i]-\/>key == key)}
+\DoxyCodeLine{379                 \{}
+\DoxyCodeLine{380                     \textcolor{comment}{//replace}}
+\DoxyCodeLine{381                     data[actualLocation*maxBucketSize + i]-\/>key = key;}
+\DoxyCodeLine{382                     data[actualLocation*maxBucketSize + i]-\/>data = value;}
+\DoxyCodeLine{383                     \textcolor{keywordflow}{break};}
+\DoxyCodeLine{384                 \}}
+\DoxyCodeLine{385             \}}
+\DoxyCodeLine{386 }
+\DoxyCodeLine{387             \textcolor{keywordflow}{if}(found==\textcolor{keyword}{false})}
+\DoxyCodeLine{388             \{}
+\DoxyCodeLine{389                 data[finalLocation] = \textcolor{keyword}{new} \mbox{\hyperlink{structglib_1_1_hash_pair}{HashPair<K, T>}}();}
+\DoxyCodeLine{390                 data[finalLocation]-\/>key = key;}
+\DoxyCodeLine{391                 data[finalLocation]-\/>data = value;}
+\DoxyCodeLine{392                 sizeOfBucket[actualLocation]++;}
+\DoxyCodeLine{393             \}}
+\DoxyCodeLine{394             }
+\DoxyCodeLine{395         \}}
+\DoxyCodeLine{396         \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(type == MODE\_KEEP\_ALL)}
+\DoxyCodeLine{397         \{}
+\DoxyCodeLine{398             data[finalLocation] = \textcolor{keyword}{new} \mbox{\hyperlink{structglib_1_1_hash_pair}{HashPair<K, T>}}();}
+\DoxyCodeLine{399             data[finalLocation]-\/>key = key;}
+\DoxyCodeLine{400             data[finalLocation]-\/>data = value;}
+\DoxyCodeLine{401             sizeOfBucket[actualLocation]++;}
+\DoxyCodeLine{402         \}}
+\DoxyCodeLine{403 }
+\DoxyCodeLine{404         \textcolor{keywordflow}{if}(sizeOfBucket[actualLocation] >= maxBucketSize)}
+\DoxyCodeLine{405         \{}
+\DoxyCodeLine{406             rehash();}
+\DoxyCodeLine{407         \}}
+\DoxyCodeLine{408     \}}
+\DoxyCodeLine{409 }
+\DoxyCodeLine{410     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{411     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_aaa2976b083edf4a8e1037f57c931b32d}{SimpleHashMap<K, T>::rehash}}()}
+\DoxyCodeLine{412     \{}
+\DoxyCodeLine{413         \textcolor{keywordtype}{size\_t} nBucketsSize = (size\_t)\mbox{\hyperlink{classglib_1_1_math_ext_af279a4153b652f056e5f53645d02ea38}{MathExt::ceil}}((\textcolor{keywordtype}{double})count * 1.5);}
+\DoxyCodeLine{414         \textcolor{keywordtype}{size\_t} nMaxBucketsSize = (size\_t)\mbox{\hyperlink{classglib_1_1_math_ext_af279a4153b652f056e5f53645d02ea38}{MathExt::ceil}}( (\textcolor{keywordtype}{double})maxBucketSize * 1.25 );}
+\DoxyCodeLine{415 }
+\DoxyCodeLine{416         std::vector<int> nBuckets = std::vector<int>(nBucketsSize);}
+\DoxyCodeLine{417         std::vector< HashPair<K, T>* > nData = std::vector< HashPair<K, T>* >(nBucketsSize*nMaxBucketsSize);}
+\DoxyCodeLine{418 }
+\DoxyCodeLine{419         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<sizeOfBucket.size(); i++)}
+\DoxyCodeLine{420         \{}
+\DoxyCodeLine{421             \textcolor{keywordtype}{int} bucketLocation = i*maxBucketSize;}
+\DoxyCodeLine{422             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} k=0; k<sizeOfBucket[i]; k++)}
+\DoxyCodeLine{423             \{}
+\DoxyCodeLine{424                 \mbox{\hyperlink{structglib_1_1_hash_pair}{HashPair<K, T>}}* pair = data[bucketLocation + k];}
+\DoxyCodeLine{425 }
+\DoxyCodeLine{426                 \textcolor{keywordtype}{size\_t} location = hashFunction(pair-\/>key);}
+\DoxyCodeLine{427                 location = location \% nBucketsSize;}
+\DoxyCodeLine{428                 \textcolor{keywordtype}{size\_t} finalLocation = (location*nMaxBucketsSize) + nBuckets[location];}
+\DoxyCodeLine{429 }
+\DoxyCodeLine{430                 nData[finalLocation] = pair;}
+\DoxyCodeLine{431                 nBuckets[location]++;}
+\DoxyCodeLine{432             \}}
+\DoxyCodeLine{433         \}}
+\DoxyCodeLine{434 }
+\DoxyCodeLine{435         maxBucketSize = nMaxBucketsSize;}
+\DoxyCodeLine{436         sizeOfBucket = nBuckets;}
+\DoxyCodeLine{437         data = nData;}
+\DoxyCodeLine{438     \}}
+\DoxyCodeLine{439 }
+\DoxyCodeLine{440     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{441     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_acbb675cacc8007edd5510a19a564887c}{SimpleHashMap<K, T>::removeFirst}}(K key)}
+\DoxyCodeLine{442     \{}
+\DoxyCodeLine{443         \textcolor{keywordtype}{size\_t} location = hashFunction(key) \% sizeOfBucket.size();}
+\DoxyCodeLine{444 }
+\DoxyCodeLine{445         \textcolor{keywordtype}{size\_t} actualLocation = location*maxBucketSize;}
+\DoxyCodeLine{446         \textcolor{keywordtype}{int} indexOfFirst = -\/1;}
+\DoxyCodeLine{447         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<sizeOfBucket[location]; i++)}
+\DoxyCodeLine{448         \{}
+\DoxyCodeLine{449             \textcolor{keywordflow}{if}(indexOfFirst == -\/1)}
+\DoxyCodeLine{450             \{}
+\DoxyCodeLine{451                 \textcolor{keywordflow}{if}(key == data[actualLocation+i]-\/>key)}
+\DoxyCodeLine{452                 \{}
+\DoxyCodeLine{453                     indexOfFirst = i;}
+\DoxyCodeLine{454                 \}}
+\DoxyCodeLine{455             \}}
+\DoxyCodeLine{456             \textcolor{keywordflow}{else}}
+\DoxyCodeLine{457             \{}
+\DoxyCodeLine{458                 \textcolor{comment}{//swap till the end of the bucket}}
+\DoxyCodeLine{459                 \mbox{\hyperlink{structglib_1_1_hash_pair}{HashPair<K,T>}}* temp = data[actualLocation+i-\/1];}
+\DoxyCodeLine{460                 data[actualLocation+i-\/1] = data[actualLocation+i];}
+\DoxyCodeLine{461                 data[actualLocation+i] = temp;}
+\DoxyCodeLine{462             \}}
+\DoxyCodeLine{463         \}}
+\DoxyCodeLine{464 }
+\DoxyCodeLine{465         \textcolor{keywordflow}{if}(indexOfFirst!=-\/1)}
+\DoxyCodeLine{466         \{}
+\DoxyCodeLine{467             \textcolor{comment}{//found key}}
+\DoxyCodeLine{468             \textcolor{keyword}{delete} data[actualLocation + sizeOfBucket[location] -\/ 1];}
+\DoxyCodeLine{469             data[actualLocation + sizeOfBucket[location] -\/ 1] = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{470             sizeOfBucket[location]-\/-\/;}
+\DoxyCodeLine{471         \}}
+\DoxyCodeLine{472     \}}
+\DoxyCodeLine{473 }
+\DoxyCodeLine{474     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{475     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_a78283261033834ca46405a38497c2dfa}{SimpleHashMap<K, T>::removeLast}}(K key)}
+\DoxyCodeLine{476     \{}
+\DoxyCodeLine{477         \textcolor{keywordtype}{size\_t} location = hashFunction(key) \% sizeOfBucket.size();}
+\DoxyCodeLine{478 }
+\DoxyCodeLine{479         \textcolor{keywordtype}{size\_t} actualLocation = location*maxBucketSize;}
+\DoxyCodeLine{480         \textcolor{keywordtype}{int} indexOfLast = -\/1;}
+\DoxyCodeLine{481         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=sizeOfBucket[location]-\/1; i>=0; i-\/-\/)}
+\DoxyCodeLine{482         \{}
+\DoxyCodeLine{483             \textcolor{keywordflow}{if}(key == data[actualLocation+i]-\/>key)}
+\DoxyCodeLine{484             \{}
+\DoxyCodeLine{485                 indexOfLast = i;}
+\DoxyCodeLine{486                 \textcolor{keywordflow}{break};}
+\DoxyCodeLine{487             \}}
+\DoxyCodeLine{488         \}}
+\DoxyCodeLine{489 }
+\DoxyCodeLine{490         \textcolor{keywordflow}{if}(indexOfLast != -\/1)}
+\DoxyCodeLine{491         \{}
+\DoxyCodeLine{492             \textcolor{comment}{//found key}}
+\DoxyCodeLine{493             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=indexOfLast; i<sizeOfBucket[location]; i++)}
+\DoxyCodeLine{494             \{}
+\DoxyCodeLine{495                 \textcolor{comment}{//swap till the end of the bucket}}
+\DoxyCodeLine{496                 \mbox{\hyperlink{structglib_1_1_hash_pair}{HashPair<K,T>}}* temp = data[actualLocation+i-\/1];}
+\DoxyCodeLine{497                 data[actualLocation+i-\/1] = data[actualLocation+i];}
+\DoxyCodeLine{498                 data[actualLocation+i] = temp;}
+\DoxyCodeLine{499             \}}
+\DoxyCodeLine{500             }
+\DoxyCodeLine{501             \textcolor{keyword}{delete} data[actualLocation + sizeOfBucket[location] -\/ 1];}
+\DoxyCodeLine{502             data[actualLocation + sizeOfBucket[location] -\/ 1] = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{503             sizeOfBucket[location]-\/-\/;}
+\DoxyCodeLine{504         \}}
+\DoxyCodeLine{505     \}}
+\DoxyCodeLine{506 }
+\DoxyCodeLine{507     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{508     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_a670b1e618313b3b39c2e3b52e5721e99}{SimpleHashMap<K, T>::removeAll}}(K key)}
+\DoxyCodeLine{509     \{}
+\DoxyCodeLine{510         \textcolor{keywordtype}{size\_t} location = hashFunction(key) \% sizeOfBucket.size();}
+\DoxyCodeLine{511 }
+\DoxyCodeLine{512         \textcolor{keywordtype}{size\_t} actualLocation = location*maxBucketSize;}
+\DoxyCodeLine{513         std::vector<HashPair<K, T>*> nBucket;}
+\DoxyCodeLine{514 }
+\DoxyCodeLine{515         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<sizeOfBucket[location]; i++)}
+\DoxyCodeLine{516         \{}
+\DoxyCodeLine{517             \textcolor{keywordflow}{if}(key != data[actualLocation+i]-\/>key)}
+\DoxyCodeLine{518             \{}
+\DoxyCodeLine{519                 nBucket.push\_back( data[actualLocation+i] );}
+\DoxyCodeLine{520             \}}
+\DoxyCodeLine{521             \textcolor{keywordflow}{else}}
+\DoxyCodeLine{522             \{}
+\DoxyCodeLine{523                 \textcolor{keyword}{delete} data[actualLocation+i];}
+\DoxyCodeLine{524                 data[actualLocation+i] = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{525             \}}
+\DoxyCodeLine{526         \}}
+\DoxyCodeLine{527 }
+\DoxyCodeLine{528         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<nBucket.size(); i++)}
+\DoxyCodeLine{529         \{}
+\DoxyCodeLine{530             data[actualLocation+i] = nBucket[i];}
+\DoxyCodeLine{531         \}}
+\DoxyCodeLine{532         sizeOfBucket[location] = nBucket.size();}
+\DoxyCodeLine{533     \}}
+\DoxyCodeLine{534 }
+\DoxyCodeLine{535     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{536     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_hash_map_aec02b54cd0f7dfe46ed08113b04a6d21}{SimpleHashMap<K, T>::remove}}(\mbox{\hyperlink{structglib_1_1_hash_pair}{HashPair<K, T>}}* p)}
+\DoxyCodeLine{537     \{}
+\DoxyCodeLine{538         \textcolor{keywordflow}{if}(p!=\textcolor{keyword}{nullptr})}
+\DoxyCodeLine{539         \{}
+\DoxyCodeLine{540             \textcolor{keywordtype}{size\_t} location = hashFunction(p-\/>key) \% sizeOfBucket.size();}
+\DoxyCodeLine{541 }
+\DoxyCodeLine{542             \textcolor{keywordtype}{size\_t} actualLocation = location*maxBucketSize;}
+\DoxyCodeLine{543             \textcolor{keywordtype}{bool} found=\textcolor{keyword}{false};}
+\DoxyCodeLine{544 }
+\DoxyCodeLine{545             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<sizeOfBucket[location]; i++)}
+\DoxyCodeLine{546             \{}
+\DoxyCodeLine{547                 \textcolor{keywordflow}{if}(found == \textcolor{keyword}{false})}
+\DoxyCodeLine{548                 \{}
+\DoxyCodeLine{549                     \textcolor{keywordflow}{if}(p == data[actualLocation+i])}
+\DoxyCodeLine{550                     \{}
+\DoxyCodeLine{551                         found = \textcolor{keyword}{true};}
+\DoxyCodeLine{552                     \}}
+\DoxyCodeLine{553                 \}}
+\DoxyCodeLine{554                 \textcolor{keywordflow}{else}}
+\DoxyCodeLine{555                 \{}
+\DoxyCodeLine{556                     \textcolor{comment}{//swap till the end of the bucket}}
+\DoxyCodeLine{557                     \mbox{\hyperlink{structglib_1_1_hash_pair}{HashPair<K,T>}}* temp = data[actualLocation+i-\/1];}
+\DoxyCodeLine{558                     data[actualLocation+i-\/1] = data[actualLocation+i];}
+\DoxyCodeLine{559                     data[actualLocation+i] = temp;}
+\DoxyCodeLine{560                 \}}
+\DoxyCodeLine{561             \}}
+\DoxyCodeLine{562 }
+\DoxyCodeLine{563             \textcolor{keywordflow}{if}(found==\textcolor{keyword}{true})}
+\DoxyCodeLine{564             \{}
+\DoxyCodeLine{565                 \textcolor{keyword}{delete} data[actualLocation + sizeOfBucket[location] -\/ 1];}
+\DoxyCodeLine{566                 data[actualLocation + sizeOfBucket[location] -\/ 1] = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{567                 sizeOfBucket[location]-\/-\/;}
+\DoxyCodeLine{568             \}}
+\DoxyCodeLine{569         \}}
+\DoxyCodeLine{570     \}}
+\DoxyCodeLine{571 }
+\DoxyCodeLine{572     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{573     \textcolor{keyword}{inline} \mbox{\hyperlink{structglib_1_1_hash_pair}{HashPair<K, T>}}* \mbox{\hyperlink{classglib_1_1_simple_hash_map_a0a650c6bc82473caa76f4c1bfbeb8a6d}{SimpleHashMap<K, T>::get}}(K key)}
+\DoxyCodeLine{574     \{}
+\DoxyCodeLine{575         \textcolor{keywordtype}{size\_t} location = hashFunction(key) \% sizeOfBucket.size();}
+\DoxyCodeLine{576         \mbox{\hyperlink{structglib_1_1_hash_pair}{HashPair<K, T>}}* value = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{577 }
+\DoxyCodeLine{578         \textcolor{keywordtype}{size\_t} actualLocation = location*maxBucketSize;}
+\DoxyCodeLine{579         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<sizeOfBucket[location]; i++)}
+\DoxyCodeLine{580         \{}
+\DoxyCodeLine{581             \textcolor{keywordflow}{if}(key == data[actualLocation+i]-\/>key)}
+\DoxyCodeLine{582             \{}
+\DoxyCodeLine{583                 value = data[actualLocation+i];}
+\DoxyCodeLine{584                 \textcolor{keywordflow}{break};}
+\DoxyCodeLine{585             \}}
+\DoxyCodeLine{586         \}}
+\DoxyCodeLine{587 }
+\DoxyCodeLine{588         \textcolor{keywordflow}{return} value;}
+\DoxyCodeLine{589     \}}
+\DoxyCodeLine{590 }
+\DoxyCodeLine{591     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{592     \textcolor{keyword}{inline} std::vector<HashPair<K, T>*> \mbox{\hyperlink{classglib_1_1_simple_hash_map_a608b33e5857f89aa5c0b6ac0d2f88026}{SimpleHashMap<K, T>::getAll}}(K key)}
+\DoxyCodeLine{593     \{}
+\DoxyCodeLine{594         \textcolor{keywordtype}{size\_t} location = hashFunction(key) \% sizeOfBucket.size();}
+\DoxyCodeLine{595         std::vector<HashPair<K, T>*> values;}
+\DoxyCodeLine{596 }
+\DoxyCodeLine{597         \textcolor{keywordtype}{size\_t} actualLocation = location*maxBucketSize;}
+\DoxyCodeLine{598         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<sizeOfBucket[location]; i++)}
+\DoxyCodeLine{599         \{}
+\DoxyCodeLine{600             \textcolor{keywordflow}{if}(key == data[actualLocation+i]-\/>key)}
+\DoxyCodeLine{601             \{}
+\DoxyCodeLine{602                 values.push\_back( data[actualLocation+i] );}
+\DoxyCodeLine{603             \}}
+\DoxyCodeLine{604         \}}
+\DoxyCodeLine{605 }
+\DoxyCodeLine{606         \textcolor{keywordflow}{return} values;}
+\DoxyCodeLine{607     \}}
+\DoxyCodeLine{608 }
+\DoxyCodeLine{609     \textcolor{keyword}{template}<\textcolor{keyword}{class} K, \textcolor{keyword}{class} T>}
+\DoxyCodeLine{610     \textcolor{keyword}{inline} std::vector<HashPair<K, T>*> \mbox{\hyperlink{classglib_1_1_simple_hash_map_aa9257ccaef2d52c34d65636bc60ff251}{SimpleHashMap<K,T>::getData}}()}
+\DoxyCodeLine{611     \{}
+\DoxyCodeLine{612         std::vector<HashPair<K, T>*> outputData = std::vector<HashPair<K, T>*>();}
+\DoxyCodeLine{613 }
+\DoxyCodeLine{614         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<sizeOfBucket.size(); i++)}
+\DoxyCodeLine{615         \{}
+\DoxyCodeLine{616             \textcolor{keywordtype}{int} bucketLocation = i*maxBucketSize;}
+\DoxyCodeLine{617             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} k=0; k<sizeOfBucket[i]; k++)}
+\DoxyCodeLine{618             \{}
+\DoxyCodeLine{619                 outputData.push\_back(data[bucketLocation+k]);}
+\DoxyCodeLine{620             \}}
+\DoxyCodeLine{621         \}}
+\DoxyCodeLine{622 }
+\DoxyCodeLine{623         \textcolor{keywordflow}{return} outputData;}
+\DoxyCodeLine{624     \}}
+\DoxyCodeLine{625 }
+\DoxyCodeLine{626 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

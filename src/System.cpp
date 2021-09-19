@@ -23,15 +23,6 @@ namespace glib
 	const FileFilter System::SOUND_FILTER = {L"Sound", L".wav;.ogg;.mp3"};
 	const FileFilter System::VIDEO_FILTER = {L"Video", L".mp4;.flv;.m4a;.wmv"};
 
-	System::System()
-	{
-	}
-
-
-	System::~System()
-	{
-	}
-
 	size_t System::getCurrentTimeMillis()
 	{
 		auto t = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now());
@@ -80,12 +71,7 @@ namespace glib
 		return numberOfThreads;
 	}
 
-	void System::dispose()
-	{
-		
-	}
-
-	void System::emulateKeypress(int key)
+	void System::emulateKeyPress(int key)
 	{
 		INPUT i;
 		ZeroMemory(&i, sizeof(INPUT));
@@ -272,12 +258,7 @@ namespace glib
 		return GetSystemMetrics(SM_CMONITORS);
 	}
 
-	void System::saveScreenShot(HWND hwnd, std::string filename)
-	{
-		System::saveScreenShot(hwnd, StringTools::toWideString(filename));
-	}
-
-	void System::saveScreenShot(HWND hwnd, std::wstring filename)
+	void System::saveScreenShot(HWND hwnd, File file)
 	{
 		HWND wndHandle = hwnd;
 		HDC hdc = GetDC(wndHandle);
@@ -316,7 +297,7 @@ namespace glib
 		bmfh.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
 		bmfh.bfSize = bmfh.bfOffBits + size;
 
-		SimpleFile f = SimpleFile(filename, SimpleFile::WRITE);
+		SimpleFile f = SimpleFile(file, SimpleFile::WRITE);
 
 		if (f.isOpen())
 		{
@@ -400,14 +381,9 @@ namespace glib
 		return finalImage;
 	}
 
-	void System::saveScreenShotDesktop(std::string filename)
+	void System::saveScreenShotDesktop(File f)
 	{
-		System::saveScreenShot(GetDesktopWindow(), filename);
-	}
-
-	void System::saveScreenShotDesktop(std::wstring filename)
-	{
-		System::saveScreenShot(GetDesktopWindow(), filename);
+		System::saveScreenShot(GetDesktopWindow(), f);
 	}
 
 	Image* System::getScreenShotDesktop()
@@ -645,6 +621,70 @@ namespace glib
 		}
 
 		return L"";
+	}
+
+	
+	int System::messageBoxPopup(unsigned int type, std::wstring title, std::wstring message)
+	{
+		return MessageBoxW(NULL, message.c_str(), title.c_str(), type);
+	}
+
+	void System::copyToClipboard(std::string str)
+	{
+		if(!OpenClipboard(NULL))
+			return;
+
+		EmptyClipboard();
+
+		HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, str.size()+1);
+		char* strPointer = (char*)GlobalLock(hMem);
+		
+		for(int i=0; i<str.size(); i++)
+			strPointer[i] = str[i];
+		
+		strPointer[str.size()] = '0';
+
+		GlobalUnlock(hMem);
+
+		SetClipboardData(CF_TEXT, hMem);
+		CloseClipboard();
+	}
+
+	void System::copyToClipboard(std::wstring str)
+	{
+		if(!OpenClipboard(NULL))
+			return;
+
+		EmptyClipboard();
+
+		HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, (str.size()+1)*2);
+		wchar_t* strPointer = (wchar_t*)GlobalLock(hMem);
+
+		for(int i=0; i<str.size(); i++)
+			strPointer[i] = str[i];
+		
+		strPointer[str.size()] = L'0';
+
+		GlobalUnlock(hMem);
+
+		SetClipboardData(CF_UNICODETEXT, hMem);
+		CloseClipboard();
+	}
+
+	std::wstring System::pasteFromClipboard()
+	{
+		if(!OpenClipboard(NULL))
+			return L"";
+
+		HANDLE clipboardData = GetClipboardData(CF_UNICODETEXT);
+		wchar_t* textPointer = (wchar_t*)GlobalLock(clipboardData);
+
+		std::wstring finalText = textPointer;
+
+		GlobalUnlock(clipboardData);
+		CloseClipboard();
+
+		return finalText;
 	}
 	
 } //NAMESPACE glib END

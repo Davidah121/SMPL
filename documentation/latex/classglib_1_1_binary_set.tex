@@ -1,0 +1,311 @@
+\hypertarget{classglib_1_1_binary_set}{}\doxysection{glib\+::Binary\+Set Class Reference}
+\label{classglib_1_1_binary_set}\index{glib::BinarySet@{glib::BinarySet}}
+Inheritance diagram for glib\+::Binary\+Set\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classglib_1_1_binary_set}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_binary_set_aa469a70fc0d8e6baf790a8d832e2ff31}\label{classglib_1_1_binary_set_aa469a70fc0d8e6baf790a8d832e2ff31}} 
+{\bfseries Binary\+Set} ()
+\begin{DoxyCompactList}\small\item\em Contructs a \mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}} object. A \mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}} is a set of bits where each bit can be accessed as a bool. Internally, it uses a std\+::vector$<$unsigned char$>$ to store data where 8 bits are in a single byte. Useful for bit processing. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_binary_set_a6f95bace718fe5e2f235d08a944b8d73}\label{classglib_1_1_binary_set_a6f95bace718fe5e2f235d08a944b8d73}} 
+{\bfseries $\sim$\+Binary\+Set} ()
+\begin{DoxyCompactList}\small\item\em Destroys a \mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}} object clearing the memory used by it. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_binary_set_a7669bdfde9ef407a50e6dface6473fe8}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_binary_set_ada58d9321efb7982dbffa17cefeacec3}{add}} (bool v)
+\begin{DoxyCompactList}\small\item\em Adds a bit to the set. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T $>$ }\\void \mbox{\hyperlink{classglib_1_1_binary_set_aaf6fec50b63b73fa06f4765c6b4e868a}{add}} (T v, int amount\+Of\+Bits=128, int offset=0)
+\begin{DoxyCompactList}\small\item\em Adds a template type to the set. Is affected by the add bit order. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_binary_set_a42e1618a16c68e665ae3dd010094d6f0}{add}} (char $\ast$v, int \mbox{\hyperlink{classglib_1_1_binary_set_a252b0565ec381209df963fb2bf0db52f}{size}})
+\begin{DoxyCompactList}\small\item\em Adds an array of char to the set. Is affected by bit add order. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_binary_set_ae4a2ad1c6c86e6ec2d193819764a97fa}{add}} (unsigned char $\ast$v, int \mbox{\hyperlink{classglib_1_1_binary_set_a252b0565ec381209df963fb2bf0db52f}{size}})
+\begin{DoxyCompactList}\small\item\em Adds an array of unsigned char to the set. Is affected by bit add order. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_binary_set_ac9f32f4f27c1d5bcfceec9716e1f453f}{add}} (\mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}} \&other)
+\begin{DoxyCompactList}\small\item\em Adds another \mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}} to the current set. Is affected by bit add order. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_binary_set_a04ac5979d4ebfc80d82b7bdfc3c6fa23}{set\+Values}} (char $\ast$v, int \mbox{\hyperlink{classglib_1_1_binary_set_a252b0565ec381209df963fb2bf0db52f}{size}})
+\begin{DoxyCompactList}\small\item\em Set an array of char values to used as the \mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}} data. These values will be copied into the set. If v is a nullptr, it clears the set. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_binary_set_ad6417f8c501e49c1fae490a76ca7cbf7}{set\+Values}} (unsigned char $\ast$v, int \mbox{\hyperlink{classglib_1_1_binary_set_a252b0565ec381209df963fb2bf0db52f}{size}})
+\begin{DoxyCompactList}\small\item\em Set an array of unsigned char values to used as the \mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}} data. These values will be copied into the set. If v is a nullptr, it clears the set. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_binary_set_a7b7c0b738c437cc981431dfaea1f9380}{get\+Bit}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets a bit from the set. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_binary_set_a72fef6e44b54fc54cf82a57aff761b47}{get\+Bits}} (int index\+Start, int index\+End, bool lmsb=false)
+\begin{DoxyCompactList}\small\item\em Gets a collection of bits from the set. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_binary_set_a1f9b7a68a92c1f8b5f3a70cab9263e4c}{set\+Bit}} (bool value, int index)
+\begin{DoxyCompactList}\small\item\em Sets a bit at the specified location. \end{DoxyCompactList}\item 
+std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_binary_set_ab741adae410d5422971402ab27431d68}{to\+Bytes}} ()
+\begin{DoxyCompactList}\small\item\em Returns the binary set data as bytes. Internally, it just returns the set it uses. It does not do any transformations on the data. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_binary_set_a252b0565ec381209df963fb2bf0db52f}{size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the number of bits in the set. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_binary_set_aa7c01917724838211365cf78b3ce5edf}\label{classglib_1_1_binary_set_aa7c01917724838211365cf78b3ce5edf}} 
+void {\bfseries clear} ()
+\begin{DoxyCompactList}\small\item\em Clears the set of all bits and the memory it used. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_binary_set_a6fd25c972b2d15348485227fdea8e35e}{set\+Bit\+Order}} (bool bit\+Order)
+\begin{DoxyCompactList}\small\item\em Sets the bit order to either LMSB or RMSB. This adjusts how the function get\+Bit will work but does not change how the data is stored or how data is added to it. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_binary_set_ab2591a0da89daadbd1b229969166a1bd}{set\+Add\+Bit\+Order}} (bool order)
+\begin{DoxyCompactList}\small\item\em Sets the add bit order to either LMSB or RMSB. This adjusts how the function add will work but does not change how the data is stored or how data is accessed. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_binary_set_ad8160005fcb17f6de48979dfe5eaeae3}\label{classglib_1_1_binary_set_ad8160005fcb17f6de48979dfe5eaeae3}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\item 
+\mbox{\Hypertarget{classglib_1_1_binary_set_a2e4e7ce009d3ce45497f2d85ec244f7c}\label{classglib_1_1_binary_set_a2e4e7ce009d3ce45497f2d85ec244f7c}} 
+static const bool {\bfseries LMSB} = true
+\begin{DoxyCompactList}\small\item\em LEFT MOST SIGNIFICANT BIT. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_binary_set_a97085661c27a010ad5aa2d9733b439ca}\label{classglib_1_1_binary_set_a97085661c27a010ad5aa2d9733b439ca}} 
+static const bool {\bfseries RMSB} = false
+\begin{DoxyCompactList}\small\item\em RIGHT MOST SIGNIFICANT BIT. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_binary_set_ac9f32f4f27c1d5bcfceec9716e1f453f}\label{classglib_1_1_binary_set_ac9f32f4f27c1d5bcfceec9716e1f453f}} 
+\index{glib::BinarySet@{glib::BinarySet}!add@{add}}
+\index{add@{add}!glib::BinarySet@{glib::BinarySet}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [1/5]}}
+{\footnotesize\ttfamily void glib\+::\+Binary\+Set\+::add (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Adds another \mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}} to the current set. Is affected by bit add order. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The \mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}} object to add. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_binary_set_ada58d9321efb7982dbffa17cefeacec3}\label{classglib_1_1_binary_set_ada58d9321efb7982dbffa17cefeacec3}} 
+\index{glib::BinarySet@{glib::BinarySet}!add@{add}}
+\index{add@{add}!glib::BinarySet@{glib::BinarySet}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [2/5]}}
+{\footnotesize\ttfamily void glib\+::\+Binary\+Set\+::add (\begin{DoxyParamCaption}\item[{bool}]{v }\end{DoxyParamCaption})}
+
+
+
+Adds a bit to the set. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & The value of the bit to add. True = 1 $\vert$ False = 0 \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_binary_set_a42e1618a16c68e665ae3dd010094d6f0}\label{classglib_1_1_binary_set_a42e1618a16c68e665ae3dd010094d6f0}} 
+\index{glib::BinarySet@{glib::BinarySet}!add@{add}}
+\index{add@{add}!glib::BinarySet@{glib::BinarySet}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [3/5]}}
+{\footnotesize\ttfamily void glib\+::\+Binary\+Set\+::add (\begin{DoxyParamCaption}\item[{char $\ast$}]{v,  }\item[{int}]{size }\end{DoxyParamCaption})}
+
+
+
+Adds an array of char to the set. Is affected by bit add order. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & The pointer to the array of char \\
+\hline
+{\em size} & The amount of items in the array. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_binary_set_aaf6fec50b63b73fa06f4765c6b4e868a}\label{classglib_1_1_binary_set_aaf6fec50b63b73fa06f4765c6b4e868a}} 
+\index{glib::BinarySet@{glib::BinarySet}!add@{add}}
+\index{add@{add}!glib::BinarySet@{glib::BinarySet}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [4/5]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void glib\+::\+Binary\+Set\+::add (\begin{DoxyParamCaption}\item[{T}]{v,  }\item[{int}]{amount\+Of\+Bits = {\ttfamily 128},  }\item[{int}]{offset = {\ttfamily 0} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Adds a template type to the set. Is affected by the add bit order. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & The data to add to the set. \\
+\hline
+{\em amount\+Of\+Bits} & The amount of bits to add from the data. Can be less than the size of the data but not greater than that size. \\
+\hline
+{\em offset} & The offset from the start of the bits in the data to start adding from. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_binary_set_ae4a2ad1c6c86e6ec2d193819764a97fa}\label{classglib_1_1_binary_set_ae4a2ad1c6c86e6ec2d193819764a97fa}} 
+\index{glib::BinarySet@{glib::BinarySet}!add@{add}}
+\index{add@{add}!glib::BinarySet@{glib::BinarySet}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}\hspace{0.1cm}{\footnotesize\ttfamily [5/5]}}
+{\footnotesize\ttfamily void glib\+::\+Binary\+Set\+::add (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{v,  }\item[{int}]{size }\end{DoxyParamCaption})}
+
+
+
+Adds an array of unsigned char to the set. Is affected by bit add order. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & The pointer to the array of unsigned char \\
+\hline
+{\em size} & The amount of items in the array. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_binary_set_a7b7c0b738c437cc981431dfaea1f9380}\label{classglib_1_1_binary_set_a7b7c0b738c437cc981431dfaea1f9380}} 
+\index{glib::BinarySet@{glib::BinarySet}!getBit@{getBit}}
+\index{getBit@{getBit}!glib::BinarySet@{glib::BinarySet}}
+\doxysubsubsection{\texorpdfstring{getBit()}{getBit()}}
+{\footnotesize\ttfamily bool glib\+::\+Binary\+Set\+::get\+Bit (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets a bit from the set. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & The index of the bit to get. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool Returns the value of the bit. If the index was invalid, the value 0 is returned. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_binary_set_a72fef6e44b54fc54cf82a57aff761b47}\label{classglib_1_1_binary_set_a72fef6e44b54fc54cf82a57aff761b47}} 
+\index{glib::BinarySet@{glib::BinarySet}!getBits@{getBits}}
+\index{getBits@{getBits}!glib::BinarySet@{glib::BinarySet}}
+\doxysubsubsection{\texorpdfstring{getBits()}{getBits()}}
+{\footnotesize\ttfamily int glib\+::\+Binary\+Set\+::get\+Bits (\begin{DoxyParamCaption}\item[{int}]{index\+Start,  }\item[{int}]{index\+End,  }\item[{bool}]{lmsb = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+Gets a collection of bits from the set. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index\+Start} & The start index of the bits to get. \\
+\hline
+{\em index\+End} & The end index of the bits to get. \\
+\hline
+{\em lmsb} & Controls whether to set the bits in the number from LMSB or RMSB \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int Returns the value of the bits as a number. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_binary_set_a7669bdfde9ef407a50e6dface6473fe8}\label{classglib_1_1_binary_set_a7669bdfde9ef407a50e6dface6473fe8}} 
+\index{glib::BinarySet@{glib::BinarySet}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::BinarySet@{glib::BinarySet}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Binary\+Set\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
+
+\mbox{\Hypertarget{classglib_1_1_binary_set_ab2591a0da89daadbd1b229969166a1bd}\label{classglib_1_1_binary_set_ab2591a0da89daadbd1b229969166a1bd}} 
+\index{glib::BinarySet@{glib::BinarySet}!setAddBitOrder@{setAddBitOrder}}
+\index{setAddBitOrder@{setAddBitOrder}!glib::BinarySet@{glib::BinarySet}}
+\doxysubsubsection{\texorpdfstring{setAddBitOrder()}{setAddBitOrder()}}
+{\footnotesize\ttfamily void glib\+::\+Binary\+Set\+::set\+Add\+Bit\+Order (\begin{DoxyParamCaption}\item[{bool}]{order }\end{DoxyParamCaption})}
+
+
+
+Sets the add bit order to either LMSB or RMSB. This adjusts how the function add will work but does not change how the data is stored or how data is accessed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em bit\+Order} & LMSB or RMSB constants should be used. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_binary_set_a1f9b7a68a92c1f8b5f3a70cab9263e4c}\label{classglib_1_1_binary_set_a1f9b7a68a92c1f8b5f3a70cab9263e4c}} 
+\index{glib::BinarySet@{glib::BinarySet}!setBit@{setBit}}
+\index{setBit@{setBit}!glib::BinarySet@{glib::BinarySet}}
+\doxysubsubsection{\texorpdfstring{setBit()}{setBit()}}
+{\footnotesize\ttfamily void glib\+::\+Binary\+Set\+::set\+Bit (\begin{DoxyParamCaption}\item[{bool}]{value,  }\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Sets a bit at the specified location. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The value to set the bit to. \\
+\hline
+{\em index} & The index of the bit. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_binary_set_a6fd25c972b2d15348485227fdea8e35e}\label{classglib_1_1_binary_set_a6fd25c972b2d15348485227fdea8e35e}} 
+\index{glib::BinarySet@{glib::BinarySet}!setBitOrder@{setBitOrder}}
+\index{setBitOrder@{setBitOrder}!glib::BinarySet@{glib::BinarySet}}
+\doxysubsubsection{\texorpdfstring{setBitOrder()}{setBitOrder()}}
+{\footnotesize\ttfamily void glib\+::\+Binary\+Set\+::set\+Bit\+Order (\begin{DoxyParamCaption}\item[{bool}]{bit\+Order }\end{DoxyParamCaption})}
+
+
+
+Sets the bit order to either LMSB or RMSB. This adjusts how the function get\+Bit will work but does not change how the data is stored or how data is added to it. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em bit\+Order} & LMSB or RMSB constants should be used. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_binary_set_a04ac5979d4ebfc80d82b7bdfc3c6fa23}\label{classglib_1_1_binary_set_a04ac5979d4ebfc80d82b7bdfc3c6fa23}} 
+\index{glib::BinarySet@{glib::BinarySet}!setValues@{setValues}}
+\index{setValues@{setValues}!glib::BinarySet@{glib::BinarySet}}
+\doxysubsubsection{\texorpdfstring{setValues()}{setValues()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Binary\+Set\+::set\+Values (\begin{DoxyParamCaption}\item[{char $\ast$}]{v,  }\item[{int}]{size }\end{DoxyParamCaption})}
+
+
+
+Set an array of char values to used as the \mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}} data. These values will be copied into the set. If v is a nullptr, it clears the set. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & The pointer to the array of char \\
+\hline
+{\em size} & The amount of items in the array. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_binary_set_ad6417f8c501e49c1fae490a76ca7cbf7}\label{classglib_1_1_binary_set_ad6417f8c501e49c1fae490a76ca7cbf7}} 
+\index{glib::BinarySet@{glib::BinarySet}!setValues@{setValues}}
+\index{setValues@{setValues}!glib::BinarySet@{glib::BinarySet}}
+\doxysubsubsection{\texorpdfstring{setValues()}{setValues()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Binary\+Set\+::set\+Values (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{v,  }\item[{int}]{size }\end{DoxyParamCaption})}
+
+
+
+Set an array of unsigned char values to used as the \mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}} data. These values will be copied into the set. If v is a nullptr, it clears the set. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & The pointer to the array of unsigned char \\
+\hline
+{\em size} & The amount of items in the array. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_binary_set_a252b0565ec381209df963fb2bf0db52f}\label{classglib_1_1_binary_set_a252b0565ec381209df963fb2bf0db52f}} 
+\index{glib::BinarySet@{glib::BinarySet}!size@{size}}
+\index{size@{size}!glib::BinarySet@{glib::BinarySet}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily int glib\+::\+Binary\+Set\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the number of bits in the set. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_binary_set_ab741adae410d5422971402ab27431d68}\label{classglib_1_1_binary_set_ab741adae410d5422971402ab27431d68}} 
+\index{glib::BinarySet@{glib::BinarySet}!toBytes@{toBytes}}
+\index{toBytes@{toBytes}!glib::BinarySet@{glib::BinarySet}}
+\doxysubsubsection{\texorpdfstring{toBytes()}{toBytes()}}
+{\footnotesize\ttfamily std\+::vector$<$ unsigned char $>$ glib\+::\+Binary\+Set\+::to\+Bytes (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the binary set data as bytes. Internally, it just returns the set it uses. It does not do any transformations on the data. 
+
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Binary\+Set.\+h\end{DoxyCompactItemize}

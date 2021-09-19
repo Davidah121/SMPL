@@ -1,0 +1,108 @@
+\hypertarget{_image_8h_source}{}\doxysection{Image.\+h}
+\label{_image_8h_source}\index{include/Image.h@{include/Image.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include "{}ColorPalette.h"{}}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}File.h"{}}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}MathExt.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}Opti.h"{}}}
+\DoxyCodeLine{6 }
+\DoxyCodeLine{7 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{8 \{}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_image}{Image}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
+\DoxyCodeLine{11     \{}
+\DoxyCodeLine{12     \textcolor{keyword}{public}:}
+\DoxyCodeLine{18         \mbox{\hyperlink{classglib_1_1_image_a04effabc1b48a1af422cb8e00cbd1f74}{Image}}();}
+\DoxyCodeLine{19 }
+\DoxyCodeLine{30         \mbox{\hyperlink{classglib_1_1_image_ad13a2d4597bdd329d36d70636881f7a8}{Image}}(\textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height);}
+\DoxyCodeLine{31 }
+\DoxyCodeLine{38         \mbox{\hyperlink{classglib_1_1_image_a7470883107758babc987e3249c9890f0}{Image}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_image}{Image}}\& other);}
+\DoxyCodeLine{39 }
+\DoxyCodeLine{46         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_a98d927982b21176c7004e5e3805a789c}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_image}{Image}}\& other);}
+\DoxyCodeLine{47 }
+\DoxyCodeLine{52         \mbox{\hyperlink{classglib_1_1_image_a837ab41e2f40d5a98e683a610628a449}{\string~Image}}();}
+\DoxyCodeLine{53 }
+\DoxyCodeLine{54         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{55         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{56         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{57 }
+\DoxyCodeLine{63         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_image_adb519ea3af77a79d6e329dbdb0a8154b}{getWidth}}();}
+\DoxyCodeLine{64 }
+\DoxyCodeLine{70         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_image_a865ca74b6f37d36e56265abcc1f13552}{getHeight}}();}
+\DoxyCodeLine{71 }
+\DoxyCodeLine{78         \mbox{\hyperlink{structglib_1_1_color}{Color}}* \mbox{\hyperlink{classglib_1_1_image_a666b05f6a347271ac276da059ede2839}{getPixels}}();}
+\DoxyCodeLine{79 }
+\DoxyCodeLine{92         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_image_ace20c6a9ca35cbfb8806932214a12e6b}{getPixel}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{bool} clamp = \textcolor{keyword}{false});}
+\DoxyCodeLine{93 }
+\DoxyCodeLine{104         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_a91be8691d34667a9ea5fac2641d12539}{setPixel}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{105 }
+\DoxyCodeLine{112         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_af9221d3e6588c4082370043285773f89}{setAllPixels}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{113         }
+\DoxyCodeLine{120         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_a84973c8b62bd16954fc69cadad107df4}{copyImage}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* v);}
+\DoxyCodeLine{121 }
+\DoxyCodeLine{128         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_a83b43af9544175e7c9d2eb5596851f7d}{setPalette}}(\mbox{\hyperlink{classglib_1_1_color_palette}{ColorPalette}} p);}
+\DoxyCodeLine{129 }
+\DoxyCodeLine{135         \mbox{\hyperlink{classglib_1_1_color_palette}{ColorPalette}}\& \mbox{\hyperlink{classglib_1_1_image_a8223220ed39a2c3e65788b937f7214a2}{getPalette}}();}
+\DoxyCodeLine{136 }
+\DoxyCodeLine{141         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_a2330d24ab33578515de5edfafc576b65}{enforcePalette}}();}
+\DoxyCodeLine{142 }
+\DoxyCodeLine{159         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_image}{Image}}** \mbox{\hyperlink{classglib_1_1_image_a3b1473f2034aa8eb88108ac2dd7a50eb}{loadImage}}(std::string filename, \textcolor{keywordtype}{int}* amountOfImages, std::vector<int>* extraData = \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{160 }
+\DoxyCodeLine{177         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_image}{Image}}** \mbox{\hyperlink{classglib_1_1_image_a63efb036ea009ea9f036ffb848bddf62}{loadImage}}(std::wstring filename, \textcolor{keywordtype}{int}* amountOfImages, std::vector<int>* extraData = \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{178 }
+\DoxyCodeLine{195         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_image}{Image}}** \mbox{\hyperlink{classglib_1_1_image_a2e92757f8c214476aced5f9e44b30665}{loadImage}}(\mbox{\hyperlink{classglib_1_1_file}{File}} file, \textcolor{keywordtype}{int}* amountOfImages, std::vector<int>* extraData = \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{196 }
+\DoxyCodeLine{197         \textcolor{comment}{//Wrapper around the graphics class for images}}
+\DoxyCodeLine{202 \textcolor{comment}{}        \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_ab5f592a55aa54dd69331c27afc55a8e4}{clearImage}}();}
+\DoxyCodeLine{203 }
+\DoxyCodeLine{213         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_a8fd86b3b1910ce7af3255599c75d8774}{drawRect}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} x2, \textcolor{keywordtype}{int} y2, \textcolor{keywordtype}{bool} outline);}
+\DoxyCodeLine{214 }
+\DoxyCodeLine{223         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_a33b89acafdc1cf1b37df1ceb5758a6e7}{drawLine}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} x2, \textcolor{keywordtype}{int} y2);}
+\DoxyCodeLine{224 }
+\DoxyCodeLine{233         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_ad5f434e1cab29ae577a8dac7b36af5b1}{drawCircle}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} radius, \textcolor{keywordtype}{bool} outline);}
+\DoxyCodeLine{234 }
+\DoxyCodeLine{242         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_aab31bc5261e2c509dcc6a7b07a0890da}{drawPolygon}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}* points, \textcolor{keywordtype}{int} size);}
+\DoxyCodeLine{243 }
+\DoxyCodeLine{251         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_a626a3a41e3df6983fb7635d791907f10}{drawImage}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{252 }
+\DoxyCodeLine{260         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_a1c92bd81d0cd13e79d9b778bcd7710fc}{drawSprite}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{261 }
+\DoxyCodeLine{273         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_add4b005fb0764afe1155b6b0f2d4107b}{drawSpritePart}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} imgX, \textcolor{keywordtype}{int} imgY, \textcolor{keywordtype}{int} imgW, \textcolor{keywordtype}{int} imgH);}
+\DoxyCodeLine{274 }
+\DoxyCodeLine{282         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_a54810ecf7ff3565eb9d67bf72ca89928}{drawText}}(std::string str, \textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{283 }
+\DoxyCodeLine{294         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_ad58f3bcb481caa0b18bca964bba7498d}{drawTextLimits}}(std::string str, \textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} maxWidth, \textcolor{keywordtype}{int} maxHeight, \textcolor{keywordtype}{bool} allowLineBreak);}
+\DoxyCodeLine{295         }
+\DoxyCodeLine{307         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_a97f8585f5a8d9fc4172be60e9d998c9a}{drawTriangle}}(\textcolor{keywordtype}{int} x1, \textcolor{keywordtype}{int} y1, \textcolor{keywordtype}{int} x2, \textcolor{keywordtype}{int} y2, \textcolor{keywordtype}{int} x3, \textcolor{keywordtype}{int} y3, \textcolor{keywordtype}{bool} outline);}
+\DoxyCodeLine{308 }
+\DoxyCodeLine{317         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_a1bce216362a061b7787eac4439058046}{drawTexturedTriangle}}(\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} p1, \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} p2, \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} p3, \mbox{\hyperlink{classglib_1_1_image}{Image}}* texture);}
+\DoxyCodeLine{318 }
+\DoxyCodeLine{326         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_a8d35ab4cfe3c07b51a1669f8870f6abb}{drawPixel}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{327 }
+\DoxyCodeLine{336         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_adb62c0b96aab0b51909bef4f8cbeccde}{drawPixel}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y, \mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{337         }
+\DoxyCodeLine{351         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_a3cbf384d6fb399580999b2eca2c06bea}{saveBMP}}(\mbox{\hyperlink{classglib_1_1_file}{File}} file, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} alphaThreshold = 255, \textcolor{keywordtype}{bool} greyscale = \textcolor{keyword}{false});}
+\DoxyCodeLine{352 }
+\DoxyCodeLine{378         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_a33cab241fd6c422dd7cc6590a2be9f5d}{saveGIF}}(\mbox{\hyperlink{classglib_1_1_file}{File}} file, \textcolor{keywordtype}{int} paletteSize = 256, \textcolor{keywordtype}{bool} dither = \textcolor{keyword}{false}, \textcolor{keywordtype}{bool} saveAlpha = \textcolor{keyword}{true}, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} alphaThreshold = 127, \textcolor{keywordtype}{bool} greyscale = \textcolor{keyword}{false});}
+\DoxyCodeLine{379 }
+\DoxyCodeLine{399         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_aaa64f542e4e69bb22a0bf10123e7c6a0}{savePNG}}(\mbox{\hyperlink{classglib_1_1_file}{File}} file, \textcolor{keywordtype}{bool} saveAlpha = \textcolor{keyword}{true}, \textcolor{keywordtype}{bool} greyscale = \textcolor{keyword}{false}, \textcolor{keywordtype}{bool} strongCompression = \textcolor{keyword}{false});}
+\DoxyCodeLine{400 }
+\DoxyCodeLine{406         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_image_af9eada62c68329c46ab3c8dc10090a36}{saveJPG}}(\mbox{\hyperlink{classglib_1_1_file}{File}} file);}
+\DoxyCodeLine{407 }
+\DoxyCodeLine{408     \textcolor{keyword}{private}:}
+\DoxyCodeLine{409         \textcolor{keywordtype}{int} width = 0;}
+\DoxyCodeLine{410         \textcolor{keywordtype}{int} height = 0;}
+\DoxyCodeLine{411         \mbox{\hyperlink{classglib_1_1_color_palette}{ColorPalette}} p = \mbox{\hyperlink{classglib_1_1_color_palette}{ColorPalette}}();}
+\DoxyCodeLine{412         \mbox{\hyperlink{structglib_1_1_color}{Color}}* pixels = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{413 }
+\DoxyCodeLine{414         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_image}{Image}}** loadBMP(std::vector<unsigned char> fileData, \textcolor{keywordtype}{int}* amountOfImages, std::vector<int>* extraData = \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{415         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_image}{Image}}** loadGIF(std::vector<unsigned char> fileData, \textcolor{keywordtype}{int}* amountOfImages, std::vector<int>* extraData = \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{416         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_image}{Image}}** loadPNG(std::vector<unsigned char> fileData, \textcolor{keywordtype}{int}* amountOfImages, std::vector<int>* extraData = \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{417         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_image}{Image}}** loadJPG(std::vector<unsigned char> fileData, \textcolor{keywordtype}{int}* amountOfImages, std::vector<int>* extraData = \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{418     \};}
+\DoxyCodeLine{419 }
+\DoxyCodeLine{420 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

@@ -1,0 +1,28 @@
+\hypertarget{_general_exceptions_8h_source}{}\doxysection{General\+Exceptions.\+h}
+\label{_general_exceptions_8h_source}\index{include/GeneralExceptions.h@{include/GeneralExceptions.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include<exception>}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{5 \{}
+\DoxyCodeLine{6 }
+\DoxyCodeLine{7     \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_out_of_bounds_error}{OutOfBoundsError}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{8     \{}
+\DoxyCodeLine{9         \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}Out of bounds access error."{}}; \}}
+\DoxyCodeLine{10     \};}
+\DoxyCodeLine{11 }
+\DoxyCodeLine{12     \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_invalid_size_error}{InvalidSizeError}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{13     \{}
+\DoxyCodeLine{14         \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}Invalid Input Size"{}}; \}}
+\DoxyCodeLine{15     \};}
+\DoxyCodeLine{16 }
+\DoxyCodeLine{17     \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_invalid_data_error}{InvalidDataError}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{18     \{}
+\DoxyCodeLine{19         \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}Invalid Input Data"{}}; \}}
+\DoxyCodeLine{20     \};}
+\DoxyCodeLine{21 }
+\DoxyCodeLine{22 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

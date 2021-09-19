@@ -4,19 +4,13 @@
 
 namespace glib
 {
-    template<typename T>
-    File::File(std::basic_string<T> filename)
-    {
-        init(filename);
-    }
 
     File::~File()
     {
         
     }
 
-    template<typename T>
-    void File::init(std::basic_string<T> filename)
+    void File::init(std::wstring filename)
     {
         locationOfExtension = filename.find_last_of(L'.');
         size_t v1 = filename.find_last_of(L'/');
@@ -37,7 +31,7 @@ namespace glib
 
         fullFileName = L"";
 
-        for(T& c : filename)
+        for(wchar_t& c : filename)
         {
             fullFileName += (wchar_t)c;
         }

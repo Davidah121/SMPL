@@ -1,0 +1,150 @@
+\hypertarget{classglib_1_1_audio_in}{}\doxysection{glib\+::Audio\+In Class Reference}
+\label{classglib_1_1_audio_in}\index{glib::AudioIn@{glib::AudioIn}}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_audio_in_1_1_audio_in_error}{Audio\+In\+Error}}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_audio_in_1_1_audio_in_init_error}{Audio\+In\+Init\+Error}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{classglib_1_1_audio_in_a3f7a2b7dc1e882bc8102395c55a03a1a}{init}} (unsigned int device=-\/1)
+\begin{DoxyCompactList}\small\item\em Opens a device specified by the device\+ID value to get audio input from. Spawns a thread to retrieve the audio. Can not be recalled until \mbox{\hyperlink{classglib_1_1_audio_in_a6d48b685a1e6553af7bd649abaaa2f26}{dispose()}} is called and successfully returned. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_audio_in_a6d48b685a1e6553af7bd649abaaa2f26}\label{classglib_1_1_audio_in_a6d48b685a1e6553af7bd649abaaa2f26}} 
+static void {\bfseries dispose} ()
+\begin{DoxyCompactList}\small\item\em Ends input of audio. Closes the audio thread that retrieves input audio. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_audio_in_a033058204f27c2a19603e532b0f2f7c3}\label{classglib_1_1_audio_in_a033058204f27c2a19603e532b0f2f7c3}} 
+static void {\bfseries record} ()
+\begin{DoxyCompactList}\small\item\em Starts recording of audio from the audio device. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_audio_in_aab71329a7194a467f809d79c40d9d313}{get\+Recording}} ()
+\begin{DoxyCompactList}\small\item\em Returns whether or not the class is recording audio from a device. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_audio_in_abb0da531afb840cf799f61d9c03cba8a}\label{classglib_1_1_audio_in_abb0da531afb840cf799f61d9c03cba8a}} 
+static void {\bfseries stop} ()
+\begin{DoxyCompactList}\small\item\em Stops recording of audio from the audio device. \end{DoxyCompactList}\item 
+static std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} $>$ \mbox{\hyperlink{classglib_1_1_audio_in_a56be65f921c1fc0e2fe06222841db45b}{get\+Audio\+Data}} ()
+\begin{DoxyCompactList}\small\item\em Gets the current recorded data. Does not clear the recorded data. That must be done with \mbox{\hyperlink{classglib_1_1_audio_in_a6045da836a90266e861608e41e1cce19}{clear\+Audio\+Data()}} \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_audio_in_a6045da836a90266e861608e41e1cce19}\label{classglib_1_1_audio_in_a6045da836a90266e861608e41e1cce19}} 
+static void {\bfseries clear\+Audio\+Data} ()
+\begin{DoxyCompactList}\small\item\em Clears the current recorded audio. This should be called to remove audio that you no longer need. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_audio_in_af247d48afff160d37415879554c14671}{set\+Buffers}} (int b)
+\begin{DoxyCompactList}\small\item\em Set the amount of buffers for playing audio. The default is 2 buffers. Must be set before calling init. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_audio_in_a353da50fa4bd32d4ac2af945bf2e4f0b}{get\+Buffers}} ()
+\begin{DoxyCompactList}\small\item\em Return the amount of buffers. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_audio_in_ab0b4d1b151963fd5b681e757a388b1cd}{set\+Size\+Of\+Buffer}} (int b)
+\begin{DoxyCompactList}\small\item\em Sets the size of the individual buffers. The default is 2205 samples. Must be set before calling init. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_audio_in_aa272ccfda4e3792fab386d2e8812951c}{get\+Size\+Of\+Buffer}} ()
+\begin{DoxyCompactList}\small\item\em Returns the number of samples for each buffer. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_audio_in_a56be65f921c1fc0e2fe06222841db45b}\label{classglib_1_1_audio_in_a56be65f921c1fc0e2fe06222841db45b}} 
+\index{glib::AudioIn@{glib::AudioIn}!getAudioData@{getAudioData}}
+\index{getAudioData@{getAudioData}!glib::AudioIn@{glib::AudioIn}}
+\doxysubsubsection{\texorpdfstring{getAudioData()}{getAudioData()}}
+{\footnotesize\ttfamily static std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} $>$ glib\+::\+Audio\+In\+::get\+Audio\+Data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets the current recorded data. Does not clear the recorded data. That must be done with \mbox{\hyperlink{classglib_1_1_audio_in_a6045da836a90266e861608e41e1cce19}{clear\+Audio\+Data()}} 
+
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$\+Vec2f$>$ A vector that stores the recorded audio in stereo. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_audio_in_a353da50fa4bd32d4ac2af945bf2e4f0b}\label{classglib_1_1_audio_in_a353da50fa4bd32d4ac2af945bf2e4f0b}} 
+\index{glib::AudioIn@{glib::AudioIn}!getBuffers@{getBuffers}}
+\index{getBuffers@{getBuffers}!glib::AudioIn@{glib::AudioIn}}
+\doxysubsubsection{\texorpdfstring{getBuffers()}{getBuffers()}}
+{\footnotesize\ttfamily static int glib\+::\+Audio\+In\+::get\+Buffers (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Return the amount of buffers. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_audio_in_aab71329a7194a467f809d79c40d9d313}\label{classglib_1_1_audio_in_aab71329a7194a467f809d79c40d9d313}} 
+\index{glib::AudioIn@{glib::AudioIn}!getRecording@{getRecording}}
+\index{getRecording@{getRecording}!glib::AudioIn@{glib::AudioIn}}
+\doxysubsubsection{\texorpdfstring{getRecording()}{getRecording()}}
+{\footnotesize\ttfamily static bool glib\+::\+Audio\+In\+::get\+Recording (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns whether or not the class is recording audio from a device. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_audio_in_aa272ccfda4e3792fab386d2e8812951c}\label{classglib_1_1_audio_in_aa272ccfda4e3792fab386d2e8812951c}} 
+\index{glib::AudioIn@{glib::AudioIn}!getSizeOfBuffer@{getSizeOfBuffer}}
+\index{getSizeOfBuffer@{getSizeOfBuffer}!glib::AudioIn@{glib::AudioIn}}
+\doxysubsubsection{\texorpdfstring{getSizeOfBuffer()}{getSizeOfBuffer()}}
+{\footnotesize\ttfamily static int glib\+::\+Audio\+In\+::get\+Size\+Of\+Buffer (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the number of samples for each buffer. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_audio_in_a3f7a2b7dc1e882bc8102395c55a03a1a}\label{classglib_1_1_audio_in_a3f7a2b7dc1e882bc8102395c55a03a1a}} 
+\index{glib::AudioIn@{glib::AudioIn}!init@{init}}
+\index{init@{init}!glib::AudioIn@{glib::AudioIn}}
+\doxysubsubsection{\texorpdfstring{init()}{init()}}
+{\footnotesize\ttfamily static void glib\+::\+Audio\+In\+::init (\begin{DoxyParamCaption}\item[{unsigned int}]{device = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Opens a device specified by the device\+ID value to get audio input from. Spawns a thread to retrieve the audio. Can not be recalled until \mbox{\hyperlink{classglib_1_1_audio_in_a6d48b685a1e6553af7bd649abaaa2f26}{dispose()}} is called and successfully returned. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em device\+ID} & The device\+ID should be obtained from the operating system. The default value is -\/1 which will map to the default input device. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{structglib_1_1_audio_in_1_1_audio_in_init_error}{Audio\+In\+Init\+Error}}} & Error is thrown if the input device could not be initialized \\
+\hline
+\end{DoxyExceptions}
+\mbox{\Hypertarget{classglib_1_1_audio_in_af247d48afff160d37415879554c14671}\label{classglib_1_1_audio_in_af247d48afff160d37415879554c14671}} 
+\index{glib::AudioIn@{glib::AudioIn}!setBuffers@{setBuffers}}
+\index{setBuffers@{setBuffers}!glib::AudioIn@{glib::AudioIn}}
+\doxysubsubsection{\texorpdfstring{setBuffers()}{setBuffers()}}
+{\footnotesize\ttfamily static void glib\+::\+Audio\+In\+::set\+Buffers (\begin{DoxyParamCaption}\item[{int}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Set the amount of buffers for playing audio. The default is 2 buffers. Must be set before calling init. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em b} & The number of buffers allows for decreases in the size of the buffers and keeps the OS fed with data to reduce studdering. The current value is set to reduce studdering and keep latency good. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_audio_in_ab0b4d1b151963fd5b681e757a388b1cd}\label{classglib_1_1_audio_in_ab0b4d1b151963fd5b681e757a388b1cd}} 
+\index{glib::AudioIn@{glib::AudioIn}!setSizeOfBuffer@{setSizeOfBuffer}}
+\index{setSizeOfBuffer@{setSizeOfBuffer}!glib::AudioIn@{glib::AudioIn}}
+\doxysubsubsection{\texorpdfstring{setSizeOfBuffer()}{setSizeOfBuffer()}}
+{\footnotesize\ttfamily static void glib\+::\+Audio\+In\+::set\+Size\+Of\+Buffer (\begin{DoxyParamCaption}\item[{int}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Sets the size of the individual buffers. The default is 2205 samples. Must be set before calling init. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em b} & The size of the buffers in samples. The larger the size, the more milliseconds of audio captured at a time. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Audio.\+h\end{DoxyCompactItemize}

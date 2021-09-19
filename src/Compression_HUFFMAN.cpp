@@ -193,7 +193,7 @@ namespace glib
 	{
 		//Next pass is to build the huffmanTree
 		//First sort it
-		freqTable->sort();
+		freqTable->sort(false);
 		int fSize = freqTable->size();
 		int maxFrequency = freqTable->sumOfFrequencies();
 
@@ -205,7 +205,7 @@ namespace glib
 		for (int i = 0; i < fSize; i++)
 		{
 			BinaryTreeNode<HuffmanNode>* test = new BinaryTreeNode<HuffmanNode>();
-			test->data = { freqTable->getFrequencyAtLocation(i), freqTable->getValueAtLocation(i) };
+			test->data = { (int)freqTable->getFrequencyAtLocation(i), freqTable->getValueAtLocation(i) };
 			test->leftChild = nullptr;
 			test->rightChild = nullptr;
 

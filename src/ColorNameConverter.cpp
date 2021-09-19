@@ -3,16 +3,6 @@
 
 namespace glib
 {
-
-    ColorNameConverter::ColorNameConverter()
-    {
-
-    }
-    ColorNameConverter::~ColorNameConverter()
-    {
-
-    }
-
     std::string ColorNameConverter::ColorToName(Color c)
     {
         auto it = std::find_if( colorNamePair.begin(), colorNamePair.end(), [c](auto&& p) { return *((int*)&p.second) == *((int*)&c); });

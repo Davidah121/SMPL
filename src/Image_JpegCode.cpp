@@ -1114,21 +1114,11 @@ namespace glib
 		}
 	}
 
-	void Image::saveJPG(std::string filename)
-	{
-		Image::saveJPG(StringTools::toWideString(filename));
-	}
-
 	void Image::saveJPG(File file)
-	{
-		Image::saveJPG(file.getFullFileName());
-	}
-
-	void Image::saveJPG(std::wstring filename)
 	{
 		
 	}
-
+	
 	Image** Image::loadJPG(std::vector<unsigned char> fileData, int* amountOfImages, std::vector<int>* extraData)
 	{
 		//magic number = 0xFF 0xD8

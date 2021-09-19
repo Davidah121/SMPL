@@ -1,0 +1,108 @@
+\hypertarget{classglib_1_1_combination_shape}{}\doxysection{glib\+::Combination\+Shape Class Reference}
+\label{classglib_1_1_combination_shape}\index{glib::CombinationShape@{glib::CombinationShape}}
+Inheritance diagram for glib\+::Combination\+Shape\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classglib_1_1_combination_shape}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_combination_shape_a1bfa163f2bb05c32331e57db964f75d6}{Combination\+Shape}} ()
+\begin{DoxyCompactList}\small\item\em Construct a new Combination \mbox{\hyperlink{classglib_1_1_shape}{Shape}} object Contains a list of shapes that make up the current shape. If either shape collides with something, it is considered a collision. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_combination_shape_a234e0695a892a58fac56651975a6f380}\label{classglib_1_1_combination_shape_a234e0695a892a58fac56651975a6f380}} 
+{\bfseries $\sim$\+Combination\+Shape} ()
+\begin{DoxyCompactList}\small\item\em Destroy the Combination \mbox{\hyperlink{classglib_1_1_shape}{Shape}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_combination_shape_a4bc1b08e2584d42a1907a6d809ee9437}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_combination_shape_a97afba6112cbe5435e5d6f0db8e6f964}{add\+Shape}} (\mbox{\hyperlink{classglib_1_1_shape}{Shape}} s)
+\begin{DoxyCompactList}\small\item\em Adds a shape to the list. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_shape}{Shape}} \mbox{\hyperlink{classglib_1_1_combination_shape_ac3a9f9b35566a9e6434d3f3441e26cd1}{get\+Shape}} (int i)
+\begin{DoxyCompactList}\small\item\em Gets a \mbox{\hyperlink{classglib_1_1_shape}{Shape}} from the list. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_combination_shape_a0078de6a1fc13fa77fd82316f93ea2c2}{size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the amount of shapes in the list. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_combination_shape_ab0ced34526e134ba2bac215e36bc7209}\label{classglib_1_1_combination_shape_ab0ced34526e134ba2bac215e36bc7209}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_combination_shape_a1bfa163f2bb05c32331e57db964f75d6}\label{classglib_1_1_combination_shape_a1bfa163f2bb05c32331e57db964f75d6}} 
+\index{glib::CombinationShape@{glib::CombinationShape}!CombinationShape@{CombinationShape}}
+\index{CombinationShape@{CombinationShape}!glib::CombinationShape@{glib::CombinationShape}}
+\doxysubsubsection{\texorpdfstring{CombinationShape()}{CombinationShape()}}
+{\footnotesize\ttfamily glib\+::\+Combination\+Shape\+::\+Combination\+Shape (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Construct a new Combination \mbox{\hyperlink{classglib_1_1_shape}{Shape}} object Contains a list of shapes that make up the current shape. If either shape collides with something, it is considered a collision. 
+
+Note that this object also contains a position, scale, and rotation. These will be applied before the shapes transforms are. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_combination_shape_a97afba6112cbe5435e5d6f0db8e6f964}\label{classglib_1_1_combination_shape_a97afba6112cbe5435e5d6f0db8e6f964}} 
+\index{glib::CombinationShape@{glib::CombinationShape}!addShape@{addShape}}
+\index{addShape@{addShape}!glib::CombinationShape@{glib::CombinationShape}}
+\doxysubsubsection{\texorpdfstring{addShape()}{addShape()}}
+{\footnotesize\ttfamily void glib\+::\+Combination\+Shape\+::add\+Shape (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_shape}{Shape}}}]{s }\end{DoxyParamCaption})}
+
+
+
+Adds a shape to the list. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & A valid shape. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_combination_shape_a4bc1b08e2584d42a1907a6d809ee9437}\label{classglib_1_1_combination_shape_a4bc1b08e2584d42a1907a6d809ee9437}} 
+\index{glib::CombinationShape@{glib::CombinationShape}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::CombinationShape@{glib::CombinationShape}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Combination\+Shape\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_shape}{glib\+::\+Shape}}.
+
+\mbox{\Hypertarget{classglib_1_1_combination_shape_ac3a9f9b35566a9e6434d3f3441e26cd1}\label{classglib_1_1_combination_shape_ac3a9f9b35566a9e6434d3f3441e26cd1}} 
+\index{glib::CombinationShape@{glib::CombinationShape}!getShape@{getShape}}
+\index{getShape@{getShape}!glib::CombinationShape@{glib::CombinationShape}}
+\doxysubsubsection{\texorpdfstring{getShape()}{getShape()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_shape}{Shape}} glib\+::\+Combination\+Shape\+::get\+Shape (\begin{DoxyParamCaption}\item[{int}]{i }\end{DoxyParamCaption})}
+
+
+
+Gets a \mbox{\hyperlink{classglib_1_1_shape}{Shape}} from the list. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The index of the shape. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_shape}{Shape}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_combination_shape_a0078de6a1fc13fa77fd82316f93ea2c2}\label{classglib_1_1_combination_shape_a0078de6a1fc13fa77fd82316f93ea2c2}} 
+\index{glib::CombinationShape@{glib::CombinationShape}!size@{size}}
+\index{size@{size}!glib::CombinationShape@{glib::CombinationShape}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily int glib\+::\+Combination\+Shape\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the amount of shapes in the list. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Shape.\+h\end{DoxyCompactItemize}

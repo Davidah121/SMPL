@@ -1,0 +1,206 @@
+\hypertarget{_compression_8h_source}{}\doxysection{Compression.\+h}
+\label{_compression_8h_source}\index{include/Compression.h@{include/Compression.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include <string>}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}BinaryTree.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}BinarySet.h"{}}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include "{}FrequencyTable.h"{}}}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include "{}GeneralExceptions.h"{}}}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{11 \{}
+\DoxyCodeLine{12 }
+\DoxyCodeLine{13     \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_huffman_node}{HuffmanNode}}}
+\DoxyCodeLine{14     \{}
+\DoxyCodeLine{15         \textcolor{keywordtype}{int} frequency = 0;}
+\DoxyCodeLine{16         \textcolor{keywordtype}{int} value = 0;}
+\DoxyCodeLine{17     \};}
+\DoxyCodeLine{18 }
+\DoxyCodeLine{19     \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_huffman_code_data}{HuffmanCodeData}}}
+\DoxyCodeLine{20     \{}
+\DoxyCodeLine{21         \textcolor{keywordtype}{int} codeLength = 0;}
+\DoxyCodeLine{22         \textcolor{keywordtype}{int} codeVal = 0;}
+\DoxyCodeLine{23         \textcolor{keywordtype}{int} value = 0;}
+\DoxyCodeLine{24     \};}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{26     \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1length_pair}{lengthPair}}}
+\DoxyCodeLine{27     \{}
+\DoxyCodeLine{28         \textcolor{keywordtype}{bool} literal;}
+\DoxyCodeLine{29         \textcolor{keywordtype}{int} v1; \textcolor{comment}{//if literal, this is the value else it is length}}
+\DoxyCodeLine{30         \textcolor{keywordtype}{int} v2; \textcolor{comment}{//backwards distance if not literal; otherwise 0}}
+\DoxyCodeLine{31     \};}
+\DoxyCodeLine{32 }
+\DoxyCodeLine{33     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_compression}{Compression}}}
+\DoxyCodeLine{34     \{}
+\DoxyCodeLine{35     \textcolor{keyword}{public}:}
+\DoxyCodeLine{36 }
+\DoxyCodeLine{37         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{ExceededExpectedSizeError}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{38         \{}
+\DoxyCodeLine{39             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}Error while decompressing data. Exceeded expected size."{}}; \}}
+\DoxyCodeLine{40         \};}
+\DoxyCodeLine{55         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_a99c51ecc8b192a605d3643ecb739cce4}{compressRLE}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* data, \textcolor{keywordtype}{int} size);}
+\DoxyCodeLine{56 }
+\DoxyCodeLine{68         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_abdaba02ef12d485e2b3291cb78c7c7f7}{compressRLE}}(std::vector<unsigned char> data);}
+\DoxyCodeLine{69 }
+\DoxyCodeLine{89         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_ae22ceede7191be8a325e091ee9bced09}{decompressRLE}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* data, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{size\_t} expectedSize = -\/1);}
+\DoxyCodeLine{90 }
+\DoxyCodeLine{107         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_a3c459eba34a4f69eb6f7d1c28f35d1c5}{decompressRLE}}(std::vector<unsigned char> data, \textcolor{keywordtype}{size\_t} expectedSize = -\/1);}
+\DoxyCodeLine{108 }
+\DoxyCodeLine{109         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_compression_1_1_l_z_w___e_r_r_o_r___l317}{LZW\_ERROR\_L317}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{110         \{}
+\DoxyCodeLine{111             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}Error Code L317 when decompressing LZW data."{}}; \}}
+\DoxyCodeLine{112         \};}
+\DoxyCodeLine{113 }
+\DoxyCodeLine{114         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_compression_1_1_l_z_w___e_r_r_o_r___l340}{LZW\_ERROR\_L340}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{115         \{}
+\DoxyCodeLine{116             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}Error Code L340 when decompressing LZW data."{}}; \}}
+\DoxyCodeLine{117         \};}
+\DoxyCodeLine{118 }
+\DoxyCodeLine{138         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_a7cdc7e2d405c844ceef65a767922a0d5}{decompressLZW}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* data, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{int} dictionarySize, \textcolor{keywordtype}{size\_t} expectedSize = -\/1);}
+\DoxyCodeLine{139 }
+\DoxyCodeLine{156         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_ad70dae407e26323202890fd26cebe0ec}{decompressLZW}}(std::vector<unsigned char> data, \textcolor{keywordtype}{int} dictionarySize, \textcolor{keywordtype}{size\_t} expectedSize = -\/1);}
+\DoxyCodeLine{157 }
+\DoxyCodeLine{158 }
+\DoxyCodeLine{175         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_aa4be40123669395a679bb15d11a18527}{compressLZW}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* data, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{int}* codeSizePointer = \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{176 }
+\DoxyCodeLine{190         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_af806f23b1457ee45ce0db19043ad7058}{compressLZW}}(std::vector<unsigned char> data, \textcolor{keywordtype}{int}* codeSizePointer = \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{191 }
+\DoxyCodeLine{211         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_a230897b9e25977485e7fcd28b57d683b}{compressLZ77}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* data, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{int} maxBufferSize = 0x7FFF);}
+\DoxyCodeLine{212 }
+\DoxyCodeLine{229         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_a6dd2e3b0adfc1309a7980c4d0779f210}{compressLZ77}}(std::vector<unsigned char> data, \textcolor{keywordtype}{int} maxBufferSize = 0x7FFF);}
+\DoxyCodeLine{230 }
+\DoxyCodeLine{255         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_a8786b97b7ef12eb150752a89d73d6af2}{decompressLZ77}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* data, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{int} maxBufferSize = 0x7FFF, \textcolor{keywordtype}{size\_t} expectedSize = -\/1);}
+\DoxyCodeLine{256 }
+\DoxyCodeLine{278         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_a4d893442c90e9464c96f4e20994db137}{decompressLZ77}}(std::vector<unsigned char> data, \textcolor{keywordtype}{int} maxBufferSize = 0x7FFF, \textcolor{keywordtype}{size\_t} expectedSize = -\/1);}
+\DoxyCodeLine{279 }
+\DoxyCodeLine{280         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_compression_1_1_l_z_s_s___e_r_r_o_r}{LZSS\_ERROR}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{281         \{}
+\DoxyCodeLine{282             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}Error when decompressing LZSS data."{}}; \}}
+\DoxyCodeLine{283         \};}
+\DoxyCodeLine{284 }
+\DoxyCodeLine{301         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_ac3f7018fe21ec94a9ba2332eb31d173b}{compressLZSS}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* data, \textcolor{keywordtype}{int} size);}
+\DoxyCodeLine{302 }
+\DoxyCodeLine{316         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_a565c87acb428b9e401ce2d21dbbb315a}{compressLZSS}}(std::vector<unsigned char> data);}
+\DoxyCodeLine{317         }
+\DoxyCodeLine{339         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_aa2863204e5ca4b3e49b325d3093305e5}{decompressLZSS}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* data, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{size\_t} expectedSize = -\/1);}
+\DoxyCodeLine{340 }
+\DoxyCodeLine{359         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_ac023a5127506e1c9080934f068caafb6}{decompressLZSS}}(std::vector<unsigned char> data, \textcolor{keywordtype}{size\_t} expectedSize = -\/1);}
+\DoxyCodeLine{360 }
+\DoxyCodeLine{361         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_compression_1_1_h_u_f_f_m_a_n___t_r_e_e___e_r_r_o_r}{HUFFMAN\_TREE\_ERROR}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{362         \{}
+\DoxyCodeLine{363             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}Invalid Huffman tree used."{}}; \}}
+\DoxyCodeLine{364         \};}
+\DoxyCodeLine{365 }
+\DoxyCodeLine{381         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_aa426e858821491c5dae797f7adb80d92}{compressHuffman}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* data, \textcolor{keywordtype}{int} size, \mbox{\hyperlink{classglib_1_1_binary_tree}{BinaryTree<HuffmanNode>}}* tree);}
+\DoxyCodeLine{382 }
+\DoxyCodeLine{395         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_a331f0f1a152d15e8bbd156cd80f3078b}{compressHuffman}}(std::vector<unsigned char> data, \mbox{\hyperlink{classglib_1_1_binary_tree}{BinaryTree<HuffmanNode>}}* tree);}
+\DoxyCodeLine{396 }
+\DoxyCodeLine{418         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_af92bd3d465631fd51be81d96e3ec98a0}{decompressHuffman}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* data, \textcolor{keywordtype}{int} size, \mbox{\hyperlink{classglib_1_1_binary_tree}{BinaryTree<HuffmanNode>}}* tree, \textcolor{keywordtype}{size\_t} expectedSize = -\/1);}
+\DoxyCodeLine{419 }
+\DoxyCodeLine{438         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_a3654c50c6a42190de76cf2e3ee033058}{decompressHuffman}}(std::vector<unsigned char> data, \mbox{\hyperlink{classglib_1_1_binary_tree}{BinaryTree<HuffmanNode>}}* tree, \textcolor{keywordtype}{size\_t} expectedSize = -\/1);}
+\DoxyCodeLine{439 }
+\DoxyCodeLine{440         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_compression_1_1_h_u_f_f_m_a_n___c_a_n_o_n_i_c_a_l___e_r_r_o_r}{HUFFMAN\_CANONICAL\_ERROR}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{441         \{}
+\DoxyCodeLine{442             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}Error creating Cannonical Huffman Tree."{}}; \}}
+\DoxyCodeLine{443         \};}
+\DoxyCodeLine{444 }
+\DoxyCodeLine{462         \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{463         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_binary_tree}{BinaryTree<HuffmanNode>}}* \mbox{\hyperlink{classglib_1_1_compression_a0aed705eee96ea7f90fec8d0ed295fa1}{buildHuffmanTree}}(T* data, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{int} maxCodeLength = -\/1);}
+\DoxyCodeLine{464 }
+\DoxyCodeLine{491         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_binary_tree}{BinaryTree<HuffmanNode>}}* \mbox{\hyperlink{classglib_1_1_compression_a87bc6fbc91ffa40578e20c664ed06ca9}{buildCanonicalHuffmanTree}}(\textcolor{keywordtype}{int}* dataValue, \textcolor{keywordtype}{int} sizeOfData, \textcolor{keywordtype}{int}* codeLength, \textcolor{keywordtype}{int} sizeOfCodeLengths, \textcolor{keywordtype}{bool} separateCodes = \textcolor{keyword}{true}, \textcolor{keywordtype}{bool} rmsb = \textcolor{keyword}{false});}
+\DoxyCodeLine{492 }
+\DoxyCodeLine{522         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_ab064e441a5cc3452fa952665ceca207e}{compressDeflate}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* data, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{int} blocks, \textcolor{keywordtype}{int} compressionLevel = 7, \textcolor{keywordtype}{bool} customTable = \textcolor{keyword}{false});}
+\DoxyCodeLine{523 }
+\DoxyCodeLine{550         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_afd776206d5d7e80a2f398a3b40207e89}{compressDeflate}}(std::vector<unsigned char> data, \textcolor{keywordtype}{int} blocks, \textcolor{keywordtype}{int} compressionLevel = 7, \textcolor{keywordtype}{bool} customTable = \textcolor{keyword}{false});}
+\DoxyCodeLine{551 }
+\DoxyCodeLine{552         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_compression_1_1_d_e_f_l_a_t_e___i_n_v_a_l_i_d___m_o_d_e}{DEFLATE\_INVALID\_MODE}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{553         \{}
+\DoxyCodeLine{554             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}Error when decompressing deflate block. Invalid compression mode found."{}}; \}}
+\DoxyCodeLine{555         \};}
+\DoxyCodeLine{556         }
+\DoxyCodeLine{574         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_afc1c7fe6d49ab02fdc77caa32e363989}{decompressDeflate}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* data, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{size\_t} expectedSize = -\/1);}
+\DoxyCodeLine{575 }
+\DoxyCodeLine{593         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_af744cae176359d2040f9095f5d69145a}{decompressDeflate}}(std::vector<unsigned char> data, \textcolor{keywordtype}{size\_t} expectedSize = -\/1);}
+\DoxyCodeLine{594 }
+\DoxyCodeLine{599         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_compression_a3711fc2c6eb9c3c23e3850f1413295fb}{compressArithmetic}}(std::vector<unsigned char> data, std::vector<double>\& percentages);}
+\DoxyCodeLine{600 }
+\DoxyCodeLine{605         \textcolor{keyword}{static} std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_compression_ade5cc012fe95dc3dfa39f1fce8b5c7a9}{decompressArithmetic}}(\textcolor{keywordtype}{double} data, \textcolor{keywordtype}{int} messageSize, std::vector<double> percentages);}
+\DoxyCodeLine{606 }
+\DoxyCodeLine{619         \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_compression_aae23326302c9f9a1fe329ad6974c019a}{adler32}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* data, \textcolor{keywordtype}{int} size);}
+\DoxyCodeLine{620 }
+\DoxyCodeLine{630         \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_compression_a0758870d09fbd7a3711514b6c3115e3d}{adler32}}(std::vector<unsigned char> data);}
+\DoxyCodeLine{631 }
+\DoxyCodeLine{632         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} CRC\_8 = 0;}
+\DoxyCodeLine{633         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} CRC\_16 = 1;}
+\DoxyCodeLine{634         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} CRC\_32 = 2;}
+\DoxyCodeLine{635         }
+\DoxyCodeLine{655         \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_compression_abc706e49226e01336b0201a89a53f7f5}{crc}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* data, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} type = CRC\_32);}
+\DoxyCodeLine{656 }
+\DoxyCodeLine{676         \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_compression_aa89f1360029855cf7c818ef6de9c33a2}{crc}}(std::vector<unsigned char> data, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} type = CRC\_32);}
+\DoxyCodeLine{677 }
+\DoxyCodeLine{678     \textcolor{keyword}{private}:}
+\DoxyCodeLine{679 }
+\DoxyCodeLine{680         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_binary_tree}{BinaryTree<HuffmanNode>}}* buildHuffmanTreeSubFunc(\mbox{\hyperlink{classglib_1_1_frequency_table}{FrequencyTable<int>}}* freqTable);}
+\DoxyCodeLine{681         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_binary_tree}{BinaryTree<HuffmanNode>}}* buildLimitedHuffmanTreeSubFunc(\mbox{\hyperlink{classglib_1_1_frequency_table}{FrequencyTable<int>}}* freqTable, \textcolor{keywordtype}{int} maxCodeLength);}
+\DoxyCodeLine{682         }
+\DoxyCodeLine{683         \textcolor{keyword}{static} \textcolor{keywordtype}{void} fillHuffmanTable(\mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode<HuffmanNode>}}* treeNode, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int}* table, \textcolor{keywordtype}{int} length, \textcolor{keywordtype}{int} code);}
+\DoxyCodeLine{684 }
+\DoxyCodeLine{685         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_binary_tree}{BinaryTree<HuffmanNode>}}* buildDeflateDefaultTree();}
+\DoxyCodeLine{686         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_binary_tree}{BinaryTree<HuffmanNode>}}** buildDynamicDeflateTree(\mbox{\hyperlink{classglib_1_1_binary_set}{BinarySet}}* data, \textcolor{keywordtype}{int}* currentLocation);}
+\DoxyCodeLine{687 }
+\DoxyCodeLine{688         \textcolor{keyword}{static} \textcolor{keywordtype}{void} getCopyLengthInformation(\textcolor{keywordtype}{int} code, \textcolor{keywordtype}{int}* baseValue, \textcolor{keywordtype}{int}* extraBits);}
+\DoxyCodeLine{689         \textcolor{keyword}{static} \textcolor{keywordtype}{void} getBackDistanceInformation(\textcolor{keywordtype}{int} code, \textcolor{keywordtype}{int}* baseValue, \textcolor{keywordtype}{int}* extraBits);}
+\DoxyCodeLine{690 }
+\DoxyCodeLine{691         \textcolor{keyword}{static} \textcolor{keywordtype}{void} compressDeflateSubFunction(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* data, \textcolor{keywordtype}{int} size, std::vector<lengthPair>* outputData, \textcolor{keywordtype}{int} compressionLevel = 7);}
+\DoxyCodeLine{692         \textcolor{keyword}{static} \textcolor{keywordtype}{void} compressDeflateSubFunction2(std::vector<lengthPair>* block, \mbox{\hyperlink{classglib_1_1_binary_set}{BinarySet}}* output, \textcolor{keywordtype}{bool} dynamic, \textcolor{keywordtype}{bool} lastBlock);}
+\DoxyCodeLine{693         }
+\DoxyCodeLine{694         \textcolor{keyword}{static} \textcolor{keywordtype}{void} buildCanonicalHuffTreeFromHuffTreeSubFunc(\mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode<HuffmanNode>}}* tree);}
+\DoxyCodeLine{695 }
+\DoxyCodeLine{696     \};}
+\DoxyCodeLine{697 }
+\DoxyCodeLine{698     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{699     \mbox{\hyperlink{classglib_1_1_binary_tree}{BinaryTree<HuffmanNode>}}* \mbox{\hyperlink{classglib_1_1_compression_a0aed705eee96ea7f90fec8d0ed295fa1}{Compression::buildHuffmanTree}}(T* data, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{int} maxCodeLength)}
+\DoxyCodeLine{700     \{}
+\DoxyCodeLine{701         \textcolor{keywordflow}{if}(size <= 0)}
+\DoxyCodeLine{702         \{}
+\DoxyCodeLine{703 \textcolor{preprocessor}{            \#ifdef USE\_EXCEPTIONS}}
+\DoxyCodeLine{704             \textcolor{keywordflow}{throw} \mbox{\hyperlink{structglib_1_1_invalid_size_error}{InvalidSizeError}}();}
+\DoxyCodeLine{705 \textcolor{preprocessor}{            \#endif}}
+\DoxyCodeLine{706             \textcolor{keywordflow}{return} \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{707         \}}
+\DoxyCodeLine{708 }
+\DoxyCodeLine{709         \textcolor{keywordflow}{if}(data == \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{710         \{}
+\DoxyCodeLine{711 \textcolor{preprocessor}{            \#ifdef USE\_EXCEPTIONS}}
+\DoxyCodeLine{712             \textcolor{keywordflow}{throw} \mbox{\hyperlink{structglib_1_1_invalid_data_error}{InvalidDataError}}();}
+\DoxyCodeLine{713 \textcolor{preprocessor}{            \#endif}}
+\DoxyCodeLine{714             \textcolor{keywordflow}{return} \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{715         \}}
+\DoxyCodeLine{716 }
+\DoxyCodeLine{717         \textcolor{comment}{//First pass is to fill the frequency table}}
+\DoxyCodeLine{718         time\_t t1, t2;}
+\DoxyCodeLine{719         \mbox{\hyperlink{classglib_1_1_frequency_table}{FrequencyTable<int>}} freqTable = \mbox{\hyperlink{classglib_1_1_frequency_table}{FrequencyTable<int>}}();}
+\DoxyCodeLine{720         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < size; i++)}
+\DoxyCodeLine{721         \{}
+\DoxyCodeLine{722             freqTable.\mbox{\hyperlink{classglib_1_1_frequency_table_a4c0fd70923b6a9596d2b05b37dba416e}{add}}((\textcolor{keywordtype}{int})data[i]);}
+\DoxyCodeLine{723         \}}
+\DoxyCodeLine{724 }
+\DoxyCodeLine{725         \textcolor{keywordflow}{if}(maxCodeLength<=0)}
+\DoxyCodeLine{726         \{}
+\DoxyCodeLine{727             \mbox{\hyperlink{classglib_1_1_binary_tree}{BinaryTree<HuffmanNode>}}* retVal = buildHuffmanTreeSubFunc(\&freqTable);}
+\DoxyCodeLine{728             \textcolor{keywordflow}{return} retVal;}
+\DoxyCodeLine{729         \}}
+\DoxyCodeLine{730         \textcolor{keywordflow}{else}}
+\DoxyCodeLine{731         \{}
+\DoxyCodeLine{732             \mbox{\hyperlink{classglib_1_1_binary_tree}{BinaryTree<HuffmanNode>}}* retVal = buildLimitedHuffmanTreeSubFunc(\&freqTable, maxCodeLength);}
+\DoxyCodeLine{733             \textcolor{keywordflow}{return} retVal;}
+\DoxyCodeLine{734         \}}
+\DoxyCodeLine{735     \}}
+\DoxyCodeLine{736 }
+\DoxyCodeLine{737 \}  \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

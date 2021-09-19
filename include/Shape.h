@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <functional>
 #include "MathExt.h"
 #include "Object.h"
 
@@ -9,23 +10,84 @@ namespace glib
 	class Shape : public Object
 	{
 	public:
+		/**
+		 * @brief Constructs a generic shape object for Collision.
+		 * 		Note that this class should be extended using subclasses.
+		 * 		Contains general information such as position, scale, and rotation.
+		 */
 		Shape();
+
+		/**
+		 * @brief Destroy the Shape object
+		 * 
+		 */
 		~Shape();
 
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
 
-		void setPosition(Vec3f posPointer);
+		/**
+		 * @brief Set the Position of the shape.
+		 * 
+		 * @param pos
+		 * 		A 3D vector representing position. If the shape is 2D, the z axis can be ignored. 
+		 */
+		void setPosition(Vec3f pos);
+
+		/**
+		 * @brief Get the Position of the shape.
+		 * 
+		 * @return Vec3f 
+		 */
 		Vec3f getPosition();
 
-		void setScale(Vec3f posScale);
+		/**
+		 * @brief Set the Scale of the shape.
+		 * 		Note that shome shapes may not factor in the scale.
+		 * 
+		 * @param sca 
+		 * 		A 3D vector representing scale. If the shape is 2D, the z axis can be ignored. 
+		 * 		
+		 */
+		void setScale(Vec3f sca);
+
+		/**
+		 * @brief Get the Scale of the shape.
+		 * 
+		 * @return Vec3f 
+		 */
 		Vec3f getScale();
 
-		void setRotation(Vec3f posRotation);
+		/**
+		 * @brief Set the Rotation of the shape.
+		 * 		Note that some shapes may not factor in the rotation.
+		 * 
+		 * @param rot 
+		 * 		A 3D vector representing rotation. If the shape is 2D, the y and z axis can be ignored. 
+		 * 
+		 */
+		void setRotation(Vec3f rot);
+
+		/**
+		 * @brief Get the Rotation of the shape.
+		 * 
+		 * @return Vec3f 
+		 */
 		Vec3f getRotation();
 
+		/**
+		 * @brief A virtual function to apply transforms to the object before collision.
+		 * 
+		 */
 		virtual void transform();
+
+		/**
+		 * @brief A virtual function to create either a bounding circle or bounding sphere.
+		 * 		Useful for eliminating collisions.
+		 * 
+		 * @return double 
+		 */
 		virtual double generateBoundingRadius();
 		
 	protected:
@@ -37,15 +99,49 @@ namespace glib
 	class CombinationShape : public Shape
 	{
 	public:
+		/**
+		 * @brief Construct a new Combination Shape object
+		 * 		Contains a list of shapes that make up the current shape.
+		 * 		If either shape collides with something, it is considered a collision.
+		 * 
+		 * 		Note that this object also contains a position, scale, and rotation. 
+		 * 		These will be applied before the shapes transforms are.
+		 * 
+		 */
 		CombinationShape();
+
+		/**
+		 * @brief Destroy the Combination Shape object
+		 * 
+		 */
 		~CombinationShape();
 
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
 		
+		/**
+		 * @brief Adds a shape to the list.
+		 * 
+		 * @param s 
+		 * 		A valid shape.
+		 */
 		void addShape(Shape s);
+
+		/**
+		 * @brief Gets a Shape from the list.
+		 * 
+		 * @param i 
+		 * 		The index of the shape.
+		 * @return Shape 
+		 */
 		Shape getShape(int i);
+
+		/**
+		 * @brief Returns the amount of shapes in the list.
+		 * 
+		 * @return int 
+		 */
 		int size();
 
 	private:
@@ -57,21 +153,62 @@ namespace glib
 	class Point2D : public Shape
 	{
 	public:
+		/**
+		 * @brief Construct a new Point2D object
+		 * 		Default position is (0,0)
+		 * 
+		 */
 		Point2D();
+
+		/**
+		 * @brief Construct a new Point2D object
+		 * 
+		 * @param pos
+		 * 		The position to set the point at.
+		 */
 		Point2D(Vec2f pos);
+
+		/**
+		 * @brief Destroy the Point2D object
+		 * 
+		 */
 		~Point2D();
 
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
 
+		/**
+		 * @brief Generates the bounding radius for the point.
+		 * 		Returns the value 0 because it is a point.
+		 * 
+		 * @return double 
+		 */
 		double generateBoundingRadius();
 	};
 
 	class Box2D : public Shape
 	{
 	public:
+		/**
+		 * @brief Construct a new Box2D object
+		 * 		It represents an Axis Aligned Bounding Box (AABB) so rotation does not
+		 * 		affect the shape.
+		 * 		Default bounds are all 0.
+		 * 		
+		 */
 		Box2D();
+
+		/**
+		 * @brief Construct a new Box2D object
+		 * 		It represents an Axis Aligned Bounding Box (AABB) so rotation does not
+		 * 		affect the shape.
+		 * 
+		 * @param leftBound 
+		 * @param topBound 
+		 * @param rightBound 
+		 * @param bottomBound 
+		 */
 		Box2D(double leftBound, double topBound, double rightBound, double bottomBound);
 		~Box2D();
 		
@@ -79,18 +216,67 @@ namespace glib
 		const Class* getClass();
 		static const Class myClass;
 		
+		/**
+		 * @brief Set the Left Bound of the AABB
+		 * 
+		 * @param lb 
+		 */
 		void setLeftBound(double lb);
+
+		/**
+		 * @brief Get the Left Bound of the AABB
+		 * 
+		 * @return double 
+		 */
 		double getLeftBound();
 
+		/**
+		 * @brief Set the Top Bound of the AABB
+		 * 
+		 * @param tb 
+		 */
 		void setTopBound(double tb);
+
+		/**
+		 * @brief Get the Top Bound of the AABB
+		 * 
+		 * @return double 
+		 */
 		double getTopBound();
 
+		/**
+		 * @brief Set the Right Bound of the AABB
+		 * 
+		 * @param tb 
+		 */
 		void setRightBound(double rb);
+
+		/**
+		 * @brief Get the Right Bound of the AABB
+		 * 
+		 * @return double 
+		 */
 		double getRightBound();
 
+		/**
+		 * @brief Set the Bottom Bound of the AABB
+		 * 
+		 * @param tb 
+		 */
 		void setBottomBound(double bb);
+
+		/**
+		 * @brief Get the Bottom Bound of the AABB
+		 * 
+		 * @return double 
+		 */
 		double getBottomBound();
 
+		/**
+		 * @brief Generates a bounding radius for the AABB.
+		 * 		(Implement later)
+		 * @return double 
+		 */
 		double generateBoundingRadius();
 	private:
 		double lBound = 0;
@@ -102,17 +288,54 @@ namespace glib
 	class Circle : public Shape
 	{
 	public:
+		/**
+		 * @brief Construct a new Circle object
+		 * 		A Circle is separate from an Ellipse so scale will not affect this shape.
+		 * 		Rotation will not affect the shape either.
+		 * 		Default radius is 0.
+		 * 
+		 */
 		Circle();
+
+		/**
+		 * @brief Construct a new Circle object
+		 * 		A Circle is separate from an Ellipse so scale will not affect this shape.
+		 * 		Rotation will not affect the shape either.
+		 * 
+		 * @param rad 
+		 */
 		Circle(double rad);
+
+		/**
+		 * @brief Destroy the Circle object
+		 * 
+		 */
 		~Circle();
 
+		/**
+		 * @brief Get the Radius of the Circle
+		 * 
+		 * @return double 
+		 */
 		double getRadius();
+
+		/**
+		 * @brief Set the Radius of the Circle
+		 * 
+		 * @param rad 
+		 */
 		void setRadius(double rad);
 
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
 
+		/**
+		 * @brief Generates the bounding radius for the circle.
+		 * 		Returns the radius of the circle.
+		 * 
+		 * @return double 
+		 */
 		double generateBoundingRadius();
 		
 	private:
@@ -122,19 +345,66 @@ namespace glib
 	class Ellipse : public Shape
 	{
 	public:
+		/**
+		 * @brief Construct a new Ellipse object
+		 * 		All transforms effect this shape. (Not yet implemented)
+		 * 		Default xRadius and yRadius are 0.
+		 * 
+		 */
 		Ellipse();
+
+		/**
+		 * @brief Construct a new Ellipse object
+		 * 		All transforms effect this shape. (Not yet implemented)
+		 * 
+		 * @param xRad 
+		 * @param yRad 
+		 */
 		Ellipse(double xRad, double yRad);
+
+		/**
+		 * @brief Destroy the Ellipse object
+		 * 
+		 */
 		~Ellipse();
 
+		/**
+		 * @brief Gets the X radius of the Ellipse.
+		 * 
+		 * @return double 
+		 */
 		double getXRadius();
+
+		/**
+		 * @brief Sets the X radius of the Ellipse.
+		 * 
+		 * @param rad 
+		 */
 		void setXRadius(double rad);
+
+		/**
+		 * @brief Gets the Y radius of the Ellipse.
+		 * 
+		 * @return double 
+		 */
 		double getYRadius();
+
+		/**
+		 * @brief Sets the Y radius of the Ellipse.
+		 * 
+		 * @param rad 
+		 */
 		void setYRadius(double rad);
 
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
 		
+		/**
+		 * @brief Generates the bounding radius of the Ellipse.
+		 * 
+		 * @return double 
+		 */
 		double generateBoundingRadius();
 	private:
 		double xRadius = 0;
@@ -145,68 +415,221 @@ namespace glib
 	class Line2D : public Shape
 	{
 	public:
+		/**
+		 * @brief Construct a new Line2D object
+		 * 		All transforms affect this shape. (Not implemented)
+		 * 		Default line is from (0,0) to (0,0)
+		 * 
+		 */
 		Line2D();
+
+		/**
+		 * @brief Construct a new Line2D object
+		 * 		All transforms affect this shape. (Not implemented)
+		 * 
+		 * @param x1 
+		 * @param y1 
+		 * @param x2 
+		 * @param y2 
+		 */
 		Line2D(double x1, double y1, double x2, double y2);
+
+		/**
+		 * @brief Construct a new Line2D object
+		 * 		All transforms affect this shape. (Not implemented)
+		 * 
+		 * @param p1 
+		 * @param p2 
+		 */
 		Line2D(Vec2f p1, Vec2f p2);
+
+		/**
+		 * @brief Destroy the Line2D object
+		 * 
+		 */
 		~Line2D();
 
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
 		
+		/**
+		 * @brief Sets the first point of the line
+		 * 
+		 * @param p 
+		 */
 		void setPoint1(Vec2f p);
+
+		/**
+		 * @brief Sets the first point of the line
+		 * 
+		 * @param x 
+		 * @param y 
+		 */
 		void setPoint1(double x, double y);
 
+		/**
+		 * @brief Sets the second point of the line
+		 * 
+		 * @param p 
+		 */
 		void setPoint2(Vec2f p);
+
+		/**
+		 * @brief Sets the second point of the line
+		 * 
+		 * @param x 
+		 * @param y 
+		 */
 		void setPoint2(double x, double y);
 
+		/**
+		 * @brief Gets the first point of the line
+		 * 
+		 * @return Vec2f 
+		 */
 		Vec2f getPoint1();
+
+		/**
+		 * @brief Gets the second point of the line
+		 * 
+		 * @return Vec2f 
+		 */
 		Vec2f getPoint2();
 
-		double getSlope();
-		double getSlopeRelativeY();
-		double getYInt();
-		double getXInt();
+		/**
+		 * @brief Gets the Line that is represented by the 2 points.
+		 * 
+		 * @return Line 
+		 */
+		Line getLine();
 
-		double getMinX();
-		double getMaxX();
-		double getMinY();
-		double getMaxY();
-
+		/**
+		 * @brief Generates a bounding radius for the Line.
+		 * 
+		 * @return double 
+		 */
 		double generateBoundingRadius();
 
 	private:
-
-		Vec2f v1;
-		Vec2f v2;
+		Line l;
 	};
 
 	class Triangle2D : public Shape
 	{
 	public:
+		/**
+		 * @brief Construct a new Triangle2D object
+		 * 		All transforms affect this shape.
+		 * 		Default position are all (0,0)
+		 * 
+		 */
 		Triangle2D();
+
+		/**
+		 * @brief Construct a new Triangle2D object
+		 * 		All transforms affect this shape.
+		 * 
+		 * @param p1 
+		 * @param p2 
+		 * @param p3 
+		 */
 		Triangle2D(Vec2f p1, Vec2f p2, Vec2f p3);
+
+		/**
+		 * @brief Construct a new Triangle2D object
+		 * 		All transforms affect this shape.
+		 * 
+		 * @param x1 
+		 * @param y1 
+		 * @param x2 
+		 * @param y2 
+		 * @param x3 
+		 * @param y3 
+		 */
 		Triangle2D(double x1, double y1, double x2, double y2, double x3, double y3);
+
+		/**
+		 * @brief Destroy the Triangle2D object
+		 * 
+		 */
 		~Triangle2D();
 
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
 		
-
+		/**
+		 * @brief Sets the first vertex of the triangle
+		 * 
+		 * @param p 
+		 */
 		void setVertex1(Vec2f p);
+
+		/**
+		 * @brief Sets the first vertex of the triangle
+		 * 
+		 * @param x 
+		 * @param y 
+		 */
 		void setVertex1(double x, double y);
 
+		/**
+		 * @brief Sets the second vertex of the triangle
+		 * 
+		 * @param p 
+		 */
 		void setVertex2(Vec2f p);
+
+		/**
+		 * @brief Sets the second vertex of the triangle
+		 * 
+		 * @param x 
+		 * @param y 
+		 */
 		void setVertex2(double x, double y);
 
+		/**
+		 * @brief Sets the third vertex of the triangle
+		 * 
+		 * @param p 
+		 */
 		void setVertex3(Vec2f p);
+
+		/**
+		 * @brief Sets the third vertex of the triangle
+		 * 
+		 * @param x 
+		 * @param y 
+		 */
 		void setVertex3(double x, double y);
 
+		/**
+		 * @brief Gets the first vertex of the triangle
+		 * 
+		 * @return Vec2f 
+		 */
 		Vec2f getVertex1();
+
+		/**
+		 * @brief Gets the first vertex of the triangle
+		 * 
+		 * @return Vec2f 
+		 */
 		Vec2f getVertex2();
+
+		/**
+		 * @brief Gets the first vertex of the triangle
+		 * 
+		 * @return Vec2f 
+		 */
 		Vec2f getVertex3();
 
+		/**
+		 * @brief Generates a bounding radius for the triangle.
+		 * 
+		 * @return double 
+		 */
 		double generateBoundingRadius();
 	private:
 
@@ -218,21 +641,75 @@ namespace glib
 	class Polygon2D : public Shape
 	{
 	public:
+		/**
+		 * @brief Construct a new Polygon2D object
+		 * 		All transforms affect this shape.
+		 * 		Maintains a list of points that make up the shape.
+		 * 		Collision methods exist only for convex polygons.
+		 * 
+		 */
 		Polygon2D();
+
+		/**
+		 * @brief Destroy the Polygon2D object
+		 * 
+		 */
 		~Polygon2D();
 
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
 
+		/**
+		 * @brief Adds a vertex to the polygon.
+		 * 		The center point will be updated as well as whether it is convex or concave.
+		 * 
+		 * @param p 
+		 */
 		void addVertex(Vec2f p);
+
+		/**
+		 * @brief Gets a vertex from the polygon at the specified index.
+		 * 
+		 * @param index 
+		 * @return Vec2f 
+		 */
 		Vec2f getVertex(int index);
+
+		/**
+		 * @brief Gets the Center Point of the polygon.
+		 * 
+		 * @return Vec2f 
+		 */
 		Vec2f getCenterPoint();
+
+		/**
+		 * @brief Clears the list of vertices
+		 * 
+		 */
 		void clear();
+
+		/**
+		 * @brief Returns the amount of vertices the polygon has.
+		 * 
+		 * @return size_t 
+		 */
 		size_t size();
 
+		/**
+		 * @brief Returns whether the polygon is convex or concave.
+		 * 		If the shape is concave, none of the pre-made collision methods will work.
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
 		bool getConvex();
 
+		/**
+		 * @brief Generates a bounding radius for the polygon.
+		 * 
+		 * @return double 
+		 */
 		double generateBoundingRadius();
 	private:
 		void checkConcave();
@@ -291,6 +768,20 @@ namespace glib
 	{
 	public:
 		//Returns false if there is no matching function for both shapes
+
+		/**
+		 * @brief Returns if there is a collision for the 2 shapes.
+		 * 		Finds a valid collision method based on the class names.
+		 * 		If no valid collision method is found among the pre-made collision methods,
+		 * 		an external function can be defined to handle collision.
+		 * 		If the function does not exist or it could not resolve the collision, the function
+		 * 		returns false.
+		 * 
+		 * @param a 
+		 * @param b 
+		 * @return true 
+		 * @return false 
+		 */
 		static bool getCollision(Shape* a, Shape* b);
 
 		//Pre made collision functions
@@ -330,16 +821,46 @@ namespace glib
 		static bool collisionMethod(Triangle2D* a, Triangle2D* b); //TODO - MATH DONE
 
 		//Polygon Stuff
+		/**
+		 * @brief Uses the Separating Axis Theorem to determine if the 2 polygons are colliding.
+		 * 		Can determine the point of collision and if either shape is encapsulated in the other.
+		 * 
+		 * @param a 
+		 * @param b 
+		 * @return true 
+		 * @return false 
+		 */
 		static bool SeparatingAxisTheorem(Polygon2D* a, Polygon2D* b);
+
+		/**
+		 * @brief Uses a method called Alternating Diagonals to determine if the 2 polygons are colliding.
+		 * 		More information can be found here: https://www.youtube.com/watch?v=7Ik2vowGcU0
+		 * 		Can determine the point of collision easier than SAT and is potentially faster due to earlier termination
+		 * 		and simple line to line collisions.
+		 * 		By itself, it can not determine if either shape is encapsulated in the other.
+		 * 
+		 * @param a 
+		 * @param b 
+		 * @return true 
+		 * @return false 
+		 */
 		static bool AlternatingDiagonals(Polygon2D* a, Polygon2D* b);
+		
 		static bool collisionMethod(Polygon2D* a, Point2D* b);
 		static bool collisionMethod(Polygon2D* a, Circle* b);
 		static bool collisionMethod(Polygon2D* a, Ellipse* b);
 
 		//Used for any additional functions
-		static void setExternalCollisionFunction(bool(*extFunction)(Shape* a, Shape* b));
+		
+		/**
+		 * @brief Sets a function that can be used to handle collision not handled by the pre-made functions.
+		 * 		Note that this is slower due to accessing the function through a pointer.
+		 * 
+		 * @param collisionFunction 
+		 */
+		static void setExternalCollisionFunction(std::function<bool(Shape*,Shape*)> collisionFunction);
 	private:
-		static bool (*extCollision)(Shape* a, Shape* b);
+		static std::function<bool(Shape*, Shape*)> extCollision;
 	};
 
 }  //NAMESPACE glib END

@@ -1,0 +1,51 @@
+\hypertarget{_p_c_g_8h_source}{}\doxysection{PCG.\+h}
+\label{_p_c_g_8h_source}\index{include/PCG.h@{include/PCG.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include <iostream>}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{5 \{}
+\DoxyCodeLine{6 }
+\DoxyCodeLine{7     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_p_c_g}{PCG}}}
+\DoxyCodeLine{8     \{}
+\DoxyCodeLine{9     \textcolor{keyword}{public}:}
+\DoxyCodeLine{21         \mbox{\hyperlink{classglib_1_1_p_c_g_a2da113c83e79c483082df9bbcdf3c591}{PCG}}(uint64\_t seed = 0x4d595df4d0f33173, uint64\_t mulitplier = 6364136223846793005u, uint64\_t increment = 1442695040888963407u)}
+\DoxyCodeLine{22         \{}
+\DoxyCodeLine{23             this-\/>seed = seed;}
+\DoxyCodeLine{24             this-\/>multiplier = mulitplier;}
+\DoxyCodeLine{25             this-\/>increment = increment;}
+\DoxyCodeLine{26 }
+\DoxyCodeLine{27             seed+=increment;}
+\DoxyCodeLine{28             \mbox{\hyperlink{classglib_1_1_p_c_g_a8c296236a90d110c7f0063c157498bdb}{get}}();}
+\DoxyCodeLine{29         \}}
+\DoxyCodeLine{30         }
+\DoxyCodeLine{35         \mbox{\hyperlink{classglib_1_1_p_c_g_a644f7363081967061864185fc2b4626b}{\string~PCG}}()}
+\DoxyCodeLine{36         \{}
+\DoxyCodeLine{37 }
+\DoxyCodeLine{38         \}}
+\DoxyCodeLine{39 }
+\DoxyCodeLine{46         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_p_c_g_a8c296236a90d110c7f0063c157498bdb}{get}}()}
+\DoxyCodeLine{47         \{}
+\DoxyCodeLine{48             uint64\_t preSeed = seed;}
+\DoxyCodeLine{49             \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} count = preSeed >> 59;}
+\DoxyCodeLine{50             }
+\DoxyCodeLine{51             seed = preSeed*multiplier + increment;}
+\DoxyCodeLine{52             preSeed \string^= preSeed >> 18;}
+\DoxyCodeLine{53 }
+\DoxyCodeLine{54             \textcolor{keywordflow}{return} rotr32((\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int})(preSeed>>27), count);}
+\DoxyCodeLine{55         \}}
+\DoxyCodeLine{56     \textcolor{keyword}{private}:}
+\DoxyCodeLine{57         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} rotr32(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} x, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} r)}
+\DoxyCodeLine{58         \{}
+\DoxyCodeLine{59             \textcolor{keywordflow}{return} x >> r | x << (-\/r \& 31);}
+\DoxyCodeLine{60         \}}
+\DoxyCodeLine{61         uint64\_t seed = 0;}
+\DoxyCodeLine{62         uint64\_t multiplier = 0;}
+\DoxyCodeLine{63         uint64\_t increment = 0;}
+\DoxyCodeLine{64     \};}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

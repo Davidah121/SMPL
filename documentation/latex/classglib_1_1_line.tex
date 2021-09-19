@@ -1,0 +1,336 @@
+\hypertarget{classglib_1_1_line}{}\doxysection{glib\+::Line Class Reference}
+\label{classglib_1_1_line}\index{glib::Line@{glib::Line}}
+Inheritance diagram for glib\+::Line\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classglib_1_1_line}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_line_afb4ff6f81e9089bea93d1466081a3f26}\label{classglib_1_1_line_afb4ff6f81e9089bea93d1466081a3f26}} 
+{\bfseries Line} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_line}{Line}} object Useful for different math operations. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_line_a43e77cd61b53fb4f2ca7762daa86d3ba}{Line}} (int x1, int y1, int x2, int y2)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_line}{Line}} object Useful for different math operations. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_line_aea235974aeca592776543d458c497ed1}{Line}} (double x1, double y1, double x2, double y2)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_line}{Line}} object Useful for different math operations. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_line_ab1bbb6ad7e403984776fa452a84a5456}{Line}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p2)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_line}{Line}} object Useful for different math operations. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_line_a3432654787f7448d3e771ff166b64f8e}\label{classglib_1_1_line_a3432654787f7448d3e771ff166b64f8e}} 
+{\bfseries $\sim$\+Line} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_line}{Line}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_line_a6084154221632a6b39d146d571d5e574}{get\+Class}} ()
+\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_line_afc1ff1d71d395423ca2cbad5205a8c43}{get\+Point1}} ()
+\begin{DoxyCompactList}\small\item\em Gets the first point of the line. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_line_a5734753c6c165cd3129e72c57a3d9bb4}{get\+Point2}} ()
+\begin{DoxyCompactList}\small\item\em Get the second point of the line. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_line_a57be84a379beb8f28e85e29eec303af4}{get\+To\+Point}} ()
+\begin{DoxyCompactList}\small\item\em Returns a vector that represent the change from point1 to point2. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_line_ad596d5adeff71793f3206b283851e46e}{get\+MaxX}} ()
+\begin{DoxyCompactList}\small\item\em Get the max X between the defined points. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_line_a6657c44b0072667575ec953f498da1ba}{get\+MinX}} ()
+\begin{DoxyCompactList}\small\item\em Get the min X between the defined points. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_line_a707a2cc6a6cc7a0d880a1c03c684cfdb}{get\+MinY}} ()
+\begin{DoxyCompactList}\small\item\em Get the min Y between the defined points. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_line_a0533c02062dad24113a4ce5b4d87f548}{get\+MaxY}} ()
+\begin{DoxyCompactList}\small\item\em Get the max Y between the defined points. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_line_accdb5cb0d6e00aba18782515b87345ef}{get\+Slope}} ()
+\begin{DoxyCompactList}\small\item\em Returns the slope of the line. The slope may be invalid if the line is a vertical line. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_line_abc4369d7ad15e45e47d35da9415eaac0}{get\+Slope\+RelativeY}} ()
+\begin{DoxyCompactList}\small\item\em Returns the slope of the line relative to the y direction. The slope may be invalid if the line is a horizontal line. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_line_af1c9f21f36e06e9dbec90906da4b7f43}{get\+YInt}} ()
+\begin{DoxyCompactList}\small\item\em Returns the Y intersection point of the line. May be invalid if the line is a vertical line. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_line_a7ce6e7ae1159a505c1a1b0cf5b1f9c6b}{get\+XInt}} ()
+\begin{DoxyCompactList}\small\item\em Returns the X intersection point of the line. May be invalid if the line is a horizontal line. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_line_a60a238937be1433ccaf44e58a1a088f7}{solve\+ForX}} (double y)
+\begin{DoxyCompactList}\small\item\em Solves the line for an X value using a y value. May be invalid if the line is horizontal. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_line_a4ffe904d3646a20c911aac5575ae05df}{solve\+ForY}} (double x)
+\begin{DoxyCompactList}\small\item\em Solves the line for an Y value using a x value. May be invalid if the line is vertical. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_line_a6fafbc696db4a3783a8dba72757d9faf}{get\+Intersection}} (\mbox{\hyperlink{classglib_1_1_line}{Line}} other)
+\begin{DoxyCompactList}\small\item\em Gets the point of intersection with another line. May be invalid if the lines never intersect. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_line_af8a4982f7fdf953d1707fb1f3ca6a7d9}\label{classglib_1_1_line_af8a4982f7fdf953d1707fb1f3ca6a7d9}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_line_a43e77cd61b53fb4f2ca7762daa86d3ba}\label{classglib_1_1_line_a43e77cd61b53fb4f2ca7762daa86d3ba}} 
+\index{glib::Line@{glib::Line}!Line@{Line}}
+\index{Line@{Line}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{Line()}{Line()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily glib\+::\+Line\+::\+Line (\begin{DoxyParamCaption}\item[{int}]{x1,  }\item[{int}]{y1,  }\item[{int}]{x2,  }\item[{int}]{y2 }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_line}{Line}} object Useful for different math operations. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x1} & \\
+\hline
+{\em y1} & \\
+\hline
+{\em x2} & \\
+\hline
+{\em y2} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_line_aea235974aeca592776543d458c497ed1}\label{classglib_1_1_line_aea235974aeca592776543d458c497ed1}} 
+\index{glib::Line@{glib::Line}!Line@{Line}}
+\index{Line@{Line}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{Line()}{Line()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily glib\+::\+Line\+::\+Line (\begin{DoxyParamCaption}\item[{double}]{x1,  }\item[{double}]{y1,  }\item[{double}]{x2,  }\item[{double}]{y2 }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_line}{Line}} object Useful for different math operations. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x1} & \\
+\hline
+{\em y1} & \\
+\hline
+{\em x2} & \\
+\hline
+{\em y2} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_line_ab1bbb6ad7e403984776fa452a84a5456}\label{classglib_1_1_line_ab1bbb6ad7e403984776fa452a84a5456}} 
+\index{glib::Line@{glib::Line}!Line@{Line}}
+\index{Line@{Line}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{Line()}{Line()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily glib\+::\+Line\+::\+Line (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p1,  }\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p2 }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_line}{Line}} object Useful for different math operations. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p1} & \\
+\hline
+{\em p2} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_line_a6084154221632a6b39d146d571d5e574}\label{classglib_1_1_line_a6084154221632a6b39d146d571d5e574}} 
+\index{glib::Line@{glib::Line}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Line\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
+
+\mbox{\Hypertarget{classglib_1_1_line_a6fafbc696db4a3783a8dba72757d9faf}\label{classglib_1_1_line_a6fafbc696db4a3783a8dba72757d9faf}} 
+\index{glib::Line@{glib::Line}!getIntersection@{getIntersection}}
+\index{getIntersection@{getIntersection}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{getIntersection()}{getIntersection()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} glib\+::\+Line\+::get\+Intersection (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_line}{Line}}}]{other }\end{DoxyParamCaption})}
+
+
+
+Gets the point of intersection with another line. May be invalid if the lines never intersect. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other line to check for intersection with. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_line_ad596d5adeff71793f3206b283851e46e}\label{classglib_1_1_line_ad596d5adeff71793f3206b283851e46e}} 
+\index{glib::Line@{glib::Line}!getMaxX@{getMaxX}}
+\index{getMaxX@{getMaxX}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{getMaxX()}{getMaxX()}}
+{\footnotesize\ttfamily double glib\+::\+Line\+::get\+MaxX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the max X between the defined points. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_line_a0533c02062dad24113a4ce5b4d87f548}\label{classglib_1_1_line_a0533c02062dad24113a4ce5b4d87f548}} 
+\index{glib::Line@{glib::Line}!getMaxY@{getMaxY}}
+\index{getMaxY@{getMaxY}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{getMaxY()}{getMaxY()}}
+{\footnotesize\ttfamily double glib\+::\+Line\+::get\+MaxY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the max Y between the defined points. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_line_a6657c44b0072667575ec953f498da1ba}\label{classglib_1_1_line_a6657c44b0072667575ec953f498da1ba}} 
+\index{glib::Line@{glib::Line}!getMinX@{getMinX}}
+\index{getMinX@{getMinX}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{getMinX()}{getMinX()}}
+{\footnotesize\ttfamily double glib\+::\+Line\+::get\+MinX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the min X between the defined points. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_line_a707a2cc6a6cc7a0d880a1c03c684cfdb}\label{classglib_1_1_line_a707a2cc6a6cc7a0d880a1c03c684cfdb}} 
+\index{glib::Line@{glib::Line}!getMinY@{getMinY}}
+\index{getMinY@{getMinY}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{getMinY()}{getMinY()}}
+{\footnotesize\ttfamily double glib\+::\+Line\+::get\+MinY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the min Y between the defined points. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_line_afc1ff1d71d395423ca2cbad5205a8c43}\label{classglib_1_1_line_afc1ff1d71d395423ca2cbad5205a8c43}} 
+\index{glib::Line@{glib::Line}!getPoint1@{getPoint1}}
+\index{getPoint1@{getPoint1}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{getPoint1()}{getPoint1()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} glib\+::\+Line\+::get\+Point1 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the first point of the line. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_line_a5734753c6c165cd3129e72c57a3d9bb4}\label{classglib_1_1_line_a5734753c6c165cd3129e72c57a3d9bb4}} 
+\index{glib::Line@{glib::Line}!getPoint2@{getPoint2}}
+\index{getPoint2@{getPoint2}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{getPoint2()}{getPoint2()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} glib\+::\+Line\+::get\+Point2 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the second point of the line. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_line_accdb5cb0d6e00aba18782515b87345ef}\label{classglib_1_1_line_accdb5cb0d6e00aba18782515b87345ef}} 
+\index{glib::Line@{glib::Line}!getSlope@{getSlope}}
+\index{getSlope@{getSlope}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{getSlope()}{getSlope()}}
+{\footnotesize\ttfamily double glib\+::\+Line\+::get\+Slope (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the slope of the line. The slope may be invalid if the line is a vertical line. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_line_abc4369d7ad15e45e47d35da9415eaac0}\label{classglib_1_1_line_abc4369d7ad15e45e47d35da9415eaac0}} 
+\index{glib::Line@{glib::Line}!getSlopeRelativeY@{getSlopeRelativeY}}
+\index{getSlopeRelativeY@{getSlopeRelativeY}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{getSlopeRelativeY()}{getSlopeRelativeY()}}
+{\footnotesize\ttfamily double glib\+::\+Line\+::get\+Slope\+RelativeY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the slope of the line relative to the y direction. The slope may be invalid if the line is a horizontal line. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_line_a57be84a379beb8f28e85e29eec303af4}\label{classglib_1_1_line_a57be84a379beb8f28e85e29eec303af4}} 
+\index{glib::Line@{glib::Line}!getToPoint@{getToPoint}}
+\index{getToPoint@{getToPoint}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{getToPoint()}{getToPoint()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} glib\+::\+Line\+::get\+To\+Point (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns a vector that represent the change from point1 to point2. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_line_a7ce6e7ae1159a505c1a1b0cf5b1f9c6b}\label{classglib_1_1_line_a7ce6e7ae1159a505c1a1b0cf5b1f9c6b}} 
+\index{glib::Line@{glib::Line}!getXInt@{getXInt}}
+\index{getXInt@{getXInt}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{getXInt()}{getXInt()}}
+{\footnotesize\ttfamily double glib\+::\+Line\+::get\+XInt (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the X intersection point of the line. May be invalid if the line is a horizontal line. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_line_af1c9f21f36e06e9dbec90906da4b7f43}\label{classglib_1_1_line_af1c9f21f36e06e9dbec90906da4b7f43}} 
+\index{glib::Line@{glib::Line}!getYInt@{getYInt}}
+\index{getYInt@{getYInt}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{getYInt()}{getYInt()}}
+{\footnotesize\ttfamily double glib\+::\+Line\+::get\+YInt (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the Y intersection point of the line. May be invalid if the line is a vertical line. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_line_a60a238937be1433ccaf44e58a1a088f7}\label{classglib_1_1_line_a60a238937be1433ccaf44e58a1a088f7}} 
+\index{glib::Line@{glib::Line}!solveForX@{solveForX}}
+\index{solveForX@{solveForX}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{solveForX()}{solveForX()}}
+{\footnotesize\ttfamily double glib\+::\+Line\+::solve\+ForX (\begin{DoxyParamCaption}\item[{double}]{y }\end{DoxyParamCaption})}
+
+
+
+Solves the line for an X value using a y value. May be invalid if the line is horizontal. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em y} & The y value to check. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_line_a4ffe904d3646a20c911aac5575ae05df}\label{classglib_1_1_line_a4ffe904d3646a20c911aac5575ae05df}} 
+\index{glib::Line@{glib::Line}!solveForY@{solveForY}}
+\index{solveForY@{solveForY}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{solveForY()}{solveForY()}}
+{\footnotesize\ttfamily double glib\+::\+Line\+::solve\+ForY (\begin{DoxyParamCaption}\item[{double}]{x }\end{DoxyParamCaption})}
+
+
+
+Solves the line for an Y value using a x value. May be invalid if the line is vertical. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & The x value to check. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Line.\+h\end{DoxyCompactItemize}

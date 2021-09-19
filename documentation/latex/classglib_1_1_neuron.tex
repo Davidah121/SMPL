@@ -1,0 +1,162 @@
+\hypertarget{classglib_1_1_neuron}{}\doxysection{glib\+::Neuron Class Reference}
+\label{classglib_1_1_neuron}\index{glib::Neuron@{glib::Neuron}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_neuron_a1cc4492828e88720ac4310aef4db292b}\label{classglib_1_1_neuron_a1cc4492828e88720ac4310aef4db292b}} 
+{\bfseries Neuron} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_neuron}{Neuron}} object A neuron will hold its current activation, and its weights to all connections. Assumes that the neuron is connected to all neurons in the next layer. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_neuron_a3b0e9b8b9e31396c784b247f97d02c67}\label{classglib_1_1_neuron_a3b0e9b8b9e31396c784b247f97d02c67}} 
+{\bfseries $\sim$\+Neuron} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_neuron}{Neuron}} object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_neuron_a38ceb0b4d8d81a85aba410e1ca53ad06}{set\+Activation}} (double v)
+\begin{DoxyCompactList}\small\item\em Set the Activation of the neuron. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_neuron_a8b62a4aa2b3b4d69913e64a98833cc49}{get\+Activation}} ()
+\begin{DoxyCompactList}\small\item\em Get the Activation of the neuron. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_neuron_ab08a8fe87fd38cf6ad5c555be49cac56}{get\+Weight}} (int index)
+\begin{DoxyCompactList}\small\item\em Get the Weight to the specified connection. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_neuron_ae23bd1915806ab058814fd700204d552}{set\+Weight}} (int index, double v)
+\begin{DoxyCompactList}\small\item\em Sets the Weight to the specified connection. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_neuron_a0a5456c90d9e90da430b791d5e5a13a6}{reset\+Weights}} (int \mbox{\hyperlink{classglib_1_1_neuron_ab72b7f3b5919e47daf63fbd4e5a21107}{size}})
+\begin{DoxyCompactList}\small\item\em Resets the weights for the neuron. \end{DoxyCompactList}\item 
+double \& \mbox{\hyperlink{classglib_1_1_neuron_ae32489b65522b89d0f7483f134fcb53f}{operator\mbox{[}$\,$\mbox{]}}} (int index)
+\begin{DoxyCompactList}\small\item\em Returns the weight to a connection. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_neuron_ab72b7f3b5919e47daf63fbd4e5a21107}{size}} ()
+\begin{DoxyCompactList}\small\item\em Returns how many connections for the neuron. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_xml_node}{Xml\+Node}} $\ast$ \mbox{\hyperlink{classglib_1_1_neuron_a2deef4a3ff7e53573f0fb5a6c856e143}{export\+Test\+Information}} (int count)
+\begin{DoxyCompactList}\small\item\em An internal tool for exporting \mbox{\hyperlink{classglib_1_1_network}{Network}} information. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_neuron_a2deef4a3ff7e53573f0fb5a6c856e143}\label{classglib_1_1_neuron_a2deef4a3ff7e53573f0fb5a6c856e143}} 
+\index{glib::Neuron@{glib::Neuron}!exportTestInformation@{exportTestInformation}}
+\index{exportTestInformation@{exportTestInformation}!glib::Neuron@{glib::Neuron}}
+\doxysubsubsection{\texorpdfstring{exportTestInformation()}{exportTestInformation()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_xml_node}{Xml\+Node}} $\ast$ glib\+::\+Neuron\+::export\+Test\+Information (\begin{DoxyParamCaption}\item[{int}]{count }\end{DoxyParamCaption})}
+
+
+
+An internal tool for exporting \mbox{\hyperlink{classglib_1_1_network}{Network}} information. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em count} & The neuron number I guess? \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Xml\+Node$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neuron_a8b62a4aa2b3b4d69913e64a98833cc49}\label{classglib_1_1_neuron_a8b62a4aa2b3b4d69913e64a98833cc49}} 
+\index{glib::Neuron@{glib::Neuron}!getActivation@{getActivation}}
+\index{getActivation@{getActivation}!glib::Neuron@{glib::Neuron}}
+\doxysubsubsection{\texorpdfstring{getActivation()}{getActivation()}}
+{\footnotesize\ttfamily double glib\+::\+Neuron\+::get\+Activation (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the Activation of the neuron. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neuron_ab08a8fe87fd38cf6ad5c555be49cac56}\label{classglib_1_1_neuron_ab08a8fe87fd38cf6ad5c555be49cac56}} 
+\index{glib::Neuron@{glib::Neuron}!getWeight@{getWeight}}
+\index{getWeight@{getWeight}!glib::Neuron@{glib::Neuron}}
+\doxysubsubsection{\texorpdfstring{getWeight()}{getWeight()}}
+{\footnotesize\ttfamily double glib\+::\+Neuron\+::get\+Weight (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Get the Weight to the specified connection. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neuron_ae32489b65522b89d0f7483f134fcb53f}\label{classglib_1_1_neuron_ae32489b65522b89d0f7483f134fcb53f}} 
+\index{glib::Neuron@{glib::Neuron}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!glib::Neuron@{glib::Neuron}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}}
+{\footnotesize\ttfamily double \& glib\+::\+Neuron\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Returns the weight to a connection. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neuron_a0a5456c90d9e90da430b791d5e5a13a6}\label{classglib_1_1_neuron_a0a5456c90d9e90da430b791d5e5a13a6}} 
+\index{glib::Neuron@{glib::Neuron}!resetWeights@{resetWeights}}
+\index{resetWeights@{resetWeights}!glib::Neuron@{glib::Neuron}}
+\doxysubsubsection{\texorpdfstring{resetWeights()}{resetWeights()}}
+{\footnotesize\ttfamily void glib\+::\+Neuron\+::reset\+Weights (\begin{DoxyParamCaption}\item[{int}]{size }\end{DoxyParamCaption})}
+
+
+
+Resets the weights for the neuron. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em size} & The amount of connections. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_neuron_a38ceb0b4d8d81a85aba410e1ca53ad06}\label{classglib_1_1_neuron_a38ceb0b4d8d81a85aba410e1ca53ad06}} 
+\index{glib::Neuron@{glib::Neuron}!setActivation@{setActivation}}
+\index{setActivation@{setActivation}!glib::Neuron@{glib::Neuron}}
+\doxysubsubsection{\texorpdfstring{setActivation()}{setActivation()}}
+{\footnotesize\ttfamily void glib\+::\+Neuron\+::set\+Activation (\begin{DoxyParamCaption}\item[{double}]{v }\end{DoxyParamCaption})}
+
+
+
+Set the Activation of the neuron. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_neuron_ae23bd1915806ab058814fd700204d552}\label{classglib_1_1_neuron_ae23bd1915806ab058814fd700204d552}} 
+\index{glib::Neuron@{glib::Neuron}!setWeight@{setWeight}}
+\index{setWeight@{setWeight}!glib::Neuron@{glib::Neuron}}
+\doxysubsubsection{\texorpdfstring{setWeight()}{setWeight()}}
+{\footnotesize\ttfamily void glib\+::\+Neuron\+::set\+Weight (\begin{DoxyParamCaption}\item[{int}]{index,  }\item[{double}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets the Weight to the specified connection. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_neuron_ab72b7f3b5919e47daf63fbd4e5a21107}\label{classglib_1_1_neuron_ab72b7f3b5919e47daf63fbd4e5a21107}} 
+\index{glib::Neuron@{glib::Neuron}!size@{size}}
+\index{size@{size}!glib::Neuron@{glib::Neuron}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily int glib\+::\+Neuron\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns how many connections for the neuron. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Neural\+Network.\+h\end{DoxyCompactItemize}

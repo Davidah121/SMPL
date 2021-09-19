@@ -1,0 +1,73 @@
+\hypertarget{classglib_1_1_class}{}\doxysection{glib\+::Class Class Reference}
+\label{classglib_1_1_class}\index{glib::Class@{glib::Class}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_class_a4a6d18538146e3fd6fa3e265d1268066}{Class}} (std\+::string name=\char`\"{}\char`\"{}, std\+::vector$<$ const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ $>$ parent\+Classes=std\+::vector$<$ const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ $>$())
+\begin{DoxyCompactList}\small\item\em The base \mbox{\hyperlink{classglib_1_1_class}{Class}} object. Its purpose is to provide a more object oriented feel similar to Java. It stores a class name, and parent classes and can be accessed from individual objects during run time. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_class_a6746cb0d9e4d1cddda30b32ff2a05d06}\label{classglib_1_1_class_a6746cb0d9e4d1cddda30b32ff2a05d06}} 
+{\bfseries $\sim$\+Class} ()
+\begin{DoxyCompactList}\small\item\em Destroys a \mbox{\hyperlink{classglib_1_1_class}{Class}} object and removes it from the \mbox{\hyperlink{classglib_1_1_class_master}{Class\+Master}} list of all classes. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_class_a273d8a88d04041a50eb08f28391960f2}{is\+Parent\+Class}} (const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$k) const
+\begin{DoxyCompactList}\small\item\em Determines if a class is the parent of this class. \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classglib_1_1_class_aac682729c35f89b4779cb254901a5fa4}{get\+Class\+Name}} () const
+\begin{DoxyCompactList}\small\item\em Returns the name of the class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_class_a4a6d18538146e3fd6fa3e265d1268066}\label{classglib_1_1_class_a4a6d18538146e3fd6fa3e265d1268066}} 
+\index{glib::Class@{glib::Class}!Class@{Class}}
+\index{Class@{Class}!glib::Class@{glib::Class}}
+\doxysubsubsection{\texorpdfstring{Class()}{Class()}}
+{\footnotesize\ttfamily glib\+::\+Class\+::\+Class (\begin{DoxyParamCaption}\item[{std\+::string}]{name = {\ttfamily \char`\"{}\char`\"{}},  }\item[{std\+::vector$<$ const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ $>$}]{parent\+Classes = {\ttfamily std\+:\+:vector$<$~const~\mbox{\hyperlink{classglib_1_1_class}{Class}}~$\ast$~$>$()} }\end{DoxyParamCaption})}
+
+
+
+The base \mbox{\hyperlink{classglib_1_1_class}{Class}} object. Its purpose is to provide a more object oriented feel similar to Java. It stores a class name, and parent classes and can be accessed from individual objects during run time. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & The name of the class. It should be unique. \\
+\hline
+{\em parent\+Classes} & The list of parent classes for the current class. It should be a reference to the class object. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_class_aac682729c35f89b4779cb254901a5fa4}\label{classglib_1_1_class_aac682729c35f89b4779cb254901a5fa4}} 
+\index{glib::Class@{glib::Class}!getClassName@{getClassName}}
+\index{getClassName@{getClassName}!glib::Class@{glib::Class}}
+\doxysubsubsection{\texorpdfstring{getClassName()}{getClassName()}}
+{\footnotesize\ttfamily std\+::string glib\+::\+Class\+::get\+Class\+Name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Returns the name of the class. 
+
+\begin{DoxyReturn}{Returns}
+std\+::string 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_class_a273d8a88d04041a50eb08f28391960f2}\label{classglib_1_1_class_a273d8a88d04041a50eb08f28391960f2}} 
+\index{glib::Class@{glib::Class}!isParentClass@{isParentClass}}
+\index{isParentClass@{isParentClass}!glib::Class@{glib::Class}}
+\doxysubsubsection{\texorpdfstring{isParentClass()}{isParentClass()}}
+{\footnotesize\ttfamily bool glib\+::\+Class\+::is\+Parent\+Class (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$}]{k }\end{DoxyParamCaption}) const}
+
+
+
+Determines if a class is the parent of this class. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em k} & The parent class pointer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool Returns true if the class was found in its parent list. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Class.\+h\end{DoxyCompactItemize}

@@ -1,0 +1,223 @@
+\hypertarget{_sound_8h_source}{}\doxysection{Sound.\+h}
+\label{_sound_8h_source}\index{include/Sound.h@{include/Sound.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include "{}Vec2f.h"{}}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}File.h"{}}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{6 \{}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_sound}{Sound}}}
+\DoxyCodeLine{9     \{}
+\DoxyCodeLine{10     \textcolor{keyword}{public}:}
+\DoxyCodeLine{11 }
+\DoxyCodeLine{12         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} C0;}
+\DoxyCodeLine{13         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} C0\_SHARP;}
+\DoxyCodeLine{14         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} D0;}
+\DoxyCodeLine{15         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} D0\_SHARP;}
+\DoxyCodeLine{16         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} E0;}
+\DoxyCodeLine{17         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} F0;}
+\DoxyCodeLine{18         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} F0\_SHARP;}
+\DoxyCodeLine{19         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} G0;}
+\DoxyCodeLine{20         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} G0\_SHARP;}
+\DoxyCodeLine{21         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} A0;}
+\DoxyCodeLine{22         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} A0\_SHARP;}
+\DoxyCodeLine{23         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} B0;}
+\DoxyCodeLine{24 }
+\DoxyCodeLine{25         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} C1;}
+\DoxyCodeLine{26         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} C1\_SHARP;}
+\DoxyCodeLine{27         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} D1;}
+\DoxyCodeLine{28         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} D1\_SHARP;}
+\DoxyCodeLine{29         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} E1;}
+\DoxyCodeLine{30         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} F1;}
+\DoxyCodeLine{31         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} F1\_SHARP;}
+\DoxyCodeLine{32         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} G1;}
+\DoxyCodeLine{33         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} G1\_SHARP;}
+\DoxyCodeLine{34         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} A1;}
+\DoxyCodeLine{35         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} A1\_SHARP;}
+\DoxyCodeLine{36         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} B1;}
+\DoxyCodeLine{37 }
+\DoxyCodeLine{38         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} C2;}
+\DoxyCodeLine{39         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} C2\_SHARP;}
+\DoxyCodeLine{40         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} D2;}
+\DoxyCodeLine{41         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} D2\_SHARP;}
+\DoxyCodeLine{42         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} E2;}
+\DoxyCodeLine{43         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} F2;}
+\DoxyCodeLine{44         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} F2\_SHARP;}
+\DoxyCodeLine{45         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} G2;}
+\DoxyCodeLine{46         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} G2\_SHARP;}
+\DoxyCodeLine{47         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} A2;}
+\DoxyCodeLine{48         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} A2\_SHARP;}
+\DoxyCodeLine{49         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} B2;}
+\DoxyCodeLine{50 }
+\DoxyCodeLine{51         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} C3;}
+\DoxyCodeLine{52         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} C3\_SHARP;}
+\DoxyCodeLine{53         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} D3;}
+\DoxyCodeLine{54         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} D3\_SHARP;}
+\DoxyCodeLine{55         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} E3;}
+\DoxyCodeLine{56         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} F3;}
+\DoxyCodeLine{57         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} F3\_SHARP;}
+\DoxyCodeLine{58         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} G3;}
+\DoxyCodeLine{59         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} G3\_SHARP;}
+\DoxyCodeLine{60         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} A3;}
+\DoxyCodeLine{61         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} A3\_SHARP;}
+\DoxyCodeLine{62         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} B3;}
+\DoxyCodeLine{63 }
+\DoxyCodeLine{64         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} C4;}
+\DoxyCodeLine{65         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} C4\_SHARP;}
+\DoxyCodeLine{66         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} D4;}
+\DoxyCodeLine{67         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} D4\_SHARP;}
+\DoxyCodeLine{68         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} E4;}
+\DoxyCodeLine{69         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} F4;}
+\DoxyCodeLine{70         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} F4\_SHARP;}
+\DoxyCodeLine{71         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} G4;}
+\DoxyCodeLine{72         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} G4\_SHARP;}
+\DoxyCodeLine{73         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} A4;}
+\DoxyCodeLine{74         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} A4\_SHARP;}
+\DoxyCodeLine{75         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} B4;}
+\DoxyCodeLine{76 }
+\DoxyCodeLine{77         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} C5;}
+\DoxyCodeLine{78         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} C5\_SHARP;}
+\DoxyCodeLine{79         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} D5;}
+\DoxyCodeLine{80         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} D5\_SHARP;}
+\DoxyCodeLine{81         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} E5;}
+\DoxyCodeLine{82         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} F5;}
+\DoxyCodeLine{83         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} F5\_SHARP;}
+\DoxyCodeLine{84         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} G5;}
+\DoxyCodeLine{85         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} G5\_SHARP;}
+\DoxyCodeLine{86         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} A5;}
+\DoxyCodeLine{87         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} A5\_SHARP;}
+\DoxyCodeLine{88         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} B5;}
+\DoxyCodeLine{89 }
+\DoxyCodeLine{90         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} C6;}
+\DoxyCodeLine{91         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} C6\_SHARP;}
+\DoxyCodeLine{92         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} D6;}
+\DoxyCodeLine{93         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} D6\_SHARP;}
+\DoxyCodeLine{94         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} E6;}
+\DoxyCodeLine{95         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} F6;}
+\DoxyCodeLine{96         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} F6\_SHARP;}
+\DoxyCodeLine{97         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} G6;}
+\DoxyCodeLine{98         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} G6\_SHARP;}
+\DoxyCodeLine{99         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} A6;}
+\DoxyCodeLine{100         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} A6\_SHARP;}
+\DoxyCodeLine{101         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} B6;}
+\DoxyCodeLine{102 }
+\DoxyCodeLine{103         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} C7;}
+\DoxyCodeLine{104         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} C7\_SHARP;}
+\DoxyCodeLine{105         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} D7;}
+\DoxyCodeLine{106         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} D7\_SHARP;}
+\DoxyCodeLine{107         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} E7;}
+\DoxyCodeLine{108         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} F7;}
+\DoxyCodeLine{109         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} F7\_SHARP;}
+\DoxyCodeLine{110         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} G7;}
+\DoxyCodeLine{111         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} G7\_SHARP;}
+\DoxyCodeLine{112         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} A7;}
+\DoxyCodeLine{113         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} A7\_SHARP;}
+\DoxyCodeLine{114         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} B7;}
+\DoxyCodeLine{115 }
+\DoxyCodeLine{116         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} C8;}
+\DoxyCodeLine{117         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} C8\_SHARP;}
+\DoxyCodeLine{118         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} D8;}
+\DoxyCodeLine{119         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} D8\_SHARP;}
+\DoxyCodeLine{120         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} E8;}
+\DoxyCodeLine{121         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} F8;}
+\DoxyCodeLine{122         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} F8\_SHARP;}
+\DoxyCodeLine{123         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} G8;}
+\DoxyCodeLine{124         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} G8\_SHARP;}
+\DoxyCodeLine{125         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} A8;}
+\DoxyCodeLine{126         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} A8\_SHARP;}
+\DoxyCodeLine{127         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{float} B8;}
+\DoxyCodeLine{128 }
+\DoxyCodeLine{137         \mbox{\hyperlink{classglib_1_1_sound_aaabfd17608303902c2f977608b7004ae}{Sound}}();}
+\DoxyCodeLine{138 }
+\DoxyCodeLine{147         \mbox{\hyperlink{classglib_1_1_sound_a63402345e7cb95377dae43b3dcdd4905}{Sound}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_sound}{Sound}}\& other);}
+\DoxyCodeLine{148 }
+\DoxyCodeLine{156         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sound_a2a2bd0a578e1eefb99a3f4d2155b9cfc}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_sound}{Sound}}\& other);}
+\DoxyCodeLine{157 }
+\DoxyCodeLine{163         \mbox{\hyperlink{classglib_1_1_sound_a67ddb16656d3de56ab1a6d1a7cca8873}{\string~Sound}}();}
+\DoxyCodeLine{164 }
+\DoxyCodeLine{172         \mbox{\hyperlink{classglib_1_1_sound}{Sound}} \mbox{\hyperlink{classglib_1_1_sound_a2ca8145bcdf907125129e7bfcfdbc348}{copy}}(\textcolor{keywordtype}{bool} shallowCopy);}
+\DoxyCodeLine{173 }
+\DoxyCodeLine{179         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sound_a756f707cbe793612a9bcbf83b02b6e5a}{play}}();}
+\DoxyCodeLine{180 }
+\DoxyCodeLine{188         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_sound_a24e751f42ec44083ee5bdb1281295289}{getPlaying}}();}
+\DoxyCodeLine{189 }
+\DoxyCodeLine{194         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sound_a506dfa5aa9320637bef956e9102f8596}{stop}}();}
+\DoxyCodeLine{195 }
+\DoxyCodeLine{200         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sound_aaa5b8bfd4e2c8b83869cdb175da66853}{pause}}();}
+\DoxyCodeLine{201 }
+\DoxyCodeLine{208         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sound_aca4b81b11e8823b48c2c45e536d3fbac}{setVolume}}(\textcolor{keywordtype}{double} left, \textcolor{keywordtype}{double} right);}
+\DoxyCodeLine{209 }
+\DoxyCodeLine{215         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sound_a571f9ec19be5ba0a49286c5ed3fa5641}{setVolume}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} v);}
+\DoxyCodeLine{216 }
+\DoxyCodeLine{222         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_sound_aacd936ad36dc853279e37f049fa491e7}{getVolume}}();}
+\DoxyCodeLine{223 }
+\DoxyCodeLine{229         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sound_a7148c9f5481d91a13500f40ad0692f1d}{setLoop}}(\textcolor{keywordtype}{bool} l);}
+\DoxyCodeLine{230 }
+\DoxyCodeLine{237         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_sound_aeaefe6c7dfbd3bc3fe64037cfe4d7ea7}{getLoop}}();}
+\DoxyCodeLine{238 }
+\DoxyCodeLine{244         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}* \mbox{\hyperlink{classglib_1_1_sound_ac9a1135320aa07f478c0c3ea34f43d2d}{getData}}();}
+\DoxyCodeLine{245 }
+\DoxyCodeLine{252         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}\& \mbox{\hyperlink{classglib_1_1_sound_a748b6f3fda91841fe216cef9c968e960}{operator[]}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{253 }
+\DoxyCodeLine{260         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_sound_a115ea4127c7f80640414e4968cce3e7b}{get}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{261 }
+\DoxyCodeLine{267         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_sound_a698eb7d750826561ac9fecd3ceff9996}{getPosition}}();}
+\DoxyCodeLine{268 }
+\DoxyCodeLine{274         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sound_a81a8bd5c2a76e1a97baeff76c44a92d9}{setPosition}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{275 }
+\DoxyCodeLine{282         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sound_aff0545e182593fe2ed9fa79419215ea5}{setPriority}}(\textcolor{keywordtype}{int} v);}
+\DoxyCodeLine{283 }
+\DoxyCodeLine{289         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_sound_a23510555f8fdf792af03ad232aebf2b1}{getPriority}}();}
+\DoxyCodeLine{290 }
+\DoxyCodeLine{297         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_sound_a0b8acd64064924c105d7f2b8848efa4b}{getLength}}();}
+\DoxyCodeLine{298 }
+\DoxyCodeLine{304         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_sound_ace3a4afb2235fa7242d0bcca29ab5b45}{getLoopStart}}();}
+\DoxyCodeLine{305 }
+\DoxyCodeLine{311         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_sound_a78de7358e1a11d7a257e0a1c6ade3ef1}{getLoopEnd}}();}
+\DoxyCodeLine{312 }
+\DoxyCodeLine{318         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sound_aca66d5d39a5606ddc7d0fad7567155a0}{setLoopStart}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{319 }
+\DoxyCodeLine{325         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sound_a15362daf18072c7a2bdcf4d965e3257e}{setLoopStart}}(\textcolor{keywordtype}{double} time);}
+\DoxyCodeLine{326 }
+\DoxyCodeLine{332         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sound_a3003c7e24c8465122cb818c0dc81c509}{setLoopEnd}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{333 }
+\DoxyCodeLine{339         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sound_a9bd98bd9e2381cad1dae1156f07c5254}{setLoopEnd}}(\textcolor{keywordtype}{double} time);}
+\DoxyCodeLine{340 }
+\DoxyCodeLine{351         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sound_a1abfd2986eda879c46d53c066e00e8f4}{setData}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}* data, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{bool} isShallowCopy=\textcolor{keyword}{false});}
+\DoxyCodeLine{352 }
+\DoxyCodeLine{360         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sound_ae4a206c92f1ae6ccf1603813f3bf7b03}{copyData}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}* data, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} size);}
+\DoxyCodeLine{361 }
+\DoxyCodeLine{369         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sound_af602fedaa829e049ebcf5931027a12a7}{loadSound}}(\mbox{\hyperlink{classglib_1_1_file}{File}} file);}
+\DoxyCodeLine{370 }
+\DoxyCodeLine{377         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_sound_a72465c3b0811aff409c3f629ce52bc45}{saveWAV}}(\mbox{\hyperlink{classglib_1_1_file}{File}} file);}
+\DoxyCodeLine{378 }
+\DoxyCodeLine{379     \textcolor{keyword}{private}:}
+\DoxyCodeLine{380         \textcolor{keywordtype}{void} loadWAV(std::vector<unsigned char> data);}
+\DoxyCodeLine{381         }
+\DoxyCodeLine{382         \textcolor{keywordtype}{void} dispose();}
+\DoxyCodeLine{383 }
+\DoxyCodeLine{384         \textcolor{keywordtype}{void} deepCopy(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_sound}{Sound}}\& other);}
+\DoxyCodeLine{385         \textcolor{keywordtype}{void} shallowCopy(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_sound}{Sound}}\& other);}
+\DoxyCodeLine{386 }
+\DoxyCodeLine{387         \textcolor{keywordtype}{bool} playing = \textcolor{keyword}{false};}
+\DoxyCodeLine{388         \textcolor{keywordtype}{bool} looping = \textcolor{keyword}{false};}
+\DoxyCodeLine{389         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} volume = \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}(1.0, 1.0);}
+\DoxyCodeLine{390 }
+\DoxyCodeLine{391         \textcolor{keywordtype}{bool} isShallowCopy = \textcolor{keyword}{false};}
+\DoxyCodeLine{392 }
+\DoxyCodeLine{393         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}* data = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{394         }
+\DoxyCodeLine{395         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} priority = 0;}
+\DoxyCodeLine{396         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} position = 0;}
+\DoxyCodeLine{397         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} length = 0;}
+\DoxyCodeLine{398 }
+\DoxyCodeLine{399         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} loopStart = 0;}
+\DoxyCodeLine{400         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} loopEnd = 0;}
+\DoxyCodeLine{401     \};}
+\DoxyCodeLine{402 }
+\DoxyCodeLine{403 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

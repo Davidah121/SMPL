@@ -1,0 +1,361 @@
+\hypertarget{classglib_1_1_vector_shape}{}\doxysection{glib\+::Vector\+Shape Class Reference}
+\label{classglib_1_1_vector_shape}\index{glib::VectorShape@{glib::VectorShape}}
+Inheritance diagram for glib\+::Vector\+Shape\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.714286cm]{classglib_1_1_vector_shape}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_shape_ac1dd5b3826be91005b84e8df03856d87}\label{classglib_1_1_vector_shape_ac1dd5b3826be91005b84e8df03856d87}} 
+{\bfseries Vector\+Shape} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_vector_shape}{Vector\+Shape}} object A \mbox{\hyperlink{classglib_1_1_vector_shape}{Vector\+Shape}} is more of an abstract class. It should be extended using subclasses. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a7758cfe00f92a8a93ca74b72c51842ea}\label{classglib_1_1_vector_shape_a7758cfe00f92a8a93ca74b72c51842ea}} 
+{\bfseries $\sim$\+Vector\+Shape} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_vector_shape}{Vector\+Shape}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_vector_shape_a40129eb1d62aa3dc66d7b4bfe902b647}{get\+Class}} ()
+\item 
+virtual void \mbox{\hyperlink{classglib_1_1_vector_shape_afb72be232bc05006422d1bd0ebcf7311}{draw}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$buffer, int global\+Width, int global\+Height)
+\begin{DoxyCompactList}\small\item\em An abstract draw function. The expected behaviour is the function should only draw the filled in part and not the stroke. Any part that is considered apart of the stroke should not be drawn. This maybe more complex so the stroke may still be done in this function if desired. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classglib_1_1_vector_shape_a24ecc3162abe3c4fa4c8190529601574}{draw\+Stroke}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$buffer, int global\+Width, int global\+Height)
+\begin{DoxyCompactList}\small\item\em An abstract draw function. The expected behaviour is the function should only draw the stroke of the graphic. This function does not needed to be implemented if the stroke is used in the normal draw function. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_shape_a52dad68807d1fae49e65e91b74a5e503}{set\+Fill\+Method}} (bool value)
+\begin{DoxyCompactList}\small\item\em Sets the Fill Method for the graphic. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_vector_shape_ac7cb9167daaca8bcf4d7277fc5646ac7}{get\+Fill\+Method}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Fill Method for the graphic. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_shape_a50b9f47645cb9ee087aaa7c4e374dfbc}{set\+Fill\+Color}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} k)
+\begin{DoxyCompactList}\small\item\em Sets the Fill \mbox{\hyperlink{structglib_1_1_color}{Color}} for the graphic. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_vector_shape_a2422e8edd5353d23f1dd2596a90e79de}{get\+Fill\+Color}} ()
+\begin{DoxyCompactList}\small\item\em Get the Fill \mbox{\hyperlink{structglib_1_1_color}{Color}} for the graphic. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_shape_a4252b5a43c24432aa7af6d5da3cc3c8c}{set\+Stroke\+Color}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} k)
+\begin{DoxyCompactList}\small\item\em Set the Stroke \mbox{\hyperlink{structglib_1_1_color}{Color}} for the graphic. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_vector_shape_a261fe311cc1babe43d532cf490a638c1}{get\+Stroke\+Color}} ()
+\begin{DoxyCompactList}\small\item\em Get the Stroke \mbox{\hyperlink{structglib_1_1_color}{Color}} for the graphic. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_shape_a8b4cf918a424b83313a56c0743e9998f}{set\+Stroke\+Width}} (double k)
+\begin{DoxyCompactList}\small\item\em Set the Stroke Width for the graphic. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_vector_shape_a9bde0d9fdd53ceb64f016687e339956a}{get\+Stroke\+Width}} ()
+\begin{DoxyCompactList}\small\item\em Get the Stroke Width for the graphic. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_shape_a1627701b1ce0c1b30122fb5f312deb80}{set\+Line\+Cap}} (char c)
+\begin{DoxyCompactList}\small\item\em Set the \mbox{\hyperlink{classglib_1_1_line}{Line}} Cap for the graphic (NOT IMPLEMENTED BY ANY GRAPHIC CURRENTLY) \end{DoxyCompactList}\item 
+char \mbox{\hyperlink{classglib_1_1_vector_shape_aeb1e2a0b297ccd9b59d67fe2fccbe225}{get\+Line\+Cap}} ()
+\begin{DoxyCompactList}\small\item\em Get the \mbox{\hyperlink{classglib_1_1_line}{Line}} Cap for the graphic. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_shape_a033a2cdd5c4f6cbe24c5fec86fd51d76}{set\+Line\+Join}} (char c)
+\begin{DoxyCompactList}\small\item\em Set the \mbox{\hyperlink{classglib_1_1_line}{Line}} Join for the graphic (NOT IMPLEMENTED BY ANY GRAPHIC CURRENTLY) \end{DoxyCompactList}\item 
+char \mbox{\hyperlink{classglib_1_1_vector_shape_a1b730e8a9bdcc684cbf4d0572887e663}{get\+Line\+Join}} ()
+\begin{DoxyCompactList}\small\item\em Get the \mbox{\hyperlink{classglib_1_1_line}{Line}} Join for the graphic. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_shape_a37e0e93f4995dbf236d89e9018504168}{set\+Transform}} (\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} m)
+\begin{DoxyCompactList}\small\item\em Set the Transform for the graphic. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_vector_shape_a8868f7c404208cff8671950f90b38c02}{get\+Transform}} ()
+\begin{DoxyCompactList}\small\item\em Get the Transform for the graphic. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static const bool \mbox{\hyperlink{classglib_1_1_vector_shape_a2035101fec792d4eb9ae41e170eded80}{EVEN\+\_\+\+ODD\+\_\+\+RULE}} = false
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a8e908ca43e68b63aa0a3b201780fc10f}\label{classglib_1_1_vector_shape_a8e908ca43e68b63aa0a3b201780fc10f}} 
+static const bool {\bfseries NON\+\_\+\+ZERO\+\_\+\+RULE} = true
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a05130e7942f51838f550876990aa5561}\label{classglib_1_1_vector_shape_a05130e7942f51838f550876990aa5561}} 
+static const char {\bfseries LINE\+\_\+\+CAP\+\_\+\+BUTT} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_shape_af32ae12efb21e147d9af22c7adace7db}\label{classglib_1_1_vector_shape_af32ae12efb21e147d9af22c7adace7db}} 
+static const char {\bfseries LINE\+\_\+\+CAP\+\_\+\+SQUARE} = 1
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a9898f265572ad0a15ef3d479eba624a4}\label{classglib_1_1_vector_shape_a9898f265572ad0a15ef3d479eba624a4}} 
+static const char {\bfseries LINE\+\_\+\+CAP\+\_\+\+ROUND} = 2
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a98677ca0484a5c2b5b928f9a498a476c}\label{classglib_1_1_vector_shape_a98677ca0484a5c2b5b928f9a498a476c}} 
+static const char {\bfseries LINE\+\_\+\+JOIN\+\_\+\+MITER} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a425a4b35448dbffee44cc2840575fb7a}\label{classglib_1_1_vector_shape_a425a4b35448dbffee44cc2840575fb7a}} 
+static const char {\bfseries LINE\+\_\+\+JOIN\+\_\+\+ROUND} = 1
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a2e86b160c965e2c9744368abf2d580b2}\label{classglib_1_1_vector_shape_a2e86b160c965e2c9744368abf2d580b2}} 
+static const char {\bfseries LINE\+\_\+\+JOIN\+\_\+\+BEVEL} = 2
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a7d62e66c0d97785a73d60363ccd0a74c}\label{classglib_1_1_vector_shape_a7d62e66c0d97785a73d60363ccd0a74c}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a57ec170802912a982815d2dbc0e59b2a}\label{classglib_1_1_vector_shape_a57ec170802912a982815d2dbc0e59b2a}} 
+void {\bfseries apply\+Transform} ()
+\begin{DoxyCompactList}\small\item\em A function useful for subclasses. May be removed. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_vector_shape_afb72be232bc05006422d1bd0ebcf7311}\label{classglib_1_1_vector_shape_afb72be232bc05006422d1bd0ebcf7311}} 
+\index{glib::VectorShape@{glib::VectorShape}!draw@{draw}}
+\index{draw@{draw}!glib::VectorShape@{glib::VectorShape}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily virtual void glib\+::\+Vector\+Shape\+::draw (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{buffer,  }\item[{int}]{global\+Width,  }\item[{int}]{global\+Height }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+An abstract draw function. The expected behaviour is the function should only draw the filled in part and not the stroke. Any part that is considered apart of the stroke should not be drawn. This maybe more complex so the stroke may still be done in this function if desired. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em buffer} & \\
+\hline
+{\em global\+Width} & The maximum width allowed. This may be less than the image\textquotesingle{}s width. \\
+\hline
+{\em global\+Height} & The maximum height allowed. This may be less than the image\textquotesingle{}s height. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented in \mbox{\hyperlink{classglib_1_1_vector_rectangle_a8953ef5a5a1cc5e9e65f791ca8dafada}{glib\+::\+Vector\+Rectangle}}, \mbox{\hyperlink{classglib_1_1_vector_circle_a5278285176ea3d5894e55e0400840a5d}{glib\+::\+Vector\+Circle}}, \mbox{\hyperlink{classglib_1_1_vector_ellipse_a91f4f20e6a1df12c71e98b12c8869fc1}{glib\+::\+Vector\+Ellipse}}, \mbox{\hyperlink{classglib_1_1_vector_line_a89741b4f81ab40467af0dd92cff08bbe}{glib\+::\+Vector\+Line}}, \mbox{\hyperlink{classglib_1_1_vector_polyline_ad664565e7864f4ec8f0531d2d488ddfc}{glib\+::\+Vector\+Polyline}}, \mbox{\hyperlink{classglib_1_1_vector_polygon_a594144754347a4d9c9991ce9bb7cc7fc}{glib\+::\+Vector\+Polygon}}, and \mbox{\hyperlink{classglib_1_1_vector_path_a03481d46e711aa4cca0f63d20cd7c2a1}{glib\+::\+Vector\+Path}}.
+
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a24ecc3162abe3c4fa4c8190529601574}\label{classglib_1_1_vector_shape_a24ecc3162abe3c4fa4c8190529601574}} 
+\index{glib::VectorShape@{glib::VectorShape}!drawStroke@{drawStroke}}
+\index{drawStroke@{drawStroke}!glib::VectorShape@{glib::VectorShape}}
+\doxysubsubsection{\texorpdfstring{drawStroke()}{drawStroke()}}
+{\footnotesize\ttfamily virtual void glib\+::\+Vector\+Shape\+::draw\+Stroke (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{buffer,  }\item[{int}]{global\+Width,  }\item[{int}]{global\+Height }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+An abstract draw function. The expected behaviour is the function should only draw the stroke of the graphic. This function does not needed to be implemented if the stroke is used in the normal draw function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em buffer} & \\
+\hline
+{\em global\+Width} & The maximum width allowed. This may be less than the image\textquotesingle{}s width. \\
+\hline
+{\em global\+Height} & The maximum height allowed. This may be less than the image\textquotesingle{}s height. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented in \mbox{\hyperlink{classglib_1_1_vector_rectangle_af52e68fb406d261f88a14e9a71f096ec}{glib\+::\+Vector\+Rectangle}}, \mbox{\hyperlink{classglib_1_1_vector_circle_a757f589482dd54e05c491073f574d23a}{glib\+::\+Vector\+Circle}}, \mbox{\hyperlink{classglib_1_1_vector_ellipse_ad82f7ab324b3b6c6ae91db5c14b79140}{glib\+::\+Vector\+Ellipse}}, \mbox{\hyperlink{classglib_1_1_vector_line_ab974e9791a04ae336566b8106eadbb7d}{glib\+::\+Vector\+Line}}, \mbox{\hyperlink{classglib_1_1_vector_polyline_afd8a6480068fd51c21508e0d4c6cd964}{glib\+::\+Vector\+Polyline}}, \mbox{\hyperlink{classglib_1_1_vector_polygon_a6107a57765c26d4fa2dbcee0d8a34f29}{glib\+::\+Vector\+Polygon}}, and \mbox{\hyperlink{classglib_1_1_vector_path_aebf45d923a738750b64f98224a0d51b1}{glib\+::\+Vector\+Path}}.
+
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a40129eb1d62aa3dc66d7b4bfe902b647}\label{classglib_1_1_vector_shape_a40129eb1d62aa3dc66d7b4bfe902b647}} 
+\index{glib::VectorShape@{glib::VectorShape}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::VectorShape@{glib::VectorShape}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Vector\+Shape\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
+
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a2422e8edd5353d23f1dd2596a90e79de}\label{classglib_1_1_vector_shape_a2422e8edd5353d23f1dd2596a90e79de}} 
+\index{glib::VectorShape@{glib::VectorShape}!getFillColor@{getFillColor}}
+\index{getFillColor@{getFillColor}!glib::VectorShape@{glib::VectorShape}}
+\doxysubsubsection{\texorpdfstring{getFillColor()}{getFillColor()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structglib_1_1_color}{Color}} glib\+::\+Vector\+Shape\+::get\+Fill\+Color (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the Fill \mbox{\hyperlink{structglib_1_1_color}{Color}} for the graphic. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_color}{Color}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_shape_ac7cb9167daaca8bcf4d7277fc5646ac7}\label{classglib_1_1_vector_shape_ac7cb9167daaca8bcf4d7277fc5646ac7}} 
+\index{glib::VectorShape@{glib::VectorShape}!getFillMethod@{getFillMethod}}
+\index{getFillMethod@{getFillMethod}!glib::VectorShape@{glib::VectorShape}}
+\doxysubsubsection{\texorpdfstring{getFillMethod()}{getFillMethod()}}
+{\footnotesize\ttfamily bool glib\+::\+Vector\+Shape\+::get\+Fill\+Method (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Fill Method for the graphic. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_shape_aeb1e2a0b297ccd9b59d67fe2fccbe225}\label{classglib_1_1_vector_shape_aeb1e2a0b297ccd9b59d67fe2fccbe225}} 
+\index{glib::VectorShape@{glib::VectorShape}!getLineCap@{getLineCap}}
+\index{getLineCap@{getLineCap}!glib::VectorShape@{glib::VectorShape}}
+\doxysubsubsection{\texorpdfstring{getLineCap()}{getLineCap()}}
+{\footnotesize\ttfamily char glib\+::\+Vector\+Shape\+::get\+Line\+Cap (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the \mbox{\hyperlink{classglib_1_1_line}{Line}} Cap for the graphic. 
+
+\begin{DoxyReturn}{Returns}
+char 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a1b730e8a9bdcc684cbf4d0572887e663}\label{classglib_1_1_vector_shape_a1b730e8a9bdcc684cbf4d0572887e663}} 
+\index{glib::VectorShape@{glib::VectorShape}!getLineJoin@{getLineJoin}}
+\index{getLineJoin@{getLineJoin}!glib::VectorShape@{glib::VectorShape}}
+\doxysubsubsection{\texorpdfstring{getLineJoin()}{getLineJoin()}}
+{\footnotesize\ttfamily char glib\+::\+Vector\+Shape\+::get\+Line\+Join (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the \mbox{\hyperlink{classglib_1_1_line}{Line}} Join for the graphic. 
+
+\begin{DoxyReturn}{Returns}
+char 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a261fe311cc1babe43d532cf490a638c1}\label{classglib_1_1_vector_shape_a261fe311cc1babe43d532cf490a638c1}} 
+\index{glib::VectorShape@{glib::VectorShape}!getStrokeColor@{getStrokeColor}}
+\index{getStrokeColor@{getStrokeColor}!glib::VectorShape@{glib::VectorShape}}
+\doxysubsubsection{\texorpdfstring{getStrokeColor()}{getStrokeColor()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structglib_1_1_color}{Color}} glib\+::\+Vector\+Shape\+::get\+Stroke\+Color (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the Stroke \mbox{\hyperlink{structglib_1_1_color}{Color}} for the graphic. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_color}{Color}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a9bde0d9fdd53ceb64f016687e339956a}\label{classglib_1_1_vector_shape_a9bde0d9fdd53ceb64f016687e339956a}} 
+\index{glib::VectorShape@{glib::VectorShape}!getStrokeWidth@{getStrokeWidth}}
+\index{getStrokeWidth@{getStrokeWidth}!glib::VectorShape@{glib::VectorShape}}
+\doxysubsubsection{\texorpdfstring{getStrokeWidth()}{getStrokeWidth()}}
+{\footnotesize\ttfamily double glib\+::\+Vector\+Shape\+::get\+Stroke\+Width (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the Stroke Width for the graphic. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a8868f7c404208cff8671950f90b38c02}\label{classglib_1_1_vector_shape_a8868f7c404208cff8671950f90b38c02}} 
+\index{glib::VectorShape@{glib::VectorShape}!getTransform@{getTransform}}
+\index{getTransform@{getTransform}!glib::VectorShape@{glib::VectorShape}}
+\doxysubsubsection{\texorpdfstring{getTransform()}{getTransform()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} glib\+::\+Vector\+Shape\+::get\+Transform (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the Transform for the graphic. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a50b9f47645cb9ee087aaa7c4e374dfbc}\label{classglib_1_1_vector_shape_a50b9f47645cb9ee087aaa7c4e374dfbc}} 
+\index{glib::VectorShape@{glib::VectorShape}!setFillColor@{setFillColor}}
+\index{setFillColor@{setFillColor}!glib::VectorShape@{glib::VectorShape}}
+\doxysubsubsection{\texorpdfstring{setFillColor()}{setFillColor()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Shape\+::set\+Fill\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{k }\end{DoxyParamCaption})}
+
+
+
+Sets the Fill \mbox{\hyperlink{structglib_1_1_color}{Color}} for the graphic. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em k} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a52dad68807d1fae49e65e91b74a5e503}\label{classglib_1_1_vector_shape_a52dad68807d1fae49e65e91b74a5e503}} 
+\index{glib::VectorShape@{glib::VectorShape}!setFillMethod@{setFillMethod}}
+\index{setFillMethod@{setFillMethod}!glib::VectorShape@{glib::VectorShape}}
+\doxysubsubsection{\texorpdfstring{setFillMethod()}{setFillMethod()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Shape\+::set\+Fill\+Method (\begin{DoxyParamCaption}\item[{bool}]{value }\end{DoxyParamCaption})}
+
+
+
+Sets the Fill Method for the graphic. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & Valid methods are\+: EVEN\+\_\+\+ODD\+\_\+\+RULE NON\+\_\+\+ZERO\+\_\+\+RULE \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a1627701b1ce0c1b30122fb5f312deb80}\label{classglib_1_1_vector_shape_a1627701b1ce0c1b30122fb5f312deb80}} 
+\index{glib::VectorShape@{glib::VectorShape}!setLineCap@{setLineCap}}
+\index{setLineCap@{setLineCap}!glib::VectorShape@{glib::VectorShape}}
+\doxysubsubsection{\texorpdfstring{setLineCap()}{setLineCap()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Shape\+::set\+Line\+Cap (\begin{DoxyParamCaption}\item[{char}]{c }\end{DoxyParamCaption})}
+
+
+
+Set the \mbox{\hyperlink{classglib_1_1_line}{Line}} Cap for the graphic (NOT IMPLEMENTED BY ANY GRAPHIC CURRENTLY) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a033a2cdd5c4f6cbe24c5fec86fd51d76}\label{classglib_1_1_vector_shape_a033a2cdd5c4f6cbe24c5fec86fd51d76}} 
+\index{glib::VectorShape@{glib::VectorShape}!setLineJoin@{setLineJoin}}
+\index{setLineJoin@{setLineJoin}!glib::VectorShape@{glib::VectorShape}}
+\doxysubsubsection{\texorpdfstring{setLineJoin()}{setLineJoin()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Shape\+::set\+Line\+Join (\begin{DoxyParamCaption}\item[{char}]{c }\end{DoxyParamCaption})}
+
+
+
+Set the \mbox{\hyperlink{classglib_1_1_line}{Line}} Join for the graphic (NOT IMPLEMENTED BY ANY GRAPHIC CURRENTLY) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a4252b5a43c24432aa7af6d5da3cc3c8c}\label{classglib_1_1_vector_shape_a4252b5a43c24432aa7af6d5da3cc3c8c}} 
+\index{glib::VectorShape@{glib::VectorShape}!setStrokeColor@{setStrokeColor}}
+\index{setStrokeColor@{setStrokeColor}!glib::VectorShape@{glib::VectorShape}}
+\doxysubsubsection{\texorpdfstring{setStrokeColor()}{setStrokeColor()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Shape\+::set\+Stroke\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{k }\end{DoxyParamCaption})}
+
+
+
+Set the Stroke \mbox{\hyperlink{structglib_1_1_color}{Color}} for the graphic. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em k} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a8b4cf918a424b83313a56c0743e9998f}\label{classglib_1_1_vector_shape_a8b4cf918a424b83313a56c0743e9998f}} 
+\index{glib::VectorShape@{glib::VectorShape}!setStrokeWidth@{setStrokeWidth}}
+\index{setStrokeWidth@{setStrokeWidth}!glib::VectorShape@{glib::VectorShape}}
+\doxysubsubsection{\texorpdfstring{setStrokeWidth()}{setStrokeWidth()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Shape\+::set\+Stroke\+Width (\begin{DoxyParamCaption}\item[{double}]{k }\end{DoxyParamCaption})}
+
+
+
+Set the Stroke Width for the graphic. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em k} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a37e0e93f4995dbf236d89e9018504168}\label{classglib_1_1_vector_shape_a37e0e93f4995dbf236d89e9018504168}} 
+\index{glib::VectorShape@{glib::VectorShape}!setTransform@{setTransform}}
+\index{setTransform@{setTransform}!glib::VectorShape@{glib::VectorShape}}
+\doxysubsubsection{\texorpdfstring{setTransform()}{setTransform()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Shape\+::set\+Transform (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}}}]{m }\end{DoxyParamCaption})}
+
+
+
+Set the Transform for the graphic. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em m} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classglib_1_1_vector_shape_a2035101fec792d4eb9ae41e170eded80}\label{classglib_1_1_vector_shape_a2035101fec792d4eb9ae41e170eded80}} 
+\index{glib::VectorShape@{glib::VectorShape}!EVEN\_ODD\_RULE@{EVEN\_ODD\_RULE}}
+\index{EVEN\_ODD\_RULE@{EVEN\_ODD\_RULE}!glib::VectorShape@{glib::VectorShape}}
+\doxysubsubsection{\texorpdfstring{EVEN\_ODD\_RULE}{EVEN\_ODD\_RULE}}
+{\footnotesize\ttfamily const bool glib\+::\+Vector\+Shape\+::\+EVEN\+\_\+\+ODD\+\_\+\+RULE = false\hspace{0.3cm}{\ttfamily [static]}}
+
+XML format\+: \texorpdfstring{$<$}{<} ... fill=\char`\"{}\+\_\+\+COLOR\char`\"{} fill-\/opacity=\char`\"{}\+\_\+\+ALPHA\char`\"{} stroke=\char`\"{}\+\_\+\+COLOR\char`\"{} stroke-\/opacity=\char`\"{}\+\_\+\+ALPHA\char`\"{} stroke-\/width=\char`\"{}\+\_\+\+VALUE\char`\"{} stroke-\/linecap=\char`\"{}\+TYPE\char`\"{} stroke-\/linejoin=\char`\"{}\+TYPE\char`\"{} stroke-\/dasharray=\char`\"{}\+Array\char`\"{} stroke-\/dashoffset=\char`\"{}\+VALUE\char`\"{} fill-\/rule=\char`\"{}\+TYPE\char`\"{} transform=\char`\"{}\+\_\+\+TRANSFORMS\char`\"{}\texorpdfstring{$>$}{>} \+\_\+\+COLOR can be in multiple formats\+: RGB TRIPLET = rgb(r,g,b) in int,float,percent HEX = \#000000 or \#000 NAME = black \+\_\+\+ALPHA can be in these formats\+: HEX = \#\+FF int = 255 percent = 100\% float = 1.\+0f \+\_\+\+VALUE will be followed by px,pt or nothing probably an int or float. \+\_\+\+TRANSFORMS can be the following translate(x,y) rotate(r) skew\+X(x) skew\+Y(y) scale(x,y) or scale(s) matrix(a,b,c,d,e,f) FOR linecap, valid types are\+: butt, square, round FOR linejoin, valid types are\+: miter, round, bevel For stroke-\/dasharray, the format is as follows\+: dash length, gap length, dash length, gap length, ... FOR fill-\/rule, valid types are\+: evenodd, nonzero
+
+NOTE\+: May contain more un-\/implemented features.
+
+Note that transforms can be applied to more than one object at a time by using the tag $<$g$>$ EXAMPLE $<$g transform=\char`\"{}scale(2)\char`\"{}$>$ This will apply the transform to all objects surrounded by it. This may mean that each object needs its own transform. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Vector\+Graphic.\+h\end{DoxyCompactItemize}

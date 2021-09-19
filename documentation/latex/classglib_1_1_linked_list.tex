@@ -1,0 +1,126 @@
+\hypertarget{classglib_1_1_linked_list}{}\doxysection{glib\+::Linked\+List\texorpdfstring{$<$}{<} T \texorpdfstring{$>$}{>} Class Template Reference}
+\label{classglib_1_1_linked_list}\index{glib::LinkedList$<$ T $>$@{glib::LinkedList$<$ T $>$}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_linked_list_a933c4294b9dcfb257bec5710a987d830}\label{classglib_1_1_linked_list_a933c4294b9dcfb257bec5710a987d830}} 
+{\bfseries Linked\+List} ()
+\begin{DoxyCompactList}\small\item\em Construct a new Linked List object. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_linked_list_ad59ac2cff2e82d2a443e0544614560ad}\label{classglib_1_1_linked_list_ad59ac2cff2e82d2a443e0544614560ad}} 
+{\bfseries $\sim$\+Linked\+List} ()
+\begin{DoxyCompactList}\small\item\em Destroy the Linked List object along with all of the memory it allocated. Does not delete the template values if they are pointers. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_linked_list_a121f29e99dbc4af53e750bddccca62ad}{add\+Node}} (T n)
+\begin{DoxyCompactList}\small\item\em Adds a new node at the end of the Linked List. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_linked_list_a8be4a269042e6b63b44dd1f6b0411985}{remove\+Node}} (\mbox{\hyperlink{structglib_1_1_link_node}{Link\+Node}}$<$ T $>$ $\ast$n)
+\begin{DoxyCompactList}\small\item\em Removes a node from the list. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_linked_list_ae489899fbddffca0123a2c5225681c40}{swap\+Nodes}} (\mbox{\hyperlink{structglib_1_1_link_node}{Link\+Node}}$<$ T $>$ $\ast$n1, \mbox{\hyperlink{structglib_1_1_link_node}{Link\+Node}}$<$ T $>$ $\ast$n2)
+\begin{DoxyCompactList}\small\item\em Swaps a node with another node. These nodes should both be in the list to avoid memory leaks and other error. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_link_node}{Link\+Node}}$<$ T $>$ $\ast$ \mbox{\hyperlink{classglib_1_1_linked_list_ac4e03c7c3acba2b0517d4029a30c7012}{get\+Root\+Node}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Root Node. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_link_node}{Link\+Node}}$<$ T $>$ $\ast$ \mbox{\hyperlink{classglib_1_1_linked_list_a4a5e7fd269eb5e076692932540bf0053}{get\+Last\+Node}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Last Node. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_linked_list_a29c95af64c5bb3c15425a2b587821f1f}{size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the size of the Linked List. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_linked_list_a66c3957285a2d58a577f803da0ebac61}\label{classglib_1_1_linked_list_a66c3957285a2d58a577f803da0ebac61}} 
+void {\bfseries clear} ()
+\begin{DoxyCompactList}\small\item\em Clears the data for the Linked List. Does not delete the template values if they are pointers. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_linked_list_a121f29e99dbc4af53e750bddccca62ad}\label{classglib_1_1_linked_list_a121f29e99dbc4af53e750bddccca62ad}} 
+\index{glib::LinkedList$<$ T $>$@{glib::LinkedList$<$ T $>$}!addNode@{addNode}}
+\index{addNode@{addNode}!glib::LinkedList$<$ T $>$@{glib::LinkedList$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{addNode()}{addNode()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void \mbox{\hyperlink{classglib_1_1_linked_list}{glib\+::\+Linked\+List}}$<$ T $>$\+::add\+Node (\begin{DoxyParamCaption}\item[{T}]{n }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Adds a new node at the end of the Linked List. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & The data to add. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_linked_list_a4a5e7fd269eb5e076692932540bf0053}\label{classglib_1_1_linked_list_a4a5e7fd269eb5e076692932540bf0053}} 
+\index{glib::LinkedList$<$ T $>$@{glib::LinkedList$<$ T $>$}!getLastNode@{getLastNode}}
+\index{getLastNode@{getLastNode}!glib::LinkedList$<$ T $>$@{glib::LinkedList$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getLastNode()}{getLastNode()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+\mbox{\hyperlink{structglib_1_1_link_node}{Link\+Node}}$<$ T $>$ $\ast$ \mbox{\hyperlink{classglib_1_1_linked_list}{glib\+::\+Linked\+List}}$<$ T $>$\+::get\+Last\+Node\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets the Last Node. 
+
+\begin{DoxyReturn}{Returns}
+Link\+Node$<$\+T$>$$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_linked_list_ac4e03c7c3acba2b0517d4029a30c7012}\label{classglib_1_1_linked_list_ac4e03c7c3acba2b0517d4029a30c7012}} 
+\index{glib::LinkedList$<$ T $>$@{glib::LinkedList$<$ T $>$}!getRootNode@{getRootNode}}
+\index{getRootNode@{getRootNode}!glib::LinkedList$<$ T $>$@{glib::LinkedList$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getRootNode()}{getRootNode()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+\mbox{\hyperlink{structglib_1_1_link_node}{Link\+Node}}$<$ T $>$ $\ast$ \mbox{\hyperlink{classglib_1_1_linked_list}{glib\+::\+Linked\+List}}$<$ T $>$\+::get\+Root\+Node\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets the Root Node. 
+
+\begin{DoxyReturn}{Returns}
+Link\+Node$<$\+T$>$$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_linked_list_a8be4a269042e6b63b44dd1f6b0411985}\label{classglib_1_1_linked_list_a8be4a269042e6b63b44dd1f6b0411985}} 
+\index{glib::LinkedList$<$ T $>$@{glib::LinkedList$<$ T $>$}!removeNode@{removeNode}}
+\index{removeNode@{removeNode}!glib::LinkedList$<$ T $>$@{glib::LinkedList$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{removeNode()}{removeNode()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void \mbox{\hyperlink{classglib_1_1_linked_list}{glib\+::\+Linked\+List}}$<$ T $>$\+::remove\+Node (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_link_node}{Link\+Node}}$<$ T $>$ $\ast$}]{n }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Removes a node from the list. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & The pointer to the node to remove. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_linked_list_a29c95af64c5bb3c15425a2b587821f1f}\label{classglib_1_1_linked_list_a29c95af64c5bb3c15425a2b587821f1f}} 
+\index{glib::LinkedList$<$ T $>$@{glib::LinkedList$<$ T $>$}!size@{size}}
+\index{size@{size}!glib::LinkedList$<$ T $>$@{glib::LinkedList$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+int \mbox{\hyperlink{classglib_1_1_linked_list}{glib\+::\+Linked\+List}}$<$ T $>$\+::size\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the size of the Linked List. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_linked_list_ae489899fbddffca0123a2c5225681c40}\label{classglib_1_1_linked_list_ae489899fbddffca0123a2c5225681c40}} 
+\index{glib::LinkedList$<$ T $>$@{glib::LinkedList$<$ T $>$}!swapNodes@{swapNodes}}
+\index{swapNodes@{swapNodes}!glib::LinkedList$<$ T $>$@{glib::LinkedList$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{swapNodes()}{swapNodes()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void \mbox{\hyperlink{classglib_1_1_linked_list}{glib\+::\+Linked\+List}}$<$ T $>$\+::swap\+Nodes (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_link_node}{Link\+Node}}$<$ T $>$ $\ast$}]{n1,  }\item[{\mbox{\hyperlink{structglib_1_1_link_node}{Link\+Node}}$<$ T $>$ $\ast$}]{n2 }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Swaps a node with another node. These nodes should both be in the list to avoid memory leaks and other error. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n1} & The first node. \\
+\hline
+{\em n2} & The second node. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Linked\+List.\+h\end{DoxyCompactItemize}

@@ -17,7 +17,6 @@ namespace glib
 
 	VectorPath::VectorPath() : VectorShape()
 	{
-		addMoveTo(0,0);
 	}
 
 	VectorPath::VectorPath(const VectorPath& other) : VectorShape()

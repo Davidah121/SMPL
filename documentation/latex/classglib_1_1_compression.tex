@@ -1,0 +1,781 @@
+\hypertarget{classglib_1_1_compression}{}\doxysection{glib\+::Compression Class Reference}
+\label{classglib_1_1_compression}\index{glib::Compression@{glib::Compression}}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_compression_1_1_d_e_f_l_a_t_e___i_n_v_a_l_i_d___m_o_d_e}{DEFLATE\+\_\+\+INVALID\+\_\+\+MODE}}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_compression_1_1_h_u_f_f_m_a_n___c_a_n_o_n_i_c_a_l___e_r_r_o_r}{HUFFMAN\+\_\+\+CANONICAL\+\_\+\+ERROR}}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_compression_1_1_h_u_f_f_m_a_n___t_r_e_e___e_r_r_o_r}{HUFFMAN\+\_\+\+TREE\+\_\+\+ERROR}}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_compression_1_1_l_z_s_s___e_r_r_o_r}{LZSS\+\_\+\+ERROR}}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_compression_1_1_l_z_w___e_r_r_o_r___l317}{LZW\+\_\+\+ERROR\+\_\+\+L317}}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_compression_1_1_l_z_w___e_r_r_o_r___l340}{LZW\+\_\+\+ERROR\+\_\+\+L340}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_a99c51ecc8b192a605d3643ecb739cce4}{compress\+RLE}} (unsigned char $\ast$data, int size)
+\begin{DoxyCompactList}\small\item\em Compresses data using Run Length Encoding. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_abdaba02ef12d485e2b3291cb78c7c7f7}{compress\+RLE}} (std\+::vector$<$ unsigned char $>$ data)
+\begin{DoxyCompactList}\small\item\em Compresses data using Run Length Encoding. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_ae22ceede7191be8a325e091ee9bced09}{decompress\+RLE}} (unsigned char $\ast$data, int size, size\+\_\+t expected\+Size=-\/1)
+\begin{DoxyCompactList}\small\item\em Decompresses Run Length Encoded data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_a3c459eba34a4f69eb6f7d1c28f35d1c5}{decompress\+RLE}} (std\+::vector$<$ unsigned char $>$ data, size\+\_\+t expected\+Size=-\/1)
+\begin{DoxyCompactList}\small\item\em Decompresses Run Length Encoded data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_a7cdc7e2d405c844ceef65a767922a0d5}{decompress\+LZW}} (unsigned char $\ast$data, int size, int dictionary\+Size, size\+\_\+t expected\+Size=-\/1)
+\begin{DoxyCompactList}\small\item\em Decompresses LZW (Lempel Ziv Welch) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_ad70dae407e26323202890fd26cebe0ec}{decompress\+LZW}} (std\+::vector$<$ unsigned char $>$ data, int dictionary\+Size, size\+\_\+t expected\+Size=-\/1)
+\begin{DoxyCompactList}\small\item\em Decompresses LZW (Lempel Ziv Welch) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_aa4be40123669395a679bb15d11a18527}{compress\+LZW}} (unsigned char $\ast$data, int size, int $\ast$code\+Size\+Pointer=nullptr)
+\begin{DoxyCompactList}\small\item\em Compresses LZW (Lempel Ziv Welch) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_af806f23b1457ee45ce0db19043ad7058}{compress\+LZW}} (std\+::vector$<$ unsigned char $>$ data, int $\ast$code\+Size\+Pointer=nullptr)
+\begin{DoxyCompactList}\small\item\em Compresses LZW (Lempel Ziv Welch) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_a230897b9e25977485e7fcd28b57d683b}{compress\+LZ77}} (unsigned char $\ast$data, int size, int max\+Buffer\+Size=0x7\+FFF)
+\begin{DoxyCompactList}\small\item\em Compresses LZ77 (Lempel Ziv 77) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_a6dd2e3b0adfc1309a7980c4d0779f210}{compress\+LZ77}} (std\+::vector$<$ unsigned char $>$ data, int max\+Buffer\+Size=0x7\+FFF)
+\begin{DoxyCompactList}\small\item\em Compresses LZ77 (Lempel Ziv 77) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_a8786b97b7ef12eb150752a89d73d6af2}{decompress\+LZ77}} (unsigned char $\ast$data, int size, int max\+Buffer\+Size=0x7\+FFF, size\+\_\+t expected\+Size=-\/1)
+\begin{DoxyCompactList}\small\item\em Decompresses LZ77 (Lempel Ziv 77) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_a4d893442c90e9464c96f4e20994db137}{decompress\+LZ77}} (std\+::vector$<$ unsigned char $>$ data, int max\+Buffer\+Size=0x7\+FFF, size\+\_\+t expected\+Size=-\/1)
+\begin{DoxyCompactList}\small\item\em Decompresses LZ77 (Lempel Ziv 77) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_ac3f7018fe21ec94a9ba2332eb31d173b}{compress\+LZSS}} (unsigned char $\ast$data, int size)
+\begin{DoxyCompactList}\small\item\em Compresses data using LZSS (Lempel Ziv Storer Szymanski) If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_a565c87acb428b9e401ce2d21dbbb315a}{compress\+LZSS}} (std\+::vector$<$ unsigned char $>$ data)
+\begin{DoxyCompactList}\small\item\em Compresses data using LZSS (Lempel Ziv Storer Szymanski) If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_aa2863204e5ca4b3e49b325d3093305e5}{decompress\+LZSS}} (unsigned char $\ast$data, int size, size\+\_\+t expected\+Size=-\/1)
+\begin{DoxyCompactList}\small\item\em Decompresses LZSS (Lempel Ziv Storer Szymanski) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_ac023a5127506e1c9080934f068caafb6}{decompress\+LZSS}} (std\+::vector$<$ unsigned char $>$ data, size\+\_\+t expected\+Size=-\/1)
+\begin{DoxyCompactList}\small\item\em Decompresses LZSS (Lempel Ziv Storer Szymanski) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_aa426e858821491c5dae797f7adb80d92}{compress\+Huffman}} (unsigned char $\ast$data, int size, \mbox{\hyperlink{classglib_1_1_binary_tree}{Binary\+Tree}}$<$ \mbox{\hyperlink{structglib_1_1_huffman_node}{Huffman\+Node}} $>$ $\ast$tree)
+\begin{DoxyCompactList}\small\item\em Compresses data using a Huffman tree. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_a331f0f1a152d15e8bbd156cd80f3078b}{compress\+Huffman}} (std\+::vector$<$ unsigned char $>$ data, \mbox{\hyperlink{classglib_1_1_binary_tree}{Binary\+Tree}}$<$ \mbox{\hyperlink{structglib_1_1_huffman_node}{Huffman\+Node}} $>$ $\ast$tree)
+\begin{DoxyCompactList}\small\item\em Compresses data using a Huffman tree. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_af92bd3d465631fd51be81d96e3ec98a0}{decompress\+Huffman}} (unsigned char $\ast$data, int size, \mbox{\hyperlink{classglib_1_1_binary_tree}{Binary\+Tree}}$<$ \mbox{\hyperlink{structglib_1_1_huffman_node}{Huffman\+Node}} $>$ $\ast$tree, size\+\_\+t expected\+Size=-\/1)
+\begin{DoxyCompactList}\small\item\em Decompresses data using Huffman tree encoding. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. If the tree is invalid for any reason such as being null or not being able to resolve data and USE\+\_\+\+EXCEPTIONS is defined, a \mbox{\hyperlink{structglib_1_1_compression_1_1_h_u_f_f_m_a_n___t_r_e_e___e_r_r_o_r}{HUFFMAN\+\_\+\+TREE\+\_\+\+ERROR}} is thrown. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_a3654c50c6a42190de76cf2e3ee033058}{decompress\+Huffman}} (std\+::vector$<$ unsigned char $>$ data, \mbox{\hyperlink{classglib_1_1_binary_tree}{Binary\+Tree}}$<$ \mbox{\hyperlink{structglib_1_1_huffman_node}{Huffman\+Node}} $>$ $\ast$tree, size\+\_\+t expected\+Size=-\/1)
+\begin{DoxyCompactList}\small\item\em Decompresses data using Huffman tree encoding. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. If the tree is invalid for any reason such as being null or not being able to resolve data and USE\+\_\+\+EXCEPTIONS is defined, a \mbox{\hyperlink{structglib_1_1_compression_1_1_h_u_f_f_m_a_n___t_r_e_e___e_r_r_o_r}{HUFFMAN\+\_\+\+TREE\+\_\+\+ERROR}} is thrown. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T $>$ }\\static \mbox{\hyperlink{classglib_1_1_binary_tree}{Binary\+Tree}}$<$ \mbox{\hyperlink{structglib_1_1_huffman_node}{Huffman\+Node}} $>$ $\ast$ \mbox{\hyperlink{classglib_1_1_compression_a0aed705eee96ea7f90fec8d0ed295fa1}{build\+Huffman\+Tree}} (T $\ast$data, int size, int max\+Code\+Length=-\/1)
+\begin{DoxyCompactList}\small\item\em Creates a huffman tree from the specified data array. A length limited huffman tree can be created this way as well if desired. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classglib_1_1_binary_tree}{Binary\+Tree}}$<$ \mbox{\hyperlink{structglib_1_1_huffman_node}{Huffman\+Node}} $>$ $\ast$ \mbox{\hyperlink{classglib_1_1_compression_a87bc6fbc91ffa40578e20c664ed06ca9}{build\+Canonical\+Huffman\+Tree}} (int $\ast$data\+Value, int size\+Of\+Data, int $\ast$code\+Length, int size\+Of\+Code\+Lengths, bool separate\+Codes=true, bool rmsb=false)
+\begin{DoxyCompactList}\small\item\em Create a Canonical Huffman Tree based on the parameters given. The data can be given where each value in the data\+Value array has a unique code length given in the code\+Length array at the same spot or they can be separate where the code\+Lengths array tells how many codes have length specified by its index. Both representations are used in different data formats. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_ab064e441a5cc3452fa952665ceca207e}{compress\+Deflate}} (unsigned char $\ast$data, int size, int blocks, int compression\+Level=7, bool custom\+Table=false)
+\begin{DoxyCompactList}\small\item\em Compresses data using DELFATE. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_afd776206d5d7e80a2f398a3b40207e89}{compress\+Deflate}} (std\+::vector$<$ unsigned char $>$ data, int blocks, int compression\+Level=7, bool custom\+Table=false)
+\begin{DoxyCompactList}\small\item\em Compresses data using DELFATE. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_afc1c7fe6d49ab02fdc77caa32e363989}{decompress\+Deflate}} (unsigned char $\ast$data, int size, size\+\_\+t expected\+Size=-\/1)
+\begin{DoxyCompactList}\small\item\em Decompresses a DEFLATE data stream. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_compression_af744cae176359d2040f9095f5d69145a}{decompress\+Deflate}} (std\+::vector$<$ unsigned char $>$ data, size\+\_\+t expected\+Size=-\/1)
+\begin{DoxyCompactList}\small\item\em Decompresses a DEFLATE data stream. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_compression_a3711fc2c6eb9c3c23e3850f1413295fb}\label{classglib_1_1_compression_a3711fc2c6eb9c3c23e3850f1413295fb}} 
+static double {\bfseries compress\+Arithmetic} (std\+::vector$<$ unsigned char $>$ data, std\+::vector$<$ double $>$ \&percentages)
+\begin{DoxyCompactList}\small\item\em Experimental Arithmetic compression. Should not be used currently. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_compression_ade5cc012fe95dc3dfa39f1fce8b5c7a9}\label{classglib_1_1_compression_ade5cc012fe95dc3dfa39f1fce8b5c7a9}} 
+static std\+::vector$<$ unsigned char $>$ {\bfseries decompress\+Arithmetic} (double data, int message\+Size, std\+::vector$<$ double $>$ percentages)
+\begin{DoxyCompactList}\small\item\em Experimental Arithmetic decompression. Should not be used currently. \end{DoxyCompactList}\item 
+static unsigned int \mbox{\hyperlink{classglib_1_1_compression_aae23326302c9f9a1fe329ad6974c019a}{adler32}} (unsigned char $\ast$data, int size)
+\begin{DoxyCompactList}\small\item\em Generates a checksum using ADLER32. If the size of data is 0 and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. \end{DoxyCompactList}\item 
+static unsigned int \mbox{\hyperlink{classglib_1_1_compression_a0758870d09fbd7a3711514b6c3115e3d}{adler32}} (std\+::vector$<$ unsigned char $>$ data)
+\begin{DoxyCompactList}\small\item\em Generates a checksum using ADLER32. If the size of data is 0 and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. \end{DoxyCompactList}\item 
+static unsigned int \mbox{\hyperlink{classglib_1_1_compression_abc706e49226e01336b0201a89a53f7f5}{crc}} (unsigned char $\ast$data, int size, unsigned char type=CRC\+\_\+32)
+\begin{DoxyCompactList}\small\item\em Generates a checksum using CRC. If the size of data is 0 and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. Three CRC methods are available\+: CRC\+\_\+8 CRC\+\_\+16 CRC\+\_\+32. \end{DoxyCompactList}\item 
+static unsigned int \mbox{\hyperlink{classglib_1_1_compression_aa89f1360029855cf7c818ef6de9c33a2}{crc}} (std\+::vector$<$ unsigned char $>$ data, unsigned char type=CRC\+\_\+32)
+\begin{DoxyCompactList}\small\item\em Generates a checksum using CRC. If the size of data is 0 and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. Three CRC methods are available\+: CRC\+\_\+8 CRC\+\_\+16 CRC\+\_\+32. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_compression_a9636159170282e9e7508400d6172efac}\label{classglib_1_1_compression_a9636159170282e9e7508400d6172efac}} 
+static const unsigned char {\bfseries CRC\+\_\+8} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_compression_ad8316faf46e4a93b01e2c3b28022d703}\label{classglib_1_1_compression_ad8316faf46e4a93b01e2c3b28022d703}} 
+static const unsigned char {\bfseries CRC\+\_\+16} = 1
+\item 
+\mbox{\Hypertarget{classglib_1_1_compression_ad058873c3602fcaeee30ba1636c31c88}\label{classglib_1_1_compression_ad058873c3602fcaeee30ba1636c31c88}} 
+static const unsigned char {\bfseries CRC\+\_\+32} = 2
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_compression_a0758870d09fbd7a3711514b6c3115e3d}\label{classglib_1_1_compression_a0758870d09fbd7a3711514b6c3115e3d}} 
+\index{glib::Compression@{glib::Compression}!adler32@{adler32}}
+\index{adler32@{adler32}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{adler32()}{adler32()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static unsigned int glib\+::\+Compression\+::adler32 (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned char $>$}]{data }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Generates a checksum using ADLER32. If the size of data is 0 and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to generate the checksum from \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+unsigned int Returns a valid checksum if successful. Otherwise, 0 is returned. Note that 0 can be a valid checksum return. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_aae23326302c9f9a1fe329ad6974c019a}\label{classglib_1_1_compression_aae23326302c9f9a1fe329ad6974c019a}} 
+\index{glib::Compression@{glib::Compression}!adler32@{adler32}}
+\index{adler32@{adler32}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{adler32()}{adler32()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static unsigned int glib\+::\+Compression\+::adler32 (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{data,  }\item[{int}]{size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Generates a checksum using ADLER32. If the size of data is 0 and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to generate the checksum from \\
+\hline
+{\em size} & The size of the data. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+unsigned int Returns a valid checksum if successful. Otherwise, 0 is returned. Note that 0 can be a valid checksum return. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_a87bc6fbc91ffa40578e20c664ed06ca9}\label{classglib_1_1_compression_a87bc6fbc91ffa40578e20c664ed06ca9}} 
+\index{glib::Compression@{glib::Compression}!buildCanonicalHuffmanTree@{buildCanonicalHuffmanTree}}
+\index{buildCanonicalHuffmanTree@{buildCanonicalHuffmanTree}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{buildCanonicalHuffmanTree()}{buildCanonicalHuffmanTree()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_binary_tree}{Binary\+Tree}}$<$ \mbox{\hyperlink{structglib_1_1_huffman_node}{Huffman\+Node}} $>$ $\ast$ glib\+::\+Compression\+::build\+Canonical\+Huffman\+Tree (\begin{DoxyParamCaption}\item[{int $\ast$}]{data\+Value,  }\item[{int}]{size\+Of\+Data,  }\item[{int $\ast$}]{code\+Length,  }\item[{int}]{size\+Of\+Code\+Lengths,  }\item[{bool}]{separate\+Codes = {\ttfamily true},  }\item[{bool}]{rmsb = {\ttfamily false} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Create a Canonical Huffman Tree based on the parameters given. The data can be given where each value in the data\+Value array has a unique code length given in the code\+Length array at the same spot or they can be separate where the code\+Lengths array tells how many codes have length specified by its index. Both representations are used in different data formats. 
+
+If the size of data is 0 or less or there is not enough data to map code lengths to the data, and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown.
+
+
+\begin{DoxyParams}{Parameters}
+{\em data\+Value} & The data values used. \\
+\hline
+{\em size\+Of\+Data} & The size of the data\+Value array. \\
+\hline
+{\em code\+Lengths} & The code lengths for the data. \\
+\hline
+{\em size\+Of\+Code\+Lengths} & The size of the code\+Length array. \\
+\hline
+{\em separate\+Codes} & Whether or not the code lengths have a one to one mapping. If false, code\+Length\mbox{[}i\mbox{]} must specify the length of data\+Value\mbox{[}i\mbox{]} and the sizes must match. Default value is true \\
+\hline
+{\em rmsb} & Determines whether the code values will be in LMSB or RMSB order. Default is false $\vert$ which is LMSB \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_compression_a0aed705eee96ea7f90fec8d0ed295fa1}\label{classglib_1_1_compression_a0aed705eee96ea7f90fec8d0ed295fa1}} 
+\index{glib::Compression@{glib::Compression}!buildHuffmanTree@{buildHuffmanTree}}
+\index{buildHuffmanTree@{buildHuffmanTree}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{buildHuffmanTree()}{buildHuffmanTree()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+\mbox{\hyperlink{classglib_1_1_binary_tree}{Binary\+Tree}}$<$ \mbox{\hyperlink{structglib_1_1_huffman_node}{Huffman\+Node}} $>$ $\ast$ glib\+::\+Compression\+::build\+Huffman\+Tree (\begin{DoxyParamCaption}\item[{T $\ast$}]{data,  }\item[{int}]{size,  }\item[{int}]{max\+Code\+Length = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Creates a huffman tree from the specified data array. A length limited huffman tree can be created this way as well if desired. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to create a huffman tree from. It should be a numerical data type as the data will be cast to ints to find the tree. \\
+\hline
+{\em size} & The size of the data. \\
+\hline
+{\em max\+Code\+Length} & The maximum code length allowed for the tree. A value less than 0 will create a huffman tree that is not length limited. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Binary\+Tree$<$\+Huffman\+Node$>$ Returns a valid huffman tree if successful. Otherwise, returns a nullptr. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_afd776206d5d7e80a2f398a3b40207e89}\label{classglib_1_1_compression_afd776206d5d7e80a2f398a3b40207e89}} 
+\index{glib::Compression@{glib::Compression}!compressDeflate@{compressDeflate}}
+\index{compressDeflate@{compressDeflate}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{compressDeflate()}{compressDeflate()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::compress\+Deflate (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned char $>$}]{data,  }\item[{int}]{blocks,  }\item[{int}]{compression\+Level = {\ttfamily 7},  }\item[{bool}]{custom\+Table = {\ttfamily false} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Compresses data using DELFATE. 
+
+\begin{DoxyVerb}    If the size of data is 0 or blocks is 0 and USE_EXCEPTIONS is defined, an InvalidSizeError is thrown.
+
+    This method will use multiple threads to compress to maintain reasonable speed unless the amount of blocks is 1.
+    Custom huffman trees are supported.
+    Uses a zlib header.
+\end{DoxyVerb}
+ 
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to decompress \\
+\hline
+{\em blocks} & The amount of blocks to separate the data into for compression. Adding more blocks allows multiple threads to compress them individually but can reduce the compression ratio. \\
+\hline
+{\em compression\+Level} & Changing the compression level adjusts the maximum backwards distance allowed. The lowest backwards distance is 256 where compression\+Level is set to 0 The maximum distance is 32768 where compression\+Level is set to 7 Default value is 7 \\
+\hline
+{\em custom\+Table} & Chooses whether to use a custom huffman table for compression. Slower but results in a unique table for each block and better compression. Default value is false \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns a valid deflate stream using a zlib header as a std\+::vector$<$unsigned char$>$. Otherwise, returns an empty vector. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_ab064e441a5cc3452fa952665ceca207e}\label{classglib_1_1_compression_ab064e441a5cc3452fa952665ceca207e}} 
+\index{glib::Compression@{glib::Compression}!compressDeflate@{compressDeflate}}
+\index{compressDeflate@{compressDeflate}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{compressDeflate()}{compressDeflate()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::compress\+Deflate (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{data,  }\item[{int}]{size,  }\item[{int}]{blocks,  }\item[{int}]{compression\+Level = {\ttfamily 7},  }\item[{bool}]{custom\+Table = {\ttfamily false} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Compresses data using DELFATE. 
+
+\begin{DoxyVerb}    If the size of data is 0 or blocks is 0 and USE_EXCEPTIONS is defined, an InvalidSizeError is thrown.
+    If the data pointer is nullptr and USE_EXCEPTIONS is defined, an InvalidDataError is thrown.
+
+    This method will use multiple threads to compress to maintain reasonable speed unless the amount of blocks is 1.
+    Custom huffman trees are supported.
+    Uses a zlib header.
+\end{DoxyVerb}
+ 
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to decompress \\
+\hline
+{\em size} & The size of the data. \\
+\hline
+{\em blocks} & The amount of blocks to separate the data into for compression. Adding more blocks allows multiple threads to compress them individually but can reduce the compression ratio. \\
+\hline
+{\em compression\+Level} & Changing the compression level adjusts the maximum backwards distance allowed. The lowest backwards distance is 256 where compression\+Level is set to 0 The maximum distance is 32768 where compression\+Level is set to 7 Default value is 7 \\
+\hline
+{\em custom\+Table} & Chooses whether to use a custom huffman table for compression. Slower but results in a unique table for each block and better compression. Default value is false \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns a valid deflate stream using a zlib header as a std\+::vector$<$unsigned char$>$. Otherwise, returns an empty vector. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_a331f0f1a152d15e8bbd156cd80f3078b}\label{classglib_1_1_compression_a331f0f1a152d15e8bbd156cd80f3078b}} 
+\index{glib::Compression@{glib::Compression}!compressHuffman@{compressHuffman}}
+\index{compressHuffman@{compressHuffman}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{compressHuffman()}{compressHuffman()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::compress\+Huffman (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned char $>$}]{data,  }\item[{\mbox{\hyperlink{classglib_1_1_binary_tree}{Binary\+Tree}}$<$ \mbox{\hyperlink{structglib_1_1_huffman_node}{Huffman\+Node}} $>$ $\ast$}]{tree }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Compresses data using a Huffman tree. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to decompress \\
+\hline
+{\em tree} & The pointer that will store the huffman tree generated. Must be a valid pointer and should not have any data stored in it. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the compressed data as a vector and the tree pointer should have the huffman tree used to compress the data. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_aa426e858821491c5dae797f7adb80d92}\label{classglib_1_1_compression_aa426e858821491c5dae797f7adb80d92}} 
+\index{glib::Compression@{glib::Compression}!compressHuffman@{compressHuffman}}
+\index{compressHuffman@{compressHuffman}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{compressHuffman()}{compressHuffman()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::compress\+Huffman (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{data,  }\item[{int}]{size,  }\item[{\mbox{\hyperlink{classglib_1_1_binary_tree}{Binary\+Tree}}$<$ \mbox{\hyperlink{structglib_1_1_huffman_node}{Huffman\+Node}} $>$ $\ast$}]{tree }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Compresses data using a Huffman tree. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to decompress \\
+\hline
+{\em size} & The size of the data. \\
+\hline
+{\em tree} & The pointer that will store the huffman tree generated. Must be a valid pointer and should not have any data stored in it. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the compressed data as a vector and the tree pointer should have the huffman tree used to compress the data. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_a6dd2e3b0adfc1309a7980c4d0779f210}\label{classglib_1_1_compression_a6dd2e3b0adfc1309a7980c4d0779f210}} 
+\index{glib::Compression@{glib::Compression}!compressLZ77@{compressLZ77}}
+\index{compressLZ77@{compressLZ77}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{compressLZ77()}{compressLZ77()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::compress\+LZ77 (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned char $>$}]{data,  }\item[{int}]{max\+Buffer\+Size = {\ttfamily 0x7FFF} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Compresses LZ77 (Lempel Ziv 77) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. 
+
+The output uses triplets with the format (back\+\_\+distance, copy\+\_\+length, literal) The maximum buffer size also specifies how many bytes are used for the back\+\_\+distance and copy\+\_\+length in each distance by using the log base 2 of the max\+Buffer\+Size. 
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to compress \\
+\hline
+{\em max\+Buffer\+Size} & The maximum allowed backwards distance allowed for compression in the sliding window. Default is 32767 \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the compressed data as a vector. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_a230897b9e25977485e7fcd28b57d683b}\label{classglib_1_1_compression_a230897b9e25977485e7fcd28b57d683b}} 
+\index{glib::Compression@{glib::Compression}!compressLZ77@{compressLZ77}}
+\index{compressLZ77@{compressLZ77}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{compressLZ77()}{compressLZ77()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::compress\+LZ77 (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{data,  }\item[{int}]{size,  }\item[{int}]{max\+Buffer\+Size = {\ttfamily 0x7FFF} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Compresses LZ77 (Lempel Ziv 77) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. 
+
+The output uses triplets with the format (back\+\_\+distance, copy\+\_\+length, literal) The maximum buffer size also specifies how many bytes are used for the back\+\_\+distance and copy\+\_\+length in each distance by using the log base 2 of the max\+Buffer\+Size. 
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to compress \\
+\hline
+{\em size} & The size of the data. \\
+\hline
+{\em max\+Buffer\+Size} & The maximum allowed backwards distance allowed for compression in the sliding window. Default is 32767 \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the compressed data as a vector. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_a565c87acb428b9e401ce2d21dbbb315a}\label{classglib_1_1_compression_a565c87acb428b9e401ce2d21dbbb315a}} 
+\index{glib::Compression@{glib::Compression}!compressLZSS@{compressLZSS}}
+\index{compressLZSS@{compressLZSS}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{compressLZSS()}{compressLZSS()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::compress\+LZSS (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned char $>$}]{data }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Compresses data using LZSS (Lempel Ziv Storer Szymanski) If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. 
+
+The output uses 9 bits for a literal or 24 bits for a reference pair The first bit specifies if it is a literal or not. If literal, the next 8 bits are the value. In a reference\+Pair, the backwards distance is 15 bits and the copy length is 8 bits. 
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to compress \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the compressed data as a vector. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_ac3f7018fe21ec94a9ba2332eb31d173b}\label{classglib_1_1_compression_ac3f7018fe21ec94a9ba2332eb31d173b}} 
+\index{glib::Compression@{glib::Compression}!compressLZSS@{compressLZSS}}
+\index{compressLZSS@{compressLZSS}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{compressLZSS()}{compressLZSS()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::compress\+LZSS (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{data,  }\item[{int}]{size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Compresses data using LZSS (Lempel Ziv Storer Szymanski) If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. 
+
+The output uses 9 bits for a literal or 24 bits for a reference pair The first bit specifies if it is a literal or not. If literal, the next 8 bits are the value. In a reference\+Pair, the backwards distance is 15 bits and the copy length is 8 bits. 
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to compress. \\
+\hline
+{\em size} & The size of the data. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the compressed data as a vector. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_af806f23b1457ee45ce0db19043ad7058}\label{classglib_1_1_compression_af806f23b1457ee45ce0db19043ad7058}} 
+\index{glib::Compression@{glib::Compression}!compressLZW@{compressLZW}}
+\index{compressLZW@{compressLZW}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{compressLZW()}{compressLZW()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::compress\+LZW (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned char $>$}]{data,  }\item[{int $\ast$}]{code\+Size\+Pointer = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Compresses LZW (Lempel Ziv Welch) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to compress \\
+\hline
+{\em code\+Size\+Pointer} & A pointer to the code size parameter that should be used to compress the data. If left as a nullptr, the code size paramter will be determined by the function. If the code size is less that or equal to 0, the function will determine the code size and modify the pointer to reflect that. Default is nullptr. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the compressed data as a vector. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_aa4be40123669395a679bb15d11a18527}\label{classglib_1_1_compression_aa4be40123669395a679bb15d11a18527}} 
+\index{glib::Compression@{glib::Compression}!compressLZW@{compressLZW}}
+\index{compressLZW@{compressLZW}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{compressLZW()}{compressLZW()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::compress\+LZW (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{data,  }\item[{int}]{size,  }\item[{int $\ast$}]{code\+Size\+Pointer = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Compresses LZW (Lempel Ziv Welch) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to compress \\
+\hline
+{\em size} & The size of the data. \\
+\hline
+{\em code\+Size\+Pointer} & A pointer to the code size parameter that should be used to compress the data. If left as a nullptr, the code size paramter will be determined by the function. If the code size is less that or equal to 0, the function will determine the code size and modify the pointer to reflect that. Default is nullptr. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the compressed data as a vector. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_abdaba02ef12d485e2b3291cb78c7c7f7}\label{classglib_1_1_compression_abdaba02ef12d485e2b3291cb78c7c7f7}} 
+\index{glib::Compression@{glib::Compression}!compressRLE@{compressRLE}}
+\index{compressRLE@{compressRLE}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{compressRLE()}{compressRLE()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::compress\+RLE (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned char $>$}]{data }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Compresses data using Run Length Encoding. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. 
+
+Data is compressed as bytes where the run is specified first, then the data is specified after. Run is a byte in size and the data is a byte in size. 
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to compress \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the compressed data as a vector so that it can be saved into a file later if desired. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_a99c51ecc8b192a605d3643ecb739cce4}\label{classglib_1_1_compression_a99c51ecc8b192a605d3643ecb739cce4}} 
+\index{glib::Compression@{glib::Compression}!compressRLE@{compressRLE}}
+\index{compressRLE@{compressRLE}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{compressRLE()}{compressRLE()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::compress\+RLE (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{data,  }\item[{int}]{size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Compresses data using Run Length Encoding. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. 
+
+Data is compressed as bytes where the run is specified first, then the data is specified after. Run is a byte in size and the data is a byte in size. 
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to compress \\
+\hline
+{\em size} & The size of the data. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the compressed data as a vector so that it can be saved into a file later if desired. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_aa89f1360029855cf7c818ef6de9c33a2}\label{classglib_1_1_compression_aa89f1360029855cf7c818ef6de9c33a2}} 
+\index{glib::Compression@{glib::Compression}!crc@{crc}}
+\index{crc@{crc}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{crc()}{crc()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static unsigned int glib\+::\+Compression\+::crc (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned char $>$}]{data,  }\item[{unsigned char}]{type = {\ttfamily CRC\+\_\+32} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Generates a checksum using CRC. If the size of data is 0 and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. Three CRC methods are available\+: CRC\+\_\+8 CRC\+\_\+16 CRC\+\_\+32. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to generate the checksum from \\
+\hline
+{\em size} & The size of the data. \\
+\hline
+{\em type} & The type of CRC to use. DEFAULT is CRC\+\_\+32 \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+unsigned int Returns a valid checksum if successful. Otherwise, 0 is returned. Note that 0 can be a valid checksum return. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_abc706e49226e01336b0201a89a53f7f5}\label{classglib_1_1_compression_abc706e49226e01336b0201a89a53f7f5}} 
+\index{glib::Compression@{glib::Compression}!crc@{crc}}
+\index{crc@{crc}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{crc()}{crc()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static unsigned int glib\+::\+Compression\+::crc (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{data,  }\item[{int}]{size,  }\item[{unsigned char}]{type = {\ttfamily CRC\+\_\+32} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Generates a checksum using CRC. If the size of data is 0 and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. Three CRC methods are available\+: CRC\+\_\+8 CRC\+\_\+16 CRC\+\_\+32. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to generate the checksum from \\
+\hline
+{\em size} & The size of the data. \\
+\hline
+{\em type} & The type of CRC to use. DEFAULT is CRC\+\_\+32 \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+unsigned int Returns a valid checksum if successful. Otherwise, 0 is returned. Note that 0 can be a valid checksum return. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_af744cae176359d2040f9095f5d69145a}\label{classglib_1_1_compression_af744cae176359d2040f9095f5d69145a}} 
+\index{glib::Compression@{glib::Compression}!decompressDeflate@{decompressDeflate}}
+\index{decompressDeflate@{decompressDeflate}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{decompressDeflate()}{decompressDeflate()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::decompress\+Deflate (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned char $>$}]{data,  }\item[{size\+\_\+t}]{expected\+Size = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Decompresses a DEFLATE data stream. 
+
+\begin{DoxyVerb}    If the size of data is 0 or blocks is 0 and USE_EXCEPTIONS is defined, an InvalidSizeError is thrown.
+    If the data pointer is nullptr and USE_EXCEPTIONS is defined, an InvalidDataError is thrown.
+
+    Assumes that the data uses a ZLIB header. GZIP is not supported.
+\end{DoxyVerb}
+ 
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to decompress \\
+\hline
+{\em size} & The size of the data. \\
+\hline
+{\em expected\+Size} & The expected size of the decompressed data. Set this if you know what the data size should be when decompressed. By default, it is set to the max that a vector can store. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the decompressed data. Otherwise, an empty vector is returned. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_afc1c7fe6d49ab02fdc77caa32e363989}\label{classglib_1_1_compression_afc1c7fe6d49ab02fdc77caa32e363989}} 
+\index{glib::Compression@{glib::Compression}!decompressDeflate@{decompressDeflate}}
+\index{decompressDeflate@{decompressDeflate}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{decompressDeflate()}{decompressDeflate()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::decompress\+Deflate (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{data,  }\item[{int}]{size,  }\item[{size\+\_\+t}]{expected\+Size = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Decompresses a DEFLATE data stream. 
+
+\begin{DoxyVerb}    If the size of data is 0 or blocks is 0 and USE_EXCEPTIONS is defined, an InvalidSizeError is thrown.
+    If the data pointer is nullptr and USE_EXCEPTIONS is defined, an InvalidDataError is thrown.
+
+    Assumes that the data uses a ZLIB header. GZIP is not supported.
+\end{DoxyVerb}
+ 
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to decompress \\
+\hline
+{\em size} & The size of the data. \\
+\hline
+{\em expected\+Size} & The expected size of the decompressed data. Set this if you know what the data size should be when decompressed. By default, it is set to the max that a vector can store. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the decompressed data. Otherwise, an empty vector is returned. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_a3654c50c6a42190de76cf2e3ee033058}\label{classglib_1_1_compression_a3654c50c6a42190de76cf2e3ee033058}} 
+\index{glib::Compression@{glib::Compression}!decompressHuffman@{decompressHuffman}}
+\index{decompressHuffman@{decompressHuffman}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{decompressHuffman()}{decompressHuffman()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::decompress\+Huffman (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned char $>$}]{data,  }\item[{\mbox{\hyperlink{classglib_1_1_binary_tree}{Binary\+Tree}}$<$ \mbox{\hyperlink{structglib_1_1_huffman_node}{Huffman\+Node}} $>$ $\ast$}]{tree,  }\item[{size\+\_\+t}]{expected\+Size = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Decompresses data using Huffman tree encoding. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. If the tree is invalid for any reason such as being null or not being able to resolve data and USE\+\_\+\+EXCEPTIONS is defined, a \mbox{\hyperlink{structglib_1_1_compression_1_1_h_u_f_f_m_a_n___t_r_e_e___e_r_r_o_r}{HUFFMAN\+\_\+\+TREE\+\_\+\+ERROR}} is thrown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to decompress \\
+\hline
+{\em tree} & The huffman tree to use for decompression \\
+\hline
+{\em expected\+Size} & The expected size of the decompressed data. Set this if you know what the data size should be when decompressed. By default, it is set to the max that a vector can store. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the decompressed data as a vector. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_af92bd3d465631fd51be81d96e3ec98a0}\label{classglib_1_1_compression_af92bd3d465631fd51be81d96e3ec98a0}} 
+\index{glib::Compression@{glib::Compression}!decompressHuffman@{decompressHuffman}}
+\index{decompressHuffman@{decompressHuffman}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{decompressHuffman()}{decompressHuffman()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::decompress\+Huffman (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{data,  }\item[{int}]{size,  }\item[{\mbox{\hyperlink{classglib_1_1_binary_tree}{Binary\+Tree}}$<$ \mbox{\hyperlink{structglib_1_1_huffman_node}{Huffman\+Node}} $>$ $\ast$}]{tree,  }\item[{size\+\_\+t}]{expected\+Size = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Decompresses data using Huffman tree encoding. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. If the tree is invalid for any reason such as being null or not being able to resolve data and USE\+\_\+\+EXCEPTIONS is defined, a \mbox{\hyperlink{structglib_1_1_compression_1_1_h_u_f_f_m_a_n___t_r_e_e___e_r_r_o_r}{HUFFMAN\+\_\+\+TREE\+\_\+\+ERROR}} is thrown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to decompress \\
+\hline
+{\em size} & The size of the data. \\
+\hline
+{\em tree} & The huffman tree to use for decompression \\
+\hline
+{\em expected\+Size} & The expected size of the decompressed data. Set this if you know what the data size should be when decompressed. By default, it is set to the max that a vector can store. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the decompressed data as a vector. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_a4d893442c90e9464c96f4e20994db137}\label{classglib_1_1_compression_a4d893442c90e9464c96f4e20994db137}} 
+\index{glib::Compression@{glib::Compression}!decompressLZ77@{decompressLZ77}}
+\index{decompressLZ77@{decompressLZ77}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{decompressLZ77()}{decompressLZ77()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::decompress\+LZ77 (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned char $>$}]{data,  }\item[{int}]{max\+Buffer\+Size = {\ttfamily 0x7FFF},  }\item[{size\+\_\+t}]{expected\+Size = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Decompresses LZ77 (Lempel Ziv 77) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. 
+
+The input is expected to use triplets with the format (back\+\_\+distance, copy\+\_\+length, literal) The maximum buffer size also specifies how many bytes are used for the back\+\_\+distance and copy\+\_\+length in each distance by using the log base 2 of the max\+Buffer\+Size. 
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to decompress \\
+\hline
+{\em max\+Buffer\+Size} & The maximum allowed backwards distance allowed for compression in the sliding window. Default is 32767. \\
+\hline
+{\em expected\+Size} & The expected size of the decompressed data. Set this if you know what the data size should be when decompressed. By default, it is set to the max that a vector can store. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the decompressed data as a vector. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_a8786b97b7ef12eb150752a89d73d6af2}\label{classglib_1_1_compression_a8786b97b7ef12eb150752a89d73d6af2}} 
+\index{glib::Compression@{glib::Compression}!decompressLZ77@{decompressLZ77}}
+\index{decompressLZ77@{decompressLZ77}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{decompressLZ77()}{decompressLZ77()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::decompress\+LZ77 (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{data,  }\item[{int}]{size,  }\item[{int}]{max\+Buffer\+Size = {\ttfamily 0x7FFF},  }\item[{size\+\_\+t}]{expected\+Size = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Decompresses LZ77 (Lempel Ziv 77) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. 
+
+The input is expected to use triplets with the format (back\+\_\+distance, copy\+\_\+length, literal) The maximum buffer size also specifies how many bytes are used for the back\+\_\+distance and copy\+\_\+length in each distance by using the log base 2 of the max\+Buffer\+Size. 
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to decompress \\
+\hline
+{\em size} & The size of the data. \\
+\hline
+{\em max\+Buffer\+Size} & The maximum allowed backwards distance allowed for compression in the sliding window. Default is 32767. \\
+\hline
+{\em expected\+Size} & The expected size of the decompressed data. Set this if you know what the data size should be when decompressed. By default, it is set to the max that a vector can store. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the decompressed data as a vector. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_ac023a5127506e1c9080934f068caafb6}\label{classglib_1_1_compression_ac023a5127506e1c9080934f068caafb6}} 
+\index{glib::Compression@{glib::Compression}!decompressLZSS@{decompressLZSS}}
+\index{decompressLZSS@{decompressLZSS}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{decompressLZSS()}{decompressLZSS()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::decompress\+LZSS (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned char $>$}]{data,  }\item[{size\+\_\+t}]{expected\+Size = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Decompresses LZSS (Lempel Ziv Storer Szymanski) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. 
+
+The input expects the format to be the same as the compression methods. The first bit specifies if it is a literal or not. If literal, the next 8 bits are the value. In a reference\+Pair, the backwards distance is 15 bits and the copy length is 8 bits. 
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to compress. \\
+\hline
+{\em expected\+Size} & The expected size of the decompressed data. Set this if you know what the data size should be when decompressed. By default, it is set to the max that a vector can store. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the decompressed data as a vector. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_aa2863204e5ca4b3e49b325d3093305e5}\label{classglib_1_1_compression_aa2863204e5ca4b3e49b325d3093305e5}} 
+\index{glib::Compression@{glib::Compression}!decompressLZSS@{decompressLZSS}}
+\index{decompressLZSS@{decompressLZSS}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{decompressLZSS()}{decompressLZSS()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::decompress\+LZSS (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{data,  }\item[{int}]{size,  }\item[{size\+\_\+t}]{expected\+Size = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Decompresses LZSS (Lempel Ziv Storer Szymanski) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. 
+
+The input expects the format to be the same as the compression methods. The first bit specifies if it is a literal or not. If literal, the next 8 bits are the value. In a reference\+Pair, the backwards distance is 15 bits and the copy length is 8 bits. 
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to compress. \\
+\hline
+{\em size} & The size of the data. \\
+\hline
+{\em expected\+Size} & The expected size of the decompressed data. Set this if you know what the data size should be when decompressed. By default, it is set to the max that a vector can store. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the decompressed data as a vector. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_ad70dae407e26323202890fd26cebe0ec}\label{classglib_1_1_compression_ad70dae407e26323202890fd26cebe0ec}} 
+\index{glib::Compression@{glib::Compression}!decompressLZW@{decompressLZW}}
+\index{decompressLZW@{decompressLZW}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{decompressLZW()}{decompressLZW()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::decompress\+LZW (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned char $>$}]{data,  }\item[{int}]{dictionary\+Size,  }\item[{size\+\_\+t}]{expected\+Size = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Decompresses LZW (Lempel Ziv Welch) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to decompress \\
+\hline
+{\em dictionary\+Size} & The size of the dictionary used to compress the data. Required to decompress. \\
+\hline
+{\em expected\+Size} & The expected size of the decompressed data. Set this if you know what the data size should be when decompressed. By default, it is set to the max that a vector can store. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the decompressed data as a vector. The decompressed data will just be the indicies in the dictionary. The original dictionary is still needed to fully decompress the data. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_a7cdc7e2d405c844ceef65a767922a0d5}\label{classglib_1_1_compression_a7cdc7e2d405c844ceef65a767922a0d5}} 
+\index{glib::Compression@{glib::Compression}!decompressLZW@{decompressLZW}}
+\index{decompressLZW@{decompressLZW}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{decompressLZW()}{decompressLZW()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::decompress\+LZW (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{data,  }\item[{int}]{size,  }\item[{int}]{dictionary\+Size,  }\item[{size\+\_\+t}]{expected\+Size = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Decompresses LZW (Lempel Ziv Welch) data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to decompress \\
+\hline
+{\em size} & The size of the data. \\
+\hline
+{\em dictionary\+Size} & The size of the dictionary used to compress the data. Required to decompress. \\
+\hline
+{\em expected\+Size} & The expected size of the decompressed data. Set this if you know what the data size should be when decompressed. By default, it is set to the max that a vector can store. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the decompressed data as a vector. The decompressed data will just be the indicies in the dictionary. The original dictionary is still needed to fully decompress the data. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_a3c459eba34a4f69eb6f7d1c28f35d1c5}\label{classglib_1_1_compression_a3c459eba34a4f69eb6f7d1c28f35d1c5}} 
+\index{glib::Compression@{glib::Compression}!decompressRLE@{decompressRLE}}
+\index{decompressRLE@{decompressRLE}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{decompressRLE()}{decompressRLE()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::decompress\+RLE (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned char $>$}]{data,  }\item[{size\+\_\+t}]{expected\+Size = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Decompresses Run Length Encoded data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. 
+
+The data is expected to have both run and the data as bytes. Run is expected to be first and the data second. 
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to decompress \\
+\hline
+{\em expected\+Size} & The expected size of the decompressed data. Set this if you know what the data size should be when decompressed. By default, it is set to the max that a vector can store. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the decompressed data as a vector. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_compression_ae22ceede7191be8a325e091ee9bced09}\label{classglib_1_1_compression_ae22ceede7191be8a325e091ee9bced09}} 
+\index{glib::Compression@{glib::Compression}!decompressRLE@{decompressRLE}}
+\index{decompressRLE@{decompressRLE}!glib::Compression@{glib::Compression}}
+\doxysubsubsection{\texorpdfstring{decompressRLE()}{decompressRLE()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+Compression\+::decompress\+RLE (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{data,  }\item[{int}]{size,  }\item[{size\+\_\+t}]{expected\+Size = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Decompresses Run Length Encoded data. If the size of data is 0 or less and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_size_error}{Invalid\+Size\+Error}} is thrown. If the data pointer is nullptr and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_invalid_data_error}{Invalid\+Data\+Error}} is thrown. If the output exceeds the expected size and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_compression_1_1_exceeded_expected_size_error}{Exceeded\+Expected\+Size\+Error}} is thrown. If USE\+\_\+\+EXCEPTIONS is not defined, the current decompressed data is returned as is. 
+
+The data is expected to have both run and the data as bytes. Run is expected to be first and the data second. 
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to decompress \\
+\hline
+{\em size} & The size of the data. \\
+\hline
+{\em expected\+Size} & The expected size of the decompressed data. Set this if you know what the data size should be when decompressed. By default, it is set to the max that a vector can store. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ If successful, returns the decompressed data as a vector. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Compression.\+h\end{DoxyCompactItemize}

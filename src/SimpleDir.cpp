@@ -11,38 +11,17 @@ namespace glib
 		return &SimpleDir::myClass;
 	}
 
-	SimpleDir::SimpleDir(std::string directory)
-	{
-		std::wstring convDir = StringTools::toWideString(directory);
-
-		try
-		{
-			exists = std::filesystem::is_directory(convDir);
-			location = convDir;
-
-			if (exists == true)
-			{
-				update();
-			}
-		}
-		catch (...)
-		{
-			#ifdef USE_EXCEPTIONS
-			throw SimpleDir::ExistanceError();
-			#endif
-		}
-	}
-
 	/*
 		Creates an object that will hold information about a directory
 		such as the folders and files in it.
 	*/
-	SimpleDir::SimpleDir(std::wstring directory)
+	SimpleDir::SimpleDir(File directory)
 	{
+		std::wstring dir = directory.getFullFileName();
 		try
 		{
-			exists = std::filesystem::is_directory(directory);
-			location = directory;
+			exists = std::filesystem::is_directory(dir);
+			location = dir;
 
 			if (exists == true)
 			{

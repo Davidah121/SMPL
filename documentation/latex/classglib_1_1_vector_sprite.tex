@@ -1,0 +1,137 @@
+\hypertarget{classglib_1_1_vector_sprite}{}\doxysection{glib\+::Vector\+Sprite Class Reference}
+\label{classglib_1_1_vector_sprite}\index{glib::VectorSprite@{glib::VectorSprite}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_sprite_a3de84bf2acf7d43f1372ec106dabe241}\label{classglib_1_1_vector_sprite_a3de84bf2acf7d43f1372ec106dabe241}} 
+{\bfseries Vector\+Sprite} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_vector_sprite}{Vector\+Sprite}} object A \mbox{\hyperlink{classglib_1_1_vector_sprite}{Vector\+Sprite}}, much like the \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} object, contains a list of \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} objects. It does not contain data about delay between Vector\+Graphics. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_vector_sprite_a46e73f67f19a51368862fc34471242e5}\label{classglib_1_1_vector_sprite_a46e73f67f19a51368862fc34471242e5}} 
+{\bfseries $\sim$\+Vector\+Sprite} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_vector_sprite}{Vector\+Sprite}} object All \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} objects in the \mbox{\hyperlink{classglib_1_1_vector_sprite}{Vector\+Sprite}} will be deleted and should be considered invalid. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_sprite_af313665e0c04d5fade0a78e4de5aab1a}{load}} (std\+::string filename)
+\begin{DoxyCompactList}\small\item\em Loads a \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} from a .svg file. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_sprite_ae18487905fc620cc31005213b3ec3be3}{save}} (std\+::string filename)
+\begin{DoxyCompactList}\small\item\em Saves a \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} into a .svg file. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_vector_sprite_a215fa9dcae5174d0f4b0baf36764e30f}{get\+Transform}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Transform for the \mbox{\hyperlink{classglib_1_1_vector_sprite}{Vector\+Sprite}}. The transform should be applied to each \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} when drawn. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_sprite_a23dfdfab88d136702965821c7b7ae32e}{set\+Transform}} (\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} t)
+\begin{DoxyCompactList}\small\item\em Sets the Transform for the \mbox{\hyperlink{classglib_1_1_vector_sprite}{Vector\+Sprite}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_sprite_aa8180eec15433779004d053f780a6877}{add\+Graphic}} (\mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} $\ast$g)
+\begin{DoxyCompactList}\small\item\em Adds a \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} to the \mbox{\hyperlink{classglib_1_1_vector_sprite}{Vector\+Sprite}}. Note that the graphic added will be deleted when the other graphics are deleted. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_vector_sprite_a85f5e0cc5f0e62ea9da4244e32011a0f}{get\+Size}} ()
+\begin{DoxyCompactList}\small\item\em Gets the amount of \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} objects in the \mbox{\hyperlink{classglib_1_1_vector_sprite}{Vector\+Sprite}}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} $\ast$ \mbox{\hyperlink{classglib_1_1_vector_sprite_aa1beab71627f44e1bbd1e23dad0eb3bb}{get\+Graphic}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets a \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} specified by the index. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_vector_sprite_aa8180eec15433779004d053f780a6877}\label{classglib_1_1_vector_sprite_aa8180eec15433779004d053f780a6877}} 
+\index{glib::VectorSprite@{glib::VectorSprite}!addGraphic@{addGraphic}}
+\index{addGraphic@{addGraphic}!glib::VectorSprite@{glib::VectorSprite}}
+\doxysubsubsection{\texorpdfstring{addGraphic()}{addGraphic()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Sprite\+::add\+Graphic (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} $\ast$}]{g }\end{DoxyParamCaption})}
+
+
+
+Adds a \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} to the \mbox{\hyperlink{classglib_1_1_vector_sprite}{Vector\+Sprite}}. Note that the graphic added will be deleted when the other graphics are deleted. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em g} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_sprite_aa1beab71627f44e1bbd1e23dad0eb3bb}\label{classglib_1_1_vector_sprite_aa1beab71627f44e1bbd1e23dad0eb3bb}} 
+\index{glib::VectorSprite@{glib::VectorSprite}!getGraphic@{getGraphic}}
+\index{getGraphic@{getGraphic}!glib::VectorSprite@{glib::VectorSprite}}
+\doxysubsubsection{\texorpdfstring{getGraphic()}{getGraphic()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} $\ast$ glib\+::\+Vector\+Sprite\+::get\+Graphic (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets a \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} specified by the index. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Vector\+Graphic$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_sprite_a85f5e0cc5f0e62ea9da4244e32011a0f}\label{classglib_1_1_vector_sprite_a85f5e0cc5f0e62ea9da4244e32011a0f}} 
+\index{glib::VectorSprite@{glib::VectorSprite}!getSize@{getSize}}
+\index{getSize@{getSize}!glib::VectorSprite@{glib::VectorSprite}}
+\doxysubsubsection{\texorpdfstring{getSize()}{getSize()}}
+{\footnotesize\ttfamily int glib\+::\+Vector\+Sprite\+::get\+Size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the amount of \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} objects in the \mbox{\hyperlink{classglib_1_1_vector_sprite}{Vector\+Sprite}}. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_sprite_a215fa9dcae5174d0f4b0baf36764e30f}\label{classglib_1_1_vector_sprite_a215fa9dcae5174d0f4b0baf36764e30f}} 
+\index{glib::VectorSprite@{glib::VectorSprite}!getTransform@{getTransform}}
+\index{getTransform@{getTransform}!glib::VectorSprite@{glib::VectorSprite}}
+\doxysubsubsection{\texorpdfstring{getTransform()}{getTransform()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} glib\+::\+Vector\+Sprite\+::get\+Transform (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Transform for the \mbox{\hyperlink{classglib_1_1_vector_sprite}{Vector\+Sprite}}. The transform should be applied to each \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} when drawn. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_sprite_af313665e0c04d5fade0a78e4de5aab1a}\label{classglib_1_1_vector_sprite_af313665e0c04d5fade0a78e4de5aab1a}} 
+\index{glib::VectorSprite@{glib::VectorSprite}!load@{load}}
+\index{load@{load}!glib::VectorSprite@{glib::VectorSprite}}
+\doxysubsubsection{\texorpdfstring{load()}{load()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Sprite\+::load (\begin{DoxyParamCaption}\item[{std\+::string}]{filename }\end{DoxyParamCaption})}
+
+
+
+Loads a \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} from a .svg file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_sprite_ae18487905fc620cc31005213b3ec3be3}\label{classglib_1_1_vector_sprite_ae18487905fc620cc31005213b3ec3be3}} 
+\index{glib::VectorSprite@{glib::VectorSprite}!save@{save}}
+\index{save@{save}!glib::VectorSprite@{glib::VectorSprite}}
+\doxysubsubsection{\texorpdfstring{save()}{save()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Sprite\+::save (\begin{DoxyParamCaption}\item[{std\+::string}]{filename }\end{DoxyParamCaption})}
+
+
+
+Saves a \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} into a .svg file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_sprite_a23dfdfab88d136702965821c7b7ae32e}\label{classglib_1_1_vector_sprite_a23dfdfab88d136702965821c7b7ae32e}} 
+\index{glib::VectorSprite@{glib::VectorSprite}!setTransform@{setTransform}}
+\index{setTransform@{setTransform}!glib::VectorSprite@{glib::VectorSprite}}
+\doxysubsubsection{\texorpdfstring{setTransform()}{setTransform()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Sprite\+::set\+Transform (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}}}]{t }\end{DoxyParamCaption})}
+
+
+
+Sets the Transform for the \mbox{\hyperlink{classglib_1_1_vector_sprite}{Vector\+Sprite}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em t} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Vector\+Sprite.\+h\end{DoxyCompactItemize}

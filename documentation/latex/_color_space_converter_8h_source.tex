@@ -1,0 +1,37 @@
+\hypertarget{_color_space_converter_8h_source}{}\doxysection{Color\+Space\+Converter.\+h}
+\label{_color_space_converter_8h_source}\index{include/ColorSpaceConverter.h@{include/ColorSpaceConverter.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include "{}Image.h"{}}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}MathExt.h"{}}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{6 \{}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_color_space_converter}{ColorSpaceConverter}}}
+\DoxyCodeLine{9     \{}
+\DoxyCodeLine{10     \textcolor{keyword}{public}:}
+\DoxyCodeLine{11         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} RGB\_TO\_YCBCR = 0;}
+\DoxyCodeLine{12         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} YCBCR\_TO\_RGB = 1;}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} RGB\_TO\_LAB = 2;}
+\DoxyCodeLine{15         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} LAB\_TO\_RGB = 3;}
+\DoxyCodeLine{16 }
+\DoxyCodeLine{17         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} RGB\_TO\_HSV = 4;}
+\DoxyCodeLine{18         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} HSV\_TO\_RGB = 5;}
+\DoxyCodeLine{19 }
+\DoxyCodeLine{20         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} RGB\_TO\_HSL = 6;}
+\DoxyCodeLine{21         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} HSL\_TO\_RGB = 7;}
+\DoxyCodeLine{22 }
+\DoxyCodeLine{23         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} RGB\_TO\_XYZ = 8;}
+\DoxyCodeLine{24         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} XYZ\_TO\_RGB = 9;}
+\DoxyCodeLine{25         }
+\DoxyCodeLine{37         \textcolor{keyword}{static} \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_color_space_converter_aa34d0009321c609116d69e8fb86a185e}{convert}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} a, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} type);}
+\DoxyCodeLine{38 }
+\DoxyCodeLine{49         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} \mbox{\hyperlink{classglib_1_1_color_space_converter_a09f7f4bd2f515564ffd28bd504c566c2}{convert}}(\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} a, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} type);}
+\DoxyCodeLine{50     \};}
+\DoxyCodeLine{51 }
+\DoxyCodeLine{52 \}  \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

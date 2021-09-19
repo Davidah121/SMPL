@@ -1,0 +1,173 @@
+\hypertarget{classglib_1_1_shape}{}\doxysection{glib\+::Shape Class Reference}
+\label{classglib_1_1_shape}\index{glib::Shape@{glib::Shape}}
+Inheritance diagram for glib\+::Shape\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=12.000000cm]{classglib_1_1_shape}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_shape_a1d80f57ed969ee0d70cde6b37ea65e1b}\label{classglib_1_1_shape_a1d80f57ed969ee0d70cde6b37ea65e1b}} 
+{\bfseries Shape} ()
+\begin{DoxyCompactList}\small\item\em Constructs a generic shape object for Collision. Note that this class should be extended using subclasses. Contains general information such as position, scale, and rotation. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_shape_a23ac1b2406d53a76df1be25ab0c8b8b4}\label{classglib_1_1_shape_a23ac1b2406d53a76df1be25ab0c8b8b4}} 
+{\bfseries $\sim$\+Shape} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_shape}{Shape}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_shape_a0098b2d3ca11003e8e260146646d6b8a}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_shape_a91986983e33628f48a94af9647409106}{set\+Position}} (\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} pos)
+\begin{DoxyCompactList}\small\item\em Set the Position of the shape. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} \mbox{\hyperlink{classglib_1_1_shape_a33c7d80c0400e84104b99542a6d21625}{get\+Position}} ()
+\begin{DoxyCompactList}\small\item\em Get the Position of the shape. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_shape_a23b53a6decafcaecb42f211f91549d6d}{set\+Scale}} (\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} sca)
+\begin{DoxyCompactList}\small\item\em Set the Scale of the shape. Note that shome shapes may not factor in the scale. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} \mbox{\hyperlink{classglib_1_1_shape_a7407981d1fd26cce6146bd24097ef50a}{get\+Scale}} ()
+\begin{DoxyCompactList}\small\item\em Get the Scale of the shape. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_shape_a90466890b285e4f2210902fd52062b39}{set\+Rotation}} (\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} rot)
+\begin{DoxyCompactList}\small\item\em Set the Rotation of the shape. Note that some shapes may not factor in the rotation. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} \mbox{\hyperlink{classglib_1_1_shape_a1318ebdf871ad82be25469ce215e0858}{get\+Rotation}} ()
+\begin{DoxyCompactList}\small\item\em Get the Rotation of the shape. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_shape_ab488ee41ba78c6208c54dc7c911ebd1b}\label{classglib_1_1_shape_ab488ee41ba78c6208c54dc7c911ebd1b}} 
+virtual void {\bfseries transform} ()
+\begin{DoxyCompactList}\small\item\em A virtual function to apply transforms to the object before collision. \end{DoxyCompactList}\item 
+virtual double \mbox{\hyperlink{classglib_1_1_shape_aa3838fc7d35a5ba71487502d0b51f25a}{generate\+Bounding\+Radius}} ()
+\begin{DoxyCompactList}\small\item\em A virtual function to create either a bounding circle or bounding sphere. Useful for eliminating collisions. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_shape_a6e8d0038fcc5ea28c9a7e254b2f71a9e}\label{classglib_1_1_shape_a6e8d0038fcc5ea28c9a7e254b2f71a9e}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_shape_aa48beb5492fe70dabf828ed9122e01d2}\label{classglib_1_1_shape_aa48beb5492fe70dabf828ed9122e01d2}} 
+\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} {\bfseries position} = \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}()
+\item 
+\mbox{\Hypertarget{classglib_1_1_shape_ab7e7eb1b1e4bb4d44b2c7eff866ff72b}\label{classglib_1_1_shape_ab7e7eb1b1e4bb4d44b2c7eff866ff72b}} 
+\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} {\bfseries scale} = \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}()
+\item 
+\mbox{\Hypertarget{classglib_1_1_shape_a29b0beb80ab12f51aa52bd1a4556e47b}\label{classglib_1_1_shape_a29b0beb80ab12f51aa52bd1a4556e47b}} 
+\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} {\bfseries rotation} = \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_shape_aa3838fc7d35a5ba71487502d0b51f25a}\label{classglib_1_1_shape_aa3838fc7d35a5ba71487502d0b51f25a}} 
+\index{glib::Shape@{glib::Shape}!generateBoundingRadius@{generateBoundingRadius}}
+\index{generateBoundingRadius@{generateBoundingRadius}!glib::Shape@{glib::Shape}}
+\doxysubsubsection{\texorpdfstring{generateBoundingRadius()}{generateBoundingRadius()}}
+{\footnotesize\ttfamily virtual double glib\+::\+Shape\+::generate\+Bounding\+Radius (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+A virtual function to create either a bounding circle or bounding sphere. Useful for eliminating collisions. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+
+
+Reimplemented in \mbox{\hyperlink{classglib_1_1_point2_d_a28f4b76ae186da3813613a7b808e3dea}{glib\+::\+Point2D}}, \mbox{\hyperlink{classglib_1_1_box2_d_ac9bef33981469918485d06f0a77cf60a}{glib\+::\+Box2D}}, \mbox{\hyperlink{classglib_1_1_circle_aac008ef0206b8d73262b256d420f2dff}{glib\+::\+Circle}}, \mbox{\hyperlink{classglib_1_1_ellipse_a6df9ddf01e833a142d2a80a6461b7ca3}{glib\+::\+Ellipse}}, \mbox{\hyperlink{classglib_1_1_line2_d_a6497a32e9ff145b20dcfc0d3daa8ce3b}{glib\+::\+Line2D}}, \mbox{\hyperlink{classglib_1_1_triangle2_d_a41dba29cfea08de98be62702d209ea5b}{glib\+::\+Triangle2D}}, and \mbox{\hyperlink{classglib_1_1_polygon2_d_a34fe137f3f882669fcc3beb2fc6e9606}{glib\+::\+Polygon2D}}.
+
+\mbox{\Hypertarget{classglib_1_1_shape_a0098b2d3ca11003e8e260146646d6b8a}\label{classglib_1_1_shape_a0098b2d3ca11003e8e260146646d6b8a}} 
+\index{glib::Shape@{glib::Shape}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::Shape@{glib::Shape}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Shape\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
+
+\mbox{\Hypertarget{classglib_1_1_shape_a33c7d80c0400e84104b99542a6d21625}\label{classglib_1_1_shape_a33c7d80c0400e84104b99542a6d21625}} 
+\index{glib::Shape@{glib::Shape}!getPosition@{getPosition}}
+\index{getPosition@{getPosition}!glib::Shape@{glib::Shape}}
+\doxysubsubsection{\texorpdfstring{getPosition()}{getPosition()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} glib\+::\+Shape\+::get\+Position (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the Position of the shape. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_shape_a1318ebdf871ad82be25469ce215e0858}\label{classglib_1_1_shape_a1318ebdf871ad82be25469ce215e0858}} 
+\index{glib::Shape@{glib::Shape}!getRotation@{getRotation}}
+\index{getRotation@{getRotation}!glib::Shape@{glib::Shape}}
+\doxysubsubsection{\texorpdfstring{getRotation()}{getRotation()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} glib\+::\+Shape\+::get\+Rotation (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the Rotation of the shape. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_shape_a7407981d1fd26cce6146bd24097ef50a}\label{classglib_1_1_shape_a7407981d1fd26cce6146bd24097ef50a}} 
+\index{glib::Shape@{glib::Shape}!getScale@{getScale}}
+\index{getScale@{getScale}!glib::Shape@{glib::Shape}}
+\doxysubsubsection{\texorpdfstring{getScale()}{getScale()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} glib\+::\+Shape\+::get\+Scale (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the Scale of the shape. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_shape_a91986983e33628f48a94af9647409106}\label{classglib_1_1_shape_a91986983e33628f48a94af9647409106}} 
+\index{glib::Shape@{glib::Shape}!setPosition@{setPosition}}
+\index{setPosition@{setPosition}!glib::Shape@{glib::Shape}}
+\doxysubsubsection{\texorpdfstring{setPosition()}{setPosition()}}
+{\footnotesize\ttfamily void glib\+::\+Shape\+::set\+Position (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}}]{pos }\end{DoxyParamCaption})}
+
+
+
+Set the Position of the shape. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pos} & A 3D vector representing position. If the shape is 2D, the z axis can be ignored. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_shape_a90466890b285e4f2210902fd52062b39}\label{classglib_1_1_shape_a90466890b285e4f2210902fd52062b39}} 
+\index{glib::Shape@{glib::Shape}!setRotation@{setRotation}}
+\index{setRotation@{setRotation}!glib::Shape@{glib::Shape}}
+\doxysubsubsection{\texorpdfstring{setRotation()}{setRotation()}}
+{\footnotesize\ttfamily void glib\+::\+Shape\+::set\+Rotation (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}}]{rot }\end{DoxyParamCaption})}
+
+
+
+Set the Rotation of the shape. Note that some shapes may not factor in the rotation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rot} & A 3D vector representing rotation. If the shape is 2D, the y and z axis can be ignored. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_shape_a23b53a6decafcaecb42f211f91549d6d}\label{classglib_1_1_shape_a23b53a6decafcaecb42f211f91549d6d}} 
+\index{glib::Shape@{glib::Shape}!setScale@{setScale}}
+\index{setScale@{setScale}!glib::Shape@{glib::Shape}}
+\doxysubsubsection{\texorpdfstring{setScale()}{setScale()}}
+{\footnotesize\ttfamily void glib\+::\+Shape\+::set\+Scale (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}}]{sca }\end{DoxyParamCaption})}
+
+
+
+Set the Scale of the shape. Note that shome shapes may not factor in the scale. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em sca} & A 3D vector representing scale. If the shape is 2D, the z axis can be ignored. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Shape.\+h\end{DoxyCompactItemize}

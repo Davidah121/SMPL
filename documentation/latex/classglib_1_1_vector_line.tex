@@ -1,0 +1,246 @@
+\hypertarget{classglib_1_1_vector_line}{}\doxysection{glib\+::Vector\+Line Class Reference}
+\label{classglib_1_1_vector_line}\index{glib::VectorLine@{glib::VectorLine}}
+Inheritance diagram for glib\+::Vector\+Line\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classglib_1_1_vector_line}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_vector_line_afc92a3218067de02dc959346b12dc6f9}{Vector\+Line}} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_vector_line}{Vector\+Line}} object Follows the SVG format for a line. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_vector_line_a103f99fad4faebdd91df40263aa15d65}\label{classglib_1_1_vector_line_a103f99fad4faebdd91df40263aa15d65}} 
+{\bfseries $\sim$\+Vector\+Line} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_vector_line}{Vector\+Line}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_vector_line_a24edeeede8b994c6efb5e737fd2e6706}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_vector_line_a89741b4f81ab40467af0dd92cff08bbe}{draw}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, int global\+Width, int global\+Height)
+\begin{DoxyCompactList}\small\item\em Draws a \mbox{\hyperlink{classglib_1_1_vector_line}{Vector\+Line}} In reality, this does not draw anything because only the stroke for the line is drawn. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_line_ab974e9791a04ae336566b8106eadbb7d}{draw\+Stroke}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$buffer, int global\+Width, int global\+Height)
+\begin{DoxyCompactList}\small\item\em Draws the stroke for the \mbox{\hyperlink{classglib_1_1_vector_line}{Vector\+Line}} This is the only function that draws anything for the line. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_line_a672366e4c852649091659abc18c471cd}{set\+X1}} (double x1)
+\begin{DoxyCompactList}\small\item\em Sets the start x value for the line. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_vector_line_a1a8c823caa12d78db46bc1349f55f126}{get\+X1}} ()
+\begin{DoxyCompactList}\small\item\em Gets the start x value for the line. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_line_a4525ce585f490309116735e73d7d10ef}{set\+Y1}} (double y1)
+\begin{DoxyCompactList}\small\item\em Sets the start y value for the line. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_vector_line_a0874894ce19e50c0546f8c652b440286}{get\+Y1}} ()
+\begin{DoxyCompactList}\small\item\em Gets the start y value for the line. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_line_aa9d1552969dbe2d1062464a78ea08a48}{set\+X2}} (double x2)
+\begin{DoxyCompactList}\small\item\em Sets the end x value for the line. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_vector_line_a8eba87e6186c185a65c4394321c8f577}{get\+X2}} ()
+\begin{DoxyCompactList}\small\item\em Gets the end x value for the line. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_line_af48cc6fe73e07d261af73bec477b703f}{set\+Y2}} (double y2)
+\begin{DoxyCompactList}\small\item\em Sets the end y value for the line. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_vector_line_aa939a4af1834a17284a6bb0e3d9a6a7d}{get\+Y2}} ()
+\begin{DoxyCompactList}\small\item\em Gets the end y value for the line. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_line_a5039c3c79c0a6f0abdaf50316cf17c98}\label{classglib_1_1_vector_line_a5039c3c79c0a6f0abdaf50316cf17c98}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_line_a8457fc7c46c1d4dbb290b30ed9866c4e}\label{classglib_1_1_vector_line_a8457fc7c46c1d4dbb290b30ed9866c4e}} 
+void {\bfseries apply\+Transform} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_vector_line_afc92a3218067de02dc959346b12dc6f9}\label{classglib_1_1_vector_line_afc92a3218067de02dc959346b12dc6f9}} 
+\index{glib::VectorLine@{glib::VectorLine}!VectorLine@{VectorLine}}
+\index{VectorLine@{VectorLine}!glib::VectorLine@{glib::VectorLine}}
+\doxysubsubsection{\texorpdfstring{VectorLine()}{VectorLine()}}
+{\footnotesize\ttfamily glib\+::\+Vector\+Line\+::\+Vector\+Line (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_vector_line}{Vector\+Line}} object Follows the SVG format for a line. 
+
+\begin{DoxyVerb}XML Format:
+    <line x1="" x2="" y1="" y2=""/>
+    x1 = start x
+    x2 = end x
+    y1 = start y
+    y2 = end y
+\end{DoxyVerb}
+ NOTE\+: Fill rule doesn\textquotesingle{}t affect this object !! \mbox{\hyperlink{classglib_1_1_line}{Line}} cap does affect this object !! \mbox{\hyperlink{classglib_1_1_line}{Line}} join doesn\textquotesingle{}t affect this object 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_vector_line_a89741b4f81ab40467af0dd92cff08bbe}\label{classglib_1_1_vector_line_a89741b4f81ab40467af0dd92cff08bbe}} 
+\index{glib::VectorLine@{glib::VectorLine}!draw@{draw}}
+\index{draw@{draw}!glib::VectorLine@{glib::VectorLine}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Line\+::draw (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{int}]{global\+Width,  }\item[{int}]{global\+Height }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Draws a \mbox{\hyperlink{classglib_1_1_vector_line}{Vector\+Line}} In reality, this does not draw anything because only the stroke for the line is drawn. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & \\
+\hline
+{\em global\+Width} & The maximum width allowed. This may be less than the image\textquotesingle{}s width. \\
+\hline
+{\em global\+Height} & The maximum height allowed. This may be less than the image\textquotesingle{}s height. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_vector_shape_afb72be232bc05006422d1bd0ebcf7311}{glib\+::\+Vector\+Shape}}.
+
+\mbox{\Hypertarget{classglib_1_1_vector_line_ab974e9791a04ae336566b8106eadbb7d}\label{classglib_1_1_vector_line_ab974e9791a04ae336566b8106eadbb7d}} 
+\index{glib::VectorLine@{glib::VectorLine}!drawStroke@{drawStroke}}
+\index{drawStroke@{drawStroke}!glib::VectorLine@{glib::VectorLine}}
+\doxysubsubsection{\texorpdfstring{drawStroke()}{drawStroke()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Line\+::draw\+Stroke (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{buffer,  }\item[{int}]{global\+Width,  }\item[{int}]{global\+Height }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Draws the stroke for the \mbox{\hyperlink{classglib_1_1_vector_line}{Vector\+Line}} This is the only function that draws anything for the line. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & \\
+\hline
+{\em global\+Width} & The maximum width allowed. This may be less than the image\textquotesingle{}s width. \\
+\hline
+{\em global\+Height} & The maximum height allowed. This may be less than the image\textquotesingle{}s height. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_vector_shape_a24ecc3162abe3c4fa4c8190529601574}{glib\+::\+Vector\+Shape}}.
+
+\mbox{\Hypertarget{classglib_1_1_vector_line_a24edeeede8b994c6efb5e737fd2e6706}\label{classglib_1_1_vector_line_a24edeeede8b994c6efb5e737fd2e6706}} 
+\index{glib::VectorLine@{glib::VectorLine}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::VectorLine@{glib::VectorLine}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Vector\+Line\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_vector_shape}{glib\+::\+Vector\+Shape}}.
+
+\mbox{\Hypertarget{classglib_1_1_vector_line_a1a8c823caa12d78db46bc1349f55f126}\label{classglib_1_1_vector_line_a1a8c823caa12d78db46bc1349f55f126}} 
+\index{glib::VectorLine@{glib::VectorLine}!getX1@{getX1}}
+\index{getX1@{getX1}!glib::VectorLine@{glib::VectorLine}}
+\doxysubsubsection{\texorpdfstring{getX1()}{getX1()}}
+{\footnotesize\ttfamily double glib\+::\+Vector\+Line\+::get\+X1 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the start x value for the line. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_line_a8eba87e6186c185a65c4394321c8f577}\label{classglib_1_1_vector_line_a8eba87e6186c185a65c4394321c8f577}} 
+\index{glib::VectorLine@{glib::VectorLine}!getX2@{getX2}}
+\index{getX2@{getX2}!glib::VectorLine@{glib::VectorLine}}
+\doxysubsubsection{\texorpdfstring{getX2()}{getX2()}}
+{\footnotesize\ttfamily double glib\+::\+Vector\+Line\+::get\+X2 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the end x value for the line. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_line_a0874894ce19e50c0546f8c652b440286}\label{classglib_1_1_vector_line_a0874894ce19e50c0546f8c652b440286}} 
+\index{glib::VectorLine@{glib::VectorLine}!getY1@{getY1}}
+\index{getY1@{getY1}!glib::VectorLine@{glib::VectorLine}}
+\doxysubsubsection{\texorpdfstring{getY1()}{getY1()}}
+{\footnotesize\ttfamily double glib\+::\+Vector\+Line\+::get\+Y1 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the start y value for the line. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_line_aa939a4af1834a17284a6bb0e3d9a6a7d}\label{classglib_1_1_vector_line_aa939a4af1834a17284a6bb0e3d9a6a7d}} 
+\index{glib::VectorLine@{glib::VectorLine}!getY2@{getY2}}
+\index{getY2@{getY2}!glib::VectorLine@{glib::VectorLine}}
+\doxysubsubsection{\texorpdfstring{getY2()}{getY2()}}
+{\footnotesize\ttfamily double glib\+::\+Vector\+Line\+::get\+Y2 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the end y value for the line. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_line_a672366e4c852649091659abc18c471cd}\label{classglib_1_1_vector_line_a672366e4c852649091659abc18c471cd}} 
+\index{glib::VectorLine@{glib::VectorLine}!setX1@{setX1}}
+\index{setX1@{setX1}!glib::VectorLine@{glib::VectorLine}}
+\doxysubsubsection{\texorpdfstring{setX1()}{setX1()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Line\+::set\+X1 (\begin{DoxyParamCaption}\item[{double}]{x1 }\end{DoxyParamCaption})}
+
+
+
+Sets the start x value for the line. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x1} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_line_aa9d1552969dbe2d1062464a78ea08a48}\label{classglib_1_1_vector_line_aa9d1552969dbe2d1062464a78ea08a48}} 
+\index{glib::VectorLine@{glib::VectorLine}!setX2@{setX2}}
+\index{setX2@{setX2}!glib::VectorLine@{glib::VectorLine}}
+\doxysubsubsection{\texorpdfstring{setX2()}{setX2()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Line\+::set\+X2 (\begin{DoxyParamCaption}\item[{double}]{x2 }\end{DoxyParamCaption})}
+
+
+
+Sets the end x value for the line. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x2} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_line_a4525ce585f490309116735e73d7d10ef}\label{classglib_1_1_vector_line_a4525ce585f490309116735e73d7d10ef}} 
+\index{glib::VectorLine@{glib::VectorLine}!setY1@{setY1}}
+\index{setY1@{setY1}!glib::VectorLine@{glib::VectorLine}}
+\doxysubsubsection{\texorpdfstring{setY1()}{setY1()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Line\+::set\+Y1 (\begin{DoxyParamCaption}\item[{double}]{y1 }\end{DoxyParamCaption})}
+
+
+
+Sets the start y value for the line. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em y1} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_line_af48cc6fe73e07d261af73bec477b703f}\label{classglib_1_1_vector_line_af48cc6fe73e07d261af73bec477b703f}} 
+\index{glib::VectorLine@{glib::VectorLine}!setY2@{setY2}}
+\index{setY2@{setY2}!glib::VectorLine@{glib::VectorLine}}
+\doxysubsubsection{\texorpdfstring{setY2()}{setY2()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Line\+::set\+Y2 (\begin{DoxyParamCaption}\item[{double}]{y2 }\end{DoxyParamCaption})}
+
+
+
+Sets the end y value for the line. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em y2} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Vector\+Graphic.\+h\end{DoxyCompactItemize}

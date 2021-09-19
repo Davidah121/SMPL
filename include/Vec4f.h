@@ -8,11 +8,43 @@ namespace glib
 	class Vec4f : public Object
 	{
 	public:
+
+		/**
+		 * @brief Construct a new Vec4f object
+		 * 
+		 */
 		Vec4f();
+
+		/**
+		 * @brief Construct a new Vec4f object
+		 * 
+		 * @param x 
+		 * @param y 
+		 * @param z 
+		 * @param w 
+		 */
 		Vec4f(double x, double y, double z, double w);
+
+		/**
+		 * @brief Construct a new Vec4f object from a Vec3f object
+		 * 		The w value will not be set.
+		 * 
+		 * @param other 
+		 */
 		Vec4f(Vec3f other);
+
+		/**
+		 * @brief Construct a new Vec4f object from a Vec3f object
+		 * 		The z and w values will not be set.
+		 * 
+		 * @param other 
+		 */
 		Vec4f(Vec2f other);
 
+		/**
+		 * @brief Destroy the Vec4f object
+		 * 
+		 */
 		~Vec4f();
 
 		//Object and Class Stuff
@@ -24,18 +56,84 @@ namespace glib
 		double z = 0;
 		double w = 0;
 
+		/**
+		 * @brief Gets the X value for the vector
+		 * 
+		 * @return double 
+		 */
 		double getX();
+
+		/**
+		 * @brief Gets the Y value for the vector
+		 * 
+		 * @return double 
+		 */
 		double getY();
+
+		/**
+		 * @brief Gets the Z value for the vector
+		 * 
+		 * @return double 
+		 */
 		double getZ();
+
+		/**
+		 * @brief Gets the W value for the vector
+		 * 
+		 * @return double 
+		 */
 		double getW();
 
+		/**
+		 * @brief Sets the X value for the vector
+		 * 
+		 * @param value 
+		 */
 		void setX(double value);
+
+		/**
+		 * @brief Sets the Y value for the vector
+		 * 
+		 * @param value 
+		 */
 		void setY(double value);
+
+		/**
+		 * @brief Sets the Z value for the vector
+		 * 
+		 * @param value 
+		 */
 		void setZ(double value);
+
+		/**
+		 * @brief Sets the W value for the vector
+		 * 
+		 * @param value 
+		 */
 		void setW(double value);
 
+
+		/**
+		 * @brief Copies values from a Vec2f.
+		 * 		The z and w values will not be set.
+		 * 
+		 * @param value 
+		 */
 		void setValues(Vec2f value);
+
+		/**
+		 * @brief Copies values from a Vec3f.
+		 * 		The w values will not be set.
+		 * 
+		 * @param value 
+		 */
 		void setValues(Vec3f value);
+
+		/**
+		 * @brief Copies values from a Vec4f.
+		 * 
+		 * @param value 
+		 */
 		void setValues(Vec4f value);
 
 		Vec4f operator-(Vec4f other);
@@ -74,6 +172,11 @@ namespace glib
 		Vec4f operator/(int other);
 		Vec4f operator/(Vec4f other);
 
+		/**
+		 * @brief Converts the Vec4f object to a GeneralVector object
+		 * 
+		 * @return GeneralVector 
+		 */
 		GeneralVector toGeneralVector();
 		operator GeneralVector() const;
 	};

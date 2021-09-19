@@ -1,0 +1,164 @@
+\hypertarget{_input_8h_source}{}\doxysection{Input.\+h}
+\label{_input_8h_source}\index{include/Input.h@{include/Input.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 }
+\DoxyCodeLine{3 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{4 \{}
+\DoxyCodeLine{5 }
+\DoxyCodeLine{6     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_input}{Input}}}
+\DoxyCodeLine{7     \{}
+\DoxyCodeLine{8     \textcolor{keyword}{public}:}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_BACKSPACE = 0x08;}
+\DoxyCodeLine{11         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_TAB = 0x09;}
+\DoxyCodeLine{12         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_ENTER = 0x0D;}
+\DoxyCodeLine{13         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_SHIFT = 0x10;}
+\DoxyCodeLine{14         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_CONTROL = 0x11;}
+\DoxyCodeLine{15         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_ALT = 0x12;}
+\DoxyCodeLine{16         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_PAUSE = 0x13;}
+\DoxyCodeLine{17         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_CAPSLOCK = 0x14;}
+\DoxyCodeLine{18         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_ESCAPE = 0x1B;}
+\DoxyCodeLine{19         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_SPACE = 0x20;}
+\DoxyCodeLine{20         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_PAGEUP = 0x21;}
+\DoxyCodeLine{21         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_PAGEDOWN = 0x22;}
+\DoxyCodeLine{22 }
+\DoxyCodeLine{23         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_END= 0x23;}
+\DoxyCodeLine{24         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_HOME = 0x24;}
+\DoxyCodeLine{25         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_LEFT = 0x25;}
+\DoxyCodeLine{26         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_UP = 0x26;}
+\DoxyCodeLine{27         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_RIGHT = 0x27;}
+\DoxyCodeLine{28         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_DOWN = 0x28;}
+\DoxyCodeLine{29         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_PRINTSCREEN = 0x2C;}
+\DoxyCodeLine{30         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_INSERT = 0x2D;}
+\DoxyCodeLine{31         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_DELETE = 0x2E;}
+\DoxyCodeLine{32 }
+\DoxyCodeLine{33         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_NUMPAD0 = 0x60;}
+\DoxyCodeLine{34         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_NUMPAD1 = 0x61;}
+\DoxyCodeLine{35         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_NUMPAD2 = 0x62;}
+\DoxyCodeLine{36         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_NUMPAD3 = 0x63;}
+\DoxyCodeLine{37         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_NUMPAD4 = 0x64;}
+\DoxyCodeLine{38         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_NUMPAD5 = 0x65;}
+\DoxyCodeLine{39         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_NUMPAD6 = 0x66;}
+\DoxyCodeLine{40         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_NUMPAD7 = 0x67;}
+\DoxyCodeLine{41         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_NUMPAD8 = 0x68;}
+\DoxyCodeLine{42         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_NUMPAD9 = 0x69;}
+\DoxyCodeLine{43 }
+\DoxyCodeLine{44         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_NUMPAD\_MULTIPLY = 0x6A;}
+\DoxyCodeLine{45         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_NUMPAD\_ADD = 0x6B;}
+\DoxyCodeLine{46         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_NUMPAD\_ENTER = 0x6C;}
+\DoxyCodeLine{47         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_NUMPAD\_SUBTRACT = 0x6D;}
+\DoxyCodeLine{48         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_NUMPAD\_DECIMAL = 0x6E;}
+\DoxyCodeLine{49         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_NUMPAD\_DIVIDE = 0x6F;}
+\DoxyCodeLine{50 }
+\DoxyCodeLine{51         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F1 = 0x70;}
+\DoxyCodeLine{52         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F2 = 0x71;}
+\DoxyCodeLine{53         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F3 = 0x72;}
+\DoxyCodeLine{54         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F4 = 0x73;}
+\DoxyCodeLine{55         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F5 = 0x74;}
+\DoxyCodeLine{56         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F6 = 0x75;}
+\DoxyCodeLine{57         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F7 = 0x76;}
+\DoxyCodeLine{58         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F8 = 0x77;}
+\DoxyCodeLine{59         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F9 = 0x78;}
+\DoxyCodeLine{60         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F10 = 0x79;}
+\DoxyCodeLine{61         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F11 = 0x7A;}
+\DoxyCodeLine{62         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F12 = 0x7B;}
+\DoxyCodeLine{63         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F13 = 0x7C;}
+\DoxyCodeLine{64         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F14 = 0x7D;}
+\DoxyCodeLine{65         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F15 = 0x7E;}
+\DoxyCodeLine{66         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F16 = 0x7F;}
+\DoxyCodeLine{67         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F17 = 0x80;}
+\DoxyCodeLine{68         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F18 = 0x81;}
+\DoxyCodeLine{69         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F19 = 0x82;}
+\DoxyCodeLine{70         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F20 = 0x83;}
+\DoxyCodeLine{71         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F21 = 0x84;}
+\DoxyCodeLine{72         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F22 = 0x85;}
+\DoxyCodeLine{73         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F23 = 0x86;}
+\DoxyCodeLine{74         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_F24 = 0x87;}
+\DoxyCodeLine{75 }
+\DoxyCodeLine{76         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_NUMLOCK = 0x90;}
+\DoxyCodeLine{77         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_SCROLL\_LOCK = 0x91;}
+\DoxyCodeLine{78         }
+\DoxyCodeLine{79         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_LSHIFT = 0xA0;}
+\DoxyCodeLine{80         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_RSHIFT = 0xA1;}
+\DoxyCodeLine{81         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_LCONTROL = 0xA2;}
+\DoxyCodeLine{82         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_RCONTROL = 0xA3;}
+\DoxyCodeLine{83 }
+\DoxyCodeLine{84         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_PLUS = 0xBB;}
+\DoxyCodeLine{85         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_COMMA = 0xBC;}
+\DoxyCodeLine{86         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_MINUS = 0xBD;}
+\DoxyCodeLine{87         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_PERIOD = 0xBE;}
+\DoxyCodeLine{88 }
+\DoxyCodeLine{89         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_FORWARD\_SLASH = 0xBF;}
+\DoxyCodeLine{90         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_TILDE = 0xC0;}
+\DoxyCodeLine{91         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_SEMICOLON = 0xBA;}
+\DoxyCodeLine{92         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_LEFT\_SQUARE\_BRACKET = 0xDB;}
+\DoxyCodeLine{93         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_BACK\_SLASH = 0xDC;}
+\DoxyCodeLine{94         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_RIGHT\_SQUARE\_BRACKET = 0xDD;}
+\DoxyCodeLine{95         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} KEY\_SINGLE\_QUOTE = 0xDE;}
+\DoxyCodeLine{96         }
+\DoxyCodeLine{103         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_input_a7c8ba62dcbbf4c4629eea675537a27ad}{pollInput}}();}
+\DoxyCodeLine{104 }
+\DoxyCodeLine{115         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_input_a78d173024bc668d2a515dc2187aab44d}{getKeyPressed}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} k);}
+\DoxyCodeLine{116 }
+\DoxyCodeLine{127         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_input_ab5c1021f1f5a37608204dfa97eb45a90}{getKeyDown}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} k);}
+\DoxyCodeLine{128 }
+\DoxyCodeLine{139         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_input_a6f639b98da2f6d0b22028352c958cae5}{getKeyUp}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} k);}
+\DoxyCodeLine{140 }
+\DoxyCodeLine{150         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_input_add8695d31bf065d6c1f15bfbb61447e7}{getMousePressed}}(\textcolor{keywordtype}{int} v);}
+\DoxyCodeLine{151 }
+\DoxyCodeLine{161         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_input_a6412e7544b232fba8bfd754800481a39}{getMouseDown}}(\textcolor{keywordtype}{int} v);}
+\DoxyCodeLine{162 }
+\DoxyCodeLine{172         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_input_af1ac246330d9f9d87039d1ad84328189}{getMouseUp}}(\textcolor{keywordtype}{int} v);}
+\DoxyCodeLine{173 }
+\DoxyCodeLine{181         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_input_a91ebf69a926f35d0cc7a8642d86d30fc}{getMouseScrollVertical}}();}
+\DoxyCodeLine{182 }
+\DoxyCodeLine{190         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_input_a83f81791912be744e81aa5150974b67c}{getMouseScrollHorizontal}}();}
+\DoxyCodeLine{191 }
+\DoxyCodeLine{197         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_input_ac9c09f187ebc0a74f44a2fe07876ce1d}{getMouseX}}();}
+\DoxyCodeLine{198 }
+\DoxyCodeLine{204         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_input_ad2725fa981525babdd45b4afd1bdcf5d}{getMouseY}}();}
+\DoxyCodeLine{205 }
+\DoxyCodeLine{212         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_input_a38cd1554a271ce755ea2cfbe1cce40ea}{getKeyChanged}}();}
+\DoxyCodeLine{213 }
+\DoxyCodeLine{220         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_input_a0453ea2b3d5d87c403faf7d292ab302b}{getMouseMoved}}();}
+\DoxyCodeLine{221 }
+\DoxyCodeLine{227         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_input_a469181ec3287095425be5ae807beaa00}{getLastKeyPressed}}();}
+\DoxyCodeLine{228 }
+\DoxyCodeLine{234         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_input_a11f434719ce71818478ba2284f11a360}{getLastKeyDown}}();}
+\DoxyCodeLine{235 }
+\DoxyCodeLine{241         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_input_ae44d64100dac6e6d8333718d085618dc}{getLastKeyReleased}}();}
+\DoxyCodeLine{242 }
+\DoxyCodeLine{243         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} LEFT\_MOUSE\_BUTTON = 0x00;}
+\DoxyCodeLine{244         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} MIDDLE\_MOUSE\_BUTTON = 0x01;}
+\DoxyCodeLine{245         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} RIGHT\_MOUSE\_BUTTON = 0x02;}
+\DoxyCodeLine{246 }
+\DoxyCodeLine{247     \textcolor{keyword}{private}:}
+\DoxyCodeLine{248         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} keyState[256];}
+\DoxyCodeLine{249         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} mouseState[3];}
+\DoxyCodeLine{250 }
+\DoxyCodeLine{251         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} preKeyState[256];}
+\DoxyCodeLine{252         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} preMouseState[3];}
+\DoxyCodeLine{253         }
+\DoxyCodeLine{254         \textcolor{keyword}{static} \textcolor{keywordtype}{int} verticalScrollValue;}
+\DoxyCodeLine{255         \textcolor{keyword}{static} \textcolor{keywordtype}{int} horizontalScrollValue;}
+\DoxyCodeLine{256 }
+\DoxyCodeLine{257         \textcolor{keyword}{static} \textcolor{keywordtype}{int} nVerticalScrollValue;}
+\DoxyCodeLine{258         \textcolor{keyword}{static} \textcolor{keywordtype}{int} nHorizontalScrollValue;}
+\DoxyCodeLine{259 }
+\DoxyCodeLine{260         \textcolor{keyword}{static} \textcolor{keywordtype}{int} mouseX;}
+\DoxyCodeLine{261         \textcolor{keyword}{static} \textcolor{keywordtype}{int} mouseY;}
+\DoxyCodeLine{262 }
+\DoxyCodeLine{263         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} keyChanged;}
+\DoxyCodeLine{264         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} mouseMoved;}
+\DoxyCodeLine{265         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} mouseClicked;}
+\DoxyCodeLine{266 }
+\DoxyCodeLine{267         \textcolor{keyword}{static} \textcolor{keywordtype}{int} lastKeyPressed;}
+\DoxyCodeLine{268         \textcolor{keyword}{static} \textcolor{keywordtype}{int} lastKeyDown;}
+\DoxyCodeLine{269         \textcolor{keyword}{static} \textcolor{keywordtype}{int} lastKeyUp;}
+\DoxyCodeLine{270     \};}
+\DoxyCodeLine{271 }
+\DoxyCodeLine{272 \}}
+
+\end{DoxyCode}

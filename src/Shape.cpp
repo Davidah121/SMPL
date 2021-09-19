@@ -279,16 +279,12 @@ namespace glib
 
 	Line2D::Line2D(double x1, double y1, double x2, double y2)
 	{
-		v1.x = x1;
-		v1.y = y1;
-		v2.x = x2;
-		v2.y = y2;
+		l = Line(x1, y1, x2, y2);
 	}
 
 	Line2D::Line2D(Vec2f p1, Vec2f p2)
 	{
-		v1 = p1;
-		v2 = p2;
+		l = Line(p1,p2);
 	}
 
 	Line2D::~Line2D()
@@ -297,82 +293,38 @@ namespace glib
 
 	void Line2D::setPoint1(Vec2f p)
 	{
-		v1 = p;
+		l = Line(p, l.getPoint2());
 	}
 
 	void Line2D::setPoint1(double x, double y)
 	{
-		v1.x = x;
-		v1.y = y;
+		l = Line(Vec2f(x,y), l.getPoint2());
 	}
 
 	void Line2D::setPoint2(Vec2f p)
 	{
-		v2 = p;
+		l = Line(l.getPoint1(), p);
 	}
 
 	void Line2D::setPoint2(double x, double y)
 	{
-		v2.x = x;
-		v2.y = y;
+		
+		l = Line(l.getPoint1(), Vec2f(x,y));
 	}
 
 	Vec2f Line2D::getPoint1()
 	{
-		return v1;
+		return l.getPoint1();
 	}
 
 	Vec2f Line2D::getPoint2()
 	{
-		return v2;
+		return l.getPoint2();
 	}
 
-	double Line2D::getSlope()
+	Line Line2D::getLine()
 	{
-		if (v2.x - v1.x != 0)
-		{
-			return (v2.y - v1.y) / (v2.x - v1.x);
-		}
-		return 0.0;
-	}
-
-	double Line2D::getSlopeRelativeY()
-	{
-		if (v2.y - v1.y != 0)
-		{
-			return (v2.x - v1.x) / (v2.y - v1.y);
-		}
-		return 0.0;
-	}
-
-	double Line2D::getYInt()
-	{
-		return v1.y - getSlope()*v1.x;
-	}
-
-	double Line2D::getXInt()
-	{
-		return v1.x - getSlopeRelativeY() * v1.y;
-	}
-
-	double Line2D::getMinX()
-	{
-		return MathExt::min(v1.x, v2.x);
-	}
-
-	double Line2D::getMaxX()
-	{
-		return MathExt::max(v1.x, v2.x);
-	}
-
-	double Line2D::getMinY()
-	{
-		return MathExt::min(v1.y, v2.y);
-	}
-
-	double Line2D::getMaxY()
-	{
-		return MathExt::max(v1.y, v2.y);
+		return l;
 	}
 
 	double Line2D::generateBoundingRadius()
@@ -603,7 +555,7 @@ namespace glib
 	#pragma region COLLISION_MASTER
 
 	//Static initialization
-	bool(*CollisionMaster::extCollision)(Shape* a, Shape* b) = nullptr;
+	std::function<bool(Shape*, Shape*)> CollisionMaster::extCollision = nullptr;
 
 	//Functions
 	bool CollisionMaster::getCollision(Shape* a, Shape* b)
@@ -943,13 +895,15 @@ namespace glib
 
 	bool CollisionMaster::collisionMethod(Point2D* a, Line2D* b)
 	{
-		if (b->getMinX() == b->getMaxX())
+		Line bLine = b->getLine();
+
+		if (bLine.getMinX() == bLine.getMaxX())
 		{
 			//Vertical line
-			if (a->getPosition().x == b->getMaxX())
+			if (a->getPosition().x == bLine.getMaxX())
 			{
-				if (a->getPosition().y >= b->getMinY() &&
-					a->getPosition().y <= b->getMaxY())
+				if (a->getPosition().y >= bLine.getMinY() &&
+					a->getPosition().y <= bLine.getMaxY())
 				{
 					return true;
 				}
@@ -957,7 +911,7 @@ namespace glib
 		}
 		else
 		{
-			double yNeeded = (a->getPosition().x * b->getSlope()) + b->getYInt();
+			double yNeeded = bLine.solveForY( a->getPosition().x);
 
 			if (yNeeded == a->getPosition().y)
 			{
@@ -1046,14 +1000,15 @@ namespace glib
 
 	bool CollisionMaster::collisionMethod(Box2D* a, Line2D* b)
 	{
-		if (b->getMinX() == b->getMaxX())
+		Line bLine = b->getLine();
+		if (bLine.getMinX() == bLine.getMaxX())
 		{
 			//Vertical line
-			if (b->getMinX() >= a->getLeftBound() &&
-				b->getMinX() <= a->getRightBound())
+			if (bLine.getMinX() >= a->getLeftBound() &&
+				bLine.getMinX() <= a->getRightBound())
 			{
-				if (b->getMinY() <= a->getBottomBound() &&
-					b->getMaxY() >= a->getTopBound())
+				if (bLine.getMinY() <= a->getBottomBound() &&
+					bLine.getMaxY() >= a->getTopBound())
 				{
 					return true;
 				}
@@ -1061,17 +1016,17 @@ namespace glib
 		}
 		else
 		{
-			double yNeeded1 = (a->getLeftBound() * b->getSlope()) + b->getYInt();
-			double yNeeded2 = (a->getRightBound() * b->getSlope()) + b->getYInt();
+			double yNeeded1 = bLine.solveForY(a->getLeftBound());
+			double yNeeded2 = bLine.solveForY(a->getRightBound());
 
 			double maY = MathExt::max(yNeeded1, yNeeded2);
 			double miY = MathExt::min(yNeeded1, yNeeded2);
 
-			maY = MathExt::clamp(maY, b->getMinY(), b->getMaxY());
-			miY = MathExt::clamp(miY, b->getMinY(), b->getMaxY());
+			maY = MathExt::clamp(maY, bLine.getMinY(), bLine.getMaxY());
+			miY = MathExt::clamp(miY, bLine.getMinY(), bLine.getMaxY());
 			
-			double maX = MathExt::clamp(a->getLeftBound(), b->getMinX(), b->getMaxX());
-			double miX = MathExt::clamp(a->getRightBound(), b->getMinX(), b->getMaxX());
+			double maX = MathExt::clamp(a->getLeftBound(), bLine.getMinX(), bLine.getMaxX());
+			double miX = MathExt::clamp(a->getRightBound(), bLine.getMinX(), bLine.getMaxX());
 
 			if (a->getLeftBound() <= maX && a->getRightBound() >= miX)
 			{
@@ -1146,18 +1101,19 @@ namespace glib
 			informs us on where to apply the force.
 		*/
 
-		if (b->getMaxX() == b->getMinX())
+		Line bLine = b->getLine();
+		if (bLine.getMaxX() == bLine.getMinX())
 		{
 			//vertical line
 			//similar to the x version
 			// y = (py + slope*px - slope*b) / (1+slope*slope)
 
 			//find the point with the minimum distance
-			double y = (a->getPosition().y + b->getSlopeRelativeY() * (a->getPosition().x - b->getXInt())) / (1 + MathExt::sqr(b->getSlopeRelativeY()));
+			double y = (a->getPosition().y + bLine.getSlopeRelativeY() * (a->getPosition().x - bLine.getXInt())) / (1 + MathExt::sqr(bLine.getSlopeRelativeY()));
 
 			//clamp it down to the max or min possible x value then solve for y
-			y = MathExt::clamp(y, b->getMinY(), b->getMaxY());
-			double x = y * b->getSlopeRelativeY() + b->getXInt();
+			y = MathExt::clamp(y, bLine.getMinY(), bLine.getMaxY());
+			double x = y * bLine.getSlopeRelativeY() + bLine.getXInt();
 
 			//now solve distance
 			double disX = MathExt::sqr(a->getPosition().x - x);
@@ -1178,11 +1134,11 @@ namespace glib
 			// x = (px + slope*py - slope*b) / (1 + slope * slope)
 
 			//find the point with the minimum distance
-			double x = (a->getPosition().x + b->getSlope() * (a->getPosition().y - b->getYInt())) / (1 + MathExt::sqr(b->getSlope()));
+			double x = (a->getPosition().x + bLine.getSlope() * (a->getPosition().y - bLine.getYInt())) / (1 + MathExt::sqr(bLine.getSlope()));
 
 			//clamp it down to the max or min possible x value then solve for y
-			x = MathExt::clamp(x, b->getMinX(), b->getMaxX());
-			double y = x * b->getSlope() + b->getYInt();
+			x = MathExt::clamp(x, bLine.getMinX(), bLine.getMaxX());
+			double y = x * bLine.getSlope() + bLine.getYInt();
 
 			//now solve distance
 			double disX = MathExt::sqr(a->getPosition().x - x);
@@ -1442,7 +1398,7 @@ namespace glib
 		return false;
 	}
 
-	void CollisionMaster::setExternalCollisionFunction(bool(*extFunction)(Shape* a, Shape* b))
+	void CollisionMaster::setExternalCollisionFunction(std::function<bool(Shape*,Shape*)> extFunction)
 	{
 		extCollision = extFunction;
 	}

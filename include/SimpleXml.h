@@ -7,7 +7,17 @@ namespace glib
     class XmlAttribute
     {
     public:
+        /**
+         * @brief Construct a new XmlAttribute object
+         *      Contains the name and value of the attribute as wstrings.
+         * 
+         */
         XmlAttribute();
+
+        /**
+         * @brief Destroy the XmlAttribute object
+         * 
+         */
         ~XmlAttribute();
 
         std::wstring name;
@@ -17,11 +27,25 @@ namespace glib
     class XmlNode
     {
     public:
+        /**
+         * @brief Construct a new XmlNode object
+         *      Contains the title of the node, a value if it has one, childNodes, attributes for the node, and its parent node.
+         * 
+         */
         XmlNode();
-        ~XmlNode();
-        XmlNode(const XmlNode &other);
 
-        bool isEndOfSection();
+        /**
+         * @brief Construct a new XmlNode object from another XmlNode object
+         * 
+         * @param other 
+         */
+
+        XmlNode(const XmlNode &other);
+        /**
+         * @brief Destroy the XmlNode object
+         * 
+         */
+        ~XmlNode();
 
         std::wstring title;
         std::vector<XmlAttribute> attributes = std::vector<XmlAttribute>();
@@ -30,28 +54,65 @@ namespace glib
         std::wstring value;
     private:
         friend class SimpleXml;
+
+        /**
+         * @brief Determines if the node an ending node. Ending nodes are only used when loading data.
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool isEndOfSection();
         bool isEnd = false;
     };
 
     class SimpleXml
     {
     public:
+        /**
+         * @brief Construct a new SimpleXml object
+         *      Contains information about an XML file.
+         *      Can be constructed in code to save data or load in data to parse.
+         * 
+         */
         SimpleXml();
+
+        /**
+         * @brief Destroy the SimpleXml object
+         * 
+         */
         ~SimpleXml();
 
-        bool load(std::string filename);
-        void save(std::string filename);
+        /**
+         * @brief Loads an XML file.
+         * 
+         * @param file 
+         * @return true 
+         * @return false 
+         */
+        bool load(File file);
 
-        bool load(std::wstring filename);
-        void save(std::wstring filename);
+        /**
+         * @brief Saves the XmlNode data into a file.
+         * 
+         * @param file 
+         */
+        void save(File file);
 
-        bool load(File filename);
-        void save(File filename);
-
+        /**
+         * @brief Disposes of the memory used by the object.
+         *      All nodes maintain by the object including their children should be considered invalid.
+         */
         void dispose();
 
-        std::vector<XmlNode*> nodes = std::vector<XmlNode*>();
+        /**
+         * @brief Parses an escape sequence in XML to the original character it represents.
+         * 
+         * @param escString 
+         * @return int 
+         */
         static int parseEscapeString(std::wstring escString);
+
+        std::vector<XmlNode*> nodes = std::vector<XmlNode*>();
         
     private:
         XmlNode* parseXmlLine(std::wstring line);

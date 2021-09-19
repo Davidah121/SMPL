@@ -1,0 +1,752 @@
+\hypertarget{classglib_1_1_gui_instance}{}\doxysection{glib\+::Gui\+Instance Class Reference}
+\label{classglib_1_1_gui_instance}\index{glib::GuiInstance@{glib::GuiInstance}}
+Inheritance diagram for glib\+::Gui\+Instance\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=12.000000cm]{classglib_1_1_gui_instance}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a558c2570ce9fcebf0666858d85bded83}\label{classglib_1_1_gui_instance_a558c2570ce9fcebf0666858d85bded83}} 
+{\bfseries Gui\+Instance} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} object \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is more of an abstract class that is designed to be extended through sub classes. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_gui_instance_adb8bc107798bd2b2ec21aee1765b5bed}{Gui\+Instance}} (const \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} \&other)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} object from another \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_aeaf94485b23362abed8e189c127ca08e}{operator=}} (const \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} \&other)
+\begin{DoxyCompactList}\small\item\em Copies a \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_abb1784a419ea2b500794c9d86e23983a}{copy}} (const \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} \&other)
+\begin{DoxyCompactList}\small\item\em Copies a \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} object. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_adbdc9b24c2f7b7e30f8ba5da6dcdf4f5}\label{classglib_1_1_gui_instance_adbdc9b24c2f7b7e30f8ba5da6dcdf4f5}} 
+{\bfseries $\sim$\+Gui\+Instance} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_gui_instance_add07902b5752d530a59372a6af8d173c}{get\+Class}} ()
+\item 
+virtual void \mbox{\hyperlink{classglib_1_1_gui_instance_adb20e1eac37428a48802ad39cf4c2cb0}{update}} ()
+\begin{DoxyCompactList}\small\item\em An update function for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. Must be overriden. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{classglib_1_1_gui_instance_a303d9dc4dedc8e5cf2027bb02c7015c8}{render}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em An render function for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. Must be overriden. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_aa4b79780799ee7044066908614004a41}{add\+Child}} (\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$obj)
+\begin{DoxyCompactList}\small\item\em Adds a child to the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. The child will be updated and rendered after the parent. A \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} child can only have one parent. The parent is replaced by this function if the child already has a parent. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_af7121a61bc9a6503fbe807028dc35804}{remove\+Child}} (\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$obj)
+\begin{DoxyCompactList}\small\item\em Removes a child from the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. \end{DoxyCompactList}\item 
+std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$ $>$ \mbox{\hyperlink{classglib_1_1_gui_instance_acb7aa4a6a22de613575322885cdf8579}{get\+Children}} ()
+\begin{DoxyCompactList}\small\item\em Gets a list of children objects. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a54d82c7da3c5e76dfc3880694a0e02e3}\label{classglib_1_1_gui_instance_a54d82c7da3c5e76dfc3880694a0e02e3}} 
+const void {\bfseries base\+Update} ()
+\begin{DoxyCompactList}\small\item\em The base update function. Should not be modified as it handles certain function calls like on\+Focus. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_ad916b050a270ccf3fc3459ada5990267}\label{classglib_1_1_gui_instance_ad916b050a270ccf3fc3459ada5990267}} 
+const void {\bfseries base\+Render} ()
+\begin{DoxyCompactList}\small\item\em The base render function. Should not be modified as it sets the correct render offsets if neccessary. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_a03af60978d4a5aafc643123977c0a978}{set\+On\+Activate\+Function}} (std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$ func)
+\begin{DoxyCompactList}\small\item\em Sets the on\+Activate Function. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_a036967081a66192947576ed3f3a878ab}{set\+On\+Visible\+Function}} (std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$ func)
+\begin{DoxyCompactList}\small\item\em Sets the on\+Visible Function. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_aafc0b156b6a42c5917949d9827758394}{set\+On\+De\+Activate\+Function}} (std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$ func)
+\begin{DoxyCompactList}\small\item\em Sets the on\+De\+Activate Function. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_ae6de77196e445d16097f710709cd7752}{set\+On\+Invisible\+Function}} (std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$ func)
+\begin{DoxyCompactList}\small\item\em Sets the on\+Invisible Function. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_a821b98ad9a8a085792a25d42e37431a8}{set\+On\+Changed\+Function}} (std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$ func)
+\begin{DoxyCompactList}\small\item\em Sets the on\+Changed Function. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_a9dd1a2eb9e7f5cc890e9a4ec60749ae2}{set\+On\+Focus\+Function}} (std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$ func)
+\begin{DoxyCompactList}\small\item\em Sets the on\+Focus Function. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_a0ea928eef71d80b91b98aea426b8d110}{set\+Offset}} (int $\ast$offX, int $\ast$offY)
+\begin{DoxyCompactList}\small\item\em Sets the x and y offset pointers. This will offset the actual position of the object. Useful if its position is based on another objects position. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_a971e2319dceb3317df8c30849a896448}{set\+Render\+Offset}} (int $\ast$offX, int $\ast$offY)
+\begin{DoxyCompactList}\small\item\em Sets the x and y render offset pointers. This will offset the rendering position of the object. Useful when using the Canvas element as the correct position on screen may not be the same as the actual objects position. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_instance_a6cc4585e79958096a42593adfa3d6b90}{get\+Priority}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Priority of the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} Affects the order of processing when the \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} processes all of the Gui\+Instances it has. Note that the \mbox{\hyperlink{classglib_1_1_gui_canvas}{Gui\+Canvas}} element has a special priority value that will always be above the other priority values. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_a6a05267af582caee5bc354642663eae8}{set\+BaseX}} (int x)
+\begin{DoxyCompactList}\small\item\em Set the Base X for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. The is the unmodified x value for the object. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_instance_afa202c479496b10eadd3131f6560eb84}{get\+BaseX}} ()
+\begin{DoxyCompactList}\small\item\em Get the Base X for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_a14192041c8c1076536c83fe366486986}{set\+BaseY}} (int y)
+\begin{DoxyCompactList}\small\item\em Set the Base Y for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. The is the unmodified y value for the object. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_instance_ad05d5bfafc6b005a7e77a0459d562a9e}{get\+BaseY}} ()
+\begin{DoxyCompactList}\small\item\em Get the Base Y for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_instance_a201e186f4acbcd50f1819de83574503b}{getX}} ()
+\begin{DoxyCompactList}\small\item\em Gets the x value for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. This will be modified by any offsets used. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_instance_a3d52135387809c701fa0226e334f13b8}{getY}} ()
+\begin{DoxyCompactList}\small\item\em Gets the y value for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. This will be modified by any offsets used. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_a106ac5ee9338b80bfa7e0be1e5739c20}{set\+Visible}} (bool is)
+\begin{DoxyCompactList}\small\item\em Sets if the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is visible. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_gui_instance_acabdf12156b8238f555f47017e702751}{get\+Visible}} ()
+\begin{DoxyCompactList}\small\item\em Gets if the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is visible. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_aa0d66700a03d3b433c45c01e95a57c28}{set\+Active}} (bool is)
+\begin{DoxyCompactList}\small\item\em Sets if the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is active. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_gui_instance_ab7e7dacafdf829e012b237b1d54c4b61}{get\+Active}} ()
+\begin{DoxyCompactList}\small\item\em Gets if the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is active. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_a5a500e32c578a2f526e3a40921d64436}{set\+Focus}} (bool is)
+\begin{DoxyCompactList}\small\item\em Sets if the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is focused. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_gui_instance_a5a6cbed51f7894ab87e07a8921691d58}{get\+Focus}} ()
+\begin{DoxyCompactList}\small\item\em Gets if the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is focused. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_a95ea3bb153fab1660a47d78789762425}{set\+Always\+Focus}} (bool is)
+\begin{DoxyCompactList}\small\item\em Sets if the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is always focused. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_gui_instance_a65017319c959ee5814a29f13694ea88f}{get\+Always\+Focus}} ()
+\begin{DoxyCompactList}\small\item\em Gets if the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is always focused. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_a2dfe0213f14ae6569575d3d8ace11a70}{set\+Canvas}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$m)
+\begin{DoxyCompactList}\small\item\em Sets the canvas for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. This will specify that all drawing must be done specifically to this image. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ \mbox{\hyperlink{classglib_1_1_gui_instance_a5499a3cfa587d8cf46786ad5d0661970}{get\+Canvas}} ()
+\begin{DoxyCompactList}\small\item\em Returns the pointer to the canvas for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} if it has one. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a3efce78a3710baa1d24a658bf4a219f7}\label{classglib_1_1_gui_instance_a3efce78a3710baa1d24a658bf4a219f7}} 
+static const int {\bfseries MAX\+\_\+\+PRIORITY\+\_\+\+VALUE} = 9999
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_ab943e1cb2e713ed07b4d344eaab9379b}\label{classglib_1_1_gui_instance_ab943e1cb2e713ed07b4d344eaab9379b}} 
+static const int {\bfseries MIN\+\_\+\+PRIORITY\+\_\+\+VALUE} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a3b15e8461adc6b4bbf009019b786c9f5}\label{classglib_1_1_gui_instance_a3b15e8461adc6b4bbf009019b786c9f5}} 
+static const int {\bfseries CANVAS\+\_\+\+PRIORITY\+\_\+\+VALUE} = -\/10000
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a306de7bb8d1fda5e1de408f80831979a}\label{classglib_1_1_gui_instance_a306de7bb8d1fda5e1de408f80831979a}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{classglib_1_1_gui_instance_a920e23cc533f846b263760eda4f7427a}{get\+OffsetX}} ()
+\begin{DoxyCompactList}\small\item\em Gets the offset x position. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_instance_a63fb3ece0d80c26c00eaab7ce212cf42}{get\+OffsetY}} ()
+\begin{DoxyCompactList}\small\item\em Gets the offset y position. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_instance_a0636de904339df5222822f49c9663274}{get\+Render\+OffsetX}} ()
+\begin{DoxyCompactList}\small\item\em Gets the rendering offset x position. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_instance_a067bb5f5ffb0be7049d71ac22b47ecae}{get\+Render\+OffsetY}} ()
+\begin{DoxyCompactList}\small\item\em Gets the rendering offset y position. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_a2c41945b9c0e7fd8d594a1a2ee1afc9c}{set\+Priority}} (int value)
+\begin{DoxyCompactList}\small\item\em Sets the Priority for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. Affects the order of processing when the \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} processes all of the Gui\+Instances it has. Note that the \mbox{\hyperlink{classglib_1_1_gui_canvas}{Gui\+Canvas}} element has a special priority value that will always be above the other priority values. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_instance_a5101b9f18c063aa2ca4d35805d98884e}{set\+Manager}} (\mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} $\ast$m)
+\begin{DoxyCompactList}\small\item\em Sets the \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. Once it has been set to a \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}}, the \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} will manage the update and rendering functions for the object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} $\ast$ \mbox{\hyperlink{classglib_1_1_gui_instance_ac8edb3a183ed212c2cb75781386dc6d2}{get\+Manager}} ()
+\begin{DoxyCompactList}\small\item\em Gets the \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_ac1471eb4577449477fce861127e01a95}\label{classglib_1_1_gui_instance_ac1471eb4577449477fce861127e01a95}} 
+std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$ {\bfseries on\+Changed\+Function}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a4cfa56ccb952fe26cc52c7092b698cd5}\label{classglib_1_1_gui_instance_a4cfa56ccb952fe26cc52c7092b698cd5}} 
+int {\bfseries baseX} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a32998f521f0f711e0c167a3da7451df2}\label{classglib_1_1_gui_instance_a32998f521f0f711e0c167a3da7451df2}} 
+int {\bfseries baseY} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a39d8076ea08113da1b967f8fd321d2cf}\label{classglib_1_1_gui_instance_a39d8076ea08113da1b967f8fd321d2cf}} 
+int {\bfseries x} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a4647f0caa07de026e18b1defc6b4bd35}\label{classglib_1_1_gui_instance_a4647f0caa07de026e18b1defc6b4bd35}} 
+int {\bfseries y} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a7e61b6dc2f68c37ce6fc39333280c4cc}\label{classglib_1_1_gui_instance_a7e61b6dc2f68c37ce6fc39333280c4cc}} 
+int {\bfseries renderX} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a0b1ac961148816d6a30d3b69b76aa66b}\label{classglib_1_1_gui_instance_a0b1ac961148816d6a30d3b69b76aa66b}} 
+int {\bfseries renderY} = 0
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a07a659119a7aaf3d74d39831f1801751}\label{classglib_1_1_gui_instance_a07a659119a7aaf3d74d39831f1801751}} 
+class {\bfseries Gui\+Manager}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_adb8bc107798bd2b2ec21aee1765b5bed}\label{classglib_1_1_gui_instance_adb8bc107798bd2b2ec21aee1765b5bed}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!GuiInstance@{GuiInstance}}
+\index{GuiInstance@{GuiInstance}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{GuiInstance()}{GuiInstance()}}
+{\footnotesize\ttfamily glib\+::\+Gui\+Instance\+::\+Gui\+Instance (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} object from another \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_aa4b79780799ee7044066908614004a41}\label{classglib_1_1_gui_instance_aa4b79780799ee7044066908614004a41}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!addChild@{addChild}}
+\index{addChild@{addChild}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{addChild()}{addChild()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::add\+Child (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$}]{obj }\end{DoxyParamCaption})}
+
+
+
+Adds a child to the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. The child will be updated and rendered after the parent. A \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} child can only have one parent. The parent is replaced by this function if the child already has a parent. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em obj} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_abb1784a419ea2b500794c9d86e23983a}\label{classglib_1_1_gui_instance_abb1784a419ea2b500794c9d86e23983a}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!copy@{copy}}
+\index{copy@{copy}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{copy()}{copy()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::copy (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Copies a \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_ab7e7dacafdf829e012b237b1d54c4b61}\label{classglib_1_1_gui_instance_ab7e7dacafdf829e012b237b1d54c4b61}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!getActive@{getActive}}
+\index{getActive@{getActive}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{getActive()}{getActive()}}
+{\footnotesize\ttfamily bool glib\+::\+Gui\+Instance\+::get\+Active (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets if the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is active. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a65017319c959ee5814a29f13694ea88f}\label{classglib_1_1_gui_instance_a65017319c959ee5814a29f13694ea88f}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!getAlwaysFocus@{getAlwaysFocus}}
+\index{getAlwaysFocus@{getAlwaysFocus}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{getAlwaysFocus()}{getAlwaysFocus()}}
+{\footnotesize\ttfamily bool glib\+::\+Gui\+Instance\+::get\+Always\+Focus (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets if the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is always focused. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_afa202c479496b10eadd3131f6560eb84}\label{classglib_1_1_gui_instance_afa202c479496b10eadd3131f6560eb84}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!getBaseX@{getBaseX}}
+\index{getBaseX@{getBaseX}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{getBaseX()}{getBaseX()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Instance\+::get\+BaseX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the Base X for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_ad05d5bfafc6b005a7e77a0459d562a9e}\label{classglib_1_1_gui_instance_ad05d5bfafc6b005a7e77a0459d562a9e}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!getBaseY@{getBaseY}}
+\index{getBaseY@{getBaseY}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{getBaseY()}{getBaseY()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Instance\+::get\+BaseY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the Base Y for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a5499a3cfa587d8cf46786ad5d0661970}\label{classglib_1_1_gui_instance_a5499a3cfa587d8cf46786ad5d0661970}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!getCanvas@{getCanvas}}
+\index{getCanvas@{getCanvas}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{getCanvas()}{getCanvas()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ glib\+::\+Gui\+Instance\+::get\+Canvas (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the pointer to the canvas for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} if it has one. 
+
+\begin{DoxyReturn}{Returns}
+Image$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_acb7aa4a6a22de613575322885cdf8579}\label{classglib_1_1_gui_instance_acb7aa4a6a22de613575322885cdf8579}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!getChildren@{getChildren}}
+\index{getChildren@{getChildren}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{getChildren()}{getChildren()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$ $>$ glib\+::\+Gui\+Instance\+::get\+Children (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets a list of children objects. 
+
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$\+Gui\+Instance$\ast$$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_add07902b5752d530a59372a6af8d173c}\label{classglib_1_1_gui_instance_add07902b5752d530a59372a6af8d173c}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Gui\+Instance\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
+
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a5a6cbed51f7894ab87e07a8921691d58}\label{classglib_1_1_gui_instance_a5a6cbed51f7894ab87e07a8921691d58}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!getFocus@{getFocus}}
+\index{getFocus@{getFocus}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{getFocus()}{getFocus()}}
+{\footnotesize\ttfamily bool glib\+::\+Gui\+Instance\+::get\+Focus (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets if the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is focused. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_ac8edb3a183ed212c2cb75781386dc6d2}\label{classglib_1_1_gui_instance_ac8edb3a183ed212c2cb75781386dc6d2}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!getManager@{getManager}}
+\index{getManager@{getManager}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{getManager()}{getManager()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} $\ast$ glib\+::\+Gui\+Instance\+::get\+Manager (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Gets the \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. 
+
+\begin{DoxyReturn}{Returns}
+Gui\+Manager$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a920e23cc533f846b263760eda4f7427a}\label{classglib_1_1_gui_instance_a920e23cc533f846b263760eda4f7427a}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!getOffsetX@{getOffsetX}}
+\index{getOffsetX@{getOffsetX}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{getOffsetX()}{getOffsetX()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Instance\+::get\+OffsetX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Gets the offset x position. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a63fb3ece0d80c26c00eaab7ce212cf42}\label{classglib_1_1_gui_instance_a63fb3ece0d80c26c00eaab7ce212cf42}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!getOffsetY@{getOffsetY}}
+\index{getOffsetY@{getOffsetY}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{getOffsetY()}{getOffsetY()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Instance\+::get\+OffsetY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Gets the offset y position. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a6cc4585e79958096a42593adfa3d6b90}\label{classglib_1_1_gui_instance_a6cc4585e79958096a42593adfa3d6b90}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!getPriority@{getPriority}}
+\index{getPriority@{getPriority}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{getPriority()}{getPriority()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Instance\+::get\+Priority (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Priority of the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} Affects the order of processing when the \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} processes all of the Gui\+Instances it has. Note that the \mbox{\hyperlink{classglib_1_1_gui_canvas}{Gui\+Canvas}} element has a special priority value that will always be above the other priority values. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a0636de904339df5222822f49c9663274}\label{classglib_1_1_gui_instance_a0636de904339df5222822f49c9663274}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!getRenderOffsetX@{getRenderOffsetX}}
+\index{getRenderOffsetX@{getRenderOffsetX}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{getRenderOffsetX()}{getRenderOffsetX()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Instance\+::get\+Render\+OffsetX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Gets the rendering offset x position. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a067bb5f5ffb0be7049d71ac22b47ecae}\label{classglib_1_1_gui_instance_a067bb5f5ffb0be7049d71ac22b47ecae}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!getRenderOffsetY@{getRenderOffsetY}}
+\index{getRenderOffsetY@{getRenderOffsetY}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{getRenderOffsetY()}{getRenderOffsetY()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Instance\+::get\+Render\+OffsetY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Gets the rendering offset y position. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_acabdf12156b8238f555f47017e702751}\label{classglib_1_1_gui_instance_acabdf12156b8238f555f47017e702751}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!getVisible@{getVisible}}
+\index{getVisible@{getVisible}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{getVisible()}{getVisible()}}
+{\footnotesize\ttfamily bool glib\+::\+Gui\+Instance\+::get\+Visible (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets if the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is visible. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a201e186f4acbcd50f1819de83574503b}\label{classglib_1_1_gui_instance_a201e186f4acbcd50f1819de83574503b}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!getX@{getX}}
+\index{getX@{getX}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{getX()}{getX()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Instance\+::getX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the x value for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. This will be modified by any offsets used. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a3d52135387809c701fa0226e334f13b8}\label{classglib_1_1_gui_instance_a3d52135387809c701fa0226e334f13b8}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!getY@{getY}}
+\index{getY@{getY}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{getY()}{getY()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Instance\+::getY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the y value for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. This will be modified by any offsets used. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_aeaf94485b23362abed8e189c127ca08e}\label{classglib_1_1_gui_instance_aeaf94485b23362abed8e189c127ca08e}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!operator=@{operator=}}
+\index{operator=@{operator=}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Copies a \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_af7121a61bc9a6503fbe807028dc35804}\label{classglib_1_1_gui_instance_af7121a61bc9a6503fbe807028dc35804}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!removeChild@{removeChild}}
+\index{removeChild@{removeChild}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{removeChild()}{removeChild()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::remove\+Child (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$}]{obj }\end{DoxyParamCaption})}
+
+
+
+Removes a child from the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em obj} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a303d9dc4dedc8e5cf2027bb02c7015c8}\label{classglib_1_1_gui_instance_a303d9dc4dedc8e5cf2027bb02c7015c8}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!render@{render}}
+\index{render@{render}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily virtual void glib\+::\+Gui\+Instance\+::render (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+An render function for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. Must be overriden. 
+
+
+
+Reimplemented in \mbox{\hyperlink{classglib_1_1_gui_container_a68897b8dc39c6effc76066634a5a5c80}{glib\+::\+Gui\+Container}}, \mbox{\hyperlink{classglib_1_1_gui_custom_object_ae3e7cd99c49d663d0728e798a9201feb}{glib\+::\+Gui\+Custom\+Object}}, \mbox{\hyperlink{classglib_1_1_gui_canvas_a9e147a1f05a18f88d54e4f1590023e2b}{glib\+::\+Gui\+Canvas}}, \mbox{\hyperlink{classglib_1_1_gui_image_ae17ce3117ff17c51609a761d7761b904}{glib\+::\+Gui\+Image}}, \mbox{\hyperlink{classglib_1_1_gui_sprite_a515f5d5b0d7f05f2049050c6e10cc825}{glib\+::\+Gui\+Sprite}}, \mbox{\hyperlink{classglib_1_1_gui_text_block_ab1c5d02791262505b439037e9aa47c15}{glib\+::\+Gui\+Text\+Block}}, \mbox{\hyperlink{classglib_1_1_gui_text_box_a43372c06eb867077c8fe91d98da9b636}{glib\+::\+Gui\+Text\+Box}}, \mbox{\hyperlink{classglib_1_1_gui_shape_a7e7f469b644f1b7120c1ac107133c3c1}{glib\+::\+Gui\+Shape}}, \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_a9ec83b275f4a70e5afc1e5744b016032}{glib\+::\+Gui\+Rectangle\+Button}}, \mbox{\hyperlink{classglib_1_1_gui_circle_button_ad1f349b70a07efdda2be6849c0e6b354}{glib\+::\+Gui\+Circle\+Button}}, and \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a27d2cf4c414ea043ab6541a163a67165}{glib\+::\+Gui\+Scroll\+Bar}}.
+
+\mbox{\Hypertarget{classglib_1_1_gui_instance_aa0d66700a03d3b433c45c01e95a57c28}\label{classglib_1_1_gui_instance_aa0d66700a03d3b433c45c01e95a57c28}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!setActive@{setActive}}
+\index{setActive@{setActive}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{setActive()}{setActive()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::set\+Active (\begin{DoxyParamCaption}\item[{bool}]{is }\end{DoxyParamCaption})}
+
+
+
+Sets if the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is active. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em is} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a95ea3bb153fab1660a47d78789762425}\label{classglib_1_1_gui_instance_a95ea3bb153fab1660a47d78789762425}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!setAlwaysFocus@{setAlwaysFocus}}
+\index{setAlwaysFocus@{setAlwaysFocus}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{setAlwaysFocus()}{setAlwaysFocus()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::set\+Always\+Focus (\begin{DoxyParamCaption}\item[{bool}]{is }\end{DoxyParamCaption})}
+
+
+
+Sets if the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is always focused. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em is} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a6a05267af582caee5bc354642663eae8}\label{classglib_1_1_gui_instance_a6a05267af582caee5bc354642663eae8}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!setBaseX@{setBaseX}}
+\index{setBaseX@{setBaseX}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{setBaseX()}{setBaseX()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::set\+BaseX (\begin{DoxyParamCaption}\item[{int}]{x }\end{DoxyParamCaption})}
+
+
+
+Set the Base X for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. The is the unmodified x value for the object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a14192041c8c1076536c83fe366486986}\label{classglib_1_1_gui_instance_a14192041c8c1076536c83fe366486986}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!setBaseY@{setBaseY}}
+\index{setBaseY@{setBaseY}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{setBaseY()}{setBaseY()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::set\+BaseY (\begin{DoxyParamCaption}\item[{int}]{y }\end{DoxyParamCaption})}
+
+
+
+Set the Base Y for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. The is the unmodified y value for the object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a2dfe0213f14ae6569575d3d8ace11a70}\label{classglib_1_1_gui_instance_a2dfe0213f14ae6569575d3d8ace11a70}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!setCanvas@{setCanvas}}
+\index{setCanvas@{setCanvas}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{setCanvas()}{setCanvas()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::set\+Canvas (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{m }\end{DoxyParamCaption})}
+
+
+
+Sets the canvas for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. This will specify that all drawing must be done specifically to this image. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em m} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a5a500e32c578a2f526e3a40921d64436}\label{classglib_1_1_gui_instance_a5a500e32c578a2f526e3a40921d64436}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!setFocus@{setFocus}}
+\index{setFocus@{setFocus}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{setFocus()}{setFocus()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::set\+Focus (\begin{DoxyParamCaption}\item[{bool}]{is }\end{DoxyParamCaption})}
+
+
+
+Sets if the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is focused. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em is} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a5101b9f18c063aa2ca4d35805d98884e}\label{classglib_1_1_gui_instance_a5101b9f18c063aa2ca4d35805d98884e}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!setManager@{setManager}}
+\index{setManager@{setManager}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{setManager()}{setManager()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::set\+Manager (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} $\ast$}]{m }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Sets the \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. Once it has been set to a \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}}, the \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} will manage the update and rendering functions for the object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em m} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a0ea928eef71d80b91b98aea426b8d110}\label{classglib_1_1_gui_instance_a0ea928eef71d80b91b98aea426b8d110}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!setOffset@{setOffset}}
+\index{setOffset@{setOffset}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{setOffset()}{setOffset()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::set\+Offset (\begin{DoxyParamCaption}\item[{int $\ast$}]{offX,  }\item[{int $\ast$}]{offY }\end{DoxyParamCaption})}
+
+
+
+Sets the x and y offset pointers. This will offset the actual position of the object. Useful if its position is based on another objects position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em offX} & \\
+\hline
+{\em offY} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a03af60978d4a5aafc643123977c0a978}\label{classglib_1_1_gui_instance_a03af60978d4a5aafc643123977c0a978}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!setOnActivateFunction@{setOnActivateFunction}}
+\index{setOnActivateFunction@{setOnActivateFunction}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{setOnActivateFunction()}{setOnActivateFunction()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::set\+On\+Activate\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$}]{func }\end{DoxyParamCaption})}
+
+
+
+Sets the on\+Activate Function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a821b98ad9a8a085792a25d42e37431a8}\label{classglib_1_1_gui_instance_a821b98ad9a8a085792a25d42e37431a8}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!setOnChangedFunction@{setOnChangedFunction}}
+\index{setOnChangedFunction@{setOnChangedFunction}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{setOnChangedFunction()}{setOnChangedFunction()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::set\+On\+Changed\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$}]{func }\end{DoxyParamCaption})}
+
+
+
+Sets the on\+Changed Function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_aafc0b156b6a42c5917949d9827758394}\label{classglib_1_1_gui_instance_aafc0b156b6a42c5917949d9827758394}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!setOnDeActivateFunction@{setOnDeActivateFunction}}
+\index{setOnDeActivateFunction@{setOnDeActivateFunction}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{setOnDeActivateFunction()}{setOnDeActivateFunction()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::set\+On\+De\+Activate\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$}]{func }\end{DoxyParamCaption})}
+
+
+
+Sets the on\+De\+Activate Function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a9dd1a2eb9e7f5cc890e9a4ec60749ae2}\label{classglib_1_1_gui_instance_a9dd1a2eb9e7f5cc890e9a4ec60749ae2}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!setOnFocusFunction@{setOnFocusFunction}}
+\index{setOnFocusFunction@{setOnFocusFunction}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{setOnFocusFunction()}{setOnFocusFunction()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::set\+On\+Focus\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$}]{func }\end{DoxyParamCaption})}
+
+
+
+Sets the on\+Focus Function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_ae6de77196e445d16097f710709cd7752}\label{classglib_1_1_gui_instance_ae6de77196e445d16097f710709cd7752}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!setOnInvisibleFunction@{setOnInvisibleFunction}}
+\index{setOnInvisibleFunction@{setOnInvisibleFunction}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{setOnInvisibleFunction()}{setOnInvisibleFunction()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::set\+On\+Invisible\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$}]{func }\end{DoxyParamCaption})}
+
+
+
+Sets the on\+Invisible Function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a036967081a66192947576ed3f3a878ab}\label{classglib_1_1_gui_instance_a036967081a66192947576ed3f3a878ab}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!setOnVisibleFunction@{setOnVisibleFunction}}
+\index{setOnVisibleFunction@{setOnVisibleFunction}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{setOnVisibleFunction()}{setOnVisibleFunction()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::set\+On\+Visible\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$}]{func }\end{DoxyParamCaption})}
+
+
+
+Sets the on\+Visible Function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a2c41945b9c0e7fd8d594a1a2ee1afc9c}\label{classglib_1_1_gui_instance_a2c41945b9c0e7fd8d594a1a2ee1afc9c}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!setPriority@{setPriority}}
+\index{setPriority@{setPriority}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{setPriority()}{setPriority()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::set\+Priority (\begin{DoxyParamCaption}\item[{int}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Sets the Priority for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. Affects the order of processing when the \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} processes all of the Gui\+Instances it has. Note that the \mbox{\hyperlink{classglib_1_1_gui_canvas}{Gui\+Canvas}} element has a special priority value that will always be above the other priority values. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a971e2319dceb3317df8c30849a896448}\label{classglib_1_1_gui_instance_a971e2319dceb3317df8c30849a896448}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!setRenderOffset@{setRenderOffset}}
+\index{setRenderOffset@{setRenderOffset}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{setRenderOffset()}{setRenderOffset()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::set\+Render\+Offset (\begin{DoxyParamCaption}\item[{int $\ast$}]{offX,  }\item[{int $\ast$}]{offY }\end{DoxyParamCaption})}
+
+
+
+Sets the x and y render offset pointers. This will offset the rendering position of the object. Useful when using the Canvas element as the correct position on screen may not be the same as the actual objects position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em offX} & \\
+\hline
+{\em offY} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a106ac5ee9338b80bfa7e0be1e5739c20}\label{classglib_1_1_gui_instance_a106ac5ee9338b80bfa7e0be1e5739c20}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!setVisible@{setVisible}}
+\index{setVisible@{setVisible}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{setVisible()}{setVisible()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Instance\+::set\+Visible (\begin{DoxyParamCaption}\item[{bool}]{is }\end{DoxyParamCaption})}
+
+
+
+Sets if the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is visible. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em is} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_instance_adb20e1eac37428a48802ad39cf4c2cb0}\label{classglib_1_1_gui_instance_adb20e1eac37428a48802ad39cf4c2cb0}} 
+\index{glib::GuiInstance@{glib::GuiInstance}!update@{update}}
+\index{update@{update}!glib::GuiInstance@{glib::GuiInstance}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily virtual void glib\+::\+Gui\+Instance\+::update (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+An update function for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. Must be overriden. 
+
+
+
+Reimplemented in \mbox{\hyperlink{classglib_1_1_gui_container_ad1c7d6ac419f1d8e2e39f63f443a4ae4}{glib\+::\+Gui\+Container}}, \mbox{\hyperlink{classglib_1_1_gui_custom_object_aa851b71e667e9bc60b3cdb49e6a52c84}{glib\+::\+Gui\+Custom\+Object}}, \mbox{\hyperlink{classglib_1_1_gui_canvas_a3f90873b1e88b91b324d51ff8834099f}{glib\+::\+Gui\+Canvas}}, \mbox{\hyperlink{classglib_1_1_gui_image_a8dd79fbacb4d7a4505a1d9bb65b708d2}{glib\+::\+Gui\+Image}}, \mbox{\hyperlink{classglib_1_1_gui_sprite_af57445e95138743ac10af54b76784c20}{glib\+::\+Gui\+Sprite}}, \mbox{\hyperlink{classglib_1_1_gui_text_block_a2daa7117bd0bffb2cdcfa8d665dfeaf1}{glib\+::\+Gui\+Text\+Block}}, \mbox{\hyperlink{classglib_1_1_gui_text_box_a4a4bfa4f076da221f5ecd3cd46601706}{glib\+::\+Gui\+Text\+Box}}, \mbox{\hyperlink{classglib_1_1_gui_shape_a8d1206553298941756e9176a64977abe}{glib\+::\+Gui\+Shape}}, \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_ac9f563bb7ffc13212f61e6e95fb9afb2}{glib\+::\+Gui\+Rectangle\+Button}}, \mbox{\hyperlink{classglib_1_1_gui_circle_button_a2bac02a77e2873a7b2e78e571d214251}{glib\+::\+Gui\+Circle\+Button}}, and \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a7aa92e3808cd7896ee6a75af5711f341}{glib\+::\+Gui\+Scroll\+Bar}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Gui\+Manager.\+h\end{DoxyCompactItemize}

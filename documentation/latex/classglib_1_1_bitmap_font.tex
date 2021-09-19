@@ -1,0 +1,90 @@
+\hypertarget{classglib_1_1_bitmap_font}{}\doxysection{glib\+::Bitmap\+Font Class Reference}
+\label{classglib_1_1_bitmap_font}\index{glib::BitmapFont@{glib::BitmapFont}}
+Inheritance diagram for glib\+::Bitmap\+Font\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classglib_1_1_bitmap_font}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_bitmap_font_1_1_invalid_file_format}{Invalid\+File\+Format}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_bitmap_font_ae92eda7f68a6301191b5fcb3401feea5}{Bitmap\+Font}} (\mbox{\hyperlink{classglib_1_1_file}{File}} file)
+\begin{DoxyCompactList}\small\item\em Creates a \mbox{\hyperlink{classglib_1_1_bitmap_font}{Bitmap\+Font}} \mbox{\hyperlink{classglib_1_1_object}{Object}}. \mbox{\hyperlink{classglib_1_1_bitmap_font}{Bitmap\+Font}} extends from the \mbox{\hyperlink{classglib_1_1_font}{Font}} class and as the name suggest, it uses an \mbox{\hyperlink{classglib_1_1_image}{Image}} to store and display characters. Two file types are supported. .ft and .fnt .ft is a custom format for font that uses a relatively simple format to store information about each character. .fnt is a format used by Bitmap\+Font\+Generator located here\+: \href{https://www.angelcode.com/products/bmfont}{\texttt{ https\+://www.\+angelcode.\+com/products/bmfont}} Note that only the xml file format is supported for .fnt. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_bitmap_font_a9f2dc72fd738022d2f81020f904a5e9a}\label{classglib_1_1_bitmap_font_a9f2dc72fd738022d2f81020f904a5e9a}} 
+{\bfseries $\sim$\+Bitmap\+Font} ()
+\begin{DoxyCompactList}\small\item\em Destroys a \mbox{\hyperlink{classglib_1_1_bitmap_font}{Bitmap\+Font}} \mbox{\hyperlink{classglib_1_1_object}{Object}}. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_bitmap_font_a975c359f9a9204c53e8267a86541bbb4}{get\+Class}} ()
+\item 
+\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ \mbox{\hyperlink{classglib_1_1_bitmap_font_a0d2f44090e870ff10a9200f1fdf6707e}{get\+Image}} (int index)
+\begin{DoxyCompactList}\small\item\em Get the image where the desired character is stored. The image can contain other characters than just the desired character. If the index is out of range and USE\+\_\+\+EXCEPTIONS is defined, an Out\+Of\+Bounds Error is thrown. If not, a nullptr is returned. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_bitmap_font_a473e9eaf4f750587e56ae5354de4f27e}\label{classglib_1_1_bitmap_font_a473e9eaf4f750587e56ae5354de4f27e}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_bitmap_font_ae92eda7f68a6301191b5fcb3401feea5}\label{classglib_1_1_bitmap_font_ae92eda7f68a6301191b5fcb3401feea5}} 
+\index{glib::BitmapFont@{glib::BitmapFont}!BitmapFont@{BitmapFont}}
+\index{BitmapFont@{BitmapFont}!glib::BitmapFont@{glib::BitmapFont}}
+\doxysubsubsection{\texorpdfstring{BitmapFont()}{BitmapFont()}}
+{\footnotesize\ttfamily glib\+::\+Bitmap\+Font\+::\+Bitmap\+Font (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_file}{File}}}]{file }\end{DoxyParamCaption})}
+
+
+
+Creates a \mbox{\hyperlink{classglib_1_1_bitmap_font}{Bitmap\+Font}} \mbox{\hyperlink{classglib_1_1_object}{Object}}. \mbox{\hyperlink{classglib_1_1_bitmap_font}{Bitmap\+Font}} extends from the \mbox{\hyperlink{classglib_1_1_font}{Font}} class and as the name suggest, it uses an \mbox{\hyperlink{classglib_1_1_image}{Image}} to store and display characters. Two file types are supported. .ft and .fnt .ft is a custom format for font that uses a relatively simple format to store information about each character. .fnt is a format used by Bitmap\+Font\+Generator located here\+: \href{https://www.angelcode.com/products/bmfont}{\texttt{ https\+://www.\+angelcode.\+com/products/bmfont}} Note that only the xml file format is supported for .fnt. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & The name of the file to load for font data. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_bitmap_font_a975c359f9a9204c53e8267a86541bbb4}\label{classglib_1_1_bitmap_font_a975c359f9a9204c53e8267a86541bbb4}} 
+\index{glib::BitmapFont@{glib::BitmapFont}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::BitmapFont@{glib::BitmapFont}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Bitmap\+Font\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
+
+\mbox{\Hypertarget{classglib_1_1_bitmap_font_a0d2f44090e870ff10a9200f1fdf6707e}\label{classglib_1_1_bitmap_font_a0d2f44090e870ff10a9200f1fdf6707e}} 
+\index{glib::BitmapFont@{glib::BitmapFont}!getImage@{getImage}}
+\index{getImage@{getImage}!glib::BitmapFont@{glib::BitmapFont}}
+\doxysubsubsection{\texorpdfstring{getImage()}{getImage()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ glib\+::\+Bitmap\+Font\+::get\+Image (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Get the image where the desired character is stored. The image can contain other characters than just the desired character. If the index is out of range and USE\+\_\+\+EXCEPTIONS is defined, an Out\+Of\+Bounds Error is thrown. If not, a nullptr is returned. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & The desired character. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Image$\ast$ A nullptr is returned if no image was found. Otherwise, a valid Image$\ast$ is returned. 
+\end{DoxyReturn}
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_font_ae1a482f1b115fc9f03fa51f6aee2f63f}{glib\+::\+Font}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Bitmap\+Font.\+h\end{DoxyCompactItemize}

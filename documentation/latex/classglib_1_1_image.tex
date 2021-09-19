@@ -1,0 +1,727 @@
+\hypertarget{classglib_1_1_image}{}\doxysection{glib\+::Image Class Reference}
+\label{classglib_1_1_image}\index{glib::Image@{glib::Image}}
+Inheritance diagram for glib\+::Image\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classglib_1_1_image}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_image_a04effabc1b48a1af422cb8e00cbd1f74}\label{classglib_1_1_image_a04effabc1b48a1af422cb8e00cbd1f74}} 
+{\bfseries Image} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_image}{Image}} object. It stores pixel data using the \mbox{\hyperlink{structglib_1_1_color}{Color}} Struct which maps to a 32 bit integer. It is stored as a single array. An invalid image has a width of 0 or height of 0. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_image_ad13a2d4597bdd329d36d70636881f7a8}{Image}} (int width, int height)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_image}{Image}} object. It stores pixel data using the \mbox{\hyperlink{structglib_1_1_color}{Color}} Struct which maps to a 32 bit integer. It is stored as a single array. An invalid image has a width of 0 or height of 0. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_image_a7470883107758babc987e3249c9890f0}{Image}} (const \mbox{\hyperlink{classglib_1_1_image}{Image}} \&other)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_image}{Image}} object from another \mbox{\hyperlink{classglib_1_1_image}{Image}} object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_a98d927982b21176c7004e5e3805a789c}{operator=}} (const \mbox{\hyperlink{classglib_1_1_image}{Image}} \&other)
+\begin{DoxyCompactList}\small\item\em Copies a \mbox{\hyperlink{classglib_1_1_image}{Image}} object. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_image_a837ab41e2f40d5a98e683a610628a449}\label{classglib_1_1_image_a837ab41e2f40d5a98e683a610628a449}} 
+{\bfseries $\sim$\+Image} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_image}{Image}} object Deletes the array of pixels and the palette for the image. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_image_a217aad926e01673f45d9e8dbbda3ad08}{get\+Class}} ()
+\item 
+int \mbox{\hyperlink{classglib_1_1_image_adb519ea3af77a79d6e329dbdb0a8154b}{get\+Width}} ()
+\begin{DoxyCompactList}\small\item\em Get the Width of the image. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_image_a865ca74b6f37d36e56265abcc1f13552}{get\+Height}} ()
+\begin{DoxyCompactList}\small\item\em Get the Height of the image. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_color}{Color}} $\ast$ \mbox{\hyperlink{classglib_1_1_image_a666b05f6a347271ac276da059ede2839}{get\+Pixels}} ()
+\begin{DoxyCompactList}\small\item\em Get the Pixels of the image. Returns a reference to the internal array used for pixels for modification or fast access. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_image_ace20c6a9ca35cbfb8806932214a12e6b}{get\+Pixel}} (int x, int y, bool clamp=false)
+\begin{DoxyCompactList}\small\item\em Gets a pixel in the image. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_a91be8691d34667a9ea5fac2641d12539}{set\+Pixel}} (int x, int y, \mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Set the Pixel at the specified location. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_af9221d3e6588c4082370043285773f89}{set\+All\+Pixels}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Sets all pixels to the specified color. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_a84973c8b62bd16954fc69cadad107df4}{copy\+Image}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$v)
+\begin{DoxyCompactList}\small\item\em Copies another \mbox{\hyperlink{classglib_1_1_image}{Image}} object to this. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_a83b43af9544175e7c9d2eb5596851f7d}{set\+Palette}} (\mbox{\hyperlink{classglib_1_1_color_palette}{Color\+Palette}} p)
+\begin{DoxyCompactList}\small\item\em Sets the Palette for the image. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_color_palette}{Color\+Palette}} \& \mbox{\hyperlink{classglib_1_1_image_a8223220ed39a2c3e65788b937f7214a2}{get\+Palette}} ()
+\begin{DoxyCompactList}\small\item\em Gets the \mbox{\hyperlink{structglib_1_1_color}{Color}} Palette for the image. May return an empty palette if it has not been set. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_image_a2330d24ab33578515de5edfafc576b65}\label{classglib_1_1_image_a2330d24ab33578515de5edfafc576b65}} 
+void {\bfseries enforce\+Palette} ()
+\begin{DoxyCompactList}\small\item\em Enforces the \mbox{\hyperlink{structglib_1_1_color}{Color}} Palette for the image. This will replace each color with the closest color in the palette. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_image_ab5f592a55aa54dd69331c27afc55a8e4}\label{classglib_1_1_image_ab5f592a55aa54dd69331c27afc55a8e4}} 
+void {\bfseries clear\+Image} ()
+\begin{DoxyCompactList}\small\item\em Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function clear\+Image. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_a8fd86b3b1910ce7af3255599c75d8774}{draw\+Rect}} (int x, int y, int x2, int y2, bool outline)
+\begin{DoxyCompactList}\small\item\em Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Rect. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_a33b89acafdc1cf1b37df1ceb5758a6e7}{draw\+Line}} (int x, int y, int x2, int y2)
+\begin{DoxyCompactList}\small\item\em Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Line. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_ad5f434e1cab29ae577a8dac7b36af5b1}{draw\+Circle}} (int x, int y, int radius, bool outline)
+\begin{DoxyCompactList}\small\item\em Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Circle. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_aab31bc5261e2c509dcc6a7b07a0890da}{draw\+Polygon}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} $\ast$points, int size)
+\begin{DoxyCompactList}\small\item\em Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Polygon May be removed later. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_a626a3a41e3df6983fb7635d791907f10}{draw\+Image}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, int x, int y)
+\begin{DoxyCompactList}\small\item\em Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Image. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_a1c92bd81d0cd13e79d9b778bcd7710fc}{draw\+Sprite}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, int x, int y)
+\begin{DoxyCompactList}\small\item\em Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Sprite. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_add4b005fb0764afe1155b6b0f2d4107b}{draw\+Sprite\+Part}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, int x, int y, int imgX, int imgY, int imgW, int imgH)
+\begin{DoxyCompactList}\small\item\em Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Sprite\+Part. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_a54810ecf7ff3565eb9d67bf72ca89928}{draw\+Text}} (std\+::string str, int x, int y)
+\begin{DoxyCompactList}\small\item\em Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Text. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_ad58f3bcb481caa0b18bca964bba7498d}{draw\+Text\+Limits}} (std\+::string str, int x, int y, int max\+Width, int max\+Height, bool allow\+Line\+Break)
+\begin{DoxyCompactList}\small\item\em Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Text\+Limits. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_a97f8585f5a8d9fc4172be60e9d998c9a}{draw\+Triangle}} (int x1, int y1, int x2, int y2, int x3, int y3, bool outline)
+\begin{DoxyCompactList}\small\item\em Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Triangle. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_a1bce216362a061b7787eac4439058046}{draw\+Textured\+Triangle}} (\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} p1, \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} p2, \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} p3, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$texture)
+\begin{DoxyCompactList}\small\item\em Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Textured\+Triangle. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_a8d35ab4cfe3c07b51a1669f8870f6abb}{draw\+Pixel}} (int x, int y, \mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Pixel. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_adb62c0b96aab0b51909bef4f8cbeccde}{draw\+Pixel}} (double x, double y, \mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Pixel This method uses doubles for the position. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_a3cbf384d6fb399580999b2eca2c06bea}{save\+BMP}} (\mbox{\hyperlink{classglib_1_1_file}{File}} file, unsigned char alpha\+Threshold=255, bool greyscale=false)
+\begin{DoxyCompactList}\small\item\em Saves a image as a .bmp file. Note that .bmp can not save alpha values. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_a33cab241fd6c422dd7cc6590a2be9f5d}{save\+GIF}} (\mbox{\hyperlink{classglib_1_1_file}{File}} file, int palette\+Size=256, bool dither=false, bool save\+Alpha=true, unsigned char alpha\+Threshold=127, bool greyscale=false)
+\begin{DoxyCompactList}\small\item\em Save an image as a .gif file. Can not save animations. Must use a palette of 256 or less colors. Will be converted to a power of 2. Can use transparency but only 1 value of transparency. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_aaa64f542e4e69bb22a0bf10123e7c6a0}{save\+PNG}} (\mbox{\hyperlink{classglib_1_1_file}{File}} file, bool save\+Alpha=true, bool greyscale=false, bool strong\+Compression=false)
+\begin{DoxyCompactList}\small\item\em Save an image as a .png file. Can not save animations Can save full alpha transparency. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_image_af9eada62c68329c46ab3c8dc10090a36}{save\+JPG}} (\mbox{\hyperlink{classglib_1_1_file}{File}} file)
+\begin{DoxyCompactList}\small\item\em Not implemented. Do not use. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$$\ast$ \mbox{\hyperlink{classglib_1_1_image_a3b1473f2034aa8eb88108ac2dd7a50eb}{load\+Image}} (std\+::string filename, int $\ast$amount\+Of\+Images, std\+::vector$<$ int $>$ $\ast$extra\+Data=nullptr)
+\begin{DoxyCompactList}\small\item\em Loads an image from a file. Valid files are .bmp, .jpg, .jpeg, .png, and .gif Can load animations for .png and .gif. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$$\ast$ \mbox{\hyperlink{classglib_1_1_image_a63efb036ea009ea9f036ffb848bddf62}{load\+Image}} (std\+::wstring filename, int $\ast$amount\+Of\+Images, std\+::vector$<$ int $>$ $\ast$extra\+Data=nullptr)
+\begin{DoxyCompactList}\small\item\em Loads an image from a file. Valid files are .bmp, .jpg, .jpeg, .png, and .gif Can load animations for .png and .gif. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$$\ast$ \mbox{\hyperlink{classglib_1_1_image_a2e92757f8c214476aced5f9e44b30665}{load\+Image}} (\mbox{\hyperlink{classglib_1_1_file}{File}} file, int $\ast$amount\+Of\+Images, std\+::vector$<$ int $>$ $\ast$extra\+Data=nullptr)
+\begin{DoxyCompactList}\small\item\em Loads an image from a file. Valid files are .bmp, .jpg, .jpeg, .png, and .gif Can load animations for .png and .gif. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_image_a24963971d5858af70cf446a55442a247}\label{classglib_1_1_image_a24963971d5858af70cf446a55442a247}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_image_ad13a2d4597bdd329d36d70636881f7a8}\label{classglib_1_1_image_ad13a2d4597bdd329d36d70636881f7a8}} 
+\index{glib::Image@{glib::Image}!Image@{Image}}
+\index{Image@{Image}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{Image()}{Image()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily glib\+::\+Image\+::\+Image (\begin{DoxyParamCaption}\item[{int}]{width,  }\item[{int}]{height }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_image}{Image}} object. It stores pixel data using the \mbox{\hyperlink{structglib_1_1_color}{Color}} Struct which maps to a 32 bit integer. It is stored as a single array. An invalid image has a width of 0 or height of 0. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em width} & The width of the image. Must be greater than 0 to be valid. \\
+\hline
+{\em height} & The height of the image. Must be greater than 0 to be valid. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_a7470883107758babc987e3249c9890f0}\label{classglib_1_1_image_a7470883107758babc987e3249c9890f0}} 
+\index{glib::Image@{glib::Image}!Image@{Image}}
+\index{Image@{Image}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{Image()}{Image()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily glib\+::\+Image\+::\+Image (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_image}{Image}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_image}{Image}} object from another \mbox{\hyperlink{classglib_1_1_image}{Image}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \mbox{\hyperlink{classglib_1_1_image}{Image}} object to copy. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_image_a84973c8b62bd16954fc69cadad107df4}\label{classglib_1_1_image_a84973c8b62bd16954fc69cadad107df4}} 
+\index{glib::Image@{glib::Image}!copyImage@{copyImage}}
+\index{copyImage@{copyImage}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{copyImage()}{copyImage()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::copy\+Image (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{v }\end{DoxyParamCaption})}
+
+
+
+Copies another \mbox{\hyperlink{classglib_1_1_image}{Image}} object to this. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & The \mbox{\hyperlink{classglib_1_1_image}{Image}} to copy. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_ad5f434e1cab29ae577a8dac7b36af5b1}\label{classglib_1_1_image_ad5f434e1cab29ae577a8dac7b36af5b1}} 
+\index{glib::Image@{glib::Image}!drawCircle@{drawCircle}}
+\index{drawCircle@{drawCircle}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{drawCircle()}{drawCircle()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::draw\+Circle (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{radius,  }\item[{bool}]{outline }\end{DoxyParamCaption})}
+
+
+
+Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Circle. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+{\em radius} & \\
+\hline
+{\em outline} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_a626a3a41e3df6983fb7635d791907f10}\label{classglib_1_1_image_a626a3a41e3df6983fb7635d791907f10}} 
+\index{glib::Image@{glib::Image}!drawImage@{drawImage}}
+\index{drawImage@{drawImage}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{drawImage()}{drawImage()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::draw\+Image (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{int}]{x,  }\item[{int}]{y }\end{DoxyParamCaption})}
+
+
+
+Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Image. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & \\
+\hline
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_a33b89acafdc1cf1b37df1ceb5758a6e7}\label{classglib_1_1_image_a33b89acafdc1cf1b37df1ceb5758a6e7}} 
+\index{glib::Image@{glib::Image}!drawLine@{drawLine}}
+\index{drawLine@{drawLine}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{drawLine()}{drawLine()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::draw\+Line (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{x2,  }\item[{int}]{y2 }\end{DoxyParamCaption})}
+
+
+
+Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Line. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+{\em x2} & \\
+\hline
+{\em y2} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_adb62c0b96aab0b51909bef4f8cbeccde}\label{classglib_1_1_image_adb62c0b96aab0b51909bef4f8cbeccde}} 
+\index{glib::Image@{glib::Image}!drawPixel@{drawPixel}}
+\index{drawPixel@{drawPixel}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{drawPixel()}{drawPixel()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::draw\+Pixel (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y,  }\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Pixel This method uses doubles for the position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_a8d35ab4cfe3c07b51a1669f8870f6abb}\label{classglib_1_1_image_a8d35ab4cfe3c07b51a1669f8870f6abb}} 
+\index{glib::Image@{glib::Image}!drawPixel@{drawPixel}}
+\index{drawPixel@{drawPixel}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{drawPixel()}{drawPixel()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::draw\+Pixel (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Pixel. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_aab31bc5261e2c509dcc6a7b07a0890da}\label{classglib_1_1_image_aab31bc5261e2c509dcc6a7b07a0890da}} 
+\index{glib::Image@{glib::Image}!drawPolygon@{drawPolygon}}
+\index{drawPolygon@{drawPolygon}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{drawPolygon()}{drawPolygon()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::draw\+Polygon (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} $\ast$}]{points,  }\item[{int}]{size }\end{DoxyParamCaption})}
+
+
+
+Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Polygon May be removed later. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em points} & \\
+\hline
+{\em size} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_a8fd86b3b1910ce7af3255599c75d8774}\label{classglib_1_1_image_a8fd86b3b1910ce7af3255599c75d8774}} 
+\index{glib::Image@{glib::Image}!drawRect@{drawRect}}
+\index{drawRect@{drawRect}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{drawRect()}{drawRect()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::draw\+Rect (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{x2,  }\item[{int}]{y2,  }\item[{bool}]{outline }\end{DoxyParamCaption})}
+
+
+
+Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Rect. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+{\em x2} & \\
+\hline
+{\em y2} & \\
+\hline
+{\em outline} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_a1c92bd81d0cd13e79d9b778bcd7710fc}\label{classglib_1_1_image_a1c92bd81d0cd13e79d9b778bcd7710fc}} 
+\index{glib::Image@{glib::Image}!drawSprite@{drawSprite}}
+\index{drawSprite@{drawSprite}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{drawSprite()}{drawSprite()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::draw\+Sprite (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{int}]{x,  }\item[{int}]{y }\end{DoxyParamCaption})}
+
+
+
+Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Sprite. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & \\
+\hline
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_add4b005fb0764afe1155b6b0f2d4107b}\label{classglib_1_1_image_add4b005fb0764afe1155b6b0f2d4107b}} 
+\index{glib::Image@{glib::Image}!drawSpritePart@{drawSpritePart}}
+\index{drawSpritePart@{drawSpritePart}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{drawSpritePart()}{drawSpritePart()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::draw\+Sprite\+Part (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{imgX,  }\item[{int}]{imgY,  }\item[{int}]{imgW,  }\item[{int}]{imgH }\end{DoxyParamCaption})}
+
+
+
+Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Sprite\+Part. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & \\
+\hline
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+{\em imgX} & \\
+\hline
+{\em imgY} & \\
+\hline
+{\em imgW} & \\
+\hline
+{\em imgH} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_a54810ecf7ff3565eb9d67bf72ca89928}\label{classglib_1_1_image_a54810ecf7ff3565eb9d67bf72ca89928}} 
+\index{glib::Image@{glib::Image}!drawText@{drawText}}
+\index{drawText@{drawText}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{drawText()}{drawText()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::draw\+Text (\begin{DoxyParamCaption}\item[{std\+::string}]{str,  }\item[{int}]{x,  }\item[{int}]{y }\end{DoxyParamCaption})}
+
+
+
+Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Text. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em str} & \\
+\hline
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_ad58f3bcb481caa0b18bca964bba7498d}\label{classglib_1_1_image_ad58f3bcb481caa0b18bca964bba7498d}} 
+\index{glib::Image@{glib::Image}!drawTextLimits@{drawTextLimits}}
+\index{drawTextLimits@{drawTextLimits}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{drawTextLimits()}{drawTextLimits()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::draw\+Text\+Limits (\begin{DoxyParamCaption}\item[{std\+::string}]{str,  }\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{max\+Width,  }\item[{int}]{max\+Height,  }\item[{bool}]{allow\+Line\+Break }\end{DoxyParamCaption})}
+
+
+
+Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Text\+Limits. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em str} & \\
+\hline
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+{\em max\+Width} & \\
+\hline
+{\em max\+Height} & \\
+\hline
+{\em allow\+Line\+Break} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_a1bce216362a061b7787eac4439058046}\label{classglib_1_1_image_a1bce216362a061b7787eac4439058046}} 
+\index{glib::Image@{glib::Image}!drawTexturedTriangle@{drawTexturedTriangle}}
+\index{drawTexturedTriangle@{drawTexturedTriangle}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{drawTexturedTriangle()}{drawTexturedTriangle()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::draw\+Textured\+Triangle (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}}}]{p1,  }\item[{\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}}}]{p2,  }\item[{\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}}}]{p3,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{texture }\end{DoxyParamCaption})}
+
+
+
+Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Textured\+Triangle. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p1} & \\
+\hline
+{\em p2} & \\
+\hline
+{\em p3} & \\
+\hline
+{\em texture} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_a97f8585f5a8d9fc4172be60e9d998c9a}\label{classglib_1_1_image_a97f8585f5a8d9fc4172be60e9d998c9a}} 
+\index{glib::Image@{glib::Image}!drawTriangle@{drawTriangle}}
+\index{drawTriangle@{drawTriangle}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{drawTriangle()}{drawTriangle()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::draw\+Triangle (\begin{DoxyParamCaption}\item[{int}]{x1,  }\item[{int}]{y1,  }\item[{int}]{x2,  }\item[{int}]{y2,  }\item[{int}]{x3,  }\item[{int}]{y3,  }\item[{bool}]{outline }\end{DoxyParamCaption})}
+
+
+
+Calls the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class function draw\+Triangle. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x1} & \\
+\hline
+{\em y1} & \\
+\hline
+{\em x2} & \\
+\hline
+{\em y2} & \\
+\hline
+{\em x3} & \\
+\hline
+{\em y3} & \\
+\hline
+{\em outline} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_a217aad926e01673f45d9e8dbbda3ad08}\label{classglib_1_1_image_a217aad926e01673f45d9e8dbbda3ad08}} 
+\index{glib::Image@{glib::Image}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Image\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
+
+\mbox{\Hypertarget{classglib_1_1_image_a865ca74b6f37d36e56265abcc1f13552}\label{classglib_1_1_image_a865ca74b6f37d36e56265abcc1f13552}} 
+\index{glib::Image@{glib::Image}!getHeight@{getHeight}}
+\index{getHeight@{getHeight}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{getHeight()}{getHeight()}}
+{\footnotesize\ttfamily int glib\+::\+Image\+::get\+Height (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the Height of the image. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_image_a8223220ed39a2c3e65788b937f7214a2}\label{classglib_1_1_image_a8223220ed39a2c3e65788b937f7214a2}} 
+\index{glib::Image@{glib::Image}!getPalette@{getPalette}}
+\index{getPalette@{getPalette}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{getPalette()}{getPalette()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_color_palette}{Color\+Palette}} \& glib\+::\+Image\+::get\+Palette (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the \mbox{\hyperlink{structglib_1_1_color}{Color}} Palette for the image. May return an empty palette if it has not been set. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_color_palette}{Color\+Palette}}\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_image_ace20c6a9ca35cbfb8806932214a12e6b}\label{classglib_1_1_image_ace20c6a9ca35cbfb8806932214a12e6b}} 
+\index{glib::Image@{glib::Image}!getPixel@{getPixel}}
+\index{getPixel@{getPixel}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{getPixel()}{getPixel()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structglib_1_1_color}{Color}} glib\+::\+Image\+::get\+Pixel (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{bool}]{clamp = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+Gets a pixel in the image. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & X position of the pixel. \\
+\hline
+{\em y} & Y position of the pixel. \\
+\hline
+{\em clamp} & Whether to clamp to the edges of the image if the x or y value is outside of the allowed bounds. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_color}{Color}} If unsuccessful, the default \mbox{\hyperlink{structglib_1_1_color}{Color}} is return with the value RGBA(0,0,0,0) 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_image_a666b05f6a347271ac276da059ede2839}\label{classglib_1_1_image_a666b05f6a347271ac276da059ede2839}} 
+\index{glib::Image@{glib::Image}!getPixels@{getPixels}}
+\index{getPixels@{getPixels}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{getPixels()}{getPixels()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structglib_1_1_color}{Color}} $\ast$ glib\+::\+Image\+::get\+Pixels (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the Pixels of the image. Returns a reference to the internal array used for pixels for modification or fast access. 
+
+\begin{DoxyReturn}{Returns}
+Color$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_image_adb519ea3af77a79d6e329dbdb0a8154b}\label{classglib_1_1_image_adb519ea3af77a79d6e329dbdb0a8154b}} 
+\index{glib::Image@{glib::Image}!getWidth@{getWidth}}
+\index{getWidth@{getWidth}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{getWidth()}{getWidth()}}
+{\footnotesize\ttfamily int glib\+::\+Image\+::get\+Width (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the Width of the image. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_image_a2e92757f8c214476aced5f9e44b30665}\label{classglib_1_1_image_a2e92757f8c214476aced5f9e44b30665}} 
+\index{glib::Image@{glib::Image}!loadImage@{loadImage}}
+\index{loadImage@{loadImage}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{loadImage()}{loadImage()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$$\ast$ glib\+::\+Image\+::load\+Image (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_file}{File}}}]{file,  }\item[{int $\ast$}]{amount\+Of\+Images,  }\item[{std\+::vector$<$ int $>$ $\ast$}]{extra\+Data = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Loads an image from a file. Valid files are .bmp, .jpg, .jpeg, .png, and .gif Can load animations for .png and .gif. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & The file to load. \\
+\hline
+{\em amount\+Of\+Images} & A pointer to an int that will store the amount of images loaded. \\
+\hline
+{\em extra\+Data} & A pointer to a vector$<$int$>$ that will store additional data about the image. For .png and .gif, it stores the delay time between each image in the animation. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Image$\ast$$\ast$ Returns an array of Image$\ast$. The size of the array is specified by the amount\+Of\+Images argument. Should be deleted when no longer needed. The individual Image$\ast$ should also be deleted when no longer needed. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_image_a3b1473f2034aa8eb88108ac2dd7a50eb}\label{classglib_1_1_image_a3b1473f2034aa8eb88108ac2dd7a50eb}} 
+\index{glib::Image@{glib::Image}!loadImage@{loadImage}}
+\index{loadImage@{loadImage}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{loadImage()}{loadImage()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$$\ast$ glib\+::\+Image\+::load\+Image (\begin{DoxyParamCaption}\item[{std\+::string}]{filename,  }\item[{int $\ast$}]{amount\+Of\+Images,  }\item[{std\+::vector$<$ int $>$ $\ast$}]{extra\+Data = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Loads an image from a file. Valid files are .bmp, .jpg, .jpeg, .png, and .gif Can load animations for .png and .gif. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & The name of file to load. \\
+\hline
+{\em amount\+Of\+Images} & A pointer to an int that will store the amount of images loaded. \\
+\hline
+{\em extra\+Data} & A pointer to a vector$<$int$>$ that will store additional data about the image. For .png and .gif, it stores the delay time between each image in the animation. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Image$\ast$$\ast$ Returns an array of Image$\ast$. The size of the array is specified by the amount\+Of\+Images argument. Should be deleted when no longer needed. The individual Image$\ast$ should also be deleted when no longer needed. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_image_a63efb036ea009ea9f036ffb848bddf62}\label{classglib_1_1_image_a63efb036ea009ea9f036ffb848bddf62}} 
+\index{glib::Image@{glib::Image}!loadImage@{loadImage}}
+\index{loadImage@{loadImage}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{loadImage()}{loadImage()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$$\ast$ glib\+::\+Image\+::load\+Image (\begin{DoxyParamCaption}\item[{std\+::wstring}]{filename,  }\item[{int $\ast$}]{amount\+Of\+Images,  }\item[{std\+::vector$<$ int $>$ $\ast$}]{extra\+Data = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Loads an image from a file. Valid files are .bmp, .jpg, .jpeg, .png, and .gif Can load animations for .png and .gif. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & The name of file to load. \\
+\hline
+{\em amount\+Of\+Images} & A pointer to an int that will store the amount of images loaded. \\
+\hline
+{\em extra\+Data} & A pointer to a vector$<$int$>$ that will store additional data about the image. For .png and .gif, it stores the delay time between each image in the animation. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Image$\ast$$\ast$ Returns an array of Image$\ast$. The size of the array is specified by the amount\+Of\+Images argument. Should be deleted when no longer needed. The individual Image$\ast$ should also be deleted when no longer needed. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_image_a98d927982b21176c7004e5e3805a789c}\label{classglib_1_1_image_a98d927982b21176c7004e5e3805a789c}} 
+\index{glib::Image@{glib::Image}!operator=@{operator=}}
+\index{operator=@{operator=}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_image}{Image}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Copies a \mbox{\hyperlink{classglib_1_1_image}{Image}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \mbox{\hyperlink{classglib_1_1_image}{Image}} object to copy. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_a3cbf384d6fb399580999b2eca2c06bea}\label{classglib_1_1_image_a3cbf384d6fb399580999b2eca2c06bea}} 
+\index{glib::Image@{glib::Image}!saveBMP@{saveBMP}}
+\index{saveBMP@{saveBMP}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{saveBMP()}{saveBMP()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::save\+BMP (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_file}{File}}}]{file,  }\item[{unsigned char}]{alpha\+Threshold = {\ttfamily 255},  }\item[{bool}]{greyscale = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+Saves a image as a .bmp file. Note that .bmp can not save alpha values. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \mbox{\hyperlink{classglib_1_1_file}{File}}} & The output file. \\
+\hline
+{\em alpha\+Threshold} & A threshold to use for alpha. Anything below this threshold will be black. Default is 255 \\
+\hline
+{\em greyscale} & Whether to convert the image to greyscale before saving. This only affects the output file and not the image data in memory. Default is false \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_a33cab241fd6c422dd7cc6590a2be9f5d}\label{classglib_1_1_image_a33cab241fd6c422dd7cc6590a2be9f5d}} 
+\index{glib::Image@{glib::Image}!saveGIF@{saveGIF}}
+\index{saveGIF@{saveGIF}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{saveGIF()}{saveGIF()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::save\+GIF (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_file}{File}}}]{file,  }\item[{int}]{palette\+Size = {\ttfamily 256},  }\item[{bool}]{dither = {\ttfamily false},  }\item[{bool}]{save\+Alpha = {\ttfamily true},  }\item[{unsigned char}]{alpha\+Threshold = {\ttfamily 127},  }\item[{bool}]{greyscale = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+Save an image as a .gif file. Can not save animations. Must use a palette of 256 or less colors. Will be converted to a power of 2. Can use transparency but only 1 value of transparency. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & The output file. \\
+\hline
+{\em palette\+Size} & The size of the palette to use if the image does not have a valid palette. 256 is the maximum size. Default is 256. \\
+\hline
+{\em dither} & Whether to use Floyd\+Steinburg dithering for saving the image. Default is false. \\
+\hline
+{\em save\+Alpha} & Whether to save an alpha value. Uses 1 value in the palette. Default is true. \\
+\hline
+{\em alpha\+Threshold} & Threshold on whether a color is visible or completely transparent. Default is 127 \\
+\hline
+{\em greyscale} & Whether to convert the image to greyscale before saving. This only affects the output file and not the image data in memory. Default is false \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_af9eada62c68329c46ab3c8dc10090a36}\label{classglib_1_1_image_af9eada62c68329c46ab3c8dc10090a36}} 
+\index{glib::Image@{glib::Image}!saveJPG@{saveJPG}}
+\index{saveJPG@{saveJPG}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{saveJPG()}{saveJPG()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::save\+JPG (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_file}{File}}}]{file }\end{DoxyParamCaption})}
+
+
+
+Not implemented. Do not use. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_aaa64f542e4e69bb22a0bf10123e7c6a0}\label{classglib_1_1_image_aaa64f542e4e69bb22a0bf10123e7c6a0}} 
+\index{glib::Image@{glib::Image}!savePNG@{savePNG}}
+\index{savePNG@{savePNG}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{savePNG()}{savePNG()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::save\+PNG (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_file}{File}}}]{file,  }\item[{bool}]{save\+Alpha = {\ttfamily true},  }\item[{bool}]{greyscale = {\ttfamily false},  }\item[{bool}]{strong\+Compression = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+Save an image as a .png file. Can not save animations Can save full alpha transparency. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & The output file. \\
+\hline
+{\em save\+Alpha} & Determines whether to save the alpha values for the image. Default is true. \\
+\hline
+{\em greyscale} & Whether to convert the image to greyscale before saving. This only affects the output file and not the image data in memory. Default is false \\
+\hline
+{\em strong\+Compression} & Determines whether to use better but slower compression to save the image. This will use different filters and custom huffman tables in the deflate method. Default is false \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_af9221d3e6588c4082370043285773f89}\label{classglib_1_1_image_af9221d3e6588c4082370043285773f89}} 
+\index{glib::Image@{glib::Image}!setAllPixels@{setAllPixels}}
+\index{setAllPixels@{setAllPixels}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{setAllPixels()}{setAllPixels()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::set\+All\+Pixels (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Sets all pixels to the specified color. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & The specified color. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_a83b43af9544175e7c9d2eb5596851f7d}\label{classglib_1_1_image_a83b43af9544175e7c9d2eb5596851f7d}} 
+\index{glib::Image@{glib::Image}!setPalette@{setPalette}}
+\index{setPalette@{setPalette}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{setPalette()}{setPalette()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::set\+Palette (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_color_palette}{Color\+Palette}}}]{p }\end{DoxyParamCaption})}
+
+
+
+Sets the Palette for the image. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & The color palette. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_image_a91be8691d34667a9ea5fac2641d12539}\label{classglib_1_1_image_a91be8691d34667a9ea5fac2641d12539}} 
+\index{glib::Image@{glib::Image}!setPixel@{setPixel}}
+\index{setPixel@{setPixel}!glib::Image@{glib::Image}}
+\doxysubsubsection{\texorpdfstring{setPixel()}{setPixel()}}
+{\footnotesize\ttfamily void glib\+::\+Image\+::set\+Pixel (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Set the Pixel at the specified location. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & X position of the pixel. \\
+\hline
+{\em y} & Y position of the pixel. \\
+\hline
+{\em c} & The color to set the pixel to. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Image.\+h\end{DoxyCompactItemize}

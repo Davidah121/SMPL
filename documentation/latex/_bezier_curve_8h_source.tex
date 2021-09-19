@@ -1,0 +1,67 @@
+\hypertarget{_bezier_curve_8h_source}{}\doxysection{Bezier\+Curve.\+h}
+\label{_bezier_curve_8h_source}\index{include/BezierCurve.h@{include/BezierCurve.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}Vec2f.h"{}}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}Object.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}GeneralExceptions.h"{}}}
+\DoxyCodeLine{6 }
+\DoxyCodeLine{7 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{8 \{}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_bezier_curve}{BezierCurve}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
+\DoxyCodeLine{11     \{}
+\DoxyCodeLine{12     \textcolor{keyword}{public}:}
+\DoxyCodeLine{18         \mbox{\hyperlink{classglib_1_1_bezier_curve_af7aade99d598de0d6165faa5bc440ec8}{BezierCurve}}();}
+\DoxyCodeLine{19 }
+\DoxyCodeLine{23         \mbox{\hyperlink{classglib_1_1_bezier_curve_af20e02aacde72e5205bd013a1197da67}{BezierCurve}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_bezier_curve}{BezierCurve}}\& o);}
+\DoxyCodeLine{24 }
+\DoxyCodeLine{28         \mbox{\hyperlink{classglib_1_1_bezier_curve_a67e084797542b9b0e46e3084f6614097}{\string~BezierCurve}}();}
+\DoxyCodeLine{29 }
+\DoxyCodeLine{30         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{31         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{32         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{33 }
+\DoxyCodeLine{34         \textcolor{comment}{//Exception Stuff}}
+\DoxyCodeLine{35         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_bezier_curve_1_1_blend_points_error}{BlendPointsError}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{36         \{}
+\DoxyCodeLine{37             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}ERROR ON BLENDING POINTS"{}}; \}}
+\DoxyCodeLine{38         \};}
+\DoxyCodeLine{39 }
+\DoxyCodeLine{46         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_bezier_curve_a803aaae0a2bd56dd9d0eea187f608797}{addPoint}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p);}
+\DoxyCodeLine{47 }
+\DoxyCodeLine{56         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_bezier_curve_a7eb788bb1591ee597f3576d9aa81dd99}{addPoint}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{57 }
+\DoxyCodeLine{68         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_bezier_curve_a4855905b952c4fada47ef710666e0655}{getPoint}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{69 }
+\DoxyCodeLine{78         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_bezier_curve_a27fcb68b9abd7b65b4721502f059fa91}{getFuctionAt}}(\textcolor{keywordtype}{double} time);}
+\DoxyCodeLine{79 }
+\DoxyCodeLine{88         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_bezier_curve_a243124d861f8db25c07fd6875a2992e5}{getDerivativeAt}}(\textcolor{keywordtype}{double} time);}
+\DoxyCodeLine{89 }
+\DoxyCodeLine{102         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_bezier_curve_ac69c3aab1f67ea42e878fbc6eeb0bc97}{getSimpleDerivativeAt}}(\textcolor{keywordtype}{double} time);}
+\DoxyCodeLine{103 }
+\DoxyCodeLine{115         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_bezier_curve_a2cd3ba9853ec2c94ca3599843be803a4}{getArcLengthAt}}(\textcolor{keywordtype}{double} time);}
+\DoxyCodeLine{116 }
+\DoxyCodeLine{130         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_bezier_curve_a2ae3efa8b748ae3e04c1bcf7223277f4}{getArcLengthAt}}(\textcolor{keywordtype}{double} startTime, \textcolor{keywordtype}{double} endTime);}
+\DoxyCodeLine{131 }
+\DoxyCodeLine{135         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_bezier_curve_a6b627e5503fcdec34b348b80e73aebf8}{clear}}();}
+\DoxyCodeLine{136 }
+\DoxyCodeLine{141         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_bezier_curve_a9ced58a155423ab3eeb5a4df1b67c70a}{size}}();}
+\DoxyCodeLine{142 }
+\DoxyCodeLine{152         std::vector<double> \mbox{\hyperlink{classglib_1_1_bezier_curve_a39419ebeab090bb41f1ce0c36ab0ef93}{findTimeForY}}(\textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{153 }
+\DoxyCodeLine{163         std::vector<double> \mbox{\hyperlink{classglib_1_1_bezier_curve_ab5c1e4bb703d4f1997e7738a977a1ce3}{findTimeForX}}(\textcolor{keywordtype}{double} x);}
+\DoxyCodeLine{164 }
+\DoxyCodeLine{165     \textcolor{keyword}{private}:}
+\DoxyCodeLine{166         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} blendPointsRecursive(\textcolor{keywordtype}{int} start, \textcolor{keywordtype}{int} end, \textcolor{keywordtype}{double} time);}
+\DoxyCodeLine{167         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} blendPointsExplicit(\textcolor{keywordtype}{double} time);}
+\DoxyCodeLine{168         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} blendPointsDerivativeRecursive(\textcolor{keywordtype}{int} start, \textcolor{keywordtype}{int} end, \textcolor{keywordtype}{double} time);}
+\DoxyCodeLine{169 }
+\DoxyCodeLine{170         std::vector<Vec2f> points = std::vector<Vec2f>();}
+\DoxyCodeLine{171     \};}
+\DoxyCodeLine{172 }
+\DoxyCodeLine{173 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

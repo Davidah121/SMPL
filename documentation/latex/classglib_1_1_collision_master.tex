@@ -1,0 +1,174 @@
+\hypertarget{classglib_1_1_collision_master}{}\doxysection{glib\+::Collision\+Master Class Reference}
+\label{classglib_1_1_collision_master}\index{glib::CollisionMaster@{glib::CollisionMaster}}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static bool \mbox{\hyperlink{classglib_1_1_collision_master_a22aa273c950c01cb1e07f1e2661f019a}{get\+Collision}} (\mbox{\hyperlink{classglib_1_1_shape}{Shape}} $\ast$a, \mbox{\hyperlink{classglib_1_1_shape}{Shape}} $\ast$b)
+\begin{DoxyCompactList}\small\item\em Returns if there is a collision for the 2 shapes. Finds a valid collision method based on the class names. If no valid collision method is found among the pre-\/made collision methods, an external function can be defined to handle collision. If the function does not exist or it could not resolve the collision, the function returns false. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_a7ecb9c1faceb1576d48ad4dfd6c45acb}\label{classglib_1_1_collision_master_a7ecb9c1faceb1576d48ad4dfd6c45acb}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_aaace8723f52879c8e93e9061cd7b3e74}\label{classglib_1_1_collision_master_aaace8723f52879c8e93e9061cd7b3e74}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_circle}{Circle}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_a029eac10e11689529bf8448e05fe8cae}\label{classglib_1_1_collision_master_a029eac10e11689529bf8448e05fe8cae}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_a5da24792c53f1b77e71073b3c2f89e42}\label{classglib_1_1_collision_master_a5da24792c53f1b77e71073b3c2f89e42}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_a849b006cd4d7f1c1dc828772077e3680}\label{classglib_1_1_collision_master_a849b006cd4d7f1c1dc828772077e3680}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_triangle2_d}{Triangle2D}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_a33084529bfa3d1d359f9c814b8985e53}\label{classglib_1_1_collision_master_a33084529bfa3d1d359f9c814b8985e53}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_line2_d}{Line2D}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_aae74da826f3c7b36d6b37a5719a58c08}\label{classglib_1_1_collision_master_aae74da826f3c7b36d6b37a5719a58c08}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_a3487234752d7fb82fa249c306a743453}\label{classglib_1_1_collision_master_a3487234752d7fb82fa249c306a743453}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_circle}{Circle}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_af01837fbdf8d96c62b5b8e8cbda4421c}\label{classglib_1_1_collision_master_af01837fbdf8d96c62b5b8e8cbda4421c}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_aa8af2b8618655eb6f3dce8c10201aa10}\label{classglib_1_1_collision_master_aa8af2b8618655eb6f3dce8c10201aa10}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_triangle2_d}{Triangle2D}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_a56829f9a3cc89da12e46a59f0d8ecc09}\label{classglib_1_1_collision_master_a56829f9a3cc89da12e46a59f0d8ecc09}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_line2_d}{Line2D}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_a40ffc32d56a80c732ff38a87b2f16cf2}\label{classglib_1_1_collision_master_a40ffc32d56a80c732ff38a87b2f16cf2}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_circle}{Circle}} $\ast$a, \mbox{\hyperlink{classglib_1_1_circle}{Circle}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_aa8039f6a15b558ed96d4593ab575e788}\label{classglib_1_1_collision_master_aa8039f6a15b558ed96d4593ab575e788}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_circle}{Circle}} $\ast$a, \mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_a46fdad394a1a22f04c9ec0ec4f0c93e3}\label{classglib_1_1_collision_master_a46fdad394a1a22f04c9ec0ec4f0c93e3}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_circle}{Circle}} $\ast$a, \mbox{\hyperlink{classglib_1_1_triangle2_d}{Triangle2D}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_a44dc55e7faa5d39dee72525a4d2ec776}\label{classglib_1_1_collision_master_a44dc55e7faa5d39dee72525a4d2ec776}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_circle}{Circle}} $\ast$a, \mbox{\hyperlink{classglib_1_1_line2_d}{Line2D}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_ae021ed90796b9fd8016fa8bb7c0c797f}\label{classglib_1_1_collision_master_ae021ed90796b9fd8016fa8bb7c0c797f}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_line2_d}{Line2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_line2_d}{Line2D}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_a90efe4829932159ec5940e092f4f35f6}\label{classglib_1_1_collision_master_a90efe4829932159ec5940e092f4f35f6}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_line2_d}{Line2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_a50f2e1ec27b28b20c6acb2e0eb382784}\label{classglib_1_1_collision_master_a50f2e1ec27b28b20c6acb2e0eb382784}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_line2_d}{Line2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_triangle2_d}{Triangle2D}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_afa24591096773d4db8841b150967fa09}\label{classglib_1_1_collision_master_afa24591096773d4db8841b150967fa09}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}} $\ast$a, \mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_a83e22608af6d8ff0fb3ca5cc743ac364}\label{classglib_1_1_collision_master_a83e22608af6d8ff0fb3ca5cc743ac364}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}} $\ast$a, \mbox{\hyperlink{classglib_1_1_triangle2_d}{Triangle2D}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_ab07cce3189f0eed1eb33c91ce25b5d7c}\label{classglib_1_1_collision_master_ab07cce3189f0eed1eb33c91ce25b5d7c}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_triangle2_d}{Triangle2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_triangle2_d}{Triangle2D}} $\ast$b)
+\item 
+static bool \mbox{\hyperlink{classglib_1_1_collision_master_ae855be598395d547cce9e6bf40487810}{Separating\+Axis\+Theorem}} (\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} $\ast$b)
+\begin{DoxyCompactList}\small\item\em Uses the Separating Axis Theorem to determine if the 2 polygons are colliding. Can determine the point of collision and if either shape is encapsulated in the other. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_collision_master_a8aa22acd33846569117de867735e087b}{Alternating\+Diagonals}} (\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} $\ast$b)
+\begin{DoxyCompactList}\small\item\em Uses a method called Alternating Diagonals to determine if the 2 polygons are colliding. More information can be found here\+: \href{https://www.youtube.com/watch?v=7Ik2vowGcU0}{\texttt{ https\+://www.\+youtube.\+com/watch?v=7\+Ik2vow\+Gc\+U0}} Can determine the point of collision easier than SAT and is potentially faster due to earlier termination and simple line to line collisions. By itself, it can not determine if either shape is encapsulated in the other. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_aa97daa56d903314f4a9d6cad3ddd3709}\label{classglib_1_1_collision_master_aa97daa56d903314f4a9d6cad3ddd3709}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_a56053e7de73910c2ee69f6711a100b4a}\label{classglib_1_1_collision_master_a56053e7de73910c2ee69f6711a100b4a}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_circle}{Circle}} $\ast$b)
+\item 
+\mbox{\Hypertarget{classglib_1_1_collision_master_a87c05dab2c2184bdb7cdaa8e9ebd956d}\label{classglib_1_1_collision_master_a87c05dab2c2184bdb7cdaa8e9ebd956d}} 
+static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}} $\ast$b)
+\item 
+static void \mbox{\hyperlink{classglib_1_1_collision_master_a58f677e41a9948c4b84c261f305ddf8f}{set\+External\+Collision\+Function}} (std\+::function$<$ bool(\mbox{\hyperlink{classglib_1_1_shape}{Shape}} $\ast$, \mbox{\hyperlink{classglib_1_1_shape}{Shape}} $\ast$)$>$ collision\+Function)
+\begin{DoxyCompactList}\small\item\em Sets a function that can be used to handle collision not handled by the pre-\/made functions. Note that this is slower due to accessing the function through a pointer. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_collision_master_a8aa22acd33846569117de867735e087b}\label{classglib_1_1_collision_master_a8aa22acd33846569117de867735e087b}} 
+\index{glib::CollisionMaster@{glib::CollisionMaster}!AlternatingDiagonals@{AlternatingDiagonals}}
+\index{AlternatingDiagonals@{AlternatingDiagonals}!glib::CollisionMaster@{glib::CollisionMaster}}
+\doxysubsubsection{\texorpdfstring{AlternatingDiagonals()}{AlternatingDiagonals()}}
+{\footnotesize\ttfamily static bool glib\+::\+Collision\+Master\+::\+Alternating\+Diagonals (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} $\ast$}]{a,  }\item[{\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} $\ast$}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Uses a method called Alternating Diagonals to determine if the 2 polygons are colliding. More information can be found here\+: \href{https://www.youtube.com/watch?v=7Ik2vowGcU0}{\texttt{ https\+://www.\+youtube.\+com/watch?v=7\+Ik2vow\+Gc\+U0}} Can determine the point of collision easier than SAT and is potentially faster due to earlier termination and simple line to line collisions. By itself, it can not determine if either shape is encapsulated in the other. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & \\
+\hline
+{\em b} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_collision_master_a22aa273c950c01cb1e07f1e2661f019a}\label{classglib_1_1_collision_master_a22aa273c950c01cb1e07f1e2661f019a}} 
+\index{glib::CollisionMaster@{glib::CollisionMaster}!getCollision@{getCollision}}
+\index{getCollision@{getCollision}!glib::CollisionMaster@{glib::CollisionMaster}}
+\doxysubsubsection{\texorpdfstring{getCollision()}{getCollision()}}
+{\footnotesize\ttfamily static bool glib\+::\+Collision\+Master\+::get\+Collision (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_shape}{Shape}} $\ast$}]{a,  }\item[{\mbox{\hyperlink{classglib_1_1_shape}{Shape}} $\ast$}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns if there is a collision for the 2 shapes. Finds a valid collision method based on the class names. If no valid collision method is found among the pre-\/made collision methods, an external function can be defined to handle collision. If the function does not exist or it could not resolve the collision, the function returns false. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & \\
+\hline
+{\em b} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_collision_master_ae855be598395d547cce9e6bf40487810}\label{classglib_1_1_collision_master_ae855be598395d547cce9e6bf40487810}} 
+\index{glib::CollisionMaster@{glib::CollisionMaster}!SeparatingAxisTheorem@{SeparatingAxisTheorem}}
+\index{SeparatingAxisTheorem@{SeparatingAxisTheorem}!glib::CollisionMaster@{glib::CollisionMaster}}
+\doxysubsubsection{\texorpdfstring{SeparatingAxisTheorem()}{SeparatingAxisTheorem()}}
+{\footnotesize\ttfamily static bool glib\+::\+Collision\+Master\+::\+Separating\+Axis\+Theorem (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} $\ast$}]{a,  }\item[{\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} $\ast$}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Uses the Separating Axis Theorem to determine if the 2 polygons are colliding. Can determine the point of collision and if either shape is encapsulated in the other. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & \\
+\hline
+{\em b} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_collision_master_a58f677e41a9948c4b84c261f305ddf8f}\label{classglib_1_1_collision_master_a58f677e41a9948c4b84c261f305ddf8f}} 
+\index{glib::CollisionMaster@{glib::CollisionMaster}!setExternalCollisionFunction@{setExternalCollisionFunction}}
+\index{setExternalCollisionFunction@{setExternalCollisionFunction}!glib::CollisionMaster@{glib::CollisionMaster}}
+\doxysubsubsection{\texorpdfstring{setExternalCollisionFunction()}{setExternalCollisionFunction()}}
+{\footnotesize\ttfamily static void glib\+::\+Collision\+Master\+::set\+External\+Collision\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ bool(\mbox{\hyperlink{classglib_1_1_shape}{Shape}} $\ast$, \mbox{\hyperlink{classglib_1_1_shape}{Shape}} $\ast$)$>$}]{collision\+Function }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Sets a function that can be used to handle collision not handled by the pre-\/made functions. Note that this is slower due to accessing the function through a pointer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em collision\+Function} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Shape.\+h\end{DoxyCompactItemize}

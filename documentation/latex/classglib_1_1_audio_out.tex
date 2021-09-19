@@ -1,0 +1,213 @@
+\hypertarget{classglib_1_1_audio_out}{}\doxysection{glib\+::Audio\+Out Class Reference}
+\label{classglib_1_1_audio_out}\index{glib::AudioOut@{glib::AudioOut}}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_audio_out_1_1_audio_out_error}{Audio\+Out\+Error}}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_audio_out_1_1_audio_out_init_error}{Audio\+Out\+Init\+Error}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{classglib_1_1_audio_out_a2b080f28a8bde02436fe1a2dbf6c6b06}{init}} (unsigned int device\+ID=-\/1)
+\begin{DoxyCompactList}\small\item\em Opens a device specified by the device\+ID value to output audio too. Spawns a thread to process that audio and output audio. Can not be recalled until \mbox{\hyperlink{classglib_1_1_audio_out_a89ecf75abca7c08bddfade30c53a4237}{dispose()}} is called and successfully returned. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_audio_out_a89ecf75abca7c08bddfade30c53a4237}\label{classglib_1_1_audio_out_a89ecf75abca7c08bddfade30c53a4237}} 
+static void {\bfseries dispose} ()
+\begin{DoxyCompactList}\small\item\em Ends output of audio. Closes the audio thread that processes and outputs audio. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_audio_out_a50d9e8991c2cddc013d84a4bf2fa860b}{set\+Volume}} (double v)
+\begin{DoxyCompactList}\small\item\em Sets the Global Volume which will be applied to every sound that is output. \end{DoxyCompactList}\item 
+static double \mbox{\hyperlink{classglib_1_1_audio_out_a434b3db8e24a9e8fa0652d448857e341}{get\+Volume}} ()
+\begin{DoxyCompactList}\small\item\em Returns the global volume value. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_audio_out_a137ca8c5c4abfd4d89146e0082155919}\label{classglib_1_1_audio_out_a137ca8c5c4abfd4d89146e0082155919}} 
+static void {\bfseries pause\+All} ()
+\begin{DoxyCompactList}\small\item\em Pauses all sounds. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_audio_out_afee70f3ba6463205e0e464d112e53771}\label{classglib_1_1_audio_out_afee70f3ba6463205e0e464d112e53771}} 
+static void {\bfseries stop\+All} ()
+\begin{DoxyCompactList}\small\item\em Stops all sounds. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_audio_out_afe5897c8467ede5c7d6f87dceae1e482}{set\+Amount\+Of\+Simultaneous\+Sounds}} (int s)
+\begin{DoxyCompactList}\small\item\em Set the amount of simultaneous sounds allowed to be played. The default value is set to 16. Note that sounds are sorted by their priority with insertion sort. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_audio_out_a8d63bcee057697266f262818b608a3b1}{get\+Amount\+Of\+Simultaneous\+Sounds}} ()
+\begin{DoxyCompactList}\small\item\em Returns the amount of simultaneous sounds allowed. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_audio_out_afce916c5220a18a08e00e2428f10243a}{add\+Sound}} (\mbox{\hyperlink{classglib_1_1_sound}{Sound}} $\ast$s)
+\begin{DoxyCompactList}\small\item\em Adds a sound to be played. The sound is referenced by a pointer. Note that sounds are sorted by their priority with insertion sort. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_audio_out_a43ed49a44927a9dc5ba22203d1d33ff3}{remove\+Sound}} (\mbox{\hyperlink{classglib_1_1_sound}{Sound}} $\ast$s)
+\begin{DoxyCompactList}\small\item\em Removes a sound from the playable sounds. A sound should be removed before it is deleted to avoid memory access violations. Note that all sounds with the same pointer will be removed. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_audio_out_acf75a7092000cd072068eb58c5fa6bb9}{set\+Buffers}} (int b)
+\begin{DoxyCompactList}\small\item\em Set the amount of buffers for playing audio. The default is 2 buffers. Must be set before calling init. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_audio_out_a7e31a332b626662f931cd57b9595c5e2}{get\+Buffers}} ()
+\begin{DoxyCompactList}\small\item\em Return the amount of buffers. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_audio_out_a07afe557dc12e5d1a16047c4d7b58484}{set\+Size\+Of\+Buffer}} (int b)
+\begin{DoxyCompactList}\small\item\em Sets the size of the individual buffers. The default is 2205 samples. Must be set before calling init. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_audio_out_aa951e08b7274310a4e25b522687b940d}{get\+Size\+Of\+Buffer}} ()
+\begin{DoxyCompactList}\small\item\em Returns the number of samples for each buffer. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_audio_out_afce916c5220a18a08e00e2428f10243a}\label{classglib_1_1_audio_out_afce916c5220a18a08e00e2428f10243a}} 
+\index{glib::AudioOut@{glib::AudioOut}!addSound@{addSound}}
+\index{addSound@{addSound}!glib::AudioOut@{glib::AudioOut}}
+\doxysubsubsection{\texorpdfstring{addSound()}{addSound()}}
+{\footnotesize\ttfamily static void glib\+::\+Audio\+Out\+::add\+Sound (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_sound}{Sound}} $\ast$}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Adds a sound to be played. The sound is referenced by a pointer. Note that sounds are sorted by their priority with insertion sort. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & A valid \mbox{\hyperlink{classglib_1_1_sound}{Sound}} pointer must be supplied. A crash will occur if an invalid pointer is supplied. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_audio_out_a8d63bcee057697266f262818b608a3b1}\label{classglib_1_1_audio_out_a8d63bcee057697266f262818b608a3b1}} 
+\index{glib::AudioOut@{glib::AudioOut}!getAmountOfSimultaneousSounds@{getAmountOfSimultaneousSounds}}
+\index{getAmountOfSimultaneousSounds@{getAmountOfSimultaneousSounds}!glib::AudioOut@{glib::AudioOut}}
+\doxysubsubsection{\texorpdfstring{getAmountOfSimultaneousSounds()}{getAmountOfSimultaneousSounds()}}
+{\footnotesize\ttfamily static int glib\+::\+Audio\+Out\+::get\+Amount\+Of\+Simultaneous\+Sounds (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the amount of simultaneous sounds allowed. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_audio_out_a7e31a332b626662f931cd57b9595c5e2}\label{classglib_1_1_audio_out_a7e31a332b626662f931cd57b9595c5e2}} 
+\index{glib::AudioOut@{glib::AudioOut}!getBuffers@{getBuffers}}
+\index{getBuffers@{getBuffers}!glib::AudioOut@{glib::AudioOut}}
+\doxysubsubsection{\texorpdfstring{getBuffers()}{getBuffers()}}
+{\footnotesize\ttfamily static int glib\+::\+Audio\+Out\+::get\+Buffers (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Return the amount of buffers. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_audio_out_aa951e08b7274310a4e25b522687b940d}\label{classglib_1_1_audio_out_aa951e08b7274310a4e25b522687b940d}} 
+\index{glib::AudioOut@{glib::AudioOut}!getSizeOfBuffer@{getSizeOfBuffer}}
+\index{getSizeOfBuffer@{getSizeOfBuffer}!glib::AudioOut@{glib::AudioOut}}
+\doxysubsubsection{\texorpdfstring{getSizeOfBuffer()}{getSizeOfBuffer()}}
+{\footnotesize\ttfamily static int glib\+::\+Audio\+Out\+::get\+Size\+Of\+Buffer (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the number of samples for each buffer. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_audio_out_a434b3db8e24a9e8fa0652d448857e341}\label{classglib_1_1_audio_out_a434b3db8e24a9e8fa0652d448857e341}} 
+\index{glib::AudioOut@{glib::AudioOut}!getVolume@{getVolume}}
+\index{getVolume@{getVolume}!glib::AudioOut@{glib::AudioOut}}
+\doxysubsubsection{\texorpdfstring{getVolume()}{getVolume()}}
+{\footnotesize\ttfamily static double glib\+::\+Audio\+Out\+::get\+Volume (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the global volume value. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_audio_out_a2b080f28a8bde02436fe1a2dbf6c6b06}\label{classglib_1_1_audio_out_a2b080f28a8bde02436fe1a2dbf6c6b06}} 
+\index{glib::AudioOut@{glib::AudioOut}!init@{init}}
+\index{init@{init}!glib::AudioOut@{glib::AudioOut}}
+\doxysubsubsection{\texorpdfstring{init()}{init()}}
+{\footnotesize\ttfamily static void glib\+::\+Audio\+Out\+::init (\begin{DoxyParamCaption}\item[{unsigned int}]{device\+ID = {\ttfamily -\/1} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Opens a device specified by the device\+ID value to output audio too. Spawns a thread to process that audio and output audio. Can not be recalled until \mbox{\hyperlink{classglib_1_1_audio_out_a89ecf75abca7c08bddfade30c53a4237}{dispose()}} is called and successfully returned. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em device\+ID} & The device\+ID should be obtained from the operating system. The default value is -\/1 which will map to the default output device. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em \mbox{\hyperlink{structglib_1_1_audio_out_1_1_audio_out_init_error}{Audio\+Out\+Init\+Error}}} & Error is thrown if the output device could not be initialized \\
+\hline
+\end{DoxyExceptions}
+\mbox{\Hypertarget{classglib_1_1_audio_out_a43ed49a44927a9dc5ba22203d1d33ff3}\label{classglib_1_1_audio_out_a43ed49a44927a9dc5ba22203d1d33ff3}} 
+\index{glib::AudioOut@{glib::AudioOut}!removeSound@{removeSound}}
+\index{removeSound@{removeSound}!glib::AudioOut@{glib::AudioOut}}
+\doxysubsubsection{\texorpdfstring{removeSound()}{removeSound()}}
+{\footnotesize\ttfamily static void glib\+::\+Audio\+Out\+::remove\+Sound (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_sound}{Sound}} $\ast$}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Removes a sound from the playable sounds. A sound should be removed before it is deleted to avoid memory access violations. Note that all sounds with the same pointer will be removed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & A valid \mbox{\hyperlink{classglib_1_1_sound}{Sound}} pointer that should be removed. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_audio_out_afe5897c8467ede5c7d6f87dceae1e482}\label{classglib_1_1_audio_out_afe5897c8467ede5c7d6f87dceae1e482}} 
+\index{glib::AudioOut@{glib::AudioOut}!setAmountOfSimultaneousSounds@{setAmountOfSimultaneousSounds}}
+\index{setAmountOfSimultaneousSounds@{setAmountOfSimultaneousSounds}!glib::AudioOut@{glib::AudioOut}}
+\doxysubsubsection{\texorpdfstring{setAmountOfSimultaneousSounds()}{setAmountOfSimultaneousSounds()}}
+{\footnotesize\ttfamily static void glib\+::\+Audio\+Out\+::set\+Amount\+Of\+Simultaneous\+Sounds (\begin{DoxyParamCaption}\item[{int}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Set the amount of simultaneous sounds allowed to be played. The default value is set to 16. Note that sounds are sorted by their priority with insertion sort. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & A positive value above 0. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_audio_out_acf75a7092000cd072068eb58c5fa6bb9}\label{classglib_1_1_audio_out_acf75a7092000cd072068eb58c5fa6bb9}} 
+\index{glib::AudioOut@{glib::AudioOut}!setBuffers@{setBuffers}}
+\index{setBuffers@{setBuffers}!glib::AudioOut@{glib::AudioOut}}
+\doxysubsubsection{\texorpdfstring{setBuffers()}{setBuffers()}}
+{\footnotesize\ttfamily static void glib\+::\+Audio\+Out\+::set\+Buffers (\begin{DoxyParamCaption}\item[{int}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Set the amount of buffers for playing audio. The default is 2 buffers. Must be set before calling init. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em b} & The number of buffers allows for decreases in the size of the buffers and keeps the OS fed with data to reduce studdering. The current value is set to reduce studdering and keep latency good. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_audio_out_a07afe557dc12e5d1a16047c4d7b58484}\label{classglib_1_1_audio_out_a07afe557dc12e5d1a16047c4d7b58484}} 
+\index{glib::AudioOut@{glib::AudioOut}!setSizeOfBuffer@{setSizeOfBuffer}}
+\index{setSizeOfBuffer@{setSizeOfBuffer}!glib::AudioOut@{glib::AudioOut}}
+\doxysubsubsection{\texorpdfstring{setSizeOfBuffer()}{setSizeOfBuffer()}}
+{\footnotesize\ttfamily static void glib\+::\+Audio\+Out\+::set\+Size\+Of\+Buffer (\begin{DoxyParamCaption}\item[{int}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Sets the size of the individual buffers. The default is 2205 samples. Must be set before calling init. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em b} & The size of the buffers in samples. The larger the size, the more milliseconds of audio that must be prepared at a time. The value 2205 was selected based on 2 buffers, stereo audio, 16 bit samples, and 44100 samples per second. This results in 50 milliseconds of audio latency with no studdering. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_audio_out_a50d9e8991c2cddc013d84a4bf2fa860b}\label{classglib_1_1_audio_out_a50d9e8991c2cddc013d84a4bf2fa860b}} 
+\index{glib::AudioOut@{glib::AudioOut}!setVolume@{setVolume}}
+\index{setVolume@{setVolume}!glib::AudioOut@{glib::AudioOut}}
+\doxysubsubsection{\texorpdfstring{setVolume()}{setVolume()}}
+{\footnotesize\ttfamily static void glib\+::\+Audio\+Out\+::set\+Volume (\begin{DoxyParamCaption}\item[{double}]{v }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Sets the Global Volume which will be applied to every sound that is output. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & The volume value that must be between 0.\+0 and 1.\+0. It will be clamped between 0.\+0 and 1.\+0 \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Audio.\+h\end{DoxyCompactItemize}

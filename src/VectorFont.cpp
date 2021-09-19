@@ -20,27 +20,27 @@ namespace glib
         
     }
 
-    bool VectorFont::load(std::wstring filename)
+    bool VectorFont::load(File file)
     {
         SimpleXml f = SimpleXml();
-        if(!f.load(filename))
+        if(!f.load(file))
         {
             return false;
         }
 
         for(XmlNode* n : f.nodes)
         {
-            if(StringTools::equalsIgnoreCase(n->title, L"svg"))
+            if(StringTools::equalsIgnoreCase<wchar_t>(n->title, L"svg"))
             {
                 XmlNode* cNode;
                 for(int index=0; index<n->childNodes.size(); index++)
                 {
                     cNode = n->childNodes[index];
-                    if( StringTools::equalsIgnoreCase(cNode->title, L"defs") )
+                    if( StringTools::equalsIgnoreCase<wchar_t>(cNode->title, L"defs") )
                     {
                         for(XmlNode* q : cNode->childNodes)
                         {
-                            if( StringTools::equalsIgnoreCase(q->title, L"font") )
+                            if( StringTools::equalsIgnoreCase<wchar_t>(q->title, L"font") )
                             {
                                 cNode = q;
                                 break;
@@ -50,11 +50,11 @@ namespace glib
                     }
                 }
 
-                if( StringTools::equalsIgnoreCase(cNode->title, L"font") )
+                if( StringTools::equalsIgnoreCase<wchar_t>(cNode->title, L"font") )
                 {
                     for(XmlAttribute a : cNode->attributes)
                     {
-                        if( StringTools::equalsIgnoreCase(a.name, L"horiz-adv-x") )
+                        if( StringTools::equalsIgnoreCase<wchar_t>(a.name, L"horiz-adv-x") )
                         {
                             baseHorizontalAdvance = MathExt::ceil( stod(a.value));
                         }
@@ -80,7 +80,7 @@ namespace glib
                     for(int i=0; i<cNode->childNodes.size(); i++)
                     {
                         XmlNode* fontChildren = cNode->childNodes[i];
-                        if(StringTools::equalsIgnoreCase(fontChildren->title, L"glyph") || StringTools::equalsIgnoreCase(fontChildren->title, L"missing-glyph"))
+                        if(StringTools::equalsIgnoreCase<wchar_t>(fontChildren->title, L"glyph") || StringTools::equalsIgnoreCase<wchar_t>(fontChildren->title, L"missing-glyph"))
                         {
                             FontCharInfo fc;
                             fc.x=0;
@@ -92,7 +92,7 @@ namespace glib
 
                             for(XmlAttribute a : fontChildren->attributes)
                             {
-                                if(StringTools::equalsIgnoreCase(a.name, L"unicode"))
+                                if(StringTools::equalsIgnoreCase<wchar_t>(a.name, L"unicode"))
                                 {
                                     //StringTools::println(a.value);
 
@@ -123,7 +123,7 @@ namespace glib
                                     }
                                     **/
                                 }
-                                else if(StringTools::equalsIgnoreCase(a.name, L"horiz-adv-x"))
+                                else if(StringTools::equalsIgnoreCase<wchar_t>(a.name, L"horiz-adv-x"))
                                 {
                                     fc.horizAdv = (int)MathExt::ceil( stod(a.value));
                                 }
@@ -144,11 +144,11 @@ namespace glib
                             this->fontSprite.addGraphic(fontGraphic);
                             
                         }
-                        else if(StringTools::equalsIgnoreCase(fontChildren->title, L"font-face"))
+                        else if(StringTools::equalsIgnoreCase<wchar_t>(fontChildren->title, L"font-face"))
                         {
                             for(XmlAttribute a : fontChildren->attributes)
                             {
-                                if( StringTools::equalsIgnoreCase(a.name, L"bbox"))
+                                if( StringTools::equalsIgnoreCase<wchar_t>(a.name, L"bbox"))
                                 {
                                     StringTools::println(a.value);
 

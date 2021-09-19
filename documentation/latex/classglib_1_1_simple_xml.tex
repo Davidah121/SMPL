@@ -1,0 +1,90 @@
+\hypertarget{classglib_1_1_simple_xml}{}\doxysection{glib\+::Simple\+Xml Class Reference}
+\label{classglib_1_1_simple_xml}\index{glib::SimpleXml@{glib::SimpleXml}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_simple_xml_af6789d2442a560a48426312975f8dcdb}\label{classglib_1_1_simple_xml_af6789d2442a560a48426312975f8dcdb}} 
+{\bfseries Simple\+Xml} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_simple_xml}{Simple\+Xml}} object Contains information about an XML file. Can be constructed in code to save data or load in data to parse. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_simple_xml_a1ea12a02596b445fbf5e776d648cbc43}\label{classglib_1_1_simple_xml_a1ea12a02596b445fbf5e776d648cbc43}} 
+{\bfseries $\sim$\+Simple\+Xml} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_simple_xml}{Simple\+Xml}} object. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_simple_xml_a0858367322d1eadaa86c6baa5f05752f}{load}} (\mbox{\hyperlink{classglib_1_1_file}{File}} file)
+\begin{DoxyCompactList}\small\item\em Loads an XML file. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_xml_a4db053e0d40143eeeed351ad0a311a15}{save}} (\mbox{\hyperlink{classglib_1_1_file}{File}} file)
+\begin{DoxyCompactList}\small\item\em Saves the \mbox{\hyperlink{classglib_1_1_xml_node}{Xml\+Node}} data into a file. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_simple_xml_a4197d2a578fdd364f533993293deac2d}\label{classglib_1_1_simple_xml_a4197d2a578fdd364f533993293deac2d}} 
+void {\bfseries dispose} ()
+\begin{DoxyCompactList}\small\item\em Disposes of the memory used by the object. All nodes maintain by the object including their children should be considered invalid. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static int \mbox{\hyperlink{classglib_1_1_simple_xml_a027d6d3088edf50b819eceabbaf38ba4}{parse\+Escape\+String}} (std\+::wstring esc\+String)
+\begin{DoxyCompactList}\small\item\em Parses an escape sequence in XML to the original character it represents. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_simple_xml_a4ff29fb91781f57b9f0dcddb3b6af51a}\label{classglib_1_1_simple_xml_a4ff29fb91781f57b9f0dcddb3b6af51a}} 
+std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_xml_node}{Xml\+Node}} $\ast$ $>$ {\bfseries nodes} = std\+::vector$<$\mbox{\hyperlink{classglib_1_1_xml_node}{Xml\+Node}}$\ast$$>$()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_simple_xml_a0858367322d1eadaa86c6baa5f05752f}\label{classglib_1_1_simple_xml_a0858367322d1eadaa86c6baa5f05752f}} 
+\index{glib::SimpleXml@{glib::SimpleXml}!load@{load}}
+\index{load@{load}!glib::SimpleXml@{glib::SimpleXml}}
+\doxysubsubsection{\texorpdfstring{load()}{load()}}
+{\footnotesize\ttfamily bool glib\+::\+Simple\+Xml\+::load (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_file}{File}}}]{file }\end{DoxyParamCaption})}
+
+
+
+Loads an XML file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_xml_a027d6d3088edf50b819eceabbaf38ba4}\label{classglib_1_1_simple_xml_a027d6d3088edf50b819eceabbaf38ba4}} 
+\index{glib::SimpleXml@{glib::SimpleXml}!parseEscapeString@{parseEscapeString}}
+\index{parseEscapeString@{parseEscapeString}!glib::SimpleXml@{glib::SimpleXml}}
+\doxysubsubsection{\texorpdfstring{parseEscapeString()}{parseEscapeString()}}
+{\footnotesize\ttfamily static int glib\+::\+Simple\+Xml\+::parse\+Escape\+String (\begin{DoxyParamCaption}\item[{std\+::wstring}]{esc\+String }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Parses an escape sequence in XML to the original character it represents. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em esc\+String} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_xml_a4db053e0d40143eeeed351ad0a311a15}\label{classglib_1_1_simple_xml_a4db053e0d40143eeeed351ad0a311a15}} 
+\index{glib::SimpleXml@{glib::SimpleXml}!save@{save}}
+\index{save@{save}!glib::SimpleXml@{glib::SimpleXml}}
+\doxysubsubsection{\texorpdfstring{save()}{save()}}
+{\footnotesize\ttfamily void glib\+::\+Simple\+Xml\+::save (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_file}{File}}}]{file }\end{DoxyParamCaption})}
+
+
+
+Saves the \mbox{\hyperlink{classglib_1_1_xml_node}{Xml\+Node}} data into a file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Simple\+Xml.\+h\end{DoxyCompactItemize}

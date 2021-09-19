@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['fastcosinetransform_0',['fastCosineTransform',['../classglib_1_1_math_ext.html#aa609b0e8d003868c0dbadb553c5df6ce',1,'glib::MathExt']]],
+  ['fastcosinetransform2d_1',['fastCosineTransform2D',['../classglib_1_1_math_ext.html#a6cc0b8dae92a7287a074f352a95ced7f',1,'glib::MathExt']]],
+  ['fastfouriertransform_2',['fastFourierTransform',['../classglib_1_1_math_ext.html#a85c667eea0f6329cb990b811d51e35c4',1,'glib::MathExt']]],
+  ['fastfouriertransformtest_3',['fastFourierTransformTest',['../classglib_1_1_math_ext.html#a789b25d3120dcd66050966f5c68e73f2',1,'glib::MathExt']]],
+  ['fastsinetransform_4',['fastSineTransform',['../classglib_1_1_math_ext.html#a6f178b99ef1906c81dbc928460603a0d',1,'glib::MathExt']]],
+  ['fastsinetransform2d_5',['fastSineTransform2D',['../classglib_1_1_math_ext.html#a7988e875b5efca0f47c5a84dda4ae5fc',1,'glib::MathExt']]],
+  ['fct8_6',['FCT8',['../classglib_1_1_math_ext.html#abe31dc16f5f5edbfa6b7a855d274efb2',1,'glib::MathExt']]],
+  ['fct8x8_7',['FCT8x8',['../classglib_1_1_math_ext.html#aa1b1dd5b19bd1ae72a917c5d2297ef90',1,'glib::MathExt']]],
+  ['file_8',['File',['../classglib_1_1_file.html#a5496acbac813c847b98401fe8f2e5e29',1,'glib::File::File(std::wstring filename)'],['../classglib_1_1_file.html#a89cfe145389a1a671edec7171be74993',1,'glib::File::File(std::basic_string&lt; T &gt; filename)'],['../classglib_1_1_file.html#ab6a2606f1ab0615ce9dd3a55c221a733',1,'glib::File::File(char *filename)'],['../classglib_1_1_file.html#afbec51b8b9cb8e0b26b62d3a39e90e87',1,'glib::File::File(const char *filename)'],['../classglib_1_1_file.html#adeadb4ebfdb0c6b2cb9c7f8ddb69d578',1,'glib::File::File(const wchar_t *filename)'],['../classglib_1_1_file.html#a42bcbec4f770828c74db7cf061129a35',1,'glib::File::File(wchar_t *filename)']]],
+  ['filedialogbox_9',['fileDialogBox',['../classglib_1_1_system.html#a1095a01e54a48e528dc5fa082aac238e',1,'glib::System']]],
+  ['filesize_10',['fileSize',['../classglib_1_1_simple_dir.html#ad756594d09b248e3cbba3dc3a9985466',1,'glib::SimpleDir']]],
+  ['filteroutcolor_11',['filterOutColor',['../classglib_1_1_graphics.html#a33e5a19ee26114ebba184a76c777f667',1,'glib::Graphics']]],
+  ['filteroutcolorrange_12',['filterOutColorRange',['../classglib_1_1_graphics.html#a7d742c17c9a6f33936f8f2646a69a494',1,'glib::Graphics']]],
+  ['findclass_13',['findClass',['../classglib_1_1_class_master.html#a841cf832eeadb56792a6ae2eb868138e',1,'glib::ClassMaster::findClass(int i)'],['../classglib_1_1_class_master.html#ae2b7a43a910325cf129e73a1462b0a2f',1,'glib::ClassMaster::findClass(std::string className)']]],
+  ['findlongestmatch_14',['findLongestMatch',['../classglib_1_1_string_tools.html#a188eb5ee217195d6020a95e21bdff29e',1,'glib::StringTools::findLongestMatch(std::string base, std::string match, int *index, int *length)'],['../classglib_1_1_string_tools.html#a305034a4cbd0b2b16e2bd192244af96a',1,'glib::StringTools::findLongestMatch(T *base, int baseSize, T *match, int matchSize, int *index, int *length)']]],
+  ['findtimeforx_15',['findTimeForX',['../classglib_1_1_bezier_curve.html#ab5c1e4bb703d4f1997e7738a977a1ce3',1,'glib::BezierCurve']]],
+  ['findtimefory_16',['findTimeForY',['../classglib_1_1_bezier_curve.html#a39419ebeab090bb41f1ce0c36ab0ef93',1,'glib::BezierCurve']]],
+  ['floor_17',['floor',['../classglib_1_1_math_ext.html#aa0a8e44de6e79aa74977f3793a5c4784',1,'glib::MathExt::floor(float a)'],['../classglib_1_1_math_ext.html#a58cfe84d5de31a945c8ac95fc120d2e6',1,'glib::MathExt::floor(double a)']]],
+  ['font_18',['Font',['../classglib_1_1_font.html#a369550cea2bcec9410d2bc57b1d3c6aa',1,'glib::Font']]],
+  ['formatstring_19',['formatString',['../classglib_1_1_string_tools.html#a2056c700117666108b4038d07bd64d4c',1,'glib::StringTools']]],
+  ['formatwidestring_20',['formatWideString',['../classglib_1_1_string_tools.html#a34c564f6331cfd44676a0ac7454e14be',1,'glib::StringTools']]],
+  ['fouriertransform_21',['fourierTransform',['../classglib_1_1_math_ext.html#a3663709f2c7bc1d58fe5d1ff433c9ec4',1,'glib::MathExt']]],
+  ['frac_22',['frac',['../classglib_1_1_math_ext.html#aa973230e0055b8aed3af627b905b53cc',1,'glib::MathExt::frac(double a)'],['../classglib_1_1_math_ext.html#aa311da01113545524cdf2c3f1c0b9afb',1,'glib::MathExt::frac(float a)']]],
+  ['frequencytable_23',['FrequencyTable',['../classglib_1_1_frequency_table.html#ad7ab4dd38b820f953130ebf47649c08b',1,'glib::FrequencyTable']]]
+];

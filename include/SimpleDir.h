@@ -3,6 +3,7 @@
 #include<vector>
 #include<filesystem>
 
+#include "File.h"
 #include "GeneralExceptions.h"
 #include "Object.h"
 
@@ -20,16 +21,7 @@ namespace glib
 		 * 
 		 * @param directory 
 		 */
-		SimpleDir(std::string directory);
-
-		/**
-		 * @brief Construct a new SimpleDir object
-		 * 		Uses the C++ filesystem 
-		 * 		Contains information about a directory and its files.
-		 * 
-		 * @param directory 
-		 */
-		SimpleDir(std::wstring directory);
+		SimpleDir(File directory);
 
 		/**
 		 * @brief Destroy the SimpleDir object

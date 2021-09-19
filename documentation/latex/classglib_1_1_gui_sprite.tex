@@ -1,0 +1,212 @@
+\hypertarget{classglib_1_1_gui_sprite}{}\doxysection{glib\+::Gui\+Sprite Class Reference}
+\label{classglib_1_1_gui_sprite}\index{glib::GuiSprite@{glib::GuiSprite}}
+Inheritance diagram for glib\+::Gui\+Sprite\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classglib_1_1_gui_sprite}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_sprite_af37dcbc0f35c0fdfee788a2c8ad0f507}\label{classglib_1_1_gui_sprite_af37dcbc0f35c0fdfee788a2c8ad0f507}} 
+{\bfseries Gui\+Sprite} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_gui_sprite}{Gui\+Sprite}} object It contains multiple Images that can be animated. Will use a copy of the \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gui_sprite_a0380e9fd8f93201338e1f884adcd64c1}\label{classglib_1_1_gui_sprite_a0380e9fd8f93201338e1f884adcd64c1}} 
+{\bfseries $\sim$\+Gui\+Sprite} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_gui_sprite}{Gui\+Sprite}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_gui_sprite_a4f172bfce34f43ef61815499aff22459}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_gui_sprite_af57445e95138743ac10af54b76784c20}{update}} ()
+\begin{DoxyCompactList}\small\item\em Updates the \mbox{\hyperlink{classglib_1_1_gui_sprite}{Gui\+Sprite}} object Swaps to the next image in the sprite based on the delay time and how much time has passed. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_sprite_a515f5d5b0d7f05f2049050c6e10cc825}{render}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Draws the \mbox{\hyperlink{classglib_1_1_gui_sprite}{Gui\+Sprite}} object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_sprite_acc8f6f6ac2a8d1365235f82d1828ba89}{set\+Sprite}} (\mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} img)
+\begin{DoxyCompactList}\small\item\em Sets the \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} \& \mbox{\hyperlink{classglib_1_1_gui_sprite_aa69446d1dee511dc766f1742cedb6a8f}{get\+Sprite}} ()
+\begin{DoxyCompactList}\small\item\em Gets the \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} Note that it is a reference and not a copy. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_sprite_a30f54e7add637355e2659c52f085e139}{set\+XScale}} (double v)
+\begin{DoxyCompactList}\small\item\em Sets the x scale for the sprite. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_sprite_a9eff484769301d81a96cae2d68e22917}{set\+YScale}} (double v)
+\begin{DoxyCompactList}\small\item\em Sets the y scale for the sprite. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_gui_sprite_a81396e93cf02759eae9b8ddb9b37bda3}{get\+XScale}} ()
+\begin{DoxyCompactList}\small\item\em Gets the x scale for the sprite. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_gui_sprite_a871a5f59c56cc97de3331934ba40b49e}{get\+YScale}} ()
+\begin{DoxyCompactList}\small\item\em Gets the y scale for the sprite. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_sprite_a12e9acb12f0886f5010562ca75172133}{set\+Color}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Sets the \mbox{\hyperlink{structglib_1_1_color}{Color}} for the sprite. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_sprite_a5c0e2f2c69f690a951a22b5cc6efea80}{get\+Color}} ()
+\begin{DoxyCompactList}\small\item\em Gets the \mbox{\hyperlink{structglib_1_1_color}{Color}} for the sprite. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gui_sprite_a56534e15f51609a1553a829195ffeba5}\label{classglib_1_1_gui_sprite_a56534e15f51609a1553a829195ffeba5}} 
+void {\bfseries reset} ()
+\begin{DoxyCompactList}\small\item\em Force resets the sprite back to index 0. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_sprite_a94d00b445b19c81d4c81b92566a1927c}\label{classglib_1_1_gui_sprite_a94d00b445b19c81d4c81b92566a1927c}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_gui_sprite_a4f172bfce34f43ef61815499aff22459}\label{classglib_1_1_gui_sprite_a4f172bfce34f43ef61815499aff22459}} 
+\index{glib::GuiSprite@{glib::GuiSprite}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::GuiSprite@{glib::GuiSprite}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Gui\+Sprite\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance}{glib\+::\+Gui\+Instance}}.
+
+\mbox{\Hypertarget{classglib_1_1_gui_sprite_a5c0e2f2c69f690a951a22b5cc6efea80}\label{classglib_1_1_gui_sprite_a5c0e2f2c69f690a951a22b5cc6efea80}} 
+\index{glib::GuiSprite@{glib::GuiSprite}!getColor@{getColor}}
+\index{getColor@{getColor}!glib::GuiSprite@{glib::GuiSprite}}
+\doxysubsubsection{\texorpdfstring{getColor()}{getColor()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structglib_1_1_color}{Color}} glib\+::\+Gui\+Sprite\+::get\+Color (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the \mbox{\hyperlink{structglib_1_1_color}{Color}} for the sprite. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_color}{Color}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_sprite_aa69446d1dee511dc766f1742cedb6a8f}\label{classglib_1_1_gui_sprite_aa69446d1dee511dc766f1742cedb6a8f}} 
+\index{glib::GuiSprite@{glib::GuiSprite}!getSprite@{getSprite}}
+\index{getSprite@{getSprite}!glib::GuiSprite@{glib::GuiSprite}}
+\doxysubsubsection{\texorpdfstring{getSprite()}{getSprite()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} \& glib\+::\+Gui\+Sprite\+::get\+Sprite (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} Note that it is a reference and not a copy. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_sprite}{Sprite}}\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_sprite_a81396e93cf02759eae9b8ddb9b37bda3}\label{classglib_1_1_gui_sprite_a81396e93cf02759eae9b8ddb9b37bda3}} 
+\index{glib::GuiSprite@{glib::GuiSprite}!getXScale@{getXScale}}
+\index{getXScale@{getXScale}!glib::GuiSprite@{glib::GuiSprite}}
+\doxysubsubsection{\texorpdfstring{getXScale()}{getXScale()}}
+{\footnotesize\ttfamily double glib\+::\+Gui\+Sprite\+::get\+XScale (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the x scale for the sprite. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_sprite_a871a5f59c56cc97de3331934ba40b49e}\label{classglib_1_1_gui_sprite_a871a5f59c56cc97de3331934ba40b49e}} 
+\index{glib::GuiSprite@{glib::GuiSprite}!getYScale@{getYScale}}
+\index{getYScale@{getYScale}!glib::GuiSprite@{glib::GuiSprite}}
+\doxysubsubsection{\texorpdfstring{getYScale()}{getYScale()}}
+{\footnotesize\ttfamily double glib\+::\+Gui\+Sprite\+::get\+YScale (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the y scale for the sprite. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_sprite_a515f5d5b0d7f05f2049050c6e10cc825}\label{classglib_1_1_gui_sprite_a515f5d5b0d7f05f2049050c6e10cc825}} 
+\index{glib::GuiSprite@{glib::GuiSprite}!render@{render}}
+\index{render@{render}!glib::GuiSprite@{glib::GuiSprite}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Sprite\+::render (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Draws the \mbox{\hyperlink{classglib_1_1_gui_sprite}{Gui\+Sprite}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em surf} & \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance_a303d9dc4dedc8e5cf2027bb02c7015c8}{glib\+::\+Gui\+Instance}}.
+
+\mbox{\Hypertarget{classglib_1_1_gui_sprite_a12e9acb12f0886f5010562ca75172133}\label{classglib_1_1_gui_sprite_a12e9acb12f0886f5010562ca75172133}} 
+\index{glib::GuiSprite@{glib::GuiSprite}!setColor@{setColor}}
+\index{setColor@{setColor}!glib::GuiSprite@{glib::GuiSprite}}
+\doxysubsubsection{\texorpdfstring{setColor()}{setColor()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Sprite\+::set\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Sets the \mbox{\hyperlink{structglib_1_1_color}{Color}} for the sprite. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_sprite_acc8f6f6ac2a8d1365235f82d1828ba89}\label{classglib_1_1_gui_sprite_acc8f6f6ac2a8d1365235f82d1828ba89}} 
+\index{glib::GuiSprite@{glib::GuiSprite}!setSprite@{setSprite}}
+\index{setSprite@{setSprite}!glib::GuiSprite@{glib::GuiSprite}}
+\doxysubsubsection{\texorpdfstring{setSprite()}{setSprite()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Sprite\+::set\+Sprite (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_sprite}{Sprite}}}]{img }\end{DoxyParamCaption})}
+
+
+
+Sets the \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_sprite_a30f54e7add637355e2659c52f085e139}\label{classglib_1_1_gui_sprite_a30f54e7add637355e2659c52f085e139}} 
+\index{glib::GuiSprite@{glib::GuiSprite}!setXScale@{setXScale}}
+\index{setXScale@{setXScale}!glib::GuiSprite@{glib::GuiSprite}}
+\doxysubsubsection{\texorpdfstring{setXScale()}{setXScale()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Sprite\+::set\+XScale (\begin{DoxyParamCaption}\item[{double}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets the x scale for the sprite. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_sprite_a9eff484769301d81a96cae2d68e22917}\label{classglib_1_1_gui_sprite_a9eff484769301d81a96cae2d68e22917}} 
+\index{glib::GuiSprite@{glib::GuiSprite}!setYScale@{setYScale}}
+\index{setYScale@{setYScale}!glib::GuiSprite@{glib::GuiSprite}}
+\doxysubsubsection{\texorpdfstring{setYScale()}{setYScale()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Sprite\+::set\+YScale (\begin{DoxyParamCaption}\item[{double}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets the y scale for the sprite. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_sprite_af57445e95138743ac10af54b76784c20}\label{classglib_1_1_gui_sprite_af57445e95138743ac10af54b76784c20}} 
+\index{glib::GuiSprite@{glib::GuiSprite}!update@{update}}
+\index{update@{update}!glib::GuiSprite@{glib::GuiSprite}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Sprite\+::update (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Updates the \mbox{\hyperlink{classglib_1_1_gui_sprite}{Gui\+Sprite}} object Swaps to the next image in the sprite based on the delay time and how much time has passed. 
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance_adb20e1eac37428a48802ad39cf4c2cb0}{glib\+::\+Gui\+Instance}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Gui\+Manager.\+h\end{DoxyCompactItemize}

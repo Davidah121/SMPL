@@ -1,0 +1,268 @@
+\hypertarget{classglib_1_1_gamepad_x_input}{}\doxysection{glib\+::Gamepad\+XInput Class Reference}
+\label{classglib_1_1_gamepad_x_input}\index{glib::GamepadXInput@{glib::GamepadXInput}}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_aea65ac13716a71157d0ec30a8fa99c8e}\label{classglib_1_1_gamepad_x_input_aea65ac13716a71157d0ec30a8fa99c8e}} 
+static void {\bfseries init} ()
+\begin{DoxyCompactList}\small\item\em Initializes the program for XInput. Requires the the Windows sdk, Windows.\+h, and Xinput.\+h Links with the XInput.\+lib using a \#pragma comment. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_af35ae5a5ce4731f5f64b858fced07955}\label{classglib_1_1_gamepad_x_input_af35ae5a5ce4731f5f64b858fced07955}} 
+static void {\bfseries dispose} ()
+\begin{DoxyCompactList}\small\item\em Deinitializes the program for XInput. Should be called when the program no longer needs XInput to free allocated resources. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a33824e6c0d5b694f9ee6716c2ae36a36}\label{classglib_1_1_gamepad_x_input_a33824e6c0d5b694f9ee6716c2ae36a36}} 
+static void {\bfseries update} ()
+\begin{DoxyCompactList}\small\item\em Updates all information for all of the connected XInput devices. Should be called before accessing the controller values to receive up to date data. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_gamepad_x_input_afdff0cf46640e4a22b0ec2b27b7b1d81}{is\+Connected}} (int id)
+\begin{DoxyCompactList}\small\item\em Returns if a controller is connected. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_gamepad_x_input_a0cc30c138cf56d443f8f80789f47b135}{get\+Button\+Pressed}} (int id, int button)
+\begin{DoxyCompactList}\small\item\em Returns if a controller specified button has just been pressed. Lasts until the next time update is called. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_gamepad_x_input_a8e4a0517e6c2f7c02a656a47f9273e4e}{get\+Button\+Down}} (int id, int button)
+\begin{DoxyCompactList}\small\item\em Returns if a controller specified button is held down. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_gamepad_x_input_a9de0073aeaf89d460b7b732856a88587}{get\+Button\+Up}} (int id, int button)
+\begin{DoxyCompactList}\small\item\em Returns if a controller specified button has just been released. Lasts until the next time update is called. \end{DoxyCompactList}\item 
+static float \mbox{\hyperlink{classglib_1_1_gamepad_x_input_a01a1a7ad618245b0146163ebc9c4498a}{get\+Axis\+Value}} (int id, int axis)
+\begin{DoxyCompactList}\small\item\em Returns the value of the specified axis for the controller. \end{DoxyCompactList}\item 
+static XINPUT\+\_\+\+STATE \mbox{\hyperlink{classglib_1_1_gamepad_x_input_ab94b8a1b5a677f01ed47fd4b189341de}{get\+State}} (int id)
+\begin{DoxyCompactList}\small\item\em Returns the raw XInput data for the specified controller. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_gamepad_x_input_a84d5e7ad814bb2ff95d46f0328dcfdbc}{set\+Vibration}} (int id, float intensity)
+\begin{DoxyCompactList}\small\item\em Sets the vibration for the specified controller if it supports it. Vibration last until it is set back to 0. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_gamepad_x_input_ab28360623b5a6a5ff04c84634ea866f6}{set\+Vibration}} (int id, float left\+Intensity, float right\+Intensity)
+\begin{DoxyCompactList}\small\item\em Sets the vibration for the specified controller if it supports it. Vibration last until it is set back to 0. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a022b93bc3f81c87b7cf11b92fb801912}\label{classglib_1_1_gamepad_x_input_a022b93bc3f81c87b7cf11b92fb801912}} 
+static const int {\bfseries BUTTONS\+\_\+\+PER\+\_\+\+CONTROLLER} = 14
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_ae3dadeb2bb31b211ea53d73e66b60ec5}\label{classglib_1_1_gamepad_x_input_ae3dadeb2bb31b211ea53d73e66b60ec5}} 
+static const int {\bfseries AXIES\+\_\+\+PER\+\_\+\+CONTROLLER} = 6
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_ad1410fead6f4b778a7c3a764e0e78825}\label{classglib_1_1_gamepad_x_input_ad1410fead6f4b778a7c3a764e0e78825}} 
+static const int {\bfseries A\+\_\+\+BUTTON} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_aab33dc276cae3e0fbbee6ca28dda890d}\label{classglib_1_1_gamepad_x_input_aab33dc276cae3e0fbbee6ca28dda890d}} 
+static const int {\bfseries B\+\_\+\+BUTTON} = 1
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a7caecf155e52456ac51cb948207fad85}\label{classglib_1_1_gamepad_x_input_a7caecf155e52456ac51cb948207fad85}} 
+static const int {\bfseries X\+\_\+\+BUTTON} = 2
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_ad76169cd7adc4b0d4f3e1b86783fb365}\label{classglib_1_1_gamepad_x_input_ad76169cd7adc4b0d4f3e1b86783fb365}} 
+static const int {\bfseries Y\+\_\+\+BUTTON} = 3
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a51a2aac270e623ec53fad6e7343dfb1d}\label{classglib_1_1_gamepad_x_input_a51a2aac270e623ec53fad6e7343dfb1d}} 
+static const int {\bfseries DPAD\+\_\+\+UP\+\_\+\+BUTTON} = -\/4
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a9a8f07152d5e4af0bd298424deba0314}\label{classglib_1_1_gamepad_x_input_a9a8f07152d5e4af0bd298424deba0314}} 
+static const int {\bfseries DPAD\+\_\+\+DOWN\+\_\+\+BUTTON} = -\/5
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a6646d815ed86fe1a286c861a21477e87}\label{classglib_1_1_gamepad_x_input_a6646d815ed86fe1a286c861a21477e87}} 
+static const int {\bfseries DPAD\+\_\+\+LEFT\+\_\+\+BUTTON} = -\/6
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a2dd1ab87eacce87fcde32209b6c73f27}\label{classglib_1_1_gamepad_x_input_a2dd1ab87eacce87fcde32209b6c73f27}} 
+static const int {\bfseries DPAD\+\_\+\+RIGHT\+\_\+\+BUTTON} = -\/7
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_aecfb558115e1fca8e74a69116489cdef}\label{classglib_1_1_gamepad_x_input_aecfb558115e1fca8e74a69116489cdef}} 
+static const int {\bfseries LB\+\_\+\+BUTTON} = 8
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a449288cf603a84d28bb6000ca50433c9}\label{classglib_1_1_gamepad_x_input_a449288cf603a84d28bb6000ca50433c9}} 
+static const int {\bfseries RB\+\_\+\+BUTTON} = 9
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a1bafd29b7870173860132dfffae91a06}\label{classglib_1_1_gamepad_x_input_a1bafd29b7870173860132dfffae91a06}} 
+static const int {\bfseries LEFT\+\_\+\+STICK\+\_\+\+BUTTON} = 10
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a3ead2067a7d14b0bd09bc4a340de4ca6}\label{classglib_1_1_gamepad_x_input_a3ead2067a7d14b0bd09bc4a340de4ca6}} 
+static const int {\bfseries RIGHT\+\_\+\+STICK\+\_\+\+BUTTON} = 11
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a25c0053eb60c65111abc51fbc125e6ea}\label{classglib_1_1_gamepad_x_input_a25c0053eb60c65111abc51fbc125e6ea}} 
+static const int {\bfseries START\+\_\+\+BUTTON} = 12
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a489c006a667d091a136835fe1e8653cb}\label{classglib_1_1_gamepad_x_input_a489c006a667d091a136835fe1e8653cb}} 
+static const int {\bfseries BACK\+\_\+\+BUTTON} = 13
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_af2a50af222dbfd3bef33520f8b11e94d}\label{classglib_1_1_gamepad_x_input_af2a50af222dbfd3bef33520f8b11e94d}} 
+static const int {\bfseries LEFT\+\_\+\+X\+\_\+\+AXIS} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a40d9da8224c055caebab60096fef2acb}\label{classglib_1_1_gamepad_x_input_a40d9da8224c055caebab60096fef2acb}} 
+static const int {\bfseries LEFT\+\_\+\+Y\+\_\+\+AXIS} = 1
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a91ed5ab0d3570cb29889eda0539df1bc}\label{classglib_1_1_gamepad_x_input_a91ed5ab0d3570cb29889eda0539df1bc}} 
+static const int {\bfseries RIGHT\+\_\+\+X\+\_\+\+AXIS} = 2
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a85eaef620b6d61b2fcaf1c8a2fba298f}\label{classglib_1_1_gamepad_x_input_a85eaef620b6d61b2fcaf1c8a2fba298f}} 
+static const int {\bfseries RIGHT\+\_\+\+Y\+\_\+\+AXIS} = 3
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_af23ebab9964ffd9c7653ff2d22fd763a}\label{classglib_1_1_gamepad_x_input_af23ebab9964ffd9c7653ff2d22fd763a}} 
+static const int {\bfseries LEFT\+\_\+\+TRIGGER} = 4
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a1eba82300a20ed3d3194aeb4f7000952}\label{classglib_1_1_gamepad_x_input_a1eba82300a20ed3d3194aeb4f7000952}} 
+static const int {\bfseries RIGHT\+\_\+\+TRIGGER} = 5
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_ab7c185b039746a6fd8c968574326d1f3}\label{classglib_1_1_gamepad_x_input_ab7c185b039746a6fd8c968574326d1f3}} 
+static const int {\bfseries AXIS\+\_\+\+DIVIDE\+\_\+\+VALUE} = 32767
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a16ea7008aea52cbaf595c96eef236ff6}\label{classglib_1_1_gamepad_x_input_a16ea7008aea52cbaf595c96eef236ff6}} 
+static const int {\bfseries TRIGGER\+\_\+\+DIVIDE\+\_\+\+VALUE} = 255
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_ad3c20e533b1333789f56bbaa48f12933}\label{classglib_1_1_gamepad_x_input_ad3c20e533b1333789f56bbaa48f12933}} 
+static int {\bfseries DEAD\+\_\+\+ZONE}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a01a1a7ad618245b0146163ebc9c4498a}\label{classglib_1_1_gamepad_x_input_a01a1a7ad618245b0146163ebc9c4498a}} 
+\index{glib::GamepadXInput@{glib::GamepadXInput}!getAxisValue@{getAxisValue}}
+\index{getAxisValue@{getAxisValue}!glib::GamepadXInput@{glib::GamepadXInput}}
+\doxysubsubsection{\texorpdfstring{getAxisValue()}{getAxisValue()}}
+{\footnotesize\ttfamily static float glib\+::\+Gamepad\+XInput\+::get\+Axis\+Value (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{int}]{axis }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the value of the specified axis for the controller. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The controller to check. It is the controller\textquotesingle{}s index in the internal list. \\
+\hline
+{\em axis} & The axis to check. The constants should be used to access the correct axis. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+float A value between \mbox{[}-\/1, 1\mbox{]} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a8e4a0517e6c2f7c02a656a47f9273e4e}\label{classglib_1_1_gamepad_x_input_a8e4a0517e6c2f7c02a656a47f9273e4e}} 
+\index{glib::GamepadXInput@{glib::GamepadXInput}!getButtonDown@{getButtonDown}}
+\index{getButtonDown@{getButtonDown}!glib::GamepadXInput@{glib::GamepadXInput}}
+\doxysubsubsection{\texorpdfstring{getButtonDown()}{getButtonDown()}}
+{\footnotesize\ttfamily static bool glib\+::\+Gamepad\+XInput\+::get\+Button\+Down (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{int}]{button }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns if a controller specified button is held down. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The controller to check. It is the controller\textquotesingle{}s index in the internal list. \\
+\hline
+{\em button} & The button to check. The constants should be used to access the correct button. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a0cc30c138cf56d443f8f80789f47b135}\label{classglib_1_1_gamepad_x_input_a0cc30c138cf56d443f8f80789f47b135}} 
+\index{glib::GamepadXInput@{glib::GamepadXInput}!getButtonPressed@{getButtonPressed}}
+\index{getButtonPressed@{getButtonPressed}!glib::GamepadXInput@{glib::GamepadXInput}}
+\doxysubsubsection{\texorpdfstring{getButtonPressed()}{getButtonPressed()}}
+{\footnotesize\ttfamily static bool glib\+::\+Gamepad\+XInput\+::get\+Button\+Pressed (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{int}]{button }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns if a controller specified button has just been pressed. Lasts until the next time update is called. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The controller to check. It is the controller\textquotesingle{}s index in the internal list. \\
+\hline
+{\em button} & The button to check. The constants should be used to access the correct button. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a9de0073aeaf89d460b7b732856a88587}\label{classglib_1_1_gamepad_x_input_a9de0073aeaf89d460b7b732856a88587}} 
+\index{glib::GamepadXInput@{glib::GamepadXInput}!getButtonUp@{getButtonUp}}
+\index{getButtonUp@{getButtonUp}!glib::GamepadXInput@{glib::GamepadXInput}}
+\doxysubsubsection{\texorpdfstring{getButtonUp()}{getButtonUp()}}
+{\footnotesize\ttfamily static bool glib\+::\+Gamepad\+XInput\+::get\+Button\+Up (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{int}]{button }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns if a controller specified button has just been released. Lasts until the next time update is called. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The controller to check. It is the controller\textquotesingle{}s index in the internal list. \\
+\hline
+{\em button} & The button to check. The constants should be used to access the correct button. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_ab94b8a1b5a677f01ed47fd4b189341de}\label{classglib_1_1_gamepad_x_input_ab94b8a1b5a677f01ed47fd4b189341de}} 
+\index{glib::GamepadXInput@{glib::GamepadXInput}!getState@{getState}}
+\index{getState@{getState}!glib::GamepadXInput@{glib::GamepadXInput}}
+\doxysubsubsection{\texorpdfstring{getState()}{getState()}}
+{\footnotesize\ttfamily static XINPUT\+\_\+\+STATE glib\+::\+Gamepad\+XInput\+::get\+State (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the raw XInput data for the specified controller. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The controller to check. It is the controller\textquotesingle{}s index in the internal list. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+XINPUT\+\_\+\+STATE 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_afdff0cf46640e4a22b0ec2b27b7b1d81}\label{classglib_1_1_gamepad_x_input_afdff0cf46640e4a22b0ec2b27b7b1d81}} 
+\index{glib::GamepadXInput@{glib::GamepadXInput}!isConnected@{isConnected}}
+\index{isConnected@{isConnected}!glib::GamepadXInput@{glib::GamepadXInput}}
+\doxysubsubsection{\texorpdfstring{isConnected()}{isConnected()}}
+{\footnotesize\ttfamily static bool glib\+::\+Gamepad\+XInput\+::is\+Connected (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns if a controller is connected. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The controller to check. It is the controller\textquotesingle{}s index in the internal list. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_a84d5e7ad814bb2ff95d46f0328dcfdbc}\label{classglib_1_1_gamepad_x_input_a84d5e7ad814bb2ff95d46f0328dcfdbc}} 
+\index{glib::GamepadXInput@{glib::GamepadXInput}!setVibration@{setVibration}}
+\index{setVibration@{setVibration}!glib::GamepadXInput@{glib::GamepadXInput}}
+\doxysubsubsection{\texorpdfstring{setVibration()}{setVibration()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static void glib\+::\+Gamepad\+XInput\+::set\+Vibration (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{float}]{intensity }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Sets the vibration for the specified controller if it supports it. Vibration last until it is set back to 0. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The controller to check. It is the controller\textquotesingle{}s index in the internal list. \\
+\hline
+{\em intensity} & The intensity to vibrate both the left and right motors. Must be a value between \mbox{[}0, 1\mbox{]} \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gamepad_x_input_ab28360623b5a6a5ff04c84634ea866f6}\label{classglib_1_1_gamepad_x_input_ab28360623b5a6a5ff04c84634ea866f6}} 
+\index{glib::GamepadXInput@{glib::GamepadXInput}!setVibration@{setVibration}}
+\index{setVibration@{setVibration}!glib::GamepadXInput@{glib::GamepadXInput}}
+\doxysubsubsection{\texorpdfstring{setVibration()}{setVibration()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static void glib\+::\+Gamepad\+XInput\+::set\+Vibration (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{float}]{left\+Intensity,  }\item[{float}]{right\+Intensity }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Sets the vibration for the specified controller if it supports it. Vibration last until it is set back to 0. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The controller to check. It is the controller\textquotesingle{}s index in the internal list. \\
+\hline
+{\em left\+Intensity} & The intensity to vibrate the left motor. Must be a value between \mbox{[}0, 1\mbox{]} \\
+\hline
+{\em right\+Intensity} & The intensity to vibrate the right motor. Must be a value between \mbox{[}0, 1\mbox{]} \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Gamepad\+XInput.\+h\end{DoxyCompactItemize}

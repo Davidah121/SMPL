@@ -1,0 +1,169 @@
+\hypertarget{_audio_8h_source}{}\doxysection{Audio.\+h}
+\label{_audio_8h_source}\index{include/Audio.h@{include/Audio.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 }
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#ifndef WIN32\_LEAN\_AND\_MEAN}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{    \#define WIN32\_LEAN\_AND\_MEAN}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{6 }
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include <Windows.h>}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include <mmeapi.h>}}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#include "{}Sound.h"{}}}
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#include <thread>}}
+\DoxyCodeLine{13 \textcolor{preprocessor}{\#include <mutex>}}
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#include <atomic>}}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16 \textcolor{preprocessor}{\#pragma comment(lib,"{}winmm.lib"{}})}
+\DoxyCodeLine{17 }
+\DoxyCodeLine{18 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{19 \{}
+\DoxyCodeLine{20 }
+\DoxyCodeLine{21     \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_audio_segment}{AudioSegment}}}
+\DoxyCodeLine{22     \{}
+\DoxyCodeLine{23         \textcolor{keywordtype}{void}* audioStuff;}
+\DoxyCodeLine{24         \textcolor{keywordtype}{bool} used;}
+\DoxyCodeLine{25     \};}
+\DoxyCodeLine{26 }
+\DoxyCodeLine{27     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_audio_out}{AudioOut}}}
+\DoxyCodeLine{28     \{}
+\DoxyCodeLine{29     \textcolor{keyword}{public}:}
+\DoxyCodeLine{30 }
+\DoxyCodeLine{31         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_audio_out_1_1_audio_out_error}{AudioOutError}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{32         \{}
+\DoxyCodeLine{33             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}Exception occured while submitting buffers."{}}; \}}
+\DoxyCodeLine{34         \};}
+\DoxyCodeLine{35 }
+\DoxyCodeLine{36         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_audio_out_1_1_audio_out_init_error}{AudioOutInitError}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{37         \{}
+\DoxyCodeLine{38             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}Exception occured while initializing AudioOut."{}}; \}}
+\DoxyCodeLine{39         \};}
+\DoxyCodeLine{40 }
+\DoxyCodeLine{51         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_audio_out_a2b080f28a8bde02436fe1a2dbf6c6b06}{init}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} deviceID = -\/1);}
+\DoxyCodeLine{52 }
+\DoxyCodeLine{57         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_audio_out_a89ecf75abca7c08bddfade30c53a4237}{dispose}}();}
+\DoxyCodeLine{58 }
+\DoxyCodeLine{66         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_audio_out_a50d9e8991c2cddc013d84a4bf2fa860b}{setVolume}}(\textcolor{keywordtype}{double} v);}
+\DoxyCodeLine{67 }
+\DoxyCodeLine{72         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_audio_out_a434b3db8e24a9e8fa0652d448857e341}{getVolume}}();}
+\DoxyCodeLine{73 }
+\DoxyCodeLine{77         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_audio_out_a137ca8c5c4abfd4d89146e0082155919}{pauseAll}}();}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{82         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_audio_out_afee70f3ba6463205e0e464d112e53771}{stopAll}}();}
+\DoxyCodeLine{83 }
+\DoxyCodeLine{91         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_audio_out_afe5897c8467ede5c7d6f87dceae1e482}{setAmountOfSimultaneousSounds}}(\textcolor{keywordtype}{int} s);}
+\DoxyCodeLine{92 }
+\DoxyCodeLine{97         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_audio_out_a8d63bcee057697266f262818b608a3b1}{getAmountOfSimultaneousSounds}}();}
+\DoxyCodeLine{98 }
+\DoxyCodeLine{107         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_audio_out_afce916c5220a18a08e00e2428f10243a}{addSound}}(\mbox{\hyperlink{classglib_1_1_sound}{Sound}}* s);}
+\DoxyCodeLine{108 }
+\DoxyCodeLine{117         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_audio_out_a43ed49a44927a9dc5ba22203d1d33ff3}{removeSound}}(\mbox{\hyperlink{classglib_1_1_sound}{Sound}}* s);}
+\DoxyCodeLine{118 }
+\DoxyCodeLine{128         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_audio_out_acf75a7092000cd072068eb58c5fa6bb9}{setBuffers}}(\textcolor{keywordtype}{int} b);}
+\DoxyCodeLine{129 }
+\DoxyCodeLine{134         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_audio_out_a7e31a332b626662f931cd57b9595c5e2}{getBuffers}}();}
+\DoxyCodeLine{135 }
+\DoxyCodeLine{148         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_audio_out_a07afe557dc12e5d1a16047c4d7b58484}{setSizeOfBuffer}}(\textcolor{keywordtype}{int} b);}
+\DoxyCodeLine{149 }
+\DoxyCodeLine{154         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_audio_out_aa951e08b7274310a4e25b522687b940d}{getSizeOfBuffer}}();}
+\DoxyCodeLine{155 }
+\DoxyCodeLine{156     \textcolor{keyword}{private}:}
+\DoxyCodeLine{157         \textcolor{keyword}{static} \textcolor{keywordtype}{int} amtOfSoundsAllowed;}
+\DoxyCodeLine{158         \textcolor{keyword}{static} \textcolor{keywordtype}{double} volume;}
+\DoxyCodeLine{159         \textcolor{keyword}{static} std::thread audioThread;}
+\DoxyCodeLine{160         \textcolor{keyword}{static} std::mutex audioMutex;}
+\DoxyCodeLine{161 }
+\DoxyCodeLine{162         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} running;}
+\DoxyCodeLine{163         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} getRunning();}
+\DoxyCodeLine{164         \textcolor{keyword}{static} \textcolor{keywordtype}{void} setRunning(\textcolor{keywordtype}{bool} b);}
+\DoxyCodeLine{165 }
+\DoxyCodeLine{166         \textcolor{keyword}{static} \textcolor{keywordtype}{int} amtBuffers;}
+\DoxyCodeLine{167         \textcolor{keyword}{static} \textcolor{keywordtype}{int} bufferSize;}
+\DoxyCodeLine{168 }
+\DoxyCodeLine{169         \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} deviceID;}
+\DoxyCodeLine{170 }
+\DoxyCodeLine{171         \textcolor{keyword}{static} std::vector<Sound*> sounds;}
+\DoxyCodeLine{172         \textcolor{keyword}{static} std::vector<Sound*> copySounds;}
+\DoxyCodeLine{173         \textcolor{keyword}{static} std::vector<AudioSegment> buffers;}
+\DoxyCodeLine{174 }
+\DoxyCodeLine{175         \textcolor{keyword}{static} \textcolor{keywordtype}{int} currentBuf;}
+\DoxyCodeLine{176         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} hasInit;}
+\DoxyCodeLine{177 }
+\DoxyCodeLine{178         \textcolor{keyword}{static} \textcolor{keywordtype}{void} submitData(\textcolor{keywordtype}{short}* buffer, \textcolor{keywordtype}{int} b);}
+\DoxyCodeLine{179         \textcolor{keyword}{static} \textcolor{keywordtype}{void} prepareData();}
+\DoxyCodeLine{180         \textcolor{keyword}{static} \textcolor{keywordtype}{void} unprepareData(\textcolor{keywordtype}{int} b);}
+\DoxyCodeLine{181 }
+\DoxyCodeLine{182         \textcolor{keyword}{static} \textcolor{keywordtype}{void} prepareSounds();}
+\DoxyCodeLine{183 }
+\DoxyCodeLine{184         \textcolor{keyword}{static} HWAVEOUT waveOutHandle;}
+\DoxyCodeLine{185         \textcolor{keyword}{static} WAVEFORMATEX format;}
+\DoxyCodeLine{186         \textcolor{keyword}{static} \textcolor{keywordtype}{void} CALLBACK audioOutCallBack(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2);}
+\DoxyCodeLine{187     \};}
+\DoxyCodeLine{188 }
+\DoxyCodeLine{189     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_audio_in}{AudioIn}}}
+\DoxyCodeLine{190     \{}
+\DoxyCodeLine{191     \textcolor{keyword}{public}:}
+\DoxyCodeLine{192         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_audio_in_1_1_audio_in_error}{AudioInError}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{193         \{}
+\DoxyCodeLine{194             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}Exception occured while retrieving buffers."{}}; \}}
+\DoxyCodeLine{195         \};}
+\DoxyCodeLine{196 }
+\DoxyCodeLine{197         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_audio_in_1_1_audio_in_init_error}{AudioInInitError}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{198         \{}
+\DoxyCodeLine{199             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}Exception occured while initializing AudioIn."{}}; \}}
+\DoxyCodeLine{200         \};}
+\DoxyCodeLine{201 }
+\DoxyCodeLine{212         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_audio_in_a3f7a2b7dc1e882bc8102395c55a03a1a}{init}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} device = -\/1);}
+\DoxyCodeLine{213 }
+\DoxyCodeLine{218         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_audio_in_a6d48b685a1e6553af7bd649abaaa2f26}{dispose}}();}
+\DoxyCodeLine{219 }
+\DoxyCodeLine{223         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_audio_in_a033058204f27c2a19603e532b0f2f7c3}{record}}();}
+\DoxyCodeLine{224 }
+\DoxyCodeLine{230         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_audio_in_aab71329a7194a467f809d79c40d9d313}{getRecording}}();}
+\DoxyCodeLine{231 }
+\DoxyCodeLine{235         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_audio_in_abb0da531afb840cf799f61d9c03cba8a}{stop}}();}
+\DoxyCodeLine{236 }
+\DoxyCodeLine{244         \textcolor{keyword}{static} std::vector<Vec2f> \mbox{\hyperlink{classglib_1_1_audio_in_a56be65f921c1fc0e2fe06222841db45b}{getAudioData}}();}
+\DoxyCodeLine{245 }
+\DoxyCodeLine{250         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_audio_in_a6045da836a90266e861608e41e1cce19}{clearAudioData}}();}
+\DoxyCodeLine{251 }
+\DoxyCodeLine{261         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_audio_in_af247d48afff160d37415879554c14671}{setBuffers}}(\textcolor{keywordtype}{int} b);}
+\DoxyCodeLine{262 }
+\DoxyCodeLine{267         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_audio_in_a353da50fa4bd32d4ac2af945bf2e4f0b}{getBuffers}}();}
+\DoxyCodeLine{268 }
+\DoxyCodeLine{277         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_audio_in_ab0b4d1b151963fd5b681e757a388b1cd}{setSizeOfBuffer}}(\textcolor{keywordtype}{int} b);}
+\DoxyCodeLine{278 }
+\DoxyCodeLine{283         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_audio_in_aa272ccfda4e3792fab386d2e8812951c}{getSizeOfBuffer}}();}
+\DoxyCodeLine{284 }
+\DoxyCodeLine{285     \textcolor{keyword}{private}:}
+\DoxyCodeLine{286         \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} deviceID;}
+\DoxyCodeLine{287         \textcolor{keyword}{static} std::vector<Vec2f> soundData;}
+\DoxyCodeLine{288         \textcolor{keyword}{static} \textcolor{keywordtype}{int} amtBuffers;}
+\DoxyCodeLine{289         \textcolor{keyword}{static} \textcolor{keywordtype}{int} bufferSize;}
+\DoxyCodeLine{290         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} hasInit;}
+\DoxyCodeLine{291 }
+\DoxyCodeLine{292         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} running;}
+\DoxyCodeLine{293         \textcolor{keyword}{static} \textcolor{keywordtype}{void} setRunning(\textcolor{keywordtype}{bool} b);}
+\DoxyCodeLine{294         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} getRunning();}
+\DoxyCodeLine{295 }
+\DoxyCodeLine{296         \textcolor{keyword}{static} std::atomic\_bool recording;}
+\DoxyCodeLine{297         \textcolor{keyword}{static} std::atomic\_bool bufferDone;}
+\DoxyCodeLine{298 }
+\DoxyCodeLine{299         \textcolor{keyword}{static} \textcolor{keywordtype}{void} addAudioData(\textcolor{keywordtype}{short}* data, \textcolor{keywordtype}{int} size);}
+\DoxyCodeLine{300 }
+\DoxyCodeLine{301         \textcolor{keyword}{static} \textcolor{keywordtype}{void} threadFunc();}
+\DoxyCodeLine{302 }
+\DoxyCodeLine{303         \textcolor{keyword}{static} std::thread audioThread;}
+\DoxyCodeLine{304         \textcolor{keyword}{static} std::mutex audioMutex;}
+\DoxyCodeLine{305 }
+\DoxyCodeLine{306         \textcolor{keyword}{static} HWAVEIN waveInHandle;}
+\DoxyCodeLine{307         \textcolor{keyword}{static} WAVEFORMATEX format;}
+\DoxyCodeLine{308         \textcolor{keyword}{static} \textcolor{keywordtype}{void} CALLBACK audioInCallBack(HWAVEIN hWaveIn, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2);}
+\DoxyCodeLine{309     \};}
+\DoxyCodeLine{310 }
+\DoxyCodeLine{311 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

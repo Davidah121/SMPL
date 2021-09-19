@@ -1,0 +1,196 @@
+\hypertarget{_graphics_8h_source}{}\doxysection{Graphics.\+h}
+\label{_graphics_8h_source}\index{include/Graphics.h@{include/Graphics.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include "{}Image.h"{}}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}Font.h"{}}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}Model.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}Opti.h"{}}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include "{}Shape.h"{}}}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{9 \{}
+\DoxyCodeLine{10 }
+\DoxyCodeLine{11     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_graphics}{Graphics}}}
+\DoxyCodeLine{12     \{}
+\DoxyCodeLine{13     \textcolor{keyword}{public}:}
+\DoxyCodeLine{14         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} NO\_COMPOSITE = 255;}
+\DoxyCodeLine{15         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} COMPOSITE\_CLEAR = 0;}
+\DoxyCodeLine{16         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} COMPOSITE\_COPY = 1;}
+\DoxyCodeLine{17         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} COMPOSITE\_DEST = 2;}
+\DoxyCodeLine{18         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} COMPOSITE\_SRC\_OVER = 3;}
+\DoxyCodeLine{19         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} COMPOSITE\_DEST\_OVER = 4;}
+\DoxyCodeLine{20         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} COMPOSITE\_SRC\_IN = 5;}
+\DoxyCodeLine{21         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} COMPOSITE\_DEST\_IN = 6;}
+\DoxyCodeLine{22         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} COMPOSITE\_SRC\_OUT = 7;}
+\DoxyCodeLine{23         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} COMPOSITE\_DEST\_OUT = 8;}
+\DoxyCodeLine{24         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} COMPOSITE\_SRC\_ATOP = 9;}
+\DoxyCodeLine{25         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} COMPOSITE\_DEST\_ATOP = 10;}
+\DoxyCodeLine{26         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} COMPOSITE\_XOR = 11;}
+\DoxyCodeLine{27         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} COMPOSITE\_LIGHTER = 12;}
+\DoxyCodeLine{28 }
+\DoxyCodeLine{29         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{bool} FILL\_EVEN\_ODD = 0;}
+\DoxyCodeLine{30         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{bool} FILL\_NON\_ZERO = 1;}
+\DoxyCodeLine{31         }
+\DoxyCodeLine{32         \textcolor{comment}{//todo:}}
+\DoxyCodeLine{33         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} BLEND\_NORMAL = 0;}
+\DoxyCodeLine{34         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} BLEND\_MULT = 1;}
+\DoxyCodeLine{35         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} BLEND\_SCREEN = 2;}
+\DoxyCodeLine{36 }
+\DoxyCodeLine{37         \textcolor{comment}{//Parameters and initialization:}}
+\DoxyCodeLine{38         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} NORMAL\_FONT = 0;}
+\DoxyCodeLine{39         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} MEDIUM\_FONT = 1;}
+\DoxyCodeLine{40         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} LARGE\_FONT = 2;}
+\DoxyCodeLine{41 }
+\DoxyCodeLine{47         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a1c46d8c2f837e63b24755b187f8ccdae}{init}}();}
+\DoxyCodeLine{48 }
+\DoxyCodeLine{53         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_af01d090215139f8aa907e5798eeebaa0}{dispose}}();}
+\DoxyCodeLine{54 }
+\DoxyCodeLine{55         \textcolor{comment}{//Drawing functions}}
+\DoxyCodeLine{56 }
+\DoxyCodeLine{62         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a7d860db215c5227ba1703eb93f9bbc4e}{clearImage}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{63 }
+\DoxyCodeLine{75         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a2ede68aed7abda6e9ad9b927170aa842}{drawPixel}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \mbox{\hyperlink{structglib_1_1_color}{Color}} c, \mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{76 }
+\DoxyCodeLine{90         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_ad7ee57c195787298c8a0a2413ed49a38}{drawPixel}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y, \mbox{\hyperlink{structglib_1_1_color}{Color}} c, \mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{91 }
+\DoxyCodeLine{102         \textcolor{keyword}{static} \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_graphics_ab3606cf0cc23415b750b84696be9d2ca}{blend}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} src, \mbox{\hyperlink{structglib_1_1_color}{Color}} dest);}
+\DoxyCodeLine{103 }
+\DoxyCodeLine{104 \textcolor{preprocessor}{        \#if (OPTI>=1)}}
+\DoxyCodeLine{105             \textcolor{keyword}{static} \_\_m128i \mbox{\hyperlink{classglib_1_1_graphics_ab3606cf0cc23415b750b84696be9d2ca}{blend}}(\_\_m128i src, \_\_m128i dest);}
+\DoxyCodeLine{106 \textcolor{preprocessor}{        \#endif}}
+\DoxyCodeLine{107 }
+\DoxyCodeLine{108 \textcolor{preprocessor}{        \#if (OPTI>=2)}}
+\DoxyCodeLine{109             \textcolor{keyword}{static} \_\_m256i \mbox{\hyperlink{classglib_1_1_graphics_ab3606cf0cc23415b750b84696be9d2ca}{blend}}(\_\_m256i src, \_\_m256i dest);}
+\DoxyCodeLine{110 \textcolor{preprocessor}{        \#endif}}
+\DoxyCodeLine{111 }
+\DoxyCodeLine{125         \textcolor{keyword}{static} \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_graphics_a9ee604e5ee9e0dcfe89d3af935b6d080}{lerp}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} src, \mbox{\hyperlink{structglib_1_1_color}{Color}} dest, \textcolor{keywordtype}{double} lerpVal);}
+\DoxyCodeLine{126 }
+\DoxyCodeLine{144         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a4b7a04d7634bd263235cefb7433b5b83}{drawRect}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} x2, \textcolor{keywordtype}{int} y2, \textcolor{keywordtype}{bool} outline, \mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{145 }
+\DoxyCodeLine{161         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a1a1475c9ad7f98719cd39ed5ab6c9ebc}{drawLine}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} x2, \textcolor{keywordtype}{int} y2, \mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{162 }
+\DoxyCodeLine{178         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_aaf513c3dc5c58d0791079181e9a37cd7}{drawCircle}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} radius, \textcolor{keywordtype}{bool} outline, \mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{179 }
+\DoxyCodeLine{186         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_abbdefd80ce18636bc379d66da2163222}{testDrawTriangle}}(\textcolor{keywordtype}{int} x1, \textcolor{keywordtype}{int} y1, \textcolor{keywordtype}{int} x2, \textcolor{keywordtype}{int} y2, \textcolor{keywordtype}{int} x3, \textcolor{keywordtype}{int} y3, \mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{187 }
+\DoxyCodeLine{209         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_aaf6e7568e21d0f18e83c1e47abef2a28}{drawTriangle}}(\textcolor{keywordtype}{int} x1, \textcolor{keywordtype}{int} y1, \textcolor{keywordtype}{int} x2, \textcolor{keywordtype}{int} y2, \textcolor{keywordtype}{int} x3, \textcolor{keywordtype}{int} y3, \textcolor{keywordtype}{bool} outline, \mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{210 }
+\DoxyCodeLine{229         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_adda98ffe0d32fac75c82c79835b31643}{drawTexturedTriangle}}(\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} p1, \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} p2, \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} p3, \mbox{\hyperlink{classglib_1_1_image}{Image}}* texture, \mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{230         }
+\DoxyCodeLine{244         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_aa796cf0e60cccf00bfd6db7265034291}{drawImage}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{245         }
+\DoxyCodeLine{259         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_adfcad2373a8083e8b90fa82f28c3413d}{drawSprite}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{260 }
+\DoxyCodeLine{282         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_acc89b72431ad7ff7933397b8ac354902}{drawSpritePart}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} imgX, \textcolor{keywordtype}{int} imgY, \textcolor{keywordtype}{int} imgW, \textcolor{keywordtype}{int} imgH, \mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{283 }
+\DoxyCodeLine{297         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a6828073d7be88610fa338811e9a7d5fe}{drawText}}(std::string str, \textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{298 }
+\DoxyCodeLine{319         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_ab1c69033fc237648dc82d64a0712bbd0}{drawTextLimits}}(std::string str, \textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} maxWidth, \textcolor{keywordtype}{int} maxHeight, \textcolor{keywordtype}{bool} useLineBreak, \mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{320 }
+\DoxyCodeLine{332         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_af1c8f49d1eb8a170b8ca12567ca011a0}{drawPolygon}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}* points, \textcolor{keywordtype}{int} size, \mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{333         }
+\DoxyCodeLine{348         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a0646616a90f27f2e0408bb45711d25ae}{drawModel}}(\mbox{\hyperlink{classglib_1_1_model}{Model}}* model, \mbox{\hyperlink{classglib_1_1_image}{Image}}* texture, \mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{349         }
+\DoxyCodeLine{350         \textcolor{comment}{//Getters and Setters}}
+\DoxyCodeLine{351 }
+\DoxyCodeLine{358         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_af6a66498b02ba6afa2589fbe4fa88a33}{setClippingRect}}(\mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}} b);}
+\DoxyCodeLine{359 }
+\DoxyCodeLine{365         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}} \mbox{\hyperlink{classglib_1_1_graphics_a44ceda2ca0404aa740fd302225965e82}{getClippingRect}}();}
+\DoxyCodeLine{366 }
+\DoxyCodeLine{373         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_aa79c7dcf3febdce994e1ac2e1a9f16f6}{resetClippingPlane}}();}
+\DoxyCodeLine{374 }
+\DoxyCodeLine{379         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a7743fdbb26b410deb9cb665dd5869c15}{setColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{380 }
+\DoxyCodeLine{385         \textcolor{keyword}{static} \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_graphics_a80c9c2db8bb90e97f2fa8e5b94c1247f}{getColor}}();}
+\DoxyCodeLine{386 }
+\DoxyCodeLine{392         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a7acef5fbc49d1dcc126e0aeb7d5fa718}{setFont}}(\mbox{\hyperlink{classglib_1_1_font}{Font}}* f);}
+\DoxyCodeLine{393 }
+\DoxyCodeLine{399         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_font}{Font}}* \mbox{\hyperlink{classglib_1_1_graphics_af5f291bde6f688dfdbe18240e72265a2}{getFont}}();}
+\DoxyCodeLine{400         }
+\DoxyCodeLine{410         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a2c4ce1332497b8197d2ec1545d546d15}{setDefaultFont}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} type);}
+\DoxyCodeLine{411 }
+\DoxyCodeLine{423         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_font}{Font}}* \mbox{\hyperlink{classglib_1_1_graphics_a6776b379bf2ae4e8e94025543e37639e}{getDefaultFont}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} type);}
+\DoxyCodeLine{424 }
+\DoxyCodeLine{430         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_ac98bf270e947eb0470661b729e946771}{setCompositeRule}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} b);}
+\DoxyCodeLine{431 }
+\DoxyCodeLine{436         \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} \mbox{\hyperlink{classglib_1_1_graphics_ac12fc361d934857194fdbaf5d998a3b0}{getCompositeRule}}();}
+\DoxyCodeLine{437 }
+\DoxyCodeLine{444         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_acfb2dd20e827d9ea25a3fd4db620c14f}{setBlendMode}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} b);}
+\DoxyCodeLine{445 }
+\DoxyCodeLine{451         \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} \mbox{\hyperlink{classglib_1_1_graphics_a24344c6973398d9ecfbf4dfc5b5a376e}{getBlendMode}}();}
+\DoxyCodeLine{452 }
+\DoxyCodeLine{459         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a80340ad2442a27fc96a26a57809aa099}{setFillRule}}(\textcolor{keywordtype}{bool} b);}
+\DoxyCodeLine{460 }
+\DoxyCodeLine{466         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_graphics_a1ce5b297148932441cf99806ab72f907}{getFillRule}}();}
+\DoxyCodeLine{467         }
+\DoxyCodeLine{468         \textcolor{comment}{//Image Manipulation}}
+\DoxyCodeLine{469         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} THRESHOLD = 0;}
+\DoxyCodeLine{470         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} ORDERED\_DITHER\_BAYER = 1;}
+\DoxyCodeLine{471         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} FLOYD\_DITHER = 2;}
+\DoxyCodeLine{472 }
+\DoxyCodeLine{473         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} NEAREST\_NEIGHBOR\_FILTER = 0;}
+\DoxyCodeLine{474         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} BILINEAR\_FILTER = 1;}
+\DoxyCodeLine{475         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} BICUBIC\_FILTER = 2;}
+\DoxyCodeLine{476 }
+\DoxyCodeLine{477         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} RED\_CHANNEL = 0;}
+\DoxyCodeLine{478         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} GREEN\_CHANNEL = 1;}
+\DoxyCodeLine{479         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} BLUE\_CHANNEL = 2;}
+\DoxyCodeLine{480         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} ALPHA\_CHANNEL = 3;}
+\DoxyCodeLine{481         }
+\DoxyCodeLine{486         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_image}{Image}}* \mbox{\hyperlink{classglib_1_1_graphics_af53845958393815dd2ecf53afd206fd2}{crop}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{int} x1, \textcolor{keywordtype}{int} y1, \textcolor{keywordtype}{int} x2, \textcolor{keywordtype}{int} y2);}
+\DoxyCodeLine{487 }
+\DoxyCodeLine{492         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_image}{Image}}* \mbox{\hyperlink{classglib_1_1_graphics_a13c54e6704a92aa9f5026d3213ed1381}{crop}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \mbox{\hyperlink{classglib_1_1_shape}{Shape}} s);}
+\DoxyCodeLine{493 }
+\DoxyCodeLine{506         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a86997d59f7f0af735d71b173397e4760}{replaceColor}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \mbox{\hyperlink{structglib_1_1_color}{Color}} oldColor, \mbox{\hyperlink{structglib_1_1_color}{Color}} newColor, \textcolor{keywordtype}{bool} ignoreAlpha = \textcolor{keyword}{false});}
+\DoxyCodeLine{507 }
+\DoxyCodeLine{515         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a33e5a19ee26114ebba184a76c777f667}{filterOutColor}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \mbox{\hyperlink{structglib_1_1_color}{Color}} c1);}
+\DoxyCodeLine{516 }
+\DoxyCodeLine{527         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a7d742c17c9a6f33936f8f2646a69a494}{filterOutColorRange}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \mbox{\hyperlink{structglib_1_1_color}{Color}} c1, \mbox{\hyperlink{structglib_1_1_color}{Color}} c2);}
+\DoxyCodeLine{528         }
+\DoxyCodeLine{536         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a637fc88e10dc6a9bd7e45c63f853e454}{convertToColorSpace}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} colorSpace);}
+\DoxyCodeLine{537 }
+\DoxyCodeLine{545         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a2343387605c41f8f8b48af6dd7415109}{boxBlur}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{int} boxSize);}
+\DoxyCodeLine{546 }
+\DoxyCodeLine{551         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a929b33f4df54abd07236ddedb2309643}{gaussianBlur}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{double} stdDeviation);}
+\DoxyCodeLine{552 }
+\DoxyCodeLine{557         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a9fe359164120d67d2bfe18fbdfd283ae}{uncannyEdgeFilter}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img);}
+\DoxyCodeLine{558 }
+\DoxyCodeLine{564         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_a5f1c30d88cc9c769df2a94a50cca77d0}{sobelEdgeFilter}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img);}
+\DoxyCodeLine{565         }
+\DoxyCodeLine{580         \textcolor{keyword}{static} std::vector<std::vector<Vec2f>> \mbox{\hyperlink{classglib_1_1_graphics_af19b0285b5dfd24b40c31b9b157b4f54}{calculateGradient}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} type);}
+\DoxyCodeLine{581         }
+\DoxyCodeLine{596         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_graphics_ac9d3c0a8ffbfec69b8977bf20ff089be}{ditherImage}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} method = THRESHOLD);}
+\DoxyCodeLine{597 }
+\DoxyCodeLine{616         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_image}{Image}}* \mbox{\hyperlink{classglib_1_1_graphics_a9adc4597bd336fc59e7fd5d78a2d572c}{scaleImage}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{double} xScale, \textcolor{keywordtype}{double} yScale, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} filterMethod = NEAREST\_NEIGHBOR\_FILTER);}
+\DoxyCodeLine{617 }
+\DoxyCodeLine{618     \textcolor{keyword}{private}:}
+\DoxyCodeLine{619         \textcolor{keyword}{static} \textcolor{keywordtype}{void} floydSteinburgDithering(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img);}
+\DoxyCodeLine{620         \textcolor{keyword}{static} \textcolor{keywordtype}{void} orderedBayerDithering(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img);}
+\DoxyCodeLine{621         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} generateBayerMatrix(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} m, \textcolor{keywordtype}{int} rowSize);}
+\DoxyCodeLine{622 }
+\DoxyCodeLine{623         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_image}{Image}}* scaleNearestNeighbor(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{double} xScale, \textcolor{keywordtype}{double} yScale);}
+\DoxyCodeLine{624         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_image}{Image}}* scaleBilinear(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{double} xScale, \textcolor{keywordtype}{double} yScale);}
+\DoxyCodeLine{625         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_image}{Image}}* scaleBicubic(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{double} xScale, \textcolor{keywordtype}{double} yScale);}
+\DoxyCodeLine{626         }
+\DoxyCodeLine{627         \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} defaultFontValue;}
+\DoxyCodeLine{628 }
+\DoxyCodeLine{629         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_font}{Font}}* defaultFont;}
+\DoxyCodeLine{630         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_font}{Font}}* defaultFontMedium;}
+\DoxyCodeLine{631         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_font}{Font}}* defaultFontLarge;}
+\DoxyCodeLine{632         }
+\DoxyCodeLine{633         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}} clippingRect;}
+\DoxyCodeLine{634         }
+\DoxyCodeLine{635         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_font}{Font}}* activeFont;}
+\DoxyCodeLine{636         \textcolor{keyword}{static} \mbox{\hyperlink{structglib_1_1_color}{Color}} activeColor;}
+\DoxyCodeLine{637         \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} compositeRule;}
+\DoxyCodeLine{638         \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} blendMode;}
+\DoxyCodeLine{639         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} fillRule;}
+\DoxyCodeLine{640 }
+\DoxyCodeLine{641         \textcolor{keyword}{static} \textcolor{keywordtype}{int} ditherMatrixSize;}
+\DoxyCodeLine{642     \};}
+\DoxyCodeLine{643 }
+\DoxyCodeLine{644 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

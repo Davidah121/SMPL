@@ -1,0 +1,128 @@
+\hypertarget{_system_8h_source}{}\doxysection{System.\+h}
+\label{_system_8h_source}\index{include/System.h@{include/System.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 }
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#ifndef WIN32\_LEAN\_AND\_MEAN}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{    \#define WIN32\_LEAN\_AND\_MEAN}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include <Windows.h>}}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include <chrono>}}
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#include <functional>}}
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#include <string>}}
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#include "{}Image.h"{}}}
+\DoxyCodeLine{12 }
+\DoxyCodeLine{13 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{14 \{}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16     \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_file_filter}{FileFilter}}}
+\DoxyCodeLine{17     \{}
+\DoxyCodeLine{18         std::wstring name;}
+\DoxyCodeLine{19         std::wstring extensions;}
+\DoxyCodeLine{20     \};}
+\DoxyCodeLine{21 }
+\DoxyCodeLine{22     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_system}{System}}}
+\DoxyCodeLine{23     \{}
+\DoxyCodeLine{24     \textcolor{keyword}{public}:}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{26         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{int} LEFT\_MOUSE\_BUTTON = 0;}
+\DoxyCodeLine{27         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{int} RIGHT\_MOUSE\_BUTTON = 1;}
+\DoxyCodeLine{28         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{int} MIDDLE\_MOUSE\_BUTTON = 2;}
+\DoxyCodeLine{29         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{int} MOUSE\_WHEEL\_UP = 3;}
+\DoxyCodeLine{30         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{int} MOUSE\_WHEEL\_DOWN = 4;}
+\DoxyCodeLine{31         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{int} MOUSE\_WHEEL\_LEFT = 5;}
+\DoxyCodeLine{32         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{int} MOUSE\_WHEEL\_RIGHT = 6;}
+\DoxyCodeLine{33         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{int} X1\_MOUSE\_BUTTON = 7;}
+\DoxyCodeLine{34         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{int} X2\_MOUSE\_BUTTON = 8;}
+\DoxyCodeLine{35 }
+\DoxyCodeLine{42         \textcolor{keyword}{static} \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_system_ad4c36ea0258c51d1287bebbeef8d00b8}{getCurrentTimeMillis}}();}
+\DoxyCodeLine{43 }
+\DoxyCodeLine{50         \textcolor{keyword}{static} \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_system_a802f620e4ba362538ae51c2061da70ba}{getCurrentTimeMicro}}();}
+\DoxyCodeLine{51 }
+\DoxyCodeLine{58         \textcolor{keyword}{static} \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_system_aeeb5a1657bbc65001548e1fb8470ba23}{getCurrentTimeNano}}();}
+\DoxyCodeLine{59 }
+\DoxyCodeLine{67         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_system_a758e7b4fe1154d98802606e1524af627}{sleep}}(\textcolor{keywordtype}{int} millis, \textcolor{keywordtype}{int} micros=0);}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{76         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_system_a20759547baa3597bf4d9b6e58c335e35}{delayRun}}(\textcolor{keywordtype}{void} (*\textcolor{keyword}{function})(), \textcolor{keywordtype}{int} millis, \textcolor{keywordtype}{int} micros = 0);}
+\DoxyCodeLine{77 }
+\DoxyCodeLine{85         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_system_af0355d3668e4e6359da166b818630288}{delayRun}}(std::function<\textcolor{keywordtype}{void}()> \textcolor{keyword}{function}, \textcolor{keywordtype}{int} millis, \textcolor{keywordtype}{int} micros = 0);}
+\DoxyCodeLine{86 }
+\DoxyCodeLine{92         \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_system_a3d1df6e55c75eed517223667dbe3dd9a}{getNumberOfThreads}}();}
+\DoxyCodeLine{93 }
+\DoxyCodeLine{94         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{long} NANOSECOND\_SEC = 1000000000L;}
+\DoxyCodeLine{95         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{long} MICROSECOND\_SEC = 1000000L;}
+\DoxyCodeLine{96         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{long} MILLISECOND\_SEC = 1000L;}
+\DoxyCodeLine{97 }
+\DoxyCodeLine{105         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_system_a1a74e546ac83a70744ca121c2b773311}{emulateKeyPress}}(\textcolor{keywordtype}{int} key);}
+\DoxyCodeLine{106 }
+\DoxyCodeLine{113         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_system_a2635d8b904c02193544cb1aeec5ba1c2}{emulateKeyRelease}}(\textcolor{keywordtype}{int} key);}
+\DoxyCodeLine{114 }
+\DoxyCodeLine{122         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_system_a2263bf8e94d7925f2bfbfec627be83bc}{emulateMousePress}}(\textcolor{keywordtype}{int} button);}
+\DoxyCodeLine{123 }
+\DoxyCodeLine{130         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_system_a4047e53a3a756c7efa28e885b73dd86e}{emulateMouseRelease}}(\textcolor{keywordtype}{int} button);}
+\DoxyCodeLine{131 }
+\DoxyCodeLine{144         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_system_aa4cb2f1b4aca4a716b4e374b3b1fadc5}{emulateMouseWheel}}(\textcolor{keywordtype}{int} wheel, \textcolor{keywordtype}{int} amount);}
+\DoxyCodeLine{145 }
+\DoxyCodeLine{152         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_system_a861061bd3411ceb66015cefad9038113}{setMousePosition}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{153 }
+\DoxyCodeLine{159         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_system_acfeae08167551a6f3c74b9e5122556cf}{getMouseX}}();}
+\DoxyCodeLine{160 }
+\DoxyCodeLine{166         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_system_abf8b8b3c4dfd4afedef27617be86f957}{getMouseY}}();}
+\DoxyCodeLine{167         }
+\DoxyCodeLine{175         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_system_adbf617bd5cd8aaca2664e77f92ef64a5}{getKeyDown}}(\textcolor{keywordtype}{int} key);}
+\DoxyCodeLine{176 }
+\DoxyCodeLine{185         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_system_a261f0715cb75763a556e0cc6860daf9c}{getKeyToggled}}(\textcolor{keywordtype}{int} key);}
+\DoxyCodeLine{186 }
+\DoxyCodeLine{194         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_system_a5234313048e0d27cc0ec85d00dcc03fd}{getMouseDown}}(\textcolor{keywordtype}{int} value);}
+\DoxyCodeLine{195 }
+\DoxyCodeLine{202         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_system_a60aa4264643277a13918a2177dc1afb0}{getDesktopWidth}}();}
+\DoxyCodeLine{203 }
+\DoxyCodeLine{210         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_system_a5027b1c759aba9e59ef60a805b733b2d}{getDesktopHeight}}();}
+\DoxyCodeLine{211 }
+\DoxyCodeLine{217         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_system_aa3f1719c8f500c6db9a33ab69af13c43}{getAmountOfMonitors}}();}
+\DoxyCodeLine{218         }
+\DoxyCodeLine{227         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_system_aa2b9b34ae13bd91ce39ceff49d73fb23}{saveScreenShot}}(HWND window, \mbox{\hyperlink{classglib_1_1_file}{File}} file);}
+\DoxyCodeLine{228 }
+\DoxyCodeLine{237         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_image}{Image}}* \mbox{\hyperlink{classglib_1_1_system_a41b8863bbaebd2c49fa088063a065f25}{getScreenShot}}(HWND window);}
+\DoxyCodeLine{238 }
+\DoxyCodeLine{244         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_system_aa5d0f3b76fb28d9166d7af752e724d82}{saveScreenShotDesktop}}(\mbox{\hyperlink{classglib_1_1_file}{File}} file);}
+\DoxyCodeLine{245 }
+\DoxyCodeLine{252         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_image}{Image}}* \mbox{\hyperlink{classglib_1_1_system_a5b765c3ca5ed8fb5b4eb87cae9060459}{getScreenShotDesktop}}();}
+\DoxyCodeLine{253 }
+\DoxyCodeLine{263         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_system_a8343dbce275d64e96364b430d214410b}{paintImageToDesktop}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{int} startX = 0, \textcolor{keywordtype}{int} startY = 0);}
+\DoxyCodeLine{264 }
+\DoxyCodeLine{276         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_system_adbcbcf2a4bd64a22f3855dcab413905a}{paintImageToWindow}}(HWND window, \mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{int} startX = 0, \textcolor{keywordtype}{int} startY = 0);}
+\DoxyCodeLine{277 }
+\DoxyCodeLine{284         \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} \mbox{\hyperlink{classglib_1_1_system_a526fc17161139c29e71344a16ba20e63}{getProcessID}}(std::wstring processName);}
+\DoxyCodeLine{285 }
+\DoxyCodeLine{292         \textcolor{keyword}{static} HWND \mbox{\hyperlink{classglib_1_1_system_af8779ba716b5b23cd73a60f232285a80}{getProcessWindow}}(std::wstring windowName);}
+\DoxyCodeLine{293 }
+\DoxyCodeLine{294         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} TYPE\_OPEN\_FILE = 0;}
+\DoxyCodeLine{295         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} TYPE\_OPEN\_FOLDER = 1;}
+\DoxyCodeLine{296         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} TYPE\_SAVE\_FILE = 2;}
+\DoxyCodeLine{297 }
+\DoxyCodeLine{298         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{structglib_1_1_file_filter}{FileFilter}} ALL\_FILTER;}
+\DoxyCodeLine{299         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{structglib_1_1_file_filter}{FileFilter}} IMAGE\_FILTER;}
+\DoxyCodeLine{300         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{structglib_1_1_file_filter}{FileFilter}} TEXT\_FILTER;}
+\DoxyCodeLine{301         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{structglib_1_1_file_filter}{FileFilter}} SOUND\_FILTER;}
+\DoxyCodeLine{302         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{structglib_1_1_file_filter}{FileFilter}} VIDEO\_FILTER;}
+\DoxyCodeLine{303         }
+\DoxyCodeLine{323         \textcolor{keyword}{static} std::wstring \mbox{\hyperlink{classglib_1_1_system_a1095a01e54a48e528dc5fa082aac238e}{fileDialogBox}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} type = TYPE\_OPEN\_FILE, std::vector<FileFilter> filters = \{\}, std::wstring startDir = L\textcolor{stringliteral}{"{}./"{}});}
+\DoxyCodeLine{324 }
+\DoxyCodeLine{334         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_system_a1ffa18d77c4bb9994736a9761df99a0b}{messageBoxPopup}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} type, std::wstring title, std::wstring message);}
+\DoxyCodeLine{335 }
+\DoxyCodeLine{341         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_system_a2b09b53794a50e14ed73a0961546a556}{copyToClipboard}}(std::string text);}
+\DoxyCodeLine{342 }
+\DoxyCodeLine{348         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_system_af71986e5be30dd577e38442aefe1fc68}{copyToClipboard}}(std::wstring text);}
+\DoxyCodeLine{349 }
+\DoxyCodeLine{355         \textcolor{keyword}{static} std::wstring \mbox{\hyperlink{classglib_1_1_system_a6db645918ab4dd676ccdb5ddab95316b}{pasteFromClipboard}}();}
+\DoxyCodeLine{356         }
+\DoxyCodeLine{357     \textcolor{keyword}{private}:}
+\DoxyCodeLine{358         \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} numberOfThreads;}
+\DoxyCodeLine{359     \};}
+\DoxyCodeLine{360 }
+\DoxyCodeLine{361 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

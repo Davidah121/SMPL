@@ -1,0 +1,46 @@
+\hypertarget{_l_c_g_8h_source}{}\doxysection{LCG.\+h}
+\label{_l_c_g_8h_source}\index{include/LCG.h@{include/LCG.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 }
+\DoxyCodeLine{3 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{4 \{}
+\DoxyCodeLine{5     }
+\DoxyCodeLine{6     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_l_c_g}{LCG}}}
+\DoxyCodeLine{7     \{}
+\DoxyCodeLine{8     \textcolor{keyword}{public}:}
+\DoxyCodeLine{27         \mbox{\hyperlink{classglib_1_1_l_c_g_a301f417e68665393d21ec63d28dbf713}{LCG}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} seed = 0xFFFF, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} multiplier = 48271, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} increment = 0, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} mod = 0xFFFFFFFF)}
+\DoxyCodeLine{28         \{}
+\DoxyCodeLine{29             this-\/>currentVal = seed;}
+\DoxyCodeLine{30             this-\/>multiplier = multiplier;}
+\DoxyCodeLine{31             this-\/>increment = increment;}
+\DoxyCodeLine{32             this-\/>mod = mod;}
+\DoxyCodeLine{33         \}}
+\DoxyCodeLine{34 }
+\DoxyCodeLine{39         \mbox{\hyperlink{classglib_1_1_l_c_g_ae5551aac4859741378062c990eac708a}{\string~LCG}}()}
+\DoxyCodeLine{40         \{}
+\DoxyCodeLine{41             }
+\DoxyCodeLine{42         \}}
+\DoxyCodeLine{43 }
+\DoxyCodeLine{49         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_l_c_g_a13f12a0e519966360bda7ca7d9b33600}{get}}()}
+\DoxyCodeLine{50         \{}
+\DoxyCodeLine{51             currentVal = ( (currentVal*multiplier) + increment ) \% mod;}
+\DoxyCodeLine{52             \textcolor{keywordflow}{return} currentVal;}
+\DoxyCodeLine{53         \}}
+\DoxyCodeLine{54 }
+\DoxyCodeLine{60         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_l_c_g_a3a389d81800b83e300135ae7ccf3c0c5}{setSeed}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} seed)}
+\DoxyCodeLine{61         \{}
+\DoxyCodeLine{62             currentVal = seed;}
+\DoxyCodeLine{63         \}}
+\DoxyCodeLine{64 }
+\DoxyCodeLine{65     \textcolor{keyword}{private}:}
+\DoxyCodeLine{66         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} currentVal;}
+\DoxyCodeLine{67         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} multiplier;}
+\DoxyCodeLine{68         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} increment;}
+\DoxyCodeLine{69         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} mod;}
+\DoxyCodeLine{70     \};}
+\DoxyCodeLine{71 }
+\DoxyCodeLine{72 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

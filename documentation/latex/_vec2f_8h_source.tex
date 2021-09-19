@@ -1,0 +1,84 @@
+\hypertarget{_vec2f_8h_source}{}\doxysection{Vec2f.\+h}
+\label{_vec2f_8h_source}\index{include/Vec2f.h@{include/Vec2f.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include "{}Object.h"{}}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}GeneralVector.h"{}}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{6 \{}
+\DoxyCodeLine{7         }
+\DoxyCodeLine{8     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
+\DoxyCodeLine{9     \{}
+\DoxyCodeLine{10     \textcolor{keyword}{public}:}
+\DoxyCodeLine{17         \mbox{\hyperlink{classglib_1_1_vec2f_ad588b19bab102bb18578a1574c31829f}{Vec2f}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{18 }
+\DoxyCodeLine{23         \mbox{\hyperlink{classglib_1_1_vec2f_abb5b794210ef04a3468bddc54a80435e}{Vec2f}}();}
+\DoxyCodeLine{24 }
+\DoxyCodeLine{29         \mbox{\hyperlink{classglib_1_1_vec2f_a05094426b291cfbe4876fdb1290cefcd}{\string~Vec2f}}();}
+\DoxyCodeLine{30 }
+\DoxyCodeLine{31         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{32         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{33         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{34 }
+\DoxyCodeLine{35         \textcolor{keywordtype}{double} x = 0;}
+\DoxyCodeLine{36         \textcolor{keywordtype}{double} y = 0;}
+\DoxyCodeLine{37 }
+\DoxyCodeLine{43         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vec2f_a86449ac3c9b96fe9aa01cf2bcffe14e2}{getX}}();}
+\DoxyCodeLine{44 }
+\DoxyCodeLine{50         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vec2f_aad884644a70fda779cdc161cb53b9549}{getY}}();}
+\DoxyCodeLine{51 }
+\DoxyCodeLine{57         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vec2f_a52e6fd1c7c823c5b38cda5d1ee0f0db2}{setX}}(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{58 }
+\DoxyCodeLine{64         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vec2f_a0528b8d177ab73f82b9112e8e3ac7f2a}{setY}}(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{71         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vec2f_ae0270aa435b68618057f5a42bf4091dd}{setValues}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other);}
+\DoxyCodeLine{72 }
+\DoxyCodeLine{73         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} operator-\/(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other);}
+\DoxyCodeLine{74         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} operator+(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other);}
+\DoxyCodeLine{75 }
+\DoxyCodeLine{76         \textcolor{keywordtype}{void} operator+=(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other);}
+\DoxyCodeLine{77         \textcolor{keywordtype}{void} operator-\/=(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other);}
+\DoxyCodeLine{78         \textcolor{keywordtype}{void} operator*=(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other);}
+\DoxyCodeLine{79         \textcolor{keywordtype}{void} operator/=(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other);}
+\DoxyCodeLine{80 }
+\DoxyCodeLine{81 }
+\DoxyCodeLine{82         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{double} other);}
+\DoxyCodeLine{83         \textcolor{keywordtype}{void} operator/=(\textcolor{keywordtype}{double} other);}
+\DoxyCodeLine{84 }
+\DoxyCodeLine{85         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{int} other);}
+\DoxyCodeLine{86         \textcolor{keywordtype}{void} operator/=(\textcolor{keywordtype}{int} other);}
+\DoxyCodeLine{87 }
+\DoxyCodeLine{88         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{long} other);}
+\DoxyCodeLine{89         \textcolor{keywordtype}{void} operator/=(\textcolor{keywordtype}{long} other);}
+\DoxyCodeLine{90 }
+\DoxyCodeLine{91         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{float} other);}
+\DoxyCodeLine{92         \textcolor{keywordtype}{void} operator/=(\textcolor{keywordtype}{float} other);}
+\DoxyCodeLine{93 }
+\DoxyCodeLine{94         \textcolor{keywordtype}{bool} operator==(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other);}
+\DoxyCodeLine{95         \textcolor{keywordtype}{bool} operator!=(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other);}
+\DoxyCodeLine{96 }
+\DoxyCodeLine{97         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} operator-\/();}
+\DoxyCodeLine{98 }
+\DoxyCodeLine{99         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} operator*(\textcolor{keywordtype}{int} value);}
+\DoxyCodeLine{100         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} operator*(\textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{101         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} operator*(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{102         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} operator*(\textcolor{keywordtype}{long} value);}
+\DoxyCodeLine{103         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} operator*(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other);}
+\DoxyCodeLine{104 }
+\DoxyCodeLine{105         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} operator/(\textcolor{keywordtype}{int} value);}
+\DoxyCodeLine{106         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} operator/(\textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{107         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} operator/(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{108         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} operator/(\textcolor{keywordtype}{long} value);}
+\DoxyCodeLine{109         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} operator/(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other);}
+\DoxyCodeLine{110 }
+\DoxyCodeLine{111         \textcolor{comment}{//casting to generic vector}}
+\DoxyCodeLine{117 \textcolor{comment}{}        \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} \mbox{\hyperlink{classglib_1_1_vec2f_a4c637f7860ab2e1f3770304627bb39e0}{toGeneralVector}}();}
+\DoxyCodeLine{118         \textcolor{keyword}{operator} \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}}() \textcolor{keyword}{const};}
+\DoxyCodeLine{119 }
+\DoxyCodeLine{120     \};}
+\DoxyCodeLine{121 }
+\DoxyCodeLine{122 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

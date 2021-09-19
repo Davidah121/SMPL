@@ -62,7 +62,7 @@ namespace glib
 		 * 		This may mean that each object needs its own transform.
 		 */
 		static const bool EVEN_ODD_RULE = false;
-		static const bool NON_ZERO = true;
+		static const bool NON_ZERO_RULE = true;
 
 		static const char LINE_CAP_BUTT = 0;
 		static const char LINE_CAP_SQUARE = 1;
@@ -72,38 +72,159 @@ namespace glib
 		static const char LINE_JOIN_ROUND = 1;
 		static const char LINE_JOIN_BEVEL = 2;
 
+		/**
+		 * @brief Construct a new VectorShape object
+		 * 		A VectorShape is more of an abstract class. It should be extended using subclasses.
+		 * 
+		 */
 		VectorShape();
+
+		/**
+		 * @brief Destroy the VectorShape object
+		 * 
+		 */
 		~VectorShape();
 		
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
 
+		/**
+		 * @brief An abstract draw function.
+		 * 		The expected behaviour is the function should only draw the filled in part and not the stroke.
+		 * 		Any part that is considered apart of the stroke should not be drawn.
+		 * 		This maybe more complex so the stroke may still be done in this function if desired.
+		 * 
+		 * @param buffer 
+		 * @param globalWidth 
+		 * 		The maximum width allowed. This may be less than the image's width.
+		 * @param globalHeight 
+		 * 		The maximum height allowed. This may be less than the image's height.
+		 */
 		virtual void draw(Image* buffer, int globalWidth, int globalHeight);
+
+		/**
+		 * @brief An abstract draw function.
+		 * 		The expected behaviour is the function should only draw the stroke of the graphic.
+		 * 		This function does not needed to be implemented if the stroke is used in the normal draw function.
+		 * 
+		 * @param buffer 
+		 * @param globalWidth 
+		 * 		The maximum width allowed. This may be less than the image's width.
+		 * @param globalHeight 
+		 * 		The maximum height allowed. This may be less than the image's height.
+		 */
 		virtual void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 
+		/**
+		 * @brief Sets the Fill Method for the graphic
+		 * 
+		 * @param value 
+		 * 		Valid methods are:
+		 * 			EVEN_ODD_RULE
+		 * 			NON_ZERO_RULE
+		 */
 		void setFillMethod(bool value);
+
+		/**
+		 * @brief Gets the Fill Method for the graphic
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
 		bool getFillMethod();
 		
+		/**
+		 * @brief Sets the Fill Color for the graphic
+		 * 
+		 * @param k 
+		 */
 		void setFillColor(Color k);
+
+		/**
+		 * @brief Get the Fill Color for the graphic
+		 * 
+		 * @return Color 
+		 */
 		Color getFillColor();
 
+		/**
+		 * @brief Set the Stroke Color for the graphic
+		 * 
+		 * @param k 
+		 */
 		void setStrokeColor(Color k);
+
+		/**
+		 * @brief Get the Stroke Color for the graphic
+		 * 
+		 * @return Color 
+		 */
 		Color getStrokeColor();
 
+		/**
+		 * @brief Set the Stroke Width for the graphic
+		 * 
+		 * @param k 
+		 */
 		void setStrokeWidth(double k);
+
+		/**
+		 * @brief Get the Stroke Width for the graphic
+		 * 
+		 * @return double 
+		 */
 		double getStrokeWidth();
 
+		/**
+		 * @brief Set the Line Cap for the graphic
+		 * 		(NOT IMPLEMENTED BY ANY GRAPHIC CURRENTLY)
+		 * 
+		 * @param c 
+		 */
 		void setLineCap(char c);
+
+		/**
+		 * @brief Get the Line Cap for the graphic
+		 * 
+		 * @return char 
+		 */
 		char getLineCap();
 
+		/**
+		 * @brief Set the Line Join for the graphic
+		 * 		(NOT IMPLEMENTED BY ANY GRAPHIC CURRENTLY)
+		 * 
+		 * @param c 
+		 */
 		void setLineJoin(char c);
+
+		/**
+		 * @brief Get the Line Join for the graphic
+		 * 
+		 * @return char 
+		 */
 		char getLineJoin();
 
+		/**
+		 * @brief Set the Transform for the graphic
+		 * 
+		 * @param m 
+		 */
 		void setTransform(Mat3f m);
+
+		/**
+		 * @brief Get the Transform for the graphic
+		 * 
+		 * @return Mat3f 
+		 */
 		Mat3f getTransform();
 		
 	protected:
+		/**
+		 * @brief A function useful for subclasses. May be removed.
+		 * 
+		 */
 		void applyTransform();
 
 	private:
@@ -136,32 +257,131 @@ namespace glib
 		* 		!! Line join does affect this object !!
 		*/
 
+		/**
+		 * @brief Construct a new VectorRectangle object
+		 * 		Follows the SVG format for rectangles.
+		 * 
+		 */
 		VectorRectangle();
+
+		/**
+		 * @brief Destroy the VectorRectangle object
+		 * 
+		 */
 		~VectorRectangle();
 
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
 
+		/**
+		 * @brief Draws the VectorRectangle
+		 * 		Also draws the stroke.
+		 * 
+		 * @param buffer 
+		 * @param globalWidth 
+		 * 		The maximum width allowed. This may be less than the image's width.
+		 * @param globalHeight 
+		 * 		The maximum height allowed. This may be less than the image's height.
+		 */
 		void draw(Image* buffer, int globalWidth, int globalHeight);
+
+		/**
+		 * @brief Draws the stroke for the VectorRectangle
+		 * 		If the shape has any transform other than the Identity matrix, this should be called.
+		 * 
+		 * @param buffer 
+		 * @param globalWidth 
+		 * 		The maximum width allowed. This may be less than the image's width.
+		 * @param globalHeight 
+		 * 		The maximum height allowed. This may be less than the image's height.
+		 */
 		void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 
+		/**
+		 * @brief Sets the x value of the VectorRectangle
+		 * 
+		 * @param x 
+		 */
 		void setX(double x);
+
+		/**
+		 * @brief Gets the x value of the VectorRectangle
+		 * 
+		 * @return double 
+		 */
 		double getX();
 
+		/**
+		 * @brief Sets the y value of the VectorRectangle
+		 * 
+		 * @param y 
+		 */
 		void setY(double y);
+
+		/**
+		 * @brief Gets the y value of the VectorRectangle
+		 * 
+		 * @return double 
+		 */
 		double getY();
 
+		/**
+		 * @brief Sets the rx value of the VectorRectangle
+		 * 		rx is the x radius for rounded corners
+		 * 
+		 * @param rx 
+		 */
 		void setRX(double rx);
+
+		/**
+		 * @brief Gets the rx value of the VectorRectangle
+		 * 
+		 * @return double 
+		 */
 		double getRX();
 
+		/**
+		 * @brief Sets the ry value of the VectorRectangle
+		 * 		ry is the y radius for rounded corners
+		 * 
+		 * @param ry 
+		 */
 		void setRY(double ry);
+
+		/**
+		 * @brief Gets the ry value of the VectorRectangle
+		 * 
+		 * @return double 
+		 */
 		double getRY();
 
+		/**
+		 * @brief Sets the width of the VectorRectangle
+		 * 
+		 * @param width 
+		 */
 		void setWidth(double width);
+
+		/**
+		 * @brief Gets the width of the VectorRectangle
+		 * 
+		 * @return double 
+		 */
 		double getWidth();
 
+		/**
+		 * @brief Sets the height of the VectorRectangle
+		 * 
+		 * @param width 
+		 */
 		void setHeight(double height);
+
+		/**
+		 * @brief Gets the height of the VectorRectangle
+		 * 
+		 * @return double 
+		 */
 		double getHeight();
 
 	protected:
@@ -195,23 +415,86 @@ namespace glib
 		 * 		Line cap doesn't affect this object
 		 * 		Line join doesn't affect this object
 		 */ 
+
+		/**
+		 * @brief Construct a new VectorCircle object
+		 * 		Follows the SVG format for circles.
+		 * 
+		 */
 		VectorCircle();
+
+		/**
+		 * @brief Destroy the VectorCircle object
+		 * 
+		 */
 		~VectorCircle();
 
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
 
+		/**
+		 * @brief Draws the VectorCircle
+		 * 
+		 * @param img 
+		 * @param globalWidth 
+		 * 		The maximum width allowed. This may be less than the image's width.
+		 * @param globalHeight 
+		 * 		The maximum height allowed. This may be less than the image's height.
+		 */
 		void draw(Image* img, int globalWidth, int globalHeight);
+
+		/**
+		 * @brief Draws the stroke of the VectorCircle
+		 * 
+		 * @param img 
+		 * @param globalWidth 
+		 * 		The maximum width allowed. This may be less than the image's width.
+		 * @param globalHeight 
+		 * 		The maximum height allowed. This may be less than the image's height.
+		 */
 		void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 		
+		/**
+		 * @brief Sets the x value of the center of the VectorCircle
+		 * 
+		 * @param x 
+		 */
 		void setX(double x);
+
+		/**
+		 * @brief Gets the x value for the center of the VectorCircle
+		 * 
+		 * @return double 
+		 */
 		double getX();
 
+		/**
+		 * @brief Sets the y value of the center of the VectorCircle
+		 * 
+		 * @param y 
+		 */
 		void setY(double y);
+
+		/**
+		 * @brief Gets the y value for the center of the VectorCircle
+		 * 
+		 * @return double 
+		 */
 		double getY();
 
+		/**
+		 * @brief Sets the radius of the VectorCircle
+		 * 
+		 * @param x 
+		 */
 		void setRadius(double r);
+
+		/**
+		 * @brief Gets the radius of the VectorCircle
+		 * 
+		 * @return double 
+		 */
 		double getRadius();
 
 	protected:
@@ -244,26 +527,100 @@ namespace glib
 		 * 		Line cap doesn't affect this object
 		 * 		Line join doesn't affect this object
 		 */ 
+
+		/**
+		 * @brief Construct a new VectorEllipse object
+		 * 		Follows the SVG format for an ellipse
+		 * 
+		 */
 		VectorEllipse();
+
+		/**
+		 * @brief Destroy the VectorEllipse object
+		 * 
+		 */
 		~VectorEllipse();
 
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
 
+		/**
+		 * @brief Draws a VectorEllipse
+		 * 
+		 * @param img 
+		 * @param globalWidth 
+		 * 		The maximum width allowed. This may be less than the image's width.
+		 * @param globalHeight 
+		 * 		The maximum height allowed. This may be less than the image's height.
+		 */
 		void draw(Image* img, int globalWidth, int globalHeight);
+
+		/**
+		 * @brief Draws the stroke for a VectorEllipse
+		 * 
+		 * @param buffer 
+		 * @param globalWidth 
+		 * 		The maximum width allowed. This may be less than the image's width.
+		 * @param globalHeight 
+		 * 		The maximum height allowed. This may be less than the image's height.
+		 */
 		void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 		
+		/**
+		 * @brief Sets the x value of the center of the Ellipse
+		 * 
+		 * @param x 
+		 */
 		void setX(double x);
+
+		/**
+		 * @brief Gets the x value of the center of the Ellipse
+		 * 
+		 * @return double 
+		 */
 		double getX();
 
+		/**
+		 * @brief Sets the y value of the center of the Ellipse
+		 * 
+		 * @param y 
+		 */
 		void setY(double y);
+
+		/**
+		 * @brief Gets the y value of the center of the Ellipse
+		 * 
+		 * @return double 
+		 */
 		double getY();
 
+		/**
+		 * @brief Sets the x radius for the Ellipse
+		 * 
+		 * @param ry 
+		 */
 		void setXRadius(double rx);
+
+		/**
+		 * @brief Gets the x radius for the Ellipse
+		 * 
+		 * @return double 
+		 */
 		double getXRadius();
 
+		/**
+		 * @brief Sets the y radius for the Ellipse
+		 * 
+		 * @param ry 
+		 */
 		void setYRadius(double ry);
+
+		/**
+		 * @brief Gets the y radius for the Ellipse
+		 * 
+		 * @return double 
+		 */
 		double getYRadius();
 
 	protected:
@@ -296,26 +653,102 @@ namespace glib
 		 * 		!! Line cap does affect this object !!
 		 * 		Line join doesn't affect this object
 		 */ 
+
+		/**
+		 * @brief Construct a new VectorLine object
+		 * 		Follows the SVG format for a line
+		 * 
+		 */
 		VectorLine();
+
+		/**
+		 * @brief Destroy the VectorLine object
+		 * 
+		 */
 		~VectorLine();
 
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
 
+		/**
+		 * @brief Draws a VectorLine
+		 * 		In reality, this does not draw anything because only the stroke for the line is drawn.
+		 * 
+		 * @param img 
+		 * @param globalWidth 
+		 * 		The maximum width allowed. This may be less than the image's width.
+		 * @param globalHeight 
+		 * 		The maximum height allowed. This may be less than the image's height.
+		 */
 		void draw(Image* img, int globalWidth, int globalHeight);
+
+		/**
+		 * @brief Draws the stroke for the VectorLine
+		 * 		This is the only function that draws anything for the line.
+		 * 
+		 * @param img 
+		 * @param globalWidth 
+		 * 		The maximum width allowed. This may be less than the image's width.
+		 * @param globalHeight 
+		 * 		The maximum height allowed. This may be less than the image's height.
+		 */
 		void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 		
+		/**
+		 * @brief Sets the start x value for the line.
+		 * 
+		 * @param x1 
+		 */
 		void setX1(double x1);
+
+		/**
+		 * @brief Gets the start x value for the line.
+		 * 
+		 * @return double 
+		 */
 		double getX1();
 
+		/**
+		 * @brief Sets the start y value for the line.
+		 * 
+		 * @param y1 
+		 */
 		void setY1(double y1);
+
+		/**
+		 * @brief Gets the start y value for the line.
+		 * 
+		 * @return double 
+		 */
 		double getY1();
 
+		/**
+		 * @brief Sets the end x value for the line.
+		 * 
+		 * @param x2 
+		 */
 		void setX2(double x2);
+
+		/**
+		 * @brief Gets the end x value for the line.
+		 * 
+		 * @return double 
+		 */
 		double getX2();
 
+		/**
+		 * @brief Sets the end y value for the line.
+		 * 
+		 * @param y2 
+		 */
 		void setY2(double y2);
+
+		/**
+		 * @brief Gets the end y value for the line.
+		 * 
+		 * @return double 
+		 */
 		double getY2();
 
 	protected:
@@ -350,23 +783,98 @@ namespace glib
 		 * 		!! Line cap does affect this object !!
 		 * 		!! Line join does affect this object !!
 		 */ 
+
+		/**
+		 * @brief Construct a new VectorPolyline object
+		 * 		Follows the SVG format for a polyline
+		 * 		Polylines behaves like a polygon but the last point is not connected to the first.
+		 * 
+		 */
 		VectorPolyline();
+
+		/**
+		 * @brief Destroy the VectorPolyline object
+		 * 
+		 */
 		~VectorPolyline();
 
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
 
+		/**
+		 * @brief Draws the VectorPolyline.
+		 * 		Specifically draws just the fill for the polyline.
+		 * 
+		 * @param img 
+		 * @param globalWidth 
+		 * 		The maximum width allowed. This may be less than the image's width.
+		 * @param globalHeight 
+		 * 		The maximum height allowed. This may be less than the image's height.
+		 */
 		void draw(Image* img, int globalWidth, int globalHeight);
+
+		/**
+		 * @brief Draws the stroke for the VectorPolyline.
+		 * 
+		 * @param img 
+		 * @param globalWidth 
+		 * 		The maximum width allowed. This may be less than the image's width.
+		 * @param globalHeight 
+		 * 		The maximum height allowed. This may be less than the image's height.
+		 */
 		void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 		
+		/**
+		 * @brief Adds a new point to the VectorPolyline
+		 * 
+		 * @param x 
+		 * @param y 
+		 */
 		void addPoint(double x, double y);
+
+		/**
+		 * @brief Adds a new point to the VectorPolyline
+		 * 
+		 * @param p 
+		 */
 		void addPoint(Vec2f p);
+
+		/**
+		 * @brief Gets the x value of a point based on the index.
+		 * 
+		 * @param index 
+		 * @return double 
+		 */
 		double getPointX(int index);
+
+		/**
+		 * @brief Gets the y value of a point based on the index.
+		 * 
+		 * @param index 
+		 * @return double 
+		 */
 		double getPointY(int index);
+
+		/**
+		 * @brief Gets a point based on the index.
+		 * 
+		 * @param index 
+		 * @return Vec2f 
+		 */
 		Vec2f getPoint(int index);
 		
+		/**
+		 * @brief Clears all points
+		 * 
+		 */
 		void clear();
+
+		/**
+		 * @brief Returns the amount of points in the VectorPolyline
+		 * 
+		 * @return int 
+		 */
 		int size();
 
 	protected:
@@ -397,23 +905,95 @@ namespace glib
 		 * 		!! Line cap does affect this object !!
 		 * 		!! Line join does affect this object !!
 		 */ 
+
+		/**
+		 * @brief Construct a new VectorPolygon object
+		 * 		Follows the SVG format for a polygon
+		 */
 		VectorPolygon();
+
+		/**
+		 * @brief Destroy the VectorPolygon object
+		 * 
+		 */
 		~VectorPolygon();
 
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
 
+		/**
+		 * @brief Draws the VectorPolygon.
+		 * 
+		 * @param img 
+		 * @param globalWidth 
+		 * 		The maximum width allowed. This may be less than the image's width.
+		 * @param globalHeight 
+		 * 		The maximum height allowed. This may be less than the image's height.
+		 */
 		void draw(Image* img, int globalWidth, int globalHeight);
+
+		/**
+		 * @brief Draws the stroke for the VectorPolygon.
+		 * 
+		 * @param img 
+		 * @param globalWidth 
+		 * 		The maximum width allowed. This may be less than the image's width.
+		 * @param globalHeight 
+		 * 		The maximum height allowed. This may be less than the image's height.
+		 */
 		void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 		
+		/**
+		 * @brief Adds a new point to the VectorPolygon
+		 * 
+		 * @param x 
+		 * @param y 
+		 */
 		void addPoint(double x, double y);
+
+		/**
+		 * @brief Adds a new point to the VectorPolygon
+		 * 
+		 * @param p
+		 */
 		void addPoint(Vec2f p);
+
+		/**
+		 * @brief Gets the x value of a point based on the index.
+		 * 
+		 * @param index 
+		 * @return double 
+		 */
 		double getPointX(int index);
+
+		/**
+		 * @brief Gets the y value of a point based on the index.
+		 * 
+		 * @param index 
+		 * @return double 
+		 */
 		double getPointY(int index);
+
+		/**
+		 * @brief Gets a point based on the index.
+		 * 
+		 * @param index 
+		 * @return Vec2f 
+		 */
 		Vec2f getPoint(int index);
 		
+		/**
+		 * @brief Clears all points
+		 * 
+		 */
 		void clear();
+
+		/**
+		 * @brief Returns the amount of points in the VectorPolygon
+		 * 
+		 * @return int 
+		 */
 		int size();
 
 	protected:
@@ -486,66 +1066,387 @@ namespace glib
 		 * 		!! Line cap does affect this object !!
 		 * 		!! Line join does affect this object !!
 		 */ 
+
+		/**
+		 * @brief Construct a new VectorPath object
+		 * 		Follows the SVG format for a path
+		 * 
+		 * 		Most complex VectorGraphic that can represent any other VectorGraphic.
+		 * 
+		 */
 		VectorPath();
+
+		/**
+		 * @brief Construct a new VectorPath object from another VectorPath
+		 * 
+		 * @param other 
+		 */
 		VectorPath(const VectorPath& other);
+
+		/**
+		 * @brief Copies a VectorPath object
+		 * 
+		 * @param other 
+		 */
 		void operator=(VectorPath& other);
+
+		/**
+		 * @brief Destroy the VectorPath object
+		 * 
+		 */
 		~VectorPath();
 
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
 
+		/**
+		 * @brief Draws the VectorPath
+		 * 
+		 * @param img 
+		 * @param globalWidth 
+		 * 		The maximum width allowed. This may be less than the image's width.
+		 * @param globalHeight 
+		 * 		The maximum height allowed. This may be less than the image's height.
+		 */
 		void draw(Image* img, int globalWidth, int globalHeight);
+
+		/**
+		 * @brief Draws the stroke for the VectorPath
+		 * 
+		 * @param img 
+		 * @param globalWidth 
+		 * 		The maximum width allowed. This may be less than the image's width.
+		 * @param globalHeight 
+		 * 		The maximum height allowed. This may be less than the image's height.
+		 */
 		void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 
+		/**
+		 * @brief Adds a move to command.
+		 * 
+		 * @param x 
+		 * @param y 
+		 */
 		void addMoveTo(double x, double y);
+
+		/**
+		 * @brief Adds a move to command.
+		 * 
+		 * @param p
+		 */
 		void addMoveTo(Vec2f p);
+
+		/**
+		 * @brief Adds a move to relative command.
+		 * 
+		 * @param x 
+		 * @param y 
+		 */
 		void addMoveToRel(double x, double y);
+
+		/**
+		 * @brief Adds a move to relative command.
+		 * 
+		 * @param p
+		 */
 		void addMoveToRel(Vec2f p);
 
+		/**
+		 * @brief Adds a line to command.
+		 * 
+		 * @param x 
+		 * @param y 
+		 */
 		void addLineTo(double x, double y);
+
+		/**
+		 * @brief Adds a line to command.
+		 * 
+		 * @param p
+		 */
 		void addLineTo(Vec2f p);
+
+		/**
+		 * @brief Adds a line to relative command.
+		 * 
+		 * @param x 
+		 * @param y 
+		 */
 		void addLineToRel(double x, double y);
+
+		/**
+		 * @brief Adds a line to relative command.
+		 * 
+		 * @param p
+		 */
 		void addLineToRel(Vec2f p);
 
+		/**
+		 * @brief Adds a horizontal to command.
+		 * 
+		 * @param x 
+		 */
 		void addHorizontalTo(double x);
+
+		/**
+		 * @brief Adds a horizontal to relative command.
+		 * 
+		 * @param x 
+		 */
 		void addHorizontalToRel(double x);
 
+		/**
+		 * @brief Adds a vertical to command.
+		 * 
+		 * @param y 
+		 */
 		void addVerticalTo(double y);
+
+		/**
+		 * @brief Adds a vertical to relative command.
+		 * 
+		 * @param y 
+		 */
 		void addVerticalToRel(double y);
 
+		/**
+		 * @brief Adds a close path command
+		 * 
+		 */
 		void addClosePath();
 
+		/**
+		 * @brief Adds a quadratic to command.
+		 * 		Uses a Quadratic Bezier curve
+		 * 
+		 * @param x1 
+		 * @param y1 
+		 * @param x2 
+		 * @param y2 
+		 */
 		void addQuadTo(double x1, double y1, double x2, double y2);
+
+		/**
+		 * @brief Adds a quadratic to command.
+		 * 		Uses a Quadratic Bezier curve
+		 * 
+		 * @param p1 
+		 * @param p2
+		 */
 		void addQuadTo(Vec2f p1, Vec2f p2);
 
+		/**
+		 * @brief Adds a quadratic to relative command.
+		 * 		Uses a Quadratic Bezier curve
+		 * 
+		 * @param x1 
+		 * @param y1 
+		 * @param x2 
+		 * @param y2 
+		 */
 		void addQuadToRel(double x1, double y1, double x2, double y2);
+
+		/**
+		 * @brief Adds a quadratic to relative command.
+		 * 		Uses a Quadratic Bezier curve
+		 * 
+		 * @param p1 
+		 * @param p2
+		 */
 		void addQuadToRel(Vec2f p1, Vec2f p2);
 
+		/**
+		 * @brief Adds a short quadratic to command.
+		 * 		Builds a new quadratic bezier curve using the previous one.
+		 * 
+		 * @param x 
+		 * @param y
+		 */
 		void addQuadToShort(double x, double y);
+
+		/**
+		 * @brief Adds a short quadratic to command.
+		 * 		Builds a new quadratic bezier curve using the previous one.
+		 * 
+		 * @param p
+		 */
 		void addQuadToShort(Vec2f p);
 
+		/**
+		 * @brief Adds a short quadratic to relative command.
+		 * 		Builds a new quadratic bezier curve using the previous one.
+		 * 
+		 * @param x 
+		 * @param y
+		 */
 		void addQuadToShortRel(double x, double y);
+
+		/**
+		 * @brief Adds a short quadratic to relative command.
+		 * 		Builds a new quadratic bezier curve using the previous one.
+		 * 
+		 * @param p
+		 */
 		void addQuadToShortRel(Vec2f p);
 
+		/**
+		 * @brief Adds a cubic to command.
+		 * 		Uses a Cubic Bezier Curve.
+		 * 
+		 * @param x1 
+		 * @param y1 
+		 * @param x2 
+		 * @param y2 
+		 * @param x3 
+		 * @param y3 
+		 */
 		void addCubicTo(double x1, double y1, double x2, double y2, double x3, double y3);
+
+		/**
+		 * @brief Adds a cubic to command.
+		 * 		Uses a Cubic Bezier Curve.
+		 * 
+		 * @param p1 
+		 * @param p2 
+		 * @param p3 
+		 */
 		void addCubicTo(Vec2f p1, Vec2f p2, Vec2f p3);
 
+		/**
+		 * @brief Adds a cubic to relative command.
+		 * 		Uses a Cubic Bezier Curve.
+		 * 
+		 * @param x1 
+		 * @param y1 
+		 * @param x2 
+		 * @param y2 
+		 * @param x3 
+		 * @param y3 
+		 */
 		void addCubicToRel(double x1, double y1, double x2, double y2, double x3, double y3);
+
+		/**
+		 * @brief Adds a cubic to relative command.
+		 * 		Uses a Cubic Bezier Curve.
+		 * 
+		 * @param p1 
+		 * @param p2 
+		 * @param p3 
+		 */
 		void addCubicToRel(Vec2f p1, Vec2f p2, Vec2f p3);
 
+		/**
+		 * @brief Adds a cubic to short command.
+		 * 		Builds a new cubic bezier curve using the previous one.
+		 * 
+		 * @param x1 
+		 * @param y1 
+		 * @param x2 
+		 * @param y2 
+		 */
 		void addCubicToShort(double x1, double y1, double x2, double y2);
+
+		/**
+		 * @brief Adds a cubic to short command.
+		 * 		Builds a new cubic bezier curve using the previous one.
+		 * 
+		 * @param p1 
+		 * @param p2 
+		 */
 		void addCubicToShort(Vec2f p1, Vec2f p2);
 
+		/**
+		 * @brief Adds a cubic to short relative command.
+		 * 		Builds a new cubic bezier curve using the previous one.
+		 * 
+		 * @param x1 
+		 * @param y1 
+		 * @param x2 
+		 * @param y2 
+		 */
 		void addCubicToShortRel(double x1, double y1, double x2, double y2);
+
+		/**
+		 * @brief Adds a cubic to short relative command.
+		 * 		Builds a new cubic bezier curve using the previous one.
+		 * 
+		 * @param p1 
+		 * @param p2 
+		 */
 		void addCubicToShortRel(Vec2f p1, Vec2f p2);
 
+		/**
+		 * @brief Adds an arc to command.
+		 * 
+		 * @param rx 
+		 * @param ry 
+		 * @param angle 
+		 * @param largeArcFlag 
+		 * 		Whether to use the larger version of the arc when drawing.
+		 * @param sweepFlag 
+		 * 		Whether to go in postive or negative direction regarding the angle.
+		 * 		Whether to go in the counter-clockwise or clockwise direction.
+		 * @param x 
+		 * @param y 
+		 */
 		void addArcTo(double rx, double ry, double angle, bool largeArcFlag, bool sweepFlag, double x, double y);
+
+		/**
+		 * @brief Adds an arc to command.
+		 * 
+		 * @param radi
+		 * @param angle 
+		 * @param largeArcFlag 
+		 * 		Whether to use the larger version of the arc when drawing.
+		 * @param sweepFlag 
+		 * 		Whether to go in postive or negative direction regarding the angle.
+		 * 		Whether to go in the counter-clockwise or clockwise direction.
+		 * @param p
+		 */
 		void addArcTo(Vec2f radi, double angle, bool largeArcFlag, bool sweepFlag, Vec2f p);
+
+		/**
+		 * @brief Adds an arc to relative command.
+		 * 
+		 * @param rx 
+		 * @param ry 
+		 * @param angle 
+		 * @param largeArcFlag 
+		 * 		Whether to use the larger version of the arc when drawing.
+		 * @param sweepFlag 
+		 * 		Whether to go in postive or negative direction regarding the angle.
+		 * 		Whether to go in the counter-clockwise or clockwise direction.
+		 * @param x 
+		 * @param y 
+		 */
 		void addArcToRel(double rx, double ry, double angle, bool largeArcFlag, bool sweepFlag, double x, double y);
+
+		/**
+		 * @brief Adds an arc to relative command.
+		 * 
+		 * @param radi
+		 * @param angle 
+		 * @param largeArcFlag 
+		 * 		Whether to use the larger version of the arc when drawing.
+		 * @param sweepFlag 
+		 * 		Whether to go in postive or negative direction regarding the angle.
+		 * 		Whether to go in the counter-clockwise or clockwise direction.
+		 * @param p
+		 */
 		void addArcToRel(Vec2f radi, double angle, bool largeArcFlag, bool sweepFlag, Vec2f p);
 		
+		/**
+		 * @brief Clears all commands from the VectorPath
+		 * 
+		 */
 		void clear();
+
+		/**
+		 * @brief Returns the amount of commands in the VectorPath
+		 * 
+		 * @return int 
+		 */
 		int size();
 
 	protected:
@@ -608,38 +1509,161 @@ namespace glib
 		static const unsigned char TEXT = 8;
 		static const unsigned char IMAGE = 9;
 
+		/**
+		 * @brief Construct a new VectorGraphic object
+		 * 		Contains a series of VectorShapes.
+		 * 		If the width <= 0 or the height <= 0, the bounds are set to the image the it is being drawn upon.
+		 * 
+		 * @param width 
+		 * 		The maximum width of the VectorGraphic
+		 * 		Default is 0
+		 * @param height 
+		 * 		The maximum height of the VectorGraphic
+		 * 		Default is 0
+		 */
 		VectorGraphic(int width=0, int height=0);
+
+		/**
+		 * @brief Construct a new VectorGraphic object from another VectorGraphic object.
+		 * 
+		 * @param other 
+		 */
 		VectorGraphic(const VectorGraphic& other);
+
+		/**
+		 * @brief Copies a VectorGraphic
+		 * 
+		 * @param other 
+		 */
 		void operator=(const VectorGraphic& other);
+
+		/**
+		 * @brief Destroy the VectorGraphic object
+		 * 
+		 */
 		~VectorGraphic();
 
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
 
+		/**
+		 * @brief Adds a VectorShape to the VectorGraphic
+		 * 
+		 * @param k 
+		 */
 		void addShape(VectorShape* k);
+
+		/**
+		 * @brief Clears all VectorShapes added to the VectorGraphic
+		 * 		Any shape added will be deleted and should be considered invalid.
+		 * 
+		 */
 		void clearShapes();
 
+		/**
+		 * @brief Draws the VectorGraphic on an image.
+		 * 
+		 * @param buffer 
+		 */
 		void draw(Image* buffer);
 
+		/**
+		 * @brief Sets the Transform of the VectorGraphic
+		 * 
+		 * @param m 
+		 */
 		void setTransform(Mat3f m);
+
+		/**
+		 * @brief Gets the Transform of the VectorGraphic
+		 * 
+		 * @return Mat3f 
+		 */
 		Mat3f getTransform();
 
+		/**
+		 * @brief Sets the View Box of the VectorGraphic
+		 * 
+		 * @param m 
+		 */
 		void setViewBox(Mat3f m);
+
+		/**
+		 * @brief Gets the View Box of the VectorGraphic
+		 * 
+		 * @return Mat3f 
+		 */
 		Mat3f getViewBox();
 
+		/**
+		 * @brief Gets the Width of the VectorGraphic
+		 * 
+		 * @return int 
+		 */
 		int getWidth();
+
+		/**
+		 * @brief Gets the Height of the VectorGraphic
+		 * 
+		 * @return int 
+		 */
 		int getHeight();
 
 		//save and load with Xml File
-		bool save(std::string filename);
-		bool load(std::string filename);
+
+		/**
+		 * @brief Saves the VectorGraphic to a .svg file
+		 * 		(NOT IMPLEMENTED)
+		 * 
+		 * @param file 
+		 * @return true 
+		 * @return false 
+		 */
+		bool save(File file);
+
+		/**
+		 * @brief Loads a VectorGraphic from a .svg file
+		 * 
+		 * @param file 
+		 * @return true 
+		 * @return false 
+		 */
+		bool load(File file);
 
 		//save and load with XmlNode
+
+		/**
+		 * @brief Loads a VectorGraphic using the parent svg xml node
+		 * 
+		 * @param svgParentNode 
+		 * @return true 
+		 * @return false 
+		 */
 		bool load(XmlNode* svgParentNode);
+
+		/**
+		 * @brief Creates an XmlNode using data from the VectorGraphic for saving
+		 * 		(NOT YET IMPLEMENTED)
+		 * 
+		 * @return XmlNode* 
+		 */
 		XmlNode* writeAsXmlNode();
 
+		/**
+		 * @brief Sets the Anti-Aliasing level for VectorGraphic drawing.
+		 * 		(Barely Implemented)
+		 * 
+		 * @param level 
+		 * 		Valid values from [0, 3]
+		 */
 		static void setAALevel(unsigned char level);
+
+		/**
+		 * @brief Gets the Anti-Aliasing level for VectorGraphic drawing.
+		 * 
+		 * @return unsigned char 
+		 */
 		static unsigned char getAALevel();
 
 	private:

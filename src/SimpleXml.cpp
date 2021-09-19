@@ -80,19 +80,10 @@ namespace glib
         nodes.clear();
     }
 
-    void SimpleXml::save(std::string filename)
-    {
-        save(StringTools::toWideString(filename));
-    }
 
-    void SimpleXml::save(File filename)
+    void SimpleXml::save(File file)
     {
-        save(filename.getFullFileName());
-    }
-
-    void SimpleXml::save(std::wstring filename)
-    {
-        SimpleFile f = SimpleFile(filename, SimpleFile::WRITE);
+        SimpleFile f = SimpleFile(file, SimpleFile::WRITE);
 
         if(f.isOpen())
         {
@@ -161,23 +152,13 @@ namespace glib
         }
     }
 
-    bool SimpleXml::load(std::string filename)
-    {
-        return load( StringTools::toWideString(filename) );
-    }
-
-    bool SimpleXml::load(File filename)
-    {
-        return load( filename.getFullFileName() );
-    }
-
     /**
      * No Error Checking currently.
      * Currently Adding error checking and failures
      */
-    bool SimpleXml::load(std::wstring filename)
+    bool SimpleXml::load(File file)
     {
-        SimpleFile f = SimpleFile(filename, SimpleFile::READ);
+        SimpleFile f = SimpleFile(file, SimpleFile::READ);
 
         bool parsingNode = false;
         std::wstring innerNodeText = L"";

@@ -1,0 +1,466 @@
+\hypertarget{_k_d_tree_8h_source}{}\doxysection{KDTree.\+h}
+\label{_k_d_tree_8h_source}\index{include/KDTree.h@{include/KDTree.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include "{}BinaryTree.h"{}}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}MathExt.h"{}}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{6 \{}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{9     \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode}}}
+\DoxyCodeLine{10     \{}
+\DoxyCodeLine{11         T* data;}
+\DoxyCodeLine{12     \};}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{15     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_k_d_tree}{KDTree}}}
+\DoxyCodeLine{16     \{}
+\DoxyCodeLine{17     \textcolor{keyword}{public}:}
+\DoxyCodeLine{27         \mbox{\hyperlink{classglib_1_1_k_d_tree_a99b93880190c8e1aed027600c78709e2}{KDTree}}(\textcolor{keywordtype}{int} dimensions);}
+\DoxyCodeLine{28 }
+\DoxyCodeLine{33         \mbox{\hyperlink{classglib_1_1_k_d_tree_aef78b91f93c074b103eb7064fddee517}{\string~KDTree}}();}
+\DoxyCodeLine{34 }
+\DoxyCodeLine{42         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_k_d_tree_a6e4dea5c8bacad27e0b36486895b136b}{add}}(T* data);}
+\DoxyCodeLine{43 }
+\DoxyCodeLine{53         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_k_d_tree_a996f17fc16a2821d65d0a1b13c69d7ea}{addUnique}}(T* data);}
+\DoxyCodeLine{54 }
+\DoxyCodeLine{63         \mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}} \mbox{\hyperlink{classglib_1_1_k_d_tree_a9739b8a44ca294df63871d455440de63}{search}}(T* data);}
+\DoxyCodeLine{64 }
+\DoxyCodeLine{77         \mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}} \mbox{\hyperlink{classglib_1_1_k_d_tree_aa0bc377316d78f2361c7e1ce7854385b}{searchNearest}}(T* data);}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{83         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_k_d_tree_aa49f3802b6738d4094ea72ee6decb7af}{balance}}();}
+\DoxyCodeLine{84     \textcolor{keyword}{private}:}
+\DoxyCodeLine{85         \mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode<KDTreeNode<T>}}>* searchRecursive(\mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode}}<\mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}}>* tNode, T* data, \textcolor{keywordtype}{int}* minDistance, \mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode}}<\mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}}>* returnVal, \textcolor{keywordtype}{int} axis, \textcolor{keywordtype}{bool} backwards);}
+\DoxyCodeLine{86         \textcolor{keywordtype}{void} cleanUp(\mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode}}<\mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}}>* node);}
+\DoxyCodeLine{87 }
+\DoxyCodeLine{88         \textcolor{keywordtype}{int} dimensions = 0;}
+\DoxyCodeLine{89         \mbox{\hyperlink{classglib_1_1_binary_tree}{BinaryTree< KDTreeNode<T>}} > binTree;}
+\DoxyCodeLine{90     \};}
+\DoxyCodeLine{91 }
+\DoxyCodeLine{92     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{93     \textcolor{keyword}{inline} \mbox{\hyperlink{classglib_1_1_k_d_tree_a99b93880190c8e1aed027600c78709e2}{KDTree<T>::KDTree}}(\textcolor{keywordtype}{int} dimensions)}
+\DoxyCodeLine{94     \{}
+\DoxyCodeLine{95         \textcolor{comment}{//max function}}
+\DoxyCodeLine{96 }
+\DoxyCodeLine{97         this-\/>dimensions = (dimensions < 0) ? 0 : dimensions;}
+\DoxyCodeLine{98     \}}
+\DoxyCodeLine{99 }
+\DoxyCodeLine{100     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{101     \textcolor{keyword}{inline} \mbox{\hyperlink{classglib_1_1_k_d_tree_aef78b91f93c074b103eb7064fddee517}{KDTree<T>::\string~KDTree}}()}
+\DoxyCodeLine{102     \{}
+\DoxyCodeLine{103         cleanUp(binTree.getRoot());}
+\DoxyCodeLine{104     \}}
+\DoxyCodeLine{105 }
+\DoxyCodeLine{106     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{107     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_k_d_tree}{KDTree<T>::cleanUp}}(\mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode}}<\mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}}>* node)}
+\DoxyCodeLine{108     \{}
+\DoxyCodeLine{109         \textcolor{keywordflow}{if}(node!=\textcolor{keyword}{nullptr})}
+\DoxyCodeLine{110         \{}
+\DoxyCodeLine{111             \mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}} n = (\mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}})node-\/>data;}
+\DoxyCodeLine{112             \textcolor{keyword}{delete}[] n.data;}
+\DoxyCodeLine{113 }
+\DoxyCodeLine{114             \textcolor{keywordflow}{if}(node-\/>leftChild != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{115                 cleanUp(node-\/>leftChild);}
+\DoxyCodeLine{116             }
+\DoxyCodeLine{117             \textcolor{keywordflow}{if}(node-\/>rightChild != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{118                 cleanUp(node-\/>rightChild);}
+\DoxyCodeLine{119         \}}
+\DoxyCodeLine{120     \}}
+\DoxyCodeLine{121 }
+\DoxyCodeLine{122     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{123     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_k_d_tree_a6e4dea5c8bacad27e0b36486895b136b}{KDTree<T>::add}}(T* data)}
+\DoxyCodeLine{124     \{}
+\DoxyCodeLine{125 }
+\DoxyCodeLine{126         \mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}} kdnode = \{data\};}
+\DoxyCodeLine{127 }
+\DoxyCodeLine{128         \mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode< KDTreeNode<T>}} >* node = \textcolor{keyword}{new} \mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode< KDTreeNode<T>}} >();}
+\DoxyCodeLine{129         node-\/>data = kdnode;}
+\DoxyCodeLine{130 }
+\DoxyCodeLine{131         \textcolor{keywordflow}{if}(binTree.getRoot() == \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{132         \{}
+\DoxyCodeLine{133             binTree.setRootNode(node);}
+\DoxyCodeLine{134         \}}
+\DoxyCodeLine{135         \textcolor{keywordflow}{else}}
+\DoxyCodeLine{136         \{}
+\DoxyCodeLine{137             \textcolor{keywordtype}{int} depth = 0;}
+\DoxyCodeLine{138             \textcolor{keywordtype}{int} indexToTest = 0;}
+\DoxyCodeLine{139             \mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode< KDTreeNode<T>}} >* currentTreeNode = binTree.getRoot();}
+\DoxyCodeLine{140             }
+\DoxyCodeLine{141             \textcolor{keywordflow}{while}(currentTreeNode!=\textcolor{keyword}{nullptr})}
+\DoxyCodeLine{142             \{}
+\DoxyCodeLine{143                 \mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}} oKDNode = currentTreeNode-\/>data;}
+\DoxyCodeLine{144                 indexToTest = depth \% dimensions;}
+\DoxyCodeLine{145 }
+\DoxyCodeLine{146                 \textcolor{keywordflow}{if}(kdnode.data[indexToTest] < oKDNode.data[indexToTest])}
+\DoxyCodeLine{147                 \{}
+\DoxyCodeLine{148                     \textcolor{comment}{//go left}}
+\DoxyCodeLine{149                     \textcolor{keywordflow}{if}(currentTreeNode-\/>leftChild == \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{150                     \{}
+\DoxyCodeLine{151                         binTree.setLeftNode(currentTreeNode, node);}
+\DoxyCodeLine{152                         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{153                     \}}
+\DoxyCodeLine{154                     \textcolor{keywordflow}{else}}
+\DoxyCodeLine{155                     \{}
+\DoxyCodeLine{156                         currentTreeNode = currentTreeNode-\/>leftChild;}
+\DoxyCodeLine{157                     \}}
+\DoxyCodeLine{158                 \}}
+\DoxyCodeLine{159                 \textcolor{keywordflow}{else}}
+\DoxyCodeLine{160                 \{}
+\DoxyCodeLine{161                     \textcolor{comment}{//go right}}
+\DoxyCodeLine{162                     \textcolor{keywordflow}{if}(currentTreeNode-\/>rightChild == \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{163                     \{}
+\DoxyCodeLine{164                         binTree.setRightNode(currentTreeNode, node);}
+\DoxyCodeLine{165                         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{166                     \}}
+\DoxyCodeLine{167                     \textcolor{keywordflow}{else}}
+\DoxyCodeLine{168                     \{}
+\DoxyCodeLine{169                         currentTreeNode = currentTreeNode-\/>rightChild;}
+\DoxyCodeLine{170                     \}}
+\DoxyCodeLine{171                 \}}
+\DoxyCodeLine{172 }
+\DoxyCodeLine{173                 depth++;}
+\DoxyCodeLine{174             \}}
+\DoxyCodeLine{175         \}}
+\DoxyCodeLine{176     \}}
+\DoxyCodeLine{177 }
+\DoxyCodeLine{178     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{179     \textcolor{keyword}{inline} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_k_d_tree_a996f17fc16a2821d65d0a1b13c69d7ea}{KDTree<T>::addUnique}}(T* data)}
+\DoxyCodeLine{180     \{}
+\DoxyCodeLine{181         \mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}} kdnode = \{data\};}
+\DoxyCodeLine{182 }
+\DoxyCodeLine{183         \mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode< KDTreeNode<T>}} >* node = \textcolor{keyword}{new} \mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode< KDTreeNode<T>}} >();}
+\DoxyCodeLine{184         node-\/>data = kdnode;}
+\DoxyCodeLine{185 }
+\DoxyCodeLine{186         \textcolor{keywordflow}{if}(binTree.getRoot() == \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{187         \{}
+\DoxyCodeLine{188             binTree.setRootNode(node);}
+\DoxyCodeLine{189             \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{190         \}}
+\DoxyCodeLine{191         \textcolor{keywordflow}{else}}
+\DoxyCodeLine{192         \{}
+\DoxyCodeLine{193             \textcolor{keywordtype}{int} depth = 0;}
+\DoxyCodeLine{194             \textcolor{keywordtype}{int} indexToTest = 0;}
+\DoxyCodeLine{195             \mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode< KDTreeNode<T>}} >* currentTreeNode = binTree.getRoot();}
+\DoxyCodeLine{196             }
+\DoxyCodeLine{197             \textcolor{keywordflow}{while}(currentTreeNode!=\textcolor{keyword}{nullptr})}
+\DoxyCodeLine{198             \{}
+\DoxyCodeLine{199                 \mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}} oKDNode = currentTreeNode-\/>data;}
+\DoxyCodeLine{200                 indexToTest = depth \% dimensions;}
+\DoxyCodeLine{201 }
+\DoxyCodeLine{202                 \textcolor{keywordtype}{bool} same = std::memcmp(data, oKDNode.data, dimensions*\textcolor{keyword}{sizeof}(T)) == 0;}
+\DoxyCodeLine{203 }
+\DoxyCodeLine{204                 \textcolor{keywordflow}{if}(same)}
+\DoxyCodeLine{205                 \{}
+\DoxyCodeLine{206                     \textcolor{keywordflow}{return} \textcolor{keyword}{false};}
+\DoxyCodeLine{207                 \}}
+\DoxyCodeLine{208 }
+\DoxyCodeLine{209                 \textcolor{keywordflow}{if}(kdnode.data[indexToTest] < oKDNode.data[indexToTest])}
+\DoxyCodeLine{210                 \{}
+\DoxyCodeLine{211                     \textcolor{comment}{//go left}}
+\DoxyCodeLine{212                     \textcolor{keywordflow}{if}(currentTreeNode-\/>leftChild == \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{213                     \{}
+\DoxyCodeLine{214                         binTree.setLeftNode(currentTreeNode, node);}
+\DoxyCodeLine{215                         \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{216                     \}}
+\DoxyCodeLine{217                     \textcolor{keywordflow}{else}}
+\DoxyCodeLine{218                     \{}
+\DoxyCodeLine{219                         currentTreeNode = currentTreeNode-\/>leftChild;}
+\DoxyCodeLine{220                     \}}
+\DoxyCodeLine{221                 \}}
+\DoxyCodeLine{222                 \textcolor{keywordflow}{else}}
+\DoxyCodeLine{223                 \{}
+\DoxyCodeLine{224                     \textcolor{comment}{//go right}}
+\DoxyCodeLine{225                     \textcolor{keywordflow}{if}(currentTreeNode-\/>rightChild == \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{226                     \{}
+\DoxyCodeLine{227                         binTree.setRightNode(currentTreeNode, node);}
+\DoxyCodeLine{228                         \textcolor{keywordflow}{return} \textcolor{keyword}{true};}
+\DoxyCodeLine{229                     \}}
+\DoxyCodeLine{230                     \textcolor{keywordflow}{else}}
+\DoxyCodeLine{231                     \{}
+\DoxyCodeLine{232                         currentTreeNode = currentTreeNode-\/>rightChild;}
+\DoxyCodeLine{233                     \}}
+\DoxyCodeLine{234                 \}}
+\DoxyCodeLine{235 }
+\DoxyCodeLine{236                 depth++;}
+\DoxyCodeLine{237             \}}
+\DoxyCodeLine{238         \}}
+\DoxyCodeLine{239 }
+\DoxyCodeLine{240         \textcolor{keywordflow}{return} \textcolor{keyword}{false};}
+\DoxyCodeLine{241     \}}
+\DoxyCodeLine{242 }
+\DoxyCodeLine{243     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{244     \textcolor{keyword}{inline} \mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}} \mbox{\hyperlink{classglib_1_1_k_d_tree_a9739b8a44ca294df63871d455440de63}{KDTree<T>::search}}(T* data)}
+\DoxyCodeLine{245     \{}
+\DoxyCodeLine{246         \textcolor{keywordtype}{int} depth = 0;}
+\DoxyCodeLine{247         \textcolor{keywordtype}{int} indexToTest = 0;}
+\DoxyCodeLine{248         \mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode< KDTreeNode<T>}} >* currentTreeNode = binTree.getRoot();}
+\DoxyCodeLine{249         }
+\DoxyCodeLine{250         \textcolor{keywordflow}{while}(currentTreeNode!=\textcolor{keyword}{nullptr})}
+\DoxyCodeLine{251         \{}
+\DoxyCodeLine{252             \mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}} oKDNode = currentTreeNode-\/>data;}
+\DoxyCodeLine{253             indexToTest = depth \% dimensions;}
+\DoxyCodeLine{254             }
+\DoxyCodeLine{255             \textcolor{keywordtype}{bool} same = std::memcmp(data, oKDNode.data, dimensions*\textcolor{keyword}{sizeof}(T)) == 0;}
+\DoxyCodeLine{256 }
+\DoxyCodeLine{257             \textcolor{keywordflow}{if}(same)}
+\DoxyCodeLine{258             \{}
+\DoxyCodeLine{259                 \textcolor{keywordflow}{return} oKDNode;}
+\DoxyCodeLine{260             \}}
+\DoxyCodeLine{261 }
+\DoxyCodeLine{262             \textcolor{keywordflow}{if}(data[indexToTest] < oKDNode.data[indexToTest])}
+\DoxyCodeLine{263             \{}
+\DoxyCodeLine{264                 \textcolor{comment}{//go left}}
+\DoxyCodeLine{265                 currentTreeNode = currentTreeNode-\/>leftChild;}
+\DoxyCodeLine{266             \}}
+\DoxyCodeLine{267             \textcolor{keywordflow}{else}}
+\DoxyCodeLine{268             \{}
+\DoxyCodeLine{269                 \textcolor{comment}{//go right}}
+\DoxyCodeLine{270                 currentTreeNode = currentTreeNode-\/>rightChild;}
+\DoxyCodeLine{271             \}}
+\DoxyCodeLine{272 }
+\DoxyCodeLine{273             depth++;}
+\DoxyCodeLine{274         \}}
+\DoxyCodeLine{275 }
+\DoxyCodeLine{276         \textcolor{keywordflow}{return} \{\textcolor{keyword}{nullptr}\};}
+\DoxyCodeLine{277     \}}
+\DoxyCodeLine{278 }
+\DoxyCodeLine{279     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{280     \textcolor{keyword}{inline} \mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}} \mbox{\hyperlink{classglib_1_1_k_d_tree_aa0bc377316d78f2361c7e1ce7854385b}{KDTree<T>::searchNearest}}(T* data)}
+\DoxyCodeLine{281     \{}
+\DoxyCodeLine{282         \textcolor{keywordtype}{int} depth = 0;}
+\DoxyCodeLine{283         \textcolor{keywordtype}{int} indexToTest = 0;}
+\DoxyCodeLine{284         \mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode< KDTreeNode<T>}} >* currentTreeNode = binTree.getRoot();}
+\DoxyCodeLine{285 }
+\DoxyCodeLine{286         \textcolor{keywordflow}{if}(currentTreeNode==\textcolor{keyword}{nullptr})}
+\DoxyCodeLine{287         \{}
+\DoxyCodeLine{288             \textcolor{keywordflow}{return} \{\textcolor{keyword}{nullptr}\};}
+\DoxyCodeLine{289         \}}
+\DoxyCodeLine{290 }
+\DoxyCodeLine{291         \textcolor{keywordtype}{int} minDistance = 1 << 30;}
+\DoxyCodeLine{292         \mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}} returnNode = currentTreeNode-\/>data;}
+\DoxyCodeLine{293 }
+\DoxyCodeLine{294         \mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode<KDTreeNode<T>}}>* finalNode = searchRecursive(currentTreeNode, data, \&minDistance, currentTreeNode, indexToTest, \textcolor{keyword}{false});}
+\DoxyCodeLine{295 }
+\DoxyCodeLine{296         \textcolor{keywordflow}{return} \{finalNode-\/>data\};}
+\DoxyCodeLine{297     \}}
+\DoxyCodeLine{298 }
+\DoxyCodeLine{299     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{300     \textcolor{keyword}{inline} \mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode<KDTreeNode<T>}}>* \mbox{\hyperlink{classglib_1_1_k_d_tree}{KDTree<T>::searchRecursive}}(\mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode}}<\mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}}>* tNode, T* data, \textcolor{keywordtype}{int}* minDistance, \mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode}}<\mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}}>* returnVal, \textcolor{keywordtype}{int} axis, \textcolor{keywordtype}{bool} backwards)}
+\DoxyCodeLine{301     \{}
+\DoxyCodeLine{302         \mbox{\hyperlink{structglib_1_1_binary_tree_node}{BinaryTreeNode<KDTreeNode<T>}}>* myVal = returnVal;}
+\DoxyCodeLine{303         \mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}} oKDNode = tNode-\/>data;}
+\DoxyCodeLine{304 }
+\DoxyCodeLine{305         \textcolor{keywordtype}{bool} leftSide = \textcolor{keyword}{false};}
+\DoxyCodeLine{306         \textcolor{keywordtype}{bool} rightSide = \textcolor{keyword}{false};}
+\DoxyCodeLine{307 }
+\DoxyCodeLine{308         \textcolor{keywordflow}{if}(backwards == \textcolor{keyword}{false})}
+\DoxyCodeLine{309         \{}
+\DoxyCodeLine{310             \textcolor{keywordtype}{int} nAxis = (axis+1) \% dimensions;}
+\DoxyCodeLine{311 }
+\DoxyCodeLine{312             \textcolor{keywordflow}{if}(data[axis] < oKDNode.data[axis])}
+\DoxyCodeLine{313             \{}
+\DoxyCodeLine{314                 leftSide = \textcolor{keyword}{true};}
+\DoxyCodeLine{315                 \textcolor{comment}{//go left}}
+\DoxyCodeLine{316                 \textcolor{keywordflow}{if}(tNode-\/>leftChild != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{317                 \{}
+\DoxyCodeLine{318                     \mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}} childNode = tNode-\/>leftChild-\/>data;}
+\DoxyCodeLine{319                     }
+\DoxyCodeLine{320                     myVal = searchRecursive(tNode-\/>leftChild, data, minDistance, tNode-\/>leftChild, nAxis, \textcolor{keyword}{false});}
+\DoxyCodeLine{321                 \}}
+\DoxyCodeLine{322             \}}
+\DoxyCodeLine{323             \textcolor{keywordflow}{else}}
+\DoxyCodeLine{324             \{}
+\DoxyCodeLine{325                 rightSide = \textcolor{keyword}{true};}
+\DoxyCodeLine{326                 \textcolor{comment}{//go right}}
+\DoxyCodeLine{327                 \textcolor{keywordflow}{if}(tNode-\/>rightChild != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{328                 \{}
+\DoxyCodeLine{329                     KDTreeNode<T> childNode = tNode-\/>rightChild-\/>data;}
+\DoxyCodeLine{330                     }
+\DoxyCodeLine{331                     myVal = searchRecursive(tNode-\/>rightChild, data, minDistance, tNode-\/>rightChild, nAxis, \textcolor{keyword}{false});}
+\DoxyCodeLine{332                 \}}
+\DoxyCodeLine{333             \}}
+\DoxyCodeLine{334         \}}
+\DoxyCodeLine{335 }
+\DoxyCodeLine{336         \textcolor{comment}{//now we go backwards}}
+\DoxyCodeLine{337         \textcolor{comment}{//update min dis}}
+\DoxyCodeLine{338 }
+\DoxyCodeLine{339         \textcolor{keywordtype}{double} currDis = 0;}
+\DoxyCodeLine{340         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<this-\/>dimensions; i++)}
+\DoxyCodeLine{341         \{}
+\DoxyCodeLine{342             currDis += \mbox{\hyperlink{classglib_1_1_math_ext_a326e2d44566b6e7aba121b74b0b242a0}{MathExt::sqr}}((\textcolor{keywordtype}{double})data[i] -\/ (\textcolor{keywordtype}{double})oKDNode.data[i]);}
+\DoxyCodeLine{343         \}}
+\DoxyCodeLine{344 }
+\DoxyCodeLine{345         \textcolor{keywordflow}{if}(currDis < *minDistance)}
+\DoxyCodeLine{346         \{}
+\DoxyCodeLine{347             myVal = tNode;}
+\DoxyCodeLine{348             *minDistance = currDis;}
+\DoxyCodeLine{349         \}}
+\DoxyCodeLine{350         }
+\DoxyCodeLine{351         \textcolor{keywordtype}{double} disToAxis = \mbox{\hyperlink{classglib_1_1_math_ext_a326e2d44566b6e7aba121b74b0b242a0}{MathExt::sqr}}( (\textcolor{keywordtype}{double})data[axis] -\/ (\textcolor{keywordtype}{double})oKDNode.data[axis] );}
+\DoxyCodeLine{352 }
+\DoxyCodeLine{353         \textcolor{keywordtype}{int} tempAxis = (axis+1) \% dimensions;}
+\DoxyCodeLine{354         }
+\DoxyCodeLine{355         \textcolor{keywordflow}{if}(*minDistance > disToAxis)}
+\DoxyCodeLine{356         \{}
+\DoxyCodeLine{357             \textcolor{comment}{//potentially on both sides}}
+\DoxyCodeLine{358 }
+\DoxyCodeLine{359             \textcolor{comment}{//left side}}
+\DoxyCodeLine{360             \textcolor{keywordflow}{if}(tNode-\/>leftChild != \textcolor{keyword}{nullptr} \&\& !leftSide)}
+\DoxyCodeLine{361             \{}
+\DoxyCodeLine{362                 KDTreeNode<T> childNode = tNode-\/>leftChild-\/>data;}
+\DoxyCodeLine{363                     }
+\DoxyCodeLine{364                 myVal = searchRecursive(tNode-\/>leftChild, data, minDistance, myVal, tempAxis, \textcolor{keyword}{true});}
+\DoxyCodeLine{365             \}}
+\DoxyCodeLine{366             }
+\DoxyCodeLine{367             tempAxis = (axis+1) \% dimensions;}
+\DoxyCodeLine{368             \textcolor{comment}{//right side}}
+\DoxyCodeLine{369             \textcolor{keywordflow}{if}(tNode-\/>rightChild != \textcolor{keyword}{nullptr} \&\& !rightSide)}
+\DoxyCodeLine{370             \{}
+\DoxyCodeLine{371                 KDTreeNode<T> childNode = tNode-\/>rightChild-\/>data;}
+\DoxyCodeLine{372                 }
+\DoxyCodeLine{373                 myVal = searchRecursive(tNode-\/>rightChild, data, minDistance, myVal, tempAxis, \textcolor{keyword}{true});}
+\DoxyCodeLine{374             \}}
+\DoxyCodeLine{375         \}}
+\DoxyCodeLine{376         \textcolor{keywordflow}{else}}
+\DoxyCodeLine{377         \{}
+\DoxyCodeLine{378             \textcolor{comment}{//potentially only on one side}}
+\DoxyCodeLine{379             \textcolor{comment}{//traverse down like normal I think}}
+\DoxyCodeLine{380                 }
+\DoxyCodeLine{381             \textcolor{keywordflow}{if}(data[axis] < oKDNode.data[axis])}
+\DoxyCodeLine{382             \{}
+\DoxyCodeLine{383                 \textcolor{comment}{//go left}}
+\DoxyCodeLine{384                 \textcolor{keywordflow}{if}(tNode-\/>leftChild != \textcolor{keyword}{nullptr} \&\& !leftSide)}
+\DoxyCodeLine{385                 \{}
+\DoxyCodeLine{386                     KDTreeNode<T> childNode = tNode-\/>leftChild-\/>data;}
+\DoxyCodeLine{387                 }
+\DoxyCodeLine{388                     myVal = searchRecursive(tNode-\/>leftChild, data, minDistance, myVal, tempAxis, \textcolor{keyword}{true});}
+\DoxyCodeLine{389                 \}}
+\DoxyCodeLine{390             \}}
+\DoxyCodeLine{391             \textcolor{keywordflow}{else}}
+\DoxyCodeLine{392             \{}
+\DoxyCodeLine{393                 \textcolor{comment}{//go right}}
+\DoxyCodeLine{394                 \textcolor{keywordflow}{if}(tNode-\/>rightChild != \textcolor{keyword}{nullptr} \&\& !rightSide)}
+\DoxyCodeLine{395                 \{}
+\DoxyCodeLine{396                     KDTreeNode<T> childNode = tNode-\/>rightChild-\/>data;}
+\DoxyCodeLine{397                 }
+\DoxyCodeLine{398                     myVal = searchRecursive(tNode-\/>rightChild, data, minDistance, myVal, tempAxis, \textcolor{keyword}{true});}
+\DoxyCodeLine{399                 \}}
+\DoxyCodeLine{400             \}}
+\DoxyCodeLine{401         \}}
+\DoxyCodeLine{402         }
+\DoxyCodeLine{403         \textcolor{keywordflow}{return} myVal;}
+\DoxyCodeLine{404     \}}
+\DoxyCodeLine{405 }
+\DoxyCodeLine{406     \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
+\DoxyCodeLine{407     \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_k_d_tree_aa49f3802b6738d4094ea72ee6decb7af}{KDTree<T>::balance}}()}
+\DoxyCodeLine{408     \{}
+\DoxyCodeLine{409         \textcolor{comment}{//sort elements by dimension with the most variance}}
+\DoxyCodeLine{410         \textcolor{comment}{//dividing the list into halfs selecting the median of each list to add to the list next.}}
+\DoxyCodeLine{411         \textcolor{comment}{//takes O(n*log(n)*log(n)) where n is the amount of values}}
+\DoxyCodeLine{412 }
+\DoxyCodeLine{413         \textcolor{keyword}{struct }Range}
+\DoxyCodeLine{414         \{}
+\DoxyCodeLine{415             \textcolor{keywordtype}{int} start;}
+\DoxyCodeLine{416             \textcolor{keywordtype}{int} end;}
+\DoxyCodeLine{417         \};}
+\DoxyCodeLine{418 }
+\DoxyCodeLine{419         std::vector< KDTreeNode<T> > tempPalette = binTree.getAllElements();}
+\DoxyCodeLine{420         std::vector< KDTreeNode<T> > addInOrder = std::vector< KDTreeNode<T> >();}
+\DoxyCodeLine{421         std::vector<Range> ranges = std::vector<Range>();}
+\DoxyCodeLine{422         std::vector<Range> ranges2 = std::vector<Range>();}
+\DoxyCodeLine{423 }
+\DoxyCodeLine{424         \textcolor{keywordtype}{int} sortBy = 0;}
+\DoxyCodeLine{425         \textcolor{keywordtype}{int} size = tempPalette.size();}
+\DoxyCodeLine{426 }
+\DoxyCodeLine{427         ranges.push\_back(\{0, size\});}
+\DoxyCodeLine{428         }
+\DoxyCodeLine{429         \textcolor{keywordflow}{while}(addInOrder.size() < size)}
+\DoxyCodeLine{430         \{}
+\DoxyCodeLine{431             \textcolor{keywordflow}{for}(Range r : ranges)}
+\DoxyCodeLine{432             \{}
+\DoxyCodeLine{433                 \textcolor{keywordtype}{int} rSize = (r.end -\/ r.start);}
+\DoxyCodeLine{434 }
+\DoxyCodeLine{435                 \textcolor{keywordflow}{if}(rSize > 1)}
+\DoxyCodeLine{436                 \{}
+\DoxyCodeLine{437                     \textcolor{comment}{//sort by dimension with the most variance}}
+\DoxyCodeLine{438                     \textcolor{keywordtype}{double}* means = \textcolor{keyword}{new} \textcolor{keywordtype}{double}[dimensions];}
+\DoxyCodeLine{439                     \textcolor{keywordtype}{double}* variance = \textcolor{keyword}{new} \textcolor{keywordtype}{double}[dimensions];}
+\DoxyCodeLine{440                     \textcolor{keywordtype}{double} mult = 1.0/rSize;}
+\DoxyCodeLine{441                     }
+\DoxyCodeLine{442                     \textcolor{comment}{//find mean}}
+\DoxyCodeLine{443                     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=r.start; i<r.end; i++)}
+\DoxyCodeLine{444                     \{}
+\DoxyCodeLine{445                         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} d=0; d<dimensions; d++)}
+\DoxyCodeLine{446                         \{}
+\DoxyCodeLine{447                             means[d] += ((\mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}})tempPalette[i]).data[d] * mult;}
+\DoxyCodeLine{448                         \}}
+\DoxyCodeLine{449                     \}}
+\DoxyCodeLine{450 }
+\DoxyCodeLine{451                     \textcolor{comment}{//find variance}}
+\DoxyCodeLine{452                     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=r.start; i<r.end; i++)}
+\DoxyCodeLine{453                     \{}
+\DoxyCodeLine{454                         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} d=0; d<dimensions; d++)}
+\DoxyCodeLine{455                         \{}
+\DoxyCodeLine{456                             \textcolor{keywordtype}{double} m = (means[d] -\/ ((\mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}})tempPalette[i]).data[d]);}
+\DoxyCodeLine{457                             variance[d] += m*m;}
+\DoxyCodeLine{458                         \}}
+\DoxyCodeLine{459                     \}}
+\DoxyCodeLine{460 }
+\DoxyCodeLine{461                     \textcolor{comment}{//sortby = index of max variance}}
+\DoxyCodeLine{462                     sortBy = 0;}
+\DoxyCodeLine{463                     \textcolor{keywordtype}{double} preMax = variance[0];}
+\DoxyCodeLine{464                     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} d=0; d<dimensions; d++)}
+\DoxyCodeLine{465                     \{}
+\DoxyCodeLine{466                         \textcolor{keywordflow}{if}(variance[d] > preMax)}
+\DoxyCodeLine{467                         \{}
+\DoxyCodeLine{468                             preMax = variance[d];}
+\DoxyCodeLine{469                             sortBy = d;}
+\DoxyCodeLine{470                         \}}
+\DoxyCodeLine{471                     \}}
+\DoxyCodeLine{472 }
+\DoxyCodeLine{473                     Sort::mergeSort<KDTreeNode<T>>(tempPalette.data()+r.start, rSize, [sortBy](\mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}} a, \mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}} b) -\/> \textcolor{keywordtype}{bool}\{}
+\DoxyCodeLine{474                         \textcolor{keywordflow}{return} a.data[sortBy] < b.data[sortBy];}
+\DoxyCodeLine{475                     \});}
+\DoxyCodeLine{476 }
+\DoxyCodeLine{477                     \textcolor{keywordtype}{int} midIndex = (r.start + r.end)/2;}
+\DoxyCodeLine{478 }
+\DoxyCodeLine{479                     \mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}} kdt = (\mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}})tempPalette[midIndex];}
+\DoxyCodeLine{480 }
+\DoxyCodeLine{481                     addInOrder.push\_back(kdt);}
+\DoxyCodeLine{482 }
+\DoxyCodeLine{483                     ranges2.push\_back( \{r.start, midIndex-\/1\} );}
+\DoxyCodeLine{484                     ranges2.push\_back( \{midIndex+1, r.end\} );}
+\DoxyCodeLine{485                 \}}
+\DoxyCodeLine{486                 \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (rSize==0)}
+\DoxyCodeLine{487                 \{}
+\DoxyCodeLine{488                     addInOrder.push\_back(tempPalette[r.start]);}
+\DoxyCodeLine{489                 \}}
+\DoxyCodeLine{490                 \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (rSize==1)}
+\DoxyCodeLine{491                 \{}
+\DoxyCodeLine{492                     addInOrder.push\_back(tempPalette[r.start]);}
+\DoxyCodeLine{493                     \textcolor{keywordflow}{if}(r.end != size)}
+\DoxyCodeLine{494                     \{}
+\DoxyCodeLine{495                         addInOrder.push\_back(tempPalette[r.end]);}
+\DoxyCodeLine{496                     \}}
+\DoxyCodeLine{497                 \}}
+\DoxyCodeLine{498             \}}
+\DoxyCodeLine{499 }
+\DoxyCodeLine{500             ranges = ranges2;}
+\DoxyCodeLine{501             ranges2.clear();}
+\DoxyCodeLine{502         \}}
+\DoxyCodeLine{503 }
+\DoxyCodeLine{504         \textcolor{comment}{//after everything above done}}
+\DoxyCodeLine{505         binTree = \mbox{\hyperlink{classglib_1_1_binary_tree}{BinaryTree< KDTreeNode<T>}} >();}
+\DoxyCodeLine{506         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<addInOrder.size(); i++)}
+\DoxyCodeLine{507         \{}
+\DoxyCodeLine{508             \mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTreeNode<T>}} k = addInOrder[i];}
+\DoxyCodeLine{509             add( k.data );}
+\DoxyCodeLine{510         \}}
+\DoxyCodeLine{511     \}}
+\DoxyCodeLine{512 }
+\DoxyCodeLine{513 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

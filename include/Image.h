@@ -1,6 +1,6 @@
 #pragma once
 #include "ColorPalette.h"
-#include <string>
+#include "File.h"
 #include "MathExt.h"
 #include "Opti.h"
 
@@ -334,21 +334,6 @@ namespace glib
 		 * @param c 
 		 */
 		void drawPixel(double x, double y, Color c);
-
-		/**
-		 * @brief Saves a image as a .bmp file.
-		 * 		Note that .bmp can not save alpha values.
-		 * @param filename 
-		 * 		The output name of the file.
-		 * @param alphaThreshold 
-		 * 		A threshold to use for alpha. Anything below this threshold will be black.
-		 * 		Default is 255
-		 * @param greyscale 
-		 * 		Whether to convert the image to greyscale before saving. This only affects the output file
-		 * 		and not the image data in memory.
-		 * 		Default is false
-		 */
-		void saveBMP(std::string filename, unsigned char alphaThreshold = 255, bool greyscale = false);
 		
 		/**
 		 * @brief Saves a image as a .bmp file.
@@ -364,49 +349,7 @@ namespace glib
 		 * 		Default is false
 		 */
 		void saveBMP(File file, unsigned char alphaThreshold = 255, bool greyscale = false);
-		
-		/**
-		 * @brief Saves a image as a .bmp file.
-		 * 		Note that .bmp can not save alpha values.
-		 * @param filename 
-		 * 		The output name of the file.
-		 * @param alphaThreshold 
-		 * 		A threshold to use for alpha. Anything below this threshold will be black.
-		 * 		Default is 255
-		 * @param greyscale 
-		 * 		Whether to convert the image to greyscale before saving. This only affects the output file
-		 * 		and not the image data in memory.
-		 * 		Default is false
-		 */
-		void saveBMP(std::wstring filename, unsigned char alphaThreshold = 255, bool greyscale = false);
-		
-		/**
-		 * @brief Save an image as a .gif file.
-		 * 		Can not save animations.
-		 * 		Must use a palette of 256 or less colors. Will be converted to a power of 2.
-		 * 		Can use transparency but only 1 value of transparency.
-		 * @param filename 
-		 * 		The output name of the file.
-		 * @param paletteSize 
-		 * 		The size of the palette to use if the image does not have a valid palette.
-		 * 		256 is the maximum size.
-		 * 		Default is 256.
-		 * @param dither 
-		 * 		Whether to use FloydSteinburg dithering for saving the image.
-		 * 		Default is false.
-		 * @param saveAlpha 
-		 * 		Whether to save an alpha value. Uses 1 value in the palette.
-		 * 		Default is true.
-		 * @param alphaThreshold
-		 * 		Threshold on whether a color is visible or completely transparent.
-		 * 		Default is 127 
-		 * @param greyscale 
-		 * 		Whether to convert the image to greyscale before saving. This only affects the output file
-		 * 		and not the image data in memory.
-		 * 		Default is false
-		 */
-		void saveGIF(std::string filename, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127, bool greyscale = false);
-		
+
 		/**
 		 * @brief Save an image as a .gif file.
 		 * 		Can not save animations.
@@ -433,54 +376,6 @@ namespace glib
 		 * 		Default is false
 		 */
 		void saveGIF(File file, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127, bool greyscale = false);
-		
-		/**
-		 * @brief Save an image as a .gif file.
-		 * 		Can not save animations.
-		 * 		Must use a palette of 256 or less colors. Will be converted to a power of 2.
-		 * 		Can use transparency but only 1 value of transparency.
-		 * @param filename 
-		 * 		The output name of the file.
-		 * @param paletteSize 
-		 * 		The size of the palette to use if the image does not have a valid palette.
-		 * 		256 is the maximum size.
-		 * 		Default is 256.
-		 * @param dither 
-		 * 		Whether to use FloydSteinburg dithering for saving the image.
-		 * 		Default is false.
-		 * @param saveAlpha 
-		 * 		Whether to save an alpha value. Uses 1 value in the palette.
-		 * 		Default is true.
-		 * @param alphaThreshold
-		 * 		Threshold on whether a color is visible or completely transparent.
-		 * 		Default is 127 
-		 * @param greyscale 
-		 * 		Whether to convert the image to greyscale before saving. This only affects the output file
-		 * 		and not the image data in memory.
-		 * 		Default is false
-		 */
-		void saveGIF(std::wstring filename, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127, bool greyscale = false);
-		
-		/**
-		 * @brief Save an image as a .png file.
-		 * 		Can not save animations
-		 * 		Can save full alpha transparency.
-		 * 
-		 * @param filename 
-		 * 		The output file name.
-		 * @param saveAlpha 
-		 * 		Determines whether to save the alpha values for the image.
-		 * 		Default is true.
-		 * @param greyscale 
-		 * 		Whether to convert the image to greyscale before saving. This only affects the output file
-		 * 		and not the image data in memory.
-		 * 		Default is false
-		 * @param strongCompression 
-		 * 		Determines whether to use better but slower compression to save the image. This will use different filters
-		 * 		and custom huffman tables in the deflate method.
-		 * 		Default is false
-		 */
-		void savePNG(std::string filename, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false);
 
 		/**
 		 * @brief Save an image as a .png file.
@@ -504,46 +399,12 @@ namespace glib
 		void savePNG(File file, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false);
 
 		/**
-		 * @brief Save an image as a .png file.
-		 * 		Can not save animations
-		 * 		Can save full alpha transparency.
-		 * 
-		 * @param filename 
-		 * 		The output file name.
-		 * @param saveAlpha 
-		 * 		Determines whether to save the alpha values for the image.
-		 * 		Default is true.
-		 * @param greyscale 
-		 * 		Whether to convert the image to greyscale before saving. This only affects the output file
-		 * 		and not the image data in memory.
-		 * 		Default is false
-		 * @param strongCompression 
-		 * 		Determines whether to use better but slower compression to save the image. This will use different filters
-		 * 		and custom huffman tables in the deflate method.
-		 * 		Default is false
-		 */
-		void savePNG(std::wstring filename, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false);
-		
-		/**
-		 * @brief Not implemented. Do not use.
-		 * 
-		 * @param filename 
-		 */
-		void saveJPG(std::string filename);
-
-		/**
 		 * @brief Not implemented. Do not use.
 		 * 
 		 * @param filename 
 		 */
 		void saveJPG(File file);
 
-		/**
-		 * @brief Not implemented. Do not use.
-		 * 
-		 * @param filename 
-		 */
-		void saveJPG(std::wstring filename);
 	private:
 		int width = 0;
 		int height = 0;

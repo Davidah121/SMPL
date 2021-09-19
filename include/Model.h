@@ -1,5 +1,6 @@
 #pragma once
 #include "MathExt.h"
+#include "File.h"
 
 namespace glib
 {
@@ -175,20 +176,12 @@ namespace glib
          * @brief Loads a model from a file.
          *      Not yet implemented
          * 
-         * @param filename 
+         * @param file 
          */
-        void loadModel(std::string filename);
-
-        /**
-         * @brief Loads a model from a file.
-         *      Not yet implemented
-         * 
-         * @param filename 
-         */
-        void loadModel(std::wstring filename);
+        void loadModel(File file);
         
     private:
-        void loadOBJ(std::wstring filename);
+        void loadOBJ(File file);
 
         std::vector<double> vertexInfo = std::vector<double>();
         std::vector<VertexFormat> orderInfo = std::vector<VertexFormat>();

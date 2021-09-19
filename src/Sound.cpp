@@ -358,19 +358,18 @@ namespace glib
         isShallowCopy = false;
     }
 
-    void Sound::loadSound(std::string filename)
+    void Sound::loadSound(File file)
     {
         //load uncompressed .WAV
         dispose();
 
-        SimpleFile f = SimpleFile(filename, SimpleFile::READ);
+        SimpleFile f = SimpleFile(file, SimpleFile::READ);
         std::vector<unsigned char> bytes = f.readFullFileAsBytes();
         f.close();
 
-        int indexOfDot = filename.find_last_of('.');
-        std::string ext = filename.substr(indexOfDot, filename.size()-indexOfDot);
+        std::wstring ext = file.getExtension();
 
-        if(ext == ".wav")
+        if(ext == L".wav")
         {
             loadWAV(bytes);
         }
@@ -533,7 +532,7 @@ namespace glib
         length = d;
     }
 
-    void Sound::saveWAV(std::string filename)
+    void Sound::saveWAV(File file)
     {
         //Structures that could potentially help
         struct RIFF_HEADER
@@ -562,7 +561,7 @@ namespace glib
             std::vector<unsigned char> data;
         };
 
-        SimpleFile f = SimpleFile(filename, SimpleFile::WRITE | SimpleFile::ASCII);
+        SimpleFile f = SimpleFile(file, SimpleFile::WRITE | SimpleFile::ASCII);
 
         if(f.isOpen())
         {

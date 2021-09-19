@@ -1,0 +1,150 @@
+\hypertarget{classglib_1_1_polygon2_d}{}\doxysection{glib\+::Polygon2D Class Reference}
+\label{classglib_1_1_polygon2_d}\index{glib::Polygon2D@{glib::Polygon2D}}
+Inheritance diagram for glib\+::Polygon2D\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classglib_1_1_polygon2_d}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_polygon2_d_a22a57b8abccf0ae0e3ed08e1ac032180}\label{classglib_1_1_polygon2_d_a22a57b8abccf0ae0e3ed08e1ac032180}} 
+{\bfseries Polygon2D} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} object All transforms affect this shape. Maintains a list of points that make up the shape. Collision methods exist only for convex polygons. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_polygon2_d_a4c727bc222264e71254f81b52f3b2bca}\label{classglib_1_1_polygon2_d_a4c727bc222264e71254f81b52f3b2bca}} 
+{\bfseries $\sim$\+Polygon2D} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_polygon2_d_a79916389debbe804b82828c18be8fda2}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_polygon2_d_aa084a57604f6b06eda4e7a8a9ea47eba}{add\+Vertex}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p)
+\begin{DoxyCompactList}\small\item\em Adds a vertex to the polygon. The center point will be updated as well as whether it is convex or concave. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_polygon2_d_a9e03037a9908ebdb6c8ba75669974cfc}{get\+Vertex}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets a vertex from the polygon at the specified index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_polygon2_d_a40a203855df394bb40d710379f266e5f}{get\+Center\+Point}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Center Point of the polygon. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_polygon2_d_a7f56d45f6b5f8a6c0aa585cf53b751a7}\label{classglib_1_1_polygon2_d_a7f56d45f6b5f8a6c0aa585cf53b751a7}} 
+void {\bfseries clear} ()
+\begin{DoxyCompactList}\small\item\em Clears the list of vertices. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classglib_1_1_polygon2_d_adbde45038ab1978da11981fb8c067391}{size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the amount of vertices the polygon has. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_polygon2_d_a68dce0ad129be744007998c0e6fd4ced}{get\+Convex}} ()
+\begin{DoxyCompactList}\small\item\em Returns whether the polygon is convex or concave. If the shape is concave, none of the pre-\/made collision methods will work. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_polygon2_d_a34fe137f3f882669fcc3beb2fc6e9606}{generate\+Bounding\+Radius}} ()
+\begin{DoxyCompactList}\small\item\em Generates a bounding radius for the polygon. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_polygon2_d_a47b2c4b26648cb212f2020d71995119b}\label{classglib_1_1_polygon2_d_a47b2c4b26648cb212f2020d71995119b}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_polygon2_d_aa084a57604f6b06eda4e7a8a9ea47eba}\label{classglib_1_1_polygon2_d_aa084a57604f6b06eda4e7a8a9ea47eba}} 
+\index{glib::Polygon2D@{glib::Polygon2D}!addVertex@{addVertex}}
+\index{addVertex@{addVertex}!glib::Polygon2D@{glib::Polygon2D}}
+\doxysubsubsection{\texorpdfstring{addVertex()}{addVertex()}}
+{\footnotesize\ttfamily void glib\+::\+Polygon2\+D\+::add\+Vertex (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p }\end{DoxyParamCaption})}
+
+
+
+Adds a vertex to the polygon. The center point will be updated as well as whether it is convex or concave. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_polygon2_d_a34fe137f3f882669fcc3beb2fc6e9606}\label{classglib_1_1_polygon2_d_a34fe137f3f882669fcc3beb2fc6e9606}} 
+\index{glib::Polygon2D@{glib::Polygon2D}!generateBoundingRadius@{generateBoundingRadius}}
+\index{generateBoundingRadius@{generateBoundingRadius}!glib::Polygon2D@{glib::Polygon2D}}
+\doxysubsubsection{\texorpdfstring{generateBoundingRadius()}{generateBoundingRadius()}}
+{\footnotesize\ttfamily double glib\+::\+Polygon2\+D\+::generate\+Bounding\+Radius (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Generates a bounding radius for the polygon. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_shape_aa3838fc7d35a5ba71487502d0b51f25a}{glib\+::\+Shape}}.
+
+\mbox{\Hypertarget{classglib_1_1_polygon2_d_a40a203855df394bb40d710379f266e5f}\label{classglib_1_1_polygon2_d_a40a203855df394bb40d710379f266e5f}} 
+\index{glib::Polygon2D@{glib::Polygon2D}!getCenterPoint@{getCenterPoint}}
+\index{getCenterPoint@{getCenterPoint}!glib::Polygon2D@{glib::Polygon2D}}
+\doxysubsubsection{\texorpdfstring{getCenterPoint()}{getCenterPoint()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} glib\+::\+Polygon2\+D\+::get\+Center\+Point (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Center Point of the polygon. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_polygon2_d_a79916389debbe804b82828c18be8fda2}\label{classglib_1_1_polygon2_d_a79916389debbe804b82828c18be8fda2}} 
+\index{glib::Polygon2D@{glib::Polygon2D}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::Polygon2D@{glib::Polygon2D}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Polygon2\+D\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_shape}{glib\+::\+Shape}}.
+
+\mbox{\Hypertarget{classglib_1_1_polygon2_d_a68dce0ad129be744007998c0e6fd4ced}\label{classglib_1_1_polygon2_d_a68dce0ad129be744007998c0e6fd4ced}} 
+\index{glib::Polygon2D@{glib::Polygon2D}!getConvex@{getConvex}}
+\index{getConvex@{getConvex}!glib::Polygon2D@{glib::Polygon2D}}
+\doxysubsubsection{\texorpdfstring{getConvex()}{getConvex()}}
+{\footnotesize\ttfamily bool glib\+::\+Polygon2\+D\+::get\+Convex (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns whether the polygon is convex or concave. If the shape is concave, none of the pre-\/made collision methods will work. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_polygon2_d_a9e03037a9908ebdb6c8ba75669974cfc}\label{classglib_1_1_polygon2_d_a9e03037a9908ebdb6c8ba75669974cfc}} 
+\index{glib::Polygon2D@{glib::Polygon2D}!getVertex@{getVertex}}
+\index{getVertex@{getVertex}!glib::Polygon2D@{glib::Polygon2D}}
+\doxysubsubsection{\texorpdfstring{getVertex()}{getVertex()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} glib\+::\+Polygon2\+D\+::get\+Vertex (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets a vertex from the polygon at the specified index. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_polygon2_d_adbde45038ab1978da11981fb8c067391}\label{classglib_1_1_polygon2_d_adbde45038ab1978da11981fb8c067391}} 
+\index{glib::Polygon2D@{glib::Polygon2D}!size@{size}}
+\index{size@{size}!glib::Polygon2D@{glib::Polygon2D}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily size\+\_\+t glib\+::\+Polygon2\+D\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the amount of vertices the polygon has. 
+
+\begin{DoxyReturn}{Returns}
+size\+\_\+t 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Shape.\+h\end{DoxyCompactItemize}
