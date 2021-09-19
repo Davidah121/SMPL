@@ -1,0 +1,122 @@
+\hypertarget{_neural_network_8h_source}{}\doxysection{Neural\+Network.\+h}
+\label{_neural_network_8h_source}\index{include/NeuralNetwork.h@{include/NeuralNetwork.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}SimpleXml.h"{}}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{6 \{}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_neuron}{Neuron}}}
+\DoxyCodeLine{9     \{}
+\DoxyCodeLine{10     \textcolor{keyword}{public}:}
+\DoxyCodeLine{17         \mbox{\hyperlink{classglib_1_1_neuron_a1cc4492828e88720ac4310aef4db292b}{Neuron}}();}
+\DoxyCodeLine{18 }
+\DoxyCodeLine{23         \mbox{\hyperlink{classglib_1_1_neuron_a3b0e9b8b9e31396c784b247f97d02c67}{\string~Neuron}}();}
+\DoxyCodeLine{24 }
+\DoxyCodeLine{30         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_neuron_a38ceb0b4d8d81a85aba410e1ca53ad06}{setActivation}}(\textcolor{keywordtype}{double} v);}
+\DoxyCodeLine{31 }
+\DoxyCodeLine{37         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_neuron_a8b62a4aa2b3b4d69913e64a98833cc49}{getActivation}}();}
+\DoxyCodeLine{38 }
+\DoxyCodeLine{45         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_neuron_ab08a8fe87fd38cf6ad5c555be49cac56}{getWeight}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{46 }
+\DoxyCodeLine{53         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_neuron_ae23bd1915806ab058814fd700204d552}{setWeight}}(\textcolor{keywordtype}{int} index, \textcolor{keywordtype}{double} v);}
+\DoxyCodeLine{54 }
+\DoxyCodeLine{61         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_neuron_a0a5456c90d9e90da430b791d5e5a13a6}{resetWeights}}(\textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_neuron_ab72b7f3b5919e47daf63fbd4e5a21107}{size}});}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{69         \textcolor{keywordtype}{double}\& \mbox{\hyperlink{classglib_1_1_neuron_ae32489b65522b89d0f7483f134fcb53f}{operator[]}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{76         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_neuron_ab72b7f3b5919e47daf63fbd4e5a21107}{size}}();}
+\DoxyCodeLine{77 }
+\DoxyCodeLine{85         \mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}* \mbox{\hyperlink{classglib_1_1_neuron_a2deef4a3ff7e53573f0fb5a6c856e143}{exportTestInformation}}(\textcolor{keywordtype}{int} count);}
+\DoxyCodeLine{86     \textcolor{keyword}{private}:}
+\DoxyCodeLine{87         \textcolor{keywordtype}{double} activation = 0.0;}
+\DoxyCodeLine{88         std::vector<double> weightsToConnections = std::vector<double>();}
+\DoxyCodeLine{89     \};}
+\DoxyCodeLine{90 }
+\DoxyCodeLine{91     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_neural_layer}{NeuralLayer}}}
+\DoxyCodeLine{92     \{}
+\DoxyCodeLine{93     \textcolor{keyword}{public}:}
+\DoxyCodeLine{105         \mbox{\hyperlink{classglib_1_1_neural_layer_ac1c650d2a5940a7bae02c51a6647a1a1}{NeuralLayer}}(\textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_neural_layer_a2e2deffc28acdb75e4308330925b0c76}{size}}, \mbox{\hyperlink{classglib_1_1_neural_layer}{NeuralLayer}}* nextLayer, \mbox{\hyperlink{classglib_1_1_neural_layer}{NeuralLayer}}* previousLayer);}
+\DoxyCodeLine{106 }
+\DoxyCodeLine{111         \mbox{\hyperlink{classglib_1_1_neural_layer_a39e6dfecc066d572ff18934d6c00fcbc}{\string~NeuralLayer}}();}
+\DoxyCodeLine{112 }
+\DoxyCodeLine{119         \mbox{\hyperlink{classglib_1_1_neural_layer}{NeuralLayer}}* \mbox{\hyperlink{classglib_1_1_neural_layer_ac8f03669f01a79b36bb6857c550cbc56}{getNextLayer}}();}
+\DoxyCodeLine{120 }
+\DoxyCodeLine{127         \mbox{\hyperlink{classglib_1_1_neural_layer}{NeuralLayer}}* \mbox{\hyperlink{classglib_1_1_neural_layer_a77ef5e7c3706a85c2db2380bd6c197aa}{getPreviousLayer}}();}
+\DoxyCodeLine{128 }
+\DoxyCodeLine{134         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_neural_layer_a5dac06e89e999df26f40c7502bb20bb8}{setNextLayer}}(\mbox{\hyperlink{classglib_1_1_neural_layer}{NeuralLayer}}* n);}
+\DoxyCodeLine{135 }
+\DoxyCodeLine{141         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_neural_layer_a325a9dc95ac0aaf09e99b327282a7870}{setPreviousLayer}}(\mbox{\hyperlink{classglib_1_1_neural_layer}{NeuralLayer}}* n);}
+\DoxyCodeLine{142         }
+\DoxyCodeLine{149         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_neural_layer_a31f0da0ce5ac027007adeed9a5661652}{setNeuronActivation}}(\textcolor{keywordtype}{int} index, \textcolor{keywordtype}{float} activation);}
+\DoxyCodeLine{150 }
+\DoxyCodeLine{157         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_neural_layer_ae342d20832f5aeb7240f436cdafd6a04}{getNeuronActivation}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{158 }
+\DoxyCodeLine{165         \mbox{\hyperlink{classglib_1_1_neuron}{Neuron}}\& \mbox{\hyperlink{classglib_1_1_neural_layer_a9505079a44282540285f4054558d54ef}{getNeuron}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{166 }
+\DoxyCodeLine{172         std::vector<Neuron>\& \mbox{\hyperlink{classglib_1_1_neural_layer_a75fafa615fb01ea4ea505f691eded670}{getListOfNeurons}}();}
+\DoxyCodeLine{173 }
+\DoxyCodeLine{181         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_neural_layer_a49c5b599eb9fcff365ec5716a4e512a5}{activationFunction}}(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{182 }
+\DoxyCodeLine{190         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_neural_layer_ae8af5f9b958cab1e6274f06053a1907d}{derivativeActivationFunction}}(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{191 }
+\DoxyCodeLine{196         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_neural_layer_a5adf1b3b39b15027d40458bf29dd77a9}{run}}();}
+\DoxyCodeLine{197 }
+\DoxyCodeLine{203         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_neural_layer_a2e2deffc28acdb75e4308330925b0c76}{size}}();}
+\DoxyCodeLine{204 }
+\DoxyCodeLine{209         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_neural_layer_a78c1750f47380aaf66fd01b849c5cee6}{resetWeightsBias}}();}
+\DoxyCodeLine{210 }
+\DoxyCodeLine{217         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_neural_layer_ad59d3f18ab67833880391dfdaaf4fe7e}{setBiasValue}}(\textcolor{keywordtype}{int} index, \textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{218 }
+\DoxyCodeLine{224         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_neural_layer_ac3a7e226fc04d08c553d40834912838f}{getBiasSize}}();}
+\DoxyCodeLine{225 }
+\DoxyCodeLine{233         \mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}* \mbox{\hyperlink{classglib_1_1_neural_layer_a25acf52646c1e11e925f289d284032c1}{exportTestInformation}}(\textcolor{keywordtype}{int} count);}
+\DoxyCodeLine{234 }
+\DoxyCodeLine{241         \mbox{\hyperlink{classglib_1_1_neuron}{Neuron}}\& \mbox{\hyperlink{classglib_1_1_neural_layer_aa53be4e2ce87a719c1fd0866e9b51c25}{operator[]}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{242     \textcolor{keyword}{private}:}
+\DoxyCodeLine{243         \textcolor{keywordtype}{int} length = 0;}
+\DoxyCodeLine{244         std::vector<Neuron> neurons = std::vector<Neuron>();}
+\DoxyCodeLine{245         \mbox{\hyperlink{classglib_1_1_neural_layer}{NeuralLayer}}* nextLayer = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{246         \mbox{\hyperlink{classglib_1_1_neural_layer}{NeuralLayer}}* previousLayer = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{247         }
+\DoxyCodeLine{248         std::vector<double> biasToConnections = std::vector<double>();}
+\DoxyCodeLine{249     \};}
+\DoxyCodeLine{250 }
+\DoxyCodeLine{251     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_neural_network}{NeuralNetwork}}}
+\DoxyCodeLine{252     \{}
+\DoxyCodeLine{253     \textcolor{keyword}{public}:}
+\DoxyCodeLine{258         \mbox{\hyperlink{classglib_1_1_neural_network_ae916a9424434576feebfecd556123197}{NeuralNetwork}}();}
+\DoxyCodeLine{259 }
+\DoxyCodeLine{264         \mbox{\hyperlink{classglib_1_1_neural_network_a726aab12ab498b2348e28158236351ca}{\string~NeuralNetwork}}();}
+\DoxyCodeLine{265 }
+\DoxyCodeLine{272         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_neural_network_a8c7b0742f9d64d962af4f72f4bfac691}{addLayerToEnd}}(\textcolor{keywordtype}{int} sizeOfLayer);}
+\DoxyCodeLine{273 }
+\DoxyCodeLine{280         std::vector<double> \mbox{\hyperlink{classglib_1_1_neural_network_a79b15647912d476b325c797046be1243}{run}}(std::vector<double> inputs);}
+\DoxyCodeLine{281 }
+\DoxyCodeLine{289         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_neural_network_ae091659a8a155c396553542205b044a8}{train}}(std::vector<std::vector<double>> inputs, std::vector<std::vector<double>> expectedOutput);}
+\DoxyCodeLine{290 }
+\DoxyCodeLine{295         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_neural_network_a293ddc2ad62dbbecfc4a1a9ce0c0d322}{resetNetwork}}();}
+\DoxyCodeLine{296 }
+\DoxyCodeLine{302         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_neural_network_a24c82ae7f7afdf33115adfe6d19f34cc}{size}}();}
+\DoxyCodeLine{303 }
+\DoxyCodeLine{309         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_neural_network_a97068546512eee7ff98f4c4a1b204718}{getLearningRate}}();}
+\DoxyCodeLine{310 }
+\DoxyCodeLine{318         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_neural_network_ae5d79497ed7c92c463ec64880dcfd2b0}{setLearningRate}}(\textcolor{keywordtype}{double} v);}
+\DoxyCodeLine{319         }
+\DoxyCodeLine{325         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_neural_network_af5ee536749902b4ef1ca9b8744bac5a8}{exportTestInformation}}(std::string filename);}
+\DoxyCodeLine{326 }
+\DoxyCodeLine{332         \mbox{\hyperlink{classglib_1_1_neural_layer}{NeuralLayer}}* \mbox{\hyperlink{classglib_1_1_neural_network_a0f5aa91f04b7f7f7285ebbfeb2b3f0ca}{getStartLayer}}();}
+\DoxyCodeLine{333 }
+\DoxyCodeLine{339         \mbox{\hyperlink{classglib_1_1_neural_layer}{NeuralLayer}}* \mbox{\hyperlink{classglib_1_1_neural_network_a6d7e025dc8b67636d709b1a1bd802fd7}{getEndLayer}}();}
+\DoxyCodeLine{340     \textcolor{keyword}{private}:}
+\DoxyCodeLine{341         \mbox{\hyperlink{classglib_1_1_neural_layer}{NeuralLayer}}* startLayer = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{342         \mbox{\hyperlink{classglib_1_1_neural_layer}{NeuralLayer}}* endLayer = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{343         \textcolor{keywordtype}{double} learningRate = 0.5;}
+\DoxyCodeLine{344     \};}
+\DoxyCodeLine{345 }
+\DoxyCodeLine{346 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

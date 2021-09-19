@@ -10,19 +10,13 @@
 
 namespace glib
 {
-
-	void Image::saveBMP(std::string filename, unsigned char alphaThreshold, bool greyscale)
-	{
-		Image::saveBMP(StringTools::toWideString(filename), alphaThreshold, greyscale);
-	}
-
-	void Image::saveBMP(std::wstring filename, unsigned char alphaThreshold, bool greyscale)
+	void Image::saveBMP(File file, unsigned char alphaThreshold, bool greyscale)
 	{
 		//save header
 		//save pixel data
 		//return
-
-		SimpleFile f = SimpleFile(filename, SimpleFile::WRITE);
+		
+		SimpleFile f = SimpleFile(file, SimpleFile::WRITE);
 		if(f.isOpen())
 		{
 			struct FileHeader

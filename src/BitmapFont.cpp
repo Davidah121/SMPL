@@ -12,28 +12,21 @@ namespace glib
 		return &BitmapFont::myClass;
 	}
 
-	BitmapFont::BitmapFont(std::string filename) : Font()
+	BitmapFont::BitmapFont(File file) : Font()
 	{
-		init( StringTools::toWideString(filename) );
+		init( file );
 	}
 
-	BitmapFont::BitmapFont(std::wstring filename) : Font()
+	void BitmapFont::init(File file)
 	{
-		init( filename );
-	}
-
-	void BitmapFont::init(std::wstring filename)
-	{
-		size_t lastDot = filename.find_last_of('.');
-
-		std::wstring extension = filename.substr(lastDot, filename.size()-lastDot);
+		std::wstring extension = file.getExtension();
 		if(extension == L".ft")
 		{
-			loadFT(filename);
+			loadFT(file);
 		}
 		else if(extension == L".fnt")
 		{
-			loadFNT(filename);
+			loadFNT(file);
 		}
 		else
 		{
@@ -62,7 +55,7 @@ namespace glib
 		return nullptr;
 	}
 
-	void BitmapFont::loadFT(std::wstring filename)
+	void BitmapFont::loadFT(File file)
 	{
 		//Load an .ft file
 		//Rough Format
@@ -76,20 +69,19 @@ namespace glib
 		//endl;
 
 		//We won't store the font name, and attributes
-		int index = filename.find_last_of('/');
-		std::wstring dir = filename.substr(0, index);
+		std::wstring dir = file.getPath();
 
 		std::vector<std::string> fileInfo;
 
 		try
 		{
 			/* code */
-			SimpleFile file = SimpleFile(filename, SimpleFile::READ);
-			if(file.isOpen())
+			SimpleFile f = SimpleFile(file, SimpleFile::READ);
+			if(f.isOpen())
 			{
-				fileInfo = file.readFullFileString();
+				fileInfo = f.readFullFileString();
 			}
-			file.close();
+			f.close();
 		}
 		catch(SimpleFile::FileOpenErrorException& e)
 		{
@@ -185,35 +177,18 @@ namespace glib
 
 	}
 
-	void BitmapFont::loadFNT(std::wstring filename)
+	void BitmapFont::loadFNT(File file)
 	{
 		//note, expects xml format
-		SimpleXml file = SimpleXml();
-		bool valid = file.load(filename);
+		SimpleXml xmlData = SimpleXml();
+		bool valid = xmlData.load(file);
 
-		int index = filename.find_last_of('/');
-		int index2 = filename.find_last_of('\\');
-		int finalIndex = 0;
-
-		if(index < filename.size() && index2 < filename.size())
-		{
-			finalIndex = MathExt::max(index, index2);
-		}
-		else if(index < filename.size())
-		{
-			finalIndex = index;
-		}
-		else
-		{
-			finalIndex = index2;
-		}
-
-		std::wstring path = filename.substr(0, finalIndex+1);
+		std::wstring path = file.getPath();
 
 		if(valid)
 		{
 			XmlNode* root = nullptr;
-			for(XmlNode* n : file.nodes)
+			for(XmlNode* n : xmlData.nodes)
 			{
 				if(n->title == L"font")
 				{

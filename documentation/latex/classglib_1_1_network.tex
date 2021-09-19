@@ -1,0 +1,327 @@
+\hypertarget{classglib_1_1_network}{}\doxysection{glib\+::Network Class Reference}
+\label{classglib_1_1_network}\index{glib::Network@{glib::Network}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_network_a73bd1535c4372d550a1a839e8ff3b1bc}{Network}} (bool type, int port, std\+::string ipaddress, int amount\+Of\+Connections\+Allowed=64, bool TCP=true)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_network}{Network}} object Allows network connection using TCP or UDP. Uses a separate thread to maintain the connection and check for message arrival. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_network_a1577eb4b04ae02105da0b6f62bb18043}\label{classglib_1_1_network_a1577eb4b04ae02105da0b6f62bb18043}} 
+{\bfseries $\sim$\+Network} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_network}{Network}} object. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_network_a32ba52701608309835c0b77340f908d9}{send\+Message}} (std\+::string message, int id=0)
+\begin{DoxyCompactList}\small\item\em Sends a message to the specified connected IP. Returns true if it was successful. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_network_a41538df00bf13b016ac9752c30cab8bb}{send\+Message}} (std\+::vector$<$ unsigned char $>$ message, int id=0)
+\begin{DoxyCompactList}\small\item\em Sends a message to the specified connected IP. Returns true if it was successful. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_network_a852d2925fa705743fcbb86eed4247f97}{send\+Message}} (unsigned char $\ast$message, int size, int id=0)
+\begin{DoxyCompactList}\small\item\em Sends a message to the specified connected IP. Returns true if it was successful. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_network_ab9f3f6a930e17a445d10e44aa6119c13}{receive\+Message}} (std\+::string \&message, int id=0)
+\begin{DoxyCompactList}\small\item\em Receives a message from the specified connected IP. Returns true if it was successful. Continues to read until the null character is found specifying the end of the string. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_network_ae4bf79bc04d99b70940dbccfd73d85e9}{receive\+Message}} (std\+::vector$<$ unsigned char $>$ \&buffer, int id=0)
+\begin{DoxyCompactList}\small\item\em Receives a message from the specified connected IP. Returns true if it was successful. Continues to read until the buffer is filled or there is no more data to read. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_network_abfccb65c87c148118f017228159dbaf2}{receive\+Message}} (unsigned char $\ast$buffer, int buffer\+Size, int id=0)
+\begin{DoxyCompactList}\small\item\em Receives a message from the specified connected IP. Returns true if it was successful. Continues to read until the buffer is filled or there is no more data to read. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_network_aedc1b1d055850af71093ee41d1140db8}{send\+Message}} (char $\ast$message, int message\+Size, int id=0)
+\begin{DoxyCompactList}\small\item\em Sends a message to the specified connected IP. Returns true if it was successful. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_network_ade827a39fc1a440c907488cea2e883df}{receive\+Message}} (char $\ast$buffer, int buffer\+Size, int id=0)
+\begin{DoxyCompactList}\small\item\em Receives a message from the specified connected IP. Returns true if it was successful. Continues to read until the buffer is filled or there is no more data to read. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_network_abbf939125005e10a3332b79c0174eee2}\label{classglib_1_1_network_abbf939125005e10a3332b79c0174eee2}} 
+void {\bfseries reconnect} ()
+\begin{DoxyCompactList}\small\item\em Attempts to reconnect. Only used for TYPE\+\_\+\+CLIENT. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_network_aeb7e5fcb43738942a72909a0212e17b0}\label{classglib_1_1_network_aeb7e5fcb43738942a72909a0212e17b0}} 
+void {\bfseries disconnect} ()
+\begin{DoxyCompactList}\small\item\em Disconnects from all connected IPs. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_network_a7f5bb2cb98a7e21acafbca12babe2fd2}{get\+Running}} ()
+\begin{DoxyCompactList}\small\item\em Returns if the thread maintaining the \mbox{\hyperlink{classglib_1_1_network}{Network}} connection is running. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_network_ad9481bde0ea65ab80684054551e09c46}{set\+On\+Connect\+Function}} (std\+::function$<$ void(int)$>$ func)
+\begin{DoxyCompactList}\small\item\em Sets the On Connection Function. This is called as soon as a connection is established. The int passed into the function is the ID of the connection. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_network_a55438f72f00e634ded864a30785f0693}{set\+On\+Message\+Arrived\+Function}} (std\+::function$<$ void(int)$>$ func)
+\begin{DoxyCompactList}\small\item\em Sets the On Message Arrived Function. This is called as soon as a message arrives. The int passed into the function is the ID of the connection that sent the message. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_network_acc7bdcd3008a25faf1ee941d55f62c69}{set\+On\+Disconnect\+Function}} (std\+::function$<$ void(int)$>$ func)
+\begin{DoxyCompactList}\small\item\em Sets the On Disconnection Function. This is called as soon as a disconnection is found. The int passed into the function is the ID that disconnected. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_network_a34d68d7e8d532db2cc6431cce37a7a7a}\label{classglib_1_1_network_a34d68d7e8d532db2cc6431cce37a7a7a}} 
+static const bool {\bfseries TYPE\+\_\+\+SERVER} = false
+\item 
+\mbox{\Hypertarget{classglib_1_1_network_a10546beb3df3de79b2ca54a6c0b5d314}\label{classglib_1_1_network_a10546beb3df3de79b2ca54a6c0b5d314}} 
+static const bool {\bfseries TYPE\+\_\+\+CLIENT} = true
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_network_a73bd1535c4372d550a1a839e8ff3b1bc}\label{classglib_1_1_network_a73bd1535c4372d550a1a839e8ff3b1bc}} 
+\index{glib::Network@{glib::Network}!Network@{Network}}
+\index{Network@{Network}!glib::Network@{glib::Network}}
+\doxysubsubsection{\texorpdfstring{Network()}{Network()}}
+{\footnotesize\ttfamily glib\+::\+Network\+::\+Network (\begin{DoxyParamCaption}\item[{bool}]{type,  }\item[{int}]{port,  }\item[{std\+::string}]{ipaddress,  }\item[{int}]{amount\+Of\+Connections\+Allowed = {\ttfamily 64},  }\item[{bool}]{TCP = {\ttfamily true} }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_network}{Network}} object Allows network connection using TCP or UDP. Uses a separate thread to maintain the connection and check for message arrival. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em type} & Servers can have multiple connections where a client can only have one connection. valid types are\+: TYPE\+\_\+\+SERVER TYPE\+\_\+\+CLIENT \\
+\hline
+{\em port} & Must be a valid port between \mbox{[}0,65535\mbox{]} \\
+\hline
+{\em ipaddress} & Must be a valid ipv4 address. For clients, it is the IP to connect to. For servers, it is the IP that will receive connections. \\
+\hline
+{\em amount\+Of\+Connections\+Allowed} & Default is 64. \\
+\hline
+{\em TCP} & If set to false, UDP is used. Default is true \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_network_a7f5bb2cb98a7e21acafbca12babe2fd2}\label{classglib_1_1_network_a7f5bb2cb98a7e21acafbca12babe2fd2}} 
+\index{glib::Network@{glib::Network}!getRunning@{getRunning}}
+\index{getRunning@{getRunning}!glib::Network@{glib::Network}}
+\doxysubsubsection{\texorpdfstring{getRunning()}{getRunning()}}
+{\footnotesize\ttfamily bool glib\+::\+Network\+::get\+Running (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns if the thread maintaining the \mbox{\hyperlink{classglib_1_1_network}{Network}} connection is running. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_network_ade827a39fc1a440c907488cea2e883df}\label{classglib_1_1_network_ade827a39fc1a440c907488cea2e883df}} 
+\index{glib::Network@{glib::Network}!receiveMessage@{receiveMessage}}
+\index{receiveMessage@{receiveMessage}!glib::Network@{glib::Network}}
+\doxysubsubsection{\texorpdfstring{receiveMessage()}{receiveMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily bool glib\+::\+Network\+::receive\+Message (\begin{DoxyParamCaption}\item[{char $\ast$}]{buffer,  }\item[{int}]{buffer\+Size,  }\item[{int}]{id = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Receives a message from the specified connected IP. Returns true if it was successful. Continues to read until the buffer is filled or there is no more data to read. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em buffer} & The buffer to receive the message. \\
+\hline
+{\em buffer\+Size} & The size of the buffer. \\
+\hline
+{\em id} & Which connection to receive from. Client will always receive from 0. Default is 0. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_network_ab9f3f6a930e17a445d10e44aa6119c13}\label{classglib_1_1_network_ab9f3f6a930e17a445d10e44aa6119c13}} 
+\index{glib::Network@{glib::Network}!receiveMessage@{receiveMessage}}
+\index{receiveMessage@{receiveMessage}!glib::Network@{glib::Network}}
+\doxysubsubsection{\texorpdfstring{receiveMessage()}{receiveMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily bool glib\+::\+Network\+::receive\+Message (\begin{DoxyParamCaption}\item[{std\+::string \&}]{message,  }\item[{int}]{id = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Receives a message from the specified connected IP. Returns true if it was successful. Continues to read until the null character is found specifying the end of the string. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em message} & The string to receive the message. \\
+\hline
+{\em id} & Which connection to receive from. Client will always receive from 0. Default is 0. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_network_ae4bf79bc04d99b70940dbccfd73d85e9}\label{classglib_1_1_network_ae4bf79bc04d99b70940dbccfd73d85e9}} 
+\index{glib::Network@{glib::Network}!receiveMessage@{receiveMessage}}
+\index{receiveMessage@{receiveMessage}!glib::Network@{glib::Network}}
+\doxysubsubsection{\texorpdfstring{receiveMessage()}{receiveMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily bool glib\+::\+Network\+::receive\+Message (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned char $>$ \&}]{buffer,  }\item[{int}]{id = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Receives a message from the specified connected IP. Returns true if it was successful. Continues to read until the buffer is filled or there is no more data to read. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em buffer} & The buffer to receive the message. \\
+\hline
+{\em id} & Which connection to receive from. Client will always receive from 0. Default is 0. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_network_abfccb65c87c148118f017228159dbaf2}\label{classglib_1_1_network_abfccb65c87c148118f017228159dbaf2}} 
+\index{glib::Network@{glib::Network}!receiveMessage@{receiveMessage}}
+\index{receiveMessage@{receiveMessage}!glib::Network@{glib::Network}}
+\doxysubsubsection{\texorpdfstring{receiveMessage()}{receiveMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily bool glib\+::\+Network\+::receive\+Message (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{buffer,  }\item[{int}]{buffer\+Size,  }\item[{int}]{id = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Receives a message from the specified connected IP. Returns true if it was successful. Continues to read until the buffer is filled or there is no more data to read. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em buffer} & The buffer to receive the message. \\
+\hline
+{\em buffer\+Size} & The size of the buffer. \\
+\hline
+{\em id} & Which connection to receive from. Client will always receive from 0. Default is 0. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_network_aedc1b1d055850af71093ee41d1140db8}\label{classglib_1_1_network_aedc1b1d055850af71093ee41d1140db8}} 
+\index{glib::Network@{glib::Network}!sendMessage@{sendMessage}}
+\index{sendMessage@{sendMessage}!glib::Network@{glib::Network}}
+\doxysubsubsection{\texorpdfstring{sendMessage()}{sendMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily bool glib\+::\+Network\+::send\+Message (\begin{DoxyParamCaption}\item[{char $\ast$}]{message,  }\item[{int}]{message\+Size,  }\item[{int}]{id = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Sends a message to the specified connected IP. Returns true if it was successful. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em message} & \\
+\hline
+{\em size} & The size of the message. \\
+\hline
+{\em id} & Which connection to send to. Client will always send to 0 Default is 0. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_network_a32ba52701608309835c0b77340f908d9}\label{classglib_1_1_network_a32ba52701608309835c0b77340f908d9}} 
+\index{glib::Network@{glib::Network}!sendMessage@{sendMessage}}
+\index{sendMessage@{sendMessage}!glib::Network@{glib::Network}}
+\doxysubsubsection{\texorpdfstring{sendMessage()}{sendMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily bool glib\+::\+Network\+::send\+Message (\begin{DoxyParamCaption}\item[{std\+::string}]{message,  }\item[{int}]{id = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Sends a message to the specified connected IP. Returns true if it was successful. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em message} & \\
+\hline
+{\em id} & Which connection to send to. Client will always send to 0 Default is 0. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_network_a41538df00bf13b016ac9752c30cab8bb}\label{classglib_1_1_network_a41538df00bf13b016ac9752c30cab8bb}} 
+\index{glib::Network@{glib::Network}!sendMessage@{sendMessage}}
+\index{sendMessage@{sendMessage}!glib::Network@{glib::Network}}
+\doxysubsubsection{\texorpdfstring{sendMessage()}{sendMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily bool glib\+::\+Network\+::send\+Message (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned char $>$}]{message,  }\item[{int}]{id = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Sends a message to the specified connected IP. Returns true if it was successful. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em message} & \\
+\hline
+{\em id} & Which connection to send to. Client will always send to 0 Default is 0. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_network_a852d2925fa705743fcbb86eed4247f97}\label{classglib_1_1_network_a852d2925fa705743fcbb86eed4247f97}} 
+\index{glib::Network@{glib::Network}!sendMessage@{sendMessage}}
+\index{sendMessage@{sendMessage}!glib::Network@{glib::Network}}
+\doxysubsubsection{\texorpdfstring{sendMessage()}{sendMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily bool glib\+::\+Network\+::send\+Message (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{message,  }\item[{int}]{size,  }\item[{int}]{id = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Sends a message to the specified connected IP. Returns true if it was successful. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em message} & \\
+\hline
+{\em size} & The size of the message. \\
+\hline
+{\em id} & Which connection to send to. Client will always send to 0 Default is 0. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_network_ad9481bde0ea65ab80684054551e09c46}\label{classglib_1_1_network_ad9481bde0ea65ab80684054551e09c46}} 
+\index{glib::Network@{glib::Network}!setOnConnectFunction@{setOnConnectFunction}}
+\index{setOnConnectFunction@{setOnConnectFunction}!glib::Network@{glib::Network}}
+\doxysubsubsection{\texorpdfstring{setOnConnectFunction()}{setOnConnectFunction()}}
+{\footnotesize\ttfamily void glib\+::\+Network\+::set\+On\+Connect\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(int)$>$}]{func }\end{DoxyParamCaption})}
+
+
+
+Sets the On Connection Function. This is called as soon as a connection is established. The int passed into the function is the ID of the connection. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_network_acc7bdcd3008a25faf1ee941d55f62c69}\label{classglib_1_1_network_acc7bdcd3008a25faf1ee941d55f62c69}} 
+\index{glib::Network@{glib::Network}!setOnDisconnectFunction@{setOnDisconnectFunction}}
+\index{setOnDisconnectFunction@{setOnDisconnectFunction}!glib::Network@{glib::Network}}
+\doxysubsubsection{\texorpdfstring{setOnDisconnectFunction()}{setOnDisconnectFunction()}}
+{\footnotesize\ttfamily void glib\+::\+Network\+::set\+On\+Disconnect\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(int)$>$}]{func }\end{DoxyParamCaption})}
+
+
+
+Sets the On Disconnection Function. This is called as soon as a disconnection is found. The int passed into the function is the ID that disconnected. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_network_a55438f72f00e634ded864a30785f0693}\label{classglib_1_1_network_a55438f72f00e634ded864a30785f0693}} 
+\index{glib::Network@{glib::Network}!setOnMessageArrivedFunction@{setOnMessageArrivedFunction}}
+\index{setOnMessageArrivedFunction@{setOnMessageArrivedFunction}!glib::Network@{glib::Network}}
+\doxysubsubsection{\texorpdfstring{setOnMessageArrivedFunction()}{setOnMessageArrivedFunction()}}
+{\footnotesize\ttfamily void glib\+::\+Network\+::set\+On\+Message\+Arrived\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(int)$>$}]{func }\end{DoxyParamCaption})}
+
+
+
+Sets the On Message Arrived Function. This is called as soon as a message arrives. The int passed into the function is the ID of the connection that sent the message. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Network.\+h\end{DoxyCompactItemize}

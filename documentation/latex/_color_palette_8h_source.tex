@@ -1,0 +1,85 @@
+\hypertarget{_color_palette_8h_source}{}\doxysection{Color\+Palette.\+h}
+\label{_color_palette_8h_source}\index{include/ColorPalette.h@{include/ColorPalette.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}Object.h"{}}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}KDTree.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}GeneralExceptions.h"{}}}
+\DoxyCodeLine{6 }
+\DoxyCodeLine{7 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{8 \{}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10     \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_color}{Color}}}
+\DoxyCodeLine{11     \{}
+\DoxyCodeLine{12         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} red = 0;}
+\DoxyCodeLine{13         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} green = 0;}
+\DoxyCodeLine{14         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} blue = 0;}
+\DoxyCodeLine{15         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} alpha = 0;}
+\DoxyCodeLine{16     \};}
+\DoxyCodeLine{17 }
+\DoxyCodeLine{18     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_color_palette}{ColorPalette}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
+\DoxyCodeLine{19     \{}
+\DoxyCodeLine{20     \textcolor{keyword}{public}:}
+\DoxyCodeLine{21 }
+\DoxyCodeLine{27         \mbox{\hyperlink{classglib_1_1_color_palette_a89476caaeb79b3cd3d161fc49ee8975a}{ColorPalette}}();}
+\DoxyCodeLine{28 }
+\DoxyCodeLine{32         \mbox{\hyperlink{classglib_1_1_color_palette_ac1cc7fd421f1ce1a37ceb9ff8ad3da0e}{ColorPalette}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_color_palette}{ColorPalette}}\& other);}
+\DoxyCodeLine{33 }
+\DoxyCodeLine{37         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_color_palette_ae14c5d290f2edacad03dde7aaafe056a}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_color_palette}{ColorPalette}}\& other);}
+\DoxyCodeLine{38 }
+\DoxyCodeLine{42         \mbox{\hyperlink{classglib_1_1_color_palette_aef3bd39ec28a9d9e9e122d4edb32c63d}{\string~ColorPalette}}();}
+\DoxyCodeLine{43         }
+\DoxyCodeLine{44 }
+\DoxyCodeLine{45         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{46         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{47         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{48         }
+\DoxyCodeLine{55         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_color_palette_a5283272afdc9af01be0cde215801612c}{addNewColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{56 }
+\DoxyCodeLine{65         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_color_palette_a784427b06eef26f5e4a1d01c2e8b6823}{getColor}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{66 }
+\DoxyCodeLine{75         \mbox{\hyperlink{structglib_1_1_color}{Color}}* \mbox{\hyperlink{classglib_1_1_color_palette_a30708fadd6366021b10d563791f7e6d4}{getColorRef}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{76 }
+\DoxyCodeLine{84         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_color_palette_ae15445579788b17a2975e5c1794d50a6}{getColorIndex}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{85         }
+\DoxyCodeLine{95         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_color_palette_a8714385399707ca174e1c670d0d50903}{getClosestColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{96 }
+\DoxyCodeLine{106         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_color_palette_ad2e81d81bec2dbc90403508e1b2086e7}{getClosestColorIndex}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{107 }
+\DoxyCodeLine{112         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_color_palette_a8ee7aa2c0748f085516fa2ccb2195cbe}{getSize}}();}
+\DoxyCodeLine{113 }
+\DoxyCodeLine{118         std::vector<Color>\& \mbox{\hyperlink{classglib_1_1_color_palette_a196f7d5eb4f564f7058a2ad6c29a62a4}{getPalette}}();}
+\DoxyCodeLine{119 }
+\DoxyCodeLine{125         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_color_palette_ad1271a3cd99099b3f132c1d0ebb45529}{setPalette}}(std::vector<Color> p);}
+\DoxyCodeLine{126 }
+\DoxyCodeLine{130         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_color_palette_a821d9260787199e79122a2667f5a9098}{clearPalette}}();}
+\DoxyCodeLine{131 }
+\DoxyCodeLine{137         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_color_palette_a3f337d33aa676d7714eef3e679dd3e7d}{setPaletteMode}}(\textcolor{keywordtype}{bool} uniqueOnly);}
+\DoxyCodeLine{138 }
+\DoxyCodeLine{153         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_color_palette}{ColorPalette}} \mbox{\hyperlink{classglib_1_1_color_palette_a3953ce396b3ad53f2a71fada05bccec9}{createColorPalette}}(\textcolor{keywordtype}{int} reds, \textcolor{keywordtype}{int} greens, \textcolor{keywordtype}{int} blues);}
+\DoxyCodeLine{154 }
+\DoxyCodeLine{155         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} MEAN\_CUT = 0;}
+\DoxyCodeLine{156         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} MEDIAN\_CUT = 1;}
+\DoxyCodeLine{157         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} K\_MEANS = 2;}
+\DoxyCodeLine{158 }
+\DoxyCodeLine{188         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_color_palette}{ColorPalette}} \mbox{\hyperlink{classglib_1_1_color_palette_af59f0589467485fc782bcb1356a428cd}{generateOptimalPalette}}(\mbox{\hyperlink{structglib_1_1_color}{Color}}* colorArray, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{int} colors, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} type, \textcolor{keywordtype}{bool} convertToLab = \textcolor{keyword}{false}, \textcolor{keywordtype}{bool} uniqueOnly = \textcolor{keyword}{false});}
+\DoxyCodeLine{189 }
+\DoxyCodeLine{195         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_color_palette_ae54e8e0318ffe4488f5f5bab2ead9ec0}{reBalance}}();}
+\DoxyCodeLine{196 }
+\DoxyCodeLine{197     \textcolor{keyword}{private}:}
+\DoxyCodeLine{198         \textcolor{keywordtype}{void} copy(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_color_palette}{ColorPalette}}\& other);}
+\DoxyCodeLine{199 }
+\DoxyCodeLine{200         \textcolor{keyword}{static} std::vector<Color> meanCut(std::vector<Color> colorArray, \textcolor{keywordtype}{int} colors);}
+\DoxyCodeLine{201         \textcolor{keyword}{static} std::vector<Color> medianCut(std::vector<Color> colorArray, \textcolor{keywordtype}{int} colors);}
+\DoxyCodeLine{202         \textcolor{keyword}{static} std::vector<Color> kMeans(std::vector<Color> colorArray, \textcolor{keywordtype}{int} colors, \textcolor{keywordtype}{int} maxIterations);}
+\DoxyCodeLine{203         }
+\DoxyCodeLine{204         std::vector<Color> paletteArr = std::vector<Color>();}
+\DoxyCodeLine{205         \mbox{\hyperlink{classglib_1_1_k_d_tree}{KDTree<unsigned char>}}* paletteTree = \textcolor{keyword}{new} \mbox{\hyperlink{classglib_1_1_k_d_tree}{KDTree<unsigned char>}}(3);}
+\DoxyCodeLine{206         \textcolor{keywordtype}{bool} uniquePalette = \textcolor{keyword}{true};}
+\DoxyCodeLine{207     \};}
+\DoxyCodeLine{208 }
+\DoxyCodeLine{209 \}}
+
+\end{DoxyCode}

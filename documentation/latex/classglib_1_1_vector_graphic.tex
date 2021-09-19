@@ -1,0 +1,382 @@
+\hypertarget{classglib_1_1_vector_graphic}{}\doxysection{glib\+::Vector\+Graphic Class Reference}
+\label{classglib_1_1_vector_graphic}\index{glib::VectorGraphic@{glib::VectorGraphic}}
+Inheritance diagram for glib\+::Vector\+Graphic\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classglib_1_1_vector_graphic}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_vector_graphic_a4644d7048dd528b0daf6a3e54e7ded4d}{Vector\+Graphic}} (int width=0, int height=0)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} object Contains a series of Vector\+Shapes. If the width \texorpdfstring{$<$}{<}= 0 or the height \texorpdfstring{$<$}{<}= 0, the bounds are set to the image the it is being drawn upon. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vector_graphic_a879c616d8087789b5016435d4be8b72b}{Vector\+Graphic}} (const \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} \&other)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} object from another \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_graphic_a9ade7f7cb3e70047753d2dfd0fb46cf6}{operator=}} (const \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} \&other)
+\begin{DoxyCompactList}\small\item\em Copies a \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a8c4dbf91175d02493e5d22fb6adea82e}\label{classglib_1_1_vector_graphic_a8c4dbf91175d02493e5d22fb6adea82e}} 
+{\bfseries $\sim$\+Vector\+Graphic} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_vector_graphic_ac657b503e0ff514d8794bd6f9e85257d}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_vector_graphic_afbfadea15d25359c3046f4359418fe20}{add\+Shape}} (\mbox{\hyperlink{classglib_1_1_vector_shape}{Vector\+Shape}} $\ast$k)
+\begin{DoxyCompactList}\small\item\em Adds a \mbox{\hyperlink{classglib_1_1_vector_shape}{Vector\+Shape}} to the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a7f6da08f8cbd45403a571049e97251ea}\label{classglib_1_1_vector_graphic_a7f6da08f8cbd45403a571049e97251ea}} 
+void {\bfseries clear\+Shapes} ()
+\begin{DoxyCompactList}\small\item\em Clears all Vector\+Shapes added to the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} Any shape added will be deleted and should be considered invalid. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_graphic_a3d4901ff6f958bc187feb50e0f0427e4}{draw}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$buffer)
+\begin{DoxyCompactList}\small\item\em Draws the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} on an image. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_graphic_ac944570ce05b48dd0b083d3416bbf04a}{set\+Transform}} (\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} m)
+\begin{DoxyCompactList}\small\item\em Sets the Transform of the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_vector_graphic_a6e93dd93265724cd2a186608a1d66da3}{get\+Transform}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Transform of the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_graphic_afabc444afce29c1b59bd07b3d02d1fc0}{set\+View\+Box}} (\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} m)
+\begin{DoxyCompactList}\small\item\em Sets the View Box of the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_vector_graphic_a74519d188d9af32d532cb85e5ce3b002}{get\+View\+Box}} ()
+\begin{DoxyCompactList}\small\item\em Gets the View Box of the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}}. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_vector_graphic_a9c62b52d69f687e0ca22cc0d752f3d64}{get\+Width}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Width of the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}}. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_vector_graphic_a9eb25e6dbb68d532dc703a2e5f294abd}{get\+Height}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Height of the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}}. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_vector_graphic_a7398cd3a653d9eeb8ecdf63794537886}{save}} (\mbox{\hyperlink{classglib_1_1_file}{File}} file)
+\begin{DoxyCompactList}\small\item\em Saves the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} to a .svg file (NOT IMPLEMENTED) \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_vector_graphic_a3294d057c21ba3bd25572a7d3c295b48}{load}} (\mbox{\hyperlink{classglib_1_1_file}{File}} file)
+\begin{DoxyCompactList}\small\item\em Loads a \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} from a .svg file. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_vector_graphic_a16850bee09d343bf72e76c7a1f0755df}{load}} (\mbox{\hyperlink{classglib_1_1_xml_node}{Xml\+Node}} $\ast$svg\+Parent\+Node)
+\begin{DoxyCompactList}\small\item\em Loads a \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} using the parent svg xml node. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_xml_node}{Xml\+Node}} $\ast$ \mbox{\hyperlink{classglib_1_1_vector_graphic_a6d90bef9d549e296da138d2df167ad93}{write\+As\+Xml\+Node}} ()
+\begin{DoxyCompactList}\small\item\em Creates an \mbox{\hyperlink{classglib_1_1_xml_node}{Xml\+Node}} using data from the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} for saving (NOT YET IMPLEMENTED) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{classglib_1_1_vector_graphic_adfd6c585a1ddcecccb48d4b29be6f3d7}{set\+AALevel}} (unsigned char level)
+\begin{DoxyCompactList}\small\item\em Sets the Anti-\/\+Aliasing level for \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} drawing. (Barely Implemented) \end{DoxyCompactList}\item 
+static unsigned char \mbox{\hyperlink{classglib_1_1_vector_graphic_a95c2cfdeb46d73ee99fb06899f753cb7}{get\+AALevel}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Anti-\/\+Aliasing level for \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} drawing. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static const unsigned char \mbox{\hyperlink{classglib_1_1_vector_graphic_a899d12b380199225333eec9b9ca20eba}{RECTANGLE}} = 1
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a2e94381ef918ed9b75d00ef3893ea5dc}\label{classglib_1_1_vector_graphic_a2e94381ef918ed9b75d00ef3893ea5dc}} 
+static const unsigned char {\bfseries CIRCLE} = 2
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a9b40faa43a8e235831aafaea35e38a28}\label{classglib_1_1_vector_graphic_a9b40faa43a8e235831aafaea35e38a28}} 
+static const unsigned char {\bfseries ELLIPSE} = 3
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a4e9ba73159036a4e0517e420f0d19e47}\label{classglib_1_1_vector_graphic_a4e9ba73159036a4e0517e420f0d19e47}} 
+static const unsigned char {\bfseries LINE} = 4
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_ae0e671df0b3f0b9611c6b6dfef9a4559}\label{classglib_1_1_vector_graphic_ae0e671df0b3f0b9611c6b6dfef9a4559}} 
+static const unsigned char {\bfseries POLYLINE} = 5
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a314223a23ed35a01175e6dbb260a1d11}\label{classglib_1_1_vector_graphic_a314223a23ed35a01175e6dbb260a1d11}} 
+static const unsigned char {\bfseries POLYGON} = 6
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a55f88ebff6bd87fbe33cc5de78912bdf}\label{classglib_1_1_vector_graphic_a55f88ebff6bd87fbe33cc5de78912bdf}} 
+static const unsigned char {\bfseries PATH} = 7
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a0bcc10759e45696e57ee4e886836bbdc}\label{classglib_1_1_vector_graphic_a0bcc10759e45696e57ee4e886836bbdc}} 
+static const unsigned char {\bfseries TEXT} = 8
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_ab0450cd291e7a1c98b798cb268b14b67}\label{classglib_1_1_vector_graphic_ab0450cd291e7a1c98b798cb268b14b67}} 
+static const unsigned char {\bfseries IMAGE} = 9
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_aecfbb24640360c69d6876e50aa14ccfb}\label{classglib_1_1_vector_graphic_aecfbb24640360c69d6876e50aa14ccfb}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a4644d7048dd528b0daf6a3e54e7ded4d}\label{classglib_1_1_vector_graphic_a4644d7048dd528b0daf6a3e54e7ded4d}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!VectorGraphic@{VectorGraphic}}
+\index{VectorGraphic@{VectorGraphic}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{VectorGraphic()}{VectorGraphic()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily glib\+::\+Vector\+Graphic\+::\+Vector\+Graphic (\begin{DoxyParamCaption}\item[{int}]{width = {\ttfamily 0},  }\item[{int}]{height = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} object Contains a series of Vector\+Shapes. If the width \texorpdfstring{$<$}{<}= 0 or the height \texorpdfstring{$<$}{<}= 0, the bounds are set to the image the it is being drawn upon. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em width} & The maximum width of the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} Default is 0 \\
+\hline
+{\em height} & The maximum height of the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} Default is 0 \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a879c616d8087789b5016435d4be8b72b}\label{classglib_1_1_vector_graphic_a879c616d8087789b5016435d4be8b72b}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!VectorGraphic@{VectorGraphic}}
+\index{VectorGraphic@{VectorGraphic}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{VectorGraphic()}{VectorGraphic()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily glib\+::\+Vector\+Graphic\+::\+Vector\+Graphic (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} object from another \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_afbfadea15d25359c3046f4359418fe20}\label{classglib_1_1_vector_graphic_afbfadea15d25359c3046f4359418fe20}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!addShape@{addShape}}
+\index{addShape@{addShape}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{addShape()}{addShape()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Graphic\+::add\+Shape (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vector_shape}{Vector\+Shape}} $\ast$}]{k }\end{DoxyParamCaption})}
+
+
+
+Adds a \mbox{\hyperlink{classglib_1_1_vector_shape}{Vector\+Shape}} to the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em k} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a3d4901ff6f958bc187feb50e0f0427e4}\label{classglib_1_1_vector_graphic_a3d4901ff6f958bc187feb50e0f0427e4}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!draw@{draw}}
+\index{draw@{draw}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Graphic\+::draw (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{buffer }\end{DoxyParamCaption})}
+
+
+
+Draws the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} on an image. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em buffer} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a95c2cfdeb46d73ee99fb06899f753cb7}\label{classglib_1_1_vector_graphic_a95c2cfdeb46d73ee99fb06899f753cb7}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!getAALevel@{getAALevel}}
+\index{getAALevel@{getAALevel}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{getAALevel()}{getAALevel()}}
+{\footnotesize\ttfamily static unsigned char glib\+::\+Vector\+Graphic\+::get\+AALevel (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets the Anti-\/\+Aliasing level for \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} drawing. 
+
+\begin{DoxyReturn}{Returns}
+unsigned char 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_ac657b503e0ff514d8794bd6f9e85257d}\label{classglib_1_1_vector_graphic_ac657b503e0ff514d8794bd6f9e85257d}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Vector\+Graphic\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
+
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a9eb25e6dbb68d532dc703a2e5f294abd}\label{classglib_1_1_vector_graphic_a9eb25e6dbb68d532dc703a2e5f294abd}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!getHeight@{getHeight}}
+\index{getHeight@{getHeight}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{getHeight()}{getHeight()}}
+{\footnotesize\ttfamily int glib\+::\+Vector\+Graphic\+::get\+Height (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Height of the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}}. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a6e93dd93265724cd2a186608a1d66da3}\label{classglib_1_1_vector_graphic_a6e93dd93265724cd2a186608a1d66da3}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!getTransform@{getTransform}}
+\index{getTransform@{getTransform}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{getTransform()}{getTransform()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} glib\+::\+Vector\+Graphic\+::get\+Transform (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Transform of the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}}. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a74519d188d9af32d532cb85e5ce3b002}\label{classglib_1_1_vector_graphic_a74519d188d9af32d532cb85e5ce3b002}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!getViewBox@{getViewBox}}
+\index{getViewBox@{getViewBox}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{getViewBox()}{getViewBox()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} glib\+::\+Vector\+Graphic\+::get\+View\+Box (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the View Box of the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}}. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a9c62b52d69f687e0ca22cc0d752f3d64}\label{classglib_1_1_vector_graphic_a9c62b52d69f687e0ca22cc0d752f3d64}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!getWidth@{getWidth}}
+\index{getWidth@{getWidth}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{getWidth()}{getWidth()}}
+{\footnotesize\ttfamily int glib\+::\+Vector\+Graphic\+::get\+Width (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Width of the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}}. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a3294d057c21ba3bd25572a7d3c295b48}\label{classglib_1_1_vector_graphic_a3294d057c21ba3bd25572a7d3c295b48}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!load@{load}}
+\index{load@{load}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{load()}{load()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily bool glib\+::\+Vector\+Graphic\+::load (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_file}{File}}}]{file }\end{DoxyParamCaption})}
+
+
+
+Loads a \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} from a .svg file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a16850bee09d343bf72e76c7a1f0755df}\label{classglib_1_1_vector_graphic_a16850bee09d343bf72e76c7a1f0755df}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!load@{load}}
+\index{load@{load}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{load()}{load()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily bool glib\+::\+Vector\+Graphic\+::load (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_xml_node}{Xml\+Node}} $\ast$}]{svg\+Parent\+Node }\end{DoxyParamCaption})}
+
+
+
+Loads a \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} using the parent svg xml node. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em svg\+Parent\+Node} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a9ade7f7cb3e70047753d2dfd0fb46cf6}\label{classglib_1_1_vector_graphic_a9ade7f7cb3e70047753d2dfd0fb46cf6}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!operator=@{operator=}}
+\index{operator=@{operator=}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Graphic\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Copies a \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a7398cd3a653d9eeb8ecdf63794537886}\label{classglib_1_1_vector_graphic_a7398cd3a653d9eeb8ecdf63794537886}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!save@{save}}
+\index{save@{save}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{save()}{save()}}
+{\footnotesize\ttfamily bool glib\+::\+Vector\+Graphic\+::save (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_file}{File}}}]{file }\end{DoxyParamCaption})}
+
+
+
+Saves the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} to a .svg file (NOT IMPLEMENTED) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_adfd6c585a1ddcecccb48d4b29be6f3d7}\label{classglib_1_1_vector_graphic_adfd6c585a1ddcecccb48d4b29be6f3d7}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!setAALevel@{setAALevel}}
+\index{setAALevel@{setAALevel}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{setAALevel()}{setAALevel()}}
+{\footnotesize\ttfamily static void glib\+::\+Vector\+Graphic\+::set\+AALevel (\begin{DoxyParamCaption}\item[{unsigned char}]{level }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Sets the Anti-\/\+Aliasing level for \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} drawing. (Barely Implemented) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em level} & Valid values from \mbox{[}0, 3\mbox{]} \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_ac944570ce05b48dd0b083d3416bbf04a}\label{classglib_1_1_vector_graphic_ac944570ce05b48dd0b083d3416bbf04a}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!setTransform@{setTransform}}
+\index{setTransform@{setTransform}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{setTransform()}{setTransform()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Graphic\+::set\+Transform (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}}}]{m }\end{DoxyParamCaption})}
+
+
+
+Sets the Transform of the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em m} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_afabc444afce29c1b59bd07b3d02d1fc0}\label{classglib_1_1_vector_graphic_afabc444afce29c1b59bd07b3d02d1fc0}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!setViewBox@{setViewBox}}
+\index{setViewBox@{setViewBox}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{setViewBox()}{setViewBox()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Graphic\+::set\+View\+Box (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}}}]{m }\end{DoxyParamCaption})}
+
+
+
+Sets the View Box of the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em m} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a6d90bef9d549e296da138d2df167ad93}\label{classglib_1_1_vector_graphic_a6d90bef9d549e296da138d2df167ad93}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!writeAsXmlNode@{writeAsXmlNode}}
+\index{writeAsXmlNode@{writeAsXmlNode}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{writeAsXmlNode()}{writeAsXmlNode()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_xml_node}{Xml\+Node}} $\ast$ glib\+::\+Vector\+Graphic\+::write\+As\+Xml\+Node (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Creates an \mbox{\hyperlink{classglib_1_1_xml_node}{Xml\+Node}} using data from the \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} for saving (NOT YET IMPLEMENTED) 
+
+\begin{DoxyReturn}{Returns}
+Xml\+Node$\ast$ 
+\end{DoxyReturn}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classglib_1_1_vector_graphic_a899d12b380199225333eec9b9ca20eba}\label{classglib_1_1_vector_graphic_a899d12b380199225333eec9b9ca20eba}} 
+\index{glib::VectorGraphic@{glib::VectorGraphic}!RECTANGLE@{RECTANGLE}}
+\index{RECTANGLE@{RECTANGLE}!glib::VectorGraphic@{glib::VectorGraphic}}
+\doxysubsubsection{\texorpdfstring{RECTANGLE}{RECTANGLE}}
+{\footnotesize\ttfamily const unsigned char glib\+::\+Vector\+Graphic\+::\+RECTANGLE = 1\hspace{0.3cm}{\ttfamily [static]}}
+
+Some Notes\+: These are the basic shapes defined in an SVG. There are other shapes and stuff however, the format used should be similar. Path is a bezier curve or line or arc. Polygon always connects the first point to the last. Can be filled Polyline does not connect the first point to the last. Can be filled Different Transforms can be applied to different objects. SVG Notes\+: Uses XML to specify information about the graphic. Width and Height are specified. May have additional metrics on them though. Formating of the xml will be specified in its corresponding class.
+
+XML format\+: $<$svg x=\char`\"{}??\char`\"{} y=\char`\"{}??\char`\"{} width=\char`\"{}??\char`\"{} height=\char`\"{}??\char`\"{} background-\/color=\char`\"{}??\char`\"{} view\+Box=\char`\"{}x y width height\char`\"{}$>$ Note that other tags are ignored
+
+Transform information\+: This transform is separated from the individual objects so that this is free to be manipulated for drawing in an application. The transforms tied to the objects are unique to them. While they can be changed, they will likely come from an svg file and therefore should not be changed freely. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Vector\+Graphic.\+h\end{DoxyCompactItemize}

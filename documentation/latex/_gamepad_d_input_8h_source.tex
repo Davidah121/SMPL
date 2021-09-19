@@ -1,0 +1,121 @@
+\hypertarget{_gamepad_d_input_8h_source}{}\doxysection{Gamepad\+DInput.\+h}
+\label{_gamepad_d_input_8h_source}\index{include/GamepadDInput.h@{include/GamepadDInput.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 }
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#ifndef WIN32\_LEAN\_AND\_MEAN}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{    \#define WIN32\_LEAN\_AND\_MEAN}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{6 }
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include<Windows.h>}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include<vector>}}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#define DIRECTINPUT\_VERSION 0x0800}}
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#include<dinput.h>}}
+\DoxyCodeLine{12 }
+\DoxyCodeLine{13 \textcolor{preprocessor}{\#pragma comment(lib, "{}dinput8.lib"{}})}
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#pragma comment(lib, "{}dxguid.lib"{}})}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{17 \{}
+\DoxyCodeLine{18 }
+\DoxyCodeLine{19     \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_device_struct}{DeviceStruct}}}
+\DoxyCodeLine{20     \{}
+\DoxyCodeLine{21         LPCDIDEVICEINSTANCE deviceInfo;}
+\DoxyCodeLine{22         LPDIRECTINPUTDEVICE8 gamepadDevice;}
+\DoxyCodeLine{23     \};}
+\DoxyCodeLine{24 }
+\DoxyCodeLine{25 }
+\DoxyCodeLine{26     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gamepad_d_input}{GamepadDInput}}}
+\DoxyCodeLine{27     \{}
+\DoxyCodeLine{28     \textcolor{keyword}{public}:}
+\DoxyCodeLine{29 }
+\DoxyCodeLine{30         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} A\_BUTTON = 1;}
+\DoxyCodeLine{31         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} B\_BUTTON = 2;}
+\DoxyCodeLine{32         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} X\_BUTTON = 0;}
+\DoxyCodeLine{33         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} Y\_BUTTON = 3;}
+\DoxyCodeLine{34 }
+\DoxyCodeLine{35         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} DPAD\_UP\_BUTTON = -\/4;}
+\DoxyCodeLine{36         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} DPAD\_DOWN\_BUTTON = -\/5;}
+\DoxyCodeLine{37         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} DPAD\_LEFT\_BUTTON = -\/6;}
+\DoxyCodeLine{38         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} DPAD\_RIGHT\_BUTTON = -\/7;}
+\DoxyCodeLine{39 }
+\DoxyCodeLine{40         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} LB\_BUTTON = 5;}
+\DoxyCodeLine{41         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} RB\_BUTTON = 6;}
+\DoxyCodeLine{42         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} LEFT\_STICK\_BUTTON = 11;}
+\DoxyCodeLine{43         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} RIGHT\_STICK\_BUTTON = 12;}
+\DoxyCodeLine{44 }
+\DoxyCodeLine{45         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} LEFT\_TRIGGER = 7;}
+\DoxyCodeLine{46         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} RIGHT\_TRIGGER = 8;}
+\DoxyCodeLine{47 }
+\DoxyCodeLine{48         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} START\_BUTTON = 9;}
+\DoxyCodeLine{49         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} BACK\_BUTTON = 10;}
+\DoxyCodeLine{50 }
+\DoxyCodeLine{51         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} LEFT\_X\_AXIS = 0;}
+\DoxyCodeLine{52         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} LEFT\_Y\_AXIS = 1;}
+\DoxyCodeLine{53         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} RIGHT\_X\_AXIS = 2;}
+\DoxyCodeLine{54         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} RIGHT\_Y\_AXIS = 3;}
+\DoxyCodeLine{55 }
+\DoxyCodeLine{56         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} EXTRA\_AXIS1 = 6;}
+\DoxyCodeLine{57         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} EXTRA\_AXIS2 = 7;}
+\DoxyCodeLine{58 }
+\DoxyCodeLine{59         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} SLIDER1 = 8;}
+\DoxyCodeLine{60         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} SLIDER2 = 9;}
+\DoxyCodeLine{61 }
+\DoxyCodeLine{62         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} AXIS\_DIVIDE\_VALUE = 32767;}
+\DoxyCodeLine{63         \textcolor{keyword}{const} \textcolor{keyword}{static} \textcolor{keywordtype}{int} TRIGGER\_DIVIDE\_VALUE = 255;}
+\DoxyCodeLine{64 }
+\DoxyCodeLine{65         \textcolor{keyword}{static} \textcolor{keywordtype}{int} DEAD\_ZONE;}
+\DoxyCodeLine{66 }
+\DoxyCodeLine{67         \textcolor{comment}{//If windowHandle is NULL, it defaults to the desktop window}}
+\DoxyCodeLine{68         \textcolor{comment}{//Both foreground and Exclusive will be false in that case.}}
+\DoxyCodeLine{69 }
+\DoxyCodeLine{90         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gamepad_d_input_a6c082294e5f17b8f4e7869aa469cf3c3}{init}}(HWND windowHandle, \textcolor{keywordtype}{bool} Foreground, \textcolor{keywordtype}{bool} Exclusive);}
+\DoxyCodeLine{91 }
+\DoxyCodeLine{96         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gamepad_d_input_ad1631ccf45a4926b7c556aad7c360a4e}{dispose}}();}
+\DoxyCodeLine{97 }
+\DoxyCodeLine{102         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gamepad_d_input_a48f2c3e1d2ff63c883927934f547e906}{getSize}}();}
+\DoxyCodeLine{103 }
+\DoxyCodeLine{110         \textcolor{keyword}{static} GUID \mbox{\hyperlink{classglib_1_1_gamepad_d_input_ae665ebd556ad0c810e7130e26f1d334b}{getGUID}}(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id});}
+\DoxyCodeLine{111 }
+\DoxyCodeLine{119         \textcolor{keyword}{static} LPCDIDEVICEINSTANCE \mbox{\hyperlink{classglib_1_1_gamepad_d_input_a6ab5f7e184d13ab11906260c4e799a2f}{getDeviceInfo}}(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id});}
+\DoxyCodeLine{120 }
+\DoxyCodeLine{133         \textcolor{keyword}{static} DIJOYSTATE \mbox{\hyperlink{classglib_1_1_gamepad_d_input_a95b610268bbeceeb722d2cb37b95d744}{getJoystickValues}}(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id});}
+\DoxyCodeLine{134 }
+\DoxyCodeLine{139         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gamepad_d_input_ae4aaf68b838668edc4eba12fbc381da0}{update}}();}
+\DoxyCodeLine{140 }
+\DoxyCodeLine{148         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gamepad_d_input_a56f349962c3be014b783271709197e7b}{isConnected}}(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id});}
+\DoxyCodeLine{149 }
+\DoxyCodeLine{160         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gamepad_d_input_aadf2dcc838f28a339079ca0e73d96c83}{getButtonPressed}}(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id}, \textcolor{keywordtype}{int} button);}
+\DoxyCodeLine{161 }
+\DoxyCodeLine{171         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gamepad_d_input_a80432523ef791ec67146b2f12fa3ea7e}{getButtonDown}}(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id}, \textcolor{keywordtype}{int} button);}
+\DoxyCodeLine{172 }
+\DoxyCodeLine{183         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gamepad_d_input_a1b2f0d945817f1bab3608bcf5eb93cd1}{getButtonUp}}(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id}, \textcolor{keywordtype}{int} button);}
+\DoxyCodeLine{184 }
+\DoxyCodeLine{194         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_gamepad_d_input_af23a8b1e49ec3f103d8f9b14c2a7d10e}{getAxisValue}}(\textcolor{keywordtype}{int} \textcolor{keywordtype}{id}, \textcolor{keywordtype}{int} axis);}
+\DoxyCodeLine{195 }
+\DoxyCodeLine{201         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gamepad_d_input_a8b6db273cb946d9f42c61a498fc5f224}{refindDevices}}();}
+\DoxyCodeLine{202 }
+\DoxyCodeLine{203     \textcolor{keyword}{private}:}
+\DoxyCodeLine{204         \textcolor{keyword}{static} BOOL CALLBACK EnumerateDeviceCallback(LPCDIDEVICEINSTANCE lpddi, LPVOID uselessJunk);}
+\DoxyCodeLine{205         \textcolor{keyword}{static} BOOL IsXInputDevice(\textcolor{keyword}{const} GUID* pGuidProductFromDirectInput);}
+\DoxyCodeLine{206 }
+\DoxyCodeLine{207         \textcolor{keyword}{static} \textcolor{keywordtype}{void} findDevices();}
+\DoxyCodeLine{208 }
+\DoxyCodeLine{209         \textcolor{keyword}{static} std::vector< DeviceStruct > devices;}
+\DoxyCodeLine{210         \textcolor{keyword}{static} std::vector< DIJOYSTATE > previousState;}
+\DoxyCodeLine{211         \textcolor{keyword}{static} std::vector< DIJOYSTATE > currentState;}
+\DoxyCodeLine{212         \textcolor{keyword}{static} std::vector< bool > connected;}
+\DoxyCodeLine{213 }
+\DoxyCodeLine{214         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} exclusive;}
+\DoxyCodeLine{215         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} foreground;}
+\DoxyCodeLine{216 }
+\DoxyCodeLine{217         \textcolor{keyword}{static} HWND windowHandle;}
+\DoxyCodeLine{218 }
+\DoxyCodeLine{219         \textcolor{keyword}{static} IDirectInput8* inface;}
+\DoxyCodeLine{220     \};}
+\DoxyCodeLine{221 }
+\DoxyCodeLine{222 \}}
+
+\end{DoxyCode}

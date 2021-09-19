@@ -236,7 +236,7 @@ namespace glib
 		return good;
 	}
 
-	bool Network::receiveMessage(std::vector<unsigned char> buffer, int id)
+	bool Network::receiveMessage(std::vector<unsigned char>& buffer, int id)
 	{
 		return receiveMessage((char*)buffer.data(), buffer.size(), id);
 	}

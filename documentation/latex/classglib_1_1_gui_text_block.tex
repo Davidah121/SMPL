@@ -1,0 +1,477 @@
+\hypertarget{classglib_1_1_gui_text_block}{}\doxysection{glib\+::Gui\+Text\+Block Class Reference}
+\label{classglib_1_1_gui_text_block}\index{glib::GuiTextBlock@{glib::GuiTextBlock}}
+Inheritance diagram for glib\+::Gui\+Text\+Block\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classglib_1_1_gui_text_block}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_gui_text_block_a5831d200d09fe4130b9927c537322b57}{Gui\+Text\+Block}} (int x, int y, int width, int height)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_gui_text_block}{Gui\+Text\+Block}} object It draws text at some location with a specified max width and height. Allows for linebreaks as well. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_afe47ce35e1835ba5768a85d4484f7819}\label{classglib_1_1_gui_text_block_afe47ce35e1835ba5768a85d4484f7819}} 
+{\bfseries $\sim$\+Gui\+Text\+Block} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_gui_text_block}{Gui\+Text\+Block}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_gui_text_block_a45ff66e59e76520d3a896934aab94b3d}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_block_a2daa7117bd0bffb2cdcfa8d665dfeaf1}{update}} ()
+\begin{DoxyCompactList}\small\item\em Updates the \mbox{\hyperlink{classglib_1_1_gui_text_block}{Gui\+Text\+Block}} object. Does nothing. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_block_ab1c5d02791262505b439037e9aa47c15}{render}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Renders the \mbox{\hyperlink{classglib_1_1_gui_text_block}{Gui\+Text\+Block}} object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_block_a23111166146cd4fab8349292ce8ec8de}{set\+Text\+Color}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Sets the Text \mbox{\hyperlink{structglib_1_1_color}{Color}}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_text_block_afbd5d2459970e57b6895ef0ba138435d}{get\+Text\+Color}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Text \mbox{\hyperlink{structglib_1_1_color}{Color}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_block_a019caed449c04377f7e82d8942eae4fd}{set\+Highlight\+Color}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Sets the Highlight \mbox{\hyperlink{structglib_1_1_color}{Color}} The color for any highlighted section of text. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_text_block_a302ad0152fe6bedb4dd52cd5384c0095}{get\+Highlight\+Color}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Highlight \mbox{\hyperlink{structglib_1_1_color}{Color}} The color for any highlighted section of text. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_block_a33cfad7bf6e1606dbdbde1ccb6820a35}{set\+Should\+Highlight\+Text}} (bool v)
+\begin{DoxyCompactList}\small\item\em Sets whether the text should be allowed to have highlighted sections. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_gui_text_block_a0587d4e9173326ec8cfdb8f9bf6be862}{get\+Should\+Highlight\+Text}} ()
+\begin{DoxyCompactList}\small\item\em Gets whether the text should be allowed to have highlighted sections. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_block_a32f9cb6e255049912b6e07cd6e2a8c41}{set\+Highlight\+Start}} (int v)
+\begin{DoxyCompactList}\small\item\em Sets the position to start the highlighted section of text. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_text_block_a57c63546754238e3bb2eb8d1a86633f1}{get\+Highlight\+Start}} ()
+\begin{DoxyCompactList}\small\item\em Gets the position of the start of the highlighted section of text. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_block_a8c17b31d39760a626404fbebabc5fc12}{set\+Highlight\+End}} (int v)
+\begin{DoxyCompactList}\small\item\em Sets the position to end the highlighted section of text. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_text_block_a549f4af075318fc99f53ffbaad50cab7}{get\+Highlight\+End}} ()
+\begin{DoxyCompactList}\small\item\em Gets the position of the end of the highlighted section of text. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_block_a9a95c1de53502685ce76f13ff5065b55}{set\+Allow\+Line\+Breaks}} (bool v)
+\begin{DoxyCompactList}\small\item\em Sets whether to allow linebreaks in the text. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_gui_text_block_a10e6c5499e1f248132ab93f3c3766c80}{get\+Allow\+Line\+Breaks}} ()
+\begin{DoxyCompactList}\small\item\em Gets whether linebreaks are allowed in the text. \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classglib_1_1_gui_text_block_afc57f21488721234da012f6aafc0af2d}{get\+Text}} ()
+\begin{DoxyCompactList}\small\item\em Gets a copy of the text displayed. \end{DoxyCompactList}\item 
+std\+::string \& \mbox{\hyperlink{classglib_1_1_gui_text_block_a25658cd961405d326eaa400b6657b29f}{get\+Text\+Ref}} ()
+\begin{DoxyCompactList}\small\item\em Gets a reference to the text displayed. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_block_aff46ace08b2791d4b08035e811d7a65e}{set\+Text}} (std\+::string s)
+\begin{DoxyCompactList}\small\item\em Sets the Text displayed. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_block_a791748fa6b83bedb796925257a0f8b9e}{set\+Font}} (\mbox{\hyperlink{classglib_1_1_font}{Font}} $\ast$f)
+\begin{DoxyCompactList}\small\item\em Sets a specific font to use. If nullptr, the default font set in the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class will be used. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_font}{Font}} $\ast$ \mbox{\hyperlink{classglib_1_1_gui_text_block_a39c203b0adba4c38c0ca4f0705fc9cc4}{get\+Font}} ()
+\begin{DoxyCompactList}\small\item\em Gets the \mbox{\hyperlink{classglib_1_1_font}{Font}} used. If nullptr, the default font set in the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class is being used. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_block_a8e98f31006e7ca6ae4b8e1189f1306d5}{set\+Width}} (int v)
+\begin{DoxyCompactList}\small\item\em Sets the Width of the text block. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_block_a02fc7a38cc660e666ce98cf79da31809}{set\+Height}} (int v)
+\begin{DoxyCompactList}\small\item\em Sets the Height of the text block. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_text_block_a581b651f9650c2d526d3ebe846545e33}{get\+Width}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Width of the text block. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_text_block_aa480786e1796c4504361d1c58329118e}{get\+Height}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Height of the text block. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_block_a0f4b82ea3f1f8086a4d1790eaa8b9b34}{set\+OffsetX}} (int x)
+\begin{DoxyCompactList}\small\item\em Sets the Offset X position of the text. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_block_aa5827bbf4f0492263ba604de1abe9db1}{set\+OffsetY}} (int y)
+\begin{DoxyCompactList}\small\item\em Sets the Offset Y position of the text. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_ac3d17468fdb90b695d97c6ed848036a9}\label{classglib_1_1_gui_text_block_ac3d17468fdb90b695d97c6ed848036a9}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a5831d200d09fe4130b9927c537322b57}\label{classglib_1_1_gui_text_block_a5831d200d09fe4130b9927c537322b57}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!GuiTextBlock@{GuiTextBlock}}
+\index{GuiTextBlock@{GuiTextBlock}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{GuiTextBlock()}{GuiTextBlock()}}
+{\footnotesize\ttfamily glib\+::\+Gui\+Text\+Block\+::\+Gui\+Text\+Block (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{width,  }\item[{int}]{height }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_gui_text_block}{Gui\+Text\+Block}} object It draws text at some location with a specified max width and height. Allows for linebreaks as well. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+{\em width} & \\
+\hline
+{\em height} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a10e6c5499e1f248132ab93f3c3766c80}\label{classglib_1_1_gui_text_block_a10e6c5499e1f248132ab93f3c3766c80}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!getAllowLineBreaks@{getAllowLineBreaks}}
+\index{getAllowLineBreaks@{getAllowLineBreaks}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{getAllowLineBreaks()}{getAllowLineBreaks()}}
+{\footnotesize\ttfamily bool glib\+::\+Gui\+Text\+Block\+::get\+Allow\+Line\+Breaks (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets whether linebreaks are allowed in the text. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a45ff66e59e76520d3a896934aab94b3d}\label{classglib_1_1_gui_text_block_a45ff66e59e76520d3a896934aab94b3d}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Gui\+Text\+Block\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance}{glib\+::\+Gui\+Instance}}.
+
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a39c203b0adba4c38c0ca4f0705fc9cc4}\label{classglib_1_1_gui_text_block_a39c203b0adba4c38c0ca4f0705fc9cc4}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!getFont@{getFont}}
+\index{getFont@{getFont}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{getFont()}{getFont()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_font}{Font}} $\ast$ glib\+::\+Gui\+Text\+Block\+::get\+Font (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the \mbox{\hyperlink{classglib_1_1_font}{Font}} used. If nullptr, the default font set in the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class is being used. 
+
+\begin{DoxyReturn}{Returns}
+Font$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_aa480786e1796c4504361d1c58329118e}\label{classglib_1_1_gui_text_block_aa480786e1796c4504361d1c58329118e}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!getHeight@{getHeight}}
+\index{getHeight@{getHeight}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{getHeight()}{getHeight()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Text\+Block\+::get\+Height (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Height of the text block. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a302ad0152fe6bedb4dd52cd5384c0095}\label{classglib_1_1_gui_text_block_a302ad0152fe6bedb4dd52cd5384c0095}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!getHighlightColor@{getHighlightColor}}
+\index{getHighlightColor@{getHighlightColor}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{getHighlightColor()}{getHighlightColor()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structglib_1_1_color}{Color}} glib\+::\+Gui\+Text\+Block\+::get\+Highlight\+Color (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Highlight \mbox{\hyperlink{structglib_1_1_color}{Color}} The color for any highlighted section of text. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_color}{Color}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a549f4af075318fc99f53ffbaad50cab7}\label{classglib_1_1_gui_text_block_a549f4af075318fc99f53ffbaad50cab7}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!getHighlightEnd@{getHighlightEnd}}
+\index{getHighlightEnd@{getHighlightEnd}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{getHighlightEnd()}{getHighlightEnd()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Text\+Block\+::get\+Highlight\+End (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the position of the end of the highlighted section of text. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a57c63546754238e3bb2eb8d1a86633f1}\label{classglib_1_1_gui_text_block_a57c63546754238e3bb2eb8d1a86633f1}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!getHighlightStart@{getHighlightStart}}
+\index{getHighlightStart@{getHighlightStart}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{getHighlightStart()}{getHighlightStart()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Text\+Block\+::get\+Highlight\+Start (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the position of the start of the highlighted section of text. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a0587d4e9173326ec8cfdb8f9bf6be862}\label{classglib_1_1_gui_text_block_a0587d4e9173326ec8cfdb8f9bf6be862}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!getShouldHighlightText@{getShouldHighlightText}}
+\index{getShouldHighlightText@{getShouldHighlightText}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{getShouldHighlightText()}{getShouldHighlightText()}}
+{\footnotesize\ttfamily bool glib\+::\+Gui\+Text\+Block\+::get\+Should\+Highlight\+Text (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets whether the text should be allowed to have highlighted sections. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_afc57f21488721234da012f6aafc0af2d}\label{classglib_1_1_gui_text_block_afc57f21488721234da012f6aafc0af2d}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!getText@{getText}}
+\index{getText@{getText}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{getText()}{getText()}}
+{\footnotesize\ttfamily std\+::string glib\+::\+Gui\+Text\+Block\+::get\+Text (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets a copy of the text displayed. 
+
+\begin{DoxyReturn}{Returns}
+std\+::string 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_afbd5d2459970e57b6895ef0ba138435d}\label{classglib_1_1_gui_text_block_afbd5d2459970e57b6895ef0ba138435d}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!getTextColor@{getTextColor}}
+\index{getTextColor@{getTextColor}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{getTextColor()}{getTextColor()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structglib_1_1_color}{Color}} glib\+::\+Gui\+Text\+Block\+::get\+Text\+Color (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Text \mbox{\hyperlink{structglib_1_1_color}{Color}}. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_color}{Color}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a25658cd961405d326eaa400b6657b29f}\label{classglib_1_1_gui_text_block_a25658cd961405d326eaa400b6657b29f}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!getTextRef@{getTextRef}}
+\index{getTextRef@{getTextRef}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{getTextRef()}{getTextRef()}}
+{\footnotesize\ttfamily std\+::string \& glib\+::\+Gui\+Text\+Block\+::get\+Text\+Ref (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets a reference to the text displayed. 
+
+\begin{DoxyReturn}{Returns}
+std\+::string\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a581b651f9650c2d526d3ebe846545e33}\label{classglib_1_1_gui_text_block_a581b651f9650c2d526d3ebe846545e33}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!getWidth@{getWidth}}
+\index{getWidth@{getWidth}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{getWidth()}{getWidth()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Text\+Block\+::get\+Width (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Width of the text block. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_ab1c5d02791262505b439037e9aa47c15}\label{classglib_1_1_gui_text_block_ab1c5d02791262505b439037e9aa47c15}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!render@{render}}
+\index{render@{render}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Block\+::render (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Renders the \mbox{\hyperlink{classglib_1_1_gui_text_block}{Gui\+Text\+Block}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em surf} & \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance_a303d9dc4dedc8e5cf2027bb02c7015c8}{glib\+::\+Gui\+Instance}}.
+
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a9a95c1de53502685ce76f13ff5065b55}\label{classglib_1_1_gui_text_block_a9a95c1de53502685ce76f13ff5065b55}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!setAllowLineBreaks@{setAllowLineBreaks}}
+\index{setAllowLineBreaks@{setAllowLineBreaks}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{setAllowLineBreaks()}{setAllowLineBreaks()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Block\+::set\+Allow\+Line\+Breaks (\begin{DoxyParamCaption}\item[{bool}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets whether to allow linebreaks in the text. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a791748fa6b83bedb796925257a0f8b9e}\label{classglib_1_1_gui_text_block_a791748fa6b83bedb796925257a0f8b9e}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!setFont@{setFont}}
+\index{setFont@{setFont}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{setFont()}{setFont()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Block\+::set\+Font (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_font}{Font}} $\ast$}]{f }\end{DoxyParamCaption})}
+
+
+
+Sets a specific font to use. If nullptr, the default font set in the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class will be used. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em f} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a02fc7a38cc660e666ce98cf79da31809}\label{classglib_1_1_gui_text_block_a02fc7a38cc660e666ce98cf79da31809}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!setHeight@{setHeight}}
+\index{setHeight@{setHeight}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{setHeight()}{setHeight()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Block\+::set\+Height (\begin{DoxyParamCaption}\item[{int}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets the Height of the text block. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a019caed449c04377f7e82d8942eae4fd}\label{classglib_1_1_gui_text_block_a019caed449c04377f7e82d8942eae4fd}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!setHighlightColor@{setHighlightColor}}
+\index{setHighlightColor@{setHighlightColor}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{setHighlightColor()}{setHighlightColor()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Block\+::set\+Highlight\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Sets the Highlight \mbox{\hyperlink{structglib_1_1_color}{Color}} The color for any highlighted section of text. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a8c17b31d39760a626404fbebabc5fc12}\label{classglib_1_1_gui_text_block_a8c17b31d39760a626404fbebabc5fc12}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!setHighlightEnd@{setHighlightEnd}}
+\index{setHighlightEnd@{setHighlightEnd}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{setHighlightEnd()}{setHighlightEnd()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Block\+::set\+Highlight\+End (\begin{DoxyParamCaption}\item[{int}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets the position to end the highlighted section of text. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a32f9cb6e255049912b6e07cd6e2a8c41}\label{classglib_1_1_gui_text_block_a32f9cb6e255049912b6e07cd6e2a8c41}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!setHighlightStart@{setHighlightStart}}
+\index{setHighlightStart@{setHighlightStart}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{setHighlightStart()}{setHighlightStart()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Block\+::set\+Highlight\+Start (\begin{DoxyParamCaption}\item[{int}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets the position to start the highlighted section of text. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a0f4b82ea3f1f8086a4d1790eaa8b9b34}\label{classglib_1_1_gui_text_block_a0f4b82ea3f1f8086a4d1790eaa8b9b34}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!setOffsetX@{setOffsetX}}
+\index{setOffsetX@{setOffsetX}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{setOffsetX()}{setOffsetX()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Block\+::set\+OffsetX (\begin{DoxyParamCaption}\item[{int}]{x }\end{DoxyParamCaption})}
+
+
+
+Sets the Offset X position of the text. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_aa5827bbf4f0492263ba604de1abe9db1}\label{classglib_1_1_gui_text_block_aa5827bbf4f0492263ba604de1abe9db1}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!setOffsetY@{setOffsetY}}
+\index{setOffsetY@{setOffsetY}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{setOffsetY()}{setOffsetY()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Block\+::set\+OffsetY (\begin{DoxyParamCaption}\item[{int}]{y }\end{DoxyParamCaption})}
+
+
+
+Sets the Offset Y position of the text. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a33cfad7bf6e1606dbdbde1ccb6820a35}\label{classglib_1_1_gui_text_block_a33cfad7bf6e1606dbdbde1ccb6820a35}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!setShouldHighlightText@{setShouldHighlightText}}
+\index{setShouldHighlightText@{setShouldHighlightText}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{setShouldHighlightText()}{setShouldHighlightText()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Block\+::set\+Should\+Highlight\+Text (\begin{DoxyParamCaption}\item[{bool}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets whether the text should be allowed to have highlighted sections. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_aff46ace08b2791d4b08035e811d7a65e}\label{classglib_1_1_gui_text_block_aff46ace08b2791d4b08035e811d7a65e}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!setText@{setText}}
+\index{setText@{setText}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{setText()}{setText()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Block\+::set\+Text (\begin{DoxyParamCaption}\item[{std\+::string}]{s }\end{DoxyParamCaption})}
+
+
+
+Sets the Text displayed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a23111166146cd4fab8349292ce8ec8de}\label{classglib_1_1_gui_text_block_a23111166146cd4fab8349292ce8ec8de}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!setTextColor@{setTextColor}}
+\index{setTextColor@{setTextColor}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{setTextColor()}{setTextColor()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Block\+::set\+Text\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Sets the Text \mbox{\hyperlink{structglib_1_1_color}{Color}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a8e98f31006e7ca6ae4b8e1189f1306d5}\label{classglib_1_1_gui_text_block_a8e98f31006e7ca6ae4b8e1189f1306d5}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!setWidth@{setWidth}}
+\index{setWidth@{setWidth}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{setWidth()}{setWidth()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Block\+::set\+Width (\begin{DoxyParamCaption}\item[{int}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets the Width of the text block. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_a2daa7117bd0bffb2cdcfa8d665dfeaf1}\label{classglib_1_1_gui_text_block_a2daa7117bd0bffb2cdcfa8d665dfeaf1}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!update@{update}}
+\index{update@{update}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Block\+::update (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Updates the \mbox{\hyperlink{classglib_1_1_gui_text_block}{Gui\+Text\+Block}} object. Does nothing. 
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance_adb20e1eac37428a48802ad39cf4c2cb0}{glib\+::\+Gui\+Instance}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Gui\+Manager.\+h\end{DoxyCompactItemize}

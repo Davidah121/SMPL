@@ -1,0 +1,265 @@
+\hypertarget{classglib_1_1_gui_manager}{}\doxysection{glib\+::Gui\+Manager Class Reference}
+\label{classglib_1_1_gui_manager}\index{glib::GuiManager@{glib::GuiManager}}
+Inheritance diagram for glib\+::Gui\+Manager\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classglib_1_1_gui_manager}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_manager_afb8dc854c5e20c213bd8eb04612dc0ff}\label{classglib_1_1_gui_manager_afb8dc854c5e20c213bd8eb04612dc0ff}} 
+{\bfseries Gui\+Manager} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} object Manages a list of Gui\+Instances updating and rendering them onto a \mbox{\hyperlink{classglib_1_1_image}{Image}}. Constructs a \mbox{\hyperlink{classglib_1_1_image}{Image}} of default size 320x240. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_gui_manager_ab63247c544d4ec849ebcd0e2fbd6a6eb}{Gui\+Manager}} (int width, int height)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} object Manages a list of Gui\+Instances updating and rendering them onto a \mbox{\hyperlink{classglib_1_1_image}{Image}}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gui_manager_a2157010ed80cce56686ea3193baafba1}\label{classglib_1_1_gui_manager_a2157010ed80cce56686ea3193baafba1}} 
+{\bfseries $\sim$\+Gui\+Manager} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} object If the \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} owns the image, it will be deleted as well. All Gui\+Instances managed will have their \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} pointer set to nullptr. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_gui_manager_a61b042ba71696cc92e80c23dde2ca58c}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_gui_manager_a4aac27fc843225c7f668901407ba7b1c}{add\+Element}} (\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$k)
+\begin{DoxyCompactList}\small\item\em Adds a \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} to be managed. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_manager_a46def9a11029401dca7763d691487149}{delete\+Element}} (\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$k)
+\begin{DoxyCompactList}\small\item\em Removes a \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} from the list. \end{DoxyCompactList}\item 
+std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$ $>$ \mbox{\hyperlink{classglib_1_1_gui_manager_a32a723401cc57a66d4321c874d999436}{get\+Elements}} ()
+\begin{DoxyCompactList}\small\item\em Gets a list of all the Gui\+Instances managed. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gui_manager_a5d0e4230f54d8b96e774fa26f47a6007}\label{classglib_1_1_gui_manager_a5d0e4230f54d8b96e774fa26f47a6007}} 
+void {\bfseries update\+Gui\+Elements} ()
+\begin{DoxyCompactList}\small\item\em Updates all of the Gui\+Instances. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gui_manager_a7d5fa1a735209b9c4cdc7125ec79f610}\label{classglib_1_1_gui_manager_a7d5fa1a735209b9c4cdc7125ec79f610}} 
+void {\bfseries render\+Gui\+Elements} ()
+\begin{DoxyCompactList}\small\item\em Renders all of the Gui\+Instances. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ \mbox{\hyperlink{classglib_1_1_gui_manager_a3eb6149465f33c380ab8c511cfa30f17}{get\+Image}} ()
+\begin{DoxyCompactList}\small\item\em Gets the \mbox{\hyperlink{classglib_1_1_image}{Image}} for the \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}}. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classglib_1_1_gui_manager_a883f0c3e2b0ed5224f378f4a14be1233}{get\+Size}} ()
+\begin{DoxyCompactList}\small\item\em Gets the amount of Gui\+Instances in the list. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_manager_a3df380216e50c42f985b42d314636cc1}{resize\+Image}} (int width, int height)
+\begin{DoxyCompactList}\small\item\em Resizes the \mbox{\hyperlink{classglib_1_1_image}{Image}} for the \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_manager_a7c5c0437aa7c5b2f03ed55473a63e809}{set\+WindowX}} (int v)
+\begin{DoxyCompactList}\small\item\em Sets the x location for the window. Used for offsetting mouse x position. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_manager_a9ee7486d703b9993d15f67a5d4fa584b}{set\+WindowY}} (int v)
+\begin{DoxyCompactList}\small\item\em Sets the y location for the window. Used for offsetting mouse y position. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_manager_a96794f575a29b1dceff191cc5b41f7b7}{get\+WindowX}} ()
+\begin{DoxyCompactList}\small\item\em Gets the x location for the window. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_manager_a14f0ce6e0febd7d808b98db0720102e3}{get\+WindowY}} ()
+\begin{DoxyCompactList}\small\item\em Gets the y location for the window. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_manager_aef06ffefe2ce7a19b3d93907ec6f0ad8}{get\+Background\+Color}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Background \mbox{\hyperlink{structglib_1_1_color}{Color}} for the \mbox{\hyperlink{classglib_1_1_image}{Image}} The image is cleared to this color before any rendering occurs. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_manager_ab190326306ae5bd7171101a2e15a5fe8}{set\+Background\+Color}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Sets the Background \mbox{\hyperlink{structglib_1_1_color}{Color}} for the \mbox{\hyperlink{classglib_1_1_image}{Image}} The image is cleared to this color before any rendering occurs. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_manager_a5b622da659832f8c6bfb0f7fc5231b9c}\label{classglib_1_1_gui_manager_a5b622da659832f8c6bfb0f7fc5231b9c}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_gui_manager_ab63247c544d4ec849ebcd0e2fbd6a6eb}\label{classglib_1_1_gui_manager_ab63247c544d4ec849ebcd0e2fbd6a6eb}} 
+\index{glib::GuiManager@{glib::GuiManager}!GuiManager@{GuiManager}}
+\index{GuiManager@{GuiManager}!glib::GuiManager@{glib::GuiManager}}
+\doxysubsubsection{\texorpdfstring{GuiManager()}{GuiManager()}}
+{\footnotesize\ttfamily glib\+::\+Gui\+Manager\+::\+Gui\+Manager (\begin{DoxyParamCaption}\item[{int}]{width,  }\item[{int}]{height }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}} object Manages a list of Gui\+Instances updating and rendering them onto a \mbox{\hyperlink{classglib_1_1_image}{Image}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em width} & \\
+\hline
+{\em height} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_gui_manager_a4aac27fc843225c7f668901407ba7b1c}\label{classglib_1_1_gui_manager_a4aac27fc843225c7f668901407ba7b1c}} 
+\index{glib::GuiManager@{glib::GuiManager}!addElement@{addElement}}
+\index{addElement@{addElement}!glib::GuiManager@{glib::GuiManager}}
+\doxysubsubsection{\texorpdfstring{addElement()}{addElement()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Manager\+::add\+Element (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$}]{k }\end{DoxyParamCaption})}
+
+
+
+Adds a \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} to be managed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em k} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_manager_a46def9a11029401dca7763d691487149}\label{classglib_1_1_gui_manager_a46def9a11029401dca7763d691487149}} 
+\index{glib::GuiManager@{glib::GuiManager}!deleteElement@{deleteElement}}
+\index{deleteElement@{deleteElement}!glib::GuiManager@{glib::GuiManager}}
+\doxysubsubsection{\texorpdfstring{deleteElement()}{deleteElement()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Manager\+::delete\+Element (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$}]{k }\end{DoxyParamCaption})}
+
+
+
+Removes a \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} from the list. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em k} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_manager_aef06ffefe2ce7a19b3d93907ec6f0ad8}\label{classglib_1_1_gui_manager_aef06ffefe2ce7a19b3d93907ec6f0ad8}} 
+\index{glib::GuiManager@{glib::GuiManager}!getBackgroundColor@{getBackgroundColor}}
+\index{getBackgroundColor@{getBackgroundColor}!glib::GuiManager@{glib::GuiManager}}
+\doxysubsubsection{\texorpdfstring{getBackgroundColor()}{getBackgroundColor()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structglib_1_1_color}{Color}} glib\+::\+Gui\+Manager\+::get\+Background\+Color (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Background \mbox{\hyperlink{structglib_1_1_color}{Color}} for the \mbox{\hyperlink{classglib_1_1_image}{Image}} The image is cleared to this color before any rendering occurs. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_color}{Color}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_manager_a61b042ba71696cc92e80c23dde2ca58c}\label{classglib_1_1_gui_manager_a61b042ba71696cc92e80c23dde2ca58c}} 
+\index{glib::GuiManager@{glib::GuiManager}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::GuiManager@{glib::GuiManager}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Gui\+Manager\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
+
+\mbox{\Hypertarget{classglib_1_1_gui_manager_a32a723401cc57a66d4321c874d999436}\label{classglib_1_1_gui_manager_a32a723401cc57a66d4321c874d999436}} 
+\index{glib::GuiManager@{glib::GuiManager}!getElements@{getElements}}
+\index{getElements@{getElements}!glib::GuiManager@{glib::GuiManager}}
+\doxysubsubsection{\texorpdfstring{getElements()}{getElements()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$ $>$ glib\+::\+Gui\+Manager\+::get\+Elements (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets a list of all the Gui\+Instances managed. 
+
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$\+Gui\+Instance$\ast$$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_manager_a3eb6149465f33c380ab8c511cfa30f17}\label{classglib_1_1_gui_manager_a3eb6149465f33c380ab8c511cfa30f17}} 
+\index{glib::GuiManager@{glib::GuiManager}!getImage@{getImage}}
+\index{getImage@{getImage}!glib::GuiManager@{glib::GuiManager}}
+\doxysubsubsection{\texorpdfstring{getImage()}{getImage()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ glib\+::\+Gui\+Manager\+::get\+Image (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the \mbox{\hyperlink{classglib_1_1_image}{Image}} for the \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}}. 
+
+\begin{DoxyReturn}{Returns}
+Image$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_manager_a883f0c3e2b0ed5224f378f4a14be1233}\label{classglib_1_1_gui_manager_a883f0c3e2b0ed5224f378f4a14be1233}} 
+\index{glib::GuiManager@{glib::GuiManager}!getSize@{getSize}}
+\index{getSize@{getSize}!glib::GuiManager@{glib::GuiManager}}
+\doxysubsubsection{\texorpdfstring{getSize()}{getSize()}}
+{\footnotesize\ttfamily size\+\_\+t glib\+::\+Gui\+Manager\+::get\+Size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the amount of Gui\+Instances in the list. 
+
+\begin{DoxyReturn}{Returns}
+size\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_manager_a96794f575a29b1dceff191cc5b41f7b7}\label{classglib_1_1_gui_manager_a96794f575a29b1dceff191cc5b41f7b7}} 
+\index{glib::GuiManager@{glib::GuiManager}!getWindowX@{getWindowX}}
+\index{getWindowX@{getWindowX}!glib::GuiManager@{glib::GuiManager}}
+\doxysubsubsection{\texorpdfstring{getWindowX()}{getWindowX()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Manager\+::get\+WindowX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the x location for the window. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_manager_a14f0ce6e0febd7d808b98db0720102e3}\label{classglib_1_1_gui_manager_a14f0ce6e0febd7d808b98db0720102e3}} 
+\index{glib::GuiManager@{glib::GuiManager}!getWindowY@{getWindowY}}
+\index{getWindowY@{getWindowY}!glib::GuiManager@{glib::GuiManager}}
+\doxysubsubsection{\texorpdfstring{getWindowY()}{getWindowY()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Manager\+::get\+WindowY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the y location for the window. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_manager_a3df380216e50c42f985b42d314636cc1}\label{classglib_1_1_gui_manager_a3df380216e50c42f985b42d314636cc1}} 
+\index{glib::GuiManager@{glib::GuiManager}!resizeImage@{resizeImage}}
+\index{resizeImage@{resizeImage}!glib::GuiManager@{glib::GuiManager}}
+\doxysubsubsection{\texorpdfstring{resizeImage()}{resizeImage()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Manager\+::resize\+Image (\begin{DoxyParamCaption}\item[{int}]{width,  }\item[{int}]{height }\end{DoxyParamCaption})}
+
+
+
+Resizes the \mbox{\hyperlink{classglib_1_1_image}{Image}} for the \mbox{\hyperlink{classglib_1_1_gui_manager}{Gui\+Manager}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em width} & \\
+\hline
+{\em height} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_manager_ab190326306ae5bd7171101a2e15a5fe8}\label{classglib_1_1_gui_manager_ab190326306ae5bd7171101a2e15a5fe8}} 
+\index{glib::GuiManager@{glib::GuiManager}!setBackgroundColor@{setBackgroundColor}}
+\index{setBackgroundColor@{setBackgroundColor}!glib::GuiManager@{glib::GuiManager}}
+\doxysubsubsection{\texorpdfstring{setBackgroundColor()}{setBackgroundColor()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Manager\+::set\+Background\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Sets the Background \mbox{\hyperlink{structglib_1_1_color}{Color}} for the \mbox{\hyperlink{classglib_1_1_image}{Image}} The image is cleared to this color before any rendering occurs. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_manager_a7c5c0437aa7c5b2f03ed55473a63e809}\label{classglib_1_1_gui_manager_a7c5c0437aa7c5b2f03ed55473a63e809}} 
+\index{glib::GuiManager@{glib::GuiManager}!setWindowX@{setWindowX}}
+\index{setWindowX@{setWindowX}!glib::GuiManager@{glib::GuiManager}}
+\doxysubsubsection{\texorpdfstring{setWindowX()}{setWindowX()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Manager\+::set\+WindowX (\begin{DoxyParamCaption}\item[{int}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets the x location for the window. Used for offsetting mouse x position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_manager_a9ee7486d703b9993d15f67a5d4fa584b}\label{classglib_1_1_gui_manager_a9ee7486d703b9993d15f67a5d4fa584b}} 
+\index{glib::GuiManager@{glib::GuiManager}!setWindowY@{setWindowY}}
+\index{setWindowY@{setWindowY}!glib::GuiManager@{glib::GuiManager}}
+\doxysubsubsection{\texorpdfstring{setWindowY()}{setWindowY()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Manager\+::set\+WindowY (\begin{DoxyParamCaption}\item[{int}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets the y location for the window. Used for offsetting mouse y position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Gui\+Manager.\+h\end{DoxyCompactItemize}

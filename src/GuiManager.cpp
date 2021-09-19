@@ -12,19 +12,12 @@ namespace glib
 
 	GuiManager::GuiManager()
 	{
+		surf = Image(320,240);
 	}
 
-	GuiManager::GuiManager(Image* img, bool ownership)
+	GuiManager::GuiManager(int width, int height)
 	{
-		ownsImage = ownership;
-		surf = img;
-	}
-
-	GuiManager::GuiManager(const GuiManager& k)
-	{
-		ownsImage = false;
-		surf = k.surf;
-		objects = std::vector<GuiInstance*>(k.objects);
+		surf = Image(width,height);
 	}
 
 	GuiManager::~GuiManager()
@@ -36,16 +29,6 @@ namespace glib
 		}
 		
 		objects.clear();
-
-		if(ownsImage)
-		{
-			if(surf!=nullptr)
-			{
-				delete surf;
-			}
-		}
-
-		surf = nullptr;
 	}
 
 	void GuiManager::addElement(GuiInstance* k)
@@ -152,11 +135,8 @@ namespace glib
 		}
 
 		//RENDER
-		if (surf != nullptr)
-		{
-			Graphics::setColor(backgroundColor);
-			surf->clearImage();
-		}
+		Graphics::setColor(backgroundColor);
+		surf.clearImage();
 
 		for (GuiInstance* obj : currVisibleObjects)
 		{
@@ -168,20 +148,14 @@ namespace glib
 			}
 			else
 			{
-				if(surf!=nullptr)
-					obj->render(surf);
+				obj->render(&surf);
 			}
 		}
 	}
 
-	void GuiManager::setImage(Image* surface)
-	{
-		surf = surface;
-	}
-
 	Image* GuiManager::getImage()
 	{
-		return surf;
+		return &surf;
 	}
 
 	size_t GuiManager::getSize()
@@ -191,14 +165,7 @@ namespace glib
 
 	void GuiManager::resizeImage(int width, int height)
 	{
-		if(ownsImage)
-		{
-			if(surf!=nullptr)
-			{
-				delete surf;
-			}
-			surf = new Image(width, height);
-		}
+		surf = Image(width, height);
 	}
 
 	void GuiManager::setWindowX(int v)

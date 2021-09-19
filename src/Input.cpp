@@ -1,5 +1,5 @@
 #include "Input.h"
-#include "WndWindow.h"
+#include "SimpleWindow.h"
 
 namespace glib
 {
@@ -30,8 +30,8 @@ namespace glib
 	void Input::pollInput()
 	{
 		//get mouse wheel from current active window
-		WndWindow::setMouseVWheelValuePointer(&nVerticalScrollValue);
-		WndWindow::setMouseHWheelValuePointer(&nHorizontalScrollValue);
+		SimpleWindow::setMouseVWheelValuePointer(&nVerticalScrollValue);
+		SimpleWindow::setMouseHWheelValuePointer(&nHorizontalScrollValue);
 
 		verticalScrollValue = nVerticalScrollValue;
 		horizontalScrollValue = nHorizontalScrollValue;

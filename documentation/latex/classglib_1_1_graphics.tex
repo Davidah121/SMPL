@@ -1,0 +1,946 @@
+\hypertarget{classglib_1_1_graphics}{}\doxysection{glib\+::Graphics Class Reference}
+\label{classglib_1_1_graphics}\index{glib::Graphics@{glib::Graphics}}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a1c46d8c2f837e63b24755b187f8ccdae}\label{classglib_1_1_graphics_a1c46d8c2f837e63b24755b187f8ccdae}} 
+static void {\bfseries init} ()
+\begin{DoxyCompactList}\small\item\em Initializes the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class for drawing. It loads in a default font for drawing text. Dispose should be called if this function has been called. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_af01d090215139f8aa907e5798eeebaa0}\label{classglib_1_1_graphics_af01d090215139f8aa907e5798eeebaa0}} 
+static void {\bfseries dispose} ()
+\begin{DoxyCompactList}\small\item\em Disposes of the memory allocated by the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_a7d860db215c5227ba1703eb93f9bbc4e}{clear\+Image}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Clears the specified Image$\ast$ to the draw color. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_a2ede68aed7abda6e9ad9b927170aa842}{draw\+Pixel}} (int x, int y, \mbox{\hyperlink{structglib_1_1_color}{Color}} c, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Draws a pixel to the specified image using Porter Duff rules. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_ad7ee57c195787298c8a0a2413ed49a38}{draw\+Pixel}} (double x, double y, \mbox{\hyperlink{structglib_1_1_color}{Color}} c, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Draws a pixel to the specified image using Porter Duff rules. This function can draw up to 4 different pixels due to the specified point not directly lining up with the pixel grid. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_graphics_ab3606cf0cc23415b750b84696be9d2ca}{blend}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} src, \mbox{\hyperlink{structglib_1_1_color}{Color}} dest)
+\begin{DoxyCompactList}\small\item\em Blends 2 colors using Porter Duff rules. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_graphics_a9ee604e5ee9e0dcfe89d3af935b6d080}{lerp}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} src, \mbox{\hyperlink{structglib_1_1_color}{Color}} dest, double lerp\+Val)
+\begin{DoxyCompactList}\small\item\em Linearly blends 2 colors together. At value 0, src is the output color. At value 1, dest is the output color. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_a4b7a04d7634bd263235cefb7433b5b83}{draw\+Rect}} (int x, int y, int x2, int y2, bool outline, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Draws a rectangle using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_a1a1475c9ad7f98719cd39ed5ab6c9ebc}{draw\+Line}} (int x, int y, int x2, int y2, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Draws a \mbox{\hyperlink{classglib_1_1_line}{Line}} using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_aaf513c3dc5c58d0791079181e9a37cd7}{draw\+Circle}} (int x, int y, int radius, bool outline, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Draws a circle using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_abbdefd80ce18636bc379d66da2163222}\label{classglib_1_1_graphics_abbdefd80ce18636bc379d66da2163222}} 
+static void {\bfseries test\+Draw\+Triangle} (int x1, int y1, int x2, int y2, int x3, int y3, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Test draw function. Should be ignored. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_aaf6e7568e21d0f18e83c1e47abef2a28}{draw\+Triangle}} (int x1, int y1, int x2, int y2, int x3, int y3, bool outline, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Draws a triangle using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_adda98ffe0d32fac75c82c79835b31643}{draw\+Textured\+Triangle}} (\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} p1, \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} p2, \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} p3, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$texture, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Draws a triangle using the specified image. Is not affected by the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_aa796cf0e60cccf00bfd6db7265034291}{draw\+Image}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, int x, int y, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Draws an \mbox{\hyperlink{classglib_1_1_image}{Image}}. The active color has no influence. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_adfcad2373a8083e8b90fa82f28c3413d}{draw\+Sprite}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, int x, int y, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Draws an \mbox{\hyperlink{classglib_1_1_image}{Image}} that is modified by the active drawing color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_acc89b72431ad7ff7933397b8ac354902}{draw\+Sprite\+Part}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, int x, int y, int imgX, int imgY, int imgW, int imgH, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Draws a part of an \mbox{\hyperlink{classglib_1_1_image}{Image}} that will be modified by the active drawing color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_a6828073d7be88610fa338811e9a7d5fe}{draw\+Text}} (std\+::string str, int x, int y, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Draws the specified text using the active font. It is affected by the active drawing color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_ab1c69033fc237648dc82d64a0712bbd0}{draw\+Text\+Limits}} (std\+::string str, int x, int y, int max\+Width, int max\+Height, bool use\+Line\+Break, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Draws the specified text using the active font. It is affected by the active drawing color. Adds additional limits such as the maximum width and maximum height. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_af1c8f49d1eb8a170b8ca12567ca011a0}{draw\+Polygon}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} $\ast$points, int size, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Draws a polygon using the active draw color. Is affected by the current fill rule. May be removed as Vector\+Graphics accomplishes the same thing but will have more options. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_a0646616a90f27f2e0408bb45711d25ae}{draw\+Model}} (\mbox{\hyperlink{classglib_1_1_model}{Model}} $\ast$model, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$texture, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Draws a model using the active draw color or texture. Follows Open\+GL drawing. Only 2D shapes are supported. Expects position, and if desired texture, to be defined in the model. Expects position and texture to be Model\+::\+TYPE\+\_\+\+VEC2. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_af6a66498b02ba6afa2589fbe4fa88a33}{set\+Clipping\+Rect}} (\mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}} b)
+\begin{DoxyCompactList}\small\item\em Sets a rectangle where drawing will be allowed for the following drawing operations. Anything outside of the rectangle is not drawn. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}} \mbox{\hyperlink{classglib_1_1_graphics_a44ceda2ca0404aa740fd302225965e82}{get\+Clipping\+Rect}} ()
+\begin{DoxyCompactList}\small\item\em Gets the clipping rectangle currently used. Anything outside of the rectangle is not drawn. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_aa79c7dcf3febdce994e1ac2e1a9f16f6}\label{classglib_1_1_graphics_aa79c7dcf3febdce994e1ac2e1a9f16f6}} 
+static void {\bfseries reset\+Clipping\+Plane} ()
+\begin{DoxyCompactList}\small\item\em Resets the clipping rectangle. The defaults are\+: x \texorpdfstring{$>$}{>}= 0 \&\& x\texorpdfstring{$<$}{<}=65535 y \texorpdfstring{$>$}{>}= 0 \&\& y\texorpdfstring{$<$}{<}=65535. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_a7743fdbb26b410deb9cb665dd5869c15}{set\+Color}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Sets the currently active drawing color. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_graphics_a80c9c2db8bb90e97f2fa8e5b94c1247f}{get\+Color}} ()
+\begin{DoxyCompactList}\small\item\em Gets the currently active drawing color. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_a7acef5fbc49d1dcc126e0aeb7d5fa718}{set\+Font}} (\mbox{\hyperlink{classglib_1_1_font}{Font}} $\ast$f)
+\begin{DoxyCompactList}\small\item\em Sets the currently active \mbox{\hyperlink{classglib_1_1_font}{Font}}. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classglib_1_1_font}{Font}} $\ast$ \mbox{\hyperlink{classglib_1_1_graphics_af5f291bde6f688dfdbe18240e72265a2}{get\+Font}} ()
+\begin{DoxyCompactList}\small\item\em Returns the currently active \mbox{\hyperlink{classglib_1_1_font}{Font}}. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_a2c4ce1332497b8197d2ec1545d546d15}{set\+Default\+Font}} (unsigned char type)
+\begin{DoxyCompactList}\small\item\em Sets the default font to one of the 3 types of default fonts available. These can be modified to the users liking by changing the font files in the resources folder. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classglib_1_1_font}{Font}} $\ast$ \mbox{\hyperlink{classglib_1_1_graphics_a6776b379bf2ae4e8e94025543e37639e}{get\+Default\+Font}} (unsigned char type)
+\begin{DoxyCompactList}\small\item\em Returns one of the default font specified. These can be modified to the users liking by changing the font files in the resources folder. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_ac98bf270e947eb0470661b729e946771}{set\+Composite\+Rule}} (unsigned char b)
+\begin{DoxyCompactList}\small\item\em Sets the Porter Duff rule to use for color and alpha blending. \end{DoxyCompactList}\item 
+static unsigned char \mbox{\hyperlink{classglib_1_1_graphics_ac12fc361d934857194fdbaf5d998a3b0}{get\+Composite\+Rule}} ()
+\begin{DoxyCompactList}\small\item\em Returns the Porter Duff rule being used for color and alpha blending. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_acfb2dd20e827d9ea25a3fd4db620c14f}{set\+Blend\+Mode}} (unsigned char b)
+\begin{DoxyCompactList}\small\item\em Sets the blend mode to use for color and alpha blending. Currently not implemented. \end{DoxyCompactList}\item 
+static unsigned char \mbox{\hyperlink{classglib_1_1_graphics_a24344c6973398d9ecfbf4dfc5b5a376e}{get\+Blend\+Mode}} ()
+\begin{DoxyCompactList}\small\item\em Returns the blend mode used for color and alpha blending. Currently not implemented. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_a80340ad2442a27fc96a26a57809aa099}{set\+Fill\+Rule}} (bool b)
+\begin{DoxyCompactList}\small\item\em Sets the fill rule to use for drawing polygons. May be removed. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_graphics_a1ce5b297148932441cf99806ab72f907}{get\+Fill\+Rule}} ()
+\begin{DoxyCompactList}\small\item\em Returns the fill rule used for drawing polygons. May be removed. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_af53845958393815dd2ecf53afd206fd2}\label{classglib_1_1_graphics_af53845958393815dd2ecf53afd206fd2}} 
+static \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ {\bfseries crop} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, int x1, int y1, int x2, int y2)
+\begin{DoxyCompactList}\small\item\em Returns a new cropped image. Should be deleted when no longer needed. Not currently implemented. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a13c54e6704a92aa9f5026d3213ed1381}\label{classglib_1_1_graphics_a13c54e6704a92aa9f5026d3213ed1381}} 
+static \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ {\bfseries crop} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, \mbox{\hyperlink{classglib_1_1_shape}{Shape}} s)
+\begin{DoxyCompactList}\small\item\em Returns a new cropped image. Should be deleted when no longer needed. Not currently implemented. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_a86997d59f7f0af735d71b173397e4760}{replace\+Color}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, \mbox{\hyperlink{structglib_1_1_color}{Color}} old\+Color, \mbox{\hyperlink{structglib_1_1_color}{Color}} new\+Color, bool ignore\+Alpha=false)
+\begin{DoxyCompactList}\small\item\em Replaces the specified color with a new color in the image. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_a33e5a19ee26114ebba184a76c777f667}{filter\+Out\+Color}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, \mbox{\hyperlink{structglib_1_1_color}{Color}} c1)
+\begin{DoxyCompactList}\small\item\em Removes all colors from the image except the specified color. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_a7d742c17c9a6f33936f8f2646a69a494}{filter\+Out\+Color\+Range}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, \mbox{\hyperlink{structglib_1_1_color}{Color}} c1, \mbox{\hyperlink{structglib_1_1_color}{Color}} c2)
+\begin{DoxyCompactList}\small\item\em Removes all colors from the image unless they fall within the range between the 2 specified colors. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_a637fc88e10dc6a9bd7e45c63f853e454}{convert\+To\+Color\+Space}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, unsigned char color\+Space)
+\begin{DoxyCompactList}\small\item\em Converts the pixels in the image to a different color space. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_a2343387605c41f8f8b48af6dd7415109}{box\+Blur}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, int box\+Size)
+\begin{DoxyCompactList}\small\item\em Blurs the image using a simple box blur. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a929b33f4df54abd07236ddedb2309643}\label{classglib_1_1_graphics_a929b33f4df54abd07236ddedb2309643}} 
+static void {\bfseries gaussian\+Blur} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, double std\+Deviation)
+\begin{DoxyCompactList}\small\item\em Blurs the image using a guassian blur. Not implemented. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a9fe359164120d67d2bfe18fbdfd283ae}\label{classglib_1_1_graphics_a9fe359164120d67d2bfe18fbdfd283ae}} 
+static void {\bfseries uncanny\+Edge\+Filter} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img)
+\begin{DoxyCompactList}\small\item\em Applies an uncanny edge filter to the image. Not implemented. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a5f1c30d88cc9c769df2a94a50cca77d0}\label{classglib_1_1_graphics_a5f1c30d88cc9c769df2a94a50cca77d0}} 
+static void {\bfseries sobel\+Edge\+Filter} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img)
+\begin{DoxyCompactList}\small\item\em Applies a sobel edge filter to the image. Not implemented. \end{DoxyCompactList}\item 
+static std\+::vector$<$ std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} $>$ $>$ \mbox{\hyperlink{classglib_1_1_graphics_af19b0285b5dfd24b40c31b9b157b4f54}{calculate\+Gradient}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, unsigned char type)
+\begin{DoxyCompactList}\small\item\em Calculates the gradient of the specified color channel using central differences. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_ac9d3c0a8ffbfec69b8977bf20ff089be}{dither\+Image}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, unsigned char method=THRESHOLD)
+\begin{DoxyCompactList}\small\item\em Dithers the image using either Bayer dithering or Floyd Steinburg dithering. Can also just enforce the palette. The image must have a palette set to use this method. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ \mbox{\hyperlink{classglib_1_1_graphics_a9adc4597bd336fc59e7fd5d78a2d572c}{scale\+Image}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, double x\+Scale, double y\+Scale, unsigned char filter\+Method=NEAREST\+\_\+\+NEIGHBOR\+\_\+\+FILTER)
+\begin{DoxyCompactList}\small\item\em Scales an image using the specified filter method and returns a new image. That new image should be deleted when no longer needed. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a63b33a08b5bcea856e3f17ecc8e0a9ad}\label{classglib_1_1_graphics_a63b33a08b5bcea856e3f17ecc8e0a9ad}} 
+static const unsigned char {\bfseries NO\+\_\+\+COMPOSITE} = 255
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a9c1b50e4684106593b842d97631e83c2}\label{classglib_1_1_graphics_a9c1b50e4684106593b842d97631e83c2}} 
+static const unsigned char {\bfseries COMPOSITE\+\_\+\+CLEAR} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_aa4f9d6776b83a99824012da7b0225512}\label{classglib_1_1_graphics_aa4f9d6776b83a99824012da7b0225512}} 
+static const unsigned char {\bfseries COMPOSITE\+\_\+\+COPY} = 1
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_aaec8c2ea17532e2cf5675d2de460c405}\label{classglib_1_1_graphics_aaec8c2ea17532e2cf5675d2de460c405}} 
+static const unsigned char {\bfseries COMPOSITE\+\_\+\+DEST} = 2
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a4e89d4bd42b19ec37c3d2e75293f2c4c}\label{classglib_1_1_graphics_a4e89d4bd42b19ec37c3d2e75293f2c4c}} 
+static const unsigned char {\bfseries COMPOSITE\+\_\+\+SRC\+\_\+\+OVER} = 3
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a2bf6287f6ddddb95025d18fecc65820d}\label{classglib_1_1_graphics_a2bf6287f6ddddb95025d18fecc65820d}} 
+static const unsigned char {\bfseries COMPOSITE\+\_\+\+DEST\+\_\+\+OVER} = 4
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a19290663b5a874694077595e6d17b657}\label{classglib_1_1_graphics_a19290663b5a874694077595e6d17b657}} 
+static const unsigned char {\bfseries COMPOSITE\+\_\+\+SRC\+\_\+\+IN} = 5
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_af6f4098abf8f3f8318b7211288d33974}\label{classglib_1_1_graphics_af6f4098abf8f3f8318b7211288d33974}} 
+static const unsigned char {\bfseries COMPOSITE\+\_\+\+DEST\+\_\+\+IN} = 6
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_ad6a680b8fc71d9cbccdfa74ecb119f91}\label{classglib_1_1_graphics_ad6a680b8fc71d9cbccdfa74ecb119f91}} 
+static const unsigned char {\bfseries COMPOSITE\+\_\+\+SRC\+\_\+\+OUT} = 7
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a9d5453d8f80bb1eb717e93d2dfd366f6}\label{classglib_1_1_graphics_a9d5453d8f80bb1eb717e93d2dfd366f6}} 
+static const unsigned char {\bfseries COMPOSITE\+\_\+\+DEST\+\_\+\+OUT} = 8
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a5ac634896b5bdced5beab79dd2c555b1}\label{classglib_1_1_graphics_a5ac634896b5bdced5beab79dd2c555b1}} 
+static const unsigned char {\bfseries COMPOSITE\+\_\+\+SRC\+\_\+\+ATOP} = 9
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_adb3caaeea2bd81782ab0dd23c348ea5e}\label{classglib_1_1_graphics_adb3caaeea2bd81782ab0dd23c348ea5e}} 
+static const unsigned char {\bfseries COMPOSITE\+\_\+\+DEST\+\_\+\+ATOP} = 10
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_ad932dea8f33967f099a3ca1627d92989}\label{classglib_1_1_graphics_ad932dea8f33967f099a3ca1627d92989}} 
+static const unsigned char {\bfseries COMPOSITE\+\_\+\+XOR} = 11
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a54e0068271b3a69cb28a3ec14ec93803}\label{classglib_1_1_graphics_a54e0068271b3a69cb28a3ec14ec93803}} 
+static const unsigned char {\bfseries COMPOSITE\+\_\+\+LIGHTER} = 12
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a58378db75500423f6cd471abb1fcd7d6}\label{classglib_1_1_graphics_a58378db75500423f6cd471abb1fcd7d6}} 
+static const bool {\bfseries FILL\+\_\+\+EVEN\+\_\+\+ODD} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a57ea6be8765c2711271d6d70906766cd}\label{classglib_1_1_graphics_a57ea6be8765c2711271d6d70906766cd}} 
+static const bool {\bfseries FILL\+\_\+\+NON\+\_\+\+ZERO} = 1
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a1cfb565f9d04623b02c1a6960d4964a5}\label{classglib_1_1_graphics_a1cfb565f9d04623b02c1a6960d4964a5}} 
+static const unsigned char {\bfseries BLEND\+\_\+\+NORMAL} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a5fdecaa842bd6000740bdbdd5d3295f3}\label{classglib_1_1_graphics_a5fdecaa842bd6000740bdbdd5d3295f3}} 
+static const unsigned char {\bfseries BLEND\+\_\+\+MULT} = 1
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_ab5c17842094e17c1aacf82f28b0950f7}\label{classglib_1_1_graphics_ab5c17842094e17c1aacf82f28b0950f7}} 
+static const unsigned char {\bfseries BLEND\+\_\+\+SCREEN} = 2
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_ac31ddc2ba9702e31615d560626ed911b}\label{classglib_1_1_graphics_ac31ddc2ba9702e31615d560626ed911b}} 
+static const unsigned char {\bfseries NORMAL\+\_\+\+FONT} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_ade2a5e52b664d4b0202c840f463a50b7}\label{classglib_1_1_graphics_ade2a5e52b664d4b0202c840f463a50b7}} 
+static const unsigned char {\bfseries MEDIUM\+\_\+\+FONT} = 1
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_af70855a05551076846f44c412c8c232b}\label{classglib_1_1_graphics_af70855a05551076846f44c412c8c232b}} 
+static const unsigned char {\bfseries LARGE\+\_\+\+FONT} = 2
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a9a16f1c1c5b74fe9e7cb7229e59469b6}\label{classglib_1_1_graphics_a9a16f1c1c5b74fe9e7cb7229e59469b6}} 
+static const unsigned char {\bfseries THRESHOLD} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a75163ade7fae32f3364a6f7a33bd744b}\label{classglib_1_1_graphics_a75163ade7fae32f3364a6f7a33bd744b}} 
+static const unsigned char {\bfseries ORDERED\+\_\+\+DITHER\+\_\+\+BAYER} = 1
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_ac3e10a64c454abb676ebd0695a0a5bd5}\label{classglib_1_1_graphics_ac3e10a64c454abb676ebd0695a0a5bd5}} 
+static const unsigned char {\bfseries FLOYD\+\_\+\+DITHER} = 2
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a676de516354ec7f8f25b7691f05b23e6}\label{classglib_1_1_graphics_a676de516354ec7f8f25b7691f05b23e6}} 
+static const unsigned char {\bfseries NEAREST\+\_\+\+NEIGHBOR\+\_\+\+FILTER} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_aacf4b7f434c276ea78a1c6746a6a9de8}\label{classglib_1_1_graphics_aacf4b7f434c276ea78a1c6746a6a9de8}} 
+static const unsigned char {\bfseries BILINEAR\+\_\+\+FILTER} = 1
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a65e4af5cdc0aefe064659db050fbb7e5}\label{classglib_1_1_graphics_a65e4af5cdc0aefe064659db050fbb7e5}} 
+static const unsigned char {\bfseries BICUBIC\+\_\+\+FILTER} = 2
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a2ace6ff422d7a0e41a148de1f158810d}\label{classglib_1_1_graphics_a2ace6ff422d7a0e41a148de1f158810d}} 
+static const unsigned char {\bfseries RED\+\_\+\+CHANNEL} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a5c76dae2e3f939fe234ab263ce1a5efc}\label{classglib_1_1_graphics_a5c76dae2e3f939fe234ab263ce1a5efc}} 
+static const unsigned char {\bfseries GREEN\+\_\+\+CHANNEL} = 1
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a5338677bc3be21f19e7e93010149a491}\label{classglib_1_1_graphics_a5338677bc3be21f19e7e93010149a491}} 
+static const unsigned char {\bfseries BLUE\+\_\+\+CHANNEL} = 2
+\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_abc558e1aa9deb7786a98b3aaff82aeaf}\label{classglib_1_1_graphics_abc558e1aa9deb7786a98b3aaff82aeaf}} 
+static const unsigned char {\bfseries ALPHA\+\_\+\+CHANNEL} = 3
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_graphics_ab3606cf0cc23415b750b84696be9d2ca}\label{classglib_1_1_graphics_ab3606cf0cc23415b750b84696be9d2ca}} 
+\index{glib::Graphics@{glib::Graphics}!blend@{blend}}
+\index{blend@{blend}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{blend()}{blend()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{structglib_1_1_color}{Color}} glib\+::\+Graphics\+::blend (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{src,  }\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{dest }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Blends 2 colors using Porter Duff rules. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & The source color. \\
+\hline
+{\em dest} & The destination color. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_color}{Color}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_graphics_a2343387605c41f8f8b48af6dd7415109}\label{classglib_1_1_graphics_a2343387605c41f8f8b48af6dd7415109}} 
+\index{glib::Graphics@{glib::Graphics}!boxBlur@{boxBlur}}
+\index{boxBlur@{boxBlur}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{boxBlur()}{boxBlur()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::box\+Blur (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{int}]{box\+Size }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Blurs the image using a simple box blur. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & The image to operate on. \\
+\hline
+{\em box\+Size} & The size of the box to use for bluring. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_af19b0285b5dfd24b40c31b9b157b4f54}\label{classglib_1_1_graphics_af19b0285b5dfd24b40c31b9b157b4f54}} 
+\index{glib::Graphics@{glib::Graphics}!calculateGradient@{calculateGradient}}
+\index{calculateGradient@{calculateGradient}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{calculateGradient()}{calculateGradient()}}
+{\footnotesize\ttfamily static std\+::vector$<$ std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} $>$ $>$ glib\+::\+Graphics\+::calculate\+Gradient (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{unsigned char}]{type }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Calculates the gradient of the specified color channel using central differences. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & The image to operate on. \\
+\hline
+{\em type} & Must be one of the following types. RED\+\_\+\+CHANNEL GREEN\+\_\+\+CHANNEL BLUE\+\_\+\+CHANNEL ALPHA\+\_\+\+CHANNEL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$std\+::vector$<$\+Vec2f$>$$>$ Returns a 2D vector of \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} where each \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} stores the gradient at that point. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_graphics_a7d860db215c5227ba1703eb93f9bbc4e}\label{classglib_1_1_graphics_a7d860db215c5227ba1703eb93f9bbc4e}} 
+\index{glib::Graphics@{glib::Graphics}!clearImage@{clearImage}}
+\index{clearImage@{clearImage}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{clearImage()}{clearImage()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::clear\+Image (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Clears the specified Image$\ast$ to the draw color. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em surf} & If set to nullptr, no error is thrown. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_a637fc88e10dc6a9bd7e45c63f853e454}\label{classglib_1_1_graphics_a637fc88e10dc6a9bd7e45c63f853e454}} 
+\index{glib::Graphics@{glib::Graphics}!convertToColorSpace@{convertToColorSpace}}
+\index{convertToColorSpace@{convertToColorSpace}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{convertToColorSpace()}{convertToColorSpace()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::convert\+To\+Color\+Space (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{unsigned char}]{color\+Space }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts the pixels in the image to a different color space. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & The image to operate on. \\
+\hline
+{\em color\+Space} & One of the operations defined in \mbox{\hyperlink{classglib_1_1_color_space_converter}{Color\+Space\+Converter}} \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_ac9d3c0a8ffbfec69b8977bf20ff089be}\label{classglib_1_1_graphics_ac9d3c0a8ffbfec69b8977bf20ff089be}} 
+\index{glib::Graphics@{glib::Graphics}!ditherImage@{ditherImage}}
+\index{ditherImage@{ditherImage}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{ditherImage()}{ditherImage()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::dither\+Image (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{unsigned char}]{method = {\ttfamily THRESHOLD} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Dithers the image using either Bayer dithering or Floyd Steinburg dithering. Can also just enforce the palette. The image must have a palette set to use this method. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & The image to operate on. Must have the palette set. \\
+\hline
+{\em method} & The dithering method to use. Valid options are\+: ORDERED\+\_\+\+DITHER\+\_\+\+BAYER FLOYD\+\_\+\+DITHER THRESHOLD If set to THRESHOLD, the image will just have its palette enforced. Default value is THRESHOLD. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_aaf513c3dc5c58d0791079181e9a37cd7}\label{classglib_1_1_graphics_aaf513c3dc5c58d0791079181e9a37cd7}} 
+\index{glib::Graphics@{glib::Graphics}!drawCircle@{drawCircle}}
+\index{drawCircle@{drawCircle}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{drawCircle()}{drawCircle()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::draw\+Circle (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{radius,  }\item[{bool}]{outline,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Draws a circle using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & The center x location of the circle. \\
+\hline
+{\em y} & The center y location of the circle \\
+\hline
+{\em radius} & The radius of the circle. \\
+\hline
+{\em outline} & Controls whether only the outline of the circle should be drawn. \\
+\hline
+{\em surf} & The image to draw the circle onto. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_aa796cf0e60cccf00bfd6db7265034291}\label{classglib_1_1_graphics_aa796cf0e60cccf00bfd6db7265034291}} 
+\index{glib::Graphics@{glib::Graphics}!drawImage@{drawImage}}
+\index{drawImage@{drawImage}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{drawImage()}{drawImage()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::draw\+Image (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{int}]{x,  }\item[{int}]{y,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Draws an \mbox{\hyperlink{classglib_1_1_image}{Image}}. The active color has no influence. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & The image to draw. \\
+\hline
+{\em x} & The x location to draw at. \\
+\hline
+{\em y} & The y location to draw at. \\
+\hline
+{\em surf} & The image to draw onto. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_a1a1475c9ad7f98719cd39ed5ab6c9ebc}\label{classglib_1_1_graphics_a1a1475c9ad7f98719cd39ed5ab6c9ebc}} 
+\index{glib::Graphics@{glib::Graphics}!drawLine@{drawLine}}
+\index{drawLine@{drawLine}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{drawLine()}{drawLine()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::draw\+Line (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{x2,  }\item[{int}]{y2,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Draws a \mbox{\hyperlink{classglib_1_1_line}{Line}} using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & The x location of the line. \\
+\hline
+{\em y} & The y location of the line \\
+\hline
+{\em x2} & The 2nd x location of the line. \\
+\hline
+{\em y2} & The 2nd y location of the line. \\
+\hline
+{\em surf} & The image to draw the line onto. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_a0646616a90f27f2e0408bb45711d25ae}\label{classglib_1_1_graphics_a0646616a90f27f2e0408bb45711d25ae}} 
+\index{glib::Graphics@{glib::Graphics}!drawModel@{drawModel}}
+\index{drawModel@{drawModel}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{drawModel()}{drawModel()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::draw\+Model (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_model}{Model}} $\ast$}]{model,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{texture,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Draws a model using the active draw color or texture. Follows Open\+GL drawing. Only 2D shapes are supported. Expects position, and if desired texture, to be defined in the model. Expects position and texture to be Model\+::\+TYPE\+\_\+\+VEC2. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em model} & The model to draw. \\
+\hline
+{\em texture} & The texture to use if desired. If the model has texture coordinates, this can not be nullptr. Otherwise, it can be nullptr. \\
+\hline
+{\em surf} & The image to draw onto. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_ad7ee57c195787298c8a0a2413ed49a38}\label{classglib_1_1_graphics_ad7ee57c195787298c8a0a2413ed49a38}} 
+\index{glib::Graphics@{glib::Graphics}!drawPixel@{drawPixel}}
+\index{drawPixel@{drawPixel}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{drawPixel()}{drawPixel()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::draw\+Pixel (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y,  }\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Draws a pixel to the specified image using Porter Duff rules. This function can draw up to 4 different pixels due to the specified point not directly lining up with the pixel grid. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & The x location of the pixel. \\
+\hline
+{\em y} & The y location of the pixel. \\
+\hline
+{\em c} & The color of the pixel. \\
+\hline
+{\em surf} & If set to nullptr, no error is thrown. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_a2ede68aed7abda6e9ad9b927170aa842}\label{classglib_1_1_graphics_a2ede68aed7abda6e9ad9b927170aa842}} 
+\index{glib::Graphics@{glib::Graphics}!drawPixel@{drawPixel}}
+\index{drawPixel@{drawPixel}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{drawPixel()}{drawPixel()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::draw\+Pixel (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Draws a pixel to the specified image using Porter Duff rules. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & The x location of the pixel. \\
+\hline
+{\em y} & The y location of the pixel. \\
+\hline
+{\em c} & The color of the pixel. \\
+\hline
+{\em surf} & If set to nullptr, no error is thrown. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_af1c8f49d1eb8a170b8ca12567ca011a0}\label{classglib_1_1_graphics_af1c8f49d1eb8a170b8ca12567ca011a0}} 
+\index{glib::Graphics@{glib::Graphics}!drawPolygon@{drawPolygon}}
+\index{drawPolygon@{drawPolygon}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{drawPolygon()}{drawPolygon()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::draw\+Polygon (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} $\ast$}]{points,  }\item[{int}]{size,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Draws a polygon using the active draw color. Is affected by the current fill rule. May be removed as Vector\+Graphics accomplishes the same thing but will have more options. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em points} & An array of points for the polygon. \\
+\hline
+{\em size} & The size of the array. \\
+\hline
+{\em surf} & The image to draw onto. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_a4b7a04d7634bd263235cefb7433b5b83}\label{classglib_1_1_graphics_a4b7a04d7634bd263235cefb7433b5b83}} 
+\index{glib::Graphics@{glib::Graphics}!drawRect@{drawRect}}
+\index{drawRect@{drawRect}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{drawRect()}{drawRect()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::draw\+Rect (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{x2,  }\item[{int}]{y2,  }\item[{bool}]{outline,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Draws a rectangle using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & The x location of the rectangle. \\
+\hline
+{\em y} & The y location of the rectangle \\
+\hline
+{\em x2} & The 2nd x location of the rectangle. \\
+\hline
+{\em y2} & The 2nd y location of the rectangle. \\
+\hline
+{\em outline} & Controls whether only the outline of the rectangle should be drawn. \\
+\hline
+{\em surf} & The image to draw the rectangle onto. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_adfcad2373a8083e8b90fa82f28c3413d}\label{classglib_1_1_graphics_adfcad2373a8083e8b90fa82f28c3413d}} 
+\index{glib::Graphics@{glib::Graphics}!drawSprite@{drawSprite}}
+\index{drawSprite@{drawSprite}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{drawSprite()}{drawSprite()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::draw\+Sprite (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{int}]{x,  }\item[{int}]{y,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Draws an \mbox{\hyperlink{classglib_1_1_image}{Image}} that is modified by the active drawing color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & The image to draw. \\
+\hline
+{\em x} & The x location to draw at. \\
+\hline
+{\em y} & The y location to draw at. \\
+\hline
+{\em surf} & The image to draw onto. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_acc89b72431ad7ff7933397b8ac354902}\label{classglib_1_1_graphics_acc89b72431ad7ff7933397b8ac354902}} 
+\index{glib::Graphics@{glib::Graphics}!drawSpritePart@{drawSpritePart}}
+\index{drawSpritePart@{drawSpritePart}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{drawSpritePart()}{drawSpritePart()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::draw\+Sprite\+Part (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{imgX,  }\item[{int}]{imgY,  }\item[{int}]{imgW,  }\item[{int}]{imgH,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Draws a part of an \mbox{\hyperlink{classglib_1_1_image}{Image}} that will be modified by the active drawing color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & The image to draw. \\
+\hline
+{\em x} & The x location to draw at. \\
+\hline
+{\em y} & The y location to draw at. \\
+\hline
+{\em imgX} & The starting x position of the part of the texture image we are drawing. \\
+\hline
+{\em imgY} & The starting y position of the part of the texture image we are drawing. \\
+\hline
+{\em imgW} & The width of the part of the texture image we are drawing. \\
+\hline
+{\em imgH} & The height of the part of the texture image we are drawing. \\
+\hline
+{\em surf} & The image to draw onto. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_a6828073d7be88610fa338811e9a7d5fe}\label{classglib_1_1_graphics_a6828073d7be88610fa338811e9a7d5fe}} 
+\index{glib::Graphics@{glib::Graphics}!drawText@{drawText}}
+\index{drawText@{drawText}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{drawText()}{drawText()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::draw\+Text (\begin{DoxyParamCaption}\item[{std\+::string}]{str,  }\item[{int}]{x,  }\item[{int}]{y,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Draws the specified text using the active font. It is affected by the active drawing color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em str} & The text to draw. \\
+\hline
+{\em x} & The x location to draw at. \\
+\hline
+{\em y} & The y location to draw at. \\
+\hline
+{\em surf} & The image to draw onto. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_ab1c69033fc237648dc82d64a0712bbd0}\label{classglib_1_1_graphics_ab1c69033fc237648dc82d64a0712bbd0}} 
+\index{glib::Graphics@{glib::Graphics}!drawTextLimits@{drawTextLimits}}
+\index{drawTextLimits@{drawTextLimits}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{drawTextLimits()}{drawTextLimits()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::draw\+Text\+Limits (\begin{DoxyParamCaption}\item[{std\+::string}]{str,  }\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{max\+Width,  }\item[{int}]{max\+Height,  }\item[{bool}]{use\+Line\+Break,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Draws the specified text using the active font. It is affected by the active drawing color. Adds additional limits such as the maximum width and maximum height. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em str} & The text to draw. \\
+\hline
+{\em x} & The x location to draw at. \\
+\hline
+{\em y} & The y location to draw at. \\
+\hline
+{\em max\+Width} & The maximum width that is allowed before a line break occurs. \\
+\hline
+{\em max\+Height} & The maximum height that is allowed. \\
+\hline
+{\em use\+Line\+Breaks} & If set to false, drawing stops if the text hits the maximum width. \\
+\hline
+{\em surf} & The image to draw onto. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_adda98ffe0d32fac75c82c79835b31643}\label{classglib_1_1_graphics_adda98ffe0d32fac75c82c79835b31643}} 
+\index{glib::Graphics@{glib::Graphics}!drawTexturedTriangle@{drawTexturedTriangle}}
+\index{drawTexturedTriangle@{drawTexturedTriangle}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{drawTexturedTriangle()}{drawTexturedTriangle()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::draw\+Textured\+Triangle (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}}}]{p1,  }\item[{\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}}}]{p2,  }\item[{\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}}}]{p3,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{texture,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Draws a triangle using the specified image. Is not affected by the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. 
+
+Uses \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} where the x,y specify the point on the triangle and z,w specify texture coordinates between \mbox{[}0, 1\mbox{]} 
+\begin{DoxyParams}{Parameters}
+{\em p1} & The 1st location of the triangle along with it\textquotesingle{}s texture coordinates. \\
+\hline
+{\em p2} & The 2nd location of the triangle along with it\textquotesingle{}s texture coordinates. \\
+\hline
+{\em p3} & The 3rd location of the triangle along with it\textquotesingle{}s texture coordinates. \\
+\hline
+{\em texture} & The texture to map onto the triangle. \\
+\hline
+{\em surf} & The image to draw the triangle onto. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_aaf6e7568e21d0f18e83c1e47abef2a28}\label{classglib_1_1_graphics_aaf6e7568e21d0f18e83c1e47abef2a28}} 
+\index{glib::Graphics@{glib::Graphics}!drawTriangle@{drawTriangle}}
+\index{drawTriangle@{drawTriangle}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{drawTriangle()}{drawTriangle()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::draw\+Triangle (\begin{DoxyParamCaption}\item[{int}]{x1,  }\item[{int}]{y1,  }\item[{int}]{x2,  }\item[{int}]{y2,  }\item[{int}]{x3,  }\item[{int}]{y3,  }\item[{bool}]{outline,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Draws a triangle using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & The x location of the triangle. \\
+\hline
+{\em y} & The y location of the triangle \\
+\hline
+{\em x2} & The 2nd x location of the triangle. \\
+\hline
+{\em y2} & The 2nd y location of the triangle. \\
+\hline
+{\em x3} & The 3rd x location of the triangle. \\
+\hline
+{\em y3} & The 3rd y location of the triangle. \\
+\hline
+{\em outline} & Controls whether only the outline of the triangle should be drawn. \\
+\hline
+{\em surf} & The image to draw the triangle onto. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_a33e5a19ee26114ebba184a76c777f667}\label{classglib_1_1_graphics_a33e5a19ee26114ebba184a76c777f667}} 
+\index{glib::Graphics@{glib::Graphics}!filterOutColor@{filterOutColor}}
+\index{filterOutColor@{filterOutColor}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{filterOutColor()}{filterOutColor()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::filter\+Out\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c1 }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Removes all colors from the image except the specified color. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & The image to operate on. \\
+\hline
+{\em c1} & The color to keep. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_a7d742c17c9a6f33936f8f2646a69a494}\label{classglib_1_1_graphics_a7d742c17c9a6f33936f8f2646a69a494}} 
+\index{glib::Graphics@{glib::Graphics}!filterOutColorRange@{filterOutColorRange}}
+\index{filterOutColorRange@{filterOutColorRange}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{filterOutColorRange()}{filterOutColorRange()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::filter\+Out\+Color\+Range (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c1,  }\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c2 }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Removes all colors from the image unless they fall within the range between the 2 specified colors. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & The image to operate on. \\
+\hline
+{\em c1} & The start of the color range. \\
+\hline
+{\em c2} & The end of the color range. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_a24344c6973398d9ecfbf4dfc5b5a376e}\label{classglib_1_1_graphics_a24344c6973398d9ecfbf4dfc5b5a376e}} 
+\index{glib::Graphics@{glib::Graphics}!getBlendMode@{getBlendMode}}
+\index{getBlendMode@{getBlendMode}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{getBlendMode()}{getBlendMode()}}
+{\footnotesize\ttfamily static unsigned char glib\+::\+Graphics\+::get\+Blend\+Mode (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the blend mode used for color and alpha blending. Currently not implemented. 
+
+\begin{DoxyReturn}{Returns}
+unsigned char 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_graphics_a44ceda2ca0404aa740fd302225965e82}\label{classglib_1_1_graphics_a44ceda2ca0404aa740fd302225965e82}} 
+\index{glib::Graphics@{glib::Graphics}!getClippingRect@{getClippingRect}}
+\index{getClippingRect@{getClippingRect}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{getClippingRect()}{getClippingRect()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}} glib\+::\+Graphics\+::get\+Clipping\+Rect (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets the clipping rectangle currently used. Anything outside of the rectangle is not drawn. 
+
+\begin{DoxyReturn}{Returns}
+Box2d 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_graphics_a80c9c2db8bb90e97f2fa8e5b94c1247f}\label{classglib_1_1_graphics_a80c9c2db8bb90e97f2fa8e5b94c1247f}} 
+\index{glib::Graphics@{glib::Graphics}!getColor@{getColor}}
+\index{getColor@{getColor}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{getColor()}{getColor()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{structglib_1_1_color}{Color}} glib\+::\+Graphics\+::get\+Color (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets the currently active drawing color. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_color}{Color}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_graphics_ac12fc361d934857194fdbaf5d998a3b0}\label{classglib_1_1_graphics_ac12fc361d934857194fdbaf5d998a3b0}} 
+\index{glib::Graphics@{glib::Graphics}!getCompositeRule@{getCompositeRule}}
+\index{getCompositeRule@{getCompositeRule}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{getCompositeRule()}{getCompositeRule()}}
+{\footnotesize\ttfamily static unsigned char glib\+::\+Graphics\+::get\+Composite\+Rule (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the Porter Duff rule being used for color and alpha blending. 
+
+\begin{DoxyReturn}{Returns}
+unsigned char 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_graphics_a6776b379bf2ae4e8e94025543e37639e}\label{classglib_1_1_graphics_a6776b379bf2ae4e8e94025543e37639e}} 
+\index{glib::Graphics@{glib::Graphics}!getDefaultFont@{getDefaultFont}}
+\index{getDefaultFont@{getDefaultFont}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{getDefaultFont()}{getDefaultFont()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_font}{Font}} $\ast$ glib\+::\+Graphics\+::get\+Default\+Font (\begin{DoxyParamCaption}\item[{unsigned char}]{type }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns one of the default font specified. These can be modified to the users liking by changing the font files in the resources folder. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em type} & Must be one of the following constants. NORMAL\+\_\+\+FONT MEDIUM\+\_\+\+FONT LARGE\+\_\+\+FONT \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Font$\ast$ May return nullptr if the font was not loaded. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_graphics_a1ce5b297148932441cf99806ab72f907}\label{classglib_1_1_graphics_a1ce5b297148932441cf99806ab72f907}} 
+\index{glib::Graphics@{glib::Graphics}!getFillRule@{getFillRule}}
+\index{getFillRule@{getFillRule}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{getFillRule()}{getFillRule()}}
+{\footnotesize\ttfamily static bool glib\+::\+Graphics\+::get\+Fill\+Rule (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the fill rule used for drawing polygons. May be removed. 
+
+\begin{DoxyReturn}{Returns}
+b 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_graphics_af5f291bde6f688dfdbe18240e72265a2}\label{classglib_1_1_graphics_af5f291bde6f688dfdbe18240e72265a2}} 
+\index{glib::Graphics@{glib::Graphics}!getFont@{getFont}}
+\index{getFont@{getFont}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{getFont()}{getFont()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_font}{Font}} $\ast$ glib\+::\+Graphics\+::get\+Font (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the currently active \mbox{\hyperlink{classglib_1_1_font}{Font}}. 
+
+\begin{DoxyReturn}{Returns}
+Font$\ast$ If the active font is nullptr, the currently active default font is returned. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_graphics_a9ee604e5ee9e0dcfe89d3af935b6d080}\label{classglib_1_1_graphics_a9ee604e5ee9e0dcfe89d3af935b6d080}} 
+\index{glib::Graphics@{glib::Graphics}!lerp@{lerp}}
+\index{lerp@{lerp}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{lerp()}{lerp()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{structglib_1_1_color}{Color}} glib\+::\+Graphics\+::lerp (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{src,  }\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{dest,  }\item[{double}]{lerp\+Val }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Linearly blends 2 colors together. At value 0, src is the output color. At value 1, dest is the output color. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em src} & The start color. \\
+\hline
+{\em dest} & The end color. \\
+\hline
+{\em lerp\+Val} & The blending value. Should be between \mbox{[}0, 1\mbox{]} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_color}{Color}} Returns the blended color. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_graphics_a86997d59f7f0af735d71b173397e4760}\label{classglib_1_1_graphics_a86997d59f7f0af735d71b173397e4760}} 
+\index{glib::Graphics@{glib::Graphics}!replaceColor@{replaceColor}}
+\index{replaceColor@{replaceColor}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{replaceColor()}{replaceColor()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::replace\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{old\+Color,  }\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{new\+Color,  }\item[{bool}]{ignore\+Alpha = {\ttfamily false} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Replaces the specified color with a new color in the image. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & The image to operate on. \\
+\hline
+{\em old\+Color} & The color to replace. \\
+\hline
+{\em new\+Color} & The new color to be used. \\
+\hline
+{\em ignore\+Alpha} & Whether to ignore alpha when checking to replace. Note that the alpha will be set to the new colors alpha. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_a9adc4597bd336fc59e7fd5d78a2d572c}\label{classglib_1_1_graphics_a9adc4597bd336fc59e7fd5d78a2d572c}} 
+\index{glib::Graphics@{glib::Graphics}!scaleImage@{scaleImage}}
+\index{scaleImage@{scaleImage}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{scaleImage()}{scaleImage()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ glib\+::\+Graphics\+::scale\+Image (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{double}]{x\+Scale,  }\item[{double}]{y\+Scale,  }\item[{unsigned char}]{filter\+Method = {\ttfamily NEAREST\+\_\+NEIGHBOR\+\_\+FILTER} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Scales an image using the specified filter method and returns a new image. That new image should be deleted when no longer needed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & The image to scale. \\
+\hline
+{\em x\+Scale} & The x scale value. Must be a positive number. \\
+\hline
+{\em y\+Scale} & The y scale value. Must be a positive number. \\
+\hline
+{\em filter\+Method} & Must be one of the following values\+: NEAREST\+\_\+\+NEIGHBOR\+\_\+\+FILTER BILINEAR\+\_\+\+FILTER BICUBIC\+\_\+\+FILTER The default is NEAREST\+\_\+\+NEIGHBOR\+\_\+\+FILTER \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_acfb2dd20e827d9ea25a3fd4db620c14f}\label{classglib_1_1_graphics_acfb2dd20e827d9ea25a3fd4db620c14f}} 
+\index{glib::Graphics@{glib::Graphics}!setBlendMode@{setBlendMode}}
+\index{setBlendMode@{setBlendMode}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{setBlendMode()}{setBlendMode()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::set\+Blend\+Mode (\begin{DoxyParamCaption}\item[{unsigned char}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Sets the blend mode to use for color and alpha blending. Currently not implemented. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em b} & Must be one of the blend mode constants. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_af6a66498b02ba6afa2589fbe4fa88a33}\label{classglib_1_1_graphics_af6a66498b02ba6afa2589fbe4fa88a33}} 
+\index{glib::Graphics@{glib::Graphics}!setClippingRect@{setClippingRect}}
+\index{setClippingRect@{setClippingRect}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{setClippingRect()}{setClippingRect()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::set\+Clipping\+Rect (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}}}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Sets a rectangle where drawing will be allowed for the following drawing operations. Anything outside of the rectangle is not drawn. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em b} & The box to use. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_a7743fdbb26b410deb9cb665dd5869c15}\label{classglib_1_1_graphics_a7743fdbb26b410deb9cb665dd5869c15}} 
+\index{glib::Graphics@{glib::Graphics}!setColor@{setColor}}
+\index{setColor@{setColor}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{setColor()}{setColor()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::set\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Sets the currently active drawing color. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_ac98bf270e947eb0470661b729e946771}\label{classglib_1_1_graphics_ac98bf270e947eb0470661b729e946771}} 
+\index{glib::Graphics@{glib::Graphics}!setCompositeRule@{setCompositeRule}}
+\index{setCompositeRule@{setCompositeRule}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{setCompositeRule()}{setCompositeRule()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::set\+Composite\+Rule (\begin{DoxyParamCaption}\item[{unsigned char}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Sets the Porter Duff rule to use for color and alpha blending. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em b} & Must be one of the composite constants. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_a2c4ce1332497b8197d2ec1545d546d15}\label{classglib_1_1_graphics_a2c4ce1332497b8197d2ec1545d546d15}} 
+\index{glib::Graphics@{glib::Graphics}!setDefaultFont@{setDefaultFont}}
+\index{setDefaultFont@{setDefaultFont}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{setDefaultFont()}{setDefaultFont()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::set\+Default\+Font (\begin{DoxyParamCaption}\item[{unsigned char}]{type }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Sets the default font to one of the 3 types of default fonts available. These can be modified to the users liking by changing the font files in the resources folder. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em type} & Must be one of the following constants. NORMAL\+\_\+\+FONT MEDIUM\+\_\+\+FONT LARGE\+\_\+\+FONT \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_a80340ad2442a27fc96a26a57809aa099}\label{classglib_1_1_graphics_a80340ad2442a27fc96a26a57809aa099}} 
+\index{glib::Graphics@{glib::Graphics}!setFillRule@{setFillRule}}
+\index{setFillRule@{setFillRule}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{setFillRule()}{setFillRule()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::set\+Fill\+Rule (\begin{DoxyParamCaption}\item[{bool}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Sets the fill rule to use for drawing polygons. May be removed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em b} & valid options are FILL\+\_\+\+EVEN\+\_\+\+ODD or FILL\+\_\+\+NON\+\_\+\+ZERO \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_a7acef5fbc49d1dcc126e0aeb7d5fa718}\label{classglib_1_1_graphics_a7acef5fbc49d1dcc126e0aeb7d5fa718}} 
+\index{glib::Graphics@{glib::Graphics}!setFont@{setFont}}
+\index{setFont@{setFont}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{setFont()}{setFont()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::set\+Font (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_font}{Font}} $\ast$}]{f }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Sets the currently active \mbox{\hyperlink{classglib_1_1_font}{Font}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em f} & Can be nullptr. If nullptr, one of the default fonts will be used. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Graphics.\+h\end{DoxyCompactItemize}

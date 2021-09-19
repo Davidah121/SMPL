@@ -276,7 +276,7 @@ namespace glib
                 cumulativeSize += modelVertFormat[i].type + 1;
 			}
 
-			int amtVert = model->getVerticies();
+			int amtVert = model->size();
             int valuesPerVertex = model->getSizeOfVertex();
 
             bool order = false;

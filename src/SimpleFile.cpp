@@ -11,19 +11,9 @@ namespace glib
 		return &SimpleFile::myClass;
 	}
 
-	SimpleFile::SimpleFile(std::wstring filename, char type)
+	SimpleFile::SimpleFile(File file, char type)
 	{
-		init(filename, type);
-	}
-
-	SimpleFile::SimpleFile(std::string filename, char type)
-	{
-		init( StringTools::toWideString(filename), type);
-	}
-
-	SimpleFile::SimpleFile(File filename, char type)
-	{
-		init( filename.getFullFileName(), type);
+		init(file.getFullFileName(), type);
 	}
 
 	void SimpleFile::init(std::wstring filename, char type)
@@ -827,7 +817,7 @@ namespace glib
 
 	int SimpleFile::getBytesLeft()
 	{
-		if(isOpen())
+		if(isOpen() && type == READ)
 		{
 			return (int)(size - file->tellg());
 		}

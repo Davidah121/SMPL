@@ -21,30 +21,26 @@ namespace glib
 
 	Sprite::Sprite(const Sprite& o)
 	{
-		ownership = false;
 		images = o.images;
 		delayTimeForFrame = o.delayTimeForFrame;
 	}
 
 	void Sprite::operator=(const Sprite& o)
 	{
-		ownership = false;
 		images = o.images;
 		delayTimeForFrame = o.delayTimeForFrame;
 	}
 
 	void Sprite::dispose()
 	{
-		if(ownership)
+		for(int i=0; i<images.size(); i++)
 		{
-			for(int i=0; i<images.size(); i++)
+			if(images[i]!=nullptr)
 			{
-				if(images[i]!=nullptr)
-				{
-					delete images[i];
-				}
+				delete images[i];
 			}
 		}
+	
 
 		images.clear();
 		delayTimeForFrame.clear();
@@ -110,14 +106,13 @@ namespace glib
 		}
 	}
 
-	void Sprite::loadImage(std::string filename)
+	void Sprite::loadImage(File file)
 	{
 		dispose();
-		ownership = true;
 		int amountOfImages = 0;
 
 		std::vector<int> extraData;
-		Image** imgs = Image::loadImage(filename, &amountOfImages, &extraData);
+		Image** imgs = Image::loadImage(file, &amountOfImages, &extraData);
 		
 		if(extraData.size()>=1)
 		{
@@ -133,27 +128,14 @@ namespace glib
 		}
 	}
 
-	void Sprite::loadImage(std::wstring filename)
+	bool Sprite::shouldLoop()
 	{
-		dispose();
-		ownership = true;
-		int amountOfImages = 0;
+		return loops;
+	}
 
-		std::vector<int> extraData;
-		Image** imgs = Image::loadImage(filename, &amountOfImages, &extraData);
-		
-		if(extraData.size()>=1)
-		{
-			this->loops = extraData[0] == 1;
-		}
-
-		for (int i = 0; i < amountOfImages; i++)
-		{
-			if(extraData.size() == amountOfImages+1)
-				addImage(imgs[i], extraData[i+1]);
-			else
-				addImage(imgs[i]);
-		}
+	void Sprite::setShouldLoop(bool v)
+	{
+		loops = v;
 	}
 
 } //NAMESPACE glib END

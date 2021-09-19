@@ -1,4 +1,4 @@
-#include "WndWindow.h"
+#include "SimpleWindow.h"
 #include "Graphics.h"
 #include "System.h"
 #include <iostream>
@@ -78,7 +78,7 @@ using namespace glib;
  *      Work on making the library portable
  */
 
-WndWindow* windowPointer;
+SimpleWindow* windowPointer;
 Image* imgPointer;
 Image* img;
 std::string globalString = "";
@@ -520,7 +520,7 @@ void testCollision()
         
     });
 
-    WndWindow window = WndWindow("TT)", 640,480);
+    SimpleWindow window = SimpleWindow("TT)", 640,480);
     window.getGuiManager()->addElement(&cus);
     window.waitTillClose();
 }
@@ -543,11 +543,11 @@ void testSVGTransforms()
         p.draw(surf, surf->getWidth(), surf->getHeight());
     });
 
-    WndWindow window = WndWindow("SVG Transforms", 640,480, -1, -1, WndWindow::TYPE_USER_MANAGED);
+    SimpleWindow window = SimpleWindow("SVG Transforms", 640,480, -1, -1, SimpleWindow::TYPE_USER_MANAGED);
     window.getGuiManager()->addElement(&cus);
 
     BinarySet k = BinarySet();
-
+    
     bool first = false;
     while(window.getRunning())
     {
@@ -565,11 +565,61 @@ void testSVGTransforms()
     // window.waitTillClose();
 }
 
+void testCopyPasteStuff()
+{
+    while(true)
+    {
+        StringTools::println("Type command: ");
+        std::string command = StringTools::getString();
+
+        if(StringTools::equalsIgnoreCase<char>(command, "copy wide"))
+        {
+            StringTools::println("Enter text to copy to clipboard: ");
+            std::wstring copyText = StringTools::getWideString();
+
+            System::copyToClipboard(copyText);
+            StringTools::println("Copied text to clipboard");
+        }
+        else if(StringTools::equalsIgnoreCase<char>(command, "copy"))
+        {
+            StringTools::println("Enter text to copy to clipboard: ");
+            std::string copyText = StringTools::getString();
+
+            System::copyToClipboard(copyText);
+            StringTools::println("Copied text to clipboard");
+        }
+        else if(StringTools::equalsIgnoreCase<char>(command, "paste"))
+        {
+            std::wstring pastedText = System::pasteFromClipboard();
+            StringTools::println("Pasted text is: %ls", pastedText.c_str());
+        }
+        else if(StringTools::equalsIgnoreCase<char>(command, "quit"))
+        {
+            break;
+        }
+        else
+        {
+            System::messageBoxPopup(MB_OK | MB_ICONWARNING, L"SECRET", L"Enter a valid command please \n Also line breaks and junk.");
+        }
+    }
+}
+
+void castStringToFile(File f)
+{
+
+}
+
+void castTest()
+{
+    castStringToFile(L"Test");
+}
+
 int main(int argc, char** argv)
 {
     StringTools::init();
     //Graphics::init();
-    testSVGTransforms();
+    //testSVGTransforms();
+    testCopyPasteStuff();
 
     //system("pause");
     return 0;

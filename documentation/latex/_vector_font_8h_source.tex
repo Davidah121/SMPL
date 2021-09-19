@@ -1,0 +1,39 @@
+\hypertarget{_vector_font_8h_source}{}\doxysection{Vector\+Font.\+h}
+\label{_vector_font_8h_source}\index{include/VectorFont.h@{include/VectorFont.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 }
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}Font.h"{}}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}VectorSprite.h"{}}}
+\DoxyCodeLine{5 }
+\DoxyCodeLine{6 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{7 \{}
+\DoxyCodeLine{8 }
+\DoxyCodeLine{9     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_vector_font}{VectorFont}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_font}{Font}}}
+\DoxyCodeLine{10     \{}
+\DoxyCodeLine{11     \textcolor{keyword}{public}:}
+\DoxyCodeLine{20         \mbox{\hyperlink{classglib_1_1_vector_font_ae5f2ac208337936d77a56ba6a9ef8ed8}{VectorFont}}();}
+\DoxyCodeLine{21 }
+\DoxyCodeLine{26         \mbox{\hyperlink{classglib_1_1_vector_font_a092aa774693d693be0695b53819c876c}{\string~VectorFont}}();}
+\DoxyCodeLine{27 }
+\DoxyCodeLine{28         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{29         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{30         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{31 }
+\DoxyCodeLine{39         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_vector_font_a0831f4779441535877197e526b8cbdb7}{load}}(\mbox{\hyperlink{classglib_1_1_file}{File}} file);}
+\DoxyCodeLine{40 }
+\DoxyCodeLine{47         \mbox{\hyperlink{classglib_1_1_vector_graphic}{VectorGraphic}}* \mbox{\hyperlink{classglib_1_1_vector_font_a5659dfe3e94c19ef0df2d75b07d6cc6e}{getGraphic}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{48 }
+\DoxyCodeLine{54         \mbox{\hyperlink{classglib_1_1_vector_sprite}{VectorSprite}}* \mbox{\hyperlink{classglib_1_1_vector_font_abd56e9496a9ea3253a348eb855a8f835}{getVectorSprite}}();}
+\DoxyCodeLine{55 }
+\DoxyCodeLine{56     \textcolor{keyword}{private}:}
+\DoxyCodeLine{57         \textcolor{comment}{//FontCharInfo should have a direct 1-\/to-\/1 mapping to fontSprite to avoid}}
+\DoxyCodeLine{58         \textcolor{comment}{//saving the sprite index information and stuff.}}
+\DoxyCodeLine{59         \mbox{\hyperlink{classglib_1_1_vector_sprite}{VectorSprite}} fontSprite = \mbox{\hyperlink{classglib_1_1_vector_sprite}{VectorSprite}}();}
+\DoxyCodeLine{60         \textcolor{keywordtype}{int} baseHorizontalAdvance = 0;}
+\DoxyCodeLine{61     \};}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{63 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

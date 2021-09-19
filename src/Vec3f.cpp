@@ -69,6 +69,12 @@ namespace glib
 		z = other.z;
 	}
 
+	void Vec3f::setValues(Vec2f other)
+	{
+		x = other.x;
+		y = other.y;
+	}
+
 	Vec3f Vec3f::operator-(Vec3f other)
 	{
 		return Vec3f(x - other.x, y - other.y, z - other.z);

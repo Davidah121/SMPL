@@ -1,0 +1,554 @@
+\hypertarget{_vector_graphic_8h_source}{}\doxysection{Vector\+Graphic.\+h}
+\label{_vector_graphic_8h_source}\index{include/VectorGraphic.h@{include/VectorGraphic.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include<vector>}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include<map>}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}Image.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}MathExt.h"{}}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include "{}SimpleXml.h"{}}}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{9 \{}
+\DoxyCodeLine{10 }
+\DoxyCodeLine{11     \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1critical_point}{criticalPoint}}}
+\DoxyCodeLine{12     \{}
+\DoxyCodeLine{13         \textcolor{keywordtype}{double} xValue;}
+\DoxyCodeLine{14         \textcolor{keywordtype}{bool} isYPositive;}
+\DoxyCodeLine{15     \};}
+\DoxyCodeLine{16 }
+\DoxyCodeLine{17     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_vector_shape}{VectorShape}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
+\DoxyCodeLine{18     \{}
+\DoxyCodeLine{19     \textcolor{keyword}{public}:}
+\DoxyCodeLine{64         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_vector_shape_a2035101fec792d4eb9ae41e170eded80}{EVEN\_ODD\_RULE}} = \textcolor{keyword}{false};}
+\DoxyCodeLine{65         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{bool} NON\_ZERO\_RULE = \textcolor{keyword}{true};}
+\DoxyCodeLine{66 }
+\DoxyCodeLine{67         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{char} LINE\_CAP\_BUTT = 0;}
+\DoxyCodeLine{68         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{char} LINE\_CAP\_SQUARE = 1;}
+\DoxyCodeLine{69         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{char} LINE\_CAP\_ROUND = 2;}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{71         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{char} LINE\_JOIN\_MITER = 0;}
+\DoxyCodeLine{72         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{char} LINE\_JOIN\_ROUND = 1;}
+\DoxyCodeLine{73         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{char} LINE\_JOIN\_BEVEL = 2;}
+\DoxyCodeLine{74 }
+\DoxyCodeLine{80         \mbox{\hyperlink{classglib_1_1_vector_shape_ac1dd5b3826be91005b84e8df03856d87}{VectorShape}}();}
+\DoxyCodeLine{81 }
+\DoxyCodeLine{86         \mbox{\hyperlink{classglib_1_1_vector_shape_a7758cfe00f92a8a93ca74b72c51842ea}{\string~VectorShape}}();}
+\DoxyCodeLine{87         }
+\DoxyCodeLine{88         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{89         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{90         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{91 }
+\DoxyCodeLine{104         \textcolor{keyword}{virtual} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_shape_afb72be232bc05006422d1bd0ebcf7311}{draw}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* buffer, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{105 }
+\DoxyCodeLine{117         \textcolor{keyword}{virtual} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_shape_a24ecc3162abe3c4fa4c8190529601574}{drawStroke}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* buffer, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{118 }
+\DoxyCodeLine{127         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_shape_a52dad68807d1fae49e65e91b74a5e503}{setFillMethod}}(\textcolor{keywordtype}{bool} value);}
+\DoxyCodeLine{128 }
+\DoxyCodeLine{135         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_vector_shape_ac7cb9167daaca8bcf4d7277fc5646ac7}{getFillMethod}}();}
+\DoxyCodeLine{136         }
+\DoxyCodeLine{142         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_shape_a50b9f47645cb9ee087aaa7c4e374dfbc}{setFillColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} k);}
+\DoxyCodeLine{143 }
+\DoxyCodeLine{149         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_vector_shape_a2422e8edd5353d23f1dd2596a90e79de}{getFillColor}}();}
+\DoxyCodeLine{150 }
+\DoxyCodeLine{156         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_shape_a4252b5a43c24432aa7af6d5da3cc3c8c}{setStrokeColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} k);}
+\DoxyCodeLine{157 }
+\DoxyCodeLine{163         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_vector_shape_a261fe311cc1babe43d532cf490a638c1}{getStrokeColor}}();}
+\DoxyCodeLine{164 }
+\DoxyCodeLine{170         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_shape_a8b4cf918a424b83313a56c0743e9998f}{setStrokeWidth}}(\textcolor{keywordtype}{double} k);}
+\DoxyCodeLine{171 }
+\DoxyCodeLine{177         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_shape_a9bde0d9fdd53ceb64f016687e339956a}{getStrokeWidth}}();}
+\DoxyCodeLine{178 }
+\DoxyCodeLine{185         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_shape_a1627701b1ce0c1b30122fb5f312deb80}{setLineCap}}(\textcolor{keywordtype}{char} c);}
+\DoxyCodeLine{186 }
+\DoxyCodeLine{192         \textcolor{keywordtype}{char} \mbox{\hyperlink{classglib_1_1_vector_shape_aeb1e2a0b297ccd9b59d67fe2fccbe225}{getLineCap}}();}
+\DoxyCodeLine{193 }
+\DoxyCodeLine{200         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_shape_a033a2cdd5c4f6cbe24c5fec86fd51d76}{setLineJoin}}(\textcolor{keywordtype}{char} c);}
+\DoxyCodeLine{201 }
+\DoxyCodeLine{207         \textcolor{keywordtype}{char} \mbox{\hyperlink{classglib_1_1_vector_shape_a1b730e8a9bdcc684cbf4d0572887e663}{getLineJoin}}();}
+\DoxyCodeLine{208 }
+\DoxyCodeLine{214         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_shape_a37e0e93f4995dbf236d89e9018504168}{setTransform}}(\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} m);}
+\DoxyCodeLine{215 }
+\DoxyCodeLine{221         \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_vector_shape_a8868f7c404208cff8671950f90b38c02}{getTransform}}();}
+\DoxyCodeLine{222         }
+\DoxyCodeLine{223     \textcolor{keyword}{protected}:}
+\DoxyCodeLine{228         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_shape_a57ec170802912a982815d2dbc0e59b2a}{applyTransform}}();}
+\DoxyCodeLine{229 }
+\DoxyCodeLine{230     \textcolor{keyword}{private}:}
+\DoxyCodeLine{231         \mbox{\hyperlink{structglib_1_1_color}{Color}} fill = \{0,0,0,255\};}
+\DoxyCodeLine{232         \mbox{\hyperlink{structglib_1_1_color}{Color}} strokeColor = \{0,0,0,0\};}
+\DoxyCodeLine{233         \textcolor{keywordtype}{double} strokeWidth = 0;}
+\DoxyCodeLine{234         \textcolor{keywordtype}{bool} fillMethod = \textcolor{keyword}{false};}
+\DoxyCodeLine{235         \textcolor{keywordtype}{char} lineCap = 0;}
+\DoxyCodeLine{236         \textcolor{keywordtype}{char} lineJoin = 0;}
+\DoxyCodeLine{237         Mat3f transform = Mat3f();}
+\DoxyCodeLine{238     \};}
+\DoxyCodeLine{239 }
+\DoxyCodeLine{240     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_vector_rectangle}{VectorRectangle}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_vector_shape}{VectorShape}}}
+\DoxyCodeLine{241     \{}
+\DoxyCodeLine{242     \textcolor{keyword}{public}:}
+\DoxyCodeLine{265         \mbox{\hyperlink{classglib_1_1_vector_rectangle_a87987cecde824d2f84216903dc5f5bce}{VectorRectangle}}();}
+\DoxyCodeLine{266 }
+\DoxyCodeLine{271         \mbox{\hyperlink{classglib_1_1_vector_rectangle_aabcae82d389c36b65e479e7c4b0de942}{\string~VectorRectangle}}();}
+\DoxyCodeLine{272 }
+\DoxyCodeLine{273         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{274         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{275         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{276 }
+\DoxyCodeLine{287         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_rectangle_a8953ef5a5a1cc5e9e65f791ca8dafada}{draw}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* buffer, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{288 }
+\DoxyCodeLine{299         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_rectangle_af52e68fb406d261f88a14e9a71f096ec}{drawStroke}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* buffer, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{300 }
+\DoxyCodeLine{306         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_rectangle_ad8ced27b840976b5d5e071f50e1488ca}{setX}}(\textcolor{keywordtype}{double} x);}
+\DoxyCodeLine{307 }
+\DoxyCodeLine{313         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_rectangle_a568c827b82fbb2450801c7771bb79cfb}{getX}}();}
+\DoxyCodeLine{314 }
+\DoxyCodeLine{320         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_rectangle_a7cc2a95f826c60d20aa722c13e31cc8a}{setY}}(\textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{321 }
+\DoxyCodeLine{327         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_rectangle_ade549f070e20d1cff8a12a8abebd3eab}{getY}}();}
+\DoxyCodeLine{328 }
+\DoxyCodeLine{335         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_rectangle_ab48ed9379bd010f79d24ca0a00e83c0c}{setRX}}(\textcolor{keywordtype}{double} rx);}
+\DoxyCodeLine{336 }
+\DoxyCodeLine{342         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_rectangle_a27d0ae5a5fdbeda25c9b1196c62b1a06}{getRX}}();}
+\DoxyCodeLine{343 }
+\DoxyCodeLine{350         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_rectangle_a5f670a78513a339c4d7947aad9202d43}{setRY}}(\textcolor{keywordtype}{double} ry);}
+\DoxyCodeLine{351 }
+\DoxyCodeLine{357         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_rectangle_ad3d0e190dcc3e46655d3efa97cc81439}{getRY}}();}
+\DoxyCodeLine{358 }
+\DoxyCodeLine{364         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_rectangle_a677a65ff20b2465254d74e5a48784e57}{setWidth}}(\textcolor{keywordtype}{double} width);}
+\DoxyCodeLine{365 }
+\DoxyCodeLine{371         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_rectangle_a95dc40256bbcd76bd1065986ad2d06b5}{getWidth}}();}
+\DoxyCodeLine{372 }
+\DoxyCodeLine{378         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_rectangle_ac704ea24d52f1e9aed63911268342360}{setHeight}}(\textcolor{keywordtype}{double} height);}
+\DoxyCodeLine{379 }
+\DoxyCodeLine{385         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_rectangle_a5192ec8a1b3d0577f8c48f92e8003893}{getHeight}}();}
+\DoxyCodeLine{386 }
+\DoxyCodeLine{387     \textcolor{keyword}{protected}:}
+\DoxyCodeLine{388         \textcolor{keywordtype}{void} applyTransform();}
+\DoxyCodeLine{389 }
+\DoxyCodeLine{390     \textcolor{keyword}{private}:}
+\DoxyCodeLine{391 }
+\DoxyCodeLine{392         \textcolor{keywordtype}{double} x = 0;}
+\DoxyCodeLine{393         \textcolor{keywordtype}{double} y = 0;}
+\DoxyCodeLine{394         \textcolor{keywordtype}{double} rx = 0;}
+\DoxyCodeLine{395         \textcolor{keywordtype}{double} ry = 0;}
+\DoxyCodeLine{396         \textcolor{keywordtype}{double} width = 0;}
+\DoxyCodeLine{397         \textcolor{keywordtype}{double} height = 0;}
+\DoxyCodeLine{398         \textcolor{keywordtype}{void} drawTransformed(\mbox{\hyperlink{classglib_1_1_image}{Image}}* buffer, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{399         \textcolor{keywordtype}{void} drawStrokeTransformed(\mbox{\hyperlink{classglib_1_1_image}{Image}}* buffer, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{400 }
+\DoxyCodeLine{401     \};}
+\DoxyCodeLine{402 }
+\DoxyCodeLine{403     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_vector_circle}{VectorCircle}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_vector_shape}{VectorShape}}}
+\DoxyCodeLine{404     \{}
+\DoxyCodeLine{405     \textcolor{keyword}{public}:}
+\DoxyCodeLine{406 }
+\DoxyCodeLine{424         \mbox{\hyperlink{classglib_1_1_vector_circle_a8ae7754d6be3d84f0cd54125fbdedf65}{VectorCircle}}();}
+\DoxyCodeLine{425 }
+\DoxyCodeLine{430         \mbox{\hyperlink{classglib_1_1_vector_circle_a1a104bad86fb53248e1728fc8454eaf8}{\string~VectorCircle}}();}
+\DoxyCodeLine{431 }
+\DoxyCodeLine{432         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{433         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{434         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{435 }
+\DoxyCodeLine{445         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_circle_a5278285176ea3d5894e55e0400840a5d}{draw}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{446 }
+\DoxyCodeLine{456         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_circle_a757f589482dd54e05c491073f574d23a}{drawStroke}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* buffer, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{457         }
+\DoxyCodeLine{463         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_circle_a9738d5d1b4f0b0c708ebec322d5e2cf4}{setX}}(\textcolor{keywordtype}{double} x);}
+\DoxyCodeLine{464 }
+\DoxyCodeLine{470         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_circle_a2efef7052752d75bd897e593cd67f426}{getX}}();}
+\DoxyCodeLine{471 }
+\DoxyCodeLine{477         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_circle_a1f6d76ee846a9e93911bb7d455826281}{setY}}(\textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{478 }
+\DoxyCodeLine{484         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_circle_a8832aadc3b97806968f4cee226802af7}{getY}}();}
+\DoxyCodeLine{485 }
+\DoxyCodeLine{491         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_circle_af337ecd0858993c91e52f19b951b6869}{setRadius}}(\textcolor{keywordtype}{double} r);}
+\DoxyCodeLine{492 }
+\DoxyCodeLine{498         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_circle_a912968051fec97a1779ee845723f49c0}{getRadius}}();}
+\DoxyCodeLine{499 }
+\DoxyCodeLine{500     \textcolor{keyword}{protected}:}
+\DoxyCodeLine{501         \textcolor{keywordtype}{void} applyTransform();}
+\DoxyCodeLine{502 }
+\DoxyCodeLine{503     \textcolor{keyword}{private}:}
+\DoxyCodeLine{504 }
+\DoxyCodeLine{505         \textcolor{keywordtype}{double} cx = 0;}
+\DoxyCodeLine{506         \textcolor{keywordtype}{double} cy = 0;}
+\DoxyCodeLine{507         \textcolor{keywordtype}{double} radius = 0;}
+\DoxyCodeLine{508         \textcolor{keywordtype}{void} drawTransformed(\mbox{\hyperlink{classglib_1_1_image}{Image}}* buffer, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{509         \textcolor{keywordtype}{void} drawStrokeTransformed(\mbox{\hyperlink{classglib_1_1_image}{Image}}* buffer, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{510         }
+\DoxyCodeLine{511     \};}
+\DoxyCodeLine{512 }
+\DoxyCodeLine{513     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_vector_ellipse}{VectorEllipse}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_vector_shape}{VectorShape}}}
+\DoxyCodeLine{514     \{}
+\DoxyCodeLine{515     \textcolor{keyword}{public}:}
+\DoxyCodeLine{516 }
+\DoxyCodeLine{536         \mbox{\hyperlink{classglib_1_1_vector_ellipse_a301dadc4b88c1b54086047332abed225}{VectorEllipse}}();}
+\DoxyCodeLine{537 }
+\DoxyCodeLine{542         \mbox{\hyperlink{classglib_1_1_vector_ellipse_a52c8f05e5ef46d30c33dd9d4b3cb6594}{\string~VectorEllipse}}();}
+\DoxyCodeLine{543 }
+\DoxyCodeLine{544         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{545         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{546         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{547 }
+\DoxyCodeLine{557         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_ellipse_a91f4f20e6a1df12c71e98b12c8869fc1}{draw}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{558 }
+\DoxyCodeLine{568         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_ellipse_ad82f7ab324b3b6c6ae91db5c14b79140}{drawStroke}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* buffer, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{569         }
+\DoxyCodeLine{575         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_ellipse_a5e1fdd68f7dd0848aeb00701c7c8c21b}{setX}}(\textcolor{keywordtype}{double} x);}
+\DoxyCodeLine{576 }
+\DoxyCodeLine{582         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_ellipse_ab8ed9c8e26bdd9ae760c0d4da5f00b44}{getX}}();}
+\DoxyCodeLine{583 }
+\DoxyCodeLine{589         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_ellipse_a210a0f3360397a03d0ca169d21ad2b12}{setY}}(\textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{590 }
+\DoxyCodeLine{596         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_ellipse_a62ea23c95b7407d6d81d737eee8aba44}{getY}}();}
+\DoxyCodeLine{597 }
+\DoxyCodeLine{603         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_ellipse_aa4864a4586b4b1879441af3df66dfb48}{setXRadius}}(\textcolor{keywordtype}{double} rx);}
+\DoxyCodeLine{604 }
+\DoxyCodeLine{610         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_ellipse_a79949c98fed7b0e7b321752d0972336f}{getXRadius}}();}
+\DoxyCodeLine{611 }
+\DoxyCodeLine{617         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_ellipse_a049aed81c44536e9f30cc70b2818bed7}{setYRadius}}(\textcolor{keywordtype}{double} ry);}
+\DoxyCodeLine{618 }
+\DoxyCodeLine{624         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_ellipse_a56132a99fa77e269f5c6a81da5b76e18}{getYRadius}}();}
+\DoxyCodeLine{625 }
+\DoxyCodeLine{626     \textcolor{keyword}{protected}:}
+\DoxyCodeLine{627         \textcolor{keywordtype}{void} applyTransform();}
+\DoxyCodeLine{628         }
+\DoxyCodeLine{629     \textcolor{keyword}{private}:}
+\DoxyCodeLine{630         \textcolor{keywordtype}{double} cx = 0;}
+\DoxyCodeLine{631         \textcolor{keywordtype}{double} cy = 0;}
+\DoxyCodeLine{632         \textcolor{keywordtype}{double} rx = 0;}
+\DoxyCodeLine{633         \textcolor{keywordtype}{double} ry = 0;}
+\DoxyCodeLine{634         \textcolor{keywordtype}{void} drawTransformed(\mbox{\hyperlink{classglib_1_1_image}{Image}}* buffer, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{635         \textcolor{keywordtype}{void} drawStrokeTransformed(\mbox{\hyperlink{classglib_1_1_image}{Image}}* buffer, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{636         }
+\DoxyCodeLine{637     \};}
+\DoxyCodeLine{638 }
+\DoxyCodeLine{639     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_vector_line}{VectorLine}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_vector_shape}{VectorShape}}}
+\DoxyCodeLine{640     \{}
+\DoxyCodeLine{641     \textcolor{keyword}{public}:}
+\DoxyCodeLine{642 }
+\DoxyCodeLine{662         \mbox{\hyperlink{classglib_1_1_vector_line_afc92a3218067de02dc959346b12dc6f9}{VectorLine}}();}
+\DoxyCodeLine{663 }
+\DoxyCodeLine{668         \mbox{\hyperlink{classglib_1_1_vector_line_a103f99fad4faebdd91df40263aa15d65}{\string~VectorLine}}();}
+\DoxyCodeLine{669 }
+\DoxyCodeLine{670         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{671         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{672         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{673 }
+\DoxyCodeLine{684         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_line_a89741b4f81ab40467af0dd92cff08bbe}{draw}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{685 }
+\DoxyCodeLine{696         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_line_ab974e9791a04ae336566b8106eadbb7d}{drawStroke}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* buffer, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{697         }
+\DoxyCodeLine{703         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_line_a672366e4c852649091659abc18c471cd}{setX1}}(\textcolor{keywordtype}{double} x1);}
+\DoxyCodeLine{704 }
+\DoxyCodeLine{710         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_line_a1a8c823caa12d78db46bc1349f55f126}{getX1}}();}
+\DoxyCodeLine{711 }
+\DoxyCodeLine{717         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_line_a4525ce585f490309116735e73d7d10ef}{setY1}}(\textcolor{keywordtype}{double} y1);}
+\DoxyCodeLine{718 }
+\DoxyCodeLine{724         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_line_a0874894ce19e50c0546f8c652b440286}{getY1}}();}
+\DoxyCodeLine{725 }
+\DoxyCodeLine{731         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_line_aa9d1552969dbe2d1062464a78ea08a48}{setX2}}(\textcolor{keywordtype}{double} x2);}
+\DoxyCodeLine{732 }
+\DoxyCodeLine{738         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_line_a8eba87e6186c185a65c4394321c8f577}{getX2}}();}
+\DoxyCodeLine{739 }
+\DoxyCodeLine{745         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_line_af48cc6fe73e07d261af73bec477b703f}{setY2}}(\textcolor{keywordtype}{double} y2);}
+\DoxyCodeLine{746 }
+\DoxyCodeLine{752         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_line_aa939a4af1834a17284a6bb0e3d9a6a7d}{getY2}}();}
+\DoxyCodeLine{753 }
+\DoxyCodeLine{754     \textcolor{keyword}{protected}:}
+\DoxyCodeLine{755         \textcolor{keywordtype}{void} applyTransform();}
+\DoxyCodeLine{756 }
+\DoxyCodeLine{757     \textcolor{keyword}{private}:}
+\DoxyCodeLine{758         \textcolor{keywordtype}{double} x1 = 0;}
+\DoxyCodeLine{759         \textcolor{keywordtype}{double} x2 = 0;}
+\DoxyCodeLine{760         \textcolor{keywordtype}{double} y1 = 0;}
+\DoxyCodeLine{761         \textcolor{keywordtype}{double} y2 = 0;}
+\DoxyCodeLine{762     \};}
+\DoxyCodeLine{763 }
+\DoxyCodeLine{764     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_vector_polyline}{VectorPolyline}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_vector_shape}{VectorShape}}}
+\DoxyCodeLine{765     \{}
+\DoxyCodeLine{766     \textcolor{keyword}{public}:}
+\DoxyCodeLine{767 }
+\DoxyCodeLine{793         \mbox{\hyperlink{classglib_1_1_vector_polyline_a2d04e0330634fcd77451bce32ad66679}{VectorPolyline}}();}
+\DoxyCodeLine{794 }
+\DoxyCodeLine{799         \mbox{\hyperlink{classglib_1_1_vector_polyline_a8a7ef4d3868a740b5dabc5feabee92de}{\string~VectorPolyline}}();}
+\DoxyCodeLine{800 }
+\DoxyCodeLine{801         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{802         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{803         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{804 }
+\DoxyCodeLine{815         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_polyline_ad664565e7864f4ec8f0531d2d488ddfc}{draw}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{816 }
+\DoxyCodeLine{826         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_polyline_afd8a6480068fd51c21508e0d4c6cd964}{drawStroke}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* buffer, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{827         }
+\DoxyCodeLine{834         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_polyline_a3bb8bcb99db20b388d1de0372dc1e622}{addPoint}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{835 }
+\DoxyCodeLine{841         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_polyline_add405826fd60d0a5f282cb873d88f8be}{addPoint}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p);}
+\DoxyCodeLine{842 }
+\DoxyCodeLine{849         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_polyline_a020b8b85868fedfce4f3036aa2e04ab3}{getPointX}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{850 }
+\DoxyCodeLine{857         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_polyline_ac8c44dbd26b92329a7ad9ec7e798166b}{getPointY}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{858 }
+\DoxyCodeLine{865         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_vector_polyline_ad5ae0bd3c8387727409b16f426710c60}{getPoint}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{866         }
+\DoxyCodeLine{871         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_polyline_ac864e0ce661edb6502be5f7e55f49488}{clear}}();}
+\DoxyCodeLine{872 }
+\DoxyCodeLine{878         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_vector_polyline_a472b36a11a79bd9267590d0c99210930}{size}}();}
+\DoxyCodeLine{879 }
+\DoxyCodeLine{880     \textcolor{keyword}{protected}:}
+\DoxyCodeLine{881         \textcolor{keywordtype}{void} applyTransform();}
+\DoxyCodeLine{882         }
+\DoxyCodeLine{883     \textcolor{keyword}{private}:}
+\DoxyCodeLine{884         std::vector<Vec2f> points = std::vector<Vec2f>();}
+\DoxyCodeLine{885     \};}
+\DoxyCodeLine{886 }
+\DoxyCodeLine{887     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_vector_polygon}{VectorPolygon}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_vector_shape}{VectorShape}}}
+\DoxyCodeLine{888     \{}
+\DoxyCodeLine{889     \textcolor{keyword}{public}:}
+\DoxyCodeLine{890 }
+\DoxyCodeLine{913         \mbox{\hyperlink{classglib_1_1_vector_polygon_ac229ab16bbf15c2582c851c59c24cb9e}{VectorPolygon}}();}
+\DoxyCodeLine{914 }
+\DoxyCodeLine{919         \mbox{\hyperlink{classglib_1_1_vector_polygon_a2fbf43be31c8c5660c4e162568e59fa5}{\string~VectorPolygon}}();}
+\DoxyCodeLine{920 }
+\DoxyCodeLine{921         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{922         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{923         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{924 }
+\DoxyCodeLine{934         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_polygon_a594144754347a4d9c9991ce9bb7cc7fc}{draw}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{935 }
+\DoxyCodeLine{945         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_polygon_a6107a57765c26d4fa2dbcee0d8a34f29}{drawStroke}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* buffer, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{946         }
+\DoxyCodeLine{953         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_polygon_a8f4c23d597e11c12feb4f656e2b99d11}{addPoint}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{954 }
+\DoxyCodeLine{960         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_polygon_a9aae1a486fa8199c136879cc02487d6f}{addPoint}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p);}
+\DoxyCodeLine{961 }
+\DoxyCodeLine{968         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_polygon_a6c289c2b3d891f8831b9aea70557134f}{getPointX}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{969 }
+\DoxyCodeLine{976         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_vector_polygon_a5b338c34de7ad11e791654ad555bd8ea}{getPointY}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{977 }
+\DoxyCodeLine{984         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_vector_polygon_a7bc10fee85d605a9e89e939f6a2e311c}{getPoint}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{985         }
+\DoxyCodeLine{990         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_polygon_a7584811d0649a44a68e63e4039aed525}{clear}}();}
+\DoxyCodeLine{991 }
+\DoxyCodeLine{997         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_vector_polygon_a1b6ffab734a7baaa0d1a5f4924fb6ba5}{size}}();}
+\DoxyCodeLine{998 }
+\DoxyCodeLine{999     \textcolor{keyword}{protected}:}
+\DoxyCodeLine{1000         \textcolor{keywordtype}{void} applyTransform();}
+\DoxyCodeLine{1001         }
+\DoxyCodeLine{1002     \textcolor{keyword}{private}:}
+\DoxyCodeLine{1003         std::vector<Vec2f> points = std::vector<Vec2f>();}
+\DoxyCodeLine{1004     \};}
+\DoxyCodeLine{1005 }
+\DoxyCodeLine{1006     \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_path_command}{PathCommand}}}
+\DoxyCodeLine{1007     \{}
+\DoxyCodeLine{1008         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} c;}
+\DoxyCodeLine{1009         std::vector<Vec2f> points;}
+\DoxyCodeLine{1010     \};}
+\DoxyCodeLine{1011 }
+\DoxyCodeLine{1012     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_vector_path}{VectorPath}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_vector_shape}{VectorShape}}}
+\DoxyCodeLine{1013     \{}
+\DoxyCodeLine{1014     \textcolor{keyword}{public}:}
+\DoxyCodeLine{1015 }
+\DoxyCodeLine{1077         \mbox{\hyperlink{classglib_1_1_vector_path_a7a45cf87ba6d36b88d8c0db00dd246b6}{VectorPath}}();}
+\DoxyCodeLine{1078 }
+\DoxyCodeLine{1084         \mbox{\hyperlink{classglib_1_1_vector_path_ae6cd78f15e06f6bbceb29858aa8b55d5}{VectorPath}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_vector_path}{VectorPath}}\& other);}
+\DoxyCodeLine{1085 }
+\DoxyCodeLine{1091         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_ab9583806d6c8a7327abfd9288781f0c2}{operator=}}(\mbox{\hyperlink{classglib_1_1_vector_path}{VectorPath}}\& other);}
+\DoxyCodeLine{1092 }
+\DoxyCodeLine{1097         \mbox{\hyperlink{classglib_1_1_vector_path_a4dea6684c3fabe12a096b9694ad153e7}{\string~VectorPath}}();}
+\DoxyCodeLine{1098 }
+\DoxyCodeLine{1099         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{1100         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{1101         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{1102 }
+\DoxyCodeLine{1112         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a03481d46e711aa4cca0f63d20cd7c2a1}{draw}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{1113 }
+\DoxyCodeLine{1123         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_aebf45d923a738750b64f98224a0d51b1}{drawStroke}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* buffer, \textcolor{keywordtype}{int} globalWidth, \textcolor{keywordtype}{int} globalHeight);}
+\DoxyCodeLine{1124 }
+\DoxyCodeLine{1131         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a71d3e7c91940984bab5b06e56dc69da9}{addMoveTo}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{1132 }
+\DoxyCodeLine{1138         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a7ecf18ee542e35e11257a24a65d78d9f}{addMoveTo}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p);}
+\DoxyCodeLine{1139 }
+\DoxyCodeLine{1146         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_af0cce3470f99799545c27ea49782c22c}{addMoveToRel}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{1147 }
+\DoxyCodeLine{1153         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_aed646d3cf72451ffe9fb372382c4a0a1}{addMoveToRel}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p);}
+\DoxyCodeLine{1154 }
+\DoxyCodeLine{1161         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_adb1bbcb0d9c02560c277901b4b3e422b}{addLineTo}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{1162 }
+\DoxyCodeLine{1168         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a4a751c27c88ab18159c2c5f53db0cb9c}{addLineTo}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p);}
+\DoxyCodeLine{1169 }
+\DoxyCodeLine{1176         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a0016030c0d287f8a15aeee72648afe73}{addLineToRel}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{1177 }
+\DoxyCodeLine{1183         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a81b52fefdaefc7d95898e92d62b45827}{addLineToRel}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p);}
+\DoxyCodeLine{1184 }
+\DoxyCodeLine{1190         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a8adcf26ddd5fe745400766d083a17a6f}{addHorizontalTo}}(\textcolor{keywordtype}{double} x);}
+\DoxyCodeLine{1191 }
+\DoxyCodeLine{1197         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a2743410972a20d9a05e22fb782900fb0}{addHorizontalToRel}}(\textcolor{keywordtype}{double} x);}
+\DoxyCodeLine{1198 }
+\DoxyCodeLine{1204         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a1b341d1f8342437e663620025865c21c}{addVerticalTo}}(\textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{1205 }
+\DoxyCodeLine{1211         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a969d079713407897ea7c9581207e66fe}{addVerticalToRel}}(\textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{1212 }
+\DoxyCodeLine{1217         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_aaac39a801172b5f1a5112ba9d75afd37}{addClosePath}}();}
+\DoxyCodeLine{1218 }
+\DoxyCodeLine{1228         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a288d722274e892febf4abf79629a7838}{addQuadTo}}(\textcolor{keywordtype}{double} x1, \textcolor{keywordtype}{double} y1, \textcolor{keywordtype}{double} x2, \textcolor{keywordtype}{double} y2);}
+\DoxyCodeLine{1229 }
+\DoxyCodeLine{1237         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a0bdcd9096924de2a38ca24d1e142ae3c}{addQuadTo}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p2);}
+\DoxyCodeLine{1238 }
+\DoxyCodeLine{1248         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_ab6fd1e29faa0071703b330e15833e4c6}{addQuadToRel}}(\textcolor{keywordtype}{double} x1, \textcolor{keywordtype}{double} y1, \textcolor{keywordtype}{double} x2, \textcolor{keywordtype}{double} y2);}
+\DoxyCodeLine{1249 }
+\DoxyCodeLine{1257         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a15666dde42346622f5f047a5c1ce2c16}{addQuadToRel}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p2);}
+\DoxyCodeLine{1258 }
+\DoxyCodeLine{1266         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a7a0cb8d0652161a3df18942af07a3c00}{addQuadToShort}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{1267 }
+\DoxyCodeLine{1274         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_ae6b1025f8d9c29bbd525495451a7e08e}{addQuadToShort}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p);}
+\DoxyCodeLine{1275 }
+\DoxyCodeLine{1283         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_abd60854ac09c5248040f998e4c273b05}{addQuadToShortRel}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{1284 }
+\DoxyCodeLine{1291         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a869f17be4d96dc1b88678c0e7b39c838}{addQuadToShortRel}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p);}
+\DoxyCodeLine{1292 }
+\DoxyCodeLine{1304         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a48ab6da96daa59d15aed6dd9cfb9bac0}{addCubicTo}}(\textcolor{keywordtype}{double} x1, \textcolor{keywordtype}{double} y1, \textcolor{keywordtype}{double} x2, \textcolor{keywordtype}{double} y2, \textcolor{keywordtype}{double} x3, \textcolor{keywordtype}{double} y3);}
+\DoxyCodeLine{1305 }
+\DoxyCodeLine{1314         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a5c1abe8aa3073e6205f7fdb6b7e33a34}{addCubicTo}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p2, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p3);}
+\DoxyCodeLine{1315 }
+\DoxyCodeLine{1327         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a9b53bde5b50bad8c49930e3055d15b34}{addCubicToRel}}(\textcolor{keywordtype}{double} x1, \textcolor{keywordtype}{double} y1, \textcolor{keywordtype}{double} x2, \textcolor{keywordtype}{double} y2, \textcolor{keywordtype}{double} x3, \textcolor{keywordtype}{double} y3);}
+\DoxyCodeLine{1328 }
+\DoxyCodeLine{1337         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a93ad20900adf7df891cc8598cfe37104}{addCubicToRel}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p2, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p3);}
+\DoxyCodeLine{1338 }
+\DoxyCodeLine{1348         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a429f16d8e68f202c8490f9819e055357}{addCubicToShort}}(\textcolor{keywordtype}{double} x1, \textcolor{keywordtype}{double} y1, \textcolor{keywordtype}{double} x2, \textcolor{keywordtype}{double} y2);}
+\DoxyCodeLine{1349 }
+\DoxyCodeLine{1357         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_aaada2edafe4eb45cb7f0585ae4f25773}{addCubicToShort}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p2);}
+\DoxyCodeLine{1358 }
+\DoxyCodeLine{1368         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_aba1341e4d5e7ea11a5e979471104e72b}{addCubicToShortRel}}(\textcolor{keywordtype}{double} x1, \textcolor{keywordtype}{double} y1, \textcolor{keywordtype}{double} x2, \textcolor{keywordtype}{double} y2);}
+\DoxyCodeLine{1369 }
+\DoxyCodeLine{1377         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a4eddd94ad294332dbfaaa5d3706555ff}{addCubicToShortRel}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p2);}
+\DoxyCodeLine{1378 }
+\DoxyCodeLine{1393         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_abfe73ef03834e07c33ad183a2dee0ed7}{addArcTo}}(\textcolor{keywordtype}{double} rx, \textcolor{keywordtype}{double} ry, \textcolor{keywordtype}{double} angle, \textcolor{keywordtype}{bool} largeArcFlag, \textcolor{keywordtype}{bool} sweepFlag, \textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{1394 }
+\DoxyCodeLine{1407         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a76e0dc6a5be99763c178ce4084660efa}{addArcTo}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} radi, \textcolor{keywordtype}{double} angle, \textcolor{keywordtype}{bool} largeArcFlag, \textcolor{keywordtype}{bool} sweepFlag, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p);}
+\DoxyCodeLine{1408 }
+\DoxyCodeLine{1423         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_af967721018d248dbf6e31fb8a943378c}{addArcToRel}}(\textcolor{keywordtype}{double} rx, \textcolor{keywordtype}{double} ry, \textcolor{keywordtype}{double} angle, \textcolor{keywordtype}{bool} largeArcFlag, \textcolor{keywordtype}{bool} sweepFlag, \textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{1424 }
+\DoxyCodeLine{1437         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a6e3aee3d7cb8889baa71e0103f87bb55}{addArcToRel}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} radi, \textcolor{keywordtype}{double} angle, \textcolor{keywordtype}{bool} largeArcFlag, \textcolor{keywordtype}{bool} sweepFlag, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p);}
+\DoxyCodeLine{1438         }
+\DoxyCodeLine{1443         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_path_a9b4ebfe7aeb22388b51fc01fc8d4fa9f}{clear}}();}
+\DoxyCodeLine{1444 }
+\DoxyCodeLine{1450         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_vector_path_a72db4df9585c09066a6157417121b40a}{size}}();}
+\DoxyCodeLine{1451 }
+\DoxyCodeLine{1452     \textcolor{keyword}{protected}:}
+\DoxyCodeLine{1453         \textcolor{keywordtype}{void} applyTransform();}
+\DoxyCodeLine{1454         }
+\DoxyCodeLine{1455     \textcolor{keyword}{private}:}
+\DoxyCodeLine{1456         std::vector<PathCommand> commands = std::vector<PathCommand>();}
+\DoxyCodeLine{1457         std::vector<Vec2f> getArcStuff(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} radi, \textcolor{keywordtype}{double} angle, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p2);}
+\DoxyCodeLine{1458         }
+\DoxyCodeLine{1459         \textcolor{keywordtype}{void} drawLineTo(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} currentPos, \mbox{\hyperlink{structglib_1_1_path_command}{PathCommand}} command, \textcolor{keywordtype}{int} minY, \textcolor{keywordtype}{int} maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, \textcolor{keywordtype}{bool} relative);}
+\DoxyCodeLine{1460         \textcolor{keywordtype}{void} drawVerticalTo(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} currentPos, \mbox{\hyperlink{structglib_1_1_path_command}{PathCommand}} command, \textcolor{keywordtype}{int} minY, \textcolor{keywordtype}{int} maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, \textcolor{keywordtype}{bool} relative);}
+\DoxyCodeLine{1461         \textcolor{keywordtype}{void} drawHorizontalTo(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} currentPos, \mbox{\hyperlink{structglib_1_1_path_command}{PathCommand}} command, \textcolor{keywordtype}{int} minY, \textcolor{keywordtype}{int} maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, \textcolor{keywordtype}{bool} relative);}
+\DoxyCodeLine{1462         \textcolor{keywordtype}{void} drawQuadTo(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} currentPos, \mbox{\hyperlink{structglib_1_1_path_command}{PathCommand}} command, \textcolor{keywordtype}{int} minY, \textcolor{keywordtype}{int} maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, \textcolor{keywordtype}{bool} relative);}
+\DoxyCodeLine{1463         \textcolor{keywordtype}{void} drawQuadShortTo(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} currentPos, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} extraPos, \mbox{\hyperlink{structglib_1_1_path_command}{PathCommand}} command, \textcolor{keywordtype}{int} minY, \textcolor{keywordtype}{int} maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, \textcolor{keywordtype}{bool} relative);}
+\DoxyCodeLine{1464         \textcolor{keywordtype}{void} drawCubicTo(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} currentPos, \mbox{\hyperlink{structglib_1_1_path_command}{PathCommand}} command, \textcolor{keywordtype}{int} minY, \textcolor{keywordtype}{int} maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, \textcolor{keywordtype}{bool} relative);}
+\DoxyCodeLine{1465         \textcolor{keywordtype}{void} drawCubicShortTo(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} currentPos, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} extraPos, \mbox{\hyperlink{structglib_1_1_path_command}{PathCommand}} command, \textcolor{keywordtype}{int} minY, \textcolor{keywordtype}{int} maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, \textcolor{keywordtype}{bool} relative);}
+\DoxyCodeLine{1466         }
+\DoxyCodeLine{1467         \textcolor{keywordtype}{void} drawArcTo(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} currentPos, \mbox{\hyperlink{structglib_1_1_path_command}{PathCommand}} command, \textcolor{keywordtype}{int} minY, \textcolor{keywordtype}{int} maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, \textcolor{keywordtype}{bool} relative);}
+\DoxyCodeLine{1468         \textcolor{keywordtype}{void} drawCloseTo(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} currentPos, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} closePoint, \textcolor{keywordtype}{int} minY, \textcolor{keywordtype}{int} maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines);}
+\DoxyCodeLine{1469         }
+\DoxyCodeLine{1470         \textcolor{keywordtype}{void} copy(\mbox{\hyperlink{classglib_1_1_vector_path}{VectorPath}}\& other);}
+\DoxyCodeLine{1471     \};}
+\DoxyCodeLine{1472 }
+\DoxyCodeLine{1473     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_vector_graphic}{VectorGraphic}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
+\DoxyCodeLine{1474     \{}
+\DoxyCodeLine{1475     \textcolor{keyword}{public}:}
+\DoxyCodeLine{1476 }
+\DoxyCodeLine{1500         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} \mbox{\hyperlink{classglib_1_1_vector_graphic_a899d12b380199225333eec9b9ca20eba}{RECTANGLE}} = 1;}
+\DoxyCodeLine{1501         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} CIRCLE = 2;}
+\DoxyCodeLine{1502         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} ELLIPSE = 3;}
+\DoxyCodeLine{1503         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} LINE = 4;}
+\DoxyCodeLine{1504         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} POLYLINE = 5;}
+\DoxyCodeLine{1505         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} POLYGON = 6;}
+\DoxyCodeLine{1506         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} PATH = 7;}
+\DoxyCodeLine{1507 }
+\DoxyCodeLine{1508         \textcolor{comment}{//future implementation}}
+\DoxyCodeLine{1509         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} TEXT = 8;}
+\DoxyCodeLine{1510         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} IMAGE = 9;}
+\DoxyCodeLine{1511 }
+\DoxyCodeLine{1524         \mbox{\hyperlink{classglib_1_1_vector_graphic_a4644d7048dd528b0daf6a3e54e7ded4d}{VectorGraphic}}(\textcolor{keywordtype}{int} width=0, \textcolor{keywordtype}{int} height=0);}
+\DoxyCodeLine{1525 }
+\DoxyCodeLine{1531         \mbox{\hyperlink{classglib_1_1_vector_graphic_a879c616d8087789b5016435d4be8b72b}{VectorGraphic}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_vector_graphic}{VectorGraphic}}\& other);}
+\DoxyCodeLine{1532 }
+\DoxyCodeLine{1538         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_graphic_a9ade7f7cb3e70047753d2dfd0fb46cf6}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_vector_graphic}{VectorGraphic}}\& other);}
+\DoxyCodeLine{1539 }
+\DoxyCodeLine{1544         \mbox{\hyperlink{classglib_1_1_vector_graphic_a8c4dbf91175d02493e5d22fb6adea82e}{\string~VectorGraphic}}();}
+\DoxyCodeLine{1545 }
+\DoxyCodeLine{1546         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{1547         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{1548         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{1549 }
+\DoxyCodeLine{1555         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_graphic_afbfadea15d25359c3046f4359418fe20}{addShape}}(\mbox{\hyperlink{classglib_1_1_vector_shape}{VectorShape}}* k);}
+\DoxyCodeLine{1556 }
+\DoxyCodeLine{1562         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_graphic_a7f6da08f8cbd45403a571049e97251ea}{clearShapes}}();}
+\DoxyCodeLine{1563 }
+\DoxyCodeLine{1569         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_graphic_a3d4901ff6f958bc187feb50e0f0427e4}{draw}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* buffer);}
+\DoxyCodeLine{1570 }
+\DoxyCodeLine{1576         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_graphic_ac944570ce05b48dd0b083d3416bbf04a}{setTransform}}(\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} m);}
+\DoxyCodeLine{1577 }
+\DoxyCodeLine{1583         \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_vector_graphic_a6e93dd93265724cd2a186608a1d66da3}{getTransform}}();}
+\DoxyCodeLine{1584 }
+\DoxyCodeLine{1590         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_graphic_afabc444afce29c1b59bd07b3d02d1fc0}{setViewBox}}(\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} m);}
+\DoxyCodeLine{1591 }
+\DoxyCodeLine{1597         \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_vector_graphic_a74519d188d9af32d532cb85e5ce3b002}{getViewBox}}();}
+\DoxyCodeLine{1598 }
+\DoxyCodeLine{1604         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_vector_graphic_a9c62b52d69f687e0ca22cc0d752f3d64}{getWidth}}();}
+\DoxyCodeLine{1605 }
+\DoxyCodeLine{1611         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_vector_graphic_a9eb25e6dbb68d532dc703a2e5f294abd}{getHeight}}();}
+\DoxyCodeLine{1612 }
+\DoxyCodeLine{1613         \textcolor{comment}{//save and load with Xml File}}
+\DoxyCodeLine{1614 }
+\DoxyCodeLine{1623         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_vector_graphic_a7398cd3a653d9eeb8ecdf63794537886}{save}}(\mbox{\hyperlink{classglib_1_1_file}{File}} file);}
+\DoxyCodeLine{1624 }
+\DoxyCodeLine{1632         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_vector_graphic_a3294d057c21ba3bd25572a7d3c295b48}{load}}(\mbox{\hyperlink{classglib_1_1_file}{File}} file);}
+\DoxyCodeLine{1633 }
+\DoxyCodeLine{1634         \textcolor{comment}{//save and load with XmlNode}}
+\DoxyCodeLine{1635 }
+\DoxyCodeLine{1643         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_vector_graphic_a16850bee09d343bf72e76c7a1f0755df}{load}}(\mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}* svgParentNode);}
+\DoxyCodeLine{1644 }
+\DoxyCodeLine{1651         \mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}* \mbox{\hyperlink{classglib_1_1_vector_graphic_a6d90bef9d549e296da138d2df167ad93}{writeAsXmlNode}}();}
+\DoxyCodeLine{1652 }
+\DoxyCodeLine{1660         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_graphic_adfd6c585a1ddcecccb48d4b29be6f3d7}{setAALevel}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} level);}
+\DoxyCodeLine{1661 }
+\DoxyCodeLine{1667         \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} \mbox{\hyperlink{classglib_1_1_vector_graphic_a95c2cfdeb46d73ee99fb06899f753cb7}{getAALevel}}();}
+\DoxyCodeLine{1668 }
+\DoxyCodeLine{1669     \textcolor{keyword}{private}:}
+\DoxyCodeLine{1670         std::vector<VectorShape*> shapes = std::vector<VectorShape*>();}
+\DoxyCodeLine{1671 }
+\DoxyCodeLine{1672         \textcolor{keywordtype}{void} copy(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_vector_graphic}{VectorGraphic}}\& other);}
+\DoxyCodeLine{1673 }
+\DoxyCodeLine{1674         \textcolor{keywordtype}{void} loadNode(\mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}* parentNode, \mbox{\hyperlink{classglib_1_1_vector_shape}{VectorShape}}* groupPointer = \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{1675 }
+\DoxyCodeLine{1676         \textcolor{keywordtype}{void} loadTransforms(\mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}* node, \mbox{\hyperlink{classglib_1_1_vector_shape}{VectorShape}}* shape, \mbox{\hyperlink{classglib_1_1_vector_shape}{VectorShape}}* groupPointer = \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{1677         \textcolor{keywordtype}{void} loadRectangle(\mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}* node, \mbox{\hyperlink{classglib_1_1_vector_rectangle}{VectorRectangle}}* shape);}
+\DoxyCodeLine{1678         \textcolor{keywordtype}{void} loadCircle(\mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}* node, \mbox{\hyperlink{classglib_1_1_vector_circle}{VectorCircle}}* shape);}
+\DoxyCodeLine{1679         \textcolor{keywordtype}{void} loadEllipse(\mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}* node, \mbox{\hyperlink{classglib_1_1_vector_ellipse}{VectorEllipse}}* shape);}
+\DoxyCodeLine{1680         \textcolor{keywordtype}{void} loadLine(\mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}* node, \mbox{\hyperlink{classglib_1_1_vector_line}{VectorLine}}* shape);}
+\DoxyCodeLine{1681         \textcolor{keywordtype}{void} loadPolygon(\mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}* node, \mbox{\hyperlink{classglib_1_1_vector_polygon}{VectorPolygon}}* shape);}
+\DoxyCodeLine{1682         \textcolor{keywordtype}{void} loadPolyline(\mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}* node, \mbox{\hyperlink{classglib_1_1_vector_polyline}{VectorPolyline}}* shape);}
+\DoxyCodeLine{1683         \textcolor{keywordtype}{void} loadPath(\mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}* node, \mbox{\hyperlink{classglib_1_1_vector_path}{VectorPath}}* shape);}
+\DoxyCodeLine{1684         }
+\DoxyCodeLine{1685         \textcolor{keywordtype}{int} width = 0;}
+\DoxyCodeLine{1686         \textcolor{keywordtype}{int} height = 0;}
+\DoxyCodeLine{1687 }
+\DoxyCodeLine{1688         \textcolor{comment}{//transforms}}
+\DoxyCodeLine{1689         \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} transform = \mbox{\hyperlink{classglib_1_1_mat3f_ae34b7f2c62a2b66671e0cf261f92f0bd}{Mat3f::getIdentity}}();}
+\DoxyCodeLine{1690         \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} viewBox = \mbox{\hyperlink{classglib_1_1_mat3f_ae34b7f2c62a2b66671e0cf261f92f0bd}{Mat3f::getIdentity}}();}
+\DoxyCodeLine{1691 }
+\DoxyCodeLine{1692         \textcolor{keyword}{static} \textcolor{keywordtype}{double} toNumber(std::string value, \textcolor{keywordtype}{bool}* percentage);}
+\DoxyCodeLine{1693         \textcolor{keyword}{static} \mbox{\hyperlink{structglib_1_1_color}{Color}} toColor(std::string value);}
+\DoxyCodeLine{1694         \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} AA\_LEVEL;}
+\DoxyCodeLine{1695     \};}
+\DoxyCodeLine{1696 }
+\DoxyCodeLine{1697 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

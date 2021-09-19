@@ -1,0 +1,224 @@
+\hypertarget{_frequency_table_8h_source}{}\doxysection{Frequency\+Table.\+h}
+\label{_frequency_table_8h_source}\index{include/FrequencyTable.h@{include/FrequencyTable.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include<vector>}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}GeneralExceptions.h"{}}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}Sort.h"{}}}
+\DoxyCodeLine{5 }
+\DoxyCodeLine{6 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{7 \{}
+\DoxyCodeLine{8 }
+\DoxyCodeLine{9     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{10     \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1freq_pair}{freqPair}}}
+\DoxyCodeLine{11     \{}
+\DoxyCodeLine{12         \textcolor{keywordtype}{size\_t} frequency;}
+\DoxyCodeLine{13         T data;}
+\DoxyCodeLine{14     \};}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{17     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_frequency_table}{FrequencyTable}}}
+\DoxyCodeLine{18     \{}
+\DoxyCodeLine{19     \textcolor{keyword}{public}:}
+\DoxyCodeLine{24         \mbox{\hyperlink{classglib_1_1_frequency_table_ad7ab4dd38b820f953130ebf47649c08b}{FrequencyTable}}();}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{29         \mbox{\hyperlink{classglib_1_1_frequency_table_a034efe43641385807c1deeb489748a54}{\string~FrequencyTable}}();}
+\DoxyCodeLine{30 }
+\DoxyCodeLine{37         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_frequency_table_a4c0fd70923b6a9596d2b05b37dba416e}{add}}(T value);}
+\DoxyCodeLine{38 }
+\DoxyCodeLine{48         \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_frequency_table_a5d17ecdf9ff2c544962481af0d9dbc4f}{getFrequency}}(T value);}
+\DoxyCodeLine{49 }
+\DoxyCodeLine{60         T \mbox{\hyperlink{classglib_1_1_frequency_table_af18347332db297142515b6e275f3b325}{getValueAtLocation}}(\textcolor{keywordtype}{size\_t} location);}
+\DoxyCodeLine{61 }
+\DoxyCodeLine{72         \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_frequency_table_a126b069a5dedbfb617315b756f7396ea}{getFrequencyAtLocation}}(\textcolor{keywordtype}{size\_t} location);}
+\DoxyCodeLine{73 }
+\DoxyCodeLine{77         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_frequency_table_a619e242264999596cbd228f9007167a5}{clear}}();}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{84         \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_frequency_table_ac1f595c5dd599c5f19bb0331371c38d5}{sumOfFrequencies}}();}
+\DoxyCodeLine{85 }
+\DoxyCodeLine{91         \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_frequency_table_ab83a851b5c97bbcbde27ee0ff62cfdee}{size}}();}
+\DoxyCodeLine{92 }
+\DoxyCodeLine{99         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_frequency_table_acd565ef1213dd63ac92828c6d06d6493}{sort}}(\textcolor{keywordtype}{bool} insertionSort);}
+\DoxyCodeLine{100 }
+\DoxyCodeLine{101     \textcolor{keyword}{private}:}
+\DoxyCodeLine{102         std::vector<freqPair<T>> values = std::vector<freqPair<T>>();}
+\DoxyCodeLine{103         \textcolor{keywordtype}{bool} sorted = \textcolor{keyword}{false};}
+\DoxyCodeLine{104     \};}
+\DoxyCodeLine{105 }
+\DoxyCodeLine{106     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{107     \textcolor{keyword}{inline} \mbox{\hyperlink{classglib_1_1_frequency_table_ad7ab4dd38b820f953130ebf47649c08b}{FrequencyTable<T>::FrequencyTable}}()}
+\DoxyCodeLine{108     \{}
+\DoxyCodeLine{109     \}}
+\DoxyCodeLine{110 }
+\DoxyCodeLine{111     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{112     \textcolor{keyword}{inline} \mbox{\hyperlink{classglib_1_1_frequency_table_a034efe43641385807c1deeb489748a54}{FrequencyTable<T>::\string~FrequencyTable}}()}
+\DoxyCodeLine{113     \{}
+\DoxyCodeLine{114         clear();}
+\DoxyCodeLine{115     \}}
+\DoxyCodeLine{116 }
+\DoxyCodeLine{117     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{118     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_frequency_table_a4c0fd70923b6a9596d2b05b37dba416e}{FrequencyTable<T>::add}}(T value)}
+\DoxyCodeLine{119     \{}
+\DoxyCodeLine{120         \textcolor{comment}{//check if the value exists}}
+\DoxyCodeLine{121         \textcolor{keywordtype}{bool} exists = \textcolor{keyword}{false};}
+\DoxyCodeLine{122         \textcolor{keywordtype}{size\_t} index = -\/1;}
+\DoxyCodeLine{123 }
+\DoxyCodeLine{124         \textcolor{keywordflow}{if}(sorted == \textcolor{keyword}{false})}
+\DoxyCodeLine{125         \{}
+\DoxyCodeLine{126             \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < values.size(); i++)}
+\DoxyCodeLine{127             \{}
+\DoxyCodeLine{128                 \textcolor{keywordflow}{if} (value == values[i].data)}
+\DoxyCodeLine{129                 \{}
+\DoxyCodeLine{130                     exists = \textcolor{keyword}{true};}
+\DoxyCodeLine{131                     index = i;}
+\DoxyCodeLine{132                     \textcolor{keywordflow}{break};}
+\DoxyCodeLine{133                 \}}
+\DoxyCodeLine{134             \}}
+\DoxyCodeLine{135         \}}
+\DoxyCodeLine{136         \textcolor{keywordflow}{else}}
+\DoxyCodeLine{137         \{}
+\DoxyCodeLine{138             \textcolor{keywordtype}{size\_t} l = 0;}
+\DoxyCodeLine{139             \textcolor{keywordtype}{size\_t} r = values.size()-\/1;}
+\DoxyCodeLine{140 }
+\DoxyCodeLine{141             \textcolor{keywordflow}{while}(l < r)}
+\DoxyCodeLine{142             \{}
+\DoxyCodeLine{143                 \textcolor{keywordtype}{size\_t} m = (l+r) / 2;}
+\DoxyCodeLine{144 }
+\DoxyCodeLine{145                 \textcolor{keywordflow}{if}(values[m].data == value)}
+\DoxyCodeLine{146                 \{}
+\DoxyCodeLine{147                     index = m;}
+\DoxyCodeLine{148                     \textcolor{keywordflow}{break};}
+\DoxyCodeLine{149                 \}}
+\DoxyCodeLine{150                 \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(value < values[m].data)}
+\DoxyCodeLine{151                     r = m;}
+\DoxyCodeLine{152                 \textcolor{keywordflow}{else}}
+\DoxyCodeLine{153                     l = m;}
+\DoxyCodeLine{154             \}}
+\DoxyCodeLine{155         \}}
+\DoxyCodeLine{156         }
+\DoxyCodeLine{157 }
+\DoxyCodeLine{158         \textcolor{keywordflow}{if} (exists == \textcolor{keyword}{false})}
+\DoxyCodeLine{159         \{}
+\DoxyCodeLine{160             values.push\_back(\{1, value\});}
+\DoxyCodeLine{161         \}}
+\DoxyCodeLine{162         \textcolor{keywordflow}{else}}
+\DoxyCodeLine{163         \{}
+\DoxyCodeLine{164             values[index].frequency++;}
+\DoxyCodeLine{165         \}}
+\DoxyCodeLine{166     \}}
+\DoxyCodeLine{167 }
+\DoxyCodeLine{168     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{169     \textcolor{keyword}{inline} \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_frequency_table_a5d17ecdf9ff2c544962481af0d9dbc4f}{FrequencyTable<T>::getFrequency}}(T value)}
+\DoxyCodeLine{170     \{}
+\DoxyCodeLine{171         \textcolor{comment}{//Find the frequency if the value exists}}
+\DoxyCodeLine{172         \textcolor{keywordtype}{size\_t} freq = 0;}
+\DoxyCodeLine{173 }
+\DoxyCodeLine{174         \textcolor{keywordflow}{if}(sorted == \textcolor{keyword}{false})}
+\DoxyCodeLine{175         \{}
+\DoxyCodeLine{176             \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < values.size(); i++)}
+\DoxyCodeLine{177             \{}
+\DoxyCodeLine{178                 \textcolor{keywordflow}{if} (value == values[i].data)}
+\DoxyCodeLine{179                 \{}
+\DoxyCodeLine{180                     freq = values[i].frequency;}
+\DoxyCodeLine{181                     \textcolor{keywordflow}{break};}
+\DoxyCodeLine{182                 \}}
+\DoxyCodeLine{183             \}}
+\DoxyCodeLine{184         \}}
+\DoxyCodeLine{185         \textcolor{keywordflow}{else}}
+\DoxyCodeLine{186         \{}
+\DoxyCodeLine{187             \textcolor{keywordtype}{size\_t} l = 0;}
+\DoxyCodeLine{188             \textcolor{keywordtype}{size\_t} r = values.size()-\/1;}
+\DoxyCodeLine{189 }
+\DoxyCodeLine{190             \textcolor{keywordflow}{while}(l < r)}
+\DoxyCodeLine{191             \{}
+\DoxyCodeLine{192                 \textcolor{keywordtype}{size\_t} m = (l+r) / 2;}
+\DoxyCodeLine{193 }
+\DoxyCodeLine{194                 \textcolor{keywordflow}{if}(values[m].data == value)}
+\DoxyCodeLine{195                     \textcolor{keywordflow}{return} values[m].frequency;}
+\DoxyCodeLine{196                 \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(value < values[m].data)}
+\DoxyCodeLine{197                     r = m;}
+\DoxyCodeLine{198                 \textcolor{keywordflow}{else}}
+\DoxyCodeLine{199                     l = m;}
+\DoxyCodeLine{200             \}}
+\DoxyCodeLine{201         \}}
+\DoxyCodeLine{202 }
+\DoxyCodeLine{203         \textcolor{keywordflow}{return} freq;}
+\DoxyCodeLine{204     \}}
+\DoxyCodeLine{205 }
+\DoxyCodeLine{206     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{207     \textcolor{keyword}{inline} T \mbox{\hyperlink{classglib_1_1_frequency_table_af18347332db297142515b6e275f3b325}{FrequencyTable<T>::getValueAtLocation}}(\textcolor{keywordtype}{size\_t} location)}
+\DoxyCodeLine{208     \{}
+\DoxyCodeLine{209         \textcolor{keywordflow}{if} (location >= 0 \&\& location < values.size())}
+\DoxyCodeLine{210             \textcolor{keywordflow}{return} values[location].data;}
+\DoxyCodeLine{211         \textcolor{keywordflow}{else}}
+\DoxyCodeLine{212         \{}
+\DoxyCodeLine{213 \textcolor{preprocessor}{            \#ifdef USE\_EXCEPTIONS}}
+\DoxyCodeLine{214             \textcolor{keywordflow}{throw} \mbox{\hyperlink{structglib_1_1_out_of_bounds_error}{OutOfBoundsError}}();}
+\DoxyCodeLine{215 \textcolor{preprocessor}{            \#endif}}
+\DoxyCodeLine{216         \}}
+\DoxyCodeLine{217         }
+\DoxyCodeLine{218         \textcolor{keywordflow}{return} T();}
+\DoxyCodeLine{219     \}}
+\DoxyCodeLine{220 }
+\DoxyCodeLine{221     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{222     \textcolor{keyword}{inline} \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_frequency_table_a126b069a5dedbfb617315b756f7396ea}{FrequencyTable<T>::getFrequencyAtLocation}}(\textcolor{keywordtype}{size\_t} location)}
+\DoxyCodeLine{223     \{}
+\DoxyCodeLine{224         \textcolor{keywordflow}{if} (location >= 0 \&\& location < values.size())}
+\DoxyCodeLine{225             \textcolor{keywordflow}{return} values[location].frequency;}
+\DoxyCodeLine{226         \textcolor{keywordflow}{else}}
+\DoxyCodeLine{227         \{}
+\DoxyCodeLine{228 \textcolor{preprocessor}{            \#ifdef USE\_EXCEPTIONS}}
+\DoxyCodeLine{229             \textcolor{keywordflow}{throw} \mbox{\hyperlink{structglib_1_1_out_of_bounds_error}{OutOfBoundsError}}();}
+\DoxyCodeLine{230 \textcolor{preprocessor}{            \#endif}}
+\DoxyCodeLine{231         \}}
+\DoxyCodeLine{232 }
+\DoxyCodeLine{233         \textcolor{keywordflow}{return} 0;}
+\DoxyCodeLine{234     \}}
+\DoxyCodeLine{235 }
+\DoxyCodeLine{236     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{237     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_frequency_table_a619e242264999596cbd228f9007167a5}{FrequencyTable<T>::clear}}()}
+\DoxyCodeLine{238     \{}
+\DoxyCodeLine{239         values.clear();}
+\DoxyCodeLine{240     \}}
+\DoxyCodeLine{241 }
+\DoxyCodeLine{242     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{243     \textcolor{keyword}{inline} \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_frequency_table_ac1f595c5dd599c5f19bb0331371c38d5}{FrequencyTable<T>::sumOfFrequencies}}()}
+\DoxyCodeLine{244     \{}
+\DoxyCodeLine{245         \textcolor{keywordtype}{size\_t} sum = 0;}
+\DoxyCodeLine{246         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < values.size(); i++)}
+\DoxyCodeLine{247         \{}
+\DoxyCodeLine{248             sum += values[i].frequency;}
+\DoxyCodeLine{249         \}}
+\DoxyCodeLine{250 }
+\DoxyCodeLine{251         \textcolor{keywordflow}{return} sum;}
+\DoxyCodeLine{252     \}}
+\DoxyCodeLine{253 }
+\DoxyCodeLine{254     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{255     \textcolor{keyword}{inline} \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_frequency_table_ab83a851b5c97bbcbde27ee0ff62cfdee}{FrequencyTable<T>::size}}()}
+\DoxyCodeLine{256     \{}
+\DoxyCodeLine{257         \textcolor{keywordflow}{return} values.size();}
+\DoxyCodeLine{258     \}}
+\DoxyCodeLine{259 }
+\DoxyCodeLine{260     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{261     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_frequency_table_acd565ef1213dd63ac92828c6d06d6493}{FrequencyTable<T>::sort}}(\textcolor{keywordtype}{bool} insertionSort)}
+\DoxyCodeLine{262     \{}
+\DoxyCodeLine{263         \textcolor{keywordflow}{if}(insertionSort)}
+\DoxyCodeLine{264         \{}
+\DoxyCodeLine{265             Sort::insertionSort<freqPair<T>>(values.data(), values.size(), [](\mbox{\hyperlink{structglib_1_1freq_pair}{freqPair<T>}} a, \mbox{\hyperlink{structglib_1_1freq_pair}{freqPair<T>}} b) -\/>\textcolor{keywordtype}{bool}\{}
+\DoxyCodeLine{266                 \textcolor{keywordflow}{return} a.data < b.data;}
+\DoxyCodeLine{267             \});}
+\DoxyCodeLine{268         \}}
+\DoxyCodeLine{269         \textcolor{keywordflow}{else}}
+\DoxyCodeLine{270         \{}
+\DoxyCodeLine{271             \textcolor{comment}{//MergeSort}}
+\DoxyCodeLine{272             Sort::mergeSort<freqPair<T>>(values.data(), values.size(), [](\mbox{\hyperlink{structglib_1_1freq_pair}{freqPair<T>}} a, \mbox{\hyperlink{structglib_1_1freq_pair}{freqPair<T>}} b) -\/>\textcolor{keywordtype}{bool}\{}
+\DoxyCodeLine{273                 \textcolor{keywordflow}{return} a.data < b.data;}
+\DoxyCodeLine{274             \});}
+\DoxyCodeLine{275         \}}
+\DoxyCodeLine{276         }
+\DoxyCodeLine{277     \}}
+\DoxyCodeLine{278 }
+\DoxyCodeLine{279 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

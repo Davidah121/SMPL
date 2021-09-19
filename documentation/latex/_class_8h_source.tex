@@ -1,0 +1,50 @@
+\hypertarget{_class_8h_source}{}\doxysection{Class.\+h}
+\label{_class_8h_source}\index{include/Class.h@{include/Class.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include <string>}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{6 \{}
+\DoxyCodeLine{7     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_class}{Class}}}
+\DoxyCodeLine{8     \{}
+\DoxyCodeLine{9     \textcolor{keyword}{public}:}
+\DoxyCodeLine{20         \mbox{\hyperlink{classglib_1_1_class_a4a6d18538146e3fd6fa3e265d1268066}{Class}}(std::string name = \textcolor{stringliteral}{"{}"{}}, std::vector<const Class*> parentClasses = std::vector<const Class*>());}
+\DoxyCodeLine{21 }
+\DoxyCodeLine{25         \mbox{\hyperlink{classglib_1_1_class_a6746cb0d9e4d1cddda30b32ff2a05d06}{\string~Class}}();}
+\DoxyCodeLine{26 }
+\DoxyCodeLine{34         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_class_a273d8a88d04041a50eb08f28391960f2}{isParentClass}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* k) \textcolor{keyword}{const};}
+\DoxyCodeLine{35 }
+\DoxyCodeLine{40         std::string \mbox{\hyperlink{classglib_1_1_class_aac682729c35f89b4779cb254901a5fa4}{getClassName}}() \textcolor{keyword}{const};}
+\DoxyCodeLine{41 }
+\DoxyCodeLine{42     \textcolor{keyword}{private}:}
+\DoxyCodeLine{43         std::string className = \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{44         std::vector<const Class*> parentClasses = std::vector<const Class*>();}
+\DoxyCodeLine{45     \};}
+\DoxyCodeLine{46 }
+\DoxyCodeLine{47     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_class_master}{ClassMaster}}}
+\DoxyCodeLine{48     \{}
+\DoxyCodeLine{49     \textcolor{keyword}{public}:}
+\DoxyCodeLine{50         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_class_master_1_1_invalid_class_name}{InvalidClassName}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{51         \{}
+\DoxyCodeLine{52             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}The class name can not be used."{}}; \}}
+\DoxyCodeLine{53         \};}
+\DoxyCodeLine{54 }
+\DoxyCodeLine{62         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_class_master_a13f983758d2064d8950969fad22e5d23}{addClass}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* k);}
+\DoxyCodeLine{63 }
+\DoxyCodeLine{69         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_class_master_ab789067dce8035dd651b2d913e5ab4c3}{removeClass}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* k);}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{75         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_class_master_ae1302b22d79680e2e7cb890524dacdc3}{getSize}}();}
+\DoxyCodeLine{76 }
+\DoxyCodeLine{84         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* \mbox{\hyperlink{classglib_1_1_class_master_a841cf832eeadb56792a6ae2eb868138e}{findClass}}(\textcolor{keywordtype}{int} i);}
+\DoxyCodeLine{85 }
+\DoxyCodeLine{93         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* \mbox{\hyperlink{classglib_1_1_class_master_ae2b7a43a910325cf129e73a1462b0a2f}{findClass}}(std::string className);}
+\DoxyCodeLine{94     \textcolor{keyword}{private}:}
+\DoxyCodeLine{95         \textcolor{keyword}{static} std::vector<const Class*> allClasses;}
+\DoxyCodeLine{96     \};}
+\DoxyCodeLine{97 }
+\DoxyCodeLine{98 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

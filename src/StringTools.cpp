@@ -8,15 +8,6 @@ namespace glib
 	bool StringTools::hasInit = false;
 	wchar_t const StringTools::lineBreak = L'\n';
 
-	StringTools::StringTools()
-	{
-
-	}
-
-	StringTools::~StringTools()
-	{
-	}
-
 	void StringTools::init()
 	{
 		int outRet = _setmode(_fileno(stdout), _O_U16TEXT);
@@ -216,7 +207,7 @@ namespace glib
 	}
 		
 
-	char StringTools::charToBase16(char val)
+	char StringTools::base10ToBase16(char val)
 	{
 		if(val<10)
 			return (char)(48+val);

@@ -1,0 +1,55 @@
+\hypertarget{classglib_1_1_p_c_g}{}\doxysection{glib\+::PCG Class Reference}
+\label{classglib_1_1_p_c_g}\index{glib::PCG@{glib::PCG}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_p_c_g_a2da113c83e79c483082df9bbcdf3c591}{PCG}} (uint64\+\_\+t seed=0x4d595df4d0f33173, uint64\+\_\+t mulitplier=6364136223846793005u, uint64\+\_\+t increment=1442695040888963407u)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_p_c_g}{PCG}} Random Number Generator Produces much more secure random numbers with speed on par with \mbox{\hyperlink{classglib_1_1_l_c_g}{LCG}}. Check here for more information \href{https://www.pcg-random.org/}{\texttt{ https\+://www.\+pcg-\/random.\+org/}}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_p_c_g_a644f7363081967061864185fc2b4626b}\label{classglib_1_1_p_c_g_a644f7363081967061864185fc2b4626b}} 
+{\bfseries $\sim$\+PCG} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_p_c_g}{PCG}} object. \end{DoxyCompactList}\item 
+unsigned int \mbox{\hyperlink{classglib_1_1_p_c_g_a8c296236a90d110c7f0063c157498bdb}{get}} ()
+\begin{DoxyCompactList}\small\item\em Gets the next random number. Truncated to an unsigned int however, the calculations are done using a uint64\+\_\+t. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_p_c_g_a2da113c83e79c483082df9bbcdf3c591}\label{classglib_1_1_p_c_g_a2da113c83e79c483082df9bbcdf3c591}} 
+\index{glib::PCG@{glib::PCG}!PCG@{PCG}}
+\index{PCG@{PCG}!glib::PCG@{glib::PCG}}
+\doxysubsubsection{\texorpdfstring{PCG()}{PCG()}}
+{\footnotesize\ttfamily glib\+::\+PCG\+::\+PCG (\begin{DoxyParamCaption}\item[{uint64\+\_\+t}]{seed = {\ttfamily 0x4d595df4d0f33173},  }\item[{uint64\+\_\+t}]{mulitplier = {\ttfamily 6364136223846793005u},  }\item[{uint64\+\_\+t}]{increment = {\ttfamily 1442695040888963407u} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_p_c_g}{PCG}} Random Number Generator Produces much more secure random numbers with speed on par with \mbox{\hyperlink{classglib_1_1_l_c_g}{LCG}}. Check here for more information \href{https://www.pcg-random.org/}{\texttt{ https\+://www.\+pcg-\/random.\+org/}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em seed} & Default is 0x4d595df4d0f33173 \\
+\hline
+{\em mulitplier} & Default is 6364136223846793005u \\
+\hline
+{\em increment} & Default is 1442695040888963407u \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_p_c_g_a8c296236a90d110c7f0063c157498bdb}\label{classglib_1_1_p_c_g_a8c296236a90d110c7f0063c157498bdb}} 
+\index{glib::PCG@{glib::PCG}!get@{get}}
+\index{get@{get}!glib::PCG@{glib::PCG}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}}
+{\footnotesize\ttfamily unsigned int glib\+::\+PCG\+::get (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets the next random number. Truncated to an unsigned int however, the calculations are done using a uint64\+\_\+t. 
+
+\begin{DoxyReturn}{Returns}
+unsigned int 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/PCG.\+h\end{DoxyCompactItemize}

@@ -1,0 +1,267 @@
+\hypertarget{classglib_1_1_bezier_curve}{}\doxysection{glib\+::Bezier\+Curve Class Reference}
+\label{classglib_1_1_bezier_curve}\index{glib::BezierCurve@{glib::BezierCurve}}
+Inheritance diagram for glib\+::Bezier\+Curve\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classglib_1_1_bezier_curve}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_bezier_curve_1_1_blend_points_error}{Blend\+Points\+Error}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_af7aade99d598de0d6165faa5bc440ec8}\label{classglib_1_1_bezier_curve_af7aade99d598de0d6165faa5bc440ec8}} 
+{\bfseries Bezier\+Curve} ()
+\begin{DoxyCompactList}\small\item\em Creates a \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} \mbox{\hyperlink{classglib_1_1_object}{Object}}. A Bezier Curve is a parametric curve valid from t=0 to t=1 The first and last points are end points and all other points are control points. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_af20e02aacde72e5205bd013a1197da67}\label{classglib_1_1_bezier_curve_af20e02aacde72e5205bd013a1197da67}} 
+{\bfseries Bezier\+Curve} (const \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} \&o)
+\begin{DoxyCompactList}\small\item\em Creates a \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} \mbox{\hyperlink{classglib_1_1_object}{Object}} from another \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} \mbox{\hyperlink{classglib_1_1_object}{Object}}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_a67e084797542b9b0e46e3084f6614097}\label{classglib_1_1_bezier_curve_a67e084797542b9b0e46e3084f6614097}} 
+{\bfseries $\sim$\+Bezier\+Curve} ()
+\begin{DoxyCompactList}\small\item\em Destroys a \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} \mbox{\hyperlink{classglib_1_1_object}{Object}} freeing its memory usage. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_bezier_curve_a47f9142c853b8244d90df3c7ce5fdae2}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_bezier_curve_a803aaae0a2bd56dd9d0eea187f608797}{add\+Point}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p)
+\begin{DoxyCompactList}\small\item\em Adds a point to the list of points for the Bezier Curve. Note that duplicate points are allowed. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_bezier_curve_a7eb788bb1591ee597f3576d9aa81dd99}{add\+Point}} (double x, double y)
+\begin{DoxyCompactList}\small\item\em Adds a point to the list of points for the Bezier Curve. Note that duplicate points are allowed. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_bezier_curve_a4855905b952c4fada47ef710666e0655}{get\+Point}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets a point from the Bezier Curve. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_bezier_curve_a27fcb68b9abd7b65b4721502f059fa91}{get\+Fuction\+At}} (double time)
+\begin{DoxyCompactList}\small\item\em Solves the \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} for the given time. Note that any time value can be used even if outside of the bounds \mbox{[}0,1\mbox{]}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_bezier_curve_a243124d861f8db25c07fd6875a2992e5}{get\+Derivative\+At}} (double time)
+\begin{DoxyCompactList}\small\item\em Solves the derivative of \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} for the given time. Note that any time value can be used even if outside of the bounds \mbox{[}0,1\mbox{]}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_bezier_curve_ac69c3aab1f67ea42e878fbc6eeb0bc97}{get\+Simple\+Derivative\+At}} (double time)
+\begin{DoxyCompactList}\small\item\em Solves for the simple derivative of \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} for the given time. Note that any time value can be used even if outside of the bounds \mbox{[}0,1\mbox{]}. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_bezier_curve_a2cd3ba9853ec2c94ca3599843be803a4}{get\+Arc\+Length\+At}} (double time)
+\begin{DoxyCompactList}\small\item\em Solves for the Arc Length of the Bezier curve from 0 to the given time. Note for all bezier curves above degree 2 (not a line) the arc length is approximated using Simpson\textquotesingle{}s rule. The Bezier curve is divided into segments and each segement is approximated and added together to get the total arc length. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_bezier_curve_a2ae3efa8b748ae3e04c1bcf7223277f4}{get\+Arc\+Length\+At}} (double start\+Time, double end\+Time)
+\begin{DoxyCompactList}\small\item\em Solves for the Arc Length of the Bezier curve from start time to end time. Note for all bezier curves above degree 2 (not a line) the arc length is approximated using Simpson\textquotesingle{}s rule. The Bezier curve is divided into segments and each segement is approximated and added together to get the total arc length. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_a6b627e5503fcdec34b348b80e73aebf8}\label{classglib_1_1_bezier_curve_a6b627e5503fcdec34b348b80e73aebf8}} 
+void {\bfseries clear} ()
+\begin{DoxyCompactList}\small\item\em Clears all points from the \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}}\textquotesingle{}s list of points. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_bezier_curve_a9ced58a155423ab3eeb5a4df1b67c70a}{size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the amount of points the bezier curve has. \end{DoxyCompactList}\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{classglib_1_1_bezier_curve_a39419ebeab090bb41f1ce0c36ab0ef93}{find\+Time\+ForY}} (double y)
+\begin{DoxyCompactList}\small\item\em Solves the function all times where the solution has the specified y value. Currently only works for Bezier\+Curves with 4 or less points. \end{DoxyCompactList}\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{classglib_1_1_bezier_curve_ab5c1e4bb703d4f1997e7738a977a1ce3}{find\+Time\+ForX}} (double x)
+\begin{DoxyCompactList}\small\item\em Solves the function all times where the solution has the specified x value. Currently only works for Bezier\+Curves with 4 or less points. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_af7fd5ee9b8df143bfe5dc63b838b710c}\label{classglib_1_1_bezier_curve_af7fd5ee9b8df143bfe5dc63b838b710c}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_a7eb788bb1591ee597f3576d9aa81dd99}\label{classglib_1_1_bezier_curve_a7eb788bb1591ee597f3576d9aa81dd99}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!addPoint@{addPoint}}
+\index{addPoint@{addPoint}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{addPoint()}{addPoint()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Bezier\+Curve\+::add\+Point (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})}
+
+
+
+Adds a point to the list of points for the Bezier Curve. Note that duplicate points are allowed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & A double representing the x value for the point \\
+\hline
+{\em y} & A double representing the y value for the point \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_a803aaae0a2bd56dd9d0eea187f608797}\label{classglib_1_1_bezier_curve_a803aaae0a2bd56dd9d0eea187f608797}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!addPoint@{addPoint}}
+\index{addPoint@{addPoint}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{addPoint()}{addPoint()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Bezier\+Curve\+::add\+Point (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p }\end{DoxyParamCaption})}
+
+
+
+Adds a point to the list of points for the Bezier Curve. Note that duplicate points are allowed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & A \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} containing the point. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_ab5c1e4bb703d4f1997e7738a977a1ce3}\label{classglib_1_1_bezier_curve_ab5c1e4bb703d4f1997e7738a977a1ce3}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!findTimeForX@{findTimeForX}}
+\index{findTimeForX@{findTimeForX}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{findTimeForX()}{findTimeForX()}}
+{\footnotesize\ttfamily std\+::vector$<$ double $>$ glib\+::\+Bezier\+Curve\+::find\+Time\+ForX (\begin{DoxyParamCaption}\item[{double}]{x }\end{DoxyParamCaption})}
+
+
+
+Solves the function all times where the solution has the specified x value. Currently only works for Bezier\+Curves with 4 or less points. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & The x value to solve for. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$double$>$ returns a list of all solutions. Can return an empty list if there is no solution. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_a39419ebeab090bb41f1ce0c36ab0ef93}\label{classglib_1_1_bezier_curve_a39419ebeab090bb41f1ce0c36ab0ef93}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!findTimeForY@{findTimeForY}}
+\index{findTimeForY@{findTimeForY}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{findTimeForY()}{findTimeForY()}}
+{\footnotesize\ttfamily std\+::vector$<$ double $>$ glib\+::\+Bezier\+Curve\+::find\+Time\+ForY (\begin{DoxyParamCaption}\item[{double}]{y }\end{DoxyParamCaption})}
+
+
+
+Solves the function all times where the solution has the specified y value. Currently only works for Bezier\+Curves with 4 or less points. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em y} & The y value to solve for. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$double$>$ returns a list of all solutions. Can return an empty list if there is no solution. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_a2ae3efa8b748ae3e04c1bcf7223277f4}\label{classglib_1_1_bezier_curve_a2ae3efa8b748ae3e04c1bcf7223277f4}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!getArcLengthAt@{getArcLengthAt}}
+\index{getArcLengthAt@{getArcLengthAt}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{getArcLengthAt()}{getArcLengthAt()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily double glib\+::\+Bezier\+Curve\+::get\+Arc\+Length\+At (\begin{DoxyParamCaption}\item[{double}]{start\+Time,  }\item[{double}]{end\+Time }\end{DoxyParamCaption})}
+
+
+
+Solves for the Arc Length of the Bezier curve from start time to end time. Note for all bezier curves above degree 2 (not a line) the arc length is approximated using Simpson\textquotesingle{}s rule. The Bezier curve is divided into segments and each segement is approximated and added together to get the total arc length. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em start\+Time} & The time to begin measuring arc length from. \\
+\hline
+{\em end\+Time} & The end time to measure arc length to. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double returns the measured arc length. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_a2cd3ba9853ec2c94ca3599843be803a4}\label{classglib_1_1_bezier_curve_a2cd3ba9853ec2c94ca3599843be803a4}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!getArcLengthAt@{getArcLengthAt}}
+\index{getArcLengthAt@{getArcLengthAt}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{getArcLengthAt()}{getArcLengthAt()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily double glib\+::\+Bezier\+Curve\+::get\+Arc\+Length\+At (\begin{DoxyParamCaption}\item[{double}]{time }\end{DoxyParamCaption})}
+
+
+
+Solves for the Arc Length of the Bezier curve from 0 to the given time. Note for all bezier curves above degree 2 (not a line) the arc length is approximated using Simpson\textquotesingle{}s rule. The Bezier curve is divided into segments and each segement is approximated and added together to get the total arc length. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em time} & The end time to measure arc length to. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double returns the measured arc length. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_a47f9142c853b8244d90df3c7ce5fdae2}\label{classglib_1_1_bezier_curve_a47f9142c853b8244d90df3c7ce5fdae2}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Bezier\+Curve\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
+
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_a243124d861f8db25c07fd6875a2992e5}\label{classglib_1_1_bezier_curve_a243124d861f8db25c07fd6875a2992e5}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!getDerivativeAt@{getDerivativeAt}}
+\index{getDerivativeAt@{getDerivativeAt}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{getDerivativeAt()}{getDerivativeAt()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} glib\+::\+Bezier\+Curve\+::get\+Derivative\+At (\begin{DoxyParamCaption}\item[{double}]{time }\end{DoxyParamCaption})}
+
+
+
+Solves the derivative of \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} for the given time. Note that any time value can be used even if outside of the bounds \mbox{[}0,1\mbox{]}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em time} & The time value to solve for. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} returns the derivative as a \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_a27fcb68b9abd7b65b4721502f059fa91}\label{classglib_1_1_bezier_curve_a27fcb68b9abd7b65b4721502f059fa91}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!getFuctionAt@{getFuctionAt}}
+\index{getFuctionAt@{getFuctionAt}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{getFuctionAt()}{getFuctionAt()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} glib\+::\+Bezier\+Curve\+::get\+Fuction\+At (\begin{DoxyParamCaption}\item[{double}]{time }\end{DoxyParamCaption})}
+
+
+
+Solves the \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} for the given time. Note that any time value can be used even if outside of the bounds \mbox{[}0,1\mbox{]}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em time} & The time value to solve for. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} returns the point as a \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_a4855905b952c4fada47ef710666e0655}\label{classglib_1_1_bezier_curve_a4855905b952c4fada47ef710666e0655}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!getPoint@{getPoint}}
+\index{getPoint@{getPoint}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{getPoint()}{getPoint()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} glib\+::\+Bezier\+Curve\+::get\+Point (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets a point from the Bezier Curve. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & The index of the point in the list. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} returns the point as a \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} if index was valid. If index was invalid and USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_out_of_bounds_error}{Out\+Of\+Bounds\+Error}} will be thrown. Otherwise, the default \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} is returned. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_ac69c3aab1f67ea42e878fbc6eeb0bc97}\label{classglib_1_1_bezier_curve_ac69c3aab1f67ea42e878fbc6eeb0bc97}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!getSimpleDerivativeAt@{getSimpleDerivativeAt}}
+\index{getSimpleDerivativeAt@{getSimpleDerivativeAt}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{getSimpleDerivativeAt()}{getSimpleDerivativeAt()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} glib\+::\+Bezier\+Curve\+::get\+Simple\+Derivative\+At (\begin{DoxyParamCaption}\item[{double}]{time }\end{DoxyParamCaption})}
+
+
+
+Solves for the simple derivative of \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} for the given time. Note that any time value can be used even if outside of the bounds \mbox{[}0,1\mbox{]}. 
+
+The simple derivative is just the next point minus the previous point where time determines which points to use. This is useful if you just need to know if the function is increasing at the time given instead of the actual derivative. 
+\begin{DoxyParams}{Parameters}
+{\em time} & The time value to solve for. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} returns the simple derivative as a \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_a9ced58a155423ab3eeb5a4df1b67c70a}\label{classglib_1_1_bezier_curve_a9ced58a155423ab3eeb5a4df1b67c70a}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!size@{size}}
+\index{size@{size}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily int glib\+::\+Bezier\+Curve\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the amount of points the bezier curve has. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Bezier\+Curve.\+h\end{DoxyCompactItemize}

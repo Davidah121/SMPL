@@ -1,0 +1,370 @@
+\hypertarget{classglib_1_1_gui_text_box}{}\doxysection{glib\+::Gui\+Text\+Box Class Reference}
+\label{classglib_1_1_gui_text_box}\index{glib::GuiTextBox@{glib::GuiTextBox}}
+Inheritance diagram for glib\+::Gui\+Text\+Box\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classglib_1_1_gui_text_box}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_gui_text_box_a7eff8a163101b11a88cd9875f8fa4164}{Gui\+Text\+Box}} (int x, int y, int width, int height)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} object Allows a user to type information into the box. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_gui_text_box_a46ccdb79b58e9bbef1f0e9d96322b195}{Gui\+Text\+Box}} (const \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} \&other)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} object from another \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_box_aab49f37d6198ad8367a3fbd0ef74b91a}{operator=}} (const \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} \&other)
+\begin{DoxyCompactList}\small\item\em Copies a \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_box_a40a160c667377cf894fa21335fdeb302}{copy}} (const \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} \&other)
+\begin{DoxyCompactList}\small\item\em Copies a \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} object. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_aaa386b0ce0ecbee9005ae57171e96e1b}\label{classglib_1_1_gui_text_box_aaa386b0ce0ecbee9005ae57171e96e1b}} 
+{\bfseries $\sim$\+Gui\+Text\+Box} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_gui_text_box_a978626de6185c0c22c516e2912258676}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_box_a4a4bfa4f076da221f5ecd3cd46601706}{update}} ()
+\begin{DoxyCompactList}\small\item\em Updates the \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_box_a43372c06eb867077c8fe91d98da9b636}{render}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Draws the \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_box_ab60d242bae1c39e68513d5dae4d529cf}{set\+On\+Enter\+Pressed\+Function}} (std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$ func)
+\begin{DoxyCompactList}\small\item\em Sets the On\+Enter\+Pressed Function. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_box_a819222845fcd1ce2f69bbfaae7801944}{set\+On\+Key\+Press\+Function}} (std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$ func)
+\begin{DoxyCompactList}\small\item\em Sets the On\+Key\+Pressed Function. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_box_a93a8d896964c2eeb48aaf22573206d59}{set\+Background\+Color}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Sets the Background \mbox{\hyperlink{structglib_1_1_color}{Color}} for the text box. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_box_ae51c72212013efd9a327ec506d972412}{set\+Outline\+Color}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Sets the Outline \mbox{\hyperlink{structglib_1_1_color}{Color}} for the text box. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_box_a20529342b518e9b620d291f6b8ca8d1d}{set\+Focus\+Outline\+Color}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Sets the Focus Outline \mbox{\hyperlink{structglib_1_1_color}{Color}} for the text box. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_box_a3cd30cedad4d6dd45b08477c0ce26d39}{set\+Cursor\+Blink\+Color}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Sets the Cursor Blink \mbox{\hyperlink{structglib_1_1_color}{Color}} for the text box. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_gui_text_block}{Gui\+Text\+Block}} $\ast$ \mbox{\hyperlink{classglib_1_1_gui_text_box_ae7536c6fab122c2fb77d54edd9ff6f0b}{get\+Text\+Block\+Element}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Text\+Block Element which contains the text data for the text box. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_box_a5ee9905be827ce7ea9fc668925e67ea9}{set\+Cursor\+Blink\+Timer}} (int time\+In\+Frames)
+\begin{DoxyCompactList}\small\item\em Sets the Cursor Blink Timer in frames. (May be changed to time in microseconds) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_box_a7ce9df1a02f313cdf498c068e1d691f6}{set\+Cursor\+Width}} (int w)
+\begin{DoxyCompactList}\small\item\em Sets the width of the Cursor. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_box_a77b4dde8698e86d0e153272f94f6e6fb}{set\+Width}} (int v)
+\begin{DoxyCompactList}\small\item\em Sets the Width of the text box. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_box_ac096fd83e792d309b72fd710ed75f9bc}{set\+Height}} (int v)
+\begin{DoxyCompactList}\small\item\em Sets the Height of the text box. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_text_box_af841cf994cbe34dfe7c2bda681507bba}{get\+Width}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Width of the text box. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_text_box_a0c2b81adf2522b99ad7d2ae345e4da73}{get\+Height}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Height of the text box. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_abb02bb42f8f09645762c72e6adef0796}\label{classglib_1_1_gui_text_box_abb02bb42f8f09645762c72e6adef0796}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_a7eff8a163101b11a88cd9875f8fa4164}\label{classglib_1_1_gui_text_box_a7eff8a163101b11a88cd9875f8fa4164}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!GuiTextBox@{GuiTextBox}}
+\index{GuiTextBox@{GuiTextBox}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{GuiTextBox()}{GuiTextBox()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily glib\+::\+Gui\+Text\+Box\+::\+Gui\+Text\+Box (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{width,  }\item[{int}]{height }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} object Allows a user to type information into the box. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & X value of the box \\
+\hline
+{\em y} & Y value of the box \\
+\hline
+{\em width} & Width of the box \\
+\hline
+{\em height} & Height of the box \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_a46ccdb79b58e9bbef1f0e9d96322b195}\label{classglib_1_1_gui_text_box_a46ccdb79b58e9bbef1f0e9d96322b195}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!GuiTextBox@{GuiTextBox}}
+\index{GuiTextBox@{GuiTextBox}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{GuiTextBox()}{GuiTextBox()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily glib\+::\+Gui\+Text\+Box\+::\+Gui\+Text\+Box (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} object from another \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_a40a160c667377cf894fa21335fdeb302}\label{classglib_1_1_gui_text_box_a40a160c667377cf894fa21335fdeb302}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!copy@{copy}}
+\index{copy@{copy}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{copy()}{copy()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Box\+::copy (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Copies a \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_a978626de6185c0c22c516e2912258676}\label{classglib_1_1_gui_text_box_a978626de6185c0c22c516e2912258676}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Gui\+Text\+Box\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance}{glib\+::\+Gui\+Instance}}.
+
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_a0c2b81adf2522b99ad7d2ae345e4da73}\label{classglib_1_1_gui_text_box_a0c2b81adf2522b99ad7d2ae345e4da73}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!getHeight@{getHeight}}
+\index{getHeight@{getHeight}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{getHeight()}{getHeight()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Text\+Box\+::get\+Height (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Height of the text box. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_ae7536c6fab122c2fb77d54edd9ff6f0b}\label{classglib_1_1_gui_text_box_ae7536c6fab122c2fb77d54edd9ff6f0b}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!getTextBlockElement@{getTextBlockElement}}
+\index{getTextBlockElement@{getTextBlockElement}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{getTextBlockElement()}{getTextBlockElement()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_gui_text_block}{Gui\+Text\+Block}} $\ast$ glib\+::\+Gui\+Text\+Box\+::get\+Text\+Block\+Element (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Text\+Block Element which contains the text data for the text box. 
+
+\begin{DoxyReturn}{Returns}
+Gui\+Text\+Block$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_af841cf994cbe34dfe7c2bda681507bba}\label{classglib_1_1_gui_text_box_af841cf994cbe34dfe7c2bda681507bba}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!getWidth@{getWidth}}
+\index{getWidth@{getWidth}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{getWidth()}{getWidth()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Text\+Box\+::get\+Width (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Width of the text box. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_aab49f37d6198ad8367a3fbd0ef74b91a}\label{classglib_1_1_gui_text_box_aab49f37d6198ad8367a3fbd0ef74b91a}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!operator=@{operator=}}
+\index{operator=@{operator=}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Box\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Copies a \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_a43372c06eb867077c8fe91d98da9b636}\label{classglib_1_1_gui_text_box_a43372c06eb867077c8fe91d98da9b636}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!render@{render}}
+\index{render@{render}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Box\+::render (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Draws the \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em surf} & \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance_a303d9dc4dedc8e5cf2027bb02c7015c8}{glib\+::\+Gui\+Instance}}.
+
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_a93a8d896964c2eeb48aaf22573206d59}\label{classglib_1_1_gui_text_box_a93a8d896964c2eeb48aaf22573206d59}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!setBackgroundColor@{setBackgroundColor}}
+\index{setBackgroundColor@{setBackgroundColor}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{setBackgroundColor()}{setBackgroundColor()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Box\+::set\+Background\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Sets the Background \mbox{\hyperlink{structglib_1_1_color}{Color}} for the text box. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_a3cd30cedad4d6dd45b08477c0ce26d39}\label{classglib_1_1_gui_text_box_a3cd30cedad4d6dd45b08477c0ce26d39}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!setCursorBlinkColor@{setCursorBlinkColor}}
+\index{setCursorBlinkColor@{setCursorBlinkColor}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{setCursorBlinkColor()}{setCursorBlinkColor()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Box\+::set\+Cursor\+Blink\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Sets the Cursor Blink \mbox{\hyperlink{structglib_1_1_color}{Color}} for the text box. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_a5ee9905be827ce7ea9fc668925e67ea9}\label{classglib_1_1_gui_text_box_a5ee9905be827ce7ea9fc668925e67ea9}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!setCursorBlinkTimer@{setCursorBlinkTimer}}
+\index{setCursorBlinkTimer@{setCursorBlinkTimer}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{setCursorBlinkTimer()}{setCursorBlinkTimer()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Box\+::set\+Cursor\+Blink\+Timer (\begin{DoxyParamCaption}\item[{int}]{time\+In\+Frames }\end{DoxyParamCaption})}
+
+
+
+Sets the Cursor Blink Timer in frames. (May be changed to time in microseconds) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em time\+In\+Frames} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_a7ce9df1a02f313cdf498c068e1d691f6}\label{classglib_1_1_gui_text_box_a7ce9df1a02f313cdf498c068e1d691f6}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!setCursorWidth@{setCursorWidth}}
+\index{setCursorWidth@{setCursorWidth}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{setCursorWidth()}{setCursorWidth()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Box\+::set\+Cursor\+Width (\begin{DoxyParamCaption}\item[{int}]{w }\end{DoxyParamCaption})}
+
+
+
+Sets the width of the Cursor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em w} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_a20529342b518e9b620d291f6b8ca8d1d}\label{classglib_1_1_gui_text_box_a20529342b518e9b620d291f6b8ca8d1d}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!setFocusOutlineColor@{setFocusOutlineColor}}
+\index{setFocusOutlineColor@{setFocusOutlineColor}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{setFocusOutlineColor()}{setFocusOutlineColor()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Box\+::set\+Focus\+Outline\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Sets the Focus Outline \mbox{\hyperlink{structglib_1_1_color}{Color}} for the text box. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_ac096fd83e792d309b72fd710ed75f9bc}\label{classglib_1_1_gui_text_box_ac096fd83e792d309b72fd710ed75f9bc}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!setHeight@{setHeight}}
+\index{setHeight@{setHeight}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{setHeight()}{setHeight()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Box\+::set\+Height (\begin{DoxyParamCaption}\item[{int}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets the Height of the text box. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_ab60d242bae1c39e68513d5dae4d529cf}\label{classglib_1_1_gui_text_box_ab60d242bae1c39e68513d5dae4d529cf}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!setOnEnterPressedFunction@{setOnEnterPressedFunction}}
+\index{setOnEnterPressedFunction@{setOnEnterPressedFunction}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{setOnEnterPressedFunction()}{setOnEnterPressedFunction()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Box\+::set\+On\+Enter\+Pressed\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$}]{func }\end{DoxyParamCaption})}
+
+
+
+Sets the On\+Enter\+Pressed Function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_a819222845fcd1ce2f69bbfaae7801944}\label{classglib_1_1_gui_text_box_a819222845fcd1ce2f69bbfaae7801944}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!setOnKeyPressFunction@{setOnKeyPressFunction}}
+\index{setOnKeyPressFunction@{setOnKeyPressFunction}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{setOnKeyPressFunction()}{setOnKeyPressFunction()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Box\+::set\+On\+Key\+Press\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$}]{func }\end{DoxyParamCaption})}
+
+
+
+Sets the On\+Key\+Pressed Function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_ae51c72212013efd9a327ec506d972412}\label{classglib_1_1_gui_text_box_ae51c72212013efd9a327ec506d972412}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!setOutlineColor@{setOutlineColor}}
+\index{setOutlineColor@{setOutlineColor}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{setOutlineColor()}{setOutlineColor()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Box\+::set\+Outline\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Sets the Outline \mbox{\hyperlink{structglib_1_1_color}{Color}} for the text box. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_a77b4dde8698e86d0e153272f94f6e6fb}\label{classglib_1_1_gui_text_box_a77b4dde8698e86d0e153272f94f6e6fb}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!setWidth@{setWidth}}
+\index{setWidth@{setWidth}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{setWidth()}{setWidth()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Box\+::set\+Width (\begin{DoxyParamCaption}\item[{int}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets the Width of the text box. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_box_a4a4bfa4f076da221f5ecd3cd46601706}\label{classglib_1_1_gui_text_box_a4a4bfa4f076da221f5ecd3cd46601706}} 
+\index{glib::GuiTextBox@{glib::GuiTextBox}!update@{update}}
+\index{update@{update}!glib::GuiTextBox@{glib::GuiTextBox}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Box\+::update (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Updates the \mbox{\hyperlink{classglib_1_1_gui_text_box}{Gui\+Text\+Box}} object. 
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance_adb20e1eac37428a48802ad39cf4c2cb0}{glib\+::\+Gui\+Instance}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Gui\+Manager.\+h\end{DoxyCompactItemize}

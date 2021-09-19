@@ -1,0 +1,285 @@
+\hypertarget{classglib_1_1_font}{}\doxysection{glib\+::Font Class Reference}
+\label{classglib_1_1_font}\index{glib::Font@{glib::Font}}
+Inheritance diagram for glib\+::Font\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classglib_1_1_font}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_font_a369550cea2bcec9410d2bc57b1d3c6aa}\label{classglib_1_1_font_a369550cea2bcec9410d2bc57b1d3c6aa}} 
+{\bfseries Font} ()
+\begin{DoxyCompactList}\small\item\em Creates a \mbox{\hyperlink{classglib_1_1_font}{Font}} \mbox{\hyperlink{classglib_1_1_object}{Object}}. This class should never be directly instantiated. It is designed to be an Abstract class that will be extended to other classes. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_font_a41742bb97cb8acd73d93651d7df35abe}\label{classglib_1_1_font_a41742bb97cb8acd73d93651d7df35abe}} 
+{\bfseries $\sim$\+Font} ()
+\begin{DoxyCompactList}\small\item\em Destroys a \mbox{\hyperlink{classglib_1_1_font}{Font}} \mbox{\hyperlink{classglib_1_1_object}{Object}}. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_font_a5a19762b33d8724836aa4bf277d45e4a}{get\+Class}} ()
+\item 
+\mbox{\hyperlink{structglib_1_1_font_char_info}{Font\+Char\+Info}} \mbox{\hyperlink{classglib_1_1_font_a7e9c6497f40109c92c21d4c0f1a36aaa}{get\+Font\+Char\+Info}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets the character information for rendering. If index is invalid and USE\+\_\+\+EXCEPTIONS is defined, throws an \mbox{\hyperlink{structglib_1_1_out_of_bounds_error}{Out\+Of\+Bounds\+Error}}. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_font_a8095a856b7f87ebc953c51d3e85713b2}{get\+Char\+Index}} (int c)
+\begin{DoxyCompactList}\small\item\em Gets the index of the desired character. Takes O(\+N) time to find the character if the list is unsorted. Takes O(\+Log\+N) time to find the character if the list is sorted. \end{DoxyCompactList}\item 
+virtual \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ \mbox{\hyperlink{classglib_1_1_font_ae1a482f1b115fc9f03fa51f6aee2f63f}{get\+Image}} (int index)
+\begin{DoxyCompactList}\small\item\em A virtual function to return the image that contains the character glyph. The default implementation returns a nullptr. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_font_a327d71da8a49c3d83ae97ade39af5757}{set\+Font\+Size}} (int value)
+\begin{DoxyCompactList}\small\item\em Sets the size of the font. This is used for rendering. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_font_a6c89b323de83d6ad9ee7f88f622be2d8}{get\+Font\+Size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the size of the font. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_font_af5355d10bde74b9fc8f86790038616c1}{get\+Original\+Font\+Size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the original size of the font. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_font_a6b749eef2ea335487e7e1e0e22b3add7}{get\+Vertical\+Advance}} ()
+\begin{DoxyCompactList}\small\item\em Returns the vertical advance of the font. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_font_aaa0169942748e240eb5282a2f6ac95fe}{get\+Width\+Of\+String}} (std\+::string text)
+\begin{DoxyCompactList}\small\item\em Returns the width of the string. This width is the space taken up when drawn. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_font_a4bdd6520b91187c34b005ade98372181}{get\+Width\+Of\+String}} (std\+::wstring text)
+\begin{DoxyCompactList}\small\item\em Returns the width of the string. This width is the space taken up when drawn. \end{DoxyCompactList}\item 
+std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_font_char_info}{Font\+Char\+Info}} $>$ \& \mbox{\hyperlink{classglib_1_1_font_ab6a6315fee17170cce0808810f4085b6}{get\+List\+Of\+Font\+Char\+Info}} ()
+\begin{DoxyCompactList}\small\item\em Returns the raw list of the font characters information. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_font_a34f46a19c58617bf8fb1f0035cba1054}\label{classglib_1_1_font_a34f46a19c58617bf8fb1f0035cba1054}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classglib_1_1_font_a75335158966db190c8f715e2df25b6ca}{sort\+List}} (bool insertion\+Sort)
+\begin{DoxyCompactList}\small\item\em Allows you to sort the list to maintain LogN search time. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_font_ac6c94d93996f2fec00db768238acc492}{add\+Char}} (\mbox{\hyperlink{structglib_1_1_font_char_info}{Font\+Char\+Info}} a)
+\begin{DoxyCompactList}\small\item\em Adds character to the list. Sets sorted to false. Should be used instead of modifying the char\+Info\+List directly. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_font_a96cb81219b65fb7b15bf811e739ef64e}\label{classglib_1_1_font_a96cb81219b65fb7b15bf811e739ef64e}} 
+std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_font_char_info}{Font\+Char\+Info}} $>$ {\bfseries char\+Info\+List} = std\+::vector$<$\mbox{\hyperlink{structglib_1_1_font_char_info}{Font\+Char\+Info}}$>$()
+\item 
+\mbox{\Hypertarget{classglib_1_1_font_a2f9baa732a937249c467c8e714d42ffd}\label{classglib_1_1_font_a2f9baa732a937249c467c8e714d42ffd}} 
+int {\bfseries max\+Horiz\+Adv} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_font_ac536af3b17c863f99ee7d088dde9fcec}\label{classglib_1_1_font_ac536af3b17c863f99ee7d088dde9fcec}} 
+int {\bfseries ascent} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_font_a13d86af3e2ae9d038ebb721f53d32d85}\label{classglib_1_1_font_a13d86af3e2ae9d038ebb721f53d32d85}} 
+int {\bfseries descent} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_font_a0ba2fc7c3f34a6a230a3f7cf44b0089a}\label{classglib_1_1_font_a0ba2fc7c3f34a6a230a3f7cf44b0089a}} 
+int {\bfseries vertical\+Adv} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_font_a389aa061d4e6db37aa89d53545479931}\label{classglib_1_1_font_a389aa061d4e6db37aa89d53545479931}} 
+int {\bfseries font\+Size} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_font_a29f61f6df60f65bf5feb00b5995389fa}\label{classglib_1_1_font_a29f61f6df60f65bf5feb00b5995389fa}} 
+int {\bfseries original\+Font\+Size} = 0
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_font_ac6c94d93996f2fec00db768238acc492}\label{classglib_1_1_font_ac6c94d93996f2fec00db768238acc492}} 
+\index{glib::Font@{glib::Font}!addChar@{addChar}}
+\index{addChar@{addChar}!glib::Font@{glib::Font}}
+\doxysubsubsection{\texorpdfstring{addChar()}{addChar()}}
+{\footnotesize\ttfamily void glib\+::\+Font\+::add\+Char (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_font_char_info}{Font\+Char\+Info}}}]{a }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Adds character to the list. Sets sorted to false. Should be used instead of modifying the char\+Info\+List directly. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & The information for the character. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_font_a8095a856b7f87ebc953c51d3e85713b2}\label{classglib_1_1_font_a8095a856b7f87ebc953c51d3e85713b2}} 
+\index{glib::Font@{glib::Font}!getCharIndex@{getCharIndex}}
+\index{getCharIndex@{getCharIndex}!glib::Font@{glib::Font}}
+\doxysubsubsection{\texorpdfstring{getCharIndex()}{getCharIndex()}}
+{\footnotesize\ttfamily int glib\+::\+Font\+::get\+Char\+Index (\begin{DoxyParamCaption}\item[{int}]{c }\end{DoxyParamCaption})}
+
+
+
+Gets the index of the desired character. Takes O(\+N) time to find the character if the list is unsorted. Takes O(\+Log\+N) time to find the character if the list is sorted. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & The character to search for. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_font_char_info}{Font\+Char\+Info}} Returns a valid \mbox{\hyperlink{structglib_1_1_font_char_info}{Font\+Char\+Info}} struct if successful. Otherwise, returns an empty structure where all values are 0. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_font_a5a19762b33d8724836aa4bf277d45e4a}\label{classglib_1_1_font_a5a19762b33d8724836aa4bf277d45e4a}} 
+\index{glib::Font@{glib::Font}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::Font@{glib::Font}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Font\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
+
+\mbox{\Hypertarget{classglib_1_1_font_a7e9c6497f40109c92c21d4c0f1a36aaa}\label{classglib_1_1_font_a7e9c6497f40109c92c21d4c0f1a36aaa}} 
+\index{glib::Font@{glib::Font}!getFontCharInfo@{getFontCharInfo}}
+\index{getFontCharInfo@{getFontCharInfo}!glib::Font@{glib::Font}}
+\doxysubsubsection{\texorpdfstring{getFontCharInfo()}{getFontCharInfo()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structglib_1_1_font_char_info}{Font\+Char\+Info}} glib\+::\+Font\+::get\+Font\+Char\+Info (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets the character information for rendering. If index is invalid and USE\+\_\+\+EXCEPTIONS is defined, throws an \mbox{\hyperlink{structglib_1_1_out_of_bounds_error}{Out\+Of\+Bounds\+Error}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & The index of the character in the array. Not necessarily in order. The index of the character should be obtained from \mbox{\hyperlink{classglib_1_1_font_a8095a856b7f87ebc953c51d3e85713b2}{get\+Char\+Index()}} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_font_char_info}{Font\+Char\+Info}} Returns a valid \mbox{\hyperlink{structglib_1_1_font_char_info}{Font\+Char\+Info}} struct if successful. Otherwise, returns an empty structure where all values are 0. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_font_a6c89b323de83d6ad9ee7f88f622be2d8}\label{classglib_1_1_font_a6c89b323de83d6ad9ee7f88f622be2d8}} 
+\index{glib::Font@{glib::Font}!getFontSize@{getFontSize}}
+\index{getFontSize@{getFontSize}!glib::Font@{glib::Font}}
+\doxysubsubsection{\texorpdfstring{getFontSize()}{getFontSize()}}
+{\footnotesize\ttfamily int glib\+::\+Font\+::get\+Font\+Size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the size of the font. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_font_ae1a482f1b115fc9f03fa51f6aee2f63f}\label{classglib_1_1_font_ae1a482f1b115fc9f03fa51f6aee2f63f}} 
+\index{glib::Font@{glib::Font}!getImage@{getImage}}
+\index{getImage@{getImage}!glib::Font@{glib::Font}}
+\doxysubsubsection{\texorpdfstring{getImage()}{getImage()}}
+{\footnotesize\ttfamily virtual \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ glib\+::\+Font\+::get\+Image (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+A virtual function to return the image that contains the character glyph. The default implementation returns a nullptr. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & The index of the character wanted. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Image$\ast$ Always returns a nullptr. 
+\end{DoxyReturn}
+
+
+Reimplemented in \mbox{\hyperlink{classglib_1_1_bitmap_font_a0d2f44090e870ff10a9200f1fdf6707e}{glib\+::\+Bitmap\+Font}}.
+
+\mbox{\Hypertarget{classglib_1_1_font_ab6a6315fee17170cce0808810f4085b6}\label{classglib_1_1_font_ab6a6315fee17170cce0808810f4085b6}} 
+\index{glib::Font@{glib::Font}!getListOfFontCharInfo@{getListOfFontCharInfo}}
+\index{getListOfFontCharInfo@{getListOfFontCharInfo}!glib::Font@{glib::Font}}
+\doxysubsubsection{\texorpdfstring{getListOfFontCharInfo()}{getListOfFontCharInfo()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_font_char_info}{Font\+Char\+Info}} $>$ \& glib\+::\+Font\+::get\+List\+Of\+Font\+Char\+Info (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the raw list of the font characters information. 
+
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$\+Font\+Char\+Info$>$\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_font_af5355d10bde74b9fc8f86790038616c1}\label{classglib_1_1_font_af5355d10bde74b9fc8f86790038616c1}} 
+\index{glib::Font@{glib::Font}!getOriginalFontSize@{getOriginalFontSize}}
+\index{getOriginalFontSize@{getOriginalFontSize}!glib::Font@{glib::Font}}
+\doxysubsubsection{\texorpdfstring{getOriginalFontSize()}{getOriginalFontSize()}}
+{\footnotesize\ttfamily int glib\+::\+Font\+::get\+Original\+Font\+Size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the original size of the font. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_font_a6b749eef2ea335487e7e1e0e22b3add7}\label{classglib_1_1_font_a6b749eef2ea335487e7e1e0e22b3add7}} 
+\index{glib::Font@{glib::Font}!getVerticalAdvance@{getVerticalAdvance}}
+\index{getVerticalAdvance@{getVerticalAdvance}!glib::Font@{glib::Font}}
+\doxysubsubsection{\texorpdfstring{getVerticalAdvance()}{getVerticalAdvance()}}
+{\footnotesize\ttfamily int glib\+::\+Font\+::get\+Vertical\+Advance (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the vertical advance of the font. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_font_aaa0169942748e240eb5282a2f6ac95fe}\label{classglib_1_1_font_aaa0169942748e240eb5282a2f6ac95fe}} 
+\index{glib::Font@{glib::Font}!getWidthOfString@{getWidthOfString}}
+\index{getWidthOfString@{getWidthOfString}!glib::Font@{glib::Font}}
+\doxysubsubsection{\texorpdfstring{getWidthOfString()}{getWidthOfString()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily int glib\+::\+Font\+::get\+Width\+Of\+String (\begin{DoxyParamCaption}\item[{std\+::string}]{text }\end{DoxyParamCaption})}
+
+
+
+Returns the width of the string. This width is the space taken up when drawn. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em text} & The string to find the width of. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int Returns the width. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_font_a4bdd6520b91187c34b005ade98372181}\label{classglib_1_1_font_a4bdd6520b91187c34b005ade98372181}} 
+\index{glib::Font@{glib::Font}!getWidthOfString@{getWidthOfString}}
+\index{getWidthOfString@{getWidthOfString}!glib::Font@{glib::Font}}
+\doxysubsubsection{\texorpdfstring{getWidthOfString()}{getWidthOfString()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily int glib\+::\+Font\+::get\+Width\+Of\+String (\begin{DoxyParamCaption}\item[{std\+::wstring}]{text }\end{DoxyParamCaption})}
+
+
+
+Returns the width of the string. This width is the space taken up when drawn. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em text} & The string to find the width of. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int Returns the width. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_font_a327d71da8a49c3d83ae97ade39af5757}\label{classglib_1_1_font_a327d71da8a49c3d83ae97ade39af5757}} 
+\index{glib::Font@{glib::Font}!setFontSize@{setFontSize}}
+\index{setFontSize@{setFontSize}!glib::Font@{glib::Font}}
+\doxysubsubsection{\texorpdfstring{setFontSize()}{setFontSize()}}
+{\footnotesize\ttfamily void glib\+::\+Font\+::set\+Font\+Size (\begin{DoxyParamCaption}\item[{int}]{value }\end{DoxyParamCaption})}
+
+
+
+Sets the size of the font. This is used for rendering. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The value to set the font\+Size to. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_font_a75335158966db190c8f715e2df25b6ca}\label{classglib_1_1_font_a75335158966db190c8f715e2df25b6ca}} 
+\index{glib::Font@{glib::Font}!sortList@{sortList}}
+\index{sortList@{sortList}!glib::Font@{glib::Font}}
+\doxysubsubsection{\texorpdfstring{sortList()}{sortList()}}
+{\footnotesize\ttfamily void glib\+::\+Font\+::sort\+List (\begin{DoxyParamCaption}\item[{bool}]{insertion\+Sort }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Allows you to sort the list to maintain LogN search time. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em insertion\+Sort} & Chooses whether to use insertion sort or merge sort for sorting. Insertion \mbox{\hyperlink{classglib_1_1_sort}{Sort}} is best used when the list is mostly sorted. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Font.\+h\end{DoxyCompactItemize}

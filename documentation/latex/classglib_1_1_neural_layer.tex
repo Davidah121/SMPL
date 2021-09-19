@@ -1,0 +1,313 @@
+\hypertarget{classglib_1_1_neural_layer}{}\doxysection{glib\+::Neural\+Layer Class Reference}
+\label{classglib_1_1_neural_layer}\index{glib::NeuralLayer@{glib::NeuralLayer}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_neural_layer_ac1c650d2a5940a7bae02c51a6647a1a1}{Neural\+Layer}} (int \mbox{\hyperlink{classglib_1_1_neural_layer_a2e2deffc28acdb75e4308330925b0c76}{size}}, \mbox{\hyperlink{classglib_1_1_neural_layer}{Neural\+Layer}} $\ast$next\+Layer, \mbox{\hyperlink{classglib_1_1_neural_layer}{Neural\+Layer}} $\ast$previous\+Layer)
+\begin{DoxyCompactList}\small\item\em Construct a new Neural Layer object Consists of Neurons and Bias values. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_neural_layer_a39e6dfecc066d572ff18934d6c00fcbc}\label{classglib_1_1_neural_layer_a39e6dfecc066d572ff18934d6c00fcbc}} 
+{\bfseries $\sim$\+Neural\+Layer} ()
+\begin{DoxyCompactList}\small\item\em Destroy the Neural Layer object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_neural_layer}{Neural\+Layer}} $\ast$ \mbox{\hyperlink{classglib_1_1_neural_layer_ac8f03669f01a79b36bb6857c550cbc56}{get\+Next\+Layer}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Next Layer If there is no next layer, it is assumed to be the last layer and returns nullptr. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_neural_layer}{Neural\+Layer}} $\ast$ \mbox{\hyperlink{classglib_1_1_neural_layer_a77ef5e7c3706a85c2db2380bd6c197aa}{get\+Previous\+Layer}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Previous Layer If there is no previous layer, it is assumed to be the first layer and returns nullptr. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_neural_layer_a5dac06e89e999df26f40c7502bb20bb8}{set\+Next\+Layer}} (\mbox{\hyperlink{classglib_1_1_neural_layer}{Neural\+Layer}} $\ast$n)
+\begin{DoxyCompactList}\small\item\em Sets the Next Layer. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_neural_layer_a325a9dc95ac0aaf09e99b327282a7870}{set\+Previous\+Layer}} (\mbox{\hyperlink{classglib_1_1_neural_layer}{Neural\+Layer}} $\ast$n)
+\begin{DoxyCompactList}\small\item\em Sets the Previous Layer. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_neural_layer_a31f0da0ce5ac027007adeed9a5661652}{set\+Neuron\+Activation}} (int index, float activation)
+\begin{DoxyCompactList}\small\item\em Set the \mbox{\hyperlink{classglib_1_1_neuron}{Neuron}} Activation at the specified index. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_neural_layer_ae342d20832f5aeb7240f436cdafd6a04}{get\+Neuron\+Activation}} (int index)
+\begin{DoxyCompactList}\small\item\em Get the \mbox{\hyperlink{classglib_1_1_neuron}{Neuron}} Activation at the specified index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_neuron}{Neuron}} \& \mbox{\hyperlink{classglib_1_1_neural_layer_a9505079a44282540285f4054558d54ef}{get\+Neuron}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets a \mbox{\hyperlink{classglib_1_1_neuron}{Neuron}}. \end{DoxyCompactList}\item 
+std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_neuron}{Neuron}} $>$ \& \mbox{\hyperlink{classglib_1_1_neural_layer_a75fafa615fb01ea4ea505f691eded670}{get\+List\+Of\+Neurons}} ()
+\begin{DoxyCompactList}\small\item\em Gets the List Of Neurons. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_neural_layer_a49c5b599eb9fcff365ec5716a4e512a5}{activation\+Function}} (double value)
+\begin{DoxyCompactList}\small\item\em Solves the activation function. The activation function is the Logistic Sigmoid. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_neural_layer_ae8af5f9b958cab1e6274f06053a1907d}{derivative\+Activation\+Function}} (double value)
+\begin{DoxyCompactList}\small\item\em Solves the derivative of the activation function. The activation function is the Logistic Sigmoid. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_neural_layer_a5adf1b3b39b15027d40458bf29dd77a9}\label{classglib_1_1_neural_layer_a5adf1b3b39b15027d40458bf29dd77a9}} 
+void {\bfseries run} ()
+\begin{DoxyCompactList}\small\item\em Using the current activations, weights, and bias, solves for the activations for the next layer. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_neural_layer_a2e2deffc28acdb75e4308330925b0c76}{size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the amount of neurons in the layer. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_neural_layer_a78c1750f47380aaf66fd01b849c5cee6}\label{classglib_1_1_neural_layer_a78c1750f47380aaf66fd01b849c5cee6}} 
+void {\bfseries reset\+Weights\+Bias} ()
+\begin{DoxyCompactList}\small\item\em Resets all weights and bias values to 0. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_neural_layer_ad59d3f18ab67833880391dfdaaf4fe7e}{set\+Bias\+Value}} (int index, double value)
+\begin{DoxyCompactList}\small\item\em Sets the Bias Value for the specified index. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_neural_layer_ac3a7e226fc04d08c553d40834912838f}{get\+Bias\+Size}} ()
+\begin{DoxyCompactList}\small\item\em Gets the amount of bias values. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_xml_node}{Xml\+Node}} $\ast$ \mbox{\hyperlink{classglib_1_1_neural_layer_a25acf52646c1e11e925f289d284032c1}{export\+Test\+Information}} (int count)
+\begin{DoxyCompactList}\small\item\em An internal tool for exporting \mbox{\hyperlink{classglib_1_1_network}{Network}} information. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_neuron}{Neuron}} \& \mbox{\hyperlink{classglib_1_1_neural_layer_aa53be4e2ce87a719c1fd0866e9b51c25}{operator\mbox{[}$\,$\mbox{]}}} (int index)
+\begin{DoxyCompactList}\small\item\em Returns a \mbox{\hyperlink{classglib_1_1_neuron}{Neuron}}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_neural_layer_ac1c650d2a5940a7bae02c51a6647a1a1}\label{classglib_1_1_neural_layer_ac1c650d2a5940a7bae02c51a6647a1a1}} 
+\index{glib::NeuralLayer@{glib::NeuralLayer}!NeuralLayer@{NeuralLayer}}
+\index{NeuralLayer@{NeuralLayer}!glib::NeuralLayer@{glib::NeuralLayer}}
+\doxysubsubsection{\texorpdfstring{NeuralLayer()}{NeuralLayer()}}
+{\footnotesize\ttfamily glib\+::\+Neural\+Layer\+::\+Neural\+Layer (\begin{DoxyParamCaption}\item[{int}]{size,  }\item[{\mbox{\hyperlink{classglib_1_1_neural_layer}{Neural\+Layer}} $\ast$}]{next\+Layer,  }\item[{\mbox{\hyperlink{classglib_1_1_neural_layer}{Neural\+Layer}} $\ast$}]{previous\+Layer }\end{DoxyParamCaption})}
+
+
+
+Construct a new Neural Layer object Consists of Neurons and Bias values. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em size} & The amount of neurons in the layer \\
+\hline
+{\em next\+Layer} & The next layer it is connected to. \\
+\hline
+{\em previous\+Layer} & The previous layer connecting to this layer. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_neural_layer_a49c5b599eb9fcff365ec5716a4e512a5}\label{classglib_1_1_neural_layer_a49c5b599eb9fcff365ec5716a4e512a5}} 
+\index{glib::NeuralLayer@{glib::NeuralLayer}!activationFunction@{activationFunction}}
+\index{activationFunction@{activationFunction}!glib::NeuralLayer@{glib::NeuralLayer}}
+\doxysubsubsection{\texorpdfstring{activationFunction()}{activationFunction()}}
+{\footnotesize\ttfamily double glib\+::\+Neural\+Layer\+::activation\+Function (\begin{DoxyParamCaption}\item[{double}]{value }\end{DoxyParamCaption})}
+
+
+
+Solves the activation function. The activation function is the Logistic Sigmoid. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neural_layer_ae8af5f9b958cab1e6274f06053a1907d}\label{classglib_1_1_neural_layer_ae8af5f9b958cab1e6274f06053a1907d}} 
+\index{glib::NeuralLayer@{glib::NeuralLayer}!derivativeActivationFunction@{derivativeActivationFunction}}
+\index{derivativeActivationFunction@{derivativeActivationFunction}!glib::NeuralLayer@{glib::NeuralLayer}}
+\doxysubsubsection{\texorpdfstring{derivativeActivationFunction()}{derivativeActivationFunction()}}
+{\footnotesize\ttfamily double glib\+::\+Neural\+Layer\+::derivative\+Activation\+Function (\begin{DoxyParamCaption}\item[{double}]{value }\end{DoxyParamCaption})}
+
+
+
+Solves the derivative of the activation function. The activation function is the Logistic Sigmoid. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neural_layer_a25acf52646c1e11e925f289d284032c1}\label{classglib_1_1_neural_layer_a25acf52646c1e11e925f289d284032c1}} 
+\index{glib::NeuralLayer@{glib::NeuralLayer}!exportTestInformation@{exportTestInformation}}
+\index{exportTestInformation@{exportTestInformation}!glib::NeuralLayer@{glib::NeuralLayer}}
+\doxysubsubsection{\texorpdfstring{exportTestInformation()}{exportTestInformation()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_xml_node}{Xml\+Node}} $\ast$ glib\+::\+Neural\+Layer\+::export\+Test\+Information (\begin{DoxyParamCaption}\item[{int}]{count }\end{DoxyParamCaption})}
+
+
+
+An internal tool for exporting \mbox{\hyperlink{classglib_1_1_network}{Network}} information. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em count} & The neural layer number I guess? \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Xml\+Node$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neural_layer_ac3a7e226fc04d08c553d40834912838f}\label{classglib_1_1_neural_layer_ac3a7e226fc04d08c553d40834912838f}} 
+\index{glib::NeuralLayer@{glib::NeuralLayer}!getBiasSize@{getBiasSize}}
+\index{getBiasSize@{getBiasSize}!glib::NeuralLayer@{glib::NeuralLayer}}
+\doxysubsubsection{\texorpdfstring{getBiasSize()}{getBiasSize()}}
+{\footnotesize\ttfamily int glib\+::\+Neural\+Layer\+::get\+Bias\+Size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the amount of bias values. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neural_layer_a75fafa615fb01ea4ea505f691eded670}\label{classglib_1_1_neural_layer_a75fafa615fb01ea4ea505f691eded670}} 
+\index{glib::NeuralLayer@{glib::NeuralLayer}!getListOfNeurons@{getListOfNeurons}}
+\index{getListOfNeurons@{getListOfNeurons}!glib::NeuralLayer@{glib::NeuralLayer}}
+\doxysubsubsection{\texorpdfstring{getListOfNeurons()}{getListOfNeurons()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_neuron}{Neuron}} $>$ \& glib\+::\+Neural\+Layer\+::get\+List\+Of\+Neurons (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the List Of Neurons. 
+
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$\+Neuron$>$\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neural_layer_a9505079a44282540285f4054558d54ef}\label{classglib_1_1_neural_layer_a9505079a44282540285f4054558d54ef}} 
+\index{glib::NeuralLayer@{glib::NeuralLayer}!getNeuron@{getNeuron}}
+\index{getNeuron@{getNeuron}!glib::NeuralLayer@{glib::NeuralLayer}}
+\doxysubsubsection{\texorpdfstring{getNeuron()}{getNeuron()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_neuron}{Neuron}} \& glib\+::\+Neural\+Layer\+::get\+Neuron (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets a \mbox{\hyperlink{classglib_1_1_neuron}{Neuron}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_neuron}{Neuron}}\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neural_layer_ae342d20832f5aeb7240f436cdafd6a04}\label{classglib_1_1_neural_layer_ae342d20832f5aeb7240f436cdafd6a04}} 
+\index{glib::NeuralLayer@{glib::NeuralLayer}!getNeuronActivation@{getNeuronActivation}}
+\index{getNeuronActivation@{getNeuronActivation}!glib::NeuralLayer@{glib::NeuralLayer}}
+\doxysubsubsection{\texorpdfstring{getNeuronActivation()}{getNeuronActivation()}}
+{\footnotesize\ttfamily double glib\+::\+Neural\+Layer\+::get\+Neuron\+Activation (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Get the \mbox{\hyperlink{classglib_1_1_neuron}{Neuron}} Activation at the specified index. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neural_layer_ac8f03669f01a79b36bb6857c550cbc56}\label{classglib_1_1_neural_layer_ac8f03669f01a79b36bb6857c550cbc56}} 
+\index{glib::NeuralLayer@{glib::NeuralLayer}!getNextLayer@{getNextLayer}}
+\index{getNextLayer@{getNextLayer}!glib::NeuralLayer@{glib::NeuralLayer}}
+\doxysubsubsection{\texorpdfstring{getNextLayer()}{getNextLayer()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_neural_layer}{Neural\+Layer}} $\ast$ glib\+::\+Neural\+Layer\+::get\+Next\+Layer (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Next Layer If there is no next layer, it is assumed to be the last layer and returns nullptr. 
+
+\begin{DoxyReturn}{Returns}
+Neural\+Layer$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neural_layer_a77ef5e7c3706a85c2db2380bd6c197aa}\label{classglib_1_1_neural_layer_a77ef5e7c3706a85c2db2380bd6c197aa}} 
+\index{glib::NeuralLayer@{glib::NeuralLayer}!getPreviousLayer@{getPreviousLayer}}
+\index{getPreviousLayer@{getPreviousLayer}!glib::NeuralLayer@{glib::NeuralLayer}}
+\doxysubsubsection{\texorpdfstring{getPreviousLayer()}{getPreviousLayer()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_neural_layer}{Neural\+Layer}} $\ast$ glib\+::\+Neural\+Layer\+::get\+Previous\+Layer (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Previous Layer If there is no previous layer, it is assumed to be the first layer and returns nullptr. 
+
+\begin{DoxyReturn}{Returns}
+Neural\+Layer$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neural_layer_aa53be4e2ce87a719c1fd0866e9b51c25}\label{classglib_1_1_neural_layer_aa53be4e2ce87a719c1fd0866e9b51c25}} 
+\index{glib::NeuralLayer@{glib::NeuralLayer}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!glib::NeuralLayer@{glib::NeuralLayer}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_neuron}{Neuron}} \& glib\+::\+Neural\+Layer\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Returns a \mbox{\hyperlink{classglib_1_1_neuron}{Neuron}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_neuron}{Neuron}}\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neural_layer_ad59d3f18ab67833880391dfdaaf4fe7e}\label{classglib_1_1_neural_layer_ad59d3f18ab67833880391dfdaaf4fe7e}} 
+\index{glib::NeuralLayer@{glib::NeuralLayer}!setBiasValue@{setBiasValue}}
+\index{setBiasValue@{setBiasValue}!glib::NeuralLayer@{glib::NeuralLayer}}
+\doxysubsubsection{\texorpdfstring{setBiasValue()}{setBiasValue()}}
+{\footnotesize\ttfamily void glib\+::\+Neural\+Layer\+::set\+Bias\+Value (\begin{DoxyParamCaption}\item[{int}]{index,  }\item[{double}]{value }\end{DoxyParamCaption})}
+
+
+
+Sets the Bias Value for the specified index. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+{\em value} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_neural_layer_a31f0da0ce5ac027007adeed9a5661652}\label{classglib_1_1_neural_layer_a31f0da0ce5ac027007adeed9a5661652}} 
+\index{glib::NeuralLayer@{glib::NeuralLayer}!setNeuronActivation@{setNeuronActivation}}
+\index{setNeuronActivation@{setNeuronActivation}!glib::NeuralLayer@{glib::NeuralLayer}}
+\doxysubsubsection{\texorpdfstring{setNeuronActivation()}{setNeuronActivation()}}
+{\footnotesize\ttfamily void glib\+::\+Neural\+Layer\+::set\+Neuron\+Activation (\begin{DoxyParamCaption}\item[{int}]{index,  }\item[{float}]{activation }\end{DoxyParamCaption})}
+
+
+
+Set the \mbox{\hyperlink{classglib_1_1_neuron}{Neuron}} Activation at the specified index. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+{\em activation} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_neural_layer_a5dac06e89e999df26f40c7502bb20bb8}\label{classglib_1_1_neural_layer_a5dac06e89e999df26f40c7502bb20bb8}} 
+\index{glib::NeuralLayer@{glib::NeuralLayer}!setNextLayer@{setNextLayer}}
+\index{setNextLayer@{setNextLayer}!glib::NeuralLayer@{glib::NeuralLayer}}
+\doxysubsubsection{\texorpdfstring{setNextLayer()}{setNextLayer()}}
+{\footnotesize\ttfamily void glib\+::\+Neural\+Layer\+::set\+Next\+Layer (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_neural_layer}{Neural\+Layer}} $\ast$}]{n }\end{DoxyParamCaption})}
+
+
+
+Sets the Next Layer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_neural_layer_a325a9dc95ac0aaf09e99b327282a7870}\label{classglib_1_1_neural_layer_a325a9dc95ac0aaf09e99b327282a7870}} 
+\index{glib::NeuralLayer@{glib::NeuralLayer}!setPreviousLayer@{setPreviousLayer}}
+\index{setPreviousLayer@{setPreviousLayer}!glib::NeuralLayer@{glib::NeuralLayer}}
+\doxysubsubsection{\texorpdfstring{setPreviousLayer()}{setPreviousLayer()}}
+{\footnotesize\ttfamily void glib\+::\+Neural\+Layer\+::set\+Previous\+Layer (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_neural_layer}{Neural\+Layer}} $\ast$}]{n }\end{DoxyParamCaption})}
+
+
+
+Sets the Previous Layer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_neural_layer_a2e2deffc28acdb75e4308330925b0c76}\label{classglib_1_1_neural_layer_a2e2deffc28acdb75e4308330925b0c76}} 
+\index{glib::NeuralLayer@{glib::NeuralLayer}!size@{size}}
+\index{size@{size}!glib::NeuralLayer@{glib::NeuralLayer}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily int glib\+::\+Neural\+Layer\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the amount of neurons in the layer. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Neural\+Network.\+h\end{DoxyCompactItemize}

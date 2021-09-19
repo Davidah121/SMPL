@@ -1,0 +1,110 @@
+\hypertarget{classglib_1_1_class_master}{}\doxysection{glib\+::Class\+Master Class Reference}
+\label{classglib_1_1_class_master}\index{glib::ClassMaster@{glib::ClassMaster}}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_class_master_1_1_invalid_class_name}{Invalid\+Class\+Name}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static bool \mbox{\hyperlink{classglib_1_1_class_master_a13f983758d2064d8950969fad22e5d23}{add\+Class}} (const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$k)
+\begin{DoxyCompactList}\small\item\em Adds a class to the master list. Should not be used outside of \mbox{\hyperlink{classglib_1_1_class}{Class}} object. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_class_master_ab789067dce8035dd651b2d913e5ab4c3}{remove\+Class}} (const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$k)
+\begin{DoxyCompactList}\small\item\em Removes a class from the master list. Should not be used outside of \mbox{\hyperlink{classglib_1_1_class}{Class}} object. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_class_master_ae1302b22d79680e2e7cb890524dacdc3}{get\+Size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the total number of classes register into the master class list. \end{DoxyCompactList}\item 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_class_master_a841cf832eeadb56792a6ae2eb868138e}{find\+Class}} (int i)
+\begin{DoxyCompactList}\small\item\em Returns the class with the specified index in the master class list. \end{DoxyCompactList}\item 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_class_master_ae2b7a43a910325cf129e73a1462b0a2f}{find\+Class}} (std\+::string class\+Name)
+\begin{DoxyCompactList}\small\item\em Returns the class with the specified name in the master class list. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_class_master_a13f983758d2064d8950969fad22e5d23}\label{classglib_1_1_class_master_a13f983758d2064d8950969fad22e5d23}} 
+\index{glib::ClassMaster@{glib::ClassMaster}!addClass@{addClass}}
+\index{addClass@{addClass}!glib::ClassMaster@{glib::ClassMaster}}
+\doxysubsubsection{\texorpdfstring{addClass()}{addClass()}}
+{\footnotesize\ttfamily static bool glib\+::\+Class\+Master\+::add\+Class (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$}]{k }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Adds a class to the master list. Should not be used outside of \mbox{\hyperlink{classglib_1_1_class}{Class}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em k} & The class pointer to add. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool Returns if it was successfully added. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_class_master_a841cf832eeadb56792a6ae2eb868138e}\label{classglib_1_1_class_master_a841cf832eeadb56792a6ae2eb868138e}} 
+\index{glib::ClassMaster@{glib::ClassMaster}!findClass@{findClass}}
+\index{findClass@{findClass}!glib::ClassMaster@{glib::ClassMaster}}
+\doxysubsubsection{\texorpdfstring{findClass()}{findClass()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Class\+Master\+::find\+Class (\begin{DoxyParamCaption}\item[{int}]{i }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the class with the specified index in the master class list. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em i} & The index of the list to check. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Class$\ast$ returns a valid class pointer if index was valid. Otherwise, it returns a nullptr. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_class_master_ae2b7a43a910325cf129e73a1462b0a2f}\label{classglib_1_1_class_master_ae2b7a43a910325cf129e73a1462b0a2f}} 
+\index{glib::ClassMaster@{glib::ClassMaster}!findClass@{findClass}}
+\index{findClass@{findClass}!glib::ClassMaster@{glib::ClassMaster}}
+\doxysubsubsection{\texorpdfstring{findClass()}{findClass()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Class\+Master\+::find\+Class (\begin{DoxyParamCaption}\item[{std\+::string}]{class\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the class with the specified name in the master class list. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em class\+Name} & The name of the class to search for. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Class$\ast$ returns a valid class pointer if successful. Otherwise, it returns a nullptr. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_class_master_ae1302b22d79680e2e7cb890524dacdc3}\label{classglib_1_1_class_master_ae1302b22d79680e2e7cb890524dacdc3}} 
+\index{glib::ClassMaster@{glib::ClassMaster}!getSize@{getSize}}
+\index{getSize@{getSize}!glib::ClassMaster@{glib::ClassMaster}}
+\doxysubsubsection{\texorpdfstring{getSize()}{getSize()}}
+{\footnotesize\ttfamily static int glib\+::\+Class\+Master\+::get\+Size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the total number of classes register into the master class list. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_class_master_ab789067dce8035dd651b2d913e5ab4c3}\label{classglib_1_1_class_master_ab789067dce8035dd651b2d913e5ab4c3}} 
+\index{glib::ClassMaster@{glib::ClassMaster}!removeClass@{removeClass}}
+\index{removeClass@{removeClass}!glib::ClassMaster@{glib::ClassMaster}}
+\doxysubsubsection{\texorpdfstring{removeClass()}{removeClass()}}
+{\footnotesize\ttfamily static void glib\+::\+Class\+Master\+::remove\+Class (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$}]{k }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Removes a class from the master list. Should not be used outside of \mbox{\hyperlink{classglib_1_1_class}{Class}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em k} & The class pointer to remove. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Class.\+h\end{DoxyCompactItemize}

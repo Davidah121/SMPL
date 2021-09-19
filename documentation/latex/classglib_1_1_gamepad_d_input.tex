@@ -1,0 +1,310 @@
+\hypertarget{classglib_1_1_gamepad_d_input}{}\doxysection{glib\+::Gamepad\+DInput Class Reference}
+\label{classglib_1_1_gamepad_d_input}\index{glib::GamepadDInput@{glib::GamepadDInput}}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static bool \mbox{\hyperlink{classglib_1_1_gamepad_d_input_a6c082294e5f17b8f4e7869aa469cf3c3}{init}} (HWND window\+Handle, bool Foreground, bool Exclusive)
+\begin{DoxyCompactList}\small\item\em Initializes the program for Direct\+Input. This library is exclusive to windows and requires the Windows SDK. Headers used are Windows.\+h, dinput.\+h Libraries used are dinput8.\+lib and dxguid.\+h They are linked using \#pragma comment() but may need to be linked manually. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_ad1631ccf45a4926b7c556aad7c360a4e}\label{classglib_1_1_gamepad_d_input_ad1631ccf45a4926b7c556aad7c360a4e}} 
+static void {\bfseries dispose} ()
+\begin{DoxyCompactList}\small\item\em Disposes all memory used and releases the devices. Must be called when the program is done with Direct\+Input. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_gamepad_d_input_a48f2c3e1d2ff63c883927934f547e906}{get\+Size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the amount of devices that can be used. \end{DoxyCompactList}\item 
+static GUID \mbox{\hyperlink{classglib_1_1_gamepad_d_input_ae665ebd556ad0c810e7130e26f1d334b}{get\+GUID}} (int id)
+\begin{DoxyCompactList}\small\item\em Returns the GUID of the specified device. \end{DoxyCompactList}\item 
+static LPCDIDEVICEINSTANCE \mbox{\hyperlink{classglib_1_1_gamepad_d_input_a6ab5f7e184d13ab11906260c4e799a2f}{get\+Device\+Info}} (int id)
+\begin{DoxyCompactList}\small\item\em Gets a structure containing information about the device. \end{DoxyCompactList}\item 
+static DIJOYSTATE \mbox{\hyperlink{classglib_1_1_gamepad_d_input_a95b610268bbeceeb722d2cb37b95d744}{get\+Joystick\+Values}} (int id)
+\begin{DoxyCompactList}\small\item\em Gets a structure containing joystick information for the device. This contains the currently pressed buttons, joystick values, and dpad buttons. Can be used directly if needed. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_ae4aaf68b838668edc4eba12fbc381da0}\label{classglib_1_1_gamepad_d_input_ae4aaf68b838668edc4eba12fbc381da0}} 
+static void {\bfseries update} ()
+\begin{DoxyCompactList}\small\item\em Obtains updated information for all of the connected joysticks. This is the prefered method to obtain information for joysticks. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_gamepad_d_input_a56f349962c3be014b783271709197e7b}{is\+Connected}} (int id)
+\begin{DoxyCompactList}\small\item\em Returns if the specified joystick is connected. \mbox{\hyperlink{classglib_1_1_gamepad_d_input_ae4aaf68b838668edc4eba12fbc381da0}{update()}} should be called before. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_gamepad_d_input_aadf2dcc838f28a339079ca0e73d96c83}{get\+Button\+Pressed}} (int id, int button)
+\begin{DoxyCompactList}\small\item\em Returns if the specified button of the joystick has just been pressed. \mbox{\hyperlink{classglib_1_1_gamepad_d_input_ae4aaf68b838668edc4eba12fbc381da0}{update()}} should be called before. Last until the next update is called. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_gamepad_d_input_a80432523ef791ec67146b2f12fa3ea7e}{get\+Button\+Down}} (int id, int button)
+\begin{DoxyCompactList}\small\item\em Returns if the specified button of the joystick is being held down. \mbox{\hyperlink{classglib_1_1_gamepad_d_input_ae4aaf68b838668edc4eba12fbc381da0}{update()}} should be called before. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_gamepad_d_input_a1b2f0d945817f1bab3608bcf5eb93cd1}{get\+Button\+Up}} (int id, int button)
+\begin{DoxyCompactList}\small\item\em Returns if the specified button of the joystick has just been released. \mbox{\hyperlink{classglib_1_1_gamepad_d_input_ae4aaf68b838668edc4eba12fbc381da0}{update()}} should be called before. Last until the next update is called. \end{DoxyCompactList}\item 
+static float \mbox{\hyperlink{classglib_1_1_gamepad_d_input_af23a8b1e49ec3f103d8f9b14c2a7d10e}{get\+Axis\+Value}} (int id, int axis)
+\begin{DoxyCompactList}\small\item\em Returns the value of the specified axis on the joystick. \mbox{\hyperlink{classglib_1_1_gamepad_d_input_ae4aaf68b838668edc4eba12fbc381da0}{update()}} should be called before. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a8b6db273cb946d9f42c61a498fc5f224}\label{classglib_1_1_gamepad_d_input_a8b6db273cb946d9f42c61a498fc5f224}} 
+static void {\bfseries refind\+Devices} ()
+\begin{DoxyCompactList}\small\item\em Determines which devices are connected. Use this to find new devices and remove devices that have been disconnected. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a89ab4f804e87b9286bd17c08cc75b631}\label{classglib_1_1_gamepad_d_input_a89ab4f804e87b9286bd17c08cc75b631}} 
+static const int {\bfseries A\+\_\+\+BUTTON} = 1
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a0b00b4410b1fb80618f043c1a6453fd3}\label{classglib_1_1_gamepad_d_input_a0b00b4410b1fb80618f043c1a6453fd3}} 
+static const int {\bfseries B\+\_\+\+BUTTON} = 2
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a37648dee1b97e7701974a2fe05b244ef}\label{classglib_1_1_gamepad_d_input_a37648dee1b97e7701974a2fe05b244ef}} 
+static const int {\bfseries X\+\_\+\+BUTTON} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a0cc4950e3bc535a8a99ee13662bdb1a5}\label{classglib_1_1_gamepad_d_input_a0cc4950e3bc535a8a99ee13662bdb1a5}} 
+static const int {\bfseries Y\+\_\+\+BUTTON} = 3
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a6867fb66aac1fb1ed89de7a583e7bd5d}\label{classglib_1_1_gamepad_d_input_a6867fb66aac1fb1ed89de7a583e7bd5d}} 
+static const int {\bfseries DPAD\+\_\+\+UP\+\_\+\+BUTTON} = -\/4
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a1d97f7f4f1d296cfa02832668af347ed}\label{classglib_1_1_gamepad_d_input_a1d97f7f4f1d296cfa02832668af347ed}} 
+static const int {\bfseries DPAD\+\_\+\+DOWN\+\_\+\+BUTTON} = -\/5
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a32bac3bfe217b494ea4f5999f4febae3}\label{classglib_1_1_gamepad_d_input_a32bac3bfe217b494ea4f5999f4febae3}} 
+static const int {\bfseries DPAD\+\_\+\+LEFT\+\_\+\+BUTTON} = -\/6
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_acd65dd15a4c1dc6d09a1ef0d76f35fe1}\label{classglib_1_1_gamepad_d_input_acd65dd15a4c1dc6d09a1ef0d76f35fe1}} 
+static const int {\bfseries DPAD\+\_\+\+RIGHT\+\_\+\+BUTTON} = -\/7
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a6a97d056f4efa63a4fc369ad7dfac7fb}\label{classglib_1_1_gamepad_d_input_a6a97d056f4efa63a4fc369ad7dfac7fb}} 
+static const int {\bfseries LB\+\_\+\+BUTTON} = 5
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_aaae435615f46c80acb01cf91b638fc20}\label{classglib_1_1_gamepad_d_input_aaae435615f46c80acb01cf91b638fc20}} 
+static const int {\bfseries RB\+\_\+\+BUTTON} = 6
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_acdad3fb9763a5f95af189d4edf5fd9b4}\label{classglib_1_1_gamepad_d_input_acdad3fb9763a5f95af189d4edf5fd9b4}} 
+static const int {\bfseries LEFT\+\_\+\+STICK\+\_\+\+BUTTON} = 11
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a05dcefc7b18ff4d06b96bc160d07a4a0}\label{classglib_1_1_gamepad_d_input_a05dcefc7b18ff4d06b96bc160d07a4a0}} 
+static const int {\bfseries RIGHT\+\_\+\+STICK\+\_\+\+BUTTON} = 12
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a06648f08fa2755c43f1f2459e37fd131}\label{classglib_1_1_gamepad_d_input_a06648f08fa2755c43f1f2459e37fd131}} 
+static const int {\bfseries LEFT\+\_\+\+TRIGGER} = 7
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_ab8a8a6f6538cf04fcd2e513af4d95df6}\label{classglib_1_1_gamepad_d_input_ab8a8a6f6538cf04fcd2e513af4d95df6}} 
+static const int {\bfseries RIGHT\+\_\+\+TRIGGER} = 8
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a59ee87429b3c9f05c9eaa369ea873e34}\label{classglib_1_1_gamepad_d_input_a59ee87429b3c9f05c9eaa369ea873e34}} 
+static const int {\bfseries START\+\_\+\+BUTTON} = 9
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a3ab22288cb57780a95bc4aca548ef476}\label{classglib_1_1_gamepad_d_input_a3ab22288cb57780a95bc4aca548ef476}} 
+static const int {\bfseries BACK\+\_\+\+BUTTON} = 10
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_ae47bbaa2c83a8ab4192c9ee4308457da}\label{classglib_1_1_gamepad_d_input_ae47bbaa2c83a8ab4192c9ee4308457da}} 
+static const int {\bfseries LEFT\+\_\+\+X\+\_\+\+AXIS} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a0a748ffc00c2739ef5cf02026697599f}\label{classglib_1_1_gamepad_d_input_a0a748ffc00c2739ef5cf02026697599f}} 
+static const int {\bfseries LEFT\+\_\+\+Y\+\_\+\+AXIS} = 1
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a342eefc1ae74a33f3d55c2c8939561ed}\label{classglib_1_1_gamepad_d_input_a342eefc1ae74a33f3d55c2c8939561ed}} 
+static const int {\bfseries RIGHT\+\_\+\+X\+\_\+\+AXIS} = 2
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a442f6aa4c78f3e4655ade3e8e85e03be}\label{classglib_1_1_gamepad_d_input_a442f6aa4c78f3e4655ade3e8e85e03be}} 
+static const int {\bfseries RIGHT\+\_\+\+Y\+\_\+\+AXIS} = 3
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_af08dae80bda44d99beddcac1404bd2c8}\label{classglib_1_1_gamepad_d_input_af08dae80bda44d99beddcac1404bd2c8}} 
+static const int {\bfseries EXTRA\+\_\+\+AXIS1} = 6
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_afa2d6885976fa1c97682cb6f76122e4c}\label{classglib_1_1_gamepad_d_input_afa2d6885976fa1c97682cb6f76122e4c}} 
+static const int {\bfseries EXTRA\+\_\+\+AXIS2} = 7
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_ac88342d03f7918af101fa5aa04cae076}\label{classglib_1_1_gamepad_d_input_ac88342d03f7918af101fa5aa04cae076}} 
+static const int {\bfseries SLIDER1} = 8
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a9449cd625127dc2ee287f89797170895}\label{classglib_1_1_gamepad_d_input_a9449cd625127dc2ee287f89797170895}} 
+static const int {\bfseries SLIDER2} = 9
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a83a221d7b0ed8bbb63b4724d709ca08f}\label{classglib_1_1_gamepad_d_input_a83a221d7b0ed8bbb63b4724d709ca08f}} 
+static const int {\bfseries AXIS\+\_\+\+DIVIDE\+\_\+\+VALUE} = 32767
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a527a66f62bdcce864617d9ee7cb317e8}\label{classglib_1_1_gamepad_d_input_a527a66f62bdcce864617d9ee7cb317e8}} 
+static const int {\bfseries TRIGGER\+\_\+\+DIVIDE\+\_\+\+VALUE} = 255
+\item 
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a34227d1d20b940c3646b3c956a2cd1fc}\label{classglib_1_1_gamepad_d_input_a34227d1d20b940c3646b3c956a2cd1fc}} 
+static int {\bfseries DEAD\+\_\+\+ZONE}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_af23a8b1e49ec3f103d8f9b14c2a7d10e}\label{classglib_1_1_gamepad_d_input_af23a8b1e49ec3f103d8f9b14c2a7d10e}} 
+\index{glib::GamepadDInput@{glib::GamepadDInput}!getAxisValue@{getAxisValue}}
+\index{getAxisValue@{getAxisValue}!glib::GamepadDInput@{glib::GamepadDInput}}
+\doxysubsubsection{\texorpdfstring{getAxisValue()}{getAxisValue()}}
+{\footnotesize\ttfamily static float glib\+::\+Gamepad\+DInput\+::get\+Axis\+Value (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{int}]{axis }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the value of the specified axis on the joystick. \mbox{\hyperlink{classglib_1_1_gamepad_d_input_ae4aaf68b838668edc4eba12fbc381da0}{update()}} should be called before. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The index of the device in the list. \\
+\hline
+{\em axis} & The id of the axis. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+float 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a80432523ef791ec67146b2f12fa3ea7e}\label{classglib_1_1_gamepad_d_input_a80432523ef791ec67146b2f12fa3ea7e}} 
+\index{glib::GamepadDInput@{glib::GamepadDInput}!getButtonDown@{getButtonDown}}
+\index{getButtonDown@{getButtonDown}!glib::GamepadDInput@{glib::GamepadDInput}}
+\doxysubsubsection{\texorpdfstring{getButtonDown()}{getButtonDown()}}
+{\footnotesize\ttfamily static bool glib\+::\+Gamepad\+DInput\+::get\+Button\+Down (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{int}]{button }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns if the specified button of the joystick is being held down. \mbox{\hyperlink{classglib_1_1_gamepad_d_input_ae4aaf68b838668edc4eba12fbc381da0}{update()}} should be called before. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The index of the device in the list. \\
+\hline
+{\em button} & The id of the button. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_aadf2dcc838f28a339079ca0e73d96c83}\label{classglib_1_1_gamepad_d_input_aadf2dcc838f28a339079ca0e73d96c83}} 
+\index{glib::GamepadDInput@{glib::GamepadDInput}!getButtonPressed@{getButtonPressed}}
+\index{getButtonPressed@{getButtonPressed}!glib::GamepadDInput@{glib::GamepadDInput}}
+\doxysubsubsection{\texorpdfstring{getButtonPressed()}{getButtonPressed()}}
+{\footnotesize\ttfamily static bool glib\+::\+Gamepad\+DInput\+::get\+Button\+Pressed (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{int}]{button }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns if the specified button of the joystick has just been pressed. \mbox{\hyperlink{classglib_1_1_gamepad_d_input_ae4aaf68b838668edc4eba12fbc381da0}{update()}} should be called before. Last until the next update is called. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The index of the device in the list. \\
+\hline
+{\em button} & The id of the button. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a1b2f0d945817f1bab3608bcf5eb93cd1}\label{classglib_1_1_gamepad_d_input_a1b2f0d945817f1bab3608bcf5eb93cd1}} 
+\index{glib::GamepadDInput@{glib::GamepadDInput}!getButtonUp@{getButtonUp}}
+\index{getButtonUp@{getButtonUp}!glib::GamepadDInput@{glib::GamepadDInput}}
+\doxysubsubsection{\texorpdfstring{getButtonUp()}{getButtonUp()}}
+{\footnotesize\ttfamily static bool glib\+::\+Gamepad\+DInput\+::get\+Button\+Up (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{int}]{button }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns if the specified button of the joystick has just been released. \mbox{\hyperlink{classglib_1_1_gamepad_d_input_ae4aaf68b838668edc4eba12fbc381da0}{update()}} should be called before. Last until the next update is called. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The index of the device in the list. \\
+\hline
+{\em button} & The id of the button. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a6ab5f7e184d13ab11906260c4e799a2f}\label{classglib_1_1_gamepad_d_input_a6ab5f7e184d13ab11906260c4e799a2f}} 
+\index{glib::GamepadDInput@{glib::GamepadDInput}!getDeviceInfo@{getDeviceInfo}}
+\index{getDeviceInfo@{getDeviceInfo}!glib::GamepadDInput@{glib::GamepadDInput}}
+\doxysubsubsection{\texorpdfstring{getDeviceInfo()}{getDeviceInfo()}}
+{\footnotesize\ttfamily static LPCDIDEVICEINSTANCE glib\+::\+Gamepad\+DInput\+::get\+Device\+Info (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets a structure containing information about the device. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The index of the device in the list. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+LPCDIDEVICEINSTANCE If successful, returns a valid structure. Otherwise, returns an empty structure. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_ae665ebd556ad0c810e7130e26f1d334b}\label{classglib_1_1_gamepad_d_input_ae665ebd556ad0c810e7130e26f1d334b}} 
+\index{glib::GamepadDInput@{glib::GamepadDInput}!getGUID@{getGUID}}
+\index{getGUID@{getGUID}!glib::GamepadDInput@{glib::GamepadDInput}}
+\doxysubsubsection{\texorpdfstring{getGUID()}{getGUID()}}
+{\footnotesize\ttfamily static GUID glib\+::\+Gamepad\+DInput\+::get\+GUID (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the GUID of the specified device. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & This refers to the index in the internal list of devices and not the GUID. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+GUID 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a95b610268bbeceeb722d2cb37b95d744}\label{classglib_1_1_gamepad_d_input_a95b610268bbeceeb722d2cb37b95d744}} 
+\index{glib::GamepadDInput@{glib::GamepadDInput}!getJoystickValues@{getJoystickValues}}
+\index{getJoystickValues@{getJoystickValues}!glib::GamepadDInput@{glib::GamepadDInput}}
+\doxysubsubsection{\texorpdfstring{getJoystickValues()}{getJoystickValues()}}
+{\footnotesize\ttfamily static DIJOYSTATE glib\+::\+Gamepad\+DInput\+::get\+Joystick\+Values (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets a structure containing joystick information for the device. This contains the currently pressed buttons, joystick values, and dpad buttons. Can be used directly if needed. 
+
+A reconnection is attempted if failed the first time. If the second attempt fails, the device is considered disconnected. 
+\begin{DoxyParams}{Parameters}
+{\em id} & The index of the device in the list. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+DIJOYSTATE If successful, returns a valid structure. Otherwise, returns an empty structure. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a48f2c3e1d2ff63c883927934f547e906}\label{classglib_1_1_gamepad_d_input_a48f2c3e1d2ff63c883927934f547e906}} 
+\index{glib::GamepadDInput@{glib::GamepadDInput}!getSize@{getSize}}
+\index{getSize@{getSize}!glib::GamepadDInput@{glib::GamepadDInput}}
+\doxysubsubsection{\texorpdfstring{getSize()}{getSize()}}
+{\footnotesize\ttfamily static int glib\+::\+Gamepad\+DInput\+::get\+Size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the amount of devices that can be used. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a6c082294e5f17b8f4e7869aa469cf3c3}\label{classglib_1_1_gamepad_d_input_a6c082294e5f17b8f4e7869aa469cf3c3}} 
+\index{glib::GamepadDInput@{glib::GamepadDInput}!init@{init}}
+\index{init@{init}!glib::GamepadDInput@{glib::GamepadDInput}}
+\doxysubsubsection{\texorpdfstring{init()}{init()}}
+{\footnotesize\ttfamily static bool glib\+::\+Gamepad\+DInput\+::init (\begin{DoxyParamCaption}\item[{HWND}]{window\+Handle,  }\item[{bool}]{Foreground,  }\item[{bool}]{Exclusive }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Initializes the program for Direct\+Input. This library is exclusive to windows and requires the Windows SDK. Headers used are Windows.\+h, dinput.\+h Libraries used are dinput8.\+lib and dxguid.\+h They are linked using \#pragma comment() but may need to be linked manually. 
+
+Note that XInput devices will not appear and should be accessed from \mbox{\hyperlink{classglib_1_1_gamepad_x_input}{Gamepad\+XInput}}. Note that the constants are based on a Logitech F310 in Direct\+Input Mode Must be disposed at the end of the program. 
+\begin{DoxyParams}{Parameters}
+{\em window\+Handle} & A valid HWND that will receive the input. If the value is NULL or 0, the desktop window is used. \\
+\hline
+{\em Foreground} & Chooses whether to allow input if the window is in the background. Will be false if the desktop window is used. \\
+\hline
+{\em Exclusive} & Chooses whether to have exclusive rights over input. Will be false if the desktop window is used. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gamepad_d_input_a56f349962c3be014b783271709197e7b}\label{classglib_1_1_gamepad_d_input_a56f349962c3be014b783271709197e7b}} 
+\index{glib::GamepadDInput@{glib::GamepadDInput}!isConnected@{isConnected}}
+\index{isConnected@{isConnected}!glib::GamepadDInput@{glib::GamepadDInput}}
+\doxysubsubsection{\texorpdfstring{isConnected()}{isConnected()}}
+{\footnotesize\ttfamily static bool glib\+::\+Gamepad\+DInput\+::is\+Connected (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns if the specified joystick is connected. \mbox{\hyperlink{classglib_1_1_gamepad_d_input_ae4aaf68b838668edc4eba12fbc381da0}{update()}} should be called before. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The index of the device in the list. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Gamepad\+DInput.\+h\end{DoxyCompactItemize}

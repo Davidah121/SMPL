@@ -1,0 +1,611 @@
+\hypertarget{classglib_1_1_gui_scroll_bar}{}\doxysection{glib\+::Gui\+Scroll\+Bar Class Reference}
+\label{classglib_1_1_gui_scroll_bar}\index{glib::GuiScrollBar@{glib::GuiScrollBar}}
+Inheritance diagram for glib\+::Gui\+Scroll\+Bar\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classglib_1_1_gui_scroll_bar}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ad4f62b605f31a2c8c84e2717f31c2340}{Gui\+Scroll\+Bar}} (int startX, int startY, int endX, int endY)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}} object It creates a horizontal or vertical scroll bar. By default, it is vertical. The scrolling area will be sized according to the startX,startY,endX,endY values. The button for scrolling will be based on that. Can use up to 3 Gui\+Rectangle\+Buttons as children. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a37a52f9ddb9269b3edfbd62e9641f312}{Gui\+Scroll\+Bar}} (const \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}} \&other)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}} object from an existing one. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a6050961ffa2f5bb4f812780a213bccc8}{operator=}} (const \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}} \&other)
+\begin{DoxyCompactList}\small\item\em Copies a \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a07f61a831b635937bb456da2bfd8e427}{copy}} (const \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}} \&other)
+\begin{DoxyCompactList}\small\item\em Copies a \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_ab67194c6bc6465f138709aa5b3af18b3}\label{classglib_1_1_gui_scroll_bar_ab67194c6bc6465f138709aa5b3af18b3}} 
+{\bfseries $\sim$\+Gui\+Scroll\+Bar} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_aa9a8d11da83bed92178a6be533f0a272}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a7aa92e3808cd7896ee6a75af5711f341}{update}} ()
+\begin{DoxyCompactList}\small\item\em Updates the \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a27d2cf4c414ea043ab6541a163a67165}{render}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Renders the \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a7e298e5eca02dfd346c25fde46a150f9}{set\+On\+Slide\+Function}} (std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$ func)
+\begin{DoxyCompactList}\small\item\em Sets the on\+Slide\+Function. Occurs when the scroll bar moves from its current position for any reason. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a01046ed685ce3bc428c4239c8ca9f6e2}{set\+Background\+Color}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Sets the Background \mbox{\hyperlink{structglib_1_1_color}{Color}} of the scroll bar. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_af19049b0503f83bf81c15f43f1d7545f}{get\+Background\+Color}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Background \mbox{\hyperlink{structglib_1_1_color}{Color}} of the scroll bar. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ac691b8e90a14e938125be1d38eaee2d5}{set\+Outline\+Color}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Sets the Outline \mbox{\hyperlink{structglib_1_1_color}{Color}} of the scroll bar. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_aeda5b9dc6b4cccd5b926133e2c2d826a}{get\+Outline\+Color}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Outline \mbox{\hyperlink{structglib_1_1_color}{Color}} of the scroll bar. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ab434d6f4ec2500737548e14a0a820433}{set\+StartX}} (int x)
+\begin{DoxyCompactList}\small\item\em Sets the Start X of the scroll bar area. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a3afcc9b7a3ce0c31922b1aec81830889}{get\+StartX}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Start X of the scroll bar area. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ac02154f8e0921c60957ef9979c512125}{set\+StartY}} (int y)
+\begin{DoxyCompactList}\small\item\em Sets the Start Y of the scroll bar area. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ab9d02fd08c098420ee3dae0de059fbc7}{get\+StartY}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Start Y of the scroll bar area. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a94bf220e4a2a2f8799604d2e931a84d0}{set\+EndX}} (int x)
+\begin{DoxyCompactList}\small\item\em Sets the End X of the scroll bar area. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a38508147b8e2943ea83e31d69709b568}{get\+EndX}} ()
+\begin{DoxyCompactList}\small\item\em Gets the End X of the scroll bar area. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a52f5a089fcb67eb099eff697f8e8bb60}{set\+EndY}} (int y)
+\begin{DoxyCompactList}\small\item\em Sets the End Y of the scroll bar area. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a06b993e5bb01eccdefa7df58572f8c29}{get\+EndY}} ()
+\begin{DoxyCompactList}\small\item\em Gets the End Y of the scroll bar area. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a5c850084e4a19165867afec52b726905}{set\+Min\+Width}} (int w)
+\begin{DoxyCompactList}\small\item\em Sets the Minimum width of the scroll bar button. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a9166481e494a07a4f26f3e31b545584b}{get\+Min\+Width}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Minimum width of the scroll bar button. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a23e88333d03624feea5930cddbda27df}{set\+Min\+Height}} (int h)
+\begin{DoxyCompactList}\small\item\em Sets the Minimum height of the scroll bar button. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a4feb98d9bb6c05c8baef8ced13ded0b9}{get\+Min\+Height}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Minimum height of the scroll bar button. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a61eb775a99aa0f58c8d31366e74b7c93}{set\+Steps}} (int s)
+\begin{DoxyCompactList}\small\item\em Sets the amount of steps in the scroll bar. This controls where the scroll bar can be / how much to move when the buttons are pressed. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a989a3e4f49d99cfdc4389ca54219ac04}{get\+Steps}} ()
+\begin{DoxyCompactList}\small\item\em Gets the amount of steps in the scroll bar. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a534e61ec320d7b64e744b47160852848}{set\+Current\+Step}} (int s)
+\begin{DoxyCompactList}\small\item\em Sets the Current Step for the scroll bar. Sets where the scroll bar is relative to the maximum allowed steps. Must be less than or equal to the maximum allowed steps. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ad966e130a19d4245b3efbbdd6c9d3d77}{get\+Current\+Step}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Current Step for the scroll bar. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a0fdbceb1e1cdd8259290dce5be64a8c1}{set\+Horizontal\+Bar}} (bool v)
+\begin{DoxyCompactList}\small\item\em Sets whether the scroll bar is vertical or horizontal. By default, it is vertical. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_af390be6f3ec33ea89ab1675fe5db77f7}{get\+Horizontal\+Bar}} ()
+\begin{DoxyCompactList}\small\item\em Gets whether the scroll bar is vertical or horizontal. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a072ef05ff7d83e74c3e6568e83ef9926}{set\+Show\+Scroll\+Buttons}} (bool v)
+\begin{DoxyCompactList}\small\item\em Sets whether to show the scroll bar buttons. By default, it is set to true. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_aae44a208c715b0c0cc43ac88c52d9394}{get\+Show\+Scroll\+Buttons}} ()
+\begin{DoxyCompactList}\small\item\em Gets whether to show the scroll bar buttons. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a4c350f6d828ec303d0a20233b0ab5ce8}\label{classglib_1_1_gui_scroll_bar_a4c350f6d828ec303d0a20233b0ab5ce8}} 
+void {\bfseries increase\+Scroll} ()
+\begin{DoxyCompactList}\small\item\em Scrolls the bar forward by 1 step. Equivalent to pressing the increase button once. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a2d77e841121a72d61b5ebe7990742caa}\label{classglib_1_1_gui_scroll_bar_a2d77e841121a72d61b5ebe7990742caa}} 
+void {\bfseries decrease\+Scroll} ()
+\begin{DoxyCompactList}\small\item\em Scrolls the bar backwards by 1 step. Equivalent to pressing the decrease button once. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{Gui\+Rectangle\+Button}} $\ast$ \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a0ba20aeaf28144ecdb13141b408a8ff4}{get\+Button\+Element}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Button Element used for the scroll bar button. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{Gui\+Rectangle\+Button}} $\ast$ \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_af939af38ad2aec064c9255003c2ea751}{get\+Decrease\+Button\+Element}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Button Element used for the scroll bar decrease button. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{Gui\+Rectangle\+Button}} $\ast$ \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a77401a488caa09d5e262c3fa0f2a74bb}{get\+Increase\+Button\+Element}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Button Element used for the scroll bar increase button. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a4abe8ef95abe800f29c8a676c023e139}\label{classglib_1_1_gui_scroll_bar_a4abe8ef95abe800f29c8a676c023e139}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_ad4f62b605f31a2c8c84e2717f31c2340}\label{classglib_1_1_gui_scroll_bar_ad4f62b605f31a2c8c84e2717f31c2340}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!GuiScrollBar@{GuiScrollBar}}
+\index{GuiScrollBar@{GuiScrollBar}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{GuiScrollBar()}{GuiScrollBar()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily glib\+::\+Gui\+Scroll\+Bar\+::\+Gui\+Scroll\+Bar (\begin{DoxyParamCaption}\item[{int}]{startX,  }\item[{int}]{startY,  }\item[{int}]{endX,  }\item[{int}]{endY }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}} object It creates a horizontal or vertical scroll bar. By default, it is vertical. The scrolling area will be sized according to the startX,startY,endX,endY values. The button for scrolling will be based on that. Can use up to 3 Gui\+Rectangle\+Buttons as children. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em startX} & Start x of the scrolling area \\
+\hline
+{\em startY} & Start y of the scrolling area \\
+\hline
+{\em endX} & End x of the scrolling area \\
+\hline
+{\em endY} & End y of the scrolling area \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a37a52f9ddb9269b3edfbd62e9641f312}\label{classglib_1_1_gui_scroll_bar_a37a52f9ddb9269b3edfbd62e9641f312}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!GuiScrollBar@{GuiScrollBar}}
+\index{GuiScrollBar@{GuiScrollBar}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{GuiScrollBar()}{GuiScrollBar()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily glib\+::\+Gui\+Scroll\+Bar\+::\+Gui\+Scroll\+Bar (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}} object from an existing one. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a07f61a831b635937bb456da2bfd8e427}\label{classglib_1_1_gui_scroll_bar_a07f61a831b635937bb456da2bfd8e427}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!copy@{copy}}
+\index{copy@{copy}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{copy()}{copy()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Scroll\+Bar\+::copy (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Copies a \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_af19049b0503f83bf81c15f43f1d7545f}\label{classglib_1_1_gui_scroll_bar_af19049b0503f83bf81c15f43f1d7545f}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!getBackgroundColor@{getBackgroundColor}}
+\index{getBackgroundColor@{getBackgroundColor}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{getBackgroundColor()}{getBackgroundColor()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structglib_1_1_color}{Color}} glib\+::\+Gui\+Scroll\+Bar\+::get\+Background\+Color (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Background \mbox{\hyperlink{structglib_1_1_color}{Color}} of the scroll bar. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_color}{Color}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a0ba20aeaf28144ecdb13141b408a8ff4}\label{classglib_1_1_gui_scroll_bar_a0ba20aeaf28144ecdb13141b408a8ff4}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!getButtonElement@{getButtonElement}}
+\index{getButtonElement@{getButtonElement}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{getButtonElement()}{getButtonElement()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{Gui\+Rectangle\+Button}} $\ast$ glib\+::\+Gui\+Scroll\+Bar\+::get\+Button\+Element (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Button Element used for the scroll bar button. 
+
+\begin{DoxyReturn}{Returns}
+Gui\+Rectangle\+Button$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_aa9a8d11da83bed92178a6be533f0a272}\label{classglib_1_1_gui_scroll_bar_aa9a8d11da83bed92178a6be533f0a272}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Gui\+Scroll\+Bar\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance}{glib\+::\+Gui\+Instance}}.
+
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_ad966e130a19d4245b3efbbdd6c9d3d77}\label{classglib_1_1_gui_scroll_bar_ad966e130a19d4245b3efbbdd6c9d3d77}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!getCurrentStep@{getCurrentStep}}
+\index{getCurrentStep@{getCurrentStep}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{getCurrentStep()}{getCurrentStep()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Scroll\+Bar\+::get\+Current\+Step (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Current Step for the scroll bar. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_af939af38ad2aec064c9255003c2ea751}\label{classglib_1_1_gui_scroll_bar_af939af38ad2aec064c9255003c2ea751}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!getDecreaseButtonElement@{getDecreaseButtonElement}}
+\index{getDecreaseButtonElement@{getDecreaseButtonElement}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{getDecreaseButtonElement()}{getDecreaseButtonElement()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{Gui\+Rectangle\+Button}} $\ast$ glib\+::\+Gui\+Scroll\+Bar\+::get\+Decrease\+Button\+Element (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Button Element used for the scroll bar decrease button. 
+
+\begin{DoxyReturn}{Returns}
+Gui\+Rectangle\+Button$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a38508147b8e2943ea83e31d69709b568}\label{classglib_1_1_gui_scroll_bar_a38508147b8e2943ea83e31d69709b568}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!getEndX@{getEndX}}
+\index{getEndX@{getEndX}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{getEndX()}{getEndX()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Scroll\+Bar\+::get\+EndX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the End X of the scroll bar area. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a06b993e5bb01eccdefa7df58572f8c29}\label{classglib_1_1_gui_scroll_bar_a06b993e5bb01eccdefa7df58572f8c29}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!getEndY@{getEndY}}
+\index{getEndY@{getEndY}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{getEndY()}{getEndY()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Scroll\+Bar\+::get\+EndY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the End Y of the scroll bar area. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_af390be6f3ec33ea89ab1675fe5db77f7}\label{classglib_1_1_gui_scroll_bar_af390be6f3ec33ea89ab1675fe5db77f7}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!getHorizontalBar@{getHorizontalBar}}
+\index{getHorizontalBar@{getHorizontalBar}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{getHorizontalBar()}{getHorizontalBar()}}
+{\footnotesize\ttfamily bool glib\+::\+Gui\+Scroll\+Bar\+::get\+Horizontal\+Bar (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets whether the scroll bar is vertical or horizontal. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a77401a488caa09d5e262c3fa0f2a74bb}\label{classglib_1_1_gui_scroll_bar_a77401a488caa09d5e262c3fa0f2a74bb}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!getIncreaseButtonElement@{getIncreaseButtonElement}}
+\index{getIncreaseButtonElement@{getIncreaseButtonElement}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{getIncreaseButtonElement()}{getIncreaseButtonElement()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{Gui\+Rectangle\+Button}} $\ast$ glib\+::\+Gui\+Scroll\+Bar\+::get\+Increase\+Button\+Element (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Button Element used for the scroll bar increase button. 
+
+\begin{DoxyReturn}{Returns}
+Gui\+Rectangle\+Button$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a4feb98d9bb6c05c8baef8ced13ded0b9}\label{classglib_1_1_gui_scroll_bar_a4feb98d9bb6c05c8baef8ced13ded0b9}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!getMinHeight@{getMinHeight}}
+\index{getMinHeight@{getMinHeight}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{getMinHeight()}{getMinHeight()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Scroll\+Bar\+::get\+Min\+Height (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Minimum height of the scroll bar button. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a9166481e494a07a4f26f3e31b545584b}\label{classglib_1_1_gui_scroll_bar_a9166481e494a07a4f26f3e31b545584b}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!getMinWidth@{getMinWidth}}
+\index{getMinWidth@{getMinWidth}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{getMinWidth()}{getMinWidth()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Scroll\+Bar\+::get\+Min\+Width (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Minimum width of the scroll bar button. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_aeda5b9dc6b4cccd5b926133e2c2d826a}\label{classglib_1_1_gui_scroll_bar_aeda5b9dc6b4cccd5b926133e2c2d826a}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!getOutlineColor@{getOutlineColor}}
+\index{getOutlineColor@{getOutlineColor}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{getOutlineColor()}{getOutlineColor()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structglib_1_1_color}{Color}} glib\+::\+Gui\+Scroll\+Bar\+::get\+Outline\+Color (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Outline \mbox{\hyperlink{structglib_1_1_color}{Color}} of the scroll bar. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_color}{Color}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_aae44a208c715b0c0cc43ac88c52d9394}\label{classglib_1_1_gui_scroll_bar_aae44a208c715b0c0cc43ac88c52d9394}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!getShowScrollButtons@{getShowScrollButtons}}
+\index{getShowScrollButtons@{getShowScrollButtons}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{getShowScrollButtons()}{getShowScrollButtons()}}
+{\footnotesize\ttfamily bool glib\+::\+Gui\+Scroll\+Bar\+::get\+Show\+Scroll\+Buttons (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets whether to show the scroll bar buttons. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a3afcc9b7a3ce0c31922b1aec81830889}\label{classglib_1_1_gui_scroll_bar_a3afcc9b7a3ce0c31922b1aec81830889}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!getStartX@{getStartX}}
+\index{getStartX@{getStartX}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{getStartX()}{getStartX()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Scroll\+Bar\+::get\+StartX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Start X of the scroll bar area. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_ab9d02fd08c098420ee3dae0de059fbc7}\label{classglib_1_1_gui_scroll_bar_ab9d02fd08c098420ee3dae0de059fbc7}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!getStartY@{getStartY}}
+\index{getStartY@{getStartY}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{getStartY()}{getStartY()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Scroll\+Bar\+::get\+StartY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Start Y of the scroll bar area. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a989a3e4f49d99cfdc4389ca54219ac04}\label{classglib_1_1_gui_scroll_bar_a989a3e4f49d99cfdc4389ca54219ac04}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!getSteps@{getSteps}}
+\index{getSteps@{getSteps}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{getSteps()}{getSteps()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Scroll\+Bar\+::get\+Steps (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the amount of steps in the scroll bar. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a6050961ffa2f5bb4f812780a213bccc8}\label{classglib_1_1_gui_scroll_bar_a6050961ffa2f5bb4f812780a213bccc8}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!operator=@{operator=}}
+\index{operator=@{operator=}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Scroll\+Bar\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Copies a \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a27d2cf4c414ea043ab6541a163a67165}\label{classglib_1_1_gui_scroll_bar_a27d2cf4c414ea043ab6541a163a67165}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!render@{render}}
+\index{render@{render}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Scroll\+Bar\+::render (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Renders the \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em surf} & \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance_a303d9dc4dedc8e5cf2027bb02c7015c8}{glib\+::\+Gui\+Instance}}.
+
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a01046ed685ce3bc428c4239c8ca9f6e2}\label{classglib_1_1_gui_scroll_bar_a01046ed685ce3bc428c4239c8ca9f6e2}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!setBackgroundColor@{setBackgroundColor}}
+\index{setBackgroundColor@{setBackgroundColor}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{setBackgroundColor()}{setBackgroundColor()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Scroll\+Bar\+::set\+Background\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Sets the Background \mbox{\hyperlink{structglib_1_1_color}{Color}} of the scroll bar. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a534e61ec320d7b64e744b47160852848}\label{classglib_1_1_gui_scroll_bar_a534e61ec320d7b64e744b47160852848}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!setCurrentStep@{setCurrentStep}}
+\index{setCurrentStep@{setCurrentStep}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{setCurrentStep()}{setCurrentStep()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Scroll\+Bar\+::set\+Current\+Step (\begin{DoxyParamCaption}\item[{int}]{s }\end{DoxyParamCaption})}
+
+
+
+Sets the Current Step for the scroll bar. Sets where the scroll bar is relative to the maximum allowed steps. Must be less than or equal to the maximum allowed steps. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a94bf220e4a2a2f8799604d2e931a84d0}\label{classglib_1_1_gui_scroll_bar_a94bf220e4a2a2f8799604d2e931a84d0}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!setEndX@{setEndX}}
+\index{setEndX@{setEndX}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{setEndX()}{setEndX()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Scroll\+Bar\+::set\+EndX (\begin{DoxyParamCaption}\item[{int}]{x }\end{DoxyParamCaption})}
+
+
+
+Sets the End X of the scroll bar area. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a52f5a089fcb67eb099eff697f8e8bb60}\label{classglib_1_1_gui_scroll_bar_a52f5a089fcb67eb099eff697f8e8bb60}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!setEndY@{setEndY}}
+\index{setEndY@{setEndY}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{setEndY()}{setEndY()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Scroll\+Bar\+::set\+EndY (\begin{DoxyParamCaption}\item[{int}]{y }\end{DoxyParamCaption})}
+
+
+
+Sets the End Y of the scroll bar area. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a0fdbceb1e1cdd8259290dce5be64a8c1}\label{classglib_1_1_gui_scroll_bar_a0fdbceb1e1cdd8259290dce5be64a8c1}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!setHorizontalBar@{setHorizontalBar}}
+\index{setHorizontalBar@{setHorizontalBar}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{setHorizontalBar()}{setHorizontalBar()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Scroll\+Bar\+::set\+Horizontal\+Bar (\begin{DoxyParamCaption}\item[{bool}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets whether the scroll bar is vertical or horizontal. By default, it is vertical. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a23e88333d03624feea5930cddbda27df}\label{classglib_1_1_gui_scroll_bar_a23e88333d03624feea5930cddbda27df}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!setMinHeight@{setMinHeight}}
+\index{setMinHeight@{setMinHeight}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{setMinHeight()}{setMinHeight()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Scroll\+Bar\+::set\+Min\+Height (\begin{DoxyParamCaption}\item[{int}]{h }\end{DoxyParamCaption})}
+
+
+
+Sets the Minimum height of the scroll bar button. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em w} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a5c850084e4a19165867afec52b726905}\label{classglib_1_1_gui_scroll_bar_a5c850084e4a19165867afec52b726905}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!setMinWidth@{setMinWidth}}
+\index{setMinWidth@{setMinWidth}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{setMinWidth()}{setMinWidth()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Scroll\+Bar\+::set\+Min\+Width (\begin{DoxyParamCaption}\item[{int}]{w }\end{DoxyParamCaption})}
+
+
+
+Sets the Minimum width of the scroll bar button. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em w} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a7e298e5eca02dfd346c25fde46a150f9}\label{classglib_1_1_gui_scroll_bar_a7e298e5eca02dfd346c25fde46a150f9}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!setOnSlideFunction@{setOnSlideFunction}}
+\index{setOnSlideFunction@{setOnSlideFunction}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{setOnSlideFunction()}{setOnSlideFunction()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Scroll\+Bar\+::set\+On\+Slide\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$}]{func }\end{DoxyParamCaption})}
+
+
+
+Sets the on\+Slide\+Function. Occurs when the scroll bar moves from its current position for any reason. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_ac691b8e90a14e938125be1d38eaee2d5}\label{classglib_1_1_gui_scroll_bar_ac691b8e90a14e938125be1d38eaee2d5}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!setOutlineColor@{setOutlineColor}}
+\index{setOutlineColor@{setOutlineColor}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{setOutlineColor()}{setOutlineColor()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Scroll\+Bar\+::set\+Outline\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})}
+
+
+
+Sets the Outline \mbox{\hyperlink{structglib_1_1_color}{Color}} of the scroll bar. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a072ef05ff7d83e74c3e6568e83ef9926}\label{classglib_1_1_gui_scroll_bar_a072ef05ff7d83e74c3e6568e83ef9926}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!setShowScrollButtons@{setShowScrollButtons}}
+\index{setShowScrollButtons@{setShowScrollButtons}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{setShowScrollButtons()}{setShowScrollButtons()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Scroll\+Bar\+::set\+Show\+Scroll\+Buttons (\begin{DoxyParamCaption}\item[{bool}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets whether to show the scroll bar buttons. By default, it is set to true. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_ab434d6f4ec2500737548e14a0a820433}\label{classglib_1_1_gui_scroll_bar_ab434d6f4ec2500737548e14a0a820433}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!setStartX@{setStartX}}
+\index{setStartX@{setStartX}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{setStartX()}{setStartX()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Scroll\+Bar\+::set\+StartX (\begin{DoxyParamCaption}\item[{int}]{x }\end{DoxyParamCaption})}
+
+
+
+Sets the Start X of the scroll bar area. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_ac02154f8e0921c60957ef9979c512125}\label{classglib_1_1_gui_scroll_bar_ac02154f8e0921c60957ef9979c512125}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!setStartY@{setStartY}}
+\index{setStartY@{setStartY}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{setStartY()}{setStartY()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Scroll\+Bar\+::set\+StartY (\begin{DoxyParamCaption}\item[{int}]{y }\end{DoxyParamCaption})}
+
+
+
+Sets the Start Y of the scroll bar area. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a61eb775a99aa0f58c8d31366e74b7c93}\label{classglib_1_1_gui_scroll_bar_a61eb775a99aa0f58c8d31366e74b7c93}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!setSteps@{setSteps}}
+\index{setSteps@{setSteps}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{setSteps()}{setSteps()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Scroll\+Bar\+::set\+Steps (\begin{DoxyParamCaption}\item[{int}]{s }\end{DoxyParamCaption})}
+
+
+
+Sets the amount of steps in the scroll bar. This controls where the scroll bar can be / how much to move when the buttons are pressed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_scroll_bar_a7aa92e3808cd7896ee6a75af5711f341}\label{classglib_1_1_gui_scroll_bar_a7aa92e3808cd7896ee6a75af5711f341}} 
+\index{glib::GuiScrollBar@{glib::GuiScrollBar}!update@{update}}
+\index{update@{update}!glib::GuiScrollBar@{glib::GuiScrollBar}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Scroll\+Bar\+::update (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Updates the \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{Gui\+Scroll\+Bar}}. 
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance_adb20e1eac37428a48802ad39cf4c2cb0}{glib\+::\+Gui\+Instance}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Gui\+Manager.\+h\end{DoxyCompactItemize}

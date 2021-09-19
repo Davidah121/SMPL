@@ -296,46 +296,12 @@ namespace glib
 
 	Image** Image::loadImage(std::string filename, int* amountOfImages, std::vector<int>* extraData)
 	{
-		SimpleFile file(filename, SimpleFile::READ);
+		return Image::loadImage( StringTools::toWideString(filename), amountOfImages, extraData);
+	}
 
-		if (file.isOpen())
-		{
-			std::vector<unsigned char> fileData = file.readFullFileAsBytes();
-
-			file.close();
-
-			std::string fileType = filename.substr(filename.size() - 3, 3);
-			std::string fileType2 = filename.substr(filename.size() - 4, 4);
-
-			if (fileType == "bmp")
-			{
-				if (amountOfImages != nullptr)
-					*amountOfImages = 1;
-
-				return loadBMP(fileData, amountOfImages, extraData);
-			}
-			else if (fileType == "gif")
-			{
-				return loadGIF(fileData, amountOfImages, extraData);
-			}
-			else if (fileType == "png")
-			{
-				return loadPNG(fileData, amountOfImages, extraData);
-			}
-			else if (fileType == "jpg" || fileType2 == "jpeg" || fileType2 == "jfif")
-			{
-				return loadJPG(fileData, amountOfImages, extraData);
-			}
-
-			return nullptr;
-		}
-		else
-		{
-			if(amountOfImages!=nullptr)
-				*amountOfImages = 0;
-
-			return nullptr;
-		}
+	Image** Image::loadImage(File filename, int* amountOfImages, std::vector<int>* extraData)
+	{
+		return Image::loadImage( filename.getFullFileName(), amountOfImages, extraData);
 	}
 
 	Image** Image::loadImage(std::wstring filename, int* amountOfImages, std::vector<int>* extraData)

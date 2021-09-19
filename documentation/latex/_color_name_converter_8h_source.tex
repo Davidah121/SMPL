@@ -1,0 +1,26 @@
+\hypertarget{_color_name_converter_8h_source}{}\doxysection{Color\+Name\+Converter.\+h}
+\label{_color_name_converter_8h_source}\index{include/ColorNameConverter.h@{include/ColorNameConverter.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include <iostream>}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include <unordered\_map>}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}ColorPalette.h"{}}}
+\DoxyCodeLine{5 }
+\DoxyCodeLine{6 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{7 \{}
+\DoxyCodeLine{8 }
+\DoxyCodeLine{9     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_color_name_converter}{ColorNameConverter}}}
+\DoxyCodeLine{10     \{}
+\DoxyCodeLine{11     \textcolor{keyword}{public}:}
+\DoxyCodeLine{12 }
+\DoxyCodeLine{22         \textcolor{keyword}{static} \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_color_name_converter_a190c322709f012d56b26f37d25f95e39}{NameToColor}}(std::string n);}
+\DoxyCodeLine{23         }
+\DoxyCodeLine{34         \textcolor{keyword}{static} std::string \mbox{\hyperlink{classglib_1_1_color_name_converter_a1300121dff0e31409d9276e698640491}{ColorToName}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{35     \textcolor{keyword}{private}:}
+\DoxyCodeLine{36         \textcolor{keyword}{static} \textcolor{keyword}{const} std::unordered\_map<std::string, Color> colorNamePair;}
+\DoxyCodeLine{37     \};}
+\DoxyCodeLine{38 }
+\DoxyCodeLine{39 \}  \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

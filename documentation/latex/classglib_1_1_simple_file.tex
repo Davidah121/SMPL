@@ -1,0 +1,423 @@
+\hypertarget{classglib_1_1_simple_file}{}\doxysection{glib\+::Simple\+File Class Reference}
+\label{classglib_1_1_simple_file}\index{glib::SimpleFile@{glib::SimpleFile}}
+Inheritance diagram for glib\+::Simple\+File\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classglib_1_1_simple_file}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_simple_file_1_1_file_open_error_exception}{File\+Open\+Error\+Exception}}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_simple_file_1_1_file_read_exception}{File\+Read\+Exception}}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_simple_file_1_1_file_write_exception}{File\+Write\+Exception}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_simple_file_aef15fd381ec74f817240fdf088446a36}{Simple\+File}} (\mbox{\hyperlink{classglib_1_1_file}{File}} file, char type)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_simple_file}{Simple\+File}} object The type specifies whether to read or write to a file. The type also specifies whether to use ASCII, UTF8, or UTF16. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_simple_file_a47f8218cd040cae4815b99125ad9e675}\label{classglib_1_1_simple_file_a47f8218cd040cae4815b99125ad9e675}} 
+{\bfseries $\sim$\+Simple\+File} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_simple_file}{Simple\+File}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_simple_file_ae95cedf859f36c1969335ee68ec2d879}{get\+Class}} ()
+\item 
+char \mbox{\hyperlink{classglib_1_1_simple_file_a6e1c46e701c0af7d5ab97cc58fb76ef5}{read\+Byte}} ()
+\begin{DoxyCompactList}\small\item\em Reads a byte of data. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_simple_file_a93f01b25817f2c8b85de792e98ee145e}{read\+Int}} ()
+\begin{DoxyCompactList}\small\item\em Reads an byte of data as an int. Not sure why this is here. \end{DoxyCompactList}\item 
+wchar\+\_\+t \mbox{\hyperlink{classglib_1_1_simple_file_affad8e96d0e358d0df34571f5827e902}{read\+Wide\+Char}} ()
+\begin{DoxyCompactList}\small\item\em Reads a wide character from the file. \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{classglib_1_1_simple_file_afef67ca4b72c13bfc3156daf8ace6c7b}{read\+String}} ()
+\begin{DoxyCompactList}\small\item\em Reads a line from the file. Reads until a line break has occured. This function is affected by the character type the file was set as. \end{DoxyCompactList}\item 
+std\+::wstring \mbox{\hyperlink{classglib_1_1_simple_file_a8c03a530cd13dee4b21a21fe57b8d1ad}{read\+Wide\+String}} ()
+\begin{DoxyCompactList}\small\item\em Reads a line from the file. Reads until a line break has occured. This function is affected by the character type the file was set as. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_simple_file_abf24a1ecbadbabfbce8b9cc5460067ba}{read\+UTF8\+Char}} ()
+\begin{DoxyCompactList}\small\item\em Reads a UTF8 character from the file. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classglib_1_1_simple_file_ac3c281d3155b9e9403d733b1f801ce78}{read\+Full\+File\+String}} ()
+\begin{DoxyCompactList}\small\item\em Reads the full file as a series of lines using the read\+String function. This function is affected by the character type the file was set as. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::wstring $>$ \mbox{\hyperlink{classglib_1_1_simple_file_a8e22f9a7c89fb595a45ecd98d98fd8a6}{read\+Full\+File\+String\+Wide}} ()
+\begin{DoxyCompactList}\small\item\em Reads the full file as a series of lines using the read\+Wide\+String function. This function is affected by the character type the file was set as. \end{DoxyCompactList}\item 
+std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_simple_file_ac96b99859dc641706343ee9b5f4a3d6d}{read\+Full\+File\+As\+Bytes}} ()
+\begin{DoxyCompactList}\small\item\em Reads the full file as a series of bytes. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_file_ad62476117ba521ec7fbbe9e7434383b6}{write\+Byte}} (char c)
+\begin{DoxyCompactList}\small\item\em Writes a byte to the file This function is affected by the character type the file was set as. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_file_ab081f9b302312ff34b8116b68a6cb6bf}{write\+Wide\+Char}} (wchar\+\_\+t c)
+\begin{DoxyCompactList}\small\item\em Writes a wide char to the file This function is affected by the character type the file was set as. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_file_a9e89bac1a7d1a6de81ca2745c7836ec3}{write\+Bytes}} (unsigned char $\ast$data, int size)
+\begin{DoxyCompactList}\small\item\em Writes a series of bytes to the file. This function is affected by the character type the file was set as. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_file_add7fabbe51288269b39a987b71b458fc}{write\+String}} (std\+::string line)
+\begin{DoxyCompactList}\small\item\em Writes a string to the file. Does not write a line break. This function is affected by the character type the file was set as. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_file_a2efa636c1c7d9cc1a7f5f0d9608b38b6}{write\+Wide\+String}} (std\+::wstring line)
+\begin{DoxyCompactList}\small\item\em Writes a wide string to the file. Does not write a line break. This function is affected by the character type the file was set as. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_file_af3a5a6dcea0f835b5600b4011eb2ba92}{write\+Line\+Break}} ()
+\begin{DoxyCompactList}\small\item\em Writes a line break to the file. This function is affected by the character type the file was set as. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_simple_file_aa67161a2acd095c997dc45d933c33862}{is\+Open}} ()
+\begin{DoxyCompactList}\small\item\em Determines if the file is opened for operations. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_simple_file_a73717ec7e72b098f70b170095dcc4326}\label{classglib_1_1_simple_file_a73717ec7e72b098f70b170095dcc4326}} 
+void {\bfseries close} ()
+\begin{DoxyCompactList}\small\item\em Closes the file for operations freeing memory and allowing other programs to access the file. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_simple_file_a1968f4adfe94b56b1a0e613b1f46fe09}{is\+End\+Of\+File}} ()
+\begin{DoxyCompactList}\small\item\em Determines if the end of the file was reached. \end{DoxyCompactList}\item 
+std\+::wstring \mbox{\hyperlink{classglib_1_1_simple_file_a6b074ac327ae48f89ba857c3238d3d3c}{get\+File\+Name}} ()
+\begin{DoxyCompactList}\small\item\em Gets the name of the file opened. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_simple_file_a4061e1ca624dd7084abc259db95a14d5}{get\+Size}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Size of file in bytes. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_simple_file_a9b4c6e7c4c6747f26bbe43aa632aadee}{get\+Bytes\+Left}} ()
+\begin{DoxyCompactList}\small\item\em Get the amount of bytes left to read in the file. Returns -\/1 if the file is not opened for reading. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_simple_file_afcb3507ca612253e29523ac55ae0f608}\label{classglib_1_1_simple_file_afcb3507ca612253e29523ac55ae0f608}} 
+static const char {\bfseries READ} = 0x00
+\item 
+\mbox{\Hypertarget{classglib_1_1_simple_file_ad02d8867120fe4bed27a679a8dd7534b}\label{classglib_1_1_simple_file_ad02d8867120fe4bed27a679a8dd7534b}} 
+static const char {\bfseries WRITE} = 0x01
+\item 
+\mbox{\Hypertarget{classglib_1_1_simple_file_a0a699c56f396e81943fdb81f8b74da19}\label{classglib_1_1_simple_file_a0a699c56f396e81943fdb81f8b74da19}} 
+static const char {\bfseries WRITE\+\_\+\+APPEND} = 0x02
+\item 
+\mbox{\Hypertarget{classglib_1_1_simple_file_ab6f31a8410f77d1cc30d3205402b38c9}\label{classglib_1_1_simple_file_ab6f31a8410f77d1cc30d3205402b38c9}} 
+static const char {\bfseries LINE\+\_\+\+BREAK\+\_\+1} = 13
+\item 
+\mbox{\Hypertarget{classglib_1_1_simple_file_acc8a9039ae6394d3fdc5c37dff56ca3a}\label{classglib_1_1_simple_file_acc8a9039ae6394d3fdc5c37dff56ca3a}} 
+static const char {\bfseries LINE\+\_\+\+BREAK\+\_\+2} = 10
+\item 
+\mbox{\Hypertarget{classglib_1_1_simple_file_a3f414dca47cfacd85523166b1295d8b4}\label{classglib_1_1_simple_file_a3f414dca47cfacd85523166b1295d8b4}} 
+static const char {\bfseries ASCII} = 0x00
+\item 
+\mbox{\Hypertarget{classglib_1_1_simple_file_a5c56597b09b6053072c25cec0a63d80d}\label{classglib_1_1_simple_file_a5c56597b09b6053072c25cec0a63d80d}} 
+static const char {\bfseries WIDECHAR} = 0x10
+\item 
+\mbox{\Hypertarget{classglib_1_1_simple_file_a5feb175282e4a2e57a6950f0bd77fe0d}\label{classglib_1_1_simple_file_a5feb175282e4a2e57a6950f0bd77fe0d}} 
+static const char {\bfseries UTF8} = 0x20
+\item 
+\mbox{\Hypertarget{classglib_1_1_simple_file_ad5e13e58f69e48f500af72312f409ffe}\label{classglib_1_1_simple_file_ad5e13e58f69e48f500af72312f409ffe}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_simple_file_aef15fd381ec74f817240fdf088446a36}\label{classglib_1_1_simple_file_aef15fd381ec74f817240fdf088446a36}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!SimpleFile@{SimpleFile}}
+\index{SimpleFile@{SimpleFile}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{SimpleFile()}{SimpleFile()}}
+{\footnotesize\ttfamily glib\+::\+Simple\+File\+::\+Simple\+File (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_file}{File}}}]{file,  }\item[{char}]{type }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_simple_file}{Simple\+File}} object The type specifies whether to read or write to a file. The type also specifies whether to use ASCII, UTF8, or UTF16. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & \\
+\hline
+{\em type} & Follows the format ACCESS\+\_\+\+TYPE $\vert$ CHAR\+\_\+\+TYPE Valid Access types are\+: READ WRITE WRITE\+\_\+\+APPEND Valid Char types are\+: ASCII WIDECHAR UTF8 \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_simple_file_a9b4c6e7c4c6747f26bbe43aa632aadee}\label{classglib_1_1_simple_file_a9b4c6e7c4c6747f26bbe43aa632aadee}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!getBytesLeft@{getBytesLeft}}
+\index{getBytesLeft@{getBytesLeft}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{getBytesLeft()}{getBytesLeft()}}
+{\footnotesize\ttfamily int glib\+::\+Simple\+File\+::get\+Bytes\+Left (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the amount of bytes left to read in the file. Returns -\/1 if the file is not opened for reading. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_file_ae95cedf859f36c1969335ee68ec2d879}\label{classglib_1_1_simple_file_ae95cedf859f36c1969335ee68ec2d879}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Simple\+File\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
+
+\mbox{\Hypertarget{classglib_1_1_simple_file_a6b074ac327ae48f89ba857c3238d3d3c}\label{classglib_1_1_simple_file_a6b074ac327ae48f89ba857c3238d3d3c}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!getFileName@{getFileName}}
+\index{getFileName@{getFileName}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{getFileName()}{getFileName()}}
+{\footnotesize\ttfamily std\+::wstring glib\+::\+Simple\+File\+::get\+File\+Name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the name of the file opened. 
+
+\begin{DoxyReturn}{Returns}
+std\+::wstring 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_file_a4061e1ca624dd7084abc259db95a14d5}\label{classglib_1_1_simple_file_a4061e1ca624dd7084abc259db95a14d5}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!getSize@{getSize}}
+\index{getSize@{getSize}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{getSize()}{getSize()}}
+{\footnotesize\ttfamily int glib\+::\+Simple\+File\+::get\+Size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Size of file in bytes. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_file_a1968f4adfe94b56b1a0e613b1f46fe09}\label{classglib_1_1_simple_file_a1968f4adfe94b56b1a0e613b1f46fe09}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!isEndOfFile@{isEndOfFile}}
+\index{isEndOfFile@{isEndOfFile}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{isEndOfFile()}{isEndOfFile()}}
+{\footnotesize\ttfamily bool glib\+::\+Simple\+File\+::is\+End\+Of\+File (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Determines if the end of the file was reached. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_file_aa67161a2acd095c997dc45d933c33862}\label{classglib_1_1_simple_file_aa67161a2acd095c997dc45d933c33862}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!isOpen@{isOpen}}
+\index{isOpen@{isOpen}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{isOpen()}{isOpen()}}
+{\footnotesize\ttfamily bool glib\+::\+Simple\+File\+::is\+Open (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Determines if the file is opened for operations. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_file_a6e1c46e701c0af7d5ab97cc58fb76ef5}\label{classglib_1_1_simple_file_a6e1c46e701c0af7d5ab97cc58fb76ef5}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!readByte@{readByte}}
+\index{readByte@{readByte}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{readByte()}{readByte()}}
+{\footnotesize\ttfamily char glib\+::\+Simple\+File\+::read\+Byte (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Reads a byte of data. 
+
+\begin{DoxyVerb}    If the file was not opened for reading
+    and USE_EXCEPTIONS is defined, a FileReadException may be thrown.
+\end{DoxyVerb}
+ \begin{DoxyReturn}{Returns}
+char 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_file_ac96b99859dc641706343ee9b5f4a3d6d}\label{classglib_1_1_simple_file_ac96b99859dc641706343ee9b5f4a3d6d}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!readFullFileAsBytes@{readFullFileAsBytes}}
+\index{readFullFileAsBytes@{readFullFileAsBytes}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{readFullFileAsBytes()}{readFullFileAsBytes()}}
+{\footnotesize\ttfamily std\+::vector$<$ unsigned char $>$ glib\+::\+Simple\+File\+::read\+Full\+File\+As\+Bytes (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Reads the full file as a series of bytes. 
+
+\begin{DoxyVerb}    If the file was not opened for reading
+    and USE_EXCEPTIONS is defined, a FileReadException may be thrown.
+\end{DoxyVerb}
+ \begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_file_ac3c281d3155b9e9403d733b1f801ce78}\label{classglib_1_1_simple_file_ac3c281d3155b9e9403d733b1f801ce78}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!readFullFileString@{readFullFileString}}
+\index{readFullFileString@{readFullFileString}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{readFullFileString()}{readFullFileString()}}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::string $>$ glib\+::\+Simple\+File\+::read\+Full\+File\+String (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Reads the full file as a series of lines using the read\+String function. This function is affected by the character type the file was set as. 
+
+If the file was not opened for reading and USE\+\_\+\+EXCEPTIONS is defined, a \mbox{\hyperlink{structglib_1_1_simple_file_1_1_file_read_exception}{File\+Read\+Exception}} may be thrown. \begin{DoxyReturn}{Returns}
+std\+::vector$<$std\+::string$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_file_a8e22f9a7c89fb595a45ecd98d98fd8a6}\label{classglib_1_1_simple_file_a8e22f9a7c89fb595a45ecd98d98fd8a6}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!readFullFileStringWide@{readFullFileStringWide}}
+\index{readFullFileStringWide@{readFullFileStringWide}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{readFullFileStringWide()}{readFullFileStringWide()}}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::wstring $>$ glib\+::\+Simple\+File\+::read\+Full\+File\+String\+Wide (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Reads the full file as a series of lines using the read\+Wide\+String function. This function is affected by the character type the file was set as. 
+
+If the file was not opened for reading and USE\+\_\+\+EXCEPTIONS is defined, a \mbox{\hyperlink{structglib_1_1_simple_file_1_1_file_read_exception}{File\+Read\+Exception}} may be thrown. \begin{DoxyReturn}{Returns}
+std\+::vector$<$std\+::wstring$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_file_a93f01b25817f2c8b85de792e98ee145e}\label{classglib_1_1_simple_file_a93f01b25817f2c8b85de792e98ee145e}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!readInt@{readInt}}
+\index{readInt@{readInt}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{readInt()}{readInt()}}
+{\footnotesize\ttfamily int glib\+::\+Simple\+File\+::read\+Int (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Reads an byte of data as an int. Not sure why this is here. 
+
+If the file was not opened for reading and USE\+\_\+\+EXCEPTIONS is defined, a \mbox{\hyperlink{structglib_1_1_simple_file_1_1_file_read_exception}{File\+Read\+Exception}} may be thrown. \begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_file_afef67ca4b72c13bfc3156daf8ace6c7b}\label{classglib_1_1_simple_file_afef67ca4b72c13bfc3156daf8ace6c7b}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!readString@{readString}}
+\index{readString@{readString}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{readString()}{readString()}}
+{\footnotesize\ttfamily std\+::string glib\+::\+Simple\+File\+::read\+String (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Reads a line from the file. Reads until a line break has occured. This function is affected by the character type the file was set as. 
+
+If the file was not opened for reading and USE\+\_\+\+EXCEPTIONS is defined, a \mbox{\hyperlink{structglib_1_1_simple_file_1_1_file_read_exception}{File\+Read\+Exception}} may be thrown. \begin{DoxyReturn}{Returns}
+std\+::string 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_file_abf24a1ecbadbabfbce8b9cc5460067ba}\label{classglib_1_1_simple_file_abf24a1ecbadbabfbce8b9cc5460067ba}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!readUTF8Char@{readUTF8Char}}
+\index{readUTF8Char@{readUTF8Char}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{readUTF8Char()}{readUTF8Char()}}
+{\footnotesize\ttfamily int glib\+::\+Simple\+File\+::read\+UTF8\+Char (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Reads a UTF8 character from the file. 
+
+\begin{DoxyVerb}    If the file was not opened for reading
+    and USE_EXCEPTIONS is defined, a FileReadException may be thrown.
+\end{DoxyVerb}
+ \begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_file_affad8e96d0e358d0df34571f5827e902}\label{classglib_1_1_simple_file_affad8e96d0e358d0df34571f5827e902}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!readWideChar@{readWideChar}}
+\index{readWideChar@{readWideChar}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{readWideChar()}{readWideChar()}}
+{\footnotesize\ttfamily wchar\+\_\+t glib\+::\+Simple\+File\+::read\+Wide\+Char (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Reads a wide character from the file. 
+
+\begin{DoxyVerb}    If the file was not opened for reading
+    and USE_EXCEPTIONS is defined, a FileReadException may be thrown.
+\end{DoxyVerb}
+ \begin{DoxyReturn}{Returns}
+wchar\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_file_a8c03a530cd13dee4b21a21fe57b8d1ad}\label{classglib_1_1_simple_file_a8c03a530cd13dee4b21a21fe57b8d1ad}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!readWideString@{readWideString}}
+\index{readWideString@{readWideString}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{readWideString()}{readWideString()}}
+{\footnotesize\ttfamily std\+::wstring glib\+::\+Simple\+File\+::read\+Wide\+String (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Reads a line from the file. Reads until a line break has occured. This function is affected by the character type the file was set as. 
+
+If the file was not opened for reading and USE\+\_\+\+EXCEPTIONS is defined, a \mbox{\hyperlink{structglib_1_1_simple_file_1_1_file_read_exception}{File\+Read\+Exception}} may be thrown. \begin{DoxyReturn}{Returns}
+std\+::wstring 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_file_ad62476117ba521ec7fbbe9e7434383b6}\label{classglib_1_1_simple_file_ad62476117ba521ec7fbbe9e7434383b6}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!writeByte@{writeByte}}
+\index{writeByte@{writeByte}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{writeByte()}{writeByte()}}
+{\footnotesize\ttfamily void glib\+::\+Simple\+File\+::write\+Byte (\begin{DoxyParamCaption}\item[{char}]{c }\end{DoxyParamCaption})}
+
+
+
+Writes a byte to the file This function is affected by the character type the file was set as. 
+
+If the file was not opened for writing and USE\+\_\+\+EXCEPTIONS is defined, a \mbox{\hyperlink{structglib_1_1_simple_file_1_1_file_write_exception}{File\+Write\+Exception}} may be thrown. 
+\begin{DoxyParams}{Parameters}
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_simple_file_a9e89bac1a7d1a6de81ca2745c7836ec3}\label{classglib_1_1_simple_file_a9e89bac1a7d1a6de81ca2745c7836ec3}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!writeBytes@{writeBytes}}
+\index{writeBytes@{writeBytes}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{writeBytes()}{writeBytes()}}
+{\footnotesize\ttfamily void glib\+::\+Simple\+File\+::write\+Bytes (\begin{DoxyParamCaption}\item[{unsigned char $\ast$}]{data,  }\item[{int}]{size }\end{DoxyParamCaption})}
+
+
+
+Writes a series of bytes to the file. This function is affected by the character type the file was set as. 
+
+If the file was not opened for writing and USE\+\_\+\+EXCEPTIONS is defined, a \mbox{\hyperlink{structglib_1_1_simple_file_1_1_file_write_exception}{File\+Write\+Exception}} may be thrown. 
+\begin{DoxyParams}{Parameters}
+{\em data} & The array of data. \\
+\hline
+{\em size} & The size of the data. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_simple_file_af3a5a6dcea0f835b5600b4011eb2ba92}\label{classglib_1_1_simple_file_af3a5a6dcea0f835b5600b4011eb2ba92}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!writeLineBreak@{writeLineBreak}}
+\index{writeLineBreak@{writeLineBreak}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{writeLineBreak()}{writeLineBreak()}}
+{\footnotesize\ttfamily void glib\+::\+Simple\+File\+::write\+Line\+Break (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Writes a line break to the file. This function is affected by the character type the file was set as. 
+
+If the file was not opened for writing and USE\+\_\+\+EXCEPTIONS is defined, a \mbox{\hyperlink{structglib_1_1_simple_file_1_1_file_write_exception}{File\+Write\+Exception}} may be thrown. \mbox{\Hypertarget{classglib_1_1_simple_file_add7fabbe51288269b39a987b71b458fc}\label{classglib_1_1_simple_file_add7fabbe51288269b39a987b71b458fc}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!writeString@{writeString}}
+\index{writeString@{writeString}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{writeString()}{writeString()}}
+{\footnotesize\ttfamily void glib\+::\+Simple\+File\+::write\+String (\begin{DoxyParamCaption}\item[{std\+::string}]{line }\end{DoxyParamCaption})}
+
+
+
+Writes a string to the file. Does not write a line break. This function is affected by the character type the file was set as. 
+
+If the file was not opened for writing and USE\+\_\+\+EXCEPTIONS is defined, a \mbox{\hyperlink{structglib_1_1_simple_file_1_1_file_write_exception}{File\+Write\+Exception}} may be thrown. 
+\begin{DoxyParams}{Parameters}
+{\em line} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_simple_file_ab081f9b302312ff34b8116b68a6cb6bf}\label{classglib_1_1_simple_file_ab081f9b302312ff34b8116b68a6cb6bf}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!writeWideChar@{writeWideChar}}
+\index{writeWideChar@{writeWideChar}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{writeWideChar()}{writeWideChar()}}
+{\footnotesize\ttfamily void glib\+::\+Simple\+File\+::write\+Wide\+Char (\begin{DoxyParamCaption}\item[{wchar\+\_\+t}]{c }\end{DoxyParamCaption})}
+
+
+
+Writes a wide char to the file This function is affected by the character type the file was set as. 
+
+If the file was not opened for writing and USE\+\_\+\+EXCEPTIONS is defined, a \mbox{\hyperlink{structglib_1_1_simple_file_1_1_file_write_exception}{File\+Write\+Exception}} may be thrown. 
+\begin{DoxyParams}{Parameters}
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_simple_file_a2efa636c1c7d9cc1a7f5f0d9608b38b6}\label{classglib_1_1_simple_file_a2efa636c1c7d9cc1a7f5f0d9608b38b6}} 
+\index{glib::SimpleFile@{glib::SimpleFile}!writeWideString@{writeWideString}}
+\index{writeWideString@{writeWideString}!glib::SimpleFile@{glib::SimpleFile}}
+\doxysubsubsection{\texorpdfstring{writeWideString()}{writeWideString()}}
+{\footnotesize\ttfamily void glib\+::\+Simple\+File\+::write\+Wide\+String (\begin{DoxyParamCaption}\item[{std\+::wstring}]{line }\end{DoxyParamCaption})}
+
+
+
+Writes a wide string to the file. Does not write a line break. This function is affected by the character type the file was set as. 
+
+If the file was not opened for writing and USE\+\_\+\+EXCEPTIONS is defined, a \mbox{\hyperlink{structglib_1_1_simple_file_1_1_file_write_exception}{File\+Write\+Exception}} may be thrown. 
+\begin{DoxyParams}{Parameters}
+{\em line} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Simple\+File.\+h\end{DoxyCompactItemize}

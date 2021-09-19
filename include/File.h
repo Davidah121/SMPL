@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include "StringTools.h"
 
 namespace glib
 {
@@ -14,8 +15,73 @@ namespace glib
          * @param filename
          *      The filename or path.
          */
+        File(std::wstring filename)
+        {
+            init( filename );
+        }
+
+        /**
+         * @brief Creates a File Object.
+         *      Allows easy access to the file name, path, full path with name, and extension.
+         *      Uses a std::wstring to store data.
+         * @param filename
+         *      The filename or path.
+         */
         template<typename T>
-        File(std::basic_string<T> filename);
+        File(std::basic_string<T> filename)
+        {
+            init( StringTools::toWideString(filename) );
+        }
+
+        /**
+         * @brief Creates a File Object.
+         *      Allows easy access to the file name, path, full path with name, and extension.
+         *      Uses a std::wstring to store data.
+         * @param filename
+         *      The filename or path.
+         */
+        File(char* filename)
+        {
+            std::string s = filename;
+            init( StringTools::toWideString(s) );
+        }
+
+        /**
+         * @brief Creates a File Object.
+         *      Allows easy access to the file name, path, full path with name, and extension.
+         *      Uses a std::wstring to store data.
+         * @param filename
+         *      The filename or path.
+         */
+        File(const char* filename)
+        {
+            std::string s = filename;
+            init( StringTools::toWideString(s) );
+        }
+
+        /**
+         * @brief Creates a File Object.
+         *      Allows easy access to the file name, path, full path with name, and extension.
+         *      Uses a std::wstring to store data.
+         * @param filename
+         *      The filename or path.
+         */
+        File(const wchar_t* filename)
+        {
+            init( filename );
+        }
+
+        /**
+         * @brief Creates a File Object.
+         *      Allows easy access to the file name, path, full path with name, and extension.
+         *      Uses a std::wstring to store data.
+         * @param filename
+         *      The filename or path.
+         */
+        File(wchar_t* filename)
+        {
+            init( filename );
+        }
 
         /**
          * @brief Destroys a File Object.
@@ -49,8 +115,8 @@ namespace glib
         std::wstring getExtension();
 
     private:
-        template<typename T>
-        void init(std::basic_string<T> filename);
+        void init(std::wstring filename);
+        
         std::wstring fullFileName;
         int locationOfExtension;
         int locationOfFileName;

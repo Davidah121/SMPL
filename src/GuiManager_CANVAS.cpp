@@ -27,7 +27,6 @@ namespace glib
 
 	void GuiCanvas::update()
 	{
-
 		Graphics::setColor(clearColor);
 		myImage.clearImage();
 	}

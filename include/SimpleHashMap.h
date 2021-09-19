@@ -17,31 +17,163 @@ namespace glib
     class SimpleHashMap
     {
     public:
+        /**
+         * @brief Construct a new SimpleHashMap object
+         *      SimpleHashMap is designed to be faster to delete than the std::multimap but it uses significantly more memory.
+         *      Due to this, SimpleHashMap is best used on smaller data sets to avoid large memory allocation.
+         *      Data is stored into a single array. The buckets are sections in the array.
+         * 
+         * @param mode 
+         *      Valid modes are:
+         *          MODE_UNIQUE_KEY
+         *          MODE_REMOVE_LAST_FROM_BUCKET
+         *          MODE_KEEP_ALL
+         *      Unique Key will replace the data with the same key.
+         *      Remove Last allows the same key. Once the bucket has reached max size, it removes the last version of that key in the bucket if it exists
+         *          and has exceeded the maximum amount allow for that key (Default is 10). Otherwise, it resizes the bucket.
+         *      Keep All keeps all data added to the hash map.
+         *      Default value is MODE_KEEP_ALL
+         * @param initBuckets 
+         *      The initial amount of buckets
+         *      Default value is 20
+         * @param maxSizeOfBuckets 
+         *      The initial maximum size of the buckets
+         *      Default value is 20
+         */
         SimpleHashMap(unsigned char mode = MODE_KEEP_ALL, int initBuckets = 20, int maxSizeOfBuckets = 20);
+
+        /**
+         * @brief Construct a new SimpleHashMap object from another SimpleHashMap
+         * 
+         * @param other 
+         */
         SimpleHashMap(const SimpleHashMap<K, T>& other);
+
+        /**
+         * @brief Copies a SimpleHashMap object
+         * 
+         * @param other 
+         */
         void operator=(const SimpleHashMap<K, T>& other);
+
+        /**
+         * @brief Destroy the SimpleHashMap object
+         * 
+         */
         ~SimpleHashMap();
 
         static const unsigned char MODE_UNIQUE_KEY = 0;
         static const unsigned char MODE_REMOVE_LAST_FROM_BUCKET = 1;
         static const unsigned char MODE_KEEP_ALL = 2;
 
+        /**
+         * @brief Clears the SimpleHashMap
+         * 
+         */
         void clear();
+
+        /**
+         * @brief Adds a new data entry into the SimpleHashMap based on the mode of the hashmap
+         * 
+         * @param key 
+         * @param value 
+         */
         void add(K key, T value);
+
+        /**
+         * @brief Removes the first entry found for the key.
+         * 
+         * @param key 
+         */
         void removeFirst(K key);
+
+        /**
+         * @brief Removes the last entry found for the key.
+         * 
+         * @param key 
+         */
         void removeLast(K key);
+
+        /**
+         * @brief Removes all entry found for the key.
+         * 
+         * @param key 
+         */
         void removeAll(K key);
+
+        /**
+         * @brief Removes a specific entry from the hashmap.
+         * 
+         * @param rm 
+         *      A pointer to the data entry to be removed.
+         */
         void remove(HashPair<K, T>* rm);
+
+        /**
+         * @brief Gets the first entry with the specified key.
+         * 
+         * @param key 
+         * @return HashPair<K, T>* 
+         */
         HashPair<K, T>* get(K key);
+
+        /**
+         * @brief Gets all entries with the specified key.
+         * 
+         * @param key 
+         * @return std::vector<HashPair<K, T>*> 
+         */
         std::vector<HashPair<K, T>*> getAll(K key);
 
+        /**
+         * @brief Returns the amount of entries
+         * 
+         * @return size_t 
+         */
         size_t size();
+
+        /**
+         * @brief Returns the total amount of data taken up.
+         * 
+         * @return size_t 
+         */
         size_t totalSize();
 
+        /**
+         * @brief Rehashes the hashmap.
+         *      Can help performance if the data has been reorganized.
+         *      Slow function that allocates a lot of memory.
+         */
         void rehash();
+
+        /**
+         * @brief Returns all of the data entries
+         * 
+         * @return std::vector< HashPair<K, T>* > 
+         */
         std::vector< HashPair<K, T>* > getData();
 
+
+        /**
+         * @brief Sets the mode of the hashmap.
+         *      Valid modes are:
+         *          MODE_UNIQUE_KEY
+         *          MODE_REMOVE_LAST_FROM_BUCKET
+         *          MODE_KEEP_ALL
+         *      Unique Key will replace the data with the same key.
+         *      Remove Last allows the same key. Once the bucket has reached max size, it removes the last version of that key in the bucket if it exists
+         *          and has exceeded the maximum amount allow for that key. Otherwise, it resizes the bucket.
+         *      Keep All keeps all data added to the hash map.
+         * @param v 
+         */
         void setMode(unsigned char v);
+
+        /**
+         * @brief Sets the maximum amount of entries allowed with the same key.
+         *      Default is 10.
+         * 
+         * @param v 
+         */
         void setMaxOfSameKey(int v);
 
     private:

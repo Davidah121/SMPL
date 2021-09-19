@@ -1,0 +1,70 @@
+\hypertarget{_complex_number_8h_source}{}\doxysection{Complex\+Number.\+h}
+\label{_complex_number_8h_source}\index{include/ComplexNumber.h@{include/ComplexNumber.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include "{}Object.h"{}}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}Vec2f.h"{}}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{6 \{}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
+\DoxyCodeLine{9     \{}
+\DoxyCodeLine{10     \textcolor{keyword}{public}:}
+\DoxyCodeLine{15         \mbox{\hyperlink{classglib_1_1_complex_number_a6b84d2629b8ba213141a0d56be3dbc9a}{ComplexNumber}}();}
+\DoxyCodeLine{16 }
+\DoxyCodeLine{25         \mbox{\hyperlink{classglib_1_1_complex_number_ace2269e3536832d17ecc52e6ab482ff4}{ComplexNumber}}(\textcolor{keywordtype}{double} real, \textcolor{keywordtype}{double} imaginary);}
+\DoxyCodeLine{31         \mbox{\hyperlink{classglib_1_1_complex_number_ae2505f232d4c8b9bbb776d392ebdc9b6}{ComplexNumber}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}}\& other);}
+\DoxyCodeLine{32 }
+\DoxyCodeLine{36         \mbox{\hyperlink{classglib_1_1_complex_number_a4c7160452dff2b3441086447691c2874}{\string~ComplexNumber}}();}
+\DoxyCodeLine{37 }
+\DoxyCodeLine{38         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{39         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{40         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{41         }
+\DoxyCodeLine{42         \mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} operator+(\mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} other);}
+\DoxyCodeLine{43         \mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} operator-\/(\mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} other);}
+\DoxyCodeLine{44         \mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} operator-\/();}
+\DoxyCodeLine{45         \mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} operator*(\mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} other);}
+\DoxyCodeLine{46 }
+\DoxyCodeLine{56         \mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} \mbox{\hyperlink{classglib_1_1_complex_number_af8b06a31e98695ef2c68846643a74efa}{operator*}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other);}
+\DoxyCodeLine{57 }
+\DoxyCodeLine{67         \mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} \mbox{\hyperlink{classglib_1_1_complex_number_af0d51810876a6ebc8b86930efaf53b59}{operator/}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other);}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69         \mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} operator*(\textcolor{keywordtype}{int} other);}
+\DoxyCodeLine{70         \mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} operator*(\textcolor{keywordtype}{float} other);}
+\DoxyCodeLine{71         \mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} operator*(\textcolor{keywordtype}{double} other);}
+\DoxyCodeLine{72 }
+\DoxyCodeLine{73         \mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} \mbox{\hyperlink{classglib_1_1_complex_number_af0d51810876a6ebc8b86930efaf53b59}{operator/}}(\textcolor{keywordtype}{int} other);}
+\DoxyCodeLine{74         \mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} \mbox{\hyperlink{classglib_1_1_complex_number_af0d51810876a6ebc8b86930efaf53b59}{operator/}}(\textcolor{keywordtype}{float} other);}
+\DoxyCodeLine{75         \mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} \mbox{\hyperlink{classglib_1_1_complex_number_af0d51810876a6ebc8b86930efaf53b59}{operator/}}(\textcolor{keywordtype}{double} other);}
+\DoxyCodeLine{76 }
+\DoxyCodeLine{77         \textcolor{keywordtype}{void} operator+=(\mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} other);}
+\DoxyCodeLine{78         \textcolor{keywordtype}{void} operator-\/=(\mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} other);}
+\DoxyCodeLine{79         \textcolor{keywordtype}{void} operator*=(\mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} other);}
+\DoxyCodeLine{80 }
+\DoxyCodeLine{87         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_complex_number_a2fe4531e95938bddde111257680a2b87}{operator*=}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other);}
+\DoxyCodeLine{88 }
+\DoxyCodeLine{95         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_complex_number_ad190e353b473b0047dd10c855560c811}{operator/=}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other);}
+\DoxyCodeLine{96 }
+\DoxyCodeLine{97         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{int} other);}
+\DoxyCodeLine{98         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{float} other);}
+\DoxyCodeLine{99         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{double} other);}
+\DoxyCodeLine{100 }
+\DoxyCodeLine{101         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_complex_number_ad190e353b473b0047dd10c855560c811}{operator/=}}(\textcolor{keywordtype}{int} other);}
+\DoxyCodeLine{102         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_complex_number_ad190e353b473b0047dd10c855560c811}{operator/=}}(\textcolor{keywordtype}{float} other);}
+\DoxyCodeLine{103         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_complex_number_ad190e353b473b0047dd10c855560c811}{operator/=}}(\textcolor{keywordtype}{double} other);}
+\DoxyCodeLine{104 }
+\DoxyCodeLine{105         \textcolor{comment}{//logic operators}}
+\DoxyCodeLine{106         \textcolor{keywordtype}{bool} operator==(\mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} other);}
+\DoxyCodeLine{107         \textcolor{keywordtype}{bool} operator!=(\mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} other);}
+\DoxyCodeLine{108         }
+\DoxyCodeLine{109         \textcolor{keywordtype}{double} real = 0;}
+\DoxyCodeLine{110         \textcolor{keywordtype}{double} imaginary = 0;}
+\DoxyCodeLine{111     \textcolor{keyword}{private}:}
+\DoxyCodeLine{112     \};}
+\DoxyCodeLine{113 }
+\DoxyCodeLine{114 \}}
+
+\end{DoxyCode}

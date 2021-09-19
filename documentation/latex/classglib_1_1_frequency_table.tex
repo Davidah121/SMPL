@@ -1,0 +1,153 @@
+\hypertarget{classglib_1_1_frequency_table}{}\doxysection{glib\+::Frequency\+Table\texorpdfstring{$<$}{<} T \texorpdfstring{$>$}{>} Class Template Reference}
+\label{classglib_1_1_frequency_table}\index{glib::FrequencyTable$<$ T $>$@{glib::FrequencyTable$<$ T $>$}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_frequency_table_ad7ab4dd38b820f953130ebf47649c08b}\label{classglib_1_1_frequency_table_ad7ab4dd38b820f953130ebf47649c08b}} 
+{\bfseries Frequency\+Table} ()
+\begin{DoxyCompactList}\small\item\em Creates a \mbox{\hyperlink{classglib_1_1_frequency_table}{Frequency\+Table}} \mbox{\hyperlink{classglib_1_1_object}{Object}} Uses templates to allow counting for any object. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_frequency_table_a034efe43641385807c1deeb489748a54}\label{classglib_1_1_frequency_table_a034efe43641385807c1deeb489748a54}} 
+{\bfseries $\sim$\+Frequency\+Table} ()
+\begin{DoxyCompactList}\small\item\em Destroys a \mbox{\hyperlink{classglib_1_1_frequency_table}{Frequency\+Table}} \mbox{\hyperlink{classglib_1_1_object}{Object}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_frequency_table_a4c0fd70923b6a9596d2b05b37dba416e}{add}} (T value)
+\begin{DoxyCompactList}\small\item\em Adds a value to the table. If it already exists, its frequency is increased. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classglib_1_1_frequency_table_a5d17ecdf9ff2c544962481af0d9dbc4f}{get\+Frequency}} (T value)
+\begin{DoxyCompactList}\small\item\em Returns the frequency of the value. Takes O(\+N) time if unsorted. Takes O(\+Log\+N) time if sorted. \end{DoxyCompactList}\item 
+T \mbox{\hyperlink{classglib_1_1_frequency_table_af18347332db297142515b6e275f3b325}{get\+Value\+At\+Location}} (size\+\_\+t location)
+\begin{DoxyCompactList}\small\item\em Gets the value at the specified location in the list. Location may change after sorting. If the location is invalid and USE\+\_\+\+EXCEPTIONS is defined, an Out\+Of\+Bounds Error is thrown. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classglib_1_1_frequency_table_a126b069a5dedbfb617315b756f7396ea}{get\+Frequency\+At\+Location}} (size\+\_\+t location)
+\begin{DoxyCompactList}\small\item\em Gets the frequency at the specified location in the list. Location may change after sorting. If the location is invalid and USE\+\_\+\+EXCEPTIONS is defined, an Out\+Of\+Bounds Error is thrown. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_frequency_table_a619e242264999596cbd228f9007167a5}\label{classglib_1_1_frequency_table_a619e242264999596cbd228f9007167a5}} 
+void {\bfseries clear} ()
+\begin{DoxyCompactList}\small\item\em Clears the frequency table. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classglib_1_1_frequency_table_ac1f595c5dd599c5f19bb0331371c38d5}{sum\+Of\+Frequencies}} ()
+\begin{DoxyCompactList}\small\item\em Returns a sum of all frequencies. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classglib_1_1_frequency_table_ab83a851b5c97bbcbde27ee0ff62cfdee}{size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the size of the frequency table. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_frequency_table_acd565ef1213dd63ac92828c6d06d6493}{sort}} (bool insertion\+Sort)
+\begin{DoxyCompactList}\small\item\em Sorts the frequency table. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_frequency_table_a4c0fd70923b6a9596d2b05b37dba416e}\label{classglib_1_1_frequency_table_a4c0fd70923b6a9596d2b05b37dba416e}} 
+\index{glib::FrequencyTable$<$ T $>$@{glib::FrequencyTable$<$ T $>$}!add@{add}}
+\index{add@{add}!glib::FrequencyTable$<$ T $>$@{glib::FrequencyTable$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void \mbox{\hyperlink{classglib_1_1_frequency_table}{glib\+::\+Frequency\+Table}}$<$ T $>$\+::add (\begin{DoxyParamCaption}\item[{T}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Adds a value to the table. If it already exists, its frequency is increased. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The value to add to the table. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_frequency_table_a5d17ecdf9ff2c544962481af0d9dbc4f}\label{classglib_1_1_frequency_table_a5d17ecdf9ff2c544962481af0d9dbc4f}} 
+\index{glib::FrequencyTable$<$ T $>$@{glib::FrequencyTable$<$ T $>$}!getFrequency@{getFrequency}}
+\index{getFrequency@{getFrequency}!glib::FrequencyTable$<$ T $>$@{glib::FrequencyTable$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getFrequency()}{getFrequency()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+size\+\_\+t \mbox{\hyperlink{classglib_1_1_frequency_table}{glib\+::\+Frequency\+Table}}$<$ T $>$\+::get\+Frequency (\begin{DoxyParamCaption}\item[{T}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the frequency of the value. Takes O(\+N) time if unsorted. Takes O(\+Log\+N) time if sorted. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The value to add to the table. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+size\+\_\+t Returns a value greater than 0 if the value was found. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_frequency_table_a126b069a5dedbfb617315b756f7396ea}\label{classglib_1_1_frequency_table_a126b069a5dedbfb617315b756f7396ea}} 
+\index{glib::FrequencyTable$<$ T $>$@{glib::FrequencyTable$<$ T $>$}!getFrequencyAtLocation@{getFrequencyAtLocation}}
+\index{getFrequencyAtLocation@{getFrequencyAtLocation}!glib::FrequencyTable$<$ T $>$@{glib::FrequencyTable$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getFrequencyAtLocation()}{getFrequencyAtLocation()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+size\+\_\+t \mbox{\hyperlink{classglib_1_1_frequency_table}{glib\+::\+Frequency\+Table}}$<$ T $>$\+::get\+Frequency\+At\+Location (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{location }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets the frequency at the specified location in the list. Location may change after sorting. If the location is invalid and USE\+\_\+\+EXCEPTIONS is defined, an Out\+Of\+Bounds Error is thrown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em location} & The location to check. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+size\+\_\+t If the function fails, returns a frequency value of 0. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_frequency_table_af18347332db297142515b6e275f3b325}\label{classglib_1_1_frequency_table_af18347332db297142515b6e275f3b325}} 
+\index{glib::FrequencyTable$<$ T $>$@{glib::FrequencyTable$<$ T $>$}!getValueAtLocation@{getValueAtLocation}}
+\index{getValueAtLocation@{getValueAtLocation}!glib::FrequencyTable$<$ T $>$@{glib::FrequencyTable$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getValueAtLocation()}{getValueAtLocation()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+T \mbox{\hyperlink{classglib_1_1_frequency_table}{glib\+::\+Frequency\+Table}}$<$ T $>$\+::get\+Value\+At\+Location (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{location }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets the value at the specified location in the list. Location may change after sorting. If the location is invalid and USE\+\_\+\+EXCEPTIONS is defined, an Out\+Of\+Bounds Error is thrown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em location} & The location to check. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+T The value returned. If the function fails, returns the default constructed value if possible. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_frequency_table_ab83a851b5c97bbcbde27ee0ff62cfdee}\label{classglib_1_1_frequency_table_ab83a851b5c97bbcbde27ee0ff62cfdee}} 
+\index{glib::FrequencyTable$<$ T $>$@{glib::FrequencyTable$<$ T $>$}!size@{size}}
+\index{size@{size}!glib::FrequencyTable$<$ T $>$@{glib::FrequencyTable$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+size\+\_\+t \mbox{\hyperlink{classglib_1_1_frequency_table}{glib\+::\+Frequency\+Table}}$<$ T $>$\+::size\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the size of the frequency table. 
+
+\begin{DoxyReturn}{Returns}
+size\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_frequency_table_acd565ef1213dd63ac92828c6d06d6493}\label{classglib_1_1_frequency_table_acd565ef1213dd63ac92828c6d06d6493}} 
+\index{glib::FrequencyTable$<$ T $>$@{glib::FrequencyTable$<$ T $>$}!sort@{sort}}
+\index{sort@{sort}!glib::FrequencyTable$<$ T $>$@{glib::FrequencyTable$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{sort()}{sort()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void \mbox{\hyperlink{classglib_1_1_frequency_table}{glib\+::\+Frequency\+Table}}$<$ T $>$\+::sort (\begin{DoxyParamCaption}\item[{bool}]{insertion\+Sort }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sorts the frequency table. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em insertion\+Sort} & If set to true, Insertion \mbox{\hyperlink{classglib_1_1_sort}{Sort}} is used. Otherwise, Merge \mbox{\hyperlink{classglib_1_1_sort}{Sort}} is used. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_frequency_table_ac1f595c5dd599c5f19bb0331371c38d5}\label{classglib_1_1_frequency_table_ac1f595c5dd599c5f19bb0331371c38d5}} 
+\index{glib::FrequencyTable$<$ T $>$@{glib::FrequencyTable$<$ T $>$}!sumOfFrequencies@{sumOfFrequencies}}
+\index{sumOfFrequencies@{sumOfFrequencies}!glib::FrequencyTable$<$ T $>$@{glib::FrequencyTable$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{sumOfFrequencies()}{sumOfFrequencies()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+size\+\_\+t \mbox{\hyperlink{classglib_1_1_frequency_table}{glib\+::\+Frequency\+Table}}$<$ T $>$\+::sum\+Of\+Frequencies\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns a sum of all frequencies. 
+
+\begin{DoxyReturn}{Returns}
+size\+\_\+t 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Frequency\+Table.\+h\end{DoxyCompactItemize}

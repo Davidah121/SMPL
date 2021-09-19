@@ -6,5 +6,5 @@
 #include "Input.h"
 #include "MathExt.h"
 #include "Sort.h"
-#include "WndWindow.h"
+#include "SimpleWindow.h"
 #include "System.h"

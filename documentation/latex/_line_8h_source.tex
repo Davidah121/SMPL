@@ -1,0 +1,76 @@
+\hypertarget{_line_8h_source}{}\doxysection{Line.\+h}
+\label{_line_8h_source}\index{include/Line.h@{include/Line.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include "{}Vec2f.h"{}}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}Object.h"{}}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{6 \{}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_line}{Line}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
+\DoxyCodeLine{9     \{}
+\DoxyCodeLine{10     \textcolor{keyword}{public}:}
+\DoxyCodeLine{15         \mbox{\hyperlink{classglib_1_1_line_afb4ff6f81e9089bea93d1466081a3f26}{Line}}();}
+\DoxyCodeLine{16 }
+\DoxyCodeLine{26         \mbox{\hyperlink{classglib_1_1_line_a43e77cd61b53fb4f2ca7762daa86d3ba}{Line}}(\textcolor{keywordtype}{int} x1, \textcolor{keywordtype}{int} y1, \textcolor{keywordtype}{int} x2, \textcolor{keywordtype}{int} y2);}
+\DoxyCodeLine{27 }
+\DoxyCodeLine{37         \mbox{\hyperlink{classglib_1_1_line_aea235974aeca592776543d458c497ed1}{Line}}(\textcolor{keywordtype}{double} x1, \textcolor{keywordtype}{double} y1, \textcolor{keywordtype}{double} x2, \textcolor{keywordtype}{double} y2);}
+\DoxyCodeLine{38 }
+\DoxyCodeLine{46         \mbox{\hyperlink{classglib_1_1_line_ab1bbb6ad7e403984776fa452a84a5456}{Line}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p2);}
+\DoxyCodeLine{47 }
+\DoxyCodeLine{52         \mbox{\hyperlink{classglib_1_1_line_a3432654787f7448d3e771ff166b64f8e}{\string~Line}}();}
+\DoxyCodeLine{53 }
+\DoxyCodeLine{54         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{55         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{56         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{57 }
+\DoxyCodeLine{63         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_line_afc1ff1d71d395423ca2cbad5205a8c43}{getPoint1}}();}
+\DoxyCodeLine{64 }
+\DoxyCodeLine{70         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_line_a5734753c6c165cd3129e72c57a3d9bb4}{getPoint2}}();}
+\DoxyCodeLine{71 }
+\DoxyCodeLine{77         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_line_a57be84a379beb8f28e85e29eec303af4}{getToPoint}}();}
+\DoxyCodeLine{78         }
+\DoxyCodeLine{84         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_line_ad596d5adeff71793f3206b283851e46e}{getMaxX}}();}
+\DoxyCodeLine{85 }
+\DoxyCodeLine{91         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_line_a6657c44b0072667575ec953f498da1ba}{getMinX}}();}
+\DoxyCodeLine{92 }
+\DoxyCodeLine{98         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_line_a707a2cc6a6cc7a0d880a1c03c684cfdb}{getMinY}}();}
+\DoxyCodeLine{99 }
+\DoxyCodeLine{105         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_line_a0533c02062dad24113a4ce5b4d87f548}{getMaxY}}();}
+\DoxyCodeLine{106 }
+\DoxyCodeLine{112         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_line_accdb5cb0d6e00aba18782515b87345ef}{getSlope}}();}
+\DoxyCodeLine{113 }
+\DoxyCodeLine{119         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_line_abc4369d7ad15e45e47d35da9415eaac0}{getSlopeRelativeY}}();}
+\DoxyCodeLine{120 }
+\DoxyCodeLine{127         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_line_af1c9f21f36e06e9dbec90906da4b7f43}{getYInt}}();}
+\DoxyCodeLine{128 }
+\DoxyCodeLine{135         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_line_a7ce6e7ae1159a505c1a1b0cf5b1f9c6b}{getXInt}}();}
+\DoxyCodeLine{136 }
+\DoxyCodeLine{144         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_line_a60a238937be1433ccaf44e58a1a088f7}{solveForX}}(\textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{145 }
+\DoxyCodeLine{154         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_line_a4ffe904d3646a20c911aac5575ae05df}{solveForY}}(\textcolor{keywordtype}{double} x);}
+\DoxyCodeLine{155 }
+\DoxyCodeLine{164         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_line_a6fafbc696db4a3783a8dba72757d9faf}{getIntersection}}(\mbox{\hyperlink{classglib_1_1_line}{Line}} other);}
+\DoxyCodeLine{165 }
+\DoxyCodeLine{166     \textcolor{keyword}{private}:}
+\DoxyCodeLine{167         \textcolor{keywordtype}{void} setMinMax();}
+\DoxyCodeLine{168         \textcolor{keywordtype}{void} setSlopeStuff();}
+\DoxyCodeLine{169 }
+\DoxyCodeLine{170         \textcolor{keywordtype}{double} slope = 0;}
+\DoxyCodeLine{171         \textcolor{keywordtype}{double} slopeRelY = 0;}
+\DoxyCodeLine{172         \textcolor{keywordtype}{double} xInt = 0;}
+\DoxyCodeLine{173         \textcolor{keywordtype}{double} yInt = 0;}
+\DoxyCodeLine{174 }
+\DoxyCodeLine{175         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} point1 = \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}(0,0);}
+\DoxyCodeLine{176         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} point2 = \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}(0, 0);}
+\DoxyCodeLine{177         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} toPoint = \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}(0, 0);}
+\DoxyCodeLine{178 }
+\DoxyCodeLine{179         \textcolor{keywordtype}{double} minX = 0, maxX = 0, minY = 0, maxY = 0;}
+\DoxyCodeLine{180 }
+\DoxyCodeLine{181     \};}
+\DoxyCodeLine{182 }
+\DoxyCodeLine{183 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

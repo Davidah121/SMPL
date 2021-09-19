@@ -23,14 +23,26 @@ namespace glib
 
 	void GuiSprite::update()
 	{
-		if(lastUpdateTime == 0)
+		if(index < img.getSize())
 		{
-			lastUpdateTime = System::getCurrentTimeMicro();
-		}
-		else if(System::getCurrentTimeMicro() - lastUpdateTime >= img.getDelayTime(index))
-		{
-			lastUpdateTime = System::getCurrentTimeMicro();
-			index = (index+1) % img.getSize();
+			if(lastUpdateTime == 0)
+			{
+				lastUpdateTime = System::getCurrentTimeMicro();
+			}
+			else if(System::getCurrentTimeMicro() - lastUpdateTime >= img.getDelayTime(index))
+			{
+				lastUpdateTime = System::getCurrentTimeMicro();
+
+				index++;
+
+				if(index >= img.getSize())
+				{
+					if(img.shouldLoop())
+					{
+						index = 0;
+					}
+				}
+			}
 		}
 	}
 
@@ -89,6 +101,12 @@ namespace glib
 	Color GuiSprite::getColor()
 	{
 		return imgColor;
+	}
+
+	void GuiSprite::reset()
+	{
+		index = 0;
+		lastUpdateTime = 0;
 	}
 
 	#pragma endregion

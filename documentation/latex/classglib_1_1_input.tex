@@ -1,0 +1,533 @@
+\hypertarget{classglib_1_1_input}{}\doxysection{glib\+::Input Class Reference}
+\label{classglib_1_1_input}\index{glib::Input@{glib::Input}}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a7c8ba62dcbbf4c4629eea675537a27ad}\label{classglib_1_1_input_a7c8ba62dcbbf4c4629eea675537a27ad}} 
+static void {\bfseries poll\+Input} ()
+\begin{DoxyCompactList}\small\item\em Polls input from the the Keyboard and Mouse using the OS tools. Note that mouse scroll wheel uses the currently active window to update. This may be changed. poll\+Input should be called to update the status of each key. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_input_a78d173024bc668d2a515dc2187aab44d}{get\+Key\+Pressed}} (unsigned char k)
+\begin{DoxyCompactList}\small\item\em Returns whether the specified key has just been pressed. Last until the next poll\+Input is called even if the key is being held down. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_input_ab5c1021f1f5a37608204dfa97eb45a90}{get\+Key\+Down}} (unsigned char k)
+\begin{DoxyCompactList}\small\item\em Returns whether the specified key is being held down. Last as long as the key is held down. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_input_a6f639b98da2f6d0b22028352c958cae5}{get\+Key\+Up}} (unsigned char k)
+\begin{DoxyCompactList}\small\item\em Returns whether the specified key has just been released. Last until the next poll\+Input is called. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_input_add8695d31bf065d6c1f15bfbb61447e7}{get\+Mouse\+Pressed}} (int v)
+\begin{DoxyCompactList}\small\item\em Returns whether the specified mouse button has just been pressed. Last until the next poll\+Input is called even if the button is still being held down. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_input_a6412e7544b232fba8bfd754800481a39}{get\+Mouse\+Down}} (int v)
+\begin{DoxyCompactList}\small\item\em Returns whether the specified mouse button is being held down. Last as long as the button is being held down. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_input_af1ac246330d9f9d87039d1ad84328189}{get\+Mouse\+Up}} (int v)
+\begin{DoxyCompactList}\small\item\em Returns whether the specified mouse button has just been released. Last until the next poll\+Input is called. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_input_a91ebf69a926f35d0cc7a8642d86d30fc}{get\+Mouse\+Scroll\+Vertical}} ()
+\begin{DoxyCompactList}\small\item\em Returns the mouse scroll wheel value in the vertical direction. Can return a positive or negative value which indicates the intensity and direction. Requires an active window to be in use. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_input_a83f81791912be744e81aa5150974b67c}{get\+Mouse\+Scroll\+Horizontal}} ()
+\begin{DoxyCompactList}\small\item\em Returns the mouse scroll wheel value in the horizontal direction. Can return a positive or negative value which indicates the intensity and direction. Requires an active window to be in use. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_input_ac9c09f187ebc0a74f44a2fe07876ce1d}{get\+MouseX}} ()
+\begin{DoxyCompactList}\small\item\em Gets the mouse x position. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_input_ad2725fa981525babdd45b4afd1bdcf5d}{get\+MouseY}} ()
+\begin{DoxyCompactList}\small\item\em Gets the mouse y position. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_input_a38cd1554a271ce755ea2cfbe1cce40ea}{get\+Key\+Changed}} ()
+\begin{DoxyCompactList}\small\item\em Gets whether a key state has changed from the previous poll input. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_input_a0453ea2b3d5d87c403faf7d292ab302b}{get\+Mouse\+Moved}} ()
+\begin{DoxyCompactList}\small\item\em Gets whether the mouse has moved from the previous poll input. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_input_a469181ec3287095425be5ae807beaa00}{get\+Last\+Key\+Pressed}} ()
+\begin{DoxyCompactList}\small\item\em Gets the last key that was pressed. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_input_a11f434719ce71818478ba2284f11a360}{get\+Last\+Key\+Down}} ()
+\begin{DoxyCompactList}\small\item\em Gets the last key that was held down. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_input_ae44d64100dac6e6d8333718d085618dc}{get\+Last\+Key\+Released}} ()
+\begin{DoxyCompactList}\small\item\em Gets the last key that was released. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_aac2d33e7672c2d93d497c4f6eef1593e}\label{classglib_1_1_input_aac2d33e7672c2d93d497c4f6eef1593e}} 
+static const unsigned char {\bfseries KEY\+\_\+\+BACKSPACE} = 0x08
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_aec7c95de4a1057996e96d04301dc5111}\label{classglib_1_1_input_aec7c95de4a1057996e96d04301dc5111}} 
+static const unsigned char {\bfseries KEY\+\_\+\+TAB} = 0x09
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a2a13a6f26d57d0b11902deca455b6ec2}\label{classglib_1_1_input_a2a13a6f26d57d0b11902deca455b6ec2}} 
+static const unsigned char {\bfseries KEY\+\_\+\+ENTER} = 0x0D
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a9b17584f6e6706074c950b0942f20a62}\label{classglib_1_1_input_a9b17584f6e6706074c950b0942f20a62}} 
+static const unsigned char {\bfseries KEY\+\_\+\+SHIFT} = 0x10
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a3fcd7b2d5f5e9569248079466cf110f8}\label{classglib_1_1_input_a3fcd7b2d5f5e9569248079466cf110f8}} 
+static const unsigned char {\bfseries KEY\+\_\+\+CONTROL} = 0x11
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a6e9f08b69341e74c9a974d64590921f0}\label{classglib_1_1_input_a6e9f08b69341e74c9a974d64590921f0}} 
+static const unsigned char {\bfseries KEY\+\_\+\+ALT} = 0x12
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_ab80208a6905c080738059e350155ecb2}\label{classglib_1_1_input_ab80208a6905c080738059e350155ecb2}} 
+static const unsigned char {\bfseries KEY\+\_\+\+PAUSE} = 0x13
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_ad364930cdbfad9174ece544e6bb0e3d4}\label{classglib_1_1_input_ad364930cdbfad9174ece544e6bb0e3d4}} 
+static const unsigned char {\bfseries KEY\+\_\+\+CAPSLOCK} = 0x14
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a86d74d5bfa33750038f6a1f76c042736}\label{classglib_1_1_input_a86d74d5bfa33750038f6a1f76c042736}} 
+static const unsigned char {\bfseries KEY\+\_\+\+ESCAPE} = 0x1B
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a75a3a9dfaf8cd0167f6e17a3a67298a5}\label{classglib_1_1_input_a75a3a9dfaf8cd0167f6e17a3a67298a5}} 
+static const unsigned char {\bfseries KEY\+\_\+\+SPACE} = 0x20
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a6b23dcbe9dde3bdc485999f8cb36da07}\label{classglib_1_1_input_a6b23dcbe9dde3bdc485999f8cb36da07}} 
+static const unsigned char {\bfseries KEY\+\_\+\+PAGEUP} = 0x21
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a4cbb6fb1922fff6d1fc68feeafb9fc95}\label{classglib_1_1_input_a4cbb6fb1922fff6d1fc68feeafb9fc95}} 
+static const unsigned char {\bfseries KEY\+\_\+\+PAGEDOWN} = 0x22
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a7d13863df9d26dc0a3895d09646daaac}\label{classglib_1_1_input_a7d13863df9d26dc0a3895d09646daaac}} 
+static const unsigned char {\bfseries KEY\+\_\+\+END} = 0x23
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a043a745a65f8865566da65cd509098af}\label{classglib_1_1_input_a043a745a65f8865566da65cd509098af}} 
+static const unsigned char {\bfseries KEY\+\_\+\+HOME} = 0x24
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_aaedba1d0de62a5afd58d48e4f97c9322}\label{classglib_1_1_input_aaedba1d0de62a5afd58d48e4f97c9322}} 
+static const unsigned char {\bfseries KEY\+\_\+\+LEFT} = 0x25
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a07024e49cb97678cb4e67db95b127fa3}\label{classglib_1_1_input_a07024e49cb97678cb4e67db95b127fa3}} 
+static const unsigned char {\bfseries KEY\+\_\+\+UP} = 0x26
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_aa190b71c9aeba2d567c3bc586ad5f9d9}\label{classglib_1_1_input_aa190b71c9aeba2d567c3bc586ad5f9d9}} 
+static const unsigned char {\bfseries KEY\+\_\+\+RIGHT} = 0x27
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_accff5050179f921c44b0b3d86b7d7244}\label{classglib_1_1_input_accff5050179f921c44b0b3d86b7d7244}} 
+static const unsigned char {\bfseries KEY\+\_\+\+DOWN} = 0x28
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_aebe71a708419074b5adf546e300c1ff8}\label{classglib_1_1_input_aebe71a708419074b5adf546e300c1ff8}} 
+static const unsigned char {\bfseries KEY\+\_\+\+PRINTSCREEN} = 0x2C
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_ad30d3e6a282bab7054dd646af611e369}\label{classglib_1_1_input_ad30d3e6a282bab7054dd646af611e369}} 
+static const unsigned char {\bfseries KEY\+\_\+\+INSERT} = 0x2D
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_af6ced5b12e881af81799878b675d75e9}\label{classglib_1_1_input_af6ced5b12e881af81799878b675d75e9}} 
+static const unsigned char {\bfseries KEY\+\_\+\+DELETE} = 0x2E
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a8d548da08b39c82bd7f61e648c812621}\label{classglib_1_1_input_a8d548da08b39c82bd7f61e648c812621}} 
+static const unsigned char {\bfseries KEY\+\_\+\+NUMPAD0} = 0x60
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a861aeb647794ec4e50d77657ea6664c9}\label{classglib_1_1_input_a861aeb647794ec4e50d77657ea6664c9}} 
+static const unsigned char {\bfseries KEY\+\_\+\+NUMPAD1} = 0x61
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_af8965cb4c380d8c1f19ac0775ff91182}\label{classglib_1_1_input_af8965cb4c380d8c1f19ac0775ff91182}} 
+static const unsigned char {\bfseries KEY\+\_\+\+NUMPAD2} = 0x62
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_af57c889728a0ef75b60de9708ed3b078}\label{classglib_1_1_input_af57c889728a0ef75b60de9708ed3b078}} 
+static const unsigned char {\bfseries KEY\+\_\+\+NUMPAD3} = 0x63
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a464058611f0a64b268fef488784cbe3e}\label{classglib_1_1_input_a464058611f0a64b268fef488784cbe3e}} 
+static const unsigned char {\bfseries KEY\+\_\+\+NUMPAD4} = 0x64
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a59ae94f4531d0eaafbe413c3debcd62f}\label{classglib_1_1_input_a59ae94f4531d0eaafbe413c3debcd62f}} 
+static const unsigned char {\bfseries KEY\+\_\+\+NUMPAD5} = 0x65
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a4952a27dbe0c32bd0e1ddbec9e8599d9}\label{classglib_1_1_input_a4952a27dbe0c32bd0e1ddbec9e8599d9}} 
+static const unsigned char {\bfseries KEY\+\_\+\+NUMPAD6} = 0x66
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a4ba4dc1c478714d7b42abdb79a5fc352}\label{classglib_1_1_input_a4ba4dc1c478714d7b42abdb79a5fc352}} 
+static const unsigned char {\bfseries KEY\+\_\+\+NUMPAD7} = 0x67
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a5489d054ee214b8cea34918352e33613}\label{classglib_1_1_input_a5489d054ee214b8cea34918352e33613}} 
+static const unsigned char {\bfseries KEY\+\_\+\+NUMPAD8} = 0x68
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a97e7220d57253c02e04dfb7a7a9f9af3}\label{classglib_1_1_input_a97e7220d57253c02e04dfb7a7a9f9af3}} 
+static const unsigned char {\bfseries KEY\+\_\+\+NUMPAD9} = 0x69
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a22cf89274d370a284ae99405593b133c}\label{classglib_1_1_input_a22cf89274d370a284ae99405593b133c}} 
+static const unsigned char {\bfseries KEY\+\_\+\+NUMPAD\+\_\+\+MULTIPLY} = 0x6A
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a09e9b13ed545415d96934324ed6d1d43}\label{classglib_1_1_input_a09e9b13ed545415d96934324ed6d1d43}} 
+static const unsigned char {\bfseries KEY\+\_\+\+NUMPAD\+\_\+\+ADD} = 0x6B
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a6ac134b00bef33e41b77ace3064f7048}\label{classglib_1_1_input_a6ac134b00bef33e41b77ace3064f7048}} 
+static const unsigned char {\bfseries KEY\+\_\+\+NUMPAD\+\_\+\+ENTER} = 0x6C
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_aa7fb358162b86831cb738a76f74245ca}\label{classglib_1_1_input_aa7fb358162b86831cb738a76f74245ca}} 
+static const unsigned char {\bfseries KEY\+\_\+\+NUMPAD\+\_\+\+SUBTRACT} = 0x6D
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a1befb49e1f09a3c01096455bd3d6ec8c}\label{classglib_1_1_input_a1befb49e1f09a3c01096455bd3d6ec8c}} 
+static const unsigned char {\bfseries KEY\+\_\+\+NUMPAD\+\_\+\+DECIMAL} = 0x6E
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_ad91f4039656952eca90d7f3ce73e5752}\label{classglib_1_1_input_ad91f4039656952eca90d7f3ce73e5752}} 
+static const unsigned char {\bfseries KEY\+\_\+\+NUMPAD\+\_\+\+DIVIDE} = 0x6F
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a7731dc22ac1568264f19b86bfff26a83}\label{classglib_1_1_input_a7731dc22ac1568264f19b86bfff26a83}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F1} = 0x70
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a0b251bc4c27b0a71b12fa6da659454e1}\label{classglib_1_1_input_a0b251bc4c27b0a71b12fa6da659454e1}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F2} = 0x71
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a2114b8309502b59198572db3c31632b8}\label{classglib_1_1_input_a2114b8309502b59198572db3c31632b8}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F3} = 0x72
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a8a97452d6081a040c6331762711d15f7}\label{classglib_1_1_input_a8a97452d6081a040c6331762711d15f7}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F4} = 0x73
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a354cab3f220a80c30dafc575acb06657}\label{classglib_1_1_input_a354cab3f220a80c30dafc575acb06657}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F5} = 0x74
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a5be16673e56bd8bd5120c353ba872580}\label{classglib_1_1_input_a5be16673e56bd8bd5120c353ba872580}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F6} = 0x75
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a714449240c1e0329e7efe3b9a9e9b96a}\label{classglib_1_1_input_a714449240c1e0329e7efe3b9a9e9b96a}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F7} = 0x76
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a8c0355c6a075b6528d32ef34f6fac795}\label{classglib_1_1_input_a8c0355c6a075b6528d32ef34f6fac795}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F8} = 0x77
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_ab9e8a6c2fb3ec21725e1d3ac9fa13785}\label{classglib_1_1_input_ab9e8a6c2fb3ec21725e1d3ac9fa13785}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F9} = 0x78
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a9f65f1d63014fa5bf16e83df9996a3b0}\label{classglib_1_1_input_a9f65f1d63014fa5bf16e83df9996a3b0}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F10} = 0x79
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_ad68485f2dd9385b50494a2ce9f794735}\label{classglib_1_1_input_ad68485f2dd9385b50494a2ce9f794735}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F11} = 0x7A
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a4becc40c9db8c9da433559771d6d3370}\label{classglib_1_1_input_a4becc40c9db8c9da433559771d6d3370}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F12} = 0x7B
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a1e491f80174d1709e1423baa6d69c70d}\label{classglib_1_1_input_a1e491f80174d1709e1423baa6d69c70d}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F13} = 0x7C
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_aa5b13c472ed35368da39f52028d7f5b8}\label{classglib_1_1_input_aa5b13c472ed35368da39f52028d7f5b8}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F14} = 0x7D
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a2de12f766954c0043fa4347f14ad4cb1}\label{classglib_1_1_input_a2de12f766954c0043fa4347f14ad4cb1}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F15} = 0x7E
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_aa52bc975f9529956834b24179d0491a2}\label{classglib_1_1_input_aa52bc975f9529956834b24179d0491a2}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F16} = 0x7F
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_af10dfa4306af60e86d52ebef0ea7b7c8}\label{classglib_1_1_input_af10dfa4306af60e86d52ebef0ea7b7c8}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F17} = 0x80
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a8eec0c3f33cdad20fe6afe297069436e}\label{classglib_1_1_input_a8eec0c3f33cdad20fe6afe297069436e}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F18} = 0x81
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_af6410e5a58f0c182114707d66e1eb21a}\label{classglib_1_1_input_af6410e5a58f0c182114707d66e1eb21a}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F19} = 0x82
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a3d9aadf59de49fa12a9097d4de8edc64}\label{classglib_1_1_input_a3d9aadf59de49fa12a9097d4de8edc64}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F20} = 0x83
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_ac817bd9ee6f6d9eec29afec61604cf7b}\label{classglib_1_1_input_ac817bd9ee6f6d9eec29afec61604cf7b}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F21} = 0x84
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a3a4fbb62fb93cd1f74442665939601a4}\label{classglib_1_1_input_a3a4fbb62fb93cd1f74442665939601a4}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F22} = 0x85
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a7bca04ab35ac3b1e6f969b0a8cb73001}\label{classglib_1_1_input_a7bca04ab35ac3b1e6f969b0a8cb73001}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F23} = 0x86
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a230c61a44644e3946085f4dc2aab090b}\label{classglib_1_1_input_a230c61a44644e3946085f4dc2aab090b}} 
+static const unsigned char {\bfseries KEY\+\_\+\+F24} = 0x87
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a6742c1372ddb5441405f345334cd2895}\label{classglib_1_1_input_a6742c1372ddb5441405f345334cd2895}} 
+static const unsigned char {\bfseries KEY\+\_\+\+NUMLOCK} = 0x90
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_aef42b8da90ecb32f629f17a24929ef26}\label{classglib_1_1_input_aef42b8da90ecb32f629f17a24929ef26}} 
+static const unsigned char {\bfseries KEY\+\_\+\+SCROLL\+\_\+\+LOCK} = 0x91
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a6923254bbb371d075c8e79d247f2b7a6}\label{classglib_1_1_input_a6923254bbb371d075c8e79d247f2b7a6}} 
+static const unsigned char {\bfseries KEY\+\_\+\+LSHIFT} = 0x\+A0
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a8743243e81144f799daa5154bca3d41d}\label{classglib_1_1_input_a8743243e81144f799daa5154bca3d41d}} 
+static const unsigned char {\bfseries KEY\+\_\+\+RSHIFT} = 0x\+A1
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_adefc31b63fda5602a57778b52d7853d8}\label{classglib_1_1_input_adefc31b63fda5602a57778b52d7853d8}} 
+static const unsigned char {\bfseries KEY\+\_\+\+LCONTROL} = 0x\+A2
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a4a6c79bc9bdcee3e55bd06a3fadd77b7}\label{classglib_1_1_input_a4a6c79bc9bdcee3e55bd06a3fadd77b7}} 
+static const unsigned char {\bfseries KEY\+\_\+\+RCONTROL} = 0x\+A3
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a630210dca19a051f6d2b725ce0d7c4ca}\label{classglib_1_1_input_a630210dca19a051f6d2b725ce0d7c4ca}} 
+static const unsigned char {\bfseries KEY\+\_\+\+PLUS} = 0x\+BB
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a0f11f0d1f86025ad08d3882cdfb8b819}\label{classglib_1_1_input_a0f11f0d1f86025ad08d3882cdfb8b819}} 
+static const unsigned char {\bfseries KEY\+\_\+\+COMMA} = 0x\+BC
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a13991e7efb0e6331afc877ed202a7aca}\label{classglib_1_1_input_a13991e7efb0e6331afc877ed202a7aca}} 
+static const unsigned char {\bfseries KEY\+\_\+\+MINUS} = 0x\+BD
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a82d75e2d682d604b9ea86937f6926f7b}\label{classglib_1_1_input_a82d75e2d682d604b9ea86937f6926f7b}} 
+static const unsigned char {\bfseries KEY\+\_\+\+PERIOD} = 0x\+BE
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a9b938574173e76ec57df17530c0710bc}\label{classglib_1_1_input_a9b938574173e76ec57df17530c0710bc}} 
+static const unsigned char {\bfseries KEY\+\_\+\+FORWARD\+\_\+\+SLASH} = 0x\+BF
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_adcd0e175eaa9826e91f864fc5d774452}\label{classglib_1_1_input_adcd0e175eaa9826e91f864fc5d774452}} 
+static const unsigned char {\bfseries KEY\+\_\+\+TILDE} = 0x\+C0
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_aa2aa6293353189b4246c7b956dbc9173}\label{classglib_1_1_input_aa2aa6293353189b4246c7b956dbc9173}} 
+static const unsigned char {\bfseries KEY\+\_\+\+SEMICOLON} = 0x\+BA
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a88133f707f35603ba4c6abbdb4fb09bf}\label{classglib_1_1_input_a88133f707f35603ba4c6abbdb4fb09bf}} 
+static const unsigned char {\bfseries KEY\+\_\+\+LEFT\+\_\+\+SQUARE\+\_\+\+BRACKET} = 0x\+DB
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a7ee45b27aa0578ece76782e2391fc4ed}\label{classglib_1_1_input_a7ee45b27aa0578ece76782e2391fc4ed}} 
+static const unsigned char {\bfseries KEY\+\_\+\+BACK\+\_\+\+SLASH} = 0x\+DC
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_add3cb64b25fbc9793d937737ddeaa7c6}\label{classglib_1_1_input_add3cb64b25fbc9793d937737ddeaa7c6}} 
+static const unsigned char {\bfseries KEY\+\_\+\+RIGHT\+\_\+\+SQUARE\+\_\+\+BRACKET} = 0x\+DD
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a444cf2ecc816f0903d3a0b30c1f44f2f}\label{classglib_1_1_input_a444cf2ecc816f0903d3a0b30c1f44f2f}} 
+static const unsigned char {\bfseries KEY\+\_\+\+SINGLE\+\_\+\+QUOTE} = 0x\+DE
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a822ca3713a9e8efb29d3e3fff9386237}\label{classglib_1_1_input_a822ca3713a9e8efb29d3e3fff9386237}} 
+static const int {\bfseries LEFT\+\_\+\+MOUSE\+\_\+\+BUTTON} = 0x00
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_ad4df147559715fd5a46bd367abd0e97d}\label{classglib_1_1_input_ad4df147559715fd5a46bd367abd0e97d}} 
+static const int {\bfseries MIDDLE\+\_\+\+MOUSE\+\_\+\+BUTTON} = 0x01
+\item 
+\mbox{\Hypertarget{classglib_1_1_input_a8f215ebcdb646dc0b29054aaf20be76e}\label{classglib_1_1_input_a8f215ebcdb646dc0b29054aaf20be76e}} 
+static const int {\bfseries RIGHT\+\_\+\+MOUSE\+\_\+\+BUTTON} = 0x02
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_input_a38cd1554a271ce755ea2cfbe1cce40ea}\label{classglib_1_1_input_a38cd1554a271ce755ea2cfbe1cce40ea}} 
+\index{glib::Input@{glib::Input}!getKeyChanged@{getKeyChanged}}
+\index{getKeyChanged@{getKeyChanged}!glib::Input@{glib::Input}}
+\doxysubsubsection{\texorpdfstring{getKeyChanged()}{getKeyChanged()}}
+{\footnotesize\ttfamily static bool glib\+::\+Input\+::get\+Key\+Changed (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets whether a key state has changed from the previous poll input. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_input_ab5c1021f1f5a37608204dfa97eb45a90}\label{classglib_1_1_input_ab5c1021f1f5a37608204dfa97eb45a90}} 
+\index{glib::Input@{glib::Input}!getKeyDown@{getKeyDown}}
+\index{getKeyDown@{getKeyDown}!glib::Input@{glib::Input}}
+\doxysubsubsection{\texorpdfstring{getKeyDown()}{getKeyDown()}}
+{\footnotesize\ttfamily static bool glib\+::\+Input\+::get\+Key\+Down (\begin{DoxyParamCaption}\item[{unsigned char}]{k }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns whether the specified key is being held down. Last as long as the key is held down. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em k} & The key the check. Use either the constants or the uppercase letters and numbers to reference a key. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_input_a78d173024bc668d2a515dc2187aab44d}\label{classglib_1_1_input_a78d173024bc668d2a515dc2187aab44d}} 
+\index{glib::Input@{glib::Input}!getKeyPressed@{getKeyPressed}}
+\index{getKeyPressed@{getKeyPressed}!glib::Input@{glib::Input}}
+\doxysubsubsection{\texorpdfstring{getKeyPressed()}{getKeyPressed()}}
+{\footnotesize\ttfamily static bool glib\+::\+Input\+::get\+Key\+Pressed (\begin{DoxyParamCaption}\item[{unsigned char}]{k }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns whether the specified key has just been pressed. Last until the next poll\+Input is called even if the key is being held down. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em k} & The key the check. Use either the constants or the uppercase letters and numbers to reference a key. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_input_a6f639b98da2f6d0b22028352c958cae5}\label{classglib_1_1_input_a6f639b98da2f6d0b22028352c958cae5}} 
+\index{glib::Input@{glib::Input}!getKeyUp@{getKeyUp}}
+\index{getKeyUp@{getKeyUp}!glib::Input@{glib::Input}}
+\doxysubsubsection{\texorpdfstring{getKeyUp()}{getKeyUp()}}
+{\footnotesize\ttfamily static bool glib\+::\+Input\+::get\+Key\+Up (\begin{DoxyParamCaption}\item[{unsigned char}]{k }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns whether the specified key has just been released. Last until the next poll\+Input is called. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em k} & The key the check. Use either the constants or the uppercase letters and numbers to reference a key. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_input_a11f434719ce71818478ba2284f11a360}\label{classglib_1_1_input_a11f434719ce71818478ba2284f11a360}} 
+\index{glib::Input@{glib::Input}!getLastKeyDown@{getLastKeyDown}}
+\index{getLastKeyDown@{getLastKeyDown}!glib::Input@{glib::Input}}
+\doxysubsubsection{\texorpdfstring{getLastKeyDown()}{getLastKeyDown()}}
+{\footnotesize\ttfamily static int glib\+::\+Input\+::get\+Last\+Key\+Down (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets the last key that was held down. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_input_a469181ec3287095425be5ae807beaa00}\label{classglib_1_1_input_a469181ec3287095425be5ae807beaa00}} 
+\index{glib::Input@{glib::Input}!getLastKeyPressed@{getLastKeyPressed}}
+\index{getLastKeyPressed@{getLastKeyPressed}!glib::Input@{glib::Input}}
+\doxysubsubsection{\texorpdfstring{getLastKeyPressed()}{getLastKeyPressed()}}
+{\footnotesize\ttfamily static int glib\+::\+Input\+::get\+Last\+Key\+Pressed (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets the last key that was pressed. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_input_ae44d64100dac6e6d8333718d085618dc}\label{classglib_1_1_input_ae44d64100dac6e6d8333718d085618dc}} 
+\index{glib::Input@{glib::Input}!getLastKeyReleased@{getLastKeyReleased}}
+\index{getLastKeyReleased@{getLastKeyReleased}!glib::Input@{glib::Input}}
+\doxysubsubsection{\texorpdfstring{getLastKeyReleased()}{getLastKeyReleased()}}
+{\footnotesize\ttfamily static int glib\+::\+Input\+::get\+Last\+Key\+Released (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets the last key that was released. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_input_a6412e7544b232fba8bfd754800481a39}\label{classglib_1_1_input_a6412e7544b232fba8bfd754800481a39}} 
+\index{glib::Input@{glib::Input}!getMouseDown@{getMouseDown}}
+\index{getMouseDown@{getMouseDown}!glib::Input@{glib::Input}}
+\doxysubsubsection{\texorpdfstring{getMouseDown()}{getMouseDown()}}
+{\footnotesize\ttfamily static bool glib\+::\+Input\+::get\+Mouse\+Down (\begin{DoxyParamCaption}\item[{int}]{v }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns whether the specified mouse button is being held down. Last as long as the button is being held down. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & The mouse button to check. Use the constants to access the correct button. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_input_a0453ea2b3d5d87c403faf7d292ab302b}\label{classglib_1_1_input_a0453ea2b3d5d87c403faf7d292ab302b}} 
+\index{glib::Input@{glib::Input}!getMouseMoved@{getMouseMoved}}
+\index{getMouseMoved@{getMouseMoved}!glib::Input@{glib::Input}}
+\doxysubsubsection{\texorpdfstring{getMouseMoved()}{getMouseMoved()}}
+{\footnotesize\ttfamily static bool glib\+::\+Input\+::get\+Mouse\+Moved (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets whether the mouse has moved from the previous poll input. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_input_add8695d31bf065d6c1f15bfbb61447e7}\label{classglib_1_1_input_add8695d31bf065d6c1f15bfbb61447e7}} 
+\index{glib::Input@{glib::Input}!getMousePressed@{getMousePressed}}
+\index{getMousePressed@{getMousePressed}!glib::Input@{glib::Input}}
+\doxysubsubsection{\texorpdfstring{getMousePressed()}{getMousePressed()}}
+{\footnotesize\ttfamily static bool glib\+::\+Input\+::get\+Mouse\+Pressed (\begin{DoxyParamCaption}\item[{int}]{v }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns whether the specified mouse button has just been pressed. Last until the next poll\+Input is called even if the button is still being held down. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & The mouse button to check. Use the constants to access the correct button. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_input_a83f81791912be744e81aa5150974b67c}\label{classglib_1_1_input_a83f81791912be744e81aa5150974b67c}} 
+\index{glib::Input@{glib::Input}!getMouseScrollHorizontal@{getMouseScrollHorizontal}}
+\index{getMouseScrollHorizontal@{getMouseScrollHorizontal}!glib::Input@{glib::Input}}
+\doxysubsubsection{\texorpdfstring{getMouseScrollHorizontal()}{getMouseScrollHorizontal()}}
+{\footnotesize\ttfamily static int glib\+::\+Input\+::get\+Mouse\+Scroll\+Horizontal (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the mouse scroll wheel value in the horizontal direction. Can return a positive or negative value which indicates the intensity and direction. Requires an active window to be in use. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_input_a91ebf69a926f35d0cc7a8642d86d30fc}\label{classglib_1_1_input_a91ebf69a926f35d0cc7a8642d86d30fc}} 
+\index{glib::Input@{glib::Input}!getMouseScrollVertical@{getMouseScrollVertical}}
+\index{getMouseScrollVertical@{getMouseScrollVertical}!glib::Input@{glib::Input}}
+\doxysubsubsection{\texorpdfstring{getMouseScrollVertical()}{getMouseScrollVertical()}}
+{\footnotesize\ttfamily static int glib\+::\+Input\+::get\+Mouse\+Scroll\+Vertical (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the mouse scroll wheel value in the vertical direction. Can return a positive or negative value which indicates the intensity and direction. Requires an active window to be in use. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_input_af1ac246330d9f9d87039d1ad84328189}\label{classglib_1_1_input_af1ac246330d9f9d87039d1ad84328189}} 
+\index{glib::Input@{glib::Input}!getMouseUp@{getMouseUp}}
+\index{getMouseUp@{getMouseUp}!glib::Input@{glib::Input}}
+\doxysubsubsection{\texorpdfstring{getMouseUp()}{getMouseUp()}}
+{\footnotesize\ttfamily static bool glib\+::\+Input\+::get\+Mouse\+Up (\begin{DoxyParamCaption}\item[{int}]{v }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns whether the specified mouse button has just been released. Last until the next poll\+Input is called. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & The mouse button to check. Use the constants to access the correct button. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_input_ac9c09f187ebc0a74f44a2fe07876ce1d}\label{classglib_1_1_input_ac9c09f187ebc0a74f44a2fe07876ce1d}} 
+\index{glib::Input@{glib::Input}!getMouseX@{getMouseX}}
+\index{getMouseX@{getMouseX}!glib::Input@{glib::Input}}
+\doxysubsubsection{\texorpdfstring{getMouseX()}{getMouseX()}}
+{\footnotesize\ttfamily static int glib\+::\+Input\+::get\+MouseX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets the mouse x position. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_input_ad2725fa981525babdd45b4afd1bdcf5d}\label{classglib_1_1_input_ad2725fa981525babdd45b4afd1bdcf5d}} 
+\index{glib::Input@{glib::Input}!getMouseY@{getMouseY}}
+\index{getMouseY@{getMouseY}!glib::Input@{glib::Input}}
+\doxysubsubsection{\texorpdfstring{getMouseY()}{getMouseY()}}
+{\footnotesize\ttfamily static int glib\+::\+Input\+::get\+MouseY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets the mouse y position. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Input.\+h\end{DoxyCompactItemize}

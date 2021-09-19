@@ -1,0 +1,871 @@
+\hypertarget{classglib_1_1_vector_path}{}\doxysection{glib\+::Vector\+Path Class Reference}
+\label{classglib_1_1_vector_path}\index{glib::VectorPath@{glib::VectorPath}}
+Inheritance diagram for glib\+::Vector\+Path\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classglib_1_1_vector_path}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_vector_path_a7a45cf87ba6d36b88d8c0db00dd246b6}{Vector\+Path}} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}} object Follows the SVG format for a path. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vector_path_ae6cd78f15e06f6bbceb29858aa8b55d5}{Vector\+Path}} (const \mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}} \&other)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}} object from another \mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_ab9583806d6c8a7327abfd9288781f0c2}{operator=}} (\mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}} \&other)
+\begin{DoxyCompactList}\small\item\em Copies a \mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}} object. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_vector_path_a4dea6684c3fabe12a096b9694ad153e7}\label{classglib_1_1_vector_path_a4dea6684c3fabe12a096b9694ad153e7}} 
+{\bfseries $\sim$\+Vector\+Path} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_vector_path_afbea6ed37d4fc8f8ffc36cd021c6fd72}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a03481d46e711aa4cca0f63d20cd7c2a1}{draw}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, int global\+Width, int global\+Height)
+\begin{DoxyCompactList}\small\item\em Draws the \mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_aebf45d923a738750b64f98224a0d51b1}{draw\+Stroke}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$buffer, int global\+Width, int global\+Height)
+\begin{DoxyCompactList}\small\item\em Draws the stroke for the \mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a71d3e7c91940984bab5b06e56dc69da9}{add\+Move\+To}} (double x, double y)
+\begin{DoxyCompactList}\small\item\em Adds a move to command. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a7ecf18ee542e35e11257a24a65d78d9f}{add\+Move\+To}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p)
+\begin{DoxyCompactList}\small\item\em Adds a move to command. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_af0cce3470f99799545c27ea49782c22c}{add\+Move\+To\+Rel}} (double x, double y)
+\begin{DoxyCompactList}\small\item\em Adds a move to relative command. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_aed646d3cf72451ffe9fb372382c4a0a1}{add\+Move\+To\+Rel}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p)
+\begin{DoxyCompactList}\small\item\em Adds a move to relative command. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_adb1bbcb0d9c02560c277901b4b3e422b}{add\+Line\+To}} (double x, double y)
+\begin{DoxyCompactList}\small\item\em Adds a line to command. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a4a751c27c88ab18159c2c5f53db0cb9c}{add\+Line\+To}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p)
+\begin{DoxyCompactList}\small\item\em Adds a line to command. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a0016030c0d287f8a15aeee72648afe73}{add\+Line\+To\+Rel}} (double x, double y)
+\begin{DoxyCompactList}\small\item\em Adds a line to relative command. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a81b52fefdaefc7d95898e92d62b45827}{add\+Line\+To\+Rel}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p)
+\begin{DoxyCompactList}\small\item\em Adds a line to relative command. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a8adcf26ddd5fe745400766d083a17a6f}{add\+Horizontal\+To}} (double x)
+\begin{DoxyCompactList}\small\item\em Adds a horizontal to command. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a2743410972a20d9a05e22fb782900fb0}{add\+Horizontal\+To\+Rel}} (double x)
+\begin{DoxyCompactList}\small\item\em Adds a horizontal to relative command. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a1b341d1f8342437e663620025865c21c}{add\+Vertical\+To}} (double y)
+\begin{DoxyCompactList}\small\item\em Adds a vertical to command. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a969d079713407897ea7c9581207e66fe}{add\+Vertical\+To\+Rel}} (double y)
+\begin{DoxyCompactList}\small\item\em Adds a vertical to relative command. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_vector_path_aaac39a801172b5f1a5112ba9d75afd37}\label{classglib_1_1_vector_path_aaac39a801172b5f1a5112ba9d75afd37}} 
+void {\bfseries add\+Close\+Path} ()
+\begin{DoxyCompactList}\small\item\em Adds a close path command. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a288d722274e892febf4abf79629a7838}{add\+Quad\+To}} (double x1, double y1, double x2, double y2)
+\begin{DoxyCompactList}\small\item\em Adds a quadratic to command. Uses a Quadratic Bezier curve. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a0bdcd9096924de2a38ca24d1e142ae3c}{add\+Quad\+To}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p2)
+\begin{DoxyCompactList}\small\item\em Adds a quadratic to command. Uses a Quadratic Bezier curve. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_ab6fd1e29faa0071703b330e15833e4c6}{add\+Quad\+To\+Rel}} (double x1, double y1, double x2, double y2)
+\begin{DoxyCompactList}\small\item\em Adds a quadratic to relative command. Uses a Quadratic Bezier curve. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a15666dde42346622f5f047a5c1ce2c16}{add\+Quad\+To\+Rel}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p2)
+\begin{DoxyCompactList}\small\item\em Adds a quadratic to relative command. Uses a Quadratic Bezier curve. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a7a0cb8d0652161a3df18942af07a3c00}{add\+Quad\+To\+Short}} (double x, double y)
+\begin{DoxyCompactList}\small\item\em Adds a short quadratic to command. Builds a new quadratic bezier curve using the previous one. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_ae6b1025f8d9c29bbd525495451a7e08e}{add\+Quad\+To\+Short}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p)
+\begin{DoxyCompactList}\small\item\em Adds a short quadratic to command. Builds a new quadratic bezier curve using the previous one. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_abd60854ac09c5248040f998e4c273b05}{add\+Quad\+To\+Short\+Rel}} (double x, double y)
+\begin{DoxyCompactList}\small\item\em Adds a short quadratic to relative command. Builds a new quadratic bezier curve using the previous one. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a869f17be4d96dc1b88678c0e7b39c838}{add\+Quad\+To\+Short\+Rel}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p)
+\begin{DoxyCompactList}\small\item\em Adds a short quadratic to relative command. Builds a new quadratic bezier curve using the previous one. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a48ab6da96daa59d15aed6dd9cfb9bac0}{add\+Cubic\+To}} (double x1, double y1, double x2, double y2, double x3, double y3)
+\begin{DoxyCompactList}\small\item\em Adds a cubic to command. Uses a Cubic Bezier Curve. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a5c1abe8aa3073e6205f7fdb6b7e33a34}{add\+Cubic\+To}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p2, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p3)
+\begin{DoxyCompactList}\small\item\em Adds a cubic to command. Uses a Cubic Bezier Curve. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a9b53bde5b50bad8c49930e3055d15b34}{add\+Cubic\+To\+Rel}} (double x1, double y1, double x2, double y2, double x3, double y3)
+\begin{DoxyCompactList}\small\item\em Adds a cubic to relative command. Uses a Cubic Bezier Curve. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a93ad20900adf7df891cc8598cfe37104}{add\+Cubic\+To\+Rel}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p2, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p3)
+\begin{DoxyCompactList}\small\item\em Adds a cubic to relative command. Uses a Cubic Bezier Curve. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a429f16d8e68f202c8490f9819e055357}{add\+Cubic\+To\+Short}} (double x1, double y1, double x2, double y2)
+\begin{DoxyCompactList}\small\item\em Adds a cubic to short command. Builds a new cubic bezier curve using the previous one. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_aaada2edafe4eb45cb7f0585ae4f25773}{add\+Cubic\+To\+Short}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p2)
+\begin{DoxyCompactList}\small\item\em Adds a cubic to short command. Builds a new cubic bezier curve using the previous one. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_aba1341e4d5e7ea11a5e979471104e72b}{add\+Cubic\+To\+Short\+Rel}} (double x1, double y1, double x2, double y2)
+\begin{DoxyCompactList}\small\item\em Adds a cubic to short relative command. Builds a new cubic bezier curve using the previous one. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a4eddd94ad294332dbfaaa5d3706555ff}{add\+Cubic\+To\+Short\+Rel}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p2)
+\begin{DoxyCompactList}\small\item\em Adds a cubic to short relative command. Builds a new cubic bezier curve using the previous one. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_abfe73ef03834e07c33ad183a2dee0ed7}{add\+Arc\+To}} (double rx, double ry, double angle, bool large\+Arc\+Flag, bool sweep\+Flag, double x, double y)
+\begin{DoxyCompactList}\small\item\em Adds an arc to command. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a76e0dc6a5be99763c178ce4084660efa}{add\+Arc\+To}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} radi, double angle, bool large\+Arc\+Flag, bool sweep\+Flag, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p)
+\begin{DoxyCompactList}\small\item\em Adds an arc to command. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_af967721018d248dbf6e31fb8a943378c}{add\+Arc\+To\+Rel}} (double rx, double ry, double angle, bool large\+Arc\+Flag, bool sweep\+Flag, double x, double y)
+\begin{DoxyCompactList}\small\item\em Adds an arc to relative command. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_path_a6e3aee3d7cb8889baa71e0103f87bb55}{add\+Arc\+To\+Rel}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} radi, double angle, bool large\+Arc\+Flag, bool sweep\+Flag, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p)
+\begin{DoxyCompactList}\small\item\em Adds an arc to relative command. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_vector_path_a9b4ebfe7aeb22388b51fc01fc8d4fa9f}\label{classglib_1_1_vector_path_a9b4ebfe7aeb22388b51fc01fc8d4fa9f}} 
+void {\bfseries clear} ()
+\begin{DoxyCompactList}\small\item\em Clears all commands from the \mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}}. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_vector_path_a72db4df9585c09066a6157417121b40a}{size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the amount of commands in the \mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_path_a42bf2465ec1d2de7b10bb97a3e1cc131}\label{classglib_1_1_vector_path_a42bf2465ec1d2de7b10bb97a3e1cc131}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_path_a2495ead810d882660d7509270abd09aa}\label{classglib_1_1_vector_path_a2495ead810d882660d7509270abd09aa}} 
+void {\bfseries apply\+Transform} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a7a45cf87ba6d36b88d8c0db00dd246b6}\label{classglib_1_1_vector_path_a7a45cf87ba6d36b88d8c0db00dd246b6}} 
+\index{glib::VectorPath@{glib::VectorPath}!VectorPath@{VectorPath}}
+\index{VectorPath@{VectorPath}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{VectorPath()}{VectorPath()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily glib\+::\+Vector\+Path\+::\+Vector\+Path (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}} object Follows the SVG format for a path. 
+
+\begin{DoxyVerb}XML Format:
+    <path d=""/>
+    d contains the data and commands.
+    (may contain spaces between the commands and data)
+    (also note that lowercase means relative to the previous location)
+    M X,Y = move to x, y. Ex: M20,30
+    L X,Y = line to x, y. Ex: L50,50
+    H x = horizontal line to x. Ex: H0
+    V y = vertical line to y. Ex: V0
+    Z = close path. (Z and z are the same in this case)
+        Goes back to the first point
+
+    C x1 y1, x2 y2, x y = Cubic bezier curve.
+        start of the curve is the previous point, x1 y1 is the control for first point
+        x y is the end point. x2 y2 is the control for the end point
+
+    S x2 y2, x y = Cubic bezier curve (Shorthand)
+        Assumes that x1 y1 are the reflection of x2 y2 across the start point
+        x1 = startX + (startX - previousX2)
+        y1 = startY + (startY - previousY2)
+
+    Q x1 y1, x y = Quadratic bezier curve
+        start of the curve is the previous point, x1 y1 is the control point
+        x y is the end point
+
+    T x y = Quadratic bezier curve (Shorthand)
+        similar to S, assumes x1 y1 are the reflection of the previous control point
+            across the start point.
+        x1 = startX + (startX - previousX1)
+        y1 = startY + (startY - previousY1)
+
+    A rx ry xrot largeArcFlag sweepFlag x y = Arc
+        rx = x radius
+        ry = y radius
+        xRot = the rotation of the ellipse
+        largeArcFlag = should angle be greater than 180 flag
+        sweepFlag = which direction. (positive or negative/clockwise or counter clockwise)
+        x = x endPoint
+        y = y endPoint
+
+        The combination of both flag determines which circle to use
+        There are 2 circles which are reflected over the start point and end point
+        The start point is the previous end point
+        The end point is specified by x,y
+        May need to expand the ellipse so that they both make contact with the start and end points
+        Solve some system of equations to do that.
+\end{DoxyVerb}
+ NOTE\+: !! Fill rule does affect this object !! !! \mbox{\hyperlink{classglib_1_1_line}{Line}} cap does affect this object !! !! \mbox{\hyperlink{classglib_1_1_line}{Line}} join does affect this object !!
+
+Most complex \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} that can represent any other \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}}. \mbox{\Hypertarget{classglib_1_1_vector_path_ae6cd78f15e06f6bbceb29858aa8b55d5}\label{classglib_1_1_vector_path_ae6cd78f15e06f6bbceb29858aa8b55d5}} 
+\index{glib::VectorPath@{glib::VectorPath}!VectorPath@{VectorPath}}
+\index{VectorPath@{VectorPath}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{VectorPath()}{VectorPath()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily glib\+::\+Vector\+Path\+::\+Vector\+Path (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}} object from another \mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_vector_path_abfe73ef03834e07c33ad183a2dee0ed7}\label{classglib_1_1_vector_path_abfe73ef03834e07c33ad183a2dee0ed7}} 
+\index{glib::VectorPath@{glib::VectorPath}!addArcTo@{addArcTo}}
+\index{addArcTo@{addArcTo}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addArcTo()}{addArcTo()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Arc\+To (\begin{DoxyParamCaption}\item[{double}]{rx,  }\item[{double}]{ry,  }\item[{double}]{angle,  }\item[{bool}]{large\+Arc\+Flag,  }\item[{bool}]{sweep\+Flag,  }\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})}
+
+
+
+Adds an arc to command. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rx} & \\
+\hline
+{\em ry} & \\
+\hline
+{\em angle} & \\
+\hline
+{\em large\+Arc\+Flag} & Whether to use the larger version of the arc when drawing. \\
+\hline
+{\em sweep\+Flag} & Whether to go in postive or negative direction regarding the angle. Whether to go in the counter-\/clockwise or clockwise direction. \\
+\hline
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a76e0dc6a5be99763c178ce4084660efa}\label{classglib_1_1_vector_path_a76e0dc6a5be99763c178ce4084660efa}} 
+\index{glib::VectorPath@{glib::VectorPath}!addArcTo@{addArcTo}}
+\index{addArcTo@{addArcTo}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addArcTo()}{addArcTo()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Arc\+To (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{radi,  }\item[{double}]{angle,  }\item[{bool}]{large\+Arc\+Flag,  }\item[{bool}]{sweep\+Flag,  }\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p }\end{DoxyParamCaption})}
+
+
+
+Adds an arc to command. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em radi} & \\
+\hline
+{\em angle} & \\
+\hline
+{\em large\+Arc\+Flag} & Whether to use the larger version of the arc when drawing. \\
+\hline
+{\em sweep\+Flag} & Whether to go in postive or negative direction regarding the angle. Whether to go in the counter-\/clockwise or clockwise direction. \\
+\hline
+{\em p} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_af967721018d248dbf6e31fb8a943378c}\label{classglib_1_1_vector_path_af967721018d248dbf6e31fb8a943378c}} 
+\index{glib::VectorPath@{glib::VectorPath}!addArcToRel@{addArcToRel}}
+\index{addArcToRel@{addArcToRel}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addArcToRel()}{addArcToRel()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Arc\+To\+Rel (\begin{DoxyParamCaption}\item[{double}]{rx,  }\item[{double}]{ry,  }\item[{double}]{angle,  }\item[{bool}]{large\+Arc\+Flag,  }\item[{bool}]{sweep\+Flag,  }\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})}
+
+
+
+Adds an arc to relative command. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rx} & \\
+\hline
+{\em ry} & \\
+\hline
+{\em angle} & \\
+\hline
+{\em large\+Arc\+Flag} & Whether to use the larger version of the arc when drawing. \\
+\hline
+{\em sweep\+Flag} & Whether to go in postive or negative direction regarding the angle. Whether to go in the counter-\/clockwise or clockwise direction. \\
+\hline
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a6e3aee3d7cb8889baa71e0103f87bb55}\label{classglib_1_1_vector_path_a6e3aee3d7cb8889baa71e0103f87bb55}} 
+\index{glib::VectorPath@{glib::VectorPath}!addArcToRel@{addArcToRel}}
+\index{addArcToRel@{addArcToRel}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addArcToRel()}{addArcToRel()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Arc\+To\+Rel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{radi,  }\item[{double}]{angle,  }\item[{bool}]{large\+Arc\+Flag,  }\item[{bool}]{sweep\+Flag,  }\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p }\end{DoxyParamCaption})}
+
+
+
+Adds an arc to relative command. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em radi} & \\
+\hline
+{\em angle} & \\
+\hline
+{\em large\+Arc\+Flag} & Whether to use the larger version of the arc when drawing. \\
+\hline
+{\em sweep\+Flag} & Whether to go in postive or negative direction regarding the angle. Whether to go in the counter-\/clockwise or clockwise direction. \\
+\hline
+{\em p} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a48ab6da96daa59d15aed6dd9cfb9bac0}\label{classglib_1_1_vector_path_a48ab6da96daa59d15aed6dd9cfb9bac0}} 
+\index{glib::VectorPath@{glib::VectorPath}!addCubicTo@{addCubicTo}}
+\index{addCubicTo@{addCubicTo}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addCubicTo()}{addCubicTo()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Cubic\+To (\begin{DoxyParamCaption}\item[{double}]{x1,  }\item[{double}]{y1,  }\item[{double}]{x2,  }\item[{double}]{y2,  }\item[{double}]{x3,  }\item[{double}]{y3 }\end{DoxyParamCaption})}
+
+
+
+Adds a cubic to command. Uses a Cubic Bezier Curve. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x1} & \\
+\hline
+{\em y1} & \\
+\hline
+{\em x2} & \\
+\hline
+{\em y2} & \\
+\hline
+{\em x3} & \\
+\hline
+{\em y3} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a5c1abe8aa3073e6205f7fdb6b7e33a34}\label{classglib_1_1_vector_path_a5c1abe8aa3073e6205f7fdb6b7e33a34}} 
+\index{glib::VectorPath@{glib::VectorPath}!addCubicTo@{addCubicTo}}
+\index{addCubicTo@{addCubicTo}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addCubicTo()}{addCubicTo()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Cubic\+To (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p1,  }\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p2,  }\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p3 }\end{DoxyParamCaption})}
+
+
+
+Adds a cubic to command. Uses a Cubic Bezier Curve. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p1} & \\
+\hline
+{\em p2} & \\
+\hline
+{\em p3} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a9b53bde5b50bad8c49930e3055d15b34}\label{classglib_1_1_vector_path_a9b53bde5b50bad8c49930e3055d15b34}} 
+\index{glib::VectorPath@{glib::VectorPath}!addCubicToRel@{addCubicToRel}}
+\index{addCubicToRel@{addCubicToRel}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addCubicToRel()}{addCubicToRel()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Cubic\+To\+Rel (\begin{DoxyParamCaption}\item[{double}]{x1,  }\item[{double}]{y1,  }\item[{double}]{x2,  }\item[{double}]{y2,  }\item[{double}]{x3,  }\item[{double}]{y3 }\end{DoxyParamCaption})}
+
+
+
+Adds a cubic to relative command. Uses a Cubic Bezier Curve. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x1} & \\
+\hline
+{\em y1} & \\
+\hline
+{\em x2} & \\
+\hline
+{\em y2} & \\
+\hline
+{\em x3} & \\
+\hline
+{\em y3} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a93ad20900adf7df891cc8598cfe37104}\label{classglib_1_1_vector_path_a93ad20900adf7df891cc8598cfe37104}} 
+\index{glib::VectorPath@{glib::VectorPath}!addCubicToRel@{addCubicToRel}}
+\index{addCubicToRel@{addCubicToRel}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addCubicToRel()}{addCubicToRel()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Cubic\+To\+Rel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p1,  }\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p2,  }\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p3 }\end{DoxyParamCaption})}
+
+
+
+Adds a cubic to relative command. Uses a Cubic Bezier Curve. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p1} & \\
+\hline
+{\em p2} & \\
+\hline
+{\em p3} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a429f16d8e68f202c8490f9819e055357}\label{classglib_1_1_vector_path_a429f16d8e68f202c8490f9819e055357}} 
+\index{glib::VectorPath@{glib::VectorPath}!addCubicToShort@{addCubicToShort}}
+\index{addCubicToShort@{addCubicToShort}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addCubicToShort()}{addCubicToShort()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Cubic\+To\+Short (\begin{DoxyParamCaption}\item[{double}]{x1,  }\item[{double}]{y1,  }\item[{double}]{x2,  }\item[{double}]{y2 }\end{DoxyParamCaption})}
+
+
+
+Adds a cubic to short command. Builds a new cubic bezier curve using the previous one. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x1} & \\
+\hline
+{\em y1} & \\
+\hline
+{\em x2} & \\
+\hline
+{\em y2} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_aaada2edafe4eb45cb7f0585ae4f25773}\label{classglib_1_1_vector_path_aaada2edafe4eb45cb7f0585ae4f25773}} 
+\index{glib::VectorPath@{glib::VectorPath}!addCubicToShort@{addCubicToShort}}
+\index{addCubicToShort@{addCubicToShort}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addCubicToShort()}{addCubicToShort()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Cubic\+To\+Short (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p1,  }\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p2 }\end{DoxyParamCaption})}
+
+
+
+Adds a cubic to short command. Builds a new cubic bezier curve using the previous one. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p1} & \\
+\hline
+{\em p2} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_aba1341e4d5e7ea11a5e979471104e72b}\label{classglib_1_1_vector_path_aba1341e4d5e7ea11a5e979471104e72b}} 
+\index{glib::VectorPath@{glib::VectorPath}!addCubicToShortRel@{addCubicToShortRel}}
+\index{addCubicToShortRel@{addCubicToShortRel}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addCubicToShortRel()}{addCubicToShortRel()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Cubic\+To\+Short\+Rel (\begin{DoxyParamCaption}\item[{double}]{x1,  }\item[{double}]{y1,  }\item[{double}]{x2,  }\item[{double}]{y2 }\end{DoxyParamCaption})}
+
+
+
+Adds a cubic to short relative command. Builds a new cubic bezier curve using the previous one. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x1} & \\
+\hline
+{\em y1} & \\
+\hline
+{\em x2} & \\
+\hline
+{\em y2} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a4eddd94ad294332dbfaaa5d3706555ff}\label{classglib_1_1_vector_path_a4eddd94ad294332dbfaaa5d3706555ff}} 
+\index{glib::VectorPath@{glib::VectorPath}!addCubicToShortRel@{addCubicToShortRel}}
+\index{addCubicToShortRel@{addCubicToShortRel}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addCubicToShortRel()}{addCubicToShortRel()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Cubic\+To\+Short\+Rel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p1,  }\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p2 }\end{DoxyParamCaption})}
+
+
+
+Adds a cubic to short relative command. Builds a new cubic bezier curve using the previous one. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p1} & \\
+\hline
+{\em p2} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a8adcf26ddd5fe745400766d083a17a6f}\label{classglib_1_1_vector_path_a8adcf26ddd5fe745400766d083a17a6f}} 
+\index{glib::VectorPath@{glib::VectorPath}!addHorizontalTo@{addHorizontalTo}}
+\index{addHorizontalTo@{addHorizontalTo}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addHorizontalTo()}{addHorizontalTo()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Horizontal\+To (\begin{DoxyParamCaption}\item[{double}]{x }\end{DoxyParamCaption})}
+
+
+
+Adds a horizontal to command. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a2743410972a20d9a05e22fb782900fb0}\label{classglib_1_1_vector_path_a2743410972a20d9a05e22fb782900fb0}} 
+\index{glib::VectorPath@{glib::VectorPath}!addHorizontalToRel@{addHorizontalToRel}}
+\index{addHorizontalToRel@{addHorizontalToRel}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addHorizontalToRel()}{addHorizontalToRel()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Horizontal\+To\+Rel (\begin{DoxyParamCaption}\item[{double}]{x }\end{DoxyParamCaption})}
+
+
+
+Adds a horizontal to relative command. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_adb1bbcb0d9c02560c277901b4b3e422b}\label{classglib_1_1_vector_path_adb1bbcb0d9c02560c277901b4b3e422b}} 
+\index{glib::VectorPath@{glib::VectorPath}!addLineTo@{addLineTo}}
+\index{addLineTo@{addLineTo}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addLineTo()}{addLineTo()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Line\+To (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})}
+
+
+
+Adds a line to command. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a4a751c27c88ab18159c2c5f53db0cb9c}\label{classglib_1_1_vector_path_a4a751c27c88ab18159c2c5f53db0cb9c}} 
+\index{glib::VectorPath@{glib::VectorPath}!addLineTo@{addLineTo}}
+\index{addLineTo@{addLineTo}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addLineTo()}{addLineTo()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Line\+To (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p }\end{DoxyParamCaption})}
+
+
+
+Adds a line to command. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a0016030c0d287f8a15aeee72648afe73}\label{classglib_1_1_vector_path_a0016030c0d287f8a15aeee72648afe73}} 
+\index{glib::VectorPath@{glib::VectorPath}!addLineToRel@{addLineToRel}}
+\index{addLineToRel@{addLineToRel}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addLineToRel()}{addLineToRel()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Line\+To\+Rel (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})}
+
+
+
+Adds a line to relative command. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a81b52fefdaefc7d95898e92d62b45827}\label{classglib_1_1_vector_path_a81b52fefdaefc7d95898e92d62b45827}} 
+\index{glib::VectorPath@{glib::VectorPath}!addLineToRel@{addLineToRel}}
+\index{addLineToRel@{addLineToRel}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addLineToRel()}{addLineToRel()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Line\+To\+Rel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p }\end{DoxyParamCaption})}
+
+
+
+Adds a line to relative command. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a71d3e7c91940984bab5b06e56dc69da9}\label{classglib_1_1_vector_path_a71d3e7c91940984bab5b06e56dc69da9}} 
+\index{glib::VectorPath@{glib::VectorPath}!addMoveTo@{addMoveTo}}
+\index{addMoveTo@{addMoveTo}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addMoveTo()}{addMoveTo()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Move\+To (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})}
+
+
+
+Adds a move to command. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a7ecf18ee542e35e11257a24a65d78d9f}\label{classglib_1_1_vector_path_a7ecf18ee542e35e11257a24a65d78d9f}} 
+\index{glib::VectorPath@{glib::VectorPath}!addMoveTo@{addMoveTo}}
+\index{addMoveTo@{addMoveTo}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addMoveTo()}{addMoveTo()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Move\+To (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p }\end{DoxyParamCaption})}
+
+
+
+Adds a move to command. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_af0cce3470f99799545c27ea49782c22c}\label{classglib_1_1_vector_path_af0cce3470f99799545c27ea49782c22c}} 
+\index{glib::VectorPath@{glib::VectorPath}!addMoveToRel@{addMoveToRel}}
+\index{addMoveToRel@{addMoveToRel}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addMoveToRel()}{addMoveToRel()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Move\+To\+Rel (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})}
+
+
+
+Adds a move to relative command. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_aed646d3cf72451ffe9fb372382c4a0a1}\label{classglib_1_1_vector_path_aed646d3cf72451ffe9fb372382c4a0a1}} 
+\index{glib::VectorPath@{glib::VectorPath}!addMoveToRel@{addMoveToRel}}
+\index{addMoveToRel@{addMoveToRel}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addMoveToRel()}{addMoveToRel()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Move\+To\+Rel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p }\end{DoxyParamCaption})}
+
+
+
+Adds a move to relative command. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a288d722274e892febf4abf79629a7838}\label{classglib_1_1_vector_path_a288d722274e892febf4abf79629a7838}} 
+\index{glib::VectorPath@{glib::VectorPath}!addQuadTo@{addQuadTo}}
+\index{addQuadTo@{addQuadTo}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addQuadTo()}{addQuadTo()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Quad\+To (\begin{DoxyParamCaption}\item[{double}]{x1,  }\item[{double}]{y1,  }\item[{double}]{x2,  }\item[{double}]{y2 }\end{DoxyParamCaption})}
+
+
+
+Adds a quadratic to command. Uses a Quadratic Bezier curve. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x1} & \\
+\hline
+{\em y1} & \\
+\hline
+{\em x2} & \\
+\hline
+{\em y2} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a0bdcd9096924de2a38ca24d1e142ae3c}\label{classglib_1_1_vector_path_a0bdcd9096924de2a38ca24d1e142ae3c}} 
+\index{glib::VectorPath@{glib::VectorPath}!addQuadTo@{addQuadTo}}
+\index{addQuadTo@{addQuadTo}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addQuadTo()}{addQuadTo()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Quad\+To (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p1,  }\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p2 }\end{DoxyParamCaption})}
+
+
+
+Adds a quadratic to command. Uses a Quadratic Bezier curve. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p1} & \\
+\hline
+{\em p2} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_ab6fd1e29faa0071703b330e15833e4c6}\label{classglib_1_1_vector_path_ab6fd1e29faa0071703b330e15833e4c6}} 
+\index{glib::VectorPath@{glib::VectorPath}!addQuadToRel@{addQuadToRel}}
+\index{addQuadToRel@{addQuadToRel}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addQuadToRel()}{addQuadToRel()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Quad\+To\+Rel (\begin{DoxyParamCaption}\item[{double}]{x1,  }\item[{double}]{y1,  }\item[{double}]{x2,  }\item[{double}]{y2 }\end{DoxyParamCaption})}
+
+
+
+Adds a quadratic to relative command. Uses a Quadratic Bezier curve. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x1} & \\
+\hline
+{\em y1} & \\
+\hline
+{\em x2} & \\
+\hline
+{\em y2} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a15666dde42346622f5f047a5c1ce2c16}\label{classglib_1_1_vector_path_a15666dde42346622f5f047a5c1ce2c16}} 
+\index{glib::VectorPath@{glib::VectorPath}!addQuadToRel@{addQuadToRel}}
+\index{addQuadToRel@{addQuadToRel}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addQuadToRel()}{addQuadToRel()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Quad\+To\+Rel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p1,  }\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p2 }\end{DoxyParamCaption})}
+
+
+
+Adds a quadratic to relative command. Uses a Quadratic Bezier curve. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p1} & \\
+\hline
+{\em p2} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a7a0cb8d0652161a3df18942af07a3c00}\label{classglib_1_1_vector_path_a7a0cb8d0652161a3df18942af07a3c00}} 
+\index{glib::VectorPath@{glib::VectorPath}!addQuadToShort@{addQuadToShort}}
+\index{addQuadToShort@{addQuadToShort}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addQuadToShort()}{addQuadToShort()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Quad\+To\+Short (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})}
+
+
+
+Adds a short quadratic to command. Builds a new quadratic bezier curve using the previous one. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_ae6b1025f8d9c29bbd525495451a7e08e}\label{classglib_1_1_vector_path_ae6b1025f8d9c29bbd525495451a7e08e}} 
+\index{glib::VectorPath@{glib::VectorPath}!addQuadToShort@{addQuadToShort}}
+\index{addQuadToShort@{addQuadToShort}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addQuadToShort()}{addQuadToShort()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Quad\+To\+Short (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p }\end{DoxyParamCaption})}
+
+
+
+Adds a short quadratic to command. Builds a new quadratic bezier curve using the previous one. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_abd60854ac09c5248040f998e4c273b05}\label{classglib_1_1_vector_path_abd60854ac09c5248040f998e4c273b05}} 
+\index{glib::VectorPath@{glib::VectorPath}!addQuadToShortRel@{addQuadToShortRel}}
+\index{addQuadToShortRel@{addQuadToShortRel}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addQuadToShortRel()}{addQuadToShortRel()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Quad\+To\+Short\+Rel (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})}
+
+
+
+Adds a short quadratic to relative command. Builds a new quadratic bezier curve using the previous one. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a869f17be4d96dc1b88678c0e7b39c838}\label{classglib_1_1_vector_path_a869f17be4d96dc1b88678c0e7b39c838}} 
+\index{glib::VectorPath@{glib::VectorPath}!addQuadToShortRel@{addQuadToShortRel}}
+\index{addQuadToShortRel@{addQuadToShortRel}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addQuadToShortRel()}{addQuadToShortRel()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Quad\+To\+Short\+Rel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p }\end{DoxyParamCaption})}
+
+
+
+Adds a short quadratic to relative command. Builds a new quadratic bezier curve using the previous one. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a1b341d1f8342437e663620025865c21c}\label{classglib_1_1_vector_path_a1b341d1f8342437e663620025865c21c}} 
+\index{glib::VectorPath@{glib::VectorPath}!addVerticalTo@{addVerticalTo}}
+\index{addVerticalTo@{addVerticalTo}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addVerticalTo()}{addVerticalTo()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Vertical\+To (\begin{DoxyParamCaption}\item[{double}]{y }\end{DoxyParamCaption})}
+
+
+
+Adds a vertical to command. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a969d079713407897ea7c9581207e66fe}\label{classglib_1_1_vector_path_a969d079713407897ea7c9581207e66fe}} 
+\index{glib::VectorPath@{glib::VectorPath}!addVerticalToRel@{addVerticalToRel}}
+\index{addVerticalToRel@{addVerticalToRel}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{addVerticalToRel()}{addVerticalToRel()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::add\+Vertical\+To\+Rel (\begin{DoxyParamCaption}\item[{double}]{y }\end{DoxyParamCaption})}
+
+
+
+Adds a vertical to relative command. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a03481d46e711aa4cca0f63d20cd7c2a1}\label{classglib_1_1_vector_path_a03481d46e711aa4cca0f63d20cd7c2a1}} 
+\index{glib::VectorPath@{glib::VectorPath}!draw@{draw}}
+\index{draw@{draw}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::draw (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{int}]{global\+Width,  }\item[{int}]{global\+Height }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Draws the \mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & \\
+\hline
+{\em global\+Width} & The maximum width allowed. This may be less than the image\textquotesingle{}s width. \\
+\hline
+{\em global\+Height} & The maximum height allowed. This may be less than the image\textquotesingle{}s height. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_vector_shape_afb72be232bc05006422d1bd0ebcf7311}{glib\+::\+Vector\+Shape}}.
+
+\mbox{\Hypertarget{classglib_1_1_vector_path_aebf45d923a738750b64f98224a0d51b1}\label{classglib_1_1_vector_path_aebf45d923a738750b64f98224a0d51b1}} 
+\index{glib::VectorPath@{glib::VectorPath}!drawStroke@{drawStroke}}
+\index{drawStroke@{drawStroke}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{drawStroke()}{drawStroke()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::draw\+Stroke (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{buffer,  }\item[{int}]{global\+Width,  }\item[{int}]{global\+Height }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Draws the stroke for the \mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & \\
+\hline
+{\em global\+Width} & The maximum width allowed. This may be less than the image\textquotesingle{}s width. \\
+\hline
+{\em global\+Height} & The maximum height allowed. This may be less than the image\textquotesingle{}s height. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_vector_shape_a24ecc3162abe3c4fa4c8190529601574}{glib\+::\+Vector\+Shape}}.
+
+\mbox{\Hypertarget{classglib_1_1_vector_path_afbea6ed37d4fc8f8ffc36cd021c6fd72}\label{classglib_1_1_vector_path_afbea6ed37d4fc8f8ffc36cd021c6fd72}} 
+\index{glib::VectorPath@{glib::VectorPath}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Vector\+Path\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_vector_shape}{glib\+::\+Vector\+Shape}}.
+
+\mbox{\Hypertarget{classglib_1_1_vector_path_ab9583806d6c8a7327abfd9288781f0c2}\label{classglib_1_1_vector_path_ab9583806d6c8a7327abfd9288781f0c2}} 
+\index{glib::VectorPath@{glib::VectorPath}!operator=@{operator=}}
+\index{operator=@{operator=}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Path\+::operator= (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}} \&}]{other }\end{DoxyParamCaption})}
+
+
+
+Copies a \mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_path_a72db4df9585c09066a6157417121b40a}\label{classglib_1_1_vector_path_a72db4df9585c09066a6157417121b40a}} 
+\index{glib::VectorPath@{glib::VectorPath}!size@{size}}
+\index{size@{size}!glib::VectorPath@{glib::VectorPath}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily int glib\+::\+Vector\+Path\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the amount of commands in the \mbox{\hyperlink{classglib_1_1_vector_path}{Vector\+Path}}. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Vector\+Graphic.\+h\end{DoxyCompactItemize}

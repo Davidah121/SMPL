@@ -1,0 +1,236 @@
+\hypertarget{classglib_1_1_vector_polygon}{}\doxysection{glib\+::Vector\+Polygon Class Reference}
+\label{classglib_1_1_vector_polygon}\index{glib::VectorPolygon@{glib::VectorPolygon}}
+Inheritance diagram for glib\+::Vector\+Polygon\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classglib_1_1_vector_polygon}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_vector_polygon_ac229ab16bbf15c2582c851c59c24cb9e}{Vector\+Polygon}} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_vector_polygon}{Vector\+Polygon}} object Follows the SVG format for a polygon. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_vector_polygon_a2fbf43be31c8c5660c4e162568e59fa5}\label{classglib_1_1_vector_polygon_a2fbf43be31c8c5660c4e162568e59fa5}} 
+{\bfseries $\sim$\+Vector\+Polygon} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_vector_polygon}{Vector\+Polygon}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_vector_polygon_a82855b40614fe649118cdc2c1cc1b42e}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_vector_polygon_a594144754347a4d9c9991ce9bb7cc7fc}{draw}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, int global\+Width, int global\+Height)
+\begin{DoxyCompactList}\small\item\em Draws the \mbox{\hyperlink{classglib_1_1_vector_polygon}{Vector\+Polygon}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_polygon_a6107a57765c26d4fa2dbcee0d8a34f29}{draw\+Stroke}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$buffer, int global\+Width, int global\+Height)
+\begin{DoxyCompactList}\small\item\em Draws the stroke for the \mbox{\hyperlink{classglib_1_1_vector_polygon}{Vector\+Polygon}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_polygon_a8f4c23d597e11c12feb4f656e2b99d11}{add\+Point}} (double x, double y)
+\begin{DoxyCompactList}\small\item\em Adds a new point to the \mbox{\hyperlink{classglib_1_1_vector_polygon}{Vector\+Polygon}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_polygon_a9aae1a486fa8199c136879cc02487d6f}{add\+Point}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p)
+\begin{DoxyCompactList}\small\item\em Adds a new point to the \mbox{\hyperlink{classglib_1_1_vector_polygon}{Vector\+Polygon}}. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_vector_polygon_a6c289c2b3d891f8831b9aea70557134f}{get\+PointX}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets the x value of a point based on the index. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_vector_polygon_a5b338c34de7ad11e791654ad555bd8ea}{get\+PointY}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets the y value of a point based on the index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_vector_polygon_a7bc10fee85d605a9e89e939f6a2e311c}{get\+Point}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets a point based on the index. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_vector_polygon_a7584811d0649a44a68e63e4039aed525}\label{classglib_1_1_vector_polygon_a7584811d0649a44a68e63e4039aed525}} 
+void {\bfseries clear} ()
+\begin{DoxyCompactList}\small\item\em Clears all points. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_vector_polygon_a1b6ffab734a7baaa0d1a5f4924fb6ba5}{size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the amount of points in the \mbox{\hyperlink{classglib_1_1_vector_polygon}{Vector\+Polygon}}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_polygon_ad51ffb0b24d5fe206a57c7ebf2ebf620}\label{classglib_1_1_vector_polygon_ad51ffb0b24d5fe206a57c7ebf2ebf620}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_polygon_a0d15ecec88e1b3fc4ce352e3506d9c10}\label{classglib_1_1_vector_polygon_a0d15ecec88e1b3fc4ce352e3506d9c10}} 
+void {\bfseries apply\+Transform} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_vector_polygon_ac229ab16bbf15c2582c851c59c24cb9e}\label{classglib_1_1_vector_polygon_ac229ab16bbf15c2582c851c59c24cb9e}} 
+\index{glib::VectorPolygon@{glib::VectorPolygon}!VectorPolygon@{VectorPolygon}}
+\index{VectorPolygon@{VectorPolygon}!glib::VectorPolygon@{glib::VectorPolygon}}
+\doxysubsubsection{\texorpdfstring{VectorPolygon()}{VectorPolygon()}}
+{\footnotesize\ttfamily glib\+::\+Vector\+Polygon\+::\+Vector\+Polygon (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_vector_polygon}{Vector\+Polygon}} object Follows the SVG format for a polygon. 
+
+\begin{DoxyVerb}XML Format:
+    <polygon points=""/>
+    points = "x1,y1 x2,y2 x3,y3 .... xn,yn"
+    there can be a space after the comma
+    must be divisable by 2 however
+    the space after y must be there. No comma after y
+
+Notes:
+    Just like polyline but the last point is always connected to the first.
+    when filling these shapes, start from min point and when you pass a line, fill
+\end{DoxyVerb}
+ NOTE\+: !! Fill rule does affect this object !! !! \mbox{\hyperlink{classglib_1_1_line}{Line}} cap does affect this object !! !! \mbox{\hyperlink{classglib_1_1_line}{Line}} join does affect this object !! 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_vector_polygon_a8f4c23d597e11c12feb4f656e2b99d11}\label{classglib_1_1_vector_polygon_a8f4c23d597e11c12feb4f656e2b99d11}} 
+\index{glib::VectorPolygon@{glib::VectorPolygon}!addPoint@{addPoint}}
+\index{addPoint@{addPoint}!glib::VectorPolygon@{glib::VectorPolygon}}
+\doxysubsubsection{\texorpdfstring{addPoint()}{addPoint()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Polygon\+::add\+Point (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})}
+
+
+
+Adds a new point to the \mbox{\hyperlink{classglib_1_1_vector_polygon}{Vector\+Polygon}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_polygon_a9aae1a486fa8199c136879cc02487d6f}\label{classglib_1_1_vector_polygon_a9aae1a486fa8199c136879cc02487d6f}} 
+\index{glib::VectorPolygon@{glib::VectorPolygon}!addPoint@{addPoint}}
+\index{addPoint@{addPoint}!glib::VectorPolygon@{glib::VectorPolygon}}
+\doxysubsubsection{\texorpdfstring{addPoint()}{addPoint()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Polygon\+::add\+Point (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p }\end{DoxyParamCaption})}
+
+
+
+Adds a new point to the \mbox{\hyperlink{classglib_1_1_vector_polygon}{Vector\+Polygon}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_polygon_a594144754347a4d9c9991ce9bb7cc7fc}\label{classglib_1_1_vector_polygon_a594144754347a4d9c9991ce9bb7cc7fc}} 
+\index{glib::VectorPolygon@{glib::VectorPolygon}!draw@{draw}}
+\index{draw@{draw}!glib::VectorPolygon@{glib::VectorPolygon}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Polygon\+::draw (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{int}]{global\+Width,  }\item[{int}]{global\+Height }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Draws the \mbox{\hyperlink{classglib_1_1_vector_polygon}{Vector\+Polygon}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & \\
+\hline
+{\em global\+Width} & The maximum width allowed. This may be less than the image\textquotesingle{}s width. \\
+\hline
+{\em global\+Height} & The maximum height allowed. This may be less than the image\textquotesingle{}s height. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_vector_shape_afb72be232bc05006422d1bd0ebcf7311}{glib\+::\+Vector\+Shape}}.
+
+\mbox{\Hypertarget{classglib_1_1_vector_polygon_a6107a57765c26d4fa2dbcee0d8a34f29}\label{classglib_1_1_vector_polygon_a6107a57765c26d4fa2dbcee0d8a34f29}} 
+\index{glib::VectorPolygon@{glib::VectorPolygon}!drawStroke@{drawStroke}}
+\index{drawStroke@{drawStroke}!glib::VectorPolygon@{glib::VectorPolygon}}
+\doxysubsubsection{\texorpdfstring{drawStroke()}{drawStroke()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Polygon\+::draw\+Stroke (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{buffer,  }\item[{int}]{global\+Width,  }\item[{int}]{global\+Height }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Draws the stroke for the \mbox{\hyperlink{classglib_1_1_vector_polygon}{Vector\+Polygon}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & \\
+\hline
+{\em global\+Width} & The maximum width allowed. This may be less than the image\textquotesingle{}s width. \\
+\hline
+{\em global\+Height} & The maximum height allowed. This may be less than the image\textquotesingle{}s height. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_vector_shape_a24ecc3162abe3c4fa4c8190529601574}{glib\+::\+Vector\+Shape}}.
+
+\mbox{\Hypertarget{classglib_1_1_vector_polygon_a82855b40614fe649118cdc2c1cc1b42e}\label{classglib_1_1_vector_polygon_a82855b40614fe649118cdc2c1cc1b42e}} 
+\index{glib::VectorPolygon@{glib::VectorPolygon}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::VectorPolygon@{glib::VectorPolygon}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Vector\+Polygon\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_vector_shape}{glib\+::\+Vector\+Shape}}.
+
+\mbox{\Hypertarget{classglib_1_1_vector_polygon_a7bc10fee85d605a9e89e939f6a2e311c}\label{classglib_1_1_vector_polygon_a7bc10fee85d605a9e89e939f6a2e311c}} 
+\index{glib::VectorPolygon@{glib::VectorPolygon}!getPoint@{getPoint}}
+\index{getPoint@{getPoint}!glib::VectorPolygon@{glib::VectorPolygon}}
+\doxysubsubsection{\texorpdfstring{getPoint()}{getPoint()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} glib\+::\+Vector\+Polygon\+::get\+Point (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets a point based on the index. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_polygon_a6c289c2b3d891f8831b9aea70557134f}\label{classglib_1_1_vector_polygon_a6c289c2b3d891f8831b9aea70557134f}} 
+\index{glib::VectorPolygon@{glib::VectorPolygon}!getPointX@{getPointX}}
+\index{getPointX@{getPointX}!glib::VectorPolygon@{glib::VectorPolygon}}
+\doxysubsubsection{\texorpdfstring{getPointX()}{getPointX()}}
+{\footnotesize\ttfamily double glib\+::\+Vector\+Polygon\+::get\+PointX (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets the x value of a point based on the index. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_polygon_a5b338c34de7ad11e791654ad555bd8ea}\label{classglib_1_1_vector_polygon_a5b338c34de7ad11e791654ad555bd8ea}} 
+\index{glib::VectorPolygon@{glib::VectorPolygon}!getPointY@{getPointY}}
+\index{getPointY@{getPointY}!glib::VectorPolygon@{glib::VectorPolygon}}
+\doxysubsubsection{\texorpdfstring{getPointY()}{getPointY()}}
+{\footnotesize\ttfamily double glib\+::\+Vector\+Polygon\+::get\+PointY (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets the y value of a point based on the index. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_polygon_a1b6ffab734a7baaa0d1a5f4924fb6ba5}\label{classglib_1_1_vector_polygon_a1b6ffab734a7baaa0d1a5f4924fb6ba5}} 
+\index{glib::VectorPolygon@{glib::VectorPolygon}!size@{size}}
+\index{size@{size}!glib::VectorPolygon@{glib::VectorPolygon}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily int glib\+::\+Vector\+Polygon\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the amount of points in the \mbox{\hyperlink{classglib_1_1_vector_polygon}{Vector\+Polygon}}. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Vector\+Graphic.\+h\end{DoxyCompactItemize}

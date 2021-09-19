@@ -1,0 +1,242 @@
+\hypertarget{_linked_list_8h_source}{}\doxysection{Linked\+List.\+h}
+\label{_linked_list_8h_source}\index{include/LinkedList.h@{include/LinkedList.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 }
+\DoxyCodeLine{3 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{4 \{}
+\DoxyCodeLine{5 }
+\DoxyCodeLine{6     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{7     \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_link_node}{LinkNode}}}
+\DoxyCodeLine{8     \{}
+\DoxyCodeLine{9         \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode}}* parentNode = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{10         \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode}}* nextNode = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{11         T value;}
+\DoxyCodeLine{12     \};}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{15     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_linked_list}{LinkedList}}}
+\DoxyCodeLine{16     \{}
+\DoxyCodeLine{17     \textcolor{keyword}{public}:}
+\DoxyCodeLine{22         \mbox{\hyperlink{classglib_1_1_linked_list_a933c4294b9dcfb257bec5710a987d830}{LinkedList}}();}
+\DoxyCodeLine{23 }
+\DoxyCodeLine{28         \mbox{\hyperlink{classglib_1_1_linked_list_ad59ac2cff2e82d2a443e0544614560ad}{\string~LinkedList}}();}
+\DoxyCodeLine{29 }
+\DoxyCodeLine{36         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_linked_list_a121f29e99dbc4af53e750bddccca62ad}{addNode}}(T n);}
+\DoxyCodeLine{37 }
+\DoxyCodeLine{44         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_linked_list_a8be4a269042e6b63b44dd1f6b0411985}{removeNode}}(\mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* n);}
+\DoxyCodeLine{45 }
+\DoxyCodeLine{55         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_linked_list_ae489899fbddffca0123a2c5225681c40}{swapNodes}}(\mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* n1, \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* n2);}
+\DoxyCodeLine{56 }
+\DoxyCodeLine{62         \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* \mbox{\hyperlink{classglib_1_1_linked_list_ac4e03c7c3acba2b0517d4029a30c7012}{getRootNode}}();}
+\DoxyCodeLine{63 }
+\DoxyCodeLine{69         \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* \mbox{\hyperlink{classglib_1_1_linked_list_a4a5e7fd269eb5e076692932540bf0053}{getLastNode}}();}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{76         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_linked_list_a29c95af64c5bb3c15425a2b587821f1f}{size}}();}
+\DoxyCodeLine{77 }
+\DoxyCodeLine{82         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_linked_list_a66c3957285a2d58a577f803da0ebac61}{clear}}();}
+\DoxyCodeLine{83     \textcolor{keyword}{private}:}
+\DoxyCodeLine{84         \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* rootNode = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{85         \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* lastNode = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{86     \};}
+\DoxyCodeLine{87 }
+\DoxyCodeLine{88     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{89     \textcolor{keyword}{inline} \mbox{\hyperlink{classglib_1_1_linked_list_a933c4294b9dcfb257bec5710a987d830}{LinkedList<T>::LinkedList}}()}
+\DoxyCodeLine{90     \{}
+\DoxyCodeLine{91     \}}
+\DoxyCodeLine{92 }
+\DoxyCodeLine{93     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{94     \textcolor{keyword}{inline} \mbox{\hyperlink{classglib_1_1_linked_list_ad59ac2cff2e82d2a443e0544614560ad}{LinkedList<T>::\string~LinkedList}}()}
+\DoxyCodeLine{95     \{}
+\DoxyCodeLine{96         clear();}
+\DoxyCodeLine{97     \}}
+\DoxyCodeLine{98 }
+\DoxyCodeLine{99     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{100     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_linked_list_a121f29e99dbc4af53e750bddccca62ad}{LinkedList<T>::addNode}}(T n)}
+\DoxyCodeLine{101     \{}
+\DoxyCodeLine{102         \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* lNode = getLastNode();}
+\DoxyCodeLine{103 }
+\DoxyCodeLine{104         \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* newNode = \textcolor{keyword}{new} \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}};}
+\DoxyCodeLine{105         newNode-\/>value = n;}
+\DoxyCodeLine{106 }
+\DoxyCodeLine{107         \textcolor{keywordflow}{if} (lNode != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{108         \{}
+\DoxyCodeLine{109             lNode-\/>nextNode = newNode;}
+\DoxyCodeLine{110             newNode-\/>parentNode = lNode;}
+\DoxyCodeLine{111 }
+\DoxyCodeLine{112             lastNode = newNode;}
+\DoxyCodeLine{113         \}}
+\DoxyCodeLine{114         \textcolor{keywordflow}{else}}
+\DoxyCodeLine{115         \{}
+\DoxyCodeLine{116             rootNode = newNode;}
+\DoxyCodeLine{117             lastNode = newNode;}
+\DoxyCodeLine{118         \}}
+\DoxyCodeLine{119     \}}
+\DoxyCodeLine{120 }
+\DoxyCodeLine{121     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{122     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_linked_list_a8be4a269042e6b63b44dd1f6b0411985}{LinkedList<T>::removeNode}}(\mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* n)}
+\DoxyCodeLine{123     \{}
+\DoxyCodeLine{124         \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* parent = n-\/>parentNode;}
+\DoxyCodeLine{125         \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* next = n-\/>nextNode;}
+\DoxyCodeLine{126 }
+\DoxyCodeLine{127         \textcolor{keywordflow}{if} (parent == \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{128         \{}
+\DoxyCodeLine{129             \textcolor{comment}{//n was root}}
+\DoxyCodeLine{130             \textcolor{comment}{//next will be new root}}
+\DoxyCodeLine{131             \textcolor{keywordflow}{if} (next != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{132             \{}
+\DoxyCodeLine{133                 rootNode = next;}
+\DoxyCodeLine{134                 next-\/>parentNode = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{135 }
+\DoxyCodeLine{136             \}}
+\DoxyCodeLine{137             \textcolor{keywordflow}{else}}
+\DoxyCodeLine{138             \{}
+\DoxyCodeLine{139                 \textcolor{comment}{//blank node}}
+\DoxyCodeLine{140                 lastNode = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{141             \}}
+\DoxyCodeLine{142         \}}
+\DoxyCodeLine{143         \textcolor{keywordflow}{else}}
+\DoxyCodeLine{144         \{}
+\DoxyCodeLine{145             \textcolor{keywordflow}{if}(lastNode == n)}
+\DoxyCodeLine{146             \{}
+\DoxyCodeLine{147                 lastNode = n-\/>parentNode;}
+\DoxyCodeLine{148             \}}
+\DoxyCodeLine{149             }
+\DoxyCodeLine{150             \textcolor{keywordflow}{if} (next != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{151             \{}
+\DoxyCodeLine{152                 parent-\/>nextNode = next;}
+\DoxyCodeLine{153                 next-\/>parentNode = parent;}
+\DoxyCodeLine{154             \}}
+\DoxyCodeLine{155             \textcolor{keywordflow}{else}}
+\DoxyCodeLine{156             \{}
+\DoxyCodeLine{157                 parent-\/>nextNode = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{158             \}}
+\DoxyCodeLine{159         \}}
+\DoxyCodeLine{160 }
+\DoxyCodeLine{161     \}}
+\DoxyCodeLine{162 }
+\DoxyCodeLine{163     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{164     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_linked_list_ae489899fbddffca0123a2c5225681c40}{LinkedList<T>::swapNodes}}(\mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* n1, \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* n2)}
+\DoxyCodeLine{165     \{}
+\DoxyCodeLine{166         \textcolor{keywordflow}{if}(n1!=\textcolor{keyword}{nullptr} \&\& n2!=\textcolor{keyword}{nullptr})}
+\DoxyCodeLine{167         \{}
+\DoxyCodeLine{168             \textcolor{keywordflow}{if}(n1-\/>nextNode == n2)}
+\DoxyCodeLine{169             \{}
+\DoxyCodeLine{170                 \textcolor{comment}{//Swap parent relation ship then swap next}}
+\DoxyCodeLine{171                 \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* tempParent = n1-\/>parentNode;}
+\DoxyCodeLine{172                 \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* tempNext = n2-\/>nextNode;}
+\DoxyCodeLine{173 }
+\DoxyCodeLine{174                 n1-\/>parentNode = n2;}
+\DoxyCodeLine{175                 n1-\/>nextNode = tempNext;}
+\DoxyCodeLine{176 }
+\DoxyCodeLine{177                 n2-\/>nextNode = n1;}
+\DoxyCodeLine{178                 n2-\/>parentNode = tempParent;}
+\DoxyCodeLine{179             \}}
+\DoxyCodeLine{180             \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(n1-\/>parentNode == n2)}
+\DoxyCodeLine{181             \{}
+\DoxyCodeLine{182                 \textcolor{comment}{//Swap parent relation ship then swap next}}
+\DoxyCodeLine{183                 \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* tempParent = n2-\/>parentNode;}
+\DoxyCodeLine{184                 \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* tempNext = n1-\/>nextNode;}
+\DoxyCodeLine{185 }
+\DoxyCodeLine{186                 n1-\/>parentNode = tempParent;}
+\DoxyCodeLine{187                 n1-\/>nextNode = n2;}
+\DoxyCodeLine{188                 }
+\DoxyCodeLine{189                 n2-\/>parentNode = n1;}
+\DoxyCodeLine{190                 n2-\/>nextNode = tempNext;}
+\DoxyCodeLine{191             \}}
+\DoxyCodeLine{192             \textcolor{keywordflow}{else}}
+\DoxyCodeLine{193             \{}
+\DoxyCodeLine{194                 \textcolor{comment}{//Complete swap}}
+\DoxyCodeLine{195                 \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* tempParent = n1-\/>parentNode;}
+\DoxyCodeLine{196                 \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* tempNext = n1-\/>nextNode;}
+\DoxyCodeLine{197 }
+\DoxyCodeLine{198                 n1-\/>parentNode = n2-\/>parentNode;}
+\DoxyCodeLine{199                 n1-\/>nextNode = n2-\/>nextNode;}
+\DoxyCodeLine{200 }
+\DoxyCodeLine{201                 n2-\/>parentNode = tempParent;}
+\DoxyCodeLine{202                 n2-\/>nextNode = tempNext;}
+\DoxyCodeLine{203             \}}
+\DoxyCodeLine{204 }
+\DoxyCodeLine{205             \textcolor{keywordflow}{if}(n1-\/>parentNode!=\textcolor{keyword}{nullptr})}
+\DoxyCodeLine{206                 n1-\/>parentNode-\/>nextNode = n1;}
+\DoxyCodeLine{207             }
+\DoxyCodeLine{208             \textcolor{keywordflow}{if}(n2-\/>nextNode!=\textcolor{keyword}{nullptr})}
+\DoxyCodeLine{209                 n1-\/>nextNode-\/>parentNode = n1;}
+\DoxyCodeLine{210 }
+\DoxyCodeLine{211             \textcolor{keywordflow}{if}(n2-\/>parentNode!=\textcolor{keyword}{nullptr})}
+\DoxyCodeLine{212                 n2-\/>parentNode-\/>nextNode = n2;}
+\DoxyCodeLine{213 }
+\DoxyCodeLine{214             \textcolor{keywordflow}{if}(n2-\/>nextNode!=\textcolor{keyword}{nullptr})}
+\DoxyCodeLine{215                 n2-\/>nextNode-\/>parentNode = n2;}
+\DoxyCodeLine{216 }
+\DoxyCodeLine{217             \textcolor{keywordflow}{if}(lastNode == n1)}
+\DoxyCodeLine{218                 lastNode = n2;}
+\DoxyCodeLine{219             \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(lastNode == n2)}
+\DoxyCodeLine{220                 lastNode = n1;}
+\DoxyCodeLine{221 }
+\DoxyCodeLine{222             \textcolor{keywordflow}{if}(rootNode == n1)}
+\DoxyCodeLine{223                 rootNode = n2;}
+\DoxyCodeLine{224             \textcolor{keywordflow}{else} \textcolor{keywordflow}{if}(rootNode == n2)}
+\DoxyCodeLine{225                 rootNode = n1;}
+\DoxyCodeLine{226             }
+\DoxyCodeLine{227         \}}
+\DoxyCodeLine{228     \}}
+\DoxyCodeLine{229 }
+\DoxyCodeLine{230     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{231     \textcolor{keyword}{inline} \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* \mbox{\hyperlink{classglib_1_1_linked_list_ac4e03c7c3acba2b0517d4029a30c7012}{LinkedList<T>::getRootNode}}()}
+\DoxyCodeLine{232     \{}
+\DoxyCodeLine{233         \textcolor{keywordflow}{return} rootNode;}
+\DoxyCodeLine{234     \}}
+\DoxyCodeLine{235 }
+\DoxyCodeLine{236     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{237     \textcolor{keyword}{inline} \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* \mbox{\hyperlink{classglib_1_1_linked_list_a4a5e7fd269eb5e076692932540bf0053}{LinkedList<T>::getLastNode}}()}
+\DoxyCodeLine{238     \{}
+\DoxyCodeLine{239         \textcolor{keywordflow}{return} lastNode;}
+\DoxyCodeLine{240     \}}
+\DoxyCodeLine{241 }
+\DoxyCodeLine{242     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{243     \textcolor{keyword}{inline} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_linked_list_a29c95af64c5bb3c15425a2b587821f1f}{LinkedList<T>::size}}()}
+\DoxyCodeLine{244     \{}
+\DoxyCodeLine{245         \textcolor{keywordtype}{int} i = 0;}
+\DoxyCodeLine{246         \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* lNode = rootNode;}
+\DoxyCodeLine{247 }
+\DoxyCodeLine{248         \textcolor{keywordflow}{if} (lNode != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{249         \{}
+\DoxyCodeLine{250             i = 1;}
+\DoxyCodeLine{251             \textcolor{keywordflow}{while} (lNode-\/>nextNode != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{252             \{}
+\DoxyCodeLine{253                 lNode = lNode-\/>nextNode;}
+\DoxyCodeLine{254                 i++;}
+\DoxyCodeLine{255             \}}
+\DoxyCodeLine{256         \}}
+\DoxyCodeLine{257         \textcolor{keywordflow}{return} i;}
+\DoxyCodeLine{258     \}}
+\DoxyCodeLine{259 }
+\DoxyCodeLine{260     \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{261     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_linked_list_a66c3957285a2d58a577f803da0ebac61}{LinkedList<T>::clear}}()}
+\DoxyCodeLine{262     \{}
+\DoxyCodeLine{263         \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* lNode = getLastNode();}
+\DoxyCodeLine{264 }
+\DoxyCodeLine{265         \textcolor{keywordflow}{if}(lNode != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{266         \{}
+\DoxyCodeLine{267             \textcolor{keywordflow}{while} (lNode-\/>parentNode != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{268             \{}
+\DoxyCodeLine{269                 \mbox{\hyperlink{structglib_1_1_link_node}{LinkNode<T>}}* nNode = lNode;}
+\DoxyCodeLine{270                 lNode = nNode-\/>parentNode;}
+\DoxyCodeLine{271 }
+\DoxyCodeLine{272                 \textcolor{keywordflow}{if}(nNode != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{273                     \textcolor{keyword}{delete} nNode;}
+\DoxyCodeLine{274             \}}
+\DoxyCodeLine{275         \}}
+\DoxyCodeLine{276 }
+\DoxyCodeLine{277         \textcolor{keywordflow}{if}(rootNode != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{278             \textcolor{keyword}{delete} rootNode;}
+\DoxyCodeLine{279 }
+\DoxyCodeLine{280         lastNode = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{281         rootNode = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{282     \}}
+\DoxyCodeLine{283 }
+\DoxyCodeLine{284 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

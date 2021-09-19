@@ -1,0 +1,118 @@
+\hypertarget{_network_8h_source}{}\doxysection{Network.\+h}
+\label{_network_8h_source}\index{include/Network.h@{include/Network.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 }
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#pragma comment(lib, "{}Ws2\_32.lib"{}})}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include <WinSock2.h>}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include <ws2tcpip.h>}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include <iostream>}}
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#include <thread>}}
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#include <mutex>}}
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#include <functional>}}
+\DoxyCodeLine{12 }
+\DoxyCodeLine{13 \textcolor{preprocessor}{\#define \_WINSOCK\_DEPRECATED\_NO\_WARNINGS}}
+\DoxyCodeLine{14 }
+\DoxyCodeLine{15 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{16 \{}
+\DoxyCodeLine{17 }
+\DoxyCodeLine{18     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_network}{Network}}}
+\DoxyCodeLine{19     \{}
+\DoxyCodeLine{20     \textcolor{keyword}{public}:}
+\DoxyCodeLine{21 }
+\DoxyCodeLine{44         \mbox{\hyperlink{classglib_1_1_network_a73bd1535c4372d550a1a839e8ff3b1bc}{Network}}(\textcolor{keywordtype}{bool} type, \textcolor{keywordtype}{int} port, std::string ipaddress, \textcolor{keywordtype}{int} amountOfConnectionsAllowed = 64, \textcolor{keywordtype}{bool} TCP = \textcolor{keyword}{true});}
+\DoxyCodeLine{45 }
+\DoxyCodeLine{50         \mbox{\hyperlink{classglib_1_1_network_a1577eb4b04ae02105da0b6f62bb18043}{\string~Network}}();}
+\DoxyCodeLine{51 }
+\DoxyCodeLine{64         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_network_a32ba52701608309835c0b77340f908d9}{sendMessage}}(std::string message, \textcolor{keywordtype}{int} \textcolor{keywordtype}{id}=0);}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{78         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_network_a41538df00bf13b016ac9752c30cab8bb}{sendMessage}}(std::vector<unsigned char> message, \textcolor{keywordtype}{int} \textcolor{keywordtype}{id}=0);}
+\DoxyCodeLine{79 }
+\DoxyCodeLine{94         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_network_a852d2925fa705743fcbb86eed4247f97}{sendMessage}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* message, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{int} \textcolor{keywordtype}{id}=0);}
+\DoxyCodeLine{95         }
+\DoxyCodeLine{110         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_network_ab9f3f6a930e17a445d10e44aa6119c13}{receiveMessage}}(std::string\& message, \textcolor{keywordtype}{int} \textcolor{keywordtype}{id}=0);}
+\DoxyCodeLine{111 }
+\DoxyCodeLine{126         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_network_ae4bf79bc04d99b70940dbccfd73d85e9}{receiveMessage}}(std::vector<unsigned char>\& buffer, \textcolor{keywordtype}{int} \textcolor{keywordtype}{id}=0);}
+\DoxyCodeLine{127 }
+\DoxyCodeLine{144         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_network_abfccb65c87c148118f017228159dbaf2}{receiveMessage}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* buffer, \textcolor{keywordtype}{int} bufferSize, \textcolor{keywordtype}{int} \textcolor{keywordtype}{id}=0);}
+\DoxyCodeLine{145 }
+\DoxyCodeLine{160         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_network_aedc1b1d055850af71093ee41d1140db8}{sendMessage}}(\textcolor{keywordtype}{char}* message, \textcolor{keywordtype}{int} messageSize, \textcolor{keywordtype}{int} \textcolor{keywordtype}{id}=0);}
+\DoxyCodeLine{161 }
+\DoxyCodeLine{178         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_network_ade827a39fc1a440c907488cea2e883df}{receiveMessage}}(\textcolor{keywordtype}{char}* buffer, \textcolor{keywordtype}{int} bufferSize, \textcolor{keywordtype}{int} \textcolor{keywordtype}{id}=0);}
+\DoxyCodeLine{179 }
+\DoxyCodeLine{185         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_network_abbf939125005e10a3332b79c0174eee2}{reconnect}}();}
+\DoxyCodeLine{186 }
+\DoxyCodeLine{191         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_network_aeb7e5fcb43738942a72909a0212e17b0}{disconnect}}();}
+\DoxyCodeLine{192 }
+\DoxyCodeLine{199         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_network_a7f5bb2cb98a7e21acafbca12babe2fd2}{getRunning}}();}
+\DoxyCodeLine{200         }
+\DoxyCodeLine{208         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_network_ad9481bde0ea65ab80684054551e09c46}{setOnConnectFunction}}(std::function<\textcolor{keywordtype}{void}(\textcolor{keywordtype}{int})> func);}
+\DoxyCodeLine{209 }
+\DoxyCodeLine{217         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_network_a55438f72f00e634ded864a30785f0693}{setOnMessageArrivedFunction}}(std::function<\textcolor{keywordtype}{void}(\textcolor{keywordtype}{int})> func);}
+\DoxyCodeLine{218 }
+\DoxyCodeLine{226         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_network_acc7bdcd3008a25faf1ee941d55f62c69}{setOnDisconnectFunction}}(std::function<\textcolor{keywordtype}{void}(\textcolor{keywordtype}{int})> func);}
+\DoxyCodeLine{227         }
+\DoxyCodeLine{228 }
+\DoxyCodeLine{229         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{bool} TYPE\_SERVER = \textcolor{keyword}{false};}
+\DoxyCodeLine{230         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{bool} TYPE\_CLIENT = \textcolor{keyword}{true};}
+\DoxyCodeLine{231     \textcolor{keyword}{private}:}
+\DoxyCodeLine{232         }
+\DoxyCodeLine{233         \textcolor{keywordtype}{bool} init();}
+\DoxyCodeLine{234 }
+\DoxyCodeLine{235         \textcolor{keywordtype}{void} dispose();}
+\DoxyCodeLine{236         \textcolor{keywordtype}{void} createSocket(\textcolor{keywordtype}{bool} TCP);}
+\DoxyCodeLine{237         \textcolor{keywordtype}{void} closeSocket();}
+\DoxyCodeLine{238 }
+\DoxyCodeLine{239         \textcolor{keywordtype}{void} setupSocket();}
+\DoxyCodeLine{240         \textcolor{keywordtype}{bool} bindSocket();}
+\DoxyCodeLine{241 }
+\DoxyCodeLine{242         \textcolor{keywordtype}{void} removeSocket(SOCKET s);}
+\DoxyCodeLine{243 }
+\DoxyCodeLine{244         \textcolor{keywordtype}{void} listen();}
+\DoxyCodeLine{245         \textcolor{keywordtype}{void} acceptConnection();}
+\DoxyCodeLine{246         \textcolor{keywordtype}{void} connect();}
+\DoxyCodeLine{247 }
+\DoxyCodeLine{248         \textcolor{keywordtype}{void} setRunning(\textcolor{keywordtype}{bool} v);}
+\DoxyCodeLine{249 }
+\DoxyCodeLine{250         \textcolor{keywordtype}{void} threadRun();}
+\DoxyCodeLine{251 }
+\DoxyCodeLine{252         \textcolor{keywordtype}{bool} getReconnect();}
+\DoxyCodeLine{253         std::function<void(\textcolor{keywordtype}{int})> getConnectFunc();}
+\DoxyCodeLine{254         std::function<void(\textcolor{keywordtype}{int})> getMessageArriveFunc();}
+\DoxyCodeLine{255         std::function<void(\textcolor{keywordtype}{int})> getDisconnectFunc();}
+\DoxyCodeLine{256         }
+\DoxyCodeLine{257 }
+\DoxyCodeLine{258         std::function<void(\textcolor{keywordtype}{int})> onConnectFunc;}
+\DoxyCodeLine{259         std::function<void(\textcolor{keywordtype}{int})> onMessageArrivedFunc;}
+\DoxyCodeLine{260         std::function<void(\textcolor{keywordtype}{int})> onDisconnectFunc;}
+\DoxyCodeLine{261 }
+\DoxyCodeLine{262         WSADATA wsaData;}
+\DoxyCodeLine{263         SOCKET sock;}
+\DoxyCodeLine{264         SOCKADDR\_IN socketAddress;}
+\DoxyCodeLine{265         \textcolor{keywordtype}{int} sizeAddress = 0;}
+\DoxyCodeLine{266         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} connectionTimeout = 1000;}
+\DoxyCodeLine{267         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} messageTimeout = 100;}
+\DoxyCodeLine{268 }
+\DoxyCodeLine{269         std::vector<SOCKET> connections;}
+\DoxyCodeLine{270         \textcolor{keywordtype}{int} totalAllowedConnections = 64;}
+\DoxyCodeLine{271 }
+\DoxyCodeLine{272         \textcolor{keywordtype}{bool} type = TYPE\_SERVER;}
+\DoxyCodeLine{273         \textcolor{keywordtype}{int} port = 0;}
+\DoxyCodeLine{274         std::string ipAddress;}
+\DoxyCodeLine{275 }
+\DoxyCodeLine{276         \textcolor{keyword}{static} \textcolor{keywordtype}{int} totalNetworks;}
+\DoxyCodeLine{277         }
+\DoxyCodeLine{278         std::thread networkThread;}
+\DoxyCodeLine{279         std::mutex networkMutex = std::mutex();}
+\DoxyCodeLine{280 }
+\DoxyCodeLine{281         \textcolor{keywordtype}{bool} running = \textcolor{keyword}{false};}
+\DoxyCodeLine{282         \textcolor{keywordtype}{bool} shouldConnect = \textcolor{keyword}{true};}
+\DoxyCodeLine{283         \textcolor{keywordtype}{bool} isConnected = \textcolor{keyword}{false};}
+\DoxyCodeLine{284     \};}
+\DoxyCodeLine{285 }
+\DoxyCodeLine{286 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

@@ -1,0 +1,43 @@
+\hypertarget{_bitmap_font_8h_source}{}\doxysection{Bitmap\+Font.\+h}
+\label{_bitmap_font_8h_source}\index{include/BitmapFont.h@{include/BitmapFont.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include "{}Font.h"{}}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}Sprite.h"{}}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}GeneralExceptions.h"{}}}
+\DoxyCodeLine{5 }
+\DoxyCodeLine{6 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{7 \{}
+\DoxyCodeLine{8     }
+\DoxyCodeLine{9     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_bitmap_font}{BitmapFont}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_font}{Font}}}
+\DoxyCodeLine{10     \{}
+\DoxyCodeLine{11     \textcolor{keyword}{public}:}
+\DoxyCodeLine{23         \mbox{\hyperlink{classglib_1_1_bitmap_font_ae92eda7f68a6301191b5fcb3401feea5}{BitmapFont}}(\mbox{\hyperlink{classglib_1_1_file}{File}} file);}
+\DoxyCodeLine{24 }
+\DoxyCodeLine{28         \mbox{\hyperlink{classglib_1_1_bitmap_font_a9f2dc72fd738022d2f81020f904a5e9a}{\string~BitmapFont}}();}
+\DoxyCodeLine{29 }
+\DoxyCodeLine{30         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{31         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{32         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{33 }
+\DoxyCodeLine{34         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_bitmap_font_1_1_invalid_file_format}{InvalidFileFormat}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{35         \{}
+\DoxyCodeLine{36             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}File format can not be read."{}}; \}}
+\DoxyCodeLine{37         \};}
+\DoxyCodeLine{38 }
+\DoxyCodeLine{49         \mbox{\hyperlink{classglib_1_1_image}{Image}}* \mbox{\hyperlink{classglib_1_1_bitmap_font_a0d2f44090e870ff10a9200f1fdf6707e}{getImage}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{50         }
+\DoxyCodeLine{51     \textcolor{keyword}{private}:}
+\DoxyCodeLine{52         \textcolor{keywordtype}{void} loadFT(\mbox{\hyperlink{classglib_1_1_file}{File}} file);}
+\DoxyCodeLine{53         \textcolor{keywordtype}{void} loadFNT(\mbox{\hyperlink{classglib_1_1_file}{File}} file);}
+\DoxyCodeLine{54 }
+\DoxyCodeLine{55         \textcolor{keywordtype}{void} init(\mbox{\hyperlink{classglib_1_1_file}{File}} file);}
+\DoxyCodeLine{56         \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} img = \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}}();}
+\DoxyCodeLine{57 }
+\DoxyCodeLine{58         std::vector<int> imgPage = std::vector<int>();}
+\DoxyCodeLine{59     \};}
+\DoxyCodeLine{60 }
+\DoxyCodeLine{61 \}  \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

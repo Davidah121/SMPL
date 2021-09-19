@@ -1,0 +1,106 @@
+\hypertarget{_binary_set_8h_source}{}\doxysection{Binary\+Set.\+h}
+\label{_binary_set_8h_source}\index{include/BinarySet.h@{include/BinarySet.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}Object.h"{}}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{comment}{//NOTE THAT SOME IMPLEMENTATION MAY BE BROKEN DUE TO SWAPING TO TEMPLATES}}
+\DoxyCodeLine{6 \textcolor{comment}{//FOR ADDING BITS.}}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{9 \{}
+\DoxyCodeLine{10 }
+\DoxyCodeLine{11     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_binary_set}{BinarySet}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
+\DoxyCodeLine{12     \{}
+\DoxyCodeLine{13         }
+\DoxyCodeLine{14     \textcolor{keyword}{public}:}
+\DoxyCodeLine{22         \mbox{\hyperlink{classglib_1_1_binary_set_aa469a70fc0d8e6baf790a8d832e2ff31}{BinarySet}}();}
+\DoxyCodeLine{23 }
+\DoxyCodeLine{27         \mbox{\hyperlink{classglib_1_1_binary_set_a6f95bace718fe5e2f235d08a944b8d73}{\string~BinarySet}}();}
+\DoxyCodeLine{28         }
+\DoxyCodeLine{29         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{30         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{31         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{32 }
+\DoxyCodeLine{33         \textcolor{comment}{//CONSTANTS}}
+\DoxyCodeLine{34         }
+\DoxyCodeLine{36         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_binary_set_a2e4e7ce009d3ce45497f2d85ec244f7c}{LMSB}} = \textcolor{keyword}{true};}
+\DoxyCodeLine{37         }
+\DoxyCodeLine{39         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_binary_set_a97085661c27a010ad5aa2d9733b439ca}{RMSB}} = \textcolor{keyword}{false};}
+\DoxyCodeLine{40 }
+\DoxyCodeLine{46         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_binary_set_ada58d9321efb7982dbffa17cefeacec3}{add}}(\textcolor{keywordtype}{bool} v);}
+\DoxyCodeLine{47 }
+\DoxyCodeLine{59         \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{60         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_binary_set_aaf6fec50b63b73fa06f4765c6b4e868a}{add}}(T v, \textcolor{keywordtype}{int} amountOfBits = 128, \textcolor{keywordtype}{int} offset = 0)}
+\DoxyCodeLine{61         \{}
+\DoxyCodeLine{62             \textcolor{keywordtype}{int} sizeInBits = \textcolor{keyword}{sizeof}(T) * 8;}
+\DoxyCodeLine{63 }
+\DoxyCodeLine{64             \textcolor{keywordtype}{int} actualAmount = amountOfBits;}
+\DoxyCodeLine{65             \textcolor{keywordflow}{if} (amountOfBits > sizeInBits)}
+\DoxyCodeLine{66             \{}
+\DoxyCodeLine{67                 actualAmount = sizeInBits;}
+\DoxyCodeLine{68             \}}
+\DoxyCodeLine{69 }
+\DoxyCodeLine{70             \textcolor{keywordflow}{if}(actualAmount < 0)}
+\DoxyCodeLine{71                 actualAmount = 0;}
+\DoxyCodeLine{72 }
+\DoxyCodeLine{73             \textcolor{keywordtype}{int} end = sizeInBits;}
+\DoxyCodeLine{74             \textcolor{keywordtype}{int} actualOffset = offset;}
+\DoxyCodeLine{75             \textcolor{keywordflow}{if}(offset < 0)}
+\DoxyCodeLine{76                 offset = 0;}
+\DoxyCodeLine{77             }
+\DoxyCodeLine{78             \textcolor{keywordflow}{if} (offset + actualAmount < end)}
+\DoxyCodeLine{79             \{}
+\DoxyCodeLine{80                 end = offset+actualAmount;}
+\DoxyCodeLine{81             \}}
+\DoxyCodeLine{82 }
+\DoxyCodeLine{83             \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = offset; i < end; i++)}
+\DoxyCodeLine{84             \{}
+\DoxyCodeLine{85                 \textcolor{keywordtype}{int} h = i;}
+\DoxyCodeLine{86                 \textcolor{keywordflow}{if}(addBitOrder==\mbox{\hyperlink{classglib_1_1_binary_set_a97085661c27a010ad5aa2d9733b439ca}{RMSB}})}
+\DoxyCodeLine{87                 \{}
+\DoxyCodeLine{88                     h = (actualAmount-\/1) -\/ h;}
+\DoxyCodeLine{89                 \}}
+\DoxyCodeLine{90                 this-\/>\mbox{\hyperlink{classglib_1_1_binary_set_ada58d9321efb7982dbffa17cefeacec3}{add}}(((v >> h) \& 0x01) == 1);}
+\DoxyCodeLine{91             \}}
+\DoxyCodeLine{92         \}}
+\DoxyCodeLine{93 }
+\DoxyCodeLine{94     }
+\DoxyCodeLine{103         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_binary_set_a42e1618a16c68e665ae3dd010094d6f0}{add}}(\textcolor{keywordtype}{char}* v, \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_binary_set_a252b0565ec381209df963fb2bf0db52f}{size}});}
+\DoxyCodeLine{104 }
+\DoxyCodeLine{113         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_binary_set_ae4a2ad1c6c86e6ec2d193819764a97fa}{add}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* v, \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_binary_set_a252b0565ec381209df963fb2bf0db52f}{size}});}
+\DoxyCodeLine{114 }
+\DoxyCodeLine{121         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_binary_set_ac9f32f4f27c1d5bcfceec9716e1f453f}{add}}(\mbox{\hyperlink{classglib_1_1_binary_set}{BinarySet}}\& other);}
+\DoxyCodeLine{122 }
+\DoxyCodeLine{132         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_binary_set_a04ac5979d4ebfc80d82b7bdfc3c6fa23}{setValues}}(\textcolor{keywordtype}{char}* v, \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_binary_set_a252b0565ec381209df963fb2bf0db52f}{size}});}
+\DoxyCodeLine{133 }
+\DoxyCodeLine{143         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_binary_set_ad6417f8c501e49c1fae490a76ca7cbf7}{setValues}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* v, \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_binary_set_a252b0565ec381209df963fb2bf0db52f}{size}});}
+\DoxyCodeLine{144 }
+\DoxyCodeLine{153         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_binary_set_a7b7c0b738c437cc981431dfaea1f9380}{getBit}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{154 }
+\DoxyCodeLine{167         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_binary_set_a72fef6e44b54fc54cf82a57aff761b47}{getBits}}(\textcolor{keywordtype}{int} indexStart, \textcolor{keywordtype}{int} indexEnd, \textcolor{keywordtype}{bool} lmsb = \textcolor{keyword}{false});}
+\DoxyCodeLine{168 }
+\DoxyCodeLine{177         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_binary_set_a1f9b7a68a92c1f8b5f3a70cab9263e4c}{setBit}}(\textcolor{keywordtype}{bool} value, \textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{178         }
+\DoxyCodeLine{185         std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_binary_set_ab741adae410d5422971402ab27431d68}{toBytes}}();}
+\DoxyCodeLine{186 }
+\DoxyCodeLine{191         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_binary_set_a252b0565ec381209df963fb2bf0db52f}{size}}();}
+\DoxyCodeLine{192 }
+\DoxyCodeLine{196         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_binary_set_aa7c01917724838211365cf78b3ce5edf}{clear}}();}
+\DoxyCodeLine{197 }
+\DoxyCodeLine{205         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_binary_set_a6fd25c972b2d15348485227fdea8e35e}{setBitOrder}}(\textcolor{keywordtype}{bool} bitOrder);}
+\DoxyCodeLine{206 }
+\DoxyCodeLine{214         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_binary_set_ab2591a0da89daadbd1b229969166a1bd}{setAddBitOrder}}(\textcolor{keywordtype}{bool} order);}
+\DoxyCodeLine{215 }
+\DoxyCodeLine{216     \textcolor{keyword}{private}:}
+\DoxyCodeLine{217         std::vector<unsigned char> set = std::vector<unsigned char>();}
+\DoxyCodeLine{218         \textcolor{keywordtype}{bool} MSB = \textcolor{keyword}{true};}
+\DoxyCodeLine{219         \textcolor{keywordtype}{bool} addBitOrder = \mbox{\hyperlink{classglib_1_1_binary_set_a2e4e7ce009d3ce45497f2d85ec244f7c}{LMSB}};}
+\DoxyCodeLine{220         \textcolor{keywordtype}{long} bitNumber = 0;}
+\DoxyCodeLine{221     \};}
+\DoxyCodeLine{222 }
+\DoxyCodeLine{223 \}  \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

@@ -1,0 +1,53 @@
+\hypertarget{classglib_1_1_color_name_converter}{}\doxysection{glib\+::Color\+Name\+Converter Class Reference}
+\label{classglib_1_1_color_name_converter}\index{glib::ColorNameConverter@{glib::ColorNameConverter}}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_color_name_converter_a190c322709f012d56b26f37d25f95e39}{Name\+To\+Color}} (std\+::string n)
+\begin{DoxyCompactList}\small\item\em Converts a name to its represented color. Ex\+: black -\/\texorpdfstring{$>$}{>} RGB(0,0,0) Ex\+: red -\/\texorpdfstring{$>$}{>} RGB(255,0,0) \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classglib_1_1_color_name_converter_a1300121dff0e31409d9276e698640491}{Color\+To\+Name}} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\begin{DoxyCompactList}\small\item\em Converts a color to its represented name Ex\+: RGB(0,0,0) -\/\texorpdfstring{$>$}{>} black Ex\+: RGB(255,0,0) -\/\texorpdfstring{$>$}{>} red Alpha is omitted in the search. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_color_name_converter_a1300121dff0e31409d9276e698640491}\label{classglib_1_1_color_name_converter_a1300121dff0e31409d9276e698640491}} 
+\index{glib::ColorNameConverter@{glib::ColorNameConverter}!ColorToName@{ColorToName}}
+\index{ColorToName@{ColorToName}!glib::ColorNameConverter@{glib::ColorNameConverter}}
+\doxysubsubsection{\texorpdfstring{ColorToName()}{ColorToName()}}
+{\footnotesize\ttfamily static std\+::string glib\+::\+Color\+Name\+Converter\+::\+Color\+To\+Name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_color}{Color}}}]{c }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts a color to its represented name Ex\+: RGB(0,0,0) -\/\texorpdfstring{$>$}{>} black Ex\+: RGB(255,0,0) -\/\texorpdfstring{$>$}{>} red Alpha is omitted in the search. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & The color to convert to a name \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::string Returns a non empty string if the color could be found in the list of valid colors and names. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_color_name_converter_a190c322709f012d56b26f37d25f95e39}\label{classglib_1_1_color_name_converter_a190c322709f012d56b26f37d25f95e39}} 
+\index{glib::ColorNameConverter@{glib::ColorNameConverter}!NameToColor@{NameToColor}}
+\index{NameToColor@{NameToColor}!glib::ColorNameConverter@{glib::ColorNameConverter}}
+\doxysubsubsection{\texorpdfstring{NameToColor()}{NameToColor()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{structglib_1_1_color}{Color}} glib\+::\+Color\+Name\+Converter\+::\+Name\+To\+Color (\begin{DoxyParamCaption}\item[{std\+::string}]{n }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts a name to its represented color. Ex\+: black -\/\texorpdfstring{$>$}{>} RGB(0,0,0) Ex\+: red -\/\texorpdfstring{$>$}{>} RGB(255,0,0) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & The name of the color \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{structglib_1_1_color}{Color}} Returns the correct color with alpha = 255 if successful. Otherwise, the default color RGBA(0,0,0,0) is returned. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Color\+Name\+Converter.\+h\end{DoxyCompactItemize}

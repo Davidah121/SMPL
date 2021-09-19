@@ -1,0 +1,74 @@
+\hypertarget{_matrix_8h_source}{}\doxysection{Matrix.\+h}
+\label{_matrix_8h_source}\index{include/Matrix.h@{include/Matrix.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include "{}Object.h"{}}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}GeneralVector.h"{}}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{6 \{}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
+\DoxyCodeLine{9     \{}
+\DoxyCodeLine{10     \textcolor{keyword}{public}:}
+\DoxyCodeLine{15         \mbox{\hyperlink{classglib_1_1_matrix_a8b66a1a57532c93308432f2d98f53a79}{Matrix}}();}
+\DoxyCodeLine{16 }
+\DoxyCodeLine{24         \mbox{\hyperlink{classglib_1_1_matrix_a5518177576551844e29a60bd7d9982dc}{Matrix}}(\textcolor{keywordtype}{int} rows, \textcolor{keywordtype}{int} cols);}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{32         \mbox{\hyperlink{classglib_1_1_matrix_a6aa1a69067ab78d2f6f04e342f829559}{Matrix}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}}\& o);}
+\DoxyCodeLine{33 }
+\DoxyCodeLine{40         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_matrix_a190956b71fdc7eeaf2334f716f30b509}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}}\& o);}
+\DoxyCodeLine{41 }
+\DoxyCodeLine{46         \mbox{\hyperlink{classglib_1_1_matrix_a7cd9d460f611775888f9f42b976ed699}{\string~Matrix}}();}
+\DoxyCodeLine{47 }
+\DoxyCodeLine{54         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_matrix_ab4b819fba1c440bc88c0ac57d792a11d}{copy}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}}\& o);}
+\DoxyCodeLine{55 }
+\DoxyCodeLine{56         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{57         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{58         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{59 }
+\DoxyCodeLine{60         \textcolor{keywordtype}{double}* operator[](\textcolor{keywordtype}{int} row);}
+\DoxyCodeLine{61 }
+\DoxyCodeLine{62         \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} operator*(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{63         \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} operator*(\textcolor{keywordtype}{int} value);}
+\DoxyCodeLine{64         \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} operator*(\textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66         \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} operator*(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} other);}
+\DoxyCodeLine{67         \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} operator*(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} other);}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{70         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{int} value);}
+\DoxyCodeLine{71         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{72 }
+\DoxyCodeLine{73         \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} operator+(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} other);}
+\DoxyCodeLine{74         \textcolor{keywordtype}{void} operator+=(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} other);}
+\DoxyCodeLine{75 }
+\DoxyCodeLine{76         \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} operator-\/(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} other);}
+\DoxyCodeLine{77         \textcolor{keywordtype}{void} operator-\/=(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} other);}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{79         \textcolor{keywordtype}{bool} operator==(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} other);}
+\DoxyCodeLine{80         \textcolor{keywordtype}{bool} operator!=(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} other);}
+\DoxyCodeLine{81 }
+\DoxyCodeLine{87         \textcolor{keywordtype}{double}** \mbox{\hyperlink{classglib_1_1_matrix_acf4161b94ce6422fa42f20fe3236d8ac}{getData}}();}
+\DoxyCodeLine{88 }
+\DoxyCodeLine{94         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_matrix_afedadcc97b9c6e89007487453f8fd186}{getRows}}();}
+\DoxyCodeLine{95 }
+\DoxyCodeLine{101         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_matrix_a824b376d0240fecc1b2edee9232cd7e2}{getCols}}();}
+\DoxyCodeLine{102 }
+\DoxyCodeLine{108         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_matrix_a1d34cadd4061e3f2b2449e11ef9ad7b6}{getValid}}();}
+\DoxyCodeLine{109 }
+\DoxyCodeLine{117         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_matrix_ad5c4ff97b0148d02c4659efb362acc12}{get}}(\textcolor{keywordtype}{int} col, \textcolor{keywordtype}{int} row);}
+\DoxyCodeLine{118 }
+\DoxyCodeLine{119     \textcolor{keyword}{protected}:}
+\DoxyCodeLine{120         \textcolor{keywordtype}{double}** data = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{121         \textcolor{keywordtype}{int} rows;}
+\DoxyCodeLine{122         \textcolor{keywordtype}{int} columns;}
+\DoxyCodeLine{123 }
+\DoxyCodeLine{124         \textcolor{keywordtype}{bool} valid = \textcolor{keyword}{true};}
+\DoxyCodeLine{125 }
+\DoxyCodeLine{126     \};}
+\DoxyCodeLine{127 }
+\DoxyCodeLine{128 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

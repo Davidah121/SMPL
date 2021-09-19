@@ -1,0 +1,94 @@
+\hypertarget{classglib_1_1_gui_shape}{}\doxysection{glib\+::Gui\+Shape Class Reference}
+\label{classglib_1_1_gui_shape}\index{glib::GuiShape@{glib::GuiShape}}
+Inheritance diagram for glib\+::Gui\+Shape\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classglib_1_1_gui_shape}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_shape_a843e426e4db87b8cbe518e7da625b1fb}\label{classglib_1_1_gui_shape_a843e426e4db87b8cbe518e7da625b1fb}} 
+{\bfseries Gui\+Shape} (int x, int y, \mbox{\hyperlink{classglib_1_1_vector_graphic}{Vector\+Graphic}} $\ast$svg)
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_shape_a0ae7345a017d98a628aa3d3dcc39330a}\label{classglib_1_1_gui_shape_a0ae7345a017d98a628aa3d3dcc39330a}} 
+{\bfseries Gui\+Shape} (const \mbox{\hyperlink{classglib_1_1_gui_shape}{Gui\+Shape}} \&other)
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_shape_acd36e8f5671fdedcf746417d7f913c76}\label{classglib_1_1_gui_shape_acd36e8f5671fdedcf746417d7f913c76}} 
+void {\bfseries operator=} (const \mbox{\hyperlink{classglib_1_1_gui_shape}{Gui\+Shape}} \&other)
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_shape_a7576fad16ba73e78cf9655b0ece42e4b}\label{classglib_1_1_gui_shape_a7576fad16ba73e78cf9655b0ece42e4b}} 
+void {\bfseries copy} (const \mbox{\hyperlink{classglib_1_1_gui_shape}{Gui\+Shape}} \&other)
+\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_gui_shape_ae55ffea895960c0eaf3b8b1d173b78ae}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_gui_shape_a8d1206553298941756e9176a64977abe}{update}} ()
+\begin{DoxyCompactList}\small\item\em An update function for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. Must be overriden. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_shape_a7e7f469b644f1b7120c1ac107133c3c1}{render}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em An render function for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. Must be overriden. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gui_shape_ab43a888c13ac337b07c463e6735f9fb9}\label{classglib_1_1_gui_shape_ab43a888c13ac337b07c463e6735f9fb9}} 
+void {\bfseries set\+On\+Click\+Function} (std\+::function$<$ void(\mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} $\ast$)$>$ func)
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_shape_aad70b33dedfa89034c0e3f0cfb8e4a14}\label{classglib_1_1_gui_shape_aad70b33dedfa89034c0e3f0cfb8e4a14}} 
+void {\bfseries set\+Background\+Color} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_shape_a7178f3d451c978e735c60e29baa603a7}\label{classglib_1_1_gui_shape_a7178f3d451c978e735c60e29baa603a7}} 
+void {\bfseries set\+Outline\+Color} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_shape_a4725b5af6e561792f1955e1e34a938f2}\label{classglib_1_1_gui_shape_a4725b5af6e561792f1955e1e34a938f2}} 
+void {\bfseries set\+Focus\+Outline\+Color} (\mbox{\hyperlink{structglib_1_1_color}{Color}} c)
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_shape_ad57ec5abc206f7ee34269faa07adbc6a}\label{classglib_1_1_gui_shape_ad57ec5abc206f7ee34269faa07adbc6a}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_gui_shape_ae55ffea895960c0eaf3b8b1d173b78ae}\label{classglib_1_1_gui_shape_ae55ffea895960c0eaf3b8b1d173b78ae}} 
+\index{glib::GuiShape@{glib::GuiShape}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::GuiShape@{glib::GuiShape}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Gui\+Shape\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance}{glib\+::\+Gui\+Instance}}.
+
+\mbox{\Hypertarget{classglib_1_1_gui_shape_a7e7f469b644f1b7120c1ac107133c3c1}\label{classglib_1_1_gui_shape_a7e7f469b644f1b7120c1ac107133c3c1}} 
+\index{glib::GuiShape@{glib::GuiShape}!render@{render}}
+\index{render@{render}!glib::GuiShape@{glib::GuiShape}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Shape\+::render (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+An render function for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. Must be overriden. 
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance_a303d9dc4dedc8e5cf2027bb02c7015c8}{glib\+::\+Gui\+Instance}}.
+
+\mbox{\Hypertarget{classglib_1_1_gui_shape_a8d1206553298941756e9176a64977abe}\label{classglib_1_1_gui_shape_a8d1206553298941756e9176a64977abe}} 
+\index{glib::GuiShape@{glib::GuiShape}!update@{update}}
+\index{update@{update}!glib::GuiShape@{glib::GuiShape}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Shape\+::update (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+An update function for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}}. Must be overriden. 
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_gui_instance_adb20e1eac37428a48802ad39cf4c2cb0}{glib\+::\+Gui\+Instance}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Gui\+Manager.\+h\end{DoxyCompactItemize}

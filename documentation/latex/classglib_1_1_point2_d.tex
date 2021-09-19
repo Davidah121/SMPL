@@ -1,0 +1,83 @@
+\hypertarget{classglib_1_1_point2_d}{}\doxysection{glib\+::Point2D Class Reference}
+\label{classglib_1_1_point2_d}\index{glib::Point2D@{glib::Point2D}}
+Inheritance diagram for glib\+::Point2D\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classglib_1_1_point2_d}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_point2_d_a4c495cb6d23122d8fd77d5868982d5aa}\label{classglib_1_1_point2_d_a4c495cb6d23122d8fd77d5868982d5aa}} 
+{\bfseries Point2D} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}} object Default position is (0,0) \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_point2_d_a043eb1ffdd56910b1c9c75fba29d4b0a}{Point2D}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} pos)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}} object. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_point2_d_a9e952d07d72c125248e0990acf76344f}\label{classglib_1_1_point2_d_a9e952d07d72c125248e0990acf76344f}} 
+{\bfseries $\sim$\+Point2D} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_point2_d_a586fff51772c322a41333ad06dc2a2cc}{get\+Class}} ()
+\item 
+double \mbox{\hyperlink{classglib_1_1_point2_d_a28f4b76ae186da3813613a7b808e3dea}{generate\+Bounding\+Radius}} ()
+\begin{DoxyCompactList}\small\item\em Generates the bounding radius for the point. Returns the value 0 because it is a point. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_point2_d_a11d0ba1a4c05f236db29fdeb471888ff}\label{classglib_1_1_point2_d_a11d0ba1a4c05f236db29fdeb471888ff}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_point2_d_a043eb1ffdd56910b1c9c75fba29d4b0a}\label{classglib_1_1_point2_d_a043eb1ffdd56910b1c9c75fba29d4b0a}} 
+\index{glib::Point2D@{glib::Point2D}!Point2D@{Point2D}}
+\index{Point2D@{Point2D}!glib::Point2D@{glib::Point2D}}
+\doxysubsubsection{\texorpdfstring{Point2D()}{Point2D()}}
+{\footnotesize\ttfamily glib\+::\+Point2\+D\+::\+Point2D (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{pos }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pos} & The position to set the point at. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_point2_d_a28f4b76ae186da3813613a7b808e3dea}\label{classglib_1_1_point2_d_a28f4b76ae186da3813613a7b808e3dea}} 
+\index{glib::Point2D@{glib::Point2D}!generateBoundingRadius@{generateBoundingRadius}}
+\index{generateBoundingRadius@{generateBoundingRadius}!glib::Point2D@{glib::Point2D}}
+\doxysubsubsection{\texorpdfstring{generateBoundingRadius()}{generateBoundingRadius()}}
+{\footnotesize\ttfamily double glib\+::\+Point2\+D\+::generate\+Bounding\+Radius (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Generates the bounding radius for the point. Returns the value 0 because it is a point. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_shape_aa3838fc7d35a5ba71487502d0b51f25a}{glib\+::\+Shape}}.
+
+\mbox{\Hypertarget{classglib_1_1_point2_d_a586fff51772c322a41333ad06dc2a2cc}\label{classglib_1_1_point2_d_a586fff51772c322a41333ad06dc2a2cc}} 
+\index{glib::Point2D@{glib::Point2D}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::Point2D@{glib::Point2D}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Point2\+D\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_shape}{glib\+::\+Shape}}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Shape.\+h\end{DoxyCompactItemize}

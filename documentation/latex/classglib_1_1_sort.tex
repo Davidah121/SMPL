@@ -1,0 +1,88 @@
+\hypertarget{classglib_1_1_sort}{}\doxysection{glib\+::Sort Class Reference}
+\label{classglib_1_1_sort}\index{glib::Sort@{glib::Sort}}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T $>$ }\\static void \mbox{\hyperlink{classglib_1_1_sort_a3df74493b939d2e5d489a40d6bc7772d}{merge\+Sort}} (T $\ast$list, size\+\_\+t size, std\+::function$<$ bool(T, T)$>$ compare\+Func)
+\begin{DoxyCompactList}\small\item\em Performs Merge \mbox{\hyperlink{classglib_1_1_sort}{Sort}} on the data. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_sort_a006f4951bcd5e4a0e125baba337d89e4}\label{classglib_1_1_sort_a006f4951bcd5e4a0e125baba337d89e4}} 
+{\footnotesize template$<$typename T $>$ }\\static void {\bfseries merge\+Sort} (T $\ast$list, size\+\_\+t size)
+\item 
+{\footnotesize template$<$typename T $>$ }\\static void \mbox{\hyperlink{classglib_1_1_sort_a1ba365698b8dff61a2046f4635e279d7}{insertion\+Sort}} (T $\ast$list, size\+\_\+t size, std\+::function$<$ bool(T, T)$>$ compare\+Func=nullptr)
+\begin{DoxyCompactList}\small\item\em Performs Insertion \mbox{\hyperlink{classglib_1_1_sort}{Sort}} on the data. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_sort_a180d08565e424d8df974cdbd60892615}\label{classglib_1_1_sort_a180d08565e424d8df974cdbd60892615}} 
+{\footnotesize template$<$typename T $>$ }\\static void {\bfseries insertion\+Sort} (T $\ast$list, size\+\_\+t size)
+\item 
+{\footnotesize template$<$typename T $>$ }\\static void \mbox{\hyperlink{classglib_1_1_sort_a5a96f853e790340702bdc9a410a90fc6}{quick\+Sort}} (T $\ast$list, size\+\_\+t size, std\+::function$<$ bool(T, T)$>$ compare\+Func=nullptr)
+\begin{DoxyCompactList}\small\item\em Performs Quick \mbox{\hyperlink{classglib_1_1_sort}{Sort}} on the data. This version of quick sort is not very good and should be updated. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_sort_adc8dc731a973523292af6bc66c055cd9}\label{classglib_1_1_sort_adc8dc731a973523292af6bc66c055cd9}} 
+{\footnotesize template$<$typename T $>$ }\\static void {\bfseries quick\+Sort} (T $\ast$list, size\+\_\+t size)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_sort_a1ba365698b8dff61a2046f4635e279d7}\label{classglib_1_1_sort_a1ba365698b8dff61a2046f4635e279d7}} 
+\index{glib::Sort@{glib::Sort}!insertionSort@{insertionSort}}
+\index{insertionSort@{insertionSort}!glib::Sort@{glib::Sort}}
+\doxysubsubsection{\texorpdfstring{insertionSort()}{insertionSort()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void glib\+::\+Sort\+::insertion\+Sort (\begin{DoxyParamCaption}\item[{T $\ast$}]{list,  }\item[{size\+\_\+t}]{size,  }\item[{std\+::function$<$ bool(T, T)$>$}]{compare\+Func = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Performs Insertion \mbox{\hyperlink{classglib_1_1_sort}{Sort}} on the data. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & \\
+\hline
+{\em size} & \\
+\hline
+{\em compare\+Func} & If set to nullptr, performs a \texorpdfstring{$<$}{<} b. a \texorpdfstring{$<$}{<} b must be defined for the the template type T. Default is nullptr. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sort_a3df74493b939d2e5d489a40d6bc7772d}\label{classglib_1_1_sort_a3df74493b939d2e5d489a40d6bc7772d}} 
+\index{glib::Sort@{glib::Sort}!mergeSort@{mergeSort}}
+\index{mergeSort@{mergeSort}!glib::Sort@{glib::Sort}}
+\doxysubsubsection{\texorpdfstring{mergeSort()}{mergeSort()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void glib\+::\+Sort\+::merge\+Sort (\begin{DoxyParamCaption}\item[{T $\ast$}]{list,  }\item[{size\+\_\+t}]{size,  }\item[{std\+::function$<$ bool(T, T)$>$}]{compare\+Func }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Performs Merge \mbox{\hyperlink{classglib_1_1_sort}{Sort}} on the data. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & \\
+\hline
+{\em size} & \\
+\hline
+{\em compare\+Func} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_sort_a5a96f853e790340702bdc9a410a90fc6}\label{classglib_1_1_sort_a5a96f853e790340702bdc9a410a90fc6}} 
+\index{glib::Sort@{glib::Sort}!quickSort@{quickSort}}
+\index{quickSort@{quickSort}!glib::Sort@{glib::Sort}}
+\doxysubsubsection{\texorpdfstring{quickSort()}{quickSort()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void glib\+::\+Sort\+::quick\+Sort (\begin{DoxyParamCaption}\item[{T $\ast$}]{list,  }\item[{size\+\_\+t}]{size,  }\item[{std\+::function$<$ bool(T, T)$>$}]{compare\+Func = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Performs Quick \mbox{\hyperlink{classglib_1_1_sort}{Sort}} on the data. This version of quick sort is not very good and should be updated. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & \\
+\hline
+{\em size} & \\
+\hline
+{\em compare\+Func} & If set to nullptr, performs a \texorpdfstring{$<$}{<} b. a \texorpdfstring{$<$}{<} b must be defined for the the template type T. Default is nullptr. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Sort.\+h\end{DoxyCompactItemize}

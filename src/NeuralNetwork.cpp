@@ -157,7 +157,7 @@ namespace glib
         return neurons[index];
     }
 
-    std::vector<Neuron> NeuralLayer::getListOfNeurons()
+    std::vector<Neuron>& NeuralLayer::getListOfNeurons()
     {
         return neurons;
     }
@@ -218,13 +218,14 @@ namespace glib
         return MathExt::logisticsSigmoid(value);
     }
 
-    double NeuralLayer::derivativeActivationFunction(double value, bool outputOfActivation)
+    double NeuralLayer::derivativeActivationFunction(double value)
     {
-        if(outputOfActivation)
-            return value*(1-value);
+        return value*(1-value);
+        // if(outputOfActivation)
+        //     return value*(1-value);
         
-        double v = MathExt::logisticsSigmoid(value);
-        return v * (1-v);
+        // double v = MathExt::logisticsSigmoid(value);
+        // return v * (1-v);
     }
 
     Neuron& NeuralLayer::operator[](int index)
@@ -401,7 +402,7 @@ namespace glib
                     {
                         double neuronActivation = currLayer->getNeuronActivation(i2);
                         double p1 = (neuronActivation - expectedOutput[x][i2]);
-                        double p2 = preLayer->derivativeActivationFunction( neuronActivation, true);
+                        double p2 = preLayer->derivativeActivationFunction( neuronActivation);
                         layerDelta[i][i2] =  p1 * p2;
                     }
                 }
@@ -415,7 +416,7 @@ namespace glib
                             summation += ( (*currLayer)[i2][k] * layerDelta[i+1][k] ); 
                         }
 
-                        layerDelta[i][i2] = summation * preLayer->derivativeActivationFunction( currLayer->getNeuronActivation(i2), true);
+                        layerDelta[i][i2] = summation * preLayer->derivativeActivationFunction( currLayer->getNeuronActivation(i2));
                     }
                 }
 

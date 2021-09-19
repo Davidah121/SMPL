@@ -1,0 +1,91 @@
+\hypertarget{_simple_dir_8h_source}{}\doxysection{Simple\+Dir.\+h}
+\label{_simple_dir_8h_source}\index{include/SimpleDir.h@{include/SimpleDir.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 }
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include<vector>}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include<filesystem>}}
+\DoxyCodeLine{5 }
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include "{}File.h"{}}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include "{}GeneralExceptions.h"{}}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include "{}Object.h"{}}}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{11 \{}
+\DoxyCodeLine{12     }
+\DoxyCodeLine{13     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_simple_dir}{SimpleDir}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
+\DoxyCodeLine{14     \{}
+\DoxyCodeLine{15     \textcolor{keyword}{public}:}
+\DoxyCodeLine{16 }
+\DoxyCodeLine{24         \mbox{\hyperlink{classglib_1_1_simple_dir_a497ae6d71b36f7f1aa49a681da282e39}{SimpleDir}}(\mbox{\hyperlink{classglib_1_1_file}{File}} directory);}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{30         \mbox{\hyperlink{classglib_1_1_simple_dir_ad991ee80133a97360ea3d93e5e27a2b7}{\string~SimpleDir}}();}
+\DoxyCodeLine{31 }
+\DoxyCodeLine{32         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{33         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{34         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{35 }
+\DoxyCodeLine{36         \textcolor{comment}{//Exceptions}}
+\DoxyCodeLine{37         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_simple_dir_1_1_existance_error}{ExistanceError}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{38         \{}
+\DoxyCodeLine{39             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}File or Directory could not be found."{}}; \}}
+\DoxyCodeLine{40         \};}
+\DoxyCodeLine{41         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_simple_dir_1_1_copy_error}{CopyError}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{42         \{}
+\DoxyCodeLine{43             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}File or Directory could not be copied."{}}; \}}
+\DoxyCodeLine{44         \};}
+\DoxyCodeLine{45         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_simple_dir_1_1_delete_error}{DeleteError}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{46         \{}
+\DoxyCodeLine{47             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}File or Directory could not be deleted."{}}; \}}
+\DoxyCodeLine{48         \};}
+\DoxyCodeLine{49         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_simple_dir_1_1_rename_error}{RenameError}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{50         \{}
+\DoxyCodeLine{51             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{noexcept} \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}File or Directory could not be renamed."{}}; \}}
+\DoxyCodeLine{52         \};}
+\DoxyCodeLine{53 }
+\DoxyCodeLine{59         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_dir_a493be047527ef812cbc838b8ebdb0fd7}{update}}();}
+\DoxyCodeLine{60 }
+\DoxyCodeLine{61         \textcolor{comment}{//Reference Stuff}}
+\DoxyCodeLine{62 }
+\DoxyCodeLine{71         std::wstring \mbox{\hyperlink{classglib_1_1_simple_dir_a64914c08a548e71b14a34d43f9ff6ca0}{getReferenceName}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{72 }
+\DoxyCodeLine{81         std::wstring \mbox{\hyperlink{classglib_1_1_simple_dir_affb8cb70216f74a6e665a35e1784f779}{getReferenceFullPath}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{82 }
+\DoxyCodeLine{89         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_dir_ad756594d09b248e3cbba3dc3a9985466}{fileSize}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{90 }
+\DoxyCodeLine{98         time\_t \mbox{\hyperlink{classglib_1_1_simple_dir_a152a40391b1aae45529558890e821899}{getLastChangeTime}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{99 }
+\DoxyCodeLine{108         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_dir_a3127fa94b89576e57f6aa71fc7300324}{referenceIsDirectory}}(\textcolor{keywordtype}{int} index); \textcolor{comment}{//Gets whether the reference is a directory or not}}
+\DoxyCodeLine{109         }
+\DoxyCodeLine{119         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_dir_af8dcd13c2280af7fa4b2ef7c2ec73542}{renameResource}}(std::wstring newFileName, \textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{120 }
+\DoxyCodeLine{130         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_dir_add03ac97bf83d10d5e2f803ebc5eaf05}{deleteResource}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{131 }
+\DoxyCodeLine{140         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_dir_a8d650536491fc71798e1e29ddbf3922b}{copyResource}}(std::wstring newFileName, \textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{141 }
+\DoxyCodeLine{148         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_dir_a190afc1bb013d754927a6501efe080a5}{getReferenceLocation}}(std::wstring name);}
+\DoxyCodeLine{149 }
+\DoxyCodeLine{150         \textcolor{comment}{//Directory Stuff}}
+\DoxyCodeLine{151 }
+\DoxyCodeLine{157         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_dir_acc7a08209bfc8b285bbd2e5e82b2b95e}{getSize}}();}
+\DoxyCodeLine{158 }
+\DoxyCodeLine{164         std::vector<std::wstring> \mbox{\hyperlink{classglib_1_1_simple_dir_a6c4ac9ff4464af58793bd9b4e99d6c25}{getFolders}}();}
+\DoxyCodeLine{165 }
+\DoxyCodeLine{171         std::vector<std::wstring> \mbox{\hyperlink{classglib_1_1_simple_dir_a95050a0b70e8e834085c8a11648900b2}{getFiles}}();}
+\DoxyCodeLine{172 }
+\DoxyCodeLine{179         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_dir_a3e5ef8c0d54f7d7f2ba865cd40c54486}{doesExist}}();}
+\DoxyCodeLine{180 }
+\DoxyCodeLine{185         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_dir_ac5b7969e1481efa1d696f52059be355f}{createDirectory}}();}
+\DoxyCodeLine{186 }
+\DoxyCodeLine{193         std::wstring \mbox{\hyperlink{classglib_1_1_simple_dir_a7a5b5b639ef97d869641b01da4cd1a2f}{getLocation}}();}
+\DoxyCodeLine{194 }
+\DoxyCodeLine{195     \textcolor{keyword}{private}:}
+\DoxyCodeLine{196         std::vector<std::filesystem::directory\_entry> names = std::vector<std::filesystem::directory\_entry>();}
+\DoxyCodeLine{197         \textcolor{keywordtype}{bool} exists = \textcolor{keyword}{false};}
+\DoxyCodeLine{198         std::wstring location = L\textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{199     \};}
+\DoxyCodeLine{200 }
+\DoxyCodeLine{201 \}  \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

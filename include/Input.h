@@ -94,28 +94,150 @@ namespace glib
 		static const unsigned char KEY_RIGHT_SQUARE_BRACKET = 0xDD;
 		static const unsigned char KEY_SINGLE_QUOTE = 0xDE;
 		
-		
+		/**
+		 * @brief Polls input from the the Keyboard and Mouse using the OS tools.
+		 * 		Note that mouse scroll wheel uses the currently active window to update.
+		 * 		This may be changed.
+		 * 		pollInput should be called to update the status of each key.
+		 */
 		static void pollInput();
 
+		/**
+		 * @brief Returns whether the specified key has just been pressed.
+		 * 		Last until the next pollInput is called even if the key is being held down.
+		 * 
+		 * @param k 
+		 * 		The key the check. Use either the constants or the uppercase letters and numbers
+		 * 		to reference a key.
+		 * @return true 
+		 * @return false 
+		 */
 		static bool getKeyPressed(unsigned char k);
+
+		/**
+		 * @brief Returns whether the specified key is being held down.
+		 * 		Last as long as the key is held down.
+		 * 
+		 * @param k 
+		 * 		The key the check. Use either the constants or the uppercase letters and numbers
+		 * 		to reference a key.
+		 * @return true 
+		 * @return false 
+		 */
 		static bool getKeyDown(unsigned char k);
+
+		/**
+		 * @brief Returns whether the specified key has just been released.
+		 * 		Last until the next pollInput is called.
+		 * 
+		 * @param k 
+		 * 		The key the check. Use either the constants or the uppercase letters and numbers
+		 * 		to reference a key.
+		 * @return true 
+		 * @return false 
+		 */
 		static bool getKeyUp(unsigned char k);
 
+		/**
+		 * @brief Returns whether the specified mouse button has just been pressed.
+		 * 		Last until the next pollInput is called even if the button is still being held down.
+		 * 
+		 * @param v
+		 * 		The mouse button to check. Use the constants to access the correct button.
+		 * @return true 
+		 * @return false 
+		 */
 		static bool getMousePressed(int v);
+
+		/**
+		 * @brief Returns whether the specified mouse button is being held down.
+		 * 		Last as long as the button is being held down.
+		 * 
+		 * @param v
+		 * 		The mouse button to check. Use the constants to access the correct button.
+		 * @return true 
+		 * @return false 
+		 */
 		static bool getMouseDown(int v);
+
+		/**
+		 * @brief Returns whether the specified mouse button has just been released.
+		 * 		Last until the next pollInput is called.
+		 * 
+		 * @param v
+		 * 		The mouse button to check. Use the constants to access the correct button.
+		 * @return true 
+		 * @return false 
+		 */
 		static bool getMouseUp(int v);
 
+		/**
+		 * @brief Returns the mouse scroll wheel value in the vertical direction.
+		 * 		Can return a positive or negative value which indicates the intensity and direction.
+		 * 		Requires an active window to be in use.
+		 * 
+		 * @return int 
+		 */
 		static int getMouseScrollVertical();
+
+		/**
+		 * @brief Returns the mouse scroll wheel value in the horizontal direction.
+		 * 		Can return a positive or negative value which indicates the intensity and direction.
+		 * 		Requires an active window to be in use.
+		 * 
+		 * @return int 
+		 */
 		static int getMouseScrollHorizontal();
 
+		/**
+		 * @brief Gets the mouse x position.
+		 * 
+		 * @return int 
+		 */
 		static int getMouseX();
+
+		/**
+		 * @brief Gets the mouse y position.
+		 * 
+		 * @return int 
+		 */
 		static int getMouseY();
 
+		/**
+		 * @brief Gets whether a key state has changed from the previous poll input.
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
 		static bool getKeyChanged();
+
+		/**
+		 * @brief Gets whether the mouse has moved from the previous poll input.
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
 		static bool getMouseMoved();
 
+		/**
+		 * @brief Gets the last key that was pressed.
+		 * 
+		 * @return int 
+		 */
 		static int getLastKeyPressed();
+
+		/**
+		 * @brief Gets the last key that was held down.
+		 * 
+		 * @return int 
+		 */
 		static int getLastKeyDown();
+
+		/**
+		 * @brief Gets the last key that was released.
+		 * 
+		 * @return int 
+		 */
 		static int getLastKeyReleased();
 
 		const static int LEFT_MOUSE_BUTTON = 0x00;

@@ -1,0 +1,78 @@
+\hypertarget{_font_8h_source}{}\doxysection{Font.\+h}
+\label{_font_8h_source}\index{include/Font.h@{include/Font.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include "{}Image.h"{}}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}Object.h"{}}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}MathExt.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}GeneralExceptions.h"{}}}
+\DoxyCodeLine{6 }
+\DoxyCodeLine{7 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{8 \{}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10     \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_font_char_info}{FontCharInfo}}}
+\DoxyCodeLine{11     \{}
+\DoxyCodeLine{12         \textcolor{keywordtype}{int} unicodeValue;}
+\DoxyCodeLine{13         \textcolor{keywordtype}{int} x;}
+\DoxyCodeLine{14         \textcolor{keywordtype}{int} y;}
+\DoxyCodeLine{15         \textcolor{keywordtype}{int} width;}
+\DoxyCodeLine{16         \textcolor{keywordtype}{int} height;}
+\DoxyCodeLine{17         \textcolor{keywordtype}{int} horizAdv;}
+\DoxyCodeLine{18         \textcolor{keywordtype}{int} xOffset;}
+\DoxyCodeLine{19         \textcolor{keywordtype}{int} yOffset;}
+\DoxyCodeLine{20     \};}
+\DoxyCodeLine{21 }
+\DoxyCodeLine{22     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_font}{Font}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
+\DoxyCodeLine{23     \{}
+\DoxyCodeLine{24     \textcolor{keyword}{public}:}
+\DoxyCodeLine{30         \mbox{\hyperlink{classglib_1_1_font_a369550cea2bcec9410d2bc57b1d3c6aa}{Font}}();}
+\DoxyCodeLine{31 }
+\DoxyCodeLine{36         \mbox{\hyperlink{classglib_1_1_font_a41742bb97cb8acd73d93651d7df35abe}{\string~Font}}();}
+\DoxyCodeLine{37 }
+\DoxyCodeLine{38         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{39         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{40         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{41         }
+\DoxyCodeLine{52         \mbox{\hyperlink{structglib_1_1_font_char_info}{FontCharInfo}} \mbox{\hyperlink{classglib_1_1_font_a7e9c6497f40109c92c21d4c0f1a36aaa}{getFontCharInfo}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{53 }
+\DoxyCodeLine{64         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_font_a8095a856b7f87ebc953c51d3e85713b2}{getCharIndex}}(\textcolor{keywordtype}{int} c);}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{74         \textcolor{keyword}{virtual} \mbox{\hyperlink{classglib_1_1_image}{Image}}* \mbox{\hyperlink{classglib_1_1_font_ae1a482f1b115fc9f03fa51f6aee2f63f}{getImage}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{75 }
+\DoxyCodeLine{82         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_font_a327d71da8a49c3d83ae97ade39af5757}{setFontSize}}(\textcolor{keywordtype}{int} value);}
+\DoxyCodeLine{83 }
+\DoxyCodeLine{88         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_font_a6c89b323de83d6ad9ee7f88f622be2d8}{getFontSize}}();}
+\DoxyCodeLine{89 }
+\DoxyCodeLine{94         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_font_af5355d10bde74b9fc8f86790038616c1}{getOriginalFontSize}}();}
+\DoxyCodeLine{95 }
+\DoxyCodeLine{100         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_font_a6b749eef2ea335487e7e1e0e22b3add7}{getVerticalAdvance}}();}
+\DoxyCodeLine{101 }
+\DoxyCodeLine{110         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_font_aaa0169942748e240eb5282a2f6ac95fe}{getWidthOfString}}(std::string text);}
+\DoxyCodeLine{111 }
+\DoxyCodeLine{120         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_font_a4bdd6520b91187c34b005ade98372181}{getWidthOfString}}(std::wstring text);}
+\DoxyCodeLine{121 }
+\DoxyCodeLine{126         std::vector<FontCharInfo>\& \mbox{\hyperlink{classglib_1_1_font_ab6a6315fee17170cce0808810f4085b6}{getListOfFontCharInfo}}();}
+\DoxyCodeLine{127         }
+\DoxyCodeLine{128     \textcolor{keyword}{protected}:}
+\DoxyCodeLine{129         std::vector<FontCharInfo> charInfoList = std::vector<FontCharInfo>();}
+\DoxyCodeLine{130 }
+\DoxyCodeLine{137         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_font_a75335158966db190c8f715e2df25b6ca}{sortList}}(\textcolor{keywordtype}{bool} insertionSort);}
+\DoxyCodeLine{138 }
+\DoxyCodeLine{146         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_font_ac6c94d93996f2fec00db768238acc492}{addChar}}(\mbox{\hyperlink{structglib_1_1_font_char_info}{FontCharInfo}} a);}
+\DoxyCodeLine{147 }
+\DoxyCodeLine{148         \textcolor{keywordtype}{int} maxHorizAdv = 0;}
+\DoxyCodeLine{149         \textcolor{keywordtype}{int} ascent = 0;}
+\DoxyCodeLine{150         \textcolor{keywordtype}{int} descent = 0;}
+\DoxyCodeLine{151         \textcolor{keywordtype}{int} verticalAdv = 0;}
+\DoxyCodeLine{152 }
+\DoxyCodeLine{153         \textcolor{keywordtype}{int} fontSize = 0;}
+\DoxyCodeLine{154         \textcolor{keywordtype}{int} originalFontSize = 0;}
+\DoxyCodeLine{155 }
+\DoxyCodeLine{156     \textcolor{keyword}{private}:}
+\DoxyCodeLine{157         \textcolor{keywordtype}{bool} sorted = \textcolor{keyword}{false};}
+\DoxyCodeLine{158     \};}
+\DoxyCodeLine{159 }
+\DoxyCodeLine{160 \}  \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

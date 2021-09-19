@@ -1,0 +1,313 @@
+\hypertarget{classglib_1_1_simple_hash_map}{}\doxysection{glib\+::Simple\+Hash\+Map\texorpdfstring{$<$}{<} K, T \texorpdfstring{$>$}{>} Class Template Reference}
+\label{classglib_1_1_simple_hash_map}\index{glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_simple_hash_map_ab0b7f8dde951f2d567c7ee8dd8e3ea8b}{Simple\+Hash\+Map}} (unsigned char mode=MODE\+\_\+\+KEEP\+\_\+\+ALL, int init\+Buckets=20, int max\+Size\+Of\+Buckets=20)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}} object \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}} is designed to be faster to delete than the std\+::multimap but it uses significantly more memory. Due to this, \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}} is best used on smaller data sets to avoid large memory allocation. Data is stored into a single array. The buckets are sections in the array. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_simple_hash_map_a42eb437da5ea185b0aecd27c8fa20ed7}{Simple\+Hash\+Map}} (const \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}}$<$ K, T $>$ \&other)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}} object from another \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_hash_map_a8cd306ab4460f624b9cf7948982b0232}{operator=}} (const \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}}$<$ K, T $>$ \&other)
+\begin{DoxyCompactList}\small\item\em Copies a \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}} object. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_a2d68fe52a24b602912ceafe8d7f237a9}\label{classglib_1_1_simple_hash_map_a2d68fe52a24b602912ceafe8d7f237a9}} 
+{\bfseries $\sim$\+Simple\+Hash\+Map} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}} object. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_acb11889ced76f351d1583b3cafb0af1b}\label{classglib_1_1_simple_hash_map_acb11889ced76f351d1583b3cafb0af1b}} 
+void {\bfseries clear} ()
+\begin{DoxyCompactList}\small\item\em Clears the \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_hash_map_a76e6d28fdcb0752229db9e3dc68ab932}{add}} (K key, T value)
+\begin{DoxyCompactList}\small\item\em Adds a new data entry into the \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}} based on the mode of the hashmap. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_hash_map_acbb675cacc8007edd5510a19a564887c}{remove\+First}} (K key)
+\begin{DoxyCompactList}\small\item\em Removes the first entry found for the key. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_hash_map_a78283261033834ca46405a38497c2dfa}{remove\+Last}} (K key)
+\begin{DoxyCompactList}\small\item\em Removes the last entry found for the key. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_hash_map_a670b1e618313b3b39c2e3b52e5721e99}{remove\+All}} (K key)
+\begin{DoxyCompactList}\small\item\em Removes all entry found for the key. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_hash_map_aec02b54cd0f7dfe46ed08113b04a6d21}{remove}} (\mbox{\hyperlink{structglib_1_1_hash_pair}{Hash\+Pair}}$<$ K, T $>$ $\ast$rm)
+\begin{DoxyCompactList}\small\item\em Removes a specific entry from the hashmap. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_hash_pair}{Hash\+Pair}}$<$ K, T $>$ $\ast$ \mbox{\hyperlink{classglib_1_1_simple_hash_map_a0a650c6bc82473caa76f4c1bfbeb8a6d}{get}} (K key)
+\begin{DoxyCompactList}\small\item\em Gets the first entry with the specified key. \end{DoxyCompactList}\item 
+std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_hash_pair}{Hash\+Pair}}$<$ K, T $>$ $\ast$ $>$ \mbox{\hyperlink{classglib_1_1_simple_hash_map_a608b33e5857f89aa5c0b6ac0d2f88026}{get\+All}} (K key)
+\begin{DoxyCompactList}\small\item\em Gets all entries with the specified key. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classglib_1_1_simple_hash_map_ab7fe7fe28844272af2ba8853e62cd951}{size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the amount of entries. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classglib_1_1_simple_hash_map_a26d2845f1a6ef240897335298177816e}{total\+Size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the total amount of data taken up. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_aaa2976b083edf4a8e1037f57c931b32d}\label{classglib_1_1_simple_hash_map_aaa2976b083edf4a8e1037f57c931b32d}} 
+void {\bfseries rehash} ()
+\begin{DoxyCompactList}\small\item\em Rehashes the hashmap. Can help performance if the data has been reorganized. Slow function that allocates a lot of memory. \end{DoxyCompactList}\item 
+std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_hash_pair}{Hash\+Pair}}$<$ K, T $>$ $\ast$ $>$ \mbox{\hyperlink{classglib_1_1_simple_hash_map_aa9257ccaef2d52c34d65636bc60ff251}{get\+Data}} ()
+\begin{DoxyCompactList}\small\item\em Returns all of the data entries. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_hash_map_a4e923bcb6dd59707c1ba4f2ee52d6912}{set\+Mode}} (unsigned char v)
+\begin{DoxyCompactList}\small\item\em Sets the mode of the hashmap. Valid modes are\+: MODE\+\_\+\+UNIQUE\+\_\+\+KEY MODE\+\_\+\+REMOVE\+\_\+\+LAST\+\_\+\+FROM\+\_\+\+BUCKET MODE\+\_\+\+KEEP\+\_\+\+ALL Unique Key will replace the data with the same key. Remove Last allows the same key. Once the bucket has reached max size, it removes the last version of that key in the bucket if it exists and has exceeded the maximum amount allow for that key. Otherwise, it resizes the bucket. Keep All keeps all data added to the hash map. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_hash_map_a40ad52feea170fd6242c0fd6732d1c6b}{set\+Max\+Of\+Same\+Key}} (int v)
+\begin{DoxyCompactList}\small\item\em Sets the maximum amount of entries allowed with the same key. Default is 10. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_aeb75c40a3be37848c64a3fc37eef20b1}\label{classglib_1_1_simple_hash_map_aeb75c40a3be37848c64a3fc37eef20b1}} 
+static const unsigned char {\bfseries MODE\+\_\+\+UNIQUE\+\_\+\+KEY} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_aa440658b6ede8b2f7d9a402ad0a780d7}\label{classglib_1_1_simple_hash_map_aa440658b6ede8b2f7d9a402ad0a780d7}} 
+static const unsigned char {\bfseries MODE\+\_\+\+REMOVE\+\_\+\+LAST\+\_\+\+FROM\+\_\+\+BUCKET} = 1
+\item 
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_ab93edd57b8dcda0395380063b02dfcfc}\label{classglib_1_1_simple_hash_map_ab93edd57b8dcda0395380063b02dfcfc}} 
+static const unsigned char {\bfseries MODE\+\_\+\+KEEP\+\_\+\+ALL} = 2
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_ab0b7f8dde951f2d567c7ee8dd8e3ea8b}\label{classglib_1_1_simple_hash_map_ab0b7f8dde951f2d567c7ee8dd8e3ea8b}} 
+\index{glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}!SimpleHashMap@{SimpleHashMap}}
+\index{SimpleHashMap@{SimpleHashMap}!glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}}
+\doxysubsubsection{\texorpdfstring{SimpleHashMap()}{SimpleHashMap()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$class K , class T $>$ \\
+\mbox{\hyperlink{classglib_1_1_simple_hash_map}{glib\+::\+Simple\+Hash\+Map}}$<$ K, T $>$\+::\mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}} (\begin{DoxyParamCaption}\item[{unsigned char}]{mode = {\ttfamily MODE\+\_\+KEEP\+\_\+ALL},  }\item[{int}]{init\+Buckets = {\ttfamily 20},  }\item[{int}]{max\+Size\+Of\+Buckets = {\ttfamily 20} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}} object \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}} is designed to be faster to delete than the std\+::multimap but it uses significantly more memory. Due to this, \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}} is best used on smaller data sets to avoid large memory allocation. Data is stored into a single array. The buckets are sections in the array. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mode} & Valid modes are\+: MODE\+\_\+\+UNIQUE\+\_\+\+KEY MODE\+\_\+\+REMOVE\+\_\+\+LAST\+\_\+\+FROM\+\_\+\+BUCKET MODE\+\_\+\+KEEP\+\_\+\+ALL Unique Key will replace the data with the same key. Remove Last allows the same key. Once the bucket has reached max size, it removes the last version of that key in the bucket if it exists and has exceeded the maximum amount allow for that key (Default is 10). Otherwise, it resizes the bucket. Keep All keeps all data added to the hash map. Default value is MODE\+\_\+\+KEEP\+\_\+\+ALL \\
+\hline
+{\em init\+Buckets} & The initial amount of buckets Default value is 20 \\
+\hline
+{\em max\+Size\+Of\+Buckets} & The initial maximum size of the buckets Default value is 20 \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_a42eb437da5ea185b0aecd27c8fa20ed7}\label{classglib_1_1_simple_hash_map_a42eb437da5ea185b0aecd27c8fa20ed7}} 
+\index{glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}!SimpleHashMap@{SimpleHashMap}}
+\index{SimpleHashMap@{SimpleHashMap}!glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}}
+\doxysubsubsection{\texorpdfstring{SimpleHashMap()}{SimpleHashMap()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$class K , class T $>$ \\
+\mbox{\hyperlink{classglib_1_1_simple_hash_map}{glib\+::\+Simple\+Hash\+Map}}$<$ K, T $>$\+::\mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}}$<$ K, T $>$ \&}]{other }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}} object from another \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_a76e6d28fdcb0752229db9e3dc68ab932}\label{classglib_1_1_simple_hash_map_a76e6d28fdcb0752229db9e3dc68ab932}} 
+\index{glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}!add@{add}}
+\index{add@{add}!glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}}
+{\footnotesize\ttfamily template$<$class K , class T $>$ \\
+void \mbox{\hyperlink{classglib_1_1_simple_hash_map}{glib\+::\+Simple\+Hash\+Map}}$<$ K, T $>$\+::add (\begin{DoxyParamCaption}\item[{K}]{key,  }\item[{T}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Adds a new data entry into the \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}} based on the mode of the hashmap. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & \\
+\hline
+{\em value} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_a0a650c6bc82473caa76f4c1bfbeb8a6d}\label{classglib_1_1_simple_hash_map_a0a650c6bc82473caa76f4c1bfbeb8a6d}} 
+\index{glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}!get@{get}}
+\index{get@{get}!glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}}
+{\footnotesize\ttfamily template$<$class K , class T $>$ \\
+\mbox{\hyperlink{structglib_1_1_hash_pair}{Hash\+Pair}}$<$ K, T $>$ $\ast$ \mbox{\hyperlink{classglib_1_1_simple_hash_map}{glib\+::\+Simple\+Hash\+Map}}$<$ K, T $>$\+::get (\begin{DoxyParamCaption}\item[{K}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets the first entry with the specified key. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Hash\+Pair$<$\+K, T$>$$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_a608b33e5857f89aa5c0b6ac0d2f88026}\label{classglib_1_1_simple_hash_map_a608b33e5857f89aa5c0b6ac0d2f88026}} 
+\index{glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}!getAll@{getAll}}
+\index{getAll@{getAll}!glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}}
+\doxysubsubsection{\texorpdfstring{getAll()}{getAll()}}
+{\footnotesize\ttfamily template$<$class K , class T $>$ \\
+std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_hash_pair}{Hash\+Pair}}$<$ K, T $>$ $\ast$ $>$ \mbox{\hyperlink{classglib_1_1_simple_hash_map}{glib\+::\+Simple\+Hash\+Map}}$<$ K, T $>$\+::get\+All (\begin{DoxyParamCaption}\item[{K}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets all entries with the specified key. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector\texorpdfstring{$<$}{<}Hash\+Pair$<$\+K, T$>$$\ast$\texorpdfstring{$>$}{>} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_aa9257ccaef2d52c34d65636bc60ff251}\label{classglib_1_1_simple_hash_map_aa9257ccaef2d52c34d65636bc60ff251}} 
+\index{glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}!getData@{getData}}
+\index{getData@{getData}!glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}}
+\doxysubsubsection{\texorpdfstring{getData()}{getData()}}
+{\footnotesize\ttfamily template$<$class K , class T $>$ \\
+std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_hash_pair}{Hash\+Pair}}$<$ K, T $>$ $\ast$ $>$ \mbox{\hyperlink{classglib_1_1_simple_hash_map}{glib\+::\+Simple\+Hash\+Map}}$<$ K, T $>$\+::get\+Data\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns all of the data entries. 
+
+\begin{DoxyReturn}{Returns}
+std\+::vector\texorpdfstring{$<$}{<} Hash\+Pair$<$\+K, T$>$$\ast$ \texorpdfstring{$>$}{>} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_a8cd306ab4460f624b9cf7948982b0232}\label{classglib_1_1_simple_hash_map_a8cd306ab4460f624b9cf7948982b0232}} 
+\index{glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily template$<$class K , class T $>$ \\
+void \mbox{\hyperlink{classglib_1_1_simple_hash_map}{glib\+::\+Simple\+Hash\+Map}}$<$ K, T $>$\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}}$<$ K, T $>$ \&}]{other }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Copies a \mbox{\hyperlink{classglib_1_1_simple_hash_map}{Simple\+Hash\+Map}} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_aec02b54cd0f7dfe46ed08113b04a6d21}\label{classglib_1_1_simple_hash_map_aec02b54cd0f7dfe46ed08113b04a6d21}} 
+\index{glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}!remove@{remove}}
+\index{remove@{remove}!glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}}
+\doxysubsubsection{\texorpdfstring{remove()}{remove()}}
+{\footnotesize\ttfamily template$<$class K , class T $>$ \\
+void \mbox{\hyperlink{classglib_1_1_simple_hash_map}{glib\+::\+Simple\+Hash\+Map}}$<$ K, T $>$\+::remove (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_hash_pair}{Hash\+Pair}}$<$ K, T $>$ $\ast$}]{rm }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Removes a specific entry from the hashmap. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rm} & A pointer to the data entry to be removed. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_a670b1e618313b3b39c2e3b52e5721e99}\label{classglib_1_1_simple_hash_map_a670b1e618313b3b39c2e3b52e5721e99}} 
+\index{glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}!removeAll@{removeAll}}
+\index{removeAll@{removeAll}!glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}}
+\doxysubsubsection{\texorpdfstring{removeAll()}{removeAll()}}
+{\footnotesize\ttfamily template$<$class K , class T $>$ \\
+void \mbox{\hyperlink{classglib_1_1_simple_hash_map}{glib\+::\+Simple\+Hash\+Map}}$<$ K, T $>$\+::remove\+All (\begin{DoxyParamCaption}\item[{K}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Removes all entry found for the key. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_acbb675cacc8007edd5510a19a564887c}\label{classglib_1_1_simple_hash_map_acbb675cacc8007edd5510a19a564887c}} 
+\index{glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}!removeFirst@{removeFirst}}
+\index{removeFirst@{removeFirst}!glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}}
+\doxysubsubsection{\texorpdfstring{removeFirst()}{removeFirst()}}
+{\footnotesize\ttfamily template$<$class K , class T $>$ \\
+void \mbox{\hyperlink{classglib_1_1_simple_hash_map}{glib\+::\+Simple\+Hash\+Map}}$<$ K, T $>$\+::remove\+First (\begin{DoxyParamCaption}\item[{K}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Removes the first entry found for the key. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_a78283261033834ca46405a38497c2dfa}\label{classglib_1_1_simple_hash_map_a78283261033834ca46405a38497c2dfa}} 
+\index{glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}!removeLast@{removeLast}}
+\index{removeLast@{removeLast}!glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}}
+\doxysubsubsection{\texorpdfstring{removeLast()}{removeLast()}}
+{\footnotesize\ttfamily template$<$class K , class T $>$ \\
+void \mbox{\hyperlink{classglib_1_1_simple_hash_map}{glib\+::\+Simple\+Hash\+Map}}$<$ K, T $>$\+::remove\+Last (\begin{DoxyParamCaption}\item[{K}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Removes the last entry found for the key. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_a40ad52feea170fd6242c0fd6732d1c6b}\label{classglib_1_1_simple_hash_map_a40ad52feea170fd6242c0fd6732d1c6b}} 
+\index{glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}!setMaxOfSameKey@{setMaxOfSameKey}}
+\index{setMaxOfSameKey@{setMaxOfSameKey}!glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}}
+\doxysubsubsection{\texorpdfstring{setMaxOfSameKey()}{setMaxOfSameKey()}}
+{\footnotesize\ttfamily template$<$class K , class T $>$ \\
+void \mbox{\hyperlink{classglib_1_1_simple_hash_map}{glib\+::\+Simple\+Hash\+Map}}$<$ K, T $>$\+::set\+Max\+Of\+Same\+Key (\begin{DoxyParamCaption}\item[{int}]{v }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the maximum amount of entries allowed with the same key. Default is 10. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_a4e923bcb6dd59707c1ba4f2ee52d6912}\label{classglib_1_1_simple_hash_map_a4e923bcb6dd59707c1ba4f2ee52d6912}} 
+\index{glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}!setMode@{setMode}}
+\index{setMode@{setMode}!glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}}
+\doxysubsubsection{\texorpdfstring{setMode()}{setMode()}}
+{\footnotesize\ttfamily template$<$class K , class T $>$ \\
+void \mbox{\hyperlink{classglib_1_1_simple_hash_map}{glib\+::\+Simple\+Hash\+Map}}$<$ K, T $>$\+::set\+Mode (\begin{DoxyParamCaption}\item[{unsigned char}]{v }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the mode of the hashmap. Valid modes are\+: MODE\+\_\+\+UNIQUE\+\_\+\+KEY MODE\+\_\+\+REMOVE\+\_\+\+LAST\+\_\+\+FROM\+\_\+\+BUCKET MODE\+\_\+\+KEEP\+\_\+\+ALL Unique Key will replace the data with the same key. Remove Last allows the same key. Once the bucket has reached max size, it removes the last version of that key in the bucket if it exists and has exceeded the maximum amount allow for that key. Otherwise, it resizes the bucket. Keep All keeps all data added to the hash map. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_ab7fe7fe28844272af2ba8853e62cd951}\label{classglib_1_1_simple_hash_map_ab7fe7fe28844272af2ba8853e62cd951}} 
+\index{glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}!size@{size}}
+\index{size@{size}!glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily template$<$class K , class T $>$ \\
+size\+\_\+t \mbox{\hyperlink{classglib_1_1_simple_hash_map}{glib\+::\+Simple\+Hash\+Map}}$<$ K, T $>$\+::size\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the amount of entries. 
+
+\begin{DoxyReturn}{Returns}
+size\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_hash_map_a26d2845f1a6ef240897335298177816e}\label{classglib_1_1_simple_hash_map_a26d2845f1a6ef240897335298177816e}} 
+\index{glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}!totalSize@{totalSize}}
+\index{totalSize@{totalSize}!glib::SimpleHashMap$<$ K, T $>$@{glib::SimpleHashMap$<$ K, T $>$}}
+\doxysubsubsection{\texorpdfstring{totalSize()}{totalSize()}}
+{\footnotesize\ttfamily template$<$class K , class T $>$ \\
+size\+\_\+t \mbox{\hyperlink{classglib_1_1_simple_hash_map}{glib\+::\+Simple\+Hash\+Map}}$<$ K, T $>$\+::total\+Size\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the total amount of data taken up. 
+
+\begin{DoxyReturn}{Returns}
+size\+\_\+t 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Simple\+Hash\+Map.\+h\end{DoxyCompactItemize}

@@ -1,0 +1,172 @@
+\hypertarget{classglib_1_1_neural_network}{}\doxysection{glib\+::Neural\+Network Class Reference}
+\label{classglib_1_1_neural_network}\index{glib::NeuralNetwork@{glib::NeuralNetwork}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_neural_network_ae916a9424434576feebfecd556123197}\label{classglib_1_1_neural_network_ae916a9424434576feebfecd556123197}} 
+{\bfseries Neural\+Network} ()
+\begin{DoxyCompactList}\small\item\em Construct a new Neural \mbox{\hyperlink{classglib_1_1_network}{Network}} object Stores the start neural layer and end neural layer. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_neural_network_a726aab12ab498b2348e28158236351ca}\label{classglib_1_1_neural_network_a726aab12ab498b2348e28158236351ca}} 
+{\bfseries $\sim$\+Neural\+Network} ()
+\begin{DoxyCompactList}\small\item\em Destroy the Neural \mbox{\hyperlink{classglib_1_1_network}{Network}} object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_neural_network_a8c7b0742f9d64d962af4f72f4bfac691}{add\+Layer\+To\+End}} (int size\+Of\+Layer)
+\begin{DoxyCompactList}\small\item\em Adds a new neural layer to the network. \end{DoxyCompactList}\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{classglib_1_1_neural_network_a79b15647912d476b325c797046be1243}{run}} (std\+::vector$<$ double $>$ inputs)
+\begin{DoxyCompactList}\small\item\em Runs the neural layer using inputs as the initial activations. Inputs must be the same size as the start layer. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_neural_network_ae091659a8a155c396553542205b044a8}{train}} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ inputs, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ expected\+Output)
+\begin{DoxyCompactList}\small\item\em Trains the network using a series of inputs and their expected output. This should still be called multiple times. This takes the average of all the training adjustments over the expected outputs and then adjust the network. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_neural_network_a293ddc2ad62dbbecfc4a1a9ce0c0d322}\label{classglib_1_1_neural_network_a293ddc2ad62dbbecfc4a1a9ce0c0d322}} 
+void {\bfseries reset\+Network} ()
+\begin{DoxyCompactList}\small\item\em Resets the weights and bias values for the network. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_neural_network_a24c82ae7f7afdf33115adfe6d19f34cc}{size}} ()
+\begin{DoxyCompactList}\small\item\em Returns how many layers are in the Neural \mbox{\hyperlink{classglib_1_1_network}{Network}}. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_neural_network_a97068546512eee7ff98f4c4a1b204718}{get\+Learning\+Rate}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Learning Rate. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_neural_network_ae5d79497ed7c92c463ec64880dcfd2b0}{set\+Learning\+Rate}} (double v)
+\begin{DoxyCompactList}\small\item\em Sets the Learning Rate. Setting lower reduces the chance for over fitting but requires more training. Setting higher increases the chance for over fitting but requires less training. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_neural_network_af5ee536749902b4ef1ca9b8744bac5a8}{export\+Test\+Information}} (std\+::string filename)
+\begin{DoxyCompactList}\small\item\em Internal tool for analysing neural networks. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_neural_layer}{Neural\+Layer}} $\ast$ \mbox{\hyperlink{classglib_1_1_neural_network_a0f5aa91f04b7f7f7285ebbfeb2b3f0ca}{get\+Start\+Layer}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Start Layer. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_neural_layer}{Neural\+Layer}} $\ast$ \mbox{\hyperlink{classglib_1_1_neural_network_a6d7e025dc8b67636d709b1a1bd802fd7}{get\+End\+Layer}} ()
+\begin{DoxyCompactList}\small\item\em Gets the End Layer. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_neural_network_a8c7b0742f9d64d962af4f72f4bfac691}\label{classglib_1_1_neural_network_a8c7b0742f9d64d962af4f72f4bfac691}} 
+\index{glib::NeuralNetwork@{glib::NeuralNetwork}!addLayerToEnd@{addLayerToEnd}}
+\index{addLayerToEnd@{addLayerToEnd}!glib::NeuralNetwork@{glib::NeuralNetwork}}
+\doxysubsubsection{\texorpdfstring{addLayerToEnd()}{addLayerToEnd()}}
+{\footnotesize\ttfamily void glib\+::\+Neural\+Network\+::add\+Layer\+To\+End (\begin{DoxyParamCaption}\item[{int}]{size\+Of\+Layer }\end{DoxyParamCaption})}
+
+
+
+Adds a new neural layer to the network. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em size\+Of\+Layer} & The amount of neurons in the layer. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_neural_network_af5ee536749902b4ef1ca9b8744bac5a8}\label{classglib_1_1_neural_network_af5ee536749902b4ef1ca9b8744bac5a8}} 
+\index{glib::NeuralNetwork@{glib::NeuralNetwork}!exportTestInformation@{exportTestInformation}}
+\index{exportTestInformation@{exportTestInformation}!glib::NeuralNetwork@{glib::NeuralNetwork}}
+\doxysubsubsection{\texorpdfstring{exportTestInformation()}{exportTestInformation()}}
+{\footnotesize\ttfamily void glib\+::\+Neural\+Network\+::export\+Test\+Information (\begin{DoxyParamCaption}\item[{std\+::string}]{filename }\end{DoxyParamCaption})}
+
+
+
+Internal tool for analysing neural networks. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_neural_network_a6d7e025dc8b67636d709b1a1bd802fd7}\label{classglib_1_1_neural_network_a6d7e025dc8b67636d709b1a1bd802fd7}} 
+\index{glib::NeuralNetwork@{glib::NeuralNetwork}!getEndLayer@{getEndLayer}}
+\index{getEndLayer@{getEndLayer}!glib::NeuralNetwork@{glib::NeuralNetwork}}
+\doxysubsubsection{\texorpdfstring{getEndLayer()}{getEndLayer()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_neural_layer}{Neural\+Layer}} $\ast$ glib\+::\+Neural\+Network\+::get\+End\+Layer (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the End Layer. 
+
+\begin{DoxyReturn}{Returns}
+Neural\+Layer$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neural_network_a97068546512eee7ff98f4c4a1b204718}\label{classglib_1_1_neural_network_a97068546512eee7ff98f4c4a1b204718}} 
+\index{glib::NeuralNetwork@{glib::NeuralNetwork}!getLearningRate@{getLearningRate}}
+\index{getLearningRate@{getLearningRate}!glib::NeuralNetwork@{glib::NeuralNetwork}}
+\doxysubsubsection{\texorpdfstring{getLearningRate()}{getLearningRate()}}
+{\footnotesize\ttfamily double glib\+::\+Neural\+Network\+::get\+Learning\+Rate (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Learning Rate. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neural_network_a0f5aa91f04b7f7f7285ebbfeb2b3f0ca}\label{classglib_1_1_neural_network_a0f5aa91f04b7f7f7285ebbfeb2b3f0ca}} 
+\index{glib::NeuralNetwork@{glib::NeuralNetwork}!getStartLayer@{getStartLayer}}
+\index{getStartLayer@{getStartLayer}!glib::NeuralNetwork@{glib::NeuralNetwork}}
+\doxysubsubsection{\texorpdfstring{getStartLayer()}{getStartLayer()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_neural_layer}{Neural\+Layer}} $\ast$ glib\+::\+Neural\+Network\+::get\+Start\+Layer (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Start Layer. 
+
+\begin{DoxyReturn}{Returns}
+Neural\+Layer$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neural_network_a79b15647912d476b325c797046be1243}\label{classglib_1_1_neural_network_a79b15647912d476b325c797046be1243}} 
+\index{glib::NeuralNetwork@{glib::NeuralNetwork}!run@{run}}
+\index{run@{run}!glib::NeuralNetwork@{glib::NeuralNetwork}}
+\doxysubsubsection{\texorpdfstring{run()}{run()}}
+{\footnotesize\ttfamily std\+::vector$<$ double $>$ glib\+::\+Neural\+Network\+::run (\begin{DoxyParamCaption}\item[{std\+::vector$<$ double $>$}]{inputs }\end{DoxyParamCaption})}
+
+
+
+Runs the neural layer using inputs as the initial activations. Inputs must be the same size as the start layer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em inputs} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$double$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neural_network_ae5d79497ed7c92c463ec64880dcfd2b0}\label{classglib_1_1_neural_network_ae5d79497ed7c92c463ec64880dcfd2b0}} 
+\index{glib::NeuralNetwork@{glib::NeuralNetwork}!setLearningRate@{setLearningRate}}
+\index{setLearningRate@{setLearningRate}!glib::NeuralNetwork@{glib::NeuralNetwork}}
+\doxysubsubsection{\texorpdfstring{setLearningRate()}{setLearningRate()}}
+{\footnotesize\ttfamily void glib\+::\+Neural\+Network\+::set\+Learning\+Rate (\begin{DoxyParamCaption}\item[{double}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets the Learning Rate. Setting lower reduces the chance for over fitting but requires more training. Setting higher increases the chance for over fitting but requires less training. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_neural_network_a24c82ae7f7afdf33115adfe6d19f34cc}\label{classglib_1_1_neural_network_a24c82ae7f7afdf33115adfe6d19f34cc}} 
+\index{glib::NeuralNetwork@{glib::NeuralNetwork}!size@{size}}
+\index{size@{size}!glib::NeuralNetwork@{glib::NeuralNetwork}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily int glib\+::\+Neural\+Network\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns how many layers are in the Neural \mbox{\hyperlink{classglib_1_1_network}{Network}}. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_neural_network_ae091659a8a155c396553542205b044a8}\label{classglib_1_1_neural_network_ae091659a8a155c396553542205b044a8}} 
+\index{glib::NeuralNetwork@{glib::NeuralNetwork}!train@{train}}
+\index{train@{train}!glib::NeuralNetwork@{glib::NeuralNetwork}}
+\doxysubsubsection{\texorpdfstring{train()}{train()}}
+{\footnotesize\ttfamily void glib\+::\+Neural\+Network\+::train (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{inputs,  }\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{expected\+Output }\end{DoxyParamCaption})}
+
+
+
+Trains the network using a series of inputs and their expected output. This should still be called multiple times. This takes the average of all the training adjustments over the expected outputs and then adjust the network. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em inputs} & \\
+\hline
+{\em expected\+Output} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Neural\+Network.\+h\end{DoxyCompactItemize}

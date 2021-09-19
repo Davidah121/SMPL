@@ -8,9 +8,33 @@ namespace glib
 	class Vec3f : public Object
 	{
 	public:
-		Vec3f(double x, double y, double z);
+		/**
+		 * @brief Construct a new Vec3f object
+		 * 
+		 */
 		Vec3f();
+
+		/**
+		 * @brief Construct a new Vec3f object using a Vec2f.
+		 * 		The z value will not be set.
+		 * 
+		 * @param other 
+		 */
 		Vec3f(Vec2f other);
+
+		/**
+		 * @brief Construct a new Vec3f object
+		 * 
+		 * @param x 
+		 * @param y 
+		 * @param z 
+		 */
+		Vec3f(double x, double y, double z);
+
+		/**
+		 * @brief Destroy the Vec3f object
+		 * 
+		 */
 		~Vec3f();
 
 		//Object and Class Stuff
@@ -21,15 +45,62 @@ namespace glib
 		double y = 0;
 		double z = 0;
 
+		/**
+		 * @brief Gets the X value for the vector
+		 * 
+		 * @return double 
+		 */
 		double getX();
+
+		/**
+		 * @brief Gets the Y value for the vector
+		 * 
+		 * @return double 
+		 */
 		double getY();
+
+		/**
+		 * @brief Gets the Z value for the vector
+		 * 
+		 * @return double 
+		 */
 		double getZ();
 
+		/**
+		 * @brief Sets the X value for the vector
+		 * 
+		 * @param value 
+		 */
 		void setX(double value);
+
+		/**
+		 * @brief Sets the Y value for the vector
+		 * 
+		 * @param value 
+		 */
 		void setY(double value);
+
+		/**
+		 * @brief Sets the Z value for the vector
+		 * 
+		 * @param value 
+		 */
 		void setZ(double value);
 
+		/**
+		 * @brief Copies another Vec3f objects values
+		 * 
+		 * @param other 
+		 */
 		void setValues(Vec3f other);
+
+		/**
+		 * @brief Copies another Vec2f objects values
+		 * 		The z value will not be set.
+		 * 
+		 * @param other 
+		 */
+		void setValues(Vec2f other);
 
 		Vec3f operator-(Vec3f other);
 		Vec3f operator+(Vec3f other);
@@ -67,6 +138,11 @@ namespace glib
 		Vec3f operator/(long value);
 		Vec3f operator/(Vec3f other);
 
+		/**
+		 * @brief Converts the Vec3f to a GeneralVector object
+		 * 
+		 * @return GeneralVector 
+		 */
 		GeneralVector toGeneralVector();
 		operator GeneralVector() const;
 

@@ -78,6 +78,7 @@ build $objDir/Quaternion.obj: buildToObject src/Quaternion.cpp
 build $objDir/Shape.obj: buildToObject src/Shape.cpp
 build $objDir/SimpleDir.obj: buildToObject src/SimpleDir.cpp
 build $objDir/SimpleFile.obj: buildToObject src/SimpleFile.cpp
+build $objDir/SimpleWindow.obj: buildToObject src/SimpleWindow.cpp
 build $objDir/SimpleXml.obj: buildToObject src/SimpleXml.cpp
 build $objDir/Sound.obj: buildToObject src/Sound.cpp
 build $objDir/Sprite.obj: buildToObject src/Sprite.cpp
@@ -97,4 +98,3 @@ build $objDir/VectorGraphic_VectorPolyline.obj: buildToObject src/VectorGraphic_
 build $objDir/VectorGraphic_VectorRectangle.obj: buildToObject src/VectorGraphic_VectorRectangle.cpp
 build $objDir/VectorGraphic_VectorShape.obj: buildToObject src/VectorGraphic_VectorShape.cpp
 build $objDir/VectorSprite.obj: buildToObject src/VectorSprite.cpp
-build $objDir/WndWindow.obj: buildToObject src/WndWindow.cpp

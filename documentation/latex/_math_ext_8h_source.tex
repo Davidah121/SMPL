@@ -1,0 +1,508 @@
+\hypertarget{_math_ext_8h_source}{}\doxysection{Math\+Ext.\+h}
+\label{_math_ext_8h_source}\index{include/MathExt.h@{include/MathExt.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include <limits>}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include <cmath>}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}Line.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}Vec2f.h"{}}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include "{}Vec3f.h"{}}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include "{}Vec4f.h"{}}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include "{}Matrix.h"{}}}
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#include "{}Mat2f.h"{}}}
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#include "{}Mat3f.h"{}}}
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#include "{}Mat4f.h"{}}}
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#include "{}Quaternion.h"{}}}
+\DoxyCodeLine{13 \textcolor{preprocessor}{\#include "{}GeneralVector.h"{}}}
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#include "{}ComplexNumber.h"{}}}
+\DoxyCodeLine{15 \textcolor{preprocessor}{\#include "{}PolarCoordinate.h"{}}}
+\DoxyCodeLine{16 }
+\DoxyCodeLine{17 \textcolor{preprocessor}{\#ifdef max}}
+\DoxyCodeLine{18 \textcolor{preprocessor}{    \#undef max}}
+\DoxyCodeLine{19 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{20 }
+\DoxyCodeLine{21 \textcolor{preprocessor}{\#ifdef min}}
+\DoxyCodeLine{22 \textcolor{preprocessor}{    \#undef min}}
+\DoxyCodeLine{23 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{24 }
+\DoxyCodeLine{25 \textcolor{preprocessor}{\#ifndef PI}}
+\DoxyCodeLine{26 \textcolor{preprocessor}{    \#define PI 3.14159265359}}
+\DoxyCodeLine{27 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{28 }
+\DoxyCodeLine{29 \textcolor{preprocessor}{\#ifndef E}}
+\DoxyCodeLine{30 \textcolor{preprocessor}{    \#define E 2.718281828459}}
+\DoxyCodeLine{31 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{32 }
+\DoxyCodeLine{33 \textcolor{comment}{//Temporary location}}
+\DoxyCodeLine{34 \textcolor{preprocessor}{\#ifndef LOGIC\_XOR}}
+\DoxyCodeLine{35 \textcolor{preprocessor}{    \#define LOGIC\_XOR(a,b) ((!(a)) != (!(b)))}}
+\DoxyCodeLine{36 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{37 }
+\DoxyCodeLine{38 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{39 \{}
+\DoxyCodeLine{40 }
+\DoxyCodeLine{41     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_math_ext}{MathExt}}}
+\DoxyCodeLine{42     \{}
+\DoxyCodeLine{43     \textcolor{keyword}{public}:}
+\DoxyCodeLine{44 }
+\DoxyCodeLine{52         \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{53         \textcolor{keyword}{static} T \mbox{\hyperlink{classglib_1_1_math_ext_aac1e61979b073f6b9323f2278b6d8574}{max}}(T a, T b)}
+\DoxyCodeLine{54         \{}
+\DoxyCodeLine{55             \textcolor{keywordflow}{return} ((a>b)? a:b);}
+\DoxyCodeLine{56         \}}
+\DoxyCodeLine{57         }
+\DoxyCodeLine{67         \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{68         \textcolor{keyword}{static} T \mbox{\hyperlink{classglib_1_1_math_ext_a0b2aa377cfc5d6f9ee7b327c2302e3c9}{max}}(T* a, \textcolor{keywordtype}{int} count)}
+\DoxyCodeLine{69         \{}
+\DoxyCodeLine{70             \textcolor{keywordflow}{if}(a == \textcolor{keyword}{nullptr} || count == 0)}
+\DoxyCodeLine{71             \{}
+\DoxyCodeLine{72                 \textcolor{keywordflow}{return} T();}
+\DoxyCodeLine{73             \}}
+\DoxyCodeLine{74 }
+\DoxyCodeLine{75             T \mbox{\hyperlink{classglib_1_1_math_ext_aac1e61979b073f6b9323f2278b6d8574}{max}} = a[0];}
+\DoxyCodeLine{76             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<count; i++)}
+\DoxyCodeLine{77             \{}
+\DoxyCodeLine{78                 \textcolor{keywordflow}{if}(a[i] > \mbox{\hyperlink{classglib_1_1_math_ext_aac1e61979b073f6b9323f2278b6d8574}{max}})}
+\DoxyCodeLine{79                     \mbox{\hyperlink{classglib_1_1_math_ext_aac1e61979b073f6b9323f2278b6d8574}{max}} = a[i];}
+\DoxyCodeLine{80             \}}
+\DoxyCodeLine{81             \textcolor{keywordflow}{return} \mbox{\hyperlink{classglib_1_1_math_ext_aac1e61979b073f6b9323f2278b6d8574}{max}};}
+\DoxyCodeLine{82         \}}
+\DoxyCodeLine{83 }
+\DoxyCodeLine{92         \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{93         \textcolor{keyword}{static} T \mbox{\hyperlink{classglib_1_1_math_ext_aa2d2d5d1297beaed81bb887b991024f5}{max}}( std::initializer\_list<T> list)}
+\DoxyCodeLine{94         \{}
+\DoxyCodeLine{95             T \mbox{\hyperlink{classglib_1_1_math_ext_aac1e61979b073f6b9323f2278b6d8574}{max}};}
+\DoxyCodeLine{96             \textcolor{keywordtype}{bool} first = \textcolor{keyword}{true};}
+\DoxyCodeLine{97             \textcolor{keywordflow}{for}(T elem : list)}
+\DoxyCodeLine{98             \{   }
+\DoxyCodeLine{99                 \textcolor{keywordflow}{if}(first)}
+\DoxyCodeLine{100                 \{}
+\DoxyCodeLine{101                     \mbox{\hyperlink{classglib_1_1_math_ext_aac1e61979b073f6b9323f2278b6d8574}{max}} = elem;}
+\DoxyCodeLine{102                     first = \textcolor{keyword}{false};}
+\DoxyCodeLine{103                 \}}
+\DoxyCodeLine{104                 }
+\DoxyCodeLine{105                 \textcolor{keywordflow}{if}(elem > \mbox{\hyperlink{classglib_1_1_math_ext_aac1e61979b073f6b9323f2278b6d8574}{max}})}
+\DoxyCodeLine{106                     \mbox{\hyperlink{classglib_1_1_math_ext_aac1e61979b073f6b9323f2278b6d8574}{max}} = elem;}
+\DoxyCodeLine{107             \}}
+\DoxyCodeLine{108             \textcolor{keywordflow}{return} \mbox{\hyperlink{classglib_1_1_math_ext_aac1e61979b073f6b9323f2278b6d8574}{max}};}
+\DoxyCodeLine{109         \}}
+\DoxyCodeLine{110 }
+\DoxyCodeLine{118         \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{119         \textcolor{keyword}{static} T \mbox{\hyperlink{classglib_1_1_math_ext_a323234f955ac1cf162526e6863cbdffa}{min}}(T a, T b)}
+\DoxyCodeLine{120         \{}
+\DoxyCodeLine{121             \textcolor{keywordflow}{return} ((a<b)? a:b);}
+\DoxyCodeLine{122         \}}
+\DoxyCodeLine{123 }
+\DoxyCodeLine{133         \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{134         \textcolor{keyword}{static} T \mbox{\hyperlink{classglib_1_1_math_ext_a4d065bdd328e84ec153893209cdb1042}{min}}(T* a, \textcolor{keywordtype}{int} count)}
+\DoxyCodeLine{135         \{}
+\DoxyCodeLine{136             \textcolor{keywordflow}{if}(a == \textcolor{keyword}{nullptr} || count == 0)}
+\DoxyCodeLine{137             \{}
+\DoxyCodeLine{138                 \textcolor{keywordflow}{return} T();}
+\DoxyCodeLine{139             \}}
+\DoxyCodeLine{140             T \mbox{\hyperlink{classglib_1_1_math_ext_a323234f955ac1cf162526e6863cbdffa}{min}} = a[0];}
+\DoxyCodeLine{141             \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<count; i++)}
+\DoxyCodeLine{142             \{}
+\DoxyCodeLine{143                 \textcolor{keywordflow}{if}(a[i] < \mbox{\hyperlink{classglib_1_1_math_ext_a323234f955ac1cf162526e6863cbdffa}{min}})}
+\DoxyCodeLine{144                     \mbox{\hyperlink{classglib_1_1_math_ext_a323234f955ac1cf162526e6863cbdffa}{min}} = a[i];}
+\DoxyCodeLine{145             \}}
+\DoxyCodeLine{146             \textcolor{keywordflow}{return} \mbox{\hyperlink{classglib_1_1_math_ext_a323234f955ac1cf162526e6863cbdffa}{min}};}
+\DoxyCodeLine{147         \}}
+\DoxyCodeLine{148 }
+\DoxyCodeLine{157         \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{158         \textcolor{keyword}{static} T \mbox{\hyperlink{classglib_1_1_math_ext_a9c9900afec0ba54e5cf9aa974c5d834f}{min}}( std::initializer\_list<T> list)}
+\DoxyCodeLine{159         \{}
+\DoxyCodeLine{160             T \mbox{\hyperlink{classglib_1_1_math_ext_a323234f955ac1cf162526e6863cbdffa}{min}};}
+\DoxyCodeLine{161             \textcolor{keywordtype}{bool} first = \textcolor{keyword}{true};}
+\DoxyCodeLine{162             \textcolor{keywordflow}{for}(T elem : list)}
+\DoxyCodeLine{163             \{}
+\DoxyCodeLine{164                 \textcolor{keywordflow}{if}(first)}
+\DoxyCodeLine{165                 \{}
+\DoxyCodeLine{166                     \mbox{\hyperlink{classglib_1_1_math_ext_a323234f955ac1cf162526e6863cbdffa}{min}} = elem;}
+\DoxyCodeLine{167                     first = \textcolor{keyword}{false};}
+\DoxyCodeLine{168                 \}}
+\DoxyCodeLine{169 }
+\DoxyCodeLine{170                 \textcolor{keywordflow}{if}(elem < \mbox{\hyperlink{classglib_1_1_math_ext_a323234f955ac1cf162526e6863cbdffa}{min}})}
+\DoxyCodeLine{171                     \mbox{\hyperlink{classglib_1_1_math_ext_a323234f955ac1cf162526e6863cbdffa}{min}} = elem;}
+\DoxyCodeLine{172             \}}
+\DoxyCodeLine{173             \textcolor{keywordflow}{return} \mbox{\hyperlink{classglib_1_1_math_ext_a323234f955ac1cf162526e6863cbdffa}{min}};}
+\DoxyCodeLine{174         \}}
+\DoxyCodeLine{175         }
+\DoxyCodeLine{183         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_aa0a8e44de6e79aa74977f3793a5c4784}{floor}}(\textcolor{keywordtype}{float} a);}
+\DoxyCodeLine{184 }
+\DoxyCodeLine{192         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_af279a4153b652f056e5f53645d02ea38}{ceil}}(\textcolor{keywordtype}{float} a);}
+\DoxyCodeLine{193 }
+\DoxyCodeLine{200         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_a1c647b9f71b4ce007f734bdd78ab8838}{round}}(\textcolor{keywordtype}{float} a);}
+\DoxyCodeLine{201 }
+\DoxyCodeLine{209         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a58cfe84d5de31a945c8ac95fc120d2e6}{floor}}(\textcolor{keywordtype}{double} a);}
+\DoxyCodeLine{210 }
+\DoxyCodeLine{218         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_adab88eb65fac71db77aa4f2950986c85}{ceil}}(\textcolor{keywordtype}{double} a);}
+\DoxyCodeLine{219 }
+\DoxyCodeLine{226         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a4b5e14969512822f84578ce328341d10}{round}}(\textcolor{keywordtype}{double} a);}
+\DoxyCodeLine{227 }
+\DoxyCodeLine{234         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_aa973230e0055b8aed3af627b905b53cc}{frac}}(\textcolor{keywordtype}{double} a);}
+\DoxyCodeLine{235 }
+\DoxyCodeLine{242         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_aa311da01113545524cdf2c3f1c0b9afb}{frac}}(\textcolor{keywordtype}{float} a);}
+\DoxyCodeLine{243 }
+\DoxyCodeLine{253         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_a5642cd8e1cdf6b9d3e97969c2bb513f8}{roundToDecimal}}(\textcolor{keywordtype}{float} a, \textcolor{keywordtype}{int} decimalPlaces=6);}
+\DoxyCodeLine{254 }
+\DoxyCodeLine{264         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a9edd770301838b5c5e822bf3b411b304}{roundToDecimal}}(\textcolor{keywordtype}{double} a, \textcolor{keywordtype}{int} decimalPlaces=6);}
+\DoxyCodeLine{265 }
+\DoxyCodeLine{272         \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{273         \textcolor{keyword}{static} T \mbox{\hyperlink{classglib_1_1_math_ext_a326e2d44566b6e7aba121b74b0b242a0}{sqr}}(T a)}
+\DoxyCodeLine{274         \{}
+\DoxyCodeLine{275             \textcolor{keywordflow}{return} a*a;}
+\DoxyCodeLine{276         \}}
+\DoxyCodeLine{277 }
+\DoxyCodeLine{284         \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{285         \textcolor{keyword}{static} T \mbox{\hyperlink{classglib_1_1_math_ext_a41df22e03ac999f3f94fa417fe5377bd}{cube}}(T a)}
+\DoxyCodeLine{286         \{}
+\DoxyCodeLine{287             \textcolor{keywordflow}{return} a*a*a;}
+\DoxyCodeLine{288         \}}
+\DoxyCodeLine{289 }
+\DoxyCodeLine{296         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_a161fcc4355499b7009052871fbb40579}{sqrt}}(\textcolor{keywordtype}{float} a);}
+\DoxyCodeLine{297 }
+\DoxyCodeLine{304         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a6fc0df22c9e7eb8e2496889fcedd141c}{sqrt}}(\textcolor{keywordtype}{double} a);}
+\DoxyCodeLine{305 }
+\DoxyCodeLine{312         \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{313         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a3a5adcf20b8496fef905282843931c65}{sqrt}}(T a)}
+\DoxyCodeLine{314         \{}
+\DoxyCodeLine{315             \textcolor{keywordflow}{return} std::sqrt(a);}
+\DoxyCodeLine{316         \}}
+\DoxyCodeLine{317         }
+\DoxyCodeLine{324         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_ad86ab881530e8039567b24d6f53ddd02}{cubeRoot}}(\textcolor{keywordtype}{float} a);}
+\DoxyCodeLine{325 }
+\DoxyCodeLine{332         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_ad11d810c6dd72ca07ed997c71cbb6df9}{cubeRoot}}(\textcolor{keywordtype}{double} a);}
+\DoxyCodeLine{333         }
+\DoxyCodeLine{340         \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{341         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a407c062c21f65c43706080eff5b5de7b}{cubeRoot}}(T a)}
+\DoxyCodeLine{342         \{}
+\DoxyCodeLine{343             \textcolor{keywordflow}{return} std::cbrt(a);}
+\DoxyCodeLine{344         \}}
+\DoxyCodeLine{345 }
+\DoxyCodeLine{353         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_abf27d490870d73a2ca06120dffa0c473}{pow}}(\textcolor{keywordtype}{float} value, \textcolor{keywordtype}{float} power);}
+\DoxyCodeLine{354 }
+\DoxyCodeLine{362         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_acb02784eccd17ff72fa6a06a3b3bdbfd}{pow}}(\textcolor{keywordtype}{double} value, \textcolor{keywordtype}{double} power);}
+\DoxyCodeLine{363         }
+\DoxyCodeLine{372         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_acbe6a084ca7d02b7bf9cc844186d8acf}{log}}(\textcolor{keywordtype}{float} value, \textcolor{keywordtype}{float} base = 10.0f);}
+\DoxyCodeLine{373 }
+\DoxyCodeLine{382         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_ab9fe8691b5e8907d0a63f3a0a3ab085e}{log}}(\textcolor{keywordtype}{double} value, \textcolor{keywordtype}{double} base = 10.0);}
+\DoxyCodeLine{383 }
+\DoxyCodeLine{392         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_abff9781335fbbd9a34d666f32e877ee8}{lerp}}(\textcolor{keywordtype}{float} a, \textcolor{keywordtype}{float} b, \textcolor{keywordtype}{float} blend);}
+\DoxyCodeLine{393 }
+\DoxyCodeLine{402         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a8c156482c68dfb9e6fcedd1e7a040b4f}{lerp}}(\textcolor{keywordtype}{double} a, \textcolor{keywordtype}{double} b, \textcolor{keywordtype}{double} blend);}
+\DoxyCodeLine{403 }
+\DoxyCodeLine{410         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_math_ext_a9f5ab5f41ea09903ec2cd88dd3e82356}{abs}}(\textcolor{keywordtype}{int} a);}
+\DoxyCodeLine{411 }
+\DoxyCodeLine{418         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a3e303895d4df0772a206e87d9b868931}{abs}}(\textcolor{keywordtype}{double} a);}
+\DoxyCodeLine{419 }
+\DoxyCodeLine{426         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_ace9d437955b3179ba7661a2c9616624b}{abs}}(\textcolor{keywordtype}{float} a);}
+\DoxyCodeLine{427 }
+\DoxyCodeLine{434         \textcolor{keyword}{static} \textcolor{keywordtype}{long} \mbox{\hyperlink{classglib_1_1_math_ext_a3c680804951cada04ef1c44dc929291e}{abs}}(\textcolor{keywordtype}{long} a);}
+\DoxyCodeLine{435 }
+\DoxyCodeLine{442         \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_math_ext_a9bce5e7376c5d5f6bf0cee1c39841494}{random}}();}
+\DoxyCodeLine{443 }
+\DoxyCodeLine{453         \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_math_ext_ad7cd29ad549a0b259cc3dd8ab0729129}{randomRange}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_math_ext_a323234f955ac1cf162526e6863cbdffa}{min}}, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_math_ext_aac1e61979b073f6b9323f2278b6d8574}{max}});}
+\DoxyCodeLine{454         }
+\DoxyCodeLine{463         \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{464         \textcolor{keyword}{static} T \mbox{\hyperlink{classglib_1_1_math_ext_aea71c47f5935238598a67e37209ba71a}{clamp}}(T value, T \mbox{\hyperlink{classglib_1_1_math_ext_a323234f955ac1cf162526e6863cbdffa}{min}}, T \mbox{\hyperlink{classglib_1_1_math_ext_aac1e61979b073f6b9323f2278b6d8574}{max}})}
+\DoxyCodeLine{465         \{}
+\DoxyCodeLine{466             \textcolor{keywordflow}{if}(value <= \mbox{\hyperlink{classglib_1_1_math_ext_a323234f955ac1cf162526e6863cbdffa}{min}})}
+\DoxyCodeLine{467                 \textcolor{keywordflow}{return} \mbox{\hyperlink{classglib_1_1_math_ext_a323234f955ac1cf162526e6863cbdffa}{min}};}
+\DoxyCodeLine{468             \textcolor{keywordflow}{if}(value >= \mbox{\hyperlink{classglib_1_1_math_ext_aac1e61979b073f6b9323f2278b6d8574}{max}})}
+\DoxyCodeLine{469                 \textcolor{keywordflow}{return} \mbox{\hyperlink{classglib_1_1_math_ext_aac1e61979b073f6b9323f2278b6d8574}{max}};}
+\DoxyCodeLine{470             \textcolor{keywordflow}{return} value;}
+\DoxyCodeLine{471         \}}
+\DoxyCodeLine{472 }
+\DoxyCodeLine{479         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_a03b54493695c25c9d2e1a908145483ff}{toDeg}}(\textcolor{keywordtype}{float} rad);}
+\DoxyCodeLine{480 }
+\DoxyCodeLine{487         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a202826df5d13209c30a572b0985be639}{toDeg}}(\textcolor{keywordtype}{double} rad);}
+\DoxyCodeLine{488 }
+\DoxyCodeLine{495         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_acf533b69876ce0b6388239770d3945b5}{toRad}}(\textcolor{keywordtype}{float} deg);}
+\DoxyCodeLine{496 }
+\DoxyCodeLine{503         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a7bc304e8e43f3ebeca6cd1066c666d9a}{toRad}}(\textcolor{keywordtype}{double} deg);}
+\DoxyCodeLine{504 }
+\DoxyCodeLine{516         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_ad8685e104281ec12853bb1a82cd5ad79}{angleToStandardRange}}(\textcolor{keywordtype}{float} angle, \textcolor{keywordtype}{bool} isDegree);}
+\DoxyCodeLine{517 }
+\DoxyCodeLine{529         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a6aab7e05d5fabd9096343af206a675db}{angleToStandardRange}}(\textcolor{keywordtype}{double} angle, \textcolor{keywordtype}{bool} isDegree);}
+\DoxyCodeLine{530         }
+\DoxyCodeLine{537         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_a7b91d93f0b7c2e0bc1301014c7741985}{cos}}(\textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{538 }
+\DoxyCodeLine{545         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a3e71726eafc02d6556d83461b44652ec}{cos}}(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{546 }
+\DoxyCodeLine{554         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_aee793c4358951a7493f61b31b4c7a36c}{dcos}}(\textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{555 }
+\DoxyCodeLine{563         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a58122f259dd32a1f66938090ee1704fc}{dcos}}(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{564 }
+\DoxyCodeLine{571         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_a20f3978a0dd52d366231157b8bead3d9}{sin}}(\textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{572 }
+\DoxyCodeLine{579         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a3202e4f2312adbb9565637a391c07344}{sin}}(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{580         }
+\DoxyCodeLine{588         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_a60129f22c38162d64224a839fdf51516}{dsin}}(\textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{589 }
+\DoxyCodeLine{597         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a917b98723e96382138418431d5b0729f}{dsin}}(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{598 }
+\DoxyCodeLine{605         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_ab62ca9e3fa7380d5fe5db23ccce539f7}{tan}}(\textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{606 }
+\DoxyCodeLine{613         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a3dfd44ff81e5a8133cfa3ef682ded146}{tan}}(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{614 }
+\DoxyCodeLine{622         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_a4e9759555cb56cc2840bc76039c30ac3}{dtan}}(\textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{623 }
+\DoxyCodeLine{631         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a2cb2b43de585c21b703ae4c01b43d3fc}{dtan}}(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{632 }
+\DoxyCodeLine{640         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_a3662eb2bfd75fbceebd2c46d6f8c98da}{arccos}}(\textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{641 }
+\DoxyCodeLine{649         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_aa425c0cab47b5465ffdc9aa7eacc1aef}{arccos}}(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{650 }
+\DoxyCodeLine{658         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_aa72af457339dba4c5482eac0cfd0cc0b}{darccos}}(\textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{659 }
+\DoxyCodeLine{667         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_aedf601fa4c688f9d1b0455a57887119c}{darccos}}(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{668 }
+\DoxyCodeLine{676         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_a3f43247c9e5be3996de2e5968cb834e4}{arcsin}}(\textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{677 }
+\DoxyCodeLine{685         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a1c9852e7d17eedbf6ac16657fda9161c}{arcsin}}(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{686 }
+\DoxyCodeLine{694         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_a07c09c089b65ce01b67e480e888621f9}{darcsin}}(\textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{695 }
+\DoxyCodeLine{703         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_ade048478a14cbb743edf9e233698fe6b}{darcsin}}(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{704 }
+\DoxyCodeLine{712         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_a977adc3a6f7fdb484dfcd1ff515bb070}{arctan}}(\textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{713 }
+\DoxyCodeLine{721         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_acf20036e04226ff437ea7205fb77ee3d}{arctan}}(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{722 }
+\DoxyCodeLine{730         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_ac66dbb51cd50d579189e35bb6343066d}{darctan}}(\textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{731 }
+\DoxyCodeLine{739         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_ab2efc447a66354511381f2f642fc1926}{darctan}}(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{740         }
+\DoxyCodeLine{750         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_a48902e9429f91cc3841cc4de8e687956}{arctan2}}(\textcolor{keywordtype}{float} y, \textcolor{keywordtype}{float} x);}
+\DoxyCodeLine{751 }
+\DoxyCodeLine{761         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a998d2fbc900a037ba3a8f73d14bb33ba}{arctan2}}(\textcolor{keywordtype}{double} y, \textcolor{keywordtype}{double} x);}
+\DoxyCodeLine{762 }
+\DoxyCodeLine{772         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_math_ext_a0b69bea6a8418d81ac0ff34bec1cae48}{darctan2}}(\textcolor{keywordtype}{float} y, \textcolor{keywordtype}{float} x);}
+\DoxyCodeLine{773 }
+\DoxyCodeLine{783         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a92db2c619f2bbd9909287a84cb8da2cf}{darctan2}}(\textcolor{keywordtype}{double} y, \textcolor{keywordtype}{double} x);}
+\DoxyCodeLine{784 }
+\DoxyCodeLine{794         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_adf3024bcfd1b7df3e530425682e70dd8}{dirToPoint}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y, \textcolor{keywordtype}{double} x2, \textcolor{keywordtype}{double} y2);}
+\DoxyCodeLine{795 }
+\DoxyCodeLine{805         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_afe2fd650c86a76fe526c81c8c0b9f6f0}{dirToPointDeg}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y, \textcolor{keywordtype}{double} x2, \textcolor{keywordtype}{double} y2);}
+\DoxyCodeLine{806 }
+\DoxyCodeLine{819         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_math_ext_a2d76466c90b3ede4cefe26452395c6fa}{angleBetween}}(\textcolor{keywordtype}{double} testAngle, \textcolor{keywordtype}{double} startAngle, \textcolor{keywordtype}{double} endAngle, \textcolor{keywordtype}{bool} clockwise);}
+\DoxyCodeLine{820 }
+\DoxyCodeLine{833         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_math_ext_a2f85fa93b0851436668c985ed55ad4c2}{angleBetweenDeg}}(\textcolor{keywordtype}{double} testAngle, \textcolor{keywordtype}{double} startAngle, \textcolor{keywordtype}{double} endAngle, \textcolor{keywordtype}{bool} clockwise);}
+\DoxyCodeLine{834         }
+\DoxyCodeLine{844         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a8663575d8909910d22a9351926ef9075}{closestAngle}}(\textcolor{keywordtype}{double} testAngle, \textcolor{keywordtype}{double} angle1, \textcolor{keywordtype}{double} angle2);}
+\DoxyCodeLine{845 }
+\DoxyCodeLine{855         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a1e6cfea93efd0ddec363b5b03e3d73a6}{closestAngleDeg}}(\textcolor{keywordtype}{double} testAngle, \textcolor{keywordtype}{double} angle1, \textcolor{keywordtype}{double} angle2);}
+\DoxyCodeLine{856         }
+\DoxyCodeLine{868         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a75941dec201890f52a8940726e7f022a}{angleClamp}}(\textcolor{keywordtype}{double} testAngle, \textcolor{keywordtype}{double} startAngle, \textcolor{keywordtype}{double} endAngle, \textcolor{keywordtype}{bool} clockwise);}
+\DoxyCodeLine{869 }
+\DoxyCodeLine{881         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a2e4a6becde6072fde26a77bde4ee270a}{angleClampDeg}}(\textcolor{keywordtype}{double} testAngle, \textcolor{keywordtype}{double} startAngle, \textcolor{keywordtype}{double} endAngle, \textcolor{keywordtype}{bool} clockwise);}
+\DoxyCodeLine{882         }
+\DoxyCodeLine{890         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_math_ext_a4a16590c31276e716e51c280eaa5a115}{lengthDir}}(\textcolor{keywordtype}{double} length, \textcolor{keywordtype}{double} direction);}
+\DoxyCodeLine{891 }
+\DoxyCodeLine{899         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a09ebc1312ebcdfca5c6819946dafd013}{dot}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} v1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} v2);}
+\DoxyCodeLine{900 }
+\DoxyCodeLine{908         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a9a70e8d4399b696de0ba736af48aab4d}{dot}}(\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} v1, \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} v2);}
+\DoxyCodeLine{909 }
+\DoxyCodeLine{917         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a2533b6b8d71c094c12555aea7e4e97f0}{dot}}(\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} v1, \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} v2);}
+\DoxyCodeLine{918 }
+\DoxyCodeLine{927         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a0870390879e7e0ab1e5db41ff754c0f5}{dot}}(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} v1, \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} v2);}
+\DoxyCodeLine{928 }
+\DoxyCodeLine{935         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a5eab0ab2e893957dec37a179e3cf710d}{vecLength}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} v);}
+\DoxyCodeLine{936 }
+\DoxyCodeLine{943         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a4ea404aceaf0f67b4baacd737ae5f004}{vecLength}}(\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} v);}
+\DoxyCodeLine{944 }
+\DoxyCodeLine{951         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a6f194d170b817cd46d361581822c9efc}{vecLength}}(\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} v);}
+\DoxyCodeLine{952 }
+\DoxyCodeLine{959         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a096c6eaed3d8bbbcb6bb55f80344be1a}{vecLength}}(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} v);}
+\DoxyCodeLine{960 }
+\DoxyCodeLine{968         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_ae99c0330397f6cd7410f9ec5eb18e055}{scalarVectorProjection}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} a, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} b);}
+\DoxyCodeLine{969 }
+\DoxyCodeLine{977         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a9319ad85d188103cabd382e340a22ef6}{scalarVectorProjection}}(\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} a, \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} b);}
+\DoxyCodeLine{978 }
+\DoxyCodeLine{986         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a5124908f72a78eecd007ece23ceccc61}{scalarVectorProjection}}(\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} a, \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} b);}
+\DoxyCodeLine{987 }
+\DoxyCodeLine{996         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_ab4ffd2a1086af460a5fa48a3ac9db8ea}{scalarVectorProjection}}(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} a, \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} b);}
+\DoxyCodeLine{997         }
+\DoxyCodeLine{1004         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_math_ext_afcb2d0bc03cf7f0291fbbda8bb13fcc2}{normalize}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} v1);}
+\DoxyCodeLine{1005 }
+\DoxyCodeLine{1012         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} \mbox{\hyperlink{classglib_1_1_math_ext_abb019ff015d9224bc22b2af9555121f6}{normalize}}(\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} v1);}
+\DoxyCodeLine{1013 }
+\DoxyCodeLine{1020         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} \mbox{\hyperlink{classglib_1_1_math_ext_a1b869add4bc195efd87147add36c416f}{normalize}}(\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} v1);}
+\DoxyCodeLine{1021 }
+\DoxyCodeLine{1028         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} \mbox{\hyperlink{classglib_1_1_math_ext_a6614707f7107453ff1a64b18606d5b04}{normalize}}(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} v1);}
+\DoxyCodeLine{1029 }
+\DoxyCodeLine{1036         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} \mbox{\hyperlink{classglib_1_1_math_ext_a67147a5f1611270b025f275299101c0c}{normalize}}(\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} q1);}
+\DoxyCodeLine{1037 }
+\DoxyCodeLine{1045         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} \mbox{\hyperlink{classglib_1_1_math_ext_a65f99807352a2ef2d8b36740165f87d1}{crossProduct}}(\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} v1, \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} v2);}
+\DoxyCodeLine{1046 }
+\DoxyCodeLine{1054         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_math_ext_ad64121c2f0b62a9f67aae2a7ec24e810}{reflect}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} a, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} b);}
+\DoxyCodeLine{1055 }
+\DoxyCodeLine{1063         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} \mbox{\hyperlink{classglib_1_1_math_ext_a65ebe9ecbf8bd68f3f61b46b3bd45767}{reflect}}(\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} a, \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} b);}
+\DoxyCodeLine{1064 }
+\DoxyCodeLine{1072         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} \mbox{\hyperlink{classglib_1_1_math_ext_ae9f6d6410a86b10cb4a082a81306da95}{reflect}}(\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} a, \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} b);}
+\DoxyCodeLine{1073 }
+\DoxyCodeLine{1082         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} \mbox{\hyperlink{classglib_1_1_math_ext_ad38a094025e849198992ab47a2bfd375}{reflect}}(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} a, \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} b);}
+\DoxyCodeLine{1083 }
+\DoxyCodeLine{1091         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_math_ext_a79e523c4b378dfed00b423481b4236eb}{inverseVec}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} f);}
+\DoxyCodeLine{1092 }
+\DoxyCodeLine{1100         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_ad05a7fbd86e08a412b1bb3fed42f8e4b}{dotNorm}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} v1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} v2);}
+\DoxyCodeLine{1101 }
+\DoxyCodeLine{1109         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a84bd4731e4cd261795ba8938bfa6ff71}{dotNorm}}(\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} v1, \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} v2);}
+\DoxyCodeLine{1110 }
+\DoxyCodeLine{1118         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a24f6a22e04fd4fd17cfa0ce8898669ee}{dotNorm}}(\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} v1, \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} v2);}
+\DoxyCodeLine{1119 }
+\DoxyCodeLine{1128         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_abfb7407ae2b0d2219712b419995e1dab}{dotNorm}}(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} v1, \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} v2);}
+\DoxyCodeLine{1129 }
+\DoxyCodeLine{1139         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a75eee54749b29dafd14f2bd72a635176}{distanceTo}}(\textcolor{keywordtype}{double} x1, \textcolor{keywordtype}{double} y1, \textcolor{keywordtype}{double} x2, \textcolor{keywordtype}{double} y2);}
+\DoxyCodeLine{1140 }
+\DoxyCodeLine{1148         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a907db971d47fa4626d10046875bc5f2a}{distanceTo}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p2);}
+\DoxyCodeLine{1149 }
+\DoxyCodeLine{1157         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_aa3f65804db90a4de72ba26d2435bda62}{distanceTo}}(\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} p1, \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} p2);}
+\DoxyCodeLine{1158 }
+\DoxyCodeLine{1166         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a59c52ee28621b9b9b35a4a0bb02b50e2}{distanceTo}}(\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} p1, \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} p2);}
+\DoxyCodeLine{1167 }
+\DoxyCodeLine{1176         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_ade6fb2d724d87d60ea6ab2f08bd04154}{distanceTo}}(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} p1, \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} p2);}
+\DoxyCodeLine{1177 }
+\DoxyCodeLine{1185         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a76bf236a3d009c757118f9cfbb7c73a1}{distanceTo}}(\mbox{\hyperlink{classglib_1_1_polar_coordinate}{PolarCoordinate}} p1, \mbox{\hyperlink{classglib_1_1_polar_coordinate}{PolarCoordinate}} p2);}
+\DoxyCodeLine{1186         }
+\DoxyCodeLine{1187         \textcolor{comment}{//2D transformations}}
+\DoxyCodeLine{1195 \textcolor{comment}{}        \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_math_ext_a5b493b1fedc98ca245b279226ff0c54f}{rotation2D}}(\textcolor{keywordtype}{double} rotation);}
+\DoxyCodeLine{1196 }
+\DoxyCodeLine{1206         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_math_ext_ac58894a863be38cc20ac41e4ab157646}{rotation2D}}(\textcolor{keywordtype}{double} rotation, \textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{1207 }
+\DoxyCodeLine{1216         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_math_ext_a692f9a414cd663efeba3a0a07d267357}{rotation2D}}(\textcolor{keywordtype}{double} rotation, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} pos);}
+\DoxyCodeLine{1217         }
+\DoxyCodeLine{1225         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_math_ext_a487173b55a94af8bc7d07c8579bdcc69}{translation2D}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{1226 }
+\DoxyCodeLine{1233         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_math_ext_ae1f3cd1d5a52b8348874e9f628307236}{translation2D}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} pos);}
+\DoxyCodeLine{1234 }
+\DoxyCodeLine{1242         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_math_ext_a7880a9215c06dd36bf7df13318d20e89}{scale2D}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{1243 }
+\DoxyCodeLine{1250         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_math_ext_af8e3963b2a9bc4fce7c62e3197e65ddb}{scale2D}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} scaleVals);}
+\DoxyCodeLine{1251 }
+\DoxyCodeLine{1259         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_math_ext_afdf0e9b8133166d7e19acce34634c341}{skew2D}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{1260 }
+\DoxyCodeLine{1267         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_math_ext_af34ec14db85cb9fc7cbae140b3c32d2a}{skew2D}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} skew);}
+\DoxyCodeLine{1268 }
+\DoxyCodeLine{1269         \textcolor{comment}{//3D transformations}}
+\DoxyCodeLine{1270 }
+\DoxyCodeLine{1281         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} \mbox{\hyperlink{classglib_1_1_math_ext_a6f3dad362bf913c26e8c5a14e7fd6b3c}{getRotationQuaternion}}(\textcolor{keywordtype}{double} rotation, \textcolor{keywordtype}{double} xAxis, \textcolor{keywordtype}{double} yAxis, \textcolor{keywordtype}{double} zAxis);}
+\DoxyCodeLine{1282 }
+\DoxyCodeLine{1291         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} \mbox{\hyperlink{classglib_1_1_math_ext_ab74cf5cbebf751a43d34567fad6e85bd}{getRotationQuaternion}}(\textcolor{keywordtype}{double} rotation, \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} rotationAxis);}
+\DoxyCodeLine{1292         }
+\DoxyCodeLine{1299         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_a96f8ed141aaad36329ce7b4b816efd8a}{QuaternionToMatrix}}(\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} q);}
+\DoxyCodeLine{1300         }
+\DoxyCodeLine{1308         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_accffaf65b7f1de49ee04e1769187e8f9}{rotation3DX}}(\textcolor{keywordtype}{double} rotation);}
+\DoxyCodeLine{1309 }
+\DoxyCodeLine{1317         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_add8018f5a316e41940991025d4cbc0c4}{rotation3DY}}(\textcolor{keywordtype}{double} rotation);}
+\DoxyCodeLine{1318         }
+\DoxyCodeLine{1326         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_a97a4e661a77c3263b188cc4147a88a55}{rotation3DZ}}(\textcolor{keywordtype}{double} rotation);}
+\DoxyCodeLine{1327 }
+\DoxyCodeLine{1336         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_ab48e875ba5b0b2c0c412b1407d47f1f5}{translation3D}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y, \textcolor{keywordtype}{double} z);}
+\DoxyCodeLine{1337 }
+\DoxyCodeLine{1344         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_aa0cf241c77a480cc7b00d486af951b68}{translation3D}}(\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} pos);}
+\DoxyCodeLine{1345 }
+\DoxyCodeLine{1354         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_a4d4dc46bbc6d10915093524104928819}{scale3D}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y, \textcolor{keywordtype}{double} z);}
+\DoxyCodeLine{1355 }
+\DoxyCodeLine{1362         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_ac7ad5cbb55d4a6b7e86edd2a9d2534a3}{scale3D}}(\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} scale);}
+\DoxyCodeLine{1363 }
+\DoxyCodeLine{1372         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_abe84a3f567cc87a7377497f4ddf4250d}{skew3D}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y, \textcolor{keywordtype}{double} z);}
+\DoxyCodeLine{1373 }
+\DoxyCodeLine{1380         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_af27db378da4079471724dcc431b66498}{skew3D}}(\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} skew);}
+\DoxyCodeLine{1381         }
+\DoxyCodeLine{1382 }
+\DoxyCodeLine{1383         \textcolor{comment}{//Equations and Functions}}
+\DoxyCodeLine{1384 }
+\DoxyCodeLine{1394         \textcolor{keyword}{static} std::vector<double> \mbox{\hyperlink{classglib_1_1_math_ext_af53202a04db108ed9fcb8504c1ba76e6}{solveLinear}}(\textcolor{keywordtype}{double} A, \textcolor{keywordtype}{double} B);}
+\DoxyCodeLine{1395 }
+\DoxyCodeLine{1406         \textcolor{keyword}{static} std::vector<ComplexNumber> \mbox{\hyperlink{classglib_1_1_math_ext_a37db31fc651758f7d032c2d1dcbb75db}{solveQuadratic}}(\textcolor{keywordtype}{double} A, \textcolor{keywordtype}{double} B, \textcolor{keywordtype}{double} C);}
+\DoxyCodeLine{1407 }
+\DoxyCodeLine{1419         \textcolor{keyword}{static} std::vector<ComplexNumber> \mbox{\hyperlink{classglib_1_1_math_ext_a77540b5cc0dd39839bcccec01b6b45cb}{solveCubic}}(\textcolor{keywordtype}{double} A, \textcolor{keywordtype}{double} B, \textcolor{keywordtype}{double} C, \textcolor{keywordtype}{double} D);}
+\DoxyCodeLine{1420 }
+\DoxyCodeLine{1430         \textcolor{keyword}{static} std::vector<double> \mbox{\hyperlink{classglib_1_1_math_ext_a4810cde90a4e1bb1acce1ba89e0fcf76}{solveQuadraticReal}}(\textcolor{keywordtype}{double} A, \textcolor{keywordtype}{double} B, \textcolor{keywordtype}{double} C);}
+\DoxyCodeLine{1431 }
+\DoxyCodeLine{1442         \textcolor{keyword}{static} std::vector<double> \mbox{\hyperlink{classglib_1_1_math_ext_a7105ed99dcccd0d6a3cb7a5a1f1745f5}{solveCubicReal}}(\textcolor{keywordtype}{double} A, \textcolor{keywordtype}{double} B, \textcolor{keywordtype}{double} C, \textcolor{keywordtype}{double} D);}
+\DoxyCodeLine{1443 }
+\DoxyCodeLine{1453         \textcolor{keyword}{static} std::vector<double> \mbox{\hyperlink{classglib_1_1_math_ext_a637aa91b1f84665675f4edb6079c6967}{reducePolynomial}}(std::vector<double> constants, \textcolor{keywordtype}{double} zero);}
+\DoxyCodeLine{1454         }
+\DoxyCodeLine{1462         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a98e088f56179e425c1969b4628d6317a}{binomialCoefficient}}(\textcolor{keywordtype}{int} n, \textcolor{keywordtype}{int} k);}
+\DoxyCodeLine{1463 }
+\DoxyCodeLine{1472         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a5ccfec1a09b010b7fbfa0a2b83170f03}{logisticsSigmoid}}(\textcolor{keywordtype}{double} x);}
+\DoxyCodeLine{1473 }
+\DoxyCodeLine{1474 }
+\DoxyCodeLine{1491         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}} \mbox{\hyperlink{classglib_1_1_math_ext_a1641f0f214c877da3f181b5d564d2810}{discreteFourierTransform}}(\mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}}* arr, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{double} x, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1492 }
+\DoxyCodeLine{1508         \textcolor{keyword}{static} std::vector<ComplexNumber> \mbox{\hyperlink{classglib_1_1_math_ext_a3663709f2c7bc1d58fe5d1ff433c9ec4}{fourierTransform}}(\mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}}* arr, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1509 }
+\DoxyCodeLine{1526         \textcolor{keyword}{static} std::vector<ComplexNumber> \mbox{\hyperlink{classglib_1_1_math_ext_a85c667eea0f6329cb990b811d51e35c4}{fastFourierTransform}}(\mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}}* arr, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1527 }
+\DoxyCodeLine{1545         \textcolor{keyword}{static} std::vector<ComplexNumber> \mbox{\hyperlink{classglib_1_1_math_ext_a789b25d3120dcd66050966f5c68e73f2}{fastFourierTransformTest}}(\mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}}* arr, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1546 }
+\DoxyCodeLine{1559         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_ab51ac3bb48b062cffe37a307202e168c}{discreteCosineTransform}}(\textcolor{keywordtype}{double}* arr, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{int} u, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1560 }
+\DoxyCodeLine{1572         \textcolor{keyword}{static} std::vector<double> \mbox{\hyperlink{classglib_1_1_math_ext_a4b871d7bbdfee5af7b224631aaf29526}{cosineTransform}}(\textcolor{keywordtype}{double}* arr, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1573 }
+\DoxyCodeLine{1582         \textcolor{keyword}{static} std::vector<double> \mbox{\hyperlink{classglib_1_1_math_ext_aa609b0e8d003868c0dbadb553c5df6ce}{fastCosineTransform}}(\textcolor{keywordtype}{double}* arr, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1583 }
+\DoxyCodeLine{1595         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_aaebe1760653f12887ec3bb9c511821c9}{discreteCosineTransform2D}}(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}}\& arr, \textcolor{keywordtype}{int} u, \textcolor{keywordtype}{int} v, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1596 }
+\DoxyCodeLine{1606         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \mbox{\hyperlink{classglib_1_1_math_ext_ae25eae87a80dafab16942ec340841a91}{cosineTransform2D}}(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}}\& arr, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1607 }
+\DoxyCodeLine{1616         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \mbox{\hyperlink{classglib_1_1_math_ext_a6cc0b8dae92a7287a074f352a95ced7f}{fastCosineTransform2D}}(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}}\& arr, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1617         }
+\DoxyCodeLine{1618         }
+\DoxyCodeLine{1619         \textcolor{comment}{//Special Case for JPEG}}
+\DoxyCodeLine{1632 \textcolor{comment}{}        \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_math_ext_abe31dc16f5f5edbfa6b7a855d274efb2}{FCT8}}(\textcolor{keywordtype}{double}* arr, \textcolor{keywordtype}{double}* output, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1633 }
+\DoxyCodeLine{1646         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_math_ext_aa1b1dd5b19bd1ae72a917c5d2297ef90}{FCT8x8}}(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}}\& arr, \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}}* output, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1647 }
+\DoxyCodeLine{1648 }
+\DoxyCodeLine{1657         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a001ee2132410af9ab21dd1d8f313605a}{discreteSineTransform}}(\textcolor{keywordtype}{double}*, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{int} u, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1658 }
+\DoxyCodeLine{1667         \textcolor{keyword}{static} std::vector<double> \mbox{\hyperlink{classglib_1_1_math_ext_a810cbcc949b7ffcc035ab0a34477d129}{sineTransform}}(\textcolor{keywordtype}{double}* arr, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1668 }
+\DoxyCodeLine{1677         \textcolor{keyword}{static} std::vector<double> \mbox{\hyperlink{classglib_1_1_math_ext_a6f178b99ef1906c81dbc928460603a0d}{fastSineTransform}}(\textcolor{keywordtype}{double}* arr, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1678 }
+\DoxyCodeLine{1688         \textcolor{keyword}{static} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_math_ext_a9bf0b0ff97b71cd6b5487bb25e4f7078}{discreteSineTransform2D}}(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}}\& arr, \textcolor{keywordtype}{int} u, \textcolor{keywordtype}{int} v, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1689 }
+\DoxyCodeLine{1697         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \mbox{\hyperlink{classglib_1_1_math_ext_abc767f517e17c66eb95f2fa2336ffa2d}{sineTransform2D}}(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}}\& arr, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1698 }
+\DoxyCodeLine{1706         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \mbox{\hyperlink{classglib_1_1_math_ext_a7988e875b5efca0f47c5a84dda4ae5fc}{fastSineTransform2D}}(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}}\& arr, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1707 }
+\DoxyCodeLine{1708         \textcolor{comment}{//Clustering algorigthms}}
+\DoxyCodeLine{1709 }
+\DoxyCodeLine{1721         \textcolor{keyword}{static} std::vector<std::vector<Vec2f>> \mbox{\hyperlink{classglib_1_1_math_ext_a1934808c64412ac75d5e414f3c021f91}{meanCut}}(std::vector<Vec2f> arr, \textcolor{keywordtype}{int} clusters, \textcolor{keywordtype}{bool} meansOnly = \textcolor{keyword}{false});}
+\DoxyCodeLine{1722 }
+\DoxyCodeLine{1734         \textcolor{keyword}{static} std::vector<std::vector<Vec2f>> \mbox{\hyperlink{classglib_1_1_math_ext_afeaabafb191ef88655fbcc7a9c6054b0}{medianCut}}(std::vector<Vec2f> arr, \textcolor{keywordtype}{int} clusters, \textcolor{keywordtype}{bool} meansOnly = \textcolor{keyword}{false});}
+\DoxyCodeLine{1735 }
+\DoxyCodeLine{1750         \textcolor{keyword}{static} std::vector<std::vector<Vec2f>> \mbox{\hyperlink{classglib_1_1_math_ext_a963d679b76eac3805273133f08f1b62f}{kMeans}}(std::vector<Vec2f> arr, \textcolor{keywordtype}{int} clusters, \textcolor{keywordtype}{int} maxIterations, \textcolor{keywordtype}{bool} meansOnly = \textcolor{keyword}{false});}
+\DoxyCodeLine{1751         }
+\DoxyCodeLine{1763         \textcolor{keyword}{static} std::vector<std::vector<Vec3f>> \mbox{\hyperlink{classglib_1_1_math_ext_a9adda2afe96bb0ea90b6014d1502ff5c}{meanCut}}(std::vector<Vec3f> arr, \textcolor{keywordtype}{int} clusters, \textcolor{keywordtype}{bool} meansOnly = \textcolor{keyword}{false});}
+\DoxyCodeLine{1764 }
+\DoxyCodeLine{1776         \textcolor{keyword}{static} std::vector<std::vector<Vec3f>> \mbox{\hyperlink{classglib_1_1_math_ext_aba8baf3f8807c807e3148c9cfc725d22}{medianCut}}(std::vector<Vec3f> arr, \textcolor{keywordtype}{int} clusters, \textcolor{keywordtype}{bool} meansOnly = \textcolor{keyword}{false});}
+\DoxyCodeLine{1777 }
+\DoxyCodeLine{1792         \textcolor{keyword}{static} std::vector<std::vector<Vec3f>> \mbox{\hyperlink{classglib_1_1_math_ext_a10957e74cdfe43df26c3feaba9dcab19}{kMeans}}(std::vector<Vec3f> arr, \textcolor{keywordtype}{int} clusters, \textcolor{keywordtype}{int} maxIterations, \textcolor{keywordtype}{bool} meansOnly = \textcolor{keyword}{false});}
+\DoxyCodeLine{1793         }
+\DoxyCodeLine{1805         \textcolor{keyword}{static} std::vector<std::vector<Vec4f>> \mbox{\hyperlink{classglib_1_1_math_ext_acdf4ffcebff0e660af0abe8426c5f607}{meanCut}}(std::vector<Vec4f> arr, \textcolor{keywordtype}{int} clusters, \textcolor{keywordtype}{bool} meansOnly = \textcolor{keyword}{false});}
+\DoxyCodeLine{1806 }
+\DoxyCodeLine{1818         \textcolor{keyword}{static} std::vector<std::vector<Vec4f>> \mbox{\hyperlink{classglib_1_1_math_ext_abc13978a4cb83cbb09a4ef5b87ce3d97}{medianCut}}(std::vector<Vec4f> arr, \textcolor{keywordtype}{int} clusters, \textcolor{keywordtype}{bool} meansOnly = \textcolor{keyword}{false});}
+\DoxyCodeLine{1819 }
+\DoxyCodeLine{1834         \textcolor{keyword}{static} std::vector<std::vector<Vec4f>> \mbox{\hyperlink{classglib_1_1_math_ext_a0636b0e8acaa398c0a33f89496d3988a}{kMeans}}(std::vector<Vec4f> arr, \textcolor{keywordtype}{int} clusters, \textcolor{keywordtype}{int} maxIterations, \textcolor{keywordtype}{bool} meansOnly = \textcolor{keyword}{false});}
+\DoxyCodeLine{1835         }
+\DoxyCodeLine{1847         \textcolor{keyword}{static} std::vector<std::vector<GeneralVector>> \mbox{\hyperlink{classglib_1_1_math_ext_a77f22d5a54bd61dd27bc5bbf466218e4}{meanCut}}(std::vector<GeneralVector> arr, \textcolor{keywordtype}{int} clusters, \textcolor{keywordtype}{bool} meansOnly = \textcolor{keyword}{false});}
+\DoxyCodeLine{1848 }
+\DoxyCodeLine{1860         \textcolor{keyword}{static} std::vector<std::vector<GeneralVector>> \mbox{\hyperlink{classglib_1_1_math_ext_ae03db6aae51d4efe75f0b3ccbb2f4fa6}{medianCut}}(std::vector<GeneralVector> arr, \textcolor{keywordtype}{int} clusters, \textcolor{keywordtype}{bool} meansOnly = \textcolor{keyword}{false});}
+\DoxyCodeLine{1861 }
+\DoxyCodeLine{1876         \textcolor{keyword}{static} std::vector<std::vector<GeneralVector>> \mbox{\hyperlink{classglib_1_1_math_ext_aa85708dcdbbad1ff022a83469b2aecd0}{kMeans}}(std::vector<GeneralVector> arr, \textcolor{keywordtype}{int} clusters, \textcolor{keywordtype}{int} maxIterations, \textcolor{keywordtype}{bool} meansOnly = \textcolor{keyword}{false});}
+\DoxyCodeLine{1877         }
+\DoxyCodeLine{1878     \textcolor{keyword}{private}:}
+\DoxyCodeLine{1879         \textcolor{keyword}{static} std::vector<ComplexNumber> doFFT(\mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}}* arr, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false});}
+\DoxyCodeLine{1880         \textcolor{keyword}{static} \textcolor{keywordtype}{void} doFFTTest(\mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}}* output, \textcolor{keywordtype}{int} size, \textcolor{keywordtype}{int} incVal, \textcolor{keywordtype}{bool} inverse=\textcolor{keyword}{false}, \mbox{\hyperlink{classglib_1_1_complex_number}{ComplexNumber}}* tempData=\textcolor{keyword}{nullptr});}
+\DoxyCodeLine{1881         }
+\DoxyCodeLine{1882     \};}
+\DoxyCodeLine{1883 }
+\DoxyCodeLine{1884 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

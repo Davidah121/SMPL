@@ -1,5 +1,6 @@
 #pragma once
 #include "BinaryTree.h"
+#include "MathExt.h"
 
 namespace glib
 {
@@ -8,20 +9,77 @@ namespace glib
     struct KDTreeNode
     {
         T* data;
-        int splitDimension = -1;
     };
 
     template<typename T>
     class KDTree
     {
     public:
+        /**
+         * @brief Construct a new KDTree object
+         *      A K Dimensional tree stores data in a BinaryTree.
+         *      The items are placed based on the dimension value.
+         *      The class expectes the data to be an array of values of atleast the size of the dimension.
+         * 
+         * @param dimensions 
+         *      The dimension of the KDTree.
+         */
         KDTree(int dimensions);
+
+        /**
+         * @brief Destroy the KDTree object
+         * 
+         */
         ~KDTree();
 
-        void add(T* data, int split = -1);
-        bool addUnique(T* data, int split = -1);
+        /**
+         * @brief Adds data to the KDTree.
+         * 
+         * @param data 
+         *      The data to add.
+         *      It is expected to be an array of at least the dimension size.
+         */
+        void add(T* data);
+
+        /**
+         * @brief Adds data to the KDTree if it does not already exist.
+         * 
+         * @param data 
+         *      The data to add.
+         *      It is expected to be an array of at least the dimension size.
+         * @return bool
+         *      Returns true if successful.
+         */
+        bool addUnique(T* data);
+
+        /**
+         * @brief Searches for the data in the tree.
+         * 
+         * @param data 
+         *      The data to search for.
+         *      It is expected to be an array of at least the dimension size.
+         * @return KDTreeNode<T> 
+         */
         KDTreeNode<T> search(T* data);
+
+        /**
+         * @brief Searches for the data in the tree.
+         *      If not found, finds the closest thing to it.
+         *      Average run time is O(LogN)
+         * 
+         *      Note that the current implementation is not as good for achieving the average run time of O(LogN)
+         * 
+         * @param data 
+         *      The data to search for.
+         *      It is expected to be an array of at least the dimension size.
+         * @return KDTreeNode<T> 
+         */
         KDTreeNode<T> searchNearest(T* data);
+
+        /**
+         * @brief Balances the KDTree to better achieve the average run time of O(LogN)
+         * 
+         */
         void balance();
     private:
         BinaryTreeNode<KDTreeNode<T>>* searchRecursive(BinaryTreeNode<KDTreeNode<T>>* tNode, T* data, int* minDistance, BinaryTreeNode<KDTreeNode<T>>* returnVal, int axis, bool backwards);
@@ -34,7 +92,9 @@ namespace glib
     template<typename T>
     inline KDTree<T>::KDTree(int dimensions)
     {
-        this->dimensions = dimensions;
+        //max function
+
+        this->dimensions = (dimensions < 0) ? 0 : dimensions;
     }
 
     template<typename T>
@@ -60,10 +120,10 @@ namespace glib
     }
 
     template<typename T>
-    inline void KDTree<T>::add(T* data, int split)
+    inline void KDTree<T>::add(T* data)
     {
 
-        KDTreeNode<T> kdnode = {data, split%dimensions };
+        KDTreeNode<T> kdnode = {data};
 
         BinaryTreeNode< KDTreeNode<T> >* node = new BinaryTreeNode< KDTreeNode<T> >();
         node->data = kdnode;
@@ -82,11 +142,6 @@ namespace glib
             {
                 KDTreeNode<T> oKDNode = currentTreeNode->data;
                 indexToTest = depth % dimensions;
-
-                if(oKDNode.splitDimension >=0 )
-                {
-                    indexToTest = oKDNode.splitDimension;
-                }
 
                 if(kdnode.data[indexToTest] < oKDNode.data[indexToTest])
                 {
@@ -121,9 +176,9 @@ namespace glib
     }
 
     template<typename T>
-    inline bool KDTree<T>::addUnique(T* data, int split)
+    inline bool KDTree<T>::addUnique(T* data)
     {
-        KDTreeNode<T> kdnode = {data, split%dimensions};
+        KDTreeNode<T> kdnode = {data};
 
         BinaryTreeNode< KDTreeNode<T> >* node = new BinaryTreeNode< KDTreeNode<T> >();
         node->data = kdnode;
@@ -143,11 +198,6 @@ namespace glib
             {
                 KDTreeNode<T> oKDNode = currentTreeNode->data;
                 indexToTest = depth % dimensions;
-                
-                if(oKDNode.splitDimension >=0 )
-                {
-                    indexToTest = oKDNode.splitDimension;
-                }
 
                 bool same = std::memcmp(data, oKDNode.data, dimensions*sizeof(T)) == 0;
 
@@ -202,11 +252,6 @@ namespace glib
             KDTreeNode<T> oKDNode = currentTreeNode->data;
             indexToTest = depth % dimensions;
             
-            if(oKDNode.splitDimension >=0 )
-            {
-                indexToTest = oKDNode.splitDimension;
-            }
-            
             bool same = std::memcmp(data, oKDNode.data, dimensions*sizeof(T)) == 0;
 
             if(same)
@@ -245,11 +290,6 @@ namespace glib
 
         int minDistance = 1 << 30;
         KDTreeNode<T> returnNode = currentTreeNode->data;
-        
-        if(returnNode.splitDimension >=0 )
-        {
-            indexToTest = returnNode.splitDimension;
-        }
 
         BinaryTreeNode<KDTreeNode<T>>* finalNode = searchRecursive(currentTreeNode, data, &minDistance, currentTreeNode, indexToTest, false);
 
@@ -276,8 +316,6 @@ namespace glib
                 if(tNode->leftChild != nullptr)
                 {
                     KDTreeNode<T> childNode = tNode->leftChild->data;
-                    if(childNode.splitDimension>=0)
-                        nAxis = childNode.splitDimension;
                     
                     myVal = searchRecursive(tNode->leftChild, data, minDistance, tNode->leftChild, nAxis, false);
                 }
@@ -289,8 +327,6 @@ namespace glib
                 if(tNode->rightChild != nullptr)
                 {
                     KDTreeNode<T> childNode = tNode->rightChild->data;
-                    if(childNode.splitDimension>=0)
-                        nAxis = childNode.splitDimension;
                     
                     myVal = searchRecursive(tNode->rightChild, data, minDistance, tNode->rightChild, nAxis, false);
                 }
@@ -324,8 +360,6 @@ namespace glib
             if(tNode->leftChild != nullptr && !leftSide)
             {
                 KDTreeNode<T> childNode = tNode->leftChild->data;
-                if(childNode.splitDimension>=0)
-                    tempAxis = childNode.splitDimension;
                     
                 myVal = searchRecursive(tNode->leftChild, data, minDistance, myVal, tempAxis, true);
             }
@@ -335,8 +369,6 @@ namespace glib
             if(tNode->rightChild != nullptr && !rightSide)
             {
                 KDTreeNode<T> childNode = tNode->rightChild->data;
-                if(childNode.splitDimension>=0)
-                    tempAxis = childNode.splitDimension;
                 
                 myVal = searchRecursive(tNode->rightChild, data, minDistance, myVal, tempAxis, true);
             }
@@ -352,8 +384,6 @@ namespace glib
                 if(tNode->leftChild != nullptr && !leftSide)
                 {
                     KDTreeNode<T> childNode = tNode->leftChild->data;
-                    if(childNode.splitDimension>=0)
-                        tempAxis = childNode.splitDimension;
                 
                     myVal = searchRecursive(tNode->leftChild, data, minDistance, myVal, tempAxis, true);
                 }
@@ -364,8 +394,6 @@ namespace glib
                 if(tNode->rightChild != nullptr && !rightSide)
                 {
                     KDTreeNode<T> childNode = tNode->rightChild->data;
-                    if(childNode.splitDimension>=0)
-                        tempAxis = childNode.splitDimension;
                 
                     myVal = searchRecursive(tNode->rightChild, data, minDistance, myVal, tempAxis, true);
                 }
@@ -449,7 +477,6 @@ namespace glib
                     int midIndex = (r.start + r.end)/2;
 
                     KDTreeNode<T> kdt = (KDTreeNode<T>)tempPalette[midIndex];
-                    kdt.splitDimension = sortBy;
 
                     addInOrder.push_back(kdt);
 
@@ -479,7 +506,7 @@ namespace glib
         for(int i=0; i<addInOrder.size(); i++)
         {
             KDTreeNode<T> k = addInOrder[i];
-            add( k.data, k.splitDimension );
+            add( k.data );
         }
     }
 

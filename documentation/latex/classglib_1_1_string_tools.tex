@@ -1,0 +1,971 @@
+\hypertarget{classglib_1_1_string_tools}{}\doxysection{glib\+::String\+Tools Class Reference}
+\label{classglib_1_1_string_tools}\index{glib::StringTools@{glib::StringTools}}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{classglib_1_1_string_tools_a79d5e16d54917ec141bbd341c8c8ddbf}{init}} ()
+\begin{DoxyCompactList}\small\item\em Initializes the \mbox{\hyperlink{classglib_1_1_string_tools}{String\+Tools}} class. Specifically, it sets up the console to accept wstring data properly. Not required if the console is not needed. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T $>$ }\\static std\+::wstring \mbox{\hyperlink{classglib_1_1_string_tools_a2573aee4e6517c3dec0b1f621cfcf1e0}{to\+Wide\+String}} (std\+::basic\+\_\+string$<$ T $>$ text)
+\begin{DoxyCompactList}\small\item\em Converts any string to a std\+::wstring. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T $>$ }\\static std\+::string \mbox{\hyperlink{classglib_1_1_string_tools_a14b859423231ee6250beee032ae7059f}{to\+CString}} (std\+::basic\+\_\+string$<$ T $>$ text)
+\begin{DoxyCompactList}\small\item\em Converts any string to a std\+::string. \end{DoxyCompactList}\item 
+static std\+::vector$<$ unsigned char $>$ \mbox{\hyperlink{classglib_1_1_string_tools_ad77df82decd60923301b22f402f422e3}{to\+UTF8}} (int c)
+\begin{DoxyCompactList}\small\item\em Converts a character to a valid UTF8 character. May use more than one byte for one UTF8 character. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_string_tools_af198c1829de77dabad0cd0043235bf75}{utf8\+To\+Char}} (std\+::vector$<$ unsigned char $>$ utf8\+Char)
+\begin{DoxyCompactList}\small\item\em Converts the bytes in a valid UTF8 character to an integer representation. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_string_tools_a8897676cfb1a36f7de7d5b44988461e0}{string\+Length}} (char $\ast$text)
+\begin{DoxyCompactList}\small\item\em Returns the string length of a character array. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_string_tools_a10b2a0bbeafa161e6ddcdcbadd09dd6f}{string\+Length}} (const char $\ast$text)
+\begin{DoxyCompactList}\small\item\em Returns the string length of a character array. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_string_tools_a86a395457daafc3e143ce28f692a2126}{string\+Length}} (wchar\+\_\+t $\ast$text)
+\begin{DoxyCompactList}\small\item\em Returns the string length of a wide character array. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_string_tools_a209e3acd5dbb8ed00b6eabf073693973}{string\+Length}} (const wchar\+\_\+t $\ast$text)
+\begin{DoxyCompactList}\small\item\em Returns the string length of a wide character array. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T $>$ }\\static bool \mbox{\hyperlink{classglib_1_1_string_tools_aecf595cfde4c9535fd22d397ca13bc35}{equals\+Ignore\+Case}} (std\+::basic\+\_\+string$<$ T $>$ a, std\+::basic\+\_\+string$<$ T $>$ b)
+\begin{DoxyCompactList}\small\item\em Returns if the strings are equal to each other ignoring the case of the character. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_string_tools_ac3bdffde01b01fd804d11a2106e24b04}{is\+Alpha\+Numerial}} (char v, bool under\+Score\+Allowed=false, bool dash\+Allowed=false)
+\begin{DoxyCompactList}\small\item\em Returns if the character is apart of the alphabet or is a number. Special characters like \textquotesingle{}-\/\textquotesingle{} and \textquotesingle{}\+\_\+\textquotesingle{} can be added to the check. Only checks in the ASCII space. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_string_tools_ae4abd24e099fbbd207f0864e5fd3d058}{is\+Valid\+Char}} (int v)
+\begin{DoxyCompactList}\small\item\em Returns if the number is valid character in the ASCII space. \end{DoxyCompactList}\item 
+static char \mbox{\hyperlink{classglib_1_1_string_tools_ab0a75e1d09cf6fdec27f5ed53b40a909}{base10\+To\+Base16}} (char v)
+\begin{DoxyCompactList}\small\item\em Converts the base10 value to its base16 value represented as a character. Ex\+: 0 -\/\texorpdfstring{$>$}{>} \textquotesingle{}0\textquotesingle{} 2 -\/\texorpdfstring{$>$}{>} \textquotesingle{}2\textquotesingle{} 10 -\/\texorpdfstring{$>$}{>} \textquotesingle{}A\textquotesingle{} 15 -\/\texorpdfstring{$>$}{>} \textquotesingle{}F\textquotesingle{}. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_string_tools_a506e815ca7c1115daf9023937845d5b9}{base16\+To\+Base10}} (char v)
+\begin{DoxyCompactList}\small\item\em Converts the base16 value represented as a character to its base10 value represented as an integer. Ex\+: \textquotesingle{}0\textquotesingle{} -\/\texorpdfstring{$>$}{>} 0 \textquotesingle{}2\textquotesingle{} -\/\texorpdfstring{$>$}{>} 2 \textquotesingle{}A\textquotesingle{} -\/\texorpdfstring{$>$}{>} 10 \textquotesingle{}F\textquotesingle{} -\/\texorpdfstring{$>$}{>} 15. \end{DoxyCompactList}\item 
+{\footnotesize template$<$class T $>$ }\\static char $\ast$ \mbox{\hyperlink{classglib_1_1_string_tools_acf8a17e7e341fb377a7a932af86dd2e3}{to\+Hex\+String}} (T value)
+\begin{DoxyCompactList}\small\item\em Converts the value to a Hexidecimal string. \end{DoxyCompactList}\item 
+{\footnotesize template$<$class T $>$ }\\static char $\ast$ \mbox{\hyperlink{classglib_1_1_string_tools_aa00f6b2a9186e862ba56fb96fe8c0b66}{to\+Binary\+String}} (T value, int bits, bool LMSB=true)
+\begin{DoxyCompactList}\small\item\em Converts the value to a Binary string. \end{DoxyCompactList}\item 
+static std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classglib_1_1_string_tools_a37f3a6824434b10065acc4abe0863cd0}{split\+String}} (std\+::string s, const char delim, bool remove\+Empty=true)
+\begin{DoxyCompactList}\small\item\em Splits a string using a single character deliminator. \end{DoxyCompactList}\item 
+static std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classglib_1_1_string_tools_aaf5e756b3dc2bc62d827cdb644fa07b2}{split\+String}} (std\+::string s, std\+::string delim, bool remove\+Empty=true)
+\begin{DoxyCompactList}\small\item\em Splits a string using a string as the deliminator. \end{DoxyCompactList}\item 
+static std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{classglib_1_1_string_tools_a186c810e5e64a00b31995b20ef3333c5}{split\+String\+Multiple\+Deliminators}} (std\+::string s, std\+::string delim, bool remove\+Empty=true)
+\begin{DoxyCompactList}\small\item\em Splits a string using multiple single character deliminators. \end{DoxyCompactList}\item 
+static std\+::vector$<$ std\+::wstring $>$ \mbox{\hyperlink{classglib_1_1_string_tools_a4e711dd8510c687bf87657669062fe63}{split\+String}} (std\+::wstring s, const wchar\+\_\+t delim, bool remove\+Empty=true)
+\begin{DoxyCompactList}\small\item\em Splits a string using a single character deliminator. \end{DoxyCompactList}\item 
+static std\+::vector$<$ std\+::wstring $>$ \mbox{\hyperlink{classglib_1_1_string_tools_a41a293a21a2e1f219160382337d35593}{split\+String}} (std\+::wstring s, std\+::wstring delim, bool remove\+Empty=true)
+\begin{DoxyCompactList}\small\item\em Splits a string using a string as the deliminator. \end{DoxyCompactList}\item 
+static std\+::vector$<$ std\+::wstring $>$ \mbox{\hyperlink{classglib_1_1_string_tools_a6cf2ad06b1cfe8c284291de07617d194}{split\+String\+Multiple\+Deliminators}} (std\+::wstring s, std\+::wstring delim, bool remove\+Empty=true)
+\begin{DoxyCompactList}\small\item\em Splits a string using multiple single character deliminators. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_string_tools_a871854ec0c8fd70a9209e076664368b8}{to\+Int}} (std\+::string s)
+\begin{DoxyCompactList}\small\item\em Converts a string into an integer. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_string_tools_aef465f04ee349e5e43f0995d1b1bfacc}{to\+Int}} (std\+::wstring s)
+\begin{DoxyCompactList}\small\item\em Converts a string into an integer. \end{DoxyCompactList}\item 
+static long \mbox{\hyperlink{classglib_1_1_string_tools_a5f1c8b71ba550ffaa3df8bffea432641}{to\+Long}} (std\+::string s)
+\begin{DoxyCompactList}\small\item\em Converts a string into a long. \end{DoxyCompactList}\item 
+static long \mbox{\hyperlink{classglib_1_1_string_tools_a841f42b4339bc811834ea1e57c8032ab}{to\+Long}} (std\+::wstring s)
+\begin{DoxyCompactList}\small\item\em Converts a string into a long. \end{DoxyCompactList}\item 
+static double \mbox{\hyperlink{classglib_1_1_string_tools_a5c9de4e9a7340812597675e9fab0947f}{to\+Double}} (std\+::string s)
+\begin{DoxyCompactList}\small\item\em Converts a string into a double. \end{DoxyCompactList}\item 
+static double \mbox{\hyperlink{classglib_1_1_string_tools_a36675954bf34d880a838296b80dd2442}{to\+Double}} (std\+::wstring s)
+\begin{DoxyCompactList}\small\item\em Converts a string into a double. \end{DoxyCompactList}\item 
+static float \mbox{\hyperlink{classglib_1_1_string_tools_a91c400cfca76866ede2718565f5233dd}{to\+Float}} (std\+::string s)
+\begin{DoxyCompactList}\small\item\em Converts a string into a float. \end{DoxyCompactList}\item 
+static float \mbox{\hyperlink{classglib_1_1_string_tools_ad427cd02b9ea93ffcf8499f52ed48655}{to\+Float}} (std\+::wstring s)
+\begin{DoxyCompactList}\small\item\em Converts a string into a float. \end{DoxyCompactList}\item 
+static std\+::wstring \mbox{\hyperlink{classglib_1_1_string_tools_a6eb8f19b75263a85e2f28d18cd01b11d}{get\+Wide\+String}} ()
+\begin{DoxyCompactList}\small\item\em Gets a wide string from the console using the users input. Halts until the user presses enter. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classglib_1_1_string_tools_a5748b7b3a5756c96251b4b308c4b9dd8}{get\+String}} ()
+\begin{DoxyCompactList}\small\item\em Gets a string from the console using the users input. Halts until the user presses enter. \end{DoxyCompactList}\item 
+static char \mbox{\hyperlink{classglib_1_1_string_tools_a4958c1563992951ea599ea591b9f3ffd}{get\+Char}} ()
+\begin{DoxyCompactList}\small\item\em Gets a character from the console using the users input. Halts until the user presses enter. \end{DoxyCompactList}\item 
+static wchar\+\_\+t \mbox{\hyperlink{classglib_1_1_string_tools_a7111bf6109d0bbe4b7d8c60462e0dbe3}{get\+Wide\+Char}} ()
+\begin{DoxyCompactList}\small\item\em Gets a wide character from the console using the users input. Halts until the user presses enter. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_string_tools_a7d41baacbc125733393e939d9967f7d3}{get\+Int}} ()
+\begin{DoxyCompactList}\small\item\em Gets an integer from the console using the users input. Halts until the user presses enter. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_string_tools_a188eb5ee217195d6020a95e21bdff29e}{find\+Longest\+Match}} (std\+::string base, std\+::string match, int $\ast$index, int $\ast$length)
+\begin{DoxyCompactList}\small\item\em Finds the longest match in the string base. \end{DoxyCompactList}\item 
+{\footnotesize template$<$class T $>$ }\\static void \mbox{\hyperlink{classglib_1_1_string_tools_a305034a4cbd0b2b16e2bd192244af96a}{find\+Longest\+Match}} (T $\ast$base, int base\+Size, T $\ast$match, int match\+Size, int $\ast$index, int $\ast$length)
+\begin{DoxyCompactList}\small\item\em Finds the longest match in the string base. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classglib_1_1_string_tools_a2056c700117666108b4038d07bd64d4c}{format\+String}} (std\+::string text,...)
+\begin{DoxyCompactList}\small\item\em Formats a string like printf() would but converts std\+::wstring to std\+::string to avoid errors. For formating information, check \href{https://www.cplusplus.com/reference/cstdio/printf/}{\texttt{ https\+://www.\+cplusplus.\+com/reference/cstdio/printf/}}. \end{DoxyCompactList}\item 
+static std\+::wstring \mbox{\hyperlink{classglib_1_1_string_tools_a34c564f6331cfd44676a0ac7454e14be}{format\+Wide\+String}} (std\+::wstring text,...)
+\begin{DoxyCompactList}\small\item\em Formats a string like wprintf() would but converts std\+::string to std\+::wstring to avoid errors. For formating information, check \href{https://www.cplusplus.com/reference/cstdio/printf/}{\texttt{ https\+://www.\+cplusplus.\+com/reference/cstdio/printf/}}. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_string_tools_a751726481fdf9bfffa1783f6e8d79ea0}{convert\+Key\+To\+Ascii}} (int key\+Val, bool shift\+Held)
+\begin{DoxyCompactList}\small\item\em Converts a keyboard press to the Ascii key it represents. This is valid in the Windows OS for the English language but may not be valid in other languages and other OS. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_string_tools_afabc5065d44e26e792ebfd2c2aa29e72}{print}} (std\+::string fmt,...)
+\begin{DoxyCompactList}\small\item\em Prints information to the console using the same format as printf() \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_string_tools_aae9cf23c88558323df1552c9863cfc0a}{println}} (std\+::string fmt,...)
+\begin{DoxyCompactList}\small\item\em Prints information to the console using the same format as printf(). Also prints a line break at the end. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_string_tools_a0d02224d31e5321c204ed8ac5421642e}{print}} (std\+::wstring fmt,...)
+\begin{DoxyCompactList}\small\item\em Prints information to the console using the same format as printf() \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_string_tools_ad3b1cc309d066be95e60b07273c02392}{println}} (std\+::wstring fmt,...)
+\begin{DoxyCompactList}\small\item\em Prints information to the console using the same format as printf(). Also prints a line break at the end. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_string_tools_acdfd524769da24d5bba6d5f16a135741}{rerout\+Output}} (std\+::wofstream file)
+\begin{DoxyCompactList}\small\item\em Rerouts the output of the print functions to somewhere else such as a file. (Not implemented) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_string_tools_aff6a659ffa9fc4035ddb3d14dc7e19d8}\label{classglib_1_1_string_tools_aff6a659ffa9fc4035ddb3d14dc7e19d8}} 
+static const wchar\+\_\+t {\bfseries line\+Break}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_string_tools_ab0a75e1d09cf6fdec27f5ed53b40a909}\label{classglib_1_1_string_tools_ab0a75e1d09cf6fdec27f5ed53b40a909}} 
+\index{glib::StringTools@{glib::StringTools}!base10ToBase16@{base10ToBase16}}
+\index{base10ToBase16@{base10ToBase16}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{base10ToBase16()}{base10ToBase16()}}
+{\footnotesize\ttfamily static char glib\+::\+String\+Tools\+::base10\+To\+Base16 (\begin{DoxyParamCaption}\item[{char}]{v }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts the base10 value to its base16 value represented as a character. Ex\+: 0 -\/\texorpdfstring{$>$}{>} \textquotesingle{}0\textquotesingle{} 2 -\/\texorpdfstring{$>$}{>} \textquotesingle{}2\textquotesingle{} 10 -\/\texorpdfstring{$>$}{>} \textquotesingle{}A\textquotesingle{} 15 -\/\texorpdfstring{$>$}{>} \textquotesingle{}F\textquotesingle{}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & Valid values are from \mbox{[}0,15\mbox{]} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+char 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a506e815ca7c1115daf9023937845d5b9}\label{classglib_1_1_string_tools_a506e815ca7c1115daf9023937845d5b9}} 
+\index{glib::StringTools@{glib::StringTools}!base16ToBase10@{base16ToBase10}}
+\index{base16ToBase10@{base16ToBase10}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{base16ToBase10()}{base16ToBase10()}}
+{\footnotesize\ttfamily static int glib\+::\+String\+Tools\+::base16\+To\+Base10 (\begin{DoxyParamCaption}\item[{char}]{v }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts the base16 value represented as a character to its base10 value represented as an integer. Ex\+: \textquotesingle{}0\textquotesingle{} -\/\texorpdfstring{$>$}{>} 0 \textquotesingle{}2\textquotesingle{} -\/\texorpdfstring{$>$}{>} 2 \textquotesingle{}A\textquotesingle{} -\/\texorpdfstring{$>$}{>} 10 \textquotesingle{}F\textquotesingle{} -\/\texorpdfstring{$>$}{>} 15. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & Valid values are from \mbox{[}\textquotesingle{}0\textquotesingle{}, \textquotesingle{}9\textquotesingle{}\mbox{]} and \mbox{[}\textquotesingle{}A\textquotesingle{}, \textquotesingle{}F\textquotesingle{}\mbox{]} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int Returns -\/1 if unsuccessful 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a751726481fdf9bfffa1783f6e8d79ea0}\label{classglib_1_1_string_tools_a751726481fdf9bfffa1783f6e8d79ea0}} 
+\index{glib::StringTools@{glib::StringTools}!convertKeyToAscii@{convertKeyToAscii}}
+\index{convertKeyToAscii@{convertKeyToAscii}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{convertKeyToAscii()}{convertKeyToAscii()}}
+{\footnotesize\ttfamily static int glib\+::\+String\+Tools\+::convert\+Key\+To\+Ascii (\begin{DoxyParamCaption}\item[{int}]{key\+Val,  }\item[{bool}]{shift\+Held }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts a keyboard press to the Ascii key it represents. This is valid in the Windows OS for the English language but may not be valid in other languages and other OS. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em key\+Val} & \\
+\hline
+{\em shift\+Held} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_aecf595cfde4c9535fd22d397ca13bc35}\label{classglib_1_1_string_tools_aecf595cfde4c9535fd22d397ca13bc35}} 
+\index{glib::StringTools@{glib::StringTools}!equalsIgnoreCase@{equalsIgnoreCase}}
+\index{equalsIgnoreCase@{equalsIgnoreCase}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{equalsIgnoreCase()}{equalsIgnoreCase()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+static bool glib\+::\+String\+Tools\+::equals\+Ignore\+Case (\begin{DoxyParamCaption}\item[{std\+::basic\+\_\+string$<$ T $>$}]{a,  }\item[{std\+::basic\+\_\+string$<$ T $>$}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Returns if the strings are equal to each other ignoring the case of the character. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em a} & \\
+\hline
+{\em b} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a188eb5ee217195d6020a95e21bdff29e}\label{classglib_1_1_string_tools_a188eb5ee217195d6020a95e21bdff29e}} 
+\index{glib::StringTools@{glib::StringTools}!findLongestMatch@{findLongestMatch}}
+\index{findLongestMatch@{findLongestMatch}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{findLongestMatch()}{findLongestMatch()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static void glib\+::\+String\+Tools\+::find\+Longest\+Match (\begin{DoxyParamCaption}\item[{std\+::string}]{base,  }\item[{std\+::string}]{match,  }\item[{int $\ast$}]{index,  }\item[{int $\ast$}]{length }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Finds the longest match in the string base. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em base} & \\
+\hline
+{\em match} & \\
+\hline
+{\em index} & A pointer to an int that will record the start index of the longest match \\
+\hline
+{\em length} & A pointer to an int that will record the length of the longest match \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a305034a4cbd0b2b16e2bd192244af96a}\label{classglib_1_1_string_tools_a305034a4cbd0b2b16e2bd192244af96a}} 
+\index{glib::StringTools@{glib::StringTools}!findLongestMatch@{findLongestMatch}}
+\index{findLongestMatch@{findLongestMatch}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{findLongestMatch()}{findLongestMatch()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+void glib\+::\+String\+Tools\+::find\+Longest\+Match (\begin{DoxyParamCaption}\item[{T $\ast$}]{base,  }\item[{int}]{base\+Size,  }\item[{T $\ast$}]{match,  }\item[{int}]{match\+Size,  }\item[{int $\ast$}]{index,  }\item[{int $\ast$}]{length }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Finds the longest match in the string base. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em base} & \\
+\hline
+{\em base\+Size} & \\
+\hline
+{\em match} & \\
+\hline
+{\em match\+Size} & \\
+\hline
+{\em index} & A pointer to an int that will record the start index of the longest match \\
+\hline
+{\em length} & A pointer to an int that will record the length of the longest match \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a2056c700117666108b4038d07bd64d4c}\label{classglib_1_1_string_tools_a2056c700117666108b4038d07bd64d4c}} 
+\index{glib::StringTools@{glib::StringTools}!formatString@{formatString}}
+\index{formatString@{formatString}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{formatString()}{formatString()}}
+{\footnotesize\ttfamily static std\+::string glib\+::\+String\+Tools\+::format\+String (\begin{DoxyParamCaption}\item[{std\+::string}]{text,  }\item[{}]{... }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Formats a string like printf() would but converts std\+::wstring to std\+::string to avoid errors. For formating information, check \href{https://www.cplusplus.com/reference/cstdio/printf/}{\texttt{ https\+://www.\+cplusplus.\+com/reference/cstdio/printf/}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em text} & \\
+\hline
+{\em ...} & The list of parameters to use. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::string 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a34c564f6331cfd44676a0ac7454e14be}\label{classglib_1_1_string_tools_a34c564f6331cfd44676a0ac7454e14be}} 
+\index{glib::StringTools@{glib::StringTools}!formatWideString@{formatWideString}}
+\index{formatWideString@{formatWideString}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{formatWideString()}{formatWideString()}}
+{\footnotesize\ttfamily static std\+::wstring glib\+::\+String\+Tools\+::format\+Wide\+String (\begin{DoxyParamCaption}\item[{std\+::wstring}]{text,  }\item[{}]{... }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Formats a string like wprintf() would but converts std\+::string to std\+::wstring to avoid errors. For formating information, check \href{https://www.cplusplus.com/reference/cstdio/printf/}{\texttt{ https\+://www.\+cplusplus.\+com/reference/cstdio/printf/}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em text} & \\
+\hline
+{\em ...} & The list of parameters to use. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::wstring 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a4958c1563992951ea599ea591b9f3ffd}\label{classglib_1_1_string_tools_a4958c1563992951ea599ea591b9f3ffd}} 
+\index{glib::StringTools@{glib::StringTools}!getChar@{getChar}}
+\index{getChar@{getChar}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{getChar()}{getChar()}}
+{\footnotesize\ttfamily static char glib\+::\+String\+Tools\+::get\+Char (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets a character from the console using the users input. Halts until the user presses enter. 
+
+\begin{DoxyReturn}{Returns}
+char 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a7d41baacbc125733393e939d9967f7d3}\label{classglib_1_1_string_tools_a7d41baacbc125733393e939d9967f7d3}} 
+\index{glib::StringTools@{glib::StringTools}!getInt@{getInt}}
+\index{getInt@{getInt}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{getInt()}{getInt()}}
+{\footnotesize\ttfamily static int glib\+::\+String\+Tools\+::get\+Int (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets an integer from the console using the users input. Halts until the user presses enter. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a5748b7b3a5756c96251b4b308c4b9dd8}\label{classglib_1_1_string_tools_a5748b7b3a5756c96251b4b308c4b9dd8}} 
+\index{glib::StringTools@{glib::StringTools}!getString@{getString}}
+\index{getString@{getString}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{getString()}{getString()}}
+{\footnotesize\ttfamily static std\+::string glib\+::\+String\+Tools\+::get\+String (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets a string from the console using the users input. Halts until the user presses enter. 
+
+\begin{DoxyReturn}{Returns}
+std\+::string 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a7111bf6109d0bbe4b7d8c60462e0dbe3}\label{classglib_1_1_string_tools_a7111bf6109d0bbe4b7d8c60462e0dbe3}} 
+\index{glib::StringTools@{glib::StringTools}!getWideChar@{getWideChar}}
+\index{getWideChar@{getWideChar}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{getWideChar()}{getWideChar()}}
+{\footnotesize\ttfamily static wchar\+\_\+t glib\+::\+String\+Tools\+::get\+Wide\+Char (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets a wide character from the console using the users input. Halts until the user presses enter. 
+
+\begin{DoxyReturn}{Returns}
+wchar\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a6eb8f19b75263a85e2f28d18cd01b11d}\label{classglib_1_1_string_tools_a6eb8f19b75263a85e2f28d18cd01b11d}} 
+\index{glib::StringTools@{glib::StringTools}!getWideString@{getWideString}}
+\index{getWideString@{getWideString}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{getWideString()}{getWideString()}}
+{\footnotesize\ttfamily static std\+::wstring glib\+::\+String\+Tools\+::get\+Wide\+String (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets a wide string from the console using the users input. Halts until the user presses enter. 
+
+\begin{DoxyReturn}{Returns}
+std\+::wstring 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a79d5e16d54917ec141bbd341c8c8ddbf}\label{classglib_1_1_string_tools_a79d5e16d54917ec141bbd341c8c8ddbf}} 
+\index{glib::StringTools@{glib::StringTools}!init@{init}}
+\index{init@{init}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{init()}{init()}}
+{\footnotesize\ttfamily static void glib\+::\+String\+Tools\+::init (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Initializes the \mbox{\hyperlink{classglib_1_1_string_tools}{String\+Tools}} class. Specifically, it sets up the console to accept wstring data properly. Not required if the console is not needed. 
+
+None of the wrapper functions to get input from the console will work if this function is not called. Ex\+: \mbox{\hyperlink{classglib_1_1_string_tools_a7d41baacbc125733393e939d9967f7d3}{get\+Int()}} or \mbox{\hyperlink{classglib_1_1_string_tools_a5748b7b3a5756c96251b4b308c4b9dd8}{get\+String()}} \mbox{\Hypertarget{classglib_1_1_string_tools_ac3bdffde01b01fd804d11a2106e24b04}\label{classglib_1_1_string_tools_ac3bdffde01b01fd804d11a2106e24b04}} 
+\index{glib::StringTools@{glib::StringTools}!isAlphaNumerial@{isAlphaNumerial}}
+\index{isAlphaNumerial@{isAlphaNumerial}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{isAlphaNumerial()}{isAlphaNumerial()}}
+{\footnotesize\ttfamily static bool glib\+::\+String\+Tools\+::is\+Alpha\+Numerial (\begin{DoxyParamCaption}\item[{char}]{v,  }\item[{bool}]{under\+Score\+Allowed = {\ttfamily false},  }\item[{bool}]{dash\+Allowed = {\ttfamily false} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns if the character is apart of the alphabet or is a number. Special characters like \textquotesingle{}-\/\textquotesingle{} and \textquotesingle{}\+\_\+\textquotesingle{} can be added to the check. Only checks in the ASCII space. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+{\em under\+Score\+Allowed} & Default is false \\
+\hline
+{\em dash\+Allowed} & Default is false \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_ae4abd24e099fbbd207f0864e5fd3d058}\label{classglib_1_1_string_tools_ae4abd24e099fbbd207f0864e5fd3d058}} 
+\index{glib::StringTools@{glib::StringTools}!isValidChar@{isValidChar}}
+\index{isValidChar@{isValidChar}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{isValidChar()}{isValidChar()}}
+{\footnotesize\ttfamily static bool glib\+::\+String\+Tools\+::is\+Valid\+Char (\begin{DoxyParamCaption}\item[{int}]{v }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns if the number is valid character in the ASCII space. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_afabc5065d44e26e792ebfd2c2aa29e72}\label{classglib_1_1_string_tools_afabc5065d44e26e792ebfd2c2aa29e72}} 
+\index{glib::StringTools@{glib::StringTools}!print@{print}}
+\index{print@{print}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static void glib\+::\+String\+Tools\+::print (\begin{DoxyParamCaption}\item[{std\+::string}]{fmt,  }\item[{}]{... }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Prints information to the console using the same format as printf() 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fmt} & \\
+\hline
+{\em ...} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a0d02224d31e5321c204ed8ac5421642e}\label{classglib_1_1_string_tools_a0d02224d31e5321c204ed8ac5421642e}} 
+\index{glib::StringTools@{glib::StringTools}!print@{print}}
+\index{print@{print}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{print()}{print()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static void glib\+::\+String\+Tools\+::print (\begin{DoxyParamCaption}\item[{std\+::wstring}]{fmt,  }\item[{}]{... }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Prints information to the console using the same format as printf() 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fmt} & \\
+\hline
+{\em ...} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_string_tools_aae9cf23c88558323df1552c9863cfc0a}\label{classglib_1_1_string_tools_aae9cf23c88558323df1552c9863cfc0a}} 
+\index{glib::StringTools@{glib::StringTools}!println@{println}}
+\index{println@{println}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{println()}{println()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static void glib\+::\+String\+Tools\+::println (\begin{DoxyParamCaption}\item[{std\+::string}]{fmt,  }\item[{}]{... }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Prints information to the console using the same format as printf(). Also prints a line break at the end. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fmt} & \\
+\hline
+{\em ...} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_string_tools_ad3b1cc309d066be95e60b07273c02392}\label{classglib_1_1_string_tools_ad3b1cc309d066be95e60b07273c02392}} 
+\index{glib::StringTools@{glib::StringTools}!println@{println}}
+\index{println@{println}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{println()}{println()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static void glib\+::\+String\+Tools\+::println (\begin{DoxyParamCaption}\item[{std\+::wstring}]{fmt,  }\item[{}]{... }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Prints information to the console using the same format as printf(). Also prints a line break at the end. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fmt} & \\
+\hline
+{\em ...} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_string_tools_acdfd524769da24d5bba6d5f16a135741}\label{classglib_1_1_string_tools_acdfd524769da24d5bba6d5f16a135741}} 
+\index{glib::StringTools@{glib::StringTools}!reroutOutput@{reroutOutput}}
+\index{reroutOutput@{reroutOutput}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{reroutOutput()}{reroutOutput()}}
+{\footnotesize\ttfamily static void glib\+::\+String\+Tools\+::rerout\+Output (\begin{DoxyParamCaption}\item[{std\+::wofstream}]{file }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Rerouts the output of the print functions to somewhere else such as a file. (Not implemented) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a37f3a6824434b10065acc4abe0863cd0}\label{classglib_1_1_string_tools_a37f3a6824434b10065acc4abe0863cd0}} 
+\index{glib::StringTools@{glib::StringTools}!splitString@{splitString}}
+\index{splitString@{splitString}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{splitString()}{splitString()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily static std\+::vector$<$ std\+::string $>$ glib\+::\+String\+Tools\+::split\+String (\begin{DoxyParamCaption}\item[{std\+::string}]{s,  }\item[{const char}]{delim,  }\item[{bool}]{remove\+Empty = {\ttfamily true} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Splits a string using a single character deliminator. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & \\
+\hline
+{\em delim} & \\
+\hline
+{\em remove\+Empty} & Whether to keep empty splits or remove them. Default is true. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$std\+::string$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_aaf5e756b3dc2bc62d827cdb644fa07b2}\label{classglib_1_1_string_tools_aaf5e756b3dc2bc62d827cdb644fa07b2}} 
+\index{glib::StringTools@{glib::StringTools}!splitString@{splitString}}
+\index{splitString@{splitString}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{splitString()}{splitString()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily static std\+::vector$<$ std\+::string $>$ glib\+::\+String\+Tools\+::split\+String (\begin{DoxyParamCaption}\item[{std\+::string}]{s,  }\item[{std\+::string}]{delim,  }\item[{bool}]{remove\+Empty = {\ttfamily true} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Splits a string using a string as the deliminator. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & \\
+\hline
+{\em delim} & \\
+\hline
+{\em remove\+Empty} & Whether to keep empty splits or remove them. Default is true. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$std\+::string$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a4e711dd8510c687bf87657669062fe63}\label{classglib_1_1_string_tools_a4e711dd8510c687bf87657669062fe63}} 
+\index{glib::StringTools@{glib::StringTools}!splitString@{splitString}}
+\index{splitString@{splitString}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{splitString()}{splitString()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily static std\+::vector$<$ std\+::wstring $>$ glib\+::\+String\+Tools\+::split\+String (\begin{DoxyParamCaption}\item[{std\+::wstring}]{s,  }\item[{const wchar\+\_\+t}]{delim,  }\item[{bool}]{remove\+Empty = {\ttfamily true} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Splits a string using a single character deliminator. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & \\
+\hline
+{\em delim} & \\
+\hline
+{\em remove\+Empty} & Whether to keep empty splits or remove them. Default is true. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$std\+::wstring$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a41a293a21a2e1f219160382337d35593}\label{classglib_1_1_string_tools_a41a293a21a2e1f219160382337d35593}} 
+\index{glib::StringTools@{glib::StringTools}!splitString@{splitString}}
+\index{splitString@{splitString}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{splitString()}{splitString()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily static std\+::vector$<$ std\+::wstring $>$ glib\+::\+String\+Tools\+::split\+String (\begin{DoxyParamCaption}\item[{std\+::wstring}]{s,  }\item[{std\+::wstring}]{delim,  }\item[{bool}]{remove\+Empty = {\ttfamily true} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Splits a string using a string as the deliminator. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & \\
+\hline
+{\em delim} & \\
+\hline
+{\em remove\+Empty} & Whether to keep empty splits or remove them. Default is true. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$std\+::wstring$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a186c810e5e64a00b31995b20ef3333c5}\label{classglib_1_1_string_tools_a186c810e5e64a00b31995b20ef3333c5}} 
+\index{glib::StringTools@{glib::StringTools}!splitStringMultipleDeliminators@{splitStringMultipleDeliminators}}
+\index{splitStringMultipleDeliminators@{splitStringMultipleDeliminators}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{splitStringMultipleDeliminators()}{splitStringMultipleDeliminators()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ std\+::string $>$ glib\+::\+String\+Tools\+::split\+String\+Multiple\+Deliminators (\begin{DoxyParamCaption}\item[{std\+::string}]{s,  }\item[{std\+::string}]{delim,  }\item[{bool}]{remove\+Empty = {\ttfamily true} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Splits a string using multiple single character deliminators. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & \\
+\hline
+{\em delim} & Each character in the string is a separate deliminator \\
+\hline
+{\em remove\+Empty} & Whether to keep empty splits or remove them. Default is true. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$std\+::string$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a6cf2ad06b1cfe8c284291de07617d194}\label{classglib_1_1_string_tools_a6cf2ad06b1cfe8c284291de07617d194}} 
+\index{glib::StringTools@{glib::StringTools}!splitStringMultipleDeliminators@{splitStringMultipleDeliminators}}
+\index{splitStringMultipleDeliminators@{splitStringMultipleDeliminators}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{splitStringMultipleDeliminators()}{splitStringMultipleDeliminators()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static std\+::vector$<$ std\+::wstring $>$ glib\+::\+String\+Tools\+::split\+String\+Multiple\+Deliminators (\begin{DoxyParamCaption}\item[{std\+::wstring}]{s,  }\item[{std\+::wstring}]{delim,  }\item[{bool}]{remove\+Empty = {\ttfamily true} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Splits a string using multiple single character deliminators. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & \\
+\hline
+{\em delim} & \\
+\hline
+{\em remove\+Empty} & Whether to keep empty splits or remove them. Default is true. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$std\+::wstring$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a8897676cfb1a36f7de7d5b44988461e0}\label{classglib_1_1_string_tools_a8897676cfb1a36f7de7d5b44988461e0}} 
+\index{glib::StringTools@{glib::StringTools}!stringLength@{stringLength}}
+\index{stringLength@{stringLength}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{stringLength()}{stringLength()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily static int glib\+::\+String\+Tools\+::string\+Length (\begin{DoxyParamCaption}\item[{char $\ast$}]{text }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the string length of a character array. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em text} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a10b2a0bbeafa161e6ddcdcbadd09dd6f}\label{classglib_1_1_string_tools_a10b2a0bbeafa161e6ddcdcbadd09dd6f}} 
+\index{glib::StringTools@{glib::StringTools}!stringLength@{stringLength}}
+\index{stringLength@{stringLength}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{stringLength()}{stringLength()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily static int glib\+::\+String\+Tools\+::string\+Length (\begin{DoxyParamCaption}\item[{const char $\ast$}]{text }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the string length of a character array. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em text} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a209e3acd5dbb8ed00b6eabf073693973}\label{classglib_1_1_string_tools_a209e3acd5dbb8ed00b6eabf073693973}} 
+\index{glib::StringTools@{glib::StringTools}!stringLength@{stringLength}}
+\index{stringLength@{stringLength}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{stringLength()}{stringLength()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily static int glib\+::\+String\+Tools\+::string\+Length (\begin{DoxyParamCaption}\item[{const wchar\+\_\+t $\ast$}]{text }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the string length of a wide character array. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em text} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a86a395457daafc3e143ce28f692a2126}\label{classglib_1_1_string_tools_a86a395457daafc3e143ce28f692a2126}} 
+\index{glib::StringTools@{glib::StringTools}!stringLength@{stringLength}}
+\index{stringLength@{stringLength}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{stringLength()}{stringLength()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily static int glib\+::\+String\+Tools\+::string\+Length (\begin{DoxyParamCaption}\item[{wchar\+\_\+t $\ast$}]{text }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Returns the string length of a wide character array. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em text} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_aa00f6b2a9186e862ba56fb96fe8c0b66}\label{classglib_1_1_string_tools_aa00f6b2a9186e862ba56fb96fe8c0b66}} 
+\index{glib::StringTools@{glib::StringTools}!toBinaryString@{toBinaryString}}
+\index{toBinaryString@{toBinaryString}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{toBinaryString()}{toBinaryString()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+static char $\ast$ glib\+::\+String\+Tools\+::to\+Binary\+String (\begin{DoxyParamCaption}\item[{T}]{value,  }\item[{int}]{bits,  }\item[{bool}]{LMSB = {\ttfamily true} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Converts the value to a Binary string. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em value} & \\
+\hline
+{\em bits} & How many bits to grab. \\
+\hline
+{\em LMSB} & Left Most Significant Bit Default is true \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+char$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a14b859423231ee6250beee032ae7059f}\label{classglib_1_1_string_tools_a14b859423231ee6250beee032ae7059f}} 
+\index{glib::StringTools@{glib::StringTools}!toCString@{toCString}}
+\index{toCString@{toCString}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{toCString()}{toCString()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+static std\+::string glib\+::\+String\+Tools\+::to\+CString (\begin{DoxyParamCaption}\item[{std\+::basic\+\_\+string$<$ T $>$}]{text }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Converts any string to a std\+::string. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em text} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::string 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a5c9de4e9a7340812597675e9fab0947f}\label{classglib_1_1_string_tools_a5c9de4e9a7340812597675e9fab0947f}} 
+\index{glib::StringTools@{glib::StringTools}!toDouble@{toDouble}}
+\index{toDouble@{toDouble}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{toDouble()}{toDouble()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static double glib\+::\+String\+Tools\+::to\+Double (\begin{DoxyParamCaption}\item[{std\+::string}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts a string into a double. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a36675954bf34d880a838296b80dd2442}\label{classglib_1_1_string_tools_a36675954bf34d880a838296b80dd2442}} 
+\index{glib::StringTools@{glib::StringTools}!toDouble@{toDouble}}
+\index{toDouble@{toDouble}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{toDouble()}{toDouble()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static double glib\+::\+String\+Tools\+::to\+Double (\begin{DoxyParamCaption}\item[{std\+::wstring}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts a string into a double. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a91c400cfca76866ede2718565f5233dd}\label{classglib_1_1_string_tools_a91c400cfca76866ede2718565f5233dd}} 
+\index{glib::StringTools@{glib::StringTools}!toFloat@{toFloat}}
+\index{toFloat@{toFloat}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{toFloat()}{toFloat()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static float glib\+::\+String\+Tools\+::to\+Float (\begin{DoxyParamCaption}\item[{std\+::string}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts a string into a float. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+float 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_ad427cd02b9ea93ffcf8499f52ed48655}\label{classglib_1_1_string_tools_ad427cd02b9ea93ffcf8499f52ed48655}} 
+\index{glib::StringTools@{glib::StringTools}!toFloat@{toFloat}}
+\index{toFloat@{toFloat}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{toFloat()}{toFloat()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static float glib\+::\+String\+Tools\+::to\+Float (\begin{DoxyParamCaption}\item[{std\+::wstring}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts a string into a float. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+float 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_acf8a17e7e341fb377a7a932af86dd2e3}\label{classglib_1_1_string_tools_acf8a17e7e341fb377a7a932af86dd2e3}} 
+\index{glib::StringTools@{glib::StringTools}!toHexString@{toHexString}}
+\index{toHexString@{toHexString}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{toHexString()}{toHexString()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+static char $\ast$ glib\+::\+String\+Tools\+::to\+Hex\+String (\begin{DoxyParamCaption}\item[{T}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Converts the value to a Hexidecimal string. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em value} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+char$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a871854ec0c8fd70a9209e076664368b8}\label{classglib_1_1_string_tools_a871854ec0c8fd70a9209e076664368b8}} 
+\index{glib::StringTools@{glib::StringTools}!toInt@{toInt}}
+\index{toInt@{toInt}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{toInt()}{toInt()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static int glib\+::\+String\+Tools\+::to\+Int (\begin{DoxyParamCaption}\item[{std\+::string}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts a string into an integer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_aef465f04ee349e5e43f0995d1b1bfacc}\label{classglib_1_1_string_tools_aef465f04ee349e5e43f0995d1b1bfacc}} 
+\index{glib::StringTools@{glib::StringTools}!toInt@{toInt}}
+\index{toInt@{toInt}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{toInt()}{toInt()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static int glib\+::\+String\+Tools\+::to\+Int (\begin{DoxyParamCaption}\item[{std\+::wstring}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts a string into an integer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a5f1c8b71ba550ffaa3df8bffea432641}\label{classglib_1_1_string_tools_a5f1c8b71ba550ffaa3df8bffea432641}} 
+\index{glib::StringTools@{glib::StringTools}!toLong@{toLong}}
+\index{toLong@{toLong}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{toLong()}{toLong()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static long glib\+::\+String\+Tools\+::to\+Long (\begin{DoxyParamCaption}\item[{std\+::string}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts a string into a long. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+long 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a841f42b4339bc811834ea1e57c8032ab}\label{classglib_1_1_string_tools_a841f42b4339bc811834ea1e57c8032ab}} 
+\index{glib::StringTools@{glib::StringTools}!toLong@{toLong}}
+\index{toLong@{toLong}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{toLong()}{toLong()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily static long glib\+::\+String\+Tools\+::to\+Long (\begin{DoxyParamCaption}\item[{std\+::wstring}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts a string into a long. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+long 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_ad77df82decd60923301b22f402f422e3}\label{classglib_1_1_string_tools_ad77df82decd60923301b22f402f422e3}} 
+\index{glib::StringTools@{glib::StringTools}!toUTF8@{toUTF8}}
+\index{toUTF8@{toUTF8}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{toUTF8()}{toUTF8()}}
+{\footnotesize\ttfamily static std\+::vector$<$ unsigned char $>$ glib\+::\+String\+Tools\+::to\+UTF8 (\begin{DoxyParamCaption}\item[{int}]{c }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts a character to a valid UTF8 character. May use more than one byte for one UTF8 character. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$unsigned char$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a2573aee4e6517c3dec0b1f621cfcf1e0}\label{classglib_1_1_string_tools_a2573aee4e6517c3dec0b1f621cfcf1e0}} 
+\index{glib::StringTools@{glib::StringTools}!toWideString@{toWideString}}
+\index{toWideString@{toWideString}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{toWideString()}{toWideString()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+static std\+::wstring glib\+::\+String\+Tools\+::to\+Wide\+String (\begin{DoxyParamCaption}\item[{std\+::basic\+\_\+string$<$ T $>$}]{text }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Converts any string to a std\+::wstring. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em text} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::wstring 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_af198c1829de77dabad0cd0043235bf75}\label{classglib_1_1_string_tools_af198c1829de77dabad0cd0043235bf75}} 
+\index{glib::StringTools@{glib::StringTools}!utf8ToChar@{utf8ToChar}}
+\index{utf8ToChar@{utf8ToChar}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{utf8ToChar()}{utf8ToChar()}}
+{\footnotesize\ttfamily static int glib\+::\+String\+Tools\+::utf8\+To\+Char (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned char $>$}]{utf8\+Char }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts the bytes in a valid UTF8 character to an integer representation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em utf8\+Char} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/String\+Tools.\+h\end{DoxyCompactItemize}

@@ -1,0 +1,387 @@
+\hypertarget{_shape_8h_source}{}\doxysection{Shape.\+h}
+\label{_shape_8h_source}\index{include/Shape.h@{include/Shape.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include <functional>}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}MathExt.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}Object.h"{}}}
+\DoxyCodeLine{6 }
+\DoxyCodeLine{7 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{8 \{}
+\DoxyCodeLine{9     }
+\DoxyCodeLine{10     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_shape}{Shape}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
+\DoxyCodeLine{11     \{}
+\DoxyCodeLine{12     \textcolor{keyword}{public}:}
+\DoxyCodeLine{18         \mbox{\hyperlink{classglib_1_1_shape_a1d80f57ed969ee0d70cde6b37ea65e1b}{Shape}}();}
+\DoxyCodeLine{19 }
+\DoxyCodeLine{24         \mbox{\hyperlink{classglib_1_1_shape_a23ac1b2406d53a76df1be25ab0c8b8b4}{\string~Shape}}();}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{26         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{27         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{28         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{29 }
+\DoxyCodeLine{36         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_shape_a91986983e33628f48a94af9647409106}{setPosition}}(\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} pos);}
+\DoxyCodeLine{37 }
+\DoxyCodeLine{43         \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} \mbox{\hyperlink{classglib_1_1_shape_a33c7d80c0400e84104b99542a6d21625}{getPosition}}();}
+\DoxyCodeLine{44 }
+\DoxyCodeLine{53         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_shape_a23b53a6decafcaecb42f211f91549d6d}{setScale}}(\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} sca);}
+\DoxyCodeLine{54 }
+\DoxyCodeLine{60         \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} \mbox{\hyperlink{classglib_1_1_shape_a7407981d1fd26cce6146bd24097ef50a}{getScale}}();}
+\DoxyCodeLine{61 }
+\DoxyCodeLine{70         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_shape_a90466890b285e4f2210902fd52062b39}{setRotation}}(\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} rot);}
+\DoxyCodeLine{71 }
+\DoxyCodeLine{77         \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} \mbox{\hyperlink{classglib_1_1_shape_a1318ebdf871ad82be25469ce215e0858}{getRotation}}();}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{83         \textcolor{keyword}{virtual} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_shape_ab488ee41ba78c6208c54dc7c911ebd1b}{transform}}();}
+\DoxyCodeLine{84 }
+\DoxyCodeLine{91         \textcolor{keyword}{virtual} \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_shape_aa3838fc7d35a5ba71487502d0b51f25a}{generateBoundingRadius}}();}
+\DoxyCodeLine{92         }
+\DoxyCodeLine{93     \textcolor{keyword}{protected}:}
+\DoxyCodeLine{94         \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} position = \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}();}
+\DoxyCodeLine{95         \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} scale = \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}();}
+\DoxyCodeLine{96         \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} rotation = \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}();}
+\DoxyCodeLine{97     \};}
+\DoxyCodeLine{98 }
+\DoxyCodeLine{99     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_combination_shape}{CombinationShape}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_shape}{Shape}}}
+\DoxyCodeLine{100     \{}
+\DoxyCodeLine{101     \textcolor{keyword}{public}:}
+\DoxyCodeLine{111         \mbox{\hyperlink{classglib_1_1_combination_shape_a1bfa163f2bb05c32331e57db964f75d6}{CombinationShape}}();}
+\DoxyCodeLine{112 }
+\DoxyCodeLine{117         \mbox{\hyperlink{classglib_1_1_combination_shape_a234e0695a892a58fac56651975a6f380}{\string~CombinationShape}}();}
+\DoxyCodeLine{118 }
+\DoxyCodeLine{119         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{120         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{121         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{122         }
+\DoxyCodeLine{129         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_combination_shape_a97afba6112cbe5435e5d6f0db8e6f964}{addShape}}(\mbox{\hyperlink{classglib_1_1_shape}{Shape}} s);}
+\DoxyCodeLine{130 }
+\DoxyCodeLine{138         \mbox{\hyperlink{classglib_1_1_shape}{Shape}} \mbox{\hyperlink{classglib_1_1_combination_shape_ac3a9f9b35566a9e6434d3f3441e26cd1}{getShape}}(\textcolor{keywordtype}{int} i);}
+\DoxyCodeLine{139 }
+\DoxyCodeLine{145         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_combination_shape_a0078de6a1fc13fa77fd82316f93ea2c2}{size}}();}
+\DoxyCodeLine{146 }
+\DoxyCodeLine{147     \textcolor{keyword}{private}:}
+\DoxyCodeLine{148         std::vector<Shape> shapes = std::vector<Shape>();}
+\DoxyCodeLine{149     \};}
+\DoxyCodeLine{150 }
+\DoxyCodeLine{151 \textcolor{preprocessor}{    \#pragma region SHAPES\_2D}}
+\DoxyCodeLine{152 }
+\DoxyCodeLine{153     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_shape}{Shape}}}
+\DoxyCodeLine{154     \{}
+\DoxyCodeLine{155     \textcolor{keyword}{public}:}
+\DoxyCodeLine{161         \mbox{\hyperlink{classglib_1_1_point2_d_a4c495cb6d23122d8fd77d5868982d5aa}{Point2D}}();}
+\DoxyCodeLine{162 }
+\DoxyCodeLine{169         \mbox{\hyperlink{classglib_1_1_point2_d_a043eb1ffdd56910b1c9c75fba29d4b0a}{Point2D}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} pos);}
+\DoxyCodeLine{170 }
+\DoxyCodeLine{175         \mbox{\hyperlink{classglib_1_1_point2_d_a9e952d07d72c125248e0990acf76344f}{\string~Point2D}}();}
+\DoxyCodeLine{176 }
+\DoxyCodeLine{177         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{178         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{179         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{180 }
+\DoxyCodeLine{187         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_point2_d_a28f4b76ae186da3813613a7b808e3dea}{generateBoundingRadius}}();}
+\DoxyCodeLine{188     \};}
+\DoxyCodeLine{189 }
+\DoxyCodeLine{190     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_shape}{Shape}}}
+\DoxyCodeLine{191     \{}
+\DoxyCodeLine{192     \textcolor{keyword}{public}:}
+\DoxyCodeLine{200         \mbox{\hyperlink{classglib_1_1_box2_d_a904e85038868bad30f0ff5c5588c3ee5}{Box2D}}();}
+\DoxyCodeLine{201 }
+\DoxyCodeLine{212         \mbox{\hyperlink{classglib_1_1_box2_d_ad0b9cf37244c0adf31c92e6cbb85c3f9}{Box2D}}(\textcolor{keywordtype}{double} leftBound, \textcolor{keywordtype}{double} topBound, \textcolor{keywordtype}{double} rightBound, \textcolor{keywordtype}{double} bottomBound);}
+\DoxyCodeLine{213         \mbox{\hyperlink{classglib_1_1_box2_d}{\string~Box2D}}();}
+\DoxyCodeLine{214         }
+\DoxyCodeLine{215         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{216         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{217         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{218         }
+\DoxyCodeLine{224         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_box2_d_a6e8bb8a5122e3d0f8550c5aaeb8a9d85}{setLeftBound}}(\textcolor{keywordtype}{double} lb);}
+\DoxyCodeLine{225 }
+\DoxyCodeLine{231         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_box2_d_a62e813c5b1e3e79491928fffd7dec092}{getLeftBound}}();}
+\DoxyCodeLine{232 }
+\DoxyCodeLine{238         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_box2_d_aa8b08d4ae71df22a8c11a39e279cf346}{setTopBound}}(\textcolor{keywordtype}{double} tb);}
+\DoxyCodeLine{239 }
+\DoxyCodeLine{245         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_box2_d_ae0c063de0c0f5f5b16c4d67ab134a9fe}{getTopBound}}();}
+\DoxyCodeLine{246 }
+\DoxyCodeLine{252         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_box2_d_aea1713698eb8d1be2791262ee31d5359}{setRightBound}}(\textcolor{keywordtype}{double} rb);}
+\DoxyCodeLine{253 }
+\DoxyCodeLine{259         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_box2_d_a5347cd6e7ec2d9f4eb461830705eb170}{getRightBound}}();}
+\DoxyCodeLine{260 }
+\DoxyCodeLine{266         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_box2_d_a0090d7b9dedd05b803b7a80da54aa46d}{setBottomBound}}(\textcolor{keywordtype}{double} bb);}
+\DoxyCodeLine{267 }
+\DoxyCodeLine{273         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_box2_d_a91e65d4e098163865245419b25e230e5}{getBottomBound}}();}
+\DoxyCodeLine{274 }
+\DoxyCodeLine{280         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_box2_d_ac9bef33981469918485d06f0a77cf60a}{generateBoundingRadius}}();}
+\DoxyCodeLine{281     \textcolor{keyword}{private}:}
+\DoxyCodeLine{282         \textcolor{keywordtype}{double} lBound = 0;}
+\DoxyCodeLine{283         \textcolor{keywordtype}{double} rBound = 0;}
+\DoxyCodeLine{284         \textcolor{keywordtype}{double} tBound = 0;}
+\DoxyCodeLine{285         \textcolor{keywordtype}{double} bBound = 0;}
+\DoxyCodeLine{286     \};}
+\DoxyCodeLine{287 }
+\DoxyCodeLine{288     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_circle}{Circle}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_shape}{Shape}}}
+\DoxyCodeLine{289     \{}
+\DoxyCodeLine{290     \textcolor{keyword}{public}:}
+\DoxyCodeLine{298         \mbox{\hyperlink{classglib_1_1_circle_a4c22c66e530d0289c777232e2336f9e8}{Circle}}();}
+\DoxyCodeLine{299 }
+\DoxyCodeLine{307         \mbox{\hyperlink{classglib_1_1_circle_a283027f9042dfea72d7df9c9ecfae0fc}{Circle}}(\textcolor{keywordtype}{double} rad);}
+\DoxyCodeLine{308 }
+\DoxyCodeLine{313         \mbox{\hyperlink{classglib_1_1_circle_a5bc67c8e7e3ac5438dd728003bd25a6a}{\string~Circle}}();}
+\DoxyCodeLine{314 }
+\DoxyCodeLine{320         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_circle_a188611dbbf2bb4b5a6f23b3cdbc18059}{getRadius}}();}
+\DoxyCodeLine{321 }
+\DoxyCodeLine{327         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_circle_afc979c2501d14f985d6d61ca66705a86}{setRadius}}(\textcolor{keywordtype}{double} rad);}
+\DoxyCodeLine{328 }
+\DoxyCodeLine{329         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{330         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{331         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{332 }
+\DoxyCodeLine{339         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_circle_aac008ef0206b8d73262b256d420f2dff}{generateBoundingRadius}}();}
+\DoxyCodeLine{340         }
+\DoxyCodeLine{341     \textcolor{keyword}{private}:}
+\DoxyCodeLine{342         \textcolor{keywordtype}{double} radius = 0;}
+\DoxyCodeLine{343     \};}
+\DoxyCodeLine{344 }
+\DoxyCodeLine{345     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_shape}{Shape}}}
+\DoxyCodeLine{346     \{}
+\DoxyCodeLine{347     \textcolor{keyword}{public}:}
+\DoxyCodeLine{354         \mbox{\hyperlink{classglib_1_1_ellipse_a35143f0cd42e2dc437d18b415b79cfca}{Ellipse}}();}
+\DoxyCodeLine{355 }
+\DoxyCodeLine{363         \mbox{\hyperlink{classglib_1_1_ellipse_afe3f179be4cb4908bd46a055ad0da625}{Ellipse}}(\textcolor{keywordtype}{double} xRad, \textcolor{keywordtype}{double} yRad);}
+\DoxyCodeLine{364 }
+\DoxyCodeLine{369         \mbox{\hyperlink{classglib_1_1_ellipse_a44a97922545c88f5a2a31b0c381e8bdc}{\string~Ellipse}}();}
+\DoxyCodeLine{370 }
+\DoxyCodeLine{376         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_ellipse_a5af8882ae3ed850b4d4b4fc3aebd5865}{getXRadius}}();}
+\DoxyCodeLine{377 }
+\DoxyCodeLine{383         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_ellipse_a6e67ab0fcfe216dad8b815617fa1aeae}{setXRadius}}(\textcolor{keywordtype}{double} rad);}
+\DoxyCodeLine{384 }
+\DoxyCodeLine{390         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_ellipse_aa871f50f937a4f100c47d1f92961dae7}{getYRadius}}();}
+\DoxyCodeLine{391 }
+\DoxyCodeLine{397         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_ellipse_a404ea0323359509fadbc3406a7ff9a50}{setYRadius}}(\textcolor{keywordtype}{double} rad);}
+\DoxyCodeLine{398 }
+\DoxyCodeLine{399         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{400         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{401         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{402         }
+\DoxyCodeLine{408         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_ellipse_a6df9ddf01e833a142d2a80a6461b7ca3}{generateBoundingRadius}}();}
+\DoxyCodeLine{409     \textcolor{keyword}{private}:}
+\DoxyCodeLine{410         \textcolor{keywordtype}{double} xRadius = 0;}
+\DoxyCodeLine{411         \textcolor{keywordtype}{double} yRadius = 0;}
+\DoxyCodeLine{412 }
+\DoxyCodeLine{413     \};}
+\DoxyCodeLine{414 }
+\DoxyCodeLine{415     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_line2_d}{Line2D}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_shape}{Shape}}}
+\DoxyCodeLine{416     \{}
+\DoxyCodeLine{417     \textcolor{keyword}{public}:}
+\DoxyCodeLine{424         \mbox{\hyperlink{classglib_1_1_line2_d_a1b0a0e29770e6fbf4ddf0b33a9116677}{Line2D}}();}
+\DoxyCodeLine{425 }
+\DoxyCodeLine{435         \mbox{\hyperlink{classglib_1_1_line2_d_ac381d8197aca37a6c3e09bb1c7bd2f10}{Line2D}}(\textcolor{keywordtype}{double} x1, \textcolor{keywordtype}{double} y1, \textcolor{keywordtype}{double} x2, \textcolor{keywordtype}{double} y2);}
+\DoxyCodeLine{436 }
+\DoxyCodeLine{444         \mbox{\hyperlink{classglib_1_1_line2_d_af21e9c77e9c7cbe9550075feb9cce621}{Line2D}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p2);}
+\DoxyCodeLine{445 }
+\DoxyCodeLine{450         \mbox{\hyperlink{classglib_1_1_line2_d_a31e4106c167d08315828441c27c2aee2}{\string~Line2D}}();}
+\DoxyCodeLine{451 }
+\DoxyCodeLine{452         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{453         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{454         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{455         }
+\DoxyCodeLine{461         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_line2_d_a6e0441cae5f7ceeb0a57107b94eeb278}{setPoint1}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p);}
+\DoxyCodeLine{462 }
+\DoxyCodeLine{469         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_line2_d_a3010733755161ed0c63c34919199979f}{setPoint1}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{470 }
+\DoxyCodeLine{476         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_line2_d_aa182b309d42f1f63c4543bf3c0d78be6}{setPoint2}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p);}
+\DoxyCodeLine{477 }
+\DoxyCodeLine{484         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_line2_d_a568a2c366b72f75b293ee56d9fbee11b}{setPoint2}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{485 }
+\DoxyCodeLine{491         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_line2_d_a19f4ec9c4044a0424b438fd08c594097}{getPoint1}}();}
+\DoxyCodeLine{492 }
+\DoxyCodeLine{498         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_line2_d_aaf9091b329823e2caddfe06b975c3185}{getPoint2}}();}
+\DoxyCodeLine{499 }
+\DoxyCodeLine{505         \mbox{\hyperlink{classglib_1_1_line}{Line}} \mbox{\hyperlink{classglib_1_1_line2_d_a60ef7115acdb7f9905933533de2d1564}{getLine}}();}
+\DoxyCodeLine{506 }
+\DoxyCodeLine{512         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_line2_d_a6497a32e9ff145b20dcfc0d3daa8ce3b}{generateBoundingRadius}}();}
+\DoxyCodeLine{513 }
+\DoxyCodeLine{514     \textcolor{keyword}{private}:}
+\DoxyCodeLine{515         \mbox{\hyperlink{classglib_1_1_line}{Line}} l;}
+\DoxyCodeLine{516     \};}
+\DoxyCodeLine{517 }
+\DoxyCodeLine{518     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_triangle2_d}{Triangle2D}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_shape}{Shape}}}
+\DoxyCodeLine{519     \{}
+\DoxyCodeLine{520     \textcolor{keyword}{public}:}
+\DoxyCodeLine{527         \mbox{\hyperlink{classglib_1_1_triangle2_d_a6fb5b7628f381012f5baa4469d34c4c0}{Triangle2D}}();}
+\DoxyCodeLine{528 }
+\DoxyCodeLine{537         \mbox{\hyperlink{classglib_1_1_triangle2_d_a075026e51e0ad03f9d82a657f4270461}{Triangle2D}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p1, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p2, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p3);}
+\DoxyCodeLine{538 }
+\DoxyCodeLine{550         \mbox{\hyperlink{classglib_1_1_triangle2_d_a75ccc7a05d9e3fffe83a26703c80a387}{Triangle2D}}(\textcolor{keywordtype}{double} x1, \textcolor{keywordtype}{double} y1, \textcolor{keywordtype}{double} x2, \textcolor{keywordtype}{double} y2, \textcolor{keywordtype}{double} x3, \textcolor{keywordtype}{double} y3);}
+\DoxyCodeLine{551 }
+\DoxyCodeLine{556         \mbox{\hyperlink{classglib_1_1_triangle2_d_aa415e3cb89c8844c6aeb5b268ac76557}{\string~Triangle2D}}();}
+\DoxyCodeLine{557 }
+\DoxyCodeLine{558         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{559         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{560         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{561         }
+\DoxyCodeLine{567         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_triangle2_d_a3f0679fc404b3822af559eae21d6979a}{setVertex1}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p);}
+\DoxyCodeLine{568 }
+\DoxyCodeLine{575         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_triangle2_d_a91dcc5508833d6e00bfba9da9ea8e56c}{setVertex1}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{576 }
+\DoxyCodeLine{582         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_triangle2_d_a05ee8c1e8679ffa46e5dac75fb5448ee}{setVertex2}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p);}
+\DoxyCodeLine{583 }
+\DoxyCodeLine{590         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_triangle2_d_a11018e956b573bf4eef67450f1eb2ffd}{setVertex2}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{591 }
+\DoxyCodeLine{597         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_triangle2_d_a0f50859b217541827eaafaa5c931d115}{setVertex3}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p);}
+\DoxyCodeLine{598 }
+\DoxyCodeLine{605         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_triangle2_d_a642ee2d1ac5428ebd7aada02241ea525}{setVertex3}}(\textcolor{keywordtype}{double} x, \textcolor{keywordtype}{double} y);}
+\DoxyCodeLine{606 }
+\DoxyCodeLine{612         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_triangle2_d_a2800fd48500c0cd62eb420263b885787}{getVertex1}}();}
+\DoxyCodeLine{613 }
+\DoxyCodeLine{619         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_triangle2_d_a56ca35521e2a790b5e3771f2ec342e7e}{getVertex2}}();}
+\DoxyCodeLine{620 }
+\DoxyCodeLine{626         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_triangle2_d_a428424a752774e499eb0fb83d0b787b2}{getVertex3}}();}
+\DoxyCodeLine{627 }
+\DoxyCodeLine{633         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_triangle2_d_a41dba29cfea08de98be62702d209ea5b}{generateBoundingRadius}}();}
+\DoxyCodeLine{634     \textcolor{keyword}{private}:}
+\DoxyCodeLine{635 }
+\DoxyCodeLine{636         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} v1;}
+\DoxyCodeLine{637         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} v2;}
+\DoxyCodeLine{638         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} v3;}
+\DoxyCodeLine{639     \};}
+\DoxyCodeLine{640 }
+\DoxyCodeLine{641     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_shape}{Shape}}}
+\DoxyCodeLine{642     \{}
+\DoxyCodeLine{643     \textcolor{keyword}{public}:}
+\DoxyCodeLine{651         \mbox{\hyperlink{classglib_1_1_polygon2_d_a22a57b8abccf0ae0e3ed08e1ac032180}{Polygon2D}}();}
+\DoxyCodeLine{652 }
+\DoxyCodeLine{657         \mbox{\hyperlink{classglib_1_1_polygon2_d_a4c727bc222264e71254f81b52f3b2bca}{\string~Polygon2D}}();}
+\DoxyCodeLine{658 }
+\DoxyCodeLine{659         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{660         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{661         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{662 }
+\DoxyCodeLine{669         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_polygon2_d_aa084a57604f6b06eda4e7a8a9ea47eba}{addVertex}}(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p);}
+\DoxyCodeLine{670 }
+\DoxyCodeLine{677         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_polygon2_d_a9e03037a9908ebdb6c8ba75669974cfc}{getVertex}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{678 }
+\DoxyCodeLine{684         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_polygon2_d_a40a203855df394bb40d710379f266e5f}{getCenterPoint}}();}
+\DoxyCodeLine{685 }
+\DoxyCodeLine{690         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_polygon2_d_a7f56d45f6b5f8a6c0aa585cf53b751a7}{clear}}();}
+\DoxyCodeLine{691 }
+\DoxyCodeLine{697         \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_polygon2_d_adbde45038ab1978da11981fb8c067391}{size}}();}
+\DoxyCodeLine{698 }
+\DoxyCodeLine{706         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_polygon2_d_a68dce0ad129be744007998c0e6fd4ced}{getConvex}}();}
+\DoxyCodeLine{707 }
+\DoxyCodeLine{713         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_polygon2_d_a34fe137f3f882669fcc3beb2fc6e9606}{generateBoundingRadius}}();}
+\DoxyCodeLine{714     \textcolor{keyword}{private}:}
+\DoxyCodeLine{715         \textcolor{keywordtype}{void} checkConcave();}
+\DoxyCodeLine{716         std::vector<Vec2f> points;}
+\DoxyCodeLine{717         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} centerPoint;}
+\DoxyCodeLine{718         \textcolor{keywordtype}{bool} isConvex = \textcolor{keyword}{true};}
+\DoxyCodeLine{719     \};}
+\DoxyCodeLine{720 }
+\DoxyCodeLine{721 \textcolor{preprocessor}{    \#pragma endregion}}
+\DoxyCodeLine{722 }
+\DoxyCodeLine{723 \textcolor{preprocessor}{    \#pragma region SHAPES\_3D}}
+\DoxyCodeLine{724 }
+\DoxyCodeLine{725     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_sphere}{Sphere}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_shape}{Shape}}}
+\DoxyCodeLine{726     \{}
+\DoxyCodeLine{727 }
+\DoxyCodeLine{728     \};}
+\DoxyCodeLine{729 }
+\DoxyCodeLine{730     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_ellipsoid}{Ellipsoid}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_shape}{Shape}}}
+\DoxyCodeLine{731     \{}
+\DoxyCodeLine{732 }
+\DoxyCodeLine{733     \};}
+\DoxyCodeLine{734 }
+\DoxyCodeLine{735     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_cylinder}{Cylinder}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_shape}{Shape}}}
+\DoxyCodeLine{736     \{}
+\DoxyCodeLine{737 }
+\DoxyCodeLine{738     \};}
+\DoxyCodeLine{739 }
+\DoxyCodeLine{740     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_box3_d}{Box3D}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_shape}{Shape}}}
+\DoxyCodeLine{741     \{}
+\DoxyCodeLine{742 }
+\DoxyCodeLine{743     \};}
+\DoxyCodeLine{744 }
+\DoxyCodeLine{745     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_point3_d}{Point3D}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_shape}{Shape}}}
+\DoxyCodeLine{746     \{}
+\DoxyCodeLine{747 }
+\DoxyCodeLine{748     \};}
+\DoxyCodeLine{749 }
+\DoxyCodeLine{750     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_line3_d}{Line3D}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_shape}{Shape}}}
+\DoxyCodeLine{751     \{}
+\DoxyCodeLine{752 }
+\DoxyCodeLine{753     \};}
+\DoxyCodeLine{754 }
+\DoxyCodeLine{755     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_triangle3_d}{Triangle3D}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_shape}{Shape}}}
+\DoxyCodeLine{756     \{}
+\DoxyCodeLine{757 }
+\DoxyCodeLine{758     \};}
+\DoxyCodeLine{759 }
+\DoxyCodeLine{760     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_polygon3_d}{Polygon3D}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_shape}{Shape}}}
+\DoxyCodeLine{761     \{}
+\DoxyCodeLine{762 }
+\DoxyCodeLine{763     \};}
+\DoxyCodeLine{764 }
+\DoxyCodeLine{765 \textcolor{preprocessor}{    \#pragma endregion}}
+\DoxyCodeLine{766 }
+\DoxyCodeLine{767     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_collision_master}{CollisionMaster}}}
+\DoxyCodeLine{768     \{}
+\DoxyCodeLine{769     \textcolor{keyword}{public}:}
+\DoxyCodeLine{770         \textcolor{comment}{//Returns false if there is no matching function for both shapes}}
+\DoxyCodeLine{771 }
+\DoxyCodeLine{785         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_collision_master_a22aa273c950c01cb1e07f1e2661f019a}{getCollision}}(\mbox{\hyperlink{classglib_1_1_shape}{Shape}}* a, \mbox{\hyperlink{classglib_1_1_shape}{Shape}}* b);}
+\DoxyCodeLine{786 }
+\DoxyCodeLine{787         \textcolor{comment}{//Pre made collision functions}}
+\DoxyCodeLine{788 }
+\DoxyCodeLine{789         \textcolor{comment}{//2D stuff}}
+\DoxyCodeLine{790         \textcolor{comment}{//Point2D}}
+\DoxyCodeLine{791         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}}* a, \mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}}* b);}
+\DoxyCodeLine{792         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}}* a, \mbox{\hyperlink{classglib_1_1_circle}{Circle}}* b);}
+\DoxyCodeLine{793         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}}* a, \mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}}* b);}
+\DoxyCodeLine{794         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}}* a, \mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}}* b);}
+\DoxyCodeLine{795         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}}* a, \mbox{\hyperlink{classglib_1_1_triangle2_d}{Triangle2D}}* b);}
+\DoxyCodeLine{796         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}}* a, \mbox{\hyperlink{classglib_1_1_line2_d}{Line2D}}* b);}
+\DoxyCodeLine{797 }
+\DoxyCodeLine{798         \textcolor{comment}{//Box2D}}
+\DoxyCodeLine{799         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}}* a, \mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}}* b);}
+\DoxyCodeLine{800         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}}* a, \mbox{\hyperlink{classglib_1_1_circle}{Circle}}* b);}
+\DoxyCodeLine{801         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}}* a, \mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}}* b);}
+\DoxyCodeLine{802         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}}* a, \mbox{\hyperlink{classglib_1_1_triangle2_d}{Triangle2D}}* b); \textcolor{comment}{//TODO -\/ MATH DONE}}
+\DoxyCodeLine{803         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}}* a, \mbox{\hyperlink{classglib_1_1_line2_d}{Line2D}}* b);}
+\DoxyCodeLine{804 }
+\DoxyCodeLine{805         \textcolor{comment}{//Circle}}
+\DoxyCodeLine{806         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_circle}{Circle}}* a, \mbox{\hyperlink{classglib_1_1_circle}{Circle}}* b);}
+\DoxyCodeLine{807         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_circle}{Circle}}* a, \mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}}* b); \textcolor{comment}{//TODO}}
+\DoxyCodeLine{808         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_circle}{Circle}}* a, \mbox{\hyperlink{classglib_1_1_triangle2_d}{Triangle2D}}* b); \textcolor{comment}{//TODO}}
+\DoxyCodeLine{809         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_circle}{Circle}}* a, \mbox{\hyperlink{classglib_1_1_line2_d}{Line2D}}* b);}
+\DoxyCodeLine{810 }
+\DoxyCodeLine{811         \textcolor{comment}{//Line2D}}
+\DoxyCodeLine{812         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_line2_d}{Line2D}}* a, \mbox{\hyperlink{classglib_1_1_line2_d}{Line2D}}* b);}
+\DoxyCodeLine{813         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_line2_d}{Line2D}}* a, \mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}}* b); \textcolor{comment}{//TODO}}
+\DoxyCodeLine{814         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_line2_d}{Line2D}}* a, \mbox{\hyperlink{classglib_1_1_triangle2_d}{Triangle2D}}* b); \textcolor{comment}{//TODO}}
+\DoxyCodeLine{815 }
+\DoxyCodeLine{816         \textcolor{comment}{//Ellipse}}
+\DoxyCodeLine{817         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}}* a, \mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}}* b); \textcolor{comment}{//TODO}}
+\DoxyCodeLine{818         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}}* a, \mbox{\hyperlink{classglib_1_1_triangle2_d}{Triangle2D}}* b); \textcolor{comment}{//TODO}}
+\DoxyCodeLine{819 }
+\DoxyCodeLine{820         \textcolor{comment}{//Triangle2D}}
+\DoxyCodeLine{821         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_triangle2_d}{Triangle2D}}* a, \mbox{\hyperlink{classglib_1_1_triangle2_d}{Triangle2D}}* b); \textcolor{comment}{//TODO -\/ MATH DONE}}
+\DoxyCodeLine{822 }
+\DoxyCodeLine{823         \textcolor{comment}{//Polygon Stuff}}
+\DoxyCodeLine{833 \textcolor{comment}{}        \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_collision_master_ae855be598395d547cce9e6bf40487810}{SeparatingAxisTheorem}}(\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}}* a, \mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}}* b);}
+\DoxyCodeLine{834 }
+\DoxyCodeLine{847         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_collision_master_a8aa22acd33846569117de867735e087b}{AlternatingDiagonals}}(\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}}* a, \mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}}* b);}
+\DoxyCodeLine{848         }
+\DoxyCodeLine{849         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}}* a, \mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}}* b);}
+\DoxyCodeLine{850         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}}* a, \mbox{\hyperlink{classglib_1_1_circle}{Circle}}* b);}
+\DoxyCodeLine{851         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} collisionMethod(\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}}* a, \mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}}* b);}
+\DoxyCodeLine{852 }
+\DoxyCodeLine{853         \textcolor{comment}{//Used for any additional functions}}
+\DoxyCodeLine{854         }
+\DoxyCodeLine{861         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_collision_master_a58f677e41a9948c4b84c261f305ddf8f}{setExternalCollisionFunction}}(std::function<\textcolor{keywordtype}{bool}(\mbox{\hyperlink{classglib_1_1_shape}{Shape}}*,\mbox{\hyperlink{classglib_1_1_shape}{Shape}}*)> collisionFunction);}
+\DoxyCodeLine{862     \textcolor{keyword}{private}:}
+\DoxyCodeLine{863         \textcolor{keyword}{static} std::function<bool(\mbox{\hyperlink{classglib_1_1_shape}{Shape}}*, \mbox{\hyperlink{classglib_1_1_shape}{Shape}}*)> extCollision;}
+\DoxyCodeLine{864     \};}
+\DoxyCodeLine{865 }
+\DoxyCodeLine{866 \}  \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

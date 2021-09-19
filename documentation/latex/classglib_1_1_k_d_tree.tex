@@ -1,0 +1,123 @@
+\hypertarget{classglib_1_1_k_d_tree}{}\doxysection{glib\+::KDTree\texorpdfstring{$<$}{<} T \texorpdfstring{$>$}{>} Class Template Reference}
+\label{classglib_1_1_k_d_tree}\index{glib::KDTree$<$ T $>$@{glib::KDTree$<$ T $>$}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_k_d_tree_a99b93880190c8e1aed027600c78709e2}{KDTree}} (int dimensions)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_k_d_tree}{KDTree}} object A K Dimensional tree stores data in a \mbox{\hyperlink{classglib_1_1_binary_tree}{Binary\+Tree}}. The items are placed based on the dimension value. The class expectes the data to be an array of values of atleast the size of the dimension. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_k_d_tree_aef78b91f93c074b103eb7064fddee517}\label{classglib_1_1_k_d_tree_aef78b91f93c074b103eb7064fddee517}} 
+{\bfseries $\sim$\+KDTree} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_k_d_tree}{KDTree}} object. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_k_d_tree_a6e4dea5c8bacad27e0b36486895b136b}{add}} (T $\ast$data)
+\begin{DoxyCompactList}\small\item\em Adds data to the \mbox{\hyperlink{classglib_1_1_k_d_tree}{KDTree}}. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_k_d_tree_a996f17fc16a2821d65d0a1b13c69d7ea}{add\+Unique}} (T $\ast$data)
+\begin{DoxyCompactList}\small\item\em Adds data to the \mbox{\hyperlink{classglib_1_1_k_d_tree}{KDTree}} if it does not already exist. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTree\+Node}}$<$ T $>$ \mbox{\hyperlink{classglib_1_1_k_d_tree_a9739b8a44ca294df63871d455440de63}{search}} (T $\ast$data)
+\begin{DoxyCompactList}\small\item\em Searches for the data in the tree. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTree\+Node}}$<$ T $>$ \mbox{\hyperlink{classglib_1_1_k_d_tree_aa0bc377316d78f2361c7e1ce7854385b}{search\+Nearest}} (T $\ast$data)
+\begin{DoxyCompactList}\small\item\em Searches for the data in the tree. If not found, finds the closest thing to it. Average run time is O(\+Log\+N) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_k_d_tree_aa49f3802b6738d4094ea72ee6decb7af}\label{classglib_1_1_k_d_tree_aa49f3802b6738d4094ea72ee6decb7af}} 
+void {\bfseries balance} ()
+\begin{DoxyCompactList}\small\item\em Balances the \mbox{\hyperlink{classglib_1_1_k_d_tree}{KDTree}} to better achieve the average run time of O(\+Log\+N) \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_k_d_tree_a99b93880190c8e1aed027600c78709e2}\label{classglib_1_1_k_d_tree_a99b93880190c8e1aed027600c78709e2}} 
+\index{glib::KDTree$<$ T $>$@{glib::KDTree$<$ T $>$}!KDTree@{KDTree}}
+\index{KDTree@{KDTree}!glib::KDTree$<$ T $>$@{glib::KDTree$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{KDTree()}{KDTree()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+\mbox{\hyperlink{classglib_1_1_k_d_tree}{glib\+::\+KDTree}}$<$ T $>$\+::\mbox{\hyperlink{classglib_1_1_k_d_tree}{KDTree}} (\begin{DoxyParamCaption}\item[{int}]{dimensions }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_k_d_tree}{KDTree}} object A K Dimensional tree stores data in a \mbox{\hyperlink{classglib_1_1_binary_tree}{Binary\+Tree}}. The items are placed based on the dimension value. The class expectes the data to be an array of values of atleast the size of the dimension. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dimensions} & The dimension of the \mbox{\hyperlink{classglib_1_1_k_d_tree}{KDTree}}. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_k_d_tree_a6e4dea5c8bacad27e0b36486895b136b}\label{classglib_1_1_k_d_tree_a6e4dea5c8bacad27e0b36486895b136b}} 
+\index{glib::KDTree$<$ T $>$@{glib::KDTree$<$ T $>$}!add@{add}}
+\index{add@{add}!glib::KDTree$<$ T $>$@{glib::KDTree$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void \mbox{\hyperlink{classglib_1_1_k_d_tree}{glib\+::\+KDTree}}$<$ T $>$\+::add (\begin{DoxyParamCaption}\item[{T $\ast$}]{data }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Adds data to the \mbox{\hyperlink{classglib_1_1_k_d_tree}{KDTree}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to add. It is expected to be an array of at least the dimension size. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_k_d_tree_a996f17fc16a2821d65d0a1b13c69d7ea}\label{classglib_1_1_k_d_tree_a996f17fc16a2821d65d0a1b13c69d7ea}} 
+\index{glib::KDTree$<$ T $>$@{glib::KDTree$<$ T $>$}!addUnique@{addUnique}}
+\index{addUnique@{addUnique}!glib::KDTree$<$ T $>$@{glib::KDTree$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{addUnique()}{addUnique()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+bool \mbox{\hyperlink{classglib_1_1_k_d_tree}{glib\+::\+KDTree}}$<$ T $>$\+::add\+Unique (\begin{DoxyParamCaption}\item[{T $\ast$}]{data }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Adds data to the \mbox{\hyperlink{classglib_1_1_k_d_tree}{KDTree}} if it does not already exist. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to add. It is expected to be an array of at least the dimension size. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool Returns true if successful. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_k_d_tree_a9739b8a44ca294df63871d455440de63}\label{classglib_1_1_k_d_tree_a9739b8a44ca294df63871d455440de63}} 
+\index{glib::KDTree$<$ T $>$@{glib::KDTree$<$ T $>$}!search@{search}}
+\index{search@{search}!glib::KDTree$<$ T $>$@{glib::KDTree$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{search()}{search()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+\mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTree\+Node}}$<$ T $>$ \mbox{\hyperlink{classglib_1_1_k_d_tree}{glib\+::\+KDTree}}$<$ T $>$\+::search (\begin{DoxyParamCaption}\item[{T $\ast$}]{data }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Searches for the data in the tree. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to search for. It is expected to be an array of at least the dimension size. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+KDTree\+Node$<$\+T$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_k_d_tree_aa0bc377316d78f2361c7e1ce7854385b}\label{classglib_1_1_k_d_tree_aa0bc377316d78f2361c7e1ce7854385b}} 
+\index{glib::KDTree$<$ T $>$@{glib::KDTree$<$ T $>$}!searchNearest@{searchNearest}}
+\index{searchNearest@{searchNearest}!glib::KDTree$<$ T $>$@{glib::KDTree$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{searchNearest()}{searchNearest()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+\mbox{\hyperlink{structglib_1_1_k_d_tree_node}{KDTree\+Node}}$<$ T $>$ \mbox{\hyperlink{classglib_1_1_k_d_tree}{glib\+::\+KDTree}}$<$ T $>$\+::search\+Nearest (\begin{DoxyParamCaption}\item[{T $\ast$}]{data }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Searches for the data in the tree. If not found, finds the closest thing to it. Average run time is O(\+Log\+N) 
+
+Note that the current implementation is not as good for achieving the average run time of O(\+Log\+N)
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & The data to search for. It is expected to be an array of at least the dimension size. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+KDTree\+Node$<$\+T$>$ 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/KDTree.\+h\end{DoxyCompactItemize}

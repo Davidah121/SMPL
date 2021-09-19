@@ -1,0 +1,183 @@
+\hypertarget{classglib_1_1_binary_tree}{}\doxysection{glib\+::Binary\+Tree\texorpdfstring{$<$}{<} T \texorpdfstring{$>$}{>} Class Template Reference}
+\label{classglib_1_1_binary_tree}\index{glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_binary_tree_a6ef47bb62e7a595e66e53ad728226882}\label{classglib_1_1_binary_tree_a6ef47bb62e7a595e66e53ad728226882}} 
+{\bfseries Binary\+Tree} ()
+\begin{DoxyCompactList}\small\item\em Creates a template \mbox{\hyperlink{classglib_1_1_binary_tree}{Binary\+Tree}} object. Uses the template \mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}} structure for each node. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_binary_tree_a33137d57aa803221df5eb8e0aeabff4e}\label{classglib_1_1_binary_tree_a33137d57aa803221df5eb8e0aeabff4e}} 
+{\bfseries $\sim$\+Binary\+Tree} ()
+\begin{DoxyCompactList}\small\item\em Destroys the \mbox{\hyperlink{classglib_1_1_binary_tree}{Binary\+Tree}} \mbox{\hyperlink{classglib_1_1_object}{Object}} and cleans up all memory. Note that it deletes all \mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}} pointers but not the data they store. This should be done by the user or pointers should be avoided unless they are smart pointers. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_binary_tree_a1ffe718d8e3db65dd8251e24bdcd4db4}{set\+Root\+Node}} (\mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}}$<$ T $>$ $\ast$node)
+\begin{DoxyCompactList}\small\item\em Sets the root node of the tree to the specified node pointer. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_binary_tree_a06e96d0d807a65b7d6f32ee01bc12f4a}{set\+Left\+Node}} (\mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}}$<$ T $>$ $\ast$parent, \mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}}$<$ T $>$ $\ast$left\+Child)
+\begin{DoxyCompactList}\small\item\em Sets the left node of the specified parent node. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_binary_tree_a608232bcd8ef9d86ec9e47d73a8c149a}{set\+Right\+Node}} (\mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}}$<$ T $>$ $\ast$parent, \mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}}$<$ T $>$ $\ast$right\+Child)
+\begin{DoxyCompactList}\small\item\em Sets the right node of the specified parent node. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}}$<$ T $>$ $\ast$ \mbox{\hyperlink{classglib_1_1_binary_tree_a792af7a0ef190c9b75cc77fbb505b9de}{traverse}} (\mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}} bin)
+\begin{DoxyCompactList}\small\item\em Traverses the tree to get a \mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}} using a \mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}}. Each bit is used to traverse the tree where 0 = go\+Left $\vert$ 1 = go\+Right. \end{DoxyCompactList}\item 
+std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_traverse_info}{Traverse\+Info}}$<$ T $>$ $>$ \mbox{\hyperlink{classglib_1_1_binary_tree_a3e819e8f2d4dd10ed1ed73fafc0eae37}{get\+Traversal\+Information}} (bool leaf\+Only=false)
+\begin{DoxyCompactList}\small\item\em Gets traversal information for the nodes in the tree. A \mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}} is used to keep track of the path taken to get to the node. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}}$<$ T $>$ $\ast$ \mbox{\hyperlink{classglib_1_1_binary_tree_a1d588792ed3b991b721d44a459af56ba}{get\+Root}} ()
+\begin{DoxyCompactList}\small\item\em Returns the root of the tree. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_binary_tree_a6f224098f9fbc92cd48dff76540feea5}{get\+Size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the amount of nodes in the tree. Includes all nodes. Not just leaf nodes. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_binary_tree_a03e6553ce3748ad925b09a267febc393}{get\+Height}} ()
+\begin{DoxyCompactList}\small\item\em Returns the height of the tree. \end{DoxyCompactList}\item 
+std\+::vector$<$ T $>$ \mbox{\hyperlink{classglib_1_1_binary_tree_a4df1d1de48220bcaca4c8e9d546a0c96}{get\+All\+Elements}} ()
+\begin{DoxyCompactList}\small\item\em Returns all of the data in all of the nodes as a list. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_binary_tree_a4df1d1de48220bcaca4c8e9d546a0c96}\label{classglib_1_1_binary_tree_a4df1d1de48220bcaca4c8e9d546a0c96}} 
+\index{glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}!getAllElements@{getAllElements}}
+\index{getAllElements@{getAllElements}!glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getAllElements()}{getAllElements()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+std\+::vector$<$ T $>$ \mbox{\hyperlink{classglib_1_1_binary_tree}{glib\+::\+Binary\+Tree}}$<$ T $>$\+::get\+All\+Elements\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns all of the data in all of the nodes as a list. 
+
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$\+T$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_binary_tree_a03e6553ce3748ad925b09a267febc393}\label{classglib_1_1_binary_tree_a03e6553ce3748ad925b09a267febc393}} 
+\index{glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}!getHeight@{getHeight}}
+\index{getHeight@{getHeight}!glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getHeight()}{getHeight()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+int \mbox{\hyperlink{classglib_1_1_binary_tree}{glib\+::\+Binary\+Tree}}$<$ T $>$\+::get\+Height\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the height of the tree. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_binary_tree_a1d588792ed3b991b721d44a459af56ba}\label{classglib_1_1_binary_tree_a1d588792ed3b991b721d44a459af56ba}} 
+\index{glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}!getRoot@{getRoot}}
+\index{getRoot@{getRoot}!glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getRoot()}{getRoot()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+\mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}}$<$ T $>$ $\ast$ \mbox{\hyperlink{classglib_1_1_binary_tree}{glib\+::\+Binary\+Tree}}$<$ T $>$\+::get\+Root\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the root of the tree. 
+
+\begin{DoxyReturn}{Returns}
+Binary\+Tree\+Node$<$\+T$>$$\ast$ Can be nullptr 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_binary_tree_a6f224098f9fbc92cd48dff76540feea5}\label{classglib_1_1_binary_tree_a6f224098f9fbc92cd48dff76540feea5}} 
+\index{glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}!getSize@{getSize}}
+\index{getSize@{getSize}!glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getSize()}{getSize()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+int \mbox{\hyperlink{classglib_1_1_binary_tree}{glib\+::\+Binary\+Tree}}$<$ T $>$\+::get\+Size\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the amount of nodes in the tree. Includes all nodes. Not just leaf nodes. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_binary_tree_a3e819e8f2d4dd10ed1ed73fafc0eae37}\label{classglib_1_1_binary_tree_a3e819e8f2d4dd10ed1ed73fafc0eae37}} 
+\index{glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}!getTraversalInformation@{getTraversalInformation}}
+\index{getTraversalInformation@{getTraversalInformation}!glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getTraversalInformation()}{getTraversalInformation()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_traverse_info}{Traverse\+Info}}$<$ T $>$ $>$ \mbox{\hyperlink{classglib_1_1_binary_tree}{glib\+::\+Binary\+Tree}}$<$ T $>$\+::get\+Traversal\+Information (\begin{DoxyParamCaption}\item[{bool}]{leaf\+Only = {\ttfamily false} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets traversal information for the nodes in the tree. A \mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}} is used to keep track of the path taken to get to the node. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em leaf\+Only} & Set to only get leaf nodes. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$\+Traverse\+Info$<$\+T$>$$>$ Returns a list of all traversal data. Each contains the node and the path. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_binary_tree_a06e96d0d807a65b7d6f32ee01bc12f4a}\label{classglib_1_1_binary_tree_a06e96d0d807a65b7d6f32ee01bc12f4a}} 
+\index{glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}!setLeftNode@{setLeftNode}}
+\index{setLeftNode@{setLeftNode}!glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{setLeftNode()}{setLeftNode()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void \mbox{\hyperlink{classglib_1_1_binary_tree}{glib\+::\+Binary\+Tree}}$<$ T $>$\+::set\+Left\+Node (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}}$<$ T $>$ $\ast$}]{parent,  }\item[{\mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}}$<$ T $>$ $\ast$}]{left\+Child }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the left node of the specified parent node. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em parent} & The node to have its left child node modified. \\
+\hline
+{\em left\+Child} & The node to set as the left child. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_binary_tree_a608232bcd8ef9d86ec9e47d73a8c149a}\label{classglib_1_1_binary_tree_a608232bcd8ef9d86ec9e47d73a8c149a}} 
+\index{glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}!setRightNode@{setRightNode}}
+\index{setRightNode@{setRightNode}!glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{setRightNode()}{setRightNode()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void \mbox{\hyperlink{classglib_1_1_binary_tree}{glib\+::\+Binary\+Tree}}$<$ T $>$\+::set\+Right\+Node (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}}$<$ T $>$ $\ast$}]{parent,  }\item[{\mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}}$<$ T $>$ $\ast$}]{right\+Child }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the right node of the specified parent node. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em parent} & The node to have its right child node modified. \\
+\hline
+{\em right\+Child} & The node to set as the right child. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_binary_tree_a1ffe718d8e3db65dd8251e24bdcd4db4}\label{classglib_1_1_binary_tree_a1ffe718d8e3db65dd8251e24bdcd4db4}} 
+\index{glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}!setRootNode@{setRootNode}}
+\index{setRootNode@{setRootNode}!glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{setRootNode()}{setRootNode()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void \mbox{\hyperlink{classglib_1_1_binary_tree}{glib\+::\+Binary\+Tree}}$<$ T $>$\+::set\+Root\+Node (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}}$<$ T $>$ $\ast$}]{node }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the root node of the tree to the specified node pointer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em node} & The node to become the new root node. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_binary_tree_a792af7a0ef190c9b75cc77fbb505b9de}\label{classglib_1_1_binary_tree_a792af7a0ef190c9b75cc77fbb505b9de}} 
+\index{glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}!traverse@{traverse}}
+\index{traverse@{traverse}!glib::BinaryTree$<$ T $>$@{glib::BinaryTree$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{traverse()}{traverse()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+\mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}}$<$ T $>$ $\ast$ \mbox{\hyperlink{classglib_1_1_binary_tree}{glib\+::\+Binary\+Tree}}$<$ T $>$\+::traverse (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}}}]{bin }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Traverses the tree to get a \mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}} using a \mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}}. Each bit is used to traverse the tree where 0 = go\+Left $\vert$ 1 = go\+Right. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em bin} & The \mbox{\hyperlink{classglib_1_1_binary_set}{Binary\+Set}} to use for traversal. Starts at index 0. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Binary\+Tree\+Node$<$\+T$>$$\ast$ Returns a pointer to the \mbox{\hyperlink{structglib_1_1_binary_tree_node}{Binary\+Tree\+Node}} found. If no node was found, returns a nullptr. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Binary\+Tree.\+h\end{DoxyCompactItemize}

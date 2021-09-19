@@ -26,18 +26,6 @@ namespace glib
 		setSlopeStuff();
 	}
 
-	Line::Line(float x1, float y1, float x2, float y2)
-	{
-		point1.x = x1;
-		point1.y = y1;
-		point2.x = x2;
-		point2.y = y2;
-
-		toPoint = point2 - point1;
-		setMinMax();
-		setSlopeStuff();
-	}
-
 	Line::Line(double x1, double y1, double x2, double y2)
 	{
 		point1.x = x1;

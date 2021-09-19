@@ -15,18 +15,70 @@ namespace glib
 	class LinkedList
 	{
 	public:
+		/**
+		 * @brief Construct a new Linked List object
+		 * 
+		 */
 		LinkedList();
+
+		/**
+		 * @brief Destroy the Linked List object along with all of the memory it allocated.
+		 * 		Does not delete the template values if they are pointers.
+		 */
 		~LinkedList();
 
+		/**
+		 * @brief Adds a new node at the end of the Linked List.
+		 * 
+		 * @param n 
+		 * 		The data to add.
+		 */
 		void addNode(T n);
+
+		/**
+		 * @brief Removes a node from the list.
+		 * 
+		 * @param n 
+		 * 		The pointer to the node to remove.
+		 */
 		void removeNode(LinkNode<T>* n);
+
+		/**
+		 * @brief Swaps a node with another node.
+		 * 		These nodes should both be in the list to avoid memory leaks and other error.
+		 * 
+		 * @param n1 
+		 * 		The first node.
+		 * @param n2 
+		 * 		The second node.
+		 */
 		void swapNodes(LinkNode<T>* n1, LinkNode<T>* n2);
 
+		/**
+		 * @brief Gets the Root Node
+		 * 
+		 * @return LinkNode<T>* 
+		 */
 		LinkNode<T>* getRootNode();
+
+		/**
+		 * @brief Gets the Last Node
+		 * 
+		 * @return LinkNode<T>* 
+		 */
 		LinkNode<T>* getLastNode();
 
+		/**
+		 * @brief Returns the size of the Linked List
+		 * 
+		 * @return int 
+		 */
 		int size();
 
+		/**
+		 * @brief Clears the data for the Linked List.
+		 * 		Does not delete the template values if they are pointers.
+		 */
 		void clear();
 	private:
 		LinkNode<T>* rootNode = nullptr;

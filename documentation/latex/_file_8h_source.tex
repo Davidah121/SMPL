@@ -1,0 +1,69 @@
+\hypertarget{_file_8h_source}{}\doxysection{File.\+h}
+\label{_file_8h_source}\index{include/File.h@{include/File.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include <iostream>}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}StringTools.h"{}}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{6 \{}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_file}{File}}}
+\DoxyCodeLine{9     \{}
+\DoxyCodeLine{10     \textcolor{keyword}{public}:}
+\DoxyCodeLine{18         \mbox{\hyperlink{classglib_1_1_file_a5496acbac813c847b98401fe8f2e5e29}{File}}(std::wstring filename)}
+\DoxyCodeLine{19         \{}
+\DoxyCodeLine{20             init( filename );}
+\DoxyCodeLine{21         \}}
+\DoxyCodeLine{22 }
+\DoxyCodeLine{30         \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{31         \mbox{\hyperlink{classglib_1_1_file_a89cfe145389a1a671edec7171be74993}{File}}(std::basic\_string<T> filename)}
+\DoxyCodeLine{32         \{}
+\DoxyCodeLine{33             init( \mbox{\hyperlink{classglib_1_1_string_tools_a2573aee4e6517c3dec0b1f621cfcf1e0}{StringTools::toWideString}}(filename) );}
+\DoxyCodeLine{34         \}}
+\DoxyCodeLine{35 }
+\DoxyCodeLine{43         \mbox{\hyperlink{classglib_1_1_file_ab6a2606f1ab0615ce9dd3a55c221a733}{File}}(\textcolor{keywordtype}{char}* filename)}
+\DoxyCodeLine{44         \{}
+\DoxyCodeLine{45             std::string s = filename;}
+\DoxyCodeLine{46             init( \mbox{\hyperlink{classglib_1_1_string_tools_a2573aee4e6517c3dec0b1f621cfcf1e0}{StringTools::toWideString}}(s) );}
+\DoxyCodeLine{47         \}}
+\DoxyCodeLine{48 }
+\DoxyCodeLine{56         \mbox{\hyperlink{classglib_1_1_file_afbec51b8b9cb8e0b26b62d3a39e90e87}{File}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char}* filename)}
+\DoxyCodeLine{57         \{}
+\DoxyCodeLine{58             std::string s = filename;}
+\DoxyCodeLine{59             init( \mbox{\hyperlink{classglib_1_1_string_tools_a2573aee4e6517c3dec0b1f621cfcf1e0}{StringTools::toWideString}}(s) );}
+\DoxyCodeLine{60         \}}
+\DoxyCodeLine{61 }
+\DoxyCodeLine{69         \mbox{\hyperlink{classglib_1_1_file_adeadb4ebfdb0c6b2cb9c7f8ddb69d578}{File}}(\textcolor{keyword}{const} \textcolor{keywordtype}{wchar\_t}* filename)}
+\DoxyCodeLine{70         \{}
+\DoxyCodeLine{71             init( filename );}
+\DoxyCodeLine{72         \}}
+\DoxyCodeLine{73 }
+\DoxyCodeLine{81         \mbox{\hyperlink{classglib_1_1_file_a42bcbec4f770828c74db7cf061129a35}{File}}(\textcolor{keywordtype}{wchar\_t}* filename)}
+\DoxyCodeLine{82         \{}
+\DoxyCodeLine{83             init( filename );}
+\DoxyCodeLine{84         \}}
+\DoxyCodeLine{85 }
+\DoxyCodeLine{89         \mbox{\hyperlink{classglib_1_1_file_a7fd1a08eb10ff76bd5240b7cdba8fec3}{\string~File}}();}
+\DoxyCodeLine{90 }
+\DoxyCodeLine{96         std::wstring \mbox{\hyperlink{classglib_1_1_file_a8a7bc2905a6c3eedca443c6d71ecfd42}{getFileName}}();}
+\DoxyCodeLine{97 }
+\DoxyCodeLine{103         std::wstring \mbox{\hyperlink{classglib_1_1_file_aaec966e974661a3d87c0427e86fabb58}{getFullFileName}}();}
+\DoxyCodeLine{104 }
+\DoxyCodeLine{109         std::wstring \mbox{\hyperlink{classglib_1_1_file_adf6a6da317c3497604f850aa95fabc0a}{getPath}}();}
+\DoxyCodeLine{110 }
+\DoxyCodeLine{115         std::wstring \mbox{\hyperlink{classglib_1_1_file_aa2813d74adf671a3e9b34a3070656e9d}{getExtension}}();}
+\DoxyCodeLine{116 }
+\DoxyCodeLine{117     \textcolor{keyword}{private}:}
+\DoxyCodeLine{118         \textcolor{keywordtype}{void} init(std::wstring filename);}
+\DoxyCodeLine{119         }
+\DoxyCodeLine{120         std::wstring fullFileName;}
+\DoxyCodeLine{121         \textcolor{keywordtype}{int} locationOfExtension;}
+\DoxyCodeLine{122         \textcolor{keywordtype}{int} locationOfFileName;}
+\DoxyCodeLine{123         }
+\DoxyCodeLine{124     \};}
+\DoxyCodeLine{125     }
+\DoxyCodeLine{126 \}  \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

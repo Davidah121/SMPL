@@ -1,0 +1,237 @@
+\hypertarget{classglib_1_1_vector_polyline}{}\doxysection{glib\+::Vector\+Polyline Class Reference}
+\label{classglib_1_1_vector_polyline}\index{glib::VectorPolyline@{glib::VectorPolyline}}
+Inheritance diagram for glib\+::Vector\+Polyline\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classglib_1_1_vector_polyline}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_vector_polyline_a2d04e0330634fcd77451bce32ad66679}{Vector\+Polyline}} ()
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_vector_polyline}{Vector\+Polyline}} object Follows the SVG format for a polyline Polylines behaves like a polygon but the last point is not connected to the first. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_vector_polyline_a8a7ef4d3868a740b5dabc5feabee92de}\label{classglib_1_1_vector_polyline_a8a7ef4d3868a740b5dabc5feabee92de}} 
+{\bfseries $\sim$\+Vector\+Polyline} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_vector_polyline}{Vector\+Polyline}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_vector_polyline_a07510096eff2ba8f003e8994528b9fd9}{get\+Class}} ()
+\item 
+void \mbox{\hyperlink{classglib_1_1_vector_polyline_ad664565e7864f4ec8f0531d2d488ddfc}{draw}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, int global\+Width, int global\+Height)
+\begin{DoxyCompactList}\small\item\em Draws the \mbox{\hyperlink{classglib_1_1_vector_polyline}{Vector\+Polyline}}. Specifically draws just the fill for the polyline. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_polyline_afd8a6480068fd51c21508e0d4c6cd964}{draw\+Stroke}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$buffer, int global\+Width, int global\+Height)
+\begin{DoxyCompactList}\small\item\em Draws the stroke for the \mbox{\hyperlink{classglib_1_1_vector_polyline}{Vector\+Polyline}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_polyline_a3bb8bcb99db20b388d1de0372dc1e622}{add\+Point}} (double x, double y)
+\begin{DoxyCompactList}\small\item\em Adds a new point to the \mbox{\hyperlink{classglib_1_1_vector_polyline}{Vector\+Polyline}}. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_vector_polyline_add405826fd60d0a5f282cb873d88f8be}{add\+Point}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p)
+\begin{DoxyCompactList}\small\item\em Adds a new point to the \mbox{\hyperlink{classglib_1_1_vector_polyline}{Vector\+Polyline}}. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_vector_polyline_a020b8b85868fedfce4f3036aa2e04ab3}{get\+PointX}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets the x value of a point based on the index. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_vector_polyline_ac8c44dbd26b92329a7ad9ec7e798166b}{get\+PointY}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets the y value of a point based on the index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_vector_polyline_ad5ae0bd3c8387727409b16f426710c60}{get\+Point}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets a point based on the index. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_vector_polyline_ac864e0ce661edb6502be5f7e55f49488}\label{classglib_1_1_vector_polyline_ac864e0ce661edb6502be5f7e55f49488}} 
+void {\bfseries clear} ()
+\begin{DoxyCompactList}\small\item\em Clears all points. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_vector_polyline_a472b36a11a79bd9267590d0c99210930}{size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the amount of points in the \mbox{\hyperlink{classglib_1_1_vector_polyline}{Vector\+Polyline}}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_polyline_a15552a2a07496affeca43369a68ce0d4}\label{classglib_1_1_vector_polyline_a15552a2a07496affeca43369a68ce0d4}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_vector_polyline_aabb92d4a49b9be47a3a144f3be3df3ba}\label{classglib_1_1_vector_polyline_aabb92d4a49b9be47a3a144f3be3df3ba}} 
+void {\bfseries apply\+Transform} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_vector_polyline_a2d04e0330634fcd77451bce32ad66679}\label{classglib_1_1_vector_polyline_a2d04e0330634fcd77451bce32ad66679}} 
+\index{glib::VectorPolyline@{glib::VectorPolyline}!VectorPolyline@{VectorPolyline}}
+\index{VectorPolyline@{VectorPolyline}!glib::VectorPolyline@{glib::VectorPolyline}}
+\doxysubsubsection{\texorpdfstring{VectorPolyline()}{VectorPolyline()}}
+{\footnotesize\ttfamily glib\+::\+Vector\+Polyline\+::\+Vector\+Polyline (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_vector_polyline}{Vector\+Polyline}} object Follows the SVG format for a polyline Polylines behaves like a polygon but the last point is not connected to the first. 
+
+\begin{DoxyVerb}XML Format:
+    <polyline points=""/>
+    points = "x1,y1 x2,y2 x3,y3 .... xn,yn"
+    there can be a space after the comma
+    must be divisable by 2 however
+    the space after y must be there. No comma after y
+
+Notes:
+    Just like polygon but the last point is not connected to the first.
+    When filling, treat it as if they are connected.
+    when filling these shapes, start from min point and when you pass a line, fill
+\end{DoxyVerb}
+ NOTE\+: !! Fill rule does affect this object !! !! \mbox{\hyperlink{classglib_1_1_line}{Line}} cap does affect this object !! !! \mbox{\hyperlink{classglib_1_1_line}{Line}} join does affect this object !! 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_vector_polyline_a3bb8bcb99db20b388d1de0372dc1e622}\label{classglib_1_1_vector_polyline_a3bb8bcb99db20b388d1de0372dc1e622}} 
+\index{glib::VectorPolyline@{glib::VectorPolyline}!addPoint@{addPoint}}
+\index{addPoint@{addPoint}!glib::VectorPolyline@{glib::VectorPolyline}}
+\doxysubsubsection{\texorpdfstring{addPoint()}{addPoint()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Polyline\+::add\+Point (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})}
+
+
+
+Adds a new point to the \mbox{\hyperlink{classglib_1_1_vector_polyline}{Vector\+Polyline}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_polyline_add405826fd60d0a5f282cb873d88f8be}\label{classglib_1_1_vector_polyline_add405826fd60d0a5f282cb873d88f8be}} 
+\index{glib::VectorPolyline@{glib::VectorPolyline}!addPoint@{addPoint}}
+\index{addPoint@{addPoint}!glib::VectorPolyline@{glib::VectorPolyline}}
+\doxysubsubsection{\texorpdfstring{addPoint()}{addPoint()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Polyline\+::add\+Point (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p }\end{DoxyParamCaption})}
+
+
+
+Adds a new point to the \mbox{\hyperlink{classglib_1_1_vector_polyline}{Vector\+Polyline}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_vector_polyline_ad664565e7864f4ec8f0531d2d488ddfc}\label{classglib_1_1_vector_polyline_ad664565e7864f4ec8f0531d2d488ddfc}} 
+\index{glib::VectorPolyline@{glib::VectorPolyline}!draw@{draw}}
+\index{draw@{draw}!glib::VectorPolyline@{glib::VectorPolyline}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Polyline\+::draw (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{int}]{global\+Width,  }\item[{int}]{global\+Height }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Draws the \mbox{\hyperlink{classglib_1_1_vector_polyline}{Vector\+Polyline}}. Specifically draws just the fill for the polyline. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & \\
+\hline
+{\em global\+Width} & The maximum width allowed. This may be less than the image\textquotesingle{}s width. \\
+\hline
+{\em global\+Height} & The maximum height allowed. This may be less than the image\textquotesingle{}s height. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_vector_shape_afb72be232bc05006422d1bd0ebcf7311}{glib\+::\+Vector\+Shape}}.
+
+\mbox{\Hypertarget{classglib_1_1_vector_polyline_afd8a6480068fd51c21508e0d4c6cd964}\label{classglib_1_1_vector_polyline_afd8a6480068fd51c21508e0d4c6cd964}} 
+\index{glib::VectorPolyline@{glib::VectorPolyline}!drawStroke@{drawStroke}}
+\index{drawStroke@{drawStroke}!glib::VectorPolyline@{glib::VectorPolyline}}
+\doxysubsubsection{\texorpdfstring{drawStroke()}{drawStroke()}}
+{\footnotesize\ttfamily void glib\+::\+Vector\+Polyline\+::draw\+Stroke (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{buffer,  }\item[{int}]{global\+Width,  }\item[{int}]{global\+Height }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Draws the stroke for the \mbox{\hyperlink{classglib_1_1_vector_polyline}{Vector\+Polyline}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em img} & \\
+\hline
+{\em global\+Width} & The maximum width allowed. This may be less than the image\textquotesingle{}s width. \\
+\hline
+{\em global\+Height} & The maximum height allowed. This may be less than the image\textquotesingle{}s height. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_vector_shape_a24ecc3162abe3c4fa4c8190529601574}{glib\+::\+Vector\+Shape}}.
+
+\mbox{\Hypertarget{classglib_1_1_vector_polyline_a07510096eff2ba8f003e8994528b9fd9}\label{classglib_1_1_vector_polyline_a07510096eff2ba8f003e8994528b9fd9}} 
+\index{glib::VectorPolyline@{glib::VectorPolyline}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::VectorPolyline@{glib::VectorPolyline}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Vector\+Polyline\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_vector_shape}{glib\+::\+Vector\+Shape}}.
+
+\mbox{\Hypertarget{classglib_1_1_vector_polyline_ad5ae0bd3c8387727409b16f426710c60}\label{classglib_1_1_vector_polyline_ad5ae0bd3c8387727409b16f426710c60}} 
+\index{glib::VectorPolyline@{glib::VectorPolyline}!getPoint@{getPoint}}
+\index{getPoint@{getPoint}!glib::VectorPolyline@{glib::VectorPolyline}}
+\doxysubsubsection{\texorpdfstring{getPoint()}{getPoint()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} glib\+::\+Vector\+Polyline\+::get\+Point (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets a point based on the index. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_polyline_a020b8b85868fedfce4f3036aa2e04ab3}\label{classglib_1_1_vector_polyline_a020b8b85868fedfce4f3036aa2e04ab3}} 
+\index{glib::VectorPolyline@{glib::VectorPolyline}!getPointX@{getPointX}}
+\index{getPointX@{getPointX}!glib::VectorPolyline@{glib::VectorPolyline}}
+\doxysubsubsection{\texorpdfstring{getPointX()}{getPointX()}}
+{\footnotesize\ttfamily double glib\+::\+Vector\+Polyline\+::get\+PointX (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets the x value of a point based on the index. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_polyline_ac8c44dbd26b92329a7ad9ec7e798166b}\label{classglib_1_1_vector_polyline_ac8c44dbd26b92329a7ad9ec7e798166b}} 
+\index{glib::VectorPolyline@{glib::VectorPolyline}!getPointY@{getPointY}}
+\index{getPointY@{getPointY}!glib::VectorPolyline@{glib::VectorPolyline}}
+\doxysubsubsection{\texorpdfstring{getPointY()}{getPointY()}}
+{\footnotesize\ttfamily double glib\+::\+Vector\+Polyline\+::get\+PointY (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets the y value of a point based on the index. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vector_polyline_a472b36a11a79bd9267590d0c99210930}\label{classglib_1_1_vector_polyline_a472b36a11a79bd9267590d0c99210930}} 
+\index{glib::VectorPolyline@{glib::VectorPolyline}!size@{size}}
+\index{size@{size}!glib::VectorPolyline@{glib::VectorPolyline}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily int glib\+::\+Vector\+Polyline\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the amount of points in the \mbox{\hyperlink{classglib_1_1_vector_polyline}{Vector\+Polyline}}. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Vector\+Graphic.\+h\end{DoxyCompactItemize}

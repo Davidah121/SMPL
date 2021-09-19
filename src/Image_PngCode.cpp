@@ -27,14 +27,9 @@ namespace glib
 		std::vector<unsigned char> compressedData = std::vector<unsigned char>();
 	};
 
-	void Image::savePNG(std::string filename, bool saveAlpha, bool greyscale, bool strongCompression)
+	void Image::savePNG(File file, bool saveAlpha, bool greyscale, bool strongCompression)
 	{
-		Image::savePNG(StringTools::toWideString(filename), saveAlpha, greyscale, strongCompression);
-	}
-
-	void Image::savePNG(std::wstring filename, bool saveAlpha, bool greyscale, bool strongCompression)
-	{
-		SimpleFile f = SimpleFile(filename, SimpleFile::WRITE);
+		SimpleFile f = SimpleFile(file, SimpleFile::WRITE);
 
 		unsigned int crcVal;
 		std::string fileHeader = {(char)0x89, (char)0x50, (char)0x4e, (char)0x47, (char)0x0d, (char)0x0a, (char)0x1a, (char)0x0a};

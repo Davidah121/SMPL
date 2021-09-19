@@ -1,0 +1,38 @@
+\hypertarget{_vector_sprite_8h_source}{}\doxysection{Vector\+Sprite.\+h}
+\label{_vector_sprite_8h_source}\index{include/VectorSprite.h@{include/VectorSprite.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include "{}VectorGraphic.h"{}}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{5 \{}
+\DoxyCodeLine{6 }
+\DoxyCodeLine{7     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_vector_sprite}{VectorSprite}}}
+\DoxyCodeLine{8     \{}
+\DoxyCodeLine{9     \textcolor{keyword}{public}:}
+\DoxyCodeLine{16         \mbox{\hyperlink{classglib_1_1_vector_sprite_a3de84bf2acf7d43f1372ec106dabe241}{VectorSprite}}();}
+\DoxyCodeLine{17 }
+\DoxyCodeLine{23         \mbox{\hyperlink{classglib_1_1_vector_sprite_a46e73f67f19a51368862fc34471242e5}{\string~VectorSprite}}();}
+\DoxyCodeLine{24 }
+\DoxyCodeLine{30         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_sprite_af313665e0c04d5fade0a78e4de5aab1a}{load}}(std::string filename);}
+\DoxyCodeLine{31 }
+\DoxyCodeLine{37         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_sprite_ae18487905fc620cc31005213b3ec3be3}{save}}(std::string filename);}
+\DoxyCodeLine{38 }
+\DoxyCodeLine{45         \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_vector_sprite_a215fa9dcae5174d0f4b0baf36764e30f}{getTransform}}();}
+\DoxyCodeLine{46 }
+\DoxyCodeLine{52         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_sprite_a23dfdfab88d136702965821c7b7ae32e}{setTransform}}(\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} t);}
+\DoxyCodeLine{53         }
+\DoxyCodeLine{60         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_vector_sprite_aa8180eec15433779004d053f780a6877}{addGraphic}}(\mbox{\hyperlink{classglib_1_1_vector_graphic}{VectorGraphic}}* g);}
+\DoxyCodeLine{61 }
+\DoxyCodeLine{67         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_vector_sprite_a85f5e0cc5f0e62ea9da4244e32011a0f}{getSize}}();}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{75         \mbox{\hyperlink{classglib_1_1_vector_graphic}{VectorGraphic}}* \mbox{\hyperlink{classglib_1_1_vector_sprite_aa1beab71627f44e1bbd1e23dad0eb3bb}{getGraphic}}(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{76     \textcolor{keyword}{private}:}
+\DoxyCodeLine{77         \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} transform;}
+\DoxyCodeLine{78         std::vector<VectorGraphic*> vectorGraphicList = std::vector<VectorGraphic*>();}
+\DoxyCodeLine{79     \};}
+\DoxyCodeLine{80 }
+\DoxyCodeLine{81 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

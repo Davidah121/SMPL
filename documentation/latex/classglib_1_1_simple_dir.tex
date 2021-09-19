@@ -1,0 +1,331 @@
+\hypertarget{classglib_1_1_simple_dir}{}\doxysection{glib\+::Simple\+Dir Class Reference}
+\label{classglib_1_1_simple_dir}\index{glib::SimpleDir@{glib::SimpleDir}}
+Inheritance diagram for glib\+::Simple\+Dir\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classglib_1_1_simple_dir}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_simple_dir_1_1_copy_error}{Copy\+Error}}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_simple_dir_1_1_delete_error}{Delete\+Error}}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_simple_dir_1_1_existance_error}{Existance\+Error}}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_simple_dir_1_1_rename_error}{Rename\+Error}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classglib_1_1_simple_dir_a497ae6d71b36f7f1aa49a681da282e39}{Simple\+Dir}} (\mbox{\hyperlink{classglib_1_1_file}{File}} directory)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_simple_dir}{Simple\+Dir}} object Uses the C++ filesystem Contains information about a directory and its files. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_simple_dir_ad991ee80133a97360ea3d93e5e27a2b7}\label{classglib_1_1_simple_dir_ad991ee80133a97360ea3d93e5e27a2b7}} 
+{\bfseries $\sim$\+Simple\+Dir} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_simple_dir}{Simple\+Dir}} object. \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_simple_dir_aa26cda1f6f984f5ab979bead78f989bb}{get\+Class}} ()
+\item 
+\mbox{\Hypertarget{classglib_1_1_simple_dir_a493be047527ef812cbc838b8ebdb0fd7}\label{classglib_1_1_simple_dir_a493be047527ef812cbc838b8ebdb0fd7}} 
+void {\bfseries update} ()
+\begin{DoxyCompactList}\small\item\em Updates all of the references for the directory. (Meaning what files and folders are in it if there was some change) \end{DoxyCompactList}\item 
+std\+::wstring \mbox{\hyperlink{classglib_1_1_simple_dir_a64914c08a548e71b14a34d43f9ff6ca0}{get\+Reference\+Name}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets the Reference Name at the specified index. May be a file or folder. If USE\+\_\+\+EXCEPTIONS is defined, an Out\+Of\+Bounds Error may be thrown. \end{DoxyCompactList}\item 
+std\+::wstring \mbox{\hyperlink{classglib_1_1_simple_dir_affb8cb70216f74a6e665a35e1784f779}{get\+Reference\+Full\+Path}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets the Reference Full Path at the specified index. May be a file or folder. If USE\+\_\+\+EXCEPTIONS is defined, an Out\+Of\+Bounds Error may be thrown. \end{DoxyCompactList}\item 
+unsigned int \mbox{\hyperlink{classglib_1_1_simple_dir_ad756594d09b248e3cbba3dc3a9985466}{file\+Size}} (int index)
+\begin{DoxyCompactList}\small\item\em Returns the size of the file or folder at the index. If USE\+\_\+\+EXCEPTIONS is defined, an Out\+Of\+Bounds Error may be thrown. \end{DoxyCompactList}\item 
+time\+\_\+t \mbox{\hyperlink{classglib_1_1_simple_dir_a152a40391b1aae45529558890e821899}{get\+Last\+Change\+Time}} (int index)
+\begin{DoxyCompactList}\small\item\em Gets the Last Change Time for the file or folder at the index. If USE\+\_\+\+EXCEPTIONS is defined, an Out\+Of\+Bounds Error may be thrown. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_simple_dir_a3127fa94b89576e57f6aa71fc7300324}{reference\+Is\+Directory}} (int index)
+\begin{DoxyCompactList}\small\item\em Returns if the reference at the specified index is a directory. If USE\+\_\+\+EXCEPTIONS is defined, an Out\+Of\+Bounds Error may be thrown. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_dir_af8dcd13c2280af7fa4b2ef7c2ec73542}{rename\+Resource}} (std\+::wstring new\+File\+Name, int index)
+\begin{DoxyCompactList}\small\item\em Attempts to rename the reference at the index. The function may fail to rename the resource. If USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_simple_dir_1_1_rename_error}{Rename\+Error}} may be thrown. If USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_out_of_bounds_error}{Out\+Of\+Bounds\+Error}} may be thrown. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_dir_add03ac97bf83d10d5e2f803ebc5eaf05}{delete\+Resource}} (int index)
+\begin{DoxyCompactList}\small\item\em Attempts to delete the reference at the index. The function may fail to delete the resource. If USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_simple_dir_1_1_delete_error}{Delete\+Error}} may be thrown. If USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_out_of_bounds_error}{Out\+Of\+Bounds\+Error}} may be thrown. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_dir_a8d650536491fc71798e1e29ddbf3922b}{copy\+Resource}} (std\+::wstring new\+File\+Name, int index)
+\begin{DoxyCompactList}\small\item\em Attempts to copy the reference at the index. The function may fail to copy the resource. If USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_simple_dir_1_1_copy_error}{Copy\+Error}} may be thrown. If USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_out_of_bounds_error}{Out\+Of\+Bounds\+Error}} may be thrown. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_simple_dir_a190afc1bb013d754927a6501efe080a5}{get\+Reference\+Location}} (std\+::wstring name)
+\begin{DoxyCompactList}\small\item\em Gets the Reference Location by its name. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_simple_dir_acc7a08209bfc8b285bbd2e5e82b2b95e}{get\+Size}} ()
+\begin{DoxyCompactList}\small\item\em Gets the amount of items in the directory. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::wstring $>$ \mbox{\hyperlink{classglib_1_1_simple_dir_a6c4ac9ff4464af58793bd9b4e99d6c25}{get\+Folders}} ()
+\begin{DoxyCompactList}\small\item\em Returns a list of all the folders. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::wstring $>$ \mbox{\hyperlink{classglib_1_1_simple_dir_a95050a0b70e8e834085c8a11648900b2}{get\+Files}} ()
+\begin{DoxyCompactList}\small\item\em Returns a list of all the files. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_simple_dir_a3e5ef8c0d54f7d7f2ba865cd40c54486}{does\+Exist}} ()
+\begin{DoxyCompactList}\small\item\em Determines if the directory specified exists. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_simple_dir_ac5b7969e1481efa1d696f52059be355f}\label{classglib_1_1_simple_dir_ac5b7969e1481efa1d696f52059be355f}} 
+void {\bfseries create\+Directory} ()
+\begin{DoxyCompactList}\small\item\em Creates a Directory with the path that the object was created with. \end{DoxyCompactList}\item 
+std\+::wstring \mbox{\hyperlink{classglib_1_1_simple_dir_a7a5b5b639ef97d869641b01da4cd1a2f}{get\+Location}} ()
+\begin{DoxyCompactList}\small\item\em Gets the name of the directory. It is the string used to create the object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_simple_dir_adcb9249383334e2ef1b17afafa6d28dd}\label{classglib_1_1_simple_dir_adcb9249383334e2ef1b17afafa6d28dd}} 
+static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classglib_1_1_simple_dir_a497ae6d71b36f7f1aa49a681da282e39}\label{classglib_1_1_simple_dir_a497ae6d71b36f7f1aa49a681da282e39}} 
+\index{glib::SimpleDir@{glib::SimpleDir}!SimpleDir@{SimpleDir}}
+\index{SimpleDir@{SimpleDir}!glib::SimpleDir@{glib::SimpleDir}}
+\doxysubsubsection{\texorpdfstring{SimpleDir()}{SimpleDir()}}
+{\footnotesize\ttfamily glib\+::\+Simple\+Dir\+::\+Simple\+Dir (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_file}{File}}}]{directory }\end{DoxyParamCaption})}
+
+
+
+Construct a new \mbox{\hyperlink{classglib_1_1_simple_dir}{Simple\+Dir}} object Uses the C++ filesystem Contains information about a directory and its files. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em directory} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classglib_1_1_simple_dir_a8d650536491fc71798e1e29ddbf3922b}\label{classglib_1_1_simple_dir_a8d650536491fc71798e1e29ddbf3922b}} 
+\index{glib::SimpleDir@{glib::SimpleDir}!copyResource@{copyResource}}
+\index{copyResource@{copyResource}!glib::SimpleDir@{glib::SimpleDir}}
+\doxysubsubsection{\texorpdfstring{copyResource()}{copyResource()}}
+{\footnotesize\ttfamily void glib\+::\+Simple\+Dir\+::copy\+Resource (\begin{DoxyParamCaption}\item[{std\+::wstring}]{new\+File\+Name,  }\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Attempts to copy the reference at the index. The function may fail to copy the resource. If USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_simple_dir_1_1_copy_error}{Copy\+Error}} may be thrown. If USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_out_of_bounds_error}{Out\+Of\+Bounds\+Error}} may be thrown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+File\+Name} & \\
+\hline
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_simple_dir_add03ac97bf83d10d5e2f803ebc5eaf05}\label{classglib_1_1_simple_dir_add03ac97bf83d10d5e2f803ebc5eaf05}} 
+\index{glib::SimpleDir@{glib::SimpleDir}!deleteResource@{deleteResource}}
+\index{deleteResource@{deleteResource}!glib::SimpleDir@{glib::SimpleDir}}
+\doxysubsubsection{\texorpdfstring{deleteResource()}{deleteResource()}}
+{\footnotesize\ttfamily void glib\+::\+Simple\+Dir\+::delete\+Resource (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Attempts to delete the reference at the index. The function may fail to delete the resource. If USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_simple_dir_1_1_delete_error}{Delete\+Error}} may be thrown. If USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_out_of_bounds_error}{Out\+Of\+Bounds\+Error}} may be thrown. 
+
+Note that deleting in this way will not move the data to the recycle bin. 
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_simple_dir_a3e5ef8c0d54f7d7f2ba865cd40c54486}\label{classglib_1_1_simple_dir_a3e5ef8c0d54f7d7f2ba865cd40c54486}} 
+\index{glib::SimpleDir@{glib::SimpleDir}!doesExist@{doesExist}}
+\index{doesExist@{doesExist}!glib::SimpleDir@{glib::SimpleDir}}
+\doxysubsubsection{\texorpdfstring{doesExist()}{doesExist()}}
+{\footnotesize\ttfamily bool glib\+::\+Simple\+Dir\+::does\+Exist (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Determines if the directory specified exists. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_dir_ad756594d09b248e3cbba3dc3a9985466}\label{classglib_1_1_simple_dir_ad756594d09b248e3cbba3dc3a9985466}} 
+\index{glib::SimpleDir@{glib::SimpleDir}!fileSize@{fileSize}}
+\index{fileSize@{fileSize}!glib::SimpleDir@{glib::SimpleDir}}
+\doxysubsubsection{\texorpdfstring{fileSize()}{fileSize()}}
+{\footnotesize\ttfamily unsigned int glib\+::\+Simple\+Dir\+::file\+Size (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Returns the size of the file or folder at the index. If USE\+\_\+\+EXCEPTIONS is defined, an Out\+Of\+Bounds Error may be thrown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+unsigned int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_dir_aa26cda1f6f984f5ab979bead78f989bb}\label{classglib_1_1_simple_dir_aa26cda1f6f984f5ab979bead78f989bb}} 
+\index{glib::SimpleDir@{glib::SimpleDir}!getClass@{getClass}}
+\index{getClass@{getClass}!glib::SimpleDir@{glib::SimpleDir}}
+\doxysubsubsection{\texorpdfstring{getClass()}{getClass()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ glib\+::\+Simple\+Dir\+::get\+Class (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
+
+\mbox{\Hypertarget{classglib_1_1_simple_dir_a95050a0b70e8e834085c8a11648900b2}\label{classglib_1_1_simple_dir_a95050a0b70e8e834085c8a11648900b2}} 
+\index{glib::SimpleDir@{glib::SimpleDir}!getFiles@{getFiles}}
+\index{getFiles@{getFiles}!glib::SimpleDir@{glib::SimpleDir}}
+\doxysubsubsection{\texorpdfstring{getFiles()}{getFiles()}}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::wstring $>$ glib\+::\+Simple\+Dir\+::get\+Files (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns a list of all the files. 
+
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$std\+::wstring$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_dir_a6c4ac9ff4464af58793bd9b4e99d6c25}\label{classglib_1_1_simple_dir_a6c4ac9ff4464af58793bd9b4e99d6c25}} 
+\index{glib::SimpleDir@{glib::SimpleDir}!getFolders@{getFolders}}
+\index{getFolders@{getFolders}!glib::SimpleDir@{glib::SimpleDir}}
+\doxysubsubsection{\texorpdfstring{getFolders()}{getFolders()}}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::wstring $>$ glib\+::\+Simple\+Dir\+::get\+Folders (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns a list of all the folders. 
+
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$std\+::wstring$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_dir_a152a40391b1aae45529558890e821899}\label{classglib_1_1_simple_dir_a152a40391b1aae45529558890e821899}} 
+\index{glib::SimpleDir@{glib::SimpleDir}!getLastChangeTime@{getLastChangeTime}}
+\index{getLastChangeTime@{getLastChangeTime}!glib::SimpleDir@{glib::SimpleDir}}
+\doxysubsubsection{\texorpdfstring{getLastChangeTime()}{getLastChangeTime()}}
+{\footnotesize\ttfamily time\+\_\+t glib\+::\+Simple\+Dir\+::get\+Last\+Change\+Time (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets the Last Change Time for the file or folder at the index. If USE\+\_\+\+EXCEPTIONS is defined, an Out\+Of\+Bounds Error may be thrown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+time\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_dir_a7a5b5b639ef97d869641b01da4cd1a2f}\label{classglib_1_1_simple_dir_a7a5b5b639ef97d869641b01da4cd1a2f}} 
+\index{glib::SimpleDir@{glib::SimpleDir}!getLocation@{getLocation}}
+\index{getLocation@{getLocation}!glib::SimpleDir@{glib::SimpleDir}}
+\doxysubsubsection{\texorpdfstring{getLocation()}{getLocation()}}
+{\footnotesize\ttfamily std\+::wstring glib\+::\+Simple\+Dir\+::get\+Location (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the name of the directory. It is the string used to create the object. 
+
+\begin{DoxyReturn}{Returns}
+std\+::wstring 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_dir_affb8cb70216f74a6e665a35e1784f779}\label{classglib_1_1_simple_dir_affb8cb70216f74a6e665a35e1784f779}} 
+\index{glib::SimpleDir@{glib::SimpleDir}!getReferenceFullPath@{getReferenceFullPath}}
+\index{getReferenceFullPath@{getReferenceFullPath}!glib::SimpleDir@{glib::SimpleDir}}
+\doxysubsubsection{\texorpdfstring{getReferenceFullPath()}{getReferenceFullPath()}}
+{\footnotesize\ttfamily std\+::wstring glib\+::\+Simple\+Dir\+::get\+Reference\+Full\+Path (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets the Reference Full Path at the specified index. May be a file or folder. If USE\+\_\+\+EXCEPTIONS is defined, an Out\+Of\+Bounds Error may be thrown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::wstring 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_dir_a190afc1bb013d754927a6501efe080a5}\label{classglib_1_1_simple_dir_a190afc1bb013d754927a6501efe080a5}} 
+\index{glib::SimpleDir@{glib::SimpleDir}!getReferenceLocation@{getReferenceLocation}}
+\index{getReferenceLocation@{getReferenceLocation}!glib::SimpleDir@{glib::SimpleDir}}
+\doxysubsubsection{\texorpdfstring{getReferenceLocation()}{getReferenceLocation()}}
+{\footnotesize\ttfamily int glib\+::\+Simple\+Dir\+::get\+Reference\+Location (\begin{DoxyParamCaption}\item[{std\+::wstring}]{name }\end{DoxyParamCaption})}
+
+
+
+Gets the Reference Location by its name. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_dir_a64914c08a548e71b14a34d43f9ff6ca0}\label{classglib_1_1_simple_dir_a64914c08a548e71b14a34d43f9ff6ca0}} 
+\index{glib::SimpleDir@{glib::SimpleDir}!getReferenceName@{getReferenceName}}
+\index{getReferenceName@{getReferenceName}!glib::SimpleDir@{glib::SimpleDir}}
+\doxysubsubsection{\texorpdfstring{getReferenceName()}{getReferenceName()}}
+{\footnotesize\ttfamily std\+::wstring glib\+::\+Simple\+Dir\+::get\+Reference\+Name (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Gets the Reference Name at the specified index. May be a file or folder. If USE\+\_\+\+EXCEPTIONS is defined, an Out\+Of\+Bounds Error may be thrown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::wstring 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_dir_acc7a08209bfc8b285bbd2e5e82b2b95e}\label{classglib_1_1_simple_dir_acc7a08209bfc8b285bbd2e5e82b2b95e}} 
+\index{glib::SimpleDir@{glib::SimpleDir}!getSize@{getSize}}
+\index{getSize@{getSize}!glib::SimpleDir@{glib::SimpleDir}}
+\doxysubsubsection{\texorpdfstring{getSize()}{getSize()}}
+{\footnotesize\ttfamily int glib\+::\+Simple\+Dir\+::get\+Size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the amount of items in the directory. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_dir_a3127fa94b89576e57f6aa71fc7300324}\label{classglib_1_1_simple_dir_a3127fa94b89576e57f6aa71fc7300324}} 
+\index{glib::SimpleDir@{glib::SimpleDir}!referenceIsDirectory@{referenceIsDirectory}}
+\index{referenceIsDirectory@{referenceIsDirectory}!glib::SimpleDir@{glib::SimpleDir}}
+\doxysubsubsection{\texorpdfstring{referenceIsDirectory()}{referenceIsDirectory()}}
+{\footnotesize\ttfamily bool glib\+::\+Simple\+Dir\+::reference\+Is\+Directory (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Returns if the reference at the specified index is a directory. If USE\+\_\+\+EXCEPTIONS is defined, an Out\+Of\+Bounds Error may be thrown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_dir_af8dcd13c2280af7fa4b2ef7c2ec73542}\label{classglib_1_1_simple_dir_af8dcd13c2280af7fa4b2ef7c2ec73542}} 
+\index{glib::SimpleDir@{glib::SimpleDir}!renameResource@{renameResource}}
+\index{renameResource@{renameResource}!glib::SimpleDir@{glib::SimpleDir}}
+\doxysubsubsection{\texorpdfstring{renameResource()}{renameResource()}}
+{\footnotesize\ttfamily void glib\+::\+Simple\+Dir\+::rename\+Resource (\begin{DoxyParamCaption}\item[{std\+::wstring}]{new\+File\+Name,  }\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Attempts to rename the reference at the index. The function may fail to rename the resource. If USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_simple_dir_1_1_rename_error}{Rename\+Error}} may be thrown. If USE\+\_\+\+EXCEPTIONS is defined, an \mbox{\hyperlink{structglib_1_1_out_of_bounds_error}{Out\+Of\+Bounds\+Error}} may be thrown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+File\+Name} & \\
+\hline
+{\em index} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Simple\+Dir.\+h\end{DoxyCompactItemize}

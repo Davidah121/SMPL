@@ -1,0 +1,72 @@
+\hypertarget{_simple_xml_8h_source}{}\doxysection{Simple\+Xml.\+h}
+\label{_simple_xml_8h_source}\index{include/SimpleXml.h@{include/SimpleXml.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include "{}SimpleFile.h"{}}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{5 \{}
+\DoxyCodeLine{6         }
+\DoxyCodeLine{7     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_xml_attribute}{XmlAttribute}}}
+\DoxyCodeLine{8     \{}
+\DoxyCodeLine{9     \textcolor{keyword}{public}:}
+\DoxyCodeLine{15         \mbox{\hyperlink{classglib_1_1_xml_attribute_ae29b7f534877938bcf5444a69163607e}{XmlAttribute}}();}
+\DoxyCodeLine{16 }
+\DoxyCodeLine{21         \mbox{\hyperlink{classglib_1_1_xml_attribute_a0d3603e20eeaccfa8bde44cb40dba287}{\string~XmlAttribute}}();}
+\DoxyCodeLine{22 }
+\DoxyCodeLine{23         std::wstring name;}
+\DoxyCodeLine{24         std::wstring value;}
+\DoxyCodeLine{25     \};}
+\DoxyCodeLine{26 }
+\DoxyCodeLine{27     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}}
+\DoxyCodeLine{28     \{}
+\DoxyCodeLine{29     \textcolor{keyword}{public}:}
+\DoxyCodeLine{35         \mbox{\hyperlink{classglib_1_1_xml_node_a7150ce53de74be5ad52995e968137fc9}{XmlNode}}();}
+\DoxyCodeLine{36 }
+\DoxyCodeLine{43         \mbox{\hyperlink{classglib_1_1_xml_node_a2b94e2be47640550d67d823098df6be3}{XmlNode}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}} \&other);}
+\DoxyCodeLine{48         \mbox{\hyperlink{classglib_1_1_xml_node_a7e13c79be475ef4706187f41cbd1af73}{\string~XmlNode}}();}
+\DoxyCodeLine{49 }
+\DoxyCodeLine{50         std::wstring title;}
+\DoxyCodeLine{51         std::vector<XmlAttribute> attributes = std::vector<XmlAttribute>();}
+\DoxyCodeLine{52         std::vector<XmlNode*> childNodes = std::vector<XmlNode*>();}
+\DoxyCodeLine{53         \mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}* parentNode = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{54         std::wstring value;}
+\DoxyCodeLine{55     \textcolor{keyword}{private}:}
+\DoxyCodeLine{56         \textcolor{keyword}{friend} \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_simple_xml}{SimpleXml}};}
+\DoxyCodeLine{57 }
+\DoxyCodeLine{64         \textcolor{keywordtype}{bool} isEndOfSection();}
+\DoxyCodeLine{65         \textcolor{keywordtype}{bool} isEnd = \textcolor{keyword}{false};}
+\DoxyCodeLine{66     \};}
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_simple_xml}{SimpleXml}}}
+\DoxyCodeLine{69     \{}
+\DoxyCodeLine{70     \textcolor{keyword}{public}:}
+\DoxyCodeLine{77         \mbox{\hyperlink{classglib_1_1_simple_xml_af6789d2442a560a48426312975f8dcdb}{SimpleXml}}();}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{83         \mbox{\hyperlink{classglib_1_1_simple_xml_a1ea12a02596b445fbf5e776d648cbc43}{\string~SimpleXml}}();}
+\DoxyCodeLine{84 }
+\DoxyCodeLine{92         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_xml_a0858367322d1eadaa86c6baa5f05752f}{load}}(\mbox{\hyperlink{classglib_1_1_file}{File}} file);}
+\DoxyCodeLine{93 }
+\DoxyCodeLine{99         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_xml_a4db053e0d40143eeeed351ad0a311a15}{save}}(\mbox{\hyperlink{classglib_1_1_file}{File}} file);}
+\DoxyCodeLine{100 }
+\DoxyCodeLine{105         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_xml_a4197d2a578fdd364f533993293deac2d}{dispose}}();}
+\DoxyCodeLine{106 }
+\DoxyCodeLine{113         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_xml_a027d6d3088edf50b819eceabbaf38ba4}{parseEscapeString}}(std::wstring escString);}
+\DoxyCodeLine{114 }
+\DoxyCodeLine{115         std::vector<XmlNode*> nodes = std::vector<XmlNode*>();}
+\DoxyCodeLine{116         }
+\DoxyCodeLine{117     \textcolor{keyword}{private}:}
+\DoxyCodeLine{118         \mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}* parseXmlLine(std::wstring line);}
+\DoxyCodeLine{119 }
+\DoxyCodeLine{120         \textcolor{keywordtype}{void} fixParseOnNode(\mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}* n);}
+\DoxyCodeLine{121 }
+\DoxyCodeLine{122         \textcolor{keywordtype}{void} saveNode(\mbox{\hyperlink{classglib_1_1_simple_file}{SimpleFile}}* f, \mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}* node);}
+\DoxyCodeLine{123         \textcolor{keywordtype}{void} deleteNode(\mbox{\hyperlink{classglib_1_1_xml_node}{XmlNode}}* node);}
+\DoxyCodeLine{124 }
+\DoxyCodeLine{125         std::vector<unsigned char> removeCommentsAndInvalidChars(std::vector<unsigned char> fileBytes);}
+\DoxyCodeLine{126     \};}
+\DoxyCodeLine{127 }
+\DoxyCodeLine{128 \} \textcolor{comment}{//NAMESPACE glib END}}
+
+\end{DoxyCode}

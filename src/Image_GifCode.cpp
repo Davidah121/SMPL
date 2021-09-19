@@ -12,15 +12,9 @@
 
 namespace glib
 {
-
-	void Image::saveGIF(std::string filename, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold, bool greyscale)
+	void Image::saveGIF(File file, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold, bool greyscale)
 	{
-		Image::saveGIF(StringTools::toWideString(filename), paletteSize, dither, saveAlpha, alphaThreshold, greyscale);
-	}
-
-	void Image::saveGIF(std::wstring filename, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold, bool greyscale)
-	{
-		SimpleFile f = SimpleFile(filename, SimpleFile::WRITE);
+		SimpleFile f = SimpleFile(file, SimpleFile::WRITE);
 
 		if(!f.isOpen())
 			return; //invalid so return from function
