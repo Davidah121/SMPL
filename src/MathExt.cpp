@@ -1115,6 +1115,139 @@ namespace glib
 		return newConstants;
 	}
 
+	PolynomialMathFunction MathExt::reducePolynomial(PolynomialMathFunction f, double zero)
+	{
+		//using synthetic division
+		std::vector<double> newConstants = std::vector<double>(f.size()-1);
+		if(f.size()>0)
+		{
+			newConstants[0] = f.getConstant(0);
+			for(int i=1; i<f.size()-1; i++)
+			{
+				newConstants[i] = f.getConstant(i) + newConstants[i-1] * zero;
+			}
+		}
+
+		return PolynomialMathFunction(newConstants);
+	}
+
+	double MathExt::bisectionMethod(MathFunction* f, double a, double b, int maxIterations)
+	{
+		double minX = a;
+		double maxX = b;
+		double x = NAN;
+
+		double resMin = f->solve(a);
+		double resMax = f->solve(b);
+
+		//check if a or b
+		if(resMin == 0.0)
+			return a;
+		if(resMax == 0.0)
+			return b;
+
+		if(resMin > resMax)
+		{
+			double temp = maxX;
+			maxX = minX;
+			minX = temp;
+		}
+
+		if(resMin*resMax >= 0)
+		{
+			//Not possible with Bisection Method
+			return NAN;
+		}
+		
+		for(int i=0; i<maxIterations; i++)
+		{
+			x = (minX+maxX) / 2.0;
+			double nResult = f->solve(x);
+
+			if(nResult == 0.0)
+			{
+				break;
+			}
+			else if(nResult > 0)
+			{
+				maxX = x;
+			}
+			else
+			{
+				minX = x;
+			}
+		}
+
+		return x;
+	}
+
+	double MathExt::newtonsMethod(MathFunction* f, MathFunction* derivative, double startPoint, int maxIterations)
+	{
+		double xn = startPoint;
+		for(int i=0; i<maxIterations; i++)
+		{
+			double num = f->solve(xn);
+			double div = derivative->solve(xn);
+
+			if(num == 0)
+			{
+				break;
+			}
+			
+			if(div != 0)
+			{
+				xn = xn - (num/div);
+			}
+			else
+			{
+				//Can not continue
+				return NAN;
+			}
+		}
+
+		return xn;
+	}
+
+	double MathExt::secantMethod(MathFunction* f, double a, double b, int maxIterations)
+	{
+		double xn[3] = {NAN, b, a};
+		double sol[3] = {NAN, f->solve(b), f->solve(a)};
+
+		if(sol[1] == 0)
+			return b;
+		if(sol[2] == 0)
+			return a;
+		
+		for(int i=0; i<maxIterations; i++)
+		{
+			double num = sol[1]*(xn[1] - xn[2]);
+			double div = sol[1] - sol[2];
+			if(div == 0)
+			{
+				//error occured
+				xn[0] = NAN;
+				break;
+			}
+
+			xn[0] = xn[1] - num/div;
+
+			sol[0] = f->solve(xn[0]);
+			if(sol[0] == 0)
+			{
+				break;
+			}
+
+			//move xn to xn-1 and move xn-1 to xn-2
+			xn[2] = xn[1];
+			xn[1] = xn[0];
+
+			sol[2] = sol[1];
+			sol[1] = sol[0];
+		}
+
+		return xn[0];
+	}
+	
 	double MathExt::binomialCoefficient(int n, int k)
 	{
 		double value = 1;

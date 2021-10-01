@@ -53,7 +53,6 @@ namespace glib
 		std::this_thread::sleep_for(timespan);
 	}
 
-
 	void System::delayRun(void(*function)(), int millis, int micros)
 	{
 		sleep(millis, micros);

@@ -46,9 +46,9 @@ namespace glib
 		x2 = MathExt::clamp(x2, 0, globalWidth);
 		y2 = MathExt::clamp(y2, 0, globalHeight);
 
-		for (int ty = y1; ty < y2; ty++)
+		for (int ty = y1; ty <= y2; ty++)
 		{
-			for (int tx = x1; tx < x2; tx++)
+			for (int tx = x1; tx <= x2; tx++)
 			{
 				//Have to determine if we are on the stroke
 				bool onStroke = false;

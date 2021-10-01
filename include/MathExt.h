@@ -13,6 +13,7 @@
 #include "GeneralVector.h"
 #include "ComplexNumber.h"
 #include "PolarCoordinate.h"
+#include "MathFunction.h"
 
 #ifdef max
 	#undef max
@@ -23,11 +24,11 @@
 #endif
 
 #ifndef PI
-	#define PI 3.14159265359
+	#define PI 3.14159265
 #endif
 
 #ifndef E
-	#define E 2.718281828459
+	#define E 2.718281828
 #endif
 
 //Temporary location
@@ -1420,6 +1421,7 @@ namespace glib
 
 		/**
 		 * @brief Solve a Quadratic equation but only returns real solutions
+		 * 		Assumes the form Ax^2 + Bx + C
 		 * 
 		 * @param A 
 		 * @param B 
@@ -1430,7 +1432,8 @@ namespace glib
 		static std::vector<double> solveQuadraticReal(double A, double B, double C);
 
 		/**
-		 * @brief Solves a Cubic equation but only returns real solutions
+		 * @brief Solves a Cubic equation but only returns real solutions.
+		 * 		Assumes the form Ax^3 + Bx^2 + Cx + D
 		 * 
 		 * @param A 
 		 * @param B 
@@ -1440,7 +1443,7 @@ namespace glib
 		 * 		Returns all solutions found.
 		 */
 		static std::vector<double> solveCubicReal(double A, double B, double C, double D);
-
+		
 		/**
 		 * @brief Reduces a polynomial to a lower degree using a known zero.
 		 * 
@@ -1451,6 +1454,95 @@ namespace glib
 		 * 		The constants for the new polynomial.
 		 */
 		static std::vector<double> reducePolynomial(std::vector<double> constants, double zero);
+
+		/**
+		 * @brief Reduces a polynomial to a lower degree using a known zero.
+		 * 
+		 * @param f 
+		 * @param zero 
+		 * 		A known solution that solves the polynomial for 0.
+		 * @return PolynomialMathFunction 
+		 */
+		static PolynomialMathFunction reducePolynomial(PolynomialMathFunction f, double zero);
+
+		/**
+		 * @brief Solves a MathFunction for 0 using the Bisection Numerical Method.
+		 * 		Bisection requires that f(a)*f(b) < 0 to work.
+		 * 		It also requires that f(c)==0 for some c value in [a, b].
+		 * 			the solution must be within the specified range.
+		 * 
+		 * 		Max Iterations is used to prevent the algorithm from running forever.
+		 * 		The method approximate the solution and will eventually converge to the correct answer.
+		 * 		
+		 * 		This will only converge on one solution at a time.
+		 * @param f 
+		 * 		The math function to solve
+		 * @param a 
+		 * 		a does not have to be less than b meaning
+		 * 		If f(a) > f(b), the a and b values will be swapped internally.
+		 * @param b 
+		 * 		b does not have to be greater than a meaning
+		 * 		If f(a) > f(b), the a and b values will be swapped internally.
+		 * @param maxIterations 
+		 * 		The maximum amount of iterations to solve for 0.
+		 * 		If the solution is not found before the maximum number of iterations,
+		 * 		the an approximation is returned.
+		 * 		Default value is 10.
+		 * @return double 
+		 * 		If solution is not possible with the given parameters, NAN is returned
+		 */
+		static double bisectionMethod(MathFunction* f, double a, double b, int maxIterations = 10);
+
+		/**
+		 * @brief Solves a MathFunction for 0 using Newton's Method.
+		 * 		Newton's Method requires the derivative of the function and a decent starting point to work.
+		 * 		If the derivative at any point when solving is 0, the function will fail.
+		 * 		Also requires that the solution exists.
+		 * 		
+		 * 		This will only converge on one solution at a time.
+		 * @param f 
+		 * 		The math function to solve
+		 * @param derivative 
+		 * 		The derivative of the math function to solve
+		 * @param startPoint 
+		 * 		A starting point to use for approximating the solution.
+		 * 		Better starting points results in faster convergence and more accurate solution when bound
+		 * 		by a maximum number of iterations.
+		 * @param maxIterations 
+		 * 		The maximum amount of iterations to solve for 0.
+		 * 		If the solution is not found before the maximum number of iterations,
+		 * 		the an approximation is returned.
+		 * 		Default value is 10.
+		 * @return double 
+		 * 		If solution is not possible with the given parameters, NAN is returned
+		 */
+		static double newtonsMethod(MathFunction* f, MathFunction* derivative, double startPoint, int maxIterations = 10);
+
+		/**
+		 * @brief Solves a MathFunction for 0 using Secant Method.
+		 * 		It is an approximation for Newton's Method when the derivative is not available.
+		 * 		It requires 2 initial values that are idealy close to the solution.
+		 * 
+		 * 		While it converges slower, it can be computationly faster due to not needing a derivative.
+		 * 		It can also fail to converge just like newton's method for similar reasons.
+		 * 		If a and b are not close enough to the solution, the method may not converge.
+		 * 		
+		 * 		This will only converge on one solution at a time.
+		 * @param f 
+		 * 		The math function to solve
+		 * @param a 
+		 * 		The first initial value
+		 * @param b 
+		 * 		The second initial value
+		 * @param maxIterations 
+		 * 		The maximum amount of iterations to solve for 0.
+		 * 		If the solution is not found before the maximum number of iterations,
+		 * 		the an approximation is returned.
+		 * 		Default value is 10.
+		 * @return double 
+		 * 		If solution is not possible with the given parameters, NAN is returned
+		 */
+		static double secantMethod(MathFunction* f, double a, double b, int maxIterations = 10);
 		
 		/**
 		 * @brief Returns the binomial coefficient using n and k.

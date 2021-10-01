@@ -79,9 +79,9 @@ namespace glib
 
 	void Graphics::drawPixel(int x, int y, Color c, Image* surf)
 	{
-		Image* otherImg;
+		Image* otherImg = surf;
 
-		if (surf == nullptr)
+		if (otherImg == nullptr)
 			return;
 
 		if(compositeRule == NO_COMPOSITE)

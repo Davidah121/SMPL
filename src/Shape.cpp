@@ -405,17 +405,28 @@ namespace glib
 
 	Vec2f Triangle2D::getVertex1()
 	{
-		return v1;
+		Vec2f nPos = Vec2f(getPosition().x, getPosition().y);
+		return v1 + nPos;
 	}
 
 	Vec2f Triangle2D::getVertex2()
 	{
-		return v2;
+		Vec2f nPos = Vec2f(getPosition().x, getPosition().y);
+		return v2 + nPos;
 	}
 
 	Vec2f Triangle2D::getVertex3()
 	{
-		return v3;
+		Vec2f nPos = Vec2f(getPosition().x, getPosition().y);
+		return v3 + nPos;
+	}
+
+	Vec2f Triangle2D::getCenterPosition()
+	{
+		Vec2f nPos = Vec2f(getPosition().x, getPosition().y);
+		Vec2f centerPos = (v1+v2+v3)/3;
+
+		return centerPos+nPos;
 	}
 
 	double Triangle2D::generateBoundingRadius()
@@ -545,6 +556,61 @@ namespace glib
 		}
 	}
 
+	Polygon2D Polygon2D::approximateCircle(double radius, int n)
+	{
+		if(n <= 3)
+			return Polygon2D();
+		
+		Polygon2D out;
+		double du = 2*PI / n;
+		for(int i=0; i<=n; i++)
+		{
+			double x = radius * MathExt::cos(du*i);
+			double y = radius * MathExt::sin(du*i);
+
+			out.addVertex( Vec2f(x,y) );
+		}
+
+		return out;
+	}
+
+	Polygon2D Polygon2D::approximateEllipse(double xRadius, double yRadius, int n)
+	{
+		if(n <= 3)
+			return Polygon2D();
+		
+		Polygon2D out;
+		double du = 2*PI / n;
+		for(int i=0; i<=n; i++)
+		{
+			double x = xRadius * MathExt::cos(du*i);
+			double y = yRadius * MathExt::sin(du*i);
+
+			out.addVertex( Vec2f(x,y) );
+		}
+
+		return out;
+	}
+
+	Polygon2D Polygon2D::approximateArc(double xRadius, double yRadius, double startAngle, double endAngle, int n)
+	{
+		if(n <= 3)
+			return Polygon2D();
+		
+		Polygon2D out;
+		out.addVertex( Vec2f(0,0) );
+		double du = (endAngle - startAngle) / n;
+		for(int i=0; i<=n; i++)
+		{
+			double x = xRadius * MathExt::cos(startAngle + du*i);
+			double y = yRadius * MathExt::sin(startAngle + du*i);
+
+			out.addVertex( Vec2f(x,y) );
+		}
+
+		return out;
+	}
+
 	double Polygon2D::generateBoundingRadius()
 	{
 		return 0;
@@ -553,9 +619,6 @@ namespace glib
 	#pragma endregion
 
 	#pragma region COLLISION_MASTER
-
-	//Static initialization
-	std::function<bool(Shape*, Shape*)> CollisionMaster::extCollision = nullptr;
 
 	//Functions
 	bool CollisionMaster::getCollision(Shape* a, Shape* b)
@@ -590,16 +653,7 @@ namespace glib
 				return CollisionMaster::collisionMethod((Box2D*)a, (Line2D*)b);
 			}
 
-			//No premade collision method found. Trying the external
-			if (extCollision != nullptr)
-			{
-				return extCollision(a, b);
-			}
-			else
-			{
-				//No external collision found
-				//will return false
-			}
+			//No matching function found
 		}
 		else if (aClassName == "Point2D")
 		{
@@ -628,16 +682,7 @@ namespace glib
 				return CollisionMaster::collisionMethod((Point2D*)a, (Line2D*)b);
 			}
 
-			//No premade collision method found. Trying the external
-			if (extCollision != nullptr)
-			{
-				return extCollision(a, b);
-			}
-			else
-			{
-				//No external collision found
-				//will return false
-			}
+			//No matching function found
 		}
 		else if (aClassName == "Circle")
 		{
@@ -666,16 +711,7 @@ namespace glib
 				return CollisionMaster::collisionMethod((Circle*)a, (Line2D*)b);
 			}
 
-			//No premade collision method found. Trying the external
-			if (extCollision != nullptr)
-			{
-				return extCollision(a, b);
-			}
-			else
-			{
-				//No external collision found
-				//will return false
-			}
+			//No matching function found
 		}
 		else if (aClassName == "Line2D")
 		{
@@ -704,16 +740,7 @@ namespace glib
 				return CollisionMaster::collisionMethod((Line2D*)a, (Line2D*)b);
 			}
 
-			//No premade collision method found. Trying the external
-			if (extCollision != nullptr)
-			{
-				return extCollision(a, b);
-			}
-			else
-			{
-				//No external collision found
-				//will return false
-			}
+			//No matching function found
 		}
 		else if (aClassName == "Triangle2D")
 		{
@@ -742,16 +769,7 @@ namespace glib
 				return CollisionMaster::collisionMethod((Line2D*)b, (Triangle2D*)a);
 			}
 
-			//No premade collision method found. Trying the external
-			if (extCollision != nullptr)
-			{
-				return extCollision(a, b);
-			}
-			else
-			{
-				//No external collision found
-				//will return false
-			}
+			//No matching function found
 		}
 		else if (aClassName == "Ellipse")
 		{
@@ -780,32 +798,17 @@ namespace glib
 				return CollisionMaster::collisionMethod((Line2D*)b, (Triangle2D*)a);
 			}
 
-			//No premade collision method found. Trying the external
-			if (extCollision != nullptr)
-			{
-				return extCollision(a, b);
-			}
-			else
-			{
-				//No external collision found
-				//will return false
-			}
+			//No matching function found
 		}
 		else
 		{
-			if (extCollision != nullptr)
-			{
-				return extCollision(a, b);
-			}
-			else
-			{
-				//No external collision found
-				//will return false
-			}
+			//No matching function found
 		}
 
 		return false;
 	}
+
+	#pragma region POINT_COLLISIONS
 
 	bool CollisionMaster::collisionMethod(Point2D* a, Point2D* b)
 	{
@@ -921,6 +924,10 @@ namespace glib
 		
 		return false;
 	}
+
+	#pragma endregion POINT_COLLISIONS
+
+	#pragma region BOX2D_COLLISIONS
 
 	bool CollisionMaster::collisionMethod(Box2D* a, Box2D* b)
 	{
@@ -1048,6 +1055,10 @@ namespace glib
 		return false;
 	}
 
+	#pragma endregion BOX2D_COLLISIONS
+
+	#pragma region CIRCLE_COLLISIONS
+
 	bool CollisionMaster::collisionMethod(Circle* a, Circle* b)
 	{
 		double disX = MathExt::sqr(a->getPosition().x - b->getPosition().x);
@@ -1065,21 +1076,133 @@ namespace glib
 
 	bool CollisionMaster::collisionMethod(Circle* a, Ellipse* b)
 	{
-		// double disX = MathExt::sqr(a->getPosition().x - b->getPosition().x);
-		// double disY = MathExt::sqr(a->getPosition().y - b->getPosition().y);
-		// double len1 = disX + disY;
+		//Convert ellipse to 2 separate circles using both its radius values.
+		//If the circle collides with both, a collision has occured.
+		//If the circle collides with one, possible collision
+		//If the circle collides with none, no collision
 
-		// double len2 = MathExt::sqr(a->getRadius()) + MathExt::sqr(b->getRadius());
+		Vec3f toVec = a->getPosition() - b->getPosition();
+		
+		toVec.z = 0;
 
-		// if (len1 <= len2)
-		// {
-		// 	return true;
-		// }
+		double dis = MathExt::vecLength(toVec);
+		int colCount = 0;
+
+		if(dis < b->getXRadius()+a->getRadius())
+			colCount++;
+
+		if(dis < b->getYRadius()+a->getRadius())
+			colCount++;
+
+		if(colCount == 0)
+			return false;
+		if(colCount == 2)
+			return true;
+		
+		if(colCount == 1)
+		{
+			//possible collision.
+			//Find closest point within reason.
+			//actual closest point is described by this: -sin(t)*(sqr(ry) - sqr(rx)) = x*rx*tan(t) - y*ry
+			GeneralMathFunction f = GeneralMathFunction();
+			double rx = b->getXRadius();
+			double ry = b->getYRadius();
+			double x = toVec.x;
+			double y = toVec.y;
+
+			f.setFunction( [rx, ry, x, y](double t) ->double{
+				double val = -MathExt::sin(t)*(MathExt::sqr(ry) - MathExt::sqr(rx));
+				val +=  y*ry;
+				val -= (x*rx*MathExt::tan(t));
+
+				return val;
+			});
+
+			//reduce [0, 2*PI] to a smaller range of values
+			double minRange, maxRange;
+			double offset = 0.000001;
+			Vec2f circlePos = Vec2f(a->getPosition().x, a->getPosition().y);
+			Vec2f ellipsePos = Vec2f(b->getPosition().x, b->getPosition().y);
+
+			//NOTE: Adjustments need to be made as to not land on an invalid point.
+			//tan(PI/2) is undefined. This works due to PI being defined to a limited set of numbers.
+			//If PI is defined with more numbers, this can fail.
+
+			if(toVec.x >= 0)
+			{
+				if(toVec.y >= 0)
+				{
+					//quad1
+					minRange = 0;
+					maxRange = PI/2 - offset;
+				}
+				else
+				{
+					//quad4
+					minRange = 3*PI/2 + offset;
+					maxRange = 2*PI;
+				}
+			}
+			else
+			{
+				if(toVec.y >= 0)
+				{
+					//quad2
+					minRange = PI/2 + offset;
+					maxRange = PI;
+				}
+				else
+				{
+					//quad3
+					minRange = PI;
+					maxRange = 3*PI/2 - offset;
+				}
+			}
+			
+			minRange = MathExt::roundToDecimal(minRange, 6);
+			maxRange = MathExt::roundToDecimal(maxRange, 6);
+
+			//Close approximation with only 10 steps. Equation is complex though and
+			//is being called through a pointer. Possibly implement here instead.
+
+			double angleValue = MathExt::bisectionMethod(&f, minRange, maxRange, 10);
+			
+			Vec2f closestPoint = ellipsePos + Vec2f(rx*MathExt::cos(angleValue),
+												ry*MathExt::sin(angleValue));
+
+			if(MathExt::distanceTo(closestPoint, circlePos) <= a->getRadius())
+			{
+				return true;
+			}
+
+			//possibly the top most point or the bottom most point
+			closestPoint = ellipsePos + Vec2f(rx*MathExt::cos(PI/2),
+									ry*MathExt::sin(PI/2));
+
+			if(MathExt::distanceTo(closestPoint, circlePos) <= a->getRadius())
+			{
+				return true;
+			}
+
+			closestPoint = ellipsePos + Vec2f(rx*MathExt::cos(3*PI/2),
+						ry*MathExt::sin(3*PI/2));
+
+			if(MathExt::distanceTo(closestPoint, circlePos) <= a->getRadius())
+			{
+				return true;
+			}
+		}
+
 		return false;
 	}
 
 	bool CollisionMaster::collisionMethod(Circle* a, Triangle2D* b)
 	{
+		//Find the closest point to the circle on each line segment in the triangle
+		//Will not determine if a is inside of b.
+		//Check if circle's center is in b to do that
+
+
 		return false;
 	}
 
@@ -1153,6 +1276,10 @@ namespace glib
 		return false;
 	}
 
+	#pragma endregion CIRCLE_COLLISIONS
+
+	#pragma region LINE2D_COLLISIONS
+
 	bool CollisionMaster::collisionMethod(Line2D* a, Line2D* b)
 	{
 		//We want to look for the point of intersection
@@ -1187,16 +1314,186 @@ namespace glib
 
 	bool CollisionMaster::collisionMethod(Line2D* a, Ellipse* b)
 	{
+		//Can't determine if line is in ellipse
+		
+		if(a->getPoint1().x == a->getPoint2().x)
+		{
+			//vertical line, do quicker method
+			double xRadSqr = MathExt::sqr(b->getXRadius());
+			double yRadSqr = MathExt::sqr(b->getYRadius());
+
+			double rot = b->getRotation().x;
+
+			double H = b->getPosition().x;
+			double K = b->getPosition().y;
+
+			double xCheck = a->getPoint1().x;
+
+			double v1 = MathExt::dcos(rot)*(xCheck-H);
+			double v2 = -MathExt::dsin(rot)*(xCheck-H);
+			
+			double A = (MathExt::sqr(MathExt::dsin(rot)) / xRadSqr) + (MathExt::sqr(MathExt::dcos(rot)) / yRadSqr);
+			double B = (MathExt::dsin(rot)*v1 / xRadSqr) + (MathExt::dcos(rot)*v2 / yRadSqr);
+			double C = (MathExt::sqr(v1)/xRadSqr) + (MathExt::sqr(v2)/yRadSqr) - 1;
+
+			double polyA = A;
+			double polyB = 2*(B-A*K);
+			double polyC = A*MathExt::sqr(K) - 2*B*K + C;
+
+			std::vector<double> solutions = MathExt::solveQuadraticReal(polyA, polyB, polyC);
+
+			if(solutions.size()>0)
+			{
+				//possible collision
+				for(int i=0; i<solutions.size(); i++)
+				{
+					Line l = a->getLine();
+					if( solutions[i] >= l.getMinY() && solutions[i] <= l.getMaxY())
+					{
+						return true;
+					}
+				}
+			}
+			else
+			{
+				//no collision
+				return false;
+			}
+		}
+		else if(a->getPoint1().y == a->getPoint2().y)
+		{
+			//horizontal line, do quicker method
+			double xRadSqr = MathExt::sqr(b->getXRadius());
+			double yRadSqr = MathExt::sqr(b->getYRadius());
+
+			double rot = b->getRotation().x;
+
+			double H = b->getPosition().x;
+			double K = b->getPosition().y;
+
+			double yCheck = a->getPoint1().y;
+
+			double v1 = MathExt::dsin(rot)*(yCheck-K);
+			double v2 = MathExt::dcos(rot)*(yCheck-K);
+			
+			double A = (MathExt::sqr(MathExt::dcos(rot)) / xRadSqr) + (MathExt::sqr(MathExt::dsin(rot)) / yRadSqr);
+			double B = (MathExt::dcos(rot)*v1 / xRadSqr) - (MathExt::dsin(rot)*v2 / yRadSqr);
+			double C = (MathExt::sqr(v1)/xRadSqr) + (MathExt::sqr(v2)/yRadSqr) - 1;
+
+			double polyA = A;
+			double polyB = 2*(B-A*K);
+			double polyC = A*MathExt::sqr(K) - 2*B*K + C;
+
+			std::vector<double> solutions = MathExt::solveQuadraticReal(polyA, polyB, polyC);
+
+			if(solutions.size()>0)
+			{
+				//possible collision
+				for(int i=0; i<solutions.size(); i++)
+				{
+					Line l = a->getLine();
+					if( solutions[i] >= l.getMinX() && solutions[i] <= l.getMaxX())
+					{
+						return true;
+					}
+				}
+			}
+			else
+			{
+				//no collision
+				return false;
+			}
+		}
+		else
+		{
+			//Convert line to general equation
+			//Assume no rotation currently but factor it in
+			
+			double A = a->getPoint2().y - a->getPoint1().y;
+			double B = a->getPoint1().x - a->getPoint2().x;
+			double C = a->getPoint2().x*a->getPoint1().y - a->getPoint2().y*a->getPoint1().x;
+
+			double xRadSqr = MathExt::sqr(b->getXRadius());
+			double yRadSqr = MathExt::sqr(b->getYRadius());
+
+			double rot = b->getRotation().x;
+
+			double H = b->getPosition().x;
+			double K = b->getPosition().y;
+
+			double V1 = -(MathExt::dsin(rot)*K + MathExt::dcos(rot)*((C/A) + H));
+			double V2 = (MathExt::dsin(rot) - MathExt::dcos(rot)*(B/A));
+			double V3 = (MathExt::dsin(rot)*((C/A)+H) - MathExt::dcos(rot)*K);
+			double V4 = (MathExt::dcos(rot) + MathExt::dsin(rot)*(B/A));
+
+			double polyA = (MathExt::sqr(V2) / xRadSqr) + (MathExt::sqr(V4) / yRadSqr);
+			double polyB = 2*((V1*V2 / xRadSqr) + (V3*V4 / yRadSqr));
+			double polyC = (MathExt::sqr(V1) / xRadSqr) + (MathExt::sqr(V3) / yRadSqr) - 1;
+
+			std::vector<double> solutions = MathExt::solveQuadraticReal(polyA, polyB, polyC);
+			
+			if(solutions.size()>0)
+			{
+				//possible collision
+				for(int i=0; i<solutions.size(); i++)
+				{
+					Line l = a->getLine();
+					if( solutions[i] >= l.getMinY() && solutions[i] <= l.getMaxY())
+					{
+						return true;
+					}
+				}
+			}
+			else
+			{
+				//no collision
+				return false;
+			}
+
+		}
+		
 		return false;
 	}
 
 	bool CollisionMaster::collisionMethod(Line2D* a, Triangle2D* b)
 	{
-		return false;
+		//check for line intersection with any line in Triangle2D
+		Line l = a->getLine();
+
+		Line tl1 = Line(b->getVertex1(), b->getVertex2());
+		Line tl2 = Line(b->getVertex2(), b->getVertex3());
+		Line tl3 = Line(b->getVertex3(), b->getVertex1());
+		
+		Vec2f posColPoint1 = l.getIntersection(tl1);
+		Vec2f posColPoint2 = l.getIntersection(tl2);
+		Vec2f posColPoint3 = l.getIntersection(tl3);
+
+		if(posColPoint1.x >= l.getMinX() && posColPoint1.x <= l.getMaxX())
+			if(posColPoint1.y >= l.getMinY() && posColPoint1.y <= l.getMaxY())
+				return true;
+
+		if(posColPoint2.x >= l.getMinX() && posColPoint2.x <= l.getMaxX())
+			if(posColPoint2.y >= l.getMinY() && posColPoint2.y <= l.getMaxY())
+				return true;
+
+		if(posColPoint3.x >= l.getMinX() && posColPoint3.x <= l.getMaxX())
+			if(posColPoint3.y >= l.getMinY() && posColPoint3.y <= l.getMaxY())
+				return true;
+		
+		//potentially inside triangle
+		Point2D p = Point2D(a->getPoint1());
+		bool col = collisionMethod(&p, b);
+
+		return col;
 	}
+
+	#pragma endregion
+
+	#pragma region ELLIPSE_COLLISIONS
 
 	bool CollisionMaster::collisionMethod(Ellipse* a, Ellipse* b)
 	{
+
 		return false;
 	}
 
@@ -1205,10 +1502,18 @@ namespace glib
 		return false;
 	}
 
+	#pragma endregion
+
+	#pragma region TRIANGLE2D_COLLISIONS
+
 	bool CollisionMaster::collisionMethod(Triangle2D* a, Triangle2D* b)
 	{
 		return false;
 	}
+
+	#pragma endregion
+
+	#pragma region POLYGON2D_COLLISIONS
 
 	bool CollisionMaster::collisionMethod(Polygon2D* a, Point2D* b)
 	{
@@ -1398,10 +1703,9 @@ namespace glib
 		return false;
 	}
 
-	void CollisionMaster::setExternalCollisionFunction(std::function<bool(Shape*,Shape*)> extFunction)
-	{
-		extCollision = extFunction;
-	}
+	#pragma endregion
+
+
 
 	#pragma endregion
 

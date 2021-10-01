@@ -68,6 +68,7 @@ build $objDir/Mat3f.obj: buildToObject src/Mat3f.cpp
 build $objDir/Mat4f.obj: buildToObject src/Mat4f.cpp
 build $objDir/MathExt.obj: buildToObject src/MathExt.cpp
 build $objDir/MathExt_Clustering.obj: buildToObject src/MathExt_Clustering.cpp
+build $objDir/MathFunction.obj: buildToObject src/MathFunction.cpp
 build $objDir/Matrix.obj: buildToObject src/Matrix.cpp
 build $objDir/Model.obj: buildToObject src/Model.cpp
 build $objDir/Network.obj: buildToObject src/Network.cpp

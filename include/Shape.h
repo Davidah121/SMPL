@@ -605,25 +605,32 @@ namespace glib
 		void setVertex3(double x, double y);
 
 		/**
-		 * @brief Gets the first vertex of the triangle
+		 * @brief Gets the first vertex of the triangle after transforms
 		 * 
 		 * @return Vec2f 
 		 */
 		Vec2f getVertex1();
 
 		/**
-		 * @brief Gets the first vertex of the triangle
+		 * @brief Gets the first vertex of the triangle after transforms
 		 * 
 		 * @return Vec2f 
 		 */
 		Vec2f getVertex2();
 
 		/**
-		 * @brief Gets the first vertex of the triangle
+		 * @brief Gets the first vertex of the triangle after transforms
 		 * 
 		 * @return Vec2f 
 		 */
 		Vec2f getVertex3();
+
+		/**
+		 * @brief Get the Center Position of the triangle after transforms
+		 * 
+		 * @return Vec2f 
+		 */
+		Vec2f getCenterPosition();
 
 		/**
 		 * @brief Generates a bounding radius for the triangle.
@@ -711,12 +718,69 @@ namespace glib
 		 * @return double 
 		 */
 		double generateBoundingRadius();
+
+		/**
+		 * @brief Generates a 2D polygon that approximates a circle.
+		 * 
+		 * @param radius 
+		 * 		The radius of the circle
+		 * @param n 
+		 * 		The amount of samples from the circle to create the polygon
+		 * @return Polygon2D 
+		 */
+		static Polygon2D approximateCircle(double radius, int n);
+
+		/**
+		 * @brief Generates a 2D polygon that approximates a ellipse.
+		 * 
+		 * @param xRadius 
+		 * 		The x radius of the ellipse
+		 * @param yRadius 
+		 * 		The y radius of the ellipse
+		 * @param n 
+		 * 		The amount of samples from the ellipse to create the polygon
+		 * @return Polygon2D 
+		 */
+		static Polygon2D approximateEllipse(double xRadius, double yRadius, int n);
+
+		/**
+		 * @brief Generates a 2D polygon that approximates an arc from an ellipse.
+		 * 		The center of the ellipse will be included at (0,0)
+		 * 
+		 * @param xRadius 
+		 * 		The x radius of the ellipse
+		 * @param yRadius 
+		 * 		The y radius of the ellipse
+		 * @param startAngle 
+		 * 		The start angle for the arc.
+		 * 		Radians expected.
+		 * @param endAngle 
+		 * 		The end angle for the arc.
+		 * 		Radians expected.
+		 * @param n 
+		 * 		The amount of samples from the ellipse to create the polygon
+		 * @return Polygon2D 
+		 */
+		static Polygon2D approximateArc(double xRadius, double yRadius, double startAngle, double endAngle, int n);
 	private:
 		void checkConcave();
 		std::vector<Vec2f> points;
 		Vec2f centerPoint;
 		bool isConvex = true;
 	};
+
+	// class CubicBezierCurve2D : public Shape
+	// {
+	// public:
+	// 	CubicBezierCurve2D();
+	// 	~CubicBezierCurve2D();
+
+	// 	void setBezierCurve(BezierCurve b);
+	// 	BezierCurve& getBezierCurve();
+
+	// private:
+	// 	BezierCurve b;
+	// };
 
 	#pragma endregion
 
@@ -799,19 +863,19 @@ namespace glib
 		static bool collisionMethod(Box2D* a, Box2D* b);
 		static bool collisionMethod(Box2D* a, Circle* b);
 		static bool collisionMethod(Box2D* a, Ellipse* b);
-		static bool collisionMethod(Box2D* a, Triangle2D* b); //TODO - MATH DONE
+		static bool collisionMethod(Box2D* a, Triangle2D* b); //TEST
 		static bool collisionMethod(Box2D* a, Line2D* b);
 
 		//Circle
 		static bool collisionMethod(Circle* a, Circle* b);
-		static bool collisionMethod(Circle* a, Ellipse* b); //TODO
+		static bool collisionMethod(Circle* a, Ellipse* b); //TEST
 		static bool collisionMethod(Circle* a, Triangle2D* b); //TODO
 		static bool collisionMethod(Circle* a, Line2D* b);
 
 		//Line2D
 		static bool collisionMethod(Line2D* a, Line2D* b);
-		static bool collisionMethod(Line2D* a, Ellipse* b); //TODO
-		static bool collisionMethod(Line2D* a, Triangle2D* b); //TODO
+		static bool collisionMethod(Line2D* a, Ellipse* b);
+		static bool collisionMethod(Line2D* a, Triangle2D* b); //TEST
 
 		//Ellipse
 		static bool collisionMethod(Ellipse* a, Ellipse* b); //TODO
@@ -847,20 +911,10 @@ namespace glib
 		static bool AlternatingDiagonals(Polygon2D* a, Polygon2D* b);
 		
 		static bool collisionMethod(Polygon2D* a, Point2D* b);
-		static bool collisionMethod(Polygon2D* a, Circle* b);
-		static bool collisionMethod(Polygon2D* a, Ellipse* b);
-
-		//Used for any additional functions
+		static bool collisionMethod(Polygon2D* a, Circle* b); //TODO
+		static bool collisionMethod(Polygon2D* a, Ellipse* b); //TODO
 		
-		/**
-		 * @brief Sets a function that can be used to handle collision not handled by the pre-made functions.
-		 * 		Note that this is slower due to accessing the function through a pointer.
-		 * 
-		 * @param collisionFunction 
-		 */
-		static void setExternalCollisionFunction(std::function<bool(Shape*,Shape*)> collisionFunction);
 	private:
-		static std::function<bool(Shape*, Shape*)> extCollision;
 	};
 
 }  //NAMESPACE glib END

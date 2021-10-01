@@ -54,6 +54,82 @@ namespace glib
 		return Vec2f();
 	}
 
+	std::vector<BezierCurve> BezierCurve::subdivide(double t)
+	{
+		if(points.size() < 2)
+			return {};
+		
+		std::vector<Vec2f> pointsForFirst;
+		std::vector<Vec2f> pointsForLast;
+
+		pointsForFirst.push_back(points.front());
+		pointsForLast.push_back(points.back());
+		
+		std::vector<Vec2f> nPoints = points;
+
+		while(true)
+		{
+			std::vector<Vec2f> xPoints;
+			for(int i=0; i<nPoints.size()-1; i++)
+			{
+				Vec2f tempBlendPoint = nPoints[i]*(1-t) + nPoints[i+1]*t;
+				xPoints.push_back(tempBlendPoint);
+			}
+
+			if(xPoints.size() == 1)
+			{
+				pointsForFirst.push_back(xPoints[0]);
+				pointsForLast.push_back(xPoints[0]);
+				break;
+			}
+			else if(xPoints.size() > 0)
+			{
+				pointsForFirst.push_back(xPoints.front());
+				pointsForLast.push_back(xPoints.back());
+				
+				nPoints = xPoints;
+			}
+			else
+			{
+				//error probably
+				break;
+			}
+		}
+
+		//Form bezier curve from the points
+		BezierCurve b1, b2;
+		for(int i=0; i<pointsForFirst.size(); i++)
+		{
+			b1.addPoint(pointsForFirst[i]);
+		}
+
+		for(int i=pointsForLast.size()-1; i>=0; i--)
+		{
+			b2.addPoint(pointsForLast[i]);
+		}
+
+		return {b1, b2};
+	}
+
+	BezierCurve BezierCurve::extract(double a, double b)
+	{
+		if(a < 0 || a > 1 || b < 0 || b > 1)
+		{
+			return BezierCurve();
+		}
+
+		std::vector<BezierCurve> tempSubdivision = subdivide(b);
+
+		//discard the second subdivision
+		//subdivide the first BezierCurve at new 'a' point
+
+		double newABlend = 1.0/b * a;
+
+		std::vector<BezierCurve> newSubDivision = tempSubdivision[0].subdivide(newABlend);
+
+		return newSubDivision[1];
+	}
+
 	Vec2f BezierCurve::getFuctionAt(double time)
 	{
 		//recursive definition that takes n^2 time
@@ -154,6 +230,14 @@ namespace glib
 	{
 		std::vector<double> timeValues = std::vector<double>();
 		double A,B,C,D;
+		double du;
+		double preTime = 0;
+		
+		GeneralMathFunction f = GeneralMathFunction();
+		f.setFunction( [this](double t) -> double{
+			return this->getFuctionAt(t).y;
+		});
+
 		switch (points.size())
 		{
 		case 0:
@@ -198,6 +282,15 @@ namespace glib
 			timeValues = MathExt::solveCubicReal(A,B,C,D);
 			break;
 		default:
+			//attempt to solve each section of the bezier curve separately.
+			du = 1.0 / size();
+			for(int i=1; i<=size(); i++)
+			{
+				double nTime = du*i;
+				double possibleSolution = MathExt::bisectionMethod(&f, preTime, nTime, 10);
+				timeValues.push_back(possibleSolution);
+				preTime = nTime;
+			}
 			break;
 		}
 
@@ -205,6 +298,8 @@ namespace glib
 		
 		for(int i=0; i<timeValues.size(); i++)
 		{
+			if(timeValues[i] == NAN)
+				continue;
 			if(timeValues[i]>=0.0 && timeValues[i]<=1.0)
 				realTimeValues.push_back(timeValues[i]);
 		}
@@ -215,6 +310,14 @@ namespace glib
 	{
 		std::vector<double> timeValues = std::vector<double>();
 		double A,B,C,D;
+		double du;
+		double preTime = 0;
+		
+		GeneralMathFunction f = GeneralMathFunction();
+		f.setFunction( [this](double t) -> double{
+			return this->getFuctionAt(t).x;
+		});
+
 		switch (points.size())
 		{
 		case 0:
@@ -252,17 +355,50 @@ namespace glib
 			timeValues = MathExt::solveCubicReal(A,B,C,D);
 			break;
 		default:
+			//attempt to solve each section of the bezier curve separately.
+			du = 1.0 / size();
+			for(int i=1; i<=size(); i++)
+			{
+				double nTime = du*i;
+				double possibleSolution = MathExt::bisectionMethod(&f, preTime, nTime, 10);
+				timeValues.push_back(possibleSolution);
+				preTime = nTime;
+			}
 			break;
 		}
 
 		std::vector<double> realTimeValues;
 		for(int i=0; i<timeValues.size(); i++)
 		{
+			if(timeValues[i] == NAN)
+				continue;
 			if(timeValues[i]>=0 && timeValues[i]<=1)
 				realTimeValues.push_back(timeValues[i]);
 		}
 
 		return realTimeValues;
+	}
+
+	std::vector<double> BezierCurve::findTimeForPoint(double x, double y)
+	{
+		std::vector<double> xTimes = findTimeForX(x);
+		std::vector<double> yTimes = findTimeForY(y);
+
+		//for all matching times, add to the final list.
+		std::vector<double> finalTimes;
+
+		for(int i=0; i<xTimes.size(); i++)
+		{
+			for(int j=0; j<yTimes.size(); j++)
+			{
+				if(xTimes[i] == yTimes[j])
+				{
+					finalTimes.push_back(xTimes[i]);
+				}
+			}
+		}
+
+		return finalTimes;
 	}
 
 	Vec2f BezierCurve::blendPointsRecursive(int start, int end, double time)
@@ -328,6 +464,99 @@ namespace glib
 		#endif
 		
 		return Vec2f();
+	}
+
+	std::vector<BezierCurve> BezierCurve::approximateCircle(double radius, bool cubic)
+	{
+		if(cubic)
+		{
+			//Using constants
+			//Find constants by solving equation under constraints
+			double c = 0.5522847498;
+			BezierCurve b1,b2,b3,b4;
+
+			//arc1
+			b1.addPoint(0,radius);
+			b1.addPoint(c*radius, radius);
+			b1.addPoint(radius,c*radius);
+			b1.addPoint(radius,0);
+
+			//arc2
+			b2.addPoint(radius,0);
+			b2.addPoint(radius, -c*radius);
+			b2.addPoint(c*radius, -radius);
+			b2.addPoint(0,-radius);
+
+			//arc3
+			b3.addPoint(0,-radius);
+			b3.addPoint(-c*radius, -radius);
+			b3.addPoint(-radius,-c*radius);
+			b3.addPoint(-radius,0);
+
+			//arc4
+			b4.addPoint(-radius,0);
+			b4.addPoint(-radius, c*radius);
+			b4.addPoint(-c*radius, radius);
+			b4.addPoint(0,radius);
+
+			return {b1,b2,b3,b4};
+		}
+		else
+		{
+			//Using constants
+			//Find constants by solving equation under constraints
+			double c = 0.914213562373;
+			BezierCurve b1,b2,b3,b4;
+
+			//arc1
+			b1.addPoint(0,radius);
+			b1.addPoint(c*radius, radius);
+			b1.addPoint(radius,c*radius);
+			b1.addPoint(radius,0);
+
+			//arc2
+			b2.addPoint(radius,0);
+			b2.addPoint(radius, -c*radius);
+			b2.addPoint(c*radius, -radius);
+			b2.addPoint(0,-radius);
+
+			//arc3
+			b3.addPoint(0,-radius);
+			b3.addPoint(-c*radius, -radius);
+			b3.addPoint(-radius,-c*radius);
+			b3.addPoint(-radius,0);
+
+			//arc4
+			b4.addPoint(-radius,0);
+			b4.addPoint(-radius, c*radius);
+			b4.addPoint(-c*radius, radius);
+			b4.addPoint(0,radius);
+
+			return {b1,b2,b3,b4};
+		}
+	}
+
+	std::vector<BezierCurve> BezierCurve::approximateEllipse(double xradius, double yradius, bool cubic)
+	{
+		if(cubic)
+		{
+			//Using constants
+			//Find constants by solving equation under constraints
+			double c = 0.5522847498;
+			BezierCurve b1,b2,b3,b4;
+
+
+			return {b1,b2,b3,b4};
+		}
+		else
+		{
+			//Using constants
+			//Find constants by solving equation under constraints
+			double c = 0.914213562373;
+			BezierCurve b1,b2,b3,b4;
+
+			return {b1,b2,b3,b4};
+		}
 	}
 
 } //NAMESPACE glib END
