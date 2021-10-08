@@ -50,6 +50,20 @@ namespace glib
 		y = other.y;
 	}
 
+	double Vec2f::getLength()
+	{
+		return sqrt((x*x) + (y*y));
+	}
+
+	Vec2f Vec2f::normalize()
+	{
+		double length = getLength();
+		if(length!=0)
+			return Vec2f(x/length, y/length);
+		else
+			return Vec2f();
+	}
+	
 	Vec2f Vec2f::operator-(Vec2f other)
 	{
 		return Vec2f(x-other.x, y-other.y);

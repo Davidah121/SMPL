@@ -58,7 +58,7 @@ PolynomialMathFunction::~PolynomialMathFunction()
 
 double PolynomialMathFunction::solve(double x)
 {
-    if(size == 0)
+    if(size() == 0)
         return 0;
     
     double solution = constants[constants.size()-1];

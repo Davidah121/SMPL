@@ -631,7 +631,7 @@ void testCollision2()
 
     g.setRenderFunction([&pos1,&pos2](Image* surf) ->void{
 
-        Circle l = Circle(16);
+        glib::Ellipse l = glib::Ellipse(32,16);
         l.setPosition(Vec3f(pos1));
 
         glib::Ellipse e = glib::Ellipse(16,32);
@@ -644,17 +644,19 @@ void testCollision2()
         ellipseGraphic.setY(pos2.y);
         ellipseGraphic.setXRadius(16);
         ellipseGraphic.setYRadius(32);
-        ellipseGraphic.setFillColor({0,0,0,255});
+        ellipseGraphic.setFillColor({0,255,0,255});
 
-        VectorCircle rect = VectorCircle();
+        VectorEllipse rect = VectorEllipse();
         rect.setX(pos1.x);
         rect.setY(pos1.y);
-        rect.setRadius(16);
+        rect.setYRadius(16);
+        rect.setXRadius(32);
+        rect.setFillColor({0,0,255,255});
         // rect.setFillColor({0,0,0,0});
         // rect.setStrokeWidth(1);
 
         if(getCol != true)
-            rect.setFillColor({0,0,0,255});
+            rect.setFillColor({0,0,255,255});
         else
             rect.setFillColor({255,0,0,255});
 
@@ -807,16 +809,40 @@ void testBezierSubdivision()
     BezierCurve c = b.extract(0.5, 0.75);
 }
 
-void testClosestPointStuff()
+// void testClosestPointStuff()
+// {
+//     //cPos = 137, 88
+//     //ePos = 128, 128
+//     glib::Ellipse e = glib::Ellipse(4,3);
+//     Circle c = Circle(3);
+//     c.setPosition( Vec3f(4.6, 4.6, 0) );
+
+//     CollisionMaster::collisionMethod(&c, &e);
+
+// }
+
+void testBezierApproximations()
 {
-    //cPos = 137, 88
-    //ePos = 128, 128
-    glib::Ellipse e = glib::Ellipse(4,3);
-    Circle c = Circle(3);
-    c.setPosition( Vec3f(4.6, 4.6, 0) );
+    SimpleWindow w = SimpleWindow("Approximations");
+    w.setThreadAutoRepaint(true);
+    w.setThreadUpdateTime(16,000);
 
-    CollisionMaster::collisionMethod(&c, &e);
+    GuiCustomObject g = GuiCustomObject();
+    std::vector<BezierCurve> b = BezierCurve::approximateEllipse(48, 24, 96, 96, true);
 
+
+    g.setRenderFunction([&b](Image* surf)->void{
+        
+        for(int i=0; i<b.size(); i++)
+        {
+            Graphics::setColor({255,0,0,255});
+            Graphics::drawBezierCurve(b[i], 20, surf);
+        }
+
+    });
+
+    w.getGuiManager()->addElement(&g);
+    w.waitTillClose();
 }
 
 int main(int argc, char** argv)
@@ -828,6 +854,8 @@ int main(int argc, char** argv)
     //testCopyPasteStuff();
     testCollision2();
     //testBezierSubdivision();
+
+    //testBezierApproximations();
 
     //testClosestPointStuff();
 

@@ -100,6 +100,25 @@ namespace glib
 		w = value.w;
 	}
 
+	Vec3f Vec4f::toVec3f()
+	{
+		return Vec3f(x,y,z);
+	}
+
+	double Vec4f::getLength()
+	{
+		return sqrt((x*x) + (y*y) + (z*z) + (w*w));
+	}
+
+	Vec4f Vec4f::normalize()
+	{
+		double length = getLength();
+		if(length!=0)
+			return Vec4f(x/length, y/length, z/length, w/length);
+		else
+			return Vec4f();
+	}
+
 	Vec4f Vec4f::operator-(Vec4f other)
 	{
 		return Vec4f(x - other.x, y - other.y, z - other.z, w - other.w);

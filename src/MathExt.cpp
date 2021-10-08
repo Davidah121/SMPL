@@ -790,6 +790,30 @@ namespace glib
 		return MathExt::sqrt(a + b + c);
 	}
 
+	#pragma region Matrix_Operations
+
+	Matrix MathExt::getInverse(Matrix& m)
+	{
+		return m.getInverse();
+	}
+
+	Matrix MathExt::getTranspose(Matrix& m)
+	{
+		return m.getTranspose();
+	}
+
+	double MathExt::getDeterminate(Matrix& m)
+	{
+		return m.getDeterminate();
+	}
+
+	Matrix MathExt::getMatrixOfMinors(Matrix& m, int row, int col)
+	{
+		return m.getMatrixOfMinors(row, col);
+	}
+
+	#pragma endregion
+
 	#pragma region Transformations_2D
 	Mat3f MathExt::rotation2D(double rotation)
 	{
@@ -1246,6 +1270,63 @@ namespace glib
 		}
 
 		return xn[0];
+	}
+
+	PolynomialMathFunction MathExt::linearRegression(std::vector<Vec2f> points, int degree)
+	{
+		if(degree < 0)
+			return PolynomialMathFunction();
+		
+		if(points.size() <= 0)
+			return PolynomialMathFunction();
+		
+		Matrix X = Matrix(points.size(), degree+1);
+		Matrix Y = Matrix(points.size(), 1);
+
+		Matrix xTranspose = Matrix(degree+1, points.size());
+
+		for(int i=0; i<points.size(); i++)
+		{
+			for(int j=0; j<degree+1; j++)
+			{
+				X[i][j] = MathExt::pow(points[i].x, j);
+				xTranspose[j][i] = MathExt::pow(points[i].x, j);
+			}
+
+			Y[i][0] = points[i].y;
+		}
+		
+		Matrix constants = (xTranspose*X).getInverse() * xTranspose * Y;
+		PolynomialMathFunction f = PolynomialMathFunction();
+
+		for(int i=0; i<constants.getRows(); i++)
+		{
+			f.addConstant(constants[i][0]);
+		}
+
+		return f;
+	}
+
+	std::vector<double> MathExt::getIntersectionQuadratic(double A1, double B1, double C1, double A2, double B2, double C2)
+	{
+		//A1x^2 + B1x + C1 = A2x^2 + B2x + C2
+		//(A1-A2)x^2 + (B1-B2)x + (C1-C2) = 0
+		double nA = (A1-A2);
+		double nB = (B1-B2);
+		double nC = (C1-C2);
+
+		return MathExt::solveQuadraticReal(nA, nB, nC);
+	}
+
+	std::vector<double> MathExt::getIntersectionQuadratic(PolynomialMathFunction a, PolynomialMathFunction b)
+	{
+		if(a.size() == 3 && b.size() == 3)
+		{
+			return MathExt::getIntersectionQuadratic(a.getConstant(0), a.getConstant(1), a.getConstant(2),
+													b.getConstant(0), b.getConstant(1), b.getConstant(2));
+		}
+
+		return {};
 	}
 	
 	double MathExt::binomialCoefficient(int n, int k)

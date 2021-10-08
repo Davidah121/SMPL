@@ -1185,6 +1185,46 @@ namespace glib
 		 */
 		static double distanceTo(PolarCoordinate p1, PolarCoordinate p2);
 		
+		//Matrix operations
+
+		/**
+		 * @brief Get the Inverse of the Matrix m.
+		 * 		A wrapper around the Matrix class's getInverse function
+		 * 
+		 * @param m 
+		 * @return Matrix 
+		 */
+		static Matrix getInverse(Matrix& m);
+
+		/**
+		 * @brief Get the Transpose of the Matrix m.
+		 * 		A wrapper around the Matrix class's getTranspose function
+		 * 
+		 * @param m 
+		 * @return Matrix 
+		 */
+		static Matrix getTranspose(Matrix& m);
+
+		/**
+		 * @brief Get the Determinate of the Matrix m.
+		 * 		A wrapper around the Matrix class's getDeterminate function
+		 * 
+		 * @param m 
+		 * @return double 
+		 */
+		static double getDeterminate(Matrix& m);
+
+		/**
+		 * @brief Get the Matrix Of Minors from the Matrix m.
+		 * 		A wrapper around the Matrix class's getMatrixOfMinors function
+		 * 
+		 * @param m 
+		 * @param row 
+		 * @param col 
+		 * @return Matrix 
+		 */
+		static Matrix getMatrixOfMinors(Matrix& m, int row, int col);
+
 		//2D transformations
 		/**
 		 * @brief Returns a 2D rotation matrix.
@@ -1543,6 +1583,21 @@ namespace glib
 		 * 		If solution is not possible with the given parameters, NAN is returned
 		 */
 		static double secantMethod(MathFunction* f, double a, double b, int maxIterations = 10);
+
+		/**
+		 * @brief Creates a polynomial of n degree that closely represents the data points.
+		 * 
+		 * @param points 
+		 * 		The x,y points of the sampled data.
+		 * @param degree 
+		 * 		The degree of the polynomial.
+		 * 		Must be 1 or more.
+		 * @return PolynomialMathFunction 
+		 */
+		static PolynomialMathFunction linearRegression(std::vector<Vec2f> points, int degree);
+
+		static std::vector<double> getIntersectionQuadratic(double A1, double B1, double C1, double A2, double B2, double C2);
+		static std::vector<double> getIntersectionQuadratic(PolynomialMathFunction a, PolynomialMathFunction b);
 		
 		/**
 		 * @brief Returns the binomial coefficient using n and k.
