@@ -101,6 +101,28 @@ namespace glib
 		 * @param other 
 		 */
 		void setValues(Vec2f other);
+		
+		/**
+		 * @brief Converts the Vec3f object to a Vec2f object by dropping the z value.
+		 * 
+		 * @return Vec2f 
+		 */
+		Vec2f toVec2f();
+
+		/**
+		 * @brief Get the Length of the vector
+		 * 
+		 * @return double 
+		 */
+		double getLength();
+
+		/**
+		 * @brief Gets the normalized version of the vector.
+		 * 		Returns a vector with the same direction but a length of 1.
+		 * 
+		 * @return Vec3f 
+		 */
+		Vec3f normalize();
 
 		Vec3f operator-(Vec3f other);
 		Vec3f operator+(Vec3f other);

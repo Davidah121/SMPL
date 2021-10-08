@@ -75,6 +75,25 @@ namespace glib
 		y = other.y;
 	}
 
+	Vec2f Vec3f::toVec2f()
+	{
+		return Vec2f(x,y);
+	}
+
+	double Vec3f::getLength()
+	{
+		return sqrt((x*x) + (y*y) + (z*z));
+	}
+
+	Vec3f Vec3f::normalize()
+	{
+		double length = getLength();
+		if(length!=0)
+			return Vec3f(x/length, y/length, z/length);
+		else
+			return Vec3f();
+	}
+
 	Vec3f Vec3f::operator-(Vec3f other)
 	{
 		return Vec3f(x - other.x, y - other.y, z - other.z);

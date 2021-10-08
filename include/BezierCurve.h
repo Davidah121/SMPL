@@ -68,6 +68,36 @@ namespace glib
 		Vec2f getPoint(int index);
 
 		/**
+		 * @brief Subdivides the Bezier Curve from [0, 1] into 2 separate Bezier Curves.
+		 * 
+		 * @param t
+		 * 		The time value to split at.
+		 * 
+		 * @return std::vector<BezierCurve> 
+		 */
+		std::vector<BezierCurve> subdivide(double t);
+
+		/**
+		 * @brief Extracts the segment from [a, b] as a new Bezier Curve.
+		 * 
+		 * @param a
+		 * 		The start time value. Must be between [0, 1]
+		 * @param b
+		 * 		The end time value. Must be between [0, 1]
+		 * @return BezierCurve
+		 */
+		BezierCurve extract(double a, double b);
+
+		/**
+		 * @brief Gets an Axis Aligned Bounding Box for the Bezier Curve.
+		 * 		If successful, it returns a std::vector<Vec2f> of size 2 where the first point
+		 * 		represents the top left of the box and the second point represents the bottom right of the box.
+		 * 
+		 * @return std::vector<Vec2f> 
+		 */
+		std::vector<Vec2f> getBoundingBox();
+
+		/**
 		 * @brief Solves the BezierCurve for the given time. Note that any time
 		 * 		value can be used even if outside of the bounds [0,1]
 		 * @param time
@@ -143,6 +173,7 @@ namespace glib
 		/**
 		 * @brief Solves the function all times where the solution has the specified y value.
 		 * 		Currently only works for BezierCurves with 4 or less points.
+		 * 
 		 * 	@param y
 		 * 		The y value to solve for.
 		 * @return std::vector<double>
@@ -154,6 +185,7 @@ namespace glib
 		/**
 		 * @brief Solves the function all times where the solution has the specified x value.
 		 * 		Currently only works for BezierCurves with 4 or less points.
+		 * 
 		 * 	@param x
 		 * 		The x value to solve for.
 		 * @return std::vector<double>
@@ -162,6 +194,72 @@ namespace glib
 		 */
 		std::vector<double> findTimeForX(double x);
 
+		/**
+		 * @brief Solves the function all times where the solution has the specified x,y value.
+		 * 		Currently only works for BezierCurves with 4 or less points.
+		 * 
+		 * @param x 
+		 * @param y 
+		 * @return std::vector<double> 
+		 * 		returns a list of all solutions. Can return an empty list if there is no
+		 * 		solution.
+		 */
+		std::vector<double> findTimeForPoint(double x, double y);
+
+		/**
+		 * @brief Approximates a Circle using a series of bezier curves.
+		 * 		If cubic bezier curves are selected, 4 Cubic Bezier curves are used for approximation.
+		 * 		If quadratic bezier curves are selected, 8 Quadratic Bezier curves are used for approximation.
+		 * 
+		 * @param radius 
+		 * 		The radius of the Circle.
+		 * @param cubic
+		 * 		If set to true, cubic bezier curves are used to approximate the circle.
+		 * 		Otherwise, quadratic bezier curves are used.
+		 * 		Default value is true.
+		 * @return std::vector<BezierCurve> 
+		 */
+		static std::vector<BezierCurve> approximateCircle(double radius, double x=0, double y=0, bool cubic=true);
+
+		/**
+		 * @brief Approximates a Ellipse using a series of bezier curves.
+		 * 		If cubic bezier curves are selected, 4 Cubic Bezier curves are used for approximation.
+		 * 		If quadratic bezier curves are selected, 8 Quadratic Bezier curves are used for approximation.
+		 * 
+		 * @param xRadius 
+		 * 		The x radius of the Ellipse.
+		 * @param yRadius 
+		 * 		The y radius of the Ellipse.
+		 * @param cubic
+		 * 		If set to true, cubic bezier curves are used to approximate the Ellipse.
+		 * 		Otherwise, quadratic bezier curves are used.
+		 * 		Default value is true.
+		 * @return std::vector<BezierCurve> 
+		 */
+		static std::vector<BezierCurve> approximateEllipse(double xRadius, double yRadius, double x=0, double y=0, bool cubic=true);
+
+		/**
+		 * @brief Approximates an Arc using a bezier curve.
+		 * 
+		 * @param xRadius 
+		 * 		The x radius of the Arc.
+		 * @param yRadius 
+		 * 		The y radius of the Arc.
+		 * @param startAngle 
+		 * 		The start angle for the arc.
+		 * 		Radians expected.
+		 * @param endAngle 
+		 * 		The end angle for the arc.
+		 * 		Radians expected.
+		 * @param cubic
+		 * 		If set to true, cubic bezier curves are used to approximate the Arc.
+		 * 		Otherwise, quadratic bezier curves are used.
+		 * 		Default value is true.
+		 * @return BezierCurve
+		 */
+		static BezierCurve approximateArc(double xRadius, double yRadius, double startAngle, double endAngle, double x=0, double y=0, bool cubic=true);
+		
+		
 	private:
 		Vec2f blendPointsRecursive(int start, int end, double time);
 		Vec2f blendPointsExplicit(double time);

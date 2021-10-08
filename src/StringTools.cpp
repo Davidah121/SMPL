@@ -2,11 +2,18 @@
 #include <string>
 #include "Input.h"
 
+#define getch() (_getwch() % 0xFF)
+#define getwch() _getwch()
+
 namespace glib
 {
 
 	bool StringTools::hasInit = false;
 	wchar_t const StringTools::lineBreak = L'\n';
+
+	std::wstreambuf* StringTools::inputBuffer = std::wcin.rdbuf();
+	std::wstreambuf* StringTools::outputBuffer = std::wcout.rdbuf();
+	std::wstreambuf* StringTools::errorBuffer = std::wcerr.rdbuf();
 
 	void StringTools::init()
 	{
@@ -670,62 +677,184 @@ namespace glib
 
 	std::wstring StringTools::getWideString()
 	{
-		if (hasInit)
+		if (!hasInit)
 		{
-			std::wstring temp = L"";
-
-			std::getline(std::wcin, temp);
-
-			return temp;
+			init();
 		}
-		return L"";
+
+		std::wstring temp = L"";
+		std::getline(std::wcin, temp);
+		return temp;
 	}
 
 	std::string StringTools::getString()
 	{
-		if (hasInit)
+		std::wstring temp = L"";
+		std::getline(std::wcin, temp);
+		std::string text = StringTools::toCString(temp);
+
+		return text;
+	}
+
+	std::string StringTools::getHiddenString(bool showAsterisk)
+	{
+		std::string text = "";
+		while(true)
 		{
-			std::wstring temp = L"";
+			int c = getch();
+			if(c == 0x0D || c == 0x0A)
+			{
+				if(showAsterisk)
+					std::wcout << "\n";
+				break;
+			}
+			else if(c == 0x08)
+			{
+				if(showAsterisk)
+				{
+					//move cursor back one
+					std::wcout << "\x1B[D";
+					//clear to end of line
+					std::wcout << "\x1B[K";
+				}
 
-			std::getline(std::wcin, temp);
-
-			std::string text = StringTools::toCString(temp);
-
-			return text;
+				if(text.size()>0)
+					text.pop_back();
+			}
+			else if(c >= 32)
+			{
+				if(showAsterisk)
+					std::wcout << "*";
+				text += c;
+			}
 		}
-		return "";
+
+		return text;
+
+	}
+
+	std::wstring StringTools::getHiddenWideString(bool showAsterisk)
+	{
+		std::wstring text = L"";
+		while(true)
+		{
+			int c = getwch();
+			if(c == 0x0D || c == 0x0A)
+			{
+				if(showAsterisk)
+					std::wcout << "\n";
+				break;
+			}
+			else if(c == 0x08)
+			{
+				if(showAsterisk)
+				{
+					//move cursor back one
+					std::wcout << "\x1B[D";
+					//clear to end of line
+					std::wcout << "\x1B[K";
+				}
+
+				if(text.size()>0)
+					text.pop_back();
+			}
+			else if(c >= 32)
+			{
+				if(showAsterisk)
+					std::wcout << "*";
+				text += c;
+			}
+		}
+
+		return text;
 	}
 
 	char StringTools::getChar()
 	{
-		if (hasInit)
-		{
-			std::wstring temp = L"";
-			std::getline(std::wcin, temp);
-
-			return (char)temp.at(0);
-		}
-		return 0;
+		return (char)std::wcin.get();
 	}
 
 	wchar_t StringTools::getWideChar()
 	{
-		if (hasInit)
-		{
-			std::wstring temp = L"";
-			std::getline(std::wcin, temp);
-
-			return temp.at(0);
-		}
-		return 0;
+		if(!hasInit)
+			init();
+		
+		return (wchar_t)std::wcin.get();
 	}
 
 	int StringTools::getInt()
 	{
-		if(hasInit)
-			return std::wcin.get();
+		std::wstring temp;
+		std::getline(std::wcin, temp);
+		return toInt(temp);
+	}
 
-		return 0;
+	float StringTools::getFloat()
+	{
+		std::wstring temp;
+		std::getline(std::wcin, temp);
+		return toFloat(temp);
+	}
+
+	char StringTools::getCharLessLock(bool noFunctionKeys)
+	{
+		if(noFunctionKeys)
+		{
+			while(true)
+			{
+				int c = getch();
+
+				if( c == 0xE0 || c == 0x00 )
+				{
+					if(c == 0xE0)
+					{
+						//Could be a valid character.
+						//Is a valid character if no character appears after
+						//however, there is no way to determine if there is another character
+						//without blocking with another getwch call
+					}
+					getch();
+				}
+				else if(c >= 0x20)
+				{
+					return c;
+				}
+			}
+		}
+		else
+		{
+			return getch();
+		}
+	}
+
+	int StringTools::getWideCharLessLock(bool noFunctionKeys)
+	{
+		if(noFunctionKeys)
+		{
+			while(true)
+			{
+				int c = getwch();
+				if( c == 0xE0 || c == 0x00 )
+				{
+					if(c == 0xE0)
+					{
+						//Could be a valid character.
+						//Is a valid character if no character appears after
+						//however, there is no way to determine if there is another character
+						//without blocking with another getwch call
+					}
+					c = getwch();
+				}
+				else if(c >= 0x20)
+				{
+					return c;
+				}
+			}
+		}
+		else
+		{
+			return getwch();
+		}
 	}
 
 	void StringTools::findLongestMatch(std::string base, std::string match, int* index, int* length)
@@ -741,7 +870,9 @@ namespace glib
 		va_list args;
 		va_copy(args, orgArgs);
 
-		for(int i=0; i<splits.size(); i++)
+		int i=0;
+
+		while(i<splits.size())
 		{
 			std::string str = splits[i];
 
@@ -765,7 +896,7 @@ namespace glib
 				{
 					loc = nLoc;
 					
-					while(true)
+					while(loc < str.size())
 					{
 						loc++;
 						//read till flag
@@ -802,6 +933,10 @@ namespace glib
 							count++;
 							break;
 						}
+						else if(str[loc] == L'%')
+						{
+							break;
+						}
 						else if(str[loc] == '*')
 						{
 							va_arg(args, int);
@@ -821,6 +956,8 @@ namespace glib
 				finalText += StringTools::toCString(delayedStr);
 				count++;
 			}
+
+			i++;
 		}
 
 		va_end(args);
@@ -850,7 +987,8 @@ namespace glib
 		va_list args;
 		va_copy(args, orgArgs);
 
-		for(int i=0; i<splits.size(); i++)
+		int i = 0;
+		while(i<splits.size())
 		{
 			std::wstring str = splits[i];
 
@@ -874,7 +1012,7 @@ namespace glib
 				{
 					loc = nLoc;
 					
-					while(true)
+					while(loc < str.size())
 					{
 						loc++;
 						//read till flag
@@ -911,6 +1049,10 @@ namespace glib
 							count++;
 							break;
 						}
+						else if(str[loc] == L'%')
+						{
+							break;
+						}
 						else if(str[loc] == L'*')
 						{
 							va_arg(args, int);
@@ -930,6 +1072,8 @@ namespace glib
 				finalText += StringTools::toWideString(delayedStr);
 				count++;
 			}
+
+			i++;
 		}
 
 		va_end(args);
@@ -949,6 +1093,67 @@ namespace glib
 		va_end(args);
 
 		return finalText;
+	}
+
+	void StringTools::clearConsole(bool clearScrollBuffer)
+	{
+		if(clearScrollBuffer)
+			StringTools::print("\x1B[2J\x1B[3J\x1B[H");
+		else
+			StringTools::print("\x1B[2J\x1B[H");
+	}
+
+	void StringTools::moveConsoleCursor(int horizontal, int vertical, bool absolute)
+	{
+		if(absolute)
+		{
+			int realHVal = (horizontal>=1) ? horizontal : 1;
+			int realVVal = (vertical>=1) ? vertical : 1;
+			
+			StringTools::print("\x1B[%d;%dH", realVVal, realHVal);
+		}
+		else
+		{
+			if(horizontal>0)
+				StringTools::print("\x1B[%dC", horizontal);
+			else if(horizontal<0)
+				StringTools::print("\x1B[%dD", std::abs(horizontal));
+
+			if(vertical>0)
+				StringTools::print("\x1B[%dB", vertical);
+			else if(vertical<0)
+				StringTools::print("\x1B[%dA", std::abs(vertical));
+		}
+	}
+
+	void StringTools::eraseConsoleLine(bool eraseFromCursor)
+	{
+		if(eraseFromCursor)
+			StringTools::print("\x1B[K");
+		else
+			StringTools::print("\x1B[2K\r");
+	}
+
+	void StringTools::reroutOutput(std::wstreambuf* file)
+	{
+		std::wcout.rdbuf(file);
+	}
+
+	void StringTools::reroutInput(std::wstreambuf* file)
+	{
+		std::wcin.rdbuf(file);
+	}
+
+	void StringTools::reroutErrorOutput(std::wstreambuf* file)
+	{
+		std::wcerr.rdbuf(file);
+	}
+
+	void StringTools::resetOutputInputStreams()
+	{
+		std::wcin.rdbuf(inputBuffer);
+		std::wcout.rdbuf(outputBuffer);
+		std::wcerr.rdbuf(errorBuffer);
 	}
 
 } //NAMESPACE glib END

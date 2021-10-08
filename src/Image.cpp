@@ -38,9 +38,12 @@ namespace glib
 
 		this->width = other.width;
 		this->height = other.height;
-		pixels = new Color[width * height];
 
-		memcpy(pixels, other.pixels, width * height * sizeof(Color));
+		if(other.pixels != nullptr)
+		{
+			pixels = new Color[width * height];
+			memcpy(pixels, other.pixels, width * height * sizeof(Color));
+		}
 
 		p = other.p;
 	}
@@ -50,9 +53,12 @@ namespace glib
 		this->~Image();
 		this->width = other.width;
 		this->height = other.height;
-		pixels = new Color[width * height];
-
-		memcpy(pixels, other.pixels, width * height * sizeof(Color));
+		
+		if(other.pixels != nullptr)
+		{
+			pixels = new Color[width * height];
+			memcpy(pixels, other.pixels, width * height * sizeof(Color));
+		}
 
 		p = other.p;
 	}
@@ -94,6 +100,9 @@ namespace glib
 		}
 		else
 		{
+			if(pixels == nullptr)
+				return Color();
+			
 			int tX, tY;
 			tX = MathExt::clamp(x, 0, width-1);
 			tY = MathExt::clamp(y, 0, height-1);

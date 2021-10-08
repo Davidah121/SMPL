@@ -604,22 +604,266 @@ void testCopyPasteStuff()
     }
 }
 
-void castStringToFile(File f)
+void testCollision2()
 {
+    SimpleWindow w = SimpleWindow("collisions");
+    w.setThreadAutoRepaint(true);
+    w.setThreadUpdateTime(16,000);
 
+    Vec2f pos1, pos2;
+
+    pos2 = Vec2f(128,128);
+    pos1 = Vec2f(64, 64);
+
+    GuiCustomObject g = GuiCustomObject();
+    g.setUpdateFunction([&pos1,&pos2]() ->void{
+        
+        if(Input::getKeyDown('W'))
+            pos1.y--;
+        else if(Input::getKeyDown('S'))
+            pos1.y++;
+        
+        if(Input::getKeyDown('A'))
+            pos1.x--;
+        else if(Input::getKeyDown('D'))
+            pos1.x++;
+    });
+
+    g.setRenderFunction([&pos1,&pos2](Image* surf) ->void{
+
+        glib::Ellipse l = glib::Ellipse(32,16);
+        l.setPosition(Vec3f(pos1));
+
+        glib::Ellipse e = glib::Ellipse(16,32);
+        e.setPosition(Vec3f(pos2));
+
+        bool getCol = CollisionMaster::collisionMethod(&l, &e);
+
+        VectorEllipse ellipseGraphic = VectorEllipse();
+        ellipseGraphic.setX(pos2.x);
+        ellipseGraphic.setY(pos2.y);
+        ellipseGraphic.setXRadius(16);
+        ellipseGraphic.setYRadius(32);
+        ellipseGraphic.setFillColor({0,255,0,255});
+
+        VectorEllipse rect = VectorEllipse();
+        rect.setX(pos1.x);
+        rect.setY(pos1.y);
+        rect.setYRadius(16);
+        rect.setXRadius(32);
+        rect.setFillColor({0,0,255,255});
+        // rect.setFillColor({0,0,0,0});
+        // rect.setStrokeWidth(1);
+
+        if(getCol != true)
+            rect.setFillColor({0,0,255,255});
+        else
+            rect.setFillColor({255,0,0,255});
+
+        ellipseGraphic.draw(surf, 320,240);
+        rect.draw(surf, 320,240);
+        
+    });
+
+    w.getGuiManager()->addElement(&g);
+
+    w.waitTillClose();
 }
 
-void castTest()
+void testConsoleStuff()
 {
-    castStringToFile(L"Test");
+    //Test1 - ClearScreen
+    for(int i=0; i<45; i++)
+    {
+        StringTools::println("Data: %d", i);
+    }
+    system("pause");
+    StringTools::clearConsole(false);
+    system("pause");
+    for(int i=0; i<45; i++)
+    {
+        StringTools::println("Data: %d", i);
+    }
+    StringTools::clearConsole(true);
+
+    //Test2 - MoveCursor for loading
+    StringTools::print("Loading: 0%%");
+    for(int i=0; i<=100; i++)
+    {
+        int moveBack = 2;
+        if(i>9)
+            moveBack++;
+        if(i>99)
+            moveBack++;
+        
+        StringTools::moveConsoleCursor(-moveBack,0);
+        StringTools::print("%d%%", i);
+        System::sleep(50);
+    }
+
+    //Test3 - ClearLine
+    StringTools::eraseConsoleLine(false);
+    StringTools::print("Finished Loading. Applying final touches.");
+    System::sleep(2000);
+    StringTools::moveConsoleCursor(18,0,true);
+    StringTools::eraseConsoleLine(true);
+    StringTools::println("");
+
+    system("pause");
+
+    StringTools::clearConsole(true);
+}
+
+void testHiddenConsoleStuff()
+{
+    StringTools::println("Enter without display");
+    std::string hiddenText = StringTools::getHiddenString(false);
+    
+    StringTools::println("Enter with display");
+    std::string hiddenText2 = StringTools::getHiddenString(true);
+    
+    StringTools::println("The hiddenText is %s and %s", hiddenText.c_str(), hiddenText2.c_str());
+}
+
+void testReroutOutput()
+{
+    std::wofstream outFile = std::wofstream("out.txt");
+    StringTools::reroutOutput(outFile.rdbuf());
+
+    StringTools::println("This go to file");
+
+    StringTools::resetOutputInputStreams();
+
+    StringTools::println("This go to console");
+}
+
+void testConsoleInput()
+{
+    StringTools::println("Enter wide input");
+    int v = StringTools::getWideCharLessLock();
+
+    StringTools::println("Value %d = %lc", v, (wchar_t)v);
+}
+
+void testBezierSubdivision()
+{
+    // SimpleWindow w = SimpleWindow("Title");
+    // w.setThreadAutoRepaint(true);
+    // w.setThreadUpdateTime(16,000);
+
+    // GuiCustomObject g = GuiCustomObject();
+    // BezierCurve b;
+    // b.addPoint(32,32);
+    // b.addPoint(32+40,32+140);
+    // b.addPoint(32+100,32+80);
+
+    // double t=0.5;
+    // bool original = false;
+
+    // g.setUpdateFunction([&t, &original]()->void{
+    //     if(Input::getKeyDown(Input::KEY_UP))
+    //     {
+    //         t+=0.05;
+    //     }
+    //     else if(Input::getKeyDown(Input::KEY_DOWN))
+    //     {
+    //         t-=0.05;
+    //     }
+
+    //     if(Input::getKeyPressed(Input::KEY_SPACE))
+    //         original = !original;
+
+    //     t = MathExt::clamp(t, 0.0, 1.0);
+    // });
+
+    // g.setRenderFunction([&b, &t, &original](Image* surf)->void{
+    //     std::vector<BezierCurve> curves = b.subdivide(t);
+
+    //     if(original)
+    //     {
+    //         Graphics::setColor({255,0,0,255});
+    //         Graphics::drawBezierCurve(b, 20, surf);
+    //     }
+    //     else
+    //     {
+    //         if(curves.size() == 2)
+    //         {
+    //             Graphics::setColor({0,255,0,128});
+    //             Graphics::drawBezierCurve(curves[0], 20, surf);
+
+    //             Graphics::setColor({0,0,255,128});
+    //             Graphics::drawBezierCurve(curves[1], 20, surf);
+    //         }
+    //     }
+
+    // });
+
+    // w.getGuiManager()->addElement(&g);
+    // w.waitTillClose();
+
+    BezierCurve b;
+    b.addPoint(0,0);
+    b.addPoint(2,7);
+    b.addPoint(5,4);
+
+    BezierCurve c = b.extract(0.5, 0.75);
+}
+
+// void testClosestPointStuff()
+// {
+//     //cPos = 137, 88
+//     //ePos = 128, 128
+//     glib::Ellipse e = glib::Ellipse(4,3);
+//     Circle c = Circle(3);
+//     c.setPosition( Vec3f(4.6, 4.6, 0) );
+
+//     CollisionMaster::collisionMethod(&c, &e);
+
+// }
+
+void testBezierApproximations()
+{
+    SimpleWindow w = SimpleWindow("Approximations");
+    w.setThreadAutoRepaint(true);
+    w.setThreadUpdateTime(16,000);
+
+    GuiCustomObject g = GuiCustomObject();
+    std::vector<BezierCurve> b = BezierCurve::approximateEllipse(48, 24, 96, 96, true);
+
+
+    g.setRenderFunction([&b](Image* surf)->void{
+        
+        for(int i=0; i<b.size(); i++)
+        {
+            Graphics::setColor({255,0,0,255});
+            Graphics::drawBezierCurve(b[i], 20, surf);
+        }
+
+    });
+
+    w.getGuiManager()->addElement(&g);
+    w.waitTillClose();
 }
 
 int main(int argc, char** argv)
 {
     StringTools::init();
+
     //Graphics::init();
     //testSVGTransforms();
-    testCopyPasteStuff();
+    //testCopyPasteStuff();
+    testCollision2();
+    //testBezierSubdivision();
+
+    //testBezierApproximations();
+
+    //testClosestPointStuff();
+
+    //testHiddenConsoleStuff();
+    //testReroutOutput();
+    //testConsoleStuff();
+
+    //testConsoleInput();
 
     //system("pause");
     return 0;

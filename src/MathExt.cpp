@@ -790,6 +790,30 @@ namespace glib
 		return MathExt::sqrt(a + b + c);
 	}
 
+	#pragma region Matrix_Operations
+
+	Matrix MathExt::getInverse(Matrix& m)
+	{
+		return m.getInverse();
+	}
+
+	Matrix MathExt::getTranspose(Matrix& m)
+	{
+		return m.getTranspose();
+	}
+
+	double MathExt::getDeterminate(Matrix& m)
+	{
+		return m.getDeterminate();
+	}
+
+	Matrix MathExt::getMatrixOfMinors(Matrix& m, int row, int col)
+	{
+		return m.getMatrixOfMinors(row, col);
+	}
+
+	#pragma endregion
+
 	#pragma region Transformations_2D
 	Mat3f MathExt::rotation2D(double rotation)
 	{
@@ -1115,6 +1139,196 @@ namespace glib
 		return newConstants;
 	}
 
+	PolynomialMathFunction MathExt::reducePolynomial(PolynomialMathFunction f, double zero)
+	{
+		//using synthetic division
+		std::vector<double> newConstants = std::vector<double>(f.size()-1);
+		if(f.size()>0)
+		{
+			newConstants[0] = f.getConstant(0);
+			for(int i=1; i<f.size()-1; i++)
+			{
+				newConstants[i] = f.getConstant(i) + newConstants[i-1] * zero;
+			}
+		}
+
+		return PolynomialMathFunction(newConstants);
+	}
+
+	double MathExt::bisectionMethod(MathFunction* f, double a, double b, int maxIterations)
+	{
+		double minX = a;
+		double maxX = b;
+		double x = NAN;
+
+		double resMin = f->solve(a);
+		double resMax = f->solve(b);
+
+		//check if a or b
+		if(resMin == 0.0)
+			return a;
+		if(resMax == 0.0)
+			return b;
+
+		if(resMin > resMax)
+		{
+			double temp = maxX;
+			maxX = minX;
+			minX = temp;
+		}
+
+		if(resMin*resMax >= 0)
+		{
+			//Not possible with Bisection Method
+			return NAN;
+		}
+		
+		for(int i=0; i<maxIterations; i++)
+		{
+			x = (minX+maxX) / 2.0;
+			double nResult = f->solve(x);
+
+			if(nResult == 0.0)
+			{
+				break;
+			}
+			else if(nResult > 0)
+			{
+				maxX = x;
+			}
+			else
+			{
+				minX = x;
+			}
+		}
+
+		return x;
+	}
+
+	double MathExt::newtonsMethod(MathFunction* f, MathFunction* derivative, double startPoint, int maxIterations)
+	{
+		double xn = startPoint;
+		for(int i=0; i<maxIterations; i++)
+		{
+			double num = f->solve(xn);
+			double div = derivative->solve(xn);
+
+			if(num == 0)
+			{
+				break;
+			}
+			
+			if(div != 0)
+			{
+				xn = xn - (num/div);
+			}
+			else
+			{
+				//Can not continue
+				return NAN;
+			}
+		}
+
+		return xn;
+	}
+
+	double MathExt::secantMethod(MathFunction* f, double a, double b, int maxIterations)
+	{
+		double xn[3] = {NAN, b, a};
+		double sol[3] = {NAN, f->solve(b), f->solve(a)};
+
+		if(sol[1] == 0)
+			return b;
+		if(sol[2] == 0)
+			return a;
+		
+		for(int i=0; i<maxIterations; i++)
+		{
+			double num = sol[1]*(xn[1] - xn[2]);
+			double div = sol[1] - sol[2];
+			if(div == 0)
+			{
+				//error occured
+				xn[0] = NAN;
+				break;
+			}
+
+			xn[0] = xn[1] - num/div;
+
+			sol[0] = f->solve(xn[0]);
+			if(sol[0] == 0)
+			{
+				break;
+			}
+
+			//move xn to xn-1 and move xn-1 to xn-2
+			xn[2] = xn[1];
+			xn[1] = xn[0];
+
+			sol[2] = sol[1];
+			sol[1] = sol[0];
+		}
+
+		return xn[0];
+	}
+
+	PolynomialMathFunction MathExt::linearRegression(std::vector<Vec2f> points, int degree)
+	{
+		if(degree < 0)
+			return PolynomialMathFunction();
+		
+		if(points.size() <= 0)
+			return PolynomialMathFunction();
+		
+		Matrix X = Matrix(points.size(), degree+1);
+		Matrix Y = Matrix(points.size(), 1);
+
+		Matrix xTranspose = Matrix(degree+1, points.size());
+
+		for(int i=0; i<points.size(); i++)
+		{
+			for(int j=0; j<degree+1; j++)
+			{
+				X[i][j] = MathExt::pow(points[i].x, j);
+				xTranspose[j][i] = MathExt::pow(points[i].x, j);
+			}
+
+			Y[i][0] = points[i].y;
+		}
+		
+		Matrix constants = (xTranspose*X).getInverse() * xTranspose * Y;
+		PolynomialMathFunction f = PolynomialMathFunction();
+
+		for(int i=0; i<constants.getRows(); i++)
+		{
+			f.addConstant(constants[i][0]);
+		}
+
+		return f;
+	}
+
+	std::vector<double> MathExt::getIntersectionQuadratic(double A1, double B1, double C1, double A2, double B2, double C2)
+	{
+		//A1x^2 + B1x + C1 = A2x^2 + B2x + C2
+		//(A1-A2)x^2 + (B1-B2)x + (C1-C2) = 0
+		double nA = (A1-A2);
+		double nB = (B1-B2);
+		double nC = (C1-C2);
+
+		return MathExt::solveQuadraticReal(nA, nB, nC);
+	}
+
+	std::vector<double> MathExt::getIntersectionQuadratic(PolynomialMathFunction a, PolynomialMathFunction b)
+	{
+		if(a.size() == 3 && b.size() == 3)
+		{
+			return MathExt::getIntersectionQuadratic(a.getConstant(0), a.getConstant(1), a.getConstant(2),
+													b.getConstant(0), b.getConstant(1), b.getConstant(2));
+		}
+
+		return {};
+	}
+	
 	double MathExt::binomialCoefficient(int n, int k)
 	{
 		double value = 1;

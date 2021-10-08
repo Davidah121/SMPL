@@ -116,13 +116,48 @@ namespace glib
 		 */
 		double get(int col, int row);
 
+		/**
+		 * @brief Gets the Inverse of the matrix.
+		 * 		The inverse only exists if the determinate is not 0 and the matrix is square.
+		 * 		An invalid matrix is returned if the function fails.
+		 * 
+		 * @return Matrix 
+		 */
+		Matrix getInverse();
+
+		/**
+		 * @brief Gets the Transpose of the matrix.
+		 * 		Swaps the rows with the columns.
+		 * 
+		 * @return Matrix 
+		 */
+		Matrix getTranspose();
+
+		/**
+		 * @brief Gets the Determinate of the matrix.
+		 * 		The determinate only exists if the matrix is square.
+		 * 
+		 * @return double 
+		 */
+		double getDeterminate();
+
+		/**
+		 * @brief Gets the Matrix Of Minors from the matrix.
+		 * 		Can return an invalid matrix if the original matrix is invalid or the new matrix
+		 * 		would have less than 1 row or 1 column.
+		 * 
+		 * @param row 
+		 * @param col 
+		 * @return Matrix 
+		 */
+		Matrix getMatrixOfMinors(int row, int col);
+
 	protected:
 		double** data = nullptr;
 		int rows;
 		int columns;
 
 		bool valid = true;
-
 	};
 
 } //NAMESPACE glib END

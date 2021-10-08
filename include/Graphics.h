@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "Opti.h"
 #include "Shape.h"
+#include "BezierCurve.h"
 
 namespace glib
 {
@@ -159,6 +160,9 @@ namespace glib
 		 * 		The image to draw the line onto.
 		 */
 		static void drawLine(int x, int y, int x2, int y2, Image* surf);
+
+		//TODO
+		static void drawBezierCurve(BezierCurve& b, int subdivisions, Image* surf);
 
 		/**
 		 * @brief Draws a circle using the active color.

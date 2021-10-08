@@ -154,14 +154,47 @@ namespace glib
 		double solveForY(double x);
 
 		/**
-		 * @brief Gets the point of intersection with another line.
+		 * @brief Gets a point of intersection with another line.
 		 * 		May be invalid if the lines never intersect.
+		 * 		If invalid, NAN will be returned.
 		 * 
 		 * @param other 
 		 * 		The other line to check for intersection with.
 		 * @return Vec2f 
 		 */
 		Vec2f getIntersection(Line other);
+		
+		/**
+		 * @brief Get the point of intersection with another line as a time value.
+		 * 		The answer, if valid, will describe a point of intersection as
+		 * 		P = getPoint1() + getToPoint()*t;
+		 * 
+		 * 		If invalid, NAN will be returned.
+		 * 
+		 * @param other 
+		 * @return double 
+		 */
+		double getIntersectionParametric(Line other);
+
+		/**
+		 * @brief Get the point on the line as Paramtetric time value.
+		 * 		If the point does not lie on the line, NAN is returned.
+		 * 
+		 * @param x 
+		 * @param y 
+		 * @return double 
+		 */
+		double getPointAsParamtetricValue(double x, double y);
+
+		/**
+		 * @brief Get the point on the line as Paramtetric time value.
+		 * 		If the point does not lie on the line, NAN is returned.
+		 * 
+		 * @param p 
+		 * @return double 
+		 */
+		double getPointAsParamtetricValue(Vec2f p);
+
 
 	private:
 		void setMinMax();

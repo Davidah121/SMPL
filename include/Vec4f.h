@@ -136,6 +136,28 @@ namespace glib
 		 */
 		void setValues(Vec4f value);
 
+		/**
+		 * @brief Converts the Vec4f object to a Vec3f object by dropping the w value.
+		 * 
+		 * @return Vec3f 
+		 */
+		Vec3f toVec3f();
+
+		/**
+		 * @brief Get the Length of the vector
+		 * 
+		 * @return double 
+		 */
+		double getLength();
+
+		/**
+		 * @brief Gets the normalized version of the vector.
+		 * 		Returns a vector with the same direction but a length of 1.
+		 * 
+		 * @return Vec4f 
+		 */
+		Vec4f normalize();
+
 		Vec4f operator-(Vec4f other);
 		Vec4f operator+(Vec4f other);
 

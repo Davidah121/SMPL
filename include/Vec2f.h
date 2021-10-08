@@ -70,6 +70,21 @@ namespace glib
 		 */
 		void setValues(Vec2f other);
 
+		/**
+		 * @brief Get the Length of the vector
+		 * 
+		 * @return double 
+		 */
+		double getLength();
+
+		/**
+		 * @brief Gets the normalized version of the vector.
+		 * 		Returns a vector with the same direction but a length of 1.
+		 * 
+		 * @return Vec2f 
+		 */
+		Vec2f normalize();
+		
 		Vec2f operator-(Vec2f other);
 		Vec2f operator+(Vec2f other);
 

@@ -377,4 +377,117 @@ namespace glib
 			return 0;
 	}
 
+	Matrix Matrix::getInverse()
+	{
+		double det = getDeterminate();
+
+		if(det!=0 && det!=NAN)
+		{
+			Matrix inverse = Matrix(rows, columns);
+			
+			if(rows==2 && columns==2)
+			{
+				inverse[0][0] = data[1][1];
+				inverse[1][1] = data[0][0];
+				inverse[1][0] = -data[1][0];
+				inverse[0][1] = -data[0][1];
+				
+				return inverse*(1.0/det);
+			}
+			else
+			{
+				double multValue = 1;
+				for(int i=0; i<rows; i++)
+				{
+					for(int j=0; j<columns; j++)
+					{
+						inverse[i][j] = getMatrixOfMinors(i, j).getDeterminate();
+
+						if((i+j) % 2 == 1)
+						{
+							inverse[i][j] *= -1;
+						}
+					}
+				}
+
+				return inverse.getTranspose() * (1.0/det);
+			}
+		}
+
+		return Matrix();
+	}
+
+	Matrix Matrix::getTranspose()
+	{
+		Matrix m = Matrix(columns, rows);
+
+		for(int i=0; i<rows; i++)
+		{
+			for(int j=0; j<columns; j++)
+			{
+				m[j][i] = data[i][j];
+			}
+		}
+
+		return m;
+	}
+
+	double Matrix::getDeterminate()
+	{
+		if(rows == columns && rows > 1)
+		{
+			if(rows == 2)
+			{
+				return (data[0][0]*data[1][1]) - (data[0][1]*data[1][0]);
+			}
+			else
+			{
+				double sumValue = 0;
+				for(int i=0; i<rows; i++)
+				{
+					if(i%2 == 0)
+					{
+						sumValue += data[i][0] * getMatrixOfMinors(i, 0).getDeterminate();
+					}
+					else
+					{
+						sumValue -= data[i][0] * getMatrixOfMinors(i, 0).getDeterminate();
+					}
+				}
+				return sumValue;
+			}
+		}
+
+		return NAN;
+	}
+
+	Matrix Matrix::getMatrixOfMinors(int row, int col)
+	{
+		Matrix m = Matrix(rows-1, columns-1);
+		
+		if(m.getValid() && getValid())
+		{
+			double** arrP = m.data;
+
+			for(int i=0; i<rows; i++)
+			{
+				if(i != row)
+				{
+					double* dataP = *arrP;
+					for(int j=0; j<columns; j++)
+					{
+						if(j != col)
+						{
+							*(dataP) = data[i][j];
+							dataP++;
+						}
+					}
+					arrP++;
+				}
+			}
+		}
+
+		return m;
+	}
+
 } //NAMESPACE glib END

@@ -190,7 +190,7 @@ namespace glib
 				}
 				else
 				{
-					return Vec2f( INFINITY, INFINITY);
+					return Vec2f( NAN, NAN);
 				}
 			}
 			else
@@ -226,14 +226,81 @@ namespace glib
 					}
 					else
 					{
-						return Vec2f( INFINITY, INFINITY); 
+						return Vec2f( NAN, NAN); 
 					}
 				}
 
 			}
 		}
 
-		return Vec2f( INFINITY, INFINITY);
+		return Vec2f( NAN, NAN);
+	}
+
+	double Line::getIntersectionParametric(Line other)
+	{
+		Vec2f point = getIntersection(other);
+
+		if(point.x != NAN)
+		{
+			Vec2f temp = point - getPoint1();
+			double t = 0;
+
+			if(getToPoint().x != 0)
+				t = temp.x / getToPoint().x;
+			else if(getToPoint().y != 0)
+				t = temp.y / getToPoint().y;
+
+			return t;	
+		}
+
+		return NAN;
+	}
+
+	double Line::getPointAsParamtetricValue(double x, double y)
+	{
+		//assuming point x,y is on the line
+		//x = P1x + dirX * t
+		//y = P1y + diry * t
+		double t1 = 0;
+		double t2 = 0;
+
+		if(getToPoint().x == 0)
+		{
+			//vertical line
+			if(x != point1.x)
+				return NAN;
+			
+			if(getToPoint().y != 0)
+				return (y - point1.y) / getToPoint().y;
+			else
+				return NAN;
+		}
+		else
+		{
+			t1 = (x - point1.x) / getToPoint().x;
+
+			if(getToPoint().y != 0)
+			{
+				t2 = (y - point1.y) / getToPoint().y;
+			}
+			else
+			{
+				//horizontal line
+				t2 = (y == point1.y) ? t1 : NAN;
+			}
+
+			if(t1 == t2)
+				return t1;
+			else
+				return NAN;
+		}
+		
+		return NAN;
+	}
+
+	double Line::getPointAsParamtetricValue(Vec2f p)
+	{
+		return getPointAsParamtetricValue(p.x, p.y);
 	}
 
 } //NAMESPACE glib END

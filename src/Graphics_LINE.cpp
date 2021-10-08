@@ -335,5 +335,27 @@ namespace glib
 
 		}
 	}
+
+	void Graphics::drawBezierCurve(BezierCurve& b, int subdivisions, Image* surf)
+	{
+		if(surf == nullptr)
+			return;
+		
+		if(subdivisions<=0)
+			return;
+		
+		if(b.size() < 2)
+			return;
+
+		double du = 1.0 / subdivisions;
+		Vec2f p1 = b.getPoint(0);
+
+		for(int i=1; i<=subdivisions; i++)
+		{
+			Vec2f p2 = b.getFuctionAt( i*du );
+			Graphics::drawLine(MathExt::round(p1.x), MathExt::round(p1.y), MathExt::round(p2.x), MathExt::round(p2.y), surf);
+			p1 = p2;
+		}
+	}
     
 } //NAMESPACE glib END

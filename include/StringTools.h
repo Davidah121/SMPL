@@ -402,6 +402,29 @@ namespace glib
 		static std::string getString();
 
 		/**
+		 * @brief Get a string from the user while hiding the text.
+		 * 		Useful if the user is entering sensitive data as it will not
+		 * 		show as they are typing nor will it appear in the consoles input history.
+		 * 
+		 * @param showAsterisk
+		 * 		If set to true, Asterisk (*) will be shown as the user types.
+		 * 		Otherwise, nothing will be shown.
+		 * @return std::string 
+		 */
+		static std::string getHiddenString(bool showAsterisk);
+
+		/**
+		 * @brief Get a wide string from the user while hiding the text.
+		 * 		Useful if the user is entering sensitive data as it will not
+		 * 		show as they are typing nor will it appear in the consoles input history.
+		 * @param showAsterisk
+		 * 		If set to true, Asterisk (*) will be shown as the user types.
+		 * 		Otherwise, nothing will be shown.
+		 * @return std::wstring 
+		 */
+		static std::wstring getHiddenWideString(bool showAsterisk);
+
+		/**
 		 * @brief Gets a character from the console using the users input.
 		 * 		Halts until the user presses enter.
 		 * 
@@ -420,10 +443,64 @@ namespace glib
 		/**
 		 * @brief Gets an integer from the console using the users input.
 		 * 		Halts until the user presses enter.
+		 * 		Only valid characters for numbers are allowed.
 		 * 
 		 * @return int 
 		 */
 		static int getInt();
+
+		/**
+		 * @brief Gets an float from the console using the users input.
+		 * 		Halts until the user presses enter.
+		 * 		Only valid characters for numbers are allowed.
+		 * 
+		 * @return float 
+		 */
+		static float getFloat();
+
+		/**
+		 * @brief Gets a character from the console using the users input.
+		 * 		Does not wait for the user to press enter.
+		 * 		Halts until a character is entered.
+		 * 
+		 * 		Note that some keys that are not characters will be treated as a character.
+		 * 			Ex: arrow keys, delete, insertion, home
+		 * 			A value of 0 or 0xE0 (224) will be returned in that case.
+		 * 			Also note that 224 is a valid character in both unicode and the extended ascii table.
+		 * 			There is no way to determine if it is an escape sequence without checking for the next
+		 * 			input which will block if it was a valid character.
+		 * 		
+		 * 		Some odd things will happen when moving code to linux.
+		 * 
+		 * @param noFunctionKeys
+		 * 		Does not count function keys when returning data.
+		 * 		Will read the first valid character.
+		 * 		Default value is true.
+		 * @return char 
+		 */
+		static char getCharLessLock(bool noFunctionKeys = true);
+
+		/**
+		 * @brief Gets a wide character from the console using the users input.
+		 * 		Does not wait for the user to press enter.
+		 * 		Halts until a character is entered.
+		 * 
+		 * 		Note that some keys that are not characters will be treated as a character.
+		 * 			Ex: arrow keys, delete, insertion, home
+		 * 			A value of 0 or 0xE0 (224) will be returned in that case.
+		 * 			Also note that 224 is a valid character in both unicode and the extended ascii table.
+		 * 			There is no way to determine if it is an escape sequence without checking for the next
+		 * 			input which will block if it was a valid character.
+		 * 
+		 * 		Some odd things will happen when moving code to linux.
+		 * 
+		 * @param noFunctionKeys
+		 * 		Does not count function keys when returning data.
+		 * 		Will read the first valid character.
+		 * 		Default value is true.
+		 * @return int 
+		 */
+		static int getWideCharLessLock(bool noFunctionKeys = true);
 
 		/**
 		 * @brief Finds the longest match in the string base.
@@ -552,16 +629,75 @@ namespace glib
 		static const wchar_t lineBreak;
 
 		/**
+		 * @brief Clears the console display
+		 * 
+		 * @param clearScrollBuffer 
+		 * 		If set to true, clears the console display and the history of information displayed.
+		 * 		Does not clear the history of user input.
+		 */
+		static void clearConsole(bool clearScrollBuffer);
+
+		/**
+		 * @brief Moves the console cursor from its current position.
+		 * 
+		 * @param horizontal 
+		 * 		Positive values move the cursor forward on a line.
+		 * 		Negative values move the cursor backwards on a line.
+		 * 		Note that the cursor stops moving when at the edge.
+		 * @param vertical 
+		 * 		Positive values move the cursor down.
+		 * 		Negative values move the cursor up.
+		 * 		Note that the cursor stops moving when at the edge.
+		 * @param absolute
+		 * 		If true, the horizontal and vertical values represent the absolute cursor position
+		 * 		and not an offset.
+		 * 		All negative values are set to 1
+		 */
+		static void moveConsoleCursor(int horizontal, int vertical, bool absolute = false);
+
+		/**
+		 * @brief Clears part of the current line in the console.
+		 * 
+		 * @param eraseFromCursor 
+		 * 		If set to false, Clears the entire line and sets the cursor to the start of the line.
+		 * 		Otherwise, clears to the right of the cursor only.
+		 */
+		static void eraseConsoleLine(bool eraseFromCursor);
+
+		/**
 		 * @brief Rerouts the output of the print functions to somewhere else such as a file.
-		 * 		(Not implemented)
+		 * 		Could also be a different console if desired.
 		 * 
 		 * @param file 
 		 */
-		static void reroutOutput(std::wofstream file);
+		static void reroutOutput(std::wstreambuf* file);
+
+		/**
+		 * @brief Rerouts the input of the get functions to somewhere else such as a file.
+		 * 		Could also be a different console if desired.
+		 * 
+		 * @param file 
+		 */
+		static void reroutInput(std::wstreambuf* file);
+
+		/**
+		 * @brief Rerouts the error output of the printErr functions to somewhere else such as a file.
+		 * 		Could also be a different console if desired.
+		 * 
+		 * @param file 
+		 */
+		static void reroutErrorOutput(std::wstreambuf* file);
+		
+		static void resetOutputInputStreams();
 
 		
 
 	private:
+
+		static std::wstreambuf* inputBuffer;
+		static std::wstreambuf* outputBuffer;
+		static std::wstreambuf* errorBuffer;
+		
 		static std::string formatStringInternal(std::string text, va_list orgArgs);
 		static std::wstring formatWideStringInternal(std::wstring text, va_list orgArgs);
 
