@@ -6,7 +6,7 @@
 	#define WIN32_LEAN_AND_MEAN
 #endif
 #include <Windows.h>
-
+#include <exception>
 #include <thread>
 #include <vector>
 #include <mutex>
@@ -23,6 +23,7 @@ namespace glib
 
 		static const unsigned char NORMAL_WINDOW = 0b0000;
 		static const unsigned char BORDERLESS_WINDOW = 0b0001;
+		static const unsigned char FULLSCREEN_WINDOW = 0b1000;
 
 		static const unsigned char STATE_NORMAL = 0x00;
 		static const unsigned char STATE_MAXIMIZED = 0x01;
@@ -33,6 +34,11 @@ namespace glib
 
 		static const unsigned char TYPE_THREAD_MANAGED = 0b0000;
 		static const unsigned char TYPE_USER_MANAGED = 0b0100;
+
+		struct WindowCreationError : public std::exception
+		{
+			const char* what() const throw() { return "Error creating window"; }
+		};
 		
 		/**
 		 * @brief Construct a new SimpleWindow object
@@ -66,9 +72,11 @@ namespace glib
 		 * @param windowType 
 		 * 		The type of window to create.
 		 * 		The window type and window management can be combined using the logical or ( '|' ).
+		 * 		(Note that FULLSCREEN_WINDOW ignores the width, height, x, y, NORMAL_WINDOW and BORDERLESS_WINDOW options)
 		 * 		Valid arguments are:
 		 * 			NORMAL_WINDOW
 		 * 			BORDERLESS_WINDOW
+		 * 			FULLSCREEN_WINDOW
 		 * 			TYPE_FOCUSABLE
 		 * 			TYPE_NONFOCUSABLE
 		 * 			TYPE_USER_MANAGED
@@ -97,9 +105,11 @@ namespace glib
 		 * @param windowType 
 		 * 		The type of window to create.
 		 * 		The window type and window management can be combined using the logical or ( '|' ).
+		 * 		(Note that FULLSCREEN_WINDOW ignores the width, height, x, y, NORMAL_WINDOW and BORDERLESS_WINDOW options)
 		 * 		Valid arguments are:
 		 * 			NORMAL_WINDOW
 		 * 			BORDERLESS_WINDOW
+		 * 			FULLSCREEN_WINDOW
 		 * 			TYPE_FOCUSABLE
 		 * 			TYPE_NONFOCUSABLE
 		 * 			TYPE_USER_MANAGED
@@ -512,6 +522,10 @@ namespace glib
 		void threadSetFocus();
 		void setShouldFocus(bool v);
 		bool getShouldFocus();
+
+		bool shouldEnd = false;
+		void setShouldEnd(bool v);
+		bool getShouldEnd();
 
 		static int* mouseVWheelPointer;
 		static int* mouseHWheelPointer;

@@ -57,27 +57,39 @@ namespace glib
 		 */
 		void setValue(double value, int location);
 
-		GeneralVector operator*(double value);
-		GeneralVector operator*(float value);
-		GeneralVector operator*(int value);
+		/**
+		 * @brief Get the Length of the vector
+		 * 
+		 * @return double 
+		 */
+		double getLength();
 
+		/**
+		 * @brief Gets the normalized version of the vector.
+		 * 		Returns a vector with the same direction but a length of 1.
+		 * 
+		 * @return GeneralVector 
+		 */
+		GeneralVector normalize();
+
+		GeneralVector operator*(double value);
 		GeneralVector operator/(double value);
-		GeneralVector operator/(float value);
-		GeneralVector operator/(int value);
+
+		friend GeneralVector operator*(double value, GeneralVector other)
+		{
+			return other*value;
+		}
 
 		GeneralVector operator+(GeneralVector o);
 		GeneralVector operator-(GeneralVector o);
 
 		void operator*=(double value);
-		void operator*=(float value);
-		void operator*=(int value);
-
 		void operator/=(double value);
-		void operator/=(float value);
-		void operator/=(int value);
 
 		void operator+=(GeneralVector o);
 		void operator-=(GeneralVector o);
+
+		GeneralVector operator-();
 
 		double& operator[](int index);
 
@@ -88,7 +100,7 @@ namespace glib
 	private:
 		
 		void copy(const GeneralVector& o);
-		unsigned char size = 0;
+		int size = 0;
 		double* values = nullptr;
 	};
 

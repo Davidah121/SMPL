@@ -73,6 +73,23 @@ namespace glib
 		}
 	}
 
+	double GeneralVector::getLength()
+	{
+		double sum = 0;
+		for(int i=0; i<size; i++)
+		{
+			sum += values[i]*values[i];
+		}
+
+		return sqrt(sum);
+	}
+
+	GeneralVector GeneralVector::normalize()
+	{
+		double l = getLength();
+		return operator/(l);
+	}
+
 	GeneralVector GeneralVector::operator*(double value)
 	{
 		GeneralVector k = GeneralVector(size);
@@ -83,47 +100,7 @@ namespace glib
 		return k;
 	}
 
-	GeneralVector GeneralVector::operator*(float value)
-	{
-		GeneralVector k = GeneralVector(size);
-		for (int i = 0; i < size; i++)
-		{
-			k.values[i] = values[i] * value;
-		}
-		return k;
-	}
-
-	GeneralVector GeneralVector::operator*(int value)
-	{
-		GeneralVector k = GeneralVector(size);
-		for (int i = 0; i < size; i++)
-		{
-			k.values[i] = values[i] * value;
-		}
-		return k;
-	}
-
 	GeneralVector GeneralVector::operator/(double value)
-	{
-		GeneralVector k = GeneralVector(size);
-		for (int i = 0; i < size; i++)
-		{
-			k.values[i] = values[i] / value;
-		}
-		return k;
-	}
-
-	GeneralVector GeneralVector::operator/(float value)
-	{
-		GeneralVector k = GeneralVector(size);
-		for (int i = 0; i < size; i++)
-		{
-			k.values[i] = values[i] / value;
-		}
-		return k;
-	}
-
-	GeneralVector GeneralVector::operator/(int value)
 	{
 		GeneralVector k = GeneralVector(size);
 		for (int i = 0; i < size; i++)
@@ -163,6 +140,16 @@ namespace glib
 		return GeneralVector();
 	}
 
+	GeneralVector GeneralVector::operator-()
+	{
+		GeneralVector k = GeneralVector(size);
+		for (int i = 0; i < size; i++)
+		{
+			k.values[i] = -values[i];
+		}
+		return k;
+	}
+
 	void GeneralVector::operator*=(double value)
 	{
 		for (int i = 0; i < size; i++)
@@ -171,39 +158,7 @@ namespace glib
 		}
 	}
 
-	void GeneralVector::operator*=(float value)
-	{
-		for (int i = 0; i < size; i++)
-		{
-			values[i] *= value;
-		}
-	}
-
-	void GeneralVector::operator*=(int value)
-	{
-		for (int i = 0; i < size; i++)
-		{
-			values[i] *= value;
-		}
-	}
-
 	void GeneralVector::operator/=(double value)
-	{
-		for (int i = 0; i < size; i++)
-		{
-			values[i] /= value;
-		}
-	}
-
-	void GeneralVector::operator/=(float value)
-	{
-		for (int i = 0; i < size; i++)
-		{
-			values[i] /= value;
-		}
-	}
-
-	void GeneralVector::operator/=(int value)
 	{
 		for (int i = 0; i < size; i++)
 		{

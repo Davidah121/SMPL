@@ -81,12 +81,12 @@ namespace glib
 		Mat4f operator-(Mat4f other);
 		Mat4f operator*(Mat4f other);
 
-		Mat4f operator*(int other);
-		Mat4f operator*(float other);
 		Mat4f operator*(double other);
+		friend Mat4f operator*(double value, Mat4f other)
+		{
+			return other*value;
+		}
 
-		void operator*=(int other);
-		void operator*=(float other);
 		void operator*=(double other);
 
 		void operator+=(Mat4f other);

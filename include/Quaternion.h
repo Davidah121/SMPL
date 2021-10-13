@@ -37,6 +37,11 @@ namespace glib
         Quaternion operator*(double val);
         void operator*=(double val);
 
+        friend Quaternion operator*(double val, Quaternion other)
+        {
+            return other*val;
+        }
+
         Quaternion operator/(double val);
         void operator/=(double val);
 
@@ -63,6 +68,20 @@ namespace glib
          * @return Quaternion 
          */
         Quaternion getInverse();
+
+        /**
+         * @brief Gets the Length of the quaternion
+         * 
+         * @return double 
+         */
+        double getLength();
+
+        /**
+		 * @brief Normalizes the quaternion
+		 * 
+		 * @return Quaternion
+		 */
+        Quaternion normalize();
 
         double a=0;
         double b=0;

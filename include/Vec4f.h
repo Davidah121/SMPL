@@ -161,38 +161,23 @@ namespace glib
 		Vec4f operator-(Vec4f other);
 		Vec4f operator+(Vec4f other);
 
-		Vec4f operator*(long other);
-		Vec4f operator*(double other);
-		Vec4f operator*(float other);
-		Vec4f operator*(int other);
-		Vec4f operator*(Vec4f other);
-
 		bool operator==(Vec4f other);
 		bool operator!=(Vec4f other);
 		Vec4f operator-();
 
 		void operator+=(Vec4f other);
 		void operator-=(Vec4f other);
-		void operator*=(Vec4f other);
-		void operator/=(Vec4f other);
 
 		void operator*=(double other);
 		void operator/=(double other);
 
-		void operator*=(int other);
-		void operator/=(int other);
-
-		void operator*=(long other);
-		void operator/=(long other);
-
-		void operator*=(float other);
-		void operator/=(float other);
-
-		Vec4f operator/(long other);
+		Vec4f operator*(double other);
 		Vec4f operator/(double other);
-		Vec4f operator/(float other);
-		Vec4f operator/(int other);
-		Vec4f operator/(Vec4f other);
+
+		friend Vec4f operator*(double value, Vec4f& other)
+		{
+			return other*value;
+		}
 
 		/**
 		 * @brief Converts the Vec4f object to a GeneralVector object

@@ -133,26 +133,13 @@ namespace glib
 		z -= other.z;
 	}
 
-	void Vec3f::operator*=(Vec3f other)
-	{
-		x *= other.x;
-		y *= other.y;
-		z *= other.z;
-	}
-
-	void Vec3f::operator/=(Vec3f other)
-	{
-		x /= other.x;
-		y /= other.y;
-		z /= other.z;
-	}
-
 	void Vec3f::operator*=(double other)
 	{
 		x *= other;
 		y *= other;
 		z *= other;
 	}
+
 	void Vec3f::operator/=(double other)
 	{
 		x /= other;
@@ -160,93 +147,14 @@ namespace glib
 		z /= other;
 	}
 
-	void Vec3f::operator*=(long other)
-	{
-		x *= other;
-		y *= other;
-		z *= other;
-	}
-	void Vec3f::operator/=(long other)
-	{
-		x /= other;
-		y /= other;
-		z /= other;
-	}
-
-	void Vec3f::operator*=(float other)
-	{
-		x *= other;
-		y *= other;
-		z *= other;
-	}
-	void Vec3f::operator/=(float other)
-	{
-		x /= other;
-		y /= other;
-		z /= other;
-	}
-
-	void Vec3f::operator*=(int other)
-	{
-		x *= other;
-		y *= other;
-		z *= other;
-	}
-	void Vec3f::operator/=(int other)
-	{
-		x /= other;
-		y /= other;
-		z /= other;
-	}
-
-	Vec3f Vec3f::operator*(int value)
-	{
-		return Vec3f(x*value,y*value,z*value);
-	}
-
-	Vec3f Vec3f::operator*(float value)
-	{
-		return Vec3f(x*value, y*value, z*value);
-	}
-
 	Vec3f Vec3f::operator*(double value)
 	{
 		return Vec3f(x*value, y*value, z*value);
 	}
 
-	Vec3f Vec3f::operator*(long value)
-	{
-		return Vec3f(x*value, y*value, z*value);
-	}
-
-	Vec3f Vec3f::operator*(Vec3f value)
-	{
-		return Vec3f(x*value.x, y*value.y, z*value.z);
-	}
-
-	Vec3f Vec3f::operator/(int value)
-	{
-		return Vec3f(x/value, y/value, z/value);
-	}
-
-	Vec3f Vec3f::operator/(float value)
-	{
-		return Vec3f(x/value, y/value, z/value);
-	}
-
 	Vec3f Vec3f::operator/(double value)
 	{
 		return Vec3f(x/value, y/value, z/value);
-	}
-
-	Vec3f Vec3f::operator/(long value)
-	{
-		return Vec3f(x/value, y/value, z/value);
-	}
-
-	Vec3f Vec3f::operator/(Vec3f value)
-	{
-		return Vec3f(x/value.x, y/value.y, z/value.z);
 	}
 
 	GeneralVector Vec3f::toGeneralVector()

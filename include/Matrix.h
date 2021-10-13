@@ -60,15 +60,15 @@ namespace glib
 		double* operator[](int row);
 
 		Matrix operator*(double value);
-		Matrix operator*(int value);
-		Matrix operator*(float value);
+		friend Matrix operator*(double value, Matrix other)
+		{
+			return other*value;
+		}
 
 		Matrix operator*(Matrix other);
 		GeneralVector operator*(GeneralVector other);
 
 		void operator*=(double value);
-		void operator*=(int value);
-		void operator*=(float value);
 
 		Matrix operator+(Matrix other);
 		void operator+=(Matrix other);

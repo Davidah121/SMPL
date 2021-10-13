@@ -92,28 +92,6 @@ namespace glib
 		return v;
 	}
 
-	Mat3f Mat3f::operator*(int other)
-	{
-		Mat3f v = Mat3f();
-
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 3; j++)
-				v[i][j] = data[i][j]*other;
-
-		return v;
-	}
-
-	Mat3f Mat3f::operator*(float other)
-	{
-		Mat3f v = Mat3f();
-
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 3; j++)
-				v[i][j] = data[i][j] * other;
-
-		return v;
-	}
-
 	Mat3f Mat3f::operator*(double other)
 	{
 		Mat3f v = Mat3f();
@@ -123,20 +101,6 @@ namespace glib
 				v[i][j] = data[i][j] * other;
 
 		return v;
-	}
-
-	void Mat3f::operator*=(int other)
-	{
-		for(int i=0; i<3; i++)
-			for(int j=0; j<3; j++)
-				data[i][j] *= other;
-	}
-
-	void Mat3f::operator*=(float other)
-	{
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 3; j++)
-				data[i][j] *= other;
 	}
 
 	void Mat3f::operator*=(double other)

@@ -88,7 +88,7 @@ namespace glib
 				if (currentWindow->closingFunction != nullptr)
 					currentWindow->closingFunction();
 				PostQuitMessage(0);
-				currentWindow->setRunning(false);
+				currentWindow->setShouldEnd(true);
 				break;
 			case WM_DESTROY:
 				/*
@@ -399,7 +399,6 @@ namespace glib
 		if(closingFunction!=nullptr)
 			closingFunction();
 		
-		setRunning(false);
 		dispose();
 	}
 
@@ -410,7 +409,7 @@ namespace glib
 			std::wstring text = title;
 			text += L"_CLASS";
 
-			setRunning(false);
+			setShouldEnd(true);
 			setValid(false);
 
 			if (wndThread != nullptr)
@@ -465,14 +464,20 @@ namespace glib
 
 		int trueWidth = width;
 		int trueHeight = height;
+		int trueX = x;
+		int trueY = y;
 
 		if (RegisterClassExW(&wndClass) != NULL)
 		{
 			int wType = windowType & 0b0001;
+			if(windowType & 0b1000)
+				wType = FULLSCREEN_WINDOW;
+			
 			int focusable = windowType & 0b0010;
 			int threadManaged = windowType & 0b0100;
 
 			DWORD style = 0;
+			bool failed = false;
 
 			switch(windowType)
 			{
@@ -491,18 +496,54 @@ namespace glib
 					break;
 			}
 
+			if(windowType == SimpleWindow::FULLSCREEN_WINDOW)
+			{
+				HMONITOR hmon = MonitorFromWindow(NULL, MONITOR_DEFAULTTONEAREST);
+				MONITORINFO mi = { sizeof(MONITORINFO) };
+
+				style = WS_POPUP|WS_VISIBLE;
+				if(!GetMonitorInfo(hmon, &mi))
+				{	
+					//failed getting monitor information
+					failed = true;
+					UnregisterClassW(text.c_str(), hins);
+					setValid(false);
+					setShouldEnd(true);
+					setRunning(false);
+
+					setFinishInit(true);
+
+					#ifdef USE_EXCEPTIONS
+						throw WindowCreationError();
+					#endif
+				}
+				
+				trueX = mi.rcMonitor.left;
+				trueY = mi.rcMonitor.top;
+				trueWidth = mi.rcMonitor.right - mi.rcMonitor.left;
+				trueHeight = mi.rcMonitor.bottom - mi.rcMonitor.top;
+
+				this->width = trueWidth;
+				this->height = trueHeight;
+				this->x = trueX;
+				this->y = trueY;
+			}
+
 			if(focusable==TYPE_NONFOCUSABLE)
 			{
 				style |= WS_EX_NOACTIVATE;
 			}
 
-			windowHandle = CreateWindowExW(NULL, text.c_str(), title.c_str(), style, x, y, trueWidth, trueHeight, NULL, NULL, hins, NULL);
+			if(!failed)
+			{
+				windowHandle = CreateWindowExW(NULL, text.c_str(), title.c_str(), style, trueX, trueY, trueWidth, trueHeight, NULL, NULL, hins, NULL);
+			}
 			
-
 			if (windowHandle != NULL)
 			{
 				setVisible(true);
 				setValid(true);
+				setShouldEnd(false);
 				setRunning(true);
 
 				initBitmap();
@@ -519,6 +560,7 @@ namespace glib
 				//The class registered, but the window creation failed
 				UnregisterClassW(text.c_str(), hins);
 				setValid(false);
+				setShouldEnd(true);
 				setRunning(false);
 
 				setFinishInit(true);
@@ -531,6 +573,7 @@ namespace glib
 			//Nothing because the window wasn't created and the
 			//class failed to register
 			setValid(false);
+			setShouldEnd(true);
 			setRunning(false);
 
 			setFinishInit(true);
@@ -728,6 +771,9 @@ namespace glib
 		case SimpleWindow::BORDERLESS_WINDOW:
 			return p.x-x;
 			break;
+		case SimpleWindow::FULLSCREEN_WINDOW:
+			return p.x-x;
+			break;
 		default:
 			return p.x-(x+16);
 			break;
@@ -748,6 +794,9 @@ namespace glib
 			break;
 		case SimpleWindow::BORDERLESS_WINDOW:
 			return p.y-y;
+			break;
+		case SimpleWindow::FULLSCREEN_WINDOW:
+			return p.x-x;
 			break;
 		default:
 			return p.y-(y+40);
@@ -915,6 +964,22 @@ namespace glib
 		return v;
 	}
 
+	
+	void SimpleWindow::setShouldEnd(bool v)
+	{
+		myMutex.lock();
+		shouldEnd = v;
+		myMutex.unlock();
+	}
+
+	bool SimpleWindow::getShouldEnd()
+	{
+		myMutex.lock();
+		bool v = shouldEnd;
+		myMutex.unlock();
+		return v;
+	}
+	
 	void SimpleWindow::setResizable(bool v)
 	{
 		canResize = v;
@@ -1038,7 +1103,7 @@ namespace glib
 
 	void SimpleWindow::run()
 	{
-		while (getRunning())
+		while (!getShouldEnd())
 		{
 			time_t t1 = System::getCurrentTimeMicro();
 			
@@ -1060,6 +1125,8 @@ namespace glib
 
 			System::sleep(waitTime/1000, waitTime%1000);
 		}
+
+		setRunning(false);
 	}
 
 	void SimpleWindow::threadUpdate()

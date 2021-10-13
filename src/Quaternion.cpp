@@ -122,4 +122,14 @@ namespace glib
         return MathExt::normalize( getConjugate() );
     }
 
+    double Quaternion::getLength()
+    {
+        return sqrt(a*a + b*b + c*c + d*d);
+    }
+
+    Quaternion Quaternion::normalize()
+    {
+        return operator/( getLength() );
+    }
+
 } //NAMESPACE glib END

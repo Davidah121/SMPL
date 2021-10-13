@@ -35,6 +35,15 @@ namespace glib
 		 */
 		~ComplexNumber();
 
+		/**
+		 * @brief Converts the Complex number to a Vec2f.
+		 * 		x = real component
+		 * 		y = imaginary component
+		 * 
+		 * @return Vec2f 
+		 */
+		Vec2f toVec2f();
+
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;
@@ -44,62 +53,19 @@ namespace glib
 		ComplexNumber operator-();
 		ComplexNumber operator*(ComplexNumber other);
 
-		/**
-		 * @brief Does component to component multiplication.
-		 * 		Ex:
-		 * 			real*other.x
-		 * 			imaginary*other.y
-		 * @param other
-		 * 		A Vec2f to use for the component multiplication
-		 * @return ComplexNumber
-		 */
-		ComplexNumber operator*(Vec2f other);
-
-		/**
-		 * @brief Does component to component division.
-		 * 		Ex:
-		 * 			real/other.x
-		 * 			imaginary/other.y
-		 * @param other
-		 * 		A Vec2f to use for the component division
-		 * @return ComplexNumber
-		 */
-		ComplexNumber operator/(Vec2f other);
-
-		ComplexNumber operator*(int other);
-		ComplexNumber operator*(float other);
 		ComplexNumber operator*(double other);
-
-		ComplexNumber operator/(int other);
-		ComplexNumber operator/(float other);
 		ComplexNumber operator/(double other);
+
+		friend ComplexNumber operator*(double value, ComplexNumber other)
+		{
+			return other*value;
+		}
 
 		void operator+=(ComplexNumber other);
 		void operator-=(ComplexNumber other);
 		void operator*=(ComplexNumber other);
 
-		/**
-		 * @brief Does component to component multiplication.
-		 * 		Ex:
-		 * 			real*other.x
-		 * 			imaginary*other.y
-		 */
-		void operator*=(Vec2f other);
-
-		/**
-		 * @brief Does component to component division.
-		 * 		Ex:
-		 * 			real*other.x
-		 * 			imaginary*other.y
-		 */
-		void operator/=(Vec2f other);
-
-		void operator*=(int other);
-		void operator*=(float other);
 		void operator*=(double other);
-
-		void operator/=(int other);
-		void operator/=(float other);
 		void operator/=(double other);
 
 		//logic operators

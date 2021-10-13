@@ -61,45 +61,7 @@ namespace glib
 		return newMat;
 	}
 
-	Mat2f Mat2f::operator*(int value)
-	{
-		Mat2f newMat = Mat2f();
-		newMat.data[0][0] = data[0][0] * value;
-		newMat.data[1][0] = data[1][0] * value;
-		newMat.data[0][1] = data[0][1] * value;
-		newMat.data[1][1] = data[1][1] * value;
-
-		return newMat;
-	}
-
-	Mat2f Mat2f::operator*(float value)
-	{
-		Mat2f newMat = Mat2f();
-		newMat.data[0][0] = data[0][0] * value;
-		newMat.data[1][0] = data[1][0] * value;
-		newMat.data[0][1] = data[0][1] * value;
-		newMat.data[1][1] = data[1][1] * value;
-
-		return newMat;
-	}
-
 	void Mat2f::operator*=(double value)
-	{
-		data[0][0] *= value;
-		data[1][0] *= value;
-		data[0][1] *= value;
-		data[1][1] *= value;
-	}
-
-	void Mat2f::operator*=(int value)
-	{
-		data[0][0] *= value;
-		data[1][0] *= value;
-		data[0][1] *= value;
-		data[1][1] *= value;
-	}
-
-	void Mat2f::operator*=(float value)
 	{
 		data[0][0] *= value;
 		data[1][0] *= value;

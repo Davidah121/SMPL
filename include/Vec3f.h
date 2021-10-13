@@ -130,35 +130,20 @@ namespace glib
 
 		void operator+=(Vec3f other);
 		void operator-=(Vec3f other);
-		void operator*=(Vec3f other);
-		void operator/=(Vec3f other);
 
 		void operator*=(double other);
 		void operator/=(double other);
 
-		void operator*=(int other);
-		void operator/=(int other);
-
-		void operator*=(long other);
-		void operator/=(long other);
-
-		void operator*=(float other);
-		void operator/=(float other);
-
 		bool operator==(Vec3f other);
 		bool operator!=(Vec3f other);
 
-		Vec3f operator*(int value);
-		Vec3f operator*(float value);
 		Vec3f operator*(double value);
-		Vec3f operator*(long value);
-		Vec3f operator*(Vec3f other);
-
-		Vec3f operator/(int value);
-		Vec3f operator/(float value);
 		Vec3f operator/(double value);
-		Vec3f operator/(long value);
-		Vec3f operator/(Vec3f other);
+
+		friend Vec3f operator*(double value, Vec3f& other)
+		{
+			return other*value;
+		}
 
 		/**
 		 * @brief Converts the Vec3f to a GeneralVector object
