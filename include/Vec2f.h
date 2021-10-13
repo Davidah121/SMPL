@@ -90,38 +90,22 @@ namespace glib
 
 		void operator+=(Vec2f other);
 		void operator-=(Vec2f other);
-		void operator*=(Vec2f other);
-		void operator/=(Vec2f other);
-
 
 		void operator*=(double other);
 		void operator/=(double other);
-
-		void operator*=(int other);
-		void operator/=(int other);
-
-		void operator*=(long other);
-		void operator/=(long other);
-
-		void operator*=(float other);
-		void operator/=(float other);
 
 		bool operator==(Vec2f other);
 		bool operator!=(Vec2f other);
 
 		Vec2f operator-();
 
-		Vec2f operator*(int value);
-		Vec2f operator*(float value);
 		Vec2f operator*(double value);
-		Vec2f operator*(long value);
-		Vec2f operator*(Vec2f other);
-
-		Vec2f operator/(int value);
-		Vec2f operator/(float value);
 		Vec2f operator/(double value);
-		Vec2f operator/(long value);
-		Vec2f operator/(Vec2f other);
+
+		friend Vec2f operator*(double value, Vec2f& other)
+		{
+			return other*value;
+		}
 
 		//casting to generic vector
 		/**

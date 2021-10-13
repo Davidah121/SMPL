@@ -64,12 +64,13 @@ namespace glib
 		double* operator[](int row);
 
 		Mat2f operator*(double value);
-		Mat2f operator*(int value);
-		Mat2f operator*(float value);
+
+		friend Mat2f operator*(double value, Mat2f other)
+		{
+			return other * value;
+		}
 
 		void operator*=(double value);
-		void operator*=(int value);
-		void operator*=(float value);
 
 		Mat2f operator+(Mat2f other);
 		void operator+=(Mat2f other);

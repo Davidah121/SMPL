@@ -845,6 +845,15 @@ void testBezierApproximations()
     w.waitTillClose();
 }
 
+void testWindowStuff()
+{
+    //Testing fullscreen
+    SimpleWindow w = SimpleWindow("FULLSCREEN", 320, 240, 32, 32, SimpleWindow::FULLSCREEN_WINDOW);
+
+    System::sleep(5000,0);
+    w.close();
+}
+
 int main(int argc, char** argv)
 {
     StringTools::init();
@@ -852,7 +861,10 @@ int main(int argc, char** argv)
     //Graphics::init();
     //testSVGTransforms();
     //testCopyPasteStuff();
+    
     testCollision2();
+    //testWindowStuff();
+
     //testBezierSubdivision();
 
     //testBezierApproximations();

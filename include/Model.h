@@ -76,32 +76,57 @@ namespace glib
         void addVertexFormatInfo(unsigned char type, unsigned char usage);
 
         /**
+         * @brief Adds a set of index information for a new vertex.
+         *      If the model is indexed, these values will be used for drawing the model.
+         * 
+         * @param indexInfo 
+         */
+        void addIndicies(std::vector<int> indexInfo);
+
+        /**
+         * @brief Set the Indicies for a vertex.
+         *      If the model is indexed, these values will be used for drawing the model.
+         * 
+         * @param vertexLocation 
+         * @param indexInfo 
+         */
+        void setIndicies(int vertexLocation, std::vector<int> indexInfo);
+
+        /**
          * @brief Adds an int to the vertex data.
          * 
          * @param value 
+         * @param list
+         *      Which list to stick the value into.
          */
-        void addInt(int value);
+        void addInt(int value, int list);
 
         /**
          * @brief Adds a Vec2f to the vertex data.
          * 
          * @param value 
+         * @param list
+         *      Which list to stick the value into.
          */
-        void addVec2f(Vec2f value);
+        void addVec2f(Vec2f value, int list);
 
         /**
          * @brief Adds a Vec3f to the vertex data.
          * 
          * @param value 
+         * @param list
+         *      Which list to stick the value into.
          */
-        void addVec3f(Vec3f value);
+        void addVec3f(Vec3f value, int list);
 
         /**
          * @brief Adds a Vec4f to the vertex data.
          * 
          * @param value 
+         * @param list
+         *      Which list to stick the value into.
          */
-        void addVec4f(Vec4f value);
+        void addVec4f(Vec4f value, int list);
         
         /**
          * @brief Gets the vertex at the specified location.
@@ -118,14 +143,6 @@ namespace glib
          * @return std::vector<VertexFormat> 
          */
         std::vector<VertexFormat> getVertexFormatInfomation();
-
-        /**
-         * @brief Returns all vertex data as a list of doubles.
-         *      Specifically returns the internal vector used to store vertex data.
-         * 
-         * @return std::vector<double>& 
-         */
-        std::vector<double>& getAllVertices();
 
         /**
          * @brief Returns the amount of verticies in the model.
@@ -180,13 +197,32 @@ namespace glib
          */
         void loadModel(File file);
         
+        /**
+         * @brief Sets whether the model uses index values to refer to vertex data.
+         *      Good for saving space. By default, the model is not indexed.
+         * 
+         * @param indexed 
+         */
+        void setIndexed(bool indexed);
+
+        /**
+         * @brief Gets whether the model uses index values to refer to vertex data.
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool getIndexed();
+
     private:
         void loadOBJ(File file);
 
-        std::vector<double> vertexInfo = std::vector<double>();
-        std::vector<VertexFormat> orderInfo = std::vector<VertexFormat>();
+        std::vector<std::vector<double>> vertexData = std::vector<std::vector<double>>();
+        std::vector<std::vector<int>> vertexIndexInfo = std::vector<std::vector<int>>();
+        std::vector<VertexFormat> formatInfo = std::vector<VertexFormat>();
+
         int sizeOfVertex = 0;
         unsigned char modelFormat = TRIANGLES;
+        bool indexed = false;
     };
 
 } //NAMESPACE glib END

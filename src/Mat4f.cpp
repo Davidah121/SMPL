@@ -104,28 +104,6 @@ namespace glib
 		return v;
 	}
 
-	Mat4f Mat4f::operator*(int other)
-	{
-		Mat4f v = Mat4f();
-
-		for (int i = 0; i < 4; i++)
-			for (int j = 0; j < 4; j++)
-				v[i][j] = data[i][j] * other;
-
-		return v;
-	}
-
-	Mat4f Mat4f::operator*(float other)
-	{
-		Mat4f v = Mat4f();
-
-		for (int i = 0; i < 4; i++)
-			for (int j = 0; j < 4; j++)
-				v[i][j] = data[i][j] * other;
-
-		return v;
-	}
-
 	Mat4f Mat4f::operator*(double other)
 	{
 		Mat4f v = Mat4f();
@@ -135,20 +113,6 @@ namespace glib
 				v[i][j] = data[i][j] * other;
 
 		return v;
-	}
-
-	void Mat4f::operator*=(int other)
-	{
-		for (int i = 0; i < 4; i++)
-			for (int j = 0; j < 4; j++)
-				data[i][j] *= other;
-	}
-
-	void Mat4f::operator*=(float other)
-	{
-		for (int i = 0; i < 4; i++)
-			for (int j = 0; j < 4; j++)
-				data[i][j] *= other;
 	}
 
 	void Mat4f::operator*=(double other)

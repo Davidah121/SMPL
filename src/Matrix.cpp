@@ -116,36 +116,6 @@ namespace glib
 		return m;
 	}
 
-	Matrix Matrix::operator*(int value)
-	{
-		Matrix m = Matrix(rows, columns);
-
-		for (int i = 0; i < rows; i++)
-		{
-			for (int i2 = 0; i2 < columns; i2++)
-			{
-				m[i][i2] = value * data[i][i2];
-			}
-		}
-
-		return m;
-	}
-
-	Matrix Matrix::operator*(float value)
-	{
-		Matrix m = Matrix(rows, columns);
-
-		for (int i = 0; i < rows; i++)
-		{
-			for (int i2 = 0; i2 < columns; i2++)
-			{
-				m[i][i2] = value * data[i][i2];
-			}
-		}
-
-		return m;
-	}
-
 	Matrix Matrix::operator*(Matrix other)
 	{
 		if(this->getRows() == other.getCols())
@@ -193,28 +163,6 @@ namespace glib
 	}
 
 	void Matrix::operator*=(double value)
-	{
-		for (int i = 0; i < rows; i++)
-		{
-			for (int i2 = 0; i2 < columns; i2++)
-			{
-				data[i][i2] *= value;
-			}
-		}
-	}
-
-	void Matrix::operator*=(int value)
-	{
-		for (int i = 0; i < rows; i++)
-		{
-			for (int i2 = 0; i2 < columns; i2++)
-			{
-				data[i][i2] *= value;
-			}
-		}
-	}
-
-	void Matrix::operator*=(float value)
 	{
 		for (int i = 0; i < rows; i++)
 		{

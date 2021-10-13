@@ -129,29 +129,9 @@ namespace glib
 		return Vec4f(x + other.x, y + other.y, z + other.z, w + other.w);
 	}
 
-	Vec4f Vec4f::operator*(long other)
-	{
-		return Vec4f(x*other, y*other, z*other, w*other);
-	}
-
 	Vec4f Vec4f::operator*(double other)
 	{
 		return Vec4f(x*other, y*other, z*other, w*other);
-	}
-
-	Vec4f Vec4f::operator*(float other)
-	{
-		return Vec4f(x*other, y*other, z*other, w*other);
-	}
-
-	Vec4f Vec4f::operator*(int other)
-	{
-		return Vec4f(x*other, y*other, z*other, w*other);
-	}
-
-	Vec4f Vec4f::operator*(Vec4f other)
-	{
-		return Vec4f(x * other.x, y * other.y, z * other.z, w * other.w);
 	}
 
 	Vec4f Vec4f::operator-()
@@ -185,22 +165,6 @@ namespace glib
 		w -= other.w;
 	}
 
-	void Vec4f::operator*=(Vec4f other)
-	{
-		x *= other.x;
-		y *= other.y;
-		z *= other.z;
-		w *= other.w;
-	}
-
-	void Vec4f::operator/=(Vec4f other)
-	{
-		x /= other.x;
-		y /= other.y;
-		z /= other.z;
-		w /= other.w;
-	}
-
 	void Vec4f::operator*=(double other)
 	{
 		x *= other;
@@ -216,73 +180,9 @@ namespace glib
 		w /= other;
 	}
 
-	void Vec4f::operator*=(long other)
-	{
-		x *= other;
-		y *= other;
-		z *= other;
-		w *= other;
-	}
-	void Vec4f::operator/=(long other)
-	{
-		x /= other;
-		y /= other;
-		z /= other;
-		w /= other;
-	}
-
-	void Vec4f::operator*=(float other)
-	{
-		x *= other;
-		y *= other;
-		z *= other;
-		w *= other;
-	}
-	void Vec4f::operator/=(float other)
-	{
-		x /= other;
-		y /= other;
-		z /= other;
-		w /= other;
-	}
-
-	void Vec4f::operator*=(int other)
-	{
-		x *= other;
-		y *= other;
-		z *= other;
-		w *= other;
-	}
-	void Vec4f::operator/=(int other)
-	{
-		x /= other;
-		y /= other;
-		z /= other;
-		w /= other;
-	}
-	Vec4f Vec4f::operator/(long other)
-	{
-		return Vec4f(x/other, y/other, z/other, w/other);
-	}
-
 	Vec4f Vec4f::operator/(double other)
 	{
 		return Vec4f(x / other, y / other, z / other, w / other);
-	}
-
-	Vec4f Vec4f::operator/(float other)
-	{
-		return Vec4f(x / other, y / other, z / other, w / other);
-	}
-
-	Vec4f Vec4f::operator/(int other)
-	{
-		return Vec4f(x / other, y / other, z / other, w / other);
-	}
-
-	Vec4f Vec4f::operator/(Vec4f other)
-	{
-		return Vec4f(x / other.x, y / other.y, z / other.z, w / other.w);
 	}
 
 	GeneralVector Vec4f::toGeneralVector()
