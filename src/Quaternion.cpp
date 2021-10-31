@@ -59,9 +59,9 @@ namespace glib
     {
         Quaternion newQuat = Quaternion();
         newQuat.a = (a*other.a - b*other.b - c*other.c - d*other.d);
-        newQuat.b = (a*other.b - b*other.a - c*other.d - d*other.c);
-        newQuat.c = (a*other.c - b*other.d - c*other.a - d*other.b);
-        newQuat.c = (a*other.d - b*other.c - c*other.b - d*other.a);
+        newQuat.b = (a*other.b + b*other.a + c*other.d - d*other.c);
+        newQuat.c = (a*other.c - b*other.d + c*other.a + d*other.b);
+        newQuat.d = (a*other.d + b*other.c - c*other.b + d*other.a);
         return newQuat;
     }
 
@@ -78,9 +78,9 @@ namespace glib
     void Quaternion::operator*=(Quaternion other)
     {
         double newA = (a*other.a - b*other.b - c*other.c - d*other.d);
-        double newB = (a*other.b - b*other.a - c*other.d - d*other.c);
-        double newC = (a*other.c - b*other.d - c*other.a - d*other.b);
-        double newD = (a*other.d - b*other.c - c*other.b - d*other.a);
+        double newB = (a*other.b + b*other.a + c*other.d - d*other.c);
+        double newC = (a*other.c - b*other.d + c*other.a + d*other.b);
+        double newD = (a*other.d + b*other.c - c*other.b + d*other.a);
         
         a = newA;
         b = newB;

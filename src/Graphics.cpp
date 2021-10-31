@@ -20,9 +20,14 @@ namespace glib
 
 	void Graphics::init()
 	{
-		Graphics::defaultFont = new BitmapFont("./Resources/DefaultFont.fnt");
-		Graphics::defaultFontMedium = new BitmapFont("./Resources/DefaultFontMedium.fnt");
-		Graphics::defaultFontLarge = new BitmapFont("./Resources/DefaultFontLarge.fnt");
+		if(defaultFont==nullptr)
+			Graphics::defaultFont = new BitmapFont("./Resources/DefaultFont.fnt");
+
+		if(defaultFontMedium==nullptr)
+			Graphics::defaultFontMedium = new BitmapFont("./Resources/DefaultFontMedium.fnt");
+
+		if(defaultFontLarge==nullptr)
+			Graphics::defaultFontLarge = new BitmapFont("./Resources/DefaultFontLarge.fnt");
 	}
 
 	void Graphics::dispose()

@@ -238,7 +238,7 @@ namespace glib
 							{
 								int imgCount = 0;
 								//Is local image so full path is needed
-								std::wstring actualFile = StringTools::toWideString(path) + attrib.value;
+								std::wstring actualFile = path + L'/' + attrib.value;
 
 								Image** imgArr = Image::loadImage(actualFile, &imgCount);
 								if(imgCount>0)

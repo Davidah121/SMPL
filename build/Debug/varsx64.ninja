@@ -1,4 +1,4 @@
-inc = -I ./include %WLIBPATH64%
+inc = -I ./include %WLIBPATH64% -I C:/Libraries/glew-2.1.0/include
 objDir = ./bin/Debug/x64/obj
 compiler = cmd /c clang 
 CXXFLAGS = -std=c++17 -march=skylake

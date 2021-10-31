@@ -1,10 +1,5 @@
 #pragma once
 
-#ifndef WIN32_LEAN_AND_MEAN
-	#define WIN32_LEAN_AND_MEAN
-#endif
-#include <Windows.h>
-
 #include <chrono>
 #include <functional>
 #include <string>
@@ -224,7 +219,7 @@ namespace glib
 		 * 		If 0 or NULL, uses the desktop window which encapsulates everything.
 		 * @param filename 
 		 */
-		static void saveScreenShot(HWND window, File file);
+		static void saveScreenShot(size_t window, File file);
 
 		/**
 		 * @brief Gets a screenshot from the specified window as an Image*.
@@ -234,7 +229,7 @@ namespace glib
 		 * 		If 0 or NULL, uses the desktop window which encapsulates everything.
 		 * @return Image* 
 		 */
-		static Image* getScreenShot(HWND window);
+		static Image* getScreenShot(size_t window);
 
 		/**
 		 * @brief Saves a screenshot from the desktop window to a file as a .bmp
@@ -273,7 +268,7 @@ namespace glib
 		 * @param startX 
 		 * @param startY 
 		 */
-		static void paintImageToWindow(HWND window, Image* img, int startX = 0, int startY = 0);
+		static void paintImageToWindow(size_t window, Image* img, int startX = 0, int startY = 0);
 
 		/**
 		 * @brief Gets the ProcessID of the application by its process name
@@ -287,9 +282,9 @@ namespace glib
 		 * @brief Gets the Window for a process by the window name.
 		 * 
 		 * @param windowName 
-		 * @return HWND 
+		 * @return size_t 
 		 */
-		static HWND getProcessWindow(std::wstring windowName);
+		static size_t getProcessWindow(std::wstring windowName);
 
 		static const unsigned char TYPE_OPEN_FILE = 0;
 		static const unsigned char TYPE_OPEN_FOLDER = 1;

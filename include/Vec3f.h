@@ -15,12 +15,12 @@ namespace glib
 		Vec3f();
 
 		/**
-		 * @brief Construct a new Vec3f object using a Vec2f.
-		 * 		The z value will not be set.
+		 * @brief Construct a new Vec3f object using a Vec2f and an
+		 * 		optional additional z value.
 		 * 
 		 * @param other 
 		 */
-		Vec3f(Vec2f other);
+		Vec3f(Vec2f other, double z=0.0);
 
 		/**
 		 * @brief Construct a new Vec3f object

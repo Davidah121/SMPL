@@ -2,10 +2,40 @@
 #include "Image.h"
 #include "GuiManager.h"
 
-#ifndef WIN32_LEAN_AND_MEAN
-	#define WIN32_LEAN_AND_MEAN
+#ifdef LINUX
+	#include <X11/Xlib.h>
+	#include <X11/Xatom.h>
+	#include <X11/Xutil.h>
+
+	struct MwmHints {
+		unsigned long flags;
+		unsigned long functions;
+		unsigned long decorations;
+		long input_mode;
+		unsigned long status;
+	};
+	
+	enum {
+		MWM_HINTS_FUNCTIONS = (1L << 0),
+		MWM_HINTS_DECORATIONS =  (1L << 1),
+
+		MWM_FUNC_ALL = (1L << 0),
+		MWM_FUNC_RESIZE = (1L << 1),
+		MWM_FUNC_MOVE = (1L << 2),
+		MWM_FUNC_MINIMIZE = (1L << 3),
+		MWM_FUNC_MAXIMIZE = (1L << 4),
+		MWM_FUNC_CLOSE = (1L << 5)
+	};
+
+#else
+	#ifndef WIN32_LEAN_AND_MEAN
+		#define WIN32_LEAN_AND_MEAN
+	#endif
+	#include <Windows.h>
 #endif
-#include <Windows.h>
+
+
+
 #include <exception>
 #include <thread>
 #include <vector>
@@ -48,7 +78,7 @@ namespace glib
 		 * 			height is 240px high,
 		 * 			the window is centered in the screen of the main monitor,
 		 * 			the window is managed by a thread,
-		 * 			and the window is a normal window (has a title bar with min, max, close buttons, and is resizable)
+		 * 			and the window is a normal window (has a title bar with min, max, close buttons, and is resizable) with software rendering.
 		 */
 		SimpleWindow();
 
@@ -83,7 +113,7 @@ namespace glib
 		 * 			TYPE_THREAD_MANAGED
 		 * 		Default value is 0 which is a Normal Focusable Thread Managed Window.
 		 */
-		SimpleWindow(std::wstring title, int width = 320, int height = 240, int x = -1, int y = -1, unsigned char windowType = 0);
+		SimpleWindow(std::wstring title, int width = 320, int height = 240, int x = -1, int y = -1, unsigned char windowType = NORMAL_WINDOW);
 
 		/**
 		 * @brief Construct a new SimpleWindow object
@@ -116,7 +146,7 @@ namespace glib
 		 * 			TYPE_THREAD_MANAGED
 		 * 		Default value is 0 which is a Normal Focusable Thread Managed Window.
 		 */
-		SimpleWindow(std::string title, int width = 320, int height = 240, int x = -1, int y = -1, unsigned char windowType = 0);
+		SimpleWindow(std::string title, int width = 320, int height = 240, int x = -1, int y = -1, unsigned char windowType = NORMAL_WINDOW);
 
 		/**
 		 * @brief Destroy the SimpleWindow object
@@ -215,6 +245,20 @@ namespace glib
 		int getHeight();
 
 		/**
+		 * @brief Gets the x position of the window
+		 * 
+		 * @return int 
+		 */
+		int getX();
+
+		/**
+		 * @brief Gets the y position of the window
+		 * 
+		 * @return int 
+		 */
+		int getY();
+
+		/**
 		 * @brief Gets the title of the window
 		 * 
 		 * @return std::wstring 
@@ -253,11 +297,13 @@ namespace glib
 
 		/**
 		 * @brief Gets the Window Handle
-		 * 		Only useful in the Window OS
+		 * 		Returns a value which represents the window.
+		 * 		Windows uses a HWND
+		 * 		Linux uses an unsigned int to store windows
 		 * 
-		 * @return HWND 
+		 * @return size_t
 		 */
-		HWND getWindowHandle();
+		size_t getWindowHandle();
 
 		/**
 		 * @brief Sets the Paint Function
@@ -287,22 +333,22 @@ namespace glib
 		/**
 		 * @brief Sets the Key Up Function
 		 * 		The function will be called when a key has been released.
-		 * 		The WPARAM contains the keycode
-		 * 		The LPARAM contains additional information
+		 * 		The first argument (unsigned long) contains the keycode
+		 * 		The second argument (long) contains additional information
 		 * 
 		 * @param function 
 		 */
-		void setKeyUpFunction(std::function<void(WPARAM, LPARAM)> function);
+		void setKeyUpFunction(std::function<void(unsigned long, long)> function);
 
 		/**
 		 * @brief Sets the Key Down Function
 		 * 		The function will be called when a key has been pressed.
-		 * 		The WPARAM contains the keycode
-		 * 		The LPARAM contains additional information
+		 * 		The first argument (unsigned long) contains the keycode
+		 * 		The second argument (long) contains additional information
 		 * 
 		 * @param function 
 		 */
-		void setKeyDownFunction(std::function<void(WPARAM, LPARAM)> function);
+		void setKeyDownFunction(std::function<void(unsigned long, long)> function);
 
 		/**
 		 * @brief Sets the Mouse Button Down Function
@@ -493,9 +539,18 @@ namespace glib
 		static std::vector<SimpleWindow*> windowList;
 		static int screenWidth;
 		static int screenHeight;
-		static SimpleWindow* getWindowByHandle(HWND value);
+
 		static void removeWindowFromList(SimpleWindow* value);
+		static SimpleWindow* getWindowByHandle(size_t value);
+
+		//CHANGE WITH OTHER OS
+
+		#ifdef LINUX
+
+		#else
 		static LRESULT _stdcall wndProc(HWND hwnd, UINT uint, WPARAM wparam, LPARAM lparam);
+		#endif
+		//
 
 		void init(int x, int y, int width, int height, std::wstring title, unsigned char windowType);
 		
@@ -562,13 +617,21 @@ namespace glib
 		void threadRender();
 		void threadRepaint();
 
-		HWND windowHandle;
-		WNDCLASSEXW wndClass;
-		HINSTANCE hins;
-		HBITMAP bitmap;
-		BITMAPINFO bitInfo;
-		HDC myHDC;
+		//At the cost of potential portability and bad code.
+		size_t windowHandle;
 
+		#ifdef LINUX
+			Display* displayServer;
+			int screen = -1;
+			Pixmap bitmap;
+		#else
+			WNDCLASSEXW wndClass;
+			HINSTANCE hins;
+			HBITMAP bitmap;
+			BITMAPINFO bitInfo;
+			HDC myHDC;
+		#endif
+		
 		GuiManager* gui = nullptr;
 		bool activateGui = true;
 
@@ -589,30 +652,14 @@ namespace glib
 		std::function<void()> mouseMovedFunction;
 		std::function<void()> closingFunction;
 
-		std::function<void(WPARAM, LPARAM)> keyUpFunction;
-		std::function<void(WPARAM, LPARAM)> keyDownFunction;
+		std::function<void(unsigned long, long)> keyUpFunction;
+		std::function<void(unsigned long, long)> keyDownFunction;
 
 		std::function<void(int)> mouseDoubleClickFunction;
 		std::function<void(int)> mouseButtonDownFunction;
 		std::function<void(int)> mouseButtonUpFunction;
 		std::function<void(int)> mouseWheelFunction;
 		std::function<void(int)> mouseHWheelFunction;
-
-
-
-		// void (*paintFunction)(void);
-		// void (*keyUpFunction)(WPARAM, LPARAM);
-		// void (*keyDownFunction)(WPARAM, LPARAM);
-
-		// void (*mouseDoubleClickFunction)(int);
-		// void (*mouseButtonDownFunction)(int);
-		// void (*mouseButtonUpFunction)(int);
-		// void (*mouseWheelFunction)(int);
-		// void (*mouseHWheelFunction)(int);
-
-		// void (*mouseMovedFunction)(void);
-
-		// void (*closingFunction)(void);
 	};
 
 } //NAMESPACE glib END

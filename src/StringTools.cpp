@@ -28,17 +28,17 @@ namespace glib
 
 	int StringTools::stringLength(char * text)
 	{
-		return std::strlen(text);
+		return strlen(text);
 	}
 
 	int StringTools::stringLength(const char * text)
 	{
-		return std::strlen(text);
+		return strlen(text);
 	}
 
 	int StringTools::stringLength(wchar_t * text)
 	{
-		return std::wcslen(text);
+		return wcslen(text);
 	}
 
 	int StringTools::stringLength(const wchar_t * text)

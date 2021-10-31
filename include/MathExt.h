@@ -1307,6 +1307,18 @@ namespace glib
 		 */
 		static Mat3f skew2D(Vec2f skew);
 
+		/**
+		 * @brief Creates a Matrix to transform a model about the origin (0,0)
+		 * 		Applies transforms in the following order
+		 * 		Scale, Rotation, Position
+		 * 
+		 * @param position 
+		 * @param rotation 
+		 * @param scale 
+		 * @return Mat3f 
+		 */
+		static Mat3f modelMatrix2D(Vec2f position, double rotation, Vec2f scale);
+
 		//3D transformations
 
 		/**
@@ -1337,7 +1349,7 @@ namespace glib
 		 * @param q 
 		 * @return Mat4f 
 		 */
-		static Mat4f QuaternionToMatrix(Quaternion q);
+		static Mat4f quaternionToMatrix(Quaternion q);
 		
 		/**
 		 * @brief Returns a 3D rotation matrix about the X axis.
@@ -1419,6 +1431,78 @@ namespace glib
 		 * @return Mat4f 
 		 */
 		static Mat4f skew3D(Vec3f skew);
+
+		/**
+		 * @brief Creates a Matrix to transform a model about the origin (0,0,0)
+		 * 		Applies transforms in the following order
+		 * 		Scale, Rotation, Position
+		 * 
+		 * 		Rotations are created using Quaternions to avoid gimbal lock
+		 * 
+		 * @param position 
+		 * @param rotation 
+		 * @param scale 
+		 * @return Mat4f 
+		 */
+		static Mat4f modelMatrix3D(Vec3f position, Vec3f rotation, Vec3f scale);
+
+
+		//PROJECTION VIEW MATRIX STUFF
+		
+		/**
+		 * @brief Calculates a 3D View Matrix that assumes that 
+		 * 		x is left and right,
+		 * 		y is forwards and backwards,
+		 * 		z is up and down.
+		 * 		
+		 * 		It uses quaternions to avoid Gimbal lock.
+		 * 
+		 * @param position 
+		 * @param rotation 
+		 * 		Assumed to be in radians
+		 * @return Mat4f 
+		 */
+		static Mat4f viewMatrix(Vec3f position, Vec3f rotation);
+
+		/**
+		 * @brief Calculates a 2D View Matrix that assumes that 
+		 * 		x is left and right,
+		 * 		y is up and down
+		 * 
+		 * @param position 
+		 * @param rotation 
+		 * 		Assumed to be in radians
+		 * @return Mat4f 
+		 */
+		static Mat4f viewMatrix2D(Vec2f position, double rotation);
+
+		/**
+		 * @brief Calculates a 3D Perspective Projection Matrix.
+		 * 
+		 * @param width 
+		 * @param height 
+		 * @param near 
+		 * @param far 
+		 * @param fov 
+		 * @return Mat4f 
+		 */
+		static Mat4f perspectiveProjectionMatrix(double width, double height, double near, double far, double fov);
+
+		/**
+		 * @brief Calculates a 3D Orthographic Projection Matrix.
+		 * 
+		 * 		If near and far are set to the same value or left at the default, a Orthographic Projection Matrix
+		 * 		for 2D will be generated. Z values in that case will represent depth.
+		 * 
+		 * @param width 
+		 * @param height 
+		 * @param near
+		 * 		Default value is 0
+		 * @param far
+		 * 		Default value is 0
+		 * @return Mat4f 
+		 */
+		static Mat4f orthographicProjectionMatrix(double width, double height, double near = 0, double far = 0);
 		
 
 		//Equations and Functions

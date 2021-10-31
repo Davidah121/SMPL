@@ -66,6 +66,11 @@ namespace glib
 
     }
 
+    SimpleXml::SimpleXml(File f)
+    {
+        load(f);
+    }
+
     SimpleXml::~SimpleXml()
     {
         dispose();
@@ -75,7 +80,8 @@ namespace glib
     {
         for(XmlNode* n : nodes)
         {
-            delete n;
+            if(n!=nullptr)
+                delete n;
         }
         nodes.clear();
     }

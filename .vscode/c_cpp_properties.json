@@ -3,7 +3,8 @@
 		{
 			"name": "Clang LLVM",
 			"includePath": [
-				"${workspaceFolder}/include/*"
+				"${workspaceFolder}/include/*",
+				"C:/Libraries/glew-2.1.0/include/*"
 			],
 			"defines": [
 				"_DEBUG",
