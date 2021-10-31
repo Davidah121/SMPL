@@ -2,6 +2,7 @@
 #include "StringTools.h"
 #include "File.h"
 #include "SimpleFile.h"
+#include "SimpleXml.h"
 
 namespace glib
 {
@@ -28,100 +29,135 @@ namespace glib
             //invalid type or usage. Exit
             return;
         }
+        VertexFormat f;
+        f.type = type;
+        f.usage = usage;
+        f.size = type;
+        if(type == TYPE_INT)
+        {
+            f.size = 1;
+        }
 
-        formatInfo.push_back({(unsigned char)type, (unsigned char)usage});
-        sizeOfVertex += type+1;
-
-        vertexData.push_back( std::vector<double>() );
-        vertexIndexInfo.push_back( std::vector<int>() );
+        formatInfo.push_back(f);
+        vertexData.push_back( std::vector<int>() );
     }
 
-    void Model::addIndicies(std::vector<int> indexInfo)
+    void Model::addIndicies(std::vector<unsigned int> indexInfo)
     {
         if(indexInfo.size() == formatInfo.size())
             vertexIndexInfo.push_back( indexInfo );
     }
 
-    void Model::setIndicies(int vertexLocation, std::vector<int> indexInfo)
+    void Model::setIndicies(unsigned int vertexLocation, std::vector<unsigned int> indexInfo)
     {
-        if(vertexLocation >= 0 && vertexLocation <= vertexIndexInfo.size())
+        if(vertexLocation <= vertexIndexInfo.size())
             if(indexInfo.size() == formatInfo.size())
                 vertexIndexInfo[vertexLocation] = indexInfo;
     }
 
-    void Model::addInt(int value, int list)
+    void Model::addInt(int value, unsigned int list)
     {
-        if(list>=0 && list<formatInfo.size())
-            vertexData[list].push_back( (double)value );
+        if(list<formatInfo.size())
+            vertexData[list].push_back( value );
+    }
+
+    void Model::addFloat(float value, unsigned int list)
+    {
+        if(list<formatInfo.size())
+            vertexData[list].push_back( *((int*)&value) );
     }
     
-    void Model::addVec2f(Vec2f value, int list)
+    void Model::addVec2f(Vec2f value, unsigned int list)
     {
-        if(list>=0 && list<formatInfo.size())
+        if(list<formatInfo.size())
         {
-            vertexData[list].push_back( value.x );
-            vertexData[list].push_back( value.y );
+            float v;
+            v = (float)value.x;
+            vertexData[list].push_back( *((int*)&v) );
+
+            v = (float)value.y;
+            vertexData[list].push_back( *((int*)&v) );
         }
     }
 
-    void Model::addVec3f(Vec3f value, int list)
+    void Model::addVec3f(Vec3f value, unsigned int list)
     {
-        if(list>=0 && list<formatInfo.size())
+        if(list<formatInfo.size())
         {
-            vertexData[list].push_back( value.x );
-            vertexData[list].push_back( value.y );
-            vertexData[list].push_back( value.z );
+            float v;
+            v = (float)value.x;
+            vertexData[list].push_back( *((int*)&v) );
+
+            v = (float)value.y;
+            vertexData[list].push_back( *((int*)&v) );
+
+            v = (float)value.z;
+            vertexData[list].push_back( *((int*)&v) );
         }
     }
 
-    void Model::addVec4f(Vec4f value, int list)
+    void Model::addVec4f(Vec4f value, unsigned int list)
     {
-        if(list>=0 && list<formatInfo.size())
+        if(list<formatInfo.size())
         {
-            vertexData[list].push_back( value.x );
-            vertexData[list].push_back( value.y );
-            vertexData[list].push_back( value.z );
-            vertexData[list].push_back( value.w );
+            float v;
+            v = (float)value.x;
+            vertexData[list].push_back( *((int*)&v) );
+
+            v = (float)value.y;
+            vertexData[list].push_back( *((int*)&v) );
+
+            v = (float)value.z;
+            vertexData[list].push_back( *((int*)&v) );
+
+            v = (float)value.w;
+            vertexData[list].push_back( *((int*)&v) );
         }
     }
 
-    std::vector<double> Model::getVertex(int i)
+    std::vector<std::vector<int>> Model::getVertex(unsigned int i)
     {
-        std::vector<double> rValue = std::vector<double>(sizeOfVertex);
+        std::vector<std::vector<int>> rValues;
 
         if(i>=size())
         {
-            return rValue;
+            return rValues;
         }
 
         if(indexed)
         {
-            for(int j=0; j<vertexIndexInfo.size(); j++)
+            for(int j=0; j<formatInfo.size(); j++)
             {
-                int valuesToGrab = this->formatInfo[j].type + 1;
+                std::vector<int> values;
+                int valuesToGrab = this->formatInfo[j].size;
                 int index = vertexIndexInfo[i][j];
 
                 for(int k=0; k<valuesToGrab; k++)
                 {
-                    rValue.push_back( vertexData[j][index*valuesToGrab + k] );
+                    values.push_back( vertexData[j][index*valuesToGrab + k]);
                 }
+
+                rValues.push_back(values);
             }
         }
         else
         {
             for(int j=0; j<formatInfo.size(); j++)
             {
-                int valuesToGrab = this->formatInfo[j].type + 1;
-                int index = i * valuesToGrab;
+                std::vector<int> values;
+                int valuesToGrab = this->formatInfo[j].size;
+                int index = i*valuesToGrab;
 
                 for(int k=0; k<valuesToGrab; k++)
                 {
-                    rValue.push_back( vertexData[j][index*valuesToGrab + k] );
+                    values.push_back( vertexData[j][index*valuesToGrab + k]);
                 }
+
+                rValues.push_back(values);
             }
         }
 
-        return rValue;
+        return rValues;
     }
 
     std::vector<VertexFormat> Model::getVertexFormatInfomation()
@@ -129,32 +165,18 @@ namespace glib
         return formatInfo;
     }
 
-    int Model::size()
-    {
-        if(indexed)
-            return vertexIndexInfo.size();
-        else
-        {
-            if(vertexData.size() > 0 && formatInfo.size() > 0)
-                return vertexData[0].size() / (formatInfo[0].type+1);
-        }
-        return 0;
-    }
-
     void Model::clear()
     {
-        sizeOfVertex = 0;
         formatInfo.clear();
         vertexData.clear();
         vertexIndexInfo.clear();
+        indexed = false;
+        modelFormat = Model::TRIANGLES;
     }
 
     void Model::setModelFormat(unsigned char format)
     {
-        if(format>9)
-            modelFormat = 9;
-        else
-            modelFormat = format;
+        modelFormat = MathExt::clamp<int>(modelFormat, 0, 9);
     }
 
     unsigned char Model::getModelFormat()
@@ -162,16 +184,74 @@ namespace glib
         return modelFormat;
     }
 
+    size_t Model::size()
+    {
+        if(indexed)
+            return vertexIndexInfo.size();
+        else
+        {
+            if(vertexData.size() > 0 && formatInfo.size() > 0)
+                if(formatInfo[0].size > 0)
+                    return vertexData[0].size() / (formatInfo[0].size);
+        }
+        return 0;
+    }
+
+    size_t Model::sizeOfList(int index)
+    {
+        if(index >= 0 && index < vertexData.size())
+        {
+            return vertexData[index].size();
+        }
+        return 0;
+    }
+
     int Model::getSizeOfVertex()
     {
-        return sizeOfVertex;
+        int sum=0;
+        for(int i=0; i<formatInfo.size(); i++)
+        {
+            sum += formatInfo[i].size;
+        }
+
+        return sum;
+    }
+
+    std::vector<std::vector<int>> Model::getRawVertexData()
+    {
+        return vertexData;
+    }
+
+    std::vector<std::vector<unsigned int>> Model::getRawIndexData()
+    {
+        return vertexIndexInfo;
+    }
+
+    void Model::setIndexed(bool v)
+    {
+        indexed = v;
+    }
+
+    bool Model::getIndexed()
+    {
+        return indexed;
     }
 
     void Model::loadModel(File file)
     {
-        if(file.getExtension() == L".obj")
+        std::wstring ext = file.getExtension();
+
+        if(ext == L".obj")
         {
             loadOBJ(file);
+        }
+        else if(ext == L".stl")
+        {
+            loadSTL(file);
+        }
+        else if(ext == L".dae")
+        {
+            loadCollada(file);
         }
         else
         {
@@ -181,6 +261,7 @@ namespace glib
 
     void Model::loadOBJ(File file)
     {
+        clear();
         SimpleFile s = SimpleFile(file, SimpleFile::READ);
         if(s.isOpen())
         {
@@ -208,15 +289,14 @@ namespace glib
 
             //line elements
             //l v1 v2 v3
-            std::vector<Vec3f> points;
-            std::vector<Vec2f> texCoords;
-            std::vector<Vec3f> normals;
 
-            clear();
-            bool hasPos = false;
-            bool hasTex = false;
-            bool hasNorm = false;
             indexed = true;
+
+            int posLocation = -1;
+            int texLocation = -1;
+            int normLocation = -1;
+
+            int currLoc = 0;
             
 
             for(std::string& s : fileInfo)
@@ -228,26 +308,29 @@ namespace glib
                     {
                     case ' ':
                         type = 0; //Vertex Position
-                        if(!hasPos)
+                        if(posLocation == -1)
                         {
                             addVertexFormatInfo(TYPE_VEC3, USAGE_POSITION);
-                            hasPos = true;
+                            posLocation = currLoc;
+                            currLoc++;
                         }
                         break;
                     case 't':
                         type = 1; //Texture Coordinate
-                        if(!hasTex)
+                        if(texLocation == -1)
                         {
                             addVertexFormatInfo(TYPE_VEC2, USAGE_TEXTURE);
-                            hasTex = true;
+                            texLocation = currLoc;
+                            currLoc++;
                         }
                         break;
                     case 'n':
                         type = 2; //Vertex Normal
-                        if(!hasNorm)
+                        if(normLocation == -1)
                         {
                             addVertexFormatInfo(TYPE_VEC3, USAGE_NORMAL);
-                            hasNorm = true;
+                            normLocation = currLoc;
+                            currLoc++;
                         }
                     default:
                         break;
@@ -268,10 +351,11 @@ namespace glib
                     if(split.size() >= 4)
                     {
                         Vec3f v;
-                        v.x = std::stod(split[1]);
-                        v.y = std::stod(split[2]);
-                        v.z = std::stod(split[3]);
-                        points.push_back(v);
+                        v.x = std::stof(split[1]);
+                        v.y = std::stof(split[2]);
+                        v.z = std::stof(split[3]);
+
+                        addVec3f(v, posLocation);
                     }
                 }
                 else if(type == 1)
@@ -280,9 +364,10 @@ namespace glib
                     if(split.size() >= 3)
                     {
                         Vec2f v;
-                        v.x = std::stod(split[1]);
-                        v.y = std::stod(split[2]);
-                        texCoords.push_back(v);
+                        v.x = std::stof(split[1]);
+                        v.y = std::stof(split[2]);
+
+                        addVec2f(v, texLocation);
                     }
                 }
                 else if(type == 2)
@@ -291,10 +376,11 @@ namespace glib
                     if(split.size() >= 4)
                     {
                         Vec3f v;
-                        v.x = std::stod(split[1]);
-                        v.y = std::stod(split[2]);
-                        v.z = std::stod(split[3]);
-                        normals.push_back(v);
+                        v.x = std::stof(split[1]);
+                        v.y = std::stof(split[2]);
+                        v.z = std::stof(split[3]);
+
+                        addVec3f(v, normLocation);
                     }
                 }
                 else if(type == 3)
@@ -316,7 +402,7 @@ namespace glib
                         for(int i=1; i<split.size(); i++)
                         {
                             std::vector<std::string> subSplit = StringTools::splitString(split[i], '/', false);
-                            std::vector<int> indexValues;
+                            std::vector<unsigned int> indexValues;
                             for(int j=0; j<subSplit.size(); j++)
                             {
                                 if(!subSplit[j].empty())
@@ -338,7 +424,7 @@ namespace glib
                         modelFormat = LINES;
                         for(int i=1; i<split.size(); i++)
                         {
-                            addIndicies( { stoi(split[i]) } );
+                            addIndicies( { (unsigned int)stoi(split[i]) } );
                         }
                     }
                 }
@@ -349,5 +435,359 @@ namespace glib
             //can't load
         }
     }
+
+    
+    void Model::loadSTL(File file)
+    {
+        clear();
+        SimpleFile s = SimpleFile(file, SimpleFile::READ | SimpleFile::ASCII);
+        if(s.isOpen())
+        {
+            //Find if ascii or binary
+            std::string type;
+            for(int i=0; i<5; i++)
+            {
+                type += (char)s.readByte();
+            }
+
+            Vec3f normal, pos;
+
+            addVertexFormatInfo(TYPE_VEC3, USAGE_POSITION);
+            addVertexFormatInfo(TYPE_VEC3, USAGE_NORMAL);
+
+            if(type == "solid")
+            {
+                //ascii file
+                std::vector<std::string> fileInfo = s.readFullFileString();
+                s.close();
+
+                for(int i=0; i<fileInfo.size(); i++)
+                {
+                    std::vector<std::string> splitInfo = StringTools::splitString(fileInfo[i], ' ', true);
+
+                    if(splitInfo.size() > 0)
+                    {
+                        if(splitInfo[0] == "facet")
+                        {
+                            if(splitInfo[1] == "normal")
+                            {
+                                normal.x = stod(splitInfo[2]);
+                                normal.y = stod(splitInfo[3]);
+                                normal.z = stod(splitInfo[4]);
+                            }
+                        }
+                        else if(splitInfo[0] == "vertex")
+                        {
+                            pos.x = stod(splitInfo[1]);
+                            pos.y = stod(splitInfo[2]);
+                            pos.z = stod(splitInfo[3]);
+
+                            addVec3f(pos, 0);
+                            addVec3f(normal, 1);
+                        }
+                        else if(splitInfo[0] == "endsolid")
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                //binary type
+                std::vector<unsigned char> fileBytes = s.readFullFileAsBytes();
+                s.close();
+
+                int index = 80-5;
+                size_t totalSize = fileBytes.size();
+                
+                unsigned int numTriangles = fileBytes[index] + ((unsigned int)fileBytes[index+1]<<8) + ((unsigned int)fileBytes[index+2]<<16) + ((unsigned int)fileBytes[index+3]<<24);
+                index+=4;
+
+                while(index < totalSize)
+                {
+                    unsigned int normalX, normalY, normalZ, posX, posY, posZ;
+
+                    normalX = fileBytes[index] + ((unsigned int)fileBytes[index+1]<<8) + ((unsigned int)fileBytes[index+2]<<16) + ((unsigned int)fileBytes[index+3]<<24);
+                    index+=4;
+                    normalY = fileBytes[index] + ((unsigned int)fileBytes[index+1]<<8) + ((unsigned int)fileBytes[index+2]<<16) + ((unsigned int)fileBytes[index+3]<<24);
+                    index+=4;
+                    normalZ = fileBytes[index] + ((unsigned int)fileBytes[index+1]<<8) + ((unsigned int)fileBytes[index+2]<<16) + ((unsigned int)fileBytes[index+3]<<24);
+                    index+=4;
+
+                    normal.x = *((float*)&normalX);
+                    normal.y = *((float*)&normalY);
+                    normal.z = *((float*)&normalZ);
+
+
+                    posX = fileBytes[index] + ((unsigned int)fileBytes[index+1]<<8) + ((unsigned int)fileBytes[index+2]<<16) + ((unsigned int)fileBytes[index+3]<<24);
+                    index+=4;
+                    posY = fileBytes[index] + ((unsigned int)fileBytes[index+1]<<8) + ((unsigned int)fileBytes[index+2]<<16) + ((unsigned int)fileBytes[index+3]<<24);
+                    index+=4;
+                    posZ = fileBytes[index] + ((unsigned int)fileBytes[index+1]<<8) + ((unsigned int)fileBytes[index+2]<<16) + ((unsigned int)fileBytes[index+3]<<24);
+                    index+=4;
+
+                    pos.x = *((float*)&posX);
+                    pos.y = *((float*)&posY);
+                    pos.z = *((float*)&posZ);
+
+                    addVec3f(pos, 0);
+
+                    posX = fileBytes[index] + ((unsigned int)fileBytes[index+1]<<8) + ((unsigned int)fileBytes[index+2]<<16) + ((unsigned int)fileBytes[index+3]<<24);
+                    index+=4;
+                    posY = fileBytes[index] + ((unsigned int)fileBytes[index+1]<<8) + ((unsigned int)fileBytes[index+2]<<16) + ((unsigned int)fileBytes[index+3]<<24);
+                    index+=4;
+                    posZ = fileBytes[index] + ((unsigned int)fileBytes[index+1]<<8) + ((unsigned int)fileBytes[index+2]<<16) + ((unsigned int)fileBytes[index+3]<<24);
+                    index+=4;
+                    
+                    pos.x = *((float*)&posX);
+                    pos.y = *((float*)&posY);
+                    pos.z = *((float*)&posZ);
+
+                    addVec3f(pos, 0);
+
+                    posX = fileBytes[index] + ((unsigned int)fileBytes[index+1]<<8) + ((unsigned int)fileBytes[index+2]<<16) + ((unsigned int)fileBytes[index+3]<<24);
+                    index+=4;
+                    posY = fileBytes[index] + ((unsigned int)fileBytes[index+1]<<8) + ((unsigned int)fileBytes[index+2]<<16) + ((unsigned int)fileBytes[index+3]<<24);
+                    index+=4;
+                    posZ = fileBytes[index] + ((unsigned int)fileBytes[index+1]<<8) + ((unsigned int)fileBytes[index+2]<<16) + ((unsigned int)fileBytes[index+3]<<24);
+                    index+=4;
+                    
+                    pos.x = *((float*)&posX);
+                    pos.y = *((float*)&posY);
+                    pos.z = *((float*)&posZ);
+
+                    addVec3f(pos, 0);
+
+                    addVec3f(normal, 1);
+                    addVec3f(normal, 1);
+                    addVec3f(normal, 1);
+
+                    index+=2;
+                }
+            }
+        }
+        else
+        {
+            //can't open file
+        }
+    }
+
+    void Model::loadCollada(File file)
+    {
+        clear();
+        indexed = true;
+
+        SimpleXml xmlData = SimpleXml(file);
+
+        if(xmlData.nodes.size() <= 0)
+        {
+            //unsuccessful
+            return;
+        }
+
+
+        XmlNode* rootColladaNode = nullptr;
+        //Find COLLADA
+        for(XmlNode* currNode : xmlData.nodes)
+        {
+            if(StringTools::equalsIgnoreCase<wchar_t>(currNode->title, L"COLLADA"))
+            {
+                rootColladaNode = currNode;
+                break;
+            }
+        }
+
+        if(rootColladaNode == nullptr)
+        {
+            //unsuccessful
+            return;
+        }
+
+        //search for library_geometries
+        XmlNode* libGeometryNodes = nullptr;
+        for(XmlNode* currNode : rootColladaNode->childNodes)
+        {
+            if(StringTools::equalsIgnoreCase<wchar_t>(currNode->title, L"library_geometries"))
+            {
+                libGeometryNodes = currNode;
+                break;
+            }
+        }
+
+        if(libGeometryNodes == nullptr)
+        {
+            //unsuccessful
+            return;
+        }
+
+        //build geometry arrays
+        for(XmlNode* currNode : libGeometryNodes->childNodes)
+        {
+            std::wstring name = L"";
+            std::vector<std::wstring> ids;
+            std::wstring vertexSource = L"";
+            int currList = 0;
+
+            if(StringTools::equalsIgnoreCase<wchar_t>(currNode->title, L"geometry"))
+            {
+                for(XmlAttribute& attrib : currNode->attributes)
+                {
+                    if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"name"))
+                    {
+                        name = attrib.value;
+                        break;
+                    }
+                }
+
+                XmlNode* meshNode = nullptr;
+
+                for(XmlNode* innerNode : currNode->childNodes)
+                {
+                    if(StringTools::equalsIgnoreCase<wchar_t>(innerNode->title, L"mesh"))
+                    {
+                        meshNode = innerNode;
+                        break;
+                    }
+                }
+
+                if(meshNode == nullptr)
+                    continue;
+                
+                for(XmlNode* innerNode : meshNode->childNodes)
+                {
+                    if(StringTools::equalsIgnoreCase<wchar_t>(innerNode->title, L"source"))
+                    {
+                        //make safe
+                        unsigned char vertAttribType = 0;
+
+                        ids.push_back( innerNode->attributes[0].value );
+                        
+                        XmlNode* accessorNode = innerNode->childNodes[1]->childNodes[0];
+                        for(XmlAttribute& attrib : accessorNode->attributes)
+                        {
+                            if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"stride"))
+                            {
+                                vertAttribType = stoi(attrib.value);
+                                break;
+                            }
+                        }
+                        
+                        //add format information
+                        if(StringTools::equalsIgnoreCase<wchar_t>(innerNode->childNodes[0]->title, L"float_array"))
+                        {
+                            addVertexFormatInfo(vertAttribType, USAGE_OTHER);
+                        }
+                        else if(StringTools::equalsIgnoreCase<wchar_t>(innerNode->childNodes[0]->title, L"int_array"))
+                        {
+                            addVertexFormatInfo(TYPE_INT, USAGE_OTHER);
+                            vertAttribType = 0;
+                        }
+                        
+                        //add vertex attribute information
+                        std::vector<std::wstring> split = StringTools::splitString(innerNode->childNodes[0]->value, L' ');
+                        
+                        for(std::wstring& v : split)
+                        {
+                            if(vertAttribType == 0)
+                            {
+                                addInt( stoi(v), currList);
+                            }
+                            else
+                            {
+                                addFloat( stof(v), currList);
+                            }
+                        }
+
+                        currList++;
+                    }
+                    else if(StringTools::equalsIgnoreCase<wchar_t>(innerNode->title, L"vertices"))
+                    {
+                        for(XmlAttribute& attrib : innerNode->attributes)
+                        {
+                            if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"source"))
+                            {
+                                vertexSource = attrib.value;
+                                break;
+                            }
+                        }
+                    }
+                    else if(StringTools::equalsIgnoreCase<wchar_t>(innerNode->title, L"triangles"))
+                    {
+                        modelFormat = TRIANGLES;
+                        XmlNode* lastParentNode = innerNode;
+                        for(XmlNode* childNodes : lastParentNode->childNodes)
+                        {
+                            if(StringTools::equalsIgnoreCase<wchar_t>(childNodes->title, L"input"))
+                            {
+                                //setting usage for the formats
+                                unsigned char usageNum = USAGE_OTHER;
+                                
+                                for(XmlAttribute& attrib : childNodes->attributes)
+                                {
+                                    if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"semantic"))
+                                    {
+                                        if(StringTools::equalsIgnoreCase<wchar_t>(attrib.value, L"VERTEX"))
+                                        {
+                                            usageNum = USAGE_POSITION;
+                                        }
+                                        else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.value, L"POSITION"))
+                                        {
+                                            usageNum = USAGE_POSITION;
+                                        }
+                                        else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.value, L"NORMAL"))
+                                        {
+                                            usageNum = USAGE_NORMAL;
+                                        }
+                                        else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.value, L"TEXCOORD"))
+                                        {
+                                            usageNum = USAGE_TEXTURE;
+                                        }
+                                    }
+                                    else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"source"))
+                                    {
+                                        int index = 0;
+                                        while(index < ids.size())
+                                        {
+                                            std::wstring testV = L"#" + ids[index];
+
+                                            if(StringTools::equalsIgnoreCase<wchar_t>(attrib.value, testV))
+                                            {
+                                                break;
+                                            }
+                                            index++;
+                                        }
+
+                                        if(index < ids.size())
+                                            formatInfo[index].usage = usageNum;
+
+                                        break;
+                                    }
+                                }
+                            }
+                            else if(StringTools::equalsIgnoreCase<wchar_t>(childNodes->title, L"p"))
+                            {
+                                //index information
+                                std::vector<std::wstring> split = StringTools::splitString(childNodes->value, L' ');
+
+                                std::vector<unsigned int> tempIndexInfo;
+                                for(std::wstring& v : split)
+                                {
+                                    tempIndexInfo.push_back( stoi(v) );
+                                    if(tempIndexInfo.size() >= formatInfo.size())
+                                    {
+                                        addIndicies(tempIndexInfo);
+                                        tempIndexInfo.clear();
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
 } //NAMESPACE glib END

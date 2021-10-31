@@ -9,6 +9,7 @@ namespace glib
     {
         unsigned char type = 0;
         unsigned char usage = 0;
+        unsigned char size = 0;
     };
 
     class Model : public Object
@@ -34,9 +35,10 @@ namespace glib
         static const Class myClass;
 
         static const unsigned char TYPE_INT = 0;
-        static const unsigned char TYPE_VEC2 = 1;
-        static const unsigned char TYPE_VEC3 = 2;
-        static const unsigned char TYPE_VEC4 = 3;
+        static const unsigned char TYPE_FLOAT = 1;
+        static const unsigned char TYPE_VEC2 = 2;
+        static const unsigned char TYPE_VEC3 = 3;
+        static const unsigned char TYPE_VEC4 = 4;
 
         static const unsigned char USAGE_POSITION = 0;
         static const unsigned char USAGE_TEXTURE = 1;
@@ -81,7 +83,7 @@ namespace glib
          * 
          * @param indexInfo 
          */
-        void addIndicies(std::vector<int> indexInfo);
+        void addIndicies(std::vector<unsigned int> indexInfo);
 
         /**
          * @brief Set the Indicies for a vertex.
@@ -90,7 +92,7 @@ namespace glib
          * @param vertexLocation 
          * @param indexInfo 
          */
-        void setIndicies(int vertexLocation, std::vector<int> indexInfo);
+        void setIndicies(unsigned int vertexLocation, std::vector<unsigned int> indexInfo);
 
         /**
          * @brief Adds an int to the vertex data.
@@ -99,7 +101,16 @@ namespace glib
          * @param list
          *      Which list to stick the value into.
          */
-        void addInt(int value, int list);
+        void addInt(int value, unsigned int list);
+
+        /**
+         * @brief Adds an int to the vertex data.
+         * 
+         * @param value 
+         * @param list
+         *      Which list to stick the value into.
+         */
+        void addFloat(float value, unsigned int list);
 
         /**
          * @brief Adds a Vec2f to the vertex data.
@@ -108,7 +119,7 @@ namespace glib
          * @param list
          *      Which list to stick the value into.
          */
-        void addVec2f(Vec2f value, int list);
+        void addVec2f(Vec2f value, unsigned int list);
 
         /**
          * @brief Adds a Vec3f to the vertex data.
@@ -117,7 +128,7 @@ namespace glib
          * @param list
          *      Which list to stick the value into.
          */
-        void addVec3f(Vec3f value, int list);
+        void addVec3f(Vec3f value, unsigned int list);
 
         /**
          * @brief Adds a Vec4f to the vertex data.
@@ -126,16 +137,18 @@ namespace glib
          * @param list
          *      Which list to stick the value into.
          */
-        void addVec4f(Vec4f value, int list);
+        void addVec4f(Vec4f value, unsigned int list);
         
         /**
          * @brief Gets the vertex at the specified location.
-         *      Returns all information for the vertex as a list of doubles
+         *      Returns all information for the vertex as a list of list
+         *      Each list should be cast to the appropriate data type.
+         *          Either int* or float*
          * 
          * @param i 
-         * @return std::vector<double> 
+         * @return std::vector<std::vector<int>>
          */
-        std::vector<double> getVertex(int i);
+        std::vector<std::vector<int>> getVertex(unsigned int i);
 
         /**
          * @brief Gets the Vertex Format Infomation as a list of VertexFormat structures.
@@ -143,13 +156,6 @@ namespace glib
          * @return std::vector<VertexFormat> 
          */
         std::vector<VertexFormat> getVertexFormatInfomation();
-
-        /**
-         * @brief Returns the amount of verticies in the model.
-         * 
-         * @return int 
-         */
-        int size();
 
         /**
          * @brief Sets the Model Format
@@ -176,6 +182,21 @@ namespace glib
         unsigned char getModelFormat();
 
         /**
+         * @brief Returns the amount of verticies in the model.
+         * 
+         * @return int 
+         */
+        size_t size();
+
+        /**
+         * @brief Returns the amount of values in a list
+         * 
+         * @param index 
+         * @return int 
+         */
+        size_t sizeOfList(int index);
+
+        /**
          * @brief Gets the size of a single vertex.
          *      Returns how many values are used for a vertex. 
          *      Not how many bytes are used.
@@ -188,6 +209,21 @@ namespace glib
          * 
          */
         void clear();
+
+        /**
+         * @brief Gets the internal vertex data for each list.
+         * 
+         * @return std::vector<std::vector<int>> 
+         */
+        std::vector<std::vector<int>> getRawVertexData();
+
+        /**
+         * @brief Gets the internal index data for each vertex.
+         * 
+         * @return std::vector<std::vector<int>> 
+         */
+        std::vector<std::vector<unsigned int>> getRawIndexData();
+        
 
         /**
          * @brief Loads a model from a file.
@@ -215,12 +251,13 @@ namespace glib
 
     private:
         void loadOBJ(File file);
+        void loadSTL(File file);
+        void loadCollada(File file);
 
-        std::vector<std::vector<double>> vertexData = std::vector<std::vector<double>>();
-        std::vector<std::vector<int>> vertexIndexInfo = std::vector<std::vector<int>>();
+        std::vector<std::vector<int>> vertexData = std::vector<std::vector<int>>();
+        std::vector<std::vector<unsigned int>> vertexIndexInfo = std::vector<std::vector<unsigned int>>();
         std::vector<VertexFormat> formatInfo = std::vector<VertexFormat>();
 
-        int sizeOfVertex = 0;
         unsigned char modelFormat = TRIANGLES;
         bool indexed = false;
     };

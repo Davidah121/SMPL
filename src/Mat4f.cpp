@@ -139,10 +139,10 @@ namespace glib
 	Vec4f Mat4f::operator*(Vec4f other)
 	{
 		Vec4f v = Vec4f();
-		v.x = data[0][0] * other.x + data[0][1]*other.y + data[0][2]*other.z + data[0][3]*other.w;
-		v.y = data[1][0] * other.x + data[1][1]*other.y + data[1][2]*other.z + data[1][3]*other.w;
-		v.z = data[2][0] * other.x + data[2][1]*other.y + data[2][2]*other.z + data[2][3]*other.w;
-		v.w = data[3][0] * other.x + data[3][1]*other.y + data[3][2]*other.z + data[3][3]*other.w;
+		v.x = (data[0][0]*other.x) + (data[0][1]*other.y) + (data[0][2]*other.z) + (data[0][3]*other.w);
+		v.y = (data[1][0]*other.x) + (data[1][1]*other.y) + (data[1][2]*other.z) + (data[1][3]*other.w);
+		v.z = (data[2][0]*other.x) + (data[2][1]*other.y) + (data[2][2]*other.z) + (data[2][3]*other.w);
+		v.w = (data[3][0]*other.x) + (data[3][1]*other.y) + (data[3][2]*other.z) + (data[3][3]*other.w);
 		
 		return v;
 	}

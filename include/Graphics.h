@@ -162,7 +162,7 @@ namespace glib
 		static void drawLine(int x, int y, int x2, int y2, Image* surf);
 
 		//TODO
-		static void drawBezierCurve(BezierCurve& b, int subdivisions, Image* surf);
+		static void drawBezierCurve(BezierCurve& b, int subdivisions, bool useArcLength, Image* surf);
 
 		/**
 		 * @brief Draws a circle using the active color.

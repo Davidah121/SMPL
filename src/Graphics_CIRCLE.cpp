@@ -365,24 +365,16 @@ namespace glib
 			}
 			else
 			{
-				int preX1 = -1;
-				int preX2 = -1;
-
-				int nextX1 = -1;
-				int nextX2 = -1;
+				int oldX1, oldX2;
 				
-				while (tY <= maxY)
-				{
-					double startX,endX;
+				oldX1 = x;
+				oldX2 = x;
 
+				for(int tY = minY; tY<=maxY+1; tY++)
+				{
+					double startX, endX;
 					if(tY>y)
 					{
-						startX = -MathExt::sqrt( radSqr - MathExt::sqr((tY+1)-y+0.5) ) + x + 1;
-						endX = MathExt::sqrt( radSqr - MathExt::sqr((tY+1)-y+0.5) ) + x;
-
-						nextX1 = MathExt::clamp( (int)MathExt::round(startX), minX, maxX);
-						nextX2 = MathExt::clamp( (int)MathExt::round(endX-1), minX, maxX);
-
 						startX = -MathExt::sqrt( radSqr - MathExt::sqr(tY-y+0.5) ) + x + 1;
 						endX = MathExt::sqrt( radSqr - MathExt::sqr(tY-y+0.5) ) + x;
 					}
@@ -395,58 +387,36 @@ namespace glib
 					int x1 = MathExt::clamp( (int)MathExt::round(startX), minX, maxX);
 					int x2 = MathExt::clamp( (int)MathExt::round(endX-1), minX, maxX);
 
-					//fill from preX1 to x1 and x2 to preX2
-					int nStart, nEnd, nStart2, nEnd2;
-
-					if(tY != minY && tY != maxY)
+					if(tY == minY)
 					{
-						if(tY <= y)
+						if(tY == y-absRad+1)
 						{
-							int leftToRightDis = MathExt::abs(x1-preX1)-1;
-							leftToRightDis = MathExt::max(leftToRightDis, 0);
-
-							nStart = x1;
-							nEnd = x1+leftToRightDis;
-							
-							drawLine(nStart,tY,nEnd,tY,surf);
-
-							leftToRightDis = MathExt::abs(x2-preX2)-1;
-							leftToRightDis = MathExt::max(leftToRightDis, 0);
-
-							nStart = (x2-leftToRightDis);
-							nEnd = x2;
-
-							drawLine(nStart,tY,nEnd,tY,surf);
+							drawLine(x1, tY, x2, tY, surf);
 						}
 						else
 						{
-							int leftToRightDis = MathExt::abs(x1-nextX1)-1;
-							leftToRightDis = MathExt::max(leftToRightDis, 0);
-
-							nStart = x1;
-							nEnd = x1+leftToRightDis;
-
-							drawLine(nStart,tY,nEnd,tY,surf);
-
-							leftToRightDis = MathExt::abs(x2-nextX2)-1;
-							leftToRightDis = MathExt::max(leftToRightDis, 0);
-
-							nStart = (x2-leftToRightDis);
-							nEnd = x2;
-
-							drawLine(nStart,tY,nEnd,tY,surf);
+							drawPixel(x1, tY, activeColor, surf);
+							drawPixel(x2, tY, activeColor, surf);
+						}
+					}
+					else if(tY == maxY+1)
+					{
+						if(tY == y+absRad)
+						{
+							drawLine(oldX1, tY-1, oldX2, tY-1, surf);
 						}
 					}
 					else
 					{
-						drawLine(x1,tY,x2,tY,surf);
+						//draw line from x1 to oldX1
+						drawLine(x1, tY, oldX1, tY-1, surf);
+						//draw line from x2 to oldX2
+						drawLine(x2, tY, oldX2, tY-1, surf);
 					}
-
-					preX1 = x1;
-					preX2 = x2;
-					tY++;
+					
+					oldX1 = x1;
+					oldX2 = x2;
 				}
-				
 			}
 		}
 	}

@@ -77,6 +77,14 @@ namespace glib
         SimpleXml();
 
         /**
+         * @brief Construct a new SimpleXml object by loading data from a file.
+         *      Contains information about an XML file.
+         *  
+         * @param file
+         */
+        SimpleXml(File file);
+
+        /**
          * @brief Destroy the SimpleXml object
          * 
          */

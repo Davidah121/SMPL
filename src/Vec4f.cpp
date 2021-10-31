@@ -22,17 +22,20 @@ namespace glib
 		this->w = w;
 	}
 
-	Vec4f::Vec4f(Vec3f other)
+	Vec4f::Vec4f(Vec3f other, double w)
 	{
 		this->x = other.x;
 		this->y = other.y;
 		this->z = other.z;
+		this->w = w;
 	}
 
-	Vec4f::Vec4f(Vec2f other)
+	Vec4f::Vec4f(Vec2f other, double z, double w)
 	{
 		this->x = other.x;
 		this->y = other.y;
+		this->z = z;
+		this->w = w;
 	}
 
 	Vec4f::~Vec4f()

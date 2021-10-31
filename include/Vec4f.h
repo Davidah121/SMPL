@@ -26,20 +26,20 @@ namespace glib
 		Vec4f(double x, double y, double z, double w);
 
 		/**
-		 * @brief Construct a new Vec4f object from a Vec3f object
-		 * 		The w value will not be set.
+		 * @brief Construct a new Vec4f object from a Vec3f object and
+		 * 		an optional additional value for w.
 		 * 
 		 * @param other 
 		 */
-		Vec4f(Vec3f other);
+		Vec4f(Vec3f other, double w);
 
 		/**
-		 * @brief Construct a new Vec4f object from a Vec3f object
-		 * 		The z and w values will not be set.
+		 * @brief Construct a new Vec4f object from a Vec3f object and 2 optional
+		 * 		values for z and w.
 		 * 
 		 * @param other 
 		 */
-		Vec4f(Vec2f other);
+		Vec4f(Vec2f other, double z, double w);
 
 		/**
 		 * @brief Destroy the Vec4f object

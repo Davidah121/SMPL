@@ -32,6 +32,14 @@
 
 #include "Algorithms.h"
 
+#include "ext/DXWindow.h"
+#include "ext/DXShader.h"
+#include "ext/DXModel.h"
+
+#include "ext/GLWindow.h"
+#include "ext/GLShader.h"
+#include "ext/GLModel.h"
+
 using namespace glib;
 
 /**
@@ -828,17 +836,42 @@ void testBezierApproximations()
     w.setThreadUpdateTime(16,000);
 
     GuiCustomObject g = GuiCustomObject();
-    std::vector<BezierCurve> b = BezierCurve::approximateEllipse(48, 24, 96, 96, true);
+    //std::vector<BezierCurve> b = BezierCurve::approximateEllipse(48, 24, 96, 96, true);
 
+    std::vector<BezierCurve> b = BezierCurve::approximateCircle(96, 128, 128, true);
+    int steps = b.front().size() * 2;
+    StringTools::println("steps = %d", steps);
+    
+    g.setUpdateFunction([&steps]()->void{
+        bool updated = false;
+        if(Input::getKeyPressed(Input::KEY_UP))
+        {
+            steps++;
+            updated = true;
+        }
+        else if(Input::getKeyPressed(Input::KEY_DOWN))
+        {
+            steps--;
+            updated = true;
+        }
+        
+        steps = MathExt::clamp(steps, 1, 20);
 
-    g.setRenderFunction([&b](Image* surf)->void{
+        if(updated)
+            StringTools::println("steps = %d", steps);
+    });
+
+    g.setRenderFunction([&b, &steps](Image* surf)->void{
         
         for(int i=0; i<b.size(); i++)
         {
             Graphics::setColor({255,0,0,255});
-            Graphics::drawBezierCurve(b[i], 20, surf);
+            Graphics::drawBezierCurve(b[i], steps, false, surf);
         }
 
+        Graphics::drawText("Test Text", 32, 32, surf);
+        // Graphics::setColor({255,0,0,255});
+        // Graphics::drawCircle(128, 128, 96, true, surf);
     });
 
     w.getGuiManager()->addElement(&g);
@@ -847,23 +880,246 @@ void testBezierApproximations()
 
 void testWindowStuff()
 {
-    //Testing fullscreen
-    SimpleWindow w = SimpleWindow("FULLSCREEN", 320, 240, 32, 32, SimpleWindow::FULLSCREEN_WINDOW);
+    //Testing borderless
+    SimpleWindow w = SimpleWindow("LIES", 320, 240, 32, 32, SimpleWindow::BORDERLESS_WINDOW);
 
     System::sleep(5000,0);
     w.close();
+}
+
+void testGLStuff()
+{
+    GLWindow w = GLWindow("OpenGL Window", 640, 480, -1, -1, GLWindow::NORMAL_WINDOW | GLWindow::TYPE_USER_MANAGED);
+
+    GLShader s = GLShader("./testFiles/GLSL/lighting copy.vs", "./testFiles/GLSL/lighting copy.fs");
+
+    Model m = Model();
+    //m.loadModel("C:/Users/Alan/Desktop/untitled2.stl");
+    m.loadModel("C:/Users/Alan/Desktop/untitled.dae");
+
+    // Vec3f test = MathExt::getRotationQuaternion(0, Vec3f(0,0,1)) * Vec3f(1, 0, 0);
+    // StringTools::println("TEST (%.3f, %.3f ,%.3f)", test.x, test.y, test.z);
+    
+    GLModel model = GLModel::convertModel(&m);
+    Vec3f pos, rot;
+    bool mouseLock = false;
+    double angle = 0.0;
+    // GLModel model = GLModel::generateTestModel();
+
+    while(!w.getShouldEnd())
+    {
+        w.update();
+        
+        glClearColor(0.2, 0.3, 0.4, 0.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glEnable(GL_MULTISAMPLE);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+
+        Mat4f proj = MathExt::perspectiveProjectionMatrix(320, 240, 0.1, 100, 60);
+        Mat4f view = MathExt::viewMatrix(pos, rot);
+        Mat4f modMat = Mat4f::getIdentity();
+
+        int midX, midY;
+        midX = w.getX() + w.getWidth()/2;
+        midY = w.getY() + w.getHeight()/2;
+
+        // Mat4f mat = Mat4f::getIdentity();
+        s.setAsActive();
+        s.setMat4("projectionMatrix", proj);
+        s.setMat4("viewMatrix", view);
+        s.setMat4("modelMatrix", modMat);
+
+        Vec2f lightPos = MathExt::lengthDir(5, angle);
+        angle+=0.05;
+
+        s.setVec3("lightPos", Vec3f(lightPos, 5));
+        s.setVec3("lightCol", Vec3f(1, 1, 1));
+        s.setFloat("maxDis", 10.0f);
+        s.setVec3("ambientCol", Vec3f(0.05, 0.05, 0.05));
+
+        model.draw();
+
+		w.swapBuffers();
+        Input::pollInput();
+
+        //mouse camera controls
+        if(mouseLock)
+        {
+            int xDiff = midX - Input::getMouseX();
+            int yDiff = midY - Input::getMouseY();
+
+            rot.z += xDiff*0.01;
+            rot.x += yDiff*0.01;
+            System::setMousePosition(midX, midY);
+        }
+
+        if(Input::getKeyDown('A'))
+        {
+            Vec2f moveDir = MathExt::lengthDir(0.1, rot.z);
+            pos.x += moveDir.x;
+            pos.y += moveDir.y;
+        }
+        else if(Input::getKeyDown('D'))
+        {
+            Vec2f moveDir = MathExt::lengthDir(0.1, rot.z);
+            pos.x -= moveDir.x;
+            pos.y -= moveDir.y;
+        }
+
+        if(Input::getKeyDown('S'))
+        {
+            Vec2f moveDir = MathExt::lengthDir(0.1, rot.z+(PI/2));
+            pos.x += moveDir.x;
+            pos.y += moveDir.y;
+        }
+        else if(Input::getKeyDown('W'))
+        {
+            Vec2f moveDir = MathExt::lengthDir(0.1, rot.z+(PI/2));
+            pos.x -= moveDir.x;
+            pos.y -= moveDir.y;
+        }
+
+        if(Input::getKeyPressed(Input::KEY_LCONTROL))
+        {
+            mouseLock = !mouseLock;
+            if(mouseLock)
+                System::setMousePosition(midX, midY);
+        }
+
+        if(Input::getKeyDown('E'))
+        {
+            pos.z += 0.1;
+        }
+        else if(Input::getKeyDown('Q'))
+        {
+            pos.z -= 0.1;
+        }
+
+        if(Input::getKeyDown(Input::KEY_LEFT))
+        {
+            rot.z += 0.1;
+        }
+        else if(Input::getKeyDown(Input::KEY_RIGHT))
+        {
+            rot.z -= 0.1;
+        }
+
+        if(Input::getKeyDown(Input::KEY_UP))
+        {
+            rot.x += 0.1;
+        }
+        else if(Input::getKeyDown(Input::KEY_DOWN))
+        {
+            rot.x -= 0.1;
+        }
+
+        if(Input::getKeyDown(Input::KEY_NUMPAD_ADD))
+        {
+            rot.y += 0.1;
+        }
+        else if(Input::getKeyDown(Input::KEY_NUMPAD_SUBTRACT))
+        {
+            rot.y -= 0.1;
+        }
+
+        StringTools::print("Position (%.3f, %.3f, %.3f)", pos.x, pos.y, pos.z);
+
+        System::sleep(16);
+        StringTools::eraseConsoleLine(false);
+    }
+}
+
+void testDirectXStuff()
+{
+    DXWindow w = DXWindow("DirectX Window", 320, 240, -1, -1, DXWindow::NORMAL_WINDOW | DXWindow::TYPE_USER_MANAGED);
+
+    DXShader s = DXShader("./testFiles/HLSL/testVert.cso", "./testFiles/HLSL/testFrag2.cso");
+    DXModel model = DXModel();
+
+    Vec3f colorArr = Vec3f(0.0, 0.0, 0.0);
+    bool reverse = false;
+
+    struct UniformData
+    {
+        float r;
+        float g;
+        float b;
+        float a;
+    };
+
+    while(!w.getShouldEnd())
+    {
+        w.update();
+
+        ID3D11RenderTargetView* renderTarget = DXSingleton::getBackBuffer();
+        DXSingleton::getContext()->OMSetRenderTargets(1, &renderTarget, nullptr);
+
+        w.clearWindow( Vec4f(0.0f, 0.2f, 0.4f, 1.0f) );
+
+        s.setAsActive();
+        // s.setVec3("inColor", colorArr);
+        UniformData u = {(float)colorArr.x, (float)colorArr.y, (float)colorArr.z, 1.0f};
+        s.setUniformData(&u, sizeof(UniformData), 0, DXShader::TYPE_FRAGMENT);
+
+        model.draw();
+
+		w.swapBuffers();
+
+        //color logic
+        if(!reverse)
+        {
+            if(colorArr.x < 1.0)
+                colorArr.x += 0.05;
+            else
+            {
+                if(colorArr.y < 1.0)
+                    colorArr.y += 0.05;
+                else
+                {
+                    if(colorArr.z < 1.0)
+                        colorArr.z += 0.05;
+                    else
+                        reverse = !reverse;
+                }
+            }
+        }
+        else
+        {
+            if(colorArr.x > 0.0)
+                colorArr.x -= 0.05;
+            else
+            {
+                if(colorArr.y > 0.0)
+                    colorArr.y -= 0.05;
+                else
+                {
+                    if(colorArr.z > 0.0)
+                        colorArr.z -= 0.05;
+                    else
+                        reverse = !reverse;
+                }
+            }
+        }
+
+        System::sleep(16);
+    }
 }
 
 int main(int argc, char** argv)
 {
     StringTools::init();
 
-    //Graphics::init();
+    Graphics::init();
     //testSVGTransforms();
     //testCopyPasteStuff();
     
-    testCollision2();
+    //testCollision2();
     //testWindowStuff();
+
+    //testGLStuff();
+    testDirectXStuff();
 
     //testBezierSubdivision();
 

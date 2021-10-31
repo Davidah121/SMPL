@@ -470,12 +470,15 @@ namespace glib
 
 		if(isOpen() && type == SimpleFile::READ)
 		{
-			int i=0;
-			while (i < size)
+			while (true)
 			{
 				//read
-				info.push_back(file->get());
-				i++;
+				unsigned char c = file->get();
+
+				if(!file->eof())
+					info.push_back(c);
+				else
+					break;
 			}
 		}
 		else

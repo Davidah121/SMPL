@@ -248,15 +248,14 @@ namespace glib
 
 			int startOfPosition = -1; //must be >= 0
 			int startOfTexture = -1; //Can be -1 but must be >= 0 for textures to work
-
-            int cumulativeSize = 0;
+			
 			for(int i=0; i<modelVertFormat.size(); i++)
 			{
 				if(modelVertFormat[i].usage == Model::USAGE_POSITION)
 				{
 					if(modelVertFormat[i].type == Model::TYPE_VEC2)
 					{
-						startOfPosition = cumulativeSize;
+						startOfPosition = i;
 					}
 				}
 
@@ -264,11 +263,9 @@ namespace glib
 				{
 					if(modelVertFormat[i].type == Model::TYPE_VEC2)
 					{
-						startOfTexture = cumulativeSize;
+						startOfTexture = i;
 					}
 				}
-
-                cumulativeSize += modelVertFormat[i].type + 1;
 			}
 
 			int amtVert = model->size();
@@ -285,8 +282,10 @@ namespace glib
 				//draw pixel at point x,y
 				for(int i=0; i<amtVert; i++)
 				{
-					std::vector<double> vertInfo = model->getVertex(i);
-					Vec2f pos = Vec2f( vertInfo[startOfPosition], vertInfo[startOfPosition+1] );
+					std::vector<std::vector<int>> vertInfo = model->getVertex(i);
+					float* positionData = (float*)vertInfo[startOfPosition].data();
+
+					Vec2f pos = Vec2f( positionData[0], positionData[1] );
 					surf->drawPixel(pos.x, pos.y, Graphics::activeColor);
 				}
 				break;
@@ -294,11 +293,14 @@ namespace glib
 				//draw lines at point x,y to point x2,y2
 				for(int i=1; i<amtVert; i+=2)
 				{
-					std::vector<double> vertInfo = model->getVertex(i-1);
-					std::vector<double> vertInfo2 = model->getVertex(i);
+					std::vector<std::vector<int>> vertInfo = model->getVertex(i-1);
+					std::vector<std::vector<int>> vertInfo2 = model->getVertex(i);
 
-					Vec2f pos = Vec2f( vertInfo[startOfPosition], vertInfo[startOfPosition+1] );
-					Vec2f pos2 = Vec2f( vertInfo2[startOfPosition], vertInfo2[startOfPosition+1] );
+					float* positionData1 = (float*)vertInfo[startOfPosition].data();
+					float* positionData2 = (float*)vertInfo2[startOfPosition].data();
+
+					Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
+					Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
 
 					surf->drawLine((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y);
 				}
@@ -307,11 +309,14 @@ namespace glib
                 //draw lines at point x,y to point x2,y2
 				for(int i=1; i<amtVert; i++)
 				{
-					std::vector<double> vertInfo = model->getVertex(i-1);
-					std::vector<double> vertInfo2 = model->getVertex(i);
+					std::vector<std::vector<int>> vertInfo = model->getVertex(i-1);
+					std::vector<std::vector<int>> vertInfo2 = model->getVertex(i);
 
-					Vec2f pos = Vec2f( vertInfo[startOfPosition], vertInfo[startOfPosition+1] );
-					Vec2f pos2 = Vec2f( vertInfo2[startOfPosition], vertInfo2[startOfPosition+1] );
+					float* positionData1 = (float*)vertInfo[startOfPosition].data();
+					float* positionData2 = (float*)vertInfo2[startOfPosition].data();
+
+					Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
+					Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
 
 					surf->drawLine((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y);
 				}
@@ -320,15 +325,18 @@ namespace glib
                 //draw lines at point x,y to point x2,y2
 				for(int i=1; i<amtVert+1; i++)
 				{
-					std::vector<double> vertInfo = model->getVertex(i-1);
-					std::vector<double> vertInfo2;
+					std::vector<std::vector<int>> vertInfo = model->getVertex(i-1);
+					std::vector<std::vector<int>> vertInfo2;
 					if( i == amtVert)
 						vertInfo2 = model->getVertex(0);
 					else
 						vertInfo2 = model->getVertex(i);
 
-					Vec2f pos = Vec2f( vertInfo[startOfPosition], vertInfo[startOfPosition+1] );
-					Vec2f pos2 = Vec2f( vertInfo2[startOfPosition], vertInfo2[startOfPosition+1] );
+					float* positionData1 = (float*)vertInfo[startOfPosition].data();
+					float* positionData2 = (float*)vertInfo2[startOfPosition].data();
+
+					Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
+					Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
 
 					surf->drawLine((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y);
 				}
@@ -337,23 +345,31 @@ namespace glib
 				//draw triangles at point x,y to point x2,y2 to point x3,y3
 				for(int i=2; i<amtVert; i+=3)
 				{
-					std::vector<double> vertInfo = model->getVertex(i-2);
-					std::vector<double> vertInfo2 = model->getVertex(i-1);
-					std::vector<double> vertInfo3 = model->getVertex(i);
-					
+					std::vector<std::vector<int>> vertInfo = model->getVertex(i-2);
+					std::vector<std::vector<int>> vertInfo2 = model->getVertex(i-1);
+					std::vector<std::vector<int>> vertInfo3 = model->getVertex(i);
+
+					float* positionData1 = (float*)vertInfo[startOfPosition].data();
+					float* positionData2 = (float*)vertInfo2[startOfPosition].data();
+					float* positionData3 = (float*)vertInfo3[startOfPosition].data();
+
 					if(startOfTexture<0)
 					{
-						Vec2f pos = Vec2f( vertInfo[startOfPosition], vertInfo[startOfPosition+1] );
-						Vec2f pos2 = Vec2f( vertInfo2[startOfPosition], vertInfo2[startOfPosition+1] );
-						Vec2f pos3 = Vec2f( vertInfo3[startOfPosition], vertInfo3[startOfPosition+1] );
+						Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
+						Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
+						Vec2f pos3 = Vec2f( positionData3[0], positionData3[1] );
 						
 						surf->drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false);
 					}
 					else
 					{
-						Vec4f pos = Vec4f( vertInfo[startOfPosition], vertInfo[startOfPosition+1], vertInfo[startOfTexture], vertInfo[startOfTexture+1] );
-						Vec4f pos2 = Vec4f( vertInfo2[startOfPosition], vertInfo2[startOfPosition+1], vertInfo2[startOfTexture], vertInfo2[startOfTexture+1] );
-						Vec4f pos3 = Vec4f( vertInfo3[startOfPosition], vertInfo3[startOfPosition+1], vertInfo3[startOfTexture], vertInfo3[startOfTexture+1] );
+						float* textureData1 = (float*)vertInfo[startOfTexture].data();
+						float* textureData2 = (float*)vertInfo2[startOfTexture].data();
+						float* textureData3 = (float*)vertInfo3[startOfTexture].data();
+						
+						Vec4f pos = Vec4f( positionData1[0], positionData1[1], textureData1[0], textureData1[1] );
+						Vec4f pos2 = Vec4f( positionData2[0], positionData2[1], textureData2[0], textureData2[1] );
+						Vec4f pos3 = Vec4f( positionData3[0], positionData3[1], textureData3[0], textureData3[1] );
 
 						surf->drawTexturedTriangle(pos, pos2, pos3, texture);
 					}
@@ -364,23 +380,31 @@ namespace glib
 				
 				for(int i=2; i<amtVert; i+=1)
 				{
-					std::vector<double> vertInfo = model->getVertex(0);
-					std::vector<double> vertInfo2 = model->getVertex(i-1);
-					std::vector<double> vertInfo3 = model->getVertex(i);
+					std::vector<std::vector<int>> vertInfo = model->getVertex(0);
+					std::vector<std::vector<int>> vertInfo2 = model->getVertex(i-1);
+					std::vector<std::vector<int>> vertInfo3 = model->getVertex(i);
+
+					float* positionData1 = (float*)vertInfo[startOfPosition].data();
+					float* positionData2 = (float*)vertInfo2[startOfPosition].data();
+					float* positionData3 = (float*)vertInfo3[startOfPosition].data();
 					
 					if(startOfTexture<0)
 					{
-						Vec2f pos = Vec2f( vertInfo[startOfPosition], vertInfo[startOfPosition+1] );
-						Vec2f pos2 = Vec2f( vertInfo2[startOfPosition], vertInfo2[startOfPosition+1] );
-						Vec2f pos3 = Vec2f( vertInfo3[startOfPosition], vertInfo3[startOfPosition+1] );
+						Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
+						Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
+						Vec2f pos3 = Vec2f( positionData3[0], positionData3[1] );
 						
 						surf->drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false);
 					}
 					else
 					{
-						Vec4f pos = Vec4f( vertInfo[startOfPosition], vertInfo[startOfPosition+1], vertInfo[startOfTexture], vertInfo[startOfTexture+1] );
-						Vec4f pos2 = Vec4f( vertInfo2[startOfPosition], vertInfo2[startOfPosition+1], vertInfo2[startOfTexture], vertInfo2[startOfTexture+1] );
-						Vec4f pos3 = Vec4f( vertInfo3[startOfPosition], vertInfo3[startOfPosition+1], vertInfo3[startOfTexture], vertInfo3[startOfTexture+1] );
+						float* textureData1 = (float*)vertInfo[startOfTexture].data();
+						float* textureData2 = (float*)vertInfo2[startOfTexture].data();
+						float* textureData3 = (float*)vertInfo3[startOfTexture].data();
+						
+						Vec4f pos = Vec4f( positionData1[0], positionData1[1], textureData1[0], textureData1[1] );
+						Vec4f pos2 = Vec4f( positionData2[0], positionData2[1], textureData2[0], textureData2[1] );
+						Vec4f pos3 = Vec4f( positionData3[0], positionData3[1], textureData3[0], textureData3[1] );
 
 						surf->drawTexturedTriangle(pos, pos2, pos3, texture);
 					}
@@ -389,7 +413,7 @@ namespace glib
             case Model::TRIANGLE_STRIP:
                 for(int i=2; i<amtVert; i++)
                 {
-					std::vector<double> vertInfo, vertInfo2, vertInfo3;
+					std::vector<std::vector<int>> vertInfo, vertInfo2, vertInfo3;
 
 					if(!order)
 					{
@@ -404,19 +428,27 @@ namespace glib
 
 					vertInfo3 = model->getVertex(i);
 					
+					float* positionData1 = (float*)vertInfo[startOfPosition].data();
+					float* positionData2 = (float*)vertInfo2[startOfPosition].data();
+					float* positionData3 = (float*)vertInfo3[startOfPosition].data();
+
 					if(startOfTexture<0)
 					{
-						Vec2f pos = Vec2f( vertInfo[startOfPosition], vertInfo[startOfPosition+1] );
-						Vec2f pos2 = Vec2f( vertInfo2[startOfPosition], vertInfo2[startOfPosition+1] );
-						Vec2f pos3 = Vec2f( vertInfo3[startOfPosition], vertInfo3[startOfPosition+1] );
+						Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
+						Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
+						Vec2f pos3 = Vec2f( positionData3[0], positionData3[1] );
 						
 						surf->drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false);
 					}
 					else
 					{
-						Vec4f pos = Vec4f( vertInfo[startOfPosition], vertInfo[startOfPosition+1], vertInfo[startOfTexture], vertInfo[startOfTexture+1] );
-						Vec4f pos2 = Vec4f( vertInfo2[startOfPosition], vertInfo2[startOfPosition+1], vertInfo2[startOfTexture], vertInfo2[startOfTexture+1] );
-						Vec4f pos3 = Vec4f( vertInfo3[startOfPosition], vertInfo3[startOfPosition+1], vertInfo3[startOfTexture], vertInfo3[startOfTexture+1] );
+						float* textureData1 = (float*)vertInfo[startOfTexture].data();
+						float* textureData2 = (float*)vertInfo2[startOfTexture].data();
+						float* textureData3 = (float*)vertInfo3[startOfTexture].data();
+						
+						Vec4f pos = Vec4f( positionData1[0], positionData1[1], textureData1[0], textureData1[1] );
+						Vec4f pos2 = Vec4f( positionData2[0], positionData2[1], textureData2[0], textureData2[1] );
+						Vec4f pos3 = Vec4f( positionData3[0], positionData3[1], textureData3[0], textureData3[1] );
 
 						surf->drawTexturedTriangle(pos, pos2, pos3, texture);
 					}
@@ -428,36 +460,49 @@ namespace glib
 				//draw 2 triangles using 4 points
 				for(int i=3; i<amtVert; i+=4)
 				{
-					std::vector<double> vertInfo = model->getVertex(i-3);
-					std::vector<double> vertInfo2 = model->getVertex(i-2);
-					std::vector<double> vertInfo3 = model->getVertex(i-1);
-					std::vector<double> vertInfo4 = model->getVertex(i);
+					std::vector<std::vector<int>> vertInfo, vertInfo2, vertInfo3, vertInfo4;
+
+					vertInfo = model->getVertex(i-3);
+					vertInfo2 = model->getVertex(i-2);
+					vertInfo3 = model->getVertex(i-1);
+					vertInfo4 = model->getVertex(i);
+					
+					
+					float* positionData1 = (float*)vertInfo[startOfPosition].data();
+					float* positionData2 = (float*)vertInfo2[startOfPosition].data();
+					float* positionData3 = (float*)vertInfo3[startOfPosition].data();
+					float* positionData4 = (float*)vertInfo4[startOfPosition].data();
 					
 					if(startOfTexture<0)
 					{
-						Vec2f pos = Vec2f( vertInfo[startOfPosition], vertInfo[startOfPosition+1] );
-						Vec2f pos2 = Vec2f( vertInfo2[startOfPosition], vertInfo2[startOfPosition+1] );
-						Vec2f pos3 = Vec2f( vertInfo3[startOfPosition], vertInfo3[startOfPosition+1] );
+						Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
+						Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
+						Vec2f pos3 = Vec2f( positionData3[0], positionData3[1] );
 						
 						surf->drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false);
 
-						pos = Vec2f( vertInfo[startOfPosition], vertInfo[startOfPosition+1] );
-						pos2 = Vec2f( vertInfo3[startOfPosition], vertInfo3[startOfPosition+1] );
-						pos3 = Vec2f( vertInfo4[startOfPosition], vertInfo4[startOfPosition+1] );
+						pos = Vec2f( positionData1[0], positionData1[1] );
+						pos2 = Vec2f( positionData3[0], positionData3[1] );
+						pos3 = Vec2f( positionData4[0], positionData4[1] );
 						
 						surf->drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false);
 					}
 					else
 					{
-						Vec4f pos = Vec4f( vertInfo[startOfPosition], vertInfo[startOfPosition+1], vertInfo[startOfTexture], vertInfo[startOfTexture+1] );
-						Vec4f pos2 = Vec4f( vertInfo2[startOfPosition], vertInfo2[startOfPosition+1], vertInfo2[startOfTexture], vertInfo2[startOfTexture+1] );
-						Vec4f pos3 = Vec4f( vertInfo3[startOfPosition], vertInfo3[startOfPosition+1], vertInfo3[startOfTexture], vertInfo3[startOfTexture+1] );
+						float* textureData1 = (float*)vertInfo[startOfTexture].data();
+						float* textureData2 = (float*)vertInfo2[startOfTexture].data();
+						float* textureData3 = (float*)vertInfo3[startOfTexture].data();
+						float* textureData4 = (float*)vertInfo4[startOfTexture].data();
+
+						Vec4f pos = Vec4f( positionData1[0], positionData1[1], textureData1[0], textureData1[1] );
+						Vec4f pos2 = Vec4f( positionData2[0], positionData2[1], textureData2[0], textureData2[1] );
+						Vec4f pos3 = Vec4f( positionData3[0], positionData3[1], textureData3[0], textureData3[1] );
 
 						surf->drawTexturedTriangle(pos, pos2, pos3, texture);
 
-						pos = Vec4f( vertInfo[startOfPosition], vertInfo[startOfPosition+1], vertInfo[startOfTexture], vertInfo[startOfTexture+1] );
-						pos2 = Vec4f( vertInfo3[startOfPosition], vertInfo3[startOfPosition+1], vertInfo3[startOfTexture], vertInfo3[startOfTexture+1] );
-						pos3 = Vec4f( vertInfo4[startOfPosition], vertInfo4[startOfPosition+1], vertInfo4[startOfTexture], vertInfo4[startOfTexture+1] );
+						pos = Vec4f( positionData1[0], positionData1[1], textureData1[0], textureData1[1] );
+						pos2 = Vec4f( positionData3[0], positionData3[1], textureData3[0], textureData3[1] );
+						pos3 = Vec4f( positionData4[0], positionData4[1], textureData4[0], textureData4[1] );
 
 						surf->drawTexturedTriangle(pos, pos2, pos3, texture);
 					}
@@ -468,7 +513,7 @@ namespace glib
 
 				for(int i=3; i<amtVert; i+=2)
 				{
-					std::vector<double> vertInfo, vertInfo2, vertInfo3, vertInfo4;
+					std::vector<std::vector<int>> vertInfo, vertInfo2, vertInfo3, vertInfo4;
 
 					if(!order)
 					{
@@ -484,32 +529,42 @@ namespace glib
 						vertInfo3 = model->getVertex(i-3);
 						vertInfo4 = model->getVertex(i);
                     }
+
+					float* positionData1 = (float*)vertInfo[startOfPosition].data();
+					float* positionData2 = (float*)vertInfo2[startOfPosition].data();
+					float* positionData3 = (float*)vertInfo3[startOfPosition].data();
+					float* positionData4 = (float*)vertInfo4[startOfPosition].data();
 					
 					if(startOfTexture<0)
 					{
-						Vec2f pos = Vec2f( vertInfo[startOfPosition], vertInfo[startOfPosition+1] );
-						Vec2f pos2 = Vec2f( vertInfo2[startOfPosition], vertInfo2[startOfPosition+1] );
-						Vec2f pos3 = Vec2f( vertInfo3[startOfPosition], vertInfo3[startOfPosition+1] );
+						Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
+						Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
+						Vec2f pos3 = Vec2f( positionData3[0], positionData3[1] );
 						
 						surf->drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false);
 
-						pos = Vec2f( vertInfo[startOfPosition], vertInfo[startOfPosition+1] );
-						pos2 = Vec2f( vertInfo3[startOfPosition], vertInfo3[startOfPosition+1] );
-						pos3 = Vec2f( vertInfo4[startOfPosition], vertInfo4[startOfPosition+1] );
+						pos = Vec2f( positionData1[0], positionData1[1] );
+						pos2 = Vec2f( positionData3[0], positionData3[1] );
+						pos3 = Vec2f( positionData4[0], positionData4[1] );
 						
 						surf->drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false);
 					}
 					else
 					{
-						Vec4f pos = Vec4f( vertInfo[startOfPosition], vertInfo[startOfPosition+1], vertInfo[startOfTexture], vertInfo[startOfTexture+1] );
-						Vec4f pos2 = Vec4f( vertInfo2[startOfPosition], vertInfo2[startOfPosition+1], vertInfo2[startOfTexture], vertInfo2[startOfTexture+1] );
-						Vec4f pos3 = Vec4f( vertInfo3[startOfPosition], vertInfo3[startOfPosition+1], vertInfo3[startOfTexture], vertInfo3[startOfTexture+1] );
+						float* textureData1 = (float*)vertInfo[startOfTexture].data();
+						float* textureData2 = (float*)vertInfo2[startOfTexture].data();
+						float* textureData3 = (float*)vertInfo3[startOfTexture].data();
+						float* textureData4 = (float*)vertInfo4[startOfTexture].data();
+
+						Vec4f pos = Vec4f( positionData1[0], positionData1[1], textureData1[0], textureData1[1] );
+						Vec4f pos2 = Vec4f( positionData2[0], positionData2[1], textureData2[0], textureData2[1] );
+						Vec4f pos3 = Vec4f( positionData3[0], positionData3[1], textureData3[0], textureData3[1] );
 
 						surf->drawTexturedTriangle(pos, pos2, pos3, texture);
 
-						pos = Vec4f( vertInfo[startOfPosition], vertInfo[startOfPosition+1], vertInfo[startOfTexture], vertInfo[startOfTexture+1] );
-						pos2 = Vec4f( vertInfo3[startOfPosition], vertInfo3[startOfPosition+1], vertInfo3[startOfTexture], vertInfo3[startOfTexture+1] );
-						pos3 = Vec4f( vertInfo4[startOfPosition], vertInfo4[startOfPosition+1], vertInfo4[startOfTexture], vertInfo4[startOfTexture+1] );
+						pos = Vec4f( positionData1[0], positionData1[1], textureData1[0], textureData1[1] );
+						pos2 = Vec4f( positionData3[0], positionData3[1], textureData3[0], textureData3[1] );
+						pos3 = Vec4f( positionData4[0], positionData4[1], textureData4[0], textureData4[1] );
 
 						surf->drawTexturedTriangle(pos, pos2, pos3, texture);
 					}

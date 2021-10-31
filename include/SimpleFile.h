@@ -156,6 +156,7 @@ namespace glib
 		 */
 		std::vector<unsigned char> readFullFileAsBytes();
 
+
 		//Write functions
 
 		/**

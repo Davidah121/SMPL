@@ -20,10 +20,11 @@ namespace glib
 	{
 	}
 
-	Vec3f::Vec3f(Vec2f other)
+	Vec3f::Vec3f(Vec2f other, double z)
 	{
 		this->x = other.x;
 		this->y = other.y;
+		this->z = z;
 	}
 
 

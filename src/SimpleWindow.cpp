@@ -21,7 +21,7 @@ namespace glib
 		return &SimpleWindow::myClass;
 	}
 
-	SimpleWindow* SimpleWindow::getWindowByHandle(HWND handle)
+	SimpleWindow* SimpleWindow::getWindowByHandle(size_t handle)
 	{
 		for (int i = 0; i < windowList.size(); i++)
 		{
@@ -52,10 +52,10 @@ namespace glib
 			windowList.pop_back();
 		}
 	}
-
+	
 	LRESULT _stdcall SimpleWindow::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
-		SimpleWindow* currentWindow = SimpleWindow::getWindowByHandle(hwnd);
+		SimpleWindow* currentWindow = SimpleWindow::getWindowByHandle((size_t)hwnd);
 
 		bool canDo = false;
 
@@ -420,10 +420,10 @@ namespace glib
 				wndThread = nullptr;
 			}
 			
-			if (IsWindow(windowHandle))
+			if (IsWindow((HWND)windowHandle))
 			{
-				CloseWindow(windowHandle);
-				DestroyWindow(windowHandle);
+				CloseWindow((HWND)windowHandle);
+				DestroyWindow((HWND)windowHandle);
 			}
 			UnregisterClassW(text.c_str(), hins);
 			DeleteObject(bitmap);
@@ -444,31 +444,26 @@ namespace glib
 
 	void SimpleWindow::init(int x, int y, int width, int height, std::wstring title, unsigned char windowType)
 	{
-		std::wstring text = title;
-		text += L"_CLASS";
+		#ifdef LINUX
 
-		hins = GetModuleHandle(NULL);
+			displayServer = XOpenDisplay(NULL);
 
-		wndClass.cbClsExtra = 0;
-		wndClass.cbSize = sizeof(WNDCLASSEX);
-		wndClass.cbWndExtra = 0;
-		wndClass.hbrBackground = (HBRUSH)(BLACK_BRUSH);
-		wndClass.hCursor = LoadCursor(hins, IDC_ARROW);
-		wndClass.hIcon = LoadIcon(hins, IDI_APPLICATION);
-		wndClass.hIconSm = LoadIcon(hins, IDI_APPLICATION);
-		wndClass.hInstance = hins;
-		wndClass.lpfnWndProc = SimpleWindow::wndProc;
-		wndClass.lpszClassName = text.c_str();
-		wndClass.lpszMenuName = NULL;
-		wndClass.style = CS_HREDRAW | CS_VREDRAW;
+			if(display == NULL)
+			{
+				//error connecting to XServer
+				setValid(false);
+				setShouldEnd(true);
+				setRunning(false);
 
-		int trueWidth = width;
-		int trueHeight = height;
-		int trueX = x;
-		int trueY = y;
+				setFinishInit(true);
+				return;
+			}
 
-		if (RegisterClassExW(&wndClass) != NULL)
-		{
+			int trueWidth = width;
+			int trueHeight = height;
+			int trueX = x;
+			int trueY = y;
+
 			int wType = windowType & 0b0001;
 			if(windowType & 0b1000)
 				wType = FULLSCREEN_WINDOW;
@@ -476,110 +471,196 @@ namespace glib
 			int focusable = windowType & 0b0010;
 			int threadManaged = windowType & 0b0100;
 
-			DWORD style = 0;
-			bool failed = false;
+			int borderWidth = 1;
 
-			switch(windowType)
+			if(focusable==TYPE_NONFOCUSABLE)
 			{
-				case SimpleWindow::NORMAL_WINDOW:
-					style = WS_OVERLAPPEDWINDOW;
-					trueWidth += 16;
-					trueHeight += 40;
-					break;
-				case SimpleWindow::BORDERLESS_WINDOW:
-					style = WS_POPUP|WS_VISIBLE|WS_SYSMENU;
-					break;
-				default:
-					style = WS_OVERLAPPEDWINDOW;
-					trueWidth += 16;
-					trueHeight += 40;
-					break;
+				
 			}
 
-			if(windowType == SimpleWindow::FULLSCREEN_WINDOW)
-			{
-				HMONITOR hmon = MonitorFromWindow(NULL, MONITOR_DEFAULTTONEAREST);
-				MONITORINFO mi = { sizeof(MONITORINFO) };
+			screen = DefaultScreen(displayServer);
+			windowHandle = XCreateSimpleWindow(displayServer, RootWindow(displayServer, screen), trueX, trueY, trueWidth, trueHeight, borderWidth, BlackPixel(display, screen), WhitePixel(display, screen));
 
-				style = WS_POPUP|WS_VISIBLE;
-				if(!GetMonitorInfo(hmon, &mi))
-				{	
-					//failed getting monitor information
-					failed = true;
+			//set window name
+			std::string cTitle = StringTools::toCString(title);
+			XStoreName(displayServer, windowHandle, cTitle.c_str());
+
+			//if window is borderless
+			if(windowType == SimpleWindow::BORDERLESS_WINDOW)
+			{
+				Atom mwmHintsProperty = XInternAtom(displayServer, "_MOTIF_WM_HINTS", 0);
+				MwmHints hints = {};
+				hints.flags = MWM_HINTS_DECORATIONS;
+				hints.decorations = 0;
+				XChangeProperty(displayServer, windowHandle, mwmHintsProperty, mwmHintsProperty, 32, PropModeReplace, (unsigned char*)&hints, 5);
+			}
+			else if(windowType == SimpleWindow::FULLSCREEN_WINDOW)
+			{
+				Atom atoms[2] = {
+					XInternAtom(displayServer, "_NET_WM_STATE_FULLSCREEN", 0), 0
+				};
+				XChangeProperty(displayServer, windowHandle, XInternAtom(displayServer, "_NET_WM_STATE", 0), XA_ATOM, 32, PropModeReplace, (unsigned char*)atoms, 1);
+
+				this->x = 0;
+				this->y = 0;
+				this->width = System::getDestopWidth();
+				this->height = System::getDesktopHeight();
+			}
+			
+
+			XSelectInput(displayServer, windowHandle, ExposureMask | KeyPressMask);
+			XMapWindow(displayServer, windowHandle);
+
+			setVisible(true);
+			setValid(true);
+			setShouldEnd(false);
+			setRunning(true);
+
+			initBitmap();
+			SimpleWindow::windowList.push_back(this);
+
+			setFinishInit(true);
+
+			if(threadManaged == TYPE_THREAD_MANAGED)
+				run();
+		#else
+
+			std::wstring text = title;
+			text += L"_CLASS";
+
+			hins = GetModuleHandle(NULL);
+
+			wndClass.cbClsExtra = 0;
+			wndClass.cbSize = sizeof(WNDCLASSEX);
+			wndClass.cbWndExtra = 0;
+			wndClass.hbrBackground = (HBRUSH)(BLACK_BRUSH);
+			wndClass.hCursor = LoadCursor(hins, IDC_ARROW);
+			wndClass.hIcon = LoadIcon(hins, IDI_APPLICATION);
+			wndClass.hIconSm = LoadIcon(hins, IDI_APPLICATION);
+			wndClass.hInstance = hins;
+			wndClass.lpfnWndProc = SimpleWindow::wndProc;
+			wndClass.lpszClassName = text.c_str();
+			wndClass.lpszMenuName = NULL;
+			wndClass.style = CS_HREDRAW | CS_VREDRAW;
+
+			int trueWidth = width;
+			int trueHeight = height;
+			int trueX = x;
+			int trueY = y;
+
+			if (RegisterClassExW(&wndClass) != NULL)
+			{
+				int wType = windowType & 0b0001;
+				if(windowType & 0b1000)
+					wType = FULLSCREEN_WINDOW;
+				
+				int focusable = windowType & 0b0010;
+				int threadManaged = windowType & 0b0100;
+
+				DWORD style = 0;
+				bool failed = false;
+
+				switch(windowType)
+				{
+					case SimpleWindow::NORMAL_WINDOW:
+						style = WS_OVERLAPPEDWINDOW;
+						trueWidth += 16;
+						trueHeight += 40;
+						break;
+					case SimpleWindow::BORDERLESS_WINDOW:
+						style = WS_POPUP|WS_VISIBLE|WS_SYSMENU;
+						break;
+					default:
+						style = WS_OVERLAPPEDWINDOW;
+						trueWidth += 16;
+						trueHeight += 40;
+						break;
+				}
+
+				if(windowType == SimpleWindow::FULLSCREEN_WINDOW)
+				{
+					HMONITOR hmon = MonitorFromWindow(NULL, MONITOR_DEFAULTTONEAREST);
+					MONITORINFO mi = { sizeof(MONITORINFO) };
+
+					style = WS_POPUP|WS_VISIBLE;
+					if(!GetMonitorInfo(hmon, &mi))
+					{	
+						//failed getting monitor information
+						failed = true;
+						UnregisterClassW(text.c_str(), hins);
+						setValid(false);
+						setShouldEnd(true);
+						setRunning(false);
+
+						setFinishInit(true);
+
+						#ifdef USE_EXCEPTIONS
+							throw WindowCreationError();
+						#endif
+					}
+					
+					trueX = mi.rcMonitor.left;
+					trueY = mi.rcMonitor.top;
+					trueWidth = mi.rcMonitor.right - mi.rcMonitor.left;
+					trueHeight = mi.rcMonitor.bottom - mi.rcMonitor.top;
+
+					this->width = trueWidth;
+					this->height = trueHeight;
+					this->x = trueX;
+					this->y = trueY;
+				}
+
+				if(focusable==TYPE_NONFOCUSABLE)
+				{
+					style |= WS_EX_NOACTIVATE;
+				}
+
+				if(!failed)
+				{
+					windowHandle = (size_t)CreateWindowExW(NULL, text.c_str(), title.c_str(), style, trueX, trueY, trueWidth, trueHeight, NULL, NULL, hins, NULL);
+				}
+				
+				if (windowHandle != NULL)
+				{
+					setVisible(true);
+					setValid(true);
+					setShouldEnd(false);
+					setRunning(true);
+
+					initBitmap();
+					SimpleWindow::windowList.push_back(this);
+
+					setFinishInit(true);
+
+					if(threadManaged == TYPE_THREAD_MANAGED)
+						run();
+				}
+				else
+				{
+					//dispose
+					//The class registered, but the window creation failed
 					UnregisterClassW(text.c_str(), hins);
 					setValid(false);
 					setShouldEnd(true);
 					setRunning(false);
 
 					setFinishInit(true);
-
-					#ifdef USE_EXCEPTIONS
-						throw WindowCreationError();
-					#endif
+					//std::cout << "Failed window creation" << std::endl;
 				}
-				
-				trueX = mi.rcMonitor.left;
-				trueY = mi.rcMonitor.top;
-				trueWidth = mi.rcMonitor.right - mi.rcMonitor.left;
-				trueHeight = mi.rcMonitor.bottom - mi.rcMonitor.top;
-
-				this->width = trueWidth;
-				this->height = trueHeight;
-				this->x = trueX;
-				this->y = trueY;
-			}
-
-			if(focusable==TYPE_NONFOCUSABLE)
-			{
-				style |= WS_EX_NOACTIVATE;
-			}
-
-			if(!failed)
-			{
-				windowHandle = CreateWindowExW(NULL, text.c_str(), title.c_str(), style, trueX, trueY, trueWidth, trueHeight, NULL, NULL, hins, NULL);
-			}
-			
-			if (windowHandle != NULL)
-			{
-				setVisible(true);
-				setValid(true);
-				setShouldEnd(false);
-				setRunning(true);
-
-				initBitmap();
-				SimpleWindow::windowList.push_back(this);
-
-				setFinishInit(true);
-
-				if(threadManaged == TYPE_THREAD_MANAGED)
-					run();
 			}
 			else
 			{
 				//dispose
-				//The class registered, but the window creation failed
-				UnregisterClassW(text.c_str(), hins);
+				//Nothing because the window wasn't created and the
+				//class failed to register
 				setValid(false);
 				setShouldEnd(true);
 				setRunning(false);
 
 				setFinishInit(true);
-				//std::cout << "Failed window creation" << std::endl;
 			}
-		}
-		else
-		{
-			//dispose
-			//Nothing because the window wasn't created and the
-			//class failed to register
-			setValid(false);
-			setShouldEnd(true);
-			setRunning(false);
 
-			setFinishInit(true);
-			//std::cout << "Failed class creation" << std::endl;
-			//std::cout << GetLastError() << std::endl;
-		}
+		#endif
 
 	}
 
@@ -618,7 +699,7 @@ namespace glib
 		wndPixels = new unsigned char[wndPixelsSize];
 
 		std::memset(wndPixels,0,wndPixelsSize);
-		myHDC = GetDC(windowHandle);
+		myHDC = GetDC((HWND)windowHandle);
 
 		bitmap = CreateCompatibleBitmap(myHDC, width, height);
 
@@ -715,45 +796,45 @@ namespace glib
 	void SimpleWindow::setVisible(bool value)
 	{
 		if (value == true)
-			ShowWindow(windowHandle, SW_SHOW);
+			ShowWindow((HWND)windowHandle, SW_SHOW);
 		else
-			ShowWindow(windowHandle, SW_HIDE);
+			ShowWindow((HWND)windowHandle, SW_HIDE);
 	}
 
 	void SimpleWindow::setX(int x)
 	{
-		SetWindowPos(windowHandle, HWND_TOP, x, this->y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+		SetWindowPos((HWND)windowHandle, HWND_TOP, x, this->y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
 		this->x = x;
 	}
 
 	void SimpleWindow::setY(int y)
 	{
-		SetWindowPos(windowHandle, HWND_TOP, this->x, y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+		SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
 		this->y = y;
 	}
 
 	void SimpleWindow::setPosition(int x, int y)
 	{
-		SetWindowPos(windowHandle, HWND_TOP, x, y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+		SetWindowPos((HWND)windowHandle, HWND_TOP, x, y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
 		this->x = x;
 		this->y = y;
 	}
 
 	void SimpleWindow::setWidth(int width)
 	{
-		SetWindowPos(windowHandle, HWND_TOP, this->x, this->y, width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+		SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, this->y, width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
 		this->width = width;
 	}
 
 	void SimpleWindow::setHeight(int height)
 	{
-		SetWindowPos(windowHandle, HWND_TOP, this->x, this->y, this->width, height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+		SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, this->y, this->width, height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
 		this->height = height;
 	}
 
 	void SimpleWindow::setSize(int width, int height)
 	{
-		SetWindowPos(windowHandle, HWND_TOP, this->x, this->y, width, height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+		SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, this->y, width, height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
 		this->width = width;
 		this->height = height;
 	}
@@ -816,6 +897,16 @@ namespace glib
 		return height;
 	}
 
+	int SimpleWindow::getX()
+	{
+		return x;
+	}
+
+	int SimpleWindow::getY()
+	{
+		return y;
+	}
+
 	std::wstring SimpleWindow::getTitle()
 	{
 		return title;
@@ -837,7 +928,7 @@ namespace glib
 		return value;
 	}
 
-	HWND SimpleWindow::getWindowHandle()
+	size_t SimpleWindow::getWindowHandle()
 	{
 		return windowHandle;
 	}
@@ -871,12 +962,12 @@ namespace glib
 		closingFunction = function;
 	}
 
-	void SimpleWindow::setKeyUpFunction(std::function<void(WPARAM, LPARAM)> function)
+	void SimpleWindow::setKeyUpFunction(std::function<void(unsigned long, long)> function)
 	{
 		keyUpFunction = function;
 	}
 
-	void SimpleWindow::setKeyDownFunction(std::function<void(WPARAM, LPARAM)> function)
+	void SimpleWindow::setKeyDownFunction(std::function<void(unsigned long, long)> function)
 	{
 		keyDownFunction = function;
 	}
@@ -936,7 +1027,7 @@ namespace glib
 
 	bool SimpleWindow::getFocus()
 	{
-		return GetFocus()==windowHandle;
+		return GetFocus()==(HWND)windowHandle;
 	}
 
 	bool SimpleWindow::getCanFocus()
@@ -953,7 +1044,7 @@ namespace glib
 
 	void SimpleWindow::threadSetFocus()
 	{
-		SetFocus(windowHandle);
+		SetFocus((HWND)windowHandle);
 	}
 
 	bool SimpleWindow::getShouldFocus()
@@ -982,6 +1073,7 @@ namespace glib
 	
 	void SimpleWindow::setResizable(bool v)
 	{
+
 		canResize = v;
 	}
 
@@ -1133,7 +1225,7 @@ namespace glib
 	{
 		MSG m;
 		ZeroMemory(&m, sizeof(MSG));
-		while(PeekMessage(&m, windowHandle, NULL, NULL, PM_REMOVE))
+		while(PeekMessage(&m, (HWND)windowHandle, NULL, NULL, PM_REMOVE))
 		{
 			TranslateMessage(&m);
 			DispatchMessage(&m);
@@ -1210,7 +1302,7 @@ namespace glib
 			threadRender();
 			int value = SetDIBits(myHDC, bitmap, 0, height, &wndPixels[0], &bitInfo, DIB_RGB_COLORS);
 			
-			RedrawWindow(windowHandle, NULL, NULL, RDW_INVALIDATE);
+			RedrawWindow((HWND)windowHandle, NULL, NULL, RDW_INVALIDATE);
 
 			myMutex.lock();
 			shouldRepaint=false;

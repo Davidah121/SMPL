@@ -541,8 +541,8 @@ namespace glib
 	
 	Vec2f MathExt::lengthDir(double length, double direction)
 	{
-		return Vec2f( MathExt::cos( toRad(direction)) * length, 
-					-MathExt::sin( toRad(direction)) * length );
+		return Vec2f( MathExt::cos( direction) * length, 
+					-MathExt::sin( direction) * length );
 	}
 
 	double MathExt::dot(Vec2f v1, Vec2f v2)
@@ -880,6 +880,13 @@ namespace glib
 			0, 0, 1
 		);
 	}
+
+	
+	Mat3f MathExt::modelMatrix2D(Vec2f position, double rotation, Vec2f scale)
+	{
+		return MathExt::scale2D(scale) * MathExt::rotation2D(rotation) * MathExt::translation2D(position);
+	}
+
 	#pragma endregion
 
 	#pragma region Transformations_3D
@@ -898,7 +905,7 @@ namespace glib
 		return Quaternion(cosHalfAngle, axisVals.x, axisVals.y, axisVals.z);
 	}
 
-	Mat4f MathExt::QuaternionToMatrix(Quaternion q)
+	Mat4f MathExt::quaternionToMatrix(Quaternion q)
 	{
 		return Mat4f(
 			q.a, -q.b, -q.c, -q.d,
@@ -982,6 +989,127 @@ namespace glib
 			0, 0, 0, 1
 		);
 	}
+
+	Mat4f MathExt::modelMatrix3D(Vec3f position, Vec3f rotation, Vec3f scale)
+	{
+
+		Quaternion xRot = MathExt::getRotationQuaternion(rotation.x, Vec3f(1,0,0));
+		Quaternion yRot = MathExt::getRotationQuaternion(rotation.y, Vec3f(0,1,0));
+		Quaternion zRot = MathExt::getRotationQuaternion(rotation.z, Vec3f(0,0,1));
+
+		Quaternion composedRotation = xRot*yRot*zRot;
+
+		return MathExt::scale3D(scale) * MathExt::quaternionToMatrix(composedRotation) * MathExt::translation3D(position);
+	}
+
+	Mat4f MathExt::viewMatrix(Vec3f position, Vec3f rotation)
+	{
+		Vec3f r1 = Vec3f(1,0,0);
+		Vec3f r2 = Vec3f(0,0,-1);
+		Vec3f r3 = Vec3f(0,1,0);
+		
+		Quaternion zRot = MathExt::getRotationQuaternion(rotation.z, r2);
+		r1 = zRot*r1;
+		r3 = zRot*r3;
+
+		Quaternion xRot = MathExt::getRotationQuaternion(rotation.x, r1);
+		r2 = xRot*r2;
+		r3 = xRot*r3;
+
+		Quaternion yRot = MathExt::getRotationQuaternion(rotation.y, r3);
+		r1 = yRot*r1;
+		r2 = yRot*r2;
+
+
+		
+		// Mat4f viewMat = Mat4f(
+		// 	r1.x, r1.y, r1.z, 0,
+		// 	r2.x, r2.y, r2.z, 0,
+		// 	r3.x, r3.y, r3.z, 0,
+		// 	0, 0, 0, 1
+		// );
+
+		// Mat4f translationMat = MathExt::translation3D(-position);
+		
+		// return translationMat * viewMat;
+
+		// r1 = Vec3f(1,0,0);
+		// r2 = Vec3f(0,0,-1);
+		// r3 = Vec3f(0,1,0);
+
+		Mat4f cameraView = Mat4f(
+			r1.x, r1.y, r1.z, 0,
+			r2.x, r2.y, r2.z, 0,
+			r3.x, r3.y, r3.z, 0,
+			0, 0, 0, 1
+		);
+
+		Mat4f cameraPos = Mat4f(
+			1, 0, 0, position.x,
+			0, 1, 0, position.y,
+			0, 0, 1, position.z,
+			0, 0, 0, 1
+		);
+
+		return cameraView * cameraPos;
+	}
+
+	Mat4f MathExt::viewMatrix2D(Vec2f position, double rotation)
+	{
+		Vec3f r1 = Vec3f(1,0,0);
+		Vec3f r2 = Vec3f(0,-1,0);
+
+		Quaternion zRot = MathExt::getRotationQuaternion(rotation, Vec3f(0,0,1));
+
+		r1 = zRot * r1;
+		r2 = zRot * r2;
+		
+		return Mat4f(
+			r1.x, r1.y, r1.z, -position.x,
+			r2.x, r2.y, r2.z, -position.y,
+			0, 0, 1, 0,
+			0, 0, 0, 0
+		);
+	}
+
+	Mat4f MathExt::perspectiveProjectionMatrix(double width, double height, double near, double far, double fov)
+	{
+		double tanVal = MathExt::dtan(fov/2);
+		double aspectRatio = height/width;
+		double S1 = aspectRatio / tanVal;
+		double S2 = 1.0 / tanVal;
+		double zRange = far-near;
+
+		return Mat4f( 
+			S1, 0, 0, 0,
+			0, S2, 0, 0,
+			0, 0, -(far)/zRange, -(far*near)/zRange,
+			0, 0, -1, 0);
+	}
+
+	Mat4f MathExt::orthographicProjectionMatrix(double width, double height, double near, double far)
+	{
+		if(near == far)
+		{
+			return Mat4f(
+				2.0/width, 0, 0, -1,
+				0, -2.0/height, 0, 1,
+				0, 0, 1, 0,
+				0, 0, 0, 1
+			);;
+		}
+		else
+		{
+			double zRange = far-near;
+			return Mat4f(
+				2.0/width, 0, 0, -1,
+				0, -2.0/height, 0, -1,
+				0, 0, 2.0/zRange, -(far+near)/zRange,
+				0, 0, 0, 1
+			);
+		}
+	}
+	
 	#pragma endregion
 
 	std::vector<double> MathExt::solveLinear(double A, double B)
