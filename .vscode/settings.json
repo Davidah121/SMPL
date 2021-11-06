@@ -79,7 +79,8 @@
         "forward_list": "cpp",
         "format": "cpp",
         "optional": "cpp",
-        "stop_token": "cpp"
+        "stop_token": "cpp",
+        "unordered_set": "cpp"
     },
     "files.exclude": {
         "**/.classpath": true,

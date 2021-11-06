@@ -387,7 +387,7 @@ namespace glib
 		}
 		else
 		{
-			priority = MathExt::abs(GuiInstance::CANVAS_PRIORITY_VALUE);
+			priority = MathExt::abs(value);
 		}
 		
 		for(GuiInstance* child : children)

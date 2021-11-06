@@ -43,7 +43,7 @@ namespace glib
 			Graphics::setClippingRect( Box2D(renderX, renderY, renderX+width, renderY+height) );
 			Graphics::drawTextLimits(text, renderX+offsetX, renderY+offsetY, width-offsetX, height-offsetY, allowLineBreaks, surf);
 
-			if(shouldHighlight && endHighlight>0 && startHighlight>0)
+			if(shouldHighlight && endHighlight>=0 && startHighlight>=0)
 			{
 				int actualS, actualE;
 
