@@ -11,7 +11,7 @@ namespace glib
 	unsigned char Graphics::blendMode = Graphics::BLEND_NORMAL;
 	bool Graphics::fillRule = Graphics::FILL_EVEN_ODD;
 
-	unsigned char Graphics::defaultFontValue = Graphics::MEDIUM_FONT;
+	unsigned char Graphics::defaultFontValue = Graphics::NORMAL_FONT;
 	Font* Graphics::defaultFont = nullptr;
 	Font* Graphics::defaultFontMedium = nullptr;
 	Font* Graphics::defaultFontLarge = nullptr;

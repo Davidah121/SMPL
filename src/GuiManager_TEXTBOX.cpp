@@ -173,75 +173,79 @@ namespace glib
 			}
 			else if( Input::getKeyPressed(Input::KEY_BACKSPACE))
 			{
-				std::string nString;
-				int actualS, actualE;
-				if(selectStart<selectEnd)
-				{
-					actualS = selectStart;
-					actualE = selectEnd;
-				}
-				else
-				{
-					actualS = selectEnd;
-					actualE = selectStart;
-				}
-				
-				if(actualS==actualE)
-				{
-					actualS--;
-				}
+				int minSelect = min(selectStart, selectEnd);
+				int maxSelect = max(selectStart, selectEnd);
+				if(minSelect==maxSelect)
+					minSelect--;
+				std::string prefix = textElement.getText().substr(0, minSelect);
+				std::string suffix = textElement.getText().substr(maxSelect);
 
-				for(int i=0; i<actualS; i++)
-				{
-					nString += textElement.getTextRef()[i];
-				}
+				textElement.setText(prefix+suffix);
 
-				for(int i=actualE; i<textElement.getTextRef().size(); i++)
-				{
-					nString += textElement.getTextRef()[i];
-				}
-
-				textElement.setText(nString);
-
-				cursorLocation = actualS;
+				cursorLocation = minSelect;
 				selectStart = cursorLocation;
 				selectEnd = cursorLocation;
 			}
 			else if( Input::getKeyPressed(Input::KEY_DELETE))
 			{
-				std::string nString;
-				int actualS, actualE;
-				if(selectStart<selectEnd)
-				{
-					actualS = selectStart;
-					actualE = selectEnd;
-				}
-				else
-				{
-					actualS = selectEnd;
-					actualE = selectStart;
-				}
-				
-				if(actualS==actualE)
-				{
-					actualE++;
-				}
+				int minSelect = min(selectStart, selectEnd);
+				int maxSelect = max(selectStart, selectEnd);
+				if(minSelect==maxSelect)
+					maxSelect++;
 
-				for(int i=0; i<actualS; i++)
-				{
-					nString += textElement.getTextRef()[i];
-				}
+				std::string prefix = textElement.getText().substr(0, minSelect);
+				std::string suffix = textElement.getText().substr(maxSelect);
 
-				for(int i=actualE; i<textElement.getTextRef().size(); i++)
-				{
-					nString += textElement.getTextRef()[i];
-				}
+				textElement.setText(prefix+suffix);
 
-				textElement.setText(nString);
-
-				cursorLocation = actualS;
+				cursorLocation = minSelect;
 				selectStart = cursorLocation;
 				selectEnd = cursorLocation;
+			}
+			else if(Input::getKeyDown(Input::KEY_CONTROL))
+			{
+				if( Input::getKeyPressed('V'))
+				{
+					//PASTE
+					std::string pasteText = StringTools::toCString(System::pasteFromClipboard());
+
+					int minSelect = min(selectStart, selectEnd);
+					int maxSelect = max(selectStart, selectEnd);
+					
+					std::string prefix = textElement.getText().substr(0, minSelect);
+					std::string suffix = textElement.getText().substr(maxSelect);
+
+					textElement.setText( (prefix + pasteText) + suffix );
+					cursorLocation = minSelect+pasteText.size();
+					selectStart = cursorLocation;
+					selectEnd = cursorLocation;
+				}
+				else if( Input::getKeyPressed('C'))
+				{
+					//COPY
+					int minSelect = min(selectStart, selectEnd);
+					int maxSelect = max(selectStart, selectEnd);
+					std::string cpyText = textElement.getText().substr(minSelect, maxSelect);
+
+					System::copyToClipboard(cpyText);
+				}
+				else if( Input::getKeyPressed('X'))
+				{
+					//CUT
+					int minSelect = min(selectStart, selectEnd);
+					int maxSelect = max(selectStart, selectEnd);
+					std::string cpyText = textElement.getText().substr(minSelect, maxSelect);
+
+					System::copyToClipboard(cpyText);
+
+					std::string prefix = textElement.getText().substr(0, minSelect);
+					std::string suffix = textElement.getText().substr(maxSelect);
+
+					textElement.setText(prefix+suffix);
+					cursorLocation = minSelect;
+					selectStart = cursorLocation;
+					selectEnd = cursorLocation;
+				}
 			}
 			else
 			{

@@ -161,7 +161,6 @@ namespace glib
                 {
                     nIndexData.push_back( uniqueIndexGroups.size()-1 );
                 }
-
             }
 
             //Next, generate unique vertex data for the buffers

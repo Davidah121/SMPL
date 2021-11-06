@@ -31,6 +31,7 @@
 #include "SimpleHashMap.h"
 
 #include "Algorithms.h"
+#include "SmartMemory.h"
 
 #include "ext/DXWindow.h"
 #include "ext/DXShader.h"
@@ -39,6 +40,7 @@
 #include "ext/GLWindow.h"
 #include "ext/GLShader.h"
 #include "ext/GLModel.h"
+#include "ext/GLTexture.h"
 
 using namespace glib;
 
@@ -891,15 +893,14 @@ void testGLStuff()
 {
     GLWindow w = GLWindow("OpenGL Window", 640, 480, -1, -1, GLWindow::NORMAL_WINDOW | GLWindow::TYPE_USER_MANAGED);
 
-    GLShader s = GLShader("./testFiles/GLSL/lighting copy.vs", "./testFiles/GLSL/lighting copy.fs");
+    GLShader s = GLShader("./testFiles/GLSL/texturedCube.vs", "./testFiles/GLSL/texturedCube.fs");
+    GLTexture texture = GLTexture("TestImages/GIF/Varying Bit size and type/basn0g01.gif");
 
     Model m = Model();
     //m.loadModel("C:/Users/Alan/Desktop/untitled2.stl");
-    m.loadModel("C:/Users/Alan/Desktop/untitled.dae");
+    // m.loadModel("C:/Users/Alan/Desktop/untitled.dae");
+    m.loadModel("TestFiles/3DModels/box.obj");
 
-    // Vec3f test = MathExt::getRotationQuaternion(0, Vec3f(0,0,1)) * Vec3f(1, 0, 0);
-    // StringTools::println("TEST (%.3f, %.3f ,%.3f)", test.x, test.y, test.z);
-    
     GLModel model = GLModel::convertModel(&m);
     Vec3f pos, rot;
     bool mouseLock = false;
@@ -931,13 +932,7 @@ void testGLStuff()
         s.setMat4("viewMatrix", view);
         s.setMat4("modelMatrix", modMat);
 
-        Vec2f lightPos = MathExt::lengthDir(5, angle);
-        angle+=0.05;
-
-        s.setVec3("lightPos", Vec3f(lightPos, 5));
-        s.setVec3("lightCol", Vec3f(1, 1, 1));
-        s.setFloat("maxDis", 10.0f);
-        s.setVec3("ambientCol", Vec3f(0.05, 0.05, 0.05));
+        texture.bind();
 
         model.draw();
 
@@ -1107,6 +1102,216 @@ void testDirectXStuff()
     }
 }
 
+void testGuiStuff()
+{
+    SimpleWindow w = SimpleWindow("Gui Testing", 320, 240);
+
+    std::vector<GuiInstance*> elements;
+
+    GuiContextMenu m = GuiContextMenu();
+    m.getListElement()->setElementSpacing(20);
+    m.getListElement()->setExpectedWidth(52);
+
+    for(int i=0; i<5; i++)
+    {
+        GuiTextBlock* b = new GuiTextBlock(0, 0, 48, 16);
+        b->setText("Data " + std::to_string(i));
+
+        GuiRectangleButton* but = new GuiRectangleButton(2, 2, 48, 16);
+        but->addChild(b);
+        but->setBackgroundColor({0, 0, 0, 0});
+        but->setOutlineColor({0, 0, 0, 0});
+        but->setFocusOutlineColor({0, 0, 0, 0});
+
+        elements.push_back(b);
+        elements.push_back(but);
+        m.getListElement()->addElement(but);
+    }
+
+    w.getGuiManager()->addElement(&m);
+    w.waitTillClose();
+
+    for(int i=0; i<elements.size(); i++)
+    {
+        delete elements[i];
+    }
+}
+
+class TestClass
+{
+public:
+    TestClass()
+    {
+
+    }
+    ~TestClass()
+    {
+        StringTools::println("Calling Destructor TestClass for %p", this);
+        memLoc.unsafeRemove();
+    }
+private:
+    SmartMemory<TestClass> memLoc = SmartMemory<TestClass>(this);
+};
+
+class Instance
+{
+public:
+    Instance()
+    {
+    }
+
+    ~Instance()
+    {
+        StringTools::println("Calling Destructor INSTANCE for %p", this);
+        memLoc.unsafeRemove();
+    }
+private:
+    SmartMemory<Instance> memLoc = SmartMemory<Instance>(this);
+};
+
+class Instance2
+{
+public:
+    Instance2()
+    {
+    }
+
+    ~Instance2()
+    {
+        StringTools::println("Calling Destructor INSTANCE2 for %p", this);
+    }
+};
+
+void testDeleteStuff()
+{
+    // SmartMemory<Image> imgPointer = SmartMemory<Image>(new Image(320, 240));
+
+    // imgPointer.getData()->setAllPixels({200, 100, 150, 240});
+
+    // SmartMemory<Image> imgPointer2 = imgPointer;
+
+    // SmartMemory<int> intPointer = SmartMemory<int>(new int[3]);
+
+    // Instance ins = Instance();
+    // SmartMemory<Instance> ins2 = SmartMemory<Instance>(new Instance(), true);
+    
+    // Instance* insP = new Instance();
+
+    // SmartMemory<int> intPointer = SmartMemory<int>(new int[4]);
+
+    // size_t t1,t2;
+    // int* p;
+    
+    // t1 = System::getCurrentTimeNano();
+    // p = intPointer.getRawPointer();
+    // t2 = System::getCurrentTimeNano();
+
+    // StringTools::println("%p, %d, TIME: %llu", &p[0], p[0], t2-t1);
+    
+    // std::shared_ptr<int> sharedP = std::shared_ptr<int>(new int[4]);
+    // std::shared_ptr<int> sharedP2 = sharedP;
+
+    // t1 = System::getCurrentTimeNano();
+    // p = sharedP2.get();
+    // t2 = System::getCurrentTimeNano();
+
+    // StringTools::println("%p, %d, TIME: %llu", &p[0], p[0], t2-t1);
+
+    SmartMemory<Instance> insArray = SmartMemory<Instance>(new Instance[4], true, true);
+    insArray.~SmartMemory();
+
+    // std::shared_ptr<Instance2> sharedP = std::shared_ptr<Instance2>(new Instance2[4]);
+    // sharedP.reset();
+
+    // Instance* ins = new Instance[20]();
+    // StringTools::println("ARRAY %p", ins);
+    // delete[] ins;
+
+    //SUMMARY, Create and Delete performance within margin of error with no debugging stuff attached.
+    //Should be less memory as only a boolean is added to determine if it can be deleted
+    //performance is likely worse as it must search the list for the data first.
+
+
+    // size_t t1, t2;
+    // t1 = System::getCurrentTimeMicro();
+    // std::unique_ptr<Image> imgPointer = std::unique_ptr<Image>(new Image(320, 240));
+    // t2 = System::getCurrentTimeMicro();
+    // StringTools::println("Time to create unique_ptr<Image> = %llu", t2-t1);
+
+    
+    // t1 = System::getCurrentTimeMicro();
+    // imgPointer.reset();
+    // t2 = System::getCurrentTimeMicro();
+    // StringTools::println("Time to destroy unique_ptr<Image> = %llu", t2-t1);
+
+    // t1 = System::getCurrentTimeMicro();
+    // SmartMemory<Image> imgPointer2 = SmartMemory<Image>(new Image(320, 240));
+    // t2 = System::getCurrentTimeMicro();
+    // StringTools::println("Time to create SmartMemory<Image> = %llu", t2-t1);
+
+    
+    // t1 = System::getCurrentTimeMicro();
+    // imgPointer2.~SmartMemory();
+    // t2 = System::getCurrentTimeMicro();
+    // StringTools::println("Time to destroy SmartMemory<Image> = %llu", t2-t1);
+}
+
+void bezierDrawing()
+{
+    SimpleWindow w = SimpleWindow("Beziergon");
+    w.setThreadAutoRepaint(true);
+    w.setThreadUpdateTime(16,000);
+
+    GuiCustomObject g = GuiCustomObject();
+
+    BezierCurve b, b2, b3;
+    Vec2f p1 = Vec2f(128, 128);
+    Vec2f p2 = Vec2f(196, 128);
+    Vec2f p3 = Vec2f(196, 196);
+    
+    b.addPoint(p1);
+    b.addPoint(p2);
+    b.addPoint(p3);
+    
+    Vec2f s1 = b.getPoint(1) - b.getPoint(0);
+    Vec2f s2 = b.getPoint(2) - b.getPoint(1);
+    Vec2f midS = s1+s2;
+    
+    s1 = MathExt::inverseVec(s1).normalize() * 2;
+    s2 = MathExt::inverseVec(s2).normalize() * 2;
+    midS = MathExt::inverseVec(midS).normalize() * 2;
+    
+
+    b2.addPoint(p1+s1);
+    b2.addPoint(p2+midS);
+    b2.addPoint(p3+s2);
+
+
+    b3.addPoint(p1-s1);
+    b3.addPoint(p2-midS);
+    b3.addPoint(p3-s2);
+
+    g.setRenderFunction([&b, &b2, &b3](Image* surf)->void{
+        
+        Graphics::setColor({255,0,0,255});
+        Graphics::drawBezierCurve(b, 10, false, surf);
+
+        Graphics::setColor({0,255,0,255});
+        Graphics::drawBezierCurve(b2, 10, false, surf);
+
+        Graphics::setColor({0,0,255,255});
+        Graphics::drawBezierCurve(b3, 10, false, surf);
+
+        Graphics::setColor({0, 0, 0, 255});
+        Graphics::drawLine((int)b3.getFuctionAt(0).x, (int)b3.getFuctionAt(0).y, (int)b2.getFuctionAt(0).x, (int)b2.getFuctionAt(0).y, surf);
+        Graphics::drawLine((int)b3.getFuctionAt(0.5).x, (int)b3.getFuctionAt(0.5).y, (int)b2.getFuctionAt(0.5).x, (int)b2.getFuctionAt(0.5).y, surf);
+        Graphics::drawLine((int)b3.getFuctionAt(1).x, (int)b3.getFuctionAt(1).y, (int)b2.getFuctionAt(1).x, (int)b2.getFuctionAt(1).y, surf);
+    });
+
+    w.getGuiManager()->addElement(&g);
+    w.waitTillClose();
+}
+
 int main(int argc, char** argv)
 {
     StringTools::init();
@@ -1118,8 +1323,12 @@ int main(int argc, char** argv)
     //testCollision2();
     //testWindowStuff();
 
-    //testGLStuff();
-    testDirectXStuff();
+    testGLStuff();
+    //testDirectXStuff();
+    //testGuiStuff();
+
+    //testDeleteStuff();
+    //bezierDrawing();
 
     //testBezierSubdivision();
 

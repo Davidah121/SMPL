@@ -407,7 +407,7 @@ namespace glib
                             {
                                 if(!subSplit[j].empty())
                                 {
-                                    indexValues.push_back( stoi(subSplit[j]) );
+                                    indexValues.push_back( (unsigned int)(stoi(subSplit[j])-1) );
                                 }
                             }
 
@@ -424,7 +424,7 @@ namespace glib
                         modelFormat = LINES;
                         for(int i=1; i<split.size(); i++)
                         {
-                            addIndicies( { (unsigned int)stoi(split[i]) } );
+                            addIndicies( { (unsigned int)(stoi(split[i])-1) } );
                         }
                     }
                 }

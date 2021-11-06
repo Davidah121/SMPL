@@ -11,15 +11,21 @@
 
 //Should use SmartPointers for memory access to avoid accessing memory that has already been deleted.
 
+struct Point
+{
+	int x=0;
+	int y=0;
+};
+
 namespace glib
 {
-
 	class GuiInstance : public Object
 	{
 	public:
 		static const int MAX_PRIORITY_VALUE = 9999;
 		static const int MIN_PRIORITY_VALUE = 0;
 		static const int CANVAS_PRIORITY_VALUE = -10000;
+		static const int CONTEXT_MENU_PRIORITY_VALUE = -10001;
 
 		/**
 		 * @brief Construct a new GuiInstance object
@@ -946,7 +952,7 @@ namespace glib
 		bool allowLineBreaks = false;
 
 		Color textColor = { 0, 0, 0, 255 };
-		Color highlightColor = { 72, 150, 255, 64 };
+		Color highlightColor = { 72, 150, 255, 96 };
 		Font* textFont = nullptr;
 
 		std::string text = "";
@@ -1684,6 +1690,103 @@ namespace glib
 		GuiRectangleButton increaseButtonElement = GuiRectangleButton(0,0,0,0);
 	};
 
+	class GuiList : public GuiInstance
+	{
+	public:
+		GuiList(int x, int y);
+		~GuiList();
+
+		//Object and Class Stuff
+		const Class* getClass();
+		static const Class myClass;
+
+		void update();
+		void render(Image* surf);
+
+		void setElementSpacing(int value);
+		void addElement(GuiInstance* ins);
+		void removeElement(GuiInstance* ins);
+
+		bool pointIsInList(int x, int y);
+		void setExpectedWidth(int w);
+
+		void setBackgroundColor(Color c);
+		void setOutlineColor(Color c);
+		
+	private:
+		std::vector<Point*> locations;
+		int elementSpacing = 0;
+		int width = 0;
+
+		Color backgroundColor = { 180, 180, 180, 255 };
+		Color outlineColor = { 0, 0, 0, 255 };
+	};
+
+	class GuiGrid : public GuiInstance
+	{
+	public:
+		GuiGrid(int x, int y);
+		~GuiGrid();
+
+		//Object and Class Stuff
+		const Class* getClass();
+		static const Class myClass;
+
+		void update();
+		void render(Image* surf);
+
+		void setGridSpacing(int x, int y);
+		void addElement(GuiInstance* ins);
+		void removeElement(GuiInstance* ins);
+
+		void setMaxRows(int row);
+		int getMaxRows();
+		void setMaxColumns(int col);
+		int getMaxColumns();
+
+		void setRowMajorOrder(bool v);
+
+		bool pointIsInGrid(int x, int y);
+		void setBackgroundColor(Color c);
+		void setOutlineColor(Color c);
+	private:
+		std::vector<Point*> locations;
+		int gridXSpacing = 0;
+		int gridYSpacing = 0;
+		int rowSize = 1;
+		int colSize = 1;
+		bool rowMajorOrder = true;
+		
+		Color backgroundColor = { 180, 180, 180, 255 };
+		Color outlineColor = { 0, 0, 0, 255 };
+	};
+
+	class GuiContextMenu : public GuiInstance
+	{
+	public:
+		GuiContextMenu();
+		~GuiContextMenu();
+
+		//Object and Class Stuff
+		const Class* getClass();
+		static const Class myClass;
+
+		void update();
+		void render(Image* surf);
+
+		GuiList* getListElement();
+
+		void showMenu(int x, int y);
+		void hideMenu();
+
+		void setShowOnRightClick(bool v);
+		bool getShowOnRightClick();
+	private:
+		GuiList listMenu = GuiList(0, 0);
+		bool showOnRightClick = true;
+		
+	};
+
 	class GuiManager : public Object
 	{
 	public:
@@ -1826,6 +1929,14 @@ namespace glib
 		int windowY = 0;
 
 		Color backgroundColor = { 0xA2, 0xB9, 0xBC, 0xFF };
+	};
+
+	class GuiMemoryManager
+	{
+	public:
+
+	private:
+		std::unordered_map<int, GuiInstance*> instances;
 	};
 
 } //NAMESPACE glib END

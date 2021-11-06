@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# Debugging files
+*.pdb
+*.exp

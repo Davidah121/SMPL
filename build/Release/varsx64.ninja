@@ -3,5 +3,5 @@ objDir = ./bin/Release/x64/obj
 compiler = cmd /c clang 
 CXXFLAGS = -std=c++17 -O3 -march=skylake
 DEFINES = -D OPTI=2
-OPTIONS = -c -Wno-unused-command-line-argument
+OPTIONS = -c -pipe -Wno-unused-command-line-argument
 compilerFlags = $OPTIONS $CXXFLAGS $DEFINES
