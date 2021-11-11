@@ -15,7 +15,10 @@ namespace glib
 
     GLTexture::~GLTexture()
     {
-        glDeleteTextures(1, &textureID);
+        if(textureID != 0)
+            glDeleteTextures(1, &textureID);
+
+        textureID = 0;
     }
 
     void GLTexture::loadImage(File f, bool includeAlpha)

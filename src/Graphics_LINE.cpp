@@ -330,7 +330,7 @@ namespace glib
 				Vec2f p2 = b.getFuctionAt( equalLengthT[i] );
 				Graphics::drawLine(MathExt::round(p1.x), MathExt::round(p1.y), MathExt::round(p2.x), MathExt::round(p2.y), surf);
 				
-				Graphics::drawCircle(MathExt::round(p1.x), MathExt::round(p1.y), 3, true, surf);
+				//Graphics::drawCircle(MathExt::round(p1.x), MathExt::round(p1.y), 3, true, surf);
 				p1 = p2;
 			}
 		}
@@ -344,7 +344,7 @@ namespace glib
 				Vec2f p2 = b.getFuctionAt( i*du );
 				Graphics::drawLine(MathExt::round(p1.x), MathExt::round(p1.y), MathExt::round(p2.x), MathExt::round(p2.y), surf);
 				
-				Graphics::drawCircle(MathExt::round(p1.x), MathExt::round(p1.y), 3, true, surf);
+				//Graphics::drawCircle(MathExt::round(p1.x), MathExt::round(p1.y), 3, true, surf);
 				p1 = p2;
 			}
 		}

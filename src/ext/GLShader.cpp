@@ -36,19 +36,6 @@ namespace glib
         vData.push_back(0);
         fData.push_back(0);
 
-        StringTools::println("SIZES: %lu - %lu", vData.size(), fData.size());
-        for(int i=0; i<vData.size(); i++)
-        {
-            StringTools::print("%c", (char)vData[i]);
-        }
-
-        StringTools::println("\n ------------------------------------------------------");
-
-        for(int i=0; i<fData.size(); i++)
-        {
-            StringTools::print("%c", (char)fData[i]);
-        }
-
         int status = 0;
         char infoLog[512];
 

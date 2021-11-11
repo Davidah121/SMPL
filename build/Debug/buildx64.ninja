@@ -32,8 +32,10 @@ build $objDir/Compression_RLE.obj: buildToObject src/Compression_RLE.cpp
 build $objDir/DXModel.obj: buildToObject src/ext/DXModel.cpp
 build $objDir/DXShader.obj: buildToObject src/ext/DXShader.cpp
 build $objDir/DXWindow.obj: buildToObject src/ext/DXWindow.cpp
+build $objDir/GLGraphics.obj: buildToObject src/ext/GLGraphics.cpp
 build $objDir/GLModel.obj: buildToObject src/ext/GLModel.cpp
 build $objDir/GLShader.obj: buildToObject src/ext/GLShader.cpp
+build $objDir/GLSurface.obj: buildToObject src/ext/GLSurface.cpp
 build $objDir/GLTexture.obj: buildToObject src/ext/GLTexture.cpp
 build $objDir/GLWindow.obj: buildToObject src/ext/GLWindow.cpp
 build $objDir/File.obj: buildToObject src/File.cpp

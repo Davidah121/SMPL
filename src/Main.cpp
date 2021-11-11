@@ -37,10 +37,7 @@
 #include "ext/DXShader.h"
 #include "ext/DXModel.h"
 
-#include "ext/GLWindow.h"
-#include "ext/GLShader.h"
-#include "ext/GLModel.h"
-#include "ext/GLTexture.h"
+#include "ext/GLGraphics.h"
 
 using namespace glib;
 
@@ -891,14 +888,33 @@ void testWindowStuff()
 
 void testGLStuff()
 {
+    int height = (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) +
+    GetSystemMetrics(SM_CXPADDEDBORDER));
+    StringTools::println("HEIGHT %d", height);
+    
     GLWindow w = GLWindow("OpenGL Window", 640, 480, -1, -1, GLWindow::NORMAL_WINDOW | GLWindow::TYPE_USER_MANAGED);
 
     GLShader s = GLShader("./testFiles/GLSL/texturedCube.vs", "./testFiles/GLSL/texturedCube.fs");
+    GLShader surfaceShader = GLShader("./testFiles/GLSL/surfaceShader.vs", "./testFiles/GLSL/surfaceShader.fs");
+    
     GLTexture texture = GLTexture("TestImages/GIF/Varying Bit size and type/basn0g01.gif");
 
+    Model surfaceModel = Model();
+    surfaceModel.addVertexFormatInfo(Model::TYPE_VEC2, Model::USAGE_POSITION);
+    surfaceModel.addVertexFormatInfo(Model::TYPE_VEC2, Model::USAGE_TEXTURE);
+
+    surfaceModel.addVec2f(Vec2f(-1, -1), 0); surfaceModel.addVec2f(Vec2f(0, 0), 1);
+    surfaceModel.addVec2f(Vec2f(1, -1), 0); surfaceModel.addVec2f(Vec2f(1, 0), 1);
+    surfaceModel.addVec2f(Vec2f(1, 1), 0); surfaceModel.addVec2f(Vec2f(1, 1), 1);
+
+    surfaceModel.addVec2f(Vec2f(-1, -1), 0); surfaceModel.addVec2f(Vec2f(0, 0), 1);
+    surfaceModel.addVec2f(Vec2f(1, 1), 0); surfaceModel.addVec2f(Vec2f(1, 1), 1);
+    surfaceModel.addVec2f(Vec2f(-1, 1), 0); surfaceModel.addVec2f(Vec2f(0, 1), 1);
+
+    GLModel surfGLModel = GLModel::convertModel(&surfaceModel);
+    
+    
     Model m = Model();
-    //m.loadModel("C:/Users/Alan/Desktop/untitled2.stl");
-    // m.loadModel("C:/Users/Alan/Desktop/untitled.dae");
     m.loadModel("TestFiles/3DModels/box.obj");
 
     GLModel model = GLModel::convertModel(&m);
@@ -907,26 +923,31 @@ void testGLStuff()
     double angle = 0.0;
     // GLModel model = GLModel::generateTestModel();
 
+    GLSurfaceParameters params = { GLSurface::COLOR_AND_DEPTH, 0, false, 0 };
+    GLSurface surface = GLSurface(640, 480, params);
+
+    GLGraphics::setClearColor(Vec4f(0.2, 0.3, 0.4, 1.0));
+    GLGraphics::enableDepthTest();
+    GLGraphics::setDepthTestFunction(GLGraphics::DEPTH_LESS);
+
     while(!w.getShouldEnd())
     {
         w.update();
         
-        glClearColor(0.2, 0.3, 0.4, 0.0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        int midX, midY;
 
-        glEnable(GL_MULTISAMPLE);
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LESS);
+        surface.bind();
+        GLGraphics::setClearColor(Vec4f(0.4, 0.3, 0.4, 1.0));
+        GLGraphics::clear(GLGraphics::COLOR_BUFFER | GLGraphics::DEPTH_BUFFER);
 
         Mat4f proj = MathExt::perspectiveProjectionMatrix(320, 240, 0.1, 100, 60);
         Mat4f view = MathExt::viewMatrix(pos, rot);
         Mat4f modMat = Mat4f::getIdentity();
 
-        int midX, midY;
         midX = w.getX() + w.getWidth()/2;
         midY = w.getY() + w.getHeight()/2;
 
-        // Mat4f mat = Mat4f::getIdentity();
+        Mat4f mat = Mat4f::getIdentity();
         s.setAsActive();
         s.setMat4("projectionMatrix", proj);
         s.setMat4("viewMatrix", view);
@@ -935,6 +956,16 @@ void testGLStuff()
         texture.bind();
 
         model.draw();
+
+        surface.bindTexture();
+
+        surface.unbind();
+        
+        GLGraphics::setClearColor(Vec4f(0.2, 0.3, 0.4, 1.0));
+        GLGraphics::clear(GLGraphics::COLOR_BUFFER | GLGraphics::DEPTH_BUFFER);
+        surfaceShader.setAsActive();
+        surface.bindTexture();
+        surfGLModel.draw();
 
 		w.swapBuffers();
         Input::pollInput();
@@ -1312,6 +1343,133 @@ void bezierDrawing()
     w.waitTillClose();
 }
 
+void demo()
+{
+    SimpleWindow w = SimpleWindow("BezierGon Demo", 640, 480);
+
+    GuiCustomObject g = GuiCustomObject();
+    BezierCurve b, b2, b3;
+
+    Vec2f p1 = Vec2f(128, 128);
+    Vec2f p2 = Vec2f(196, 128);
+    Vec2f p3 = Vec2f(196, 196);
+
+    int selection = -1;
+
+    g.setUpdateFunction( [&b, &b2, &b3, &p1, &p2, &p3, &selection, &w]()->void{
+
+        int mX, mY;
+        mX = w.getMouseX();
+        mY = w.getMouseY();
+        Point2D mousePoint = Point2D(Vec2f(mX, mY));
+
+        if(Input::getMousePressed(Input::LEFT_MOUSE_BUTTON))
+        {
+            StringTools::println("MousePressed");
+            StringTools::println("%d,%d", mX, mY);
+            Circle c = Circle(6);
+
+            c.setPosition(p1);
+            if(CollisionMaster::getCollision(&c, &mousePoint))
+            {
+                StringTools::println("Selection0");
+                selection = 0;
+            }
+            else
+            {
+                c.setPosition(p2);
+                if(CollisionMaster::getCollision(&c, &mousePoint))
+                {
+                    selection = 1;
+                }
+                else
+                {
+                    c.setPosition(p3);
+                    if(CollisionMaster::getCollision(&c, &mousePoint))
+                    {
+                        selection = 2;
+                    }
+                    else
+                    {
+                        selection = -1;
+                    }
+                }
+            }
+        }
+
+        if(Input::getMouseUp(Input::LEFT_MOUSE_BUTTON))
+        {
+            selection = -1;
+        }
+
+        if(selection>=0)
+        {
+            if(selection==0)
+            {
+                p1 = Vec2f(mX, mY);
+            }
+            else if(selection==1)
+            {
+                p2 = Vec2f(mX, mY);
+            }
+            else if(selection==2)
+            {
+                p3 = Vec2f(mX, mY);
+            }
+        }
+
+        b = BezierCurve();
+        b2 = BezierCurve();
+        b3 = BezierCurve();
+
+        b.addPoint(p1);
+        b.addPoint(p2);
+        b.addPoint(p3);
+
+        Vec2f s1 = b.getPoint(1) - b.getPoint(0);
+        Vec2f s2 = b.getPoint(2) - b.getPoint(1);
+        Vec2f midS = s1+s2;
+
+        s1 = MathExt::inverseVec(s1).normalize() * 10;
+        s2 = MathExt::inverseVec(s2).normalize() * 10;
+        midS = MathExt::inverseVec(midS).normalize() * 10;
+
+        b2.addPoint(p1+s1);
+        b2.addPoint(p2+midS);
+        b2.addPoint(p3+s2);
+
+        b3.addPoint(p1-s1);
+        b3.addPoint(p2-midS);
+        b3.addPoint(p3-s2);
+    });
+
+    g.setRenderFunction( [&b, &b2, &b3, &p1, &p2, &p3](Image* surf)->void{
+
+        Graphics::setColor({0,0,0,255});
+        Graphics::drawBezierCurve(b, 10, false, surf);
+
+        Graphics::setColor({0,255,0,255});
+        Graphics::drawBezierCurve(b2, 10, false, surf);
+
+        Graphics::setColor({0,0,255,255});
+        Graphics::drawBezierCurve(b3, 10, false, surf);
+
+        Graphics::setColor({0, 0, 0, 255});
+        Graphics::drawLine((int)b3.getFuctionAt(0).x, (int)b3.getFuctionAt(0).y, (int)b2.getFuctionAt(0).x, (int)b2.getFuctionAt(0).y, surf);
+        Graphics::drawLine((int)b3.getFuctionAt(0.5).x, (int)b3.getFuctionAt(0.5).y, (int)b2.getFuctionAt(0.5).x, (int)b2.getFuctionAt(0.5).y, surf);
+        Graphics::drawLine((int)b3.getFuctionAt(1).x, (int)b3.getFuctionAt(1).y, (int)b2.getFuctionAt(1).x, (int)b2.getFuctionAt(1).y, surf);
+
+        Graphics::setColor({255, 255, 255, 255});
+        Graphics::drawCircle((int)p1.x, (int)p1.y, 6, false, surf);
+        Graphics::drawCircle((int)p2.x, (int)p2.y, 6, false, surf);
+        Graphics::drawCircle((int)p3.x, (int)p3.y, 6, false, surf);
+
+    });
+
+    w.getGuiManager()->addElement(&g);
+    w.waitTillClose();
+}
+
 int main(int argc, char** argv)
 {
     StringTools::init();
@@ -1322,6 +1480,8 @@ int main(int argc, char** argv)
     
     //testCollision2();
     //testWindowStuff();
+
+    //demo();
 
     testGLStuff();
     //testDirectXStuff();
