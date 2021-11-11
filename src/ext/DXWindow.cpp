@@ -750,11 +750,12 @@ namespace glib
 	{
 		POINT p;
 		GetCursorPos(&p);
-
+		int borderWidth = GetSystemMetrics(SM_CXFRAME);
+		
 		switch (windowType)
 		{
 		case DXWindow::NORMAL_WINDOW:
-			return p.x-(x+16);
+			return p.x-(x+borderWidth);
 			break;
 		case DXWindow::BORDERLESS_WINDOW:
 			return p.x-x;
@@ -763,7 +764,7 @@ namespace glib
 			return p.x-x;
 			break;
 		default:
-			return p.x-(x+16);
+			return p.x-(x+borderWidth);
 			break;
 		}
 
@@ -774,11 +775,13 @@ namespace glib
 	{
 		POINT p;
 		GetCursorPos(&p);
+		int borderHeight = (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) +
+    							GetSystemMetrics(SM_CXPADDEDBORDER));
 
 		switch (windowType)
 		{
 		case DXWindow::NORMAL_WINDOW:
-			return p.y-(y+40);
+			return p.y-(y+borderHeight);
 			break;
 		case DXWindow::BORDERLESS_WINDOW:
 			return p.y-y;
@@ -787,7 +790,7 @@ namespace glib
 			return p.x-x;
 			break;
 		default:
-			return p.y-(y+40);
+			return p.y-(y+borderHeight);
 			break;
 		}
 

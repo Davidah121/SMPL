@@ -25,7 +25,7 @@ namespace glib
 
     private:
         int edgeBehavior = GL_CLAMP_TO_EDGE;
-        int filterType = GL_NEAREST;
+        int filterType = GL_LINEAR;
 
         unsigned int textureID = 0;
         bool textureType = TEXTURE2D;
