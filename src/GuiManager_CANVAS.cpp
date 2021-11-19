@@ -18,6 +18,7 @@ namespace glib
 	GuiCanvas::GuiCanvas(int width, int height)
 	{
 		myImage = Image(width, height);
+		boundingBox = Box2D(x, y, x+width, y+height);
 	}
 
 	GuiCanvas::~GuiCanvas()
@@ -29,6 +30,7 @@ namespace glib
 	{
 		Graphics::setColor(clearColor);
 		myImage.clearImage();
+		boundingBox = Box2D(x, y, x+myImage.getWidth(), y+myImage.getHeight());
 	}
 
 	void GuiCanvas::render(Image* surf)

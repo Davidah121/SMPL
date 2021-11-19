@@ -35,6 +35,13 @@ namespace glib
 		GuiInstance();
 
 		/**
+		 * @brief Construct a new GuiInstance object
+		 * 		GuiInstance is more of an abstract class that is designed to be extended through sub classes.
+		 * 
+		 */
+		GuiInstance(std::string nameID);
+
+		/**
 		 * @brief Construct a new GuiInstance object from another GuiInstance object
 		 * 
 		 * @param other 
@@ -347,6 +354,10 @@ namespace glib
 
 		int renderX = 0;
 		int renderY = 0;
+
+		Box2D boundingBox = Box2D(0, 0, 0, 0);
+
+		std::string nameID = "";
 
 		/**
 		 * @brief Sets the Priority for the GuiInstance.
@@ -745,7 +756,7 @@ namespace glib
 		 * @param width 
 		 * @param height 
 		 */
-		GuiTextBlock(int x, int y, int width, int height);
+		GuiTextBlock(int x, int y, int width = -1, int height = -1);
 
 		/**
 		 * @brief Destroy the GuiTextBlock object
@@ -897,32 +908,34 @@ namespace glib
 		Font* getFont();
 
 		/**
-		 * @brief Sets the Width of the text block
+		 * @brief Sets the Maximum Width of the text block
+		 * 		If set to <= 0, no maximum width will be imposed
 		 * 
 		 * @param v 
 		 */
-		void setWidth(int v);
+		void setMaxWidth(int v);
 
 		/**
-		 * @brief Sets the Height of the text block
+		 * @brief Sets the Maximum Height of the text block
+		 * 		If set to <= 0, no maximum height will be imposed
 		 * 
 		 * @param v 
 		 */
-		void setHeight(int v);
+		void setMaxHeight(int v);
 
 		/**
 		 * @brief Gets the Width of the text block
 		 * 
 		 * @return int 
 		 */
-		int getWidth();
+		int getMaxWidth();
 
 		/**
 		 * @brief Gets the Height of the text block
 		 * 
 		 * @return int 
 		 */
-		int getHeight();
+		int getMaxHeight();
 
 		/**
 		 * @brief Sets the Offset X position of the text.
@@ -940,8 +953,8 @@ namespace glib
 
 	private:
 
-		int width = 0;
-		int height = 0;
+		int maxWidth = 0;
+		int maxHeight = 0;
 		bool shouldHighlight = false;
 
 		int startHighlight = -1;
@@ -1934,9 +1947,16 @@ namespace glib
 	class GuiMemoryManager
 	{
 	public:
+		static GuiMemoryManager* getGuiMemoryManager();
 
+		void addInstance(std::string, GuiInstance*);
+		void removeInstance(std::string, GuiInstance*);
 	private:
-		std::unordered_map<int, GuiInstance*> instances;
+		GuiMemoryManager();
+		~GuiMemoryManager();
+
+		std::unordered_multimap<std::string, GuiInstance*> instances;
+		static GuiMemoryManager singleton;
 	};
 
 } //NAMESPACE glib END

@@ -229,6 +229,14 @@ static double \mbox{\hyperlink{classglib_1_1_math_ext_ade6fb2d724d87d60ea6ab2f08
 \begin{DoxyCompactList}\small\item\em Returns the distance from p1 to p2. Both \mbox{\hyperlink{classglib_1_1_general_vector}{General\+Vector}} Objects must have the same size. \end{DoxyCompactList}\item 
 static double \mbox{\hyperlink{classglib_1_1_math_ext_a76bf236a3d009c757118f9cfbb7c73a1}{distance\+To}} (\mbox{\hyperlink{classglib_1_1_polar_coordinate}{Polar\+Coordinate}} p1, \mbox{\hyperlink{classglib_1_1_polar_coordinate}{Polar\+Coordinate}} p2)
 \begin{DoxyCompactList}\small\item\em Returns the distance from p1 to p2. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \mbox{\hyperlink{classglib_1_1_math_ext_a24eba5aaea3be3786c02aab0a1d440b6}{get\+Inverse}} (\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \&m)
+\begin{DoxyCompactList}\small\item\em Get the Inverse of the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} m. A wrapper around the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} class\textquotesingle{}s get\+Inverse function. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \mbox{\hyperlink{classglib_1_1_math_ext_a5a74d2b226f3a4c36628a18ee645b100}{get\+Transpose}} (\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \&m)
+\begin{DoxyCompactList}\small\item\em Get the Transpose of the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} m. A wrapper around the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} class\textquotesingle{}s get\+Transpose function. \end{DoxyCompactList}\item 
+static double \mbox{\hyperlink{classglib_1_1_math_ext_adc05393ecb4c6b6d60a2686d5d4e9be2}{get\+Determinate}} (\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \&m)
+\begin{DoxyCompactList}\small\item\em Get the Determinate of the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} m. A wrapper around the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} class\textquotesingle{}s get\+Determinate function. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \mbox{\hyperlink{classglib_1_1_math_ext_a209ec31f37e800597f24ec56310bb4f5}{get\+Matrix\+Of\+Minors}} (\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \&m, int row, int col)
+\begin{DoxyCompactList}\small\item\em Get the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} Of Minors from the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} m. A wrapper around the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} class\textquotesingle{}s get\+Matrix\+Of\+Minors function. \end{DoxyCompactList}\item 
 static \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_math_ext_a5b493b1fedc98ca245b279226ff0c54f}{rotation2D}} (double rotation)
 \begin{DoxyCompactList}\small\item\em Returns a 2D rotation matrix. \end{DoxyCompactList}\item 
 static \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_math_ext_ac58894a863be38cc20ac41e4ab157646}{rotation2D}} (double rotation, double x, double y)
@@ -247,11 +255,13 @@ static \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_
 \begin{DoxyCompactList}\small\item\em Returns a 2D skew matrix. \end{DoxyCompactList}\item 
 static \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_math_ext_af34ec14db85cb9fc7cbae140b3c32d2a}{skew2D}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} skew)
 \begin{DoxyCompactList}\small\item\em Returns a 2D skew matrix. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} \mbox{\hyperlink{classglib_1_1_math_ext_aa4fb8caffcd2d44e6476678d0c2acea4}{model\+Matrix2D}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} position, double rotation, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} scale)
+\begin{DoxyCompactList}\small\item\em Creates a \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} to transform a model about the origin (0,0) Applies transforms in the following order Scale, Rotation, Position. \end{DoxyCompactList}\item 
 static \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} \mbox{\hyperlink{classglib_1_1_math_ext_a6f3dad362bf913c26e8c5a14e7fd6b3c}{get\+Rotation\+Quaternion}} (double rotation, double x\+Axis, double y\+Axis, double z\+Axis)
 \begin{DoxyCompactList}\small\item\em Gets a quaternion that rotates about the specified axis by a specified amount. \end{DoxyCompactList}\item 
 static \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} \mbox{\hyperlink{classglib_1_1_math_ext_ab74cf5cbebf751a43d34567fad6e85bd}{get\+Rotation\+Quaternion}} (double rotation, \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} rotation\+Axis)
 \begin{DoxyCompactList}\small\item\em Gets a quaternion that rotates about the specified axis by a specified amount. \end{DoxyCompactList}\item 
-static \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_a96f8ed141aaad36329ce7b4b816efd8a}{Quaternion\+To\+Matrix}} (\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} q)
+static \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_af156579d8d6e231402e04f1c7439bb79}{quaternion\+To\+Matrix}} (\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} q)
 \begin{DoxyCompactList}\small\item\em Converts a \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} to a \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}}. \end{DoxyCompactList}\item 
 static \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_accffaf65b7f1de49ee04e1769187e8f9}{rotation3\+DX}} (double rotation)
 \begin{DoxyCompactList}\small\item\em Returns a 3D rotation matrix about the X axis. \end{DoxyCompactList}\item 
@@ -271,6 +281,16 @@ static \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_
 \begin{DoxyCompactList}\small\item\em Returns a 3D skew matrix. \end{DoxyCompactList}\item 
 static \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_af27db378da4079471724dcc431b66498}{skew3D}} (\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} skew)
 \begin{DoxyCompactList}\small\item\em Returns a 3D skew matrix. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_a679eb7db0e7cd11fa2ad67ad1684b2d6}{model\+Matrix3D}} (\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} position, \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} rotation, \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} scale)
+\begin{DoxyCompactList}\small\item\em Creates a \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} to transform a model about the origin (0,0,0) Applies transforms in the following order Scale, Rotation, Position. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_a5e71133d2291bf3f266596729b5853c2}{view\+Matrix}} (\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} position, \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} rotation)
+\begin{DoxyCompactList}\small\item\em Calculates a 3D View \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} that assumes that x is left and right, y is forwards and backwards, z is up and down. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_a918017bcac7288ea875a5fba34810ad3}{view\+Matrix2D}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} position, double rotation)
+\begin{DoxyCompactList}\small\item\em Calculates a 2D View \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} that assumes that x is left and right, y is up and down. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_a39d3e2f0bc14e855fe0405672b142c72}{perspective\+Projection\+Matrix}} (double width, double height, double near, double far, double fov)
+\begin{DoxyCompactList}\small\item\em Calculates a 3D Perspective Projection \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}}. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} \mbox{\hyperlink{classglib_1_1_math_ext_a8323f3148417235d837302f58f5efa67}{orthographic\+Projection\+Matrix}} (double width, double height, double near=0, double far=0)
+\begin{DoxyCompactList}\small\item\em Calculates a 3D Orthographic Projection \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}}. \end{DoxyCompactList}\item 
 static std\+::vector$<$ double $>$ \mbox{\hyperlink{classglib_1_1_math_ext_af53202a04db108ed9fcb8504c1ba76e6}{solve\+Linear}} (double A, double B)
 \begin{DoxyCompactList}\small\item\em Solves a Linear equation in the form\+: Ax + B = 0. \end{DoxyCompactList}\item 
 static std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} $>$ \mbox{\hyperlink{classglib_1_1_math_ext_a37db31fc651758f7d032c2d1dcbb75db}{solve\+Quadratic}} (double A, double B, double C)
@@ -278,11 +298,27 @@ static std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+
 static std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} $>$ \mbox{\hyperlink{classglib_1_1_math_ext_a77540b5cc0dd39839bcccec01b6b45cb}{solve\+Cubic}} (double A, double B, double C, double D)
 \begin{DoxyCompactList}\small\item\em Solves a Cubic equation in the form\+: Ax$^\wedge$3 + Bx$^\wedge$2 + Cx + D = 0. \end{DoxyCompactList}\item 
 static std\+::vector$<$ double $>$ \mbox{\hyperlink{classglib_1_1_math_ext_a4810cde90a4e1bb1acce1ba89e0fcf76}{solve\+Quadratic\+Real}} (double A, double B, double C)
-\begin{DoxyCompactList}\small\item\em Solve a Quadratic equation but only returns real solutions. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Solve a Quadratic equation but only returns real solutions Assumes the form Ax$^\wedge$2 + Bx + C. \end{DoxyCompactList}\item 
 static std\+::vector$<$ double $>$ \mbox{\hyperlink{classglib_1_1_math_ext_a7105ed99dcccd0d6a3cb7a5a1f1745f5}{solve\+Cubic\+Real}} (double A, double B, double C, double D)
-\begin{DoxyCompactList}\small\item\em Solves a Cubic equation but only returns real solutions. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Solves a Cubic equation but only returns real solutions. Assumes the form Ax$^\wedge$3 + Bx$^\wedge$2 + Cx + D. \end{DoxyCompactList}\item 
 static std\+::vector$<$ double $>$ \mbox{\hyperlink{classglib_1_1_math_ext_a637aa91b1f84665675f4edb6079c6967}{reduce\+Polynomial}} (std\+::vector$<$ double $>$ constants, double zero)
 \begin{DoxyCompactList}\small\item\em Reduces a polynomial to a lower degree using a known zero. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{class_polynomial_math_function}{Polynomial\+Math\+Function}} \mbox{\hyperlink{classglib_1_1_math_ext_afa302369abc60bf36b19aca3ca4f6555}{reduce\+Polynomial}} (\mbox{\hyperlink{class_polynomial_math_function}{Polynomial\+Math\+Function}} f, double zero)
+\begin{DoxyCompactList}\small\item\em Reduces a polynomial to a lower degree using a known zero. \end{DoxyCompactList}\item 
+static double \mbox{\hyperlink{classglib_1_1_math_ext_a375a375b68313988a9aeef3f3a3daedc}{bisection\+Method}} (\mbox{\hyperlink{class_math_function}{Math\+Function}} $\ast$f, double a, double b, int max\+Iterations=10)
+\begin{DoxyCompactList}\small\item\em Solves a \mbox{\hyperlink{class_math_function}{Math\+Function}} for 0 using the Bisection Numerical Method. Bisection requires that f(a)$\ast$f(b) \texorpdfstring{$<$}{<} 0 to work. It also requires that f(c)==0 for some c value in \mbox{[}a, b\mbox{]}. the solution must be within the specified range. \end{DoxyCompactList}\item 
+static double \mbox{\hyperlink{classglib_1_1_math_ext_ae37c4ba41a2e6c5a10acdb41def14129}{newtons\+Method}} (\mbox{\hyperlink{class_math_function}{Math\+Function}} $\ast$f, \mbox{\hyperlink{class_math_function}{Math\+Function}} $\ast$derivative, double start\+Point, int max\+Iterations=10)
+\begin{DoxyCompactList}\small\item\em Solves a \mbox{\hyperlink{class_math_function}{Math\+Function}} for 0 using Newton\textquotesingle{}s Method. Newton\textquotesingle{}s Method requires the derivative of the function and a decent starting point to work. If the derivative at any point when solving is 0, the function will fail. Also requires that the solution exists. \end{DoxyCompactList}\item 
+static double \mbox{\hyperlink{classglib_1_1_math_ext_a01e653b68b59cc54f5680ce97482309b}{secant\+Method}} (\mbox{\hyperlink{class_math_function}{Math\+Function}} $\ast$f, double a, double b, int max\+Iterations=10)
+\begin{DoxyCompactList}\small\item\em Solves a \mbox{\hyperlink{class_math_function}{Math\+Function}} for 0 using Secant Method. It is an approximation for Newton\textquotesingle{}s Method when the derivative is not available. It requires 2 initial values that are idealy close to the solution. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{class_polynomial_math_function}{Polynomial\+Math\+Function}} \mbox{\hyperlink{classglib_1_1_math_ext_a3b2ae7d543a787acb3f4a1a2d743ecab}{linear\+Regression}} (std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} $>$ points, int degree)
+\begin{DoxyCompactList}\small\item\em Creates a polynomial of n degree that closely represents the data points. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_math_ext_addc86df8df42dcc899637eb93e40c48d}\label{classglib_1_1_math_ext_addc86df8df42dcc899637eb93e40c48d}} 
+static std\+::vector$<$ double $>$ {\bfseries get\+Intersection\+Quadratic} (double A1, double B1, double C1, double A2, double B2, double C2)
+\item 
+\mbox{\Hypertarget{classglib_1_1_math_ext_ab3e26b43b36bac5db2ea767a980b1b75}\label{classglib_1_1_math_ext_ab3e26b43b36bac5db2ea767a980b1b75}} 
+static std\+::vector$<$ double $>$ {\bfseries get\+Intersection\+Quadratic} (\mbox{\hyperlink{class_polynomial_math_function}{Polynomial\+Math\+Function}} a, \mbox{\hyperlink{class_polynomial_math_function}{Polynomial\+Math\+Function}} b)
+\item 
 static double \mbox{\hyperlink{classglib_1_1_math_ext_a98e088f56179e425c1969b4628d6317a}{binomial\+Coefficient}} (int n, int k)
 \begin{DoxyCompactList}\small\item\em Returns the binomial coefficient using n and k. \end{DoxyCompactList}\item 
 static double \mbox{\hyperlink{classglib_1_1_math_ext_a5ccfec1a09b010b7fbfa0a2b83170f03}{logistics\+Sigmoid}} (double x)
@@ -729,6 +765,32 @@ Returns the binomial coefficient using n and k.
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_math_ext_a375a375b68313988a9aeef3f3a3daedc}\label{classglib_1_1_math_ext_a375a375b68313988a9aeef3f3a3daedc}} 
+\index{glib::MathExt@{glib::MathExt}!bisectionMethod@{bisectionMethod}}
+\index{bisectionMethod@{bisectionMethod}!glib::MathExt@{glib::MathExt}}
+\doxysubsubsection{\texorpdfstring{bisectionMethod()}{bisectionMethod()}}
+{\footnotesize\ttfamily static double glib\+::\+Math\+Ext\+::bisection\+Method (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_math_function}{Math\+Function}} $\ast$}]{f,  }\item[{double}]{a,  }\item[{double}]{b,  }\item[{int}]{max\+Iterations = {\ttfamily 10} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Solves a \mbox{\hyperlink{class_math_function}{Math\+Function}} for 0 using the Bisection Numerical Method. Bisection requires that f(a)$\ast$f(b) \texorpdfstring{$<$}{<} 0 to work. It also requires that f(c)==0 for some c value in \mbox{[}a, b\mbox{]}. the solution must be within the specified range. 
+
+Max Iterations is used to prevent the algorithm from running forever. The method approximate the solution and will eventually converge to the correct answer.
+
+This will only converge on one solution at a time. 
+\begin{DoxyParams}{Parameters}
+{\em f} & The math function to solve \\
+\hline
+{\em a} & a does not have to be less than b meaning If f(a) \texorpdfstring{$>$}{>} f(b), the a and b values will be swapped internally. \\
+\hline
+{\em b} & b does not have to be greater than a meaning If f(a) \texorpdfstring{$>$}{>} f(b), the a and b values will be swapped internally. \\
+\hline
+{\em max\+Iterations} & The maximum amount of iterations to solve for 0. If the solution is not found before the maximum number of iterations, the an approximation is returned. Default value is 10. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double If solution is not possible with the given parameters, NAN is returned 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_math_ext_adab88eb65fac71db77aa4f2950986c85}\label{classglib_1_1_math_ext_adab88eb65fac71db77aa4f2950986c85}} 
 \index{glib::MathExt@{glib::MathExt}!ceil@{ceil}}
@@ -1973,6 +2035,64 @@ Returns the fractional or decimal part of the number.
 \begin{DoxyReturn}{Returns}
 float 
 \end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_math_ext_adc05393ecb4c6b6d60a2686d5d4e9be2}\label{classglib_1_1_math_ext_adc05393ecb4c6b6d60a2686d5d4e9be2}} 
+\index{glib::MathExt@{glib::MathExt}!getDeterminate@{getDeterminate}}
+\index{getDeterminate@{getDeterminate}!glib::MathExt@{glib::MathExt}}
+\doxysubsubsection{\texorpdfstring{getDeterminate()}{getDeterminate()}}
+{\footnotesize\ttfamily static double glib\+::\+Math\+Ext\+::get\+Determinate (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \&}]{m }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Get the Determinate of the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} m. A wrapper around the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} class\textquotesingle{}s get\+Determinate function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em m} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_math_ext_a24eba5aaea3be3786c02aab0a1d440b6}\label{classglib_1_1_math_ext_a24eba5aaea3be3786c02aab0a1d440b6}} 
+\index{glib::MathExt@{glib::MathExt}!getInverse@{getInverse}}
+\index{getInverse@{getInverse}!glib::MathExt@{glib::MathExt}}
+\doxysubsubsection{\texorpdfstring{getInverse()}{getInverse()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} glib\+::\+Math\+Ext\+::get\+Inverse (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \&}]{m }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Get the Inverse of the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} m. A wrapper around the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} class\textquotesingle{}s get\+Inverse function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em m} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_math_ext_a209ec31f37e800597f24ec56310bb4f5}\label{classglib_1_1_math_ext_a209ec31f37e800597f24ec56310bb4f5}} 
+\index{glib::MathExt@{glib::MathExt}!getMatrixOfMinors@{getMatrixOfMinors}}
+\index{getMatrixOfMinors@{getMatrixOfMinors}!glib::MathExt@{glib::MathExt}}
+\doxysubsubsection{\texorpdfstring{getMatrixOfMinors()}{getMatrixOfMinors()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} glib\+::\+Math\+Ext\+::get\+Matrix\+Of\+Minors (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \&}]{m,  }\item[{int}]{row,  }\item[{int}]{col }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Get the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} Of Minors from the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} m. A wrapper around the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} class\textquotesingle{}s get\+Matrix\+Of\+Minors function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em m} & \\
+\hline
+{\em row} & \\
+\hline
+{\em col} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_math_ext_a6f3dad362bf913c26e8c5a14e7fd6b3c}\label{classglib_1_1_math_ext_a6f3dad362bf913c26e8c5a14e7fd6b3c}} 
 \index{glib::MathExt@{glib::MathExt}!getRotationQuaternion@{getRotationQuaternion}}
 \index{getRotationQuaternion@{getRotationQuaternion}!glib::MathExt@{glib::MathExt}}
@@ -2016,6 +2136,24 @@ Gets a quaternion that rotates about the specified axis by a specified amount.
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_math_ext_a5a74d2b226f3a4c36628a18ee645b100}\label{classglib_1_1_math_ext_a5a74d2b226f3a4c36628a18ee645b100}} 
+\index{glib::MathExt@{glib::MathExt}!getTranspose@{getTranspose}}
+\index{getTranspose@{getTranspose}!glib::MathExt@{glib::MathExt}}
+\doxysubsubsection{\texorpdfstring{getTranspose()}{getTranspose()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} glib\+::\+Math\+Ext\+::get\+Transpose (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \&}]{m }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Get the Transpose of the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} m. A wrapper around the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} class\textquotesingle{}s get\+Transpose function. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em m} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_math_ext_a79e523c4b378dfed00b423481b4236eb}\label{classglib_1_1_math_ext_a79e523c4b378dfed00b423481b4236eb}} 
 \index{glib::MathExt@{glib::MathExt}!inverseVec@{inverseVec}}
@@ -2194,6 +2332,26 @@ Linearly blend 2 values together using a blend value between \mbox{[}0, 1\mbox{]
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 float 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_math_ext_a3b2ae7d543a787acb3f4a1a2d743ecab}\label{classglib_1_1_math_ext_a3b2ae7d543a787acb3f4a1a2d743ecab}} 
+\index{glib::MathExt@{glib::MathExt}!linearRegression@{linearRegression}}
+\index{linearRegression@{linearRegression}!glib::MathExt@{glib::MathExt}}
+\doxysubsubsection{\texorpdfstring{linearRegression()}{linearRegression()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{class_polynomial_math_function}{Polynomial\+Math\+Function}} glib\+::\+Math\+Ext\+::linear\+Regression (\begin{DoxyParamCaption}\item[{std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} $>$}]{points,  }\item[{int}]{degree }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Creates a polynomial of n degree that closely represents the data points. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em points} & The x,y points of the sampled data. \\
+\hline
+{\em degree} & The degree of the polynomial. Must be 1 or more. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{class_polynomial_math_function}{Polynomial\+Math\+Function}} 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_math_ext_ab9fe8691b5e8907d0a63f3a0a3ab085e}\label{classglib_1_1_math_ext_ab9fe8691b5e8907d0a63f3a0a3ab085e}} 
 \index{glib::MathExt@{glib::MathExt}!log@{log}}
@@ -2551,6 +2709,76 @@ Returns the min of the 2 template values.
 \begin{DoxyReturn}{Returns}
 T 
 \end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_math_ext_aa4fb8caffcd2d44e6476678d0c2acea4}\label{classglib_1_1_math_ext_aa4fb8caffcd2d44e6476678d0c2acea4}} 
+\index{glib::MathExt@{glib::MathExt}!modelMatrix2D@{modelMatrix2D}}
+\index{modelMatrix2D@{modelMatrix2D}!glib::MathExt@{glib::MathExt}}
+\doxysubsubsection{\texorpdfstring{modelMatrix2D()}{modelMatrix2D()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} glib\+::\+Math\+Ext\+::model\+Matrix2D (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{position,  }\item[{double}]{rotation,  }\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{scale }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Creates a \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} to transform a model about the origin (0,0) Applies transforms in the following order Scale, Rotation, Position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em position} & \\
+\hline
+{\em rotation} & \\
+\hline
+{\em scale} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_math_ext_a679eb7db0e7cd11fa2ad67ad1684b2d6}\label{classglib_1_1_math_ext_a679eb7db0e7cd11fa2ad67ad1684b2d6}} 
+\index{glib::MathExt@{glib::MathExt}!modelMatrix3D@{modelMatrix3D}}
+\index{modelMatrix3D@{modelMatrix3D}!glib::MathExt@{glib::MathExt}}
+\doxysubsubsection{\texorpdfstring{modelMatrix3D()}{modelMatrix3D()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} glib\+::\+Math\+Ext\+::model\+Matrix3D (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}}]{position,  }\item[{\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}}]{rotation,  }\item[{\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}}]{scale }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Creates a \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} to transform a model about the origin (0,0,0) Applies transforms in the following order Scale, Rotation, Position. 
+
+Rotations are created using Quaternions to avoid gimbal lock
+
+
+\begin{DoxyParams}{Parameters}
+{\em position} & \\
+\hline
+{\em rotation} & \\
+\hline
+{\em scale} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_math_ext_ae37c4ba41a2e6c5a10acdb41def14129}\label{classglib_1_1_math_ext_ae37c4ba41a2e6c5a10acdb41def14129}} 
+\index{glib::MathExt@{glib::MathExt}!newtonsMethod@{newtonsMethod}}
+\index{newtonsMethod@{newtonsMethod}!glib::MathExt@{glib::MathExt}}
+\doxysubsubsection{\texorpdfstring{newtonsMethod()}{newtonsMethod()}}
+{\footnotesize\ttfamily static double glib\+::\+Math\+Ext\+::newtons\+Method (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_math_function}{Math\+Function}} $\ast$}]{f,  }\item[{\mbox{\hyperlink{class_math_function}{Math\+Function}} $\ast$}]{derivative,  }\item[{double}]{start\+Point,  }\item[{int}]{max\+Iterations = {\ttfamily 10} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Solves a \mbox{\hyperlink{class_math_function}{Math\+Function}} for 0 using Newton\textquotesingle{}s Method. Newton\textquotesingle{}s Method requires the derivative of the function and a decent starting point to work. If the derivative at any point when solving is 0, the function will fail. Also requires that the solution exists. 
+
+This will only converge on one solution at a time. 
+\begin{DoxyParams}{Parameters}
+{\em f} & The math function to solve \\
+\hline
+{\em derivative} & The derivative of the math function to solve \\
+\hline
+{\em start\+Point} & A starting point to use for approximating the solution. Better starting points results in faster convergence and more accurate solution when bound by a maximum number of iterations. \\
+\hline
+{\em max\+Iterations} & The maximum amount of iterations to solve for 0. If the solution is not found before the maximum number of iterations, the an approximation is returned. Default value is 10. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double If solution is not possible with the given parameters, NAN is returned 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_math_ext_a6614707f7107453ff1a64b18606d5b04}\label{classglib_1_1_math_ext_a6614707f7107453ff1a64b18606d5b04}} 
 \index{glib::MathExt@{glib::MathExt}!normalize@{normalize}}
 \index{normalize@{normalize}!glib::MathExt@{glib::MathExt}}
@@ -2641,6 +2869,59 @@ Normalizes the vector.
 \begin{DoxyReturn}{Returns}
 \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} 
 \end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_math_ext_a8323f3148417235d837302f58f5efa67}\label{classglib_1_1_math_ext_a8323f3148417235d837302f58f5efa67}} 
+\index{glib::MathExt@{glib::MathExt}!orthographicProjectionMatrix@{orthographicProjectionMatrix}}
+\index{orthographicProjectionMatrix@{orthographicProjectionMatrix}!glib::MathExt@{glib::MathExt}}
+\doxysubsubsection{\texorpdfstring{orthographicProjectionMatrix()}{orthographicProjectionMatrix()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} glib\+::\+Math\+Ext\+::orthographic\+Projection\+Matrix (\begin{DoxyParamCaption}\item[{double}]{width,  }\item[{double}]{height,  }\item[{double}]{near = {\ttfamily 0},  }\item[{double}]{far = {\ttfamily 0} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Calculates a 3D Orthographic Projection \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}}. 
+
+\begin{DoxyVerb}    If near and far are set to the same value or left at the default, a Orthographic Projection Matrix
+    for 2D will be generated. Z values in that case will represent depth.
+\end{DoxyVerb}
+ 
+\begin{DoxyParams}{Parameters}
+{\em width} & \\
+\hline
+{\em height} & \\
+\hline
+{\em near} & Default value is 0 \\
+\hline
+{\em far} & Default value is 0 \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_math_ext_a39d3e2f0bc14e855fe0405672b142c72}\label{classglib_1_1_math_ext_a39d3e2f0bc14e855fe0405672b142c72}} 
+\index{glib::MathExt@{glib::MathExt}!perspectiveProjectionMatrix@{perspectiveProjectionMatrix}}
+\index{perspectiveProjectionMatrix@{perspectiveProjectionMatrix}!glib::MathExt@{glib::MathExt}}
+\doxysubsubsection{\texorpdfstring{perspectiveProjectionMatrix()}{perspectiveProjectionMatrix()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} glib\+::\+Math\+Ext\+::perspective\+Projection\+Matrix (\begin{DoxyParamCaption}\item[{double}]{width,  }\item[{double}]{height,  }\item[{double}]{near,  }\item[{double}]{far,  }\item[{double}]{fov }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Calculates a 3D Perspective Projection \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em width} & \\
+\hline
+{\em height} & \\
+\hline
+{\em near} & \\
+\hline
+{\em far} & \\
+\hline
+{\em fov} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_math_ext_acb02784eccd17ff72fa6a06a3b3bdbfd}\label{classglib_1_1_math_ext_acb02784eccd17ff72fa6a06a3b3bdbfd}} 
 \index{glib::MathExt@{glib::MathExt}!pow@{pow}}
 \index{pow@{pow}!glib::MathExt@{glib::MathExt}}
@@ -2681,11 +2962,11 @@ Returns the value raise to the specified power. Negative powers are allowed.
 \begin{DoxyReturn}{Returns}
 float 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classglib_1_1_math_ext_a96f8ed141aaad36329ce7b4b816efd8a}\label{classglib_1_1_math_ext_a96f8ed141aaad36329ce7b4b816efd8a}} 
-\index{glib::MathExt@{glib::MathExt}!QuaternionToMatrix@{QuaternionToMatrix}}
-\index{QuaternionToMatrix@{QuaternionToMatrix}!glib::MathExt@{glib::MathExt}}
-\doxysubsubsection{\texorpdfstring{QuaternionToMatrix()}{QuaternionToMatrix()}}
-{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} glib\+::\+Math\+Ext\+::\+Quaternion\+To\+Matrix (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}}}]{q }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+\mbox{\Hypertarget{classglib_1_1_math_ext_af156579d8d6e231402e04f1c7439bb79}\label{classglib_1_1_math_ext_af156579d8d6e231402e04f1c7439bb79}} 
+\index{glib::MathExt@{glib::MathExt}!quaternionToMatrix@{quaternionToMatrix}}
+\index{quaternionToMatrix@{quaternionToMatrix}!glib::MathExt@{glib::MathExt}}
+\doxysubsubsection{\texorpdfstring{quaternionToMatrix()}{quaternionToMatrix()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} glib\+::\+Math\+Ext\+::quaternion\+To\+Matrix (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}}}]{q }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
 
 
@@ -2732,10 +3013,30 @@ Returns a random number using std\+::rand() within the specified range std\+::sr
 \begin{DoxyReturn}{Returns}
 unsigned int 
 \end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_math_ext_afa302369abc60bf36b19aca3ca4f6555}\label{classglib_1_1_math_ext_afa302369abc60bf36b19aca3ca4f6555}} 
+\index{glib::MathExt@{glib::MathExt}!reducePolynomial@{reducePolynomial}}
+\index{reducePolynomial@{reducePolynomial}!glib::MathExt@{glib::MathExt}}
+\doxysubsubsection{\texorpdfstring{reducePolynomial()}{reducePolynomial()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{class_polynomial_math_function}{Polynomial\+Math\+Function}} glib\+::\+Math\+Ext\+::reduce\+Polynomial (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_polynomial_math_function}{Polynomial\+Math\+Function}}}]{f,  }\item[{double}]{zero }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Reduces a polynomial to a lower degree using a known zero. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em f} & \\
+\hline
+{\em zero} & A known solution that solves the polynomial for 0. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{class_polynomial_math_function}{Polynomial\+Math\+Function}} 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_math_ext_a637aa91b1f84665675f4edb6079c6967}\label{classglib_1_1_math_ext_a637aa91b1f84665675f4edb6079c6967}} 
 \index{glib::MathExt@{glib::MathExt}!reducePolynomial@{reducePolynomial}}
 \index{reducePolynomial@{reducePolynomial}!glib::MathExt@{glib::MathExt}}
-\doxysubsubsection{\texorpdfstring{reducePolynomial()}{reducePolynomial()}}
+\doxysubsubsection{\texorpdfstring{reducePolynomial()}{reducePolynomial()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
 {\footnotesize\ttfamily static std\+::vector$<$ double $>$ glib\+::\+Math\+Ext\+::reduce\+Polynomial (\begin{DoxyParamCaption}\item[{std\+::vector$<$ double $>$}]{constants,  }\item[{double}]{zero }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
 
@@ -3180,6 +3481,32 @@ Returns a 3D scale matrix.
 \begin{DoxyReturn}{Returns}
 \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} 
 \end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_math_ext_a01e653b68b59cc54f5680ce97482309b}\label{classglib_1_1_math_ext_a01e653b68b59cc54f5680ce97482309b}} 
+\index{glib::MathExt@{glib::MathExt}!secantMethod@{secantMethod}}
+\index{secantMethod@{secantMethod}!glib::MathExt@{glib::MathExt}}
+\doxysubsubsection{\texorpdfstring{secantMethod()}{secantMethod()}}
+{\footnotesize\ttfamily static double glib\+::\+Math\+Ext\+::secant\+Method (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_math_function}{Math\+Function}} $\ast$}]{f,  }\item[{double}]{a,  }\item[{double}]{b,  }\item[{int}]{max\+Iterations = {\ttfamily 10} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Solves a \mbox{\hyperlink{class_math_function}{Math\+Function}} for 0 using Secant Method. It is an approximation for Newton\textquotesingle{}s Method when the derivative is not available. It requires 2 initial values that are idealy close to the solution. 
+
+While it converges slower, it can be computationly faster due to not needing a derivative. It can also fail to converge just like newton\textquotesingle{}s method for similar reasons. If a and b are not close enough to the solution, the method may not converge.
+
+This will only converge on one solution at a time. 
+\begin{DoxyParams}{Parameters}
+{\em f} & The math function to solve \\
+\hline
+{\em a} & The first initial value \\
+\hline
+{\em b} & The second initial value \\
+\hline
+{\em max\+Iterations} & The maximum amount of iterations to solve for 0. If the solution is not found before the maximum number of iterations, the an approximation is returned. Default value is 10. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double If solution is not possible with the given parameters, NAN is returned 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_math_ext_a3202e4f2312adbb9565637a391c07344}\label{classglib_1_1_math_ext_a3202e4f2312adbb9565637a391c07344}} 
 \index{glib::MathExt@{glib::MathExt}!sin@{sin}}
 \index{sin@{sin}!glib::MathExt@{glib::MathExt}}
@@ -3368,7 +3695,7 @@ std\+::vector$<$\+Complex\+Number$>$ Returns all solutions found.
 
 
 
-Solves a Cubic equation but only returns real solutions. 
+Solves a Cubic equation but only returns real solutions. Assumes the form Ax$^\wedge$3 + Bx$^\wedge$2 + Cx + D. 
 
 
 \begin{DoxyParams}{Parameters}
@@ -3434,7 +3761,7 @@ std\+::vector$<$\+Complex\+Number$>$ Returns all solutions found.
 
 
 
-Solve a Quadratic equation but only returns real solutions. 
+Solve a Quadratic equation but only returns real solutions Assumes the form Ax$^\wedge$2 + Bx + C. 
 
 
 \begin{DoxyParams}{Parameters}
@@ -3779,6 +4106,48 @@ Returns the length of the vector.
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_math_ext_a5e71133d2291bf3f266596729b5853c2}\label{classglib_1_1_math_ext_a5e71133d2291bf3f266596729b5853c2}} 
+\index{glib::MathExt@{glib::MathExt}!viewMatrix@{viewMatrix}}
+\index{viewMatrix@{viewMatrix}!glib::MathExt@{glib::MathExt}}
+\doxysubsubsection{\texorpdfstring{viewMatrix()}{viewMatrix()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} glib\+::\+Math\+Ext\+::view\+Matrix (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}}]{position,  }\item[{\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}}]{rotation }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Calculates a 3D View \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} that assumes that x is left and right, y is forwards and backwards, z is up and down. 
+
+It uses quaternions to avoid Gimbal lock.
+
+
+\begin{DoxyParams}{Parameters}
+{\em position} & \\
+\hline
+{\em rotation} & Assumed to be in radians \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_math_ext_a918017bcac7288ea875a5fba34810ad3}\label{classglib_1_1_math_ext_a918017bcac7288ea875a5fba34810ad3}} 
+\index{glib::MathExt@{glib::MathExt}!viewMatrix2D@{viewMatrix2D}}
+\index{viewMatrix2D@{viewMatrix2D}!glib::MathExt@{glib::MathExt}}
+\doxysubsubsection{\texorpdfstring{viewMatrix2D()}{viewMatrix2D()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} glib\+::\+Math\+Ext\+::view\+Matrix2D (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{position,  }\item[{double}]{rotation }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Calculates a 2D View \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} that assumes that x is left and right, y is up and down. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em position} & \\
+\hline
+{\em rotation} & Assumed to be in radians \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} 
 \end{DoxyReturn}
 
 

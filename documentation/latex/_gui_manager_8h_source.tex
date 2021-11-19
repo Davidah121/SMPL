@@ -15,754 +15,878 @@
 \DoxyCodeLine{11 }
 \DoxyCodeLine{12 \textcolor{comment}{//Should use SmartPointers for memory access to avoid accessing memory that has already been deleted.}}
 \DoxyCodeLine{13 }
-\DoxyCodeLine{14 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{14 \textcolor{keyword}{struct }\mbox{\hyperlink{struct_point}{Point}}}
 \DoxyCodeLine{15 \{}
-\DoxyCodeLine{16 }
-\DoxyCodeLine{17     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
-\DoxyCodeLine{18     \{}
-\DoxyCodeLine{19     \textcolor{keyword}{public}:}
-\DoxyCodeLine{20         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{int} MAX\_PRIORITY\_VALUE = 9999;}
-\DoxyCodeLine{21         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{int} MIN\_PRIORITY\_VALUE = 0;}
-\DoxyCodeLine{22         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{int} CANVAS\_PRIORITY\_VALUE = -\/10000;}
-\DoxyCodeLine{23 }
-\DoxyCodeLine{29         \mbox{\hyperlink{classglib_1_1_gui_instance_a558c2570ce9fcebf0666858d85bded83}{GuiInstance}}();}
-\DoxyCodeLine{30 }
-\DoxyCodeLine{36         \mbox{\hyperlink{classglib_1_1_gui_instance_adb8bc107798bd2b2ec21aee1765b5bed}{GuiInstance}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}\& other);}
-\DoxyCodeLine{37 }
-\DoxyCodeLine{43         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_aeaf94485b23362abed8e189c127ca08e}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}\& other);}
-\DoxyCodeLine{44 }
-\DoxyCodeLine{50         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_abb1784a419ea2b500794c9d86e23983a}{copy}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}\& other);}
-\DoxyCodeLine{51 }
-\DoxyCodeLine{56         \mbox{\hyperlink{classglib_1_1_gui_instance_adbdc9b24c2f7b7e30f8ba5da6dcdf4f5}{\string~GuiInstance}}();}
+\DoxyCodeLine{16     \textcolor{keywordtype}{int} x=0;}
+\DoxyCodeLine{17     \textcolor{keywordtype}{int} y=0;}
+\DoxyCodeLine{18 \};}
+\DoxyCodeLine{19 }
+\DoxyCodeLine{20 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{21 \{}
+\DoxyCodeLine{22     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
+\DoxyCodeLine{23     \{}
+\DoxyCodeLine{24     \textcolor{keyword}{public}:}
+\DoxyCodeLine{25         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{int} MAX\_PRIORITY\_VALUE = 9999;}
+\DoxyCodeLine{26         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{int} MIN\_PRIORITY\_VALUE = 0;}
+\DoxyCodeLine{27         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{int} CANVAS\_PRIORITY\_VALUE = -\/10000;}
+\DoxyCodeLine{28         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{int} CONTEXT\_MENU\_PRIORITY\_VALUE = -\/10001;}
+\DoxyCodeLine{29 }
+\DoxyCodeLine{35         \mbox{\hyperlink{classglib_1_1_gui_instance_a558c2570ce9fcebf0666858d85bded83}{GuiInstance}}();}
+\DoxyCodeLine{36 }
+\DoxyCodeLine{42         \mbox{\hyperlink{classglib_1_1_gui_instance_a5d13ef0409f80f75192d7824bb15b45d}{GuiInstance}}(std::string nameID);}
+\DoxyCodeLine{43 }
+\DoxyCodeLine{49         \mbox{\hyperlink{classglib_1_1_gui_instance_adb8bc107798bd2b2ec21aee1765b5bed}{GuiInstance}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}\& other);}
+\DoxyCodeLine{50 }
+\DoxyCodeLine{56         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_aeaf94485b23362abed8e189c127ca08e}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}\& other);}
 \DoxyCodeLine{57 }
-\DoxyCodeLine{58         \textcolor{comment}{//Object and Class Stuff}}
-\DoxyCodeLine{59         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
-\DoxyCodeLine{60         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
-\DoxyCodeLine{61 }
-\DoxyCodeLine{66         \textcolor{keyword}{virtual} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_adb20e1eac37428a48802ad39cf4c2cb0}{update}}();}
-\DoxyCodeLine{67 }
-\DoxyCodeLine{72         \textcolor{keyword}{virtual} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a303d9dc4dedc8e5cf2027bb02c7015c8}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
-\DoxyCodeLine{73 }
-\DoxyCodeLine{82         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_aa4b79780799ee7044066908614004a41}{addChild}}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}* obj);}
-\DoxyCodeLine{83 }
-\DoxyCodeLine{89         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_af7121a61bc9a6503fbe807028dc35804}{removeChild}}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}* obj);}
-\DoxyCodeLine{90 }
-\DoxyCodeLine{96         std::vector<GuiInstance*> \mbox{\hyperlink{classglib_1_1_gui_instance_acb7aa4a6a22de613575322885cdf8579}{getChildren}}();}
-\DoxyCodeLine{97 }
-\DoxyCodeLine{103         \textcolor{keyword}{const} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a54d82c7da3c5e76dfc3880694a0e02e3}{baseUpdate}}();}
-\DoxyCodeLine{104 }
-\DoxyCodeLine{110         \textcolor{keyword}{const} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_ad916b050a270ccf3fc3459ada5990267}{baseRender}}();}
-\DoxyCodeLine{111 }
-\DoxyCodeLine{117         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a03af60978d4a5aafc643123977c0a978}{setOnActivateFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
-\DoxyCodeLine{118 }
-\DoxyCodeLine{124         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a036967081a66192947576ed3f3a878ab}{setOnVisibleFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
-\DoxyCodeLine{125 }
-\DoxyCodeLine{131         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_aafc0b156b6a42c5917949d9827758394}{setOnDeActivateFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
-\DoxyCodeLine{132 }
-\DoxyCodeLine{138         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_ae6de77196e445d16097f710709cd7752}{setOnInvisibleFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
-\DoxyCodeLine{139 }
-\DoxyCodeLine{145         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a821b98ad9a8a085792a25d42e37431a8}{setOnChangedFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
-\DoxyCodeLine{146 }
-\DoxyCodeLine{152         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a9dd1a2eb9e7f5cc890e9a4ec60749ae2}{setOnFocusFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
-\DoxyCodeLine{153 }
-\DoxyCodeLine{162         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a0ea928eef71d80b91b98aea426b8d110}{setOffset}}(\textcolor{keywordtype}{int}* offX, \textcolor{keywordtype}{int}* offY);}
-\DoxyCodeLine{163 }
-\DoxyCodeLine{173         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a971e2319dceb3317df8c30849a896448}{setRenderOffset}}(\textcolor{keywordtype}{int}* offX, \textcolor{keywordtype}{int}* offY);}
-\DoxyCodeLine{174 }
-\DoxyCodeLine{182         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_instance_a6cc4585e79958096a42593adfa3d6b90}{getPriority}}();}
-\DoxyCodeLine{183 }
-\DoxyCodeLine{190         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a6a05267af582caee5bc354642663eae8}{setBaseX}}(\textcolor{keywordtype}{int} x);}
-\DoxyCodeLine{191 }
-\DoxyCodeLine{197         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_instance_afa202c479496b10eadd3131f6560eb84}{getBaseX}}();}
-\DoxyCodeLine{198 }
-\DoxyCodeLine{205         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a14192041c8c1076536c83fe366486986}{setBaseY}}(\textcolor{keywordtype}{int} y);}
-\DoxyCodeLine{206 }
-\DoxyCodeLine{212         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_instance_ad05d5bfafc6b005a7e77a0459d562a9e}{getBaseY}}();}
-\DoxyCodeLine{213 }
-\DoxyCodeLine{220         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_instance_a201e186f4acbcd50f1819de83574503b}{getX}}();}
-\DoxyCodeLine{221 }
-\DoxyCodeLine{228         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_instance_a3d52135387809c701fa0226e334f13b8}{getY}}();}
-\DoxyCodeLine{229 }
-\DoxyCodeLine{235         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a106ac5ee9338b80bfa7e0be1e5739c20}{setVisible}}(\textcolor{keywordtype}{bool} is);}
-\DoxyCodeLine{236 }
-\DoxyCodeLine{243         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gui_instance_acabdf12156b8238f555f47017e702751}{getVisible}}();}
-\DoxyCodeLine{244 }
-\DoxyCodeLine{250         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_aa0d66700a03d3b433c45c01e95a57c28}{setActive}}(\textcolor{keywordtype}{bool} is);}
-\DoxyCodeLine{251 }
-\DoxyCodeLine{258         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gui_instance_ab7e7dacafdf829e012b237b1d54c4b61}{getActive}}();}
-\DoxyCodeLine{259 }
-\DoxyCodeLine{265         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a5a500e32c578a2f526e3a40921d64436}{setFocus}}(\textcolor{keywordtype}{bool} is);}
-\DoxyCodeLine{266 }
-\DoxyCodeLine{273         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gui_instance_a5a6cbed51f7894ab87e07a8921691d58}{getFocus}}();}
-\DoxyCodeLine{274 }
-\DoxyCodeLine{280         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a95ea3bb153fab1660a47d78789762425}{setAlwaysFocus}}(\textcolor{keywordtype}{bool} is);}
-\DoxyCodeLine{281 }
-\DoxyCodeLine{288         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gui_instance_a65017319c959ee5814a29f13694ea88f}{getAlwaysFocus}}();}
-\DoxyCodeLine{289 }
-\DoxyCodeLine{296         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a2dfe0213f14ae6569575d3d8ace11a70}{setCanvas}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* m);}
-\DoxyCodeLine{297 }
-\DoxyCodeLine{303         \mbox{\hyperlink{classglib_1_1_image}{Image}}* \mbox{\hyperlink{classglib_1_1_gui_instance_a5499a3cfa587d8cf46786ad5d0661970}{getCanvas}}();}
-\DoxyCodeLine{304 }
-\DoxyCodeLine{305     \textcolor{keyword}{protected}:}
-\DoxyCodeLine{306         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onChangedFunction;}
-\DoxyCodeLine{307 }
-\DoxyCodeLine{313         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_instance_a920e23cc533f846b263760eda4f7427a}{getOffsetX}}();}
-\DoxyCodeLine{314 }
-\DoxyCodeLine{320         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_instance_a63fb3ece0d80c26c00eaab7ce212cf42}{getOffsetY}}();}
-\DoxyCodeLine{321 }
-\DoxyCodeLine{327         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_instance_a0636de904339df5222822f49c9663274}{getRenderOffsetX}}();}
-\DoxyCodeLine{328 }
-\DoxyCodeLine{334         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_instance_a067bb5f5ffb0be7049d71ac22b47ecae}{getRenderOffsetY}}();}
-\DoxyCodeLine{335 }
-\DoxyCodeLine{336         \textcolor{keywordtype}{int} baseX = 0;}
-\DoxyCodeLine{337         \textcolor{keywordtype}{int} baseY = 0;}
-\DoxyCodeLine{338 }
-\DoxyCodeLine{339         \textcolor{keywordtype}{int} x = 0;}
-\DoxyCodeLine{340         \textcolor{keywordtype}{int} y = 0;}
+\DoxyCodeLine{63         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_abb1784a419ea2b500794c9d86e23983a}{copy}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}\& other);}
+\DoxyCodeLine{64 }
+\DoxyCodeLine{69         \mbox{\hyperlink{classglib_1_1_gui_instance_adbdc9b24c2f7b7e30f8ba5da6dcdf4f5}{\string~GuiInstance}}();}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{71         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{72         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{73         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{74 }
+\DoxyCodeLine{79         \textcolor{keyword}{virtual} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_adb20e1eac37428a48802ad39cf4c2cb0}{update}}();}
+\DoxyCodeLine{80 }
+\DoxyCodeLine{85         \textcolor{keyword}{virtual} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a303d9dc4dedc8e5cf2027bb02c7015c8}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{86 }
+\DoxyCodeLine{95         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_aa4b79780799ee7044066908614004a41}{addChild}}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}* obj);}
+\DoxyCodeLine{96 }
+\DoxyCodeLine{102         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_af7121a61bc9a6503fbe807028dc35804}{removeChild}}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}* obj);}
+\DoxyCodeLine{103 }
+\DoxyCodeLine{109         std::vector<GuiInstance*> \mbox{\hyperlink{classglib_1_1_gui_instance_acb7aa4a6a22de613575322885cdf8579}{getChildren}}();}
+\DoxyCodeLine{110 }
+\DoxyCodeLine{116         \textcolor{keyword}{const} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a54d82c7da3c5e76dfc3880694a0e02e3}{baseUpdate}}();}
+\DoxyCodeLine{117 }
+\DoxyCodeLine{123         \textcolor{keyword}{const} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_ad916b050a270ccf3fc3459ada5990267}{baseRender}}();}
+\DoxyCodeLine{124 }
+\DoxyCodeLine{130         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a03af60978d4a5aafc643123977c0a978}{setOnActivateFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
+\DoxyCodeLine{131 }
+\DoxyCodeLine{137         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a036967081a66192947576ed3f3a878ab}{setOnVisibleFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
+\DoxyCodeLine{138 }
+\DoxyCodeLine{144         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_aafc0b156b6a42c5917949d9827758394}{setOnDeActivateFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
+\DoxyCodeLine{145 }
+\DoxyCodeLine{151         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_ae6de77196e445d16097f710709cd7752}{setOnInvisibleFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
+\DoxyCodeLine{152 }
+\DoxyCodeLine{158         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a821b98ad9a8a085792a25d42e37431a8}{setOnChangedFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
+\DoxyCodeLine{159 }
+\DoxyCodeLine{165         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a9dd1a2eb9e7f5cc890e9a4ec60749ae2}{setOnFocusFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
+\DoxyCodeLine{166 }
+\DoxyCodeLine{175         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a0ea928eef71d80b91b98aea426b8d110}{setOffset}}(\textcolor{keywordtype}{int}* offX, \textcolor{keywordtype}{int}* offY);}
+\DoxyCodeLine{176 }
+\DoxyCodeLine{186         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a971e2319dceb3317df8c30849a896448}{setRenderOffset}}(\textcolor{keywordtype}{int}* offX, \textcolor{keywordtype}{int}* offY);}
+\DoxyCodeLine{187 }
+\DoxyCodeLine{195         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_instance_a6cc4585e79958096a42593adfa3d6b90}{getPriority}}();}
+\DoxyCodeLine{196 }
+\DoxyCodeLine{203         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a6a05267af582caee5bc354642663eae8}{setBaseX}}(\textcolor{keywordtype}{int} x);}
+\DoxyCodeLine{204 }
+\DoxyCodeLine{210         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_instance_afa202c479496b10eadd3131f6560eb84}{getBaseX}}();}
+\DoxyCodeLine{211 }
+\DoxyCodeLine{218         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a14192041c8c1076536c83fe366486986}{setBaseY}}(\textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{219 }
+\DoxyCodeLine{225         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_instance_ad05d5bfafc6b005a7e77a0459d562a9e}{getBaseY}}();}
+\DoxyCodeLine{226 }
+\DoxyCodeLine{233         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_instance_a201e186f4acbcd50f1819de83574503b}{getX}}();}
+\DoxyCodeLine{234 }
+\DoxyCodeLine{241         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_instance_a3d52135387809c701fa0226e334f13b8}{getY}}();}
+\DoxyCodeLine{242 }
+\DoxyCodeLine{248         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a106ac5ee9338b80bfa7e0be1e5739c20}{setVisible}}(\textcolor{keywordtype}{bool} is);}
+\DoxyCodeLine{249 }
+\DoxyCodeLine{256         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gui_instance_acabdf12156b8238f555f47017e702751}{getVisible}}();}
+\DoxyCodeLine{257 }
+\DoxyCodeLine{263         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_aa0d66700a03d3b433c45c01e95a57c28}{setActive}}(\textcolor{keywordtype}{bool} is);}
+\DoxyCodeLine{264 }
+\DoxyCodeLine{271         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gui_instance_ab7e7dacafdf829e012b237b1d54c4b61}{getActive}}();}
+\DoxyCodeLine{272 }
+\DoxyCodeLine{278         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a5a500e32c578a2f526e3a40921d64436}{setFocus}}(\textcolor{keywordtype}{bool} is);}
+\DoxyCodeLine{279 }
+\DoxyCodeLine{286         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gui_instance_a5a6cbed51f7894ab87e07a8921691d58}{getFocus}}();}
+\DoxyCodeLine{287 }
+\DoxyCodeLine{293         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a95ea3bb153fab1660a47d78789762425}{setAlwaysFocus}}(\textcolor{keywordtype}{bool} is);}
+\DoxyCodeLine{294 }
+\DoxyCodeLine{301         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gui_instance_a65017319c959ee5814a29f13694ea88f}{getAlwaysFocus}}();}
+\DoxyCodeLine{302 }
+\DoxyCodeLine{309         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a2dfe0213f14ae6569575d3d8ace11a70}{setCanvas}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* m);}
+\DoxyCodeLine{310 }
+\DoxyCodeLine{316         \mbox{\hyperlink{classglib_1_1_image}{Image}}* \mbox{\hyperlink{classglib_1_1_gui_instance_a5499a3cfa587d8cf46786ad5d0661970}{getCanvas}}();}
+\DoxyCodeLine{317 }
+\DoxyCodeLine{318     \textcolor{keyword}{protected}:}
+\DoxyCodeLine{319         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onChangedFunction;}
+\DoxyCodeLine{320 }
+\DoxyCodeLine{326         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_instance_a920e23cc533f846b263760eda4f7427a}{getOffsetX}}();}
+\DoxyCodeLine{327 }
+\DoxyCodeLine{333         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_instance_a63fb3ece0d80c26c00eaab7ce212cf42}{getOffsetY}}();}
+\DoxyCodeLine{334 }
+\DoxyCodeLine{340         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_instance_a0636de904339df5222822f49c9663274}{getRenderOffsetX}}();}
 \DoxyCodeLine{341 }
-\DoxyCodeLine{342         \textcolor{keywordtype}{int} renderX = 0;}
-\DoxyCodeLine{343         \textcolor{keywordtype}{int} renderY = 0;}
-\DoxyCodeLine{344 }
-\DoxyCodeLine{352         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a2c41945b9c0e7fd8d594a1a2ee1afc9c}{setPriority}}(\textcolor{keywordtype}{int} value);}
-\DoxyCodeLine{353 }
-\DoxyCodeLine{354         \textcolor{keyword}{friend} \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_manager}{GuiManager}};}
-\DoxyCodeLine{355 }
-\DoxyCodeLine{362         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a5101b9f18c063aa2ca4d35805d98884e}{setManager}}(\mbox{\hyperlink{classglib_1_1_gui_manager}{GuiManager}}* m);}
-\DoxyCodeLine{363 }
-\DoxyCodeLine{369         \mbox{\hyperlink{classglib_1_1_gui_manager}{GuiManager}}* \mbox{\hyperlink{classglib_1_1_gui_instance_ac8edb3a183ed212c2cb75781386dc6d2}{getManager}}();}
+\DoxyCodeLine{347         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_instance_a067bb5f5ffb0be7049d71ac22b47ecae}{getRenderOffsetY}}();}
+\DoxyCodeLine{348 }
+\DoxyCodeLine{349         \textcolor{keywordtype}{int} baseX = 0;}
+\DoxyCodeLine{350         \textcolor{keywordtype}{int} baseY = 0;}
+\DoxyCodeLine{351 }
+\DoxyCodeLine{352         \textcolor{keywordtype}{int} x = 0;}
+\DoxyCodeLine{353         \textcolor{keywordtype}{int} y = 0;}
+\DoxyCodeLine{354 }
+\DoxyCodeLine{355         \textcolor{keywordtype}{int} renderX = 0;}
+\DoxyCodeLine{356         \textcolor{keywordtype}{int} renderY = 0;}
+\DoxyCodeLine{357 }
+\DoxyCodeLine{358         \mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}} boundingBox = \mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}}(0, 0, 0, 0);}
+\DoxyCodeLine{359 }
+\DoxyCodeLine{360         std::string nameID = \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{361 }
+\DoxyCodeLine{369         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a2c41945b9c0e7fd8d594a1a2ee1afc9c}{setPriority}}(\textcolor{keywordtype}{int} value);}
 \DoxyCodeLine{370 }
-\DoxyCodeLine{371     \textcolor{keyword}{private}:}
-\DoxyCodeLine{372         \textcolor{keywordtype}{void} updatePriority();}
-\DoxyCodeLine{373 }
-\DoxyCodeLine{374         \textcolor{keywordtype}{int} priority = 0;}
-\DoxyCodeLine{375 }
-\DoxyCodeLine{376         \textcolor{keywordtype}{bool} visible = \textcolor{keyword}{true};}
-\DoxyCodeLine{377         \textcolor{keywordtype}{bool} active = \textcolor{keyword}{true};}
-\DoxyCodeLine{378         \textcolor{keywordtype}{bool} focus = \textcolor{keyword}{false};}
-\DoxyCodeLine{379         \textcolor{keywordtype}{bool} alwaysFocus = \textcolor{keyword}{false};}
+\DoxyCodeLine{371         \textcolor{keyword}{friend} \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_manager}{GuiManager}};}
+\DoxyCodeLine{372 }
+\DoxyCodeLine{379         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_instance_a5101b9f18c063aa2ca4d35805d98884e}{setManager}}(\mbox{\hyperlink{classglib_1_1_gui_manager}{GuiManager}}* m);}
 \DoxyCodeLine{380 }
-\DoxyCodeLine{381         \textcolor{keywordtype}{int}* offX = \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{382         \textcolor{keywordtype}{int}* offY = \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{383 }
-\DoxyCodeLine{384         \textcolor{keywordtype}{int}* renderOffX = \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{385         \textcolor{keywordtype}{int}* renderOffY = \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{386         }
-\DoxyCodeLine{387         \textcolor{keywordtype}{bool} shouldCallA = \textcolor{keyword}{false};}
-\DoxyCodeLine{388         \textcolor{keywordtype}{bool} shouldCallV = \textcolor{keyword}{false};}
-\DoxyCodeLine{389         \textcolor{keywordtype}{bool} shouldCallA2 = \textcolor{keyword}{false};}
-\DoxyCodeLine{390         \textcolor{keywordtype}{bool} shouldCallV2 = \textcolor{keyword}{false};}
-\DoxyCodeLine{391 }
-\DoxyCodeLine{392         \textcolor{keywordtype}{bool} shouldCallF = \textcolor{keyword}{false};}
-\DoxyCodeLine{393 }
-\DoxyCodeLine{394         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onFocusFunction;}
-\DoxyCodeLine{395         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onActivateFunction;}
-\DoxyCodeLine{396         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onVisibleFunction;}
+\DoxyCodeLine{386         \mbox{\hyperlink{classglib_1_1_gui_manager}{GuiManager}}* \mbox{\hyperlink{classglib_1_1_gui_instance_ac8edb3a183ed212c2cb75781386dc6d2}{getManager}}();}
+\DoxyCodeLine{387 }
+\DoxyCodeLine{388     \textcolor{keyword}{private}:}
+\DoxyCodeLine{389         \textcolor{keywordtype}{void} updatePriority();}
+\DoxyCodeLine{390 }
+\DoxyCodeLine{391         \textcolor{keywordtype}{int} priority = 0;}
+\DoxyCodeLine{392 }
+\DoxyCodeLine{393         \textcolor{keywordtype}{bool} visible = \textcolor{keyword}{true};}
+\DoxyCodeLine{394         \textcolor{keywordtype}{bool} active = \textcolor{keyword}{true};}
+\DoxyCodeLine{395         \textcolor{keywordtype}{bool} focus = \textcolor{keyword}{false};}
+\DoxyCodeLine{396         \textcolor{keywordtype}{bool} alwaysFocus = \textcolor{keyword}{false};}
 \DoxyCodeLine{397 }
-\DoxyCodeLine{398         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onDeActivateFunction;}
-\DoxyCodeLine{399         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onInvisibleFunction;}
+\DoxyCodeLine{398         \textcolor{keywordtype}{int}* offX = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{399         \textcolor{keywordtype}{int}* offY = \textcolor{keyword}{nullptr};}
 \DoxyCodeLine{400 }
-\DoxyCodeLine{401         std::vector<GuiInstance*> children = std::vector<GuiInstance*>();}
-\DoxyCodeLine{402         \mbox{\hyperlink{classglib_1_1_gui_manager}{GuiManager}}* manager = \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{403         \mbox{\hyperlink{classglib_1_1_image}{Image}}* canvas = \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{404         \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}* parent = \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{405     \};}
-\DoxyCodeLine{406 }
-\DoxyCodeLine{407     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_container}{GuiContainer}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
-\DoxyCodeLine{408     \{}
-\DoxyCodeLine{409     \textcolor{keyword}{public}:}
-\DoxyCodeLine{415         \mbox{\hyperlink{classglib_1_1_gui_container_adb9b908fa56abc5cf2050fc83b2e9e27}{GuiContainer}}();}
-\DoxyCodeLine{416 }
-\DoxyCodeLine{421         \mbox{\hyperlink{classglib_1_1_gui_container_a7c3cea10ccd4a8c58a5485b51a0eaa0b}{\string~GuiContainer}}();}
-\DoxyCodeLine{422 }
-\DoxyCodeLine{423         \textcolor{comment}{//Object and Class Stuff}}
-\DoxyCodeLine{424         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
-\DoxyCodeLine{425         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
-\DoxyCodeLine{426         }
-\DoxyCodeLine{431         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_container_ad1c7d6ac419f1d8e2e39f63f443a4ae4}{update}}();}
-\DoxyCodeLine{432 }
-\DoxyCodeLine{438         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_container_a68897b8dc39c6effc76066634a5a5c80}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{401         \textcolor{keywordtype}{int}* renderOffX = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{402         \textcolor{keywordtype}{int}* renderOffY = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{403         }
+\DoxyCodeLine{404         \textcolor{keywordtype}{bool} shouldCallA = \textcolor{keyword}{false};}
+\DoxyCodeLine{405         \textcolor{keywordtype}{bool} shouldCallV = \textcolor{keyword}{false};}
+\DoxyCodeLine{406         \textcolor{keywordtype}{bool} shouldCallA2 = \textcolor{keyword}{false};}
+\DoxyCodeLine{407         \textcolor{keywordtype}{bool} shouldCallV2 = \textcolor{keyword}{false};}
+\DoxyCodeLine{408 }
+\DoxyCodeLine{409         \textcolor{keywordtype}{bool} shouldCallF = \textcolor{keyword}{false};}
+\DoxyCodeLine{410 }
+\DoxyCodeLine{411         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onFocusFunction;}
+\DoxyCodeLine{412         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onActivateFunction;}
+\DoxyCodeLine{413         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onVisibleFunction;}
+\DoxyCodeLine{414 }
+\DoxyCodeLine{415         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onDeActivateFunction;}
+\DoxyCodeLine{416         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onInvisibleFunction;}
+\DoxyCodeLine{417 }
+\DoxyCodeLine{418         std::vector<GuiInstance*> children = std::vector<GuiInstance*>();}
+\DoxyCodeLine{419         \mbox{\hyperlink{classglib_1_1_gui_manager}{GuiManager}}* manager = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{420         \mbox{\hyperlink{classglib_1_1_image}{Image}}* canvas = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{421         \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}* parent = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{422     \};}
+\DoxyCodeLine{423 }
+\DoxyCodeLine{424     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_container}{GuiContainer}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
+\DoxyCodeLine{425     \{}
+\DoxyCodeLine{426     \textcolor{keyword}{public}:}
+\DoxyCodeLine{432         \mbox{\hyperlink{classglib_1_1_gui_container_adb9b908fa56abc5cf2050fc83b2e9e27}{GuiContainer}}();}
+\DoxyCodeLine{433 }
+\DoxyCodeLine{438         \mbox{\hyperlink{classglib_1_1_gui_container_a7c3cea10ccd4a8c58a5485b51a0eaa0b}{\string~GuiContainer}}();}
 \DoxyCodeLine{439 }
-\DoxyCodeLine{440     \textcolor{keyword}{private}:}
-\DoxyCodeLine{441     \};}
-\DoxyCodeLine{442 }
-\DoxyCodeLine{443     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_custom_object}{GuiCustomObject}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
-\DoxyCodeLine{444     \{}
-\DoxyCodeLine{445     \textcolor{keyword}{public}:}
-\DoxyCodeLine{452         \mbox{\hyperlink{classglib_1_1_gui_custom_object_a6722f695bdc49a7c8ea213187b2264bf}{GuiCustomObject}}();}
-\DoxyCodeLine{453 }
-\DoxyCodeLine{458         \mbox{\hyperlink{classglib_1_1_gui_custom_object_a4278f879a5762f49af0a7835afe08d69}{\string~GuiCustomObject}}();}
+\DoxyCodeLine{440         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{441         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{442         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{443         }
+\DoxyCodeLine{448         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_container_ad1c7d6ac419f1d8e2e39f63f443a4ae4}{update}}();}
+\DoxyCodeLine{449 }
+\DoxyCodeLine{455         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_container_a68897b8dc39c6effc76066634a5a5c80}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{456 }
+\DoxyCodeLine{457     \textcolor{keyword}{private}:}
+\DoxyCodeLine{458     \};}
 \DoxyCodeLine{459 }
-\DoxyCodeLine{460         \textcolor{comment}{//Object and Class Stuff}}
-\DoxyCodeLine{461         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
-\DoxyCodeLine{462         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
-\DoxyCodeLine{463         }
-\DoxyCodeLine{468         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_custom_object_aa851b71e667e9bc60b3cdb49e6a52c84}{update}}();}
-\DoxyCodeLine{469 }
-\DoxyCodeLine{475         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_custom_object_ae3e7cd99c49d663d0728e798a9201feb}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{460     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_custom_object}{GuiCustomObject}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
+\DoxyCodeLine{461     \{}
+\DoxyCodeLine{462     \textcolor{keyword}{public}:}
+\DoxyCodeLine{469         \mbox{\hyperlink{classglib_1_1_gui_custom_object_a6722f695bdc49a7c8ea213187b2264bf}{GuiCustomObject}}();}
+\DoxyCodeLine{470 }
+\DoxyCodeLine{475         \mbox{\hyperlink{classglib_1_1_gui_custom_object_a4278f879a5762f49af0a7835afe08d69}{\string~GuiCustomObject}}();}
 \DoxyCodeLine{476 }
-\DoxyCodeLine{482         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_custom_object_ac6f6229b7e8911550f16c8047b181605}{setUpdateFunction}}(std::function<\textcolor{keywordtype}{void}()> func);}
-\DoxyCodeLine{483 }
-\DoxyCodeLine{489         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_custom_object_aa9ec363d1779bc13a535b9734d3510e8}{setRenderFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_image}{Image}}*)> func);}
-\DoxyCodeLine{490     \textcolor{keyword}{private}:}
-\DoxyCodeLine{491         std::function<void()> updateFunc;}
-\DoxyCodeLine{492         std::function<void(\mbox{\hyperlink{classglib_1_1_image}{Image}}*)> renderFunc;}
-\DoxyCodeLine{493     \};}
-\DoxyCodeLine{494 }
-\DoxyCodeLine{495     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_canvas}{GuiCanvas}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
-\DoxyCodeLine{496     \{}
-\DoxyCodeLine{497     \textcolor{keyword}{public}:}
-\DoxyCodeLine{505         \mbox{\hyperlink{classglib_1_1_gui_canvas_a1a6acce610925aaec4f90666ba834f89}{GuiCanvas}}();}
-\DoxyCodeLine{506 }
-\DoxyCodeLine{518         \mbox{\hyperlink{classglib_1_1_gui_canvas_a30a7f7316f0d71d9a0dd51638f799c4c}{GuiCanvas}}(\textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height);}
-\DoxyCodeLine{519 }
-\DoxyCodeLine{524         \mbox{\hyperlink{classglib_1_1_gui_canvas_a73956f0baed8b2c119241168f341fae2}{\string~GuiCanvas}}();}
-\DoxyCodeLine{525 }
-\DoxyCodeLine{526         \textcolor{comment}{//Object and Class Stuff}}
-\DoxyCodeLine{527         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
-\DoxyCodeLine{528         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
-\DoxyCodeLine{529         }
-\DoxyCodeLine{534         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_canvas_a3f90873b1e88b91b324d51ff8834099f}{update}}();}
-\DoxyCodeLine{535 }
-\DoxyCodeLine{541         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_canvas_a9e147a1f05a18f88d54e4f1590023e2b}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{477         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{478         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{479         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{480         }
+\DoxyCodeLine{485         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_custom_object_aa851b71e667e9bc60b3cdb49e6a52c84}{update}}();}
+\DoxyCodeLine{486 }
+\DoxyCodeLine{492         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_custom_object_ae3e7cd99c49d663d0728e798a9201feb}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{493 }
+\DoxyCodeLine{499         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_custom_object_ac6f6229b7e8911550f16c8047b181605}{setUpdateFunction}}(std::function<\textcolor{keywordtype}{void}()> func);}
+\DoxyCodeLine{500 }
+\DoxyCodeLine{506         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_custom_object_aa9ec363d1779bc13a535b9734d3510e8}{setRenderFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_image}{Image}}*)> func);}
+\DoxyCodeLine{507     \textcolor{keyword}{private}:}
+\DoxyCodeLine{508         std::function<void()> updateFunc;}
+\DoxyCodeLine{509         std::function<void(\mbox{\hyperlink{classglib_1_1_image}{Image}}*)> renderFunc;}
+\DoxyCodeLine{510     \};}
+\DoxyCodeLine{511 }
+\DoxyCodeLine{512     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_canvas}{GuiCanvas}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
+\DoxyCodeLine{513     \{}
+\DoxyCodeLine{514     \textcolor{keyword}{public}:}
+\DoxyCodeLine{522         \mbox{\hyperlink{classglib_1_1_gui_canvas_a1a6acce610925aaec4f90666ba834f89}{GuiCanvas}}();}
+\DoxyCodeLine{523 }
+\DoxyCodeLine{535         \mbox{\hyperlink{classglib_1_1_gui_canvas_a30a7f7316f0d71d9a0dd51638f799c4c}{GuiCanvas}}(\textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height);}
+\DoxyCodeLine{536 }
+\DoxyCodeLine{541         \mbox{\hyperlink{classglib_1_1_gui_canvas_a73956f0baed8b2c119241168f341fae2}{\string~GuiCanvas}}();}
 \DoxyCodeLine{542 }
-\DoxyCodeLine{548         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_canvas_aac5f1740e218c741da43afc096faa5a4}{setInstanceCanvas}}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}* ins);}
-\DoxyCodeLine{549 }
-\DoxyCodeLine{555         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_canvas_a025e05380f9496f179fe9afc6a81db5f}{getClearColor}}();}
-\DoxyCodeLine{556 }
-\DoxyCodeLine{562         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_canvas_a64f944b54a2eacad2fad9927a3557111}{setClearColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{563     \textcolor{keyword}{private}:}
-\DoxyCodeLine{564         \mbox{\hyperlink{classglib_1_1_image}{Image}} myImage;}
-\DoxyCodeLine{565         \mbox{\hyperlink{structglib_1_1_color}{Color}} clearColor = \{0,0,0,0\};}
-\DoxyCodeLine{566     \};}
-\DoxyCodeLine{567 }
-\DoxyCodeLine{568     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_image}{GuiImage}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
-\DoxyCodeLine{569     \{}
-\DoxyCodeLine{570     \textcolor{keyword}{public}:}
-\DoxyCodeLine{578         \mbox{\hyperlink{classglib_1_1_gui_image_a07e90fdb5f71aa99f294d09d8139d4fb}{GuiImage}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img = \textcolor{keyword}{nullptr});}
-\DoxyCodeLine{579 }
-\DoxyCodeLine{585         \mbox{\hyperlink{classglib_1_1_gui_image_a0ba6a4a6025b47caee46668ac6f82a93}{\string~GuiImage}}();}
-\DoxyCodeLine{586 }
-\DoxyCodeLine{587         \textcolor{comment}{//Object and Class Stuff}}
-\DoxyCodeLine{588         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
-\DoxyCodeLine{589         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
-\DoxyCodeLine{590         }
-\DoxyCodeLine{595         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_image_a8dd79fbacb4d7a4505a1d9bb65b708d2}{update}}();}
+\DoxyCodeLine{543         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{544         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{545         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{546         }
+\DoxyCodeLine{551         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_canvas_a3f90873b1e88b91b324d51ff8834099f}{update}}();}
+\DoxyCodeLine{552 }
+\DoxyCodeLine{558         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_canvas_a9e147a1f05a18f88d54e4f1590023e2b}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{559 }
+\DoxyCodeLine{565         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_canvas_aac5f1740e218c741da43afc096faa5a4}{setInstanceCanvas}}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}* ins);}
+\DoxyCodeLine{566 }
+\DoxyCodeLine{572         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_canvas_a025e05380f9496f179fe9afc6a81db5f}{getClearColor}}();}
+\DoxyCodeLine{573 }
+\DoxyCodeLine{579         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_canvas_a64f944b54a2eacad2fad9927a3557111}{setClearColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{580     \textcolor{keyword}{private}:}
+\DoxyCodeLine{581         \mbox{\hyperlink{classglib_1_1_image}{Image}} myImage;}
+\DoxyCodeLine{582         \mbox{\hyperlink{structglib_1_1_color}{Color}} clearColor = \{0,0,0,0\};}
+\DoxyCodeLine{583     \};}
+\DoxyCodeLine{584 }
+\DoxyCodeLine{585     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_image}{GuiImage}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
+\DoxyCodeLine{586     \{}
+\DoxyCodeLine{587     \textcolor{keyword}{public}:}
+\DoxyCodeLine{595         \mbox{\hyperlink{classglib_1_1_gui_image_a07e90fdb5f71aa99f294d09d8139d4fb}{GuiImage}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img = \textcolor{keyword}{nullptr});}
 \DoxyCodeLine{596 }
-\DoxyCodeLine{602         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_image_ae17ce3117ff17c51609a761d7761b904}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{602         \mbox{\hyperlink{classglib_1_1_gui_image_a0ba6a4a6025b47caee46668ac6f82a93}{\string~GuiImage}}();}
 \DoxyCodeLine{603 }
-\DoxyCodeLine{609         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_image_ac016c976c931c9beb30f0fe3e46ebdcb}{setImage}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img);}
-\DoxyCodeLine{610 }
-\DoxyCodeLine{616         \mbox{\hyperlink{classglib_1_1_image}{Image}}* \mbox{\hyperlink{classglib_1_1_gui_image_a6deb6e1dc2b7af224161f74b1fabdff9}{getImage}}();}
-\DoxyCodeLine{617 }
-\DoxyCodeLine{618     \textcolor{keyword}{private}:}
-\DoxyCodeLine{619         \mbox{\hyperlink{classglib_1_1_image}{Image}}* img;}
-\DoxyCodeLine{620     \};}
-\DoxyCodeLine{621 }
-\DoxyCodeLine{622     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_sprite}{GuiSprite}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
-\DoxyCodeLine{623     \{}
-\DoxyCodeLine{624     \textcolor{keyword}{public}:}
-\DoxyCodeLine{630         \mbox{\hyperlink{classglib_1_1_gui_sprite_af37dcbc0f35c0fdfee788a2c8ad0f507}{GuiSprite}}();}
-\DoxyCodeLine{631 }
-\DoxyCodeLine{636         \mbox{\hyperlink{classglib_1_1_gui_sprite_a0380e9fd8f93201338e1f884adcd64c1}{\string~GuiSprite}}();}
-\DoxyCodeLine{637 }
-\DoxyCodeLine{638         \textcolor{comment}{//Object and Class Stuff}}
-\DoxyCodeLine{639         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
-\DoxyCodeLine{640         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
-\DoxyCodeLine{641         }
-\DoxyCodeLine{647         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_sprite_af57445e95138743ac10af54b76784c20}{update}}();}
+\DoxyCodeLine{604         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{605         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{606         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{607         }
+\DoxyCodeLine{612         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_image_a8dd79fbacb4d7a4505a1d9bb65b708d2}{update}}();}
+\DoxyCodeLine{613 }
+\DoxyCodeLine{619         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_image_ae17ce3117ff17c51609a761d7761b904}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{620 }
+\DoxyCodeLine{626         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_image_ac016c976c931c9beb30f0fe3e46ebdcb}{setImage}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* img);}
+\DoxyCodeLine{627 }
+\DoxyCodeLine{633         \mbox{\hyperlink{classglib_1_1_image}{Image}}* \mbox{\hyperlink{classglib_1_1_gui_image_a6deb6e1dc2b7af224161f74b1fabdff9}{getImage}}();}
+\DoxyCodeLine{634 }
+\DoxyCodeLine{635     \textcolor{keyword}{private}:}
+\DoxyCodeLine{636         \mbox{\hyperlink{classglib_1_1_image}{Image}}* img;}
+\DoxyCodeLine{637     \};}
+\DoxyCodeLine{638 }
+\DoxyCodeLine{639     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_sprite}{GuiSprite}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
+\DoxyCodeLine{640     \{}
+\DoxyCodeLine{641     \textcolor{keyword}{public}:}
+\DoxyCodeLine{647         \mbox{\hyperlink{classglib_1_1_gui_sprite_af37dcbc0f35c0fdfee788a2c8ad0f507}{GuiSprite}}();}
 \DoxyCodeLine{648 }
-\DoxyCodeLine{654         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_sprite_a515f5d5b0d7f05f2049050c6e10cc825}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
-\DoxyCodeLine{655 }
-\DoxyCodeLine{661         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_sprite_acc8f6f6ac2a8d1365235f82d1828ba89}{setSprite}}(\mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} img);}
-\DoxyCodeLine{662 }
-\DoxyCodeLine{669         \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}}\& \mbox{\hyperlink{classglib_1_1_gui_sprite_aa69446d1dee511dc766f1742cedb6a8f}{getSprite}}();}
-\DoxyCodeLine{670 }
-\DoxyCodeLine{676         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_sprite_a30f54e7add637355e2659c52f085e139}{setXScale}}(\textcolor{keywordtype}{double} v);}
-\DoxyCodeLine{677 }
-\DoxyCodeLine{683         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_sprite_a9eff484769301d81a96cae2d68e22917}{setYScale}}(\textcolor{keywordtype}{double} v);}
-\DoxyCodeLine{684         }
-\DoxyCodeLine{690         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_gui_sprite_a81396e93cf02759eae9b8ddb9b37bda3}{getXScale}}();}
-\DoxyCodeLine{691 }
-\DoxyCodeLine{697         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_gui_sprite_a871a5f59c56cc97de3331934ba40b49e}{getYScale}}();}
-\DoxyCodeLine{698 }
-\DoxyCodeLine{704         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_sprite_a12e9acb12f0886f5010562ca75172133}{setColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{705 }
-\DoxyCodeLine{711         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_sprite_a5c0e2f2c69f690a951a22b5cc6efea80}{getColor}}();}
-\DoxyCodeLine{712 }
-\DoxyCodeLine{717         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_sprite_a56534e15f51609a1553a829195ffeba5}{reset}}();}
-\DoxyCodeLine{718 }
-\DoxyCodeLine{719     \textcolor{keyword}{private}:}
-\DoxyCodeLine{720         time\_t lastUpdateTime = 0;}
-\DoxyCodeLine{721         \textcolor{keywordtype}{int} index = 0;}
+\DoxyCodeLine{653         \mbox{\hyperlink{classglib_1_1_gui_sprite_a0380e9fd8f93201338e1f884adcd64c1}{\string~GuiSprite}}();}
+\DoxyCodeLine{654 }
+\DoxyCodeLine{655         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{656         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{657         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{658         }
+\DoxyCodeLine{664         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_sprite_af57445e95138743ac10af54b76784c20}{update}}();}
+\DoxyCodeLine{665 }
+\DoxyCodeLine{671         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_sprite_a515f5d5b0d7f05f2049050c6e10cc825}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{672 }
+\DoxyCodeLine{678         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_sprite_acc8f6f6ac2a8d1365235f82d1828ba89}{setSprite}}(\mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} img);}
+\DoxyCodeLine{679 }
+\DoxyCodeLine{686         \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}}\& \mbox{\hyperlink{classglib_1_1_gui_sprite_aa69446d1dee511dc766f1742cedb6a8f}{getSprite}}();}
+\DoxyCodeLine{687 }
+\DoxyCodeLine{693         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_sprite_a30f54e7add637355e2659c52f085e139}{setXScale}}(\textcolor{keywordtype}{double} v);}
+\DoxyCodeLine{694 }
+\DoxyCodeLine{700         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_sprite_a9eff484769301d81a96cae2d68e22917}{setYScale}}(\textcolor{keywordtype}{double} v);}
+\DoxyCodeLine{701         }
+\DoxyCodeLine{707         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_gui_sprite_a81396e93cf02759eae9b8ddb9b37bda3}{getXScale}}();}
+\DoxyCodeLine{708 }
+\DoxyCodeLine{714         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_gui_sprite_a871a5f59c56cc97de3331934ba40b49e}{getYScale}}();}
+\DoxyCodeLine{715 }
+\DoxyCodeLine{721         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_sprite_a12e9acb12f0886f5010562ca75172133}{setColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
 \DoxyCodeLine{722 }
-\DoxyCodeLine{723         \textcolor{keywordtype}{double} xScale = 1;}
-\DoxyCodeLine{724         \textcolor{keywordtype}{double} yScale = 1;}
-\DoxyCodeLine{725         \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} img;}
-\DoxyCodeLine{726         \mbox{\hyperlink{structglib_1_1_color}{Color}} imgColor = \{255,255,255,255\};}
-\DoxyCodeLine{727     \};}
-\DoxyCodeLine{728 }
-\DoxyCodeLine{729     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_text_block}{GuiTextBlock}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
-\DoxyCodeLine{730     \{}
-\DoxyCodeLine{731     \textcolor{keyword}{public}:}
-\DoxyCodeLine{742         \mbox{\hyperlink{classglib_1_1_gui_text_block_a5831d200d09fe4130b9927c537322b57}{GuiTextBlock}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height);}
-\DoxyCodeLine{743 }
-\DoxyCodeLine{748         \mbox{\hyperlink{classglib_1_1_gui_text_block_afe47ce35e1835ba5768a85d4484f7819}{\string~GuiTextBlock}}();}
-\DoxyCodeLine{749 }
-\DoxyCodeLine{750         \textcolor{comment}{//Object and Class Stuff}}
-\DoxyCodeLine{751         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
-\DoxyCodeLine{752         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
-\DoxyCodeLine{753 }
-\DoxyCodeLine{759         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a2daa7117bd0bffb2cdcfa8d665dfeaf1}{update}}();}
+\DoxyCodeLine{728         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_sprite_a5c0e2f2c69f690a951a22b5cc6efea80}{getColor}}();}
+\DoxyCodeLine{729 }
+\DoxyCodeLine{734         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_sprite_a56534e15f51609a1553a829195ffeba5}{reset}}();}
+\DoxyCodeLine{735 }
+\DoxyCodeLine{736     \textcolor{keyword}{private}:}
+\DoxyCodeLine{737         time\_t lastUpdateTime = 0;}
+\DoxyCodeLine{738         \textcolor{keywordtype}{int} index = 0;}
+\DoxyCodeLine{739 }
+\DoxyCodeLine{740         \textcolor{keywordtype}{double} xScale = 1;}
+\DoxyCodeLine{741         \textcolor{keywordtype}{double} yScale = 1;}
+\DoxyCodeLine{742         \mbox{\hyperlink{classglib_1_1_sprite}{Sprite}} img;}
+\DoxyCodeLine{743         \mbox{\hyperlink{structglib_1_1_color}{Color}} imgColor = \{255,255,255,255\};}
+\DoxyCodeLine{744     \};}
+\DoxyCodeLine{745 }
+\DoxyCodeLine{746     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_text_block}{GuiTextBlock}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
+\DoxyCodeLine{747     \{}
+\DoxyCodeLine{748     \textcolor{keyword}{public}:}
+\DoxyCodeLine{759         \mbox{\hyperlink{classglib_1_1_gui_text_block_acee1ec7fe7d50ecfb0d684af9ae47ba7}{GuiTextBlock}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} width = -\/1, \textcolor{keywordtype}{int} height = -\/1);}
 \DoxyCodeLine{760 }
-\DoxyCodeLine{766         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_ab1c5d02791262505b439037e9aa47c15}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
-\DoxyCodeLine{767 }
-\DoxyCodeLine{773         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a23111166146cd4fab8349292ce8ec8de}{setTextColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{774 }
-\DoxyCodeLine{780         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_text_block_afbd5d2459970e57b6895ef0ba138435d}{getTextColor}}();}
-\DoxyCodeLine{781 }
-\DoxyCodeLine{788         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a019caed449c04377f7e82d8942eae4fd}{setHighlightColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{789 }
-\DoxyCodeLine{796         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_text_block_a302ad0152fe6bedb4dd52cd5384c0095}{getHighlightColor}}();}
-\DoxyCodeLine{797 }
-\DoxyCodeLine{803         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a33cfad7bf6e1606dbdbde1ccb6820a35}{setShouldHighlightText}}(\textcolor{keywordtype}{bool} v);}
-\DoxyCodeLine{804 }
-\DoxyCodeLine{811         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gui_text_block_a0587d4e9173326ec8cfdb8f9bf6be862}{getShouldHighlightText}}();}
-\DoxyCodeLine{812 }
-\DoxyCodeLine{818         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a32f9cb6e255049912b6e07cd6e2a8c41}{setHighlightStart}}(\textcolor{keywordtype}{int} v);}
-\DoxyCodeLine{819 }
-\DoxyCodeLine{825         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_text_block_a57c63546754238e3bb2eb8d1a86633f1}{getHighlightStart}}();}
-\DoxyCodeLine{826 }
-\DoxyCodeLine{832         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a8c17b31d39760a626404fbebabc5fc12}{setHighlightEnd}}(\textcolor{keywordtype}{int} v);}
-\DoxyCodeLine{833 }
-\DoxyCodeLine{839         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_text_block_a549f4af075318fc99f53ffbaad50cab7}{getHighlightEnd}}();}
-\DoxyCodeLine{840 }
-\DoxyCodeLine{846         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a9a95c1de53502685ce76f13ff5065b55}{setAllowLineBreaks}}(\textcolor{keywordtype}{bool} v);}
-\DoxyCodeLine{847 }
-\DoxyCodeLine{854         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gui_text_block_a10e6c5499e1f248132ab93f3c3766c80}{getAllowLineBreaks}}();}
-\DoxyCodeLine{855 }
-\DoxyCodeLine{861         std::string \mbox{\hyperlink{classglib_1_1_gui_text_block_afc57f21488721234da012f6aafc0af2d}{getText}}();}
-\DoxyCodeLine{862 }
-\DoxyCodeLine{868         std::string\& \mbox{\hyperlink{classglib_1_1_gui_text_block_a25658cd961405d326eaa400b6657b29f}{getTextRef}}();}
-\DoxyCodeLine{869 }
-\DoxyCodeLine{875         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_aff46ace08b2791d4b08035e811d7a65e}{setText}}(std::string s);}
-\DoxyCodeLine{876 }
-\DoxyCodeLine{883         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a791748fa6b83bedb796925257a0f8b9e}{setFont}}(\mbox{\hyperlink{classglib_1_1_font}{Font}}* f);}
-\DoxyCodeLine{884 }
-\DoxyCodeLine{891         \mbox{\hyperlink{classglib_1_1_font}{Font}}* \mbox{\hyperlink{classglib_1_1_gui_text_block_a39c203b0adba4c38c0ca4f0705fc9cc4}{getFont}}();}
-\DoxyCodeLine{892 }
-\DoxyCodeLine{898         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a8e98f31006e7ca6ae4b8e1189f1306d5}{setWidth}}(\textcolor{keywordtype}{int} v);}
-\DoxyCodeLine{899 }
-\DoxyCodeLine{905         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a02fc7a38cc660e666ce98cf79da31809}{setHeight}}(\textcolor{keywordtype}{int} v);}
-\DoxyCodeLine{906 }
-\DoxyCodeLine{912         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_text_block_a581b651f9650c2d526d3ebe846545e33}{getWidth}}();}
-\DoxyCodeLine{913 }
-\DoxyCodeLine{919         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_text_block_aa480786e1796c4504361d1c58329118e}{getHeight}}();}
-\DoxyCodeLine{920 }
-\DoxyCodeLine{926         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a0f4b82ea3f1f8086a4d1790eaa8b9b34}{setOffsetX}}(\textcolor{keywordtype}{int} x);}
-\DoxyCodeLine{927 }
-\DoxyCodeLine{933         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_aa5827bbf4f0492263ba604de1abe9db1}{setOffsetY}}(\textcolor{keywordtype}{int} y);}
-\DoxyCodeLine{934 }
-\DoxyCodeLine{935     \textcolor{keyword}{private}:}
-\DoxyCodeLine{936 }
-\DoxyCodeLine{937         \textcolor{keywordtype}{int} width = 0;}
-\DoxyCodeLine{938         \textcolor{keywordtype}{int} height = 0;}
-\DoxyCodeLine{939         \textcolor{keywordtype}{bool} shouldHighlight = \textcolor{keyword}{false};}
-\DoxyCodeLine{940 }
-\DoxyCodeLine{941         \textcolor{keywordtype}{int} startHighlight = -\/1;}
-\DoxyCodeLine{942         \textcolor{keywordtype}{int} endHighlight = -\/1;}
-\DoxyCodeLine{943         \textcolor{keywordtype}{int} offsetX = 0;}
-\DoxyCodeLine{944         \textcolor{keywordtype}{int} offsetY = 0;}
-\DoxyCodeLine{945 }
-\DoxyCodeLine{946         \textcolor{keywordtype}{bool} allowLineBreaks = \textcolor{keyword}{false};}
-\DoxyCodeLine{947 }
-\DoxyCodeLine{948         \mbox{\hyperlink{structglib_1_1_color}{Color}} textColor = \{ 0, 0, 0, 255 \};}
-\DoxyCodeLine{949         \mbox{\hyperlink{structglib_1_1_color}{Color}} highlightColor = \{ 72, 150, 255, 64 \};}
-\DoxyCodeLine{950         Font* textFont = \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{951 }
-\DoxyCodeLine{952         std::string text = \textcolor{stringliteral}{"{}"{}};}
-\DoxyCodeLine{953     \};}
-\DoxyCodeLine{954 }
-\DoxyCodeLine{955     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_text_box}{GuiTextBox}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
-\DoxyCodeLine{956     \{}
-\DoxyCodeLine{957     \textcolor{keyword}{public}:}
-\DoxyCodeLine{971         \mbox{\hyperlink{classglib_1_1_gui_text_box_a7eff8a163101b11a88cd9875f8fa4164}{GuiTextBox}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height);}
-\DoxyCodeLine{972 }
-\DoxyCodeLine{978         \mbox{\hyperlink{classglib_1_1_gui_text_box_a46ccdb79b58e9bbef1f0e9d96322b195}{GuiTextBox}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_text_box}{GuiTextBox}}\& other);}
-\DoxyCodeLine{979 }
-\DoxyCodeLine{985         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_aab49f37d6198ad8367a3fbd0ef74b91a}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_text_box}{GuiTextBox}}\& other);}
-\DoxyCodeLine{986 }
-\DoxyCodeLine{992         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a40a160c667377cf894fa21335fdeb302}{copy}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_text_box}{GuiTextBox}}\& other);}
-\DoxyCodeLine{993 }
-\DoxyCodeLine{998         \mbox{\hyperlink{classglib_1_1_gui_text_box_aaa386b0ce0ecbee9005ae57171e96e1b}{\string~GuiTextBox}}();}
-\DoxyCodeLine{999 }
-\DoxyCodeLine{1000         \textcolor{comment}{//Object and Class Stuff}}
-\DoxyCodeLine{1001         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
-\DoxyCodeLine{1002         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
-\DoxyCodeLine{1003 }
-\DoxyCodeLine{1008         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a4a4bfa4f076da221f5ecd3cd46601706}{update}}();}
-\DoxyCodeLine{1009 }
-\DoxyCodeLine{1015         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a43372c06eb867077c8fe91d98da9b636}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
-\DoxyCodeLine{1016 }
-\DoxyCodeLine{1022         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_ab60d242bae1c39e68513d5dae4d529cf}{setOnEnterPressedFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
-\DoxyCodeLine{1023 }
-\DoxyCodeLine{1029         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a819222845fcd1ce2f69bbfaae7801944}{setOnKeyPressFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
-\DoxyCodeLine{1030 }
-\DoxyCodeLine{1036         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a93a8d896964c2eeb48aaf22573206d59}{setBackgroundColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{1037 }
-\DoxyCodeLine{1043         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_ae51c72212013efd9a327ec506d972412}{setOutlineColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{1044 }
-\DoxyCodeLine{1050         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a20529342b518e9b620d291f6b8ca8d1d}{setFocusOutlineColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{1051 }
-\DoxyCodeLine{1057         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a3cd30cedad4d6dd45b08477c0ce26d39}{setCursorBlinkColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{1058 }
-\DoxyCodeLine{1064         \mbox{\hyperlink{classglib_1_1_gui_text_block}{GuiTextBlock}}* \mbox{\hyperlink{classglib_1_1_gui_text_box_ae7536c6fab122c2fb77d54edd9ff6f0b}{getTextBlockElement}}();}
-\DoxyCodeLine{1065 }
-\DoxyCodeLine{1072         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a5ee9905be827ce7ea9fc668925e67ea9}{setCursorBlinkTimer}}(\textcolor{keywordtype}{int} timeInFrames);}
-\DoxyCodeLine{1073 }
-\DoxyCodeLine{1079         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a7ce9df1a02f313cdf498c068e1d691f6}{setCursorWidth}}(\textcolor{keywordtype}{int} w);}
-\DoxyCodeLine{1080 }
-\DoxyCodeLine{1086         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a77b4dde8698e86d0e153272f94f6e6fb}{setWidth}}(\textcolor{keywordtype}{int} v);}
-\DoxyCodeLine{1087 }
-\DoxyCodeLine{1093         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_ac096fd83e792d309b72fd710ed75f9bc}{setHeight}}(\textcolor{keywordtype}{int} v);}
-\DoxyCodeLine{1094 }
-\DoxyCodeLine{1100         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_text_box_af841cf994cbe34dfe7c2bda681507bba}{getWidth}}();}
-\DoxyCodeLine{1101 }
-\DoxyCodeLine{1107         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_text_box_a0c2b81adf2522b99ad7d2ae345e4da73}{getHeight}}();}
-\DoxyCodeLine{1108     \textcolor{keyword}{private}:}
-\DoxyCodeLine{1109         }
-\DoxyCodeLine{1110         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onEnterPressedFunction;}
-\DoxyCodeLine{1111         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onKeyPressFunction;}
-\DoxyCodeLine{1112 }
-\DoxyCodeLine{1113         \textcolor{keywordtype}{void} keyInput();}
-\DoxyCodeLine{1114         \textcolor{keywordtype}{void} mouseInput();}
-\DoxyCodeLine{1115         \textcolor{keywordtype}{void} selectionCleanup();}
-\DoxyCodeLine{1116 }
-\DoxyCodeLine{1117         \textcolor{keywordtype}{int} width = 0;}
-\DoxyCodeLine{1118         \textcolor{keywordtype}{int} height = 0;}
-\DoxyCodeLine{1119 }
-\DoxyCodeLine{1120         \textcolor{keywordtype}{int} cursorLocation = 0;}
-\DoxyCodeLine{1121         \textcolor{keywordtype}{int} selectStart = -\/1;}
-\DoxyCodeLine{1122         \textcolor{keywordtype}{int} selectEnd = -\/1;}
-\DoxyCodeLine{1123         }
-\DoxyCodeLine{1124         \textcolor{keywordtype}{int} startStringIndex = 0;}
-\DoxyCodeLine{1125 }
-\DoxyCodeLine{1126         \textcolor{keywordtype}{bool} hold = \textcolor{keyword}{false};}
-\DoxyCodeLine{1127         \textcolor{keywordtype}{bool} cursorBlink = \textcolor{keyword}{false};}
-\DoxyCodeLine{1128         \textcolor{keywordtype}{int} cursorBlinkTimer = 0;}
-\DoxyCodeLine{1129         \textcolor{keywordtype}{int} cursorBlinkMaxTime = 30;}
-\DoxyCodeLine{1130         \textcolor{keywordtype}{int} cursorWidth = 1;}
+\DoxyCodeLine{765         \mbox{\hyperlink{classglib_1_1_gui_text_block_afe47ce35e1835ba5768a85d4484f7819}{\string~GuiTextBlock}}();}
+\DoxyCodeLine{766 }
+\DoxyCodeLine{767         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{768         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{769         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{770 }
+\DoxyCodeLine{776         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a2daa7117bd0bffb2cdcfa8d665dfeaf1}{update}}();}
+\DoxyCodeLine{777 }
+\DoxyCodeLine{783         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_ab1c5d02791262505b439037e9aa47c15}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{784 }
+\DoxyCodeLine{790         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a23111166146cd4fab8349292ce8ec8de}{setTextColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{791 }
+\DoxyCodeLine{797         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_text_block_afbd5d2459970e57b6895ef0ba138435d}{getTextColor}}();}
+\DoxyCodeLine{798 }
+\DoxyCodeLine{805         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a019caed449c04377f7e82d8942eae4fd}{setHighlightColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{806 }
+\DoxyCodeLine{813         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_text_block_a302ad0152fe6bedb4dd52cd5384c0095}{getHighlightColor}}();}
+\DoxyCodeLine{814 }
+\DoxyCodeLine{820         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a33cfad7bf6e1606dbdbde1ccb6820a35}{setShouldHighlightText}}(\textcolor{keywordtype}{bool} v);}
+\DoxyCodeLine{821 }
+\DoxyCodeLine{828         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gui_text_block_a0587d4e9173326ec8cfdb8f9bf6be862}{getShouldHighlightText}}();}
+\DoxyCodeLine{829 }
+\DoxyCodeLine{835         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a32f9cb6e255049912b6e07cd6e2a8c41}{setHighlightStart}}(\textcolor{keywordtype}{int} v);}
+\DoxyCodeLine{836 }
+\DoxyCodeLine{842         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_text_block_a57c63546754238e3bb2eb8d1a86633f1}{getHighlightStart}}();}
+\DoxyCodeLine{843 }
+\DoxyCodeLine{849         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a8c17b31d39760a626404fbebabc5fc12}{setHighlightEnd}}(\textcolor{keywordtype}{int} v);}
+\DoxyCodeLine{850 }
+\DoxyCodeLine{856         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_text_block_a549f4af075318fc99f53ffbaad50cab7}{getHighlightEnd}}();}
+\DoxyCodeLine{857 }
+\DoxyCodeLine{863         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a9a95c1de53502685ce76f13ff5065b55}{setAllowLineBreaks}}(\textcolor{keywordtype}{bool} v);}
+\DoxyCodeLine{864 }
+\DoxyCodeLine{871         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gui_text_block_a10e6c5499e1f248132ab93f3c3766c80}{getAllowLineBreaks}}();}
+\DoxyCodeLine{872 }
+\DoxyCodeLine{878         std::string \mbox{\hyperlink{classglib_1_1_gui_text_block_afc57f21488721234da012f6aafc0af2d}{getText}}();}
+\DoxyCodeLine{879 }
+\DoxyCodeLine{885         std::string\& \mbox{\hyperlink{classglib_1_1_gui_text_block_a25658cd961405d326eaa400b6657b29f}{getTextRef}}();}
+\DoxyCodeLine{886 }
+\DoxyCodeLine{892         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_aff46ace08b2791d4b08035e811d7a65e}{setText}}(std::string s);}
+\DoxyCodeLine{893 }
+\DoxyCodeLine{900         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a791748fa6b83bedb796925257a0f8b9e}{setFont}}(\mbox{\hyperlink{classglib_1_1_font}{Font}}* f);}
+\DoxyCodeLine{901 }
+\DoxyCodeLine{908         \mbox{\hyperlink{classglib_1_1_font}{Font}}* \mbox{\hyperlink{classglib_1_1_gui_text_block_a39c203b0adba4c38c0ca4f0705fc9cc4}{getFont}}();}
+\DoxyCodeLine{909 }
+\DoxyCodeLine{916         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_ac84e737536680916acae2d9639b8379a}{setMaxWidth}}(\textcolor{keywordtype}{int} v);}
+\DoxyCodeLine{917 }
+\DoxyCodeLine{924         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_acc6a592f786e1aff124e9b93c737ec4e}{setMaxHeight}}(\textcolor{keywordtype}{int} v);}
+\DoxyCodeLine{925 }
+\DoxyCodeLine{931         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_text_block_ae2c1a522f037f26b1bfdd2f22896486c}{getMaxWidth}}();}
+\DoxyCodeLine{932 }
+\DoxyCodeLine{938         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_text_block_ab2361068ff4bc2c1bae603b81cd66422}{getMaxHeight}}();}
+\DoxyCodeLine{939 }
+\DoxyCodeLine{945         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_a0f4b82ea3f1f8086a4d1790eaa8b9b34}{setOffsetX}}(\textcolor{keywordtype}{int} x);}
+\DoxyCodeLine{946 }
+\DoxyCodeLine{952         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_block_aa5827bbf4f0492263ba604de1abe9db1}{setOffsetY}}(\textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{953 }
+\DoxyCodeLine{954     \textcolor{keyword}{private}:}
+\DoxyCodeLine{955 }
+\DoxyCodeLine{956         \textcolor{keywordtype}{int} maxWidth = 0;}
+\DoxyCodeLine{957         \textcolor{keywordtype}{int} maxHeight = 0;}
+\DoxyCodeLine{958         \textcolor{keywordtype}{bool} shouldHighlight = \textcolor{keyword}{false};}
+\DoxyCodeLine{959 }
+\DoxyCodeLine{960         \textcolor{keywordtype}{int} startHighlight = -\/1;}
+\DoxyCodeLine{961         \textcolor{keywordtype}{int} endHighlight = -\/1;}
+\DoxyCodeLine{962         \textcolor{keywordtype}{int} offsetX = 0;}
+\DoxyCodeLine{963         \textcolor{keywordtype}{int} offsetY = 0;}
+\DoxyCodeLine{964 }
+\DoxyCodeLine{965         \textcolor{keywordtype}{bool} allowLineBreaks = \textcolor{keyword}{false};}
+\DoxyCodeLine{966 }
+\DoxyCodeLine{967         \mbox{\hyperlink{structglib_1_1_color}{Color}} textColor = \{ 0, 0, 0, 255 \};}
+\DoxyCodeLine{968         \mbox{\hyperlink{structglib_1_1_color}{Color}} highlightColor = \{ 72, 150, 255, 96 \};}
+\DoxyCodeLine{969         Font* textFont = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{970 }
+\DoxyCodeLine{971         std::string text = \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{972     \};}
+\DoxyCodeLine{973 }
+\DoxyCodeLine{974     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_text_box}{GuiTextBox}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
+\DoxyCodeLine{975     \{}
+\DoxyCodeLine{976     \textcolor{keyword}{public}:}
+\DoxyCodeLine{990         \mbox{\hyperlink{classglib_1_1_gui_text_box_a7eff8a163101b11a88cd9875f8fa4164}{GuiTextBox}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height);}
+\DoxyCodeLine{991 }
+\DoxyCodeLine{997         \mbox{\hyperlink{classglib_1_1_gui_text_box_a46ccdb79b58e9bbef1f0e9d96322b195}{GuiTextBox}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_text_box}{GuiTextBox}}\& other);}
+\DoxyCodeLine{998 }
+\DoxyCodeLine{1004         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_aab49f37d6198ad8367a3fbd0ef74b91a}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_text_box}{GuiTextBox}}\& other);}
+\DoxyCodeLine{1005 }
+\DoxyCodeLine{1011         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a40a160c667377cf894fa21335fdeb302}{copy}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_text_box}{GuiTextBox}}\& other);}
+\DoxyCodeLine{1012 }
+\DoxyCodeLine{1017         \mbox{\hyperlink{classglib_1_1_gui_text_box_aaa386b0ce0ecbee9005ae57171e96e1b}{\string~GuiTextBox}}();}
+\DoxyCodeLine{1018 }
+\DoxyCodeLine{1019         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{1020         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{1021         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{1022 }
+\DoxyCodeLine{1027         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a4a4bfa4f076da221f5ecd3cd46601706}{update}}();}
+\DoxyCodeLine{1028 }
+\DoxyCodeLine{1034         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a43372c06eb867077c8fe91d98da9b636}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{1035 }
+\DoxyCodeLine{1041         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_ab60d242bae1c39e68513d5dae4d529cf}{setOnEnterPressedFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
+\DoxyCodeLine{1042 }
+\DoxyCodeLine{1048         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a819222845fcd1ce2f69bbfaae7801944}{setOnKeyPressFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
+\DoxyCodeLine{1049 }
+\DoxyCodeLine{1055         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a93a8d896964c2eeb48aaf22573206d59}{setBackgroundColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1056 }
+\DoxyCodeLine{1062         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_ae51c72212013efd9a327ec506d972412}{setOutlineColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1063 }
+\DoxyCodeLine{1069         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a20529342b518e9b620d291f6b8ca8d1d}{setFocusOutlineColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1070 }
+\DoxyCodeLine{1076         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a3cd30cedad4d6dd45b08477c0ce26d39}{setCursorBlinkColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1077 }
+\DoxyCodeLine{1083         \mbox{\hyperlink{classglib_1_1_gui_text_block}{GuiTextBlock}}* \mbox{\hyperlink{classglib_1_1_gui_text_box_ae7536c6fab122c2fb77d54edd9ff6f0b}{getTextBlockElement}}();}
+\DoxyCodeLine{1084 }
+\DoxyCodeLine{1091         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a5ee9905be827ce7ea9fc668925e67ea9}{setCursorBlinkTimer}}(\textcolor{keywordtype}{int} timeInFrames);}
+\DoxyCodeLine{1092 }
+\DoxyCodeLine{1098         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a7ce9df1a02f313cdf498c068e1d691f6}{setCursorWidth}}(\textcolor{keywordtype}{int} w);}
+\DoxyCodeLine{1099 }
+\DoxyCodeLine{1105         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_a77b4dde8698e86d0e153272f94f6e6fb}{setWidth}}(\textcolor{keywordtype}{int} v);}
+\DoxyCodeLine{1106 }
+\DoxyCodeLine{1112         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_text_box_ac096fd83e792d309b72fd710ed75f9bc}{setHeight}}(\textcolor{keywordtype}{int} v);}
+\DoxyCodeLine{1113 }
+\DoxyCodeLine{1119         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_text_box_af841cf994cbe34dfe7c2bda681507bba}{getWidth}}();}
+\DoxyCodeLine{1120 }
+\DoxyCodeLine{1126         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_text_box_a0c2b81adf2522b99ad7d2ae345e4da73}{getHeight}}();}
+\DoxyCodeLine{1127     \textcolor{keyword}{private}:}
+\DoxyCodeLine{1128         }
+\DoxyCodeLine{1129         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onEnterPressedFunction;}
+\DoxyCodeLine{1130         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onKeyPressFunction;}
 \DoxyCodeLine{1131 }
-\DoxyCodeLine{1132         \mbox{\hyperlink{structglib_1_1_color}{Color}} backgroundColor = \{ 180, 180, 180, 255 \};}
-\DoxyCodeLine{1133         \mbox{\hyperlink{structglib_1_1_color}{Color}} outlineColor = \{ 0, 0, 0, 255 \};}
-\DoxyCodeLine{1134         Color focusOutlineColor = \{ 0, 0, 255, 255 \};}
+\DoxyCodeLine{1132         \textcolor{keywordtype}{void} keyInput();}
+\DoxyCodeLine{1133         \textcolor{keywordtype}{void} mouseInput();}
+\DoxyCodeLine{1134         \textcolor{keywordtype}{void} selectionCleanup();}
 \DoxyCodeLine{1135 }
-\DoxyCodeLine{1136         Color cursorBlinkColor = \{0,0,0,255\};}
-\DoxyCodeLine{1137 }
-\DoxyCodeLine{1138         GuiTextBlock textElement = GuiTextBlock(0,0,0,0);}
-\DoxyCodeLine{1139     \};}
-\DoxyCodeLine{1140 }
-\DoxyCodeLine{1141     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_shape}{GuiShape}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
-\DoxyCodeLine{1142     \{}
-\DoxyCodeLine{1143     \textcolor{keyword}{public}:}
-\DoxyCodeLine{1144         \mbox{\hyperlink{classglib_1_1_gui_shape}{GuiShape}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \mbox{\hyperlink{classglib_1_1_vector_graphic}{VectorGraphic}}* svg);}
-\DoxyCodeLine{1145         \mbox{\hyperlink{classglib_1_1_gui_shape}{GuiShape}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_shape}{GuiShape}}\& other);}
-\DoxyCodeLine{1146         \textcolor{keywordtype}{void} operator=(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_shape}{GuiShape}}\& other);}
-\DoxyCodeLine{1147         \textcolor{keywordtype}{void} copy(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_shape}{GuiShape}}\& other);}
-\DoxyCodeLine{1148         \mbox{\hyperlink{classglib_1_1_gui_shape}{\string~GuiShape}}();}
-\DoxyCodeLine{1149 }
-\DoxyCodeLine{1150         \textcolor{comment}{//Object and Class Stuff}}
-\DoxyCodeLine{1151         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
-\DoxyCodeLine{1152         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
-\DoxyCodeLine{1153         }
-\DoxyCodeLine{1154         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_shape_a8d1206553298941756e9176a64977abe}{update}}();}
-\DoxyCodeLine{1155         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_shape_a7e7f469b644f1b7120c1ac107133c3c1}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{1136         \textcolor{keywordtype}{int} width = 0;}
+\DoxyCodeLine{1137         \textcolor{keywordtype}{int} height = 0;}
+\DoxyCodeLine{1138 }
+\DoxyCodeLine{1139         \textcolor{keywordtype}{int} cursorLocation = 0;}
+\DoxyCodeLine{1140         \textcolor{keywordtype}{int} selectStart = -\/1;}
+\DoxyCodeLine{1141         \textcolor{keywordtype}{int} selectEnd = -\/1;}
+\DoxyCodeLine{1142         }
+\DoxyCodeLine{1143         \textcolor{keywordtype}{int} startStringIndex = 0;}
+\DoxyCodeLine{1144 }
+\DoxyCodeLine{1145         \textcolor{keywordtype}{bool} hold = \textcolor{keyword}{false};}
+\DoxyCodeLine{1146         \textcolor{keywordtype}{bool} cursorBlink = \textcolor{keyword}{false};}
+\DoxyCodeLine{1147         \textcolor{keywordtype}{int} cursorBlinkTimer = 0;}
+\DoxyCodeLine{1148         \textcolor{keywordtype}{int} cursorBlinkMaxTime = 30;}
+\DoxyCodeLine{1149         \textcolor{keywordtype}{int} cursorWidth = 1;}
+\DoxyCodeLine{1150 }
+\DoxyCodeLine{1151         \mbox{\hyperlink{structglib_1_1_color}{Color}} backgroundColor = \{ 180, 180, 180, 255 \};}
+\DoxyCodeLine{1152         \mbox{\hyperlink{structglib_1_1_color}{Color}} outlineColor = \{ 0, 0, 0, 255 \};}
+\DoxyCodeLine{1153         Color focusOutlineColor = \{ 0, 0, 255, 255 \};}
+\DoxyCodeLine{1154 }
+\DoxyCodeLine{1155         Color cursorBlinkColor = \{0,0,0,255\};}
 \DoxyCodeLine{1156 }
-\DoxyCodeLine{1157         \textcolor{keywordtype}{void} setOnClickFunction(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
-\DoxyCodeLine{1158 }
-\DoxyCodeLine{1159         \textcolor{keywordtype}{void} setBackgroundColor(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{1160         \textcolor{keywordtype}{void} setOutlineColor(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{1161         \textcolor{keywordtype}{void} setFocusOutlineColor(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{1162 }
-\DoxyCodeLine{1163     \textcolor{keyword}{private}:}
-\DoxyCodeLine{1164         }
-\DoxyCodeLine{1165         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onClickFunction;}
-\DoxyCodeLine{1166 }
-\DoxyCodeLine{1167         \mbox{\hyperlink{classglib_1_1_combination_shape}{CombinationShape}}* collisionMap = \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{1168         \mbox{\hyperlink{classglib_1_1_vector_graphic}{VectorGraphic}}* shape = \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{1169 }
-\DoxyCodeLine{1170         \mbox{\hyperlink{structglib_1_1_color}{Color}} backgroundColor = \{ 180, 180, 180, 255 \};}
-\DoxyCodeLine{1171         \mbox{\hyperlink{structglib_1_1_color}{Color}} outlineColor = \{ 0, 0, 0, 255 \};}
-\DoxyCodeLine{1172         Color focusOutlineColor = \{ 0, 0, 255, 255 \};}
-\DoxyCodeLine{1173     \};}
-\DoxyCodeLine{1174 }
-\DoxyCodeLine{1175     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{GuiRectangleButton}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
-\DoxyCodeLine{1176     \{}
-\DoxyCodeLine{1177     \textcolor{keyword}{public}:}
-\DoxyCodeLine{1186         \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_afbe0aee69ffd939cf8bcee50ba620b6e}{GuiRectangleButton}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height);}
-\DoxyCodeLine{1187 }
-\DoxyCodeLine{1193         \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_a4830e8b0e0f51d612755375c1cbd6f23}{GuiRectangleButton}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{GuiRectangleButton}}\& other);}
-\DoxyCodeLine{1194 }
-\DoxyCodeLine{1200         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_aec86d9294339e29aa1024b64eecce83e}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{GuiRectangleButton}}\& other);}
-\DoxyCodeLine{1201 }
-\DoxyCodeLine{1207         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_a25a82768b2371ec1ecf0dc995707e280}{copy}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{GuiRectangleButton}}\& other);}
-\DoxyCodeLine{1208 }
-\DoxyCodeLine{1213         \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_a2f2a69b994b2034bae710012cf07bf7c}{\string~GuiRectangleButton}}();}
-\DoxyCodeLine{1214 }
-\DoxyCodeLine{1215         \textcolor{comment}{//Object and Class Stuff}}
-\DoxyCodeLine{1216         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
-\DoxyCodeLine{1217         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
-\DoxyCodeLine{1218         }
-\DoxyCodeLine{1223         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_ac9f563bb7ffc13212f61e6e95fb9afb2}{update}}();}
-\DoxyCodeLine{1224 }
-\DoxyCodeLine{1230         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_a9ec83b275f4a70e5afc1e5744b016032}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
-\DoxyCodeLine{1231 }
-\DoxyCodeLine{1237         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_abe72308f05538bcd8367dfeb1e3b778b}{setOnClickFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
-\DoxyCodeLine{1238 }
-\DoxyCodeLine{1244         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_ac8bb16543a69a73176cfc32de2e9b13f}{setOnClickHoldFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
-\DoxyCodeLine{1245 }
-\DoxyCodeLine{1251         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_ae8dea6f690052a22508e7b06887641cb}{setOnClickReleaseFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
-\DoxyCodeLine{1252 }
-\DoxyCodeLine{1258         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_a8beef90b063503bd83450c7191f79fdd}{setBackgroundColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{1259 }
-\DoxyCodeLine{1265         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_a5b644d971ab1b3e6507925b69c669fae}{setOutlineColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{1266 }
-\DoxyCodeLine{1272         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_ac9fab9962f010d8a6de7ce973227eda6}{setFocusOutlineColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{1273 }
-\DoxyCodeLine{1279         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_af19dcbf8a0d81fab53aa8b85c1416461}{setFocusBackgroundColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{1280 }
-\DoxyCodeLine{1286         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_aeda60507919b36563aabdeae12bef0a5}{setHoverColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{1287 }
-\DoxyCodeLine{1293         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_a884cd4bdaadb6c1eea1f5063d30b421b}{setWidth}}(\textcolor{keywordtype}{int} v);}
-\DoxyCodeLine{1294 }
-\DoxyCodeLine{1300         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_aa2afe76e69889a87fa0047a613e45b77}{setHeight}}(\textcolor{keywordtype}{int} v);}
-\DoxyCodeLine{1301 }
-\DoxyCodeLine{1307         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_aeb4a82d77acb079ba0d7fb4ce89cb729}{getWidth}}();}
-\DoxyCodeLine{1308 }
-\DoxyCodeLine{1314         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_aee2535739ab1797a460cfbfe00f0eeb7}{getHeight}}();}
-\DoxyCodeLine{1315 }
-\DoxyCodeLine{1316     \textcolor{keyword}{private}:}
-\DoxyCodeLine{1317         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onClickFunction;}
-\DoxyCodeLine{1318         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onClickHoldFunction;}
-\DoxyCodeLine{1319         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onClickReleaseFunction;}
+\DoxyCodeLine{1157         GuiTextBlock textElement = GuiTextBlock(0,0,0,0);}
+\DoxyCodeLine{1158     \};}
+\DoxyCodeLine{1159 }
+\DoxyCodeLine{1160     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_shape}{GuiShape}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
+\DoxyCodeLine{1161     \{}
+\DoxyCodeLine{1162     \textcolor{keyword}{public}:}
+\DoxyCodeLine{1163         \mbox{\hyperlink{classglib_1_1_gui_shape}{GuiShape}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \mbox{\hyperlink{classglib_1_1_vector_graphic}{VectorGraphic}}* svg);}
+\DoxyCodeLine{1164         \mbox{\hyperlink{classglib_1_1_gui_shape}{GuiShape}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_shape}{GuiShape}}\& other);}
+\DoxyCodeLine{1165         \textcolor{keywordtype}{void} operator=(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_shape}{GuiShape}}\& other);}
+\DoxyCodeLine{1166         \textcolor{keywordtype}{void} copy(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_shape}{GuiShape}}\& other);}
+\DoxyCodeLine{1167         \mbox{\hyperlink{classglib_1_1_gui_shape}{\string~GuiShape}}();}
+\DoxyCodeLine{1168 }
+\DoxyCodeLine{1169         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{1170         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{1171         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{1172         }
+\DoxyCodeLine{1173         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_shape_a8d1206553298941756e9176a64977abe}{update}}();}
+\DoxyCodeLine{1174         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_shape_a7e7f469b644f1b7120c1ac107133c3c1}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{1175 }
+\DoxyCodeLine{1176         \textcolor{keywordtype}{void} setOnClickFunction(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
+\DoxyCodeLine{1177 }
+\DoxyCodeLine{1178         \textcolor{keywordtype}{void} setBackgroundColor(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1179         \textcolor{keywordtype}{void} setOutlineColor(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1180         \textcolor{keywordtype}{void} setFocusOutlineColor(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1181 }
+\DoxyCodeLine{1182     \textcolor{keyword}{private}:}
+\DoxyCodeLine{1183         }
+\DoxyCodeLine{1184         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onClickFunction;}
+\DoxyCodeLine{1185 }
+\DoxyCodeLine{1186         \mbox{\hyperlink{classglib_1_1_combination_shape}{CombinationShape}}* collisionMap = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{1187         \mbox{\hyperlink{classglib_1_1_vector_graphic}{VectorGraphic}}* shape = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{1188 }
+\DoxyCodeLine{1189         \mbox{\hyperlink{structglib_1_1_color}{Color}} backgroundColor = \{ 180, 180, 180, 255 \};}
+\DoxyCodeLine{1190         \mbox{\hyperlink{structglib_1_1_color}{Color}} outlineColor = \{ 0, 0, 0, 255 \};}
+\DoxyCodeLine{1191         Color focusOutlineColor = \{ 0, 0, 255, 255 \};}
+\DoxyCodeLine{1192     \};}
+\DoxyCodeLine{1193 }
+\DoxyCodeLine{1194     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{GuiRectangleButton}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
+\DoxyCodeLine{1195     \{}
+\DoxyCodeLine{1196     \textcolor{keyword}{public}:}
+\DoxyCodeLine{1205         \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_afbe0aee69ffd939cf8bcee50ba620b6e}{GuiRectangleButton}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height);}
+\DoxyCodeLine{1206 }
+\DoxyCodeLine{1212         \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_a4830e8b0e0f51d612755375c1cbd6f23}{GuiRectangleButton}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{GuiRectangleButton}}\& other);}
+\DoxyCodeLine{1213 }
+\DoxyCodeLine{1219         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_aec86d9294339e29aa1024b64eecce83e}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{GuiRectangleButton}}\& other);}
+\DoxyCodeLine{1220 }
+\DoxyCodeLine{1226         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_a25a82768b2371ec1ecf0dc995707e280}{copy}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{GuiRectangleButton}}\& other);}
+\DoxyCodeLine{1227 }
+\DoxyCodeLine{1232         \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_a2f2a69b994b2034bae710012cf07bf7c}{\string~GuiRectangleButton}}();}
+\DoxyCodeLine{1233 }
+\DoxyCodeLine{1234         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{1235         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{1236         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{1237         }
+\DoxyCodeLine{1242         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_ac9f563bb7ffc13212f61e6e95fb9afb2}{update}}();}
+\DoxyCodeLine{1243 }
+\DoxyCodeLine{1249         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_a9ec83b275f4a70e5afc1e5744b016032}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{1250 }
+\DoxyCodeLine{1256         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_abe72308f05538bcd8367dfeb1e3b778b}{setOnClickFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
+\DoxyCodeLine{1257 }
+\DoxyCodeLine{1263         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_ac8bb16543a69a73176cfc32de2e9b13f}{setOnClickHoldFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
+\DoxyCodeLine{1264 }
+\DoxyCodeLine{1270         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_ae8dea6f690052a22508e7b06887641cb}{setOnClickReleaseFunction}}(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
+\DoxyCodeLine{1271 }
+\DoxyCodeLine{1277         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_a8beef90b063503bd83450c7191f79fdd}{setBackgroundColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1278 }
+\DoxyCodeLine{1284         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_a5b644d971ab1b3e6507925b69c669fae}{setOutlineColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1285 }
+\DoxyCodeLine{1291         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_ac9fab9962f010d8a6de7ce973227eda6}{setFocusOutlineColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1292 }
+\DoxyCodeLine{1298         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_af19dcbf8a0d81fab53aa8b85c1416461}{setFocusBackgroundColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1299 }
+\DoxyCodeLine{1305         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_aeda60507919b36563aabdeae12bef0a5}{setHoverColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1306 }
+\DoxyCodeLine{1312         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_a884cd4bdaadb6c1eea1f5063d30b421b}{setWidth}}(\textcolor{keywordtype}{int} v);}
+\DoxyCodeLine{1313 }
+\DoxyCodeLine{1319         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_aa2afe76e69889a87fa0047a613e45b77}{setHeight}}(\textcolor{keywordtype}{int} v);}
 \DoxyCodeLine{1320 }
-\DoxyCodeLine{1321         \textcolor{keywordtype}{int} width = 0;}
-\DoxyCodeLine{1322         \textcolor{keywordtype}{int} height = 0;}
-\DoxyCodeLine{1323 }
-\DoxyCodeLine{1324         \textcolor{keywordtype}{bool} hover = \textcolor{keyword}{false};}
-\DoxyCodeLine{1325 }
-\DoxyCodeLine{1326         \mbox{\hyperlink{structglib_1_1_color}{Color}} backgroundColor = \{ 180, 180, 180, 255 \};}
-\DoxyCodeLine{1327         \mbox{\hyperlink{structglib_1_1_color}{Color}} hoverColor = \{200, 200, 200, 255\};}
-\DoxyCodeLine{1328         Color focusBackgroundColor = \{225, 225, 225, 255\};}
-\DoxyCodeLine{1329 }
-\DoxyCodeLine{1330         Color outlineColor = \{ 0, 0, 0, 255 \};}
-\DoxyCodeLine{1331         Color focusOutlineColor = \{ 0, 0, 255, 255 \};}
-\DoxyCodeLine{1332     \};}
-\DoxyCodeLine{1333 }
-\DoxyCodeLine{1334     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_circle_button}{GuiCircleButton}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
-\DoxyCodeLine{1335     \{}
-\DoxyCodeLine{1336     \textcolor{keyword}{public}:}
-\DoxyCodeLine{1337         \mbox{\hyperlink{classglib_1_1_gui_circle_button}{GuiCircleButton}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} radius);}
-\DoxyCodeLine{1338         \mbox{\hyperlink{classglib_1_1_gui_circle_button}{GuiCircleButton}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_circle_button}{GuiCircleButton}}\& other);}
-\DoxyCodeLine{1339         \textcolor{keywordtype}{void} operator=(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_circle_button}{GuiCircleButton}}\& other);}
-\DoxyCodeLine{1340         \textcolor{keywordtype}{void} copy(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_circle_button}{GuiCircleButton}}\& other);}
-\DoxyCodeLine{1341         \mbox{\hyperlink{classglib_1_1_gui_circle_button}{\string~GuiCircleButton}}();}
+\DoxyCodeLine{1326         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_aeb4a82d77acb079ba0d7fb4ce89cb729}{getWidth}}();}
+\DoxyCodeLine{1327 }
+\DoxyCodeLine{1333         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_aee2535739ab1797a460cfbfe00f0eeb7}{getHeight}}();}
+\DoxyCodeLine{1334 }
+\DoxyCodeLine{1335     \textcolor{keyword}{private}:}
+\DoxyCodeLine{1336         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onClickFunction;}
+\DoxyCodeLine{1337         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onClickHoldFunction;}
+\DoxyCodeLine{1338         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onClickReleaseFunction;}
+\DoxyCodeLine{1339 }
+\DoxyCodeLine{1340         \textcolor{keywordtype}{int} width = 0;}
+\DoxyCodeLine{1341         \textcolor{keywordtype}{int} height = 0;}
 \DoxyCodeLine{1342 }
-\DoxyCodeLine{1343         \textcolor{comment}{//Object and Class Stuff}}
-\DoxyCodeLine{1344         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
-\DoxyCodeLine{1345         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
-\DoxyCodeLine{1346 }
-\DoxyCodeLine{1347         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_circle_button_a2bac02a77e2873a7b2e78e571d214251}{update}}();}
-\DoxyCodeLine{1348         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_circle_button_ad1f349b70a07efdda2be6849c0e6b354}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
-\DoxyCodeLine{1349 }
-\DoxyCodeLine{1350         \textcolor{keywordtype}{void} setOnClickFunction(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
-\DoxyCodeLine{1351         \textcolor{keywordtype}{void} setOnClickHoldFunction(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
+\DoxyCodeLine{1343         \textcolor{keywordtype}{bool} hover = \textcolor{keyword}{false};}
+\DoxyCodeLine{1344 }
+\DoxyCodeLine{1345         \mbox{\hyperlink{structglib_1_1_color}{Color}} backgroundColor = \{ 180, 180, 180, 255 \};}
+\DoxyCodeLine{1346         \mbox{\hyperlink{structglib_1_1_color}{Color}} hoverColor = \{200, 200, 200, 255\};}
+\DoxyCodeLine{1347         Color focusBackgroundColor = \{225, 225, 225, 255\};}
+\DoxyCodeLine{1348 }
+\DoxyCodeLine{1349         Color outlineColor = \{ 0, 0, 0, 255 \};}
+\DoxyCodeLine{1350         Color focusOutlineColor = \{ 0, 0, 255, 255 \};}
+\DoxyCodeLine{1351     \};}
 \DoxyCodeLine{1352 }
-\DoxyCodeLine{1353         \textcolor{keywordtype}{void} setBackgroundColor(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{1354         \textcolor{keywordtype}{void} setOutlineColor(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{1355         \textcolor{keywordtype}{void} setFocusOutlineColor(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{1356 }
-\DoxyCodeLine{1357         \textcolor{keywordtype}{void} setRadius(\textcolor{keywordtype}{int} v);}
-\DoxyCodeLine{1358         \textcolor{keywordtype}{int} getRadius();}
-\DoxyCodeLine{1359 }
-\DoxyCodeLine{1360     \textcolor{keyword}{private}:}
-\DoxyCodeLine{1361         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onClickFunction;}
-\DoxyCodeLine{1362         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onClickHoldFunction;}
-\DoxyCodeLine{1363 }
-\DoxyCodeLine{1364         \textcolor{keywordtype}{int} radius = 0;}
+\DoxyCodeLine{1353     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_circle_button}{GuiCircleButton}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
+\DoxyCodeLine{1354     \{}
+\DoxyCodeLine{1355     \textcolor{keyword}{public}:}
+\DoxyCodeLine{1356         \mbox{\hyperlink{classglib_1_1_gui_circle_button}{GuiCircleButton}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} radius);}
+\DoxyCodeLine{1357         \mbox{\hyperlink{classglib_1_1_gui_circle_button}{GuiCircleButton}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_circle_button}{GuiCircleButton}}\& other);}
+\DoxyCodeLine{1358         \textcolor{keywordtype}{void} operator=(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_circle_button}{GuiCircleButton}}\& other);}
+\DoxyCodeLine{1359         \textcolor{keywordtype}{void} copy(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_circle_button}{GuiCircleButton}}\& other);}
+\DoxyCodeLine{1360         \mbox{\hyperlink{classglib_1_1_gui_circle_button}{\string~GuiCircleButton}}();}
+\DoxyCodeLine{1361 }
+\DoxyCodeLine{1362         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{1363         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{1364         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
 \DoxyCodeLine{1365 }
-\DoxyCodeLine{1366         \mbox{\hyperlink{structglib_1_1_color}{Color}} backgroundColor = \{ 180, 180, 180, 255 \};}
-\DoxyCodeLine{1367         \mbox{\hyperlink{structglib_1_1_color}{Color}} outlineColor = \{ 0, 0, 0, 255 \};}
-\DoxyCodeLine{1368         Color focusOutlineColor = \{ 0, 0, 255, 255 \};}
-\DoxyCodeLine{1369     \};}
-\DoxyCodeLine{1370 }
-\DoxyCodeLine{1371     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{GuiScrollBar}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
-\DoxyCodeLine{1372     \{}
-\DoxyCodeLine{1373     \textcolor{keyword}{public}:}
-\DoxyCodeLine{1390         \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ad4f62b605f31a2c8c84e2717f31c2340}{GuiScrollBar}}(\textcolor{keywordtype}{int} startX, \textcolor{keywordtype}{int} startY, \textcolor{keywordtype}{int} endX, \textcolor{keywordtype}{int} endY);}
-\DoxyCodeLine{1391 }
-\DoxyCodeLine{1397         \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a37a52f9ddb9269b3edfbd62e9641f312}{GuiScrollBar}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{GuiScrollBar}}\& other);}
-\DoxyCodeLine{1398 }
-\DoxyCodeLine{1404         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a6050961ffa2f5bb4f812780a213bccc8}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{GuiScrollBar}}\& other);}
-\DoxyCodeLine{1405 }
-\DoxyCodeLine{1411         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a07f61a831b635937bb456da2bfd8e427}{copy}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{GuiScrollBar}}\& other);}
-\DoxyCodeLine{1412 }
-\DoxyCodeLine{1417         \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ab67194c6bc6465f138709aa5b3af18b3}{\string~GuiScrollBar}}();}
-\DoxyCodeLine{1418 }
-\DoxyCodeLine{1419         \textcolor{comment}{//Object and Class Stuff}}
-\DoxyCodeLine{1420         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
-\DoxyCodeLine{1421         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
-\DoxyCodeLine{1422 }
-\DoxyCodeLine{1427         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a7aa92e3808cd7896ee6a75af5711f341}{update}}();}
-\DoxyCodeLine{1428 }
-\DoxyCodeLine{1434         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a27d2cf4c414ea043ab6541a163a67165}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
-\DoxyCodeLine{1435 }
-\DoxyCodeLine{1442         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a7e298e5eca02dfd346c25fde46a150f9}{setOnSlideFunction}}( std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
-\DoxyCodeLine{1443 }
-\DoxyCodeLine{1449         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a01046ed685ce3bc428c4239c8ca9f6e2}{setBackgroundColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{1450 }
-\DoxyCodeLine{1456         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_af19049b0503f83bf81c15f43f1d7545f}{getBackgroundColor}}();}
-\DoxyCodeLine{1457 }
-\DoxyCodeLine{1463         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ac691b8e90a14e938125be1d38eaee2d5}{setOutlineColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{1464 }
-\DoxyCodeLine{1470         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_aeda5b9dc6b4cccd5b926133e2c2d826a}{getOutlineColor}}();}
-\DoxyCodeLine{1471 }
-\DoxyCodeLine{1477         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ab434d6f4ec2500737548e14a0a820433}{setStartX}}(\textcolor{keywordtype}{int} x);}
-\DoxyCodeLine{1478 }
-\DoxyCodeLine{1484         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a3afcc9b7a3ce0c31922b1aec81830889}{getStartX}}();}
-\DoxyCodeLine{1485 }
-\DoxyCodeLine{1491         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ac02154f8e0921c60957ef9979c512125}{setStartY}}(\textcolor{keywordtype}{int} y);}
-\DoxyCodeLine{1492 }
-\DoxyCodeLine{1498         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ab9d02fd08c098420ee3dae0de059fbc7}{getStartY}}();}
-\DoxyCodeLine{1499 }
-\DoxyCodeLine{1505         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a94bf220e4a2a2f8799604d2e931a84d0}{setEndX}}(\textcolor{keywordtype}{int} x);}
-\DoxyCodeLine{1506 }
-\DoxyCodeLine{1512         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a38508147b8e2943ea83e31d69709b568}{getEndX}}();}
-\DoxyCodeLine{1513 }
-\DoxyCodeLine{1519         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a52f5a089fcb67eb099eff697f8e8bb60}{setEndY}}(\textcolor{keywordtype}{int} y);}
-\DoxyCodeLine{1520 }
-\DoxyCodeLine{1526         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a06b993e5bb01eccdefa7df58572f8c29}{getEndY}}();}
-\DoxyCodeLine{1527 }
-\DoxyCodeLine{1533         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a5c850084e4a19165867afec52b726905}{setMinWidth}}(\textcolor{keywordtype}{int} w);}
-\DoxyCodeLine{1534 }
-\DoxyCodeLine{1540         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a9166481e494a07a4f26f3e31b545584b}{getMinWidth}}();}
-\DoxyCodeLine{1541 }
-\DoxyCodeLine{1547         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a23e88333d03624feea5930cddbda27df}{setMinHeight}}(\textcolor{keywordtype}{int} h);}
-\DoxyCodeLine{1548 }
-\DoxyCodeLine{1554         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a4feb98d9bb6c05c8baef8ced13ded0b9}{getMinHeight}}();}
-\DoxyCodeLine{1555 }
-\DoxyCodeLine{1562         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a61eb775a99aa0f58c8d31366e74b7c93}{setSteps}}(\textcolor{keywordtype}{int} s);}
-\DoxyCodeLine{1563 }
-\DoxyCodeLine{1569         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a989a3e4f49d99cfdc4389ca54219ac04}{getSteps}}();}
-\DoxyCodeLine{1570 }
-\DoxyCodeLine{1578         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a534e61ec320d7b64e744b47160852848}{setCurrentStep}}(\textcolor{keywordtype}{int} s);}
-\DoxyCodeLine{1579 }
-\DoxyCodeLine{1585         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ad966e130a19d4245b3efbbdd6c9d3d77}{getCurrentStep}}();}
-\DoxyCodeLine{1586 }
-\DoxyCodeLine{1593         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a0fdbceb1e1cdd8259290dce5be64a8c1}{setHorizontalBar}}(\textcolor{keywordtype}{bool} v);}
-\DoxyCodeLine{1594 }
-\DoxyCodeLine{1601         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_af390be6f3ec33ea89ab1675fe5db77f7}{getHorizontalBar}}();}
-\DoxyCodeLine{1602 }
-\DoxyCodeLine{1609         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a072ef05ff7d83e74c3e6568e83ef9926}{setShowScrollButtons}}(\textcolor{keywordtype}{bool} v);}
-\DoxyCodeLine{1610 }
-\DoxyCodeLine{1617         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_aae44a208c715b0c0cc43ac88c52d9394}{getShowScrollButtons}}();}
-\DoxyCodeLine{1618 }
-\DoxyCodeLine{1624         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a4c350f6d828ec303d0a20233b0ab5ce8}{increaseScroll}}();}
-\DoxyCodeLine{1625 }
-\DoxyCodeLine{1631         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a2d77e841121a72d61b5ebe7990742caa}{decreaseScroll}}();}
-\DoxyCodeLine{1632 }
-\DoxyCodeLine{1638         \mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{GuiRectangleButton}}* \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a0ba20aeaf28144ecdb13141b408a8ff4}{getButtonElement}}();}
-\DoxyCodeLine{1639 }
-\DoxyCodeLine{1645         \mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{GuiRectangleButton}}* \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_af939af38ad2aec064c9255003c2ea751}{getDecreaseButtonElement}}();}
-\DoxyCodeLine{1646 }
-\DoxyCodeLine{1652         \mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{GuiRectangleButton}}* \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a77401a488caa09d5e262c3fa0f2a74bb}{getIncreaseButtonElement}}();}
-\DoxyCodeLine{1653 }
-\DoxyCodeLine{1654     \textcolor{keyword}{private}:}
-\DoxyCodeLine{1655 }
-\DoxyCodeLine{1656         \textcolor{keywordtype}{int} startX = 0;}
-\DoxyCodeLine{1657         \textcolor{keywordtype}{int} endX = 0;}
-\DoxyCodeLine{1658         \textcolor{keywordtype}{int} startY = 0;}
-\DoxyCodeLine{1659         \textcolor{keywordtype}{int} endY = 0;}
-\DoxyCodeLine{1660 }
-\DoxyCodeLine{1661         \textcolor{keywordtype}{int} steps = 0;}
-\DoxyCodeLine{1662         \textcolor{keywordtype}{int} currStep = 0;}
-\DoxyCodeLine{1663 }
-\DoxyCodeLine{1664         \textcolor{keywordtype}{int} minWidth = 12;}
-\DoxyCodeLine{1665         \textcolor{keywordtype}{int} minHeight = 12;}
-\DoxyCodeLine{1666 }
-\DoxyCodeLine{1667         \textcolor{keywordtype}{bool} isHorizontal = \textcolor{keyword}{false};}
-\DoxyCodeLine{1668         \textcolor{keywordtype}{bool} showScrollButtons = \textcolor{keyword}{true};}
-\DoxyCodeLine{1669 }
-\DoxyCodeLine{1670         \textcolor{comment}{//holdButtonFunction variables}}
-\DoxyCodeLine{1671         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onSlideFunction;}
-\DoxyCodeLine{1672         \textcolor{keywordtype}{void} holdButtonFunction(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}* a);}
-\DoxyCodeLine{1673         \textcolor{keywordtype}{int} preMouseX = 0;}
-\DoxyCodeLine{1674         \textcolor{keywordtype}{int} preMouseY = 0;}
-\DoxyCodeLine{1675         \textcolor{keywordtype}{int} preButtonX = 0;}
-\DoxyCodeLine{1676         \textcolor{keywordtype}{int} preButtonY = 0;}
-\DoxyCodeLine{1677 }
-\DoxyCodeLine{1678         \mbox{\hyperlink{structglib_1_1_color}{Color}} backgroundColor = \{ 180, 180, 180, 255 \};}
-\DoxyCodeLine{1679         \mbox{\hyperlink{structglib_1_1_color}{Color}} outlineColor = \{ 0, 0, 0, 255 \};}
-\DoxyCodeLine{1680 }
-\DoxyCodeLine{1681         GuiRectangleButton buttonElement = GuiRectangleButton(0,0,0,0);}
+\DoxyCodeLine{1366         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_circle_button_a2bac02a77e2873a7b2e78e571d214251}{update}}();}
+\DoxyCodeLine{1367         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_circle_button_ad1f349b70a07efdda2be6849c0e6b354}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{1368 }
+\DoxyCodeLine{1369         \textcolor{keywordtype}{void} setOnClickFunction(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
+\DoxyCodeLine{1370         \textcolor{keywordtype}{void} setOnClickHoldFunction(std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
+\DoxyCodeLine{1371 }
+\DoxyCodeLine{1372         \textcolor{keywordtype}{void} setBackgroundColor(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1373         \textcolor{keywordtype}{void} setOutlineColor(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1374         \textcolor{keywordtype}{void} setFocusOutlineColor(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1375 }
+\DoxyCodeLine{1376         \textcolor{keywordtype}{void} setRadius(\textcolor{keywordtype}{int} v);}
+\DoxyCodeLine{1377         \textcolor{keywordtype}{int} getRadius();}
+\DoxyCodeLine{1378 }
+\DoxyCodeLine{1379     \textcolor{keyword}{private}:}
+\DoxyCodeLine{1380         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onClickFunction;}
+\DoxyCodeLine{1381         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onClickHoldFunction;}
+\DoxyCodeLine{1382 }
+\DoxyCodeLine{1383         \textcolor{keywordtype}{int} radius = 0;}
+\DoxyCodeLine{1384 }
+\DoxyCodeLine{1385         \mbox{\hyperlink{structglib_1_1_color}{Color}} backgroundColor = \{ 180, 180, 180, 255 \};}
+\DoxyCodeLine{1386         \mbox{\hyperlink{structglib_1_1_color}{Color}} outlineColor = \{ 0, 0, 0, 255 \};}
+\DoxyCodeLine{1387         Color focusOutlineColor = \{ 0, 0, 255, 255 \};}
+\DoxyCodeLine{1388     \};}
+\DoxyCodeLine{1389 }
+\DoxyCodeLine{1390     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{GuiScrollBar}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
+\DoxyCodeLine{1391     \{}
+\DoxyCodeLine{1392     \textcolor{keyword}{public}:}
+\DoxyCodeLine{1409         \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ad4f62b605f31a2c8c84e2717f31c2340}{GuiScrollBar}}(\textcolor{keywordtype}{int} startX, \textcolor{keywordtype}{int} startY, \textcolor{keywordtype}{int} endX, \textcolor{keywordtype}{int} endY);}
+\DoxyCodeLine{1410 }
+\DoxyCodeLine{1416         \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a37a52f9ddb9269b3edfbd62e9641f312}{GuiScrollBar}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{GuiScrollBar}}\& other);}
+\DoxyCodeLine{1417 }
+\DoxyCodeLine{1423         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a6050961ffa2f5bb4f812780a213bccc8}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{GuiScrollBar}}\& other);}
+\DoxyCodeLine{1424 }
+\DoxyCodeLine{1430         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a07f61a831b635937bb456da2bfd8e427}{copy}}(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar}{GuiScrollBar}}\& other);}
+\DoxyCodeLine{1431 }
+\DoxyCodeLine{1436         \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ab67194c6bc6465f138709aa5b3af18b3}{\string~GuiScrollBar}}();}
+\DoxyCodeLine{1437 }
+\DoxyCodeLine{1438         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{1439         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{1440         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{1441 }
+\DoxyCodeLine{1446         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a7aa92e3808cd7896ee6a75af5711f341}{update}}();}
+\DoxyCodeLine{1447 }
+\DoxyCodeLine{1453         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a27d2cf4c414ea043ab6541a163a67165}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{1454 }
+\DoxyCodeLine{1461         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a7e298e5eca02dfd346c25fde46a150f9}{setOnSlideFunction}}( std::function<\textcolor{keywordtype}{void}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> func);}
+\DoxyCodeLine{1462 }
+\DoxyCodeLine{1468         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a01046ed685ce3bc428c4239c8ca9f6e2}{setBackgroundColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1469 }
+\DoxyCodeLine{1475         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_af19049b0503f83bf81c15f43f1d7545f}{getBackgroundColor}}();}
+\DoxyCodeLine{1476 }
+\DoxyCodeLine{1482         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ac691b8e90a14e938125be1d38eaee2d5}{setOutlineColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1483 }
+\DoxyCodeLine{1489         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_aeda5b9dc6b4cccd5b926133e2c2d826a}{getOutlineColor}}();}
+\DoxyCodeLine{1490 }
+\DoxyCodeLine{1496         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ab434d6f4ec2500737548e14a0a820433}{setStartX}}(\textcolor{keywordtype}{int} x);}
+\DoxyCodeLine{1497 }
+\DoxyCodeLine{1503         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a3afcc9b7a3ce0c31922b1aec81830889}{getStartX}}();}
+\DoxyCodeLine{1504 }
+\DoxyCodeLine{1510         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ac02154f8e0921c60957ef9979c512125}{setStartY}}(\textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{1511 }
+\DoxyCodeLine{1517         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ab9d02fd08c098420ee3dae0de059fbc7}{getStartY}}();}
+\DoxyCodeLine{1518 }
+\DoxyCodeLine{1524         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a94bf220e4a2a2f8799604d2e931a84d0}{setEndX}}(\textcolor{keywordtype}{int} x);}
+\DoxyCodeLine{1525 }
+\DoxyCodeLine{1531         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a38508147b8e2943ea83e31d69709b568}{getEndX}}();}
+\DoxyCodeLine{1532 }
+\DoxyCodeLine{1538         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a52f5a089fcb67eb099eff697f8e8bb60}{setEndY}}(\textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{1539 }
+\DoxyCodeLine{1545         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a06b993e5bb01eccdefa7df58572f8c29}{getEndY}}();}
+\DoxyCodeLine{1546 }
+\DoxyCodeLine{1552         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a5c850084e4a19165867afec52b726905}{setMinWidth}}(\textcolor{keywordtype}{int} w);}
+\DoxyCodeLine{1553 }
+\DoxyCodeLine{1559         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a9166481e494a07a4f26f3e31b545584b}{getMinWidth}}();}
+\DoxyCodeLine{1560 }
+\DoxyCodeLine{1566         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a23e88333d03624feea5930cddbda27df}{setMinHeight}}(\textcolor{keywordtype}{int} h);}
+\DoxyCodeLine{1567 }
+\DoxyCodeLine{1573         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a4feb98d9bb6c05c8baef8ced13ded0b9}{getMinHeight}}();}
+\DoxyCodeLine{1574 }
+\DoxyCodeLine{1581         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a61eb775a99aa0f58c8d31366e74b7c93}{setSteps}}(\textcolor{keywordtype}{int} s);}
+\DoxyCodeLine{1582 }
+\DoxyCodeLine{1588         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a989a3e4f49d99cfdc4389ca54219ac04}{getSteps}}();}
+\DoxyCodeLine{1589 }
+\DoxyCodeLine{1597         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a534e61ec320d7b64e744b47160852848}{setCurrentStep}}(\textcolor{keywordtype}{int} s);}
+\DoxyCodeLine{1598 }
+\DoxyCodeLine{1604         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_ad966e130a19d4245b3efbbdd6c9d3d77}{getCurrentStep}}();}
+\DoxyCodeLine{1605 }
+\DoxyCodeLine{1612         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a0fdbceb1e1cdd8259290dce5be64a8c1}{setHorizontalBar}}(\textcolor{keywordtype}{bool} v);}
+\DoxyCodeLine{1613 }
+\DoxyCodeLine{1620         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_af390be6f3ec33ea89ab1675fe5db77f7}{getHorizontalBar}}();}
+\DoxyCodeLine{1621 }
+\DoxyCodeLine{1628         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a072ef05ff7d83e74c3e6568e83ef9926}{setShowScrollButtons}}(\textcolor{keywordtype}{bool} v);}
+\DoxyCodeLine{1629 }
+\DoxyCodeLine{1636         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_aae44a208c715b0c0cc43ac88c52d9394}{getShowScrollButtons}}();}
+\DoxyCodeLine{1637 }
+\DoxyCodeLine{1643         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a4c350f6d828ec303d0a20233b0ab5ce8}{increaseScroll}}();}
+\DoxyCodeLine{1644 }
+\DoxyCodeLine{1650         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a2d77e841121a72d61b5ebe7990742caa}{decreaseScroll}}();}
+\DoxyCodeLine{1651 }
+\DoxyCodeLine{1657         \mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{GuiRectangleButton}}* \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a0ba20aeaf28144ecdb13141b408a8ff4}{getButtonElement}}();}
+\DoxyCodeLine{1658 }
+\DoxyCodeLine{1664         \mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{GuiRectangleButton}}* \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_af939af38ad2aec064c9255003c2ea751}{getDecreaseButtonElement}}();}
+\DoxyCodeLine{1665 }
+\DoxyCodeLine{1671         \mbox{\hyperlink{classglib_1_1_gui_rectangle_button}{GuiRectangleButton}}* \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a77401a488caa09d5e262c3fa0f2a74bb}{getIncreaseButtonElement}}();}
+\DoxyCodeLine{1672 }
+\DoxyCodeLine{1673     \textcolor{keyword}{private}:}
+\DoxyCodeLine{1674 }
+\DoxyCodeLine{1675         \textcolor{keywordtype}{int} startX = 0;}
+\DoxyCodeLine{1676         \textcolor{keywordtype}{int} endX = 0;}
+\DoxyCodeLine{1677         \textcolor{keywordtype}{int} startY = 0;}
+\DoxyCodeLine{1678         \textcolor{keywordtype}{int} endY = 0;}
+\DoxyCodeLine{1679 }
+\DoxyCodeLine{1680         \textcolor{keywordtype}{int} steps = 0;}
+\DoxyCodeLine{1681         \textcolor{keywordtype}{int} currStep = 0;}
 \DoxyCodeLine{1682 }
-\DoxyCodeLine{1683         GuiRectangleButton decreaseButtonElement = GuiRectangleButton(0,0,0,0);}
-\DoxyCodeLine{1684         GuiRectangleButton increaseButtonElement = GuiRectangleButton(0,0,0,0);}
-\DoxyCodeLine{1685     \};}
-\DoxyCodeLine{1686 }
-\DoxyCodeLine{1687     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_manager}{GuiManager}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
-\DoxyCodeLine{1688     \{}
-\DoxyCodeLine{1689     \textcolor{keyword}{public}:}
-\DoxyCodeLine{1695         \mbox{\hyperlink{classglib_1_1_gui_manager_afb8dc854c5e20c213bd8eb04612dc0ff}{GuiManager}}();}
+\DoxyCodeLine{1683         \textcolor{keywordtype}{int} minWidth = 12;}
+\DoxyCodeLine{1684         \textcolor{keywordtype}{int} minHeight = 12;}
+\DoxyCodeLine{1685 }
+\DoxyCodeLine{1686         \textcolor{keywordtype}{bool} isHorizontal = \textcolor{keyword}{false};}
+\DoxyCodeLine{1687         \textcolor{keywordtype}{bool} showScrollButtons = \textcolor{keyword}{true};}
+\DoxyCodeLine{1688 }
+\DoxyCodeLine{1689         \textcolor{comment}{//holdButtonFunction variables}}
+\DoxyCodeLine{1690         std::function<void(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*)> onSlideFunction;}
+\DoxyCodeLine{1691         \textcolor{keywordtype}{void} holdButtonFunction(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}* a);}
+\DoxyCodeLine{1692         \textcolor{keywordtype}{int} preMouseX = 0;}
+\DoxyCodeLine{1693         \textcolor{keywordtype}{int} preMouseY = 0;}
+\DoxyCodeLine{1694         \textcolor{keywordtype}{int} preButtonX = 0;}
+\DoxyCodeLine{1695         \textcolor{keywordtype}{int} preButtonY = 0;}
 \DoxyCodeLine{1696 }
-\DoxyCodeLine{1704         \mbox{\hyperlink{classglib_1_1_gui_manager_ab63247c544d4ec849ebcd0e2fbd6a6eb}{GuiManager}}(\textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height);}
+\DoxyCodeLine{1697         \mbox{\hyperlink{structglib_1_1_color}{Color}} backgroundColor = \{ 180, 180, 180, 255 \};}
+\DoxyCodeLine{1698         \mbox{\hyperlink{structglib_1_1_color}{Color}} outlineColor = \{ 0, 0, 0, 255 \};}
+\DoxyCodeLine{1699 }
+\DoxyCodeLine{1700         GuiRectangleButton buttonElement = GuiRectangleButton(0,0,0,0);}
+\DoxyCodeLine{1701 }
+\DoxyCodeLine{1702         GuiRectangleButton decreaseButtonElement = GuiRectangleButton(0,0,0,0);}
+\DoxyCodeLine{1703         GuiRectangleButton increaseButtonElement = GuiRectangleButton(0,0,0,0);}
+\DoxyCodeLine{1704     \};}
 \DoxyCodeLine{1705 }
-\DoxyCodeLine{1711         \mbox{\hyperlink{classglib_1_1_gui_manager_a2157010ed80cce56686ea3193baafba1}{\string~GuiManager}}();}
-\DoxyCodeLine{1712 }
-\DoxyCodeLine{1713         \textcolor{comment}{//Object and Class Stuff}}
-\DoxyCodeLine{1714         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
-\DoxyCodeLine{1715         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
-\DoxyCodeLine{1716 }
-\DoxyCodeLine{1722         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_manager_a4aac27fc843225c7f668901407ba7b1c}{addElement}}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}* k);}
-\DoxyCodeLine{1723 }
-\DoxyCodeLine{1729         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_manager_a46def9a11029401dca7763d691487149}{deleteElement}}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}* k);}
-\DoxyCodeLine{1730 }
-\DoxyCodeLine{1736         std::vector<GuiInstance*> \mbox{\hyperlink{classglib_1_1_gui_manager_a32a723401cc57a66d4321c874d999436}{getElements}}();}
+\DoxyCodeLine{1706     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_list}{GuiList}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
+\DoxyCodeLine{1707     \{}
+\DoxyCodeLine{1708     \textcolor{keyword}{public}:}
+\DoxyCodeLine{1709         \mbox{\hyperlink{classglib_1_1_gui_list}{GuiList}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{1710         \mbox{\hyperlink{classglib_1_1_gui_list}{\string~GuiList}}();}
+\DoxyCodeLine{1711 }
+\DoxyCodeLine{1712         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{1713         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{1714         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{1715 }
+\DoxyCodeLine{1716         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_list_a1763a844a861b943362152fbe66b9485}{update}}();}
+\DoxyCodeLine{1717         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_list_ad37b9bc54e783bd4a97ba2de8ed9dd63}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{1718 }
+\DoxyCodeLine{1719         \textcolor{keywordtype}{void} setElementSpacing(\textcolor{keywordtype}{int} value);}
+\DoxyCodeLine{1720         \textcolor{keywordtype}{void} addElement(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}* ins);}
+\DoxyCodeLine{1721         \textcolor{keywordtype}{void} removeElement(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}* ins);}
+\DoxyCodeLine{1722 }
+\DoxyCodeLine{1723         \textcolor{keywordtype}{bool} pointIsInList(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{1724         \textcolor{keywordtype}{void} setExpectedWidth(\textcolor{keywordtype}{int} w);}
+\DoxyCodeLine{1725 }
+\DoxyCodeLine{1726         \textcolor{keywordtype}{void} setBackgroundColor(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1727         \textcolor{keywordtype}{void} setOutlineColor(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1728         }
+\DoxyCodeLine{1729     \textcolor{keyword}{private}:}
+\DoxyCodeLine{1730         std::vector<Point*> locations;}
+\DoxyCodeLine{1731         \textcolor{keywordtype}{int} elementSpacing = 0;}
+\DoxyCodeLine{1732         \textcolor{keywordtype}{int} width = 0;}
+\DoxyCodeLine{1733 }
+\DoxyCodeLine{1734         \mbox{\hyperlink{structglib_1_1_color}{Color}} backgroundColor = \{ 180, 180, 180, 255 \};}
+\DoxyCodeLine{1735         \mbox{\hyperlink{structglib_1_1_color}{Color}} outlineColor = \{ 0, 0, 0, 255 \};}
+\DoxyCodeLine{1736     \};}
 \DoxyCodeLine{1737 }
-\DoxyCodeLine{1742         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_manager_a5d0e4230f54d8b96e774fa26f47a6007}{updateGuiElements}}();}
+\DoxyCodeLine{1738     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_grid}{GuiGrid}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
+\DoxyCodeLine{1739     \{}
+\DoxyCodeLine{1740     \textcolor{keyword}{public}:}
+\DoxyCodeLine{1741         \mbox{\hyperlink{classglib_1_1_gui_grid}{GuiGrid}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{1742         \mbox{\hyperlink{classglib_1_1_gui_grid}{\string~GuiGrid}}();}
 \DoxyCodeLine{1743 }
-\DoxyCodeLine{1748         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_manager_a7d5fa1a735209b9c4cdc7125ec79f610}{renderGuiElements}}();}
-\DoxyCodeLine{1749 }
-\DoxyCodeLine{1755         \mbox{\hyperlink{classglib_1_1_image}{Image}}* \mbox{\hyperlink{classglib_1_1_gui_manager_a3eb6149465f33c380ab8c511cfa30f17}{getImage}}();}
-\DoxyCodeLine{1756 }
-\DoxyCodeLine{1762         \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_gui_manager_a883f0c3e2b0ed5224f378f4a14be1233}{getSize}}();}
-\DoxyCodeLine{1763 }
-\DoxyCodeLine{1770         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_manager_a3df380216e50c42f985b42d314636cc1}{resizeImage}}(\textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height);}
-\DoxyCodeLine{1771 }
-\DoxyCodeLine{1778         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_manager_a7c5c0437aa7c5b2f03ed55473a63e809}{setWindowX}}(\textcolor{keywordtype}{int} v);}
-\DoxyCodeLine{1779 }
-\DoxyCodeLine{1786         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_manager_a9ee7486d703b9993d15f67a5d4fa584b}{setWindowY}}(\textcolor{keywordtype}{int} v);}
-\DoxyCodeLine{1787 }
-\DoxyCodeLine{1793         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_manager_a96794f575a29b1dceff191cc5b41f7b7}{getWindowX}}();}
+\DoxyCodeLine{1744         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{1745         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{1746         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{1747 }
+\DoxyCodeLine{1748         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_grid_a781de6f76c9c245cc9ba8d50eaa1876a}{update}}();}
+\DoxyCodeLine{1749         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_grid_a58c98be7cee91335c2f31f8998426fba}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{1750 }
+\DoxyCodeLine{1751         \textcolor{keywordtype}{void} setGridSpacing(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{1752         \textcolor{keywordtype}{void} addElement(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}* ins);}
+\DoxyCodeLine{1753         \textcolor{keywordtype}{void} removeElement(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}* ins);}
+\DoxyCodeLine{1754 }
+\DoxyCodeLine{1755         \textcolor{keywordtype}{void} setMaxRows(\textcolor{keywordtype}{int} row);}
+\DoxyCodeLine{1756         \textcolor{keywordtype}{int} getMaxRows();}
+\DoxyCodeLine{1757         \textcolor{keywordtype}{void} setMaxColumns(\textcolor{keywordtype}{int} col);}
+\DoxyCodeLine{1758         \textcolor{keywordtype}{int} getMaxColumns();}
+\DoxyCodeLine{1759 }
+\DoxyCodeLine{1760         \textcolor{keywordtype}{void} setRowMajorOrder(\textcolor{keywordtype}{bool} v);}
+\DoxyCodeLine{1761 }
+\DoxyCodeLine{1762         \textcolor{keywordtype}{bool} pointIsInGrid(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{1763         \textcolor{keywordtype}{void} setBackgroundColor(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1764         \textcolor{keywordtype}{void} setOutlineColor(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1765     \textcolor{keyword}{private}:}
+\DoxyCodeLine{1766         std::vector<Point*> locations;}
+\DoxyCodeLine{1767         \textcolor{keywordtype}{int} gridXSpacing = 0;}
+\DoxyCodeLine{1768         \textcolor{keywordtype}{int} gridYSpacing = 0;}
+\DoxyCodeLine{1769         \textcolor{keywordtype}{int} rowSize = 1;}
+\DoxyCodeLine{1770         \textcolor{keywordtype}{int} colSize = 1;}
+\DoxyCodeLine{1771         \textcolor{keywordtype}{bool} rowMajorOrder = \textcolor{keyword}{true};}
+\DoxyCodeLine{1772         }
+\DoxyCodeLine{1773         \mbox{\hyperlink{structglib_1_1_color}{Color}} backgroundColor = \{ 180, 180, 180, 255 \};}
+\DoxyCodeLine{1774         \mbox{\hyperlink{structglib_1_1_color}{Color}} outlineColor = \{ 0, 0, 0, 255 \};}
+\DoxyCodeLine{1775     \};}
+\DoxyCodeLine{1776 }
+\DoxyCodeLine{1777     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_context_menu}{GuiContextMenu}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}}
+\DoxyCodeLine{1778     \{}
+\DoxyCodeLine{1779     \textcolor{keyword}{public}:}
+\DoxyCodeLine{1780         \mbox{\hyperlink{classglib_1_1_gui_context_menu}{GuiContextMenu}}();}
+\DoxyCodeLine{1781         \mbox{\hyperlink{classglib_1_1_gui_context_menu}{\string~GuiContextMenu}}();}
+\DoxyCodeLine{1782 }
+\DoxyCodeLine{1783         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{1784         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{1785         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{1786 }
+\DoxyCodeLine{1787         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_context_menu_a8e9810e3ee7a6c9dafc8865e53f1e306}{update}}();}
+\DoxyCodeLine{1788         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_context_menu_a32afeb5966c22d3e211fd35520d690b0}{render}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* surf);}
+\DoxyCodeLine{1789 }
+\DoxyCodeLine{1790         \mbox{\hyperlink{classglib_1_1_gui_list}{GuiList}}* getListElement();}
+\DoxyCodeLine{1791 }
+\DoxyCodeLine{1792         \textcolor{keywordtype}{void} showMenu(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{1793         \textcolor{keywordtype}{void} hideMenu();}
 \DoxyCodeLine{1794 }
-\DoxyCodeLine{1800         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_manager_a14f0ce6e0febd7d808b98db0720102e3}{getWindowY}}();}
-\DoxyCodeLine{1801 }
-\DoxyCodeLine{1808         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_manager_aef06ffefe2ce7a19b3d93907ec6f0ad8}{getBackgroundColor}}();}
-\DoxyCodeLine{1809 }
-\DoxyCodeLine{1816         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_manager_ab190326306ae5bd7171101a2e15a5fe8}{setBackgroundColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
-\DoxyCodeLine{1817 }
-\DoxyCodeLine{1818     \textcolor{keyword}{private}:}
-\DoxyCodeLine{1819         \textcolor{keywordtype}{void} sortElements();}
-\DoxyCodeLine{1820 }
-\DoxyCodeLine{1821         std::vector<GuiInstance*> objects = std::vector<GuiInstance*>();}
-\DoxyCodeLine{1822         }
-\DoxyCodeLine{1823         \mbox{\hyperlink{classglib_1_1_image}{Image}} surf;}
-\DoxyCodeLine{1824 }
-\DoxyCodeLine{1825         \textcolor{keywordtype}{int} windowX = 0;}
-\DoxyCodeLine{1826         \textcolor{keywordtype}{int} windowY = 0;}
-\DoxyCodeLine{1827 }
-\DoxyCodeLine{1828         \mbox{\hyperlink{structglib_1_1_color}{Color}} backgroundColor = \{ 0xA2, 0xB9, 0xBC, 0xFF \};}
-\DoxyCodeLine{1829     \};}
-\DoxyCodeLine{1830 }
-\DoxyCodeLine{1831 \} \textcolor{comment}{//NAMESPACE glib END}}
+\DoxyCodeLine{1795         \textcolor{keywordtype}{void} setShowOnRightClick(\textcolor{keywordtype}{bool} v);}
+\DoxyCodeLine{1796         \textcolor{keywordtype}{bool} getShowOnRightClick();}
+\DoxyCodeLine{1797     \textcolor{keyword}{private}:}
+\DoxyCodeLine{1798         \mbox{\hyperlink{classglib_1_1_gui_list}{GuiList}} listMenu = \mbox{\hyperlink{classglib_1_1_gui_list}{GuiList}}(0, 0);}
+\DoxyCodeLine{1799         \textcolor{keywordtype}{bool} showOnRightClick = \textcolor{keyword}{true};}
+\DoxyCodeLine{1800         }
+\DoxyCodeLine{1801     \};}
+\DoxyCodeLine{1802 }
+\DoxyCodeLine{1803     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_manager}{GuiManager}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
+\DoxyCodeLine{1804     \{}
+\DoxyCodeLine{1805     \textcolor{keyword}{public}:}
+\DoxyCodeLine{1811         \mbox{\hyperlink{classglib_1_1_gui_manager_afb8dc854c5e20c213bd8eb04612dc0ff}{GuiManager}}();}
+\DoxyCodeLine{1812 }
+\DoxyCodeLine{1820         \mbox{\hyperlink{classglib_1_1_gui_manager_ab63247c544d4ec849ebcd0e2fbd6a6eb}{GuiManager}}(\textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height);}
+\DoxyCodeLine{1821 }
+\DoxyCodeLine{1827         \mbox{\hyperlink{classglib_1_1_gui_manager_a2157010ed80cce56686ea3193baafba1}{\string~GuiManager}}();}
+\DoxyCodeLine{1828 }
+\DoxyCodeLine{1829         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{1830         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{1831         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{1832 }
+\DoxyCodeLine{1838         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_manager_a4aac27fc843225c7f668901407ba7b1c}{addElement}}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}* k);}
+\DoxyCodeLine{1839 }
+\DoxyCodeLine{1845         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_manager_a46def9a11029401dca7763d691487149}{deleteElement}}(\mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}* k);}
+\DoxyCodeLine{1846 }
+\DoxyCodeLine{1852         std::vector<GuiInstance*> \mbox{\hyperlink{classglib_1_1_gui_manager_a32a723401cc57a66d4321c874d999436}{getElements}}();}
+\DoxyCodeLine{1853 }
+\DoxyCodeLine{1858         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_manager_a5d0e4230f54d8b96e774fa26f47a6007}{updateGuiElements}}();}
+\DoxyCodeLine{1859 }
+\DoxyCodeLine{1864         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_manager_a7d5fa1a735209b9c4cdc7125ec79f610}{renderGuiElements}}();}
+\DoxyCodeLine{1865 }
+\DoxyCodeLine{1871         \mbox{\hyperlink{classglib_1_1_image}{Image}}* \mbox{\hyperlink{classglib_1_1_gui_manager_a3eb6149465f33c380ab8c511cfa30f17}{getImage}}();}
+\DoxyCodeLine{1872 }
+\DoxyCodeLine{1878         \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_gui_manager_a883f0c3e2b0ed5224f378f4a14be1233}{getSize}}();}
+\DoxyCodeLine{1879 }
+\DoxyCodeLine{1886         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_manager_a3df380216e50c42f985b42d314636cc1}{resizeImage}}(\textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height);}
+\DoxyCodeLine{1887 }
+\DoxyCodeLine{1894         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_manager_a7c5c0437aa7c5b2f03ed55473a63e809}{setWindowX}}(\textcolor{keywordtype}{int} v);}
+\DoxyCodeLine{1895 }
+\DoxyCodeLine{1902         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_manager_a9ee7486d703b9993d15f67a5d4fa584b}{setWindowY}}(\textcolor{keywordtype}{int} v);}
+\DoxyCodeLine{1903 }
+\DoxyCodeLine{1909         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_manager_a96794f575a29b1dceff191cc5b41f7b7}{getWindowX}}();}
+\DoxyCodeLine{1910 }
+\DoxyCodeLine{1916         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_gui_manager_a14f0ce6e0febd7d808b98db0720102e3}{getWindowY}}();}
+\DoxyCodeLine{1917 }
+\DoxyCodeLine{1924         \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib_1_1_gui_manager_aef06ffefe2ce7a19b3d93907ec6f0ad8}{getBackgroundColor}}();}
+\DoxyCodeLine{1925 }
+\DoxyCodeLine{1932         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_gui_manager_ab190326306ae5bd7171101a2e15a5fe8}{setBackgroundColor}}(\mbox{\hyperlink{structglib_1_1_color}{Color}} c);}
+\DoxyCodeLine{1933 }
+\DoxyCodeLine{1934     \textcolor{keyword}{private}:}
+\DoxyCodeLine{1935         \textcolor{keywordtype}{void} sortElements();}
+\DoxyCodeLine{1936 }
+\DoxyCodeLine{1937         std::vector<GuiInstance*> objects = std::vector<GuiInstance*>();}
+\DoxyCodeLine{1938         }
+\DoxyCodeLine{1939         \mbox{\hyperlink{classglib_1_1_image}{Image}} surf;}
+\DoxyCodeLine{1940 }
+\DoxyCodeLine{1941         \textcolor{keywordtype}{int} windowX = 0;}
+\DoxyCodeLine{1942         \textcolor{keywordtype}{int} windowY = 0;}
+\DoxyCodeLine{1943 }
+\DoxyCodeLine{1944         \mbox{\hyperlink{structglib_1_1_color}{Color}} backgroundColor = \{ 0xA2, 0xB9, 0xBC, 0xFF \};}
+\DoxyCodeLine{1945     \};}
+\DoxyCodeLine{1946 }
+\DoxyCodeLine{1947     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_gui_memory_manager}{GuiMemoryManager}}}
+\DoxyCodeLine{1948     \{}
+\DoxyCodeLine{1949     \textcolor{keyword}{public}:}
+\DoxyCodeLine{1950         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_gui_memory_manager}{GuiMemoryManager}}* getGuiMemoryManager();}
+\DoxyCodeLine{1951 }
+\DoxyCodeLine{1952         \textcolor{keywordtype}{void} addInstance(std::string, \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*);}
+\DoxyCodeLine{1953         \textcolor{keywordtype}{void} removeInstance(std::string, \mbox{\hyperlink{classglib_1_1_gui_instance}{GuiInstance}}*);}
+\DoxyCodeLine{1954     \textcolor{keyword}{private}:}
+\DoxyCodeLine{1955         \mbox{\hyperlink{classglib_1_1_gui_memory_manager}{GuiMemoryManager}}();}
+\DoxyCodeLine{1956         \mbox{\hyperlink{classglib_1_1_gui_memory_manager}{\string~GuiMemoryManager}}();}
+\DoxyCodeLine{1957 }
+\DoxyCodeLine{1958         std::unordered\_multimap<std::string, GuiInstance*> instances;}
+\DoxyCodeLine{1959         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_gui_memory_manager}{GuiMemoryManager}} singleton;}
+\DoxyCodeLine{1960     \};}
+\DoxyCodeLine{1961 }
+\DoxyCodeLine{1962 \} \textcolor{comment}{//NAMESPACE glib END}}
 
 \end{DoxyCode}

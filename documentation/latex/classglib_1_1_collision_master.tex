@@ -71,7 +71,7 @@ static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_triang
 static bool \mbox{\hyperlink{classglib_1_1_collision_master_ae855be598395d547cce9e6bf40487810}{Separating\+Axis\+Theorem}} (\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} $\ast$b)
 \begin{DoxyCompactList}\small\item\em Uses the Separating Axis Theorem to determine if the 2 polygons are colliding. Can determine the point of collision and if either shape is encapsulated in the other. \end{DoxyCompactList}\item 
 static bool \mbox{\hyperlink{classglib_1_1_collision_master_a8aa22acd33846569117de867735e087b}{Alternating\+Diagonals}} (\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} $\ast$b)
-\begin{DoxyCompactList}\small\item\em Uses a method called Alternating Diagonals to determine if the 2 polygons are colliding. More information can be found here\+: \href{https://www.youtube.com/watch?v=7Ik2vowGcU0}{\texttt{ https\+://www.\+youtube.\+com/watch?v=7\+Ik2vow\+Gc\+U0}} Can determine the point of collision easier than SAT and is potentially faster due to earlier termination and simple line to line collisions. By itself, it can not determine if either shape is encapsulated in the other. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Uses a method called Alternating Diagonals to determine if the 2 polygons are colliding. More information can be found here\+: \href{https://www.youtube.com/watch?v=7Ik2vowGcU0}{\texttt{ https\+://www.\+youtube.\+com/watch?v=7\+Ik2vow\+Gc\+U0}} Can determine the point of collision easier than SAT and is potentially faster due to earlier termination and simple line to line collisions. By itself, it can not determine if either shape is encapsulated in the other in every case. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classglib_1_1_collision_master_aa97daa56d903314f4a9d6cad3ddd3709}\label{classglib_1_1_collision_master_aa97daa56d903314f4a9d6cad3ddd3709}} 
 static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_point2_d}{Point2D}} $\ast$b)
 \item 
@@ -80,9 +80,7 @@ static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_polygo
 \item 
 \mbox{\Hypertarget{classglib_1_1_collision_master_a87c05dab2c2184bdb7cdaa8e9ebd956d}\label{classglib_1_1_collision_master_a87c05dab2c2184bdb7cdaa8e9ebd956d}} 
 static bool {\bfseries collision\+Method} (\mbox{\hyperlink{classglib_1_1_polygon2_d}{Polygon2D}} $\ast$a, \mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}} $\ast$b)
-\item 
-static void \mbox{\hyperlink{classglib_1_1_collision_master_a58f677e41a9948c4b84c261f305ddf8f}{set\+External\+Collision\+Function}} (std\+::function$<$ bool(\mbox{\hyperlink{classglib_1_1_shape}{Shape}} $\ast$, \mbox{\hyperlink{classglib_1_1_shape}{Shape}} $\ast$)$>$ collision\+Function)
-\begin{DoxyCompactList}\small\item\em Sets a function that can be used to handle collision not handled by the pre-\/made functions. Note that this is slower due to accessing the function through a pointer. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{DoxyCompactItemize}
 
 
 \doxysubsection{Member Function Documentation}
@@ -94,7 +92,7 @@ static void \mbox{\hyperlink{classglib_1_1_collision_master_a58f677e41a9948c4b84
 
 
 
-Uses a method called Alternating Diagonals to determine if the 2 polygons are colliding. More information can be found here\+: \href{https://www.youtube.com/watch?v=7Ik2vowGcU0}{\texttt{ https\+://www.\+youtube.\+com/watch?v=7\+Ik2vow\+Gc\+U0}} Can determine the point of collision easier than SAT and is potentially faster due to earlier termination and simple line to line collisions. By itself, it can not determine if either shape is encapsulated in the other. 
+Uses a method called Alternating Diagonals to determine if the 2 polygons are colliding. More information can be found here\+: \href{https://www.youtube.com/watch?v=7Ik2vowGcU0}{\texttt{ https\+://www.\+youtube.\+com/watch?v=7\+Ik2vow\+Gc\+U0}} Can determine the point of collision easier than SAT and is potentially faster due to earlier termination and simple line to line collisions. By itself, it can not determine if either shape is encapsulated in the other in every case. 
 
 
 \begin{DoxyParams}{Parameters}
@@ -152,21 +150,6 @@ true
 
 false 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classglib_1_1_collision_master_a58f677e41a9948c4b84c261f305ddf8f}\label{classglib_1_1_collision_master_a58f677e41a9948c4b84c261f305ddf8f}} 
-\index{glib::CollisionMaster@{glib::CollisionMaster}!setExternalCollisionFunction@{setExternalCollisionFunction}}
-\index{setExternalCollisionFunction@{setExternalCollisionFunction}!glib::CollisionMaster@{glib::CollisionMaster}}
-\doxysubsubsection{\texorpdfstring{setExternalCollisionFunction()}{setExternalCollisionFunction()}}
-{\footnotesize\ttfamily static void glib\+::\+Collision\+Master\+::set\+External\+Collision\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ bool(\mbox{\hyperlink{classglib_1_1_shape}{Shape}} $\ast$, \mbox{\hyperlink{classglib_1_1_shape}{Shape}} $\ast$)$>$}]{collision\+Function }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
-
-
-
-Sets a function that can be used to handle collision not handled by the pre-\/made functions. Note that this is slower due to accessing the function through a pointer. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em collision\+Function} & \\
-\hline
-\end{DoxyParams}
 
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}

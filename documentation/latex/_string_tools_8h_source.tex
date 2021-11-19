@@ -154,246 +154,273 @@
 \DoxyCodeLine{395 }
 \DoxyCodeLine{402         \textcolor{keyword}{static} std::string \mbox{\hyperlink{classglib_1_1_string_tools_a5748b7b3a5756c96251b4b308c4b9dd8}{getString}}();}
 \DoxyCodeLine{403 }
-\DoxyCodeLine{410         \textcolor{keyword}{static} \textcolor{keywordtype}{char} \mbox{\hyperlink{classglib_1_1_string_tools_a4958c1563992951ea599ea591b9f3ffd}{getChar}}();}
-\DoxyCodeLine{411 }
-\DoxyCodeLine{418         \textcolor{keyword}{static} \textcolor{keywordtype}{wchar\_t} \mbox{\hyperlink{classglib_1_1_string_tools_a7111bf6109d0bbe4b7d8c60462e0dbe3}{getWideChar}}();}
-\DoxyCodeLine{419 }
-\DoxyCodeLine{426         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_string_tools_a7d41baacbc125733393e939d9967f7d3}{getInt}}();}
-\DoxyCodeLine{427 }
-\DoxyCodeLine{438         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_a188eb5ee217195d6020a95e21bdff29e}{findLongestMatch}}(std::string base, std::string match, \textcolor{keywordtype}{int}* index, \textcolor{keywordtype}{int}* length);}
-\DoxyCodeLine{439 }
-\DoxyCodeLine{453         \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
-\DoxyCodeLine{454         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_a188eb5ee217195d6020a95e21bdff29e}{findLongestMatch}}(T* base, \textcolor{keywordtype}{int} baseSize, T* match, \textcolor{keywordtype}{int} matchSize, \textcolor{keywordtype}{int}* index, \textcolor{keywordtype}{int}* length);}
-\DoxyCodeLine{455 }
-\DoxyCodeLine{464         \textcolor{keyword}{static} std::string \mbox{\hyperlink{classglib_1_1_string_tools_a2056c700117666108b4038d07bd64d4c}{formatString}}(std::string text, ...);}
-\DoxyCodeLine{465 }
-\DoxyCodeLine{474         \textcolor{keyword}{static} std::wstring \mbox{\hyperlink{classglib_1_1_string_tools_a34c564f6331cfd44676a0ac7454e14be}{formatWideString}}(std::wstring text, ...);}
-\DoxyCodeLine{475 }
-\DoxyCodeLine{484         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_string_tools_a751726481fdf9bfffa1783f6e8d79ea0}{convertKeyToAscii}}(\textcolor{keywordtype}{int} keyVal, \textcolor{keywordtype}{bool} shiftHeld);}
-\DoxyCodeLine{485         }
-\DoxyCodeLine{492         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_afabc5065d44e26e792ebfd2c2aa29e72}{print}}(std::string fmt, ...)}
-\DoxyCodeLine{493         \{}
-\DoxyCodeLine{494             va\_list args;}
-\DoxyCodeLine{495             va\_start(args, fmt);}
-\DoxyCodeLine{496             std::wstring finalString = formatWideStringInternal( \mbox{\hyperlink{classglib_1_1_string_tools_a2573aee4e6517c3dec0b1f621cfcf1e0}{StringTools::toWideString}}(fmt), args);}
-\DoxyCodeLine{497             va\_end(args);}
-\DoxyCodeLine{498 }
-\DoxyCodeLine{499             std::wcout << finalString;}
-\DoxyCodeLine{500         \}}
-\DoxyCodeLine{501 }
-\DoxyCodeLine{509         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_aae9cf23c88558323df1552c9863cfc0a}{println}}(std::string fmt, ...)}
-\DoxyCodeLine{510         \{}
-\DoxyCodeLine{511             va\_list args;}
-\DoxyCodeLine{512             va\_start(args, fmt);}
-\DoxyCodeLine{513             std::wstring finalString = formatWideStringInternal( \mbox{\hyperlink{classglib_1_1_string_tools_a2573aee4e6517c3dec0b1f621cfcf1e0}{StringTools::toWideString}}(fmt), args);}
-\DoxyCodeLine{514             va\_end(args);}
-\DoxyCodeLine{515 }
-\DoxyCodeLine{516             std::wcout << finalString << L\textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
-\DoxyCodeLine{517         \}}
-\DoxyCodeLine{518 }
-\DoxyCodeLine{525         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_a0d02224d31e5321c204ed8ac5421642e}{print}}(std::wstring fmt, ...)}
-\DoxyCodeLine{526         \{}
-\DoxyCodeLine{527             va\_list args;}
-\DoxyCodeLine{528             va\_start(args, fmt);}
-\DoxyCodeLine{529             std::wstring finalString = formatWideStringInternal(fmt, args);}
-\DoxyCodeLine{530             va\_end(args);}
-\DoxyCodeLine{531 }
-\DoxyCodeLine{532             std::wcout << finalString;}
-\DoxyCodeLine{533         \}}
-\DoxyCodeLine{534 }
-\DoxyCodeLine{542         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_ad3b1cc309d066be95e60b07273c02392}{println}}(std::wstring fmt, ...)}
-\DoxyCodeLine{543         \{}
-\DoxyCodeLine{544             va\_list args;}
-\DoxyCodeLine{545             va\_start(args, fmt);}
-\DoxyCodeLine{546             std::wstring finalString = formatWideStringInternal(fmt, args);}
-\DoxyCodeLine{547             va\_end(args);}
-\DoxyCodeLine{548 }
-\DoxyCodeLine{549             std::wcout << finalString << L\textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
-\DoxyCodeLine{550         \}}
-\DoxyCodeLine{551 }
-\DoxyCodeLine{552         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{wchar\_t} lineBreak;}
-\DoxyCodeLine{553 }
-\DoxyCodeLine{560         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_acdfd524769da24d5bba6d5f16a135741}{reroutOutput}}(std::wofstream file);}
-\DoxyCodeLine{561 }
+\DoxyCodeLine{414         \textcolor{keyword}{static} std::string \mbox{\hyperlink{classglib_1_1_string_tools_a969a7307d14d4434c038035c9ebb67a2}{getHiddenString}}(\textcolor{keywordtype}{bool} showAsterisk);}
+\DoxyCodeLine{415 }
+\DoxyCodeLine{425         \textcolor{keyword}{static} std::wstring \mbox{\hyperlink{classglib_1_1_string_tools_a64bc7823d5df49044138adeb2ec2237e}{getHiddenWideString}}(\textcolor{keywordtype}{bool} showAsterisk);}
+\DoxyCodeLine{426 }
+\DoxyCodeLine{433         \textcolor{keyword}{static} \textcolor{keywordtype}{char} \mbox{\hyperlink{classglib_1_1_string_tools_a4958c1563992951ea599ea591b9f3ffd}{getChar}}();}
+\DoxyCodeLine{434 }
+\DoxyCodeLine{441         \textcolor{keyword}{static} \textcolor{keywordtype}{wchar\_t} \mbox{\hyperlink{classglib_1_1_string_tools_a7111bf6109d0bbe4b7d8c60462e0dbe3}{getWideChar}}();}
+\DoxyCodeLine{442 }
+\DoxyCodeLine{450         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_string_tools_a7d41baacbc125733393e939d9967f7d3}{getInt}}();}
+\DoxyCodeLine{451 }
+\DoxyCodeLine{459         \textcolor{keyword}{static} \textcolor{keywordtype}{float} \mbox{\hyperlink{classglib_1_1_string_tools_a71dd253c23df3b21163e4fdd290a6f6c}{getFloat}}();}
+\DoxyCodeLine{460 }
+\DoxyCodeLine{481         \textcolor{keyword}{static} \textcolor{keywordtype}{char} \mbox{\hyperlink{classglib_1_1_string_tools_a289423a4340bfad2f56fcbe89a03404d}{getCharLessLock}}(\textcolor{keywordtype}{bool} noFunctionKeys = \textcolor{keyword}{true});}
+\DoxyCodeLine{482 }
+\DoxyCodeLine{503         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_string_tools_acd6a0cf09b0cf3a46e2ed438a81d8da7}{getWideCharLessLock}}(\textcolor{keywordtype}{bool} noFunctionKeys = \textcolor{keyword}{true});}
+\DoxyCodeLine{504 }
+\DoxyCodeLine{515         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_a188eb5ee217195d6020a95e21bdff29e}{findLongestMatch}}(std::string base, std::string match, \textcolor{keywordtype}{int}* index, \textcolor{keywordtype}{int}* length);}
+\DoxyCodeLine{516 }
+\DoxyCodeLine{530         \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
+\DoxyCodeLine{531         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_a188eb5ee217195d6020a95e21bdff29e}{findLongestMatch}}(T* base, \textcolor{keywordtype}{int} baseSize, T* match, \textcolor{keywordtype}{int} matchSize, \textcolor{keywordtype}{int}* index, \textcolor{keywordtype}{int}* length);}
+\DoxyCodeLine{532 }
+\DoxyCodeLine{541         \textcolor{keyword}{static} std::string \mbox{\hyperlink{classglib_1_1_string_tools_a2056c700117666108b4038d07bd64d4c}{formatString}}(std::string text, ...);}
+\DoxyCodeLine{542 }
+\DoxyCodeLine{551         \textcolor{keyword}{static} std::wstring \mbox{\hyperlink{classglib_1_1_string_tools_a34c564f6331cfd44676a0ac7454e14be}{formatWideString}}(std::wstring text, ...);}
+\DoxyCodeLine{552 }
+\DoxyCodeLine{561         \textcolor{keyword}{static} \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_string_tools_a751726481fdf9bfffa1783f6e8d79ea0}{convertKeyToAscii}}(\textcolor{keywordtype}{int} keyVal, \textcolor{keywordtype}{bool} shiftHeld);}
 \DoxyCodeLine{562         }
-\DoxyCodeLine{563 }
-\DoxyCodeLine{564     \textcolor{keyword}{private}:}
-\DoxyCodeLine{565         \textcolor{keyword}{static} std::string formatStringInternal(std::string text, va\_list orgArgs);}
-\DoxyCodeLine{566         \textcolor{keyword}{static} std::wstring formatWideStringInternal(std::wstring text, va\_list orgArgs);}
-\DoxyCodeLine{567 }
-\DoxyCodeLine{576         \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
-\DoxyCodeLine{577         \textcolor{keyword}{static} std::vector<int> longestPrefixSubstring(T* array, \textcolor{keywordtype}{int} size);}
+\DoxyCodeLine{569         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_afabc5065d44e26e792ebfd2c2aa29e72}{print}}(std::string fmt, ...)}
+\DoxyCodeLine{570         \{}
+\DoxyCodeLine{571             va\_list args;}
+\DoxyCodeLine{572             va\_start(args, fmt);}
+\DoxyCodeLine{573             std::wstring finalString = formatWideStringInternal( \mbox{\hyperlink{classglib_1_1_string_tools_a2573aee4e6517c3dec0b1f621cfcf1e0}{StringTools::toWideString}}(fmt), args);}
+\DoxyCodeLine{574             va\_end(args);}
+\DoxyCodeLine{575 }
+\DoxyCodeLine{576             std::wcout << finalString;}
+\DoxyCodeLine{577         \}}
 \DoxyCodeLine{578 }
-\DoxyCodeLine{579         \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
-\DoxyCodeLine{580         \textcolor{keyword}{static} \textcolor{keywordtype}{void} KMP(T* base, \textcolor{keywordtype}{int} baseSize,T* match, \textcolor{keywordtype}{int} matchSize, \textcolor{keywordtype}{int}* index, \textcolor{keywordtype}{int}* length);}
-\DoxyCodeLine{581 }
-\DoxyCodeLine{582         \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
-\DoxyCodeLine{583         \textcolor{keyword}{static} \textcolor{keywordtype}{void} NaivePatternSearch(T* base, \textcolor{keywordtype}{int} baseSize, T* match, \textcolor{keywordtype}{int} matchSize, \textcolor{keywordtype}{int}* index, \textcolor{keywordtype}{int}* length);}
-\DoxyCodeLine{584 }
-\DoxyCodeLine{585         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} hasInit;}
-\DoxyCodeLine{586     \};}
-\DoxyCodeLine{587 }
-\DoxyCodeLine{588     \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
-\DoxyCodeLine{589     \textcolor{keyword}{inline} std::vector<int> StringTools::longestPrefixSubstring(T* array, \textcolor{keywordtype}{int} size)}
-\DoxyCodeLine{590     \{}
-\DoxyCodeLine{591         std::vector<int> lps = std::vector<int>(size);}
+\DoxyCodeLine{586         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_aae9cf23c88558323df1552c9863cfc0a}{println}}(std::string fmt, ...)}
+\DoxyCodeLine{587         \{}
+\DoxyCodeLine{588             va\_list args;}
+\DoxyCodeLine{589             va\_start(args, fmt);}
+\DoxyCodeLine{590             std::wstring finalString = formatWideStringInternal( \mbox{\hyperlink{classglib_1_1_string_tools_a2573aee4e6517c3dec0b1f621cfcf1e0}{StringTools::toWideString}}(fmt), args);}
+\DoxyCodeLine{591             va\_end(args);}
 \DoxyCodeLine{592 }
-\DoxyCodeLine{593         \textcolor{keywordtype}{int} m = 0;}
-\DoxyCodeLine{594         lps[0] = 0;}
+\DoxyCodeLine{593             std::wcout << finalString << L\textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{594         \}}
 \DoxyCodeLine{595 }
-\DoxyCodeLine{596         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} pos=1; pos<size; pos++)}
-\DoxyCodeLine{597         \{}
-\DoxyCodeLine{598             \textcolor{keywordflow}{while}(m>0 \&\& array[pos] != array[m])}
-\DoxyCodeLine{599             \{}
-\DoxyCodeLine{600                 m = lps[m-\/1];}
-\DoxyCodeLine{601             \}}
-\DoxyCodeLine{602 }
-\DoxyCodeLine{603             \textcolor{keywordflow}{if}(array[pos] == array[m])}
-\DoxyCodeLine{604             \{}
-\DoxyCodeLine{605                 m++;}
-\DoxyCodeLine{606             \}}
-\DoxyCodeLine{607 }
-\DoxyCodeLine{608             lps[pos] = m;}
-\DoxyCodeLine{609         \}}
-\DoxyCodeLine{610         }
-\DoxyCodeLine{611         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<size; i++)}
-\DoxyCodeLine{612         \{}
-\DoxyCodeLine{613             lps[i] -\/= 1;}
-\DoxyCodeLine{614         \}}
-\DoxyCodeLine{615 }
-\DoxyCodeLine{616         \textcolor{keywordflow}{return} lps;}
-\DoxyCodeLine{617     \}}
-\DoxyCodeLine{618 }
-\DoxyCodeLine{619     \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
-\DoxyCodeLine{620     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} StringTools::KMP(T* base, \textcolor{keywordtype}{int} baseSize,T* match, \textcolor{keywordtype}{int} matchSize, \textcolor{keywordtype}{int}* index, \textcolor{keywordtype}{int}* length)}
-\DoxyCodeLine{621     \{}
-\DoxyCodeLine{622         \textcolor{comment}{//preprocess match}}
-\DoxyCodeLine{623         std::vector<int> lps = longestPrefixSubstring(match, matchSize);}
-\DoxyCodeLine{624 }
-\DoxyCodeLine{625         \textcolor{keywordtype}{int} i = 0;}
-\DoxyCodeLine{626         \textcolor{keywordtype}{int} j = -\/1;}
-\DoxyCodeLine{627 }
-\DoxyCodeLine{628         \textcolor{keywordtype}{int} currMaxLength = 0;}
-\DoxyCodeLine{629         }
-\DoxyCodeLine{630         \textcolor{keywordflow}{while}(i < baseSize)}
-\DoxyCodeLine{631         \{}
-\DoxyCodeLine{632             \textcolor{keywordflow}{if}(base[i] == match[j+1])}
-\DoxyCodeLine{633             \{}
-\DoxyCodeLine{634                 j++;}
-\DoxyCodeLine{635                 i++;}
-\DoxyCodeLine{636 }
-\DoxyCodeLine{637                 \textcolor{keywordflow}{if}((j+1)>=currMaxLength)}
-\DoxyCodeLine{638                 \{}
-\DoxyCodeLine{639                     currMaxLength = j+1;}
-\DoxyCodeLine{640                     *index = i-\/currMaxLength;}
-\DoxyCodeLine{641                     *length = currMaxLength;}
-\DoxyCodeLine{642                 \}}
-\DoxyCodeLine{643             \}}
-\DoxyCodeLine{644             \textcolor{keywordflow}{else}}
-\DoxyCodeLine{645             \{}
-\DoxyCodeLine{646                 \textcolor{keywordflow}{if}(j>=0)}
-\DoxyCodeLine{647                     j = lps[j];}
-\DoxyCodeLine{648                 \textcolor{keywordflow}{else}}
-\DoxyCodeLine{649                     i++;}
-\DoxyCodeLine{650             \}}
-\DoxyCodeLine{651 }
-\DoxyCodeLine{652             \textcolor{keywordflow}{if}(currMaxLength==matchSize)}
-\DoxyCodeLine{653             \{}
-\DoxyCodeLine{654                 \textcolor{comment}{//found match}}
-\DoxyCodeLine{655                 \textcolor{keywordflow}{break};}
-\DoxyCodeLine{656             \}}
-\DoxyCodeLine{657         \}}
-\DoxyCodeLine{658 }
-\DoxyCodeLine{659     \}}
-\DoxyCodeLine{660 }
-\DoxyCodeLine{661     \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
-\DoxyCodeLine{662     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} StringTools::NaivePatternSearch(T* base, \textcolor{keywordtype}{int} baseSize, T* match, \textcolor{keywordtype}{int} matchSize, \textcolor{keywordtype}{int}* index, \textcolor{keywordtype}{int}* length)}
-\DoxyCodeLine{663     \{}
-\DoxyCodeLine{664         \textcolor{keywordflow}{if}(length!=\textcolor{keyword}{nullptr} \&\& index!=\textcolor{keyword}{nullptr})}
-\DoxyCodeLine{665         \{}
-\DoxyCodeLine{666             \textcolor{keywordtype}{int} maxVal = 0;}
-\DoxyCodeLine{667             \textcolor{keywordtype}{int} indexOfMax = 0;}
-\DoxyCodeLine{668 }
-\DoxyCodeLine{669             \textcolor{keywordtype}{int} x = 0;}
-\DoxyCodeLine{670             \textcolor{keywordtype}{int} y = 0;}
-\DoxyCodeLine{671 }
-\DoxyCodeLine{672             \textcolor{keywordtype}{int} currSize = 0;}
-\DoxyCodeLine{673             \textcolor{keywordtype}{int} currStartIndex = -\/1;}
+\DoxyCodeLine{602         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_a0d02224d31e5321c204ed8ac5421642e}{print}}(std::wstring fmt, ...)}
+\DoxyCodeLine{603         \{}
+\DoxyCodeLine{604             va\_list args;}
+\DoxyCodeLine{605             va\_start(args, fmt);}
+\DoxyCodeLine{606             std::wstring finalString = formatWideStringInternal(fmt, args);}
+\DoxyCodeLine{607             va\_end(args);}
+\DoxyCodeLine{608 }
+\DoxyCodeLine{609             std::wcout << finalString;}
+\DoxyCodeLine{610         \}}
+\DoxyCodeLine{611 }
+\DoxyCodeLine{619         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_ad3b1cc309d066be95e60b07273c02392}{println}}(std::wstring fmt, ...)}
+\DoxyCodeLine{620         \{}
+\DoxyCodeLine{621             va\_list args;}
+\DoxyCodeLine{622             va\_start(args, fmt);}
+\DoxyCodeLine{623             std::wstring finalString = formatWideStringInternal(fmt, args);}
+\DoxyCodeLine{624             va\_end(args);}
+\DoxyCodeLine{625 }
+\DoxyCodeLine{626             std::wcout << finalString << L\textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{627         \}}
+\DoxyCodeLine{628 }
+\DoxyCodeLine{629         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{wchar\_t} lineBreak;}
+\DoxyCodeLine{630 }
+\DoxyCodeLine{638         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_aac716af15c5d7de79825928500e6c717}{clearConsole}}(\textcolor{keywordtype}{bool} clearScrollBuffer);}
+\DoxyCodeLine{639 }
+\DoxyCodeLine{656         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_adf89794d2f4bab662c68f468bb96aca7}{moveConsoleCursor}}(\textcolor{keywordtype}{int} horizontal, \textcolor{keywordtype}{int} vertical, \textcolor{keywordtype}{bool} absolute = \textcolor{keyword}{false});}
+\DoxyCodeLine{657 }
+\DoxyCodeLine{665         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_a4bfcefc9af308f541bd9cc913192c9d0}{eraseConsoleLine}}(\textcolor{keywordtype}{bool} eraseFromCursor);}
+\DoxyCodeLine{666 }
+\DoxyCodeLine{673         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_a474058a5f926aea528568a304f5e3404}{reroutOutput}}(std::wstreambuf* file);}
 \DoxyCodeLine{674 }
-\DoxyCodeLine{675             \textcolor{keywordtype}{int} nextPossibleIndex = -\/1;}
-\DoxyCodeLine{676 }
-\DoxyCodeLine{677             T* sB = base;}
-\DoxyCodeLine{678             T* sM = match;}
-\DoxyCodeLine{679 }
-\DoxyCodeLine{680             \textcolor{keywordtype}{char} startValue = match[0];}
-\DoxyCodeLine{681             }
-\DoxyCodeLine{682             \textcolor{keywordflow}{while}(x < baseSize)}
-\DoxyCodeLine{683             \{}
-\DoxyCodeLine{684                 \textcolor{keywordflow}{if}(*sB == *sM)}
-\DoxyCodeLine{685                 \{}
-\DoxyCodeLine{686                     \textcolor{keywordflow}{if}(currStartIndex!=-\/1)}
-\DoxyCodeLine{687                     \{}
-\DoxyCodeLine{688                         \textcolor{keywordflow}{if}(*sB == startValue)}
-\DoxyCodeLine{689                         \{}
-\DoxyCodeLine{690                             nextPossibleIndex = x; }
-\DoxyCodeLine{691                         \}}
-\DoxyCodeLine{692                     \}}
-\DoxyCodeLine{693 }
-\DoxyCodeLine{694                     \textcolor{keywordflow}{if}(currStartIndex==-\/1)}
-\DoxyCodeLine{695                         currStartIndex = x;}
-\DoxyCodeLine{696                     }
-\DoxyCodeLine{697                     currSize++;}
-\DoxyCodeLine{698                     sM++;}
-\DoxyCodeLine{699 }
-\DoxyCodeLine{700                     \textcolor{keywordflow}{if}(currSize >= matchSize)}
-\DoxyCodeLine{701                     \{}
-\DoxyCodeLine{702                         maxVal = currSize;}
-\DoxyCodeLine{703                         indexOfMax = currStartIndex;}
-\DoxyCodeLine{704                         \textcolor{keywordflow}{break};}
-\DoxyCodeLine{705                     \}}
-\DoxyCodeLine{706                 \}}
-\DoxyCodeLine{707                 \textcolor{keywordflow}{else}}
-\DoxyCodeLine{708                 \{}
-\DoxyCodeLine{709                     \textcolor{keywordflow}{if}(currSize >= maxVal)}
-\DoxyCodeLine{710                     \{}
-\DoxyCodeLine{711                         maxVal = currSize;}
-\DoxyCodeLine{712                         indexOfMax = currStartIndex;}
-\DoxyCodeLine{713                     \}}
+\DoxyCodeLine{681         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_a1eb3b591348f62bd79acbdc340d9065a}{reroutInput}}(std::wstreambuf* file);}
+\DoxyCodeLine{682 }
+\DoxyCodeLine{689         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_a83aa50cb7fb0c2e32b8f41142093841c}{reroutErrorOutput}}(std::wstreambuf* file);}
+\DoxyCodeLine{690         }
+\DoxyCodeLine{691         \textcolor{keyword}{static} \textcolor{keywordtype}{void} resetOutputInputStreams();}
+\DoxyCodeLine{692 }
+\DoxyCodeLine{693         }
+\DoxyCodeLine{694 }
+\DoxyCodeLine{695     \textcolor{keyword}{private}:}
+\DoxyCodeLine{696 }
+\DoxyCodeLine{697         \textcolor{keyword}{static} std::wstreambuf* inputBuffer;}
+\DoxyCodeLine{698         \textcolor{keyword}{static} std::wstreambuf* outputBuffer;}
+\DoxyCodeLine{699         \textcolor{keyword}{static} std::wstreambuf* errorBuffer;}
+\DoxyCodeLine{700         }
+\DoxyCodeLine{701         \textcolor{keyword}{static} std::string formatStringInternal(std::string text, va\_list orgArgs);}
+\DoxyCodeLine{702         \textcolor{keyword}{static} std::wstring formatWideStringInternal(std::wstring text, va\_list orgArgs);}
+\DoxyCodeLine{703 }
+\DoxyCodeLine{712         \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
+\DoxyCodeLine{713         \textcolor{keyword}{static} std::vector<int> longestPrefixSubstring(T* array, \textcolor{keywordtype}{int} size);}
 \DoxyCodeLine{714 }
-\DoxyCodeLine{715                     \textcolor{keywordflow}{if}(nextPossibleIndex>0)}
-\DoxyCodeLine{716                     \{}
-\DoxyCodeLine{717                         x = nextPossibleIndex;}
-\DoxyCodeLine{718                         sB = base + nextPossibleIndex;}
-\DoxyCodeLine{719                     \}}
+\DoxyCodeLine{715         \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
+\DoxyCodeLine{716         \textcolor{keyword}{static} \textcolor{keywordtype}{void} KMP(T* base, \textcolor{keywordtype}{int} baseSize,T* match, \textcolor{keywordtype}{int} matchSize, \textcolor{keywordtype}{int}* index, \textcolor{keywordtype}{int}* length);}
+\DoxyCodeLine{717 }
+\DoxyCodeLine{718         \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
+\DoxyCodeLine{719         \textcolor{keyword}{static} \textcolor{keywordtype}{void} NaivePatternSearch(T* base, \textcolor{keywordtype}{int} baseSize, T* match, \textcolor{keywordtype}{int} matchSize, \textcolor{keywordtype}{int}* index, \textcolor{keywordtype}{int}* length);}
 \DoxyCodeLine{720 }
-\DoxyCodeLine{721                     currSize = 0;}
-\DoxyCodeLine{722                     currStartIndex = -\/1;}
-\DoxyCodeLine{723                     nextPossibleIndex = -\/1;}
-\DoxyCodeLine{724 }
-\DoxyCodeLine{725                     sM = match;}
-\DoxyCodeLine{726                 \}}
-\DoxyCodeLine{727 }
-\DoxyCodeLine{728                 sB++;}
-\DoxyCodeLine{729                 x++;}
-\DoxyCodeLine{730             \}}
-\DoxyCodeLine{731             }
-\DoxyCodeLine{732             \textcolor{keywordflow}{if}(currSize >= maxVal)}
-\DoxyCodeLine{733             \{}
-\DoxyCodeLine{734                 maxVal = currSize;}
-\DoxyCodeLine{735                 indexOfMax = currStartIndex;}
-\DoxyCodeLine{736             \}}
-\DoxyCodeLine{737             }
-\DoxyCodeLine{738             *length = maxVal;}
-\DoxyCodeLine{739             *index = indexOfMax;}
-\DoxyCodeLine{740         \}}
-\DoxyCodeLine{741     \}}
-\DoxyCodeLine{742 }
-\DoxyCodeLine{743     \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
-\DoxyCodeLine{744     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_a188eb5ee217195d6020a95e21bdff29e}{StringTools::findLongestMatch}}(T* base, \textcolor{keywordtype}{int} baseSize, T* match, \textcolor{keywordtype}{int} matchSize, \textcolor{keywordtype}{int}* index, \textcolor{keywordtype}{int}* length)}
-\DoxyCodeLine{745     \{}
-\DoxyCodeLine{746         StringTools::KMP(base, baseSize, match, matchSize, index, length);}
-\DoxyCodeLine{747     \}}
-\DoxyCodeLine{748 }
-\DoxyCodeLine{749 \} \textcolor{comment}{//NAMESPACE glib END}}
+\DoxyCodeLine{721         \textcolor{keyword}{static} \textcolor{keywordtype}{bool} hasInit;}
+\DoxyCodeLine{722     \};}
+\DoxyCodeLine{723 }
+\DoxyCodeLine{724     \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
+\DoxyCodeLine{725     \textcolor{keyword}{inline} std::vector<int> StringTools::longestPrefixSubstring(T* array, \textcolor{keywordtype}{int} size)}
+\DoxyCodeLine{726     \{}
+\DoxyCodeLine{727         std::vector<int> lps = std::vector<int>(size);}
+\DoxyCodeLine{728 }
+\DoxyCodeLine{729         \textcolor{keywordtype}{int} m = 0;}
+\DoxyCodeLine{730         lps[0] = 0;}
+\DoxyCodeLine{731 }
+\DoxyCodeLine{732         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} pos=1; pos<size; pos++)}
+\DoxyCodeLine{733         \{}
+\DoxyCodeLine{734             \textcolor{keywordflow}{while}(m>0 \&\& array[pos] != array[m])}
+\DoxyCodeLine{735             \{}
+\DoxyCodeLine{736                 m = lps[m-\/1];}
+\DoxyCodeLine{737             \}}
+\DoxyCodeLine{738 }
+\DoxyCodeLine{739             \textcolor{keywordflow}{if}(array[pos] == array[m])}
+\DoxyCodeLine{740             \{}
+\DoxyCodeLine{741                 m++;}
+\DoxyCodeLine{742             \}}
+\DoxyCodeLine{743 }
+\DoxyCodeLine{744             lps[pos] = m;}
+\DoxyCodeLine{745         \}}
+\DoxyCodeLine{746         }
+\DoxyCodeLine{747         \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i=0; i<size; i++)}
+\DoxyCodeLine{748         \{}
+\DoxyCodeLine{749             lps[i] -\/= 1;}
+\DoxyCodeLine{750         \}}
+\DoxyCodeLine{751 }
+\DoxyCodeLine{752         \textcolor{keywordflow}{return} lps;}
+\DoxyCodeLine{753     \}}
+\DoxyCodeLine{754 }
+\DoxyCodeLine{755     \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
+\DoxyCodeLine{756     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} StringTools::KMP(T* base, \textcolor{keywordtype}{int} baseSize,T* match, \textcolor{keywordtype}{int} matchSize, \textcolor{keywordtype}{int}* index, \textcolor{keywordtype}{int}* length)}
+\DoxyCodeLine{757     \{}
+\DoxyCodeLine{758         \textcolor{comment}{//preprocess match}}
+\DoxyCodeLine{759         std::vector<int> lps = longestPrefixSubstring(match, matchSize);}
+\DoxyCodeLine{760 }
+\DoxyCodeLine{761         \textcolor{keywordtype}{int} i = 0;}
+\DoxyCodeLine{762         \textcolor{keywordtype}{int} j = -\/1;}
+\DoxyCodeLine{763 }
+\DoxyCodeLine{764         \textcolor{keywordtype}{int} currMaxLength = 0;}
+\DoxyCodeLine{765         }
+\DoxyCodeLine{766         \textcolor{keywordflow}{while}(i < baseSize)}
+\DoxyCodeLine{767         \{}
+\DoxyCodeLine{768             \textcolor{keywordflow}{if}(base[i] == match[j+1])}
+\DoxyCodeLine{769             \{}
+\DoxyCodeLine{770                 j++;}
+\DoxyCodeLine{771                 i++;}
+\DoxyCodeLine{772 }
+\DoxyCodeLine{773                 \textcolor{keywordflow}{if}((j+1)>=currMaxLength)}
+\DoxyCodeLine{774                 \{}
+\DoxyCodeLine{775                     currMaxLength = j+1;}
+\DoxyCodeLine{776                     *index = i-\/currMaxLength;}
+\DoxyCodeLine{777                     *length = currMaxLength;}
+\DoxyCodeLine{778                 \}}
+\DoxyCodeLine{779             \}}
+\DoxyCodeLine{780             \textcolor{keywordflow}{else}}
+\DoxyCodeLine{781             \{}
+\DoxyCodeLine{782                 \textcolor{keywordflow}{if}(j>=0)}
+\DoxyCodeLine{783                     j = lps[j];}
+\DoxyCodeLine{784                 \textcolor{keywordflow}{else}}
+\DoxyCodeLine{785                     i++;}
+\DoxyCodeLine{786             \}}
+\DoxyCodeLine{787 }
+\DoxyCodeLine{788             \textcolor{keywordflow}{if}(currMaxLength==matchSize)}
+\DoxyCodeLine{789             \{}
+\DoxyCodeLine{790                 \textcolor{comment}{//found match}}
+\DoxyCodeLine{791                 \textcolor{keywordflow}{break};}
+\DoxyCodeLine{792             \}}
+\DoxyCodeLine{793         \}}
+\DoxyCodeLine{794 }
+\DoxyCodeLine{795     \}}
+\DoxyCodeLine{796 }
+\DoxyCodeLine{797     \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
+\DoxyCodeLine{798     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} StringTools::NaivePatternSearch(T* base, \textcolor{keywordtype}{int} baseSize, T* match, \textcolor{keywordtype}{int} matchSize, \textcolor{keywordtype}{int}* index, \textcolor{keywordtype}{int}* length)}
+\DoxyCodeLine{799     \{}
+\DoxyCodeLine{800         \textcolor{keywordflow}{if}(length!=\textcolor{keyword}{nullptr} \&\& index!=\textcolor{keyword}{nullptr})}
+\DoxyCodeLine{801         \{}
+\DoxyCodeLine{802             \textcolor{keywordtype}{int} maxVal = 0;}
+\DoxyCodeLine{803             \textcolor{keywordtype}{int} indexOfMax = 0;}
+\DoxyCodeLine{804 }
+\DoxyCodeLine{805             \textcolor{keywordtype}{int} x = 0;}
+\DoxyCodeLine{806             \textcolor{keywordtype}{int} y = 0;}
+\DoxyCodeLine{807 }
+\DoxyCodeLine{808             \textcolor{keywordtype}{int} currSize = 0;}
+\DoxyCodeLine{809             \textcolor{keywordtype}{int} currStartIndex = -\/1;}
+\DoxyCodeLine{810 }
+\DoxyCodeLine{811             \textcolor{keywordtype}{int} nextPossibleIndex = -\/1;}
+\DoxyCodeLine{812 }
+\DoxyCodeLine{813             T* sB = base;}
+\DoxyCodeLine{814             T* sM = match;}
+\DoxyCodeLine{815 }
+\DoxyCodeLine{816             \textcolor{keywordtype}{char} startValue = match[0];}
+\DoxyCodeLine{817             }
+\DoxyCodeLine{818             \textcolor{keywordflow}{while}(x < baseSize)}
+\DoxyCodeLine{819             \{}
+\DoxyCodeLine{820                 \textcolor{keywordflow}{if}(*sB == *sM)}
+\DoxyCodeLine{821                 \{}
+\DoxyCodeLine{822                     \textcolor{keywordflow}{if}(currStartIndex!=-\/1)}
+\DoxyCodeLine{823                     \{}
+\DoxyCodeLine{824                         \textcolor{keywordflow}{if}(*sB == startValue)}
+\DoxyCodeLine{825                         \{}
+\DoxyCodeLine{826                             nextPossibleIndex = x; }
+\DoxyCodeLine{827                         \}}
+\DoxyCodeLine{828                     \}}
+\DoxyCodeLine{829 }
+\DoxyCodeLine{830                     \textcolor{keywordflow}{if}(currStartIndex==-\/1)}
+\DoxyCodeLine{831                         currStartIndex = x;}
+\DoxyCodeLine{832                     }
+\DoxyCodeLine{833                     currSize++;}
+\DoxyCodeLine{834                     sM++;}
+\DoxyCodeLine{835 }
+\DoxyCodeLine{836                     \textcolor{keywordflow}{if}(currSize >= matchSize)}
+\DoxyCodeLine{837                     \{}
+\DoxyCodeLine{838                         maxVal = currSize;}
+\DoxyCodeLine{839                         indexOfMax = currStartIndex;}
+\DoxyCodeLine{840                         \textcolor{keywordflow}{break};}
+\DoxyCodeLine{841                     \}}
+\DoxyCodeLine{842                 \}}
+\DoxyCodeLine{843                 \textcolor{keywordflow}{else}}
+\DoxyCodeLine{844                 \{}
+\DoxyCodeLine{845                     \textcolor{keywordflow}{if}(currSize >= maxVal)}
+\DoxyCodeLine{846                     \{}
+\DoxyCodeLine{847                         maxVal = currSize;}
+\DoxyCodeLine{848                         indexOfMax = currStartIndex;}
+\DoxyCodeLine{849                     \}}
+\DoxyCodeLine{850 }
+\DoxyCodeLine{851                     \textcolor{keywordflow}{if}(nextPossibleIndex>0)}
+\DoxyCodeLine{852                     \{}
+\DoxyCodeLine{853                         x = nextPossibleIndex;}
+\DoxyCodeLine{854                         sB = base + nextPossibleIndex;}
+\DoxyCodeLine{855                     \}}
+\DoxyCodeLine{856 }
+\DoxyCodeLine{857                     currSize = 0;}
+\DoxyCodeLine{858                     currStartIndex = -\/1;}
+\DoxyCodeLine{859                     nextPossibleIndex = -\/1;}
+\DoxyCodeLine{860 }
+\DoxyCodeLine{861                     sM = match;}
+\DoxyCodeLine{862                 \}}
+\DoxyCodeLine{863 }
+\DoxyCodeLine{864                 sB++;}
+\DoxyCodeLine{865                 x++;}
+\DoxyCodeLine{866             \}}
+\DoxyCodeLine{867             }
+\DoxyCodeLine{868             \textcolor{keywordflow}{if}(currSize >= maxVal)}
+\DoxyCodeLine{869             \{}
+\DoxyCodeLine{870                 maxVal = currSize;}
+\DoxyCodeLine{871                 indexOfMax = currStartIndex;}
+\DoxyCodeLine{872             \}}
+\DoxyCodeLine{873             }
+\DoxyCodeLine{874             *length = maxVal;}
+\DoxyCodeLine{875             *index = indexOfMax;}
+\DoxyCodeLine{876         \}}
+\DoxyCodeLine{877     \}}
+\DoxyCodeLine{878 }
+\DoxyCodeLine{879     \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
+\DoxyCodeLine{880     \textcolor{keyword}{inline} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_string_tools_a188eb5ee217195d6020a95e21bdff29e}{StringTools::findLongestMatch}}(T* base, \textcolor{keywordtype}{int} baseSize, T* match, \textcolor{keywordtype}{int} matchSize, \textcolor{keywordtype}{int}* index, \textcolor{keywordtype}{int}* length)}
+\DoxyCodeLine{881     \{}
+\DoxyCodeLine{882         StringTools::KMP(base, baseSize, match, matchSize, index, length);}
+\DoxyCodeLine{883     \}}
+\DoxyCodeLine{884 }
+\DoxyCodeLine{885 \} \textcolor{comment}{//NAMESPACE glib END}}
 
 \end{DoxyCode}

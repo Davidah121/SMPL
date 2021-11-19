@@ -71,6 +71,7 @@ $(function() {
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="#friends">Friends</a> &#124;
 <a href="classglib_1_1_vec3f-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">glib::Vec3f Class Reference</div></div>
 </div><!--header-->
@@ -91,9 +92,9 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Vec3f</b> ()</td></tr>
 <tr class="memdesc:a17817fb9be3359bc4d38c8a1621d409a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> object. <br /></td></tr>
 <tr class="separator:a17817fb9be3359bc4d38c8a1621d409a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad15076db569afcfaa229527b4fe27db6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_vec3f.html#ad15076db569afcfaa229527b4fe27db6">Vec3f</a> (<a class="el" href="classglib_1_1_vec2f.html">Vec2f</a> other)</td></tr>
-<tr class="memdesc:ad15076db569afcfaa229527b4fe27db6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> object using a <a class="el" href="classglib_1_1_vec2f.html">Vec2f</a>. The z value will not be set.  <a href="classglib_1_1_vec3f.html#ad15076db569afcfaa229527b4fe27db6">More...</a><br /></td></tr>
-<tr class="separator:ad15076db569afcfaa229527b4fe27db6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4a78990f96c0697ea2fc6b0630ebe6c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_vec3f.html#ab4a78990f96c0697ea2fc6b0630ebe6c">Vec3f</a> (<a class="el" href="classglib_1_1_vec2f.html">Vec2f</a> other, double z=0.0)</td></tr>
+<tr class="memdesc:ab4a78990f96c0697ea2fc6b0630ebe6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> object using a <a class="el" href="classglib_1_1_vec2f.html">Vec2f</a> and an optional additional z value.  <a href="classglib_1_1_vec3f.html#ab4a78990f96c0697ea2fc6b0630ebe6c">More...</a><br /></td></tr>
+<tr class="separator:ab4a78990f96c0697ea2fc6b0630ebe6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63577177fba5d0b82d02d3d71a1eca15"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_vec3f.html#a63577177fba5d0b82d02d3d71a1eca15">Vec3f</a> (double x, double y, double z)</td></tr>
 <tr class="memdesc:a63577177fba5d0b82d02d3d71a1eca15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> object.  <a href="classglib_1_1_vec3f.html#a63577177fba5d0b82d02d3d71a1eca15">More...</a><br /></td></tr>
 <tr class="separator:a63577177fba5d0b82d02d3d71a1eca15"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -127,6 +128,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afcd09685d114d0a6df99fbdccdbd3bb3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_vec3f.html#afcd09685d114d0a6df99fbdccdbd3bb3">setValues</a> (<a class="el" href="classglib_1_1_vec2f.html">Vec2f</a> other)</td></tr>
 <tr class="memdesc:afcd09685d114d0a6df99fbdccdbd3bb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies another <a class="el" href="classglib_1_1_vec2f.html">Vec2f</a> objects values The z value will not be set.  <a href="classglib_1_1_vec3f.html#afcd09685d114d0a6df99fbdccdbd3bb3">More...</a><br /></td></tr>
 <tr class="separator:afcd09685d114d0a6df99fbdccdbd3bb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a769240f04274f816473b1c44cfc890dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classglib_1_1_vec2f.html">Vec2f</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_vec3f.html#a769240f04274f816473b1c44cfc890dd">toVec2f</a> ()</td></tr>
+<tr class="memdesc:a769240f04274f816473b1c44cfc890dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> object to a <a class="el" href="classglib_1_1_vec2f.html">Vec2f</a> object by dropping the z value.  <a href="classglib_1_1_vec3f.html#a769240f04274f816473b1c44cfc890dd">More...</a><br /></td></tr>
+<tr class="separator:a769240f04274f816473b1c44cfc890dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc1b8d9ff9f2faa00bef4e71ad73c35a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_vec3f.html#afc1b8d9ff9f2faa00bef4e71ad73c35a">getLength</a> ()</td></tr>
+<tr class="memdesc:afc1b8d9ff9f2faa00bef4e71ad73c35a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Length of the vector.  <a href="classglib_1_1_vec3f.html#afc1b8d9ff9f2faa00bef4e71ad73c35a">More...</a><br /></td></tr>
+<tr class="separator:afc1b8d9ff9f2faa00bef4e71ad73c35a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae35b3c453db0741238e0b7cc61913829"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_vec3f.html#ae35b3c453db0741238e0b7cc61913829">normalize</a> ()</td></tr>
+<tr class="memdesc:ae35b3c453db0741238e0b7cc61913829"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the normalized version of the vector. Returns a vector with the same direction but a length of 1.  <a href="classglib_1_1_vec3f.html#ae35b3c453db0741238e0b7cc61913829">More...</a><br /></td></tr>
+<tr class="separator:ae35b3c453db0741238e0b7cc61913829"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62bd51676d95f8fab386e9aa469d37bd"><td class="memItemLeft" align="right" valign="top"><a id="a62bd51676d95f8fab386e9aa469d37bd" name="a62bd51676d95f8fab386e9aa469d37bd"></a>
 <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator-</b> (<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> other)</td></tr>
 <tr class="separator:a62bd51676d95f8fab386e9aa469d37bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -142,72 +152,24 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>operator+=</b> (<a cl
 <tr class="memitem:aa8e8cd1f1e6b1af83e3cf254fa7fd789"><td class="memItemLeft" align="right" valign="top"><a id="aa8e8cd1f1e6b1af83e3cf254fa7fd789" name="aa8e8cd1f1e6b1af83e3cf254fa7fd789"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>operator-=</b> (<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> other)</td></tr>
 <tr class="separator:aa8e8cd1f1e6b1af83e3cf254fa7fd789"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a301f829a5af51f9151241da3abebab31"><td class="memItemLeft" align="right" valign="top"><a id="a301f829a5af51f9151241da3abebab31" name="a301f829a5af51f9151241da3abebab31"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>operator*=</b> (<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> other)</td></tr>
-<tr class="separator:a301f829a5af51f9151241da3abebab31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aecdcdc74172e8f2859c5faf1c84cdd60"><td class="memItemLeft" align="right" valign="top"><a id="aecdcdc74172e8f2859c5faf1c84cdd60" name="aecdcdc74172e8f2859c5faf1c84cdd60"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>operator/=</b> (<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> other)</td></tr>
-<tr class="separator:aecdcdc74172e8f2859c5faf1c84cdd60"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec4beb3a61848758161d49b896241c88"><td class="memItemLeft" align="right" valign="top"><a id="aec4beb3a61848758161d49b896241c88" name="aec4beb3a61848758161d49b896241c88"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>operator*=</b> (double other)</td></tr>
 <tr class="separator:aec4beb3a61848758161d49b896241c88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a831bcd6e98bd43b4233ebbb6dfaf0103"><td class="memItemLeft" align="right" valign="top"><a id="a831bcd6e98bd43b4233ebbb6dfaf0103" name="a831bcd6e98bd43b4233ebbb6dfaf0103"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>operator/=</b> (double other)</td></tr>
 <tr class="separator:a831bcd6e98bd43b4233ebbb6dfaf0103"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d0f2e52191053825a14675fcddec098"><td class="memItemLeft" align="right" valign="top"><a id="a1d0f2e52191053825a14675fcddec098" name="a1d0f2e52191053825a14675fcddec098"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>operator*=</b> (int other)</td></tr>
-<tr class="separator:a1d0f2e52191053825a14675fcddec098"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f87e490c4a3f437bbaf190b2bc31d86"><td class="memItemLeft" align="right" valign="top"><a id="a2f87e490c4a3f437bbaf190b2bc31d86" name="a2f87e490c4a3f437bbaf190b2bc31d86"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>operator/=</b> (int other)</td></tr>
-<tr class="separator:a2f87e490c4a3f437bbaf190b2bc31d86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96a802641b031666d27aa0934b9977ff"><td class="memItemLeft" align="right" valign="top"><a id="a96a802641b031666d27aa0934b9977ff" name="a96a802641b031666d27aa0934b9977ff"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>operator*=</b> (long other)</td></tr>
-<tr class="separator:a96a802641b031666d27aa0934b9977ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9d507e1e59844b1145735ee99b99955"><td class="memItemLeft" align="right" valign="top"><a id="ae9d507e1e59844b1145735ee99b99955" name="ae9d507e1e59844b1145735ee99b99955"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>operator/=</b> (long other)</td></tr>
-<tr class="separator:ae9d507e1e59844b1145735ee99b99955"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac36820f4796a1c7d3dbbfe8eb26a7d70"><td class="memItemLeft" align="right" valign="top"><a id="ac36820f4796a1c7d3dbbfe8eb26a7d70" name="ac36820f4796a1c7d3dbbfe8eb26a7d70"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>operator*=</b> (float other)</td></tr>
-<tr class="separator:ac36820f4796a1c7d3dbbfe8eb26a7d70"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad78d2fdbb1177c2ebdd58028785b982a"><td class="memItemLeft" align="right" valign="top"><a id="ad78d2fdbb1177c2ebdd58028785b982a" name="ad78d2fdbb1177c2ebdd58028785b982a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>operator/=</b> (float other)</td></tr>
-<tr class="separator:ad78d2fdbb1177c2ebdd58028785b982a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a6a556f6659fa2c225aa9dd80308282"><td class="memItemLeft" align="right" valign="top"><a id="a7a6a556f6659fa2c225aa9dd80308282" name="a7a6a556f6659fa2c225aa9dd80308282"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator==</b> (<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> other)</td></tr>
 <tr class="separator:a7a6a556f6659fa2c225aa9dd80308282"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77da4fb959b83f572b22f992412bf09e"><td class="memItemLeft" align="right" valign="top"><a id="a77da4fb959b83f572b22f992412bf09e" name="a77da4fb959b83f572b22f992412bf09e"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> other)</td></tr>
 <tr class="separator:a77da4fb959b83f572b22f992412bf09e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a80e0ca3b3ff1326573c522e222b21ed6"><td class="memItemLeft" align="right" valign="top"><a id="a80e0ca3b3ff1326573c522e222b21ed6" name="a80e0ca3b3ff1326573c522e222b21ed6"></a>
-<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> (int value)</td></tr>
-<tr class="separator:a80e0ca3b3ff1326573c522e222b21ed6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a03d0ea43b7102592c4ca71dffccdce1e"><td class="memItemLeft" align="right" valign="top"><a id="a03d0ea43b7102592c4ca71dffccdce1e" name="a03d0ea43b7102592c4ca71dffccdce1e"></a>
-<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> (float value)</td></tr>
-<tr class="separator:a03d0ea43b7102592c4ca71dffccdce1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84d149202ab354a461f46c72845688d1"><td class="memItemLeft" align="right" valign="top"><a id="a84d149202ab354a461f46c72845688d1" name="a84d149202ab354a461f46c72845688d1"></a>
 <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> (double value)</td></tr>
 <tr class="separator:a84d149202ab354a461f46c72845688d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5ea46fed1e9e8f8bc72b78878cbc5faa"><td class="memItemLeft" align="right" valign="top"><a id="a5ea46fed1e9e8f8bc72b78878cbc5faa" name="a5ea46fed1e9e8f8bc72b78878cbc5faa"></a>
-<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> (long value)</td></tr>
-<tr class="separator:a5ea46fed1e9e8f8bc72b78878cbc5faa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa1b2474c7a39c21d427ffb4167b95f04"><td class="memItemLeft" align="right" valign="top"><a id="aa1b2474c7a39c21d427ffb4167b95f04" name="aa1b2474c7a39c21d427ffb4167b95f04"></a>
-<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> (<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> other)</td></tr>
-<tr class="separator:aa1b2474c7a39c21d427ffb4167b95f04"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a73f25cf52675ad24f8f7ffef53a5dc"><td class="memItemLeft" align="right" valign="top"><a id="a5a73f25cf52675ad24f8f7ffef53a5dc" name="a5a73f25cf52675ad24f8f7ffef53a5dc"></a>
-<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator/</b> (int value)</td></tr>
-<tr class="separator:a5a73f25cf52675ad24f8f7ffef53a5dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1970e6d606c331e7b79e8578e39c174d"><td class="memItemLeft" align="right" valign="top"><a id="a1970e6d606c331e7b79e8578e39c174d" name="a1970e6d606c331e7b79e8578e39c174d"></a>
-<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator/</b> (float value)</td></tr>
-<tr class="separator:a1970e6d606c331e7b79e8578e39c174d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aca21a1c02478cf11db2de427e01dabf7"><td class="memItemLeft" align="right" valign="top"><a id="aca21a1c02478cf11db2de427e01dabf7" name="aca21a1c02478cf11db2de427e01dabf7"></a>
 <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator/</b> (double value)</td></tr>
 <tr class="separator:aca21a1c02478cf11db2de427e01dabf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ac3a022fad191e52cb409fd7f2c4914"><td class="memItemLeft" align="right" valign="top"><a id="a9ac3a022fad191e52cb409fd7f2c4914" name="a9ac3a022fad191e52cb409fd7f2c4914"></a>
-<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator/</b> (long value)</td></tr>
-<tr class="separator:a9ac3a022fad191e52cb409fd7f2c4914"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f1780c4170184b529c34a247d65d3d6"><td class="memItemLeft" align="right" valign="top"><a id="a3f1780c4170184b529c34a247d65d3d6" name="a3f1780c4170184b529c34a247d65d3d6"></a>
-<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator/</b> (<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> other)</td></tr>
-<tr class="separator:a3f1780c4170184b529c34a247d65d3d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab789f44c9f4d07dc3da95a2df599a64a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classglib_1_1_general_vector.html">GeneralVector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_vec3f.html#ab789f44c9f4d07dc3da95a2df599a64a">toGeneralVector</a> ()</td></tr>
 <tr class="memdesc:ab789f44c9f4d07dc3da95a2df599a64a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> to a <a class="el" href="classglib_1_1_general_vector.html">GeneralVector</a> object.  <a href="classglib_1_1_vec3f.html#ab789f44c9f4d07dc3da95a2df599a64a">More...</a><br /></td></tr>
 <tr class="separator:ab789f44c9f4d07dc3da95a2df599a64a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -236,10 +198,16 @@ static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><
 <tr class="memitem:aff9d6262ae7deeb357e80d79ae5f5917 inherit pub_static_attribs_classglib_1_1_object"><td class="memItemLeft" align="right" valign="top"><a id="aff9d6262ae7deeb357e80d79ae5f5917" name="aff9d6262ae7deeb357e80d79ae5f5917"></a>
 static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><td class="memItemRight" valign="bottom"><b>myClass</b></td></tr>
 <tr class="separator:aff9d6262ae7deeb357e80d79ae5f5917 inherit pub_static_attribs_classglib_1_1_object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:a80e5b818774b007b0dd4f71a7a30e273"><td class="memItemLeft" align="right" valign="top"><a id="a80e5b818774b007b0dd4f71a7a30e273" name="a80e5b818774b007b0dd4f71a7a30e273"></a>
+<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> (double value, <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> &amp;other)</td></tr>
+<tr class="separator:a80e5b818774b007b0dd4f71a7a30e273"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ad15076db569afcfaa229527b4fe27db6" name="ad15076db569afcfaa229527b4fe27db6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad15076db569afcfaa229527b4fe27db6">&#9670;&nbsp;</a></span>Vec3f() <span class="overload">[1/2]</span></h2>
+<a id="ab4a78990f96c0697ea2fc6b0630ebe6c" name="ab4a78990f96c0697ea2fc6b0630ebe6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4a78990f96c0697ea2fc6b0630ebe6c">&#9670;&nbsp;</a></span>Vec3f() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -248,13 +216,23 @@ static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><
           <td class="memname">glib::Vec3f::Vec3f </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classglib_1_1_vec2f.html">Vec2f</a>&#160;</td>
-          <td class="paramname"><em>other</em></td><td>)</td>
+          <td class="paramname"><em>other</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>z</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Construct a new <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> object using a <a class="el" href="classglib_1_1_vec2f.html">Vec2f</a>. The z value will not be set. </p>
+<p>Construct a new <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> object using a <a class="el" href="classglib_1_1_vec2f.html">Vec2f</a> and an optional additional z value. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">other</td><td></td></tr>
@@ -336,6 +314,26 @@ static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><
 
 </div>
 </div>
+<a id="afc1b8d9ff9f2faa00bef4e71ad73c35a" name="afc1b8d9ff9f2faa00bef4e71ad73c35a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc1b8d9ff9f2faa00bef4e71ad73c35a">&#9670;&nbsp;</a></span>getLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double glib::Vec3f::getLength </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the Length of the vector. </p>
+<dl class="section return"><dt>Returns</dt><dd>double </dd></dl>
+
+</div>
+</div>
 <a id="a5d65907c3012953bd915e038514da100" name="a5d65907c3012953bd915e038514da100"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5d65907c3012953bd915e038514da100">&#9670;&nbsp;</a></span>getX()</h2>
 
@@ -393,6 +391,26 @@ static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><
 
 <p>Gets the Z value for the vector. </p>
 <dl class="section return"><dt>Returns</dt><dd>double </dd></dl>
+
+</div>
+</div>
+<a id="ae35b3c453db0741238e0b7cc61913829" name="ae35b3c453db0741238e0b7cc61913829"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae35b3c453db0741238e0b7cc61913829">&#9670;&nbsp;</a></span>normalize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> glib::Vec3f::normalize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the normalized version of the vector. Returns a vector with the same direction but a length of 1. </p>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> </dd></dl>
 
 </div>
 </div>
@@ -543,6 +561,26 @@ static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><
 
 <p>Converts the <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> to a <a class="el" href="classglib_1_1_general_vector.html">GeneralVector</a> object. </p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classglib_1_1_general_vector.html">GeneralVector</a> </dd></dl>
+
+</div>
+</div>
+<a id="a769240f04274f816473b1c44cfc890dd" name="a769240f04274f816473b1c44cfc890dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a769240f04274f816473b1c44cfc890dd">&#9670;&nbsp;</a></span>toVec2f()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classglib_1_1_vec2f.html">Vec2f</a> glib::Vec3f::toVec2f </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Converts the <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a> object to a <a class="el" href="classglib_1_1_vec2f.html">Vec2f</a> object by dropping the z value. </p>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classglib_1_1_vec2f.html">Vec2f</a> </dd></dl>
 
 </div>
 </div>

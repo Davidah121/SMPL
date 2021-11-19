@@ -31,27 +31,28 @@
 \DoxyCodeLine{64         \textcolor{keywordtype}{double}* operator[](\textcolor{keywordtype}{int} row);}
 \DoxyCodeLine{65 }
 \DoxyCodeLine{66         \mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} operator*(\textcolor{keywordtype}{double} value);}
-\DoxyCodeLine{67         \mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} operator*(\textcolor{keywordtype}{int} value);}
-\DoxyCodeLine{68         \mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} operator*(\textcolor{keywordtype}{float} value);}
-\DoxyCodeLine{69 }
-\DoxyCodeLine{70         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{double} value);}
-\DoxyCodeLine{71         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{int} value);}
-\DoxyCodeLine{72         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{float} value);}
-\DoxyCodeLine{73 }
-\DoxyCodeLine{74         \mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} operator+(\mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} other);}
-\DoxyCodeLine{75         \textcolor{keywordtype}{void} operator+=(\mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} other);}
-\DoxyCodeLine{76 }
-\DoxyCodeLine{77         \mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} operator-\/(\mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} other);}
-\DoxyCodeLine{78         \textcolor{keywordtype}{void} operator-\/=(\mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} other);}
-\DoxyCodeLine{79 }
-\DoxyCodeLine{80         \mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} operator*(\mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} other);}
-\DoxyCodeLine{81 }
-\DoxyCodeLine{82         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} operator*(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other);}
-\DoxyCodeLine{83 }
-\DoxyCodeLine{84         \textcolor{keywordtype}{bool} operator==(\mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} other);}
-\DoxyCodeLine{85         \textcolor{keywordtype}{bool} operator!=(\mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} other);}
-\DoxyCodeLine{86     \};}
-\DoxyCodeLine{87 }
-\DoxyCodeLine{88 \} \textcolor{comment}{//NAMESPACE glib END}}
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68         \textcolor{keyword}{friend} \mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} operator*(\textcolor{keywordtype}{double} value, \mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} other)}
+\DoxyCodeLine{69         \{}
+\DoxyCodeLine{70             \textcolor{keywordflow}{return} other * value;}
+\DoxyCodeLine{71         \}}
+\DoxyCodeLine{72 }
+\DoxyCodeLine{73         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{74 }
+\DoxyCodeLine{75         \mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} operator+(\mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} other);}
+\DoxyCodeLine{76         \textcolor{keywordtype}{void} operator+=(\mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} other);}
+\DoxyCodeLine{77 }
+\DoxyCodeLine{78         \mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} operator-\/(\mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} other);}
+\DoxyCodeLine{79         \textcolor{keywordtype}{void} operator-\/=(\mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} other);}
+\DoxyCodeLine{80 }
+\DoxyCodeLine{81         \mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} operator*(\mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} other);}
+\DoxyCodeLine{82 }
+\DoxyCodeLine{83         \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} operator*(\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other);}
+\DoxyCodeLine{84 }
+\DoxyCodeLine{85         \textcolor{keywordtype}{bool} operator==(\mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} other);}
+\DoxyCodeLine{86         \textcolor{keywordtype}{bool} operator!=(\mbox{\hyperlink{classglib_1_1_mat2f}{Mat2f}} other);}
+\DoxyCodeLine{87     \};}
+\DoxyCodeLine{88 }
+\DoxyCodeLine{89 \} \textcolor{comment}{//NAMESPACE glib END}}
 
 \end{DoxyCode}

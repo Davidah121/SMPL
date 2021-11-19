@@ -880,7 +880,7 @@ void testBezierApproximations()
 void testWindowStuff()
 {
     //Testing borderless
-    SimpleWindow w = SimpleWindow("LIES", 320, 240, 32, 32, SimpleWindow::BORDERLESS_WINDOW);
+    SimpleWindow w = SimpleWindow("LIES", 320, 240, 32, 32, SimpleWindow::BORDERLESS_WINDOW | SimpleWindow::TYPE_USER_MANAGED);
 
     System::sleep(5000,0);
     w.close();
@@ -1470,6 +1470,29 @@ void demo()
     w.waitTillClose();
 }
 
+void testAntiAliasing()
+{
+    SimpleWindow w = SimpleWindow("Graphics Test", 640, 480);
+
+    GuiCustomObject g = GuiCustomObject();
+    
+    g.setRenderFunction( [](Image* surf)->void{
+        
+        Graphics::setAntiAliasing(true);
+        Graphics::setColor({255,255,255,255});
+        Graphics::drawCircle(64, 64, 32, false, surf);
+
+        
+        // Graphics::setAntiAliasing(false);
+        // Graphics::setColor({0,0,0,128});
+        // Graphics::testDrawCircle(64, 64, 32, false, surf);
+
+    });
+
+    w.getGuiManager()->addElement(&g);
+    w.waitTillClose();
+}
+
 int main(int argc, char** argv)
 {
     StringTools::init();
@@ -1479,13 +1502,15 @@ int main(int argc, char** argv)
     //testCopyPasteStuff();
     
     //testCollision2();
-    //testWindowStuff();
+    testWindowStuff();
 
     //demo();
 
-    testGLStuff();
+    //testGLStuff();
     //testDirectXStuff();
     //testGuiStuff();
+
+    //testAntiAliasing();
 
     //testDeleteStuff();
     //bezierDrawing();
@@ -1503,5 +1528,7 @@ int main(int argc, char** argv)
     //testConsoleInput();
 
     //system("pause");
+
+    Graphics::dispose();
     return 0;
 }

@@ -10,12 +10,13 @@ var searchData=
   ['binarytree_7',['BinaryTree',['../classglib_1_1_binary_tree.html#a6ef47bb62e7a595e66e53ad728226882',1,'glib::BinaryTree::BinaryTree()'],['../classglib_1_1_binary_tree.html',1,'glib::BinaryTree&lt; T &gt;']]],
   ['binarytreenode_8',['BinaryTreeNode',['../structglib_1_1_binary_tree_node.html',1,'glib']]],
   ['binomialcoefficient_9',['binomialCoefficient',['../classglib_1_1_math_ext.html#a98e088f56179e425c1969b4628d6317a',1,'glib::MathExt']]],
-  ['bitmapfont_10',['BitmapFont',['../classglib_1_1_bitmap_font.html#ae92eda7f68a6301191b5fcb3401feea5',1,'glib::BitmapFont::BitmapFont()'],['../classglib_1_1_bitmap_font.html',1,'glib::BitmapFont']]],
-  ['blend_11',['blend',['../classglib_1_1_graphics.html#ab3606cf0cc23415b750b84696be9d2ca',1,'glib::Graphics']]],
-  ['blendpointserror_12',['BlendPointsError',['../structglib_1_1_bezier_curve_1_1_blend_points_error.html',1,'glib::BezierCurve']]],
-  ['box2d_13',['Box2D',['../classglib_1_1_box2_d.html#a904e85038868bad30f0ff5c5588c3ee5',1,'glib::Box2D::Box2D()'],['../classglib_1_1_box2_d.html#ad0b9cf37244c0adf31c92e6cbb85c3f9',1,'glib::Box2D::Box2D(double leftBound, double topBound, double rightBound, double bottomBound)'],['../classglib_1_1_box2_d.html',1,'glib::Box2D']]],
-  ['box3d_14',['Box3D',['../classglib_1_1_box3_d.html',1,'glib']]],
-  ['boxblur_15',['boxBlur',['../classglib_1_1_graphics.html#a2343387605c41f8f8b48af6dd7415109',1,'glib::Graphics']]],
-  ['buildcanonicalhuffmantree_16',['buildCanonicalHuffmanTree',['../classglib_1_1_compression.html#a87bc6fbc91ffa40578e20c664ed06ca9',1,'glib::Compression']]],
-  ['buildhuffmantree_17',['buildHuffmanTree',['../classglib_1_1_compression.html#a0aed705eee96ea7f90fec8d0ed295fa1',1,'glib::Compression']]]
+  ['bisectionmethod_10',['bisectionMethod',['../classglib_1_1_math_ext.html#a375a375b68313988a9aeef3f3a3daedc',1,'glib::MathExt']]],
+  ['bitmapfont_11',['BitmapFont',['../classglib_1_1_bitmap_font.html#ae92eda7f68a6301191b5fcb3401feea5',1,'glib::BitmapFont::BitmapFont()'],['../classglib_1_1_bitmap_font.html',1,'glib::BitmapFont']]],
+  ['blend_12',['blend',['../classglib_1_1_graphics.html#ab3606cf0cc23415b750b84696be9d2ca',1,'glib::Graphics']]],
+  ['blendpointserror_13',['BlendPointsError',['../structglib_1_1_bezier_curve_1_1_blend_points_error.html',1,'glib::BezierCurve']]],
+  ['box2d_14',['Box2D',['../classglib_1_1_box2_d.html#a904e85038868bad30f0ff5c5588c3ee5',1,'glib::Box2D::Box2D()'],['../classglib_1_1_box2_d.html#ad0b9cf37244c0adf31c92e6cbb85c3f9',1,'glib::Box2D::Box2D(double leftBound, double topBound, double rightBound, double bottomBound)'],['../classglib_1_1_box2_d.html',1,'glib::Box2D']]],
+  ['box3d_15',['Box3D',['../classglib_1_1_box3_d.html',1,'glib']]],
+  ['boxblur_16',['boxBlur',['../classglib_1_1_graphics.html#a2343387605c41f8f8b48af6dd7415109',1,'glib::Graphics']]],
+  ['buildcanonicalhuffmantree_17',['buildCanonicalHuffmanTree',['../classglib_1_1_compression.html#a87bc6fbc91ffa40578e20c664ed06ca9',1,'glib::Compression']]],
+  ['buildhuffmantree_18',['buildHuffmanTree',['../classglib_1_1_compression.html#a0aed705eee96ea7f90fec8d0ed295fa1',1,'glib::Compression']]]
 ];

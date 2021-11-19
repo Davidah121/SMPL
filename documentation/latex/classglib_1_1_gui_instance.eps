@@ -5,7 +5,7 @@
 %%For: 
 %Magnification: 1.00
 %%Orientation: Portrait
-%%BoundingBox: 0 0 500 833.333313
+%%BoundingBox: 0 0 500 1025.640991
 %%Pages: 0
 %%BeginSetup
 %%EndSetup
@@ -19,12 +19,12 @@
 /marginwidth 10 def
 /distx 20 def
 /disty 40 def
-/boundaspect 0.600000 def  % aspect ratio of the BoundingBox (width/height)
+/boundaspect 0.487500 def  % aspect ratio of the BoundingBox (width/height)
 /boundx 500 def
 /boundy boundx boundaspect div def
 /xspacing 0 def
 /yspacing 0 def
-/rows 13 def
+/rows 16 def
 /cols 2 def
 /scalefactor 0 def
 /boxfont /Times-Roman findfont fontheight scalefont def
@@ -178,8 +178,11 @@ boxfont setfont
 (glib::GuiCanvas) cw
 (glib::GuiCircleButton) cw
 (glib::GuiContainer) cw
+(glib::GuiContextMenu) cw
 (glib::GuiCustomObject) cw
+(glib::GuiGrid) cw
 (glib::GuiImage) cw
+(glib::GuiList) cw
 (glib::GuiRectangleButton) cw
 (glib::GuiScrollBar) cw
 (glib::GuiShape) cw
@@ -197,13 +200,16 @@ boundx scalefactor div boundy scalefactor div scale
 
 % ----- classes -----
 
- (glib::GuiInstance) 0.000000 11.000000 box
- (glib::Object) 0.000000 12.000000 box
- (glib::GuiCanvas) 1.000000 10.000000 box
- (glib::GuiCircleButton) 1.000000 9.000000 box
- (glib::GuiContainer) 1.000000 8.000000 box
- (glib::GuiCustomObject) 1.000000 7.000000 box
- (glib::GuiImage) 1.000000 6.000000 box
+ (glib::GuiInstance) 0.000000 14.000000 box
+ (glib::Object) 0.000000 15.000000 box
+ (glib::GuiCanvas) 1.000000 13.000000 box
+ (glib::GuiCircleButton) 1.000000 12.000000 box
+ (glib::GuiContainer) 1.000000 11.000000 box
+ (glib::GuiContextMenu) 1.000000 10.000000 box
+ (glib::GuiCustomObject) 1.000000 9.000000 box
+ (glib::GuiGrid) 1.000000 8.000000 box
+ (glib::GuiImage) 1.000000 7.000000 box
+ (glib::GuiList) 1.000000 6.000000 box
  (glib::GuiRectangleButton) 1.000000 5.000000 box
  (glib::GuiScrollBar) 1.000000 4.000000 box
  (glib::GuiShape) 1.000000 3.000000 box
@@ -214,11 +220,17 @@ boundx scalefactor div boundy scalefactor div scale
 % ----- relations -----
 
 solid
-0 0.000000 11.000000 out
+0 0.000000 14.000000 out
 solid
-1 0.000000 12.000000 in
+1 0.000000 15.000000 in
 solid
-1 0.000000 10.250000 out
+1 0.000000 13.250000 out
+solid
+0 0.000000 13.500000 hedge
+solid
+0 0.000000 12.500000 hedge
+solid
+0 0.000000 11.500000 hedge
 solid
 0 0.000000 10.500000 hedge
 solid
@@ -242,4 +254,4 @@ solid
 solid
 0 0.000000 0.500000 hedge
 solid
-0.000000 11.000000 0.500000 vedge
+0.000000 14.000000 0.500000 vedge

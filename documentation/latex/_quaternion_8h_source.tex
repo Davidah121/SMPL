@@ -24,29 +24,38 @@
 \DoxyCodeLine{37         \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} operator*(\textcolor{keywordtype}{double} val);}
 \DoxyCodeLine{38         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{double} val);}
 \DoxyCodeLine{39 }
-\DoxyCodeLine{40         \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} operator/(\textcolor{keywordtype}{double} val);}
-\DoxyCodeLine{41         \textcolor{keywordtype}{void} operator/=(\textcolor{keywordtype}{double} val);}
-\DoxyCodeLine{42 }
-\DoxyCodeLine{43         \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} operator*(\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} other);}
-\DoxyCodeLine{44         \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} operator+(\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} other);}
-\DoxyCodeLine{45         \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} operator-\/(\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} other);}
-\DoxyCodeLine{46 }
-\DoxyCodeLine{47         \textcolor{keywordtype}{void} operator*=(\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} other);}
-\DoxyCodeLine{48         \textcolor{keywordtype}{void} operator+=(\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} other);}
-\DoxyCodeLine{49         \textcolor{keywordtype}{void} operator-\/=(\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} other);}
-\DoxyCodeLine{50         }
-\DoxyCodeLine{51         \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} operator*(\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} other);}
-\DoxyCodeLine{52 }
-\DoxyCodeLine{58         \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} \mbox{\hyperlink{classglib_1_1_quaternion_a9bbe437eb5f90ab0a76b36dc7c919839}{getConjugate}}();}
-\DoxyCodeLine{59 }
-\DoxyCodeLine{65         \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} \mbox{\hyperlink{classglib_1_1_quaternion_a2bb9ca67ea875f080a4e9cc525908f90}{getInverse}}();}
-\DoxyCodeLine{66 }
-\DoxyCodeLine{67         \textcolor{keywordtype}{double} a=0;}
-\DoxyCodeLine{68         \textcolor{keywordtype}{double} b=0;}
-\DoxyCodeLine{69         \textcolor{keywordtype}{double} c=0;}
-\DoxyCodeLine{70         \textcolor{keywordtype}{double} d=0;}
-\DoxyCodeLine{71     \};}
-\DoxyCodeLine{72 }
-\DoxyCodeLine{73 \}}
+\DoxyCodeLine{40         \textcolor{keyword}{friend} \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} operator*(\textcolor{keywordtype}{double} val, \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} other)}
+\DoxyCodeLine{41         \{}
+\DoxyCodeLine{42             \textcolor{keywordflow}{return} other*val;}
+\DoxyCodeLine{43         \}}
+\DoxyCodeLine{44 }
+\DoxyCodeLine{45         \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} operator/(\textcolor{keywordtype}{double} val);}
+\DoxyCodeLine{46         \textcolor{keywordtype}{void} operator/=(\textcolor{keywordtype}{double} val);}
+\DoxyCodeLine{47 }
+\DoxyCodeLine{48         \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} operator*(\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} other);}
+\DoxyCodeLine{49         \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} operator+(\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} other);}
+\DoxyCodeLine{50         \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} operator-\/(\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} other);}
+\DoxyCodeLine{51 }
+\DoxyCodeLine{52         \textcolor{keywordtype}{void} operator*=(\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} other);}
+\DoxyCodeLine{53         \textcolor{keywordtype}{void} operator+=(\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} other);}
+\DoxyCodeLine{54         \textcolor{keywordtype}{void} operator-\/=(\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} other);}
+\DoxyCodeLine{55         }
+\DoxyCodeLine{56         \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} operator*(\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} other);}
+\DoxyCodeLine{57 }
+\DoxyCodeLine{63         \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} \mbox{\hyperlink{classglib_1_1_quaternion_a9bbe437eb5f90ab0a76b36dc7c919839}{getConjugate}}();}
+\DoxyCodeLine{64 }
+\DoxyCodeLine{70         \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} \mbox{\hyperlink{classglib_1_1_quaternion_a2bb9ca67ea875f080a4e9cc525908f90}{getInverse}}();}
+\DoxyCodeLine{71 }
+\DoxyCodeLine{77         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_quaternion_aabbe7f5d02863add9db0523b30b2d254}{getLength}}();}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{84         \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} \mbox{\hyperlink{classglib_1_1_quaternion_acf07c1d0ede830556be28ae94ba0a2e9}{normalize}}();}
+\DoxyCodeLine{85 }
+\DoxyCodeLine{86         \textcolor{keywordtype}{double} a=0;}
+\DoxyCodeLine{87         \textcolor{keywordtype}{double} b=0;}
+\DoxyCodeLine{88         \textcolor{keywordtype}{double} c=0;}
+\DoxyCodeLine{89         \textcolor{keywordtype}{double} d=0;}
+\DoxyCodeLine{90     \};}
+\DoxyCodeLine{91 }
+\DoxyCodeLine{92 \}}
 
 \end{DoxyCode}

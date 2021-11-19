@@ -9,10 +9,11 @@ var searchData=
   ['binaryset_6',['BinarySet',['../classglib_1_1_binary_set.html#aa469a70fc0d8e6baf790a8d832e2ff31',1,'glib::BinarySet']]],
   ['binarytree_7',['BinaryTree',['../classglib_1_1_binary_tree.html#a6ef47bb62e7a595e66e53ad728226882',1,'glib::BinaryTree']]],
   ['binomialcoefficient_8',['binomialCoefficient',['../classglib_1_1_math_ext.html#a98e088f56179e425c1969b4628d6317a',1,'glib::MathExt']]],
-  ['bitmapfont_9',['BitmapFont',['../classglib_1_1_bitmap_font.html#ae92eda7f68a6301191b5fcb3401feea5',1,'glib::BitmapFont']]],
-  ['blend_10',['blend',['../classglib_1_1_graphics.html#ab3606cf0cc23415b750b84696be9d2ca',1,'glib::Graphics']]],
-  ['box2d_11',['Box2D',['../classglib_1_1_box2_d.html#a904e85038868bad30f0ff5c5588c3ee5',1,'glib::Box2D::Box2D()'],['../classglib_1_1_box2_d.html#ad0b9cf37244c0adf31c92e6cbb85c3f9',1,'glib::Box2D::Box2D(double leftBound, double topBound, double rightBound, double bottomBound)']]],
-  ['boxblur_12',['boxBlur',['../classglib_1_1_graphics.html#a2343387605c41f8f8b48af6dd7415109',1,'glib::Graphics']]],
-  ['buildcanonicalhuffmantree_13',['buildCanonicalHuffmanTree',['../classglib_1_1_compression.html#a87bc6fbc91ffa40578e20c664ed06ca9',1,'glib::Compression']]],
-  ['buildhuffmantree_14',['buildHuffmanTree',['../classglib_1_1_compression.html#a0aed705eee96ea7f90fec8d0ed295fa1',1,'glib::Compression']]]
+  ['bisectionmethod_9',['bisectionMethod',['../classglib_1_1_math_ext.html#a375a375b68313988a9aeef3f3a3daedc',1,'glib::MathExt']]],
+  ['bitmapfont_10',['BitmapFont',['../classglib_1_1_bitmap_font.html#ae92eda7f68a6301191b5fcb3401feea5',1,'glib::BitmapFont']]],
+  ['blend_11',['blend',['../classglib_1_1_graphics.html#ab3606cf0cc23415b750b84696be9d2ca',1,'glib::Graphics']]],
+  ['box2d_12',['Box2D',['../classglib_1_1_box2_d.html#a904e85038868bad30f0ff5c5588c3ee5',1,'glib::Box2D::Box2D()'],['../classglib_1_1_box2_d.html#ad0b9cf37244c0adf31c92e6cbb85c3f9',1,'glib::Box2D::Box2D(double leftBound, double topBound, double rightBound, double bottomBound)']]],
+  ['boxblur_13',['boxBlur',['../classglib_1_1_graphics.html#a2343387605c41f8f8b48af6dd7415109',1,'glib::Graphics']]],
+  ['buildcanonicalhuffmantree_14',['buildCanonicalHuffmanTree',['../classglib_1_1_compression.html#a87bc6fbc91ffa40578e20c664ed06ca9',1,'glib::Compression']]],
+  ['buildhuffmantree_15',['buildHuffmanTree',['../classglib_1_1_compression.html#a0aed705eee96ea7f90fec8d0ed295fa1',1,'glib::Compression']]]
 ];

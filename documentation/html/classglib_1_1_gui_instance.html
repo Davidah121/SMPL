@@ -87,14 +87,17 @@ Inheritance diagram for glib::GuiInstance:</div>
 <area href="classglib_1_1_gui_canvas.html" alt="glib::GuiCanvas" shape="rect" coords="158,112,306,136"/>
 <area href="classglib_1_1_gui_circle_button.html" alt="glib::GuiCircleButton" shape="rect" coords="158,168,306,192"/>
 <area href="classglib_1_1_gui_container.html" alt="glib::GuiContainer" shape="rect" coords="158,224,306,248"/>
-<area href="classglib_1_1_gui_custom_object.html" alt="glib::GuiCustomObject" shape="rect" coords="158,280,306,304"/>
-<area href="classglib_1_1_gui_image.html" alt="glib::GuiImage" shape="rect" coords="158,336,306,360"/>
-<area href="classglib_1_1_gui_rectangle_button.html" alt="glib::GuiRectangleButton" shape="rect" coords="158,392,306,416"/>
-<area href="classglib_1_1_gui_scroll_bar.html" alt="glib::GuiScrollBar" shape="rect" coords="158,448,306,472"/>
-<area href="classglib_1_1_gui_shape.html" alt="glib::GuiShape" shape="rect" coords="158,504,306,528"/>
-<area href="classglib_1_1_gui_sprite.html" alt="glib::GuiSprite" shape="rect" coords="158,560,306,584"/>
-<area href="classglib_1_1_gui_text_block.html" alt="glib::GuiTextBlock" shape="rect" coords="158,616,306,640"/>
-<area href="classglib_1_1_gui_text_box.html" alt="glib::GuiTextBox" shape="rect" coords="158,672,306,696"/>
+<area href="classglib_1_1_gui_context_menu.html" alt="glib::GuiContextMenu" shape="rect" coords="158,280,306,304"/>
+<area href="classglib_1_1_gui_custom_object.html" alt="glib::GuiCustomObject" shape="rect" coords="158,336,306,360"/>
+<area href="classglib_1_1_gui_grid.html" alt="glib::GuiGrid" shape="rect" coords="158,392,306,416"/>
+<area href="classglib_1_1_gui_image.html" alt="glib::GuiImage" shape="rect" coords="158,448,306,472"/>
+<area href="classglib_1_1_gui_list.html" alt="glib::GuiList" shape="rect" coords="158,504,306,528"/>
+<area href="classglib_1_1_gui_rectangle_button.html" alt="glib::GuiRectangleButton" shape="rect" coords="158,560,306,584"/>
+<area href="classglib_1_1_gui_scroll_bar.html" alt="glib::GuiScrollBar" shape="rect" coords="158,616,306,640"/>
+<area href="classglib_1_1_gui_shape.html" alt="glib::GuiShape" shape="rect" coords="158,672,306,696"/>
+<area href="classglib_1_1_gui_sprite.html" alt="glib::GuiSprite" shape="rect" coords="158,728,306,752"/>
+<area href="classglib_1_1_gui_text_block.html" alt="glib::GuiTextBlock" shape="rect" coords="158,784,306,808"/>
+<area href="classglib_1_1_gui_text_box.html" alt="glib::GuiTextBox" shape="rect" coords="158,840,306,864"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -104,6 +107,10 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>GuiInstance</b> ()</td></tr>
 <tr class="memdesc:a558c2570ce9fcebf0666858d85bded83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new <a class="el" href="classglib_1_1_gui_instance.html">GuiInstance</a> object <a class="el" href="classglib_1_1_gui_instance.html">GuiInstance</a> is more of an abstract class that is designed to be extended through sub classes. <br /></td></tr>
 <tr class="separator:a558c2570ce9fcebf0666858d85bded83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d13ef0409f80f75192d7824bb15b45d"><td class="memItemLeft" align="right" valign="top"><a id="a5d13ef0409f80f75192d7824bb15b45d" name="a5d13ef0409f80f75192d7824bb15b45d"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>GuiInstance</b> (std::string nameID)</td></tr>
+<tr class="memdesc:a5d13ef0409f80f75192d7824bb15b45d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new <a class="el" href="classglib_1_1_gui_instance.html">GuiInstance</a> object <a class="el" href="classglib_1_1_gui_instance.html">GuiInstance</a> is more of an abstract class that is designed to be extended through sub classes. <br /></td></tr>
+<tr class="separator:a5d13ef0409f80f75192d7824bb15b45d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb8bc107798bd2b2ec21aee1765b5bed"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_gui_instance.html#adb8bc107798bd2b2ec21aee1765b5bed">GuiInstance</a> (const <a class="el" href="classglib_1_1_gui_instance.html">GuiInstance</a> &amp;other)</td></tr>
 <tr class="memdesc:adb8bc107798bd2b2ec21aee1765b5bed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new <a class="el" href="classglib_1_1_gui_instance.html">GuiInstance</a> object from another <a class="el" href="classglib_1_1_gui_instance.html">GuiInstance</a> object.  <a href="classglib_1_1_gui_instance.html#adb8bc107798bd2b2ec21aee1765b5bed">More...</a><br /></td></tr>
 <tr class="separator:adb8bc107798bd2b2ec21aee1765b5bed"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -229,6 +236,9 @@ static const int&#160;</td><td class="memItemRight" valign="bottom"><b>MIN_PRIOR
 <tr class="memitem:a3b15e8461adc6b4bbf009019b786c9f5"><td class="memItemLeft" align="right" valign="top"><a id="a3b15e8461adc6b4bbf009019b786c9f5" name="a3b15e8461adc6b4bbf009019b786c9f5"></a>
 static const int&#160;</td><td class="memItemRight" valign="bottom"><b>CANVAS_PRIORITY_VALUE</b> = -10000</td></tr>
 <tr class="separator:a3b15e8461adc6b4bbf009019b786c9f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb1d905ac70a0f86b841d6b65cbef331"><td class="memItemLeft" align="right" valign="top"><a id="acb1d905ac70a0f86b841d6b65cbef331" name="acb1d905ac70a0f86b841d6b65cbef331"></a>
+static const int&#160;</td><td class="memItemRight" valign="bottom"><b>CONTEXT_MENU_PRIORITY_VALUE</b> = -10001</td></tr>
+<tr class="separator:acb1d905ac70a0f86b841d6b65cbef331"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a306de7bb8d1fda5e1de408f80831979a"><td class="memItemLeft" align="right" valign="top"><a id="a306de7bb8d1fda5e1de408f80831979a" name="a306de7bb8d1fda5e1de408f80831979a"></a>
 static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><td class="memItemRight" valign="bottom"><b>myClass</b></td></tr>
 <tr class="separator:a306de7bb8d1fda5e1de408f80831979a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -284,6 +294,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>renderX</b> = 0</td></
 <tr class="memitem:a0b1ac961148816d6a30d3b69b76aa66b"><td class="memItemLeft" align="right" valign="top"><a id="a0b1ac961148816d6a30d3b69b76aa66b" name="a0b1ac961148816d6a30d3b69b76aa66b"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>renderY</b> = 0</td></tr>
 <tr class="separator:a0b1ac961148816d6a30d3b69b76aa66b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ddcd8106fe8f2eed9976e2d7b4bb38f"><td class="memItemLeft" align="right" valign="top"><a id="a3ddcd8106fe8f2eed9976e2d7b4bb38f" name="a3ddcd8106fe8f2eed9976e2d7b4bb38f"></a>
+<a class="el" href="classglib_1_1_box2_d.html">Box2D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>boundingBox</b> = <a class="el" href="classglib_1_1_box2_d.html">Box2D</a>(0, 0, 0, 0)</td></tr>
+<tr class="separator:a3ddcd8106fe8f2eed9976e2d7b4bb38f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51a7ab606cc315f83b4bafcb6aaa54ef"><td class="memItemLeft" align="right" valign="top"><a id="a51a7ab606cc315f83b4bafcb6aaa54ef" name="a51a7ab606cc315f83b4bafcb6aaa54ef"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>nameID</b> = &quot;&quot;</td></tr>
+<tr class="separator:a51a7ab606cc315f83b4bafcb6aaa54ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
@@ -844,7 +860,7 @@ false </dd></dl>
 
 <p>An render function for the <a class="el" href="classglib_1_1_gui_instance.html">GuiInstance</a>. Must be overriden. </p>
 
-<p>Reimplemented in <a class="el" href="classglib_1_1_gui_container.html#a68897b8dc39c6effc76066634a5a5c80">glib::GuiContainer</a>, <a class="el" href="classglib_1_1_gui_custom_object.html#ae3e7cd99c49d663d0728e798a9201feb">glib::GuiCustomObject</a>, <a class="el" href="classglib_1_1_gui_canvas.html#a9e147a1f05a18f88d54e4f1590023e2b">glib::GuiCanvas</a>, <a class="el" href="classglib_1_1_gui_image.html#ae17ce3117ff17c51609a761d7761b904">glib::GuiImage</a>, <a class="el" href="classglib_1_1_gui_sprite.html#a515f5d5b0d7f05f2049050c6e10cc825">glib::GuiSprite</a>, <a class="el" href="classglib_1_1_gui_text_block.html#ab1c5d02791262505b439037e9aa47c15">glib::GuiTextBlock</a>, <a class="el" href="classglib_1_1_gui_text_box.html#a43372c06eb867077c8fe91d98da9b636">glib::GuiTextBox</a>, <a class="el" href="classglib_1_1_gui_shape.html#a7e7f469b644f1b7120c1ac107133c3c1">glib::GuiShape</a>, <a class="el" href="classglib_1_1_gui_rectangle_button.html#a9ec83b275f4a70e5afc1e5744b016032">glib::GuiRectangleButton</a>, <a class="el" href="classglib_1_1_gui_circle_button.html#ad1f349b70a07efdda2be6849c0e6b354">glib::GuiCircleButton</a>, and <a class="el" href="classglib_1_1_gui_scroll_bar.html#a27d2cf4c414ea043ab6541a163a67165">glib::GuiScrollBar</a>.</p>
+<p>Reimplemented in <a class="el" href="classglib_1_1_gui_container.html#a68897b8dc39c6effc76066634a5a5c80">glib::GuiContainer</a>, <a class="el" href="classglib_1_1_gui_custom_object.html#ae3e7cd99c49d663d0728e798a9201feb">glib::GuiCustomObject</a>, <a class="el" href="classglib_1_1_gui_canvas.html#a9e147a1f05a18f88d54e4f1590023e2b">glib::GuiCanvas</a>, <a class="el" href="classglib_1_1_gui_image.html#ae17ce3117ff17c51609a761d7761b904">glib::GuiImage</a>, <a class="el" href="classglib_1_1_gui_sprite.html#a515f5d5b0d7f05f2049050c6e10cc825">glib::GuiSprite</a>, <a class="el" href="classglib_1_1_gui_text_block.html#ab1c5d02791262505b439037e9aa47c15">glib::GuiTextBlock</a>, <a class="el" href="classglib_1_1_gui_text_box.html#a43372c06eb867077c8fe91d98da9b636">glib::GuiTextBox</a>, <a class="el" href="classglib_1_1_gui_shape.html#a7e7f469b644f1b7120c1ac107133c3c1">glib::GuiShape</a>, <a class="el" href="classglib_1_1_gui_rectangle_button.html#a9ec83b275f4a70e5afc1e5744b016032">glib::GuiRectangleButton</a>, <a class="el" href="classglib_1_1_gui_circle_button.html#ad1f349b70a07efdda2be6849c0e6b354">glib::GuiCircleButton</a>, <a class="el" href="classglib_1_1_gui_scroll_bar.html#a27d2cf4c414ea043ab6541a163a67165">glib::GuiScrollBar</a>, <a class="el" href="classglib_1_1_gui_list.html#ad37b9bc54e783bd4a97ba2de8ed9dd63">glib::GuiList</a>, <a class="el" href="classglib_1_1_gui_grid.html#a58c98be7cee91335c2f31f8998426fba">glib::GuiGrid</a>, and <a class="el" href="classglib_1_1_gui_context_menu.html#a32afeb5966c22d3e211fd35520d690b0">glib::GuiContextMenu</a>.</p>
 
 </div>
 </div>
@@ -1353,7 +1369,7 @@ false </dd></dl>
 
 <p>An update function for the <a class="el" href="classglib_1_1_gui_instance.html">GuiInstance</a>. Must be overriden. </p>
 
-<p>Reimplemented in <a class="el" href="classglib_1_1_gui_container.html#ad1c7d6ac419f1d8e2e39f63f443a4ae4">glib::GuiContainer</a>, <a class="el" href="classglib_1_1_gui_custom_object.html#aa851b71e667e9bc60b3cdb49e6a52c84">glib::GuiCustomObject</a>, <a class="el" href="classglib_1_1_gui_canvas.html#a3f90873b1e88b91b324d51ff8834099f">glib::GuiCanvas</a>, <a class="el" href="classglib_1_1_gui_image.html#a8dd79fbacb4d7a4505a1d9bb65b708d2">glib::GuiImage</a>, <a class="el" href="classglib_1_1_gui_sprite.html#af57445e95138743ac10af54b76784c20">glib::GuiSprite</a>, <a class="el" href="classglib_1_1_gui_text_block.html#a2daa7117bd0bffb2cdcfa8d665dfeaf1">glib::GuiTextBlock</a>, <a class="el" href="classglib_1_1_gui_text_box.html#a4a4bfa4f076da221f5ecd3cd46601706">glib::GuiTextBox</a>, <a class="el" href="classglib_1_1_gui_shape.html#a8d1206553298941756e9176a64977abe">glib::GuiShape</a>, <a class="el" href="classglib_1_1_gui_rectangle_button.html#ac9f563bb7ffc13212f61e6e95fb9afb2">glib::GuiRectangleButton</a>, <a class="el" href="classglib_1_1_gui_circle_button.html#a2bac02a77e2873a7b2e78e571d214251">glib::GuiCircleButton</a>, and <a class="el" href="classglib_1_1_gui_scroll_bar.html#a7aa92e3808cd7896ee6a75af5711f341">glib::GuiScrollBar</a>.</p>
+<p>Reimplemented in <a class="el" href="classglib_1_1_gui_container.html#ad1c7d6ac419f1d8e2e39f63f443a4ae4">glib::GuiContainer</a>, <a class="el" href="classglib_1_1_gui_custom_object.html#aa851b71e667e9bc60b3cdb49e6a52c84">glib::GuiCustomObject</a>, <a class="el" href="classglib_1_1_gui_canvas.html#a3f90873b1e88b91b324d51ff8834099f">glib::GuiCanvas</a>, <a class="el" href="classglib_1_1_gui_image.html#a8dd79fbacb4d7a4505a1d9bb65b708d2">glib::GuiImage</a>, <a class="el" href="classglib_1_1_gui_sprite.html#af57445e95138743ac10af54b76784c20">glib::GuiSprite</a>, <a class="el" href="classglib_1_1_gui_text_block.html#a2daa7117bd0bffb2cdcfa8d665dfeaf1">glib::GuiTextBlock</a>, <a class="el" href="classglib_1_1_gui_text_box.html#a4a4bfa4f076da221f5ecd3cd46601706">glib::GuiTextBox</a>, <a class="el" href="classglib_1_1_gui_shape.html#a8d1206553298941756e9176a64977abe">glib::GuiShape</a>, <a class="el" href="classglib_1_1_gui_rectangle_button.html#ac9f563bb7ffc13212f61e6e95fb9afb2">glib::GuiRectangleButton</a>, <a class="el" href="classglib_1_1_gui_circle_button.html#a2bac02a77e2873a7b2e78e571d214251">glib::GuiCircleButton</a>, <a class="el" href="classglib_1_1_gui_scroll_bar.html#a7aa92e3808cd7896ee6a75af5711f341">glib::GuiScrollBar</a>, <a class="el" href="classglib_1_1_gui_list.html#a1763a844a861b943362152fbe66b9485">glib::GuiList</a>, <a class="el" href="classglib_1_1_gui_grid.html#a781de6f76c9c245cc9ba8d50eaa1876a">glib::GuiGrid</a>, and <a class="el" href="classglib_1_1_gui_context_menu.html#a8e9810e3ee7a6c9dafc8865e53f1e306">glib::GuiContextMenu</a>.</p>
 
 </div>
 </div>

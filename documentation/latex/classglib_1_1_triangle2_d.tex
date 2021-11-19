@@ -34,11 +34,13 @@ void \mbox{\hyperlink{classglib_1_1_triangle2_d_a0f50859b217541827eaafaa5c931d11
 void \mbox{\hyperlink{classglib_1_1_triangle2_d_a642ee2d1ac5428ebd7aada02241ea525}{set\+Vertex3}} (double x, double y)
 \begin{DoxyCompactList}\small\item\em Sets the third vertex of the triangle. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_triangle2_d_a2800fd48500c0cd62eb420263b885787}{get\+Vertex1}} ()
-\begin{DoxyCompactList}\small\item\em Gets the first vertex of the triangle. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Gets the first vertex of the triangle after transforms. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_triangle2_d_a56ca35521e2a790b5e3771f2ec342e7e}{get\+Vertex2}} ()
-\begin{DoxyCompactList}\small\item\em Gets the first vertex of the triangle. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Gets the first vertex of the triangle after transforms. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_triangle2_d_a428424a752774e499eb0fb83d0b787b2}{get\+Vertex3}} ()
-\begin{DoxyCompactList}\small\item\em Gets the first vertex of the triangle. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Gets the first vertex of the triangle after transforms. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_triangle2_d_a0b83191461eacd8d95ef0809bbe5f517}{get\+Center\+Position}} ()
+\begin{DoxyCompactList}\small\item\em Get the Center Position of the triangle after transforms. \end{DoxyCompactList}\item 
 double \mbox{\hyperlink{classglib_1_1_triangle2_d_a41dba29cfea08de98be62702d209ea5b}{generate\+Bounding\+Radius}} ()
 \begin{DoxyCompactList}\small\item\em Generates a bounding radius for the triangle. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Static Public Attributes}
@@ -46,6 +48,11 @@ double \mbox{\hyperlink{classglib_1_1_triangle2_d_a41dba29cfea08de98be62702d209e
 \item 
 \mbox{\Hypertarget{classglib_1_1_triangle2_d_a1949ed8dbe87a965ffbb98f8a8891b59}\label{classglib_1_1_triangle2_d_a1949ed8dbe87a965ffbb98f8a8891b59}} 
 static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classglib_1_1_triangle2_d_a1b7e14f84ddb9e738b4ca9edb4082efe}{on\+Transform\+Changed}} ()
 \end{DoxyCompactItemize}
 \doxysubsection*{Additional Inherited Members}
 
@@ -115,6 +122,19 @@ double
 
 Reimplemented from \mbox{\hyperlink{classglib_1_1_shape_aa3838fc7d35a5ba71487502d0b51f25a}{glib\+::\+Shape}}.
 
+\mbox{\Hypertarget{classglib_1_1_triangle2_d_a0b83191461eacd8d95ef0809bbe5f517}\label{classglib_1_1_triangle2_d_a0b83191461eacd8d95ef0809bbe5f517}} 
+\index{glib::Triangle2D@{glib::Triangle2D}!getCenterPosition@{getCenterPosition}}
+\index{getCenterPosition@{getCenterPosition}!glib::Triangle2D@{glib::Triangle2D}}
+\doxysubsubsection{\texorpdfstring{getCenterPosition()}{getCenterPosition()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} glib\+::\+Triangle2\+D\+::get\+Center\+Position (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the Center Position of the triangle after transforms. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_triangle2_d_a8609d2b6517e0c5810651dab696f8ca7}\label{classglib_1_1_triangle2_d_a8609d2b6517e0c5810651dab696f8ca7}} 
 \index{glib::Triangle2D@{glib::Triangle2D}!getClass@{getClass}}
 \index{getClass@{getClass}!glib::Triangle2D@{glib::Triangle2D}}
@@ -133,7 +153,7 @@ Reimplemented from \mbox{\hyperlink{classglib_1_1_shape}{glib\+::\+Shape}}.
 
 
 
-Gets the first vertex of the triangle. 
+Gets the first vertex of the triangle after transforms. 
 
 \begin{DoxyReturn}{Returns}
 \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} 
@@ -146,7 +166,7 @@ Gets the first vertex of the triangle.
 
 
 
-Gets the first vertex of the triangle. 
+Gets the first vertex of the triangle after transforms. 
 
 \begin{DoxyReturn}{Returns}
 \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} 
@@ -159,11 +179,21 @@ Gets the first vertex of the triangle.
 
 
 
-Gets the first vertex of the triangle. 
+Gets the first vertex of the triangle after transforms. 
 
 \begin{DoxyReturn}{Returns}
 \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} 
 \end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_triangle2_d_a1b7e14f84ddb9e738b4ca9edb4082efe}\label{classglib_1_1_triangle2_d_a1b7e14f84ddb9e738b4ca9edb4082efe}} 
+\index{glib::Triangle2D@{glib::Triangle2D}!onTransformChanged@{onTransformChanged}}
+\index{onTransformChanged@{onTransformChanged}!glib::Triangle2D@{glib::Triangle2D}}
+\doxysubsubsection{\texorpdfstring{onTransformChanged()}{onTransformChanged()}}
+{\footnotesize\ttfamily void glib\+::\+Triangle2\+D\+::on\+Transform\+Changed (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \mbox{\hyperlink{classglib_1_1_shape}{glib\+::\+Shape}}.
+
 \mbox{\Hypertarget{classglib_1_1_triangle2_d_a91dcc5508833d6e00bfba9da9ea8e56c}\label{classglib_1_1_triangle2_d_a91dcc5508833d6e00bfba9da9ea8e56c}} 
 \index{glib::Triangle2D@{glib::Triangle2D}!setVertex1@{setVertex1}}
 \index{setVertex1@{setVertex1}!glib::Triangle2D@{glib::Triangle2D}}

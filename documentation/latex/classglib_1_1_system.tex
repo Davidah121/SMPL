@@ -45,9 +45,9 @@ static int \mbox{\hyperlink{classglib_1_1_system_a5027b1c759aba9e59ef60a805b733b
 \begin{DoxyCompactList}\small\item\em Gets the Height of the Desktop Window. Affectively, the height of the monitor. \end{DoxyCompactList}\item 
 static int \mbox{\hyperlink{classglib_1_1_system_aa3f1719c8f500c6db9a33ab69af13c43}{get\+Amount\+Of\+Monitors}} ()
 \begin{DoxyCompactList}\small\item\em Gets the amount of monitors connected. \end{DoxyCompactList}\item 
-static void \mbox{\hyperlink{classglib_1_1_system_aa2b9b34ae13bd91ce39ceff49d73fb23}{save\+Screen\+Shot}} (HWND window, \mbox{\hyperlink{classglib_1_1_file}{File}} file)
+static void \mbox{\hyperlink{classglib_1_1_system_a7b2e40427270c751c00945ce60dcfd3a}{save\+Screen\+Shot}} (size\+\_\+t window, \mbox{\hyperlink{classglib_1_1_file}{File}} file)
 \begin{DoxyCompactList}\small\item\em Saves a screenshot from the specified window to a file as a .bmp Note that the HWND may not contain any pixel data. \end{DoxyCompactList}\item 
-static \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ \mbox{\hyperlink{classglib_1_1_system_a41b8863bbaebd2c49fa088063a065f25}{get\+Screen\+Shot}} (HWND window)
+static \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ \mbox{\hyperlink{classglib_1_1_system_a75dfa03e018e09616b58d42962be5e65}{get\+Screen\+Shot}} (size\+\_\+t window)
 \begin{DoxyCompactList}\small\item\em Gets a screenshot from the specified window as an Image$\ast$. The Image$\ast$ should be deleted when no longer needed. \end{DoxyCompactList}\item 
 static void \mbox{\hyperlink{classglib_1_1_system_aa5d0f3b76fb28d9166d7af752e724d82}{save\+Screen\+Shot\+Desktop}} (\mbox{\hyperlink{classglib_1_1_file}{File}} file)
 \begin{DoxyCompactList}\small\item\em Saves a screenshot from the desktop window to a file as a .bmp. \end{DoxyCompactList}\item 
@@ -55,11 +55,11 @@ static \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ \mbox{\hyperlink{cla
 \begin{DoxyCompactList}\small\item\em Gets a screenshot from the desktop window as an Image$\ast$. The Image$\ast$ should be deleted when no longer needed. \end{DoxyCompactList}\item 
 static void \mbox{\hyperlink{classglib_1_1_system_a8343dbce275d64e96364b430d214410b}{paint\+Image\+To\+Desktop}} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, int startX=0, int startY=0)
 \begin{DoxyCompactList}\small\item\em Paints the image on the desktop window at the specified location. It is over written when the desktop window considers that section invalid. A repaint can invalidate a section. \end{DoxyCompactList}\item 
-static void \mbox{\hyperlink{classglib_1_1_system_adbcbcf2a4bd64a22f3855dcab413905a}{paint\+Image\+To\+Window}} (HWND window, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, int startX=0, int startY=0)
+static void \mbox{\hyperlink{classglib_1_1_system_aa9b688812e1ff73e5b3560f5ca7cd3ad}{paint\+Image\+To\+Window}} (size\+\_\+t window, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, int startX=0, int startY=0)
 \begin{DoxyCompactList}\small\item\em Paints the image on the specified window at the specified location. It is over written when the desktop window considers that section invalid. A repaint can invalidate a section. \end{DoxyCompactList}\item 
 static unsigned long \mbox{\hyperlink{classglib_1_1_system_a526fc17161139c29e71344a16ba20e63}{get\+Process\+ID}} (std\+::wstring process\+Name)
 \begin{DoxyCompactList}\small\item\em Gets the Process\+ID of the application by its process name. \end{DoxyCompactList}\item 
-static HWND \mbox{\hyperlink{classglib_1_1_system_af8779ba716b5b23cd73a60f232285a80}{get\+Process\+Window}} (std\+::wstring window\+Name)
+static size\+\_\+t \mbox{\hyperlink{classglib_1_1_system_a0bdcc166a538a75b519857abfab9b6a8}{get\+Process\+Window}} (std\+::wstring window\+Name)
 \begin{DoxyCompactList}\small\item\em Gets the Window for a process by the window name. \end{DoxyCompactList}\item 
 static std\+::wstring \mbox{\hyperlink{classglib_1_1_system_a1095a01e54a48e528dc5fa082aac238e}{file\+Dialog\+Box}} (unsigned char type=TYPE\+\_\+\+OPEN\+\_\+\+FILE, std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_file_filter}{File\+Filter}} $>$ filters=\{\}, std\+::wstring start\+Dir=L\char`\"{}./\char`\"{})
 \begin{DoxyCompactList}\small\item\em Opens a file dialog box to either save, load, or select a directory. \end{DoxyCompactList}\item 
@@ -499,11 +499,11 @@ Gets the Process\+ID of the application by its process name.
 \begin{DoxyReturn}{Returns}
 unsigned long 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classglib_1_1_system_af8779ba716b5b23cd73a60f232285a80}\label{classglib_1_1_system_af8779ba716b5b23cd73a60f232285a80}} 
+\mbox{\Hypertarget{classglib_1_1_system_a0bdcc166a538a75b519857abfab9b6a8}\label{classglib_1_1_system_a0bdcc166a538a75b519857abfab9b6a8}} 
 \index{glib::System@{glib::System}!getProcessWindow@{getProcessWindow}}
 \index{getProcessWindow@{getProcessWindow}!glib::System@{glib::System}}
 \doxysubsubsection{\texorpdfstring{getProcessWindow()}{getProcessWindow()}}
-{\footnotesize\ttfamily static HWND glib\+::\+System\+::get\+Process\+Window (\begin{DoxyParamCaption}\item[{std\+::wstring}]{window\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily static size\+\_\+t glib\+::\+System\+::get\+Process\+Window (\begin{DoxyParamCaption}\item[{std\+::wstring}]{window\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
 
 
@@ -515,13 +515,13 @@ Gets the Window for a process by the window name.
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-HWND 
+size\+\_\+t 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classglib_1_1_system_a41b8863bbaebd2c49fa088063a065f25}\label{classglib_1_1_system_a41b8863bbaebd2c49fa088063a065f25}} 
+\mbox{\Hypertarget{classglib_1_1_system_a75dfa03e018e09616b58d42962be5e65}\label{classglib_1_1_system_a75dfa03e018e09616b58d42962be5e65}} 
 \index{glib::System@{glib::System}!getScreenShot@{getScreenShot}}
 \index{getScreenShot@{getScreenShot}!glib::System@{glib::System}}
 \doxysubsubsection{\texorpdfstring{getScreenShot()}{getScreenShot()}}
-{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ glib\+::\+System\+::get\+Screen\+Shot (\begin{DoxyParamCaption}\item[{HWND}]{window }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ glib\+::\+System\+::get\+Screen\+Shot (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{window }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
 
 
@@ -589,11 +589,11 @@ Paints the image on the desktop window at the specified location. It is over wri
 {\em startY} & \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classglib_1_1_system_adbcbcf2a4bd64a22f3855dcab413905a}\label{classglib_1_1_system_adbcbcf2a4bd64a22f3855dcab413905a}} 
+\mbox{\Hypertarget{classglib_1_1_system_aa9b688812e1ff73e5b3560f5ca7cd3ad}\label{classglib_1_1_system_aa9b688812e1ff73e5b3560f5ca7cd3ad}} 
 \index{glib::System@{glib::System}!paintImageToWindow@{paintImageToWindow}}
 \index{paintImageToWindow@{paintImageToWindow}!glib::System@{glib::System}}
 \doxysubsubsection{\texorpdfstring{paintImageToWindow()}{paintImageToWindow()}}
-{\footnotesize\ttfamily static void glib\+::\+System\+::paint\+Image\+To\+Window (\begin{DoxyParamCaption}\item[{HWND}]{window,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{int}]{startX = {\ttfamily 0},  }\item[{int}]{startY = {\ttfamily 0} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily static void glib\+::\+System\+::paint\+Image\+To\+Window (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{window,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{img,  }\item[{int}]{startX = {\ttfamily 0},  }\item[{int}]{startY = {\ttfamily 0} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
 
 
@@ -623,11 +623,11 @@ Retrieves the currently copied text from the clipboard if it is text.
 \begin{DoxyReturn}{Returns}
 std\+::wstring 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classglib_1_1_system_aa2b9b34ae13bd91ce39ceff49d73fb23}\label{classglib_1_1_system_aa2b9b34ae13bd91ce39ceff49d73fb23}} 
+\mbox{\Hypertarget{classglib_1_1_system_a7b2e40427270c751c00945ce60dcfd3a}\label{classglib_1_1_system_a7b2e40427270c751c00945ce60dcfd3a}} 
 \index{glib::System@{glib::System}!saveScreenShot@{saveScreenShot}}
 \index{saveScreenShot@{saveScreenShot}!glib::System@{glib::System}}
 \doxysubsubsection{\texorpdfstring{saveScreenShot()}{saveScreenShot()}}
-{\footnotesize\ttfamily static void glib\+::\+System\+::save\+Screen\+Shot (\begin{DoxyParamCaption}\item[{HWND}]{window,  }\item[{\mbox{\hyperlink{classglib_1_1_file}{File}}}]{file }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily static void glib\+::\+System\+::save\+Screen\+Shot (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{window,  }\item[{\mbox{\hyperlink{classglib_1_1_file}{File}}}]{file }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
 
 

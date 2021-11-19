@@ -92,30 +92,39 @@ $(function() {
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> operator*(<span class="keywordtype">double</span> val);</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordtype">void</span> operator*=(<span class="keywordtype">double</span> val);</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> operator/(<span class="keywordtype">double</span> val);</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordtype">void</span> operator/=(<span class="keywordtype">double</span> val);</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> operator*(<a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> other);</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> operator+(<a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> other);</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> operator-(<a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> other);</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordtype">void</span> operator*=(<a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> other);</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordtype">void</span> operator+=(<a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> other);</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordtype">void</span> operator-=(<a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> other);</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <a class="code hl_class" href="classglib_1_1_vec3f.html">Vec3f</a> operator*(<a class="code hl_class" href="classglib_1_1_vec3f.html">Vec3f</a> other);</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classglib_1_1_quaternion.html#a9bbe437eb5f90ab0a76b36dc7c919839">   58</a></span>        <a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> <a class="code hl_function" href="classglib_1_1_quaternion.html#a9bbe437eb5f90ab0a76b36dc7c919839">getConjugate</a>();</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classglib_1_1_quaternion.html#a2bb9ca67ea875f080a4e9cc525908f90">   65</a></span>        <a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> <a class="code hl_function" href="classglib_1_1_quaternion.html#a2bb9ca67ea875f080a4e9cc525908f90">getInverse</a>();</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordtype">double</span> a=0;</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordtype">double</span> b=0;</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordtype">double</span> c=0;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordtype">double</span> d=0;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    };</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keyword">friend</span> <a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> operator*(<span class="keywordtype">double</span> val, <a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> other)</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            <span class="keywordflow">return</span> other*val;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> operator/(<span class="keywordtype">double</span> val);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordtype">void</span> operator/=(<span class="keywordtype">double</span> val);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> operator*(<a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> other);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> operator+(<a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> other);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> operator-(<a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> other);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordtype">void</span> operator*=(<a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> other);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordtype">void</span> operator+=(<a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> other);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordtype">void</span> operator-=(<a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> other);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <a class="code hl_class" href="classglib_1_1_vec3f.html">Vec3f</a> operator*(<a class="code hl_class" href="classglib_1_1_vec3f.html">Vec3f</a> other);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classglib_1_1_quaternion.html#a9bbe437eb5f90ab0a76b36dc7c919839">   63</a></span>        <a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> <a class="code hl_function" href="classglib_1_1_quaternion.html#a9bbe437eb5f90ab0a76b36dc7c919839">getConjugate</a>();</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classglib_1_1_quaternion.html#a2bb9ca67ea875f080a4e9cc525908f90">   70</a></span>        <a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> <a class="code hl_function" href="classglib_1_1_quaternion.html#a2bb9ca67ea875f080a4e9cc525908f90">getInverse</a>();</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classglib_1_1_quaternion.html#aabbe7f5d02863add9db0523b30b2d254">   77</a></span>        <span class="keywordtype">double</span> <a class="code hl_function" href="classglib_1_1_quaternion.html#aabbe7f5d02863add9db0523b30b2d254">getLength</a>();</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classglib_1_1_quaternion.html#acf07c1d0ede830556be28ae94ba0a2e9">   84</a></span>        <a class="code hl_class" href="classglib_1_1_quaternion.html">Quaternion</a> <a class="code hl_function" href="classglib_1_1_quaternion.html#acf07c1d0ede830556be28ae94ba0a2e9">normalize</a>();</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordtype">double</span> a=0;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keywordtype">double</span> b=0;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordtype">double</span> c=0;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keywordtype">double</span> d=0;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    };</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}</div>
 <div class="ttc" id="aclassglib_1_1_class_html"><div class="ttname"><a href="classglib_1_1_class.html">glib::Class</a></div><div class="ttdef"><b>Definition:</b> Class.h:8</div></div>
 <div class="ttc" id="aclassglib_1_1_object_html"><div class="ttname"><a href="classglib_1_1_object.html">glib::Object</a></div><div class="ttdef"><b>Definition:</b> Object.h:8</div></div>
 <div class="ttc" id="aclassglib_1_1_quaternion_html"><div class="ttname"><a href="classglib_1_1_quaternion.html">glib::Quaternion</a></div><div class="ttdef"><b>Definition:</b> Quaternion.h:9</div></div>
@@ -123,7 +132,9 @@ $(function() {
 <div class="ttc" id="aclassglib_1_1_quaternion_html_a74f6f4c15ae94292f44d1eb1e4fbd02e"><div class="ttname"><a href="classglib_1_1_quaternion.html#a74f6f4c15ae94292f44d1eb1e4fbd02e">glib::Quaternion::Quaternion</a></div><div class="ttdeci">Quaternion()</div><div class="ttdoc">Construct a new Quaternion object.</div></div>
 <div class="ttc" id="aclassglib_1_1_quaternion_html_a8b16aff91eb08b13a043bc7800c93da9"><div class="ttname"><a href="classglib_1_1_quaternion.html#a8b16aff91eb08b13a043bc7800c93da9">glib::Quaternion::~Quaternion</a></div><div class="ttdeci">~Quaternion()</div><div class="ttdoc">Destroy the Quaternion object.</div></div>
 <div class="ttc" id="aclassglib_1_1_quaternion_html_a9bbe437eb5f90ab0a76b36dc7c919839"><div class="ttname"><a href="classglib_1_1_quaternion.html#a9bbe437eb5f90ab0a76b36dc7c919839">glib::Quaternion::getConjugate</a></div><div class="ttdeci">Quaternion getConjugate()</div><div class="ttdoc">Gets the Conjugate of the quaternion.</div></div>
+<div class="ttc" id="aclassglib_1_1_quaternion_html_aabbe7f5d02863add9db0523b30b2d254"><div class="ttname"><a href="classglib_1_1_quaternion.html#aabbe7f5d02863add9db0523b30b2d254">glib::Quaternion::getLength</a></div><div class="ttdeci">double getLength()</div><div class="ttdoc">Gets the Length of the quaternion.</div></div>
 <div class="ttc" id="aclassglib_1_1_quaternion_html_abd455964461b460dbe6c81fc1cebd07b"><div class="ttname"><a href="classglib_1_1_quaternion.html#abd455964461b460dbe6c81fc1cebd07b">glib::Quaternion::Quaternion</a></div><div class="ttdeci">Quaternion(double a, double b, double c, double d)</div><div class="ttdoc">Construct a new Quaternion object. Takes the form ai + bj + ck + d.</div></div>
+<div class="ttc" id="aclassglib_1_1_quaternion_html_acf07c1d0ede830556be28ae94ba0a2e9"><div class="ttname"><a href="classglib_1_1_quaternion.html#acf07c1d0ede830556be28ae94ba0a2e9">glib::Quaternion::normalize</a></div><div class="ttdeci">Quaternion normalize()</div><div class="ttdoc">Normalizes the quaternion.</div></div>
 <div class="ttc" id="aclassglib_1_1_vec3f_html"><div class="ttname"><a href="classglib_1_1_vec3f.html">glib::Vec3f</a></div><div class="ttdef"><b>Definition:</b> Vec3f.h:9</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

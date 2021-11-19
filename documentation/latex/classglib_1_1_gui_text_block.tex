@@ -9,7 +9,7 @@ Inheritance diagram for glib\+::Gui\+Text\+Block\+:\begin{figure}[H]
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classglib_1_1_gui_text_block_a5831d200d09fe4130b9927c537322b57}{Gui\+Text\+Block}} (int x, int y, int width, int height)
+\mbox{\hyperlink{classglib_1_1_gui_text_block_acee1ec7fe7d50ecfb0d684af9ae47ba7}{Gui\+Text\+Block}} (int x, int y, int width=-\/1, int height=-\/1)
 \begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_gui_text_block}{Gui\+Text\+Block}} object It draws text at some location with a specified max width and height. Allows for linebreaks as well. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classglib_1_1_gui_text_block_afe47ce35e1835ba5768a85d4484f7819}\label{classglib_1_1_gui_text_block_afe47ce35e1835ba5768a85d4484f7819}} 
 {\bfseries $\sim$\+Gui\+Text\+Block} ()
@@ -54,13 +54,13 @@ void \mbox{\hyperlink{classglib_1_1_gui_text_block_a791748fa6b83bedb796925257a0f
 \begin{DoxyCompactList}\small\item\em Sets a specific font to use. If nullptr, the default font set in the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class will be used. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classglib_1_1_font}{Font}} $\ast$ \mbox{\hyperlink{classglib_1_1_gui_text_block_a39c203b0adba4c38c0ca4f0705fc9cc4}{get\+Font}} ()
 \begin{DoxyCompactList}\small\item\em Gets the \mbox{\hyperlink{classglib_1_1_font}{Font}} used. If nullptr, the default font set in the \mbox{\hyperlink{classglib_1_1_graphics}{Graphics}} class is being used. \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classglib_1_1_gui_text_block_a8e98f31006e7ca6ae4b8e1189f1306d5}{set\+Width}} (int v)
-\begin{DoxyCompactList}\small\item\em Sets the Width of the text block. \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classglib_1_1_gui_text_block_a02fc7a38cc660e666ce98cf79da31809}{set\+Height}} (int v)
-\begin{DoxyCompactList}\small\item\em Sets the Height of the text block. \end{DoxyCompactList}\item 
-int \mbox{\hyperlink{classglib_1_1_gui_text_block_a581b651f9650c2d526d3ebe846545e33}{get\+Width}} ()
+void \mbox{\hyperlink{classglib_1_1_gui_text_block_ac84e737536680916acae2d9639b8379a}{set\+Max\+Width}} (int v)
+\begin{DoxyCompactList}\small\item\em Sets the Maximum Width of the text block If set to \texorpdfstring{$<$}{<}= 0, no maximum width will be imposed. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_gui_text_block_acc6a592f786e1aff124e9b93c737ec4e}{set\+Max\+Height}} (int v)
+\begin{DoxyCompactList}\small\item\em Sets the Maximum Height of the text block If set to \texorpdfstring{$<$}{<}= 0, no maximum height will be imposed. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_gui_text_block_ae2c1a522f037f26b1bfdd2f22896486c}{get\+Max\+Width}} ()
 \begin{DoxyCompactList}\small\item\em Gets the Width of the text block. \end{DoxyCompactList}\item 
-int \mbox{\hyperlink{classglib_1_1_gui_text_block_aa480786e1796c4504361d1c58329118e}{get\+Height}} ()
+int \mbox{\hyperlink{classglib_1_1_gui_text_block_ab2361068ff4bc2c1bae603b81cd66422}{get\+Max\+Height}} ()
 \begin{DoxyCompactList}\small\item\em Gets the Height of the text block. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classglib_1_1_gui_text_block_a0f4b82ea3f1f8086a4d1790eaa8b9b34}{set\+OffsetX}} (int x)
 \begin{DoxyCompactList}\small\item\em Sets the Offset X position of the text. \end{DoxyCompactList}\item 
@@ -76,11 +76,11 @@ static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
 
 
 \doxysubsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classglib_1_1_gui_text_block_a5831d200d09fe4130b9927c537322b57}\label{classglib_1_1_gui_text_block_a5831d200d09fe4130b9927c537322b57}} 
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_acee1ec7fe7d50ecfb0d684af9ae47ba7}\label{classglib_1_1_gui_text_block_acee1ec7fe7d50ecfb0d684af9ae47ba7}} 
 \index{glib::GuiTextBlock@{glib::GuiTextBlock}!GuiTextBlock@{GuiTextBlock}}
 \index{GuiTextBlock@{GuiTextBlock}!glib::GuiTextBlock@{glib::GuiTextBlock}}
 \doxysubsubsection{\texorpdfstring{GuiTextBlock()}{GuiTextBlock()}}
-{\footnotesize\ttfamily glib\+::\+Gui\+Text\+Block\+::\+Gui\+Text\+Block (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{width,  }\item[{int}]{height }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily glib\+::\+Gui\+Text\+Block\+::\+Gui\+Text\+Block (\begin{DoxyParamCaption}\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{width = {\ttfamily -\/1},  }\item[{int}]{height = {\ttfamily -\/1} }\end{DoxyParamCaption})}
 
 
 
@@ -138,19 +138,6 @@ Gets the \mbox{\hyperlink{classglib_1_1_font}{Font}} used. If nullptr, the defau
 \begin{DoxyReturn}{Returns}
 Font$\ast$ 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classglib_1_1_gui_text_block_aa480786e1796c4504361d1c58329118e}\label{classglib_1_1_gui_text_block_aa480786e1796c4504361d1c58329118e}} 
-\index{glib::GuiTextBlock@{glib::GuiTextBlock}!getHeight@{getHeight}}
-\index{getHeight@{getHeight}!glib::GuiTextBlock@{glib::GuiTextBlock}}
-\doxysubsubsection{\texorpdfstring{getHeight()}{getHeight()}}
-{\footnotesize\ttfamily int glib\+::\+Gui\+Text\+Block\+::get\+Height (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
-
-
-
-Gets the Height of the text block. 
-
-\begin{DoxyReturn}{Returns}
-int 
-\end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_gui_text_block_a302ad0152fe6bedb4dd52cd5384c0095}\label{classglib_1_1_gui_text_block_a302ad0152fe6bedb4dd52cd5384c0095}} 
 \index{glib::GuiTextBlock@{glib::GuiTextBlock}!getHighlightColor@{getHighlightColor}}
 \index{getHighlightColor@{getHighlightColor}!glib::GuiTextBlock@{glib::GuiTextBlock}}
@@ -186,6 +173,32 @@ int
 
 
 Gets the position of the start of the highlighted section of text. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_ab2361068ff4bc2c1bae603b81cd66422}\label{classglib_1_1_gui_text_block_ab2361068ff4bc2c1bae603b81cd66422}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!getMaxHeight@{getMaxHeight}}
+\index{getMaxHeight@{getMaxHeight}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{getMaxHeight()}{getMaxHeight()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Text\+Block\+::get\+Max\+Height (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Height of the text block. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_ae2c1a522f037f26b1bfdd2f22896486c}\label{classglib_1_1_gui_text_block_ae2c1a522f037f26b1bfdd2f22896486c}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!getMaxWidth@{getMaxWidth}}
+\index{getMaxWidth@{getMaxWidth}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{getMaxWidth()}{getMaxWidth()}}
+{\footnotesize\ttfamily int glib\+::\+Gui\+Text\+Block\+::get\+Max\+Width (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Width of the text block. 
 
 \begin{DoxyReturn}{Returns}
 int 
@@ -244,19 +257,6 @@ Gets a reference to the text displayed.
 \begin{DoxyReturn}{Returns}
 std\+::string\& 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classglib_1_1_gui_text_block_a581b651f9650c2d526d3ebe846545e33}\label{classglib_1_1_gui_text_block_a581b651f9650c2d526d3ebe846545e33}} 
-\index{glib::GuiTextBlock@{glib::GuiTextBlock}!getWidth@{getWidth}}
-\index{getWidth@{getWidth}!glib::GuiTextBlock@{glib::GuiTextBlock}}
-\doxysubsubsection{\texorpdfstring{getWidth()}{getWidth()}}
-{\footnotesize\ttfamily int glib\+::\+Gui\+Text\+Block\+::get\+Width (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
-
-
-
-Gets the Width of the text block. 
-
-\begin{DoxyReturn}{Returns}
-int 
-\end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_gui_text_block_ab1c5d02791262505b439037e9aa47c15}\label{classglib_1_1_gui_text_block_ab1c5d02791262505b439037e9aa47c15}} 
 \index{glib::GuiTextBlock@{glib::GuiTextBlock}!render@{render}}
 \index{render@{render}!glib::GuiTextBlock@{glib::GuiTextBlock}}
@@ -306,21 +306,6 @@ Sets a specific font to use. If nullptr, the default font set in the \mbox{\hype
 {\em f} & \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classglib_1_1_gui_text_block_a02fc7a38cc660e666ce98cf79da31809}\label{classglib_1_1_gui_text_block_a02fc7a38cc660e666ce98cf79da31809}} 
-\index{glib::GuiTextBlock@{glib::GuiTextBlock}!setHeight@{setHeight}}
-\index{setHeight@{setHeight}!glib::GuiTextBlock@{glib::GuiTextBlock}}
-\doxysubsubsection{\texorpdfstring{setHeight()}{setHeight()}}
-{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Block\+::set\+Height (\begin{DoxyParamCaption}\item[{int}]{v }\end{DoxyParamCaption})}
-
-
-
-Sets the Height of the text block. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em v} & \\
-\hline
-\end{DoxyParams}
 \mbox{\Hypertarget{classglib_1_1_gui_text_block_a019caed449c04377f7e82d8942eae4fd}\label{classglib_1_1_gui_text_block_a019caed449c04377f7e82d8942eae4fd}} 
 \index{glib::GuiTextBlock@{glib::GuiTextBlock}!setHighlightColor@{setHighlightColor}}
 \index{setHighlightColor@{setHighlightColor}!glib::GuiTextBlock@{glib::GuiTextBlock}}
@@ -360,6 +345,36 @@ Sets the position to end the highlighted section of text.
 
 
 Sets the position to start the highlighted section of text. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_acc6a592f786e1aff124e9b93c737ec4e}\label{classglib_1_1_gui_text_block_acc6a592f786e1aff124e9b93c737ec4e}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!setMaxHeight@{setMaxHeight}}
+\index{setMaxHeight@{setMaxHeight}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{setMaxHeight()}{setMaxHeight()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Block\+::set\+Max\+Height (\begin{DoxyParamCaption}\item[{int}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets the Maximum Height of the text block If set to \texorpdfstring{$<$}{<}= 0, no maximum height will be imposed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_gui_text_block_ac84e737536680916acae2d9639b8379a}\label{classglib_1_1_gui_text_block_ac84e737536680916acae2d9639b8379a}} 
+\index{glib::GuiTextBlock@{glib::GuiTextBlock}!setMaxWidth@{setMaxWidth}}
+\index{setMaxWidth@{setMaxWidth}!glib::GuiTextBlock@{glib::GuiTextBlock}}
+\doxysubsubsection{\texorpdfstring{setMaxWidth()}{setMaxWidth()}}
+{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Block\+::set\+Max\+Width (\begin{DoxyParamCaption}\item[{int}]{v }\end{DoxyParamCaption})}
+
+
+
+Sets the Maximum Width of the text block If set to \texorpdfstring{$<$}{<}= 0, no maximum width will be imposed. 
 
 
 \begin{DoxyParams}{Parameters}
@@ -439,21 +454,6 @@ Sets the Text \mbox{\hyperlink{structglib_1_1_color}{Color}}.
 
 \begin{DoxyParams}{Parameters}
 {\em c} & \\
-\hline
-\end{DoxyParams}
-\mbox{\Hypertarget{classglib_1_1_gui_text_block_a8e98f31006e7ca6ae4b8e1189f1306d5}\label{classglib_1_1_gui_text_block_a8e98f31006e7ca6ae4b8e1189f1306d5}} 
-\index{glib::GuiTextBlock@{glib::GuiTextBlock}!setWidth@{setWidth}}
-\index{setWidth@{setWidth}!glib::GuiTextBlock@{glib::GuiTextBlock}}
-\doxysubsubsection{\texorpdfstring{setWidth()}{setWidth()}}
-{\footnotesize\ttfamily void glib\+::\+Gui\+Text\+Block\+::set\+Width (\begin{DoxyParamCaption}\item[{int}]{v }\end{DoxyParamCaption})}
-
-
-
-Sets the Width of the text block. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em v} & \\
 \hline
 \end{DoxyParams}
 \mbox{\Hypertarget{classglib_1_1_gui_text_block_a2daa7117bd0bffb2cdcfa8d665dfeaf1}\label{classglib_1_1_gui_text_block_a2daa7117bd0bffb2cdcfa8d665dfeaf1}} 

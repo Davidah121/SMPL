@@ -104,11 +104,18 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>dispose</b> ()
 <tr class="memdesc:a4b7a04d7634bd263235cefb7433b5b83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws a rectangle using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used.  <a href="classglib_1_1_graphics.html#a4b7a04d7634bd263235cefb7433b5b83">More...</a><br /></td></tr>
 <tr class="separator:a4b7a04d7634bd263235cefb7433b5b83"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a1475c9ad7f98719cd39ed5ab6c9ebc"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_graphics.html#a1a1475c9ad7f98719cd39ed5ab6c9ebc">drawLine</a> (int x, int y, int x2, int y2, <a class="el" href="classglib_1_1_image.html">Image</a> *surf)</td></tr>
-<tr class="memdesc:a1a1475c9ad7f98719cd39ed5ab6c9ebc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws a <a class="el" href="classglib_1_1_line.html">Line</a> using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used.  <a href="classglib_1_1_graphics.html#a1a1475c9ad7f98719cd39ed5ab6c9ebc">More...</a><br /></td></tr>
+<tr class="memdesc:a1a1475c9ad7f98719cd39ed5ab6c9ebc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws a <a class="el" href="classglib_1_1_line.html">Line</a> using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. Anti-Aliasing is supported.  <a href="classglib_1_1_graphics.html#a1a1475c9ad7f98719cd39ed5ab6c9ebc">More...</a><br /></td></tr>
 <tr class="separator:a1a1475c9ad7f98719cd39ed5ab6c9ebc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a3026b613d3dbc210385c04450c2f53"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_graphics.html#a7a3026b613d3dbc210385c04450c2f53">drawBezierCurve</a> (<a class="el" href="classglib_1_1_bezier_curve.html">BezierCurve</a> &amp;b, int subdivisions, bool useArcLength, <a class="el" href="classglib_1_1_image.html">Image</a> *surf)</td></tr>
+<tr class="memdesc:a7a3026b613d3dbc210385c04450c2f53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Approximately draws a Bezier Curve with a specified amount of subdivisions. (Note that higher subdivision values may result in a worse looking curve.) Draws a Bezier Curve of any degree. Anti-Aliasing is supported.  <a href="classglib_1_1_graphics.html#a7a3026b613d3dbc210385c04450c2f53">More...</a><br /></td></tr>
+<tr class="separator:a7a3026b613d3dbc210385c04450c2f53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf513c3dc5c58d0791079181e9a37cd7"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_graphics.html#aaf513c3dc5c58d0791079181e9a37cd7">drawCircle</a> (int x, int y, int radius, bool outline, <a class="el" href="classglib_1_1_image.html">Image</a> *surf)</td></tr>
-<tr class="memdesc:aaf513c3dc5c58d0791079181e9a37cd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws a circle using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used.  <a href="classglib_1_1_graphics.html#aaf513c3dc5c58d0791079181e9a37cd7">More...</a><br /></td></tr>
+<tr class="memdesc:aaf513c3dc5c58d0791079181e9a37cd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draws a circle using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. Anti-Aliasing is supported.  <a href="classglib_1_1_graphics.html#aaf513c3dc5c58d0791079181e9a37cd7">More...</a><br /></td></tr>
 <tr class="separator:aaf513c3dc5c58d0791079181e9a37cd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34ceaf22dfaf47dc79d3e7ab322776ad"><td class="memItemLeft" align="right" valign="top"><a id="a34ceaf22dfaf47dc79d3e7ab322776ad" name="a34ceaf22dfaf47dc79d3e7ab322776ad"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>testDrawCircle</b> (int x, int y, int radius, bool outline, <a class="el" href="classglib_1_1_image.html">Image</a> *surf)</td></tr>
+<tr class="memdesc:a34ceaf22dfaf47dc79d3e7ab322776ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test draw function. Should be ignored. <br /></td></tr>
+<tr class="separator:a34ceaf22dfaf47dc79d3e7ab322776ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbdefd80ce18636bc379d66da2163222"><td class="memItemLeft" align="right" valign="top"><a id="abbdefd80ce18636bc379d66da2163222" name="abbdefd80ce18636bc379d66da2163222"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>testDrawTriangle</b> (int x1, int y1, int x2, int y2, int x3, int y3, <a class="el" href="classglib_1_1_image.html">Image</a> *surf)</td></tr>
 <tr class="memdesc:abbdefd80ce18636bc379d66da2163222"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test draw function. Should be ignored. <br /></td></tr>
@@ -186,6 +193,12 @@ static void&#160;</td><td class="memItemRight" valign="bottom"><b>resetClippingP
 <tr class="memitem:a1ce5b297148932441cf99806ab72f907"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_graphics.html#a1ce5b297148932441cf99806ab72f907">getFillRule</a> ()</td></tr>
 <tr class="memdesc:a1ce5b297148932441cf99806ab72f907"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the fill rule used for drawing polygons. May be removed.  <a href="classglib_1_1_graphics.html#a1ce5b297148932441cf99806ab72f907">More...</a><br /></td></tr>
 <tr class="separator:a1ce5b297148932441cf99806ab72f907"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accb875747d8a1e81816c4b5025de1d4d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_graphics.html#accb875747d8a1e81816c4b5025de1d4d">setAntiAliasing</a> (bool b)</td></tr>
+<tr class="memdesc:accb875747d8a1e81816c4b5025de1d4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets whether to use Anti Aliasing when drawing.  <a href="classglib_1_1_graphics.html#accb875747d8a1e81816c4b5025de1d4d">More...</a><br /></td></tr>
+<tr class="separator:accb875747d8a1e81816c4b5025de1d4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a450bf4091f5d8d083503afe5ed1ed7c5"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_graphics.html#a450bf4091f5d8d083503afe5ed1ed7c5">getAntiAliasing</a> ()</td></tr>
+<tr class="memdesc:a450bf4091f5d8d083503afe5ed1ed7c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether Anti Aliasing is being used when drawing.  <a href="classglib_1_1_graphics.html#a450bf4091f5d8d083503afe5ed1ed7c5">More...</a><br /></td></tr>
+<tr class="separator:a450bf4091f5d8d083503afe5ed1ed7c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af53845958393815dd2ecf53afd206fd2"><td class="memItemLeft" align="right" valign="top"><a id="af53845958393815dd2ecf53afd206fd2" name="af53845958393815dd2ecf53afd206fd2"></a>
 static <a class="el" href="classglib_1_1_image.html">Image</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>crop</b> (<a class="el" href="classglib_1_1_image.html">Image</a> *img, int x1, int y1, int x2, int y2)</td></tr>
 <tr class="memdesc:af53845958393815dd2ecf53afd206fd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a new cropped image. Should be deleted when no longer needed. Not currently implemented. <br /></td></tr>
@@ -592,6 +605,65 @@ static const unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b
 
 </div>
 </div>
+<a id="a7a3026b613d3dbc210385c04450c2f53" name="a7a3026b613d3dbc210385c04450c2f53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a3026b613d3dbc210385c04450c2f53">&#9670;&nbsp;</a></span>drawBezierCurve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void glib::Graphics::drawBezierCurve </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classglib_1_1_bezier_curve.html">BezierCurve</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>subdivisions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>useArcLength</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classglib_1_1_image.html">Image</a> *&#160;</td>
+          <td class="paramname"><em>surf</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Approximately draws a Bezier Curve with a specified amount of subdivisions. (Note that higher subdivision values may result in a worse looking curve.) Draws a Bezier Curve of any degree. Anti-Aliasing is supported. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">b</td><td>The input Bezier Curve </td></tr>
+    <tr><td class="paramname">subdivisions</td><td>The number of lines to use to approximate the Bezier Curve. 10 or higher is recommended. </td></tr>
+    <tr><td class="paramname">useArcLength</td><td>Whether to use the arc length when configuring the lines. Using Arc Length creates lines that are mostly the same length as each other. More computationally expensive. </td></tr>
+    <tr><td class="paramname">surf</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="aaf513c3dc5c58d0791079181e9a37cd7" name="aaf513c3dc5c58d0791079181e9a37cd7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aaf513c3dc5c58d0791079181e9a37cd7">&#9670;&nbsp;</a></span>drawCircle()</h2>
 
@@ -644,7 +716,7 @@ static const unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b
 </table>
 </div><div class="memdoc">
 
-<p>Draws a circle using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. </p>
+<p>Draws a circle using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. Anti-Aliasing is supported. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">x</td><td>The center x location of the circle. </td></tr>
@@ -769,7 +841,7 @@ static const unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b
 </table>
 </div><div class="memdoc">
 
-<p>Draws a <a class="el" href="classglib_1_1_line.html">Line</a> using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. </p>
+<p>Draws a <a class="el" href="classglib_1_1_line.html">Line</a> using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. Anti-Aliasing is supported. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">x</td><td>The x location of the line. </td></tr>
@@ -1064,6 +1136,7 @@ static const unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b
 </div><div class="memdoc">
 
 <p>Draws a rectangle using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. </p>
+<p >Doesn't use Anti-Aliasing</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">x</td><td>The x location of the rectangle. </td></tr>
@@ -1613,6 +1686,36 @@ static const unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b
 
 </div>
 </div>
+<a id="a450bf4091f5d8d083503afe5ed1ed7c5" name="a450bf4091f5d8d083503afe5ed1ed7c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a450bf4091f5d8d083503afe5ed1ed7c5">&#9670;&nbsp;</a></span>getAntiAliasing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool glib::Graphics::getAntiAliasing </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets whether Anti Aliasing is being used when drawing. </p>
+<dl class="section return"><dt>Returns</dt><dd>true </dd>
+<dd>
+false </dd></dl>
+
+</div>
+</div>
 <a id="a24344c6973398d9ecfbf4dfc5b5a376e" name="a24344c6973398d9ecfbf4dfc5b5a376e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a24344c6973398d9ecfbf4dfc5b5a376e">&#9670;&nbsp;</a></span>getBlendMode()</h2>
 
@@ -1981,6 +2084,40 @@ static const unsigned char&#160;</td><td class="memItemRight" valign="bottom"><b
     <tr><td class="paramname">xScale</td><td>The x scale value. Must be a positive number. </td></tr>
     <tr><td class="paramname">yScale</td><td>The y scale value. Must be a positive number. </td></tr>
     <tr><td class="paramname">filterMethod</td><td>Must be one of the following values: NEAREST_NEIGHBOR_FILTER BILINEAR_FILTER BICUBIC_FILTER The default is NEAREST_NEIGHBOR_FILTER </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="accb875747d8a1e81816c4b5025de1d4d" name="accb875747d8a1e81816c4b5025de1d4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accb875747d8a1e81816c4b5025de1d4d">&#9670;&nbsp;</a></span>setAntiAliasing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void glib::Graphics::setAntiAliasing </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>b</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets whether to use Anti Aliasing when drawing. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">b</td><td></td></tr>
   </table>
   </dd>
 </dl>

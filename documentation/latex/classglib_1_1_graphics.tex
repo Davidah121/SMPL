@@ -22,9 +22,14 @@ static \mbox{\hyperlink{structglib_1_1_color}{Color}} \mbox{\hyperlink{classglib
 static void \mbox{\hyperlink{classglib_1_1_graphics_a4b7a04d7634bd263235cefb7433b5b83}{draw\+Rect}} (int x, int y, int x2, int y2, bool outline, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
 \begin{DoxyCompactList}\small\item\em Draws a rectangle using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. \end{DoxyCompactList}\item 
 static void \mbox{\hyperlink{classglib_1_1_graphics_a1a1475c9ad7f98719cd39ed5ab6c9ebc}{draw\+Line}} (int x, int y, int x2, int y2, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
-\begin{DoxyCompactList}\small\item\em Draws a \mbox{\hyperlink{classglib_1_1_line}{Line}} using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Draws a \mbox{\hyperlink{classglib_1_1_line}{Line}} using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. Anti-\/\+Aliasing is supported. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_a7a3026b613d3dbc210385c04450c2f53}{draw\+Bezier\+Curve}} (\mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} \&b, int subdivisions, bool use\+Arc\+Length, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Approximately draws a Bezier Curve with a specified amount of subdivisions. (Note that higher subdivision values may result in a worse looking curve.) Draws a Bezier Curve of any degree. Anti-\/\+Aliasing is supported. \end{DoxyCompactList}\item 
 static void \mbox{\hyperlink{classglib_1_1_graphics_aaf513c3dc5c58d0791079181e9a37cd7}{draw\+Circle}} (int x, int y, int radius, bool outline, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
-\begin{DoxyCompactList}\small\item\em Draws a circle using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Draws a circle using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. Anti-\/\+Aliasing is supported. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_graphics_a34ceaf22dfaf47dc79d3e7ab322776ad}\label{classglib_1_1_graphics_a34ceaf22dfaf47dc79d3e7ab322776ad}} 
+static void {\bfseries test\+Draw\+Circle} (int x, int y, int radius, bool outline, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
+\begin{DoxyCompactList}\small\item\em Test draw function. Should be ignored. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classglib_1_1_graphics_abbdefd80ce18636bc379d66da2163222}\label{classglib_1_1_graphics_abbdefd80ce18636bc379d66da2163222}} 
 static void {\bfseries test\+Draw\+Triangle} (int x1, int y1, int x2, int y2, int x3, int y3, \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$surf)
 \begin{DoxyCompactList}\small\item\em Test draw function. Should be ignored. \end{DoxyCompactList}\item 
@@ -77,6 +82,10 @@ static void \mbox{\hyperlink{classglib_1_1_graphics_a80340ad2442a27fc96a26a57809
 \begin{DoxyCompactList}\small\item\em Sets the fill rule to use for drawing polygons. May be removed. \end{DoxyCompactList}\item 
 static bool \mbox{\hyperlink{classglib_1_1_graphics_a1ce5b297148932441cf99806ab72f907}{get\+Fill\+Rule}} ()
 \begin{DoxyCompactList}\small\item\em Returns the fill rule used for drawing polygons. May be removed. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_graphics_accb875747d8a1e81816c4b5025de1d4d}{set\+Anti\+Aliasing}} (bool b)
+\begin{DoxyCompactList}\small\item\em Sets whether to use Anti Aliasing when drawing. \end{DoxyCompactList}\item 
+static bool \mbox{\hyperlink{classglib_1_1_graphics_a450bf4091f5d8d083503afe5ed1ed7c5}{get\+Anti\+Aliasing}} ()
+\begin{DoxyCompactList}\small\item\em Gets whether Anti Aliasing is being used when drawing. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classglib_1_1_graphics_af53845958393815dd2ecf53afd206fd2}\label{classglib_1_1_graphics_af53845958393815dd2ecf53afd206fd2}} 
 static \mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$ {\bfseries crop} (\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$img, int x1, int y1, int x2, int y2)
 \begin{DoxyCompactList}\small\item\em Returns a new cropped image. Should be deleted when no longer needed. Not currently implemented. \end{DoxyCompactList}\item 
@@ -316,6 +325,27 @@ Dithers the image using either Bayer dithering or Floyd Steinburg dithering. Can
 {\em method} & The dithering method to use. Valid options are\+: ORDERED\+\_\+\+DITHER\+\_\+\+BAYER FLOYD\+\_\+\+DITHER THRESHOLD If set to THRESHOLD, the image will just have its palette enforced. Default value is THRESHOLD. \\
 \hline
 \end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_a7a3026b613d3dbc210385c04450c2f53}\label{classglib_1_1_graphics_a7a3026b613d3dbc210385c04450c2f53}} 
+\index{glib::Graphics@{glib::Graphics}!drawBezierCurve@{drawBezierCurve}}
+\index{drawBezierCurve@{drawBezierCurve}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{drawBezierCurve()}{drawBezierCurve()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::draw\+Bezier\+Curve (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} \&}]{b,  }\item[{int}]{subdivisions,  }\item[{bool}]{use\+Arc\+Length,  }\item[{\mbox{\hyperlink{classglib_1_1_image}{Image}} $\ast$}]{surf }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Approximately draws a Bezier Curve with a specified amount of subdivisions. (Note that higher subdivision values may result in a worse looking curve.) Draws a Bezier Curve of any degree. Anti-\/\+Aliasing is supported. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em b} & The input Bezier Curve \\
+\hline
+{\em subdivisions} & The number of lines to use to approximate the Bezier Curve. 10 or higher is recommended. \\
+\hline
+{\em use\+Arc\+Length} & Whether to use the arc length when configuring the lines. Using Arc Length creates lines that are mostly the same length as each other. More computationally expensive. \\
+\hline
+{\em surf} & \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{classglib_1_1_graphics_aaf513c3dc5c58d0791079181e9a37cd7}\label{classglib_1_1_graphics_aaf513c3dc5c58d0791079181e9a37cd7}} 
 \index{glib::Graphics@{glib::Graphics}!drawCircle@{drawCircle}}
 \index{drawCircle@{drawCircle}!glib::Graphics@{glib::Graphics}}
@@ -324,7 +354,7 @@ Dithers the image using either Bayer dithering or Floyd Steinburg dithering. Can
 
 
 
-Draws a circle using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. 
+Draws a circle using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. Anti-\/\+Aliasing is supported. 
 
 
 \begin{DoxyParams}{Parameters}
@@ -368,7 +398,7 @@ Draws an \mbox{\hyperlink{classglib_1_1_image}{Image}}. The active color has no 
 
 
 
-Draws a \mbox{\hyperlink{classglib_1_1_line}{Line}} using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. 
+Draws a \mbox{\hyperlink{classglib_1_1_line}{Line}} using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. Anti-\/\+Aliasing is supported. 
 
 
 \begin{DoxyParams}{Parameters}
@@ -472,6 +502,8 @@ Draws a polygon using the active draw color. Is affected by the current fill rul
 
 
 Draws a rectangle using the active color. If OPTI is defined as 1, SSE instructions are used. If OPTI is defined as 2, AVX instructions are used. 
+
+Doesn\textquotesingle{}t use Anti-\/\+Aliasing
 
 
 \begin{DoxyParams}{Parameters}
@@ -674,6 +706,21 @@ Removes all colors from the image unless they fall within the range between the 
 {\em c2} & The end of the color range. \\
 \hline
 \end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_a450bf4091f5d8d083503afe5ed1ed7c5}\label{classglib_1_1_graphics_a450bf4091f5d8d083503afe5ed1ed7c5}} 
+\index{glib::Graphics@{glib::Graphics}!getAntiAliasing@{getAntiAliasing}}
+\index{getAntiAliasing@{getAntiAliasing}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{getAntiAliasing()}{getAntiAliasing()}}
+{\footnotesize\ttfamily static bool glib\+::\+Graphics\+::get\+Anti\+Aliasing (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets whether Anti Aliasing is being used when drawing. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_graphics_a24344c6973398d9ecfbf4dfc5b5a376e}\label{classglib_1_1_graphics_a24344c6973398d9ecfbf4dfc5b5a376e}} 
 \index{glib::Graphics@{glib::Graphics}!getBlendMode@{getBlendMode}}
 \index{getBlendMode@{getBlendMode}!glib::Graphics@{glib::Graphics}}
@@ -832,6 +879,21 @@ Scales an image using the specified filter method and returns a new image. That 
 {\em y\+Scale} & The y scale value. Must be a positive number. \\
 \hline
 {\em filter\+Method} & Must be one of the following values\+: NEAREST\+\_\+\+NEIGHBOR\+\_\+\+FILTER BILINEAR\+\_\+\+FILTER BICUBIC\+\_\+\+FILTER The default is NEAREST\+\_\+\+NEIGHBOR\+\_\+\+FILTER \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_graphics_accb875747d8a1e81816c4b5025de1d4d}\label{classglib_1_1_graphics_accb875747d8a1e81816c4b5025de1d4d}} 
+\index{glib::Graphics@{glib::Graphics}!setAntiAliasing@{setAntiAliasing}}
+\index{setAntiAliasing@{setAntiAliasing}!glib::Graphics@{glib::Graphics}}
+\doxysubsubsection{\texorpdfstring{setAntiAliasing()}{setAntiAliasing()}}
+{\footnotesize\ttfamily static void glib\+::\+Graphics\+::set\+Anti\+Aliasing (\begin{DoxyParamCaption}\item[{bool}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Sets whether to use Anti Aliasing when drawing. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em b} & \\
 \hline
 \end{DoxyParams}
 \mbox{\Hypertarget{classglib_1_1_graphics_acfb2dd20e827d9ea25a3fd4db620c14f}\label{classglib_1_1_graphics_acfb2dd20e827d9ea25a3fd4db620c14f}} 

@@ -129,6 +129,9 @@ namespace glib
 		 * @brief Draws a rectangle using the active color.
 		 * 		If OPTI is defined as 1, SSE instructions are used.
 		 * 		If OPTI is defined as 2, AVX instructions are used.
+		 * 
+		 * 		Doesn't use Anti-Aliasing
+		 * 
 		 * @param x
 		 * 		The x location of the rectangle.
 		 * @param y
@@ -148,6 +151,8 @@ namespace glib
 		 * @brief Draws a Line using the active color.
 		 * 		If OPTI is defined as 1, SSE instructions are used.
 		 * 		If OPTI is defined as 2, AVX instructions are used.
+		 * 		Anti-Aliasing is supported
+		 * 
 		 * @param x
 		 * 		The x location of the line.
 		 * @param y
@@ -161,13 +166,31 @@ namespace glib
 		 */
 		static void drawLine(int x, int y, int x2, int y2, Image* surf);
 
-		//TODO
+		/**
+		 * @brief Approximately draws a Bezier Curve with a specified amount of subdivisions.
+		 * 		(Note that higher subdivision values may result in a worse looking curve.)
+		 * 		Draws a Bezier Curve of any degree.
+		 * 		Anti-Aliasing is supported.
+		 * 
+		 * @param b 
+		 * 		The input Bezier Curve
+		 * @param subdivisions 
+		 * 		The number of lines to use to approximate the Bezier Curve.
+		 * 		10 or higher is recommended.
+		 * @param useArcLength 
+		 * 		Whether to use the arc length when configuring the lines.
+		 * 		Using Arc Length creates lines that are mostly the same length as each other.
+		 * 		More computationally expensive.
+		 * @param surf 
+		 */
 		static void drawBezierCurve(BezierCurve& b, int subdivisions, bool useArcLength, Image* surf);
 
 		/**
 		 * @brief Draws a circle using the active color.
 		 * 		If OPTI is defined as 1, SSE instructions are used.
 		 * 		If OPTI is defined as 2, AVX instructions are used.
+		 * 		Anti-Aliasing is supported.
+		 * 
 		 * @param x
 		 * 		The center x location of the circle.
 		 * @param y
@@ -180,6 +203,14 @@ namespace glib
 		 * 		The image to draw the circle onto.
 		 */
 		static void drawCircle(int x, int y, int radius, bool outline, Image* surf);
+
+		/**
+		 * @brief
+		 * 		Test draw function. Should be ignored.
+		 * 
+		 * 
+		 */
+		static void testDrawCircle(int x, int y, int radius, bool outline, Image* surf);
 
 		/**
 		 * @brief
@@ -469,6 +500,21 @@ namespace glib
 		 */
 		static bool getFillRule();
 		
+		/**
+		 * @brief Sets whether to use Anti Aliasing when drawing
+		 * 
+		 * @param b 
+		 */
+		static void setAntiAliasing(bool b);
+
+		/**
+		 * @brief Gets whether Anti Aliasing is being used when drawing
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
+		static bool getAntiAliasing();
+		
 		//Image Manipulation
 		static const unsigned char THRESHOLD = 0;
 		static const unsigned char ORDERED_DITHER_BAYER = 1;
@@ -641,6 +687,8 @@ namespace glib
 		static unsigned char compositeRule;
 		static unsigned char blendMode;
 		static bool fillRule;
+
+		static bool antiAliasing;
 
 		static int ditherMatrixSize;
 	};

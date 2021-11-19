@@ -13,7 +13,7 @@ namespace glib
 
 	GuiSprite::GuiSprite()
 	{
-
+		boundingBox = Box2D(0,0,0,0);
 	}
 
 	GuiSprite::~GuiSprite()
@@ -43,6 +43,12 @@ namespace glib
 					}
 				}
 			}
+
+			boundingBox = Box2D(x, y, x+img.getImage(index)->getWidth(), y+img.getImage(index)->getHeight());
+		}
+		else
+		{
+			boundingBox = Box2D(0,0,0,0);
 		}
 	}
 

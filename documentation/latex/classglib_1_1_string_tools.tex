@@ -67,12 +67,22 @@ static std\+::wstring \mbox{\hyperlink{classglib_1_1_string_tools_a6eb8f19b75263
 \begin{DoxyCompactList}\small\item\em Gets a wide string from the console using the users input. Halts until the user presses enter. \end{DoxyCompactList}\item 
 static std\+::string \mbox{\hyperlink{classglib_1_1_string_tools_a5748b7b3a5756c96251b4b308c4b9dd8}{get\+String}} ()
 \begin{DoxyCompactList}\small\item\em Gets a string from the console using the users input. Halts until the user presses enter. \end{DoxyCompactList}\item 
+static std\+::string \mbox{\hyperlink{classglib_1_1_string_tools_a969a7307d14d4434c038035c9ebb67a2}{get\+Hidden\+String}} (bool show\+Asterisk)
+\begin{DoxyCompactList}\small\item\em Get a string from the user while hiding the text. Useful if the user is entering sensitive data as it will not show as they are typing nor will it appear in the consoles input history. \end{DoxyCompactList}\item 
+static std\+::wstring \mbox{\hyperlink{classglib_1_1_string_tools_a64bc7823d5df49044138adeb2ec2237e}{get\+Hidden\+Wide\+String}} (bool show\+Asterisk)
+\begin{DoxyCompactList}\small\item\em Get a wide string from the user while hiding the text. Useful if the user is entering sensitive data as it will not show as they are typing nor will it appear in the consoles input history. \end{DoxyCompactList}\item 
 static char \mbox{\hyperlink{classglib_1_1_string_tools_a4958c1563992951ea599ea591b9f3ffd}{get\+Char}} ()
 \begin{DoxyCompactList}\small\item\em Gets a character from the console using the users input. Halts until the user presses enter. \end{DoxyCompactList}\item 
 static wchar\+\_\+t \mbox{\hyperlink{classglib_1_1_string_tools_a7111bf6109d0bbe4b7d8c60462e0dbe3}{get\+Wide\+Char}} ()
 \begin{DoxyCompactList}\small\item\em Gets a wide character from the console using the users input. Halts until the user presses enter. \end{DoxyCompactList}\item 
 static int \mbox{\hyperlink{classglib_1_1_string_tools_a7d41baacbc125733393e939d9967f7d3}{get\+Int}} ()
-\begin{DoxyCompactList}\small\item\em Gets an integer from the console using the users input. Halts until the user presses enter. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Gets an integer from the console using the users input. Halts until the user presses enter. Only valid characters for numbers are allowed. \end{DoxyCompactList}\item 
+static float \mbox{\hyperlink{classglib_1_1_string_tools_a71dd253c23df3b21163e4fdd290a6f6c}{get\+Float}} ()
+\begin{DoxyCompactList}\small\item\em Gets an float from the console using the users input. Halts until the user presses enter. Only valid characters for numbers are allowed. \end{DoxyCompactList}\item 
+static char \mbox{\hyperlink{classglib_1_1_string_tools_a289423a4340bfad2f56fcbe89a03404d}{get\+Char\+Less\+Lock}} (bool no\+Function\+Keys=true)
+\begin{DoxyCompactList}\small\item\em Gets a character from the console using the users input. Does not wait for the user to press enter. Halts until a character is entered. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{classglib_1_1_string_tools_acd6a0cf09b0cf3a46e2ed438a81d8da7}{get\+Wide\+Char\+Less\+Lock}} (bool no\+Function\+Keys=true)
+\begin{DoxyCompactList}\small\item\em Gets a wide character from the console using the users input. Does not wait for the user to press enter. Halts until a character is entered. \end{DoxyCompactList}\item 
 static void \mbox{\hyperlink{classglib_1_1_string_tools_a188eb5ee217195d6020a95e21bdff29e}{find\+Longest\+Match}} (std\+::string base, std\+::string match, int $\ast$index, int $\ast$length)
 \begin{DoxyCompactList}\small\item\em Finds the longest match in the string base. \end{DoxyCompactList}\item 
 {\footnotesize template$<$class T $>$ }\\static void \mbox{\hyperlink{classglib_1_1_string_tools_a305034a4cbd0b2b16e2bd192244af96a}{find\+Longest\+Match}} (T $\ast$base, int base\+Size, T $\ast$match, int match\+Size, int $\ast$index, int $\ast$length)
@@ -91,8 +101,21 @@ static void \mbox{\hyperlink{classglib_1_1_string_tools_a0d02224d31e5321c204ed8a
 \begin{DoxyCompactList}\small\item\em Prints information to the console using the same format as printf() \end{DoxyCompactList}\item 
 static void \mbox{\hyperlink{classglib_1_1_string_tools_ad3b1cc309d066be95e60b07273c02392}{println}} (std\+::wstring fmt,...)
 \begin{DoxyCompactList}\small\item\em Prints information to the console using the same format as printf(). Also prints a line break at the end. \end{DoxyCompactList}\item 
-static void \mbox{\hyperlink{classglib_1_1_string_tools_acdfd524769da24d5bba6d5f16a135741}{rerout\+Output}} (std\+::wofstream file)
-\begin{DoxyCompactList}\small\item\em Rerouts the output of the print functions to somewhere else such as a file. (Not implemented) \end{DoxyCompactList}\end{DoxyCompactItemize}
+static void \mbox{\hyperlink{classglib_1_1_string_tools_aac716af15c5d7de79825928500e6c717}{clear\+Console}} (bool clear\+Scroll\+Buffer)
+\begin{DoxyCompactList}\small\item\em Clears the console display. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_string_tools_adf89794d2f4bab662c68f468bb96aca7}{move\+Console\+Cursor}} (int horizontal, int vertical, bool absolute=false)
+\begin{DoxyCompactList}\small\item\em Moves the console cursor from its current position. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_string_tools_a4bfcefc9af308f541bd9cc913192c9d0}{erase\+Console\+Line}} (bool erase\+From\+Cursor)
+\begin{DoxyCompactList}\small\item\em Clears part of the current line in the console. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_string_tools_a474058a5f926aea528568a304f5e3404}{rerout\+Output}} (std\+::wstreambuf $\ast$file)
+\begin{DoxyCompactList}\small\item\em Rerouts the output of the print functions to somewhere else such as a file. Could also be a different console if desired. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_string_tools_a1eb3b591348f62bd79acbdc340d9065a}{rerout\+Input}} (std\+::wstreambuf $\ast$file)
+\begin{DoxyCompactList}\small\item\em Rerouts the input of the get functions to somewhere else such as a file. Could also be a different console if desired. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{classglib_1_1_string_tools_a83aa50cb7fb0c2e32b8f41142093841c}{rerout\+Error\+Output}} (std\+::wstreambuf $\ast$file)
+\begin{DoxyCompactList}\small\item\em Rerouts the error output of the print\+Err functions to somewhere else such as a file. Could also be a different console if desired. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_string_tools_af2d2ced0952b9bb3508b461a7adf63c6}\label{classglib_1_1_string_tools_af2d2ced0952b9bb3508b461a7adf63c6}} 
+static void {\bfseries reset\+Output\+Input\+Streams} ()
+\end{DoxyCompactItemize}
 \doxysubsection*{Static Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -138,6 +161,21 @@ Converts the base16 value represented as a character to its base10 value represe
 \begin{DoxyReturn}{Returns}
 int Returns -\/1 if unsuccessful 
 \end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_aac716af15c5d7de79825928500e6c717}\label{classglib_1_1_string_tools_aac716af15c5d7de79825928500e6c717}} 
+\index{glib::StringTools@{glib::StringTools}!clearConsole@{clearConsole}}
+\index{clearConsole@{clearConsole}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{clearConsole()}{clearConsole()}}
+{\footnotesize\ttfamily static void glib\+::\+String\+Tools\+::clear\+Console (\begin{DoxyParamCaption}\item[{bool}]{clear\+Scroll\+Buffer }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Clears the console display. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em clear\+Scroll\+Buffer} & If set to true, clears the console display and the history of information displayed. Does not clear the history of user input. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{classglib_1_1_string_tools_a751726481fdf9bfffa1783f6e8d79ea0}\label{classglib_1_1_string_tools_a751726481fdf9bfffa1783f6e8d79ea0}} 
 \index{glib::StringTools@{glib::StringTools}!convertKeyToAscii@{convertKeyToAscii}}
 \index{convertKeyToAscii@{convertKeyToAscii}!glib::StringTools@{glib::StringTools}}
@@ -186,6 +224,21 @@ true
 
 false 
 \end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a4bfcefc9af308f541bd9cc913192c9d0}\label{classglib_1_1_string_tools_a4bfcefc9af308f541bd9cc913192c9d0}} 
+\index{glib::StringTools@{glib::StringTools}!eraseConsoleLine@{eraseConsoleLine}}
+\index{eraseConsoleLine@{eraseConsoleLine}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{eraseConsoleLine()}{eraseConsoleLine()}}
+{\footnotesize\ttfamily static void glib\+::\+String\+Tools\+::erase\+Console\+Line (\begin{DoxyParamCaption}\item[{bool}]{erase\+From\+Cursor }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Clears part of the current line in the console. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em erase\+From\+Cursor} & If set to false, Clears the entire line and sets the cursor to the start of the line. Otherwise, clears to the right of the cursor only. \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{classglib_1_1_string_tools_a188eb5ee217195d6020a95e21bdff29e}\label{classglib_1_1_string_tools_a188eb5ee217195d6020a95e21bdff29e}} 
 \index{glib::StringTools@{glib::StringTools}!findLongestMatch@{findLongestMatch}}
 \index{findLongestMatch@{findLongestMatch}!glib::StringTools@{glib::StringTools}}
@@ -291,6 +344,77 @@ Gets a character from the console using the users input. Halts until the user pr
 \begin{DoxyReturn}{Returns}
 char 
 \end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a289423a4340bfad2f56fcbe89a03404d}\label{classglib_1_1_string_tools_a289423a4340bfad2f56fcbe89a03404d}} 
+\index{glib::StringTools@{glib::StringTools}!getCharLessLock@{getCharLessLock}}
+\index{getCharLessLock@{getCharLessLock}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{getCharLessLock()}{getCharLessLock()}}
+{\footnotesize\ttfamily static char glib\+::\+String\+Tools\+::get\+Char\+Less\+Lock (\begin{DoxyParamCaption}\item[{bool}]{no\+Function\+Keys = {\ttfamily true} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets a character from the console using the users input. Does not wait for the user to press enter. Halts until a character is entered. 
+
+Note that some keys that are not characters will be treated as a character. Ex\+: arrow keys, delete, insertion, home A value of 0 or 0x\+E0 (224) will be returned in that case. Also note that 224 is a valid character in both unicode and the extended ascii table. There is no way to determine if it is an escape sequence without checking for the next input which will block if it was a valid character.
+
+Some odd things will happen when moving code to linux.
+
+
+\begin{DoxyParams}{Parameters}
+{\em no\+Function\+Keys} & Does not count function keys when returning data. Will read the first valid character. Default value is true. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+char 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a71dd253c23df3b21163e4fdd290a6f6c}\label{classglib_1_1_string_tools_a71dd253c23df3b21163e4fdd290a6f6c}} 
+\index{glib::StringTools@{glib::StringTools}!getFloat@{getFloat}}
+\index{getFloat@{getFloat}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{getFloat()}{getFloat()}}
+{\footnotesize\ttfamily static float glib\+::\+String\+Tools\+::get\+Float (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets an float from the console using the users input. Halts until the user presses enter. Only valid characters for numbers are allowed. 
+
+\begin{DoxyReturn}{Returns}
+float 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a969a7307d14d4434c038035c9ebb67a2}\label{classglib_1_1_string_tools_a969a7307d14d4434c038035c9ebb67a2}} 
+\index{glib::StringTools@{glib::StringTools}!getHiddenString@{getHiddenString}}
+\index{getHiddenString@{getHiddenString}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{getHiddenString()}{getHiddenString()}}
+{\footnotesize\ttfamily static std\+::string glib\+::\+String\+Tools\+::get\+Hidden\+String (\begin{DoxyParamCaption}\item[{bool}]{show\+Asterisk }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Get a string from the user while hiding the text. Useful if the user is entering sensitive data as it will not show as they are typing nor will it appear in the consoles input history. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em show\+Asterisk} & If set to true, Asterisk ($\ast$) will be shown as the user types. Otherwise, nothing will be shown. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::string 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a64bc7823d5df49044138adeb2ec2237e}\label{classglib_1_1_string_tools_a64bc7823d5df49044138adeb2ec2237e}} 
+\index{glib::StringTools@{glib::StringTools}!getHiddenWideString@{getHiddenWideString}}
+\index{getHiddenWideString@{getHiddenWideString}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{getHiddenWideString()}{getHiddenWideString()}}
+{\footnotesize\ttfamily static std\+::wstring glib\+::\+String\+Tools\+::get\+Hidden\+Wide\+String (\begin{DoxyParamCaption}\item[{bool}]{show\+Asterisk }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Get a wide string from the user while hiding the text. Useful if the user is entering sensitive data as it will not show as they are typing nor will it appear in the consoles input history. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em show\+Asterisk} & If set to true, Asterisk ($\ast$) will be shown as the user types. Otherwise, nothing will be shown. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::wstring 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_string_tools_a7d41baacbc125733393e939d9967f7d3}\label{classglib_1_1_string_tools_a7d41baacbc125733393e939d9967f7d3}} 
 \index{glib::StringTools@{glib::StringTools}!getInt@{getInt}}
 \index{getInt@{getInt}!glib::StringTools@{glib::StringTools}}
@@ -299,7 +423,7 @@ char
 
 
 
-Gets an integer from the console using the users input. Halts until the user presses enter. 
+Gets an integer from the console using the users input. Halts until the user presses enter. Only valid characters for numbers are allowed. 
 
 \begin{DoxyReturn}{Returns}
 int 
@@ -329,6 +453,28 @@ Gets a wide character from the console using the users input. Halts until the us
 
 \begin{DoxyReturn}{Returns}
 wchar\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_acd6a0cf09b0cf3a46e2ed438a81d8da7}\label{classglib_1_1_string_tools_acd6a0cf09b0cf3a46e2ed438a81d8da7}} 
+\index{glib::StringTools@{glib::StringTools}!getWideCharLessLock@{getWideCharLessLock}}
+\index{getWideCharLessLock@{getWideCharLessLock}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{getWideCharLessLock()}{getWideCharLessLock()}}
+{\footnotesize\ttfamily static int glib\+::\+String\+Tools\+::get\+Wide\+Char\+Less\+Lock (\begin{DoxyParamCaption}\item[{bool}]{no\+Function\+Keys = {\ttfamily true} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets a wide character from the console using the users input. Does not wait for the user to press enter. Halts until a character is entered. 
+
+Note that some keys that are not characters will be treated as a character. Ex\+: arrow keys, delete, insertion, home A value of 0 or 0x\+E0 (224) will be returned in that case. Also note that 224 is a valid character in both unicode and the extended ascii table. There is no way to determine if it is an escape sequence without checking for the next input which will block if it was a valid character.
+
+Some odd things will happen when moving code to linux.
+
+
+\begin{DoxyParams}{Parameters}
+{\em no\+Function\+Keys} & Does not count function keys when returning data. Will read the first valid character. Default value is true. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_string_tools_a6eb8f19b75263a85e2f28d18cd01b11d}\label{classglib_1_1_string_tools_a6eb8f19b75263a85e2f28d18cd01b11d}} 
 \index{glib::StringTools@{glib::StringTools}!getWideString@{getWideString}}
@@ -397,6 +543,25 @@ true
 
 false 
 \end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_string_tools_adf89794d2f4bab662c68f468bb96aca7}\label{classglib_1_1_string_tools_adf89794d2f4bab662c68f468bb96aca7}} 
+\index{glib::StringTools@{glib::StringTools}!moveConsoleCursor@{moveConsoleCursor}}
+\index{moveConsoleCursor@{moveConsoleCursor}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{moveConsoleCursor()}{moveConsoleCursor()}}
+{\footnotesize\ttfamily static void glib\+::\+String\+Tools\+::move\+Console\+Cursor (\begin{DoxyParamCaption}\item[{int}]{horizontal,  }\item[{int}]{vertical,  }\item[{bool}]{absolute = {\ttfamily false} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Moves the console cursor from its current position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em horizontal} & Positive values move the cursor forward on a line. Negative values move the cursor backwards on a line. Note that the cursor stops moving when at the edge. \\
+\hline
+{\em vertical} & Positive values move the cursor down. Negative values move the cursor up. Note that the cursor stops moving when at the edge. \\
+\hline
+{\em absolute} & If true, the horizontal and vertical values represent the absolute cursor position and not an offset. All negative values are set to 1 \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{classglib_1_1_string_tools_afabc5065d44e26e792ebfd2c2aa29e72}\label{classglib_1_1_string_tools_afabc5065d44e26e792ebfd2c2aa29e72}} 
 \index{glib::StringTools@{glib::StringTools}!print@{print}}
 \index{print@{print}!glib::StringTools@{glib::StringTools}}
@@ -465,15 +630,45 @@ Prints information to the console using the same format as printf(). Also prints
 {\em ...} & \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classglib_1_1_string_tools_acdfd524769da24d5bba6d5f16a135741}\label{classglib_1_1_string_tools_acdfd524769da24d5bba6d5f16a135741}} 
+\mbox{\Hypertarget{classglib_1_1_string_tools_a83aa50cb7fb0c2e32b8f41142093841c}\label{classglib_1_1_string_tools_a83aa50cb7fb0c2e32b8f41142093841c}} 
+\index{glib::StringTools@{glib::StringTools}!reroutErrorOutput@{reroutErrorOutput}}
+\index{reroutErrorOutput@{reroutErrorOutput}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{reroutErrorOutput()}{reroutErrorOutput()}}
+{\footnotesize\ttfamily static void glib\+::\+String\+Tools\+::rerout\+Error\+Output (\begin{DoxyParamCaption}\item[{std\+::wstreambuf $\ast$}]{file }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Rerouts the error output of the print\+Err functions to somewhere else such as a file. Could also be a different console if desired. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a1eb3b591348f62bd79acbdc340d9065a}\label{classglib_1_1_string_tools_a1eb3b591348f62bd79acbdc340d9065a}} 
+\index{glib::StringTools@{glib::StringTools}!reroutInput@{reroutInput}}
+\index{reroutInput@{reroutInput}!glib::StringTools@{glib::StringTools}}
+\doxysubsubsection{\texorpdfstring{reroutInput()}{reroutInput()}}
+{\footnotesize\ttfamily static void glib\+::\+String\+Tools\+::rerout\+Input (\begin{DoxyParamCaption}\item[{std\+::wstreambuf $\ast$}]{file }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Rerouts the input of the get functions to somewhere else such as a file. Could also be a different console if desired. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_string_tools_a474058a5f926aea528568a304f5e3404}\label{classglib_1_1_string_tools_a474058a5f926aea528568a304f5e3404}} 
 \index{glib::StringTools@{glib::StringTools}!reroutOutput@{reroutOutput}}
 \index{reroutOutput@{reroutOutput}!glib::StringTools@{glib::StringTools}}
 \doxysubsubsection{\texorpdfstring{reroutOutput()}{reroutOutput()}}
-{\footnotesize\ttfamily static void glib\+::\+String\+Tools\+::rerout\+Output (\begin{DoxyParamCaption}\item[{std\+::wofstream}]{file }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+{\footnotesize\ttfamily static void glib\+::\+String\+Tools\+::rerout\+Output (\begin{DoxyParamCaption}\item[{std\+::wstreambuf $\ast$}]{file }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
 
 
 
-Rerouts the output of the print functions to somewhere else such as a file. (Not implemented) 
+Rerouts the output of the print functions to somewhere else such as a file. Could also be a different console if desired. 
 
 
 \begin{DoxyParams}{Parameters}

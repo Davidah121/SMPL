@@ -103,6 +103,9 @@ namespace glib
 			if (onClickHoldFunction != nullptr)
 				onClickHoldFunction(this);
 		}
+
+		
+		boundingBox = Box2D(x, y, x+width, y+height);
 	}
 
 	void GuiRectangleButton::render(Image* surf)

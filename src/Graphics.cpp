@@ -10,6 +10,7 @@ namespace glib
 	unsigned char Graphics::compositeRule = Graphics::COMPOSITE_SRC_OVER;
 	unsigned char Graphics::blendMode = Graphics::BLEND_NORMAL;
 	bool Graphics::fillRule = Graphics::FILL_EVEN_ODD;
+	bool Graphics::antiAliasing = false;
 
 	unsigned char Graphics::defaultFontValue = Graphics::NORMAL_FONT;
 	Font* Graphics::defaultFont = nullptr;
@@ -767,6 +768,16 @@ namespace glib
 	unsigned char Graphics::getBlendMode()
 	{
 		return blendMode;
+	}
+
+	void Graphics::setAntiAliasing(bool v)
+	{
+		antiAliasing = v;
+	}
+
+	bool Graphics::getAntiAliasing()
+	{
+		return antiAliasing;
 	}
 
 	#pragma endregion

@@ -23,7 +23,7 @@ namespace glib
 
 	void GuiImage::update()
 	{
-		
+		boundingBox = Box2D(x, y, x+img->getWidth(), y+img->getHeight());
 	}
 
 	void GuiImage::render(Image* surf)

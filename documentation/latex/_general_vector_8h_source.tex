@@ -27,41 +27,42 @@
 \DoxyCodeLine{50 }
 \DoxyCodeLine{58         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_general_vector_ad6c2c8c9116c7b5ce68337f4097ff2b5}{setValue}}(\textcolor{keywordtype}{double} value, \textcolor{keywordtype}{int} location);}
 \DoxyCodeLine{59 }
-\DoxyCodeLine{60         \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} operator*(\textcolor{keywordtype}{double} value);}
-\DoxyCodeLine{61         \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} operator*(\textcolor{keywordtype}{float} value);}
-\DoxyCodeLine{62         \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} operator*(\textcolor{keywordtype}{int} value);}
-\DoxyCodeLine{63 }
-\DoxyCodeLine{64         \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} operator/(\textcolor{keywordtype}{double} value);}
-\DoxyCodeLine{65         \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} operator/(\textcolor{keywordtype}{float} value);}
-\DoxyCodeLine{66         \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} operator/(\textcolor{keywordtype}{int} value);}
-\DoxyCodeLine{67 }
-\DoxyCodeLine{68         \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} operator+(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} o);}
-\DoxyCodeLine{69         \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} operator-\/(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} o);}
-\DoxyCodeLine{70 }
-\DoxyCodeLine{71         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{double} value);}
-\DoxyCodeLine{72         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{float} value);}
-\DoxyCodeLine{73         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{int} value);}
+\DoxyCodeLine{65         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_general_vector_a8d40f0e04a4a6ab2f4694bf98814b48b}{getLength}}();}
+\DoxyCodeLine{66 }
+\DoxyCodeLine{73         \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} \mbox{\hyperlink{classglib_1_1_general_vector_a40f7c135a5592bb8b76b365cd6ba6b1b}{normalize}}();}
 \DoxyCodeLine{74 }
-\DoxyCodeLine{75         \textcolor{keywordtype}{void} operator/=(\textcolor{keywordtype}{double} value);}
-\DoxyCodeLine{76         \textcolor{keywordtype}{void} operator/=(\textcolor{keywordtype}{float} value);}
-\DoxyCodeLine{77         \textcolor{keywordtype}{void} operator/=(\textcolor{keywordtype}{int} value);}
-\DoxyCodeLine{78 }
-\DoxyCodeLine{79         \textcolor{keywordtype}{void} operator+=(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} o);}
-\DoxyCodeLine{80         \textcolor{keywordtype}{void} operator-\/=(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} o);}
-\DoxyCodeLine{81 }
-\DoxyCodeLine{82         \textcolor{keywordtype}{double}\& operator[](\textcolor{keywordtype}{int} index);}
-\DoxyCodeLine{83 }
-\DoxyCodeLine{84         \textcolor{keywordtype}{bool} operator==(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} other);}
-\DoxyCodeLine{85         \textcolor{keywordtype}{bool} operator!=(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} other);}
-\DoxyCodeLine{86 }
-\DoxyCodeLine{87         \textcolor{keywordtype}{int} getSize();}
-\DoxyCodeLine{88     \textcolor{keyword}{private}:}
-\DoxyCodeLine{89         }
-\DoxyCodeLine{90         \textcolor{keywordtype}{void} copy(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}}\& o);}
-\DoxyCodeLine{91         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} size = 0;}
-\DoxyCodeLine{92         \textcolor{keywordtype}{double}* values = \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{93     \};}
-\DoxyCodeLine{94 }
-\DoxyCodeLine{95 \} \textcolor{comment}{//NAMESPACE glib END}}
+\DoxyCodeLine{75         \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} operator*(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{76         \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} operator/(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{77 }
+\DoxyCodeLine{78         \textcolor{keyword}{friend} \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} operator*(\textcolor{keywordtype}{double} value, \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} other)}
+\DoxyCodeLine{79         \{}
+\DoxyCodeLine{80             \textcolor{keywordflow}{return} other*value;}
+\DoxyCodeLine{81         \}}
+\DoxyCodeLine{82 }
+\DoxyCodeLine{83         \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} operator+(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} o);}
+\DoxyCodeLine{84         \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} operator-\/(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} o);}
+\DoxyCodeLine{85 }
+\DoxyCodeLine{86         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{87         \textcolor{keywordtype}{void} operator/=(\textcolor{keywordtype}{double} value);}
+\DoxyCodeLine{88 }
+\DoxyCodeLine{89         \textcolor{keywordtype}{void} operator+=(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} o);}
+\DoxyCodeLine{90         \textcolor{keywordtype}{void} operator-\/=(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} o);}
+\DoxyCodeLine{91 }
+\DoxyCodeLine{92         \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} operator-\/();}
+\DoxyCodeLine{93 }
+\DoxyCodeLine{94         \textcolor{keywordtype}{double}\& operator[](\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{95 }
+\DoxyCodeLine{96         \textcolor{keywordtype}{bool} operator==(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} other);}
+\DoxyCodeLine{97         \textcolor{keywordtype}{bool} operator!=(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} other);}
+\DoxyCodeLine{98 }
+\DoxyCodeLine{99         \textcolor{keywordtype}{int} getSize();}
+\DoxyCodeLine{100     \textcolor{keyword}{private}:}
+\DoxyCodeLine{101         }
+\DoxyCodeLine{102         \textcolor{keywordtype}{void} copy(\textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}}\& o);}
+\DoxyCodeLine{103         \textcolor{keywordtype}{int} size = 0;}
+\DoxyCodeLine{104         \textcolor{keywordtype}{double}* values = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{105     \};}
+\DoxyCodeLine{106 }
+\DoxyCodeLine{107 \} \textcolor{comment}{//NAMESPACE glib END}}
 
 \end{DoxyCode}

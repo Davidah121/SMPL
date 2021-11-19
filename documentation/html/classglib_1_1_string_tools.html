@@ -178,6 +178,12 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a5748b7b3a5756c96251b4b308c4b9dd8"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_string_tools.html#a5748b7b3a5756c96251b4b308c4b9dd8">getString</a> ()</td></tr>
 <tr class="memdesc:a5748b7b3a5756c96251b4b308c4b9dd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a string from the console using the users input. Halts until the user presses enter.  <a href="classglib_1_1_string_tools.html#a5748b7b3a5756c96251b4b308c4b9dd8">More...</a><br /></td></tr>
 <tr class="separator:a5748b7b3a5756c96251b4b308c4b9dd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a969a7307d14d4434c038035c9ebb67a2"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_string_tools.html#a969a7307d14d4434c038035c9ebb67a2">getHiddenString</a> (bool showAsterisk)</td></tr>
+<tr class="memdesc:a969a7307d14d4434c038035c9ebb67a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a string from the user while hiding the text. Useful if the user is entering sensitive data as it will not show as they are typing nor will it appear in the consoles input history.  <a href="classglib_1_1_string_tools.html#a969a7307d14d4434c038035c9ebb67a2">More...</a><br /></td></tr>
+<tr class="separator:a969a7307d14d4434c038035c9ebb67a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64bc7823d5df49044138adeb2ec2237e"><td class="memItemLeft" align="right" valign="top">static std::wstring&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_string_tools.html#a64bc7823d5df49044138adeb2ec2237e">getHiddenWideString</a> (bool showAsterisk)</td></tr>
+<tr class="memdesc:a64bc7823d5df49044138adeb2ec2237e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a wide string from the user while hiding the text. Useful if the user is entering sensitive data as it will not show as they are typing nor will it appear in the consoles input history.  <a href="classglib_1_1_string_tools.html#a64bc7823d5df49044138adeb2ec2237e">More...</a><br /></td></tr>
+<tr class="separator:a64bc7823d5df49044138adeb2ec2237e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4958c1563992951ea599ea591b9f3ffd"><td class="memItemLeft" align="right" valign="top">static char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_string_tools.html#a4958c1563992951ea599ea591b9f3ffd">getChar</a> ()</td></tr>
 <tr class="memdesc:a4958c1563992951ea599ea591b9f3ffd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a character from the console using the users input. Halts until the user presses enter.  <a href="classglib_1_1_string_tools.html#a4958c1563992951ea599ea591b9f3ffd">More...</a><br /></td></tr>
 <tr class="separator:a4958c1563992951ea599ea591b9f3ffd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -185,8 +191,17 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memdesc:a7111bf6109d0bbe4b7d8c60462e0dbe3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a wide character from the console using the users input. Halts until the user presses enter.  <a href="classglib_1_1_string_tools.html#a7111bf6109d0bbe4b7d8c60462e0dbe3">More...</a><br /></td></tr>
 <tr class="separator:a7111bf6109d0bbe4b7d8c60462e0dbe3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d41baacbc125733393e939d9967f7d3"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_string_tools.html#a7d41baacbc125733393e939d9967f7d3">getInt</a> ()</td></tr>
-<tr class="memdesc:a7d41baacbc125733393e939d9967f7d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an integer from the console using the users input. Halts until the user presses enter.  <a href="classglib_1_1_string_tools.html#a7d41baacbc125733393e939d9967f7d3">More...</a><br /></td></tr>
+<tr class="memdesc:a7d41baacbc125733393e939d9967f7d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an integer from the console using the users input. Halts until the user presses enter. Only valid characters for numbers are allowed.  <a href="classglib_1_1_string_tools.html#a7d41baacbc125733393e939d9967f7d3">More...</a><br /></td></tr>
 <tr class="separator:a7d41baacbc125733393e939d9967f7d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71dd253c23df3b21163e4fdd290a6f6c"><td class="memItemLeft" align="right" valign="top">static float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_string_tools.html#a71dd253c23df3b21163e4fdd290a6f6c">getFloat</a> ()</td></tr>
+<tr class="memdesc:a71dd253c23df3b21163e4fdd290a6f6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an float from the console using the users input. Halts until the user presses enter. Only valid characters for numbers are allowed.  <a href="classglib_1_1_string_tools.html#a71dd253c23df3b21163e4fdd290a6f6c">More...</a><br /></td></tr>
+<tr class="separator:a71dd253c23df3b21163e4fdd290a6f6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a289423a4340bfad2f56fcbe89a03404d"><td class="memItemLeft" align="right" valign="top">static char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_string_tools.html#a289423a4340bfad2f56fcbe89a03404d">getCharLessLock</a> (bool noFunctionKeys=true)</td></tr>
+<tr class="memdesc:a289423a4340bfad2f56fcbe89a03404d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a character from the console using the users input. Does not wait for the user to press enter. Halts until a character is entered.  <a href="classglib_1_1_string_tools.html#a289423a4340bfad2f56fcbe89a03404d">More...</a><br /></td></tr>
+<tr class="separator:a289423a4340bfad2f56fcbe89a03404d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd6a0cf09b0cf3a46e2ed438a81d8da7"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_string_tools.html#acd6a0cf09b0cf3a46e2ed438a81d8da7">getWideCharLessLock</a> (bool noFunctionKeys=true)</td></tr>
+<tr class="memdesc:acd6a0cf09b0cf3a46e2ed438a81d8da7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a wide character from the console using the users input. Does not wait for the user to press enter. Halts until a character is entered.  <a href="classglib_1_1_string_tools.html#acd6a0cf09b0cf3a46e2ed438a81d8da7">More...</a><br /></td></tr>
+<tr class="separator:acd6a0cf09b0cf3a46e2ed438a81d8da7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a188eb5ee217195d6020a95e21bdff29e"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_string_tools.html#a188eb5ee217195d6020a95e21bdff29e">findLongestMatch</a> (std::string base, std::string match, int *index, int *length)</td></tr>
 <tr class="memdesc:a188eb5ee217195d6020a95e21bdff29e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the longest match in the string base.  <a href="classglib_1_1_string_tools.html#a188eb5ee217195d6020a95e21bdff29e">More...</a><br /></td></tr>
 <tr class="separator:a188eb5ee217195d6020a95e21bdff29e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -215,9 +230,27 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:ad3b1cc309d066be95e60b07273c02392"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_string_tools.html#ad3b1cc309d066be95e60b07273c02392">println</a> (std::wstring fmt,...)</td></tr>
 <tr class="memdesc:ad3b1cc309d066be95e60b07273c02392"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints information to the console using the same format as printf(). Also prints a line break at the end.  <a href="classglib_1_1_string_tools.html#ad3b1cc309d066be95e60b07273c02392">More...</a><br /></td></tr>
 <tr class="separator:ad3b1cc309d066be95e60b07273c02392"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acdfd524769da24d5bba6d5f16a135741"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_string_tools.html#acdfd524769da24d5bba6d5f16a135741">reroutOutput</a> (std::wofstream file)</td></tr>
-<tr class="memdesc:acdfd524769da24d5bba6d5f16a135741"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rerouts the output of the print functions to somewhere else such as a file. (Not implemented)  <a href="classglib_1_1_string_tools.html#acdfd524769da24d5bba6d5f16a135741">More...</a><br /></td></tr>
-<tr class="separator:acdfd524769da24d5bba6d5f16a135741"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac716af15c5d7de79825928500e6c717"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_string_tools.html#aac716af15c5d7de79825928500e6c717">clearConsole</a> (bool clearScrollBuffer)</td></tr>
+<tr class="memdesc:aac716af15c5d7de79825928500e6c717"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears the console display.  <a href="classglib_1_1_string_tools.html#aac716af15c5d7de79825928500e6c717">More...</a><br /></td></tr>
+<tr class="separator:aac716af15c5d7de79825928500e6c717"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf89794d2f4bab662c68f468bb96aca7"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_string_tools.html#adf89794d2f4bab662c68f468bb96aca7">moveConsoleCursor</a> (int horizontal, int vertical, bool absolute=false)</td></tr>
+<tr class="memdesc:adf89794d2f4bab662c68f468bb96aca7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves the console cursor from its current position.  <a href="classglib_1_1_string_tools.html#adf89794d2f4bab662c68f468bb96aca7">More...</a><br /></td></tr>
+<tr class="separator:adf89794d2f4bab662c68f468bb96aca7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bfcefc9af308f541bd9cc913192c9d0"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_string_tools.html#a4bfcefc9af308f541bd9cc913192c9d0">eraseConsoleLine</a> (bool eraseFromCursor)</td></tr>
+<tr class="memdesc:a4bfcefc9af308f541bd9cc913192c9d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears part of the current line in the console.  <a href="classglib_1_1_string_tools.html#a4bfcefc9af308f541bd9cc913192c9d0">More...</a><br /></td></tr>
+<tr class="separator:a4bfcefc9af308f541bd9cc913192c9d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a474058a5f926aea528568a304f5e3404"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_string_tools.html#a474058a5f926aea528568a304f5e3404">reroutOutput</a> (std::wstreambuf *file)</td></tr>
+<tr class="memdesc:a474058a5f926aea528568a304f5e3404"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rerouts the output of the print functions to somewhere else such as a file. Could also be a different console if desired.  <a href="classglib_1_1_string_tools.html#a474058a5f926aea528568a304f5e3404">More...</a><br /></td></tr>
+<tr class="separator:a474058a5f926aea528568a304f5e3404"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1eb3b591348f62bd79acbdc340d9065a"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_string_tools.html#a1eb3b591348f62bd79acbdc340d9065a">reroutInput</a> (std::wstreambuf *file)</td></tr>
+<tr class="memdesc:a1eb3b591348f62bd79acbdc340d9065a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rerouts the input of the get functions to somewhere else such as a file. Could also be a different console if desired.  <a href="classglib_1_1_string_tools.html#a1eb3b591348f62bd79acbdc340d9065a">More...</a><br /></td></tr>
+<tr class="separator:a1eb3b591348f62bd79acbdc340d9065a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83aa50cb7fb0c2e32b8f41142093841c"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_string_tools.html#a83aa50cb7fb0c2e32b8f41142093841c">reroutErrorOutput</a> (std::wstreambuf *file)</td></tr>
+<tr class="memdesc:a83aa50cb7fb0c2e32b8f41142093841c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rerouts the error output of the printErr functions to somewhere else such as a file. Could also be a different console if desired.  <a href="classglib_1_1_string_tools.html#a83aa50cb7fb0c2e32b8f41142093841c">More...</a><br /></td></tr>
+<tr class="separator:a83aa50cb7fb0c2e32b8f41142093841c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2d2ced0952b9bb3508b461a7adf63c6"><td class="memItemLeft" align="right" valign="top"><a id="af2d2ced0952b9bb3508b461a7adf63c6" name="af2d2ced0952b9bb3508b461a7adf63c6"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>resetOutputInputStreams</b> ()</td></tr>
+<tr class="separator:af2d2ced0952b9bb3508b461a7adf63c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -293,6 +326,40 @@ static const wchar_t&#160;</td><td class="memItemRight" valign="bottom"><b>lineB
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>int Returns -1 if unsuccessful </dd></dl>
+
+</div>
+</div>
+<a id="aac716af15c5d7de79825928500e6c717" name="aac716af15c5d7de79825928500e6c717"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac716af15c5d7de79825928500e6c717">&#9670;&nbsp;</a></span>clearConsole()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void glib::StringTools::clearConsole </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>clearScrollBuffer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clears the console display. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">clearScrollBuffer</td><td>If set to true, clears the console display and the history of information displayed. Does not clear the history of user input. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -395,6 +462,40 @@ template&lt;typename T &gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>true </dd>
 <dd>
 false </dd></dl>
+
+</div>
+</div>
+<a id="a4bfcefc9af308f541bd9cc913192c9d0" name="a4bfcefc9af308f541bd9cc913192c9d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bfcefc9af308f541bd9cc913192c9d0">&#9670;&nbsp;</a></span>eraseConsoleLine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void glib::StringTools::eraseConsoleLine </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>eraseFromCursor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clears part of the current line in the console. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">eraseFromCursor</td><td>If set to false, Clears the entire line and sets the cursor to the start of the line. Otherwise, clears to the right of the cursor only. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -658,6 +759,141 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
+<a id="a289423a4340bfad2f56fcbe89a03404d" name="a289423a4340bfad2f56fcbe89a03404d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a289423a4340bfad2f56fcbe89a03404d">&#9670;&nbsp;</a></span>getCharLessLock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static char glib::StringTools::getCharLessLock </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>noFunctionKeys</em> = <code>true</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets a character from the console using the users input. Does not wait for the user to press enter. Halts until a character is entered. </p>
+<p >Note that some keys that are not characters will be treated as a character. Ex: arrow keys, delete, insertion, home A value of 0 or 0xE0 (224) will be returned in that case. Also note that 224 is a valid character in both unicode and the extended ascii table. There is no way to determine if it is an escape sequence without checking for the next input which will block if it was a valid character.</p>
+<p >Some odd things will happen when moving code to linux.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">noFunctionKeys</td><td>Does not count function keys when returning data. Will read the first valid character. Default value is true. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>char </dd></dl>
+
+</div>
+</div>
+<a id="a71dd253c23df3b21163e4fdd290a6f6c" name="a71dd253c23df3b21163e4fdd290a6f6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71dd253c23df3b21163e4fdd290a6f6c">&#9670;&nbsp;</a></span>getFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static float glib::StringTools::getFloat </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets an float from the console using the users input. Halts until the user presses enter. Only valid characters for numbers are allowed. </p>
+<dl class="section return"><dt>Returns</dt><dd>float </dd></dl>
+
+</div>
+</div>
+<a id="a969a7307d14d4434c038035c9ebb67a2" name="a969a7307d14d4434c038035c9ebb67a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a969a7307d14d4434c038035c9ebb67a2">&#9670;&nbsp;</a></span>getHiddenString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::string glib::StringTools::getHiddenString </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>showAsterisk</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get a string from the user while hiding the text. Useful if the user is entering sensitive data as it will not show as they are typing nor will it appear in the consoles input history. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">showAsterisk</td><td>If set to true, Asterisk (*) will be shown as the user types. Otherwise, nothing will be shown. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::string </dd></dl>
+
+</div>
+</div>
+<a id="a64bc7823d5df49044138adeb2ec2237e" name="a64bc7823d5df49044138adeb2ec2237e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64bc7823d5df49044138adeb2ec2237e">&#9670;&nbsp;</a></span>getHiddenWideString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::wstring glib::StringTools::getHiddenWideString </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>showAsterisk</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get a wide string from the user while hiding the text. Useful if the user is entering sensitive data as it will not show as they are typing nor will it appear in the consoles input history. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">showAsterisk</td><td>If set to true, Asterisk (*) will be shown as the user types. Otherwise, nothing will be shown. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::wstring </dd></dl>
+
+</div>
+</div>
 <a id="a7d41baacbc125733393e939d9967f7d3" name="a7d41baacbc125733393e939d9967f7d3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7d41baacbc125733393e939d9967f7d3">&#9670;&nbsp;</a></span>getInt()</h2>
 
@@ -681,7 +917,7 @@ template&lt;class T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Gets an integer from the console using the users input. Halts until the user presses enter. </p>
+<p>Gets an integer from the console using the users input. Halts until the user presses enter. Only valid characters for numbers are allowed. </p>
 <dl class="section return"><dt>Returns</dt><dd>int </dd></dl>
 
 </div>
@@ -742,6 +978,43 @@ template&lt;class T &gt; </div>
 
 </div>
 </div>
+<a id="acd6a0cf09b0cf3a46e2ed438a81d8da7" name="acd6a0cf09b0cf3a46e2ed438a81d8da7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd6a0cf09b0cf3a46e2ed438a81d8da7">&#9670;&nbsp;</a></span>getWideCharLessLock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static int glib::StringTools::getWideCharLessLock </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>noFunctionKeys</em> = <code>true</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets a wide character from the console using the users input. Does not wait for the user to press enter. Halts until a character is entered. </p>
+<p >Note that some keys that are not characters will be treated as a character. Ex: arrow keys, delete, insertion, home A value of 0 or 0xE0 (224) will be returned in that case. Also note that 224 is a valid character in both unicode and the extended ascii table. There is no way to determine if it is an escape sequence without checking for the next input which will block if it was a valid character.</p>
+<p >Some odd things will happen when moving code to linux.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">noFunctionKeys</td><td>Does not count function keys when returning data. Will read the first valid character. Default value is true. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>int </dd></dl>
+
+</div>
+</div>
 <a id="a6eb8f19b75263a85e2f28d18cd01b11d" name="a6eb8f19b75263a85e2f28d18cd01b11d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6eb8f19b75263a85e2f28d18cd01b11d">&#9670;&nbsp;</a></span>getWideString()</h2>
 
@@ -794,7 +1067,7 @@ template&lt;class T &gt; </div>
 </div><div class="memdoc">
 
 <p>Initializes the <a class="el" href="classglib_1_1_string_tools.html">StringTools</a> class. Specifically, it sets up the console to accept wstring data properly. Not required if the console is not needed. </p>
-<p >None of the wrapper functions to get input from the console will work if this function is not called. Ex: <a class="el" href="classglib_1_1_string_tools.html#a7d41baacbc125733393e939d9967f7d3" title="Gets an integer from the console using the users input. Halts until the user presses enter.">getInt()</a> or <a class="el" href="classglib_1_1_string_tools.html#a5748b7b3a5756c96251b4b308c4b9dd8" title="Gets a string from the console using the users input. Halts until the user presses enter.">getString()</a> </p>
+<p >None of the wrapper functions to get input from the console will work if this function is not called. Ex: <a class="el" href="classglib_1_1_string_tools.html#a7d41baacbc125733393e939d9967f7d3" title="Gets an integer from the console using the users input. Halts until the user presses enter....">getInt()</a> or <a class="el" href="classglib_1_1_string_tools.html#a5748b7b3a5756c96251b4b308c4b9dd8" title="Gets a string from the console using the users input. Halts until the user presses enter.">getString()</a> </p>
 
 </div>
 </div>
@@ -887,6 +1160,58 @@ false </dd></dl>
 <dl class="section return"><dt>Returns</dt><dd>true </dd>
 <dd>
 false </dd></dl>
+
+</div>
+</div>
+<a id="adf89794d2f4bab662c68f468bb96aca7" name="adf89794d2f4bab662c68f468bb96aca7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf89794d2f4bab662c68f468bb96aca7">&#9670;&nbsp;</a></span>moveConsoleCursor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void glib::StringTools::moveConsoleCursor </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>horizontal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertical</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>absolute</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Moves the console cursor from its current position. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">horizontal</td><td>Positive values move the cursor forward on a line. Negative values move the cursor backwards on a line. Note that the cursor stops moving when at the edge. </td></tr>
+    <tr><td class="paramname">vertical</td><td>Positive values move the cursor down. Negative values move the cursor up. Note that the cursor stops moving when at the edge. </td></tr>
+    <tr><td class="paramname">absolute</td><td>If true, the horizontal and vertical values represent the absolute cursor position and not an offset. All negative values are set to 1 </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1070,8 +1395,8 @@ false </dd></dl>
 
 </div>
 </div>
-<a id="acdfd524769da24d5bba6d5f16a135741" name="acdfd524769da24d5bba6d5f16a135741"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acdfd524769da24d5bba6d5f16a135741">&#9670;&nbsp;</a></span>reroutOutput()</h2>
+<a id="a83aa50cb7fb0c2e32b8f41142093841c" name="a83aa50cb7fb0c2e32b8f41142093841c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83aa50cb7fb0c2e32b8f41142093841c">&#9670;&nbsp;</a></span>reroutErrorOutput()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1080,9 +1405,9 @@ false </dd></dl>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void glib::StringTools::reroutOutput </td>
+          <td class="memname">static void glib::StringTools::reroutErrorOutput </td>
           <td>(</td>
-          <td class="paramtype">std::wofstream&#160;</td>
+          <td class="paramtype">std::wstreambuf *&#160;</td>
           <td class="paramname"><em>file</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1094,7 +1419,75 @@ false </dd></dl>
 </table>
 </div><div class="memdoc">
 
-<p>Rerouts the output of the print functions to somewhere else such as a file. (Not implemented) </p>
+<p>Rerouts the error output of the printErr functions to somewhere else such as a file. Could also be a different console if desired. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">file</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1eb3b591348f62bd79acbdc340d9065a" name="a1eb3b591348f62bd79acbdc340d9065a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1eb3b591348f62bd79acbdc340d9065a">&#9670;&nbsp;</a></span>reroutInput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void glib::StringTools::reroutInput </td>
+          <td>(</td>
+          <td class="paramtype">std::wstreambuf *&#160;</td>
+          <td class="paramname"><em>file</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Rerouts the input of the get functions to somewhere else such as a file. Could also be a different console if desired. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">file</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a474058a5f926aea528568a304f5e3404" name="a474058a5f926aea528568a304f5e3404"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a474058a5f926aea528568a304f5e3404">&#9670;&nbsp;</a></span>reroutOutput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void glib::StringTools::reroutOutput </td>
+          <td>(</td>
+          <td class="paramtype">std::wstreambuf *&#160;</td>
+          <td class="paramname"><em>file</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Rerouts the output of the print functions to somewhere else such as a file. Could also be a different console if desired. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">file</td><td></td></tr>

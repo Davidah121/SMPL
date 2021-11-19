@@ -1,0 +1,175 @@
+\hypertarget{_smart_memory_8h_source}{}\doxysection{Smart\+Memory.\+h}
+\label{_smart_memory_8h_source}\index{include/SmartMemory.h@{include/SmartMemory.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include <unordered\_map>}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}StringTools.h"{}}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{comment}{//TESTING FOR SAFE MEMORY MANAGEMENT}}
+\DoxyCodeLine{6 }
+\DoxyCodeLine{7 \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
+\DoxyCodeLine{8 \textcolor{keyword}{struct }\mbox{\hyperlink{struct_mem_classification}{MemClassification}}}
+\DoxyCodeLine{9 \{}
+\DoxyCodeLine{10     T* dataPointer = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{11     \textcolor{keywordtype}{bool} array = \textcolor{keyword}{false};}
+\DoxyCodeLine{12 \};}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 \textcolor{keyword}{template}<\textcolor{keyword}{class} T>}
+\DoxyCodeLine{15 \textcolor{keyword}{class }\mbox{\hyperlink{class_static_mem_manager}{StaticMemManager}}}
+\DoxyCodeLine{16 \{}
+\DoxyCodeLine{17 \textcolor{keyword}{public}:}
+\DoxyCodeLine{18     \mbox{\hyperlink{class_static_mem_manager}{StaticMemManager}}()}
+\DoxyCodeLine{19     \{}
+\DoxyCodeLine{20     \}}
+\DoxyCodeLine{21 }
+\DoxyCodeLine{22     \mbox{\hyperlink{class_static_mem_manager}{\string~StaticMemManager}}()}
+\DoxyCodeLine{23     \{}
+\DoxyCodeLine{24         \mbox{\hyperlink{classglib_1_1_string_tools_aae9cf23c88558323df1552c9863cfc0a}{glib::StringTools::println}}(\textcolor{stringliteral}{"{}DELETE ALL DATA"{}});}
+\DoxyCodeLine{25         std::vector<MemClassification<T>> pArr;}
+\DoxyCodeLine{26         \textcolor{keywordflow}{for}(\textcolor{keyword}{auto} it = pointerData.begin(); it != pointerData.end(); it++)}
+\DoxyCodeLine{27         \{}
+\DoxyCodeLine{28             pArr.push\_back(\{it-\/>first, it-\/>second\});}
+\DoxyCodeLine{29         \}}
+\DoxyCodeLine{30 }
+\DoxyCodeLine{31         \textcolor{keywordflow}{for}(\mbox{\hyperlink{struct_mem_classification}{MemClassification<T>}}\& memory : pArr)}
+\DoxyCodeLine{32         \{}
+\DoxyCodeLine{33             \textcolor{keywordflow}{if}(memory.dataPointer != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{34             \{}
+\DoxyCodeLine{35                 \textcolor{keywordflow}{if}(memory.array)}
+\DoxyCodeLine{36                     \textcolor{keyword}{delete}[] memory.dataPointer;}
+\DoxyCodeLine{37                 \textcolor{keywordflow}{else}}
+\DoxyCodeLine{38                     \textcolor{keyword}{delete} memory.dataPointer;}
+\DoxyCodeLine{39             \}}
+\DoxyCodeLine{40         \}}
+\DoxyCodeLine{41 }
+\DoxyCodeLine{42         pointerData.clear();}
+\DoxyCodeLine{43         pArr.clear();}
+\DoxyCodeLine{44     \}}
+\DoxyCodeLine{45 }
+\DoxyCodeLine{46     std::unordered\_map<T*, bool> pointerData;}
+\DoxyCodeLine{47 \textcolor{keyword}{private}:}
+\DoxyCodeLine{48 \};}
+\DoxyCodeLine{49 }
+\DoxyCodeLine{50 \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{51 \textcolor{keyword}{class }\mbox{\hyperlink{class_smart_memory}{SmartMemory}}}
+\DoxyCodeLine{52 \{}
+\DoxyCodeLine{53 \textcolor{keyword}{public}:}
+\DoxyCodeLine{54 }
+\DoxyCodeLine{60     \mbox{\hyperlink{class_smart_memory_aeb2a6e98385b1e07b0f2a5858349c3c8}{SmartMemory}}()}
+\DoxyCodeLine{61     \{}
+\DoxyCodeLine{62     \}}
+\DoxyCodeLine{63 }
+\DoxyCodeLine{80     \mbox{\hyperlink{class_smart_memory_a58c3765fc5d4df63401d36a7405f230f}{SmartMemory}}(T* data, \textcolor{keywordtype}{bool} array = \textcolor{keyword}{false}, \textcolor{keywordtype}{bool} bypassOwnership = \textcolor{keyword}{false})}
+\DoxyCodeLine{81     \{}
+\DoxyCodeLine{82         hashValue = data;}
+\DoxyCodeLine{83 }
+\DoxyCodeLine{84         \textcolor{keywordflow}{if}(hashValue != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{85         \{}
+\DoxyCodeLine{86             \textcolor{keyword}{auto} it = memoryStuff.pointerData.find(hashValue);}
+\DoxyCodeLine{87             \textcolor{keywordflow}{if}(it == memoryStuff.pointerData.end())}
+\DoxyCodeLine{88             \{}
+\DoxyCodeLine{89                 deleteRights = \textcolor{keyword}{true};}
+\DoxyCodeLine{90                 memoryStuff.pointerData.insert( \{hashValue, array\} );}
+\DoxyCodeLine{91                 \mbox{\hyperlink{classglib_1_1_string_tools_aae9cf23c88558323df1552c9863cfc0a}{glib::StringTools::println}}(\textcolor{stringliteral}{"{}Added \%p"{}}, hashValue);}
+\DoxyCodeLine{92             \}}
+\DoxyCodeLine{93             \textcolor{keywordflow}{else}}
+\DoxyCodeLine{94             \{}
+\DoxyCodeLine{95                 deleteRights = \textcolor{keyword}{false};}
+\DoxyCodeLine{96                 it-\/>second = array;}
+\DoxyCodeLine{97                 \mbox{\hyperlink{classglib_1_1_string_tools_aae9cf23c88558323df1552c9863cfc0a}{glib::StringTools::println}}(\textcolor{stringliteral}{"{}Copied \%p"{}}, hashValue);}
+\DoxyCodeLine{98             \}}
+\DoxyCodeLine{99         \}}
+\DoxyCodeLine{100 }
+\DoxyCodeLine{101         \textcolor{keywordflow}{if}(bypassOwnership)}
+\DoxyCodeLine{102             deleteRights = \textcolor{keyword}{true};}
+\DoxyCodeLine{103     \}}
+\DoxyCodeLine{104 }
+\DoxyCodeLine{114     \mbox{\hyperlink{class_smart_memory_a82a46e9288f8ee1149ade1bb9d3c7626}{SmartMemory}}(\textcolor{keyword}{const} \mbox{\hyperlink{class_smart_memory}{SmartMemory<T>}}\& other)}
+\DoxyCodeLine{115     \{}
+\DoxyCodeLine{116         deletePointer();}
+\DoxyCodeLine{117         hashValue = other.hashValue;}
+\DoxyCodeLine{118         deleteRights = \textcolor{keyword}{false};}
+\DoxyCodeLine{119     \}}
+\DoxyCodeLine{120 }
+\DoxyCodeLine{130     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_smart_memory_a21a5f6e48a6700350755258a4c71c4d2}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{class_smart_memory}{SmartMemory<T>}}\& other)}
+\DoxyCodeLine{131     \{}
+\DoxyCodeLine{132         deletePointer();}
+\DoxyCodeLine{133         hashValue = other.hashValue;}
+\DoxyCodeLine{134         deleteRights = \textcolor{keyword}{false};}
+\DoxyCodeLine{135     \}}
+\DoxyCodeLine{136 }
+\DoxyCodeLine{141     \mbox{\hyperlink{class_smart_memory_a6e7dfecd561566f11e72e3efe3f3474d}{\string~SmartMemory}}()}
+\DoxyCodeLine{142     \{}
+\DoxyCodeLine{143         deletePointer();}
+\DoxyCodeLine{144     \}}
+\DoxyCodeLine{145 }
+\DoxyCodeLine{152     T* \mbox{\hyperlink{class_smart_memory_af843653ec454d766cced5174f3f3e61f}{getPointer}}()}
+\DoxyCodeLine{153     \{}
+\DoxyCodeLine{154         \textcolor{keywordflow}{if}(hashValue != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{155         \{}
+\DoxyCodeLine{156             \textcolor{keyword}{auto} it = memoryStuff.pointerData.find(hashValue);}
+\DoxyCodeLine{157             \textcolor{keywordflow}{if}(it != memoryStuff.pointerData.end())}
+\DoxyCodeLine{158             \{}
+\DoxyCodeLine{159                 \textcolor{keywordflow}{return} (T*)*it;}
+\DoxyCodeLine{160             \}}
+\DoxyCodeLine{161             \textcolor{keywordflow}{else}}
+\DoxyCodeLine{162             \{}
+\DoxyCodeLine{163                 hashValue = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{164             \}}
+\DoxyCodeLine{165         \}}
+\DoxyCodeLine{166 }
+\DoxyCodeLine{167         \textcolor{keywordflow}{return} \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{168     \}}
+\DoxyCodeLine{169 }
+\DoxyCodeLine{179     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_smart_memory_abd9d93de461af77776658853a1de7210}{unsafeRemove}}()}
+\DoxyCodeLine{180     \{}
+\DoxyCodeLine{181         \textcolor{keywordflow}{if}(hashValue != \textcolor{keyword}{nullptr} \&\& deleteRights)}
+\DoxyCodeLine{182         \{}
+\DoxyCodeLine{183             memoryStuff.pointerData.erase(hashValue);}
+\DoxyCodeLine{184             hashValue = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{185         \}}
+\DoxyCodeLine{186     \}}
+\DoxyCodeLine{187 }
+\DoxyCodeLine{195     \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_smart_memory_aedbd47b630406d09c5cb999b8c5911df}{getDeleteRights}}()}
+\DoxyCodeLine{196     \{}
+\DoxyCodeLine{197         \textcolor{keywordflow}{return} deleteRights;}
+\DoxyCodeLine{198     \}}
+\DoxyCodeLine{199 }
+\DoxyCodeLine{209     T* \mbox{\hyperlink{class_smart_memory_a01f592fd46f19a87f2c6e0e2d43e509b}{getRawPointer}}()}
+\DoxyCodeLine{210     \{}
+\DoxyCodeLine{211         \textcolor{keywordflow}{return} hashValue;}
+\DoxyCodeLine{212     \}}
+\DoxyCodeLine{213 }
+\DoxyCodeLine{214 \textcolor{keyword}{private}:}
+\DoxyCodeLine{215 }
+\DoxyCodeLine{220     \textcolor{keywordtype}{void} deletePointer()}
+\DoxyCodeLine{221     \{}
+\DoxyCodeLine{222         \textcolor{keywordflow}{if}(deleteRights \&\& hashValue != \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{223         \{}
+\DoxyCodeLine{224             \textcolor{keyword}{auto} it = memoryStuff.pointerData.find(hashValue);}
+\DoxyCodeLine{225             \textcolor{keywordflow}{if}(it != memoryStuff.pointerData.end())}
+\DoxyCodeLine{226             \{}
+\DoxyCodeLine{227                 \mbox{\hyperlink{classglib_1_1_string_tools_aae9cf23c88558323df1552c9863cfc0a}{glib::StringTools::println}}(\textcolor{stringliteral}{"{}Delete hashValue \%p"{}}, hashValue);}
+\DoxyCodeLine{228 }
+\DoxyCodeLine{229                 \textcolor{keywordflow}{if}(it-\/>second == \textcolor{keyword}{true})}
+\DoxyCodeLine{230                     \textcolor{keyword}{delete}[] (T*)hashValue;}
+\DoxyCodeLine{231                 \textcolor{keywordflow}{else}}
+\DoxyCodeLine{232                     \textcolor{keyword}{delete} (T*)hashValue;}
+\DoxyCodeLine{233                 }
+\DoxyCodeLine{234                 memoryStuff.pointerData.erase(hashValue);}
+\DoxyCodeLine{235             \}}
+\DoxyCodeLine{236 }
+\DoxyCodeLine{237             hashValue = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{238         \}}
+\DoxyCodeLine{239     \}}
+\DoxyCodeLine{240 }
+\DoxyCodeLine{241     \textcolor{keywordtype}{bool} deleteRights = \textcolor{keyword}{false};}
+\DoxyCodeLine{242     T* hashValue = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{243     \textcolor{keyword}{static} \mbox{\hyperlink{class_static_mem_manager}{StaticMemManager<T>}} memoryStuff;}
+\DoxyCodeLine{244 \};}
+\DoxyCodeLine{245 }
+\DoxyCodeLine{246 \textcolor{keyword}{template}<\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{247 \mbox{\hyperlink{class_static_mem_manager}{StaticMemManager<T>}} \mbox{\hyperlink{class_smart_memory}{SmartMemory<T>::memoryStuff}};}
+
+\end{DoxyCode}

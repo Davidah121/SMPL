@@ -1170,8 +1170,11 @@ namespace glib
 
 		if( MathExt::sqr(B) - 4*A*C >= 0)
 		{
-			k1 = (-B + MathExt::sqrt( MathExt::sqr(B) - 4*A*C )) / (2*A);
-			k2 = (-B - MathExt::sqrt( MathExt::sqr(B) - 4*A*C )) / (2*A);
+			double sqrtVal = MathExt::sqrt( MathExt::sqr(B) - 4*A*C );
+			double divVal = 2*A;
+
+			k1 = (-B + sqrtVal) / divVal;
+			k2 = (-B - sqrtVal) / divVal;
 			
 			return {k1, k2};
 		}

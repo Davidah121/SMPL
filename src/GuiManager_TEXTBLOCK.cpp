@@ -15,8 +15,8 @@ namespace glib
 	{
 		setBaseX(x);
 		setBaseY(y);
-		this->width = width;
-		this->height = height;
+		this->maxWidth = width;
+		this->maxHeight = height;
 	}
 
 	GuiTextBlock::~GuiTextBlock()
@@ -26,7 +26,12 @@ namespace glib
 
 	void GuiTextBlock::update()
 	{
-		
+		Font* currFont = textFont;
+		if(currFont == nullptr)
+			currFont = Graphics::getFont();
+
+		int totalWidth = currFont->getWidthOfString(text);
+
 	}
 
 	void GuiTextBlock::render(Image* surf)
@@ -40,8 +45,12 @@ namespace glib
 
 			Graphics::setColor(textColor);
 
-			Graphics::setClippingRect( Box2D(renderX, renderY, renderX+width, renderY+height) );
-			Graphics::drawTextLimits(text, renderX+offsetX, renderY+offsetY, width-offsetX, height-offsetY, allowLineBreaks, surf);
+			int actualMaxW = (maxWidth <= 0) ? 0xFFFF : maxWidth;
+			int actualMaxH = (maxHeight <= 0) ? 0xFFFF : maxHeight;
+			
+
+			Graphics::setClippingRect( Box2D(renderX, renderY, renderX+actualMaxW, renderY+actualMaxH) );
+			Graphics::drawTextLimits(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowLineBreaks, surf);
 
 			if(shouldHighlight && endHighlight>=0 && startHighlight>=0)
 			{
@@ -62,6 +71,7 @@ namespace glib
 				startString = text.substr(0, actualS);
 				endString = text.substr(actualE, text.size());
 
+				//TODO Change to deal with highlighting text vertically
 				int startWidth = currFont->getWidthOfString(startString);
 				int endWidth = currFont->getWidthOfString(endString);
 
@@ -114,22 +124,22 @@ namespace glib
 		return textFont;
 	}
 
-	void GuiTextBlock::setWidth(int v)
+	void GuiTextBlock::setMaxWidth(int v)
 	{
-		width = v;
+		maxWidth = v;
 	}
-	void GuiTextBlock::setHeight(int v)
+	void GuiTextBlock::setMaxHeight(int v)
 	{
-		height = v;
+		maxHeight = v;
 	}
 
-	int GuiTextBlock::getWidth()
+	int GuiTextBlock::getMaxWidth()
 	{
-		return width;
+		return maxWidth;
 	}
-	int GuiTextBlock::getHeight()
+	int GuiTextBlock::getMaxHeight()
 	{
-		return height;
+		return maxHeight;
 	}
 
 	void GuiTextBlock::setHighlightColor(Color c)

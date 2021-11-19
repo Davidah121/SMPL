@@ -210,6 +210,8 @@ namespace glib
 				}
 			}
 		}
+
+		boundingBox = Box2D(startX, startY, endX, endY);
 	}
 
 	void GuiScrollBar::holdButtonFunction(GuiInstance* ins)

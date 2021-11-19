@@ -14,10 +14,10 @@ Inheritance diagram for glib\+::Vec4f\+:\begin{figure}[H]
 \begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} object. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classglib_1_1_vec4f_aeb425d17f02d8d660c86c864bfdc81fb}{Vec4f}} (double x, double y, double z, double w)
 \begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} object. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classglib_1_1_vec4f_a136e3e7f35fc7524f941e9018c6bc09a}{Vec4f}} (\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} other)
-\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} object from a \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} object The w value will not be set. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classglib_1_1_vec4f_aeed35fb19999f2c376463a442f9aae96}{Vec4f}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other)
-\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} object from a \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} object The z and w values will not be set. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec4f_a5f46fc32425ddcace9c586606a661dc1}{Vec4f}} (\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} other, double w)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} object from a \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} object and an optional additional value for w. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec4f_a13a5d14120358d9bfa3da43bac1a09a0}{Vec4f}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other, double z, double w)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} object from a \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} object and 2 optional values for z and w. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classglib_1_1_vec4f_a028181b7de605d685490939feef47827}\label{classglib_1_1_vec4f_a028181b7de605d685490939feef47827}} 
 {\bfseries $\sim$\+Vec4f} ()
 \begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} object. \end{DoxyCompactList}\item 
@@ -45,26 +45,17 @@ void \mbox{\hyperlink{classglib_1_1_vec4f_a48bcae1fef536a01957a0f234a1b29dc}{set
 \begin{DoxyCompactList}\small\item\em Copies values from a \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}. The w values will not be set. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classglib_1_1_vec4f_adb86276b7502961cb30313893eed27a2}{set\+Values}} (\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} value)
 \begin{DoxyCompactList}\small\item\em Copies values from a \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} \mbox{\hyperlink{classglib_1_1_vec4f_a52142b2ff467f2dd889a985729f7ae4f}{to\+Vec3f}} ()
+\begin{DoxyCompactList}\small\item\em Converts the \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} object to a \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} object by dropping the w value. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_vec4f_abeef495d15c07387c9aa62bbcde96628}{get\+Length}} ()
+\begin{DoxyCompactList}\small\item\em Get the Length of the vector. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} \mbox{\hyperlink{classglib_1_1_vec4f_ac7bfd2b2d04ef07de7bd05054bbf022a}{normalize}} ()
+\begin{DoxyCompactList}\small\item\em Gets the normalized version of the vector. Returns a vector with the same direction but a length of 1. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classglib_1_1_vec4f_a353bac4477162af4025c241810c572b5}\label{classglib_1_1_vec4f_a353bac4477162af4025c241810c572b5}} 
 \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} {\bfseries operator-\/} (\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} other)
 \item 
 \mbox{\Hypertarget{classglib_1_1_vec4f_a7eb12dfb0691ef78d7abfad5a4ace827}\label{classglib_1_1_vec4f_a7eb12dfb0691ef78d7abfad5a4ace827}} 
 \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} {\bfseries operator+} (\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec4f_aa133000b32a705fb052f8c6532340b08}\label{classglib_1_1_vec4f_aa133000b32a705fb052f8c6532340b08}} 
-\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} {\bfseries operator$\ast$} (long other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec4f_aa2969deb6820d20d128e4cb4fa428339}\label{classglib_1_1_vec4f_aa2969deb6820d20d128e4cb4fa428339}} 
-\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} {\bfseries operator$\ast$} (double other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec4f_a2152534b3f85537d457da55d25a69027}\label{classglib_1_1_vec4f_a2152534b3f85537d457da55d25a69027}} 
-\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} {\bfseries operator$\ast$} (float other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec4f_a5adfc3889fb0f8107f7a42a0395c8edf}\label{classglib_1_1_vec4f_a5adfc3889fb0f8107f7a42a0395c8edf}} 
-\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} {\bfseries operator$\ast$} (int other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec4f_aeab49dee94bda413c8f0892608487268}\label{classglib_1_1_vec4f_aeab49dee94bda413c8f0892608487268}} 
-\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} {\bfseries operator$\ast$} (\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} other)
 \item 
 \mbox{\Hypertarget{classglib_1_1_vec4f_a5654e2ed229326de5c5c13c53c2c14c6}\label{classglib_1_1_vec4f_a5654e2ed229326de5c5c13c53c2c14c6}} 
 bool {\bfseries operator==} (\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} other)
@@ -81,50 +72,17 @@ void {\bfseries operator+=} (\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} other
 \mbox{\Hypertarget{classglib_1_1_vec4f_a91bcc9445f1a7696646071e22ff89af9}\label{classglib_1_1_vec4f_a91bcc9445f1a7696646071e22ff89af9}} 
 void {\bfseries operator-\/=} (\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} other)
 \item 
-\mbox{\Hypertarget{classglib_1_1_vec4f_accfb9c18b1202ddbdcee556fce8c4eee}\label{classglib_1_1_vec4f_accfb9c18b1202ddbdcee556fce8c4eee}} 
-void {\bfseries operator$\ast$=} (\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec4f_a219d502793aac7ef629f01c494df42cd}\label{classglib_1_1_vec4f_a219d502793aac7ef629f01c494df42cd}} 
-void {\bfseries operator/=} (\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} other)
-\item 
 \mbox{\Hypertarget{classglib_1_1_vec4f_a32cdb9b44418aa138b27cba4c4beba30}\label{classglib_1_1_vec4f_a32cdb9b44418aa138b27cba4c4beba30}} 
 void {\bfseries operator$\ast$=} (double other)
 \item 
 \mbox{\Hypertarget{classglib_1_1_vec4f_a8ce91c3a22933a0234e3902f3d3ff685}\label{classglib_1_1_vec4f_a8ce91c3a22933a0234e3902f3d3ff685}} 
 void {\bfseries operator/=} (double other)
 \item 
-\mbox{\Hypertarget{classglib_1_1_vec4f_aaf881b1df9724d892d6eb9ff3c275a4e}\label{classglib_1_1_vec4f_aaf881b1df9724d892d6eb9ff3c275a4e}} 
-void {\bfseries operator$\ast$=} (int other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec4f_a245c5c17fe9e002c246787f6ceac1fca}\label{classglib_1_1_vec4f_a245c5c17fe9e002c246787f6ceac1fca}} 
-void {\bfseries operator/=} (int other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec4f_a83b01e8b453f0fa409823e8f12fa7e60}\label{classglib_1_1_vec4f_a83b01e8b453f0fa409823e8f12fa7e60}} 
-void {\bfseries operator$\ast$=} (long other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec4f_ae3affb53f1fb37ac18ba8d6e8223a301}\label{classglib_1_1_vec4f_ae3affb53f1fb37ac18ba8d6e8223a301}} 
-void {\bfseries operator/=} (long other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec4f_a294e277d6a1f6603c12b88bcb93861d8}\label{classglib_1_1_vec4f_a294e277d6a1f6603c12b88bcb93861d8}} 
-void {\bfseries operator$\ast$=} (float other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec4f_a1a92d914f65a912adb4a3b32fae0d5ab}\label{classglib_1_1_vec4f_a1a92d914f65a912adb4a3b32fae0d5ab}} 
-void {\bfseries operator/=} (float other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec4f_af8e2fd2625b182579fa9a8ef07f37c68}\label{classglib_1_1_vec4f_af8e2fd2625b182579fa9a8ef07f37c68}} 
-\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} {\bfseries operator/} (long other)
+\mbox{\Hypertarget{classglib_1_1_vec4f_aa2969deb6820d20d128e4cb4fa428339}\label{classglib_1_1_vec4f_aa2969deb6820d20d128e4cb4fa428339}} 
+\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} {\bfseries operator$\ast$} (double other)
 \item 
 \mbox{\Hypertarget{classglib_1_1_vec4f_a03053fe364666cb2ecfe3b7c77dd8a12}\label{classglib_1_1_vec4f_a03053fe364666cb2ecfe3b7c77dd8a12}} 
 \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} {\bfseries operator/} (double other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec4f_ac43f31c8a4bde32146a6507862496027}\label{classglib_1_1_vec4f_ac43f31c8a4bde32146a6507862496027}} 
-\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} {\bfseries operator/} (float other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec4f_ac1396769b608573c091196418167e5f2}\label{classglib_1_1_vec4f_ac1396769b608573c091196418167e5f2}} 
-\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} {\bfseries operator/} (int other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec4f_afb504e920e1ae39b8c093e2549f0dcae}\label{classglib_1_1_vec4f_afb504e920e1ae39b8c093e2549f0dcae}} 
-\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} {\bfseries operator/} (\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} other)
 \item 
 \mbox{\hyperlink{classglib_1_1_general_vector}{General\+Vector}} \mbox{\hyperlink{classglib_1_1_vec4f_a912f1cc9ba14e7ce6a932c9d4cfa2cbe}{to\+General\+Vector}} ()
 \begin{DoxyCompactList}\small\item\em Converts the \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} object to a \mbox{\hyperlink{classglib_1_1_general_vector}{General\+Vector}} object. \end{DoxyCompactList}\item 
@@ -152,6 +110,12 @@ double {\bfseries w} = 0
 \mbox{\Hypertarget{classglib_1_1_vec4f_a3f3b6b5dd85ac32f7f9a81b4a2d04d34}\label{classglib_1_1_vec4f_a3f3b6b5dd85ac32f7f9a81b4a2d04d34}} 
 static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
 \end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_vec4f_adf74ac8f4d0b2881f766637d7dc612e1}\label{classglib_1_1_vec4f_adf74ac8f4d0b2881f766637d7dc612e1}} 
+\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} {\bfseries operator$\ast$} (double value, \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} \&other)
+\end{DoxyCompactItemize}
 
 
 \doxysubsection{Constructor \& Destructor Documentation}
@@ -176,30 +140,30 @@ Construct a new \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} object.
 {\em w} & \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classglib_1_1_vec4f_a136e3e7f35fc7524f941e9018c6bc09a}\label{classglib_1_1_vec4f_a136e3e7f35fc7524f941e9018c6bc09a}} 
+\mbox{\Hypertarget{classglib_1_1_vec4f_a5f46fc32425ddcace9c586606a661dc1}\label{classglib_1_1_vec4f_a5f46fc32425ddcace9c586606a661dc1}} 
 \index{glib::Vec4f@{glib::Vec4f}!Vec4f@{Vec4f}}
 \index{Vec4f@{Vec4f}!glib::Vec4f@{glib::Vec4f}}
 \doxysubsubsection{\texorpdfstring{Vec4f()}{Vec4f()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
-{\footnotesize\ttfamily glib\+::\+Vec4f\+::\+Vec4f (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}}]{other }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily glib\+::\+Vec4f\+::\+Vec4f (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}}]{other,  }\item[{double}]{w }\end{DoxyParamCaption})}
 
 
 
-Construct a new \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} object from a \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} object The w value will not be set. 
+Construct a new \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} object from a \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} object and an optional additional value for w. 
 
 
 \begin{DoxyParams}{Parameters}
 {\em other} & \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classglib_1_1_vec4f_aeed35fb19999f2c376463a442f9aae96}\label{classglib_1_1_vec4f_aeed35fb19999f2c376463a442f9aae96}} 
+\mbox{\Hypertarget{classglib_1_1_vec4f_a13a5d14120358d9bfa3da43bac1a09a0}\label{classglib_1_1_vec4f_a13a5d14120358d9bfa3da43bac1a09a0}} 
 \index{glib::Vec4f@{glib::Vec4f}!Vec4f@{Vec4f}}
 \index{Vec4f@{Vec4f}!glib::Vec4f@{glib::Vec4f}}
 \doxysubsubsection{\texorpdfstring{Vec4f()}{Vec4f()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
-{\footnotesize\ttfamily glib\+::\+Vec4f\+::\+Vec4f (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{other }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily glib\+::\+Vec4f\+::\+Vec4f (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{other,  }\item[{double}]{z,  }\item[{double}]{w }\end{DoxyParamCaption})}
 
 
 
-Construct a new \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} object from a \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} object The z and w values will not be set. 
+Construct a new \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} object from a \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} object and 2 optional values for z and w. 
 
 
 \begin{DoxyParams}{Parameters}
@@ -219,6 +183,19 @@ Construct a new \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} object from a \mbo
 
 Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
 
+\mbox{\Hypertarget{classglib_1_1_vec4f_abeef495d15c07387c9aa62bbcde96628}\label{classglib_1_1_vec4f_abeef495d15c07387c9aa62bbcde96628}} 
+\index{glib::Vec4f@{glib::Vec4f}!getLength@{getLength}}
+\index{getLength@{getLength}!glib::Vec4f@{glib::Vec4f}}
+\doxysubsubsection{\texorpdfstring{getLength()}{getLength()}}
+{\footnotesize\ttfamily double glib\+::\+Vec4f\+::get\+Length (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the Length of the vector. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_vec4f_a31724da15b0f6f3e63cf1ce74a2ec97a}\label{classglib_1_1_vec4f_a31724da15b0f6f3e63cf1ce74a2ec97a}} 
 \index{glib::Vec4f@{glib::Vec4f}!getW@{getW}}
 \index{getW@{getW}!glib::Vec4f@{glib::Vec4f}}
@@ -270,6 +247,19 @@ Gets the Z value for the vector.
 
 \begin{DoxyReturn}{Returns}
 double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vec4f_ac7bfd2b2d04ef07de7bd05054bbf022a}\label{classglib_1_1_vec4f_ac7bfd2b2d04ef07de7bd05054bbf022a}} 
+\index{glib::Vec4f@{glib::Vec4f}!normalize@{normalize}}
+\index{normalize@{normalize}!glib::Vec4f@{glib::Vec4f}}
+\doxysubsubsection{\texorpdfstring{normalize()}{normalize()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} glib\+::\+Vec4f\+::normalize (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the normalized version of the vector. Returns a vector with the same direction but a length of 1. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_vec4f_afa2906b53057c36554c55260a43ab1a6}\label{classglib_1_1_vec4f_afa2906b53057c36554c55260a43ab1a6}} 
 \index{glib::Vec4f@{glib::Vec4f}!setValues@{setValues}}
@@ -388,6 +378,19 @@ Converts the \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} object to a \mbox{\hy
 
 \begin{DoxyReturn}{Returns}
 \mbox{\hyperlink{classglib_1_1_general_vector}{General\+Vector}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vec4f_a52142b2ff467f2dd889a985729f7ae4f}\label{classglib_1_1_vec4f_a52142b2ff467f2dd889a985729f7ae4f}} 
+\index{glib::Vec4f@{glib::Vec4f}!toVec3f@{toVec3f}}
+\index{toVec3f@{toVec3f}!glib::Vec4f@{glib::Vec4f}}
+\doxysubsubsection{\texorpdfstring{toVec3f()}{toVec3f()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} glib\+::\+Vec4f\+::to\+Vec3f (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Converts the \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} object to a \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} object by dropping the w value. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} 
 \end{DoxyReturn}
 
 
