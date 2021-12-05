@@ -18,10 +18,10 @@ namespace glib
 		 * @brief Construct a new Matrix object
 		 * 		A matrix with rows = 0 or columns = 0 is considered invalid.
 		 * 
-		 * @param rows 
 		 * @param cols 
+		 * @param rows 
 		 */
-		Matrix(int rows, int cols);
+		Matrix(int cols, int rows);
 
 		/**
 		 * @brief Construct a new Matrix object from another Matrix object

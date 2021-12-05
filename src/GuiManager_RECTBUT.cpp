@@ -103,6 +103,9 @@ namespace glib
 			if (onClickHoldFunction != nullptr)
 				onClickHoldFunction(this);
 		}
+
+		
+		boundingBox = Box2D(x, y, x+width, y+height);
 	}
 
 	void GuiRectangleButton::render(Image* surf)
@@ -113,21 +116,21 @@ namespace glib
 			if(!getFocus())
 			{
 				if(!hover)
-					Graphics::setColor(backgroundColor);
+					SimpleGraphics::setColor(backgroundColor);
 				else
-					Graphics::setColor(hoverColor);
+					SimpleGraphics::setColor(hoverColor);
 			}
 			else
 			{
-				Graphics::setColor(focusBackgroundColor);
+				SimpleGraphics::setColor(focusBackgroundColor);
 			}
 			
 			surf->drawRect(renderX, renderY, renderX + width, renderY + height, false);
 
 			if (getFocus() == false)
-				Graphics::setColor(outlineColor);
+				SimpleGraphics::setColor(outlineColor);
 			else
-				Graphics::setColor(focusOutlineColor);
+				SimpleGraphics::setColor(focusOutlineColor);
 
 			surf->drawRect(renderX, renderY, renderX + width, renderY + height, true);
 		}

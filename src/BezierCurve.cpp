@@ -216,8 +216,7 @@ namespace glib
 			break;
 		default:
 			//Simpson's rule
-			//subdivisions = 4 * points.size()
-			//each time section is approximated by Simpson's rule of n = 4
+			//subdivisions = 2 * points.size()
 			derVec = getDerivativeAt(startTime);
 			arcLength += MathExt::vecLength(derVec);
 

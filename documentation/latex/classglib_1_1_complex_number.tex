@@ -19,6 +19,8 @@ Inheritance diagram for glib\+::Complex\+Number\+:\begin{figure}[H]
 \mbox{\Hypertarget{classglib_1_1_complex_number_a4c7160452dff2b3441086447691c2874}\label{classglib_1_1_complex_number_a4c7160452dff2b3441086447691c2874}} 
 {\bfseries $\sim$\+Complex\+Number} ()
 \begin{DoxyCompactList}\small\item\em Destroys a \mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_complex_number_a344907c5668f87de00a1b861a7b3c910}{to\+Vec2f}} ()
+\begin{DoxyCompactList}\small\item\em Converts the Complex number to a \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}. x = real component y = imaginary component. \end{DoxyCompactList}\item 
 const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{classglib_1_1_complex_number_a00bc33001e3817e2c2d2bf3bd7b7b57d}{get\+Class}} ()
 \item 
 \mbox{\Hypertarget{classglib_1_1_complex_number_ad72f6bc78bcefbba87b888a3923946b2}\label{classglib_1_1_complex_number_ad72f6bc78bcefbba87b888a3923946b2}} 
@@ -33,24 +35,8 @@ const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{clas
 \mbox{\Hypertarget{classglib_1_1_complex_number_ac3ed9e1047a1b2b70b70473bf06c1065}\label{classglib_1_1_complex_number_ac3ed9e1047a1b2b70b70473bf06c1065}} 
 \mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} {\bfseries operator$\ast$} (\mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} other)
 \item 
-\mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} \mbox{\hyperlink{classglib_1_1_complex_number_af8b06a31e98695ef2c68846643a74efa}{operator$\ast$}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other)
-\begin{DoxyCompactList}\small\item\em Does component to component multiplication. Ex\+: real$\ast$other.x imaginary$\ast$other.y. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} \mbox{\hyperlink{classglib_1_1_complex_number_af0d51810876a6ebc8b86930efaf53b59}{operator/}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other)
-\begin{DoxyCompactList}\small\item\em Does component to component division. Ex\+: real/other.\+x imaginary/other.\+y. \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{classglib_1_1_complex_number_a2bb5cb8743394eb8fbd18c8e49396f90}\label{classglib_1_1_complex_number_a2bb5cb8743394eb8fbd18c8e49396f90}} 
-\mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} {\bfseries operator$\ast$} (int other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_complex_number_ad70a23bbfb2f89c2dcdcb713c2081191}\label{classglib_1_1_complex_number_ad70a23bbfb2f89c2dcdcb713c2081191}} 
-\mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} {\bfseries operator$\ast$} (float other)
-\item 
 \mbox{\Hypertarget{classglib_1_1_complex_number_ad3e98190b3381dca3dea06c6c3fc1ac4}\label{classglib_1_1_complex_number_ad3e98190b3381dca3dea06c6c3fc1ac4}} 
 \mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} {\bfseries operator$\ast$} (double other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_complex_number_a0f69f6532a73c5d12e5f571a030a3830}\label{classglib_1_1_complex_number_a0f69f6532a73c5d12e5f571a030a3830}} 
-\mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} {\bfseries operator/} (int other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_complex_number_a3ed88e82bd2cf19ea45002f54e9a4ba8}\label{classglib_1_1_complex_number_a3ed88e82bd2cf19ea45002f54e9a4ba8}} 
-\mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} {\bfseries operator/} (float other)
 \item 
 \mbox{\Hypertarget{classglib_1_1_complex_number_a1ef47d9409b73ad01016a2017b30cde9}\label{classglib_1_1_complex_number_a1ef47d9409b73ad01016a2017b30cde9}} 
 \mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} {\bfseries operator/} (double other)
@@ -64,26 +50,8 @@ void {\bfseries operator-\/=} (\mbox{\hyperlink{classglib_1_1_complex_number}{Co
 \mbox{\Hypertarget{classglib_1_1_complex_number_a8f8632a3743ca4001e0d824dc8664315}\label{classglib_1_1_complex_number_a8f8632a3743ca4001e0d824dc8664315}} 
 void {\bfseries operator$\ast$=} (\mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} other)
 \item 
-\mbox{\Hypertarget{classglib_1_1_complex_number_a2fe4531e95938bddde111257680a2b87}\label{classglib_1_1_complex_number_a2fe4531e95938bddde111257680a2b87}} 
-void {\bfseries operator$\ast$=} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other)
-\begin{DoxyCompactList}\small\item\em Does component to component multiplication. Ex\+: real$\ast$other.x imaginary$\ast$other.y. \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{classglib_1_1_complex_number_ad190e353b473b0047dd10c855560c811}\label{classglib_1_1_complex_number_ad190e353b473b0047dd10c855560c811}} 
-void {\bfseries operator/=} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other)
-\begin{DoxyCompactList}\small\item\em Does component to component division. Ex\+: real$\ast$other.x imaginary$\ast$other.y. \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{classglib_1_1_complex_number_aa520d61b03003a407aad80dc79058a8a}\label{classglib_1_1_complex_number_aa520d61b03003a407aad80dc79058a8a}} 
-void {\bfseries operator$\ast$=} (int other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_complex_number_aec824e8ea68e24c3be30c417c690c6d7}\label{classglib_1_1_complex_number_aec824e8ea68e24c3be30c417c690c6d7}} 
-void {\bfseries operator$\ast$=} (float other)
-\item 
 \mbox{\Hypertarget{classglib_1_1_complex_number_a1025aed627bcab497c0dedfd979e37b2}\label{classglib_1_1_complex_number_a1025aed627bcab497c0dedfd979e37b2}} 
 void {\bfseries operator$\ast$=} (double other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_complex_number_a92a1514371350e46bc2d57ebb316ae4a}\label{classglib_1_1_complex_number_a92a1514371350e46bc2d57ebb316ae4a}} 
-void {\bfseries operator/=} (int other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_complex_number_adc8a745561b6f2d342b2e960ee97a4c9}\label{classglib_1_1_complex_number_adc8a745561b6f2d342b2e960ee97a4c9}} 
-void {\bfseries operator/=} (float other)
 \item 
 \mbox{\Hypertarget{classglib_1_1_complex_number_ad1d715e0daae5f4019d92f22e67acce1}\label{classglib_1_1_complex_number_ad1d715e0daae5f4019d92f22e67acce1}} 
 void {\bfseries operator/=} (double other)
@@ -108,6 +76,12 @@ double {\bfseries imaginary} = 0
 \item 
 \mbox{\Hypertarget{classglib_1_1_complex_number_aad834c027575f53e862a8466be51480e}\label{classglib_1_1_complex_number_aad834c027575f53e862a8466be51480e}} 
 static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_complex_number_a2784af7aa9376c666a3967798e6635f9}\label{classglib_1_1_complex_number_a2784af7aa9376c666a3967798e6635f9}} 
+\mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} {\bfseries operator$\ast$} (double value, \mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} other)
 \end{DoxyCompactItemize}
 
 
@@ -157,41 +131,18 @@ Creates a \mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} objec
 
 Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
 
-\mbox{\Hypertarget{classglib_1_1_complex_number_af8b06a31e98695ef2c68846643a74efa}\label{classglib_1_1_complex_number_af8b06a31e98695ef2c68846643a74efa}} 
-\index{glib::ComplexNumber@{glib::ComplexNumber}!operator$\ast$@{operator$\ast$}}
-\index{operator$\ast$@{operator$\ast$}!glib::ComplexNumber@{glib::ComplexNumber}}
-\doxysubsubsection{\texorpdfstring{operator$\ast$()}{operator*()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} glib\+::\+Complex\+Number\+::operator$\ast$ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{other }\end{DoxyParamCaption})}
+\mbox{\Hypertarget{classglib_1_1_complex_number_a344907c5668f87de00a1b861a7b3c910}\label{classglib_1_1_complex_number_a344907c5668f87de00a1b861a7b3c910}} 
+\index{glib::ComplexNumber@{glib::ComplexNumber}!toVec2f@{toVec2f}}
+\index{toVec2f@{toVec2f}!glib::ComplexNumber@{glib::ComplexNumber}}
+\doxysubsubsection{\texorpdfstring{toVec2f()}{toVec2f()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} glib\+::\+Complex\+Number\+::to\+Vec2f (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
 
 
-Does component to component multiplication. Ex\+: real$\ast$other.x imaginary$\ast$other.y. 
+Converts the Complex number to a \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}. x = real component y = imaginary component. 
 
-
-\begin{DoxyParams}{Parameters}
-{\em other} & A \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} to use for the component multiplication \\
-\hline
-\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-\mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} 
-\end{DoxyReturn}
-\mbox{\Hypertarget{classglib_1_1_complex_number_af0d51810876a6ebc8b86930efaf53b59}\label{classglib_1_1_complex_number_af0d51810876a6ebc8b86930efaf53b59}} 
-\index{glib::ComplexNumber@{glib::ComplexNumber}!operator/@{operator/}}
-\index{operator/@{operator/}!glib::ComplexNumber@{glib::ComplexNumber}}
-\doxysubsubsection{\texorpdfstring{operator/()}{operator/()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} glib\+::\+Complex\+Number\+::operator/ (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{other }\end{DoxyParamCaption})}
-
-
-
-Does component to component division. Ex\+: real/other.\+x imaginary/other.\+y. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em other} & A \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} to use for the component division \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-\mbox{\hyperlink{classglib_1_1_complex_number}{Complex\+Number}} 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} 
 \end{DoxyReturn}
 
 

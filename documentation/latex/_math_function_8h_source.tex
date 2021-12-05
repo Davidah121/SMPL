@@ -1,0 +1,46 @@
+\hypertarget{_math_function_8h_source}{}\doxysection{Math\+Function.\+h}
+\label{_math_function_8h_source}\index{include/MathFunction.h@{include/MathFunction.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#include<functional>}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{keyword}{class }\mbox{\hyperlink{class_math_function}{MathFunction}}}
+\DoxyCodeLine{5 \{}
+\DoxyCodeLine{6 \textcolor{keyword}{public}:}
+\DoxyCodeLine{7     \mbox{\hyperlink{class_math_function}{MathFunction}}();}
+\DoxyCodeLine{8     \mbox{\hyperlink{class_math_function}{\string~MathFunction}}();}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10     \textcolor{keywordtype}{double} \textcolor{keyword}{virtual} solve(\textcolor{keywordtype}{double} x);}
+\DoxyCodeLine{11 \textcolor{keyword}{private}:}
+\DoxyCodeLine{12 \};}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 \textcolor{keyword}{class }\mbox{\hyperlink{class_general_math_function}{GeneralMathFunction}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_math_function}{MathFunction}}}
+\DoxyCodeLine{15 \{}
+\DoxyCodeLine{16 \textcolor{keyword}{public}:}
+\DoxyCodeLine{17     \mbox{\hyperlink{class_general_math_function}{GeneralMathFunction}}();}
+\DoxyCodeLine{18     \mbox{\hyperlink{class_general_math_function}{\string~GeneralMathFunction}}();}
+\DoxyCodeLine{19 }
+\DoxyCodeLine{20     \textcolor{keywordtype}{void} setFunction(std::function<\textcolor{keywordtype}{double}(\textcolor{keywordtype}{double})> f);}
+\DoxyCodeLine{21     \textcolor{keywordtype}{double} solve(\textcolor{keywordtype}{double} x);}
+\DoxyCodeLine{22 \textcolor{keyword}{private}:}
+\DoxyCodeLine{23     std::function<double(\textcolor{keywordtype}{double})> func;}
+\DoxyCodeLine{24 \};}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{26 \textcolor{keyword}{class }\mbox{\hyperlink{class_polynomial_math_function}{PolynomialMathFunction}}}
+\DoxyCodeLine{27 \{}
+\DoxyCodeLine{28 \textcolor{keyword}{public}:}
+\DoxyCodeLine{29     \mbox{\hyperlink{class_polynomial_math_function}{PolynomialMathFunction}}();}
+\DoxyCodeLine{30     \mbox{\hyperlink{class_polynomial_math_function}{PolynomialMathFunction}}(std::vector<double> constants);}
+\DoxyCodeLine{31     \mbox{\hyperlink{class_polynomial_math_function}{\string~PolynomialMathFunction}}();}
+\DoxyCodeLine{32 }
+\DoxyCodeLine{33     \textcolor{keywordtype}{void} addConstant(\textcolor{keywordtype}{double} d);}
+\DoxyCodeLine{34     \textcolor{keywordtype}{double} getConstant(\textcolor{keywordtype}{int} index);}
+\DoxyCodeLine{35     \textcolor{keywordtype}{size\_t} size();}
+\DoxyCodeLine{36 }
+\DoxyCodeLine{37     \textcolor{keywordtype}{double} solve(\textcolor{keywordtype}{double} x);}
+\DoxyCodeLine{38 \textcolor{keyword}{private}:}
+\DoxyCodeLine{39     std::vector<double> constants;}
+\DoxyCodeLine{40 \};}
+
+\end{DoxyCode}

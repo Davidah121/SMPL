@@ -31,12 +31,6 @@ double $\ast$ {\bfseries operator\mbox{[}$\,$\mbox{]}} (int row)
 \mbox{\Hypertarget{classglib_1_1_matrix_a1a64d0401a2fb326dbc6ff08800c1dc6}\label{classglib_1_1_matrix_a1a64d0401a2fb326dbc6ff08800c1dc6}} 
 \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} {\bfseries operator$\ast$} (double value)
 \item 
-\mbox{\Hypertarget{classglib_1_1_matrix_ae410be26a311e27008f35b970ccdfc06}\label{classglib_1_1_matrix_ae410be26a311e27008f35b970ccdfc06}} 
-\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} {\bfseries operator$\ast$} (int value)
-\item 
-\mbox{\Hypertarget{classglib_1_1_matrix_a642125c3630f99f6ee085b432c111422}\label{classglib_1_1_matrix_a642125c3630f99f6ee085b432c111422}} 
-\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} {\bfseries operator$\ast$} (float value)
-\item 
 \mbox{\Hypertarget{classglib_1_1_matrix_aa732c0a485b6b5227b3809f00286d6fe}\label{classglib_1_1_matrix_aa732c0a485b6b5227b3809f00286d6fe}} 
 \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} {\bfseries operator$\ast$} (\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} other)
 \item 
@@ -45,12 +39,6 @@ double $\ast$ {\bfseries operator\mbox{[}$\,$\mbox{]}} (int row)
 \item 
 \mbox{\Hypertarget{classglib_1_1_matrix_a9a0fc1c04d7ae04062220e500244ccac}\label{classglib_1_1_matrix_a9a0fc1c04d7ae04062220e500244ccac}} 
 void {\bfseries operator$\ast$=} (double value)
-\item 
-\mbox{\Hypertarget{classglib_1_1_matrix_a5beb79603c580dc2661cbe0d6cf750b5}\label{classglib_1_1_matrix_a5beb79603c580dc2661cbe0d6cf750b5}} 
-void {\bfseries operator$\ast$=} (int value)
-\item 
-\mbox{\Hypertarget{classglib_1_1_matrix_a1b9919fab4c8bbd252de70d5016393aa}\label{classglib_1_1_matrix_a1b9919fab4c8bbd252de70d5016393aa}} 
-void {\bfseries operator$\ast$=} (float value)
 \item 
 \mbox{\Hypertarget{classglib_1_1_matrix_a749565dd9bda76fb5165a421acb50686}\label{classglib_1_1_matrix_a749565dd9bda76fb5165a421acb50686}} 
 \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} {\bfseries operator+} (\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} other)
@@ -79,7 +67,15 @@ int \mbox{\hyperlink{classglib_1_1_matrix_a824b376d0240fecc1b2edee9232cd7e2}{get
 bool \mbox{\hyperlink{classglib_1_1_matrix_a1d34cadd4061e3f2b2449e11ef9ad7b6}{get\+Valid}} ()
 \begin{DoxyCompactList}\small\item\em Returns if the matrix is valid. \end{DoxyCompactList}\item 
 double \mbox{\hyperlink{classglib_1_1_matrix_ad5c4ff97b0148d02c4659efb362acc12}{get}} (int col, int row)
-\begin{DoxyCompactList}\small\item\em Returns the value of the matrix at the specified location. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Returns the value of the matrix at the specified location. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \mbox{\hyperlink{classglib_1_1_matrix_a4bf62bf2f0bb31f25e143fa9f585a91f}{get\+Inverse}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Inverse of the matrix. The inverse only exists if the determinate is not 0 and the matrix is square. An invalid matrix is returned if the function fails. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \mbox{\hyperlink{classglib_1_1_matrix_a91df2513a83730a62a7cfd437a9fec4a}{get\+Transpose}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Transpose of the matrix. Swaps the rows with the columns. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_matrix_a7aca0121caf256649a336e15daa2547b}{get\+Determinate}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Determinate of the matrix. The determinate only exists if the matrix is square. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \mbox{\hyperlink{classglib_1_1_matrix_a7ebdfc2b2dac46924054d26438f89955}{get\+Matrix\+Of\+Minors}} (int row, int col)
+\begin{DoxyCompactList}\small\item\em Gets the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} Of Minors from the matrix. Can return an invalid matrix if the original matrix is invalid or the new matrix would have less than 1 row or 1 column. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Static Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -100,6 +96,12 @@ int {\bfseries columns}
 \item 
 \mbox{\Hypertarget{classglib_1_1_matrix_aed085a952e603140f522a640191bf93e}\label{classglib_1_1_matrix_aed085a952e603140f522a640191bf93e}} 
 bool {\bfseries valid} = true
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_matrix_a03ad7883b2f86a5c2d1cc3d7b52dd8d8}\label{classglib_1_1_matrix_a03ad7883b2f86a5c2d1cc3d7b52dd8d8}} 
+\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} {\bfseries operator$\ast$} (double value, \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} other)
 \end{DoxyCompactItemize}
 
 
@@ -210,6 +212,52 @@ Returns the 2D array representing the data in the matrix.
 \begin{DoxyReturn}{Returns}
 double$\ast$$\ast$ 
 \end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_matrix_a7aca0121caf256649a336e15daa2547b}\label{classglib_1_1_matrix_a7aca0121caf256649a336e15daa2547b}} 
+\index{glib::Matrix@{glib::Matrix}!getDeterminate@{getDeterminate}}
+\index{getDeterminate@{getDeterminate}!glib::Matrix@{glib::Matrix}}
+\doxysubsubsection{\texorpdfstring{getDeterminate()}{getDeterminate()}}
+{\footnotesize\ttfamily double glib\+::\+Matrix\+::get\+Determinate (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Determinate of the matrix. The determinate only exists if the matrix is square. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_matrix_a4bf62bf2f0bb31f25e143fa9f585a91f}\label{classglib_1_1_matrix_a4bf62bf2f0bb31f25e143fa9f585a91f}} 
+\index{glib::Matrix@{glib::Matrix}!getInverse@{getInverse}}
+\index{getInverse@{getInverse}!glib::Matrix@{glib::Matrix}}
+\doxysubsubsection{\texorpdfstring{getInverse()}{getInverse()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} glib\+::\+Matrix\+::get\+Inverse (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Inverse of the matrix. The inverse only exists if the determinate is not 0 and the matrix is square. An invalid matrix is returned if the function fails. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_matrix_a7ebdfc2b2dac46924054d26438f89955}\label{classglib_1_1_matrix_a7ebdfc2b2dac46924054d26438f89955}} 
+\index{glib::Matrix@{glib::Matrix}!getMatrixOfMinors@{getMatrixOfMinors}}
+\index{getMatrixOfMinors@{getMatrixOfMinors}!glib::Matrix@{glib::Matrix}}
+\doxysubsubsection{\texorpdfstring{getMatrixOfMinors()}{getMatrixOfMinors()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} glib\+::\+Matrix\+::get\+Matrix\+Of\+Minors (\begin{DoxyParamCaption}\item[{int}]{row,  }\item[{int}]{col }\end{DoxyParamCaption})}
+
+
+
+Gets the \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} Of Minors from the matrix. Can return an invalid matrix if the original matrix is invalid or the new matrix would have less than 1 row or 1 column. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em row} & \\
+\hline
+{\em col} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_matrix_afedadcc97b9c6e89007487453f8fd186}\label{classglib_1_1_matrix_afedadcc97b9c6e89007487453f8fd186}} 
 \index{glib::Matrix@{glib::Matrix}!getRows@{getRows}}
 \index{getRows@{getRows}!glib::Matrix@{glib::Matrix}}
@@ -222,6 +270,19 @@ Returns the amount of rows.
 
 \begin{DoxyReturn}{Returns}
 int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_matrix_a91df2513a83730a62a7cfd437a9fec4a}\label{classglib_1_1_matrix_a91df2513a83730a62a7cfd437a9fec4a}} 
+\index{glib::Matrix@{glib::Matrix}!getTranspose@{getTranspose}}
+\index{getTranspose@{getTranspose}!glib::Matrix@{glib::Matrix}}
+\doxysubsubsection{\texorpdfstring{getTranspose()}{getTranspose()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} glib\+::\+Matrix\+::get\+Transpose (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Transpose of the matrix. Swaps the rows with the columns. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_matrix_a1d34cadd4061e3f2b2449e11ef9ad7b6}\label{classglib_1_1_matrix_a1d34cadd4061e3f2b2449e11ef9ad7b6}} 
 \index{glib::Matrix@{glib::Matrix}!getValid@{getValid}}

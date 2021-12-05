@@ -34,12 +34,12 @@
 \DoxyCodeLine{71         \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} operator-\/(\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} other);}
 \DoxyCodeLine{72         \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} operator*(\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} other);}
 \DoxyCodeLine{73 }
-\DoxyCodeLine{74         \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} operator*(\textcolor{keywordtype}{int} other);}
-\DoxyCodeLine{75         \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} operator*(\textcolor{keywordtype}{float} other);}
-\DoxyCodeLine{76         \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} operator*(\textcolor{keywordtype}{double} other);}
-\DoxyCodeLine{77 }
-\DoxyCodeLine{78         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{int} other);}
-\DoxyCodeLine{79         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{float} other);}
+\DoxyCodeLine{74         \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} operator*(\textcolor{keywordtype}{double} other);}
+\DoxyCodeLine{75         \textcolor{keyword}{friend} \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} operator*(\textcolor{keywordtype}{double} value, \mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} other)}
+\DoxyCodeLine{76         \{}
+\DoxyCodeLine{77             \textcolor{keywordflow}{return} other*value;}
+\DoxyCodeLine{78         \}}
+\DoxyCodeLine{79         }
 \DoxyCodeLine{80         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{double} other);}
 \DoxyCodeLine{81 }
 \DoxyCodeLine{82         \textcolor{keywordtype}{void} operator+=(\mbox{\hyperlink{classglib_1_1_mat3f}{Mat3f}} other);}

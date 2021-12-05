@@ -18,33 +18,47 @@ const \mbox{\hyperlink{classglib_1_1_class}{Class}} $\ast$ \mbox{\hyperlink{clas
 \item 
 void \mbox{\hyperlink{classglib_1_1_model_aa408efad32ce22f92f2a3987aca73a24}{add\+Vertex\+Format\+Info}} (unsigned char type, unsigned char usage)
 \begin{DoxyCompactList}\small\item\em Adds new format information for the verticies of the model. Must be called before using the model. \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classglib_1_1_model_a33dd1860f36f869f6939af1e8eff7c7b}{add\+Int}} (int value)
+void \mbox{\hyperlink{classglib_1_1_model_ac512f94a13249cf187106839f65ceb62}{add\+Indicies}} (std\+::vector$<$ unsigned int $>$ index\+Info)
+\begin{DoxyCompactList}\small\item\em Adds a set of index information for a new vertex. If the model is indexed, these values will be used for drawing the model. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_model_a78cb3685c28afb4f4d14f656aa6390f2}{set\+Indicies}} (unsigned int vertex\+Location, std\+::vector$<$ unsigned int $>$ index\+Info)
+\begin{DoxyCompactList}\small\item\em Set the Indicies for a vertex. If the model is indexed, these values will be used for drawing the model. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_model_a295bdd91ba1e8351a888ee9bac6eba05}{add\+Int}} (int value, unsigned int list)
 \begin{DoxyCompactList}\small\item\em Adds an int to the vertex data. \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classglib_1_1_model_a3d8005a397fc9c148bd3cbc44b1b35b0}{add\+Vec2f}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} value)
+void \mbox{\hyperlink{classglib_1_1_model_aaea2475a216f04c7c7b8627ecc1563d6}{add\+Float}} (float value, unsigned int list)
+\begin{DoxyCompactList}\small\item\em Adds an int to the vertex data. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_model_af2331744ee10d6ebbd18325dfb29c397}{add\+Vec2f}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} value, unsigned int list)
 \begin{DoxyCompactList}\small\item\em Adds a \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} to the vertex data. \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classglib_1_1_model_adc518a884d6748b6de2ed89e3361db63}{add\+Vec3f}} (\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} value)
+void \mbox{\hyperlink{classglib_1_1_model_ab8c123388f888124335ecf8e3950b0a7}{add\+Vec3f}} (\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} value, unsigned int list)
 \begin{DoxyCompactList}\small\item\em Adds a \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} to the vertex data. \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classglib_1_1_model_a6db5904c2e3a267015a871e9485f75ee}{add\+Vec4f}} (\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} value)
+void \mbox{\hyperlink{classglib_1_1_model_a8af1364283242a213166b09408772221}{add\+Vec4f}} (\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} value, unsigned int list)
 \begin{DoxyCompactList}\small\item\em Adds a \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} to the vertex data. \end{DoxyCompactList}\item 
-std\+::vector$<$ double $>$ \mbox{\hyperlink{classglib_1_1_model_a1f30c4c19084a7b1e2920e01e985a6f3}{get\+Vertex}} (int i)
-\begin{DoxyCompactList}\small\item\em Gets the vertex at the specified location. Returns all information for the vertex as a list of doubles. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::vector$<$ int $>$ $>$ \mbox{\hyperlink{classglib_1_1_model_a362da1168c605e0636a677031519c070}{get\+Vertex}} (unsigned int i)
+\begin{DoxyCompactList}\small\item\em Gets the vertex at the specified location. Returns all information for the vertex as a list of list Each list should be cast to the appropriate data type. Either int$\ast$ or float$\ast$. \end{DoxyCompactList}\item 
 std\+::vector$<$ \mbox{\hyperlink{structglib_1_1_vertex_format}{Vertex\+Format}} $>$ \mbox{\hyperlink{classglib_1_1_model_ad35a7b60b3e384b067ca461fb5bbe47d}{get\+Vertex\+Format\+Infomation}} ()
 \begin{DoxyCompactList}\small\item\em Gets the Vertex Format Infomation as a list of \mbox{\hyperlink{structglib_1_1_vertex_format}{Vertex\+Format}} structures. \end{DoxyCompactList}\item 
-std\+::vector$<$ double $>$ \& \mbox{\hyperlink{classglib_1_1_model_aba53ef0af55461b5d1a9febe20c64224}{get\+All\+Vertices}} ()
-\begin{DoxyCompactList}\small\item\em Returns all vertex data as a list of doubles. Specifically returns the internal vector used to store vertex data. \end{DoxyCompactList}\item 
-int \mbox{\hyperlink{classglib_1_1_model_a7a8b791706c78542d74e9484929982c6}{size}} ()
-\begin{DoxyCompactList}\small\item\em Returns the amount of verticies in the model. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classglib_1_1_model_acd73adc2f9007f97c14a5bca424d2c6b}{set\+Model\+Format}} (unsigned char format)
 \begin{DoxyCompactList}\small\item\em Sets the \mbox{\hyperlink{classglib_1_1_model}{Model}} Format. \end{DoxyCompactList}\item 
 unsigned char \mbox{\hyperlink{classglib_1_1_model_ad81822ec9da1421ee1003814e0dca08f}{get\+Model\+Format}} ()
 \begin{DoxyCompactList}\small\item\em Gets the \mbox{\hyperlink{classglib_1_1_model}{Model}} Format. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classglib_1_1_model_a91c75b6b88a1889480787c196b1456bf}{size}} ()
+\begin{DoxyCompactList}\small\item\em Returns the amount of verticies in the model. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classglib_1_1_model_ac3d79f25097126167e9237089b40cee6}{size\+Of\+List}} (int index)
+\begin{DoxyCompactList}\small\item\em Returns the amount of values in a list. \end{DoxyCompactList}\item 
 int \mbox{\hyperlink{classglib_1_1_model_a9249a1c3d96f8740d22019aa757e35a7}{get\+Size\+Of\+Vertex}} ()
 \begin{DoxyCompactList}\small\item\em Gets the size of a single vertex. Returns how many values are used for a vertex. Not how many bytes are used. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classglib_1_1_model_a85f918d89f7b2f26a009085796a22c8e}\label{classglib_1_1_model_a85f918d89f7b2f26a009085796a22c8e}} 
 void {\bfseries clear} ()
 \begin{DoxyCompactList}\small\item\em Clears all of the data for the model. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::vector$<$ int $>$ $>$ \mbox{\hyperlink{classglib_1_1_model_a7c6a9340b9b0db9a224ef49666ec64b4}{get\+Raw\+Vertex\+Data}} ()
+\begin{DoxyCompactList}\small\item\em Gets the internal vertex data for each list. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ \mbox{\hyperlink{classglib_1_1_model_a87ccc3ddb7e5086ffaaaa76784ef9fa8}{get\+Raw\+Index\+Data}} ()
+\begin{DoxyCompactList}\small\item\em Gets the internal index data for each vertex. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classglib_1_1_model_a51fa2c6a2e83230b2b502a01a4a6ea7d}{load\+Model}} (\mbox{\hyperlink{classglib_1_1_file}{File}} file)
-\begin{DoxyCompactList}\small\item\em Loads a model from a file. Not yet implemented. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Loads a model from a file. Not yet implemented. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_model_a291508d90c702f8fb6f2c0c28811c995}{set\+Indexed}} (bool indexed)
+\begin{DoxyCompactList}\small\item\em Sets whether the model uses index values to refer to vertex data. Good for saving space. By default, the model is not indexed. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classglib_1_1_model_a55a5bf6bfca22ca482a0edd564fc7d14}{get\+Indexed}} ()
+\begin{DoxyCompactList}\small\item\em Gets whether the model uses index values to refer to vertex data. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Static Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -54,14 +68,17 @@ static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
 \mbox{\Hypertarget{classglib_1_1_model_aec08a2cdbeec1481a6de0cda149a0d73}\label{classglib_1_1_model_aec08a2cdbeec1481a6de0cda149a0d73}} 
 static const unsigned char {\bfseries TYPE\+\_\+\+INT} = 0
 \item 
+\mbox{\Hypertarget{classglib_1_1_model_a619a85ff10d4bb78c3d8ee5c4956a371}\label{classglib_1_1_model_a619a85ff10d4bb78c3d8ee5c4956a371}} 
+static const unsigned char {\bfseries TYPE\+\_\+\+FLOAT} = 1
+\item 
 \mbox{\Hypertarget{classglib_1_1_model_ab4c9109b0abd0463cbc1ada3bd86cc43}\label{classglib_1_1_model_ab4c9109b0abd0463cbc1ada3bd86cc43}} 
-static const unsigned char {\bfseries TYPE\+\_\+\+VEC2} = 1
+static const unsigned char {\bfseries TYPE\+\_\+\+VEC2} = 2
 \item 
 \mbox{\Hypertarget{classglib_1_1_model_aeb2821a9cdff21d0c16ae6d584375f7b}\label{classglib_1_1_model_aeb2821a9cdff21d0c16ae6d584375f7b}} 
-static const unsigned char {\bfseries TYPE\+\_\+\+VEC3} = 2
+static const unsigned char {\bfseries TYPE\+\_\+\+VEC3} = 3
 \item 
 \mbox{\Hypertarget{classglib_1_1_model_aaca692c6f4f254bd5eaa2adb7f52acc5}\label{classglib_1_1_model_aaca692c6f4f254bd5eaa2adb7f52acc5}} 
-static const unsigned char {\bfseries TYPE\+\_\+\+VEC4} = 3
+static const unsigned char {\bfseries TYPE\+\_\+\+VEC4} = 4
 \item 
 \mbox{\Hypertarget{classglib_1_1_model_a8d2d8008ca86378a803b430aa7b1d464}\label{classglib_1_1_model_a8d2d8008ca86378a803b430aa7b1d464}} 
 static const unsigned char {\bfseries USAGE\+\_\+\+POSITION} = 0
@@ -118,11 +135,11 @@ Construct a new \mbox{\hyperlink{classglib_1_1_model}{Model}} object The model o
 The model format is adjusted by the function \mbox{\hyperlink{classglib_1_1_model_aa408efad32ce22f92f2a3987aca73a24}{add\+Vertex\+Format\+Info()}} 
 
 \doxysubsection{Member Function Documentation}
-\mbox{\Hypertarget{classglib_1_1_model_a33dd1860f36f869f6939af1e8eff7c7b}\label{classglib_1_1_model_a33dd1860f36f869f6939af1e8eff7c7b}} 
-\index{glib::Model@{glib::Model}!addInt@{addInt}}
-\index{addInt@{addInt}!glib::Model@{glib::Model}}
-\doxysubsubsection{\texorpdfstring{addInt()}{addInt()}}
-{\footnotesize\ttfamily void glib\+::\+Model\+::add\+Int (\begin{DoxyParamCaption}\item[{int}]{value }\end{DoxyParamCaption})}
+\mbox{\Hypertarget{classglib_1_1_model_aaea2475a216f04c7c7b8627ecc1563d6}\label{classglib_1_1_model_aaea2475a216f04c7c7b8627ecc1563d6}} 
+\index{glib::Model@{glib::Model}!addFloat@{addFloat}}
+\index{addFloat@{addFloat}!glib::Model@{glib::Model}}
+\doxysubsubsection{\texorpdfstring{addFloat()}{addFloat()}}
+{\footnotesize\ttfamily void glib\+::\+Model\+::add\+Float (\begin{DoxyParamCaption}\item[{float}]{value,  }\item[{unsigned int}]{list }\end{DoxyParamCaption})}
 
 
 
@@ -132,12 +149,46 @@ Adds an int to the vertex data.
 \begin{DoxyParams}{Parameters}
 {\em value} & \\
 \hline
+{\em list} & Which list to stick the value into. \\
+\hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classglib_1_1_model_a3d8005a397fc9c148bd3cbc44b1b35b0}\label{classglib_1_1_model_a3d8005a397fc9c148bd3cbc44b1b35b0}} 
+\mbox{\Hypertarget{classglib_1_1_model_ac512f94a13249cf187106839f65ceb62}\label{classglib_1_1_model_ac512f94a13249cf187106839f65ceb62}} 
+\index{glib::Model@{glib::Model}!addIndicies@{addIndicies}}
+\index{addIndicies@{addIndicies}!glib::Model@{glib::Model}}
+\doxysubsubsection{\texorpdfstring{addIndicies()}{addIndicies()}}
+{\footnotesize\ttfamily void glib\+::\+Model\+::add\+Indicies (\begin{DoxyParamCaption}\item[{std\+::vector$<$ unsigned int $>$}]{index\+Info }\end{DoxyParamCaption})}
+
+
+
+Adds a set of index information for a new vertex. If the model is indexed, these values will be used for drawing the model. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index\+Info} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_model_a295bdd91ba1e8351a888ee9bac6eba05}\label{classglib_1_1_model_a295bdd91ba1e8351a888ee9bac6eba05}} 
+\index{glib::Model@{glib::Model}!addInt@{addInt}}
+\index{addInt@{addInt}!glib::Model@{glib::Model}}
+\doxysubsubsection{\texorpdfstring{addInt()}{addInt()}}
+{\footnotesize\ttfamily void glib\+::\+Model\+::add\+Int (\begin{DoxyParamCaption}\item[{int}]{value,  }\item[{unsigned int}]{list }\end{DoxyParamCaption})}
+
+
+
+Adds an int to the vertex data. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & \\
+\hline
+{\em list} & Which list to stick the value into. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_model_af2331744ee10d6ebbd18325dfb29c397}\label{classglib_1_1_model_af2331744ee10d6ebbd18325dfb29c397}} 
 \index{glib::Model@{glib::Model}!addVec2f@{addVec2f}}
 \index{addVec2f@{addVec2f}!glib::Model@{glib::Model}}
 \doxysubsubsection{\texorpdfstring{addVec2f()}{addVec2f()}}
-{\footnotesize\ttfamily void glib\+::\+Model\+::add\+Vec2f (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{value }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily void glib\+::\+Model\+::add\+Vec2f (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{value,  }\item[{unsigned int}]{list }\end{DoxyParamCaption})}
 
 
 
@@ -147,12 +198,14 @@ Adds a \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} to the vertex data.
 \begin{DoxyParams}{Parameters}
 {\em value} & \\
 \hline
+{\em list} & Which list to stick the value into. \\
+\hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classglib_1_1_model_adc518a884d6748b6de2ed89e3361db63}\label{classglib_1_1_model_adc518a884d6748b6de2ed89e3361db63}} 
+\mbox{\Hypertarget{classglib_1_1_model_ab8c123388f888124335ecf8e3950b0a7}\label{classglib_1_1_model_ab8c123388f888124335ecf8e3950b0a7}} 
 \index{glib::Model@{glib::Model}!addVec3f@{addVec3f}}
 \index{addVec3f@{addVec3f}!glib::Model@{glib::Model}}
 \doxysubsubsection{\texorpdfstring{addVec3f()}{addVec3f()}}
-{\footnotesize\ttfamily void glib\+::\+Model\+::add\+Vec3f (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}}]{value }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily void glib\+::\+Model\+::add\+Vec3f (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}}]{value,  }\item[{unsigned int}]{list }\end{DoxyParamCaption})}
 
 
 
@@ -162,12 +215,14 @@ Adds a \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} to the vertex data.
 \begin{DoxyParams}{Parameters}
 {\em value} & \\
 \hline
+{\em list} & Which list to stick the value into. \\
+\hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classglib_1_1_model_a6db5904c2e3a267015a871e9485f75ee}\label{classglib_1_1_model_a6db5904c2e3a267015a871e9485f75ee}} 
+\mbox{\Hypertarget{classglib_1_1_model_a8af1364283242a213166b09408772221}\label{classglib_1_1_model_a8af1364283242a213166b09408772221}} 
 \index{glib::Model@{glib::Model}!addVec4f@{addVec4f}}
 \index{addVec4f@{addVec4f}!glib::Model@{glib::Model}}
 \doxysubsubsection{\texorpdfstring{addVec4f()}{addVec4f()}}
-{\footnotesize\ttfamily void glib\+::\+Model\+::add\+Vec4f (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}}}]{value }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily void glib\+::\+Model\+::add\+Vec4f (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}}}]{value,  }\item[{unsigned int}]{list }\end{DoxyParamCaption})}
 
 
 
@@ -176,6 +231,8 @@ Adds a \mbox{\hyperlink{classglib_1_1_vec4f}{Vec4f}} to the vertex data.
 
 \begin{DoxyParams}{Parameters}
 {\em value} & \\
+\hline
+{\em list} & Which list to stick the value into. \\
 \hline
 \end{DoxyParams}
 \mbox{\Hypertarget{classglib_1_1_model_aa408efad32ce22f92f2a3987aca73a24}\label{classglib_1_1_model_aa408efad32ce22f92f2a3987aca73a24}} 
@@ -195,19 +252,6 @@ Adds new format information for the verticies of the model. Must be called befor
 {\em usage} & Valid usages are\+: USAGE\+\_\+\+POSITION USAGE\+\_\+\+TEXTURE USAGE\+\_\+\+NORMAL USAGE\+\_\+\+OTHER \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classglib_1_1_model_aba53ef0af55461b5d1a9febe20c64224}\label{classglib_1_1_model_aba53ef0af55461b5d1a9febe20c64224}} 
-\index{glib::Model@{glib::Model}!getAllVertices@{getAllVertices}}
-\index{getAllVertices@{getAllVertices}!glib::Model@{glib::Model}}
-\doxysubsubsection{\texorpdfstring{getAllVertices()}{getAllVertices()}}
-{\footnotesize\ttfamily std\+::vector$<$ double $>$ \& glib\+::\+Model\+::get\+All\+Vertices (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
-
-
-
-Returns all vertex data as a list of doubles. Specifically returns the internal vector used to store vertex data. 
-
-\begin{DoxyReturn}{Returns}
-std\+::vector$<$double$>$\& 
-\end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_model_adb76f802ea43a285d3c7f971f0437044}\label{classglib_1_1_model_adb76f802ea43a285d3c7f971f0437044}} 
 \index{glib::Model@{glib::Model}!getClass@{getClass}}
 \index{getClass@{getClass}!glib::Model@{glib::Model}}
@@ -218,6 +262,21 @@ std\+::vector$<$double$>$\&
 
 Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
 
+\mbox{\Hypertarget{classglib_1_1_model_a55a5bf6bfca22ca482a0edd564fc7d14}\label{classglib_1_1_model_a55a5bf6bfca22ca482a0edd564fc7d14}} 
+\index{glib::Model@{glib::Model}!getIndexed@{getIndexed}}
+\index{getIndexed@{getIndexed}!glib::Model@{glib::Model}}
+\doxysubsubsection{\texorpdfstring{getIndexed()}{getIndexed()}}
+{\footnotesize\ttfamily bool glib\+::\+Model\+::get\+Indexed (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets whether the model uses index values to refer to vertex data. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_model_ad81822ec9da1421ee1003814e0dca08f}\label{classglib_1_1_model_ad81822ec9da1421ee1003814e0dca08f}} 
 \index{glib::Model@{glib::Model}!getModelFormat@{getModelFormat}}
 \index{getModelFormat@{getModelFormat}!glib::Model@{glib::Model}}
@@ -230,6 +289,32 @@ Gets the \mbox{\hyperlink{classglib_1_1_model}{Model}} Format.
 
 \begin{DoxyReturn}{Returns}
 unsigned char 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_model_a87ccc3ddb7e5086ffaaaa76784ef9fa8}\label{classglib_1_1_model_a87ccc3ddb7e5086ffaaaa76784ef9fa8}} 
+\index{glib::Model@{glib::Model}!getRawIndexData@{getRawIndexData}}
+\index{getRawIndexData@{getRawIndexData}!glib::Model@{glib::Model}}
+\doxysubsubsection{\texorpdfstring{getRawIndexData()}{getRawIndexData()}}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::vector$<$ unsigned int $>$ $>$ glib\+::\+Model\+::get\+Raw\+Index\+Data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the internal index data for each vertex. 
+
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$std\+::vector$<$int$>$$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_model_a7c6a9340b9b0db9a224ef49666ec64b4}\label{classglib_1_1_model_a7c6a9340b9b0db9a224ef49666ec64b4}} 
+\index{glib::Model@{glib::Model}!getRawVertexData@{getRawVertexData}}
+\index{getRawVertexData@{getRawVertexData}!glib::Model@{glib::Model}}
+\doxysubsubsection{\texorpdfstring{getRawVertexData()}{getRawVertexData()}}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::vector$<$ int $>$ $>$ glib\+::\+Model\+::get\+Raw\+Vertex\+Data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the internal vertex data for each list. 
+
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$std\+::vector$<$int$>$$>$ 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_model_a9249a1c3d96f8740d22019aa757e35a7}\label{classglib_1_1_model_a9249a1c3d96f8740d22019aa757e35a7}} 
 \index{glib::Model@{glib::Model}!getSizeOfVertex@{getSizeOfVertex}}
@@ -244,15 +329,15 @@ Gets the size of a single vertex. Returns how many values are used for a vertex.
 \begin{DoxyReturn}{Returns}
 int 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classglib_1_1_model_a1f30c4c19084a7b1e2920e01e985a6f3}\label{classglib_1_1_model_a1f30c4c19084a7b1e2920e01e985a6f3}} 
+\mbox{\Hypertarget{classglib_1_1_model_a362da1168c605e0636a677031519c070}\label{classglib_1_1_model_a362da1168c605e0636a677031519c070}} 
 \index{glib::Model@{glib::Model}!getVertex@{getVertex}}
 \index{getVertex@{getVertex}!glib::Model@{glib::Model}}
 \doxysubsubsection{\texorpdfstring{getVertex()}{getVertex()}}
-{\footnotesize\ttfamily std\+::vector$<$ double $>$ glib\+::\+Model\+::get\+Vertex (\begin{DoxyParamCaption}\item[{int}]{i }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::vector$<$ int $>$ $>$ glib\+::\+Model\+::get\+Vertex (\begin{DoxyParamCaption}\item[{unsigned int}]{i }\end{DoxyParamCaption})}
 
 
 
-Gets the vertex at the specified location. Returns all information for the vertex as a list of doubles. 
+Gets the vertex at the specified location. Returns all information for the vertex as a list of list Each list should be cast to the appropriate data type. Either int$\ast$ or float$\ast$. 
 
 
 \begin{DoxyParams}{Parameters}
@@ -260,7 +345,7 @@ Gets the vertex at the specified location. Returns all information for the verte
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-std\+::vector$<$double$>$ 
+std\+::vector$<$std\+::vector$<$int$>$$>$ 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_model_ad35a7b60b3e384b067ca461fb5bbe47d}\label{classglib_1_1_model_ad35a7b60b3e384b067ca461fb5bbe47d}} 
 \index{glib::Model@{glib::Model}!getVertexFormatInfomation@{getVertexFormatInfomation}}
@@ -290,6 +375,38 @@ Loads a model from a file. Not yet implemented.
 {\em file} & \\
 \hline
 \end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_model_a291508d90c702f8fb6f2c0c28811c995}\label{classglib_1_1_model_a291508d90c702f8fb6f2c0c28811c995}} 
+\index{glib::Model@{glib::Model}!setIndexed@{setIndexed}}
+\index{setIndexed@{setIndexed}!glib::Model@{glib::Model}}
+\doxysubsubsection{\texorpdfstring{setIndexed()}{setIndexed()}}
+{\footnotesize\ttfamily void glib\+::\+Model\+::set\+Indexed (\begin{DoxyParamCaption}\item[{bool}]{indexed }\end{DoxyParamCaption})}
+
+
+
+Sets whether the model uses index values to refer to vertex data. Good for saving space. By default, the model is not indexed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em indexed} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_model_a78cb3685c28afb4f4d14f656aa6390f2}\label{classglib_1_1_model_a78cb3685c28afb4f4d14f656aa6390f2}} 
+\index{glib::Model@{glib::Model}!setIndicies@{setIndicies}}
+\index{setIndicies@{setIndicies}!glib::Model@{glib::Model}}
+\doxysubsubsection{\texorpdfstring{setIndicies()}{setIndicies()}}
+{\footnotesize\ttfamily void glib\+::\+Model\+::set\+Indicies (\begin{DoxyParamCaption}\item[{unsigned int}]{vertex\+Location,  }\item[{std\+::vector$<$ unsigned int $>$}]{index\+Info }\end{DoxyParamCaption})}
+
+
+
+Set the Indicies for a vertex. If the model is indexed, these values will be used for drawing the model. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em vertex\+Location} & \\
+\hline
+{\em index\+Info} & \\
+\hline
+\end{DoxyParams}
 \mbox{\Hypertarget{classglib_1_1_model_acd73adc2f9007f97c14a5bca424d2c6b}\label{classglib_1_1_model_acd73adc2f9007f97c14a5bca424d2c6b}} 
 \index{glib::Model@{glib::Model}!setModelFormat@{setModelFormat}}
 \index{setModelFormat@{setModelFormat}!glib::Model@{glib::Model}}
@@ -305,16 +422,34 @@ Sets the \mbox{\hyperlink{classglib_1_1_model}{Model}} Format.
 {\em format} & Valid formats are\+: POINTS LINES LINE\+\_\+\+STRIP LINE\+\_\+\+LOOP TRIANGLES TRIANGLE\+\_\+\+STRIP TRIANGLE\+\_\+\+FAN QUADS QUAD\+\_\+\+STRIP \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classglib_1_1_model_a7a8b791706c78542d74e9484929982c6}\label{classglib_1_1_model_a7a8b791706c78542d74e9484929982c6}} 
+\mbox{\Hypertarget{classglib_1_1_model_a91c75b6b88a1889480787c196b1456bf}\label{classglib_1_1_model_a91c75b6b88a1889480787c196b1456bf}} 
 \index{glib::Model@{glib::Model}!size@{size}}
 \index{size@{size}!glib::Model@{glib::Model}}
 \doxysubsubsection{\texorpdfstring{size()}{size()}}
-{\footnotesize\ttfamily int glib\+::\+Model\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily size\+\_\+t glib\+::\+Model\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
 
 
 Returns the amount of verticies in the model. 
 
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_model_ac3d79f25097126167e9237089b40cee6}\label{classglib_1_1_model_ac3d79f25097126167e9237089b40cee6}} 
+\index{glib::Model@{glib::Model}!sizeOfList@{sizeOfList}}
+\index{sizeOfList@{sizeOfList}!glib::Model@{glib::Model}}
+\doxysubsubsection{\texorpdfstring{sizeOfList()}{sizeOfList()}}
+{\footnotesize\ttfamily size\+\_\+t glib\+::\+Model\+::size\+Of\+List (\begin{DoxyParamCaption}\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Returns the amount of values in a list. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & \\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 int 
 \end{DoxyReturn}

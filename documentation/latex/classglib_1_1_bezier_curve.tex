@@ -31,6 +31,12 @@ void \mbox{\hyperlink{classglib_1_1_bezier_curve_a7eb788bb1591ee597f3576d9aa81dd
 \begin{DoxyCompactList}\small\item\em Adds a point to the list of points for the Bezier Curve. Note that duplicate points are allowed. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_bezier_curve_a4855905b952c4fada47ef710666e0655}{get\+Point}} (int index)
 \begin{DoxyCompactList}\small\item\em Gets a point from the Bezier Curve. \end{DoxyCompactList}\item 
+std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} $>$ \mbox{\hyperlink{classglib_1_1_bezier_curve_ae746ae44536f83b3501a2e1880c0e0eb}{subdivide}} (double t)
+\begin{DoxyCompactList}\small\item\em Subdivides the Bezier Curve from \mbox{[}0, 1\mbox{]} into 2 separate Bezier Curves. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} \mbox{\hyperlink{classglib_1_1_bezier_curve_a8316a11c2f245ae2715c388c9c386948}{extract}} (double a, double b)
+\begin{DoxyCompactList}\small\item\em Extracts the segment from \mbox{[}a, b\mbox{]} as a new Bezier Curve. \end{DoxyCompactList}\item 
+std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} $>$ \mbox{\hyperlink{classglib_1_1_bezier_curve_a223f17e1db1a15e445d33f25a8c2ac38}{get\+Bounding\+Box}} ()
+\begin{DoxyCompactList}\small\item\em Gets an Axis Aligned Bounding Box for the Bezier Curve. If successful, it returns a std\+::vector$<$\+Vec2f$>$ of size 2 where the first point represents the top left of the box and the second point represents the bottom right of the box. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_bezier_curve_a27fcb68b9abd7b65b4721502f059fa91}{get\+Fuction\+At}} (double time)
 \begin{DoxyCompactList}\small\item\em Solves the \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} for the given time. Note that any time value can be used even if outside of the bounds \mbox{[}0,1\mbox{]}. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_bezier_curve_a243124d861f8db25c07fd6875a2992e5}{get\+Derivative\+At}} (double time)
@@ -49,7 +55,18 @@ int \mbox{\hyperlink{classglib_1_1_bezier_curve_a9ced58a155423ab3eeb5a4df1b67c70
 std\+::vector$<$ double $>$ \mbox{\hyperlink{classglib_1_1_bezier_curve_a39419ebeab090bb41f1ce0c36ab0ef93}{find\+Time\+ForY}} (double y)
 \begin{DoxyCompactList}\small\item\em Solves the function all times where the solution has the specified y value. Currently only works for Bezier\+Curves with 4 or less points. \end{DoxyCompactList}\item 
 std\+::vector$<$ double $>$ \mbox{\hyperlink{classglib_1_1_bezier_curve_ab5c1e4bb703d4f1997e7738a977a1ce3}{find\+Time\+ForX}} (double x)
-\begin{DoxyCompactList}\small\item\em Solves the function all times where the solution has the specified x value. Currently only works for Bezier\+Curves with 4 or less points. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Solves the function all times where the solution has the specified x value. Currently only works for Bezier\+Curves with 4 or less points. \end{DoxyCompactList}\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{classglib_1_1_bezier_curve_a8e5aec3417965b81fc3c4386809cd52d}{find\+Time\+For\+Point}} (double x, double y)
+\begin{DoxyCompactList}\small\item\em Solves the function all times where the solution has the specified x,y value. Currently only works for Bezier\+Curves with 4 or less points. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} $>$ \mbox{\hyperlink{classglib_1_1_bezier_curve_a8211a4a0d63ddb8b3a9919823a91744e}{approximate\+Circle}} (double radius, double x=0, double y=0, bool cubic=true)
+\begin{DoxyCompactList}\small\item\em Approximates a \mbox{\hyperlink{classglib_1_1_circle}{Circle}} using a series of bezier curves. If cubic bezier curves are selected, 4 Cubic Bezier curves are used for approximation. If quadratic bezier curves are selected, 8 Quadratic Bezier curves are used for approximation. \end{DoxyCompactList}\item 
+static std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} $>$ \mbox{\hyperlink{classglib_1_1_bezier_curve_ac08655a9f7450541aae746998ab8613d}{approximate\+Ellipse}} (double x\+Radius, double y\+Radius, double x=0, double y=0, bool cubic=true)
+\begin{DoxyCompactList}\small\item\em Approximates a \mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}} using a series of bezier curves. If cubic bezier curves are selected, 4 Cubic Bezier curves are used for approximation. If quadratic bezier curves are selected, 8 Quadratic Bezier curves are used for approximation. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} \mbox{\hyperlink{classglib_1_1_bezier_curve_a88518677a069f983390c251f489c68a7}{approximate\+Arc}} (double x\+Radius, double y\+Radius, double start\+Angle, double end\+Angle, double x=0, double y=0, bool cubic=true)
+\begin{DoxyCompactList}\small\item\em Approximates an Arc using a bezier curve. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Static Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -91,6 +108,114 @@ Adds a point to the list of points for the Bezier Curve. Note that duplicate poi
 {\em p} & A \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} containing the point. \\
 \hline
 \end{DoxyParams}
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_a88518677a069f983390c251f489c68a7}\label{classglib_1_1_bezier_curve_a88518677a069f983390c251f489c68a7}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!approximateArc@{approximateArc}}
+\index{approximateArc@{approximateArc}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{approximateArc()}{approximateArc()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} glib\+::\+Bezier\+Curve\+::approximate\+Arc (\begin{DoxyParamCaption}\item[{double}]{x\+Radius,  }\item[{double}]{y\+Radius,  }\item[{double}]{start\+Angle,  }\item[{double}]{end\+Angle,  }\item[{double}]{x = {\ttfamily 0},  }\item[{double}]{y = {\ttfamily 0},  }\item[{bool}]{cubic = {\ttfamily true} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Approximates an Arc using a bezier curve. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x\+Radius} & The x radius of the Arc. \\
+\hline
+{\em y\+Radius} & The y radius of the Arc. \\
+\hline
+{\em start\+Angle} & The start angle for the arc. Radians expected. \\
+\hline
+{\em end\+Angle} & The end angle for the arc. Radians expected. \\
+\hline
+{\em cubic} & If set to true, cubic bezier curves are used to approximate the Arc. Otherwise, quadratic bezier curves are used. Default value is true. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_a8211a4a0d63ddb8b3a9919823a91744e}\label{classglib_1_1_bezier_curve_a8211a4a0d63ddb8b3a9919823a91744e}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!approximateCircle@{approximateCircle}}
+\index{approximateCircle@{approximateCircle}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{approximateCircle()}{approximateCircle()}}
+{\footnotesize\ttfamily static std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} $>$ glib\+::\+Bezier\+Curve\+::approximate\+Circle (\begin{DoxyParamCaption}\item[{double}]{radius,  }\item[{double}]{x = {\ttfamily 0},  }\item[{double}]{y = {\ttfamily 0},  }\item[{bool}]{cubic = {\ttfamily true} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Approximates a \mbox{\hyperlink{classglib_1_1_circle}{Circle}} using a series of bezier curves. If cubic bezier curves are selected, 4 Cubic Bezier curves are used for approximation. If quadratic bezier curves are selected, 8 Quadratic Bezier curves are used for approximation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em radius} & The radius of the \mbox{\hyperlink{classglib_1_1_circle}{Circle}}. \\
+\hline
+{\em cubic} & If set to true, cubic bezier curves are used to approximate the circle. Otherwise, quadratic bezier curves are used. Default value is true. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$\+Bezier\+Curve$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_ac08655a9f7450541aae746998ab8613d}\label{classglib_1_1_bezier_curve_ac08655a9f7450541aae746998ab8613d}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!approximateEllipse@{approximateEllipse}}
+\index{approximateEllipse@{approximateEllipse}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{approximateEllipse()}{approximateEllipse()}}
+{\footnotesize\ttfamily static std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} $>$ glib\+::\+Bezier\+Curve\+::approximate\+Ellipse (\begin{DoxyParamCaption}\item[{double}]{x\+Radius,  }\item[{double}]{y\+Radius,  }\item[{double}]{x = {\ttfamily 0},  }\item[{double}]{y = {\ttfamily 0},  }\item[{bool}]{cubic = {\ttfamily true} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Approximates a \mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}} using a series of bezier curves. If cubic bezier curves are selected, 4 Cubic Bezier curves are used for approximation. If quadratic bezier curves are selected, 8 Quadratic Bezier curves are used for approximation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x\+Radius} & The x radius of the \mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}}. \\
+\hline
+{\em y\+Radius} & The y radius of the \mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}}. \\
+\hline
+{\em cubic} & If set to true, cubic bezier curves are used to approximate the \mbox{\hyperlink{classglib_1_1_ellipse}{Ellipse}}. Otherwise, quadratic bezier curves are used. Default value is true. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$\+Bezier\+Curve$>$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_a8316a11c2f245ae2715c388c9c386948}\label{classglib_1_1_bezier_curve_a8316a11c2f245ae2715c388c9c386948}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!extract@{extract}}
+\index{extract@{extract}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{extract()}{extract()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} glib\+::\+Bezier\+Curve\+::extract (\begin{DoxyParamCaption}\item[{double}]{a,  }\item[{double}]{b }\end{DoxyParamCaption})}
+
+
+
+Extracts the segment from \mbox{[}a, b\mbox{]} as a new Bezier Curve. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & The start time value. Must be between \mbox{[}0, 1\mbox{]} \\
+\hline
+{\em b} & The end time value. Must be between \mbox{[}0, 1\mbox{]} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_a8e5aec3417965b81fc3c4386809cd52d}\label{classglib_1_1_bezier_curve_a8e5aec3417965b81fc3c4386809cd52d}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!findTimeForPoint@{findTimeForPoint}}
+\index{findTimeForPoint@{findTimeForPoint}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{findTimeForPoint()}{findTimeForPoint()}}
+{\footnotesize\ttfamily std\+::vector$<$ double $>$ glib\+::\+Bezier\+Curve\+::find\+Time\+For\+Point (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})}
+
+
+
+Solves the function all times where the solution has the specified x,y value. Currently only works for Bezier\+Curves with 4 or less points. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$double$>$ returns a list of all solutions. Can return an empty list if there is no solution. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_bezier_curve_ab5c1e4bb703d4f1997e7738a977a1ce3}\label{classglib_1_1_bezier_curve_ab5c1e4bb703d4f1997e7738a977a1ce3}} 
 \index{glib::BezierCurve@{glib::BezierCurve}!findTimeForX@{findTimeForX}}
 \index{findTimeForX@{findTimeForX}!glib::BezierCurve@{glib::BezierCurve}}
@@ -164,6 +289,19 @@ Solves for the Arc Length of the Bezier curve from 0 to the given time. Note for
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 double returns the measured arc length. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_a223f17e1db1a15e445d33f25a8c2ac38}\label{classglib_1_1_bezier_curve_a223f17e1db1a15e445d33f25a8c2ac38}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!getBoundingBox@{getBoundingBox}}
+\index{getBoundingBox@{getBoundingBox}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{getBoundingBox()}{getBoundingBox()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} $>$ glib\+::\+Bezier\+Curve\+::get\+Bounding\+Box (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets an Axis Aligned Bounding Box for the Bezier Curve. If successful, it returns a std\+::vector$<$\+Vec2f$>$ of size 2 where the first point represents the top left of the box and the second point represents the bottom right of the box. 
+
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$\+Vec2f$>$ 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_bezier_curve_a47f9142c853b8244d90df3c7ce5fdae2}\label{classglib_1_1_bezier_curve_a47f9142c853b8244d90df3c7ce5fdae2}} 
 \index{glib::BezierCurve@{glib::BezierCurve}!getClass@{getClass}}
@@ -259,6 +397,24 @@ Returns the amount of points the bezier curve has.
 
 \begin{DoxyReturn}{Returns}
 int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_bezier_curve_ae746ae44536f83b3501a2e1880c0e0eb}\label{classglib_1_1_bezier_curve_ae746ae44536f83b3501a2e1880c0e0eb}} 
+\index{glib::BezierCurve@{glib::BezierCurve}!subdivide@{subdivide}}
+\index{subdivide@{subdivide}!glib::BezierCurve@{glib::BezierCurve}}
+\doxysubsubsection{\texorpdfstring{subdivide()}{subdivide()}}
+{\footnotesize\ttfamily std\+::vector$<$ \mbox{\hyperlink{classglib_1_1_bezier_curve}{Bezier\+Curve}} $>$ glib\+::\+Bezier\+Curve\+::subdivide (\begin{DoxyParamCaption}\item[{double}]{t }\end{DoxyParamCaption})}
+
+
+
+Subdivides the Bezier Curve from \mbox{[}0, 1\mbox{]} into 2 separate Bezier Curves. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em t} & The time value to split at.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::vector$<$\+Bezier\+Curve$>$ 
 \end{DoxyReturn}
 
 

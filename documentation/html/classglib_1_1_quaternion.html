@@ -71,6 +71,7 @@ $(function() {
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="#friends">Friends</a> &#124;
 <a href="classglib_1_1_quaternion-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">glib::Quaternion Class Reference</div></div>
 </div><!--header-->
@@ -139,6 +140,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>operator-=</b> (<a cl
 <tr class="memitem:a2bb9ca67ea875f080a4e9cc525908f90"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classglib_1_1_quaternion.html">Quaternion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_quaternion.html#a2bb9ca67ea875f080a4e9cc525908f90">getInverse</a> ()</td></tr>
 <tr class="memdesc:a2bb9ca67ea875f080a4e9cc525908f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the Inverse of the quaternion.  <a href="classglib_1_1_quaternion.html#a2bb9ca67ea875f080a4e9cc525908f90">More...</a><br /></td></tr>
 <tr class="separator:a2bb9ca67ea875f080a4e9cc525908f90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabbe7f5d02863add9db0523b30b2d254"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_quaternion.html#aabbe7f5d02863add9db0523b30b2d254">getLength</a> ()</td></tr>
+<tr class="memdesc:aabbe7f5d02863add9db0523b30b2d254"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the Length of the quaternion.  <a href="classglib_1_1_quaternion.html#aabbe7f5d02863add9db0523b30b2d254">More...</a><br /></td></tr>
+<tr class="separator:aabbe7f5d02863add9db0523b30b2d254"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf07c1d0ede830556be28ae94ba0a2e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classglib_1_1_quaternion.html">Quaternion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_quaternion.html#acf07c1d0ede830556be28ae94ba0a2e9">normalize</a> ()</td></tr>
+<tr class="memdesc:acf07c1d0ede830556be28ae94ba0a2e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalizes the quaternion.  <a href="classglib_1_1_quaternion.html#acf07c1d0ede830556be28ae94ba0a2e9">More...</a><br /></td></tr>
+<tr class="separator:acf07c1d0ede830556be28ae94ba0a2e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -164,6 +171,12 @@ static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><
 <tr class="memitem:aff9d6262ae7deeb357e80d79ae5f5917 inherit pub_static_attribs_classglib_1_1_object"><td class="memItemLeft" align="right" valign="top"><a id="aff9d6262ae7deeb357e80d79ae5f5917" name="aff9d6262ae7deeb357e80d79ae5f5917"></a>
 static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><td class="memItemRight" valign="bottom"><b>myClass</b></td></tr>
 <tr class="separator:aff9d6262ae7deeb357e80d79ae5f5917 inherit pub_static_attribs_classglib_1_1_object"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:a625ffc3596fb612e4eca8cfe823f6d6e"><td class="memItemLeft" align="right" valign="top"><a id="a625ffc3596fb612e4eca8cfe823f6d6e" name="a625ffc3596fb612e4eca8cfe823f6d6e"></a>
+<a class="el" href="classglib_1_1_quaternion.html">Quaternion</a>&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> (double val, <a class="el" href="classglib_1_1_quaternion.html">Quaternion</a> other)</td></tr>
+<tr class="separator:a625ffc3596fb612e4eca8cfe823f6d6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="abd455964461b460dbe6c81fc1cebd07b" name="abd455964461b460dbe6c81fc1cebd07b"></a>
@@ -281,6 +294,46 @@ static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><
 </div><div class="memdoc">
 
 <p>Gets the Inverse of the quaternion. </p>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classglib_1_1_quaternion.html">Quaternion</a> </dd></dl>
+
+</div>
+</div>
+<a id="aabbe7f5d02863add9db0523b30b2d254" name="aabbe7f5d02863add9db0523b30b2d254"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabbe7f5d02863add9db0523b30b2d254">&#9670;&nbsp;</a></span>getLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double glib::Quaternion::getLength </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the Length of the quaternion. </p>
+<dl class="section return"><dt>Returns</dt><dd>double </dd></dl>
+
+</div>
+</div>
+<a id="acf07c1d0ede830556be28ae94ba0a2e9" name="acf07c1d0ede830556be28ae94ba0a2e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf07c1d0ede830556be28ae94ba0a2e9">&#9670;&nbsp;</a></span>normalize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classglib_1_1_quaternion.html">Quaternion</a> glib::Quaternion::normalize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Normalizes the quaternion. </p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classglib_1_1_quaternion.html">Quaternion</a> </dd></dl>
 
 </div>

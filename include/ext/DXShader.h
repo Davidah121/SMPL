@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DXSingleton.h"
+#include "ext/DXSingleton.h"
 
 #include "MathExt.h"
 #include "SimpleFile.h"

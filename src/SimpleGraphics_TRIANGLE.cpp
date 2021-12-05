@@ -2,7 +2,7 @@
 
 namespace glib
 {
-	void Graphics::testDrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, Image* surf)
+	void SimpleGraphics::testDrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, Image* surf)
 	{
 		int currentComposite = compositeRule;
 		Image* otherImg;
@@ -43,13 +43,13 @@ namespace glib
 				
 				for(int x=guessedMin; x<guessedMax; x++)
 				{
-					drawPixel(x,y,Graphics::getColor(), surf);
+					drawPixel(x,y,SimpleGraphics::getColor(), surf);
 				}
 			}
 		}
 	}
 
-	void Graphics::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline, Image* surf)
+	void SimpleGraphics::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline, Image* surf)
 	{
 		int currentComposite = compositeRule;
 		Image* otherImg;
@@ -82,11 +82,11 @@ namespace glib
 			int minX = MathExt::min( {x1,x2,x3} );
 			int maxX = MathExt::max( {x1,x2,x3} );
 
-			minY = MathExt::clamp(minY, (int)Graphics::getClippingRect().getTopBound(), (int)Graphics::getClippingRect().getBottomBound());
-			maxY = MathExt::clamp(maxY, (int)Graphics::getClippingRect().getTopBound(), (int)Graphics::getClippingRect().getBottomBound());
+			minY = MathExt::clamp(minY, (int)SimpleGraphics::getClippingRect().getTopBound(), (int)SimpleGraphics::getClippingRect().getBottomBound());
+			maxY = MathExt::clamp(maxY, (int)SimpleGraphics::getClippingRect().getTopBound(), (int)SimpleGraphics::getClippingRect().getBottomBound());
 			
-			minX = MathExt::clamp(minX, (int)Graphics::getClippingRect().getLeftBound(), (int)Graphics::getClippingRect().getRightBound());
-			maxX = MathExt::clamp(maxX, (int)Graphics::getClippingRect().getLeftBound(), (int)Graphics::getClippingRect().getRightBound());
+			minX = MathExt::clamp(minX, (int)SimpleGraphics::getClippingRect().getLeftBound(), (int)SimpleGraphics::getClippingRect().getRightBound());
+			maxX = MathExt::clamp(maxX, (int)SimpleGraphics::getClippingRect().getLeftBound(), (int)SimpleGraphics::getClippingRect().getRightBound());
 			
 			
 			for(int y=minY; y<maxY; y++)
@@ -117,7 +117,7 @@ namespace glib
 
 					__m256i* avxFill = (__m256i*)startFill;
 					__m256i* avxEnd = avxFill + avxWidth;
-					__m256i avxColor = _mm256_set1_epi32( *((int*)&Graphics::activeColor) );
+					__m256i avxColor = _mm256_set1_epi32( *((int*)&SimpleGraphics::activeColor) );
 
 					//fill from cX1 to cX2
 					if(currentComposite == NO_COMPOSITE)
@@ -132,7 +132,7 @@ namespace glib
 						startFill += avxWidth<<3;
 						for(int i=0; i<remainder; i++)
 						{
-							*startFill = Graphics::activeColor;
+							*startFill = SimpleGraphics::activeColor;
 							startFill++;
 						}
 					}
@@ -150,7 +150,7 @@ namespace glib
 						startFill += avxWidth<<3;
 						for(int i=0; i<remainder; i++)
 						{
-							*startFill = blend(Graphics::activeColor, *startFill);
+							*startFill = blend(SimpleGraphics::activeColor, *startFill);
 							startFill++;
 						}
 					}
@@ -165,7 +165,7 @@ namespace glib
 
 					__m128i* sseFill = (__m128i*)startFill;
 					__m128i* sseEnd = sseFill + sseWidth;
-					__m128i sseColor = _mm_set1_epi32( *((int*)&Graphics::activeColor) );
+					__m128i sseColor = _mm_set1_epi32( *((int*)&SimpleGraphics::activeColor) );
 
 					//fill from cX1 to cX2
 					if(compositeRule == NO_COMPOSITE)
@@ -180,7 +180,7 @@ namespace glib
 						startFill += sseWidth<<2;
 						for(int i=0; i<remainder; i++)
 						{
-							*startFill = Graphics::activeColor;
+							*startFill = SimpleGraphics::activeColor;
 							startFill++;
 						}
 					}
@@ -198,7 +198,7 @@ namespace glib
 						startFill += sseWidth<<2;
 						for(int i=0; i<remainder; i++)
 						{
-							*startFill = blend(Graphics::activeColor, *startFill);
+							*startFill = blend(SimpleGraphics::activeColor, *startFill);
 							startFill++;
 						}
 					}
@@ -235,7 +235,7 @@ namespace glib
 		}
 	}
 
-	void Graphics::drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture, Image* surf)
+	void SimpleGraphics::drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture, Image* surf)
 	{
 		int currentComposite = compositeRule;
 		Image* otherImg;
@@ -260,11 +260,11 @@ namespace glib
 			int minX = MathExt::min( {p1.x,p2.x,p3.x} );
 			int maxX = MathExt::max( {p1.x,p2.x,p3.x} );
 
-			minY = MathExt::clamp(minY, (int)Graphics::getClippingRect().getTopBound(), (int)Graphics::getClippingRect().getBottomBound());
-			maxY = MathExt::clamp(maxY, (int)Graphics::getClippingRect().getTopBound(), (int)Graphics::getClippingRect().getBottomBound());
+			minY = MathExt::clamp(minY, (int)SimpleGraphics::getClippingRect().getTopBound(), (int)SimpleGraphics::getClippingRect().getBottomBound());
+			maxY = MathExt::clamp(maxY, (int)SimpleGraphics::getClippingRect().getTopBound(), (int)SimpleGraphics::getClippingRect().getBottomBound());
 			
-			minX = MathExt::clamp(minX, (int)Graphics::getClippingRect().getLeftBound(), (int)Graphics::getClippingRect().getRightBound());
-			maxX = MathExt::clamp(maxX, (int)Graphics::getClippingRect().getLeftBound(), (int)Graphics::getClippingRect().getRightBound());
+			minX = MathExt::clamp(minX, (int)SimpleGraphics::getClippingRect().getLeftBound(), (int)SimpleGraphics::getClippingRect().getRightBound());
+			maxX = MathExt::clamp(maxX, (int)SimpleGraphics::getClippingRect().getLeftBound(), (int)SimpleGraphics::getClippingRect().getRightBound());
 			
 			double det = (p2.y-p3.y)*(p1.x-p3.x) + (p3.x-p2.x)*(p1.y-p3.y);
 
@@ -344,7 +344,7 @@ namespace glib
 
 					__m256i* avxFill = (__m256i*)startFill;
 					__m256i* avxEnd = avxFill + avxWidth;
-					__m256i avxColor = _mm256_set1_epi32( *((int*)&Graphics::activeColor) );
+					__m256i avxColor = _mm256_set1_epi32( *((int*)&SimpleGraphics::activeColor) );
 
 					__m256 startWeights1 = _mm256_set1_ps((float)s1);
 					__m256 startWeights2 = _mm256_set1_ps((float)s2);
@@ -475,7 +475,7 @@ namespace glib
 
 					__m128i* sseFill = (__m128i*)startFill;
 					__m128i* sseEnd = sseFill + sseWidth;
-					__m128i sseColor = _mm_set1_epi32( *((int*)&Graphics::activeColor) );
+					__m128i sseColor = _mm_set1_epi32( *((int*)&SimpleGraphics::activeColor) );
 
 					__m128 startWeights1 = _mm_set1_ps((float)s1);
 					__m128 startWeights2 = _mm_set1_ps((float)s2);

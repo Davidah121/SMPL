@@ -30,6 +30,11 @@ namespace glib
         return p;
     }
 
+    Color ColorNameConverter::NameToColor(std::wstring n)
+    {
+        return ColorNameConverter::NameToColor( StringTools::toCString(n) );
+    }
+
     const std::unordered_map<std::string, Color> ColorNameConverter::colorNamePair = {
         {"indianred",{205,92,92,255}},
         {"lightcoral",{240,128,128,255}},

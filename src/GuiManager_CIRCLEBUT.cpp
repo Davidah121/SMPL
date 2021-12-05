@@ -84,13 +84,13 @@ namespace glib
 		if(surf!=nullptr)
 		{
 			//draw a circle
-			Graphics::setColor(backgroundColor);
+			SimpleGraphics::setColor(backgroundColor);
 			surf->drawCircle(renderX, renderY, radius, false);
 
 			if (getFocus() == false)
-				Graphics::setColor(outlineColor);
+				SimpleGraphics::setColor(outlineColor);
 			else
-				Graphics::setColor(focusOutlineColor);
+				SimpleGraphics::setColor(focusOutlineColor);
 
 			surf->drawCircle(renderX, renderY, radius, true);
 		}

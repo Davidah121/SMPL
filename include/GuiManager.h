@@ -1,11 +1,15 @@
 #pragma once
-#include<string>
-#include<vector>
+#include <string>
+#include <vector>
+#include <unordered_set>
+
 #include "VectorGraphic.h"
 #include "Image.h"
-#include "Graphics.h"
+#include "SimpleGraphics.h"
 #include "Shape.h"
 #include "Sprite.h"
+
+#include "ColorNameConverter.h"
 
 #include <functional>
 
@@ -33,6 +37,13 @@ namespace glib
 		 * 
 		 */
 		GuiInstance();
+
+		/**
+		 * @brief Construct a new GuiInstance object
+		 * 		GuiInstance is more of an abstract class that is designed to be extended through sub classes.
+		 * 
+		 */
+		GuiInstance(std::string nameID);
 
 		/**
 		 * @brief Construct a new GuiInstance object from another GuiInstance object
@@ -308,6 +319,17 @@ namespace glib
 		 */
 		Image* getCanvas();
 
+		/**
+		 * @brief Loads data from an Xml Attribute.
+		 * 		This allows a large list of attributes to be defined
+		 * 		and allow each class to deal with them in their own way.
+		 * 		
+		 * 		Will remove data from the hashmap if it has been processed.
+		 * 
+		 * @param attrib 
+		 */
+		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs);
+
 	protected:
 		std::function<void(GuiInstance*)> onChangedFunction;
 
@@ -347,6 +369,10 @@ namespace glib
 
 		int renderX = 0;
 		int renderY = 0;
+
+		Box2D boundingBox = Box2D(0, 0, 0, 0);
+
+		std::wstring nameID = L"";
 
 		/**
 		 * @brief Sets the Priority for the GuiInstance.
@@ -443,7 +469,21 @@ namespace glib
 		 */
 		void render(Image* surf);
 
+		/**
+		 * @brief Loads data from an Xml Attribute.
+		 * 		This allows a large list of attributes to be defined
+		 * 		and allow each class to deal with them in their own way.
+		 * 		
+		 * 		Will remove data from the hashmap if it has been processed.
+		 * 
+		 * @param attrib 
+		 */
+		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs);
+
+		static void registerLoadFunction();
+
 	private:
+		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes);
 	};
 
 	class GuiCustomObject : public GuiInstance
@@ -745,7 +785,7 @@ namespace glib
 		 * @param width 
 		 * @param height 
 		 */
-		GuiTextBlock(int x, int y, int width, int height);
+		GuiTextBlock(int x, int y, int width = -1, int height = -1);
 
 		/**
 		 * @brief Destroy the GuiTextBlock object
@@ -862,27 +902,28 @@ namespace glib
 		/**
 		 * @brief Gets a copy of the text displayed
 		 * 
-		 * @return std::string 
+		 * @return std::wstring 
 		 */
-		std::string getText();
+		std::wstring getText();
 
 		/**
 		 * @brief Gets a reference to the text displayed
 		 * 
-		 * @return std::string& 
+		 * @return std::wstring& 
 		 */
-		std::string& getTextRef();
+		std::wstring& getTextRef();
 
 		/**
 		 * @brief Sets the Text displayed
 		 * 
 		 * @param s 
 		 */
+		void setText(std::wstring s);
 		void setText(std::string s);
 
 		/**
 		 * @brief Sets a specific font to use.
-		 * 		If nullptr, the default font set in the Graphics class will be used.
+		 * 		If nullptr, the default font set in the SimpleGraphics class will be used.
 		 * 
 		 * @param f 
 		 */
@@ -890,39 +931,41 @@ namespace glib
 
 		/**
 		 * @brief Gets the Font used.
-		 * 		If nullptr, the default font set in the Graphics class is being used.
+		 * 		If nullptr, the default font set in the SimpleGraphics class is being used.
 		 * 
 		 * @return Font* 
 		 */
 		Font* getFont();
 
 		/**
-		 * @brief Sets the Width of the text block
+		 * @brief Sets the Maximum Width of the text block
+		 * 		If set to <= 0, no maximum width will be imposed
 		 * 
 		 * @param v 
 		 */
-		void setWidth(int v);
+		void setMaxWidth(int v);
 
 		/**
-		 * @brief Sets the Height of the text block
+		 * @brief Sets the Maximum Height of the text block
+		 * 		If set to <= 0, no maximum height will be imposed
 		 * 
 		 * @param v 
 		 */
-		void setHeight(int v);
+		void setMaxHeight(int v);
 
 		/**
 		 * @brief Gets the Width of the text block
 		 * 
 		 * @return int 
 		 */
-		int getWidth();
+		int getMaxWidth();
 
 		/**
 		 * @brief Gets the Height of the text block
 		 * 
 		 * @return int 
 		 */
-		int getHeight();
+		int getMaxHeight();
 
 		/**
 		 * @brief Sets the Offset X position of the text.
@@ -938,10 +981,24 @@ namespace glib
 		 */
 		void setOffsetY(int y);
 
-	private:
+		/**
+		 * @brief Loads data from an Xml Attribute.
+		 * 		This allows a large list of attributes to be defined
+		 * 		and allow each class to deal with them in their own way.
+		 * 		
+		 * 		Will remove data from the hashmap if it has been processed.
+		 * 
+		 * @param attrib 
+		 */
+		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs);
 
-		int width = 0;
-		int height = 0;
+		static void registerLoadFunction();
+
+	private:
+		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes);
+
+		int maxWidth = 0;
+		int maxHeight = 0;
 		bool shouldHighlight = false;
 
 		int startHighlight = -1;
@@ -955,7 +1012,7 @@ namespace glib
 		Color highlightColor = { 72, 150, 255, 96 };
 		Font* textFont = nullptr;
 
-		std::string text = "";
+		std::wstring text = L"";
 	};
 
 	class GuiTextBox : public GuiInstance
@@ -1825,6 +1882,14 @@ namespace glib
 		void addElement(GuiInstance* k);
 
 		/**
+		 * @brief Adds a GuiInstance to a list of elements that the GuiManager is allowed to free memory from.
+		 * 		Memory is freed when the element is deleted or the GuiManager is deleted.
+		 * 
+		 * @param k 
+		 */
+		void addToDeleteList(GuiInstance* k);
+
+		/**
 		 * @brief Removes a GuiInstance from the list.
 		 * 
 		 * @param k 
@@ -1918,10 +1983,16 @@ namespace glib
 		 */
 		void setBackgroundColor(Color c);
 
+		void loadElementsFromFile(File f);
+		bool loadElement(XmlNode* node, GuiInstance* parent);
+		static void registerLoadFunction(std::wstring className, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&)> func);
 	private:
 		void sortElements();
 
 		std::vector<GuiInstance*> objects = std::vector<GuiInstance*>();
+		std::unordered_set<GuiInstance*> shouldDelete = std::unordered_set<GuiInstance*>();
+		
+		static std::unordered_map<std::wstring, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&)> > elementLoadingFunctions;
 		
 		Image surf;
 
@@ -1934,9 +2005,16 @@ namespace glib
 	class GuiMemoryManager
 	{
 	public:
+		static GuiMemoryManager* getGuiMemoryManager();
 
+		void addInstance(std::string, GuiInstance*);
+		void removeInstance(std::string, GuiInstance*);
 	private:
-		std::unordered_map<int, GuiInstance*> instances;
+		GuiMemoryManager();
+		~GuiMemoryManager();
+
+		std::unordered_multimap<std::string, GuiInstance*> instances;
+		static GuiMemoryManager singleton;
 	};
 
 } //NAMESPACE glib END

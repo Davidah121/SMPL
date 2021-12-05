@@ -6,15 +6,20 @@ Inheritance diagram for glib\+::Simple\+Window\+:\begin{figure}[H]
 \includegraphics[height=2.000000cm]{classglib_1_1_simple_window}
 \end{center}
 \end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structglib_1_1_simple_window_1_1_window_creation_error}{Window\+Creation\+Error}}
+\end{DoxyCompactItemize}
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
 \mbox{\Hypertarget{classglib_1_1_simple_window_ae680ec044a31c26e9cc5e40d86e64266}\label{classglib_1_1_simple_window_ae680ec044a31c26e9cc5e40d86e64266}} 
 {\bfseries Simple\+Window} ()
-\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_simple_window}{Simple\+Window}} object By default\+: the window does not have a name, width is 320px wide, height is 240px high, the window is centered in the screen of the main monitor, the window is managed by a thread, and the window is a normal window (has a title bar with min, max, close buttons, and is resizable) \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classglib_1_1_simple_window_a965438de02c1c434921bbf57977d997e}{Simple\+Window}} (std\+::wstring title, int width=320, int height=240, int x=-\/1, int y=-\/1, unsigned char window\+Type=0)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_simple_window}{Simple\+Window}} object By default\+: the window does not have a name, width is 320px wide, height is 240px high, the window is centered in the screen of the main monitor, the window is managed by a thread, and the window is a normal window (has a title bar with min, max, close buttons, and is resizable) with software rendering. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_simple_window_a51aba8a2a25bb5a67e5df59d0dc431fd}{Simple\+Window}} (std\+::wstring title, int width=320, int height=240, int x=-\/1, int y=-\/1, unsigned char window\+Type=NORMAL\+\_\+\+WINDOW)
 \begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_simple_window}{Simple\+Window}} object. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classglib_1_1_simple_window_aa7c22485a6900403e45ae9cefdf0a86e}{Simple\+Window}} (std\+::string title, int width=320, int height=240, int x=-\/1, int y=-\/1, unsigned char window\+Type=0)
+\mbox{\hyperlink{classglib_1_1_simple_window_ae6e359cbd26a7c151b60732411198226}{Simple\+Window}} (std\+::string title, int width=320, int height=240, int x=-\/1, int y=-\/1, unsigned char window\+Type=NORMAL\+\_\+\+WINDOW)
 \begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_simple_window}{Simple\+Window}} object. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classglib_1_1_simple_window_aed0664cada4aa9f0697a7d0bbf8b22af}\label{classglib_1_1_simple_window_aed0664cada4aa9f0697a7d0bbf8b22af}} 
 {\bfseries $\sim$\+Simple\+Window} ()
@@ -43,6 +48,10 @@ int \mbox{\hyperlink{classglib_1_1_simple_window_a082894638d25003f0cc473fa189885
 \begin{DoxyCompactList}\small\item\em Gets the width of the window. \end{DoxyCompactList}\item 
 int \mbox{\hyperlink{classglib_1_1_simple_window_a55e529c6214ec9701ce05b1d827d2c0d}{get\+Height}} ()
 \begin{DoxyCompactList}\small\item\em Gets the height of the window. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_simple_window_a7e499e0823ed0ee743266d5a5233e8a1}{getX}} ()
+\begin{DoxyCompactList}\small\item\em Gets the x position of the window. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classglib_1_1_simple_window_ad8189c983072d028c61e809c6c9b0e33}{getY}} ()
+\begin{DoxyCompactList}\small\item\em Gets the y position of the window. \end{DoxyCompactList}\item 
 std\+::wstring \mbox{\hyperlink{classglib_1_1_simple_window_aa62d723c7cca0d87d0a8d5fb5164f1cb}{get\+Title}} ()
 \begin{DoxyCompactList}\small\item\em Gets the title of the window. \end{DoxyCompactList}\item 
 int \mbox{\hyperlink{classglib_1_1_simple_window_a759c57a86cd54a528d5eef28ae3148a9}{get\+Image\+Size}} ()
@@ -54,18 +63,18 @@ bool \mbox{\hyperlink{classglib_1_1_simple_window_a763059e54d640c6dbc751326fdac3
 \mbox{\Hypertarget{classglib_1_1_simple_window_a762ed3ad210fb82f5e372549b139f714}\label{classglib_1_1_simple_window_a762ed3ad210fb82f5e372549b139f714}} 
 void {\bfseries close} ()
 \begin{DoxyCompactList}\small\item\em Closes the window. \end{DoxyCompactList}\item 
-HWND \mbox{\hyperlink{classglib_1_1_simple_window_a93b1851fd15eaf3881fbca59ab16eb6b}{get\+Window\+Handle}} ()
-\begin{DoxyCompactList}\small\item\em Gets the Window Handle Only useful in the Window OS. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classglib_1_1_simple_window_a7a293e2d34d8defb67da38a79557bf71}{get\+Window\+Handle}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Window Handle Returns a value which represents the window. Windows uses a HWND Linux uses an unsigned int to store windows. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classglib_1_1_simple_window_a2342ffb08fb3ffef61bc14cee3271a66}{set\+Paint\+Function}} (std\+::function$<$ void()$>$ function)
 \begin{DoxyCompactList}\small\item\em Sets the Paint Function The function will be called when the window needs to repaint and allows custom rendering using the \mbox{\hyperlink{classglib_1_1_simple_window_a474741d2456b1ce0034c77788e7e8a74}{draw\+Image()}} function. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classglib_1_1_simple_window_a2c18e4957af70281f7fca74a50374451}{set\+Mouse\+Moved\+Function}} (std\+::function$<$ void()$>$ function)
 \begin{DoxyCompactList}\small\item\em Sets the Mouse Moved Function The function will be called when the mouse has moved inside the window. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classglib_1_1_simple_window_a3e0e64439c7448c495fd7cf28fbd496e}{set\+Closing\+Function}} (std\+::function$<$ void()$>$ function)
 \begin{DoxyCompactList}\small\item\em Sets the Closing Function The function will be called right before the window is closed. \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classglib_1_1_simple_window_a0cec0d31976f6059c8891a844dd88c1b}{set\+Key\+Up\+Function}} (std\+::function$<$ void(WPARAM, LPARAM)$>$ function)
-\begin{DoxyCompactList}\small\item\em Sets the Key Up Function The function will be called when a key has been released. The WPARAM contains the keycode The LPARAM contains additional information. \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classglib_1_1_simple_window_ae8c7284f40ee523deb61248eeb62752a}{set\+Key\+Down\+Function}} (std\+::function$<$ void(WPARAM, LPARAM)$>$ function)
-\begin{DoxyCompactList}\small\item\em Sets the Key Down Function The function will be called when a key has been pressed. The WPARAM contains the keycode The LPARAM contains additional information. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_window_a8b81d894a477a9154037a3f3d087ff0f}{set\+Key\+Up\+Function}} (std\+::function$<$ void(unsigned long, long)$>$ function)
+\begin{DoxyCompactList}\small\item\em Sets the Key Up Function The function will be called when a key has been released. The first argument (unsigned long) contains the keycode The second argument (long) contains additional information. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classglib_1_1_simple_window_abce36ce947675f0f4f093ad81a8f344d}{set\+Key\+Down\+Function}} (std\+::function$<$ void(unsigned long, long)$>$ function)
+\begin{DoxyCompactList}\small\item\em Sets the Key Down Function The function will be called when a key has been pressed. The first argument (unsigned long) contains the keycode The second argument (long) contains additional information. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classglib_1_1_simple_window_a55d03e50c4a1252d795785659ff113c6}{set\+Mouse\+Button\+Down\+Function}} (std\+::function$<$ void(int)$>$ function)
 \begin{DoxyCompactList}\small\item\em Sets the Mouse Button Down Function The function will be called when a mouse button has been pressed. The integer value represents which mouse button was pressed. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classglib_1_1_simple_window_a56f718599fc5579213c93135589c9e1a}{set\+Mouse\+Button\+Up\+Function}} (std\+::function$<$ void(int)$>$ function)
@@ -138,6 +147,9 @@ static const unsigned char {\bfseries NORMAL\+\_\+\+WINDOW} = 0b0000
 \mbox{\Hypertarget{classglib_1_1_simple_window_a05fccc83280c35380c1b0b093a80639e}\label{classglib_1_1_simple_window_a05fccc83280c35380c1b0b093a80639e}} 
 static const unsigned char {\bfseries BORDERLESS\+\_\+\+WINDOW} = 0b0001
 \item 
+\mbox{\Hypertarget{classglib_1_1_simple_window_a62fcdfc3bfba822379d7bb9a85e1e0eb}\label{classglib_1_1_simple_window_a62fcdfc3bfba822379d7bb9a85e1e0eb}} 
+static const unsigned char {\bfseries FULLSCREEN\+\_\+\+WINDOW} = 0b1000
+\item 
 \mbox{\Hypertarget{classglib_1_1_simple_window_ae2cb72a751d3ce1a0cda6f444f28170f}\label{classglib_1_1_simple_window_ae2cb72a751d3ce1a0cda6f444f28170f}} 
 static const unsigned char {\bfseries STATE\+\_\+\+NORMAL} = 0x00
 \item 
@@ -165,11 +177,11 @@ static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
 
 
 \doxysubsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classglib_1_1_simple_window_a965438de02c1c434921bbf57977d997e}\label{classglib_1_1_simple_window_a965438de02c1c434921bbf57977d997e}} 
+\mbox{\Hypertarget{classglib_1_1_simple_window_a51aba8a2a25bb5a67e5df59d0dc431fd}\label{classglib_1_1_simple_window_a51aba8a2a25bb5a67e5df59d0dc431fd}} 
 \index{glib::SimpleWindow@{glib::SimpleWindow}!SimpleWindow@{SimpleWindow}}
 \index{SimpleWindow@{SimpleWindow}!glib::SimpleWindow@{glib::SimpleWindow}}
 \doxysubsubsection{\texorpdfstring{SimpleWindow()}{SimpleWindow()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
-{\footnotesize\ttfamily glib\+::\+Simple\+Window\+::\+Simple\+Window (\begin{DoxyParamCaption}\item[{std\+::wstring}]{title,  }\item[{int}]{width = {\ttfamily 320},  }\item[{int}]{height = {\ttfamily 240},  }\item[{int}]{x = {\ttfamily -\/1},  }\item[{int}]{y = {\ttfamily -\/1},  }\item[{unsigned char}]{window\+Type = {\ttfamily 0} }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily glib\+::\+Simple\+Window\+::\+Simple\+Window (\begin{DoxyParamCaption}\item[{std\+::wstring}]{title,  }\item[{int}]{width = {\ttfamily 320},  }\item[{int}]{height = {\ttfamily 240},  }\item[{int}]{x = {\ttfamily -\/1},  }\item[{int}]{y = {\ttfamily -\/1},  }\item[{unsigned char}]{window\+Type = {\ttfamily NORMAL\+\_\+WINDOW} }\end{DoxyParamCaption})}
 
 
 
@@ -187,14 +199,14 @@ Construct a new \mbox{\hyperlink{classglib_1_1_simple_window}{Simple\+Window}} o
 \hline
 {\em y} & The y location of the top left part of the window. By default, it is -\/1 which will set the center y of the window at the center y of the main monitor. \\
 \hline
-{\em window\+Type} & The type of window to create. The window type and window management can be combined using the logical or ( \textquotesingle{}$\vert$\textquotesingle{} ). Valid arguments are\+: NORMAL\+\_\+\+WINDOW BORDERLESS\+\_\+\+WINDOW TYPE\+\_\+\+FOCUSABLE TYPE\+\_\+\+NONFOCUSABLE TYPE\+\_\+\+USER\+\_\+\+MANAGED TYPE\+\_\+\+THREAD\+\_\+\+MANAGED Default value is 0 which is a Normal Focusable Thread Managed Window. \\
+{\em window\+Type} & The type of window to create. The window type and window management can be combined using the logical or ( \textquotesingle{}$\vert$\textquotesingle{} ). (Note that FULLSCREEN\+\_\+\+WINDOW ignores the width, height, x, y, NORMAL\+\_\+\+WINDOW and BORDERLESS\+\_\+\+WINDOW options) Valid arguments are\+: NORMAL\+\_\+\+WINDOW BORDERLESS\+\_\+\+WINDOW FULLSCREEN\+\_\+\+WINDOW TYPE\+\_\+\+FOCUSABLE TYPE\+\_\+\+NONFOCUSABLE TYPE\+\_\+\+USER\+\_\+\+MANAGED TYPE\+\_\+\+THREAD\+\_\+\+MANAGED Default value is 0 which is a Normal Focusable Thread Managed Window. \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classglib_1_1_simple_window_aa7c22485a6900403e45ae9cefdf0a86e}\label{classglib_1_1_simple_window_aa7c22485a6900403e45ae9cefdf0a86e}} 
+\mbox{\Hypertarget{classglib_1_1_simple_window_ae6e359cbd26a7c151b60732411198226}\label{classglib_1_1_simple_window_ae6e359cbd26a7c151b60732411198226}} 
 \index{glib::SimpleWindow@{glib::SimpleWindow}!SimpleWindow@{SimpleWindow}}
 \index{SimpleWindow@{SimpleWindow}!glib::SimpleWindow@{glib::SimpleWindow}}
 \doxysubsubsection{\texorpdfstring{SimpleWindow()}{SimpleWindow()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
-{\footnotesize\ttfamily glib\+::\+Simple\+Window\+::\+Simple\+Window (\begin{DoxyParamCaption}\item[{std\+::string}]{title,  }\item[{int}]{width = {\ttfamily 320},  }\item[{int}]{height = {\ttfamily 240},  }\item[{int}]{x = {\ttfamily -\/1},  }\item[{int}]{y = {\ttfamily -\/1},  }\item[{unsigned char}]{window\+Type = {\ttfamily 0} }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily glib\+::\+Simple\+Window\+::\+Simple\+Window (\begin{DoxyParamCaption}\item[{std\+::string}]{title,  }\item[{int}]{width = {\ttfamily 320},  }\item[{int}]{height = {\ttfamily 240},  }\item[{int}]{x = {\ttfamily -\/1},  }\item[{int}]{y = {\ttfamily -\/1},  }\item[{unsigned char}]{window\+Type = {\ttfamily NORMAL\+\_\+WINDOW} }\end{DoxyParamCaption})}
 
 
 
@@ -212,7 +224,7 @@ Construct a new \mbox{\hyperlink{classglib_1_1_simple_window}{Simple\+Window}} o
 \hline
 {\em y} & The y location of the top left part of the window. By default, it is -\/1 which will set the center y of the window at the center y of the main monitor. \\
 \hline
-{\em window\+Type} & The type of window to create. The window type and window management can be combined using the logical or ( \textquotesingle{}$\vert$\textquotesingle{} ). Valid arguments are\+: NORMAL\+\_\+\+WINDOW BORDERLESS\+\_\+\+WINDOW TYPE\+\_\+\+FOCUSABLE TYPE\+\_\+\+NONFOCUSABLE TYPE\+\_\+\+USER\+\_\+\+MANAGED TYPE\+\_\+\+THREAD\+\_\+\+MANAGED Default value is 0 which is a Normal Focusable Thread Managed Window. \\
+{\em window\+Type} & The type of window to create. The window type and window management can be combined using the logical or ( \textquotesingle{}$\vert$\textquotesingle{} ). (Note that FULLSCREEN\+\_\+\+WINDOW ignores the width, height, x, y, NORMAL\+\_\+\+WINDOW and BORDERLESS\+\_\+\+WINDOW options) Valid arguments are\+: NORMAL\+\_\+\+WINDOW BORDERLESS\+\_\+\+WINDOW FULLSCREEN\+\_\+\+WINDOW TYPE\+\_\+\+FOCUSABLE TYPE\+\_\+\+NONFOCUSABLE TYPE\+\_\+\+USER\+\_\+\+MANAGED TYPE\+\_\+\+THREAD\+\_\+\+MANAGED Default value is 0 which is a Normal Focusable Thread Managed Window. \\
 \hline
 \end{DoxyParams}
 
@@ -424,18 +436,44 @@ Gets the width of the window.
 \begin{DoxyReturn}{Returns}
 int 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classglib_1_1_simple_window_a93b1851fd15eaf3881fbca59ab16eb6b}\label{classglib_1_1_simple_window_a93b1851fd15eaf3881fbca59ab16eb6b}} 
+\mbox{\Hypertarget{classglib_1_1_simple_window_a7a293e2d34d8defb67da38a79557bf71}\label{classglib_1_1_simple_window_a7a293e2d34d8defb67da38a79557bf71}} 
 \index{glib::SimpleWindow@{glib::SimpleWindow}!getWindowHandle@{getWindowHandle}}
 \index{getWindowHandle@{getWindowHandle}!glib::SimpleWindow@{glib::SimpleWindow}}
 \doxysubsubsection{\texorpdfstring{getWindowHandle()}{getWindowHandle()}}
-{\footnotesize\ttfamily HWND glib\+::\+Simple\+Window\+::get\+Window\+Handle (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily size\+\_\+t glib\+::\+Simple\+Window\+::get\+Window\+Handle (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
 
 
-Gets the Window Handle Only useful in the Window OS. 
+Gets the Window Handle Returns a value which represents the window. Windows uses a HWND Linux uses an unsigned int to store windows. 
 
 \begin{DoxyReturn}{Returns}
-HWND 
+size\+\_\+t 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_window_a7e499e0823ed0ee743266d5a5233e8a1}\label{classglib_1_1_simple_window_a7e499e0823ed0ee743266d5a5233e8a1}} 
+\index{glib::SimpleWindow@{glib::SimpleWindow}!getX@{getX}}
+\index{getX@{getX}!glib::SimpleWindow@{glib::SimpleWindow}}
+\doxysubsubsection{\texorpdfstring{getX()}{getX()}}
+{\footnotesize\ttfamily int glib\+::\+Simple\+Window\+::getX (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the x position of the window. 
+
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_simple_window_ad8189c983072d028c61e809c6c9b0e33}\label{classglib_1_1_simple_window_ad8189c983072d028c61e809c6c9b0e33}} 
+\index{glib::SimpleWindow@{glib::SimpleWindow}!getY@{getY}}
+\index{getY@{getY}!glib::SimpleWindow@{glib::SimpleWindow}}
+\doxysubsubsection{\texorpdfstring{getY()}{getY()}}
+{\footnotesize\ttfamily int glib\+::\+Simple\+Window\+::getY (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the y position of the window. 
+
+\begin{DoxyReturn}{Returns}
+int 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_simple_window_a49718b77a6cd2c4e5aff264ae0f21116}\label{classglib_1_1_simple_window_a49718b77a6cd2c4e5aff264ae0f21116}} 
 \index{glib::SimpleWindow@{glib::SimpleWindow}!setActivateGui@{setActivateGui}}
@@ -497,30 +535,30 @@ Sets the height of the window.
 {\em height} & \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classglib_1_1_simple_window_ae8c7284f40ee523deb61248eeb62752a}\label{classglib_1_1_simple_window_ae8c7284f40ee523deb61248eeb62752a}} 
+\mbox{\Hypertarget{classglib_1_1_simple_window_abce36ce947675f0f4f093ad81a8f344d}\label{classglib_1_1_simple_window_abce36ce947675f0f4f093ad81a8f344d}} 
 \index{glib::SimpleWindow@{glib::SimpleWindow}!setKeyDownFunction@{setKeyDownFunction}}
 \index{setKeyDownFunction@{setKeyDownFunction}!glib::SimpleWindow@{glib::SimpleWindow}}
 \doxysubsubsection{\texorpdfstring{setKeyDownFunction()}{setKeyDownFunction()}}
-{\footnotesize\ttfamily void glib\+::\+Simple\+Window\+::set\+Key\+Down\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(WPARAM, LPARAM)$>$}]{function }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily void glib\+::\+Simple\+Window\+::set\+Key\+Down\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(unsigned long, long)$>$}]{function }\end{DoxyParamCaption})}
 
 
 
-Sets the Key Down Function The function will be called when a key has been pressed. The WPARAM contains the keycode The LPARAM contains additional information. 
+Sets the Key Down Function The function will be called when a key has been pressed. The first argument (unsigned long) contains the keycode The second argument (long) contains additional information. 
 
 
 \begin{DoxyParams}{Parameters}
 {\em function} & \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classglib_1_1_simple_window_a0cec0d31976f6059c8891a844dd88c1b}\label{classglib_1_1_simple_window_a0cec0d31976f6059c8891a844dd88c1b}} 
+\mbox{\Hypertarget{classglib_1_1_simple_window_a8b81d894a477a9154037a3f3d087ff0f}\label{classglib_1_1_simple_window_a8b81d894a477a9154037a3f3d087ff0f}} 
 \index{glib::SimpleWindow@{glib::SimpleWindow}!setKeyUpFunction@{setKeyUpFunction}}
 \index{setKeyUpFunction@{setKeyUpFunction}!glib::SimpleWindow@{glib::SimpleWindow}}
 \doxysubsubsection{\texorpdfstring{setKeyUpFunction()}{setKeyUpFunction()}}
-{\footnotesize\ttfamily void glib\+::\+Simple\+Window\+::set\+Key\+Up\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(WPARAM, LPARAM)$>$}]{function }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily void glib\+::\+Simple\+Window\+::set\+Key\+Up\+Function (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(unsigned long, long)$>$}]{function }\end{DoxyParamCaption})}
 
 
 
-Sets the Key Up Function The function will be called when a key has been released. The WPARAM contains the keycode The LPARAM contains additional information. 
+Sets the Key Up Function The function will be called when a key has been released. The first argument (unsigned long) contains the keycode The second argument (long) contains additional information. 
 
 
 \begin{DoxyParams}{Parameters}

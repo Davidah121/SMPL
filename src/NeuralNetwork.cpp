@@ -40,15 +40,18 @@ namespace glib
     {
         weightsToConnections.clear();
         
-        int modV = 100000;
-        double divV = (double)modV / 20.0;
-        double minusVal = (double)modV / 2.0;
-        LCG r = LCG(rand(), 12345, 0, modV);
-        
-        for(int i=0; i<size; i++)
+        if(size > 0)
         {
-            double w = ((double)r.get() - minusVal) / divV;
-            weightsToConnections.push_back( w );
+            LCG r = LCG(rand());
+
+            for(int i=0; i<size; i++)
+            {
+                double rVal = (int)(r.get()%20000) - 10000;
+                double w = rVal/10000;
+                w = MathExt::clamp(w, -1.0, 1.0);
+                
+                weightsToConnections.push_back( w );
+            }
         }
     }
 
@@ -194,20 +197,14 @@ namespace glib
         {
             for(Neuron& k : neurons)
             {
-                k.resetWeights( nextLayer->size());
+                k.resetWeights( nextLayer->size()); //Use Xavier Initialization
             }
 
             biasToConnections.clear();
 
-            int modV = 100000;
-            double divV = (double)modV / 10.0;
-            double minusVal = (double)modV / 2.0;
-            LCG r = LCG(rand(), 12345, 0, modV);
-
             for(int i=0; i<nextLayer->size(); i++)
             {
-                double b = ((double)r.get() - minusVal) / divV;
-                biasToConnections.push_back(b);
+                biasToConnections.push_back(0.0); //set all bias values to 0.0
             }
         }
 
@@ -276,6 +273,11 @@ namespace glib
     void NeuralLayer::setBiasValue(int index, double value)
     {
         biasToConnections[index] = value;
+    }
+
+    double NeuralLayer::getBiasValue(int index)
+    {
+        return biasToConnections[index];
     }
 
     int NeuralLayer::getBiasSize()
@@ -359,6 +361,7 @@ namespace glib
     void NeuralNetwork::train(std::vector<std::vector<double>> inputs, std::vector<std::vector<double>> expectedOutput)
     {
         std::vector< std::vector< std::vector<double> > > weightAdjustments = std::vector< std::vector< std::vector<double> > >();
+        // std::vector< std::vector<double> > biasAdjustments = std::vector< std::vector<double> >();
         std::vector< std::vector<double> > layerDelta = std::vector< std::vector<double> >();
 
         // weightAdjustments[layers][neuronsInLayer][weightsPerNeuron];
@@ -375,6 +378,7 @@ namespace glib
             int neuronSize = s->size();
             layerDelta.push_back( std::vector<double>(neuronSize) );
             weightAdjustments.push_back( std::vector< std::vector<double> >( neuronSize) );
+            // biasAdjustments.push_back( std::vector<double>(neuronSize) );
             for(int i=0; i<neuronSize; i++)
             {
                 int weightSize = s->getNeuron(i).size();
@@ -393,7 +397,7 @@ namespace glib
         {
             std::vector<double> actualOutputs = run(inputs[x]);
 
-            //Gradient Descent using back propagation. Adjust weights but not bias
+            //Gradient Descent using back propagation. Adjust weights but not bias yet
             while(preLayer != nullptr)
             {
                 if(currLayer == endLayer)
@@ -430,7 +434,12 @@ namespace glib
                     {
                         //weight adjustments should be the average adjustment over all samples
                         weightAdjustments[i-1][k][h] += (layerDelta[i][h] * preLayer->getNeuronActivation(k)) * avgMultiplier;
+
+
                     }
+
+                    //bias adjustments only involve the layerDelta
+                    // biasAdjustments[i-1][k] = layerDelta[i][k] * avgMultiplier;
                 }
 
                 i--;
@@ -456,6 +465,10 @@ namespace glib
                 {
                     (*l)[k][h] -= weightAdjustments[i][k][h] * learningRate;
                 }
+                
+                // double b = l->getBiasValue(k);
+                // b -= biasAdjustments[i][k] * learningRate;
+                // l->setBiasValue(k, b);
             }
             i++;
             l = l->getNextLayer();

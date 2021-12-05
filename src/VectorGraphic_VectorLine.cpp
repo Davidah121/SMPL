@@ -1,5 +1,5 @@
 #include "VectorGraphic.h"
-#include "Graphics.h"
+#include "SimpleGraphics.h"
 #include "Sort.h"
 #include "StringTools.h"
 #include "BezierCurve.h"
@@ -31,7 +31,7 @@ namespace glib
 
 	void VectorLine::drawStroke(Image* buffer, int globalWidth, int globalHeight)
 	{
-		//Most of the drawing has been moved to the Graphics class
+		//Most of the drawing has been moved to the SimpleGraphics class
 
 		//for dealing with stroke width, we will draw a polygon with
 		//no stroke. Extending when needed. A Circle is drawn at the ends
@@ -65,13 +65,13 @@ namespace glib
 		if(getStrokeWidth()==1)
 		{
 			//method 1
-			Graphics::setColor(getStrokeColor());
+			SimpleGraphics::setColor(getStrokeColor());
 			buffer->drawLine(x1,y1,x2,y2);
 		}
 		else if(getStrokeWidth() > 1)
 		{
-			Graphics::setColor(getStrokeColor());
-			Graphics::setFillRule(Graphics::FILL_EVEN_ODD);
+			SimpleGraphics::setColor(getStrokeColor());
+			SimpleGraphics::setFillRule(SimpleGraphics::FILL_EVEN_ODD);
 
 			//deal with the linecaps
 			//create the 4 points

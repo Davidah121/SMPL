@@ -209,12 +209,20 @@ namespace glib
         void resetWeightsBias();
 
         /**
-         * @brief Sets the Bias Value for the specified index.
+         * @brief Sets the Bias Value at the specified index.
          * 
          * @param index 
          * @param value 
          */
         void setBiasValue(int index, double value);
+
+        /**
+         * @brief Gets the Bias Value at the specified index.
+         * 
+         * @param index 
+         * @return double 
+         */
+        double getBiasValue(int index);
 
         /**
          * @brief Gets the amount of bias values.

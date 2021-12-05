@@ -8,5 +8,7 @@ var searchData=
   ['emulatemousewheel_5',['emulateMouseWheel',['../classglib_1_1_system.html#aa4cb2f1b4aca4a716b4e374b3b1fadc5',1,'glib::System']]],
   ['enforcepalette_6',['enforcePalette',['../classglib_1_1_image.html#a2330d24ab33578515de5edfafc576b65',1,'glib::Image']]],
   ['equalsignorecase_7',['equalsIgnoreCase',['../classglib_1_1_string_tools.html#aecf595cfde4c9535fd22d397ca13bc35',1,'glib::StringTools']]],
-  ['exporttestinformation_8',['exportTestInformation',['../classglib_1_1_neuron.html#a2deef4a3ff7e53573f0fb5a6c856e143',1,'glib::Neuron::exportTestInformation()'],['../classglib_1_1_neural_layer.html#a25acf52646c1e11e925f289d284032c1',1,'glib::NeuralLayer::exportTestInformation()'],['../classglib_1_1_neural_network.html#af5ee536749902b4ef1ca9b8744bac5a8',1,'glib::NeuralNetwork::exportTestInformation()']]]
+  ['eraseconsoleline_8',['eraseConsoleLine',['../classglib_1_1_string_tools.html#a4bfcefc9af308f541bd9cc913192c9d0',1,'glib::StringTools']]],
+  ['exporttestinformation_9',['exportTestInformation',['../classglib_1_1_neuron.html#a2deef4a3ff7e53573f0fb5a6c856e143',1,'glib::Neuron::exportTestInformation()'],['../classglib_1_1_neural_layer.html#a25acf52646c1e11e925f289d284032c1',1,'glib::NeuralLayer::exportTestInformation()'],['../classglib_1_1_neural_network.html#af5ee536749902b4ef1ca9b8744bac5a8',1,'glib::NeuralNetwork::exportTestInformation()']]],
+  ['extract_10',['extract',['../classglib_1_1_bezier_curve.html#a8316a11c2f245ae2715c388c9c386948',1,'glib::BezierCurve']]]
 ];

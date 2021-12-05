@@ -1,15 +1,13 @@
 #pragma once
 #include "MathExt.h"
 
-#include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include "ext/GLSingleton.h"
 
 #include "Model.h"
 
 namespace glib
 {
-
+    
     class GLModel
     {
     public:
@@ -30,10 +28,23 @@ namespace glib
 
         size_t getSize();
 
+        void storeDataInt(int attributeID, std::vector<int> data, int sizePerVertex, bool forceReallocate = false);
+        void storeDataFloat(int attributeID, std::vector<float> data, int sizePerVertex, bool forceReallocate = false);
+        void storeDataFloat(int attributeID, std::vector<double> data, int sizePerVertex, bool forceReallocate = false);
+        
+        void setAttributeEnabled(int attributeID, bool v);
+
+        void disableAllAttributes();
+
+        void setDrawType(int value);
     private:
+        void createVAO();
+
         unsigned int vaoID = 0;
         unsigned int indexedBuffer = 0;
         std::vector<unsigned int> vboIDs;
+        std::vector<size_t> vboSizes; //size in bytes
+        std::vector<bool> attributeEnabled;
 
         bool modType = TYPE_ARRAY;
         int drawType = GL_TRIANGLES;

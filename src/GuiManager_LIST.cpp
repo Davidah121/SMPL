@@ -40,10 +40,10 @@ namespace glib
 	{
 		int height = locations.size()*elementSpacing;
 
-		Graphics::setColor(backgroundColor);
+		SimpleGraphics::setColor(backgroundColor);
 		surf->drawRect(renderX, renderY, renderX+width, renderY+height, false);
 		
-		Graphics::setColor(outlineColor);
+		SimpleGraphics::setColor(outlineColor);
 		surf->drawRect(renderX, renderY, renderX+width, renderY+height, true);
 	}
 

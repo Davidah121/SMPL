@@ -174,7 +174,7 @@ namespace glib
 		Vec4f operator*(double other);
 		Vec4f operator/(double other);
 
-		friend Vec4f operator*(double value, Vec4f& other)
+		friend Vec4f operator*(double value, Vec4f other)
 		{
 			return other*value;
 		}

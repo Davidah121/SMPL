@@ -29,9 +29,6 @@ void \mbox{\hyperlink{classglib_1_1_shape_a90466890b285e4f2210902fd52062b39}{set
 \begin{DoxyCompactList}\small\item\em Set the Rotation of the shape. Note that some shapes may not factor in the rotation. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} \mbox{\hyperlink{classglib_1_1_shape_a1318ebdf871ad82be25469ce215e0858}{get\+Rotation}} ()
 \begin{DoxyCompactList}\small\item\em Get the Rotation of the shape. \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{classglib_1_1_shape_ab488ee41ba78c6208c54dc7c911ebd1b}\label{classglib_1_1_shape_ab488ee41ba78c6208c54dc7c911ebd1b}} 
-virtual void {\bfseries transform} ()
-\begin{DoxyCompactList}\small\item\em A virtual function to apply transforms to the object before collision. \end{DoxyCompactList}\item 
 virtual double \mbox{\hyperlink{classglib_1_1_shape_aa3838fc7d35a5ba71487502d0b51f25a}{generate\+Bounding\+Radius}} ()
 \begin{DoxyCompactList}\small\item\em A virtual function to create either a bounding circle or bounding sphere. Useful for eliminating collisions. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Static Public Attributes}
@@ -40,6 +37,12 @@ virtual double \mbox{\hyperlink{classglib_1_1_shape_aa3838fc7d35a5ba71487502d0b5
 \mbox{\Hypertarget{classglib_1_1_shape_a6e8d0038fcc5ea28c9a7e254b2f71a9e}\label{classglib_1_1_shape_a6e8d0038fcc5ea28c9a7e254b2f71a9e}} 
 static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
 \end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_shape_a3e64b765bff5a02e2326980e5bfb30f6}\label{classglib_1_1_shape_a3e64b765bff5a02e2326980e5bfb30f6}} 
+virtual void {\bfseries on\+Transform\+Changed} ()
+\end{DoxyCompactItemize}
 \doxysubsection*{Protected Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -47,7 +50,7 @@ static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
 \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} {\bfseries position} = \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}()
 \item 
 \mbox{\Hypertarget{classglib_1_1_shape_ab7e7eb1b1e4bb4d44b2c7eff866ff72b}\label{classglib_1_1_shape_ab7e7eb1b1e4bb4d44b2c7eff866ff72b}} 
-\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} {\bfseries scale} = \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}()
+\mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} {\bfseries scale} = \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}(1,1,1)
 \item 
 \mbox{\Hypertarget{classglib_1_1_shape_a29b0beb80ab12f51aa52bd1a4556e47b}\label{classglib_1_1_shape_a29b0beb80ab12f51aa52bd1a4556e47b}} 
 \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}} {\bfseries rotation} = \mbox{\hyperlink{classglib_1_1_vec3f}{Vec3f}}()

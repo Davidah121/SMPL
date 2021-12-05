@@ -20,6 +20,7 @@ namespace glib
 		 * 		Returns the correct color with alpha = 255 if successful. Otherwise, the default color RGBA(0,0,0,0) is returned.
 		 */
 		static Color NameToColor(std::string n);
+		static Color NameToColor(std::wstring n);
 		
 		/**
 		 * @brief Converts a color to its represented name

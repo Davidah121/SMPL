@@ -118,15 +118,18 @@ namespace glib
 
 	Matrix Matrix::operator*(Matrix other)
 	{
-		if(this->getRows() == other.getCols())
+		if(this->getCols() == other.getRows())
 		{
-			Matrix m = Matrix(this->getCols(), other.getRows());
+			int nCols = this->getRows();
+			int nRows = other.getCols();
 
-			for (int i = 0; i < rows; i++)
+			Matrix m = Matrix(nCols, nRows);
+
+			for (int i = 0; i < nRows; i++)
 			{
-				for (int i2 = 0; i2 < columns; i2++)
+				for (int i2 = 0; i2 < nCols; i2++)
 				{
-					for(int i3=0; i3<rows; i3++)
+					for(int i3 = 0; i3 < columns; i3++)
 					{
 						m[i][i2] += data[i][i3] * other[i3][i2];
 					}

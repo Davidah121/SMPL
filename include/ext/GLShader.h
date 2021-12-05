@@ -1,8 +1,6 @@
 #pragma once
 
-#include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include "ext/GLSingleton.h"
 
 #include "MathExt.h"
 #include "SimpleFile.h"
@@ -12,6 +10,7 @@ namespace glib
     class GLShader
     {
     public:
+        GLShader();
         GLShader(File vertexShaderFile, File fragmentShaderFile);
         ~GLShader();
 
@@ -34,11 +33,18 @@ namespace glib
         unsigned int getShaderID();
         unsigned int getVertexID();
         unsigned int getFragmentID();
+
+        static GLShader createShaderFromStringLiteral(std::string vertexString, std::string fragmentString);
+
+        static void deactivateCurrentShader();
         
     private:
-        unsigned int shaderID;
-        unsigned int vertexID;
-        unsigned int fragmentID;
+
+        void init(std::string vertexString, std::string fragmentString);
+
+        unsigned int shaderID = 0;
+        unsigned int vertexID = 0;
+        unsigned int fragmentID = 0;
         bool valid = false;
     };
 

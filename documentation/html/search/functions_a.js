@@ -10,5 +10,8 @@ var searchData=
   ['mergesort_7',['mergeSort',['../classglib_1_1_sort.html#a3df74493b939d2e5d489a40d6bc7772d',1,'glib::Sort']]],
   ['messageboxpopup_8',['messageBoxPopup',['../classglib_1_1_system.html#a1ffa18d77c4bb9994736a9761df99a0b',1,'glib::System']]],
   ['min_9',['min',['../classglib_1_1_math_ext.html#a323234f955ac1cf162526e6863cbdffa',1,'glib::MathExt::min(T a, T b)'],['../classglib_1_1_math_ext.html#a4d065bdd328e84ec153893209cdb1042',1,'glib::MathExt::min(T *a, int count)'],['../classglib_1_1_math_ext.html#a9c9900afec0ba54e5cf9aa974c5d834f',1,'glib::MathExt::min(std::initializer_list&lt; T &gt; list)']]],
-  ['model_10',['Model',['../classglib_1_1_model.html#a4584d45846cbbdfcdc15acf13ee56596',1,'glib::Model']]]
+  ['model_10',['Model',['../classglib_1_1_model.html#a4584d45846cbbdfcdc15acf13ee56596',1,'glib::Model']]],
+  ['modelmatrix2d_11',['modelMatrix2D',['../classglib_1_1_math_ext.html#aa4fb8caffcd2d44e6476678d0c2acea4',1,'glib::MathExt']]],
+  ['modelmatrix3d_12',['modelMatrix3D',['../classglib_1_1_math_ext.html#a679eb7db0e7cd11fa2ad67ad1684b2d6',1,'glib::MathExt']]],
+  ['moveconsolecursor_13',['moveConsoleCursor',['../classglib_1_1_string_tools.html#adf89794d2f4bab662c68f468bb96aca7',1,'glib::StringTools']]]
 ];

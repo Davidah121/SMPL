@@ -9,8 +9,10 @@ var searchData=
   ['emulatemousewheel_6',['emulateMouseWheel',['../classglib_1_1_system.html#aa4cb2f1b4aca4a716b4e374b3b1fadc5',1,'glib::System']]],
   ['enforcepalette_7',['enforcePalette',['../classglib_1_1_image.html#a2330d24ab33578515de5edfafc576b65',1,'glib::Image']]],
   ['equalsignorecase_8',['equalsIgnoreCase',['../classglib_1_1_string_tools.html#aecf595cfde4c9535fd22d397ca13bc35',1,'glib::StringTools']]],
-  ['even_5fodd_5frule_9',['EVEN_ODD_RULE',['../classglib_1_1_vector_shape.html#a2035101fec792d4eb9ae41e170eded80',1,'glib::VectorShape']]],
-  ['exceededexpectedsizeerror_10',['ExceededExpectedSizeError',['../structglib_1_1_compression_1_1_exceeded_expected_size_error.html',1,'glib::Compression']]],
-  ['existanceerror_11',['ExistanceError',['../structglib_1_1_simple_dir_1_1_existance_error.html',1,'glib::SimpleDir']]],
-  ['exporttestinformation_12',['exportTestInformation',['../classglib_1_1_neuron.html#a2deef4a3ff7e53573f0fb5a6c856e143',1,'glib::Neuron::exportTestInformation()'],['../classglib_1_1_neural_layer.html#a25acf52646c1e11e925f289d284032c1',1,'glib::NeuralLayer::exportTestInformation()'],['../classglib_1_1_neural_network.html#af5ee536749902b4ef1ca9b8744bac5a8',1,'glib::NeuralNetwork::exportTestInformation()']]]
+  ['eraseconsoleline_9',['eraseConsoleLine',['../classglib_1_1_string_tools.html#a4bfcefc9af308f541bd9cc913192c9d0',1,'glib::StringTools']]],
+  ['even_5fodd_5frule_10',['EVEN_ODD_RULE',['../classglib_1_1_vector_shape.html#a2035101fec792d4eb9ae41e170eded80',1,'glib::VectorShape']]],
+  ['exceededexpectedsizeerror_11',['ExceededExpectedSizeError',['../structglib_1_1_compression_1_1_exceeded_expected_size_error.html',1,'glib::Compression']]],
+  ['existanceerror_12',['ExistanceError',['../structglib_1_1_simple_dir_1_1_existance_error.html',1,'glib::SimpleDir']]],
+  ['exporttestinformation_13',['exportTestInformation',['../classglib_1_1_neuron.html#a2deef4a3ff7e53573f0fb5a6c856e143',1,'glib::Neuron::exportTestInformation()'],['../classglib_1_1_neural_layer.html#a25acf52646c1e11e925f289d284032c1',1,'glib::NeuralLayer::exportTestInformation()'],['../classglib_1_1_neural_network.html#af5ee536749902b4ef1ca9b8744bac5a8',1,'glib::NeuralNetwork::exportTestInformation()']]],
+  ['extract_14',['extract',['../classglib_1_1_bezier_curve.html#a8316a11c2f245ae2715c388c9c386948',1,'glib::BezierCurve']]]
 ];

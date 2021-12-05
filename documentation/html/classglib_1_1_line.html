@@ -145,8 +145,17 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a4ffe904d3646a20c911aac5575ae05df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves the line for an Y value using a x value. May be invalid if the line is vertical.  <a href="classglib_1_1_line.html#a4ffe904d3646a20c911aac5575ae05df">More...</a><br /></td></tr>
 <tr class="separator:a4ffe904d3646a20c911aac5575ae05df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6fafbc696db4a3783a8dba72757d9faf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classglib_1_1_vec2f.html">Vec2f</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_line.html#a6fafbc696db4a3783a8dba72757d9faf">getIntersection</a> (<a class="el" href="classglib_1_1_line.html">Line</a> other)</td></tr>
-<tr class="memdesc:a6fafbc696db4a3783a8dba72757d9faf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the point of intersection with another line. May be invalid if the lines never intersect.  <a href="classglib_1_1_line.html#a6fafbc696db4a3783a8dba72757d9faf">More...</a><br /></td></tr>
+<tr class="memdesc:a6fafbc696db4a3783a8dba72757d9faf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a point of intersection with another line. May be invalid if the lines never intersect. If invalid, NAN will be returned.  <a href="classglib_1_1_line.html#a6fafbc696db4a3783a8dba72757d9faf">More...</a><br /></td></tr>
 <tr class="separator:a6fafbc696db4a3783a8dba72757d9faf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6762617ef78590f12b03da124d80a7b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_line.html#af6762617ef78590f12b03da124d80a7b">getIntersectionParametric</a> (<a class="el" href="classglib_1_1_line.html">Line</a> other)</td></tr>
+<tr class="memdesc:af6762617ef78590f12b03da124d80a7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the point of intersection with another line as a time value. The answer, if valid, will describe a point of intersection as P = <a class="el" href="classglib_1_1_line.html#afc1ff1d71d395423ca2cbad5205a8c43" title="Gets the first point of the line.">getPoint1()</a> + <a class="el" href="classglib_1_1_line.html#a57be84a379beb8f28e85e29eec303af4" title="Returns a vector that represent the change from point1 to point2.">getToPoint()</a>*t;.  <a href="classglib_1_1_line.html#af6762617ef78590f12b03da124d80a7b">More...</a><br /></td></tr>
+<tr class="separator:af6762617ef78590f12b03da124d80a7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27fe5839e176286a499059d6f1270d93"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_line.html#a27fe5839e176286a499059d6f1270d93">getPointAsParamtetricValue</a> (double x, double y)</td></tr>
+<tr class="memdesc:a27fe5839e176286a499059d6f1270d93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the point on the line as Paramtetric time value. If the point does not lie on the line, NAN is returned.  <a href="classglib_1_1_line.html#a27fe5839e176286a499059d6f1270d93">More...</a><br /></td></tr>
+<tr class="separator:a27fe5839e176286a499059d6f1270d93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a017a5239c891781b19e3fc52770bf257"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_line.html#a017a5239c891781b19e3fc52770bf257">getPointAsParamtetricValue</a> (<a class="el" href="classglib_1_1_vec2f.html">Vec2f</a> p)</td></tr>
+<tr class="memdesc:a017a5239c891781b19e3fc52770bf257"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the point on the line as Paramtetric time value. If the point does not lie on the line, NAN is returned.  <a href="classglib_1_1_line.html#a017a5239c891781b19e3fc52770bf257">More...</a><br /></td></tr>
+<tr class="separator:a017a5239c891781b19e3fc52770bf257"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -342,7 +351,7 @@ static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><
       </table>
 </div><div class="memdoc">
 
-<p>Gets the point of intersection with another line. May be invalid if the lines never intersect. </p>
+<p>Gets a point of intersection with another line. May be invalid if the lines never intersect. If invalid, NAN will be returned. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">other</td><td>The other line to check for intersection with. </td></tr>
@@ -350,6 +359,34 @@ static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classglib_1_1_vec2f.html">Vec2f</a> </dd></dl>
+
+</div>
+</div>
+<a id="af6762617ef78590f12b03da124d80a7b" name="af6762617ef78590f12b03da124d80a7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6762617ef78590f12b03da124d80a7b">&#9670;&nbsp;</a></span>getIntersectionParametric()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double glib::Line::getIntersectionParametric </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classglib_1_1_line.html">Line</a>&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the point of intersection with another line as a time value. The answer, if valid, will describe a point of intersection as P = <a class="el" href="classglib_1_1_line.html#afc1ff1d71d395423ca2cbad5205a8c43" title="Gets the first point of the line.">getPoint1()</a> + <a class="el" href="classglib_1_1_line.html#a57be84a379beb8f28e85e29eec303af4" title="Returns a vector that represent the change from point1 to point2.">getToPoint()</a>*t;. </p>
+<p >If invalid, NAN will be returned.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">other</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>double </dd></dl>
 
 </div>
 </div>
@@ -470,6 +507,71 @@ static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><
 
 <p>Get the second point of the line. </p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classglib_1_1_vec2f.html">Vec2f</a> </dd></dl>
+
+</div>
+</div>
+<a id="a27fe5839e176286a499059d6f1270d93" name="a27fe5839e176286a499059d6f1270d93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27fe5839e176286a499059d6f1270d93">&#9670;&nbsp;</a></span>getPointAsParamtetricValue() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double glib::Line::getPointAsParamtetricValue </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the point on the line as Paramtetric time value. If the point does not lie on the line, NAN is returned. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td></td></tr>
+    <tr><td class="paramname">y</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>double </dd></dl>
+
+</div>
+</div>
+<a id="a017a5239c891781b19e3fc52770bf257" name="a017a5239c891781b19e3fc52770bf257"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a017a5239c891781b19e3fc52770bf257">&#9670;&nbsp;</a></span>getPointAsParamtetricValue() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double glib::Line::getPointAsParamtetricValue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classglib_1_1_vec2f.html">Vec2f</a>&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the point on the line as Paramtetric time value. If the point does not lie on the line, NAN is returned. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">p</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>double </dd></dl>
 
 </div>
 </div>

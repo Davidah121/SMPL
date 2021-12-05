@@ -815,5 +815,19 @@ namespace glib
 			return L"";
 		#endif
 	}
+
+	
+	void System::clearClipboard()
+	{
+		#ifndef LINUX
+
+			if(!OpenClipboard(NULL))
+				return;
+
+			EmptyClipboard();
+			CloseClipboard();
+
+		#endif
+	}
 	
 } //NAMESPACE glib END

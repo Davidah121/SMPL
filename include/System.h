@@ -348,6 +348,12 @@ namespace glib
 		 * @return std::wstring 
 		 */
 		static std::wstring pasteFromClipboard();
+
+		/**
+		 * @brief Clears data from the clipboard.
+		 * 
+		 */
+		static void clearClipboard();
 		
 	private:
 		static unsigned int numberOfThreads;

@@ -34,7 +34,7 @@ namespace glib
 		template<typename T>
 		static std::wstring toWideString(std::basic_string<T> text)
 		{
-			std::wstring finalText = L"";
+			std::wstring finalText;
 			for (int i = 0; i < text.size(); i++)
 			{
 				finalText += (wchar_t)text[i];
@@ -53,10 +53,49 @@ namespace glib
 		template<typename T>
 		static std::string toCString(std::basic_string<T> text)
 		{
-			std::string finalText = "";
+			std::string finalText;
+
 			for (int i = 0; i < text.size(); i++)
 			{
 				finalText += (char)text[i];
+			}
+
+			return finalText;
+		}
+
+		/**
+		 * @brief Converts any string to lowercase
+		 * 
+		 * @tparam T 
+		 * @param text 
+		 * @return std::basic_string<T>
+		 */
+		template<typename T>
+		static std::basic_string<T> toLowercase(std::basic_string<T> text)
+		{
+			std::basic_string<T> finalText;
+			for (int i = 0; i < text.size(); i++)
+			{
+				finalText += tolower(text[i]);
+			}
+
+			return finalText;
+		}
+
+		/**
+		 * @brief Converts any string to uppercase
+		 * 
+		 * @tparam T 
+		 * @param text 
+		 * @return std::basic_string<T>
+		 */
+		template<typename T>
+		static std::basic_string<T> toUppercase(std::basic_string<T> text)
+		{
+			std::basic_string<T> finalText = "";
+			for (int i = 0; i < text.size(); i++)
+			{
+				finalText += toupper(text[i]);
 			}
 
 			return finalText;

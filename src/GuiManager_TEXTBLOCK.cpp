@@ -15,8 +15,8 @@ namespace glib
 	{
 		setBaseX(x);
 		setBaseY(y);
-		this->width = width;
-		this->height = height;
+		this->maxWidth = width;
+		this->maxHeight = height;
 	}
 
 	GuiTextBlock::~GuiTextBlock()
@@ -26,56 +26,37 @@ namespace glib
 
 	void GuiTextBlock::update()
 	{
-		
+		Font* currFont = textFont;
+		if(currFont == nullptr)
+			currFont = SimpleGraphics::getFont();
+
+		int totalWidth = currFont->getWidthOfString(text);
+
 	}
 
 	void GuiTextBlock::render(Image* surf)
 	{
 		if(surf!=nullptr)
 		{
-			Font* oldFont = Graphics::getFont();
+			Font* oldFont = SimpleGraphics::getFont();
 
 			if(textFont!=nullptr)
-				Graphics::setFont(textFont);
+				SimpleGraphics::setFont(textFont);
 
-			Graphics::setColor(textColor);
+			SimpleGraphics::setColor(textColor);
 
-			Graphics::setClippingRect( Box2D(renderX, renderY, renderX+width, renderY+height) );
-			Graphics::drawTextLimits(text, renderX+offsetX, renderY+offsetY, width-offsetX, height-offsetY, allowLineBreaks, surf);
-
-			if(shouldHighlight && endHighlight>=0 && startHighlight>=0)
-			{
-				int actualS, actualE;
-
-				actualS = MathExt::clamp(startHighlight, 0, (int)text.size());
-				actualE = MathExt::clamp(endHighlight, 0, (int)text.size());
-
-				if(actualS > actualE)
-				{
-					int swap = actualS;
-					actualS = actualE;
-					actualE = swap;
-				}
-				
-				Font* currFont = Graphics::getFont();
-				std::string startString, endString;
-				startString = text.substr(0, actualS);
-				endString = text.substr(actualE, text.size());
-
-				int startWidth = currFont->getWidthOfString(startString);
-				int endWidth = currFont->getWidthOfString(endString);
-
-				int totalWidth = currFont->getWidthOfString(text);
-				
-				totalWidth -= (startWidth + endWidth);
-
-				Graphics::setColor(highlightColor);
-				int sX = renderX + startWidth;
-				Graphics::drawRect(sX+offsetX, renderY+offsetY, sX+totalWidth+offsetX, renderY+offsetY+currFont->getFontSize(), false, surf);
-			}
+			int actualMaxW = (maxWidth <= 0) ? 0xFFFF : maxWidth;
+			int actualMaxH = (maxHeight <= 0) ? 0xFFFF : maxHeight;
 			
-			Graphics::resetClippingPlane();
-			Graphics::setFont(oldFont);
+
+			SimpleGraphics::setClippingRect( Box2D(renderX, renderY, renderX+actualMaxW, renderY+actualMaxH) );
+			if(shouldHighlight)
+				SimpleGraphics::drawTextLimitsHighlighted(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowLineBreaks, startHighlight, endHighlight, highlightColor, surf);
+			else
+				SimpleGraphics::drawTextLimits(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowLineBreaks, surf);
+			
+			SimpleGraphics::resetClippingPlane();
+			SimpleGraphics::setFont(oldFont);
 		}
 	}
 
@@ -89,19 +70,24 @@ namespace glib
 		return textColor;
 	}
 
-	std::string GuiTextBlock::getText()
+	std::wstring GuiTextBlock::getText()
 	{
 		return text;
 	}
 
-	std::string& GuiTextBlock::getTextRef()
+	std::wstring& GuiTextBlock::getTextRef()
 	{
 		return text;
+	}
+
+	void GuiTextBlock::setText(std::wstring s)
+	{
+		text = s;
 	}
 
 	void GuiTextBlock::setText(std::string s)
 	{
-		text = s;
+		text = StringTools::toWideString(s);
 	}
 
 	void GuiTextBlock::setFont(Font* f)
@@ -114,22 +100,22 @@ namespace glib
 		return textFont;
 	}
 
-	void GuiTextBlock::setWidth(int v)
+	void GuiTextBlock::setMaxWidth(int v)
 	{
-		width = v;
+		maxWidth = v;
 	}
-	void GuiTextBlock::setHeight(int v)
+	void GuiTextBlock::setMaxHeight(int v)
 	{
-		height = v;
+		maxHeight = v;
 	}
 
-	int GuiTextBlock::getWidth()
+	int GuiTextBlock::getMaxWidth()
 	{
-		return width;
+		return maxWidth;
 	}
-	int GuiTextBlock::getHeight()
+	int GuiTextBlock::getMaxHeight()
 	{
-		return height;
+		return maxHeight;
 	}
 
 	void GuiTextBlock::setHighlightColor(Color c)
@@ -186,6 +172,83 @@ namespace glib
 	{
 		offsetY = y;
 	}
+
+	void GuiTextBlock::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attributes)
+	{
+		GuiInstance::loadDataFromXML(attributes);
+
+		std::vector<std::wstring> possibleNames = { L"maxwidth", L"maxheight", L"textcolor", L"highlightcolor", L"allowhighlight", L"allowlinebreaks", L"highlightstart", L"highlightend", L"offsetx", L"offsety", L"text" };
+
+		for(int i=0; i<possibleNames.size(); i++)
+		{
+			auto it = attributes.find(possibleNames[i]);
+			if(it != attributes.end())
+			{
+				if(possibleNames[i] == L"maxwidth")
+				{
+					this->maxWidth = StringTools::toInt(it->second);
+				}
+				else if(possibleNames[i] == L"maxheight")
+				{
+					this->maxHeight = StringTools::toInt(it->second);
+				}
+				else if(possibleNames[i] == L"textcolor")
+				{
+					//define as color name or rgba
+					this->textColor = ColorNameConverter::NameToColor(it->second);
+				}
+				else if(possibleNames[i] == L"highlightcolor")
+				{
+					//define as color name or rgba
+					this->highlightColor = ColorNameConverter::NameToColor(it->second);
+				}
+				else if(possibleNames[i] == L"allowhighlight")
+				{
+					this->shouldHighlight = StringTools::equalsIgnoreCase<wchar_t>(it->second, L"true");
+				}
+				else if(possibleNames[i] == L"allowlinebreaks")
+				{
+					this->allowLineBreaks = StringTools::equalsIgnoreCase<wchar_t>(it->second, L"true");
+				}
+				else if(possibleNames[i] == L"highlightstart")
+				{
+					this->startHighlight = StringTools::toInt(it->second);
+				}
+				else if(possibleNames[i] == L"highlightend")
+				{
+					this->endHighlight = StringTools::toInt(it->second);
+				}
+				else if(possibleNames[i] == L"offsetx")
+				{
+					this->offsetX = StringTools::toInt(it->second);
+				}
+				else if(possibleNames[i] == L"offsety")
+				{
+					this->offsetY = StringTools::toInt(it->second);
+				}
+				else if(possibleNames[i] == L"text")
+				{
+					this->text = it->second;
+				}
+
+				attributes.erase(possibleNames[i]);
+			}
+		}
+	}
+
+	GuiInstance* GuiTextBlock::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes)
+	{
+		GuiTextBlock* ins = new GuiTextBlock(0, 0);
+		ins->loadDataFromXML(attributes);
+
+		return ins;
+	}
+
+	void GuiTextBlock::registerLoadFunction()
+	{
+		GuiManager::registerLoadFunction(L"TextBlock", GuiTextBlock::loadFunction);
+	}
+
 
 	#pragma endregion
 

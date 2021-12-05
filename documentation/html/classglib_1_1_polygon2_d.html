@@ -69,7 +69,9 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="classglib_1_1_polygon2_d-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">glib::Polygon2D Class Reference</div></div>
 </div><!--header-->
@@ -104,7 +106,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a9e03037a9908ebdb6c8ba75669974cfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a vertex from the polygon at the specified index.  <a href="classglib_1_1_polygon2_d.html#a9e03037a9908ebdb6c8ba75669974cfc">More...</a><br /></td></tr>
 <tr class="separator:a9e03037a9908ebdb6c8ba75669974cfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40a203855df394bb40d710379f266e5f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classglib_1_1_vec2f.html">Vec2f</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_polygon2_d.html#a40a203855df394bb40d710379f266e5f">getCenterPoint</a> ()</td></tr>
-<tr class="memdesc:a40a203855df394bb40d710379f266e5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the Center Point of the polygon.  <a href="classglib_1_1_polygon2_d.html#a40a203855df394bb40d710379f266e5f">More...</a><br /></td></tr>
+<tr class="memdesc:a40a203855df394bb40d710379f266e5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the Center <a class="el" href="struct_point.html">Point</a> of the polygon.  <a href="classglib_1_1_polygon2_d.html#a40a203855df394bb40d710379f266e5f">More...</a><br /></td></tr>
 <tr class="separator:a40a203855df394bb40d710379f266e5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f56d45f6b5f8a6c0aa585cf53b751a7"><td class="memItemLeft" align="right" valign="top"><a id="a7f56d45f6b5f8a6c0aa585cf53b751a7" name="a7f56d45f6b5f8a6c0aa585cf53b751a7"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr>
@@ -146,10 +148,18 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr
 <tr class="memitem:a1318ebdf871ad82be25469ce215e0858 inherit pub_methods_classglib_1_1_shape"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_shape.html#a1318ebdf871ad82be25469ce215e0858">getRotation</a> ()</td></tr>
 <tr class="memdesc:a1318ebdf871ad82be25469ce215e0858 inherit pub_methods_classglib_1_1_shape"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Rotation of the shape.  <a href="classglib_1_1_shape.html#a1318ebdf871ad82be25469ce215e0858">More...</a><br /></td></tr>
 <tr class="separator:a1318ebdf871ad82be25469ce215e0858 inherit pub_methods_classglib_1_1_shape"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab488ee41ba78c6208c54dc7c911ebd1b inherit pub_methods_classglib_1_1_shape"><td class="memItemLeft" align="right" valign="top"><a id="ab488ee41ba78c6208c54dc7c911ebd1b" name="ab488ee41ba78c6208c54dc7c911ebd1b"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>transform</b> ()</td></tr>
-<tr class="memdesc:ab488ee41ba78c6208c54dc7c911ebd1b inherit pub_methods_classglib_1_1_shape"><td class="mdescLeft">&#160;</td><td class="mdescRight">A virtual function to apply transforms to the object before collision. <br /></td></tr>
-<tr class="separator:ab488ee41ba78c6208c54dc7c911ebd1b inherit pub_methods_classglib_1_1_shape"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a08268d2a59bda2fd440ef1b5024867c6"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classglib_1_1_polygon2_d.html">Polygon2D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_polygon2_d.html#a08268d2a59bda2fd440ef1b5024867c6">approximateCircle</a> (double radius, int n)</td></tr>
+<tr class="memdesc:a08268d2a59bda2fd440ef1b5024867c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a 2D polygon that approximates a circle.  <a href="classglib_1_1_polygon2_d.html#a08268d2a59bda2fd440ef1b5024867c6">More...</a><br /></td></tr>
+<tr class="separator:a08268d2a59bda2fd440ef1b5024867c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6d6ba89082e8e0dab56f0eedb9c9a97"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classglib_1_1_polygon2_d.html">Polygon2D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_polygon2_d.html#ad6d6ba89082e8e0dab56f0eedb9c9a97">approximateEllipse</a> (double xRadius, double yRadius, int n)</td></tr>
+<tr class="memdesc:ad6d6ba89082e8e0dab56f0eedb9c9a97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a 2D polygon that approximates a ellipse.  <a href="classglib_1_1_polygon2_d.html#ad6d6ba89082e8e0dab56f0eedb9c9a97">More...</a><br /></td></tr>
+<tr class="separator:ad6d6ba89082e8e0dab56f0eedb9c9a97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4dd0bb8d8bec37b0f0341e71904eac0"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classglib_1_1_polygon2_d.html">Polygon2D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_polygon2_d.html#ae4dd0bb8d8bec37b0f0341e71904eac0">approximateArc</a> (double xRadius, double yRadius, double startAngle, double endAngle, int n)</td></tr>
+<tr class="memdesc:ae4dd0bb8d8bec37b0f0341e71904eac0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a 2D polygon that approximates an arc from an ellipse. The center of the ellipse will be included at (0,0)  <a href="classglib_1_1_polygon2_d.html#ae4dd0bb8d8bec37b0f0341e71904eac0">More...</a><br /></td></tr>
+<tr class="separator:ae4dd0bb8d8bec37b0f0341e71904eac0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -165,6 +175,11 @@ static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><
 static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><td class="memItemRight" valign="bottom"><b>myClass</b></td></tr>
 <tr class="separator:aff9d6262ae7deeb357e80d79ae5f5917 inherit pub_static_attribs_classglib_1_1_object"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a073e94ef72f70a3449ed4df226f653ab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_polygon2_d.html#a073e94ef72f70a3449ed4df226f653ab">onTransformChanged</a> ()</td></tr>
+<tr class="separator:a073e94ef72f70a3449ed4df226f653ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_attribs_classglib_1_1_shape"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classglib_1_1_shape')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classglib_1_1_shape.html">glib::Shape</a></td></tr>
@@ -172,7 +187,7 @@ Additional Inherited Members</h2></td></tr>
 <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>position</b> = <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>()</td></tr>
 <tr class="separator:aa48beb5492fe70dabf828ed9122e01d2 inherit pro_attribs_classglib_1_1_shape"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7e7eb1b1e4bb4d44b2c7eff866ff72b inherit pro_attribs_classglib_1_1_shape"><td class="memItemLeft" align="right" valign="top"><a id="ab7e7eb1b1e4bb4d44b2c7eff866ff72b" name="ab7e7eb1b1e4bb4d44b2c7eff866ff72b"></a>
-<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>scale</b> = <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>()</td></tr>
+<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>scale</b> = <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>(1,1,1)</td></tr>
 <tr class="separator:ab7e7eb1b1e4bb4d44b2c7eff866ff72b inherit pro_attribs_classglib_1_1_shape"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29b0beb80ab12f51aa52bd1a4556e47b inherit pro_attribs_classglib_1_1_shape"><td class="memItemLeft" align="right" valign="top"><a id="a29b0beb80ab12f51aa52bd1a4556e47b" name="a29b0beb80ab12f51aa52bd1a4556e47b"></a>
 <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>rotation</b> = <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>()</td></tr>
@@ -202,6 +217,172 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="ae4dd0bb8d8bec37b0f0341e71904eac0" name="ae4dd0bb8d8bec37b0f0341e71904eac0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4dd0bb8d8bec37b0f0341e71904eac0">&#9670;&nbsp;</a></span>approximateArc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classglib_1_1_polygon2_d.html">Polygon2D</a> glib::Polygon2D::approximateArc </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xRadius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yRadius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>startAngle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>endAngle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generates a 2D polygon that approximates an arc from an ellipse. The center of the ellipse will be included at (0,0) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">xRadius</td><td>The x radius of the ellipse </td></tr>
+    <tr><td class="paramname">yRadius</td><td>The y radius of the ellipse </td></tr>
+    <tr><td class="paramname">startAngle</td><td>The start angle for the arc. Radians expected. </td></tr>
+    <tr><td class="paramname">endAngle</td><td>The end angle for the arc. Radians expected. </td></tr>
+    <tr><td class="paramname">n</td><td>The amount of samples from the ellipse to create the polygon </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classglib_1_1_polygon2_d.html">Polygon2D</a> </dd></dl>
+
+</div>
+</div>
+<a id="a08268d2a59bda2fd440ef1b5024867c6" name="a08268d2a59bda2fd440ef1b5024867c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08268d2a59bda2fd440ef1b5024867c6">&#9670;&nbsp;</a></span>approximateCircle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classglib_1_1_polygon2_d.html">Polygon2D</a> glib::Polygon2D::approximateCircle </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generates a 2D polygon that approximates a circle. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">radius</td><td>The radius of the circle </td></tr>
+    <tr><td class="paramname">n</td><td>The amount of samples from the circle to create the polygon </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classglib_1_1_polygon2_d.html">Polygon2D</a> </dd></dl>
+
+</div>
+</div>
+<a id="ad6d6ba89082e8e0dab56f0eedb9c9a97" name="ad6d6ba89082e8e0dab56f0eedb9c9a97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6d6ba89082e8e0dab56f0eedb9c9a97">&#9670;&nbsp;</a></span>approximateEllipse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classglib_1_1_polygon2_d.html">Polygon2D</a> glib::Polygon2D::approximateEllipse </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xRadius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yRadius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generates a 2D polygon that approximates a ellipse. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">xRadius</td><td>The x radius of the ellipse </td></tr>
+    <tr><td class="paramname">yRadius</td><td>The y radius of the ellipse </td></tr>
+    <tr><td class="paramname">n</td><td>The amount of samples from the ellipse to create the polygon </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classglib_1_1_polygon2_d.html">Polygon2D</a> </dd></dl>
 
 </div>
 </div>
@@ -250,7 +431,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Gets the Center Point of the polygon. </p>
+<p>Gets the Center <a class="el" href="struct_point.html">Point</a> of the polygon. </p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classglib_1_1_vec2f.html">Vec2f</a> </dd></dl>
 
 </div>
@@ -328,6 +509,33 @@ false </dd></dl>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classglib_1_1_vec2f.html">Vec2f</a> </dd></dl>
+
+</div>
+</div>
+<a id="a073e94ef72f70a3449ed4df226f653ab" name="a073e94ef72f70a3449ed4df226f653ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a073e94ef72f70a3449ed4df226f653ab">&#9670;&nbsp;</a></span>onTransformChanged()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void glib::Polygon2D::onTransformChanged </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classglib_1_1_shape.html">glib::Shape</a>.</p>
 
 </div>
 </div>

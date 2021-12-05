@@ -6,265 +6,310 @@
 \DoxyCodeLine{2 \textcolor{preprocessor}{\#include "{}Image.h"{}}}
 \DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}GuiManager.h"{}}}
 \DoxyCodeLine{4 }
-\DoxyCodeLine{5 \textcolor{preprocessor}{\#ifndef WIN32\_LEAN\_AND\_MEAN}}
-\DoxyCodeLine{6 \textcolor{preprocessor}{    \#define WIN32\_LEAN\_AND\_MEAN}}
-\DoxyCodeLine{7 \textcolor{preprocessor}{\#endif}}
-\DoxyCodeLine{8 \textcolor{preprocessor}{\#include <Windows.h>}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#ifdef LINUX}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{    \#include <X11/Xlib.h>}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{    \#include <X11/Xatom.h>}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{    \#include <X11/Xutil.h>}}
 \DoxyCodeLine{9 }
-\DoxyCodeLine{10 \textcolor{preprocessor}{\#include <thread>}}
-\DoxyCodeLine{11 \textcolor{preprocessor}{\#include <vector>}}
-\DoxyCodeLine{12 \textcolor{preprocessor}{\#include <mutex>}}
-\DoxyCodeLine{13 }
-\DoxyCodeLine{14 \textcolor{keyword}{namespace }glib}
-\DoxyCodeLine{15 \{}
-\DoxyCodeLine{16 }
-\DoxyCodeLine{17     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_simple_window}{SimpleWindow}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
-\DoxyCodeLine{18     \{}
-\DoxyCodeLine{19     \textcolor{keyword}{public}:}
-\DoxyCodeLine{20         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} MOUSE\_LEFT = 0x00;}
-\DoxyCodeLine{21         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} MOUSE\_MIDDLE = 0x01;}
-\DoxyCodeLine{22         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} MOUSE\_RIGHT = 0x02;}
-\DoxyCodeLine{23 }
-\DoxyCodeLine{24         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} NORMAL\_WINDOW = 0b0000;}
-\DoxyCodeLine{25         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} BORDERLESS\_WINDOW = 0b0001;}
-\DoxyCodeLine{26 }
-\DoxyCodeLine{27         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} STATE\_NORMAL = 0x00;}
-\DoxyCodeLine{28         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} STATE\_MAXIMIZED = 0x01;}
-\DoxyCodeLine{29         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} STATE\_MINIMIZED = 0x02;}
-\DoxyCodeLine{30         }
-\DoxyCodeLine{31         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} TYPE\_FOCUSABLE = 0b0000;}
-\DoxyCodeLine{32         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} TYPE\_NONFOCUSABLE = 0b0010;}
-\DoxyCodeLine{33 }
-\DoxyCodeLine{34         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} TYPE\_THREAD\_MANAGED = 0b0000;}
-\DoxyCodeLine{35         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} TYPE\_USER\_MANAGED = 0b0100;}
-\DoxyCodeLine{36         }
-\DoxyCodeLine{47         \mbox{\hyperlink{classglib_1_1_simple_window_ae680ec044a31c26e9cc5e40d86e64266}{SimpleWindow}}();}
-\DoxyCodeLine{48 }
-\DoxyCodeLine{78         \mbox{\hyperlink{classglib_1_1_simple_window_a965438de02c1c434921bbf57977d997e}{SimpleWindow}}(std::wstring title, \textcolor{keywordtype}{int} width = 320, \textcolor{keywordtype}{int} height = 240, \textcolor{keywordtype}{int} x = -\/1, \textcolor{keywordtype}{int} y = -\/1, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} windowType = 0);}
-\DoxyCodeLine{79 }
-\DoxyCodeLine{109         \mbox{\hyperlink{classglib_1_1_simple_window_aa7c22485a6900403e45ae9cefdf0a86e}{SimpleWindow}}(std::string title, \textcolor{keywordtype}{int} width = 320, \textcolor{keywordtype}{int} height = 240, \textcolor{keywordtype}{int} x = -\/1, \textcolor{keywordtype}{int} y = -\/1, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} windowType = 0);}
-\DoxyCodeLine{110 }
-\DoxyCodeLine{117         \mbox{\hyperlink{classglib_1_1_simple_window_aed0664cada4aa9f0697a7d0bbf8b22af}{\string~SimpleWindow}}();}
-\DoxyCodeLine{118 }
-\DoxyCodeLine{119         \textcolor{comment}{//Object and Class Stuff}}
-\DoxyCodeLine{120         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
-\DoxyCodeLine{121         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
-\DoxyCodeLine{122 }
-\DoxyCodeLine{128         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_ab63c4abb3df7903a18fe75371b1e809f}{setVisible}}(\textcolor{keywordtype}{bool} value);}
-\DoxyCodeLine{129 }
-\DoxyCodeLine{136         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a97efadf6d1e374f2ff08dd20de9e3f79}{setX}}(\textcolor{keywordtype}{int} x);}
-\DoxyCodeLine{137 }
-\DoxyCodeLine{144         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a5ceb9f08f78ae7434d114e8e0b7cf7d9}{setY}}(\textcolor{keywordtype}{int} y);}
-\DoxyCodeLine{145 }
-\DoxyCodeLine{153         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a46c4aeb073590e0aa1694dc1e78f70e6}{setPosition}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y);}
-\DoxyCodeLine{154 }
-\DoxyCodeLine{160         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a96edc75ae63db26efedb88864c2a915a}{setWidth}}(\textcolor{keywordtype}{int} width);}
-\DoxyCodeLine{161 }
-\DoxyCodeLine{167         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a11d6f499afa8ccdd2d5b6f640ff2ca06}{setHeight}}(\textcolor{keywordtype}{int} height);}
-\DoxyCodeLine{168 }
-\DoxyCodeLine{175         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a2c0dc2e492d587dadf9eb483df74a95b}{setSize}}(\textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height);}
-\DoxyCodeLine{176 }
-\DoxyCodeLine{183         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_window_aa5a1158fe2fabdf269af8179e206d00d}{getMouseX}}();}
-\DoxyCodeLine{184 }
-\DoxyCodeLine{191         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_window_a85834aa538e093135ff515abc2b1af5e}{getMouseY}}();}
-\DoxyCodeLine{192 }
-\DoxyCodeLine{198         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_window_a082894638d25003f0cc473fa1898854b}{getWidth}}();}
-\DoxyCodeLine{199 }
-\DoxyCodeLine{205         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_window_a55e529c6214ec9701ce05b1d827d2c0d}{getHeight}}();}
-\DoxyCodeLine{206 }
-\DoxyCodeLine{212         std::wstring \mbox{\hyperlink{classglib_1_1_simple_window_aa62d723c7cca0d87d0a8d5fb5164f1cb}{getTitle}}();}
-\DoxyCodeLine{213 }
-\DoxyCodeLine{220         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_window_a759c57a86cd54a528d5eef28ae3148a9}{getImageSize}}();}
-\DoxyCodeLine{221 }
-\DoxyCodeLine{228         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_window_a7a4d6907c944bf85c4c07a61e3de24ce}{getValid}}();}
-\DoxyCodeLine{229 }
-\DoxyCodeLine{236         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_window_a763059e54d640c6dbc751326fdac3404}{getRunning}}();}
-\DoxyCodeLine{237 }
-\DoxyCodeLine{242         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a762ed3ad210fb82f5e372549b139f714}{close}}();}
-\DoxyCodeLine{243 }
-\DoxyCodeLine{250         HWND \mbox{\hyperlink{classglib_1_1_simple_window_a93b1851fd15eaf3881fbca59ab16eb6b}{getWindowHandle}}();}
-\DoxyCodeLine{251 }
-\DoxyCodeLine{259         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a2342ffb08fb3ffef61bc14cee3271a66}{setPaintFunction}}(std::function<\textcolor{keywordtype}{void}()> \textcolor{keyword}{function});}
+\DoxyCodeLine{10     \textcolor{keyword}{struct }MwmHints \{}
+\DoxyCodeLine{11         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} flags;}
+\DoxyCodeLine{12         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} functions;}
+\DoxyCodeLine{13         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} decorations;}
+\DoxyCodeLine{14         \textcolor{keywordtype}{long} input\_mode;}
+\DoxyCodeLine{15         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long} status;}
+\DoxyCodeLine{16     \};}
+\DoxyCodeLine{17     }
+\DoxyCodeLine{18     \textcolor{keyword}{enum} \{}
+\DoxyCodeLine{19         MWM\_HINTS\_FUNCTIONS = (1L << 0),}
+\DoxyCodeLine{20         MWM\_HINTS\_DECORATIONS =  (1L << 1),}
+\DoxyCodeLine{21 }
+\DoxyCodeLine{22         MWM\_FUNC\_ALL = (1L << 0),}
+\DoxyCodeLine{23         MWM\_FUNC\_RESIZE = (1L << 1),}
+\DoxyCodeLine{24         MWM\_FUNC\_MOVE = (1L << 2),}
+\DoxyCodeLine{25         MWM\_FUNC\_MINIMIZE = (1L << 3),}
+\DoxyCodeLine{26         MWM\_FUNC\_MAXIMIZE = (1L << 4),}
+\DoxyCodeLine{27         MWM\_FUNC\_CLOSE = (1L << 5)}
+\DoxyCodeLine{28     \};}
+\DoxyCodeLine{29 }
+\DoxyCodeLine{30 \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{31 \textcolor{preprocessor}{    \#ifndef WIN32\_LEAN\_AND\_MEAN}}
+\DoxyCodeLine{32 \textcolor{preprocessor}{        \#define WIN32\_LEAN\_AND\_MEAN}}
+\DoxyCodeLine{33 \textcolor{preprocessor}{    \#endif}}
+\DoxyCodeLine{34 \textcolor{preprocessor}{    \#include <Windows.h>}}
+\DoxyCodeLine{35 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{36 }
+\DoxyCodeLine{37 }
+\DoxyCodeLine{38 }
+\DoxyCodeLine{39 \textcolor{preprocessor}{\#include <exception>}}
+\DoxyCodeLine{40 \textcolor{preprocessor}{\#include <thread>}}
+\DoxyCodeLine{41 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{42 \textcolor{preprocessor}{\#include <mutex>}}
+\DoxyCodeLine{43 }
+\DoxyCodeLine{44 \textcolor{keyword}{namespace }glib}
+\DoxyCodeLine{45 \{}
+\DoxyCodeLine{46 }
+\DoxyCodeLine{47     \textcolor{keyword}{class }\mbox{\hyperlink{classglib_1_1_simple_window}{SimpleWindow}} : \textcolor{keyword}{public} \mbox{\hyperlink{classglib_1_1_object}{Object}}}
+\DoxyCodeLine{48     \{}
+\DoxyCodeLine{49     \textcolor{keyword}{public}:}
+\DoxyCodeLine{50         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} MOUSE\_LEFT = 0x00;}
+\DoxyCodeLine{51         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} MOUSE\_MIDDLE = 0x01;}
+\DoxyCodeLine{52         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} MOUSE\_RIGHT = 0x02;}
+\DoxyCodeLine{53 }
+\DoxyCodeLine{54         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} NORMAL\_WINDOW = 0b0000;}
+\DoxyCodeLine{55         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} BORDERLESS\_WINDOW = 0b0001;}
+\DoxyCodeLine{56         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} FULLSCREEN\_WINDOW = 0b1000;}
+\DoxyCodeLine{57 }
+\DoxyCodeLine{58         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} STATE\_NORMAL = 0x00;}
+\DoxyCodeLine{59         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} STATE\_MAXIMIZED = 0x01;}
+\DoxyCodeLine{60         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} STATE\_MINIMIZED = 0x02;}
+\DoxyCodeLine{61         }
+\DoxyCodeLine{62         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} TYPE\_FOCUSABLE = 0b0000;}
+\DoxyCodeLine{63         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} TYPE\_NONFOCUSABLE = 0b0010;}
+\DoxyCodeLine{64 }
+\DoxyCodeLine{65         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} TYPE\_THREAD\_MANAGED = 0b0000;}
+\DoxyCodeLine{66         \textcolor{keyword}{static} \textcolor{keyword}{const} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} TYPE\_USER\_MANAGED = 0b0100;}
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68         \textcolor{keyword}{struct }\mbox{\hyperlink{structglib_1_1_simple_window_1_1_window_creation_error}{WindowCreationError}} : \textcolor{keyword}{public} std::exception}
+\DoxyCodeLine{69         \{}
+\DoxyCodeLine{70             \textcolor{keyword}{const} \textcolor{keywordtype}{char}* what() \textcolor{keyword}{const} \textcolor{keywordflow}{throw}() \{ \textcolor{keywordflow}{return} \textcolor{stringliteral}{"{}Error creating window"{}}; \}}
+\DoxyCodeLine{71         \};}
+\DoxyCodeLine{72         }
+\DoxyCodeLine{83         \mbox{\hyperlink{classglib_1_1_simple_window_ae680ec044a31c26e9cc5e40d86e64266}{SimpleWindow}}();}
+\DoxyCodeLine{84 }
+\DoxyCodeLine{116         \mbox{\hyperlink{classglib_1_1_simple_window_a51aba8a2a25bb5a67e5df59d0dc431fd}{SimpleWindow}}(std::wstring title, \textcolor{keywordtype}{int} width = 320, \textcolor{keywordtype}{int} height = 240, \textcolor{keywordtype}{int} x = -\/1, \textcolor{keywordtype}{int} y = -\/1, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} windowType = NORMAL\_WINDOW);}
+\DoxyCodeLine{117 }
+\DoxyCodeLine{149         \mbox{\hyperlink{classglib_1_1_simple_window_ae6e359cbd26a7c151b60732411198226}{SimpleWindow}}(std::string title, \textcolor{keywordtype}{int} width = 320, \textcolor{keywordtype}{int} height = 240, \textcolor{keywordtype}{int} x = -\/1, \textcolor{keywordtype}{int} y = -\/1, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} windowType = NORMAL\_WINDOW);}
+\DoxyCodeLine{150 }
+\DoxyCodeLine{157         \mbox{\hyperlink{classglib_1_1_simple_window_aed0664cada4aa9f0697a7d0bbf8b22af}{\string~SimpleWindow}}();}
+\DoxyCodeLine{158 }
+\DoxyCodeLine{159         \textcolor{comment}{//Object and Class Stuff}}
+\DoxyCodeLine{160         \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}}* getClass();}
+\DoxyCodeLine{161         \textcolor{keyword}{static} \textcolor{keyword}{const} \mbox{\hyperlink{classglib_1_1_class}{Class}} myClass;}
+\DoxyCodeLine{162 }
+\DoxyCodeLine{168         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_ab63c4abb3df7903a18fe75371b1e809f}{setVisible}}(\textcolor{keywordtype}{bool} value);}
+\DoxyCodeLine{169 }
+\DoxyCodeLine{176         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a97efadf6d1e374f2ff08dd20de9e3f79}{setX}}(\textcolor{keywordtype}{int} x);}
+\DoxyCodeLine{177 }
+\DoxyCodeLine{184         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a5ceb9f08f78ae7434d114e8e0b7cf7d9}{setY}}(\textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{185 }
+\DoxyCodeLine{193         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a46c4aeb073590e0aa1694dc1e78f70e6}{setPosition}}(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y);}
+\DoxyCodeLine{194 }
+\DoxyCodeLine{200         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a96edc75ae63db26efedb88864c2a915a}{setWidth}}(\textcolor{keywordtype}{int} width);}
+\DoxyCodeLine{201 }
+\DoxyCodeLine{207         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a11d6f499afa8ccdd2d5b6f640ff2ca06}{setHeight}}(\textcolor{keywordtype}{int} height);}
+\DoxyCodeLine{208 }
+\DoxyCodeLine{215         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a2c0dc2e492d587dadf9eb483df74a95b}{setSize}}(\textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height);}
+\DoxyCodeLine{216 }
+\DoxyCodeLine{223         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_window_aa5a1158fe2fabdf269af8179e206d00d}{getMouseX}}();}
+\DoxyCodeLine{224 }
+\DoxyCodeLine{231         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_window_a85834aa538e093135ff515abc2b1af5e}{getMouseY}}();}
+\DoxyCodeLine{232 }
+\DoxyCodeLine{238         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_window_a082894638d25003f0cc473fa1898854b}{getWidth}}();}
+\DoxyCodeLine{239 }
+\DoxyCodeLine{245         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_window_a55e529c6214ec9701ce05b1d827d2c0d}{getHeight}}();}
+\DoxyCodeLine{246 }
+\DoxyCodeLine{252         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_window_a7e499e0823ed0ee743266d5a5233e8a1}{getX}}();}
+\DoxyCodeLine{253 }
+\DoxyCodeLine{259         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_window_ad8189c983072d028c61e809c6c9b0e33}{getY}}();}
 \DoxyCodeLine{260 }
-\DoxyCodeLine{267         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a2c18e4957af70281f7fca74a50374451}{setMouseMovedFunction}}(std::function<\textcolor{keywordtype}{void}()> \textcolor{keyword}{function});}
-\DoxyCodeLine{268 }
-\DoxyCodeLine{275         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a3e0e64439c7448c495fd7cf28fbd496e}{setClosingFunction}}(std::function<\textcolor{keywordtype}{void}()> \textcolor{keyword}{function});}
-\DoxyCodeLine{276 }
-\DoxyCodeLine{285         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a0cec0d31976f6059c8891a844dd88c1b}{setKeyUpFunction}}(std::function<\textcolor{keywordtype}{void}(WPARAM, LPARAM)> \textcolor{keyword}{function});}
-\DoxyCodeLine{286 }
-\DoxyCodeLine{295         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_ae8c7284f40ee523deb61248eeb62752a}{setKeyDownFunction}}(std::function<\textcolor{keywordtype}{void}(WPARAM, LPARAM)> \textcolor{keyword}{function});}
-\DoxyCodeLine{296 }
-\DoxyCodeLine{304         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a55d03e50c4a1252d795785659ff113c6}{setMouseButtonDownFunction}}(std::function<\textcolor{keywordtype}{void}(\textcolor{keywordtype}{int})> \textcolor{keyword}{function});}
-\DoxyCodeLine{305 }
-\DoxyCodeLine{313         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a56f718599fc5579213c93135589c9e1a}{setMouseButtonUpFunction}}(std::function<\textcolor{keywordtype}{void}(\textcolor{keywordtype}{int})> \textcolor{keyword}{function});}
-\DoxyCodeLine{314 }
-\DoxyCodeLine{323         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_abafc59bcc6d8ff670af29979981a2333}{setMouseHWheelFunction}}(std::function<\textcolor{keywordtype}{void}(\textcolor{keywordtype}{int})> \textcolor{keyword}{function});}
+\DoxyCodeLine{266         std::wstring \mbox{\hyperlink{classglib_1_1_simple_window_aa62d723c7cca0d87d0a8d5fb5164f1cb}{getTitle}}();}
+\DoxyCodeLine{267 }
+\DoxyCodeLine{274         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_window_a759c57a86cd54a528d5eef28ae3148a9}{getImageSize}}();}
+\DoxyCodeLine{275 }
+\DoxyCodeLine{282         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_window_a7a4d6907c944bf85c4c07a61e3de24ce}{getValid}}();}
+\DoxyCodeLine{283 }
+\DoxyCodeLine{290         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_window_a763059e54d640c6dbc751326fdac3404}{getRunning}}();}
+\DoxyCodeLine{291 }
+\DoxyCodeLine{296         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a762ed3ad210fb82f5e372549b139f714}{close}}();}
+\DoxyCodeLine{297 }
+\DoxyCodeLine{306         \textcolor{keywordtype}{size\_t} \mbox{\hyperlink{classglib_1_1_simple_window_a7a293e2d34d8defb67da38a79557bf71}{getWindowHandle}}();}
+\DoxyCodeLine{307 }
+\DoxyCodeLine{315         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a2342ffb08fb3ffef61bc14cee3271a66}{setPaintFunction}}(std::function<\textcolor{keywordtype}{void}()> \textcolor{keyword}{function});}
+\DoxyCodeLine{316 }
+\DoxyCodeLine{323         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a2c18e4957af70281f7fca74a50374451}{setMouseMovedFunction}}(std::function<\textcolor{keywordtype}{void}()> \textcolor{keyword}{function});}
 \DoxyCodeLine{324 }
-\DoxyCodeLine{333         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a8dbe93096f2dcbc09ee25aec0ed3f932}{setMouseWheelFunction}}(std::function<\textcolor{keywordtype}{void}(\textcolor{keywordtype}{int})> \textcolor{keyword}{function});}
-\DoxyCodeLine{334 }
-\DoxyCodeLine{340         \mbox{\hyperlink{classglib_1_1_gui_manager}{GuiManager}}* \mbox{\hyperlink{classglib_1_1_simple_window_a562e1ff7721373f422f228b1a93fd9f2}{getGuiManager}}();}
-\DoxyCodeLine{341 }
-\DoxyCodeLine{347         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a49718b77a6cd2c4e5aff264ae0f21116}{setActivateGui}}(\textcolor{keywordtype}{bool} v);}
-\DoxyCodeLine{348 }
-\DoxyCodeLine{355         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_window_ae09810fef38c65065fb6770009e9a4d6}{getActivateGui}}();}
-\DoxyCodeLine{356         }
-\DoxyCodeLine{362         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a474741d2456b1ce0034c77788e7e8a74}{drawImage}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* g);}
-\DoxyCodeLine{363 }
-\DoxyCodeLine{368         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a8adfef2dd8055ee00494a2b4b59d38ed}{guiUpdate}}();}
-\DoxyCodeLine{369 }
-\DoxyCodeLine{375         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a0ae673a7579bbac941bf4d8a27762d51}{update}}();}
-\DoxyCodeLine{376 }
-\DoxyCodeLine{383         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_af2566af2451f3b766e7d310290bdda7e}{repaint}}();}
-\DoxyCodeLine{384 }
-\DoxyCodeLine{390         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a9ba3f2167828d593197a414218a920ab}{setThreadAutoRepaint}}(\textcolor{keywordtype}{bool} v);}
-\DoxyCodeLine{391 }
-\DoxyCodeLine{400         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a8bcee10cecde7c44ff2e5a22371e06f3}{setThreadUpdateTime}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} millis, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} micros = 0);}
-\DoxyCodeLine{401 }
-\DoxyCodeLine{406         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a87268f6e0058cdf544bfba828eb0baff}{waitTillClose}}();}
-\DoxyCodeLine{407 }
-\DoxyCodeLine{408         \textcolor{comment}{//adjustment stuff}}
-\DoxyCodeLine{409 }
-\DoxyCodeLine{417         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_aebb8198d17b15a007590bd2a3a8c137c}{setFocus}}(\textcolor{keywordtype}{bool} v);}
-\DoxyCodeLine{418 }
-\DoxyCodeLine{425         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_window_a7cb64ca82fed762d154883c4f8dad9e6}{getFocus}}();}
-\DoxyCodeLine{426 }
-\DoxyCodeLine{433         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_window_ab1996c40fee027583f27aed1b040eb6f}{getCanFocus}}();}
-\DoxyCodeLine{434 }
-\DoxyCodeLine{440         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a6d654c3c4033341cdf2e99a48d0d440b}{setResizable}}(\textcolor{keywordtype}{bool} v);}
-\DoxyCodeLine{441 }
-\DoxyCodeLine{446         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_window_acf2a1d96c1564fc263a76ce987d09205}{getResizable}}();}
+\DoxyCodeLine{331         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a3e0e64439c7448c495fd7cf28fbd496e}{setClosingFunction}}(std::function<\textcolor{keywordtype}{void}()> \textcolor{keyword}{function});}
+\DoxyCodeLine{332 }
+\DoxyCodeLine{341         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a8b81d894a477a9154037a3f3d087ff0f}{setKeyUpFunction}}(std::function<\textcolor{keywordtype}{void}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long}, \textcolor{keywordtype}{long})> \textcolor{keyword}{function});}
+\DoxyCodeLine{342 }
+\DoxyCodeLine{351         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_abce36ce947675f0f4f093ad81a8f344d}{setKeyDownFunction}}(std::function<\textcolor{keywordtype}{void}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long}, \textcolor{keywordtype}{long})> \textcolor{keyword}{function});}
+\DoxyCodeLine{352 }
+\DoxyCodeLine{360         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a55d03e50c4a1252d795785659ff113c6}{setMouseButtonDownFunction}}(std::function<\textcolor{keywordtype}{void}(\textcolor{keywordtype}{int})> \textcolor{keyword}{function});}
+\DoxyCodeLine{361 }
+\DoxyCodeLine{369         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a56f718599fc5579213c93135589c9e1a}{setMouseButtonUpFunction}}(std::function<\textcolor{keywordtype}{void}(\textcolor{keywordtype}{int})> \textcolor{keyword}{function});}
+\DoxyCodeLine{370 }
+\DoxyCodeLine{379         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_abafc59bcc6d8ff670af29979981a2333}{setMouseHWheelFunction}}(std::function<\textcolor{keywordtype}{void}(\textcolor{keywordtype}{int})> \textcolor{keyword}{function});}
+\DoxyCodeLine{380 }
+\DoxyCodeLine{389         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a8dbe93096f2dcbc09ee25aec0ed3f932}{setMouseWheelFunction}}(std::function<\textcolor{keywordtype}{void}(\textcolor{keywordtype}{int})> \textcolor{keyword}{function});}
+\DoxyCodeLine{390 }
+\DoxyCodeLine{396         \mbox{\hyperlink{classglib_1_1_gui_manager}{GuiManager}}* \mbox{\hyperlink{classglib_1_1_simple_window_a562e1ff7721373f422f228b1a93fd9f2}{getGuiManager}}();}
+\DoxyCodeLine{397 }
+\DoxyCodeLine{403         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a49718b77a6cd2c4e5aff264ae0f21116}{setActivateGui}}(\textcolor{keywordtype}{bool} v);}
+\DoxyCodeLine{404 }
+\DoxyCodeLine{411         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_window_ae09810fef38c65065fb6770009e9a4d6}{getActivateGui}}();}
+\DoxyCodeLine{412         }
+\DoxyCodeLine{418         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a474741d2456b1ce0034c77788e7e8a74}{drawImage}}(\mbox{\hyperlink{classglib_1_1_image}{Image}}* g);}
+\DoxyCodeLine{419 }
+\DoxyCodeLine{424         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a8adfef2dd8055ee00494a2b4b59d38ed}{guiUpdate}}();}
+\DoxyCodeLine{425 }
+\DoxyCodeLine{431         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a0ae673a7579bbac941bf4d8a27762d51}{update}}();}
+\DoxyCodeLine{432 }
+\DoxyCodeLine{439         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_af2566af2451f3b766e7d310290bdda7e}{repaint}}();}
+\DoxyCodeLine{440 }
+\DoxyCodeLine{446         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a9ba3f2167828d593197a414218a920ab}{setThreadAutoRepaint}}(\textcolor{keywordtype}{bool} v);}
 \DoxyCodeLine{447 }
-\DoxyCodeLine{453         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_aa4e598700dd67beb44c68d26dbb34ba0}{setMovable}}(\textcolor{keywordtype}{bool} v);}
-\DoxyCodeLine{454 }
-\DoxyCodeLine{461         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_window_a22daca542da763fdba5915860be4a827}{getMovable}}();}
-\DoxyCodeLine{462 }
-\DoxyCodeLine{470         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a6233cb7f897e778eae7a4e19af9f091f}{setMouseVWheelValuePointer}}(\textcolor{keywordtype}{int}* v);}
-\DoxyCodeLine{471 }
-\DoxyCodeLine{479         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_af0db3e05ab9bf387daa091337086d941}{setMouseHWheelValuePointer}}(\textcolor{keywordtype}{int}* v);}
-\DoxyCodeLine{480 }
-\DoxyCodeLine{481     \textcolor{keyword}{private}:}
-\DoxyCodeLine{482         }
-\DoxyCodeLine{483         \textcolor{keyword}{static} std::vector<SimpleWindow*> windowList;}
-\DoxyCodeLine{484         \textcolor{keyword}{static} \textcolor{keywordtype}{int} screenWidth;}
-\DoxyCodeLine{485         \textcolor{keyword}{static} \textcolor{keywordtype}{int} screenHeight;}
-\DoxyCodeLine{486         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_simple_window}{SimpleWindow}}* getWindowByHandle(HWND value);}
-\DoxyCodeLine{487         \textcolor{keyword}{static} \textcolor{keywordtype}{void} removeWindowFromList(\mbox{\hyperlink{classglib_1_1_simple_window}{SimpleWindow}}* value);}
-\DoxyCodeLine{488         \textcolor{keyword}{static} LRESULT \_stdcall wndProc(HWND hwnd, UINT uint, WPARAM wparam, LPARAM lparam);}
-\DoxyCodeLine{489 }
-\DoxyCodeLine{490         \textcolor{keywordtype}{void} init(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height, std::wstring title, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} windowType);}
-\DoxyCodeLine{491         }
-\DoxyCodeLine{492         \textcolor{keywordtype}{void} setAllFunctionsToNull();}
-\DoxyCodeLine{493         }
-\DoxyCodeLine{494         \textcolor{keywordtype}{void} initBitmap();}
-\DoxyCodeLine{495 }
-\DoxyCodeLine{496         \textcolor{keywordtype}{void} setRunning(\textcolor{keywordtype}{bool} value);}
-\DoxyCodeLine{497         \textcolor{keywordtype}{void} setValid(\textcolor{keywordtype}{bool} value);}
-\DoxyCodeLine{498         \textcolor{keywordtype}{void} setFinishInit(\textcolor{keywordtype}{bool} value);}
-\DoxyCodeLine{499         \textcolor{keywordtype}{void} setResizing(\textcolor{keywordtype}{bool} value);}
-\DoxyCodeLine{500         \textcolor{keywordtype}{void} setResizeMe(\textcolor{keywordtype}{bool} value);}
-\DoxyCodeLine{501 }
-\DoxyCodeLine{502         \textcolor{keywordtype}{bool} getFinishInit();}
+\DoxyCodeLine{456         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a8bcee10cecde7c44ff2e5a22371e06f3}{setThreadUpdateTime}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} millis, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} micros = 0);}
+\DoxyCodeLine{457 }
+\DoxyCodeLine{462         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a87268f6e0058cdf544bfba828eb0baff}{waitTillClose}}();}
+\DoxyCodeLine{463 }
+\DoxyCodeLine{464         \textcolor{comment}{//adjustment stuff}}
+\DoxyCodeLine{465 }
+\DoxyCodeLine{473         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_aebb8198d17b15a007590bd2a3a8c137c}{setFocus}}(\textcolor{keywordtype}{bool} v);}
+\DoxyCodeLine{474 }
+\DoxyCodeLine{481         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_window_a7cb64ca82fed762d154883c4f8dad9e6}{getFocus}}();}
+\DoxyCodeLine{482 }
+\DoxyCodeLine{489         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_window_ab1996c40fee027583f27aed1b040eb6f}{getCanFocus}}();}
+\DoxyCodeLine{490 }
+\DoxyCodeLine{496         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a6d654c3c4033341cdf2e99a48d0d440b}{setResizable}}(\textcolor{keywordtype}{bool} v);}
+\DoxyCodeLine{497 }
+\DoxyCodeLine{502         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_window_acf2a1d96c1564fc263a76ce987d09205}{getResizable}}();}
 \DoxyCodeLine{503 }
-\DoxyCodeLine{504         \textcolor{keywordtype}{bool} getResizing();}
-\DoxyCodeLine{505         \textcolor{keywordtype}{bool} getResizeMe();}
-\DoxyCodeLine{506         \textcolor{keywordtype}{bool} getRepaint();}
-\DoxyCodeLine{507 }
-\DoxyCodeLine{508         \textcolor{keywordtype}{void} run();}
-\DoxyCodeLine{509         \textcolor{keywordtype}{void} dispose();}
+\DoxyCodeLine{509         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_aa4e598700dd67beb44c68d26dbb34ba0}{setMovable}}(\textcolor{keywordtype}{bool} v);}
 \DoxyCodeLine{510 }
-\DoxyCodeLine{511         \textcolor{keywordtype}{bool} shouldFocus = \textcolor{keyword}{false};}
-\DoxyCodeLine{512         \textcolor{keywordtype}{void} threadSetFocus();}
-\DoxyCodeLine{513         \textcolor{keywordtype}{void} setShouldFocus(\textcolor{keywordtype}{bool} v);}
-\DoxyCodeLine{514         \textcolor{keywordtype}{bool} getShouldFocus();}
-\DoxyCodeLine{515 }
-\DoxyCodeLine{516         \textcolor{keyword}{static} \textcolor{keywordtype}{int}* mouseVWheelPointer;}
-\DoxyCodeLine{517         \textcolor{keyword}{static} \textcolor{keywordtype}{int}* mouseHWheelPointer;}
-\DoxyCodeLine{518         }
-\DoxyCodeLine{519         }
-\DoxyCodeLine{520         \textcolor{keywordtype}{int} x = 0;}
-\DoxyCodeLine{521         \textcolor{keywordtype}{int} y = 0;}
-\DoxyCodeLine{522         \textcolor{keywordtype}{int} width = 320;}
-\DoxyCodeLine{523         \textcolor{keywordtype}{int} height = 240;}
-\DoxyCodeLine{524 }
-\DoxyCodeLine{525         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} windowState = STATE\_NORMAL;}
-\DoxyCodeLine{526         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} windowType = NORMAL\_WINDOW;}
+\DoxyCodeLine{517         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_window_a22daca542da763fdba5915860be4a827}{getMovable}}();}
+\DoxyCodeLine{518 }
+\DoxyCodeLine{526         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_a6233cb7f897e778eae7a4e19af9f091f}{setMouseVWheelValuePointer}}(\textcolor{keywordtype}{int}* v);}
 \DoxyCodeLine{527 }
-\DoxyCodeLine{528         \textcolor{keywordtype}{int} preX = 0;}
-\DoxyCodeLine{529         \textcolor{keywordtype}{int} preY = 0;}
-\DoxyCodeLine{530         }
-\DoxyCodeLine{531         std::wstring title = L\textcolor{stringliteral}{"{}"{}};}
-\DoxyCodeLine{532 }
-\DoxyCodeLine{533         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* wndPixels = \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{534 }
-\DoxyCodeLine{535         \textcolor{keywordtype}{int} wndPixelsSize;}
-\DoxyCodeLine{536         \textcolor{keywordtype}{int} scanLinePadding;}
-\DoxyCodeLine{537 }
-\DoxyCodeLine{538         std::thread* wndThread = \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{539         std::mutex myMutex = std::mutex();}
-\DoxyCodeLine{540         \textcolor{keywordtype}{bool} threadOwnership = \textcolor{keyword}{true};}
-\DoxyCodeLine{541         \textcolor{keywordtype}{bool} shouldRepaint = \textcolor{keyword}{false};}
-\DoxyCodeLine{542         \textcolor{keywordtype}{bool} autoRepaint = \textcolor{keyword}{true};}
-\DoxyCodeLine{543         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} sleepTimeMillis = 16;}
-\DoxyCodeLine{544         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} sleepTimeMicros = 0;}
+\DoxyCodeLine{535         \textcolor{keyword}{static} \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_window_af0db3e05ab9bf387daa091337086d941}{setMouseHWheelValuePointer}}(\textcolor{keywordtype}{int}* v);}
+\DoxyCodeLine{536 }
+\DoxyCodeLine{537     \textcolor{keyword}{private}:}
+\DoxyCodeLine{538         }
+\DoxyCodeLine{539         \textcolor{keyword}{static} std::vector<SimpleWindow*> windowList;}
+\DoxyCodeLine{540         \textcolor{keyword}{static} \textcolor{keywordtype}{int} screenWidth;}
+\DoxyCodeLine{541         \textcolor{keyword}{static} \textcolor{keywordtype}{int} screenHeight;}
+\DoxyCodeLine{542 }
+\DoxyCodeLine{543         \textcolor{keyword}{static} \textcolor{keywordtype}{void} removeWindowFromList(\mbox{\hyperlink{classglib_1_1_simple_window}{SimpleWindow}}* value);}
+\DoxyCodeLine{544         \textcolor{keyword}{static} \mbox{\hyperlink{classglib_1_1_simple_window}{SimpleWindow}}* getWindowByHandle(\textcolor{keywordtype}{size\_t} value);}
 \DoxyCodeLine{545 }
-\DoxyCodeLine{546         \textcolor{keywordtype}{void} threadUpdate();}
-\DoxyCodeLine{547         \textcolor{keywordtype}{void} threadGuiUpdate();}
-\DoxyCodeLine{548         \textcolor{keywordtype}{void} threadRender();}
-\DoxyCodeLine{549         \textcolor{keywordtype}{void} threadRepaint();}
-\DoxyCodeLine{550 }
-\DoxyCodeLine{551         HWND windowHandle;}
-\DoxyCodeLine{552         WNDCLASSEXW wndClass;}
-\DoxyCodeLine{553         HINSTANCE hins;}
-\DoxyCodeLine{554         HBITMAP bitmap;}
-\DoxyCodeLine{555         BITMAPINFO bitInfo;}
-\DoxyCodeLine{556         HDC myHDC;}
-\DoxyCodeLine{557 }
-\DoxyCodeLine{558         \mbox{\hyperlink{classglib_1_1_gui_manager}{GuiManager}}* gui = \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{559         \textcolor{keywordtype}{bool} activateGui = \textcolor{keyword}{true};}
+\DoxyCodeLine{546         \textcolor{comment}{//CHANGE WITH OTHER OS}}
+\DoxyCodeLine{547 }
+\DoxyCodeLine{548 \textcolor{preprocessor}{        \#ifdef LINUX}}
+\DoxyCodeLine{549 }
+\DoxyCodeLine{550 \textcolor{preprocessor}{        \#else}}
+\DoxyCodeLine{551         \textcolor{keyword}{static} LRESULT \_stdcall wndProc(HWND hwnd, UINT uint, WPARAM wparam, LPARAM lparam);}
+\DoxyCodeLine{552 \textcolor{preprocessor}{        \#endif}}
+\DoxyCodeLine{553         \textcolor{comment}{//}}
+\DoxyCodeLine{554 }
+\DoxyCodeLine{555         \textcolor{keywordtype}{void} init(\textcolor{keywordtype}{int} x, \textcolor{keywordtype}{int} y, \textcolor{keywordtype}{int} width, \textcolor{keywordtype}{int} height, std::wstring title, \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} windowType);}
+\DoxyCodeLine{556         }
+\DoxyCodeLine{557         \textcolor{keywordtype}{void} setAllFunctionsToNull();}
+\DoxyCodeLine{558         }
+\DoxyCodeLine{559         \textcolor{keywordtype}{void} initBitmap();}
 \DoxyCodeLine{560 }
-\DoxyCodeLine{561         \textcolor{keywordtype}{bool} valid = \textcolor{keyword}{true};}
-\DoxyCodeLine{562         \textcolor{keywordtype}{bool} running = \textcolor{keyword}{true};}
-\DoxyCodeLine{563 }
-\DoxyCodeLine{564         \textcolor{keywordtype}{bool} resizing = \textcolor{keyword}{false};}
-\DoxyCodeLine{565         \textcolor{keywordtype}{bool} resizeMe = \textcolor{keyword}{false};}
+\DoxyCodeLine{561         \textcolor{keywordtype}{void} setRunning(\textcolor{keywordtype}{bool} value);}
+\DoxyCodeLine{562         \textcolor{keywordtype}{void} setValid(\textcolor{keywordtype}{bool} value);}
+\DoxyCodeLine{563         \textcolor{keywordtype}{void} setFinishInit(\textcolor{keywordtype}{bool} value);}
+\DoxyCodeLine{564         \textcolor{keywordtype}{void} setResizing(\textcolor{keywordtype}{bool} value);}
+\DoxyCodeLine{565         \textcolor{keywordtype}{void} setResizeMe(\textcolor{keywordtype}{bool} value);}
 \DoxyCodeLine{566 }
-\DoxyCodeLine{567         \textcolor{keywordtype}{bool} finishedInit = \textcolor{keyword}{false};}
+\DoxyCodeLine{567         \textcolor{keywordtype}{bool} getFinishInit();}
 \DoxyCodeLine{568 }
-\DoxyCodeLine{569         \textcolor{keywordtype}{bool} focused = \textcolor{keyword}{false};}
-\DoxyCodeLine{570         \textcolor{keywordtype}{bool} canFocus = \textcolor{keyword}{true};}
-\DoxyCodeLine{571         \textcolor{keywordtype}{bool} canResize = \textcolor{keyword}{true};}
-\DoxyCodeLine{572         \textcolor{keywordtype}{bool} canMove = \textcolor{keyword}{true};}
-\DoxyCodeLine{573 }
-\DoxyCodeLine{574         std::function<void()> paintFunction;}
-\DoxyCodeLine{575         std::function<void()> mouseMovedFunction;}
-\DoxyCodeLine{576         std::function<void()> closingFunction;}
-\DoxyCodeLine{577 }
-\DoxyCodeLine{578         std::function<void(WPARAM, LPARAM)> keyUpFunction;}
-\DoxyCodeLine{579         std::function<void(WPARAM, LPARAM)> keyDownFunction;}
+\DoxyCodeLine{569         \textcolor{keywordtype}{bool} getResizing();}
+\DoxyCodeLine{570         \textcolor{keywordtype}{bool} getResizeMe();}
+\DoxyCodeLine{571         \textcolor{keywordtype}{bool} getRepaint();}
+\DoxyCodeLine{572 }
+\DoxyCodeLine{573         \textcolor{keywordtype}{void} run();}
+\DoxyCodeLine{574         \textcolor{keywordtype}{void} dispose();}
+\DoxyCodeLine{575 }
+\DoxyCodeLine{576         \textcolor{keywordtype}{bool} shouldFocus = \textcolor{keyword}{false};}
+\DoxyCodeLine{577         \textcolor{keywordtype}{void} threadSetFocus();}
+\DoxyCodeLine{578         \textcolor{keywordtype}{void} setShouldFocus(\textcolor{keywordtype}{bool} v);}
+\DoxyCodeLine{579         \textcolor{keywordtype}{bool} getShouldFocus();}
 \DoxyCodeLine{580 }
-\DoxyCodeLine{581         std::function<void(\textcolor{keywordtype}{int})> mouseDoubleClickFunction;}
-\DoxyCodeLine{582         std::function<void(\textcolor{keywordtype}{int})> mouseButtonDownFunction;}
-\DoxyCodeLine{583         std::function<void(\textcolor{keywordtype}{int})> mouseButtonUpFunction;}
-\DoxyCodeLine{584         std::function<void(\textcolor{keywordtype}{int})> mouseWheelFunction;}
-\DoxyCodeLine{585         std::function<void(\textcolor{keywordtype}{int})> mouseHWheelFunction;}
-\DoxyCodeLine{586 }
-\DoxyCodeLine{587 }
-\DoxyCodeLine{588 }
-\DoxyCodeLine{589         \textcolor{comment}{// void (*paintFunction)(void);}}
-\DoxyCodeLine{590         \textcolor{comment}{// void (*keyUpFunction)(WPARAM, LPARAM);}}
-\DoxyCodeLine{591         \textcolor{comment}{// void (*keyDownFunction)(WPARAM, LPARAM);}}
-\DoxyCodeLine{592 }
-\DoxyCodeLine{593         \textcolor{comment}{// void (*mouseDoubleClickFunction)(int);}}
-\DoxyCodeLine{594         \textcolor{comment}{// void (*mouseButtonDownFunction)(int);}}
-\DoxyCodeLine{595         \textcolor{comment}{// void (*mouseButtonUpFunction)(int);}}
-\DoxyCodeLine{596         \textcolor{comment}{// void (*mouseWheelFunction)(int);}}
-\DoxyCodeLine{597         \textcolor{comment}{// void (*mouseHWheelFunction)(int);}}
-\DoxyCodeLine{598 }
-\DoxyCodeLine{599         \textcolor{comment}{// void (*mouseMovedFunction)(void);}}
-\DoxyCodeLine{600 }
-\DoxyCodeLine{601         \textcolor{comment}{// void (*closingFunction)(void);}}
-\DoxyCodeLine{602     \};}
+\DoxyCodeLine{581         \textcolor{keywordtype}{bool} shouldEnd = \textcolor{keyword}{false};}
+\DoxyCodeLine{582         \textcolor{keywordtype}{void} setShouldEnd(\textcolor{keywordtype}{bool} v);}
+\DoxyCodeLine{583         \textcolor{keywordtype}{bool} getShouldEnd();}
+\DoxyCodeLine{584 }
+\DoxyCodeLine{585         \textcolor{keyword}{static} \textcolor{keywordtype}{int}* mouseVWheelPointer;}
+\DoxyCodeLine{586         \textcolor{keyword}{static} \textcolor{keywordtype}{int}* mouseHWheelPointer;}
+\DoxyCodeLine{587         }
+\DoxyCodeLine{588         }
+\DoxyCodeLine{589         \textcolor{keywordtype}{int} x = 0;}
+\DoxyCodeLine{590         \textcolor{keywordtype}{int} y = 0;}
+\DoxyCodeLine{591         \textcolor{keywordtype}{int} width = 320;}
+\DoxyCodeLine{592         \textcolor{keywordtype}{int} height = 240;}
+\DoxyCodeLine{593 }
+\DoxyCodeLine{594         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} windowState = STATE\_NORMAL;}
+\DoxyCodeLine{595         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} windowType = NORMAL\_WINDOW;}
+\DoxyCodeLine{596 }
+\DoxyCodeLine{597         \textcolor{keywordtype}{int} preX = 0;}
+\DoxyCodeLine{598         \textcolor{keywordtype}{int} preY = 0;}
+\DoxyCodeLine{599         }
+\DoxyCodeLine{600         std::wstring title = L\textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{601 }
+\DoxyCodeLine{602         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* wndPixels = \textcolor{keyword}{nullptr};}
 \DoxyCodeLine{603 }
-\DoxyCodeLine{604 \} \textcolor{comment}{//NAMESPACE glib END}}
+\DoxyCodeLine{604         \textcolor{keywordtype}{int} wndPixelsSize;}
+\DoxyCodeLine{605         \textcolor{keywordtype}{int} scanLinePadding;}
+\DoxyCodeLine{606 }
+\DoxyCodeLine{607         std::thread* wndThread = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{608         std::mutex myMutex = std::mutex();}
+\DoxyCodeLine{609         \textcolor{keywordtype}{bool} threadOwnership = \textcolor{keyword}{true};}
+\DoxyCodeLine{610         \textcolor{keywordtype}{bool} shouldRepaint = \textcolor{keyword}{false};}
+\DoxyCodeLine{611         \textcolor{keywordtype}{bool} autoRepaint = \textcolor{keyword}{true};}
+\DoxyCodeLine{612         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} sleepTimeMillis = 16;}
+\DoxyCodeLine{613         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} sleepTimeMicros = 0;}
+\DoxyCodeLine{614 }
+\DoxyCodeLine{615         \textcolor{keywordtype}{void} threadUpdate();}
+\DoxyCodeLine{616         \textcolor{keywordtype}{void} threadGuiUpdate();}
+\DoxyCodeLine{617         \textcolor{keywordtype}{void} threadRender();}
+\DoxyCodeLine{618         \textcolor{keywordtype}{void} threadRepaint();}
+\DoxyCodeLine{619 }
+\DoxyCodeLine{620         \textcolor{comment}{//At the cost of potential portability and bad code.}}
+\DoxyCodeLine{621         \textcolor{keywordtype}{size\_t} windowHandle;}
+\DoxyCodeLine{622 }
+\DoxyCodeLine{623 \textcolor{preprocessor}{        \#ifdef LINUX}}
+\DoxyCodeLine{624             Display* displayServer;}
+\DoxyCodeLine{625             \textcolor{keywordtype}{int} screen = -\/1;}
+\DoxyCodeLine{626             Pixmap bitmap;}
+\DoxyCodeLine{627 \textcolor{preprocessor}{        \#else}}
+\DoxyCodeLine{628             WNDCLASSEXW wndClass;}
+\DoxyCodeLine{629             HINSTANCE hins;}
+\DoxyCodeLine{630             HBITMAP bitmap;}
+\DoxyCodeLine{631             BITMAPINFO bitInfo;}
+\DoxyCodeLine{632             HDC myHDC;}
+\DoxyCodeLine{633 \textcolor{preprocessor}{        \#endif}}
+\DoxyCodeLine{634         }
+\DoxyCodeLine{635         \mbox{\hyperlink{classglib_1_1_gui_manager}{GuiManager}}* gui = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{636         \textcolor{keywordtype}{bool} activateGui = \textcolor{keyword}{true};}
+\DoxyCodeLine{637 }
+\DoxyCodeLine{638         \textcolor{keywordtype}{bool} valid = \textcolor{keyword}{true};}
+\DoxyCodeLine{639         \textcolor{keywordtype}{bool} running = \textcolor{keyword}{true};}
+\DoxyCodeLine{640 }
+\DoxyCodeLine{641         \textcolor{keywordtype}{bool} resizing = \textcolor{keyword}{false};}
+\DoxyCodeLine{642         \textcolor{keywordtype}{bool} resizeMe = \textcolor{keyword}{false};}
+\DoxyCodeLine{643 }
+\DoxyCodeLine{644         \textcolor{keywordtype}{bool} finishedInit = \textcolor{keyword}{false};}
+\DoxyCodeLine{645 }
+\DoxyCodeLine{646         \textcolor{keywordtype}{bool} focused = \textcolor{keyword}{false};}
+\DoxyCodeLine{647         \textcolor{keywordtype}{bool} canFocus = \textcolor{keyword}{true};}
+\DoxyCodeLine{648         \textcolor{keywordtype}{bool} canResize = \textcolor{keyword}{true};}
+\DoxyCodeLine{649         \textcolor{keywordtype}{bool} canMove = \textcolor{keyword}{true};}
+\DoxyCodeLine{650 }
+\DoxyCodeLine{651         std::function<void()> paintFunction;}
+\DoxyCodeLine{652         std::function<void()> mouseMovedFunction;}
+\DoxyCodeLine{653         std::function<void()> closingFunction;}
+\DoxyCodeLine{654 }
+\DoxyCodeLine{655         std::function<void(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long}, \textcolor{keywordtype}{long})> keyUpFunction;}
+\DoxyCodeLine{656         std::function<void(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{long}, \textcolor{keywordtype}{long})> keyDownFunction;}
+\DoxyCodeLine{657 }
+\DoxyCodeLine{658         std::function<void(\textcolor{keywordtype}{int})> mouseDoubleClickFunction;}
+\DoxyCodeLine{659         std::function<void(\textcolor{keywordtype}{int})> mouseButtonDownFunction;}
+\DoxyCodeLine{660         std::function<void(\textcolor{keywordtype}{int})> mouseButtonUpFunction;}
+\DoxyCodeLine{661         std::function<void(\textcolor{keywordtype}{int})> mouseWheelFunction;}
+\DoxyCodeLine{662         std::function<void(\textcolor{keywordtype}{int})> mouseHWheelFunction;}
+\DoxyCodeLine{663     \};}
+\DoxyCodeLine{664 }
+\DoxyCodeLine{665 \} \textcolor{comment}{//NAMESPACE glib END}}
 
 \end{DoxyCode}

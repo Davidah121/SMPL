@@ -20,6 +20,22 @@ namespace glib
 	{
 	}
 
+	
+	void Font::copyFont(Font& f)
+	{
+		charInfoList = f.charInfoList;
+
+		maxHorizAdv = f.maxHorizAdv;
+		ascent = f.ascent;
+		descent = f.descent;
+		verticalAdv = f.verticalAdv;
+		
+		fontSize = f.fontSize;
+		originalFontSize = f.originalFontSize;
+
+		sorted = f.sorted;
+	}
+
 	FontCharInfo Font::getFontCharInfo(int c)
 	{
 		int index = getCharIndex(c);

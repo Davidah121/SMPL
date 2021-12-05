@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MathExt.h"
-#include "DXSingleton.h"
+#include "ext/DXSingleton.h"
 #include "SimpleFile.h"
 
 namespace glib

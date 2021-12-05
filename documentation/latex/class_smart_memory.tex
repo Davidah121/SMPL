@@ -1,0 +1,151 @@
+\hypertarget{class_smart_memory}{}\doxysection{Smart\+Memory\texorpdfstring{$<$}{<} T \texorpdfstring{$>$}{>} Class Template Reference}
+\label{class_smart_memory}\index{SmartMemory$<$ T $>$@{SmartMemory$<$ T $>$}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_smart_memory_aeb2a6e98385b1e07b0f2a5858349c3c8}\label{class_smart_memory_aeb2a6e98385b1e07b0f2a5858349c3c8}} 
+{\bfseries Smart\+Memory} ()
+\begin{DoxyCompactList}\small\item\em Construct a new Empty \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} object Holds a nullptr. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_smart_memory_a58c3765fc5d4df63401d36a7405f230f}{Smart\+Memory}} (T $\ast$data, bool array=false, bool bypass\+Ownership=false)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} object. Will contain the pointer to some data that is assumed to be valid. The pointer can not be a nullptr. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_smart_memory_a82a46e9288f8ee1149ade1bb9d3c7626}{Smart\+Memory}} (const \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}}$<$ T $>$ \&other)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} object from another \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} object. It will not have delete rights. If the object originally stored a pointer and had delete rights, it will delete its pointer. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_smart_memory_a21a5f6e48a6700350755258a4c71c4d2}{operator=}} (const \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}}$<$ T $>$ \&other)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} object from another \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} object. It will not have delete rights. If the object originally stored a pointer and had delete rights, it will delete its pointer. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_smart_memory_a6e7dfecd561566f11e72e3efe3f3474d}\label{class_smart_memory_a6e7dfecd561566f11e72e3efe3f3474d}} 
+{\bfseries $\sim$\+Smart\+Memory} ()
+\begin{DoxyCompactList}\small\item\em Destroy the \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} object. If the object has delete rights, it will delete the pointer. \end{DoxyCompactList}\item 
+T $\ast$ \mbox{\hyperlink{class_smart_memory_af843653ec454d766cced5174f3f3e61f}{get\+Pointer}} ()
+\begin{DoxyCompactList}\small\item\em Gets the stored pointer. If it has been deleted, a nullptr will be returned. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_smart_memory_abd9d93de461af77776658853a1de7210}{unsafe\+Remove}} ()
+\begin{DoxyCompactList}\small\item\em Removes the pointer from the memory list without deleting it if it has delete rights. Useful if the data has been deleted outside of the \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} scope. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_smart_memory_aedbd47b630406d09c5cb999b8c5911df}{get\+Delete\+Rights}} ()
+\begin{DoxyCompactList}\small\item\em Returns if the object has delete rights. If it has delete rights, the data pointer will be deleted when the object is destroyed. \end{DoxyCompactList}\item 
+T $\ast$ \mbox{\hyperlink{class_smart_memory_a01f592fd46f19a87f2c6e0e2d43e509b}{get\+Raw\+Pointer}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Raw Pointer that is stored. Does not check if the pointer is valid. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_smart_memory_a58c3765fc5d4df63401d36a7405f230f}\label{class_smart_memory_a58c3765fc5d4df63401d36a7405f230f}} 
+\index{SmartMemory$<$ T $>$@{SmartMemory$<$ T $>$}!SmartMemory@{SmartMemory}}
+\index{SmartMemory@{SmartMemory}!SmartMemory$<$ T $>$@{SmartMemory$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{SmartMemory()}{SmartMemory()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+\mbox{\hyperlink{class_smart_memory}{Smart\+Memory}}$<$ T $>$\+::\mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} (\begin{DoxyParamCaption}\item[{T $\ast$}]{data,  }\item[{bool}]{array = {\ttfamily false},  }\item[{bool}]{bypass\+Ownership = {\ttfamily false} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct a new \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} object. Will contain the pointer to some data that is assumed to be valid. The pointer can not be a nullptr. 
+
+If the pointer is stored by another \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} object, the created \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} object will not have delete rights.
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & A non zero pointer to some data. If zero, it is considered invalid. \\
+\hline
+{\em bypass\+Ownership} & If set to true, the created \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} object will always has delete rights. It will delete the pointer when the \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} is destroyed. By default, it is false. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_smart_memory_a82a46e9288f8ee1149ade1bb9d3c7626}\label{class_smart_memory_a82a46e9288f8ee1149ade1bb9d3c7626}} 
+\index{SmartMemory$<$ T $>$@{SmartMemory$<$ T $>$}!SmartMemory@{SmartMemory}}
+\index{SmartMemory@{SmartMemory}!SmartMemory$<$ T $>$@{SmartMemory$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{SmartMemory()}{SmartMemory()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+\mbox{\hyperlink{class_smart_memory}{Smart\+Memory}}$<$ T $>$\+::\mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}}$<$ T $>$ \&}]{other }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct a new \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} object from another \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} object. It will not have delete rights. If the object originally stored a pointer and had delete rights, it will delete its pointer. 
+
+Equavelent to a shared\+\_\+ptr$<$\+T$>$
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_smart_memory_aedbd47b630406d09c5cb999b8c5911df}\label{class_smart_memory_aedbd47b630406d09c5cb999b8c5911df}} 
+\index{SmartMemory$<$ T $>$@{SmartMemory$<$ T $>$}!getDeleteRights@{getDeleteRights}}
+\index{getDeleteRights@{getDeleteRights}!SmartMemory$<$ T $>$@{SmartMemory$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getDeleteRights()}{getDeleteRights()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+bool \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}}$<$ T $>$\+::get\+Delete\+Rights (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns if the object has delete rights. If it has delete rights, the data pointer will be deleted when the object is destroyed. 
+
+\begin{DoxyReturn}{Returns}
+true 
+
+false 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_smart_memory_af843653ec454d766cced5174f3f3e61f}\label{class_smart_memory_af843653ec454d766cced5174f3f3e61f}} 
+\index{SmartMemory$<$ T $>$@{SmartMemory$<$ T $>$}!getPointer@{getPointer}}
+\index{getPointer@{getPointer}!SmartMemory$<$ T $>$@{SmartMemory$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getPointer()}{getPointer()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+T $\ast$ \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}}$<$ T $>$\+::get\+Pointer (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets the stored pointer. If it has been deleted, a nullptr will be returned. 
+
+\begin{DoxyReturn}{Returns}
+T$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_smart_memory_a01f592fd46f19a87f2c6e0e2d43e509b}\label{class_smart_memory_a01f592fd46f19a87f2c6e0e2d43e509b}} 
+\index{SmartMemory$<$ T $>$@{SmartMemory$<$ T $>$}!getRawPointer@{getRawPointer}}
+\index{getRawPointer@{getRawPointer}!SmartMemory$<$ T $>$@{SmartMemory$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{getRawPointer()}{getRawPointer()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+T $\ast$ \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}}$<$ T $>$\+::get\+Raw\+Pointer (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Gets the Raw Pointer that is stored. Does not check if the pointer is valid. 
+
+If the pointer at a previous point was discovered to be deleted, this will return a nullptr.
+
+\begin{DoxyReturn}{Returns}
+T$\ast$ 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_smart_memory_a21a5f6e48a6700350755258a4c71c4d2}\label{class_smart_memory_a21a5f6e48a6700350755258a4c71c4d2}} 
+\index{SmartMemory$<$ T $>$@{SmartMemory$<$ T $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!SmartMemory$<$ T $>$@{SmartMemory$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}}$<$ T $>$\+::operator= (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}}$<$ T $>$ \&}]{other }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct a new \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} object from another \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} object. It will not have delete rights. If the object originally stored a pointer and had delete rights, it will delete its pointer. 
+
+Equavelent to a shared\+\_\+ptr$<$\+T$>$
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_smart_memory_abd9d93de461af77776658853a1de7210}\label{class_smart_memory_abd9d93de461af77776658853a1de7210}} 
+\index{SmartMemory$<$ T $>$@{SmartMemory$<$ T $>$}!unsafeRemove@{unsafeRemove}}
+\index{unsafeRemove@{unsafeRemove}!SmartMemory$<$ T $>$@{SmartMemory$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{unsafeRemove()}{unsafeRemove()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}}$<$ T $>$\+::unsafe\+Remove (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Removes the pointer from the memory list without deleting it if it has delete rights. Useful if the data has been deleted outside of the \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} scope. 
+
+An example of such is an object created on the stack and the reference being stored in a \mbox{\hyperlink{class_smart_memory}{Smart\+Memory}} object.
+
+Special care should be taken to ensure that data is not deleted twice or not delete at all. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/Smart\+Memory.\+h\end{DoxyCompactItemize}

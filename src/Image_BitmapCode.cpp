@@ -2,7 +2,7 @@
 #include <vector>
 #include "SimpleFile.h"
 #include "Compression.h"
-#include "Graphics.h"
+#include "SimpleGraphics.h"
 #include <iostream>
 #include "StringTools.h"
 
@@ -19,34 +19,36 @@ namespace glib
 		SimpleFile f = SimpleFile(file, SimpleFile::WRITE);
 		if(f.isOpen())
 		{
+			unsigned char* header = new unsigned char[14];
+			unsigned char* infoHeader = new unsigned char[40];
+
+			memset(header, 0, 14);
+			memset(infoHeader, 0, 40);
+			
 			struct FileHeader
 			{
-				unsigned short type;
-				unsigned int size;
-				unsigned short reserved1;
-				unsigned short reserved2;
-				unsigned int offset;
+				unsigned short type = 0;
+				unsigned int size = 0;
+				unsigned short reserved1 = 0;
+				unsigned short reserved2 = 0;
+				unsigned int offset = 0;
 			};
 
 			struct FileInfo
 			{
-				unsigned int size;
-				int width;
-				int height;
-				unsigned short colorPlanes;
-				unsigned short bitsPerPixel;
-				unsigned int compressionMethod;
-				unsigned int imageSize;
-				int xResolution;
-				int yResolution;
-				unsigned int paletteSize;
-				unsigned int importantColors;
+				unsigned int size = 0;
+				int width = 0;
+				int height = 0;
+				unsigned short colorPlanes = 0;
+				unsigned short bitsPerPixel = 0;
+				unsigned int compressionMethod = 0;
+				unsigned int imageSize = 0;
+				int xResolution = 0;
+				int yResolution = 0;
+				unsigned int paletteSize = 0;
+				unsigned int importantColors = 0;
 			};
 
-			FileHeader header = {0x4D42, (unsigned int)(width*height*3), 0, 0, 54};
-			FileInfo infoHeader = {40, width, height, 1, 24, 0, 0, 0, 0, 0, 0};
-
-			//start from the bottom up
 			//calculate additional bytes on a scanline for padding
 			int padding = (width*3) % 4;
 			if(padding>0)
@@ -54,6 +56,25 @@ namespace glib
 				padding = 4-padding;
 			}
 
+			header[0] = 0x42; //header
+			header[1] = 0x4D; //header
+
+			unsigned int* sizeStart = (unsigned int*)&header[2];
+			*sizeStart = 40+14+(unsigned int)((width+padding)*height*3); //size
+
+			header[10] = 54; //data offset
+
+			
+			unsigned int* infoAsInt = (unsigned int*)infoHeader;
+			infoAsInt[0] = 40; //size
+			infoAsInt[1] = width; //width
+			infoAsInt[2] = height; //height
+			
+			unsigned short* infoAsShort = (unsigned short*)&infoHeader[12];
+			infoAsShort[0] = 1; //color planes
+			infoAsShort[1] = 24; //bits per pixel
+
+			//start from the bottom up
 			unsigned char* outPixels = new unsigned char[(width+padding)*height*3];
 			int i=0;
 			for(int y=height-1; y>=0; y--)
@@ -93,11 +114,13 @@ namespace glib
 				}
 			}
 
-			f.writeBytes((unsigned char*)&header, sizeof(FileHeader));
-			f.writeBytes((unsigned char*)&infoHeader, sizeof(FileInfo));
+			f.writeBytes(header, 14);
+			f.writeBytes(infoHeader, 40);
 			f.writeBytes(outPixels, (width+padding)*height*3);
 			
 			delete[] outPixels;
+			delete[] header;
+			delete[] infoHeader;
 			f.close();
 		}
 	}

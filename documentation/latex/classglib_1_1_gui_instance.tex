@@ -12,6 +12,9 @@ Inheritance diagram for glib\+::Gui\+Instance\+:\begin{figure}[H]
 \mbox{\Hypertarget{classglib_1_1_gui_instance_a558c2570ce9fcebf0666858d85bded83}\label{classglib_1_1_gui_instance_a558c2570ce9fcebf0666858d85bded83}} 
 {\bfseries Gui\+Instance} ()
 \begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} object \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is more of an abstract class that is designed to be extended through sub classes. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a5d13ef0409f80f75192d7824bb15b45d}\label{classglib_1_1_gui_instance_a5d13ef0409f80f75192d7824bb15b45d}} 
+{\bfseries Gui\+Instance} (std\+::string name\+ID)
+\begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} object \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} is more of an abstract class that is designed to be extended through sub classes. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classglib_1_1_gui_instance_adb8bc107798bd2b2ec21aee1765b5bed}{Gui\+Instance}} (const \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} \&other)
 \begin{DoxyCompactList}\small\item\em Construct a new \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} object from another \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} object. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classglib_1_1_gui_instance_aeaf94485b23362abed8e189c127ca08e}{operator=}} (const \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Instance}} \&other)
@@ -101,6 +104,9 @@ static const int {\bfseries MIN\+\_\+\+PRIORITY\+\_\+\+VALUE} = 0
 \mbox{\Hypertarget{classglib_1_1_gui_instance_a3b15e8461adc6b4bbf009019b786c9f5}\label{classglib_1_1_gui_instance_a3b15e8461adc6b4bbf009019b786c9f5}} 
 static const int {\bfseries CANVAS\+\_\+\+PRIORITY\+\_\+\+VALUE} = -\/10000
 \item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_acb1d905ac70a0f86b841d6b65cbef331}\label{classglib_1_1_gui_instance_acb1d905ac70a0f86b841d6b65cbef331}} 
+static const int {\bfseries CONTEXT\+\_\+\+MENU\+\_\+\+PRIORITY\+\_\+\+VALUE} = -\/10001
+\item 
 \mbox{\Hypertarget{classglib_1_1_gui_instance_a306de7bb8d1fda5e1de408f80831979a}\label{classglib_1_1_gui_instance_a306de7bb8d1fda5e1de408f80831979a}} 
 static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
 \end{DoxyCompactItemize}
@@ -144,6 +150,12 @@ int {\bfseries renderX} = 0
 \item 
 \mbox{\Hypertarget{classglib_1_1_gui_instance_a0b1ac961148816d6a30d3b69b76aa66b}\label{classglib_1_1_gui_instance_a0b1ac961148816d6a30d3b69b76aa66b}} 
 int {\bfseries renderY} = 0
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a3ddcd8106fe8f2eed9976e2d7b4bb38f}\label{classglib_1_1_gui_instance_a3ddcd8106fe8f2eed9976e2d7b4bb38f}} 
+\mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}} {\bfseries bounding\+Box} = \mbox{\hyperlink{classglib_1_1_box2_d}{Box2D}}(0, 0, 0, 0)
+\item 
+\mbox{\Hypertarget{classglib_1_1_gui_instance_a51a7ab606cc315f83b4bafcb6aaa54ef}\label{classglib_1_1_gui_instance_a51a7ab606cc315f83b4bafcb6aaa54ef}} 
+std\+::string {\bfseries name\+ID} = \char`\"{}\char`\"{}
 \end{DoxyCompactItemize}
 \doxysubsection*{Friends}
 \begin{DoxyCompactItemize}
@@ -470,7 +482,7 @@ An render function for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Ins
 
 
 
-Reimplemented in \mbox{\hyperlink{classglib_1_1_gui_container_a68897b8dc39c6effc76066634a5a5c80}{glib\+::\+Gui\+Container}}, \mbox{\hyperlink{classglib_1_1_gui_custom_object_ae3e7cd99c49d663d0728e798a9201feb}{glib\+::\+Gui\+Custom\+Object}}, \mbox{\hyperlink{classglib_1_1_gui_canvas_a9e147a1f05a18f88d54e4f1590023e2b}{glib\+::\+Gui\+Canvas}}, \mbox{\hyperlink{classglib_1_1_gui_image_ae17ce3117ff17c51609a761d7761b904}{glib\+::\+Gui\+Image}}, \mbox{\hyperlink{classglib_1_1_gui_sprite_a515f5d5b0d7f05f2049050c6e10cc825}{glib\+::\+Gui\+Sprite}}, \mbox{\hyperlink{classglib_1_1_gui_text_block_ab1c5d02791262505b439037e9aa47c15}{glib\+::\+Gui\+Text\+Block}}, \mbox{\hyperlink{classglib_1_1_gui_text_box_a43372c06eb867077c8fe91d98da9b636}{glib\+::\+Gui\+Text\+Box}}, \mbox{\hyperlink{classglib_1_1_gui_shape_a7e7f469b644f1b7120c1ac107133c3c1}{glib\+::\+Gui\+Shape}}, \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_a9ec83b275f4a70e5afc1e5744b016032}{glib\+::\+Gui\+Rectangle\+Button}}, \mbox{\hyperlink{classglib_1_1_gui_circle_button_ad1f349b70a07efdda2be6849c0e6b354}{glib\+::\+Gui\+Circle\+Button}}, and \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a27d2cf4c414ea043ab6541a163a67165}{glib\+::\+Gui\+Scroll\+Bar}}.
+Reimplemented in \mbox{\hyperlink{classglib_1_1_gui_container_a68897b8dc39c6effc76066634a5a5c80}{glib\+::\+Gui\+Container}}, \mbox{\hyperlink{classglib_1_1_gui_custom_object_ae3e7cd99c49d663d0728e798a9201feb}{glib\+::\+Gui\+Custom\+Object}}, \mbox{\hyperlink{classglib_1_1_gui_canvas_a9e147a1f05a18f88d54e4f1590023e2b}{glib\+::\+Gui\+Canvas}}, \mbox{\hyperlink{classglib_1_1_gui_image_ae17ce3117ff17c51609a761d7761b904}{glib\+::\+Gui\+Image}}, \mbox{\hyperlink{classglib_1_1_gui_sprite_a515f5d5b0d7f05f2049050c6e10cc825}{glib\+::\+Gui\+Sprite}}, \mbox{\hyperlink{classglib_1_1_gui_text_block_ab1c5d02791262505b439037e9aa47c15}{glib\+::\+Gui\+Text\+Block}}, \mbox{\hyperlink{classglib_1_1_gui_text_box_a43372c06eb867077c8fe91d98da9b636}{glib\+::\+Gui\+Text\+Box}}, \mbox{\hyperlink{classglib_1_1_gui_shape_a7e7f469b644f1b7120c1ac107133c3c1}{glib\+::\+Gui\+Shape}}, \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_a9ec83b275f4a70e5afc1e5744b016032}{glib\+::\+Gui\+Rectangle\+Button}}, \mbox{\hyperlink{classglib_1_1_gui_circle_button_ad1f349b70a07efdda2be6849c0e6b354}{glib\+::\+Gui\+Circle\+Button}}, \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a27d2cf4c414ea043ab6541a163a67165}{glib\+::\+Gui\+Scroll\+Bar}}, \mbox{\hyperlink{classglib_1_1_gui_list_ad37b9bc54e783bd4a97ba2de8ed9dd63}{glib\+::\+Gui\+List}}, \mbox{\hyperlink{classglib_1_1_gui_grid_a58c98be7cee91335c2f31f8998426fba}{glib\+::\+Gui\+Grid}}, and \mbox{\hyperlink{classglib_1_1_gui_context_menu_a32afeb5966c22d3e211fd35520d690b0}{glib\+::\+Gui\+Context\+Menu}}.
 
 \mbox{\Hypertarget{classglib_1_1_gui_instance_aa0d66700a03d3b433c45c01e95a57c28}\label{classglib_1_1_gui_instance_aa0d66700a03d3b433c45c01e95a57c28}} 
 \index{glib::GuiInstance@{glib::GuiInstance}!setActive@{setActive}}
@@ -743,7 +755,7 @@ An update function for the \mbox{\hyperlink{classglib_1_1_gui_instance}{Gui\+Ins
 
 
 
-Reimplemented in \mbox{\hyperlink{classglib_1_1_gui_container_ad1c7d6ac419f1d8e2e39f63f443a4ae4}{glib\+::\+Gui\+Container}}, \mbox{\hyperlink{classglib_1_1_gui_custom_object_aa851b71e667e9bc60b3cdb49e6a52c84}{glib\+::\+Gui\+Custom\+Object}}, \mbox{\hyperlink{classglib_1_1_gui_canvas_a3f90873b1e88b91b324d51ff8834099f}{glib\+::\+Gui\+Canvas}}, \mbox{\hyperlink{classglib_1_1_gui_image_a8dd79fbacb4d7a4505a1d9bb65b708d2}{glib\+::\+Gui\+Image}}, \mbox{\hyperlink{classglib_1_1_gui_sprite_af57445e95138743ac10af54b76784c20}{glib\+::\+Gui\+Sprite}}, \mbox{\hyperlink{classglib_1_1_gui_text_block_a2daa7117bd0bffb2cdcfa8d665dfeaf1}{glib\+::\+Gui\+Text\+Block}}, \mbox{\hyperlink{classglib_1_1_gui_text_box_a4a4bfa4f076da221f5ecd3cd46601706}{glib\+::\+Gui\+Text\+Box}}, \mbox{\hyperlink{classglib_1_1_gui_shape_a8d1206553298941756e9176a64977abe}{glib\+::\+Gui\+Shape}}, \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_ac9f563bb7ffc13212f61e6e95fb9afb2}{glib\+::\+Gui\+Rectangle\+Button}}, \mbox{\hyperlink{classglib_1_1_gui_circle_button_a2bac02a77e2873a7b2e78e571d214251}{glib\+::\+Gui\+Circle\+Button}}, and \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a7aa92e3808cd7896ee6a75af5711f341}{glib\+::\+Gui\+Scroll\+Bar}}.
+Reimplemented in \mbox{\hyperlink{classglib_1_1_gui_container_ad1c7d6ac419f1d8e2e39f63f443a4ae4}{glib\+::\+Gui\+Container}}, \mbox{\hyperlink{classglib_1_1_gui_custom_object_aa851b71e667e9bc60b3cdb49e6a52c84}{glib\+::\+Gui\+Custom\+Object}}, \mbox{\hyperlink{classglib_1_1_gui_canvas_a3f90873b1e88b91b324d51ff8834099f}{glib\+::\+Gui\+Canvas}}, \mbox{\hyperlink{classglib_1_1_gui_image_a8dd79fbacb4d7a4505a1d9bb65b708d2}{glib\+::\+Gui\+Image}}, \mbox{\hyperlink{classglib_1_1_gui_sprite_af57445e95138743ac10af54b76784c20}{glib\+::\+Gui\+Sprite}}, \mbox{\hyperlink{classglib_1_1_gui_text_block_a2daa7117bd0bffb2cdcfa8d665dfeaf1}{glib\+::\+Gui\+Text\+Block}}, \mbox{\hyperlink{classglib_1_1_gui_text_box_a4a4bfa4f076da221f5ecd3cd46601706}{glib\+::\+Gui\+Text\+Box}}, \mbox{\hyperlink{classglib_1_1_gui_shape_a8d1206553298941756e9176a64977abe}{glib\+::\+Gui\+Shape}}, \mbox{\hyperlink{classglib_1_1_gui_rectangle_button_ac9f563bb7ffc13212f61e6e95fb9afb2}{glib\+::\+Gui\+Rectangle\+Button}}, \mbox{\hyperlink{classglib_1_1_gui_circle_button_a2bac02a77e2873a7b2e78e571d214251}{glib\+::\+Gui\+Circle\+Button}}, \mbox{\hyperlink{classglib_1_1_gui_scroll_bar_a7aa92e3808cd7896ee6a75af5711f341}{glib\+::\+Gui\+Scroll\+Bar}}, \mbox{\hyperlink{classglib_1_1_gui_list_a1763a844a861b943362152fbe66b9485}{glib\+::\+Gui\+List}}, \mbox{\hyperlink{classglib_1_1_gui_grid_a781de6f76c9c245cc9ba8d50eaa1876a}{glib\+::\+Gui\+Grid}}, and \mbox{\hyperlink{classglib_1_1_gui_context_menu_a8e9810e3ee7a6c9dafc8865e53f1e306}{glib\+::\+Gui\+Context\+Menu}}.
 
 
 

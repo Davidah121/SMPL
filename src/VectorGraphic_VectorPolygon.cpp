@@ -1,5 +1,5 @@
 #include "VectorGraphic.h"
-#include "Graphics.h"
+#include "SimpleGraphics.h"
 #include "Sort.h"
 #include "StringTools.h"
 #include "BezierCurve.h"
@@ -26,11 +26,11 @@ namespace glib
 
 	void VectorPolygon::draw(Image* buffer, int globalWidth, int globalHeight)
 	{
-		//Everything done here has been moved to the Graphics class
+		//Everything done here has been moved to the SimpleGraphics class
 		//Hence, we will use that method which will be optimized
 		//separately.
-		Graphics::setColor(getFillColor());
-		Graphics::setFillRule(getFillMethod());
+		SimpleGraphics::setColor(getFillColor());
+		SimpleGraphics::setFillRule(getFillMethod());
 
 		std::vector<Vec2f> prePoints = points;
 		applyTransform();
@@ -41,8 +41,8 @@ namespace glib
 
 	void VectorPolygon::drawStroke(Image* buffer, int globalWidth, int globalHeight)
 	{
-		Graphics::setColor(getStrokeColor());
-		Graphics::setFillRule(Graphics::FILL_EVEN_ODD);
+		SimpleGraphics::setColor(getStrokeColor());
+		SimpleGraphics::setFillRule(SimpleGraphics::FILL_EVEN_ODD);
 
 		std::vector<Vec2f> prePoints = points;
 		applyTransform();

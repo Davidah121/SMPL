@@ -1,5 +1,5 @@
 #include "VectorGraphic.h"
-#include "Graphics.h"
+#include "SimpleGraphics.h"
 #include "Sort.h"
 #include "StringTools.h"
 #include "BezierCurve.h"

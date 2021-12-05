@@ -560,7 +560,7 @@ namespace glib
 				DWORD style = 0;
 				bool failed = false;
 
-				switch(windowType)
+				switch(wType)
 				{
 					case SimpleWindow::NORMAL_WINDOW:
 						style = WS_OVERLAPPEDWINDOW;
@@ -577,7 +577,7 @@ namespace glib
 						break;
 				}
 
-				if(windowType == SimpleWindow::FULLSCREEN_WINDOW)
+				if(wType == SimpleWindow::FULLSCREEN_WINDOW)
 				{
 					HMONITOR hmon = MonitorFromWindow(NULL, MONITOR_DEFAULTTONEAREST);
 					MONITORINFO mi = { sizeof(MONITORINFO) };
@@ -1063,6 +1063,8 @@ namespace glib
 	{
 		myMutex.lock();
 		shouldEnd = v;
+		if(threadOwnership == false)
+			running = false;
 		myMutex.unlock();
 	}
 
@@ -1076,7 +1078,6 @@ namespace glib
 	
 	void SimpleWindow::setResizable(bool v)
 	{
-
 		canResize = v;
 	}
 

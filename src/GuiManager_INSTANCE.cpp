@@ -427,6 +427,46 @@ namespace glib
 		return canvas;
 	}
 
+	
+	void GuiInstance::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs)
+	{
+		std::vector<std::wstring> possibleNames = { L"id", L"visible", L"active", L"alwaysfocus", L"onactive", L"onfocus", L"onvisible", L"ondeactivate", L"oninvisible", L"onchanged", L"x", L"y" };
+
+		for(int i=0; i<possibleNames.size(); i++)
+		{
+			auto it = attribs.find(possibleNames[i]);
+			if(it != attribs.end())
+			{
+				if(possibleNames[i] == L"id")
+				{
+					this->nameID = it->second;
+				}
+				else if(possibleNames[i] == L"visible")
+				{
+					this->setVisible(StringTools::equalsIgnoreCase<wchar_t>(it->second, L"true"));
+				}
+				else if(possibleNames[i] == L"active")
+				{
+					this->setActive(StringTools::equalsIgnoreCase<wchar_t>(it->second, L"true"));
+				}
+				else if(possibleNames[i] == L"alwaysfocus")
+				{
+					this->setAlwaysFocus(StringTools::equalsIgnoreCase<wchar_t>(it->second, L"true"));
+				}				
+				else if(possibleNames[i] == L"x")
+				{
+					this->setBaseX( StringTools::toInt(it->second) );
+				}
+				else if(possibleNames[i] == L"y")
+				{
+					this->setBaseY( StringTools::toInt(it->second) );
+				}
+
+				attribs.erase(possibleNames[i]);
+			}
+		}
+	}
+
 	#pragma endregion
     
 } //NAMESPACE glib END

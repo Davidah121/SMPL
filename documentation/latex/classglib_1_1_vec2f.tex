@@ -29,6 +29,10 @@ void \mbox{\hyperlink{classglib_1_1_vec2f_a0528b8d177ab73f82b9112e8e3ac7f2a}{set
 \begin{DoxyCompactList}\small\item\em Sets the Y value for the vector. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classglib_1_1_vec2f_ae0270aa435b68618057f5a42bf4091dd}{set\+Values}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other)
 \begin{DoxyCompactList}\small\item\em Copies the values of another \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_vec2f_a3c0e66058c653701c4130bbf4b6af0ec}{get\+Length}} ()
+\begin{DoxyCompactList}\small\item\em Get the Length of the vector. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_vec2f_acd0134e9324e239a23cc43c29069581a}{normalize}} ()
+\begin{DoxyCompactList}\small\item\em Gets the normalized version of the vector. Returns a vector with the same direction but a length of 1. \end{DoxyCompactList}\item 
 \mbox{\Hypertarget{classglib_1_1_vec2f_a24984a6a777f3985e520a86b6bcf4255}\label{classglib_1_1_vec2f_a24984a6a777f3985e520a86b6bcf4255}} 
 \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} {\bfseries operator-\/} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other)
 \item 
@@ -41,35 +45,11 @@ void {\bfseries operator+=} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other
 \mbox{\Hypertarget{classglib_1_1_vec2f_af50295dafba7e571820c12a4aad8f65a}\label{classglib_1_1_vec2f_af50295dafba7e571820c12a4aad8f65a}} 
 void {\bfseries operator-\/=} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other)
 \item 
-\mbox{\Hypertarget{classglib_1_1_vec2f_a989a6d8d001fa48e5ac4627b0f5bc7f6}\label{classglib_1_1_vec2f_a989a6d8d001fa48e5ac4627b0f5bc7f6}} 
-void {\bfseries operator$\ast$=} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec2f_a38ceb00740eb3b6a96986c2ae831d09a}\label{classglib_1_1_vec2f_a38ceb00740eb3b6a96986c2ae831d09a}} 
-void {\bfseries operator/=} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other)
-\item 
 \mbox{\Hypertarget{classglib_1_1_vec2f_aee7a9822832166eee3666b4c93754c16}\label{classglib_1_1_vec2f_aee7a9822832166eee3666b4c93754c16}} 
 void {\bfseries operator$\ast$=} (double other)
 \item 
 \mbox{\Hypertarget{classglib_1_1_vec2f_afd11db300b8135bde1084b33f06ace0b}\label{classglib_1_1_vec2f_afd11db300b8135bde1084b33f06ace0b}} 
 void {\bfseries operator/=} (double other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec2f_ae1eb7c01605b8090ecd37a1eb7b319a4}\label{classglib_1_1_vec2f_ae1eb7c01605b8090ecd37a1eb7b319a4}} 
-void {\bfseries operator$\ast$=} (int other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec2f_a8bed54497fee98060fed80e6298b9606}\label{classglib_1_1_vec2f_a8bed54497fee98060fed80e6298b9606}} 
-void {\bfseries operator/=} (int other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec2f_a7a50d6ad7ea7bedc5e6372cb1ee83ee0}\label{classglib_1_1_vec2f_a7a50d6ad7ea7bedc5e6372cb1ee83ee0}} 
-void {\bfseries operator$\ast$=} (long other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec2f_af8084b84ed167d9cf5f3848fa96e3f87}\label{classglib_1_1_vec2f_af8084b84ed167d9cf5f3848fa96e3f87}} 
-void {\bfseries operator/=} (long other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec2f_af67600e4a62bb3638a0788f2b88bd4b2}\label{classglib_1_1_vec2f_af67600e4a62bb3638a0788f2b88bd4b2}} 
-void {\bfseries operator$\ast$=} (float other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec2f_a7344d6a3ccd3c5d2a24762ee30d2e661}\label{classglib_1_1_vec2f_a7344d6a3ccd3c5d2a24762ee30d2e661}} 
-void {\bfseries operator/=} (float other)
 \item 
 \mbox{\Hypertarget{classglib_1_1_vec2f_a34d498c258bb66a512cc0f2cf5513f10}\label{classglib_1_1_vec2f_a34d498c258bb66a512cc0f2cf5513f10}} 
 bool {\bfseries operator==} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other)
@@ -80,35 +60,11 @@ bool {\bfseries operator!=} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other
 \mbox{\Hypertarget{classglib_1_1_vec2f_abfb3f2913113ad2dfce51e16443bed1a}\label{classglib_1_1_vec2f_abfb3f2913113ad2dfce51e16443bed1a}} 
 \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} {\bfseries operator-\/} ()
 \item 
-\mbox{\Hypertarget{classglib_1_1_vec2f_a6ed438b5952b744990a854b518e2b49b}\label{classglib_1_1_vec2f_a6ed438b5952b744990a854b518e2b49b}} 
-\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} {\bfseries operator$\ast$} (int value)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec2f_a70495e55e4e5235d98b18fa2acf3b289}\label{classglib_1_1_vec2f_a70495e55e4e5235d98b18fa2acf3b289}} 
-\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} {\bfseries operator$\ast$} (float value)
-\item 
 \mbox{\Hypertarget{classglib_1_1_vec2f_a8a330f4f983b162bb9b87471fe1b6926}\label{classglib_1_1_vec2f_a8a330f4f983b162bb9b87471fe1b6926}} 
 \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} {\bfseries operator$\ast$} (double value)
 \item 
-\mbox{\Hypertarget{classglib_1_1_vec2f_aebc5943a176969a94b44d210036d0af1}\label{classglib_1_1_vec2f_aebc5943a176969a94b44d210036d0af1}} 
-\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} {\bfseries operator$\ast$} (long value)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec2f_a3291338d10bb6168f764c44d9523ee6a}\label{classglib_1_1_vec2f_a3291338d10bb6168f764c44d9523ee6a}} 
-\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} {\bfseries operator$\ast$} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec2f_af00ca9ef44a9e6dc4b9204b73982982b}\label{classglib_1_1_vec2f_af00ca9ef44a9e6dc4b9204b73982982b}} 
-\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} {\bfseries operator/} (int value)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec2f_acc4be6567077e8cb502eddc0fd347210}\label{classglib_1_1_vec2f_acc4be6567077e8cb502eddc0fd347210}} 
-\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} {\bfseries operator/} (float value)
-\item 
 \mbox{\Hypertarget{classglib_1_1_vec2f_a5a3a26c3c3e284ba2e43ac371d01c382}\label{classglib_1_1_vec2f_a5a3a26c3c3e284ba2e43ac371d01c382}} 
 \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} {\bfseries operator/} (double value)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec2f_a0c56902d8b78c72842d0b12313ef3c9e}\label{classglib_1_1_vec2f_a0c56902d8b78c72842d0b12313ef3c9e}} 
-\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} {\bfseries operator/} (long value)
-\item 
-\mbox{\Hypertarget{classglib_1_1_vec2f_a4ee96bd9fd96c8f46ce460ec057e9fe7}\label{classglib_1_1_vec2f_a4ee96bd9fd96c8f46ce460ec057e9fe7}} 
-\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} {\bfseries operator/} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} other)
 \item 
 \mbox{\hyperlink{classglib_1_1_general_vector}{General\+Vector}} \mbox{\hyperlink{classglib_1_1_vec2f_a4c637f7860ab2e1f3770304627bb39e0}{to\+General\+Vector}} ()
 \begin{DoxyCompactList}\small\item\em Converts the \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} to a \mbox{\hyperlink{classglib_1_1_general_vector}{General\+Vector}} \mbox{\hyperlink{classglib_1_1_object}{Object}}. \end{DoxyCompactList}\item 
@@ -129,6 +85,12 @@ double {\bfseries y} = 0
 \item 
 \mbox{\Hypertarget{classglib_1_1_vec2f_a9d91de5ed0eb86847703dbadc5e2f3dd}\label{classglib_1_1_vec2f_a9d91de5ed0eb86847703dbadc5e2f3dd}} 
 static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_vec2f_a22a45560c4b97089ef3e3cbe87fee0b8}\label{classglib_1_1_vec2f_a22a45560c4b97089ef3e3cbe87fee0b8}} 
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} {\bfseries operator$\ast$} (double value, \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \&other)
 \end{DoxyCompactItemize}
 
 
@@ -163,6 +125,19 @@ Construct a new \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} object.
 
 Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
 
+\mbox{\Hypertarget{classglib_1_1_vec2f_a3c0e66058c653701c4130bbf4b6af0ec}\label{classglib_1_1_vec2f_a3c0e66058c653701c4130bbf4b6af0ec}} 
+\index{glib::Vec2f@{glib::Vec2f}!getLength@{getLength}}
+\index{getLength@{getLength}!glib::Vec2f@{glib::Vec2f}}
+\doxysubsubsection{\texorpdfstring{getLength()}{getLength()}}
+{\footnotesize\ttfamily double glib\+::\+Vec2f\+::get\+Length (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the Length of the vector. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_vec2f_a86449ac3c9b96fe9aa01cf2bcffe14e2}\label{classglib_1_1_vec2f_a86449ac3c9b96fe9aa01cf2bcffe14e2}} 
 \index{glib::Vec2f@{glib::Vec2f}!getX@{getX}}
 \index{getX@{getX}!glib::Vec2f@{glib::Vec2f}}
@@ -188,6 +163,19 @@ Gets the Y value for the vector.
 
 \begin{DoxyReturn}{Returns}
 double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_vec2f_acd0134e9324e239a23cc43c29069581a}\label{classglib_1_1_vec2f_acd0134e9324e239a23cc43c29069581a}} 
+\index{glib::Vec2f@{glib::Vec2f}!normalize@{normalize}}
+\index{normalize@{normalize}!glib::Vec2f@{glib::Vec2f}}
+\doxysubsubsection{\texorpdfstring{normalize()}{normalize()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} glib\+::\+Vec2f\+::normalize (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the normalized version of the vector. Returns a vector with the same direction but a length of 1. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_vec2f_ae0270aa435b68618057f5a42bf4091dd}\label{classglib_1_1_vec2f_ae0270aa435b68618057f5a42bf4091dd}} 
 \index{glib::Vec2f@{glib::Vec2f}!setValues@{setValues}}

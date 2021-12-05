@@ -2,7 +2,7 @@
 #include <vector>
 #include "SimpleFile.h"
 #include "Compression.h"
-#include "Graphics.h"
+#include "SimpleGraphics.h"
 #include <iostream>
 #include "StringTools.h"
 #include "Sort.h"

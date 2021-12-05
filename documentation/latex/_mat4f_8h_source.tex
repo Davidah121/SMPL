@@ -37,12 +37,12 @@
 \DoxyCodeLine{81         \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} operator-\/(\mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} other);}
 \DoxyCodeLine{82         \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} operator*(\mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} other);}
 \DoxyCodeLine{83 }
-\DoxyCodeLine{84         \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} operator*(\textcolor{keywordtype}{int} other);}
-\DoxyCodeLine{85         \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} operator*(\textcolor{keywordtype}{float} other);}
-\DoxyCodeLine{86         \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} operator*(\textcolor{keywordtype}{double} other);}
-\DoxyCodeLine{87 }
-\DoxyCodeLine{88         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{int} other);}
-\DoxyCodeLine{89         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{float} other);}
+\DoxyCodeLine{84         \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} operator*(\textcolor{keywordtype}{double} other);}
+\DoxyCodeLine{85         \textcolor{keyword}{friend} \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} operator*(\textcolor{keywordtype}{double} value, \mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} other)}
+\DoxyCodeLine{86         \{}
+\DoxyCodeLine{87             \textcolor{keywordflow}{return} other*value;}
+\DoxyCodeLine{88         \}}
+\DoxyCodeLine{89 }
 \DoxyCodeLine{90         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{double} other);}
 \DoxyCodeLine{91 }
 \DoxyCodeLine{92         \textcolor{keywordtype}{void} operator+=(\mbox{\hyperlink{classglib_1_1_mat4f}{Mat4f}} other);}

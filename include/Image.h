@@ -196,13 +196,13 @@ namespace glib
 
 		//Wrapper around the graphics class for images
 		/**
-		 * @brief Calls the Graphics class function clearImage
+		 * @brief Calls the SimpleGraphics class function clearImage
 		 * 
 		 */
 		void clearImage();
 
 		/**
-		 * @brief Calls the Graphics class function drawRect
+		 * @brief Calls the SimpleGraphics class function drawRect
 		 * 
 		 * @param x 
 		 * @param y 
@@ -213,7 +213,7 @@ namespace glib
 		void drawRect(int x, int y, int x2, int y2, bool outline);
 
 		/**
-		 * @brief Calls the Graphics class function drawLine
+		 * @brief Calls the SimpleGraphics class function drawLine
 		 * 
 		 * @param x 
 		 * @param y 
@@ -223,7 +223,7 @@ namespace glib
 		void drawLine(int x, int y, int x2, int y2);
 
 		/**
-		 * @brief Calls the Graphics class function drawCircle
+		 * @brief Calls the SimpleGraphics class function drawCircle
 		 * 
 		 * @param x 
 		 * @param y 
@@ -233,7 +233,7 @@ namespace glib
 		void drawCircle(int x, int y, int radius, bool outline);
 
 		/**
-		 * @brief Calls the Graphics class function drawPolygon
+		 * @brief Calls the SimpleGraphics class function drawPolygon
 		 * 		May be removed later.
 		 * 
 		 * @param points 
@@ -242,7 +242,7 @@ namespace glib
 		void drawPolygon(Vec2f* points, int size);
 
 		/**
-		 * @brief Calls the Graphics class function drawImage
+		 * @brief Calls the SimpleGraphics class function drawImage
 		 * 
 		 * @param img 
 		 * @param x 
@@ -251,7 +251,7 @@ namespace glib
 		void drawImage(Image* img, int x, int y);
 
 		/**
-		 * @brief Calls the Graphics class function drawSprite
+		 * @brief Calls the SimpleGraphics class function drawSprite
 		 * 
 		 * @param img 
 		 * @param x 
@@ -260,7 +260,7 @@ namespace glib
 		void drawSprite(Image* img, int x, int y);
 
 		/**
-		 * @brief Calls the Graphics class function drawSpritePart
+		 * @brief Calls the SimpleGraphics class function drawSpritePart
 		 * 
 		 * @param img 
 		 * @param x 
@@ -273,7 +273,7 @@ namespace glib
 		void drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH);
 
 		/**
-		 * @brief Calls the Graphics class function drawText
+		 * @brief Calls the SimpleGraphics class function drawText
 		 * 
 		 * @param str 
 		 * @param x 
@@ -282,7 +282,7 @@ namespace glib
 		void drawText(std::string str, int x, int y);
 
 		/**
-		 * @brief Calls the Graphics class function drawTextLimits
+		 * @brief Calls the SimpleGraphics class function drawTextLimits
 		 * 
 		 * @param str 
 		 * @param x 
@@ -294,7 +294,7 @@ namespace glib
 		void drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowLineBreak);
 		
 		/**
-		 * @brief Calls the Graphics class function drawTriangle
+		 * @brief Calls the SimpleGraphics class function drawTriangle
 		 * 
 		 * @param x1 
 		 * @param y1 
@@ -307,7 +307,7 @@ namespace glib
 		void drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline);
 
 		/**
-		 * @brief Calls the Graphics class function drawTexturedTriangle
+		 * @brief Calls the SimpleGraphics class function drawTexturedTriangle
 		 * 
 		 * @param p1 
 		 * @param p2 
@@ -317,7 +317,7 @@ namespace glib
 		void drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture);
 
 		/**
-		 * @brief Calls the Graphics class function drawPixel
+		 * @brief Calls the SimpleGraphics class function drawPixel
 		 * 
 		 * @param x 
 		 * @param y 
@@ -326,7 +326,7 @@ namespace glib
 		void drawPixel(int x, int y, Color c);
 
 		/**
-		 * @brief Calls the Graphics class function drawPixel
+		 * @brief Calls the SimpleGraphics class function drawPixel
 		 * 		This method uses doubles for the position.
 		 * 
 		 * @param x 

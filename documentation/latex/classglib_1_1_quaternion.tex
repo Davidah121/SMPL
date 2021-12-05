@@ -55,7 +55,11 @@ void {\bfseries operator-\/=} (\mbox{\hyperlink{classglib_1_1_quaternion}{Quater
 \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} \mbox{\hyperlink{classglib_1_1_quaternion_a9bbe437eb5f90ab0a76b36dc7c919839}{get\+Conjugate}} ()
 \begin{DoxyCompactList}\small\item\em Gets the Conjugate of the quaternion. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} \mbox{\hyperlink{classglib_1_1_quaternion_a2bb9ca67ea875f080a4e9cc525908f90}{get\+Inverse}} ()
-\begin{DoxyCompactList}\small\item\em Gets the Inverse of the quaternion. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Gets the Inverse of the quaternion. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_quaternion_aabbe7f5d02863add9db0523b30b2d254}{get\+Length}} ()
+\begin{DoxyCompactList}\small\item\em Gets the Length of the quaternion. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} \mbox{\hyperlink{classglib_1_1_quaternion_acf07c1d0ede830556be28ae94ba0a2e9}{normalize}} ()
+\begin{DoxyCompactList}\small\item\em Normalizes the quaternion. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -76,6 +80,12 @@ double {\bfseries d} =0
 \item 
 \mbox{\Hypertarget{classglib_1_1_quaternion_ae1ae40d9bf80536fb05d244f5a8528b0}\label{classglib_1_1_quaternion_ae1ae40d9bf80536fb05d244f5a8528b0}} 
 static const \mbox{\hyperlink{classglib_1_1_class}{Class}} {\bfseries my\+Class}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classglib_1_1_quaternion_a625ffc3596fb612e4eca8cfe823f6d6e}\label{classglib_1_1_quaternion_a625ffc3596fb612e4eca8cfe823f6d6e}} 
+\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} {\bfseries operator$\ast$} (double val, \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} other)
 \end{DoxyCompactItemize}
 
 
@@ -136,6 +146,32 @@ Gets the Conjugate of the quaternion.
 
 
 Gets the Inverse of the quaternion. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_quaternion_aabbe7f5d02863add9db0523b30b2d254}\label{classglib_1_1_quaternion_aabbe7f5d02863add9db0523b30b2d254}} 
+\index{glib::Quaternion@{glib::Quaternion}!getLength@{getLength}}
+\index{getLength@{getLength}!glib::Quaternion@{glib::Quaternion}}
+\doxysubsubsection{\texorpdfstring{getLength()}{getLength()}}
+{\footnotesize\ttfamily double glib\+::\+Quaternion\+::get\+Length (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the Length of the quaternion. 
+
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_quaternion_acf07c1d0ede830556be28ae94ba0a2e9}\label{classglib_1_1_quaternion_acf07c1d0ede830556be28ae94ba0a2e9}} 
+\index{glib::Quaternion@{glib::Quaternion}!normalize@{normalize}}
+\index{normalize@{normalize}!glib::Quaternion@{glib::Quaternion}}
+\doxysubsubsection{\texorpdfstring{normalize()}{normalize()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} glib\+::\+Quaternion\+::normalize (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Normalizes the quaternion. 
 
 \begin{DoxyReturn}{Returns}
 \mbox{\hyperlink{classglib_1_1_quaternion}{Quaternion}} 

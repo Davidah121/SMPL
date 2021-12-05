@@ -31,15 +31,15 @@
 \DoxyCodeLine{60         \textcolor{keywordtype}{double}* operator[](\textcolor{keywordtype}{int} row);}
 \DoxyCodeLine{61 }
 \DoxyCodeLine{62         \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} operator*(\textcolor{keywordtype}{double} value);}
-\DoxyCodeLine{63         \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} operator*(\textcolor{keywordtype}{int} value);}
-\DoxyCodeLine{64         \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} operator*(\textcolor{keywordtype}{float} value);}
-\DoxyCodeLine{65 }
-\DoxyCodeLine{66         \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} operator*(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} other);}
-\DoxyCodeLine{67         \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} operator*(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} other);}
-\DoxyCodeLine{68 }
-\DoxyCodeLine{69         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{double} value);}
-\DoxyCodeLine{70         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{int} value);}
-\DoxyCodeLine{71         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{float} value);}
+\DoxyCodeLine{63         \textcolor{keyword}{friend} \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} operator*(\textcolor{keywordtype}{double} value, \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} other)}
+\DoxyCodeLine{64         \{}
+\DoxyCodeLine{65             \textcolor{keywordflow}{return} other*value;}
+\DoxyCodeLine{66         \}}
+\DoxyCodeLine{67 }
+\DoxyCodeLine{68         \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} operator*(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} other);}
+\DoxyCodeLine{69         \mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} operator*(\mbox{\hyperlink{classglib_1_1_general_vector}{GeneralVector}} other);}
+\DoxyCodeLine{70 }
+\DoxyCodeLine{71         \textcolor{keywordtype}{void} operator*=(\textcolor{keywordtype}{double} value);}
 \DoxyCodeLine{72 }
 \DoxyCodeLine{73         \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} operator+(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} other);}
 \DoxyCodeLine{74         \textcolor{keywordtype}{void} operator+=(\mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} other);}
@@ -60,15 +60,22 @@
 \DoxyCodeLine{109 }
 \DoxyCodeLine{117         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_matrix_ad5c4ff97b0148d02c4659efb362acc12}{get}}(\textcolor{keywordtype}{int} col, \textcolor{keywordtype}{int} row);}
 \DoxyCodeLine{118 }
-\DoxyCodeLine{119     \textcolor{keyword}{protected}:}
-\DoxyCodeLine{120         \textcolor{keywordtype}{double}** data = \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{121         \textcolor{keywordtype}{int} rows;}
-\DoxyCodeLine{122         \textcolor{keywordtype}{int} columns;}
-\DoxyCodeLine{123 }
-\DoxyCodeLine{124         \textcolor{keywordtype}{bool} valid = \textcolor{keyword}{true};}
-\DoxyCodeLine{125 }
-\DoxyCodeLine{126     \};}
+\DoxyCodeLine{126         \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \mbox{\hyperlink{classglib_1_1_matrix_a4bf62bf2f0bb31f25e143fa9f585a91f}{getInverse}}();}
 \DoxyCodeLine{127 }
-\DoxyCodeLine{128 \} \textcolor{comment}{//NAMESPACE glib END}}
+\DoxyCodeLine{134         \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \mbox{\hyperlink{classglib_1_1_matrix_a91df2513a83730a62a7cfd437a9fec4a}{getTranspose}}();}
+\DoxyCodeLine{135 }
+\DoxyCodeLine{142         \textcolor{keywordtype}{double} \mbox{\hyperlink{classglib_1_1_matrix_a7aca0121caf256649a336e15daa2547b}{getDeterminate}}();}
+\DoxyCodeLine{143 }
+\DoxyCodeLine{153         \mbox{\hyperlink{classglib_1_1_matrix}{Matrix}} \mbox{\hyperlink{classglib_1_1_matrix_a7ebdfc2b2dac46924054d26438f89955}{getMatrixOfMinors}}(\textcolor{keywordtype}{int} row, \textcolor{keywordtype}{int} col);}
+\DoxyCodeLine{154 }
+\DoxyCodeLine{155     \textcolor{keyword}{protected}:}
+\DoxyCodeLine{156         \textcolor{keywordtype}{double}** data = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{157         \textcolor{keywordtype}{int} rows;}
+\DoxyCodeLine{158         \textcolor{keywordtype}{int} columns;}
+\DoxyCodeLine{159 }
+\DoxyCodeLine{160         \textcolor{keywordtype}{bool} valid = \textcolor{keyword}{true};}
+\DoxyCodeLine{161     \};}
+\DoxyCodeLine{162 }
+\DoxyCodeLine{163 \} \textcolor{comment}{//NAMESPACE glib END}}
 
 \end{DoxyCode}

@@ -50,7 +50,13 @@ double \mbox{\hyperlink{classglib_1_1_line_a60a238937be1433ccaf44e58a1a088f7}{so
 double \mbox{\hyperlink{classglib_1_1_line_a4ffe904d3646a20c911aac5575ae05df}{solve\+ForY}} (double x)
 \begin{DoxyCompactList}\small\item\em Solves the line for an Y value using a x value. May be invalid if the line is vertical. \end{DoxyCompactList}\item 
 \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} \mbox{\hyperlink{classglib_1_1_line_a6fafbc696db4a3783a8dba72757d9faf}{get\+Intersection}} (\mbox{\hyperlink{classglib_1_1_line}{Line}} other)
-\begin{DoxyCompactList}\small\item\em Gets the point of intersection with another line. May be invalid if the lines never intersect. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Gets a point of intersection with another line. May be invalid if the lines never intersect. If invalid, NAN will be returned. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_line_af6762617ef78590f12b03da124d80a7b}{get\+Intersection\+Parametric}} (\mbox{\hyperlink{classglib_1_1_line}{Line}} other)
+\begin{DoxyCompactList}\small\item\em Get the point of intersection with another line as a time value. The answer, if valid, will describe a point of intersection as P = \mbox{\hyperlink{classglib_1_1_line_afc1ff1d71d395423ca2cbad5205a8c43}{get\+Point1()}} + \mbox{\hyperlink{classglib_1_1_line_a57be84a379beb8f28e85e29eec303af4}{get\+To\+Point()}}$\ast$t;. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_line_a27fe5839e176286a499059d6f1270d93}{get\+Point\+As\+Paramtetric\+Value}} (double x, double y)
+\begin{DoxyCompactList}\small\item\em Get the point on the line as Paramtetric time value. If the point does not lie on the line, NAN is returned. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classglib_1_1_line_a017a5239c891781b19e3fc52770bf257}{get\+Point\+As\+Paramtetric\+Value}} (\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} p)
+\begin{DoxyCompactList}\small\item\em Get the point on the line as Paramtetric time value. If the point does not lie on the line, NAN is returned. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Static Public Attributes}
 \begin{DoxyCompactItemize}
 \item 
@@ -140,7 +146,7 @@ Reimplemented from \mbox{\hyperlink{classglib_1_1_object}{glib\+::\+Object}}.
 
 
 
-Gets the point of intersection with another line. May be invalid if the lines never intersect. 
+Gets a point of intersection with another line. May be invalid if the lines never intersect. If invalid, NAN will be returned. 
 
 
 \begin{DoxyParams}{Parameters}
@@ -149,6 +155,26 @@ Gets the point of intersection with another line. May be invalid if the lines ne
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_line_af6762617ef78590f12b03da124d80a7b}\label{classglib_1_1_line_af6762617ef78590f12b03da124d80a7b}} 
+\index{glib::Line@{glib::Line}!getIntersectionParametric@{getIntersectionParametric}}
+\index{getIntersectionParametric@{getIntersectionParametric}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{getIntersectionParametric()}{getIntersectionParametric()}}
+{\footnotesize\ttfamily double glib\+::\+Line\+::get\+Intersection\+Parametric (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_line}{Line}}}]{other }\end{DoxyParamCaption})}
+
+
+
+Get the point of intersection with another line as a time value. The answer, if valid, will describe a point of intersection as P = \mbox{\hyperlink{classglib_1_1_line_afc1ff1d71d395423ca2cbad5205a8c43}{get\+Point1()}} + \mbox{\hyperlink{classglib_1_1_line_a57be84a379beb8f28e85e29eec303af4}{get\+To\+Point()}}$\ast$t;. 
+
+If invalid, NAN will be returned.
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_line_ad596d5adeff71793f3206b283851e46e}\label{classglib_1_1_line_ad596d5adeff71793f3206b283851e46e}} 
 \index{glib::Line@{glib::Line}!getMaxX@{getMaxX}}
@@ -227,6 +253,44 @@ Get the second point of the line.
 
 \begin{DoxyReturn}{Returns}
 \mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_line_a27fe5839e176286a499059d6f1270d93}\label{classglib_1_1_line_a27fe5839e176286a499059d6f1270d93}} 
+\index{glib::Line@{glib::Line}!getPointAsParamtetricValue@{getPointAsParamtetricValue}}
+\index{getPointAsParamtetricValue@{getPointAsParamtetricValue}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{getPointAsParamtetricValue()}{getPointAsParamtetricValue()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily double glib\+::\+Line\+::get\+Point\+As\+Paramtetric\+Value (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y }\end{DoxyParamCaption})}
+
+
+
+Get the point on the line as Paramtetric time value. If the point does not lie on the line, NAN is returned. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classglib_1_1_line_a017a5239c891781b19e3fc52770bf257}\label{classglib_1_1_line_a017a5239c891781b19e3fc52770bf257}} 
+\index{glib::Line@{glib::Line}!getPointAsParamtetricValue@{getPointAsParamtetricValue}}
+\index{getPointAsParamtetricValue@{getPointAsParamtetricValue}!glib::Line@{glib::Line}}
+\doxysubsubsection{\texorpdfstring{getPointAsParamtetricValue()}{getPointAsParamtetricValue()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily double glib\+::\+Line\+::get\+Point\+As\+Paramtetric\+Value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classglib_1_1_vec2f}{Vec2f}}}]{p }\end{DoxyParamCaption})}
+
+
+
+Get the point on the line as Paramtetric time value. If the point does not lie on the line, NAN is returned. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
 \end{DoxyReturn}
 \mbox{\Hypertarget{classglib_1_1_line_accdb5cb0d6e00aba18782515b87345ef}\label{classglib_1_1_line_accdb5cb0d6e00aba18782515b87345ef}} 
 \index{glib::Line@{glib::Line}!getSlope@{getSlope}}

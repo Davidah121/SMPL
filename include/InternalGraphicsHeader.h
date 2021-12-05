@@ -2,7 +2,7 @@
 
 //ONLY FOR INTERNAL USE WITH GRAPHICS FILES
 
-#include "Graphics.h"
+#include "SimpleGraphics.h"
 #include "MathExt.h"
 #include <iostream>
 #include "Sort.h"

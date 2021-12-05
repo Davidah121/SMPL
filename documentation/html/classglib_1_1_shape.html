@@ -70,6 +70,7 @@ $(function() {
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classglib_1_1_shape-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">glib::Shape Class Reference</div></div>
@@ -131,10 +132,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1318ebdf871ad82be25469ce215e0858"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_shape.html#a1318ebdf871ad82be25469ce215e0858">getRotation</a> ()</td></tr>
 <tr class="memdesc:a1318ebdf871ad82be25469ce215e0858"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Rotation of the shape.  <a href="classglib_1_1_shape.html#a1318ebdf871ad82be25469ce215e0858">More...</a><br /></td></tr>
 <tr class="separator:a1318ebdf871ad82be25469ce215e0858"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab488ee41ba78c6208c54dc7c911ebd1b"><td class="memItemLeft" align="right" valign="top"><a id="ab488ee41ba78c6208c54dc7c911ebd1b" name="ab488ee41ba78c6208c54dc7c911ebd1b"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>transform</b> ()</td></tr>
-<tr class="memdesc:ab488ee41ba78c6208c54dc7c911ebd1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">A virtual function to apply transforms to the object before collision. <br /></td></tr>
-<tr class="separator:ab488ee41ba78c6208c54dc7c911ebd1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3838fc7d35a5ba71487502d0b51f25a"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_shape.html#aa3838fc7d35a5ba71487502d0b51f25a">generateBoundingRadius</a> ()</td></tr>
 <tr class="memdesc:aa3838fc7d35a5ba71487502d0b51f25a"><td class="mdescLeft">&#160;</td><td class="mdescRight">A virtual function to create either a bounding circle or bounding sphere. Useful for eliminating collisions.  <a href="classglib_1_1_shape.html#aa3838fc7d35a5ba71487502d0b51f25a">More...</a><br /></td></tr>
 <tr class="separator:aa3838fc7d35a5ba71487502d0b51f25a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -149,13 +146,19 @@ static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><
 static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><td class="memItemRight" valign="bottom"><b>myClass</b></td></tr>
 <tr class="separator:aff9d6262ae7deeb357e80d79ae5f5917 inherit pub_static_attribs_classglib_1_1_object"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a3e64b765bff5a02e2326980e5bfb30f6"><td class="memItemLeft" align="right" valign="top"><a id="a3e64b765bff5a02e2326980e5bfb30f6" name="a3e64b765bff5a02e2326980e5bfb30f6"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>onTransformChanged</b> ()</td></tr>
+<tr class="separator:a3e64b765bff5a02e2326980e5bfb30f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:aa48beb5492fe70dabf828ed9122e01d2"><td class="memItemLeft" align="right" valign="top"><a id="aa48beb5492fe70dabf828ed9122e01d2" name="aa48beb5492fe70dabf828ed9122e01d2"></a>
 <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>position</b> = <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>()</td></tr>
 <tr class="separator:aa48beb5492fe70dabf828ed9122e01d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7e7eb1b1e4bb4d44b2c7eff866ff72b"><td class="memItemLeft" align="right" valign="top"><a id="ab7e7eb1b1e4bb4d44b2c7eff866ff72b" name="ab7e7eb1b1e4bb4d44b2c7eff866ff72b"></a>
-<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>scale</b> = <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>()</td></tr>
+<a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>scale</b> = <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>(1,1,1)</td></tr>
 <tr class="separator:ab7e7eb1b1e4bb4d44b2c7eff866ff72b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29b0beb80ab12f51aa52bd1a4556e47b"><td class="memItemLeft" align="right" valign="top"><a id="a29b0beb80ab12f51aa52bd1a4556e47b" name="a29b0beb80ab12f51aa52bd1a4556e47b"></a>
 <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>&#160;</td><td class="memItemRight" valign="bottom"><b>rotation</b> = <a class="el" href="classglib_1_1_vec3f.html">Vec3f</a>()</td></tr>

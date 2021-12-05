@@ -210,6 +210,8 @@ namespace glib
 				}
 			}
 		}
+
+		boundingBox = Box2D(startX, startY, endX, endY);
 	}
 
 	void GuiScrollBar::holdButtonFunction(GuiInstance* ins)
@@ -287,10 +289,10 @@ namespace glib
 		if(surf!=nullptr)
 		{
 			//draw the background bar
-			Graphics::setColor(backgroundColor);
+			SimpleGraphics::setColor(backgroundColor);
 			surf->drawRect(renderX+startX, renderY+startY, renderX+endX, renderY+endY, false);
 
-			Graphics::setColor(outlineColor);
+			SimpleGraphics::setColor(outlineColor);
 			surf->drawRect(renderX+startX, renderY+startY, renderX+endX, renderY+endY, true);
 		}
 	}

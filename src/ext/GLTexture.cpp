@@ -3,14 +3,22 @@
 namespace glib
 {
 
-    GLTexture::GLTexture(File f, bool includeAlpha)
+    GLTexture::GLTexture(File f, bool includeAlpha, GLTextureParams params)
     {
-        loadImage(f, includeAlpha);
+        if(!GLSingleton::getInit())
+        {
+            return;
+        }
+        loadImage(f, includeAlpha, params);
     }
 
-    GLTexture::GLTexture(Image* img, bool includeAlpha)
+    GLTexture::GLTexture(Image* img, bool includeAlpha, GLTextureParams params)
     {
-        setImage(img, includeAlpha);
+        if(!GLSingleton::getInit())
+        {
+            return;
+        }
+        setImage(img, includeAlpha, params);
     }
 
     GLTexture::~GLTexture()
@@ -21,14 +29,14 @@ namespace glib
         textureID = 0;
     }
 
-    void GLTexture::loadImage(File f, bool includeAlpha)
+    void GLTexture::loadImage(File f, bool includeAlpha, GLTextureParams params)
     {
         int imgSize = 0;
         Image** imgPointer = Image::loadImage(f, &imgSize);
 
         if(imgSize > 0)
         {
-            setImage(imgPointer[0], includeAlpha);
+            setImage(imgPointer[0], includeAlpha, params);
         }
 
         for(int i=0; i<imgSize; i++)
@@ -38,8 +46,11 @@ namespace glib
         delete[] imgPointer;
     }
 
-    void GLTexture::setImage(Image* img, bool includeAlpha)
+    void GLTexture::setImage(Image* img, bool includeAlpha, GLTextureParams params)
     {
+        edgeBehavior = params.edgeBehavior;
+        filterType = params.filterType;
+
         if(img==nullptr)
             return;
         
@@ -51,21 +62,16 @@ namespace glib
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterType);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterType);
         
-
+        width = img->getWidth();
+        height = img->getHeight();
+        Color* data = img->getPixels();
+        
         if(includeAlpha)
         {
-            int width = img->getWidth();
-            int height = img->getHeight();
-            Color* data = img->getPixels();
-
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         }
         else
         {
-            int width = img->getWidth();
-            int height = img->getHeight();
-            Color* data = img->getPixels();
-
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         }
 
@@ -78,6 +84,16 @@ namespace glib
         
         glActiveTexture(textureLocation);
         glBindTexture(GL_TEXTURE_2D, textureID);
+    }
+
+    int GLTexture::getWidth()
+    {
+        return width;
+    }
+
+    int GLTexture::getHeight()
+    {
+        return height;
     }
 
 }

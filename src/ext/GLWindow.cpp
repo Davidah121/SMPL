@@ -53,7 +53,6 @@ namespace glib
 		}
 	}
 
-
 	void GLWindow::setPixelFormat()
 	{
 		PIXELFORMATDESCRIPTOR pfd;
@@ -105,14 +104,15 @@ namespace glib
 			}
 		}
 
-		GLuint err = glewInit();
-		if(err != GLEW_OK)
+		GLSingleton::tryInit();
+		if(!GLSingleton::getInit())
 		{
 			StringTools::println("GLEW ERROR");
 			setShouldEnd(true);
 			return;
 		}
-
+	
+		
 		glViewport(0, 0, width, height);
 		glClearColor(0.0f,0.0f,0.0f,0.0f);
 		glClearDepth(1.0f);
@@ -146,6 +146,16 @@ namespace glib
 			wglDeleteContext(ghRC);
 	}
 
+	void GLWindow::setVSync(int interval)
+	{
+		wglSwapIntervalEXT(interval);
+		swapInterval = interval;
+	}
+
+	int GLWindow::getVSyncInterval()
+	{
+		return swapInterval;
+	}
 	
 	LRESULT _stdcall GLWindow::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
@@ -554,7 +564,7 @@ namespace glib
 				DWORD style = 0;
 				bool failed = false;
 
-				switch(windowType)
+				switch(wType)
 				{
 					case GLWindow::NORMAL_WINDOW:
 						style = WS_OVERLAPPEDWINDOW;
@@ -571,7 +581,7 @@ namespace glib
 						break;
 				}
 
-				if(windowType == GLWindow::FULLSCREEN_WINDOW)
+				if(wType == GLWindow::FULLSCREEN_WINDOW)
 				{
 					HMONITOR hmon = MonitorFromWindow(NULL, MONITOR_DEFAULTTONEAREST);
 					MONITORINFO mi = { sizeof(MONITORINFO) };
@@ -968,6 +978,8 @@ namespace glib
 	{
 		myMutex.lock();
 		shouldEnd = v;
+		if(threadOwnership == false)
+			running = false;
 		myMutex.unlock();
 	}
 

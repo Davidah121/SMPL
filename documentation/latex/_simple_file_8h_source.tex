@@ -70,46 +70,47 @@
 \DoxyCodeLine{149 }
 \DoxyCodeLine{157         std::vector<unsigned char> \mbox{\hyperlink{classglib_1_1_simple_file_ac96b99859dc641706343ee9b5f4a3d6d}{readFullFileAsBytes}}();}
 \DoxyCodeLine{158 }
-\DoxyCodeLine{159         \textcolor{comment}{//Write functions}}
-\DoxyCodeLine{160 }
-\DoxyCodeLine{169         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_file_ad62476117ba521ec7fbbe9e7434383b6}{writeByte}}(\textcolor{keywordtype}{char} c);}
-\DoxyCodeLine{170 }
-\DoxyCodeLine{179         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_file_ab081f9b302312ff34b8116b68a6cb6bf}{writeWideChar}}(\textcolor{keywordtype}{wchar\_t} c);}
-\DoxyCodeLine{180 }
-\DoxyCodeLine{192         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_file_a9e89bac1a7d1a6de81ca2745c7836ec3}{writeBytes}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* data, \textcolor{keywordtype}{int} size);}
-\DoxyCodeLine{193 }
-\DoxyCodeLine{202         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_file_add7fabbe51288269b39a987b71b458fc}{writeString}}(std::string line);}
-\DoxyCodeLine{203 }
-\DoxyCodeLine{212         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_file_a2efa636c1c7d9cc1a7f5f0d9608b38b6}{writeWideString}}(std::wstring line);}
-\DoxyCodeLine{213 }
-\DoxyCodeLine{221         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_file_af3a5a6dcea0f835b5600b4011eb2ba92}{writeLineBreak}}();}
-\DoxyCodeLine{222 }
-\DoxyCodeLine{223         \textcolor{comment}{//File functions}}
-\DoxyCodeLine{224 }
-\DoxyCodeLine{231         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_file_aa67161a2acd095c997dc45d933c33862}{isOpen}}();}
-\DoxyCodeLine{232 }
-\DoxyCodeLine{238         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_file_a73717ec7e72b098f70b170095dcc4326}{close}}();}
-\DoxyCodeLine{239 }
-\DoxyCodeLine{246         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_file_a1968f4adfe94b56b1a0e613b1f46fe09}{isEndOfFile}}();}
-\DoxyCodeLine{247 }
-\DoxyCodeLine{253         std::wstring \mbox{\hyperlink{classglib_1_1_simple_file_a6b074ac327ae48f89ba857c3238d3d3c}{getFileName}}();}
-\DoxyCodeLine{254 }
-\DoxyCodeLine{260         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_file_a4061e1ca624dd7084abc259db95a14d5}{getSize}}();}
-\DoxyCodeLine{261 }
-\DoxyCodeLine{268         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_file_a9b4c6e7c4c6747f26bbe43aa632aadee}{getBytesLeft}}();}
-\DoxyCodeLine{269 }
-\DoxyCodeLine{270     \textcolor{keyword}{private}:}
-\DoxyCodeLine{271         \textcolor{keywordtype}{void} init(std::wstring filename, \textcolor{keywordtype}{char} type);}
-\DoxyCodeLine{272         \textcolor{keywordtype}{int} getChar();}
-\DoxyCodeLine{273 }
-\DoxyCodeLine{274         std::wstring wideFileName;}
-\DoxyCodeLine{275         \textcolor{keywordtype}{char} type=0;}
-\DoxyCodeLine{276         \textcolor{keywordtype}{char} dataType=0;}
-\DoxyCodeLine{277         std::fstream* file = \textcolor{keyword}{nullptr};}
-\DoxyCodeLine{278         \textcolor{keywordtype}{int} size;}
-\DoxyCodeLine{279         }
-\DoxyCodeLine{280     \};}
-\DoxyCodeLine{281 }
-\DoxyCodeLine{282 \} \textcolor{comment}{//NAMESPACE glib END}}
+\DoxyCodeLine{159 }
+\DoxyCodeLine{160         \textcolor{comment}{//Write functions}}
+\DoxyCodeLine{161 }
+\DoxyCodeLine{170         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_file_ad62476117ba521ec7fbbe9e7434383b6}{writeByte}}(\textcolor{keywordtype}{char} c);}
+\DoxyCodeLine{171 }
+\DoxyCodeLine{180         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_file_ab081f9b302312ff34b8116b68a6cb6bf}{writeWideChar}}(\textcolor{keywordtype}{wchar\_t} c);}
+\DoxyCodeLine{181 }
+\DoxyCodeLine{193         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_file_a9e89bac1a7d1a6de81ca2745c7836ec3}{writeBytes}}(\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* data, \textcolor{keywordtype}{int} size);}
+\DoxyCodeLine{194 }
+\DoxyCodeLine{203         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_file_add7fabbe51288269b39a987b71b458fc}{writeString}}(std::string line);}
+\DoxyCodeLine{204 }
+\DoxyCodeLine{213         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_file_a2efa636c1c7d9cc1a7f5f0d9608b38b6}{writeWideString}}(std::wstring line);}
+\DoxyCodeLine{214 }
+\DoxyCodeLine{222         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_file_af3a5a6dcea0f835b5600b4011eb2ba92}{writeLineBreak}}();}
+\DoxyCodeLine{223 }
+\DoxyCodeLine{224         \textcolor{comment}{//File functions}}
+\DoxyCodeLine{225 }
+\DoxyCodeLine{232         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_file_aa67161a2acd095c997dc45d933c33862}{isOpen}}();}
+\DoxyCodeLine{233 }
+\DoxyCodeLine{239         \textcolor{keywordtype}{void} \mbox{\hyperlink{classglib_1_1_simple_file_a73717ec7e72b098f70b170095dcc4326}{close}}();}
+\DoxyCodeLine{240 }
+\DoxyCodeLine{247         \textcolor{keywordtype}{bool} \mbox{\hyperlink{classglib_1_1_simple_file_a1968f4adfe94b56b1a0e613b1f46fe09}{isEndOfFile}}();}
+\DoxyCodeLine{248 }
+\DoxyCodeLine{254         std::wstring \mbox{\hyperlink{classglib_1_1_simple_file_a6b074ac327ae48f89ba857c3238d3d3c}{getFileName}}();}
+\DoxyCodeLine{255 }
+\DoxyCodeLine{261         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_file_a4061e1ca624dd7084abc259db95a14d5}{getSize}}();}
+\DoxyCodeLine{262 }
+\DoxyCodeLine{269         \textcolor{keywordtype}{int} \mbox{\hyperlink{classglib_1_1_simple_file_a9b4c6e7c4c6747f26bbe43aa632aadee}{getBytesLeft}}();}
+\DoxyCodeLine{270 }
+\DoxyCodeLine{271     \textcolor{keyword}{private}:}
+\DoxyCodeLine{272         \textcolor{keywordtype}{void} init(std::wstring filename, \textcolor{keywordtype}{char} type);}
+\DoxyCodeLine{273         \textcolor{keywordtype}{int} getChar();}
+\DoxyCodeLine{274 }
+\DoxyCodeLine{275         std::wstring wideFileName;}
+\DoxyCodeLine{276         \textcolor{keywordtype}{char} type=0;}
+\DoxyCodeLine{277         \textcolor{keywordtype}{char} dataType=0;}
+\DoxyCodeLine{278         std::fstream* file = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{279         \textcolor{keywordtype}{int} size;}
+\DoxyCodeLine{280         }
+\DoxyCodeLine{281     \};}
+\DoxyCodeLine{282 }
+\DoxyCodeLine{283 \} \textcolor{comment}{//NAMESPACE glib END}}
 
 \end{DoxyCode}

@@ -2,7 +2,7 @@
 #include <vector>
 #include "SimpleFile.h"
 #include "Compression.h"
-#include "Graphics.h"
+#include "SimpleGraphics.h"
 #include <iostream>
 #include "StringTools.h"
 
@@ -233,72 +233,72 @@ namespace glib
 
 	void Image::clearImage()
 	{
-		Graphics::clearImage(this);
+		SimpleGraphics::clearImage(this);
 	}
 
 	void Image::drawRect(int x, int y, int x2, int y2, bool outline)
 	{
-		Graphics::drawRect(x, y, x2, y2, outline, this);
+		SimpleGraphics::drawRect(x, y, x2, y2, outline, this);
 	}
 
 	void Image::drawLine(int x, int y, int x2, int y2)
 	{
-		Graphics::drawLine(x, y, x2, y2, this);
+		SimpleGraphics::drawLine(x, y, x2, y2, this);
 	}
 
 	void Image::drawCircle(int x, int y, int radius, bool outline)
 	{
-		Graphics::drawCircle(x, y, radius, outline, this);
+		SimpleGraphics::drawCircle(x, y, radius, outline, this);
 	}
 
 	void Image::drawPolygon(Vec2f* points, int size)
 	{
-		Graphics::drawPolygon(points, size, this);
+		SimpleGraphics::drawPolygon(points, size, this);
 	}
 
 	void Image::drawImage(Image* img, int x, int y)
 	{
-		Graphics::drawImage(img, x, y, this);
+		SimpleGraphics::drawImage(img, x, y, this);
 	}
 
 	void Image::drawSprite(Image* img, int x, int y)
 	{
-		Graphics::drawSprite(img, x, y, this);
+		SimpleGraphics::drawSprite(img, x, y, this);
 	}
 
 	void Image::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH)
 	{
-		Graphics::drawSpritePart(img, x, y, imgX, imgY, imgW, imgH, this);
+		SimpleGraphics::drawSpritePart(img, x, y, imgX, imgY, imgW, imgH, this);
 	}
 
 	void Image::drawText(std::string str, int x, int y)
 	{
-		Graphics::drawText(str, x, y, this);
+		SimpleGraphics::drawText(str, x, y, this);
 	}
 
 	void Image::drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowLineBreak)
 	{
-		Graphics::drawTextLimits(str, x, y, maxWidth, maxHeight, allowLineBreak, this);
+		SimpleGraphics::drawTextLimits(str, x, y, maxWidth, maxHeight, allowLineBreak, this);
 	}
 
 	void Image::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline)
 	{
-		Graphics::drawTriangle(x1, y1, x2, y2, x3, y3, outline, this);
+		SimpleGraphics::drawTriangle(x1, y1, x2, y2, x3, y3, outline, this);
 	}
 
 	void Image::drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture)
 	{
-		Graphics::drawTexturedTriangle(p1, p2, p3, texture, this);
+		SimpleGraphics::drawTexturedTriangle(p1, p2, p3, texture, this);
 	}
 
 	void Image::drawPixel(int x, int y, Color c)
 	{
-		Graphics::drawPixel(x, y, c, this);
+		SimpleGraphics::drawPixel(x, y, c, this);
 	}
 
 	void Image::drawPixel(double x, double y, Color c)
 	{
-		Graphics::drawPixel(x, y, c, this);
+		SimpleGraphics::drawPixel(x, y, c, this);
 	}
 
 	#pragma endregion

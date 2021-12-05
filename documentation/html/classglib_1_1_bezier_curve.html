@@ -70,6 +70,7 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="classglib_1_1_bezier_curve-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">glib::BezierCurve Class Reference</div></div>
@@ -115,6 +116,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4855905b952c4fada47ef710666e0655"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classglib_1_1_vec2f.html">Vec2f</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_bezier_curve.html#a4855905b952c4fada47ef710666e0655">getPoint</a> (int index)</td></tr>
 <tr class="memdesc:a4855905b952c4fada47ef710666e0655"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a point from the Bezier Curve.  <a href="classglib_1_1_bezier_curve.html#a4855905b952c4fada47ef710666e0655">More...</a><br /></td></tr>
 <tr class="separator:a4855905b952c4fada47ef710666e0655"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae746ae44536f83b3501a2e1880c0e0eb"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classglib_1_1_bezier_curve.html">BezierCurve</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_bezier_curve.html#ae746ae44536f83b3501a2e1880c0e0eb">subdivide</a> (double t)</td></tr>
+<tr class="memdesc:ae746ae44536f83b3501a2e1880c0e0eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subdivides the Bezier Curve from [0, 1] into 2 separate Bezier Curves.  <a href="classglib_1_1_bezier_curve.html#ae746ae44536f83b3501a2e1880c0e0eb">More...</a><br /></td></tr>
+<tr class="separator:ae746ae44536f83b3501a2e1880c0e0eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8316a11c2f245ae2715c388c9c386948"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classglib_1_1_bezier_curve.html">BezierCurve</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_bezier_curve.html#a8316a11c2f245ae2715c388c9c386948">extract</a> (double a, double b)</td></tr>
+<tr class="memdesc:a8316a11c2f245ae2715c388c9c386948"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extracts the segment from [a, b] as a new Bezier Curve.  <a href="classglib_1_1_bezier_curve.html#a8316a11c2f245ae2715c388c9c386948">More...</a><br /></td></tr>
+<tr class="separator:a8316a11c2f245ae2715c388c9c386948"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a223f17e1db1a15e445d33f25a8c2ac38"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classglib_1_1_vec2f.html">Vec2f</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_bezier_curve.html#a223f17e1db1a15e445d33f25a8c2ac38">getBoundingBox</a> ()</td></tr>
+<tr class="memdesc:a223f17e1db1a15e445d33f25a8c2ac38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an Axis Aligned Bounding Box for the Bezier Curve. If successful, it returns a std::vector&lt;Vec2f&gt; of size 2 where the first point represents the top left of the box and the second point represents the bottom right of the box.  <a href="classglib_1_1_bezier_curve.html#a223f17e1db1a15e445d33f25a8c2ac38">More...</a><br /></td></tr>
+<tr class="separator:a223f17e1db1a15e445d33f25a8c2ac38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27fcb68b9abd7b65b4721502f059fa91"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classglib_1_1_vec2f.html">Vec2f</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_bezier_curve.html#a27fcb68b9abd7b65b4721502f059fa91">getFuctionAt</a> (double time)</td></tr>
 <tr class="memdesc:a27fcb68b9abd7b65b4721502f059fa91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves the <a class="el" href="classglib_1_1_bezier_curve.html">BezierCurve</a> for the given time. Note that any time value can be used even if outside of the bounds [0,1].  <a href="classglib_1_1_bezier_curve.html#a27fcb68b9abd7b65b4721502f059fa91">More...</a><br /></td></tr>
 <tr class="separator:a27fcb68b9abd7b65b4721502f059fa91"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,6 +153,21 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> ()</td></tr
 <tr class="memitem:ab5c1e4bb703d4f1997e7738a977a1ce3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_bezier_curve.html#ab5c1e4bb703d4f1997e7738a977a1ce3">findTimeForX</a> (double x)</td></tr>
 <tr class="memdesc:ab5c1e4bb703d4f1997e7738a977a1ce3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves the function all times where the solution has the specified x value. Currently only works for BezierCurves with 4 or less points.  <a href="classglib_1_1_bezier_curve.html#ab5c1e4bb703d4f1997e7738a977a1ce3">More...</a><br /></td></tr>
 <tr class="separator:ab5c1e4bb703d4f1997e7738a977a1ce3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e5aec3417965b81fc3c4386809cd52d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_bezier_curve.html#a8e5aec3417965b81fc3c4386809cd52d">findTimeForPoint</a> (double x, double y)</td></tr>
+<tr class="memdesc:a8e5aec3417965b81fc3c4386809cd52d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solves the function all times where the solution has the specified x,y value. Currently only works for BezierCurves with 4 or less points.  <a href="classglib_1_1_bezier_curve.html#a8e5aec3417965b81fc3c4386809cd52d">More...</a><br /></td></tr>
+<tr class="separator:a8e5aec3417965b81fc3c4386809cd52d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a8211a4a0d63ddb8b3a9919823a91744e"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; <a class="el" href="classglib_1_1_bezier_curve.html">BezierCurve</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_bezier_curve.html#a8211a4a0d63ddb8b3a9919823a91744e">approximateCircle</a> (double radius, double x=0, double y=0, bool cubic=true)</td></tr>
+<tr class="memdesc:a8211a4a0d63ddb8b3a9919823a91744e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Approximates a <a class="el" href="classglib_1_1_circle.html">Circle</a> using a series of bezier curves. If cubic bezier curves are selected, 4 Cubic Bezier curves are used for approximation. If quadratic bezier curves are selected, 8 Quadratic Bezier curves are used for approximation.  <a href="classglib_1_1_bezier_curve.html#a8211a4a0d63ddb8b3a9919823a91744e">More...</a><br /></td></tr>
+<tr class="separator:a8211a4a0d63ddb8b3a9919823a91744e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac08655a9f7450541aae746998ab8613d"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; <a class="el" href="classglib_1_1_bezier_curve.html">BezierCurve</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_bezier_curve.html#ac08655a9f7450541aae746998ab8613d">approximateEllipse</a> (double xRadius, double yRadius, double x=0, double y=0, bool cubic=true)</td></tr>
+<tr class="memdesc:ac08655a9f7450541aae746998ab8613d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Approximates a <a class="el" href="classglib_1_1_ellipse.html">Ellipse</a> using a series of bezier curves. If cubic bezier curves are selected, 4 Cubic Bezier curves are used for approximation. If quadratic bezier curves are selected, 8 Quadratic Bezier curves are used for approximation.  <a href="classglib_1_1_bezier_curve.html#ac08655a9f7450541aae746998ab8613d">More...</a><br /></td></tr>
+<tr class="separator:ac08655a9f7450541aae746998ab8613d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88518677a069f983390c251f489c68a7"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classglib_1_1_bezier_curve.html">BezierCurve</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classglib_1_1_bezier_curve.html#a88518677a069f983390c251f489c68a7">approximateArc</a> (double xRadius, double yRadius, double startAngle, double endAngle, double x=0, double y=0, bool cubic=true)</td></tr>
+<tr class="memdesc:a88518677a069f983390c251f489c68a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Approximates an Arc using a bezier curve.  <a href="classglib_1_1_bezier_curve.html#a88518677a069f983390c251f489c68a7">More...</a><br /></td></tr>
+<tr class="separator:a88518677a069f983390c251f489c68a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -215,6 +240,284 @@ static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a88518677a069f983390c251f489c68a7" name="a88518677a069f983390c251f489c68a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88518677a069f983390c251f489c68a7">&#9670;&nbsp;</a></span>approximateArc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classglib_1_1_bezier_curve.html">BezierCurve</a> glib::BezierCurve::approximateArc </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xRadius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yRadius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>startAngle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>endAngle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>y</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cubic</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Approximates an Arc using a bezier curve. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">xRadius</td><td>The x radius of the Arc. </td></tr>
+    <tr><td class="paramname">yRadius</td><td>The y radius of the Arc. </td></tr>
+    <tr><td class="paramname">startAngle</td><td>The start angle for the arc. Radians expected. </td></tr>
+    <tr><td class="paramname">endAngle</td><td>The end angle for the arc. Radians expected. </td></tr>
+    <tr><td class="paramname">cubic</td><td>If set to true, cubic bezier curves are used to approximate the Arc. Otherwise, quadratic bezier curves are used. Default value is true. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classglib_1_1_bezier_curve.html">BezierCurve</a> </dd></dl>
+
+</div>
+</div>
+<a id="a8211a4a0d63ddb8b3a9919823a91744e" name="a8211a4a0d63ddb8b3a9919823a91744e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8211a4a0d63ddb8b3a9919823a91744e">&#9670;&nbsp;</a></span>approximateCircle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::vector&lt; <a class="el" href="classglib_1_1_bezier_curve.html">BezierCurve</a> &gt; glib::BezierCurve::approximateCircle </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>y</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cubic</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Approximates a <a class="el" href="classglib_1_1_circle.html">Circle</a> using a series of bezier curves. If cubic bezier curves are selected, 4 Cubic Bezier curves are used for approximation. If quadratic bezier curves are selected, 8 Quadratic Bezier curves are used for approximation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">radius</td><td>The radius of the <a class="el" href="classglib_1_1_circle.html">Circle</a>. </td></tr>
+    <tr><td class="paramname">cubic</td><td>If set to true, cubic bezier curves are used to approximate the circle. Otherwise, quadratic bezier curves are used. Default value is true. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;BezierCurve&gt; </dd></dl>
+
+</div>
+</div>
+<a id="ac08655a9f7450541aae746998ab8613d" name="ac08655a9f7450541aae746998ab8613d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac08655a9f7450541aae746998ab8613d">&#9670;&nbsp;</a></span>approximateEllipse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::vector&lt; <a class="el" href="classglib_1_1_bezier_curve.html">BezierCurve</a> &gt; glib::BezierCurve::approximateEllipse </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xRadius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yRadius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>y</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cubic</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Approximates a <a class="el" href="classglib_1_1_ellipse.html">Ellipse</a> using a series of bezier curves. If cubic bezier curves are selected, 4 Cubic Bezier curves are used for approximation. If quadratic bezier curves are selected, 8 Quadratic Bezier curves are used for approximation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">xRadius</td><td>The x radius of the <a class="el" href="classglib_1_1_ellipse.html">Ellipse</a>. </td></tr>
+    <tr><td class="paramname">yRadius</td><td>The y radius of the <a class="el" href="classglib_1_1_ellipse.html">Ellipse</a>. </td></tr>
+    <tr><td class="paramname">cubic</td><td>If set to true, cubic bezier curves are used to approximate the <a class="el" href="classglib_1_1_ellipse.html">Ellipse</a>. Otherwise, quadratic bezier curves are used. Default value is true. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;BezierCurve&gt; </dd></dl>
+
+</div>
+</div>
+<a id="a8316a11c2f245ae2715c388c9c386948" name="a8316a11c2f245ae2715c388c9c386948"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8316a11c2f245ae2715c388c9c386948">&#9670;&nbsp;</a></span>extract()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classglib_1_1_bezier_curve.html">BezierCurve</a> glib::BezierCurve::extract </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extracts the segment from [a, b] as a new Bezier Curve. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a</td><td>The start time value. Must be between [0, 1] </td></tr>
+    <tr><td class="paramname">b</td><td>The end time value. Must be between [0, 1] </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classglib_1_1_bezier_curve.html">BezierCurve</a> </dd></dl>
+
+</div>
+</div>
+<a id="a8e5aec3417965b81fc3c4386809cd52d" name="a8e5aec3417965b81fc3c4386809cd52d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e5aec3417965b81fc3c4386809cd52d">&#9670;&nbsp;</a></span>findTimeForPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; double &gt; glib::BezierCurve::findTimeForPoint </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solves the function all times where the solution has the specified x,y value. Currently only works for BezierCurves with 4 or less points. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td></td></tr>
+    <tr><td class="paramname">y</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;double&gt; returns a list of all solutions. Can return an empty list if there is no solution. </dd></dl>
 
 </div>
 </div>
@@ -334,6 +637,26 @@ static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>double returns the measured arc length. </dd></dl>
+
+</div>
+</div>
+<a id="a223f17e1db1a15e445d33f25a8c2ac38" name="a223f17e1db1a15e445d33f25a8c2ac38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a223f17e1db1a15e445d33f25a8c2ac38">&#9670;&nbsp;</a></span>getBoundingBox()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classglib_1_1_vec2f.html">Vec2f</a> &gt; glib::BezierCurve::getBoundingBox </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets an Axis Aligned Bounding Box for the Bezier Curve. If successful, it returns a std::vector&lt;Vec2f&gt; of size 2 where the first point represents the top left of the box and the second point represents the bottom right of the box. </p>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;Vec2f&gt; </dd></dl>
 
 </div>
 </div>
@@ -489,6 +812,33 @@ static const <a class="el" href="classglib_1_1_class.html">Class</a>&#160;</td><
 
 <p>Returns the amount of points the bezier curve has. </p>
 <dl class="section return"><dt>Returns</dt><dd>int </dd></dl>
+
+</div>
+</div>
+<a id="ae746ae44536f83b3501a2e1880c0e0eb" name="ae746ae44536f83b3501a2e1880c0e0eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae746ae44536f83b3501a2e1880c0e0eb">&#9670;&nbsp;</a></span>subdivide()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classglib_1_1_bezier_curve.html">BezierCurve</a> &gt; glib::BezierCurve::subdivide </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Subdivides the Bezier Curve from [0, 1] into 2 separate Bezier Curves. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">t</td><td>The time value to split at.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;BezierCurve&gt; </dd></dl>
 
 </div>
 </div>

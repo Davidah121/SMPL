@@ -7,7 +7,7 @@
 #endif
 #include <Windows.h>
 
-#include "DXSingleton.h"
+#include "ext/DXSingleton.h"
 
 #include <exception>
 #include <thread>
@@ -442,7 +442,6 @@ namespace glib
 
         
         void testDirectX();
-		bool getShouldEnd();
 		void clearWindow(Vec4f color);
 		void swapBuffers();
 	private:
@@ -492,6 +491,7 @@ namespace glib
 
 		bool shouldEnd = false;
 		void setShouldEnd(bool v);
+		bool getShouldEnd();
 
 		static int* mouseVWheelPointer;
 		static int* mouseHWheelPointer;

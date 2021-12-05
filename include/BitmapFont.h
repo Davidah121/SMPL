@@ -47,7 +47,21 @@ namespace glib
 		 * 		A nullptr is returned if no image was found. Otherwise, a valid Image* is returned.
 		 */
 		Image* getImage(int index);
+
+		/**
+		 * @brief Gets the internal Sprite used to store the image data for the characters.
+		 * 
+		 * @return Sprite* 
+		 */
+		Sprite* getSprite();
 		
+		/**
+		 * @brief Gets the internal data specifying what image in the sprite a character is located in.
+		 * 
+		 * @return std::vector<int> 
+		 */
+		std::vector<int> getImagePages();
+
 	private:
 		void loadFT(File file);
 		void loadFNT(File file);

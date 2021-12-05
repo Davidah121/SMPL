@@ -15,13 +15,14 @@ var searchData=
   ['filteroutcolorrange_12',['filterOutColorRange',['../classglib_1_1_graphics.html#a7d742c17c9a6f33936f8f2646a69a494',1,'glib::Graphics']]],
   ['findclass_13',['findClass',['../classglib_1_1_class_master.html#a841cf832eeadb56792a6ae2eb868138e',1,'glib::ClassMaster::findClass(int i)'],['../classglib_1_1_class_master.html#ae2b7a43a910325cf129e73a1462b0a2f',1,'glib::ClassMaster::findClass(std::string className)']]],
   ['findlongestmatch_14',['findLongestMatch',['../classglib_1_1_string_tools.html#a188eb5ee217195d6020a95e21bdff29e',1,'glib::StringTools::findLongestMatch(std::string base, std::string match, int *index, int *length)'],['../classglib_1_1_string_tools.html#a305034a4cbd0b2b16e2bd192244af96a',1,'glib::StringTools::findLongestMatch(T *base, int baseSize, T *match, int matchSize, int *index, int *length)']]],
-  ['findtimeforx_15',['findTimeForX',['../classglib_1_1_bezier_curve.html#ab5c1e4bb703d4f1997e7738a977a1ce3',1,'glib::BezierCurve']]],
-  ['findtimefory_16',['findTimeForY',['../classglib_1_1_bezier_curve.html#a39419ebeab090bb41f1ce0c36ab0ef93',1,'glib::BezierCurve']]],
-  ['floor_17',['floor',['../classglib_1_1_math_ext.html#aa0a8e44de6e79aa74977f3793a5c4784',1,'glib::MathExt::floor(float a)'],['../classglib_1_1_math_ext.html#a58cfe84d5de31a945c8ac95fc120d2e6',1,'glib::MathExt::floor(double a)']]],
-  ['font_18',['Font',['../classglib_1_1_font.html#a369550cea2bcec9410d2bc57b1d3c6aa',1,'glib::Font']]],
-  ['formatstring_19',['formatString',['../classglib_1_1_string_tools.html#a2056c700117666108b4038d07bd64d4c',1,'glib::StringTools']]],
-  ['formatwidestring_20',['formatWideString',['../classglib_1_1_string_tools.html#a34c564f6331cfd44676a0ac7454e14be',1,'glib::StringTools']]],
-  ['fouriertransform_21',['fourierTransform',['../classglib_1_1_math_ext.html#a3663709f2c7bc1d58fe5d1ff433c9ec4',1,'glib::MathExt']]],
-  ['frac_22',['frac',['../classglib_1_1_math_ext.html#aa973230e0055b8aed3af627b905b53cc',1,'glib::MathExt::frac(double a)'],['../classglib_1_1_math_ext.html#aa311da01113545524cdf2c3f1c0b9afb',1,'glib::MathExt::frac(float a)']]],
-  ['frequencytable_23',['FrequencyTable',['../classglib_1_1_frequency_table.html#ad7ab4dd38b820f953130ebf47649c08b',1,'glib::FrequencyTable']]]
+  ['findtimeforpoint_15',['findTimeForPoint',['../classglib_1_1_bezier_curve.html#a8e5aec3417965b81fc3c4386809cd52d',1,'glib::BezierCurve']]],
+  ['findtimeforx_16',['findTimeForX',['../classglib_1_1_bezier_curve.html#ab5c1e4bb703d4f1997e7738a977a1ce3',1,'glib::BezierCurve']]],
+  ['findtimefory_17',['findTimeForY',['../classglib_1_1_bezier_curve.html#a39419ebeab090bb41f1ce0c36ab0ef93',1,'glib::BezierCurve']]],
+  ['floor_18',['floor',['../classglib_1_1_math_ext.html#aa0a8e44de6e79aa74977f3793a5c4784',1,'glib::MathExt::floor(float a)'],['../classglib_1_1_math_ext.html#a58cfe84d5de31a945c8ac95fc120d2e6',1,'glib::MathExt::floor(double a)']]],
+  ['font_19',['Font',['../classglib_1_1_font.html#a369550cea2bcec9410d2bc57b1d3c6aa',1,'glib::Font']]],
+  ['formatstring_20',['formatString',['../classglib_1_1_string_tools.html#a2056c700117666108b4038d07bd64d4c',1,'glib::StringTools']]],
+  ['formatwidestring_21',['formatWideString',['../classglib_1_1_string_tools.html#a34c564f6331cfd44676a0ac7454e14be',1,'glib::StringTools']]],
+  ['fouriertransform_22',['fourierTransform',['../classglib_1_1_math_ext.html#a3663709f2c7bc1d58fe5d1ff433c9ec4',1,'glib::MathExt']]],
+  ['frac_23',['frac',['../classglib_1_1_math_ext.html#aa973230e0055b8aed3af627b905b53cc',1,'glib::MathExt::frac(double a)'],['../classglib_1_1_math_ext.html#aa311da01113545524cdf2c3f1c0b9afb',1,'glib::MathExt::frac(float a)']]],
+  ['frequencytable_24',['FrequencyTable',['../classglib_1_1_frequency_table.html#ad7ab4dd38b820f953130ebf47649c08b',1,'glib::FrequencyTable']]]
 ];
