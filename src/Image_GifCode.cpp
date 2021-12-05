@@ -4,7 +4,7 @@
 #include "Compression.h"
 #include "StringTools.h"
 #include "MathExt.h"
-#include "Graphics.h"
+#include "SimpleGraphics.h"
 
 #include "ColorSpaceConverter.h"
 
@@ -78,7 +78,7 @@ namespace glib
 		if(dither)
 		{
 			tempImg.setPalette(tempPalette);
-			Graphics::ditherImage(&tempImg, Graphics::FLOYD_DITHER);
+			SimpleGraphics::ditherImage(&tempImg, SimpleGraphics::FLOYD_DITHER);
 		}
 
 		t1 = System::getCurrentTimeMicro();

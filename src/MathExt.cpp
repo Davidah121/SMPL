@@ -1091,12 +1091,16 @@ namespace glib
 	{
 		if(near == far)
 		{
+			//x` = 2x/width + 0y + 0z + -1w
+			//y` = 0x -2y/height + 0z + 1w
+			//z` = 0x + 0y + z + 0w
+			//w` = 0x + 0y + 0z + w
 			return Mat4f(
 				2.0/width, 0, 0, -1,
 				0, -2.0/height, 0, 1,
 				0, 0, 1, 0,
 				0, 0, 0, 1
-			);;
+			);
 		}
 		else
 		{
@@ -1459,15 +1463,21 @@ namespace glib
 
 		return {};
 	}
+
+	
+	int MathExt::factorial(int k)
+	{
+		int sum = 1;
+		for(int i=1; i<=k; i++)
+		{
+			sum *= i;
+		}
+		return sum;
+	}
 	
 	double MathExt::binomialCoefficient(int n, int k)
 	{
-		double value = 1;
-
-		for(int i=1; i<k; i++)
-		{
-			value *= (n+1-i)/i;
-		}
+		double value = factorial(n) / (factorial(k)*factorial(n-k));
 		return value;
 	}
 
@@ -1741,6 +1751,10 @@ namespace glib
 
 	#pragma endregion
 
+	#pragma region SINE_TRANSFORM_1D
+
+	#pragma endregion
+
 	#pragma region COSINE_TRANSFORM_2D
 
 	double MathExt::discreteCosineTransform2D(Matrix& arr, int u, int v, bool inverse)
@@ -1852,6 +1866,11 @@ namespace glib
 	{
 		return Matrix();
 	}
+
+	#pragma endregion
+
+	
+	#pragma region SINE_TRANSFORM_2D
 
 	#pragma endregion
 

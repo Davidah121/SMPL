@@ -36,9 +36,7 @@
 		#define WIN32_LEAN_AND_MEAN
 	#endif
 	#include <Windows.h>
-	#include <GL/glew.h>
-    #include <GL/gl.h>
-    #include <GL/glu.h>
+	#include "ext/GLSingleton.h"
 #endif
 
 #include <exception>
@@ -472,9 +470,29 @@ namespace glib
 		 */
 		static void setMouseHWheelValuePointer(int* v);
 
-        
+		/**
+		 * @brief Sets the swap interval for vsync. 
+		 * 		If set to 0, vsync will be disabled.
+		 * 
+		 * 		Note that in order to have 30 fps on a 60hz monitor, interval should be set to 2.
+		 * 		To have 30 fps on a 120hz monitor, interval should be set to 4.
+		 * 
+		 * 		Sleeping in software can help for specific framerates and interval could be set to 1 to sync on the next
+		 * 		available frame.
+		 * 
+		 * @param interval 
+		 * 		Specifies which frame to sync on. 
+		 */
+        void setVSync(int interval);
+		
+		/**
+		 * @brief Gets the swap interval for vsync.
+		 * 
+		 * @return int 
+		 */
+		int getVSyncInterval();
+
         void testGL();
-		bool getShouldEnd();
 		void swapBuffers();
 		
 	private:
@@ -499,6 +517,7 @@ namespace glib
         void setPixelFormat();
         void initGL();
         void disposeGL();
+		int swapInterval = 0;
         //
 
 		void init(int x, int y, int width, int height, std::wstring title, unsigned char windowType);
@@ -526,6 +545,7 @@ namespace glib
 
 		bool shouldEnd = false;
 		void setShouldEnd(bool v);
+		bool getShouldEnd();
 
 		static int* mouseVWheelPointer;
 		static int* mouseHWheelPointer;

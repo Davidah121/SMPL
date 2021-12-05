@@ -103,13 +103,13 @@ namespace glib
 		if(surf!=nullptr)
 		{
 			//draw a rectangle
-			Graphics::setColor(backgroundColor);
+			SimpleGraphics::setColor(backgroundColor);
 			surf->drawRect(renderX, renderY, renderX + width, renderY + height, false);
 
 			if (getFocus() == false)
-				Graphics::setColor(outlineColor);
+				SimpleGraphics::setColor(outlineColor);
 			else
-				Graphics::setColor(focusOutlineColor);
+				SimpleGraphics::setColor(focusOutlineColor);
 			
 			surf->drawRect(renderX, renderY, renderX + width, renderY + height, true);
 
@@ -118,9 +118,9 @@ namespace glib
 				if(!cursorBlink)
 				{
 					//Font Stuff
-					Graphics::setColor(cursorBlinkColor);
-					std::string testText = textElement.getTextRef().substr(startStringIndex, cursorLocation-startStringIndex);
-					Font* f = (textElement.getFont() != nullptr) ? textElement.getFont() : Graphics::getFont();
+					SimpleGraphics::setColor(cursorBlinkColor);
+					std::wstring testText = textElement.getTextRef().substr(startStringIndex, cursorLocation-startStringIndex);
+					Font* f = (textElement.getFont() != nullptr) ? textElement.getFont() : SimpleGraphics::getFont();
 					int startOfCursorLine = f->getWidthOfString(testText);
 
 					surf->drawRect(renderX+startOfCursorLine, renderY, renderX+startOfCursorLine+cursorWidth, renderY+f->getFontSize(), false);
@@ -177,8 +177,8 @@ namespace glib
 				int maxSelect = max(selectStart, selectEnd);
 				if(minSelect==maxSelect)
 					minSelect--;
-				std::string prefix = textElement.getText().substr(0, minSelect);
-				std::string suffix = textElement.getText().substr(maxSelect);
+				std::wstring prefix = textElement.getText().substr(0, minSelect);
+				std::wstring suffix = textElement.getText().substr(maxSelect);
 
 				textElement.setText(prefix+suffix);
 
@@ -193,8 +193,8 @@ namespace glib
 				if(minSelect==maxSelect)
 					maxSelect++;
 
-				std::string prefix = textElement.getText().substr(0, minSelect);
-				std::string suffix = textElement.getText().substr(maxSelect);
+				std::wstring prefix = textElement.getText().substr(0, minSelect);
+				std::wstring suffix = textElement.getText().substr(maxSelect);
 
 				textElement.setText(prefix+suffix);
 
@@ -207,13 +207,13 @@ namespace glib
 				if( Input::getKeyPressed('V'))
 				{
 					//PASTE
-					std::string pasteText = StringTools::toCString(System::pasteFromClipboard());
+					std::wstring pasteText = System::pasteFromClipboard();
 
 					int minSelect = min(selectStart, selectEnd);
 					int maxSelect = max(selectStart, selectEnd);
 					
-					std::string prefix = textElement.getText().substr(0, minSelect);
-					std::string suffix = textElement.getText().substr(maxSelect);
+					std::wstring prefix = textElement.getText().substr(0, minSelect);
+					std::wstring suffix = textElement.getText().substr(maxSelect);
 
 					textElement.setText( (prefix + pasteText) + suffix );
 					cursorLocation = minSelect+pasteText.size();
@@ -225,7 +225,7 @@ namespace glib
 					//COPY
 					int minSelect = min(selectStart, selectEnd);
 					int maxSelect = max(selectStart, selectEnd);
-					std::string cpyText = textElement.getText().substr(minSelect, maxSelect);
+					std::wstring cpyText = textElement.getText().substr(minSelect, maxSelect);
 
 					System::copyToClipboard(cpyText);
 				}
@@ -234,12 +234,12 @@ namespace glib
 					//CUT
 					int minSelect = min(selectStart, selectEnd);
 					int maxSelect = max(selectStart, selectEnd);
-					std::string cpyText = textElement.getText().substr(minSelect, maxSelect);
+					std::wstring cpyText = textElement.getText().substr(minSelect, maxSelect);
 
 					System::copyToClipboard(cpyText);
 
-					std::string prefix = textElement.getText().substr(0, minSelect);
-					std::string suffix = textElement.getText().substr(maxSelect);
+					std::wstring prefix = textElement.getText().substr(0, minSelect);
+					std::wstring suffix = textElement.getText().substr(maxSelect);
 
 					textElement.setText(prefix+suffix);
 					cursorLocation = minSelect;
@@ -260,10 +260,10 @@ namespace glib
 					int minSelect = min(selectStart, selectEnd);
 					int maxSelect = max(selectStart, selectEnd);
 					
-					std::string prefix = textElement.getText().substr(0, minSelect);
-					std::string suffix = textElement.getText().substr(maxSelect);
+					std::wstring prefix = textElement.getText().substr(0, minSelect);
+					std::wstring suffix = textElement.getText().substr(maxSelect);
 
-					textElement.setText( (prefix + (char)value) + suffix );
+					textElement.setText( (prefix + (wchar_t)value) + suffix );
 					cursorLocation = minSelect+1;
 					selectStart = cursorLocation;
 					selectEnd = cursorLocation;
@@ -274,7 +274,7 @@ namespace glib
 
 	void GuiTextBox::mouseInput()
 	{
-		Font* f = (textElement.getFont() != nullptr) ? textElement.getFont() : Graphics::getFont();
+		Font* f = (textElement.getFont() != nullptr) ? textElement.getFont() : SimpleGraphics::getFont();
 		int mouseX = Input::getMouseX();
 		int mouseY = Input::getMouseY();
 		
@@ -301,7 +301,7 @@ namespace glib
 
 					//set cursor pos and start selection
 					int testX = mouseX-x;
-					std::string testText = textElement.getText();
+					std::wstring testText = textElement.getText();
 
 					int totalWidth = 0;
 					bool found = false;
@@ -338,7 +338,7 @@ namespace glib
 			//selection stuff
 			//set cursor pos and end selection
 			int testX = mouseX-x;
-			std::string testText = textElement.getText();
+			std::wstring testText = textElement.getText();
 
 			int totalWidth = 0;
 			bool found = false;
@@ -365,7 +365,7 @@ namespace glib
 
 	void GuiTextBox::selectionCleanup()
 	{
-		Font* f = (textElement.getFont() != nullptr) ? textElement.getFont() : Graphics::getFont();
+		Font* f = (textElement.getFont() != nullptr) ? textElement.getFont() : SimpleGraphics::getFont();
 
 		textElement.setHighlightStart(selectStart);
 		textElement.setHighlightEnd(selectEnd);
@@ -378,7 +378,7 @@ namespace glib
 		if(startStringIndex<0)
 			startStringIndex = 0;
 
-		std::string testStringWidth = textElement.getTextRef().substr(startStringIndex, cursorLocation-startStringIndex);
+		std::wstring testStringWidth = textElement.getTextRef().substr(startStringIndex, cursorLocation-startStringIndex);
 		int testWidth = f->getWidthOfString(testStringWidth);
 
 		if(testWidth >= width)

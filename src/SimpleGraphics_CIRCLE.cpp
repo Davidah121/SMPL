@@ -2,7 +2,7 @@
 
 namespace glib
 {
-    void Graphics::drawCircle(int x, int y, int radius, bool outline, Image* surf)
+    void SimpleGraphics::drawCircle(int x, int y, int radius, bool outline, Image* surf)
 	{
 		int currentComposite = compositeRule;
 
@@ -602,7 +602,7 @@ namespace glib
 		}
 	}
     
-	void Graphics::testDrawCircle(int x, int y, int radius, bool outline, Image* surf)
+	void SimpleGraphics::testDrawCircle(int x, int y, int radius, bool outline, Image* surf)
 	{
 		int currentComposite = compositeRule;
 

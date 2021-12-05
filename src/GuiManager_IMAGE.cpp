@@ -32,7 +32,7 @@ namespace glib
 		{
 			if(img!=nullptr)
 			{
-				Graphics::drawImage(img, renderX, renderY, surf);
+				SimpleGraphics::drawImage(img, renderX, renderY, surf);
 			}
 		}
 	}

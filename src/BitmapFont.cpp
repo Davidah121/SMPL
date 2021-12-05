@@ -55,6 +55,16 @@ namespace glib
 		return nullptr;
 	}
 
+	Sprite* BitmapFont::getSprite()
+	{
+		return &img;
+	}
+
+	std::vector<int> BitmapFont::getImagePages()
+	{
+		return imgPage;
+	}
+
 	void BitmapFont::loadFT(File file)
 	{
 		//Load an .ft file

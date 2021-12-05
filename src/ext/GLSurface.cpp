@@ -6,6 +6,10 @@ namespace glib
     
     GLSurface::GLSurface(int width, int height, GLSurfaceParameters params)
     {
+        if(!GLSingleton::getInit())
+        {
+            return;
+        }
         this->width = width;
         this->height = height;
         this->params = params;
@@ -15,6 +19,11 @@ namespace glib
 
     GLSurface::~GLSurface()
     {
+        if(!GLSingleton::getInit())
+        {
+            return;
+        }
+
         if(fboID!=0)
             glDeleteFramebuffers(1, &fboID);
 
@@ -90,7 +99,7 @@ namespace glib
             glBindFramebuffer(GL_READ_FRAMEBUFFER, fboID);
             glBindFramebuffer(GL_DRAW_FRAMEBUFFER, secondFboID);
 
-            glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+            glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
             needsToBlit = false;
             
             glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -238,5 +247,15 @@ namespace glib
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         valid = true;
+    }
+
+    int GLSurface::getWidth()
+    {
+        return width;
+    }
+
+    int GLSurface::getHeight()
+    {
+        return height;
     }
 }

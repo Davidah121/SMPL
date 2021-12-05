@@ -3,11 +3,92 @@
 namespace glib
 {
 	#pragma region GUI_MANAGER
+	std::unordered_map<std::wstring, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&)> > GuiManager::elementLoadingFunctions;
 
 	const Class GuiManager::myClass = Class("GuiManager", {&Object::myClass});
 	const Class* GuiManager::getClass()
 	{
 		return &GuiManager::myClass;
+	}
+
+	void GuiManager::registerLoadFunction(std::wstring className, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&)> func)
+	{
+		elementLoadingFunctions[className] = func;
+	}
+
+	bool GuiManager::loadElement(XmlNode* node, GuiInstance* parent)
+	{
+		if(node != nullptr)
+		{
+			GuiInstance* parentObj = parent;
+			GuiInstance* thisIns = nullptr;
+
+			auto it = elementLoadingFunctions.find(node->title);
+			if(it != elementLoadingFunctions.end())
+			{
+				std::unordered_map<std::wstring, std::wstring> map;
+				for(XmlAttribute& attrib : node->attributes)
+				{
+					map[attrib.name] = attrib.value;
+				}
+
+				thisIns = it->second(map);
+				
+				if(parent != nullptr)
+					parent->addChild(thisIns);
+			}
+
+			if(thisIns == nullptr)
+				return false;
+			
+			//add to list
+			addElement(thisIns);
+			addToDeleteList(thisIns);
+			
+			
+			for(XmlNode* n : node->childNodes)
+			{
+				bool successful = loadElement(n, thisIns);
+				if(!successful)
+				{
+					StringTools::println("ERROR LOADING NODE: %ls", n->title.c_str());
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	void GuiManager::loadElementsFromFile(File f)
+	{
+		SimpleXml xmlFile = SimpleXml(f);
+		
+		//Everything must be encapsulated in the tag <SimpleGUI> or something
+		XmlNode* parentNode = nullptr;
+
+		for(XmlNode* n : xmlFile.nodes)
+		{
+			if(StringTools::equalsIgnoreCase<wchar_t>(n->title, L"SimpleGUI"))
+			{
+				parentNode = n;
+				break;
+			}
+		}
+
+		if(parentNode != nullptr)
+		{
+			for(XmlNode* n : parentNode->childNodes)
+			{
+				bool successful = loadElement(n, nullptr);
+				if(!successful)
+				{
+					StringTools::println("ERROR LOADING NODE: %ls", n->title.c_str());
+				}
+			}
+		}
 	}
 
 	GuiManager::GuiManager()
@@ -27,8 +108,15 @@ namespace glib
 			if(ins!=nullptr)
 				ins->manager = nullptr;
 		}
+
+		for(auto it=shouldDelete.begin(); it != shouldDelete.end(); it++)
+		{
+			GuiInstance* pointer = *it;
+			delete pointer;
+		}
 		
 		objects.clear();
+		shouldDelete.clear();
 	}
 
 	void GuiManager::addElement(GuiInstance* k)
@@ -50,6 +138,11 @@ namespace glib
 				}
 			}
 		}
+	}
+	
+	void GuiManager::addToDeleteList(GuiInstance* k)
+	{
+		shouldDelete.insert(k);
 	}
 
 	void GuiManager::deleteElement(GuiInstance* k)
@@ -84,6 +177,14 @@ namespace glib
 			{
 				deleteElement(o);
 			}
+
+			auto it = shouldDelete.find(k);
+			if(it != shouldDelete.end())
+			{
+				shouldDelete.erase(k);
+				delete k;
+			}
+			
 		}
 	}
 
@@ -135,7 +236,7 @@ namespace glib
 		}
 
 		//RENDER
-		Graphics::setColor(backgroundColor);
+		SimpleGraphics::setColor(backgroundColor);
 		surf.clearImage();
 
 		for (GuiInstance* obj : currVisibleObjects)

@@ -1,0 +1,9 @@
+<SimpleGUI>
+    <Container x="32"/>
+    <Container y="32"/>
+
+    <Container visible="false">
+        <TextBlock text="Some generic text" />
+    </Container>
+
+</SimpleGUI>

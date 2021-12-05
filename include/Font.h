@@ -35,6 +35,15 @@ namespace glib
 		 */
 		~Font();
 
+		/**
+		 * @brief Copies all font information from another Font object.
+		 * 		Does not copy information specific to a particular implementation
+		 * 		of the Font class.
+		 * 
+		 * @param f 
+		 */
+		void copyFont(Font& f);
+
 		//Object and Class Stuff
 		const Class* getClass();
 		static const Class myClass;

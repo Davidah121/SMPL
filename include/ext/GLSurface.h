@@ -35,6 +35,9 @@ namespace glib
         void unbind();
 
         bool getValid();
+
+        int getWidth();
+        int getHeight();
     private:
         void init();
         

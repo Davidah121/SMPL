@@ -58,15 +58,15 @@ namespace glib
 		{
 			if(img.getImage(index)!=nullptr)
 			{
-				Graphics::setColor(imgColor);
+				SimpleGraphics::setColor(imgColor);
 				int x1 = renderX;
 				int x2 = renderX + img.getImage(index)->getWidth() * xScale;
 
 				int y1 = renderY;
 				int y2 = renderY + img.getImage(index)->getHeight() * yScale;
 				
-				Graphics::drawTexturedTriangle(Vec4f(x1, y1, 0, 0), Vec4f(x2, y1, 1, 0), Vec4f(x2, y2, 1, 1), img.getImage(index), surf);
-				Graphics::drawTexturedTriangle(Vec4f(x1, y1, 0, 0), Vec4f(x2, y2, 1, 1), Vec4f(x1, y2, 0, 1), img.getImage(index), surf);
+				SimpleGraphics::drawTexturedTriangle(Vec4f(x1, y1, 0, 0), Vec4f(x2, y1, 1, 0), Vec4f(x2, y2, 1, 1), img.getImage(index), surf);
+				SimpleGraphics::drawTexturedTriangle(Vec4f(x1, y1, 0, 0), Vec4f(x2, y2, 1, 1), Vec4f(x1, y2, 0, 1), img.getImage(index), surf);
 			}
 		}
 	}

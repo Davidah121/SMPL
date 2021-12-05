@@ -207,6 +207,8 @@ namespace glib
                         return false;
                     }
 
+                    bool slashAtFront = innerNodeText[0] == '/';
+
                     innerNodeText = L"";
                     isRecordingText = false;
                     if(parentNode==nullptr)
@@ -235,7 +237,7 @@ namespace glib
                         }
                         else
                         {
-                            if(node->title == parentNode->title && node->isEndOfSection())
+                            if(node->title == parentNode->title && node->isEndOfSection() && slashAtFront)
                             {
                                 parentNode = parentNode->parentNode;
                             }

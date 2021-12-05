@@ -79,10 +79,10 @@ namespace glib
 		int width = colSize*gridXSpacing;
 		int height = rowSize*gridYSpacing;
 
-		Graphics::setColor(backgroundColor);
+		SimpleGraphics::setColor(backgroundColor);
 		surf->drawRect(renderX, renderY, renderX+width, renderY+height, false);
 		
-		Graphics::setColor(outlineColor);
+		SimpleGraphics::setColor(outlineColor);
 		surf->drawRect(renderX, renderY, renderX+width, renderY+height, true);
 	}
 

@@ -2,7 +2,7 @@
 
 namespace glib
 {
-	void Graphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
+	void SimpleGraphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 	{
 		int currentComposite = compositeRule;
 
@@ -10,6 +10,8 @@ namespace glib
 		{
 			if(x1==x2 && y1==y2)
 			{
+				//draw pixel
+				drawPixel(x1, y1, SimpleGraphics::activeColor, surf);
 				return;
 			}
 
@@ -54,6 +56,11 @@ namespace glib
 			{
 				//horizontal line
 				
+				if(y1 < minY || y1 > maxY)
+				{
+					return;
+				}
+
 				Color* startPoint = surf->getPixels() + minX + (surf->getWidth()*y1);
 				Color* endPoint = surf->getPixels() + maxX + (surf->getWidth()*y1);
 				
@@ -78,6 +85,7 @@ namespace glib
 					for(int i=0; i<remainder; i++)
 					{
 						*startPoint = blend(activeColor, *startPoint);
+						startPoint++;
 					}
 
 				#elif (OPTI >= 1)
@@ -102,6 +110,7 @@ namespace glib
 					for(int i=0; i<remainder; i++)
 					{
 						*startPoint = blend(activeColor, *startPoint);
+						startPoint++;
 					}
 				#else
 					while(startPoint <= endPoint)
@@ -281,7 +290,7 @@ namespace glib
 		}
 	}
 
-	void Graphics::drawBezierCurve(BezierCurve& b, int subdivisions, bool useArcLength, Image* surf)
+	void SimpleGraphics::drawBezierCurve(BezierCurve& b, int subdivisions, bool useArcLength, Image* surf)
 	{
 		if(surf == nullptr)
 			return;
@@ -342,7 +351,7 @@ namespace glib
 			for(int i=1; i<=subdivisions; i++)
 			{
 				Vec2f p2 = b.getFuctionAt( equalLengthT[i] );
-				Graphics::drawLine(MathExt::round(p1.x), MathExt::round(p1.y), MathExt::round(p2.x), MathExt::round(p2.y), surf);
+				SimpleGraphics::drawLine(MathExt::round(p1.x), MathExt::round(p1.y), MathExt::round(p2.x), MathExt::round(p2.y), surf);
 				
 				p1 = p2;
 			}
@@ -355,7 +364,7 @@ namespace glib
 			for(int i=1; i<=subdivisions; i++)
 			{
 				Vec2f p2 = b.getFuctionAt( i*du );
-				Graphics::drawLine(MathExt::round(p1.x), MathExt::round(p1.y), MathExt::round(p2.x), MathExt::round(p2.y), surf);
+				SimpleGraphics::drawLine(MathExt::round(p1.x), MathExt::round(p1.y), MathExt::round(p2.x), MathExt::round(p2.y), surf);
 				
 				p1 = p2;
 			}

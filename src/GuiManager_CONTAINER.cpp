@@ -30,6 +30,24 @@ namespace glib
 	{
 		
 	}
+	
+	void GuiContainer::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attributes)
+	{
+		GuiInstance::loadDataFromXML(attributes);
+	}
+
+	GuiInstance* GuiContainer::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes)
+	{
+		GuiContainer* ins = new GuiContainer();
+		ins->loadDataFromXML(attributes);
+
+		return ins;
+	}
+
+	void GuiContainer::registerLoadFunction()
+	{
+		GuiManager::registerLoadFunction(L"Container", GuiContainer::loadFunction);
+	}
 
 	#pragma endregion
 

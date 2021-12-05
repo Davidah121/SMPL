@@ -102,7 +102,7 @@ namespace glib
 		Vec2f operator*(double value);
 		Vec2f operator/(double value);
 
-		friend Vec2f operator*(double value, Vec2f& other)
+		friend Vec2f operator*(double value, Vec2f other)
 		{
 			return other*value;
 		}

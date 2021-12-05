@@ -2,7 +2,7 @@
 
 namespace glib
 {
-	void Graphics::drawPolygon(Vec2f* points, int size, Image* surf)
+	void SimpleGraphics::drawPolygon(Vec2f* points, int size, Image* surf)
 	{
 		Image* otherImg;
 		if (surf == nullptr)
@@ -110,7 +110,7 @@ namespace glib
 					//different for even-odd and non-zero
 					std::vector<criticalPoint> newScanLine = std::vector<criticalPoint>();
 
-					if(fillRule == Graphics::FILL_EVEN_ODD)
+					if(fillRule == SimpleGraphics::FILL_EVEN_ODD)
 					{
 						for(int j=1; j<scanLines[i].size(); j+=2)
 						{
@@ -152,7 +152,7 @@ namespace glib
 				}
 			}
 
-			if(fillRule==Graphics::FILL_EVEN_ODD)
+			if(fillRule==SimpleGraphics::FILL_EVEN_ODD)
 			{
 				//even-odd rule. Fill between even to odd indicies
 				//not odd to even indicies
@@ -179,7 +179,7 @@ namespace glib
 
 						do
 						{
-							otherImg->drawPixel(fillX, j+minY, Graphics::activeColor);
+							otherImg->drawPixel(fillX, j+minY, SimpleGraphics::activeColor);
 							fillX++;
 						} while (fillX<=endX);
 						
@@ -216,7 +216,7 @@ namespace glib
 
 							do
 							{
-								otherImg->drawPixel(fillX, j+minY, Graphics::activeColor);
+								otherImg->drawPixel(fillX, j+minY, SimpleGraphics::activeColor);
 								fillX++;
 							} while (fillX<=endX);
 							
@@ -229,7 +229,7 @@ namespace glib
 
 	}
 	
-	void Graphics::drawModel(Model* model, Image* texture, Image* surf)
+	void SimpleGraphics::drawModel(Model* model, Image* texture, Image* surf)
 	{
 		Image* otherImg;
 		if (surf == nullptr)
@@ -286,7 +286,7 @@ namespace glib
 					float* positionData = (float*)vertInfo[startOfPosition].data();
 
 					Vec2f pos = Vec2f( positionData[0], positionData[1] );
-					surf->drawPixel(pos.x, pos.y, Graphics::activeColor);
+					surf->drawPixel(pos.x, pos.y, SimpleGraphics::activeColor);
 				}
 				break;
 			case Model::LINES:

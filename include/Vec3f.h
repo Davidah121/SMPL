@@ -140,7 +140,7 @@ namespace glib
 		Vec3f operator*(double value);
 		Vec3f operator/(double value);
 
-		friend Vec3f operator*(double value, Vec3f& other)
+		friend Vec3f operator*(double value, Vec3f other)
 		{
 			return other*value;
 		}

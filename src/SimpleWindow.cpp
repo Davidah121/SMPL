@@ -1063,6 +1063,8 @@ namespace glib
 	{
 		myMutex.lock();
 		shouldEnd = v;
+		if(threadOwnership == false)
+			running = false;
 		myMutex.unlock();
 	}
 
@@ -1076,7 +1078,6 @@ namespace glib
 	
 	void SimpleWindow::setResizable(bool v)
 	{
-
 		canResize = v;
 	}
 

@@ -5,33 +5,45 @@ namespace glib
 
 	#pragma region DRAWING_FUNCTIONS
 
-	Color Graphics::activeColor = { 0, 0, 0, 255 };
-	Font* Graphics::activeFont = nullptr;
-	unsigned char Graphics::compositeRule = Graphics::COMPOSITE_SRC_OVER;
-	unsigned char Graphics::blendMode = Graphics::BLEND_NORMAL;
-	bool Graphics::fillRule = Graphics::FILL_EVEN_ODD;
-	bool Graphics::antiAliasing = false;
+	Color SimpleGraphics::activeColor = { 0, 0, 0, 255 };
+	Font* SimpleGraphics::activeFont = nullptr;
+	unsigned char SimpleGraphics::compositeRule = SimpleGraphics::COMPOSITE_SRC_OVER;
+	unsigned char SimpleGraphics::blendMode = SimpleGraphics::BLEND_NORMAL;
+	bool SimpleGraphics::fillRule = SimpleGraphics::FILL_EVEN_ODD;
+	bool SimpleGraphics::antiAliasing = false;
 
-	unsigned char Graphics::defaultFontValue = Graphics::NORMAL_FONT;
-	Font* Graphics::defaultFont = nullptr;
-	Font* Graphics::defaultFontMedium = nullptr;
-	Font* Graphics::defaultFontLarge = nullptr;
+	unsigned char SimpleGraphics::defaultFontValue = SimpleGraphics::NORMAL_FONT;
+	Font* SimpleGraphics::defaultFont = nullptr;
+	Font* SimpleGraphics::defaultFontMedium = nullptr;
+	Font* SimpleGraphics::defaultFontLarge = nullptr;
 
-	Box2D Graphics::clippingRect = Box2D(0, 0, 0xFFFF, 0xFFFF);
+	Box2D SimpleGraphics::clippingRect = Box2D(0, 0, 0xFFFF, 0xFFFF);
 
-	void Graphics::init()
+	SimpleGraphics SimpleGraphics::g = SimpleGraphics();
+
+	SimpleGraphics::SimpleGraphics()
 	{
-		if(defaultFont==nullptr)
-			Graphics::defaultFont = new BitmapFont("./Resources/DefaultFont.fnt");
 
-		if(defaultFontMedium==nullptr)
-			Graphics::defaultFontMedium = new BitmapFont("./Resources/DefaultFontMedium.fnt");
-
-		if(defaultFontLarge==nullptr)
-			Graphics::defaultFontLarge = new BitmapFont("./Resources/DefaultFontLarge.fnt");
 	}
 
-	void Graphics::dispose()
+	SimpleGraphics::~SimpleGraphics()
+	{
+		dispose();
+	}
+
+	void SimpleGraphics::init()
+	{
+		if(defaultFont==nullptr)
+			SimpleGraphics::defaultFont = new BitmapFont("./Resources/DefaultFont.fnt");
+
+		if(defaultFontMedium==nullptr)
+			SimpleGraphics::defaultFontMedium = new BitmapFont("./Resources/DefaultFontMedium.fnt");
+
+		if(defaultFontLarge==nullptr)
+			SimpleGraphics::defaultFontLarge = new BitmapFont("./Resources/DefaultFontLarge.fnt");
+	}
+
+	void SimpleGraphics::dispose()
 	{
 		if(defaultFont!=nullptr)
 			delete defaultFont;
@@ -47,7 +59,7 @@ namespace glib
 		defaultFontLarge = nullptr;
 	}
 
-	void Graphics::clearImage(Image* surf)
+	void SimpleGraphics::clearImage(Image* surf)
 	{
 		if (surf != nullptr)
 		{
@@ -55,7 +67,7 @@ namespace glib
 		}
 	}
 
-	void Graphics::drawPixel(double x, double y, Color c, Image* surf)
+	void SimpleGraphics::drawPixel(double x, double y, Color c, Image* surf)
 	{
 		//convert into four separate pixels
 		Vec2f p1 = Vec2f(floor(x), floor(y));
@@ -83,7 +95,7 @@ namespace glib
 		drawPixel( (int)p1.x, (int)p2.y, c4, surf);
 	}
 
-	void Graphics::drawPixel(int x, int y, Color c, Image* surf)
+	void SimpleGraphics::drawPixel(int x, int y, Color c, Image* surf)
 	{
 		Image* otherImg = surf;
 
@@ -183,7 +195,7 @@ namespace glib
 	
 	}
 
-	Color Graphics::blend(Color src, Color dest)
+	Color SimpleGraphics::blend(Color src, Color dest)
 	{
 		if(compositeRule == NO_COMPOSITE)
 		{
@@ -279,7 +291,7 @@ namespace glib
 	#pragma region SSE_AND_AVX_BLENDS
 
 	#if (OPTI>=1)
-	__m128i Graphics::blend(__m128i src, __m128i dest)
+	__m128i SimpleGraphics::blend(__m128i src, __m128i dest)
 	{
 		if(compositeRule == NO_COMPOSITE)
 		{
@@ -449,7 +461,7 @@ namespace glib
 	#endif
 
 	#if (OPTI>=2)
-	__m256i Graphics::blend(__m256i src, __m256i dest)
+	__m256i SimpleGraphics::blend(__m256i src, __m256i dest)
 	{
 		if(compositeRule == NO_COMPOSITE)
 		{
@@ -660,7 +672,7 @@ namespace glib
 
 	#pragma endregion
 
-	Color Graphics::lerp(Color src, Color dest, double lerpVal)
+	Color SimpleGraphics::lerp(Color src, Color dest, double lerpVal)
 	{
 		Vec4f v1 = Vec4f(src.red, src.green, src.blue, src.alpha);
 		Vec4f v2 = Vec4f(dest.red, dest.green, dest.blue, dest.alpha);
@@ -673,17 +685,17 @@ namespace glib
 				(unsigned char)MathExt::clamp(v3.w, 0.0, 255.0) };
 	}
 
-	void Graphics::setClippingRect(Box2D b)
+	void SimpleGraphics::setClippingRect(Box2D b)
 	{
 		clippingRect = b;
 	}
 
-	Box2D Graphics::getClippingRect()
+	Box2D SimpleGraphics::getClippingRect()
 	{
 		return clippingRect;
 	}
 
-	void Graphics::resetClippingPlane()
+	void SimpleGraphics::resetClippingPlane()
 	{
 		clippingRect.setLeftBound(0);
 		clippingRect.setRightBound(0xFFFF);
@@ -691,37 +703,37 @@ namespace glib
 		clippingRect.setBottomBound(0xFFFF);
 	}
 
-	void Graphics::setColor(Color c)
+	void SimpleGraphics::setColor(Color c)
 	{
 		activeColor = c;
 	}
 
-	Color Graphics::getColor()
+	Color SimpleGraphics::getColor()
 	{
 		return activeColor;
 	}
 
-	void Graphics::setFont(Font* f)
+	void SimpleGraphics::setFont(Font* f)
 	{
 		activeFont = f;
 	}
 
-	Font* Graphics::getFont()
+	Font* SimpleGraphics::getFont()
 	{
 		if(activeFont!=nullptr)
 			return activeFont;
 		else
 		{
-			return Graphics::getDefaultFont(defaultFontValue);
+			return SimpleGraphics::getDefaultFont(defaultFontValue);
 		}
 	}
 
-	void Graphics::setDefaultFont(unsigned char byte)
+	void SimpleGraphics::setDefaultFont(unsigned char byte)
 	{
 		defaultFontValue = MathExt::clamp(byte, (unsigned char)0, (unsigned char)2);
 	}
 
-	Font* Graphics::getDefaultFont(unsigned char byte)
+	Font* SimpleGraphics::getDefaultFont(unsigned char byte)
 	{
 		switch (byte)
 		{
@@ -740,42 +752,42 @@ namespace glib
 		return defaultFont;
 	}
 
-	void Graphics::setFillRule(bool v)
+	void SimpleGraphics::setFillRule(bool v)
 	{
-		Graphics::fillRule = v;
+		SimpleGraphics::fillRule = v;
 	}
 
-	bool Graphics::getFillRule()
+	bool SimpleGraphics::getFillRule()
 	{
 		return fillRule;
 	}
 
-	void Graphics::setCompositeRule(unsigned char b)
+	void SimpleGraphics::setCompositeRule(unsigned char b)
 	{
 		compositeRule = b;
 	}
 
-	unsigned char Graphics::getCompositeRule()
+	unsigned char SimpleGraphics::getCompositeRule()
 	{
 		return compositeRule;
 	}
 
-	void Graphics::setBlendMode(unsigned char b)
+	void SimpleGraphics::setBlendMode(unsigned char b)
 	{
 		blendMode = b;
 	}
 
-	unsigned char Graphics::getBlendMode()
+	unsigned char SimpleGraphics::getBlendMode()
 	{
 		return blendMode;
 	}
 
-	void Graphics::setAntiAliasing(bool v)
+	void SimpleGraphics::setAntiAliasing(bool v)
 	{
 		antiAliasing = v;
 	}
 
-	bool Graphics::getAntiAliasing()
+	bool SimpleGraphics::getAntiAliasing()
 	{
 		return antiAliasing;
 	}

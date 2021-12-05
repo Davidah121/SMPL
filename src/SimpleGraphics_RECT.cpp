@@ -4,7 +4,7 @@ namespace glib
 {
 
     //works properly now
-    void Graphics::drawRect(int x, int y, int x2, int y2, bool outline, Image* surf)
+    void SimpleGraphics::drawRect(int x, int y, int x2, int y2, bool outline, Image* surf)
     {
         int currentComposite = compositeRule;
         Image* otherImg;

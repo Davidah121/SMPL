@@ -2,7 +2,7 @@
 #include <vector>
 #include "SimpleFile.h"
 #include "Compression.h"
-#include "Graphics.h"
+#include "SimpleGraphics.h"
 #include <iostream>
 #include "StringTools.h"
 
@@ -1104,16 +1104,16 @@ namespace glib
 						}
 						else if(imgData[i].blend_op == 1)
 						{
-							Color oldColor = Graphics::getColor();
-							unsigned char oldCompositeRule = Graphics::getCompositeRule();
+							Color oldColor = SimpleGraphics::getColor();
+							unsigned char oldCompositeRule = SimpleGraphics::getCompositeRule();
 
-							Graphics::setColor( {255,255,255,255} );
-							Graphics::setCompositeRule( Graphics::COMPOSITE_SRC_OVER );
+							SimpleGraphics::setColor( {255,255,255,255} );
+							SimpleGraphics::setCompositeRule( SimpleGraphics::COMPOSITE_SRC_OVER );
 
 							actualImg->drawSprite(tImg, imgData[i].x_offset, imgData[i].y_offset);
 
-							Graphics::setColor(oldColor);
-							Graphics::setCompositeRule(oldCompositeRule);
+							SimpleGraphics::setColor(oldColor);
+							SimpleGraphics::setCompositeRule(oldCompositeRule);
 						}
 						else
 						{

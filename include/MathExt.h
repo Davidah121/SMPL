@@ -1684,6 +1684,14 @@ namespace glib
 		static std::vector<double> getIntersectionQuadratic(PolynomialMathFunction a, PolynomialMathFunction b);
 		
 		/**
+		 * @brief Returns the factorial of the specified input
+		 * 
+		 * @param k 
+		 * @return int 
+		 */
+		static int factorial(int k);
+		
+		/**
 		 * @brief Returns the binomial coefficient using n and k.
 		 * 
 		 * @param n 
@@ -1778,6 +1786,8 @@ namespace glib
 		/**
 		 * @brief Computes the Discrete Cosine Transform on the array.
 		 * 		Runs in O(N) time. Solves for a single point.
+		 * 
+		 * 		Also known as DCT-II
 		 * 
 		 * @param arr
 		 * @param size 

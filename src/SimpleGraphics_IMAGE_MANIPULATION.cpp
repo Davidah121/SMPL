@@ -5,19 +5,19 @@ namespace glib
 
     #pragma region IMAGE_MANIPULATION
     
-	int Graphics::ditherMatrixSize = 2;
+	int SimpleGraphics::ditherMatrixSize = 2;
 
-	Image* Graphics::crop(Image* img, int x1, int y1, int x2, int y2)
+	Image* SimpleGraphics::crop(Image* img, int x1, int y1, int x2, int y2)
 	{
 		return nullptr;
 	}
 
-	Image* Graphics::crop(Image* img, Shape s)
+	Image* SimpleGraphics::crop(Image* img, Shape s)
 	{
 		return nullptr;
 	}
 
-	void Graphics::replaceColor(Image* img, Color oldColor, Color newColor, bool ignoreAlpha)
+	void SimpleGraphics::replaceColor(Image* img, Color oldColor, Color newColor, bool ignoreAlpha)
 	{
 		if(img!=nullptr)
 		{
@@ -49,7 +49,7 @@ namespace glib
 		}
 	}
 
-	void Graphics::filterOutColor(Image* img, Color c1)
+	void SimpleGraphics::filterOutColor(Image* img, Color c1)
 	{
 		if(img != nullptr)
 		{
@@ -67,7 +67,7 @@ namespace glib
 		}
 	}
 
-	void Graphics::filterOutColorRange(Image* img, Color c1, Color c2)
+	void SimpleGraphics::filterOutColorRange(Image* img, Color c1, Color c2)
 	{
 		if(img != nullptr)
 		{
@@ -96,7 +96,7 @@ namespace glib
 		}
 	}
 
-	void Graphics::convertToColorSpace(Image* img, unsigned char colorSpace)
+	void SimpleGraphics::convertToColorSpace(Image* img, unsigned char colorSpace)
 	{
 		if(img != nullptr)
 		{
@@ -111,7 +111,7 @@ namespace glib
 		}
 	}
 
-	void Graphics::boxBlur(Image* img, int boxSize)
+	void SimpleGraphics::boxBlur(Image* img, int boxSize)
 	{
 		if(img != nullptr)
 		{
@@ -152,24 +152,94 @@ namespace glib
 		}
 	}
 
-	void Graphics::gaussianBlur(Image* img, double stdDeviation)
+	Image* SimpleGraphics::gaussianBlur(Image* img, int kernelRadius, double sigma)
 	{
-		//1 2 1
-		//1 4 6 4 1
-		//Binomial Theorem
+		double actualSigma = sigma;
+		if(sigma <= 0)
+		{
+			actualSigma = 0.5*kernelRadius;
+		}
+
+		if(kernelRadius == 0)
+		{
+			Image* newImg = new Image(img->getWidth(), img->getHeight());
+			img->copyImage(newImg);
+			return newImg;
+		}
+
+		int n = 2*kernelRadius + 1;
+		Matrix verticalMat = Matrix(1, n);
+		Matrix horizontalMat = Matrix(n, 1);
+
+		double variance = MathExt::sqr(actualSigma);
+		double A = 1.0/(MathExt::sqrt(2*PI*variance));
+
+		double sigX = -kernelRadius;
+
+		for(int i=0; i<n; i++)
+		{
+			double B = exp( -MathExt::sqr(sigX)/(2*variance) );
+			
+			verticalMat[i][0] = A*B;
+			horizontalMat[0][i] = A*B;
+			sigX++;
+		}
+
+		Matrix k = verticalMat*horizontalMat;
+		
+		double sum = 0;
+		for(int j=0; j<n; j++)
+		{
+			for(int i=0; i<n; i++)
+			{
+				sum += k[j][i];
+			}
+		}
+
+		k *= 1.0/sum;
+		
+		Image* result = new Image(img->getWidth(), img->getHeight());
+
+		for(int y=0; y<result->getHeight(); y++)
+		{
+			for(int x=0; x<result->getWidth(); x++)
+			{
+				Vec3f kernelResult;
+
+				for(int j=0; j<n; j++)
+				{
+					int actualY = y+j-kernelRadius;
+					for(int i=0; i<n; i++)
+					{
+						int actualX = x+i-kernelRadius;
+						Color c = img->getPixel(actualX, actualY, true);
+						kernelResult += k[j][i] * Vec3f(c.red, c.green, c.blue);
+					}
+				}
+
+				result->setPixel( x, y, {
+					(unsigned char)MathExt::round(kernelResult.x),
+					(unsigned char)MathExt::round(kernelResult.y),
+					(unsigned char)MathExt::round(kernelResult.z),
+					255
+				});
+			}
+		}
+
+		return result;
 	}
 
-	void Graphics::uncannyEdgeFilter(Image* img)
+	Image* SimpleGraphics::cannyEdgeFilter(Image* img)
 	{
-
+		return nullptr;
 	}
 
-	void Graphics::sobelEdgeFilter(Image* img)
+	Image* SimpleGraphics::sobelEdgeFilter(Image* img)
 	{
-
+		return nullptr;
 	}
 
-	std::vector<std::vector<Vec2f>> Graphics::calculateGradient(Image* img, unsigned char type)
+	std::vector<std::vector<Vec2f>> SimpleGraphics::calculateGradient(Image* img, unsigned char type)
 	{
 		std::vector< std::vector<Vec2f> > gradientImage;
 		if(img!=nullptr)
@@ -248,7 +318,7 @@ namespace glib
 		return gradientImage;
 	}
 
-	void Graphics::ditherImage(Image* img, unsigned char method)
+	void SimpleGraphics::ditherImage(Image* img, unsigned char method)
 	{
 		if(img!=nullptr)
 		{
@@ -270,7 +340,7 @@ namespace glib
 		}
 	}
 
-	void Graphics::floydSteinburgDithering(Image* img)
+	void SimpleGraphics::floydSteinburgDithering(Image* img)
 	{
 		int wid = img->getWidth();
 		int hei = img->getHeight();
@@ -315,7 +385,7 @@ namespace glib
 		delete[] error;
 	}
 
-	void Graphics::orderedBayerDithering(Image* img)
+	void SimpleGraphics::orderedBayerDithering(Image* img)
 	{
 		int rows = (int)MathExt::ceil(MathExt::sqrt(img->getPalette().getSize()));
 		int size = (int)MathExt::sqr(rows);
@@ -348,7 +418,7 @@ namespace glib
 		}
 	}
 
-	Matrix Graphics::generateBayerMatrix(Matrix mat, int rowSize)
+	Matrix SimpleGraphics::generateBayerMatrix(Matrix mat, int rowSize)
 	{
 		Matrix mat2;
 		if(mat.getCols() == 0 || mat.getRows() == 0)
@@ -386,7 +456,7 @@ namespace glib
 		}
 	}
 
-	Image* Graphics::scaleImage(Image* img, double xScale, double yScale, unsigned char filterMethod)
+	Image* SimpleGraphics::scaleImage(Image* img, double xScale, double yScale, unsigned char filterMethod)
 	{
 		switch(filterMethod)
 		{
@@ -407,7 +477,7 @@ namespace glib
 		return nullptr;
 	}
 
-	Image* Graphics::scaleNearestNeighbor(Image* img, double xScale, double yScale)
+	Image* SimpleGraphics::scaleNearestNeighbor(Image* img, double xScale, double yScale)
 	{
 		if(img!=nullptr)
 		{
@@ -440,7 +510,7 @@ namespace glib
 		return nullptr;
 	}
 
-	Image* Graphics::scaleBilinear(Image* img, double xScale, double yScale)
+	Image* SimpleGraphics::scaleBilinear(Image* img, double xScale, double yScale)
 	{
 		if(img!=nullptr)
 		{
@@ -487,7 +557,7 @@ namespace glib
 		return nullptr;
 	}
 
-	Image* Graphics::scaleBicubic(Image* img, double xScale, double yScale)
+	Image* SimpleGraphics::scaleBicubic(Image* img, double xScale, double yScale)
 	{
 		if(img!=nullptr)
 		{

@@ -9,7 +9,7 @@
 namespace glib
 {
 
-	class Graphics
+	class SimpleGraphics
 	{
 	public:
 		static const unsigned char NO_COMPOSITE = 255;
@@ -41,7 +41,7 @@ namespace glib
 		static const unsigned char LARGE_FONT = 2;
 
 		/**
-		 * @brief Initializes the Graphics class for drawing.
+		 * @brief Initializes the SimpleGraphics class for drawing.
 		 * 		It loads in a default font for drawing text.
 		 * 		Dispose should be called if this function has been called.
 		 */
@@ -49,7 +49,7 @@ namespace glib
 
 		/**
 		 * @brief
-		 * 		Disposes of the memory allocated by the Graphics class.
+		 * 		Disposes of the memory allocated by the SimpleGraphics class.
 		 */
 		static void dispose();
 
@@ -294,6 +294,25 @@ namespace glib
 		static void drawSprite(Image* img, int x, int y, Image* surf);
 
 		/**
+		 * @brief Draws an Image that is modified by the active drawing color.
+		 * 		If OPTI is defined as 1, SSE instructions are used.
+		 * 		If OPTI is defined as 2, AVX instructions are used.
+		 * @param img
+		 * 		The image to draw.
+		 * @param x1
+		 * 		The x1 location to draw from.
+		 * @param y1
+		 * 		The y1 location to draw from.
+		 * @param x2
+		 * 		The x2 location to draw to.
+		 * @param y2
+		 * 		The y2 location to draw to.
+		 * @param surf
+		 * 		The image to draw onto.
+		 */
+		static void drawSprite(Image* img, int x1, int y1, int x2, int y2, Image* surf);
+
+		/**
 		 * @brief Draws a part of an Image that will be modified by the active drawing color.
 		 * 		If OPTI is defined as 1, SSE instructions are used.
 		 * 		If OPTI is defined as 2, AVX instructions are used.
@@ -329,6 +348,7 @@ namespace glib
 		 * @param surf
 		 * 		The image to draw onto.
 		 */
+		static void drawText(std::wstring str, int x, int y, Image* surf);
 		static void drawText(std::string str, int x, int y, Image* surf);
 
 		/**
@@ -351,7 +371,37 @@ namespace glib
 		 * @param surf
 		 * 		The image to draw onto.
 		 */
+		static void drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, Image* surf);
 		static void drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, Image* surf);
+
+		/**
+		 * @brief Draws the specified text using the active font. It is affected by the active drawing color.
+		 * 		Adds additional limits such as the maximum width and maximum height.
+		 * 		Highlights the text from some start point to some end point as well.
+		 * 
+		 * 		If OPTI is defined as 1, SSE instructions are used.
+		 * 		If OPTI is defined as 2, AVX instructions are used.
+		 * @param str
+		 * 		The text to draw.
+		 * @param x
+		 * 		The x location to draw at.
+		 * @param y
+		 * 		The y location to draw at.
+		 * @param maxWidth
+		 * 		The maximum width that is allowed before a line break occurs.
+		 * @param maxHeight
+		 * 		The maximum height that is allowed.
+		 * @param useLineBreaks
+		 * 		If set to false, drawing stops if the text hits the maximum width.
+		 * @param highlightStart
+		 * 		The start of the highlighted section
+		 * @param highlightEnd
+		 * 		The end of the highlighted section
+		 * @param surf
+		 * 		The image to draw onto.
+		 */
+		static void drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
+		static void drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
 
 		/**
 		 * @brief Draws a polygon using the active draw color.
@@ -596,22 +646,29 @@ namespace glib
 
 		/**
 		 * @brief Blurs the image using a guassian blur.
-		 * 		Not implemented.
+		 * 		Returns a new image blurred using the kernel radius and the std.deviation
+		 * 		specified by sigma.
+		 * 
+		 * @param kernelRadius
+		 * 		The radius of the kernel used when blurring
+		 * @param sigma
+		 * 		If sigma is <=0, the value will be half of the kernel radius
+		 * @return Image*
 		 */
-		static void gaussianBlur(Image* img, double stdDeviation);
+		static Image* gaussianBlur(Image* img, int kernelRadius, double sigma = -1.0);
 
 		/**
-		 * @brief Applies an uncanny edge filter to the image.
+		 * @brief Applies an canny edge filter to the image.
 		 * 		Not implemented.
 		 */
-		static void uncannyEdgeFilter(Image* img);
+		static Image* cannyEdgeFilter(Image* img);
 
 		/**
 		 * @brief
 		 * 		Applies a sobel edge filter to the image.
 		 * 		Not implemented.
 		 */
-		static void sobelEdgeFilter(Image* img);
+		static Image* sobelEdgeFilter(Image* img);
 		
 		/**
 		 * @brief Calculates the gradient of the specified color channel using
@@ -666,6 +723,9 @@ namespace glib
 		static Image* scaleImage(Image* img, double xScale, double yScale, unsigned char filterMethod = NEAREST_NEIGHBOR_FILTER);
 
 	private:
+		SimpleGraphics();
+		~SimpleGraphics();
+
 		static void floydSteinburgDithering(Image* img);
 		static void orderedBayerDithering(Image* img);
 		static Matrix generateBayerMatrix(Matrix m, int rowSize);
@@ -691,6 +751,8 @@ namespace glib
 		static bool antiAliasing;
 
 		static int ditherMatrixSize;
+
+		static SimpleGraphics g;
 	};
 
 } //NAMESPACE glib END
