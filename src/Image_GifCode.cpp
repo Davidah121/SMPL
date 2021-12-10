@@ -208,9 +208,9 @@ namespace glib
 		//compress data
 		t1 = System::getCurrentTimeMicro();
 		std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, &codeSize);
-		// t2 = System::getCurrentTimeMicro();
+		t2 = System::getCurrentTimeMicro();
 
-		// StringTools::println("Time to compress: %u", t2-t1);
+		StringTools::println("Time to compress: %u", t2-t1);
 
 		for(int i=0; i<compressedData.size(); i++)
 		{

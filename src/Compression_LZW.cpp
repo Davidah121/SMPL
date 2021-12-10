@@ -30,7 +30,8 @@ namespace glib
 		}
 		
 		//First make the base dictionary
-		SimpleHashMap<std::string, int> baseDictionary = SimpleHashMap<std::string, int>();
+		
+		std::unordered_map<std::string, int> baseDictionary = std::unordered_map<std::string, int>();
 
 		int codeSize = -1;
 		if(codeSizePointer!=nullptr)
@@ -46,7 +47,8 @@ namespace glib
 				std::string temp = "";
 				temp += data[i];
 
-				baseDictionary.add( temp, bSize ); //fix
+				std::pair<std::string, int> pair = {temp, bSize};
+				baseDictionary.insert( pair ); //fix
 				bSize++;
 			}
 
@@ -60,7 +62,8 @@ namespace glib
 			{
 				std::string k = "";
 				k += (char)i;
-				baseDictionary.add( k, i );
+				std::pair<std::string, int> pair = {k, i};
+				baseDictionary.insert( pair ); //fix
 			}
 		}
 		
@@ -72,9 +75,7 @@ namespace glib
 		int clearDictionaryLocation = baseDictionary.size();
 		int EndOfDataLocation = baseDictionary.size()+1;
 
-		baseDictionary.rehash();
-
-		SimpleHashMap<std::string, int> newDictionary = baseDictionary;
+		std::unordered_map<std::string, int> newDictionary = baseDictionary;
 
 		//Compress
 		//First note how many bits to use
@@ -98,21 +99,23 @@ namespace glib
 		{
 			newString += data[i];
 
-			HashPair<std::string, int>* itr = newDictionary.get(newString);
+			auto itr = newDictionary.find(newString);
 			
-			bool exists = (itr != nullptr);
+			bool exists = (itr != newDictionary.end());
 
 			if (exists == true)
 			{
-				preIndex = itr->data;
+				preIndex = itr->second;
 				lastString = newString;
 				i++;
 			}
 			else
 			{
 				binData.add(preIndex, currBits);
+
+				std::pair<std::string, int> pair = {newString, newDictionary.size()+2 };
 				
-				newDictionary.add( newString, newDictionary.size()+2 );
+				newDictionary.insert( pair );
 
 				int shifts = 0;
 				int v = 1;

@@ -424,6 +424,74 @@ namespace glib
 		return height;
 	}
 
+	void GuiTextBox::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attributes)
+	{
+		GuiInstance::loadDataFromXML(attributes);
+
+		std::vector<std::wstring> possibleNames = { L"width", L"height", L"cursorblinktimer", L"cursorwidth", L"backgroundcolor", L"outlinecolor", L"focusoutlinecolor", L"cursorblinkcolor"};
+
+		for(int i=0; i<possibleNames.size(); i++)
+		{
+			auto it = attributes.find(possibleNames[i]);
+			if(it != attributes.end())
+			{
+				if(possibleNames[i] == L"width")
+				{
+					this->width = std::abs(StringTools::toInt(it->second));
+				}
+				else if(possibleNames[i] == L"height")
+				{
+					this->height = std::abs(StringTools::toInt(it->second));
+				}
+				else if(possibleNames[i] == L"cursorblinktimer")
+				{
+					this->setCursorBlinkTimer(StringTools::toInt(it->second));
+				}
+				else if(possibleNames[i] == L"cursorwidth")
+				{
+					this->cursorWidth = std::abs(StringTools::toInt(it->second));
+				}
+				else if(possibleNames[i] == L"backgroundcolor")
+				{
+					//define as color name or rgba
+					this->backgroundColor = ColorNameConverter::NameToColor(it->second);
+				}
+				else if(possibleNames[i] == L"outlinecolor")
+				{
+					//define as color name or rgba
+					this->outlineColor = ColorNameConverter::NameToColor(it->second);
+				}
+				else if(possibleNames[i] == L"focusoutlinecolor")
+				{
+					//define as color name or rgba
+					this->focusOutlineColor = ColorNameConverter::NameToColor(it->second);
+				}
+				else if(possibleNames[i] == L"cursorblinkcolor")
+				{
+					//define as color name or rgba
+					this->cursorBlinkColor = ColorNameConverter::NameToColor(it->second);
+				}
+
+				attributes.erase(possibleNames[i]);
+			}
+		}
+
+		textElement.loadDataFromXML(attributes);
+	}
+
+	GuiInstance* GuiTextBox::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes)
+	{
+		GuiTextBox* ins = new GuiTextBox(0, 0, 0, 0);
+		ins->loadDataFromXML(attributes);
+
+		return ins;
+	}
+
+	void GuiTextBox::registerLoadFunction()
+	{
+		GuiManager::registerLoadFunction(L"GuiTextBox", GuiTextBox::loadFunction);
+	}
+
 	#pragma endregion
 
 } //NAMESPACE glib END

@@ -40,8 +40,7 @@ namespace glib
 				delete images[i];
 			}
 		}
-	
-
+		
 		images.clear();
 		delayTimeForFrame.clear();
 	}

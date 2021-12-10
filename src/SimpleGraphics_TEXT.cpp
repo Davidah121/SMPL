@@ -237,7 +237,7 @@ namespace glib
 					else
 						drawSprite(charImg, currX+fci.xOffset, currY+fci.yOffset, otherImg);
 					
-					if(i >= highlightStart && i <= highlightEnd)
+					if(i >= highlightStart && i < highlightEnd)
 					{
 						Color oldColor = activeColor;
 						SimpleGraphics::setColor(highlightColor);

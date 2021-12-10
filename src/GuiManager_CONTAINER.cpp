@@ -46,7 +46,7 @@ namespace glib
 
 	void GuiContainer::registerLoadFunction()
 	{
-		GuiManager::registerLoadFunction(L"Container", GuiContainer::loadFunction);
+		GuiManager::registerLoadFunction(L"GuiContainer", GuiContainer::loadFunction);
 	}
 
 	#pragma endregion

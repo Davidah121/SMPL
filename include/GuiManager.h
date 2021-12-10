@@ -741,6 +741,42 @@ namespace glib
 		 * @return double 
 		 */
 		double getYScale();
+		
+		/**
+		 * @brief Set the Width of the rendered image.
+		 * 		Forces the image to a specified width.
+		 * 
+		 * 		This will still be affected by the x scale so setting the
+		 * 		width to 20 and xScale to 0.5 will result in a width of 10.
+		 * 
+		 * @param width 
+		 */
+		void setWidth(int width);
+		
+		/**
+		 * @brief Set the Height of the rendered image.
+		 * 		Forces the image to a specified height.
+		 * 
+		 * 		This will still be affected by the y scale so setting the
+		 * 		height to 20 and xScale to 0.5 will result in a height of 10.
+		 * 
+		 * @param height 
+		 */
+		void setHeight(int height);
+
+		/**
+		 * @brief Gets the override Width of the rendered image.
+		 * 
+		 * @return int 
+		 */
+		int getWidth();
+
+		/**
+		 * @brief Gets the override Height of the rendered image.
+		 * 
+		 * @return int 
+		 */
+		int getHeight();
 
 		/**
 		 * @brief Sets the Color for the sprite.
@@ -762,12 +798,31 @@ namespace glib
 		 */
 		void reset();
 
+		/**
+		 * @brief Loads data from an Xml Attribute.
+		 * 		This allows a large list of attributes to be defined
+		 * 		and allow each class to deal with them in their own way.
+		 * 		
+		 * 		Will remove data from the hashmap if it has been processed.
+		 * 
+		 * @param attrib 
+		 */
+		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs);
+
+		static void registerLoadFunction();
+
 	private:
+		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes);
+
 		time_t lastUpdateTime = 0;
 		int index = 0;
 
 		double xScale = 1;
 		double yScale = 1;
+		
+		int width = -1;
+		int height = -1;
+
 		Sprite img;
 		Color imgColor = {255,255,255,255};
 	};
@@ -1168,7 +1223,22 @@ namespace glib
 		 * @return int 
 		 */
 		int getHeight();
+	
+		/**
+		 * @brief Loads data from an Xml Attribute.
+		 * 		This allows a large list of attributes to be defined
+		 * 		and allow each class to deal with them in their own way.
+		 * 		
+		 * 		Will remove data from the hashmap if it has been processed.
+		 * 
+		 * @param attrib 
+		 */
+		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs);
+
+		static void registerLoadFunction();
+
 	private:
+		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes);
 		
 		std::function<void(GuiInstance*)> onEnterPressedFunction;
 		std::function<void(GuiInstance*)> onKeyPressFunction;
@@ -1376,7 +1446,23 @@ namespace glib
 		 */
 		int getHeight();
 
+		/**
+		 * @brief Loads data from an Xml Attribute.
+		 * 		This allows a large list of attributes to be defined
+		 * 		and allow each class to deal with them in their own way.
+		 * 		
+		 * 		Will remove data from the hashmap if it has been processed.
+		 * 
+		 * @param attrib 
+		 */
+		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs);
+
+		static void registerLoadFunction();
+
 	private:
+		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes);
+		
+
 		std::function<void(GuiInstance*)> onClickFunction;
 		std::function<void(GuiInstance*)> onClickHoldFunction;
 		std::function<void(GuiInstance*)> onClickReleaseFunction;
@@ -1986,6 +2072,8 @@ namespace glib
 		void loadElementsFromFile(File f);
 		bool loadElement(XmlNode* node, GuiInstance* parent);
 		static void registerLoadFunction(std::wstring className, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&)> func);
+
+		static void initDefaultLoadFunctions();
 	private:
 		void sortElements();
 

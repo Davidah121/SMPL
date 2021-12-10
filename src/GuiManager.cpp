@@ -11,6 +11,16 @@ namespace glib
 		return &GuiManager::myClass;
 	}
 
+
+	void GuiManager::initDefaultLoadFunctions()
+	{
+		GuiRectangleButton::registerLoadFunction();
+		GuiTextBlock::registerLoadFunction();
+		GuiTextBox::registerLoadFunction();
+		GuiSprite::registerLoadFunction();
+		GuiContainer::registerLoadFunction();
+	}
+
 	void GuiManager::registerLoadFunction(std::wstring className, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&)> func)
 	{
 		elementLoadingFunctions[className] = func;
@@ -29,7 +39,7 @@ namespace glib
 				std::unordered_map<std::wstring, std::wstring> map;
 				for(XmlAttribute& attrib : node->attributes)
 				{
-					map[attrib.name] = attrib.value;
+					map[ StringTools::toLowercase(attrib.name) ] = attrib.value;
 				}
 
 				thisIns = it->second(map);

@@ -278,7 +278,7 @@ namespace glib
 			return temp;
 		}
 
-		if(type != MEAN_CUT || type != MEDIAN_CUT || type != K_MEANS)
+		if(type != MEAN_CUT && type != MEDIAN_CUT && type != K_MEANS)
 		{
 			return temp;
 		}
