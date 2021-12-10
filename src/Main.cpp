@@ -571,13 +571,149 @@ void demo()
 
 void testLoadGui()
 {
-    GuiContainer::registerLoadFunction();
-    GuiTextBlock::registerLoadFunction();
+    GuiManager::initDefaultLoadFunctions();
 
-    GuiManager g = GuiManager(320, 240);
-    g.loadElementsFromFile("Test.xml");
+    SimpleWindow w = SimpleWindow("GuiLoading", 320, 240);
 
+    w.getGuiManager()->loadElementsFromFile("Test.xml");
+
+    w.waitTillClose();
 }
+
+void testSavePNG()
+{
+    Sprite k;
+    k.loadImage("C:/Users/Alan/Pictures/Screenshot 2021-12-08 201519.png");
+
+    size_t t1,t2;
+    t1 = System::getCurrentTimeNano();
+    if(k.getSize()>0)
+        k.getImage(0)->savePNG("testOutput.png", false, false, true);
+    t2 = System::getCurrentTimeNano();
+
+    StringTools::println("TIME TAKEN %llu", t2-t1);
+
+    t1 = System::getCurrentTimeNano();
+    if(k.getSize()>0)
+        k.getImage(0)->saveGIF("testOutput.gif", 256, false, false);
+    t2 = System::getCurrentTimeNano();
+
+    StringTools::println("TIME TAKEN %llu", t2-t1);
+}
+
+
+
+// void testQuickHash()
+// {
+//     size_t t1,t2;
+//     size_t totalTimeCHash = 0;
+//     size_t totalTimeTHash = 0;
+
+//     StringTools::println("std::unordered_multimap<std::string, std::string>");
+//     t1 = System::getCurrentTimeNano();
+//     std::unordered_map<std::string, std::string> map1 = std::unordered_map<std::string, std::string>(16384);
+//     // map1.max_load_factor(1);
+//     t2 = System::getCurrentTimeNano();
+
+//     StringTools::println("\tCREATE TIME: %llu + %llu", t2-t1, map1.bucket_count());
+//     totalTimeCHash += t2-t1;
+
+//     t1 = System::getCurrentTimeNano();
+//     for(int i=0; i<1000000; i++)
+//     {
+//         std::pair<std::string, std::string> pair = {std::to_string(i%16384), std::to_string(i)};
+//         map1.insert( pair );
+//     }
+//     t2 = System::getCurrentTimeNano();
+
+//     StringTools::println("\tINSERT TIME: %llu", t2-t1);
+//     totalTimeCHash += t2-t1;
+
+//     t1 = System::getCurrentTimeNano();
+
+//     auto it = map1.find(std::to_string(4024));
+
+//     t2 = System::getCurrentTimeNano();
+
+//     StringTools::println("\tFIND TIME: %llu", t2-t1);
+//     totalTimeCHash += t2-t1;
+
+
+//     t1 = System::getCurrentTimeNano();
+//     map1.erase(std::to_string(4024));
+//     t2 = System::getCurrentTimeNano();
+
+//     StringTools::println("\tDELETE TIME: %llu", t2-t1);
+//     totalTimeCHash += t2-t1;
+
+//     t1 = System::getCurrentTimeNano();
+//     map1.rehash( map1.bucket_count()*2 );
+//     t2 = System::getCurrentTimeNano();
+//     StringTools::println("\tREHASH TIME: %llu | Bucket Size: %llu", t2-t1, map1.bucket_count());
+//     totalTimeCHash += t2-t1;
+
+//     t1 = System::getCurrentTimeNano();
+//     map1.clear();
+//     t2 = System::getCurrentTimeNano();
+//     StringTools::println("\tCLEAR TIME: %llu", t2-t1);
+//     totalTimeCHash += t2-t1;
+
+    
+//     StringTools::println("\tTOTAL TIME: %llu", totalTimeCHash);
+
+
+
+//     StringTools::println("TestHash<std::string, std::string>");
+//     t1 = System::getCurrentTimeNano();
+//     TestHash<std::string, std::string> map2(TestHash<std::string, std::string>::MODE_UNIQUE_KEY);
+//     map2.setMaxLoadFactor(-1);
+//     t2 = System::getCurrentTimeNano();
+
+//     StringTools::println("\tCREATE TIME: %llu", t2-t1);
+//     totalTimeTHash += t2-t1;
+
+//     t1 = System::getCurrentTimeNano();
+//     for(int i=0; i<1000000; i++)
+//     {
+//         map2.addElement( std::to_string(i%16384), std::to_string(i) );
+//     }
+//     t2 = System::getCurrentTimeNano();
+
+//     StringTools::println("\tINSERT TIME: %llu", t2-t1);
+//     totalTimeTHash += t2-t1;
+
+//     t1 = System::getCurrentTimeNano();
+
+//     std::vector<TestHashPair<std::string, std::string>> collection2 = map2.getElement(std::to_string(4024));
+
+//     t2 = System::getCurrentTimeNano();
+
+//     StringTools::println("\tCOLLECTION FIND TIME: %llu", t2-t1);
+//     totalTimeTHash += t2-t1;
+
+
+//     t1 = System::getCurrentTimeNano();
+//     map2.removeFirstElement(std::to_string(4024));
+//     t2 = System::getCurrentTimeNano();
+
+//     StringTools::println("\tDELETE TIME: %llu", t2-t1);
+//     totalTimeTHash += t2-t1;
+
+//     t1 = System::getCurrentTimeNano();
+//     map2.rehash();
+//     t2 = System::getCurrentTimeNano();
+//     StringTools::println("\tREHASH TIME: %llu | Bucket Size: %llu", t2-t1, map2.amountOfBuckets());
+//     totalTimeTHash += t2-t1;
+
+//     t1 = System::getCurrentTimeNano();
+//     map2.clear();
+//     t2 = System::getCurrentTimeNano();
+//     StringTools::println("\tCLEAR TIME: %llu", t2-t1);
+//     totalTimeTHash += t2-t1;
+    
+//     StringTools::println("\tTOTAL TIME: %llu", totalTimeTHash);
+//     StringTools::println("TOTAL TIME SAVE: %llu", totalTimeCHash-totalTimeTHash);
+// }
 
 int main(int argc, char** argv)
 {
@@ -585,7 +721,9 @@ int main(int argc, char** argv)
 
     SimpleGraphics::init();
 
-    testLoadGui();
+    // testLoadGui();
+    testSavePNG();
+    // testQuickHash();
     
     return 0;
 }

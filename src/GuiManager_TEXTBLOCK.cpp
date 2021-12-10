@@ -50,8 +50,12 @@ namespace glib
 			
 
 			SimpleGraphics::setClippingRect( Box2D(renderX, renderY, renderX+actualMaxW, renderY+actualMaxH) );
+
+			int minHighlight = min(startHighlight, endHighlight);
+			int maxHighlight = max(startHighlight, endHighlight);
+			
 			if(shouldHighlight)
-				SimpleGraphics::drawTextLimitsHighlighted(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowLineBreaks, startHighlight, endHighlight, highlightColor, surf);
+				SimpleGraphics::drawTextLimitsHighlighted(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowLineBreaks, minHighlight, maxHighlight, highlightColor, surf);
 			else
 				SimpleGraphics::drawTextLimits(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowLineBreaks, surf);
 			
@@ -246,7 +250,7 @@ namespace glib
 
 	void GuiTextBlock::registerLoadFunction()
 	{
-		GuiManager::registerLoadFunction(L"TextBlock", GuiTextBlock::loadFunction);
+		GuiManager::registerLoadFunction(L"GuiTextBlock", GuiTextBlock::loadFunction);
 	}
 
 

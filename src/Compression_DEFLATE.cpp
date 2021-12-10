@@ -67,8 +67,14 @@ namespace glib
 		//Method 5 - SIMPLE_HASH_MAP : Best Performance and Good Size. Memory Hog. Could potentially crash due to memory constraints.
 		//The rehash function should be reworked to use less memory as it basically doubles the memory used. It is also the slowest part I believe.
 		
-		SimpleHashMap<int, int> map = SimpleHashMap<int, int>( SimpleHashMap<int, int>::MODE_REMOVE_LAST_FROM_BUCKET, 4096 );
-		map.setMaxOfSameKey(32);
+		size_t t1,t2;
+
+		t1 = System::getCurrentTimeMicro();
+		SimpleHashMap<int, int> map = SimpleHashMap<int, int>( SimpleHashMap<int, int>::MODE_KEEP_ALL, 1<<15 );
+		map.setMaxLoadFactor(-1);
+		t2 = System::getCurrentTimeMicro();
+
+		// StringTools::println("TIME TO CREATE %llu", t2-t1);
 
 		int i = 0;
 		while(i < size-2)
@@ -108,7 +114,7 @@ namespace glib
 					unsigned char* startBase = (data+locationOfMatch);
 					unsigned char* startMatch = (data+i);
 
-					int len = 3;
+					int len;
 					
 					for(len=3; len<lengthMax; len++)
 					{
@@ -161,7 +167,11 @@ namespace glib
 			outputData->push_back( {true, data[i+j], 0} );
 		}
 
+		t1 = System::getCurrentTimeMicro();
 		map.clear();
+		t2 = System::getCurrentTimeMicro();
+
+		// StringTools::println("TIME TO DELETE %llu", t2-t1);
 
 		#pragma region OLD_CODE
 		//Method 4 - HASHED_LINKED_LIST : same as Method 3 but slow delete time causing slower overall time
@@ -1005,6 +1015,12 @@ namespace glib
 			{
 				nSize = size - (block*sizeOfBlock);
 			}
+			info[block].clear();
+			// size_t t1 = System::getCurrentTimeMicro();
+			// compressDeflateSubFunction(nData, nSize, &info[block], compressionLevel);
+			// size_t t2 = System::getCurrentTimeMicro();
+
+			// StringTools::println("TIME TAKEN: %llu", t2-t1);
 
 			if(block<tSize)
 			{

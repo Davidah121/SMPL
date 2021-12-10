@@ -1,46 +1,42 @@
 #pragma once
 
 #include <vector>
-#include <functional>
 
 namespace glib
 {
-
-    template<class K, class T>
+    template<typename K, typename T>
     struct HashPair
     {
         K key;
         T data;
     };
 
-    template<class K, class T>
+    template<typename K, typename T>
     class SimpleHashMap
     {
     public:
+        static const bool MODE_KEEP_ALL = false;
+        static const bool MODE_UNIQUE_KEY = true;
+
         /**
          * @brief Construct a new SimpleHashMap object
-         *      SimpleHashMap is designed to be faster to delete than the std::multimap but it uses significantly more memory.
-         *      Due to this, SimpleHashMap is best used on smaller data sets to avoid large memory allocation.
-         *      Data is stored into a single array. The buckets are sections in the array.
+         *      SimpleHashMap is designed to be simpler and faster to delete than the std::unordered_multimap.
+         *      A mode exists for unique keys but std::unordered_map is faster in every way currently
          * 
          * @param mode 
          *      Valid modes are:
          *          MODE_UNIQUE_KEY
-         *          MODE_REMOVE_LAST_FROM_BUCKET
          *          MODE_KEEP_ALL
          *      Unique Key will replace the data with the same key.
-         *      Remove Last allows the same key. Once the bucket has reached max size, it removes the last version of that key in the bucket if it exists
-         *          and has exceeded the maximum amount allow for that key (Default is 10). Otherwise, it resizes the bucket.
          *      Keep All keeps all data added to the hash map.
          *      Default value is MODE_KEEP_ALL
          * @param initBuckets 
          *      The initial amount of buckets
-         *      Default value is 20
-         * @param maxSizeOfBuckets 
-         *      The initial maximum size of the buckets
-         *      Default value is 20
+         *      The amount of buckets must be a power of 2. 
+         *          Will be rounded up to a power of 2.
+         *      Default value is 16384
          */
-        SimpleHashMap(unsigned char mode = MODE_KEEP_ALL, int initBuckets = 20, int maxSizeOfBuckets = 20);
+        SimpleHashMap(bool mode = MODE_KEEP_ALL, size_t initBucketCount = 16384);
 
         /**
          * @brief Construct a new SimpleHashMap object from another SimpleHashMap
@@ -62,9 +58,71 @@ namespace glib
          */
         ~SimpleHashMap();
 
-        static const unsigned char MODE_UNIQUE_KEY = 0;
-        static const unsigned char MODE_REMOVE_LAST_FROM_BUCKET = 1;
-        static const unsigned char MODE_KEEP_ALL = 2;
+        /**
+         * @brief Adds a new data entry into the SimpleHashMap based on the mode of the hashmap
+         * 
+         * @param key 
+         * @param value 
+         */
+        void add(K key, T data);
+
+        bool remove(HashPair<K,T>* pair);
+
+        /**
+         * @brief Removes the first entry found for the key.
+         *      Returns if successful.
+         * 
+         *      All HashPair references to the removed data will be invalid as the reference will be deleted.
+         * 
+         * @param key 
+         * @return bool
+         */
+        bool removeFirst(K key);
+
+        /**
+         * @brief Removes the last entry found for the key.
+         *      Returns if successful.
+         * 
+         *      All HashPair references to the removed data will be invalid as the reference will be deleted.
+         * 
+         * @param key 
+         * @return bool
+         */
+        bool removeLast(K key);
+
+        /**
+         * @brief Removes all entries found for the key.
+         *      Returns if successful.
+         * 
+         *      All HashPair references to the removed data will be invalid as the reference will be deleted.
+         * 
+         * @param key 
+         * @return bool
+         */
+        bool removeAll(K key);
+        
+        /**
+         * @brief Gets the first entry with the specified key.
+         * 
+         * @param key 
+         * @return HashPair<K, T>* 
+         */
+        HashPair<K,T>* get(K key);
+
+        /**
+         * @brief Gets all entries with the specified key.
+         * 
+         * @param key 
+         * @return std::vector<HashPair<K, T>*> 
+         */
+        std::vector<HashPair<K,T>*> getAll(K key);
+
+        /**
+         * @brief Rehashes the hash map.
+         *      Can help performance if the data has been reorganized.
+         *      Automatically happens as data is added if the max load factor has been exceeded.
+         */
+        void rehash();
 
         /**
          * @brief Clears the SimpleHashMap
@@ -73,153 +131,72 @@ namespace glib
         void clear();
 
         /**
-         * @brief Adds a new data entry into the SimpleHashMap based on the mode of the hashmap
+         * @brief Returns the amount of buckets created in the hash map
          * 
-         * @param key 
-         * @param value 
+         * @return size_t 
          */
-        void add(K key, T value);
-
-        /**
-         * @brief Removes the first entry found for the key.
-         * 
-         * @param key 
-         */
-        void removeFirst(K key);
-
-        /**
-         * @brief Removes the last entry found for the key.
-         * 
-         * @param key 
-         */
-        void removeLast(K key);
-
-        /**
-         * @brief Removes all entry found for the key.
-         * 
-         * @param key 
-         */
-        void removeAll(K key);
-
-        /**
-         * @brief Removes a specific entry from the hashmap.
-         * 
-         * @param rm 
-         *      A pointer to the data entry to be removed.
-         */
-        void remove(HashPair<K, T>* rm);
-
-        /**
-         * @brief Gets the first entry with the specified key.
-         * 
-         * @param key 
-         * @return HashPair<K, T>* 
-         */
-        HashPair<K, T>* get(K key);
-
-        /**
-         * @brief Gets all entries with the specified key.
-         * 
-         * @param key 
-         * @return std::vector<HashPair<K, T>*> 
-         */
-        std::vector<HashPair<K, T>*> getAll(K key);
+        size_t amountOfBuckets();
 
         /**
          * @brief Returns the amount of entries
          * 
          * @return size_t 
          */
-        size_t size();
+        size_t getSize();
 
         /**
-         * @brief Returns the total amount of data taken up.
+         * @brief Sets the Max Load Factor for the hash map.
+         *      If the load factor exceeds the max load factor, it causes a rehash.
+         *      load factor = size/buckets
          * 
-         * @return size_t 
-         */
-        size_t totalSize();
-
-        /**
-         * @brief Rehashes the hashmap.
-         *      Can help performance if the data has been reorganized.
-         *      Slow function that allocates a lot of memory.
-         */
-        void rehash();
-
-        /**
-         * @brief Returns all of the data entries
+         *      By default, it is set to 10
          * 
-         * @return std::vector< HashPair<K, T>* > 
+         *      Note that if set to a value less than 0, no rehash will happen unless
+         *      explicitly requested
+         * @param f 
          */
-        std::vector< HashPair<K, T>* > getData();
-
+        void setMaxLoadFactor(double f);
 
         /**
-         * @brief Sets the mode of the hashmap.
-         *      Valid modes are:
-         *          MODE_UNIQUE_KEY
-         *          MODE_REMOVE_LAST_FROM_BUCKET
-         *          MODE_KEEP_ALL
-         *      Unique Key will replace the data with the same key.
-         *      Remove Last allows the same key. Once the bucket has reached max size, it removes the last version of that key in the bucket if it exists
-         *          and has exceeded the maximum amount allow for that key. Otherwise, it resizes the bucket.
-         *      Keep All keeps all data added to the hash map.
-         * @param v 
-         */
-        void setMode(unsigned char v);
-
-        /**
-         * @brief Sets the maximum amount of entries allowed with the same key.
-         *      Default is 10.
+         * @brief Gets the Max Load Factor for the hash map.
          * 
-         * @param v 
+         * @return double 
          */
-        void setMaxOfSameKey(int v);
+        double getMaxLoadFactor();
 
     private:
-        std::hash<K> hashFunction;
-
-        unsigned char type = MODE_KEEP_ALL;
-        int maxBucketSize = 20;
-        int maxOfSameKey = 10;
-        size_t count = 0;
-        
-        
-        std::vector< int > sizeOfBucket;
-        std::vector< HashPair<K, T>* > data;
+        std::vector<std::vector<HashPair<K,T>*>> buckets;
+        size_t size = 0;
+        double maxLoadFactor = 10;
+        bool mode = MODE_KEEP_ALL;
+        std::hash<K> hasher;
     };
 
-    template<class K, class T>
-    inline SimpleHashMap<K, T>::SimpleHashMap(unsigned char mode, int initBuckets, int maxSizeOfBuckets)
+    template<typename K, typename T>
+    inline SimpleHashMap<K, T>::SimpleHashMap(bool mode, size_t initBuckets)
     {
-        type = mode;
-        maxBucketSize = maxSizeOfBuckets;
-        sizeOfBucket = std::vector<int>(initBuckets);
-        data = std::vector< HashPair<K, T>* >(initBuckets*maxBucketSize);
+        size_t actualBucketCount =  1 << (int)ceil(log2(initBuckets));
+        buckets = std::vector<std::vector<HashPair<K,T>*>>(actualBucketCount);
+        this->mode = mode;
     }
 
     template<class K, class T>
     inline SimpleHashMap<K, T>::SimpleHashMap(const SimpleHashMap<K, T>& other)
     {
-        type = other.type;
-        maxBucketSize = other.maxBucketSize;
-        maxOfSameKey = other.maxOfSameKey;
-        count = other.count;
+        mode = other.mode;
+        size = other.size;
+        maxLoadFactor = other.maxLoadFactor;
+        
+        buckets = std::vector< std::vector<HashPair<K, T>*> >(other.buckets.size());
 
-        sizeOfBucket = other.sizeOfBucket;
-        data = std::vector< HashPair<K, T>* >(other.data.size());
-
-        for(int i=0; i<sizeOfBucket.size(); i++)
+        for(int bucketLocation=0; bucketLocation<other.buckets.size(); bucketLocation++)
         {
-            int bucketLocation = i*maxBucketSize;
-            for(int k=0; k<sizeOfBucket[i]; k++)
+            buckets[bucketLocation].reserve( other.buckets[bucketLocation].size() );
+            for(int k=0; k<other.buckets[bucketLocation].size(); k++)
             {
-                if(other.data[bucketLocation + k] != nullptr)
-                {
-                    data[bucketLocation + k] = new HashPair<K, T>();
-                    data[bucketLocation + k]->key = other.data[bucketLocation + k]->key;
-                    data[bucketLocation + k]->data = other.data[bucketLocation + k]->data;
-                }
+                buckets[bucketLocation].push_back(new HashPair<K, T>());
+                buckets[bucketLocation].back()->key = other.buckets[bucketLocation][k]->key;
+                buckets[bucketLocation].back()->data = other.buckets[bucketLocation][k]->data;
             }
         }
     }
@@ -227,400 +204,330 @@ namespace glib
     template<class K, class T>
     inline void SimpleHashMap<K, T>::operator=(const SimpleHashMap<K, T>& other)
     {
-        type = other.type;
-        maxBucketSize = other.maxBucketSize;
-        maxOfSameKey = other.maxOfSameKey;
-        count = other.count;
+        mode = other.mode;
+        size = other.size;
+        maxLoadFactor = other.maxLoadFactor;
+        
+        buckets = std::vector< std::vector<HashPair<K, T>*> >(other.buckets.size());
 
-        sizeOfBucket = other.sizeOfBucket;
-        data = std::vector< HashPair<K, T>* >(other.data.size());
-
-        for(int i=0; i<sizeOfBucket.size(); i++)
+        for(int bucketLocation=0; bucketLocation<other.buckets.size(); bucketLocation++)
         {
-            int bucketLocation = i*maxBucketSize;
-            for(int k=0; k<sizeOfBucket[i]; k++)
+            buckets[bucketLocation].reserve( other.buckets[bucketLocation].size() );
+            for(int k=0; k<other.buckets[bucketLocation].size(); k++)
             {
-                if(other.data[bucketLocation + k] != nullptr)
-                {
-                    data[bucketLocation + k] = new HashPair<K, T>();
-                    data[bucketLocation + k]->key = other.data[bucketLocation + k]->key;
-                    data[bucketLocation + k]->data = other.data[bucketLocation + k]->data;
-                }
+                buckets[bucketLocation].push_back(new HashPair<K, T>());
+                buckets[bucketLocation].back()->key = other.buckets[bucketLocation][k]->key;
+                buckets[bucketLocation].back()->data = other.buckets[bucketLocation][k]->data;
             }
         }
     }
 
-    template<class K, class T>
+    template<typename K, typename T>
     inline SimpleHashMap<K, T>::~SimpleHashMap()
     {
-        clear();
-    }
-
-    template<class K, class T>
-    inline void SimpleHashMap<K, T>::clear()
-    {
-        for(int i=0; i<sizeOfBucket.size(); i++)
+        for(int i=0; i<buckets.size(); i++)
         {
-            int bucketLocation = i*maxBucketSize;
-            for(int k=0; k<sizeOfBucket[i]; k++)
+            for(int j=0; j<buckets[i].size(); j++)
             {
-                if(data[bucketLocation+k]!=nullptr)
-                    delete data[bucketLocation+k];
-                
-                data[bucketLocation+k] = nullptr;
+                delete buckets[i][j];
             }
         }
-
-        sizeOfBucket.clear();
-        data.clear();
-        maxBucketSize = 20;
+        buckets.clear();
     }
 
-    template<class K, class T>
-    inline size_t SimpleHashMap<K, T>::size()
+    template<typename K, typename T>
+    inline void SimpleHashMap<K, T>::add(K key, T data)
     {
-        return count;
-    }
+        size_t bucketLocation = hasher(key) % buckets.size();
+        HashPair<K,T>* pair = new HashPair<K,T>();
+        pair->key = key;
+        pair->data = data;
 
-    template<class K, class T>
-    inline size_t SimpleHashMap<K, T>::totalSize()
-    {
-        return data.capacity();
-    }
-
-    template<class K, class T>
-    inline void SimpleHashMap<K, T>::setMode(unsigned char c)
-    {
-        if(c >= 0 && c <= 2)
+        if(mode == MODE_KEEP_ALL)
         {
-            mode = c;
+            buckets[bucketLocation].push_back( pair );
+            this->size++;
         }
-        else
+        else if(mode == MODE_UNIQUE_KEY)
         {
-            mode = MODE_KEEP_ALL;
-        }
-    }
-
-    template<class K, class T>
-    inline void SimpleHashMap<K, T>::setMaxOfSameKey(int v)
-    {
-        if(v>0)
-            maxOfSameKey = v;
-        else
-            maxOfSameKey = 1;
-    }
-
-    template<class K, class T>
-    inline void SimpleHashMap<K, T>::add(K key, T value)
-    {
-        size_t location = hashFunction(key);
-        count++;
-
-        if(sizeOfBucket.size() <= 0)
-        {
-            //init buckets to a size of atleast ceil(count * 1.75)
-            size_t nSize = (size_t)MathExt::ceil((double)count * 1.75);
-            sizeOfBucket = std::vector<int>(nSize);
-            data = std::vector<HashPair<K,T>*>(nSize*maxBucketSize);
-        }
-
-        size_t actualLocation = location % sizeOfBucket.size();
-        size_t finalLocation = (actualLocation*maxBucketSize) + sizeOfBucket[actualLocation];
-
-        if(type == MODE_REMOVE_LAST_FROM_BUCKET)
-        {
-            if(sizeOfBucket[actualLocation] == maxBucketSize - 1)
-            {
-                bool found = false;
-                std::vector<HashPair<K,T>*> tempBucket = std::vector<HashPair<K,T>*>();
-                int k = 0;
-                int amountFound = 0;
-
-                for(int i=0; i<sizeOfBucket[actualLocation]; i++)
-                {
-                    if(data[actualLocation*maxBucketSize + i]->key == key)
-                    {
-                        amountFound++;
-                    }
-                }
-
-                if(amountFound>=maxOfSameKey)
-                {
-                    int deletions = amountFound - maxOfSameKey;
-                    for(int i=0; i<deletions; i++)
-                    {
-                        removeFirst(key);
-                    }
-                }
-                
-                k = sizeOfBucket[actualLocation];
-
-                data[actualLocation*maxBucketSize + k] = new HashPair<K, T>();
-                data[actualLocation*maxBucketSize + k]->key = key;
-                data[actualLocation*maxBucketSize + k]->data = value;
-                
-                sizeOfBucket[actualLocation]++;
-            }
-            else
-            {
-                data[finalLocation] = new HashPair<K, T>();
-                data[finalLocation]->key = key;
-                data[finalLocation]->data = value;
-
-                sizeOfBucket[actualLocation]++;
-            }
-        }
-        else if(type == MODE_UNIQUE_KEY)
-        {
+            //find if the key already exists
             bool found = false;
-            for(int i=0; i<sizeOfBucket[actualLocation]; i++)
+            for(int i=0; i<buckets[bucketLocation].size(); i++)
             {
-                if(data[actualLocation*maxBucketSize + i]->key == key)
+                if(buckets[bucketLocation][i]->key == key)
                 {
-                    //replace
-                    data[actualLocation*maxBucketSize + i]->key = key;
-                    data[actualLocation*maxBucketSize + i]->data = value;
+                    buckets[bucketLocation][i]->data = data;
+                    found = true;
                     break;
                 }
             }
 
-            if(found==false)
+            if(!found)
             {
-                data[finalLocation] = new HashPair<K, T>();
-                data[finalLocation]->key = key;
-                data[finalLocation]->data = value;
-                sizeOfBucket[actualLocation]++;
-            }
-            
-        }
-        else if(type == MODE_KEEP_ALL)
-        {
-            data[finalLocation] = new HashPair<K, T>();
-            data[finalLocation]->key = key;
-            data[finalLocation]->data = value;
-            sizeOfBucket[actualLocation]++;
-        }
-
-        if(sizeOfBucket[actualLocation] >= maxBucketSize)
-        {
-            rehash();
-        }
-    }
-
-    template<class K, class T>
-    inline void SimpleHashMap<K, T>::rehash()
-    {
-        size_t nBucketsSize = (size_t)MathExt::ceil((double)count * 1.5);
-        size_t nMaxBucketsSize = (size_t)MathExt::ceil( (double)maxBucketSize * 1.25 );
-
-        std::vector<int> nBuckets = std::vector<int>(nBucketsSize);
-        std::vector< HashPair<K, T>* > nData = std::vector< HashPair<K, T>* >(nBucketsSize*nMaxBucketsSize);
-
-        for(int i=0; i<sizeOfBucket.size(); i++)
-        {
-            int bucketLocation = i*maxBucketSize;
-            for(int k=0; k<sizeOfBucket[i]; k++)
-            {
-                HashPair<K, T>* pair = data[bucketLocation + k];
-
-                size_t location = hashFunction(pair->key);
-                location = location % nBucketsSize;
-                size_t finalLocation = (location*nMaxBucketsSize) + nBuckets[location];
-
-                nData[finalLocation] = pair;
-                nBuckets[location]++;
+                buckets[bucketLocation].push_back( pair );
+                this->size++;
             }
         }
 
-        maxBucketSize = nMaxBucketsSize;
-        sizeOfBucket = nBuckets;
-        data = nData;
+        if(maxLoadFactor >= 0)
+        {
+            double loadFactor = (double)this->size / buckets.size();
+            if(loadFactor > maxLoadFactor)
+            {
+                rehash();
+            }
+        }
     }
 
-    template<class K, class T>
-    inline void SimpleHashMap<K, T>::removeFirst(K key)
+    template<typename K, typename T>
+    inline bool SimpleHashMap<K, T>::remove(HashPair<K,T>* pair)
     {
-        size_t location = hashFunction(key) % sizeOfBucket.size();
-
-        size_t actualLocation = location*maxBucketSize;
-        int indexOfFirst = -1;
-        for(int i=0; i<sizeOfBucket[location]; i++)
+        if(pair != nullptr)
         {
-            if(indexOfFirst == -1)
+            size_t bucketLocation = hasher(pair->key) % buckets.size();
+
+            int indexOfKey = -1;
+            for(int i=0; i<buckets[bucketLocation].size(); i++)
             {
-                if(key == data[actualLocation+i]->key)
+                if(buckets[bucketLocation][i] == pair)
                 {
-                    indexOfFirst = i;
+                    indexOfKey = i;
+                    delete pair;
+                    break;
                 }
             }
-            else
+
+            if(indexOfKey != -1)
             {
-                //swap till the end of the bucket
-                HashPair<K,T>* temp = data[actualLocation+i-1];
-                data[actualLocation+i-1] = data[actualLocation+i];
-                data[actualLocation+i] = temp;
+                for(int i=indexOfKey; i<buckets[bucketLocation].size()-1; i++)
+                {
+                    HashPair<K,T>* temp = buckets[bucketLocation][i];
+                    buckets[bucketLocation][i] = buckets[bucketLocation][i+1];
+                    buckets[bucketLocation][i+1] = temp;
+                }
+                buckets[bucketLocation].pop_back();
+                this->size--;
+                return true;
             }
         }
-
-        if(indexOfFirst!=-1)
-        {
-            //found key
-            delete data[actualLocation + sizeOfBucket[location] - 1];
-            data[actualLocation + sizeOfBucket[location] - 1] = nullptr;
-            sizeOfBucket[location]--;
-        }
+        return false;
     }
 
-    template<class K, class T>
-    inline void SimpleHashMap<K, T>::removeLast(K key)
+    template<typename K, typename T>
+    inline bool SimpleHashMap<K, T>::removeFirst(K key)
     {
-        size_t location = hashFunction(key) % sizeOfBucket.size();
+        size_t bucketLocation = hasher(key) % buckets.size();
 
-        size_t actualLocation = location*maxBucketSize;
-        int indexOfLast = -1;
-        for(int i=sizeOfBucket[location]-1; i>=0; i--)
+        int indexOfKey = -1;
+        for(int i=0; i<buckets[bucketLocation].size(); i++)
         {
-            if(key == data[actualLocation+i]->key)
+            HashPair<K,T>* pair = buckets[bucketLocation][i];
+            if(pair->key == key)
             {
-                indexOfLast = i;
+                indexOfKey = i;
+                delete pair;
                 break;
             }
         }
 
-        if(indexOfLast != -1)
+        if(indexOfKey != -1)
         {
-            //found key
-            for(int i=indexOfLast; i<sizeOfBucket[location]; i++)
+            for(int i=indexOfKey; i<buckets[bucketLocation].size()-1; i++)
             {
-                //swap till the end of the bucket
-                HashPair<K,T>* temp = data[actualLocation+i-1];
-                data[actualLocation+i-1] = data[actualLocation+i];
-                data[actualLocation+i] = temp;
+                HashPair<K,T>* temp = buckets[bucketLocation][i];
+                buckets[bucketLocation][i] = buckets[bucketLocation][i+1];
+                buckets[bucketLocation][i+1] = temp;
             }
-            
-            delete data[actualLocation + sizeOfBucket[location] - 1];
-            data[actualLocation + sizeOfBucket[location] - 1] = nullptr;
-            sizeOfBucket[location]--;
+            buckets[bucketLocation].pop_back();
+            this->size--;
+            return true;
         }
+        return false;
     }
 
-    template<class K, class T>
-    inline void SimpleHashMap<K, T>::removeAll(K key)
+    template<typename K, typename T>
+    inline bool SimpleHashMap<K, T>::removeLast(K key)
     {
-        size_t location = hashFunction(key) % sizeOfBucket.size();
+        size_t bucketLocation = hasher(key) % buckets.size();
 
-        size_t actualLocation = location*maxBucketSize;
-        std::vector<HashPair<K, T>*> nBucket;
-
-        for(int i=0; i<sizeOfBucket[location]; i++)
+        int indexOfKey = -1;
+        for(int i=buckets[bucketLocation].size()-1; i>=0; i--)
         {
-            if(key != data[actualLocation+i]->key)
+            HashPair<K,T>* pair = buckets[bucketLocation][i];
+            if(pair.key == key)
             {
-                nBucket.push_back( data[actualLocation+i] );
-            }
-            else
-            {
-                delete data[actualLocation+i];
-                data[actualLocation+i] = nullptr;
+                indexOfKey = i;
+                delete pair;
+                break;
             }
         }
 
-        for(int i=0; i<nBucket.size(); i++)
+        if(indexOfKey != -1)
         {
-            data[actualLocation+i] = nBucket[i];
+            for(int i=indexOfKey; i<buckets[bucketLocation].size()-1; i++)
+            {
+                HashPair<K,T>* temp = buckets[bucketLocation][i];
+                buckets[bucketLocation][i] = buckets[bucketLocation][i+1];
+                buckets[bucketLocation][i+1] = temp;
+            }
+            buckets[bucketLocation].pop_back();
+            this->size--;
+            return true;
         }
-        sizeOfBucket[location] = nBucket.size();
+        return false;
     }
 
-    template<class K, class T>
-    inline void SimpleHashMap<K, T>::remove(HashPair<K, T>* p)
+    template<typename K, typename T>
+    inline bool SimpleHashMap<K, T>::removeAll(K key)
     {
-        if(p!=nullptr)
+        size_t bucketLocation = hasher(key) % buckets.size();
+
+        int count = 0;
+        for(int i=0; i<buckets[bucketLocation].size(); i++)
         {
-            size_t location = hashFunction(p->key) % sizeOfBucket.size();
-
-            size_t actualLocation = location*maxBucketSize;
-            bool found=false;
-
-            for(int i=0; i<sizeOfBucket[location]; i++)
+            HashPair<K,T>* pair = buckets[bucketLocation][i];
+            if(pair.key == key)
             {
-                if(found == false)
+                delete pair;
+                buckets[bucketLocation][i] = nullptr;
+                count++;
+            }
+        }
+
+        if(count > 0)
+        {
+            size_t totalSize = buckets[bucketLocation].size();
+
+            for(int i=totalSize-1; i>=0; i--)
+            {
+                if(buckets[bucketLocation][i] == nullptr)
                 {
-                    if(p == data[actualLocation+i])
+                    for(int j=i; j<totalSize-1; j++)
                     {
-                        found = true;
+                        HashPair<K,T>* temp = buckets[bucketLocation][j];
+                        buckets[bucketLocation][j] = buckets[bucketLocation][j+1];
+                        buckets[bucketLocation][j+1] = temp;
                     }
                 }
-                else
-                {
-                    //swap till the end of the bucket
-                    HashPair<K,T>* temp = data[actualLocation+i-1];
-                    data[actualLocation+i-1] = data[actualLocation+i];
-                    data[actualLocation+i] = temp;
-                }
+                
+                buckets[bucketLocation].pop_back();
+                totalSize--;
+                this->size--;
             }
-
-            if(found==true)
-            {
-                delete data[actualLocation + sizeOfBucket[location] - 1];
-                data[actualLocation + sizeOfBucket[location] - 1] = nullptr;
-                sizeOfBucket[location]--;
-            }
+            return true;
         }
+        return false;
     }
 
-    template<class K, class T>
-    inline HashPair<K, T>* SimpleHashMap<K, T>::get(K key)
+    template<typename K, typename T>
+    inline HashPair<K,T>* SimpleHashMap<K, T>::get(K key)
     {
-        size_t location = hashFunction(key) % sizeOfBucket.size();
-        HashPair<K, T>* value = nullptr;
+        size_t bucketLocation = hasher(key) % buckets.size();
+        HashPair<K,T>* collection = nullptr;
 
-        size_t actualLocation = location*maxBucketSize;
-        for(int i=0; i<sizeOfBucket[location]; i++)
+        for(int i=0; i<buckets[bucketLocation].size(); i++)
         {
-            if(key == data[actualLocation+i]->key)
+            if(buckets[bucketLocation][i]->key == key)
             {
-                value = data[actualLocation+i];
+                collection = buckets[bucketLocation][i];
                 break;
             }
         }
 
-        return value;
+        return collection;
     }
 
-    template<class K, class T>
-    inline std::vector<HashPair<K, T>*> SimpleHashMap<K, T>::getAll(K key)
+    template<typename K, typename T>
+    inline std::vector<HashPair<K,T>*> SimpleHashMap<K, T>::getAll(K key)
     {
-        size_t location = hashFunction(key) % sizeOfBucket.size();
-        std::vector<HashPair<K, T>*> values;
+        size_t bucketLocation = hasher(key) % buckets.size();
+        std::vector<HashPair<K,T>*> collection;
 
-        size_t actualLocation = location*maxBucketSize;
-        for(int i=0; i<sizeOfBucket[location]; i++)
+        for(int i=0; i<buckets[bucketLocation].size(); i++)
         {
-            if(key == data[actualLocation+i]->key)
-            {
-                values.push_back( data[actualLocation+i] );
-            }
+            if(buckets[bucketLocation][i]->key == key)
+                collection.push_back(buckets[bucketLocation][i]);
         }
 
-        return values;
+        return collection;
     }
 
-    template<class K, class T>
-    inline std::vector<HashPair<K, T>*> SimpleHashMap<K,T>::getData()
+    template<typename K, typename T>
+    inline void SimpleHashMap<K, T>::rehash()
     {
-        std::vector<HashPair<K, T>*> outputData = std::vector<HashPair<K, T>*>();
+        size_t oldSize = buckets.size();
+        buckets.resize(oldSize*2);
 
-        for(int i=0; i<sizeOfBucket.size(); i++)
+        for(int bucketLocation=0; bucketLocation<oldSize; bucketLocation++)
         {
-            int bucketLocation = i*maxBucketSize;
-            for(int k=0; k<sizeOfBucket[i]; k++)
+            if(buckets[bucketLocation].size()>0)
+                buckets[bucketLocation+oldSize].reserve( buckets[bucketLocation].size() );
+
+            int count = 0;
+
+            for(int j=0; j<buckets[bucketLocation].size(); j++)
             {
-                outputData.push_back(data[bucketLocation+k]);
+                size_t newLocation = hasher(buckets[bucketLocation][j]->key) % buckets.size();
+                
+                if(newLocation != bucketLocation)
+                {
+                    buckets[newLocation].push_back(buckets[bucketLocation][j]);
+                    buckets[bucketLocation][j] = nullptr;
+                    count++;
+                }
+            }
+
+            if(count > 0)
+            {
+                size_t totalSize = buckets[bucketLocation].size();
+
+                for(int i=totalSize-1; i>=0; i--)
+                {
+                    if(buckets[bucketLocation][i] == nullptr)
+                    {
+                        for(int j=i; j<totalSize-1; j++)
+                        {
+                            HashPair<K,T>* temp = buckets[bucketLocation][j];
+                            buckets[bucketLocation][j] = buckets[bucketLocation][j+1];
+                            buckets[bucketLocation][j+1] = temp;
+                        }
+                    }
+                    
+                    buckets[bucketLocation].pop_back();
+                    totalSize--;
+                }
             }
         }
-
-        return outputData;
     }
 
+
+    template<typename K, typename T>
+    inline void SimpleHashMap<K, T>::clear()
+    {
+        buckets.clear();
+    }
+
+    template<typename K, typename T>
+    inline size_t SimpleHashMap<K, T>::amountOfBuckets()
+    {
+        return buckets.size();
+    }
+
+    template<typename K, typename T>
+    inline size_t SimpleHashMap<K, T>::getSize()
+    {
+        return size;
+    }
+
+    template<typename K, typename T>
+    inline void SimpleHashMap<K, T>::setMaxLoadFactor(double f)
+    {
+        maxLoadFactor = f;
+    }
+
+    template<typename K, typename T>
+    inline double SimpleHashMap<K, T>::getMaxLoadFactor()
+    {
+        return maxLoadFactor;
+    }
 } //NAMESPACE glib END

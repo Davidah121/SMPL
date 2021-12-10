@@ -193,6 +193,68 @@ namespace glib
 		return height;
 	}
 
+	void GuiRectangleButton::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs)
+	{
+		GuiInstance::loadDataFromXML(attribs);
+		std::vector<std::wstring> possibleNames = { L"width", L"height", L"backgroundcolor", L"outlinecolor", L"focusoutlinecolor", L"hovercolor", L"focusbackgroundcolor"};
+
+		for(int i=0; i<possibleNames.size(); i++)
+		{
+			auto it = attribs.find(possibleNames[i]);
+			if(it != attribs.end())
+			{
+				if(it->first == L"width")
+				{
+					width = std::abs(StringTools::toInt(it->second));
+				}
+				else if(it->first == L"height")
+				{
+					height = std::abs(StringTools::toInt(it->second));
+				}
+				else if(it->first == L"backgroundcolor")
+				{
+					//define as color name or rgba
+					backgroundColor = ColorNameConverter::NameToColor(it->second);
+				}
+				else if(it->first == L"outlinecolor")
+				{
+					//define as color name or rgba
+					outlineColor = ColorNameConverter::NameToColor(it->second);
+				}
+				else if(it->first == L"focusoutlinecolor")
+				{
+					//define as color name or rgba
+					focusOutlineColor = ColorNameConverter::NameToColor(it->second);
+				}
+				else if(it->first == L"focusbackgroundcolor")
+				{
+					//define as color name or rgba
+					focusBackgroundColor = ColorNameConverter::NameToColor(it->second);
+				}
+				else if(it->first == L"hovercolor")
+				{
+					//define as color name or rgba
+					hoverColor = ColorNameConverter::NameToColor(it->second);
+				}
+				
+				attribs.erase(possibleNames[i]);
+			}
+		}
+	}
+
+	void GuiRectangleButton::registerLoadFunction()
+	{
+		GuiManager::registerLoadFunction(L"GuiRectangleButton", GuiRectangleButton::loadFunction);
+	}
+
+	GuiInstance* GuiRectangleButton::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes)
+	{
+		GuiRectangleButton* ins = new GuiRectangleButton(0,0,0,0);
+		ins->loadDataFromXML(attributes);
+		
+		return ins;
+	}
+
 	#pragma endregion
 
 } //NAMESPACE glib END
