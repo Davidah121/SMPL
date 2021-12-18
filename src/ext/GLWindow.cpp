@@ -55,17 +55,38 @@ namespace glib
 
 	void GLWindow::setPixelFormat()
 	{
-		PIXELFORMATDESCRIPTOR pfd;
-		ZeroMemory(&pfd, sizeof(PIXELFORMATDESCRIPTOR));
+		// PIXELFORMATDESCRIPTOR pfd;
+		// ZeroMemory(&pfd, sizeof(PIXELFORMATDESCRIPTOR));
 
-		pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-		pfd.nVersion = 1;
-		pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-		pfd.dwVisibleMask = PFD_MAIN_PLANE;
-		pfd.cColorBits = 8;
-		pfd.cDepthBits = 16;
-		pfd.iPixelType = PFD_TYPE_RGBA;
+		// pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+		// pfd.nVersion = 1;
+		// pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+		// pfd.iLayerType = PFD_MAIN_PLANE;
+		// pfd.cColorBits = 24;
+		// pfd.cDepthBits = 32;
+		// pfd.iPixelType = PFD_TYPE_RGBA;
 
+		PIXELFORMATDESCRIPTOR pfd =
+		{
+			sizeof(PIXELFORMATDESCRIPTOR),
+			1,
+			PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    // Flags
+			PFD_TYPE_RGBA,        // The kind of framebuffer. RGBA or palette.
+			32,                   // Colordepth of the framebuffer.
+			0, 0, 0, 0, 0, 0,
+			0,
+			0,
+			0,
+			0, 0, 0, 0,
+			24,                   // Number of bits for the depthbuffer
+			8,                    // Number of bits for the stencilbuffer
+			0,                    // Number of Aux buffers in the framebuffer.
+			PFD_MAIN_PLANE,
+			0,
+			0, 0, 0
+		};
+
+		
 		int pixelFormat = ChoosePixelFormat(ghDC, &pfd);
 
 		if(pixelFormat == 0)
@@ -111,7 +132,6 @@ namespace glib
 			setShouldEnd(true);
 			return;
 		}
-	
 		
 		glViewport(0, 0, width, height);
 		glClearColor(0.0f,0.0f,0.0f,0.0f);

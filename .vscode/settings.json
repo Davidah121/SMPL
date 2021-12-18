@@ -81,7 +81,11 @@
         "optional": "cpp",
         "stop_token": "cpp",
         "unordered_set": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "cerrno": "cpp",
+        "cfloat": "cpp",
+        "climits": "cpp",
+        "string_view": "cpp"
     },
     "files.exclude": {
         "**/.classpath": true,

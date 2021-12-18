@@ -6,26 +6,63 @@ namespace glib
     GLModel::GLModel()
     {
     }
+    
+    GLModel::GLModel(GLModel& other)
+    {
+        vaoID = other.vaoID;
+        indexedBuffer = other.indexedBuffer;
+        vboIDs = other.vboIDs;
+        vboSizes = other.vboSizes;
+        attributeEnabled = other.attributeEnabled;
+        
+        modType = other.modType;
+        drawType = other.drawType;
+        usage = other.usage;
+        size = other.size;
+        first = other.first;
+        shouldDelete = true;
+    }
+
+    void GLModel::operator=(GLModel& other)
+    {
+        vaoID = other.vaoID;
+        indexedBuffer = other.indexedBuffer;
+        vboIDs = other.vboIDs;
+        vboSizes = other.vboSizes;
+        attributeEnabled = other.attributeEnabled;
+        
+        modType = other.modType;
+        drawType = other.drawType;
+        usage = other.usage;
+        size = other.size;
+        first = other.first;
+        shouldDelete = true;
+    }
 
     GLModel::~GLModel()
     {
-        if(!GLSingleton::getInit())
+        if(shouldDelete)
         {
-            return;
-        }
-        glDeleteBuffers(vboIDs.size(), vboIDs.data());
-        
-        if(vaoID != 0)
-            glDeleteVertexArrays(1, &vaoID);
-        
-        if(indexedBuffer != 0)
-            glDeleteBuffers(1, &indexedBuffer);
+            if(!GLSingleton::getInit())
+            {
+                return;
+            }
+            glDeleteBuffers(vboIDs.size(), vboIDs.data());
+            
+            if(vaoID != 0)
+                glDeleteVertexArrays(1, &vaoID);
+            
+            if(indexedBuffer != 0)
+                glDeleteBuffers(1, &indexedBuffer);
 
-        vboIDs.clear();
-        vboSizes.clear();
-        attributeEnabled.clear();
-        vaoID = 0;
-        indexedBuffer = 0;
+            vboIDs.clear();
+            vboSizes.clear();
+            attributeEnabled.clear();
+            vaoID = 0;
+            indexedBuffer = 0;
+            size = 0;
+            first = 0;
+        }
     }
 
     void GLModel::draw()
@@ -70,12 +107,14 @@ namespace glib
         }
 
         GLModel glModel;
+        
 
         glModel.setDrawType(m->getModelFormat());
 
         glModel.modType = m->getIndexed();
         glModel.size = m->size();
         glModel.usage = usage;
+        glModel.shouldDelete = false;
 
         glGenVertexArrays(1, &glModel.vaoID);
         glBindVertexArray(glModel.vaoID);
@@ -88,7 +127,7 @@ namespace glib
         glModel.vboIDs = std::vector<unsigned int>(vFormat.size());
         glModel.vboSizes = std::vector<size_t>(vFormat.size());
         glModel.attributeEnabled = std::vector<bool>(vFormat.size());
-        
+
         glGenBuffers(glModel.vboIDs.size(), glModel.vboIDs.data());
 
         if(glModel.modType != TYPE_INDEXED)
@@ -105,10 +144,9 @@ namespace glib
                 glBufferData(GL_ARRAY_BUFFER, nSize, rawVertexData[i].data(), usage);
 
                 if(f.type == Model::TYPE_INT)
-                    glVertexAttribPointer(i, f.size, GL_INT, GL_FALSE, f.size*dataSize, nullptr);
+                    glVertexAttribPointer(i, (int)f.size, GL_INT, GL_FALSE, f.size*dataSize, nullptr);
                 else
-                    glVertexAttribPointer(i, f.size, GL_FLOAT, GL_FALSE, f.size*dataSize, nullptr);
-                
+                    glVertexAttribPointer(i, (int)f.size, GL_FLOAT, GL_FALSE, f.size*dataSize, nullptr);
                 
                 glModel.attributeEnabled[i] = true;
                 glEnableVertexAttribArray(i);
@@ -226,6 +264,7 @@ namespace glib
         m.vboIDs.push_back(0);
         m.vboSizes.push_back(9*sizeof(float));
         m.attributeEnabled.push_back(true);
+        m.shouldDelete = false;
 
 
         float verticies[] = {
@@ -237,8 +276,7 @@ namespace glib
         glGenVertexArrays(1, &m.vaoID);
         glBindVertexArray(m.vaoID);
 
-        glGenBuffers(1, &m.vboIDs[0]);
-
+        glGenBuffers(1, m.vboIDs.data());
         glBindBuffer(GL_ARRAY_BUFFER, m.vboIDs[0]);
 
         glBufferData(GL_ARRAY_BUFFER, sizeof(verticies), verticies, GL_STATIC_DRAW);
@@ -405,7 +443,7 @@ namespace glib
         switch(value)
         {
             case Model::POINTS:
-                drawType = GL_POINT;
+                drawType = GL_POINTS;
                 break;
             case Model::LINES:
                 drawType = GL_LINES;

@@ -150,6 +150,13 @@ namespace glib
          */
         std::vector<std::vector<int>> getVertex(unsigned int i);
 
+        int getInt(int index, unsigned int list);
+        float getFloat(int index, unsigned int list);
+        Vec2f getVec2f(int index, unsigned int list);
+        Vec3f getVec3f(int index, unsigned int list);
+        Vec4f getVec4f(int index, unsigned int list);
+        
+
         /**
          * @brief Gets the Vertex Format Infomation as a list of VertexFormat structures.
          * 

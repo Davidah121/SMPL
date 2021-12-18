@@ -39,6 +39,8 @@
 
 #include "ext/GLGraphics.h"
 
+#include "ModelBuilder.h"
+
 using namespace glib;
 
 void testGLStuff()
@@ -715,6 +717,163 @@ void testSavePNG()
 //     StringTools::println("TOTAL TIME SAVE: %llu", totalTimeCHash-totalTimeTHash);
 // }
 
+void testModelBuilder()
+{
+    GLWindow w = GLWindow("OpenGL Window", 640, 480, -1, -1, GLWindow::NORMAL_WINDOW | GLWindow::TYPE_USER_MANAGED);
+    
+    Model* m = ModelBuilder::createSphere(1, 10);
+    GLModel gm = GLModel::convertModel(m);
+
+    GLGraphics::init();
+    GLGraphics::setClearColor(Vec4f(0.2, 0.3, 0.4, 1.0));
+    GLGraphics::enableDepthTest();
+    GLGraphics::setDepthTestFunction(GLGraphics::DEPTH_LESS);
+    // GLGraphics::disableFaceCulling();
+    GLGraphics::enableFaceCulling();
+    GLGraphics::setFaceCullingType(GLGraphics::CULL_BACK);
+    GLGraphics::setOrthoProjection(640, 480);
+
+    GLFont glFont = GLFont("Resources/DefaultFont.fnt");
+
+    GLGraphics::setFont(&glFont);
+
+    
+
+    GLModel gm2 = GLModel();
+    std::vector<float> data = {-0.5f, 0.0f, -0.5f,
+                            0.0f, 0.0f, 0.5f,
+                            0.5f, 0.0f, -0.5f};
+
+    gm2.storeDataFloat(0, data, 3);
+    // gm2.setDrawType(GL_POINTS);
+
+    GLShader s = GLShader("Resources/glsl/vs/3dVertShader.vs", "Resources/glsl/fs/3dFragShader.fs");
+
+
+    Vec3f pos, rot, lightPos;
+    float dirToLight;
+    bool mouseLock = false;
+    lightPos = Vec3f(0, -10, 10);
+
+    while(w.getRunning())
+    {
+        w.update();
+        Input::pollInput();
+
+
+        GLGraphics::clear(GLGraphics::COLOR_BUFFER | GLGraphics::DEPTH_BUFFER);
+
+        s.setAsActive();
+        Mat4f proj = MathExt::perspectiveProjectionMatrix(640, 480, 0.1, 100, 60);
+
+        Vec3f toPos = MathExt::sphericalCoord(1, rot.z, rot.x)+pos;
+        // Mat4f view = MathExt::lookAtMatrix(pos, toPos, Vec3f(0,0,1));
+        Mat4f view = MathExt::viewMatrix(pos, rot, true);
+
+        // lightPos.setValues( MathExt::lengthDir(10, dirToLight));
+        dirToLight += PI/60;
+
+        s.setMat4("projectionMatrix", proj);
+        s.setMat4("viewMatrix", view);
+        s.setVec3("lightPos", lightPos);
+        // s.setVec3("inColor", Vec3f(1,0,0));
+        
+        gm.draw();
+        s.deactivateCurrentShader();
+
+        GLGraphics::drawText( StringTools::formatString("(%.3f, %.3f, %.3f)", pos.x, pos.y, pos.z), 0, 0);
+        // GLGraphics::drawRectangle(0, 0, 32, 32, false);
+        w.swapBuffers();
+
+        
+        if(Input::getKeyDown('W'))
+        {
+            Vec2f temp = MathExt::lengthDir(0.2, rot.z, true);
+            pos.x+=temp.x;
+            pos.y+=temp.y;
+        }
+        else if(Input::getKeyDown('S'))
+        {
+            Vec2f temp = MathExt::lengthDir(0.2, rot.z + PI, true);
+            pos.x+=temp.x;
+            pos.y+=temp.y;
+        }
+
+        if(Input::getKeyDown('A'))
+        {
+            Vec2f temp = MathExt::lengthDir(0.2, rot.z - PI/2, true);
+            pos.x+=temp.x;
+            pos.y+=temp.y;
+        }
+        else if(Input::getKeyDown('D'))
+        {
+            Vec2f temp = MathExt::lengthDir(0.2, rot.z + PI/2, true);
+            pos.x+=temp.x;
+            pos.y+=temp.y;
+        }
+
+        if(Input::getKeyDown('E'))
+        {
+            pos.z+=0.1;
+        }
+        else if(Input::getKeyDown('Q'))
+        {
+            pos.z-=0.1;
+        }
+
+        if(mouseLock)
+        {
+            Vec2f mouseDisToCenter;
+            mouseDisToCenter.x = Input::getMouseX() - (w.getX() + w.getWidth()/2);
+            mouseDisToCenter.y = Input::getMouseY() - (w.getY() + w.getHeight()/2);
+            
+            rot.z += mouseDisToCenter.x/180;
+            rot.y += mouseDisToCenter.y/180;
+
+            System::setMousePosition(w.getX() + w.getWidth()/2, w.getY() + w.getHeight()/2);
+        }
+
+        if(Input::getKeyPressed(Input::KEY_CONTROL))
+        {
+            mouseLock = !mouseLock;
+
+            if(mouseLock)
+                System::setMousePosition(w.getX() + w.getWidth()/2, w.getY() + w.getHeight()/2);
+        }
+
+        if(Input::getKeyDown(Input::KEY_LEFT))
+        {
+            rot.z-=PI/180;
+        }
+        else if(Input::getKeyDown(Input::KEY_RIGHT))
+        {
+            rot.z+=PI/180;
+        }
+
+        if(Input::getKeyDown(Input::KEY_UP))
+        {
+            rot.y-=PI/180;
+        }
+        else if(Input::getKeyDown(Input::KEY_DOWN))
+        {
+            rot.y+=PI/180;
+        }
+
+        if(Input::getKeyDown(Input::KEY_MINUS))
+        {
+            rot.x-=PI/180;
+        }
+        else if(Input::getKeyDown(Input::KEY_PLUS))
+        {
+            rot.x+=PI/180;
+        }
+        System::sleep(16);
+        // StringTools::println("Position: (%.3f, %.3f, %.3f)", pos.x, pos.y, pos.z);
+    }
+
+    delete m;
+}
+
 int main(int argc, char** argv)
 {
     StringTools::init();
@@ -722,8 +881,10 @@ int main(int argc, char** argv)
     SimpleGraphics::init();
 
     // testLoadGui();
-    testSavePNG();
+    // testSavePNG();
     // testQuickHash();
+    testModelBuilder();
+    // testGLStuff();
     
     return 0;
 }
