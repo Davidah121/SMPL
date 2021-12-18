@@ -16,12 +16,12 @@ namespace glib
     }
 
 
-    Quaternion::Quaternion(double a, double b, double c, double d)
+    Quaternion::Quaternion(double x, double y, double z, double w)
     {
-        this->a=a;
-        this->b=b;
-        this->c=c;
-        this->d=d;
+        this->x=x;
+        this->y=y;
+        this->z=z;
+        this->w=w;
     }
 
     Quaternion::~Quaternion()
@@ -31,90 +31,92 @@ namespace glib
 
     Quaternion Quaternion::operator*(double val)
     {
-        return Quaternion(val*a, val*b, val*c, val*d);
+        return Quaternion(val*x, val*y, val*z, val*w);
     }
 
     void Quaternion::operator*=(double val)
     {
-        a*=val;
-        b*=val;
-        c*=val;
-        d*=val;
+        x*=val;
+        y*=val;
+        z*=val;
+        w*=val;
     }
 
     Quaternion Quaternion::operator/(double val)
     {
-        return Quaternion(val/a, val/b, val/c, val/d);
+        return Quaternion(val/x, val/y, val/z, val/w);
     }
 
     void Quaternion::operator/=(double val)
     {
-        a/=val;
-        b/=val;
-        c/=val;
-        d/=val;
+        x/=val;
+        y/=val;
+        z/=val;
+        w/=val;
     }
 
     Quaternion Quaternion::operator*(Quaternion other)
     {
         Quaternion newQuat = Quaternion();
-        newQuat.a = (a*other.a - b*other.b - c*other.c - d*other.d);
-        newQuat.b = (a*other.b + b*other.a + c*other.d - d*other.c);
-        newQuat.c = (a*other.c - b*other.d + c*other.a + d*other.b);
-        newQuat.d = (a*other.d + b*other.c - c*other.b + d*other.a);
+
+        newQuat.w = (w*other.w - x*other.x - y*other.y - z*other.z);
+        newQuat.x = (w*other.x + x*other.w + y*other.z - z*other.y);
+        newQuat.y = (w*other.y - x*other.z + y*other.w + z*other.x);
+        newQuat.z = (w*other.z + x*other.y - y*other.x + z*other.w);
+        
         return newQuat;
     }
 
     Quaternion Quaternion::operator+(Quaternion other)
     {
-        return Quaternion(a+other.a, b+other.b, c+other.c, d+other.d);
+        return Quaternion(x+other.x, y+other.y, z+other.z, w+other.w);
     }
 
     Quaternion Quaternion::operator-(Quaternion other)
     {
-        return Quaternion(a-other.a, b-other.b, c-other.c, d-other.d);
+        return Quaternion(x-other.x, y-other.y, z-other.z, w-other.w);
     }
 
     void Quaternion::operator*=(Quaternion other)
     {
-        double newA = (a*other.a - b*other.b - c*other.c - d*other.d);
-        double newB = (a*other.b + b*other.a + c*other.d - d*other.c);
-        double newC = (a*other.c - b*other.d + c*other.a + d*other.b);
-        double newD = (a*other.d + b*other.c - c*other.b + d*other.a);
+        double newW = (w*other.w - x*other.x - y*other.y - z*other.z);
+        double newX = (w*other.x + x*other.w + y*other.z - z*other.y);
+        double newY = (w*other.y - x*other.z + y*other.w + z*other.x);
+        double newZ = (w*other.z + x*other.y - y*other.x + z*other.w);
         
-        a = newA;
-        b = newB;
-        c = newC;
-        d = newD;
+        x = newX;
+        y = newY;
+        z = newZ;
+        w = newW;
     }
 
     void Quaternion::operator+=(Quaternion other)
     {
-        a+=other.a;
-        b+=other.b;
-        c+=other.c;
-        d+=other.d;
+        x+=other.x;
+        y+=other.y;
+        z+=other.z;
+        w+=other.w;
     }
 
     void Quaternion::operator-=(Quaternion other)
     {
-        a-=other.a;
-        b-=other.b;
-        c-=other.c;
-        d-=other.d;
+        x-=other.x;
+        y-=other.y;
+        z-=other.z;
+        w-=other.w;
     }
 
     Vec3f Quaternion::operator*(Vec3f other)
     {
-        Quaternion directionQuat = Quaternion(0, other.x, other.y, other.z);
+        Quaternion directionQuat = Quaternion(other.x, other.y, other.z, 0);
         Quaternion output = (*(this)) * directionQuat * getConjugate();
 
-        return Vec3f(output.b, output.c, output.d);
+        return Vec3f(output.x, output.y, output.z);
     }
 
     Quaternion Quaternion::getConjugate()
     {
-        return Quaternion(a, -b, -c, -d);
+        return Quaternion(-x, -y, -z, w);
     }
 
     Quaternion Quaternion::getInverse()
@@ -124,12 +126,13 @@ namespace glib
 
     double Quaternion::getLength()
     {
-        return sqrt(a*a + b*b + c*c + d*d);
+        return sqrt(x*x + y*y + z*z + w*w);
     }
 
     Quaternion Quaternion::normalize()
     {
-        return operator/( getLength() );
+        double l = getLength();
+        return Quaternion(x/l, y/l, z/l, w/l);
     }
 
 } //NAMESPACE glib END

@@ -15,6 +15,8 @@ namespace glib
         static const bool TYPE_INDEXED = true;
 
         GLModel();
+        GLModel(GLModel& other);
+        void operator=(GLModel& other);
         ~GLModel();
 
         void draw();
@@ -53,6 +55,8 @@ namespace glib
 
         size_t size = 0;
         size_t first = 0;
+
+        bool shouldDelete = true;
     };
     
 }

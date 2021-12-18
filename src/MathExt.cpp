@@ -539,10 +539,28 @@ namespace glib
 			return closestAngleDeg(tA, sA, eA);
 	}
 	
-	Vec2f MathExt::lengthDir(double length, double direction)
+	Vec2f MathExt::lengthDir(double length, double direction, bool counterClockwise)
 	{
-		return Vec2f( MathExt::cos( direction) * length, 
+		if(counterClockwise)
+		{
+			return Vec2f( MathExt::cos( direction) * length, 
 					-MathExt::sin( direction) * length );
+		}
+		else 
+		{
+			return Vec2f( MathExt::cos( direction) * length, 
+					MathExt::sin( direction) * length );
+		}
+	}
+
+	Vec3f MathExt::sphericalCoord(double length, double theta, double phi)
+	{
+		Vec3f result;
+		result.x = length*cos(theta)*cos(phi);
+		result.y = -length*sin(theta)*cos(phi);
+		result.z = length*sin(phi);
+		
+		return result;
 	}
 
 	double MathExt::dot(Vec2f v1, Vec2f v2)
@@ -654,7 +672,7 @@ namespace glib
 
 	Quaternion MathExt::normalize(Quaternion q1)
 	{
-		double len = MathExt::sqrt( MathExt::sqr(q1.a) + MathExt::sqr(q1.b) + MathExt::sqr(q1.c) + MathExt::sqr(q1.d));
+		double len = MathExt::sqrt( MathExt::sqr(q1.x) + MathExt::sqr(q1.y) + MathExt::sqr(q1.z) + MathExt::sqr(q1.w));
 		if(len!=0)
 			return q1/len;
 		else
@@ -902,16 +920,17 @@ namespace glib
 		double cosHalfAngle = MathExt::cos(halfAngle);
 		Vec3f axisVals = rotationAxis * MathExt::sin(halfAngle);
 		
-		return Quaternion(cosHalfAngle, axisVals.x, axisVals.y, axisVals.z);
+		return Quaternion(axisVals.x, axisVals.y, axisVals.z, cosHalfAngle);
 	}
 
 	Mat4f MathExt::quaternionToMatrix(Quaternion q)
 	{
+		Quaternion nQ = q.normalize();
 		return Mat4f(
-			q.a, -q.b, -q.c, -q.d,
-			q.b, q.a, -q.d, q.c,
-			q.c, q.d, q.a, -q.b,
-			q.d, -q.c, q.b, q.a
+			2*(sqr(nQ.w) + sqr(nQ.x) ) - 1, 2*(nQ.x*nQ.y - nQ.w*nQ.z), 2*(nQ.x*nQ.z + nQ.w*nQ.y), 0,
+			2*(nQ.x*nQ.y + nQ.w*nQ.z), 2*(sqr(nQ.w) + sqr(nQ.y)) - 1, 2*(nQ.y*nQ.z - nQ.w*nQ.x), 0,
+			2*(nQ.x*nQ.z - nQ.w*nQ.y), 2*(nQ.y*nQ.z + nQ.w*nQ.x), 2*(sqr(nQ.w) + sqr(nQ.z)) - 1, 0,
+			0, 0, 0, 1
 		);
 	}
 
@@ -1002,42 +1021,27 @@ namespace glib
 		return MathExt::scale3D(scale) * MathExt::quaternionToMatrix(composedRotation) * MathExt::translation3D(position);
 	}
 
-	Mat4f MathExt::viewMatrix(Vec3f position, Vec3f rotation)
+	Mat4f MathExt::viewMatrix(Vec3f position, Vec3f rotation, bool counterClockwise)
 	{
 		Vec3f r1 = Vec3f(1,0,0);
-		Vec3f r2 = Vec3f(0,0,-1);
-		Vec3f r3 = Vec3f(0,1,0);
+		Vec3f r2 = Vec3f(0,1,0);
+		Vec3f r3 = Vec3f(0,0,1);
 		
-		Quaternion zRot = MathExt::getRotationQuaternion(rotation.z, r2);
-		r1 = zRot*r1;
-		r3 = zRot*r3;
-
-		Quaternion xRot = MathExt::getRotationQuaternion(rotation.x, r1);
-		r2 = xRot*r2;
-		r3 = xRot*r3;
-
-		Quaternion yRot = MathExt::getRotationQuaternion(rotation.y, r3);
-		r1 = yRot*r1;
-		r2 = yRot*r2;
-
-
+		Quaternion zRot = MathExt::getRotationQuaternion((counterClockwise)?rotation.z : -rotation.z, r3);
+		Quaternion yRot = MathExt::getRotationQuaternion(-rotation.y, r2);
+		Quaternion xRot = MathExt::getRotationQuaternion(-rotation.x, r1);
 		
-		// Mat4f viewMat = Mat4f(
-		// 	r1.x, r1.y, r1.z, 0,
-		// 	r2.x, r2.y, r2.z, 0,
-		// 	r3.x, r3.y, r3.z, 0,
-		// 	0, 0, 0, 1
-		// );
+		Mat4f viewMat = Mat4f(
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			-1, 0, 0, 0,
+			0, 0, 0, 1
+		);
 
-		// Mat4f translationMat = MathExt::translation3D(-position);
+		Quaternion finalRot = xRot*yRot*zRot;
+        Mat4f quatMatrix = MathExt::quaternionToMatrix(finalRot);
 		
-		// return translationMat * viewMat;
-
-		// r1 = Vec3f(1,0,0);
-		// r2 = Vec3f(0,0,-1);
-		// r3 = Vec3f(0,1,0);
-
-		Mat4f cameraView = Mat4f(
+		Mat4f cameraRotation = Mat4f(
 			r1.x, r1.y, r1.z, 0,
 			r2.x, r2.y, r2.z, 0,
 			r3.x, r3.y, r3.z, 0,
@@ -1045,13 +1049,34 @@ namespace glib
 		);
 
 		Mat4f cameraPos = Mat4f(
-			1, 0, 0, position.x,
-			0, 1, 0, position.y,
-			0, 0, 1, position.z,
+			1, 0, 0, -position.x,
+			0, 1, 0, -position.y,
+			0, 0, 1, -position.z,
 			0, 0, 0, 1
 		);
 
-		return cameraView * cameraPos;
+		if(counterClockwise)
+		{
+			viewMat[0][1] = -1;
+		}
+
+		return viewMat * quatMatrix * cameraPos;
+	}
+
+	Mat4f MathExt::lookAtMatrix(Vec3f eyePos, Vec3f toPos, Vec3f upVec)
+	{
+		Vec3f forward = (toPos - eyePos).normalize(); 
+		Vec3f right = (crossProduct(forward, upVec)).normalize(); //right
+		Vec3f up = crossProduct(forward, right); //up
+
+		Mat4f cameraView = Mat4f(
+			right.x, right.y, right.z, -dot(right, eyePos),
+			up.x, up.y, up.z, -dot(up, eyePos),
+			forward.x, forward.y, forward.z, -dot(forward, eyePos),
+			0, 0, 0, 1
+		);
+
+		return cameraView;
 	}
 
 	Mat4f MathExt::viewMatrix2D(Vec2f position, double rotation)

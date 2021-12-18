@@ -160,6 +160,105 @@ namespace glib
         return rValues;
     }
 
+    int Model::getInt(int index, unsigned int list)
+    {
+        if(list < vertexData.size())
+        {
+            int valuesToGrab = 1;
+            unsigned int offset = valuesToGrab*index;
+            
+            if(offset < vertexData[list].size())
+            {
+                return vertexData[list][offset];
+            }
+            else
+            {
+                //throw exception
+                return 0;
+            }
+        }
+    }
+    float Model::getFloat(int index, unsigned int list)
+    {
+        if(list < vertexData.size())
+        {
+            int valuesToGrab = 1;
+            unsigned int offset = valuesToGrab*index;
+            if(offset < vertexData[list].size())
+            {
+                return *((float*)&vertexData[list][offset]);
+            }
+            else
+            {
+                //throw exception
+                return NAN;
+            }
+        }
+    }
+    Vec2f Model::getVec2f(int index, unsigned int list)
+    {
+        if(list < vertexData.size())
+        {
+            int valuesToGrab = 2;
+            unsigned int offset = valuesToGrab*index;
+            if(offset+1 < vertexData[list].size())
+            {
+                Vec2f v;
+                v.x = *((float*)&vertexData[list][offset]);
+                v.y = *((float*)&vertexData[list][offset+1]);
+                return v;
+            }
+            else
+            {
+                //throw exception
+                return Vec2f();
+            }
+        }
+    }
+    Vec3f Model::getVec3f(int index, unsigned int list)
+    {
+        if(list < vertexData.size())
+        {
+            int valuesToGrab = 3;
+            unsigned int offset = valuesToGrab*index;
+            if(offset+2 < vertexData[list].size())
+            {
+                Vec3f v;
+                v.x = *((float*)&vertexData[list][offset]);
+                v.y = *((float*)&vertexData[list][offset+1]);
+                v.z = *((float*)&vertexData[list][offset+2]);
+                return v;
+            }
+            else
+            {
+                //throw exception
+                return Vec3f();
+            }
+        }
+    }
+    Vec4f Model::getVec4f(int index, unsigned int list)
+    {
+        if(list < vertexData.size())
+        {
+            int valuesToGrab = 4;
+            unsigned int offset = valuesToGrab*index;
+            if(offset+3 < vertexData[list].size())
+            {
+                Vec4f v;
+                v.x = *((float*)&vertexData[list][offset]);
+                v.y = *((float*)&vertexData[list][offset+1]);
+                v.z = *((float*)&vertexData[list][offset+2]);
+                v.w = *((float*)&vertexData[list][offset+3]);
+                return v;
+            }
+            else
+            {
+                //throw exception
+                return Vec4f();
+            }
+        }
+    }
+
     std::vector<VertexFormat> Model::getVertexFormatInfomation()
     {
         return formatInfo;
@@ -176,7 +275,7 @@ namespace glib
 
     void Model::setModelFormat(unsigned char format)
     {
-        modelFormat = MathExt::clamp<int>(modelFormat, 0, 9);
+        modelFormat = MathExt::clamp<int>(format, POINTS, QUAD_STRIP);
     }
 
     unsigned char Model::getModelFormat()

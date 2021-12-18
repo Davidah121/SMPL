@@ -888,7 +888,9 @@ namespace glib
 		 * @param direction 
 		 * @return Vec2f 
 		 */
-		static Vec2f lengthDir(double length, double direction);
+		static Vec2f lengthDir(double length, double direction, bool counterClockwise=false);
+		
+		static Vec3f sphericalCoord(double length, double theta, double phi);
 
 		/**
 		 * @brief Returns the dot product of the 2 vectors.
@@ -1451,18 +1453,24 @@ namespace glib
 		
 		/**
 		 * @brief Calculates a 3D View Matrix that assumes that 
-		 * 		x is left and right,
-		 * 		y is forwards and backwards,
-		 * 		z is up and down.
+		 * 		x is fowards and backwards (x+ is forwards), 
+		 * 		y is left and right (y+ is right),
+		 * 		z is up and down (z+ is up).
 		 * 		
 		 * 		It uses quaternions to avoid Gimbal lock.
 		 * 
 		 * @param position 
 		 * @param rotation 
 		 * 		Assumed to be in radians
+		 * @param counterClockwise
+		 * 		Allows the ability to flip y+ so that y+ is left
+		 * 		and y- is right.
+		 * 		By default, it is false
 		 * @return Mat4f 
 		 */
-		static Mat4f viewMatrix(Vec3f position, Vec3f rotation);
+		static Mat4f viewMatrix(Vec3f position, Vec3f rotation, bool counterClockwise = false);
+
+		static Mat4f lookAtMatrix(Vec3f eyePos, Vec3f toPos, Vec3f upVec);
 
 		/**
 		 * @brief Calculates a 2D View Matrix that assumes that 

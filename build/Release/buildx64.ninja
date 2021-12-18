@@ -76,6 +76,7 @@ build $objDir/MathExt_Clustering.obj: buildToObject src/MathExt_Clustering.cpp
 build $objDir/MathFunction.obj: buildToObject src/MathFunction.cpp
 build $objDir/Matrix.obj: buildToObject src/Matrix.cpp
 build $objDir/Model.obj: buildToObject src/Model.cpp
+build $objDir/ModelBuilder.obj: buildToObject src/ModelBuilder.cpp
 build $objDir/Network.obj: buildToObject src/Network.cpp
 build $objDir/NeuralNetwork.obj: buildToObject src/NeuralNetwork.cpp
 build $objDir/Object.obj: buildToObject src/Object.cpp

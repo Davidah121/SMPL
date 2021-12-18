@@ -16,14 +16,14 @@ namespace glib
 
         /**
          * @brief Construct a new Quaternion object.
-         *      Takes the form ai + bj + ck + d
+         *      Takes the form xi + yj + zk + w
          * 
-         * @param a 
-         * @param b 
-         * @param c 
-         * @param d 
+         * @param x 
+         * @param y 
+         * @param z 
+         * @param w 
          */
-        Quaternion(double a, double b, double c, double d);
+        Quaternion(double x, double y, double z, double w);
 
         /**
          * @brief Destroy the Quaternion object
@@ -83,10 +83,10 @@ namespace glib
 		 */
         Quaternion normalize();
 
-        double a=0;
-        double b=0;
-        double c=0;
-        double d=0;
+        double x=0;
+        double y=0;
+        double z=0;
+        double w=0;
     };
 
 }
