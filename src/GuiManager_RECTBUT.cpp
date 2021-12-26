@@ -18,6 +18,8 @@ namespace glib
 		this->width = width;
 		this->height = height;
 		onClickFunction = nullptr;
+		onClickHoldFunction = nullptr;
+		onClickReleaseFunction = nullptr;
 	}
 
 	GuiRectangleButton::GuiRectangleButton(const GuiRectangleButton& other) : GuiInstance(other)
@@ -35,6 +37,7 @@ namespace glib
 	{
 		onClickFunction = other.onClickFunction;
 		onClickHoldFunction = other.onClickHoldFunction;
+		onClickReleaseFunction = other.onClickReleaseFunction;
 
 		width = other.width;
 		height = other.height;

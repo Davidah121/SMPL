@@ -5,15 +5,92 @@ namespace glib
 
 #pragma region LZW
 
-	std::vector<unsigned char> Compression::compressLZW(std::vector<unsigned char> data, int* codeSizePointer)
+	#pragma region THREAD_FUNCTION
+	void LZWThreadFunction(BinarySet* outputData, unsigned char* data, int size, int codeSize, bool omitEndCode)
 	{
-		return Compression::compressLZW(data.data(), data.size(), codeSizePointer);
+		Compression::compressLZW(outputData, data, size, codeSize, omitEndCode);
 	}
 
-	std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int size, int* codeSizePointer)
+	#pragma endregion
+	std::vector<unsigned char> Compression::compressLZW(std::vector<unsigned char> data, int blocks, int codeSize)
 	{
-		std::vector<unsigned char> output = std::vector<unsigned char>();
+		return Compression::compressLZW(data.data(), data.size(), blocks, codeSize);
+	}
+	
+	std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int size, int blocks, int codeSize)
+	{
+		if(codeSize <= 0)
+		{
+			return {};
+		}
 
+		int totalBlocks = blocks;
+		int blockSize = size;
+		if(blocks > 1)
+		{
+			blockSize /= blocks;
+			totalBlocks = blocks;
+		}
+		else
+		{
+			return compressLZW(data, size, codeSize);
+		}
+
+		unsigned int threadCount = System::getNumberOfThreads();
+		std::vector<BinarySet> blockDataArray = std::vector<BinarySet>(blocks);
+		std::vector<std::thread> blockThreads = std::vector<std::thread>(threadCount);
+
+		for(int i=0; i<blocks; i++)
+		{
+			int threadID = i%threadCount;
+			unsigned char* inputData = data + blockSize*i;
+			int inputSize = blockSize;
+			if(i==blocks-1)
+				inputSize = size - blockSize*i;
+
+			if(i==0)
+			{
+				blockThreads[threadID] = std::thread(LZWThreadFunction, &blockDataArray[i], inputData, inputSize, codeSize, false);
+			}
+			else
+			{
+				if(blockThreads[threadID].joinable())
+					blockThreads[threadID].join();
+				
+				bool omitEndCode = true;
+				if(i == blocks-1)
+				{
+					omitEndCode = false;
+				}
+
+				blockThreads[threadID] = std::thread(LZWThreadFunction, &blockDataArray[i], inputData, inputSize, codeSize, omitEndCode);
+			}
+		}
+
+		for(int i=0; i<threadCount; i++)
+		{
+			int threadID = i%threadCount;
+
+			if(blockThreads[threadID].joinable())
+				blockThreads[threadID].join();
+		}
+
+		BinarySet finalSet = blockDataArray[0];
+		for(int i=1; i<blocks; i++)
+		{
+			finalSet.add(blockDataArray[i]);
+		}
+
+		return finalSet.toBytes();
+	}
+
+	std::vector<unsigned char> Compression::compressLZW(std::vector<unsigned char> data, int codeSize)
+	{
+		return Compression::compressLZW(data.data(), data.size(), codeSize);
+	}
+
+	std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int size, int codeSize)
+	{
 		if(size <= 0)
 		{
 			#ifdef USE_EXCEPTIONS
@@ -26,47 +103,26 @@ namespace glib
 			#ifdef USE_EXCEPTIONS
 			throw InvalidDataError();
 			#endif
-			return output;
+			return {};
+		}
+
+		if(codeSize <= 0)
+		{
+			return {};
 		}
 		
 		//First make the base dictionary
 		
 		std::unordered_map<std::string, int> baseDictionary = std::unordered_map<std::string, int>();
 
-		int codeSize = -1;
-		if(codeSizePointer!=nullptr)
+		int s = 1 << codeSize;
+		for(int i=0; i < s; i++)
 		{
-			codeSize = *codeSizePointer;
+			std::string k = "";
+			k += (char)i;
+			std::pair<std::string, int> pair = {k, i};
+			baseDictionary.insert( pair ); //fix
 		}
-
-		if(codeSize <= 0)
-		{
-			int bSize = 0;
-			for (int i = 0; i < size; i++)
-			{
-				std::string temp = "";
-				temp += data[i];
-
-				std::pair<std::string, int> pair = {temp, bSize};
-				baseDictionary.insert( pair ); //fix
-				bSize++;
-			}
-
-			if(codeSizePointer!=nullptr)
-				*codeSizePointer = (int)ceil(log2(baseDictionary.size()));
-		}
-		else
-		{
-			int s = 1 << codeSize;
-			for(int i=0; i < s; i++)
-			{
-				std::string k = "";
-				k += (char)i;
-				std::pair<std::string, int> pair = {k, i};
-				baseDictionary.insert( pair ); //fix
-			}
-		}
-		
 
 		//Add the clearDictionary and endOfData values.
 		//We need to store the location so that it can be excluded in compression
@@ -158,11 +214,141 @@ namespace glib
 		}
 
 		binData.add(EndOfDataLocation, currBits, 0);
-		output = binData.toBytes();
 
-
-		return output;
+		return binData.toBytes();
 	}
+
+	void Compression::compressLZW(BinarySet* outputData, unsigned char* data, int size, int codeSize, bool omitEndCode)
+	{
+		outputData->clear();
+		if(size <= 0)
+		{
+			#ifdef USE_EXCEPTIONS
+			throw InvalidSizeError();
+			#endif
+		}
+
+		if(data == nullptr)
+		{
+			#ifdef USE_EXCEPTIONS
+			throw InvalidDataError();
+			#endif
+			return;
+		}
+
+		if(codeSize <= 0)
+		{
+			return;
+		}
+		
+		//First make the base dictionary
+		
+		std::unordered_map<std::string, int> baseDictionary = std::unordered_map<std::string, int>();
+
+		int s = 1 << codeSize;
+		for(int i=0; i < s; i++)
+		{
+			std::string k = "";
+			k += (char)i;
+			std::pair<std::string, int> pair = {k, i};
+			baseDictionary.insert( pair ); //fix
+		}
+
+		//Add the clearDictionary and endOfData values.
+		//We need to store the location so that it can be excluded in compression
+		//when we compare what data is in the dictionary.
+
+		int clearDictionaryLocation = baseDictionary.size();
+		int EndOfDataLocation = baseDictionary.size()+1;
+
+		std::unordered_map<std::string, int> newDictionary = baseDictionary;
+
+		//Compress
+		//First note how many bits to use
+		int baseBits = (int)ceil(log2(newDictionary.size()+2));
+		int currBits = baseBits;
+
+		//Now store the values as a binary string of sorts
+		//We are using a custom class BinarySet that does the
+		//conversion for us.
+		// BinarySet binData = BinarySet();
+		outputData->setBitOrder(BinarySet::LMSB);
+
+		std::string lastString = "";
+		std::string newString = "";
+		int preIndex = 0;
+
+		outputData->add(clearDictionaryLocation, currBits);
+
+		int i = 0;
+		while(i<size)
+		{
+			newString += data[i];
+
+			auto itr = newDictionary.find(newString);
+			
+			bool exists = (itr != newDictionary.end());
+
+			if (exists == true)
+			{
+				preIndex = itr->second;
+				lastString = newString;
+				i++;
+			}
+			else
+			{
+				outputData->add(preIndex, currBits);
+
+				std::pair<std::string, int> pair = {newString, newDictionary.size()+2 };
+				
+				newDictionary.insert( pair );
+
+				int shifts = 0;
+				int v = 1;
+				while(shifts<32)
+				{
+					if(newDictionary.size()+2 > v)
+					{
+						v = v << 1;
+						shifts++;
+					}
+					else
+					{
+						break;
+					}
+				}
+
+				currBits = shifts;
+
+				preIndex = -1;
+				newString = "";
+				lastString = "";
+			}
+
+			if(newDictionary.size()+2 == 4096)
+			{
+				//clear Dictionary and start over
+				outputData->add(clearDictionaryLocation, currBits);
+				currBits = baseBits;
+				newDictionary = baseDictionary;
+				preIndex = -1;
+				newString = "";
+				lastString = "";
+			}
+			
+		}
+
+		if (newString != "")
+		{
+			outputData->add(preIndex, currBits, 0);
+		}
+
+		if(!omitEndCode)
+			outputData->add(EndOfDataLocation, currBits, 0);
+		else
+			outputData->add(clearDictionaryLocation, currBits);
+	}
+
 
 	std::vector<unsigned char> Compression::decompressLZW(std::vector<unsigned char> data, int dictionarySize, size_t expectedSize)
 	{

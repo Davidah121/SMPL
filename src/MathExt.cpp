@@ -1508,15 +1508,8 @@ namespace glib
 
 	double MathExt::logisticsSigmoid(double x)
 	{
-		if (x != 0)
-		{
-			return 1.0 / (1.0 + pow(E, -x));
-		}
-		else
-		{
-			//divide by zero error
-			return 0;
-		}
+		double temp = 1.0+exp(-x);
+		return 1.0 / temp;
 	}
 
 	#pragma region FOURIER_TRANSFORM_1D

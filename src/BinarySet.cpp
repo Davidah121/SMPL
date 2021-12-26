@@ -174,6 +174,11 @@ namespace glib
 	{
 		return set;
 	}
+	
+	std::vector<unsigned char>& BinarySet::getByteRef()
+	{
+		return set;
+	}
 
 	int BinarySet::size()
 	{

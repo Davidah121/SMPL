@@ -42,13 +42,14 @@ namespace glib
         
         if(size > 0)
         {
+            srand(time(NULL));
             LCG r = LCG(rand());
 
             for(int i=0; i<size; i++)
             {
-                double rVal = (int)(r.get()%20000) - 10000;
-                double w = rVal/10000;
-                w = MathExt::clamp(w, -1.0, 1.0);
+                double rVal = (int)(r.get()%1000000) - 500000;
+                double w = rVal/100000;
+                w = MathExt::clamp(w, -5.0, 5.0);
                 
                 weightsToConnections.push_back( w );
             }
@@ -98,6 +99,20 @@ namespace glib
         neuronHeader->childNodes.push_back(neuronWeights);
             
         return neuronHeader;
+    }
+
+    void Neuron::importNeuron(XmlNode* node)
+    {
+        for(XmlNode* n : node->childNodes)
+        {
+            if(n->title == L"NeuronWeights")
+            {
+                for(XmlNode* k : n->childNodes)
+                {
+                    weightsToConnections.push_back(std::stod(k->value));
+                }
+            }
+        }
     }
 
     #pragma endregion
@@ -180,13 +195,15 @@ namespace glib
             {
                 for(int i2=0; i2<nSize; i2++)
                 {
-                    results[i2] += neurons[i].getActivation() * neurons[i].getWeight(i2);
+                    double temp = neurons[i].getActivation() * neurons[i].getWeight(i2);
+                    results[i2] += temp;
                 }
             }
 
             for(int i2=0; i2<nSize; i2++)
             {
-                nextLayer->setNeuronActivation(i2, activationFunction( results[i2] + biasToConnections[i2] ) );
+                double temp = activationFunction( results[i2] + biasToConnections[i2] );
+                nextLayer->setNeuronActivation(i2, temp);
             }
         }
     }
@@ -283,6 +300,27 @@ namespace glib
     int NeuralLayer::getBiasSize()
     {
         return biasToConnections.size();
+    }
+
+    void NeuralLayer::importLayer(XmlNode* node)
+    {
+        for(XmlNode* n : node->childNodes)
+        {
+            if(n->title == L"LayerBias")
+            {
+                for(XmlNode* k : n->childNodes)
+                {
+                    biasToConnections.push_back(std::stod(k->value));
+                }
+            }
+            else if(n->title == L"Neuron")
+            {
+                neurons.push_back( Neuron() );
+                neurons.back().importNeuron(n);
+            }
+        }
+
+        length = neurons.size();
     }
 
     #pragma endregion
@@ -463,6 +501,7 @@ namespace glib
             {
                 for(int h=0; h<(*l)[k].size(); h++)
                 {
+                    // StringTools::println("WeightAdjustments [%d,%d,%d] = %f", i, k, h, weightAdjustments[i][k][h]*learningRate);
                     (*l)[k][h] -= weightAdjustments[i][k][h] * learningRate;
                 }
                 
@@ -474,6 +513,171 @@ namespace glib
             l = l->getNextLayer();
         }
         
+    }
+
+
+    void NeuralNetwork::testTrain(std::vector<std::vector<double>> inputs, std::vector<std::vector<double>> expectedOutput)
+    {
+        int numberOfLayers = size();
+        //adjustment per layer per neuron per weight
+        std::vector< std::vector< std::vector<double> > > weightAdjustments = std::vector< std::vector< std::vector<double> > >(numberOfLayers);
+
+        //adjustment per layer per neuron
+        std::vector< std::vector<double> > biasAdjustments = std::vector< std::vector<double> >(numberOfLayers);
+
+        //layerDelta for weights and bias values
+        std::vector< std::vector<double> > layerDelta = std::vector< std::vector<double> >(numberOfLayers);
+        //std::vector< std::vector< std::vector<double> > > averageCostWeights = std::vector< std::vector< std::vector<double> > >(numberOfLayers);
+
+
+        NeuralLayer* currLayer = startLayer;
+
+        for(int i=0; i<numberOfLayers; i++)
+        {
+            weightAdjustments[i] = std::vector<std::vector<double>>(currLayer->size());
+            biasAdjustments[i] = std::vector<double>(currLayer->getBiasSize());
+            
+            layerDelta[i] = std::vector<double>(currLayer->size());
+            // StringTools::println("%d", biasAdjustments[i].size());
+
+            //init weight adjustments at current layer
+            for(int j=0; j<weightAdjustments[i].size(); j++)
+            {
+                weightAdjustments[i][j] = std::vector<double>(currLayer->getNeuron(j).size());
+            }
+            currLayer = currLayer->getNextLayer();
+        }
+
+        if(inputs.size() != expectedOutput.size())
+            return;
+
+        size_t sLayerSize = startLayer->size();
+        size_t eLayerSize = endLayer->size();
+        
+        
+        double averageMult = 1.0 / expectedOutput.size();
+
+        for(int iterations=0; iterations<expectedOutput.size(); iterations++)
+        {
+            //apply x number of tests
+
+            if(inputs[iterations].size() != sLayerSize)
+                break;
+
+            if(expectedOutput[iterations].size() != eLayerSize)
+                break;
+
+            //reset layer deltas
+            for(int i=0; i<layerDelta.size(); i++)
+            {
+                for(int j=0; j<layerDelta[i].size(); j++)
+                {
+                    layerDelta[i][j] = 0;
+                }
+            }
+
+            //run inputs
+            std::vector<double> runOutputs = run(inputs[iterations]);
+
+            //calculate last layer error
+            int currLayerNumber = numberOfLayers-1;
+            NeuralLayer* l = endLayer;
+
+            for(int k=0; k<layerDelta[currLayerNumber].size(); k++)
+            {
+                layerDelta[currLayerNumber][k] = (runOutputs[k] - expectedOutput[iterations][k]) * l->derivativeActivationFunction(runOutputs[k]);
+            }
+
+            l = l->getPreviousLayer();
+            currLayerNumber--;
+
+            while(currLayerNumber >= 0)
+            {
+                NeuralLayer* lPlus = l->getNextLayer();
+                NeuralLayer* lMinus = l->getPreviousLayer();
+                
+                for(int n=0; n<l->size(); n++)
+                {
+                    Neuron neuron = l->getNeuron(n);
+
+                    //reset layerDelta values to 0 to remove old values
+                    //from previous runs.
+
+                    for(int w=0; w<neuron.size(); w++)
+                    {
+                        double Z = neuron.getActivation();
+
+                        double nDelta = layerDelta[currLayerNumber+1][w] * l->derivativeActivationFunction( Z );
+                        double activationCostDerivative = nDelta * neuron.getWeight(w);
+
+                        layerDelta[currLayerNumber][n] += activationCostDerivative;
+                        weightAdjustments[currLayerNumber][n][w] += (neuron.getActivation()*layerDelta[currLayerNumber+1][w]) / inputs.size();
+                        if(n == 0)
+                            biasAdjustments[currLayerNumber][w] += layerDelta[currLayerNumber+1][w] / inputs.size();
+                    }
+                }
+                
+                l = l->getPreviousLayer();
+                currLayerNumber--;
+            }
+
+        }
+
+        //update weight values
+        NeuralLayer* l = startLayer;
+        for(int n=0; n<layerDelta.size(); n++)
+        {
+            for(int w=0; w<layerDelta[n].size(); w++)
+            {
+                Neuron neuron = l->getNeuron(w);
+                for(int k=0; k<neuron.size(); k++)
+                {
+                    // StringTools::println("WeightAdjustments [%d,%d,%d]: %f", n, w, k, weightAdjustments[n][w][k]);
+                    double temp = l->getNeuron(w).getWeight(k) - weightAdjustments[n][w][k]*learningRate;
+                    l->getNeuron(w).setWeight(k, temp);
+                }
+            }
+            
+            l = l->getNextLayer();
+        }
+
+        //update bias values
+        l = startLayer;
+        for(int n=0; n<biasAdjustments.size(); n++)
+        {
+            // StringTools::println("%d vs %llu", l->getBiasSize(), biasAdjustments[n].size());
+            for(int w=0; w<biasAdjustments[n].size(); w++)
+            {
+                double temp = l->getBiasValue(w) - biasAdjustments[n][w]*learningRate;
+                l->setBiasValue(w, temp);
+            }
+            l = l->getNextLayer();
+        }
+    }
+
+    std::vector<double> NeuralNetwork::getCost(std::vector<std::vector<double>> inputs, std::vector<std::vector<double>> expectedOutput)
+    {
+        std::vector<double> results;
+
+        if(inputs.size() != expectedOutput.size())
+            return results;
+
+        for(int iterations=0; iterations<expectedOutput.size(); iterations++)
+        {
+            //apply x number of tests
+
+            //run inputs
+            std::vector<double> runOutputs = run(inputs[iterations]);
+            double cost = 0;
+            for(int k=0; k<runOutputs.size(); k++)
+            {
+                cost += 0.5 * MathExt::sqr(runOutputs[k] - expectedOutput[iterations][k]);
+            }
+
+            results.push_back( cost );
+        }
+
+        return results;
     }
 
     void NeuralNetwork::resetNetwork()
@@ -524,9 +728,25 @@ namespace glib
             l = l->getNextLayer();
         }
 
-    SimpleXml file = SimpleXml();
-    file.nodes.push_back(header);
-    file.save(StringTools::toWideString(filename));
+        SimpleXml file = SimpleXml();
+        file.nodes.push_back(header);
+        file.save(StringTools::toWideString(filename));
+    }
+
+    void NeuralNetwork::importNetwork(File f)
+    {
+        SimpleXml file = SimpleXml(f);
+
+        XmlNode* startNode = file.nodes[0];
+
+        for(XmlNode* n : startNode->childNodes)
+        {
+            if(n->title == L"Layer")
+            {
+                addLayerToEnd(0);
+                endLayer->importLayer(n);
+            }
+        }
     }
 
     NeuralLayer* NeuralNetwork::getStartLayer()

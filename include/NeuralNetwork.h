@@ -83,6 +83,8 @@ namespace glib
          * @return XmlNode* 
          */
         XmlNode* exportTestInformation(int count);
+        
+        void importNeuron(XmlNode* node);
     private:
         double activation = 0.0;
         std::vector<double> weightsToConnections = std::vector<double>();
@@ -240,6 +242,8 @@ namespace glib
          */
         XmlNode* exportTestInformation(int count);
 
+        void importLayer(XmlNode* node);
+
         /**
          * @brief Returns a Neuron
          * 
@@ -296,6 +300,9 @@ namespace glib
          */
         void train(std::vector<std::vector<double>> inputs, std::vector<std::vector<double>> expectedOutput);
 
+        void testTrain(std::vector<std::vector<double>> inputs, std::vector<std::vector<double>> expectedOutput);
+        std::vector<double> getCost(std::vector<std::vector<double>> inputs, std::vector<std::vector<double>> expectedOutput);
+        
         /**
          * @brief Resets the weights and bias values for the network.
          * 
@@ -331,6 +338,8 @@ namespace glib
          * @param filename 
          */
         void exportTestInformation(std::string filename);
+
+        void importNetwork(File f);
 
         /**
          * @brief Gets the Start Layer

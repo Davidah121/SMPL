@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include "PCG.h"
 
 namespace glib
 {
@@ -53,6 +54,16 @@ namespace glib
 
         template<typename T>
         static void quickSort(T* list, size_t size);
+
+        /**
+         * @brief Shuffles the data around randomly using PCG as the random number generator.
+         * 
+         * @tparam T 
+         * @param data 
+         * @param size 
+         */
+        template<typename T>
+        static void shuffle(T* list, size_t size);
     
     private:
 
@@ -468,6 +479,22 @@ namespace glib
         list[j+1] = temp;
 
         return j+1;
+    }
+
+    template<typename T>
+    void Sort::shuffle(T* list, size_t size)
+    {
+        PCG p = PCG(time(NULL));
+
+        for(size_t index=0; index<size; index++)
+        {
+            size_t newIndex = p.get()%size;
+
+            T temp = list[index];
+            list[index] = list[newIndex];
+            list[newIndex] = temp;
+        }
+        
     }
 
     #pragma endregion

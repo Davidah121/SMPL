@@ -185,6 +185,15 @@ namespace glib
 		std::vector<unsigned char> toBytes();
 
 		/**
+		 * @brief Gets the Reference to the internal set used to store
+		 * 		data. Best used when the data is just being read as it avoids
+		 * 		additional copies.
+		 * 
+		 * @return std::vector<unsigned char>& 
+		 */
+		std::vector<unsigned char>& getByteRef();
+
+		/**
 		 * @brief Returns the number of bits in the set.
 		 * @return int
 		 */

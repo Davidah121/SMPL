@@ -979,13 +979,12 @@ namespace glib
 	std::vector<unsigned char> Compression::compressDeflate(unsigned char* data, int size, int blocks, int compressionLevel, bool customTable)
 	{
 		//probably will only use default trees and stuff
-
 		if(data == nullptr)
 		{
 			#ifdef USE_EXCEPTIONS
 			throw InvalidDataError();
 			#endif
-			return std::vector<unsigned char>();
+			return {};
 		}
 
 		if(size <=0 || blocks <=0 )
@@ -993,7 +992,7 @@ namespace glib
 			#ifdef USE_EXCEPTIONS
 			throw InvalidSizeError();
 			#endif
-			return std::vector<unsigned char>();
+			return {};
 		}
 		
 		int tSize = System::getNumberOfThreads();
@@ -1016,11 +1015,6 @@ namespace glib
 				nSize = size - (block*sizeOfBlock);
 			}
 			info[block].clear();
-			// size_t t1 = System::getCurrentTimeMicro();
-			// compressDeflateSubFunction(nData, nSize, &info[block], compressionLevel);
-			// size_t t2 = System::getCurrentTimeMicro();
-
-			// StringTools::println("TIME TAKEN: %llu", t2-t1);
 
 			if(block<tSize)
 			{
@@ -1058,13 +1052,6 @@ namespace glib
 				threads[t].join();
 		}
 
-		// for(int block=0; block<blocks; block++)
-		// {
-		// 	StringTools::println("BLOCK = %d", block);
-		// 	compressDeflateSubFunction2(&info[block], &threadBinData[block], customTable, block == (blocks-1)); //for debugging purposes
-		// 	StringTools::println("");
-		// }
-
 		//Construct
 		for(int block=0; block<blocks; block++)
 		{
@@ -1072,8 +1059,93 @@ namespace glib
 		}
 
 		bin.setAddBitOrder(BinarySet::LMSB);
-		
 		return bin.toBytes();
+	}
+
+	void Compression::compressDeflate(BinarySet* outputData, unsigned char* data, int size, int blocks, int compressionLevel, bool customTable)
+	{
+		//probably will only use default trees and stuff
+		outputData->clear();
+		if(data == nullptr)
+		{
+			#ifdef USE_EXCEPTIONS
+			throw InvalidDataError();
+			#endif
+			return;
+		}
+
+		if(size <=0 || blocks <=0 )
+		{
+			#ifdef USE_EXCEPTIONS
+			throw InvalidSizeError();
+			#endif
+			return;
+		}
+		
+		int tSize = System::getNumberOfThreads();
+		std::vector<std::vector<lengthPair>> info = std::vector<std::vector<lengthPair>>(blocks);
+		std::vector<std::thread> threads = std::vector<std::thread>( tSize );
+
+		BinarySet bin = BinarySet();
+
+		outputData->setBitOrder(BinarySet::LMSB);
+		outputData->setAddBitOrder(BinarySet::RMSB);
+
+		int sizeOfBlock = size/blocks;
+
+		for(int block=0; block<blocks; block++)
+		{
+			int nSize = sizeOfBlock;
+			unsigned char* nData = data + block*sizeOfBlock;
+			if(block == blocks-1)
+			{
+				nSize = size - (block*sizeOfBlock);
+			}
+			info[block].clear();
+
+			if(block<tSize)
+			{
+				info[block].clear();
+				threads[ block%tSize ] = std::thread(compressDeflateSubFunction, nData, nSize, &info[block], compressionLevel);
+			}
+			else
+			{
+				if(threads[block%tSize].joinable())
+					threads[block%tSize].join();
+
+				info[block].clear();
+				threads[ block%tSize ] = std::thread(compressDeflateSubFunction, nData, nSize, &info[block], compressionLevel);
+			}
+		}
+
+		for(int t=0; t<tSize; t++)
+		{
+			if(threads[t].joinable())
+				threads[t].join();
+		}
+
+		std::vector<BinarySet> threadBinData = std::vector<BinarySet>(blocks);
+
+		for(int block=0; block<blocks; block++)
+		{
+			if(threads[block%tSize].joinable())
+				threads[block%tSize].join();
+				
+			threads[ block%tSize ] = std::thread(compressDeflateSubFunction2, &info[block], &threadBinData[block], customTable, block == (blocks-1) );
+		}
+		for(int t=0; t<tSize; t++)
+		{
+			if(threads[t].joinable())
+				threads[t].join();
+		}
+
+		//Construct
+		for(int block=0; block<blocks; block++)
+		{
+			outputData->add( threadBinData[block] );
+		}
+
+		outputData->setAddBitOrder(BinarySet::LMSB);
 	}
 
 	std::vector<unsigned char> Compression::decompressDeflate(std::vector<unsigned char> data, size_t expectedSize)

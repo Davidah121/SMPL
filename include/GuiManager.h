@@ -1987,7 +1987,7 @@ namespace glib
 		 * 
 		 * @return std::vector<GuiInstance*> 
 		 */
-		std::vector<GuiInstance*> getElements();
+		std::vector<GuiInstance*>& getElements();
 
 		/**
 		 * @brief Updates all of the GuiInstances
