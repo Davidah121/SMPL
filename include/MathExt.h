@@ -1190,6 +1190,19 @@ namespace glib
 		//Matrix operations
 
 		/**
+		 * @brief Returns the hadamard product of the 2 matrices.
+		 * 		The hadamard product requires that the matricies are the same size.
+		 * 			rows = other.rows, columns = other.columns
+		 * 		
+		 * 		It does component to component multiplication.
+		 * 
+		 * @param a
+		 * @param b 
+		 * @return Matrix 
+		 */
+		Matrix hadamardProduct(Matrix& a, Matrix& b);
+
+		/**
 		 * @brief Get the Inverse of the Matrix m.
 		 * 		A wrapper around the Matrix class's getInverse function
 		 * 

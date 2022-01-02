@@ -264,6 +264,11 @@ namespace glib
 		}
 	}
 
+	std::vector<GuiInstance*>& GuiManager::getElements()
+	{
+		return objects;
+	}
+
 	Image* GuiManager::getImage()
 	{
 		return &surf;

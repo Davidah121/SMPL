@@ -737,18 +737,7 @@ void testModelBuilder()
 
     GLGraphics::setFont(&glFont);
 
-    
-
-    GLModel gm2 = GLModel();
-    std::vector<float> data = {-0.5f, 0.0f, -0.5f,
-                            0.0f, 0.0f, 0.5f,
-                            0.5f, 0.0f, -0.5f};
-
-    gm2.storeDataFloat(0, data, 3);
-    // gm2.setDrawType(GL_POINTS);
-
     GLShader s = GLShader("Resources/glsl/vs/3dVertShader.vs", "Resources/glsl/fs/3dFragShader.fs");
-
 
     Vec3f pos, rot, lightPos;
     float dirToLight;
@@ -868,23 +857,74 @@ void testModelBuilder()
             rot.x+=PI/180;
         }
         System::sleep(16);
-        // StringTools::println("Position: (%.3f, %.3f, %.3f)", pos.x, pos.y, pos.z);
     }
 
     delete m;
 }
 
+void testCompression()
+{
+    StringTools::println("Enter file to compress:");
+    std::string filename = StringTools::getString();
+
+    SimpleFile f = SimpleFile(filename, SimpleFile::READ);
+    if(f.isOpen())
+    {
+        std::vector<unsigned char> fileBytes = f.readFullFileAsBytes();
+        f.close();
+
+        BinaryTree<HuffmanNode> huffTree;
+
+        size_t t1, t2, deflateTime, lzwTime, lzssTime, huffmanTime;
+
+        t1 = System::getCurrentTimeMicro();
+        std::vector<unsigned char> deflateData = Compression::compressDeflate(fileBytes, 128, 7, false);
+        t2 = System::getCurrentTimeMicro();
+        deflateTime = t2-t1;
+        
+        t1 = System::getCurrentTimeMicro();
+        std::vector<unsigned char> lzwData = Compression::compressLZW(fileBytes, 24, 8);
+        t2 = System::getCurrentTimeMicro();
+        lzwTime = t2-t1;
+
+        t1 = System::getCurrentTimeMicro();
+        std::vector<unsigned char> lzssData = Compression::compressLZSS(fileBytes);
+        t2 = System::getCurrentTimeMicro();
+        lzssTime = t2-t1;
+
+        t1 = System::getCurrentTimeMicro();
+        std::vector<unsigned char> huffmanData = Compression::compressHuffman(fileBytes, &huffTree);
+        t2 = System::getCurrentTimeMicro();
+        huffmanTime = t2-t1;
+
+        StringTools::println("Original Size: %llu", fileBytes.size());
+        StringTools::println("Deflate Size + %%: %llu, %f. Time taken: %llu", deflateData.size(), (double)deflateData.size() / fileBytes.size(), deflateTime);
+        StringTools::println("LZW Size + %%: %llu, %f. Time taken: %llu", lzwData.size(), (double)lzwData.size() / fileBytes.size(), lzwTime);
+        StringTools::println("LZSS Size + %%: %llu, %f. Time taken: %llu", lzssData.size(), (double)lzssData.size() / fileBytes.size(), lzssTime);
+        StringTools::println("Huffman Only Size + %%: %llu, %f. Time taken: %llu", huffmanData.size(), (double)huffmanData.size() / fileBytes.size(), huffmanTime);
+        
+    }
+    else
+    {
+        StringTools::println("COULDN'T OPEN FILE");
+    }
+}
+
 int main(int argc, char** argv)
 {
     StringTools::init();
-
     SimpleGraphics::init();
 
     // testLoadGui();
-    // testSavePNG();
+
+    //Adjust compression algorithms to adjust pointer to output instead of returning a new list and copying it.
+    testSavePNG();
+
     // testQuickHash();
-    testModelBuilder();
+    // testModelBuilder();
     // testGLStuff();
+
+    // testCompression();
     
     return 0;
 }

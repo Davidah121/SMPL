@@ -204,7 +204,8 @@ namespace glib
 
 		int blocks = MathExt::ceil((double)height/24);
 
-		std::vector<unsigned char> compressedData = Compression::compressDeflate(scanLines, blocks, 7, strongCompression);
+		BinarySet compressedData;
+		Compression::compressDeflate(&compressedData, scanLines.data(), scanLines.size(), blocks, 7, strongCompression);
 		
 		int fullSize = compressedData.size()+2+4;
 		std::string IDATHeader = "";
@@ -221,9 +222,10 @@ namespace glib
 		IDATHeader += 0b01111000;
 		IDATHeader += 0b00000001;
 
-		for(int i=0; i<compressedData.size(); i++)
+		std::vector<unsigned char> binarySetBytes = compressedData.getByteRef();
+		for(unsigned char& c : binarySetBytes)
 		{
-			IDATHeader += (char)compressedData[i];
+			IDATHeader += (char)c;
 		}
 
 		//adler

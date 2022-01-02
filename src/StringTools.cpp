@@ -771,7 +771,11 @@ namespace glib
 
 	char StringTools::getChar()
 	{
-		return (char)std::wcin.get();
+		std::string temp = getString();
+		if(temp.empty())
+			return 0;
+		else
+			return temp[0];
 	}
 
 	wchar_t StringTools::getWideChar()
@@ -779,7 +783,11 @@ namespace glib
 		if(!hasInit)
 			init();
 		
-		return (wchar_t)std::wcin.get();
+		std::wstring temp = getWideString();
+		if(temp.empty())
+			return 0;
+		else
+			return temp[0];
 	}
 
 	int StringTools::getInt()

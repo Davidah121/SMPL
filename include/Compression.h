@@ -156,6 +156,9 @@ namespace glib
 		static std::vector<unsigned char> decompressLZW(std::vector<unsigned char> data, int dictionarySize, size_t expectedSize = -1);
 
 
+		static std::vector<unsigned char> compressLZW(unsigned char* data, int size, int blocks, int codeSize);
+		static std::vector<unsigned char> compressLZW(std::vector<unsigned char> data, int blocks, int codeSize);
+
 		/**
 		 * @brief Compresses LZW (Lempel Ziv Welch) data.
 		 * 		If the size of data is 0 or less and USE_EXCEPTIONS is defined, an InvalidSizeError is thrown.
@@ -172,8 +175,8 @@ namespace glib
 		 * @return std::vector<unsigned char>
 		 * 		If successful, returns the compressed data as a vector.
 		 */
-		static std::vector<unsigned char> compressLZW(unsigned char* data, int size, int* codeSizePointer = nullptr);
-
+		static std::vector<unsigned char> compressLZW(unsigned char* data, int size, int codeSize);
+		
 		/**
 		 * @brief Compresses LZW (Lempel Ziv Welch) data.
 		 * 		If the size of data is 0 or less and USE_EXCEPTIONS is defined, an InvalidSizeError is thrown.
@@ -187,7 +190,9 @@ namespace glib
 		 * @return std::vector<unsigned char>
 		 * 		If successful, returns the compressed data as a vector.
 		 */
-		static std::vector<unsigned char> compressLZW(std::vector<unsigned char> data, int* codeSizePointer = nullptr);
+		static std::vector<unsigned char> compressLZW(std::vector<unsigned char> data, int codeSize);
+
+		static void compressLZW(BinarySet* outputData, unsigned char* data, int size, int codeSize, bool omitEndCode = false);
 
 		/**
 		 * @brief Compresses LZ77 (Lempel Ziv 77) data.
@@ -520,7 +525,8 @@ namespace glib
 		 * 		Otherwise, returns an empty vector.
 		 */
 		static std::vector<unsigned char> compressDeflate(unsigned char* data, int size, int blocks, int compressionLevel = 7, bool customTable = false);
-
+		static void compressDeflate(BinarySet* outputData, unsigned char* data, int size, int blocks, int compressionLevel = 7, bool customTable = false);
+		
 		/**
 		 * @brief Compresses data using DELFATE
 		 * 
@@ -692,7 +698,6 @@ namespace glib
 		static void compressDeflateSubFunction2(std::vector<lengthPair>* block, BinarySet* output, bool dynamic, bool lastBlock);
 		
 		static void buildCanonicalHuffTreeFromHuffTreeSubFunc(BinaryTreeNode<HuffmanNode>* tree);
-
 	};
 
 	template<typename T>

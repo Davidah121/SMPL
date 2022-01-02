@@ -205,9 +205,13 @@ namespace glib
 		//min code size
 		gifHeaderInfo += (char)codeSize;
 		
+		//Separate into blocks to make it multi threaded
+		//each block should approach the max dictionary size of 4096 entries and try not to exceed it.
+
+		int blocks = MathExt::ceil((double)height/24);
 		//compress data
 		t1 = System::getCurrentTimeMicro();
-		std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, &codeSize);
+		std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, blocks, codeSize);
 		t2 = System::getCurrentTimeMicro();
 
 		StringTools::println("Time to compress: %u", t2-t1);

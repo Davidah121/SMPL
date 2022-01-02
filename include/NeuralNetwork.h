@@ -1,93 +1,10 @@
 #pragma once
 #include <vector>
+#include "Matrix.h"
 #include "SimpleXml.h"
 
 namespace glib
 {
-
-    class Neuron
-    {
-    public:
-        /**
-         * @brief Construct a new Neuron object
-         *      A neuron will hold its current activation, and its weights to all connections.
-         *      Assumes that the neuron is connected to all neurons in the next layer.
-         * 
-         */
-        Neuron();
-
-        /**
-         * @brief Destroy the Neuron object
-         * 
-         */
-        ~Neuron();
-
-        /**
-         * @brief Set the Activation of the neuron.
-         * 
-         * @param v 
-         */
-        void setActivation(double v);
-
-        /**
-         * @brief Get the Activation of the neuron.
-         * 
-         * @return double 
-         */
-        double getActivation();
-
-        /**
-         * @brief Get the Weight to the specified connection.
-         * 
-         * @param index 
-         * @return double 
-         */
-        double getWeight(int index);
-
-        /**
-         * @brief Sets the Weight to the specified connection.
-         * 
-         * @param index 
-         * @param v 
-         */
-        void setWeight(int index, double v);
-
-        /**
-         * @brief Resets the weights for the neuron.
-         * 
-         * @param size 
-         *      The amount of connections.
-         */
-        void resetWeights(int size);
-
-        /**
-         * @brief Returns the weight to a connection
-         * 
-         * @param index 
-         * @return double& 
-         */
-        double& operator[](int index);
-
-        /**
-         * @brief Returns how many connections for the neuron.
-         * 
-         * @return int 
-         */
-        int size();
-
-        /**
-         * @brief An internal tool for exporting Network information.
-         * 
-         * @param count 
-         *      The neuron number I guess?
-         * @return XmlNode* 
-         */
-        XmlNode* exportTestInformation(int count);
-    private:
-        double activation = 0.0;
-        std::vector<double> weightsToConnections = std::vector<double>();
-    };
-
     class NeuralLayer
     {
     public:
@@ -146,7 +63,7 @@ namespace glib
          * @param index 
          * @param activation 
          */
-        void setNeuronActivation(int index, float activation);
+        void setNeuronActivation(int index, double activation);
 
         /**
          * @brief Get the Neuron Activation at the specified index.
@@ -155,21 +72,6 @@ namespace glib
          * @return double 
          */
         double getNeuronActivation(int index);
-
-        /**
-         * @brief Gets a Neuron
-         * 
-         * @param index 
-         * @return Neuron& 
-         */
-        Neuron& getNeuron(int index);
-
-        /**
-         * @brief Gets the List Of Neurons
-         * 
-         * @return std::vector<Neuron>& 
-         */
-        std::vector<Neuron>& getListOfNeurons();
 
         /**
          * @brief Solves the activation function.
@@ -188,6 +90,12 @@ namespace glib
          * @return double 
          */
         double derivativeActivationFunction(double value);
+
+        Matrix getDerivativeMatrix();
+        Matrix& getNeuronMatrix();
+        Matrix& getWeightMatrix();
+        Matrix& getBiasMatrix();
+
 
         /**
          * @brief Using the current activations, weights, and bias, solves for the activations for the next layer.
@@ -231,29 +139,16 @@ namespace glib
          */
         int getBiasSize();
 
-        /**
-         * @brief An internal tool for exporting Network information.
-         * 
-         * @param count 
-         *      The neural layer number I guess?
-         * @return XmlNode* 
-         */
-        XmlNode* exportTestInformation(int count);
-
-        /**
-         * @brief Returns a Neuron
-         * 
-         * @param index 
-         * @return Neuron& 
-         */
-        Neuron& operator[](int index);
     private:
         int length = 0;
-        std::vector<Neuron> neurons = std::vector<Neuron>();
         NeuralLayer* nextLayer = nullptr;
         NeuralLayer* previousLayer = nullptr;
         
-        std::vector<double> biasToConnections = std::vector<double>();
+        Matrix neurons = Matrix();
+
+        //weights and bias connected to this layer from the previous.
+        Matrix weightsToConnections = Matrix();
+        Matrix biasToConnections = Matrix();
     };
 
     class NeuralNetwork
@@ -297,6 +192,17 @@ namespace glib
         void train(std::vector<std::vector<double>> inputs, std::vector<std::vector<double>> expectedOutput);
 
         /**
+         * @brief Gets the Cost of the network according to the given inputs.
+         *      Returns the cost of each input.
+         *      The total cost is the sum of the cost over all samples.
+         * 
+         * @param inputs 
+         * @param expectedOutput 
+         * @return std::vector<double> 
+         */
+        std::vector<double> getCost(std::vector<std::vector<double>> inputs, std::vector<std::vector<double>> expectedOutput);
+        
+        /**
          * @brief Resets the weights and bias values for the network.
          * 
          */
@@ -324,13 +230,6 @@ namespace glib
          * @param v 
          */
         void setLearningRate(double v);
-        
-        /**
-         * @brief Internal tool for analysing neural networks
-         * 
-         * @param filename 
-         */
-        void exportTestInformation(std::string filename);
 
         /**
          * @brief Gets the Start Layer
@@ -348,7 +247,7 @@ namespace glib
     private:
         NeuralLayer* startLayer = nullptr;
         NeuralLayer* endLayer = nullptr;
-        double learningRate = 0.5;
+        double learningRate = 0.03;
     };
 
 } //NAMESPACE glib END

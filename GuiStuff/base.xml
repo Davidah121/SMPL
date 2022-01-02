@@ -1,0 +1,21 @@
+<SimpleGUI>
+    <GuiContainer>
+        <GuiRectangleButton x="32" y="32" width="128" height="24">
+            <GuiTextBlock text="RESET NETWORK"/>
+        </GuiRectangleButton>
+
+        <GuiRectangleButton x="192" y="32" width="128" height="24">
+            <GuiTextBlock text="TRAIN NETWORK"/>
+        </GuiRectangleButton>
+
+        <GuiRectangleButton x="128" y="64" width="128" height="24">
+            <GuiTextBlock text="TRAIN CONTINUOUS"/>
+        </GuiRectangleButton>
+
+        <GuiRectangleButton x="288" y="64" width="64" height="24">
+            <GuiTextBlock text="COST"/>
+        </GuiRectangleButton>
+        
+    </GuiContainer>
+
+</SimpleGUI>

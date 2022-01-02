@@ -177,6 +177,8 @@ namespace glib
                 return 0;
             }
         }
+        return 0;
+    
     }
     float Model::getFloat(int index, unsigned int list)
     {
@@ -194,7 +196,9 @@ namespace glib
                 return NAN;
             }
         }
+        return NAN;
     }
+
     Vec2f Model::getVec2f(int index, unsigned int list)
     {
         if(list < vertexData.size())
@@ -214,7 +218,9 @@ namespace glib
                 return Vec2f();
             }
         }
+        return Vec2f();
     }
+
     Vec3f Model::getVec3f(int index, unsigned int list)
     {
         if(list < vertexData.size())
@@ -235,7 +241,9 @@ namespace glib
                 return Vec3f();
             }
         }
+        return Vec3f();
     }
+
     Vec4f Model::getVec4f(int index, unsigned int list)
     {
         if(list < vertexData.size())
@@ -257,6 +265,7 @@ namespace glib
                 return Vec4f();
             }
         }
+        return Vec4f();
     }
 
     std::vector<VertexFormat> Model::getVertexFormatInfomation()

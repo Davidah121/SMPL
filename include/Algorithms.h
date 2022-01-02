@@ -31,9 +31,10 @@ namespace glib
          *      The Grouping contains the total weight and the ids of all items used.
 		 */
         static std::vector<Grouping> packageMergeAlgorithm(std::vector<Grouping> baseItems, size_t desiredTotal);
-
+        
     private:
 
     };
-    
+
 } //NAMESPACE glib END
+
