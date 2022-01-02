@@ -1051,7 +1051,7 @@ namespace glib
 			if(threads[t].joinable())
 				threads[t].join();
 		}
-
+		
 		//Construct
 		for(int block=0; block<blocks; block++)
 		{
@@ -1059,6 +1059,7 @@ namespace glib
 		}
 
 		bin.setAddBitOrder(BinarySet::LMSB);
+		
 		return bin.toBytes();
 	}
 

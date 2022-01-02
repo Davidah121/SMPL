@@ -14,11 +14,12 @@ namespace glib
 	{
 		this->columns = 0;
 		this->rows = 0;
+		data = nullptr;
 
 		valid = false;
 	}
 
-	Matrix::Matrix(int cols, int rows)
+	Matrix::Matrix(int rows, int cols)
 	{
 		this->columns = cols;
 		this->rows = rows;
@@ -39,6 +40,7 @@ namespace glib
 	Matrix::Matrix(const Matrix& c)
 	{
 		this->copy(c);
+
 	}
 
 	void Matrix::operator=(const Matrix& c)
@@ -86,14 +88,19 @@ namespace glib
 
 	Matrix::~Matrix()
 	{
-		for (int i = 0; i < rows; i++)
+		if(valid)
 		{
-			if(data[i]!=nullptr)
-				delete[] data[i];
-		}
+			for (int i = 0; i < rows; i++)
+			{
+				if(data[i]!=nullptr)
+					delete[] data[i];
+			}
 
-		if(data!=nullptr)
-			delete[] data;
+			if(data!=nullptr)
+				delete[] data;
+		}
+		
+		valid = false;
 	}
 
 	double * Matrix::operator[](int row)
@@ -120,10 +127,10 @@ namespace glib
 	{
 		if(this->getCols() == other.getRows())
 		{
-			int nCols = this->getRows();
-			int nRows = other.getCols();
+			int nRows = this->getRows();
+			int nCols = other.getCols();
 
-			Matrix m = Matrix(nCols, nRows);
+			Matrix m = Matrix(nRows, nCols);
 
 			for (int i = 0; i < nRows; i++)
 			{
@@ -328,6 +335,26 @@ namespace glib
 			return 0;
 	}
 
+	Matrix Matrix::hadamardProduct(Matrix other)
+	{
+		if(rows != other.rows || columns != other.columns)
+		{
+			return Matrix();
+		}
+
+		Matrix m = Matrix(rows, columns);
+
+		for (int i = 0; i < rows; i++)
+		{
+			for (int i2 = 0; i2 < columns; i2++)
+			{
+				m[i][i2] = other.data[i][i2] * data[i][i2];
+			}
+		}
+
+		return m;
+	}
+
 	Matrix Matrix::getInverse()
 	{
 		double det = getDeterminate();
@@ -439,6 +466,17 @@ namespace glib
 		}
 
 		return m;
+	}
+
+	void Matrix::clear()
+	{
+		for(int i=0; i<rows; i++)
+		{
+			for(int j=0; j<columns; j++)
+			{
+				data[i][j] = 0;
+			}
+		}
 	}
 
 } //NAMESPACE glib END

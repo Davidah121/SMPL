@@ -810,6 +810,11 @@ namespace glib
 
 	#pragma region Matrix_Operations
 
+	Matrix MathExt::hadamardProduct(Matrix& a, Matrix& b)
+	{
+		return a.hadamardProduct(b);
+	}
+
 	Matrix MathExt::getInverse(Matrix& m)
 	{
 		return m.getInverse();

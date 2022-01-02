@@ -875,16 +875,33 @@ void testCompression()
 
         BinaryTree<HuffmanNode> huffTree;
 
-        std::vector<unsigned char> deflateData = Compression::compressDeflate(fileBytes, 128, 7, true);
-        std::vector<unsigned char> lzwData = Compression::compressLZW(fileBytes, 8);
+        size_t t1, t2, deflateTime, lzwTime, lzssTime, huffmanTime;
+
+        t1 = System::getCurrentTimeMicro();
+        std::vector<unsigned char> deflateData = Compression::compressDeflate(fileBytes, 128, 7, false);
+        t2 = System::getCurrentTimeMicro();
+        deflateTime = t2-t1;
+        
+        t1 = System::getCurrentTimeMicro();
+        std::vector<unsigned char> lzwData = Compression::compressLZW(fileBytes, 24, 8);
+        t2 = System::getCurrentTimeMicro();
+        lzwTime = t2-t1;
+
+        t1 = System::getCurrentTimeMicro();
         std::vector<unsigned char> lzssData = Compression::compressLZSS(fileBytes);
+        t2 = System::getCurrentTimeMicro();
+        lzssTime = t2-t1;
+
+        t1 = System::getCurrentTimeMicro();
         std::vector<unsigned char> huffmanData = Compression::compressHuffman(fileBytes, &huffTree);
+        t2 = System::getCurrentTimeMicro();
+        huffmanTime = t2-t1;
 
         StringTools::println("Original Size: %llu", fileBytes.size());
-        StringTools::println("Deflate Size + %%: %llu, %f", deflateData.size(), (double)deflateData.size() / fileBytes.size());
-        StringTools::println("LZW Size + %%: %llu, %f", lzwData.size(), (double)lzwData.size() / fileBytes.size());
-        StringTools::println("LZSS Size + %%: %llu, %f", lzssData.size(), (double)lzssData.size() / fileBytes.size());
-        StringTools::println("Huffman Only Size + %%: %llu, %f", huffmanData.size(), (double)huffmanData.size() / fileBytes.size());
+        StringTools::println("Deflate Size + %%: %llu, %f. Time taken: %llu", deflateData.size(), (double)deflateData.size() / fileBytes.size(), deflateTime);
+        StringTools::println("LZW Size + %%: %llu, %f. Time taken: %llu", lzwData.size(), (double)lzwData.size() / fileBytes.size(), lzwTime);
+        StringTools::println("LZSS Size + %%: %llu, %f. Time taken: %llu", lzssData.size(), (double)lzssData.size() / fileBytes.size(), lzssTime);
+        StringTools::println("Huffman Only Size + %%: %llu, %f. Time taken: %llu", huffmanData.size(), (double)huffmanData.size() / fileBytes.size(), huffmanTime);
         
     }
     else
@@ -893,393 +910,15 @@ void testCompression()
     }
 }
 
-void neuralTest()
-{
-    //Setup neural network
-    NeuralNetwork n = NeuralNetwork();
-    // n.importNetwork("TestNetwork.xml");
-    n.addLayerToEnd(2);
-    n.addLayerToEnd(2);
-    n.addLayerToEnd(2);
-    n.resetNetwork();
-    n.setLearningRate(0.3);
-
-    std::vector<Vec2f> testDataPoints;
-    for(int i=0; i<=4; i++)
-    {
-        double length = (double)i*1.5;
-        for(int j=0; j<20; j++)
-        {
-            double dir = j*2.0*PI / 48.0;
-            testDataPoints.push_back( MathExt::lengthDir(length, dir) );
-        }
-    }
-
-    Sort::shuffle(testDataPoints.data(), testDataPoints.size());
-
-    int testDataIndex = 0;
-    //train the neural network on all inputs
-    while(true)
-    {
-        StringTools::println("T for train, C for cost, R for run, V for view, E for exit.");
-        char input = StringTools::getChar();
-
-        if(input == 'T')
-        {
-            for(int it=0; it<1000; it++)
-            {
-                //collect 10 inputs
-                std::vector<std::vector<double>> collectionOfInputs = std::vector<std::vector<double>>();
-                std::vector<std::vector<double>> collectionOfOutputs = std::vector<std::vector<double>>();
-                
-                int i = 0;
-                while(i < 10)
-                {
-                    std::vector<double> subInputs;
-                    subInputs.push_back( MathExt::logisticsSigmoid( testDataPoints[testDataIndex+i].x ) );
-                    subInputs.push_back( MathExt::logisticsSigmoid( testDataPoints[testDataIndex+i].y ) );
-
-                    collectionOfInputs.push_back(subInputs);
-                    collectionOfOutputs.push_back( { (testDataPoints[testDataIndex+i].getLength() <= 2) ? 1.0 : 0.0, 0.0} );
-
-                    i++;
-                    testDataIndex = (testDataIndex+1) % testDataPoints.size();
-                }
-
-                n.testTrain( collectionOfInputs, collectionOfOutputs);
-            }
-        }
-        else if(input == 'C')
-        {
-            std::vector<std::vector<double>> collectionOfInputs = std::vector<std::vector<double>>();
-            std::vector<std::vector<double>> collectionOfOutputs = std::vector<std::vector<double>>();
-            
-            int i = 0;
-            while(i < testDataPoints.size())
-            {
-                std::vector<double> subInputs;
-                subInputs.push_back( MathExt::logisticsSigmoid( testDataPoints[testDataIndex+i].x ) );
-                subInputs.push_back( MathExt::logisticsSigmoid( testDataPoints[testDataIndex+i].y ) );
-
-                collectionOfInputs.push_back(subInputs);
-                collectionOfOutputs.push_back( { (testDataPoints[i].getLength() <= 2) ? 1.0 : 0.0, 0.0} );
-
-                i++;
-            }
-
-            double totalCost = 0;
-            std::vector<double> costValues = n.getCost( collectionOfInputs, collectionOfOutputs);
-            for(int k=0; k<costValues.size(); k++)
-            {
-                // StringTools::println("Cost for [%.3f, %.3f] = %f", collectionOfInputs[k][0], collectionOfInputs[k][1], costValues[k]);
-                totalCost += costValues[k];
-            }
-
-            StringTools::println("Total cost over all samples = %f", totalCost);
-            StringTools::println("Average cost over all samples = %f", totalCost/costValues.size());
-        }
-        else if(input == 'R')
-        {
-            double v1 = std::stod(StringTools::getString());
-            double v2 = std::stod(StringTools::getString());
-
-            std::vector<double> inputs = {v1/6, v2/6};
-            std::vector<double> outputs = n.run(inputs);
-
-            StringTools::println("Inputs [%.3f, %.3f] = Outputs [%.3f]", v1, v2, outputs[0]);
-        }
-        else if(input == 'V')
-        {
-            double w11 = n.getStartLayer()->getNeuron(0).getWeight(0);
-            double w21 = n.getStartLayer()->getNeuron(1).getWeight(0);
-            
-            double w12 = n.getStartLayer()->getNeuron(0).getWeight(1);
-            double w22 = n.getStartLayer()->getNeuron(1).getWeight(1);
-
-            double w13 = n.getStartLayer()->getNeuron(0).getWeight(2);
-            double w23 = n.getStartLayer()->getNeuron(1).getWeight(2);
-
-            StringTools::println("W11 = %f", w11);
-            StringTools::println("W21 = %f", w21);
-            StringTools::println("W12 = %f", w12);
-            StringTools::println("W22 = %f", w22);
-            StringTools::println("W13 = %f", w13);
-            StringTools::println("W23 = %f", w23);
-        }
-        else if(input == 'E')
-        {
-            break;
-        }
-    }
-
-    n.exportTestInformation("After2.xml");
-}
-
-void neuralVisualizer()
-{
-    SimpleWindow window = SimpleWindow("Neural Visualizer", 640, 480);
-
-    bool changed = true;
-    srand(time(NULL));
-
-    NeuralNetwork network = NeuralNetwork();
-    network.addLayerToEnd(2);
-    network.addLayerToEnd(3);
-    network.addLayerToEnd(1);
-    network.resetNetwork();
-    network.setLearningRate(1);
-
-    std::vector<std::vector<Image>> networkNeuronGradient = std::vector<std::vector<Image>>(3);
-    networkNeuronGradient[0] = std::vector<Image>(2);
-    networkNeuronGradient[1] = std::vector<Image>(3);
-    networkNeuronGradient[2] = std::vector<Image>(1);
-
-    for(int i=0; i<networkNeuronGradient.size(); i++)
-    {
-        for(int j=0; j<networkNeuronGradient[i].size(); j++)
-        {
-            networkNeuronGradient[i][j] = Image(64, 64);
-        }
-    }
-    
-
-    GuiManager::initDefaultLoadFunctions();
-    window.getGuiManager()->loadElementsFromFile("GuiStuff/base.xml");
-
-    //set resetButton function
-    std::vector<GuiInstance*> elements = window.getGuiManager()->getElements();
-
-    if(elements.size() > 0)
-    {
-        GuiRectangleButton* resetButton = (GuiRectangleButton*)elements[1];
-        resetButton->setOnClickReleaseFunction( [&network, &changed](GuiInstance* ins) -> void{
-            network.resetNetwork();
-            changed = true; 
-        });
-
-        GuiRectangleButton* trainButton = (GuiRectangleButton*)elements[3];
-        trainButton->setOnClickReleaseFunction( [&network, &changed](GuiInstance* ins) -> void{
-            
-            std::vector<std::vector<double>> inputs = std::vector<std::vector<double>>();
-            std::vector<std::vector<double>> outputs = std::vector<std::vector<double>>();
-
-            double dir = MathExt::toRad((double)(rand()%360));
-            double length = (double)(rand()%6);
-
-            Vec2f v = MathExt::lengthDir(length, dir);
-            inputs.push_back( { MathExt::logisticsSigmoid(v.x), MathExt::logisticsSigmoid(v.y)} );
-            outputs.push_back( { (v.getLength() <= 2) ? 1.0 : 0.0} );
-            
-            network.testTrain(inputs, outputs);
-            changed = true; 
-        });
-
-        GuiRectangleButton* trainButton2 = (GuiRectangleButton*)elements[5];
-        trainButton2->setOnClickHoldFunction( [&network, &changed](GuiInstance* ins) -> void{
-            
-            std::vector<std::vector<double>> inputs = std::vector<std::vector<double>>();
-            std::vector<std::vector<double>> outputs = std::vector<std::vector<double>>();
-
-            double dir = MathExt::toRad((double)(rand()%360));
-            double length = (double)(rand()%6);
-
-            Vec2f v = MathExt::lengthDir(length, dir);
-            inputs.push_back( { MathExt::logisticsSigmoid(v.x), MathExt::logisticsSigmoid(v.y)} );
-            outputs.push_back( { (v.getLength() <= 2) ? 1.0 : 0.0} );
-            
-            network.testTrain(inputs, outputs);
-            changed = true; 
-        });
-
-        GuiRectangleButton* costButton = (GuiRectangleButton*)elements[7];
-        costButton->setOnClickReleaseFunction( [&network](GuiInstance* ins) -> void{
-
-            std::vector<std::vector<double>> inputs = std::vector<std::vector<double>>();
-            std::vector<std::vector<double>> outputs = std::vector<std::vector<double>>();
-
-            double dir = MathExt::toRad((double)(rand()%360));
-            double length = (double)(rand()%6);
-
-            Vec2f v = MathExt::lengthDir(length, dir);
-            inputs.push_back( { MathExt::logisticsSigmoid(v.x), MathExt::logisticsSigmoid(v.y)} );
-            outputs.push_back( { (v.getLength() <= 2) ? 1.0 : 0.0} );
-            std::vector<double> costs = network.getCost(inputs, outputs);
-            StringTools::println("COST for %f,%f = %f", inputs[0][0], inputs[0][1], costs[0]);
-        });
-    }
-
-
-    GuiCustomObject neuralGuiObj = GuiCustomObject();
-    neuralGuiObj.setUpdateFunction( [&network, &networkNeuronGradient, &changed]() -> void{
-
-        if(!changed)
-            return;
-        
-        NeuralLayer* l = network.getStartLayer();
-
-        int index = 0;
-        while(l != nullptr)
-        {
-            if(l == network.getStartLayer())
-            {
-                std::vector<Neuron> neurons = l->getListOfNeurons();
-                for(int i=0; i<neurons.size(); i++)
-                {
-                    if(i == 0)
-                    {
-                        //x values
-                        for(int y=0; y<networkNeuronGradient[index][i].getHeight(); y++)
-                        {
-                            for(int x=0; x<networkNeuronGradient[index][i].getWidth(); x++)
-                            {
-                                Color c = {0,0,0,255};
-                                c.red = (unsigned char)(255 * MathExt::logisticsSigmoid( x-(networkNeuronGradient[index][i].getWidth()/2) ));
-                                c.green = c.red;
-                                c.blue = c.red;
-                                networkNeuronGradient[index][i].setPixel(x, y, c);
-                            }
-                        }
-                    }
-                    else if(i == 1)
-                    {
-                        //y values
-                        for(int y=0; y<networkNeuronGradient[index][i].getHeight(); y++)
-                        {
-                            Color c = {0,0,0,255};
-                            c.red = (unsigned char)(255 * MathExt::logisticsSigmoid( y-(networkNeuronGradient[index][i].getHeight()/2) ));
-                            c.green = c.red;
-                            c.blue = c.red;
-                            for(int x=0; x<networkNeuronGradient[index][i].getWidth(); x++)
-                            {
-                                networkNeuronGradient[index][i].setPixel(x, y, c);
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                std::vector<Neuron> neurons = l->getListOfNeurons();
-                std::vector<Neuron> preNeurons = l->getPreviousLayer()->getListOfNeurons();
-                
-                for(int i=0; i<neurons.size(); i++)
-                {
-                    for(int y=0; y<networkNeuronGradient[index][i].getHeight(); y++)
-                    {
-                        for(int x=0; x<networkNeuronGradient[index][i].getWidth(); x++)
-                        {
-                            Color c = {0, 0, 0, 255};
-                            double res = 0;
-                            for(int j=0; j<preNeurons.size(); j++)
-                            {
-                                double tempIntensity = (double)networkNeuronGradient[index-1][j].getPixel(x,y).red / 255.0;
-                                res += tempIntensity*preNeurons[j].getWeight(i);
-                            }
-                            
-                            c.red = (unsigned char)(255 * MathExt::logisticsSigmoid(res + l->getPreviousLayer()->getBiasValue(i)));
-                            c.green = c.red;
-                            c.blue = c.red;
-
-                            networkNeuronGradient[index][i].setPixel(x, y, c);
-                        }
-                    }
-                }
-            }
-
-            index++;
-            l = l->getNextLayer();
-        }
-
-        changed = false;
-    });
-
-    neuralGuiObj.setRenderFunction( [&network, &networkNeuronGradient](Image* surf) -> void{
-        
-        //draw gradients
-        for(int i=0; i<networkNeuronGradient.size(); i++)
-        {
-            int xOffset = 128+(i*128);
-            for(int j=0; j<networkNeuronGradient[i].size(); j++)
-            {
-                int yOffset = 96+(j*96);
-
-                SimpleGraphics::drawImage(&networkNeuronGradient[i][j], xOffset, yOffset, surf);
-            }
-        }
-
-        //draw connections from first layer to second
-        
-        std::vector<Neuron> neurons = network.getStartLayer()->getListOfNeurons();
-        int xOffset = 128;
-        for(int j=0; j<neurons.size(); j++)
-        {
-            int yOffset = 96+(j*96);
-
-            for(int k=0; k<neurons[j].size(); k++)
-            {
-                Color c;
-                int yOffsetOther = 96+(k*96);
-                if(neurons[j][k] > 0)
-                {
-                    c.red = neurons[j][k]*32;
-                    c.alpha = 255;
-                }
-                else
-                {
-                    c.blue = neurons[j][k]*32;
-                    c.alpha = 255;
-                }
-
-                SimpleGraphics::setColor(c);
-                SimpleGraphics::drawLine(xOffset+32, yOffset+32, xOffset+32+128, 32+yOffsetOther, surf);
-            }
-        }
-        
-        neurons = network.getStartLayer()->getNextLayer()->getListOfNeurons();
-        xOffset = 256;
-        for(int j=0; j<neurons.size(); j++)
-        {
-            int yOffset = 96+(j*96);
-
-            for(int k=0; k<neurons[j].size(); k++)
-            {
-                Color c;
-                int yOffsetOther = 96+(k*96);
-                if(neurons[j][k] > 0)
-                {
-                    c.red = neurons[j][k]*32;
-                    c.alpha = 255;
-                }
-                else
-                {
-                    c.blue = neurons[j][k]*32;
-                    c.alpha = 255;
-                }
-
-                SimpleGraphics::setColor(c);
-                SimpleGraphics::drawLine(xOffset+32, yOffset+32, xOffset+32+128, 32+yOffsetOther, surf);
-            }
-        }
-    });
-
-    window.getGuiManager()->addElement(&neuralGuiObj);
-
-    window.waitTillClose();
-}
-
 int main(int argc, char** argv)
 {
     StringTools::init();
-
     SimpleGraphics::init();
 
     // testLoadGui();
 
     //Adjust compression algorithms to adjust pointer to output instead of returning a new list and copying it.
-    // testSavePNG();
-
-    // neuralTest();
-    neuralVisualizer();
+    testSavePNG();
 
     // testQuickHash();
     // testModelBuilder();

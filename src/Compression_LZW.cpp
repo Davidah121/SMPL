@@ -50,7 +50,7 @@ namespace glib
 
 			if(i==0)
 			{
-				blockThreads[threadID] = std::thread(LZWThreadFunction, &blockDataArray[i], inputData, inputSize, codeSize, false);
+				blockThreads[threadID] = std::thread(LZWThreadFunction, &blockDataArray[i], inputData, inputSize, codeSize, true);
 			}
 			else
 			{

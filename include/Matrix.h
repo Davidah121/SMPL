@@ -18,10 +18,10 @@ namespace glib
 		 * @brief Construct a new Matrix object
 		 * 		A matrix with rows = 0 or columns = 0 is considered invalid.
 		 * 
-		 * @param cols 
 		 * @param rows 
+		 * @param cols 
 		 */
-		Matrix(int cols, int rows);
+		Matrix(int rows, int cols);
 
 		/**
 		 * @brief Construct a new Matrix object from another Matrix object
@@ -110,11 +110,23 @@ namespace glib
 		/**
 		 * @brief Returns the value of the matrix at the specified location
 		 * 
-		 * @param col 
 		 * @param row 
+		 * @param col 
 		 * @return double 
 		 */
-		double get(int col, int row);
+		double get(int row, int col);
+
+		/**
+		 * @brief Returns the Hadamard product of the 2 matrices.
+		 * 		The Hadamard product requires that the matricies are the same size.
+		 * 			rows = other.rows, columns = other.columns
+		 * 		
+		 * 		It does component to component multiplication.
+		 * 
+		 * @param other 
+		 * @return Matrix 
+		 */
+		Matrix hadamardProduct(Matrix other);
 
 		/**
 		 * @brief Gets the Inverse of the matrix.
@@ -152,12 +164,14 @@ namespace glib
 		 */
 		Matrix getMatrixOfMinors(int row, int col);
 
+		void clear();
+
 	protected:
 		double** data = nullptr;
-		int rows;
-		int columns;
+		int rows = 0;
+		int columns = 0;
 
-		bool valid = true;
+		bool valid = false;
 	};
 
 } //NAMESPACE glib END
