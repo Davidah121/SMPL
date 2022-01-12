@@ -641,7 +641,6 @@ namespace glib
 
 				if(!failed)
 				{
-					
 					windowHandle = (size_t)CreateWindowW(text.c_str(), title.c_str(), style, trueX, trueY, trueWidth, trueHeight, NULL, NULL, hins, NULL);
 				}
 				

@@ -121,9 +121,23 @@ namespace glib
 	void DXWindow::swapBuffers()
 	{
 		IDXGISwapChain* d3dSwapChain = DXSingleton::getSwapChain();
-		d3dSwapChain->Present(0, 0);
+		d3dSwapChain->Present(swapInterval, swapFlags);
 	}
 
+	void DXWindow::setVSync(unsigned int interval)
+	{
+		swapInterval = interval;
+	}
+	
+	unsigned int DXWindow::getVSyncInterval()
+	{
+		return swapInterval;
+	}
+	
+	void DXWindow::setSwapChainFlags(unsigned int flags)
+	{
+		swapFlags = flags;
+	}
 	
 	LRESULT _stdcall DXWindow::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
@@ -587,7 +601,6 @@ namespace glib
 
 				if(!failed)
 				{
-					
 					windowHandle = (size_t)CreateWindowW(text.c_str(), title.c_str(), style, trueX, trueY, trueWidth, trueHeight, NULL, NULL, hins, NULL);
 				}
 				

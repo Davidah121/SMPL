@@ -30,8 +30,12 @@ namespace glib
 		if(currFont == nullptr)
 			currFont = SimpleGraphics::getFont();
 
-		int totalWidth = currFont->getWidthOfString(text);
+		boundingBox = currFont->getBoundingBox(text, allowLineBreaks, maxWidth, maxHeight);
 
+		boundingBox.setLeftBound( boundingBox.getLeftBound() + x );
+		boundingBox.setRightBound( boundingBox.getRightBound() + x );
+		boundingBox.setTopBound( boundingBox.getTopBound() + y );
+		boundingBox.setBottomBound( boundingBox.getBottomBound() + y );
 	}
 
 	void GuiTextBlock::render(Image* surf)
@@ -47,9 +51,6 @@ namespace glib
 
 			int actualMaxW = (maxWidth <= 0) ? 0xFFFF : maxWidth;
 			int actualMaxH = (maxHeight <= 0) ? 0xFFFF : maxHeight;
-			
-
-			SimpleGraphics::setClippingRect( Box2D(renderX, renderY, renderX+actualMaxW, renderY+actualMaxH) );
 
 			int minHighlight = min(startHighlight, endHighlight);
 			int maxHighlight = max(startHighlight, endHighlight);
@@ -59,7 +60,6 @@ namespace glib
 			else
 				SimpleGraphics::drawTextLimits(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowLineBreaks, surf);
 			
-			SimpleGraphics::resetClippingPlane();
 			SimpleGraphics::setFont(oldFont);
 		}
 	}

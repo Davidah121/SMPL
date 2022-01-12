@@ -68,6 +68,8 @@ namespace glib
 
         bool remove(HashPair<K,T>* pair);
 
+        bool remove(K key, T data);
+
         /**
          * @brief Removes the first entry found for the key.
          *      Returns if successful.
@@ -310,6 +312,38 @@ namespace glib
                 return true;
             }
         }
+        return false;
+    }
+
+    template<typename K, typename T>
+    inline bool SimpleHashMap<K, T>::remove(K key, T data)
+    {
+        size_t bucketLocation = hasher(key) % buckets.size();
+
+        int indexOfKey = -1;
+        for(int i=0; i<buckets[bucketLocation].size(); i++)
+        {
+            if(buckets[bucketLocation][i]->data == data)
+            {
+                indexOfKey = i;
+                delete buckets[bucketLocation][i];
+                break;
+            }
+        }
+
+        if(indexOfKey != -1)
+        {
+            for(int i=indexOfKey; i<buckets[bucketLocation].size()-1; i++)
+            {
+                HashPair<K,T>* temp = buckets[bucketLocation][i];
+                buckets[bucketLocation][i] = buckets[bucketLocation][i+1];
+                buckets[bucketLocation][i+1] = temp;
+            }
+            buckets[bucketLocation].pop_back();
+            this->size--;
+            return true;
+        }
+
         return false;
     }
 

@@ -19,6 +19,9 @@ namespace glib
 		GuiTextBox::registerLoadFunction();
 		GuiSprite::registerLoadFunction();
 		GuiContainer::registerLoadFunction();
+		GuiList::registerLoadFunction();
+		GuiGrid::registerLoadFunction();
+		GuiContextMenu::registerLoadFunction();
 	}
 
 	void GuiManager::registerLoadFunction(std::wstring className, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&)> func)
@@ -104,11 +107,13 @@ namespace glib
 	GuiManager::GuiManager()
 	{
 		surf = Image(320,240);
+		surf.setAllPixels(backgroundColor);
 	}
 
 	GuiManager::GuiManager(int width, int height)
 	{
 		surf = Image(width,height);
+		surf.setAllPixels(backgroundColor);
 	}
 
 	GuiManager::~GuiManager()
@@ -126,6 +131,7 @@ namespace glib
 		}
 		
 		objects.clear();
+		objectsByName.clear();
 		shouldDelete.clear();
 	}
 
@@ -137,6 +143,7 @@ namespace glib
 			{
 				k->setManager(this);
 				objects.push_back(k);
+				objectsByName.add( k->nameID, k);
 
 				for(int i=0; i<k->getChildren().size(); i++)
 				{
@@ -181,6 +188,7 @@ namespace glib
 			}
 
 			k->manager = nullptr;
+			objectsByName.remove(k->nameID, k);
 
 			//delete children as well
 			for(GuiInstance* o : k->getChildren())
@@ -214,11 +222,13 @@ namespace glib
 		std::vector<GuiInstance*> currActiveObjects = std::vector<GuiInstance*>();
 		for(int i=0; i<objects.size(); i++)
 		{
-			if (objects[i] != nullptr)
+			GuiInstance* obj = objects[i];
+
+			if (obj != nullptr)
 			{
-				if(objects[i]->getActive())
+				if(obj->getActive())
 				{
-					currActiveObjects.push_back(objects[i]);
+					currActiveObjects.push_back(obj);
 				}
 			}
 		}
@@ -229,11 +239,30 @@ namespace glib
 			obj->baseUpdate();
 			obj->update();
 		}
+
 	}
 
-	void GuiManager::renderGuiElements()
+	bool GuiManager::renderGuiElements()
 	{
 		std::vector<GuiInstance*> currVisibleObjects = std::vector<GuiInstance*>();
+
+		unsigned int minX = 0xFFFFFFFF;
+		unsigned int maxX = 0;
+		unsigned int minY = 0xFFFFFFFF;
+		unsigned int maxY = 0;
+
+		unsigned int preMinX = 0xFFFFFFFF;
+		unsigned int preMaxX = 0;
+		unsigned int preMinY = 0xFFFFFFFF;
+		unsigned int preMaxY = 0;
+
+		int redrawCount = 0;
+
+		if(alwaysInvalidate)
+		{
+			invalidImage = true;
+		}
+
 		for(int i=0; i<objects.size(); i++)
 		{
 			if (objects[i] != nullptr)
@@ -241,32 +270,123 @@ namespace glib
 				if(objects[i]->getVisible())
 				{
 					currVisibleObjects.push_back(objects[i]);
+
+					if(invalidImage)
+					{
+						redrawCount++;
+						objects[i]->shouldRedraw = true;
+					}
+					else
+					{
+						if(objects[i]->shouldRedraw)
+							redrawCount++;
+					}
 				}
 			}
 		}
 
-		//RENDER
-		SimpleGraphics::setColor(backgroundColor);
-		surf.clearImage();
-
-		for (GuiInstance* obj : currVisibleObjects)
+		if(redrawCount > 0)
 		{
-			obj->baseRender();
-
-			if(obj->canvas != nullptr)
+			//calculate the bounding render area
+			for(GuiInstance* obj : currVisibleObjects)
 			{
-				obj->render(obj->canvas);
+				if(obj->shouldRedraw)
+				{
+					minX = min(obj->boundingBox.getLeftBound(), minX);
+					maxX = max(obj->boundingBox.getRightBound(), maxX);
+					minY = min(obj->boundingBox.getTopBound(), minY);
+					maxY = max(obj->boundingBox.getBottomBound(), maxY);
+					
+					preMinX = min(obj->previousBoundingBox.getLeftBound(), preMinX);
+					preMaxX = max(obj->previousBoundingBox.getRightBound(), preMaxX);
+					preMinY = min(obj->previousBoundingBox.getTopBound(), preMinY);
+					preMaxY = max(obj->previousBoundingBox.getBottomBound(), preMaxY);
+				}
+			}
+
+			Box2D newClipBox = Box2D(minX, minY, maxX, maxY);
+			Box2D preClipBox = Box2D(preMinX, preMinY, preMaxX, preMaxY);
+
+			SimpleGraphics::setColor(backgroundColor);
+
+			if(invalidImage)
+			{
+				surf.clearImage();
+				SimpleGraphics::resetClippingPlane();
 			}
 			else
 			{
-				obj->render(&surf);
+				if(minX <=0 && maxX >=surf.getWidth() && minY <=0 && maxY >=surf.getHeight())
+				{
+					surf.clearImage(); 
+				}
+				else if(preMinX <=0 && preMaxX >=surf.getWidth() && preMinY <=0 && preMaxY >=surf.getHeight())
+				{
+					surf.clearImage();
+				}
+				else
+				{
+					surf.drawRect(minX, minY, maxX, maxY, false);
+					surf.drawRect(preMinX, preMinY, preMaxX, preMaxY, false);
+				}
+			}
+			
+			for(GuiInstance* obj : currVisibleObjects)
+			{
+				if(!invalidImage)
+				{
+					if(CollisionMaster::collisionMethod(&newClipBox, &obj->boundingBox))
+					{
+						obj->shouldRedraw = true;
+						SimpleGraphics::setClippingRect(newClipBox);
+					}
+					else if(CollisionMaster::collisionMethod(&newClipBox, &obj->boundingBox))
+					{
+						obj->shouldRedraw = true;
+						SimpleGraphics::setClippingRect(preClipBox);
+					}
+					else
+					{
+						obj->shouldRedraw = false;
+					}
+				}
+
+				if(obj->shouldRedraw)
+				{
+					obj->baseRender();
+					obj->render(&surf);
+
+					obj->previousBoundingBox = obj->boundingBox;
+				}
+
+				obj->shouldRedraw = false;
+			}
+
+		}
+		else
+		{
+			if(invalidImage)
+			{
+				SimpleGraphics::setColor(backgroundColor);
+				surf.clearImage();
+				redrawCount++;
 			}
 		}
+
+		SimpleGraphics::resetClippingPlane();
+		invalidImage = false;
+		
+		return redrawCount != 0;
 	}
 
 	std::vector<GuiInstance*>& GuiManager::getElements()
 	{
 		return objects;
+	}
+	
+	std::vector< HashPair<std::wstring, GuiInstance*>* > GuiManager::getInstancesByName(std::wstring name)
+	{
+		return objectsByName.getAll(name);
 	}
 
 	Image* GuiManager::getImage()
@@ -282,6 +402,17 @@ namespace glib
 	void GuiManager::resizeImage(int width, int height)
 	{
 		surf = Image(width, height);
+		invalidImage = true;
+	}
+
+	void GuiManager::invalidateImage()
+	{
+		invalidImage = true;
+	}
+	
+	void GuiManager::alwaysInvalidateImage(bool v)
+	{
+		alwaysInvalidate = v;
 	}
 
 	void GuiManager::setWindowX(int v)

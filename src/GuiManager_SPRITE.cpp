@@ -34,6 +34,7 @@ namespace glib
 				lastUpdateTime = System::getCurrentTimeMicro();
 
 				index++;
+				setShouldRedraw(true);
 
 				if(index >= img.getSize())
 				{
@@ -87,6 +88,7 @@ namespace glib
 	void GuiSprite::setSprite(Sprite img)
 	{
 		this->img = img;
+		setShouldRedraw(true);
 	}
 
 	Sprite& GuiSprite::getSprite()
@@ -97,10 +99,13 @@ namespace glib
 	void GuiSprite::setXScale(double v)
 	{
 		xScale = v;
+		setShouldRedraw(true);
 	}
+
 	void GuiSprite::setYScale(double v)
 	{
 		yScale = v;
+		setShouldRedraw(true);
 	}
 
 	double GuiSprite::getXScale()
@@ -115,11 +120,13 @@ namespace glib
 	void GuiSprite::setWidth(int width)
 	{
 		this->width = width;
+		setShouldRedraw(true);
 	}
 
 	void GuiSprite::setHeight(int height)
 	{
 		this->height = height;
+		setShouldRedraw(true);
 	}
 
 	int GuiSprite::getWidth()
@@ -135,6 +142,7 @@ namespace glib
 	void GuiSprite::setColor(Color c)
 	{
 		imgColor = c;
+		setShouldRedraw(true);
 	}
 
 	Color GuiSprite::getColor()
@@ -146,6 +154,7 @@ namespace glib
 	{
 		index = 0;
 		lastUpdateTime = 0;
+		setShouldRedraw(true);
 	}
 
 

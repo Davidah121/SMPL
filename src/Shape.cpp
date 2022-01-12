@@ -176,6 +176,16 @@ namespace glib
 	{
 		return bottomRight.y;
 	}
+	
+	double Box2D::getWidth()
+	{
+		return bottomRight.x - topLeft.x;
+	}
+	
+	double Box2D::getHeight()
+	{
+		return bottomRight.y - topLeft.y;
+	}
 
 	void Box2D::onTransformChanged()
 	{
@@ -196,6 +206,17 @@ namespace glib
 		return toTopLeft.getLength();
 	}
 
+	
+	bool Box2D::operator==(Box2D other)
+	{
+		return (topLeft == other.topLeft && bottomRight == other.bottomRight);
+	}
+
+	bool Box2D::operator!=(Box2D other)
+	{
+		return !operator==(other);
+	}
+	
 	#pragma endregion
 
 	#pragma region CIRCLE

@@ -612,9 +612,10 @@ namespace glib
 		unsigned int sleepTimeMillis = 16;
 		unsigned int sleepTimeMicros = 0;
 
+		
 		void threadUpdate();
 		void threadGuiUpdate();
-		void threadRender();
+		bool threadRender();
 		void threadRepaint();
 
 		//At the cost of potential portability and bad code.

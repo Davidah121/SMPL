@@ -1,6 +1,5 @@
 #pragma once
 #include "ext/GLSingleton.h"
-
 #include "Image.h"
 
 namespace glib

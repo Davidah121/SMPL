@@ -23,6 +23,7 @@ namespace glib
 
 	void GuiCustomObject::update()
 	{
+		setShouldRedraw(true);
 		if(updateFunc!=nullptr)
 			updateFunc();
 	}

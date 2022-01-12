@@ -276,11 +276,28 @@ namespace glib
 		double getBottomBound();
 
 		/**
+		 * @brief Gets the Width of the AABB
+		 * 
+		 * @return double 
+		 */
+		double getWidth();
+
+		/**
+		 * @brief Gets the Height of the AABB
+		 * 
+		 * @return double 
+		 */
+		double getHeight();
+
+		/**
 		 * @brief Generates a bounding radius for the AABB.
 		 * 		(Implement later)
 		 * @return double 
 		 */
 		double generateBoundingRadius();
+
+		bool operator==(Box2D other);
+		bool operator!=(Box2D other);
 
 	protected:
 		void onTransformChanged();

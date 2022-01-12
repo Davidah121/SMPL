@@ -153,9 +153,15 @@ namespace glib
 		children = m;
 
 		ins->parent = nullptr;
+		ins->setOffset(nullptr, nullptr);
 	}
 
 	std::vector<GuiInstance*> GuiInstance::getChildren()
+	{
+		return children;
+	}
+
+	std::vector<GuiInstance*>& GuiInstance::getChildrenRef()
 	{
 		return children;
 	}
@@ -234,6 +240,11 @@ namespace glib
 		return alwaysFocus;
 	}
 
+	void GuiInstance::setShouldRedraw(bool v)
+	{
+		shouldRedraw = v;
+	}
+
 	int GuiInstance::getOffsetX()
 	{
 		if(offX!=nullptr)
@@ -292,6 +303,11 @@ namespace glib
 		return y;
 	}
 
+	Box2D GuiInstance::getBoundingBox()
+	{
+		return boundingBox;
+	}
+
 	void GuiInstance::setOnActivateFunction(std::function<void(GuiInstance*)> func)
 	{
 		onActivateFunction = func;
@@ -338,6 +354,12 @@ namespace glib
 	{
 		renderX = baseX + getOffsetX() - getRenderOffsetX();
 		renderY = baseY + getOffsetY() - getRenderOffsetY();
+
+		if(renderX != oldRenderX || renderY != oldRenderY)
+			setShouldRedraw(true);
+		
+		oldRenderX = renderX;
+		oldRenderY = renderY;
 	}
 
 	const void GuiInstance::baseUpdate()
@@ -350,16 +372,22 @@ namespace glib
 				onActivateFunction(this);
 
 		if (shouldCallV)
+		{
+			setShouldRedraw(true);
 			if(onVisibleFunction!=nullptr)
 				onVisibleFunction(this);
+		}
 		
 		if (shouldCallA2)
 			if(onDeActivateFunction!=nullptr)
 				onDeActivateFunction(this);
 
 		if (shouldCallV2)
+		{
+			setShouldRedraw(true);
 			if(onInvisibleFunction!=nullptr)
 				onInvisibleFunction(this);
+		}
 
 		if(shouldCallF)
 			if(onFocusFunction!=nullptr)

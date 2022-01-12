@@ -440,6 +440,35 @@ namespace glib
 		 */
 		static void setMouseHWheelValuePointer(int* v);
 
+		/**
+		 * @brief Sets the swap interval for vsync. 
+		 * 		If set to 0, vsync will be disabled.
+		 * 
+		 * 		Note that in order to have 30 fps on a 60hz monitor, interval should be set to 2.
+		 * 		To have 30 fps on a 120hz monitor, interval should be set to 4.
+		 * 
+		 * 		Sleeping in software can help for specific framerates and interval could be set to 1 to sync on the next
+		 * 		available frame.
+		 * 
+		 * @param interval 
+		 * 		Specifies which frame to sync on. 
+		 */
+        void setVSync(unsigned int interval);
+		
+		/**
+		 * @brief Gets the swap interval for vsync.
+		 * 
+		 * @return unsigned int 
+		 */
+		unsigned int getVSyncInterval();
+
+		/**
+		 * @brief Sets additional flags in the IDXGISwapChain->Present() function.
+		 * 		Useful for things like variable refresh rate among other things.
+		 * 
+		 * @param flags 
+		 */
+		void setSwapChainFlags(unsigned int flags);
         
         void testDirectX();
 		void clearWindow(Vec4f color);
@@ -462,6 +491,8 @@ namespace glib
         // ID3D11RenderTargetView* backBuffer = nullptr;
 
         void initDirectX();
+		unsigned int swapInterval = 0;
+		unsigned int swapFlags = 0;
         // void disposeDirectX();
 
         //

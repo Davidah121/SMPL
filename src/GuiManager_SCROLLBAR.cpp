@@ -169,11 +169,12 @@ namespace glib
 	void GuiScrollBar::increaseScroll()
 	{
 		setCurrentStep( currStep + 1 );
-
 	}
 
 	void GuiScrollBar::update()
 	{
+		bool oldFocus = getFocus();
+
 		if(buttonElement.getFocus() || increaseButtonElement.getFocus() || decreaseButtonElement.getFocus())
 		{
 			if(!getFocus())
@@ -210,6 +211,9 @@ namespace glib
 				}
 			}
 		}
+
+		if(getFocus() != oldFocus)
+			setShouldRedraw(true);
 
 		boundingBox = Box2D(startX, startY, endX, endY);
 	}
@@ -337,6 +341,7 @@ namespace glib
 			increaseButtonElement.setWidth(buttonWidth);
 			increaseButtonElement.setHeight(buttonWidth);
 		}
+		setShouldRedraw(true);
 	}
 
 	bool GuiScrollBar::getHorizontalBar()
@@ -364,6 +369,7 @@ namespace glib
 	void GuiScrollBar::setBackgroundColor(Color c)
 	{
 		backgroundColor = c;
+		setShouldRedraw(true);
 	}
 
 	Color GuiScrollBar::getBackgroundColor()
@@ -374,6 +380,7 @@ namespace glib
 	void GuiScrollBar::setOutlineColor(Color c)
 	{
 		outlineColor = c;
+		setShouldRedraw(true);
 	}
 
 	Color GuiScrollBar::getOutlineColor()
@@ -384,6 +391,7 @@ namespace glib
 	void GuiScrollBar::setStartX(int x)
 	{
 		startX = x;
+		setShouldRedraw(true);
 	}
 
 	int GuiScrollBar::getStartX()
@@ -394,6 +402,7 @@ namespace glib
 	void GuiScrollBar::setStartY(int y)
 	{
 		startY = y;
+		setShouldRedraw(true);
 	}
 
 	int GuiScrollBar::getStartY()
@@ -404,6 +413,7 @@ namespace glib
 	void GuiScrollBar::setEndX(int x)
 	{
 		endX = x;
+		setShouldRedraw(true);
 	}
 
 	int GuiScrollBar::getEndX()
@@ -414,6 +424,7 @@ namespace glib
 	void GuiScrollBar::setEndY(int y)
 	{
 		endY = y;
+		setShouldRedraw(true);
 	}
 
 	int GuiScrollBar::getEndY()
@@ -424,6 +435,7 @@ namespace glib
 	void GuiScrollBar::setMinWidth(int w)
 	{
 		minWidth = w;
+		setShouldRedraw(true);
 	}
 
 	int GuiScrollBar::getMinWidth()
@@ -434,6 +446,7 @@ namespace glib
 	void GuiScrollBar::setMinHeight(int h)
 	{
 		minHeight = h;
+		setShouldRedraw(true);
 	}
 
 	int GuiScrollBar::getMinHeight()

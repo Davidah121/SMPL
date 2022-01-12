@@ -1,8 +1,7 @@
 #pragma once
+
 #include "MathExt.h"
-
 #include "ext/GLSingleton.h"
-
 #include "Model.h"
 
 namespace glib
@@ -30,9 +29,9 @@ namespace glib
 
         size_t getSize();
 
-        void storeDataInt(int attributeID, std::vector<int> data, int sizePerVertex, bool forceReallocate = false);
-        void storeDataFloat(int attributeID, std::vector<float> data, int sizePerVertex, bool forceReallocate = false);
-        void storeDataFloat(int attributeID, std::vector<double> data, int sizePerVertex, bool forceReallocate = false);
+        void storeDataInt(int attributeID, std::vector<int> data, int valuesPerVertex, bool forceReallocate = false);
+        void storeDataFloat(int attributeID, std::vector<float> data, int valuesPerVertex, bool forceReallocate = false);
+        void storeDataFloat(int attributeID, std::vector<double> data, int valuesPerVertex, bool forceReallocate = false);
         
         void setAttributeEnabled(int attributeID, bool v);
 
@@ -54,7 +53,6 @@ namespace glib
         int usage = GL_DYNAMIC_DRAW;
 
         size_t size = 0;
-        size_t first = 0;
 
         bool shouldDelete = true;
     };

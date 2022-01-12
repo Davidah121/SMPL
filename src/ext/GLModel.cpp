@@ -5,6 +5,7 @@ namespace glib
 
     GLModel::GLModel()
     {
+        shouldDelete = true;
     }
     
     GLModel::GLModel(GLModel& other)
@@ -19,7 +20,6 @@ namespace glib
         drawType = other.drawType;
         usage = other.usage;
         size = other.size;
-        first = other.first;
         shouldDelete = true;
     }
 
@@ -35,7 +35,6 @@ namespace glib
         drawType = other.drawType;
         usage = other.usage;
         size = other.size;
-        first = other.first;
         shouldDelete = true;
     }
 
@@ -61,7 +60,6 @@ namespace glib
             vaoID = 0;
             indexedBuffer = 0;
             size = 0;
-            first = 0;
         }
     }
 
@@ -81,7 +79,7 @@ namespace glib
 
             if(modType == TYPE_ARRAY)
             {
-                glDrawArrays(drawType, first, size);
+                glDrawArrays(drawType, 0, size);
             }
             else
             {
@@ -259,7 +257,6 @@ namespace glib
 
         m.size = 3;
         m.modType = TYPE_ARRAY;
-        m.first = 0;
         m.drawType = GL_TRIANGLES;
         m.vboIDs.push_back(0);
         m.vboSizes.push_back(9*sizeof(float));
@@ -452,7 +449,7 @@ namespace glib
                 drawType = GL_LINE_STRIP;
                 break;
             case Model::LINE_LOOP:
-                drawType = GL_LINE_LOOP;
+                drawType = GL_LINE_LOOP; //No longer valid. Replace
                 break;
             case Model::TRIANGLES:
                 drawType = GL_TRIANGLES;
@@ -461,13 +458,13 @@ namespace glib
                 drawType = GL_TRIANGLE_STRIP;
                 break;
             case Model::TRIANGLE_FAN:
-                drawType = GL_TRIANGLE_FAN;
+                drawType = GL_TRIANGLE_FAN; //No longer valid. Replace
                 break;
             case Model::QUADS:
-                drawType = GL_QUADS;
+                drawType = GL_QUADS; //No longer valid. Replace
                 break;
             case Model::QUAD_STRIP:
-                drawType = GL_QUAD_STRIP;
+                drawType = GL_QUAD_STRIP; //No longer valid. Replace
                 break;
             default:
                 drawType = GL_POINT;
