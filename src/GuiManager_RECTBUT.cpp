@@ -60,6 +60,9 @@ namespace glib
 	{
 		int mouseX = Input::getMouseX();
 		int mouseY = Input::getMouseY();
+
+		bool oldHover = hover;
+		bool oldFocus = getFocus();
 		
 		if(getManager()!=nullptr)
 		{
@@ -107,6 +110,11 @@ namespace glib
 				onClickHoldFunction(this);
 		}
 
+		if(getFocus() != oldFocus)
+			setShouldRedraw(true);
+		
+		if(hover != oldHover)
+			setShouldRedraw(true);
 		
 		boundingBox = Box2D(x, y, x+width, y+height);
 	}
@@ -157,35 +165,42 @@ namespace glib
 	void GuiRectangleButton::setBackgroundColor(Color c)
 	{
 		backgroundColor = c;
+		setShouldRedraw(true);
 	}
 
 	void GuiRectangleButton::setOutlineColor(Color c)
 	{
 		outlineColor = c;
+		setShouldRedraw(true);
 	}
 
 	void GuiRectangleButton::setFocusOutlineColor(Color c)
 	{
 		focusOutlineColor = c;
+		setShouldRedraw(true);
 	}
 
 	void GuiRectangleButton::setFocusBackgroundColor(Color c)
 	{
 		focusBackgroundColor = c;
+		setShouldRedraw(true);
 	}
 
 	void GuiRectangleButton::setHoverColor(Color c)
 	{
 		hoverColor = c;
+		setShouldRedraw(true);
 	}
 
 	void GuiRectangleButton::setWidth(int v)
 	{
 		width = v;
+		setShouldRedraw(true);
 	}
 	void GuiRectangleButton::setHeight(int v)
 	{
 		height = v;
+		setShouldRedraw(true);
 	}
 	int GuiRectangleButton::getWidth()
 	{

@@ -31,6 +31,7 @@ namespace glib
 		SimpleGraphics::setColor(clearColor);
 		myImage.clearImage();
 		boundingBox = Box2D(x, y, x+myImage.getWidth(), y+myImage.getHeight());
+		setShouldRedraw(true);
 	}
 
 	void GuiCanvas::render(Image* surf)

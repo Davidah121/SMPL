@@ -40,6 +40,7 @@ namespace glib
 	void GuiImage::setImage(Image* img)
 	{
 		this->img = img;
+		setShouldRedraw(true);
 	}
 
 	Image* GuiImage::getImage()

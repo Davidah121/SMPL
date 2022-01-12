@@ -2,6 +2,7 @@
 
 namespace glib
 {
+    DXShader* DXShader::activeShader = nullptr;
 
     DXShader::DXShader(File vertexShaderFile, File fragmentShaderFile)
     {
@@ -93,10 +94,17 @@ namespace glib
 
     void DXShader::setAsActive()
     {
-        ID3D11DeviceContext* context = DXSingleton::getContext();
+        if(valid)
+        {
+            deactivateCurrentShader();
+            
+            ID3D11DeviceContext* context = DXSingleton::getContext();
 
-        context->VSSetShader(vertexID, nullptr, 0);
-        context->PSSetShader(fragmentID, nullptr, 0);
+            context->VSSetShader(vertexID, nullptr, 0);
+            context->PSSetShader(fragmentID, nullptr, 0);
+            context->IASetInputLayout(layout);
+            activeShader = this;
+        }
     }
 
     void DXShader::setUniformData(void* buffer, size_t sizeOfBuffer, int location, int type)
@@ -149,4 +157,25 @@ namespace glib
     {
         return valid;
     }
+
+    void DXShader::deactivateCurrentShader()
+    {
+        ID3D11DeviceContext* context = DXSingleton::getContext();
+
+        context->VSSetShader(0, nullptr, 0);
+        context->PSSetShader(0, nullptr, 0);
+        context->GSSetShader(0, nullptr, 0);
+        context->HSSetShader(0, nullptr, 0);
+        context->DSSetShader(0, nullptr, 0);
+        context->CSSetShader(0, nullptr, 0);
+
+        context->IASetInputLayout(0);
+        activeShader = nullptr;
+    }
+
+    DXShader* DXShader::getActiveShader()
+    {
+        return activeShader;
+    }
+
 };

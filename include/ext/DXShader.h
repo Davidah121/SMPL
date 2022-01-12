@@ -36,7 +36,8 @@ namespace glib
         ID3D11VertexShader* getVertexShaderPointer();
         ID3D11PixelShader* getFragmentShaderPointer();
         
-        // unsigned int getShaderID();
+        static void deactivateCurrentShader();
+        static DXShader* getActiveShader();
     private:
 
         ID3D11VertexShader* vertexID = nullptr;
@@ -45,6 +46,8 @@ namespace glib
         D3D11_INPUT_ELEMENT_DESC inputDesc;
         ID3D11InputLayout* layout = nullptr;
         bool valid = false;
+
+        static DXShader* activeShader;
     };
 
 } //NAMESPACE glib END

@@ -23,7 +23,7 @@ namespace glib
 
 	void GuiContainer::update()
 	{
-		
+		setShouldRedraw(false);
 	}
 
 	void GuiContainer::render(Image* surf)

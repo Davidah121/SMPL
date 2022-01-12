@@ -685,10 +685,13 @@ namespace glib
 		bitInfo.bmiColors->rgbBlue = 0;
 		bitInfo.bmiColors->rgbReserved = 0;
 
-		scanLinePadding = width%4;
+		scanLinePadding = 4 - width%4;
+		if(scanLinePadding == 4)
+			scanLinePadding = 0;
 
 		wndPixelsSize = (width*3 + scanLinePadding) * height;
 
+		
 		if(wndPixels != nullptr)
 		{
 			DeleteObject(bitmap);
@@ -1272,23 +1275,33 @@ namespace glib
 		}
 	}
 
-	void SimpleWindow::threadRender()
+	bool SimpleWindow::threadRender()
 	{
+		bool changed = false;
+
 		if(windowState != STATE_MINIMIZED)
 		{
 			if (gui != nullptr && activateGui)
 			{
-				gui->renderGuiElements();
-				drawImage(gui->getImage());
+				changed = gui->renderGuiElements();
+				if(changed)
+					drawImage(gui->getImage());
 			}
 		}
 
 		if (paintFunction != nullptr)
+		{
 			paintFunction();
+			changed = true;
+		}
+
+		return changed;
 	}
 
 	void SimpleWindow::threadRepaint()
 	{
+		bool changed = false;
+
 		//draw and send redraw message
 		if(getResizing())
 		{
@@ -1299,14 +1312,20 @@ namespace glib
 		{
 			initBitmap();
 			setResizeMe(false);
+
+			changed = true;
 		}
 
 		if(windowState != STATE_MINIMIZED)
 		{
-			threadRender();
-			int value = SetDIBits(myHDC, bitmap, 0, height, &wndPixels[0], &bitInfo, DIB_RGB_COLORS);
-			
-			RedrawWindow((HWND)windowHandle, NULL, NULL, RDW_INVALIDATE);
+			bool imgChanged = threadRender();
+
+			if(changed || imgChanged)
+			{
+				int value = SetDIBits(myHDC, bitmap, 0, height, &wndPixels[0], &bitInfo, DIB_RGB_COLORS);
+				
+				RedrawWindow((HWND)windowHandle, NULL, NULL, RDW_INVALIDATE);
+			}
 
 			myMutex.lock();
 			shouldRepaint=false;

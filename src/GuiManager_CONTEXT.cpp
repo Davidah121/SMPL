@@ -61,6 +61,7 @@ namespace glib
 				}
 			}
 		}
+		setShouldRedraw(false);
 	}
 
 	void GuiContextMenu::render(Image* surf)
@@ -95,6 +96,25 @@ namespace glib
 	bool GuiContextMenu::getShowOnRightClick()
 	{
 		return showOnRightClick;
+	}
+
+	void GuiContextMenu::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs)
+	{
+		GuiInstance::loadDataFromXML(attribs);
+		listMenu.loadDataFromXML(attribs);
+	}
+
+	void GuiContextMenu::registerLoadFunction()
+	{
+		GuiManager::registerLoadFunction(L"GuiContextMenu", GuiContextMenu::loadFunction);
+	}
+
+	GuiInstance* GuiContextMenu::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes)
+	{
+		GuiContextMenu* ins = new GuiContextMenu();
+		ins->loadDataFromXML(attributes);
+		
+		return ins;
 	}
 	
 	#pragma endregion

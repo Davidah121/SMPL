@@ -400,6 +400,8 @@ namespace glib
 		keyInput();
 		mouseInput();
 		selectionCleanup();
+
+		boundingBox = Box2D(x, y, x+width, y+height);
 	}
 
 	GuiTextBlock* GuiTextBox::getTextBlockElement()

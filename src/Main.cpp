@@ -296,24 +296,41 @@ void testGuiStuff()
 
     std::vector<GuiInstance*> elements;
 
-    GuiContextMenu m = GuiContextMenu();
-    m.getListElement()->setElementSpacing(20);
-    m.getListElement()->setExpectedWidth(52);
+    // GuiContextMenu m = GuiContextMenu();
+    // m.getListElement()->setElementSpacing(8);
 
-    for(int i=0; i<5; i++)
+    // for(int i=0; i<5; i++)
+    // {
+    //     GuiTextBlock* b = new GuiTextBlock(2, 2, 48, 16);
+    //     b->setText("Data " + std::to_string(i));
+
+    //     GuiRectangleButton* but = new GuiRectangleButton(2, 2, 48, 16);
+    //     but->addChild(b);
+    //     but->setBackgroundColor({0, 0, 0, 0});
+    //     but->setOutlineColor({0, 0, 0, 0});
+    //     but->setFocusOutlineColor({0, 0, 0, 0});
+
+    //     elements.push_back(b);
+    //     elements.push_back(but);
+    //     m.getListElement()->addElement(but);
+    // }
+
+    GuiGrid m = GuiGrid(32, 32);
+    m.setGridSpacing(16, 16);
+    m.setMaxRows(4);
+    m.setMaxColumns(4);
+
+    Mat4f q = MathExt::viewMatrix2D(Vec2f(32, 32), 42);
+
+    for(int i=0; i<4; i++)
     {
-        GuiTextBlock* b = new GuiTextBlock(0, 0, 48, 16);
-        b->setText("Data " + std::to_string(i));
-
-        GuiRectangleButton* but = new GuiRectangleButton(2, 2, 48, 16);
-        but->addChild(b);
-        but->setBackgroundColor({0, 0, 0, 0});
-        but->setOutlineColor({0, 0, 0, 0});
-        but->setFocusOutlineColor({0, 0, 0, 0});
-
-        elements.push_back(b);
-        elements.push_back(but);
-        m.getListElement()->addElement(but);
+        for(int j=0; j<4; j++)
+        {
+            GuiTextBlock* b = new GuiTextBlock(2, 2, 48, 24);
+            b->setText( std::to_string(q[i][j]) );
+            m.addChild(b);
+            elements.push_back(b);
+        }
     }
 
     w.getGuiManager()->addElement(&m);
@@ -918,7 +935,9 @@ int main(int argc, char** argv)
     // testLoadGui();
 
     //Adjust compression algorithms to adjust pointer to output instead of returning a new list and copying it.
-    testSavePNG();
+    // testSavePNG();
+
+    testGuiStuff();
 
     // testQuickHash();
     // testModelBuilder();

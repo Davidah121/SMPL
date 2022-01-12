@@ -28,6 +28,8 @@ namespace glib
         void setMat3(std::string varName, Mat3f value, bool transpose = true);
         void setMat4(std::string varName, Mat4f value, bool transpose = true);
         
+        
+        void setUniformData(void* buffer, size_t sizeOfBuffer, int location, int type);
 
         bool getValid();
         unsigned int getShaderID();
@@ -37,6 +39,7 @@ namespace glib
         static GLShader createShaderFromStringLiteral(std::string vertexString, std::string fragmentString);
 
         static void deactivateCurrentShader();
+        static GLShader* getActiveShader();
         
     private:
 
@@ -46,6 +49,8 @@ namespace glib
         unsigned int vertexID = 0;
         unsigned int fragmentID = 0;
         bool valid = false;
+
+        static GLShader* activeShader;
     };
 
 } //NAMESPACE glib END

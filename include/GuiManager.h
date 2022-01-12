@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <unordered_set>
+#include "SimpleHashMap.h"
 
 #include "VectorGraphic.h"
 #include "Image.h"
@@ -111,6 +112,14 @@ namespace glib
 		 * @return std::vector<GuiInstance*> 
 		 */
 		std::vector<GuiInstance*> getChildren();
+
+		/**
+		 * @brief Gets a list of children objects.
+		 * 		Returns a reference to the internal list
+		 * 
+		 * @return std::vector<GuiInstance*>&
+		 */
+		std::vector<GuiInstance*>& getChildrenRef();
 
 		/**
 		 * @brief The base update function.
@@ -245,6 +254,13 @@ namespace glib
 		int getY();
 
 		/**
+		 * @brief Gets the Bounding Box for the GuiInstance.
+		 * 
+		 * @return Box2D 
+		 */
+		Box2D getBoundingBox();
+
+		/**
 		 * @brief Sets if the GuiInstance is visible.
 		 * 
 		 * @param is 
@@ -303,6 +319,15 @@ namespace glib
 		 * @return false 
 		 */
 		bool getAlwaysFocus();
+
+		/**
+		 * @brief Sets whether the object should be redrawn.
+		 * 		If the object has moved, or was previously covered, it should redraw.
+		 * 		Saves performance by reducing draw calls.
+		 * 
+		 * @param v 
+		 */
+		void setShouldRedraw(bool v);
 
 		/**
 		 * @brief Sets the canvas for the GuiInstance.
@@ -371,6 +396,7 @@ namespace glib
 		int renderY = 0;
 
 		Box2D boundingBox = Box2D(0, 0, 0, 0);
+		Box2D previousBoundingBox = Box2D(0, 0, 0, 0);
 
 		std::wstring nameID = L"";
 
@@ -415,6 +441,9 @@ namespace glib
 
 		int* renderOffX = nullptr;
 		int* renderOffY = nullptr;
+
+		int oldRenderX = 0;
+		int oldRenderY = 0;
 		
 		bool shouldCallA = false;
 		bool shouldCallV = false;
@@ -422,6 +451,8 @@ namespace glib
 		bool shouldCallV2 = false;
 
 		bool shouldCallF = false;
+
+		bool shouldRedraw = true;
 
 		std::function<void(GuiInstance*)> onFocusFunction;
 		std::function<void(GuiInstance*)> onActivateFunction;
@@ -1836,7 +1867,7 @@ namespace glib
 	class GuiList : public GuiInstance
 	{
 	public:
-		GuiList(int x, int y);
+		GuiList(int x, int y, bool isVertical = true);
 		~GuiList();
 
 		//Object and Class Stuff
@@ -1850,16 +1881,37 @@ namespace glib
 		void addElement(GuiInstance* ins);
 		void removeElement(GuiInstance* ins);
 
+		//override parent add child functions so that both addElement and addChild work the same way.
+		void addChild(GuiInstance* ins);
+		void removeChild(GuiInstance* ins);
+
 		bool pointIsInList(int x, int y);
-		void setExpectedWidth(int w);
 
 		void setBackgroundColor(Color c);
 		void setOutlineColor(Color c);
+
+		void setIsVerticalList(bool v);
+		bool getIsVerticalList();
 		
+		/**
+		 * @brief Loads data from an Xml Attribute.
+		 * 		This allows a large list of attributes to be defined
+		 * 		and allow each class to deal with them in their own way.
+		 * 		
+		 * 		Will remove data from the hashmap if it has been processed.
+		 * 
+		 * @param attrib 
+		 */
+		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs);
+
+		static void registerLoadFunction();
+
 	private:
+		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes);
+
 		std::vector<Point*> locations;
 		int elementSpacing = 0;
-		int width = 0;
+		bool isVertical = true;
 
 		Color backgroundColor = { 180, 180, 180, 255 };
 		Color outlineColor = { 0, 0, 0, 255 };
@@ -1881,6 +1933,10 @@ namespace glib
 		void setGridSpacing(int x, int y);
 		void addElement(GuiInstance* ins);
 		void removeElement(GuiInstance* ins);
+		
+		//override parent add child functions so that both addElement and addChild work the same way.
+		void addChild(GuiInstance* ins);
+		void removeChild(GuiInstance* ins);
 
 		void setMaxRows(int row);
 		int getMaxRows();
@@ -1892,13 +1948,29 @@ namespace glib
 		bool pointIsInGrid(int x, int y);
 		void setBackgroundColor(Color c);
 		void setOutlineColor(Color c);
+
+		/**
+		 * @brief Loads data from an Xml Attribute.
+		 * 		This allows a large list of attributes to be defined
+		 * 		and allow each class to deal with them in their own way.
+		 * 		
+		 * 		Will remove data from the hashmap if it has been processed.
+		 * 
+		 * @param attrib 
+		 */
+		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs);
+
+		static void registerLoadFunction();
+
 	private:
+		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes);
+
 		std::vector<Point*> locations;
 		int gridXSpacing = 0;
 		int gridYSpacing = 0;
 		int rowSize = 1;
 		int colSize = 1;
-		bool rowMajorOrder = true;
+		bool rowMajorOrder = false;
 		
 		Color backgroundColor = { 180, 180, 180, 255 };
 		Color outlineColor = { 0, 0, 0, 255 };
@@ -1924,7 +1996,22 @@ namespace glib
 
 		void setShowOnRightClick(bool v);
 		bool getShowOnRightClick();
+		
+		/**
+		 * @brief Loads data from an Xml Attribute.
+		 * 		This allows a large list of attributes to be defined
+		 * 		and allow each class to deal with them in their own way.
+		 * 		
+		 * 		Will remove data from the hashmap if it has been processed.
+		 * 
+		 * @param attrib 
+		 */
+		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs);
+		static void registerLoadFunction();
+
 	private:
+		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes);
+
 		GuiList listMenu = GuiList(0, 0);
 		bool showOnRightClick = true;
 		
@@ -1999,7 +2086,7 @@ namespace glib
 		 * @brief Renders all of the GuiInstances
 		 * 
 		 */
-		void renderGuiElements();
+		bool renderGuiElements();
 
 		/**
 		 * @brief Gets the Image for the GuiManager
@@ -2022,6 +2109,21 @@ namespace glib
 		 * @param height 
 		 */
 		void resizeImage(int width, int height);
+
+		/**
+		 * @brief Forces a redraw of everything that is visible.
+		 * 		By default, only objects that request a redraw will be redrawn along with potential
+		 * 		objects that it could affect with its redraw.
+		 * 
+		 */
+		void invalidateImage();
+
+		/**
+		 * @brief Forces the GuiManager to always redraw everything that is visible every frame.
+		 * 
+		 * @param v
+		 */
+		void alwaysInvalidateImage(bool v);
 
 		/**
 		 * @brief Sets the x location for the window.
@@ -2069,6 +2171,14 @@ namespace glib
 		 */
 		void setBackgroundColor(Color c);
 
+		/**
+		 * @brief Gets a list of GuiInstances with the specified name/id.
+		 * 
+		 * @param name 
+		 * @return std::vector<GuiInstance*> 
+		 */
+		std::vector< HashPair<std::wstring, GuiInstance*>* > getInstancesByName(std::wstring name);
+
 		void loadElementsFromFile(File f);
 		bool loadElement(XmlNode* node, GuiInstance* parent);
 		static void registerLoadFunction(std::wstring className, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&)> func);
@@ -2081,28 +2191,18 @@ namespace glib
 		std::unordered_set<GuiInstance*> shouldDelete = std::unordered_set<GuiInstance*>();
 		
 		static std::unordered_map<std::wstring, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&)> > elementLoadingFunctions;
+
+		SimpleHashMap<std::wstring, GuiInstance*> objectsByName = SimpleHashMap<std::wstring, GuiInstance*>();
 		
 		Image surf;
 
 		int windowX = 0;
 		int windowY = 0;
+		bool invalidImage = true;
+		bool alwaysInvalidate = false;
 
 		Color backgroundColor = { 0xA2, 0xB9, 0xBC, 0xFF };
-	};
 
-	class GuiMemoryManager
-	{
-	public:
-		static GuiMemoryManager* getGuiMemoryManager();
-
-		void addInstance(std::string, GuiInstance*);
-		void removeInstance(std::string, GuiInstance*);
-	private:
-		GuiMemoryManager();
-		~GuiMemoryManager();
-
-		std::unordered_multimap<std::string, GuiInstance*> instances;
-		static GuiMemoryManager singleton;
 	};
 
 } //NAMESPACE glib END

@@ -2,6 +2,8 @@
 
 namespace glib
 {
+    GLShader* GLShader::activeShader = nullptr;
+
     GLShader::GLShader()
     {
 
@@ -145,12 +147,18 @@ namespace glib
         glDeleteShader(fragmentID);
         
         valid = false;
+
+        if(activeShader == this)
+            activeShader = nullptr;
     }
 
     void GLShader::setAsActive()
     {
         if(valid)
+        {
             glUseProgram(shaderID);
+            activeShader = nullptr;
+        }
     }
 
     void GLShader::setBool(std::string varName, bool value)
@@ -267,5 +275,9 @@ namespace glib
     {
         glUseProgram(0);
     }
-
+    
+    GLShader* GLShader::getActiveShader()
+    {
+        return activeShader;
+    }
 }
