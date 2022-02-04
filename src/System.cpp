@@ -21,7 +21,8 @@
 
 namespace glib
 {
-		
+	
+	size_t System::dbtime[16];
 	unsigned int System::numberOfThreads = std::thread::hardware_concurrency();
 	const FileFilter System::ALL_FILTER = {L"All Files", L"."};
 	const FileFilter System::IMAGE_FILTER = {L"Image", L".bmp;.gif;.png;.jpg;.jpeg"};
@@ -78,6 +79,7 @@ namespace glib
 
 	void System::emulateKeyPress(int key)
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 			INPUT i;
@@ -94,6 +96,7 @@ namespace glib
 
 	void System::emulateKeyRelease(int key)
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 			INPUT i;
@@ -110,6 +113,7 @@ namespace glib
 
 	void System::emulateMousePress(int key)
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 			INPUT i;
@@ -147,6 +151,7 @@ namespace glib
 
 	void System::emulateMouseRelease(int key)
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 			INPUT i;
@@ -184,6 +189,7 @@ namespace glib
 
 	void System::emulateMouseWheel(int wheel, int amount)
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 			INPUT i;
@@ -220,6 +226,7 @@ namespace glib
 
 	void System::setMousePosition(int x, int y)
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 		SetCursorPos(x, y);
 		#endif
@@ -227,6 +234,7 @@ namespace glib
 
 	int System::getMouseX()
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 		POINT p = {};
@@ -240,6 +248,7 @@ namespace glib
 
 	int System::getMouseY()
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 			POINT p = {};
@@ -253,6 +262,7 @@ namespace glib
 
 	bool System::getKeyDown(int key)
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 			bool v = (GetKeyState(key)>>15 & 0x01) == 1;
@@ -265,6 +275,7 @@ namespace glib
 
 	bool System::getKeyToggled(int key)
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 			bool v = (GetKeyState(key) & 0x01) == 1;
 			return v;
@@ -275,6 +286,7 @@ namespace glib
 
 	bool System::getMouseDown(int value)
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 			switch (value)
@@ -343,6 +355,7 @@ namespace glib
 
 	void System::saveScreenShot(size_t hwnd, File file)
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 			HWND wndHandle = (HWND)hwnd;
@@ -400,6 +413,7 @@ namespace glib
 
 	Image* System::getScreenShot(size_t hwnd)
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 			HWND wndHandle = (HWND)hwnd;
 			HDC hdc = GetDC(wndHandle);
@@ -484,6 +498,7 @@ namespace glib
 
 	void System::paintImageToWindow(size_t hwnd, Image* img, int startX, int startY)
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 			HDC hdc = GetDC((HWND)hwnd);
@@ -554,6 +569,7 @@ namespace glib
 
 	unsigned long System::getProcessID(std::wstring processName)
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 			DWORD pid = 0;
@@ -585,6 +601,7 @@ namespace glib
 
 	size_t System::getProcessWindow(std::wstring windowName)
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 			HWND hwnd = FindWindowW(NULL, windowName.c_str());
@@ -600,6 +617,7 @@ namespace glib
 
 	std::wstring System::fileDialogBox(unsigned char type, std::vector<FileFilter> filters, std::wstring startDir)
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 			//older win32 method. Works just fine so I'm keeping it.
@@ -737,6 +755,7 @@ namespace glib
 	
 	int System::messageBoxPopup(unsigned int type, std::wstring title, std::wstring message)
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 			return MessageBoxW(NULL, message.c_str(), title.c_str(), type);
 		#else
@@ -746,6 +765,7 @@ namespace glib
 
 	void System::copyToClipboard(std::string str)
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 			if(!OpenClipboard(NULL))
@@ -771,6 +791,7 @@ namespace glib
 
 	void System::copyToClipboard(std::wstring str)
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 			if(!OpenClipboard(NULL))
@@ -796,6 +817,7 @@ namespace glib
 
 	std::wstring System::pasteFromClipboard()
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 			if(!OpenClipboard(NULL))
@@ -819,6 +841,7 @@ namespace glib
 	
 	void System::clearClipboard()
 	{
+		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 			if(!OpenClipboard(NULL))

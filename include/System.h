@@ -5,6 +5,8 @@
 #include <string>
 #include "Image.h"
 
+
+
 namespace glib
 {
 
@@ -18,6 +20,7 @@ namespace glib
 	{
 	public:
 
+		static size_t dbtime[16];
 		static const int LEFT_MOUSE_BUTTON = 0;
 		static const int RIGHT_MOUSE_BUTTON = 1;
 		static const int MIDDLE_MOUSE_BUTTON = 2;

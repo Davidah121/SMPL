@@ -49,13 +49,9 @@ namespace glib
 
 	void ColorPalette::copy(const ColorPalette& other)
 	{
+		this->~ColorPalette();
+
 		uniquePalette = other.uniquePalette;
-		
-		paletteArr.clear();
-		
-		if(paletteTree != nullptr)
-			delete paletteTree;
-		
 		paletteTree = new KDTree<unsigned char>(3);
 
 		for(Color c : other.paletteArr)

@@ -173,4 +173,67 @@ namespace glib
 		return !(this->operator==(other));
 	}
 
+	void Mat4f::fillArray(float* buffer)
+	{
+		buffer[0] = (float)data[0][0];
+		buffer[1] = (float)data[0][1];
+		buffer[2] = (float)data[0][2];
+		buffer[3] = (float)data[0][3];
+
+		buffer[4] = (float)data[1][0];
+		buffer[5] = (float)data[1][1];
+		buffer[6] = (float)data[1][2];
+		buffer[7] = (float)data[1][3];
+
+		buffer[ 8] = (float)data[2][0];
+		buffer[ 9] = (float)data[2][1];
+		buffer[10] = (float)data[2][2];
+		buffer[11] = (float)data[2][3];
+
+		buffer[12] = (float)data[3][0];
+		buffer[13] = (float)data[3][1];
+		buffer[14] = (float)data[3][2];
+		buffer[15] = (float)data[3][3];
+	}
+	void Mat4f::fillArray(double* buffer)
+	{
+		buffer[0] = data[0][0];
+		buffer[1] = data[0][1];
+		buffer[2] = data[0][2];
+		buffer[3] = data[0][3];
+
+		buffer[4] = data[1][0];
+		buffer[5] = data[1][1];
+		buffer[6] = data[1][2];
+		buffer[7] = data[1][3];
+
+		buffer[ 8] = data[2][0];
+		buffer[ 9] = data[2][1];
+		buffer[10] = data[2][2];
+		buffer[11] = data[2][3];
+
+		buffer[12] = data[3][0];
+		buffer[13] = data[3][1];
+		buffer[14] = data[3][2];
+		buffer[15] = data[3][3];
+	}
+
+	float* Mat4f::convertToFloatArray()
+	{
+		return new float[16]{
+			(float)data[0][0], (float)data[0][1], (float)data[0][2], (float)data[0][3],
+			(float)data[1][0], (float)data[1][1], (float)data[1][2], (float)data[1][3],
+			(float)data[2][0], (float)data[2][1], (float)data[2][2], (float)data[2][3],
+			(float)data[3][0], (float)data[3][1], (float)data[3][2], (float)data[3][3]
+		};
+	}
+	double* Mat4f::convertToDoubleArray()
+	{
+		return new double[16]{
+			data[0][0], data[0][1], data[0][2], data[0][3],
+			data[1][0], data[1][1], data[1][2], data[1][3],
+			data[2][0], data[2][1], data[2][2], data[2][3],
+			data[3][0], data[3][1], data[3][2], data[3][3]
+		};
+	}
 } //NAMESPACE glib END

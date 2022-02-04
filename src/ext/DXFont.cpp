@@ -76,9 +76,12 @@ namespace glib
             //setup position values
             std::vector<float> positions = {
                 0, 0,
-                0, (float)fci.height,
                 (float)fci.width, (float)fci.height,
-                (float)fci.width, 0
+                0, (float)fci.height,
+
+                0, 0,
+                (float)fci.width, 0,
+                (float)fci.width, (float)fci.height
             };
 
             //setup texture values
@@ -87,9 +90,12 @@ namespace glib
 
             std::vector<float> textures = {
                 xMultVal * fci.x, yMultVal * fci.y,
-                xMultVal * fci.x, yMultVal * (fci.y+fci.height),
                 xMultVal * (fci.x+fci.width), yMultVal * (fci.y+fci.height),
-                xMultVal * (fci.x+fci.width), yMultVal * fci.y
+                xMultVal * fci.x, yMultVal * (fci.y+fci.height),
+                
+                xMultVal * fci.x, yMultVal * fci.y,
+                xMultVal * (fci.x+fci.width), yMultVal * fci.y,
+                xMultVal * (fci.x+fci.width), yMultVal * (fci.y+fci.height)
             };
             
 
@@ -97,7 +103,7 @@ namespace glib
             m->storeDataFloat(1, textures, 2);
             m->setAttributeEnabled(0, true);
             m->setAttributeEnabled(1, true);
-            m->setDrawType(Model::QUADS);
+            m->setDrawType(Model::TRIANGLES);
 
             models.push_back(m);
         }

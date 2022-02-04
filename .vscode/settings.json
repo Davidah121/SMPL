@@ -85,7 +85,9 @@
         "cerrno": "cpp",
         "cfloat": "cpp",
         "climits": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "deque": "cpp",
+        "stack": "cpp"
     },
     "files.exclude": {
         "**/.classpath": true,

@@ -154,4 +154,34 @@ namespace glib
 		return !(this->operator==(other));
 	}
 
+	void Mat2f::fillArray(float* buffer)
+	{
+		buffer[0] = (float)data[0][0];
+		buffer[1] = (float)data[0][1];
+		buffer[2] = (float)data[1][0];
+		buffer[3] = (float)data[1][1];
+	}
+	void Mat2f::fillArray(double* buffer)
+	{
+		buffer[0] = data[0][0];
+		buffer[1] = data[0][1];
+		buffer[2] = data[1][0];
+		buffer[3] = data[1][1];
+	}
+
+	float* Mat2f::convertToFloatArray()
+	{
+		return new float[4]{
+			(float)data[0][0], (float)data[0][1],
+			(float)data[1][0], (float)data[1][1]
+		};
+	}
+	double* Mat2f::convertToDoubleArray()
+	{
+		return new double[4]{
+			data[0][0], data[0][1],
+			data[1][0], data[1][1]
+		};
+	}
+
 } //NAMESPACE glib END

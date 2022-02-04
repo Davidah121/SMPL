@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include "System.h"
 
 namespace glib
 {
@@ -66,8 +67,23 @@ namespace glib
          */
         void add(K key, T data);
 
+        /**
+         * @brief Removes the HashPair entry.
+         * 
+         * @param pair 
+         * @return true 
+         * @return false 
+         */
         bool remove(HashPair<K,T>* pair);
 
+        /**
+         * @brief Removes the HashPair entry with the specified key and data.
+         * 
+         * @param key 
+         * @param data 
+         * @return true 
+         * @return false 
+         */
         bool remove(K key, T data);
 
         /**
@@ -112,12 +128,30 @@ namespace glib
         HashPair<K,T>* get(K key);
 
         /**
+         * @brief Gets the next entry using the previous key.
+         *      get() must have been called before.
+         * 
+         * @param key 
+         * @return HashPair<K, T>* 
+         */
+        HashPair<K,T>* getNext();
+
+        /**
          * @brief Gets all entries with the specified key.
          * 
          * @param key 
          * @return std::vector<HashPair<K, T>*> 
          */
         std::vector<HashPair<K,T>*> getAll(K key);
+
+        /**
+         * @brief Gets a selection of entries with the specified key.
+         *      The maximum number of entries grabbed will limited by count.
+         * 
+         * @param key 
+         * @return std::vector<HashPair<K, T>*> 
+         */
+        std::vector<HashPair<K,T>*> getAllCount(K key, int count);
 
         /**
          * @brief Rehashes the hash map.
@@ -172,6 +206,9 @@ namespace glib
         double maxLoadFactor = 10;
         bool mode = MODE_KEEP_ALL;
         std::hash<K> hasher;
+
+        size_t offset = -1;
+        K lastKey;
     };
 
     template<typename K, typename T>
@@ -227,19 +264,14 @@ namespace glib
     template<typename K, typename T>
     inline SimpleHashMap<K, T>::~SimpleHashMap()
     {
-        for(int i=0; i<buckets.size(); i++)
-        {
-            for(int j=0; j<buckets[i].size(); j++)
-            {
-                delete buckets[i][j];
-            }
-        }
-        buckets.clear();
+        clear();
     }
 
     template<typename K, typename T>
     inline void SimpleHashMap<K, T>::add(K key, T data)
     {
+        size_t t1 = System::getCurrentTimeMicro();
+
         size_t bucketLocation = hasher(key) % buckets.size();
         HashPair<K,T>* pair = new HashPair<K,T>();
         pair->key = key;
@@ -271,6 +303,9 @@ namespace glib
             }
         }
 
+        size_t t2 = System::getCurrentTimeMicro();
+        // System::dbtime[0] += t2-t1;
+
         if(maxLoadFactor >= 0)
         {
             double loadFactor = (double)this->size / buckets.size();
@@ -284,11 +319,13 @@ namespace glib
     template<typename K, typename T>
     inline bool SimpleHashMap<K, T>::remove(HashPair<K,T>* pair)
     {
+        size_t t1 = System::getCurrentTimeMicro();
+
+        int indexOfKey = -1;
         if(pair != nullptr)
         {
             size_t bucketLocation = hasher(pair->key) % buckets.size();
 
-            int indexOfKey = -1;
             for(int i=0; i<buckets[bucketLocation].size(); i++)
             {
                 if(buckets[bucketLocation][i] == pair)
@@ -309,15 +346,20 @@ namespace glib
                 }
                 buckets[bucketLocation].pop_back();
                 this->size--;
-                return true;
             }
         }
-        return false;
+
+        size_t t2 = System::getCurrentTimeMicro();
+        // System::dbtime[3] += t2-t1;
+
+        return indexOfKey != -1;
     }
 
     template<typename K, typename T>
     inline bool SimpleHashMap<K, T>::remove(K key, T data)
     {
+        size_t t1 = System::getCurrentTimeMicro();
+
         size_t bucketLocation = hasher(key) % buckets.size();
 
         int indexOfKey = -1;
@@ -341,10 +383,14 @@ namespace glib
             }
             buckets[bucketLocation].pop_back();
             this->size--;
-            return true;
         }
 
-        return false;
+        
+        size_t t2 = System::getCurrentTimeMicro();
+        // System::dbtime[3] += t2-t1;
+
+
+        return indexOfKey != -1;
     }
 
     template<typename K, typename T>
@@ -353,7 +399,7 @@ namespace glib
         size_t bucketLocation = hasher(key) % buckets.size();
 
         int indexOfKey = -1;
-        for(int i=0; i<buckets[bucketLocation].size(); i++)
+        for(int i=buckets[bucketLocation].size()-1; i>=0; i--)
         {
             HashPair<K,T>* pair = buckets[bucketLocation][i];
             if(pair->key == key)
@@ -385,7 +431,7 @@ namespace glib
         size_t bucketLocation = hasher(key) % buckets.size();
 
         int indexOfKey = -1;
-        for(int i=buckets[bucketLocation].size()-1; i>=0; i--)
+        for(int i=0; i<buckets[bucketLocation].size(); i++)
         {
             HashPair<K,T>* pair = buckets[bucketLocation][i];
             if(pair.key == key)
@@ -456,24 +502,55 @@ namespace glib
     template<typename K, typename T>
     inline HashPair<K,T>* SimpleHashMap<K, T>::get(K key)
     {
+        size_t t1 = System::getCurrentTimeMicro();
         size_t bucketLocation = hasher(key) % buckets.size();
         HashPair<K,T>* collection = nullptr;
 
-        for(int i=0; i<buckets[bucketLocation].size(); i++)
+        for(int i=buckets[bucketLocation].size()-1; i>=0; i--)
         {
             if(buckets[bucketLocation][i]->key == key)
             {
                 collection = buckets[bucketLocation][i];
+                offset = i-1;
+                lastKey = key;
                 break;
             }
         }
+        size_t t2 = System::getCurrentTimeMicro();
+        // System::dbtime[2] += t2-t1;
+        return collection;
+    }
 
+    template<typename K, typename T>
+    inline HashPair<K,T>* SimpleHashMap<K, T>::getNext()
+    {
+        size_t t1 = System::getCurrentTimeMicro();
+        HashPair<K,T>* collection = nullptr;
+        
+        if(offset >= 0)
+        {
+            size_t bucketLocation = hasher(lastKey) % buckets.size();
+
+            for(int i=offset; i>=0; i--)
+            {
+                if(buckets[bucketLocation][i]->key == lastKey)
+                {
+                    collection = buckets[bucketLocation][i];
+                    offset = i-1;
+                    break;
+                }
+            }
+        }
+
+        size_t t2 = System::getCurrentTimeMicro();
+        // System::dbtime[2] += t2-t1;
         return collection;
     }
 
     template<typename K, typename T>
     inline std::vector<HashPair<K,T>*> SimpleHashMap<K, T>::getAll(K key)
     {
+
         size_t bucketLocation = hasher(key) % buckets.size();
         std::vector<HashPair<K,T>*> collection;
 
@@ -483,12 +560,41 @@ namespace glib
                 collection.push_back(buckets[bucketLocation][i]);
         }
 
+
+        return collection;
+    }
+
+    template<typename K, typename T>
+    inline std::vector<HashPair<K,T>*> SimpleHashMap<K, T>::getAllCount(K key, int count)
+    {
+        size_t t1 = System::getCurrentTimeMicro();
+
+        size_t bucketLocation = hasher(key) % buckets.size();
+        std::vector<HashPair<K,T>*> collection;
+        int currCount = 0;
+
+        for(int i=buckets[bucketLocation].size()-1; i>=0; i--)
+        {
+            if(buckets[bucketLocation][i]->key == key)
+            {
+                collection.push_back(buckets[bucketLocation][i]);
+                currCount++;
+                if(currCount >= count)
+                    break;
+            }
+        }
+
+        size_t t2 = System::getCurrentTimeMicro();
+        // System::dbtime[2] += t2-t1;
+
         return collection;
     }
 
     template<typename K, typename T>
     inline void SimpleHashMap<K, T>::rehash()
     {
+        size_t t1 = System::getCurrentTimeMicro();
+
         size_t oldSize = buckets.size();
         buckets.resize(oldSize*2);
 
@@ -532,13 +638,25 @@ namespace glib
                 }
             }
         }
+        size_t t2 = System::getCurrentTimeMicro();
+        // System::dbtime[1] += t2-t1;
     }
 
 
     template<typename K, typename T>
     inline void SimpleHashMap<K, T>::clear()
     {
+        size_t t1 = System::getCurrentTimeMicro();
+        for(int i=0; i<buckets.size(); i++)
+        {
+            for(int j=0; j<buckets[i].size(); j++)
+            {
+                delete buckets[i][j];
+            }
+        }
         buckets.clear();
+        size_t t2 = System::getCurrentTimeMicro();
+        // System::dbtime[4] += t2-t1;
     }
 
     template<typename K, typename T>

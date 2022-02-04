@@ -2,6 +2,59 @@
 #include <string>
 #include "Input.h"
 
+#ifdef LINUX
+	#include <unistd.h>
+	#include <termios.h>
+	#include <errno.h>
+	
+	//Note, works a bit better than the windows equivalent
+	int _getwch()
+	{
+		int buf = 0;
+		struct termios old = { 0 };
+		fflush(stdout);
+		if(tcgetattr(0, &old) < 0)
+			perror("tcsetattr()");
+		
+		old.c_lflag &= ~ICANON //local modes = Non Canonical Mode
+		old.c_lflag &= ~ECHO; //local modes = Disable echo.
+		old.c_cc[VMIN] = 1; //control chars (MIN value) = 1
+		old.c_cc[VTIME] = 0; //control chars (TIME value) = 0 (No time)
+		
+		if(tcsetattr(0, TCSANOW, &old) < 0)
+			perror("tcsetattr ICANON");
+		
+		if(read(0, &buf, 4) < 0)
+			perror("read()");
+		
+		old.c_lflag |= ICANON; //local modes = Canonical mode
+		old.c_lflag |= ECHO; //local modes = Enable echo
+		
+		if(tcsetattr(0, TCSADRAIN, &old) < 0)
+			perror("tcsetattr ~ICANON");
+		
+		std::vector<unsigned char> bytes;
+		bytes.push_back( buf & 0xFF );
+
+		if((buf>>8) & 0xFF > 0)
+		{
+			bytes.push_back((buf>>8) & 0xFF);
+			if((buf>>16) & 0xFF > 0)
+			{
+				bytes.push_back((buf>>16) & 0xFF);
+				if((buf>>24) & 0xFF > 0)
+				{
+					bytes.push_back((buf>>24) & 0xFF);
+				}
+			}
+		}
+		
+		return StringTools::utf8ToChar(bytes);
+	}
+#else
+	#include<io.h>
+#endif
+
 #define getch() (_getwch() % 0xFF)
 #define getwch() _getwch()
 

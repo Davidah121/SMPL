@@ -179,6 +179,37 @@ namespace glib
 			return other*value;
 		}
 
+		//Converting into an array
+		/**
+		 * @brief Fills a float array of at least size 4 with the
+		 * 		x, y, z, and w values.
+		 * 		
+		 * @param buffer 
+		 * 		Must be of size 4 or greater.
+		 */
+		void fillArray(float* buffer);
+
+		/**
+		 * @brief Fills a float array of at least size 4 with the
+		 * 		x, y, z, and w values.
+		 * 		
+		 * @param buffer 
+		 * 		Must be of size 4 or greater.
+		 */
+		void fillArray(double* buffer);
+
+		/**
+		 * @brief Creates a new float array of size 4 and fills it
+		 * 		with the x, y, z, and w values.
+		 */
+		float* convertToFloatArray();
+
+		/**
+		 * @brief Creates a new double array of size 4 and fills it
+		 * 		with the x, y, z, and w values.
+		 */
+		double* convertToDoubleArray();
+
 		/**
 		 * @brief Converts the Vec4f object to a GeneralVector object
 		 * 

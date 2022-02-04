@@ -32,17 +32,31 @@
 		#define WIN32_LEAN_AND_MEAN
 	#endif
 	#include <Windows.h>
+	#include <dwmapi.h>
+
+	#pragma comment(lib,"Dwmapi.lib")
 #endif
-
-
 
 #include <exception>
 #include <thread>
 #include <vector>
 #include <mutex>
 
+#define DWMWA_WINDOW_CORNER_PREFERENCE_CONST 33
+#define DWMWCP_DEFAULT_CONST 0
+#define DWMWCP_DONOTROUND_CONST 1
+#define DWMWCP_ROUND_CONST 2
+#define DWMWCP_ROUNDSMALL_CONST 3
+
 namespace glib
 {
+	struct WindowOptions
+	{
+		unsigned char windowType = 0;
+		bool focusable = true;
+		bool threadManaged = true;
+		unsigned char cornerType = DWMWCP_DEFAULT_CONST;
+	};
 
 	class SimpleWindow : public Object
 	{
@@ -51,20 +65,25 @@ namespace glib
 		static const unsigned char MOUSE_MIDDLE = 0x01;
 		static const unsigned char MOUSE_RIGHT = 0x02;
 
-		static const unsigned char NORMAL_WINDOW = 0b0000;
-		static const unsigned char BORDERLESS_WINDOW = 0b0001;
-		static const unsigned char FULLSCREEN_WINDOW = 0b1000;
+		static const unsigned char NORMAL_WINDOW = 0;
+		static const unsigned char BORDERLESS_WINDOW = 1;
+		static const unsigned char FULLSCREEN_WINDOW = 2;
 
 		static const unsigned char STATE_NORMAL = 0x00;
 		static const unsigned char STATE_MAXIMIZED = 0x01;
 		static const unsigned char STATE_MINIMIZED = 0x02;
 		
-		static const unsigned char TYPE_FOCUSABLE = 0b0000;
-		static const unsigned char TYPE_NONFOCUSABLE = 0b0010;
+		static const bool TYPE_FOCUSABLE = true;
+		static const bool TYPE_NONFOCUSABLE = false;
 
-		static const unsigned char TYPE_THREAD_MANAGED = 0b0000;
-		static const unsigned char TYPE_USER_MANAGED = 0b0100;
+		static const bool TYPE_THREAD_MANAGED = true;
+		static const bool TYPE_USER_MANAGED = false;
 
+		static const unsigned char TYPE_DEFAULT_CORNER = DWMWCP_DEFAULT_CONST;
+		static const unsigned char TYPE_NO_ROUND_CORNER = DWMWCP_DONOTROUND_CONST;
+		static const unsigned char TYPE_ROUND_CORNER = DWMWCP_ROUND_CONST;
+		static const unsigned char TYPE_SMALLROUND_CORNER = DWMWCP_ROUNDSMALL_CONST;
+		
 		struct WindowCreationError : public std::exception
 		{
 			const char* what() const throw() { return "Error creating window"; }
@@ -101,19 +120,10 @@ namespace glib
 		 * 		By default, it is -1 which will set the center y of the window at the center y of the main monitor.
 		 * @param windowType 
 		 * 		The type of window to create.
-		 * 		The window type and window management can be combined using the logical or ( '|' ).
-		 * 		(Note that FULLSCREEN_WINDOW ignores the width, height, x, y, NORMAL_WINDOW and BORDERLESS_WINDOW options)
-		 * 		Valid arguments are:
-		 * 			NORMAL_WINDOW
-		 * 			BORDERLESS_WINDOW
-		 * 			FULLSCREEN_WINDOW
-		 * 			TYPE_FOCUSABLE
-		 * 			TYPE_NONFOCUSABLE
-		 * 			TYPE_USER_MANAGED
-		 * 			TYPE_THREAD_MANAGED
-		 * 		Default value is 0 which is a Normal Focusable Thread Managed Window.
+		 * 		Default value creates a window that is a Normal Focusable Thread Managed Window.
+		 * 			Normal refers to having a frame that holds the title, minimize, maximize, and close button
 		 */
-		SimpleWindow(std::wstring title, int width = 320, int height = 240, int x = -1, int y = -1, unsigned char windowType = NORMAL_WINDOW);
+		SimpleWindow(std::wstring title, int width = 320, int height = 240, int x = -1, int y = -1, WindowOptions windowType = {});
 
 		/**
 		 * @brief Construct a new SimpleWindow object
@@ -134,19 +144,10 @@ namespace glib
 		 * 		By default, it is -1 which will set the center y of the window at the center y of the main monitor.
 		 * @param windowType 
 		 * 		The type of window to create.
-		 * 		The window type and window management can be combined using the logical or ( '|' ).
-		 * 		(Note that FULLSCREEN_WINDOW ignores the width, height, x, y, NORMAL_WINDOW and BORDERLESS_WINDOW options)
-		 * 		Valid arguments are:
-		 * 			NORMAL_WINDOW
-		 * 			BORDERLESS_WINDOW
-		 * 			FULLSCREEN_WINDOW
-		 * 			TYPE_FOCUSABLE
-		 * 			TYPE_NONFOCUSABLE
-		 * 			TYPE_USER_MANAGED
-		 * 			TYPE_THREAD_MANAGED
-		 * 		Default value is 0 which is a Normal Focusable Thread Managed Window.
+		 * 		Default value creates a window that is a Normal Focusable Thread Managed Window.
+		 * 			Normal refers to having a frame that holds the title, minimize, maximize, and close button
 		 */
-		SimpleWindow(std::string title, int width = 320, int height = 240, int x = -1, int y = -1, unsigned char windowType = NORMAL_WINDOW);
+		SimpleWindow(std::string title, int width = 320, int height = 240, int x = -1, int y = -1, WindowOptions windowType = {});
 
 		/**
 		 * @brief Destroy the SimpleWindow object
@@ -546,13 +547,13 @@ namespace glib
 		//CHANGE WITH OTHER OS
 
 		#ifdef LINUX
-
+		void x11EventProc();
 		#else
 		static LRESULT _stdcall wndProc(HWND hwnd, UINT uint, WPARAM wparam, LPARAM lparam);
 		#endif
 		//
 
-		void init(int x, int y, int width, int height, std::wstring title, unsigned char windowType);
+		void init(int x, int y, int width, int height, std::wstring title, WindowOptions windowType);
 		
 		void setAllFunctionsToNull();
 		
@@ -592,7 +593,7 @@ namespace glib
 		int height = 240;
 
 		unsigned char windowState = STATE_NORMAL;
-		unsigned char windowType = NORMAL_WINDOW;
+		WindowOptions windowType = {};
 
 		int preX = 0;
 		int preY = 0;
@@ -624,7 +625,7 @@ namespace glib
 		#ifdef LINUX
 			Display* displayServer;
 			int screen = -1;
-			Pixmap bitmap;
+			GC gc;
 		#else
 			WNDCLASSEXW wndClass;
 			HINSTANCE hins;
@@ -655,8 +656,7 @@ namespace glib
 
 		std::function<void(unsigned long, long)> keyUpFunction;
 		std::function<void(unsigned long, long)> keyDownFunction;
-
-		std::function<void(int)> mouseDoubleClickFunction;
+		
 		std::function<void(int)> mouseButtonDownFunction;
 		std::function<void(int)> mouseButtonUpFunction;
 		std::function<void(int)> mouseWheelFunction;

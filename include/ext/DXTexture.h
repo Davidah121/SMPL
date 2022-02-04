@@ -8,7 +8,6 @@
  * 
  */
 
-
 namespace glib
 {
     class DXTexture

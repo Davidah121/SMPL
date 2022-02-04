@@ -107,6 +107,37 @@ namespace glib
 			return other*value;
 		}
 
+		//Converting into an array
+		/**
+		 * @brief Fills a float array of at least size 2 with the
+		 * 		x and y values.
+		 * 		
+		 * @param buffer 
+		 * 		Must be of size 2 or greater.
+		 */
+		void fillArray(float* buffer);
+
+		/**
+		 * @brief Fills a float array of at least size 2 with the
+		 * 		x and y values.
+		 * 		
+		 * @param buffer 
+		 * 		Must be of size 2 or greater.
+		 */
+		void fillArray(double* buffer);
+
+		/**
+		 * @brief Creates a new float array of size 2 and fills it
+		 * 		with the x and y values.
+		 */
+		float* convertToFloatArray();
+
+		/**
+		 * @brief Creates a new double array of size 2 and fills it
+		 * 		with the x and y values.
+		 */
+		double* convertToDoubleArray();
+
 		//casting to generic vector
 		/**
 		 * @brief Converts the Vec2f to a GeneralVector Object

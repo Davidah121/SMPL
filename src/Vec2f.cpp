@@ -123,6 +123,26 @@ namespace glib
 		return Vec2f(x / value, y / value);
 	}
 
+	void Vec2f::fillArray(float* buffer)
+	{
+		buffer[0] = (float)x;
+		buffer[1] = (float)y;
+	}
+	void Vec2f::fillArray(double* buffer)
+	{
+		buffer[0] = x;
+		buffer[1] = y;
+	}
+
+	float* Vec2f::convertToFloatArray()
+	{
+		return new float[2] {(float)x, (float)y};
+	}
+	double* Vec2f::convertToDoubleArray()
+	{
+		return new double[2] {x, y};
+	}
+
 	GeneralVector Vec2f::toGeneralVector()
 	{
 		return (GeneralVector)* this;

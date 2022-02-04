@@ -1,6 +1,7 @@
 #pragma once
 #include<iostream>
-#include<io.h>
+#include<stdio.h>
+#include<string.h>
 #include<vector>
 #include<fcntl.h>
 #include "BinarySet.h"
@@ -117,7 +118,7 @@ namespace glib
 		 * @return int 
 		 */
 		static int utf8ToChar(std::vector<unsigned char> utf8Char);
-
+		
 		/**
 		 * @brief Returns the string length of a character array.
 		 * 

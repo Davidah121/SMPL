@@ -33,13 +33,13 @@
 #include "Algorithms.h"
 #include "SmartMemory.h"
 
-#include "ext/DXWindow.h"
-#include "ext/DXShader.h"
-#include "ext/DXModel.h"
+#include "ext/DXGraphics.h"
 
 #include "ext/GLGraphics.h"
 
 #include "ModelBuilder.h"
+
+#include <Psapi.h>
 
 using namespace glib;
 
@@ -218,73 +218,39 @@ void testDirectXStuff()
 {
     DXWindow w = DXWindow("DirectX Window", 320, 240, -1, -1, DXWindow::NORMAL_WINDOW | DXWindow::TYPE_USER_MANAGED);
 
-    DXShader s = DXShader("./testFiles/HLSL/testVert.cso", "./testFiles/HLSL/testFrag2.cso");
-    DXModel model = DXModel();
+    DXGraphics::init();
+    DXGraphics::setOrthoProjection(320, 240);
+    DXTexture t = DXTexture("RESULT.png", true);
+    DXFont f = DXFont("Resources/DefaultFont.fnt");
 
-    Vec3f colorArr = Vec3f(0.0, 0.0, 0.0);
-    bool reverse = false;
-
-    struct UniformData
-    {
-        float r;
-        float g;
-        float b;
-        float a;
-    };
+    DXSurface s = DXSurface(320, 240, {DXSurface::COLOR, DXSurface::NEAREST_FILTER, 0});
 
     while(w.getRunning())
     {
         w.update();
 
-        ID3D11RenderTargetView* renderTarget = DXSingleton::getBackBuffer();
-        DXSingleton::getContext()->OMSetRenderTargets(1, &renderTarget, nullptr);
+        s.bind();
 
-        w.clearWindow( Vec4f(0.0f, 0.2f, 0.4f, 1.0f) );
+        DXGraphics::setClearColor(Vec4f(0.0, 0.0, 0.0, 0.0));
+        DXGraphics::clear(GLGraphics::COLOR_BUFFER | GLGraphics::DEPTH_BUFFER);
+        DXGraphics::setDrawColor(Vec4f(1,1,1,1));
 
-        s.setAsActive();
-        // s.setVec3("inColor", colorArr);
-        UniformData u = {(float)colorArr.x, (float)colorArr.y, (float)colorArr.z, 1.0f};
-        s.setUniformData(&u, sizeof(UniformData), 0, DXShader::TYPE_FRAGMENT);
+        DXGraphics::drawRectangle(100, 100, 200, 200, false);
+        DXGraphics::drawTexture( 32, 32, &t);
+        DXGraphics::setDrawColor(Vec4f(0,0,1,1));
+        DXGraphics::drawCircle( 160, 120, 64);
+        
+        DXGraphics::setDrawColor(Vec4f(1,0,1,1));
+        DXGraphics::drawText("TemporaryText", 0, 0, &f);
 
-        model.draw();
+        s.unbind();
+
+        DXGraphics::setClearColor(Vec4f(0.4, 0.3, 0.4, 1.0));
+        DXGraphics::clear(GLGraphics::COLOR_BUFFER | GLGraphics::DEPTH_BUFFER);
+        DXGraphics::setDrawColor(Vec4f(1,1,1,1));
+        DXGraphics::drawSurface(0, 0, 320, 240, &s);
 
 		w.swapBuffers();
-
-        //color logic
-        if(!reverse)
-        {
-            if(colorArr.x < 1.0)
-                colorArr.x += 0.05;
-            else
-            {
-                if(colorArr.y < 1.0)
-                    colorArr.y += 0.05;
-                else
-                {
-                    if(colorArr.z < 1.0)
-                        colorArr.z += 0.05;
-                    else
-                        reverse = !reverse;
-                }
-            }
-        }
-        else
-        {
-            if(colorArr.x > 0.0)
-                colorArr.x -= 0.05;
-            else
-            {
-                if(colorArr.y > 0.0)
-                    colorArr.y -= 0.05;
-                else
-                {
-                    if(colorArr.z > 0.0)
-                        colorArr.z -= 0.05;
-                    else
-                        reverse = !reverse;
-                }
-            }
-        }
 
         System::sleep(16);
     }
@@ -895,7 +861,7 @@ void testCompression()
         size_t t1, t2, deflateTime, lzwTime, lzssTime, huffmanTime;
 
         t1 = System::getCurrentTimeMicro();
-        std::vector<unsigned char> deflateData = Compression::compressDeflate(fileBytes, 128, 7, false);
+        std::vector<unsigned char> deflateData = Compression::compressDeflate(fileBytes, 24, 7, true);
         t2 = System::getCurrentTimeMicro();
         deflateTime = t2-t1;
         
@@ -904,27 +870,33 @@ void testCompression()
         t2 = System::getCurrentTimeMicro();
         lzwTime = t2-t1;
 
-        t1 = System::getCurrentTimeMicro();
-        std::vector<unsigned char> lzssData = Compression::compressLZSS(fileBytes);
-        t2 = System::getCurrentTimeMicro();
-        lzssTime = t2-t1;
+        // t1 = System::getCurrentTimeMicro();
+        // std::vector<unsigned char> lzssData = Compression::compressLZSS(fileBytes);
+        // t2 = System::getCurrentTimeMicro();
+        // lzssTime = t2-t1;
 
-        t1 = System::getCurrentTimeMicro();
-        std::vector<unsigned char> huffmanData = Compression::compressHuffman(fileBytes, &huffTree);
-        t2 = System::getCurrentTimeMicro();
-        huffmanTime = t2-t1;
+        // t1 = System::getCurrentTimeMicro();
+        // std::vector<unsigned char> huffmanData = Compression::compressHuffman(fileBytes, &huffTree);
+        // t2 = System::getCurrentTimeMicro();
+        // huffmanTime = t2-t1;
 
         StringTools::println("Original Size: %llu", fileBytes.size());
         StringTools::println("Deflate Size + %%: %llu, %f. Time taken: %llu", deflateData.size(), (double)deflateData.size() / fileBytes.size(), deflateTime);
         StringTools::println("LZW Size + %%: %llu, %f. Time taken: %llu", lzwData.size(), (double)lzwData.size() / fileBytes.size(), lzwTime);
-        StringTools::println("LZSS Size + %%: %llu, %f. Time taken: %llu", lzssData.size(), (double)lzssData.size() / fileBytes.size(), lzssTime);
-        StringTools::println("Huffman Only Size + %%: %llu, %f. Time taken: %llu", huffmanData.size(), (double)huffmanData.size() / fileBytes.size(), huffmanTime);
+        // StringTools::println("LZSS Size + %%: %llu, %f. Time taken: %llu", lzssData.size(), (double)lzssData.size() / fileBytes.size(), lzssTime);
+        // StringTools::println("Huffman Only Size + %%: %llu, %f. Time taken: %llu", huffmanData.size(), (double)huffmanData.size() / fileBytes.size(), huffmanTime);
         
     }
     else
     {
         StringTools::println("COULDN'T OPEN FILE");
     }
+}
+
+void testMemoryLeakThing()
+{
+    SimpleWindow w = SimpleWindow("TITLE", 1920, 1080, 0, 0);
+    w.waitTillClose();
 }
 
 int main(int argc, char** argv)
@@ -937,11 +909,14 @@ int main(int argc, char** argv)
     //Adjust compression algorithms to adjust pointer to output instead of returning a new list and copying it.
     // testSavePNG();
 
-    testGuiStuff();
+    // testGuiStuff();
+
+    // testMemoryLeakThing();
 
     // testQuickHash();
     // testModelBuilder();
     // testGLStuff();
+    testDirectXStuff();
 
     // testCompression();
     
