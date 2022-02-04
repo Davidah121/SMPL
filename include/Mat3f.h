@@ -86,6 +86,35 @@ namespace glib
 
 		bool operator==(Mat3f other);
 		bool operator!=(Mat3f other);
+
+		//Converting into an array
+		/**
+		 * @brief Fills a float array of at least size 9 with the matrix values
+		 * 		
+		 * @param buffer 
+		 * 		Must be of size 9 or greater.
+		 */
+		void fillArray(float* buffer);
+
+		/**
+		 * @brief Fills a float array of at least size 9 with the matrix values
+		 * 		
+		 * @param buffer 
+		 * 		Must be of size 9 or greater.
+		 */
+		void fillArray(double* buffer);
+
+		/**
+		 * @brief Creates a new float array of size 9 and fills it
+		 * 		with the matrix values.
+		 */
+		float* convertToFloatArray();
+
+		/**
+		 * @brief Creates a new double array of size 9 and fills it
+		 * 		with the matrix values.
+		 */
+		double* convertToDoubleArray();
 	};
 
 } //NAMESPACE glib END

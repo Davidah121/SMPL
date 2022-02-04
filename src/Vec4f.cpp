@@ -188,6 +188,30 @@ namespace glib
 		return Vec4f(x / other, y / other, z / other, w / other);
 	}
 
+	void Vec4f::fillArray(float* buffer)
+	{
+		buffer[0] = (float)x;
+		buffer[1] = (float)y;
+		buffer[2] = (float)z;
+		buffer[3] = (float)w;
+	}
+	void Vec4f::fillArray(double* buffer)
+	{
+		buffer[0] = x;
+		buffer[1] = y;
+		buffer[2] = z;
+		buffer[3] = w;
+	}
+
+	float* Vec4f::convertToFloatArray()
+	{
+		return new float[4] {(float)x, (float)y, (float)z, (float)z};
+	}
+	double* Vec4f::convertToDoubleArray()
+	{
+		return new double[4] {x, y, z, w};
+	}
+
 	GeneralVector Vec4f::toGeneralVector()
 	{
 		return (GeneralVector)* this;

@@ -90,7 +90,6 @@ namespace glib
 
         model.modType = m->getIndexed();
         model.size = m->size();
-        model.shouldDelete = false;
 
         std::vector<std::vector<int>> rawVertexData = m->getRawVertexData();
         std::vector<std::vector<unsigned int>> rawIndexData = m->getRawIndexData();
@@ -121,6 +120,8 @@ namespace glib
 
                 devPointer->CreateBuffer(&bd, &srd, &model.vertexData[i]);
 
+                model.strides[i] = dataSize * f.size;
+                model.offsets[i] = 0;
                 model.attributeEnabled[i] = true;
                 i++;
             }
@@ -186,19 +187,21 @@ namespace glib
             {
                 //always 4; sizeof(int) == sizeof(float) == 4
                 int dataSize = sizeof(int);
-                size_t nSize = dataSize * rawVertexData[i].size();
+                size_t nSize = dataSize * nVertexData[i].size();
 
                 D3D11_BUFFER_DESC bd = {0};
                 bd.ByteWidth = nSize;
                 bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
                 D3D11_SUBRESOURCE_DATA srd;
-                srd.pSysMem = rawVertexData[i].data();
+                srd.pSysMem = nVertexData[i].data();
                 srd.SysMemPitch = 0;
                 srd.SysMemSlicePitch = 0;
 
                 devPointer->CreateBuffer(&bd, &srd, &model.vertexData[i]);
 
+                model.strides[i] = dataSize * f.size;
+                model.offsets[i] = 0;
                 model.attributeEnabled[i] = true;
                 i++;
             }

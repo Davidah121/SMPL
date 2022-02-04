@@ -21,11 +21,11 @@ public:
     static ID3D11DeviceContext* getContext();
     static ID3D11RenderTargetView* getBackBuffer();
 
-    static void init(HWND outputWindowHandle);
+    static void init(HWND outputWindowHandle, bool windowed);
     static void dispose();
     
 private:
-    DXSingleton(HWND outputWindowHandle);
+    DXSingleton(HWND outputWindowHandle, bool windowed);
     ~DXSingleton();
 
     IDXGISwapChain* d3dSwapChain = nullptr;
@@ -38,12 +38,12 @@ private:
 
 inline DXSingleton* DXSingleton::singleton = nullptr;
 
-inline void DXSingleton::init(HWND outputWindowHandle)
+inline void DXSingleton::init(HWND outputWindowHandle, bool windowed)
 {
     if(singleton != nullptr)
         delete singleton;
 
-    singleton = new DXSingleton(outputWindowHandle);
+    singleton = new DXSingleton(outputWindowHandle, windowed);
 }
 
 inline void DXSingleton::dispose()
@@ -54,7 +54,7 @@ inline void DXSingleton::dispose()
     singleton = nullptr;
 }
 
-inline DXSingleton::DXSingleton(HWND outputWindowHandle)
+inline DXSingleton::DXSingleton(HWND outputWindowHandle, bool windowed)
 {
     DXGI_SWAP_CHAIN_DESC scd;
     ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC));
@@ -62,7 +62,7 @@ inline DXSingleton::DXSingleton(HWND outputWindowHandle)
     scd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
     scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     scd.SampleDesc.Count = 1;
-    scd.Windowed = true;
+    scd.Windowed = windowed;
     scd.OutputWindow = outputWindowHandle;
 
     D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, NULL, NULL, NULL, D3D11_SDK_VERSION, &scd, &d3dSwapChain, &d3dDevice, NULL, &d3dContext);

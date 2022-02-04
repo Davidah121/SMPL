@@ -111,9 +111,9 @@ namespace glib
             sampleDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
             sampleDesc.MaxAnisotropy = 0;
 
-            sampleDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-            sampleDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-            sampleDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+            sampleDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+            sampleDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+            sampleDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 
             sampleDesc.MipLODBias = 0.0f;
             sampleDesc.MinLOD = 0;

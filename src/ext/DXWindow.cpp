@@ -78,7 +78,7 @@ namespace glib
 		// pBackBuff->Release();
 
 		// d3dContext->OMSetRenderTargets(1, &backBuffer, nullptr);
-		DXSingleton::init((HWND)windowHandle);
+		DXSingleton::init((HWND)windowHandle, true);
 
 		D3D11_VIEWPORT viewport = {0};
 		viewport.TopLeftX = 0;

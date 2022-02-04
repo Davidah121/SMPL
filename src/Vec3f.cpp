@@ -158,6 +158,28 @@ namespace glib
 		return Vec3f(x/value, y/value, z/value);
 	}
 
+	void Vec3f::fillArray(float* buffer)
+	{
+		buffer[0] = (float)x;
+		buffer[1] = (float)y;
+		buffer[2] = (float)z;
+	}
+	void Vec3f::fillArray(double* buffer)
+	{
+		buffer[0] = x;
+		buffer[1] = y;
+		buffer[2] = z;
+	}
+
+	float* Vec3f::convertToFloatArray()
+	{
+		return new float[3] {(float)x, (float)y, (float)z};
+	}
+	double* Vec3f::convertToDoubleArray()
+	{
+		return new double[3] {x, y, z};
+	}
+
 	GeneralVector Vec3f::toGeneralVector()
 	{
 		return (GeneralVector)* this;

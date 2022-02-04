@@ -1,9 +1,14 @@
-cbuffer UniformData : register(b0)
+struct VS_OUTPUT
 {
-	float4 r;
+	float4 position : SV_POSITION;
+	float2 uv : TEXCOORD;
 };
 
-float4 main() : SV_TARGET
+Texture2D Texture : register(t0);
+sampler Sampler : register(s0);
+
+float4 main(VS_OUTPUT input) : SV_TARGET
 {
-	return r;
+	float4 color = Texture.Sample( Sampler, input.uv );
+	return color;
 }

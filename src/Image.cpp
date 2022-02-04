@@ -67,7 +67,8 @@ namespace glib
 	{
 		if(pixels!=nullptr)
 			delete[] pixels;
-
+		
+		pixels = nullptr;
 		p.~ColorPalette();
 	}
 

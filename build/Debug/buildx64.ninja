@@ -30,9 +30,11 @@ build $objDir/Compression_LZSS.obj: buildToObject src/Compression_LZSS.cpp
 build $objDir/Compression_LZW.obj: buildToObject src/Compression_LZW.cpp
 build $objDir/Compression_RLE.obj: buildToObject src/Compression_RLE.cpp
 build $objDir/DXFont.obj: buildToObject src/ext/DXFont.cpp
+build $objDir/DXGraphics.obj: buildToObject src/ext/DXGraphics.cpp
 build $objDir/DXModel.obj: buildToObject src/ext/DXModel.cpp
 build $objDir/DXShader.obj: buildToObject src/ext/DXShader.cpp
 build $objDir/DXSprite.obj: buildToObject src/ext/DXSprite.cpp
+build $objDir/DXSurface.obj: buildToObject src/ext/DXSurface.cpp
 build $objDir/DXTexture.obj: buildToObject src/ext/DXTexture.cpp
 build $objDir/DXWindow.obj: buildToObject src/ext/DXWindow.cpp
 build $objDir/GLFont.obj: buildToObject src/ext/GLFont.cpp

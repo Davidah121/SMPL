@@ -101,6 +101,7 @@ namespace glib
     inline KDTree<T>::~KDTree()
     {
         cleanUp(binTree.getRoot());
+        binTree.~BinaryTree();
     }
 
     template<typename T>

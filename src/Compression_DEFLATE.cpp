@@ -1,5 +1,4 @@
 #include "InternalCompressionHeader.h"
-
 namespace glib
 {
 
@@ -64,26 +63,26 @@ namespace glib
 		//Get 3 bytes and try to find it in the hashmap. If found, try and find match.
 		//If not found, add the 3 values to the hashmap and write the first byte to the output
 
-		//Method 5 - SIMPLE_HASH_MAP : Best Performance and Good Size. Memory Hog. Could potentially crash due to memory constraints.
-		//The rehash function should be reworked to use less memory as it basically doubles the memory used. It is also the slowest part I believe.
+		//Method 5 - SIMPLE_HASH_MAP : Best Performance and Good Size.
+		// System::dbtime[0] = 0;
+		// System::dbtime[1] = 0;
+		// System::dbtime[2] = 0;
+		// System::dbtime[3] = 0;
+		// System::dbtime[4] = 0;
 		
-		size_t t1,t2;
 
-		t1 = System::getCurrentTimeMicro();
 		SimpleHashMap<int, int> map = SimpleHashMap<int, int>( SimpleHashMap<int, int>::MODE_KEEP_ALL, 1<<15 );
 		map.setMaxLoadFactor(-1);
-		t2 = System::getCurrentTimeMicro();
 
-		// StringTools::println("TIME TO CREATE %llu", t2-t1);
 
 		int i = 0;
 		while(i < size-2)
 		{
 			int key = data[i] + ((int)data[i+1]<<8) + ((int)data[i+2]<<16);
 			
-			std::vector<HashPair<int, int>*> k = map.getAll(key);
+			HashPair<int, int>* k = map.get(key);
 
-			if(k.size()==0)
+			if(k == nullptr)
 			{
 				//not found or size too small
 				//always insert
@@ -98,15 +97,14 @@ namespace glib
 				int bestLength = 0;
 				int bestLocation = 0;
 
-				for(HashPair<int, int>* it : k)
+				do
 				{
-					int locationOfMatch = it->data;
+					int locationOfMatch = k->data;
 
 					if(locationOfMatch < lowestPoint)
 					{
 						//maximum backwards distance reached
-						map.remove(it);
-						continue;
+						break;
 					}
 
 					int lengthMax = min(size-i, 258);
@@ -134,7 +132,9 @@ namespace glib
 					{
 						break;
 					}
-				}
+					
+					k = map.getNext();
+				} while(k != nullptr);
 
 				//always insert
 				map.add( key, i );
@@ -166,10 +166,7 @@ namespace glib
 		{
 			outputData->push_back( {true, data[i+j], 0} );
 		}
-
-		t1 = System::getCurrentTimeMicro();
 		map.clear();
-		t2 = System::getCurrentTimeMicro();
 
 		// StringTools::println("TIME TO DELETE %llu", t2-t1);
 
@@ -994,68 +991,91 @@ namespace glib
 			#endif
 			return {};
 		}
-		
-		int tSize = System::getNumberOfThreads();
-		std::vector<std::vector<lengthPair>> info = std::vector<std::vector<lengthPair>>(blocks);
-		std::vector<std::thread> threads = std::vector<std::thread>( tSize );
 
 		BinarySet bin = BinarySet();
 
 		bin.setBitOrder(BinarySet::LMSB);
 		bin.setAddBitOrder(BinarySet::RMSB);
 
-		int sizeOfBlock = size/blocks;
-
-		for(int block=0; block<blocks; block++)
+		if(blocks > 1)
 		{
-			int nSize = sizeOfBlock;
-			unsigned char* nData = data + block*sizeOfBlock;
-			if(block == blocks-1)
-			{
-				nSize = size - (block*sizeOfBlock);
-			}
-			info[block].clear();
+			int tSize = System::getNumberOfThreads();
+			std::vector<std::vector<lengthPair>> info = std::vector<std::vector<lengthPair>>(blocks);
+			std::vector<std::thread> threads = std::vector<std::thread>( tSize );
 
-			if(block<tSize)
+			int sizeOfBlock = size/blocks;
+
+			for(int block=0; block<blocks; block++)
 			{
+				int nSize = sizeOfBlock;
+				unsigned char* nData = data + block*sizeOfBlock;
+				if(block == blocks-1)
+				{
+					nSize = size - (block*sizeOfBlock);
+				}
 				info[block].clear();
-				threads[ block%tSize ] = std::thread(compressDeflateSubFunction, nData, nSize, &info[block], compressionLevel);
+
+				if(block<tSize)
+				{
+					info[block].clear();
+					threads[ block%tSize ] = std::thread(compressDeflateSubFunction, nData, nSize, &info[block], compressionLevel);
+				}
+				else
+				{
+					if(threads[block%tSize].joinable())
+						threads[block%tSize].join();
+
+					info[block].clear();
+					threads[ block%tSize ] = std::thread(compressDeflateSubFunction, nData, nSize, &info[block], compressionLevel);
+				}
 			}
-			else
+
+			for(int t=0; t<tSize; t++)
+			{
+				if(threads[t].joinable())
+					threads[t].join();
+			}
+
+			std::vector<BinarySet> threadBinData = std::vector<BinarySet>(blocks);
+
+			for(int block=0; block<blocks; block++)
 			{
 				if(threads[block%tSize].joinable())
 					threads[block%tSize].join();
-
-				info[block].clear();
-				threads[ block%tSize ] = std::thread(compressDeflateSubFunction, nData, nSize, &info[block], compressionLevel);
+					
+				threads[ block%tSize ] = std::thread(compressDeflateSubFunction2, &info[block], &threadBinData[block], customTable, block == (blocks-1) );
+			}
+			for(int t=0; t<tSize; t++)
+			{
+				if(threads[t].joinable())
+					threads[t].join();
+			}
+			
+			//Construct
+			for(int block=0; block<blocks; block++)
+			{
+				bin.add( threadBinData[block] );
 			}
 		}
+		else
+		{
+			std::vector<lengthPair> info = std::vector<lengthPair>();
+			size_t t1, t2;
+			t1 = System::getCurrentTimeMicro();
+			compressDeflateSubFunction(data, size, &info, compressionLevel);
+			t2 = System::getCurrentTimeMicro();
+			StringTools::println("TIME FOR SUBFUNCTION1: %llu", t2-t1);
+			
+			t1 = System::getCurrentTimeMicro();
+			compressDeflateSubFunction2(&info, &bin, customTable, true);
+			t2 = System::getCurrentTimeMicro();
+			StringTools::println("TIME FOR SUBFUNCTION2: %llu", t2-t1);
 
-		for(int t=0; t<tSize; t++)
-		{
-			if(threads[t].joinable())
-				threads[t].join();
-		}
-
-		std::vector<BinarySet> threadBinData = std::vector<BinarySet>(blocks);
-
-		for(int block=0; block<blocks; block++)
-		{
-			if(threads[block%tSize].joinable())
-				threads[block%tSize].join();
-				
-			threads[ block%tSize ] = std::thread(compressDeflateSubFunction2, &info[block], &threadBinData[block], customTable, block == (blocks-1) );
-		}
-		for(int t=0; t<tSize; t++)
-		{
-			if(threads[t].joinable())
-				threads[t].join();
-		}
-		
-		//Construct
-		for(int block=0; block<blocks; block++)
-		{
-			bin.add( threadBinData[block] );
+			StringTools::println("Time to add in hashmap: %llu", System::dbtime[0]);
+			StringTools::println("Time to rehash in hashmap: %llu", System::dbtime[1]);
+			StringTools::println("Time to getAll in hashmap: %llu", System::dbtime[2]);
+			StringTools::println("Time to remove in hashmap: %llu", System::dbtime[3]);
+			StringTools::println("Time to clear in hashmap: %llu", System::dbtime[4]);
 		}
 
 		bin.setAddBitOrder(BinarySet::LMSB);

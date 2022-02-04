@@ -34,7 +34,6 @@ namespace glib
 
         static const int CULL_FRONT = GL_FRONT;
         static const int CULL_BACK = GL_BACK;
-        static const int CULL_ALL = GL_FRONT_AND_BACK;
         
         static void init();
 

@@ -1,5 +1,6 @@
 #include "SimpleWindow.h"
 #include <iostream>
+#include <string.h>
 #include "MathExt.h"
 #include "System.h"
 #include "StringTools.h"
@@ -53,219 +54,279 @@ namespace glib
 		}
 	}
 	
-	LRESULT _stdcall SimpleWindow::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
-	{
-		SimpleWindow* currentWindow = SimpleWindow::getWindowByHandle((size_t)hwnd);
-
-		bool canDo = false;
-
-		HDC hdc;
-		PAINTSTRUCT ps;
-		HDC mem;
-		BITMAP img;
-		HGDIOBJ oldImg;
-		RECT* rect = nullptr;
-
-		if (currentWindow != nullptr)
+	#ifdef LINUX
+		void SimpleWindow::x11EventProc()
 		{
-			switch (msg)
+			XEvent event;
+			XNextEvent(displayServer, &event);
+
+			switch (event.type)
 			{
-			case WM_ERASEBKGND:
+			case Expose:
+				//Handled below
 				break;
-			case WM_PAINT:
-				hdc = BeginPaint(hwnd, &ps);
-
-				mem = CreateCompatibleDC(hdc);
-				oldImg = SelectObject(mem, currentWindow->bitmap);
-				GetObject(currentWindow->bitmap, sizeof(BITMAP), &img);
-
-				BitBlt(hdc, 0, 0, img.bmWidth, img.bmHeight, mem, 0, 0, SRCCOPY);
-
-				DeleteDC(mem);
-				EndPaint(hwnd, &ps);
+			case KeyPress:
+				if(keyDownFunction != nullptr)
+					keyDownFunction(event.xkey.keycode, NULL);
 				break;
-			case WM_CLOSE:
-				if (currentWindow->closingFunction != nullptr)
-					currentWindow->closingFunction();
-				PostQuitMessage(0);
-				currentWindow->setShouldEnd(true);
+			case KeyRelease:
+				if(keyUpFunction != nullptr)
+					keyUpFunction(event.xkey.keycode, NULL);
 				break;
-			case WM_DESTROY:
-				/*
-				if (currentWindow->closingFunction != nullptr)
-					currentWindow->closingFunction();
-				PostQuitMessage(0);
-				currentWindow->setRunning(false);
-				*/
+			case ButtonPress:
+				if(mouseButtonDownFunction != nullptr)
+					mouseButtonDownFunction(event.xbutton.button);
 				break;
-			case WM_KEYDOWN:
-				if (currentWindow->keyDownFunction != nullptr)
-					currentWindow->keyDownFunction(wparam, lparam);
+			case ButtonRelease:
+				if(mouseButtonUpFunction != nullptr)
+					mouseButtonUpFunction(event.xbutton.button);
 				break;
-			case WM_KEYUP:
-				if (currentWindow->keyUpFunction != nullptr)
-					currentWindow->keyUpFunction(wparam, lparam);
+			case MotionNotify:
+				if(mouseMovedFunction != nullptr)
+					mouseMovedFunction();
 				break;
-			case WM_LBUTTONDOWN:
-				if (currentWindow->mouseButtonDownFunction != nullptr)
-					currentWindow->mouseButtonDownFunction(MOUSE_LEFT);
-				break;
-			case WM_MBUTTONDOWN:
-				if (currentWindow->mouseButtonDownFunction != nullptr)
-					currentWindow->mouseButtonDownFunction(MOUSE_MIDDLE);
-				break;
-			case WM_RBUTTONDOWN:
-				if (currentWindow->mouseButtonDownFunction != nullptr)
-					currentWindow->mouseButtonDownFunction(MOUSE_RIGHT);
-				break;
-			case WM_LBUTTONUP:
-				if (currentWindow->mouseButtonUpFunction != nullptr)
-					currentWindow->mouseButtonUpFunction(MOUSE_LEFT);
-				break;
-			case WM_MBUTTONUP:
-				if (currentWindow->mouseButtonUpFunction != nullptr)
-					currentWindow->mouseButtonUpFunction(MOUSE_MIDDLE);
-				break;
-			case WM_RBUTTONUP:
-				if (currentWindow->mouseButtonUpFunction != nullptr)
-					currentWindow->mouseButtonUpFunction(MOUSE_RIGHT);
-				break;
-			case WM_MOUSEWHEEL:
-				if (currentWindow->mouseWheelFunction != nullptr)
-					currentWindow->mouseWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
-				
-				if(SimpleWindow::mouseVWheelPointer)
-					*SimpleWindow::mouseVWheelPointer = GET_WHEEL_DELTA_WPARAM(wparam)/120;
-				break;
-			case WM_MOUSEHWHEEL:
-				if (currentWindow->mouseHWheelFunction != nullptr)
-					currentWindow->mouseHWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
-				
-				if(SimpleWindow::mouseHWheelPointer)
-					*SimpleWindow::mouseHWheelPointer = GET_WHEEL_DELTA_WPARAM(wparam)/120;
-				break;
-			case WM_MOUSEMOVE:
-				if (currentWindow->mouseMovedFunction != nullptr)
-					currentWindow->mouseMovedFunction();
-				break;
-			case WM_MOVING:
-				rect = (RECT*)lparam;
-				currentWindow->x = rect->left;
-				currentWindow->y = rect->top;
-				
-				currentWindow->width = rect->right - rect->left;
-				currentWindow->height = rect->bottom - rect->top;
-				break;
-			case WM_ENTERSIZEMOVE:
-				currentWindow->setResizing(true);
-				break;
-			case WM_SIZING:
-				rect = (RECT*)lparam;
-				
-				currentWindow->preX = rect->left;
-				currentWindow->preY = rect->top;
-
-				currentWindow->x = rect->left;
-				currentWindow->y = rect->top;
-
-				currentWindow->width = rect->right - rect->left;
-				currentWindow->height = rect->bottom - rect->top;
-				break;
-			case WM_SIZE:
-				if(wparam == SIZE_MAXIMIZED)
+			case DestroyNotify:
+				if(closingFunction != nullptr)
+					closingFunction();
+				setShouldEnd(true);
+			case ConfigureNotify:
+				x = event.xconfigure.x;
+				y = event.xconfigure.y;
+				if(width != event.xconfigure.width ||
+					height != event.xconfigure.height)
 				{
-					currentWindow->windowState = STATE_MAXIMIZED;
-					//FIX LATER
-					if(currentWindow->getResizing())
-					{
-						currentWindow->preX = currentWindow->x;
-						currentWindow->preY = currentWindow->y;
-
-						currentWindow->x = 0;
-						currentWindow->y = 0;
-
-						currentWindow->width = LOWORD(lparam);
-						currentWindow->height = HIWORD(lparam);
-					}
-					else
-					{
-						currentWindow->setResizeMe(true);
-
-						currentWindow->preX = currentWindow->x;
-						currentWindow->preY = currentWindow->y;
-
-						currentWindow->x = 0;
-						currentWindow->y = 0;
-
-						currentWindow->width = LOWORD(lparam);
-						currentWindow->height = HIWORD(lparam);
-					}
+					width = event.xconfigure.width;
+					height = event.xconfigure.height;
+					initBitmap();
 				}
-				else if(wparam == SIZE_RESTORED)
-				{
-					currentWindow->windowState = STATE_NORMAL;
-					//FIX LATER
-					if(currentWindow->getResizing())
-					{
-						currentWindow->x = currentWindow->preX;
-						currentWindow->y = currentWindow->preY;
-
-						currentWindow->width = LOWORD(lparam);
-						currentWindow->height = HIWORD(lparam);
-					}
-					else
-					{
-						currentWindow->setResizeMe(true);
-
-						currentWindow->x = currentWindow->preX;
-						currentWindow->y = currentWindow->preY;
-
-						currentWindow->width = LOWORD(lparam);
-						currentWindow->height = HIWORD(lparam);
-					}
-				}
-				else if(wparam == SIZE_MINIMIZED)
-				{
-					currentWindow->preX = currentWindow->x;
-					currentWindow->preY = currentWindow->y;
-
-					currentWindow->width = LOWORD(lparam);
-					currentWindow->height = HIWORD(lparam);
-
-					currentWindow->windowState = STATE_MINIMIZED;
-				}
-				break;
-			case WM_EXITSIZEMOVE:
-				currentWindow->initBitmap();
-				currentWindow->setResizing(false);
-				break;
-			case WM_MDIMAXIMIZE:
-				break;
-			case WM_SYSCOMMAND:
-				if(wparam == SC_MOVE)
-				{
-					if(!currentWindow->getMovable())
-					{
-						return 0;
-					}
-				}
-				else if(wparam == SC_SIZE)
-				{
-					if(!currentWindow->getResizable())
-					{
-						return 0;
-					}
-				}
-				break;
-			case WM_SETCURSOR:
-				SetCursor( LoadCursor(NULL, IDC_ARROW) );
 			default:
 				break;
 			}
-		}
 
-		return DefWindowProcW(hwnd, msg, wparam, lparam);
-	}
+			if(event.type == Expose)
+			{
+				XImage* drawableImage = XGetImage(displayServer, (Window)windowHandle, 0, 0, width, height, AllPlanes, ZPixmap);
+				memcpy(drawableImage->data, wndPixels, wndPixelsSize);
+				XPutImage(displayServer, (Window)windowHandle, gc, drawableImage, 0, 0, 0, 0, width, height);
+				XDestroyImage(drawableImage);
+			}
+		}
+	#else
+
+		LRESULT _stdcall SimpleWindow::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+		{
+			SimpleWindow* currentWindow = SimpleWindow::getWindowByHandle((size_t)hwnd);
+
+			bool canDo = false;
+
+			HDC hdc;
+			PAINTSTRUCT ps;
+			HDC mem;
+			BITMAP img;
+			HGDIOBJ oldImg;
+			RECT* rect = nullptr;
+
+			if (currentWindow != nullptr)
+			{
+				switch (msg)
+				{
+				case WM_ERASEBKGND:
+					break;
+				case WM_PAINT:
+					hdc = BeginPaint(hwnd, &ps);
+
+					mem = CreateCompatibleDC(hdc);
+					oldImg = SelectObject(mem, currentWindow->bitmap);
+					GetObject(currentWindow->bitmap, sizeof(BITMAP), &img);
+
+					BitBlt(hdc, 0, 0, img.bmWidth, img.bmHeight, mem, 0, 0, SRCCOPY);
+
+					DeleteDC(mem);
+					EndPaint(hwnd, &ps);
+					break;
+				case WM_CLOSE:
+					if (currentWindow->closingFunction != nullptr)
+						currentWindow->closingFunction();
+					PostQuitMessage(0);
+					currentWindow->setShouldEnd(true);
+					break;
+				case WM_DESTROY:
+					/*
+					if (currentWindow->closingFunction != nullptr)
+						currentWindow->closingFunction();
+					PostQuitMessage(0);
+					currentWindow->setRunning(false);
+					*/
+					break;
+				case WM_KEYDOWN:
+					if (currentWindow->keyDownFunction != nullptr)
+						currentWindow->keyDownFunction(wparam, lparam);
+					break;
+				case WM_KEYUP:
+					if (currentWindow->keyUpFunction != nullptr)
+						currentWindow->keyUpFunction(wparam, lparam);
+					break;
+				case WM_LBUTTONDOWN:
+					if (currentWindow->mouseButtonDownFunction != nullptr)
+						currentWindow->mouseButtonDownFunction(MOUSE_LEFT);
+					break;
+				case WM_MBUTTONDOWN:
+					if (currentWindow->mouseButtonDownFunction != nullptr)
+						currentWindow->mouseButtonDownFunction(MOUSE_MIDDLE);
+					break;
+				case WM_RBUTTONDOWN:
+					if (currentWindow->mouseButtonDownFunction != nullptr)
+						currentWindow->mouseButtonDownFunction(MOUSE_RIGHT);
+					break;
+				case WM_LBUTTONUP:
+					if (currentWindow->mouseButtonUpFunction != nullptr)
+						currentWindow->mouseButtonUpFunction(MOUSE_LEFT);
+					break;
+				case WM_MBUTTONUP:
+					if (currentWindow->mouseButtonUpFunction != nullptr)
+						currentWindow->mouseButtonUpFunction(MOUSE_MIDDLE);
+					break;
+				case WM_RBUTTONUP:
+					if (currentWindow->mouseButtonUpFunction != nullptr)
+						currentWindow->mouseButtonUpFunction(MOUSE_RIGHT);
+					break;
+				case WM_MOUSEWHEEL:
+					if (currentWindow->mouseWheelFunction != nullptr)
+						currentWindow->mouseWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
+					
+					if(SimpleWindow::mouseVWheelPointer)
+						*SimpleWindow::mouseVWheelPointer = GET_WHEEL_DELTA_WPARAM(wparam)/120;
+					break;
+				case WM_MOUSEHWHEEL:
+					if (currentWindow->mouseHWheelFunction != nullptr)
+						currentWindow->mouseHWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
+					
+					if(SimpleWindow::mouseHWheelPointer)
+						*SimpleWindow::mouseHWheelPointer = GET_WHEEL_DELTA_WPARAM(wparam)/120;
+					break;
+				case WM_MOUSEMOVE:
+					if (currentWindow->mouseMovedFunction != nullptr)
+						currentWindow->mouseMovedFunction();
+					break;
+				case WM_MOVING:
+					rect = (RECT*)lparam;
+					currentWindow->x = rect->left;
+					currentWindow->y = rect->top;
+					
+					currentWindow->width = rect->right - rect->left;
+					currentWindow->height = rect->bottom - rect->top;
+					break;
+				case WM_ENTERSIZEMOVE:
+					currentWindow->setResizing(true);
+					break;
+				case WM_SIZING:
+					rect = (RECT*)lparam;
+					
+					currentWindow->preX = rect->left;
+					currentWindow->preY = rect->top;
+
+					currentWindow->x = rect->left;
+					currentWindow->y = rect->top;
+
+					currentWindow->width = rect->right - rect->left;
+					currentWindow->height = rect->bottom - rect->top;
+					break;
+				case WM_SIZE:
+					if(wparam == SIZE_MAXIMIZED)
+					{
+						currentWindow->windowState = STATE_MAXIMIZED;
+						//FIX LATER
+						if(currentWindow->getResizing())
+						{
+							currentWindow->preX = currentWindow->x;
+							currentWindow->preY = currentWindow->y;
+
+							currentWindow->x = 0;
+							currentWindow->y = 0;
+
+							currentWindow->width = LOWORD(lparam);
+							currentWindow->height = HIWORD(lparam);
+						}
+						else
+						{
+							currentWindow->setResizeMe(true);
+
+							currentWindow->preX = currentWindow->x;
+							currentWindow->preY = currentWindow->y;
+
+							currentWindow->x = 0;
+							currentWindow->y = 0;
+
+							currentWindow->width = LOWORD(lparam);
+							currentWindow->height = HIWORD(lparam);
+						}
+					}
+					else if(wparam == SIZE_RESTORED)
+					{
+						currentWindow->windowState = STATE_NORMAL;
+						//FIX LATER
+						if(currentWindow->getResizing())
+						{
+							currentWindow->x = currentWindow->preX;
+							currentWindow->y = currentWindow->preY;
+
+							currentWindow->width = LOWORD(lparam);
+							currentWindow->height = HIWORD(lparam);
+						}
+						else
+						{
+							currentWindow->setResizeMe(true);
+
+							currentWindow->x = currentWindow->preX;
+							currentWindow->y = currentWindow->preY;
+
+							currentWindow->width = LOWORD(lparam);
+							currentWindow->height = HIWORD(lparam);
+						}
+					}
+					else if(wparam == SIZE_MINIMIZED)
+					{
+						currentWindow->preX = currentWindow->x;
+						currentWindow->preY = currentWindow->y;
+
+						currentWindow->width = LOWORD(lparam);
+						currentWindow->height = HIWORD(lparam);
+
+						currentWindow->windowState = STATE_MINIMIZED;
+					}
+					break;
+				case WM_EXITSIZEMOVE:
+					currentWindow->initBitmap();
+					currentWindow->setResizing(false);
+					break;
+				case WM_MDIMAXIMIZE:
+					break;
+				case WM_SYSCOMMAND:
+					if(wparam == SC_MOVE)
+					{
+						if(!currentWindow->getMovable())
+						{
+							return 0;
+						}
+					}
+					else if(wparam == SC_SIZE)
+					{
+						if(!currentWindow->getResizable())
+						{
+							return 0;
+						}
+					}
+					break;
+				case WM_SETCURSOR:
+					SetCursor( LoadCursor(NULL, IDC_ARROW) );
+				default:
+					break;
+				}
+			}
+
+			return DefWindowProcW(hwnd, msg, wparam, lparam);
+		}
+	#endif
 
 	SimpleWindow::SimpleWindow()
 	{
@@ -278,10 +339,8 @@ namespace glib
 		setAllFunctionsToNull();
 
 		gui = new GuiManager(this->width, this->height);
-
-		int threadManaged = windowType & 0b0100;
 		
-		if(threadManaged == TYPE_THREAD_MANAGED)
+		if(windowType.threadManaged == TYPE_THREAD_MANAGED)
 		{
 			threadOwnership = true;
 			wndThread = new std::thread(&SimpleWindow::init, this, this->x, this->y, this->width, this->height, this->title, this->windowType);
@@ -298,7 +357,7 @@ namespace glib
 		}
 	}
 
-	SimpleWindow::SimpleWindow(std::wstring title, int width, int height, int x, int y, unsigned char windowType)
+	SimpleWindow::SimpleWindow(std::wstring title, int width, int height, int x, int y, WindowOptions windowType)
 	{
 		this->x = x;
 		this->y = y;
@@ -325,9 +384,7 @@ namespace glib
 		
 		this->title = title;
 
-		int threadManaged = windowType & 0b0100;
-		
-		if(threadManaged == TYPE_THREAD_MANAGED)
+		if(windowType.threadManaged == TYPE_THREAD_MANAGED)
 		{
 			threadOwnership = true;
 			wndThread = new std::thread(&SimpleWindow::init, this, this->x, this->y, this->width, this->height, this->title, this->windowType);
@@ -344,7 +401,7 @@ namespace glib
 		}
 	}
 
-	SimpleWindow::SimpleWindow(std::string title, int width, int height, int x, int y, unsigned char windowType)
+	SimpleWindow::SimpleWindow(std::string title, int width, int height, int x, int y, WindowOptions windowType)
 	{
 		this->x = x;
 		this->y = y;
@@ -370,9 +427,7 @@ namespace glib
 
 		this->title = StringTools::toWideString(title);
 
-		int threadManaged = windowType & 0b0100;
-
-		if(threadManaged == TYPE_THREAD_MANAGED)
+		if(windowType.threadManaged == TYPE_THREAD_MANAGED)
 		{
 			threadOwnership = true;
 			wndThread = new std::thread(&SimpleWindow::init, this, this->x, this->y, this->width, this->height, this->title, this->windowType);
@@ -404,6 +459,7 @@ namespace glib
 
 	void SimpleWindow::dispose()
 	{
+		//TODO - LINUX VERSION
 		if (getValid())
 		{
 			std::wstring text = title;
@@ -420,14 +476,23 @@ namespace glib
 				wndThread = nullptr;
 			}
 			
-			if (IsWindow((HWND)windowHandle))
-			{
-				CloseWindow((HWND)windowHandle);
-				DestroyWindow((HWND)windowHandle);
-			}
-			UnregisterClassW(text.c_str(), hins);
-			DeleteObject(bitmap);
-			DeleteDC(myHDC);
+			#ifdef LINUX
+				XFreeGC(displayServer, gc);
+				XDestroyWindow(displayServer, (Window)windowHandle);
+				XCloseDisplay(displayServer);
+
+				windowHandle = NULL;
+				displayServer = nullptr;
+			#else
+				if (IsWindow((HWND)windowHandle))
+				{
+					CloseWindow((HWND)windowHandle);
+					DestroyWindow((HWND)windowHandle);
+				}
+				UnregisterClassW(text.c_str(), hins);
+				DeleteObject(bitmap);
+				DeleteDC(myHDC);
+			#endif
 
 			if(gui!=nullptr)
 				delete gui;
@@ -442,13 +507,13 @@ namespace glib
 		}
 	}
 
-	void SimpleWindow::init(int x, int y, int width, int height, std::wstring title, unsigned char windowType)
+	void SimpleWindow::init(int x, int y, int width, int height, std::wstring title, WindowOptions windowType)
 	{
 		#ifdef LINUX
 
 			displayServer = XOpenDisplay(NULL);
 
-			if(display == NULL)
+			if(displayServer == NULL)
 			{
 				//error connecting to XServer
 				setValid(false);
@@ -464,29 +529,22 @@ namespace glib
 			int trueX = x;
 			int trueY = y;
 
-			int wType = windowType & 0b0001;
-			if(windowType & 0b1000)
-				wType = FULLSCREEN_WINDOW;
-			
-			int focusable = windowType & 0b0010;
-			int threadManaged = windowType & 0b0100;
-
 			int borderWidth = 1;
 
-			if(focusable==TYPE_NONFOCUSABLE)
+			if(windowType.focusable==false)
 			{
 				
 			}
 
 			screen = DefaultScreen(displayServer);
-			windowHandle = XCreateSimpleWindow(displayServer, RootWindow(displayServer, screen), trueX, trueY, trueWidth, trueHeight, borderWidth, BlackPixel(display, screen), WhitePixel(display, screen));
+			windowHandle = XCreateSimpleWindow(displayServer, RootWindow(displayServer, screen), trueX, trueY, trueWidth, trueHeight, borderWidth, BlackPixel(displayServer, screen), WhitePixel(displayServer, screen));
 
 			//set window name
 			std::string cTitle = StringTools::toCString(title);
 			XStoreName(displayServer, windowHandle, cTitle.c_str());
 
 			//if window is borderless
-			if(windowType == SimpleWindow::BORDERLESS_WINDOW)
+			if(windowType.windowType == SimpleWindow::BORDERLESS_WINDOW)
 			{
 				Atom mwmHintsProperty = XInternAtom(displayServer, "_MOTIF_WM_HINTS", 0);
 				MwmHints hints = {};
@@ -494,7 +552,7 @@ namespace glib
 				hints.decorations = 0;
 				XChangeProperty(displayServer, windowHandle, mwmHintsProperty, mwmHintsProperty, 32, PropModeReplace, (unsigned char*)&hints, 5);
 			}
-			else if(windowType == SimpleWindow::FULLSCREEN_WINDOW)
+			else if(windowType.windowType == SimpleWindow::FULLSCREEN_WINDOW)
 			{
 				Atom atoms[2] = {
 					XInternAtom(displayServer, "_NET_WM_STATE_FULLSCREEN", 0), 0
@@ -503,12 +561,12 @@ namespace glib
 
 				this->x = 0;
 				this->y = 0;
-				this->width = System::getDestopWidth();
+				this->width = System::getDesktopWidth();
 				this->height = System::getDesktopHeight();
 			}
 			
 
-			XSelectInput(displayServer, windowHandle, ExposureMask | KeyPressMask);
+			XSelectInput(displayServer, windowHandle, ExposureMask | StructureNotifyMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask);
 			XMapWindow(displayServer, windowHandle);
 
 			setVisible(true);
@@ -550,17 +608,10 @@ namespace glib
 
 			if (RegisterClassExW(&wndClass) != NULL)
 			{
-				int wType = windowType & 0b0001;
-				if(windowType & 0b1000)
-					wType = FULLSCREEN_WINDOW;
-				
-				int focusable = windowType & 0b0010;
-				int threadManaged = windowType & 0b0100;
-
 				DWORD style = 0;
 				bool failed = false;
 
-				switch(wType)
+				switch(windowType.windowType)
 				{
 					case SimpleWindow::NORMAL_WINDOW:
 						style = WS_OVERLAPPEDWINDOW;
@@ -577,7 +628,7 @@ namespace glib
 						break;
 				}
 
-				if(wType == SimpleWindow::FULLSCREEN_WINDOW)
+				if(windowType.windowType == SimpleWindow::FULLSCREEN_WINDOW)
 				{
 					HMONITOR hmon = MonitorFromWindow(NULL, MONITOR_DEFAULTTONEAREST);
 					MONITORINFO mi = { sizeof(MONITORINFO) };
@@ -610,7 +661,7 @@ namespace glib
 					this->y = trueY;
 				}
 
-				if(focusable==TYPE_NONFOCUSABLE)
+				if(windowType.focusable==TYPE_NONFOCUSABLE)
 				{
 					style |= WS_EX_NOACTIVATE;
 				}
@@ -618,6 +669,9 @@ namespace glib
 				if(!failed)
 				{
 					windowHandle = (size_t)CreateWindowExW(NULL, text.c_str(), title.c_str(), style, trueX, trueY, trueWidth, trueHeight, NULL, NULL, hins, NULL);
+
+					DWORD attribValue = windowType.cornerType;
+					DwmSetWindowAttribute((HWND)windowHandle, DWMWA_WINDOW_CORNER_PREFERENCE_CONST, &attribValue, sizeof(attribValue));
 				}
 				
 				if (windowHandle != NULL)
@@ -632,7 +686,7 @@ namespace glib
 
 					setFinishInit(true);
 
-					if(threadManaged == TYPE_THREAD_MANAGED)
+					if(windowType.threadManaged == TYPE_THREAD_MANAGED)
 						run();
 				}
 				else
@@ -666,24 +720,43 @@ namespace glib
 
 	void SimpleWindow::initBitmap()
 	{
-		bitInfo.bmiHeader.biSize = sizeof(bitInfo.bmiHeader);
-		bitInfo.bmiHeader.biWidth = width;
-		bitInfo.bmiHeader.biHeight = -height;
-		bitInfo.bmiHeader.biCompression = BI_RGB;
-		bitInfo.bmiHeader.biPlanes = 1;
-		bitInfo.bmiHeader.biBitCount = 24;
-		bitInfo.bmiHeader.biSizeImage = 0;
+		#ifndef LINUX
+			if(wndPixels != nullptr)
+			{
+				DeleteObject(bitmap);
+				delete[] wndPixels;
+				wndPixels = nullptr;
+			}
 
-		bitInfo.bmiHeader.biXPelsPerMeter = width;
-		bitInfo.bmiHeader.biYPelsPerMeter = height;
+			bitInfo.bmiHeader.biSize = sizeof(bitInfo.bmiHeader);
+			bitInfo.bmiHeader.biWidth = width;
+			bitInfo.bmiHeader.biHeight = -height;
+			bitInfo.bmiHeader.biCompression = BI_RGB;
+			bitInfo.bmiHeader.biPlanes = 1;
+			bitInfo.bmiHeader.biBitCount = 24;
+			bitInfo.bmiHeader.biSizeImage = 0;
 
-		bitInfo.bmiHeader.biClrImportant = 0;
-		bitInfo.bmiHeader.biClrUsed = 0;
+			bitInfo.bmiHeader.biXPelsPerMeter = width;
+			bitInfo.bmiHeader.biYPelsPerMeter = height;
 
-		bitInfo.bmiColors->rgbRed = 0;
-		bitInfo.bmiColors->rgbGreen = 0;
-		bitInfo.bmiColors->rgbBlue = 0;
-		bitInfo.bmiColors->rgbReserved = 0;
+			bitInfo.bmiHeader.biClrImportant = 0;
+			bitInfo.bmiHeader.biClrUsed = 0;
+
+			bitInfo.bmiColors->rgbRed = 0;
+			bitInfo.bmiColors->rgbGreen = 0;
+			bitInfo.bmiColors->rgbBlue = 0;
+			bitInfo.bmiColors->rgbReserved = 0;
+
+			myHDC = GetDC((HWND)windowHandle);
+
+			bitmap = CreateCompatibleBitmap(myHDC, width, height);
+		#endif
+
+		if(wndPixels != nullptr)
+		{
+			delete[] wndPixels;
+			wndPixels = nullptr;
+		}
 
 		scanLinePadding = 4 - width%4;
 		if(scanLinePadding == 4)
@@ -691,20 +764,8 @@ namespace glib
 
 		wndPixelsSize = (width*3 + scanLinePadding) * height;
 
-		
-		if(wndPixels != nullptr)
-		{
-			DeleteObject(bitmap);
-			DeleteDC(myHDC);
-			delete[] wndPixels;
-		}
-
 		wndPixels = new unsigned char[wndPixelsSize];
-
-		std::memset(wndPixels,0,wndPixelsSize);
-		myHDC = GetDC((HWND)windowHandle);
-
-		bitmap = CreateCompatibleBitmap(myHDC, width, height);
+		memset(wndPixels,0,wndPixelsSize);
 
 		if(gui!=nullptr)
 		{
@@ -798,69 +859,118 @@ namespace glib
 
 	void SimpleWindow::setVisible(bool value)
 	{
-		if (value == true)
-			ShowWindow((HWND)windowHandle, SW_SHOW);
-		else
-			ShowWindow((HWND)windowHandle, SW_HIDE);
+		#ifdef LINUX
+			if (value == true)
+				XMapWindow(displayServer, (Window)windowHandle);
+			else
+				XUnmapWindow(displayServer, (Window)windowHandle);
+		#else
+			if (value == true)
+				ShowWindow((HWND)windowHandle, SW_SHOW);
+			else
+				ShowWindow((HWND)windowHandle, SW_HIDE);
+		#endif
 	}
 
 	void SimpleWindow::setX(int x)
 	{
-		SetWindowPos((HWND)windowHandle, HWND_TOP, x, this->y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+		#ifdef LINUX
+			XMoveWindow(displayServer, (Window)windowHandle, x, this->y);
+		#else
+			SetWindowPos((HWND)windowHandle, HWND_TOP, x, this->y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+		#endif
 		this->x = x;
 	}
 
 	void SimpleWindow::setY(int y)
 	{
-		SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+		#ifdef LINUX
+			XMoveWindow(displayServer, (Window)windowHandle, this->x, y);
+		#else
+			SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+		#endif
 		this->y = y;
 	}
 
 	void SimpleWindow::setPosition(int x, int y)
 	{
-		SetWindowPos((HWND)windowHandle, HWND_TOP, x, y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+		#ifdef LINUX
+			XMoveWindow(displayServer, (Window)windowHandle, x, y);
+		#else
+			SetWindowPos((HWND)windowHandle, HWND_TOP, x, y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+		#endif
 		this->x = x;
 		this->y = y;
 	}
 
 	void SimpleWindow::setWidth(int width)
 	{
-		SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, this->y, width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+		#ifdef LINUX
+			XResizeWindow(displayServer, (Window)windowHandle, width, this->height);
+		#else
+			SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, this->y, width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+		#endif
 		this->width = width;
 	}
 
 	void SimpleWindow::setHeight(int height)
 	{
-		SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, this->y, this->width, height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+		#ifdef LINUX
+			XResizeWindow(displayServer, (Window)windowHandle, this->width, height);
+		#else
+			SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, this->y, this->width, height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+		#endif
 		this->height = height;
 	}
 
 	void SimpleWindow::setSize(int width, int height)
 	{
-		SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, this->y, width, height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+		#ifdef LINUX
+			XResizeWindow(displayServer, (Window)windowHandle, width, height);
+		#else
+			SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, this->y, width, height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
+		#endif
 		this->width = width;
 		this->height = height;
 	}
 
 	int SimpleWindow::getMouseX()
 	{
-		POINT p;
-		GetCursorPos(&p);
-		int borderWidth = GetSystemMetrics(SM_CXFRAME);
+		int mx = 0;
+		int borderWidth = 0;
+
+		#ifdef LINUX
 		
-		switch (windowType)
+		int winX, winY, rootX, rootY = 0;
+		unsigned int mask = 0;
+		Window childWin, rootWin;
+
+		XQueryPointer(displayServer, RootWindow(displayServer, screen),
+		&childWin, &rootWin, &winX, &winY, &rootX, &rootY, &mask);
+
+		mx = rootX;
+		borderWidth = 1; //Set when creating the window
+		
+		#else
+			POINT p;
+			GetCursorPos(&p);
+			borderWidth = GetSystemMetrics(SM_CXFRAME);
+			mx = p.x;
+		#endif
+		
+		switch (windowType.windowType)
 		{
 		case SimpleWindow::NORMAL_WINDOW:
-			return p.x-(x+borderWidth);
+			return mx-(x+borderWidth);
 			break;
 		case SimpleWindow::BORDERLESS_WINDOW:
-			return p.x-x;
+			return mx-x;
 			break;
 		case SimpleWindow::FULLSCREEN_WINDOW:
-			return p.x-x;
+			return mx-x;
 			break;
 		default:
-			return p.x-(x+borderWidth);
+			return mx-(x+borderWidth);
 			break;
 		}
 
@@ -869,28 +979,47 @@ namespace glib
 
 	int SimpleWindow::getMouseY()
 	{
-		POINT p;
-		GetCursorPos(&p);
-		int borderHeight = (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) +
-    							GetSystemMetrics(SM_CXPADDEDBORDER));
 
-		switch (windowType)
+		int my = 0;
+		int borderHeight = 0;
+
+		#ifdef LINUX
+		
+			int winX, winY, rootX, rootY = 0;
+			unsigned int mask = 0;
+			Window childWin, rootWin;
+
+			XQueryPointer(displayServer, RootWindow(displayServer, screen),
+			&childWin, &rootWin, &winX, &winY, &rootX, &rootY, &mask);
+
+			my = rootY;
+			borderHeight = 1 + 13; //Set when creating the window
+		
+		#else
+			POINT p;
+			GetCursorPos(&p);
+			borderHeight = (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) +
+    							GetSystemMetrics(SM_CXPADDEDBORDER));
+			my = p.y;
+		#endif
+		
+		switch (windowType.windowType)
 		{
 		case SimpleWindow::NORMAL_WINDOW:
-			return p.y-(y+borderHeight);
+			return my-(y+borderHeight);
 			break;
 		case SimpleWindow::BORDERLESS_WINDOW:
-			return p.y-y;
+			return my-y;
 			break;
 		case SimpleWindow::FULLSCREEN_WINDOW:
-			return p.x-x;
+			return my-y;
 			break;
 		default:
-			return p.y-(y+borderHeight);
+			return my-(y+borderHeight);
 			break;
 		}
 
-		return 0;
+		return my;
 	}
 
 	int SimpleWindow::getWidth()
@@ -944,7 +1073,6 @@ namespace glib
 		paintFunction = nullptr;
 		keyUpFunction = nullptr;
 		keyDownFunction = nullptr;
-		mouseDoubleClickFunction = nullptr;
 		mouseButtonDownFunction = nullptr;
 		mouseButtonUpFunction = nullptr;
 		mouseWheelFunction = nullptr;
@@ -1033,7 +1161,14 @@ namespace glib
 
 	bool SimpleWindow::getFocus()
 	{
-		return GetFocus()==(HWND)windowHandle;
+		#ifdef LINUX
+			Window currFocusedWindow;
+			int other;
+			XGetInputFocus(displayServer, &currFocusedWindow, &other);
+			return (currFocusedWindow == (Window)windowHandle);
+		#else
+			return GetFocus()==(HWND)windowHandle;
+		#endif
 	}
 
 	bool SimpleWindow::getCanFocus()
@@ -1050,7 +1185,11 @@ namespace glib
 
 	void SimpleWindow::threadSetFocus()
 	{
-		SetFocus((HWND)windowHandle);
+		#ifdef LINUX
+			XSetInputFocus(displayServer, (Window)windowHandle, RevertToNone, CurrentTime);
+		#else
+			SetFocus((HWND)windowHandle);
+		#endif
 	}
 
 	bool SimpleWindow::getShouldFocus()
@@ -1230,13 +1369,17 @@ namespace glib
 
 	void SimpleWindow::threadUpdate()
 	{
-		MSG m;
-		ZeroMemory(&m, sizeof(MSG));
-		while(PeekMessage(&m, (HWND)windowHandle, NULL, NULL, PM_REMOVE))
-		{
-			TranslateMessage(&m);
-			DispatchMessage(&m);
-		}
+		#ifdef LINUX
+			x11EventProc();
+		#else
+			MSG m;
+			ZeroMemory(&m, sizeof(MSG));
+			while(PeekMessage(&m, (HWND)windowHandle, NULL, NULL, PM_REMOVE))
+			{
+				TranslateMessage(&m);
+				DispatchMessage(&m);
+			}
+		#endif
 		
 		if(getShouldFocus())
 		{
@@ -1251,7 +1394,7 @@ namespace glib
 		{
 			if (gui != nullptr && activateGui)
 			{
-				if(windowType == SimpleWindow::NORMAL_WINDOW)
+				if(windowType.windowType == SimpleWindow::NORMAL_WINDOW)
 				{
 					if(windowState != STATE_MAXIMIZED)
 					{
@@ -1300,6 +1443,7 @@ namespace glib
 
 	void SimpleWindow::threadRepaint()
 	{
+		//TODO - LINUX VERSION
 		bool changed = false;
 
 		//draw and send redraw message
@@ -1322,9 +1466,13 @@ namespace glib
 
 			if(changed || imgChanged)
 			{
-				int value = SetDIBits(myHDC, bitmap, 0, height, &wndPixels[0], &bitInfo, DIB_RGB_COLORS);
-				
-				RedrawWindow((HWND)windowHandle, NULL, NULL, RDW_INVALIDATE);
+				#ifdef LINUX
+					//Simpler than XSendEvent
+					XClearArea(displayServer, (Window)windowHandle, 0, 0, 1, 1, true);
+				#else
+					int value = SetDIBits(myHDC, bitmap, 0, height, &wndPixels[0], &bitInfo, DIB_RGB_COLORS);
+					RedrawWindow((HWND)windowHandle, NULL, NULL, RDW_INVALIDATE);
+				#endif
 			}
 
 			myMutex.lock();
