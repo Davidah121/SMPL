@@ -569,6 +569,7 @@ void testSavePNG()
 {
     Sprite k;
     k.loadImage("C:/Users/Alan/Pictures/Screenshot 2021-12-08 201519.png");
+    // k.loadImage("RESULT.png");
 
     size_t t1,t2;
     t1 = System::getCurrentTimeNano();

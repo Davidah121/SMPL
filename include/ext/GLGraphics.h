@@ -34,6 +34,9 @@ namespace glib
 
         static const int CULL_FRONT = GL_FRONT;
         static const int CULL_BACK = GL_BACK;
+
+        static const bool CULL_COUNTER_CLOCKWISE = true;
+        static const bool CULL_CLOCKWISE = false;
         
         static void init();
 
@@ -51,6 +54,7 @@ namespace glib
 
         static void enableFaceCulling();
         static void disableFaceCulling();
+        static void setFaceCullingDirection(bool type);
         static void setFaceCullingType(int type);
 
         static void enableBlending();

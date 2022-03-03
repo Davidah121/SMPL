@@ -53,7 +53,7 @@ namespace glib
 
         static void setDepthTestFunction(int type);
 
-        static void enableFaceCulling(int type);
+        static void enableFaceCulling(int type, bool direction = CULL_CLOCKWISE);
         static void disableFaceCulling();
 
         static void enableBlending();

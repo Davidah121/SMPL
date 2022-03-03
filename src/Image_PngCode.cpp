@@ -27,12 +27,52 @@ namespace glib
 		std::vector<unsigned char> compressedData = std::vector<unsigned char>();
 	};
 
+	void savePNGIDAT(std::string* output, unsigned char* data, size_t size, bool strongCompression)
+	{
+		unsigned int crcVal = Compression::adler32(data, size);
+
+		BinarySet compressedData;
+		Compression::compressDeflate(&compressedData, data, size, 1, 7, strongCompression);
+		
+		int fullSize = compressedData.size()+2+4;
+		std::string IDATHeader = "";
+
+		//length
+		IDATHeader += (fullSize>>24) & 0xFF;
+		IDATHeader += (fullSize>>16) & 0xFF;
+		IDATHeader += (fullSize>>8) & 0xFF;
+		IDATHeader += (fullSize>>0) & 0xFF;
+		//ID
+		IDATHeader += "IDAT";
+		
+		//ZLIB STUFF
+		IDATHeader += 0b01111000;
+		IDATHeader += 0b00000001;
+
+		std::vector<unsigned char> binarySetBytes = compressedData.getByteRef();
+		for(unsigned char& c : binarySetBytes)
+		{
+			IDATHeader += (char)c;
+		}
+
+		//adler
+		IDATHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
+
+		//crc
+		crcVal = Compression::crc((unsigned char*)IDATHeader.data()+4, IDATHeader.size()-4);
+		IDATHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
+
+		output->clear();
+		output->append(IDATHeader);
+	}
+
 	void Image::savePNG(File file, bool saveAlpha, bool greyscale, bool strongCompression)
 	{
 		SimpleFile f = SimpleFile(file, SimpleFile::WRITE);
 
 		unsigned int crcVal;
 		std::string fileHeader = {(char)0x89, (char)0x50, (char)0x4e, (char)0x47, (char)0x0d, (char)0x0a, (char)0x1a, (char)0x0a};
+		f.writeString(fileHeader);
 
 		std::string IHDRHeader = {(char)0, (char)0, (char)0, (char)0x0D, 'I', 'H', 'D', 'R'};
 		
@@ -87,12 +127,8 @@ namespace glib
 		crcVal = Compression::crc((unsigned char*)IHDRHeader.data()+4, IHDRHeader.size()-4);
 		IHDRHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
 
+		f.writeString(IHDRHeader);
 
-		std::string IENDHeader = {(char)0, (char)0, (char)0, (char)0, 'I', 'E', 'N', 'D'};
-		
-		//CRC
-		crcVal = Compression::crc((unsigned char*)IENDHeader.data()+4, IENDHeader.size()-4);
-		IENDHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
 
 		std::vector<unsigned char> scanLines = std::vector<unsigned char>();
 		for(int i=0; i<height; i++)
@@ -200,47 +236,68 @@ namespace glib
 			}
 		}
 
-		crcVal = Compression::adler32(scanLines);
-
+		//split into blocks
 		int blocks = MathExt::ceil((double)height/24);
+		unsigned int adlerValue = Compression::adler32(scanLines.data(), scanLines.size());
 
 		BinarySet compressedData;
 		Compression::compressDeflate(&compressedData, scanLines.data(), scanLines.size(), blocks, 7, strongCompression);
 		
-		int fullSize = compressedData.size()+2+4;
-		std::string IDATHeader = "";
-
-		//length
-		IDATHeader += (fullSize>>24) & 0xFF;
-		IDATHeader += (fullSize>>16) & 0xFF;
-		IDATHeader += (fullSize>>8) & 0xFF;
-		IDATHeader += (fullSize>>0) & 0xFF;
-		//ID
-		IDATHeader += "IDAT";
-		
-		//ZLIB STUFF
-		IDATHeader += 0b01111000;
-		IDATHeader += 0b00000001;
-
 		std::vector<unsigned char> binarySetBytes = compressedData.getByteRef();
-		for(unsigned char& c : binarySetBytes)
+		int byteOffset = 0;
+		int blockSize = binarySetBytes.size() / blocks;
+
+		for(int i=0; i<blocks; i++)
 		{
-			IDATHeader += (char)c;
+			std::string IDATHeader = "";
+
+			//length
+			int fullSize = blockSize;
+			
+			if(i == blocks - 1)
+				fullSize += 4;
+
+			if(i == 0)
+				fullSize += 2;
+			
+			IDATHeader += (fullSize>>24) & 0xFF;
+			IDATHeader += (fullSize>>16) & 0xFF;
+			IDATHeader += (fullSize>>8) & 0xFF;
+			IDATHeader += (fullSize>>0) & 0xFF;
+			//ID
+			IDATHeader += "IDAT";
+			
+			if(i == 0)
+			{
+				//ZLIB STUFF
+				IDATHeader += 0b01111000;
+				IDATHeader += 0b00000001;
+			}
+
+			for(int j = 0; j < blockSize; j++)
+			{
+				IDATHeader += (char)binarySetBytes[byteOffset];
+				byteOffset++;
+			}
+
+			if(i == blocks - 1)
+			{
+				//adler
+				IDATHeader += {(char)((adlerValue>>24) & 0xFF), (char)((adlerValue>>16) & 0xFF), (char)((adlerValue>>8) & 0xFF), (char)((adlerValue>>0) & 0xFF)};
+			}
+
+			//crc
+			crcVal = Compression::crc((unsigned char*)IDATHeader.data()+4, IDATHeader.size()-4);
+			IDATHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
+
+			f.writeString(IDATHeader);
 		}
 
-		//adler
-		IDATHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
-
-		//crc
-		crcVal = Compression::crc((unsigned char*)IDATHeader.data()+4, IDATHeader.size()-4);
-		IDATHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
-
-
-		f.writeString(fileHeader);
-		f.writeString(IHDRHeader);
-
-		f.writeString(IDATHeader);
-
+		std::string IENDHeader = {(char)0, (char)0, (char)0, (char)0, 'I', 'E', 'N', 'D'};
+		
+		//CRC
+		crcVal = Compression::crc((unsigned char*)IENDHeader.data()+4, IENDHeader.size()-4);
+		IENDHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
 		f.writeString(IENDHeader);
 
 		f.close();

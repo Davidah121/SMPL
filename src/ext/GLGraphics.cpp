@@ -98,6 +98,14 @@ namespace glib
         glDisable(GL_CULL_FACE);
     }
 
+    void GLGraphics::setFaceCullingDirection(bool type)
+    {
+        if(type == CULL_COUNTER_CLOCKWISE)
+            glFrontFace(GL_CCW);
+        else
+            glFrontFace(GL_CW);
+    }
+    
     void GLGraphics::setFaceCullingType(int type)
     {
         glCullFace(type);

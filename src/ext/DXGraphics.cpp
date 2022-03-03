@@ -173,6 +173,8 @@ namespace glib
         
         if(res == S_OK)
             context->OMSetDepthStencilState(depthStencilState, 0);
+
+        depthStencilState->Release();
     }
 
     void DXGraphics::disableDepthTest()
@@ -187,6 +189,8 @@ namespace glib
         
         if(res == S_OK)
             context->OMSetDepthStencilState(depthStencilState, 0);
+            
+        depthStencilState->Release();
     }
 
     void DXGraphics::setDepthTestFunction(int type)
@@ -201,20 +205,25 @@ namespace glib
         
         if(res == S_OK)
             context->OMSetDepthStencilState(depthStencilState, 0);
+
+        depthStencilState->Release();
     }
 
-    void DXGraphics::enableFaceCulling(int type)
+    void DXGraphics::enableFaceCulling(int type, bool direction)
     {
         ID3D11Device* device = DXSingleton::getDevice();
         ID3D11DeviceContext* context = DXSingleton::getContext();
 
         rasterDesc.CullMode = (D3D11_CULL_MODE)type;
+        rasterDesc.FrontCounterClockwise = direction;
 
         ID3D11RasterizerState* rasterState;
         HRESULT res = device->CreateRasterizerState(&rasterDesc, &rasterState);
         
         if(res == S_OK)
             context->RSSetState(rasterState);
+
+        rasterState->Release();
     }
 
     void DXGraphics::disableFaceCulling()
@@ -229,6 +238,8 @@ namespace glib
         
         if(res == S_OK)
             context->RSSetState(rasterState);
+        
+        rasterState->Release();
     }
 
     void DXGraphics::enableBlending()
@@ -243,6 +254,8 @@ namespace glib
         
         if(res == S_OK)
             context->OMSetBlendState(blendState, nullptr, 0xFFFFFFFF );
+        
+        blendState->Release();
     }
 
     void DXGraphics::disableBlending()
@@ -256,6 +269,8 @@ namespace glib
         
         if(res == S_OK)
             context->OMSetBlendState(blendState, nullptr, 0xFFFFFFFF );
+
+        blendState->Release();
     }
 
     void DXGraphics::setBlendFunction(int src, int dest)
