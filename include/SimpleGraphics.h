@@ -63,6 +63,24 @@ namespace glib
 		static void clearImage(Image* surf);
 
 		/**
+		 * @brief Converts a Color (which is 4 unsigned characters) to a Vec4f.
+		 * 		Each color channel is converted from [0, 255] to [0, 1]
+		 * 
+		 * @param c 
+		 * @return Vec4f 
+		 */
+		static Vec4f convertColorToVec4f(Color c);
+
+		/**
+		 * @brief Converts a Vec4f (which is 4 doubles) to a Color.
+		 * 		Each color channel is converted from [0, 1] to [0, 255]
+		 * 
+		 * @param v 
+		 * @return Color 
+		 */
+		static Color convertVec4fToColor(Vec4f v);
+
+		/**
 		 * @brief Draws a pixel to the specified image using Porter Duff rules.
 		 * @param x
 		 * 		The x location of the pixel.

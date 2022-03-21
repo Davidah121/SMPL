@@ -26,9 +26,9 @@ namespace glib
 
 	void GuiTextBlock::update()
 	{
-		Font* currFont = textFont;
-		if(currFont == nullptr)
-			currFont = SimpleGraphics::getFont();
+		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
+		GuiFontInterface* fInt = (textFont != nullptr) ? textFont : graphicsInterface->getFont();
+		Font* currFont = fInt->getFont();
 
 		boundingBox = currFont->getBoundingBox(text, allowLineBreaks, maxWidth, maxHeight);
 
@@ -38,30 +38,30 @@ namespace glib
 		boundingBox.setBottomBound( boundingBox.getBottomBound() + y );
 	}
 
-	void GuiTextBlock::render(Image* surf)
+	void GuiTextBlock::render()
 	{
-		if(surf!=nullptr)
-		{
-			Font* oldFont = SimpleGraphics::getFont();
+		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
+		GuiFontInterface* fInt = (textFont != nullptr) ? textFont : graphicsInterface->getFont();
+		GuiFontInterface* oldFontInt = graphicsInterface->getFont();
 
-			if(textFont!=nullptr)
-				SimpleGraphics::setFont(textFont);
+		Font* currFont = fInt->getFont();
 
-			SimpleGraphics::setColor(textColor);
+		graphicsInterface->setFont(fInt);
+		graphicsInterface->setColor(textColor);
 
-			int actualMaxW = (maxWidth <= 0) ? 0xFFFF : maxWidth;
-			int actualMaxH = (maxHeight <= 0) ? 0xFFFF : maxHeight;
+		int actualMaxW = (maxWidth <= 0) ? 0xFFFF : maxWidth;
+		int actualMaxH = (maxHeight <= 0) ? 0xFFFF : maxHeight;
 
-			int minHighlight = min(startHighlight, endHighlight);
-			int maxHighlight = max(startHighlight, endHighlight);
-			
-			if(shouldHighlight)
-				SimpleGraphics::drawTextLimitsHighlighted(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowLineBreaks, minHighlight, maxHighlight, highlightColor, surf);
-			else
-				SimpleGraphics::drawTextLimits(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowLineBreaks, surf);
-			
-			SimpleGraphics::setFont(oldFont);
-		}
+		int minHighlight = min(startHighlight, endHighlight);
+		int maxHighlight = max(startHighlight, endHighlight);
+		
+		if(shouldHighlight)
+			graphicsInterface->drawTextLimitsHighlighted(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowLineBreaks, minHighlight, maxHighlight, highlightColor);
+		else
+			graphicsInterface->drawTextLimits(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowLineBreaks);
+		
+		graphicsInterface->setFont(oldFontInt);
+	
 	}
 
 	void GuiTextBlock::setTextColor(Color c)
@@ -94,12 +94,12 @@ namespace glib
 		text = StringTools::toWideString(s);
 	}
 
-	void GuiTextBlock::setFont(Font* f)
+	void GuiTextBlock::setFont(GuiFontInterface* f)
 	{
 		textFont = f;
 	}
 
-	Font* GuiTextBlock::getFont()
+	GuiFontInterface* GuiTextBlock::getFont()
 	{
 		return textFont;
 	}

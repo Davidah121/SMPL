@@ -51,13 +51,12 @@ build $objDir/GamepadDInput.obj: buildToObject src/GamepadDInput.cpp
 build $objDir/GamepadXInput.obj: buildToObject src/GamepadXInput.cpp
 build $objDir/GeneralVector.obj: buildToObject src/GeneralVector.cpp
 build $objDir/GuiManager.obj: buildToObject src/GuiManager.cpp
+build $objDir/GuiManagerGraphicsInterface.obj: buildToObject src/GuiManagerGraphicsInterface.cpp
 build $objDir/GuiManager_CANVAS.obj: buildToObject src/GuiManager_CANVAS.cpp
-build $objDir/GuiManager_CIRCLEBUT.obj: buildToObject src/GuiManager_CIRCLEBUT.cpp
 build $objDir/GuiManager_CONTAINER.obj: buildToObject src/GuiManager_CONTAINER.cpp
 build $objDir/GuiManager_CONTEXT.obj: buildToObject src/GuiManager_CONTEXT.cpp
 build $objDir/GuiManager_CUSTOM.obj: buildToObject src/GuiManager_CUSTOM.cpp
 build $objDir/GuiManager_GRID.obj: buildToObject src/GuiManager_GRID.cpp
-build $objDir/GuiManager_IMAGE.obj: buildToObject src/GuiManager_IMAGE.cpp
 build $objDir/GuiManager_INSTANCE.obj: buildToObject src/GuiManager_INSTANCE.cpp
 build $objDir/GuiManager_LIST.obj: buildToObject src/GuiManager_LIST.cpp
 build $objDir/GuiManager_RECTBUT.obj: buildToObject src/GuiManager_RECTBUT.cpp

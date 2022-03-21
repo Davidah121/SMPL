@@ -67,6 +67,26 @@ namespace glib
 		}
 	}
 
+	Vec4f SimpleGraphics::convertColorToVec4f(Color c)
+	{
+		Vec4f result;
+		result.x = (double)c.red / 255.0;
+		result.y = (double)c.green / 255.0;
+		result.z = (double)c.blue / 255.0;
+		result.w = (double)c.alpha / 255.0;
+		return result;
+	}
+
+	Color SimpleGraphics::convertVec4fToColor(Vec4f v)
+	{
+		Color result;
+		result.red = (unsigned char)MathExt::clamp(v.x*255, 0.0, 255.0);
+		result.green = (unsigned char)MathExt::clamp(v.y*255, 0.0, 255.0);
+		result.blue = (unsigned char)MathExt::clamp(v.z*255, 0.0, 255.0);
+		result.alpha = (unsigned char)MathExt::clamp(v.w*255, 0.0, 255.0);
+		return result;
+	}
+
 	void SimpleGraphics::drawPixel(double x, double y, Color c, Image* surf)
 	{
 		//convert into four separate pixels

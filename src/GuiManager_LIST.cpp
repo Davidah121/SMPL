@@ -87,16 +87,18 @@ namespace glib
 
 	}
 
-	void GuiList::render(Image* surf)
+	void GuiList::render()
 	{
 		int width = boundingBox.getWidth();
 		int height = boundingBox.getHeight();
+		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
+
 		
-		SimpleGraphics::setColor(backgroundColor);
-		surf->drawRect(renderX, renderY, renderX+width, renderY+height, false);
+		graphicsInterface->setColor(backgroundColor);
+		graphicsInterface->drawRect(renderX, renderY, renderX+width, renderY+height, false);
 		
-		SimpleGraphics::setColor(outlineColor);
-		surf->drawRect(renderX, renderY, renderX+width, renderY+height, true);
+		graphicsInterface->setColor(outlineColor);
+		graphicsInterface->drawRect(renderX, renderY, renderX+width, renderY+height, true);
 	}
 
 	void GuiList::setElementSpacing(int value)

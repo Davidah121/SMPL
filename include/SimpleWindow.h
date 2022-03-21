@@ -42,11 +42,21 @@
 #include <vector>
 #include <mutex>
 
-#define DWMWA_WINDOW_CORNER_PREFERENCE_CONST 33
-#define DWMWCP_DEFAULT_CONST 0
-#define DWMWCP_DONOTROUND_CONST 1
-#define DWMWCP_ROUND_CONST 2
-#define DWMWCP_ROUNDSMALL_CONST 3
+#ifndef DWMWA_WINDOW_CORNER_PREFERENCE_CONST
+	#define DWMWA_WINDOW_CORNER_PREFERENCE_CONST 33
+#endif
+#ifndef DWMWCP_DEFAULT_CONST
+	#define DWMWCP_DEFAULT_CONST 0
+#endif
+#ifndef DWMWCP_DONOTROUND_CONST
+	#define DWMWCP_DONOTROUND_CONST 1
+#endif
+#ifndef DWMWCP_ROUND_CONST
+	#define DWMWCP_ROUND_CONST 2
+#endif
+#ifndef DWMWCP_ROUNDSMALL_CONST
+	#define DWMWCP_ROUNDSMALL_CONST 3
+#endif
 
 namespace glib
 {
@@ -497,6 +507,15 @@ namespace glib
 		void setResizable(bool v);
 
 		/**
+		 * @brief Returns whether the window should be repainted or not.
+		 * 		Can reduce the number of redraws needed as long as nothing has changed.
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
+		bool getRepaint();
+
+		/**
 		 * @brief Gets whether the window can be resized.
 		 * 
 		 */
@@ -535,8 +554,17 @@ namespace glib
 		 */
 		static void setMouseHWheelValuePointer(int* v);
 
-	private:
+	protected:
 		
+		/**
+		 * @brief Construct a new Simple Window object. This is used for objects
+		 * 		that wish to extend from the SimpleWindow class but not recreate a lot of basic
+		 * 		implementation.
+		 * 
+		 * @param NoCreation 
+		 */
+		SimpleWindow(bool NoCreation);
+
 		static std::vector<SimpleWindow*> windowList;
 		static int screenWidth;
 		static int screenHeight;
@@ -569,7 +597,6 @@ namespace glib
 
 		bool getResizing();
 		bool getResizeMe();
-		bool getRepaint();
 
 		void run();
 		void dispose();
@@ -649,6 +676,7 @@ namespace glib
 		bool canFocus = true;
 		bool canResize = true;
 		bool canMove = true;
+		bool noWindowProcPaint = false;
 
 		std::function<void()> paintFunction;
 		std::function<void()> mouseMovedFunction;

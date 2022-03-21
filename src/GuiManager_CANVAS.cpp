@@ -17,7 +17,7 @@ namespace glib
 
 	GuiCanvas::GuiCanvas(int width, int height)
 	{
-		myImage = Image(width, height);
+		// myImage = Image(width, height);
 		boundingBox = Box2D(x, y, x+width, y+height);
 	}
 
@@ -28,15 +28,15 @@ namespace glib
 
 	void GuiCanvas::update()
 	{
-		SimpleGraphics::setColor(clearColor);
-		myImage.clearImage();
-		boundingBox = Box2D(x, y, x+myImage.getWidth(), y+myImage.getHeight());
-		setShouldRedraw(true);
+		// SimpleGraphics::setColor(clearColor);
+		// myImage.clearImage();
+		// boundingBox = Box2D(x, y, x+myImage.getWidth(), y+myImage.getHeight());
+		// setShouldRedraw(true);
 	}
 
-	void GuiCanvas::render(Image* surf)
+	void GuiCanvas::render()
 	{
-		surf->drawImage(&myImage, renderX, renderY);
+		// surf->drawImage(&myImage, renderX, renderY);
 	}
 
 	void GuiCanvas::setClearColor(Color c)
@@ -51,14 +51,14 @@ namespace glib
 
 	void GuiCanvas::setInstanceCanvas(GuiInstance* ins)
 	{
-		ins->setCanvas(&myImage);
-		ins->setRenderOffset(&x, &y);
-		setPriority( GuiInstance::CANVAS_PRIORITY_VALUE );
+		// ins->setCanvas(&myImage);
+		// ins->setRenderOffset(&x, &y);
+		// setPriority( GuiInstance::CANVAS_PRIORITY_VALUE );
 
-		for(GuiInstance* o : ins->getChildren())
-		{
-			setInstanceCanvas(o);
-		}
+		// for(GuiInstance* o : ins->getChildren())
+		// {
+		// 	setInstanceCanvas(o);
+		// }
 	}
 
 	#pragma endregion

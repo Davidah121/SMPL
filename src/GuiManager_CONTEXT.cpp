@@ -64,7 +64,7 @@ namespace glib
 		setShouldRedraw(false);
 	}
 
-	void GuiContextMenu::render(Image* surf)
+	void GuiContextMenu::render()
 	{
 
 	}

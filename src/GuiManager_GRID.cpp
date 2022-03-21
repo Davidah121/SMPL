@@ -92,16 +92,17 @@ namespace glib
 		boundingBox = Box2D(x, y, x+maxWidth, y+maxHeight);
 	}
 
-	void GuiGrid::render(Image* surf)
+	void GuiGrid::render()
 	{
 		int width = boundingBox.getWidth();
 		int height = boundingBox.getHeight();
+		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
 
-		SimpleGraphics::setColor(backgroundColor);
-		surf->drawRect(renderX, renderY, renderX+width, renderY+height, false);
-		
-		SimpleGraphics::setColor(outlineColor);
-		surf->drawRect(renderX, renderY, renderX+width, renderY+height, true);
+		graphicsInterface->setColor(backgroundColor);
+		graphicsInterface->drawRect(renderX, renderY, renderX+width, renderY+height, false);
+
+		graphicsInterface->setColor(outlineColor);
+		graphicsInterface->drawRect(renderX, renderY, renderX+width, renderY+height, true);
 	}
 
 	void GuiGrid::setGridSpacing(int x, int y)

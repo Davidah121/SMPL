@@ -131,11 +131,22 @@ namespace glib
         orthoMat = MathExt::orthographicProjectionMatrix(width, height);
     }
 
-    void GLGraphics::setOrthoProjection(Mat4f mat)
+    void GLGraphics::setProjection(Mat4f mat)
     {
         orthoMat = mat;
     }
 
+    void GLGraphics::setClippingRectangle(int x, int y, int width, int height)
+    {
+        glEnable(GL_SCISSOR_TEST);
+        glScissor(x, y, width, height);
+    }
+
+    void GLGraphics::resetClippingRectangle()
+    {
+        glDisable(GL_SCISSOR_TEST);
+    }
+    
     void GLGraphics::setFont(GLFont* font)
     {
         activeFont = font;
@@ -224,6 +235,43 @@ namespace glib
     {
         drawTexture(x, y, x+tex->getWidth(), y+tex->getHeight(), tex);
     }
+
+    void GLGraphics::drawTexturePart(Vec4f positionData, Vec4f textureData, GLTexture* tex)
+    {
+        //create rectangle
+        std::vector<float> positions = {
+            (float)positionData.x, (float)positionData.y,
+            (float)positionData.x, (float)positionData.w,
+            (float)positionData.z, (float)positionData.w,
+            (float)positionData.z, (float)positionData.y
+        };
+
+        //create texture coords
+        std::vector<float> textureCoords = {
+            (float)textureData.x, (float)textureData.y,
+            (float)textureData.x, (float)textureData.w,
+            (float)textureData.z, (float)textureData.w,
+            (float)textureData.z, (float)textureData.y
+        };
+
+        drawModel.storeDataFloat(0, positions, 2);
+        drawModel.storeDataFloat(1, textureCoords, 2);
+        drawModel.setAttributeEnabled(0, true);
+        drawModel.setAttributeEnabled(1, true);
+        drawModel.setDrawType(Model::QUADS);
+
+        //setup shader
+        textureShader->setAsActive();
+        textureShader->setVec4("activeColor", drawColor);
+        textureShader->setMat4("projectionMatrix", orthoMat);
+        textureShader->setInt("textureID", 0);
+        
+        //draw model
+        tex->bind();
+        drawModel.draw();
+        
+        GLShader::deactivateCurrentShader();
+    }
     
     void GLGraphics::drawSprite(double x1, double y1, double x2, double y2, GLSprite* sprite, int index)
     {
@@ -243,68 +291,7 @@ namespace glib
 
     void GLGraphics::drawText(std::string text, double x, double y, GLFont* fontPointer)
     {
-        GLFont* f;
-        if(fontPointer!=nullptr)
-            f = fontPointer;
-        else
-            f = activeFont;
-        
-        if(f == nullptr)
-            return;
-
-        //setup shader
-        Mat4f modelMatrix = Mat4f::getIdentity();
-
-        textShader->setAsActive();
-        textShader->setVec4("activeColor", drawColor);
-        textShader->setMat4("projectionMatrix", orthoMat);
-        textShader->setInt("textureID", 0);
-        
-        //draw models
-        double currX = x;
-        double currY = y;
-        GLTexture* oldTexture = nullptr;
-        for(int i=0; i<text.length(); i++)
-        {
-            int charIndex = f->getCharIndex(text[i]);
-            GLTexture* charTexture = f->getTexture(charIndex);
-            GLModel* charModel = f->getModel(charIndex);
-            FontCharInfo fci = f->getFontCharInfo(text[i]);
-
-            if(charModel == nullptr)
-            {
-                continue;
-            }
-
-            if(text[i] == '\n')
-            {
-                currX = x;
-                currY += f->getVerticalAdvance();
-                continue;
-            }
-
-            if(text[i] == ' ')
-            {
-                currX += fci.horizAdv;
-                continue;
-            }
-
-            modelMatrix[0][3] = currX+fci.xOffset;
-            modelMatrix[1][3] = currY+fci.yOffset;
-            
-            textShader->setMat4("modelMatrix", modelMatrix);
-
-            if(charTexture != oldTexture)
-                charTexture->bind();
-
-            charModel->draw();
-			
-            currX += fci.horizAdv;
-
-            oldTexture = charTexture;
-        }
-        
-        GLShader::deactivateCurrentShader();
+        GLGraphics::drawText(StringTools::toWideString(text), x, y, fontPointer);
     }
 
     void GLGraphics::drawText(std::wstring text, double x, double y, GLFont* fontPointer)
@@ -374,115 +361,20 @@ namespace glib
     
     void GLGraphics::drawTextLimits(std::string text, double x, double y, double maxWidth, double maxHeight, bool useLineBreak, GLFont* fontPointer)
     {
-        GLFont* f;
-        if(fontPointer!=nullptr)
-            f = fontPointer;
-        else
-            f = activeFont;
-        
-        if(f == nullptr)
-            return;
-
-        //setup shader
-        Mat4f modelMatrix = Mat4f::getIdentity();
-
-        textShader->setAsActive();
-        textShader->setVec4("activeColor", drawColor);
-        textShader->setMat4("projectionMatrix", orthoMat);
-        textShader->setInt("textureID", 0);
-        
-        //draw models
-        double currX = x;
-        double currY = y;
-        double currW = 0;
-        double currH = 0;
-        
-        GLTexture* oldTexture = nullptr;
-        for(int i=0; i<text.length(); i++)
-        {
-            int charIndex = f->getCharIndex(text[i]);
-            GLTexture* charTexture = f->getTexture(charIndex);
-            GLModel* charModel = f->getModel(charIndex);
-            FontCharInfo fci = f->getFontCharInfo(text[i]);
-
-            if(charModel == nullptr)
-            {
-                continue;
-            }
-
-            if(text[i] == '\n')
-            {
-                currX = x;
-                currW = 0;
-
-                if(useLineBreak)
-                {
-                    currH += f->getVerticalAdvance();
-                    currY += f->getVerticalAdvance();
-
-                    if(currH >= maxHeight)
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    break;
-                }
-                continue;
-            }
-
-            if(currW + fci.width > maxWidth)
-            {
-                fci.width = maxWidth - currW;
-            }
-            if(currH + fci.height > maxHeight)
-            {
-                fci.height = maxHeight - currH;
-            }
-
-            if(text[i] != ' ')
-            {
-                modelMatrix[0][3] = currX+fci.xOffset;
-                modelMatrix[1][3] = currY+fci.yOffset;
-                
-                textShader->setMat4("modelMatrix", modelMatrix);
-
-                if(charTexture != oldTexture)
-                    charTexture->bind();
-                charModel->draw();
-            }
-            
-            currX += fci.horizAdv;
-            currW += fci.horizAdv;
-
-            if(currW >= maxWidth)
-            {
-                currW = 0;
-                currX = x;
-
-                if(useLineBreak)
-                {
-                    currH += f->getVerticalAdvance();
-                    currY += f->getVerticalAdvance();
-
-                    if(currH >= maxHeight)
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    break;
-                }
-            }
-            oldTexture = charTexture;
-        }
-        
-        GLShader::deactivateCurrentShader();
+        GLGraphics::drawTextLimitsHighlighted( StringTools::toWideString(text), x, y, maxWidth, maxHeight, useLineBreak, -1, -1, Vec4f(), fontPointer);
     }
 
     void GLGraphics::drawTextLimits(std::wstring text, double x, double y, double maxWidth, double maxHeight, bool useLineBreak, GLFont* fontPointer)
+    {
+        GLGraphics::drawTextLimitsHighlighted( StringTools::toWideString(text), x, y, maxWidth, maxHeight, useLineBreak, -1, -1, Vec4f(), fontPointer);
+    }
+
+    void GLGraphics::drawTextLimitsHighlighted(std::string text, double x, double y, double maxWidth, double maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Vec4f highlightColor, GLFont* fontPointer)
+    {
+        GLGraphics::drawTextLimitsHighlighted( StringTools::toWideString(text), x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor, fontPointer);
+    }
+
+    void GLGraphics::drawTextLimitsHighlighted(std::wstring text, double x, double y, double maxWidth, double maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Vec4f highlightColor, GLFont* fontPointer)
     {
         GLFont* f;
         if(fontPointer!=nullptr)
@@ -496,6 +388,7 @@ namespace glib
         //setup shader
         Mat4f modelMatrix = Mat4f::getIdentity();
 
+        Vec4f oldDrawColor = drawColor;
         textShader->setAsActive();
         textShader->setVec4("activeColor", drawColor);
         textShader->setMat4("projectionMatrix", orthoMat);
@@ -520,7 +413,7 @@ namespace glib
                 continue;
             }
 
-            if(text[i] == '\n')
+            if(text[i] == L'\n')
             {
                 currX = x;
                 currW = 0;
@@ -551,7 +444,7 @@ namespace glib
                 fci.height = maxHeight - currH;
             }
 
-            if(text[i] != ' ')
+            if(text[i] != L' ')
             {
                 modelMatrix[0][3] = currX+fci.xOffset;
                 modelMatrix[1][3] = currY+fci.yOffset;
@@ -561,6 +454,13 @@ namespace glib
                 if(charTexture != oldTexture)
                     charTexture->bind();
                 charModel->draw();
+
+                if(i >= highlightStart && i < highlightEnd)
+                {
+                    GLGraphics::setDrawColor(highlightColor);
+                    GLGraphics::drawRectangle(currX, currY, currX + fci.horizAdv, currY + f->getVerticalAdvance(), false);
+                    GLGraphics::setDrawColor(oldDrawColor);
+                }
             }
             
             currX += fci.horizAdv;

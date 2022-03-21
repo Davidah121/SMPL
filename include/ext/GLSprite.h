@@ -2,6 +2,7 @@
 #include "Image.h"
 #include "ext/GLTexture.h"
 #include "Object.h"
+#include "Sprite.h"
 
 namespace glib
 {
@@ -16,6 +17,15 @@ namespace glib
 		 * 		Can be used as a wrapper for the Image Loading functions.
 		 */
 		GLSprite();
+
+		/**
+		 * @brief Construct a new GLSprite object from a Sprite.
+		 * 		Useful to prevent a new load and convert a software based sprite to
+		 * 		a graphics accelerated one.
+		 * 
+		 * @param o 
+		 */
+		GLSprite(Sprite& o);
 
 		/**
 		 * @brief Construct a new GLSprite object from another GLSprite object

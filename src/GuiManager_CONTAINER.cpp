@@ -26,7 +26,7 @@ namespace glib
 		setShouldRedraw(false);
 	}
 
-	void GuiContainer::render(Image* surf)
+	void GuiContainer::render()
 	{
 		
 	}

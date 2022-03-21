@@ -9,6 +9,14 @@
 #include "System.h"
 #include "ColorSpaceConverter.h"
 
+#ifndef max
+	#define max(a,b) (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+	#define min(a,b) (((a) < (b)) ? (a) : (b))
+#endif
+
 namespace glib
 {
 
@@ -245,20 +253,33 @@ namespace glib
 		
 		std::vector<unsigned char> binarySetBytes = compressedData.getByteRef();
 		int byteOffset = 0;
-		int blockSize = binarySetBytes.size() / blocks;
+		int maxIDATSize = 0x2000; //Force all IDAT headers to be at most 8192 bytes so libpng doesn't freak out.
+		int totalIDAT = ceil((double)binarySetBytes.size() / maxIDATSize);
 
-		for(int i=0; i<blocks; i++)
+		StringTools::println("%d, %d", totalIDAT, maxIDATSize);
+
+		while(byteOffset < binarySetBytes.size())
 		{
 			std::string IDATHeader = "";
 
 			//length
-			int fullSize = blockSize;
+			int fullSize = 0;
+			bool lastBlock = false;
+			int readSize = min(binarySetBytes.size() - byteOffset, maxIDATSize);
 			
-			if(i == blocks - 1)
+			if(binarySetBytes.size() - byteOffset <= maxIDATSize)
+			{
+				lastBlock = true;
 				fullSize += 4;
+			}
 
-			if(i == 0)
+			if(byteOffset == 0)
+			{
+				readSize = maxIDATSize-2;
 				fullSize += 2;
+			}
+			
+			fullSize += readSize;
 			
 			IDATHeader += (fullSize>>24) & 0xFF;
 			IDATHeader += (fullSize>>16) & 0xFF;
@@ -267,20 +288,20 @@ namespace glib
 			//ID
 			IDATHeader += "IDAT";
 			
-			if(i == 0)
+			if(byteOffset == 0)
 			{
 				//ZLIB STUFF
 				IDATHeader += 0b01111000;
 				IDATHeader += 0b00000001;
 			}
 
-			for(int j = 0; j < blockSize; j++)
+			for(int j = 0; j < readSize; j++)
 			{
 				IDATHeader += (char)binarySetBytes[byteOffset];
 				byteOffset++;
 			}
 
-			if(i == blocks - 1)
+			if(lastBlock)
 			{
 				//adler
 				IDATHeader += {(char)((adlerValue>>24) & 0xFF), (char)((adlerValue>>16) & 0xFF), (char)((adlerValue>>8) & 0xFF), (char)((adlerValue>>0) & 0xFF)};

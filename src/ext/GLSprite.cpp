@@ -31,6 +31,15 @@ namespace glib
 		delayTimeForFrame = o.delayTimeForFrame;
 	}
 
+	GLSprite::GLSprite(Sprite& o)
+	{
+		for(int i=0; i<o.getSize(); i++)
+		{
+			images.push_back( new GLTexture(o.getImage(i)) );
+			delayTimeForFrame.push_back( o.getDelayTime(i) );
+		}
+	}
+
 	void GLSprite::dispose()
 	{
 		for(int i=0; i<images.size(); i++)

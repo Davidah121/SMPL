@@ -317,6 +317,24 @@ namespace glib
 		}
 		
 		/**
+		 * @brief Returns the sqrt of a float using a faster approximation.
+		 * 		Approximation from the Fast Inverse Square Root code from Quake 3 Arena
+		 * 
+		 * @param a 
+		 * @return float 
+		 */
+		static float fastSqrt(float a);
+
+		/**
+		 * @brief Returns the Inverse sqrt of a float using a faster approximation. (1/sqrt(a))
+		 * 		Approximation from the Fast Inverse Square Root code from Quake 3 Arena
+		 * 
+		 * @param a 
+		 * @return float 
+		 */
+		static float fastInvSqrt(float a);
+
+		/**
 		 * @brief Returns the cube root of the value.
 		 * 
 		 * @param a 
@@ -1524,6 +1542,25 @@ namespace glib
 		 * @return Mat4f 
 		 */
 		static Mat4f orthographicProjectionMatrix(double width, double height, double near = 0, double far = 0);
+		
+		/**
+		 * @brief Calculates a 3D Orthographic Projection Matrix.
+		 * 		This method uses left, right, top, and bottom to refer to the scene bounding box.
+		 * 
+		 * 		If near and far are set to the same value or left at the default, a Orthographic Projection Matrix
+		 * 		for 2D will be generated. Z values in that case will represent depth.
+		 * 
+		 * @param left 
+		 * @param right 
+		 * @param top 
+		 * @param bottom 
+		 * @param near
+		 * 		Default value is 0
+		 * @param far
+		 * 		Default value is 0
+		 * @return Mat4f 
+		 */
+		static Mat4f orthographicProjectionMatrix2(double left, double right, double top, double bottom, double near = 0, double far = 0);
 		
 
 		//Equations and Functions

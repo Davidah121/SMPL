@@ -119,32 +119,31 @@ namespace glib
 		boundingBox = Box2D(x, y, x+width, y+height);
 	}
 
-	void GuiRectangleButton::render(Image* surf)
+	void GuiRectangleButton::render()
 	{
-		if(surf!=nullptr)
+		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
+
+		if(!getFocus())
 		{
-			//draw a rectangle
-			if(!getFocus())
-			{
-				if(!hover)
-					SimpleGraphics::setColor(backgroundColor);
-				else
-					SimpleGraphics::setColor(hoverColor);
-			}
+			if(!hover)
+				graphicsInterface->setColor(backgroundColor);
 			else
-			{
-				SimpleGraphics::setColor(focusBackgroundColor);
-			}
-			
-			surf->drawRect(renderX, renderY, renderX + width, renderY + height, false);
-
-			if (getFocus() == false)
-				SimpleGraphics::setColor(outlineColor);
-			else
-				SimpleGraphics::setColor(focusOutlineColor);
-
-			surf->drawRect(renderX, renderY, renderX + width, renderY + height, true);
+				graphicsInterface->setColor(hoverColor);
 		}
+		else
+		{
+			graphicsInterface->setColor(focusBackgroundColor);
+		}
+		
+		graphicsInterface->drawRect(renderX, renderY, renderX + width, renderY + height, false);
+
+		if (getFocus() == false)
+			graphicsInterface->setColor(outlineColor);
+		else
+			graphicsInterface->setColor(focusOutlineColor);
+
+		graphicsInterface->drawRect(renderX, renderY, renderX + width, renderY + height, true);
+	
 	}
 
 	void GuiRectangleButton::setOnClickFunction(std::function<void(GuiInstance*)> func)

@@ -288,17 +288,17 @@ namespace glib
 		}
 	}
 
-	void GuiScrollBar::render(Image* surf)
+	void GuiScrollBar::render()
 	{
-		if(surf!=nullptr)
-		{
-			//draw the background bar
-			SimpleGraphics::setColor(backgroundColor);
-			surf->drawRect(renderX+startX, renderY+startY, renderX+endX, renderY+endY, false);
+		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
 
-			SimpleGraphics::setColor(outlineColor);
-			surf->drawRect(renderX+startX, renderY+startY, renderX+endX, renderY+endY, true);
-		}
+		//draw the background bar
+		graphicsInterface->setColor(backgroundColor);
+		graphicsInterface->drawRect(renderX+startX, renderY+startY, renderX+endX, renderY+endY, false);
+
+		graphicsInterface->setColor(outlineColor);
+		graphicsInterface->drawRect(renderX+startX, renderY+startY, renderX+endX, renderY+endY, true);
+		
 	}
 
 	void GuiScrollBar::setHorizontalBar(bool v)

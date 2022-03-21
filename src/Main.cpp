@@ -39,10 +39,11 @@
 
 #include "ModelBuilder.h"
 
-#include <Psapi.h>
+#include <xmmintrin.h>
 
 using namespace glib;
 
+/*
 void testGLStuff()
 {
     int height = (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) +
@@ -900,11 +901,67 @@ void testMemoryLeakThing()
     w.waitTillClose();
 }
 
+void testSVGStuff()
+{
+    SimpleWindow w = SimpleWindow("TITLE", 640, 480);
+
+    Image img = Image(640, 480);
+    w.setPaintFunction( [&w, &img]() ->void {
+        
+        SimpleGraphics::setColor({0, 0, 0, 0});
+        img.clearImage();
+        VectorCircle c = VectorCircle();
+        c.setX(320);
+        c.setY(240);
+        c.setRadius(128);
+        c.setStrokeWidth(32);
+        c.setFillColor({255,0,0,255});
+        c.setStrokeColor({255,255,0,255});
+
+        c.draw(&img, 640, 480);
+        // SimpleGraphics::setAntiAliasing(true);
+        // SimpleGraphics::setColor({255, 0, 0, 255});
+
+        // img.drawCircle(320, 240, 128, false);
+
+        w.drawImage(&img);
+    });
+
+    w.waitTillClose();
+}
+*/
+
+void testNewGL()
+{
+    //TODO - Fix Clipping rectangle for OPENGL
+    GLWindow window = GLWindow("Title", 320, 240, -1, -1, {0, true, false, 0});
+    GLGraphics::init();
+
+    GuiRectangleButton a = GuiRectangleButton(32, 32, 64, 32);
+    window.getGuiManager()->addElement(&a);
+    
+    while(window.getRunning())
+    {
+        window.update();
+        window.guiUpdate();
+        if(window.getRepaint())
+            window.repaint();
+        System::sleep(15);
+    }
+
+    // SimpleWindow window = SimpleWindow();
+
+    // GuiRectangleButton a = GuiRectangleButton(32, 32, 64, 32);
+    // window.getGuiManager()->addElement(&a);
+    // window.waitTillClose();
+}
+
 int main(int argc, char** argv)
 {
     StringTools::init();
     SimpleGraphics::init();
 
+    // testSVGStuff();
     // testLoadGui();
 
     //Adjust compression algorithms to adjust pointer to output instead of returning a new list and copying it.
@@ -917,9 +974,11 @@ int main(int argc, char** argv)
     // testQuickHash();
     // testModelBuilder();
     // testGLStuff();
-    testDirectXStuff();
+    // testDirectXStuff();
 
     // testCompression();
+
+    testNewGL();
     
     return 0;
 }

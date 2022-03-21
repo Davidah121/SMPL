@@ -62,7 +62,10 @@ namespace glib
         static void setBlendFunction(int src, int dest);
 
         static void setOrthoProjection(int width, int height);
-        static void setOrthoProjection(Mat4f mat);
+        static void setProjection(Mat4f mat);
+
+        static void setClippingRectangle(int x, int y, int width, int height);
+        static void resetClippingRectangle();
 
         static void setFont(GLFont* font);
         static GLFont* getFont();
@@ -70,6 +73,8 @@ namespace glib
         static void drawSurface(double x1, double y1, double x2, double y2, GLSurface* s);
         static void drawTexture(double x1, double y1, double x2, double y2, GLTexture* tex);
         static void drawTexture(double x, double y, GLTexture* tex);
+
+        static void drawTexturePart(Vec4f positionData, Vec4f textureData, GLTexture* tex);
         
         static void drawSprite(double x1, double y1, double x2, double y2, GLSprite* sprite, int index);
         static void drawSprite(double x, double y, GLSprite* sprite, int index);
@@ -79,6 +84,9 @@ namespace glib
 
         static void drawTextLimits(std::string text, double x, double y, double maxWidth, double maxHeight, bool useLineBreaks, GLFont* fontPointer = nullptr);
         static void drawTextLimits(std::wstring text, double x, double y, double maxWidth, double maxHeight, bool useLineBreaks, GLFont* fontPointer = nullptr);
+
+        static void drawTextLimitsHighlighted(std::string text, double x, double y, double maxWidth, double maxHeight, bool useLineBreaks, int highlightStart, int highlightEnd, Vec4f highlightColor, GLFont* fontPointer = nullptr);
+        static void drawTextLimitsHighlighted(std::wstring text, double x, double y, double maxWidth, double maxHeight, bool useLineBreaks, int highlightStart, int highlightEnd, Vec4f highlightColor, GLFont* fontPointer = nullptr);
 
         static void drawRectangle(double x1, double y1, double x2, double y2, bool outline);
         static void drawCircle(double x, double y, double radius);

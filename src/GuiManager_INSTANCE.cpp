@@ -116,7 +116,7 @@ namespace glib
 	{
 	}
 
-	void GuiInstance::render(Image* surf)
+	void GuiInstance::render()
 	{
 	}
 
@@ -445,12 +445,12 @@ namespace glib
 		return manager;
 	}
 
-	void GuiInstance::setCanvas(Image* m)
+	void GuiInstance::setCanvas(GuiSurfaceInterface* m)
 	{
 		canvas = m;
 	}
 
-	Image* GuiInstance::getCanvas()
+	GuiSurfaceInterface* GuiInstance::getCanvas()
 	{
 		return canvas;
 	}

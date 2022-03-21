@@ -133,16 +133,19 @@ namespace glib
 				case WM_ERASEBKGND:
 					break;
 				case WM_PAINT:
-					hdc = BeginPaint(hwnd, &ps);
+					if(currentWindow->noWindowProcPaint == false)
+					{
+						hdc = BeginPaint(hwnd, &ps);
 
-					mem = CreateCompatibleDC(hdc);
-					oldImg = SelectObject(mem, currentWindow->bitmap);
-					GetObject(currentWindow->bitmap, sizeof(BITMAP), &img);
+						mem = CreateCompatibleDC(hdc);
+						oldImg = SelectObject(mem, currentWindow->bitmap);
+						GetObject(currentWindow->bitmap, sizeof(BITMAP), &img);
 
-					BitBlt(hdc, 0, 0, img.bmWidth, img.bmHeight, mem, 0, 0, SRCCOPY);
+						BitBlt(hdc, 0, 0, img.bmWidth, img.bmHeight, mem, 0, 0, SRCCOPY);
 
-					DeleteDC(mem);
-					EndPaint(hwnd, &ps);
+						DeleteDC(mem);
+						EndPaint(hwnd, &ps);
+					}
 					break;
 				case WM_CLOSE:
 					if (currentWindow->closingFunction != nullptr)
@@ -328,27 +331,25 @@ namespace glib
 		}
 	#endif
 
+	SimpleWindow::SimpleWindow(bool NoCreation)
+	{
+		//Does nothing as it should
+		SimpleWindow::windowList.push_back(this);
+	}
+
 	SimpleWindow::SimpleWindow()
 	{
-		x = screenWidth / 2 - 160;
-		y = screenHeight / 2 - 120;
-		width = 320;
-		height = 240;
-		title = L"";
+		SimpleWindow::windowList.push_back(this);
 
-		setAllFunctionsToNull();
-
-		gui = new GuiManager(this->width, this->height);
-		
 		if(windowType.threadManaged == TYPE_THREAD_MANAGED)
 		{
 			threadOwnership = true;
-			wndThread = new std::thread(&SimpleWindow::init, this, this->x, this->y, this->width, this->height, this->title, this->windowType);
+			wndThread = new std::thread(&SimpleWindow::init, this, -1, -1, 320, 240, L"", windowType);
 		}
 		else
 		{
 			threadOwnership = false;
-			init(this->x, this->y, this->width, this->height, this->title, this->windowType);
+			init(-1, -1, 320, 240, L"", windowType);
 		}
 
 		while (getFinishInit() != true)
@@ -359,31 +360,7 @@ namespace glib
 
 	SimpleWindow::SimpleWindow(std::wstring title, int width, int height, int x, int y, WindowOptions windowType)
 	{
-		this->x = x;
-		this->y = y;
-		this->width = width;
-		this->height = height;
-
-		this->windowType = windowType;
-
-		if (this->width < 0)
-			this->width = 320;
-
-		if (this->height < 0)
-			this->height = 240;
-
-		if (this->x < 0)
-			this->x = screenWidth / 2 - (width/2);
-
-		if (this->y < 0)
-			this->y = screenHeight / 2 - (height/2);
-
-
-		setAllFunctionsToNull();
-		gui = new GuiManager(this->width, this->height);
-		
-		this->title = title;
-
+		SimpleWindow::windowList.push_back(this);
 		if(windowType.threadManaged == TYPE_THREAD_MANAGED)
 		{
 			threadOwnership = true;
@@ -403,39 +380,16 @@ namespace glib
 
 	SimpleWindow::SimpleWindow(std::string title, int width, int height, int x, int y, WindowOptions windowType)
 	{
-		this->x = x;
-		this->y = y;
-		this->width = width;
-		this->height = height;
-		
-		this->windowType = windowType;
-
-		if (this->width < 0)
-			this->width = 320;
-
-		if (this->height < 0)
-			this->height = 240;
-
-		if (this->x < 0)
-			this->x = screenWidth / 2 - (width/2);
-
-		if (this->y < 0)
-			this->y = screenHeight / 2 - (height/2);
-
-		setAllFunctionsToNull();
-		gui = new GuiManager(this->width, this->height);
-
-		this->title = StringTools::toWideString(title);
-
+		SimpleWindow::windowList.push_back(this);
 		if(windowType.threadManaged == TYPE_THREAD_MANAGED)
 		{
 			threadOwnership = true;
-			wndThread = new std::thread(&SimpleWindow::init, this, this->x, this->y, this->width, this->height, this->title, this->windowType);
+			wndThread = new std::thread(&SimpleWindow::init, this, this->x, this->y, this->width, this->height, StringTools::toWideString(title), this->windowType);
 		}
 		else
 		{
 			threadOwnership = false;
-			init(this->x, this->y, this->width, this->height, this->title, this->windowType);
+			init(this->x, this->y, this->width, this->height, StringTools::toWideString(title), this->windowType);
 		}
 
 		while (getFinishInit() != true)
@@ -459,7 +413,6 @@ namespace glib
 
 	void SimpleWindow::dispose()
 	{
-		//TODO - LINUX VERSION
 		if (getValid())
 		{
 			std::wstring text = title;
@@ -490,8 +443,16 @@ namespace glib
 					DestroyWindow((HWND)windowHandle);
 				}
 				UnregisterClassW(text.c_str(), hins);
-				DeleteObject(bitmap);
-				DeleteDC(myHDC);
+
+				if(bitmap != 0)
+					DeleteObject(bitmap);
+				
+				if(myHDC != 0)
+					DeleteDC(myHDC);
+
+				bitmap = 0;
+				myHDC = 0;
+				windowHandle = 0;
 			#endif
 
 			if(gui!=nullptr)
@@ -509,6 +470,29 @@ namespace glib
 
 	void SimpleWindow::init(int x, int y, int width, int height, std::wstring title, WindowOptions windowType)
 	{
+		this->x = x;
+		this->y = y;
+		this->width = width;
+		this->height = height;
+		
+		this->windowType = windowType;
+
+		if (this->width < 0)
+			this->width = 320;
+
+		if (this->height < 0)
+			this->height = 240;
+
+		if (this->x < 0)
+			this->x = (screenWidth / 2) - (width/2);
+
+		if (this->y < 0)
+			this->y = (screenHeight / 2) - (height/2);
+		
+		this->title = title;
+
+		setAllFunctionsToNull();
+
 		#ifdef LINUX
 
 			displayServer = XOpenDisplay(NULL);
@@ -524,10 +508,10 @@ namespace glib
 				return;
 			}
 
-			int trueWidth = width;
-			int trueHeight = height;
-			int trueX = x;
-			int trueY = y;
+			int trueWidth = this->width;
+			int trueHeight = this->height;
+			int trueX = this->x;
+			int trueY = this->y;
 
 			int borderWidth = 1;
 
@@ -601,10 +585,10 @@ namespace glib
 			wndClass.lpszMenuName = NULL;
 			wndClass.style = CS_HREDRAW | CS_VREDRAW;
 
-			int trueWidth = width;
-			int trueHeight = height;
-			int trueX = x;
-			int trueY = y;
+			int trueWidth = this->width;
+			int trueHeight = this->height;
+			int trueX = this->x;
+			int trueY = this->y;
 
 			if (RegisterClassExW(&wndClass) != NULL)
 			{
@@ -642,7 +626,7 @@ namespace glib
 						setValid(false);
 						setShouldEnd(true);
 						setRunning(false);
-
+						
 						setFinishInit(true);
 
 						#ifdef USE_EXCEPTIONS
@@ -676,13 +660,16 @@ namespace glib
 				
 				if (windowHandle != NULL)
 				{
+					this->preX = this->x;
+					this->preY = this->y;
+					
 					setVisible(true);
 					setValid(true);
 					setShouldEnd(false);
 					setRunning(true);
 
 					initBitmap();
-					SimpleWindow::windowList.push_back(this);
+					gui = new GuiManager(GuiManager::TYPE_SOFTWARE, this->width, this->height);
 
 					setFinishInit(true);
 
@@ -979,7 +966,6 @@ namespace glib
 
 	int SimpleWindow::getMouseY()
 	{
-
 		int my = 0;
 		int borderHeight = 0;
 
@@ -1248,6 +1234,7 @@ namespace glib
 
 	void SimpleWindow::drawImage(Image* g)
 	{
+		//TODO LINUX VERSION
 		if (g != nullptr)
 		{
 			if (g->getWidth() == width && g->getHeight() == height)
@@ -1257,7 +1244,7 @@ namespace glib
 				unsigned char* wndPixelsStart = wndPixels;
 				unsigned char* wndPixelsEnd = wndPixels + wndPixelsSize;
 				
-				int x = 0;
+				int tX = 0;
 				int scanLineNum = 0;
 
 				while (wndPixelsStart < wndPixelsEnd)
@@ -1268,12 +1255,12 @@ namespace glib
 
 					wndPixelsStart += 3;
 					imgPixelsStart++;
-					x++;
+					tX++;
 
-					if(x>=width)
+					if(tX>=width)
 					{
 						scanLineNum++;
-						x=0;
+						tX=0;
 						wndPixelsStart += scanLinePadding;
 					}
 				}
@@ -1428,7 +1415,10 @@ namespace glib
 			{
 				changed = gui->renderGuiElements();
 				if(changed)
-					drawImage(gui->getImage());
+				{
+					Image* surface = (Image*)gui->getSurface()->getSurface();
+					drawImage(surface);
+				}
 			}
 		}
 
