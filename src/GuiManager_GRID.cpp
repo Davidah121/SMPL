@@ -92,16 +92,17 @@ namespace glib
 		boundingBox = Box2D(x, y, x+maxWidth, y+maxHeight);
 	}
 
-	void GuiGrid::render(Image* surf)
+	void GuiGrid::render()
 	{
 		int width = boundingBox.getWidth();
 		int height = boundingBox.getHeight();
+		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
 
-		SimpleGraphics::setColor(backgroundColor);
-		surf->drawRect(renderX, renderY, renderX+width, renderY+height, false);
-		
-		SimpleGraphics::setColor(outlineColor);
-		surf->drawRect(renderX, renderY, renderX+width, renderY+height, true);
+		graphicsInterface->setColor(backgroundColor);
+		graphicsInterface->drawRect(renderX, renderY, renderX+width, renderY+height, false);
+
+		graphicsInterface->setColor(outlineColor);
+		graphicsInterface->drawRect(renderX, renderY, renderX+width, renderY+height, true);
 	}
 
 	void GuiGrid::setGridSpacing(int x, int y)
@@ -208,9 +209,9 @@ namespace glib
 		setShouldRedraw(true);
 	}
 
-	void GuiGrid::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs)
+	void GuiGrid::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter)
 	{
-		GuiInstance::loadDataFromXML(attribs);
+		GuiInstance::loadDataFromXML(attribs, inter);
 		std::vector<std::wstring> possibleNames = { L"horizontalspacing", L"verticalspacing", L"rowmajor", L"maxrows", L"maxcolumns", L"backgroundcolor", L"outlinecolor"};
 
 		for(int i=0; i<possibleNames.size(); i++)
@@ -259,10 +260,10 @@ namespace glib
 		GuiManager::registerLoadFunction(L"GuiGrid", GuiGrid::loadFunction);
 	}
 
-	GuiInstance* GuiGrid::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes)
+	GuiInstance* GuiGrid::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
 	{
 		GuiGrid* ins = new GuiGrid(0,0);
-		ins->loadDataFromXML(attributes);
+		ins->loadDataFromXML(attributes, inter);
 		
 		return ins;
 	}

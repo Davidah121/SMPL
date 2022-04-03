@@ -71,21 +71,25 @@ namespace glib
 	void GuiTextBox::setBackgroundColor(Color c)
 	{
 		backgroundColor = c;
+		setShouldRedraw(true);
 	}
 
 	void GuiTextBox::setOutlineColor(Color c)
 	{
 		outlineColor = c;
+		setShouldRedraw(true);
 	}
 
 	void GuiTextBox::setFocusOutlineColor(Color c)
 	{
 		focusOutlineColor = c;
+		setShouldRedraw(true);
 	}
 
 	void GuiTextBox::setCursorBlinkColor(Color c)
 	{
 		cursorBlinkColor = c;
+		setShouldRedraw(true);
 	}
 
 	void GuiTextBox::setCursorBlinkTimer(int timeInFrames)
@@ -96,44 +100,40 @@ namespace glib
 	void GuiTextBox::setCursorWidth(int w)
 	{
 		cursorWidth = w;
+		setShouldRedraw(true);
 	}
 
-	void GuiTextBox::render(Image* surf)
+	void GuiTextBox::render()
 	{
-		if(surf!=nullptr)
+		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
+
+		//draw a rectangle
+		graphicsInterface->setColor(backgroundColor);
+		graphicsInterface->drawRect(renderX, renderY, renderX + width, renderY + height, false);
+
+		if (getFocus() == false)
+			graphicsInterface->setColor(outlineColor);
+		else
+			graphicsInterface->setColor(focusOutlineColor);
+		
+		graphicsInterface->drawRect(renderX, renderY, renderX + width, renderY + height, true);
+
+		if(getFocus())
 		{
-			//draw a rectangle
-			SimpleGraphics::setColor(backgroundColor);
-			surf->drawRect(renderX, renderY, renderX + width, renderY + height, false);
-
-			if (getFocus() == false)
-				SimpleGraphics::setColor(outlineColor);
-			else
-				SimpleGraphics::setColor(focusOutlineColor);
-			
-			surf->drawRect(renderX, renderY, renderX + width, renderY + height, true);
-
-			if(getFocus())
+			if(!cursorBlink)
 			{
-				if(!cursorBlink)
-				{
-					//Font Stuff
-					SimpleGraphics::setColor(cursorBlinkColor);
-					std::wstring testText = textElement.getTextRef().substr(startStringIndex, cursorLocation-startStringIndex);
-					Font* f = (textElement.getFont() != nullptr) ? textElement.getFont() : SimpleGraphics::getFont();
-					int startOfCursorLine = f->getWidthOfString(testText);
+				//Font Stuff
+				graphicsInterface->setColor(cursorBlinkColor);
+				std::wstring testText = textElement.getTextRef().substr(startStringIndex, cursorLocation-startStringIndex);
+				GuiFontInterface* fInt = (textElement.getFont() != nullptr) ? textElement.getFont() : graphicsInterface->getFont();
+				Font* f = fInt->getFont();
 
-					surf->drawRect(renderX+startOfCursorLine, renderY, renderX+startOfCursorLine+cursorWidth, renderY+f->getFontSize(), false);
-				}
+				int startOfCursorLine = f->getWidthOfString(testText);
 
-				cursorBlinkTimer++;
-				if(cursorBlinkTimer>=cursorBlinkMaxTime)
-				{
-					cursorBlinkTimer = 0;
-					cursorBlink = !cursorBlink;
-				}
+				graphicsInterface->drawRect(renderX+startOfCursorLine, renderY, renderX+startOfCursorLine+cursorWidth, renderY+f->getFontSize(), false);
 			}
 		}
+	
 	}
 
 	void GuiTextBox::keyInput()
@@ -274,7 +274,10 @@ namespace glib
 
 	void GuiTextBox::mouseInput()
 	{
-		Font* f = (textElement.getFont() != nullptr) ? textElement.getFont() : SimpleGraphics::getFont();
+		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
+		GuiFontInterface* fInt = (textElement.getFont() != nullptr) ? textElement.getFont() : graphicsInterface->getFont();
+		Font* f = fInt->getFont();
+
 		int mouseX = Input::getMouseX();
 		int mouseY = Input::getMouseY();
 		
@@ -365,8 +368,10 @@ namespace glib
 
 	void GuiTextBox::selectionCleanup()
 	{
-		Font* f = (textElement.getFont() != nullptr) ? textElement.getFont() : SimpleGraphics::getFont();
-
+		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
+		GuiFontInterface* fInt = (textElement.getFont() != nullptr) ? textElement.getFont() : graphicsInterface->getFont();
+		Font* f = fInt->getFont();
+		
 		textElement.setHighlightStart(selectStart);
 		textElement.setHighlightEnd(selectEnd);
 
@@ -392,6 +397,7 @@ namespace glib
 
 	void GuiTextBox::update()
 	{
+		int prevCursorLoc = cursorLocation;
 		selectEnd = MathExt::clamp(selectEnd, 0, (int)textElement.getTextRef().size());
 		selectStart = MathExt::clamp(selectStart, 0, (int)textElement.getTextRef().size());
 		cursorLocation = MathExt::clamp(cursorLocation, 0, (int)textElement.getTextRef().size());
@@ -401,6 +407,17 @@ namespace glib
 		mouseInput();
 		selectionCleanup();
 
+		cursorBlinkTimer++;
+		if(cursorBlinkTimer>=cursorBlinkMaxTime)
+		{
+			cursorBlinkTimer = 0;
+			cursorBlink = !cursorBlink;
+			setShouldRedraw(true);
+		}
+
+		if(prevCursorLoc != cursorLocation)
+			setShouldRedraw(true);
+		
 		boundingBox = Box2D(x, y, x+width, y+height);
 	}
 
@@ -412,10 +429,12 @@ namespace glib
 	void GuiTextBox::setWidth(int v)
 	{
 		width = v;
+		setShouldRedraw(true);
 	}
 	void GuiTextBox::setHeight(int v)
 	{
 		height = v;
+		setShouldRedraw(true);
 	}
 	int GuiTextBox::getWidth()
 	{
@@ -426,9 +445,9 @@ namespace glib
 		return height;
 	}
 
-	void GuiTextBox::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attributes)
+	void GuiTextBox::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
 	{
-		GuiInstance::loadDataFromXML(attributes);
+		GuiInstance::loadDataFromXML(attributes, inter);
 
 		std::vector<std::wstring> possibleNames = { L"width", L"height", L"cursorblinktimer", L"cursorwidth", L"backgroundcolor", L"outlinecolor", L"focusoutlinecolor", L"cursorblinkcolor"};
 
@@ -478,13 +497,13 @@ namespace glib
 			}
 		}
 
-		textElement.loadDataFromXML(attributes);
+		textElement.loadDataFromXML(attributes, inter);
 	}
 
-	GuiInstance* GuiTextBox::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes)
+	GuiInstance* GuiTextBox::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
 	{
 		GuiTextBox* ins = new GuiTextBox(0, 0, 0, 0);
-		ins->loadDataFromXML(attributes);
+		ins->loadDataFromXML(attributes, inter);
 
 		return ins;
 	}

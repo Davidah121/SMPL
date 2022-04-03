@@ -76,6 +76,28 @@ namespace glib
 		return std::sqrt(a);
 	}
 
+	float MathExt::fastSqrt(float a)
+	{
+		return 1.0f/MathExt::fastInvSqrt(a);
+	}
+
+	float MathExt::fastInvSqrt(float number)
+	{
+		long i;
+		float x2, y;
+		const float threehalfs = 1.5F;
+
+		x2 = number * 0.5F;
+		y  = number;
+		i  = * ( long * ) &y;
+		i  = 0x5f3759df - ( i >> 1 );
+		y  = * ( float * ) &i;
+		y  = y * ( threehalfs - ( x2 * y * y ) );
+		y  = y * ( threehalfs - ( x2 * y * y ) );
+
+		return y;
+	}
+
 	float MathExt::cubeRoot(float a)
 	{
 		return std::cbrtf(a);
@@ -1143,6 +1165,30 @@ namespace glib
 			);
 		}
 	}
+
+	Mat4f MathExt::orthographicProjectionMatrix2(double left, double right, double top, double bottom, double near, double far)
+	{
+		if(near == far)
+		{
+			return Mat4f(
+				2.0/(right-left), 0, 0, -(right+left) / (right-left),
+				0, 2.0/(top-bottom), 0, -(top+bottom) / (top-bottom),
+				0, 0, 1, 0,
+				0, 0, 0, 1
+			);
+		}
+		else
+		{
+			double zRange = far-near;
+			return Mat4f(
+				2.0/(right-left), 0, 0, -(right+left) / (right-left),
+				0, 2.0/(top-bottom), 0, (top+bottom) / (top-bottom),
+				0, 0, 2.0/zRange, -(far+near)/zRange,
+				0, 0, 0, 1
+			);
+		}
+	}
+		
 	
 	#pragma endregion
 

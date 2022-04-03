@@ -3,7 +3,7 @@
 namespace glib
 {
 	#pragma region GUI_MANAGER
-	std::unordered_map<std::wstring, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&)> > GuiManager::elementLoadingFunctions;
+	std::unordered_map<std::wstring, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&, GuiGraphicsInterface* inter)> > GuiManager::elementLoadingFunctions;
 
 	const Class GuiManager::myClass = Class("GuiManager", {&Object::myClass});
 	const Class* GuiManager::getClass()
@@ -24,7 +24,7 @@ namespace glib
 		GuiContextMenu::registerLoadFunction();
 	}
 
-	void GuiManager::registerLoadFunction(std::wstring className, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&)> func)
+	void GuiManager::registerLoadFunction(std::wstring className, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&, GuiGraphicsInterface* inter)> func)
 	{
 		elementLoadingFunctions[className] = func;
 	}
@@ -45,7 +45,7 @@ namespace glib
 					map[ StringTools::toLowercase(attrib.name) ] = attrib.value;
 				}
 
-				thisIns = it->second(map);
+				thisIns = it->second(map, &graphicsInterface); //call load function for specific instance
 				
 				if(parent != nullptr)
 					parent->addChild(thisIns);
@@ -104,16 +104,20 @@ namespace glib
 		}
 	}
 
-	GuiManager::GuiManager()
+	GuiManager::GuiManager(unsigned char type)
 	{
-		surf = Image(320,240);
-		surf.setAllPixels(backgroundColor);
+		graphicsInterface = GuiGraphicsInterface(type);
+		surf = graphicsInterface.createSurface(320, 240);
+
+		// surf.setAllPixels(backgroundColor); //Clear to background color
 	}
 
-	GuiManager::GuiManager(int width, int height)
+	GuiManager::GuiManager(unsigned char type, int width, int height)
 	{
-		surf = Image(width,height);
-		surf.setAllPixels(backgroundColor);
+		graphicsInterface = GuiGraphicsInterface(type);
+		surf = graphicsInterface.createSurface(width, height);
+
+		// surf.setAllPixels(backgroundColor); //Clear to background color
 	}
 
 	GuiManager::~GuiManager()
@@ -133,6 +137,10 @@ namespace glib
 		objects.clear();
 		objectsByName.clear();
 		shouldDelete.clear();
+
+		if(surf != nullptr)
+			delete surf;
+		surf = nullptr;
 	}
 
 	void GuiManager::addElement(GuiInstance* k)
@@ -208,6 +216,7 @@ namespace glib
 
 	void GuiManager::sortElements()
 	{
+		//assume mostly sorted
 		Sort::insertionSort<GuiInstance*>(objects.data(), objects.size(), [](GuiInstance* a, GuiInstance* b)->bool{
 			return a->getPriority() < b->getPriority();
 		});
@@ -284,6 +293,10 @@ namespace glib
 				}
 			}
 		}
+		int width = surf->getWidth();
+		int height = surf->getHeight();
+		
+		graphicsInterface.setOrthoProjection(width, height);
 
 		if(redrawCount > 0)
 		{
@@ -307,30 +320,33 @@ namespace glib
 			Box2D newClipBox = Box2D(minX, minY, maxX, maxY);
 			Box2D preClipBox = Box2D(preMinX, preMinY, preMaxX, preMaxY);
 
-			SimpleGraphics::setColor(backgroundColor);
+
+			graphicsInterface.setColor(backgroundColor);
+			graphicsInterface.setBoundSurface(surf);
 
 			if(invalidImage)
 			{
-				surf.clearImage();
-				SimpleGraphics::resetClippingPlane();
+				graphicsInterface.clear();
+				graphicsInterface.resetClippingPlane();
 			}
 			else
 			{
-				if(minX <=0 && maxX >=surf.getWidth() && minY <=0 && maxY >=surf.getHeight())
+				if(minX <= 0 && maxX >= surf->getWidth() && minY <= 0 && maxY >= surf->getHeight())
 				{
-					surf.clearImage(); 
+					graphicsInterface.clear(); //Clear everything
 				}
-				else if(preMinX <=0 && preMaxX >=surf.getWidth() && preMinY <=0 && preMaxY >=surf.getHeight())
+				else if(preMinX <= 0 && preMaxX >= surf->getWidth() && preMinY <= 0 && preMaxY >= surf->getHeight())
 				{
-					surf.clearImage();
+					graphicsInterface.clear(); //Clear everything
 				}
 				else
 				{
-					surf.drawRect(minX, minY, maxX, maxY, false);
-					surf.drawRect(preMinX, preMinY, preMaxX, preMaxY, false);
+					//Clear the invalid areas
+					graphicsInterface.drawRect(minX, minY, maxX, maxY, false);
+					graphicsInterface.drawRect(preMinX, preMinY, preMaxX, preMaxY, false);
 				}
 			}
-			
+
 			for(GuiInstance* obj : currVisibleObjects)
 			{
 				if(!invalidImage)
@@ -338,12 +354,12 @@ namespace glib
 					if(CollisionMaster::collisionMethod(&newClipBox, &obj->boundingBox))
 					{
 						obj->shouldRedraw = true;
-						SimpleGraphics::setClippingRect(newClipBox);
+						graphicsInterface.setClippingRect(newClipBox);
 					}
 					else if(CollisionMaster::collisionMethod(&newClipBox, &obj->boundingBox))
 					{
 						obj->shouldRedraw = true;
-						SimpleGraphics::setClippingRect(preClipBox);
+						graphicsInterface.setClippingRect(preClipBox);
 					}
 					else
 					{
@@ -354,7 +370,8 @@ namespace glib
 				if(obj->shouldRedraw)
 				{
 					obj->baseRender();
-					obj->render(&surf);
+					graphicsInterface.setBoundSurface(surf);
+					obj->render();
 
 					obj->previousBoundingBox = obj->boundingBox;
 				}
@@ -367,14 +384,21 @@ namespace glib
 		{
 			if(invalidImage)
 			{
-				SimpleGraphics::setColor(backgroundColor);
-				surf.clearImage();
+				graphicsInterface.setColor(backgroundColor);
+				graphicsInterface.setBoundSurface(surf);
+				graphicsInterface.clear();
 				redrawCount++;
 			}
 		}
 
-		SimpleGraphics::resetClippingPlane();
+		graphicsInterface.resetClippingPlane();
 		invalidImage = false;
+
+		if(redrawCount != 0)
+		{
+			graphicsInterface.setColor(Vec4f(1,1,1,1));
+			graphicsInterface.drawToScreen();
+		}		
 		
 		return redrawCount != 0;
 	}
@@ -389,9 +413,9 @@ namespace glib
 		return objectsByName.getAll(name);
 	}
 
-	Image* GuiManager::getImage()
+	GuiSurfaceInterface* GuiManager::getSurface()
 	{
-		return &surf;
+		return surf;
 	}
 
 	size_t GuiManager::getSize()
@@ -401,8 +425,16 @@ namespace glib
 
 	void GuiManager::resizeImage(int width, int height)
 	{
-		surf = Image(width, height);
+		bool wasBound = surf == graphicsInterface.getBoundSurface();
+		if(surf != nullptr)
+		{
+			delete surf;
+		}
+		surf = graphicsInterface.createSurface(width, height);
 		invalidImage = true;
+
+		if(wasBound)
+			graphicsInterface.setBoundSurface(surf);
 	}
 
 	void GuiManager::invalidateImage()
@@ -443,6 +475,11 @@ namespace glib
 	void GuiManager::setBackgroundColor(Color c)
 	{
 		backgroundColor = c;
+	}
+
+	GuiGraphicsInterface* GuiManager::getGraphicsInterface()
+	{
+		return &graphicsInterface;
 	}
 
 	#pragma endregion

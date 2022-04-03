@@ -443,6 +443,7 @@ namespace glib
 		 * 		The maximum height allowed. This may be less than the image's height.
 		 */
 		void draw(Image* img, int globalWidth, int globalHeight);
+		void testDraw(Image* img, int globalWidth, int globalHeight);
 
 		/**
 		 * @brief Draws the stroke of the VectorCircle

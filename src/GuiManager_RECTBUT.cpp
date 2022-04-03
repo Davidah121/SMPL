@@ -119,32 +119,30 @@ namespace glib
 		boundingBox = Box2D(x, y, x+width, y+height);
 	}
 
-	void GuiRectangleButton::render(Image* surf)
+	void GuiRectangleButton::render()
 	{
-		if(surf!=nullptr)
+		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
+
+		if(!getFocus())
 		{
-			//draw a rectangle
-			if(!getFocus())
-			{
-				if(!hover)
-					SimpleGraphics::setColor(backgroundColor);
-				else
-					SimpleGraphics::setColor(hoverColor);
-			}
+			if(!hover)
+				graphicsInterface->setColor(backgroundColor);
 			else
-			{
-				SimpleGraphics::setColor(focusBackgroundColor);
-			}
-			
-			surf->drawRect(renderX, renderY, renderX + width, renderY + height, false);
-
-			if (getFocus() == false)
-				SimpleGraphics::setColor(outlineColor);
-			else
-				SimpleGraphics::setColor(focusOutlineColor);
-
-			surf->drawRect(renderX, renderY, renderX + width, renderY + height, true);
+				graphicsInterface->setColor(hoverColor);
 		}
+		else
+		{
+			graphicsInterface->setColor(focusBackgroundColor);
+		}
+		
+		graphicsInterface->drawRect(renderX, renderY, renderX + width, renderY + height, false);
+
+		if (getFocus() == false)
+			graphicsInterface->setColor(outlineColor);
+		else
+			graphicsInterface->setColor(focusOutlineColor);
+
+		graphicsInterface->drawRect(renderX, renderY, renderX + width, renderY + height, true);
 	}
 
 	void GuiRectangleButton::setOnClickFunction(std::function<void(GuiInstance*)> func)
@@ -211,9 +209,9 @@ namespace glib
 		return height;
 	}
 
-	void GuiRectangleButton::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs)
+	void GuiRectangleButton::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter)
 	{
-		GuiInstance::loadDataFromXML(attribs);
+		GuiInstance::loadDataFromXML(attribs, inter);
 		std::vector<std::wstring> possibleNames = { L"width", L"height", L"backgroundcolor", L"outlinecolor", L"focusoutlinecolor", L"hovercolor", L"focusbackgroundcolor"};
 
 		for(int i=0; i<possibleNames.size(); i++)
@@ -265,10 +263,10 @@ namespace glib
 		GuiManager::registerLoadFunction(L"GuiRectangleButton", GuiRectangleButton::loadFunction);
 	}
 
-	GuiInstance* GuiRectangleButton::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes)
+	GuiInstance* GuiRectangleButton::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
 	{
 		GuiRectangleButton* ins = new GuiRectangleButton(0,0,0,0);
-		ins->loadDataFromXML(attributes);
+		ins->loadDataFromXML(attributes, inter);
 		
 		return ins;
 	}

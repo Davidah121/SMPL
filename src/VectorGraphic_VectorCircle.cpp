@@ -24,6 +24,87 @@ namespace glib
 	{
 	}
 
+	void VectorCircle::testDraw(Image* buffer, int globalWidth, int globalHeight)
+	{
+		//first, calc bounding box
+		double halfStroke = getStrokeWidth()/2;
+		int minX = MathExt::clamp((int)(cx-radius-halfStroke), 0, globalWidth);
+		int maxX = MathExt::clamp((int)(cx+radius+halfStroke), 0, globalWidth);
+		int minY = MathExt::clamp((int)(cy-radius-halfStroke), 0, globalHeight);
+		int maxY = MathExt::clamp((int)(cy+radius+halfStroke), 0, globalHeight);
+
+		double insideRad = MathExt::sqrt(MathExt::sqr(radius-halfStroke));
+		double insideRad2 = MathExt::sqrt(MathExt::sqr(radius-halfStroke+1));
+		double outsideRad = MathExt::sqrt(MathExt::sqr(radius+halfStroke));
+		double outsideRad2 = MathExt::sqrt(MathExt::sqr(radius+halfStroke+1));
+
+		for(int y=minY; y<=maxY; y++)
+		{
+			for(int x=minX; x<=maxX; x++)
+			{
+				//measure distance
+				double dis = MathExt::sqrt(MathExt::sqr(cx-x) + MathExt::sqr(cy-y));
+
+				if(dis < outsideRad2)
+				{
+					if(getStrokeWidth() == 0)
+					{
+						if(dis <= insideRad)
+						{
+							buffer->drawPixel(x, y, getFillColor()); // fully filled inside circle
+						}
+						else
+						{
+							//normal anti-aliasing
+							double percentFilled = outsideRad2 - dis;
+							Color c = getFillColor();
+							c.alpha = (unsigned char)(c.alpha * percentFilled);
+
+							buffer->drawPixel(x, y, c);
+						}
+					}
+					else
+					{
+						if(dis <= insideRad)
+						{
+							buffer->drawPixel(x, y, getFillColor()); // fully filled inside circle
+						}
+						else
+						{
+							//potentially inside stroke
+							if(dis <= outsideRad)
+							{
+								//inside stroke or inside edge of stroke
+								if(dis >= insideRad2)
+								{
+									buffer->drawPixel(x, y, getStrokeColor());
+								}
+								else
+								{
+									double percentFilled = (dis - insideRad2);
+									Color c = getStrokeColor();
+									c.alpha = (unsigned char)(c.alpha * percentFilled);
+
+									buffer->drawPixel(x, y, getFillColor());
+									buffer->drawPixel(x, y, c);
+								}
+							}
+							else
+							{
+								
+								double percentFilled = (outsideRad2 - dis);
+								Color c = getStrokeColor();
+								c.alpha = (unsigned char)(c.alpha * percentFilled);
+
+								buffer->drawPixel(x, y, c);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	void VectorCircle::draw(Image* buffer, int globalWidth, int globalHeight)
 	{
 		if(Mat3f::getIdentity() != getTransform())
@@ -32,6 +113,9 @@ namespace glib
 			drawTransformed(buffer, globalWidth, globalHeight);
 			return;
 		}
+
+		testDraw(buffer, globalWidth, globalHeight);
+		return;
 
 		//multiply everything by 1 + AA_LEVEL then calculate.
 		//At end, use sample data to adjust transparency.

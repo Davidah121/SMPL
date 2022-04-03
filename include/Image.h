@@ -402,8 +402,17 @@ namespace glib
 		 * @brief Not implemented. Do not use.
 		 * 
 		 * @param filename 
+		 * 		The output file.
+		 * @param quality
+		 * 		Picks the quality matrix used.
+		 * 		Quality matrix is the default JPEG quality matrix
+		 * 		Valid from 1 - 10
+		 * @param subsampleMode
+		 * 		Mode 0: No sub sampling (4:4:4)
+		 * 		Mode 1: Basic sub sampling (4:2:2)
+		 * 		Mode 2: Best Compression (4:2:0)
 		 */
-		void saveJPG(File file);
+		void saveJPG(File file, int quality = 8, int subsampleMode = 0);
 
 	private:
 		int width = 0;

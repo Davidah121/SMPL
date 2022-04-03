@@ -116,7 +116,7 @@ namespace glib
 	{
 	}
 
-	void GuiInstance::render(Image* surf)
+	void GuiInstance::render()
 	{
 	}
 
@@ -179,6 +179,7 @@ namespace glib
 			shouldCallV2 = true;
 			shouldCallV = false;
 		}
+		setShouldRedraw(true);
 	}
 
 	bool GuiInstance::getVisible()
@@ -222,6 +223,7 @@ namespace glib
 		{
 			focus = true;
 		}
+		setShouldRedraw(true);
 	}
 
 	bool GuiInstance::getFocus()
@@ -445,18 +447,18 @@ namespace glib
 		return manager;
 	}
 
-	void GuiInstance::setCanvas(Image* m)
+	void GuiInstance::setCanvas(GuiSurfaceInterface* m)
 	{
 		canvas = m;
 	}
 
-	Image* GuiInstance::getCanvas()
+	GuiSurfaceInterface* GuiInstance::getCanvas()
 	{
 		return canvas;
 	}
 
 	
-	void GuiInstance::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs)
+	void GuiInstance::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter)
 	{
 		std::vector<std::wstring> possibleNames = { L"id", L"visible", L"active", L"alwaysfocus", L"onactive", L"onfocus", L"onvisible", L"ondeactivate", L"oninvisible", L"onchanged", L"x", L"y" };
 

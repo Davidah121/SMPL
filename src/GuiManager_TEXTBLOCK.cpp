@@ -26,9 +26,9 @@ namespace glib
 
 	void GuiTextBlock::update()
 	{
-		Font* currFont = textFont;
-		if(currFont == nullptr)
-			currFont = SimpleGraphics::getFont();
+		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
+		GuiFontInterface* fInt = (textFont != nullptr) ? textFont : graphicsInterface->getFont();
+		Font* currFont = fInt->getFont();
 
 		boundingBox = currFont->getBoundingBox(text, allowLineBreaks, maxWidth, maxHeight);
 
@@ -38,30 +38,30 @@ namespace glib
 		boundingBox.setBottomBound( boundingBox.getBottomBound() + y );
 	}
 
-	void GuiTextBlock::render(Image* surf)
+	void GuiTextBlock::render()
 	{
-		if(surf!=nullptr)
-		{
-			Font* oldFont = SimpleGraphics::getFont();
+		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
+		GuiFontInterface* fInt = (textFont != nullptr) ? textFont : graphicsInterface->getFont();
+		GuiFontInterface* oldFontInt = graphicsInterface->getFont();
 
-			if(textFont!=nullptr)
-				SimpleGraphics::setFont(textFont);
+		Font* currFont = fInt->getFont();
 
-			SimpleGraphics::setColor(textColor);
+		graphicsInterface->setFont(fInt);
+		graphicsInterface->setColor(textColor);
 
-			int actualMaxW = (maxWidth <= 0) ? 0xFFFF : maxWidth;
-			int actualMaxH = (maxHeight <= 0) ? 0xFFFF : maxHeight;
+		int actualMaxW = (maxWidth <= 0) ? 0xFFFF : maxWidth;
+		int actualMaxH = (maxHeight <= 0) ? 0xFFFF : maxHeight;
 
-			int minHighlight = min(startHighlight, endHighlight);
-			int maxHighlight = max(startHighlight, endHighlight);
-			
-			if(shouldHighlight)
-				SimpleGraphics::drawTextLimitsHighlighted(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowLineBreaks, minHighlight, maxHighlight, highlightColor, surf);
-			else
-				SimpleGraphics::drawTextLimits(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowLineBreaks, surf);
-			
-			SimpleGraphics::setFont(oldFont);
-		}
+		int minHighlight = min(startHighlight, endHighlight);
+		int maxHighlight = max(startHighlight, endHighlight);
+		
+		if(shouldHighlight)
+			graphicsInterface->drawTextLimitsHighlighted(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowLineBreaks, minHighlight, maxHighlight, highlightColor);
+		else
+			graphicsInterface->drawTextLimits(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowLineBreaks);
+		
+		graphicsInterface->setFont(oldFontInt);
+	
 	}
 
 	void GuiTextBlock::setTextColor(Color c)
@@ -87,19 +87,22 @@ namespace glib
 	void GuiTextBlock::setText(std::wstring s)
 	{
 		text = s;
+		setShouldRedraw(true);
 	}
 
 	void GuiTextBlock::setText(std::string s)
 	{
 		text = StringTools::toWideString(s);
+		setShouldRedraw(true);
 	}
 
-	void GuiTextBlock::setFont(Font* f)
+	void GuiTextBlock::setFont(GuiFontInterface* f)
 	{
 		textFont = f;
+		setShouldRedraw(true);
 	}
 
-	Font* GuiTextBlock::getFont()
+	GuiFontInterface* GuiTextBlock::getFont()
 	{
 		return textFont;
 	}
@@ -107,10 +110,12 @@ namespace glib
 	void GuiTextBlock::setMaxWidth(int v)
 	{
 		maxWidth = v;
+		setShouldRedraw(true);
 	}
 	void GuiTextBlock::setMaxHeight(int v)
 	{
 		maxHeight = v;
+		setShouldRedraw(true);
 	}
 
 	int GuiTextBlock::getMaxWidth()
@@ -125,6 +130,7 @@ namespace glib
 	void GuiTextBlock::setHighlightColor(Color c)
 	{
 		highlightColor = c;
+		setShouldRedraw(true);
 	}
 	Color GuiTextBlock::getHighlightColor()
 	{
@@ -134,6 +140,7 @@ namespace glib
 	void GuiTextBlock::setShouldHighlightText(bool v)
 	{
 		shouldHighlight = v;
+		setShouldRedraw(true);
 	}
 	bool GuiTextBlock::getShouldHighlightText()
 	{
@@ -143,6 +150,7 @@ namespace glib
 	void GuiTextBlock::setHighlightStart(int v)
 	{
 		startHighlight = v;
+		setShouldRedraw(true);
 	}
 	int GuiTextBlock::getHighlightStart()
 	{
@@ -151,6 +159,7 @@ namespace glib
 	void GuiTextBlock::setHighlightEnd(int v)
 	{
 		endHighlight = v;
+		setShouldRedraw(true);
 	}
 	int GuiTextBlock::getHighlightEnd()
 	{
@@ -160,6 +169,7 @@ namespace glib
 	void GuiTextBlock::setAllowLineBreaks(bool v)
 	{
 		allowLineBreaks = v;
+		setShouldRedraw(true);
 	}
 
 	bool GuiTextBlock::getAllowLineBreaks()
@@ -170,16 +180,18 @@ namespace glib
 	void GuiTextBlock::setOffsetX(int x)
 	{
 		offsetX = x;
+		setShouldRedraw(true);
 	}
 
 	void GuiTextBlock::setOffsetY(int y)
 	{
 		offsetY = y;
+		setShouldRedraw(true);
 	}
 
-	void GuiTextBlock::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attributes)
+	void GuiTextBlock::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
 	{
-		GuiInstance::loadDataFromXML(attributes);
+		GuiInstance::loadDataFromXML(attributes, inter);
 
 		std::vector<std::wstring> possibleNames = { L"maxwidth", L"maxheight", L"textcolor", L"highlightcolor", L"allowhighlight", L"allowlinebreaks", L"highlightstart", L"highlightend", L"offsetx", L"offsety", L"text" };
 
@@ -240,10 +252,10 @@ namespace glib
 		}
 	}
 
-	GuiInstance* GuiTextBlock::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes)
+	GuiInstance* GuiTextBlock::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
 	{
 		GuiTextBlock* ins = new GuiTextBlock(0, 0);
-		ins->loadDataFromXML(attributes);
+		ins->loadDataFromXML(attributes, inter);
 
 		return ins;
 	}

@@ -26,20 +26,20 @@ namespace glib
 		setShouldRedraw(false);
 	}
 
-	void GuiContainer::render(Image* surf)
+	void GuiContainer::render()
 	{
 		
 	}
 	
-	void GuiContainer::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attributes)
+	void GuiContainer::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
 	{
-		GuiInstance::loadDataFromXML(attributes);
+		GuiInstance::loadDataFromXML(attributes, inter);
 	}
 
-	GuiInstance* GuiContainer::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes)
+	GuiInstance* GuiContainer::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
 	{
 		GuiContainer* ins = new GuiContainer();
-		ins->loadDataFromXML(attributes);
+		ins->loadDataFromXML(attributes, inter);
 
 		return ins;
 	}

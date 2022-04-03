@@ -16,36 +16,50 @@ namespace glib
 		boundingBox = Box2D(0,0,0,0);
 	}
 
+	GuiSprite::GuiSprite(File f)
+	{
+		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
+		img = graphicsInterface->createSprite(f);
+		boundingBox = Box2D(0,0,0,0);
+	}
+
 	GuiSprite::~GuiSprite()
 	{
-		
+		if(img != nullptr)
+			delete img;
+		img = nullptr;
 	}
 
 	void GuiSprite::update()
 	{
-		if(index < img.getSize())
+		int lastIndex = index;
+		if(img == nullptr)
+			return;
+		
+		if(index < img->getSize())
 		{
 			if(lastUpdateTime == 0)
 			{
 				lastUpdateTime = System::getCurrentTimeMicro();
 			}
-			else if(System::getCurrentTimeMicro() - lastUpdateTime >= img.getDelayTime(index))
+			else if(System::getCurrentTimeMicro() - lastUpdateTime >= img->getDelayTime(index))
 			{
 				lastUpdateTime = System::getCurrentTimeMicro();
-
+				
 				index++;
-				setShouldRedraw(true);
-
-				if(index >= img.getSize())
+				if(index >= img->getSize())
 				{
-					if(img.shouldLoop())
+					if(img->shouldLoop())
 					{
 						index = 0;
 					}
 				}
+
+				if(index != lastIndex)
+					setShouldRedraw(true);
 			}
 
-			boundingBox = Box2D(x, y, x+img.getImage(index)->getWidth(), y+img.getImage(index)->getHeight());
+			boundingBox = Box2D(x, y, x+img->getImage(index)->getWidth(), y+img->getImage(index)->getHeight());
 		}
 		else
 		{
@@ -53,45 +67,42 @@ namespace glib
 		}
 	}
 
-	void GuiSprite::render(Image* surf)
+	void GuiSprite::render()
 	{
-		if(surf!=nullptr)
+		if(img == nullptr)
+			return;
+		
+		if(img->getImage(index)!=nullptr)
 		{
-			if(img.getImage(index)!=nullptr)
+			GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
+
+			graphicsInterface->setColor(imgColor);
+
+			int tempWidth = (width > 0) ? width : img->getImage(index)->getWidth();
+			int tempHeight = (height > 0) ? height : img->getImage(index)->getHeight();
+			
+			double nXScale = (tempWidth * xScale) / img->getImage(index)->getWidth();
+			double nYScale = (tempHeight * yScale) / img->getImage(index)->getHeight();
+			
+			if(nXScale == 1 && nYScale == 1)
 			{
-				SimpleGraphics::setColor(imgColor);
+				graphicsInterface->drawSprite(img->getImage(index), renderX, renderY);
+			}
+			else
+			{
+				int x1 = renderX;
+				int x2 = renderX + img->getImage(index)->getWidth() * nXScale;
 
-				int tempWidth = (width > 0) ? width : img.getImage(index)->getWidth();
-				int tempHeight = (height > 0) ? height : img.getImage(index)->getHeight();
-				
-				double nXScale = (tempWidth * xScale) / img.getImage(index)->getWidth();
-				double nYScale = (tempHeight * yScale) / img.getImage(index)->getHeight();
-				
-				if(nXScale == 1 && nYScale == 1)
-				{
-					SimpleGraphics::drawSprite(img.getImage(index), renderX, renderY, surf);
-				}
-				else
-				{
-					int x1 = renderX;
-					int x2 = renderX + img.getImage(index)->getWidth() * nXScale;
+				int y1 = renderY;
+				int y2 = renderY + img->getImage(index)->getHeight() * nYScale;
 
-					int y1 = renderY;
-					int y2 = renderY + img.getImage(index)->getHeight() * nYScale;
-
-					SimpleGraphics::drawSprite(img.getImage(index), x1, y1, x2, y2, surf);
-				}
+				graphicsInterface->drawSprite(img->getImage(index), x1, y1, x2, y2);
 			}
 		}
+	
 	}
 
-	void GuiSprite::setSprite(Sprite img)
-	{
-		this->img = img;
-		setShouldRedraw(true);
-	}
-
-	Sprite& GuiSprite::getSprite()
+	GuiSpriteInterface* GuiSprite::getSprite()
 	{
 		return img;
 	}
@@ -158,9 +169,9 @@ namespace glib
 	}
 
 
-	void GuiSprite::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs)
+	void GuiSprite::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter)
 	{
-		GuiInstance::loadDataFromXML(attribs);
+		GuiInstance::loadDataFromXML(attribs, inter);
 		std::vector<std::wstring> possibleNames = { L"src", L"width", L"height", L"xscale", L"yscale", L"color"};
 
 		for(int i=0; i<possibleNames.size(); i++)
@@ -170,7 +181,7 @@ namespace glib
 			{
 				if(it->first == L"src")
 				{
-					img.loadImage(it->second);
+					img = inter->createSprite(it->second);
 				}
 				else if(it->first == L"width")
 				{
@@ -204,10 +215,10 @@ namespace glib
 		GuiManager::registerLoadFunction(L"GuiSprite", GuiSprite::loadFunction);
 	}
 
-	GuiInstance* GuiSprite::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes)
+	GuiInstance* GuiSprite::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
 	{
 		GuiSprite* ins = new GuiSprite();
-		ins->loadDataFromXML(attributes);
+		ins->loadDataFromXML(attributes, inter);
 
 		return ins;
 	}

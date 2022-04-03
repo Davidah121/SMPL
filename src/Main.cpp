@@ -39,10 +39,11 @@
 
 #include "ModelBuilder.h"
 
-#include <Psapi.h>
+#include <xmmintrin.h>
 
 using namespace glib;
 
+/*
 void testGLStuff()
 {
     int height = (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) +
@@ -569,6 +570,7 @@ void testSavePNG()
 {
     Sprite k;
     k.loadImage("C:/Users/Alan/Pictures/Screenshot 2021-12-08 201519.png");
+    // k.loadImage("RESULT.png");
 
     size_t t1,t2;
     t1 = System::getCurrentTimeNano();
@@ -899,11 +901,59 @@ void testMemoryLeakThing()
     w.waitTillClose();
 }
 
+void testSVGStuff()
+{
+    SimpleWindow w = SimpleWindow("TITLE", 640, 480);
+
+    Image img = Image(640, 480);
+    w.setPaintFunction( [&w, &img]() ->void {
+        
+        SimpleGraphics::setColor({0, 0, 0, 0});
+        img.clearImage();
+        VectorCircle c = VectorCircle();
+        c.setX(320);
+        c.setY(240);
+        c.setRadius(128);
+        c.setStrokeWidth(32);
+        c.setFillColor({255,0,0,255});
+        c.setStrokeColor({255,255,0,255});
+
+        c.draw(&img, 640, 480);
+        // SimpleGraphics::setAntiAliasing(true);
+        // SimpleGraphics::setColor({255, 0, 0, 255});
+
+        // img.drawCircle(320, 240, 128, false);
+
+        w.drawImage(&img);
+    });
+
+    w.waitTillClose();
+}
+*/
+
+void testNewGL()
+{
+    //TODO - Continue working on consistency with GLGraphics and SimpleGraphics
+    //TODO - Mainly outlines and some clipping stuff.
+    GuiManager::initDefaultLoadFunctions();
+
+    GLWindow window = GLWindow("OpenGL", 640, 480, -1, -1, {SimpleWindow::NORMAL_WINDOW, true, false, 0});
+    GLFont defaultFont = GLFont("Resources/DefaultFont.fnt");
+    GLGraphics::setFont(&defaultFont);
+    window.getGuiManager()->loadElementsFromFile("Test.xml");
+    window.waitTillClose();
+
+    SimpleWindow window2 = SimpleWindow("Software", 640, 480, -1, -1, {SimpleWindow::NORMAL_WINDOW, true, false, 0});
+    window2.getGuiManager()->loadElementsFromFile("Test.xml");
+    window2.waitTillClose();
+}
+
 int main(int argc, char** argv)
 {
     StringTools::init();
     SimpleGraphics::init();
 
+    // testSVGStuff();
     // testLoadGui();
 
     //Adjust compression algorithms to adjust pointer to output instead of returning a new list and copying it.
@@ -916,9 +966,11 @@ int main(int argc, char** argv)
     // testQuickHash();
     // testModelBuilder();
     // testGLStuff();
-    testDirectXStuff();
+    // testDirectXStuff();
 
     // testCompression();
+
+    testNewGL();
     
     return 0;
 }

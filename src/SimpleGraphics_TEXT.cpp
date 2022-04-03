@@ -166,7 +166,12 @@ namespace glib
 			}
 		}
 	}
-
+	
+	void SimpleGraphics::drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor, Image* surf)
+	{
+		SimpleGraphics::drawTextLimitsHighlighted(StringTools::toWideString(str), x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor, surf);
+	}
+	
 	void SimpleGraphics::drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor, Image* surf)
 	{
 		Image* otherImg;

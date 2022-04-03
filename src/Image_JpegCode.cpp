@@ -30,6 +30,42 @@ namespace glib
 
 	std::vector<unsigned short> samplingRate;
 
+	Matrix getLuminanceQuantizationMatrix(int qualityLevel)
+	{
+		Matrix qualityMatrix = Matrix(8,8);
+		double qualityDouble = (double)(MathExt::clamp(qualityLevel, 1, 10)-1)/9.0;
+
+		qualityMatrix[0][0] = MathExt::lerp(16, 2, qualityDouble);     qualityMatrix[0][1] = MathExt::lerp(11, 1.5, qualityDouble);   qualityMatrix[0][2] = MathExt::lerp(10, 1.5, qualityDouble);   qualityMatrix[0][3] = MathExt::lerp(16, 2, qualityDouble);     qualityMatrix[0][4] = MathExt::lerp(24, 3.5, qualityDouble);   qualityMatrix[0][5] = MathExt::lerp(40, 5, qualityDouble);     qualityMatrix[0][6] = MathExt::lerp(51, 6, qualityDouble);     qualityMatrix[0][7] = MathExt::lerp(61, 7.5, qualityDouble); 
+		qualityMatrix[1][0] = MathExt::lerp(12, 1.5, qualityDouble);   qualityMatrix[1][1] = MathExt::lerp(12, 1.5, qualityDouble);   qualityMatrix[1][2] = MathExt::lerp(14, 2, qualityDouble);     qualityMatrix[1][3] = MathExt::lerp(19, 2.5, qualityDouble);   qualityMatrix[1][4] = MathExt::lerp(26, 3.5, qualityDouble);   qualityMatrix[1][5] = MathExt::lerp(58, 7, qualityDouble);     qualityMatrix[1][6] = MathExt::lerp(60, 7, qualityDouble);     qualityMatrix[1][7] = MathExt::lerp(55, 7, qualityDouble); 
+		qualityMatrix[2][0] = MathExt::lerp(14, 2, qualityDouble);     qualityMatrix[2][1] = MathExt::lerp(13, 2, qualityDouble);     qualityMatrix[2][2] = MathExt::lerp(16, 2, qualityDouble);     qualityMatrix[2][3] = MathExt::lerp(24, 3, qualityDouble);     qualityMatrix[2][4] = MathExt::lerp(40, 5, qualityDouble);     qualityMatrix[2][5] = MathExt::lerp(57, 7, qualityDouble);     qualityMatrix[2][6] = MathExt::lerp(69, 9, qualityDouble);     qualityMatrix[2][7] = MathExt::lerp(56, 8, qualityDouble); 
+		qualityMatrix[3][0] = MathExt::lerp(14, 2, qualityDouble);     qualityMatrix[3][1] = MathExt::lerp(17, 2, qualityDouble);     qualityMatrix[3][2] = MathExt::lerp(22, 2.5, qualityDouble);   qualityMatrix[3][3] = MathExt::lerp(29, 4, qualityDouble);     qualityMatrix[3][4] = MathExt::lerp(51, 6.5, qualityDouble);   qualityMatrix[3][5] = MathExt::lerp(87, 10.5, qualityDouble);  qualityMatrix[3][6] = MathExt::lerp(80, 10.5, qualityDouble);  qualityMatrix[3][7] = MathExt::lerp(62, 9.5, qualityDouble); 
+		qualityMatrix[4][0] = MathExt::lerp(18, 3, qualityDouble);     qualityMatrix[4][1] = MathExt::lerp(22, 3, qualityDouble);     qualityMatrix[4][2] = MathExt::lerp(37, 4.5, qualityDouble);   qualityMatrix[4][3] = MathExt::lerp(56, 7, qualityDouble);     qualityMatrix[4][4] = MathExt::lerp(68, 9, qualityDouble);     qualityMatrix[4][5] = MathExt::lerp(109, 13.5, qualityDouble); qualityMatrix[4][6] = MathExt::lerp(103, 14, qualityDouble);   qualityMatrix[4][7] = MathExt::lerp(77, 11.5, qualityDouble); 
+		qualityMatrix[5][0] = MathExt::lerp(24, 3.5, qualityDouble);   qualityMatrix[5][1] = MathExt::lerp(35, 4.5, qualityDouble);   qualityMatrix[5][2] = MathExt::lerp(55, 7, qualityDouble);     qualityMatrix[5][3] = MathExt::lerp(64, 8.5, qualityDouble);   qualityMatrix[5][4] = MathExt::lerp(81, 10.5, qualityDouble);  qualityMatrix[5][5] = MathExt::lerp(104, 14, qualityDouble);   qualityMatrix[5][6] = MathExt::lerp(113, 15.5, qualityDouble); qualityMatrix[5][7] = MathExt::lerp(92, 13, qualityDouble); 
+		qualityMatrix[6][0] = MathExt::lerp(49, 6, qualityDouble);     qualityMatrix[6][1] = MathExt::lerp(64, 7.5, qualityDouble);   qualityMatrix[6][2] = MathExt::lerp(78, 10, qualityDouble);    qualityMatrix[6][3] = MathExt::lerp(87, 11, qualityDouble);    qualityMatrix[6][4] = MathExt::lerp(103, 14, qualityDouble);   qualityMatrix[6][5] = MathExt::lerp(121, 16, qualityDouble);   qualityMatrix[6][6] = MathExt::lerp(120, 16, qualityDouble);   qualityMatrix[6][7] = MathExt::lerp(101, 14, qualityDouble); 
+		qualityMatrix[7][0] = MathExt::lerp(72, 8.5, qualityDouble);   qualityMatrix[7][1] = MathExt::lerp(92, 10, qualityDouble);    qualityMatrix[7][2] = MathExt::lerp(95, 12.5, qualityDouble);  qualityMatrix[7][3] = MathExt::lerp(98, 13.5, qualityDouble);  qualityMatrix[7][4] = MathExt::lerp(112, 15, qualityDouble);   qualityMatrix[7][5] = MathExt::lerp(100, 14, qualityDouble);   qualityMatrix[7][6] = MathExt::lerp(103, 14.5, qualityDouble); qualityMatrix[7][7] = MathExt::lerp(99, 14, qualityDouble); 
+
+		return qualityMatrix;
+	}
+
+	Matrix getChrominanceQuantizationMatrix(int qualityLevel)
+	{
+		//LERP BETWEEN JPEG quality and Photoshop
+		Matrix qualityMatrix = Matrix(8,8);
+
+		double qualityDouble = (double)(MathExt::clamp(qualityLevel, 1, 10)-1)/9.0;
+
+		qualityMatrix[0][0] = MathExt::lerp(17, 2, qualityDouble);      qualityMatrix[0][1] = MathExt::lerp(18, 2, qualityDouble);      qualityMatrix[0][2] = MathExt::lerp(24, 3, qualityDouble);      qualityMatrix[0][3] = MathExt::lerp(47, 6, qualityDouble);      qualityMatrix[0][4] = MathExt::lerp(99, 8, qualityDouble);      qualityMatrix[0][5] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[0][6] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[0][7] = MathExt::lerp(99, 9, qualityDouble); 
+		qualityMatrix[1][0] = MathExt::lerp(18, 2, qualityDouble);      qualityMatrix[1][1] = MathExt::lerp(21, 3, qualityDouble);      qualityMatrix[1][2] = MathExt::lerp(26, 4, qualityDouble);      qualityMatrix[1][3] = MathExt::lerp(66, 6, qualityDouble);      qualityMatrix[1][4] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[1][5] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[1][6] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[1][7] = MathExt::lerp(99, 9, qualityDouble); 
+		qualityMatrix[2][0] = MathExt::lerp(24, 3, qualityDouble);      qualityMatrix[2][1] = MathExt::lerp(26, 4, qualityDouble);      qualityMatrix[2][2] = MathExt::lerp(56, 5, qualityDouble);      qualityMatrix[2][3] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[2][4] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[2][5] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[2][6] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[2][7] = MathExt::lerp(99, 9, qualityDouble); 
+		qualityMatrix[3][0] = MathExt::lerp(47, 6, qualityDouble);      qualityMatrix[3][1] = MathExt::lerp(66, 6, qualityDouble);      qualityMatrix[3][2] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[3][3] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[3][4] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[3][5] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[3][6] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[3][7] = MathExt::lerp(99, 9, qualityDouble); 
+		qualityMatrix[4][0] = MathExt::lerp(99, 8, qualityDouble);      qualityMatrix[4][1] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[4][2] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[4][3] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[4][4] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[4][5] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[4][6] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[4][7] = MathExt::lerp(99, 9, qualityDouble); 
+		qualityMatrix[5][0] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[5][1] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[5][2] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[5][3] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[5][4] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[5][5] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[5][6] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[5][7] = MathExt::lerp(99, 9, qualityDouble); 
+		qualityMatrix[6][0] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[6][1] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[6][2] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[6][3] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[6][4] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[6][5] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[6][6] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[6][7] = MathExt::lerp(99, 9, qualityDouble); 
+		qualityMatrix[7][0] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[7][1] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[7][2] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[7][3] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[7][4] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[7][5] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[7][6] = MathExt::lerp(99, 9, qualityDouble);      qualityMatrix[7][7] = MathExt::lerp(99, 9, qualityDouble); 
+
+		return qualityMatrix;
+	}
+
 	BinaryTreeNode<HuffmanNode>* traverseTree(BinarySet* binSet, BinaryTree<HuffmanNode>* tree, int* startLoc)
 	{
 		BinaryTreeNode<HuffmanNode>* currNode = tree->getRoot();
@@ -1114,9 +1150,11 @@ namespace glib
 		}
 	}
 
-	void Image::saveJPG(File file)
+	void Image::saveJPG(File file, int quality, int subsampleMode)
 	{
-		
+		//save using jpeg quantization matrix
+		// Matrix lum = getLuminanceQuantizationMatrix(quality);
+		// Matrix chrom = getChrominanceQuantizationMatrix(quality);
 	}
 	
 	Image** Image::loadJPG(std::vector<unsigned char> fileData, int* amountOfImages, std::vector<int>* extraData)
