@@ -341,7 +341,7 @@ namespace glib
 	{
 		SimpleWindow::windowList.push_back(this);
 
-		if(windowType.threadManaged == TYPE_THREAD_MANAGED)
+		if(this->windowType.threadManaged == TYPE_THREAD_MANAGED)
 		{
 			threadOwnership = true;
 			wndThread = new std::thread(&SimpleWindow::init, this, -1, -1, 320, 240, L"", windowType);
@@ -364,12 +364,12 @@ namespace glib
 		if(windowType.threadManaged == TYPE_THREAD_MANAGED)
 		{
 			threadOwnership = true;
-			wndThread = new std::thread(&SimpleWindow::init, this, this->x, this->y, this->width, this->height, this->title, this->windowType);
+			wndThread = new std::thread(&SimpleWindow::init, this, x, y, width, height, title, windowType);
 		}
 		else
 		{
 			threadOwnership = false;
-			init(this->x, this->y, this->width, this->height, this->title, this->windowType);
+			init(x, y, width, height, title, windowType);
 		}
 
 		while (getFinishInit() != true)
@@ -384,12 +384,12 @@ namespace glib
 		if(windowType.threadManaged == TYPE_THREAD_MANAGED)
 		{
 			threadOwnership = true;
-			wndThread = new std::thread(&SimpleWindow::init, this, this->x, this->y, this->width, this->height, StringTools::toWideString(title), this->windowType);
+			wndThread = new std::thread(&SimpleWindow::init, this, x, y, width, height, StringTools::toWideString(title), windowType);
 		}
 		else
 		{
 			threadOwnership = false;
-			init(this->x, this->y, this->width, this->height, StringTools::toWideString(title), this->windowType);
+			init(x, y, width, height, StringTools::toWideString(title), windowType);
 		}
 
 		while (getFinishInit() != true)
@@ -745,10 +745,7 @@ namespace glib
 			wndPixels = nullptr;
 		}
 
-		scanLinePadding = 4 - width%4;
-		if(scanLinePadding == 4)
-			scanLinePadding = 0;
-
+		scanLinePadding = width%4;
 		wndPixelsSize = (width*3 + scanLinePadding) * height;
 
 		wndPixels = new unsigned char[wndPixelsSize];
@@ -838,9 +835,16 @@ namespace glib
 
 	void SimpleWindow::waitTillClose()
 	{
-		while(getRunning())
+		if(this->windowType.threadManaged == SimpleWindow::TYPE_THREAD_MANAGED)
 		{
-			System::sleep(1);
+			while(getRunning())
+			{
+				System::sleep(1);
+			}
+		}
+		else
+		{
+			run();
 		}
 	}
 

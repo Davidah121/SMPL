@@ -64,6 +64,20 @@ namespace glib
 
 		return k;
 	}
+	
+	Mat4f Mat4f::getTranspose()
+	{
+		Mat4f k = Mat4f();
+		for(int i=0; i<rows; i++)
+		{
+			for(int j=0; j<columns; j++)
+			{
+				k[j][i] = data[i][j];
+			}
+		}
+
+		return k;
+	}
 
 	double* Mat4f::operator[](int row)
 	{

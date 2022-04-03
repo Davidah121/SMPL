@@ -32,6 +32,7 @@ namespace glib
 
 	void GuiSprite::update()
 	{
+		int lastIndex = index;
 		if(img == nullptr)
 			return;
 		
@@ -44,10 +45,8 @@ namespace glib
 			else if(System::getCurrentTimeMicro() - lastUpdateTime >= img->getDelayTime(index))
 			{
 				lastUpdateTime = System::getCurrentTimeMicro();
-
+				
 				index++;
-				setShouldRedraw(true);
-
 				if(index >= img->getSize())
 				{
 					if(img->shouldLoop())
@@ -55,6 +54,9 @@ namespace glib
 						index = 0;
 					}
 				}
+
+				if(index != lastIndex)
+					setShouldRedraw(true);
 			}
 
 			boundingBox = Box2D(x, y, x+img->getImage(index)->getWidth(), y+img->getImage(index)->getHeight());
@@ -167,11 +169,10 @@ namespace glib
 	}
 
 
-	void GuiSprite::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs)
+	void GuiSprite::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter)
 	{
-		GuiInstance::loadDataFromXML(attribs);
+		GuiInstance::loadDataFromXML(attribs, inter);
 		std::vector<std::wstring> possibleNames = { L"src", L"width", L"height", L"xscale", L"yscale", L"color"};
-		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
 
 		for(int i=0; i<possibleNames.size(); i++)
 		{
@@ -180,7 +181,7 @@ namespace glib
 			{
 				if(it->first == L"src")
 				{
-					img = graphicsInterface->createSprite(it->second);
+					img = inter->createSprite(it->second);
 				}
 				else if(it->first == L"width")
 				{
@@ -214,10 +215,10 @@ namespace glib
 		GuiManager::registerLoadFunction(L"GuiSprite", GuiSprite::loadFunction);
 	}
 
-	GuiInstance* GuiSprite::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes)
+	GuiInstance* GuiSprite::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
 	{
 		GuiSprite* ins = new GuiSprite();
-		ins->loadDataFromXML(attributes);
+		ins->loadDataFromXML(attributes, inter);
 
 		return ins;
 	}

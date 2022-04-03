@@ -103,6 +103,12 @@ namespace glib
 
 		
 		/**
+		 * @brief Waits until the window has closed to continue.
+		 * 		It will process the window messages and gui until closed.
+		 */
+		void waitTillClose();
+		
+		/**
 		 * @brief Sets the swap interval for vsync. 
 		 * 		If set to 0, vsync will be disabled.
 		 * 

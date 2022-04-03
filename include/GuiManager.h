@@ -44,7 +44,6 @@ namespace glib
 		GuiSurfaceInterface(int width, int height, unsigned char type);
 		void* surface = nullptr;
 		int type = -1;
-		bool shouldDelete = true;
 	};
 
 	class GuiImageInterface
@@ -69,7 +68,6 @@ namespace glib
 
 		void* image = nullptr;
 		int type = -1;
-		bool shouldDelete = true;
 	};
 
 	class GuiSpriteInterface
@@ -94,7 +92,6 @@ namespace glib
 		GuiSpriteInterface(File file, unsigned char type);
 		void* sprite = nullptr;
 		int type = -1;
-		bool shouldDelete = true;
 	};
 
 	class GuiFontInterface
@@ -115,7 +112,6 @@ namespace glib
 		GuiFontInterface(Font* f, unsigned char type);
 		Font* font = nullptr;
 		int type = -1;
-		bool shouldDelete = true;
 	};
 
 	class GuiGraphicsInterface
@@ -210,6 +206,7 @@ namespace glib
 
 		void drawToScreen();
 		void setProjection(Mat4f proj);
+		void setOrthoProjection(int width, int height);
 		
 	private:
 		unsigned char type = TYPE_INVALID;
@@ -546,7 +543,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs);
+		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter);
 
 	protected:
 		std::function<void(GuiInstance*)> onChangedFunction;
@@ -701,12 +698,12 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs);
+		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter);
 
 		static void registerLoadFunction();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes);
+		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter);
 	};
 
 	class GuiCustomObject : public GuiInstance
@@ -754,10 +751,10 @@ namespace glib
 		 * 
 		 * @param func 
 		 */
-		void setRenderFunction(std::function<void(GuiSurfaceInterface*)> func);
+		void setRenderFunction(std::function<void(GuiGraphicsInterface*)> func);
 	private:
 		std::function<void()> updateFunc;
-		std::function<void(GuiSurfaceInterface*)> renderFunc;
+		std::function<void(GuiGraphicsInterface*)> renderFunc;
 	};
 
 	class GuiCanvas : public GuiInstance
@@ -974,12 +971,12 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs);
+		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter);
 
 		static void registerLoadFunction();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes);
+		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter);
 
 		time_t lastUpdateTime = 0;
 		int index = 0;
@@ -1211,12 +1208,12 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs);
+		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter);
 
 		static void registerLoadFunction();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes);
+		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter);
 
 		int maxWidth = 0;
 		int maxHeight = 0;
@@ -1398,12 +1395,12 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs);
+		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter);
 
 		static void registerLoadFunction();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes);
+		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter);
 		
 		std::function<void(GuiInstance*)> onEnterPressedFunction;
 		std::function<void(GuiInstance*)> onKeyPressFunction;
@@ -1585,12 +1582,12 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs);
+		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter);
 
 		static void registerLoadFunction();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes);
+		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter);
 		
 
 		std::function<void(GuiInstance*)> onClickFunction;
@@ -1963,12 +1960,12 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs);
+		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter);
 
 		static void registerLoadFunction();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes);
+		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter);
 
 		std::vector<Point*> locations;
 		int elementSpacing = 0;
@@ -2019,12 +2016,12 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs);
+		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter);
 
 		static void registerLoadFunction();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes);
+		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter);
 
 		std::vector<Point*> locations;
 		int gridXSpacing = 0;
@@ -2067,11 +2064,11 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs);
+		void loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter);
 		static void registerLoadFunction();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes);
+		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter);
 
 		GuiList listMenu = GuiList(0, 0);
 		bool showOnRightClick = true;
@@ -2263,18 +2260,48 @@ namespace glib
 		 */
 		std::vector< HashPair<std::wstring, GuiInstance*>* > getInstancesByName(std::wstring name);
 
+		/**
+		 * @brief Loads a series of GuiInstances from a file. All instances loaded from the file are managed by the
+		 * 		GuiManager and will be freed when no longer needed.
+		 * 		A valid load function must be registered in order to load a particular instance from the file.
+		 * 	
+		 * @param f 
+		 */
 		void loadElementsFromFile(File f);
-		bool loadElement(XmlNode* node, GuiInstance* parent);
-		static void registerLoadFunction(std::wstring className, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&)> func);
 
+		/**
+		 * @brief Adds a load function to the list of valid load functions that can be used when loading data from a file.
+		 * 		The function must take in a unordered_map (hashmap) of parameters to be set.
+		 * 		Not all parameters must be set and some are expected to be passed to the parent class.
+		 * 
+		 *  	The function must also take in the GuiGraphicsInterface used. Best used for loading additional graphics data.
+		 * 
+		 * @param className 
+		 * @param func 
+		 */
+		static void registerLoadFunction(std::wstring className, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&, GuiGraphicsInterface* inter)> func);
+
+		/**
+		 * @brief Adds some default loading functions to be used when loading elements from a file.
+		 * 		They are for the following classes:
+		 * 			GuiContainer
+		 * 			GuiGrid
+		 * 			GuiList
+		 * 			GuiContextMenu
+		 * 			GuiRectangleButton
+		 * 			GuiSprite
+		 * 			GuiTextBlock
+		 * 			GuiTextBox
+		 */
 		static void initDefaultLoadFunctions();
 	private:
+		bool loadElement(XmlNode* node, GuiInstance* parent);
 		void sortElements();
 
 		std::vector<GuiInstance*> objects = std::vector<GuiInstance*>();
 		std::unordered_set<GuiInstance*> shouldDelete = std::unordered_set<GuiInstance*>();
 		
-		static std::unordered_map<std::wstring, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&)> > elementLoadingFunctions;
+		static std::unordered_map<std::wstring, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&, GuiGraphicsInterface* inter)> > elementLoadingFunctions;
 
 		SimpleHashMap<std::wstring, GuiInstance*> objectsByName = SimpleHashMap<std::wstring, GuiInstance*>();
 		

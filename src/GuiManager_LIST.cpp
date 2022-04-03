@@ -187,9 +187,9 @@ namespace glib
 		return isVertical;
 	}
 
-	void GuiList::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs)
+	void GuiList::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter)
 	{
-		GuiInstance::loadDataFromXML(attribs);
+		GuiInstance::loadDataFromXML(attribs, inter);
 		std::vector<std::wstring> possibleNames = { L"spacing", L"isvertical", L"backgroundcolor", L"outlinecolor"};
 
 		for(int i=0; i<possibleNames.size(); i++)
@@ -226,10 +226,10 @@ namespace glib
 		GuiManager::registerLoadFunction(L"GuiList", GuiList::loadFunction);
 	}
 
-	GuiInstance* GuiList::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes)
+	GuiInstance* GuiList::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
 	{
 		GuiList* ins = new GuiList(0,0);
-		ins->loadDataFromXML(attributes);
+		ins->loadDataFromXML(attributes, inter);
 		
 		return ins;
 	}

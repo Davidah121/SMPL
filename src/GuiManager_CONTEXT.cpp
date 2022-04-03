@@ -98,10 +98,10 @@ namespace glib
 		return showOnRightClick;
 	}
 
-	void GuiContextMenu::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs)
+	void GuiContextMenu::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter)
 	{
-		GuiInstance::loadDataFromXML(attribs);
-		listMenu.loadDataFromXML(attribs);
+		GuiInstance::loadDataFromXML(attribs, inter);
+		listMenu.loadDataFromXML(attribs, inter);
 	}
 
 	void GuiContextMenu::registerLoadFunction()
@@ -109,10 +109,10 @@ namespace glib
 		GuiManager::registerLoadFunction(L"GuiContextMenu", GuiContextMenu::loadFunction);
 	}
 
-	GuiInstance* GuiContextMenu::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes)
+	GuiInstance* GuiContextMenu::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
 	{
 		GuiContextMenu* ins = new GuiContextMenu();
-		ins->loadDataFromXML(attributes);
+		ins->loadDataFromXML(attributes, inter);
 		
 		return ins;
 	}

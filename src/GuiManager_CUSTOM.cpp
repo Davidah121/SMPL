@@ -32,8 +32,8 @@ namespace glib
 	{
 		if(renderFunc!=nullptr)
 		{
-			GuiSurfaceInterface* surf = this->getManager()->getSurface();
-			renderFunc(surf);
+			GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
+			renderFunc(graphicsInterface);
 		}
 	}
 
@@ -42,7 +42,7 @@ namespace glib
 		updateFunc = func;
 	}
 
-	void GuiCustomObject::setRenderFunction(std::function<void(GuiSurfaceInterface*)> func)
+	void GuiCustomObject::setRenderFunction(std::function<void(GuiGraphicsInterface*)> func)
 	{
 		renderFunc = func;
 	}

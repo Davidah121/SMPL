@@ -7,11 +7,11 @@ namespace glib
 
 	int Network::totalNetworks = 0;
 
-	Network::Network(bool type, int port, std::string ipaddress, int amountOfConnectionsAllowed, bool TCP)
+	Network::Network(bool type, int port, std::string location, int amountOfConnectionsAllowed, bool TCP)
 	{
 		this->type = type;
 		this->port = port;
-		this->ipAddress = ipaddress;
+		this->location = location;
 
 		if(!init())
 		{
@@ -55,7 +55,7 @@ namespace glib
 
 	bool Network::init()
 	{
-		int status = WSAStartup(MAKEWORD(1, 1), &wsaData);
+		int status = WSAStartup(MAKEWORD(2, 2), &wsaData);
 		Network::totalNetworks++;
 
 		if (status != 0)
@@ -63,19 +63,7 @@ namespace glib
 			//error
 			return false;
 		}
-		else
-		{
-			if (LOBYTE(wsaData.wVersion) == 1)
-			{
-				//Worked
-				return true;
-			}
-			else
-			{
-				//Not correct version
-				return false;
-			}
-		}
+		return true;
 	}
 
 	void Network::createSocket(bool tcp)
@@ -94,9 +82,20 @@ namespace glib
 	{
 		socketAddress.sin_port = htons(port);
 		socketAddress.sin_family = AF_INET;
+
+		if(location[0] >= '0' && location[0] <= '9')
+		{
+			inet_pton(AF_INET, location.c_str(), &socketAddress.sin_addr); //IPv4
+		}
+		else
+		{
+			hostent* host = gethostbyname(location.c_str());
+
+			socketAddress.sin_addr.s_addr = *((int32_t*)host->h_addr); //Website Name
+			if(host != nullptr)
+				delete host;
+		}
 		
-		inet_pton(AF_INET, ipAddress.c_str(), &socketAddress.sin_addr);
-		//socketAddress.sin_addr.S_un.S_addr = inet_addr(ipAddress);
 		sizeAddress = sizeof(socketAddress);
 	}
 
@@ -238,7 +237,39 @@ namespace glib
 
 	bool Network::receiveMessage(std::vector<unsigned char>& buffer, int id)
 	{
-		return receiveMessage((char*)buffer.data(), buffer.size(), id);
+		//allocate buffer of x size. read till status == 0
+		networkMutex.lock();
+		char* tempBuffer = new char[4096];
+		ZeroMemory(tempBuffer, 4096);
+		bool good = false;
+
+		while(true)
+		{
+			int status = SOCKET_ERROR;
+			if(type == Network::TYPE_CLIENT)
+				status = recv(connections[0], tempBuffer, 4096, MSG_PEEK);
+			else
+				status = recv(connections[id], tempBuffer, 4096, MSG_PEEK);
+
+			if(status <= 0)
+				break;
+			
+			if(type == Network::TYPE_CLIENT)
+				status = recv(connections[0], tempBuffer, 4096, NULL);
+			else
+				status = recv(connections[id], tempBuffer, 4096, NULL);
+				
+			for(int i=0; i<status; i++)
+			{
+				buffer.push_back(tempBuffer[i]);
+			}
+			good = true;
+		}
+		
+		networkMutex.unlock();
+
+		delete[] tempBuffer;
+		return good;
 	}
 
 	bool Network::receiveMessage(unsigned char* buffer, int bufferSize, int id)
@@ -306,17 +337,33 @@ namespace glib
 		shouldConnect = true;
 		networkMutex.unlock();
 	}
+
 	void Network::disconnect()
 	{
 		networkMutex.lock();
 		for(int i=0; i<connections.size(); i++)
 		{
-			closesocket(connections[i]);
+			if(connections[i] != NULL)
+				closesocket(connections[i]);
+			connections[i] = NULL;
 		}
 		shouldConnect = false;
 		isConnected = false;
 		networkMutex.unlock();
 	}
+
+	// void Network::disconnect(int id)
+	// {
+	// 	networkMutex.lock();
+	// 	if(id >= 0 && id < connections.size())
+	// 	{
+	// 		if(connections[id] != NULL)
+	// 			closesocket(connections[id]);
+	// 		connections[id] = NULL;
+	// 	}
+	// 	shouldConnect = false;
+	// 	networkMutex.unlock();
+	// }
 
 	void Network::removeSocket(SOCKET s)
 	{
@@ -395,11 +442,37 @@ namespace glib
 		return v;
 	}
 
+	void Network::startNetwork()
+	{
+		networkMutex.lock();
+		shouldStart = true;
+		networkMutex.unlock();
+	}
+
+	void Network::endNetwork()
+	{
+		disconnect();
+		setRunning(false);
+	}
+
+	bool Network::getShouldStart()
+	{
+		networkMutex.lock();
+		bool v = shouldStart;
+		networkMutex.unlock();
+		return v;
+	}
+
 	void Network::threadRun()
 	{
 		bool init = false;
 		TIMEVAL waitTime = {0,1};
 		FD_SET socketSet;
+
+		while(!getShouldStart())
+		{
+			System::sleep(0, 1);
+		}
 
 		while(getRunning())
 		{

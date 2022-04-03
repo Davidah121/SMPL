@@ -468,7 +468,8 @@ namespace glib
 
 		/**
 		 * @brief Waits until the window has closed to continue.
-		 * 
+		 * 		If the window is user managed, it will process the window messages
+		 * 		and gui until closed. Otherwise, it just sleeps till close.
 		 */
 		void waitTillClose();
 

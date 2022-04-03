@@ -39,6 +39,7 @@ namespace glib
         static const bool CULL_CLOCKWISE = false;
         
         static void init();
+        static void dispose();
 
         static void clear(int clearCodes);
         static void setClearColor(Vec4f color);
@@ -63,6 +64,7 @@ namespace glib
 
         static void setOrthoProjection(int width, int height);
         static void setProjection(Mat4f mat);
+        static void setViewport(int x, int y, int width, int height);
 
         static void setClippingRectangle(int x, int y, int width, int height);
         static void resetClippingRectangle();
@@ -89,7 +91,8 @@ namespace glib
         static void drawTextLimitsHighlighted(std::wstring text, double x, double y, double maxWidth, double maxHeight, bool useLineBreaks, int highlightStart, int highlightEnd, Vec4f highlightColor, GLFont* fontPointer = nullptr);
 
         static void drawRectangle(double x1, double y1, double x2, double y2, bool outline);
-        static void drawCircle(double x, double y, double radius);
+        static void drawCircle(double x, double y, double radius, bool outline);
+        static void drawCircle(double x, double y, double innerRadius, double outerRadius);
         static void drawTriangle(Vec2f p1, Vec2f p2, Vec2f p3, bool outline);
 
         static void drawLine(double x1, double y1, double x2, double y2);
@@ -103,6 +106,12 @@ namespace glib
         static Vec4f clearColor;
         static Vec4f drawColor;
         static Mat4f orthoMat;
+        static Mat4f surfaceMat;
+
+        static int viewportX;
+        static int viewportY;
+        static int viewportWidth;
+        static int viewportHeight;
 
         //Note that the following shaders will be implemented in the resource folder
         //This may change to being literal strings
@@ -113,7 +122,7 @@ namespace glib
         static GLFont* activeFont;
 
         static GLModel drawModel;
-
+        static bool hasInit;
         static GLGraphics singleton;
     };
 

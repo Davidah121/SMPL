@@ -71,21 +71,25 @@ namespace glib
 	void GuiTextBox::setBackgroundColor(Color c)
 	{
 		backgroundColor = c;
+		setShouldRedraw(true);
 	}
 
 	void GuiTextBox::setOutlineColor(Color c)
 	{
 		outlineColor = c;
+		setShouldRedraw(true);
 	}
 
 	void GuiTextBox::setFocusOutlineColor(Color c)
 	{
 		focusOutlineColor = c;
+		setShouldRedraw(true);
 	}
 
 	void GuiTextBox::setCursorBlinkColor(Color c)
 	{
 		cursorBlinkColor = c;
+		setShouldRedraw(true);
 	}
 
 	void GuiTextBox::setCursorBlinkTimer(int timeInFrames)
@@ -96,6 +100,7 @@ namespace glib
 	void GuiTextBox::setCursorWidth(int w)
 	{
 		cursorWidth = w;
+		setShouldRedraw(true);
 	}
 
 	void GuiTextBox::render()
@@ -126,13 +131,6 @@ namespace glib
 				int startOfCursorLine = f->getWidthOfString(testText);
 
 				graphicsInterface->drawRect(renderX+startOfCursorLine, renderY, renderX+startOfCursorLine+cursorWidth, renderY+f->getFontSize(), false);
-			}
-
-			cursorBlinkTimer++;
-			if(cursorBlinkTimer>=cursorBlinkMaxTime)
-			{
-				cursorBlinkTimer = 0;
-				cursorBlink = !cursorBlink;
 			}
 		}
 	
@@ -399,6 +397,7 @@ namespace glib
 
 	void GuiTextBox::update()
 	{
+		int prevCursorLoc = cursorLocation;
 		selectEnd = MathExt::clamp(selectEnd, 0, (int)textElement.getTextRef().size());
 		selectStart = MathExt::clamp(selectStart, 0, (int)textElement.getTextRef().size());
 		cursorLocation = MathExt::clamp(cursorLocation, 0, (int)textElement.getTextRef().size());
@@ -408,6 +407,17 @@ namespace glib
 		mouseInput();
 		selectionCleanup();
 
+		cursorBlinkTimer++;
+		if(cursorBlinkTimer>=cursorBlinkMaxTime)
+		{
+			cursorBlinkTimer = 0;
+			cursorBlink = !cursorBlink;
+			setShouldRedraw(true);
+		}
+
+		if(prevCursorLoc != cursorLocation)
+			setShouldRedraw(true);
+		
 		boundingBox = Box2D(x, y, x+width, y+height);
 	}
 
@@ -419,10 +429,12 @@ namespace glib
 	void GuiTextBox::setWidth(int v)
 	{
 		width = v;
+		setShouldRedraw(true);
 	}
 	void GuiTextBox::setHeight(int v)
 	{
 		height = v;
+		setShouldRedraw(true);
 	}
 	int GuiTextBox::getWidth()
 	{
@@ -433,9 +445,9 @@ namespace glib
 		return height;
 	}
 
-	void GuiTextBox::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attributes)
+	void GuiTextBox::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
 	{
-		GuiInstance::loadDataFromXML(attributes);
+		GuiInstance::loadDataFromXML(attributes, inter);
 
 		std::vector<std::wstring> possibleNames = { L"width", L"height", L"cursorblinktimer", L"cursorwidth", L"backgroundcolor", L"outlinecolor", L"focusoutlinecolor", L"cursorblinkcolor"};
 
@@ -485,13 +497,13 @@ namespace glib
 			}
 		}
 
-		textElement.loadDataFromXML(attributes);
+		textElement.loadDataFromXML(attributes, inter);
 	}
 
-	GuiInstance* GuiTextBox::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes)
+	GuiInstance* GuiTextBox::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
 	{
 		GuiTextBox* ins = new GuiTextBox(0, 0, 0, 0);
-		ins->loadDataFromXML(attributes);
+		ins->loadDataFromXML(attributes, inter);
 
 		return ins;
 	}

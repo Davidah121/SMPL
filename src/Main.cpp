@@ -933,27 +933,19 @@ void testSVGStuff()
 
 void testNewGL()
 {
-    //TODO - Fix Clipping rectangle for OPENGL
-    GLWindow window = GLWindow("Title", 320, 240, -1, -1, {0, true, false, 0});
-    GLGraphics::init();
+    //TODO - Continue working on consistency with GLGraphics and SimpleGraphics
+    //TODO - Mainly outlines and some clipping stuff.
+    GuiManager::initDefaultLoadFunctions();
 
-    GuiRectangleButton a = GuiRectangleButton(32, 32, 64, 32);
-    window.getGuiManager()->addElement(&a);
-    
-    while(window.getRunning())
-    {
-        window.update();
-        window.guiUpdate();
-        if(window.getRepaint())
-            window.repaint();
-        System::sleep(15);
-    }
+    GLWindow window = GLWindow("OpenGL", 640, 480, -1, -1, {SimpleWindow::NORMAL_WINDOW, true, false, 0});
+    GLFont defaultFont = GLFont("Resources/DefaultFont.fnt");
+    GLGraphics::setFont(&defaultFont);
+    window.getGuiManager()->loadElementsFromFile("Test.xml");
+    window.waitTillClose();
 
-    // SimpleWindow window = SimpleWindow();
-
-    // GuiRectangleButton a = GuiRectangleButton(32, 32, 64, 32);
-    // window.getGuiManager()->addElement(&a);
-    // window.waitTillClose();
+    SimpleWindow window2 = SimpleWindow("Software", 640, 480, -1, -1, {SimpleWindow::NORMAL_WINDOW, true, false, 0});
+    window2.getGuiManager()->loadElementsFromFile("Test.xml");
+    window2.waitTillClose();
 }
 
 int main(int argc, char** argv)

@@ -143,7 +143,6 @@ namespace glib
 			graphicsInterface->setColor(focusOutlineColor);
 
 		graphicsInterface->drawRect(renderX, renderY, renderX + width, renderY + height, true);
-	
 	}
 
 	void GuiRectangleButton::setOnClickFunction(std::function<void(GuiInstance*)> func)
@@ -210,9 +209,9 @@ namespace glib
 		return height;
 	}
 
-	void GuiRectangleButton::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs)
+	void GuiRectangleButton::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter)
 	{
-		GuiInstance::loadDataFromXML(attribs);
+		GuiInstance::loadDataFromXML(attribs, inter);
 		std::vector<std::wstring> possibleNames = { L"width", L"height", L"backgroundcolor", L"outlinecolor", L"focusoutlinecolor", L"hovercolor", L"focusbackgroundcolor"};
 
 		for(int i=0; i<possibleNames.size(); i++)
@@ -264,10 +263,10 @@ namespace glib
 		GuiManager::registerLoadFunction(L"GuiRectangleButton", GuiRectangleButton::loadFunction);
 	}
 
-	GuiInstance* GuiRectangleButton::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes)
+	GuiInstance* GuiRectangleButton::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
 	{
 		GuiRectangleButton* ins = new GuiRectangleButton(0,0,0,0);
-		ins->loadDataFromXML(attributes);
+		ins->loadDataFromXML(attributes, inter);
 		
 		return ins;
 	}

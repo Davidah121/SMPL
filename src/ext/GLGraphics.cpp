@@ -5,6 +5,12 @@ namespace glib
     Vec4f GLGraphics::clearColor = Vec4f();
     Vec4f GLGraphics::drawColor = Vec4f(1,1,1,1);
     Mat4f GLGraphics::orthoMat = Mat4f::getIdentity();
+    Mat4f GLGraphics::surfaceMat = Mat4f::getIdentity();
+    
+    int GLGraphics::viewportX = 0;
+    int GLGraphics::viewportY = 0;
+    int GLGraphics::viewportWidth = 0;
+    int GLGraphics::viewportHeight = 0;
 
     GLModel GLGraphics::drawModel = GLModel();
     
@@ -14,25 +20,27 @@ namespace glib
     GLShader* GLGraphics::textShader = nullptr;
     GLFont* GLGraphics::activeFont = nullptr;
 
+    bool GLGraphics::hasInit = false;
+
     GLGraphics GLGraphics::singleton;
 
     void GLGraphics::init()
     {
-        GLGraphics::textureShader = new GLShader("Resources/glsl/vs/rectTextureVertShader.vs", "Resources/glsl/fs/rectTextureFragShader.fs");
-        GLGraphics::circleShader = new GLShader("Resources/glsl/vs/circleVertShader.vs", "Resources/glsl/fs/circleFragShader.fs");
-        GLGraphics::rectangleShader = new GLShader("Resources/glsl/vs/rectangleVertShader.vs", "Resources/glsl/fs/rectangleFragShader.fs");
-        GLGraphics::textShader = new GLShader("Resources/glsl/vs/textVertShader.vs", "Resources/glsl/fs/textFragShader.fs");
+        if(!GLGraphics::hasInit)
+        {
+            GLGraphics::textureShader = new GLShader("Resources/glsl/vs/rectTextureVertShader.vs", "Resources/glsl/fs/rectTextureFragShader.fs");
+            GLGraphics::circleShader = new GLShader("Resources/glsl/vs/circleVertShader.vs", "Resources/glsl/fs/circleFragShader.fs");
+            GLGraphics::rectangleShader = new GLShader("Resources/glsl/vs/rectangleVertShader.vs", "Resources/glsl/fs/rectangleFragShader.fs");
+            GLGraphics::textShader = new GLShader("Resources/glsl/vs/textVertShader.vs", "Resources/glsl/fs/textFragShader.fs");
 
-        enableBlending();
-        setBlendFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            
+            enableBlending();
+            setBlendFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            hasInit = true;
+        }
     }
 
-    GLGraphics::GLGraphics()
-    {
-
-    }
-
-    GLGraphics::~GLGraphics()
+    void GLGraphics::dispose()
     {
         if(GLGraphics::textureShader != nullptr)
             delete textureShader;
@@ -50,6 +58,18 @@ namespace glib
         GLGraphics::circleShader = nullptr;
         GLGraphics::rectangleShader = nullptr;
         GLGraphics::textShader = nullptr;
+
+        GLGraphics::hasInit = false;
+    }
+
+    GLGraphics::GLGraphics()
+    {
+
+    }
+
+    GLGraphics::~GLGraphics()
+    {
+        dispose();
     }
 
     void GLGraphics::clear(int clearCodes)
@@ -128,7 +148,11 @@ namespace glib
     
     void GLGraphics::setOrthoProjection(int width, int height)
     {
-        orthoMat = MathExt::orthographicProjectionMatrix(width, height);
+        Mat4f translationMatrix = Mat4f::getIdentity();
+        translationMatrix[0][3] = 0.5; //Maps from [0, width-1] instead of [1, width]
+        translationMatrix[1][3] = 0.5; //Maps from [0, height-1] instead of [1, height]
+        orthoMat = MathExt::orthographicProjectionMatrix(width, height) * translationMatrix;
+        surfaceMat = MathExt::orthographicProjectionMatrix(width, height); //Separate matrix for surface drawing.
     }
 
     void GLGraphics::setProjection(Mat4f mat)
@@ -136,10 +160,19 @@ namespace glib
         orthoMat = mat;
     }
 
+    void GLGraphics::setViewport(int x, int y, int width, int height)
+    {
+        glViewport(x, y, width, height);
+        viewportX = x;
+        viewportY = y;
+        viewportWidth = width;
+        viewportHeight = height;
+    }
+
     void GLGraphics::setClippingRectangle(int x, int y, int width, int height)
     {
         glEnable(GL_SCISSOR_TEST);
-        glScissor(x, y, width, height);
+        glScissor(x, viewportHeight - y - height-1, width+1, height+1);
     }
 
     void GLGraphics::resetClippingRectangle()
@@ -159,6 +192,9 @@ namespace glib
 
     void GLGraphics::drawSurface(double x1, double y1, double x2, double y2, GLSurface* s)
     {
+        if(!hasInit)
+            return; //throw error
+        
         //create rectangle
         std::vector<float> positions = {
             (float)x1, (float)y1,
@@ -184,7 +220,7 @@ namespace glib
         //setup shader
         textureShader->setAsActive();
         textureShader->setVec4("activeColor", drawColor);
-        textureShader->setMat4("projectionMatrix", orthoMat);
+        textureShader->setMat4("projectionMatrix", surfaceMat);
         textureShader->setInt("textureID", 0);
         
         //draw model
@@ -196,6 +232,8 @@ namespace glib
 
     void GLGraphics::drawTexture(double x1, double y1, double x2, double y2, GLTexture* tex)
     {
+        if(!hasInit)
+            return; //throw error
         //create rectangle
         std::vector<float> positions = {
             (float)x1, (float)y1,
@@ -238,6 +276,9 @@ namespace glib
 
     void GLGraphics::drawTexturePart(Vec4f positionData, Vec4f textureData, GLTexture* tex)
     {
+        if(!hasInit)
+            return; //throw error
+
         //create rectangle
         std::vector<float> positions = {
             (float)positionData.x, (float)positionData.y,
@@ -296,6 +337,9 @@ namespace glib
 
     void GLGraphics::drawText(std::wstring text, double x, double y, GLFont* fontPointer)
     {
+        if(!hasInit)
+            return; //throw error
+
         GLFont* f;
         if(fontPointer!=nullptr)
             f = fontPointer;
@@ -376,6 +420,9 @@ namespace glib
 
     void GLGraphics::drawTextLimitsHighlighted(std::wstring text, double x, double y, double maxWidth, double maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Vec4f highlightColor, GLFont* fontPointer)
     {
+        if(!hasInit)
+            return; //throw error
+
         GLFont* f;
         if(fontPointer!=nullptr)
             f = fontPointer;
@@ -494,6 +541,11 @@ namespace glib
 
     void GLGraphics::drawRectangle(double x1, double y1, double x2, double y2, bool outline)
     {
+        if(!hasInit)
+        {
+            return; //throw error
+        }
+
         //create rectangle
         std::vector<float> positions = {
             (float)x1, (float)y1,
@@ -520,14 +572,25 @@ namespace glib
         GLShader::deactivateCurrentShader();
     }
     
-    void GLGraphics::drawCircle(double x, double y, double radius)
+    void GLGraphics::drawCircle(double x, double y, double radius, bool outline)
     {
+        if(outline)
+            drawCircle(x, y, radius-0.5, radius+0.5);
+        else
+            drawCircle(x, y, 0, radius);
+    }
+
+    void GLGraphics::drawCircle(double x, double y, double innerRadius, double outerRadius)
+    {
+        if(!hasInit)
+            return; //throw error
+
         //create rectangle to surround the circle
         std::vector<float> positions = {
-            (float)(x-radius), (float)(y-radius),
-            (float)(x-radius), (float)(y+radius),
-            (float)(x+radius), (float)(y+radius),
-            (float)(x+radius), (float)(y-radius)
+            (float)(x-outerRadius), (float)(y-outerRadius),
+            (float)(x-outerRadius), (float)(y+outerRadius),
+            (float)(x+outerRadius), (float)(y+outerRadius),
+            (float)(x+outerRadius), (float)(y-outerRadius)
         };
 
         drawModel.storeDataFloat(0, positions, 2);
@@ -539,7 +602,8 @@ namespace glib
         circleShader->setVec4("activeColor", drawColor);
         circleShader->setMat4("projectionMatrix", orthoMat);
         circleShader->setVec2("circleCenter", Vec2f(x, y));
-        circleShader->setFloat("radius", radius);
+        circleShader->setFloat("innerRad", innerRadius);
+        circleShader->setFloat("outerRad", outerRadius);
 
         //draw model
         drawModel.draw();
@@ -549,6 +613,9 @@ namespace glib
     
     void GLGraphics::drawLine(double x1, double y1, double x2, double y2)
     {
+        if(!hasInit)
+            return; //throw error
+        
         //use rectangle shader
         std::vector<float> positions = {
             (float)(x1), (float)(y1),
@@ -564,6 +631,7 @@ namespace glib
         rectangleShader->setVec4("activeColor", drawColor);
         rectangleShader->setMat4("projectionMatrix", orthoMat);
 
+
         //draw model
         drawModel.draw();
 
@@ -572,6 +640,9 @@ namespace glib
 
     void GLGraphics::drawBezierCurve(BezierCurve* b, int subdivisions)
     {
+        if(!hasInit)
+            return; //throw error
+
         //use rectangle shader
         std::vector<float> positions;
         for(int i=0; i<subdivisions; i++)
@@ -598,6 +669,9 @@ namespace glib
 
     void GLGraphics::drawTriangle(Vec2f p1, Vec2f p2, Vec2f p3, bool outline)
     {
+        if(!hasInit)
+            return; //throw error
+
         //create triangle
         std::vector<float> positions = {
             (float)p1.x, (float)p1.y,

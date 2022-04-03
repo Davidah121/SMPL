@@ -75,6 +75,13 @@ namespace glib
 		 */
 		static Mat4f getIdentity();
 
+		/**
+		 * @brief Returns the Transpose of the matrix as a Mat4f.
+		 * 
+		 * @return Mat4f 
+		 */
+		Mat4f getTranspose();
+
 		double* operator[](int row);
 
 		Mat4f operator+(Mat4f other);

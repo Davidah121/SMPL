@@ -4,6 +4,7 @@
 #include "System.h"
 #include "StringTools.h"
 #include "Input.h"
+#include "ext/GLGraphics.h"
 
 namespace glib
 {
@@ -116,10 +117,16 @@ namespace glib
 			setShouldEnd(true);
 			return;
 		}
+
+		GLGraphics::init();
+		GLGraphics::setViewport(0, 0, width, height);
+		GLGraphics::setClearColor( Vec4f(0, 0, 0, 0) );
+		GLGraphics::clear(GLGraphics::COLOR_BUFFER | GLGraphics::DEPTH_BUFFER);
+		GLGraphics::setOrthoProjection(width, height);
 		
-		glViewport(0, 0, width, height);
-		glClearColor(0.0f,0.0f,0.0f,0.0f);
-		glClearDepth(1.0f);
+		// glViewport(0, 0, width, height);
+		// glClearColor(0.0f,0.0f,0.0f,0.0f);
+		// glClearDepth(1.0f);
 	}
 
 	void GLWindow::testGL()
@@ -172,63 +179,24 @@ namespace glib
 		height = 240;
 		title = L"";
 
-		if(windowType.threadManaged == TYPE_THREAD_MANAGED)
-		{
-			threadOwnership = true;
-			wndThread = new std::thread(&GLWindow::init, this, x, y, width, height, title, windowType);
-		}
-		else
-		{
-			threadOwnership = false;
-			init(x, y, width, height, title, windowType);
-		}
-
-		while (getFinishInit() != true)
-		{
-			std::this_thread::yield();
-		}
+		threadOwnership = false;
+		init(x, y, width, height, title, windowType);
 	}
 
 	GLWindow::GLWindow(std::wstring title, int width, int height, int x, int y, WindowOptions windowType)
 		: SimpleWindow(true)
 	{
 		GLWindow::windowList.push_back(this);
-		if(windowType.threadManaged == TYPE_THREAD_MANAGED)
-		{
-			threadOwnership = true;
-			wndThread = new std::thread(&GLWindow::init, this, x, y, width, height, title, windowType);
-		}
-		else
-		{
-			threadOwnership = false;
-			init(x, y, width, height, title, windowType);
-		}
-
-		while (getFinishInit() != true)
-		{
-			std::this_thread::yield();
-		}
+		threadOwnership = false;
+		init(x, y, width, height, title, windowType);
 	}
 
 	GLWindow::GLWindow(std::string title, int width, int height, int x, int y, WindowOptions windowType)
 		: SimpleWindow(true)
 	{
 		GLWindow::windowList.push_back(this);
-		if(windowType.threadManaged == TYPE_THREAD_MANAGED)
-		{
-			threadOwnership = true;
-			wndThread = new std::thread(&GLWindow::init, this, x, y, width, height, StringTools::toWideString(title), windowType);
-		}
-		else
-		{
-			threadOwnership = false;
-			init(x, y, width, height, StringTools::toWideString(title), windowType);
-		}
-
-		while (getFinishInit() != true)
-		{
-			std::this_thread::yield();
-		}
+		threadOwnership = false;
+		init(x, y, width, height, StringTools::toWideString(title), windowType);
 	}
 
 	GLWindow::~GLWindow()
@@ -261,6 +229,7 @@ namespace glib
 		this->height = height;
 		
 		this->windowType = windowType;
+		this->windowType.threadManaged = SimpleWindow::TYPE_USER_MANAGED; //Must be user managed
 
 		if (this->width < 0)
 			this->width = 320;
@@ -460,9 +429,6 @@ namespace glib
 					gui = new GuiManager(GuiManager::TYPE_OPENGL, this->width, this->height);
 
 					setFinishInit(true);
-
-					if(windowType.threadManaged == TYPE_THREAD_MANAGED)
-						run();
 				}
 				else
 				{
@@ -491,6 +457,11 @@ namespace glib
 
 		#endif
 
+	}
+
+	void GLWindow::waitTillClose()
+	{
+		run();
 	}
 
 	void GLWindow::run()

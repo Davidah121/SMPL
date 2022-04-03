@@ -31,17 +31,17 @@ namespace glib
 		 * 			TYPE_CLIENT
 		 * @param port 
 		 * 		Must be a valid port between [0,65535]
-		 * @param ipaddress 
-		 * 		Must be a valid ipv4 address.
-		 * 		For clients, it is the IP to connect to.
-		 * 		For servers, it is the IP that will receive connections.
+		 * @param location 
+		 * 		Must be a valid ipv4 address or website name.
+		 * 		For clients, it is the IP or name to connect to.
+		 * 		For servers, it is the IP or name that will receive connections.
 		 * @param amountOfConnectionsAllowed 
 		 * 		Default is 64.
 		 * @param TCP 
 		 * 		If set to false, UDP is used.
 		 * 		Default is true
 		 */
-		Network(bool type, int port, std::string ipaddress, int amountOfConnectionsAllowed = 64, bool TCP = true);
+		Network(bool type, int port, std::string location, int amountOfConnectionsAllowed = 64, bool TCP = true);
 
 		/**
 		 * @brief Destroy the Network object
@@ -116,6 +116,8 @@ namespace glib
 		 * 
 		 * @param buffer 
 		 * 		The buffer to receive the message.
+		 * @param maxBufferSize
+		 * 		The maximum size to read. 
 		 * @param id 
 		 * 		Which connection to receive from.
 		 * 		Client will always receive from 0.
@@ -190,6 +192,12 @@ namespace glib
 		 */
 		void disconnect();
 
+		// /**
+		//  * @brief Disconnects from the specified id.
+		//  * 
+		//  */
+		// void disconnect(int id);
+
 		/**
 		 * @brief Returns if the thread maintaining the Network connection is running.
 		 * 
@@ -225,6 +233,24 @@ namespace glib
 		 */
 		void setOnDisconnectFunction(std::function<void(int)> func);
 		
+		/**
+		 * @brief Starts up the network allowing it to connect 
+		 * 		or receive connections. This delays any network interactions until
+		 * 		after the programmer has specifies they should start.
+		 * 
+		 * 		Best called after initializing the necessary functions and data.
+		 */
+		void startNetwork();
+
+		/**
+		 * @brief Destroys the network. Afterwards, it can no longer be used.
+		 * 		This is equivalent to calling the destructor of the object.
+		 * 		After calling this, the thread maintaining the network will be closed
+		 * 		and no longer running. This should end loops that run while the network is
+		 * 		running.
+		 * 
+		 */
+		void endNetwork();
 
 		static const bool TYPE_SERVER = false;
 		static const bool TYPE_CLIENT = true;
@@ -250,6 +276,8 @@ namespace glib
 		void threadRun();
 
 		bool getReconnect();
+		bool getShouldStart();
+
 		std::function<void(int)> getConnectFunc();
 		std::function<void(int)> getMessageArriveFunc();
 		std::function<void(int)> getDisconnectFunc();
@@ -265,13 +293,14 @@ namespace glib
 		int sizeAddress = 0;
 		unsigned long connectionTimeout = 1000;
 		unsigned long messageTimeout = 100;
+		bool shouldStart = false;
 
 		std::vector<SOCKET> connections;
 		int totalAllowedConnections = 64;
 
 		bool type = TYPE_SERVER;
 		int port = 0;
-		std::string ipAddress;
+		std::string location;
 
 		static int totalNetworks;
 		

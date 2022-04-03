@@ -3,7 +3,7 @@
 namespace glib
 {
 	#pragma region GUI_MANAGER
-	std::unordered_map<std::wstring, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&)> > GuiManager::elementLoadingFunctions;
+	std::unordered_map<std::wstring, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&, GuiGraphicsInterface* inter)> > GuiManager::elementLoadingFunctions;
 
 	const Class GuiManager::myClass = Class("GuiManager", {&Object::myClass});
 	const Class* GuiManager::getClass()
@@ -24,7 +24,7 @@ namespace glib
 		GuiContextMenu::registerLoadFunction();
 	}
 
-	void GuiManager::registerLoadFunction(std::wstring className, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&)> func)
+	void GuiManager::registerLoadFunction(std::wstring className, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&, GuiGraphicsInterface* inter)> func)
 	{
 		elementLoadingFunctions[className] = func;
 	}
@@ -45,7 +45,7 @@ namespace glib
 					map[ StringTools::toLowercase(attrib.name) ] = attrib.value;
 				}
 
-				thisIns = it->second(map);
+				thisIns = it->second(map, &graphicsInterface); //call load function for specific instance
 				
 				if(parent != nullptr)
 					parent->addChild(thisIns);
@@ -296,7 +296,7 @@ namespace glib
 		int width = surf->getWidth();
 		int height = surf->getHeight();
 		
-		graphicsInterface.setProjection(MathExt::orthographicProjectionMatrix(width, height));
+		graphicsInterface.setOrthoProjection(width, height);
 
 		if(redrawCount > 0)
 		{
