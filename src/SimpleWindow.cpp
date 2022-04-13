@@ -67,11 +67,11 @@ namespace glib
 				break;
 			case KeyPress:
 				if(keyDownFunction != nullptr)
-					keyDownFunction(event.xkey.keycode, NULL);
+					keyDownFunction(event.xkey.keycode, 0);
 				break;
 			case KeyRelease:
 				if(keyUpFunction != nullptr)
-					keyUpFunction(event.xkey.keycode, NULL);
+					keyUpFunction(event.xkey.keycode, 0);
 				break;
 			case ButtonPress:
 				if(mouseButtonDownFunction != nullptr)
@@ -89,6 +89,19 @@ namespace glib
 				if(closingFunction != nullptr)
 					closingFunction();
 				setShouldEnd(true);
+				break;
+			case CreateNotify:
+				break;
+			case ResizeRequest:
+				break;
+			case ClientMessage:
+				if (event.xclient.data.l[0] == wmDeleteMessage)
+				{
+					if(closingFunction != nullptr)
+						closingFunction();
+					setShouldEnd(true);
+				}
+				break;
 			case ConfigureNotify:
 				x = event.xconfigure.x;
 				y = event.xconfigure.y;
@@ -321,7 +334,7 @@ namespace glib
 					}
 					break;
 				case WM_SETCURSOR:
-					SetCursor( LoadCursor(NULL, IDC_ARROW) );
+					SetCursor( LoadCursor(0, IDC_ARROW) );
 				default:
 					break;
 				}
@@ -434,7 +447,7 @@ namespace glib
 				XDestroyWindow(displayServer, (Window)windowHandle);
 				XCloseDisplay(displayServer);
 
-				windowHandle = NULL;
+				windowHandle = 0;
 				displayServer = nullptr;
 			#else
 				if (IsWindow((HWND)windowHandle))
@@ -495,9 +508,9 @@ namespace glib
 
 		#ifdef LINUX
 
-			displayServer = XOpenDisplay(NULL);
+			displayServer = XOpenDisplay(0);
 
-			if(displayServer == NULL)
+			if(displayServer == 0)
 			{
 				//error connecting to XServer
 				setValid(false);
@@ -522,7 +535,7 @@ namespace glib
 
 			screen = DefaultScreen(displayServer);
 			windowHandle = XCreateSimpleWindow(displayServer, RootWindow(displayServer, screen), trueX, trueY, trueWidth, trueHeight, borderWidth, BlackPixel(displayServer, screen), WhitePixel(displayServer, screen));
-
+			
 			//set window name
 			std::string cTitle = StringTools::toCString(title);
 			XStoreName(displayServer, windowHandle, cTitle.c_str());
@@ -550,8 +563,13 @@ namespace glib
 			}
 			
 
-			XSelectInput(displayServer, windowHandle, ExposureMask | StructureNotifyMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask);
+			XSelectInput(displayServer, windowHandle, ExposureMask | SubstructureNotifyMask | StructureNotifyMask | ResizeRedirectMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask);
 			XMapWindow(displayServer, windowHandle);
+
+			wmDeleteMessage = XInternAtom(displayServer, "WM_DELETE_WINDOW", 0);
+			XSetWMProtocols(displayServer, windowHandle, &wmDeleteMessage, 1);
+
+			gc = XCreateGC(displayServer, windowHandle, 0, nullptr);
 
 			setVisible(true);
 			setValid(true);
@@ -563,14 +581,14 @@ namespace glib
 
 			setFinishInit(true);
 
-			if(threadManaged == TYPE_THREAD_MANAGED)
+			if(windowType.threadManaged == TYPE_THREAD_MANAGED)
 				run();
 		#else
 
 			std::wstring text = title;
 			text += L"_CLASS";
 
-			hins = GetModuleHandle(NULL);
+			hins = GetModuleHandle(0);
 
 			wndClass.cbClsExtra = 0;
 			wndClass.cbSize = sizeof(WNDCLASSEX);
@@ -582,7 +600,7 @@ namespace glib
 			wndClass.hInstance = hins;
 			wndClass.lpfnWndProc = SimpleWindow::wndProc;
 			wndClass.lpszClassName = text.c_str();
-			wndClass.lpszMenuName = NULL;
+			wndClass.lpszMenuName = 0;
 			wndClass.style = CS_HREDRAW | CS_VREDRAW;
 
 			int trueWidth = this->width;
@@ -590,7 +608,7 @@ namespace glib
 			int trueX = this->x;
 			int trueY = this->y;
 
-			if (RegisterClassExW(&wndClass) != NULL)
+			if (RegisterClassExW(&wndClass) != 0)
 			{
 				DWORD style = 0;
 				bool failed = false;
@@ -614,7 +632,7 @@ namespace glib
 
 				if(windowType.windowType == SimpleWindow::FULLSCREEN_WINDOW)
 				{
-					HMONITOR hmon = MonitorFromWindow(NULL, MONITOR_DEFAULTTONEAREST);
+					HMONITOR hmon = MonitorFromWindow(0, MONITOR_DEFAULTTONEAREST);
 					MONITORINFO mi = { sizeof(MONITORINFO) };
 
 					style = WS_POPUP|WS_VISIBLE;
@@ -652,13 +670,13 @@ namespace glib
 
 				if(!failed)
 				{
-					windowHandle = (size_t)CreateWindowExW(NULL, text.c_str(), title.c_str(), style, trueX, trueY, trueWidth, trueHeight, NULL, NULL, hins, NULL);
+					windowHandle = (size_t)CreateWindowExW(0, text.c_str(), title.c_str(), style, trueX, trueY, trueWidth, trueHeight, 0, 0, hins, 0);
 
 					DWORD attribValue = windowType.cornerType;
 					DwmSetWindowAttribute((HWND)windowHandle, DWMWA_WINDOW_CORNER_PREFERENCE_CONST, &attribValue, sizeof(attribValue));
 				}
 				
-				if (windowHandle != NULL)
+				if (windowHandle != 0)
 				{
 					this->preX = this->x;
 					this->preY = this->y;
@@ -1337,6 +1355,9 @@ namespace glib
 			time_t t1 = System::getCurrentTimeMicro();
 			
 			threadUpdate();
+			if(getShouldEnd())
+				break;
+
 			threadGuiUpdate();
 
 			if(getRepaint())
@@ -1365,12 +1386,15 @@ namespace glib
 		#else
 			MSG m;
 			ZeroMemory(&m, sizeof(MSG));
-			while(PeekMessage(&m, (HWND)windowHandle, NULL, NULL, PM_REMOVE))
+			while(PeekMessage(&m, (HWND)windowHandle, 0, 0, PM_REMOVE))
 			{
 				TranslateMessage(&m);
 				DispatchMessage(&m);
 			}
 		#endif
+
+		if(getShouldEnd())
+			return;
 		
 		if(getShouldFocus())
 		{
@@ -1465,7 +1489,7 @@ namespace glib
 					XClearArea(displayServer, (Window)windowHandle, 0, 0, 1, 1, true);
 				#else
 					int value = SetDIBits(myHDC, bitmap, 0, height, &wndPixels[0], &bitInfo, DIB_RGB_COLORS);
-					RedrawWindow((HWND)windowHandle, NULL, NULL, RDW_INVALIDATE);
+					RedrawWindow((HWND)windowHandle, 0, 0, RDW_INVALIDATE);
 				#endif
 			}
 

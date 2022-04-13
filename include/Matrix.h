@@ -1,4 +1,5 @@
 #pragma once
+#include <math.h>
 #include "Object.h"
 #include "GeneralVector.h"
 
@@ -11,6 +12,8 @@ namespace glib
 		/**
 		 * @brief Construct a new Matrix object
 		 * 		A matrix with rows = 0 or columns = 0 is considered invalid.
+		 * 		
+		 * 		The internal data structure used to store the matrix is a 1D array.
 		 */
 		Matrix();
 
@@ -18,6 +21,7 @@ namespace glib
 		 * @brief Construct a new Matrix object
 		 * 		A matrix with rows = 0 or columns = 0 is considered invalid.
 		 * 
+		 * 		The internal data structure used to store the matrix is a 1D array.
 		 * @param rows 
 		 * @param cols 
 		 */
@@ -57,6 +61,12 @@ namespace glib
 		const Class* getClass();
 		static const Class myClass;
 
+		/**
+		 * @brief Returns a pointer to the start of the specified row
+		 * 		Note that the internal data structure is a 1D array.
+		 * @param row 
+		 * @return double* 
+		 */
 		double* operator[](int row);
 
 		Matrix operator*(double value);
@@ -80,11 +90,11 @@ namespace glib
 		bool operator!=(Matrix other);
 
 		/**
-		 * @brief Returns the 2D array representing the data in the matrix.
+		 * @brief Returns the 1D array representing the data in the matrix.
 		 * 
-		 * @return double** 
+		 * @return double* 
 		 */
-		double** getData();
+		double* getData();
 
 		/**
 		 * @brief Returns the amount of rows.
@@ -167,9 +177,10 @@ namespace glib
 		void clear();
 
 	protected:
-		double** data = nullptr;
+		double* data = nullptr;
 		int rows = 0;
 		int columns = 0;
+		int size = 0;
 
 		bool valid = false;
 	};

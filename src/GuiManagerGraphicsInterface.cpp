@@ -1,4 +1,6 @@
-#include "GuiManager.h"
+#include "GuiGraphics.h"
+#include "SimpleGraphics.h"
+#include "BitmapFont.h"
 #include "ext/GLGraphics.h"
 
 namespace glib
@@ -9,8 +11,10 @@ namespace glib
     {
         if(type == TYPE_SOFTWARE)
             return GuiSurfaceInterface::createSoftwareSurface(width, height);
-        else if(type == TYPE_OPENGL)
-            return GuiSurfaceInterface::createGLSurface(width, height);
+        #ifdef USE_OPENGL
+            if(type == TYPE_OPENGL)
+                return GuiSurfaceInterface::createGLSurface(width, height);
+        #endif
         return nullptr;
     }
 
@@ -18,8 +22,10 @@ namespace glib
     {
         if(type == TYPE_SOFTWARE)
             return GuiImageInterface::createSoftwareImage(f);
-        else if(type == TYPE_OPENGL)
-            return GuiImageInterface::createGLImage(f);
+        #ifdef USE_OPENGL
+            if(type == TYPE_OPENGL)
+                return GuiImageInterface::createGLImage(f);
+        #endif
         return nullptr;
     }
 
@@ -27,8 +33,10 @@ namespace glib
     {
         if(type == TYPE_SOFTWARE)
             return GuiSpriteInterface::createSoftwareSprite(f);
-        else if(type == TYPE_OPENGL)
-            return GuiSpriteInterface::createGLSprite(f);
+        #ifdef USE_OPENGL
+            if(type == TYPE_OPENGL)
+                return GuiSpriteInterface::createGLSprite(f);
+        #endif
         return nullptr;
     }
 
@@ -36,8 +44,10 @@ namespace glib
     {
         if(type == TYPE_SOFTWARE)
             return GuiFontInterface::createSoftwareFont(f);
-        else if(type == TYPE_OPENGL)
-            return GuiFontInterface::createGLFont(f);
+        #ifdef USE_OPENGL
+            if(type == TYPE_OPENGL)
+                return GuiFontInterface::createGLFont(f);
+        #endif
         return nullptr;
     }
 
@@ -84,11 +94,13 @@ namespace glib
 
             SimpleGraphics::setColor(c);
         }
-        else if(type == TYPE_OPENGL)
-        {
-            GLGraphics::setDrawColor(v);
-            GLGraphics::setClearColor(v);
-        }
+        #ifdef USE_OPENGL
+            if(type == TYPE_OPENGL)
+            {
+                GLGraphics::setDrawColor(v);
+                GLGraphics::setClearColor(v);
+            }
+        #endif
     }
     
     void GuiGraphicsInterface::setColor(Color c)
@@ -97,13 +109,16 @@ namespace glib
         {
             SimpleGraphics::setColor(c);
         }
-        else if(type == TYPE_OPENGL)
-        {
-            Vec4f v = Vec4f( (double)c.red / 255.0, (double)c.green / 255.0, (double)c.blue / 255.0, (double)c.alpha / 255.0);
+        
+        #ifdef USE_OPENGL
+            if(type == TYPE_OPENGL)
+            {
+                Vec4f v = Vec4f( (double)c.red / 255.0, (double)c.green / 255.0, (double)c.blue / 255.0, (double)c.alpha / 255.0);
 
-            GLGraphics::setDrawColor(v);
-            GLGraphics::setClearColor(v);
-        }
+                GLGraphics::setDrawColor(v);
+                GLGraphics::setClearColor(v);
+            }
+        #endif
     }
 
     Color GuiGraphicsInterface::getColor()
@@ -112,18 +127,21 @@ namespace glib
         {
             return SimpleGraphics::getColor();
         }
-        else if(type == TYPE_OPENGL)
-        {
-            Vec4f v = GLGraphics::getDrawColor();
+        
+        #ifdef USE_OPENGL
+            if(type == TYPE_OPENGL)
+            {
+                Vec4f v = GLGraphics::getDrawColor();
 
-            Color c;
-            c.red = (unsigned char)MathExt::clamp(v.x*255.0, 0.0, 255.0);
-            c.green = (unsigned char)MathExt::clamp(v.y*255.0, 0.0, 255.0);
-            c.blue = (unsigned char)MathExt::clamp(v.z*255.0, 0.0, 255.0);
-            c.alpha = (unsigned char)MathExt::clamp(v.w*255.0, 0.0, 255.0);
+                Color c;
+                c.red = (unsigned char)MathExt::clamp(v.x*255.0, 0.0, 255.0);
+                c.green = (unsigned char)MathExt::clamp(v.y*255.0, 0.0, 255.0);
+                c.blue = (unsigned char)MathExt::clamp(v.z*255.0, 0.0, 255.0);
+                c.alpha = (unsigned char)MathExt::clamp(v.w*255.0, 0.0, 255.0);
 
-            return c;
-        }
+                return c;
+            }
+        #endif
 
         return Color();
     }
@@ -137,12 +155,15 @@ namespace glib
 
             return v;
         }
-        else if(type == TYPE_OPENGL)
-        {
-            Vec4f v = GLGraphics::getDrawColor();
-            
-            return v;
-        }
+        
+        #ifdef USE_OPENGL
+            if(type == TYPE_OPENGL)
+            {
+                Vec4f v = GLGraphics::getDrawColor();
+                
+                return v;
+            }
+        #endif
         
         return Vec4f();
     }
@@ -157,10 +178,13 @@ namespace glib
         {
             SimpleGraphics::setFont( (BitmapFont*)f->getFont() );
         }
-        else if(getType() == TYPE_OPENGL)
-        {
-            GLGraphics::setFont( (GLFont*)f->getFont() );
-        }
+        
+        #ifdef USE_OPENGL
+            if(getType() == TYPE_OPENGL)
+            {
+                GLGraphics::setFont( (GLFont*)f->getFont() );
+            }
+        #endif
     }
 
     GuiFontInterface* GuiGraphicsInterface::getFont()
@@ -170,10 +194,13 @@ namespace glib
         {
             f = SimpleGraphics::getFont();
         }
-        else if(getType() == TYPE_OPENGL)
-        {
-            f = GLGraphics::getFont();
-        }
+        
+        #ifdef USE_OPENGL
+            if(getType() == TYPE_OPENGL)
+            {
+                f = GLGraphics::getFont();
+            }
+        #endif
 
         return GuiFontInterface::createFromFont(f, getType());
     }
@@ -185,18 +212,21 @@ namespace glib
             return; //Even though opengl does not need a bound surface, return as an error.
         }
 
-        if(getType() == TYPE_SOFTWARE && boundSurface != nullptr)
+        if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE && boundSurface != nullptr)
         {
             SimpleGraphics::clearImage( (Image*)boundSurface->getSurface() );
         }
-        else
-        {
-            if(boundSurface->getSurface() != nullptr)
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
             {
-                ((GLSurface*)boundSurface->getSurface())->bind();
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((GLSurface*)boundSurface->getSurface())->bind();
+                }
+                GLGraphics::clear(GLGraphics::COLOR_BUFFER | GLGraphics::DEPTH_BUFFER);
             }
-            GLGraphics::clear(GLGraphics::COLOR_BUFFER | GLGraphics::DEPTH_BUFFER);
-        }
+        #endif
     }
 
     void GuiGraphicsInterface::drawRect(int x, int y, int x2, int y2, bool outline)
@@ -210,14 +240,18 @@ namespace glib
         {
             SimpleGraphics::drawRect(x, y, x2, y2, outline, (Image*)boundSurface->getSurface());
         }
-        else
-        {
-            if(boundSurface->getSurface() != nullptr)
+        
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
             {
-                ((GLSurface*)boundSurface->getSurface())->bind();
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((GLSurface*)boundSurface->getSurface())->bind();
+                }
+                GLGraphics::drawRectangle(x, y, x2, y2, outline);
             }
-            GLGraphics::drawRectangle(x, y, x2, y2, outline);
-        }
+        #endif
     }
 
     void GuiGraphicsInterface::drawLine(int x, int y, int x2, int y2)
@@ -231,14 +265,17 @@ namespace glib
         {
             SimpleGraphics::drawLine( x, y, x2, y2, (Image*)boundSurface->getSurface() );
         }
-        else
-        {
-            if(boundSurface->getSurface() != nullptr)
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
             {
-                ((GLSurface*)boundSurface->getSurface())->bind();
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((GLSurface*)boundSurface->getSurface())->bind();
+                }
+                GLGraphics::drawLine(x, y, x2, y2);
             }
-            GLGraphics::drawLine(x, y, x2, y2);
-        }
+        #endif
     }
 
     void GuiGraphicsInterface::drawCircle(int x, int y, int radius, bool outline)
@@ -252,14 +289,17 @@ namespace glib
         {
             SimpleGraphics::drawCircle(x, y, radius, outline, (Image*)boundSurface->getSurface() );
         }
-        else
-        {
-            if(boundSurface->getSurface() != nullptr)
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
             {
-                ((GLSurface*)boundSurface->getSurface())->bind();
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((GLSurface*)boundSurface->getSurface())->bind();
+                }
+                GLGraphics::drawCircle(x, y, radius, outline);
             }
-            GLGraphics::drawCircle(x, y, radius, outline);
-        }
+        #endif
     }
 
     void GuiGraphicsInterface::drawSprite(GuiImageInterface* img, int x, int y)
@@ -275,15 +315,18 @@ namespace glib
                 Image* imgData = (Image*)img->getImage();
                 SimpleGraphics::drawSprite(imgData, x, y, (Image*)boundSurface->getSurface());
             }
-            else
-            {
-                if(boundSurface->getSurface() != nullptr)
+            
+            #ifdef USE_OPENGL
+                if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
                 {
-                    ((GLSurface*)boundSurface->getSurface())->bind();
+                    if(boundSurface->getSurface() != nullptr)
+                    {
+                        ((GLSurface*)boundSurface->getSurface())->bind();
+                    }
+                    GLTexture* imgData = (GLTexture*)img->getImage();
+                    GLGraphics::drawTexture(x, y, imgData);
                 }
-                GLTexture* imgData = (GLTexture*)img->getImage();
-                GLGraphics::drawTexture(x, y, imgData);
-            }
+            #endif
         }
     }
 
@@ -300,15 +343,19 @@ namespace glib
                 Image* imgData = (Image*)img->getImage();
                 SimpleGraphics::drawSprite(imgData, x1, y1, x2, y2, (Image*)boundSurface->getSurface());
             }
-            else
-            {
-                if(boundSurface->getSurface() != nullptr)
+            
+            
+            #ifdef USE_OPENGL
+                if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
                 {
-                    ((GLSurface*)boundSurface->getSurface())->bind();
+                    if(boundSurface->getSurface() != nullptr)
+                    {
+                        ((GLSurface*)boundSurface->getSurface())->bind();
+                    }
+                    GLTexture* imgData = (GLTexture*)img->getImage();
+                    GLGraphics::drawTexture(x1, y1, x2, y2, imgData);
                 }
-                GLTexture* imgData = (GLTexture*)img->getImage();
-                GLGraphics::drawTexture(x1, y1, x2, y2, imgData);
-            }
+            #endif
         }
     }
 
@@ -325,22 +372,25 @@ namespace glib
                 Image* imgData = (Image*)img->getImage();
                 SimpleGraphics::drawSpritePart(imgData, x, y, imgX, imgY, imgW, imgH, (Image*)boundSurface->getSurface());
             }
-            else
-            {
-                if(boundSurface->getSurface() != nullptr)
+            
+            #ifdef USE_OPENGL
+                if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
                 {
-                    ((GLSurface*)boundSurface->getSurface())->bind();
+                    if(boundSurface->getSurface() != nullptr)
+                    {
+                        ((GLSurface*)boundSurface->getSurface())->bind();
+                    }
+                    GLTexture* imgData = (GLTexture*)img->getImage();
+                    Vec4f positionData = Vec4f(x, y, x+imgW, y+imgH);
+                    Vec4f textureData = Vec4f(imgX, imgY, imgX+imgW, imgY+imgH);
+                    textureData.x /= imgData->getWidth();
+                    textureData.y /= imgData->getHeight();
+                    textureData.z /= imgData->getWidth();
+                    textureData.w /= imgData->getHeight();
+                    
+                    GLGraphics::drawTexturePart(positionData, textureData, imgData);
                 }
-                GLTexture* imgData = (GLTexture*)img->getImage();
-                Vec4f positionData = Vec4f(x, y, x+imgW, y+imgH);
-                Vec4f textureData = Vec4f(imgX, imgY, imgX+imgW, imgY+imgH);
-                textureData.x /= imgData->getWidth();
-                textureData.y /= imgData->getHeight();
-                textureData.z /= imgData->getWidth();
-                textureData.w /= imgData->getHeight();
-                
-                GLGraphics::drawTexturePart(positionData, textureData, imgData);
-            }
+            #endif
         }
     }
 
@@ -354,14 +404,17 @@ namespace glib
         {
             SimpleGraphics::drawText(str, x, y, (Image*)boundSurface->getSurface());
         }
-        else
-        {
-            if(boundSurface->getSurface() != nullptr)
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
             {
-                ((GLSurface*)boundSurface->getSurface())->bind();
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((GLSurface*)boundSurface->getSurface())->bind();
+                }
+                GLGraphics::drawText(str, x, y);
             }
-            GLGraphics::drawText(str, x, y);
-        }
+        #endif
     }
 
     void GuiGraphicsInterface::drawText(std::wstring str, int x, int y)
@@ -374,14 +427,17 @@ namespace glib
         {
             SimpleGraphics::drawText(str, x, y, (Image*)boundSurface->getSurface());
         }
-        else
-        {
-            if(boundSurface->getSurface() != nullptr)
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
             {
-                ((GLSurface*)boundSurface->getSurface())->bind();
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((GLSurface*)boundSurface->getSurface())->bind();
+                }
+                GLGraphics::drawText(str, x, y);
             }
-            GLGraphics::drawText(str, x, y);
-        }
+        #endif
     }
 
     void GuiGraphicsInterface::drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak)
@@ -394,14 +450,17 @@ namespace glib
         {
             SimpleGraphics::drawTextLimits(str, x, y, maxWidth, maxHeight, useLineBreak, (Image*)boundSurface->getSurface());
         }
-        else
-        {
-            if(boundSurface->getSurface() != nullptr)
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
             {
-                ((GLSurface*)boundSurface->getSurface())->bind();
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((GLSurface*)boundSurface->getSurface())->bind();
+                }
+                GLGraphics::drawTextLimits(str, x, y, maxWidth, maxHeight, useLineBreak);
             }
-            GLGraphics::drawTextLimits(str, x, y, maxWidth, maxHeight, useLineBreak);
-        }
+        #endif
     }
 
     void GuiGraphicsInterface::drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak)
@@ -414,14 +473,17 @@ namespace glib
         {
             SimpleGraphics::drawTextLimits(str, x, y, maxWidth, maxHeight, useLineBreak, (Image*)boundSurface->getSurface());
         }
-        else
-        {
-            if(boundSurface->getSurface() != nullptr)
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
             {
-                ((GLSurface*)boundSurface->getSurface())->bind();
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((GLSurface*)boundSurface->getSurface())->bind();
+                }
+                GLGraphics::drawTextLimits(str, x, y, maxWidth, maxHeight, useLineBreak);
             }
-            GLGraphics::drawTextLimits(str, x, y, maxWidth, maxHeight, useLineBreak);
-        }
+        #endif
     }
     
     void GuiGraphicsInterface::drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor)
@@ -434,15 +496,18 @@ namespace glib
         {
             SimpleGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor, (Image*)boundSurface->getSurface());
         }
-        else
-        {
-            if(boundSurface->getSurface() != nullptr)
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
             {
-                ((GLSurface*)boundSurface->getSurface())->bind();
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((GLSurface*)boundSurface->getSurface())->bind();
+                }
+                Vec4f vColor = SimpleGraphics::convertColorToVec4f(highlightColor);
+                GLGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, vColor);
             }
-            Vec4f vColor = SimpleGraphics::convertColorToVec4f(highlightColor);
-            GLGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, vColor);
-        }
+        #endif
     }
 
     void GuiGraphicsInterface::drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor)
@@ -455,15 +520,18 @@ namespace glib
         {
             SimpleGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor, (Image*)boundSurface->getSurface());
         }
-        else
-        {
-            if(boundSurface->getSurface() != nullptr)
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
             {
-                ((GLSurface*)boundSurface->getSurface())->bind();
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((GLSurface*)boundSurface->getSurface())->bind();
+                }
+                Vec4f vColor = SimpleGraphics::convertColorToVec4f(highlightColor);
+                GLGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, vColor);
             }
-            Vec4f vColor = SimpleGraphics::convertColorToVec4f(highlightColor);
-            GLGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, vColor);
-        }
+        #endif
     }
     
     void GuiGraphicsInterface::drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Vec4f highlightColor)
@@ -477,14 +545,17 @@ namespace glib
             Color cColor = SimpleGraphics::convertVec4fToColor(highlightColor);
             SimpleGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, cColor, (Image*)boundSurface->getSurface());
         }
-        else
-        {
-            if(boundSurface->getSurface() != nullptr)
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
             {
-                ((GLSurface*)boundSurface->getSurface())->bind();
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((GLSurface*)boundSurface->getSurface())->bind();
+                }
+                GLGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor);
             }
-            GLGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor);
-        }
+        #endif
     }
 
     void GuiGraphicsInterface::drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Vec4f highlightColor)
@@ -498,14 +569,17 @@ namespace glib
             Color cColor = SimpleGraphics::convertVec4fToColor(highlightColor);
             SimpleGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, cColor, (Image*)boundSurface->getSurface());
         }
-        else
-        {
-            if(boundSurface->getSurface() != nullptr)
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
             {
-                ((GLSurface*)boundSurface->getSurface())->bind();
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((GLSurface*)boundSurface->getSurface())->bind();
+                }
+                GLGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor);
             }
-            GLGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor);
-        }
+        #endif
     }
 
     void GuiGraphicsInterface::setClippingRect(Box2D b)
@@ -515,15 +589,18 @@ namespace glib
         {
             SimpleGraphics::setClippingRect(b);
         }
-        else
-        {
-            //Set the ortho graphic projection matrix using this
-            int x = (int)b.getLeftBound();
-            int y = (int)b.getTopBound();
-            int wid = (int)b.getWidth();
-            int hei = (int)b.getHeight();
-            GLGraphics::setClippingRectangle(x, y, wid, hei);
-        }
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
+            {
+                //Set the ortho graphic projection matrix using this
+                int x = (int)b.getLeftBound();
+                int y = (int)b.getTopBound();
+                int wid = (int)b.getWidth();
+                int hei = (int)b.getHeight();
+                GLGraphics::setClippingRectangle(x, y, wid, hei);
+            }
+        #endif
     }
 
     Box2D GuiGraphicsInterface::getClippingRect()
@@ -538,10 +615,13 @@ namespace glib
         {
             SimpleGraphics::resetClippingPlane();
         }
-        else
-        {
-            GLGraphics::resetClippingRectangle();
-        }
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
+            {
+                GLGraphics::resetClippingRectangle();
+            }
+        #endif
     }
 
     void GuiGraphicsInterface::drawSurface(GuiSurfaceInterface* img, int x, int y)
@@ -557,21 +637,24 @@ namespace glib
                 SimpleGraphics::drawSprite((Image*)img->getSurface(), x, y, (Image*)boundSurface->getSurface());
             }
         }
-        else
-        {
-            if(boundSurface->getSurface() != nullptr)
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
             {
-                ((GLSurface*)boundSurface->getSurface())->bind();
-            }
-            if(img != nullptr)
-            {
-                GLSurface* tempSurf = (GLSurface*)boundSurface->getSurface();
-                if(tempSurf != nullptr)
+                if(boundSurface->getSurface() != nullptr)
                 {
-                    GLGraphics::drawSurface(x, y, x+tempSurf->getWidth(), y+tempSurf->getHeight(), tempSurf);
+                    ((GLSurface*)boundSurface->getSurface())->bind();
+                }
+                if(img != nullptr)
+                {
+                    GLSurface* tempSurf = (GLSurface*)boundSurface->getSurface();
+                    if(tempSurf != nullptr)
+                    {
+                        GLGraphics::drawSurface(x, y, x+tempSurf->getWidth(), y+tempSurf->getHeight(), tempSurf);
+                    }
                 }
             }
-        }
+        #endif
     }
     void GuiGraphicsInterface::drawSurface(GuiSurfaceInterface* img, int x1, int y1, int x2, int y2)
     {
@@ -586,18 +669,21 @@ namespace glib
                 SimpleGraphics::drawSprite((Image*)img->getSurface(), x1, y1, x2, y2, (Image*)boundSurface->getSurface());
             }
         }
-        else
-        {
-            if(boundSurface->getSurface() != nullptr)
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
             {
-                ((GLSurface*)boundSurface->getSurface())->bind();
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((GLSurface*)boundSurface->getSurface())->bind();
+                }
+                if(img != nullptr)
+                {
+                    GLSurface* tempSurf = (GLSurface*)img->getSurface();
+                    GLGraphics::drawSurface(x1, y1, x2, y2, tempSurf);
+                }
             }
-            if(img != nullptr)
-            {
-                GLSurface* tempSurf = (GLSurface*)img->getSurface();
-                GLGraphics::drawSurface(x1, y1, x2, y2, tempSurf);
-            }
-        }
+        #endif
     }
 
     void GuiGraphicsInterface::drawToScreen()
@@ -609,16 +695,19 @@ namespace glib
         if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
         {
         }
-        else
-        {
-            if(boundSurface->getSurface() != nullptr)
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
             {
-                ((GLSurface*)boundSurface->getSurface())->unbind();
-                int width = boundSurface->getWidth();
-                int height = boundSurface->getHeight();
-                GLGraphics::drawSurface(0, 0, width, height, (GLSurface*)boundSurface->getSurface());
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((GLSurface*)boundSurface->getSurface())->unbind();
+                    int width = boundSurface->getWidth();
+                    int height = boundSurface->getHeight();
+                    GLGraphics::drawSurface(0, 0, width, height, (GLSurface*)boundSurface->getSurface());
+                }
             }
-        }
+        #endif
     }
 
     void GuiGraphicsInterface::setOrthoProjection(int width, int height)
@@ -626,10 +715,13 @@ namespace glib
         if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
         {
         }
-        else
-        {
-            GLGraphics::setOrthoProjection(width, height);
-        }
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
+            {
+                GLGraphics::setOrthoProjection(width, height);
+            }
+        #endif
     }
 
     void GuiGraphicsInterface::setProjection(Mat4f proj)
@@ -637,10 +729,13 @@ namespace glib
         if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
         {
         }
-        else
-        {
-            GLGraphics::setProjection(proj);
-        }
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
+            {
+                GLGraphics::setProjection(proj);
+            }
+        #endif
     }
 
     #pragma endregion
@@ -662,10 +757,13 @@ namespace glib
         {
             surface = new Image(width, height);
         }
-        else if(type == GuiGraphicsInterface::TYPE_OPENGL)
-        {
-            surface = new GLSurface(width, height);
-        }
+        
+        #ifdef USE_OPENGL
+            if(type == GuiGraphicsInterface::TYPE_OPENGL)
+            {
+                surface = new GLSurface(width, height);
+            }
+        #endif
         this->type = type;
     }
 
@@ -687,8 +785,11 @@ namespace glib
         {
             if(type == GuiGraphicsInterface::TYPE_SOFTWARE)
                 delete ((Image*)surface);
-            else if(type == GuiGraphicsInterface::TYPE_OPENGL)
-                delete ((GLSurface*)surface);
+            
+            #ifdef USE_OPENGL
+                if(type == GuiGraphicsInterface::TYPE_OPENGL)
+                    delete ((GLSurface*)surface);
+            #endif
         }
         
         surface = nullptr;
@@ -705,8 +806,11 @@ namespace glib
         {
             if(type == GuiGraphicsInterface::TYPE_SOFTWARE)
                 return ((Image*)surface)->getWidth();
-            else if(type == GuiGraphicsInterface::TYPE_OPENGL)
-                return ((GLSurface*)surface)->getWidth();
+            
+            #ifdef USE_OPENGL
+                if(type == GuiGraphicsInterface::TYPE_OPENGL)
+                    return ((GLSurface*)surface)->getWidth();
+            #endif
         }
         return 0;
     }
@@ -717,8 +821,10 @@ namespace glib
         {
             if(type == GuiGraphicsInterface::TYPE_SOFTWARE)
                 return ((Image*)surface)->getHeight();
-            else if(type == GuiGraphicsInterface::TYPE_OPENGL)
-                return ((GLSurface*)surface)->getHeight();
+            #ifdef USE_OPENGL
+                if(type == GuiGraphicsInterface::TYPE_OPENGL)
+                    return ((GLSurface*)surface)->getHeight();
+            #endif
         }
         return 0;
     }
@@ -752,10 +858,13 @@ namespace glib
 
             delete loadedImgArray;
         }
-        else if(type == GuiGraphicsInterface::TYPE_OPENGL)
-        {
-            image = new GLTexture(file);
-        }
+        
+        #ifdef USE_OPENGL
+            if(type == GuiGraphicsInterface::TYPE_OPENGL)
+            {
+                image = new GLTexture(file);
+            }
+        #endif
         this->type = type;
     }
     
@@ -781,8 +890,11 @@ namespace glib
         {
             if(type == GuiGraphicsInterface::TYPE_SOFTWARE)
                 delete (Image*)image;
-            else if(type == GuiGraphicsInterface::TYPE_OPENGL)
-                delete (GLTexture*)image;
+            
+            #ifdef USE_OPENGL
+                if(type == GuiGraphicsInterface::TYPE_OPENGL)
+                    delete (GLTexture*)image;
+            #endif
         }
         
         image = nullptr;
@@ -804,10 +916,14 @@ namespace glib
         {
             return ((Image*)image)->getWidth();
         }
-        else if(type == GuiGraphicsInterface::TYPE_OPENGL)
-        {
-            return ((GLTexture*)image)->getWidth();
-        }
+        
+        #ifdef USE_OPENGL
+            if(type == GuiGraphicsInterface::TYPE_OPENGL)
+            {
+                return ((GLTexture*)image)->getWidth();
+            }
+        #endif
+
         return 0;
     }
     int GuiImageInterface::getHeight()
@@ -816,10 +932,14 @@ namespace glib
         {
             return ((Image*)image)->getHeight();
         }
-        else if(type == GuiGraphicsInterface::TYPE_OPENGL)
-        {
-            return ((GLTexture*)image)->getHeight();
-        }
+        
+        #ifdef USE_OPENGL
+            if(type == GuiGraphicsInterface::TYPE_OPENGL)
+            {
+                return ((GLTexture*)image)->getHeight();
+            }
+        #endif
+
         return 0;
     }
 
@@ -840,11 +960,14 @@ namespace glib
             sprite = new Sprite();
             ((Sprite*)sprite)->loadImage(file);
         }
-        else if(type == GuiGraphicsInterface::TYPE_OPENGL)
-        {
-            sprite = new GLSprite();
-            ((GLSprite*)sprite)->loadImage(file);
-        }
+        
+        #ifdef USE_OPENGL
+            if(type == GuiGraphicsInterface::TYPE_OPENGL)
+            {
+                sprite = new GLSprite();
+                ((GLSprite*)sprite)->loadImage(file);
+            }
+        #endif
         this->type = type;
     }
 
@@ -854,8 +977,11 @@ namespace glib
         {
             if(type == GuiGraphicsInterface::TYPE_SOFTWARE)
                 delete (Sprite*)sprite;
-            else if(type == GuiGraphicsInterface::TYPE_OPENGL)
-                delete (GLSprite*)sprite;
+            
+            #ifdef USE_OPENGL
+                if(type == GuiGraphicsInterface::TYPE_OPENGL)
+                    delete (GLSprite*)sprite;
+            #endif
         }
         
         sprite = nullptr;
@@ -880,13 +1006,16 @@ namespace glib
             result->image = ((Sprite*)sprite)->getImage(index);
             return result;
         }
-        else if(type == GuiGraphicsInterface::TYPE_OPENGL)
-        {
-            GuiImageInterface* result = new GuiImageInterface();
-            result->type = GuiGraphicsInterface::TYPE_OPENGL;
-            result->image = ((GLSprite*)sprite)->getTexture(index);
-            return result;
-        }
+        
+        #ifdef USE_OPENGL
+            if(type == GuiGraphicsInterface::TYPE_OPENGL)
+            {
+                GuiImageInterface* result = new GuiImageInterface();
+                result->type = GuiGraphicsInterface::TYPE_OPENGL;
+                result->image = ((GLSprite*)sprite)->getTexture(index);
+                return result;
+            }
+        #endif
 
         return nullptr;
     }
@@ -897,10 +1026,14 @@ namespace glib
         {
             return ((Sprite*)sprite)->getDelayTime(index);
         }
-        else if(type == GuiGraphicsInterface::TYPE_OPENGL)
-        {
-            return ((GLSprite*)sprite)->getDelayTime(index);
-        }
+        
+        #ifdef USE_OPENGL
+            if(type == GuiGraphicsInterface::TYPE_OPENGL)
+            {
+                return ((GLSprite*)sprite)->getDelayTime(index);
+            }
+        #endif
+
         return -1;
     }
 
@@ -910,10 +1043,14 @@ namespace glib
         {
             return ((Sprite*)sprite)->getSize();
         }
-        else if(type == GuiGraphicsInterface::TYPE_OPENGL)
-        {
-            return ((GLSprite*)sprite)->getSize();
-        }
+        
+        #ifdef USE_OPENGL
+            if(type == GuiGraphicsInterface::TYPE_OPENGL)
+            {
+                return ((GLSprite*)sprite)->getSize();
+            }
+        #endif
+
         return 0;
     }
     
@@ -923,10 +1060,14 @@ namespace glib
         {
             return ((Sprite*)sprite)->shouldLoop();
         }
-        else if(type == GuiGraphicsInterface::TYPE_OPENGL)
-        {
-            return ((GLSprite*)sprite)->shouldLoop();
-        }
+        
+        #ifdef USE_OPENGL
+            if(type == GuiGraphicsInterface::TYPE_OPENGL)
+            {
+                return ((GLSprite*)sprite)->shouldLoop();
+            }
+        #endif
+
         return false;
     }
 
@@ -953,17 +1094,23 @@ namespace glib
         {
             font = new BitmapFont(file);
         }
-        else if(type == GuiGraphicsInterface::TYPE_OPENGL)
-        {
-            font = new GLFont(file);
-        }
+        
+        #ifdef USE_OPENGL
+            if(type == GuiGraphicsInterface::TYPE_OPENGL)
+            {
+                font = new GLFont(file);
+            }
+        #endif
+
         this->type = type;
+        shouldDelete = true;
     }
 
     GuiFontInterface::GuiFontInterface(Font* f, unsigned char type)
     {
         font = f;
         this->type = type;
+        shouldDelete = false;
     }
 
     GuiFontInterface::GuiFontInterface(const GuiFontInterface& other)
@@ -979,12 +1126,18 @@ namespace glib
     
     GuiFontInterface::~GuiFontInterface()
     {
-        if(font != nullptr)
+        if(shouldDelete)
         {
-            if(type == GuiGraphicsInterface::TYPE_SOFTWARE)
-                delete (BitmapFont*)font;
-            else if(type == GuiGraphicsInterface::TYPE_OPENGL)
-                delete (GLFont*)font;
+            if(font != nullptr)
+            {
+                if(type == GuiGraphicsInterface::TYPE_SOFTWARE)
+                    delete (BitmapFont*)font;
+                    
+                #ifdef USE_OPENGL
+                    if(type == GuiGraphicsInterface::TYPE_OPENGL)
+                        delete (GLFont*)font;
+                #endif
+            }
         }
         
         font = nullptr;

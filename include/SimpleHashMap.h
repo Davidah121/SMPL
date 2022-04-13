@@ -434,7 +434,7 @@ namespace glib
         for(int i=0; i<buckets[bucketLocation].size(); i++)
         {
             HashPair<K,T>* pair = buckets[bucketLocation][i];
-            if(pair.key == key)
+            if(pair->key == key)
             {
                 indexOfKey = i;
                 delete pair;
@@ -466,7 +466,7 @@ namespace glib
         for(int i=0; i<buckets[bucketLocation].size(); i++)
         {
             HashPair<K,T>* pair = buckets[bucketLocation][i];
-            if(pair.key == key)
+            if(pair->key == key)
             {
                 delete pair;
                 buckets[bucketLocation][i] = nullptr;

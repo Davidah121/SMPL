@@ -1,5 +1,6 @@
 #pragma once
 #include <limits>
+#include <math.h>
 #include <cmath>
 #include "Line.h"
 #include "Vec2f.h"
@@ -53,7 +54,7 @@ namespace glib
 		template<typename T>
 		static T max(T a, T b)
 		{
-			return ((a>b)? a:b);
+			return (((a)>(b))? (a):(b));
 		}
 		
 		/**
@@ -73,13 +74,13 @@ namespace glib
 				return T();
 			}
 
-			T max = a[0];
+			T maxV = a[0];
 			for(int i=0; i<count; i++)
 			{
-				if(a[i] > max)
-					max = a[i];
+				if(a[i] > maxV)
+					maxV = a[i];
 			}
-			return max;
+			return maxV;
 		}
 
 		/**
@@ -93,20 +94,20 @@ namespace glib
 		template<typename T>
 		static T max( std::initializer_list<T> list)
 		{
-			T max;
+			T maxV;
 			bool first = true;
 			for(T elem : list)
 			{	
 				if(first)
 				{
-					max = elem;
+					maxV = elem;
 					first = false;
 				}
 				
-				if(elem > max)
-					max = elem;
+				if(elem > maxV)
+					maxV = elem;
 			}
-			return max;
+			return maxV;
 		}
 
 		/**
@@ -138,13 +139,13 @@ namespace glib
 			{
 				return T();
 			}
-			T min = a[0];
+			T minV = a[0];
 			for(int i=0; i<count; i++)
 			{
-				if(a[i] < min)
-					min = a[i];
+				if(a[i] < minV)
+					minV = a[i];
 			}
-			return min;
+			return minV;
 		}
 
 		/**
@@ -158,20 +159,20 @@ namespace glib
 		template<typename T>
 		static T min( std::initializer_list<T> list)
 		{
-			T min;
+			T minV;
 			bool first = true;
 			for(T elem : list)
 			{
 				if(first)
 				{
-					min = elem;
+					minV = elem;
 					first = false;
 				}
 
-				if(elem < min)
-					min = elem;
+				if(elem < minV)
+					minV = elem;
 			}
-			return min;
+			return minV;
 		}
 		
 		/**

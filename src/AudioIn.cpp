@@ -5,6 +5,13 @@
 namespace glib
 {
 
+    #ifdef LINUX
+
+	#else
+        HWAVEIN AudioIn::waveInHandle;
+        WAVEFORMATEX AudioIn::format;
+    #endif
+
     unsigned int AudioIn::deviceID = -1;
     std::vector<Vec2f> AudioIn::soundData;
     int AudioIn::bufferSize = 2205*2;
@@ -18,40 +25,41 @@ namespace glib
     std::atomic_bool AudioIn::bufferDone = false;
     std::atomic_bool AudioIn::recording = false;
 
-    HWAVEIN AudioIn::waveInHandle;
-    WAVEFORMATEX AudioIn::format;
-
     void AudioIn::init(unsigned int device)
     {
         if(!hasInit)
         {
-            hasInit = true;
+            #ifdef LINUX
 
-            deviceID = device;
+            #else
+                hasInit = true;
 
-            ZeroMemory(&format, sizeof(WAVEFORMATEX));
-            ZeroMemory(&waveInHandle, sizeof(HWAVEIN));
-            
-            format.cbSize = 0; //Extra data size
-            format.wFormatTag = WAVE_FORMAT_PCM;
-            format.wBitsPerSample = 16; //Bits per sample
-            format.nSamplesPerSec = 44100; //standard
-            format.nChannels = 2; //Stereo = 2, Mono = 1
-            format.nBlockAlign = (format.wBitsPerSample * format.nChannels) / 8;//
-            format.nAvgBytesPerSec = format.nBlockAlign * format.nSamplesPerSec;//
+                deviceID = device;
 
-            MMRESULT result = waveInOpen(&waveInHandle, deviceID, &format, (DWORD_PTR)AudioIn::audioInCallBack, NULL, CALLBACK_FUNCTION);
+                ZeroMemory(&format, sizeof(WAVEFORMATEX));
+                ZeroMemory(&waveInHandle, sizeof(HWAVEIN));
+                
+                format.cbSize = 0; //Extra data size
+                format.wFormatTag = WAVE_FORMAT_PCM;
+                format.wBitsPerSample = 16; //Bits per sample
+                format.nSamplesPerSec = 44100; //standard
+                format.nChannels = 2; //Stereo = 2, Mono = 1
+                format.nBlockAlign = (format.wBitsPerSample * format.nChannels) / 8;//
+                format.nAvgBytesPerSec = format.nBlockAlign * format.nSamplesPerSec;//
 
-            if(result == MMSYSERR_NOERROR)
-            {
-                //good
-                setRunning(true);
-                audioThread = std::thread(threadFunc);
-            }
-            else
-            {
-                dispose();
-            }
+                MMRESULT result = waveInOpen(&waveInHandle, deviceID, &format, (DWORD_PTR)AudioIn::audioInCallBack, NULL, CALLBACK_FUNCTION);
+
+                if(result == MMSYSERR_NOERROR)
+                {
+                    //good
+                    setRunning(true);
+                    audioThread = std::thread(threadFunc);
+                }
+                else
+                {
+                    dispose();
+                }
+            #endif
         }
     }
 
@@ -65,7 +73,12 @@ namespace glib
             audioThread.join();
 
         StringTools::println("AFTER JOIN");
-        waveInClose(waveInHandle);
+
+        #ifdef LINUX
+
+		#else
+            waveInClose(waveInHandle);
+        #endif
 
         StringTools::println("AFTER CLOSE");
 
@@ -75,7 +88,11 @@ namespace glib
 
     void AudioIn::record()
     {
-        waveInStart(waveInHandle);
+        #ifdef LINUX
+
+		#else
+            waveInStart(waveInHandle);
+        #endif
         recording = true;
     }
 
@@ -86,17 +103,25 @@ namespace glib
 
     void AudioIn::stop()
     {
-        waveInStop(waveInHandle);
+        #ifdef LINUX
+
+		#else
+            waveInStop(waveInHandle);
+        #endif
         recording = false;
     }
 
-    void CALLBACK AudioIn::audioInCallBack(HWAVEIN hWaveIn, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2)
-    {
-        if(uMsg == WIM_DATA)
+    #ifdef LINUX
+
+	#else
+        void CALLBACK AudioIn::audioInCallBack(HWAVEIN hWaveIn, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2)
         {
-            bufferDone = true;
+            if(uMsg == WIM_DATA)
+            {
+                bufferDone = true;
+            }
         }
-    }
+    #endif
 
     void AudioIn::addAudioData(short* data, int size)
     {
@@ -121,67 +146,71 @@ namespace glib
 
     void AudioIn::threadFunc()
     {
-        short* buffer = new short[bufferSize];
+        #ifdef LINUX
 
-        WAVEHDR hdr;
-        ZeroMemory(&hdr, sizeof(WAVEHDR));
-        
-        hdr.dwBufferLength = bufferSize*2;
-        hdr.lpData = (LPSTR)buffer;
-        hdr.dwFlags = 0;
+		#else
+            short* buffer = new short[bufferSize];
 
-        while(getRunning())
-        {
-            if(recording)
+            WAVEHDR hdr;
+            ZeroMemory(&hdr, sizeof(WAVEHDR));
+            
+            hdr.dwBufferLength = bufferSize*2;
+            hdr.lpData = (LPSTR)buffer;
+            hdr.dwFlags = 0;
+
+            while(getRunning())
             {
-                MMRESULT result = waveInPrepareHeader(waveInHandle, &hdr, sizeof(WAVEHDR));
-                
-                if(result != MMSYSERR_NOERROR)
+                if(recording)
                 {
-                    //error has occured
-                    StringTools::println("ERROR WAVE_IN_PREPARE %d", result);
-                    break;
-                }
+                    MMRESULT result = waveInPrepareHeader(waveInHandle, &hdr, sizeof(WAVEHDR));
+                    
+                    if(result != MMSYSERR_NOERROR)
+                    {
+                        //error has occured
+                        StringTools::println("ERROR WAVE_IN_PREPARE %d", result);
+                        break;
+                    }
 
-                bufferDone = false;
+                    bufferDone = false;
 
-                result = waveInAddBuffer(waveInHandle, &hdr, sizeof(WAVEHDR));
-                if(result != MMSYSERR_NOERROR)
-                {
-                    //error has occured
-                    waveInUnprepareHeader(waveInHandle, &hdr, sizeof(WAVEHDR));
-                    StringTools::println("ERROR WAVE_IN_ADD %d", result);
-                    break;
+                    result = waveInAddBuffer(waveInHandle, &hdr, sizeof(WAVEHDR));
+                    if(result != MMSYSERR_NOERROR)
+                    {
+                        //error has occured
+                        waveInUnprepareHeader(waveInHandle, &hdr, sizeof(WAVEHDR));
+                        StringTools::println("ERROR WAVE_IN_ADD %d", result);
+                        break;
+                    }
+                    
+                    while(bufferDone != true)
+                    {
+                        System::sleep(0,1);
+                    }
+                    
+                    result = waveInUnprepareHeader(waveInHandle, &hdr, sizeof(WAVEHDR));
+                    if(result != MMSYSERR_NOERROR)
+                    {
+                        //error has occured
+                        StringTools::println("ERROR WAVE_IN_UN_PREPARE %d", result);
+                        break;
+                    }
+
+                    addAudioData(buffer, hdr.dwBytesRecorded/2);
+
+                    ZeroMemory(&hdr, sizeof(WAVEHDR));
+                    memset(buffer, 0, bufferSize*2);
+                    
+                    hdr.dwBufferLength = bufferSize*2;
+                    hdr.lpData = (LPSTR)buffer;
                 }
-                
-                while(bufferDone != true)
+                else
                 {
                     System::sleep(0,1);
                 }
-                
-                result = waveInUnprepareHeader(waveInHandle, &hdr, sizeof(WAVEHDR));
-                if(result != MMSYSERR_NOERROR)
-                {
-                    //error has occured
-                    StringTools::println("ERROR WAVE_IN_UN_PREPARE %d", result);
-                    break;
-                }
-
-                addAudioData(buffer, hdr.dwBytesRecorded/2);
-
-                ZeroMemory(&hdr, sizeof(WAVEHDR));
-                memset(buffer, 0, bufferSize*2);
-                
-                hdr.dwBufferLength = bufferSize*2;
-                hdr.lpData = (LPSTR)buffer;
             }
-            else
-            {
-                System::sleep(0,1);
-            }
-        }
 
-        delete[] buffer;
+            delete[] buffer;
+        #endif
     }
 
     std::vector<Vec2f> AudioIn::getAudioData()

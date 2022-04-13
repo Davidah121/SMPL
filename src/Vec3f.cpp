@@ -1,4 +1,6 @@
 #include "Vec3f.h"
+#include <cmath>
+#include <math.h>
 
 namespace glib
 {
@@ -83,7 +85,7 @@ namespace glib
 
 	double Vec3f::getLength()
 	{
-		return sqrt((x*x) + (y*y) + (z*z));
+		return std::sqrt((x*x) + (y*y) + (z*z));
 	}
 
 	Vec3f Vec3f::normalize()

@@ -27,8 +27,8 @@ namespace glib
 		int width = this->endX-this->startX;
 		int height = this->endY-this->startY;
 
-		int buttonWidth = max(width, minWidth);
-		int buttonHeight = max(height, minHeight);
+		int buttonWidth = MathExt::max(width, minWidth);
+		int buttonHeight = MathExt::max(height, minHeight);
 
 
 		//location of button center == (startX+endX)/2
@@ -190,22 +190,22 @@ namespace glib
 		{
 			if(isHorizontal)
 			{
-				if(Input::getKeyPressed(VK_LEFT) || Input::getMouseScrollVertical() > 0 || Input::getMouseScrollHorizontal() < 0)
+				if(Input::getKeyPressed(Input::KEY_LEFT) || Input::getMouseScrollVertical() > 0 || Input::getMouseScrollHorizontal() < 0)
 				{
 					decreaseScroll();
 				}
-				else if (Input::getKeyPressed(VK_RIGHT) || Input::getMouseScrollVertical() < 0 || Input::getMouseScrollHorizontal() > 0)
+				else if (Input::getKeyPressed(Input::KEY_RIGHT) || Input::getMouseScrollVertical() < 0 || Input::getMouseScrollHorizontal() > 0)
 				{
 					increaseScroll();
 				}
 			}
 			else
 			{
-				if(Input::getKeyPressed(VK_UP) || Input::getMouseScrollVertical() > 0)
+				if(Input::getKeyPressed(Input::KEY_UP) || Input::getMouseScrollVertical() > 0)
 				{
 					decreaseScroll();
 				}
-				else if (Input::getKeyPressed(VK_DOWN) || Input::getMouseScrollVertical() < 0)
+				else if (Input::getKeyPressed(Input::KEY_DOWN) || Input::getMouseScrollVertical() < 0)
 				{
 					increaseScroll();
 				}
@@ -308,8 +308,8 @@ namespace glib
 		int width = this->endX-this->startX;
 		int height = this->endY-this->startY;
 
-		int buttonWidth = max(width, minWidth);
-		int buttonHeight = max(height, minHeight);
+		int buttonWidth = MathExt::max(width, minWidth);
+		int buttonHeight = MathExt::max(height, minHeight);
 
 		if(isHorizontal)
 		{
@@ -456,7 +456,7 @@ namespace glib
 
 	void GuiScrollBar::setSteps(int s)
 	{
-		steps = max(s, 0);
+		steps = MathExt::max(s, 0);
 		setCurrentStep( MathExt::clamp(currStep, 0, steps) );
 
 		if(isHorizontal)
@@ -465,7 +465,7 @@ namespace glib
 			
 			width = (int)MathExt::round((double)width/(steps+1));
 
-			buttonElement.setWidth( max(width, minWidth) );
+			buttonElement.setWidth( MathExt::max(width, minWidth) );
 		}
 		else
 		{
@@ -473,7 +473,7 @@ namespace glib
 
 			height = (int)MathExt::round((double)height/(steps+1));
 
-			buttonElement.setHeight( max(height, minHeight) );
+			buttonElement.setHeight( MathExt::max(height, minHeight) );
 		}
 	}
 

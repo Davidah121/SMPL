@@ -1,5 +1,6 @@
 #include "ColorNameConverter.h"
 #include <algorithm>
+#include "StringTools.h"
 
 namespace glib
 {
@@ -16,8 +17,7 @@ namespace glib
 
     Color ColorNameConverter::NameToColor(std::string n)
     {
-        std::string lowerString = n;
-        std::transform(lowerString.begin(), lowerString.end(), lowerString.begin(), std::tolower);
+        std::string lowerString = StringTools::toLowercase(n);
         Color p = {0,0,0,255};
         try
         {

@@ -429,7 +429,7 @@ namespace glib
 	void GuiInstance::updatePriority()
 	{
 		if(parent!=nullptr)
-			priority = max(priority, parent->priority+1);
+			priority = MathExt::max(priority, parent->priority+1);
 		
 		for(GuiInstance* insChildren : children)
 		{

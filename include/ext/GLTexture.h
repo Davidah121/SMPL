@@ -1,50 +1,54 @@
 #pragma once
-#include "ext/GLSingleton.h"
-#include "Image.h"
 
-namespace glib
-{
+#ifdef USE_OPENGL
 
-    struct GLTextureParams
+    #include "ext/GLSingleton.h"
+    #include "Image.h"
+
+    namespace glib
     {
-        int edgeBehavior = GL_CLAMP_TO_EDGE;
-        int filterType = GL_LINEAR;
-    };
 
-    class GLTexture
-    {
-    public:
-        static const bool TEXTURE2D = false;
-        static const bool TEXTURE3D = true;
+        struct GLTextureParams
+        {
+            int edgeBehavior = GL_CLAMP_TO_EDGE;
+            int filterType = GL_LINEAR;
+        };
 
-        static const int BEHAVIOR_CLAMP_TO_EDGE = GL_CLAMP_TO_EDGE;
-        static const int BEHAVIOR_CLAMP_TO_BORDER = GL_CLAMP_TO_BORDER;
-        
-        static const int FILTER_NEAREST = GL_NEAREST;
-        static const int FILTER_LINEAR = GL_LINEAR;
-        
-        GLTexture(File f, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});
-        GLTexture(Image* img, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});
-        ~GLTexture();
+        class GLTexture
+        {
+        public:
+            static const bool TEXTURE2D = false;
+            static const bool TEXTURE3D = true;
 
-        void loadImage(File f, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});
-        void setImage(Image* img, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});
+            static const int BEHAVIOR_CLAMP_TO_EDGE = GL_CLAMP_TO_EDGE;
+            static const int BEHAVIOR_CLAMP_TO_BORDER = GL_CLAMP_TO_BORDER;
+            
+            static const int FILTER_NEAREST = GL_NEAREST;
+            static const int FILTER_LINEAR = GL_LINEAR;
+            
+            GLTexture(File f, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});
+            GLTexture(Image* img, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});
+            ~GLTexture();
 
-        void bind(int location = 0);
+            void loadImage(File f, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});
+            void setImage(Image* img, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});
 
-        int getWidth();
-        int getHeight();
+            void bind(int location = 0);
 
-    private:
-        int edgeBehavior = GL_CLAMP_TO_EDGE;
-        int filterType = GL_LINEAR;
+            int getWidth();
+            int getHeight();
 
-        unsigned int textureID = 0;
-        bool textureType = TEXTURE2D;
+        private:
+            int edgeBehavior = GL_CLAMP_TO_EDGE;
+            int filterType = GL_LINEAR;
 
-        int width = 0;
-        int height = 0;
-    };
+            unsigned int textureID = 0;
+            bool textureType = TEXTURE2D;
 
-} // namespace glib
+            int width = 0;
+            int height = 0;
+        };
 
+    } // namespace glib
+
+#endif

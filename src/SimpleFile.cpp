@@ -21,13 +21,13 @@ namespace glib
 		this->type = type&0x0F;
 		this->dataType = type&0xF0;
 		this->size = 0;
-
+		std::string temp = StringTools::toUTF8String(filename);
 		switch (this->type)
 		{
 		case SimpleFile::READ:
 			
 			//try to open
-			this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
+			this->file = new std::fstream(temp, std::fstream::in | std::fstream::ate | std::fstream::binary);
 
 			#ifdef USE_EXCEPTIONS
 			if(!this->file->is_open())
@@ -40,7 +40,7 @@ namespace glib
 			size = (int)file->tellg();
 			file->close();
 
-			this->file->open(filename, std::fstream::in | std::fstream::binary);
+			this->file->open(temp, std::fstream::in | std::fstream::binary);
 
 			#ifdef USE_EXCEPTIONS
 			if(!this->file->is_open())
@@ -89,7 +89,7 @@ namespace glib
 			break;
 		case SimpleFile::WRITE:
 			//
-			this->file = new std::fstream(filename, std::fstream::out | std::fstream::binary);
+			this->file = new std::fstream(temp, std::fstream::out | std::fstream::binary);
 			this->wideFileName = filename;
 
 			#ifdef USE_EXCEPTIONS
@@ -103,7 +103,7 @@ namespace glib
 			break;
 		case SimpleFile::WRITE_APPEND:
 			//
-			this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
+			this->file = new std::fstream(temp, std::fstream::in | std::fstream::ate | std::fstream::binary);
 
 			#ifdef USE_EXCEPTIONS
 			if(!this->file->is_open())
@@ -116,7 +116,7 @@ namespace glib
 			size = (int)file->tellg();
 			file->close();
 
-			this->file->open(filename, std::fstream::out | std::fstream::app | std::fstream::binary);
+			this->file->open(temp, std::fstream::out | std::fstream::app | std::fstream::binary);
 
 			#ifdef USE_EXCEPTIONS
 			if(!this->file->is_open())

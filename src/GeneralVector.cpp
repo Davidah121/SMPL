@@ -1,4 +1,5 @@
 #include "GeneralVector.h"
+#include <math.h>
 
 namespace glib
 {

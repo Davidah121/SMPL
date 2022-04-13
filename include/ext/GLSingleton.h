@@ -1,14 +1,19 @@
 #pragma once
-#include <GL/glew.h>
 
-#include <GL/gl.h>
-#include <GL/glu.h>
+#ifdef USE_OPENGL
 
-#ifdef LINUX
+    #include <GL/glew.h>
 
-#else
-    #include <GL/wglew.h> //Windows extension
-#endif
+    #include <GL/gl.h>
+    #include <GL/glu.h>
+
+    #ifdef LINUX
+
+    #else
+        #include <GL/wglew.h> //Windows extension
+    #endif
+
+
 
 class GLSingleton
 {
@@ -45,3 +50,5 @@ private:
 };
 
 inline bool GLSingleton::hasInit = false;
+
+#endif

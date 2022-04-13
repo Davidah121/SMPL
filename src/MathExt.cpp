@@ -13,17 +13,17 @@ namespace glib
 
 	float MathExt::floor(float a)
 	{
-		return std::floorf(a);
+		return ::floorf(a);
 	}
 
 	float MathExt::ceil(float a)
 	{
-		return std::ceilf(a);
+		return ::ceilf(a);
 	}
 
 	float MathExt::round(float a)
 	{
-		return std::roundf(a);
+		return ::roundf(a);
 	}
 
 	double MathExt::floor(double a)
@@ -68,7 +68,7 @@ namespace glib
 
 	float MathExt::sqrt(float a)
 	{
-		return std::sqrtf(a);
+		return ::sqrtf(a);
 	}
 
 	double MathExt::sqrt(double a)
@@ -100,7 +100,7 @@ namespace glib
 
 	float MathExt::cubeRoot(float a)
 	{
-		return std::cbrtf(a);
+		return ::cbrtf(a);
 	}
 
 	double MathExt::cubeRoot(double a)
@@ -110,7 +110,7 @@ namespace glib
 
 	float MathExt::pow(float value, float power)
 	{
-		return std::powf(value, power);
+		return ::powf(value, power);
 	}
 
 	double MathExt::pow(double value, double power)
@@ -254,7 +254,7 @@ namespace glib
 
 	float MathExt::cos(float value)
 	{
-		return std::cosf(value);
+		return ::cosf(value);
 	}
 
 	double MathExt::cos(double value)
@@ -264,7 +264,7 @@ namespace glib
 
 	float MathExt::dcos(float value)
 	{
-		return std::cosf(toRad(value));
+		return ::cosf(toRad(value));
 	}
 
 	double MathExt::dcos(double value)
@@ -274,7 +274,7 @@ namespace glib
 
 	float MathExt::arccos(float value)
 	{
-		return std::acosf(value);
+		return ::acosf(value);
 	}
 
 	double MathExt::arccos(double value)
@@ -284,7 +284,7 @@ namespace glib
 
 	float MathExt::darccos(float value)
 	{
-		return toDeg(std::acosf(value));
+		return toDeg(::acosf(value));
 	}
 
 	double MathExt::darccos(double value)
@@ -294,7 +294,7 @@ namespace glib
 
 	float MathExt::sin(float value)
 	{
-		return std::sinf(value);
+		return ::sinf(value);
 	}
 
 	double MathExt::sin(double value)
@@ -304,7 +304,7 @@ namespace glib
 
 	float MathExt::dsin(float value)
 	{
-		return std::sinf(toRad(value));
+		return ::sinf(toRad(value));
 	}
 
 	double MathExt::dsin(double value)
@@ -314,7 +314,7 @@ namespace glib
 
 	float MathExt::arcsin(float value)
 	{
-		return std::asinf(value);
+		return ::asinf(value);
 	}
 
 	double MathExt::arcsin(double value)
@@ -324,7 +324,7 @@ namespace glib
 
 	float MathExt::darcsin(float value)
 	{
-		return toDeg(std::asinf(value));
+		return toDeg(::asinf(value));
 	}
 
 	double MathExt::darcsin(double value)
@@ -334,7 +334,7 @@ namespace glib
 
 	float MathExt::tan(float value)
 	{
-		return std::tanf(value);
+		return ::tanf(value);
 	}
 
 	double MathExt::tan(double value)
@@ -344,7 +344,7 @@ namespace glib
 
 	float MathExt::dtan(float value)
 	{
-		return std::tanf(toRad(value));
+		return ::tanf(toRad(value));
 	}
 
 	double MathExt::dtan(double value)
@@ -354,7 +354,7 @@ namespace glib
 
 	float MathExt::arctan(float value)
 	{
-		return std::atanf(value);
+		return ::atanf(value);
 	}
 
 	double MathExt::arctan(double value)
@@ -364,7 +364,7 @@ namespace glib
 
 	float MathExt::arctan2(float y, float x)
 	{
-		return std::atan2f(y, x);
+		return ::atan2f(y, x);
 	}
 
 	double MathExt::arctan2(double y, double x)
@@ -374,7 +374,7 @@ namespace glib
 
 	float MathExt::darctan(float value)
 	{
-		return toDeg(std::atanf(value));
+		return toDeg(::atanf(value));
 	}
 
 	double MathExt::darctan(double value)
@@ -384,7 +384,7 @@ namespace glib
 
 	float MathExt::darctan2(float y, float x)
 	{
-		return toDeg(std::atan2f(y,x));
+		return toDeg(::atan2f(y,x));
 	}
 
 	double MathExt::darctan2(double y, double x)
@@ -2067,9 +2067,8 @@ namespace glib
 	void MathExt::FCT8x8(Matrix& arr, Matrix* output, bool inverse)
 	{
 		//for each row
-		double** finalArr = output->getData();
 		double* newArr = new double[8];
-		double* passArr = new double[8];
+		double* passArr = nullptr;
 
 		for(int v=0; v<arr.getRows(); v++)
 		{
@@ -2078,7 +2077,7 @@ namespace glib
 
 			for(int i=0; i<arr.getCols(); i++)
 			{
-				finalArr[v][i] = newArr[i];
+				arr[v][i] = newArr[i];
 			}
 		}
 
@@ -2087,19 +2086,18 @@ namespace glib
 		{
 			for(int i=0; i<arr.getRows(); i++)
 			{
-				passArr[i] = finalArr[i][u];
+				passArr[i] = arr[i][u];
 			}
 
 			MathExt::FCT8(passArr, newArr, inverse);
 
 			for(int i=0; i<arr.getRows(); i++)
 			{
-				finalArr[i][u] = newArr[i];
+				arr[i][u] = newArr[i];
 			}
 		}
 
 		delete[] newArr;
-		delete[] passArr;
 	}
 
 	#pragma endregion

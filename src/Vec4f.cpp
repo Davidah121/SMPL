@@ -1,5 +1,6 @@
 #include "Vec4f.h"
-#include "MathExt.h"
+#include <cmath>
+#include <math.h>
 
 namespace glib
 {
@@ -110,7 +111,7 @@ namespace glib
 
 	double Vec4f::getLength()
 	{
-		return sqrt((x*x) + (y*y) + (z*z) + (w*w));
+		return std::sqrt((x*x) + (y*y) + (z*z) + (w*w));
 	}
 
 	Vec4f Vec4f::normalize()

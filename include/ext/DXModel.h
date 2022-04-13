@@ -1,60 +1,62 @@
 #pragma once
 
-#include "MathExt.h"
-#include "ext/DXSingleton.h"
-#include "Model.h"
+#ifdef USE_DIRECTX
 
-/**
- * Things that still need work.
- *      Setting data dynamically inside of a buffer instead of creating a new one.
- *      Enable and disable attributes.
- */
+    #include "MathExt.h"
+    #include "ext/DXSingleton.h"
+    #include "Model.h"
 
-namespace glib
-{
-    class DXModel
+    /**
+     * Things that still need work.
+     *      Setting data dynamically inside of a buffer instead of creating a new one.
+     *      Enable and disable attributes.
+     */
+
+    namespace glib
     {
-    public:
-        static const bool TYPE_ARRAY = false;
-        static const bool TYPE_INDEXED = true;
+        class DXModel
+        {
+        public:
+            static const bool TYPE_ARRAY = false;
+            static const bool TYPE_INDEXED = true;
 
-        DXModel();
-        DXModel(DXModel& other);
-        void operator=(DXModel& other);
-        ~DXModel();
+            DXModel();
+            DXModel(DXModel& other);
+            void operator=(DXModel& other);
+            ~DXModel();
 
-        void draw();
+            void draw();
 
-        static DXModel convertModel(Model* m);
-        static DXModel generateTestModel();
+            static DXModel convertModel(Model* m);
+            static DXModel generateTestModel();
 
-        bool getModelType();
-        int getDrawType();
+            bool getModelType();
+            int getDrawType();
 
-        size_t getSize();
+            size_t getSize();
 
-        void storeDataInt(int attributeID, std::vector<int> data, int valuesPerVertex, bool forceReallocate = false);
-        void storeDataFloat(int attributeID, std::vector<float> data, int valuesPerVertex, bool forceReallocate = false);
-        void storeDataFloat(int attributeID, std::vector<double> data, int valuesPerVertex, bool forceReallocate = false);
-        
-        void setAttributeEnabled(int attributeID, bool v);
+            void storeDataInt(int attributeID, std::vector<int> data, int valuesPerVertex, bool forceReallocate = false);
+            void storeDataFloat(int attributeID, std::vector<float> data, int valuesPerVertex, bool forceReallocate = false);
+            void storeDataFloat(int attributeID, std::vector<double> data, int valuesPerVertex, bool forceReallocate = false);
+            
+            void setAttributeEnabled(int attributeID, bool v);
 
-        void disableAllAttributes();
+            void disableAllAttributes();
 
-        void setDrawType(int value);
-    private:
-        std::vector<ID3D11Buffer*> vertexData = std::vector<ID3D11Buffer*>();
-        std::vector<unsigned int> offsets = std::vector<unsigned int>();
-        std::vector<unsigned int> strides = std::vector<unsigned int>();
-        std::vector<bool> attributeEnabled;
+            void setDrawType(int value);
+        private:
+            std::vector<ID3D11Buffer*> vertexData = std::vector<ID3D11Buffer*>();
+            std::vector<unsigned int> offsets = std::vector<unsigned int>();
+            std::vector<unsigned int> strides = std::vector<unsigned int>();
+            std::vector<bool> attributeEnabled;
 
-        ID3D11Buffer* indexData = nullptr;
+            size_t size = 0;
+            ID3D11Buffer* indexData = nullptr;
+            
+            bool modType = TYPE_ARRAY;
+            int drawType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+            bool shouldDelete = true;
+        };
+    }
 
-        size_t size = 0;
-        
-        bool modType = TYPE_ARRAY;
-        int drawType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-        bool shouldDelete = true;
-    };
-
-}
+#endif

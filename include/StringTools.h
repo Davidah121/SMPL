@@ -65,6 +65,28 @@ namespace glib
 		}
 
 		/**
+		 * @brief Converts a wide string to a valid UTF8 string
+		 * 
+		 * @param s 
+		 * @return std::string 
+		 */
+		static std::string toUTF8String(std::wstring s)
+		{
+			std::string finalText;
+
+			for (wchar_t& c : s)
+			{
+				std::vector<unsigned char> values = StringTools::toUTF8(c);
+				for(unsigned char& v : values)
+				{
+					finalText += (char)v;
+				}
+			}
+
+			return finalText;
+		}
+
+		/**
 		 * @brief Converts any string to lowercase
 		 * 
 		 * @tparam T 

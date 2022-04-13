@@ -1,4 +1,6 @@
 #include "Vec2f.h"
+#include <cmath>
+#include <math.h>
 
 namespace glib
 {
@@ -52,7 +54,7 @@ namespace glib
 
 	double Vec2f::getLength()
 	{
-		return sqrt((x*x) + (y*y));
+		return std::sqrt((x*x) + (y*y));
 	}
 
 	Vec2f Vec2f::normalize()

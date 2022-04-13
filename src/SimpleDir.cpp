@@ -83,7 +83,7 @@ namespace glib
 	{
 		if (index >= 0 && index < names.size())
 		{
-			return names[index].path().c_str();
+			return names[index].path().wstring();
 		}
 		else
 		{

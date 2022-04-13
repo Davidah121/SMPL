@@ -44,25 +44,36 @@ namespace glib
 		mouseMoved = false;
 		keyChanged = false;
 		mouseClicked = false;
+		int px, py;
 
-		POINT p;
-		GetCursorPos(&p);
+		#ifdef LINUX
+		#else
+			POINT tp;
+			GetCursorPos(&tp);
+			px = tp.x;
+			py = tp.y;
+		#endif
 
-		if (p.x != mouseX)
+		if (px != mouseX)
 		{
 			mouseMoved = true;
 		}
-		if (p.y != mouseY)
+		if (py != mouseY)
 		{
 			mouseMoved = true;
 		}
 
-		mouseX = (int)p.x;
-		mouseY = (int)p.y;
+		mouseX = px;
+		mouseY = py;
 
 		for (int i = 0; i < 256; i++)
 		{
-			bool keyValue = (GetAsyncKeyState(i) >> 15 & 0x01) == 1;
+			bool keyValue = 0;
+			#ifdef LINUX
+
+			#else
+				keyValue = (GetAsyncKeyState(i) >> 15 & 0x01) == 1;
+			#endif
 
 			preKeyState[i] = keyState[i];
 			keyState[i] = keyValue;
@@ -86,11 +97,15 @@ namespace glib
 			}
 		}
 		preMouseState[0] = mouseState[0];
-		mouseState[0] = (GetAsyncKeyState(VK_LBUTTON) >> 15 & 0x01) == 1;
 		preMouseState[1] = mouseState[1];
-		mouseState[1] = (GetAsyncKeyState(VK_MBUTTON) >> 15 & 0x01) == 1;
 		preMouseState[2] = mouseState[2];
-		mouseState[2] = (GetAsyncKeyState(VK_RBUTTON) >> 15 & 0x01) == 1;
+
+		#ifdef LINUX
+		#else
+			mouseState[0] = (GetAsyncKeyState(VK_LBUTTON) >> 15 & 0x01) == 1;
+			mouseState[1] = (GetAsyncKeyState(VK_MBUTTON) >> 15 & 0x01) == 1;
+			mouseState[2] = (GetAsyncKeyState(VK_RBUTTON) >> 15 & 0x01) == 1;
+		#endif
 
 		if (preMouseState[0] != mouseState[0]
 			|| preMouseState[1] != mouseState[1]

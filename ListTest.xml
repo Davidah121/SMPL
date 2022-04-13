@@ -1,0 +1,14 @@
+<SimpleGUI>
+
+    <GuiList x="64" y="64" spacing="32">
+        <GuiTextBlock x="1" maxwidth="128" maxheight="24" text="LABEL1"/>
+        <GuiTextBox width="128" height="24" name="LABEL1"/>
+        
+        <GuiTextBlock x="1" maxwidth="128" maxheight="24" text="LABEL2"/>
+        <GuiTextBox width="128" height="24" name="LABEL2"/>
+
+        <GuiTextBlock x="1" maxwidth="128" maxheight="24" text="LABEL3"/>
+        <GuiTextBox width="128" height="24" name="LABEL3"/>
+    </GuiList>
+
+</SimpleGUI>

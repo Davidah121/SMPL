@@ -305,15 +305,15 @@ namespace glib
 			{
 				if(obj->shouldRedraw)
 				{
-					minX = min(obj->boundingBox.getLeftBound(), minX);
-					maxX = max(obj->boundingBox.getRightBound(), maxX);
-					minY = min(obj->boundingBox.getTopBound(), minY);
-					maxY = max(obj->boundingBox.getBottomBound(), maxY);
+					minX = MathExt::min((unsigned int)obj->boundingBox.getLeftBound(), minX);
+					maxX = MathExt::max((unsigned int)obj->boundingBox.getRightBound(), maxX);
+					minY = MathExt::min((unsigned int)obj->boundingBox.getTopBound(), minY);
+					maxY = MathExt::max((unsigned int)obj->boundingBox.getBottomBound(), maxY);
 					
-					preMinX = min(obj->previousBoundingBox.getLeftBound(), preMinX);
-					preMaxX = max(obj->previousBoundingBox.getRightBound(), preMaxX);
-					preMinY = min(obj->previousBoundingBox.getTopBound(), preMinY);
-					preMaxY = max(obj->previousBoundingBox.getBottomBound(), preMaxY);
+					preMinX = MathExt::min((unsigned int)obj->previousBoundingBox.getLeftBound(), preMinX);
+					preMaxX = MathExt::max((unsigned int)obj->previousBoundingBox.getRightBound(), preMaxX);
+					preMinY = MathExt::min((unsigned int)obj->previousBoundingBox.getTopBound(), preMinY);
+					preMaxY = MathExt::max((unsigned int)obj->previousBoundingBox.getBottomBound(), preMaxY);
 				}
 			}
 
@@ -356,7 +356,7 @@ namespace glib
 						obj->shouldRedraw = true;
 						graphicsInterface.setClippingRect(newClipBox);
 					}
-					else if(CollisionMaster::collisionMethod(&newClipBox, &obj->boundingBox))
+					else if(CollisionMaster::collisionMethod(&preClipBox, &obj->boundingBox))
 					{
 						obj->shouldRedraw = true;
 						graphicsInterface.setClippingRect(preClipBox);
@@ -378,6 +378,11 @@ namespace glib
 
 				obj->shouldRedraw = false;
 			}
+
+			graphicsInterface.setColor(Vec4f(1,0,0,1));
+			graphicsInterface.drawRect(minX, minY, maxX, maxY, true);
+			graphicsInterface.setColor(Vec4f(0,0,1,1));
+			graphicsInterface.drawRect(preMinX, preMinY, preMaxX, preMaxY, true);
 
 		}
 		else

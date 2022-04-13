@@ -41,8 +41,8 @@ namespace glib
 			GuiInstance* child = children[i];
 			Box2D box = child->getBoundingBox();
 
-			minWidthRequired = max(box.getWidth(), minWidthRequired);
-			minHeightRequired = max(box.getHeight(), minHeightRequired);
+			minWidthRequired = MathExt::max((int)box.getWidth(), minWidthRequired);
+			minHeightRequired = MathExt::max((int)box.getHeight(), minHeightRequired);
 		}
 
 		if(!rowMajorOrder)
@@ -56,7 +56,7 @@ namespace glib
 				locations[i]->y = y + (minHeightRequired+gridYSpacing) * r;
 			}
 			
-			maxWidth = (minWidthRequired+gridXSpacing) * min(children.size(), colSize);
+			maxWidth = (minWidthRequired+gridXSpacing) * MathExt::min((int)children.size(), colSize);
 			maxHeight = (minHeightRequired+gridYSpacing) * ((children.size())/colSize);
 		}
 		else
@@ -70,7 +70,7 @@ namespace glib
 				locations[i]->y = y + (minHeightRequired+gridYSpacing) * r;
 			}
 			
-			maxWidth = (minWidthRequired+gridXSpacing) * min(children.size(), rowSize);
+			maxWidth = (minWidthRequired+gridXSpacing) * MathExt::min((int)children.size(), rowSize);
 			maxHeight = (minHeightRequired+gridYSpacing) * ((children.size())/rowSize);
 		}
 		
