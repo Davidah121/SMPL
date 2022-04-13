@@ -44,7 +44,7 @@ namespace glib
 
 				int disToObjectEdge = c->getBoundingBox().getRightBound() - x;
 
-				width = max(disToObjectEdge, width);
+				width = MathExt::max(disToObjectEdge, width);
 				height += elementSpacing + c->getBoundingBox().getHeight();
 			}
 		}
@@ -60,13 +60,13 @@ namespace glib
 				int disToObjectEdge = c->getBoundingBox().getBottomBound() - y;
 
 				width += elementSpacing + c->getBoundingBox().getWidth();
-				height = max(disToObjectEdge, height);
+				height = MathExt::max(disToObjectEdge, height);
 			}
 		}
 
-		if(boundingBox.getLeftBound() == x && boundingBox.getRightBound() == x+width)
+		if((int)boundingBox.getLeftBound() == x && (int)boundingBox.getRightBound() == x+width)
 		{
-			if(boundingBox.getTopBound() == y && boundingBox.getBottomBound() == y+height)
+			if((int)boundingBox.getTopBound() == y && (int)boundingBox.getBottomBound() == y+height)
 			{
 				setShouldRedraw(false);
 			}
@@ -92,13 +92,18 @@ namespace glib
 		int width = boundingBox.getWidth();
 		int height = boundingBox.getHeight();
 		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
-
 		
-		graphicsInterface->setColor(backgroundColor);
-		graphicsInterface->drawRect(renderX, renderY, renderX+width, renderY+height, false);
+		if(backgroundColor.alpha != 0)
+		{
+			graphicsInterface->setColor(backgroundColor);
+			graphicsInterface->drawRect(renderX, renderY, renderX+width, renderY+height, false);
+		}
 		
-		graphicsInterface->setColor(outlineColor);
-		graphicsInterface->drawRect(renderX, renderY, renderX+width, renderY+height, true);
+		if(outlineColor.alpha != 0)
+		{
+			graphicsInterface->setColor(outlineColor);
+			graphicsInterface->drawRect(renderX, renderY, renderX+width, renderY+height, true);
+		}
 	}
 
 	void GuiList::setElementSpacing(int value)

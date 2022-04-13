@@ -347,10 +347,11 @@ namespace glib
 		Display* d = XOpenDisplay(NULL);
 		if(d == nullptr)
 			return m;
-		return ((_XPrivDisplay)display)->screens;
+		// return ((_XPrivDisplay)display)->screens; //TODO
 		#else
 		return GetSystemMetrics(SM_CMONITORS);
 		#endif
+		return 0;
 	}
 
 	void System::saveScreenShot(size_t hwnd, File file)
@@ -488,12 +489,17 @@ namespace glib
 
 	void System::saveScreenShotDesktop(File f)
 	{
+		#ifndef LINUX
 		System::saveScreenShot((size_t)GetDesktopWindow(), f);
+		#endif
 	}
 
 	Image* System::getScreenShotDesktop()
 	{
+		#ifndef LINUX
 		return System::getScreenShot((size_t)GetDesktopWindow());
+		#endif
+		return nullptr;
 	}
 
 	void System::paintImageToWindow(size_t hwnd, Image* img, int startX, int startY)
@@ -564,7 +570,9 @@ namespace glib
 
 	void System::paintImageToDesktop(Image* img, int startX, int startY)
 	{
-		System::paintImageToWindow((size_t)GetDesktopWindow(), img, startX, startY);
+		#ifndef LINUX
+			System::paintImageToWindow((size_t)GetDesktopWindow(), img, startX, startY);
+		#endif
 	}
 
 	unsigned long System::getProcessID(std::wstring processName)

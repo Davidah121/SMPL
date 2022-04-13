@@ -1,6 +1,8 @@
 #pragma once
 #include "BinaryTree.h"
 #include "MathExt.h"
+#include "Sort.h"
+#include <cstring>
 
 namespace glib
 {

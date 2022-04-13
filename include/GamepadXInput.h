@@ -1,9 +1,17 @@
 #pragma once
 
+#ifdef LINUX
+
+#else
+
 #pragma comment(lib, "XInput.lib")
 
 #ifndef WIN32_LEAN_AND_MEAN
 	#define WIN32_LEAN_AND_MEAN
+#endif
+
+#ifndef NOMINMAX
+	#define NOMINMAX
 #endif
 
 #include <Windows.h>
@@ -167,3 +175,5 @@ namespace glib
 	};
 
 }  //NAMESPACE glib END
+
+#endif

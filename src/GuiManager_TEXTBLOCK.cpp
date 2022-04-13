@@ -40,6 +40,8 @@ namespace glib
 
 	void GuiTextBlock::render()
 	{
+		// StringTools::println("%d, %ls", renderX, text.c_str());
+
 		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
 		GuiFontInterface* fInt = (textFont != nullptr) ? textFont : graphicsInterface->getFont();
 		GuiFontInterface* oldFontInt = graphicsInterface->getFont();
@@ -52,8 +54,8 @@ namespace glib
 		int actualMaxW = (maxWidth <= 0) ? 0xFFFF : maxWidth;
 		int actualMaxH = (maxHeight <= 0) ? 0xFFFF : maxHeight;
 
-		int minHighlight = min(startHighlight, endHighlight);
-		int maxHighlight = max(startHighlight, endHighlight);
+		int minHighlight = MathExt::min(startHighlight, endHighlight);
+		int maxHighlight = MathExt::max(startHighlight, endHighlight);
 		
 		if(shouldHighlight)
 			graphicsInterface->drawTextLimitsHighlighted(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowLineBreaks, minHighlight, maxHighlight, highlightColor);
@@ -109,13 +111,15 @@ namespace glib
 
 	void GuiTextBlock::setMaxWidth(int v)
 	{
+		if(v != maxWidth)
+			setShouldRedraw(true);
 		maxWidth = v;
-		setShouldRedraw(true);
 	}
 	void GuiTextBlock::setMaxHeight(int v)
 	{
+		if(v != maxHeight)
+			setShouldRedraw(true);
 		maxHeight = v;
-		setShouldRedraw(true);
 	}
 
 	int GuiTextBlock::getMaxWidth()
@@ -139,8 +143,10 @@ namespace glib
 
 	void GuiTextBlock::setShouldHighlightText(bool v)
 	{
+		if(v != shouldHighlight)
+			setShouldRedraw(true);
+
 		shouldHighlight = v;
-		setShouldRedraw(true);
 	}
 	bool GuiTextBlock::getShouldHighlightText()
 	{
@@ -149,8 +155,10 @@ namespace glib
 
 	void GuiTextBlock::setHighlightStart(int v)
 	{
+		if(v != startHighlight)
+			setShouldRedraw(true);
+		
 		startHighlight = v;
-		setShouldRedraw(true);
 	}
 	int GuiTextBlock::getHighlightStart()
 	{
@@ -158,8 +166,10 @@ namespace glib
 	}
 	void GuiTextBlock::setHighlightEnd(int v)
 	{
+		if(v != endHighlight)
+			setShouldRedraw(true);
+		
 		endHighlight = v;
-		setShouldRedraw(true);
 	}
 	int GuiTextBlock::getHighlightEnd()
 	{
@@ -179,14 +189,16 @@ namespace glib
 
 	void GuiTextBlock::setOffsetX(int x)
 	{
+		if(x != offsetX)
+			setShouldRedraw(true);
 		offsetX = x;
-		setShouldRedraw(true);
 	}
 
 	void GuiTextBlock::setOffsetY(int y)
 	{
+		if(y != offsetY)
+			setShouldRedraw(true);
 		offsetY = y;
-		setShouldRedraw(true);
 	}
 
 	void GuiTextBlock::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)

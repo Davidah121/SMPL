@@ -1,16 +1,37 @@
 #pragma once
 
-#pragma comment(lib, "Ws2_32.lib")
+#ifdef LINUX
+	#include <unistd.h>
+	#include <sys/types.h>
+	#include <sys/socket.h>
+	#include <netinet/in.h>
 
-#include <WinSock2.h>
+	#include <arpa/inet.h> //inet_addr
+	#include <netdb.h> //hostent
+	#include <sys/ioctl.h>
+	#define SOCKET_TYPE int
+	
+	#ifndef SOCKET_ERROR
+		#define SOCKET_ERROR (-1)
+	#endif
+	#ifndef INVALID_SOCKET
+		#define INVALID_SOCKET (~0)
+	#endif
+#else
+	#pragma comment(lib, "Ws2_32.lib")
+	#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
+	#include <WinSock2.h>
+	#include <ws2tcpip.h>
+	#define SOCKET_TYPE SOCKET
+#endif
+
 #include <vector>
-#include <ws2tcpip.h>
 #include <iostream>
 #include <thread>
 #include <mutex>
 #include <functional>
 
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 namespace glib
 {
@@ -192,11 +213,28 @@ namespace glib
 		 */
 		void disconnect();
 
-		// /**
-		//  * @brief Disconnects from the specified id.
-		//  * 
-		//  */
-		// void disconnect(int id);
+		/**
+		 * @brief Disconnects from the specified id.
+		 * 
+		 */
+		void disconnect(int id);
+
+		/**
+		 * @brief Returns a string representing the ipaddress of the specified connection id.
+		 * 
+		 * @param id 
+		 * @return std::string 
+		 */
+		std::string getIPFromConnection(int id);
+
+		/**
+		 * @brief Returns a connection id using the ipaddress provided.
+		 * 		Returns -1 if nothing was found.
+		 * 
+		 * @param s 
+		 * @return int 
+		 */
+		int getIDFromIP(std::string s);
 
 		/**
 		 * @brief Returns if the thread maintaining the Network connection is running.
@@ -265,7 +303,6 @@ namespace glib
 		void setupSocket();
 		bool bindSocket();
 
-		void removeSocket(SOCKET s);
 
 		void listen();
 		void acceptConnection();
@@ -287,15 +324,20 @@ namespace glib
 		std::function<void(int)> onMessageArrivedFunc;
 		std::function<void(int)> onDisconnectFunc;
 
-		WSADATA wsaData;
-		SOCKET sock;
-		SOCKADDR_IN socketAddress;
+		#ifndef LINUX
+			WSADATA wsaData;
+		#endif
+		
+		SOCKET_TYPE sock;
+		sockaddr_in socketAddress;
+		std::vector<SOCKET_TYPE> connections;
+		void removeSocket(SOCKET_TYPE s);
+
 		int sizeAddress = 0;
 		unsigned long connectionTimeout = 1000;
 		unsigned long messageTimeout = 100;
 		bool shouldStart = false;
 
-		std::vector<SOCKET> connections;
 		int totalAllowedConnections = 64;
 
 		bool type = TYPE_SERVER;
@@ -305,7 +347,7 @@ namespace glib
 		static int totalNetworks;
 		
 		std::thread networkThread;
-		std::mutex networkMutex = std::mutex();
+		std::mutex networkMutex;
 
 		bool running = false;
 		bool shouldConnect = true;

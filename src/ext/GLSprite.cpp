@@ -1,151 +1,155 @@
-#include "ext/GLSprite.h"
+#ifdef USE_OPENGL
 
-namespace glib
-{
-		
-	const Class GLSprite::myClass = Class("GLSprite", {&Object::myClass});
-	const Class* GLSprite::getClass()
+	#include "ext/GLSprite.h"
+
+	namespace glib
 	{
-		return &GLSprite::myClass;
-	}
-
-	GLSprite::GLSprite()
-	{
-	}
-
-
-	GLSprite::~GLSprite()
-	{
-		dispose();
-	}
-
-	GLSprite::GLSprite(const GLSprite& o)
-	{
-		images = o.images;
-		delayTimeForFrame = o.delayTimeForFrame;
-	}
-
-	void GLSprite::operator=(const GLSprite& o)
-	{
-		images = o.images;
-		delayTimeForFrame = o.delayTimeForFrame;
-	}
-
-	GLSprite::GLSprite(Sprite& o)
-	{
-		for(int i=0; i<o.getSize(); i++)
+			
+		const Class GLSprite::myClass = Class("GLSprite", {&Object::myClass});
+		const Class* GLSprite::getClass()
 		{
-			images.push_back( new GLTexture(o.getImage(i)) );
-			delayTimeForFrame.push_back( o.getDelayTime(i) );
+			return &GLSprite::myClass;
 		}
-	}
 
-	void GLSprite::dispose()
-	{
-		for(int i=0; i<images.size(); i++)
+		GLSprite::GLSprite()
 		{
-			if(images[i]!=nullptr)
+		}
+
+
+		GLSprite::~GLSprite()
+		{
+			dispose();
+		}
+
+		GLSprite::GLSprite(const GLSprite& o)
+		{
+			images = o.images;
+			delayTimeForFrame = o.delayTimeForFrame;
+		}
+
+		void GLSprite::operator=(const GLSprite& o)
+		{
+			images = o.images;
+			delayTimeForFrame = o.delayTimeForFrame;
+		}
+
+		GLSprite::GLSprite(Sprite& o)
+		{
+			for(int i=0; i<o.getSize(); i++)
 			{
-				delete images[i];
+				images.push_back( new GLTexture(o.getImage(i)) );
+				delayTimeForFrame.push_back( o.getDelayTime(i) );
 			}
 		}
 
-		images.clear();
-		delayTimeForFrame.clear();
-	}
-
-	GLTexture* GLSprite::getTexture(int index)
-	{
-		if (images.size() > index && index >= 0)
+		void GLSprite::dispose()
 		{
-			return images[index];
-		}
-		return nullptr;
-	}
-
-	int GLSprite::getDelayTime(int index)
-	{
-		if (images.size() > index && index >= 0)
-		{
-			return delayTimeForFrame[index];
-		}
-		return -1;
-	}
-
-	void GLSprite::setDelayTime(int index, int microSecondsDelay)
-	{
-		if (images.size() > index && index >= 0)
-		{
-			delayTimeForFrame[index] = microSecondsDelay;
-		}
-	}
-
-	int GLSprite::getSize()
-	{
-		return images.size();
-	}
-
-	void GLSprite::addTexture(GLTexture* p, int microSecondsDelay)
-	{
-		images.push_back(p);
-		delayTimeForFrame.push_back(microSecondsDelay);
-	}
-
-	void GLSprite::removeImage(int index)
-	{
-		if (index >= 0 && index < images.size())
-		{
-			std::vector<GLTexture*> newImages = std::vector<GLTexture*>();
-			std::vector<int> newImageDelay = std::vector<int>();
-
-			for (int i = 0; i < images.size(); i++)
+			for(int i=0; i<images.size(); i++)
 			{
-				if (i != index)
+				if(images[i]!=nullptr)
 				{
-					newImages.push_back(images[i]);
-					newImageDelay.push_back(delayTimeForFrame[i]);
-				}
-				else
 					delete images[i];
+				}
 			}
 
-			images = newImages;
-			delayTimeForFrame = newImageDelay;
+			images.clear();
+			delayTimeForFrame.clear();
 		}
-	}
 
-	void GLSprite::loadImage(File file)
-	{
-		dispose();
-		int amountOfImages = 0;
-
-		std::vector<int> extraData;
-		Image** imgs = Image::loadImage(file, &amountOfImages, &extraData);
-		
-		if(extraData.size()>=1)
+		GLTexture* GLSprite::getTexture(int index)
 		{
-			this->loops = extraData[0] == 1;
+			if (images.size() > index && index >= 0)
+			{
+				return images[index];
+			}
+			return nullptr;
 		}
 
-		for (int i = 0; i < amountOfImages; i++)
+		int GLSprite::getDelayTime(int index)
 		{
-			GLTexture* k = new GLTexture(imgs[i], true);
-
-			if(extraData.size() == amountOfImages+1)
-				addTexture(k, extraData[i+1]);
-			else
-				addTexture(k);
+			if (images.size() > index && index >= 0)
+			{
+				return delayTimeForFrame[index];
+			}
+			return -1;
 		}
-	}
 
-	bool GLSprite::shouldLoop()
-	{
-		return loops;
-	}
+		void GLSprite::setDelayTime(int index, int microSecondsDelay)
+		{
+			if (images.size() > index && index >= 0)
+			{
+				delayTimeForFrame[index] = microSecondsDelay;
+			}
+		}
 
-	void GLSprite::setShouldLoop(bool v)
-	{
-		loops = v;
-	}
+		int GLSprite::getSize()
+		{
+			return images.size();
+		}
 
-} //NAMESPACE glib END
+		void GLSprite::addTexture(GLTexture* p, int microSecondsDelay)
+		{
+			images.push_back(p);
+			delayTimeForFrame.push_back(microSecondsDelay);
+		}
+
+		void GLSprite::removeImage(int index)
+		{
+			if (index >= 0 && index < images.size())
+			{
+				std::vector<GLTexture*> newImages = std::vector<GLTexture*>();
+				std::vector<int> newImageDelay = std::vector<int>();
+
+				for (int i = 0; i < images.size(); i++)
+				{
+					if (i != index)
+					{
+						newImages.push_back(images[i]);
+						newImageDelay.push_back(delayTimeForFrame[i]);
+					}
+					else
+						delete images[i];
+				}
+
+				images = newImages;
+				delayTimeForFrame = newImageDelay;
+			}
+		}
+
+		void GLSprite::loadImage(File file)
+		{
+			dispose();
+			int amountOfImages = 0;
+
+			std::vector<int> extraData;
+			Image** imgs = Image::loadImage(file, &amountOfImages, &extraData);
+			
+			if(extraData.size()>=1)
+			{
+				this->loops = extraData[0] == 1;
+			}
+
+			for (int i = 0; i < amountOfImages; i++)
+			{
+				GLTexture* k = new GLTexture(imgs[i], true);
+
+				if(extraData.size() == amountOfImages+1)
+					addTexture(k, extraData[i+1]);
+				else
+					addTexture(k);
+			}
+		}
+
+		bool GLSprite::shouldLoop()
+		{
+			return loops;
+		}
+
+		void GLSprite::setShouldLoop(bool v)
+		{
+			loops = v;
+		}
+
+	} //NAMESPACE glib END
+	
+#endif

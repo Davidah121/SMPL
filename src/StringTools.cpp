@@ -16,7 +16,7 @@
 		if(tcgetattr(0, &old) < 0)
 			perror("tcsetattr()");
 		
-		old.c_lflag &= ~ICANON //local modes = Non Canonical Mode
+		old.c_lflag &= ~ICANON; //local modes = Non Canonical Mode
 		old.c_lflag &= ~ECHO; //local modes = Disable echo.
 		old.c_cc[VMIN] = 1; //control chars (MIN value) = 1
 		old.c_cc[VTIME] = 0; //control chars (TIME value) = 0 (No time)
@@ -36,20 +36,20 @@
 		std::vector<unsigned char> bytes;
 		bytes.push_back( buf & 0xFF );
 
-		if((buf>>8) & 0xFF > 0)
+		if(((buf>>8) & 0xFF) > 0)
 		{
 			bytes.push_back((buf>>8) & 0xFF);
-			if((buf>>16) & 0xFF > 0)
+			if(((buf>>16) & 0xFF) > 0)
 			{
 				bytes.push_back((buf>>16) & 0xFF);
-				if((buf>>24) & 0xFF > 0)
+				if(((buf>>24) & 0xFF) > 0)
 				{
 					bytes.push_back((buf>>24) & 0xFF);
 				}
 			}
 		}
 		
-		return StringTools::utf8ToChar(bytes);
+		return glib::StringTools::utf8ToChar(bytes);
 	}
 #else
 	#include<io.h>
@@ -70,9 +70,13 @@ namespace glib
 
 	void StringTools::init()
 	{
-		int outRet = _setmode(_fileno(stdout), _O_U16TEXT);
-		int inRet = _setmode(_fileno(stdin), _O_U16TEXT);
-		int errRet = _setmode(_fileno(stderr), _O_U16TEXT);
+		#ifdef LINUX
+
+		#else
+			int outRet = _setmode(_fileno(stdout), _O_U16TEXT);
+			int inRet = _setmode(_fileno(stdin), _O_U16TEXT);
+			int errRet = _setmode(_fileno(stderr), _O_U16TEXT);
+		#endif
 
 		std::ios_base::sync_with_stdio(true);
 

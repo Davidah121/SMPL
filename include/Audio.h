@@ -1,19 +1,29 @@
 #pragma once
 
-#ifndef WIN32_LEAN_AND_MEAN
-	#define WIN32_LEAN_AND_MEAN
-#endif
-
-#include <Windows.h>
-#include <mmeapi.h>
-
 #include <vector>
 #include "Sound.h"
 #include <thread>
 #include <mutex>
 #include <atomic>
 
-#pragma comment(lib,"winmm.lib")
+#ifdef LINUX
+
+#else
+
+	#ifndef WIN32_LEAN_AND_MEAN
+		#define WIN32_LEAN_AND_MEAN
+	#endif
+
+	#ifndef NOMINMAX
+		#define NOMINMAX
+	#endif
+
+	#include <Windows.h>
+	#include <mmeapi.h>
+
+	#pragma comment(lib,"winmm.lib")
+
+#endif
 
 namespace glib
 {
@@ -181,9 +191,13 @@ namespace glib
 
 		static void prepareSounds();
 
-		static HWAVEOUT waveOutHandle;
-		static WAVEFORMATEX format;
-		static void CALLBACK audioOutCallBack(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2);
+		#ifdef LINUX
+
+		#else
+			static HWAVEOUT waveOutHandle;
+			static WAVEFORMATEX format;
+			static void CALLBACK audioOutCallBack(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2);
+		#endif
 	};
 
 	class AudioIn
@@ -303,9 +317,13 @@ namespace glib
 		static std::thread audioThread;
 		static std::mutex audioMutex;
 
-		static HWAVEIN waveInHandle;
-		static WAVEFORMATEX format;
-		static void CALLBACK audioInCallBack(HWAVEIN hWaveIn, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2);
+		#ifdef LINUX
+
+		#else
+			static HWAVEIN waveInHandle;
+			static WAVEFORMATEX format;
+			static void CALLBACK audioInCallBack(HWAVEIN hWaveIn, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2);
+		#endif
 	};
 
 } //NAMESPACE glib END

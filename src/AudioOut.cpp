@@ -8,8 +8,12 @@
 namespace glib
 {
 
-	HWAVEOUT AudioOut::waveOutHandle;
-	WAVEFORMATEX AudioOut::format;
+	#ifdef LINUX
+
+	#else
+		HWAVEOUT AudioOut::waveOutHandle;
+		WAVEFORMATEX AudioOut::format;
+	#endif
 
 	int AudioOut::amtOfSoundsAllowed = 16;
 	double AudioOut::volume = 1.0;
@@ -33,39 +37,43 @@ namespace glib
 	{
 		if(!hasInit)
 		{
-			hasInit = true;
+			#ifdef LINUX
 
-			memset(&format, 0, sizeof(WAVEFORMATEX));
+			#else
+				hasInit = true;
 
-			format.cbSize = 0; //Extra data size
-			format.wFormatTag = WAVE_FORMAT_PCM;
-			format.wBitsPerSample = 16; //Bits per sample
-			format.nSamplesPerSec = 44100; //standard
-			format.nChannels = 2; //Stereo = 2, Mono = 1
-			format.nBlockAlign = (format.wBitsPerSample * format.nChannels) / 8;//
-			format.nAvgBytesPerSec = format.nBlockAlign * format.nSamplesPerSec;//
+				memset(&format, 0, sizeof(WAVEFORMATEX));
 
-			for(int i=0; i<amtBuffers; i++)
-			{
-				buffers.push_back({nullptr, true});
-			}
+				format.cbSize = 0; //Extra data size
+				format.wFormatTag = WAVE_FORMAT_PCM;
+				format.wBitsPerSample = 16; //Bits per sample
+				format.nSamplesPerSec = 44100; //standard
+				format.nChannels = 2; //Stereo = 2, Mono = 1
+				format.nBlockAlign = (format.wBitsPerSample * format.nChannels) / 8;//
+				format.nAvgBytesPerSec = format.nBlockAlign * format.nSamplesPerSec;//
 
-			MMRESULT result = waveOutOpen(&waveOutHandle, deviceID, &format, (DWORD_PTR)AudioOut::audioOutCallBack, NULL, CALLBACK_FUNCTION);
+				for(int i=0; i<amtBuffers; i++)
+				{
+					buffers.push_back({nullptr, true});
+				}
 
-			AudioOut::deviceID = deviceID;
-			if(result == MMSYSERR_NOERROR)
-			{
-				running = true;
-				AudioOut::audioThread = std::thread(AudioOut::prepareData);
-			}
-			else
-			{
-				dispose();
-				
-				#ifdef USE_EXCEPTIONS
-				throw AudioOutInitError();
-				#endif
-			}
+				MMRESULT result = waveOutOpen(&waveOutHandle, deviceID, &format, (DWORD_PTR)AudioOut::audioOutCallBack, NULL, CALLBACK_FUNCTION);
+
+				AudioOut::deviceID = deviceID;
+				if(result == MMSYSERR_NOERROR)
+				{
+					running = true;
+					AudioOut::audioThread = std::thread(AudioOut::prepareData);
+				}
+				else
+				{
+					dispose();
+					
+					#ifdef USE_EXCEPTIONS
+					throw AudioOutInitError();
+					#endif
+				}
+			#endif
 		}
 	}
 
@@ -85,7 +93,12 @@ namespace glib
 			unprepareData(k);
 		}
 		
-		waveOutClose(waveOutHandle);
+		#ifdef LINUX
+
+		#else
+			waveOutClose(waveOutHandle);
+		#endif
+
 		hasInit = false;
 	}
 
@@ -93,28 +106,30 @@ namespace glib
 	{
 		if(getRunning())
 		{
-			WAVEHDR* whdr = new WAVEHDR();
-			ZeroMemory(whdr, sizeof(WAVEHDR));
-			whdr->dwBufferLength = bufferSize*2*2;
-			whdr->lpData = (LPSTR)buffer;
+			#ifdef LINUX
 
-			buffers[b].audioStuff = whdr;
+			#else
+				WAVEHDR* whdr = new WAVEHDR();
+				ZeroMemory(whdr, sizeof(WAVEHDR));
+				whdr->dwBufferLength = bufferSize*2*2;
+				whdr->lpData = (LPSTR)buffer;
 
-			waveOutPrepareHeader(waveOutHandle, whdr, sizeof(WAVEHDR));
-			MMRESULT wResult = waveOutWrite(waveOutHandle, whdr, sizeof(WAVEHDR));
-			if(wResult != 0)
-			{
-				//error has occured
-				// dispose();
-				// StringTools::println("AUDIO ERROR: ", (int) wResult);
-				#ifdef USE_EXCEPTIONS
-				throw AudioOutError();
-				#else
-				throw -1;
-				#endif
+				buffers[b].audioStuff = whdr;
 
-				
-			}
+				waveOutPrepareHeader(waveOutHandle, whdr, sizeof(WAVEHDR));
+				MMRESULT wResult = waveOutWrite(waveOutHandle, whdr, sizeof(WAVEHDR));
+				if(wResult != 0)
+				{
+					//error has occured
+					// dispose();
+					// StringTools::println("AUDIO ERROR: ", (int) wResult);
+					#ifdef USE_EXCEPTIONS
+					throw AudioOutError();
+					#else
+					throw -1;
+					#endif
+				}
+			#endif
 		}
 	}
 
@@ -231,27 +246,35 @@ namespace glib
 
 	void AudioOut::unprepareData(int b)
 	{
-		WAVEHDR* a = (WAVEHDR*)buffers[b].audioStuff;
-		
-		if(a!=nullptr)
-		{
-			waveOutUnprepareHeader(waveOutHandle, a, sizeof(WAVEHDR));
-			delete a->lpData;
-			delete a;
-		}
+		#ifdef LINUX
+
+		#else
+			WAVEHDR* a = (WAVEHDR*)buffers[b].audioStuff;
+			
+			if(a!=nullptr)
+			{
+				waveOutUnprepareHeader(waveOutHandle, a, sizeof(WAVEHDR));
+				delete a->lpData;
+				delete a;
+			}
+		#endif
 
 		buffers[b].audioStuff = nullptr;
 		buffers[b].used = true;
 	}
 
-	void CALLBACK AudioOut::audioOutCallBack(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2)
-	{
-		if(uMsg == WOM_DONE)
+	#ifdef LINUX
+
+	#else
+		void CALLBACK AudioOut::audioOutCallBack(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2)
 		{
-			unprepareData(currentBuf);
-			currentBuf = (currentBuf+1) % amtBuffers;
+			if(uMsg == WOM_DONE)
+			{
+				unprepareData(currentBuf);
+				currentBuf = (currentBuf+1) % amtBuffers;
+			}
 		}
-	}
+	#endif
 
 	void AudioOut::setVolume(double v)
 	{

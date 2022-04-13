@@ -15,10 +15,10 @@ namespace glib
 
 	Mat2f::Mat2f(double v1, double v2, double v3, double v4) : Matrix(2,2)
 	{
-		data[0][0] = v1;
-		data[0][1] = v2;
-		data[1][0] = v3;
-		data[1][1] = v4;
+		data[0] = v1;
+		data[1] = v2;
+		data[2] = v3;
+		data[3] = v4;
 	}
 
 	Mat2f::Mat2f(const Mat2f& c)
@@ -47,74 +47,65 @@ namespace glib
 
 	double* Mat2f::operator[](int row)
 	{
-		return data[row];
+		return Matrix::operator[](row);
 	}
 
 	Mat2f Mat2f::operator*(double value)
 	{
-		Mat2f newMat = Mat2f();
-		newMat.data[0][0] = data[0][0] * value;
-		newMat.data[1][0] = data[1][0] * value;
-		newMat.data[0][1] = data[0][1] * value;
-		newMat.data[1][1] = data[1][1] * value;
+		Mat2f v = Mat2f();
 
-		return newMat;
+		for (int i = 0; i < 4; i++)
+			v.data[i] = data[i] * value;
+
+		return v;
 	}
 
 	void Mat2f::operator*=(double value)
 	{
-		data[0][0] *= value;
-		data[1][0] *= value;
-		data[0][1] *= value;
-		data[1][1] *= value;
+		for (int i = 0; i < 2; i++)
+			data[i] *= value;
 	}
 
 	Mat2f Mat2f::operator+(Mat2f other)
 	{
-		Mat2f newMat = Mat2f();
-		newMat.data[0][0] = data[0][0] + other.data[0][0];
-		newMat.data[1][0] = data[1][0] + other.data[1][0];
-		newMat.data[0][1] = data[0][1] + other.data[0][1];
-		newMat.data[1][1] = data[1][1] + other.data[1][1];
+		Mat2f v = Mat2f();
 
-		return newMat;
+		for (int i = 0; i < 4; i++)
+			v.data[i] = data[i] + other.data[i];
+
+		return v;
 	}
 
 	void Mat2f::operator+=(Mat2f other)
 	{
-		data[0][0] += other.data[0][0];
-		data[1][0] += other.data[1][0];
-		data[0][1] += other.data[0][1];
-		data[1][1] += other.data[1][1];
+		for (int i = 0; i < 2; i++)
+			data[i] += other.data[i];
 	}
 
 	Mat2f Mat2f::operator-(Mat2f other)
 	{
-		Mat2f newMat = Mat2f();
-		newMat.data[0][0] = data[0][0] - other.data[0][0];
-		newMat.data[1][0] = data[1][0] - other.data[1][0];
-		newMat.data[0][1] = data[0][1] - other.data[0][1];
-		newMat.data[1][1] = data[1][1] - other.data[1][1];
+		Mat2f v = Mat2f();
 
-		return newMat;
+		for (int i = 0; i < 4; i++)
+			v.data[i] = data[i] - other.data[i];
+
+		return v;
 	}
 
 	void Mat2f::operator-=(Mat2f other)
 	{
-		data[0][0] -= other.data[0][0];
-		data[1][0] -= other.data[1][0];
-		data[0][1] -= other.data[0][1];
-		data[1][1] -= other.data[1][1];
+		for (int i = 0; i < 2; i++)
+			data[i] -= other.data[i];
 	}
 
 	Mat2f Mat2f::operator*(Mat2f other)
 	{
 		Mat2f n = Mat2f();
-		n[0][0] = data[0][0] * other[0][0] + data[1][0] * other[0][1];
-		n[1][0] = data[0][0] * other[1][0] + data[1][0] * other[1][1];
+		n[0][0] = data[0] * other.data[0] + data[1] * other.data[2];
+		n[0][1] = data[0] * other.data[1] + data[1] * other.data[3];
 
-		n[0][1] = data[0][1] * other[0][0] + data[1][1] * other[0][1];
-		n[1][1] = data[0][1] * other[1][0] + data[1][1] * other[1][1];
+		n[1][0] = data[2] * other.data[0] + data[3] * other.data[2];
+		n[1][1] = data[2] * other.data[1] + data[3] * other.data[3];
 
 		return n;
 	}
@@ -122,31 +113,15 @@ namespace glib
 	Vec2f Mat2f::operator*(Vec2f other)
 	{
 		Vec2f v = Vec2f();
-		v.x = data[0][0] * other.x + data[0][1]*other.y;
-		v.y = data[1][0] * other.x + data[1][1]*other.y;
+		v.x = data[0] * other.x + data[1]*other.y;
+		v.y = data[2] * other.x + data[3]*other.y;
 		
 		return v;
 	}
 
 	bool Mat2f::operator==(Mat2f other)
 	{
-		bool same = true;
-		for(int y=0; y<2; y++)
-		{
-			for(int x=0; x<2; x++)
-			{
-				if(data[y][x] != other.data[y][x])
-				{
-					same = false;
-					break;
-				}
-			}
-			if(same==false)
-			{
-				break;
-			}
-		}
-		return same;
+		return Matrix::operator==(other);
 	}
 
 	bool Mat2f::operator!=(Mat2f other)
@@ -156,32 +131,17 @@ namespace glib
 
 	void Mat2f::fillArray(float* buffer)
 	{
-		buffer[0] = (float)data[0][0];
-		buffer[1] = (float)data[0][1];
-		buffer[2] = (float)data[1][0];
-		buffer[3] = (float)data[1][1];
+		for(int i=0; i<4; i++)
+		{
+			buffer[i] = (float)data[i];
+		}
 	}
 	void Mat2f::fillArray(double* buffer)
 	{
-		buffer[0] = data[0][0];
-		buffer[1] = data[0][1];
-		buffer[2] = data[1][0];
-		buffer[3] = data[1][1];
-	}
-
-	float* Mat2f::convertToFloatArray()
-	{
-		return new float[4]{
-			(float)data[0][0], (float)data[0][1],
-			(float)data[1][0], (float)data[1][1]
-		};
-	}
-	double* Mat2f::convertToDoubleArray()
-	{
-		return new double[4]{
-			data[0][0], data[0][1],
-			data[1][0], data[1][1]
-		};
+		for(int i=0; i<4; i++)
+		{
+			buffer[i] = data[i];
+		}
 	}
 
 } //NAMESPACE glib END

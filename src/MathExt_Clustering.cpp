@@ -329,7 +329,7 @@ namespace glib
 			for(int k=0; k<arr.size(); k++)
 			{
 				int minIndex = -1;
-				double minDis = DBL_MAX;
+				double minDis = std::numeric_limits<double>::max();
 
 				//measure distance from all means
 				for(int j=0; j<groups.size(); j++)
@@ -755,7 +755,7 @@ namespace glib
 			for(int k=0; k<arr.size(); k++)
 			{
 				int minIndex = -1;
-				double minDis = DBL_MAX;
+				double minDis = std::numeric_limits<double>::max();
 
 				//measure distance from all means
 				for(int j=0; j<groups.size(); j++)
@@ -1212,7 +1212,7 @@ namespace glib
 			for(int k=0; k<arr.size(); k++)
 			{
 				int minIndex = -1;
-				double minDis = DBL_MAX;
+				double minDis = std::numeric_limits<double>::max();
 
 				//measure distance from all means
 				for(int j=0; j<groups.size(); j++)
@@ -1603,7 +1603,7 @@ namespace glib
 			for(int k=0; k<arr.size(); k++)
 			{
 				int minIndex = -1;
-				double minDis = DBL_MAX;
+				double minDis = std::numeric_limits<double>::max();
 
 				//measure distance from all means
 				for(int j=0; j<groups.size(); j++)

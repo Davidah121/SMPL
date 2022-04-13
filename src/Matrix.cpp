@@ -14,6 +14,7 @@ namespace glib
 	{
 		this->columns = 0;
 		this->rows = 0;
+		this->size = 0;
 		data = nullptr;
 
 		valid = false;
@@ -23,24 +24,20 @@ namespace glib
 	{
 		this->columns = cols;
 		this->rows = rows;
+		this->size = rows*cols;
 
 		if (cols > 0 && rows > 0)
 		{
 			valid = true;
 
-			data = new double*[rows];
-			for (int i = 0; i < rows; i++)
-			{
-				data[i] = new double[cols];
-				memset(data[i], 0, sizeof(double)*cols);
-			}
+			data = new double[rows*cols];
+			memset(data, 0, sizeof(double)*rows*cols);
 		}
 	}
 
 	Matrix::Matrix(const Matrix& c)
 	{
 		this->copy(c);
-
 	}
 
 	void Matrix::operator=(const Matrix& c)
@@ -53,12 +50,6 @@ namespace glib
 		if(data!=nullptr)
 		{
 			//clear first
-			for (int i = 0; i < rows; i++)
-			{
-				if(data[i]!=nullptr)
-					delete[] data[i];
-			}
-
 			if(data!=nullptr)
 				delete[] data;
 		}
@@ -66,23 +57,15 @@ namespace glib
 		valid = c.valid;
 		rows = c.rows;
 		columns = c.columns;
+		this->size = rows*columns;
 		
 		if(c.data!=nullptr)
 		{
-			data = new double*[rows];
-			for (int i = 0; i < rows; i++)
+			data = new double[size];
+			for (int i = 0; i < size; i++)
 			{
-				data[i] = new double[columns];
+				data[i] = c.data[i];
 			}
-
-			for (int i = 0; i < rows; i++)
-			{
-				for (int i2 = 0; i2 < columns; i2++)
-				{
-					data[i][i2] = c.data[i][i2];
-				}
-			}
-			
 		}
 	}
 
@@ -90,34 +73,28 @@ namespace glib
 	{
 		if(valid)
 		{
-			for (int i = 0; i < rows; i++)
-			{
-				if(data[i]!=nullptr)
-					delete[] data[i];
-			}
-
 			if(data!=nullptr)
 				delete[] data;
+			data = nullptr;
 		}
-		
+		rows = 0;
+		columns = 0;
+		size = 0;
 		valid = false;
 	}
 
 	double * Matrix::operator[](int row)
 	{
-		return data[row];
+		return &data[row*columns];
 	}
 
 	Matrix Matrix::operator*(double value)
 	{
 		Matrix m = Matrix(rows, columns);
 
-		for (int i = 0; i < rows; i++)
+		for (int i = 0; i < size; i++)
 		{
-			for (int i2 = 0; i2 < columns; i2++)
-			{
-				m[i][i2] = value * data[i][i2];
-			}
+			m.data[i] = value * data[i];
 		}
 
 		return m;
@@ -138,7 +115,7 @@ namespace glib
 				{
 					for(int i3 = 0; i3 < columns; i3++)
 					{
-						m[i][i2] += data[i][i3] * other[i3][i2];
+						m.data[i2 + i*columns] += data[i3 + i*columns] * other.data[i2 + i3*columns];
 					}
 				}
 			}
@@ -159,7 +136,7 @@ namespace glib
 			{
 				for(int i3=0; i3 < rows; i3++)
 				{
-					v[i] += data[i][i3] * other[i3];
+					v[i] += data[i3 + i*columns] * other[i3];
 				}
 			}
 
@@ -174,12 +151,9 @@ namespace glib
 
 	void Matrix::operator*=(double value)
 	{
-		for (int i = 0; i < rows; i++)
+		for (int i = 0; i < size; i++)
 		{
-			for (int i2 = 0; i2 < columns; i2++)
-			{
-				data[i][i2] *= value;
-			}
+			data[i] *= value;
 		}
 	}
 
@@ -189,12 +163,9 @@ namespace glib
 		{
 			Matrix m = Matrix(rows, columns);
 
-			for (int i = 0; i < rows; i++)
+			for (int i = 0; i < size; i++)
 			{
-				for (int i2 = 0; i2 < columns; i2++)
-				{
-					m[i][i2] = other[i][i2] + data[i][i2];
-				}
+					m.data[i] = other.data[i] + data[i];
 			}
 
 			return m;
@@ -209,12 +180,9 @@ namespace glib
 	{
 		if (columns == other.columns && rows == other.rows)
 		{
-			for (int i = 0; i < rows; i++)
+			for (int i = 0; i < size; i++)
 			{
-				for (int i2 = 0; i2 < columns; i2++)
-				{
-					data[i][i2] += other[i][i2];
-				}
+				data[i] += other.data[i];
 			}
 		}
 	}
@@ -225,12 +193,9 @@ namespace glib
 		{
 			Matrix m = Matrix(rows, columns);
 
-			for (int i = 0; i < rows; i++)
+			for (int i = 0; i < size; i++)
 			{
-				for (int i2 = 0; i2 < columns; i2++)
-				{
-					m[i][i2] = other[i][i2] - data[i][i2];
-				}
+				m.data[i] = other.data[i] - data[i];
 			}
 
 			return m;
@@ -245,12 +210,9 @@ namespace glib
 	{
 		if (columns == other.columns && rows == other.rows)
 		{
-			for (int i = 0; i < rows; i++)
+			for (int i = 0; i < size; i++)
 			{
-				for (int i2 = 0; i2 < columns; i2++)
-				{
-					data[i][i2] -= other[i][i2];
-				}
+				data[i] -= other.data[i];
 			}
 		}
 	}
@@ -262,52 +224,22 @@ namespace glib
 			return false;
 		}
 
-		bool same = true;
-		for(int y=0; y<other.rows; y++)
+		for(int i=0; i<size; i++)
 		{
-			for(int x=0; x<other.columns; x++)
+			if(data[i] != other.data[i])
 			{
-				if(data[y][x] != other.data[y][x])
-				{
-					same = false;
-					break;
-				}
-			}
-			if(same==false)
-			{
-				break;
+				return false;
 			}
 		}
-		return same;
+		return true;
 	}
 
 	bool Matrix::operator!=(Matrix other)
 	{
-		if(rows != other.rows || columns != other.columns)
-		{
-			return true;
-		}
-		
-		bool notSame = true;
-		for(int y=0; y<2; y++)
-		{
-			for(int x=0; x<2; x++)
-			{
-				if(data[y][x] == other.data[y][x])
-				{
-					notSame = false;
-					break;
-				}
-			}
-			if(notSame==false)
-			{
-				break;
-			}
-		}
-		return notSame;
+		return !(this->operator==(other));
 	}
 
-	double** Matrix::getData()
+	double* Matrix::getData()
 	{
 		return data;
 	}
@@ -330,7 +262,7 @@ namespace glib
 	double Matrix::get(int col, int row)
 	{
 		if (row < rows && col < columns)
-			return data[row][col];
+			return data[col + row*columns];
 		else
 			return 0;
 	}
@@ -346,10 +278,7 @@ namespace glib
 
 		for (int i = 0; i < rows; i++)
 		{
-			for (int i2 = 0; i2 < columns; i2++)
-			{
-				m[i][i2] = other.data[i][i2] * data[i][i2];
-			}
+			m.data[i] = other.data[i] * data[i];
 		}
 
 		return m;
@@ -365,10 +294,10 @@ namespace glib
 			
 			if(rows==2 && columns==2)
 			{
-				inverse[0][0] = data[1][1];
-				inverse[1][1] = data[0][0];
-				inverse[1][0] = -data[1][0];
-				inverse[0][1] = -data[0][1];
+				inverse.data[0] = data[3];
+				inverse.data[1] = -data[1];
+				inverse.data[2] = -data[2];
+				inverse.data[3] = data[0];
 				
 				return inverse*(1.0/det);
 			}
@@ -403,7 +332,7 @@ namespace glib
 		{
 			for(int j=0; j<columns; j++)
 			{
-				m[j][i] = data[i][j];
+				m.data[i + j*rows] = data[j + i*columns];
 			}
 		}
 
@@ -414,22 +343,22 @@ namespace glib
 	{
 		if(rows == columns && rows > 1)
 		{
-			if(rows == 2)
+			if(columns == 2)
 			{
-				return (data[0][0]*data[1][1]) - (data[0][1]*data[1][0]);
+				return (data[0]*data[3]) - (data[1]*data[2]);
 			}
 			else
 			{
 				double sumValue = 0;
-				for(int i=0; i<rows; i++)
+				for(int i=0; i<columns; i++)
 				{
 					if(i%2 == 0)
 					{
-						sumValue += data[i][0] * getMatrixOfMinors(i, 0).getDeterminate();
+						sumValue += data[i] * getMatrixOfMinors(0, i).getDeterminate();
 					}
 					else
 					{
-						sumValue -= data[i][0] * getMatrixOfMinors(i, 0).getDeterminate();
+						sumValue -= data[i] * getMatrixOfMinors(0, i).getDeterminate();
 					}
 				}
 				return sumValue;
@@ -445,22 +374,22 @@ namespace glib
 		
 		if(m.getValid() && getValid())
 		{
-			double** arrP = m.data;
+			double* arrP = m.data;
 
 			for(int i=0; i<rows; i++)
 			{
 				if(i != row)
 				{
-					double* dataP = *arrP;
+					double* dataP = arrP;
 					for(int j=0; j<columns; j++)
 					{
 						if(j != col)
 						{
-							*(dataP) = data[i][j];
+							*(dataP) = data[j + i*columns];
 							dataP++;
 						}
 					}
-					arrP++;
+					arrP+=m.columns;
 				}
 			}
 		}
@@ -470,13 +399,7 @@ namespace glib
 
 	void Matrix::clear()
 	{
-		for(int i=0; i<rows; i++)
-		{
-			for(int j=0; j<columns; j++)
-			{
-				data[i][j] = 0;
-			}
-		}
+		memset(data, 0, sizeof(double)*rows*columns);
 	}
 
 } //NAMESPACE glib END

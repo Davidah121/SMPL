@@ -173,8 +173,8 @@ namespace glib
 			}
 			else if( Input::getKeyPressed(Input::KEY_BACKSPACE))
 			{
-				int minSelect = min(selectStart, selectEnd);
-				int maxSelect = max(selectStart, selectEnd);
+				int minSelect = MathExt::min(selectStart, selectEnd);
+				int maxSelect = MathExt::max(selectStart, selectEnd);
 				if(minSelect==maxSelect)
 					minSelect--;
 				std::wstring prefix = textElement.getText().substr(0, minSelect);
@@ -188,8 +188,8 @@ namespace glib
 			}
 			else if( Input::getKeyPressed(Input::KEY_DELETE))
 			{
-				int minSelect = min(selectStart, selectEnd);
-				int maxSelect = max(selectStart, selectEnd);
+				int minSelect = MathExt::min(selectStart, selectEnd);
+				int maxSelect = MathExt::max(selectStart, selectEnd);
 				if(minSelect==maxSelect)
 					maxSelect++;
 
@@ -209,8 +209,8 @@ namespace glib
 					//PASTE
 					std::wstring pasteText = System::pasteFromClipboard();
 
-					int minSelect = min(selectStart, selectEnd);
-					int maxSelect = max(selectStart, selectEnd);
+					int minSelect = MathExt::min(selectStart, selectEnd);
+					int maxSelect = MathExt::max(selectStart, selectEnd);
 					
 					std::wstring prefix = textElement.getText().substr(0, minSelect);
 					std::wstring suffix = textElement.getText().substr(maxSelect);
@@ -223,8 +223,8 @@ namespace glib
 				else if( Input::getKeyPressed('C'))
 				{
 					//COPY
-					int minSelect = min(selectStart, selectEnd);
-					int maxSelect = max(selectStart, selectEnd);
+					int minSelect = MathExt::min(selectStart, selectEnd);
+					int maxSelect = MathExt::max(selectStart, selectEnd);
 					std::wstring cpyText = textElement.getText().substr(minSelect, maxSelect);
 
 					System::copyToClipboard(cpyText);
@@ -232,8 +232,8 @@ namespace glib
 				else if( Input::getKeyPressed('X'))
 				{
 					//CUT
-					int minSelect = min(selectStart, selectEnd);
-					int maxSelect = max(selectStart, selectEnd);
+					int minSelect = MathExt::min(selectStart, selectEnd);
+					int maxSelect = MathExt::max(selectStart, selectEnd);
 					std::wstring cpyText = textElement.getText().substr(minSelect, maxSelect);
 
 					System::copyToClipboard(cpyText);
@@ -253,12 +253,12 @@ namespace glib
 				int charVal = lastKey;
 
 				//convert char to ascii
-				int value = StringTools::convertKeyToAscii(lastKey, Input::getKeyDown(VK_SHIFT));
+				int value = StringTools::convertKeyToAscii(lastKey, Input::getKeyDown(Input::KEY_SHIFT));
 
 				if(value!=-1)
 				{
-					int minSelect = min(selectStart, selectEnd);
-					int maxSelect = max(selectStart, selectEnd);
+					int minSelect = MathExt::min(selectStart, selectEnd);
+					int maxSelect = MathExt::max(selectStart, selectEnd);
 					
 					std::wstring prefix = textElement.getText().substr(0, minSelect);
 					std::wstring suffix = textElement.getText().substr(maxSelect);
@@ -407,12 +407,15 @@ namespace glib
 		mouseInput();
 		selectionCleanup();
 
-		cursorBlinkTimer++;
-		if(cursorBlinkTimer>=cursorBlinkMaxTime)
+		if(getFocus())
 		{
-			cursorBlinkTimer = 0;
-			cursorBlink = !cursorBlink;
-			setShouldRedraw(true);
+			cursorBlinkTimer++;
+			if(cursorBlinkTimer>=cursorBlinkMaxTime)
+			{
+				cursorBlinkTimer = 0;
+				cursorBlink = !cursorBlink;
+				setShouldRedraw(true);
+			}
 		}
 
 		if(prevCursorLoc != cursorLocation)

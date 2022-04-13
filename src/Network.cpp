@@ -4,7 +4,6 @@
 
 namespace glib
 {
-
 	int Network::totalNetworks = 0;
 
 	Network::Network(bool type, int port, std::string location, int amountOfConnectionsAllowed, bool TCP)
@@ -35,7 +34,7 @@ namespace glib
 				createSocket(TCP);
 				setupSocket();
 				connections.push_back(sock);
-				sock = NULL;
+				sock = 0;
 
 				setRunning(true);
 				networkThread = std::thread(&Network::threadRun, this);
@@ -49,20 +48,31 @@ namespace glib
 		setRunning(false);
 		dispose();
 
+		startNetwork(); //Must start the network if it has not ever been started.
+
 		if(networkThread.joinable())
 			networkThread.join();
+
+		networkMutex.lock();
+		shouldStart = false;
+		networkMutex.unlock();
 	}
 
 	bool Network::init()
 	{
-		int status = WSAStartup(MAKEWORD(2, 2), &wsaData);
-		Network::totalNetworks++;
+		#ifndef LINUX
+			//REQUIRED ON WINDOWS
+			int status = WSAStartup(MAKEWORD(2, 2), &wsaData);
+			Network::totalNetworks++;
 
-		if (status != 0)
-		{
-			//error
-			return false;
-		}
+			if (status != 0)
+			{
+				//error
+				return false;
+			}
+			return true;
+		#endif
+
 		return true;
 	}
 
@@ -74,7 +84,11 @@ namespace glib
 			sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
 		u_long mode = 1;
-		ioctlsocket(sock, FIONBIO, &mode);
+		#ifdef LINUX
+			ioctl(sock, FIONBIO, &mode);
+		#else
+			ioctlsocket(sock, FIONBIO, &mode);
+		#endif
 	}
 
 
@@ -83,6 +97,7 @@ namespace glib
 		socketAddress.sin_port = htons(port);
 		socketAddress.sin_family = AF_INET;
 
+
 		if(location[0] >= '0' && location[0] <= '9')
 		{
 			inet_pton(AF_INET, location.c_str(), &socketAddress.sin_addr); //IPv4
@@ -90,10 +105,7 @@ namespace glib
 		else
 		{
 			hostent* host = gethostbyname(location.c_str());
-
-			socketAddress.sin_addr.s_addr = *((int32_t*)host->h_addr); //Website Name
-			if(host != nullptr)
-				delete host;
+			socketAddress.sin_addr.s_addr = *((int32_t*)host->h_addr_list[0]); //Website Name
 		}
 		
 		sizeAddress = sizeof(socketAddress);
@@ -103,7 +115,7 @@ namespace glib
 	{
 		if (type == Network::TYPE_SERVER)
 		{
-			int error = bind(sock, (SOCKADDR*)(&socketAddress), sizeAddress);
+			int error = bind(sock, (sockaddr*)(&socketAddress), sizeAddress);
 
 			if (error == SOCKET_ERROR)
 			{
@@ -127,11 +139,11 @@ namespace glib
 	{
 		if (type == Network::TYPE_SERVER)
 		{
-			SOCKET tempSock = INVALID_SOCKET;
+			SOCKET_TYPE tempSock = INVALID_SOCKET;
 
 			while (tempSock == INVALID_SOCKET)
 			{
-				tempSock = accept(sock, (SOCKADDR*)&socketAddress, &sizeAddress);
+				tempSock = accept(sock, (sockaddr*)&socketAddress, (socklen_t*)&sizeAddress);
 			}
 			
 			connections.push_back(tempSock);
@@ -142,10 +154,20 @@ namespace glib
 	{
 		for(int i=0; i<connections.size(); i++)
 		{
-			closesocket(connections[i]);
+			#ifdef LINUX
+				close(connections[i]);
+			#else
+				closesocket(connections[i]);
+			#endif
 		}
+		connections.clear();
 		
-		closesocket(sock);
+		#ifdef LINUX
+			close(sock);
+		#else
+			closesocket(sock);
+		#endif
+		sock = 0;
 	}
 
 	void Network::connect()
@@ -154,7 +176,7 @@ namespace glib
 		
 		if (type == Network::TYPE_CLIENT)
 		{
-			status = ::connect(connections[0], (SOCKADDR*)(&socketAddress), sizeAddress);
+			status = ::connect(connections[0], (sockaddr*)&socketAddress, sizeAddress);
 		}
 	}
 
@@ -176,7 +198,7 @@ namespace glib
 		//allocate buffer of x size. read till '\0'
 		networkMutex.lock();
 		char* tempBuffer = new char[4096];
-		ZeroMemory(tempBuffer, 4096);
+		memset(tempBuffer, 0, 4096);
 		bool good = false;
 
 		while(true)
@@ -207,16 +229,16 @@ namespace glib
 				{
 					//did not find '\0', redo until we do
 					if(type == Network::TYPE_CLIENT)
-						status = recv(connections[0], tempBuffer, 4096, NULL);
+						status = recv(connections[0], tempBuffer, 4096, 0);
 					else
-						status = recv(connections[id], tempBuffer, 4096, NULL);
+						status = recv(connections[id], tempBuffer, 4096, 0);
 				}
 				else
 				{
 					if(type == Network::TYPE_CLIENT)
-						status = recv(connections[0], tempBuffer, bytesToRead, NULL);
+						status = recv(connections[0], tempBuffer, bytesToRead, 0);
 					else
-						status = recv(connections[id], tempBuffer, bytesToRead, NULL);
+						status = recv(connections[id], tempBuffer, bytesToRead, 0);
 
 					good = true;
 					break;
@@ -240,7 +262,7 @@ namespace glib
 		//allocate buffer of x size. read till status == 0
 		networkMutex.lock();
 		char* tempBuffer = new char[4096];
-		ZeroMemory(tempBuffer, 4096);
+		memset(tempBuffer, 0, 4096);
 		bool good = false;
 
 		while(true)
@@ -255,9 +277,9 @@ namespace glib
 				break;
 			
 			if(type == Network::TYPE_CLIENT)
-				status = recv(connections[0], tempBuffer, 4096, NULL);
+				status = recv(connections[0], tempBuffer, 4096, 0);
 			else
-				status = recv(connections[id], tempBuffer, 4096, NULL);
+				status = recv(connections[id], tempBuffer, 4096, 0);
 				
 			for(int i=0; i<status; i++)
 			{
@@ -320,15 +342,17 @@ namespace glib
 	void Network::dispose()
 	{
 		closeSocket();
-		Network::totalNetworks--;
-		if(Network::totalNetworks==0)
-		{
-			int status = WSACleanup();
-			if (status != 0)
+		#ifndef LINUX
+			Network::totalNetworks--;
+			if(Network::totalNetworks==0)
 			{
-				//error
+				int status = WSACleanup();
+				if (status != 0)
+				{
+					//error
+				}
 			}
-		}
+		#endif
 	}
 
 	void Network::reconnect()
@@ -343,39 +367,91 @@ namespace glib
 		networkMutex.lock();
 		for(int i=0; i<connections.size(); i++)
 		{
-			if(connections[i] != NULL)
-				closesocket(connections[i]);
-			connections[i] = NULL;
+			if(connections[i] != 0)
+			{
+				#ifdef LINUX
+					close(connections[i]);
+				#else
+					closesocket(connections[i]);
+				#endif
+			}
 		}
+		connections.clear();
 		shouldConnect = false;
 		isConnected = false;
 		networkMutex.unlock();
 	}
 
-	// void Network::disconnect(int id)
-	// {
-	// 	networkMutex.lock();
-	// 	if(id >= 0 && id < connections.size())
-	// 	{
-	// 		if(connections[id] != NULL)
-	// 			closesocket(connections[id]);
-	// 		connections[id] = NULL;
-	// 	}
-	// 	shouldConnect = false;
-	// 	networkMutex.unlock();
-	// }
+	void Network::disconnect(int id)
+	{
+		removeSocket(connections[id]);
+	}
 
-	void Network::removeSocket(SOCKET s)
+	std::string Network::getIPFromConnection(int id)
 	{
 		networkMutex.lock();
-		std::vector<SOCKET> nSockets;
+		sockaddr addr;
+		int len;
+		#ifdef LINUX
+			int err = getpeername(connections[id], (sockaddr*)&addr, (socklen_t*)&len);
+		#else
+			int err = getpeername(connections[id], (sockaddr*)&addr, &len);
+		#endif
+		networkMutex.unlock();
+
+		if(err == 0)
+		{
+			std::string returnVal = addr.sa_data;
+			return returnVal;
+		}
+		return "";
+	}
+
+	int Network::getIDFromIP(std::string s)
+	{
+		int id = -1;
+		networkMutex.lock();
+		for(int i=0; i<connections.size(); i++)
+		{
+			sockaddr addr;
+			int len;
+			#ifdef LINUX
+				int err = getpeername(connections[i], (sockaddr*)&addr, (socklen_t*)&len);
+			#else
+				int err = getpeername(connections[i], (sockaddr*)&addr, &len);
+			#endif
+			if(err == 0)
+			{
+				std::string testVal = addr.sa_data;
+				if(testVal == s)
+				{
+					id = i;
+					break;
+				}
+			}
+		}
+		networkMutex.unlock();
+		return id;
+	}
+
+	void Network::removeSocket(SOCKET_TYPE s)
+	{
+		networkMutex.lock();
+		std::vector<SOCKET_TYPE> nSockets;
 		for(int i=0; i<connections.size(); i++)
 		{
 			if(connections[i]!=s)
 				nSockets.push_back(connections[i]);
 			else
-				closesocket(s);
+			{
+				#ifdef LINUX
+					close(s);
+				#else
+					closesocket(s);
+				#endif
+			}
 		}
+		connections = nSockets;
 		networkMutex.unlock();
 	}
 
@@ -466,12 +542,12 @@ namespace glib
 	void Network::threadRun()
 	{
 		bool init = false;
-		TIMEVAL waitTime = {0,1};
-		FD_SET socketSet;
+		timeval waitTime = {0,1};
+		fd_set socketSet;
 
 		while(!getShouldStart())
 		{
-			System::sleep(0, 1);
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		}
 
 		while(getRunning())
@@ -488,11 +564,11 @@ namespace glib
 				{
 					
 					if(connections.size() < totalAllowedConnections)
-					{			
+					{
 						FD_ZERO(&socketSet);
 						FD_SET(sock, &socketSet);
 
-						int retVal = select(NULL, &socketSet, NULL, NULL, &waitTime);
+						int retVal = select(0, &socketSet, NULL, NULL, &waitTime);
 						
 						//Note retVal of 0 means timeout
 						if(retVal>0)
@@ -515,11 +591,15 @@ namespace glib
 					}
 
 					int startIndex=0;
-					std::vector<SOCKET> clients = connections;
+					std::vector<SOCKET_TYPE> clients = connections;
 
 					while(startIndex < connections.size())
 					{
-						int currSize = MathExt::min((int)clients.size() - startIndex, 64);
+						int currSize = 0;
+						if(clients.size() - startIndex < 64)
+							currSize = clients.size() - startIndex;
+						else
+							currSize = 64;
 						FD_ZERO(&socketSet);
 
 						for(int i=0; i<currSize; i++)
@@ -527,7 +607,7 @@ namespace glib
 							FD_SET(clients[i + startIndex], &socketSet);
 						}
 
-						int retVal = select(NULL, &socketSet, NULL, NULL, &waitTime);
+						int retVal = select(0, &socketSet, NULL, NULL, &waitTime);
 
 						if(retVal>0)
 						{
@@ -561,7 +641,7 @@ namespace glib
 						startIndex+=currSize;
 					}
 					//sleep for x time
-					System::sleep(0,1);
+					std::this_thread::sleep_for(std::chrono::microseconds(1));
 				}
 				
 			}
@@ -573,9 +653,14 @@ namespace glib
 					if(getReconnect())
 					{
 						connect();
-						int lastError = GetLastError();
-						wouldConnect = (GetLastError() == WSAEISCONN);
-						
+						#ifdef LINUX
+							int lastError = errno;
+							wouldConnect = (lastError == EISCONN);
+						#else
+							int lastError = GetLastError();
+							wouldConnect = (GetLastError() == WSAEISCONN);
+						#endif
+
 						if(wouldConnect)
 						{
 							std::function<void(int)> cpy = getConnectFunc();
@@ -587,7 +672,7 @@ namespace glib
 						
 					}
 					//sleep for x time
-					System::sleep(0,1);
+					std::this_thread::sleep_for(std::chrono::microseconds(1));
 				}
 
 				//MESSAGE
@@ -596,7 +681,7 @@ namespace glib
 					FD_ZERO(&socketSet);
 					FD_SET(connections[0], &socketSet);
 
-					int retVal = select(NULL, &socketSet, NULL, NULL, &waitTime);
+					int retVal = select(0, &socketSet, NULL, NULL, &waitTime);
 
 					//Note retVal of 0 means timeout
 					if(retVal>0)
@@ -622,12 +707,13 @@ namespace glib
 					FD_CLR(connections[0], &socketSet);
 
 					//sleep for x time
-					System::sleep(0,1);
+					std::this_thread::sleep_for(std::chrono::microseconds(1));
 				}
 
 			}
 			
 		}
 	}
+
 
 } //NAMESPACE glib END
