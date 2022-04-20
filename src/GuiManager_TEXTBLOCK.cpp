@@ -51,8 +51,8 @@ namespace glib
 		graphicsInterface->setFont(fInt);
 		graphicsInterface->setColor(textColor);
 
-		int actualMaxW = (maxWidth <= 0) ? 0xFFFF : maxWidth;
-		int actualMaxH = (maxHeight <= 0) ? 0xFFFF : maxHeight;
+		int actualMaxW = (maxWidth < 0) ? 0xFFFF : maxWidth; //65535 will be considered the maximum width. Most images and textures limit size to this.
+		int actualMaxH = (maxHeight < 0) ? 0xFFFF : maxHeight; //65535 will be considered the maximum height. Most images and textures limit size to this.
 
 		int minHighlight = MathExt::min(startHighlight, endHighlight);
 		int maxHighlight = MathExt::max(startHighlight, endHighlight);
@@ -63,7 +63,7 @@ namespace glib
 			graphicsInterface->drawTextLimits(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowLineBreaks);
 		
 		graphicsInterface->setFont(oldFontInt);
-	
+		
 	}
 
 	void GuiTextBlock::setTextColor(Color c)

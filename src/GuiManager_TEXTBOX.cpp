@@ -120,7 +120,7 @@ namespace glib
 
 		if(getFocus())
 		{
-			if(!cursorBlink)
+			if(cursorBlink)
 			{
 				//Font Stuff
 				graphicsInterface->setColor(cursorBlinkColor);
@@ -133,7 +133,7 @@ namespace glib
 				graphicsInterface->drawRect(renderX+startOfCursorLine, renderY, renderX+startOfCursorLine+cursorWidth, renderY+f->getFontSize(), false);
 			}
 		}
-	
+
 	}
 
 	void GuiTextBox::keyInput()
@@ -289,10 +289,8 @@ namespace glib
 		
 		if (Input::getMousePressed(Input::LEFT_MOUSE_BUTTON))
 		{
-			setFocus(false);
-
-			selectEnd = -1;
-			selectStart = -1;
+			selectEnd = 0;
+			selectStart = 0;
 			cursorLocation = 0;
 
 			if (mouseX >= x && mouseX <= x + width)
@@ -328,6 +326,14 @@ namespace glib
 						selectStart = testText.size();
 					}
 				}
+				else
+				{
+					setFocus(false);
+				}
+			}
+			else
+			{
+				setFocus(false);
 			}
 		}
 
@@ -417,6 +423,14 @@ namespace glib
 				setShouldRedraw(true);
 			}
 		}
+		else
+		{
+			if(cursorBlink)
+			{
+				setShouldRedraw(true);
+				cursorBlink = false;
+			}
+		}
 
 		if(prevCursorLoc != cursorLocation)
 			setShouldRedraw(true);
@@ -501,6 +515,8 @@ namespace glib
 		}
 
 		textElement.loadDataFromXML(attributes, inter);
+		textElement.setMaxWidth(width);
+		textElement.setMaxHeight(height);
 	}
 
 	GuiInstance* GuiTextBox::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)

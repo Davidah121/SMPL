@@ -815,10 +815,10 @@ namespace glib
 		 * 
 		 * @param x 
 		 * @param y 
-		 * @param width 
-		 * @param height 
+		 * @param maxWidth 
+		 * @param maxHeight 
 		 */
-		GuiTextBlock(int x, int y, int width = -1, int height = -1);
+		GuiTextBlock(int x, int y, int maxWidth = -1, int maxHeight = -1);
 
 		/**
 		 * @brief Destroy the GuiTextBlock object
@@ -971,7 +971,7 @@ namespace glib
 
 		/**
 		 * @brief Sets the Maximum Width of the text block
-		 * 		If set to <= 0, no maximum width will be imposed
+		 * 		If set to < 0, no maximum width will be imposed
 		 * 
 		 * @param v 
 		 */
@@ -979,7 +979,7 @@ namespace glib
 
 		/**
 		 * @brief Sets the Maximum Height of the text block
-		 * 		If set to <= 0, no maximum height will be imposed
+		 * 		If set to < 0, no maximum height will be imposed
 		 * 
 		 * @param v 
 		 */
@@ -1029,8 +1029,8 @@ namespace glib
 	private:
 		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter);
 
-		int maxWidth = 0;
-		int maxHeight = 0;
+		int maxWidth = -1;
+		int maxHeight = -1;
 		bool shouldHighlight = false;
 
 		int startHighlight = -1;
@@ -1782,7 +1782,7 @@ namespace glib
 		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter);
 
 		std::vector<Point*> locations;
-		int elementSpacing = 0;
+		int elementSpacing = 1;
 		bool isVertical = true;
 
 		Color backgroundColor = { 0, 0, 0, 0 };
@@ -1838,8 +1838,8 @@ namespace glib
 		static GuiInstance* loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter);
 
 		std::vector<Point*> locations;
-		int gridXSpacing = 0;
-		int gridYSpacing = 0;
+		int gridXSpacing = 1;
+		int gridYSpacing = 1;
 		int rowSize = 1;
 		int colSize = 1;
 		bool rowMajorOrder = false;
@@ -2119,7 +2119,6 @@ namespace glib
 
 		SimpleHashMap<std::wstring, GuiInstance*> objectsByName = SimpleHashMap<std::wstring, GuiInstance*>();
 		
-
 		int windowX = 0;
 		int windowY = 0;
 		bool invalidImage = true;
@@ -2129,7 +2128,6 @@ namespace glib
 		GuiGraphicsInterface graphicsInterface;
 
 		Color backgroundColor = { 0xA2, 0xB9, 0xBC, 0xFF };
-
 	};
 
 } //NAMESPACE glib END

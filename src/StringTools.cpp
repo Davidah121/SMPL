@@ -71,7 +71,7 @@ namespace glib
 	void StringTools::init()
 	{
 		#ifdef LINUX
-
+			setlocale(LC_CTYPE, "");
 		#else
 			int outRet = _setmode(_fileno(stdout), _O_U16TEXT);
 			int inRet = _setmode(_fileno(stdin), _O_U16TEXT);
@@ -333,6 +333,47 @@ namespace glib
 			c4 += c & 0b00111111;
 			return {c1, c2, c3, c4};
 		}
+	}
+
+	short StringTools::byteSwap(short v)
+	{
+		#ifdef LINUX
+			return StringTools::leftRotate(v, 8);
+		#else
+			return _byteswap_ushort(v);
+		#endif
+	}
+
+	int StringTools::byteSwap(int v)
+	{
+		#ifdef LINUX
+			return(
+				((v & 0x000000FF) << 24) |
+				((v & 0x0000FF00) <<  8) |
+				((v & 0x00FF0000) >>  8) |
+				((v & 0xFF000000) >> 24)
+			);
+		#else
+			return _byteswap_ulong(v);
+		#endif
+	}
+
+	size_t StringTools::byteSwap(size_t v)
+	{
+		#ifdef LINUX
+			return(
+				((v & 0x00000000000000FF) << 56) |
+				((v & 0x000000000000FF00) << 48) |
+				((v & 0x0000000000FF0000) << 40) |
+				((v & 0x00000000FF000000) << 32) |
+				((v & 0xFF00000000000000) >> 56) |
+				((v & 0x00FF000000000000) >> 48) |
+				((v & 0x0000FF0000000000) >> 40) |
+				((v & 0x000000FF00000000) >> 32)
+			);
+		#else
+			return _byteswap_uint64(v);
+		#endif
 	}
 
 	int StringTools::utf8ToChar(std::vector<unsigned char> utf8Char)
@@ -940,15 +981,25 @@ namespace glib
 		while(i<splits.size())
 		{
 			std::string str = splits[i];
-
-			int size = vsnprintf(nullptr, 0, str.c_str(), args);
-			size++;
-
-			char* nText = new char[size];
 			
-			vsnprintf(nText, size, str.c_str(), args);
+			int bufferSize = 1024;
+			char* nText = new char[bufferSize];
+			while(true)
+			{
+				int size = vsnprintf(nText, bufferSize, str.c_str(), args);
+				if(size < 0)
+				{
+					bufferSize*=2;
+					delete[] nText;
+					nText = new char[bufferSize];
+				}
+				else
+				{
+					break;
+				}
+			}
+			
 			finalText += nText;
-
 			delete[] nText;
 			
 			int count = 0;
@@ -1056,15 +1107,25 @@ namespace glib
 		while(i<splits.size())
 		{
 			std::wstring str = splits[i];
-
-			int size = vswprintf(nullptr, 0, str.c_str(), args);
-			size++;
-
-			wchar_t* nText = new wchar_t[size];
 			
-			vswprintf(nText, size, str.c_str(), args);
+			int bufferSize = 1024;
+			wchar_t* nText = new wchar_t[bufferSize];
+			while(true)
+			{
+				int size = vswprintf(nText, bufferSize, str.c_str(), args);
+				if(size < 0)
+				{
+					bufferSize*=2;
+					delete[] nText;
+					nText = new wchar_t[bufferSize];
+				}
+				else
+				{
+					break;
+				}
+			}
+			
 			finalText += nText;
-
 			delete[] nText;
 			
 			int count = 0;

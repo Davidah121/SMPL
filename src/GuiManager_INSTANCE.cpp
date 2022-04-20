@@ -223,7 +223,6 @@ namespace glib
 		{
 			focus = true;
 		}
-		setShouldRedraw(true);
 	}
 
 	bool GuiInstance::getFocus()
@@ -392,8 +391,11 @@ namespace glib
 		}
 
 		if(shouldCallF)
+		{
+			setShouldRedraw(true);
 			if(onFocusFunction!=nullptr)
 				onFocusFunction(this);
+		}
 		
 		shouldCallA = false;
 		shouldCallV = false;

@@ -1,14 +1,25 @@
 <SimpleGUI>
 
-    <GuiList x="64" y="64" spacing="32">
-        <GuiTextBlock x="1" maxwidth="128" maxheight="24" text="LABEL1"/>
-        <GuiTextBox width="128" height="24" name="LABEL1"/>
+    <GuiGrid x="64" y="64" horizontalspacing="32" verticalspacing="32" maxcolumns="3" maxrows="2">
+        <GuiList spacing="1">
+            <GuiTextBlock maxwidth="128" maxheight="24" text="LABEL1"/>
+            <GuiTextBox width="128" height="24" id="LABEL1"/>
+        </GuiList>
         
-        <GuiTextBlock x="1" maxwidth="128" maxheight="24" text="LABEL2"/>
-        <GuiTextBox width="128" height="24" name="LABEL2"/>
+        <GuiList spacing="1">
+            <GuiTextBlock maxwidth="128" maxheight="24" text="LABEL2"/>
+            <GuiTextBox width="128" height="24" id="LABEL2"/>
+        </GuiList>
 
-        <GuiTextBlock x="1" maxwidth="128" maxheight="24" text="LABEL3"/>
-        <GuiTextBox width="128" height="24" name="LABEL3"/>
-    </GuiList>
+        <GuiList spacing="1">
+            <GuiTextBlock maxwidth="128" maxheight="24" text="LABEL3"/>
+            <GuiTextBox width="128" height="24" id="LABEL3"/>
+        </GuiList>
+
+        <GuiList spacing="1">
+            <GuiTextBlock maxwidth="128" maxheight="24" text="LABEL4"/>
+            <GuiTextBox width="128" height="24" id="LABEL4"/>
+        </GuiList>
+    </GuiGrid>
 
 </SimpleGUI>

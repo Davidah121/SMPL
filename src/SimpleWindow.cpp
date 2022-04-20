@@ -118,10 +118,10 @@ namespace glib
 
 			if(event.type == Expose)
 			{
-				XImage* drawableImage = XGetImage(displayServer, (Window)windowHandle, 0, 0, width, height, AllPlanes, ZPixmap);
-				memcpy(drawableImage->data, wndPixels, wndPixelsSize);
-				XPutImage(displayServer, (Window)windowHandle, gc, drawableImage, 0, 0, 0, 0, width, height);
-				XDestroyImage(drawableImage);
+				if(drawableImage != nullptr)
+				{
+					XPutImage(displayServer, (Window)windowHandle, gc, drawableImage, 0, 0, 0, 0, width, height);
+				}
 			}
 		}
 	#else
@@ -167,12 +167,6 @@ namespace glib
 					currentWindow->setShouldEnd(true);
 					break;
 				case WM_DESTROY:
-					/*
-					if (currentWindow->closingFunction != nullptr)
-						currentWindow->closingFunction();
-					PostQuitMessage(0);
-					currentWindow->setRunning(false);
-					*/
 					break;
 				case WM_KEYDOWN:
 					if (currentWindow->keyDownFunction != nullptr)
@@ -446,6 +440,8 @@ namespace glib
 				XFreeGC(displayServer, gc);
 				XDestroyWindow(displayServer, (Window)windowHandle);
 				XCloseDisplay(displayServer);
+				XDestroyImage(drawableImage); //Deletes wndPixels
+				wndPixels = nullptr;
 
 				windowHandle = 0;
 				displayServer = nullptr;
@@ -532,9 +528,16 @@ namespace glib
 			{
 				
 			}
+			XVisualInfo vInfo;
+			XMatchVisualInfo(displayServer, DefaultScreen(displayServer), 32, TrueColor, &vInfo);
 
+			XSetWindowAttributes attr;
+			attr.colormap = XCreateColormap(displayServer, DefaultRootWindow(displayServer), vInfo.visual, AllocNone);
+			attr.border_pixel = borderWidth;
+			attr.background_pixel = 0;
+			
 			screen = DefaultScreen(displayServer);
-			windowHandle = XCreateSimpleWindow(displayServer, RootWindow(displayServer, screen), trueX, trueY, trueWidth, trueHeight, borderWidth, BlackPixel(displayServer, screen), WhitePixel(displayServer, screen));
+			windowHandle = XCreateWindow(displayServer, DefaultRootWindow(displayServer), trueX, trueY, trueWidth, trueHeight, borderWidth, vInfo.depth, InputOutput, vInfo.visual, CWColormap | CWBorderPixel | CWBackPixel, &attr);
 			
 			//set window name
 			std::string cTitle = StringTools::toCString(title);
@@ -569,16 +572,22 @@ namespace glib
 			wmDeleteMessage = XInternAtom(displayServer, "WM_DELETE_WINDOW", 0);
 			XSetWMProtocols(displayServer, windowHandle, &wmDeleteMessage, 1);
 
-			gc = XCreateGC(displayServer, windowHandle, 0, nullptr);
+			gc = XCreateGC(displayServer, windowHandle, 0, 0);
 
+			this->preX = this->x;
+			this->preY = this->y;
+			
 			setVisible(true);
 			setValid(true);
 			setShouldEnd(false);
 			setRunning(true);
 
 			initBitmap();
-			SimpleWindow::windowList.push_back(this);
+			gui = new GuiManager(GuiManager::TYPE_SOFTWARE, this->width, this->height);
 
+			if(windowType.initFunction != nullptr)
+				windowType.initFunction(this);
+			
 			setFinishInit(true);
 
 			if(windowType.threadManaged == TYPE_THREAD_MANAGED)
@@ -689,6 +698,9 @@ namespace glib
 					initBitmap();
 					gui = new GuiManager(GuiManager::TYPE_SOFTWARE, this->width, this->height);
 
+					if(windowType.initFunction != nullptr)
+						windowType.initFunction(this);
+					
 					setFinishInit(true);
 
 					if(windowType.threadManaged == TYPE_THREAD_MANAGED)
@@ -725,7 +737,21 @@ namespace glib
 
 	void SimpleWindow::initBitmap()
 	{
-		#ifndef LINUX
+		#ifdef LINUX
+			if(wndPixels != nullptr)
+			{
+				XDestroyImage(drawableImage); //destroys wndPixels
+				drawableImage = nullptr;
+				wndPixels = nullptr;
+			}
+			wndPixelsSize = (width*height*4);
+			wndPixels = new unsigned char[wndPixelsSize];
+
+			XVisualInfo vInfo;
+			XMatchVisualInfo(displayServer, DefaultScreen(displayServer), 32, TrueColor, &vInfo);
+			drawableImage = XCreateImage(displayServer, vInfo.visual, vInfo.depth,
+									ZPixmap, 0, (char*)wndPixels, width, height, 32, 4*width);
+		#else
 			if(wndPixels != nullptr)
 			{
 				DeleteObject(bitmap);
@@ -755,19 +781,19 @@ namespace glib
 			myHDC = GetDC((HWND)windowHandle);
 
 			bitmap = CreateCompatibleBitmap(myHDC, width, height);
+
+			if(wndPixels != nullptr)
+			{
+				delete[] wndPixels;
+				wndPixels = nullptr;
+			}
+
+			scanLinePadding = width%4;
+			wndPixelsSize = (width*3 + scanLinePadding) * height;
+
+			wndPixels = new unsigned char[wndPixelsSize];
+			memset(wndPixels,0,wndPixelsSize);
 		#endif
-
-		if(wndPixels != nullptr)
-		{
-			delete[] wndPixels;
-			wndPixels = nullptr;
-		}
-
-		scanLinePadding = width%4;
-		wndPixelsSize = (width*3 + scanLinePadding) * height;
-
-		wndPixels = new unsigned char[wndPixelsSize];
-		memset(wndPixels,0,wndPixelsSize);
 
 		if(gui!=nullptr)
 		{
@@ -1256,96 +1282,109 @@ namespace glib
 
 	void SimpleWindow::drawImage(Image* g)
 	{
-		//TODO LINUX VERSION
-		if (g != nullptr)
+		#ifdef LINUX
+		Color* imgPixels = (Color*)g->getPixels();
+		int* windowPixels = (int*)wndPixels;
+		int* endWindowPixels = windowPixels + width*height;
+		Color* endImgPixels = imgPixels + g->getWidth()*g->getHeight();
+		
+		if(width == g->getWidth() && height == g->getHeight())
 		{
-			if (g->getWidth() == width && g->getHeight() == height)
+			while(windowPixels < endWindowPixels)
 			{
-				//same size
-				Color* imgPixelsStart = g->getPixels();
-				unsigned char* wndPixelsStart = wndPixels;
-				unsigned char* wndPixelsEnd = wndPixels + wndPixelsSize;
 				
-				int tX = 0;
-				int scanLineNum = 0;
-
-				while (wndPixelsStart < wndPixelsEnd)
+				int v = imgPixels->alpha; //switch from RGBA to ARGB
+				v = (v<<8) + imgPixels->red;
+				v = (v<<8) + imgPixels->green;
+				v = (v<<8) + imgPixels->blue;
+				// int v = 0xFF000000 + (((*imgPixels) & 0xFFFFFF));
+				*windowPixels = v;
+				windowPixels++;
+				imgPixels++;
+			}
+		}
+		else
+		{
+			int minWidth = MathExt::min(width, g->getWidth());
+			int wndPixelAdjust = width - minWidth;
+			int imgPixelAdjust = g->getWidth() - minWidth;
+			int tX = 0;
+			while(windowPixels < endWindowPixels && imgPixels < endImgPixels)
+			{
+				int v = imgPixels->alpha; //switch from RGBA to ARGB
+				v = (v<<8) + imgPixels->red;
+				v = (v<<8) + imgPixels->green;
+				v = (v<<8) + imgPixels->blue;
+				*windowPixels = v;
+				windowPixels++; 
+				imgPixels++;
+				tX++;
+				if(tX >= minWidth)
 				{
-					*wndPixelsStart = (*imgPixelsStart).blue;
-					*(wndPixelsStart + 1) = (*imgPixelsStart).green;
-					*(wndPixelsStart + 2) = (*imgPixelsStart).red;
-
-					wndPixelsStart += 3;
-					imgPixelsStart++;
-					tX++;
-
-					if(tX>=width)
-					{
-						scanLineNum++;
-						tX=0;
-						wndPixelsStart += scanLinePadding;
-					}
+					tX = 0;
+					windowPixels += wndPixelAdjust;
+					imgPixels += imgPixelAdjust;
 				}
 			}
-			else
+		}
+		#else
+
+			if (g != nullptr)
 			{
-				Color* imgPixelsStart = g->getPixels();
-				Color* imgPixelsEnd = imgPixelsStart + (g->getWidth()*g->getHeight());
-
-				unsigned char* wndPixelsStart = wndPixels;
-				unsigned char* wndPixelsEnd = wndPixels + wndPixelsSize;
-
-				int side = g->getWidth() - width;
-				int absAddAmount = MathExt::abs(g->getWidth() - width);
-
-				//FIX WIDTH AND HEIGHT ADJUST
-				
-				int tX = 0;
-
-				if (side > 0)
+				if (g->getWidth() == width && g->getHeight() == height)
 				{
-					//img width > window width
-					while (wndPixelsStart < wndPixelsEnd && imgPixelsStart < imgPixelsEnd)
+					//same size
+					Color* imgPixelsStart = g->getPixels();
+					unsigned char* wndPixelsStart = wndPixels;
+					unsigned char* wndPixelsEnd = wndPixels + wndPixelsSize;
+					int tX = 0;
+					while (wndPixelsStart < wndPixelsEnd)
 					{
 						*wndPixelsStart = (*imgPixelsStart).blue;
 						*(wndPixelsStart + 1) = (*imgPixelsStart).green;
 						*(wndPixelsStart + 2) = (*imgPixelsStart).red;
 
-						imgPixelsStart++;
 						wndPixelsStart += 3;
-						tX++;
-						
-						if (tX >= width)
+						imgPixelsStart++;
+
+						if(tX>=width)
 						{
+							tX=0;
 							wndPixelsStart += scanLinePadding;
-							imgPixelsStart += absAddAmount;
-							tX = 0;
 						}
 					}
 				}
 				else
 				{
-					//FIX WIDTH AND HEIGHT ADJUST
-					//img width < window width
-					while (wndPixelsStart < wndPixelsEnd && imgPixelsStart < imgPixelsEnd)
+					Color* imgPixelsStart = g->getPixels();
+					Color* imgPixelsEnds = g->getPixels() + g->getWidth()*g->getHeight();
+					unsigned char* wndPixelsStart = wndPixels;
+					unsigned char* wndPixelsEnd = wndPixels + wndPixelsSize;
+
+					int minWidth = MathExt::min(width, g->getWidth());
+					int wndPixelWidthPadding = width - minWidth;
+					int imgWidthPadding = g->getWidth() - minWidth;
+					int tX = 0;
+
+					while(wndPixelsStart < wndPixelsEnd && imgPixelsStart < imgPixelsEnds)
 					{
-						*wndPixelsStart = (*imgPixelsStart).blue;
-						*(wndPixelsStart + 1) = (*imgPixelsStart).green;
-						*(wndPixelsStart + 2) = (*imgPixelsStart).red;
-
+						wndPixelsStart[0] = imgPixelsStart->blue;
+						wndPixelsStart[1] = imgPixelsStart->green;
+						wndPixelsStart[2] = imgPixelsStart->red;
+						
+						wndPixelsStart+=3; 
 						imgPixelsStart++;
-						wndPixelsStart += 3;
 						tX++;
-
-						if (tX >= g->getWidth())
+						if(tX >= minWidth)
 						{
-							wndPixelsStart += absAddAmount*3 + scanLinePadding;
 							tX = 0;
+							wndPixelsStart += wndPixelWidthPadding + scanLinePadding;
+							imgPixelsStart += imgWidthPadding;
 						}
 					}
 				}
 			}
-		}
+		#endif
 	}
 
 	void SimpleWindow::run()

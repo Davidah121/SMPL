@@ -404,7 +404,7 @@ namespace glib
 			graphicsInterface.setColor(Vec4f(1,1,1,1));
 			graphicsInterface.drawToScreen();
 		}		
-		
+
 		return redrawCount != 0;
 	}
 

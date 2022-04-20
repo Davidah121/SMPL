@@ -2068,16 +2068,15 @@ namespace glib
 	{
 		//for each row
 		double* newArr = new double[8];
-		double* passArr = nullptr;
+		double* passArr = new double[8];
 
 		for(int v=0; v<arr.getRows(); v++)
 		{
-			double* passArr = arr[v];
-			MathExt::FCT8(passArr, newArr, inverse);
+			MathExt::FCT8(arr[v], newArr, inverse);
 
 			for(int i=0; i<arr.getCols(); i++)
 			{
-				arr[v][i] = newArr[i];
+				output->operator[](v)[i] = newArr[i];
 			}
 		}
 
@@ -2086,18 +2085,19 @@ namespace glib
 		{
 			for(int i=0; i<arr.getRows(); i++)
 			{
-				passArr[i] = arr[i][u];
+				passArr[i] = output->operator[](i)[u];
 			}
 
 			MathExt::FCT8(passArr, newArr, inverse);
 
 			for(int i=0; i<arr.getRows(); i++)
 			{
-				arr[i][u] = newArr[i];
+				output->operator[](i)[u] = newArr[i];
 			}
 		}
 
 		delete[] newArr;
+		delete[] passArr;
 	}
 
 	#pragma endregion

@@ -183,12 +183,31 @@ namespace glib
 	Box2D Font::getBoundingBox(std::wstring text, bool allowLineBreaks, int maxWidth, int maxHeight)
 	{
 		int totalWidth = 0;
-		int totalHeight = 0;
+		int totalHeight = verticalAdv;
+
+		if(text.size() == 0)
+			totalHeight = 0;
 		
 		int currWidth = 0;
 		for(int i=0; i<text.size(); i++)
 		{
 			FontCharInfo fci = getFontCharInfo(text[i]);
+
+			if(fci.unicodeValue == '\n')
+			{
+				if(allowLineBreaks)
+				{
+					if(maxHeight > 0) //Negative values mean no max height
+					{
+						if(totalHeight + verticalAdv > maxHeight)
+							break;
+					}
+					
+					totalHeight += verticalAdv;
+					currWidth = 0;
+					continue;
+				}
+			}
 
 			if(maxWidth > 0)
 			{
@@ -201,12 +220,17 @@ namespace glib
 					else
 					{
 						totalHeight += verticalAdv;
+						currWidth = 0;
 					}
 				}
 				else
 				{
 					currWidth += fci.horizAdv;
 				}
+			}
+			else if(maxWidth < 0) //Negative values mean no max width
+			{
+				currWidth += fci.horizAdv;
 			}
 
 			totalWidth = MathExt::max(currWidth, totalWidth);

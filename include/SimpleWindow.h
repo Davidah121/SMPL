@@ -65,12 +65,15 @@
 
 namespace glib
 {
+	class SimpleWindow;
+	
 	struct WindowOptions
 	{
 		unsigned char windowType = 0;
 		bool focusable = true;
 		bool threadManaged = true;
 		unsigned char cornerType = DWMWCP_DEFAULT_CONST;
+		std::function<void(SimpleWindow*)> initFunction = nullptr;
 	};
 
 	class SimpleWindow : public Object
@@ -659,6 +662,8 @@ namespace glib
 			Display* displayServer;
 			int screen = -1;
 			GC gc;
+			Atom wmDeleteMessage;
+			XImage* drawableImage;
 		#else
 			WNDCLASSEXW wndClass;
 			HINSTANCE hins;
