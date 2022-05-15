@@ -102,6 +102,10 @@ namespace glib
 				}
 			}
 		}
+		else
+		{
+			StringTools::println("Expected Root Node SimpleGUI was not found.");
+		}
 	}
 
 	GuiManager::GuiManager(unsigned char type)
@@ -379,10 +383,11 @@ namespace glib
 				obj->shouldRedraw = false;
 			}
 
-			graphicsInterface.setColor(Vec4f(1,0,0,1));
-			graphicsInterface.drawRect(minX, minY, maxX, maxY, true);
-			graphicsInterface.setColor(Vec4f(0,0,1,1));
-			graphicsInterface.drawRect(preMinX, preMinY, preMaxX, preMaxY, true);
+			//Drawing valid and invalid areas
+			// graphicsInterface.setColor(Vec4f(1,0,0,1));
+			// graphicsInterface.drawRect(minX, minY, maxX, maxY, true);
+			// graphicsInterface.setColor(Vec4f(0,0,1,1));
+			// graphicsInterface.drawRect(preMinX, preMinY, preMaxX, preMaxY, true);
 
 		}
 		else
@@ -403,7 +408,7 @@ namespace glib
 		{
 			graphicsInterface.setColor(Vec4f(1,1,1,1));
 			graphicsInterface.drawToScreen();
-		}		
+		}
 
 		return redrawCount != 0;
 	}

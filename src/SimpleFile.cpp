@@ -37,7 +37,7 @@ namespace glib
 			}
 			#endif
 
-			size = (int)file->tellg();
+			size = (size_t)file->tellg();
 			file->close();
 
 			this->file->open(temp, std::fstream::in | std::fstream::binary);
@@ -113,7 +113,7 @@ namespace glib
 			}
 			#endif
 
-			size = (int)file->tellg();
+			size = (size_t)file->tellg();
 			file->close();
 
 			this->file->open(temp, std::fstream::out | std::fstream::app | std::fstream::binary);
@@ -180,6 +180,24 @@ namespace glib
 			#endif
 		}
 		return '\0';
+	}
+	
+	void SimpleFile::readBytes(char* buffer, int size)
+	{
+		if (isOpen() && type == SimpleFile::READ && !isEndOfFile())
+		{
+			file->read(buffer, size);
+		}
+		else
+		{
+			//File is not opened for reading
+			#ifdef USE_EXCEPTIONS
+
+			//not open for reading. could be file access or the file may not exist.
+			throw SimpleFile::FileReadException();
+
+			#endif
+		}
 	}
 
 	wchar_t toWideChar(unsigned char p, unsigned char p2)
@@ -813,20 +831,32 @@ namespace glib
 		return wideFileName;
 	}
 
-	int SimpleFile::getSize()
+	size_t SimpleFile::getSize()
 	{
 		return size;
 	}
 
-	int SimpleFile::getBytesLeft()
+	size_t SimpleFile::getBytesLeft()
 	{
 		if(isOpen() && type == READ)
 		{
-			return (int)(size - file->tellg());
+			return (size - file->tellg());
 		}
 		else
 		{
-			return -1;
+			return 0;
+		}
+	}
+	
+	void SimpleFile::seek(size_t index)
+	{
+		if(type == READ)
+		{
+			file->seekg(index);
+		}
+		else
+		{
+			file->seekp(index);
 		}
 	}
 	

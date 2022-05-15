@@ -1,6 +1,7 @@
 #include "StringTools.h"
 #include "System.h"
 #include "SimpleWindow.h"
+#include "SimpleDir.h"
 #include <stdlib.h>
 
 using namespace glib;
@@ -95,12 +96,79 @@ void byteSwapv2()
     delete[] wndPixels;
 }
 
-int main(int argc, char** argv)
+void testGradients()
 {
-    byteSwapv1();
-    byteSwapv2();
+    Image img = Image(512, 512);
+    Color c1 = {0, 0, 0, 0};
+    Color c2 = {255, 255, 255, 255};
+    
+    SimpleGraphics::drawLinearGradient(c1, c2, Vec2f(0, 0), Vec2f(512, 512), &img);
+    img.savePNG("Test1.png");
+
+
+    Image img2 = Image(512, 512);
+    std::vector<Color> colors;
+    colors.push_back( {0, 0, 0, 255} );
+    colors.push_back( {0, 0, 255, 255} );
+    colors.push_back( {0, 255, 0, 255} );
+    colors.push_back( {255, 0, 0, 255} );
+    
+    // std::vector<Vec2f> points;
+    // points.push_back( Vec2f(0, 0) );
+
+    
+    // SimpleGraphics::drawLinearGradient(c1, c2, Vec2f(0, 0), Vec2f(512, 512), &img2);
+    // img.savePNG("Test2.png");
     
 
+    Image img3 = Image(512, 512);
+    c1 = {0, 0, 0, 255};
+    c2 = {255, 0, 0, 255};
+    
+    SimpleGraphics::drawRadialGradient(c1, c2, Vec2f(256, 256), 256, &img3);
+    img3.savePNG("Test3.png");
+    
+}
+
+void testDir()
+{
+    SimpleDir d = SimpleDir("./");
+    std::vector<std::wstring> allFiles = d.getFolders();
+
+    for(std::wstring& str : allFiles)
+    {
+        StringTools::println(str);
+    }
+}
+
+void initFunction(SimpleWindow* w)
+{
+    w->getGuiManager()->loadElementsFromFile("GuiStuff/layout.xml");
+}
+
+int testWindow()
+{
+    StringTools::init();
+    SimpleGraphics::init();
+    GuiManager::initDefaultLoadFunctions();
+
+    WindowOptions options;
+    options.threadManaged = false;
+    options.initFunction = initFunction;
+
+    SimpleWindow w = SimpleWindow("TITLE", 1280, 720, -1, -1, options);
+    w.waitTillClose();
+    return 0;
+}
+
+int main(int argc, char** argv)
+{
+    // byteSwapv1();
+    // byteSwapv2();
+    // testGradients();
+    // testDir();
+    testWindow();
+    
     // StringTools::println("%x", StringTools::byteSwap(0x11223344));
     // testLinuxStuff();
     return 0;

@@ -1,0 +1,36 @@
+<SimpleGUI>
+    <GuiTextBlock maxwidth="64" maxheight="64" text="TEST"/>
+    <GuiList x="0" y="0" spacing="16" isvertical="false" ID="WindowBar">
+        <GuiButton width="64" height="24" ID="WindowBar_Edit">
+            <GuiTextBlock maxwidth="64" maxheight="24" text="Edit"/>
+            <GuiList ID="WindowBar_EditList" visible="false">
+            </GuiList>
+        </GuiButton>
+
+        <GuiButton width="64" height="24" ID="WindowBar_Options">
+            <GuiTextBlock maxwidth="64" maxheight="24" text="Options"/>
+            <GuiList ID="WindowBar_EditList" visible="false">
+            </GuiList>
+        </GuiButton>
+
+        <GuiButton width="64" height="24" ID="WindowBar_Help">
+            <GuiTextBlock width="64" height="24" text="Help"/>
+        </GuiButton>
+    </GuiList>
+
+    <GuiGrid x="64" y="64" maxrows="3" maxcolumns="3" horizontalspacing="16" verticalspacing="16" ID="FileGrid">
+        
+        <GuiButton width="32" height="32"/>
+        <GuiButton width="32" height="32"/>
+        <GuiButton width="32" height="32"/>
+
+        <GuiButton width="32" height="32"/>
+        <GuiButton width="32" height="32"/>
+        <GuiButton width="32" height="32"/>
+
+        <GuiButton width="32" height="32"/>
+        <GuiButton width="32" height="32"/>
+        <GuiButton width="32" height="32"/>
+        
+    </GuiGrid>
+</SimpleGUI>

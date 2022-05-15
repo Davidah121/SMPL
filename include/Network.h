@@ -201,6 +201,37 @@ namespace glib
 		bool receiveMessage(char* buffer, int bufferSize, int id=0);
 
 		/**
+		 * @brief Receives a message from the specified connected IP.
+		 * 		Returns true if it was successful.
+		 * 		Does not remove the data from the internal queue. 
+		 * 		Buffer will be resized to the minimum of expected size or the number of bytes read.
+		 * 
+		 * @param buffer 
+		 * 		The buffer to receive the message.
+		 * @param expectedSize
+		 * 		The size of the buffer passed in.
+		 * @param id 
+		 * 		Which connection to receive from.
+		 * 		Client will always receive from 0.
+		 * 		Default is 0.
+		 * @return true 
+		 * @return false 
+		 */
+		bool peek(std::vector<unsigned char>& buffer, int expectedSize, int id=0);
+
+		/**
+		 * @brief Call when done reading data from the internal queue.
+		 * 		This allows multiple receiveMessage calls without affecting the message arrived callback.
+		 * 		
+		 * 		The class now will only notify you of a message after you have specified that you have read the previous stuff.
+		 * @param id 
+		 * 		Which connection to receive from.
+		 * 		Client will always receive from 0.
+		 * 		Default is 0.
+		 */
+		void setDoneReceiving(int id=0);
+
+		/**
 		 * @brief Attempts to reconnect.
 		 * 		Only used for TYPE_CLIENT
 		 * 
@@ -315,6 +346,8 @@ namespace glib
 		bool getReconnect();
 		bool getShouldStart();
 
+		bool isWaitingOnRead(int id);
+
 		std::function<void(int)> getConnectFunc();
 		std::function<void(int)> getMessageArriveFunc();
 		std::function<void(int)> getDisconnectFunc();
@@ -331,6 +364,7 @@ namespace glib
 		SOCKET_TYPE sock;
 		sockaddr_in socketAddress;
 		std::vector<SOCKET_TYPE> connections;
+		std::vector<bool> waitingOnRead;
 		void removeSocket(SOCKET_TYPE s);
 
 		int sizeAddress = 0;

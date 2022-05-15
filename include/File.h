@@ -114,6 +114,13 @@ namespace glib
          */
         std::wstring getExtension();
 
+        /**
+         * @brief Returns the filename with the extension.
+         * 
+         * @return std::wstring 
+         */
+        std::wstring getFileNameWithExt();
+        
     private:
         void init(std::wstring filename);
         

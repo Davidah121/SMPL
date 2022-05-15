@@ -251,8 +251,8 @@ namespace glib
 			int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
 			int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
 
-			int maxXBound = MathExt::min(tempWidth-1, (int)clippingRect.getRightBound());
-			int maxYBound = MathExt::min(tempHeight-1, (int)clippingRect.getBottomBound());
+			int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
+			int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
 
 			int minX = MathExt::clamp(x, minXBound, maxXBound);
 			int maxX = MathExt::clamp(x+img->getWidth(), minXBound, maxXBound);
@@ -420,7 +420,7 @@ namespace glib
 						drawImgStart += avxWidth<<3;
 
 						//fill remainder
-						for(int i=0; i<remainder; i++)
+						for(int i=0; i<=remainder; i++)
 						{
 							Color drawC = { (unsigned char) (drawImgStart->red * colorMult.x),
 											(unsigned char) (drawImgStart->green * colorMult.y),

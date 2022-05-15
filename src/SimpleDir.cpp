@@ -65,9 +65,14 @@ namespace glib
 		{
 			std::wstring temp = getReferenceFullPath(index);
 
-			int pos = temp.find_last_of(L'\\', temp.size());
+			size_t pos = temp.find_last_of(L'\\', temp.size());
+			size_t pos2 = temp.find_last_of(L'/', temp.size());
+			size_t finalPos = (pos < pos2) ? pos : pos2;
 
-			return temp.substr(pos + 1, temp.size());
+			if(finalPos > temp.size())
+				return temp.substr(0, temp.size());
+			else
+				return temp.substr(finalPos+1, temp.size());
 		}
 		else
 		{

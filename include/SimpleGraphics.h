@@ -449,6 +449,45 @@ namespace glib
 		 * 		The image to draw onto.
 		 */
 		static void drawModel(Model* model, Image* texture, Image* surf);
+
+		/**
+		 * @brief Draws a Linear Gradient from the start point to the end point on an image.
+		 * 		The points do not have to be in the image nor do they have to be integer values.
+		 * 		The blend between c1 and c2 blends each color channel separately including the alpha.
+		 * 
+		 * @param c1 
+		 * @param c2 
+		 * @param startPoint 
+		 * @param endPoint 
+		 * @param surf 
+		 */
+		static void drawLinearGradient(Color c1, Color c2, Vec2f startPoint, Vec2f endPoint, Image* surf);
+
+		/**
+		 * @brief Draws a Linear Gradient using multiple blend colors and blend points on an image.
+		 * 		The points do not have to be in the image nor do they have to be integer values.
+		 * 		The blendColors and blendPoints size must be the same otherwise, nothing is drawn.
+		 * 
+		 * @param blendColors 
+		 * @param blendPoints 
+		 * @param surf 
+		 */
+		static void drawLinearGradient(std::vector<Color> blendColors, std::vector<Vec2f> blendPoints, Image* surf);
+
+		/**
+		 * @brief Draws a Radial Gradient from the mid point on an image.
+		 * 		The mid point specifies the middle of the circle and the radius is how big the circle will be.
+		 * 		The points do not have to be in the image nor do they have to be integer values.
+		 * 		The blend between c1 and c2 blends each color channel separately including the alpha.
+		 * 
+		 * @param c1 
+		 * @param c2 
+		 * @param midPoint 
+		 * @param radius 
+		 * @param surf 
+		 */
+		static void drawRadialGradient(Color c1, Color c2, Vec2f midPoint, double radius, Image* surf);
+		
 		
 		//Getters and Setters
 

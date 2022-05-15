@@ -59,12 +59,21 @@ namespace glib
 
     std::wstring File::getPath()
     {
-        return fullFileName.substr(0, locationOfFileName);
+        std::wstring path = fullFileName.substr(0, locationOfFileName);
+        if(path.empty())
+            return L"./";
+        else
+            return path;
     }
 
     std::wstring File::getExtension()
     {
         return fullFileName.substr(locationOfExtension, fullFileName.size()-locationOfExtension);
+    }
+
+    std::wstring File::getFileNameWithExt()
+    {
+        return fullFileName.substr(locationOfFileName, fullFileName.size());
     }
 
 } //NAMESPACE glib END
