@@ -7,7 +7,6 @@
 
 namespace glib
 {
-	
 	class Shape : public Object
 	{
 	public:
@@ -25,8 +24,7 @@ namespace glib
 		~Shape();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief Set the Position of the shape.
@@ -114,8 +112,7 @@ namespace glib
 		~CombinationShape();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 		
 		/**
 		 * @brief Adds a shape to the list.
@@ -175,8 +172,7 @@ namespace glib
 		~Point2D();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief Generates the bounding radius for the point.
@@ -216,8 +212,7 @@ namespace glib
 		~Box2D();
 		
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 		
 		/**
 		 * @brief Set the Left Bound of the AABB
@@ -352,8 +347,7 @@ namespace glib
 		void setRadius(double rad);
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief Generates the bounding radius for the circle.
@@ -426,8 +420,7 @@ namespace glib
 		void setYRadius(double rad);
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 		
 		/**
 		 * @brief Generates the bounding radius of the Ellipse.
@@ -485,8 +478,7 @@ namespace glib
 		~Line2D();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 		
 		/**
 		 * @brief Sets the first point of the line
@@ -595,8 +587,7 @@ namespace glib
 		~Triangle2D();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 		
 		/**
 		 * @brief Sets the first vertex of the triangle
@@ -706,8 +697,7 @@ namespace glib
 		~Polygon2D();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief Adds a vertex to the polygon.
@@ -889,10 +879,14 @@ namespace glib
 		 * 
 		 * @param a 
 		 * @param b 
+		 * @param overrideQuickCheck
+		 * 		Uses the bounding radius for the 2 shapes to determine if a collision is possible.
+		 * 		Returns false if they don't collide otherwise, continues with normal collision.
+		 * 		Can be skipped if the bounding radius values are not correctly generated for any of the specified shapes.
 		 * @return true 
 		 * @return false 
 		 */
-		static bool getCollision(Shape* a, Shape* b);
+		static bool getCollision(Shape* a, Shape* b, bool overrideQuickCheck = false);
 
 		//Pre made collision functions
 

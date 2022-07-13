@@ -421,8 +421,8 @@ namespace glib
 	std::string Network::getIPFromConnection(int id)
 	{
 		networkMutex.lock();
-		sockaddr addr;
-		int len;
+		sockaddr_in addr = {0};
+		int len = sizeof(sockaddr_in);
 		#ifdef LINUX
 			int err = getpeername(connections[id], (sockaddr*)&addr, (socklen_t*)&len);
 		#else
@@ -432,7 +432,7 @@ namespace glib
 
 		if(err == 0)
 		{
-			std::string returnVal = addr.sa_data;
+			std::string returnVal = inet_ntoa(addr.sin_addr);
 			return returnVal;
 		}
 		return "";
@@ -444,8 +444,8 @@ namespace glib
 		networkMutex.lock();
 		for(int i=0; i<connections.size(); i++)
 		{
-			sockaddr addr;
-			int len;
+			sockaddr_in addr = {0};
+			int len = sizeof(sockaddr_in);
 			#ifdef LINUX
 				int err = getpeername(connections[i], (sockaddr*)&addr, (socklen_t*)&len);
 			#else
@@ -453,7 +453,7 @@ namespace glib
 			#endif
 			if(err == 0)
 			{
-				std::string testVal = addr.sa_data;
+				std::string testVal = inet_ntoa(addr.sin_addr);
 				if(testVal == s)
 				{
 					id = i;

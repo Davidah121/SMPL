@@ -45,8 +45,7 @@ namespace glib
 		Vec2f toVec2f();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 		
 		ComplexNumber operator+(ComplexNumber other);
 		ComplexNumber operator-(ComplexNumber other);

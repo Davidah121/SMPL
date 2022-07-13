@@ -87,7 +87,8 @@
         "climits": "cpp",
         "string_view": "cpp",
         "deque": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "queue": "cpp"
     },
     "files.exclude": {
         "**/.classpath": true,

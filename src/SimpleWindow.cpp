@@ -13,14 +13,7 @@ namespace glib
 	int SimpleWindow::screenWidth = System::getDesktopWidth();
 	int SimpleWindow::screenHeight = System::getDesktopHeight();
 
-	int* SimpleWindow::mouseVWheelPointer = nullptr;
-	int* SimpleWindow::mouseHWheelPointer = nullptr;
-
-	const Class SimpleWindow::myClass = Class("SimpleWindow", {&Object::myClass});
-	const Class* SimpleWindow::getClass()
-	{
-		return &SimpleWindow::myClass;
-	}
+	const Class SimpleWindow::globalClass = Class("SimpleWindow", {&Object::globalClass});
 
 	SimpleWindow* SimpleWindow::getWindowByHandle(size_t handle)
 	{
@@ -139,6 +132,10 @@ namespace glib
 			HGDIOBJ oldImg;
 			RECT* rect = nullptr;
 
+			int borderHeight = (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) +
+    							GetSystemMetrics(SM_CXPADDEDBORDER) + 1 + 8);
+			int borderWidth = (GetSystemMetrics(SM_CXFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER))*2;
+
 			if (currentWindow != nullptr)
 			{
 				switch (msg)
@@ -168,9 +165,22 @@ namespace glib
 					break;
 				case WM_DESTROY:
 					break;
+				case WM_CHAR:
+					if(currentWindow->internalCharValFunction != nullptr)
+						currentWindow->internalCharValFunction(wparam, lparam);
+					break;
 				case WM_KEYDOWN:
 					if (currentWindow->keyDownFunction != nullptr)
 						currentWindow->keyDownFunction(wparam, lparam);
+					
+					if(wparam == Input::KEY_DELETE || wparam == Input::KEY_LEFT || wparam == Input::KEY_RIGHT
+					 || wparam == Input::KEY_DOWN || wparam == Input::KEY_UP)
+					{
+						//Exceptions. These keys are not apart of WM_CHAR but are useful when editing text.
+						if(currentWindow->internalCharValFunction != nullptr)
+							currentWindow->internalCharValFunction(wparam | Input::NEGATIVE, lparam);
+					}
+					
 					break;
 				case WM_KEYUP:
 					if (currentWindow->keyUpFunction != nullptr)
@@ -203,16 +213,18 @@ namespace glib
 				case WM_MOUSEWHEEL:
 					if (currentWindow->mouseWheelFunction != nullptr)
 						currentWindow->mouseWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
-					
-					if(SimpleWindow::mouseVWheelPointer)
-						*SimpleWindow::mouseVWheelPointer = GET_WHEEL_DELTA_WPARAM(wparam)/120;
+
+					if(currentWindow->internalMouseWheelFunction != nullptr)
+						currentWindow->internalMouseWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
+
 					break;
 				case WM_MOUSEHWHEEL:
 					if (currentWindow->mouseHWheelFunction != nullptr)
 						currentWindow->mouseHWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
 					
-					if(SimpleWindow::mouseHWheelPointer)
-						*SimpleWindow::mouseHWheelPointer = GET_WHEEL_DELTA_WPARAM(wparam)/120;
+					if(currentWindow->internalMouseHWheelFunction != nullptr)
+						currentWindow->internalMouseHWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
+
 					break;
 				case WM_MOUSEMOVE:
 					if (currentWindow->mouseMovedFunction != nullptr)
@@ -223,8 +235,17 @@ namespace glib
 					currentWindow->x = rect->left;
 					currentWindow->y = rect->top;
 					
-					currentWindow->width = rect->right - rect->left;
-					currentWindow->height = rect->bottom - rect->top;
+					if(currentWindow->windowType.windowType == SimpleWindow::NORMAL_WINDOW)
+					{
+						currentWindow->width = rect->right - rect->left - borderWidth;
+						currentWindow->height = rect->bottom - rect->top - borderHeight;
+					}
+					else
+					{
+						currentWindow->width = rect->right - rect->left;
+						currentWindow->height = rect->bottom - rect->top;
+					}
+
 					break;
 				case WM_ENTERSIZEMOVE:
 					currentWindow->setResizing(true);
@@ -238,8 +259,17 @@ namespace glib
 					currentWindow->x = rect->left;
 					currentWindow->y = rect->top;
 
-					currentWindow->width = rect->right - rect->left;
-					currentWindow->height = rect->bottom - rect->top;
+					if(currentWindow->windowType.windowType == SimpleWindow::NORMAL_WINDOW)
+					{
+						currentWindow->width = rect->right - rect->left - borderWidth;
+						currentWindow->height = rect->bottom - rect->top - borderHeight;
+					}
+					else
+					{
+						currentWindow->width = rect->right - rect->left;
+						currentWindow->height = rect->bottom - rect->top;
+					}
+
 					break;
 				case WM_SIZE:
 					if(wparam == SIZE_MAXIMIZED)
@@ -255,7 +285,7 @@ namespace glib
 							currentWindow->y = 0;
 
 							currentWindow->width = LOWORD(lparam);
-							currentWindow->height = HIWORD(lparam);
+							currentWindow->height = HIWORD(lparam)-1;
 						}
 						else
 						{
@@ -268,7 +298,7 @@ namespace glib
 							currentWindow->y = 0;
 
 							currentWindow->width = LOWORD(lparam);
-							currentWindow->height = HIWORD(lparam);
+							currentWindow->height = HIWORD(lparam)-1;
 						}
 					}
 					else if(wparam == SIZE_RESTORED)
@@ -281,7 +311,7 @@ namespace glib
 							currentWindow->y = currentWindow->preY;
 
 							currentWindow->width = LOWORD(lparam);
-							currentWindow->height = HIWORD(lparam);
+							currentWindow->height = HIWORD(lparam)-1;
 						}
 						else
 						{
@@ -291,7 +321,7 @@ namespace glib
 							currentWindow->y = currentWindow->preY;
 
 							currentWindow->width = LOWORD(lparam);
-							currentWindow->height = HIWORD(lparam);
+							currentWindow->height = HIWORD(lparam)-1;
 						}
 					}
 					else if(wparam == SIZE_MINIMIZED)
@@ -455,6 +485,9 @@ namespace glib
 
 				if(bitmap != 0)
 					DeleteObject(bitmap);
+
+				if(handleToIcon != 0)
+					DeleteObject(handleToIcon);
 				
 				if(myHDC != 0)
 					DeleteDC(myHDC);
@@ -479,6 +512,7 @@ namespace glib
 
 	void SimpleWindow::init(int x, int y, int width, int height, std::wstring title, WindowOptions windowType)
 	{
+		setClass(globalClass);
 		this->x = x;
 		this->y = y;
 		this->width = width;
@@ -604,7 +638,19 @@ namespace glib
 			wndClass.cbWndExtra = 0;
 			wndClass.hbrBackground = (HBRUSH)(BLACK_BRUSH);
 			wndClass.hCursor = LoadCursor(hins, IDC_ARROW);
-			wndClass.hIcon = LoadIcon(hins, IDI_APPLICATION);
+
+			if(windowType.iconFileString.empty())
+				wndClass.hIcon = LoadIcon(hins, IDI_APPLICATION);
+			else
+			{
+				if(windowType.iconIsFile)
+					handleToIcon = (HICON)LoadImageA(NULL, windowType.iconFileString.c_str(), IMAGE_ICON, 0, 0, LR_LOADFROMFILE);
+				else
+					handleToIcon = (HICON)LoadImageA(hins, windowType.iconFileString.c_str(), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR);
+
+				wndClass.hIcon = handleToIcon;
+			}
+			
 			wndClass.hIconSm = LoadIcon(hins, IDI_APPLICATION);
 			wndClass.hInstance = hins;
 			wndClass.lpfnWndProc = SimpleWindow::wndProc;
@@ -724,6 +770,7 @@ namespace glib
 				//dispose
 				//Nothing because the window wasn't created and the
 				//class failed to register
+				StringTools::println("%d", GetLastError());
 				setValid(false);
 				setShouldEnd(true);
 				setRunning(false);
@@ -1175,14 +1222,11 @@ namespace glib
 		return activateGui;
 	}
 
-	void SimpleWindow::setMouseVWheelValuePointer(int* v)
+	void SimpleWindow::setWindowAsInputFocus()
 	{
-		SimpleWindow::mouseVWheelPointer = v;
-	}
-
-	void SimpleWindow::setMouseHWheelValuePointer(int* v)
-	{
-		SimpleWindow::mouseHWheelPointer = v;
+		internalCharValFunction = Input::adjustCurrCharVal;
+		internalMouseWheelFunction = Input::adjustVerticalScroll;
+		internalMouseHWheelFunction = Input::adjustHorizontalScroll;
 	}
 
 	void SimpleWindow::setFocus(bool v)
@@ -1346,6 +1390,7 @@ namespace glib
 
 						wndPixelsStart += 3;
 						imgPixelsStart++;
+						tX++;
 
 						if(tX>=width)
 						{
@@ -1484,7 +1529,8 @@ namespace glib
 				if(changed)
 				{
 					Image* surface = (Image*)gui->getSurface()->getSurface();
-					drawImage(surface);
+					if(surface != nullptr)
+						drawImage(surface);
 				}
 			}
 		}

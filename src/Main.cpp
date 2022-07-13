@@ -2,6 +2,8 @@
 #include "System.h"
 #include "SimpleWindow.h"
 #include "SimpleDir.h"
+#include "SpatialHashing.h"
+#include "IniFile.h"
 #include <stdlib.h>
 
 using namespace glib;
@@ -16,7 +18,7 @@ void testLinuxStuff()
         windowHandle->getGuiManager()->loadElementsFromFile("Test.xml");
     };
 
-    SimpleWindow w = SimpleWindow("Windows Ver", 640, 480, -1, -1, {0, true, true, 0, initFunction});
+    SimpleWindow w = SimpleWindow("Windows Ver", 640, 480, -1, -1, {0, true, true, 0, false, "", initFunction});
     w.waitTillClose();
 }
 
@@ -132,18 +134,45 @@ void testGradients()
 
 void testDir()
 {
-    SimpleDir d = SimpleDir("./");
-    std::vector<std::wstring> allFiles = d.getFolders();
+    SimpleDir d = SimpleDir("C:");
+    int index = d.getReferenceLocation("Stuff");
+    size_t size = d.getReferenceSize(index);
 
-    for(std::wstring& str : allFiles)
-    {
-        StringTools::println(str);
-    }
+    StringTools::println("Size of C:/Stuff: %llu", size);
+
+    
+    d = SimpleDir("C:/Users/Alan/Documents/VSCodeProjects");
+    index = d.getReferenceLocation("GLib");
+    size = d.getReferenceSize(index);
+
+    StringTools::println("Size of C:/Users/Alan/Documents/VSCodeProjects/GLib: %llu", size);
+}
+
+void paintFunc(int width, int height)
+{
+    Image temp = Image(width, height);
+    temp.setAllPixels({255,255,255,255});
+
+    SimpleGraphics::resetClippingPlane();
+    SimpleGraphics::setColor({0,0,0,255});
+    SimpleGraphics::drawRect(32, 32, 64, 64, false, &temp);
+
+    SimpleGraphics::setClippingRect(Box2D(96, 32, 128, 64));
+    SimpleGraphics::setColor({0,255,0,255});
+    SimpleGraphics::drawRect(96, 32, 128, 64, false, &temp);
+
+    SimpleGraphics::resetClippingPlane();
+    SimpleGraphics::setColor({0,0,0,255});
+    SimpleGraphics::drawText("-_\\|]/fqoij.vcjo!~@#$)(*_>,/", 160, 32, &temp);
+    
+    //fix png saving
+    temp.savePNG("testClip.png");
 }
 
 void initFunction(SimpleWindow* w)
 {
     w->getGuiManager()->loadElementsFromFile("GuiStuff/layout.xml");
+    w->setWindowAsInputFocus();
 }
 
 int testWindow()
@@ -154,22 +183,65 @@ int testWindow()
 
     WindowOptions options;
     options.threadManaged = false;
+    options.iconFileString = "icon.ico";
     options.initFunction = initFunction;
 
     SimpleWindow w = SimpleWindow("TITLE", 1280, 720, -1, -1, options);
+
     w.waitTillClose();
     return 0;
 }
 
-int main(int argc, char** argv)
+void testSpatialHashing()
 {
-    // byteSwapv1();
-    // byteSwapv2();
-    // testGradients();
-    // testDir();
-    testWindow();
     
-    // StringTools::println("%x", StringTools::byteSwap(0x11223344));
-    // testLinuxStuff();
+}
+
+void testINI(bool readTest)
+{
+    if(readTest)
+    {
+        IniFile f = IniFile();
+        bool valid = f.load("test.ini");
+
+        if(valid)
+        {
+            std::vector<std::string> sections = f.getSections();
+            for(std::string& sStr : sections)
+            {
+                std::vector<std::string> keys = f.getKeys(sStr);
+
+                StringTools::println("SECTION: %s", sStr.c_str());
+                for(std::string& kStr : keys)
+                {
+                    std::string vStr = f.readValue(sStr, kStr);
+                    StringTools::println("\t%s = %s", kStr.c_str(), vStr.c_str());
+                }
+            }
+        }
+        else
+        {
+            StringTools::println("ERROR LOADING");
+        }
+
+    }
+    else
+    {
+        IniFile f = IniFile();
+        f.writeValue("SectionTest", "Key1", "Value1");
+        f.writeValue("SectionTest", "Key2", "Value2");
+        f.writeValue("SectionTest", "Key3", "Value3");
+        f.writeValue("SectionTest", "Key4", "Value4");
+        f.writeValue("SectionTest", "Key1", "Value6");
+
+        f.save("test.ini");
+    }
+}
+
+// int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
+int main()
+{
+    // Sleep(1000);
+    testWindow();
     return 0;
 }

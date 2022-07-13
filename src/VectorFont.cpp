@@ -4,15 +4,11 @@
 namespace glib
 {
         
-    const Class VectorFont::myClass = Class("VectorFont", {&Font::myClass});
-    const Class* VectorFont::getClass()
-    {
-        return &VectorFont::myClass;
-    }
+    const Class VectorFont::globalClass = Class("VectorFont", {&Font::globalClass});
 
     VectorFont::VectorFont() : Font()
     {
-
+		setClass(globalClass);
     }
 
     VectorFont::~VectorFont()
@@ -30,17 +26,17 @@ namespace glib
 
         for(XmlNode* n : f.nodes)
         {
-            if(StringTools::equalsIgnoreCase<wchar_t>(n->title, L"svg"))
+            if(StringTools::equalsIgnoreCase<char>(n->title, "svg"))
             {
                 XmlNode* cNode;
                 for(int index=0; index<n->childNodes.size(); index++)
                 {
                     cNode = n->childNodes[index];
-                    if( StringTools::equalsIgnoreCase<wchar_t>(cNode->title, L"defs") )
+                    if( StringTools::equalsIgnoreCase<char>(cNode->title, "defs") )
                     {
                         for(XmlNode* q : cNode->childNodes)
                         {
-                            if( StringTools::equalsIgnoreCase<wchar_t>(q->title, L"font") )
+                            if( StringTools::equalsIgnoreCase<char>(q->title, "font") )
                             {
                                 cNode = q;
                                 break;
@@ -50,11 +46,11 @@ namespace glib
                     }
                 }
 
-                if( StringTools::equalsIgnoreCase<wchar_t>(cNode->title, L"font") )
+                if( StringTools::equalsIgnoreCase<char>(cNode->title, "font") )
                 {
                     for(XmlAttribute a : cNode->attributes)
                     {
-                        if( StringTools::equalsIgnoreCase<wchar_t>(a.name, L"horiz-adv-x") )
+                        if( StringTools::equalsIgnoreCase<char>(a.name, "horiz-adv-x") )
                         {
                             baseHorizontalAdvance = MathExt::ceil( stod(a.value));
                         }
@@ -65,13 +61,13 @@ namespace glib
                     int height = 0;
                     
                     XmlNode parentNode = XmlNode();
-                    parentNode.title = L"svg";
+                    parentNode.title = "svg";
                     XmlAttribute widthAttrib = XmlAttribute();
-                    widthAttrib.name = L"width";
-                    widthAttrib.value = std::to_wstring(width);
+                    widthAttrib.name = "width";
+                    widthAttrib.value = std::to_string(width);
                     XmlAttribute heightAttrib = XmlAttribute();
-                    heightAttrib.name = L"height";
-                    heightAttrib.value = std::to_wstring(height);
+                    heightAttrib.name = "height";
+                    heightAttrib.value = std::to_string(height);
                     
                     parentNode.attributes.push_back( widthAttrib );
                     parentNode.attributes.push_back( heightAttrib );
@@ -80,7 +76,7 @@ namespace glib
                     for(int i=0; i<cNode->childNodes.size(); i++)
                     {
                         XmlNode* fontChildren = cNode->childNodes[i];
-                        if(StringTools::equalsIgnoreCase<wchar_t>(fontChildren->title, L"glyph") || StringTools::equalsIgnoreCase<wchar_t>(fontChildren->title, L"missing-glyph"))
+                        if(StringTools::equalsIgnoreCase<char>(fontChildren->title, "glyph") || StringTools::equalsIgnoreCase<char>(fontChildren->title, "missing-glyph"))
                         {
                             FontCharInfo fc;
                             fc.x=0;
@@ -92,7 +88,7 @@ namespace glib
 
                             for(XmlAttribute a : fontChildren->attributes)
                             {
-                                if(StringTools::equalsIgnoreCase<wchar_t>(a.name, L"unicode"))
+                                if(StringTools::equalsIgnoreCase<char>(a.name, "unicode"))
                                 {
                                     //StringTools::println(a.value);
 
@@ -103,7 +99,7 @@ namespace glib
                                     else
                                     {
                                         
-                                        if(a.value == L"A")
+                                        if(a.value == "A")
                                         {
                                             StringTools::println(a.value);
                                             StringTools::println(a.name);
@@ -123,7 +119,7 @@ namespace glib
                                     }
                                     **/
                                 }
-                                else if(StringTools::equalsIgnoreCase<wchar_t>(a.name, L"horiz-adv-x"))
+                                else if(StringTools::equalsIgnoreCase<char>(a.name, "horiz-adv-x"))
                                 {
                                     fc.horizAdv = (int)MathExt::ceil( stod(a.value));
                                 }
@@ -133,7 +129,7 @@ namespace glib
                             VectorGraphic* fontGraphic = new VectorGraphic(width, height);
                             
                             XmlNode parsedNode = XmlNode(*fontChildren);
-                            parsedNode.title = L"path";
+                            parsedNode.title = "path";
                             parentNode.childNodes.push_back(&parsedNode);
 
                             fontGraphic->load(&parentNode);
@@ -144,23 +140,23 @@ namespace glib
                             this->fontSprite.addGraphic(fontGraphic);
                             
                         }
-                        else if(StringTools::equalsIgnoreCase<wchar_t>(fontChildren->title, L"font-face"))
+                        else if(StringTools::equalsIgnoreCase<char>(fontChildren->title, "font-face"))
                         {
                             for(XmlAttribute a : fontChildren->attributes)
                             {
-                                if( StringTools::equalsIgnoreCase<wchar_t>(a.name, L"bbox"))
+                                if( StringTools::equalsIgnoreCase<char>(a.name, "bbox"))
                                 {
                                     StringTools::println(a.value);
 
-                                    std::vector<std::wstring> split = StringTools::splitStringMultipleDeliminators(a.value, L", ");
+                                    std::vector<std::string> split = StringTools::splitStringMultipleDeliminators(a.value, ", ");
                                     
                                     if(split.size()==4)
                                     {
                                         width = (int) MathExt::ceil(stod(split[2]) - stod(split[0]));
                                         height = (int) MathExt::ceil(stod(split[3]) - stod(split[1]));
 
-                                        parentNode.attributes[0].value = std::to_wstring(width);
-                                        parentNode.attributes[1].value = std::to_wstring(height);
+                                        parentNode.attributes[0].value = std::to_string(width);
+                                        parentNode.attributes[1].value = std::to_string(height);
                                     }
                                     else
                                     {

@@ -12,8 +12,8 @@ namespace glib
 
 	struct FileFilter
 	{
-		std::wstring name;
-		std::wstring extensions;
+		std::string name;
+		std::string extensions;
 	};
 
 	class System
@@ -279,7 +279,7 @@ namespace glib
 		 * @param processName 
 		 * @return unsigned long 
 		 */
-		static unsigned long getProcessID(std::wstring processName);
+		static unsigned long getProcessID(std::string processName);
 
 		/**
 		 * @brief Gets the Window for a process by the window name.
@@ -287,7 +287,7 @@ namespace glib
 		 * @param windowName 
 		 * @return size_t 
 		 */
-		static size_t getProcessWindow(std::wstring windowName);
+		static size_t getProcessWindow(std::string windowName);
 
 		static const unsigned char TYPE_OPEN_FILE = 0;
 		static const unsigned char TYPE_OPEN_FOLDER = 1;
@@ -315,10 +315,10 @@ namespace glib
 		 * 		Default is no filters.
 		 * @param startDir 
 		 * 		The starting directory for the file dialog box.
-		 * 		Default is L"./" which either sets it to the last location it was at or the programs directory.
-		 * @return std::wstring 
+		 * 		Default is "./" which either sets it to the last location it was at or the programs directory.
+		 * @return std::string 
 		 */
-		static std::wstring fileDialogBox(unsigned char type = TYPE_OPEN_FILE, std::vector<FileFilter> filters = {}, std::wstring startDir = L"./");
+		static std::string fileDialogBox(unsigned char type = TYPE_OPEN_FILE, std::vector<FileFilter> filters = {}, std::string startDir = "./");
 
 		/**
 		 * @brief Creates a message box popup.
@@ -329,7 +329,7 @@ namespace glib
 		 * @param message 
 		 * @return int 
 		 */
-		static int messageBoxPopup(unsigned int type, std::wstring title, std::wstring message);
+		static int messageBoxPopup(unsigned int type, std::string title, std::string message);
 
 		/**
 		 * @brief Copies text into the clipboard
@@ -348,9 +348,9 @@ namespace glib
 		/**
 		 * @brief Retrieves the currently copied text from the clipboard if it is text.
 		 * 
-		 * @return std::wstring 
+		 * @return std::string 
 		 */
-		static std::wstring pasteFromClipboard();
+		static std::string pasteFromClipboard();
 
 		/**
 		 * @brief Clears data from the clipboard.

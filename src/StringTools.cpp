@@ -732,6 +732,43 @@ namespace glib
 		return stringArray;
 	}
 
+	std::string StringTools::removeWhitespace(std::string originalStr, bool removeTabs)
+	{
+		std::string nStr;
+		for(char& c : originalStr)
+		{
+			if(c == ' ')
+				continue;
+
+			if(removeTabs)
+			{
+				if(c == '\t')
+					continue;
+			}
+
+			nStr += c;
+		}
+		return nStr;
+	}
+
+	std::wstring StringTools::removeWhitespace(std::wstring originalStr, bool removeTabs)
+	{
+		std::wstring nStr;
+		for(wchar_t& c : originalStr)
+		{
+			if(c == L' ')
+				continue;
+
+			if(removeTabs)
+			{
+				if(c == L'\t')
+					continue;
+			}
+			
+			nStr += c;
+		}
+		return nStr;
+	}
 
 	int StringTools::toInt(std::string s)
 	{
@@ -771,6 +808,39 @@ namespace glib
 	float StringTools::toFloat(std::wstring s)
 	{
 		return std::stof(s.c_str());
+	}
+
+	std::string StringTools::toString(int k)
+	{
+		return std::to_string(k);
+	}
+	std::string StringTools::toString(long k)
+	{
+		return std::to_string(k);
+	}
+	std::string StringTools::toString(unsigned int k)
+	{
+		return std::to_string(k);
+	}
+	std::string StringTools::toString(unsigned long k)
+	{
+		return std::to_string(k);
+	}
+	std::string StringTools::toString(long long k)
+	{
+		return std::to_string(k);
+	}
+	std::string StringTools::toString(unsigned long long k)
+	{
+		return std::to_string(k);
+	}
+	std::string StringTools::toString(float k)
+	{
+		return std::to_string(k);
+	}
+	std::string StringTools::toString(double k)
+	{
+		return std::to_string(k);
 	}
 
 	std::wstring StringTools::getWideString()

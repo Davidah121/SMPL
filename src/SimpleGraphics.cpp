@@ -36,11 +36,11 @@ namespace glib
 		if(defaultFont==nullptr)
 			SimpleGraphics::defaultFont = new BitmapFont("./Resources/DefaultFont.fnt");
 
-		if(defaultFontMedium==nullptr)
-			SimpleGraphics::defaultFontMedium = new BitmapFont("./Resources/DefaultFontMedium.fnt");
+		// if(defaultFontMedium==nullptr)
+		// 	SimpleGraphics::defaultFontMedium = new BitmapFont("./Resources/DefaultFontMedium.fnt");
 
-		if(defaultFontLarge==nullptr)
-			SimpleGraphics::defaultFontLarge = new BitmapFont("./Resources/DefaultFontLarge.fnt");
+		// if(defaultFontLarge==nullptr)
+		// 	SimpleGraphics::defaultFontLarge = new BitmapFont("./Resources/DefaultFontLarge.fnt");
 	}
 
 	void SimpleGraphics::dispose()

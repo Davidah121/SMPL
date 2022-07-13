@@ -37,8 +37,7 @@ namespace glib
 		~Sprite();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief Gets an image from the sprite at the specified index.

@@ -65,8 +65,7 @@ namespace glib
 		~SimpleFile();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		//Read functions
 		/**
@@ -268,9 +267,9 @@ namespace glib
 		/**
 		 * @brief Gets the name of the file opened
 		 * 
-		 * @return std::wstring 
+		 * @return std::string 
 		 */
-		std::wstring getFileName();
+		std::string getFileName();
 
 		/**
 		 * @brief Gets the Size of file in bytes.
@@ -288,10 +287,10 @@ namespace glib
 		size_t getBytesLeft();
 
 	private:
-		void init(std::wstring filename, char type);
+		void init(std::string filename, char type);
 		int getChar();
 
-		std::wstring wideFileName;
+		std::string filename;
 		char type=0;
 		char dataType=0;
 		std::fstream* file = nullptr;

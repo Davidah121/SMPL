@@ -437,6 +437,26 @@ namespace glib
 		static std::vector<std::wstring> splitStringMultipleDeliminators(std::wstring s, std::wstring delim, bool removeEmpty=true);
 
 		/**
+		 * @brief Removes all white space from the string.
+		 * 		There is an option to remove tabs as well.
+		 * 
+		 * @param originalStr 
+		 * @param removeTabs 
+		 * @return std::string 
+		 */
+		static std::string removeWhitespace(std::string originalStr, bool removeTabs = false);
+
+		/**
+		 * @brief Removes all white space from the string.
+		 * 		There is an option to remove tabs as well.
+		 * 
+		 * @param originalStr 
+		 * @param removeTabs 
+		 * @return std::wstring 
+		 */
+		static std::wstring removeWhitespace(std::wstring originalStr, bool removeTabs = false);
+		
+		/**
 		 * @brief Converts a string into an integer.
 		 * 
 		 * @param s 
@@ -499,6 +519,21 @@ namespace glib
 		 * @return float 
 		 */
 		static float toFloat(std::wstring s);
+
+		/**
+		 * @brief Converts the value into a string
+		 * 
+		 * @param k 
+		 * @return std::string 
+		 */
+		static std::string toString(int k);
+		static std::string toString(long k);
+		static std::string toString(unsigned int k);
+		static std::string toString(unsigned long k);
+		static std::string toString(long long k);
+		static std::string toString(unsigned long long k);
+		static std::string toString(float k);
+		static std::string toString(double k);
 
 		/**
 		 * @brief Gets a wide string from the console using the users input.

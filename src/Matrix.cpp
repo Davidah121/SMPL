@@ -4,14 +4,11 @@
 namespace glib
 {
 
-	const Class Matrix::myClass = Class("Matrix", {&Object::myClass});
-	const Class* Matrix::getClass()
-	{
-		return &Matrix::myClass;
-	}
+	const Class Matrix::globalClass = Class("Matrix", {&Object::globalClass});
 
 	Matrix::Matrix()
 	{
+		setClass(globalClass);
 		this->columns = 0;
 		this->rows = 0;
 		this->size = 0;
@@ -22,6 +19,7 @@ namespace glib
 
 	Matrix::Matrix(int rows, int cols)
 	{
+		setClass(globalClass);
 		this->columns = cols;
 		this->rows = rows;
 		this->size = rows*cols;
@@ -47,6 +45,7 @@ namespace glib
 
 	void Matrix::copy(const Matrix& c)
 	{
+		setClass(globalClass);
 		if(data!=nullptr)
 		{
 			//clear first

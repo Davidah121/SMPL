@@ -5,11 +5,7 @@
 namespace glib
 {
 
-	const Class SimpleDir::myClass = Class("SimpleDir", {&Object::myClass});
-	const Class* SimpleDir::getClass()
-	{
-		return &SimpleDir::myClass;
-	}
+	const Class SimpleDir::globalClass = Class("SimpleDir", {&Object::globalClass});
 
 	/*
 		Creates an object that will hold information about a directory
@@ -17,7 +13,14 @@ namespace glib
 	*/
 	SimpleDir::SimpleDir(File directory)
 	{
-		std::wstring dir = directory.getFullFileName();
+		setClass(globalClass);
+		std::string dir = directory.getFullFileName();
+		if(dir.size() > 0)
+		{
+			if(dir.back() != L'/' && dir.back() != L'\\')
+				dir += L'\\';
+		}
+
 		try
 		{
 			exists = std::filesystem::is_directory(dir);
@@ -59,20 +62,23 @@ namespace glib
 	/*
 		Gets the name of a reference at the index if possible.
 	*/
-	std::wstring SimpleDir::getReferenceName(int index)
+	std::string SimpleDir::getReferenceName(int index)
 	{
 		if (index >= 0 && index < names.size())
 		{
-			std::wstring temp = getReferenceFullPath(index);
+			File tempF = getReferenceFullPath(index);
+			return tempF.getFileNameWithExt();
 
-			size_t pos = temp.find_last_of(L'\\', temp.size());
-			size_t pos2 = temp.find_last_of(L'/', temp.size());
-			size_t finalPos = (pos < pos2) ? pos : pos2;
+			// std::string temp = getReferenceFullPath(index);
 
-			if(finalPos > temp.size())
-				return temp.substr(0, temp.size());
-			else
-				return temp.substr(finalPos+1, temp.size());
+			// size_t pos = temp.find_last_of(L'\\', temp.size());
+			// size_t pos2 = temp.find_last_of(L'/', temp.size());
+			// size_t finalPos = (pos < pos2) ? pos : pos2;
+
+			// if(finalPos > temp.size())
+			// 	return temp.substr(0, temp.size());
+			// else
+			// 	return temp.substr(finalPos+1, temp.size());
 		}
 		else
 		{
@@ -80,22 +86,22 @@ namespace glib
 			throw SimpleDir::OutOfBoundsError();
 			#endif
 
-			return L"";
+			return "";
 		}
 	}
 
-	std::wstring SimpleDir::getReferenceFullPath(int index)
+	std::string SimpleDir::getReferenceFullPath(int index)
 	{
 		if (index >= 0 && index < names.size())
 		{
-			return names[index].path().wstring();
+			return names[index].path().u8string();
 		}
 		else
 		{
 			#ifdef USE_EXCEPTIONS
 			throw SimpleDir::OutOfBoundsError();
 			#endif
-			return L"";
+			return "";
 		}
 	}
 
@@ -103,11 +109,14 @@ namespace glib
 		Gets the file size of a reference at the index if possible.
 		Returns an unsigned int.
 	*/
-	unsigned int SimpleDir::fileSize(int index)
+	size_t SimpleDir::getReferenceSize(int index)
 	{
 		if (index >= 0 && index < names.size())
 		{
-			return (unsigned int)std::filesystem::file_size(names[index]);
+			if(names[index].is_directory())
+				return getFolderSize(names[index]);
+			else
+				return getFileSize(names[index]);
 		}
 		else
 		{
@@ -116,6 +125,28 @@ namespace glib
 			#endif
 			return -1;
 		}
+	}
+	
+	size_t SimpleDir::getFileSize(std::filesystem::directory_entry f)
+	{
+		return std::filesystem::file_size(f);
+	}
+
+	size_t SimpleDir::getFolderSize(std::filesystem::directory_entry f)
+	{
+		size_t totalSize = 0;
+		for (auto& entry: std::filesystem::directory_iterator(f))
+		{
+			if(entry.is_directory())
+			{
+				totalSize += getFolderSize(entry);
+			}
+			else
+			{
+				totalSize += getFileSize(entry);
+			}
+		}
+		return totalSize;
 	}
 
 	/*
@@ -168,12 +199,12 @@ namespace glib
 		Changes the name to the new name specified.
 		The new name should not contain the path.
 	*/
-	void SimpleDir::renameResource(std::wstring newName, int index)
+	void SimpleDir::renameResource(std::string newName, int index)
 	{
 		if (index >= 0 && index < names.size())
 		{
-			std::wstring temp = getLocation();
-			temp += L"\\";
+			std::string temp = getLocation();
+			temp += "\\";
 			temp += newName;
 
 			try
@@ -236,11 +267,11 @@ namespace glib
 		ends with a / or \, then it will use the current name of the file.
 		Otherwise, it will use the name and file extension you specify.
 	*/
-	void SimpleDir::copyResource(std::wstring newName, int index)
+	void SimpleDir::copyResource(std::string newName, int index)
 	{
 		if (index >= 0 && index < names.size())
 		{
-			std::wstring oth = L"";
+			std::string oth = "";
 			oth += newName;
 			
 			if (oth.at(oth.size() - 1) == L'\\')
@@ -273,7 +304,7 @@ namespace glib
 		Attempts to get a reference with the specified name.
 		Returns -1 if the reference does not exist.
 	*/
-	int SimpleDir::getReferenceLocation(std::wstring name)
+	int SimpleDir::getReferenceLocation(std::string name)
 	{
 		int index = -1;
 		for (int i = 0; i < names.size(); i++)
@@ -300,9 +331,9 @@ namespace glib
 		Gets all of the folders in this directory and returns them as
 		a vector of wide character pointers.
 	*/
-	std::vector<std::wstring> SimpleDir::getFolders()
+	std::vector<std::string> SimpleDir::getFolders()
 	{
-		std::vector<std::wstring> dirs = std::vector<std::wstring>();
+		std::vector<std::string> dirs = std::vector<std::string>();
 
 		for (int i = 0; i < getSize(); i++)
 		{
@@ -319,9 +350,9 @@ namespace glib
 		Gets all of the files in this directory and returns them as
 		a vector of wide character pointers.
 	*/
-	std::vector<std::wstring> SimpleDir::getFiles()
+	std::vector<std::string> SimpleDir::getFiles()
 	{
-		std::vector<std::wstring> files = std::vector<std::wstring>();
+		std::vector<std::string> files = std::vector<std::string>();
 
 		for (int i = 0; i < getSize(); i++)
 		{
@@ -354,7 +385,7 @@ namespace glib
 	/*
 		Returns a string that represents the location of the directory
 	*/
-	std::wstring SimpleDir::getLocation()
+	std::string SimpleDir::getLocation()
 	{
 		return location;
 	}

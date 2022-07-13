@@ -31,8 +31,7 @@ namespace glib
         ~Model();
 
         //Object and Class Stuff
-        const Class* getClass();
-        static const Class myClass;
+        static const Class globalClass;
 
         static const unsigned char TYPE_INT = 0;
         static const unsigned char TYPE_FLOAT = 1;

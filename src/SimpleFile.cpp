@@ -5,29 +5,25 @@
 namespace glib
 {
 
-	const Class SimpleFile::myClass = Class("SimpleFile", {&Object::myClass});
-	const Class* SimpleFile::getClass()
-	{
-		return &SimpleFile::myClass;
-	}
+	const Class SimpleFile::globalClass = Class("SimpleFile", {&Object::globalClass});
 
 	SimpleFile::SimpleFile(File file, char type)
 	{
 		init(file.getFullFileName(), type);
 	}
 
-	void SimpleFile::init(std::wstring filename, char type)
+	void SimpleFile::init(std::string filename, char type)
 	{
+		setClass(globalClass);
 		this->type = type&0x0F;
 		this->dataType = type&0xF0;
 		this->size = 0;
-		std::string temp = StringTools::toUTF8String(filename);
 		switch (this->type)
 		{
 		case SimpleFile::READ:
 			
 			//try to open
-			this->file = new std::fstream(temp, std::fstream::in | std::fstream::ate | std::fstream::binary);
+			this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
 
 			#ifdef USE_EXCEPTIONS
 			if(!this->file->is_open())
@@ -40,7 +36,7 @@ namespace glib
 			size = (size_t)file->tellg();
 			file->close();
 
-			this->file->open(temp, std::fstream::in | std::fstream::binary);
+			this->file->open(filename, std::fstream::in | std::fstream::binary);
 
 			#ifdef USE_EXCEPTIONS
 			if(!this->file->is_open())
@@ -85,12 +81,12 @@ namespace glib
 					file->putback(c1);
 				}
 			}
-			this->wideFileName = filename;
+			this->filename = filename;
 			break;
 		case SimpleFile::WRITE:
 			//
-			this->file = new std::fstream(temp, std::fstream::out | std::fstream::binary);
-			this->wideFileName = filename;
+			this->file = new std::fstream(filename, std::fstream::out | std::fstream::binary);
+			this->filename = filename;
 
 			#ifdef USE_EXCEPTIONS
 			if(!this->file->is_open())
@@ -103,7 +99,7 @@ namespace glib
 			break;
 		case SimpleFile::WRITE_APPEND:
 			//
-			this->file = new std::fstream(temp, std::fstream::in | std::fstream::ate | std::fstream::binary);
+			this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
 
 			#ifdef USE_EXCEPTIONS
 			if(!this->file->is_open())
@@ -116,7 +112,7 @@ namespace glib
 			size = (size_t)file->tellg();
 			file->close();
 
-			this->file->open(temp, std::fstream::out | std::fstream::app | std::fstream::binary);
+			this->file->open(filename, std::fstream::out | std::fstream::app | std::fstream::binary);
 
 			#ifdef USE_EXCEPTIONS
 			if(!this->file->is_open())
@@ -126,7 +122,7 @@ namespace glib
 			}
 			#endif
 
-			this->wideFileName = filename;
+			this->filename = filename;
 			break;
 		default:
 			break;
@@ -218,7 +214,12 @@ namespace glib
 		if (isOpen() && type == SimpleFile::READ && !isEndOfFile())
 		{
 			p1 = file->get();
+			if(isEndOfFile())
+				return -1;
+
 			p2 = file->get();
+			if(isEndOfFile())
+				return -1;
 
 			return toWideChar(p1, p2);
 		}
@@ -372,6 +373,9 @@ namespace glib
 		{
 			std::vector<unsigned char> chars = std::vector<unsigned char>();
 			unsigned char c1 = file->get();
+
+			if(isEndOfFile())
+				return -1;
 			
 			if(c1>>7 == 0)
 			{
@@ -381,6 +385,10 @@ namespace glib
 			{
 				chars.push_back(c1);
 				c1 = file->get();
+				
+				if(isEndOfFile())
+					return -1;
+
 				if( (c1 >> 7) == 1 && ((c1 >> 6) & 0x01) == 0)
 				{
 					//valid utf8
@@ -398,15 +406,28 @@ namespace glib
 			{
 				chars.push_back(c1);
 				chars.push_back( (unsigned char)file->get() );
+				if(isEndOfFile())
+					return -1;
+
 				chars.push_back( (unsigned char)file->get() );
+				if(isEndOfFile())
+					return -1;
 				return StringTools::utf8ToChar(chars);
 			}
 			else if( ((c1 >> 3) & 0x01) == 0)
 			{
 				chars.push_back(c1);
 				chars.push_back( (unsigned char)file->get() );
+				if(isEndOfFile())
+					return -1;
+
 				chars.push_back( (unsigned char)file->get() );
+				if(isEndOfFile())
+					return -1;
+
 				chars.push_back( (unsigned char)file->get() );
+				if(isEndOfFile())
+					return -1;
 				return StringTools::utf8ToChar(chars);
 			}
 			else
@@ -818,7 +839,7 @@ namespace glib
 	{
 		if(file != nullptr)
 		{
-			return file->eof();
+			return !file->good();
 		}
 		else
 		{
@@ -826,9 +847,9 @@ namespace glib
 		}
 	}
 
-	std::wstring SimpleFile::getFileName()
+	std::string SimpleFile::getFileName()
 	{
-		return wideFileName;
+		return filename;
 	}
 
 	size_t SimpleFile::getSize()

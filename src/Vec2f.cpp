@@ -5,20 +5,18 @@
 namespace glib
 {
 
-	const Class Vec2f::myClass = Class("Vec2f", {&Object::myClass});
-	const Class* Vec2f::getClass()
-	{
-		return &Vec2f::myClass;
-	}
+	const Class Vec2f::globalClass = Class("Vec2f", {&Object::globalClass});
 
 	Vec2f::Vec2f(double x, double y)
 	{
+		setClass(globalClass);
 		this->x = x;
 		this->y = y;
 	}
 
 	Vec2f::Vec2f()
 	{
+		setClass(globalClass);
 	}
 
 	Vec2f::~Vec2f()

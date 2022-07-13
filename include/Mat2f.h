@@ -51,8 +51,7 @@ namespace glib
 		~Mat2f();
 		
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief Returns the Identity 2x2 matrix

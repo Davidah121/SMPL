@@ -5,14 +5,11 @@ namespace glib
     
 	#pragma region GUI_SCROLL_BAR
 
-	const Class GuiScrollBar::myClass = Class("GuiScrollBar", {&GuiScrollBar::myClass});
-	const Class* GuiScrollBar::getClass()
-	{
-		return &GuiScrollBar::myClass;
-	}
+	const Class GuiScrollBar::globalClass = Class("GuiScrollBar", {&GuiScrollBar::globalClass});
 
 	GuiScrollBar::GuiScrollBar(int startX, int startY, int endX, int endY) : GuiInstance()
 	{
+		setClass(globalClass);
 		setBaseX(x);
 		setBaseY(y);
 		
@@ -62,6 +59,7 @@ namespace glib
 		buttonElement.setOnClickHoldFunction( f );
 		buttonElement.setOnActivateFunction( f2 );
 		buttonElement.setOnDeActivateFunction( f3 );
+
 		addChild( &buttonElement );
 
 		std::function<void(GuiInstance*)> scrollDecrease = [this](GuiInstance* a) -> void{
@@ -85,6 +83,10 @@ namespace glib
 
 		decreaseButtonElement.setOnClickFunction(scrollDecrease);
 		increaseButtonElement.setOnClickFunction(scrollIncrease);
+
+		buttonElement.setBackgroundColor(buttonColor);
+		decreaseButtonElement.setBackgroundColor(buttonColor);
+		increaseButtonElement.setBackgroundColor(buttonColor);
 		
 		addChild( &decreaseButtonElement );
 		addChild( &increaseButtonElement );
@@ -103,6 +105,7 @@ namespace glib
 
 	void GuiScrollBar::copy(const GuiScrollBar& other)
 	{
+		setClass(globalClass);
 		startX = other.startX;
 		endX = other.endX;
 		startY = other.startY;
@@ -125,6 +128,7 @@ namespace glib
 		preButtonY = other.preButtonY;
 
 		backgroundColor = other.backgroundColor;
+		buttonColor = other.buttonColor;
 		outlineColor = other.outlineColor;
 
 		buttonElement = other.buttonElement;
@@ -151,6 +155,10 @@ namespace glib
 
 		decreaseButtonElement.setOnClickFunction(scrollDecrease);
 		increaseButtonElement.setOnClickFunction(scrollIncrease);
+
+		buttonElement.setBackgroundColor(buttonColor);
+		decreaseButtonElement.setBackgroundColor(buttonColor);
+		increaseButtonElement.setBackgroundColor(buttonColor);
 
 		addChild(&buttonElement);
 		addChild(&decreaseButtonElement);
@@ -285,6 +293,7 @@ namespace glib
 			{
 				onSlideFunction(this);
 			}
+			setShouldRedraw(true);
 		}
 	}
 
@@ -475,6 +484,8 @@ namespace glib
 
 			buttonElement.setHeight( MathExt::max(height, minHeight) );
 		}
+
+		setShouldRedraw(true);
 	}
 
 	int GuiScrollBar::getSteps()
@@ -520,7 +531,9 @@ namespace glib
 			{
 				onSlideFunction(this);
 			}
+			setShouldRedraw(true);
 		}
+		
 	}
 
 	int GuiScrollBar::getCurrentStep()
@@ -541,6 +554,12 @@ namespace glib
 	GuiRectangleButton* GuiScrollBar::getIncreaseButtonElement()
 	{
 		return &increaseButtonElement;
+	}
+
+	void GuiScrollBar::solveBoundingBox()
+	{
+		//Shouldn't have children at all but it will be allowed.
+		boundingBox = Box2D(startX, startY, endX, endY);
 	}
 
 	#pragma endregion

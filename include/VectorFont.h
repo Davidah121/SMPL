@@ -26,8 +26,7 @@ namespace glib
         ~VectorFont();
 
         //Object and Class Stuff
-        const Class* getClass();
-        static const Class myClass;
+        static const Class globalClass;
 
         /**
          * @brief Loads a vector font from an .svg file.

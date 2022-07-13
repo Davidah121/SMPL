@@ -37,8 +37,7 @@ namespace glib
 		~GeneralVector();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief Returns the value at the specified location or dimension.

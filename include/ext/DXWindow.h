@@ -133,8 +133,7 @@
 			~DXWindow();
 
 			//Object and Class Stuff
-			const Class* getClass();
-			static const Class myClass;
+			static const Class globalClass;
 
 			/**
 			 * @brief Sets if the window should be visible.

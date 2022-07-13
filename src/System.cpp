@@ -24,11 +24,11 @@ namespace glib
 	
 	size_t System::dbtime[16];
 	unsigned int System::numberOfThreads = std::thread::hardware_concurrency();
-	const FileFilter System::ALL_FILTER = {L"All Files", L"."};
-	const FileFilter System::IMAGE_FILTER = {L"Image", L".bmp;.gif;.png;.jpg;.jpeg"};
-	const FileFilter System::TEXT_FILTER = {L"Text", L".txt"};
-	const FileFilter System::SOUND_FILTER = {L"Sound", L".wav;.ogg;.mp3"};
-	const FileFilter System::VIDEO_FILTER = {L"Video", L".mp4;.flv;.m4a;.wmv"};
+	const FileFilter System::ALL_FILTER = {"All Files", "."};
+	const FileFilter System::IMAGE_FILTER = {"Image", ".bmp;.gif;.png;.jpg;.jpeg"};
+	const FileFilter System::TEXT_FILTER = {"Text", ".txt"};
+	const FileFilter System::SOUND_FILTER = {"Sound", ".wav;.ogg;.mp3"};
+	const FileFilter System::VIDEO_FILTER = {"Video", ".mp4;.flv;.m4a;.wmv"};
 
 	size_t System::getCurrentTimeMillis()
 	{
@@ -575,7 +575,7 @@ namespace glib
 		#endif
 	}
 
-	unsigned long System::getProcessID(std::wstring processName)
+	unsigned long System::getProcessID(std::string processName)
 	{
 		//TODO - LINUX VERSION
 		#ifndef LINUX
@@ -584,18 +584,18 @@ namespace glib
 			HANDLE hndl = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS | TH32CS_SNAPMODULE, 0);
 			if (hndl)
 			{
-				PROCESSENTRY32W  process = { sizeof(PROCESSENTRY32W) };
-				Process32FirstW(hndl, &process);
+				PROCESSENTRY32 process = { sizeof(PROCESSENTRY32) };
+				Process32First(hndl, &process);
 				do
 				{
-					std::wstring thisProcess = process.szExeFile;
+					std::string thisProcess = process.szExeFile;
 					if (thisProcess == processName)
 					{
 						pid = process.th32ProcessID;
 						break;
 					}
 					
-				} while (Process32NextW(hndl, &process));
+				} while (Process32Next(hndl, &process));
 
 				CloseHandle(hndl);
 			}
@@ -607,14 +607,14 @@ namespace glib
 		#endif
 	}
 
-	size_t System::getProcessWindow(std::wstring windowName)
+	size_t System::getProcessWindow(std::string windowName)
 	{
 		//TODO - LINUX VERSION
 		#ifndef LINUX
 
-			HWND hwnd = FindWindowW(NULL, windowName.c_str());
+			HWND hwnd = FindWindowA(NULL, windowName.c_str());
 			if(hwnd == 0)
-				hwnd = FindWindowW(windowName.c_str(), NULL);
+				hwnd = FindWindowA(windowName.c_str(), NULL);
 
 			return (size_t)hwnd;
 
@@ -623,7 +623,7 @@ namespace glib
 		#endif
 	}
 
-	std::wstring System::fileDialogBox(unsigned char type, std::vector<FileFilter> filters, std::wstring startDir)
+	std::string System::fileDialogBox(unsigned char type, std::vector<FileFilter> filters, std::string startDir)
 	{
 		//TODO - LINUX VERSION
 		#ifndef LINUX
@@ -631,7 +631,7 @@ namespace glib
 			//older win32 method. Works just fine so I'm keeping it.
 			
 			//build the filter text
-			std::vector<wchar_t> filterText;
+			std::vector<char> filterText;
 			
 			for(int i=0; i<filters.size(); i++)
 			{
@@ -639,29 +639,29 @@ namespace glib
 				{
 					filterText.push_back(filters[i].name[k]);
 				}
-				filterText.push_back(L'\0');
+				filterText.push_back('\0');
 
-				std::vector<std::wstring> exts = StringTools::splitString(filters[i].extensions, L',');
+				std::vector<std::string> exts = StringTools::splitString(filters[i].extensions, ',');
 				for(int j=0; j<exts.size(); i++)
 				{
 					if(j>0)
 					{
-						filterText.push_back( L';' );
+						filterText.push_back( ';' );
 					}
-					filterText.push_back(L'*');
+					filterText.push_back('*');
 					for(int k=0; k<exts[j].size(); k++)
 					{
 						filterText.push_back(exts[j][k]);
 					}
 				}
-				filterText.push_back(L'\0');
+				filterText.push_back('\0');
 			}
 
 			if(filters.size()==0)
 			{
 			}
 
-			wchar_t* initDir = nullptr;
+			char* initDir = nullptr;
 			if(!startDir.empty())
 			{
 				initDir = startDir.data();
@@ -669,10 +669,10 @@ namespace glib
 
 			if(type==TYPE_OPEN_FILE)
 			{
-				OPENFILENAMEW resStruct = {0};
-				wchar_t* stringArray = new wchar_t[MAX_PATH]{0};
+				OPENFILENAMEA resStruct = {0};
+				char* stringArray = new char[MAX_PATH]{0};
 
-				resStruct.lStructSize = sizeof(OPENFILENAMEW);
+				resStruct.lStructSize = sizeof(OPENFILENAMEA);
 				resStruct.lpstrFile = stringArray;
 				resStruct.nMaxFile = MAX_PATH;
 				resStruct.lpstrFilter = filterText.data();
@@ -680,9 +680,9 @@ namespace glib
 				resStruct.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 				resStruct.lpstrInitialDir = initDir;
 
-				bool result = GetOpenFileNameW(&resStruct);
+				bool result = GetOpenFileNameA(&resStruct);
 				
-				std::wstring finalString = stringArray;
+				std::string finalString = stringArray;
 				delete[] stringArray;
 
 				return finalString;
@@ -732,14 +732,14 @@ namespace glib
 					}
 					CoUninitialize();
 				}
-				return finalString;
+				return StringTools::toUTF8String(finalString);
 			}
 			else if(type==TYPE_SAVE_FILE)
 			{
-				OPENFILENAMEW resStruct = {0};
-				wchar_t* stringArray = new wchar_t[MAX_PATH]{0};
+				OPENFILENAMEA resStruct = {0};
+				char* stringArray = new char[MAX_PATH]{0};
 
-				resStruct.lStructSize = sizeof(OPENFILENAMEW);
+				resStruct.lStructSize = sizeof(OPENFILENAMEA);
 				resStruct.lpstrFile = stringArray;
 				resStruct.nMaxFile = MAX_PATH;
 				resStruct.lpstrFilter = filterText.data();
@@ -747,9 +747,9 @@ namespace glib
 				resStruct.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
 				resStruct.lpstrInitialDir = initDir;
 
-				bool result = GetSaveFileNameW(&resStruct);
+				bool result = GetSaveFileNameA(&resStruct);
 				
-				std::wstring finalString = stringArray;
+				std::string finalString = stringArray;
 				delete[] stringArray;
 
 				return finalString;
@@ -757,15 +757,14 @@ namespace glib
 
 		#endif
 
-		return L"";
+		return "";
 	}
-
 	
-	int System::messageBoxPopup(unsigned int type, std::wstring title, std::wstring message)
+	int System::messageBoxPopup(unsigned int type, std::string title, std::string message)
 	{
 		//TODO - LINUX VERSION
 		#ifndef LINUX
-			return MessageBoxW(NULL, message.c_str(), title.c_str(), type);
+			return MessageBoxA(NULL, message.c_str(), title.c_str(), type);
 		#else
 			return 0;
 		#endif
@@ -823,26 +822,33 @@ namespace glib
 		#endif
 	}
 
-	std::wstring System::pasteFromClipboard()
+	std::string System::pasteFromClipboard()
 	{
 		//TODO - LINUX VERSION
 		#ifndef LINUX
 
 			if(!OpenClipboard(NULL))
-				return L"";
+				return "";
 
+			std::wstring finalText;
 			HANDLE clipboardData = GetClipboardData(CF_UNICODETEXT);
-			wchar_t* textPointer = (wchar_t*)GlobalLock(clipboardData);
+			if(clipboardData != NULL)
+			{
+				wchar_t* textPointer = (wchar_t*)GlobalLock(clipboardData);
+				if(textPointer != nullptr)
+				{
+					finalText = textPointer;
+				}
 
-			std::wstring finalText = textPointer;
+				GlobalUnlock(clipboardData);
+			}
 
-			GlobalUnlock(clipboardData);
 			CloseClipboard();
 
-			return finalText;
+			return StringTools::toUTF8String(finalText);
 
 		#else
-			return L"";
+			return "";
 		#endif
 	}
 

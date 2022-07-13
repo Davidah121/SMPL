@@ -11,14 +11,11 @@
 namespace glib
 {
 
-	const Class Image::myClass = Class("Image", {&Object::myClass});
-	const Class* Image::getClass()
-	{
-		return &Image::myClass;
-	}
+	const Class Image::globalClass = Class("Image", {&Object::globalClass});
 
 	Image::Image()
 	{
+		setClass(globalClass);
 		width = 0;
 		height = 0;
 		pixels = nullptr;
@@ -26,6 +23,7 @@ namespace glib
 
 	Image::Image(int width, int height)
 	{
+		setClass(globalClass);
 		this->width = width;
 		this->height = height;
 		pixels = new Color[width * height];
@@ -36,6 +34,7 @@ namespace glib
 	{
 		this->~Image();
 
+		setClass(globalClass);
 		this->width = other.width;
 		this->height = other.height;
 
@@ -54,6 +53,7 @@ namespace glib
 		this->width = other.width;
 		this->height = other.height;
 		
+		setClass(globalClass);
 		if(other.pixels != nullptr)
 		{
 			pixels = new Color[width * height];
@@ -71,6 +71,16 @@ namespace glib
 		pixels = nullptr;
 		p.~ColorPalette();
 	}
+	
+	void Image::setSamplingMethod(int m)
+	{
+		samplingMethod = m;
+	}
+
+	int Image::getSamplingMethod()
+	{
+		return samplingMethod;
+	}
 
 	int Image::getWidth()
 	{
@@ -87,29 +97,132 @@ namespace glib
 		return pixels;
 	}
 
-	Color Image::getPixel(int x, int y, bool clamp)
+	Color Image::getPixel(int x, int y, int edgeBehavior)
 	{
-		if(!clamp)
+		if(pixels == nullptr)
+			return Color();
+
+		if(edgeBehavior == NONE)
 		{
-			if (x >= 0 && x < width)
-			{
-				if (y >= 0 && y < height)
-				{
-					return pixels[y * width + x];
-				}
-			}
-		}
-		else
-		{
-			if(pixels == nullptr)
+			if (x < 0 || x >= width)
 				return Color();
-			
+			if (y < 0 || y >= height)
+				return Color();
+			return pixels[y * width + x];
+		}
+		else if(edgeBehavior == CLAMP)
+		{
 			int tX, tY;
 			tX = MathExt::clamp(x, 0, width-1);
 			tY = MathExt::clamp(y, 0, height-1);
 			
 			return pixels[tY * width + tX];
 		}
+		else if(edgeBehavior == REPEAT)
+		{
+			int tX, tY;
+			tX = tX % width;
+			tY = tY % height;
+			
+			return pixels[tY * width + tX];
+		}
+		
+		return Color();
+	}
+
+	Color Image::getPixel(double x, double y, int edgeBehavior)
+	{
+		if(samplingMethod == NEAREST)
+		{
+			int nX = (int)round(x);
+			int nY = (int)round(y);
+			
+			return getPixel(nX, nY, edgeBehavior);
+		}
+		else if(samplingMethod == BILINEAR)
+		{
+			//average 4 pixels
+			int nX = (int)floor(x);
+			int nY = (int)floor(y);
+			int nX2 = (int)ceil(x);
+			int nY2 = (int)ceil(y);
+			double xFrac = MathExt::frac(x);
+			double yFrac = MathExt::frac(y);
+			
+			if(nX < 0 || nX >= width)
+				return Color();
+			if(nX2 < 0 || nX2 >= width)
+				return Color();
+			if(nY < 0 || nY >= height)
+				return Color();
+			if(nY2 < 0 || nY2 >= height)
+				return Color();
+			
+			Color p1 = getPixel(nX, nY, edgeBehavior);
+			Color p2 = getPixel(nX2, nY, edgeBehavior);
+			Color p3 = getPixel(nX, nY2, edgeBehavior);
+			Color p4 = getPixel(nX2, nY2, edgeBehavior);
+			
+			Color blend1 = SimpleGraphics::lerp(p1, p2, xFrac);
+			Color blend2 = SimpleGraphics::lerp(p3, p4, xFrac);
+			
+			return SimpleGraphics::lerp(blend1, blend2, yFrac);
+		}
+		else if(samplingMethod == BICUBIC)
+		{
+			//Same as a 3D bezier patch. (Bicubic Patch)
+			//Need 16 points
+			double yFrac = MathExt::frac(y);
+			double xFrac = MathExt::frac(x);
+
+			int yPoints[4];
+			yPoints[1] = MathExt::floor(y);
+			yPoints[0] = yPoints[1]-1;
+			yPoints[2] = MathExt::ceil(y);
+			yPoints[3] = yPoints[2]+1;
+			int xPoints[4];
+			xPoints[1] = MathExt::floor(x);
+			xPoints[0] = xPoints[1]-1;
+			xPoints[2] = MathExt::ceil(x);
+			xPoints[3] = xPoints[2]+1;
+			
+			Vec4f arr[16];
+			for(int j=0; j<16; j++)
+			{
+				int xV = j%4;
+				int yV = j/4;
+				Color c = getPixel(xPoints[xV], yPoints[yV], edgeBehavior);
+				arr[j] = Vec4f(c.red, c.green, c.blue, c.alpha);
+			}
+
+			Vec4f polys[4];
+			for(int j=0; j<4; j++)
+			{
+				Vec4f a, b, c, d;
+				a = (arr[j*4 + 0]*-0.5) + (arr[j*4 + 1]*1.5) + (arr[j*4 + 2]*-1.5) + (arr[j*4 + 3]*0.5);
+				b = (arr[j*4 + 0]) + (arr[j*4 + 1]*-2.5) + (arr[j*4 + 2]*2) + (arr[j*4 + 3]*-0.5);
+				c = (arr[j*4 + 0]*-0.5) + (arr[j*4 + 2]*0.5);
+				d = arr[j*4 + 1];
+
+				polys[j] = ((a*xFrac + b)*xFrac + c)*xFrac + d;
+			}
+			
+			Vec4f a, b, c, d;
+			a = (polys[0]*-0.5) + (polys[1]*1.5) + (polys[2]*-1.5) + (polys[3]*0.5);
+			b = (polys[0]) + (polys[1]*-2.5) + (polys[2]*2) + (polys[3]*-0.5);
+			c = (polys[0]*-0.5) + (polys[2]*0.5);
+			d = polys[1];
+
+			Vec4f finalC = ((a*yFrac + b)*yFrac + c)*yFrac + d;
+
+			return {
+				(unsigned char)MathExt::clamp(finalC.x, 0.0, 255.0),
+				(unsigned char)MathExt::clamp(finalC.y, 0.0, 255.0),
+				(unsigned char)MathExt::clamp(finalC.z, 0.0, 255.0),
+				(unsigned char)MathExt::clamp(finalC.w, 0.0, 255.0)
+			};
+		}
+		
 		
 		return Color();
 	}
@@ -267,6 +380,11 @@ namespace glib
 		SimpleGraphics::drawSprite(img, x, y, this);
 	}
 
+	void Image::drawSprite(Image* img, int x, int y, int x2, int y2)
+	{
+		SimpleGraphics::drawSprite(img, x, y, x2, y2, this);
+	}
+
 	void Image::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH)
 	{
 		SimpleGraphics::drawSpritePart(img, x, y, imgX, imgY, imgW, imgH, this);
@@ -277,9 +395,29 @@ namespace glib
 		SimpleGraphics::drawText(str, x, y, this);
 	}
 
+	void Image::drawText(std::wstring str, int x, int y)
+	{
+		SimpleGraphics::drawText(str, x, y, this);
+	}
+
 	void Image::drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowLineBreak)
 	{
 		SimpleGraphics::drawTextLimits(str, x, y, maxWidth, maxHeight, allowLineBreak, this);
+	}
+
+	void Image::drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool allowLineBreak)
+	{
+		SimpleGraphics::drawTextLimits(str, x, y, maxWidth, maxHeight, allowLineBreak, this);
+	}
+
+	void Image::drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor)
+	{
+		SimpleGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor, this);
+	}
+
+	void Image::drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor)
+	{
+		SimpleGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor, this);
 	}
 
 	void Image::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline)
@@ -304,45 +442,32 @@ namespace glib
 
 	#pragma endregion
 
-	Image** Image::loadImage(std::string filename, int* amountOfImages, std::vector<int>* extraData)
-	{
-		return Image::loadImage( StringTools::toWideString(filename), amountOfImages, extraData);
-	}
-
 	Image** Image::loadImage(File filename, int* amountOfImages, std::vector<int>* extraData)
-	{
-		return Image::loadImage( filename.getFullFileName(), amountOfImages, extraData);
-	}
-
-	Image** Image::loadImage(std::wstring filename, int* amountOfImages, std::vector<int>* extraData)
 	{
 		SimpleFile file(filename, SimpleFile::READ);
 
 		if (file.isOpen())
 		{
 			std::vector<unsigned char> fileData = file.readFullFileAsBytes();
-
 			file.close();
 
-			std::wstring fileType = filename.substr(filename.size() - 3, 3);
-			std::wstring fileType2 = filename.substr(filename.size() - 4, 4);
-
-			if (fileType == L"bmp")
+			std::string filenameExt = filename.getExtension();
+			if (filenameExt == ".bmp")
 			{
 				if (amountOfImages != nullptr)
 					* amountOfImages = 1;
 
 				return loadBMP(fileData, amountOfImages, extraData);
 			}
-			else if (fileType == L"gif")
+			else if (filenameExt == ".gif")
 			{
 				return loadGIF(fileData, amountOfImages, extraData);
 			}
-			else if (fileType == L"png")
+			else if (filenameExt == ".png")
 			{
 				return loadPNG(fileData, amountOfImages, extraData);
 			}
-			else if (fileType == L"jpg" || fileType2 == L"jpeg" || fileType2 == L"jfif")
+			else if (filenameExt == ".jpg" || filenameExt == ".jpeg" || filenameExt == ".jfif")
 			{
 				return loadJPG(fileData, amountOfImages, extraData);
 			}
@@ -357,5 +482,4 @@ namespace glib
 
 		return nullptr;
 	}
-
 } //NAMESPACE glib END

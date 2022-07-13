@@ -69,6 +69,7 @@ build $objDir/Image_BitmapCode.obj: buildToObject src/Image_BitmapCode.cpp
 build $objDir/Image_GifCode.obj: buildToObject src/Image_GifCode.cpp
 build $objDir/Image_JpegCode.obj: buildToObject src/Image_JpegCode.cpp
 build $objDir/Image_PngCode.obj: buildToObject src/Image_PngCode.cpp
+build $objDir/IniFile.obj: buildToObject src/IniFile.cpp
 build $objDir/Input.obj: buildToObject src/Input.cpp
 build $objDir/Line.obj: buildToObject src/Line.cpp
 build $objDir/Main.obj: buildToObject src/Main.cpp

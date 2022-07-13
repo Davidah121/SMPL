@@ -5,14 +5,11 @@
 namespace glib
 {
 
-	const Class Vec3f::myClass = Class("Vec3f", {&Object::myClass});
-	const Class* Vec3f::getClass()
-	{
-		return &Vec3f::myClass;
-	}
+	const Class Vec3f::globalClass = Class("Vec3f", {&Object::globalClass});
 
 	Vec3f::Vec3f(double x, double y, double z)
 	{
+		setClass(globalClass);
 		this->x = x;
 		this->y = y;
 		this->z = z;
@@ -20,10 +17,12 @@ namespace glib
 
 	Vec3f::Vec3f()
 	{
+		setClass(globalClass);
 	}
 
 	Vec3f::Vec3f(Vec2f other, double z)
 	{
+		setClass(globalClass);
 		this->x = other.x;
 		this->y = other.y;
 		this->z = z;

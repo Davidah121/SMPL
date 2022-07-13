@@ -27,8 +27,7 @@ namespace glib
 		~BinarySet();
 		
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		//CONSTANTS
 		

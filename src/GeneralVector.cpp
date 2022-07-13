@@ -4,14 +4,11 @@
 namespace glib
 {
 
-	const Class GeneralVector::myClass = Class("GeneralVector", {&Object::myClass});
-	const Class* GeneralVector::getClass()
-	{
-		return &GeneralVector::myClass;
-	}
+	const Class GeneralVector::globalClass = Class("GeneralVector", {&Object::globalClass});
 
 	GeneralVector::GeneralVector(int size)
 	{
+		setClass(globalClass);
 		this->size = size;
 		if (size > 0)
 		{
@@ -37,6 +34,7 @@ namespace glib
 	{
 		this->~GeneralVector();
 
+		setClass(globalClass);
 		this->size = o.size;
 		if(size>0)
 		{

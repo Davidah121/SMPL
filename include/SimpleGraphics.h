@@ -295,6 +295,7 @@ namespace glib
 		 * 		The image to draw onto.
 		 */
 		static void drawImage(Image* img, int x, int y, Image* surf);
+		static void drawImage_OLD(Image* img, int x, int y, Image* surf);
 		
 		/**
 		 * @brief Draws an Image that is modified by the active drawing color.
@@ -310,6 +311,7 @@ namespace glib
 		 * 		The image to draw onto.
 		 */
 		static void drawSprite(Image* img, int x, int y, Image* surf);
+		static void drawSprite_OLD(Image* img, int x, int y, Image* surf);
 
 		/**
 		 * @brief Draws an Image that is modified by the active drawing color.
@@ -329,6 +331,7 @@ namespace glib
 		 * 		The image to draw onto.
 		 */
 		static void drawSprite(Image* img, int x1, int y1, int x2, int y2, Image* surf);
+		static void drawSprite_OLD(Image* img, int x1, int y1, int x2, int y2, Image* surf);
 
 		/**
 		 * @brief Draws a part of an Image that will be modified by the active drawing color.
@@ -352,9 +355,11 @@ namespace glib
 		 * 		The image to draw onto.
 		 */
 		static void drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH, Image* surf);
+		static void drawSpritePart_OLD(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH, Image* surf);
 
 		/**
 		 * @brief Draws the specified text using the active font. It is affected by the active drawing color.
+		 * 		Linebreaks affect the text.
 		 * 		If OPTI is defined as 1, SSE instructions are used.
 		 * 		If OPTI is defined as 2, AVX instructions are used.
 		 * @param str
@@ -371,6 +376,25 @@ namespace glib
 
 		/**
 		 * @brief Draws the specified text using the active font. It is affected by the active drawing color.
+		 * 		Linebreaks affect the text.
+		 * 		Highlights the text from some start point to some end point as well.
+		 * 		If OPTI is defined as 1, SSE instructions are used.
+		 * 		If OPTI is defined as 2, AVX instructions are used.
+		 * 
+		 * @param str 
+		 * @param x 
+		 * @param y 
+		 * @param highlightStart 
+		 * @param highlightEnd 
+		 * @param highlightColor 
+		 * @param surf 
+		 */
+		static void drawTextHighlighted(std::wstring str, int x, int y, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
+		static void drawTextHighlighted(std::string str, int x, int y, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
+
+
+		/**
+		 * @brief Draws the specified text using the active font. It is affected by the active drawing color.
 		 * 		Adds additional limits such as the maximum width and maximum height.
 		 * 		If OPTI is defined as 1, SSE instructions are used.
 		 * 		If OPTI is defined as 2, AVX instructions are used.
@@ -384,13 +408,14 @@ namespace glib
 		 * 		The maximum width that is allowed before a line break occurs.
 		 * @param maxHeight
 		 * 		The maximum height that is allowed.
-		 * @param useLineBreaks
+		 * @param allowTextWrap
 		 * 		If set to false, drawing stops if the text hits the maximum width.
+		 * 		Otherwise, it automatically inserts a line break.
 		 * @param surf
 		 * 		The image to draw onto.
 		 */
-		static void drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, Image* surf);
-		static void drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, Image* surf);
+		static void drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, Image* surf);
+		static void drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, Image* surf);
 
 		/**
 		 * @brief Draws the specified text using the active font. It is affected by the active drawing color.
@@ -409,8 +434,9 @@ namespace glib
 		 * 		The maximum width that is allowed before a line break occurs.
 		 * @param maxHeight
 		 * 		The maximum height that is allowed.
-		 * @param useLineBreaks
+		 * @param allowTextWrap
 		 * 		If set to false, drawing stops if the text hits the maximum width.
+		 * 		Otherwise, it automatically inserts a line break.
 		 * @param highlightStart
 		 * 		The start of the highlighted section
 		 * @param highlightEnd
@@ -418,8 +444,8 @@ namespace glib
 		 * @param surf
 		 * 		The image to draw onto.
 		 */
-		static void drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
-		static void drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
+		static void drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
+		static void drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
 
 		/**
 		 * @brief Draws a polygon using the active draw color.

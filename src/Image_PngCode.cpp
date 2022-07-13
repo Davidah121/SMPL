@@ -257,7 +257,7 @@ namespace glib
 		int totalIDAT = ceil((double)binarySetBytes.size() / maxIDATSize);
 
 		StringTools::println("%d, %d", totalIDAT, maxIDATSize);
-
+		//3078
 		while(byteOffset < binarySetBytes.size())
 		{
 			std::string IDATHeader = "";
@@ -267,18 +267,22 @@ namespace glib
 			bool lastBlock = false;
 			int readSize = min(binarySetBytes.size() - byteOffset, maxIDATSize);
 			
-			if(binarySetBytes.size() - byteOffset <= maxIDATSize)
+			if(readSize < maxIDATSize)
 			{
+				//last block. Adler Checksum value
 				lastBlock = true;
 				fullSize += 4;
 			}
-
+			
 			if(byteOffset == 0)
 			{
-				readSize = maxIDATSize-2;
+				//first block. Needs zlib header
 				fullSize += 2;
 			}
-			
+
+			//In order for the block to remain <= 8192, remove headers and checksum from the amount of compressed
+			//data in the block.
+			readSize -= max( (fullSize+readSize) - maxIDATSize, 0);
 			fullSize += readSize;
 			
 			IDATHeader += (fullSize>>24) & 0xFF;

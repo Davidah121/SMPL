@@ -9,14 +9,11 @@ namespace glib
 {
 		
 	#pragma region VectorPath
-	const Class VectorPath::myClass = Class("VectorPath", {&VectorShape::myClass});
-	const Class* VectorPath::getClass()
-	{
-		return &VectorPath::myClass;
-	}
+	const Class VectorPath::globalClass = Class("VectorPath", {&VectorShape::globalClass});
 
 	VectorPath::VectorPath() : VectorShape()
 	{
+		setClass(globalClass);
 	}
 
 	VectorPath::VectorPath(const VectorPath& other) : VectorShape()
@@ -34,6 +31,7 @@ namespace glib
 	void VectorPath::copy(VectorPath& other)
 	{
 		//StringTools::println("Copy Function");
+		setClass(globalClass);
 		this->setFillColor( other.getFillColor() );
 		this->setStrokeColor( other.getStrokeColor() );
 		this->setFillMethod( other.getFillMethod() );

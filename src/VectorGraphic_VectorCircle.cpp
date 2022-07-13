@@ -10,14 +10,11 @@ namespace glib
 		
 	#pragma region VectorCircle
 
-	const Class VectorCircle::myClass = Class("VectorCircle", {&VectorShape::myClass});
-	const Class* VectorCircle::getClass()
-	{
-		return &VectorCircle::myClass;
-	}
+	const Class VectorCircle::globalClass = Class("VectorCircle", {&VectorShape::globalClass});
 
 	VectorCircle::VectorCircle() : VectorShape()
 	{
+		setClass(globalClass);
 	}
 
 	VectorCircle::~VectorCircle()

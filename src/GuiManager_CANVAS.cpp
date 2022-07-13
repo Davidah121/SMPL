@@ -5,20 +5,23 @@ namespace glib
     
 	#pragma region GUI_CANVAS_CLASS
 
-	const Class GuiCanvas::myClass = Class("GuiCanvas", {&GuiInstance::myClass});
-	const Class* GuiCanvas::getClass()
-	{
-		return &GuiCanvas::myClass;
-	}
+	const Class GuiCanvas::globalClass = Class("GuiCanvas", {&GuiInstance::globalClass});
 
 	GuiCanvas::GuiCanvas()
 	{
+		setClass(globalClass);
+		boundingBox = Box2D(0, 0, 0, 0);
+		includeChildrenInBounds = false;
+		setPriority(LOWER_PRIORITY);
 	}
 
 	GuiCanvas::GuiCanvas(int width, int height)
 	{
+		setClass(globalClass);
 		// myImage = Image(width, height);
 		boundingBox = Box2D(x, y, x+width, y+height);
+		includeChildrenInBounds = false;
+		setPriority(LOWER_PRIORITY);
 	}
 
 	GuiCanvas::~GuiCanvas()
@@ -59,6 +62,14 @@ namespace glib
 		// {
 		// 	setInstanceCanvas(o);
 		// }
+	}
+
+	
+	void GuiCanvas::solveBoundingBox()
+	{
+		//Due to the properties of the canvas, The children do not affect the bounding box size. It's size is only the image.
+		if(myImage != nullptr)
+			boundingBox = Box2D(x, y, x+myImage->getWidth(), myImage->getHeight());
 	}
 
 	#pragma endregion

@@ -5,15 +5,13 @@ namespace glib
     
 	#pragma region GUI_CONTAINER_CLASS
 
-	const Class GuiContainer::myClass = Class("GuiContainer", {&GuiInstance::myClass});
-	const Class* GuiContainer::getClass()
-	{
-		return &GuiContainer::myClass;
-	}
+	const Class GuiContainer::globalClass = Class("GuiContainer", {&GuiInstance::globalClass});
 
 	GuiContainer::GuiContainer()
 	{
-		
+		setClass(globalClass);
+		includeChildrenInBounds = true;
+		setPriority(HIGHER_PRIORITY);
 	}
 
 	GuiContainer::~GuiContainer()
@@ -30,13 +28,18 @@ namespace glib
 	{
 		
 	}
+
+	void GuiContainer::solveBoundingBox()
+	{
+		//Do nothing as the grouping of all of the children's boxes is handled by the instance itself
+	}
 	
-	void GuiContainer::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
+	void GuiContainer::loadDataFromXML(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter)
 	{
 		GuiInstance::loadDataFromXML(attributes, inter);
 	}
 
-	GuiInstance* GuiContainer::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
+	GuiInstance* GuiContainer::loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter)
 	{
 		GuiContainer* ins = new GuiContainer();
 		ins->loadDataFromXML(attributes, inter);
@@ -46,7 +49,7 @@ namespace glib
 
 	void GuiContainer::registerLoadFunction()
 	{
-		GuiManager::registerLoadFunction(L"GuiContainer", GuiContainer::loadFunction);
+		GuiManager::registerLoadFunction("GuiContainer", GuiContainer::loadFunction);
 	}
 
 	#pragma endregion

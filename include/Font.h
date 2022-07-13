@@ -46,8 +46,7 @@ namespace glib
 		void copyFont(Font& f);
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 		
 		/**
 		 * @brief Gets the character information for rendering.
@@ -110,32 +109,11 @@ namespace glib
 		int getVerticalAdvance();
 
 		/**
-		 * @brief Returns the width of the string.
-		 * 		This width is the space taken up when drawn.
-		 * @param text
-		 * 		The string to find the width of.
-		 * @return int
-		 * 		Returns the width.
-		 */
-		int getWidthOfString(std::string text);
-
-		/**
-		 * @brief Returns the width of the string.
-		 * 		This width is the space taken up when drawn.
-		 * @param text
-		 * 		The string to find the width of.
-		 * @return int
-		 * 		Returns the width.
-		 */
-		int getWidthOfString(std::wstring text);
-
-		/**
 		 * @brief Returns a bounding box that surrounds the text based on the given parameters.
-		 * 		Note that when a line break occurs, it does not carry the whole word to the next line.
+		 * 		Note that when a line break or wrap text occurs, it does not carry the whole word to the next line.
+		 * 		Wrapped text can be removed by setting max width to a negative value.
 		 * 
 		 * @param text 
-		 * @param allowLineBreaks 
-		 * 		Causes line breaks to move to a new line instead of being ignored.
 		 * @param maxWidth 
 		 * 		Sets a maximum width up to 2^31 - 1. A negative value means no maximum width.
 		 * 		If the string exceeds the maximum width, it moves to a new line.
@@ -144,15 +122,14 @@ namespace glib
 		 * 		If the string exceeds the maximum height, it stops.
 		 * @return Box2D 
 		 */
-		Box2D getBoundingBox(std::string text, bool allowLineBreaks, int maxWidth, int maxHeight);
+		Box2D getBoundingBox(std::string text, int maxWidth, int maxHeight);
 
 		/**
 		 * @brief Returns a bounding box that surrounds the text based on the given parameters.
-		 * 		Note that when a line break occurs, it does not carry the whole word to the next line.
+		 * 		Note that when a line break or wrap text occurs, it does not carry the whole word to the next line.
+		 * 		Wrapped text can be removed by setting max width to a negative value.
 		 * 
 		 * @param text 
-		 * @param allowLineBreaks 
-		 * 		Causes line breaks to move to a new line instead of being ignored.
 		 * @param maxWidth 
 		 * 		Sets a maximum width up to 2^31 - 1. A negative value means no maximum width.
 		 * 		If the string exceeds the maximum width, it moves to a new line.
@@ -161,7 +138,7 @@ namespace glib
 		 * 		If the string exceeds the maximum height, it stops.
 		 * @return Box2D 
 		 */
-		Box2D getBoundingBox(std::wstring text, bool allowLineBreaks, int maxWidth, int maxHeight);
+		Box2D getBoundingBox(std::wstring text, int maxWidth, int maxHeight);
 
 		/**
 		 * @brief Returns the raw list of the font characters information.

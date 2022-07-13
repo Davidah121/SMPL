@@ -10,14 +10,11 @@ namespace glib
 		
 	#pragma region VectorPolyline
 
-	const Class VectorPolyline::myClass = Class("VectorPolyline", {&VectorShape::myClass});
-	const Class* VectorPolyline::getClass()
-	{
-		return &VectorPolyline::myClass;
-	}
+	const Class VectorPolyline::globalClass = Class("VectorPolyline", {&VectorShape::globalClass});
 
 	VectorPolyline::VectorPolyline() : VectorShape()
 	{
+		setClass(globalClass);
 	}
 
 	VectorPolyline::~VectorPolyline()

@@ -10,14 +10,11 @@ namespace glib
 		
 	#pragma region VectorLine
 
-	const Class VectorLine::myClass = Class("VectorLine", {&VectorShape::myClass});
-	const Class* VectorLine::getClass()
-	{
-		return &VectorLine::myClass;
-	}
+	const Class VectorLine::globalClass = Class("VectorLine", {&VectorShape::globalClass});
 
 	VectorLine::VectorLine() : VectorShape()
 	{
+		setClass(globalClass);
 	}
 
 	VectorLine::~VectorLine()

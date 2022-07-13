@@ -28,8 +28,7 @@ namespace glib
 		~BitmapFont();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		struct InvalidFileFormat : public std::exception
 		{

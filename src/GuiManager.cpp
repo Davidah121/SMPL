@@ -3,14 +3,9 @@
 namespace glib
 {
 	#pragma region GUI_MANAGER
-	std::unordered_map<std::wstring, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&, GuiGraphicsInterface* inter)> > GuiManager::elementLoadingFunctions;
+	std::unordered_map<std::string, std::function<GuiInstance*(std::unordered_map<std::string, std::string>&, GuiGraphicsInterface* inter)> > GuiManager::elementLoadingFunctions;
 
-	const Class GuiManager::myClass = Class("GuiManager", {&Object::myClass});
-	const Class* GuiManager::getClass()
-	{
-		return &GuiManager::myClass;
-	}
-
+	const Class GuiManager::globalClass = Class("GuiManager", {&Object::globalClass});
 
 	void GuiManager::initDefaultLoadFunctions()
 	{
@@ -24,7 +19,7 @@ namespace glib
 		GuiContextMenu::registerLoadFunction();
 	}
 
-	void GuiManager::registerLoadFunction(std::wstring className, std::function<GuiInstance*(std::unordered_map<std::wstring, std::wstring>&, GuiGraphicsInterface* inter)> func)
+	void GuiManager::registerLoadFunction(std::string className, std::function<GuiInstance*(std::unordered_map<std::string, std::string>&, GuiGraphicsInterface* inter)> func)
 	{
 		elementLoadingFunctions[className] = func;
 	}
@@ -39,7 +34,7 @@ namespace glib
 			auto it = elementLoadingFunctions.find(node->title);
 			if(it != elementLoadingFunctions.end())
 			{
-				std::unordered_map<std::wstring, std::wstring> map;
+				std::unordered_map<std::string, std::string> map;
 				for(XmlAttribute& attrib : node->attributes)
 				{
 					map[ StringTools::toLowercase(attrib.name) ] = attrib.value;
@@ -84,7 +79,7 @@ namespace glib
 
 		for(XmlNode* n : xmlFile.nodes)
 		{
-			if(StringTools::equalsIgnoreCase<wchar_t>(n->title, L"SimpleGUI"))
+			if(StringTools::equalsIgnoreCase<char>(n->title, "SimpleGUI"))
 			{
 				parentNode = n;
 				break;
@@ -110,6 +105,7 @@ namespace glib
 
 	GuiManager::GuiManager(unsigned char type)
 	{
+		setClass(globalClass);
 		graphicsInterface = GuiGraphicsInterface(type);
 		surf = graphicsInterface.createSurface(320, 240);
 
@@ -118,6 +114,7 @@ namespace glib
 
 	GuiManager::GuiManager(unsigned char type, int width, int height)
 	{
+		setClass(globalClass);
 		graphicsInterface = GuiGraphicsInterface(type);
 		surf = graphicsInterface.createSurface(width, height);
 
@@ -126,16 +123,17 @@ namespace glib
 
 	GuiManager::~GuiManager()
 	{
-		for(GuiInstance* ins : objects)
+		for(GuiInstance* k : objects)
 		{
-			if(ins!=nullptr)
-				ins->manager = nullptr;
+			deleteElementDelayed(k);
 		}
 
+		//Remove the remaining objects allocated that for some reason did not get deleted
 		for(auto it=shouldDelete.begin(); it != shouldDelete.end(); it++)
 		{
 			GuiInstance* pointer = *it;
-			delete pointer;
+			if(pointer != nullptr)
+				delete pointer;
 		}
 		
 		objects.clear();
@@ -154,9 +152,7 @@ namespace glib
 			if(k->getManager() == nullptr)
 			{
 				k->setManager(this);
-				objects.push_back(k);
 				objectsByName.add( k->nameID, k);
-
 				for(int i=0; i<k->getChildren().size(); i++)
 				{
 					GuiInstance* c = k->getChildren().at(i);
@@ -165,6 +161,11 @@ namespace glib
 						addElement(c);
 					}
 				}
+			}
+
+			if(k->parent == nullptr)
+			{
+				objects.push_back(k);
 			}
 		}
 	}
@@ -178,6 +179,8 @@ namespace glib
 	{
 		if(k->manager == this)
 		{
+			//Even if the element is not a root element, it is possible for the object
+			//to be in the root object list.
 			int startIndex = -1;
 			int orgSize = getSize();
 
@@ -218,57 +221,289 @@ namespace glib
 		}
 	}
 
-	void GuiManager::sortElements()
+	void GuiManager::deleteElementDelayed(GuiInstance* k)
 	{
-		//assume mostly sorted
-		Sort::insertionSort<GuiInstance*>(objects.data(), objects.size(), [](GuiInstance* a, GuiInstance* b)->bool{
-			return a->getPriority() < b->getPriority();
-		});
+		if(k->manager == this)
+		{
+			k->manager = nullptr;
+			objectsByName.remove(k->nameID, k);
+
+			//delete children as well
+			for(GuiInstance* o : k->getChildren())
+			{
+				deleteElementDelayed(o);
+			}
+		}
+	}
+
+	void GuiManager::fixObjects()
+	{
+		//Only keep the root elements
+		std::vector<GuiInstance*> rootElements;
+		
+		for(GuiInstance* objs : objects)
+		{
+			if(objs->getParent() == nullptr)
+			{
+				//Do not add duplicate
+				bool canAdd = true;
+				for(int i=0; i<rootElements.size(); i++)
+				{
+					if(objs == rootElements[i])
+					{
+						canAdd = false;
+						break;
+					}
+				}
+				if(canAdd)
+					rootElements.push_back( objs );
+			}
+			else
+			{
+				GuiInstance* temp = objs->getParent();
+				while(true)
+				{
+					if(temp->getParent() == nullptr)
+						break;
+					else
+						temp = temp->getParent();
+				}
+
+				//Do not add duplicate
+				bool canAdd = true;
+				for(int i=0; i<rootElements.size(); i++)
+				{
+					if(temp == rootElements[i])
+					{
+						canAdd = false;
+						break;
+					}
+				}
+				if(canAdd)
+					rootElements.push_back( temp );
+			}
+		}
+
+		objects = rootElements;
 	}
 
 	void GuiManager::updateGuiElements()
 	{
 		//Assume that pollInput() was already called
-		sortElements();
-
-		//remove objects that are not active or whose parents aren't active
-		std::vector<GuiInstance*> currActiveObjects = std::vector<GuiInstance*>();
-		for(int i=0; i<objects.size(); i++)
+		//update root elements
+		fixObjects();
+		for(GuiInstance* objs : objects)
 		{
-			GuiInstance* obj = objects[i];
+			updateElement(objs);
+		}
+	}
 
-			if (obj != nullptr)
+	void GuiManager::updateElement(GuiInstance* k)
+	{
+		if(k != nullptr)
+		{
+			if(k->getActive())
 			{
-				if(obj->getActive())
+				bool v = k->getPriority() & 0b10;
+				if(v)
 				{
-					currActiveObjects.push_back(obj);
+					//update self then children
+					k->baseUpdate();
+					k->update();
+
+					for(GuiInstance* childObj : k->getChildrenRef())
+					{
+						updateElement(childObj);
+					}
+				}
+				else
+				{
+					//update children then self
+					for(GuiInstance* childObj : k->getChildrenRef())
+					{
+						updateElement(childObj);
+					}
+
+					k->baseUpdate();
+					k->update();
 				}
 			}
 		}
+	}
 
-		//UPDATE
-		for(GuiInstance* obj : currActiveObjects)
+	void GuiManager::renderElement(GuiInstance* k, int& redrawCount)
+	{
+		if(k != nullptr)
 		{
-			obj->baseUpdate();
-			obj->update();
+			//moved out of the getVisible section so that all possible objects are still updated.
+			bool v = k->getPriority() & 0b01;
+			
+			if(!v)
+			{
+				//render children first
+				for(GuiInstance* childObj : k->getChildrenRef())
+				{
+					renderElement(childObj, redrawCount);
+				}
+			}
+
+			if(k->getVisible())
+			{
+				//render self
+				bool clip1 = false;
+				bool clip2 = false;
+
+				if(!this->invalidImage)
+				{
+					if(CollisionMaster::collisionMethod(&newClipBox, &k->boundingBox))
+					{
+						k->shouldRedraw = true;
+						clip1 = true;
+						graphicsInterface.setClippingRect(newClipBox);
+					}
+					if(CollisionMaster::collisionMethod(&preClipBox, &k->boundingBox))
+					{
+						k->shouldRedraw = true;
+						clip2 = true;
+						graphicsInterface.setClippingRect(preClipBox);
+					}
+					
+					if(!clip1 && !clip2)
+					{
+						k->shouldRedraw = false;
+					}
+				}
+				else
+				{
+					k->shouldRedraw = true;
+				}
+
+				if(k->shouldRedraw)
+				{
+					k->baseRender();
+					graphicsInterface.setBoundSurface(surf);
+					if(!clip1 && !clip2)
+					{
+						k->render();
+					}
+					else
+					{
+						if(clip1 && !clip2)
+						{
+							graphicsInterface.setClippingRect(newClipBox);
+							k->render();
+						}
+						else if(clip2 && !clip1)
+						{
+							graphicsInterface.setClippingRect(preClipBox);
+							k->render();
+						}
+						else if(clip1 && clip2)
+						{
+							//check if either box is completely inside of the other.
+							//If so, do not use that box.
+							bool box1Col = false;
+							bool box2Col = false;
+
+							//Check for overlap. If completely inside, this will be true for preClipBox but if newClipBox is inside preClipBox, it will be false.
+							//assumes that leftBound<rightBound and topBound<bottomBound
+							if(preClipBox.getLeftBound() >= newClipBox.getLeftBound() && preClipBox.getRightBound() <= newClipBox.getRightBound())
+							{
+								if(preClipBox.getTopBound() >= newClipBox.getTopBound() && preClipBox.getBottomBound() <= newClipBox.getBottomBound())
+								{
+									box1Col = true;
+								}
+							}
+
+							//Check for overlap. If completely inside, this will be true for newClipBox but if preClipBox is inside newClipBox, it will be false.
+							if(newClipBox.getLeftBound() >= preClipBox.getLeftBound() && newClipBox.getRightBound() <= preClipBox.getRightBound())
+							{
+								if(newClipBox.getTopBound() >= preClipBox.getTopBound() && newClipBox.getBottomBound() <= preClipBox.getBottomBound())
+								{
+									box2Col = true;
+								}
+							}
+
+							if(!box1Col && !box2Col)
+							{
+								//neither box fully encapsulates the other.
+								//Use both boxes
+								graphicsInterface.setClippingRect(newClipBox);
+								k->render();
+								graphicsInterface.setClippingRect(preClipBox);
+								k->render();
+							}
+							else if(box1Col && !box2Col)
+							{
+								//previousBox is in new box. Only do new box
+								graphicsInterface.setClippingRect(newClipBox);
+								k->render();
+							}
+							else
+							{
+								//Possible that both are the same
+								//newBox is in the previousBox. Only do previous box
+								graphicsInterface.setClippingRect(preClipBox);
+								k->render();
+							}
+						}
+					}
+
+					redrawCount++;
+					k->previousBoundingBox = k->boundingBox;
+				}
+			}
+
+			if(v)
+			{
+				//render children last
+				for(GuiInstance* childObj : k->getChildrenRef())
+				{
+					renderElement(childObj, redrawCount);
+				}
+			}
+			
+			//set things like if it should redraw. This will apply regardless of whether the object is visible or not.
+			//If the object is not visible, it just means it should be cleared.
+			k->shouldRedraw = false;
+		}
+	}
+
+	void GuiManager::updateBounds(GuiInstance* obj, int& redrawCount)
+	{
+		//calculate the bounding render area
+
+		if( (obj->shouldRedraw || this->invalidImage) )
+		{
+			newClipBox.setLeftBound( MathExt::min(newClipBox.getLeftBound(), obj->boundingBox.getLeftBound()) );
+			newClipBox.setRightBound( MathExt::max(newClipBox.getRightBound(), obj->boundingBox.getRightBound()) );
+			newClipBox.setTopBound( MathExt::min(newClipBox.getTopBound(), obj->boundingBox.getTopBound()) );
+			newClipBox.setBottomBound( MathExt::max(newClipBox.getBottomBound(), obj->boundingBox.getBottomBound()) );
+			
+			preClipBox.setLeftBound( MathExt::min(preClipBox.getLeftBound(), obj->previousBoundingBox.getLeftBound()) );
+			preClipBox.setRightBound( MathExt::max(preClipBox.getRightBound(), obj->previousBoundingBox.getRightBound()) );
+			preClipBox.setTopBound( MathExt::min(preClipBox.getTopBound(), obj->previousBoundingBox.getTopBound()) );
+			preClipBox.setBottomBound( MathExt::max(preClipBox.getBottomBound(), obj->previousBoundingBox.getBottomBound()) );
+			
+			redrawCount++;
+			obj->setShouldRedraw(true);
 		}
 
+		for(GuiInstance* childObj : obj->getChildrenRef())
+		{
+			if(obj->shouldRedraw)
+				childObj->setShouldRedraw(true);
+			
+			updateBounds(childObj, redrawCount);
+		}
 	}
 
 	bool GuiManager::renderGuiElements()
 	{
-		std::vector<GuiInstance*> currVisibleObjects = std::vector<GuiInstance*>();
-
-		unsigned int minX = 0xFFFFFFFF;
-		unsigned int maxX = 0;
-		unsigned int minY = 0xFFFFFFFF;
-		unsigned int maxY = 0;
-
-		unsigned int preMinX = 0xFFFFFFFF;
-		unsigned int preMaxX = 0;
-		unsigned int preMinY = 0xFFFFFFFF;
-		unsigned int preMaxY = 0;
-
+		fixObjects();
+		newClipBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
+		preClipBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
+		int shouldRedrawCount = 0;
 		int redrawCount = 0;
 
 		if(alwaysInvalidate)
@@ -276,119 +511,69 @@ namespace glib
 			invalidImage = true;
 		}
 
-		for(int i=0; i<objects.size(); i++)
+		for(GuiInstance* obj : objects)
 		{
-			if (objects[i] != nullptr)
-			{
-				if(objects[i]->getVisible())
-				{
-					currVisibleObjects.push_back(objects[i]);
-
-					if(invalidImage)
-					{
-						redrawCount++;
-						objects[i]->shouldRedraw = true;
-					}
-					else
-					{
-						if(objects[i]->shouldRedraw)
-							redrawCount++;
-					}
-				}
-			}
+			updateBounds(obj, shouldRedrawCount);
 		}
+		
 		int width = surf->getWidth();
 		int height = surf->getHeight();
 		
 		graphicsInterface.setOrthoProjection(width, height);
+		graphicsInterface.resetClippingPlane();
+		graphicsInterface.setColor(backgroundColor);
+		graphicsInterface.setBoundSurface(surf);
 
-		if(redrawCount > 0)
+		if(shouldRedrawCount > 0)
 		{
-			//calculate the bounding render area
-			for(GuiInstance* obj : currVisibleObjects)
-			{
-				if(obj->shouldRedraw)
-				{
-					minX = MathExt::min((unsigned int)obj->boundingBox.getLeftBound(), minX);
-					maxX = MathExt::max((unsigned int)obj->boundingBox.getRightBound(), maxX);
-					minY = MathExt::min((unsigned int)obj->boundingBox.getTopBound(), minY);
-					maxY = MathExt::max((unsigned int)obj->boundingBox.getBottomBound(), maxY);
-					
-					preMinX = MathExt::min((unsigned int)obj->previousBoundingBox.getLeftBound(), preMinX);
-					preMaxX = MathExt::max((unsigned int)obj->previousBoundingBox.getRightBound(), preMaxX);
-					preMinY = MathExt::min((unsigned int)obj->previousBoundingBox.getTopBound(), preMinY);
-					preMaxY = MathExt::max((unsigned int)obj->previousBoundingBox.getBottomBound(), preMaxY);
-				}
-			}
-
-			Box2D newClipBox = Box2D(minX, minY, maxX, maxY);
-			Box2D preClipBox = Box2D(preMinX, preMinY, preMaxX, preMaxY);
-
-
-			graphicsInterface.setColor(backgroundColor);
-			graphicsInterface.setBoundSurface(surf);
-
+			// StringTools::println("REDRAW: %d", redrawCount);
+			// StringTools::println("NewBox: (%.3f, %.3f , %.3f, %.3f)", newClipBox.getLeftBound(), newClipBox.getTopBound(), newClipBox.getRightBound(), newClipBox.getBottomBound());
+			// StringTools::println("PreBox: (%.3f, %.3f , %.3f, %.3f)", preClipBox.getLeftBound(), preClipBox.getTopBound(), preClipBox.getRightBound(), preClipBox.getBottomBound());
+			
 			if(invalidImage)
 			{
 				graphicsInterface.clear();
-				graphicsInterface.resetClippingPlane();
 			}
 			else
 			{
-				if(minX <= 0 && maxX >= surf->getWidth() && minY <= 0 && maxY >= surf->getHeight())
+				if(newClipBox.getLeftBound() <= 0 && newClipBox.getRightBound() >= surf->getWidth() 
+					&& newClipBox.getTopBound() <= 0 && newClipBox.getBottomBound() >= surf->getHeight())
 				{
 					graphicsInterface.clear(); //Clear everything
 				}
-				else if(preMinX <= 0 && preMaxX >= surf->getWidth() && preMinY <= 0 && preMaxY >= surf->getHeight())
+				else if(preClipBox.getLeftBound() <= 0 && preClipBox.getRightBound() >= surf->getWidth() 
+						&& preClipBox.getTopBound() <= 0 && preClipBox.getBottomBound() >= surf->getHeight())
 				{
 					graphicsInterface.clear(); //Clear everything
 				}
 				else
 				{
 					//Clear the invalid areas
-					graphicsInterface.drawRect(minX, minY, maxX, maxY, false);
-					graphicsInterface.drawRect(preMinX, preMinY, preMaxX, preMaxY, false);
+					graphicsInterface.drawRect(newClipBox.getLeftBound(), newClipBox.getTopBound(), newClipBox.getRightBound(), newClipBox.getBottomBound(), false);
+					graphicsInterface.drawRect(preClipBox.getLeftBound(), preClipBox.getTopBound(), preClipBox.getRightBound(), preClipBox.getBottomBound(), false);
 				}
 			}
 
-			for(GuiInstance* obj : currVisibleObjects)
+		
+			for(GuiInstance* obj : objects)
 			{
-				if(!invalidImage)
-				{
-					if(CollisionMaster::collisionMethod(&newClipBox, &obj->boundingBox))
-					{
-						obj->shouldRedraw = true;
-						graphicsInterface.setClippingRect(newClipBox);
-					}
-					else if(CollisionMaster::collisionMethod(&preClipBox, &obj->boundingBox))
-					{
-						obj->shouldRedraw = true;
-						graphicsInterface.setClippingRect(preClipBox);
-					}
-					else
-					{
-						obj->shouldRedraw = false;
-					}
-				}
-
-				if(obj->shouldRedraw)
-				{
-					obj->baseRender();
-					graphicsInterface.setBoundSurface(surf);
-					obj->render();
-
-					obj->previousBoundingBox = obj->boundingBox;
-				}
-
-				obj->shouldRedraw = false;
+				renderElement(obj, redrawCount);
 			}
 
 			//Drawing valid and invalid areas
 			// graphicsInterface.setColor(Vec4f(1,0,0,1));
-			// graphicsInterface.drawRect(minX, minY, maxX, maxY, true);
+			// if(newClipBox.getLeftBound() < newClipBox.getRightBound()
+			// && newClipBox.getTopBound() < newClipBox.getBottomBound())
+			// {
+			// 	graphicsInterface.drawRect(newClipBox.getLeftBound(), newClipBox.getTopBound(), newClipBox.getRightBound(), newClipBox.getBottomBound(), true);
+			// }
+			
 			// graphicsInterface.setColor(Vec4f(0,0,1,1));
-			// graphicsInterface.drawRect(preMinX, preMinY, preMaxX, preMaxY, true);
-
+			// if(preClipBox.getLeftBound() < preClipBox.getRightBound()
+			// && preClipBox.getTopBound() < preClipBox.getBottomBound())
+			// {
+			// 	graphicsInterface.drawRect(preClipBox.getLeftBound(), preClipBox.getTopBound(), preClipBox.getRightBound(), preClipBox.getBottomBound(), true);
+			// }
 		}
 		else
 		{
@@ -408,8 +593,9 @@ namespace glib
 		{
 			graphicsInterface.setColor(Vec4f(1,1,1,1));
 			graphicsInterface.drawToScreen();
+			// StringTools::println("RedrawCount: %d", redrawCount);
 		}
-
+		
 		return redrawCount != 0;
 	}
 
@@ -418,7 +604,7 @@ namespace glib
 		return objects;
 	}
 	
-	std::vector< HashPair<std::wstring, GuiInstance*>* > GuiManager::getInstancesByName(std::wstring name)
+	std::vector< HashPair<std::string, GuiInstance*>* > GuiManager::getInstancesByName(std::string name)
 	{
 		return objectsByName.getAll(name);
 	}

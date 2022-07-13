@@ -10,6 +10,14 @@ namespace glib
 	class Image : public Object
 	{
 	public:
+		const static int NONE = 0;
+		const static int CLAMP = 1;
+		const static int REPEAT = 2;
+
+		const static int NEAREST = 0;
+		const static int BILINEAR = 1;
+		const static int BICUBIC = 2;
+
 		/**
 		 * @brief Construct a new Image object.
 		 * 		It stores pixel data using the Color Struct which maps to a 32 bit integer.
@@ -52,8 +60,21 @@ namespace glib
 		~Image();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
+
+		/**
+		 * @brief Sets the Sampling Method used to get pixels that are not aligned.
+		 * 
+		 * @param m 
+		 */
+		void setSamplingMethod(int m);
+
+		/**
+		 * @brief Get the Sampling Method used to get pixels that are not aligned.
+		 * 
+		 * @return int 
+		 */
+		int getSamplingMethod();
 
 		/**
 		 * @brief Get the Width of the image.
@@ -84,12 +105,25 @@ namespace glib
 		 * 		X position of the pixel.
 		 * @param y 
 		 * 		Y position of the pixel.
-		 * @param clamp 
-		 * 		Whether to clamp to the edges of the image if the x or y value is outside of the allowed bounds.
+		 * @param edgeBehavior 
+		 * 		The behavior to take if the location is beyond the edges of the image.
 		 * @return Color 
 		 * 		If unsuccessful, the default Color is return with the value RGBA(0,0,0,0)
 		 */
-		Color getPixel(int x, int y, bool clamp = false);
+		Color getPixel(int x, int y, int edgeBehavior = NONE);
+
+		/**
+		 * @brief Geta pixel in the image.
+		 * 		Uses the image's filter method to blend pixels for the final output.
+		 * 
+		 * @param x 
+		 * @param y 
+		 * @param edgeBehavior 
+		 * 		The behavior to take if the location is beyond the edges of the image.
+		 * @return Color 
+		 * 		If unsuccessful, the default Color is return with the value RGBA(0,0,0,0)
+		 */
+		Color getPixel(double x, double y, int edgeBehavior = NONE);
 
 		/**
 		 * @brief Set the Pixel at the specified location
@@ -139,60 +173,6 @@ namespace glib
 		 * 		This will replace each color with the closest color in the palette.
 		 */
 		void enforcePalette();
-
-		/**
-		 * @brief Loads an image from a file.
-		 * 		Valid files are .bmp, .jpg, .jpeg, .png, and .gif
-		 * 		Can load animations for .png and .gif.
-		 * 
-		 * @param filename 
-		 * 		The name of file to load.
-		 * @param amountOfImages 
-		 * 		A pointer to an int that will store the amount of images loaded.
-		 * @param extraData 
-		 * 		A pointer to a vector<int> that will store additional data about the image.
-		 * 		For .png and .gif, it stores the delay time between each image in the animation.
-		 * @return Image** 
-		 * 		Returns an array of Image*. The size of the array is specified by the amountOfImages argument.
-		 * 		Should be deleted when no longer needed. The individual Image* should also be deleted when no longer needed.
-		 */
-		static Image** loadImage(std::string filename, int* amountOfImages, std::vector<int>* extraData = nullptr);
-
-		/**
-		 * @brief Loads an image from a file.
-		 * 		Valid files are .bmp, .jpg, .jpeg, .png, and .gif
-		 * 		Can load animations for .png and .gif.
-		 * 
-		 * @param filename 
-		 * 		The name of file to load.
-		 * @param amountOfImages 
-		 * 		A pointer to an int that will store the amount of images loaded.
-		 * @param extraData 
-		 * 		A pointer to a vector<int> that will store additional data about the image.
-		 * 		For .png and .gif, it stores the delay time between each image in the animation.
-		 * @return Image** 
-		 * 		Returns an array of Image*. The size of the array is specified by the amountOfImages argument.
-		 * 		Should be deleted when no longer needed. The individual Image* should also be deleted when no longer needed.
-		 */
-		static Image** loadImage(std::wstring filename, int* amountOfImages, std::vector<int>* extraData = nullptr);
-
-		/**
-		 * @brief Loads an image from a file.
-		 * 		Valid files are .bmp, .jpg, .jpeg, .png, and .gif
-		 * 		Can load animations for .png and .gif.
-		 * 
-		 * @param file 
-		 * 		The file to load.
-		 * @param amountOfImages 
-		 * 		A pointer to an int that will store the amount of images loaded.
-		 * @param extraData 
-		 * 		A pointer to a vector<int> that will store additional data about the image.
-		 * 		For .png and .gif, it stores the delay time between each image in the animation.
-		 * @return Image** 
-		 * 		Returns an array of Image*. The size of the array is specified by the amountOfImages argument.
-		 * 		Should be deleted when no longer needed. The individual Image* should also be deleted when no longer needed.
-		 */
-		static Image** loadImage(File file, int* amountOfImages, std::vector<int>* extraData = nullptr);
 
 		//Wrapper around the graphics class for images
 		/**
@@ -260,6 +240,17 @@ namespace glib
 		void drawSprite(Image* img, int x, int y);
 
 		/**
+		 * @brief Calls the SimpleGraphics class function drawSprite
+		 * 
+		 * @param img 
+		 * @param x 
+		 * @param y 
+		 * @param x2 
+		 * @param y2 
+		 */
+		void drawSprite(Image* img, int x, int y, int x2, int y2);
+
+		/**
 		 * @brief Calls the SimpleGraphics class function drawSpritePart
 		 * 
 		 * @param img 
@@ -280,6 +271,8 @@ namespace glib
 		 * @param y 
 		 */
 		void drawText(std::string str, int x, int y);
+		void drawText(std::wstring str, int x, int y);
+		
 
 		/**
 		 * @brief Calls the SimpleGraphics class function drawTextLimits
@@ -292,7 +285,24 @@ namespace glib
 		 * @param allowLineBreak 
 		 */
 		void drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowLineBreak);
+		void drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool allowLineBreak);
 		
+		/**
+		 * @brief Calls the SimpleGraphics class function drawTextLimitsHighlighted
+		 * 
+		 * @param str 
+		 * @param x 
+		 * @param y 
+		 * @param maxWidth 
+		 * @param maxHeight 
+		 * @param useLineBreak 
+		 * @param highlightStart 
+		 * @param highlightEnd 
+		 * @param highlightColor 
+		 */
+		void drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor);
+		void drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor);
+
 		/**
 		 * @brief Calls the SimpleGraphics class function drawTriangle
 		 * 
@@ -335,6 +345,24 @@ namespace glib
 		 */
 		void drawPixel(double x, double y, Color c);
 		
+		/**
+		 * @brief Loads an image from a file.
+		 * 		Valid files are .bmp, .jpg, .jpeg, .png, and .gif
+		 * 		Can load animations for .png and .gif.
+		 * 
+		 * @param file 
+		 * 		The file to load.
+		 * @param amountOfImages 
+		 * 		A pointer to an int that will store the amount of images loaded.
+		 * @param extraData 
+		 * 		A pointer to a vector<int> that will store additional data about the image.
+		 * 		For .png and .gif, it stores the delay time between each image in the animation.
+		 * @return Image** 
+		 * 		Returns an array of Image*. The size of the array is specified by the amountOfImages argument.
+		 * 		Should be deleted when no longer needed. The individual Image* should also be deleted when no longer needed.
+		 */
+		static Image** loadImage(File file, int* amountOfImages, std::vector<int>* extraData = nullptr);
+
 		/**
 		 * @brief Saves a image as a .bmp file.
 		 * 		Note that .bmp can not save alpha values.
@@ -417,6 +445,7 @@ namespace glib
 	private:
 		int width = 0;
 		int height = 0;
+		int samplingMethod = NEAREST;
 		ColorPalette p = ColorPalette();
 		Color* pixels = nullptr;
 

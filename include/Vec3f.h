@@ -38,8 +38,7 @@ namespace glib
 		~Vec3f();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		double x = 0;
 		double y = 0;

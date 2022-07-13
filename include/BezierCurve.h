@@ -28,8 +28,7 @@ namespace glib
 		~BezierCurve();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		//Exception Stuff
 		struct BlendPointsError : public std::exception

@@ -5,16 +5,15 @@ namespace glib
     
 	#pragma region GUI_GRID_CLASS
 
-	const Class GuiGrid::myClass = Class("GuiGrid", {&GuiInstance::myClass});
-	const Class* GuiGrid::getClass()
-	{
-		return &GuiGrid::myClass;
-	}
+	const Class GuiGrid::globalClass = Class("GuiGrid", {&GuiInstance::globalClass});
 
 	GuiGrid::GuiGrid(int x, int y)
 	{
+		setClass(globalClass);
 		baseX = x;
 		baseY = y;
+		includeChildrenInBounds = false;
+		setPriority(HIGHER_PRIORITY);
 	}
 
 	GuiGrid::~GuiGrid()
@@ -78,7 +77,7 @@ namespace glib
 		{
 			if(boundingBox.getTopBound() == y && boundingBox.getBottomBound() == y+maxHeight)
 			{
-				setShouldRedraw(false);
+				//Don't do anything. It may still need to be redrawn for other reasons.
 			}
 			else
 			{
@@ -209,42 +208,48 @@ namespace glib
 		setShouldRedraw(true);
 	}
 
-	void GuiGrid::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter)
+	void GuiGrid::solveBoundingBox()
+	{
+		//Call the update function since it only solves for the new bounding box. Also repositions all of the objects below it.
+		update();
+	}
+
+	void GuiGrid::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter)
 	{
 		GuiInstance::loadDataFromXML(attribs, inter);
-		std::vector<std::wstring> possibleNames = { L"horizontalspacing", L"verticalspacing", L"rowmajor", L"maxrows", L"maxcolumns", L"backgroundcolor", L"outlinecolor"};
+		std::vector<std::string> possibleNames = { "horizontalspacing", "verticalspacing", "rowmajor", "maxrows", "maxcolumns", "backgroundcolor", "outlinecolor"};
 
 		for(int i=0; i<possibleNames.size(); i++)
 		{
 			auto it = attribs.find(possibleNames[i]);
 			if(it != attribs.end())
 			{
-				if(it->first == L"horizontalspacing")
+				if(it->first == "horizontalspacing")
 				{
 					gridXSpacing = std::abs(StringTools::toInt(it->second));
 				}
-				else if(it->first == L"verticalspacing")
+				else if(it->first == "verticalspacing")
 				{
 					gridYSpacing = std::abs(StringTools::toInt(it->second));
 				}
-				else if(it->first == L"maxrows")
+				else if(it->first == "maxrows")
 				{
 					rowSize = std::abs(StringTools::toInt(it->second));
 				}
-				else if(it->first == L"maxcolumns")
+				else if(it->first == "maxcolumns")
 				{
 					colSize = std::abs(StringTools::toInt(it->second));
 				}
-				else if(it->first == L"rowmajor")
+				else if(it->first == "rowmajor")
 				{
-					rowMajorOrder = StringTools::equalsIgnoreCase<wchar_t>(it->second, L"true");
+					rowMajorOrder = StringTools::equalsIgnoreCase<char>(it->second, "true");
 				}
-				else if(it->first == L"backgroundcolor")
+				else if(it->first == "backgroundcolor")
 				{
 					//define as color name or rgba
 					backgroundColor = ColorNameConverter::NameToColor(it->second);
 				}
-				else if(it->first == L"outlinecolor")
+				else if(it->first == "outlinecolor")
 				{
 					//define as color name or rgba
 					outlineColor = ColorNameConverter::NameToColor(it->second);
@@ -257,10 +262,10 @@ namespace glib
 
 	void GuiGrid::registerLoadFunction()
 	{
-		GuiManager::registerLoadFunction(L"GuiGrid", GuiGrid::loadFunction);
+		GuiManager::registerLoadFunction("GuiGrid", GuiGrid::loadFunction);
 	}
 
-	GuiInstance* GuiGrid::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
+	GuiInstance* GuiGrid::loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter)
 	{
 		GuiGrid* ins = new GuiGrid(0,0);
 		ins->loadDataFromXML(attributes, inter);

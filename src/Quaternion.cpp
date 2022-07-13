@@ -4,20 +4,17 @@
 namespace glib
 {
 
-    const Class Quaternion::myClass = Class("Quaternion", {&Object::myClass});
-    const Class* Quaternion::getClass()
-    {
-        return &Quaternion::myClass;
-    }
+    const Class Quaternion::globalClass = Class("Quaternion", {&Object::globalClass});
 
     Quaternion::Quaternion()
     {
-
+		setClass(globalClass);
     }
 
 
     Quaternion::Quaternion(double x, double y, double z, double w)
     {
+		setClass(globalClass);
         this->x=x;
         this->y=y;
         this->z=z;

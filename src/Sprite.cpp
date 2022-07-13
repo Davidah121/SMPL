@@ -3,16 +3,12 @@
 namespace glib
 {
 		
-	const Class Sprite::myClass = Class("Sprite", {&Object::myClass});
-	const Class* Sprite::getClass()
-	{
-		return &Sprite::myClass;
-	}
-
+	const Class Sprite::globalClass = Class("Sprite", {&Object::globalClass});
+	
 	Sprite::Sprite()
 	{
+		setClass(globalClass);
 	}
-
 
 	Sprite::~Sprite()
 	{
@@ -21,12 +17,14 @@ namespace glib
 
 	Sprite::Sprite(const Sprite& o)
 	{
+		setClass(globalClass);
 		images = o.images;
 		delayTimeForFrame = o.delayTimeForFrame;
 	}
 
 	void Sprite::operator=(const Sprite& o)
 	{
+		setClass(globalClass);
 		images = o.images;
 		delayTimeForFrame = o.delayTimeForFrame;
 	}

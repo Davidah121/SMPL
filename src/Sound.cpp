@@ -367,9 +367,9 @@ namespace glib
         std::vector<unsigned char> bytes = f.readFullFileAsBytes();
         f.close();
 
-        std::wstring ext = file.getExtension();
+        std::string ext = file.getExtension();
 
-        if(ext == L".wav")
+        if(ext == ".wav")
         {
             loadWAV(bytes);
         }

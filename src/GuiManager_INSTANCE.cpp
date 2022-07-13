@@ -5,14 +5,11 @@ namespace glib
 
 #pragma region GUI_INSTANCE_CLASS
 
-	const Class GuiInstance::myClass = Class("GuiInstance", {&Object::myClass});
-	const Class* GuiInstance::getClass()
-	{
-		return &GuiInstance::myClass;
-	}
+	const Class GuiInstance::globalClass = Class("GuiInstance", {&Object::globalClass});
 
 	GuiInstance::GuiInstance()
 	{
+		setClass(globalClass);
 		shouldCallA = false;
 		shouldCallV = false;
 	}
@@ -29,6 +26,7 @@ namespace glib
 
 	void GuiInstance::copy(const GuiInstance& other)
 	{
+		setClass(globalClass);
 		baseX = other.baseX;
 		baseY = other.baseY;
 
@@ -37,6 +35,9 @@ namespace glib
 
 		renderX = other.renderX;
 		renderY = other.renderY;
+
+		boundingBox = other.boundingBox;
+		previousBoundingBox = other.previousBoundingBox;
 
 		priority = other.priority;
 
@@ -128,7 +129,6 @@ namespace glib
 		}
 		
 		ins->parent = this;
-		ins->updatePriority();
 		ins->setOffset( &x, &y );
 		children.push_back(ins);
 
@@ -179,7 +179,8 @@ namespace glib
 			shouldCallV2 = true;
 			shouldCallV = false;
 		}
-		setShouldRedraw(true);
+		//set the raw variable because setShouldRedraw will be adjusted by the visible attribute.
+		shouldRedraw = true;
 	}
 
 	bool GuiInstance::getVisible()
@@ -243,7 +244,8 @@ namespace glib
 
 	void GuiInstance::setShouldRedraw(bool v)
 	{
-		shouldRedraw = v;
+		if(getVisible())
+			shouldRedraw = v;
 	}
 
 	int GuiInstance::getOffsetX()
@@ -306,7 +308,30 @@ namespace glib
 
 	Box2D GuiInstance::getBoundingBox()
 	{
+		solveBoundingBox();
+		if(includeChildrenInBounds)
+		{
+			for(GuiInstance* child : children)
+			{
+				if(child->getVisible() && child->getActive())
+				{
+					Box2D temp = child->getBoundingBox();
+
+					boundingBox.setLeftBound( MathExt::min( boundingBox.getLeftBound(), temp.getLeftBound()) );
+					boundingBox.setTopBound( MathExt::min( boundingBox.getTopBound(), temp.getTopBound()) );
+
+					boundingBox.setRightBound( MathExt::max( boundingBox.getRightBound(), temp.getRightBound()) );
+					boundingBox.setBottomBound( MathExt::max( boundingBox.getBottomBound(), temp.getBottomBound()) );
+				}
+			}
+		}
+
 		return boundingBox;
+	}
+
+	void GuiInstance::solveBoundingBox()
+	{
+		//Empty function
 	}
 
 	void GuiInstance::setOnActivateFunction(std::function<void(GuiInstance*)> func)
@@ -405,38 +430,20 @@ namespace glib
 
 		shouldCallF = false;
 	}
+	
+	GuiInstance* GuiInstance::getParent()
+	{
+		return parent;
+	}
 
-	int GuiInstance::getPriority()
+	char GuiInstance::getPriority()
 	{
 		return priority;
 	}
 
-	void GuiInstance::setPriority(int value)
+	void GuiInstance::setPriority(char value)
 	{
-		if(value!=CANVAS_PRIORITY_VALUE)
-		{
-			priority = MathExt::clamp(value, GuiInstance::MIN_PRIORITY_VALUE, GuiInstance::MAX_PRIORITY_VALUE);
-		}
-		else
-		{
-			priority = MathExt::abs(value);
-		}
-		
-		for(GuiInstance* child : children)
-		{
-			child->updatePriority();
-		}
-	}
-
-	void GuiInstance::updatePriority()
-	{
-		if(parent!=nullptr)
-			priority = MathExt::max(priority, parent->priority+1);
-		
-		for(GuiInstance* insChildren : children)
-		{
-			insChildren->updatePriority();
-		}
+		priority = value;
 	}
 
 	void GuiInstance::setManager(GuiManager* m)
@@ -460,36 +467,36 @@ namespace glib
 	}
 
 	
-	void GuiInstance::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter)
+	void GuiInstance::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter)
 	{
-		std::vector<std::wstring> possibleNames = { L"id", L"visible", L"active", L"alwaysfocus", L"onactive", L"onfocus", L"onvisible", L"ondeactivate", L"oninvisible", L"onchanged", L"x", L"y" };
+		std::vector<std::string> possibleNames = { "id", "visible", "active", "alwaysfocus", "onactive", "onfocus", "onvisible", "ondeactivate", "oninvisible", "onchanged", "x", "y" };
 
 		for(int i=0; i<possibleNames.size(); i++)
 		{
 			auto it = attribs.find(possibleNames[i]);
 			if(it != attribs.end())
 			{
-				if(possibleNames[i] == L"id")
+				if(possibleNames[i] == "id")
 				{
 					this->nameID = it->second;
 				}
-				else if(possibleNames[i] == L"visible")
+				else if(possibleNames[i] == "visible")
 				{
-					this->setVisible(StringTools::equalsIgnoreCase<wchar_t>(it->second, L"true"));
+					this->setVisible(StringTools::equalsIgnoreCase<char>(it->second, "true"));
 				}
-				else if(possibleNames[i] == L"active")
+				else if(possibleNames[i] == "active")
 				{
-					this->setActive(StringTools::equalsIgnoreCase<wchar_t>(it->second, L"true"));
+					this->setActive(StringTools::equalsIgnoreCase<char>(it->second, "true"));
 				}
-				else if(possibleNames[i] == L"alwaysfocus")
+				else if(possibleNames[i] == "alwaysfocus")
 				{
-					this->setAlwaysFocus(StringTools::equalsIgnoreCase<wchar_t>(it->second, L"true"));
+					this->setAlwaysFocus(StringTools::equalsIgnoreCase<char>(it->second, "true"));
 				}				
-				else if(possibleNames[i] == L"x")
+				else if(possibleNames[i] == "x")
 				{
 					this->setBaseX( StringTools::toInt(it->second) );
 				}
-				else if(possibleNames[i] == L"y")
+				else if(possibleNames[i] == "y")
 				{
 					this->setBaseY( StringTools::toInt(it->second) );
 				}

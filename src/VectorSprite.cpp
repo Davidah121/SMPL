@@ -26,7 +26,7 @@ namespace glib
         {
             for(XmlNode* n : file.nodes)
             {
-                if(StringTools::equalsIgnoreCase<wchar_t>(n->title, L"svg"))
+                if(StringTools::equalsIgnoreCase<char>(n->title, "svg"))
                 {
                     VectorGraphic* g = new VectorGraphic();
                     g->load(n);

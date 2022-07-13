@@ -10,11 +10,11 @@ namespace glib
         
     }
 
-    void File::init(std::wstring filename)
+    void File::init(std::string filename)
     {
-        locationOfExtension = filename.find_last_of(L'.');
-        size_t v1 = filename.find_last_of(L'/');
-        size_t v2 = filename.find_last_of(L'\\');
+        locationOfExtension = filename.find_last_of('.');
+        size_t v1 = filename.find_last_of('/');
+        size_t v2 = filename.find_last_of('\\');
 
         if(v1 == SIZE_MAX)
         {
@@ -47,33 +47,37 @@ namespace glib
         fullFileName = filename;
     }
 
-    std::wstring File::getFileName()
+    std::string File::getFileName()
     {
-        return fullFileName.substr(locationOfFileName, locationOfExtension-locationOfFileName);
+        return fullFileName.substr(locationOfFileName+1, locationOfExtension-(locationOfFileName+1));
     }
 
-    std::wstring File::getFullFileName()
+    std::string File::getFullFileName()
     {
         return fullFileName;
     }
 
-    std::wstring File::getPath()
+    std::string File::getPath()
     {
-        std::wstring path = fullFileName.substr(0, locationOfFileName);
+        std::string path = fullFileName.substr(0, locationOfFileName);
         if(path.empty())
-            return L"./";
+            return "./";
         else
             return path;
     }
 
-    std::wstring File::getExtension()
+    std::string File::getExtension()
     {
-        return fullFileName.substr(locationOfExtension, fullFileName.size()-locationOfExtension);
+        if(locationOfExtension < fullFileName.size())
+            return fullFileName.substr(locationOfExtension, fullFileName.size());
+        return "";
     }
 
-    std::wstring File::getFileNameWithExt()
+    std::string File::getFileNameWithExt()
     {
-        return fullFileName.substr(locationOfFileName, fullFileName.size());
+        if(locationOfFileName+1 < fullFileName.size())
+            return fullFileName.substr(locationOfFileName+1, fullFileName.size());
+        return "";
     }
 
 } //NAMESPACE glib END

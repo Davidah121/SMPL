@@ -5,22 +5,23 @@ namespace glib
     
 	#pragma region GUI_SPRITE_CLASS
 
-	const Class GuiSprite::myClass = Class("GuiSprite", {&GuiInstance::myClass});
-	const Class* GuiSprite::getClass()
-	{
-		return &GuiSprite::myClass;
-	}
+	const Class GuiSprite::globalClass = Class("GuiSprite", {&GuiInstance::globalClass});
 
 	GuiSprite::GuiSprite()
 	{
+		setClass(globalClass);
 		boundingBox = Box2D(0,0,0,0);
 	}
 
 	GuiSprite::GuiSprite(File f)
 	{
+		setClass(globalClass);
 		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
 		img = graphicsInterface->createSprite(f);
-		boundingBox = Box2D(0,0,0,0);
+		if(img->getSize() > 0)
+			boundingBox = Box2D(x, y, x+img->getImage(0)->getWidth(), y+img->getImage(0)->getHeight());
+		else
+			boundingBox = Box2D(0,0,0,0);
 	}
 
 	GuiSprite::~GuiSprite()
@@ -168,38 +169,50 @@ namespace glib
 		setShouldRedraw(true);
 	}
 
+	void GuiSprite::solveBoundingBox()
+	{
+		if(index < img->getSize())
+		{
+			boundingBox = Box2D(x, y, x+img->getImage(index)->getWidth(), y+img->getImage(index)->getHeight());
+		}
+		else
+		{
+			boundingBox = Box2D(0,0,0,0);
+		}
+	}
 
-	void GuiSprite::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter)
+
+	void GuiSprite::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter)
 	{
 		GuiInstance::loadDataFromXML(attribs, inter);
-		std::vector<std::wstring> possibleNames = { L"src", L"width", L"height", L"xscale", L"yscale", L"color"};
+		std::vector<std::string> possibleNames = { "src", "width", "height", "xscale", "yscale", "color"};
 
 		for(int i=0; i<possibleNames.size(); i++)
 		{
 			auto it = attribs.find(possibleNames[i]);
 			if(it != attribs.end())
 			{
-				if(it->first == L"src")
+				if(it->first == "src")
 				{
 					img = inter->createSprite(it->second);
 				}
-				else if(it->first == L"width")
+				else if(it->first == "width")
 				{
 					width = std::abs(StringTools::toInt(it->second));
 				}
-				else if(it->first == L"height")
+				else if(it->first == "height")
 				{
 					height = std::abs(StringTools::toInt(it->second));
 				}
-				else if(it->first == L"xscale")
+				else if(it->first == "xscale")
 				{
 					xScale = StringTools::toFloat(it->second);
 				}
-				else if(it->first == L"yscale")
+				else if(it->first == "yscale")
 				{
 					yScale = StringTools::toFloat(it->second);
 				}
-				else if(it->first == L"color")
+				else if(it->first == "color")
 				{
 					imgColor = ColorNameConverter::NameToColor(it->second);
 				}
@@ -208,14 +221,19 @@ namespace glib
 			}
 		}
 
+		if(img != nullptr)
+		{
+			if(img->getSize() > 0)
+				boundingBox = Box2D(x, y, x+img->getImage(index)->getWidth(), y+img->getImage(index)->getHeight());
+		}
 	}
 
 	void GuiSprite::registerLoadFunction()
 	{
-		GuiManager::registerLoadFunction(L"GuiSprite", GuiSprite::loadFunction);
+		GuiManager::registerLoadFunction("GuiSprite", GuiSprite::loadFunction);
 	}
 
-	GuiInstance* GuiSprite::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
+	GuiInstance* GuiSprite::loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter)
 	{
 		GuiSprite* ins = new GuiSprite();
 		ins->loadDataFromXML(attributes, inter);

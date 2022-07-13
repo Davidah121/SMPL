@@ -7,14 +7,11 @@
 namespace glib
 {
 
-    const Class Model::myClass = Class("Model", {&Object::myClass});
-    const Class* Model::getClass()
-    {
-        return &Model::myClass;
-    }
-
+    const Class Model::globalClass = Class("Model", {&Object::globalClass});
+    
     Model::Model()
     {
+		setClass(globalClass);
     }
 
     Model::~Model()
@@ -347,17 +344,17 @@ namespace glib
 
     void Model::loadModel(File file)
     {
-        std::wstring ext = file.getExtension();
+        std::string ext = file.getExtension();
 
-        if(ext == L".obj")
+        if(ext == ".obj")
         {
             loadOBJ(file);
         }
-        else if(ext == L".stl")
+        else if(ext == ".stl")
         {
             loadSTL(file);
         }
-        else if(ext == L".dae")
+        else if(ext == ".dae")
         {
             loadCollada(file);
         }
@@ -699,7 +696,7 @@ namespace glib
         //Find COLLADA
         for(XmlNode* currNode : xmlData.nodes)
         {
-            if(StringTools::equalsIgnoreCase<wchar_t>(currNode->title, L"COLLADA"))
+            if(StringTools::equalsIgnoreCase<char>(currNode->title, "COLLADA"))
             {
                 rootColladaNode = currNode;
                 break;
@@ -716,7 +713,7 @@ namespace glib
         XmlNode* libGeometryNodes = nullptr;
         for(XmlNode* currNode : rootColladaNode->childNodes)
         {
-            if(StringTools::equalsIgnoreCase<wchar_t>(currNode->title, L"library_geometries"))
+            if(StringTools::equalsIgnoreCase<char>(currNode->title, "library_geometries"))
             {
                 libGeometryNodes = currNode;
                 break;
@@ -732,16 +729,16 @@ namespace glib
         //build geometry arrays
         for(XmlNode* currNode : libGeometryNodes->childNodes)
         {
-            std::wstring name = L"";
-            std::vector<std::wstring> ids;
-            std::wstring vertexSource = L"";
+            std::string name = "";
+            std::vector<std::string> ids;
+            std::string vertexSource = "";
             int currList = 0;
 
-            if(StringTools::equalsIgnoreCase<wchar_t>(currNode->title, L"geometry"))
+            if(StringTools::equalsIgnoreCase<char>(currNode->title, "geometry"))
             {
                 for(XmlAttribute& attrib : currNode->attributes)
                 {
-                    if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"name"))
+                    if(StringTools::equalsIgnoreCase<char>(attrib.name, "name"))
                     {
                         name = attrib.value;
                         break;
@@ -752,7 +749,7 @@ namespace glib
 
                 for(XmlNode* innerNode : currNode->childNodes)
                 {
-                    if(StringTools::equalsIgnoreCase<wchar_t>(innerNode->title, L"mesh"))
+                    if(StringTools::equalsIgnoreCase<char>(innerNode->title, "mesh"))
                     {
                         meshNode = innerNode;
                         break;
@@ -764,7 +761,7 @@ namespace glib
                 
                 for(XmlNode* innerNode : meshNode->childNodes)
                 {
-                    if(StringTools::equalsIgnoreCase<wchar_t>(innerNode->title, L"source"))
+                    if(StringTools::equalsIgnoreCase<char>(innerNode->title, "source"))
                     {
                         //make safe
                         unsigned char vertAttribType = 0;
@@ -774,7 +771,7 @@ namespace glib
                         XmlNode* accessorNode = innerNode->childNodes[1]->childNodes[0];
                         for(XmlAttribute& attrib : accessorNode->attributes)
                         {
-                            if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"stride"))
+                            if(StringTools::equalsIgnoreCase<char>(attrib.name, "stride"))
                             {
                                 vertAttribType = stoi(attrib.value);
                                 break;
@@ -782,20 +779,20 @@ namespace glib
                         }
                         
                         //add format information
-                        if(StringTools::equalsIgnoreCase<wchar_t>(innerNode->childNodes[0]->title, L"float_array"))
+                        if(StringTools::equalsIgnoreCase<char>(innerNode->childNodes[0]->title, "float_array"))
                         {
                             addVertexFormatInfo(vertAttribType, USAGE_OTHER);
                         }
-                        else if(StringTools::equalsIgnoreCase<wchar_t>(innerNode->childNodes[0]->title, L"int_array"))
+                        else if(StringTools::equalsIgnoreCase<char>(innerNode->childNodes[0]->title, "int_array"))
                         {
                             addVertexFormatInfo(TYPE_INT, USAGE_OTHER);
                             vertAttribType = 0;
                         }
                         
                         //add vertex attribute information
-                        std::vector<std::wstring> split = StringTools::splitString(innerNode->childNodes[0]->value, L' ');
+                        std::vector<std::string> split = StringTools::splitString(innerNode->childNodes[0]->value, ' ');
                         
-                        for(std::wstring& v : split)
+                        for(std::string& v : split)
                         {
                             if(vertAttribType == 0)
                             {
@@ -809,57 +806,57 @@ namespace glib
 
                         currList++;
                     }
-                    else if(StringTools::equalsIgnoreCase<wchar_t>(innerNode->title, L"vertices"))
+                    else if(StringTools::equalsIgnoreCase<char>(innerNode->title, "vertices"))
                     {
                         for(XmlAttribute& attrib : innerNode->attributes)
                         {
-                            if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"source"))
+                            if(StringTools::equalsIgnoreCase<char>(attrib.name, "source"))
                             {
                                 vertexSource = attrib.value;
                                 break;
                             }
                         }
                     }
-                    else if(StringTools::equalsIgnoreCase<wchar_t>(innerNode->title, L"triangles"))
+                    else if(StringTools::equalsIgnoreCase<char>(innerNode->title, "triangles"))
                     {
                         modelFormat = TRIANGLES;
                         XmlNode* lastParentNode = innerNode;
                         for(XmlNode* childNodes : lastParentNode->childNodes)
                         {
-                            if(StringTools::equalsIgnoreCase<wchar_t>(childNodes->title, L"input"))
+                            if(StringTools::equalsIgnoreCase<char>(childNodes->title, "input"))
                             {
                                 //setting usage for the formats
                                 unsigned char usageNum = USAGE_OTHER;
                                 
                                 for(XmlAttribute& attrib : childNodes->attributes)
                                 {
-                                    if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"semantic"))
+                                    if(StringTools::equalsIgnoreCase<char>(attrib.name, "semantic"))
                                     {
-                                        if(StringTools::equalsIgnoreCase<wchar_t>(attrib.value, L"VERTEX"))
+                                        if(StringTools::equalsIgnoreCase<char>(attrib.value, "VERTEX"))
                                         {
                                             usageNum = USAGE_POSITION;
                                         }
-                                        else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.value, L"POSITION"))
+                                        else if(StringTools::equalsIgnoreCase<char>(attrib.value, "POSITION"))
                                         {
                                             usageNum = USAGE_POSITION;
                                         }
-                                        else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.value, L"NORMAL"))
+                                        else if(StringTools::equalsIgnoreCase<char>(attrib.value, "NORMAL"))
                                         {
                                             usageNum = USAGE_NORMAL;
                                         }
-                                        else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.value, L"TEXCOORD"))
+                                        else if(StringTools::equalsIgnoreCase<char>(attrib.value, "TEXCOORD"))
                                         {
                                             usageNum = USAGE_TEXTURE;
                                         }
                                     }
-                                    else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"source"))
+                                    else if(StringTools::equalsIgnoreCase<char>(attrib.name, "source"))
                                     {
                                         int index = 0;
                                         while(index < ids.size())
                                         {
-                                            std::wstring testV = L"#" + ids[index];
+                                            std::string testV = "#" + ids[index];
 
-                                            if(StringTools::equalsIgnoreCase<wchar_t>(attrib.value, testV))
+                                            if(StringTools::equalsIgnoreCase<char>(attrib.value, testV))
                                             {
                                                 break;
                                             }
@@ -873,13 +870,13 @@ namespace glib
                                     }
                                 }
                             }
-                            else if(StringTools::equalsIgnoreCase<wchar_t>(childNodes->title, L"p"))
+                            else if(StringTools::equalsIgnoreCase<char>(childNodes->title, "p"))
                             {
                                 //index information
-                                std::vector<std::wstring> split = StringTools::splitString(childNodes->value, L' ');
+                                std::vector<std::string> split = StringTools::splitString(childNodes->value, ' ');
 
                                 std::vector<unsigned int> tempIndexInfo;
-                                for(std::wstring& v : split)
+                                for(std::string& v : split)
                                 {
                                     tempIndexInfo.push_back( stoi(v) );
                                     if(tempIndexInfo.size() >= formatInfo.size())

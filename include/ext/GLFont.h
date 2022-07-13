@@ -32,8 +32,7 @@
 			~GLFont();
 			
 			//Object and Class Stuff
-			const Class* getClass();
-			static const Class myClass;
+			static const Class globalClass;
 
 			/**
 			 * @brief Get the texture where the desired character is stored.

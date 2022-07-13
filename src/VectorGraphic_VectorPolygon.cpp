@@ -10,14 +10,11 @@ namespace glib
 		
 	#pragma region VectorPolygon
 
-	const Class VectorPolygon::myClass = Class("VectorPolygon", {&VectorShape::myClass});
-	const Class* VectorPolygon::getClass()
-	{
-		return &VectorPolygon::myClass;
-	}
+	const Class VectorPolygon::globalClass = Class("VectorPolygon", {&VectorShape::globalClass});
 
 	VectorPolygon::VectorPolygon() : VectorShape()
 	{
+		setClass(globalClass);
 	}
 
 	VectorPolygon::~VectorPolygon()

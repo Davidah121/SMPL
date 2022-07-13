@@ -10,14 +10,11 @@ namespace glib
 		
 	#pragma region VectorRectangle
 
-	const Class VectorRectangle::myClass = Class("VectorRectangle", {&VectorShape::myClass});
-	const Class* VectorRectangle::getClass()
-	{
-		return &VectorRectangle::myClass;
-	}
+	const Class VectorRectangle::globalClass = Class("VectorRectangle", {&VectorShape::globalClass});
 
 	VectorRectangle::VectorRectangle() : VectorShape()
 	{
+		setClass(globalClass);
 	}
 
 	VectorRectangle::~VectorRectangle()

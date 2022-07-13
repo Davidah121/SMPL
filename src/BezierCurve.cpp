@@ -5,20 +5,17 @@
 namespace glib
 {
 
-	const Class BezierCurve::myClass = Class("BezierCurve", {&Object::myClass});
-	const Class* BezierCurve::getClass()
-	{
-		return &BezierCurve::myClass;
-	}
+	const Class BezierCurve::globalClass = Class("BezierCurve", {&Object::globalClass});
 
 
 	BezierCurve::BezierCurve()
 	{
-
+		setClass(globalClass);
 	}
 
 	BezierCurve::BezierCurve(const BezierCurve& o)
 	{
+		setClass(globalClass);
 		points.clear();
 		for (int i = 0; i < o.points.size(); i++)
 		{

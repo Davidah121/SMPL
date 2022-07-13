@@ -5,17 +5,16 @@ namespace glib
     
 	#pragma region GUI_LIST_CLASS
 
-	const Class GuiList::myClass = Class("GuiList", {&GuiInstance::myClass});
-	const Class* GuiList::getClass()
-	{
-		return &GuiList::myClass;
-	}
+	const Class GuiList::globalClass = Class("GuiList", {&GuiInstance::globalClass});
 
 	GuiList::GuiList(int x, int y, bool isVerticalList)
 	{
+		setClass(globalClass);
 		baseX = x;
 		baseY = y;
 		isVertical = isVerticalList;
+		includeChildrenInBounds = false;
+		setPriority(HIGHER_PRIORITY);
 	}
 
 	GuiList::~GuiList()
@@ -25,6 +24,7 @@ namespace glib
 			if(locations[i]!=nullptr)
 				delete locations[i];
 		}
+		locations.clear();
 	}
 
 	void GuiList::update()
@@ -41,11 +41,15 @@ namespace glib
 				locations[i]->y = y + height;
 
 				GuiInstance* c = children[i];
+				Box2D bounds = c->getBoundingBox();
 
-				int disToObjectEdge = c->getBoundingBox().getRightBound() - x;
+
+				int disToObjectEdge = bounds.getRightBound() - x;
 
 				width = MathExt::max(disToObjectEdge, width);
-				height += elementSpacing + c->getBoundingBox().getHeight();
+				height += bounds.getHeight();
+				if(i<children.size()-1)
+					height += elementSpacing;
 			}
 		}
 		else
@@ -56,10 +60,14 @@ namespace glib
 				locations[i]->y = y;
 
 				GuiInstance* c = children[i];
+				Box2D bounds = c->getBoundingBox();
 				
-				int disToObjectEdge = c->getBoundingBox().getBottomBound() - y;
+				int disToObjectEdge = bounds.getBottomBound() - y;
 
-				width += elementSpacing + c->getBoundingBox().getWidth();
+				width += bounds.getWidth();
+				if(i<children.size()-1)
+					width += elementSpacing;
+
 				height = MathExt::max(disToObjectEdge, height);
 			}
 		}
@@ -68,7 +76,7 @@ namespace glib
 		{
 			if((int)boundingBox.getTopBound() == y && (int)boundingBox.getBottomBound() == y+height)
 			{
-				setShouldRedraw(false);
+				//Don't do anything. It may still need to be redrawn for other reasons.
 			}
 			else
 			{
@@ -192,30 +200,36 @@ namespace glib
 		return isVertical;
 	}
 
-	void GuiList::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter)
+	void GuiList::solveBoundingBox()
+	{
+		//Call the update function since it only solves for the new bounding box. Also repositions all of the objects below it.
+		update();
+	}
+
+	void GuiList::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter)
 	{
 		GuiInstance::loadDataFromXML(attribs, inter);
-		std::vector<std::wstring> possibleNames = { L"spacing", L"isvertical", L"backgroundcolor", L"outlinecolor"};
+		std::vector<std::string> possibleNames = { "spacing", "isvertical", "backgroundcolor", "outlinecolor"};
 
 		for(int i=0; i<possibleNames.size(); i++)
 		{
 			auto it = attribs.find(possibleNames[i]);
 			if(it != attribs.end())
 			{
-				if(it->first == L"spacing")
+				if(it->first == "spacing")
 				{
 					elementSpacing = std::abs(StringTools::toInt(it->second));
 				}
-				else if(it->first == L"isvertical")
+				else if(it->first == "isvertical")
 				{
-					isVertical = StringTools::equalsIgnoreCase<wchar_t>(it->second, L"true");
+					isVertical = StringTools::equalsIgnoreCase<char>(it->second, "true");
 				}
-				else if(it->first == L"backgroundcolor")
+				else if(it->first == "backgroundcolor")
 				{
 					//define as color name or rgba
 					backgroundColor = ColorNameConverter::NameToColor(it->second);
 				}
-				else if(it->first == L"outlinecolor")
+				else if(it->first == "outlinecolor")
 				{
 					//define as color name or rgba
 					outlineColor = ColorNameConverter::NameToColor(it->second);
@@ -228,10 +242,10 @@ namespace glib
 
 	void GuiList::registerLoadFunction()
 	{
-		GuiManager::registerLoadFunction(L"GuiList", GuiList::loadFunction);
+		GuiManager::registerLoadFunction("GuiList", GuiList::loadFunction);
 	}
 
-	GuiInstance* GuiList::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
+	GuiInstance* GuiList::loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter)
 	{
 		GuiList* ins = new GuiList(0,0);
 		ins->loadDataFromXML(attributes, inter);
