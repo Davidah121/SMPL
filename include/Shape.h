@@ -160,6 +160,16 @@ namespace glib
 		/**
 		 * @brief Construct a new Point2D object
 		 * 
+		 * @param x
+		 * 		The x position
+		 * @param y
+		 * 		The y position
+		 */
+		Point2D(double x, double y);
+
+		/**
+		 * @brief Construct a new Point2D object
+		 * 
 		 * @param pos
 		 * 		The position to set the point at.
 		 */

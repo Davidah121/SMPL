@@ -352,6 +352,9 @@ namespace glib
 		 */
 		GuiSurfaceInterface* getCanvas();
 
+		void setStaticScaling(bool v);
+		bool getStaticScaling();
+
 		/**
 		 * @brief Loads data from an Xml Attribute.
 		 * 		This allows a large list of attributes to be defined
@@ -394,15 +397,17 @@ namespace glib
 		 */
 		int getRenderOffsetY();
 
+		int* getRenderOffsetPointerX();
+		int* getRenderOffsetPointerY();
+		
+
 		int baseX = 0;
 		int baseY = 0;
 
 		int x = 0;
 		int y = 0;
 
-		int renderX = 0;
-		int renderY = 0;
-
+		bool staticScaling = false;
 		bool includeChildrenInBounds = true;
 
 		Box2D boundingBox = Box2D(0, 0, 0, 0);
@@ -650,13 +655,6 @@ namespace glib
 		void render();
 
 		/**
-		 * @brief Sets the specified GuiInstance's canvas to this canvas.
-		 * 
-		 * @param ins 
-		 */
-		void setInstanceCanvas(GuiInstance* ins);
-
-		/**
 		 * @brief Gets the Clear Color for the image.
 		 * 
 		 * @return Color 
@@ -669,12 +667,31 @@ namespace glib
 		 * @param c 
 		 */
 		void setClearColor(Color c);
+
+		//override parent add child functions so that both addElement and addChild work the same way.
+		void addChild(GuiInstance* ins);
+		void removeChild(GuiInstance* ins);
 		
 	protected:
+		/**
+		 * @brief Sets the specified GuiInstance's canvas to this canvas.
+		 * 
+		 * @param ins
+		 * @param setOffset
+		 */
+		void setInstanceCanvas(GuiInstance* ins, bool setOffset);
+		
+		/**
+		 * @brief Removes the specified GuiInstance's canvas and its render offset.
+		 * 
+		 * @param ins
+		 */
+		void removeInstanceCanvas(GuiInstance* ins);
+
 		void solveBoundingBox();
 
 	private:
-		GuiSurfaceInterface* myImage;
+		GuiSurfaceInterface* myImage = nullptr;
 		Color clearColor = {0,0,0,0};
 	};
 
@@ -2146,6 +2163,20 @@ namespace glib
 		int getWindowY();
 
 		/**
+		 * @brief Gets the Mouse X position relative to the window
+		 * 
+		 * @return int 
+		 */
+		int getMouseX();
+
+		/**
+		 * @brief Gets the Mouse Y position relative to the window
+		 * 
+		 * @return int 
+		 */
+		int getMouseY();
+
+		/**
 		 * @brief Gets the Background Color for the Image
 		 * 		The image is cleared to this color before any rendering occurs
 		 * 
@@ -2160,6 +2191,9 @@ namespace glib
 		 * @param c 
 		 */
 		void setBackgroundColor(Color c);
+
+		void setExpectedSize(Vec2f s);
+		Vec2f getExpectedSize();
 
 		/**
 		 * @brief Get the Graphics Interface that this GuiManager uses.
@@ -2231,6 +2265,8 @@ namespace glib
 		int windowY = 0;
 		bool invalidImage = true;
 		bool alwaysInvalidate = false;
+
+		Vec2f expectedSize;
 
 		GuiSurfaceInterface* surf;
 		GuiGraphicsInterface graphicsInterface;

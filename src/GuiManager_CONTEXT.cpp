@@ -23,13 +23,12 @@ namespace glib
 
 	void GuiContextMenu::update()
 	{
-		int mouseX = Input::getMouseX();
-		int mouseY = Input::getMouseY();
-		
+		int mouseX, mouseY;
+
 		if(getManager()!=nullptr)
 		{
-			mouseX -= getManager()->getWindowX();
-			mouseY -= getManager()->getWindowY();
+			mouseX = getManager()->getMouseX();
+			mouseY = getManager()->getMouseY();
 		}
 
 		if(getVisible())

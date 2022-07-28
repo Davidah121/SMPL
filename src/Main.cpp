@@ -171,7 +171,7 @@ void paintFunc(int width, int height)
 
 void initFunction(SimpleWindow* w)
 {
-    w->getGuiManager()->loadElementsFromFile("GuiStuff/layout.xml");
+    // w->getGuiManager()->loadElementsFromFile("GuiStuff/layout.xml");
     w->setWindowAsInputFocus();
 }
 
@@ -187,13 +187,83 @@ int testWindow()
     options.initFunction = initFunction;
 
     SimpleWindow w = SimpleWindow("TITLE", 1280, 720, -1, -1, options);
+    // GuiContainer c1 = GuiContainer();
+    // // c1.setClearColor(Color{255,255,255,255});
+    // c1.setBaseX(32);
+    // c1.setBaseY(32);
 
+    // GuiList l1 = GuiList(8, 8);
+    // l1.setElementSpacing(4);
+    // l1.setOutlineColor(Color{0, 0, 255, 255});
+
+    // GuiRectangleButton b1 = GuiRectangleButton(-12, 0, 24, 24);
+    // l1.addChild(&b1);
+    
+    // GuiTextBox t1 = GuiTextBox(0, 0, 64, 24);
+    // l1.addChild(&t1);
+
+    // c1.addChild(&l1);
+
+    // w.getGuiManager()->addElement(&c1);
+
+    GuiCustomObject obj = GuiCustomObject();
+    obj.setRenderFunction([](GuiGraphicsInterface* interface) -> void{
+        SimpleGraphics::setAntiAliasing(true);
+        interface->setColor(Color{0,0,0,255});
+        interface->drawEllipse(128, 128, 32, 48, false);
+        interface->drawEllipse(256, 256, 48, 32, false);
+
+        interface->setColor(Color{0,0,255,255});
+        interface->drawRect(128, 128, 128+1, 128+1, false);
+        interface->drawRect(256, 256, 256+1, 256+1, false);
+    });
+
+    w.getGuiManager()->addElement(&obj);
+    
+    w.getGuiManager()->setExpectedSize(Vec2f(1280, 720));
+    w.getGuiManager()->alwaysInvalidateImage(true);
     w.waitTillClose();
     return 0;
 }
 
 void testSpatialHashing()
 {
+    SpatialHashing<Vec2f> spatialGrid = SpatialHashing<Vec2f>(4, 4, 32 ,32);
+    //grid 0,0
+    spatialGrid.addObject(Vec2f(2,2), Point2D(2,2));
+    spatialGrid.addObject(Vec2f(1,2), Point2D(1,2));
+    //grid 2,0
+    spatialGrid.addObject(Vec2f(20,1), Point2D(20,1));
+    spatialGrid.addObject(Vec2f(23,6), Point2D(23,6));
+    //grid 0,3
+    spatialGrid.addObject(Vec2f(5,31), Point2D(5,31));
+    spatialGrid.addObject(Vec2f(2,28), Point2D(2,28));
+    //grid 1,2
+    spatialGrid.addObject(Vec2f(9,17), Point2D(9,17));
+    spatialGrid.addObject(Vec2f(12,20), Point2D(12,20));
+
+    //Grid 0,0 && Grid 1,0
+    spatialGrid.addObject(Vec2f(8,0), Point2D(8,0));
+    
+    //Grid 0,0 && Grid 0,1
+    spatialGrid.addObject(Vec2f(0,8), Point2D(0,8));
+    
+    //Grid 0,0 && Grid 0,1 && Grid 1,0 && Grid 1,1
+    spatialGrid.addObject(Vec2f(8,8), Point2D(8,8));
+
+    for(int j=0; j<4; j++)
+    {
+        for(int i=0; i<4; i++)
+        {
+            auto objs = spatialGrid.getObjects(i, j);
+            StringTools::println("Grid (%d, %d)", i, j);
+            for(SpatialHashingObject<Vec2f>& o : objs)
+            {
+                StringTools::println("\t(%.3f, %.3f)", o.getData().x, o.getData().y);
+            }
+        }
+    }
+
     
 }
 
@@ -243,5 +313,6 @@ int main()
 {
     // Sleep(1000);
     testWindow();
+    // testSpatialHashing();
     return 0;
 }

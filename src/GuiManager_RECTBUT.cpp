@@ -59,16 +59,16 @@ namespace glib
 
 	void GuiRectangleButton::update()
 	{
-		int mouseX = Input::getMouseX();
-		int mouseY = Input::getMouseY();
+		int mouseX;
+		int mouseY;
 
 		bool oldHover = hover;
 		bool oldFocus = getFocus();
 		
 		if(getManager()!=nullptr)
 		{
-			mouseX -= getManager()->getWindowX();
-			mouseY -= getManager()->getWindowY();
+			mouseX = getManager()->getMouseX();
+			mouseY = getManager()->getMouseY();
 		}
 
 		
@@ -123,7 +123,7 @@ namespace glib
 	void GuiRectangleButton::render()
 	{
 		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
-
+		
 		if(!getFocus())
 		{
 			if(!hover)
@@ -136,14 +136,14 @@ namespace glib
 			graphicsInterface->setColor(focusBackgroundColor);
 		}
 		
-		graphicsInterface->drawRect(renderX, renderY, renderX + width, renderY + height, false);
+		graphicsInterface->drawRect(x, y, x + width, y + height, false);
 
 		if (getFocus() == false)
 			graphicsInterface->setColor(outlineColor);
 		else
 			graphicsInterface->setColor(focusOutlineColor);
 
-		graphicsInterface->drawRect(renderX, renderY, renderX + width, renderY + height, true);
+		graphicsInterface->drawRect(x, y, x + width, y + height, true);
 	}
 
 	void GuiRectangleButton::setOnClickFunction(std::function<void(GuiInstance*)> func)

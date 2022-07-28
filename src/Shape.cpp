@@ -74,6 +74,12 @@ namespace glib
 		setClass(globalClass);
 	}
 
+	Point2D::Point2D(double x, double y)
+	{
+		setClass(globalClass);
+		position.x = x;
+		position.y = y;
+	}
 	Point2D::Point2D(Vec2f pos)
 	{
 		setClass(globalClass);

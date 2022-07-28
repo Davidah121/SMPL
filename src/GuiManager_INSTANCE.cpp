@@ -33,9 +33,6 @@ namespace glib
 		x = other.x;
 		y = other.y;
 
-		renderX = other.renderX;
-		renderY = other.renderY;
-
 		boundingBox = other.boundingBox;
 		previousBoundingBox = other.previousBoundingBox;
 
@@ -130,6 +127,7 @@ namespace glib
 		
 		ins->parent = this;
 		ins->setOffset( &x, &y );
+		ins->setCanvas( getCanvas() );
 		children.push_back(ins);
 
 		if(manager!=nullptr && manager!=ins->manager)
@@ -154,6 +152,7 @@ namespace glib
 
 		ins->parent = nullptr;
 		ins->setOffset(nullptr, nullptr);
+		ins->setRenderOffset(nullptr, nullptr);
 	}
 
 	std::vector<GuiInstance*> GuiInstance::getChildren()
@@ -276,6 +275,15 @@ namespace glib
 		return 0;
 	}
 
+	int* GuiInstance::getRenderOffsetPointerX()
+	{
+		return renderOffX;
+	}
+	int* GuiInstance::getRenderOffsetPointerY()
+	{
+		return renderOffY;
+	}
+
 	void GuiInstance::setBaseX(int x)
 	{
 		baseX = x;
@@ -378,14 +386,14 @@ namespace glib
 
 	const void GuiInstance::baseRender()
 	{
-		renderX = baseX + getOffsetX() - getRenderOffsetX();
-		renderY = baseY + getOffsetY() - getRenderOffsetY();
+		x = baseX + getOffsetX() - getRenderOffsetX();
+		y = baseY + getOffsetY() - getRenderOffsetY();
 
-		if(renderX != oldRenderX || renderY != oldRenderY)
+		if(x != oldRenderX || y != oldRenderY)
 			setShouldRedraw(true);
 		
-		oldRenderX = renderX;
-		oldRenderY = renderY;
+		oldRenderX = x;
+		oldRenderY = y;
 	}
 
 	const void GuiInstance::baseUpdate()
@@ -465,7 +473,16 @@ namespace glib
 	{
 		return canvas;
 	}
+	
+	void GuiInstance::setStaticScaling(bool v)
+	{
+		staticScaling = v;
+	}
 
+	bool GuiInstance::getStaticScaling()
+	{
+		return staticScaling;
+	}
 	
 	void GuiInstance::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter)
 	{

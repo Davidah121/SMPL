@@ -353,6 +353,11 @@ namespace glib
 				bool clip1 = false;
 				bool clip2 = false;
 
+				if(k->getStaticScaling())
+				{
+					graphicsInterface.enableScaling(false);
+				}
+
 				if(!this->invalidImage)
 				{
 					if(CollisionMaster::collisionMethod(&newClipBox, &k->boundingBox))
@@ -381,7 +386,11 @@ namespace glib
 				if(k->shouldRedraw)
 				{
 					k->baseRender();
-					graphicsInterface.setBoundSurface(surf);
+					if(k->getCanvas() == nullptr)
+						graphicsInterface.setBoundSurface(surf);
+					else
+						graphicsInterface.setBoundSurface(k->getCanvas());
+					
 					if(!clip1 && !clip2)
 					{
 						k->render();
@@ -454,6 +463,8 @@ namespace glib
 				}
 			}
 
+			graphicsInterface.enableScaling(true);
+
 			if(v)
 			{
 				//render children last
@@ -523,6 +534,8 @@ namespace glib
 		graphicsInterface.resetClippingPlane();
 		graphicsInterface.setColor(backgroundColor);
 		graphicsInterface.setBoundSurface(surf);
+		
+		graphicsInterface.setScalingFactor( Vec2f((double)width/expectedSize.x, (double)height/expectedSize.y) );
 
 		if(shouldRedrawCount > 0)
 		{
@@ -559,21 +572,22 @@ namespace glib
 			{
 				renderElement(obj, redrawCount);
 			}
-
-			//Drawing valid and invalid areas
-			// graphicsInterface.setColor(Vec4f(1,0,0,1));
-			// if(newClipBox.getLeftBound() < newClipBox.getRightBound()
-			// && newClipBox.getTopBound() < newClipBox.getBottomBound())
-			// {
-			// 	graphicsInterface.drawRect(newClipBox.getLeftBound(), newClipBox.getTopBound(), newClipBox.getRightBound(), newClipBox.getBottomBound(), true);
-			// }
 			
-			// graphicsInterface.setColor(Vec4f(0,0,1,1));
-			// if(preClipBox.getLeftBound() < preClipBox.getRightBound()
-			// && preClipBox.getTopBound() < preClipBox.getBottomBound())
-			// {
-			// 	graphicsInterface.drawRect(preClipBox.getLeftBound(), preClipBox.getTopBound(), preClipBox.getRightBound(), preClipBox.getBottomBound(), true);
-			// }
+			//Drawing valid and invalid areas
+			graphicsInterface.setBoundSurface(surf);
+			graphicsInterface.setColor(Vec4f(1,0,0,1));
+			if(newClipBox.getLeftBound() < newClipBox.getRightBound()
+			&& newClipBox.getTopBound() < newClipBox.getBottomBound())
+			{
+				graphicsInterface.drawRect(newClipBox.getLeftBound(), newClipBox.getTopBound(), newClipBox.getRightBound(), newClipBox.getBottomBound(), true);
+			}
+			
+			graphicsInterface.setColor(Vec4f(0,0,1,1));
+			if(preClipBox.getLeftBound() < preClipBox.getRightBound()
+			&& preClipBox.getTopBound() < preClipBox.getBottomBound())
+			{
+				graphicsInterface.drawRect(preClipBox.getLeftBound(), preClipBox.getTopBound(), preClipBox.getRightBound(), preClipBox.getBottomBound(), true);
+			}
 		}
 		else
 		{
@@ -591,6 +605,7 @@ namespace glib
 
 		if(redrawCount != 0)
 		{
+			graphicsInterface.setBoundSurface(surf);
 			graphicsInterface.setColor(Vec4f(1,1,1,1));
 			graphicsInterface.drawToScreen();
 			// StringTools::println("RedrawCount: %d", redrawCount);
@@ -663,6 +678,22 @@ namespace glib
 		return windowY;
 	}
 
+	int GuiManager::getMouseX()
+	{
+		double temp = (double)(Input::getMouseX() - getWindowX());
+		double scaling = expectedSize.x / surf->getWidth();
+
+		return (int)temp*scaling;
+	}
+	
+	int GuiManager::getMouseY()
+	{
+		double temp = (double)(Input::getMouseY() - getWindowY());
+		double scaling = expectedSize.y / surf->getHeight();
+
+		return (int)temp*scaling;
+	}
+
 	Color GuiManager::getBackgroundColor()
 	{
 		return backgroundColor;
@@ -672,7 +703,17 @@ namespace glib
 	{
 		backgroundColor = c;
 	}
+	
+	void GuiManager::setExpectedSize(Vec2f s)
+	{
+		expectedSize = s;
+	}
 
+	Vec2f GuiManager::getExpectedSize()
+	{
+		return expectedSize;
+	}
+	
 	GuiGraphicsInterface* GuiManager::getGraphicsInterface()
 	{
 		return &graphicsInterface;

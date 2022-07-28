@@ -16,12 +16,19 @@ namespace glib
 	GuiSprite::GuiSprite(File f)
 	{
 		setClass(globalClass);
-		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
-		img = graphicsInterface->createSprite(f);
-		if(img->getSize() > 0)
-			boundingBox = Box2D(x, y, x+img->getImage(0)->getWidth(), y+img->getImage(0)->getHeight());
+		if(this->getManager() != nullptr)
+		{
+			GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
+			img = graphicsInterface->createSprite(f);
+			if(img->getSize() > 0)
+				boundingBox = Box2D(x, y, x+img->getImage(0)->getWidth(), y+img->getImage(0)->getHeight());
+			else
+				boundingBox = Box2D(0,0,0,0);
+		}
 		else
+		{
 			boundingBox = Box2D(0,0,0,0);
+		}
 	}
 
 	GuiSprite::~GuiSprite()
@@ -87,15 +94,15 @@ namespace glib
 			
 			if(nXScale == 1 && nYScale == 1)
 			{
-				graphicsInterface->drawSprite(img->getImage(index), renderX, renderY);
+				graphicsInterface->drawSprite(img->getImage(index), x, y);
 			}
 			else
 			{
-				int x1 = renderX;
-				int x2 = renderX + img->getImage(index)->getWidth() * nXScale;
+				int x1 = x;
+				int x2 = x + img->getImage(index)->getWidth() * nXScale;
 
-				int y1 = renderY;
-				int y2 = renderY + img->getImage(index)->getHeight() * nYScale;
+				int y1 = y;
+				int y2 = y + img->getImage(index)->getHeight() * nYScale;
 
 				graphicsInterface->drawSprite(img->getImage(index), x1, y1, x2, y2);
 			}

@@ -41,6 +41,7 @@ namespace glib
 				locations[i]->y = y + height;
 
 				GuiInstance* c = children[i];
+				c->setRenderOffset(getRenderOffsetPointerX(), getRenderOffsetPointerY());
 				Box2D bounds = c->getBoundingBox();
 
 
@@ -60,6 +61,7 @@ namespace glib
 				locations[i]->y = y;
 
 				GuiInstance* c = children[i];
+				c->setRenderOffset(getRenderOffsetPointerX(), getRenderOffsetPointerY());
 				Box2D bounds = c->getBoundingBox();
 				
 				int disToObjectEdge = bounds.getBottomBound() - y;
@@ -104,13 +106,13 @@ namespace glib
 		if(backgroundColor.alpha != 0)
 		{
 			graphicsInterface->setColor(backgroundColor);
-			graphicsInterface->drawRect(renderX, renderY, renderX+width, renderY+height, false);
+			graphicsInterface->drawRect(x, y, x+width, y+height, false);
 		}
 		
 		if(outlineColor.alpha != 0)
 		{
 			graphicsInterface->setColor(outlineColor);
-			graphicsInterface->drawRect(renderX, renderY, renderX+width, renderY+height, true);
+			graphicsInterface->drawRect(x, y, x+width, y+height, true);
 		}
 	}
 
@@ -140,6 +142,7 @@ namespace glib
 			locations.push_back( p );
 			GuiInstance::addChild(ins);
 			ins->setOffset( &p->x, &p->y );
+			ins->setRenderOffset(getRenderOffsetPointerX(), getRenderOffsetPointerY());
 		}
 	}
 

@@ -235,10 +235,25 @@ namespace glib
         {
             return; //Even though opengl does not need a bound surface, return as an error.
         }
+        int nx, ny, nx2, ny2;
+        if(useScaling)
+        {
+            nx = x*scalingFactor.x;
+            ny = y*scalingFactor.y;
+            nx2 = x2*scalingFactor.x;
+            ny2 = y2*scalingFactor.y;
+        }
+        else
+        {
+            nx = x;
+            ny = y;
+            nx2 = x2;
+            ny2 = y2;
+        }
 
         if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
         {
-            SimpleGraphics::drawRect(x, y, x2, y2, outline, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawRect(nx, ny, nx2, ny2, outline, (Image*)boundSurface->getSurface());
         }
         
         
@@ -249,7 +264,7 @@ namespace glib
                 {
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
-                GLGraphics::drawRectangle(x, y, x2, y2, outline);
+                GLGraphics::drawRectangle(nx, ny, nx2, ny2, outline);
             }
         #endif
     }
@@ -260,10 +275,26 @@ namespace glib
         {
             return; //Even though opengl does not need a bound surface, return as an error.
         }
+        
+        int nx, ny, nx2, ny2;
+        if(useScaling)
+        {
+            nx = x*scalingFactor.x;
+            ny = y*scalingFactor.y;
+            nx2 = x2*scalingFactor.x;
+            ny2 = y2*scalingFactor.y;
+        }
+        else
+        {
+            nx = x;
+            ny = y;
+            nx2 = x2;
+            ny2 = y2;
+        }
 
         if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
         {
-            SimpleGraphics::drawLine( x, y, x2, y2, (Image*)boundSurface->getSurface() );
+            SimpleGraphics::drawLine(nx, ny, nx2, ny2, (Image*)boundSurface->getSurface() );
         }
         
         #ifdef USE_OPENGL
@@ -273,7 +304,7 @@ namespace glib
                 {
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
-                GLGraphics::drawLine(x, y, x2, y2);
+                GLGraphics::drawLine(nx, ny, nx2, ny2);
             }
         #endif
     }
@@ -284,10 +315,22 @@ namespace glib
         {
             return; //Even though opengl does not need a bound surface, return as an error.
         }
+        
+        int nx, ny, nRad;
+        if(useScaling)
+        {
+            nx = x*scalingFactor.x;
+            ny = y*scalingFactor.y;
+        }
+        else
+        {
+            nx = x;
+            ny = y;
+        }
 
         if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
         {
-            SimpleGraphics::drawCircle(x, y, radius, outline, (Image*)boundSurface->getSurface() );
+            SimpleGraphics::drawCircle(nx, ny, radius, outline, (Image*)boundSurface->getSurface() );
         }
         
         #ifdef USE_OPENGL
@@ -297,7 +340,47 @@ namespace glib
                 {
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
-                GLGraphics::drawCircle(x, y, radius, outline);
+                GLGraphics::drawCircle(nx, ny, radius, outline);
+            }
+        #endif
+    }
+    
+	void GuiGraphicsInterface::drawEllipse(int x, int y, int xRad, int yRad, bool outline)
+    {
+        if(boundSurface == nullptr)
+        {
+            return; //Even though opengl does not need a bound surface, return as an error.
+        }
+        
+        int nx, ny, nXRad, nYRad;
+        if(useScaling)
+        {
+            nx = x*scalingFactor.x;
+            ny = y*scalingFactor.y;
+            nXRad = xRad*scalingFactor.x;
+            nYRad = yRad*scalingFactor.y;
+        }
+        else
+        {
+            nx = x;
+            ny = y;
+            nXRad = xRad;
+            nYRad = yRad;
+        }
+
+        if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
+        {
+            SimpleGraphics::drawEllipse(nx, ny, nXRad, nYRad, outline, (Image*)boundSurface->getSurface() );
+        }
+        
+        #ifdef USE_OPENGL
+            if(getType() == GuiGraphicsInterface::TYPE_OPENGL)
+            {
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((GLSurface*)boundSurface->getSurface())->bind();
+                }
+                GLGraphics::drawEllipse(nx, ny, nXRad, nYRad, outline);
             }
         #endif
     }
@@ -310,10 +393,22 @@ namespace glib
         }
         if(img != nullptr)
         {
+            int nx, ny;
+            if(useScaling)
+            {
+                nx = x*scalingFactor.x;
+                ny = y*scalingFactor.y;
+            }
+            else
+            {
+                nx = x;
+                ny = y;
+            }
+
             if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
             {
                 Image* imgData = (Image*)img->getImage();
-                SimpleGraphics::drawSprite(imgData, x, y, (Image*)boundSurface->getSurface());
+                SimpleGraphics::drawSprite(imgData, nx, ny, (Image*)boundSurface->getSurface());
             }
             
             #ifdef USE_OPENGL
@@ -324,7 +419,7 @@ namespace glib
                         ((GLSurface*)boundSurface->getSurface())->bind();
                     }
                     GLTexture* imgData = (GLTexture*)img->getImage();
-                    GLGraphics::drawTexture(x, y, imgData);
+                    GLGraphics::drawTexture(nx, ny, imgData);
                 }
             #endif
         }
@@ -338,10 +433,27 @@ namespace glib
         }
         if(img != nullptr)
         {
+            
+            int nx, ny, nx2, ny2;
+            if(useScaling)
+            {
+                nx = x1*scalingFactor.x;
+                ny = y1*scalingFactor.y;
+                nx2 = x2*scalingFactor.x;
+                ny2 = y2*scalingFactor.y;
+            }
+            else
+            {
+                nx = x1;
+                ny = y1;
+                nx2 = x2;
+                ny2 = y2;
+            }
+
             if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
             {
                 Image* imgData = (Image*)img->getImage();
-                SimpleGraphics::drawSprite(imgData, x1, y1, x2, y2, (Image*)boundSurface->getSurface());
+                SimpleGraphics::drawSprite(imgData, nx, ny, nx2, ny2, (Image*)boundSurface->getSurface());
             }
             
             
@@ -353,7 +465,7 @@ namespace glib
                         ((GLSurface*)boundSurface->getSurface())->bind();
                     }
                     GLTexture* imgData = (GLTexture*)img->getImage();
-                    GLGraphics::drawTexture(x1, y1, x2, y2, imgData);
+                    GLGraphics::drawTexture(nx, ny, nx2, ny2, imgData);
                 }
             #endif
         }
@@ -367,10 +479,22 @@ namespace glib
         }
         if(img != nullptr)
         {
+            int nx, ny;
+            if(useScaling)
+            {
+                nx = x*scalingFactor.x;
+                ny = y*scalingFactor.y;
+            }
+            else
+            {
+                nx = x;
+                ny = y;
+            }
+
             if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
             {
                 Image* imgData = (Image*)img->getImage();
-                SimpleGraphics::drawSpritePart(imgData, x, y, imgX, imgY, imgW, imgH, (Image*)boundSurface->getSurface());
+                SimpleGraphics::drawSpritePart(imgData, nx, ny, imgX, imgY, imgW, imgH, (Image*)boundSurface->getSurface());
             }
             
             #ifdef USE_OPENGL
@@ -381,7 +505,7 @@ namespace glib
                         ((GLSurface*)boundSurface->getSurface())->bind();
                     }
                     GLTexture* imgData = (GLTexture*)img->getImage();
-                    Vec4f positionData = Vec4f(x, y, x+imgW, y+imgH);
+                    Vec4f positionData = Vec4f(nx, ny, nx+imgW, ny+imgH);
                     Vec4f textureData = Vec4f(imgX, imgY, imgX+imgW, imgY+imgH);
                     textureData.x /= imgData->getWidth();
                     textureData.y /= imgData->getHeight();
@@ -400,9 +524,22 @@ namespace glib
         {
             return; //Even though opengl does not need a bound surface, return as an error.
         }
+        
+        int nx, ny;
+        if(useScaling)
+        {
+            nx = x*scalingFactor.x;
+            ny = y*scalingFactor.y;
+        }
+        else
+        {
+            nx = x;
+            ny = y;
+        }
+
         if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
         {
-            SimpleGraphics::drawText(str, x, y, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawText(str, nx, ny, (Image*)boundSurface->getSurface());
         }
         
         #ifdef USE_OPENGL
@@ -412,7 +549,7 @@ namespace glib
                 {
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
-                GLGraphics::drawText(str, x, y);
+                GLGraphics::drawText(str, nx, ny);
             }
         #endif
     }
@@ -423,9 +560,21 @@ namespace glib
         {
             return; //Even though opengl does not need a bound surface, return as an error.
         }
+        int nx, ny;
+        if(useScaling)
+        {
+            nx = x*scalingFactor.x;
+            ny = y*scalingFactor.y;
+        }
+        else
+        {
+            nx = x;
+            ny = y;
+        }
+
         if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
         {
-            SimpleGraphics::drawText(str, x, y, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawText(str, nx, ny, (Image*)boundSurface->getSurface());
         }
         
         #ifdef USE_OPENGL
@@ -435,7 +584,7 @@ namespace glib
                 {
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
-                GLGraphics::drawText(str, x, y);
+                GLGraphics::drawText(str, nx, ny);
             }
         #endif
     }
@@ -446,9 +595,22 @@ namespace glib
         {
             return; //Even though opengl does not need a bound surface, return as an error.
         }
+        
+        int nx, ny;
+        if(useScaling)
+        {
+            nx = x*scalingFactor.x;
+            ny = y*scalingFactor.y;
+        }
+        else
+        {
+            nx = x;
+            ny = y;
+        }
+
         if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
         {
-            SimpleGraphics::drawTextLimits(str, x, y, maxWidth, maxHeight, useLineBreak, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, useLineBreak, (Image*)boundSurface->getSurface());
         }
         
         #ifdef USE_OPENGL
@@ -458,7 +620,7 @@ namespace glib
                 {
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
-                GLGraphics::drawTextLimits(str, x, y, maxWidth, maxHeight, useLineBreak);
+                GLGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, useLineBreak);
             }
         #endif
     }
@@ -469,9 +631,21 @@ namespace glib
         {
             return; //Even though opengl does not need a bound surface, return as an error.
         }
+        int nx, ny;
+        if(useScaling)
+        {
+            nx = x*scalingFactor.x;
+            ny = y*scalingFactor.y;
+        }
+        else
+        {
+            nx = x;
+            ny = y;
+        }
+
         if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
         {
-            SimpleGraphics::drawTextLimits(str, x, y, maxWidth, maxHeight, useLineBreak, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, useLineBreak, (Image*)boundSurface->getSurface());
         }
         
         #ifdef USE_OPENGL
@@ -481,7 +655,7 @@ namespace glib
                 {
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
-                GLGraphics::drawTextLimits(str, x, y, maxWidth, maxHeight, useLineBreak);
+                GLGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, useLineBreak);
             }
         #endif
     }
@@ -492,9 +666,21 @@ namespace glib
         {
             return; //Even though opengl does not need a bound surface, return as an error.
         }
+        int nx, ny;
+        if(useScaling)
+        {
+            nx = x*scalingFactor.x;
+            ny = y*scalingFactor.y;
+        }
+        else
+        {
+            nx = x;
+            ny = y;
+        }
+
         if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
         {
-            SimpleGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor, (Image*)boundSurface->getSurface());
         }
         
         #ifdef USE_OPENGL
@@ -505,7 +691,7 @@ namespace glib
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
                 Vec4f vColor = SimpleGraphics::convertColorToVec4f(highlightColor);
-                GLGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, vColor);
+                GLGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, vColor);
             }
         #endif
     }
@@ -516,9 +702,21 @@ namespace glib
         {
             return; //Even though opengl does not need a bound surface, return as an error.
         }
+        int nx, ny;
+        if(useScaling)
+        {
+            nx = x*scalingFactor.x;
+            ny = y*scalingFactor.y;
+        }
+        else
+        {
+            nx = x;
+            ny = y;
+        }
+
         if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
         {
-            SimpleGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor, (Image*)boundSurface->getSurface());
         }
         
         #ifdef USE_OPENGL
@@ -529,7 +727,7 @@ namespace glib
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
                 Vec4f vColor = SimpleGraphics::convertColorToVec4f(highlightColor);
-                GLGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, vColor);
+                GLGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, vColor);
             }
         #endif
     }
@@ -540,10 +738,22 @@ namespace glib
         {
             return; //Even though opengl does not need a bound surface, return as an error.
         }
+        int nx, ny;
+        if(useScaling)
+        {
+            nx = x*scalingFactor.x;
+            ny = y*scalingFactor.y;
+        }
+        else
+        {
+            nx = x;
+            ny = y;
+        }
+
         if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
         {
             Color cColor = SimpleGraphics::convertVec4fToColor(highlightColor);
-            SimpleGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, cColor, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, cColor, (Image*)boundSurface->getSurface());
         }
         
         #ifdef USE_OPENGL
@@ -553,7 +763,7 @@ namespace glib
                 {
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
-                GLGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor);
+                GLGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor);
             }
         #endif
     }
@@ -564,10 +774,22 @@ namespace glib
         {
             return; //Even though opengl does not need a bound surface, return as an error.
         }
+        int nx, ny;
+        if(useScaling)
+        {
+            nx = x*scalingFactor.x;
+            ny = y*scalingFactor.y;
+        }
+        else
+        {
+            nx = x;
+            ny = y;
+        }
+
         if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
         {
             Color cColor = SimpleGraphics::convertVec4fToColor(highlightColor);
-            SimpleGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, cColor, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, cColor, (Image*)boundSurface->getSurface());
         }
         
         #ifdef USE_OPENGL
@@ -577,7 +799,7 @@ namespace glib
                 {
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
-                GLGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor);
+                GLGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor);
             }
         #endif
     }
@@ -585,6 +807,12 @@ namespace glib
     void GuiGraphicsInterface::setClippingRect(Box2D b)
     {
         clippingRect = b;
+
+        if(useScaling)
+            b.setScale(Vec3f(scalingFactor, 1.0));
+        else
+            b.setScale(Vec3f(1.0, 1.0, 1.0));
+
         if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
         {
             SimpleGraphics::setClippingRect(b);
@@ -630,11 +858,23 @@ namespace glib
         {
             return; //Even though opengl does not need a bound surface, return as an error.
         }
+        int nx, ny;
+        if(useScaling)
+        {
+            nx = x*scalingFactor.x;
+            ny = y*scalingFactor.y;
+        }
+        else
+        {
+            nx = x;
+            ny = y;
+        }
+
         if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
         {
             if(img != nullptr)
             {
-                SimpleGraphics::drawSprite((Image*)img->getSurface(), x, y, (Image*)boundSurface->getSurface());
+                SimpleGraphics::drawSprite((Image*)img->getSurface(), nx, ny, (Image*)boundSurface->getSurface());
             }
         }
         
@@ -650,7 +890,7 @@ namespace glib
                     GLSurface* tempSurf = (GLSurface*)boundSurface->getSurface();
                     if(tempSurf != nullptr)
                     {
-                        GLGraphics::drawSurface(x, y, x+tempSurf->getWidth(), y+tempSurf->getHeight(), tempSurf);
+                        GLGraphics::drawSurface(nx, ny, nx+tempSurf->getWidth(), ny+tempSurf->getHeight(), tempSurf);
                     }
                 }
             }
@@ -662,11 +902,27 @@ namespace glib
         {
             return; //Even though opengl does not need a bound surface, return as an error.
         }
+        int nx1, ny1, nx2, ny2;
+        if(useScaling)
+        {
+            nx1 = x1*scalingFactor.x;
+            ny1 = y1*scalingFactor.y;
+            nx2 = x2*scalingFactor.x;
+            ny2 = y2*scalingFactor.y;
+        }
+        else
+        {
+            nx1 = x1;
+            ny1 = y1;
+            nx2 = x2;
+            ny2 = y2;
+        }
+
         if(getType() == GuiGraphicsInterface::TYPE_SOFTWARE)
         {
             if(img != nullptr)
             {
-                SimpleGraphics::drawSprite((Image*)img->getSurface(), x1, y1, x2, y2, (Image*)boundSurface->getSurface());
+                SimpleGraphics::drawSprite((Image*)img->getSurface(), nx1, ny1, nx2, ny2, (Image*)boundSurface->getSurface());
             }
         }
         
@@ -680,7 +936,7 @@ namespace glib
                 if(img != nullptr)
                 {
                     GLSurface* tempSurf = (GLSurface*)img->getSurface();
-                    GLGraphics::drawSurface(x1, y1, x2, y2, tempSurf);
+                    GLGraphics::drawSurface(nx1, ny1, nx2, ny2, tempSurf);
                 }
             }
         #endif
@@ -722,6 +978,16 @@ namespace glib
                 GLGraphics::setOrthoProjection(width, height);
             }
         #endif
+    }
+    
+    void GuiGraphicsInterface::setScalingFactor(Vec2f v)
+    {
+        scalingFactor = v;
+    }
+
+    void GuiGraphicsInterface::enableScaling(bool v)
+    {
+        useScaling = v;
     }
 
     void GuiGraphicsInterface::setProjection(Mat4f proj)

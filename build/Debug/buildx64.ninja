@@ -92,6 +92,7 @@ build $objDir/SimpleDir.obj: buildToObject src/SimpleDir.cpp
 build $objDir/SimpleFile.obj: buildToObject src/SimpleFile.cpp
 build $objDir/SimpleGraphics.obj: buildToObject src/SimpleGraphics.cpp
 build $objDir/SimpleGraphics_CIRCLE.obj: buildToObject src/SimpleGraphics_CIRCLE.cpp
+build $objDir/SimpleGraphics_ELLIPSE.obj: buildToObject src/SimpleGraphics_ELLIPSE.cpp
 build $objDir/SimpleGraphics_GRADIENTS.obj: buildToObject src/SimpleGraphics_GRADIENTS.cpp
 build $objDir/SimpleGraphics_IMAGE.obj: buildToObject src/SimpleGraphics_IMAGE.cpp
 build $objDir/SimpleGraphics_IMAGE_MANIPULATION.obj: buildToObject src/SimpleGraphics_IMAGE_MANIPULATION.cpp

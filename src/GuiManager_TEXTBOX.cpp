@@ -108,14 +108,14 @@ namespace glib
 		
 		//draw a rectangle
 		graphicsInterface->setColor(backgroundColor);
-		graphicsInterface->drawRect(renderX, renderY, renderX + width, renderY + height, false);
+		graphicsInterface->drawRect(x, y, x + width, y + height, false);
 
 		if (getFocus() == false)
 			graphicsInterface->setColor(outlineColor);
 		else
 			graphicsInterface->setColor(focusOutlineColor);
 		
-		graphicsInterface->drawRect(renderX, renderY, renderX + width, renderY + height, true);
+		graphicsInterface->drawRect(x, y, x + width, y + height, true);
 
 		if(getFocus())
 		{
@@ -156,7 +156,7 @@ namespace glib
 				xCursorPos += textElement.getBaseX() + xOffsetForText;
 				yCursorPos += textElement.getBaseY() + yOffsetForText;
 				
-				graphicsInterface->drawRect(renderX+xCursorPos, renderY+yCursorPos, renderX+xCursorPos+cursorWidth, renderY+yCursorPos+f->getFontSize(), false);
+				graphicsInterface->drawRect(x+xCursorPos, y+yCursorPos, x+xCursorPos+cursorWidth, y+yCursorPos+f->getFontSize(), false);
 			}
 		}
 
@@ -176,7 +176,7 @@ namespace glib
 			}
 
 			std::queue<int> charBuffer = Input::getCharactersTyped();
-			StringTools::println("%llu", charBuffer.size());
+			// StringTools::println("%llu", charBuffer.size());
 			
 			while(charBuffer.size() > 0)
 			{
@@ -405,13 +405,13 @@ namespace glib
 		Font* f = fInt->getFont();
 		std::string temp = textElement.getText();
 
-		int mouseX = Input::getMouseX();
-		int mouseY = Input::getMouseY();
+		int mouseX;
+		int mouseY;
 		
 		if(getManager()!=nullptr)
 		{
-			mouseX -= getManager()->getWindowX();
-			mouseY -= getManager()->getWindowY();
+			mouseX = getManager()->getMouseX();
+			mouseY = getManager()->getMouseY();
 		}
 		
 		if (Input::getMousePressed(Input::LEFT_MOUSE_BUTTON))

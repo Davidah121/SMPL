@@ -109,17 +109,17 @@ namespace glib
 		if(!text.empty())
 		{
 			if(shouldHighlight)
-				graphicsInterface->drawTextLimitsHighlighted(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText, minHighlight, maxHighlight, highlightColor);
+				graphicsInterface->drawTextLimitsHighlighted(text, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText, minHighlight, maxHighlight, highlightColor);
 			else
-				graphicsInterface->drawTextLimits(text, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText);
+				graphicsInterface->drawTextLimits(text, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText);
 		}
 		else
 		{
 			graphicsInterface->setColor(defaultTextColor);
 			if(shouldHighlight)
-				graphicsInterface->drawTextLimitsHighlighted(defaultString, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText, minHighlight, maxHighlight, highlightColor);
+				graphicsInterface->drawTextLimitsHighlighted(defaultString, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText, minHighlight, maxHighlight, highlightColor);
 			else
-				graphicsInterface->drawTextLimits(defaultString, renderX+offsetX, renderY+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText);
+				graphicsInterface->drawTextLimits(defaultString, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText);
 		}
 		
 		graphicsInterface->setFont(oldFontInt);

@@ -231,6 +231,27 @@ namespace glib
 		static void testDrawCircle(int x, int y, int radius, bool outline, Image* surf);
 
 		/**
+		 * @brief Draws a ellipse using the active color.
+		 * 		If OPTI is defined as 1, SSE instructions are used.
+		 * 		If OPTI is defined as 2, AVX instructions are used.
+		 * 		Anti-Aliasing is supported.
+		 * 
+		 * @param x
+		 * 		The center x location of the ellipse
+		 * @param y
+		 * 		The center y location of the ellipse
+		 * @param xRad 
+		 * 		The x radius
+		 * @param yRad 
+		 * 		The y radius
+		 * @param outline 
+		 * 		Controls whether only the outline of the ellipse should be drawn.
+		 * @param surf
+		 * 		The image to draw the ellipse onto.
+		 */
+		static void drawEllipse(int x, int y, int xRad, int yRad, bool outline, Image* surf);
+
+		/**
 		 * @brief
 		 * 		Test draw function. Should be ignored.
 		 * 

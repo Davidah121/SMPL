@@ -163,6 +163,7 @@ namespace glib
 		void drawRect(int x, int y, int x2, int y2, bool outline);
 		void drawLine(int x, int y, int x2, int y2);
 		void drawCircle(int x, int y, int radius, bool outline);
+		void drawEllipse(int x, int y, int xRad, int yRad, bool outline);
 
 		void drawSprite(GuiImageInterface* img, int x, int y);
 		void drawSprite(GuiImageInterface* img, int x1, int y1, int x2, int y2);
@@ -190,10 +191,14 @@ namespace glib
 		void drawToScreen();
 		void setProjection(Mat4f proj);
 		void setOrthoProjection(int width, int height);
+		void setScalingFactor(Vec2f v);
+		void enableScaling(bool v);
 		
 	private:
 		unsigned char type = TYPE_INVALID;
 		GuiSurfaceInterface* boundSurface = nullptr;
 		Box2D clippingRect = Box2D(0, 0, 65535, 65535);
+		Vec2f scalingFactor = Vec2f(1, 1);
+		bool useScaling = true;
 	};
 }

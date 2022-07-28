@@ -98,10 +98,10 @@ namespace glib
 		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
 
 		graphicsInterface->setColor(backgroundColor);
-		graphicsInterface->drawRect(renderX, renderY, renderX+width, renderY+height, false);
+		graphicsInterface->drawRect(x, y, x+width, y+height, false);
 
 		graphicsInterface->setColor(outlineColor);
-		graphicsInterface->drawRect(renderX, renderY, renderX+width, renderY+height, true);
+		graphicsInterface->drawRect(x, y, x+width, y+height, true);
 	}
 
 	void GuiGrid::setGridSpacing(int x, int y)

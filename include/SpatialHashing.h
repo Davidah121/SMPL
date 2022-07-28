@@ -92,15 +92,15 @@ namespace glib
 
             for(int y=startYGrid; y<endYGrid; y++)
             {
-                boxShape.setTopBound(startYGrid*yInc);
-                boxShape.setBottomBound((startYGrid+1) * yInc);
+                boxShape.setTopBound(y*yInc);
+                boxShape.setBottomBound((y+1) * yInc);
 
                 for(int x=startXGrid; x<endXGrid; x++)
                 {
-                    boxShape.setLeftBound(startXGrid*xInc);
-                    boxShape.setRightBound((startXGrid+1) * xInc);
+                    boxShape.setLeftBound(x*xInc);
+                    boxShape.setRightBound((x+1) * xInc);
 
-                    if( CollisionMaster::getCollision( &boxShape, &obj.getShape() ) )
+                    if( CollisionMaster::getCollision( &boxShape, &obj.collisionShape, true ) )
                     {
                         if(obj.id == -1)
                         {

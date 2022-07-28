@@ -229,13 +229,13 @@ namespace glib
 	void GuiScrollBar::holdButtonFunction(GuiInstance* ins)
 	{
 		//ins is the rectangle button. Can be disregarded.
-		int mouseX = Input::getMouseX();
-		int mouseY = Input::getMouseY();
+		int mouseX;
+		int mouseY;
 		
 		if(getManager()!=nullptr)
 		{
-			mouseX -= getManager()->getWindowX();
-			mouseY -= getManager()->getWindowY();
+			mouseX = getManager()->getMouseX();
+			mouseY = getManager()->getMouseY();
 		}
 
 		if(Input::getMousePressed(Input::LEFT_MOUSE_BUTTON))
@@ -303,10 +303,10 @@ namespace glib
 
 		//draw the background bar
 		graphicsInterface->setColor(backgroundColor);
-		graphicsInterface->drawRect(renderX+startX, renderY+startY, renderX+endX, renderY+endY, false);
+		graphicsInterface->drawRect(x+startX, y+startY, x+endX, y+endY, false);
 
 		graphicsInterface->setColor(outlineColor);
-		graphicsInterface->drawRect(renderX+startX, renderY+startY, renderX+endX, renderY+endY, true);
+		graphicsInterface->drawRect(x+startX, y+startY, x+endX, y+endY, true);
 		
 	}
 
