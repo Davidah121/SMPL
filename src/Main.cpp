@@ -308,11 +308,23 @@ void testINI(bool readTest)
     }
 }
 
+void testDir2()
+{
+    SimpleDir d = SimpleDir("./");
+    for(int i=0; i<d.getSize(); i++)
+    {
+        StringTools::println("%s", d.getReferenceName(i).c_str());
+    }
+    File temp = "test.txt";
+    StringTools::println(temp.getFileNameWithExt());
+}
+
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main()
 {
     // Sleep(1000);
-    testWindow();
+    // testWindow();
+    testDir2();
     // testSpatialHashing();
     return 0;
 }
