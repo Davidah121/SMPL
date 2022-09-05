@@ -4,10 +4,15 @@ namespace glib
 {
 	void SimpleGraphics::drawText(std::string str, int x, int y, Image* surf)
 	{
-		SimpleGraphics::drawText(StringTools::toWideString(str), x, y, surf);
+		SimpleGraphics::drawText(StringTools::utf8ToIntString(str), x, y, surf);
 	}
 
 	void SimpleGraphics::drawText(std::wstring str, int x, int y, Image* surf)
+	{
+		SimpleGraphics::drawText(StringTools::wideStringToIntString(str), x, y, surf);
+	}
+
+	void SimpleGraphics::drawText(std::vector<int> str, int x, int y, Image* surf)
 	{
 		Image* otherImg;
 		if (surf == nullptr)
@@ -25,11 +30,11 @@ namespace glib
 			}
 			int currX = x;
 			int currY = y;
-			for(int i=0; i<str.length(); i++)
+			for(int i=0; i<str.size(); i++)
 			{
 				int charIndex = tFont->getCharIndex(str[i]);
 				Image* charImg = tFont->getImage(charIndex);
-				FontCharInfo fci = tFont->getFontCharInfo(str[i]);
+				FontCharInfo fci = tFont->getFontCharInfo(charIndex);
 				
 				if(charImg == nullptr && str[i] != '\n')
 				{
@@ -61,10 +66,15 @@ namespace glib
 
 	void SimpleGraphics::drawTextHighlighted(std::string str, int x, int y, int highlightStart, int highlightEnd, Color highlightColor, Image* surf)
 	{
-		SimpleGraphics::drawTextHighlighted(StringTools::toWideString(str), x, y, highlightStart, highlightEnd, highlightColor, surf);
+		SimpleGraphics::drawTextHighlighted(StringTools::utf8ToIntString(str), x, y, highlightStart, highlightEnd, highlightColor, surf);
 	}
 
 	void SimpleGraphics::drawTextHighlighted(std::wstring str, int x, int y, int highlightStart, int highlightEnd, Color highlightColor, Image* surf)
+	{
+		SimpleGraphics::drawTextHighlighted(StringTools::wideStringToIntString(str), x, y, highlightStart, highlightEnd, highlightColor, surf);
+	}
+
+	void SimpleGraphics::drawTextHighlighted(std::vector<int> str, int x, int y, int highlightStart, int highlightEnd, Color highlightColor, Image* surf)
 	{
 		Image* otherImg;
 		if (surf == nullptr)
@@ -82,11 +92,11 @@ namespace glib
 			}
 			int currX = x;
 			int currY = y;
-			for(int i=0; i<str.length(); i++)
+			for(int i=0; i<str.size(); i++)
 			{
 				int charIndex = tFont->getCharIndex(str[i]);
 				Image* charImg = tFont->getImage(charIndex);
-				FontCharInfo fci = tFont->getFontCharInfo(str[i]);
+				FontCharInfo fci = tFont->getFontCharInfo(charIndex);
 				
 				if(charImg == nullptr && str[i] != '\n')
 				{
@@ -123,10 +133,15 @@ namespace glib
 
 	void SimpleGraphics::drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, Image* surf)
 	{
-		SimpleGraphics::drawTextLimits(StringTools::toWideString(str), x, y, maxWidth, maxHeight, allowTextWrap, surf);
+		SimpleGraphics::drawTextLimits(StringTools::utf8ToIntString(str), x, y, maxWidth, maxHeight, allowTextWrap, surf);
 	}
 
 	void SimpleGraphics::drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, Image* surf)
+	{
+		SimpleGraphics::drawTextLimits(StringTools::wideStringToIntString(str), x, y, maxWidth, maxHeight, allowTextWrap, surf);
+	}
+
+	void SimpleGraphics::drawTextLimits(std::vector<int> str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, Image* surf)
 	{
 		Image* otherImg;
 		if (surf == nullptr)
@@ -148,11 +163,11 @@ namespace glib
 			int currH = 0;
 			bool waitingOnLineBreak = false;
 			
-			for(int i=0; i<str.length(); i++)
+			for(int i=0; i<str.size(); i++)
 			{
 				int charIndex = tFont->getCharIndex(str[i]);
 				Image* charImg = tFont->getImage(charIndex);
-				FontCharInfo fci = tFont->getFontCharInfo(str[i]);
+				FontCharInfo fci = tFont->getFontCharInfo(charIndex);
 				
 				if(charImg == nullptr && str[i] != '\n')
 				{
@@ -231,10 +246,15 @@ namespace glib
 	
 	void SimpleGraphics::drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, int highlightStart, int highlightEnd, Color highlightColor, Image* surf)
 	{
-		SimpleGraphics::drawTextLimitsHighlighted(StringTools::toWideString(str), x, y, maxWidth, maxHeight, allowTextWrap, highlightStart, highlightEnd, highlightColor, surf);
+		SimpleGraphics::drawTextLimitsHighlighted(StringTools::utf8ToIntString(str), x, y, maxWidth, maxHeight, allowTextWrap, highlightStart, highlightEnd, highlightColor, surf);
 	}
 	
 	void SimpleGraphics::drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, int highlightStart, int highlightEnd, Color highlightColor, Image* surf)
+	{
+		SimpleGraphics::drawTextLimitsHighlighted(StringTools::wideStringToIntString(str), x, y, maxWidth, maxHeight, allowTextWrap, highlightStart, highlightEnd, highlightColor, surf);
+	}
+
+	void SimpleGraphics::drawTextLimitsHighlighted(std::vector<int> str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, int highlightStart, int highlightEnd, Color highlightColor, Image* surf)
 	{
 		Image* otherImg;
 		if (surf == nullptr)
@@ -256,11 +276,11 @@ namespace glib
 			int currH = 0;
 			bool waitingOnLineBreak = false;
 			
-			for(int i=0; i<str.length(); i++)
+			for(int i=0; i<str.size(); i++)
 			{
 				int charIndex = tFont->getCharIndex(str[i]);
 				Image* charImg = tFont->getImage(charIndex);
-				FontCharInfo fci = tFont->getFontCharInfo(str[i]);
+				FontCharInfo fci = tFont->getFontCharInfo(charIndex);
 				
 				if(charImg == nullptr && str[i] != '\n')
 				{

@@ -108,6 +108,7 @@ namespace glib
 		setClass(globalClass);
 		graphicsInterface = GuiGraphicsInterface(type);
 		surf = graphicsInterface.createSurface(320, 240);
+		expectedSize = Vec2f(320, 240);
 
 		// surf.setAllPixels(backgroundColor); //Clear to background color
 	}
@@ -117,6 +118,7 @@ namespace glib
 		setClass(globalClass);
 		graphicsInterface = GuiGraphicsInterface(type);
 		surf = graphicsInterface.createSurface(width, height);
+		expectedSize = Vec2f(width, height);
 
 		// surf.setAllPixels(backgroundColor); //Clear to background color
 	}

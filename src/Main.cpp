@@ -4,6 +4,7 @@
 #include "SimpleDir.h"
 #include "SpatialHashing.h"
 #include "IniFile.h"
+#include "VectorFont.h"
 #include <stdlib.h>
 
 using namespace glib;
@@ -308,11 +309,129 @@ void testINI(bool readTest)
     }
 }
 
+void testVectorGraphic()
+{
+    VectorGraphic g1 = VectorGraphic();
+    // g1.load("testSVG.svg");
+    // g1.load("testFiles/SvgFiles/Five Pointed Star.svg");
+    g1.load("SVGs/_ionicons_svg_md-call-tan.svg");
+    VectorGraphic g2 = VectorGraphic();
+    g2.load("SVGs/_ionicons_svg_md-call.svg");
+    VectorGraphic g3 = VectorGraphic();
+    g3.load("SVGs/_ionicons_svg_md-mail.svg");
+    VectorGraphic g4 = VectorGraphic();
+    g4.load("SVGs/_ionicons_svg_md-pin.svg");
+    // VectorGraphic g5 = VectorGraphic();
+    // g4.load("SVGs/_ionicons_svg_md-pin.svg");
+    
+    Image buffer = Image(512, 512);
+    buffer.setAllPixels({0,0,0,0});
+    g1.draw(&buffer);
+    buffer.savePNG("Test1.png");
+    
+    buffer.setAllPixels({0,0,0,0});
+    g2.draw(&buffer);
+    buffer.savePNG("Test2.png");
+    
+    buffer.setAllPixels({0,0,0,0});
+    g3.draw(&buffer);
+    buffer.savePNG("Test3.png");
+    
+    buffer.setAllPixels({0,0,0,0});
+    g4.draw(&buffer);
+    buffer.savePNG("Test4.png");
+
+}
+
+void testVectorFont()
+{
+    VectorFont f = VectorFont();
+    f.load("SVGFonts/AnyConv.com__consolab.svg");
+    StringTools::println("Loaded %llu characters", f.getListOfFontCharInfo().size());
+
+    Image buffer = Image(f.getGraphic(0)->getWidth()/2, f.getGraphic(0)->getHeight()/2);
+    
+    for(int i='A'; i<='z'; i++)
+    {
+        int index = f.getCharIndex(i);
+        if(index >= 0)
+        {
+            VectorGraphic* grap = f.getGraphic(index);
+            if(grap != nullptr)
+            {
+                grap->setTransform(MathExt::scale2D(0.5, 0.5));
+                SimpleGraphics::setColor({255,255,255,255});
+                buffer.clearImage();
+                grap->draw(&buffer);
+
+                buffer.savePNG("TestOutput/image" + StringTools::toString(i) + ".png");
+            }
+        }
+    }
+}
+
+void testFontDrawing()
+{
+    SimpleGraphics::init();
+    Font* bitmapFont = SimpleGraphics::getDefaultFont(0);
+
+    FontCharInfo bfci = bitmapFont->getFontCharInfo( bitmapFont->getCharIndex('o') );
+    StringTools::println("FontInfo: %d, %d, %d, %d, %d", bfci.width, bfci.height, bfci.horizAdv, bfci.xOffset, bfci.yOffset);
+    
+    Image img = Image(128, 128);
+    SimpleGraphics::drawText("This is some text", 0, 0, &img);
+    img.savePNG("TestImg.png");
+
+    VectorFont vF = VectorFont();
+    vF.load("SVGFonts/ARIBLK.svg");
+    vF.setFontSize(12);
+    
+    // StringTools::println("VectorFontSize: %d", vF.getFontSize());
+    Image img2 = Image(128, 128);
+    SimpleGraphics::setFont(&vF);
+    SimpleGraphics::drawText("This is some text", 0, 0, &img2);
+    img2.savePNG("TestImg2.png");
+
+    FontCharInfo fci = vF.getFontCharInfo( vF.getCharIndex('o') );
+    double scaleV = (double)vF.getFontSize() / vF.getOriginalFontSize();
+    StringTools::println("FontInfo2: %d, %d, %d, %d, %d", fci.width, fci.height, fci.horizAdv, fci.xOffset, fci.yOffset);
+    StringTools::println("FontInfo3: %.3f, %.3f, %.3f, %.3f, %.3f", fci.width/scaleV, fci.height/scaleV, fci.horizAdv/scaleV, fci.xOffset/scaleV, fci.yOffset/scaleV);
+    
+}
+
+void testPolygonStuff()
+{
+    Image img = Image(128, 128);
+
+    std::vector<Vec2f> points = {Vec2f(64, 24), Vec2f(80, 80), Vec2f(32, 48), Vec2f(96, 48), Vec2f(48, 80)};
+    SimpleGraphics::drawPolygon(points.data(), points.size(), &img);
+
+    Vec2f midPoint;
+    for(int i=0; i<points.size(); i++)
+    {
+        midPoint += points[i];
+    }
+    midPoint /= points.size();
+
+    for(int i=0; i<points.size(); i++)
+    {
+        SimpleGraphics::setColor({255,0,0,255});
+        SimpleGraphics::drawLine(points[i].x, points[i].y, midPoint.x, midPoint.y, &img);
+    }
+
+    img.savePNG("polything.png");
+}
+
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main()
 {
     // Sleep(1000);
-    testWindow();
+    // testWindow();
+    // testVectorGraphic();
+    // testVectorFont();
     // testSpatialHashing();
+    // testFontDrawing();
+    testPolygonStuff();
+
     return 0;
 }

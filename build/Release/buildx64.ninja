@@ -101,6 +101,7 @@ build $objDir/SimpleGraphics_MODEL.obj: buildToObject src/SimpleGraphics_MODEL.c
 build $objDir/SimpleGraphics_RECT.obj: buildToObject src/SimpleGraphics_RECT.cpp
 build $objDir/SimpleGraphics_TEXT.obj: buildToObject src/SimpleGraphics_TEXT.cpp
 build $objDir/SimpleGraphics_TRIANGLE.obj: buildToObject src/SimpleGraphics_TRIANGLE.cpp
+build $objDir/SimpleJSON.obj: buildToObject src/SimpleJSON.cpp
 build $objDir/SimpleWindow.obj: buildToObject src/SimpleWindow.cpp
 build $objDir/SimpleXml.obj: buildToObject src/SimpleXml.cpp
 build $objDir/Sound.obj: buildToObject src/Sound.cpp

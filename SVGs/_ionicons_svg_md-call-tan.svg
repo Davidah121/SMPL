@@ -3,10 +3,9 @@
               "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
 
 <svg xmlns="http://www.w3.org/2000/svg"
-     width="5.68889in" height="5.68889in"
      viewBox="0 0 512 512">
   <path id="Selection #2"
-        fill="none" stroke="black" stroke-width="1"
+        fill="black" stroke="black" stroke-width="1"
         d="M 102.00,64.00
            C 102.00,64.00 147.00,64.00 147.00,64.00
              156.06,64.00 166.56,62.29 173.96,68.39

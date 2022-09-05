@@ -289,6 +289,10 @@ namespace glib
 		{
 			return ((int)(val-'A')) + 10;
 		}
+		else if(val >= 'a' && val <= 'f')
+		{
+			return ((int)(val-'a')) + 10;
+		}
 		else
 		{
 			return -1;
@@ -378,37 +382,144 @@ namespace glib
 
 	int StringTools::utf8ToChar(std::vector<unsigned char> utf8Char)
 	{
-		BinarySet b;
-		b.setBitOrder(BinarySet::RMSB);
-		b.setValues(utf8Char.data(), utf8Char.size());
+		// BinarySet b;
+		// b.setBitOrder(BinarySet::RMSB);
+		// b.setValues(utf8Char.data(), utf8Char.size());
 
-		BinarySet result;
+		// BinarySet result;
 
-		int i = 0;
+		// int i = 0;
 
-		while(i<b.size())
+		// while(i<b.size())
+		// {
+		// 	if(!b.getBit(i))
+		// 	{
+		// 		i++;
+		// 		int count = 8 - (i % 8);
+
+		// 		for(int k=0; k<count; k++)
+		// 		{
+		// 			result.add( b.getBit(i) );
+		// 			i++;
+		// 		}
+		// 	}
+		// 	else
+		// 	{
+		// 		i++;
+		// 	}
+		// }
+
+		// if(result.size()>0)
+		// 	return result.getBits(0, result.size(), true);
+		// else
+		// 	return 0;
+
+		int bytesToRead = 0;
+		int runningCount = 0;
+		for(unsigned char& c : utf8Char)
 		{
-			if(!b.getBit(i))
+			if(bytesToRead < 0)
 			{
-				i++;
-				int count = 8 - (i % 8);
-
-				for(int k=0; k<count; k++)
+				if(c <= 127)
 				{
-					result.add( b.getBit(i) );
-					i++;
+					runningCount = c;
+					break;
+				}
+				else
+				{
+					//utf8
+					if(c >= 0b11110000)
+					{
+						bytesToRead = 3;
+						runningCount += c & 0b111;
+					}
+					else if(c >= 0b11100000)
+					{
+						bytesToRead = 2;
+						runningCount += c & 0b1111;
+					}
+					else
+					{
+						bytesToRead = 1;
+						runningCount += c & 0b11111;
+					}
 				}
 			}
 			else
 			{
-				i++;
+				runningCount <<= 6;
+				runningCount += c & 0b111111;
+				if(bytesToRead == 0)
+				{
+					break;
+				}
 			}
 		}
 
-		if(result.size()>0)
-			return result.getBits(0, result.size(), true);
-		else
-			return 0;
+		return runningCount;
+	}
+
+	std::vector<int> StringTools::utf8ToIntString(std::string validUTF8String)
+	{
+		std::vector<int> finalChars;
+		int bytesToRead = 0;
+		int runningCount = 0;
+		for(char& c : validUTF8String)
+		{
+			unsigned char v = (unsigned char)c;
+			if(bytesToRead <= 0)
+			{
+				if(v <= 127)
+					finalChars.push_back(v);
+				else
+				{
+					//utf8
+					if((v >> 3) == 0b11110)
+					{
+						bytesToRead = 3;
+						runningCount += v & 0b111;
+					}
+					else if((v >> 4) == 0b1110)
+					{
+						bytesToRead = 2;
+						runningCount += v & 0b1111;
+					}
+					else  if((v >> 5) == 0b110)
+					{
+						bytesToRead = 1;
+						runningCount += v & 0b11111;
+					}
+					else
+					{
+						//error probably
+						break;
+					}
+				}
+			}
+			else
+			{
+				runningCount <<= 6;
+				runningCount += v & 0b111111;
+				bytesToRead--;
+				if(bytesToRead == 0)
+				{
+					finalChars.push_back(runningCount);
+					runningCount = 0;
+				}
+			}
+		}
+
+		return finalChars;
+	}
+	
+	std::vector<int> StringTools::wideStringToIntString(std::wstring str)
+	{
+		std::vector<int> results = std::vector<int>(str.size());
+		for(int i=0; i<str.size(); i++)
+		{
+			results[i] = str[i];
+		}
+		return results;
 	}
 
 	std::vector<std::string> StringTools::splitString(std::string s, const char delim, bool removeEmpty)
@@ -732,40 +843,150 @@ namespace glib
 		return stringArray;
 	}
 
-	std::string StringTools::removeWhitespace(std::string originalStr, bool removeTabs)
+	std::string StringTools::removeWhitespace(std::string originalStr, bool removeTabs, bool onlyLeadingAndTrailing)
 	{
 		std::string nStr;
-		for(char& c : originalStr)
+		if(!onlyLeadingAndTrailing)
 		{
-			if(c == ' ')
-				continue;
-
-			if(removeTabs)
+			for(char& c : originalStr)
 			{
-				if(c == '\t')
+				if(c == ' ')
 					continue;
-			}
 
-			nStr += c;
+				if(removeTabs)
+				{
+					if(c == '\t')
+						continue;
+				}
+
+				nStr += c;
+			}
+		}
+		else
+		{
+			int firstInvalidSpot = -1;
+			bool hitNormalChar = false;
+			for(int i=0; i<originalStr.size(); i++)
+			{
+				char c = originalStr[i];
+				if(!hitNormalChar)
+				{
+					if(c == ' ')
+						continue;
+
+					if(removeTabs)
+					{
+						if(c == '\t')
+							continue;
+					}
+				}
+				else
+				{
+					if(c == ' ')
+					{
+						if(firstInvalidSpot < 0)
+							firstInvalidSpot = i;
+						continue;
+					}
+
+					if(removeTabs)
+					{
+						if(c == '\t')
+						{
+							if(firstInvalidSpot < 0)
+								firstInvalidSpot = i;
+							continue;
+						}
+					}
+				}
+
+				//Add data that was skipped since it is not empty white space at the end.
+				if(firstInvalidSpot >= 0)
+				{
+					for(int k=firstInvalidSpot; k<i; k++)
+					{
+						nStr += originalStr[k];
+					}
+				}
+				hitNormalChar = true;
+				firstInvalidSpot = -1;
+
+				nStr += c;
+			}
 		}
 		return nStr;
 	}
 
-	std::wstring StringTools::removeWhitespace(std::wstring originalStr, bool removeTabs)
+	std::wstring StringTools::removeWhitespace(std::wstring originalStr, bool removeTabs, bool onlyLeadingAndTrailing)
 	{
 		std::wstring nStr;
-		for(wchar_t& c : originalStr)
+		if(!onlyLeadingAndTrailing)
 		{
-			if(c == L' ')
-				continue;
-
-			if(removeTabs)
+			for(wchar_t& c : originalStr)
 			{
-				if(c == L'\t')
+				if(c == L' ')
 					continue;
+
+				if(removeTabs)
+				{
+					if(c == L'\t')
+						continue;
+				}
+
+				nStr += c;
 			}
-			
-			nStr += c;
+		}
+		else
+		{
+			int firstInvalidSpot = -1;
+			bool hitNormalChar = false;
+			for(int i=0; i<originalStr.size(); i++)
+			{
+				wchar_t c = originalStr[i];
+				if(!hitNormalChar)
+				{
+					if(c == ' ')
+						continue;
+
+					if(removeTabs)
+					{
+						if(c == L'\t')
+							continue;
+					}
+				}
+				else
+				{
+					if(c == L' ')
+					{
+						if(firstInvalidSpot < 0)
+							firstInvalidSpot = i;
+						continue;
+					}
+
+					if(removeTabs)
+					{
+						if(c == L'\t')
+						{
+							if(firstInvalidSpot < 0)
+								firstInvalidSpot = i;
+							continue;
+						}
+					}
+				}
+
+				//Add data that was skipped since it is not empty white space at the end.
+				if(firstInvalidSpot >= 0)
+				{
+					for(int k=firstInvalidSpot; k<i; k++)
+					{
+						nStr += originalStr[k];
+					}
+				}
+				hitNormalChar = true;
+				firstInvalidSpot = -1;
+
+				nStr += c;
+			}
 		}
 		return nStr;
 	}

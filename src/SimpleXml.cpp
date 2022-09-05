@@ -162,8 +162,9 @@ namespace glib
      * No Error Checking currently.
      * Currently Adding error checking and failures
      */
-    bool SimpleXml::load(File file)
+    bool SimpleXml::load(File file, bool parseEscape)
     {
+        shouldParseEscape = parseEscape;
         SimpleFile f = SimpleFile(file, SimpleFile::READ | SimpleFile::UTF8);
 
         bool parsingNode = false;
@@ -287,9 +288,12 @@ namespace glib
                 }
             }
 
-            for(XmlNode* node : nodes)
+            if(shouldParseEscape)
             {
-                fixParseOnNode(node);
+                for(XmlNode* node : nodes)
+                {
+                    fixParseOnNode(node);
+                }
             }
 
         }
@@ -527,18 +531,39 @@ namespace glib
         if(escString.front()=='&' && escString.back()==';')
         {
             //valid format
-            std::string internalString = escString.substr(1, escString.size()-2);
-            if(internalString.front() == '#')
+            bool num = false;
+            bool hex = false;
+            std::string infoToParse = "";
+            for(int i=1; i<escString.size()-1; i++)
             {
-                internalString = internalString.substr(1, internalString.size()-1);
-                if(internalString.front() == 'x')
+                if(escString[i] == '#')
+                {
+                    num = true;
+                    continue;
+                }
+
+                if(num)
+                {
+                    if(escString[i] == 'x')
+                    {
+                        hex = true;
+                        continue;
+                    }
+                }
+                
+                infoToParse.push_back(escString[i]);
+            }
+
+            if(num)
+            {
+                if(hex)
                 {
                     //hex value
-                    int multiple = 0;
                     int charVal = 0;
-                    for(int i=internalString.size()-1; i>=1; i--, multiple++)
+                    for(int i=0; i<infoToParse.size(); i++)
                     {
-                        charVal += StringTools::base16ToBase10(internalString[i]) * (int)MathExt::pow(16.0, multiple);
+                        charVal <<= 4;
+                        charVal += StringTools::base16ToBase10(infoToParse[i]);
                     }
 
                     //charVal could be any unicode value. Change later.
@@ -547,30 +572,30 @@ namespace glib
                 else
                 {
                     //decimal number
-                    return std::stoi( internalString );
+                    return std::stoi( infoToParse );
                 }
             }
             else
             {
                 //name
                 //only XML predefined names
-                if(internalString == "quot")
+                if(infoToParse == "quot")
                 {
                     return '"';
                 }
-                else if(internalString == "amp")
+                else if(infoToParse == "amp")
                 {
                     return '&';
                 }
-                else if(internalString == "apos")
+                else if(infoToParse == "apos")
                 {
                     return '\'';
                 }
-                else if(internalString == "lt")
+                else if(infoToParse == "lt")
                 {
                     return '<';
                 }
-                else if(internalString == "gt")
+                else if(infoToParse == "gt")
                 {
                     return '>';
                 }
@@ -611,7 +636,12 @@ namespace glib
                     {
                         tempString += ';';
                         int t = parseEscapeString(tempString);
-                        actualString += t;
+                        std::vector<unsigned char> asUTFSet = StringTools::toUTF8(t);
+
+                        for(unsigned char& c : asUTFSet)
+                        {
+                            actualString += c;
+                        }
                         proc=false;
                         tempString = "";
                     }
@@ -650,7 +680,12 @@ namespace glib
                 {
                     tempString += ';';
                     int t = parseEscapeString(tempString);
-                    actualString += t;
+                    std::vector<unsigned char> asUTFSet = StringTools::toUTF8(t);
+
+                    for(unsigned char& c : asUTFSet)
+                    {
+                        actualString += c;
+                    }
                     proc=false;
                     tempString = "";
                 }
@@ -663,9 +698,12 @@ namespace glib
         actualString += tempString;
         n->value = actualString;
         
-        for(XmlNode* q : n->childNodes)
+        if(shouldParseEscape)
         {
-            fixParseOnNode(q);
+            for(XmlNode* q : n->childNodes)
+            {
+                fixParseOnNode(q);
+            }
         }
     }
 

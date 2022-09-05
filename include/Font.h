@@ -50,6 +50,8 @@ namespace glib
 		
 		/**
 		 * @brief Gets the character information for rendering.
+		 * 		The values are adjusted based on the current font size vs the original.
+		 * 		Assumes the image for each character, or a character sheet, is also scaled.
 		 * 		If index is invalid and USE_EXCEPTIONS is defined, throws an OutOfBoundsError
 		 * @param index
 		 * 		The index of the character in the array. Not necessarily in order.
@@ -81,7 +83,7 @@ namespace glib
 		 * 		Always returns a nullptr.
 		 */
 		virtual Image* getImage(int index);
-
+		
 		/**
 		 * @brief Sets the size of the font.
 		 * 		This is used for rendering.
@@ -104,6 +106,7 @@ namespace glib
 
 		/**
 		 * @brief Returns the vertical advance of the font.
+		 * 		It is adjusted by the current font size vs the original font size.
 		 * @return int
 		 */
 		int getVerticalAdvance();
@@ -112,6 +115,7 @@ namespace glib
 		 * @brief Returns a bounding box that surrounds the text based on the given parameters.
 		 * 		Note that when a line break or wrap text occurs, it does not carry the whole word to the next line.
 		 * 		Wrapped text can be removed by setting max width to a negative value.
+		 * 		It is adjusted by the current font size vs the original font size.
 		 * 
 		 * @param text 
 		 * @param maxWidth 
@@ -128,6 +132,7 @@ namespace glib
 		 * @brief Returns a bounding box that surrounds the text based on the given parameters.
 		 * 		Note that when a line break or wrap text occurs, it does not carry the whole word to the next line.
 		 * 		Wrapped text can be removed by setting max width to a negative value.
+		 * 		It is adjusted by the current font size vs the original font size.
 		 * 
 		 * @param text 
 		 * @param maxWidth 
@@ -142,6 +147,8 @@ namespace glib
 
 		/**
 		 * @brief Returns the raw list of the font characters information.
+		 * 		It is not adjusted by the set font size. Each FontCharInfo must be adjusted
+		 * 		separately.
 		 * @return std::vector<FontCharInfo>&
 		 */
 		std::vector<FontCharInfo>& getListOfFontCharInfo();

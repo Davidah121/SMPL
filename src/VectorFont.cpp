@@ -64,10 +64,14 @@ namespace glib
                     parentNode.title = "svg";
                     XmlAttribute widthAttrib = XmlAttribute();
                     widthAttrib.name = "width";
-                    widthAttrib.value = std::to_string(width);
+                    widthAttrib.value = "0";
                     XmlAttribute heightAttrib = XmlAttribute();
                     heightAttrib.name = "height";
-                    heightAttrib.value = std::to_string(height);
+                    heightAttrib.value = "0";
+                    
+                    XmlAttribute transform = XmlAttribute();
+                    transform.name = "transform";
+                    transform.value = "translate(0,0) scale(1,-1)";
                     
                     parentNode.attributes.push_back( widthAttrib );
                     parentNode.attributes.push_back( heightAttrib );
@@ -75,49 +79,27 @@ namespace glib
                     //process font information
                     for(int i=0; i<cNode->childNodes.size(); i++)
                     {
-                        XmlNode* fontChildren = cNode->childNodes[i];
-                        if(StringTools::equalsIgnoreCase<char>(fontChildren->title, "glyph") || StringTools::equalsIgnoreCase<char>(fontChildren->title, "missing-glyph"))
+                        XmlNode* fontChild = cNode->childNodes[i];
+                        if(StringTools::equalsIgnoreCase<char>(fontChild->title, "glyph") || StringTools::equalsIgnoreCase<char>(fontChild->title, "missing-glyph"))
                         {
                             FontCharInfo fc;
                             fc.x=0;
                             fc.y=0;
+                            fc.xOffset = 0;
+                            fc.yOffset = 0;
                             fc.width = width;
                             fc.height = height;
                             fc.horizAdv = baseHorizontalAdvance;
                             fc.unicodeValue = -1;   //assuming missing-glyph
 
-                            for(XmlAttribute a : fontChildren->attributes)
+                            for(XmlAttribute& a : fontChild->attributes)
                             {
                                 if(StringTools::equalsIgnoreCase<char>(a.name, "unicode"))
                                 {
-                                    //StringTools::println(a.value);
+                                    auto stuff = StringTools::utf8ToIntString(a.value);
+                                    if(stuff.size() > 0)
+                                        fc.unicodeValue = stuff.front();
 
-                                    if(a.value.front() == '&' && a.value.back() == ';')
-                                    {
-                                        fc.unicodeValue = SimpleXml::parseEscapeString(a.value);
-                                    }
-                                    else
-                                    {
-                                        
-                                        if(a.value == "A")
-                                        {
-                                            StringTools::println(a.value);
-                                            StringTools::println(a.name);
-                                            StringTools::println("%d",i);
-                                            StringTools::println(fontChildren->attributes[0].value);
-                                            fc.unicodeValue = 65;
-                                        }
-                                        else
-                                            fc.unicodeValue = (unsigned char) a.value.front();
-                                    }
-                                    
-                                
-                                    /**
-                                    for(int i=3, k=0; i>=0 || k<a.value.size(); i--, k++)
-                                    {
-                                        unicodeVal += a.value[k] << (i*8);
-                                    }
-                                    **/
                                 }
                                 else if(StringTools::equalsIgnoreCase<char>(a.name, "horiz-adv-x"))
                                 {
@@ -126,10 +108,12 @@ namespace glib
                             }
 
                             //turn the xmlNode into a path and pass it into a vectorgrahpic
-                            VectorGraphic* fontGraphic = new VectorGraphic(width, height);
+                            VectorGraphic* fontGraphic = new VectorGraphic();
                             
-                            XmlNode parsedNode = XmlNode(*fontChildren);
+                            XmlNode parsedNode = XmlNode(*fontChild);
                             parsedNode.title = "path";
+                            parsedNode.attributes.push_back(transform);
+
                             parentNode.childNodes.push_back(&parsedNode);
 
                             fontGraphic->load(&parentNode);
@@ -140,31 +124,30 @@ namespace glib
                             this->fontSprite.addGraphic(fontGraphic);
                             
                         }
-                        else if(StringTools::equalsIgnoreCase<char>(fontChildren->title, "font-face"))
+                        else if(StringTools::equalsIgnoreCase<char>(fontChild->title, "font-face"))
                         {
-                            for(XmlAttribute a : fontChildren->attributes)
+                            for(XmlAttribute a : fontChild->attributes)
                             {
                                 if( StringTools::equalsIgnoreCase<char>(a.name, "bbox"))
                                 {
-                                    StringTools::println(a.value);
-
-                                    std::vector<std::string> split = StringTools::splitStringMultipleDeliminators(a.value, ", ");
-                                    
-                                    if(split.size()==4)
+                                    //Note that minX and minY do not contribute to the viewBox. Just the transform
+                                    auto lazyCode = StringTools::splitStringMultipleDeliminators(a.value, " ,");
+                                    if(lazyCode.size() == 4)
                                     {
-                                        width = (int) MathExt::ceil(stod(split[2]) - stod(split[0]));
-                                        height = (int) MathExt::ceil(stod(split[3]) - stod(split[1]));
+                                        width = MathExt::abs(StringTools::toInt(lazyCode[2]));
+                                        height = MathExt::abs(StringTools::toInt(lazyCode[3]));
+                                        parentNode.attributes[0].value = lazyCode[2];
+                                        parentNode.attributes[1].value = lazyCode[3];
 
-                                        parentNode.attributes[0].value = std::to_string(width);
-                                        parentNode.attributes[1].value = std::to_string(height);
+                                        this->originalFontSize = height;
+                                        fontSize = height;
+                                        baseWidth = width;
+                                        baseHeight = height;
                                     }
-                                    else
-                                    {
-                                        //something went wrong
-                                        StringTools::println("Something is wrong with the split size of a.value: %d", split.size());
-                                    }
-                                    
-                                    
+                                }
+                                else if(StringTools::equalsIgnoreCase<char>(a.name, "ascent"))
+                                {
+                                    transform.value = "translate(0," + a.value + ") scale(1,-1)";
                                 }
                             }
                         }
@@ -186,6 +169,56 @@ namespace glib
     VectorSprite* VectorFont::getVectorSprite()
     {
         return &fontSprite;
+    }
+
+    Image* VectorFont::getImage(int index)
+    {
+        double scaleValue = (double)this->getFontSize() / this->getOriginalFontSize();
+        
+        Image* glyphImage = this->cachedGlyphs.getData(index);
+        if(glyphImage == nullptr)
+        {
+            //create new image and add to cachedGlyphs
+            VectorGraphic* vecGlyph = fontSprite.getGraphic(index);
+
+            if(vecGlyph != nullptr)
+            {
+                //can be added.
+                Image* newGlyphImg = new Image((int)(baseWidth*scaleValue), (int)(baseHeight*scaleValue));
+                vecGlyph->setTransform(MathExt::scale2D(scaleValue, scaleValue));
+                vecGlyph->draw(newGlyphImg);
+
+                cachedGlyphs.addData(index, newGlyphImg);
+                return newGlyphImg;
+            }
+        }
+        else
+        {
+            if(this->getFontSize() == glyphImage->getHeight())
+            {
+                return glyphImage;
+            }
+            else
+            {
+                //Should be resized
+                //create new image and add to cachedGlyphs
+                VectorGraphic* vecGlyph = fontSprite.getGraphic(index);
+
+                if(vecGlyph != nullptr)
+                {
+                    Image* newGlyphImg = new Image((int)(baseWidth*scaleValue), (int)(baseHeight*scaleValue));
+                    //can be added.
+                    vecGlyph->setTransform(MathExt::scale2D(scaleValue, scaleValue));
+                    vecGlyph->draw(newGlyphImg);
+
+                    cachedGlyphs.addData(index, newGlyphImg);
+                    return newGlyphImg;
+                }
+            }
+
+        }
+
+        return nullptr;
     }
 
 } //NAMESPACE glib END

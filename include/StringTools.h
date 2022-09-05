@@ -142,6 +142,23 @@ namespace glib
 		static int utf8ToChar(std::vector<unsigned char> utf8Char);
 
 		/**
+		 * @brief Converts the bytes in a std::string or any utf8 compliant string into
+		 * 		a set of integers for easier parsing.
+		 * 
+		 * @param validUTF8String 
+		 * @return std::vector<int> 
+		 */
+		static std::vector<int> utf8ToIntString(std::string validUTF8String);
+
+		/**
+		 * @brief Converts the bytes in a std::wstring into
+		 * 		a set of integers for easier parsing.
+		 * @param str 
+		 * @return std::vector<int> 
+		 */
+		static std::vector<int> wideStringToIntString(std::wstring str);
+
+		/**
 		 * @brief Performs a bitwise left rotate on the data type.
 		 * 
 		 * @tparam T 
@@ -442,9 +459,12 @@ namespace glib
 		 * 
 		 * @param originalStr 
 		 * @param removeTabs 
+		 * @param onlyLeadingAndTrailing
+		 * 		Only removes the empty white space at the beginning and ending.
+		 * 		Keeps whitespace between data.
 		 * @return std::string 
 		 */
-		static std::string removeWhitespace(std::string originalStr, bool removeTabs = false);
+		static std::string removeWhitespace(std::string originalStr, bool removeTabs = false, bool onlyLeadingAndTrailing = false);
 
 		/**
 		 * @brief Removes all white space from the string.
@@ -452,9 +472,12 @@ namespace glib
 		 * 
 		 * @param originalStr 
 		 * @param removeTabs 
+		 * @param onlyLeadingAndTrailing
+		 * 		Only removes the empty white space at the beginning and ending.
+		 * 		Keeps whitespace between data.
 		 * @return std::wstring 
 		 */
-		static std::wstring removeWhitespace(std::wstring originalStr, bool removeTabs = false);
+		static std::wstring removeWhitespace(std::wstring originalStr, bool removeTabs = false, bool onlyLeadingAndTrailing = false);
 		
 		/**
 		 * @brief Converts a string into an integer.

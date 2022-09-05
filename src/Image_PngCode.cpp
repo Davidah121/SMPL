@@ -255,8 +255,7 @@ namespace glib
 		int byteOffset = 0;
 		int maxIDATSize = 0x2000; //Force all IDAT headers to be at most 8192 bytes so libpng doesn't freak out.
 		int totalIDAT = ceil((double)binarySetBytes.size() / maxIDATSize);
-
-		StringTools::println("%d, %d", totalIDAT, maxIDATSize);
+		
 		//3078
 		while(byteOffset < binarySetBytes.size())
 		{

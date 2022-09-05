@@ -46,7 +46,7 @@ namespace glib
 		 * 		A nullptr is returned if no image was found. Otherwise, a valid Image* is returned.
 		 */
 		Image* getImage(int index);
-
+		
 		/**
 		 * @brief Gets the internal Sprite used to store the image data for the characters.
 		 * 

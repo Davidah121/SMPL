@@ -2,6 +2,7 @@
 #include "SimpleFile.h"
 #include "StringTools.h"
 #include "SimpleXml.h"
+#include "SimpleGraphics.h"
 
 namespace glib
 {
@@ -222,6 +223,7 @@ namespace glib
 						if(attrib.name == "size")
 						{
 							fontSize = std::stoi(attrib.value);
+							originalFontSize = fontSize;
 						}
 					}
 				}

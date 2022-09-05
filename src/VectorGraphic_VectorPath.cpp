@@ -7,7 +7,10 @@
 
 namespace glib
 {
-		
+	bool VectorPath::oldMethod = false;
+	Image* surfImg = nullptr;
+	int count = 0;
+
 	#pragma region VectorPath
 	const Class VectorPath::globalClass = Class("VectorPath", {&VectorShape::globalClass});
 
@@ -51,6 +54,8 @@ namespace glib
 	void VectorPath::draw(Image* img, int globalWidth, int globalHeight)
 	{
 		//copy to old vectorpath
+		surfImg = img;
+		count = 0;
 		VectorPath copyVal = VectorPath(*this);
 
 		applyTransform();
@@ -75,6 +80,7 @@ namespace glib
 		std::vector<criticalPoint>* scanLines = new std::vector<criticalPoint>[yDis]();
 		std::vector<int>* strokeScanLines = new std::vector<int>[yDis]();
 
+		
 		for(int i=0; i<commands.size(); i++)
 		{
 			switch(commands[i].c)
@@ -101,14 +107,14 @@ namespace glib
 					break;
 				case 'H':
 					//no drawing
-					//drawHorizontalTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
-					drawLineTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
+					drawHorizontalTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
+					// drawLineTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
 					currentPos.x = commands[i].points[0].x;
 					break;
 				case 'h':
 					//no drawing
-					//drawHorizontalTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
-					drawLineTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
+					drawHorizontalTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
+					// drawLineTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
 					currentPos += commands[i].points[0];
 					break;
 				case 'V':
@@ -220,77 +226,48 @@ namespace glib
 				break;
 		}
 
-
 		for(int i=0; i<yDis; i++)
 		{
 			if(scanLines[i].size()>0)
 			{
+				//sort by xValue. Sort by end point or not
 				Sort::insertionSort<criticalPoint>(scanLines[i].data(), scanLines[i].size(), [](criticalPoint a, criticalPoint b) -> bool {return a.xValue<b.xValue;});
-				
-				// StringTools::print("Scanline %d : ", i);
 
-				// for(int k=0; k<scanLines[i].size(); k++)
-				// {
-				// 	StringTools::print(" %.3f, ", scanLines[i][k].xValue);
-				// }
-				// StringTools::println("");
-				
 				//rule, can not be the same if you are filling to it.
 				//different for even-odd and non-zero
 				std::vector<criticalPoint> newScanLine = std::vector<criticalPoint>();
 
+				// if(i==90)
+				// {
+				// 	StringTools::print("Scanline %d: ", i);
+				// 	for(criticalPoint& cp : scanLines[i])
+				// 	{
+				// 		StringTools::print("(%.3f,%.3f,%.3f, %.3f, %d), ", cp.xValue, cp.direction.x, cp.direction.y, cp.timeVal, cp.horizontal);
+				// 	}
+				// 	StringTools::println("");
+				// 	StringTools::println("");
+				// }
+
 				if(getFillMethod() == VectorShape::EVEN_ODD_RULE)
 				{
-					// bool lowestPoint = true;
-					// for(int j=1; j<scanLines[i].size(); j+=2)
-					// {
-					// 	criticalPoint p1 = scanLines[i][j-1];
-					// 	criticalPoint p2 = scanLines[i][j];
-					// 	bool oldDir = p1.isYPositive;
-					// 	bool newDir = p2.isYPositive;
-
-					// 	if(newDir!=oldDir)
-					// 	{
-					// 		newScanLine.push_back(p1);
-					// 		newScanLine.push_back(p2);
-					// 	}
-					// 	else
-					// 	{
-					// 		if(lowestPoint)
-					// 			newScanLine.push_back(p1);
-					// 		else
-					// 			newScanLine.push_back(p2);
-
-					// 		lowestPoint = !lowestPoint;
-					// 	}
-					// }
-
-					if(scanLines[i].size()==2)
+					//shouldn't need much if the values are recorded correctly
+					bool skipped = false;
+					if(scanLines[i].size() >= 2)
 					{
-						newScanLine.push_back(scanLines[i][0]);
-						newScanLine.push_back(scanLines[i][1]);
-					}
-					else
-					{
-						bool skipped = true;
-						for(int j=0; j<scanLines[i].size(); j++)
+						for(int j=0; j<scanLines[i].size(); j+=1)
 						{
-							if(skipped)
+							criticalPoint newPoint = scanLines[i][j];
+
+							if(newPoint.timeVal == 0 || newPoint.timeVal == 1)
 							{
-								newScanLine.push_back(scanLines[i][j]);
-								skipped = false;
+								if(newPoint.otherEndPoint.y < i)
+								{
+									newScanLine.push_back(newPoint);
+								}
 							}
 							else
 							{
-								if(MathExt::round(scanLines[i][j-1].xValue) == MathExt::round(scanLines[i][j].xValue))
-								{
-									skipped = true;
-								}
-								else
-								{
-									newScanLine.push_back(scanLines[i][j]);
-									skipped = false;
-								}
+								newScanLine.push_back(newPoint);
 							}
 						}
 					}
@@ -306,8 +283,8 @@ namespace glib
 						}
 						else
 						{
-							bool newDir = scanLines[i][j].isYPositive;
-							bool oldDir = scanLines[i][j-1].isYPositive;
+							bool newDir = scanLines[i][j].direction.y > 0;
+							bool oldDir = scanLines[i][j-1].direction.y > 0;
 
 							if(newDir != oldDir)
 							{
@@ -319,17 +296,18 @@ namespace glib
 				}
 
 				scanLines[i] = newScanLine;
-
-				// StringTools::print("Scanline %d:", i);
-
-				// for(int k=0; k<scanLines[i].size(); k++)
-				// {
-				// 	StringTools::print(" %.3f, ", scanLines[i][k].xValue);
-				// }
-				// StringTools::println("");
 			}
 
-			
+			// if(i==90)
+			// {
+			// 	StringTools::print("Scanline %d: ", i);
+			// 	for(criticalPoint& cp : scanLines[i])
+			// 	{
+			// 		StringTools::print("%.3f, ", cp.xValue);
+			// 	}
+			// 	StringTools::println("");
+			// 		StringTools::println("");
+			// }
 		}
 
 		if(getFillMethod()==VectorShape::EVEN_ODD_RULE)
@@ -389,7 +367,7 @@ namespace glib
 						double startX = scanLines[j][i].xValue;
 						double endX = scanLines[j][i+1].xValue;
 
-						bool dir = scanLines[j][i].isYPositive;
+						bool dir = scanLines[j][i].direction.y > 0;
 
 						double yVal = j+minY;
 						int intYVal = (int)j+minY;
@@ -497,38 +475,45 @@ namespace glib
 		{
 			b.addPoint(command.points[0]);
 
-			actualMinY = MathExt::ceil(MathExt::min( currentPos.y, command.points[0].y));
-			actualMaxY = MathExt::floor(MathExt::max( currentPos.y, command.points[0].y));
+			actualMinY = MathExt::floor(MathExt::min( currentPos.y, command.points[0].y));
+			actualMaxY = MathExt::ceil(MathExt::max( currentPos.y, command.points[0].y));
 		}
 		else
 		{
 			b.addPoint(currentPos + command.points[0]);
 
-			actualMinY = MathExt::ceil(MathExt::min( currentPos.y, currentPos.y + command.points[0].y));
-			actualMaxY = MathExt::floor(MathExt::max( currentPos.y, currentPos.y + command.points[0].y));
+			actualMinY = MathExt::floor(MathExt::min( currentPos.y, currentPos.y + command.points[0].y));
+			actualMaxY = MathExt::ceil(MathExt::max( currentPos.y, currentPos.y + command.points[0].y));
 		}
 
-		// StringTools::out << "currentPos: (" << currentPos.x << ", " << currentPos.y << ")";
-		// StringTools::out << "otherPos: (" << currentPos.x+(*(command.points)).x << ", " << currentPos.y +(*(command.points)).y<< ")" << StringTools::lineBreak;
-		
-		
 		actualMinY = MathExt::clamp((int)actualMinY, minY, maxY);
 		actualMaxY = MathExt::clamp((int)actualMaxY, minY, maxY);
 
+		if(actualMaxY == actualMinY)
+		{
+			//horizontal line
+			//because it is only 2 points, we can use get simple derivative and it will be accurate.
+			Vec2f dir = b.getSimpleDerivativeAt(0);
+			
+			scanLines[actualMinY].push_back({b.getPoint(0).x, dir, 0, b.getPoint(1), true});
+			scanLines[actualMinY].push_back({b.getPoint(1).x, dir, 1, b.getPoint(0), true});
+			return;
+		}
+
 		for(int y=actualMinY; y<=actualMaxY; y++)
 		{
-			std::vector<double> times;
-			//The line is not a horizontal line. Scanlines are handled separately
-			if(actualMinY!=actualMaxY)
-				times = b.findTimeForY(y);
-			
+			std::vector<double> times = b.findTimeForY(y, true);
+			double previousTimes = INFINITY;
 			for(int t=0; t<times.size(); t++)
 			{
 				Vec2f v = b.getFuctionAt(times[t]);
 				//because it is only 2 points, we can use get simple derivative and it will be accurate.
-				Vec2f dir = b.getSimpleDerivativeAt(times[t]);
+				Vec2f dir = b.getDerivativeAt(times[t]);
+				Vec2f otherEndPoint = b.getPoint(0);
+				if(times[t] == 0)
+					otherEndPoint = b.getPoint(1);
 				
-				scanLines[y].push_back({v.x, dir.y>0});
+				scanLines[y].push_back({v.x, dir, times[t], otherEndPoint, false});
 			}
 		}
 
@@ -575,19 +560,20 @@ namespace glib
 		
 		actualMinY = MathExt::clamp((int)actualMinY, minY, maxY);
 		actualMaxY = MathExt::clamp((int)actualMaxY, minY, maxY);
+		Vec2f dir = (command.points[0].y >= 0) ? Vec2f(0,1) : Vec2f(0,-1);
 
 		if(!relative)
 		{
 			for(int y=actualMinY; y<=actualMaxY; y++)
 			{
-				scanLines[y].push_back({currentPos.x, (command.points[0].y - currentPos.y) >0});
+				scanLines[y].push_back({currentPos.x, dir, (double)(y-actualMinY)/(actualMaxY-actualMinY)});
 			}
 		}
 		else
 		{
 			for(int y=actualMinY; y<=actualMaxY; y++)
 			{
-				scanLines[y].push_back({currentPos.x, command.points[0].y >0});
+				scanLines[y].push_back({currentPos.x, dir, (double)(y-actualMinY)/(actualMaxY-actualMinY)});
 			}
 		}
 		
@@ -595,6 +581,25 @@ namespace glib
 
 	void VectorPath::drawHorizontalTo(Vec2f currentPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative)
 	{
+		int yVal = currentPos.y;
+
+		//horizontal line
+		//because it is only 2 points, we can use get simple derivative and it will be accurate.
+		Vec2f dir = Vec2f(1,0);
+		if(command.points[0].x < 0)
+			dir = Vec2f(-1, 0);
+		
+		if(!relative)
+		{
+			scanLines[yVal].push_back({currentPos.x, dir, 0, Vec2f(), true});
+			scanLines[yVal].push_back({command.points[0].x, dir, 1, Vec2f(), true});
+		}
+		else
+		{
+			scanLines[yVal].push_back({currentPos.x, dir, 0, Vec2f(), true});
+			scanLines[yVal].push_back({currentPos.x + command.points[0].x, dir, 1, Vec2f(), true});
+		}
+
 		if(getStrokeWidth()>0)
 		{
 			double halfStrokeWidth = getStrokeWidth()/2;
@@ -626,8 +631,8 @@ namespace glib
 		BezierCurve b = BezierCurve();
 		b.addPoint(currentPos);
 
-		int actualMinY = MathExt::round(currentPos.y);
-		int actualMaxY = MathExt::round(currentPos.y);
+		int actualMinY = MathExt::floor(currentPos.y);
+		int actualMaxY = MathExt::ceil(currentPos.y);
 
 		for(int j=0; j<2; j++)
 		{
@@ -636,11 +641,11 @@ namespace glib
 				b.addPoint(command.points[j]);
 				if(command.points[j].y < actualMinY)
 				{
-					actualMinY = MathExt::round(command.points[j].y);
+					actualMinY = MathExt::floor(command.points[j].y);
 				}
 				if(command.points[j].y > actualMaxY)
 				{
-					actualMaxY = MathExt::round(command.points[j].y);
+					actualMaxY = MathExt::ceil(command.points[j].y);
 				}
 			}
 			else
@@ -648,11 +653,11 @@ namespace glib
 				b.addPoint(currentPos+command.points[j]);
 				if(currentPos.y+command.points[j].y < actualMinY)
 				{
-					actualMinY = MathExt::round(currentPos.y+command.points[j].y);
+					actualMinY = MathExt::floor(currentPos.y+command.points[j].y);
 				}
 				if(currentPos.y+command.points[j].y > actualMaxY)
 				{
-					actualMaxY = MathExt::round(currentPos.y+command.points[j].y);
+					actualMaxY = MathExt::ceil(currentPos.y+command.points[j].y);
 				}
 			}
 		}
@@ -660,15 +665,32 @@ namespace glib
 		actualMinY = MathExt::clamp((int)actualMinY, minY, maxY);
 		actualMaxY = MathExt::clamp((int)actualMaxY, minY, maxY);
 
+		//check if horizontal line
+		if(actualMaxY == actualMinY)
+		{
+			//horizontal line
+			//because it is only 2 points, we can use get simple derivative and it will be accurate.
+			Vec2f dir = b.getSimpleDerivativeAt(0);
+			
+			scanLines[actualMinY].push_back({b.getPoint(0).x, dir, 0, Vec2f(), true});
+			scanLines[actualMinY].push_back({b.getPoint(2).x, dir, 1, Vec2f(), true});
+			return;
+		}
+
 		for(int y=actualMinY; y<=actualMaxY; y++)
 		{
-			std::vector<double> times = b.findTimeForY(y);
+			std::vector<double> times = b.findTimeForY(y, true);
+			double previousTimes = INFINITY;
 			for(int t=0; t<times.size(); t++)
 			{
 				Vec2f v = b.getFuctionAt(times[t]);
 				Vec2f dir = b.getDerivativeAt(times[t]);
 				
-				scanLines[y].push_back({v.x, dir.y >0});
+				Vec2f otherEndPoint = b.getPoint(0);
+				if(times[t] == 0)
+					otherEndPoint = b.getPoint(2);
+				
+				scanLines[y].push_back({v.x, dir, times[t], otherEndPoint, false});
 			}
 		}
 	}
@@ -688,32 +710,49 @@ namespace glib
 		else
 			b.addPoint(currentPos+command.points[0]);
 
-		int actualMinY = MathExt::ceil(currentPos.y);
-		int actualMaxY = MathExt::floor(currentPos.y);
+		int actualMinY = MathExt::floor(currentPos.y);
+		int actualMaxY = MathExt::ceil(currentPos.y);
 		for(int j=0; j<b.size(); j++)
 		{
 			if(b.getPoint(j).y < actualMinY)
 			{
-				actualMinY = MathExt::ceil(b.getPoint(j).y);
+				actualMinY = MathExt::floor(b.getPoint(j).y);
 			}
 			if(b.getPoint(j).y > actualMaxY)
 			{
-				actualMaxY = MathExt::floor(b.getPoint(j).y);
+				actualMaxY = MathExt::ceil(b.getPoint(j).y);
 			}
 		}
 
 		actualMinY = MathExt::clamp((int)actualMinY, minY, maxY);
 		actualMaxY = MathExt::clamp((int)actualMaxY, minY, maxY);
 		
+		//check if horizontal line
+		if(actualMaxY == actualMinY)
+		{
+			//horizontal line
+			//because it is only 2 points, we can use get simple derivative and it will be accurate.
+			Vec2f dir = b.getSimpleDerivativeAt(0);
+			
+			scanLines[actualMinY].push_back({b.getPoint(0).x, dir, 0, Vec2f(), true});
+			scanLines[actualMinY].push_back({b.getPoint(2).x, dir, 1, Vec2f(), true});
+			return;
+		}
+
 		for(int y=actualMinY; y<=actualMaxY; y++)
 		{
-			std::vector<double> times = b.findTimeForY(y);
+			std::vector<double> times = b.findTimeForY(y, true);
+			double previousTime = INFINITY;
 			for(int t=0; t<times.size(); t++)
 			{
 				Vec2f v = b.getFuctionAt(times[t]);
 				Vec2f dir = b.getDerivativeAt(times[t]);
 				
-				scanLines[y].push_back({v.x, dir.y>0});
+				Vec2f otherEndPoint = b.getPoint(0);
+				if(times[t] == 0)
+					otherEndPoint = b.getPoint(2);
+				
+				scanLines[y].push_back({v.x, dir, times[t], otherEndPoint, false});
 			}
 		}
 	}
@@ -723,8 +762,8 @@ namespace glib
 		BezierCurve b = BezierCurve();
 		b.addPoint(currentPos);
 
-		int actualMinY = MathExt::ceil(currentPos.y);
-		int actualMaxY = MathExt::floor(currentPos.y);
+		int actualMinY = MathExt::floor(currentPos.y);
+		int actualMaxY = MathExt::ceil(currentPos.y);
 
 		for(int j=0; j<3; j++)
 		{
@@ -733,11 +772,11 @@ namespace glib
 				b.addPoint(command.points[j]);
 				if(command.points[j].y < actualMinY)
 				{
-					actualMinY = MathExt::ceil(command.points[j].y);
+					actualMinY = MathExt::floor(command.points[j].y);
 				}
 				if(command.points[j].y > actualMaxY)
 				{
-					actualMaxY = MathExt::floor(command.points[j].y);
+					actualMaxY = MathExt::ceil(command.points[j].y);
 				}
 			}
 			else
@@ -745,11 +784,11 @@ namespace glib
 				b.addPoint(currentPos+command.points[j]);
 				if(currentPos.y+command.points[j].y < actualMinY)
 				{
-					actualMinY = MathExt::ceil(currentPos.y+command.points[j].y);
+					actualMinY = MathExt::floor(currentPos.y+command.points[j].y);
 				}
 				if(currentPos.y+command.points[j].y > actualMaxY)
 				{
-					actualMaxY = MathExt::floor(currentPos.y+command.points[j].y);
+					actualMaxY = MathExt::ceil(currentPos.y+command.points[j].y);
 				}
 			}
 		}
@@ -757,16 +796,32 @@ namespace glib
 		actualMinY = MathExt::clamp((int)actualMinY, minY, maxY);
 		actualMaxY = MathExt::clamp((int)actualMaxY, minY, maxY);
 
+		//check if horizontal line
+		if(actualMaxY == actualMinY)
+		{
+			//horizontal line
+			//because it is only 2 points, we can use get simple derivative and it will be accurate.
+			Vec2f dir = b.getSimpleDerivativeAt(0);
+			
+			scanLines[actualMinY].push_back({b.getPoint(0).x, dir, 0, Vec2f(), true});
+			scanLines[actualMinY].push_back({b.getPoint(3).x, dir, 1, Vec2f(), true});
+			return;
+		}
+
 		for(int y=actualMinY; y<=actualMaxY; y++)
 		{
-			std::vector<double> times = b.findTimeForY(y);
-			
+			std::vector<double> times = b.findTimeForY(y, true);
+			double previousTime = INFINITY;
 			for(int t=0; t<times.size(); t++)
 			{
 				Vec2f v = b.getFuctionAt(times[t]);
 				Vec2f dir = b.getDerivativeAt(times[t]);
 				
-				scanLines[y].push_back({v.x, dir.y>0});
+				Vec2f otherEndPoint = b.getPoint(0);
+				if(times[t] == 0)
+					otherEndPoint = b.getPoint(3);
+				
+				scanLines[y].push_back({v.x, dir, times[t], otherEndPoint, false});
 			}
 		}
 	}
@@ -796,26 +851,43 @@ namespace glib
 		{
 			if(b.getPoint(j).y < actualMinY)
 			{
-				actualMinY = MathExt::ceil(b.getPoint(j).y);
+				actualMinY = MathExt::floor(b.getPoint(j).y);
 			}
 			if(b.getPoint(j).y > actualMaxY)
 			{
-				actualMaxY = MathExt::floor(b.getPoint(j).y);
+				actualMaxY = MathExt::ceil(b.getPoint(j).y);
 			}
 		}
 
 		actualMinY = MathExt::clamp((int)actualMinY, minY, maxY);
 		actualMaxY = MathExt::clamp((int)actualMaxY, minY, maxY);
+		
+		//check if horizontal line
+		if(actualMaxY == actualMinY)
+		{
+			//horizontal line
+			//because it is only 2 points, we can use get simple derivative and it will be accurate.
+			Vec2f dir = b.getSimpleDerivativeAt(0);
+			
+			scanLines[actualMinY].push_back({b.getPoint(0).x, dir, 0, Vec2f(), true});
+			scanLines[actualMinY].push_back({b.getPoint(3).x, dir, 1, Vec2f(), true});
+			return;
+		}
 
 		for(int y=actualMinY; y<=actualMaxY; y++)
 		{
-			std::vector<double> times = b.findTimeForY(y);
+			std::vector<double> times = b.findTimeForY(y, true);
+			double previousTime = INFINITY;
 			for(int t=0; t<times.size(); t++)
 			{
 				Vec2f v = b.getFuctionAt(times[t]);
 				Vec2f dir = b.getDerivativeAt(times[t]);
+
+				Vec2f otherEndPoint = b.getPoint(0);
+				if(times[t] == 0)
+					otherEndPoint = b.getPoint(3);
 				
-				scanLines[y].push_back({v.x, dir.y>0});
+				scanLines[y].push_back({v.x, dir, times[t], otherEndPoint, false});
 			}
 		}
 	}
@@ -1034,8 +1106,9 @@ namespace glib
 				//For all ellipses, if the x value is less than the center point, the y slope will be negative.
 				//if the x value is greater than the center point, the y slope will be positive.
 				
-				std::vector<double> times = separatingLine.findTimeForY(y);
+				std::vector<double> times = separatingLine.findTimeForY(y, true);
 
+				//TODO: FIX DIRECTION LATER
 				if(times.size()>0)
 				{
 					double solveX = separatingLine.getFuctionAt(times[0]).x;
@@ -1043,32 +1116,32 @@ namespace glib
 					{
 						if(solveX > minX)
 						{
-							scanLines[y].push_back({maxX, true});
+							scanLines[y].push_back({maxX, Vec2f(0,1), false});
 						}
 						else
 						{
-							scanLines[y].push_back({minX, false});
-							scanLines[y].push_back({maxX, true});
+							scanLines[y].push_back({minX, Vec2f(0,-1), false});
+							scanLines[y].push_back({maxX, Vec2f(0,1), false});
 						}
 					}
 					else
 					{
 						if(solveX < maxX)
 						{
-							scanLines[y].push_back({minX, false});
+							scanLines[y].push_back({minX, Vec2f(0,-1), false});
 						}
 						else
 						{
-							scanLines[y].push_back({minX, false});
-							scanLines[y].push_back({maxX, true});
+							scanLines[y].push_back({minX, Vec2f(0,-1), false});
+							scanLines[y].push_back({maxX, Vec2f(0,1), false});
 						}
 					}
 					
 				}
 				else
 				{
-					scanLines[y].push_back({minX, false});
-					scanLines[y].push_back({maxX, true});
+					scanLines[y].push_back({minX, Vec2f(0,-1), false});
+					scanLines[y].push_back({maxX, Vec2f(0,1), false});
 				}
 			}
 			
@@ -1081,21 +1154,40 @@ namespace glib
 		b.addPoint(currentPos);
 		b.addPoint(closePoint);
 
-		int actualMinY = MathExt::ceil(MathExt::min( currentPos.y, closePoint.y));
-		int actualMaxY = MathExt::floor(MathExt::max( currentPos.y, closePoint.y));
+		int actualMinY = MathExt::floor(MathExt::min( currentPos.y, closePoint.y));
+		int actualMaxY = MathExt::ceil(MathExt::max( currentPos.y, closePoint.y));
 
 		actualMinY = MathExt::clamp((int)actualMinY, minY, maxY);
 		actualMaxY = MathExt::clamp((int)actualMaxY, minY, maxY);
 
-		for(int y=actualMinY; y<actualMaxY; y++)
+		if(actualMaxY == actualMinY)
 		{
-			std::vector<double> times = b.findTimeForY(y);
+			//horizontal line
+			//because it is only 2 points, we can use get simple derivative and it will be accurate.
+			Vec2f dir = b.getSimpleDerivativeAt(0);
+			
+			if(b.getPoint(0) != b.getPoint(1))
+			{
+				scanLines[actualMinY].push_back({b.getPoint(0).x, dir, 0, Vec2f(), true});
+				scanLines[actualMinY].push_back({b.getPoint(1).x, dir, 1, Vec2f(), true});
+			}
+			return;
+		}
+
+		for(int y=actualMinY; y<=actualMaxY; y++)
+		{
+			std::vector<double> times = b.findTimeForY(y, true);
+			double previousTime = INFINITY;
 			for(int t=0; t<times.size(); t++)
 			{
 				Vec2f v = b.getFuctionAt(times[t]);
-				Vec2f dir = b.getSimpleDerivativeAt(times[t]);
+				Vec2f dir = b.getDerivativeAt(times[t]);
 				
-				scanLines[y].push_back({v.x, dir.y>0});
+				Vec2f otherEndPoint = b.getPoint(0);
+				if(times[t] == 0)
+					otherEndPoint = b.getPoint(1);
+				
+				scanLines[y].push_back({v.x, dir, times[t], otherEndPoint, false});
 			}
 		}
 	}

@@ -11,7 +11,10 @@ namespace glib
 	struct criticalPoint
 	{
 		double xValue;
-		bool isYPositive;
+		Vec2f direction;
+		double timeVal;
+		Vec2f otherEndPoint;
+		bool horizontal;
 	};
 
 	class VectorShape : public Object
@@ -1442,6 +1445,7 @@ namespace glib
 		 */
 		int size();
 
+		static bool oldMethod;
 	protected:
 		void applyTransform();
 		

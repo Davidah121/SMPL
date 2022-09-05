@@ -287,6 +287,10 @@ namespace glib
 		int startImgX = imgX + MathExt::max(minX - x, 0);
 		int nImgW = imgW - (startImgX - imgX);
 		int nImgH = imgH - (startImgY - imgY);
+
+		nImgW = MathExt::clamp(nImgW, 0, img->getWidth());
+		nImgH = MathExt::clamp(nImgH, 0, img->getHeight());
+		
 		
 		
 		int maxX = MathExt::clamp(minX+(nImgW-1), minXBound, maxXBound);

@@ -179,7 +179,7 @@ namespace glib
 		 * 		returns a list of all solutions. Can return an empty list if there is no
 		 * 		solution.
 		 */
-		std::vector<double> findTimeForY(double y);
+		std::vector<double> findTimeForY(double y, bool removeDuplicates = false);
 
 		/**
 		 * @brief Solves the function all times where the solution has the specified x value.
@@ -191,7 +191,7 @@ namespace glib
 		 * 		returns a list of all solutions. Can return an empty list if there is no
 		 * 		solution.
 		 */
-		std::vector<double> findTimeForX(double x);
+		std::vector<double> findTimeForX(double x, bool removeDuplicates = false);
 
 		/**
 		 * @brief Solves the function all times where the solution has the specified x,y value.
@@ -203,7 +203,7 @@ namespace glib
 		 * 		returns a list of all solutions. Can return an empty list if there is no
 		 * 		solution.
 		 */
-		std::vector<double> findTimeForPoint(double x, double y);
+		std::vector<double> findTimeForPoint(double x, double y, bool removeDuplicates = false);
 
 		/**
 		 * @brief Approximates a Circle using a series of bezier curves.

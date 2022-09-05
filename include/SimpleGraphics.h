@@ -394,6 +394,7 @@ namespace glib
 		 */
 		static void drawText(std::wstring str, int x, int y, Image* surf);
 		static void drawText(std::string str, int x, int y, Image* surf);
+		static void drawText(std::vector<int> str, int x, int y, Image* surf);
 
 		/**
 		 * @brief Draws the specified text using the active font. It is affected by the active drawing color.
@@ -412,6 +413,7 @@ namespace glib
 		 */
 		static void drawTextHighlighted(std::wstring str, int x, int y, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
 		static void drawTextHighlighted(std::string str, int x, int y, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
+		static void drawTextHighlighted(std::vector<int> str, int x, int y, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
 
 
 		/**
@@ -437,6 +439,7 @@ namespace glib
 		 */
 		static void drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, Image* surf);
 		static void drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, Image* surf);
+		static void drawTextLimits(std::vector<int> str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, Image* surf);
 
 		/**
 		 * @brief Draws the specified text using the active font. It is affected by the active drawing color.
@@ -467,6 +470,8 @@ namespace glib
 		 */
 		static void drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
 		static void drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
+		static void drawTextLimitsHighlighted(std::vector<int> str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
+
 
 		/**
 		 * @brief Draws a polygon using the active draw color.

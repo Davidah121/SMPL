@@ -97,7 +97,7 @@ namespace glib
          * @return true 
          * @return false 
          */
-        bool load(File file);
+        bool load(File file, bool parseEscape = true);
 
         /**
          * @brief Saves the XmlNode data into a file.
@@ -129,6 +129,8 @@ namespace glib
 
         void saveNode(SimpleFile* f, XmlNode* node);
         void deleteNode(XmlNode* node);
+
+        bool shouldParseEscape = true;
 
         std::vector<unsigned char> removeCommentsAndInvalidChars(std::vector<unsigned char> fileBytes);
     };

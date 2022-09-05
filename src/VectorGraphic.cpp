@@ -123,7 +123,6 @@ namespace glib
 			for (int i = 0; i < shapes.size(); i++)
 			{
 				temp = shapes[i]->getTransform();
-
 				finalTransform = globalTransform * temp;
 
 				shapes[i]->setTransform(finalTransform);
@@ -235,25 +234,25 @@ namespace glib
 					//for now, if width and height have not been defined, set them here
 					std::vector<std::string> split = StringTools::splitStringMultipleDeliminators(attrib.value, " ,");
 					bool percent = false;
-					int tempX, tempY, tempWidth, tempHeight;
+					int minX, minY, tempWidth, tempHeight;
 
 					if(split.size() == 4)
 					{
-						tempX = (int)MathExt::ceil(toNumber(StringTools::toCString(split[0]), &percent));
-						tempY = (int)MathExt::ceil(toNumber(StringTools::toCString(split[1]), &percent));
+						minX = (int)MathExt::ceil(toNumber(StringTools::toCString(split[0]), &percent));
+						minY = (int)MathExt::ceil(toNumber(StringTools::toCString(split[1]), &percent));
 						tempWidth = (int)MathExt::ceil(toNumber(StringTools::toCString(split[2]), &percent));
 						tempHeight = (int)MathExt::ceil(toNumber(StringTools::toCString(split[3]), &percent));
 					}
-
-					if(width == 0)
-						width = tempWidth;
-					if(height == 0)
-						height = tempHeight;
 					
-					double xScale = (double)width / tempWidth;
-					double yScale = (double)height / tempHeight;
+					if(this->width == 0)
+						width = MathExt::abs(tempWidth);
+					if(this->height == 0)
+						height = MathExt::abs(tempHeight);
+					
+					double xScale = (double)this->width / tempWidth;
+					double yScale = (double)this->height / tempHeight;
 
-					viewBox = MathExt::scale2D(xScale, yScale) * MathExt::translation2D(-tempX, -tempY);
+					viewBox = MathExt::scale2D(xScale, yScale) * MathExt::translation2D(-minX, -minY);
 				}
 			}
 
@@ -379,7 +378,7 @@ namespace glib
 		
 		for(XmlAttribute& attrib : node->attributes)
 		{
-			if(StringTools::equalsIgnoreCase<char>(attrib.name, "fil"))
+			if(StringTools::equalsIgnoreCase<char>(attrib.name, "fill"))
 			{
 				Color c = toColor(StringTools::toCString(attrib.value));
 				shape->setFillColor( c );
@@ -443,7 +442,7 @@ namespace glib
 				{
 					//shape->setLineCap(NULL);
 				}
-				else if(attrib.value=="beve")
+				else if(attrib.value=="bevel")
 				{
 					shape->setLineJoin(VectorShape::LINE_JOIN_BEVEL);
 				}
@@ -466,14 +465,16 @@ namespace glib
 			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "transform"))
 			{
 				Mat3f thisTransform = shape->getTransform();
-				std::vector<std::string> splitString = StringTools::splitString(attrib.value, ' ');
-				for(std::string transformName : splitString)
-				{
-					int indexOfArgs = transformName.find('(', 0);
-					std::string subName = transformName.substr(0, indexOfArgs);
-					std::string subArgs = transformName.substr(indexOfArgs+1, transformName.length()-indexOfArgs-2);
 
-					std::vector<std::string> args = StringTools::splitString(subArgs, ',');
+				std::vector<std::string> splitString = StringTools::splitStringMultipleDeliminators(attrib.value, "()");
+				
+				for(int index=0; index<splitString.size()-1; index+=2)
+				{
+					std::string subName = splitString[index];
+					std::string subArgs = splitString[index+1];
+					subName = StringTools::removeWhitespace(subName, true, true);
+
+					std::vector<std::string> args = StringTools::splitStringMultipleDeliminators(subArgs, " ,");
 
 					if(subName == "translate")
 					{
@@ -521,7 +522,7 @@ namespace glib
 					{
 						if(args.size() == 1)
 						{
-							thisTransform = MathExt::scale2D( std::stod(args[0]), 0) * thisTransform;
+							thisTransform = MathExt::skew2D( std::stod(args[0]), 0) * thisTransform;
 						}
 					}
 					else if(subName == "skewY")
@@ -953,11 +954,21 @@ namespace glib
 						if(parsedArgs>=argNum && c!=' ')
 						{
 							parsedArgs = 0;
-							if(rel)
-								instructions.push_back( 'l' );
+							if(instructions.back() == 'M' || instructions.back() == 'm')
+							{
+								if(rel)
+									instructions.push_back( 'l' );
+								else
+									instructions.push_back( 'L' );
+								argNum = 2;
+							}
 							else
-								instructions.push_back( 'L' );
-							argNum = 2;
+								instructions.push_back( instructions.back() );
+							// if(rel)
+							// 	instructions.push_back( 'l' );
+							// else
+							// 	instructions.push_back( 'L' );
+							// argNum = 2;
 						}
 
 						if( (c==' ' || c==',' || c=='-') && numbers.back()!= ' ')
@@ -979,7 +990,7 @@ namespace glib
 						numbers += c;
 					}
 				}
-				
+
 				std::vector<std::string> splitNumbers = StringTools::splitStringMultipleDeliminators(numbers, " ,");
 				
 				int numberIndex = 0;
@@ -1077,6 +1088,7 @@ namespace glib
 							break;
 					}
 				}
+
 			}
 		}
 	}

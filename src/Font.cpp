@@ -33,13 +33,20 @@ namespace glib
 		sorted = f.sorted;
 	}
 
-	FontCharInfo Font::getFontCharInfo(int c)
+	FontCharInfo Font::getFontCharInfo(int index)
 	{
-		int index = getCharIndex(c);
-
 		if (index >= 0 && index < charInfoList.size())
 		{
-			return charInfoList[index];
+			double scaleVal = (double)fontSize / originalFontSize;
+			FontCharInfo nFCI = charInfoList[index];
+			nFCI.x = MathExt::round(nFCI.x * scaleVal);
+			nFCI.y = MathExt::round(nFCI.y * scaleVal);
+			nFCI.width = MathExt::round(nFCI.width * scaleVal);
+			nFCI.height = MathExt::round(nFCI.height * scaleVal);
+			nFCI.horizAdv = MathExt::round(nFCI.horizAdv * scaleVal);
+			nFCI.xOffset = MathExt::round(nFCI.xOffset * scaleVal);
+			nFCI.yOffset = MathExt::round(nFCI.yOffset * scaleVal);
+			return nFCI;
 		}
 		
 		#ifdef USE_EXCEPTIONS
@@ -133,33 +140,10 @@ namespace glib
 
 	int Font::getVerticalAdvance()
 	{
-		return verticalAdv;
+		double scaleVal = (double)fontSize / originalFontSize;
+		return verticalAdv*scaleVal;
 	}
 
-	// int Font::getWidthOfString(std::string text)
-	// {
-	// 	int totalWidth = 0;
-	// 	for(int i=0; i<text.size(); i++)
-	// 	{
-	// 		FontCharInfo fci = getFontCharInfo(text[i]);
-	// 		totalWidth += fci.horizAdv;
-	// 	}
-
-	// 	return totalWidth;
-	// }
-
-	// int Font::getWidthOfString(std::wstring text)
-	// {
-	// 	int totalWidth = 0;
-	// 	for(int i=0; i<text.size(); i++)
-	// 	{
-	// 		FontCharInfo fci = getFontCharInfo(text[i]);
-	// 		totalWidth += fci.horizAdv;
-	// 	}
-
-	// 	return totalWidth;
-	// }
-	
 	Box2D Font::getBoundingBox(std::string text, int maxWidth, int maxHeight)
 	{
 		int totalWidth = 0;
@@ -170,9 +154,12 @@ namespace glib
 		
 		int currWidth = 0;
 		int currHeight = 0;
+
+		
 		for(int i=0; i<text.size(); i++)
 		{
-			FontCharInfo fci = getFontCharInfo(text[i]);
+			int charIndexInFont = getCharIndex(text[i]);
+			FontCharInfo fci = getFontCharInfo(charIndexInFont);
 			
 			if(text[i] == '\n')
 			{
@@ -243,9 +230,11 @@ namespace glib
 		
 		int currWidth = 0;
 		int currHeight = 0;
+
 		for(int i=0; i<text.size(); i++)
 		{
-			FontCharInfo fci = getFontCharInfo(text[i]);
+			int charIndexInFont = getCharIndex(text[i]);
+			FontCharInfo fci = getFontCharInfo(charIndexInFont);
 			
 			if(text[i] == '\n')
 			{

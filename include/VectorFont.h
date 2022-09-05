@@ -2,6 +2,7 @@
 
 #include "Font.h"
 #include "VectorSprite.h"
+#include "CachedDataList.h"
 
 namespace glib
 {
@@ -52,11 +53,23 @@ namespace glib
          */
         VectorSprite* getVectorSprite();
 
+        /**
+         * @brief Gets the image of the font character at the specified index.
+         *      The image pointer should not be deleted after use as the class will delete it when no longer needed.
+         *      A new cached image may be redrawn when this method is called.
+         * 
+         * @param index 
+         * @return Image* 
+         */
+        Image* getImage(int index);
     private:
         //FontCharInfo should have a direct 1-to-1 mapping to fontSprite to avoid
         //saving the sprite index information and stuff.
         VectorSprite fontSprite = VectorSprite();
+        CachedDataList<Image> cachedGlyphs = CachedDataList<Image>(256);
         int baseHorizontalAdvance = 0;
+        int baseWidth = 0;
+        int baseHeight = 0;
     };
 
 } //NAMESPACE glib END

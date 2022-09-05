@@ -139,7 +139,8 @@ namespace glib
 					}
 					else
 					{
-						FontCharInfo fci = f->getFontCharInfo(testText[i]);
+						int charIndexInFont = f->getCharIndex(testText[i]);
+						FontCharInfo fci = f->getFontCharInfo(charIndexInFont);
 						xCursorPos += fci.horizAdv;
 					}
 
@@ -470,7 +471,8 @@ namespace glib
 							}
 							else
 							{
-								FontCharInfo fci = f->getFontCharInfo(temp[i]);
+								int charIndexInFont = f->getCharIndex(temp[i]);
+								FontCharInfo fci = f->getFontCharInfo(charIndexInFont);
 								int xS = xStartLoc - (int)MathExt::floor((double)preXAdv/2);
 								int xE = xStartLoc + (int)MathExt::ceil((double)fci.horizAdv/2);
 								if(mouseY >= yStartLoc && mouseY < yStartLoc+f->getVerticalAdvance())
@@ -562,7 +564,8 @@ namespace glib
 					}
 					else
 					{
-						FontCharInfo fci = f->getFontCharInfo(temp[i]);
+						int charIndexInFont = f->getCharIndex(temp[i]);
+						FontCharInfo fci = f->getFontCharInfo(charIndexInFont);
 						int xS = xStartLoc - (int)MathExt::floor((double)preXAdv/2);
 						int xE = xStartLoc + (int)MathExt::ceil((double)fci.horizAdv/2);
 						if(mouseY >= yStartLoc && mouseY < yStartLoc+f->getVerticalAdvance())
@@ -623,7 +626,8 @@ namespace glib
 			}
 			else
 			{
-				FontCharInfo fci = f->getFontCharInfo(tempText[i]);
+				int charIndexInFont = f->getCharIndex(tempText[i]);
+				FontCharInfo fci = f->getFontCharInfo(charIndexInFont);
 				xCursorPos += fci.horizAdv;
 			}
 
