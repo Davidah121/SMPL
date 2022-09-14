@@ -112,6 +112,7 @@ build $objDir/Vec2f.obj: buildToObject src/Vec2f.cpp
 build $objDir/Vec3f.obj: buildToObject src/Vec3f.cpp
 build $objDir/Vec4f.obj: buildToObject src/Vec4f.cpp
 build $objDir/VectorFont.obj: buildToObject src/VectorFont.cpp
+build $objDir/VectorFontOTF.obj: buildToObject src/VectorFontOTF.cpp
 build $objDir/VectorGraphic.obj: buildToObject src/VectorGraphic.cpp
 build $objDir/VectorGraphic_VectorCircle.obj: buildToObject src/VectorGraphic_VectorCircle.cpp
 build $objDir/VectorGraphic_VectorEllipse.obj: buildToObject src/VectorGraphic_VectorEllipse.cpp

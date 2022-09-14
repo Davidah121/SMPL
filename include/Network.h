@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef LINUX
+#ifdef __unix__
 	#include <unistd.h>
 	#include <sys/types.h>
 	#include <sys/socket.h>
@@ -357,7 +357,7 @@ namespace glib
 		std::function<void(int)> onMessageArrivedFunc;
 		std::function<void(int)> onDisconnectFunc;
 
-		#ifndef LINUX
+		#ifndef __unix__
 			WSADATA wsaData;
 		#endif
 		

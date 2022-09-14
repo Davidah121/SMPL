@@ -2,7 +2,7 @@
 #include <string>
 #include "Input.h"
 
-#ifdef LINUX
+#ifdef __unix__
 	#include <unistd.h>
 	#include <termios.h>
 	#include <errno.h>
@@ -70,7 +70,7 @@ namespace glib
 
 	void StringTools::init()
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			setlocale(LC_CTYPE, "");
 		#else
 			int outRet = _setmode(_fileno(stdout), _O_U16TEXT);
@@ -341,7 +341,7 @@ namespace glib
 
 	short StringTools::byteSwap(short v)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			return StringTools::leftRotate(v, 8);
 		#else
 			return _byteswap_ushort(v);
@@ -350,7 +350,7 @@ namespace glib
 
 	int StringTools::byteSwap(int v)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			return(
 				((v & 0x000000FF) << 24) |
 				((v & 0x0000FF00) <<  8) |
@@ -364,7 +364,7 @@ namespace glib
 
 	size_t StringTools::byteSwap(size_t v)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			return(
 				((v & 0x00000000000000FF) << 56) |
 				((v & 0x000000000000FF00) << 48) |

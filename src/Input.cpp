@@ -50,7 +50,7 @@ namespace glib
 		mouseClicked = false;
 		int px, py;
 
-		#ifdef LINUX
+		#ifdef __unix__
 		#else
 			POINT tp;
 			GetCursorPos(&tp);
@@ -73,7 +73,7 @@ namespace glib
 		for (int i = 0; i < 256; i++)
 		{
 			bool keyValue = 0;
-			#ifdef LINUX
+			#ifdef __unix__
 
 			#else
 				keyValue = (GetAsyncKeyState(i) >> 15 & 0x01) == 1;
@@ -104,7 +104,7 @@ namespace glib
 		preMouseState[1] = mouseState[1];
 		preMouseState[2] = mouseState[2];
 
-		#ifdef LINUX
+		#ifdef __unix__
 		#else
 			mouseState[0] = (GetAsyncKeyState(VK_LBUTTON) >> 15 & 0x01) == 1;
 			mouseState[1] = (GetAsyncKeyState(VK_MBUTTON) >> 15 & 0x01) == 1;

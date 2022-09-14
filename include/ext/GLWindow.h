@@ -4,7 +4,7 @@
 
 	#include "SimpleWindow.h"
 
-	#ifdef LINUX
+	#ifdef __unix__
 		#include <GL/glx.h>
 		#include <GL/gl.h>
 		#include <GL/glu.h>

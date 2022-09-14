@@ -30,7 +30,8 @@ namespace glib
         static const Class globalClass;
 
         /**
-         * @brief Loads a vector font from an .svg file.
+         * @brief Loads a vector font from a valid file
+         *      Valid formats: .svg | .ttf | .otf
          * 
          * @param file 
          * @return true 
@@ -63,6 +64,10 @@ namespace glib
          */
         Image* getImage(int index);
     private:
+
+        bool loadSVGFont(File file);
+        bool loadOTFFont(File file);
+
         //FontCharInfo should have a direct 1-to-1 mapping to fontSprite to avoid
         //saving the sprite index information and stuff.
         VectorSprite fontSprite = VectorSprite();

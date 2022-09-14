@@ -4,7 +4,7 @@
 #include <thread>
 #include "SimpleFile.h"
 
-#ifdef LINUX
+#ifdef __unix__
 	#include <X11/Xlib.h>
 #else
 	#ifndef WIN32_LEAN_AND_MEAN
@@ -79,8 +79,8 @@ namespace glib
 
 	void System::emulateKeyPress(int key)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifndef __unix__
 
 			INPUT i;
 			ZeroMemory(&i, sizeof(INPUT));
@@ -96,8 +96,8 @@ namespace glib
 
 	void System::emulateKeyRelease(int key)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifndef __unix__
 
 			INPUT i;
 			ZeroMemory(&i, sizeof(INPUT));
@@ -113,8 +113,8 @@ namespace glib
 
 	void System::emulateMousePress(int key)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifndef __unix__
 
 			INPUT i;
 			ZeroMemory(&i, sizeof(INPUT));
@@ -151,8 +151,8 @@ namespace glib
 
 	void System::emulateMouseRelease(int key)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifndef __unix__
 
 			INPUT i;
 			ZeroMemory(&i, sizeof(INPUT));
@@ -189,8 +189,8 @@ namespace glib
 
 	void System::emulateMouseWheel(int wheel, int amount)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifndef __unix__
 
 			INPUT i;
 			ZeroMemory(&i, sizeof(INPUT));
@@ -226,16 +226,16 @@ namespace glib
 
 	void System::setMousePosition(int x, int y)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifndef __unix__
 		SetCursorPos(x, y);
 		#endif
 	}
 
 	int System::getMouseX()
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifndef __unix__
 
 		POINT p = {};
 		GetCursorPos(&p);
@@ -248,8 +248,8 @@ namespace glib
 
 	int System::getMouseY()
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifndef __unix__
 
 			POINT p = {};
 			GetCursorPos(&p);
@@ -262,8 +262,8 @@ namespace glib
 
 	bool System::getKeyDown(int key)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifndef __unix__
 
 			bool v = (GetKeyState(key)>>15 & 0x01) == 1;
 			return v;
@@ -275,8 +275,8 @@ namespace glib
 
 	bool System::getKeyToggled(int key)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifndef __unix__
 			bool v = (GetKeyState(key) & 0x01) == 1;
 			return v;
 		#else
@@ -286,8 +286,8 @@ namespace glib
 
 	bool System::getMouseDown(int value)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifndef __unix__
 
 			switch (value)
 			{
@@ -312,7 +312,7 @@ namespace glib
 
 	int System::getDesktopWidth()
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 		int w = 0;
 		Display* d = XOpenDisplay(NULL);
 		if(d == nullptr)
@@ -327,7 +327,7 @@ namespace glib
 
 	int System::getDesktopHeight()
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 		int h = 0;
 		Display* d = XOpenDisplay(NULL);
 		if(d == nullptr)
@@ -342,7 +342,7 @@ namespace glib
 
 	int System::getAmountOfMonitors()
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 		int m = 0;
 		Display* d = XOpenDisplay(NULL);
 		if(d == nullptr)
@@ -356,8 +356,8 @@ namespace glib
 
 	void System::saveScreenShot(size_t hwnd, File file)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifndef __unix__
 
 			HWND wndHandle = (HWND)hwnd;
 			HDC hdc = GetDC(wndHandle);
@@ -414,8 +414,8 @@ namespace glib
 
 	Image* System::getScreenShot(size_t hwnd)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifndef __unix__
 			HWND wndHandle = (HWND)hwnd;
 			HDC hdc = GetDC(wndHandle);
 
@@ -489,14 +489,14 @@ namespace glib
 
 	void System::saveScreenShotDesktop(File f)
 	{
-		#ifndef LINUX
+		#ifndef __unix__
 		System::saveScreenShot((size_t)GetDesktopWindow(), f);
 		#endif
 	}
 
 	Image* System::getScreenShotDesktop()
 	{
-		#ifndef LINUX
+		#ifndef __unix__
 		return System::getScreenShot((size_t)GetDesktopWindow());
 		#endif
 		return nullptr;
@@ -504,8 +504,8 @@ namespace glib
 
 	void System::paintImageToWindow(size_t hwnd, Image* img, int startX, int startY)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifndef __unix__
 
 			HDC hdc = GetDC((HWND)hwnd);
 			HDC mem = CreateCompatibleDC(hdc);
@@ -570,7 +570,7 @@ namespace glib
 
 	void System::paintImageToDesktop(Image* img, int startX, int startY)
 	{
-		#ifndef LINUX
+		#ifndef __unix__
 			System::paintImageToWindow((size_t)GetDesktopWindow(), img, startX, startY);
 		#endif
 	}
@@ -578,7 +578,7 @@ namespace glib
 	unsigned long System::getProcessID(std::string processName)
 	{
 		//TODO - LINUX VERSION
-		#ifndef LINUX
+		#ifndef __unix__
 
 			DWORD pid = 0;
 			HANDLE hndl = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS | TH32CS_SNAPMODULE, 0);
@@ -610,7 +610,7 @@ namespace glib
 	size_t System::getProcessWindow(std::string windowName)
 	{
 		//TODO - LINUX VERSION
-		#ifndef LINUX
+		#ifndef __unix__
 
 			HWND hwnd = FindWindowA(NULL, windowName.c_str());
 			if(hwnd == 0)
@@ -625,8 +625,8 @@ namespace glib
 
 	std::string System::fileDialogBox(unsigned char type, std::vector<FileFilter> filters, std::string startDir)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifndef __unix__
 
 			//older win32 method. Works just fine so I'm keeping it.
 			
@@ -763,7 +763,7 @@ namespace glib
 	int System::messageBoxPopup(unsigned int type, std::string title, std::string message)
 	{
 		//TODO - LINUX VERSION
-		#ifndef LINUX
+		#ifndef __unix__
 			return MessageBoxA(NULL, message.c_str(), title.c_str(), type);
 		#else
 			return 0;
@@ -773,7 +773,7 @@ namespace glib
 	void System::copyToClipboard(std::string str)
 	{
 		//TODO - LINUX VERSION
-		#ifndef LINUX
+		#ifndef __unix__
 
 			if(!OpenClipboard(NULL))
 				return;
@@ -799,7 +799,7 @@ namespace glib
 	void System::copyToClipboard(std::wstring str)
 	{
 		//TODO - LINUX VERSION
-		#ifndef LINUX
+		#ifndef __unix__
 
 			if(!OpenClipboard(NULL))
 				return;
@@ -825,7 +825,7 @@ namespace glib
 	std::string System::pasteFromClipboard()
 	{
 		//TODO - LINUX VERSION
-		#ifndef LINUX
+		#ifndef __unix__
 
 			if(!OpenClipboard(NULL))
 				return "";
@@ -856,7 +856,7 @@ namespace glib
 	void System::clearClipboard()
 	{
 		//TODO - LINUX VERSION
-		#ifndef LINUX
+		#ifndef __unix__
 
 			if(!OpenClipboard(NULL))
 				return;

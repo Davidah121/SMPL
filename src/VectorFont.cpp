@@ -16,7 +16,80 @@ namespace glib
         
     }
 
+    VectorGraphic* VectorFont::getGraphic(int index)
+    {
+        return fontSprite.getGraphic(index);
+    }
+
+    VectorSprite* VectorFont::getVectorSprite()
+    {
+        return &fontSprite;
+    }
+
+    Image* VectorFont::getImage(int index)
+    {
+        double scaleValue = (double)this->getFontSize() / this->getOriginalFontSize();
+        
+        Image* glyphImage = this->cachedGlyphs.getData(index);
+        if(glyphImage == nullptr)
+        {
+            //create new image and add to cachedGlyphs
+            VectorGraphic* vecGlyph = fontSprite.getGraphic(index);
+
+            if(vecGlyph != nullptr)
+            {
+                //can be added.
+                Image* newGlyphImg = new Image((int)(baseWidth*scaleValue), (int)(baseHeight*scaleValue));
+                vecGlyph->setTransform(MathExt::scale2D(scaleValue, scaleValue));
+                vecGlyph->draw(newGlyphImg);
+
+                cachedGlyphs.addData(index, newGlyphImg);
+                return newGlyphImg;
+            }
+        }
+        else
+        {
+            if(this->getFontSize() == glyphImage->getHeight())
+            {
+                return glyphImage;
+            }
+            else
+            {
+                //Should be resized
+                //create new image and add to cachedGlyphs
+                VectorGraphic* vecGlyph = fontSprite.getGraphic(index);
+
+                if(vecGlyph != nullptr)
+                {
+                    Image* newGlyphImg = new Image((int)(baseWidth*scaleValue), (int)(baseHeight*scaleValue));
+                    //can be added.
+                    vecGlyph->setTransform(MathExt::scale2D(scaleValue, scaleValue));
+                    vecGlyph->draw(newGlyphImg);
+
+                    cachedGlyphs.addData(index, newGlyphImg);
+                    return newGlyphImg;
+                }
+            }
+
+        }
+
+        return nullptr;
+    }
+
     bool VectorFont::load(File file)
+    {
+        if(file.getExtension() == ".svg")
+        {
+            return loadSVGFont(file);
+        }
+        else if(file.getExtension() == ".ttf" || file.getExtension() == ".otf")
+        {
+            return loadOTFFont(file);
+        }
+        return false;
+    }
+
+    bool VectorFont::loadSVGFont(File file)
     {
         SimpleXml f = SimpleXml();
         if(!f.load(file))
@@ -159,66 +232,6 @@ namespace glib
         }
 
         return true;
-    }
-
-    VectorGraphic* VectorFont::getGraphic(int index)
-    {
-        return fontSprite.getGraphic(index);
-    }
-
-    VectorSprite* VectorFont::getVectorSprite()
-    {
-        return &fontSprite;
-    }
-
-    Image* VectorFont::getImage(int index)
-    {
-        double scaleValue = (double)this->getFontSize() / this->getOriginalFontSize();
-        
-        Image* glyphImage = this->cachedGlyphs.getData(index);
-        if(glyphImage == nullptr)
-        {
-            //create new image and add to cachedGlyphs
-            VectorGraphic* vecGlyph = fontSprite.getGraphic(index);
-
-            if(vecGlyph != nullptr)
-            {
-                //can be added.
-                Image* newGlyphImg = new Image((int)(baseWidth*scaleValue), (int)(baseHeight*scaleValue));
-                vecGlyph->setTransform(MathExt::scale2D(scaleValue, scaleValue));
-                vecGlyph->draw(newGlyphImg);
-
-                cachedGlyphs.addData(index, newGlyphImg);
-                return newGlyphImg;
-            }
-        }
-        else
-        {
-            if(this->getFontSize() == glyphImage->getHeight())
-            {
-                return glyphImage;
-            }
-            else
-            {
-                //Should be resized
-                //create new image and add to cachedGlyphs
-                VectorGraphic* vecGlyph = fontSprite.getGraphic(index);
-
-                if(vecGlyph != nullptr)
-                {
-                    Image* newGlyphImg = new Image((int)(baseWidth*scaleValue), (int)(baseHeight*scaleValue));
-                    //can be added.
-                    vecGlyph->setTransform(MathExt::scale2D(scaleValue, scaleValue));
-                    vecGlyph->draw(newGlyphImg);
-
-                    cachedGlyphs.addData(index, newGlyphImg);
-                    return newGlyphImg;
-                }
-            }
-
-        }
-
-        return nullptr;
     }
 
 } //NAMESPACE glib END

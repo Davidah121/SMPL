@@ -422,6 +422,19 @@ void testPolygonStuff()
     img.savePNG("polything.png");
 }
 
+void testFileStuff()
+{
+    #ifdef _WIN32
+        StringTools::println("Is windows 32bit or 64bit");
+    #endif
+    #ifdef __linux__
+        StringTools::println("Is linux 32bit or 64bit");
+    #endif
+    #ifdef __APPLE__
+        StringTools::println("Is mac os x 32bit or 64bit");
+    #endif
+}
+
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main()
 {
@@ -431,7 +444,8 @@ int main()
     // testVectorFont();
     // testSpatialHashing();
     // testFontDrawing();
-    testPolygonStuff();
+    // testPolygonStuff();
+    testFileStuff();
 
     return 0;
 }

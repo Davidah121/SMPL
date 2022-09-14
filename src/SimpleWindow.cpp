@@ -47,7 +47,7 @@ namespace glib
 		}
 	}
 	
-	#ifdef LINUX
+	#ifdef __unix__
 		void SimpleWindow::x11EventProc()
 		{
 			XEvent event;
@@ -466,7 +466,7 @@ namespace glib
 				wndThread = nullptr;
 			}
 			
-			#ifdef LINUX
+			#ifdef __unix__
 				XFreeGC(displayServer, gc);
 				XDestroyWindow(displayServer, (Window)windowHandle);
 				XCloseDisplay(displayServer);
@@ -536,7 +536,7 @@ namespace glib
 
 		setAllFunctionsToNull();
 
-		#ifdef LINUX
+		#ifdef __unix__
 
 			displayServer = XOpenDisplay(0);
 
@@ -784,7 +784,7 @@ namespace glib
 
 	void SimpleWindow::initBitmap()
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			if(wndPixels != nullptr)
 			{
 				XDestroyImage(drawableImage); //destroys wndPixels
@@ -941,7 +941,7 @@ namespace glib
 
 	void SimpleWindow::setVisible(bool value)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			if (value == true)
 				XMapWindow(displayServer, (Window)windowHandle);
 			else
@@ -956,7 +956,7 @@ namespace glib
 
 	void SimpleWindow::setX(int x)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			XMoveWindow(displayServer, (Window)windowHandle, x, this->y);
 		#else
 			SetWindowPos((HWND)windowHandle, HWND_TOP, x, this->y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
@@ -966,7 +966,7 @@ namespace glib
 
 	void SimpleWindow::setY(int y)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			XMoveWindow(displayServer, (Window)windowHandle, this->x, y);
 		#else
 			SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
@@ -976,7 +976,7 @@ namespace glib
 
 	void SimpleWindow::setPosition(int x, int y)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			XMoveWindow(displayServer, (Window)windowHandle, x, y);
 		#else
 			SetWindowPos((HWND)windowHandle, HWND_TOP, x, y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
@@ -987,7 +987,7 @@ namespace glib
 
 	void SimpleWindow::setWidth(int width)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			XResizeWindow(displayServer, (Window)windowHandle, width, this->height);
 		#else
 			SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, this->y, width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
@@ -997,7 +997,7 @@ namespace glib
 
 	void SimpleWindow::setHeight(int height)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			XResizeWindow(displayServer, (Window)windowHandle, this->width, height);
 		#else
 			SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, this->y, this->width, height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
@@ -1007,7 +1007,7 @@ namespace glib
 
 	void SimpleWindow::setSize(int width, int height)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			XResizeWindow(displayServer, (Window)windowHandle, width, height);
 		#else
 			SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, this->y, width, height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
@@ -1021,7 +1021,7 @@ namespace glib
 		int mx = 0;
 		int borderWidth = 0;
 
-		#ifdef LINUX
+		#ifdef __unix__
 		
 		int winX, winY, rootX, rootY = 0;
 		unsigned int mask = 0;
@@ -1064,7 +1064,7 @@ namespace glib
 		int my = 0;
 		int borderHeight = 0;
 
-		#ifdef LINUX
+		#ifdef __unix__
 		
 			int winX, winY, rootX, rootY = 0;
 			unsigned int mask = 0;
@@ -1239,7 +1239,7 @@ namespace glib
 
 	bool SimpleWindow::getFocus()
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			Window currFocusedWindow;
 			int other;
 			XGetInputFocus(displayServer, &currFocusedWindow, &other);
@@ -1263,7 +1263,7 @@ namespace glib
 
 	void SimpleWindow::threadSetFocus()
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			XSetInputFocus(displayServer, (Window)windowHandle, RevertToNone, CurrentTime);
 		#else
 			SetFocus((HWND)windowHandle);
@@ -1326,7 +1326,7 @@ namespace glib
 
 	void SimpleWindow::drawImage(Image* g)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 		Color* imgPixels = (Color*)g->getPixels();
 		int* windowPixels = (int*)wndPixels;
 		int* endWindowPixels = windowPixels + width*height;
@@ -1465,7 +1465,7 @@ namespace glib
 
 	void SimpleWindow::threadUpdate()
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			x11EventProc();
 		#else
 			MSG m;
@@ -1546,7 +1546,7 @@ namespace glib
 
 	void SimpleWindow::threadRepaint()
 	{
-		//TODO - LINUX VERSION
+		//TODO - __unix__ VERSION
 		bool changed = false;
 
 		//draw and send redraw message
@@ -1569,7 +1569,7 @@ namespace glib
 
 			if(changed || imgChanged)
 			{
-				#ifdef LINUX
+				#ifdef __unix__
 					//Simpler than XSendEvent
 					XClearArea(displayServer, (Window)windowHandle, 0, 0, 1, 1, true);
 				#else

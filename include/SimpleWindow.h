@@ -2,7 +2,7 @@
 #include "Image.h"
 #include "GuiManager.h"
 
-#ifdef LINUX
+#ifdef __unix__
 	#include <X11/Xlib.h>
 	#include <X11/Xatom.h>
 	#include <X11/Xutil.h>
@@ -576,7 +576,7 @@ namespace glib
 
 		//CHANGE WITH OTHER OS
 
-		#ifdef LINUX
+		#ifdef __unix__
 		void x11EventProc();
 		#else
 		static LRESULT _stdcall wndProc(HWND hwnd, UINT uint, WPARAM wparam, LPARAM lparam);
@@ -647,7 +647,7 @@ namespace glib
 		//At the cost of potential portability and bad code.
 		size_t windowHandle;
 
-		#ifdef LINUX
+		#ifdef __unix__
 			Display* displayServer;
 			int screen = -1;
 			GC gc;
