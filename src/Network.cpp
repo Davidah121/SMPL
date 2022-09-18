@@ -59,7 +59,7 @@ namespace glib
 
 	bool Network::init()
 	{
-		#ifndef LINUX
+		#ifndef __unix__
 			//REQUIRED ON WINDOWS
 			int status = WSAStartup(MAKEWORD(2, 2), &wsaData);
 			Network::totalNetworks++;
@@ -83,7 +83,7 @@ namespace glib
 			sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
 		u_long mode = 1;
-		#ifdef LINUX
+		#ifdef __unix__
 			ioctl(sock, FIONBIO, &mode);
 		#else
 			ioctlsocket(sock, FIONBIO, &mode);
@@ -156,7 +156,7 @@ namespace glib
 
 		for(int i=0; i<connections.size(); i++)
 		{
-			#ifdef LINUX
+			#ifdef __unix__
 				close(connections[i]);
 			#else
 				closesocket(connections[i]);
@@ -165,7 +165,7 @@ namespace glib
 		connections.clear();
 		waitingOnRead.clear();
 		
-		#ifdef LINUX
+		#ifdef __unix__
 			close(sock);
 		#else
 			closesocket(sock);
@@ -372,7 +372,7 @@ namespace glib
 	void Network::dispose()
 	{
 		closeSocket();
-		#ifndef LINUX
+		#ifndef __unix__
 			Network::totalNetworks--;
 			if(Network::totalNetworks==0)
 			{
@@ -399,7 +399,7 @@ namespace glib
 		{
 			if(connections[i] != 0)
 			{
-				#ifdef LINUX
+				#ifdef __unix__
 					close(connections[i]);
 				#else
 					closesocket(connections[i]);
@@ -410,6 +410,7 @@ namespace glib
 		waitingOnRead.clear();
 		shouldConnect = false;
 		isConnected = false;
+		timeWaited = 0;
 		networkMutex.unlock();
 	}
 
@@ -423,7 +424,7 @@ namespace glib
 		networkMutex.lock();
 		sockaddr_in addr = {0};
 		int len = sizeof(sockaddr_in);
-		#ifdef LINUX
+		#ifdef __unix__
 			int err = getpeername(connections[id], (sockaddr*)&addr, (socklen_t*)&len);
 		#else
 			int err = getpeername(connections[id], (sockaddr*)&addr, &len);
@@ -446,7 +447,7 @@ namespace glib
 		{
 			sockaddr_in addr = {0};
 			int len = sizeof(sockaddr_in);
-			#ifdef LINUX
+			#ifdef __unix__
 				int err = getpeername(connections[i], (sockaddr*)&addr, (socklen_t*)&len);
 			#else
 				int err = getpeername(connections[i], (sockaddr*)&addr, &len);
@@ -479,7 +480,7 @@ namespace glib
 			}
 			else
 			{
-				#ifdef LINUX
+				#ifdef __unix__
 					close(s);
 				#else
 					closesocket(s);
@@ -542,6 +543,14 @@ namespace glib
 	{
 		networkMutex.lock();
 		bool v = running;
+		networkMutex.unlock();
+		return v;
+	}
+	
+	bool Network::getTimeoutOccurred()
+	{
+		networkMutex.lock();
+		bool v = timeoutOccurred;
 		networkMutex.unlock();
 		return v;
 	}
@@ -638,7 +647,7 @@ namespace glib
 									cpy(connections.size()-1);
 							}
 						}
-						else if(retVal!=0)
+						else if(retVal<0)
 						{
 							//error occured
 							disconnect();
@@ -688,20 +697,36 @@ namespace glib
 									
 									if(status <= 0)
 									{
-										int finalErr = WSAGetLastError();
-										if(finalErr == WSAEWOULDBLOCK)
-										{
-											//Do nothing. Acceptable error
-										}
-										else
-										{
-											//disconnect
-											std::function<void(int)> cpy = getDisconnectFunc();
-											if(cpy!=nullptr)
-												cpy(startIndex+i);
-											removeSocket(clients[startIndex+i]);
-											break;
-										}
+										#ifdef __unix__
+											if(errno == EWOULDBLOCK)
+											{
+												//Do nothing. Acceptable error
+											}
+											else
+											{
+												//disconnect
+												std::function<void(int)> cpy = getDisconnectFunc();
+												if(cpy!=nullptr)
+													cpy(startIndex+i);
+												removeSocket(clients[startIndex+i]);
+												break;
+											}
+										#else
+											int finalErr = WSAGetLastError();
+											if(finalErr == WSAEWOULDBLOCK)
+											{
+												//Do nothing. Acceptable error
+											}
+											else
+											{
+												//disconnect
+												std::function<void(int)> cpy = getDisconnectFunc();
+												if(cpy!=nullptr)
+													cpy(startIndex+i);
+												removeSocket(clients[startIndex+i]);
+												break;
+											}
+										#endif
 									}
 									else
 									{
@@ -736,7 +761,7 @@ namespace glib
 					if(getReconnect())
 					{
 						connect();
-						#ifdef LINUX
+						#ifdef __unix__
 							int lastError = errno;
 							wouldConnect = (lastError == EISCONN);
 						#else
@@ -753,7 +778,20 @@ namespace glib
 							break;
 						}
 						
+						networkMutex.lock();
+						connectionTimeout = false;
+						networkMutex.unlock();
+
+						timeWaited += 10;
+						if(timeWaited >= connectionTimeout)
+						{
+							disconnect();
+							networkMutex.lock();
+							connectionTimeout = true;
+							networkMutex.unlock();
+						}
 					}
+
 					//sleep for x time
 					std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				}
@@ -788,19 +826,33 @@ namespace glib
 								//error occured or graceful exit
 								//disconnected
 								std::function<void(int)> cpy = getDisconnectFunc();
-								int finalErr = WSAGetLastError();
+								#ifdef __unix__
+									if(errno == EWOULDBLOCK)
+									{
+										//Do nothing. Acceptable error
+									}
+									else
+									{
+										if(cpy!=nullptr)
+											cpy(0);
+										disconnect();
+										break;
+									}
+								#else
+									int finalErr = WSAGetLastError();
 
-								if(finalErr == WSAEWOULDBLOCK)
-								{
-									//Do nothing. Acceptable error
-								}
-								else
-								{
-									if(cpy!=nullptr)
-										cpy(0);
-									disconnect();
-									break;
-								}
+									if(finalErr == WSAEWOULDBLOCK)
+									{
+										//Do nothing. Acceptable error
+									}
+									else
+									{
+										if(cpy!=nullptr)
+											cpy(0);
+										disconnect();
+										break;
+									}
+								#endif
 							}
 							else
 							{
@@ -817,24 +869,39 @@ namespace glib
 							}
 						}
 					}
-					else if(retVal!=0)
+					else if(retVal<0)
 					{
 						//error occured
 						//disconnected
 						std::function<void(int)> cpy = getDisconnectFunc();
-						int finalErr = WSAGetLastError();
-
-						if(finalErr == WSAEWOULDBLOCK)
-						{
-							//Do nothing. Acceptable error
-						}
-						else
-						{
-							if(cpy!=nullptr)
-								cpy(0);
-							disconnect();
-							break;
+						#ifdef __unix__
+							if(errno == EWOULDBLOCK)
+							{
+								//Do nothing. Acceptable error
 							}
+							else
+							{
+								if(cpy!=nullptr)
+									cpy(0);
+								disconnect();
+								break;
+							}
+						#else
+							int finalErr = WSAGetLastError();
+
+							if(finalErr == WSAEWOULDBLOCK)
+							{
+								//Do nothing. Acceptable error
+							}
+							else
+							{
+								if(cpy!=nullptr)
+									cpy(0);
+								disconnect();
+								break;
+							}
+						#endif
+							
 					}
 					FD_CLR(connections[0], &socketSet);
 

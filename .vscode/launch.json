@@ -2,10 +2,10 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "(MVSC) Debug Launch x64",
+			"name": "(MVSC) Debug Launch",
 			"type": "cppvsdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/bin/Debug/x64/GLib.exe",
+			"program": "${workspaceFolder}/bin/Debug/GLib.exe",
 			"args": [],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",
@@ -13,10 +13,10 @@
 			"console": "externalTerminal"
 		},
 		{
-			"name": "(MVSC) Release Launch x64",
+			"name": "(MVSC) Release Launch",
 			"type": "cppvsdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/bin/Release/x64/GLib.exe",
+			"program": "${workspaceFolder}/bin/Release/GLib.exe",
 			"args": [],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",

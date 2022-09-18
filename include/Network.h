@@ -274,6 +274,14 @@ namespace glib
 		 * @return false 
 		 */
 		bool getRunning();
+
+		/**
+		 * @brief Gets whether a Timeout Occurred while sending messages or connecting.
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
+		bool getTimeoutOccurred();
 		
 		/**
 		 * @brief Sets the On Connection Function.
@@ -368,9 +376,11 @@ namespace glib
 		void removeSocket(SOCKET_TYPE s);
 
 		int sizeAddress = 0;
-		unsigned long connectionTimeout = 1000;
-		unsigned long messageTimeout = 100;
+		unsigned long connectionTimeout = 5000; //In milliseconds. 5 seconds total
+		unsigned long timeWaited = 0;
 		bool shouldStart = false;
+
+		bool timeoutOccurred = false;
 
 		int totalAllowedConnections = 64;
 

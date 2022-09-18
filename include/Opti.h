@@ -4,7 +4,6 @@
 #define OPTI 0
 #endif
 
-#include <immintrin.h>
 
 //Note that the following includes are due to intellisense not working properly.
 //These will be included by immintrin.h if the proper preprocessors are defined. In
@@ -12,6 +11,8 @@
 //moved above immintrin.h and the includes should be removed.
 
 #if (OPTI>=1)
+
+#include <immintrin.h>
 
 #ifndef __SSE3__
     #define __SSE3__ 1

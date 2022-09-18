@@ -165,7 +165,7 @@ namespace glib
                     boxShape.setLeftBound(startXGrid*xInc);
                     boxShape.setRightBound((startXGrid+1) * xInc);
 
-                    if( CollisionMaster::getCollision( &boxShape, &shape ) )
+                    if( CollisionMaster::getCollision( &boxShape, shape ) )
                     {
                         int gridIndex = x + y*xGrids;
 
@@ -193,7 +193,7 @@ namespace glib
         void removeObject(int id)
         {
             //1 pass
-            for(int i=0; i<yGrids; y++)
+            for(int i=0; i<yGrids; i++)
             {
                 for(int j=0; j<xGrids; j++)
                 {

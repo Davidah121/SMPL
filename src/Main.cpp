@@ -373,7 +373,7 @@ void testVectorFont()
 void testFontDrawing()
 {
     SimpleGraphics::init();
-    Font* bitmapFont = SimpleGraphics::getDefaultFont(0);
+    glib::Font* bitmapFont = SimpleGraphics::getDefaultFont(0);
 
     FontCharInfo bfci = bitmapFont->getFontCharInfo( bitmapFont->getCharIndex('o') );
     StringTools::println("FontInfo: %d, %d, %d, %d, %d", bfci.width, bfci.height, bfci.horizAdv, bfci.xOffset, bfci.yOffset);
