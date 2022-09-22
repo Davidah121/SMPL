@@ -575,21 +575,21 @@ namespace glib
 				renderElement(obj, redrawCount);
 			}
 			
-			//Drawing valid and invalid areas
-			graphicsInterface.setBoundSurface(surf);
-			graphicsInterface.setColor(Vec4f(1,0,0,1));
-			if(newClipBox.getLeftBound() < newClipBox.getRightBound()
-			&& newClipBox.getTopBound() < newClipBox.getBottomBound())
-			{
-				graphicsInterface.drawRect(newClipBox.getLeftBound(), newClipBox.getTopBound(), newClipBox.getRightBound(), newClipBox.getBottomBound(), true);
-			}
+			// //Drawing valid and invalid areas
+			// graphicsInterface.setBoundSurface(surf);
+			// graphicsInterface.setColor(Vec4f(1,0,0,1));
+			// if(newClipBox.getLeftBound() < newClipBox.getRightBound()
+			// && newClipBox.getTopBound() < newClipBox.getBottomBound())
+			// {
+			// 	graphicsInterface.drawRect(newClipBox.getLeftBound(), newClipBox.getTopBound(), newClipBox.getRightBound(), newClipBox.getBottomBound(), true);
+			// }
 			
-			graphicsInterface.setColor(Vec4f(0,0,1,1));
-			if(preClipBox.getLeftBound() < preClipBox.getRightBound()
-			&& preClipBox.getTopBound() < preClipBox.getBottomBound())
-			{
-				graphicsInterface.drawRect(preClipBox.getLeftBound(), preClipBox.getTopBound(), preClipBox.getRightBound(), preClipBox.getBottomBound(), true);
-			}
+			// graphicsInterface.setColor(Vec4f(0,0,1,1));
+			// if(preClipBox.getLeftBound() < preClipBox.getRightBound()
+			// && preClipBox.getTopBound() < preClipBox.getBottomBound())
+			// {
+			// 	graphicsInterface.drawRect(preClipBox.getLeftBound(), preClipBox.getTopBound(), preClipBox.getRightBound(), preClipBox.getBottomBound(), true);
+			// }
 		}
 		else
 		{

@@ -45,7 +45,7 @@ namespace glib
 
 	Image* Sprite::getImage(int index)
 	{
-		if (images.size() > index && index >= 0)
+		if (index < images.size() && index >= 0)
 		{
 			return images[index];
 		}
@@ -54,7 +54,7 @@ namespace glib
 
 	int Sprite::getDelayTime(int index)
 	{
-		if (images.size() > index && index >= 0)
+		if (index < images.size() && index >= 0)
 		{
 			return delayTimeForFrame[index];
 		}
@@ -63,7 +63,7 @@ namespace glib
 
 	void Sprite::setDelayTime(int index, int microSecondsDelay)
 	{
-		if (images.size() > index && index >= 0)
+		if (index < images.size() && index >= 0)
 		{
 			delayTimeForFrame[index] = microSecondsDelay;
 		}

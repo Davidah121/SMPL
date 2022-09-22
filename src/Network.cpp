@@ -171,6 +171,9 @@ namespace glib
 			closesocket(sock);
 		#endif
 		sock = 0;
+		isConnected = false;
+		timeWaited = 0;
+		shouldConnect = false;
 
 		networkMutex.unlock();
 	}
@@ -779,15 +782,15 @@ namespace glib
 						}
 						
 						networkMutex.lock();
-						connectionTimeout = false;
+						timeoutOccurred = false;
 						networkMutex.unlock();
 
 						timeWaited += 10;
-						if(timeWaited >= connectionTimeout)
+						if(timeWaited >= timeoutTimer)
 						{
 							disconnect();
 							networkMutex.lock();
-							connectionTimeout = true;
+							timeoutOccurred = true;
 							networkMutex.unlock();
 						}
 					}

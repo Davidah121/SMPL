@@ -1265,6 +1265,12 @@ namespace glib
 
     GuiImageInterface* GuiSpriteInterface::getImage(int index)
     {
+        if(sprite == nullptr)
+            return nullptr;
+        
+        if(index < 0 || index >= this->getSize())
+            return nullptr;
+        
         if(type == GuiGraphicsInterface::TYPE_SOFTWARE)
         {
             GuiImageInterface* result = new GuiImageInterface();

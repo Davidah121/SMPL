@@ -376,7 +376,7 @@ namespace glib
 		void removeSocket(SOCKET_TYPE s);
 
 		int sizeAddress = 0;
-		unsigned long connectionTimeout = 5000; //In milliseconds. 5 seconds total
+		unsigned long timeoutTimer = 5000; //In milliseconds. 5 seconds total
 		unsigned long timeWaited = 0;
 		bool shouldStart = false;
 

@@ -172,9 +172,10 @@ namespace glib
 				case WM_KEYDOWN:
 					if (currentWindow->keyDownFunction != nullptr)
 						currentWindow->keyDownFunction(wparam, lparam);
-					
-					if(wparam == Input::KEY_DELETE || wparam == Input::KEY_LEFT || wparam == Input::KEY_RIGHT
-					 || wparam == Input::KEY_DOWN || wparam == Input::KEY_UP)
+					 
+					if(wparam == (Input::KEY_DELETE&0xFF) || wparam == (Input::KEY_LEFT&0xFF) || wparam == (Input::KEY_RIGHT&0xFF)
+					 || wparam == (Input::KEY_DOWN&0xFF) || wparam == (Input::KEY_UP&0xFF) || wparam == (Input::KEY_BACKSPACE&0xFF)
+					 || wparam == (Input::KEY_ENTER&0xFF))
 					{
 						//Exceptions. These keys are not apart of WM_CHAR but are useful when editing text.
 						if(currentWindow->internalCharValFunction != nullptr)

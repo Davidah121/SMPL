@@ -246,9 +246,10 @@ namespace glib
 		 * @brief Force clears the characters in the buffer.
 		 * 		These are the character received from the active window.
 		 * 		The character buffer is normalily cleared after it is read at least once and pollInput has been called.
-		 * 
+		 * 		
+		 * 		In some scenarios, it is more beneficial to clear out values that haven't been read yet. (Example, keys pressed while no textbox was selected.)
 		 */
-		void clearCharactersTyped();
+		static void clearCharactersTyped();
 
 		/**
 		 * @brief Gets all the Characters Typed left in the buffer.

@@ -146,6 +146,40 @@ namespace glib
 		Box2D getBoundingBox(std::wstring text, int maxWidth, int maxHeight);
 
 		/**
+		 * @brief Returns the location of the cursor at the given character location.
+		 * 		Note that when a line break or wrap text occurs, it does not carry the whole word to the next line.
+		 * 		Wrapped text can be removed by setting max width to a negative value.
+		 * 		It is adjusted by the current font size vs the original font size.
+		 * 
+		 * @param text 
+		 * @param maxWidth 
+		 * 		Sets a maximum width up to 2^31 - 1. A negative value means no maximum width.
+		 * 		If the string exceeds the maximum width, it moves to a new line.
+		 * @param maxHeight 
+		 * 		Sets a maximum height up to 2^31 - 1. A negative value means no maximum height.
+		 * 		If the string exceeds the maximum height, it stops.
+		 * @return Vec2f 
+		 */
+		Vec2f getCursorLocation(std::string text, size_t charIndex, int maxWidth, int maxHeight);
+		
+		/**
+		 * @brief Returns the location of the cursor at the given character location.
+		 * 		Note that when a line break or wrap text occurs, it does not carry the whole word to the next line.
+		 * 		Wrapped text can be removed by setting max width to a negative value.
+		 * 		It is adjusted by the current font size vs the original font size.
+		 * 
+		 * @param text 
+		 * @param maxWidth 
+		 * 		Sets a maximum width up to 2^31 - 1. A negative value means no maximum width.
+		 * 		If the string exceeds the maximum width, it moves to a new line.
+		 * @param maxHeight 
+		 * 		Sets a maximum height up to 2^31 - 1. A negative value means no maximum height.
+		 * 		If the string exceeds the maximum height, it stops.
+		 * @return Vec2f 
+		 */
+		Vec2f getCursorLocation(std::wstring text, size_t charIndex, int maxWidth, int maxHeight);
+		
+		/**
 		 * @brief Returns the raw list of the font characters information.
 		 * 		It is not adjusted by the set font size. Each FontCharInfo must be adjusted
 		 * 		separately.

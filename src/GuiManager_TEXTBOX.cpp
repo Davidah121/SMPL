@@ -127,37 +127,12 @@ namespace glib
 				GuiFontInterface* fInt = (textElement.getFont() != nullptr) ? textElement.getFont() : graphicsInterface->getFont();
 				Font* f = fInt->getFont();
 
-				int xCursorPos, yCursorPos;
-				xCursorPos = 0;
-				yCursorPos = 0;
-				for(int i=0; i<cursorLocation; i++)
-				{
-					if(testText[i] == '\n')
-					{
-						xCursorPos = 0;
-						yCursorPos += f->getVerticalAdvance();
-					}
-					else
-					{
-						int charIndexInFont = f->getCharIndex(testText[i]);
-						FontCharInfo fci = f->getFontCharInfo(charIndexInFont);
-						xCursorPos += fci.horizAdv;
-					}
+				Vec2f cursorPos = f->getCursorLocation( testText, cursorLocation, -1, textElement.getMaxHeight() );
 
-					if(textElement.getAllowTextWrap())
-					{
-						if(xCursorPos >= textElement.getMaxWidth())
-						{
-							xCursorPos = 0;
-							yCursorPos += f->getVerticalAdvance();
-						}
-					}
-				}
-
-				xCursorPos += textElement.getBaseX() + xOffsetForText;
-				yCursorPos += textElement.getBaseY() + yOffsetForText;
+				cursorPos.x += textElement.getBaseX() + xOffsetForText;
+				cursorPos.y += textElement.getBaseY() + yOffsetForText;
 				
-				graphicsInterface->drawRect(x+xCursorPos, y+yCursorPos, x+xCursorPos+cursorWidth, y+yCursorPos+f->getFontSize(), false);
+				graphicsInterface->drawRect(x+cursorPos.x, y+cursorPos.y, x+cursorPos.x+cursorWidth, y+cursorPos.y+f->getFontSize(), false);
 			}
 		}
 
@@ -176,8 +151,53 @@ namespace glib
 				}
 			}
 
+			if(Input::getKeyDown(Input::KEY_CONTROL))
+			{
+				if( Input::getKeyPressed('V') )
+				{
+					//PASTE
+					std::string pasteText = System::pasteFromClipboard();
+
+					int minSelect = MathExt::min(selectStart, selectEnd);
+					int maxSelect = MathExt::max(selectStart, selectEnd);
+					
+					std::string prefix = textElement.getText().substr(0, minSelect);
+					std::string suffix = textElement.getText().substr(maxSelect);
+
+					textElement.setText( (prefix + pasteText) + suffix );
+					cursorLocation = minSelect+pasteText.size();
+					selectStart = cursorLocation;
+					selectEnd = cursorLocation;
+				}
+				else if( Input::getKeyPressed('C') )
+				{
+					//COPY
+					int minSelect = MathExt::min(selectStart, selectEnd);
+					int maxSelect = MathExt::max(selectStart, selectEnd);
+					std::string cpyText = textElement.getText().substr(minSelect, maxSelect);
+
+					System::copyToClipboard(cpyText);
+				}
+				else if( Input::getKeyPressed('X') )
+				{
+					//CUT
+					int minSelect = MathExt::min(selectStart, selectEnd);
+					int maxSelect = MathExt::max(selectStart, selectEnd);
+					std::string cpyText = textElement.getText().substr(minSelect, maxSelect);
+
+					System::copyToClipboard(cpyText);
+
+					std::string prefix = textElement.getText().substr(0, minSelect);
+					std::string suffix = textElement.getText().substr(maxSelect);
+
+					textElement.setText(prefix+suffix);
+					cursorLocation = minSelect;
+					selectStart = cursorLocation;
+					selectEnd = cursorLocation;
+				}
+			}
+
 			std::queue<int> charBuffer = Input::getCharactersTyped();
-			// StringTools::println("%llu", charBuffer.size());
 			
 			while(charBuffer.size() > 0)
 			{
@@ -328,51 +348,6 @@ namespace glib
 						}
 					}
 				}
-				else if(Input::getKeyDown(Input::KEY_CONTROL))
-				{
-					if( inputChar == 'v')
-					{
-						//PASTE
-						std::string pasteText = System::pasteFromClipboard();
-
-						int minSelect = MathExt::min(selectStart, selectEnd);
-						int maxSelect = MathExt::max(selectStart, selectEnd);
-						
-						std::string prefix = textElement.getText().substr(0, minSelect);
-						std::string suffix = textElement.getText().substr(maxSelect);
-
-						textElement.setText( (prefix + pasteText) + suffix );
-						cursorLocation = minSelect+pasteText.size();
-						selectStart = cursorLocation;
-						selectEnd = cursorLocation;
-					}
-					else if( inputChar == 'c')
-					{
-						//COPY
-						int minSelect = MathExt::min(selectStart, selectEnd);
-						int maxSelect = MathExt::max(selectStart, selectEnd);
-						std::string cpyText = textElement.getText().substr(minSelect, maxSelect);
-
-						System::copyToClipboard(cpyText);
-					}
-					else if( inputChar == 'x')
-					{
-						//CUT
-						int minSelect = MathExt::min(selectStart, selectEnd);
-						int maxSelect = MathExt::max(selectStart, selectEnd);
-						std::string cpyText = textElement.getText().substr(minSelect, maxSelect);
-
-						System::copyToClipboard(cpyText);
-
-						std::string prefix = textElement.getText().substr(0, minSelect);
-						std::string suffix = textElement.getText().substr(maxSelect);
-
-						textElement.setText(prefix+suffix);
-						cursorLocation = minSelect;
-						selectStart = cursorLocation;
-						selectEnd = cursorLocation;
-					}
-				}
 				else
 				{
 					if(inputChar >= ' ')
@@ -425,6 +400,10 @@ namespace glib
 			{
 				if (mouseY >= y && mouseY <= y + height)
 				{
+					if(!getFocus())
+						setShouldRedraw(true);
+					
+					Input::clearCharactersTyped();
 					setFocus(true);
 					hold = true;
 					bool found = false;
@@ -506,11 +485,15 @@ namespace glib
 				}
 				else
 				{
+					if(getFocus())
+						setShouldRedraw(true);
 					setFocus(false);
 				}
 			}
 			else
 			{
+				if(getFocus())
+					setShouldRedraw(true);
 				setFocus(false);
 			}
 		}
@@ -641,8 +624,8 @@ namespace glib
 			}
 		}
 
-		xCursorPos += textElement.getBaseX();
-		yCursorPos += textElement.getBaseY();
+		xCursorPos += textElement.getBaseX()*2;
+		yCursorPos += textElement.getBaseY()*2;
 
 		xOffsetForText = MathExt::min(width - xCursorPos, 0);
 		yOffsetForText = MathExt::min(height - yCursorPos, 0);
@@ -787,8 +770,12 @@ namespace glib
 		boundingBox = Box2D(x, y, x+width, y+height);
 
 		textElement.loadDataFromXML(attributes, inter);
-		textElement.setMaxWidth(width);
-		textElement.setMaxHeight(height);
+		
+		if(textElement.getMaxWidth() == 0)
+			textElement.setMaxWidth(width - textElement.getBaseX()*2);
+
+		if(textElement.getMaxHeight() == 0)
+			textElement.setMaxHeight(height - textElement.getBaseY()*2);
 	}
 
 	GuiInstance* GuiTextBox::loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter)

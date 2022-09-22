@@ -5,6 +5,7 @@
 #include "SpatialHashing.h"
 #include "IniFile.h"
 #include "VectorFont.h"
+#include "Network.h"
 #include <stdlib.h>
 
 using namespace glib;
@@ -172,7 +173,7 @@ void paintFunc(int width, int height)
 
 void initFunction(SimpleWindow* w)
 {
-    // w->getGuiManager()->loadElementsFromFile("GuiStuff/layout.xml");
+    w->getGuiManager()->loadElementsFromFile("GuiStuff/layout.xml");
     w->setWindowAsInputFocus();
 }
 
@@ -207,22 +208,27 @@ int testWindow()
 
     // w.getGuiManager()->addElement(&c1);
 
-    GuiCustomObject obj = GuiCustomObject();
-    obj.setRenderFunction([](GuiGraphicsInterface* interface) -> void{
-        SimpleGraphics::setAntiAliasing(true);
-        interface->setColor(Color{0,0,0,255});
-        interface->drawEllipse(128, 128, 32, 48, false);
-        interface->drawEllipse(256, 256, 48, 32, false);
+    // GuiCustomObject obj = GuiCustomObject();
+    // obj.setRenderFunction([](GuiGraphicsInterface* interface) -> void{
+    //     SimpleGraphics::setAntiAliasing(true);
+    //     interface->setColor(Color{0,0,0,255});
+    //     interface->drawEllipse(128, 128, 32, 48, false);
+    //     interface->drawEllipse(256, 256, 48, 32, false);
 
-        interface->setColor(Color{0,0,255,255});
-        interface->drawRect(128, 128, 128+1, 128+1, false);
-        interface->drawRect(256, 256, 256+1, 256+1, false);
-    });
-
-    w.getGuiManager()->addElement(&obj);
+    //     interface->setColor(Color{0,0,255,255});
+    //     interface->drawRect(128, 128, 128+1, 128+1, false);
+    //     interface->drawRect(256, 256, 256+1, 256+1, false);
+    // });
+    
+    // GuiTextBox obj = GuiTextBox( 32, 32, 256, 24 );
+    // obj.getTextBlockElement()->setBaseX(4);
+    // obj.getTextBlockElement()->setBaseY(4);
+    // obj.getTextBlockElement()->setMaxWidth( 256-8 );
+    
+    // w.getGuiManager()->addElement(&obj);
     
     w.getGuiManager()->setExpectedSize(Vec2f(1280, 720));
-    w.getGuiManager()->alwaysInvalidateImage(true);
+    // w.getGuiManager()->alwaysInvalidateImage(true);
     w.waitTillClose();
     return 0;
 }
@@ -435,17 +441,42 @@ void testFileStuff()
     #endif
 }
 
+void networkTest()
+{
+    Network k = Network(Network::TYPE_CLIENT, 4040, "127.0.0.1");
+    k.setOnConnectFunction([](int id) ->void{
+        StringTools::println("Connected");
+    });
+    k.setOnDisconnectFunction([&k](int id) ->void{
+        StringTools::println("Disconnected");
+        k.endNetwork();
+    });
+
+    k.startNetwork();
+
+    while(k.getRunning())
+    {
+        if(k.getTimeoutOccurred())
+        {
+            StringTools::println("Timeout has occured");
+            break;
+        }
+        System::sleep(10);
+    }
+}
+
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main()
 {
     // Sleep(1000);
+    networkTest();
     // testWindow();
     // testVectorGraphic();
     // testVectorFont();
     // testSpatialHashing();
     // testFontDrawing();
     // testPolygonStuff();
-    testFileStuff();
+    // testFileStuff();
 
     return 0;
 }
