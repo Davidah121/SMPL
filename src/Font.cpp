@@ -306,7 +306,7 @@ namespace glib
 		int currWidth = 0;
 		int currHeight = 0;
 
-		size_t actualSize = MathExt::clamp(charIndex, 0Ui64, text.size());
+		size_t actualSize = MathExt::clamp<size_t>(charIndex, 0, text.size());
 
 		for(int i=0; i<actualSize; i++)
 		{
@@ -382,7 +382,7 @@ namespace glib
 		int currWidth = 0;
 		int currHeight = 0;
 
-		size_t actualSize = MathExt::clamp(charIndex, 0Ui64, text.size());
+		size_t actualSize = MathExt::clamp<size_t>(charIndex, 0, text.size());
 
 		for(int i=0; i<actualSize; i++)
 		{

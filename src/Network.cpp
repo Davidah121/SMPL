@@ -632,8 +632,9 @@ namespace glib
 
 						FD_ZERO(&socketSet);
 						FD_SET(sock, &socketSet);
+						waitTime = {0, 100};
 
-						int retVal = select(0, &socketSet, NULL, NULL, &waitTime);
+						int retVal = select(sock, &socketSet, NULL, NULL, &waitTime);
 
 						bool isSet = FD_ISSET(sock, &socketSet);
 						networkMutex.unlock();
@@ -676,13 +677,14 @@ namespace glib
 						else
 							currSize = 64;
 						FD_ZERO(&socketSet);
-
+						SOCKET_TYPE maxSock = 0;
 						for(int i=0; i<currSize; i++)
 						{
 							FD_SET(clients[i + startIndex], &socketSet);
+							maxSock = MathExt::min<SOCKET_TYPE>(maxSock, clients[i + startIndex]);
 						}
 
-						int retVal = select(0, &socketSet, NULL, NULL, &waitTime);
+						int retVal = select(maxSock, &socketSet, NULL, NULL, &waitTime);
 
 						if(retVal>0)
 						{
@@ -809,7 +811,7 @@ namespace glib
 					FD_ZERO(&socketSet);
 					FD_SET(connections[0], &socketSet);
 
-					int retVal = select(0, &socketSet, NULL, NULL, &waitTime);
+					int retVal = select(connections[0], &socketSet, NULL, NULL, &waitTime);
 					bool isSet = FD_ISSET(connections[0], &socketSet);
 					networkMutex.unlock();
 

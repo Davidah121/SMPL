@@ -441,9 +441,9 @@ void testFileStuff()
     #endif
 }
 
-void networkTest()
+void networkTest(bool type)
 {
-    Network k = Network(Network::TYPE_CLIENT, 4040, "127.0.0.1");
+    Network k = Network(type, 4040, "127.0.0.1");
     k.setOnConnectFunction([](int id) ->void{
         StringTools::println("Connected");
     });
@@ -466,10 +466,15 @@ void networkTest()
 }
 
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
-int main()
+int main(int argc, char** argv)
 {
     // Sleep(1000);
-    networkTest();
+    std::string com = argv[1];
+    if(com == "client")
+        networkTest(Network::TYPE_CLIENT);
+    else
+        networkTest(Network::TYPE_SERVER);
+    
     // testWindow();
     // testVectorGraphic();
     // testVectorFont();
