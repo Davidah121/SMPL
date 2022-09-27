@@ -465,15 +465,21 @@ void networkTest(bool type)
     }
 }
 
+void testOTFLoading()
+{
+    VectorFont f = VectorFont();
+    f.load("arial.ttf");
+}
+
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main(int argc, char** argv)
 {
     // Sleep(1000);
-    std::string com = argv[1];
-    if(com == "client")
-        networkTest(Network::TYPE_CLIENT);
-    else
-        networkTest(Network::TYPE_SERVER);
+    // std::string com = argv[1];
+    // if(com == "client")
+    //     networkTest(Network::TYPE_CLIENT);
+    // else
+    //     networkTest(Network::TYPE_SERVER);
     
     // testWindow();
     // testVectorGraphic();
@@ -482,6 +488,8 @@ int main(int argc, char** argv)
     // testFontDrawing();
     // testPolygonStuff();
     // testFileStuff();
+
+    testOTFLoading();
 
     return 0;
 }

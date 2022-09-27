@@ -45,6 +45,8 @@ namespace glib
 		 * 		Allows network connection using TCP or UDP.
 		 * 		Uses a separate thread to maintain the connection and check for message arrival.
 		 * 
+		 *		Note that in a linux environment, the OS will keep sockets open for 60 seconds and they can not be
+		 * 			reopened. This may cause errors when re-running a program
 		 * @param type 
 		 * 		Servers can have multiple connections where a client can only have one connection.
 		 * 		valid types are:
@@ -67,6 +69,8 @@ namespace glib
 		/**
 		 * @brief Destroy the Network object
 		 * 
+		 * 		Note that in a linux environment, the OS will keep sockets open for 60 seconds and they can not be
+		 * 			reopened. This may cause errors when re-running a program.
 		 */
 		~Network();
 
@@ -240,13 +244,17 @@ namespace glib
 
 		/**
 		 * @brief Disconnects from all connected IPs.
-		 * 
+		 * 		
+		 * 		Note that in a linux environment, the OS will keep sockets open for 60 seconds and they can not be
+		 * 			reopened. This may cause errors when re-running a program.
 		 */
 		void disconnect();
 
 		/**
 		 * @brief Disconnects from the specified id.
-		 * 
+		 * 		
+		 * 		Note that in a linux environment, the OS will keep sockets open for 60 seconds and they can not be
+		 * 			reopened. This may cause errors when re-running a program.
 		 */
 		void disconnect(int id);
 
@@ -325,6 +333,9 @@ namespace glib
 		 * 		After calling this, the thread maintaining the network will be closed
 		 * 		and no longer running. This should end loops that run while the network is
 		 * 		running.
+		 * 
+		 * 		Note that in a linux environment, the OS will keep sockets open for 60 seconds and they can not be
+		 * 			reopened. This may cause errors when re-running a program.
 		 * 
 		 */
 		void endNetwork();

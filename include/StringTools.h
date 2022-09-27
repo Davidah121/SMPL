@@ -210,6 +210,33 @@ namespace glib
 		 * @return size_t 
 		 */
 		static size_t byteSwap(size_t v);
+
+		/**
+		 * @brief Swaps the order of the bytes where the size is 8bit, 16bit, 32bit, or 64bit.
+		 * 		All other sizes return the same value. Assumes that the value can be cast into a short, int, and size_t
+		 * 
+		 * @tparam T 
+		 * @param v 
+		 * @return T 
+		 */
+		template<typename T>
+		static T byteSwap(T v)
+		{
+			switch(sizeof(T))
+			{
+				case 1:
+					return v;
+				case 2:
+					return (T)byteSwap((short)v);
+				case 4:
+					return (T)byteSwap((int)v);
+				case 8:
+					return (T)byteSwap((size_t)v);
+				default:
+					return v;
+			}
+			return v;
+		}
 		
 		/**
 		 * @brief Returns the string length of a character array.
@@ -347,6 +374,47 @@ namespace glib
 			hexString[size] = '\0';
 
 			return hexString;
+		}
+
+		/**
+		 * @brief Converts a string into a size_t. Assumes that the value is unsigned
+		 * 		and fits into a size_t.
+		 * 
+		 * @param v 
+		 * @return size_t 
+		 */
+		static size_t fromHexString(std::string v)
+		{
+			//check for 0x at the front
+			size_t result = 0;
+			if(v.size() <= 0)
+				return -1;
+
+			for(int k=0; k<v.size(); k++)
+			{
+				if(v[k] == 'x')
+				{
+					if(v[k-1] == 0)
+					{
+						result = 0;
+					}
+				}
+				else
+				{
+					int temp = base16ToBase10(v[k]);
+					if(temp != -1)
+					{
+						result <<= 4;
+						result += temp;
+					}
+					else
+					{
+						return -1;
+					}
+				}
+			}
+			
+			return result;
 		}
 
 		/**
