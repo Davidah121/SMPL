@@ -709,7 +709,7 @@ namespace glib
 									bool valid = true;
 									networkMutex.lock();
 									char testChar = 0;
-									valid = recv(clientConnections[i].fd, &testChar, 1, MSG_PEEK) >= 0;
+									valid = recv(clientConnections[i].fd, &testChar, 1, MSG_PEEK) > 0;
 									networkMutex.unlock();
 
 									if(!valid)
@@ -839,7 +839,7 @@ namespace glib
 								bool valid = true;
 								networkMutex.lock();
 								char testChar = 0;
-								valid = recv(mainSocket.fd, &testChar, 1, MSG_PEEK) >= 0;
+								valid = recv(mainSocket.fd, &testChar, 1, MSG_PEEK) > 0;
 								networkMutex.unlock();
 
 								if(!valid)
@@ -1014,7 +1014,7 @@ namespace glib
 									bool valid = true;
 									networkMutex.lock();
 									char testChar = 0;
-									valid = recv(clientConnections[i].fd, &testChar, 1, MSG_PEEK) >= 0;
+									valid = recv(clientConnections[i].fd, &testChar, 1, MSG_PEEK) > 0;
 									networkMutex.unlock();
 
 									if(!valid)
@@ -1143,7 +1143,7 @@ namespace glib
 								bool valid = true;
 								networkMutex.lock();
 								char testChar = 0;
-								valid = recv(mainSocket.fd, &testChar, 1, MSG_PEEK) >= 0;
+								valid = recv(mainSocket.fd, &testChar, 1, MSG_PEEK) > 0;
 								networkMutex.unlock();
 
 								if(!valid)
