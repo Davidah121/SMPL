@@ -706,18 +706,45 @@ namespace glib
 								else if(clientConnections[i].revents & POLLRDNORM)
 								{
 									//check for disconnect
-									bool skip = isWaitingOnRead(i);
-									
-									if(!skip)
-									{
-										networkMutex.lock();
-										waitingOnRead[i] = true;
-										networkMutex.unlock();
+									bool valid = true;
+									networkMutex.lock();
+									char testChar = 0;
+									valid = recv(clientConnections[i].fd, &testChar, 1, MSG_PEEK) >= 0;
+									networkMutex.unlock();
 
-										//can receive message
-										std::function<void(int)> cpy = getMessageArriveFunc();
-										if(cpy!=nullptr)
-											cpy(i);
+									if(!valid)
+									{
+										//error occured or graceful exit
+										//disconnected
+										std::function<void(int)> cpy = getDisconnectFunc();
+										int finalErr = errno;
+
+										if(finalErr == EWOULDBLOCK)
+										{
+											//Do nothing. Acceptable error
+										}
+										else
+										{
+											if(cpy!=nullptr)
+												cpy(i);
+											disconnect();
+											break;
+										}
+									}
+									else
+									{
+										bool skip = isWaitingOnRead(i);
+										if(!skip)
+										{
+											networkMutex.lock();
+											waitingOnRead[i] = true;
+											networkMutex.unlock();
+
+											//can receive message
+											std::function<void(int)> cpy = getMessageArriveFunc();
+											if(cpy!=nullptr)
+												cpy(i);
+										}
 									}
 								}
 							}
@@ -808,15 +835,44 @@ namespace glib
 							}
 							else if(mainSocket.revents & POLLRDNORM)
 							{
-								if(!skip)
-								{
-									networkMutex.lock();
-									waitingOnRead[0] = true;
-									networkMutex.unlock();
+								//check for disconnect
+								bool valid = true;
+								networkMutex.lock();
+								char testChar = 0;
+								valid = recv(mainSocket.fd, &testChar, 1, MSG_PEEK) >= 0;
+								networkMutex.unlock();
 
-									std::function<void(int)> cpy = getMessageArriveFunc();
-									if(cpy!=nullptr)
-										cpy(0);
+								if(!valid)
+								{
+									//error occured or graceful exit
+									//disconnected
+									std::function<void(int)> cpy = getDisconnectFunc();
+									int finalErr = errno;
+
+									if(finalErr == EWOULDBLOCK)
+									{
+										//Do nothing. Acceptable error
+									}
+									else
+									{
+										if(cpy!=nullptr)
+											cpy(0);
+										disconnect();
+										break;
+									}
+								}
+								else
+								{
+									if(!skip)
+									{
+										networkMutex.lock();
+										waitingOnRead[0] = true;
+										networkMutex.unlock();
+
+										std::function<void(int)> cpy = getMessageArriveFunc();
+										if(cpy!=nullptr)
+											cpy(0);
+									}
 								}
 							}
 							
@@ -955,17 +1011,45 @@ namespace glib
 								else if(clientConnections[i].revents & POLLRDNORM)
 								{
 									//check for disconnect
-									bool skip = isWaitingOnRead(i);
-									if(!skip)
-									{
-										networkMutex.lock();
-										waitingOnRead[i] = true;
-										networkMutex.unlock();
+									bool valid = true;
+									networkMutex.lock();
+									char testChar = 0;
+									valid = recv(clientConnections[i].fd, &testChar, 1, MSG_PEEK) >= 0;
+									networkMutex.unlock();
 
-										//can receive message
-										std::function<void(int)> cpy = getMessageArriveFunc();
-										if(cpy!=nullptr)
-											cpy(i);
+									if(!valid)
+									{
+										//error occured or graceful exit
+										//disconnected
+										std::function<void(int)> cpy = getDisconnectFunc();
+										int finalErr = WSAGetLastError();
+
+										if(finalErr == WSAEWOULDBLOCK)
+										{
+											//Do nothing. Acceptable error
+										}
+										else
+										{
+											if(cpy!=nullptr)
+												cpy(i);
+											disconnect();
+											break;
+										}
+									}
+									else
+									{
+										bool skip = isWaitingOnRead(i);
+										if(!skip)
+										{
+											networkMutex.lock();
+											waitingOnRead[i] = true;
+											networkMutex.unlock();
+
+											//can receive message
+											std::function<void(int)> cpy = getMessageArriveFunc();
+											if(cpy!=nullptr)
+												cpy(i);
+										}
 									}
 								}
 							}
@@ -1055,15 +1139,46 @@ namespace glib
 							}
 							else if(mainSocket.revents & POLLRDNORM)
 							{
-								if(!skip)
-								{
-									networkMutex.lock();
-									waitingOnRead[0] = true;
-									networkMutex.unlock();
+								//check for disconnect
+								bool valid = true;
+								networkMutex.lock();
+								char testChar = 0;
+								valid = recv(mainSocket.fd, &testChar, 1, MSG_PEEK) >= 0;
+								networkMutex.unlock();
 
-									std::function<void(int)> cpy = getMessageArriveFunc();
-									if(cpy!=nullptr)
-										cpy(0);
+								if(!valid)
+								{
+									//error occured or graceful exit
+									//disconnected
+									std::function<void(int)> cpy = getDisconnectFunc();
+									int finalErr = WSAGetLastError();
+
+									if(finalErr == WSAEWOULDBLOCK)
+									{
+										//Do nothing. Acceptable error
+									}
+									else
+									{
+										if(cpy!=nullptr)
+											cpy(0);
+										disconnect();
+										break;
+									}
+								}
+								else
+								{
+									bool skip = isWaitingOnRead(0);
+									if(!skip)
+									{
+										networkMutex.lock();
+										waitingOnRead[0] = true;
+										networkMutex.unlock();
+
+										//can receive message
+										std::function<void(int)> cpy = getMessageArriveFunc();
+										if(cpy!=nullptr)
+											cpy(0);
+									}
 								}
 							}
 						}

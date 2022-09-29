@@ -444,7 +444,7 @@ void testFileStuff()
 
 void networkTest(bool type)
 {
-    Network k = Network(type, 4040, "127.0.0.1");
+    Network k = Network(type, 4040, "192.168.0.246");
     std::atomic_bool connected = false;
 
     k.setOnConnectFunction([type, &k, &connected](int id) ->void{
@@ -506,7 +506,7 @@ void testINI()
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main(int argc, char** argv)
 {
-    testINI();
+    //testINI();
     // Sleep(1000);
     std::string com = argv[1];
     if(com == "client")

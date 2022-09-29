@@ -17,7 +17,7 @@
 			"type": "cppvsdbg",
 			"request": "launch",
 			"program": "${workspaceFolder}/bin/Release/GLib.exe",
-			"args": [],
+			"args": ["server"],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",
 			"environment": [],
