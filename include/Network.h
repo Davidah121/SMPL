@@ -4,6 +4,7 @@
 	#include <unistd.h>
 	#include <sys/types.h>
 	#include <sys/socket.h>
+	#include <poll.h>
 	#include <netinet/in.h>
 
 	#include <arpa/inet.h> //inet_addr
@@ -384,6 +385,8 @@ namespace glib
 		sockaddr_in socketAddress;
 		std::vector<SOCKET_TYPE> connections;
 		std::vector<bool> waitingOnRead;
+		// std::vector<bool> canWriteToSocket;
+
 		void removeSocket(SOCKET_TYPE s);
 
 		int sizeAddress = 0;

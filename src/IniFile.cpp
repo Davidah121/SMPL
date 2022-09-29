@@ -215,7 +215,7 @@ namespace glib
                             continue;
                         }
 
-                        if(equalsIndex+2 < l.size())
+                        if(equalsIndex+1 < l.size())
                         {
                             value = l.substr(equalsIndex+1);
                         }

@@ -6,7 +6,7 @@
 			"type": "cppvsdbg",
 			"request": "launch",
 			"program": "${workspaceFolder}/bin/Debug/GLib.exe",
-			"args": [],
+			"args": ["client"],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",
 			"environment": [],

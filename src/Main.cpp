@@ -7,6 +7,7 @@
 #include "VectorFont.h"
 #include "Network.h"
 #include <stdlib.h>
+#include <atomic>
 
 using namespace glib;
 
@@ -444,24 +445,45 @@ void testFileStuff()
 void networkTest(bool type)
 {
     Network k = Network(type, 4040, "127.0.0.1");
-    k.setOnConnectFunction([](int id) ->void{
+    std::atomic_bool connected = false;
+
+    k.setOnConnectFunction([type, &k, &connected](int id) ->void{
         StringTools::println("Connected");
+        connected = true;
+        if(type == Network::TYPE_CLIENT)
+        {
+            std::string msg = "Hello";
+            k.sendMessage(msg, id);
+        }
     });
-    k.setOnDisconnectFunction([&k](int id) ->void{
+    k.setOnMessageArrivedFunction([&k](int id) ->void{
+        std::string msg = "";
+        k.receiveMessage(msg, id);
+        StringTools::println("Received: %s", msg.c_str());
+    });
+    k.setOnDisconnectFunction([&k, &connected](int id) ->void{
         StringTools::println("Disconnected");
+        connected = false;
         k.endNetwork();
     });
 
     k.startNetwork();
 
-    while(k.getRunning())
+    while(k.getRunning() && !connected)
     {
         if(k.getTimeoutOccurred())
         {
             StringTools::println("Timeout has occured");
             break;
         }
+        
         System::sleep(10);
+    }
+
+    while(k.getRunning())
+    {
+        if(StringTools::getString() == "end")
+            break;
     }
 }
 
@@ -471,15 +493,26 @@ void testOTFLoading()
     f.load("arial.ttf");
 }
 
+void testINI()
+{
+    glib::IniFile f = glib::IniFile();
+    bool loaded = f.load("config.ini");
+    if(loaded)
+    {
+        int allowedConnections = glib::StringTools::toInt( f.readValue("Network", "AllowedConnections") );
+    }
+}
+
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main(int argc, char** argv)
 {
+    testINI();
     // Sleep(1000);
-    // std::string com = argv[1];
-    // if(com == "client")
-    //     networkTest(Network::TYPE_CLIENT);
-    // else
-    //     networkTest(Network::TYPE_SERVER);
+    std::string com = argv[1];
+    if(com == "client")
+        networkTest(Network::TYPE_CLIENT);
+    else
+        networkTest(Network::TYPE_SERVER);
     
     // testWindow();
     // testVectorGraphic();
@@ -489,7 +522,7 @@ int main(int argc, char** argv)
     // testPolygonStuff();
     // testFileStuff();
 
-    testOTFLoading();
+    // testOTFLoading();
 
     return 0;
 }
