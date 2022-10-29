@@ -2,23 +2,125 @@
 
 namespace glib
 {
-    
+	#pragma region GUI_CONTEXT_MENU_HELPER_CLASS
+	const Class GuiContextMenuHelper::globalClass = Class("GuiContextMenuHelper", {&GuiInstance::globalClass});
+	GuiContextMenuHelper GuiContextMenuHelper::singletonHelper;
+
+	GuiContextMenuHelper::GuiContextMenuHelper() : GuiInstance()
+	{
+		setClass(globalClass);
+		setVisible(true);
+		includeChildrenInBounds = true;
+	}
+
+	GuiContextMenuHelper::~GuiContextMenuHelper()
+	{
+		removeContextMenu();
+	}
+
+	void GuiContextMenuHelper::update()
+	{
+		//Must always be at 0,0
+		setBaseX(0);
+		setBaseY(0);
+	}
+
+	void GuiContextMenuHelper::render()
+	{
+
+	}
+
+	GuiContextMenuHelper* GuiContextMenuHelper::getContextMenuHelper(GuiManager* manager)
+	{
+		if(manager == nullptr)
+			return nullptr;
+		
+		//set the singletonHelper's guiManager if it does not have one
+		if(singletonHelper.getManager() == nullptr)
+		{
+			manager->addElement(&singletonHelper);
+			return &singletonHelper;
+		}
+		if(singletonHelper.getManager() == manager)
+			return &singletonHelper;
+		
+		return nullptr;
+	}
+
+	void GuiContextMenuHelper::setContextMenu(GuiContextMenu* o)
+	{
+		heldContextMenu = o;
+		this->addChild(heldContextMenu->getListElement());
+		setVisible(true);
+	}
+
+	void GuiContextMenuHelper::removeContextMenu(GuiContextMenu* o)
+	{
+		if(heldContextMenu == o)
+		{
+			this->removeChild(heldContextMenu->getListElement());
+			heldContextMenu = nullptr;
+			setVisible(false);
+		}
+	}
+
+	void GuiContextMenuHelper::removeContextMenu()
+	{
+		if(heldContextMenu != nullptr)
+		{
+			this->removeChild(heldContextMenu->getListElement());
+		}
+		heldContextMenu = nullptr;
+		setVisible(false);
+	}
+	
+	void GuiContextMenuHelper::solveBoundingBox()
+	{
+		//The size is the size of the children
+		boundingBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
+	}
+
+	#pragma endregion
+
 	#pragma region GUI_CONTEXT_MENU_CLASS
 
 	const Class GuiContextMenu::globalClass = Class("GuiContextMenu", {&GuiInstance::globalClass});
 
-	GuiContextMenu::GuiContextMenu()
+	GuiContextMenu::GuiContextMenu() : GuiInstance()
 	{
 		setClass(globalClass);
-		GuiInstance::addChild(&listMenu);
 		listMenu.setBackgroundColor(Color{255,255,255,255});
 		includeChildrenInBounds = true;
 		setVisible(false);
+		listMenu.setVisible(false);
 	}
 
+	GuiContextMenu::GuiContextMenu(const GuiContextMenu& other) : GuiInstance(other)
+	{
+		copy(other);
+	}
+
+	void GuiContextMenu::operator=(const GuiContextMenu& other)
+	{
+		GuiInstance::copy(other);
+		copy(other);
+	}
+
+	void GuiContextMenu::copy(const GuiContextMenu& other)
+	{
+		setClass(globalClass);
+		listMenu = other.listMenu;
+		includeChildrenInBounds = true;
+		showOnRightClick = other.showOnRightClick;
+		setVisible(false);
+		listMenu.setVisible(false);
+	}
+	
 	GuiContextMenu::~GuiContextMenu()
 	{
-
+		GuiContextMenuHelper* helper = GuiContextMenuHelper::getContextMenuHelper( this->getManager() );
+		if(helper != nullptr)
+			helper->removeContextMenu(this);
 	}
 
 	void GuiContextMenu::update()
@@ -31,7 +133,7 @@ namespace glib
 			mouseY = getManager()->getMouseY();
 		}
 
-		if(getVisible())
+		if(listMenu.getVisible())
 		{
 			if(!listMenu.pointIsInList(mouseX, mouseY))
 			{
@@ -51,24 +153,27 @@ namespace glib
 		}
 		else
 		{
-			if(showOnRightClick)
+			if(Input::getMouseUp(Input::RIGHT_MOUSE_BUTTON))
 			{
-				GuiInstance* parentIns = this->getParent();
-				bool shouldOpen = true;
-				if(parentIns != nullptr)
+				if(showOnRightClick)
 				{
-					Box2D box = parentIns->getBoundingBox();
-					Point2D point = Point2D(Vec2f(mouseX, mouseY));
-					shouldOpen = CollisionMaster::getCollision(&box, &point, true);
-				}
+					GuiInstance* parentIns = this->getParent();
+					bool shouldOpen = true;
+					if(parentIns != nullptr)
+					{
+						Box2D box = parentIns->getBoundingBox();
+						Point2D point = Point2D(Vec2f(mouseX, mouseY));
+						shouldOpen = CollisionMaster::getCollision(&box, &point, true);
+					}
 
-				if(Input::getMouseUp(Input::RIGHT_MOUSE_BUTTON) && shouldOpen)
-				{
-					showMenu(mouseX, mouseY);
+					if(shouldOpen)
+					{
+						showMenu(mouseX, mouseY);
+					}
 				}
 			}
 		}
-		setShouldRedraw(false);
+		// setShouldRedraw(false);
 	}
 
 	void GuiContextMenu::render()
@@ -83,18 +188,22 @@ namespace glib
 
 	void GuiContextMenu::showMenu(int x, int y)
 	{
-		setVisible(true);
-		int offX = x - this->x;
-		int offY = y - this->y;
+		listMenu.setVisible(true);
 		listMenu.setActive(true);
-		listMenu.setBaseX(offX);
-		listMenu.setBaseY(offY);
+
+		listMenu.setBaseX(x);
+		listMenu.setBaseY(y);
+
+		GuiContextMenuHelper* helper = GuiContextMenuHelper::getContextMenuHelper( this->getManager() );
+		if(helper != nullptr)
+			helper->setContextMenu(this);
 	}
 
 	void GuiContextMenu::hideMenu()
 	{
-		setVisible(false);
-		listMenu.setActive(false);
+		GuiContextMenuHelper* helper = GuiContextMenuHelper::getContextMenuHelper( this->getManager() );
+		if(helper != nullptr)
+			helper->removeContextMenu(this);
 	}
 
 	void GuiContextMenu::addChild(GuiInstance* ins)
@@ -120,6 +229,7 @@ namespace glib
 	void GuiContextMenu::solveBoundingBox()
 	{
 		//The size is the size of the children
+		boundingBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
 	}
 
 	void GuiContextMenu::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter)

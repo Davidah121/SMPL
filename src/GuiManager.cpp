@@ -17,6 +17,7 @@ namespace glib
 		GuiList::registerLoadFunction();
 		GuiGrid::registerLoadFunction();
 		GuiContextMenu::registerLoadFunction();
+		GuiDatePicker::registerLoadFunction();
 	}
 
 	void GuiManager::registerLoadFunction(std::string className, std::function<GuiInstance*(std::unordered_map<std::string, std::string>&, GuiGraphicsInterface* inter)> func)
@@ -134,8 +135,11 @@ namespace glib
 		for(auto it=shouldDelete.begin(); it != shouldDelete.end(); it++)
 		{
 			GuiInstance* pointer = *it;
+
+			pointer->setManager(nullptr); //Prevent circular delete.
 			if(pointer != nullptr)
 				delete pointer;
+			
 		}
 		
 		objects.clear();
@@ -163,12 +167,13 @@ namespace glib
 						addElement(c);
 					}
 				}
-			}
 
-			if(k->parent == nullptr)
-			{
-				objects.push_back(k);
+				if(k->parent == nullptr)
+				{
+					objects.push_back(k);
+				}
 			}
+			
 		}
 	}
 	
@@ -485,7 +490,6 @@ namespace glib
 	void GuiManager::updateBounds(GuiInstance* obj, int& redrawCount)
 	{
 		//calculate the bounding render area
-
 		if( (obj->shouldRedraw || this->invalidImage) )
 		{
 			newClipBox.setLeftBound( MathExt::min(newClipBox.getLeftBound(), obj->boundingBox.getLeftBound()) );

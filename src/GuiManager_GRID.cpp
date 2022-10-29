@@ -7,12 +7,36 @@ namespace glib
 
 	const Class GuiGrid::globalClass = Class("GuiGrid", {&GuiInstance::globalClass});
 
-	GuiGrid::GuiGrid(int x, int y)
+	GuiGrid::GuiGrid(int x, int y) : GuiInstance()
 	{
 		setClass(globalClass);
-		baseX = x;
-		baseY = y;
+		setBaseX(x);
+		setBaseY(y);
 		includeChildrenInBounds = false;
+		setPriority(HIGHER_PRIORITY);
+	}
+
+	GuiGrid::GuiGrid(const GuiGrid& other) : GuiInstance(other)
+	{
+		copy(other);
+	}
+
+	void GuiGrid::operator=(const GuiGrid& other)
+	{
+		GuiInstance::copy(other);
+		copy(other);
+	}
+
+	void GuiGrid::copy(const GuiGrid& other)
+	{
+		setClass(globalClass);
+		gridXSpacing = other.gridXSpacing;
+		gridYSpacing = other.gridYSpacing;
+		rowSize = other.rowSize;
+		colSize = other.colSize;
+		rowMajorOrder = other.rowMajorOrder;
+		backgroundColor = other.backgroundColor;
+		outlineColor = other.outlineColor;
 		setPriority(HIGHER_PRIORITY);
 	}
 
@@ -23,10 +47,13 @@ namespace glib
 			if(locations[i]!=nullptr)
 				delete locations[i];
 		}
+		locations.clear();
 	}
 
 	void GuiGrid::update()
 	{
+		Box2D oldBounds = boundingBox;
+		boundingBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
 		std::vector<GuiInstance*> children = getChildren();
 		
 		int maxWidth = 0;
@@ -73,9 +100,9 @@ namespace glib
 			maxHeight = (minHeightRequired+gridYSpacing) * ((children.size())/rowSize);
 		}
 		
-		if(boundingBox.getLeftBound() == x && boundingBox.getRightBound() == x+maxWidth)
+		if(oldBounds.getLeftBound() == x && oldBounds.getRightBound() == x+maxWidth)
 		{
-			if(boundingBox.getTopBound() == y && boundingBox.getBottomBound() == y+maxHeight)
+			if(oldBounds.getTopBound() == y && oldBounds.getBottomBound() == y+maxHeight)
 			{
 				//Don't do anything. It may still need to be redrawn for other reasons.
 			}

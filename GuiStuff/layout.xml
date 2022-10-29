@@ -1,68 +1,21 @@
 <SimpleGUI>
-    <!-- <GuiTextBox x="32" y="32" textXOffset="4" textYOffset="4" width="256" height="24" backgroundColor="Gainsboro" defaultText="enter text">
-        <GuiContextMenu ID="ContextID">
-            <GuiTextBlock x="8" y="8" maxwidth="64" maxheight="24" text="Edit" ID="ChildEdit"/>
-            <GuiTextBlock x="8" y="8" maxwidth="96" maxheight="24" text="Search By Title" ID="ChildTitle"/>
-            <GuiTextBlock x="8" y="8" maxwidth="96" maxheight="24" text="Search By Date" ID="ChildDate"/>
+    
+    <GuiContextMenu>
+        <GuiTextBlock maxwidth="96" maxheight="24" text="item4"/>
+        <GuiTextBlock maxwidth="96" maxheight="24" text="item5"/>
+        <GuiTextBlock maxwidth="96" maxheight="24" text="item6"/>
+        <GuiTextBlock maxwidth="96" maxheight="24" text="item7"/>
+    </GuiContextMenu>
+
+    <!-- <GuiTextBox x="32" y="32" width="96" height="24">
+        <GuiContainer/>
+        <GuiContextMenu>
+            <GuiTextBlock maxwidth="96" maxheight="24" text="item1"/>
+            <GuiTextBlock maxwidth="96" maxheight="24" text="item2"/>
+            <GuiTextBlock maxwidth="96" maxheight="24" text="item3"/>
         </GuiContextMenu>
     </GuiTextBox> -->
 
-    <GuiSprite x="0" y="0" src="GuiStuff/Background.png" />
-    <GuiList x="16" y="16" spacing="16" isvertical="false" ID="WindowBar">
-        <GuiRectangleButton width="64" height="24" ID="WindowBar_Edit">
-            <GuiTextBlock x="8" y="8" maxwidth="64" maxheight="24" text="Insert" ID="WindowBar_EditText"/>
-        </GuiRectangleButton>
 
-        <GuiRectangleButton width="96" height="24" ID="WindowBar_SearchT">
-            <GuiTextBlock x="8" y="8" maxwidth="96" maxheight="24" text="Search By Title"/>
-        </GuiRectangleButton>
-        
-        <GuiRectangleButton width="96" height="24" ID="WindowBar_SearchD">
-            <GuiTextBlock x="8" y="8" maxwidth="96" maxheight="24" text="Search By Date"/>
-        </GuiRectangleButton>
 
-        <!-- <GuiRectangleButton width="64" height="24" ID="WindowBar_Help">
-            <GuiTextBlock x="8" y="8" maxwidth="64" maxheight="24" text="Help"/>
-        </GuiRectangleButton> -->
-    </GuiList>
-
-    <GuiList x="16" y="64" spacing="28">
-        
-        <GuiList x="4" y="0" spacing="4" isvertical="false">
-            <GuiRectangleButton visible="false" active="false" x="0" y="-2" width="16" height="16" ID="ModeSwitchID">
-                <GuiSprite src="GuiStuff/CancelButton.png"/>
-            </GuiRectangleButton>
-            <GuiTextBlock x="0" y="0" maxwidth="96" maxheight="24" text="ID: NULL" ID="MessageID"/>
-        </GuiList>
-        
-        <GuiTextBox x="8" y="0" textXOffset="4" textYOffset="4" width="256" height="24" backgroundColor="Gainsboro" ID="MessageTitleID">
-            <GuiTextBlock x="-8" y="-12" maxwidth="96" maxheight="24" text="Title: "/>
-        </GuiTextBox>
-
-        <GuiTextBox x="8" y="0" textXOffset="4" textYOffset="4" width="128" height="24" backgroundColor="Gainsboro" ID="MessageDateID" defaultText="YYYY-MM-DD">
-            <GuiTextBlock x="-8" y="-12" maxwidth="96" maxheight="24" text="Date: "/>
-        </GuiTextBox>
-
-        <GuiTextBox x="8" y="0" textXOffset="4" textYOffset="4" width="256" height="24" backgroundColor="Gainsboro" ID="VideoMessageLinkID" defaultText="https://">
-            <GuiTextBlock x="-8" y="-12" maxwidth="96" maxheight="24" text="Video Link: "/>
-        </GuiTextBox>
-        
-        <GuiTextBox x="8" y="0" textXOffset="4" textYOffset="4" width="256" height="24" backgroundColor="Gainsboro" ID="AudioMessageLinkID" defaultText="https://">
-            <GuiTextBlock x="-8" y="-12" maxwidth="96" maxheight="24" text="Audio Link: "/>
-        </GuiTextBox>
-
-        <GuiTextBox x="8" y="0" textXOffset="4" textYOffset="4" width="384" height="240" maxwidth="376" backgroundColor="Gainsboro" ID="MessageDescriptionID" allowLineBreaks="true" allowWrapText="true">
-            <GuiTextBlock x="-8" y="-12" maxwidth="96" maxheight="24" text="Description: "/>
-        </GuiTextBox>
-    </GuiList>
-
-    <GuiRectangleButton x="928" y="8" width="32" height="32" ID="SortStyle">
-        <GuiSprite src="GuiStuff/SortAsc.png" ID="sortImg1"/>
-        <GuiSprite visible="false" src="GuiStuff/SortDsc.png" ID="sortImg2"/>
-    </GuiRectangleButton>
-    
-    <GuiList x="960" y="0" spacing="16" isvertical="true" ID="DatabaseElementsList">
-        
-    </GuiList>
-    
 </SimpleGUI>

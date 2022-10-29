@@ -159,6 +159,61 @@ namespace glib
 		static std::vector<int> wideStringToIntString(std::wstring str);
 
 		/**
+		 * @brief Converts a base64 character into a number. Properly handles the url safe cases as well.
+		 * 
+		 * @param b 
+		 * @return int 
+		 */
+		static int base64CharToNum(unsigned char b);
+
+		/**
+		 * @brief Converts a set of bytes into base64 encoding.
+		 * 
+		 * @param bytes 
+		 * @param urlSafe 
+		 * 		Replaces select values with others that can be put into a url.
+		 * 			Specifically replaces '+' and '/'
+		 * @return std::string 
+		 */
+		static std::string base64Encode(std::vector<unsigned char> bytes, bool urlSafe);
+
+		/**
+		 * @brief Converts a set of bytes into base64 encoding.
+		 * 
+		 * @param bytes 
+		 * @param size
+		 * @param urlSafe 
+		 * 		Replaces select values with others that can be put into a url.
+		 * 			Specifically replaces '+' and '/'
+		 * @return std::string 
+		 */
+		static std::string base64Encode(unsigned char* bytes, size_t size, bool urlSafe);
+
+		/**
+		 * @brief Converts a base64 encoded string or set of bytes back into the original byte data.
+		 * 
+		 * @param bytes 
+		 * @return std::vector<unsigned char> 
+		 */
+		static std::vector<unsigned char> base64Decode(std::vector<unsigned char> bytes);
+
+		/**
+		 * @brief Converts a base64 encoded string or set of bytes back into the original byte data.
+		 * 
+		 * @param bytes 
+		 * @return std::vector<unsigned char> 
+		 */
+		static std::vector<unsigned char> base64Decode(std::string bytes);
+
+		/**
+		 * @brief Converts a base64 encoded string or set of bytes back into the original byte data.
+		 * 
+		 * @param bytes 
+		 * @param size
+		 * @return std::vector<unsigned char> 
+		 */
+		static std::vector<unsigned char> base64Decode(unsigned char* bytes, size_t size);
+		/**
 		 * @brief Performs a bitwise left rotate on the data type.
 		 * 
 		 * @tparam T 

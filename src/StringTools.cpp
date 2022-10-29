@@ -61,6 +61,16 @@
 namespace glib
 {
 
+	//Used in base64 conversions
+	unsigned char base64Lookup[64] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+                                'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+                                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/'};
+
+	unsigned char base64LookupURLSafe[64] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+									'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+									'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_'};
+
+
 	bool StringTools::hasInit = false;
 	wchar_t const StringTools::lineBreak = L'\n';
 
@@ -520,6 +530,163 @@ namespace glib
 			results[i] = str[i];
 		}
 		return results;
+	}
+
+	int StringTools::base64CharToNum(unsigned char base64Char)
+	{
+		if(base64Char >= 'A' && base64Char <= 'Z')
+			return base64Char - 'A';
+		else if(base64Char >= 'a' && base64Char <= 'z')
+			return (base64Char - 'a') + 26;
+		else if(base64Char >= '0' && base64Char <= '9')
+			return (base64Char - '0') + 52;
+		else if(base64Char == '+' || base64Char == '-')
+			return 62;
+		else if(base64Char == '/' || base64Char == '_')
+			return 63;
+			
+		return -1;
+	}
+	std::string StringTools::base64Encode(std::vector<unsigned char> bytes, bool urlSafe)
+	{
+		return base64Encode(bytes.data(), bytes.size(), urlSafe);
+	}
+	std::string StringTools::base64Encode(unsigned char* bytes, size_t size, bool urlSafe)
+	{
+		std::string result;
+		
+		if(size <= 0)
+			return "";
+		
+		size_t adjustedSize = size - (size%3);
+		size_t remainder = size - adjustedSize;
+		
+		size_t index = 0;
+		while(index < adjustedSize)
+		{
+			unsigned char c1,c2,c3,c4;
+			c1 = (bytes[index] & 0b11111100) >> 2;
+			c2 = ((bytes[index] & 0b00000011) << 4) + ((bytes[index+1] & 0b11110000) >> 4);
+			c3 = ((bytes[index+1] & 0b00001111) << 2) + ((bytes[index+2] & 0b11000000) >> 6);
+			c4 = ((bytes[index+2] & 0b00111111));
+			
+			if(urlSafe)
+			{
+				result += base64LookupURLSafe[c1];
+				result += base64LookupURLSafe[c2];
+				result += base64LookupURLSafe[c3];
+				result += base64LookupURLSafe[c4];
+			}
+			else
+			{
+				result += base64Lookup[c1];
+				result += base64Lookup[c2];
+				result += base64Lookup[c3];
+				result += base64Lookup[c4];
+			}
+			index += 3;
+		}
+
+		if(remainder == 1)
+		{
+			unsigned char c1, c2;
+			c1 = (bytes[adjustedSize] & 0b11111100) >> 2;
+			c2 = ((bytes[adjustedSize] & 0b00000011) << 4);
+			
+			if(urlSafe)
+			{
+				result += base64LookupURLSafe[c1];
+				result += base64LookupURLSafe[c2];
+			}
+			else
+			{
+				result += base64Lookup[c1];
+				result += base64Lookup[c2];
+			}
+			result += "=="; //padding
+		}
+		else if(remainder == 2)
+		{
+			unsigned char c1, c2, c3;
+			c1 = (bytes[adjustedSize] & 0b11111100) >> 2;
+			c2 = ((bytes[adjustedSize] & 0b00000011) << 4) + ((bytes[adjustedSize+1] & 0b11110000) >> 4);
+			c3 = ((bytes[adjustedSize+1] & 0b00001111) << 2);
+			
+			if(urlSafe)
+			{
+				result += base64LookupURLSafe[c1];
+				result += base64LookupURLSafe[c2];
+				result += base64LookupURLSafe[c3];
+			}
+			else
+			{
+				result += base64Lookup[c1];
+				result += base64Lookup[c2];
+				result += base64Lookup[c3];
+			}
+			result += "="; //padding
+		}
+
+		return result;
+	}
+
+	std::vector<unsigned char> StringTools::base64Decode(std::vector<unsigned char> bytes)
+	{
+		return base64Decode(bytes.data(), bytes.size());
+	}
+	std::vector<unsigned char> StringTools::base64Decode(unsigned char* bytes, size_t size)
+	{
+		std::vector<unsigned char> result;
+		if(size == 0)
+			return {};
+		
+		unsigned int temp = 0;
+		int bitsAvaliable = 0;
+		for(size_t i=0; i<size; i++)
+		{
+			if(bytes[i] != '=')
+			{
+				int charToNum = base64CharToNum(bytes[i]);
+				if(charToNum < 0)
+					return {}; //error
+				
+				temp = temp << 6;
+				temp += charToNum;
+				bitsAvaliable += 6;
+
+				if(bitsAvaliable >= 8)
+				{
+					unsigned char nByte = temp >> (bitsAvaliable-8);
+					result.push_back(nByte);
+
+					unsigned int andValue = (1<<(bitsAvaliable-8))-1;
+					temp = (temp&andValue);
+					bitsAvaliable-=8;
+				}
+			}
+			else
+			{
+				//If there are bits available, use them to create bytes
+				if(bitsAvaliable > 0)
+				{
+					result.push_back(temp);
+					temp = 0;
+				}
+
+				bitsAvaliable = 0;
+			}
+		}
+
+		//If there are bits available, use them to create bytes
+		if(bitsAvaliable > 0)
+		{
+			result.push_back(temp);
+			temp = 0;
+		}
+
+		bitsAvaliable = 0;
+
+		return result;
 	}
 
 	std::vector<std::string> StringTools::splitString(std::string s, const char delim, bool removeEmpty)

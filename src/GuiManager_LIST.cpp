@@ -7,13 +7,37 @@ namespace glib
 
 	const Class GuiList::globalClass = Class("GuiList", {&GuiInstance::globalClass});
 
-	GuiList::GuiList(int x, int y, bool isVerticalList)
+	GuiList::GuiList(int x, int y, bool isVerticalList) : GuiInstance()
 	{
 		setClass(globalClass);
-		baseX = x;
-		baseY = y;
+		setBaseX(x);
+		setBaseY(y);
 		isVertical = isVerticalList;
 		includeChildrenInBounds = false;
+		setPriority(HIGHER_PRIORITY);
+	}
+
+	GuiList::GuiList(const GuiList& other) : GuiInstance(other)
+	{
+		copy(other);
+	}
+
+	void GuiList::operator=(const GuiList& other)
+	{
+		GuiInstance::copy(other);
+		copy(other);
+	}
+
+	void GuiList::copy(const GuiList& other)
+	{
+		setClass(globalClass);
+		setBaseX(other.x);
+		setBaseY(other.y);
+		isVertical = other.isVertical;
+		includeChildrenInBounds = false;
+		elementSpacing = other.elementSpacing;
+		backgroundColor = other.backgroundColor;
+		outlineColor = other.outlineColor;
 		setPriority(HIGHER_PRIORITY);
 	}
 
@@ -29,6 +53,14 @@ namespace glib
 
 	void GuiList::update()
 	{
+		Box2D oldBounds = boundingBox;
+		boundingBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
+		if(!getVisible())
+		{
+			//Don't need to do anything
+			return;
+		}
+
 		std::vector<GuiInstance*> children = getChildren();
 		int height = 0;
 		int width = 0;
@@ -39,18 +71,21 @@ namespace glib
 			{
 				locations[i]->x = x;
 				locations[i]->y = y + height;
-
+				
 				GuiInstance* c = children[i];
-				c->setRenderOffset(getRenderOffsetPointerX(), getRenderOffsetPointerY());
-				Box2D bounds = c->getBoundingBox();
+				if(c->getVisible())
+				{
+					c->setRenderOffset(getRenderOffsetPointerX(), getRenderOffsetPointerY());
+					Box2D bounds = c->getBoundingBox();
 
 
-				int disToObjectEdge = bounds.getRightBound() - x;
+					int disToObjectEdge = bounds.getRightBound() - x;
 
-				width = MathExt::max(disToObjectEdge, width);
-				height += bounds.getHeight();
-				if(i<children.size()-1)
-					height += elementSpacing;
+					width = MathExt::max(disToObjectEdge, width);
+					height += bounds.getHeight();
+					if(i<children.size()-1)
+						height += elementSpacing;
+				}
 			}
 		}
 		else
@@ -61,22 +96,26 @@ namespace glib
 				locations[i]->y = y;
 
 				GuiInstance* c = children[i];
-				c->setRenderOffset(getRenderOffsetPointerX(), getRenderOffsetPointerY());
-				Box2D bounds = c->getBoundingBox();
-				
-				int disToObjectEdge = bounds.getBottomBound() - y;
 
-				width += bounds.getWidth();
-				if(i<children.size()-1)
-					width += elementSpacing;
+				if(c->getVisible())
+				{
+					c->setRenderOffset(getRenderOffsetPointerX(), getRenderOffsetPointerY());
+					Box2D bounds = c->getBoundingBox();
+					
+					int disToObjectEdge = bounds.getBottomBound() - y;
 
-				height = MathExt::max(disToObjectEdge, height);
+					width += bounds.getWidth();
+					if(i<children.size()-1)
+						width += elementSpacing;
+
+					height = MathExt::max(disToObjectEdge, height);
+				}
 			}
 		}
 
-		if((int)boundingBox.getLeftBound() == x && (int)boundingBox.getRightBound() == x+width)
+		if((int)oldBounds.getLeftBound() == x && (int)oldBounds.getRightBound() == x+width)
 		{
-			if((int)boundingBox.getTopBound() == y && (int)boundingBox.getBottomBound() == y+height)
+			if((int)oldBounds.getTopBound() == y && (int)oldBounds.getBottomBound() == y+height)
 			{
 				//Don't do anything. It may still need to be redrawn for other reasons.
 			}
@@ -114,6 +153,9 @@ namespace glib
 			graphicsInterface->setColor(outlineColor);
 			graphicsInterface->drawRect(x, y, x+width, y+height, true);
 		}
+
+		// graphicsInterface->setColor(Color{255, 0, 0, 255});
+		// graphicsInterface->drawRect(x, y, x+width, y+height, true);
 	}
 
 	void GuiList::setElementSpacing(int value)

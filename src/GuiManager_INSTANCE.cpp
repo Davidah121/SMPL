@@ -97,6 +97,7 @@ namespace glib
 		{
 			ins->parent = nullptr;
 			ins->setOffset(nullptr, nullptr);
+			ins->setRenderOffset(nullptr, nullptr);
 		}
 
 		parent = nullptr;
@@ -139,6 +140,7 @@ namespace glib
 
 	void GuiInstance::removeChild(GuiInstance* ins)
 	{
+		bool found = false;
 		std::vector<GuiInstance*> m = std::vector<GuiInstance*>();
 		for(int i=0; i<children.size(); i++)
 		{
@@ -146,13 +148,20 @@ namespace glib
 			{
 				m.push_back(children[i]);
 			}
+			else
+			{
+				found = true;
+			}
 		}
 
 		children = m;
 
-		ins->parent = nullptr;
-		ins->setOffset(nullptr, nullptr);
-		ins->setRenderOffset(nullptr, nullptr);
+		if(found)
+		{
+			ins->parent = nullptr;
+			ins->setOffset(nullptr, nullptr);
+			ins->setRenderOffset(nullptr, nullptr);
+		}
 	}
 
 	std::vector<GuiInstance*> GuiInstance::getChildren()
@@ -178,14 +187,17 @@ namespace glib
 			shouldCallV2 = true;
 			shouldCallV = false;
 		}
+		
 		//set the raw variable because setShouldRedraw will be adjusted by the visible attribute.
 		shouldRedraw = true;
 	}
 
 	bool GuiInstance::getVisible()
 	{
-		bool finalVisibility = (parent!=nullptr) ? (visible && parent->getVisible()) : visible;
-		return finalVisibility;
+		if(parent != nullptr)
+			return (visible && parent->getVisible());
+		else
+			return visible;
 	}
 
 	void GuiInstance::setActive(bool is)
@@ -316,12 +328,13 @@ namespace glib
 
 	Box2D GuiInstance::getBoundingBox()
 	{
+		//resolve
 		solveBoundingBox();
 		if(includeChildrenInBounds)
 		{
 			for(GuiInstance* child : children)
 			{
-				if(child->getVisible() && child->getActive())
+				if(child->getActive())
 				{
 					Box2D temp = child->getBoundingBox();
 

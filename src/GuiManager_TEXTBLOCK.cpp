@@ -7,7 +7,7 @@ namespace glib
 
 	const Class GuiTextBlock::globalClass = Class("GuiTextBlock", {&GuiInstance::globalClass});
 
-	GuiTextBlock::GuiTextBlock(int x, int y, int width, int height)
+	GuiTextBlock::GuiTextBlock(int x, int y, int width, int height) : GuiInstance()
 	{
 		setClass(globalClass);
 		setBaseX(x);
@@ -16,9 +16,39 @@ namespace glib
 		this->maxHeight = height;
 	}
 
+	GuiTextBlock::GuiTextBlock(const GuiTextBlock& other) : GuiInstance(other)
+	{
+		copy(other);
+	}
+
+	void GuiTextBlock::operator=(const GuiTextBlock& other)
+	{
+		GuiInstance::copy(other);
+		copy(other);
+	}
+
+	void GuiTextBlock::copy(const GuiTextBlock& other)
+	{
+		setClass(globalClass);
+		maxWidth = other.maxWidth;
+		maxHeight = other.maxHeight;
+		shouldHighlight = other.shouldHighlight;
+		startHighlight = other.startHighlight;
+		endHighlight = other.endHighlight;
+		offsetX = other.offsetX;
+		offsetY = other.offsetY;
+		allowWrapText = other.allowWrapText;
+		updateBounds = other.updateBounds;
+		defaultString = other.defaultString;
+		textColor = other.textColor;
+		defaultTextColor = other.defaultTextColor;
+		highlightColor = other.highlightColor;
+		textFont = other.textFont;
+		text = other.text;
+	}
+
 	GuiTextBlock::~GuiTextBlock()
 	{
-		
 	}
 
 	void GuiTextBlock::update()

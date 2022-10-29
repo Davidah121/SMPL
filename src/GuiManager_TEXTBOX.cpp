@@ -17,6 +17,7 @@ namespace glib
 		onEnterPressedFunction = nullptr;
 		onKeyPressFunction = nullptr;
 
+		includeChildrenInBounds = false;
 		textElement = GuiTextBlock(0, 0, width, height);
 		textElement.setShouldHighlightText(true);
 		addChild( &textElement );
@@ -48,6 +49,7 @@ namespace glib
 		focusOutlineColor = other.focusOutlineColor;
 
 		textElement = other.textElement;
+		includeChildrenInBounds = false;
 
 		removeChild((GuiInstance*)&other.textElement);
 		addChild( &textElement );
@@ -127,6 +129,9 @@ namespace glib
 				GuiFontInterface* fInt = (textElement.getFont() != nullptr) ? textElement.getFont() : graphicsInterface->getFont();
 				Font* f = fInt->getFont();
 
+				if(f == nullptr)
+					return;
+				
 				Vec2f cursorPos = f->getCursorLocation( testText, cursorLocation, -1, textElement.getMaxHeight() );
 
 				cursorPos.x += textElement.getBaseX() + xOffsetForText;

@@ -75,7 +75,7 @@ namespace glib
 		 * @brief Destroy the GuiInstance object
 		 * 
 		 */
-		~GuiInstance();
+		virtual ~GuiInstance();
 
 		//Object and Class Stuff
 		static const Class globalClass;
@@ -875,6 +875,20 @@ namespace glib
 		GuiTextBlock(int x, int y, int maxWidth = -1, int maxHeight = -1);
 
 		/**
+		 * @brief Construct a new Gui Text Block object from another.
+		 * 
+		 * @param other 
+		 */
+		GuiTextBlock(const GuiTextBlock& other);
+		
+		/**
+		 * @brief Copy a Gui Text Block object from another.
+		 * 
+		 * @param other 
+		 */
+		void operator=(const GuiTextBlock& other);
+
+		/**
 		 * @brief Destroy the GuiTextBlock object
 		 * 
 		 */
@@ -1108,7 +1122,8 @@ namespace glib
 
 	private:
 		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
-
+		void copy(const GuiTextBlock& other);
+		
 		int maxWidth = -1;
 		int maxHeight = -1;
 		bool shouldHighlight = false;
@@ -1850,6 +1865,8 @@ namespace glib
 	{
 	public:
 		GuiList(int x, int y, bool isVertical = true);
+		GuiList(const GuiList& other);
+		void operator=(const GuiList& other);
 		~GuiList();
 
 		//Object and Class Stuff
@@ -1892,6 +1909,7 @@ namespace glib
 
 	private:
 		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
+		void copy(const GuiList& other);
 
 		std::vector<Point*> locations;
 		int elementSpacing = 1;
@@ -1905,6 +1923,8 @@ namespace glib
 	{
 	public:
 		GuiGrid(int x, int y);
+		GuiGrid(const GuiGrid& other);
+		void operator=(const GuiGrid& other);
 		~GuiGrid();
 
 		//Object and Class Stuff
@@ -1950,6 +1970,7 @@ namespace glib
 
 	private:
 		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
+		void copy(const GuiGrid& other);
 
 		std::vector<Point*> locations;
 		int gridXSpacing = 1;
@@ -1966,6 +1987,8 @@ namespace glib
 	{
 	public:
 		GuiContextMenu();
+		GuiContextMenu(const GuiContextMenu& other);
+		void operator=(const GuiContextMenu& other);
 		~GuiContextMenu();
 
 		//Object and Class Stuff
@@ -2004,9 +2027,120 @@ namespace glib
 		
 	private:
 		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
+		void copy(const GuiContextMenu& other);
 
 		GuiList listMenu = GuiList(0, 0);
 		bool showOnRightClick = true;
+		
+	};
+
+	class GuiContextMenuHelper : public GuiInstance
+	{
+	public:
+
+		//Object and Class Stuff
+		static const Class globalClass;
+
+		void update();
+		void render();
+
+		static GuiContextMenuHelper* getContextMenuHelper(GuiManager* manager);
+
+		void setContextMenu(GuiContextMenu* o);
+		void removeContextMenu(GuiContextMenu* o);
+		void removeContextMenu();
+	
+	protected:
+		void solveBoundingBox();
+
+	private:
+		GuiContextMenuHelper();
+		~GuiContextMenuHelper();
+		
+		static GuiContextMenuHelper singletonHelper;
+		GuiContextMenu* heldContextMenu = nullptr;
+	};
+
+	class GuiDatePicker : public GuiInstance
+	{
+	public:
+		/**
+		 * @brief Construct a new Date Picker object
+		 * 		The object consist of a Textbox with a button inside. The button shows a calendar for easy selection.
+		 * 		Default format is in mm/dd/yyyy
+		 */
+		GuiDatePicker(int x, int y, int width, int height, bool calendarChild = true);
+		GuiDatePicker(const GuiDatePicker& other);
+		void operator=(const GuiDatePicker& other);
+		~GuiDatePicker();
+
+		//Object and Class Stuff
+		static const Class globalClass;
+
+		void update();
+		void render();
+		
+		void toggleCalendar();
+		std::string getDateString();
+		void setDateString(std::string text);
+		
+		/**
+		 * @brief Loads data from an Xml Attribute.
+		 * 		This allows a large list of attributes to be defined
+		 * 		and allow each class to deal with them in their own way.
+		 * 		
+		 * 		Will remove data from the hashmap if it has been processed.
+		 * 
+		 * @param attrib 
+		 */
+		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
+		static void registerLoadFunction();
+
+	protected:
+		void solveBoundingBox();
+		
+	private:
+		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
+		
+		/**
+		 * @brief Construct a new Gui Date Picker object
+		 * 		Private constructor that does not initialize anything.
+		 * 
+		 */
+		GuiDatePicker();
+		void copy(const GuiDatePicker& other);
+
+		void init(int x, int y, int width, int height, bool calendarChild);
+		void dispose();
+		void setCalendarValues();
+		void gridButtonPress(int index);
+		void shiftRightMonth();
+		void shiftLeftMonth();
+
+		int width = 0;
+		int height = 0;
+		int gridWidth = 0;
+		int gridHeight = 0;
+		bool visibleCalendar = false;
+		bool calendarIsChild = true;
+
+		Color backgroundColor;
+		Color gridHeaderColor;
+
+		GuiList mainContainer = GuiList(0, 0, false);
+		GuiTextBox dateStringBox = GuiTextBox(0, 0, 0, 0);
+		GuiRectangleButton calendarButton = GuiRectangleButton(0, 0, 0, 0);
+
+		GuiList calendarStack = GuiList(0, 0, true);
+		GuiList topHorizontalBar = GuiList(0, 0, false);
+
+		GuiRectangleButton gridLeftBut = GuiRectangleButton(0, 0, 0, 0);
+		GuiRectangleButton gridRightBut = GuiRectangleButton(0, 0, 0, 0);
+		GuiTextBlock gridCenterText = GuiTextBlock(0, 0, 0, 0);
+		
+		GuiGrid dateGrid = GuiGrid(0, 0);
+		std::vector<GuiRectangleButton*> gridButtons;
+		std::vector<GuiTextBlock*> gridText;
 		
 	};
 

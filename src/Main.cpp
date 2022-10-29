@@ -503,18 +503,41 @@ void testINI()
     }
 }
 
+void testDatePicker()
+{
+    SimpleGraphics::init();
+
+    WindowOptions options;
+    options.threadManaged = false;
+
+    SimpleWindow w = SimpleWindow("Title", 640, 480, -1, -1, options);
+
+    GuiDatePicker testObject = GuiDatePicker(32, 32, 96, 24); //memory issue
+    // GuiTextBox testObject = GuiTextBox(32, 32, 96, 24);
+    w.getGuiManager()->addElement(&testObject);
+
+    while(w.getRunning())
+    {
+        w.update();
+        w.guiUpdate();
+        w.repaint();
+
+        System::sleep(10);
+    }
+}
+
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main(int argc, char** argv)
 {
     //testINI();
     // Sleep(1000);
-    std::string com = argv[1];
-    if(com == "client")
-        networkTest(Network::TYPE_CLIENT);
-    else
-        networkTest(Network::TYPE_SERVER);
+    // std::string com = argv[1];
+    // if(com == "client")
+    //     networkTest(Network::TYPE_CLIENT);
+    // else
+    //     networkTest(Network::TYPE_SERVER);
     
-    // testWindow();
+    testWindow();
     // testVectorGraphic();
     // testVectorFont();
     // testSpatialHashing();
@@ -523,6 +546,8 @@ int main(int argc, char** argv)
     // testFileStuff();
 
     // testOTFLoading();
+
+    // testDatePicker();
 
     return 0;
 }

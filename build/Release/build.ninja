@@ -57,6 +57,7 @@ build $objDir/GuiManager_CANVAS.o: buildToObject src/GuiManager_CANVAS.cpp
 build $objDir/GuiManager_CONTAINER.o: buildToObject src/GuiManager_CONTAINER.cpp
 build $objDir/GuiManager_CONTEXT.o: buildToObject src/GuiManager_CONTEXT.cpp
 build $objDir/GuiManager_CUSTOM.o: buildToObject src/GuiManager_CUSTOM.cpp
+build $objDir/GuiManager_DatePicker.o: buildToObject src/GuiManager_DatePicker.cpp
 build $objDir/GuiManager_GRID.o: buildToObject src/GuiManager_GRID.cpp
 build $objDir/GuiManager_INSTANCE.o: buildToObject src/GuiManager_INSTANCE.cpp
 build $objDir/GuiManager_LIST.o: buildToObject src/GuiManager_LIST.cpp

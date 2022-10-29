@@ -348,6 +348,9 @@ namespace glib
 		bool init();
 
 		void dispose();
+
+		void initNetwork(bool TCP);
+		
 		void createSocket(bool TCP);
 		void closeSocket();
 
@@ -401,6 +404,7 @@ namespace glib
 		bool type = TYPE_SERVER;
 		int port = 0;
 		std::string location;
+		bool isTCP = true;
 
 		static int totalNetworks;
 		

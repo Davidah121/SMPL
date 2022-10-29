@@ -11,6 +11,8 @@ namespace glib
 		this->type = type;
 		this->port = port;
 		this->location = location;
+		this->isTCP = TCP;
+		this->totalAllowedConnections = amountOfConnectionsAllowed;
 
 		if(!init())
 		{
@@ -19,27 +21,8 @@ namespace glib
 		}
 		else
 		{
-			if(type==TYPE_SERVER)
-			{
-				this->totalAllowedConnections = amountOfConnectionsAllowed;
-				createSocket(TCP);
-				setupSocket();
-				bindSocket();
-
-				setRunning(true);
-				networkThread = std::thread(&Network::threadRun, this);
-			}
-			else if(type==TYPE_CLIENT)
-			{
-				createSocket(TCP);
-				setupSocket();
-				connections.push_back(sock);
-				waitingOnRead.push_back(false);
-				sock = 0;
-
-				setRunning(true);
-				networkThread = std::thread(&Network::threadRun, this);
-			}
+			initNetwork(TCP);
+			networkThread = std::thread(&Network::threadRun, this);
 		}
 	}
 
@@ -73,6 +56,28 @@ namespace glib
 		#endif
 
 		return true;
+	}
+
+	void Network::initNetwork(bool tcp)
+	{
+		if(type==TYPE_SERVER)
+		{
+			createSocket(tcp);
+			setupSocket();
+			bindSocket();
+
+			setRunning(true);
+		}
+		else if(type==TYPE_CLIENT)
+		{
+			createSocket(tcp);
+			setupSocket();
+			connections.push_back(sock);
+			waitingOnRead.push_back(false);
+			sock = 0;
+
+			setRunning(true);
+		}
 	}
 
 	void Network::createSocket(bool tcp)
@@ -1067,6 +1072,10 @@ namespace glib
 					{
 						if(getReconnect())
 						{
+							if(connections.size() == 0)
+							{
+								initNetwork(isTCP);
+							}
 							connect();
 							int lastError = GetLastError();
 							wouldConnect = (GetLastError() == WSAEISCONN);
