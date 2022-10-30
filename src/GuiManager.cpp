@@ -527,7 +527,7 @@ namespace glib
 		{
 			invalidImage = true;
 		}
-
+		
 		for(GuiInstance* obj : objects)
 		{
 			updateBounds(obj, shouldRedrawCount);
@@ -552,6 +552,7 @@ namespace glib
 			if(invalidImage)
 			{
 				graphicsInterface.clear();
+				redrawCount++;
 			}
 			else
 			{
@@ -698,6 +699,16 @@ namespace glib
 		double scaling = expectedSize.y / surf->getHeight();
 
 		return (int)temp*scaling;
+	}
+
+	bool GuiManager::getFocus()
+	{
+		return isInFocus;
+	}
+
+	void GuiManager::setFocus(bool v)
+	{
+		isInFocus = v;
 	}
 
 	Color GuiManager::getBackgroundColor()

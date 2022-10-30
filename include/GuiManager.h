@@ -410,7 +410,7 @@ namespace glib
 		bool staticScaling = false;
 		bool includeChildrenInBounds = true;
 
-		Box2D boundingBox = Box2D(0, 0, 0, 0);
+		Box2D boundingBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
 		Box2D previousBoundingBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
 
 		std::string nameID = "";
@@ -2319,6 +2319,24 @@ namespace glib
 		Color getBackgroundColor();
 
 		/**
+		 * @brief Gets whether the GuiManager is in focus or not.
+		 * 		This is equivalent to the window being focused.
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
+		bool getFocus();
+
+		/**
+		 * @brief Sets whether the GuiManager is in focus or not.
+		 * 		If it is attached to a SimpleWindow, that window will call this function when the window is focused.
+		 * 		Otherwise, call this function when the GuiManager should be in focus.
+		 * 
+		 * @param v 
+		 */
+		void setFocus(bool v);
+
+		/**
 		 * @brief Sets the Background Color for the Image
 		 * 		The image is cleared to this color before any rendering occurs
 		 * 
@@ -2399,6 +2417,7 @@ namespace glib
 		int windowY = 0;
 		bool invalidImage = true;
 		bool alwaysInvalidate = false;
+		bool isInFocus = false;
 
 		Vec2f expectedSize;
 

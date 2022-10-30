@@ -54,7 +54,7 @@ namespace glib
 	void GuiList::update()
 	{
 		Box2D oldBounds = boundingBox;
-		boundingBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
+		boundingBox = Box2D(x, y, x, y); //Set the bounds to be at the x and y position
 		if(!getVisible())
 		{
 			//Don't need to do anything
@@ -62,6 +62,7 @@ namespace glib
 		}
 
 		std::vector<GuiInstance*> children = getChildren();
+		
 		int height = 0;
 		int width = 0;
 
@@ -78,11 +79,12 @@ namespace glib
 					c->setRenderOffset(getRenderOffsetPointerX(), getRenderOffsetPointerY());
 					Box2D bounds = c->getBoundingBox();
 
-
-					int disToObjectEdge = bounds.getRightBound() - x;
-
-					width = MathExt::max(disToObjectEdge, width);
-					height += bounds.getHeight();
+					boundingBox.setLeftBound( MathExt::min(boundingBox.getLeftBound(), (double)x+c->getBaseX()) );
+					boundingBox.setRightBound( MathExt::max(boundingBox.getRightBound(), (double)x+c->getBaseX()+bounds.getWidth()) );
+					boundingBox.setTopBound( MathExt::min(boundingBox.getTopBound(), (double)y+c->getBaseY()) );
+					boundingBox.setBottomBound( MathExt::max(boundingBox.getBottomBound(), (double)y+c->getBaseY()+bounds.getHeight()+height) );
+					
+					height = boundingBox.getHeight();
 					if(i<children.size()-1)
 						height += elementSpacing;
 				}
@@ -102,13 +104,14 @@ namespace glib
 					c->setRenderOffset(getRenderOffsetPointerX(), getRenderOffsetPointerY());
 					Box2D bounds = c->getBoundingBox();
 					
-					int disToObjectEdge = bounds.getBottomBound() - y;
-
-					width += bounds.getWidth();
+					boundingBox.setLeftBound( MathExt::min(boundingBox.getLeftBound(), (double)x+c->getBaseX()) );
+					boundingBox.setRightBound( MathExt::max(boundingBox.getRightBound(), (double)x+c->getBaseX()+bounds.getWidth()+width) );
+					boundingBox.setTopBound( MathExt::min(boundingBox.getTopBound(), (double)y+c->getBaseY()) );
+					boundingBox.setBottomBound( MathExt::max(boundingBox.getBottomBound(), (double)y+c->getBaseY()+bounds.getHeight()) );
+					
+					width += boundingBox.getWidth();
 					if(i<children.size()-1)
 						width += elementSpacing;
-
-					height = MathExt::max(disToObjectEdge, height);
 				}
 			}
 		}
@@ -128,34 +131,32 @@ namespace glib
 		{
 			setShouldRedraw(true);
 		}
-
-		boundingBox.setLeftBound(x);
-		boundingBox.setRightBound(x+width);
-		boundingBox.setTopBound(y);
-		boundingBox.setBottomBound(y+height);
-
 	}
 
 	void GuiList::render()
 	{
-		int width = boundingBox.getWidth();
-		int height = boundingBox.getHeight();
+		int x1 = boundingBox.getLeftBound();
+		int y1 = boundingBox.getTopBound();
+		
+		int x2 = boundingBox.getRightBound();
+		int y2 = boundingBox.getBottomBound();
+
+		if(x1>x2 || y1>y2)
+			return;
+		
 		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
 		
 		if(backgroundColor.alpha != 0)
 		{
 			graphicsInterface->setColor(backgroundColor);
-			graphicsInterface->drawRect(x, y, x+width, y+height, false);
+			graphicsInterface->drawRect(x1, y1, x2, y2, false);
 		}
 		
 		if(outlineColor.alpha != 0)
 		{
 			graphicsInterface->setColor(outlineColor);
-			graphicsInterface->drawRect(x, y, x+width, y+height, true);
+			graphicsInterface->drawRect(x1, y1, x2, y2, true);
 		}
-
-		// graphicsInterface->setColor(Color{255, 0, 0, 255});
-		// graphicsInterface->drawRect(x, y, x+width, y+height, true);
 	}
 
 	void GuiList::setElementSpacing(int value)

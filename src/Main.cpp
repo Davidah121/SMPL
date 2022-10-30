@@ -6,6 +6,7 @@
 #include "IniFile.h"
 #include "VectorFont.h"
 #include "Network.h"
+#include "Input.h"
 #include <stdlib.h>
 #include <atomic>
 
@@ -503,7 +504,7 @@ void testINI()
     }
 }
 
-void testDatePicker()
+void testBoundingBoxes()
 {
     SimpleGraphics::init();
 
@@ -512,17 +513,38 @@ void testDatePicker()
 
     SimpleWindow w = SimpleWindow("Title", 640, 480, -1, -1, options);
 
-    GuiDatePicker testObject = GuiDatePicker(32, 32, 96, 24); //memory issue
-    // GuiTextBox testObject = GuiTextBox(32, 32, 96, 24);
-    w.getGuiManager()->addElement(&testObject);
+    // GuiDatePicker testObject = GuiDatePicker(32, 32, 96, 24); //memory issue
+    GuiTextBox testObject2 = GuiTextBox(32, 32, 96, 24);
+    GuiContextMenu testObject = GuiContextMenu();
+    testObject.setShowOnRightClick(true);
+    GuiTextBlock obj1 = GuiTextBlock(0, 0, 128, 32);
+    obj1.setText("1Test");
+    GuiTextBlock obj2 = GuiTextBlock(0, 0, 128, 32);
+    obj2.setText("2 But also a test");
+    GuiTextBlock obj3 = GuiTextBlock(0, 0, 128, 32);
+    obj3.setText("_3 Biggest Test you've ever seen");
+    
+    testObject.addChild( &obj1 );
+    testObject.addChild( &obj2 );
+    testObject.addChild( &obj3 );
+
+    testObject2.addChild(&testObject);
+    
+    w.getGuiManager()->addElement(&testObject2);
+    w.getGuiManager()->alwaysInvalidateImage(true);
 
     while(w.getRunning())
     {
+        // Input::pollInput();
         w.update();
-        w.guiUpdate();
-        w.repaint();
 
-        System::sleep(10);
+        // if(Input::getKeyPressed(Input::KEY_SPACE))
+        // {
+            w.guiUpdate();
+            w.repaint();
+        // }
+
+        System::sleep(16);
     }
 }
 
@@ -537,13 +559,14 @@ int main(int argc, char** argv)
     // else
     //     networkTest(Network::TYPE_SERVER);
     
-    testWindow();
+    // testWindow();
     // testVectorGraphic();
     // testVectorFont();
     // testSpatialHashing();
     // testFontDrawing();
     // testPolygonStuff();
     // testFileStuff();
+    testBoundingBoxes();
 
     // testOTFLoading();
 

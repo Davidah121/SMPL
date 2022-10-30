@@ -140,6 +140,14 @@ namespace glib
 			{
 				switch (msg)
 				{
+				case WM_SETFOCUS:
+					if(currentWindow->gui!=nullptr)
+						currentWindow->gui->setFocus(true);
+					break;
+				case WM_KILLFOCUS:
+					if(currentWindow->gui!=nullptr)
+						currentWindow->gui->setFocus(false);
+					break;
 				case WM_ERASEBKGND:
 					break;
 				case WM_PAINT:
@@ -623,6 +631,7 @@ namespace glib
 			if(windowType.initFunction != nullptr)
 				windowType.initFunction(this);
 			
+			gui->setFocus(true);
 			setFinishInit(true);
 
 			if(windowType.threadManaged == TYPE_THREAD_MANAGED)
@@ -748,6 +757,7 @@ namespace glib
 					if(windowType.initFunction != nullptr)
 						windowType.initFunction(this);
 					
+					gui->setFocus(true);
 					setFinishInit(true);
 
 					if(windowType.threadManaged == TYPE_THREAD_MANAGED)

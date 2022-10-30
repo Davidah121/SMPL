@@ -91,7 +91,6 @@ namespace glib
 		setClass(globalClass);
 		listMenu.setBackgroundColor(Color{255,255,255,255});
 		includeChildrenInBounds = true;
-		setVisible(false);
 		listMenu.setVisible(false);
 	}
 
@@ -112,7 +111,6 @@ namespace glib
 		listMenu = other.listMenu;
 		includeChildrenInBounds = true;
 		showOnRightClick = other.showOnRightClick;
-		setVisible(false);
 		listMenu.setVisible(false);
 	}
 	
@@ -155,6 +153,12 @@ namespace glib
 		{
 			if(Input::getMouseUp(Input::RIGHT_MOUSE_BUTTON))
 			{
+				if(getManager() != nullptr)
+				{
+					if(!getManager()->getFocus())
+						return; //Can't open menu unless in focus.
+				}
+
 				if(showOnRightClick)
 				{
 					GuiInstance* parentIns = this->getParent();
@@ -201,6 +205,8 @@ namespace glib
 
 	void GuiContextMenu::hideMenu()
 	{
+		listMenu.setVisible(false);
+		listMenu.setActive(false);
 		GuiContextMenuHelper* helper = GuiContextMenuHelper::getContextMenuHelper( this->getManager() );
 		if(helper != nullptr)
 			helper->removeContextMenu(this);

@@ -1,4 +1,5 @@
 #include "GuiManager.h"
+#include <ctime>
 
 namespace glib
 {
