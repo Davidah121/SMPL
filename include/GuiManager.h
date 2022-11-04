@@ -544,6 +544,213 @@ namespace glib
 		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
 	};
 
+	class GuiList : public GuiInstance
+	{
+	public:
+		GuiList(int x, int y, bool isVertical = true);
+		GuiList(const GuiList& other);
+		void operator=(const GuiList& other);
+		~GuiList();
+
+		//Object and Class Stuff
+		static const Class globalClass;
+
+		void update();
+		void render();
+
+		void setElementSpacing(int value);
+		void addElement(GuiInstance* ins);
+		void removeElement(GuiInstance* ins);
+
+		//override parent add child functions so that both addElement and addChild work the same way.
+		void addChild(GuiInstance* ins);
+		void removeChild(GuiInstance* ins);
+
+		bool pointIsInList(int x, int y);
+
+		void setBackgroundColor(Color c);
+		void setOutlineColor(Color c);
+
+		void setIsVerticalList(bool v);
+		bool getIsVerticalList();
+		
+		/**
+		 * @brief Loads data from an Xml Attribute.
+		 * 		This allows a large list of attributes to be defined
+		 * 		and allow each class to deal with them in their own way.
+		 * 		
+		 * 		Will remove data from the hashmap if it has been processed.
+		 * 
+		 * @param attrib 
+		 */
+		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
+
+		static void registerLoadFunction();
+
+	protected:
+		void solveBoundingBox();
+
+	private:
+		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
+		void copy(const GuiList& other);
+
+		std::vector<Point*> locations;
+		int elementSpacing = 1;
+		bool isVertical = true;
+
+		Color backgroundColor = { 0, 0, 0, 0 };
+		Color outlineColor = { 0, 0, 0, 0 };
+	};
+
+	class GuiGrid : public GuiInstance
+	{
+	public:
+		GuiGrid(int x, int y);
+		GuiGrid(const GuiGrid& other);
+		void operator=(const GuiGrid& other);
+		~GuiGrid();
+
+		//Object and Class Stuff
+		static const Class globalClass;
+
+		void update();
+		void render();
+
+		void setGridSpacing(int x, int y);
+		void addElement(GuiInstance* ins);
+		void removeElement(GuiInstance* ins);
+		
+		//override parent add child functions so that both addElement and addChild work the same way.
+		void addChild(GuiInstance* ins);
+		void removeChild(GuiInstance* ins);
+
+		void setMaxRows(int row);
+		int getMaxRows();
+		void setMaxColumns(int col);
+		int getMaxColumns();
+
+		void setRowMajorOrder(bool v);
+
+		bool pointIsInGrid(int x, int y);
+		void setBackgroundColor(Color c);
+		void setOutlineColor(Color c);
+
+		/**
+		 * @brief Loads data from an Xml Attribute.
+		 * 		This allows a large list of attributes to be defined
+		 * 		and allow each class to deal with them in their own way.
+		 * 		
+		 * 		Will remove data from the hashmap if it has been processed.
+		 * 
+		 * @param attrib 
+		 */
+		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
+
+		static void registerLoadFunction();
+
+	protected:
+		void solveBoundingBox();
+
+	private:
+		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
+		void copy(const GuiGrid& other);
+
+		std::vector<Point*> locations;
+		int gridXSpacing = 1;
+		int gridYSpacing = 1;
+		int rowSize = 1;
+		int colSize = 1;
+		bool rowMajorOrder = false;
+		
+		Color backgroundColor = { 0, 0, 0, 0 };
+		Color outlineColor = { 0, 0, 0, 0 };
+	};
+
+	class GuiContextMenu : public GuiInstance
+	{
+	public:
+		GuiContextMenu();
+		GuiContextMenu(const GuiContextMenu& other);
+		void operator=(const GuiContextMenu& other);
+		~GuiContextMenu();
+
+		//Object and Class Stuff
+		static const Class globalClass;
+
+		void update();
+		void render();
+
+		GuiList* getListElement();
+
+		void showMenu(int x, int y);
+		void hideMenu();
+
+		bool isMenuShowing();
+
+		void setCanHideOnClick(bool v);
+		bool getCanHideOnClick();
+
+		void setShowOnRightClick(bool v);
+		bool getShowOnRightClick();
+
+		
+		//override parent add/remove child functions so that it goes to the list menu
+		void addChild(GuiInstance* ins);
+		void removeChild(GuiInstance* ins);
+		
+		/**
+		 * @brief Loads data from an Xml Attribute.
+		 * 		This allows a large list of attributes to be defined
+		 * 		and allow each class to deal with them in their own way.
+		 * 		
+		 * 		Will remove data from the hashmap if it has been processed.
+		 * 
+		 * @param attrib 
+		 */
+		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
+		static void registerLoadFunction();
+
+	protected:
+		void solveBoundingBox();
+		
+	private:
+		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
+		void copy(const GuiContextMenu& other);
+
+		GuiList listMenu = GuiList(0, 0);
+		bool showOnRightClick = true;
+		bool canHideOnClick = true;
+		
+	};
+
+	class GuiContextMenuHelper : public GuiInstance
+	{
+	public:
+
+		//Object and Class Stuff
+		static const Class globalClass;
+
+		void update();
+		void render();
+
+		static GuiContextMenuHelper* getContextMenuHelper(GuiManager* manager);
+
+		void setContextMenu(GuiContextMenu* o);
+		void removeContextMenu(GuiContextMenu* o);
+		void removeContextMenu();
+		bool isMenuShowing();
+	
+	protected:
+		void solveBoundingBox();
+
+	private:
+		GuiContextMenuHelper();
+		~GuiContextMenuHelper();
+		
+		static GuiContextMenuHelper singletonHelper;
+		GuiContextMenu* heldContextMenu = nullptr;
+	};
+
 	class GuiCustomObject : public GuiInstance
 	{
 	public:
@@ -694,6 +901,183 @@ namespace glib
 		GuiSurfaceInterface* myImage = nullptr;
 		Color clearColor = {0,0,0,0};
 	};
+
+	class GuiRectangleButton : public GuiInstance
+	{
+	public:
+		/**
+		 * @brief Construct a new GuiRectangleButton object
+		 * 
+		 * @param x 
+		 * @param y 
+		 * @param width 
+		 * @param height 
+		 */
+		GuiRectangleButton(int x, int y, int width, int height);
+
+		/**
+		 * @brief Construct a new GuiRectangleButton object from another GuiRectangleButton
+		 * 
+		 * @param other 
+		 */
+		GuiRectangleButton(const GuiRectangleButton& other);
+
+		/**
+		 * @brief Copies a GuiRectangleButton object
+		 * 
+		 * @param other 
+		 */
+		void operator=(const GuiRectangleButton& other);
+
+		/**
+		 * @brief Copies a GuiRectangleButton object
+		 * 
+		 * @param other 
+		 */
+		void copy(const GuiRectangleButton& other);
+
+		/**
+		 * @brief Destroy the GuiRectangleButton object
+		 * 
+		 */
+		~GuiRectangleButton();
+
+		//Object and Class Stuff
+		static const Class globalClass;
+		
+		/**
+		 * @brief Updates the GuiRectangleButton
+		 * 
+		 */
+		void update();
+
+		/**
+		 * @brief Renders the GuiRectangleButton
+		 * 
+		 */
+		void render();
+
+		/**
+		 * @brief Sets the OnClickFunction for the button
+		 * 
+		 * @param func 
+		 */
+		void setOnClickFunction(std::function<void(GuiInstance*)> func);
+
+		/**
+		 * @brief Sets the OnClickHoldFunction for the button
+		 * 
+		 * @param func 
+		 */
+		void setOnClickHoldFunction(std::function<void(GuiInstance*)> func);
+
+		/**
+		 * @brief Sets the OnClickReleaseFunction for the button
+		 * 
+		 * @param func 
+		 */
+		void setOnClickReleaseFunction(std::function<void(GuiInstance*)> func);
+
+		/**
+		 * @brief Sets the Background Color for the button
+		 * 
+		 * @param c 
+		 */
+		void setBackgroundColor(Color c);
+
+		/**
+		 * @brief Sets the Outline Color for the button
+		 * 
+		 * @param c 
+		 */
+		void setOutlineColor(Color c);
+
+		/**
+		 * @brief Sets the Focus Outline Color for the button
+		 * 
+		 * @param c 
+		 */
+		void setFocusOutlineColor(Color c);
+
+		/**
+		 * @brief Sets the Focus Background Color for the button
+		 * 
+		 * @param c 
+		 */
+		void setFocusBackgroundColor(Color c);
+
+		/**
+		 * @brief Sets the Hover Color for the button
+		 * 
+		 * @param c 
+		 */
+		void setHoverColor(Color c);
+
+		/**
+		 * @brief Sets the Width of the button
+		 * 
+		 * @param v 
+		 */
+		void setWidth(int v);
+
+		/**
+		 * @brief Sets the Height of the button
+		 * 
+		 * @param v 
+		 */
+		void setHeight(int v);
+
+		/**
+		 * @brief Gets the Width of the button
+		 * 
+		 * @return int 
+		 */
+		int getWidth();
+
+		/**
+		 * @brief Gets the Height of the button
+		 * 
+		 * @return int 
+		 */
+		int getHeight();
+
+		/**
+		 * @brief Loads data from an Xml Attribute.
+		 * 		This allows a large list of attributes to be defined
+		 * 		and allow each class to deal with them in their own way.
+		 * 		
+		 * 		Will remove data from the hashmap if it has been processed.
+		 * 
+		 * @param attrib 
+		 */
+		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
+
+		static void registerLoadFunction();
+
+	protected:
+		void solveBoundingBox();
+
+	private:
+		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
+		
+
+		std::function<void(GuiInstance*)> onClickFunction;
+		std::function<void(GuiInstance*)> onClickHoldFunction;
+		std::function<void(GuiInstance*)> onClickReleaseFunction;
+
+		int width = 0;
+		int height = 0;
+
+		bool hover = false;
+
+		Color backgroundColor = { 180, 180, 180, 255 };
+		Color hoverColor = {200, 200, 200, 255};
+		Color focusBackgroundColor = {225, 225, 225, 255};
+
+		Color outlineColor = { 0, 0, 0, 255 };
+		Color focusOutlineColor = { 0, 0, 255, 255 };
+	};
+
 
 	class GuiSprite : public GuiInstance
 	{
@@ -1221,6 +1605,34 @@ namespace glib
 		void setOnKeyPressFunction(std::function<void(GuiInstance*)> func);
 
 		/**
+		 * @brief Does the copy function for the textbox.
+		 * 		This can normally be done with Ctrl+C but this can be called programatically.
+		 * 
+		 */
+		void copy();
+
+		/**
+		 * @brief Does the cut function for the textbox.
+		 * 		This can normally be done with Ctrl+X but this can be called programatically.
+		 * 
+		 */
+		void cut();
+
+		/**
+		 * @brief Does the paste function for the textbox.
+		 * 		This can normally be done with Ctrl+V but this can be called programatically.
+		 * 
+		 */
+		void paste();
+
+		/**
+		 * @brief Gets the text that is currently selected.
+		 * 
+		 * @return std::string 
+		 */
+		std::string getSelectedText();
+
+		/**
 		 * @brief Sets the Background Color for the text box
 		 * 
 		 * @param c 
@@ -1269,6 +1681,29 @@ namespace glib
 		 * @return GuiTextBlock* 
 		 */
 		GuiTextBlock* getTextBlockElement();
+
+		/**
+		 * @brief Gets the built in Context Menu for the Textbox.
+		 * 
+		 * @return GuiContextMenu* 
+		 */
+		GuiContextMenu* getContextMenu();
+
+		/**
+		 * @brief Sets whether the GuiTextBox should use its built in context menu.
+		 * 		Useful if another context menu was added to the object.
+		 * 
+		 * @param v 
+		 */
+		void enableContextMenu(bool v);
+
+		/**
+		 * @brief Returns whether the GuiTextBox is using its built in context menu.
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
+		bool isContextMenuEnabled();
 
 		/**
 		 * @brief Sets the Cursor Blink Timer in frames.
@@ -1338,6 +1773,7 @@ namespace glib
 		void keyInput();
 		void mouseInput();
 		void selectionCleanup();
+		void initContextMenu();
 
 		int width = 0;
 		int height = 0;
@@ -1358,6 +1794,8 @@ namespace glib
 		int cursorBlinkMaxTime = 15;
 		int cursorWidth = 1;
 
+		bool contextMenuEnabled = true;
+
 		Color backgroundColor = { 180, 180, 180, 255 };
 		Color outlineColor = { 0, 0, 0, 255 };
 		Color focusOutlineColor = { 0, 0, 255, 255 };
@@ -1365,184 +1803,12 @@ namespace glib
 		Color cursorBlinkColor = {0,0,0,255};
 
 		GuiTextBlock textElement = GuiTextBlock(0,0,0,0);
-	};
-
-	class GuiRectangleButton : public GuiInstance
-	{
-	public:
-		/**
-		 * @brief Construct a new GuiRectangleButton object
-		 * 
-		 * @param x 
-		 * @param y 
-		 * @param width 
-		 * @param height 
-		 */
-		GuiRectangleButton(int x, int y, int width, int height);
-
-		/**
-		 * @brief Construct a new GuiRectangleButton object from another GuiRectangleButton
-		 * 
-		 * @param other 
-		 */
-		GuiRectangleButton(const GuiRectangleButton& other);
-
-		/**
-		 * @brief Copies a GuiRectangleButton object
-		 * 
-		 * @param other 
-		 */
-		void operator=(const GuiRectangleButton& other);
-
-		/**
-		 * @brief Copies a GuiRectangleButton object
-		 * 
-		 * @param other 
-		 */
-		void copy(const GuiRectangleButton& other);
-
-		/**
-		 * @brief Destroy the GuiRectangleButton object
-		 * 
-		 */
-		~GuiRectangleButton();
-
-		//Object and Class Stuff
-		static const Class globalClass;
+		GuiContextMenu contextMenu = GuiContextMenu();
+		std::vector<GuiRectangleButton*> contextMenuButtons;
+		std::vector<GuiTextBlock*> contextMenuText;
 		
-		/**
-		 * @brief Updates the GuiRectangleButton
-		 * 
-		 */
-		void update();
-
-		/**
-		 * @brief Renders the GuiRectangleButton
-		 * 
-		 */
-		void render();
-
-		/**
-		 * @brief Sets the OnClickFunction for the button
-		 * 
-		 * @param func 
-		 */
-		void setOnClickFunction(std::function<void(GuiInstance*)> func);
-
-		/**
-		 * @brief Sets the OnClickHoldFunction for the button
-		 * 
-		 * @param func 
-		 */
-		void setOnClickHoldFunction(std::function<void(GuiInstance*)> func);
-
-		/**
-		 * @brief Sets the OnClickReleaseFunction for the button
-		 * 
-		 * @param func 
-		 */
-		void setOnClickReleaseFunction(std::function<void(GuiInstance*)> func);
-
-		/**
-		 * @brief Sets the Background Color for the button
-		 * 
-		 * @param c 
-		 */
-		void setBackgroundColor(Color c);
-
-		/**
-		 * @brief Sets the Outline Color for the button
-		 * 
-		 * @param c 
-		 */
-		void setOutlineColor(Color c);
-
-		/**
-		 * @brief Sets the Focus Outline Color for the button
-		 * 
-		 * @param c 
-		 */
-		void setFocusOutlineColor(Color c);
-
-		/**
-		 * @brief Sets the Focus Background Color for the button
-		 * 
-		 * @param c 
-		 */
-		void setFocusBackgroundColor(Color c);
-
-		/**
-		 * @brief Sets the Hover Color for the button
-		 * 
-		 * @param c 
-		 */
-		void setHoverColor(Color c);
-
-		/**
-		 * @brief Sets the Width of the button
-		 * 
-		 * @param v 
-		 */
-		void setWidth(int v);
-
-		/**
-		 * @brief Sets the Height of the button
-		 * 
-		 * @param v 
-		 */
-		void setHeight(int v);
-
-		/**
-		 * @brief Gets the Width of the button
-		 * 
-		 * @return int 
-		 */
-		int getWidth();
-
-		/**
-		 * @brief Gets the Height of the button
-		 * 
-		 * @return int 
-		 */
-		int getHeight();
-
-		/**
-		 * @brief Loads data from an Xml Attribute.
-		 * 		This allows a large list of attributes to be defined
-		 * 		and allow each class to deal with them in their own way.
-		 * 		
-		 * 		Will remove data from the hashmap if it has been processed.
-		 * 
-		 * @param attrib 
-		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
-
-		static void registerLoadFunction();
-
-	protected:
-		void solveBoundingBox();
-
-	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
-		
-
-		std::function<void(GuiInstance*)> onClickFunction;
-		std::function<void(GuiInstance*)> onClickHoldFunction;
-		std::function<void(GuiInstance*)> onClickReleaseFunction;
-
-		int width = 0;
-		int height = 0;
-
-		bool hover = false;
-
-		Color backgroundColor = { 180, 180, 180, 255 };
-		Color hoverColor = {200, 200, 200, 255};
-		Color focusBackgroundColor = {225, 225, 225, 255};
-
-		Color outlineColor = { 0, 0, 0, 255 };
-		Color focusOutlineColor = { 0, 0, 255, 255 };
 	};
-
+	
 	class GuiScrollBar : public GuiInstance
 	{
 	public:
@@ -1861,206 +2127,6 @@ namespace glib
 		GuiRectangleButton increaseButtonElement = GuiRectangleButton(0,0,0,0);
 	};
 
-	class GuiList : public GuiInstance
-	{
-	public:
-		GuiList(int x, int y, bool isVertical = true);
-		GuiList(const GuiList& other);
-		void operator=(const GuiList& other);
-		~GuiList();
-
-		//Object and Class Stuff
-		static const Class globalClass;
-
-		void update();
-		void render();
-
-		void setElementSpacing(int value);
-		void addElement(GuiInstance* ins);
-		void removeElement(GuiInstance* ins);
-
-		//override parent add child functions so that both addElement and addChild work the same way.
-		void addChild(GuiInstance* ins);
-		void removeChild(GuiInstance* ins);
-
-		bool pointIsInList(int x, int y);
-
-		void setBackgroundColor(Color c);
-		void setOutlineColor(Color c);
-
-		void setIsVerticalList(bool v);
-		bool getIsVerticalList();
-		
-		/**
-		 * @brief Loads data from an Xml Attribute.
-		 * 		This allows a large list of attributes to be defined
-		 * 		and allow each class to deal with them in their own way.
-		 * 		
-		 * 		Will remove data from the hashmap if it has been processed.
-		 * 
-		 * @param attrib 
-		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
-
-		static void registerLoadFunction();
-
-	protected:
-		void solveBoundingBox();
-
-	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
-		void copy(const GuiList& other);
-
-		std::vector<Point*> locations;
-		int elementSpacing = 1;
-		bool isVertical = true;
-
-		Color backgroundColor = { 0, 0, 0, 0 };
-		Color outlineColor = { 0, 0, 0, 0 };
-	};
-
-	class GuiGrid : public GuiInstance
-	{
-	public:
-		GuiGrid(int x, int y);
-		GuiGrid(const GuiGrid& other);
-		void operator=(const GuiGrid& other);
-		~GuiGrid();
-
-		//Object and Class Stuff
-		static const Class globalClass;
-
-		void update();
-		void render();
-
-		void setGridSpacing(int x, int y);
-		void addElement(GuiInstance* ins);
-		void removeElement(GuiInstance* ins);
-		
-		//override parent add child functions so that both addElement and addChild work the same way.
-		void addChild(GuiInstance* ins);
-		void removeChild(GuiInstance* ins);
-
-		void setMaxRows(int row);
-		int getMaxRows();
-		void setMaxColumns(int col);
-		int getMaxColumns();
-
-		void setRowMajorOrder(bool v);
-
-		bool pointIsInGrid(int x, int y);
-		void setBackgroundColor(Color c);
-		void setOutlineColor(Color c);
-
-		/**
-		 * @brief Loads data from an Xml Attribute.
-		 * 		This allows a large list of attributes to be defined
-		 * 		and allow each class to deal with them in their own way.
-		 * 		
-		 * 		Will remove data from the hashmap if it has been processed.
-		 * 
-		 * @param attrib 
-		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
-
-		static void registerLoadFunction();
-
-	protected:
-		void solveBoundingBox();
-
-	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
-		void copy(const GuiGrid& other);
-
-		std::vector<Point*> locations;
-		int gridXSpacing = 1;
-		int gridYSpacing = 1;
-		int rowSize = 1;
-		int colSize = 1;
-		bool rowMajorOrder = false;
-		
-		Color backgroundColor = { 0, 0, 0, 0 };
-		Color outlineColor = { 0, 0, 0, 0 };
-	};
-
-	class GuiContextMenu : public GuiInstance
-	{
-	public:
-		GuiContextMenu();
-		GuiContextMenu(const GuiContextMenu& other);
-		void operator=(const GuiContextMenu& other);
-		~GuiContextMenu();
-
-		//Object and Class Stuff
-		static const Class globalClass;
-
-		void update();
-		void render();
-
-		GuiList* getListElement();
-
-		void showMenu(int x, int y);
-		void hideMenu();
-
-		void setShowOnRightClick(bool v);
-		bool getShowOnRightClick();
-
-		
-		//override parent add/remove child functions so that it goes to the list menu
-		void addChild(GuiInstance* ins);
-		void removeChild(GuiInstance* ins);
-		
-		/**
-		 * @brief Loads data from an Xml Attribute.
-		 * 		This allows a large list of attributes to be defined
-		 * 		and allow each class to deal with them in their own way.
-		 * 		
-		 * 		Will remove data from the hashmap if it has been processed.
-		 * 
-		 * @param attrib 
-		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
-		static void registerLoadFunction();
-
-	protected:
-		void solveBoundingBox();
-		
-	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
-		void copy(const GuiContextMenu& other);
-
-		GuiList listMenu = GuiList(0, 0);
-		bool showOnRightClick = true;
-		
-	};
-
-	class GuiContextMenuHelper : public GuiInstance
-	{
-	public:
-
-		//Object and Class Stuff
-		static const Class globalClass;
-
-		void update();
-		void render();
-
-		static GuiContextMenuHelper* getContextMenuHelper(GuiManager* manager);
-
-		void setContextMenu(GuiContextMenu* o);
-		void removeContextMenu(GuiContextMenu* o);
-		void removeContextMenu();
-	
-	protected:
-		void solveBoundingBox();
-
-	private:
-		GuiContextMenuHelper();
-		~GuiContextMenuHelper();
-		
-		static GuiContextMenuHelper singletonHelper;
-		GuiContextMenu* heldContextMenu = nullptr;
-	};
-
 	class GuiDatePicker : public GuiInstance
 	{
 	public:
@@ -2209,6 +2275,14 @@ namespace glib
 		 * @param k 
 		 */
 		void deleteElement(GuiInstance* k);
+
+		/**
+		 * @brief Adds adjustments for the render clip box based on the object that is being removed.
+		 * 		This is called whenever the object is deleted or removed as a child from another object.
+		 * 
+		 * @param k 
+		 */
+		void addToRemovedObjectBox(GuiInstance* k);
 
 		/**
 		 * @brief Gets a list of all the GuiInstances managed
@@ -2424,6 +2498,7 @@ namespace glib
 		GuiSurfaceInterface* surf;
 		GuiGraphicsInterface graphicsInterface;
 
+		Box2D deletedObjectsBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
 		Box2D preClipBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
 		Box2D newClipBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
 

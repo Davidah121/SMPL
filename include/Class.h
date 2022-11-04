@@ -40,10 +40,14 @@ namespace glib
 		 * @return std::string
 		 */
 		std::string getClassName() const;
+		
+		bool operator==(const Class other) const;
+		bool operator!=(const Class other) const;
 
 	private:
 		std::string className = "";
 		std::vector<const Class*> parentClasses = std::vector<const Class*>();
+		int classID = 0;
 	};
 
 	class ClassMaster
@@ -58,10 +62,10 @@ namespace glib
 		 * @brief Adds a class to the master list. Should not be used outside of Class object
 		 * @param k
 		 * 		The class pointer to add.
-		 * @return bool
-		 * 		Returns if it was successfully added.
+		 * @return int
+		 * 		Returns a positive value if successful.
 		 */
-		static bool addClass(const Class* k);
+		static int addClass(const Class* k);
 
 		/**
 		 * @brief Removes a class from the master list. Should not be used outside of Class object
@@ -95,6 +99,7 @@ namespace glib
 		static const Class* findClass(std::string className);
 	private:
 		static std::vector<const Class*> allClasses;
+		static int maxID;
 	};
 
 } //NAMESPACE glib END

@@ -185,16 +185,26 @@ namespace glib
 			{
 				if(currWidth + fci.horizAdv > maxWidth)
 				{
-					if(totalHeight + verticalAdv > maxHeight)
+					if(maxHeight < 0)
 					{
-						currHeight = 0;
-						break;
-					}
-					else
-					{
+						//No maximum height
 						totalHeight += verticalAdv;
 						currWidth = 0;
 						currHeight = 0;
+					}
+					else
+					{
+						if(totalHeight + verticalAdv > maxHeight)
+						{
+							currHeight = 0;
+							break;
+						}
+						else
+						{
+							totalHeight += verticalAdv;
+							currWidth = 0;
+							currHeight = 0;
+						}
 					}
 				}
 				else
@@ -260,16 +270,26 @@ namespace glib
 			{
 				if(currWidth + fci.horizAdv > maxWidth)
 				{
-					if(totalHeight + verticalAdv > maxHeight)
+					if(maxHeight < 0)
 					{
-						currHeight = 0;
-						break;
-					}
-					else
-					{
+						//No maximum height
 						totalHeight += verticalAdv;
 						currWidth = 0;
 						currHeight = 0;
+					}
+					else
+					{
+						if(totalHeight + verticalAdv > maxHeight)
+						{
+							currHeight = 0;
+							break;
+						}
+						else
+						{
+							totalHeight += verticalAdv;
+							currWidth = 0;
+							currHeight = 0;
+						}
 					}
 				}
 				else
@@ -337,16 +357,26 @@ namespace glib
 			{
 				if(currWidth + fci.horizAdv > maxWidth)
 				{
-					if(totalHeight + verticalAdv > maxHeight)
+					if(maxHeight < 0)
 					{
-						currHeight = 0;
-						break;
-					}
-					else
-					{
+						//No maximum height
 						totalHeight += verticalAdv;
 						currWidth = 0;
 						currHeight = 0;
+					}
+					else
+					{
+						if(totalHeight + verticalAdv > maxHeight)
+						{
+							currHeight = 0;
+							break;
+						}
+						else
+						{
+							totalHeight += verticalAdv;
+							currWidth = 0;
+							currHeight = 0;
+						}
 					}
 				}
 				else
@@ -413,16 +443,26 @@ namespace glib
 			{
 				if(currWidth + fci.horizAdv > maxWidth)
 				{
-					if(totalHeight + verticalAdv > maxHeight)
+					if(maxHeight < 0)
 					{
-						currHeight = 0;
-						break;
-					}
-					else
-					{
+						//No maximum height
 						totalHeight += verticalAdv;
 						currWidth = 0;
 						currHeight = 0;
+					}
+					else
+					{
+						if(totalHeight + verticalAdv > maxHeight)
+						{
+							currHeight = 0;
+							break;
+						}
+						else
+						{
+							totalHeight += verticalAdv;
+							currWidth = 0;
+							currHeight = 0;
+						}
 					}
 				}
 				else

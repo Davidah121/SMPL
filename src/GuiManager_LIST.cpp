@@ -109,25 +109,14 @@ namespace glib
 					boundingBox.setTopBound( MathExt::min(boundingBox.getTopBound(), (double)y+c->getBaseY()) );
 					boundingBox.setBottomBound( MathExt::max(boundingBox.getBottomBound(), (double)y+c->getBaseY()+bounds.getHeight()) );
 					
-					width += boundingBox.getWidth();
+					width = boundingBox.getWidth();
 					if(i<children.size()-1)
 						width += elementSpacing;
 				}
 			}
 		}
 
-		if((int)oldBounds.getLeftBound() == x && (int)oldBounds.getRightBound() == x+width)
-		{
-			if((int)oldBounds.getTopBound() == y && (int)oldBounds.getBottomBound() == y+height)
-			{
-				//Don't do anything. It may still need to be redrawn for other reasons.
-			}
-			else
-			{
-				setShouldRedraw(true);
-			}
-		}
-		else
+		if(oldBounds != boundingBox)
 		{
 			setShouldRedraw(true);
 		}

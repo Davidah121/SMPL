@@ -184,6 +184,9 @@ namespace glib
 
 	void GuiManager::deleteElement(GuiInstance* k)
 	{
+		if(k == nullptr)
+			return;
+
 		if(k->manager == this)
 		{
 			//Even if the element is not a root element, it is possible for the object
@@ -211,6 +214,7 @@ namespace glib
 
 			k->manager = nullptr;
 			objectsByName.remove(k->nameID, k);
+			addToRemovedObjectBox(k);
 
 			//delete children as well
 			for(GuiInstance* o : k->getChildren())
@@ -230,16 +234,31 @@ namespace glib
 
 	void GuiManager::deleteElementDelayed(GuiInstance* k)
 	{
+		if(k == nullptr)
+			return;
+
 		if(k->manager == this)
 		{
 			k->manager = nullptr;
 			objectsByName.remove(k->nameID, k);
+			addToRemovedObjectBox(k);
 
 			//delete children as well
 			for(GuiInstance* o : k->getChildren())
 			{
 				deleteElementDelayed(o);
 			}
+		}
+	}
+
+	void GuiManager::addToRemovedObjectBox(GuiInstance* k)
+	{
+		if(k!=nullptr)
+		{
+			deletedObjectsBox.setLeftBound( MathExt::min(deletedObjectsBox.getLeftBound(), k->previousBoundingBox.getLeftBound()) );
+			deletedObjectsBox.setRightBound( MathExt::max(deletedObjectsBox.getRightBound(), k->previousBoundingBox.getRightBound()) );
+			deletedObjectsBox.setTopBound( MathExt::min(deletedObjectsBox.getTopBound(), k->previousBoundingBox.getTopBound()) );
+			deletedObjectsBox.setBottomBound( MathExt::max(deletedObjectsBox.getBottomBound(), k->previousBoundingBox.getBottomBound()) );
 		}
 	}
 
@@ -299,9 +318,9 @@ namespace glib
 		//Assume that pollInput() was already called
 		//update root elements
 		fixObjects();
-		for(GuiInstance* objs : objects)
+		for(int i=0; i<objects.size(); i++)
 		{
-			updateElement(objs);
+			updateElement( objects[i] );
 		}
 	}
 
@@ -357,8 +376,22 @@ namespace glib
 			if(k->getVisible())
 			{
 				//render self
+				bool validNewBox = false;
+				bool validPreBox = false;
 				bool clip1 = false;
 				bool clip2 = false;
+
+				if(newClipBox.getLeftBound() <= newClipBox.getRightBound()
+				&& newClipBox.getTopBound() <= newClipBox.getBottomBound())
+				{
+					validNewBox = true;
+				}
+
+				if(preClipBox.getLeftBound() <= preClipBox.getRightBound()
+				&& preClipBox.getTopBound() <= preClipBox.getBottomBound())
+				{
+					validPreBox = true;
+				}
 
 				if(k->getStaticScaling())
 				{
@@ -367,17 +400,24 @@ namespace glib
 
 				if(!this->invalidImage)
 				{
-					if(CollisionMaster::collisionMethod(&newClipBox, &k->boundingBox))
+					if(validNewBox)
 					{
-						k->shouldRedraw = true;
-						clip1 = true;
-						graphicsInterface.setClippingRect(newClipBox);
+						if(CollisionMaster::collisionMethod(&newClipBox, &k->boundingBox))
+						{
+							k->shouldRedraw = true;
+							clip1 = true;
+							graphicsInterface.setClippingRect(newClipBox);
+						}
 					}
-					if(CollisionMaster::collisionMethod(&preClipBox, &k->boundingBox))
+
+					if(validPreBox)
 					{
-						k->shouldRedraw = true;
-						clip2 = true;
-						graphicsInterface.setClippingRect(preClipBox);
+						if(CollisionMaster::collisionMethod(&preClipBox, &k->boundingBox))
+						{
+							k->shouldRedraw = true;
+							clip2 = true;
+							graphicsInterface.setClippingRect(preClipBox);
+						}
 					}
 					
 					if(!clip1 && !clip2)
@@ -490,6 +530,7 @@ namespace glib
 	void GuiManager::updateBounds(GuiInstance* obj, int& redrawCount)
 	{
 		//calculate the bounding render area
+
 		if( (obj->shouldRedraw || this->invalidImage) )
 		{
 			newClipBox.setLeftBound( MathExt::min(newClipBox.getLeftBound(), obj->boundingBox.getLeftBound()) );
@@ -520,6 +561,7 @@ namespace glib
 		fixObjects();
 		newClipBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
 		preClipBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
+
 		int shouldRedrawCount = 0;
 		int redrawCount = 0;
 
@@ -532,6 +574,12 @@ namespace glib
 		{
 			updateBounds(obj, shouldRedrawCount);
 		}
+
+		//adjust previous clip box by all of the removed objects.
+		preClipBox.setLeftBound( MathExt::min(preClipBox.getLeftBound(), deletedObjectsBox.getLeftBound()) );
+		preClipBox.setRightBound( MathExt::max(preClipBox.getRightBound(), deletedObjectsBox.getRightBound()) );
+		preClipBox.setTopBound( MathExt::min(preClipBox.getTopBound(), deletedObjectsBox.getTopBound()) );
+		preClipBox.setBottomBound( MathExt::max(preClipBox.getBottomBound(), deletedObjectsBox.getBottomBound()) );
 		
 		int width = surf->getWidth();
 		int height = surf->getHeight();
@@ -549,10 +597,11 @@ namespace glib
 			// StringTools::println("NewBox: (%.3f, %.3f , %.3f, %.3f)", newClipBox.getLeftBound(), newClipBox.getTopBound(), newClipBox.getRightBound(), newClipBox.getBottomBound());
 			// StringTools::println("PreBox: (%.3f, %.3f , %.3f, %.3f)", preClipBox.getLeftBound(), preClipBox.getTopBound(), preClipBox.getRightBound(), preClipBox.getBottomBound());
 			
+			//Add to redrawCount since you are clearing stuff.
+			redrawCount++;
 			if(invalidImage)
 			{
 				graphicsInterface.clear();
-				redrawCount++;
 			}
 			else
 			{
@@ -569,8 +618,20 @@ namespace glib
 				else
 				{
 					//Clear the invalid areas
-					graphicsInterface.drawRect(newClipBox.getLeftBound(), newClipBox.getTopBound(), newClipBox.getRightBound(), newClipBox.getBottomBound(), false);
-					graphicsInterface.drawRect(preClipBox.getLeftBound(), preClipBox.getTopBound(), preClipBox.getRightBound(), preClipBox.getBottomBound(), false);
+
+					//check if valid box
+					if(newClipBox.getLeftBound() <= newClipBox.getRightBound()
+					&& newClipBox.getTopBound() <= newClipBox.getBottomBound())
+					{
+						graphicsInterface.drawRect(newClipBox.getLeftBound(), newClipBox.getTopBound(), newClipBox.getRightBound(), newClipBox.getBottomBound(), false);
+					}
+					
+					//check if valid box
+					if(preClipBox.getLeftBound() <= preClipBox.getRightBound()
+					&& preClipBox.getTopBound() <= preClipBox.getBottomBound())
+					{
+						graphicsInterface.drawRect(preClipBox.getLeftBound(), preClipBox.getTopBound(), preClipBox.getRightBound(), preClipBox.getBottomBound(), false);
+					}
 				}
 			}
 
@@ -605,17 +666,31 @@ namespace glib
 				graphicsInterface.clear();
 				redrawCount++;
 			}
+			else
+			{
+				//If the object was removed from the list, it may not have caused other objects to redraw but needs to clear its area.
+				//The box will have valid bounds in that case. (Note that it could still have bounds outside of the render area but it won't matter)
+				if(deletedObjectsBox.getLeftBound() <= deletedObjectsBox.getRightBound()
+				&& deletedObjectsBox.getTopBound() <= deletedObjectsBox.getBottomBound())
+				{
+					graphicsInterface.setColor(backgroundColor);
+					graphicsInterface.setBoundSurface(surf);
+					graphicsInterface.drawRect(deletedObjectsBox.getLeftBound(), deletedObjectsBox.getTopBound(), deletedObjectsBox.getRightBound(), deletedObjectsBox.getBottomBound(), false);
+					redrawCount++;
+				}
+			}
 		}
 
 		graphicsInterface.resetClippingPlane();
 		invalidImage = false;
+		deletedObjectsBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
 
 		if(redrawCount != 0)
 		{
 			graphicsInterface.setBoundSurface(surf);
 			graphicsInterface.setColor(Vec4f(1,1,1,1));
 			graphicsInterface.drawToScreen();
-			// StringTools::println("RedrawCount: %d", redrawCount);
+			StringTools::println("RedrawCount: %d", redrawCount);
 		}
 		
 		return redrawCount != 0;

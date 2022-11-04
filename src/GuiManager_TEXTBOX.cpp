@@ -22,6 +22,8 @@ namespace glib
 		textElement.setShouldHighlightText(true);
 		addChild( &textElement );
 		boundingBox = Box2D(x, y, x+width, y+height);
+
+		initContextMenu();
 	}
 
 	GuiTextBox::GuiTextBox(const GuiTextBox& other) : GuiInstance(other)
@@ -57,6 +59,52 @@ namespace glib
 
 	GuiTextBox::~GuiTextBox()
 	{
+		//delete contextMenuStuff
+		for(int i=0; i<contextMenuButtons.size(); i++)
+		{
+			if(contextMenuText[i] != nullptr)
+				delete contextMenuText[i];
+			if(contextMenuButtons[i] != nullptr)
+				delete contextMenuButtons[i];
+		}
+
+		contextMenuText.clear();
+		contextMenuButtons.clear();
+	}
+
+	void GuiTextBox::initContextMenu()
+	{
+		// Adjust so that the text is always the same size regardless of scale.
+		// Text Size of 12pt or something.
+		contextMenuButtons.push_back( new GuiRectangleButton(0, 0, 96, 24) );
+		contextMenuButtons.push_back( new GuiRectangleButton(0, 0, 96, 24) );
+		contextMenuButtons.push_back( new GuiRectangleButton(0, 0, 96, 24) );
+		
+		contextMenuText.push_back( new GuiTextBlock(0, 0, 96, 24) );
+		contextMenuText.push_back( new GuiTextBlock(0, 0, 96, 24) );
+		contextMenuText.push_back( new GuiTextBlock(0, 0, 96, 24) );
+
+		contextMenuButtons[0]->setOnClickReleaseFunction([this](GuiInstance* ins) -> void{
+			this->copy();
+		});
+		contextMenuButtons[1]->setOnClickReleaseFunction([this](GuiInstance* ins) -> void{
+			this->paste();
+		});
+		contextMenuButtons[2]->setOnClickReleaseFunction([this](GuiInstance* ins) -> void{
+			this->cut();
+		});
+		contextMenuText[0]->setText("Copy");
+		contextMenuText[1]->setText("Paste");
+		contextMenuText[2]->setText("Cut");
+
+		contextMenuButtons[0]->addChild(contextMenuText[0]);
+		contextMenuButtons[1]->addChild(contextMenuText[1]);
+		contextMenuButtons[2]->addChild(contextMenuText[2]);
+		
+		contextMenu.addChild(contextMenuButtons[0]);
+		contextMenu.addChild(contextMenuButtons[1]);
+		contextMenu.addChild(contextMenuButtons[2]);
+		addChild(&contextMenu);
 	}
 
 	void GuiTextBox::setOnEnterPressedFunction(std::function<void(GuiInstance*)> func)
@@ -132,7 +180,7 @@ namespace glib
 				if(f == nullptr)
 					return;
 				
-				Vec2f cursorPos = f->getCursorLocation( testText, cursorLocation, -1, textElement.getMaxHeight() );
+				Vec2f cursorPos = f->getCursorLocation( testText, cursorLocation, textElement.getMaxWidth(), textElement.getMaxHeight() );
 
 				cursorPos.x += textElement.getBaseX() + xOffsetForText;
 				cursorPos.y += textElement.getBaseY() + yOffsetForText;
@@ -141,6 +189,57 @@ namespace glib
 			}
 		}
 
+	}
+
+	void GuiTextBox::copy()
+	{
+		int minSelect = MathExt::min(selectStart, selectEnd);
+		int maxSelect = MathExt::max(selectStart, selectEnd);
+		std::string cpyText = textElement.getText().substr(minSelect, maxSelect);
+
+		System::copyToClipboard(cpyText);
+	}
+
+	void GuiTextBox::cut()
+	{
+		int minSelect = MathExt::min(selectStart, selectEnd);
+		int maxSelect = MathExt::max(selectStart, selectEnd);
+		std::string cpyText = textElement.getText().substr(minSelect, maxSelect);
+
+		System::copyToClipboard(cpyText);
+
+		std::string prefix = textElement.getText().substr(0, minSelect);
+		std::string suffix = textElement.getText().substr(maxSelect);
+
+		textElement.setText(prefix+suffix);
+		cursorLocation = minSelect;
+		selectStart = cursorLocation;
+		selectEnd = cursorLocation;
+	}
+
+	void GuiTextBox::paste()
+	{
+		std::string pasteText = System::pasteFromClipboard();
+
+		int minSelect = MathExt::min(selectStart, selectEnd);
+		int maxSelect = MathExt::max(selectStart, selectEnd);
+		
+		std::string prefix = textElement.getText().substr(0, minSelect);
+		std::string suffix = textElement.getText().substr(maxSelect);
+
+		textElement.setText( (prefix + pasteText) + suffix );
+		cursorLocation = minSelect+pasteText.size();
+		selectStart = cursorLocation;
+		selectEnd = cursorLocation;
+	}
+
+	std::string GuiTextBox::getSelectedText()
+	{
+		int minSelect = MathExt::min(selectStart, selectEnd);
+		int maxSelect = MathExt::max(selectStart, selectEnd);
+		std::string cpyText = textElement.getText().substr(minSelect, maxSelect);
+
+		return cpyText;
 	}
 
 	void GuiTextBox::keyInput()
@@ -161,44 +260,17 @@ namespace glib
 				if( Input::getKeyPressed('V') )
 				{
 					//PASTE
-					std::string pasteText = System::pasteFromClipboard();
-
-					int minSelect = MathExt::min(selectStart, selectEnd);
-					int maxSelect = MathExt::max(selectStart, selectEnd);
-					
-					std::string prefix = textElement.getText().substr(0, minSelect);
-					std::string suffix = textElement.getText().substr(maxSelect);
-
-					textElement.setText( (prefix + pasteText) + suffix );
-					cursorLocation = minSelect+pasteText.size();
-					selectStart = cursorLocation;
-					selectEnd = cursorLocation;
+					paste();
 				}
 				else if( Input::getKeyPressed('C') )
 				{
 					//COPY
-					int minSelect = MathExt::min(selectStart, selectEnd);
-					int maxSelect = MathExt::max(selectStart, selectEnd);
-					std::string cpyText = textElement.getText().substr(minSelect, maxSelect);
-
-					System::copyToClipboard(cpyText);
+					copy();
 				}
 				else if( Input::getKeyPressed('X') )
 				{
 					//CUT
-					int minSelect = MathExt::min(selectStart, selectEnd);
-					int maxSelect = MathExt::max(selectStart, selectEnd);
-					std::string cpyText = textElement.getText().substr(minSelect, maxSelect);
-
-					System::copyToClipboard(cpyText);
-
-					std::string prefix = textElement.getText().substr(0, minSelect);
-					std::string suffix = textElement.getText().substr(maxSelect);
-
-					textElement.setText(prefix+suffix);
-					cursorLocation = minSelect;
-					selectStart = cursorLocation;
-					selectEnd = cursorLocation;
+					cut();
 				}
 			}
 
@@ -394,7 +466,56 @@ namespace glib
 			mouseX = getManager()->getMouseX();
 			mouseY = getManager()->getMouseY();
 		}
+
+		//check if there is a context menu open. If there is, skip. There may not be any context menus
+		GuiContextMenuHelper* helper = GuiContextMenuHelper::getContextMenuHelper(getManager());
+		if(helper != nullptr)
+		{
+			//Assume that if visible, there is a context menu open
+			if(helper->isMenuShowing())
+			{
+				if(Input::getMousePressed(Input::LEFT_MOUSE_BUTTON))
+				{
+					//Continue only if the context menu showed is not owned by this object
+					for( GuiInstance* childIns : this->getChildrenRef() )
+					{
+						if(childIns->getClass() == GuiContextMenu::globalClass)
+						{
+							if(((GuiContextMenu*)childIns)->isMenuShowing())
+								return;
+						}
+					}
+				}
+				else
+				{
+					return;
+				}
+			}
+		}
 		
+		if(Input::getMousePressed(Input::RIGHT_MOUSE_BUTTON) || Input::getMousePressed(Input::MIDDLE_MOUSE_BUTTON))
+		{
+			bool good = false;
+			if (mouseX >= x && mouseX <= x + width)
+			{
+				if (mouseY >= y && mouseY <= y + height)
+				{
+					good = true;
+				}
+			}
+
+			if(!good)
+			{
+				selectEnd = 0;
+				selectStart = 0;
+				cursorLocation = 0;
+				
+				if(getFocus())
+					setShouldRedraw(true);
+				setFocus(false);
+			}
+		}
+
 		if (Input::getMousePressed(Input::LEFT_MOUSE_BUTTON))
 		{
 			selectEnd = 0;
@@ -683,6 +804,30 @@ namespace glib
 		return &textElement;
 	}
 
+	GuiContextMenu* GuiTextBox::getContextMenu()
+	{
+		return &contextMenu;
+	}
+
+	void GuiTextBox::enableContextMenu(bool v)
+	{
+		contextMenuEnabled = v;
+		if(v)
+		{
+			contextMenu.hideMenu();
+			contextMenu.setShowOnRightClick(false); //Remains in the children list but can not be enabled using right click
+		}
+		else
+		{
+			contextMenu.setShowOnRightClick(true); //Remains in the children list but can not be enabled using right click
+		}
+	}
+
+	bool GuiTextBox::isContextMenuEnabled()
+	{
+		return contextMenuEnabled;
+	}
+
 	void GuiTextBox::setWidth(int v)
 	{
 		width = v;
@@ -720,7 +865,7 @@ namespace glib
 	{
 		GuiInstance::loadDataFromXML(attributes, inter);
 
-		std::vector<std::string> possibleNames = { "width", "height", "cursorblinktimer", "cursorwidth", "backgroundcolor", "outlinecolor", "focusoutlinecolor", "cursorblinkcolor", "allowlinebreaks"};
+		std::vector<std::string> possibleNames = { "width", "height", "cursorblinktimer", "cursorwidth", "backgroundcolor", "outlinecolor", "focusoutlinecolor", "cursorblinkcolor", "allowlinebreaks", "enablecontextmenu"};
 
 		for(int i=0; i<possibleNames.size(); i++)
 		{
@@ -767,6 +912,10 @@ namespace glib
 				{
 					this->allowLineBreaks = StringTools::equalsIgnoreCase<char>(it->second, "true");
 				}
+				else if(possibleNames[i] == "enablecontextmenu")
+				{
+					this->enableContextMenu( StringTools::equalsIgnoreCase<char>(it->second, "true") );
+				}
 
 				attributes.erase(possibleNames[i]);
 			}
@@ -777,10 +926,10 @@ namespace glib
 		textElement.loadDataFromXML(attributes, inter);
 		
 		if(textElement.getMaxWidth() == 0)
-			textElement.setMaxWidth(width - textElement.getBaseX()*2);
+			textElement.setMaxWidth(width - textElement.getBaseX()*2 - 1);
 
 		if(textElement.getMaxHeight() == 0)
-			textElement.setMaxHeight(height - textElement.getBaseY()*2);
+			textElement.setMaxHeight(height - textElement.getBaseY()*2 - 1);
 	}
 
 	GuiInstance* GuiTextBox::loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter)

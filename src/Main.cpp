@@ -177,6 +177,21 @@ void initFunction(SimpleWindow* w)
 {
     w->getGuiManager()->loadElementsFromFile("GuiStuff/layout.xml");
     w->setWindowAsInputFocus();
+    
+    // GuiTextBox* boxIns = (GuiTextBox*)w->getGuiManager()->getInstancesByName("textbox")[0]->data;
+    
+    // ((GuiRectangleButton*)w->getGuiManager()->getInstancesByName("b1")[0]->data)->setOnClickReleaseFunction([boxIns](GuiInstance* ins) ->void{
+    //     System::messageBoxPopup(0, "Title", "1-" + boxIns->getSelectedText());
+    // });
+    
+    // ((GuiRectangleButton*)w->getGuiManager()->getInstancesByName("b2")[0]->data)->setOnClickReleaseFunction([boxIns](GuiInstance* ins) ->void{
+    //     System::messageBoxPopup(0, "Title", "2");
+    // });
+    
+    // ((GuiRectangleButton*)w->getGuiManager()->getInstancesByName("b3")[0]->data)->setOnClickReleaseFunction([boxIns](GuiInstance* ins) ->void{
+    //     System::messageBoxPopup(0, "Title", "3");
+    // });
+    
 }
 
 int testWindow()
@@ -531,7 +546,7 @@ void testBoundingBoxes()
     testObject2.addChild(&testObject);
     
     w.getGuiManager()->addElement(&testObject2);
-    w.getGuiManager()->alwaysInvalidateImage(true);
+    // w.getGuiManager()->alwaysInvalidateImage(true);
 
     while(w.getRunning())
     {
@@ -559,14 +574,14 @@ int main(int argc, char** argv)
     // else
     //     networkTest(Network::TYPE_SERVER);
     
-    // testWindow();
+    testWindow();
     // testVectorGraphic();
     // testVectorFont();
     // testSpatialHashing();
     // testFontDrawing();
     // testPolygonStuff();
     // testFileStuff();
-    testBoundingBoxes();
+    // testBoundingBoxes();
 
     // testOTFLoading();
 

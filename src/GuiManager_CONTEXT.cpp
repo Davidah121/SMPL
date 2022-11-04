@@ -49,6 +49,9 @@ namespace glib
 
 	void GuiContextMenuHelper::setContextMenu(GuiContextMenu* o)
 	{
+		//remove the previous context menu
+		removeContextMenu();
+		
 		heldContextMenu = o;
 		this->addChild(heldContextMenu->getListElement());
 		setVisible(true);
@@ -74,6 +77,11 @@ namespace glib
 		setVisible(false);
 	}
 	
+	bool GuiContextMenuHelper::isMenuShowing()
+	{
+		return heldContextMenu != nullptr;
+	}
+
 	void GuiContextMenuHelper::solveBoundingBox()
 	{
 		//The size is the size of the children
@@ -133,7 +141,7 @@ namespace glib
 
 		if(listMenu.getVisible())
 		{
-			if(!listMenu.pointIsInList(mouseX, mouseY))
+			if(!listMenu.pointIsInList(mouseX, mouseY) && canHideOnClick)
 			{
 				if(Input::getMousePressed(Input::LEFT_MOUSE_BUTTON))
 				{
@@ -192,6 +200,7 @@ namespace glib
 
 	void GuiContextMenu::showMenu(int x, int y)
 	{
+		StringTools::println("SHOW");
 		listMenu.setVisible(true);
 		listMenu.setActive(true);
 
@@ -205,11 +214,17 @@ namespace glib
 
 	void GuiContextMenu::hideMenu()
 	{
+		StringTools::println("HIDE");
 		listMenu.setVisible(false);
 		listMenu.setActive(false);
 		GuiContextMenuHelper* helper = GuiContextMenuHelper::getContextMenuHelper( this->getManager() );
 		if(helper != nullptr)
 			helper->removeContextMenu(this);
+	}
+
+	bool GuiContextMenu::isMenuShowing()
+	{
+		return listMenu.getVisible();
 	}
 
 	void GuiContextMenu::addChild(GuiInstance* ins)
@@ -230,6 +245,16 @@ namespace glib
 	bool GuiContextMenu::getShowOnRightClick()
 	{
 		return showOnRightClick;
+	}
+
+	void GuiContextMenu::setCanHideOnClick(bool v)
+	{
+		canHideOnClick = v;
+	}
+	
+	bool GuiContextMenu::getCanHideOnClick()
+	{
+		return canHideOnClick;
 	}
 
 	void GuiContextMenu::solveBoundingBox()

@@ -11,7 +11,8 @@ namespace glib
 	bool Input::mouseState[3];
 
 	std::queue<int> Input::charBuffer;
-	bool Input::canClearBuffer = false;
+	std::queue<int> Input::charBackBuffer;
+	bool Input::canClearBuffer = true;
 
 	bool Input::mouseMoved = false;
 	bool Input::keyChanged = false;
@@ -118,9 +119,15 @@ namespace glib
 			mouseClicked = true;
 		}
 
+		//swap char buffers
+		//Idea: Fill back buffer until front buffer is read. Once front buffer is read, swap buffers.
+		//			Prevents reading while window is adjusting the buffers.
+		
 		if(canClearBuffer)
 		{
-			charBuffer = std::queue<int>();
+			//set front buffer to back buffer. Clear back buffer.
+			charBuffer = charBackBuffer;
+			charBackBuffer = std::queue<int>();
 			canClearBuffer = false;
 		}
 
@@ -214,14 +221,14 @@ namespace glib
 	{
 		inputMutex.lock();
 		charBuffer = std::queue<int>();
+		charBackBuffer = std::queue<int>();
 		inputMutex.unlock();
 	}
 
 	std::queue<int> Input::getCharactersTyped()
 	{
 		inputMutex.lock();
-		if(charBuffer.size() > 0)
-			canClearBuffer = true;
+		canClearBuffer = true;
 		std::queue<int> tempBuff = charBuffer;
 		inputMutex.unlock();
 
@@ -249,7 +256,7 @@ namespace glib
 		
 		for(int i=0; i<repeatV; i++)
 		{
-			charBuffer.push(v1);
+			charBackBuffer.push(v1);
 		}
 		inputMutex.unlock();
 	}

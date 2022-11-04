@@ -243,7 +243,7 @@ namespace glib
 		static int getLastKeyReleased();
 
 		/**
-		 * @brief Force clears the characters in the buffer.
+		 * @brief Force clears the characters in the buffer. Clears both the front and back buffer.
 		 * 		These are the character received from the active window.
 		 * 		The character buffer is normalily cleared after it is read at least once and pollInput has been called.
 		 * 		
@@ -295,6 +295,7 @@ namespace glib
 
 		static bool canClearBuffer;
 		static std::queue<int> charBuffer;
+		static std::queue<int> charBackBuffer;
 		static std::mutex inputMutex;
 	};
 

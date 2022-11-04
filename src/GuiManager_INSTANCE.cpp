@@ -136,10 +136,14 @@ namespace glib
 			//add to manager
 			manager->addElement(ins);
 		}
+		setShouldRedraw(true);
 	}
 
 	void GuiInstance::removeChild(GuiInstance* ins)
 	{
+		if(ins == nullptr)
+			return;
+		
 		bool found = false;
 		std::vector<GuiInstance*> m = std::vector<GuiInstance*>();
 		for(int i=0; i<children.size(); i++)
@@ -161,7 +165,13 @@ namespace glib
 			ins->parent = nullptr;
 			ins->setOffset(nullptr, nullptr);
 			ins->setRenderOffset(nullptr, nullptr);
+
+			//Object will not be rendered or updated so it should be removed from the GuiManager.
+			//The programmer can add the element back.
+			if(ins->manager != nullptr)
+				ins->manager->addToRemovedObjectBox(ins);
 		}
+		setShouldRedraw(true);
 	}
 
 	std::vector<GuiInstance*> GuiInstance::getChildren()
@@ -332,8 +342,9 @@ namespace glib
 		solveBoundingBox();
 		if(includeChildrenInBounds)
 		{
-			for(GuiInstance* child : children)
+			for(int i=0; i<children.size(); i++)
 			{
+				GuiInstance* child = children[i];
 				if(child->getActive())
 				{
 					Box2D temp = child->getBoundingBox();

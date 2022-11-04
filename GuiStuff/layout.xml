@@ -1,21 +1,24 @@
 <SimpleGUI>
     
     <GuiContextMenu>
-        <GuiTextBlock maxwidth="96" maxheight="24" text="item4"/>
-        <GuiTextBlock maxwidth="96" maxheight="24" text="item5"/>
-        <GuiTextBlock maxwidth="96" maxheight="24" text="item6"/>
-        <GuiTextBlock maxwidth="96" maxheight="24" text="item7"/>
+        <GuiRectangleButton width="96" height="24">
+            <GuiTextBlock maxwidth="96" maxheight="24" text="item4"/>
+        </GuiRectangleButton>
+
+        <GuiRectangleButton width="96" height="24">
+            <GuiTextBlock maxwidth="96" maxheight="24" text="item5"/>
+        </GuiRectangleButton>
+
+        <GuiRectangleButton width="96" height="24">
+            <GuiTextBlock maxwidth="96" maxheight="24" text="item6"/>
+        </GuiRectangleButton>
+
+        <GuiRectangleButton width="96" height="24">
+            <GuiTextBlock maxwidth="96" maxheight="24" text="item7"/>
+        </GuiRectangleButton>
     </GuiContextMenu>
 
-    <!-- <GuiTextBox x="32" y="32" width="96" height="24">
-        <GuiContainer/>
-        <GuiContextMenu>
-            <GuiTextBlock maxwidth="96" maxheight="24" text="item1"/>
-            <GuiTextBlock maxwidth="96" maxheight="24" text="item2"/>
-            <GuiTextBlock maxwidth="96" maxheight="24" text="item3"/>
-        </GuiContextMenu>
-    </GuiTextBox> -->
-
+    <GuiTextBox x="32" y="32" width="256" height="256" textXOffset="1" textYOffset="1" allowLineBreaks="true" allowWrapText="true"/>
 
 
 </SimpleGUI>
