@@ -892,8 +892,8 @@ namespace glib
 	Mat3f MathExt::translation2D(Vec2f trans)
 	{
 		return Mat3f(
-			1, 0, trans.x,
-			0, 1, trans.y,
+			1, 0, -trans.x,
+			0, 1, -trans.y,
 			0, 0, 1
 		);
 	}
@@ -1266,6 +1266,32 @@ namespace glib
 	{
 		if(A!=0)
 		{
+			if(D==0)
+			{
+				if(C==0)
+				{
+					if(B==0)
+					{
+						return {0,0,0};
+					}
+					else
+					{
+						//factor into linear
+						std::vector<double> solutions = solveLinear(A, B);
+						solutions.push_back(0); //Also a solution
+						solutions.push_back(0); //Also a solution
+						return solutions;
+					}
+				}
+				else
+				{
+					//factor into quadratic
+					std::vector<double> solutions = solveQuadraticReal(A, B, C);
+					solutions.push_back(0); //Also a solution
+					return solutions;
+				}
+			}
+			
 			double p = (3.0*A*C - MathExt::sqr(B))/ (3.0*MathExt::sqr(A));
 			double q = (2.0*MathExt::cube(B) - 9.0*A*B*C + 27.0*MathExt::sqr(A)*D) / (27.0*MathExt::cube(A));
 
@@ -1303,10 +1329,10 @@ namespace glib
 			{
 				//StringTools::println("1 Solution");
 				//doesn't matter in this case whether we use + or -
-				double temp = (-q - MathExt::sqrt(q2 + 4.0*p3/27.0))/2.0;
+				double temp = (-q - MathExt::sqrt(q2 + (4.0*p3)/27.0))/2.0;
 				double w = MathExt::cubeRoot(temp);
-				double solution = w - p/3.0*w;
-				double actualSolution = solution + B/(3.0*A);
+				double solution = w - p/(3.0*w);
+				double actualSolution = solution - B/(3.0*A);
 				
 				return {actualSolution};
 			}
@@ -2068,16 +2094,15 @@ namespace glib
 	{
 		//for each row
 		double* newArr = new double[8];
-		double* passArr = nullptr;
+		double* passArr = new double[8];
 
 		for(int v=0; v<arr.getRows(); v++)
 		{
-			double* passArr = arr[v];
-			MathExt::FCT8(passArr, newArr, inverse);
+			MathExt::FCT8(arr[v], newArr, inverse);
 
 			for(int i=0; i<arr.getCols(); i++)
 			{
-				arr[v][i] = newArr[i];
+				output->operator[](v)[i] = newArr[i];
 			}
 		}
 
@@ -2086,18 +2111,19 @@ namespace glib
 		{
 			for(int i=0; i<arr.getRows(); i++)
 			{
-				passArr[i] = arr[i][u];
+				passArr[i] = output->operator[](i)[u];
 			}
 
 			MathExt::FCT8(passArr, newArr, inverse);
 
 			for(int i=0; i<arr.getRows(); i++)
 			{
-				arr[i][u] = newArr[i];
+				output->operator[](i)[u] = newArr[i];
 			}
 		}
 
 		delete[] newArr;
+		delete[] passArr;
 	}
 
 	#pragma endregion

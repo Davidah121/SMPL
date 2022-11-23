@@ -8,16 +8,13 @@ namespace glib
 
 
 		#pragma region ClassStuff
-		const Class Shape::myClass = Class("Shape", {&Object::myClass});
-		const Class* Shape::getClass()
-		{
-			return &Shape::myClass;
-		}
+		const Class Shape::globalClass = Class("Shape", {&Object::globalClass});
 		#pragma endregion
 
 
 	Shape::Shape()
 	{
+		setClass(globalClass);
 	}
 
 	Shape::~Shape()
@@ -69,20 +66,23 @@ namespace glib
 	#pragma region POINT2D
 
 		#pragma region ClassStuff
-		const Class Point2D::myClass = Class("Point2D", { &Shape::myClass });
-		const Class* Point2D::getClass()
-		{
-			return &Point2D::myClass;
-		}
+		const Class Point2D::globalClass = Class("Point2D", { &Shape::globalClass });
 		#pragma endregion
 
 	Point2D::Point2D()
 	{
-
+		setClass(globalClass);
 	}
 
+	Point2D::Point2D(double x, double y)
+	{
+		setClass(globalClass);
+		position.x = x;
+		position.y = y;
+	}
 	Point2D::Point2D(Vec2f pos)
 	{
+		setClass(globalClass);
 		position.x = pos.x;
 		position.y = pos.y;
 	}
@@ -106,20 +106,17 @@ namespace glib
 	#pragma region Box2D
 
 		#pragma region ClassStuff
-		const Class Box2D::myClass = Class("Box2D", { &Shape::myClass });
-		const Class* Box2D::getClass()
-		{
-			return &Box2D::myClass;
-		}
+		const Class Box2D::globalClass = Class("Box2D", { &Shape::globalClass });
 		#pragma endregion
 
 	Box2D::Box2D()
 	{
-
+		setClass(globalClass);
 	}
 
 	Box2D::Box2D(double leftBound, double topBound, double rightBound, double bottomBound)
 	{
+		setClass(globalClass);
 		baseTopLeft.x = leftBound;
 		baseTopLeft.y = topBound;
 		baseBottomRight.x = rightBound;
@@ -216,26 +213,23 @@ namespace glib
 	{
 		return !operator==(other);
 	}
-	
+
 	#pragma endregion
 
 	#pragma region CIRCLE
 
 		#pragma region ClassStuff
-		const Class Circle::myClass = Class("Circle", { &Shape::myClass });
-		const Class* Circle::getClass()
-		{
-			return &Circle::myClass;
-		}
+		const Class Circle::globalClass = Class("Circle", { &Shape::globalClass });
 		#pragma endregion
 
 	Circle::Circle()
 	{
-
+		setClass(globalClass);
 	}
 
 	Circle::Circle(double rad)
 	{
+		setClass(globalClass);
 		radius = rad;
 		baseRadius = rad;
 	}
@@ -270,20 +264,17 @@ namespace glib
 	#pragma region ELLIPSE
 
 		#pragma region ClassStuff
-		const Class Ellipse::myClass = Class("Ellipse", { &Shape::myClass });
-		const Class* Ellipse::getClass()
-		{
-			return &Ellipse::myClass;
-		}
+		const Class Ellipse::globalClass = Class("Ellipse", { &Shape::globalClass });
 		#pragma endregion
 
 	Ellipse::Ellipse()
 	{
-
+		setClass(globalClass);
 	}
 
 	Ellipse::Ellipse(double xRad, double yRad)
 	{
+		setClass(globalClass);
 		xRadius = xRad;
 		yRadius = yRad;
 
@@ -334,26 +325,24 @@ namespace glib
 	#pragma region LINE2D
 
 		#pragma region ClassStuff
-		const Class Line2D::myClass = Class("Line2D", { &Shape::myClass });
-		const Class* Line2D::getClass()
-		{
-			return &Line2D::myClass;
-		}
+		const Class Line2D::globalClass = Class("Line2D", { &Shape::globalClass });
 		#pragma endregion
 
 	Line2D::Line2D()
 	{
-
+		setClass(globalClass);
 	}
 
 	Line2D::Line2D(double x1, double y1, double x2, double y2)
 	{
+		setClass(globalClass);
 		baseL = Line(x1, y1, x2, y2);
 		l = Line(x1, y1, x2, y2);
 	}
 
 	Line2D::Line2D(Vec2f p1, Vec2f p2)
 	{
+		setClass(globalClass);
 		baseL = Line(p1, p2);
 		l = Line(p1, p2);
 	}
@@ -449,20 +438,17 @@ namespace glib
 	#pragma region TRIANGLE2D
 
 		#pragma region ClassStuff
-		const Class Triangle2D::myClass = Class("Triangle2D", { &Shape::myClass });
-		const Class* Triangle2D::getClass()
-		{
-			return &Triangle2D::myClass;
-		}
+		const Class Triangle2D::globalClass = Class("Triangle2D", { &Shape::globalClass });
 		#pragma endregion
 
 	Triangle2D::Triangle2D()
 	{
-
+		setClass(globalClass);
 	}
 
 	Triangle2D::Triangle2D(Vec2f p1, Vec2f p2, Vec2f p3)
 	{
+		setClass(globalClass);
 		v1 = p1;
 		v2 = p2;
 		v3 = p3;
@@ -470,6 +456,7 @@ namespace glib
 
 	Triangle2D::Triangle2D(double x1, double y1, double x2, double y2, double x3, double y3)
 	{
+		setClass(globalClass);
 		v1.x = x1;
 		v1.y = y1;
 		v2.x = x2;
@@ -556,15 +543,12 @@ namespace glib
 	#pragma region POLYGON2D
 
 		#pragma region ClassStuff
-		const Class Polygon2D::myClass = Class("Polygon2D", {&Shape::myClass});
-		const Class* Polygon2D::getClass()
-		{
-			return &Polygon2D::myClass;
-		}
+		const Class Polygon2D::globalClass = Class("Polygon2D", {&Shape::globalClass});
 		#pragma endregion
 
 	Polygon2D::Polygon2D()
 	{
+		setClass(globalClass);
 	}
 
 	Polygon2D::~Polygon2D()
@@ -743,10 +727,23 @@ namespace glib
 	#pragma region COLLISION_MASTER
 
 	//Functions
-	bool CollisionMaster::getCollision(Shape* a, Shape* b)
+	bool CollisionMaster::getCollision(Shape* a, Shape* b, bool overrideQuickCheck)
 	{
-		std::string aClassName = a->getClass()->getClassName();
-		std::string bClassName = b->getClass()->getClassName();
+		std::string aClassName = a->getClass().getClassName();
+		std::string bClassName = b->getClass().getClassName();
+
+		if(!overrideQuickCheck)
+		{
+			//check if the bounding radius collides before continuing
+			double r1 = a->generateBoundingRadius();
+			double r2 = b->generateBoundingRadius();
+			Vec3f toB = b->getPosition() - a->getPosition();
+			if(toB.getLength() > r1+r2)
+			{
+				//no collision unless radius values are incorrect
+				return false;
+			}
+		}
 
 		if (aClassName == "Box2D")
 		{

@@ -9,7 +9,7 @@ namespace glib
     public:
         /**
          * @brief Construct a new XmlAttribute object
-         *      Contains the name and value of the attribute as wstrings.
+         *      Contains the name and value of the attribute as utf8 strings.
          * 
          */
         XmlAttribute();
@@ -20,8 +20,8 @@ namespace glib
          */
         ~XmlAttribute();
 
-        std::wstring name;
-        std::wstring value;
+        std::string name;
+        std::string value;
     };
 
     class XmlNode
@@ -47,11 +47,11 @@ namespace glib
          */
         ~XmlNode();
 
-        std::wstring title;
+        std::string title;
         std::vector<XmlAttribute> attributes = std::vector<XmlAttribute>();
         std::vector<XmlNode*> childNodes = std::vector<XmlNode*>();
         XmlNode* parentNode = nullptr;
-        std::wstring value;
+        std::string value;
     private:
         friend class SimpleXml;
 
@@ -97,7 +97,7 @@ namespace glib
          * @return true 
          * @return false 
          */
-        bool load(File file);
+        bool load(File file, bool parseEscape = true);
 
         /**
          * @brief Saves the XmlNode data into a file.
@@ -118,17 +118,19 @@ namespace glib
          * @param escString 
          * @return int 
          */
-        static int parseEscapeString(std::wstring escString);
+        static int parseEscapeString(std::string escString);
 
         std::vector<XmlNode*> nodes = std::vector<XmlNode*>();
         
     private:
-        XmlNode* parseXmlLine(std::wstring line);
+        XmlNode* parseXmlLine(std::string line);
 
         void fixParseOnNode(XmlNode* n);
 
         void saveNode(SimpleFile* f, XmlNode* node);
         void deleteNode(XmlNode* node);
+
+        bool shouldParseEscape = true;
 
         std::vector<unsigned char> removeCommentsAndInvalidChars(std::vector<unsigned char> fileBytes);
     };

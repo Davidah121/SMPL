@@ -3,16 +3,12 @@
 namespace glib
 {
 		
-	const Class Sprite::myClass = Class("Sprite", {&Object::myClass});
-	const Class* Sprite::getClass()
-	{
-		return &Sprite::myClass;
-	}
-
+	const Class Sprite::globalClass = Class("Sprite", {&Object::globalClass});
+	
 	Sprite::Sprite()
 	{
+		setClass(globalClass);
 	}
-
 
 	Sprite::~Sprite()
 	{
@@ -21,14 +17,26 @@ namespace glib
 
 	Sprite::Sprite(const Sprite& o)
 	{
-		images = o.images;
-		delayTimeForFrame = o.delayTimeForFrame;
+		copy(o);
 	}
 
 	void Sprite::operator=(const Sprite& o)
 	{
-		images = o.images;
+		copy(o);
+	}
+
+	void Sprite::copy(const Sprite& o)
+	{
+		setClass(globalClass);
 		delayTimeForFrame = o.delayTimeForFrame;
+
+		//hard copy
+		for(int i=0; i<o.images.size(); i++)
+		{
+			Image* nImg = new Image();
+			nImg->copyImage(o.images[i]);
+			images.push_back( nImg );
+		}
 	}
 
 	void Sprite::dispose()
@@ -47,7 +55,7 @@ namespace glib
 
 	Image* Sprite::getImage(int index)
 	{
-		if (images.size() > index && index >= 0)
+		if (index < images.size() && index >= 0)
 		{
 			return images[index];
 		}
@@ -56,7 +64,7 @@ namespace glib
 
 	int Sprite::getDelayTime(int index)
 	{
-		if (images.size() > index && index >= 0)
+		if (index < images.size() && index >= 0)
 		{
 			return delayTimeForFrame[index];
 		}
@@ -65,7 +73,7 @@ namespace glib
 
 	void Sprite::setDelayTime(int index, int microSecondsDelay)
 	{
-		if (images.size() > index && index >= 0)
+		if (index < images.size() && index >= 0)
 		{
 			delayTimeForFrame[index] = microSecondsDelay;
 		}

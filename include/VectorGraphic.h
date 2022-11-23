@@ -11,7 +11,10 @@ namespace glib
 	struct criticalPoint
 	{
 		double xValue;
-		bool isYPositive;
+		Vec2f direction;
+		double timeVal;
+		Vec2f otherEndPoint;
+		bool horizontal;
 	};
 
 	class VectorShape : public Object
@@ -86,8 +89,7 @@ namespace glib
 		~VectorShape();
 		
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief An abstract draw function.
@@ -271,8 +273,7 @@ namespace glib
 		~VectorRectangle();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief Draws the VectorRectangle
@@ -430,8 +431,7 @@ namespace glib
 		~VectorCircle();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief Draws the VectorCircle
@@ -543,8 +543,7 @@ namespace glib
 		~VectorEllipse();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief Draws a VectorEllipse
@@ -669,8 +668,7 @@ namespace glib
 		~VectorLine();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief Draws a VectorLine
@@ -800,8 +798,7 @@ namespace glib
 		~VectorPolyline();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief Draws the VectorPolyline.
@@ -920,8 +917,7 @@ namespace glib
 		~VectorPolygon();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief Draws the VectorPolygon.
@@ -1098,8 +1094,7 @@ namespace glib
 		~VectorPath();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief Draws the VectorPath
@@ -1450,6 +1445,7 @@ namespace glib
 		 */
 		int size();
 
+		static bool oldMethod;
 	protected:
 		void applyTransform();
 		
@@ -1545,8 +1541,7 @@ namespace glib
 		~VectorGraphic();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief Adds a VectorShape to the VectorGraphic

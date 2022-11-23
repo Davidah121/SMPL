@@ -12,8 +12,8 @@ namespace glib
 
 	struct FileFilter
 	{
-		std::wstring name;
-		std::wstring extensions;
+		std::string name;
+		std::string extensions;
 	};
 
 	class System
@@ -287,7 +287,7 @@ namespace glib
 		 * @param windowName 
 		 * @return size_t 
 		 */
-		static size_t getProcessWindow(std::wstring windowName);
+		static size_t getProcessWindow(std::string windowName);
 
 		static const unsigned char TYPE_OPEN_FILE = 0;
 		static const unsigned char TYPE_OPEN_FOLDER = 1;
@@ -315,10 +315,10 @@ namespace glib
 		 * 		Default is no filters.
 		 * @param startDir 
 		 * 		The starting directory for the file dialog box.
-		 * 		Default is L"./" which either sets it to the last location it was at or the programs directory.
-		 * @return std::wstring 
+		 * 		Default is "./" which either sets it to the last location it was at or the programs directory.
+		 * @return std::string 
 		 */
-		static std::wstring fileDialogBox(unsigned char type = TYPE_OPEN_FILE, std::vector<FileFilter> filters = {}, std::wstring startDir = L"./");
+		static std::string fileDialogBox(unsigned char type = TYPE_OPEN_FILE, std::vector<FileFilter> filters = {}, std::string startDir = "./");
 
 		/**
 		 * @brief Creates a message box popup.
@@ -329,7 +329,7 @@ namespace glib
 		 * @param message 
 		 * @return int 
 		 */
-		static int messageBoxPopup(unsigned int type, std::wstring title, std::wstring message);
+		static int messageBoxPopup(unsigned int type, std::string title, std::string message);
 
 		/**
 		 * @brief Copies text into the clipboard
@@ -348,16 +348,72 @@ namespace glib
 		/**
 		 * @brief Retrieves the currently copied text from the clipboard if it is text.
 		 * 
-		 * @return std::wstring 
+		 * @return std::string 
 		 */
-		static std::wstring pasteFromClipboard();
+		static std::string pasteFromClipboard();
 
 		/**
 		 * @brief Clears data from the clipboard.
 		 * 
 		 */
 		static void clearClipboard();
+
+		//Statistics and stuff
+		/**
+		 * @brief Gets the Total Virtual Memory possible.
+		 * 
+		 * @return size_t 
+		 */
+		static size_t getTotalVirtualMem();
+
+		/**
+		 * @brief Gets the Total amount of RAM available to the system.
+		 * 
+		 * @return size_t 
+		 */
+		static size_t getTotalPhysicalMem();
 		
+		/**
+		 * @brief Gets the Total Virtual Memory available that has not been allocated.
+		 * 
+		 * @return size_t 
+		 */
+		static size_t getTotalVirtualMemAvaliable();
+
+		/**
+		 * @brief Gets the Total amount of RAM available to the system that has not been allocated.
+		 * 
+		 * @return size_t 
+		 */
+		static size_t getTotalPhysicalMemAvaliable();
+
+		/**
+		 * @brief Gets the Total amount of Virtual Memory Used by the program
+		 * 
+		 * @return size_t 
+		 */
+		static size_t getVirtualMemUsed();
+
+		/**
+		 * @brief Get the Total amount of Physical Memory Used by the program
+		 * 
+		 * @return size_t 
+		 */
+		static size_t getPhysicalMemUsed();
+		
+		/**
+		 * @brief Get the Cpu for the entire system.
+		 * 
+		 * @return double 
+		 */
+		static double getTotalCpuUsage(); //TODO
+		
+		/**
+		 * @brief Get the Cpu for the program.
+		 * 
+		 * @return double 
+		 */
+		static double getCpuUsage(); //TODO
 	private:
 		static unsigned int numberOfThreads;
 	};

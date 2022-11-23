@@ -58,8 +58,7 @@ namespace glib
 		void copy(const Matrix& o);
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief Returns a pointer to the start of the specified row

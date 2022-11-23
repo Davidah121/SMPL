@@ -5,14 +5,11 @@ namespace glib
     
 	#pragma region GUI_RECTANGLE_BUTTON
 
-	const Class GuiRectangleButton::myClass = Class("GuiRectangleButton", {&GuiInstance::myClass});
-	const Class* GuiRectangleButton::getClass()
-	{
-		return &GuiRectangleButton::myClass;
-	}
+	const Class GuiRectangleButton::globalClass = Class("GuiRectangleButton", {&GuiInstance::globalClass});
 
 	GuiRectangleButton::GuiRectangleButton(int x, int y, int width, int height) : GuiInstance()
 	{
+		setClass(globalClass);
 		setBaseX(x);
 		setBaseY(y);
 		this->width = width;
@@ -20,6 +17,9 @@ namespace glib
 		onClickFunction = nullptr;
 		onClickHoldFunction = nullptr;
 		onClickReleaseFunction = nullptr;
+		includeChildrenInBounds = true;
+
+		boundingBox = Box2D(x, y, x+width, y+height);
 	}
 
 	GuiRectangleButton::GuiRectangleButton(const GuiRectangleButton& other) : GuiInstance(other)
@@ -35,6 +35,7 @@ namespace glib
 
 	void GuiRectangleButton::copy(const GuiRectangleButton& other)
 	{
+		setClass(globalClass);
 		onClickFunction = other.onClickFunction;
 		onClickHoldFunction = other.onClickHoldFunction;
 		onClickReleaseFunction = other.onClickReleaseFunction;
@@ -58,16 +59,16 @@ namespace glib
 
 	void GuiRectangleButton::update()
 	{
-		int mouseX = Input::getMouseX();
-		int mouseY = Input::getMouseY();
+		int mouseX;
+		int mouseY;
 
 		bool oldHover = hover;
 		bool oldFocus = getFocus();
 		
 		if(getManager()!=nullptr)
 		{
-			mouseX -= getManager()->getWindowX();
-			mouseY -= getManager()->getWindowY();
+			mouseX = getManager()->getMouseX();
+			mouseY = getManager()->getMouseY();
 		}
 
 		
@@ -121,28 +122,26 @@ namespace glib
 
 	void GuiRectangleButton::render()
 	{
-		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
-
 		if(!getFocus())
 		{
 			if(!hover)
-				graphicsInterface->setColor(backgroundColor);
+				GuiGraphicsInterface::setColor(backgroundColor);
 			else
-				graphicsInterface->setColor(hoverColor);
+				GuiGraphicsInterface::setColor(hoverColor);
 		}
 		else
 		{
-			graphicsInterface->setColor(focusBackgroundColor);
+			GuiGraphicsInterface::setColor(focusBackgroundColor);
 		}
 		
-		graphicsInterface->drawRect(renderX, renderY, renderX + width, renderY + height, false);
+		GuiGraphicsInterface::drawRect(x, y, x + width, y + height, false);
 
 		if (getFocus() == false)
-			graphicsInterface->setColor(outlineColor);
+			GuiGraphicsInterface::setColor(outlineColor);
 		else
-			graphicsInterface->setColor(focusOutlineColor);
+			GuiGraphicsInterface::setColor(focusOutlineColor);
 
-		graphicsInterface->drawRect(renderX, renderY, renderX + width, renderY + height, true);
+		GuiGraphicsInterface::drawRect(x, y, x + width, y + height, true);
 	}
 
 	void GuiRectangleButton::setOnClickFunction(std::function<void(GuiInstance*)> func)
@@ -193,11 +192,13 @@ namespace glib
 	void GuiRectangleButton::setWidth(int v)
 	{
 		width = v;
+		boundingBox = Box2D(x, y, x+width, y+height);
 		setShouldRedraw(true);
 	}
 	void GuiRectangleButton::setHeight(int v)
 	{
 		height = v;
+		boundingBox = Box2D(x, y, x+width, y+height);
 		setShouldRedraw(true);
 	}
 	int GuiRectangleButton::getWidth()
@@ -209,45 +210,50 @@ namespace glib
 		return height;
 	}
 
-	void GuiRectangleButton::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter)
+	void GuiRectangleButton::solveBoundingBox()
 	{
-		GuiInstance::loadDataFromXML(attribs, inter);
-		std::vector<std::wstring> possibleNames = { L"width", L"height", L"backgroundcolor", L"outlinecolor", L"focusoutlinecolor", L"hovercolor", L"focusbackgroundcolor"};
+		boundingBox = Box2D(x, y, x+width, y+height);
+	}
+
+	void GuiRectangleButton::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs)
+	{
+		GuiInstance::loadDataFromXML(attribs);
+		std::vector<std::string> possibleNames = { "width", "height", "backgroundcolor", "outlinecolor", "focusoutlinecolor", "hovercolor", "focusbackgroundcolor"};
 
 		for(int i=0; i<possibleNames.size(); i++)
 		{
 			auto it = attribs.find(possibleNames[i]);
 			if(it != attribs.end())
 			{
-				if(it->first == L"width")
+				if(it->first == "width")
 				{
 					width = std::abs(StringTools::toInt(it->second));
 				}
-				else if(it->first == L"height")
+				else if(it->first == "height")
 				{
 					height = std::abs(StringTools::toInt(it->second));
 				}
-				else if(it->first == L"backgroundcolor")
+				else if(it->first == "backgroundcolor")
 				{
 					//define as color name or rgba
 					backgroundColor = ColorNameConverter::NameToColor(it->second);
 				}
-				else if(it->first == L"outlinecolor")
+				else if(it->first == "outlinecolor")
 				{
 					//define as color name or rgba
 					outlineColor = ColorNameConverter::NameToColor(it->second);
 				}
-				else if(it->first == L"focusoutlinecolor")
+				else if(it->first == "focusoutlinecolor")
 				{
 					//define as color name or rgba
 					focusOutlineColor = ColorNameConverter::NameToColor(it->second);
 				}
-				else if(it->first == L"focusbackgroundcolor")
+				else if(it->first == "focusbackgroundcolor")
 				{
 					//define as color name or rgba
 					focusBackgroundColor = ColorNameConverter::NameToColor(it->second);
 				}
-				else if(it->first == L"hovercolor")
+				else if(it->first == "hovercolor")
 				{
 					//define as color name or rgba
 					hoverColor = ColorNameConverter::NameToColor(it->second);
@@ -256,17 +262,18 @@ namespace glib
 				attribs.erase(possibleNames[i]);
 			}
 		}
+		boundingBox = Box2D(x, y, x+width, y+height);
 	}
 
 	void GuiRectangleButton::registerLoadFunction()
 	{
-		GuiManager::registerLoadFunction(L"GuiRectangleButton", GuiRectangleButton::loadFunction);
+		GuiManager::registerLoadFunction("GuiRectangleButton", GuiRectangleButton::loadFunction);
 	}
 
-	GuiInstance* GuiRectangleButton::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
+	GuiInstance* GuiRectangleButton::loadFunction(std::unordered_map<std::string, std::string>& attributes)
 	{
 		GuiRectangleButton* ins = new GuiRectangleButton(0,0,0,0);
-		ins->loadDataFromXML(attributes, inter);
+		ins->loadDataFromXML(attributes);
 		
 		return ins;
 	}

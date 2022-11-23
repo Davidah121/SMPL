@@ -2,7 +2,7 @@
 #include "Image.h"
 #include "GuiManager.h"
 
-#ifdef LINUX
+#ifdef __unix__
 	#include <X11/Xlib.h>
 	#include <X11/Xatom.h>
 	#include <X11/Xutil.h>
@@ -65,12 +65,17 @@
 
 namespace glib
 {
+	class SimpleWindow;
+	
 	struct WindowOptions
 	{
 		unsigned char windowType = 0;
 		bool focusable = true;
 		bool threadManaged = true;
 		unsigned char cornerType = DWMWCP_DEFAULT_CONST;
+		bool iconIsFile = true;
+		std::string iconFileString;
+		std::function<void(SimpleWindow*)> initFunction = nullptr;
 	};
 
 	class SimpleWindow : public Object
@@ -173,8 +178,7 @@ namespace glib
 		~SimpleWindow();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief Sets if the window should be visible.
@@ -543,22 +547,14 @@ namespace glib
 		bool getMovable();
 
 		/**
-		 * @brief Sets the Mouse VWheel Value Pointer 
-		 * 		This value will be modified by the window in focus.
-		 * 		Allows the Input class or any other class to get mouse wheel values with out accessing the window directly.
-		 * 
-		 * @param v 
+		 * @brief Sets the window as the focus for the Input Class.
+		 * 		This causes the Input class to use this windows mouse wheel values and 
+		 * 		receive characters typed into the window.
+		 * 		
+		 * 		Note: This does not include normal raw key presses as they are independent of the window.
+		 * 		Only one window can be the Input focus.
 		 */
-		static void setMouseVWheelValuePointer(int* v);
-
-		/**
-		 * @brief Sets the Mouse HWheel Value Pointer 
-		 * 		This value will be modified by the window in focus.
-		 * 		Allows the Input class or any other class to get mouse wheel values with out accessing the window directly.
-		 * 
-		 * @param v 
-		 */
-		static void setMouseHWheelValuePointer(int* v);
+		void setWindowAsInputFocus();
 
 	protected:
 		
@@ -580,7 +576,7 @@ namespace glib
 
 		//CHANGE WITH OTHER OS
 
-		#ifdef LINUX
+		#ifdef __unix__
 		void x11EventProc();
 		#else
 		static LRESULT _stdcall wndProc(HWND hwnd, UINT uint, WPARAM wparam, LPARAM lparam);
@@ -616,10 +612,6 @@ namespace glib
 		void setShouldEnd(bool v);
 		bool getShouldEnd();
 
-		static int* mouseVWheelPointer;
-		static int* mouseHWheelPointer;
-		
-		
 		int x = 0;
 		int y = 0;
 		int width = 320;
@@ -655,14 +647,17 @@ namespace glib
 		//At the cost of potential portability and bad code.
 		size_t windowHandle;
 
-		#ifdef LINUX
+		#ifdef __unix__
 			Display* displayServer;
 			int screen = -1;
 			GC gc;
+			Atom wmDeleteMessage;
+			XImage* drawableImage;
 		#else
 			WNDCLASSEXW wndClass;
 			HINSTANCE hins;
 			HBITMAP bitmap;
+			HICON handleToIcon;
 			BITMAPINFO bitInfo;
 			HDC myHDC;
 		#endif
@@ -695,6 +690,10 @@ namespace glib
 		std::function<void(int)> mouseButtonUpFunction;
 		std::function<void(int)> mouseWheelFunction;
 		std::function<void(int)> mouseHWheelFunction;
+
+		std::function<void(int)> internalMouseWheelFunction;
+		std::function<void(int)> internalMouseHWheelFunction;
+		std::function<void(unsigned int, unsigned int)> internalCharValFunction;
 	};
 
 } //NAMESPACE glib END

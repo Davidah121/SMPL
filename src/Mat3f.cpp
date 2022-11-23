@@ -3,18 +3,16 @@
 namespace glib
 {
 		
-	const Class Mat3f::myClass = Class("Mat3f", {&Matrix::myClass});
-	const Class* Mat3f::getClass()
-	{
-		return &Mat3f::myClass;
-	}
+	const Class Mat3f::globalClass = Class("Mat3f", {&Matrix::globalClass});
 
 	Mat3f::Mat3f() : Matrix(3, 3)
 	{
+		setClass(globalClass);
 	}
 
 	Mat3f::Mat3f(double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8, double v9) : Matrix(3,3)
 	{
+		setClass(globalClass);
 		data[0] = v1;
 		data[1] = v2;
 		data[2] = v3;
@@ -36,11 +34,13 @@ namespace glib
 	Mat3f::Mat3f(const Mat3f& c)
 	{
 		this->copy(c);
+		setClass(globalClass);
 	}
 
 	void Mat3f::operator=(const Mat3f& o)
 	{
 		this->copy(o);
+		setClass(globalClass);
 	}
 
 	Mat3f Mat3f::getIdentity()

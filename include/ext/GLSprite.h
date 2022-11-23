@@ -28,7 +28,7 @@
 			 * 
 			 * @param o 
 			 */
-			GLSprite(Sprite& o);
+			GLSprite(const Sprite& o);
 
 			/**
 			 * @brief Construct a new GLSprite object from another GLSprite object
@@ -45,14 +45,21 @@
 			void operator=(const GLSprite& o);
 
 			/**
+			 * @brief Copies a GLSprite object
+			 * 		Hard Copy
+			 * 
+			 * @param o 
+			 */
+			void copy(const GLSprite& o);
+
+			/**
 			 * @brief Destroy the GLSprite object
 			 * 
 			 */
 			~GLSprite();
 
 			//Object and Class Stuff
-			const Class* getClass();
-			static const Class myClass;
+			static const Class globalClass;
 
 			/**
 			 * @brief Gets an texture from the sprite at the specified index.

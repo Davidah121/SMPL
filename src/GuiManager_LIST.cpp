@@ -5,17 +5,40 @@ namespace glib
     
 	#pragma region GUI_LIST_CLASS
 
-	const Class GuiList::myClass = Class("GuiList", {&GuiInstance::myClass});
-	const Class* GuiList::getClass()
+	const Class GuiList::globalClass = Class("GuiList", {&GuiInstance::globalClass});
+
+	GuiList::GuiList(int x, int y, bool isVerticalList) : GuiInstance()
 	{
-		return &GuiList::myClass;
+		setClass(globalClass);
+		setBaseX(x);
+		setBaseY(y);
+		isVertical = isVerticalList;
+		includeChildrenInBounds = false;
+		setPriority(HIGHER_PRIORITY);
 	}
 
-	GuiList::GuiList(int x, int y, bool isVerticalList)
+	GuiList::GuiList(const GuiList& other) : GuiInstance(other)
 	{
-		baseX = x;
-		baseY = y;
-		isVertical = isVerticalList;
+		copy(other);
+	}
+
+	void GuiList::operator=(const GuiList& other)
+	{
+		GuiInstance::copy(other);
+		copy(other);
+	}
+
+	void GuiList::copy(const GuiList& other)
+	{
+		setClass(globalClass);
+		setBaseX(other.x);
+		setBaseY(other.y);
+		isVertical = other.isVertical;
+		includeChildrenInBounds = false;
+		elementSpacing = other.elementSpacing;
+		backgroundColor = other.backgroundColor;
+		outlineColor = other.outlineColor;
+		setPriority(HIGHER_PRIORITY);
 	}
 
 	GuiList::~GuiList()
@@ -25,11 +48,21 @@ namespace glib
 			if(locations[i]!=nullptr)
 				delete locations[i];
 		}
+		locations.clear();
 	}
 
 	void GuiList::update()
 	{
+		Box2D oldBounds = boundingBox;
+		boundingBox = Box2D(x, y, x, y); //Set the bounds to be at the x and y position
+		if(!getVisible())
+		{
+			//Don't need to do anything
+			return;
+		}
+
 		std::vector<GuiInstance*> children = getChildren();
+		
 		int height = 0;
 		int width = 0;
 
@@ -39,13 +72,22 @@ namespace glib
 			{
 				locations[i]->x = x;
 				locations[i]->y = y + height;
-
+				
 				GuiInstance* c = children[i];
+				if(c->getVisible())
+				{
+					c->setRenderOffset(getRenderOffsetPointerX(), getRenderOffsetPointerY());
+					Box2D bounds = c->getBoundingBox();
 
-				int disToObjectEdge = c->getBoundingBox().getRightBound() - x;
-
-				width = MathExt::max(disToObjectEdge, width);
-				height += elementSpacing + c->getBoundingBox().getHeight();
+					boundingBox.setLeftBound( MathExt::min(boundingBox.getLeftBound(), (double)x+c->getBaseX()) );
+					boundingBox.setRightBound( MathExt::max(boundingBox.getRightBound(), (double)x+c->getBaseX()+bounds.getWidth()) );
+					boundingBox.setTopBound( MathExt::min(boundingBox.getTopBound(), (double)y+c->getBaseY()) );
+					boundingBox.setBottomBound( MathExt::max(boundingBox.getBottomBound(), (double)y+c->getBaseY()+bounds.getHeight()+height) );
+					
+					height = boundingBox.getHeight();
+					if(i<children.size()-1)
+						height += elementSpacing;
+				}
 			}
 		}
 		else
@@ -56,53 +98,51 @@ namespace glib
 				locations[i]->y = y;
 
 				GuiInstance* c = children[i];
-				
-				int disToObjectEdge = c->getBoundingBox().getBottomBound() - y;
 
-				width += elementSpacing + c->getBoundingBox().getWidth();
-				height = MathExt::max(disToObjectEdge, height);
+				if(c->getVisible())
+				{
+					c->setRenderOffset(getRenderOffsetPointerX(), getRenderOffsetPointerY());
+					Box2D bounds = c->getBoundingBox();
+					
+					boundingBox.setLeftBound( MathExt::min(boundingBox.getLeftBound(), (double)x+c->getBaseX()) );
+					boundingBox.setRightBound( MathExt::max(boundingBox.getRightBound(), (double)x+c->getBaseX()+bounds.getWidth()+width) );
+					boundingBox.setTopBound( MathExt::min(boundingBox.getTopBound(), (double)y+c->getBaseY()) );
+					boundingBox.setBottomBound( MathExt::max(boundingBox.getBottomBound(), (double)y+c->getBaseY()+bounds.getHeight()) );
+					
+					width = boundingBox.getWidth();
+					if(i<children.size()-1)
+						width += elementSpacing;
+				}
 			}
 		}
 
-		if((int)boundingBox.getLeftBound() == x && (int)boundingBox.getRightBound() == x+width)
-		{
-			if((int)boundingBox.getTopBound() == y && (int)boundingBox.getBottomBound() == y+height)
-			{
-				setShouldRedraw(false);
-			}
-			else
-			{
-				setShouldRedraw(true);
-			}
-		}
-		else
+		if(oldBounds != boundingBox)
 		{
 			setShouldRedraw(true);
 		}
-
-		boundingBox.setLeftBound(x);
-		boundingBox.setRightBound(x+width);
-		boundingBox.setTopBound(y);
-		boundingBox.setBottomBound(y+height);
-
 	}
 
 	void GuiList::render()
 	{
-		int width = boundingBox.getWidth();
-		int height = boundingBox.getHeight();
-		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
+		int x1 = boundingBox.getLeftBound();
+		int y1 = boundingBox.getTopBound();
+		
+		int x2 = boundingBox.getRightBound();
+		int y2 = boundingBox.getBottomBound();
+
+		if(x1>x2 || y1>y2)
+			return;
 		
 		if(backgroundColor.alpha != 0)
 		{
-			graphicsInterface->setColor(backgroundColor);
-			graphicsInterface->drawRect(renderX, renderY, renderX+width, renderY+height, false);
+			GuiGraphicsInterface::setColor(backgroundColor);
+			GuiGraphicsInterface::drawRect(x1, y1, x2, y2, false);
 		}
 		
 		if(outlineColor.alpha != 0)
 		{
-			graphicsInterface->setColor(outlineColor);
-			graphicsInterface->drawRect(renderX, renderY, renderX+width, renderY+height, true);
+			GuiGraphicsInterface::setColor(outlineColor);
+			GuiGraphicsInterface::drawRect(x1, y1, x2, y2, true);
 		}
 	}
 
@@ -132,6 +172,7 @@ namespace glib
 			locations.push_back( p );
 			GuiInstance::addChild(ins);
 			ins->setOffset( &p->x, &p->y );
+			ins->setRenderOffset(getRenderOffsetPointerX(), getRenderOffsetPointerY());
 		}
 	}
 
@@ -192,30 +233,36 @@ namespace glib
 		return isVertical;
 	}
 
-	void GuiList::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter)
+	void GuiList::solveBoundingBox()
 	{
-		GuiInstance::loadDataFromXML(attribs, inter);
-		std::vector<std::wstring> possibleNames = { L"spacing", L"isvertical", L"backgroundcolor", L"outlinecolor"};
+		//Call the update function since it only solves for the new bounding box. Also repositions all of the objects below it.
+		update();
+	}
+
+	void GuiList::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs)
+	{
+		GuiInstance::loadDataFromXML(attribs);
+		std::vector<std::string> possibleNames = { "spacing", "isvertical", "backgroundcolor", "outlinecolor"};
 
 		for(int i=0; i<possibleNames.size(); i++)
 		{
 			auto it = attribs.find(possibleNames[i]);
 			if(it != attribs.end())
 			{
-				if(it->first == L"spacing")
+				if(it->first == "spacing")
 				{
 					elementSpacing = std::abs(StringTools::toInt(it->second));
 				}
-				else if(it->first == L"isvertical")
+				else if(it->first == "isvertical")
 				{
-					isVertical = StringTools::equalsIgnoreCase<wchar_t>(it->second, L"true");
+					isVertical = StringTools::equalsIgnoreCase<char>(it->second, "true");
 				}
-				else if(it->first == L"backgroundcolor")
+				else if(it->first == "backgroundcolor")
 				{
 					//define as color name or rgba
 					backgroundColor = ColorNameConverter::NameToColor(it->second);
 				}
-				else if(it->first == L"outlinecolor")
+				else if(it->first == "outlinecolor")
 				{
 					//define as color name or rgba
 					outlineColor = ColorNameConverter::NameToColor(it->second);
@@ -228,13 +275,13 @@ namespace glib
 
 	void GuiList::registerLoadFunction()
 	{
-		GuiManager::registerLoadFunction(L"GuiList", GuiList::loadFunction);
+		GuiManager::registerLoadFunction("GuiList", GuiList::loadFunction);
 	}
 
-	GuiInstance* GuiList::loadFunction(std::unordered_map<std::wstring, std::wstring>& attributes, GuiGraphicsInterface* inter)
+	GuiInstance* GuiList::loadFunction(std::unordered_map<std::string, std::string>& attributes)
 	{
 		GuiList* ins = new GuiList(0,0);
-		ins->loadDataFromXML(attributes, inter);
+		ins->loadDataFromXML(attributes);
 		
 		return ins;
 	}

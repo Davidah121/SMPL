@@ -5,14 +5,11 @@ namespace glib
 
 #pragma region GUI_INSTANCE_CLASS
 
-	const Class GuiInstance::myClass = Class("GuiInstance", {&Object::myClass});
-	const Class* GuiInstance::getClass()
-	{
-		return &GuiInstance::myClass;
-	}
+	const Class GuiInstance::globalClass = Class("GuiInstance", {&Object::globalClass});
 
 	GuiInstance::GuiInstance()
 	{
+		setClass(globalClass);
 		shouldCallA = false;
 		shouldCallV = false;
 	}
@@ -29,14 +26,15 @@ namespace glib
 
 	void GuiInstance::copy(const GuiInstance& other)
 	{
+		setClass(globalClass);
 		baseX = other.baseX;
 		baseY = other.baseY;
 
 		x = other.x;
 		y = other.y;
 
-		renderX = other.renderX;
-		renderY = other.renderY;
+		boundingBox = other.boundingBox;
+		previousBoundingBox = other.previousBoundingBox;
 
 		priority = other.priority;
 
@@ -65,9 +63,9 @@ namespace glib
 			other.parent->addChild(this);
 		}
 		
-		for(GuiInstance* child : children)
+		for(int i=0; i<children.size(); i++)
 		{
-			child->parent = nullptr;
+			GuiInstance* child = children[i];
 			addChild(child);
 		}
 
@@ -94,11 +92,13 @@ namespace glib
 		{
 			manager->deleteElement(this);
 		}
-
-		for(GuiInstance* ins : children)
+		
+		for(int i=0; i<children.size(); i++)
 		{
+			GuiInstance* ins = children[i];
 			ins->parent = nullptr;
 			ins->setOffset(nullptr, nullptr);
+			ins->setRenderOffset(nullptr, nullptr);
 		}
 
 		parent = nullptr;
@@ -128,8 +128,8 @@ namespace glib
 		}
 		
 		ins->parent = this;
-		ins->updatePriority();
 		ins->setOffset( &x, &y );
+		ins->setCanvas( getCanvas() );
 		children.push_back(ins);
 
 		if(manager!=nullptr && manager!=ins->manager)
@@ -137,10 +137,15 @@ namespace glib
 			//add to manager
 			manager->addElement(ins);
 		}
+		setShouldRedraw(true);
 	}
 
 	void GuiInstance::removeChild(GuiInstance* ins)
 	{
+		if(ins == nullptr)
+			return;
+		
+		bool found = false;
 		std::vector<GuiInstance*> m = std::vector<GuiInstance*>();
 		for(int i=0; i<children.size(); i++)
 		{
@@ -148,12 +153,26 @@ namespace glib
 			{
 				m.push_back(children[i]);
 			}
+			else
+			{
+				found = true;
+			}
 		}
 
 		children = m;
 
-		ins->parent = nullptr;
-		ins->setOffset(nullptr, nullptr);
+		if(found)
+		{
+			ins->parent = nullptr;
+			ins->setOffset(nullptr, nullptr);
+			ins->setRenderOffset(nullptr, nullptr);
+
+			//Object will not be rendered or updated so it should be removed from the GuiManager.
+			//The programmer can add the element back.
+			if(ins->manager != nullptr)
+				ins->manager->addToRemovedObjectBox(ins);
+		}
+		setShouldRedraw(true);
 	}
 
 	std::vector<GuiInstance*> GuiInstance::getChildren()
@@ -179,13 +198,17 @@ namespace glib
 			shouldCallV2 = true;
 			shouldCallV = false;
 		}
-		setShouldRedraw(true);
+		
+		//set the raw variable because setShouldRedraw will be adjusted by the visible attribute.
+		shouldRedraw = true;
 	}
 
 	bool GuiInstance::getVisible()
 	{
-		bool finalVisibility = (parent!=nullptr) ? (visible && parent->getVisible()) : visible;
-		return finalVisibility;
+		if(parent != nullptr)
+			return (visible && parent->getVisible());
+		else
+			return visible;
 	}
 
 	void GuiInstance::setActive(bool is)
@@ -223,7 +246,6 @@ namespace glib
 		{
 			focus = true;
 		}
-		setShouldRedraw(true);
 	}
 
 	bool GuiInstance::getFocus()
@@ -244,7 +266,8 @@ namespace glib
 
 	void GuiInstance::setShouldRedraw(bool v)
 	{
-		shouldRedraw = v;
+		if(getVisible())
+			shouldRedraw = v;
 	}
 
 	int GuiInstance::getOffsetX()
@@ -273,6 +296,15 @@ namespace glib
 		if(renderOffY!=nullptr)
 			return *renderOffY;
 		return 0;
+	}
+
+	int* GuiInstance::getRenderOffsetPointerX()
+	{
+		return renderOffX;
+	}
+	int* GuiInstance::getRenderOffsetPointerY()
+	{
+		return renderOffY;
 	}
 
 	void GuiInstance::setBaseX(int x)
@@ -307,7 +339,37 @@ namespace glib
 
 	Box2D GuiInstance::getBoundingBox()
 	{
+		//resolve
+		solveBoundingBox();
+		if(includeChildrenInBounds)
+		{
+			for(int i=0; i<children.size(); i++)
+			{
+				GuiInstance* child = children[i];
+				if(child->getActive())
+				{
+					Box2D temp = child->getBoundingBox();
+
+					boundingBox.setLeftBound( MathExt::min( boundingBox.getLeftBound(), temp.getLeftBound()) );
+					boundingBox.setTopBound( MathExt::min( boundingBox.getTopBound(), temp.getTopBound()) );
+
+					boundingBox.setRightBound( MathExt::max( boundingBox.getRightBound(), temp.getRightBound()) );
+					boundingBox.setBottomBound( MathExt::max( boundingBox.getBottomBound(), temp.getBottomBound()) );
+				}
+			}
+		}
+
 		return boundingBox;
+	}
+
+	Box2D GuiInstance::getInvalidBox()
+	{
+		return Box2D(0x7FFFFFFF, 0x7FFFFFFF, -0x7FFFFFFF, -0x7FFFFFFF);
+	}
+
+	void GuiInstance::solveBoundingBox()
+	{
+		//Empty function
 	}
 
 	void GuiInstance::setOnActivateFunction(std::function<void(GuiInstance*)> func)
@@ -354,14 +416,14 @@ namespace glib
 
 	const void GuiInstance::baseRender()
 	{
-		renderX = baseX + getOffsetX() - getRenderOffsetX();
-		renderY = baseY + getOffsetY() - getRenderOffsetY();
+		x = baseX + getOffsetX() - getRenderOffsetX();
+		y = baseY + getOffsetY() - getRenderOffsetY();
 
-		if(renderX != oldRenderX || renderY != oldRenderY)
+		if(x != oldRenderX || y != oldRenderY)
 			setShouldRedraw(true);
 		
-		oldRenderX = renderX;
-		oldRenderY = renderY;
+		oldRenderX = x;
+		oldRenderY = y;
 	}
 
 	const void GuiInstance::baseUpdate()
@@ -392,8 +454,11 @@ namespace glib
 		}
 
 		if(shouldCallF)
+		{
+			setShouldRedraw(true);
 			if(onFocusFunction!=nullptr)
 				onFocusFunction(this);
+		}
 		
 		shouldCallA = false;
 		shouldCallV = false;
@@ -403,38 +468,20 @@ namespace glib
 
 		shouldCallF = false;
 	}
+	
+	GuiInstance* GuiInstance::getParent()
+	{
+		return parent;
+	}
 
-	int GuiInstance::getPriority()
+	char GuiInstance::getPriority()
 	{
 		return priority;
 	}
 
-	void GuiInstance::setPriority(int value)
+	void GuiInstance::setPriority(char value)
 	{
-		if(value!=CANVAS_PRIORITY_VALUE)
-		{
-			priority = MathExt::clamp(value, GuiInstance::MIN_PRIORITY_VALUE, GuiInstance::MAX_PRIORITY_VALUE);
-		}
-		else
-		{
-			priority = MathExt::abs(value);
-		}
-		
-		for(GuiInstance* child : children)
-		{
-			child->updatePriority();
-		}
-	}
-
-	void GuiInstance::updatePriority()
-	{
-		if(parent!=nullptr)
-			priority = MathExt::max(priority, parent->priority+1);
-		
-		for(GuiInstance* insChildren : children)
-		{
-			insChildren->updatePriority();
-		}
+		priority = value;
 	}
 
 	void GuiInstance::setManager(GuiManager* m)
@@ -456,38 +503,47 @@ namespace glib
 	{
 		return canvas;
 	}
-
 	
-	void GuiInstance::loadDataFromXML(std::unordered_map<std::wstring, std::wstring>& attribs, GuiGraphicsInterface* inter)
+	void GuiInstance::setStaticScaling(bool v)
 	{
-		std::vector<std::wstring> possibleNames = { L"id", L"visible", L"active", L"alwaysfocus", L"onactive", L"onfocus", L"onvisible", L"ondeactivate", L"oninvisible", L"onchanged", L"x", L"y" };
+		staticScaling = v;
+	}
+
+	bool GuiInstance::getStaticScaling()
+	{
+		return staticScaling;
+	}
+	
+	void GuiInstance::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs)
+	{
+		std::vector<std::string> possibleNames = { "id", "visible", "active", "alwaysfocus", "onactive", "onfocus", "onvisible", "ondeactivate", "oninvisible", "onchanged", "x", "y" };
 
 		for(int i=0; i<possibleNames.size(); i++)
 		{
 			auto it = attribs.find(possibleNames[i]);
 			if(it != attribs.end())
 			{
-				if(possibleNames[i] == L"id")
+				if(possibleNames[i] == "id")
 				{
 					this->nameID = it->second;
 				}
-				else if(possibleNames[i] == L"visible")
+				else if(possibleNames[i] == "visible")
 				{
-					this->setVisible(StringTools::equalsIgnoreCase<wchar_t>(it->second, L"true"));
+					this->setVisible(StringTools::equalsIgnoreCase<char>(it->second, "true"));
 				}
-				else if(possibleNames[i] == L"active")
+				else if(possibleNames[i] == "active")
 				{
-					this->setActive(StringTools::equalsIgnoreCase<wchar_t>(it->second, L"true"));
+					this->setActive(StringTools::equalsIgnoreCase<char>(it->second, "true"));
 				}
-				else if(possibleNames[i] == L"alwaysfocus")
+				else if(possibleNames[i] == "alwaysfocus")
 				{
-					this->setAlwaysFocus(StringTools::equalsIgnoreCase<wchar_t>(it->second, L"true"));
+					this->setAlwaysFocus(StringTools::equalsIgnoreCase<char>(it->second, "true"));
 				}				
-				else if(possibleNames[i] == L"x")
+				else if(possibleNames[i] == "x")
 				{
 					this->setBaseX( StringTools::toInt(it->second) );
 				}
-				else if(possibleNames[i] == L"y")
+				else if(possibleNames[i] == "y")
 				{
 					this->setBaseY( StringTools::toInt(it->second) );
 				}

@@ -10,14 +10,11 @@ namespace glib
 		
 	#pragma region VectorEllipse
 
-	const Class VectorEllipse::myClass = Class("VectorEllipse", {&VectorShape::myClass});
-	const Class* VectorEllipse::getClass()
-	{
-		return &VectorEllipse::myClass;
-	}
+	const Class VectorEllipse::globalClass = Class("VectorEllipse", {&VectorShape::globalClass});
 
 	VectorEllipse::VectorEllipse() : VectorShape()
 	{
+		setClass(globalClass);
 	}
 
 	VectorEllipse::~VectorEllipse()

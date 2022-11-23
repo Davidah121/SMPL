@@ -10,10 +10,14 @@ namespace glib
 	bool Input::preMouseState[3];
 	bool Input::mouseState[3];
 
+	std::queue<int> Input::charBuffer;
+	std::queue<int> Input::charBackBuffer;
+	bool Input::canClearBuffer = true;
+
 	bool Input::mouseMoved = false;
 	bool Input::keyChanged = false;
 	bool Input::mouseClicked = false;
-
+	
 	int Input::mouseX = -1;
 	int Input::mouseY = -1;
 
@@ -27,11 +31,12 @@ namespace glib
 	int Input::nVerticalScrollValue = 0;
 	int Input::nHorizontalScrollValue = 0;
 
+	std::mutex Input::inputMutex;
+	size_t tempThing = 0;
+
 	void Input::pollInput()
 	{
-		//get mouse wheel from current active window
-		SimpleWindow::setMouseVWheelValuePointer(&nVerticalScrollValue);
-		SimpleWindow::setMouseHWheelValuePointer(&nHorizontalScrollValue);
+		inputMutex.lock();
 
 		verticalScrollValue = nVerticalScrollValue;
 		horizontalScrollValue = nHorizontalScrollValue;
@@ -46,7 +51,7 @@ namespace glib
 		mouseClicked = false;
 		int px, py;
 
-		#ifdef LINUX
+		#ifdef __unix__
 		#else
 			POINT tp;
 			GetCursorPos(&tp);
@@ -69,7 +74,7 @@ namespace glib
 		for (int i = 0; i < 256; i++)
 		{
 			bool keyValue = 0;
-			#ifdef LINUX
+			#ifdef __unix__
 
 			#else
 				keyValue = (GetAsyncKeyState(i) >> 15 & 0x01) == 1;
@@ -100,7 +105,7 @@ namespace glib
 		preMouseState[1] = mouseState[1];
 		preMouseState[2] = mouseState[2];
 
-		#ifdef LINUX
+		#ifdef __unix__
 		#else
 			mouseState[0] = (GetAsyncKeyState(VK_LBUTTON) >> 15 & 0x01) == 1;
 			mouseState[1] = (GetAsyncKeyState(VK_MBUTTON) >> 15 & 0x01) == 1;
@@ -113,23 +118,37 @@ namespace glib
 		{
 			mouseClicked = true;
 		}
+
+		//swap char buffers
+		//Idea: Fill back buffer until front buffer is read. Once front buffer is read, swap buffers.
+		//			Prevents reading while window is adjusting the buffers.
+		
+		if(canClearBuffer)
+		{
+			//set front buffer to back buffer. Clear back buffer.
+			charBuffer = charBackBuffer;
+			charBackBuffer = std::queue<int>();
+			canClearBuffer = false;
+		}
+
+		inputMutex.unlock();
 	}
 
-	bool Input::getKeyPressed(unsigned char k)
+	bool Input::getKeyPressed(int k)
 	{
-		if (preKeyState[k] == false && keyState[k] == true)
+		if (preKeyState[k & 0xFF] == false && keyState[k & 0xFF] == true)
 			return true;
 		return false;
 	}
 
-	bool Input::getKeyDown(unsigned char k)
+	bool Input::getKeyDown(int k)
 	{
-		return keyState[k];
+		return keyState[k & 0xFF];
 	}
 
-	bool Input::getKeyUp(unsigned char k)
+	bool Input::getKeyUp(int k)
 	{
-		if (preKeyState[k] == true && keyState[k] == false)
+		if (preKeyState[k & 0xFF] == true && keyState[k & 0xFF] == false)
 			return true;
 		return false;
 	}
@@ -143,12 +162,12 @@ namespace glib
 
 	bool Input::getMouseDown(int v)
 	{
-		return mouseState[v];
+		return mouseState[v & 0xFF];
 	}
 
 	bool Input::getMouseUp(int v)
 	{
-		if (preMouseState[v] == true && mouseState[v] == false)
+		if (preMouseState[v & 0xFF] == true && mouseState[v & 0xFF] == false)
 			return true;
 		return false;
 	}
@@ -196,6 +215,50 @@ namespace glib
 	int Input::getLastKeyReleased()
 	{
 		return lastKeyUp;
+	}
+
+	void Input::clearCharactersTyped()
+	{
+		inputMutex.lock();
+		charBuffer = std::queue<int>();
+		charBackBuffer = std::queue<int>();
+		inputMutex.unlock();
+	}
+
+	std::queue<int> Input::getCharactersTyped()
+	{
+		inputMutex.lock();
+		canClearBuffer = true;
+		std::queue<int> tempBuff = charBuffer;
+		inputMutex.unlock();
+
+		return tempBuff;
+	}
+
+	void Input::adjustVerticalScroll(int v)
+	{
+		inputMutex.lock();
+		nVerticalScrollValue += v;
+		inputMutex.unlock();
+	}
+
+	void Input::adjustHorizontalScroll(int v)
+	{
+		inputMutex.lock();
+		nHorizontalScrollValue += v;
+		inputMutex.unlock();
+	}
+
+	void Input::adjustCurrCharVal(unsigned int v1, unsigned int v2)
+	{
+		inputMutex.lock();
+		int repeatV = v2 & 0xFFFF;
+		
+		for(int i=0; i<repeatV; i++)
+		{
+			charBackBuffer.push(v1);
+		}
+		inputMutex.unlock();
 	}
 
 } //NAMESPACE glib END

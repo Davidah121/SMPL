@@ -3,18 +3,16 @@
 namespace glib
 {
 
-	const Class Mat2f::myClass = Class("Mat2f", {&Matrix::myClass});
-	const Class* Mat2f::getClass()
-	{
-		return &Mat2f::myClass;
-	}
+	const Class Mat2f::globalClass = Class("Mat2f", {&Matrix::globalClass});
 
 	Mat2f::Mat2f() : Matrix(2,2)
 	{
+		setClass(globalClass);
 	}
 
 	Mat2f::Mat2f(double v1, double v2, double v3, double v4) : Matrix(2,2)
 	{
+		setClass(globalClass);
 		data[0] = v1;
 		data[1] = v2;
 		data[2] = v3;
@@ -24,11 +22,13 @@ namespace glib
 	Mat2f::Mat2f(const Mat2f& c)
 	{
 		this->copy(c);
+		setClass(globalClass);
 	}
 
 	void Mat2f::operator=(const Mat2f& o)
 	{
 		this->copy(o);
+		setClass(globalClass);
 	}
 
 	Mat2f::~Mat2f()

@@ -4,9 +4,15 @@
 #include <thread>
 #include "SimpleFile.h"
 
-#ifdef LINUX
+#ifdef __unix__
 	#include <X11/Xlib.h>
-#else
+	#include <sys/types.h>
+	#include <sys/sysinfo.h>
+	#include <sys/times.h>
+	#include <sys/vtimes.h>
+#endif
+
+#ifdef _WIN32
 	#ifndef WIN32_LEAN_AND_MEAN
 		#define WIN32_LEAN_AND_MEAN
 	#endif
@@ -16,6 +22,9 @@
 	#include <TlHelp32.h>
 	#include <ShlObj.h>
 	#include <commdlg.h>
+
+	#include <Psapi.h>
+	#include <Pdh.h>
 #endif
 
 
@@ -24,11 +33,11 @@ namespace glib
 	
 	size_t System::dbtime[16];
 	unsigned int System::numberOfThreads = std::thread::hardware_concurrency();
-	const FileFilter System::ALL_FILTER = {L"All Files", L"."};
-	const FileFilter System::IMAGE_FILTER = {L"Image", L".bmp;.gif;.png;.jpg;.jpeg"};
-	const FileFilter System::TEXT_FILTER = {L"Text", L".txt"};
-	const FileFilter System::SOUND_FILTER = {L"Sound", L".wav;.ogg;.mp3"};
-	const FileFilter System::VIDEO_FILTER = {L"Video", L".mp4;.flv;.m4a;.wmv"};
+	const FileFilter System::ALL_FILTER = {"All Files", "."};
+	const FileFilter System::IMAGE_FILTER = {"Image", ".bmp;.gif;.png;.jpg;.jpeg"};
+	const FileFilter System::TEXT_FILTER = {"Text", ".txt"};
+	const FileFilter System::SOUND_FILTER = {"Sound", ".wav;.ogg;.mp3"};
+	const FileFilter System::VIDEO_FILTER = {"Video", ".mp4;.flv;.m4a;.wmv"};
 
 	size_t System::getCurrentTimeMillis()
 	{
@@ -79,8 +88,8 @@ namespace glib
 
 	void System::emulateKeyPress(int key)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifdef _WIN32
 
 			INPUT i;
 			ZeroMemory(&i, sizeof(INPUT));
@@ -96,8 +105,8 @@ namespace glib
 
 	void System::emulateKeyRelease(int key)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifdef _WIN32
 
 			INPUT i;
 			ZeroMemory(&i, sizeof(INPUT));
@@ -113,8 +122,8 @@ namespace glib
 
 	void System::emulateMousePress(int key)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifdef _WIN32
 
 			INPUT i;
 			ZeroMemory(&i, sizeof(INPUT));
@@ -151,8 +160,8 @@ namespace glib
 
 	void System::emulateMouseRelease(int key)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifdef _WIN32
 
 			INPUT i;
 			ZeroMemory(&i, sizeof(INPUT));
@@ -189,8 +198,8 @@ namespace glib
 
 	void System::emulateMouseWheel(int wheel, int amount)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifdef _WIN32
 
 			INPUT i;
 			ZeroMemory(&i, sizeof(INPUT));
@@ -226,68 +235,64 @@ namespace glib
 
 	void System::setMousePosition(int x, int y)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifdef _WIN32
 		SetCursorPos(x, y);
 		#endif
 	}
 
 	int System::getMouseX()
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifdef _WIN32
 
-		POINT p = {};
-		GetCursorPos(&p);
-		return p.x;
-		
-		#else
-			return -1;
+			POINT p = {};
+			GetCursorPos(&p);
+			return p.x;
+
 		#endif
+		return -1;
 	}
 
 	int System::getMouseY()
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifdef _WIN32
 
 			POINT p = {};
 			GetCursorPos(&p);
 			return p.y;
 
-		#else
-			return -1;
 		#endif
+		return -1;
 	}
 
 	bool System::getKeyDown(int key)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifdef _WIN32
 
 			bool v = (GetKeyState(key)>>15 & 0x01) == 1;
 			return v;
 
-		#else
-			return false;
 		#endif
+		return false;
 	}
 
 	bool System::getKeyToggled(int key)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifdef _WIN32
 			bool v = (GetKeyState(key) & 0x01) == 1;
 			return v;
-		#else
-			return false;
 		#endif
+		return false;
 	}
 
 	bool System::getMouseDown(int value)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifdef _WIN32
 
 			switch (value)
 			{
@@ -305,14 +310,17 @@ namespace glib
 				return false;
 			}
 
-		#else
-			return false;
 		#endif
+		return false;
 	}
 
 	int System::getDesktopWidth()
 	{
-		#ifdef LINUX
+		#ifdef _WIN32
+		return GetSystemMetrics(SM_CXSCREEN);
+		#endif
+
+		#ifdef __unix__
 		int w = 0;
 		Display* d = XOpenDisplay(NULL);
 		if(d == nullptr)
@@ -320,14 +328,18 @@ namespace glib
 		int s = DefaultScreen(d);
 		w = DisplayWidth(d, s);
 		return w;
-		#else
-		return GetSystemMetrics(SM_CXSCREEN);
 		#endif
+		
+		return -1;
 	}
 
 	int System::getDesktopHeight()
 	{
-		#ifdef LINUX
+		#ifdef _WIN32
+		return GetSystemMetrics(SM_CYSCREEN);
+		#endif
+
+		#ifdef __unix__
 		int h = 0;
 		Display* d = XOpenDisplay(NULL);
 		if(d == nullptr)
@@ -335,29 +347,31 @@ namespace glib
 		int s = DefaultScreen(d);
 		h = DisplayHeight(d, s);
 		return h;
-		#else
-		return GetSystemMetrics(SM_CYSCREEN);
 		#endif
+
+		return -1;
 	}
 
 	int System::getAmountOfMonitors()
 	{
-		#ifdef LINUX
+		#ifdef _WIN32
+		return GetSystemMetrics(SM_CMONITORS);
+		#endif
+		
+		#ifdef __unix__
 		int m = 0;
 		Display* d = XOpenDisplay(NULL);
 		if(d == nullptr)
 			return m;
 		// return ((_XPrivDisplay)display)->screens; //TODO
-		#else
-		return GetSystemMetrics(SM_CMONITORS);
 		#endif
 		return 0;
 	}
 
 	void System::saveScreenShot(size_t hwnd, File file)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifdef _WIN32
 
 			HWND wndHandle = (HWND)hwnd;
 			HDC hdc = GetDC(wndHandle);
@@ -414,8 +428,8 @@ namespace glib
 
 	Image* System::getScreenShot(size_t hwnd)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifdef _WIN32
 			HWND wndHandle = (HWND)hwnd;
 			HDC hdc = GetDC(wndHandle);
 
@@ -482,21 +496,21 @@ namespace glib
 			delete[] pixels;
 			
 			return finalImage;
-		#else
-			return nullptr;
 		#endif
+
+		return nullptr;
 	}
 
 	void System::saveScreenShotDesktop(File f)
 	{
-		#ifndef LINUX
+		#ifdef _WIN32
 		System::saveScreenShot((size_t)GetDesktopWindow(), f);
 		#endif
 	}
 
 	Image* System::getScreenShotDesktop()
 	{
-		#ifndef LINUX
+		#ifdef _WIN32
 		return System::getScreenShot((size_t)GetDesktopWindow());
 		#endif
 		return nullptr;
@@ -504,8 +518,8 @@ namespace glib
 
 	void System::paintImageToWindow(size_t hwnd, Image* img, int startX, int startY)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifdef _WIN32
 
 			HDC hdc = GetDC((HWND)hwnd);
 			HDC mem = CreateCompatibleDC(hdc);
@@ -570,7 +584,7 @@ namespace glib
 
 	void System::paintImageToDesktop(Image* img, int startX, int startY)
 	{
-		#ifndef LINUX
+		#ifdef _WIN32
 			System::paintImageToWindow((size_t)GetDesktopWindow(), img, startX, startY);
 		#endif
 	}
@@ -578,13 +592,13 @@ namespace glib
 	unsigned long System::getProcessID(std::wstring processName)
 	{
 		//TODO - LINUX VERSION
-		#ifndef LINUX
+		#ifdef _WIN32
 
 			DWORD pid = 0;
 			HANDLE hndl = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS | TH32CS_SNAPMODULE, 0);
 			if (hndl)
 			{
-				PROCESSENTRY32W  process = { sizeof(PROCESSENTRY32W) };
+				PROCESSENTRY32W process = { sizeof(PROCESSENTRY32W) };
 				Process32FirstW(hndl, &process);
 				do
 				{
@@ -602,36 +616,34 @@ namespace glib
 
 			return pid;
 
-		#else
-			return 0;
 		#endif
+		return 0;
 	}
 
-	size_t System::getProcessWindow(std::wstring windowName)
+	size_t System::getProcessWindow(std::string windowName)
 	{
 		//TODO - LINUX VERSION
-		#ifndef LINUX
+		#ifdef _WIN32
 
-			HWND hwnd = FindWindowW(NULL, windowName.c_str());
+			HWND hwnd = FindWindowA(NULL, windowName.c_str());
 			if(hwnd == 0)
-				hwnd = FindWindowW(windowName.c_str(), NULL);
+				hwnd = FindWindowA(windowName.c_str(), NULL);
 
 			return (size_t)hwnd;
 
-		#else
-			return 0;
 		#endif
+		return 0;
 	}
 
-	std::wstring System::fileDialogBox(unsigned char type, std::vector<FileFilter> filters, std::wstring startDir)
+	std::string System::fileDialogBox(unsigned char type, std::vector<FileFilter> filters, std::string startDir)
 	{
-		//TODO - LINUX VERSION
-		#ifndef LINUX
+		//TODO - __unix__ VERSION
+		#ifdef _WIN32
 
 			//older win32 method. Works just fine so I'm keeping it.
 			
 			//build the filter text
-			std::vector<wchar_t> filterText;
+			std::vector<char> filterText;
 			
 			for(int i=0; i<filters.size(); i++)
 			{
@@ -639,29 +651,29 @@ namespace glib
 				{
 					filterText.push_back(filters[i].name[k]);
 				}
-				filterText.push_back(L'\0');
+				filterText.push_back('\0');
 
-				std::vector<std::wstring> exts = StringTools::splitString(filters[i].extensions, L',');
+				std::vector<std::string> exts = StringTools::splitString(filters[i].extensions, ',');
 				for(int j=0; j<exts.size(); i++)
 				{
 					if(j>0)
 					{
-						filterText.push_back( L';' );
+						filterText.push_back( ';' );
 					}
-					filterText.push_back(L'*');
+					filterText.push_back('*');
 					for(int k=0; k<exts[j].size(); k++)
 					{
 						filterText.push_back(exts[j][k]);
 					}
 				}
-				filterText.push_back(L'\0');
+				filterText.push_back('\0');
 			}
 
 			if(filters.size()==0)
 			{
 			}
 
-			wchar_t* initDir = nullptr;
+			char* initDir = nullptr;
 			if(!startDir.empty())
 			{
 				initDir = startDir.data();
@@ -669,10 +681,10 @@ namespace glib
 
 			if(type==TYPE_OPEN_FILE)
 			{
-				OPENFILENAMEW resStruct = {0};
-				wchar_t* stringArray = new wchar_t[MAX_PATH]{0};
+				OPENFILENAMEA resStruct = {0};
+				char* stringArray = new char[MAX_PATH]{0};
 
-				resStruct.lStructSize = sizeof(OPENFILENAMEW);
+				resStruct.lStructSize = sizeof(OPENFILENAMEA);
 				resStruct.lpstrFile = stringArray;
 				resStruct.nMaxFile = MAX_PATH;
 				resStruct.lpstrFilter = filterText.data();
@@ -680,9 +692,9 @@ namespace glib
 				resStruct.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 				resStruct.lpstrInitialDir = initDir;
 
-				bool result = GetOpenFileNameW(&resStruct);
+				bool result = GetOpenFileNameA(&resStruct);
 				
-				std::wstring finalString = stringArray;
+				std::string finalString = stringArray;
 				delete[] stringArray;
 
 				return finalString;
@@ -732,14 +744,14 @@ namespace glib
 					}
 					CoUninitialize();
 				}
-				return finalString;
+				return StringTools::toUTF8String(finalString);
 			}
 			else if(type==TYPE_SAVE_FILE)
 			{
-				OPENFILENAMEW resStruct = {0};
-				wchar_t* stringArray = new wchar_t[MAX_PATH]{0};
+				OPENFILENAMEA resStruct = {0};
+				char* stringArray = new char[MAX_PATH]{0};
 
-				resStruct.lStructSize = sizeof(OPENFILENAMEW);
+				resStruct.lStructSize = sizeof(OPENFILENAMEA);
 				resStruct.lpstrFile = stringArray;
 				resStruct.nMaxFile = MAX_PATH;
 				resStruct.lpstrFilter = filterText.data();
@@ -747,9 +759,9 @@ namespace glib
 				resStruct.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
 				resStruct.lpstrInitialDir = initDir;
 
-				bool result = GetSaveFileNameW(&resStruct);
+				bool result = GetSaveFileNameA(&resStruct);
 				
-				std::wstring finalString = stringArray;
+				std::string finalString = stringArray;
 				delete[] stringArray;
 
 				return finalString;
@@ -757,24 +769,22 @@ namespace glib
 
 		#endif
 
-		return L"";
+		return "";
 	}
-
 	
-	int System::messageBoxPopup(unsigned int type, std::wstring title, std::wstring message)
+	int System::messageBoxPopup(unsigned int type, std::string title, std::string message)
 	{
 		//TODO - LINUX VERSION
-		#ifndef LINUX
-			return MessageBoxW(NULL, message.c_str(), title.c_str(), type);
-		#else
-			return 0;
+		#ifdef _WIN32
+			return MessageBoxA(NULL, message.c_str(), title.c_str(), type);
 		#endif
+		return 0;
 	}
 
 	void System::copyToClipboard(std::string str)
 	{
 		//TODO - LINUX VERSION
-		#ifndef LINUX
+		#ifdef _WIN32
 
 			if(!OpenClipboard(NULL))
 				return;
@@ -800,7 +810,7 @@ namespace glib
 	void System::copyToClipboard(std::wstring str)
 	{
 		//TODO - LINUX VERSION
-		#ifndef LINUX
+		#ifdef _WIN32
 
 			if(!OpenClipboard(NULL))
 				return;
@@ -823,34 +833,39 @@ namespace glib
 		#endif
 	}
 
-	std::wstring System::pasteFromClipboard()
+	std::string System::pasteFromClipboard()
 	{
 		//TODO - LINUX VERSION
-		#ifndef LINUX
+		#ifdef _WIN32
 
 			if(!OpenClipboard(NULL))
-				return L"";
+				return "";
 
+			std::wstring finalText;
 			HANDLE clipboardData = GetClipboardData(CF_UNICODETEXT);
-			wchar_t* textPointer = (wchar_t*)GlobalLock(clipboardData);
+			if(clipboardData != NULL)
+			{
+				wchar_t* textPointer = (wchar_t*)GlobalLock(clipboardData);
+				if(textPointer != nullptr)
+				{
+					finalText = textPointer;
+				}
 
-			std::wstring finalText = textPointer;
+				GlobalUnlock(clipboardData);
+			}
 
-			GlobalUnlock(clipboardData);
 			CloseClipboard();
 
-			return finalText;
-
-		#else
-			return L"";
+			return StringTools::toUTF8String(finalText);
 		#endif
+		return "";
 	}
 
 	
 	void System::clearClipboard()
 	{
 		//TODO - LINUX VERSION
-		#ifndef LINUX
+		#ifdef _WIN32
 
 			if(!OpenClipboard(NULL))
 				return;
@@ -859,6 +874,81 @@ namespace glib
 			CloseClipboard();
 
 		#endif
+	}
+
+	size_t System::getTotalVirtualMem()
+	{
+		#ifdef _WIN32
+		MEMORYSTATUSEX memInfo;
+		memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+		GlobalMemoryStatusEx(&memInfo);
+		return memInfo.ullTotalPageFile;
+		#endif
+		return 0;
+	}
+
+	size_t System::getTotalPhysicalMem()
+	{
+		#ifdef _WIN32
+		MEMORYSTATUSEX memInfo;
+		memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+		GlobalMemoryStatusEx(&memInfo);
+		return memInfo.ullTotalPhys;
+		#endif
+		return 0;
+	}
+	
+	size_t System::getTotalVirtualMemAvaliable()
+	{
+		#ifdef _WIN32
+		MEMORYSTATUSEX memInfo;
+		memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+		GlobalMemoryStatusEx(&memInfo);
+		return memInfo.ullAvailPageFile;
+		#endif
+		return 0;
+	}
+
+	size_t System::getTotalPhysicalMemAvaliable()
+	{
+		#ifdef _WIN32
+		MEMORYSTATUSEX memInfo;
+		memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+		GlobalMemoryStatusEx(&memInfo);
+		return memInfo.ullAvailPhys;
+		#endif
+		return 0;
+	}
+
+	size_t System::getVirtualMemUsed()
+	{
+		#ifdef _WIN32
+		PROCESS_MEMORY_COUNTERS_EX pmc;
+		GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(PROCESS_MEMORY_COUNTERS_EX));
+		return pmc.PrivateUsage;
+		#endif
+		return 0;
+	}
+
+	size_t System::getPhysicalMemUsed()
+	{
+		#ifdef _WIN32
+		PROCESS_MEMORY_COUNTERS_EX pmc;
+		GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(PROCESS_MEMORY_COUNTERS_EX));
+		return pmc.WorkingSetSize;
+		#endif
+		return 0;
+	}
+	
+	double getTotalCpuUsage()
+	{
+		// PdhOpenQuery(NULL, NULL, )
+		return 0;
+	}
+	
+	double getCpuUsage()
+	{
+		return 0;
 	}
 	
 } //NAMESPACE glib END

@@ -2,7 +2,7 @@
 #include <string>
 #include "Input.h"
 
-#ifdef LINUX
+#ifdef __unix__
 	#include <unistd.h>
 	#include <termios.h>
 	#include <errno.h>
@@ -61,6 +61,16 @@
 namespace glib
 {
 
+	//Used in base64 conversions
+	unsigned char base64Lookup[64] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+                                'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+                                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/'};
+
+	unsigned char base64LookupURLSafe[64] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+									'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+									'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_'};
+
+
 	bool StringTools::hasInit = false;
 	wchar_t const StringTools::lineBreak = L'\n';
 
@@ -70,8 +80,8 @@ namespace glib
 
 	void StringTools::init()
 	{
-		#ifdef LINUX
-
+		#ifdef __unix__
+			setlocale(LC_CTYPE, "");
 		#else
 			int outRet = _setmode(_fileno(stdout), _O_U16TEXT);
 			int inRet = _setmode(_fileno(stdin), _O_U16TEXT);
@@ -289,6 +299,10 @@ namespace glib
 		{
 			return ((int)(val-'A')) + 10;
 		}
+		else if(val >= 'a' && val <= 'f')
+		{
+			return ((int)(val-'a')) + 10;
+		}
 		else
 		{
 			return -1;
@@ -335,39 +349,344 @@ namespace glib
 		}
 	}
 
+	short StringTools::byteSwap(short v)
+	{
+		#ifdef __unix__
+			return StringTools::leftRotate(v, 8);
+		#else
+			return _byteswap_ushort(v);
+		#endif
+	}
+
+	int StringTools::byteSwap(int v)
+	{
+		#ifdef __unix__
+			return(
+				((v & 0x000000FF) << 24) |
+				((v & 0x0000FF00) <<  8) |
+				((v & 0x00FF0000) >>  8) |
+				((v & 0xFF000000) >> 24)
+			);
+		#else
+			return _byteswap_ulong(v);
+		#endif
+	}
+
+	size_t StringTools::byteSwap(size_t v)
+	{
+		#ifdef __unix__
+			return(
+				((v & 0x00000000000000FF) << 56) |
+				((v & 0x000000000000FF00) << 48) |
+				((v & 0x0000000000FF0000) << 40) |
+				((v & 0x00000000FF000000) << 32) |
+				((v & 0xFF00000000000000) >> 56) |
+				((v & 0x00FF000000000000) >> 48) |
+				((v & 0x0000FF0000000000) >> 40) |
+				((v & 0x000000FF00000000) >> 32)
+			);
+		#else
+			return _byteswap_uint64(v);
+		#endif
+	}
+
 	int StringTools::utf8ToChar(std::vector<unsigned char> utf8Char)
 	{
-		BinarySet b;
-		b.setBitOrder(BinarySet::RMSB);
-		b.setValues(utf8Char.data(), utf8Char.size());
+		// BinarySet b;
+		// b.setBitOrder(BinarySet::RMSB);
+		// b.setValues(utf8Char.data(), utf8Char.size());
 
-		BinarySet result;
+		// BinarySet result;
 
-		int i = 0;
+		// int i = 0;
 
-		while(i<b.size())
+		// while(i<b.size())
+		// {
+		// 	if(!b.getBit(i))
+		// 	{
+		// 		i++;
+		// 		int count = 8 - (i % 8);
+
+		// 		for(int k=0; k<count; k++)
+		// 		{
+		// 			result.add( b.getBit(i) );
+		// 			i++;
+		// 		}
+		// 	}
+		// 	else
+		// 	{
+		// 		i++;
+		// 	}
+		// }
+
+		// if(result.size()>0)
+		// 	return result.getBits(0, result.size(), true);
+		// else
+		// 	return 0;
+
+		int bytesToRead = 0;
+		int runningCount = 0;
+		for(unsigned char& c : utf8Char)
 		{
-			if(!b.getBit(i))
+			if(bytesToRead < 0)
 			{
-				i++;
-				int count = 8 - (i % 8);
-
-				for(int k=0; k<count; k++)
+				if(c <= 127)
 				{
-					result.add( b.getBit(i) );
-					i++;
+					runningCount = c;
+					break;
+				}
+				else
+				{
+					//utf8
+					if(c >= 0b11110000)
+					{
+						bytesToRead = 3;
+						runningCount += c & 0b111;
+					}
+					else if(c >= 0b11100000)
+					{
+						bytesToRead = 2;
+						runningCount += c & 0b1111;
+					}
+					else
+					{
+						bytesToRead = 1;
+						runningCount += c & 0b11111;
+					}
 				}
 			}
 			else
 			{
-				i++;
+				runningCount <<= 6;
+				runningCount += c & 0b111111;
+				if(bytesToRead == 0)
+				{
+					break;
+				}
 			}
 		}
 
-		if(result.size()>0)
-			return result.getBits(0, result.size(), true);
-		else
-			return 0;
+		return runningCount;
+	}
+
+	std::vector<int> StringTools::utf8ToIntString(std::string validUTF8String)
+	{
+		std::vector<int> finalChars;
+		int bytesToRead = 0;
+		int runningCount = 0;
+		for(char& c : validUTF8String)
+		{
+			unsigned char v = (unsigned char)c;
+			if(bytesToRead <= 0)
+			{
+				if(v <= 127)
+					finalChars.push_back(v);
+				else
+				{
+					//utf8
+					if((v >> 3) == 0b11110)
+					{
+						bytesToRead = 3;
+						runningCount += v & 0b111;
+					}
+					else if((v >> 4) == 0b1110)
+					{
+						bytesToRead = 2;
+						runningCount += v & 0b1111;
+					}
+					else  if((v >> 5) == 0b110)
+					{
+						bytesToRead = 1;
+						runningCount += v & 0b11111;
+					}
+					else
+					{
+						//error probably
+						break;
+					}
+				}
+			}
+			else
+			{
+				runningCount <<= 6;
+				runningCount += v & 0b111111;
+				bytesToRead--;
+				if(bytesToRead == 0)
+				{
+					finalChars.push_back(runningCount);
+					runningCount = 0;
+				}
+			}
+		}
+
+		return finalChars;
+	}
+	
+	std::vector<int> StringTools::wideStringToIntString(std::wstring str)
+	{
+		std::vector<int> results = std::vector<int>(str.size());
+		for(int i=0; i<str.size(); i++)
+		{
+			results[i] = str[i];
+		}
+		return results;
+	}
+
+	int StringTools::base64CharToNum(unsigned char base64Char)
+	{
+		if(base64Char >= 'A' && base64Char <= 'Z')
+			return base64Char - 'A';
+		else if(base64Char >= 'a' && base64Char <= 'z')
+			return (base64Char - 'a') + 26;
+		else if(base64Char >= '0' && base64Char <= '9')
+			return (base64Char - '0') + 52;
+		else if(base64Char == '+' || base64Char == '-')
+			return 62;
+		else if(base64Char == '/' || base64Char == '_')
+			return 63;
+			
+		return -1;
+	}
+	std::string StringTools::base64Encode(std::vector<unsigned char> bytes, bool urlSafe)
+	{
+		return base64Encode(bytes.data(), bytes.size(), urlSafe);
+	}
+	std::string StringTools::base64Encode(unsigned char* bytes, size_t size, bool urlSafe)
+	{
+		std::string result;
+		
+		if(size <= 0)
+			return "";
+		
+		size_t adjustedSize = size - (size%3);
+		size_t remainder = size - adjustedSize;
+		
+		size_t index = 0;
+		while(index < adjustedSize)
+		{
+			unsigned char c1,c2,c3,c4;
+			c1 = (bytes[index] & 0b11111100) >> 2;
+			c2 = ((bytes[index] & 0b00000011) << 4) + ((bytes[index+1] & 0b11110000) >> 4);
+			c3 = ((bytes[index+1] & 0b00001111) << 2) + ((bytes[index+2] & 0b11000000) >> 6);
+			c4 = ((bytes[index+2] & 0b00111111));
+			
+			if(urlSafe)
+			{
+				result += base64LookupURLSafe[c1];
+				result += base64LookupURLSafe[c2];
+				result += base64LookupURLSafe[c3];
+				result += base64LookupURLSafe[c4];
+			}
+			else
+			{
+				result += base64Lookup[c1];
+				result += base64Lookup[c2];
+				result += base64Lookup[c3];
+				result += base64Lookup[c4];
+			}
+			index += 3;
+		}
+
+		if(remainder == 1)
+		{
+			unsigned char c1, c2;
+			c1 = (bytes[adjustedSize] & 0b11111100) >> 2;
+			c2 = ((bytes[adjustedSize] & 0b00000011) << 4);
+			
+			if(urlSafe)
+			{
+				result += base64LookupURLSafe[c1];
+				result += base64LookupURLSafe[c2];
+			}
+			else
+			{
+				result += base64Lookup[c1];
+				result += base64Lookup[c2];
+			}
+			result += "=="; //padding
+		}
+		else if(remainder == 2)
+		{
+			unsigned char c1, c2, c3;
+			c1 = (bytes[adjustedSize] & 0b11111100) >> 2;
+			c2 = ((bytes[adjustedSize] & 0b00000011) << 4) + ((bytes[adjustedSize+1] & 0b11110000) >> 4);
+			c3 = ((bytes[adjustedSize+1] & 0b00001111) << 2);
+			
+			if(urlSafe)
+			{
+				result += base64LookupURLSafe[c1];
+				result += base64LookupURLSafe[c2];
+				result += base64LookupURLSafe[c3];
+			}
+			else
+			{
+				result += base64Lookup[c1];
+				result += base64Lookup[c2];
+				result += base64Lookup[c3];
+			}
+			result += "="; //padding
+		}
+
+		return result;
+	}
+
+	std::vector<unsigned char> StringTools::base64Decode(std::vector<unsigned char> bytes)
+	{
+		return base64Decode(bytes.data(), bytes.size());
+	}
+	std::vector<unsigned char> StringTools::base64Decode(unsigned char* bytes, size_t size)
+	{
+		std::vector<unsigned char> result;
+		if(size == 0)
+			return {};
+		
+		unsigned int temp = 0;
+		int bitsAvaliable = 0;
+		for(size_t i=0; i<size; i++)
+		{
+			if(bytes[i] != '=')
+			{
+				int charToNum = base64CharToNum(bytes[i]);
+				if(charToNum < 0)
+					return {}; //error
+				
+				temp = temp << 6;
+				temp += charToNum;
+				bitsAvaliable += 6;
+
+				if(bitsAvaliable >= 8)
+				{
+					unsigned char nByte = temp >> (bitsAvaliable-8);
+					result.push_back(nByte);
+
+					unsigned int andValue = (1<<(bitsAvaliable-8))-1;
+					temp = (temp&andValue);
+					bitsAvaliable-=8;
+				}
+			}
+			else
+			{
+				//If there are bits available, use them to create bytes
+				if(bitsAvaliable > 0)
+				{
+					result.push_back(temp);
+					temp = 0;
+				}
+
+				bitsAvaliable = 0;
+			}
+		}
+
+		//If there are bits available, use them to create bytes
+		if(bitsAvaliable > 0)
+		{
+			result.push_back(temp);
+			temp = 0;
+		}
+
+		bitsAvaliable = 0;
+
+		return result;
 	}
 
 	std::vector<std::string> StringTools::splitString(std::string s, const char delim, bool removeEmpty)
@@ -691,6 +1010,153 @@ namespace glib
 		return stringArray;
 	}
 
+	std::string StringTools::removeWhitespace(std::string originalStr, bool removeTabs, bool onlyLeadingAndTrailing)
+	{
+		std::string nStr;
+		if(!onlyLeadingAndTrailing)
+		{
+			for(char& c : originalStr)
+			{
+				if(c == ' ')
+					continue;
+
+				if(removeTabs)
+				{
+					if(c == '\t')
+						continue;
+				}
+
+				nStr += c;
+			}
+		}
+		else
+		{
+			int firstInvalidSpot = -1;
+			bool hitNormalChar = false;
+			for(int i=0; i<originalStr.size(); i++)
+			{
+				char c = originalStr[i];
+				if(!hitNormalChar)
+				{
+					if(c == ' ')
+						continue;
+
+					if(removeTabs)
+					{
+						if(c == '\t')
+							continue;
+					}
+				}
+				else
+				{
+					if(c == ' ')
+					{
+						if(firstInvalidSpot < 0)
+							firstInvalidSpot = i;
+						continue;
+					}
+
+					if(removeTabs)
+					{
+						if(c == '\t')
+						{
+							if(firstInvalidSpot < 0)
+								firstInvalidSpot = i;
+							continue;
+						}
+					}
+				}
+
+				//Add data that was skipped since it is not empty white space at the end.
+				if(firstInvalidSpot >= 0)
+				{
+					for(int k=firstInvalidSpot; k<i; k++)
+					{
+						nStr += originalStr[k];
+					}
+				}
+				hitNormalChar = true;
+				firstInvalidSpot = -1;
+
+				nStr += c;
+			}
+		}
+		return nStr;
+	}
+
+	std::wstring StringTools::removeWhitespace(std::wstring originalStr, bool removeTabs, bool onlyLeadingAndTrailing)
+	{
+		std::wstring nStr;
+		if(!onlyLeadingAndTrailing)
+		{
+			for(wchar_t& c : originalStr)
+			{
+				if(c == L' ')
+					continue;
+
+				if(removeTabs)
+				{
+					if(c == L'\t')
+						continue;
+				}
+
+				nStr += c;
+			}
+		}
+		else
+		{
+			int firstInvalidSpot = -1;
+			bool hitNormalChar = false;
+			for(int i=0; i<originalStr.size(); i++)
+			{
+				wchar_t c = originalStr[i];
+				if(!hitNormalChar)
+				{
+					if(c == ' ')
+						continue;
+
+					if(removeTabs)
+					{
+						if(c == L'\t')
+							continue;
+					}
+				}
+				else
+				{
+					if(c == L' ')
+					{
+						if(firstInvalidSpot < 0)
+							firstInvalidSpot = i;
+						continue;
+					}
+
+					if(removeTabs)
+					{
+						if(c == L'\t')
+						{
+							if(firstInvalidSpot < 0)
+								firstInvalidSpot = i;
+							continue;
+						}
+					}
+				}
+
+				//Add data that was skipped since it is not empty white space at the end.
+				if(firstInvalidSpot >= 0)
+				{
+					for(int k=firstInvalidSpot; k<i; k++)
+					{
+						nStr += originalStr[k];
+					}
+				}
+				hitNormalChar = true;
+				firstInvalidSpot = -1;
+
+				nStr += c;
+			}
+		}
+		return nStr;
+	}
 
 	int StringTools::toInt(std::string s)
 	{
@@ -730,6 +1196,39 @@ namespace glib
 	float StringTools::toFloat(std::wstring s)
 	{
 		return std::stof(s.c_str());
+	}
+
+	std::string StringTools::toString(int k)
+	{
+		return std::to_string(k);
+	}
+	std::string StringTools::toString(long k)
+	{
+		return std::to_string(k);
+	}
+	std::string StringTools::toString(unsigned int k)
+	{
+		return std::to_string(k);
+	}
+	std::string StringTools::toString(unsigned long k)
+	{
+		return std::to_string(k);
+	}
+	std::string StringTools::toString(long long k)
+	{
+		return std::to_string(k);
+	}
+	std::string StringTools::toString(unsigned long long k)
+	{
+		return std::to_string(k);
+	}
+	std::string StringTools::toString(float k)
+	{
+		return std::to_string(k);
+	}
+	std::string StringTools::toString(double k)
+	{
+		return std::to_string(k);
 	}
 
 	std::wstring StringTools::getWideString()
@@ -940,15 +1439,25 @@ namespace glib
 		while(i<splits.size())
 		{
 			std::string str = splits[i];
-
-			int size = vsnprintf(nullptr, 0, str.c_str(), args);
-			size++;
-
-			char* nText = new char[size];
 			
-			vsnprintf(nText, size, str.c_str(), args);
+			int bufferSize = 1024;
+			char* nText = new char[bufferSize];
+			while(true)
+			{
+				int size = vsnprintf(nText, bufferSize, str.c_str(), args);
+				if(size < 0)
+				{
+					bufferSize*=2;
+					delete[] nText;
+					nText = new char[bufferSize];
+				}
+				else
+				{
+					break;
+				}
+			}
+			
 			finalText += nText;
-
 			delete[] nText;
 			
 			int count = 0;
@@ -1056,15 +1565,25 @@ namespace glib
 		while(i<splits.size())
 		{
 			std::wstring str = splits[i];
-
-			int size = vswprintf(nullptr, 0, str.c_str(), args);
-			size++;
-
-			wchar_t* nText = new wchar_t[size];
 			
-			vswprintf(nText, size, str.c_str(), args);
+			int bufferSize = 1024;
+			wchar_t* nText = new wchar_t[bufferSize];
+			while(true)
+			{
+				int size = vswprintf(nText, bufferSize, str.c_str(), args);
+				if(size < 0)
+				{
+					bufferSize*=2;
+					delete[] nText;
+					nText = new wchar_t[bufferSize];
+				}
+				else
+				{
+					break;
+				}
+			}
+			
 			finalText += nText;
-
 			delete[] nText;
 			
 			int count = 0;

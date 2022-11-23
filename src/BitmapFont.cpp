@@ -2,29 +2,27 @@
 #include "SimpleFile.h"
 #include "StringTools.h"
 #include "SimpleXml.h"
+#include "SimpleGraphics.h"
 
 namespace glib
 {
 
-	const Class BitmapFont::myClass = Class("BitmapFont", {&Font::myClass});
-	const Class* BitmapFont::getClass()
-	{
-		return &BitmapFont::myClass;
-	}
+	const Class BitmapFont::globalClass = Class("BitmapFont", {&Font::globalClass});
 
 	BitmapFont::BitmapFont(File file) : Font()
 	{
+		setClass(globalClass);
 		init( file );
 	}
 
 	void BitmapFont::init(File file)
 	{
-		std::wstring extension = file.getExtension();
-		if(extension == L".ft")
+		std::string extension = file.getExtension();
+		if(extension == ".ft")
 		{
 			loadFT(file);
 		}
-		else if(extension == L".fnt")
+		else if(extension == ".fnt")
 		{
 			loadFNT(file);
 		}
@@ -79,7 +77,7 @@ namespace glib
 		//endl;
 
 		//We won't store the font name, and attributes
-		std::wstring dir = file.getPath();
+		std::string dir = file.getPath();
 
 		std::vector<std::string> fileInfo;
 
@@ -104,7 +102,7 @@ namespace glib
 		if (fileInfo.size()>0)
 		{
 			int fontSize = StringTools::toInt(fileInfo[2]);
-			std::wstring imageFile = dir + L"/" + StringTools::toWideString(fileInfo[3]);
+			std::string imageFile = dir + "/" + fileInfo[3];
 			int amountOfImages = 0;
 			Image** tempImgPointer = Image::loadImage(imageFile, &amountOfImages);
 			if(amountOfImages>0)
@@ -155,7 +153,7 @@ namespace glib
 						throw BitmapFont::InvalidFileFormat();
 						#endif
 						break;
-						//StringTools::println("Invalid wstring: %s| with size: %d", fileInfo[startIndex].c_str(), fileInfo.size());
+						//StringTools::println("Invalid string: %s| with size: %d", fileInfo[startIndex].c_str(), fileInfo.size());
 					}
 					
 				}
@@ -167,7 +165,7 @@ namespace glib
 			//pngs have explicit alpha, gifs have 1 alpha value
 			//and bmp will not have alpha. Treat the intensity as the alpha.
 			//should change the format to YCaCb to do this later so colors still work.
-			if ( imageFile.substr(imageFile.size() - 3, 3) != L"png" && imageFile.substr(imageFile.size() - 3, 3) != L"gif")
+			if ( imageFile.substr(imageFile.size() - 3, 3) != "png" && imageFile.substr(imageFile.size() - 3, 3) != "gif")
 			{
 				Image* tImg = img.getImage(0);
 				Color* imgPixels = tImg->getPixels();
@@ -193,14 +191,14 @@ namespace glib
 		SimpleXml xmlData = SimpleXml();
 		bool valid = xmlData.load(file);
 
-		std::wstring path = file.getPath();
+		std::string path = file.getPath();
 
 		if(valid)
 		{
 			XmlNode* root = nullptr;
 			for(XmlNode* n : xmlData.nodes)
 			{
-				if(n->title == L"font")
+				if(n->title == "font")
 				{
 					root = n;
 					break;
@@ -218,37 +216,38 @@ namespace glib
 
 			for(XmlNode* n : root->childNodes)
 			{
-				if(n->title == L"info")
+				if(n->title == "info")
 				{
 					for(XmlAttribute attrib : n->attributes)
 					{
-						if(attrib.name == L"size")
+						if(attrib.name == "size")
 						{
 							fontSize = std::stoi(attrib.value);
+							originalFontSize = fontSize;
 						}
 					}
 				}
-				else if(n->title == L"common")
+				else if(n->title == "common")
 				{
 					for(XmlAttribute attrib : n->attributes)
 					{
-						if(attrib.name == L"lineHeight")
+						if(attrib.name == "lineHeight")
 						{
 							verticalAdv = std::stoi(attrib.value);
 						}
 					}
 				}
-				else if(n->title == L"pages")
+				else if(n->title == "pages")
 				{
 					for(XmlNode* n2 : n->childNodes)
 					{
 						for(XmlAttribute attrib : n2->attributes)
 						{
-							if(attrib.name == L"file")
+							if(attrib.name == "file")
 							{
 								int imgCount = 0;
 								//Is local image so full path is needed
-								std::wstring actualFile = path + L'/' + attrib.value;
+								std::string actualFile = path + '/' + attrib.value;
 
 								Image** imgArr = Image::loadImage(actualFile, &imgCount);
 								if(imgCount>0)
@@ -260,7 +259,7 @@ namespace glib
 						}
 					}
 				}
-				else if(n->title == L"chars")
+				else if(n->title == "chars")
 				{
 					for(XmlNode* n2 : n->childNodes)
 					{
@@ -269,39 +268,39 @@ namespace glib
 
 						for(XmlAttribute attrib : n2->attributes)
 						{
-							if(attrib.name == L"id")
+							if(attrib.name == "id")
 							{
 								fci.unicodeValue = StringTools::toInt(attrib.value);
 							}
-							else if(attrib.name == L"x")
+							else if(attrib.name == "x")
 							{
 								fci.x = StringTools::toInt(attrib.value);
 							}
-							else if(attrib.name == L"y")
+							else if(attrib.name == "y")
 							{
 								fci.y = StringTools::toInt(attrib.value);
 							}
-							else if(attrib.name == L"width")
+							else if(attrib.name == "width")
 							{
 								fci.width = StringTools::toInt(attrib.value);
 							}
-							else if(attrib.name == L"height")
+							else if(attrib.name == "height")
 							{
 								fci.height = StringTools::toInt(attrib.value);
 							}
-							else if(attrib.name == L"xadvance")
+							else if(attrib.name == "xadvance")
 							{
 								fci.horizAdv = StringTools::toInt(attrib.value);
 							}
-							else if(attrib.name == L"page")
+							else if(attrib.name == "page")
 							{
 								page = StringTools::toInt(attrib.value);
 							}
-							else if(attrib.name == L"xoffset")
+							else if(attrib.name == "xoffset")
 							{
 								fci.xOffset = StringTools::toInt(attrib.value);
 							}
-							else if(attrib.name == L"yoffset")
+							else if(attrib.name == "yoffset")
 							{
 								fci.yOffset = StringTools::toInt(attrib.value);
 							}

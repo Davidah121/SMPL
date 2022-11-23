@@ -6,7 +6,7 @@
 #include <mutex>
 #include <atomic>
 
-#ifdef LINUX
+#ifdef __unix__
 
 #else
 
@@ -191,7 +191,7 @@ namespace glib
 
 		static void prepareSounds();
 
-		#ifdef LINUX
+		#ifdef __unix__
 
 		#else
 			static HWAVEOUT waveOutHandle;
@@ -317,7 +317,7 @@ namespace glib
 		static std::thread audioThread;
 		static std::mutex audioMutex;
 
-		#ifdef LINUX
+		#ifdef __unix__
 
 		#else
 			static HWAVEIN waveInHandle;

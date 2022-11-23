@@ -231,6 +231,27 @@ namespace glib
 		static void testDrawCircle(int x, int y, int radius, bool outline, Image* surf);
 
 		/**
+		 * @brief Draws a ellipse using the active color.
+		 * 		If OPTI is defined as 1, SSE instructions are used.
+		 * 		If OPTI is defined as 2, AVX instructions are used.
+		 * 		Anti-Aliasing is supported.
+		 * 
+		 * @param x
+		 * 		The center x location of the ellipse
+		 * @param y
+		 * 		The center y location of the ellipse
+		 * @param xRad 
+		 * 		The x radius
+		 * @param yRad 
+		 * 		The y radius
+		 * @param outline 
+		 * 		Controls whether only the outline of the ellipse should be drawn.
+		 * @param surf
+		 * 		The image to draw the ellipse onto.
+		 */
+		static void drawEllipse(int x, int y, int xRad, int yRad, bool outline, Image* surf);
+
+		/**
 		 * @brief
 		 * 		Test draw function. Should be ignored.
 		 * 
@@ -295,6 +316,7 @@ namespace glib
 		 * 		The image to draw onto.
 		 */
 		static void drawImage(Image* img, int x, int y, Image* surf);
+		static void drawImage_OLD(Image* img, int x, int y, Image* surf);
 		
 		/**
 		 * @brief Draws an Image that is modified by the active drawing color.
@@ -310,6 +332,7 @@ namespace glib
 		 * 		The image to draw onto.
 		 */
 		static void drawSprite(Image* img, int x, int y, Image* surf);
+		static void drawSprite_OLD(Image* img, int x, int y, Image* surf);
 
 		/**
 		 * @brief Draws an Image that is modified by the active drawing color.
@@ -329,6 +352,7 @@ namespace glib
 		 * 		The image to draw onto.
 		 */
 		static void drawSprite(Image* img, int x1, int y1, int x2, int y2, Image* surf);
+		static void drawSprite_OLD(Image* img, int x1, int y1, int x2, int y2, Image* surf);
 
 		/**
 		 * @brief Draws a part of an Image that will be modified by the active drawing color.
@@ -352,9 +376,11 @@ namespace glib
 		 * 		The image to draw onto.
 		 */
 		static void drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH, Image* surf);
+		static void drawSpritePart_OLD(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH, Image* surf);
 
 		/**
 		 * @brief Draws the specified text using the active font. It is affected by the active drawing color.
+		 * 		Linebreaks affect the text.
 		 * 		If OPTI is defined as 1, SSE instructions are used.
 		 * 		If OPTI is defined as 2, AVX instructions are used.
 		 * @param str
@@ -368,6 +394,27 @@ namespace glib
 		 */
 		static void drawText(std::wstring str, int x, int y, Image* surf);
 		static void drawText(std::string str, int x, int y, Image* surf);
+		static void drawText(std::vector<int> str, int x, int y, Image* surf);
+
+		/**
+		 * @brief Draws the specified text using the active font. It is affected by the active drawing color.
+		 * 		Linebreaks affect the text.
+		 * 		Highlights the text from some start point to some end point as well.
+		 * 		If OPTI is defined as 1, SSE instructions are used.
+		 * 		If OPTI is defined as 2, AVX instructions are used.
+		 * 
+		 * @param str 
+		 * @param x 
+		 * @param y 
+		 * @param highlightStart 
+		 * @param highlightEnd 
+		 * @param highlightColor 
+		 * @param surf 
+		 */
+		static void drawTextHighlighted(std::wstring str, int x, int y, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
+		static void drawTextHighlighted(std::string str, int x, int y, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
+		static void drawTextHighlighted(std::vector<int> str, int x, int y, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
+
 
 		/**
 		 * @brief Draws the specified text using the active font. It is affected by the active drawing color.
@@ -384,13 +431,15 @@ namespace glib
 		 * 		The maximum width that is allowed before a line break occurs.
 		 * @param maxHeight
 		 * 		The maximum height that is allowed.
-		 * @param useLineBreaks
+		 * @param allowTextWrap
 		 * 		If set to false, drawing stops if the text hits the maximum width.
+		 * 		Otherwise, it automatically inserts a line break.
 		 * @param surf
 		 * 		The image to draw onto.
 		 */
-		static void drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, Image* surf);
-		static void drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, Image* surf);
+		static void drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, Image* surf);
+		static void drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, Image* surf);
+		static void drawTextLimits(std::vector<int> str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, Image* surf);
 
 		/**
 		 * @brief Draws the specified text using the active font. It is affected by the active drawing color.
@@ -409,8 +458,9 @@ namespace glib
 		 * 		The maximum width that is allowed before a line break occurs.
 		 * @param maxHeight
 		 * 		The maximum height that is allowed.
-		 * @param useLineBreaks
+		 * @param allowTextWrap
 		 * 		If set to false, drawing stops if the text hits the maximum width.
+		 * 		Otherwise, it automatically inserts a line break.
 		 * @param highlightStart
 		 * 		The start of the highlighted section
 		 * @param highlightEnd
@@ -418,8 +468,10 @@ namespace glib
 		 * @param surf
 		 * 		The image to draw onto.
 		 */
-		static void drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
-		static void drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
+		static void drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
+		static void drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
+		static void drawTextLimitsHighlighted(std::vector<int> str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
+
 
 		/**
 		 * @brief Draws a polygon using the active draw color.
@@ -449,6 +501,45 @@ namespace glib
 		 * 		The image to draw onto.
 		 */
 		static void drawModel(Model* model, Image* texture, Image* surf);
+
+		/**
+		 * @brief Draws a Linear Gradient from the start point to the end point on an image.
+		 * 		The points do not have to be in the image nor do they have to be integer values.
+		 * 		The blend between c1 and c2 blends each color channel separately including the alpha.
+		 * 
+		 * @param c1 
+		 * @param c2 
+		 * @param startPoint 
+		 * @param endPoint 
+		 * @param surf 
+		 */
+		static void drawLinearGradient(Color c1, Color c2, Vec2f startPoint, Vec2f endPoint, Image* surf);
+
+		/**
+		 * @brief Draws a Linear Gradient using multiple blend colors and blend points on an image.
+		 * 		The points do not have to be in the image nor do they have to be integer values.
+		 * 		The blendColors and blendPoints size must be the same otherwise, nothing is drawn.
+		 * 
+		 * @param blendColors 
+		 * @param blendPoints 
+		 * @param surf 
+		 */
+		static void drawLinearGradient(std::vector<Color> blendColors, std::vector<Vec2f> blendPoints, Image* surf);
+
+		/**
+		 * @brief Draws a Radial Gradient from the mid point on an image.
+		 * 		The mid point specifies the middle of the circle and the radius is how big the circle will be.
+		 * 		The points do not have to be in the image nor do they have to be integer values.
+		 * 		The blend between c1 and c2 blends each color channel separately including the alpha.
+		 * 
+		 * @param c1 
+		 * @param c2 
+		 * @param midPoint 
+		 * @param radius 
+		 * @param surf 
+		 */
+		static void drawRadialGradient(Color c1, Color c2, Vec2f midPoint, double radius, Image* surf);
+		
 		
 		//Getters and Setters
 

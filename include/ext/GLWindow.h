@@ -4,7 +4,7 @@
 
 	#include "SimpleWindow.h"
 
-	#ifdef LINUX
+	#ifdef __unix__
 		#include <GL/glx.h>
 		#include <GL/gl.h>
 		#include <GL/glu.h>
@@ -93,8 +93,7 @@
 			~GLWindow();
 
 			//Object and Class Stuff
-			const Class* getClass();
-			static const Class myClass;
+			static const Class globalClass;
 
 			/**
 			 * @brief Repaints the window.

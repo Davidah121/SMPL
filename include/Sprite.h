@@ -18,17 +18,25 @@ namespace glib
 
 		/**
 		 * @brief Construct a new Sprite object from another Sprite object
-		 * 
+		 * 		Hard copy
 		 * @param o 
 		 */
 		Sprite(const Sprite& o);
 
 		/**
 		 * @brief Copies a Sprite object
-		 * 
+		 * 		Hard copy
 		 * @param o 
 		 */
 		void operator=(const Sprite& o);
+
+		/**
+		 * @brief Copies a sprite object.
+		 * 		Hard copy
+		 * 
+		 * @param o 
+		 */
+		void copy(const Sprite& o);
 
 		/**
 		 * @brief Destroy the Sprite object
@@ -37,8 +45,7 @@ namespace glib
 		~Sprite();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		/**
 		 * @brief Gets an image from the sprite at the specified index.

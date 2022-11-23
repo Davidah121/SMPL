@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef LINUX
+#ifdef __unix__
 
 #else
 

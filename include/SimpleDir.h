@@ -18,6 +18,7 @@ namespace glib
 		 * @brief Construct a new SimpleDir object
 		 * 		Uses the C++ filesystem 
 		 * 		Contains information about a directory and its files.
+		 * 		All strings are utf8
 		 * 
 		 * @param directory 
 		 */
@@ -30,8 +31,7 @@ namespace glib
 		~SimpleDir();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		//Exceptions
 		struct ExistanceError : public std::exception
@@ -66,9 +66,9 @@ namespace glib
 		 * 		If USE_EXCEPTIONS is defined, an OutOfBounds Error may be thrown.
 		 * 
 		 * @param index 
-		 * @return std::wstring 
+		 * @return std::string 
 		 */
-		std::wstring getReferenceName(int index);
+		std::string getReferenceName(int index);
 
 		/**
 		 * @brief Gets the Reference Full Path at the specified index.
@@ -76,17 +76,17 @@ namespace glib
 		 * 		If USE_EXCEPTIONS is defined, an OutOfBounds Error may be thrown.
 		 * 
 		 * @param index 
-		 * @return std::wstring 
+		 * @return std::string 
 		 */
-		std::wstring getReferenceFullPath(int index);
+		std::string getReferenceFullPath(int index);
 
 		/**
-		 * @brief Returns the size of the file or folder at the index.
+		 * @brief Get the size of the file or folder at the index.
 		 * 		If USE_EXCEPTIONS is defined, an OutOfBounds Error may be thrown.
 		 * @param index 
-		 * @return unsigned int 
+		 * @return size_t 
 		 */
-		unsigned int fileSize(int index);
+		size_t getReferenceSize(int index);
 
 		/**
 		 * @brief Gets the Last Change Time for the file or folder at the index.
@@ -116,7 +116,7 @@ namespace glib
 		 * @param newFileName 
 		 * @param index 
 		 */
-		void renameResource(std::wstring newFileName, int index);
+		void renameResource(std::string newFileName, int index);
 
 		/**
 		 * @brief Attempts to delete the reference at the index.
@@ -137,7 +137,7 @@ namespace glib
 		 * @param newFileName 
 		 * @param index 
 		 */
-		void copyResource(std::wstring newFileName, int index);
+		void copyResource(std::string newFileName, int index);
 
 		/**
 		 * @brief Gets the Reference Location by its name.
@@ -145,7 +145,7 @@ namespace glib
 		 * @param name 
 		 * @return int 
 		 */
-		int getReferenceLocation(std::wstring name);
+		int getReferenceLocation(std::string name);
 
 		//Directory Stuff
 
@@ -158,17 +158,19 @@ namespace glib
 
 		/**
 		 * @brief Returns a list of all the folders.
+		 * 		Returns utf8 strings
 		 * 
-		 * @return std::vector<std::wstring> 
+		 * @return std::vector<std::string> 
 		 */
-		std::vector<std::wstring> getFolders();
+		std::vector<std::string> getFolders();
 
 		/**
 		 * @brief Returns a list of all the files.
+		 * 		Returns utf8 strings
 		 * 
-		 * @return std::vector<std::wstring> 
+		 * @return std::vector<std::string> 
 		 */
-		std::vector<std::wstring> getFiles();
+		std::vector<std::string> getFiles();
 
 		/**
 		 * @brief Determines if the directory specified exists.
@@ -187,15 +189,19 @@ namespace glib
 		/**
 		 * @brief Gets the name of the directory.
 		 * 		It is the string used to create the object.
+		 * 		Returns a utf8 string
 		 * 
-		 * @return std::wstring 
+		 * @return std::string 
 		 */
-		std::wstring getLocation();
+		std::string getLocation();
 
 	private:
+		size_t getFileSize(std::filesystem::directory_entry f);
+		size_t getFolderSize(std::filesystem::directory_entry f);
+
 		std::vector<std::filesystem::directory_entry> names = std::vector<std::filesystem::directory_entry>();
 		bool exists = false;
-		std::wstring location = L"";
+		std::string location = "";
 	};
 
 }  //NAMESPACE glib END

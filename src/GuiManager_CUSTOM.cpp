@@ -5,15 +5,13 @@ namespace glib
     
 	#pragma region GUI_CUSTOM_OBJECT_CLASS
 
-	const Class GuiCustomObject::myClass = Class("GuiCustomObject", {&GuiInstance::myClass});
-	const Class* GuiCustomObject::getClass()
-	{
-		return &GuiCustomObject::myClass;
-	}
+	const Class GuiCustomObject::globalClass = Class("GuiCustomObject", {&GuiInstance::globalClass});
 
 	GuiCustomObject::GuiCustomObject()
 	{
-		
+		setClass(globalClass);
+		includeChildrenInBounds = true;
+		boundingBox = GuiInstance::getInvalidBox();
 	}
 
 	GuiCustomObject::~GuiCustomObject()
@@ -32,8 +30,7 @@ namespace glib
 	{
 		if(renderFunc!=nullptr)
 		{
-			GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
-			renderFunc(graphicsInterface);
+			renderFunc();
 		}
 	}
 
@@ -42,9 +39,20 @@ namespace glib
 		updateFunc = func;
 	}
 
-	void GuiCustomObject::setRenderFunction(std::function<void(GuiGraphicsInterface*)> func)
+	void GuiCustomObject::setRenderFunction(std::function<void()> func)
 	{
 		renderFunc = func;
+	}
+
+	void GuiCustomObject::setBoundingBoxCalcFunction(std::function<void()> func)
+	{
+		boundCalcFunc = func;
+	}
+	
+	void GuiCustomObject::solveBoundingBox()
+	{
+		if(boundCalcFunc != nullptr)
+			boundCalcFunc();
 	}
 
 	#pragma endregion

@@ -12,7 +12,7 @@ namespace glib
 		this->parentClasses = parentClasses;
 		if (name != "")
 		{
-			ClassMaster::addClass(this);
+			classID = ClassMaster::addClass(this);
 		}
 	}
 
@@ -21,6 +21,7 @@ namespace glib
 		ClassMaster::removeClass(this);
 		className.clear();
 		parentClasses.clear();
+		classID = -1;
 	}
 
 	bool Class::isParentClass(const Class* k) const
@@ -45,13 +46,24 @@ namespace glib
 		return className;
 	}
 
+	bool Class::operator==(const Class other) const
+	{
+		return classID == other.classID;
+	}
+	
+	bool Class::operator!=(const Class other) const
+	{
+		return classID != other.classID;
+	}
+
 	#pragma endregion
 
 	#pragma region CLASS_MASTER
 
 	std::vector<const Class*> ClassMaster::allClasses = std::vector<const Class*>();
+	int ClassMaster::maxID = 0;
 
-	bool ClassMaster::addClass(const Class* k)
+	int ClassMaster::addClass(const Class* k)
 	{
 		//Check if the class already exists or if the name already exists
 		bool can = true;
@@ -77,7 +89,12 @@ namespace glib
 			//No exit of fail
 		}
 
-		return can;
+		if(can)
+		{
+			maxID++;
+			return maxID;
+		}
+		return -1;
 	}
 
 	void ClassMaster::removeClass(const Class* k)

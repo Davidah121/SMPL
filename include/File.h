@@ -11,11 +11,11 @@ namespace glib
         /**
          * @brief Creates a File Object.
          *      Allows easy access to the file name, path, full path with name, and extension.
-         *      Uses a std::wstring to store data.
+         *      Uses a utf8 string to store data.
          * @param filename
          *      The filename or path.
          */
-        File(std::wstring filename)
+        File(std::string filename)
         {
             init( filename );
         }
@@ -23,64 +23,63 @@ namespace glib
         /**
          * @brief Creates a File Object.
          *      Allows easy access to the file name, path, full path with name, and extension.
-         *      Uses a std::wstring to store data.
+         *      Uses a utf8 string to store data.
          * @param filename
          *      The filename or path.
          */
-        template<typename T>
-        File(std::basic_string<T> filename)
+        File(std::wstring filename)
         {
-            init( StringTools::toWideString(filename) );
+            init( StringTools::toUTF8String(filename) );
         }
 
         /**
          * @brief Creates a File Object.
          *      Allows easy access to the file name, path, full path with name, and extension.
-         *      Uses a std::wstring to store data.
+         *      Uses a utf8 string to store data.
          * @param filename
          *      The filename or path.
          */
         File(char* filename)
         {
             std::string s = filename;
-            init( StringTools::toWideString(s) );
+            init( s );
         }
 
         /**
          * @brief Creates a File Object.
          *      Allows easy access to the file name, path, full path with name, and extension.
-         *      Uses a std::wstring to store data.
+         *      Uses a utf8 string to store data.
          * @param filename
          *      The filename or path.
          */
         File(const char* filename)
         {
             std::string s = filename;
-            init( StringTools::toWideString(s) );
+            init( s );
         }
 
         /**
          * @brief Creates a File Object.
          *      Allows easy access to the file name, path, full path with name, and extension.
-         *      Uses a std::wstring to store data.
+         *      Uses a utf8 string to store data.
          * @param filename
          *      The filename or path.
          */
         File(const wchar_t* filename)
         {
-            init( filename );
+            init( StringTools::toUTF8String(filename) );
         }
 
         /**
          * @brief Creates a File Object.
          *      Allows easy access to the file name, path, full path with name, and extension.
-         *      Uses a std::wstring to store data.
+         *      Uses a utf8 string to store data.
          * @param filename
          *      The filename or path.
          */
         File(wchar_t* filename)
         {
-            init( filename );
+            init( StringTools::toUTF8String(filename) );
         }
 
         /**
@@ -91,33 +90,40 @@ namespace glib
         /**
          * @brief Returns just the name of the file.
          *      The extension is not included.
-         * @return std::wstring
+         * @return std::string
          */
-        std::wstring getFileName();
+        std::string getFileName();
 
         /**
          * @brief Returns the full reference to the file.
          *      Has the full path, filename, and extension.
-         * @return std::wstring
+         * @return std::string
          */
-        std::wstring getFullFileName();
+        std::string getFullFileName();
 
         /**
          * @brief Returns the path to the file.
-         * @return std::wstring
+         * @return std::string
          */
-        std::wstring getPath();
+        std::string getPath();
 
         /**
          * @brief Returns just the extension of the file.
-         * @return std::wstring
+         * @return std::string
          */
-        std::wstring getExtension();
+        std::string getExtension();
 
-    private:
-        void init(std::wstring filename);
+        /**
+         * @brief Returns the filename with the extension.
+         * 
+         * @return std::string 
+         */
+        std::string getFileNameWithExt();
         
-        std::wstring fullFileName;
+    private:
+        void init(std::string filename);
+        
+        std::string fullFileName;
         int locationOfExtension;
         int locationOfFileName;
         

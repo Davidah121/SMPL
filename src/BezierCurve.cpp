@@ -5,20 +5,17 @@
 namespace glib
 {
 
-	const Class BezierCurve::myClass = Class("BezierCurve", {&Object::myClass});
-	const Class* BezierCurve::getClass()
-	{
-		return &BezierCurve::myClass;
-	}
+	const Class BezierCurve::globalClass = Class("BezierCurve", {&Object::globalClass});
 
 
 	BezierCurve::BezierCurve()
 	{
-
+		setClass(globalClass);
 	}
 
 	BezierCurve::BezierCurve(const BezierCurve& o)
 	{
+		setClass(globalClass);
 		points.clear();
 		for (int i = 0; i < o.points.size(); i++)
 		{
@@ -249,7 +246,7 @@ namespace glib
 		return points.size();
 	}
 
-	std::vector<double> BezierCurve::findTimeForY(double Y)
+	std::vector<double> BezierCurve::findTimeForY(double Y, bool removeDuplicates)
 	{
 		std::vector<double> timeValues = std::vector<double>();
 		double A,B,C,D;
@@ -321,15 +318,33 @@ namespace glib
 		
 		for(int i=0; i<timeValues.size(); i++)
 		{
+			double roundedValue = MathExt::roundToDecimal(timeValues[i]);
 			if(timeValues[i] == NAN)
 				continue;
-			if(timeValues[i]>=0.0 && timeValues[i]<=1.0)
-				realTimeValues.push_back(timeValues[i]);
+			if(roundedValue>=0.0 && roundedValue<=1.0)
+			{
+				bool found = false;
+				if(removeDuplicates)
+				{
+					for(int j=0; j<realTimeValues.size(); j++)
+					{
+						if(realTimeValues[j] == roundedValue)
+						{
+							found = true;
+							break;
+						}
+					}
+				}
+
+				if(!found)
+					realTimeValues.push_back(roundedValue);
+			}
 		}
+		
 		return realTimeValues;
 	}
 
-	std::vector<double> BezierCurve::findTimeForX(double X)
+	std::vector<double> BezierCurve::findTimeForX(double X, bool removeDuplicates)
 	{
 		std::vector<double> timeValues = std::vector<double>();
 		double A,B,C,D;
@@ -366,6 +381,9 @@ namespace glib
 			A = points[0].x - 2*points[1].x + points[2].x;
 			B = -2*points[0].x + 2*points[1].x;
 			C = points[0].x - X;
+			A = MathExt::roundToDecimal(A, 10);
+			B = MathExt::roundToDecimal(B, 10);
+			C = MathExt::roundToDecimal(C, 10);
 			timeValues = MathExt::solveQuadraticReal(A,B,C);
 			break;
 		case 4:
@@ -375,6 +393,10 @@ namespace glib
 			B = 3*points[0].x - 6*points[1].x + 3*points[2].x;
 			C = -3*points[0].x + 3*points[1].x;
 			D = points[0].x - X;
+			A = MathExt::roundToDecimal(A, 10);
+			B = MathExt::roundToDecimal(B, 10);
+			C = MathExt::roundToDecimal(C, 10);
+			D = MathExt::roundToDecimal(D, 10);
 			timeValues = MathExt::solveCubicReal(A,B,C,D);
 			break;
 		default:
@@ -390,19 +412,37 @@ namespace glib
 			break;
 		}
 
-		std::vector<double> realTimeValues;
+		std::vector<double> realTimeValues = std::vector<double>();
+		
 		for(int i=0; i<timeValues.size(); i++)
 		{
+			double roundedValue = MathExt::roundToDecimal(timeValues[i]);
 			if(timeValues[i] == NAN)
 				continue;
-			if(timeValues[i]>=0 && timeValues[i]<=1)
-				realTimeValues.push_back(timeValues[i]);
+			if(roundedValue>=0.0 && roundedValue<=1.0)
+			{
+				bool found = false;
+				if(removeDuplicates)
+				{
+					for(int j=0; j<realTimeValues.size(); j++)
+					{
+						if(realTimeValues[j] == roundedValue)
+						{
+							found = true;
+							break;
+						}
+					}
+				}
+
+				if(!found)
+					realTimeValues.push_back(roundedValue);
+			}
 		}
 
 		return realTimeValues;
 	}
 
-	std::vector<double> BezierCurve::findTimeForPoint(double x, double y)
+	std::vector<double> BezierCurve::findTimeForPoint(double x, double y, bool removeDuplicates)
 	{
 		std::vector<double> xTimes = findTimeForX(x);
 		std::vector<double> yTimes = findTimeForY(y);
@@ -416,7 +456,22 @@ namespace glib
 			{
 				if(xTimes[i] == yTimes[j])
 				{
-					finalTimes.push_back(xTimes[i]);
+					bool found = false;
+
+					if(removeDuplicates)
+					{
+						for(int j=0; j<finalTimes.size(); j++)
+						{
+							if(finalTimes[j] == xTimes[i])
+							{
+								found = true;
+								break;
+							}
+						}
+					}
+
+					if(!found)
+						finalTimes.push_back(xTimes[i]);
 				}
 			}
 		}

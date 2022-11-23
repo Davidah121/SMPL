@@ -3,14 +3,11 @@
 namespace glib
 {
 		
-	const Class Mat4f::myClass = Class("Mat4f", {&Matrix::myClass});
-	const Class* Mat4f::getClass()
-	{
-		return &Mat4f::myClass;
-	}
+	const Class Mat4f::globalClass = Class("Mat4f", {&Matrix::globalClass});
 
 	Mat4f::Mat4f() : Matrix(4, 4)
 	{
+		setClass(globalClass);
 	}
 
 	Mat4f::Mat4f(double v1, double v2, double v3, double v4, 
@@ -18,6 +15,7 @@ namespace glib
 			double v9, double v10, double v11, double v12, 
 			double v13, double v14, double v15, double v16) : Matrix(4, 4)
 	{
+		setClass(globalClass);
 		data[0] = v1;
 		data[1] = v2;
 		data[2] = v3;
@@ -42,11 +40,13 @@ namespace glib
 	Mat4f::Mat4f(const Mat4f& c)
 	{
 		this->copy(c);
+		setClass(globalClass);
 	}
 
 	void Mat4f::operator=(const Mat4f& o)
 	{
 		this->copy(o);
+		setClass(globalClass);
 	}
 
 	Mat4f::~Mat4f()

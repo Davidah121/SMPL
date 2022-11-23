@@ -11,6 +11,8 @@ namespace glib
 		this->type = type;
 		this->port = port;
 		this->location = location;
+		this->isTCP = TCP;
+		this->totalAllowedConnections = amountOfConnectionsAllowed;
 
 		if(!init())
 		{
@@ -19,26 +21,8 @@ namespace glib
 		}
 		else
 		{
-			if(type==TYPE_SERVER)
-			{
-				this->totalAllowedConnections = amountOfConnectionsAllowed;
-				createSocket(TCP);
-				setupSocket();
-				bindSocket();
-
-				setRunning(true);
-				networkThread = std::thread(&Network::threadRun, this);
-			}
-			else if(type==TYPE_CLIENT)
-			{
-				createSocket(TCP);
-				setupSocket();
-				connections.push_back(sock);
-				sock = 0;
-
-				setRunning(true);
-				networkThread = std::thread(&Network::threadRun, this);
-			}
+			initNetwork(TCP);
+			networkThread = std::thread(&Network::threadRun, this);
 		}
 	}
 
@@ -49,18 +33,16 @@ namespace glib
 		dispose();
 
 		startNetwork(); //Must start the network if it has not ever been started.
-
+		
 		if(networkThread.joinable())
 			networkThread.join();
 
-		networkMutex.lock();
 		shouldStart = false;
-		networkMutex.unlock();
 	}
 
 	bool Network::init()
 	{
-		#ifndef LINUX
+		#ifndef __unix__
 			//REQUIRED ON WINDOWS
 			int status = WSAStartup(MAKEWORD(2, 2), &wsaData);
 			Network::totalNetworks++;
@@ -76,6 +58,28 @@ namespace glib
 		return true;
 	}
 
+	void Network::initNetwork(bool tcp)
+	{
+		if(type==TYPE_SERVER)
+		{
+			createSocket(tcp);
+			setupSocket();
+			bindSocket();
+
+			setRunning(true);
+		}
+		else if(type==TYPE_CLIENT)
+		{
+			createSocket(tcp);
+			setupSocket();
+			connections.push_back(sock);
+			waitingOnRead.push_back(false);
+			sock = 0;
+
+			setRunning(true);
+		}
+	}
+
 	void Network::createSocket(bool tcp)
 	{
 		if(tcp)
@@ -84,7 +88,7 @@ namespace glib
 			sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
 		u_long mode = 1;
-		#ifdef LINUX
+		#ifdef __unix__
 			ioctl(sock, FIONBIO, &mode);
 		#else
 			ioctlsocket(sock, FIONBIO, &mode);
@@ -147,27 +151,36 @@ namespace glib
 			}
 			
 			connections.push_back(tempSock);
+			waitingOnRead.push_back(false);
 		}
 	}
 
 	void Network::closeSocket()
 	{
+		networkMutex.lock();
+
 		for(int i=0; i<connections.size(); i++)
 		{
-			#ifdef LINUX
+			#ifdef __unix__
 				close(connections[i]);
 			#else
 				closesocket(connections[i]);
 			#endif
 		}
 		connections.clear();
+		waitingOnRead.clear();
 		
-		#ifdef LINUX
+		#ifdef __unix__
 			close(sock);
 		#else
 			closesocket(sock);
 		#endif
 		sock = 0;
+		isConnected = false;
+		timeWaited = 0;
+		shouldConnect = false;
+
+		networkMutex.unlock();
 	}
 
 	void Network::connect()
@@ -201,9 +214,9 @@ namespace glib
 		memset(tempBuffer, 0, 4096);
 		bool good = false;
 
+		int status = SOCKET_ERROR;
 		while(true)
 		{
-			int status = SOCKET_ERROR;
 			if(type == Network::TYPE_CLIENT)
 				status = recv(connections[0], tempBuffer, 4096, MSG_PEEK);
 			else
@@ -250,7 +263,7 @@ namespace glib
 				break;
 			}
 		}
-		
+
 		networkMutex.unlock();
 
 		delete[] tempBuffer;
@@ -265,9 +278,9 @@ namespace glib
 		memset(tempBuffer, 0, 4096);
 		bool good = false;
 
+		int status = SOCKET_ERROR;
 		while(true)
 		{
-			int status = SOCKET_ERROR;
 			if(type == Network::TYPE_CLIENT)
 				status = recv(connections[0], tempBuffer, 4096, MSG_PEEK);
 			else
@@ -338,11 +351,36 @@ namespace glib
 		}
 		return true;
 	}
+	
+	bool Network::peek(std::vector<unsigned char>& buffer, int expectedSize, int id)
+	{
+		networkMutex.lock();
+
+		int status = SOCKET_ERROR;
+		buffer.resize(expectedSize);
+		if(type == Network::TYPE_CLIENT)
+			status = recv(connections[0], (char*)buffer.data(), expectedSize, MSG_PEEK);
+		else
+			status = recv(connections[id], (char*)buffer.data(), expectedSize, MSG_PEEK);
+		
+		if(status > 0 && status < expectedSize)
+		{
+			buffer.resize(status);
+		}
+		networkMutex.unlock();
+
+		if(status == 0 || status == SOCKET_ERROR)
+		{
+			//error, if 0, closed
+			return false;
+		}
+		return true;
+	}
 
 	void Network::dispose()
 	{
 		closeSocket();
-		#ifndef LINUX
+		#ifndef __unix__
 			Network::totalNetworks--;
 			if(Network::totalNetworks==0)
 			{
@@ -369,7 +407,7 @@ namespace glib
 		{
 			if(connections[i] != 0)
 			{
-				#ifdef LINUX
+				#ifdef __unix__
 					close(connections[i]);
 				#else
 					closesocket(connections[i]);
@@ -377,8 +415,10 @@ namespace glib
 			}
 		}
 		connections.clear();
+		waitingOnRead.clear();
 		shouldConnect = false;
 		isConnected = false;
+		timeWaited = 0;
 		networkMutex.unlock();
 	}
 
@@ -390,9 +430,9 @@ namespace glib
 	std::string Network::getIPFromConnection(int id)
 	{
 		networkMutex.lock();
-		sockaddr addr;
-		int len;
-		#ifdef LINUX
+		sockaddr_in addr = {0};
+		int len = sizeof(sockaddr_in);
+		#ifdef __unix__
 			int err = getpeername(connections[id], (sockaddr*)&addr, (socklen_t*)&len);
 		#else
 			int err = getpeername(connections[id], (sockaddr*)&addr, &len);
@@ -401,7 +441,7 @@ namespace glib
 
 		if(err == 0)
 		{
-			std::string returnVal = addr.sa_data;
+			std::string returnVal = inet_ntoa(addr.sin_addr);
 			return returnVal;
 		}
 		return "";
@@ -413,16 +453,16 @@ namespace glib
 		networkMutex.lock();
 		for(int i=0; i<connections.size(); i++)
 		{
-			sockaddr addr;
-			int len;
-			#ifdef LINUX
+			sockaddr_in addr = {0};
+			int len = sizeof(sockaddr_in);
+			#ifdef __unix__
 				int err = getpeername(connections[i], (sockaddr*)&addr, (socklen_t*)&len);
 			#else
 				int err = getpeername(connections[i], (sockaddr*)&addr, &len);
 			#endif
 			if(err == 0)
 			{
-				std::string testVal = addr.sa_data;
+				std::string testVal = inet_ntoa(addr.sin_addr);
 				if(testVal == s)
 				{
 					id = i;
@@ -438,13 +478,17 @@ namespace glib
 	{
 		networkMutex.lock();
 		std::vector<SOCKET_TYPE> nSockets;
+		std::vector<bool> nWaitingOnRead;
 		for(int i=0; i<connections.size(); i++)
 		{
 			if(connections[i]!=s)
+			{
 				nSockets.push_back(connections[i]);
+				nWaitingOnRead.push_back(waitingOnRead[i]);
+			}
 			else
 			{
-				#ifdef LINUX
+				#ifdef __unix__
 					close(s);
 				#else
 					closesocket(s);
@@ -452,6 +496,7 @@ namespace glib
 			}
 		}
 		connections = nSockets;
+		waitingOnRead = nWaitingOnRead;
 		networkMutex.unlock();
 	}
 
@@ -509,6 +554,14 @@ namespace glib
 		networkMutex.unlock();
 		return v;
 	}
+	
+	bool Network::getTimeoutOccurred()
+	{
+		networkMutex.lock();
+		bool v = timeoutOccurred;
+		networkMutex.unlock();
+		return v;
+	}
 
 	bool Network::getReconnect()
 	{
@@ -527,7 +580,7 @@ namespace glib
 
 	void Network::endNetwork()
 	{
-		disconnect();
+		closeSocket();
 		setRunning(false);
 	}
 
@@ -539,181 +592,633 @@ namespace glib
 		return v;
 	}
 
-	void Network::threadRun()
+	bool Network::isWaitingOnRead(int id)
 	{
-		bool init = false;
-		timeval waitTime = {0,1};
-		fd_set socketSet;
+		networkMutex.lock();
+		bool v = waitingOnRead[id];
+		networkMutex.unlock();
+		return v;
+	}
 
-		while(!getShouldStart())
+	void Network::setDoneReceiving(int id)
+	{
+		networkMutex.lock();
+		waitingOnRead[id] = false;
+		networkMutex.unlock();
+	}
+	
+	#ifdef __unix__
+		void Network::threadRun()
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
-		}
+			bool init = false;
 
-		while(getRunning())
-		{
-			if(type==TYPE_SERVER)
+			while(!getShouldStart())
 			{
-				if(!init)
-				{
-					listen();
-					init = true;
-				}
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			}
 
-				while(getRunning())
+			while(getRunning())
+			{
+				if(type==TYPE_SERVER)
 				{
-					
-					if(connections.size() < totalAllowedConnections)
+					if(!init)
 					{
-						FD_ZERO(&socketSet);
-						FD_SET(sock, &socketSet);
+						listen();
+						init = true;
+					}
 
-						int retVal = select(0, &socketSet, NULL, NULL, &waitTime);
+					while(getRunning())
+					{
 						
-						//Note retVal of 0 means timeout
-						if(retVal>0)
+						if(connections.size() < totalAllowedConnections)
 						{
-							if(FD_ISSET(sock, &socketSet))
+							bool incommingConnection = false;
+							networkMutex.lock();
+
+							pollfd listeningSocketFD = {};
+							listeningSocketFD.fd = sock;
+							listeningSocketFD.events = POLLRDNORM;
+							listeningSocketFD.revents = POLLRDNORM;
+
+							int err = poll(&listeningSocketFD, 1, 1);
+							if(err > 0)
+							{
+								if(listeningSocketFD.revents & POLLRDNORM)
+								{
+									//connected
+									incommingConnection = true;
+								}
+							}
+
+							networkMutex.unlock();
+							
+							//Note retVal of 0 means timeout
+							if(incommingConnection)
 							{
 								acceptConnection();
 								std::function<void(int)> cpy = getConnectFunc();
 
 								if(cpy!=nullptr)
-									cpy(connections.size());
+									cpy(connections.size()-1);
+							}
+							else if(err<0)
+							{
+								//error occured
+								disconnect();
 							}
 						}
-						else if(retVal!=0)
+
+						networkMutex.lock();
+
+						std::vector<pollfd> clientConnections;
+						for(int i=0; i<connections.size(); i++)
 						{
-							//error occured
-							disconnect();
-						}
-						FD_CLR(sock, &socketSet);
-					}
-
-					int startIndex=0;
-					std::vector<SOCKET_TYPE> clients = connections;
-
-					while(startIndex < connections.size())
-					{
-						int currSize = 0;
-						if(clients.size() - startIndex < 64)
-							currSize = clients.size() - startIndex;
-						else
-							currSize = 64;
-						FD_ZERO(&socketSet);
-
-						for(int i=0; i<currSize; i++)
-						{
-							FD_SET(clients[i + startIndex], &socketSet);
+							pollfd newFD = {};
+							newFD.fd = connections[i];
+							newFD.events = POLLRDNORM;
+							newFD.revents = POLLRDNORM;
+							
+							clientConnections.push_back( newFD );
 						}
 
-						int retVal = select(0, &socketSet, NULL, NULL, &waitTime);
-
-						if(retVal>0)
+						networkMutex.unlock();
+						
+						int err = poll(clientConnections.data(), clientConnections.size(), 1);
+						
+						if(err>0)
 						{
-							for(int i=0; i<currSize; i++)
+							for(int i=0; i<clientConnections.size(); i++)
 							{
-								if(FD_ISSET(clients[startIndex+i], &socketSet))
+								if(clientConnections[i].revents & POLLERR || clientConnections[i].revents & POLLHUP || clientConnections[i].revents & POLLNVAL)
 								{
-									//check for disconnect
-									char c = '\0';
-									int status = recv(clients[startIndex+i], &c, 1, MSG_PEEK);
-									if(status != 1)
+									//error occured or graceful exit
+									//disconnected
+									std::function<void(int)> cpy = getDisconnectFunc();
+									int finalErr = errno;
+
+									if(finalErr == EWOULDBLOCK)
 									{
-										//disconnect
-										std::function<void(int)> cpy = getDisconnectFunc();
-										if(cpy!=nullptr)
-											cpy(startIndex+i);
-										removeSocket(clients[startIndex+i]);
-										break;
+										//Do nothing. Acceptable error
 									}
 									else
 									{
-										//can receive message
-										std::function<void(int)> cpy = getMessageArriveFunc();
 										if(cpy!=nullptr)
-											cpy(startIndex+i);
+											cpy(i);
+										disconnect();
+										break;
 									}
-									
+								}
+								else if(clientConnections[i].revents & POLLRDNORM)
+								{
+									//check for disconnect
+									bool valid = true;
+									networkMutex.lock();
+									char testChar = 0;
+									valid = recv(clientConnections[i].fd, &testChar, 1, MSG_PEEK) > 0;
+									networkMutex.unlock();
+
+									if(!valid)
+									{
+										//error occured or graceful exit
+										//disconnected
+										std::function<void(int)> cpy = getDisconnectFunc();
+										int finalErr = errno;
+
+										if(finalErr == EWOULDBLOCK)
+										{
+											//Do nothing. Acceptable error
+										}
+										else
+										{
+											if(cpy!=nullptr)
+												cpy(i);
+											disconnect();
+											break;
+										}
+									}
+									else
+									{
+										bool skip = isWaitingOnRead(i);
+										if(!skip)
+										{
+											networkMutex.lock();
+											waitingOnRead[i] = true;
+											networkMutex.unlock();
+
+											//can receive message
+											std::function<void(int)> cpy = getMessageArriveFunc();
+											if(cpy!=nullptr)
+												cpy(i);
+										}
+									}
 								}
 							}
 						}
-						startIndex+=currSize;
+						
+						//sleep for x time
+						std::this_thread::sleep_for(std::chrono::milliseconds(10));
 					}
-					//sleep for x time
-					std::this_thread::sleep_for(std::chrono::microseconds(1));
+					
+				}
+				else
+				{
+					bool wouldConnect = false;
+					while(getRunning())
+					{
+						if(getReconnect())
+						{
+							connect();
+							int lastError = errno;
+							wouldConnect = (lastError == EISCONN);
+
+							if(wouldConnect)
+							{
+								std::function<void(int)> cpy = getConnectFunc();
+								
+								if(cpy!=nullptr)
+									cpy(0);
+								break;
+							}
+							
+							networkMutex.lock();
+							timeoutOccurred = false;
+							networkMutex.unlock();
+
+							timeWaited += 10;
+							if(timeWaited >= timeoutTimer)
+							{
+								disconnect();
+								networkMutex.lock();
+								timeoutOccurred = true;
+								networkMutex.unlock();
+							}
+						}
+
+						//sleep for x time
+						std::this_thread::sleep_for(std::chrono::milliseconds(10));
+					}
+
+					//MESSAGE
+					while(getRunning())
+					{
+						networkMutex.lock();
+
+						bool skip = waitingOnRead[0];
+						bool isSet = false;
+
+						pollfd mainSocket = {};
+						mainSocket.fd = connections[0];
+						mainSocket.events = POLLRDNORM;
+						mainSocket.revents = POLLRDNORM;
+
+						int err = poll(&mainSocket, 1, 1);
+
+						networkMutex.unlock();
+
+						//Note retVal of 0 means timeout
+						if(err>0)
+						{
+							//check for disconnect
+							if(mainSocket.revents & POLLERR || mainSocket.revents & POLLHUP || mainSocket.revents & POLLNVAL)
+							{
+								//error occured or graceful exit
+								//disconnected
+								std::function<void(int)> cpy = getDisconnectFunc();
+								int finalErr = errno;
+
+								if(finalErr == EWOULDBLOCK)
+								{
+									//Do nothing. Acceptable error
+								}
+								else
+								{
+									if(cpy!=nullptr)
+										cpy(0);
+									disconnect();
+									break;
+								}
+							}
+							else if(mainSocket.revents & POLLRDNORM)
+							{
+								//check for disconnect
+								bool valid = true;
+								networkMutex.lock();
+								char testChar = 0;
+								valid = recv(mainSocket.fd, &testChar, 1, MSG_PEEK) > 0;
+								networkMutex.unlock();
+
+								if(!valid)
+								{
+									//error occured or graceful exit
+									//disconnected
+									std::function<void(int)> cpy = getDisconnectFunc();
+									int finalErr = errno;
+
+									if(finalErr == EWOULDBLOCK)
+									{
+										//Do nothing. Acceptable error
+									}
+									else
+									{
+										if(cpy!=nullptr)
+											cpy(0);
+										disconnect();
+										break;
+									}
+								}
+								else
+								{
+									if(!skip)
+									{
+										networkMutex.lock();
+										waitingOnRead[0] = true;
+										networkMutex.unlock();
+
+										std::function<void(int)> cpy = getMessageArriveFunc();
+										if(cpy!=nullptr)
+											cpy(0);
+									}
+								}
+							}
+							
+						}
+						else if(err<0)
+						{
+							//error occured
+							//disconnected
+							std::function<void(int)> cpy = getDisconnectFunc();
+							int finalErr = errno;
+
+							if(finalErr == EWOULDBLOCK)
+							{
+								//Do nothing. Acceptable error
+							}
+							else
+							{
+								if(cpy!=nullptr)
+									cpy(0);
+								disconnect();
+								break;
+							}
+								
+						}
+
+						//sleep for x time
+						std::this_thread::sleep_for(std::chrono::milliseconds(10));
+					}
+
 				}
 				
 			}
-			else
-			{
-				bool wouldConnect = false;
-				while(getRunning())
-				{
-					if(getReconnect())
-					{
-						connect();
-						#ifdef LINUX
-							int lastError = errno;
-							wouldConnect = (lastError == EISCONN);
-						#else
-							int lastError = GetLastError();
-							wouldConnect = (GetLastError() == WSAEISCONN);
-						#endif
+		}
+	#else
+		void Network::threadRun()
+		{
+			bool init = false;
 
-						if(wouldConnect)
+			while(!getShouldStart())
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			}
+
+			while(getRunning())
+			{
+				if(type==TYPE_SERVER)
+				{
+					if(!init)
+					{
+						listen();
+						init = true;
+					}
+
+					while(getRunning())
+					{
+						
+						if(connections.size() < totalAllowedConnections)
 						{
-							std::function<void(int)> cpy = getConnectFunc();
+							bool incommingConnection = false;
+							networkMutex.lock();
+
+							WSAPOLLFD listeningSocketFD = {};
+							listeningSocketFD.fd = sock;
+							listeningSocketFD.events = POLLRDNORM;
+							listeningSocketFD.revents = POLLRDNORM;
+
+							int err = WSAPoll(&listeningSocketFD, 1, 1);
+							if(err > 0)
+							{
+								if(listeningSocketFD.revents & POLLRDNORM)
+								{
+									//connected
+									incommingConnection = true;
+								}
+							}
+
+							networkMutex.unlock();
 							
-							if(cpy!=nullptr)
-								cpy(0);
-							break;
+							//Note retVal of 0 means timeout
+							if(incommingConnection)
+							{
+								acceptConnection();
+								std::function<void(int)> cpy = getConnectFunc();
+
+								if(cpy!=nullptr)
+									cpy(connections.size()-1);
+							}
+							else if(err<0)
+							{
+								//error occured
+								disconnect();
+							}
+						}
+
+						networkMutex.lock();
+
+						std::vector<WSAPOLLFD> clientConnections;
+						for(int i=0; i<connections.size(); i++)
+						{
+							WSAPOLLFD newFD = {};
+							newFD.fd = connections[i];
+							newFD.events = POLLRDNORM;
+							newFD.revents = POLLRDNORM;
+							
+							clientConnections.push_back( newFD );
+						}
+
+						networkMutex.unlock();
+						
+						int err = WSAPoll(clientConnections.data(), clientConnections.size(), 1);
+						
+						if(err>0)
+						{
+							for(int i=0; i<clientConnections.size(); i++)
+							{
+								//check for disconnect
+								if(clientConnections[i].revents & POLLERR || clientConnections[i].revents & POLLHUP || clientConnections[i].revents & POLLNVAL)
+								{
+									//error occured or graceful exit
+									//disconnected
+									std::function<void(int)> cpy = getDisconnectFunc();
+									int finalErr = WSAGetLastError();
+
+									if(finalErr == WSAEWOULDBLOCK)
+									{
+										//Do nothing. Acceptable error
+									}
+									else
+									{
+										if(cpy!=nullptr)
+											cpy(i);
+										disconnect();
+										break;
+									}
+								}
+								else if(clientConnections[i].revents & POLLRDNORM)
+								{
+									//check for disconnect
+									bool valid = true;
+									networkMutex.lock();
+									char testChar = 0;
+									valid = recv(clientConnections[i].fd, &testChar, 1, MSG_PEEK) > 0;
+									networkMutex.unlock();
+
+									if(!valid)
+									{
+										//error occured or graceful exit
+										//disconnected
+										std::function<void(int)> cpy = getDisconnectFunc();
+										int finalErr = WSAGetLastError();
+
+										if(finalErr == WSAEWOULDBLOCK)
+										{
+											//Do nothing. Acceptable error
+										}
+										else
+										{
+											if(cpy!=nullptr)
+												cpy(i);
+											disconnect();
+											break;
+										}
+									}
+									else
+									{
+										bool skip = isWaitingOnRead(i);
+										if(!skip)
+										{
+											networkMutex.lock();
+											waitingOnRead[i] = true;
+											networkMutex.unlock();
+
+											//can receive message
+											std::function<void(int)> cpy = getMessageArriveFunc();
+											if(cpy!=nullptr)
+												cpy(i);
+										}
+									}
+								}
+							}
 						}
 						
+						//sleep for x time
+						std::this_thread::sleep_for(std::chrono::milliseconds(10));
 					}
-					//sleep for x time
-					std::this_thread::sleep_for(std::chrono::microseconds(1));
+					
 				}
-
-				//MESSAGE
-				while(getRunning())
+				else
 				{
-					FD_ZERO(&socketSet);
-					FD_SET(connections[0], &socketSet);
-
-					int retVal = select(0, &socketSet, NULL, NULL, &waitTime);
-
-					//Note retVal of 0 means timeout
-					if(retVal>0)
+					bool wouldConnect = false;
+					while(getRunning())
 					{
-						if(FD_ISSET(connections[0], &socketSet))
+						if(getReconnect())
 						{
-							std::function<void(int)> cpy = getMessageArriveFunc();
-							if(cpy!=nullptr)
-								cpy(0);
+							if(connections.size() == 0)
+							{
+								initNetwork(isTCP);
+							}
+							connect();
+							int lastError = GetLastError();
+							wouldConnect = (GetLastError() == WSAEISCONN);
+
+							if(wouldConnect)
+							{
+								std::function<void(int)> cpy = getConnectFunc();
+								
+								if(cpy!=nullptr)
+									cpy(0);
+								break;
+							}
+							
+							networkMutex.lock();
+							timeoutOccurred = false;
+							networkMutex.unlock();
+
+							timeWaited += 10;
+							if(timeWaited >= timeoutTimer)
+							{
+								disconnect();
+								networkMutex.lock();
+								timeoutOccurred = true;
+								networkMutex.unlock();
+							}
 						}
+
+						//sleep for x time
+						std::this_thread::sleep_for(std::chrono::milliseconds(10));
 					}
-					else if(retVal!=0)
+
+					//MESSAGE
+					while(getRunning())
 					{
-						//error occured
-						//disconnected
-						std::function<void(int)> cpy = getDisconnectFunc();
+						networkMutex.lock();
 
-						if(cpy!=nullptr)
-							cpy(0);
-						disconnect();
-						break;
+						bool skip = waitingOnRead[0];
+
+						WSAPOLLFD mainSocket = {};
+						mainSocket.fd = connections[0];
+						mainSocket.events = POLLRDNORM;
+						mainSocket.revents = POLLRDNORM;
+
+						int err = WSAPoll(&mainSocket, 1, 1);
+
+						networkMutex.unlock();
+
+						//Note retVal of 0 means timeout
+						if(err>0)
+						{
+							//check for disconnect
+							if(mainSocket.revents & POLLERR || mainSocket.revents & POLLHUP || mainSocket.revents & POLLNVAL)
+							{
+								//error occured or graceful exit
+								//disconnected
+								std::function<void(int)> cpy = getDisconnectFunc();
+								int finalErr = WSAGetLastError();
+
+								if(finalErr == WSAEWOULDBLOCK)
+								{
+									//Do nothing. Acceptable error
+								}
+								else
+								{
+									if(cpy!=nullptr)
+										cpy(0);
+									disconnect();
+									break;
+								}
+							}
+							else if(mainSocket.revents & POLLRDNORM)
+							{
+								//check for disconnect
+								bool valid = true;
+								networkMutex.lock();
+								char testChar = 0;
+								valid = recv(mainSocket.fd, &testChar, 1, MSG_PEEK) > 0;
+								networkMutex.unlock();
+
+								if(!valid)
+								{
+									//error occured or graceful exit
+									//disconnected
+									std::function<void(int)> cpy = getDisconnectFunc();
+									int finalErr = WSAGetLastError();
+
+									if(finalErr == WSAEWOULDBLOCK)
+									{
+										//Do nothing. Acceptable error
+									}
+									else
+									{
+										if(cpy!=nullptr)
+											cpy(0);
+										disconnect();
+										break;
+									}
+								}
+								else
+								{
+									bool skip = isWaitingOnRead(0);
+									if(!skip)
+									{
+										networkMutex.lock();
+										waitingOnRead[0] = true;
+										networkMutex.unlock();
+
+										//can receive message
+										std::function<void(int)> cpy = getMessageArriveFunc();
+										if(cpy!=nullptr)
+											cpy(0);
+									}
+								}
+							}
+						}
+						else if(err<0)
+						{
+							//error occured
+							//disconnected
+							std::function<void(int)> cpy = getDisconnectFunc();
+							int finalErr = WSAGetLastError();
+
+							if(finalErr == WSAEWOULDBLOCK)
+							{
+								//Do nothing. Acceptable error
+							}
+							else
+							{
+								if(cpy!=nullptr)
+									cpy(0);
+								disconnect();
+								break;
+							}
+						}
+
+						//sleep for x time
+						std::this_thread::sleep_for(std::chrono::milliseconds(10));
 					}
-					FD_CLR(connections[0], &socketSet);
 
-					//sleep for x time
-					std::this_thread::sleep_for(std::chrono::microseconds(1));
 				}
-
+				
 			}
-			
 		}
-	}
-
+	#endif
 
 } //NAMESPACE glib END

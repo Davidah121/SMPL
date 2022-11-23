@@ -430,6 +430,9 @@
 						//Must init gui here so openGL is initialized first
 						gui = new GuiManager(GuiManager::TYPE_OPENGL, this->width, this->height);
 
+						if(windowType.initFunction != nullptr)
+							windowType.initFunction(this);
+
 						setFinishInit(true);
 					}
 					else

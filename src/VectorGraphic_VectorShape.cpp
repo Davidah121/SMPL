@@ -11,14 +11,11 @@ namespace glib
 		
 	#pragma region VectorShape
 
-	const Class VectorShape::myClass = Class("VectorShape", {&Object::myClass});
-	const Class* VectorShape::getClass()
-	{
-		return &VectorShape::myClass;
-	}
+	const Class VectorShape::globalClass = Class("VectorShape", {&Object::globalClass});
 
 	VectorShape::VectorShape()
 	{
+		setClass(globalClass);
 		transform = Mat3f::getIdentity();
 	}
 

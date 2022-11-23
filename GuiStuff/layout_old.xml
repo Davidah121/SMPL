@@ -1,0 +1,5 @@
+<SimpleGUI>
+
+    <GuiDatePicker x="32" y="32" width="96" height="24" backgroundColor="Gainsboro"/>
+
+</SimpleGUI>

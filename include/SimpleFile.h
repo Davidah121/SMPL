@@ -65,8 +65,7 @@ namespace glib
 		~SimpleFile();
 
 		//Object and Class Stuff
-		const Class* getClass();
-		static const Class myClass;
+		static const Class globalClass;
 
 		//Read functions
 		/**
@@ -78,6 +77,17 @@ namespace glib
 		 * @return char 
 		 */
 		char readByte();
+
+		/**
+		 * @brief Reads bytes of data into a buffer.
+		 * 
+		 * 		If the file was not opened for reading
+		 * 		and USE_EXCEPTIONS is defined, a FileReadException may be thrown.
+		 * 
+		 * @param buffer 
+		 * @param size 
+		 */
+		void readBytes(char* buffer, int size);
 
 		/**
 		 * @brief Reads an byte of data as an int.
@@ -126,6 +136,14 @@ namespace glib
 		 * @return int 
 		 */
 		int readUTF8Char();
+
+		/**
+		 * @brief Moves to the specified index in the file. Useful when reading as a stream of data
+		 * 		and resuming reading after a close. Can be used when writing data as well.
+		 * 
+		 * @param index 
+		 */
+		void seek(size_t index);
 
 		/**
 		 * @brief Reads the full file as a series of lines using the readString function.
@@ -249,34 +267,34 @@ namespace glib
 		/**
 		 * @brief Gets the name of the file opened
 		 * 
-		 * @return std::wstring 
+		 * @return std::string 
 		 */
-		std::wstring getFileName();
+		std::string getFileName();
 
 		/**
 		 * @brief Gets the Size of file in bytes.
 		 * 
-		 * @return int 
+		 * @return size_t 
 		 */
-		int getSize();
+		size_t getSize();
 
 		/**
 		 * @brief Get the amount of bytes left to read in the file.
-		 * 		Returns -1 if the file is not opened for reading.
+		 * 		Returns 0 if the file is not opened for reading.
 		 * 
-		 * @return int 
+		 * @return size_t 
 		 */
-		int getBytesLeft();
+		size_t getBytesLeft();
 
 	private:
-		void init(std::wstring filename, char type);
+		void init(std::string filename, char type);
 		int getChar();
 
-		std::wstring wideFileName;
+		std::string filename;
 		char type=0;
 		char dataType=0;
 		std::fstream* file = nullptr;
-		int size;
+		size_t size;
 		
 	};
 

@@ -483,7 +483,7 @@
                 int charIndex = f->getCharIndex(text[i]);
                 DXTexture* charTexture = f->getTexture(charIndex);
                 DXModel* charModel = f->getModel(charIndex);
-                FontCharInfo fci = f->getFontCharInfo(text[i]);
+                FontCharInfo fci = f->getFontCharInfo(charIndex);
 
                 if(charModel == nullptr)
                 {
@@ -573,7 +573,7 @@
                 int charIndex = f->getCharIndex(text[i]);
                 DXTexture* charTexture = f->getTexture(charIndex);
                 DXModel* charModel = f->getModel(charIndex);
-                FontCharInfo fci = f->getFontCharInfo(text[i]);
+                FontCharInfo fci = f->getFontCharInfo(charIndex);
 
                 if(charModel == nullptr)
                 {
@@ -663,7 +663,7 @@
                 int charIndex = f->getCharIndex(text[i]);
                 DXTexture* charTexture = f->getTexture(charIndex);
                 DXModel* charModel = f->getModel(charIndex);
-                FontCharInfo fci = f->getFontCharInfo(text[i]);
+                FontCharInfo fci = f->getFontCharInfo(charIndex);
 
                 if(charModel == nullptr)
                 {
@@ -796,7 +796,7 @@
                 int charIndex = f->getCharIndex(text[i]);
                 DXTexture* charTexture = f->getTexture(charIndex);
                 DXModel* charModel = f->getModel(charIndex);
-                FontCharInfo fci = f->getFontCharInfo(text[i]);
+                FontCharInfo fci = f->getFontCharInfo(charIndex);
 
                 if(charModel == nullptr)
                 {

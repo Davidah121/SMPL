@@ -13,14 +13,7 @@ namespace glib
 	int SimpleWindow::screenWidth = System::getDesktopWidth();
 	int SimpleWindow::screenHeight = System::getDesktopHeight();
 
-	int* SimpleWindow::mouseVWheelPointer = nullptr;
-	int* SimpleWindow::mouseHWheelPointer = nullptr;
-
-	const Class SimpleWindow::myClass = Class("SimpleWindow", {&Object::myClass});
-	const Class* SimpleWindow::getClass()
-	{
-		return &SimpleWindow::myClass;
-	}
+	const Class SimpleWindow::globalClass = Class("SimpleWindow", {&Object::globalClass});
 
 	SimpleWindow* SimpleWindow::getWindowByHandle(size_t handle)
 	{
@@ -54,7 +47,7 @@ namespace glib
 		}
 	}
 	
-	#ifdef LINUX
+	#ifdef __unix__
 		void SimpleWindow::x11EventProc()
 		{
 			XEvent event;
@@ -118,10 +111,10 @@ namespace glib
 
 			if(event.type == Expose)
 			{
-				XImage* drawableImage = XGetImage(displayServer, (Window)windowHandle, 0, 0, width, height, AllPlanes, ZPixmap);
-				memcpy(drawableImage->data, wndPixels, wndPixelsSize);
-				XPutImage(displayServer, (Window)windowHandle, gc, drawableImage, 0, 0, 0, 0, width, height);
-				XDestroyImage(drawableImage);
+				if(drawableImage != nullptr)
+				{
+					XPutImage(displayServer, (Window)windowHandle, gc, drawableImage, 0, 0, 0, 0, width, height);
+				}
 			}
 		}
 	#else
@@ -139,10 +132,22 @@ namespace glib
 			HGDIOBJ oldImg;
 			RECT* rect = nullptr;
 
+			int borderHeight = (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) +
+    							GetSystemMetrics(SM_CXPADDEDBORDER) + 1 + 8);
+			int borderWidth = (GetSystemMetrics(SM_CXFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER))*2;
+
 			if (currentWindow != nullptr)
 			{
 				switch (msg)
 				{
+				case WM_SETFOCUS:
+					if(currentWindow->gui!=nullptr)
+						currentWindow->gui->setFocus(true);
+					break;
+				case WM_KILLFOCUS:
+					if(currentWindow->gui!=nullptr)
+						currentWindow->gui->setFocus(false);
+					break;
 				case WM_ERASEBKGND:
 					break;
 				case WM_PAINT:
@@ -167,16 +172,24 @@ namespace glib
 					currentWindow->setShouldEnd(true);
 					break;
 				case WM_DESTROY:
-					/*
-					if (currentWindow->closingFunction != nullptr)
-						currentWindow->closingFunction();
-					PostQuitMessage(0);
-					currentWindow->setRunning(false);
-					*/
+					break;
+				case WM_CHAR:
+					if(currentWindow->internalCharValFunction != nullptr)
+						currentWindow->internalCharValFunction(wparam, lparam);
 					break;
 				case WM_KEYDOWN:
 					if (currentWindow->keyDownFunction != nullptr)
 						currentWindow->keyDownFunction(wparam, lparam);
+					 
+					if(wparam == (Input::KEY_DELETE&0xFF) || wparam == (Input::KEY_LEFT&0xFF) || wparam == (Input::KEY_RIGHT&0xFF)
+					 || wparam == (Input::KEY_DOWN&0xFF) || wparam == (Input::KEY_UP&0xFF) || wparam == (Input::KEY_BACKSPACE&0xFF)
+					 || wparam == (Input::KEY_ENTER&0xFF))
+					{
+						//Exceptions. These keys are not apart of WM_CHAR but are useful when editing text.
+						if(currentWindow->internalCharValFunction != nullptr)
+							currentWindow->internalCharValFunction(wparam | Input::NEGATIVE, lparam);
+					}
+					
 					break;
 				case WM_KEYUP:
 					if (currentWindow->keyUpFunction != nullptr)
@@ -209,16 +222,18 @@ namespace glib
 				case WM_MOUSEWHEEL:
 					if (currentWindow->mouseWheelFunction != nullptr)
 						currentWindow->mouseWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
-					
-					if(SimpleWindow::mouseVWheelPointer)
-						*SimpleWindow::mouseVWheelPointer = GET_WHEEL_DELTA_WPARAM(wparam)/120;
+
+					if(currentWindow->internalMouseWheelFunction != nullptr)
+						currentWindow->internalMouseWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
+
 					break;
 				case WM_MOUSEHWHEEL:
 					if (currentWindow->mouseHWheelFunction != nullptr)
 						currentWindow->mouseHWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
 					
-					if(SimpleWindow::mouseHWheelPointer)
-						*SimpleWindow::mouseHWheelPointer = GET_WHEEL_DELTA_WPARAM(wparam)/120;
+					if(currentWindow->internalMouseHWheelFunction != nullptr)
+						currentWindow->internalMouseHWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
+
 					break;
 				case WM_MOUSEMOVE:
 					if (currentWindow->mouseMovedFunction != nullptr)
@@ -229,8 +244,17 @@ namespace glib
 					currentWindow->x = rect->left;
 					currentWindow->y = rect->top;
 					
-					currentWindow->width = rect->right - rect->left;
-					currentWindow->height = rect->bottom - rect->top;
+					if(currentWindow->windowType.windowType == SimpleWindow::NORMAL_WINDOW)
+					{
+						currentWindow->width = rect->right - rect->left - borderWidth;
+						currentWindow->height = rect->bottom - rect->top - borderHeight;
+					}
+					else
+					{
+						currentWindow->width = rect->right - rect->left;
+						currentWindow->height = rect->bottom - rect->top;
+					}
+
 					break;
 				case WM_ENTERSIZEMOVE:
 					currentWindow->setResizing(true);
@@ -244,8 +268,17 @@ namespace glib
 					currentWindow->x = rect->left;
 					currentWindow->y = rect->top;
 
-					currentWindow->width = rect->right - rect->left;
-					currentWindow->height = rect->bottom - rect->top;
+					if(currentWindow->windowType.windowType == SimpleWindow::NORMAL_WINDOW)
+					{
+						currentWindow->width = rect->right - rect->left - borderWidth;
+						currentWindow->height = rect->bottom - rect->top - borderHeight;
+					}
+					else
+					{
+						currentWindow->width = rect->right - rect->left;
+						currentWindow->height = rect->bottom - rect->top;
+					}
+
 					break;
 				case WM_SIZE:
 					if(wparam == SIZE_MAXIMIZED)
@@ -261,7 +294,7 @@ namespace glib
 							currentWindow->y = 0;
 
 							currentWindow->width = LOWORD(lparam);
-							currentWindow->height = HIWORD(lparam);
+							currentWindow->height = HIWORD(lparam)-1;
 						}
 						else
 						{
@@ -274,7 +307,7 @@ namespace glib
 							currentWindow->y = 0;
 
 							currentWindow->width = LOWORD(lparam);
-							currentWindow->height = HIWORD(lparam);
+							currentWindow->height = HIWORD(lparam)-1;
 						}
 					}
 					else if(wparam == SIZE_RESTORED)
@@ -287,7 +320,7 @@ namespace glib
 							currentWindow->y = currentWindow->preY;
 
 							currentWindow->width = LOWORD(lparam);
-							currentWindow->height = HIWORD(lparam);
+							currentWindow->height = HIWORD(lparam)-1;
 						}
 						else
 						{
@@ -297,7 +330,7 @@ namespace glib
 							currentWindow->y = currentWindow->preY;
 
 							currentWindow->width = LOWORD(lparam);
-							currentWindow->height = HIWORD(lparam);
+							currentWindow->height = HIWORD(lparam)-1;
 						}
 					}
 					else if(wparam == SIZE_MINIMIZED)
@@ -442,10 +475,12 @@ namespace glib
 				wndThread = nullptr;
 			}
 			
-			#ifdef LINUX
+			#ifdef __unix__
 				XFreeGC(displayServer, gc);
 				XDestroyWindow(displayServer, (Window)windowHandle);
 				XCloseDisplay(displayServer);
+				XDestroyImage(drawableImage); //Deletes wndPixels
+				wndPixels = nullptr;
 
 				windowHandle = 0;
 				displayServer = nullptr;
@@ -459,6 +494,9 @@ namespace glib
 
 				if(bitmap != 0)
 					DeleteObject(bitmap);
+
+				if(handleToIcon != 0)
+					DeleteObject(handleToIcon);
 				
 				if(myHDC != 0)
 					DeleteDC(myHDC);
@@ -483,6 +521,7 @@ namespace glib
 
 	void SimpleWindow::init(int x, int y, int width, int height, std::wstring title, WindowOptions windowType)
 	{
+		setClass(globalClass);
 		this->x = x;
 		this->y = y;
 		this->width = width;
@@ -506,7 +545,7 @@ namespace glib
 
 		setAllFunctionsToNull();
 
-		#ifdef LINUX
+		#ifdef __unix__
 
 			displayServer = XOpenDisplay(0);
 
@@ -532,9 +571,16 @@ namespace glib
 			{
 				
 			}
+			XVisualInfo vInfo;
+			XMatchVisualInfo(displayServer, DefaultScreen(displayServer), 32, TrueColor, &vInfo);
 
+			XSetWindowAttributes attr;
+			attr.colormap = XCreateColormap(displayServer, DefaultRootWindow(displayServer), vInfo.visual, AllocNone);
+			attr.border_pixel = borderWidth;
+			attr.background_pixel = 0;
+			
 			screen = DefaultScreen(displayServer);
-			windowHandle = XCreateSimpleWindow(displayServer, RootWindow(displayServer, screen), trueX, trueY, trueWidth, trueHeight, borderWidth, BlackPixel(displayServer, screen), WhitePixel(displayServer, screen));
+			windowHandle = XCreateWindow(displayServer, DefaultRootWindow(displayServer), trueX, trueY, trueWidth, trueHeight, borderWidth, vInfo.depth, InputOutput, vInfo.visual, CWColormap | CWBorderPixel | CWBackPixel, &attr);
 			
 			//set window name
 			std::string cTitle = StringTools::toCString(title);
@@ -569,16 +615,23 @@ namespace glib
 			wmDeleteMessage = XInternAtom(displayServer, "WM_DELETE_WINDOW", 0);
 			XSetWMProtocols(displayServer, windowHandle, &wmDeleteMessage, 1);
 
-			gc = XCreateGC(displayServer, windowHandle, 0, nullptr);
+			gc = XCreateGC(displayServer, windowHandle, 0, 0);
 
+			this->preX = this->x;
+			this->preY = this->y;
+			
 			setVisible(true);
 			setValid(true);
 			setShouldEnd(false);
 			setRunning(true);
 
 			initBitmap();
-			SimpleWindow::windowList.push_back(this);
+			gui = new GuiManager(GuiManager::TYPE_SOFTWARE, this->width, this->height);
 
+			if(windowType.initFunction != nullptr)
+				windowType.initFunction(this);
+			
+			gui->setFocus(true);
 			setFinishInit(true);
 
 			if(windowType.threadManaged == TYPE_THREAD_MANAGED)
@@ -595,7 +648,19 @@ namespace glib
 			wndClass.cbWndExtra = 0;
 			wndClass.hbrBackground = (HBRUSH)(BLACK_BRUSH);
 			wndClass.hCursor = LoadCursor(hins, IDC_ARROW);
-			wndClass.hIcon = LoadIcon(hins, IDI_APPLICATION);
+
+			if(windowType.iconFileString.empty())
+				wndClass.hIcon = LoadIcon(hins, IDI_APPLICATION);
+			else
+			{
+				if(windowType.iconIsFile)
+					handleToIcon = (HICON)LoadImageA(NULL, windowType.iconFileString.c_str(), IMAGE_ICON, 0, 0, LR_LOADFROMFILE);
+				else
+					handleToIcon = (HICON)LoadImageA(hins, windowType.iconFileString.c_str(), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR);
+
+				wndClass.hIcon = handleToIcon;
+			}
+			
 			wndClass.hIconSm = LoadIcon(hins, IDI_APPLICATION);
 			wndClass.hInstance = hins;
 			wndClass.lpfnWndProc = SimpleWindow::wndProc;
@@ -689,6 +754,10 @@ namespace glib
 					initBitmap();
 					gui = new GuiManager(GuiManager::TYPE_SOFTWARE, this->width, this->height);
 
+					if(windowType.initFunction != nullptr)
+						windowType.initFunction(this);
+					
+					gui->setFocus(true);
 					setFinishInit(true);
 
 					if(windowType.threadManaged == TYPE_THREAD_MANAGED)
@@ -712,6 +781,7 @@ namespace glib
 				//dispose
 				//Nothing because the window wasn't created and the
 				//class failed to register
+				StringTools::println("%d", GetLastError());
 				setValid(false);
 				setShouldEnd(true);
 				setRunning(false);
@@ -725,7 +795,21 @@ namespace glib
 
 	void SimpleWindow::initBitmap()
 	{
-		#ifndef LINUX
+		#ifdef __unix__
+			if(wndPixels != nullptr)
+			{
+				XDestroyImage(drawableImage); //destroys wndPixels
+				drawableImage = nullptr;
+				wndPixels = nullptr;
+			}
+			wndPixelsSize = (width*height*4);
+			wndPixels = new unsigned char[wndPixelsSize];
+
+			XVisualInfo vInfo;
+			XMatchVisualInfo(displayServer, DefaultScreen(displayServer), 32, TrueColor, &vInfo);
+			drawableImage = XCreateImage(displayServer, vInfo.visual, vInfo.depth,
+									ZPixmap, 0, (char*)wndPixels, width, height, 32, 4*width);
+		#else
 			if(wndPixels != nullptr)
 			{
 				DeleteObject(bitmap);
@@ -755,19 +839,19 @@ namespace glib
 			myHDC = GetDC((HWND)windowHandle);
 
 			bitmap = CreateCompatibleBitmap(myHDC, width, height);
+
+			if(wndPixels != nullptr)
+			{
+				delete[] wndPixels;
+				wndPixels = nullptr;
+			}
+
+			scanLinePadding = width%4;
+			wndPixelsSize = (width*3 + scanLinePadding) * height;
+
+			wndPixels = new unsigned char[wndPixelsSize];
+			memset(wndPixels,0,wndPixelsSize);
 		#endif
-
-		if(wndPixels != nullptr)
-		{
-			delete[] wndPixels;
-			wndPixels = nullptr;
-		}
-
-		scanLinePadding = width%4;
-		wndPixelsSize = (width*3 + scanLinePadding) * height;
-
-		wndPixels = new unsigned char[wndPixelsSize];
-		memset(wndPixels,0,wndPixelsSize);
 
 		if(gui!=nullptr)
 		{
@@ -868,7 +952,7 @@ namespace glib
 
 	void SimpleWindow::setVisible(bool value)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			if (value == true)
 				XMapWindow(displayServer, (Window)windowHandle);
 			else
@@ -883,7 +967,7 @@ namespace glib
 
 	void SimpleWindow::setX(int x)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			XMoveWindow(displayServer, (Window)windowHandle, x, this->y);
 		#else
 			SetWindowPos((HWND)windowHandle, HWND_TOP, x, this->y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
@@ -893,7 +977,7 @@ namespace glib
 
 	void SimpleWindow::setY(int y)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			XMoveWindow(displayServer, (Window)windowHandle, this->x, y);
 		#else
 			SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
@@ -903,7 +987,7 @@ namespace glib
 
 	void SimpleWindow::setPosition(int x, int y)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			XMoveWindow(displayServer, (Window)windowHandle, x, y);
 		#else
 			SetWindowPos((HWND)windowHandle, HWND_TOP, x, y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
@@ -914,7 +998,7 @@ namespace glib
 
 	void SimpleWindow::setWidth(int width)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			XResizeWindow(displayServer, (Window)windowHandle, width, this->height);
 		#else
 			SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, this->y, width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
@@ -924,7 +1008,7 @@ namespace glib
 
 	void SimpleWindow::setHeight(int height)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			XResizeWindow(displayServer, (Window)windowHandle, this->width, height);
 		#else
 			SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, this->y, this->width, height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
@@ -934,7 +1018,7 @@ namespace glib
 
 	void SimpleWindow::setSize(int width, int height)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			XResizeWindow(displayServer, (Window)windowHandle, width, height);
 		#else
 			SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, this->y, width, height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
@@ -948,7 +1032,7 @@ namespace glib
 		int mx = 0;
 		int borderWidth = 0;
 
-		#ifdef LINUX
+		#ifdef __unix__
 		
 		int winX, winY, rootX, rootY = 0;
 		unsigned int mask = 0;
@@ -991,7 +1075,7 @@ namespace glib
 		int my = 0;
 		int borderHeight = 0;
 
-		#ifdef LINUX
+		#ifdef __unix__
 		
 			int winX, winY, rootX, rootY = 0;
 			unsigned int mask = 0;
@@ -1149,14 +1233,11 @@ namespace glib
 		return activateGui;
 	}
 
-	void SimpleWindow::setMouseVWheelValuePointer(int* v)
+	void SimpleWindow::setWindowAsInputFocus()
 	{
-		SimpleWindow::mouseVWheelPointer = v;
-	}
-
-	void SimpleWindow::setMouseHWheelValuePointer(int* v)
-	{
-		SimpleWindow::mouseHWheelPointer = v;
+		internalCharValFunction = Input::adjustCurrCharVal;
+		internalMouseWheelFunction = Input::adjustVerticalScroll;
+		internalMouseHWheelFunction = Input::adjustHorizontalScroll;
 	}
 
 	void SimpleWindow::setFocus(bool v)
@@ -1169,7 +1250,7 @@ namespace glib
 
 	bool SimpleWindow::getFocus()
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			Window currFocusedWindow;
 			int other;
 			XGetInputFocus(displayServer, &currFocusedWindow, &other);
@@ -1193,7 +1274,7 @@ namespace glib
 
 	void SimpleWindow::threadSetFocus()
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			XSetInputFocus(displayServer, (Window)windowHandle, RevertToNone, CurrentTime);
 		#else
 			SetFocus((HWND)windowHandle);
@@ -1256,96 +1337,110 @@ namespace glib
 
 	void SimpleWindow::drawImage(Image* g)
 	{
-		//TODO LINUX VERSION
-		if (g != nullptr)
+		#ifdef __unix__
+		Color* imgPixels = (Color*)g->getPixels();
+		int* windowPixels = (int*)wndPixels;
+		int* endWindowPixels = windowPixels + width*height;
+		Color* endImgPixels = imgPixels + g->getWidth()*g->getHeight();
+		
+		if(width == g->getWidth() && height == g->getHeight())
 		{
-			if (g->getWidth() == width && g->getHeight() == height)
+			while(windowPixels < endWindowPixels)
 			{
-				//same size
-				Color* imgPixelsStart = g->getPixels();
-				unsigned char* wndPixelsStart = wndPixels;
-				unsigned char* wndPixelsEnd = wndPixels + wndPixelsSize;
 				
-				int tX = 0;
-				int scanLineNum = 0;
-
-				while (wndPixelsStart < wndPixelsEnd)
+				int v = imgPixels->alpha; //switch from RGBA to ARGB
+				v = (v<<8) + imgPixels->red;
+				v = (v<<8) + imgPixels->green;
+				v = (v<<8) + imgPixels->blue;
+				// int v = 0xFF000000 + (((*imgPixels) & 0xFFFFFF));
+				*windowPixels = v;
+				windowPixels++;
+				imgPixels++;
+			}
+		}
+		else
+		{
+			int minWidth = MathExt::min(width, g->getWidth());
+			int wndPixelAdjust = width - minWidth;
+			int imgPixelAdjust = g->getWidth() - minWidth;
+			int tX = 0;
+			while(windowPixels < endWindowPixels && imgPixels < endImgPixels)
+			{
+				int v = imgPixels->alpha; //switch from RGBA to ARGB
+				v = (v<<8) + imgPixels->red;
+				v = (v<<8) + imgPixels->green;
+				v = (v<<8) + imgPixels->blue;
+				*windowPixels = v;
+				windowPixels++; 
+				imgPixels++;
+				tX++;
+				if(tX >= minWidth)
 				{
-					*wndPixelsStart = (*imgPixelsStart).blue;
-					*(wndPixelsStart + 1) = (*imgPixelsStart).green;
-					*(wndPixelsStart + 2) = (*imgPixelsStart).red;
-
-					wndPixelsStart += 3;
-					imgPixelsStart++;
-					tX++;
-
-					if(tX>=width)
-					{
-						scanLineNum++;
-						tX=0;
-						wndPixelsStart += scanLinePadding;
-					}
+					tX = 0;
+					windowPixels += wndPixelAdjust;
+					imgPixels += imgPixelAdjust;
 				}
 			}
-			else
+		}
+		#else
+
+			if (g != nullptr)
 			{
-				Color* imgPixelsStart = g->getPixels();
-				Color* imgPixelsEnd = imgPixelsStart + (g->getWidth()*g->getHeight());
-
-				unsigned char* wndPixelsStart = wndPixels;
-				unsigned char* wndPixelsEnd = wndPixels + wndPixelsSize;
-
-				int side = g->getWidth() - width;
-				int absAddAmount = MathExt::abs(g->getWidth() - width);
-
-				//FIX WIDTH AND HEIGHT ADJUST
-				
-				int tX = 0;
-
-				if (side > 0)
+				if (g->getWidth() == width && g->getHeight() == height)
 				{
-					//img width > window width
-					while (wndPixelsStart < wndPixelsEnd && imgPixelsStart < imgPixelsEnd)
+					//same size
+					Color* imgPixelsStart = g->getPixels();
+					unsigned char* wndPixelsStart = wndPixels;
+					unsigned char* wndPixelsEnd = wndPixels + wndPixelsSize;
+					int tX = 0;
+					while (wndPixelsStart < wndPixelsEnd)
 					{
 						*wndPixelsStart = (*imgPixelsStart).blue;
 						*(wndPixelsStart + 1) = (*imgPixelsStart).green;
 						*(wndPixelsStart + 2) = (*imgPixelsStart).red;
 
-						imgPixelsStart++;
 						wndPixelsStart += 3;
+						imgPixelsStart++;
 						tX++;
-						
-						if (tX >= width)
+
+						if(tX>=width)
 						{
+							tX=0;
 							wndPixelsStart += scanLinePadding;
-							imgPixelsStart += absAddAmount;
-							tX = 0;
 						}
 					}
 				}
 				else
 				{
-					//FIX WIDTH AND HEIGHT ADJUST
-					//img width < window width
-					while (wndPixelsStart < wndPixelsEnd && imgPixelsStart < imgPixelsEnd)
+					Color* imgPixelsStart = g->getPixels();
+					Color* imgPixelsEnds = g->getPixels() + g->getWidth()*g->getHeight();
+					unsigned char* wndPixelsStart = wndPixels;
+					unsigned char* wndPixelsEnd = wndPixels + wndPixelsSize;
+
+					int minWidth = MathExt::min(width, g->getWidth());
+					int wndPixelWidthPadding = width - minWidth;
+					int imgWidthPadding = g->getWidth() - minWidth;
+					int tX = 0;
+
+					while(wndPixelsStart < wndPixelsEnd && imgPixelsStart < imgPixelsEnds)
 					{
-						*wndPixelsStart = (*imgPixelsStart).blue;
-						*(wndPixelsStart + 1) = (*imgPixelsStart).green;
-						*(wndPixelsStart + 2) = (*imgPixelsStart).red;
-
+						wndPixelsStart[0] = imgPixelsStart->blue;
+						wndPixelsStart[1] = imgPixelsStart->green;
+						wndPixelsStart[2] = imgPixelsStart->red;
+						
+						wndPixelsStart+=3; 
 						imgPixelsStart++;
-						wndPixelsStart += 3;
 						tX++;
-
-						if (tX >= g->getWidth())
+						if(tX >= minWidth)
 						{
-							wndPixelsStart += absAddAmount*3 + scanLinePadding;
 							tX = 0;
+							wndPixelsStart += wndPixelWidthPadding + scanLinePadding;
+							imgPixelsStart += imgWidthPadding;
 						}
 					}
 				}
 			}
-		}
+		#endif
 	}
 
 	void SimpleWindow::run()
@@ -1353,13 +1448,12 @@ namespace glib
 		while (!getShouldEnd())
 		{
 			time_t t1 = System::getCurrentTimeMicro();
-			
+
 			threadUpdate();
 			if(getShouldEnd())
 				break;
 
 			threadGuiUpdate();
-
 			if(getRepaint())
 				threadRepaint();
 
@@ -1381,7 +1475,7 @@ namespace glib
 
 	void SimpleWindow::threadUpdate()
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 			x11EventProc();
 		#else
 			MSG m;
@@ -1445,7 +1539,8 @@ namespace glib
 				if(changed)
 				{
 					Image* surface = (Image*)gui->getSurface()->getSurface();
-					drawImage(surface);
+					if(surface != nullptr)
+						drawImage(surface);
 				}
 			}
 		}
@@ -1461,7 +1556,7 @@ namespace glib
 
 	void SimpleWindow::threadRepaint()
 	{
-		//TODO - LINUX VERSION
+		//TODO - __unix__ VERSION
 		bool changed = false;
 
 		//draw and send redraw message
@@ -1484,7 +1579,7 @@ namespace glib
 
 			if(changed || imgChanged)
 			{
-				#ifdef LINUX
+				#ifdef __unix__
 					//Simpler than XSendEvent
 					XClearArea(displayServer, (Window)windowHandle, 0, 0, 1, 1, true);
 				#else

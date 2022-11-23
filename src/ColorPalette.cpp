@@ -11,11 +11,7 @@ namespace glib
 {
 
 	#pragma region ClassStuff
-	const Class ColorPalette::myClass = Class("ColorPalette", {&Object::myClass});
-	const Class* ColorPalette::getClass()
-	{
-		return &ColorPalette::myClass;
-	}
+	const Class ColorPalette::globalClass = Class("ColorPalette", {&Object::globalClass});
 	#pragma endregion
 
 	struct ColorNode
@@ -26,6 +22,7 @@ namespace glib
 
 	ColorPalette::ColorPalette()
 	{
+		setClass(globalClass);
 	}
 
 	ColorPalette::~ColorPalette()
@@ -50,7 +47,8 @@ namespace glib
 	void ColorPalette::copy(const ColorPalette& other)
 	{
 		this->~ColorPalette();
-
+		
+		setClass(globalClass);
 		uniquePalette = other.uniquePalette;
 		paletteTree = new KDTree<unsigned char>(3);
 

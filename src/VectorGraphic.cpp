@@ -12,11 +12,7 @@ namespace glib
 
 	unsigned char VectorGraphic::AA_LEVEL = 0;
 
-	const Class VectorGraphic::myClass = Class("VectorGraphic", {&Object::myClass});
-	const Class* VectorGraphic::getClass()
-	{
-		return &VectorGraphic::myClass;
-	}
+	const Class VectorGraphic::globalClass = Class("VectorGraphic", {&Object::globalClass});
 
 	VectorGraphic::VectorGraphic(int width, int height)
 	{
@@ -43,43 +39,43 @@ namespace glib
 
 		for(int i=0; i<c.shapes.size(); i++)
 		{
-			if(c.shapes[i]->getClass()->getClassName() == VectorRectangle::myClass.getClassName())
+			if(c.shapes[i]->getClass().getClassName() == VectorRectangle::globalClass.getClassName())
 			{
 				//rectangle
 				VectorRectangle* g = new VectorRectangle(*(VectorRectangle*)c.shapes[i]);
 				shapes.push_back(g);
 			}
-			else if(c.shapes[i]->getClass()->getClassName() == VectorLine::myClass.getClassName())
+			else if(c.shapes[i]->getClass().getClassName() == VectorLine::globalClass.getClassName())
 			{
 				//line
 				VectorLine* g = new VectorLine(*(VectorLine*)c.shapes[i]);
 				shapes.push_back(g);
 			}
-			else if(c.shapes[i]->getClass()->getClassName() == VectorCircle::myClass.getClassName())
+			else if(c.shapes[i]->getClass().getClassName() == VectorCircle::globalClass.getClassName())
 			{
 				//circle
 				VectorCircle* g = new VectorCircle(*(VectorCircle*)c.shapes[i]);
 				shapes.push_back(g);
 			}
-			else if(c.shapes[i]->getClass()->getClassName() == VectorEllipse::myClass.getClassName())
+			else if(c.shapes[i]->getClass().getClassName() == VectorEllipse::globalClass.getClassName())
 			{
 				//ellipse
 				VectorEllipse* g = new VectorEllipse(*(VectorEllipse*)c.shapes[i]);
 				shapes.push_back(g);
 			}
-			else if(c.shapes[i]->getClass()->getClassName() == VectorPolygon::myClass.getClassName())
+			else if(c.shapes[i]->getClass().getClassName() == VectorPolygon::globalClass.getClassName())
 			{
 				//polygon
 				VectorPolygon* g = new VectorPolygon(*(VectorPolygon*)c.shapes[i]);
 				shapes.push_back(g);
 			}
-			else if(c.shapes[i]->getClass()->getClassName() == VectorPolyline::myClass.getClassName())
+			else if(c.shapes[i]->getClass().getClassName() == VectorPolyline::globalClass.getClassName())
 			{
 				//polyline
 				VectorPolyline* g = new VectorPolyline(*(VectorPolyline*)c.shapes[i]);
 				shapes.push_back(g);
 			}
-			else if(c.shapes[i]->getClass()->getClassName() == VectorPath::myClass.getClassName())
+			else if(c.shapes[i]->getClass().getClassName() == VectorPath::globalClass.getClassName())
 			{
 				//path
 				//StringTools::println("PATH");
@@ -127,7 +123,6 @@ namespace glib
 			for (int i = 0; i < shapes.size(); i++)
 			{
 				temp = shapes[i]->getTransform();
-
 				finalTransform = globalTransform * temp;
 
 				shapes[i]->setTransform(finalTransform);
@@ -207,7 +202,7 @@ namespace glib
 		bool valid = svgParentNode!=nullptr;
 
 		if(valid)
-			valid = StringTools::equalsIgnoreCase<wchar_t>(svgParentNode->title, L"svg");
+			valid = StringTools::equalsIgnoreCase<char>(svgParentNode->title, "svg");
 
 		if(valid)
 		{
@@ -215,7 +210,7 @@ namespace glib
 			
 			for(XmlAttribute attrib : parentNode->attributes)
 			{
-				if(StringTools::equalsIgnoreCase<wchar_t>(L"width", attrib.name))
+				if(StringTools::equalsIgnoreCase<char>("width", attrib.name))
 				{
 					bool percent = false;
 					double value = toNumber(StringTools::toCString(attrib.value), &percent);
@@ -225,7 +220,7 @@ namespace glib
 						this->width = (int)MathExt::ceil(value);
 					
 				}
-				else if(StringTools::equalsIgnoreCase<wchar_t>(L"height", attrib.name))
+				else if(StringTools::equalsIgnoreCase<char>("height", attrib.name))
 				{
 					bool percent = false;
 					double value = toNumber(StringTools::toCString(attrib.value), &percent);
@@ -234,30 +229,30 @@ namespace glib
 					else
 						this->height = (int)MathExt::ceil(value);
 				}
-				else if(StringTools::equalsIgnoreCase<wchar_t>(L"viewbox", attrib.name))
+				else if(StringTools::equalsIgnoreCase<char>("viewbox", attrib.name))
 				{
 					//for now, if width and height have not been defined, set them here
-					std::vector<std::wstring> split = StringTools::splitStringMultipleDeliminators(attrib.value, L" ,");
+					std::vector<std::string> split = StringTools::splitStringMultipleDeliminators(attrib.value, " ,");
 					bool percent = false;
-					int tempX, tempY, tempWidth, tempHeight;
+					int minX, minY, tempWidth, tempHeight;
 
 					if(split.size() == 4)
 					{
-						tempX = (int)MathExt::ceil(toNumber(StringTools::toCString(split[0]), &percent));
-						tempY = (int)MathExt::ceil(toNumber(StringTools::toCString(split[1]), &percent));
+						minX = (int)MathExt::ceil(toNumber(StringTools::toCString(split[0]), &percent));
+						minY = (int)MathExt::ceil(toNumber(StringTools::toCString(split[1]), &percent));
 						tempWidth = (int)MathExt::ceil(toNumber(StringTools::toCString(split[2]), &percent));
 						tempHeight = (int)MathExt::ceil(toNumber(StringTools::toCString(split[3]), &percent));
 					}
-
-					if(width == 0)
-						width = tempWidth;
-					if(height == 0)
-						height = tempHeight;
 					
-					double xScale = (double)width / tempWidth;
-					double yScale = (double)height / tempHeight;
+					if(this->width == 0)
+						width = MathExt::abs(tempWidth);
+					if(this->height == 0)
+						height = MathExt::abs(tempHeight);
+					
+					double xScale = (double)this->width / tempWidth;
+					double yScale = (double)this->height / tempHeight;
 
-					viewBox = MathExt::scale2D(xScale, yScale) * MathExt::translation2D(-tempX, -tempY);
+					viewBox = MathExt::scale2D(xScale, yScale) * MathExt::translation2D(-minX, -minY);
 				}
 			}
 
@@ -287,56 +282,56 @@ namespace glib
 
 			VectorShape* shape = nullptr;
 
-			if(StringTools::equalsIgnoreCase<wchar_t>(childNode->title, L"g"))
+			if(StringTools::equalsIgnoreCase<char>(childNode->title, "g"))
 			{
 				//group
 				VectorShape groupShape = VectorShape();
 				loadTransforms(childNode, &groupShape, groupPointer);
 				loadNode(childNode, &groupShape);
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(childNode->title, L"rect"))
+			else if(StringTools::equalsIgnoreCase<char>(childNode->title, "rect"))
 			{
 				//rectangle
 				VectorRectangle* g = new VectorRectangle();
 				loadRectangle(childNode, g);
 				shape = (VectorShape*)g;
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(childNode->title, L"circle"))
+			else if(StringTools::equalsIgnoreCase<char>(childNode->title, "circle"))
 			{
 				//circle
 				VectorCircle* g = new VectorCircle();
 				loadCircle(childNode, g);
 				shape = (VectorShape*)g;
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(childNode->title, L"ellipse"))
+			else if(StringTools::equalsIgnoreCase<char>(childNode->title, "ellipse"))
 			{
 				//ellipse
 				VectorEllipse* g = new VectorEllipse();
 				loadEllipse(childNode, g);
 				shape = (VectorShape*)g;
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(childNode->title, L"line"))
+			else if(StringTools::equalsIgnoreCase<char>(childNode->title, "line"))
 			{
 				//line
 				VectorLine* g = new VectorLine();
 				loadLine(childNode, g);
 				shape = (VectorShape*)g;
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(childNode->title, L"polygon"))
+			else if(StringTools::equalsIgnoreCase<char>(childNode->title, "polygon"))
 			{
 				//polygon
 				VectorPolygon* g = new VectorPolygon();
 				loadPolygon(childNode, g);
 				shape = (VectorShape*)g;
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(childNode->title, L"polyline"))
+			else if(StringTools::equalsIgnoreCase<char>(childNode->title, "polyline"))
 			{
 				//polyline
 				VectorPolyline* g = new VectorPolyline();
 				loadPolyline(childNode, g);
 				shape = (VectorShape*)g;
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(childNode->title, L"path"))
+			else if(StringTools::equalsIgnoreCase<char>(childNode->title, "path"))
 			{
 				//path
 				VectorPath* g = new VectorPath();
@@ -383,21 +378,21 @@ namespace glib
 		
 		for(XmlAttribute& attrib : node->attributes)
 		{
-			if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"fill"))
+			if(StringTools::equalsIgnoreCase<char>(attrib.name, "fill"))
 			{
 				Color c = toColor(StringTools::toCString(attrib.value));
 				shape->setFillColor( c );
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"fill-opacity"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "fill-opacity"))
 			{
 				Color c = shape->getFillColor();
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				c.alpha = (unsigned char)(255*value);
 				shape->setFillColor( c );
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"fill-rule"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "fill-rule"))
 			{
-				if(StringTools::equalsIgnoreCase<wchar_t>(attrib.value, L"nonzero"))
+				if(StringTools::equalsIgnoreCase<char>(attrib.value, "nonzero"))
 				{
 					shape->setFillMethod(VectorShape::NON_ZERO_RULE);
 				}
@@ -406,19 +401,19 @@ namespace glib
 					shape->setFillMethod(VectorShape::EVEN_ODD_RULE);
 				}
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"stroke"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "stroke"))
 			{
 				Color c = toColor(StringTools::toCString(attrib.value));
 				shape->setStrokeColor( c );
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"stroke-opacity"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "stroke-opacity"))
 			{
 				Color c = shape->getStrokeColor();
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				c.alpha = (unsigned char)(255*value);
 				shape->setStrokeColor( c );
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"stroke-width"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "stroke-width"))
 			{
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
@@ -426,60 +421,62 @@ namespace glib
 				else
 					shape->setStrokeWidth( value );
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"stroke-linecap"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "stroke-linecap"))
 			{
-				if(attrib.value==L"butt")
+				if(attrib.value=="butt")
 				{
 					shape->setLineCap(VectorShape::LINE_CAP_BUTT);
 				}
-				else if(attrib.value==L"square")
+				else if(attrib.value=="square")
 				{
 					shape->setLineCap(VectorShape::LINE_CAP_SQUARE);
 				}
-				else if(attrib.value==L"round")
+				else if(attrib.value=="round")
 				{
 					shape->setLineCap(VectorShape::LINE_CAP_ROUND);
 				}
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"stroke-linejoin"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "stroke-linejoin"))
 			{
-				if(attrib.value==L"arcs")
+				if(attrib.value=="arcs")
 				{
 					//shape->setLineCap(NULL);
 				}
-				else if(attrib.value==L"bevel")
+				else if(attrib.value=="bevel")
 				{
 					shape->setLineJoin(VectorShape::LINE_JOIN_BEVEL);
 				}
-				else if(attrib.value==L"miter")
+				else if(attrib.value=="miter")
 				{
 					shape->setLineJoin(VectorShape::LINE_JOIN_MITER);
 				}
-				else if(attrib.value==L"miter-clip")
+				else if(attrib.value=="miter-clip")
 				{
 					//shape->setLineCap(NULL);
 				}
-				else if(attrib.value==L"round")
+				else if(attrib.value=="round")
 				{
 					shape->setLineJoin(VectorShape::LINE_JOIN_ROUND);
 				}
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"stroke-dasharray"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "stroke-dasharray"))
 			{
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"transform"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "transform"))
 			{
 				Mat3f thisTransform = shape->getTransform();
-				std::vector<std::wstring> splitString = StringTools::splitString(attrib.value, ' ');
-				for(std::wstring transformName : splitString)
+
+				std::vector<std::string> splitString = StringTools::splitStringMultipleDeliminators(attrib.value, "()");
+				
+				for(int index=0; index<splitString.size()-1; index+=2)
 				{
-					int indexOfArgs = transformName.find('(', 0);
-					std::wstring subName = transformName.substr(0, indexOfArgs);
-					std::wstring subArgs = transformName.substr(indexOfArgs+1, transformName.length()-indexOfArgs-2);
+					std::string subName = splitString[index];
+					std::string subArgs = splitString[index+1];
+					subName = StringTools::removeWhitespace(subName, true, true);
 
-					std::vector<std::wstring> args = StringTools::splitString(subArgs, ',');
+					std::vector<std::string> args = StringTools::splitStringMultipleDeliminators(subArgs, " ,");
 
-					if(subName == L"translate")
+					if(subName == "translate")
 					{
 						switch(args.size())
 						{
@@ -493,7 +490,7 @@ namespace glib
 								break;
 						}
 					}
-					else if(subName == L"scale")
+					else if(subName == "scale")
 					{
 						switch(args.size())
 						{
@@ -507,7 +504,7 @@ namespace glib
 								break;
 						}
 					}
-					else if(subName == L"rotate")
+					else if(subName == "rotate")
 					{
 						switch(args.size())
 						{
@@ -521,21 +518,21 @@ namespace glib
 								break;
 						}
 					}
-					else if(subName == L"skewX")
+					else if(subName == "skewX")
 					{
 						if(args.size() == 1)
 						{
-							thisTransform = MathExt::scale2D( std::stod(args[0]), 0) * thisTransform;
+							thisTransform = MathExt::skew2D( std::stod(args[0]), 0) * thisTransform;
 						}
 					}
-					else if(subName == L"skewY")
+					else if(subName == "skewY")
 					{
 						if(args.size() == 1)
 						{
 							thisTransform = MathExt::skew2D( 0, std::stod(args[0])) * thisTransform;
 						}
 					}
-					else if(subName == L"matrix")
+					else if(subName == "matrix")
 					{
 						if(args.size() == 6)
 						{
@@ -574,7 +571,7 @@ namespace glib
 			//invalid node pointer
 			return;
 		}
-		if(!StringTools::equalsIgnoreCase<wchar_t>(node->title, L"rect"))
+		if(!StringTools::equalsIgnoreCase<char>(node->title, "rect"))
 		{
 			//invalid node
 			return;
@@ -582,7 +579,7 @@ namespace glib
 
 		for(XmlAttribute& attrib : node->attributes)
 		{
-			if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"x"))
+			if(StringTools::equalsIgnoreCase<char>(attrib.name, "x"))
 			{
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
@@ -590,7 +587,7 @@ namespace glib
 				else
 					shape->setX( value );
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"y"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "y"))
 			{
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
@@ -598,7 +595,7 @@ namespace glib
 				else
 					shape->setY( value );
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"rx"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "rx"))
 			{
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
@@ -606,7 +603,7 @@ namespace glib
 				else
 					shape->setRX( value );
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"ry"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "ry"))
 			{
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
@@ -614,7 +611,7 @@ namespace glib
 				else
 					shape->setRY( value );
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"width"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "width"))
 			{
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
@@ -622,7 +619,7 @@ namespace glib
 				else
 					shape->setWidth( value );
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"height"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "height"))
 			{
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
@@ -648,7 +645,7 @@ namespace glib
 			//invalid node pointer
 			return;
 		}
-		if(!StringTools::equalsIgnoreCase<wchar_t>(node->title, L"circle"))
+		if(!StringTools::equalsIgnoreCase<char>(node->title, "circle"))
 		{
 			//invalid node
 			return;
@@ -656,7 +653,7 @@ namespace glib
 
 		for(XmlAttribute attrib : node->attributes)
 		{
-			if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"cx"))
+			if(StringTools::equalsIgnoreCase<char>(attrib.name, "cx"))
 			{
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
@@ -664,7 +661,7 @@ namespace glib
 				else
 					shape->setX( value );
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"cy"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "cy"))
 			{
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
@@ -672,7 +669,7 @@ namespace glib
 				else
 					shape->setY( value );
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"r"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "r"))
 			{
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
@@ -698,7 +695,7 @@ namespace glib
 			//invalid node pointer
 			return;
 		}
-		if(!StringTools::equalsIgnoreCase<wchar_t>(node->title, L"ellipse"))
+		if(!StringTools::equalsIgnoreCase<char>(node->title, "ellipse"))
 		{
 			//invalid node
 			return;
@@ -706,7 +703,7 @@ namespace glib
 
 		for(XmlAttribute attrib : node->attributes)
 		{
-			if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"cx"))
+			if(StringTools::equalsIgnoreCase<char>(attrib.name, "cx"))
 			{
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
@@ -714,7 +711,7 @@ namespace glib
 				else
 					shape->setX( value );
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"cy"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "cy"))
 			{
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
@@ -722,7 +719,7 @@ namespace glib
 				else
 					shape->setY( value );
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"rx"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "rx"))
 			{
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
@@ -730,7 +727,7 @@ namespace glib
 				else
 					shape->setXRadius( value );
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"ry"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "ry"))
 			{
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
@@ -756,7 +753,7 @@ namespace glib
 			//invalid node pointer
 			return;
 		}
-		if(!StringTools::equalsIgnoreCase<wchar_t>(node->title, L"line"))
+		if(!StringTools::equalsIgnoreCase<char>(node->title, "line"))
 		{
 			//invalid node
 			return;
@@ -764,7 +761,7 @@ namespace glib
 
 		for(XmlAttribute attrib : node->attributes)
 		{
-			if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"x1"))
+			if(StringTools::equalsIgnoreCase<char>(attrib.name, "x1"))
 			{
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
@@ -772,7 +769,7 @@ namespace glib
 				else
 					shape->setX1( value );
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"y1"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "y1"))
 			{
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
@@ -780,7 +777,7 @@ namespace glib
 				else
 					shape->setY1( value );
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"x2"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "x2"))
 			{
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
@@ -788,7 +785,7 @@ namespace glib
 				else
 					shape->setX2( value );
 			}
-			else if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"y2"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "y2"))
 			{
 				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
 				if(percentValue)
@@ -811,7 +808,7 @@ namespace glib
 			//invalid node pointer
 			return;
 		}
-		if(!StringTools::equalsIgnoreCase<wchar_t>(node->title, L"polygon"))
+		if(!StringTools::equalsIgnoreCase<char>(node->title, "polygon"))
 		{
 			//invalid node
 			return;
@@ -819,12 +816,12 @@ namespace glib
 
 		for(XmlAttribute attrib : node->attributes)
 		{
-			if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"points"))
+			if(StringTools::equalsIgnoreCase<char>(attrib.name, "points"))
 			{
-				std::vector<std::wstring> splits = StringTools::splitString(attrib.value, ' ');
-				for(std::wstring point : splits)
+				std::vector<std::string> splits = StringTools::splitString(attrib.value, ' ');
+				for(std::string point : splits)
 				{
-					std::vector<std::wstring> pointSplit = StringTools::splitString(point, ',');
+					std::vector<std::string> pointSplit = StringTools::splitString(point, ',');
 					if(pointSplit.size()==2)
 						shape->addPoint( std::stod(pointSplit[0]), std::stod(pointSplit[1]) );
 				}
@@ -844,7 +841,7 @@ namespace glib
 			//invalid node pointer
 			return;
 		}
-		if(!StringTools::equalsIgnoreCase<wchar_t>(node->title, L"polyline"))
+		if(!StringTools::equalsIgnoreCase<char>(node->title, "polyline"))
 		{
 			//invalid node
 			return;
@@ -852,12 +849,12 @@ namespace glib
 
 		for(XmlAttribute attrib : node->attributes)
 		{
-			if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"points"))
+			if(StringTools::equalsIgnoreCase<char>(attrib.name, "points"))
 			{
-				std::vector<std::wstring> splits = StringTools::splitString(attrib.value, ' ');
-				for(std::wstring point : splits)
+				std::vector<std::string> splits = StringTools::splitString(attrib.value, ' ');
+				for(std::string point : splits)
 				{
-					std::vector<std::wstring> pointSplit = StringTools::splitString(point, ',');
+					std::vector<std::string> pointSplit = StringTools::splitString(point, ',');
 					if(pointSplit.size()==2)
 						shape->addPoint( std::stod(pointSplit[0]), std::stod(pointSplit[1]) );
 				}
@@ -881,7 +878,7 @@ namespace glib
 			//invalid node pointer
 			return;
 		}
-		if(!StringTools::equalsIgnoreCase<wchar_t>(node->title, L"path"))
+		if(!StringTools::equalsIgnoreCase<char>(node->title, "path"))
 		{
 			//invalid node
 			return;
@@ -889,7 +886,7 @@ namespace glib
 
 		for(XmlAttribute& attrib : node->attributes)
 		{
-			if(StringTools::equalsIgnoreCase<wchar_t>(attrib.name, L"d"))
+			if(StringTools::equalsIgnoreCase<char>(attrib.name, "d"))
 			{
 				//Method: Separate Letters from values
 				//separate letters first
@@ -957,11 +954,21 @@ namespace glib
 						if(parsedArgs>=argNum && c!=' ')
 						{
 							parsedArgs = 0;
-							if(rel)
-								instructions.push_back( 'l' );
+							if(instructions.back() == 'M' || instructions.back() == 'm')
+							{
+								if(rel)
+									instructions.push_back( 'l' );
+								else
+									instructions.push_back( 'L' );
+								argNum = 2;
+							}
 							else
-								instructions.push_back( 'L' );
-							argNum = 2;
+								instructions.push_back( instructions.back() );
+							// if(rel)
+							// 	instructions.push_back( 'l' );
+							// else
+							// 	instructions.push_back( 'L' );
+							// argNum = 2;
 						}
 
 						if( (c==' ' || c==',' || c=='-') && numbers.back()!= ' ')
@@ -983,7 +990,7 @@ namespace glib
 						numbers += c;
 					}
 				}
-				
+
 				std::vector<std::string> splitNumbers = StringTools::splitStringMultipleDeliminators(numbers, " ,");
 				
 				int numberIndex = 0;
@@ -1081,6 +1088,7 @@ namespace glib
 							break;
 					}
 				}
+
 			}
 		}
 	}

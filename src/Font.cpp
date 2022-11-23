@@ -6,23 +6,20 @@
 namespace glib
 {
 		
-	const Class Font::myClass = Class("Font", {&Object::myClass});
-	const Class* Font::getClass()
-	{
-		return &Font::myClass;
-	}
+	const Class Font::globalClass = Class("Font", {&Object::globalClass});
 
 	Font::Font()
 	{
+		setClass(globalClass);
 	}
 
 	Font::~Font()
 	{
 	}
-
 	
 	void Font::copyFont(Font& f)
 	{
+		setClass( f.getClass() );
 		charInfoList = f.charInfoList;
 
 		maxHorizAdv = f.maxHorizAdv;
@@ -36,13 +33,20 @@ namespace glib
 		sorted = f.sorted;
 	}
 
-	FontCharInfo Font::getFontCharInfo(int c)
+	FontCharInfo Font::getFontCharInfo(int index)
 	{
-		int index = getCharIndex(c);
-
 		if (index >= 0 && index < charInfoList.size())
 		{
-			return charInfoList[index];
+			double scaleVal = (double)fontSize / originalFontSize;
+			FontCharInfo nFCI = charInfoList[index];
+			nFCI.x = MathExt::round(nFCI.x * scaleVal);
+			nFCI.y = MathExt::round(nFCI.y * scaleVal);
+			nFCI.width = MathExt::round(nFCI.width * scaleVal);
+			nFCI.height = MathExt::round(nFCI.height * scaleVal);
+			nFCI.horizAdv = MathExt::round(nFCI.horizAdv * scaleVal);
+			nFCI.xOffset = MathExt::round(nFCI.xOffset * scaleVal);
+			nFCI.yOffset = MathExt::round(nFCI.yOffset * scaleVal);
+			return nFCI;
 		}
 		
 		#ifdef USE_EXCEPTIONS
@@ -66,6 +70,16 @@ namespace glib
 			int l = 0;
 			int r = charInfoList.size()-1;
 
+			int preL, preR;
+			preL = l;
+			preR = r;
+
+			//check bounds first since they will never occur in the loop
+			if(charInfoList[l].unicodeValue == c)
+				return l;
+			if(charInfoList[r].unicodeValue == c)
+				return r;
+			
 			while(l < r)
 			{
 				int m = (l+r) / 2;
@@ -77,6 +91,14 @@ namespace glib
 					r = m;
 				else if( c > uniVal)
 					l = m;
+				
+				if(preL == l && preR == r)
+				{
+					//not found
+					break;
+				}
+				preL = l;
+				preR = r;
 			}
 		}
 		else
@@ -118,101 +140,194 @@ namespace glib
 
 	int Font::getVerticalAdvance()
 	{
-		return verticalAdv;
+		double scaleVal = (double)fontSize / originalFontSize;
+		return verticalAdv*scaleVal;
 	}
 
-	int Font::getWidthOfString(std::string text)
+	Box2D Font::getBoundingBox(std::string text, int maxWidth, int maxHeight)
 	{
-		int totalWidth = 0;
-		for(int i=0; i<text.size(); i++)
-		{
-			FontCharInfo fci = getFontCharInfo(text[i]);
-			totalWidth += fci.horizAdv;
-		}
-
-		return totalWidth;
-	}
-
-	int Font::getWidthOfString(std::wstring text)
-	{
-		int totalWidth = 0;
-		for(int i=0; i<text.size(); i++)
-		{
-			FontCharInfo fci = getFontCharInfo(text[i]);
-			totalWidth += fci.horizAdv;
-		}
-
-		return totalWidth;
-	}
-	
-	Box2D Font::getBoundingBox(std::string text, bool allowLineBreaks, int maxWidth, int maxHeight)
-	{
-		int totalWidth = 0;
 		int totalHeight = 0;
-		
+		int totalWidth = 0;
 		int currWidth = 0;
+		int currHeight = 0;
+
 		for(int i=0; i<text.size(); i++)
 		{
-			FontCharInfo fci = getFontCharInfo(text[i]);
-
-			if(maxWidth > 0)
+			int charIndex = this->getCharIndex(text[i]);
+			FontCharInfo fci = this->getFontCharInfo(charIndex);
+			if(text[i] == '\n')
 			{
-				if(currWidth + fci.horizAdv > maxWidth)
+				currHeight += this->getVerticalAdvance();
+				if(maxHeight >= 0)
 				{
-					if(totalHeight + verticalAdv > maxHeight)
+					if(currHeight >= maxHeight)
 					{
 						break;
 					}
-					else
-					{
-						totalHeight += verticalAdv;
-					}
 				}
-				else
-				{
-					currWidth += fci.horizAdv;
-				}
+				continue;
 			}
 
-			totalWidth = MathExt::max(currWidth, totalWidth);
-		}
-
-		return Box2D(0, 0, totalWidth, totalHeight);
-	}
-
-	Box2D Font::getBoundingBox(std::wstring text, bool allowLineBreaks, int maxWidth, int maxHeight)
-	{
-		int totalWidth = 0;
-		int totalHeight = 0;
-		
-		int currWidth = 0;
-		for(int i=0; i<text.size(); i++)
-		{
-			FontCharInfo fci = getFontCharInfo(text[i]);
-
-			if(maxWidth > 0)
+			if(maxWidth >= 0)
 			{
 				if(currWidth + fci.horizAdv > maxWidth)
 				{
-					if(totalHeight + verticalAdv > maxHeight)
+					currWidth = 0;
+					currHeight += this->getVerticalAdvance();
+					if(maxHeight >= 0)
 					{
-						break;
+						if(currHeight >= maxHeight)
+						{
+							break;
+						}
 					}
-					else
-					{
-						totalHeight += verticalAdv;
-					}
-				}
-				else
-				{
-					currWidth += fci.horizAdv;
 				}
 			}
 
-			totalWidth = MathExt::max(currWidth, totalWidth);
+			currWidth += fci.horizAdv;
+			totalWidth = MathExt::max(totalWidth, currWidth);
 		}
 
-		return Box2D(0, 0, totalWidth, totalHeight);
+		return Box2D(0, 0, totalWidth, currHeight+this->getVerticalAdvance());
+	}
+
+	Box2D Font::getBoundingBox(std::wstring text, int maxWidth, int maxHeight)
+	{
+		int totalHeight = 0;
+		int totalWidth = 0;
+		int currWidth = 0;
+		int currHeight = 0;
+
+		for(int i=0; i<text.size(); i++)
+		{
+			int charIndex = this->getCharIndex(text[i]);
+			FontCharInfo fci = this->getFontCharInfo(charIndex);
+			if(text[i] == L'\n')
+			{
+				currHeight += this->getVerticalAdvance();
+				if(maxHeight >= 0)
+				{
+					if(currHeight >= maxHeight)
+					{
+						break;
+					}
+				}
+				continue;
+			}
+			
+			if(maxWidth >= 0)
+			{
+				if(currWidth + fci.horizAdv > maxWidth)
+				{
+					currWidth = 0;
+					currHeight += this->getVerticalAdvance();
+					if(maxHeight >= 0)
+					{
+						if(currHeight >= maxHeight)
+						{
+							break;
+						}
+					}
+				}
+			}
+
+			currWidth += fci.horizAdv;
+			totalWidth = MathExt::max(totalWidth, currWidth);
+		}
+
+		return Box2D(0, 0, totalWidth, currHeight+this->getVerticalAdvance());
+	}
+
+	Vec2f Font::getCursorLocation(std::string text, size_t charIndex, int maxWidth, int maxHeight)
+	{
+		int currWidth = 0;
+		int currHeight = 0;
+
+		size_t actualSize = MathExt::clamp<size_t>(charIndex, 0, text.size());
+
+		for(int i=0; i<actualSize; i++)
+		{
+			int charIndex = this->getCharIndex(text[i]);
+			FontCharInfo fci = this->getFontCharInfo(charIndex);
+			if(text[i] == '\n')
+			{
+				currHeight += this->getVerticalAdvance();
+				if(maxHeight >= 0)
+				{
+					if(currHeight >= maxHeight)
+					{
+						break;
+					}
+				}
+				continue;
+			}
+
+			if(maxWidth >= 0)
+			{
+				if(currWidth + fci.horizAdv > maxWidth)
+				{
+					currWidth = 0;
+					currHeight += this->getVerticalAdvance();
+					if(maxHeight >= 0)
+					{
+						if(currHeight >= maxHeight)
+						{
+							break;
+						}
+					}
+				}
+			}
+
+			currWidth += fci.horizAdv;
+		}
+
+		return Vec2f(currWidth, currHeight);
+	}
+
+	Vec2f Font::getCursorLocation(std::wstring text, size_t charIndex, int maxWidth, int maxHeight)
+	{
+		int currWidth = 0;
+		int currHeight = 0;
+
+		size_t actualSize = MathExt::clamp<size_t>(charIndex, 0, text.size());
+
+		for(int i=0; i<actualSize; i++)
+		{
+			int charIndex = this->getCharIndex(text[i]);
+			FontCharInfo fci = this->getFontCharInfo(charIndex);
+			if(text[i] == L'\n')
+			{
+				currHeight += this->getVerticalAdvance();
+				if(maxHeight >= 0)
+				{
+					if(currHeight >= maxHeight)
+					{
+						break;
+					}
+				}
+				continue;
+			}
+
+			if(maxWidth >= 0)
+			{
+				if(currWidth + fci.horizAdv > maxWidth)
+				{
+					currWidth = 0;
+					currHeight += this->getVerticalAdvance();
+					if(maxHeight >= 0)
+					{
+						if(currHeight >= maxHeight)
+						{
+							break;
+						}
+					}
+				}
+			}
+
+			currWidth += fci.horizAdv;
+		}
+
+		return Vec2f(currWidth, currHeight);
 	}
 
 	void Font::addChar(FontCharInfo a)

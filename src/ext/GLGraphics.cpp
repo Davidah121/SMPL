@@ -369,7 +369,7 @@
                 int charIndex = f->getCharIndex(text[i]);
                 GLTexture* charTexture = f->getTexture(charIndex);
                 GLModel* charModel = f->getModel(charIndex);
-                FontCharInfo fci = f->getFontCharInfo(text[i]);
+                FontCharInfo fci = f->getFontCharInfo(charIndex);
 
                 if(charModel == nullptr)
                 {
@@ -455,7 +455,7 @@
                 int charIndex = f->getCharIndex(text[i]);
                 GLTexture* charTexture = f->getTexture(charIndex);
                 GLModel* charModel = f->getModel(charIndex);
-                FontCharInfo fci = f->getFontCharInfo(text[i]);
+                FontCharInfo fci = f->getFontCharInfo(charIndex);
 
                 if(charModel == nullptr)
                 {

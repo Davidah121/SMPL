@@ -104,40 +104,40 @@ namespace glib
 
     void SimpleXml::saveNode(SimpleFile* f, XmlNode* node)
     {
-        std::wstring line = L"";
+        std::string line = "";
 
-        line += L"<";
+        line += "<";
 
         //has no child nodes, no attributes, and no value
-        if(node->childNodes.size()==0 && node->attributes.size()==0 && node->value==L"")
+        if(node->childNodes.size()==0 && node->attributes.size()==0 && node->value=="")
         {
-            line+=L"/";
+            line+="/";
         }
 
         line += node->title;
 
         for(XmlAttribute a : node->attributes)
         {
-            line += L" ";
+            line += " ";
             line += a.name;
-            line += L"=\"";
+            line += "=\"";
             line += a.value;
-            line += L"\"";
+            line += "\"";
         }
         
         //has no child nodes and no value, but has at least one attribute
-        if(node->childNodes.size()==0 && node->attributes.size()>0 && node->value==L"")
+        if(node->childNodes.size()==0 && node->attributes.size()>0 && node->value=="")
         {
-            line += L"/";
+            line += "/";
         }
-        line += L">";
+        line += ">";
 
-        f->writeWideString(line);
+        f->writeString(line);
 
-        if(node->value==L"" && node->childNodes.size()>0)
+        if(node->value=="" && node->childNodes.size()>0)
             f->writeLineBreak();
-        else if(node->value!=L"")
-            f->writeWideString(node->value);
+        else if(node->value!="")
+            f->writeString(node->value);
         else
             f->writeLineBreak();
         
@@ -147,13 +147,13 @@ namespace glib
             saveNode(f, v);
         }
 
-        if(node->childNodes.size()>0 || node->value!=L"")
+        if(node->childNodes.size()>0 || node->value!="")
         {
-            line = L"</";
+            line = "</";
             line += node->title;
-            line += L">";
+            line += ">";
 
-            f->writeWideString(line);
+            f->writeString(line);
             f->writeLineBreak();
         }
     }
@@ -162,12 +162,13 @@ namespace glib
      * No Error Checking currently.
      * Currently Adding error checking and failures
      */
-    bool SimpleXml::load(File file)
+    bool SimpleXml::load(File file, bool parseEscape)
     {
-        SimpleFile f = SimpleFile(file, SimpleFile::READ);
+        shouldParseEscape = parseEscape;
+        SimpleFile f = SimpleFile(file, SimpleFile::READ | SimpleFile::UTF8);
 
         bool parsingNode = false;
-        std::wstring innerNodeText = L"";
+        std::string innerNodeText = "";
 
         XmlNode* parentNode = nullptr;
         bool isRecordingText = false;
@@ -189,7 +190,7 @@ namespace glib
                     {
                         parentNode->value = innerNodeText;
                     }
-                    innerNodeText = L"";
+                    innerNodeText = "";
                     isRecordingText = false;
                     parsingNode = true;
                     hitEnd=false;
@@ -209,7 +210,7 @@ namespace glib
 
                     bool slashAtFront = innerNodeText[0] == '/';
 
-                    innerNodeText = L"";
+                    innerNodeText = "";
                     isRecordingText = false;
                     if(parentNode==nullptr)
                     {
@@ -287,9 +288,12 @@ namespace glib
                 }
             }
 
-            for(XmlNode* node : nodes)
+            if(shouldParseEscape)
             {
-                fixParseOnNode(node);
+                for(XmlNode* node : nodes)
+                {
+                    fixParseOnNode(node);
+                }
             }
 
         }
@@ -401,15 +405,15 @@ namespace glib
         return newBytes;
     }
 
-    XmlNode* SimpleXml::parseXmlLine(std::wstring line)
+    XmlNode* SimpleXml::parseXmlLine(std::string line)
     {
         //first, get the title. Will always be first and separated by a space from everything else
         XmlNode* node;
 
         size_t indexOfFirstSpace = line.find_first_of(' ');
-        std::wstring title = line.substr(0, indexOfFirstSpace);
+        std::string title = line.substr(0, indexOfFirstSpace);
 
-        std::wstring attribString = line;
+        std::string attribString = line;
 
         node = new XmlNode();
 
@@ -467,7 +471,7 @@ namespace glib
                         attrib.value+=attribString[i];
                     }
 
-                    if(attrib.name != L"")
+                    if(attrib.name != "")
                         node->attributes.push_back(attrib);
                     
                     attrib = XmlAttribute();
@@ -520,25 +524,46 @@ namespace glib
         return node;
     }
 
-    int SimpleXml::parseEscapeString(std::wstring escString)
+    int SimpleXml::parseEscapeString(std::string escString)
     {
         //Format: &----;
         
         if(escString.front()=='&' && escString.back()==';')
         {
             //valid format
-            std::wstring internalString = escString.substr(1, escString.size()-2);
-            if(internalString.front() == '#')
+            bool num = false;
+            bool hex = false;
+            std::string infoToParse = "";
+            for(int i=1; i<escString.size()-1; i++)
             {
-                internalString = internalString.substr(1, internalString.size()-1);
-                if(internalString.front() == 'x')
+                if(escString[i] == '#')
+                {
+                    num = true;
+                    continue;
+                }
+
+                if(num)
+                {
+                    if(escString[i] == 'x')
+                    {
+                        hex = true;
+                        continue;
+                    }
+                }
+                
+                infoToParse.push_back(escString[i]);
+            }
+
+            if(num)
+            {
+                if(hex)
                 {
                     //hex value
-                    int multiple = 0;
                     int charVal = 0;
-                    for(int i=internalString.size()-1; i>=1; i--, multiple++)
+                    for(int i=0; i<infoToParse.size(); i++)
                     {
-                        charVal += StringTools::base16ToBase10(internalString[i]) * (int)MathExt::pow(16.0, multiple);
+                        charVal <<= 4;
+                        charVal += StringTools::base16ToBase10(infoToParse[i]);
                     }
 
                     //charVal could be any unicode value. Change later.
@@ -547,30 +572,30 @@ namespace glib
                 else
                 {
                     //decimal number
-                    return std::stoi( internalString );
+                    return std::stoi( infoToParse );
                 }
             }
             else
             {
                 //name
                 //only XML predefined names
-                if(internalString == L"quot")
+                if(infoToParse == "quot")
                 {
                     return '"';
                 }
-                else if(internalString == L"amp")
+                else if(infoToParse == "amp")
                 {
                     return '&';
                 }
-                else if(internalString == L"apos")
+                else if(infoToParse == "apos")
                 {
                     return '\'';
                 }
-                else if(internalString == L"lt")
+                else if(infoToParse == "lt")
                 {
                     return '<';
                 }
-                else if(internalString == L"gt")
+                else if(infoToParse == "gt")
                 {
                     return '>';
                 }
@@ -583,13 +608,13 @@ namespace glib
 
     void SimpleXml::fixParseOnNode(XmlNode* n)
     {
-        std::wstring actualString = L"";
-        std::wstring tempString = L"";
+        std::string actualString = "";
+        std::string tempString = "";
         bool proc = false;
         for(XmlAttribute& k : n->attributes)
         {
-            actualString = L"";
-            tempString = L"";
+            actualString = "";
+            tempString = "";
             proc = false;
             for(char c : k.value)
             {
@@ -611,9 +636,14 @@ namespace glib
                     {
                         tempString += ';';
                         int t = parseEscapeString(tempString);
-                        actualString += t;
+                        std::vector<unsigned char> asUTFSet = StringTools::toUTF8(t);
+
+                        for(unsigned char& c : asUTFSet)
+                        {
+                            actualString += c;
+                        }
                         proc=false;
-                        tempString = L"";
+                        tempString = "";
                     }
                     else
                     {
@@ -627,8 +657,8 @@ namespace glib
 
 
         //repeat for the value of the node if it has one
-        actualString = L"";
-        tempString = L"";
+        actualString = "";
+        tempString = "";
         proc = false;
         for(char c : n->value)
         {
@@ -650,9 +680,14 @@ namespace glib
                 {
                     tempString += ';';
                     int t = parseEscapeString(tempString);
-                    actualString += t;
+                    std::vector<unsigned char> asUTFSet = StringTools::toUTF8(t);
+
+                    for(unsigned char& c : asUTFSet)
+                    {
+                        actualString += c;
+                    }
                     proc=false;
-                    tempString = L"";
+                    tempString = "";
                 }
                 else
                 {
@@ -663,9 +698,12 @@ namespace glib
         actualString += tempString;
         n->value = actualString;
         
-        for(XmlNode* q : n->childNodes)
+        if(shouldParseEscape)
         {
-            fixParseOnNode(q);
+            for(XmlNode* q : n->childNodes)
+            {
+                fixParseOnNode(q);
+            }
         }
     }
 

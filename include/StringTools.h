@@ -140,6 +140,158 @@ namespace glib
 		 * @return int 
 		 */
 		static int utf8ToChar(std::vector<unsigned char> utf8Char);
+
+		/**
+		 * @brief Converts the bytes in a std::string or any utf8 compliant string into
+		 * 		a set of integers for easier parsing.
+		 * 
+		 * @param validUTF8String 
+		 * @return std::vector<int> 
+		 */
+		static std::vector<int> utf8ToIntString(std::string validUTF8String);
+
+		/**
+		 * @brief Converts the bytes in a std::wstring into
+		 * 		a set of integers for easier parsing.
+		 * @param str 
+		 * @return std::vector<int> 
+		 */
+		static std::vector<int> wideStringToIntString(std::wstring str);
+
+		/**
+		 * @brief Converts a base64 character into a number. Properly handles the url safe cases as well.
+		 * 
+		 * @param b 
+		 * @return int 
+		 */
+		static int base64CharToNum(unsigned char b);
+
+		/**
+		 * @brief Converts a set of bytes into base64 encoding.
+		 * 
+		 * @param bytes 
+		 * @param urlSafe 
+		 * 		Replaces select values with others that can be put into a url.
+		 * 			Specifically replaces '+' and '/'
+		 * @return std::string 
+		 */
+		static std::string base64Encode(std::vector<unsigned char> bytes, bool urlSafe);
+
+		/**
+		 * @brief Converts a set of bytes into base64 encoding.
+		 * 
+		 * @param bytes 
+		 * @param size
+		 * @param urlSafe 
+		 * 		Replaces select values with others that can be put into a url.
+		 * 			Specifically replaces '+' and '/'
+		 * @return std::string 
+		 */
+		static std::string base64Encode(unsigned char* bytes, size_t size, bool urlSafe);
+
+		/**
+		 * @brief Converts a base64 encoded string or set of bytes back into the original byte data.
+		 * 
+		 * @param bytes 
+		 * @return std::vector<unsigned char> 
+		 */
+		static std::vector<unsigned char> base64Decode(std::vector<unsigned char> bytes);
+
+		/**
+		 * @brief Converts a base64 encoded string or set of bytes back into the original byte data.
+		 * 
+		 * @param bytes 
+		 * @return std::vector<unsigned char> 
+		 */
+		static std::vector<unsigned char> base64Decode(std::string bytes);
+
+		/**
+		 * @brief Converts a base64 encoded string or set of bytes back into the original byte data.
+		 * 
+		 * @param bytes 
+		 * @param size
+		 * @return std::vector<unsigned char> 
+		 */
+		static std::vector<unsigned char> base64Decode(unsigned char* bytes, size_t size);
+		/**
+		 * @brief Performs a bitwise left rotate on the data type.
+		 * 
+		 * @tparam T 
+		 * @param n 
+		 * @param d 
+		 * @return T 
+		 */
+		template<typename T>
+		static T leftRotate(T n, unsigned int d)
+		{
+			return (n << d) | (n >> ((sizeof(T)*8) - d));
+		}
+
+		/**
+		 * @brief Performs a bitwise right rotate on the data type.
+		 * 
+		 * @tparam T 
+		 * @param n 
+		 * @param d 
+		 * @return T 
+		 */
+		template<typename T>
+		static T rightRotate(T n, unsigned int d)
+		{
+			return (n >> d) | (n << ((sizeof(T)*8) - d));
+		}
+
+		/**
+		 * @brief Swaps the order of the bytes in a short (16 bits).
+		 * 		It is equivalent to a left or right rotate by 8 bits.
+		 * @param v 
+		 * @return short 
+		 */
+		static short byteSwap(short v);
+
+		/**
+		 * @brief Swaps the order of the bytes in an integer (32 bits).
+		 * 		Example:
+		 * 			0x11223344 -> 0x44332211
+		 * @param v 
+		 * @return int 
+		 */
+		static int byteSwap(int v);
+
+		/**
+		 * @brief Swaps the order of the bytes in a size_t or long (64 bits).
+		 * 
+		 * @param v 
+		 * @return size_t 
+		 */
+		static size_t byteSwap(size_t v);
+
+		/**
+		 * @brief Swaps the order of the bytes where the size is 8bit, 16bit, 32bit, or 64bit.
+		 * 		All other sizes return the same value. Assumes that the value can be cast into a short, int, and size_t
+		 * 
+		 * @tparam T 
+		 * @param v 
+		 * @return T 
+		 */
+		template<typename T>
+		static T byteSwap(T v)
+		{
+			switch(sizeof(T))
+			{
+				case 1:
+					return v;
+				case 2:
+					return (T)byteSwap((short)v);
+				case 4:
+					return (T)byteSwap((int)v);
+				case 8:
+					return (T)byteSwap((size_t)v);
+				default:
+					return v;
+			}
+			return v;
+		}
 		
 		/**
 		 * @brief Returns the string length of a character array.
@@ -280,6 +432,47 @@ namespace glib
 		}
 
 		/**
+		 * @brief Converts a string into a size_t. Assumes that the value is unsigned
+		 * 		and fits into a size_t.
+		 * 
+		 * @param v 
+		 * @return size_t 
+		 */
+		static size_t fromHexString(std::string v)
+		{
+			//check for 0x at the front
+			size_t result = 0;
+			if(v.size() <= 0)
+				return -1;
+
+			for(int k=0; k<v.size(); k++)
+			{
+				if(v[k] == 'x')
+				{
+					if(v[k-1] == 0)
+					{
+						result = 0;
+					}
+				}
+				else
+				{
+					int temp = base16ToBase10(v[k]);
+					if(temp != -1)
+					{
+						result <<= 4;
+						result += temp;
+					}
+					else
+					{
+						return -1;
+					}
+				}
+			}
+			
+			return result;
+		}
+
+		/**
 		 * @brief Converts the value to a Binary string.
 		 * 
 		 * @tparam T 
@@ -384,6 +577,32 @@ namespace glib
 		static std::vector<std::wstring> splitStringMultipleDeliminators(std::wstring s, std::wstring delim, bool removeEmpty=true);
 
 		/**
+		 * @brief Removes all white space from the string.
+		 * 		There is an option to remove tabs as well.
+		 * 
+		 * @param originalStr 
+		 * @param removeTabs 
+		 * @param onlyLeadingAndTrailing
+		 * 		Only removes the empty white space at the beginning and ending.
+		 * 		Keeps whitespace between data.
+		 * @return std::string 
+		 */
+		static std::string removeWhitespace(std::string originalStr, bool removeTabs = false, bool onlyLeadingAndTrailing = false);
+
+		/**
+		 * @brief Removes all white space from the string.
+		 * 		There is an option to remove tabs as well.
+		 * 
+		 * @param originalStr 
+		 * @param removeTabs 
+		 * @param onlyLeadingAndTrailing
+		 * 		Only removes the empty white space at the beginning and ending.
+		 * 		Keeps whitespace between data.
+		 * @return std::wstring 
+		 */
+		static std::wstring removeWhitespace(std::wstring originalStr, bool removeTabs = false, bool onlyLeadingAndTrailing = false);
+		
+		/**
 		 * @brief Converts a string into an integer.
 		 * 
 		 * @param s 
@@ -446,6 +665,21 @@ namespace glib
 		 * @return float 
 		 */
 		static float toFloat(std::wstring s);
+
+		/**
+		 * @brief Converts the value into a string
+		 * 
+		 * @param k 
+		 * @return std::string 
+		 */
+		static std::string toString(int k);
+		static std::string toString(long k);
+		static std::string toString(unsigned int k);
+		static std::string toString(unsigned long k);
+		static std::string toString(long long k);
+		static std::string toString(unsigned long long k);
+		static std::string toString(float k);
+		static std::string toString(double k);
 
 		/**
 		 * @brief Gets a wide string from the console using the users input.

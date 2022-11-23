@@ -8,7 +8,7 @@
 namespace glib
 {
 
-	#ifdef LINUX
+	#ifdef __unix__
 
 	#else
 		HWAVEOUT AudioOut::waveOutHandle;
@@ -37,7 +37,7 @@ namespace glib
 	{
 		if(!hasInit)
 		{
-			#ifdef LINUX
+			#ifdef __unix__
 
 			#else
 				hasInit = true;
@@ -93,7 +93,7 @@ namespace glib
 			unprepareData(k);
 		}
 		
-		#ifdef LINUX
+		#ifdef __unix__
 
 		#else
 			waveOutClose(waveOutHandle);
@@ -106,7 +106,7 @@ namespace glib
 	{
 		if(getRunning())
 		{
-			#ifdef LINUX
+			#ifdef __unix__
 
 			#else
 				WAVEHDR* whdr = new WAVEHDR();
@@ -246,7 +246,7 @@ namespace glib
 
 	void AudioOut::unprepareData(int b)
 	{
-		#ifdef LINUX
+		#ifdef __unix__
 
 		#else
 			WAVEHDR* a = (WAVEHDR*)buffers[b].audioStuff;
@@ -263,7 +263,7 @@ namespace glib
 		buffers[b].used = true;
 	}
 
-	#ifdef LINUX
+	#ifdef __unix__
 
 	#else
 		void CALLBACK AudioOut::audioOutCallBack(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2)

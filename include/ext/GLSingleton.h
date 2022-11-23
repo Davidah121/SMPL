@@ -7,7 +7,7 @@
     #include <GL/gl.h>
     #include <GL/glu.h>
 
-    #ifdef LINUX
+    #ifdef __unix__
 
     #else
         #include <GL/wglew.h> //Windows extension

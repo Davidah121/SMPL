@@ -4,25 +4,24 @@ namespace glib
 {
 
 	#pragma region ClassStuff
-	const Class ComplexNumber::myClass = Class("ComplexNumber", {&Object::myClass});
-	const Class* ComplexNumber::getClass()
-	{
-		return &ComplexNumber::myClass;
-	}
+	const Class ComplexNumber::globalClass = Class("ComplexNumber", {&Object::globalClass});
 	#pragma endregion
 
 	ComplexNumber::ComplexNumber()
 	{
+		setClass(globalClass);
 	}
 
 	ComplexNumber::ComplexNumber(double real, double imaginary)
 	{
+		setClass(globalClass);
 		this->real = real;
 		this->imaginary = imaginary;
 	}
 
 	ComplexNumber::ComplexNumber(const ComplexNumber& other)
 	{
+		setClass(globalClass);
 		real = other.real;
 		imaginary = other.imaginary;
 	}

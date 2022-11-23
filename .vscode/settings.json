@@ -87,7 +87,8 @@
         "climits": "cpp",
         "string_view": "cpp",
         "deque": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "queue": "cpp"
     },
     "files.exclude": {
         "**/.classpath": true,
@@ -97,8 +98,9 @@
     },
     "svg.preview.background": "transparent",
     "svg-font-previewer.autoOpenPreview": false,
-    "lldb.showDisassembly": "auto",
+    "lldb.showDisassembly": "always",
     "lldb.dereferencePointers": false,
     "C_Cpp.clang_format_fallbackStyle": "LLVM",
-    "lldb.displayFormat": "auto"
+    "lldb.displayFormat": "auto",
+    "lldb.consoleMode": "commands"
 }

@@ -41,8 +41,7 @@
 			~DXSprite();
 
 			//Object and Class Stuff
-			const Class* getClass();
-			static const Class myClass;
+			static const Class globalClass;
 
 			/**
 			 * @brief Gets an texture from the sprite at the specified index.

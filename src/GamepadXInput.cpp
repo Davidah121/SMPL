@@ -1,7 +1,7 @@
 #include "GamepadXInput.h"
 #include "MathExt.h"
 
-#ifdef LINUX
+#ifdef __unix__
 
 #else
 	#pragma warning (disable : 4995)

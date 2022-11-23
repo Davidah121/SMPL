@@ -4,17 +4,12 @@
 namespace glib
 {
 
-	const Class BinarySet::myClass = Class("BinarySet", {&Object::myClass});
-	const Class* BinarySet::getClass()
-	{
-		return &BinarySet::myClass;
-	}
-
+	const Class BinarySet::globalClass = Class("BinarySet", {&Object::globalClass});
 
 	BinarySet::BinarySet()
 	{
+		setClass(globalClass);
 	}
-
 
 	BinarySet::~BinarySet()
 	{

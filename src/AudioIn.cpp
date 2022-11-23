@@ -5,7 +5,7 @@
 namespace glib
 {
 
-    #ifdef LINUX
+    #ifdef __unix__
 
 	#else
         HWAVEIN AudioIn::waveInHandle;
@@ -29,7 +29,7 @@ namespace glib
     {
         if(!hasInit)
         {
-            #ifdef LINUX
+            #ifdef __unix__
 
             #else
                 hasInit = true;
@@ -74,7 +74,7 @@ namespace glib
 
         StringTools::println("AFTER JOIN");
 
-        #ifdef LINUX
+        #ifdef __unix__
 
 		#else
             waveInClose(waveInHandle);
@@ -88,7 +88,7 @@ namespace glib
 
     void AudioIn::record()
     {
-        #ifdef LINUX
+        #ifdef __unix__
 
 		#else
             waveInStart(waveInHandle);
@@ -103,7 +103,7 @@ namespace glib
 
     void AudioIn::stop()
     {
-        #ifdef LINUX
+        #ifdef __unix__
 
 		#else
             waveInStop(waveInHandle);
@@ -111,7 +111,7 @@ namespace glib
         recording = false;
     }
 
-    #ifdef LINUX
+    #ifdef __unix__
 
 	#else
         void CALLBACK AudioIn::audioInCallBack(HWAVEIN hWaveIn, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2)
@@ -146,7 +146,7 @@ namespace glib
 
     void AudioIn::threadFunc()
     {
-        #ifdef LINUX
+        #ifdef __unix__
 
 		#else
             short* buffer = new short[bufferSize];

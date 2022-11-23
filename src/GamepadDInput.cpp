@@ -1,6 +1,6 @@
 #include "GamepadDInput.h"
 
-#ifdef LINUX
+#ifdef __unix__
 
 #else
 	#include <wbemidl.h>

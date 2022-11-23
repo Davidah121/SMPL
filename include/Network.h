@@ -1,9 +1,10 @@
 #pragma once
 
-#ifdef LINUX
+#ifdef __unix__
 	#include <unistd.h>
 	#include <sys/types.h>
 	#include <sys/socket.h>
+	#include <poll.h>
 	#include <netinet/in.h>
 
 	#include <arpa/inet.h> //inet_addr
@@ -45,6 +46,8 @@ namespace glib
 		 * 		Allows network connection using TCP or UDP.
 		 * 		Uses a separate thread to maintain the connection and check for message arrival.
 		 * 
+		 *		Note that in a linux environment, the OS will keep sockets open for 60 seconds and they can not be
+		 * 			reopened. This may cause errors when re-running a program
 		 * @param type 
 		 * 		Servers can have multiple connections where a client can only have one connection.
 		 * 		valid types are:
@@ -67,6 +70,8 @@ namespace glib
 		/**
 		 * @brief Destroy the Network object
 		 * 
+		 * 		Note that in a linux environment, the OS will keep sockets open for 60 seconds and they can not be
+		 * 			reopened. This may cause errors when re-running a program.
 		 */
 		~Network();
 
@@ -201,6 +206,37 @@ namespace glib
 		bool receiveMessage(char* buffer, int bufferSize, int id=0);
 
 		/**
+		 * @brief Receives a message from the specified connected IP.
+		 * 		Returns true if it was successful.
+		 * 		Does not remove the data from the internal queue. 
+		 * 		Buffer will be resized to the minimum of expected size or the number of bytes read.
+		 * 
+		 * @param buffer 
+		 * 		The buffer to receive the message.
+		 * @param expectedSize
+		 * 		The size of the buffer passed in.
+		 * @param id 
+		 * 		Which connection to receive from.
+		 * 		Client will always receive from 0.
+		 * 		Default is 0.
+		 * @return true 
+		 * @return false 
+		 */
+		bool peek(std::vector<unsigned char>& buffer, int expectedSize, int id=0);
+
+		/**
+		 * @brief Call when done reading data from the internal queue.
+		 * 		This allows multiple receiveMessage calls without affecting the message arrived callback.
+		 * 		
+		 * 		The class now will only notify you of a message after you have specified that you have read the previous stuff.
+		 * @param id 
+		 * 		Which connection to receive from.
+		 * 		Client will always receive from 0.
+		 * 		Default is 0.
+		 */
+		void setDoneReceiving(int id=0);
+
+		/**
 		 * @brief Attempts to reconnect.
 		 * 		Only used for TYPE_CLIENT
 		 * 
@@ -209,13 +245,17 @@ namespace glib
 
 		/**
 		 * @brief Disconnects from all connected IPs.
-		 * 
+		 * 		
+		 * 		Note that in a linux environment, the OS will keep sockets open for 60 seconds and they can not be
+		 * 			reopened. This may cause errors when re-running a program.
 		 */
 		void disconnect();
 
 		/**
 		 * @brief Disconnects from the specified id.
-		 * 
+		 * 		
+		 * 		Note that in a linux environment, the OS will keep sockets open for 60 seconds and they can not be
+		 * 			reopened. This may cause errors when re-running a program.
 		 */
 		void disconnect(int id);
 
@@ -243,6 +283,14 @@ namespace glib
 		 * @return false 
 		 */
 		bool getRunning();
+
+		/**
+		 * @brief Gets whether a Timeout Occurred while sending messages or connecting.
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
+		bool getTimeoutOccurred();
 		
 		/**
 		 * @brief Sets the On Connection Function.
@@ -287,6 +335,9 @@ namespace glib
 		 * 		and no longer running. This should end loops that run while the network is
 		 * 		running.
 		 * 
+		 * 		Note that in a linux environment, the OS will keep sockets open for 60 seconds and they can not be
+		 * 			reopened. This may cause errors when re-running a program.
+		 * 
 		 */
 		void endNetwork();
 
@@ -297,6 +348,9 @@ namespace glib
 		bool init();
 
 		void dispose();
+
+		void initNetwork(bool TCP);
+		
 		void createSocket(bool TCP);
 		void closeSocket();
 
@@ -315,6 +369,8 @@ namespace glib
 		bool getReconnect();
 		bool getShouldStart();
 
+		bool isWaitingOnRead(int id);
+
 		std::function<void(int)> getConnectFunc();
 		std::function<void(int)> getMessageArriveFunc();
 		std::function<void(int)> getDisconnectFunc();
@@ -324,25 +380,31 @@ namespace glib
 		std::function<void(int)> onMessageArrivedFunc;
 		std::function<void(int)> onDisconnectFunc;
 
-		#ifndef LINUX
+		#ifndef __unix__
 			WSADATA wsaData;
 		#endif
 		
 		SOCKET_TYPE sock;
 		sockaddr_in socketAddress;
 		std::vector<SOCKET_TYPE> connections;
+		std::vector<bool> waitingOnRead;
+		// std::vector<bool> canWriteToSocket;
+
 		void removeSocket(SOCKET_TYPE s);
 
 		int sizeAddress = 0;
-		unsigned long connectionTimeout = 1000;
-		unsigned long messageTimeout = 100;
+		unsigned long timeoutTimer = 5000; //In milliseconds. 5 seconds total
+		unsigned long timeWaited = 0;
 		bool shouldStart = false;
+
+		bool timeoutOccurred = false;
 
 		int totalAllowedConnections = 64;
 
 		bool type = TYPE_SERVER;
 		int port = 0;
 		std::string location;
+		bool isTCP = true;
 
 		static int totalNetworks;
 		
