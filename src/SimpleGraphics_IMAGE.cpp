@@ -7,6 +7,8 @@ namespace glib
 		int currentComposite = compositeRule;
 		if(surf == nullptr)
 			return;
+		if(img == nullptr)
+			return;
 		if(surf->getWidth()<=0 || surf->getHeight()<=0)
 		{
 			return;
@@ -79,6 +81,8 @@ namespace glib
 	{
 		int currentComposite = compositeRule;
 		if(surf == nullptr)
+			return;
+		if(img == nullptr)
 			return;
 		if(surf->getWidth()<=0 || surf->getHeight()<=0)
 		{
@@ -163,6 +167,8 @@ namespace glib
 	{
 		int currentComposite = compositeRule;
 		if(surf == nullptr)
+			return;
+		if(img == nullptr)
 			return;
 		if(surf->getWidth()<=0 || surf->getHeight()<=0)
 		{
@@ -266,6 +272,8 @@ namespace glib
 		int currentComposite = compositeRule;
 		if(surf == nullptr)
 			return;
+		if(img == nullptr)
+			return;
 		if(surf->getWidth()<=0 || surf->getHeight()<=0)
 			return;
 		if(img->getWidth()<=0 || img->getHeight()<=0)
@@ -350,6 +358,8 @@ namespace glib
 		int currentComposite = compositeRule;
 
 		Image* otherImg;
+		if(img == nullptr)
+			return;
 		if (surf == nullptr)
 			return;
 		else
@@ -580,6 +590,8 @@ namespace glib
 	{
 		int currentComposite = compositeRule;
 		Image* otherImg;
+		if(img == nullptr)
+			return;
 		if (surf == nullptr)
 			return;
 		else

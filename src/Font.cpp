@@ -146,183 +146,100 @@ namespace glib
 
 	Box2D Font::getBoundingBox(std::string text, int maxWidth, int maxHeight)
 	{
-		int totalWidth = 0;
 		int totalHeight = 0;
-		
-		if(text.size() == 0)
-			totalHeight = 0;
-		
+		int totalWidth = 0;
 		int currWidth = 0;
 		int currHeight = 0;
 
-		
 		for(int i=0; i<text.size(); i++)
 		{
-			int charIndexInFont = getCharIndex(text[i]);
-			FontCharInfo fci = getFontCharInfo(charIndexInFont);
-			
+			int charIndex = this->getCharIndex(text[i]);
+			FontCharInfo fci = this->getFontCharInfo(charIndex);
 			if(text[i] == '\n')
 			{
-				if(maxHeight > 0) //Negative values mean no max height
+				currHeight += this->getVerticalAdvance();
+				if(maxHeight >= 0)
 				{
-					if(totalHeight + verticalAdv > maxHeight)
+					if(currHeight >= maxHeight)
 					{
-						currHeight = 0;
 						break;
 					}
 				}
-				
-				totalHeight += verticalAdv;
-				currWidth = 0;
-				currHeight = 0;
 				continue;
 			}
-			
-			if(fci.unicodeValue == 0)
-				continue;
 
-			if(maxWidth > 0)
+			if(maxWidth >= 0)
 			{
 				if(currWidth + fci.horizAdv > maxWidth)
 				{
-					if(maxHeight < 0)
+					currWidth = 0;
+					currHeight += this->getVerticalAdvance();
+					if(maxHeight >= 0)
 					{
-						//No maximum height
-						totalHeight += verticalAdv;
-						currWidth = 0;
-						currHeight = 0;
-					}
-					else
-					{
-						if(totalHeight + verticalAdv > maxHeight)
+						if(currHeight >= maxHeight)
 						{
-							currHeight = 0;
 							break;
 						}
-						else
-						{
-							totalHeight += verticalAdv;
-							currWidth = 0;
-							currHeight = 0;
-						}
 					}
 				}
-				else
-				{
-					currWidth += fci.horizAdv + fci.xOffset;
-					if(i==text.size()-1)
-						currWidth += fci.width - fci.horizAdv - fci.xOffset;
-					currHeight = MathExt::max(fci.height + fci.yOffset, currHeight);
-				}
-			}
-			else if(maxWidth < 0) //Negative values mean no max width
-			{
-				currWidth += fci.horizAdv + fci.xOffset;
-				if(i==text.size()-1)
-					currWidth += fci.width - fci.horizAdv - fci.xOffset;
-				currHeight = MathExt::max(fci.height + fci.yOffset, currHeight);
 			}
 
-			totalWidth = MathExt::max(currWidth, totalWidth);
+			currWidth += fci.horizAdv;
+			totalWidth = MathExt::max(totalWidth, currWidth);
 		}
 
-		totalHeight += currHeight; //Adds current lines height to the total height
-		return Box2D(0, 0, totalWidth, totalHeight);
+		return Box2D(0, 0, totalWidth, currHeight+this->getVerticalAdvance());
 	}
 
 	Box2D Font::getBoundingBox(std::wstring text, int maxWidth, int maxHeight)
 	{
-		int totalWidth = 0;
 		int totalHeight = 0;
-		
-		if(text.size() == 0)
-			totalHeight = 0;
-		
+		int totalWidth = 0;
 		int currWidth = 0;
 		int currHeight = 0;
 
 		for(int i=0; i<text.size(); i++)
 		{
-			int charIndexInFont = getCharIndex(text[i]);
-			FontCharInfo fci = getFontCharInfo(charIndexInFont);
-			
-			if(text[i] == '\n')
+			int charIndex = this->getCharIndex(text[i]);
+			FontCharInfo fci = this->getFontCharInfo(charIndex);
+			if(text[i] == L'\n')
 			{
-				if(maxHeight > 0) //Negative values mean no max height
+				currHeight += this->getVerticalAdvance();
+				if(maxHeight >= 0)
 				{
-					if(totalHeight + verticalAdv > maxHeight)
+					if(currHeight >= maxHeight)
 					{
-						currHeight = 0;
 						break;
 					}
 				}
-				
-				totalHeight += verticalAdv;
-				currWidth = 0;
-				currHeight = 0;
 				continue;
 			}
-
-			if(fci.unicodeValue == 0)
-				continue;
-
-			if(maxWidth > 0)
+			
+			if(maxWidth >= 0)
 			{
 				if(currWidth + fci.horizAdv > maxWidth)
 				{
-					if(maxHeight < 0)
+					currWidth = 0;
+					currHeight += this->getVerticalAdvance();
+					if(maxHeight >= 0)
 					{
-						//No maximum height
-						totalHeight += verticalAdv;
-						currWidth = 0;
-						currHeight = 0;
-					}
-					else
-					{
-						if(totalHeight + verticalAdv > maxHeight)
+						if(currHeight >= maxHeight)
 						{
-							currHeight = 0;
 							break;
 						}
-						else
-						{
-							totalHeight += verticalAdv;
-							currWidth = 0;
-							currHeight = 0;
-						}
 					}
 				}
-				else
-				{
-					currWidth += fci.horizAdv + fci.xOffset;
-					if(i==text.size()-1)
-						currWidth += fci.width - fci.horizAdv - fci.xOffset;
-					currHeight = MathExt::max(fci.height + fci.yOffset, currHeight);
-				}
-			}
-			else if(maxWidth < 0) //Negative values mean no max width
-			{
-				currWidth += fci.horizAdv + fci.xOffset;
-				if(i==text.size()-1)
-					currWidth += fci.width - fci.horizAdv - fci.xOffset;
-				currHeight = MathExt::max(fci.height + fci.yOffset, currHeight);
 			}
 
-			totalWidth = MathExt::max(currWidth, totalWidth);
+			currWidth += fci.horizAdv;
+			totalWidth = MathExt::max(totalWidth, currWidth);
 		}
 
-		totalHeight += currHeight; //Adds current lines height to the total height
-		return Box2D(0, 0, totalWidth, totalHeight);
+		return Box2D(0, 0, totalWidth, currHeight+this->getVerticalAdvance());
 	}
 
 	Vec2f Font::getCursorLocation(std::string text, size_t charIndex, int maxWidth, int maxHeight)
 	{
-		int totalWidth = 0;
-		int totalHeight = 0;
-		
-		if(text.size() == 0)
-			totalHeight = 0;
-		
 		int currWidth = 0;
 		int currHeight = 0;
 
@@ -330,85 +247,45 @@ namespace glib
 
 		for(int i=0; i<actualSize; i++)
 		{
-			int charIndexInFont = getCharIndex(text[i]);
-			FontCharInfo fci = getFontCharInfo(charIndexInFont);
-			
+			int charIndex = this->getCharIndex(text[i]);
+			FontCharInfo fci = this->getFontCharInfo(charIndex);
 			if(text[i] == '\n')
 			{
-				if(maxHeight > 0) //Negative values mean no max height
+				currHeight += this->getVerticalAdvance();
+				if(maxHeight >= 0)
 				{
-					if(totalHeight + verticalAdv > maxHeight)
+					if(currHeight >= maxHeight)
 					{
-						currHeight = 0;
 						break;
 					}
 				}
-				
-				totalHeight += verticalAdv;
-				currWidth = 0;
-				currHeight = 0;
 				continue;
 			}
-			
-			if(fci.unicodeValue == 0)
-				continue;
 
-			if(maxWidth > 0)
+			if(maxWidth >= 0)
 			{
 				if(currWidth + fci.horizAdv > maxWidth)
 				{
-					if(maxHeight < 0)
+					currWidth = 0;
+					currHeight += this->getVerticalAdvance();
+					if(maxHeight >= 0)
 					{
-						//No maximum height
-						totalHeight += verticalAdv;
-						currWidth = 0;
-						currHeight = 0;
-					}
-					else
-					{
-						if(totalHeight + verticalAdv > maxHeight)
+						if(currHeight >= maxHeight)
 						{
-							currHeight = 0;
 							break;
 						}
-						else
-						{
-							totalHeight += verticalAdv;
-							currWidth = 0;
-							currHeight = 0;
-						}
 					}
 				}
-				else
-				{
-					currWidth += fci.horizAdv;
-					if(i==text.size()-1)
-						currWidth += fci.width - fci.horizAdv;
-					currHeight = MathExt::max(fci.height, currHeight);
-				}
-			}
-			else if(maxWidth < 0) //Negative values mean no max width
-			{
-				currWidth += fci.horizAdv;
-				if(i==text.size()-1)
-					currWidth += fci.width - fci.horizAdv;
-				currHeight = MathExt::max(fci.height, currHeight);
 			}
 
-			totalWidth = MathExt::max(currWidth, totalWidth);
+			currWidth += fci.horizAdv;
 		}
 
-		return Vec2f(currWidth, totalHeight);
+		return Vec2f(currWidth, currHeight);
 	}
 
 	Vec2f Font::getCursorLocation(std::wstring text, size_t charIndex, int maxWidth, int maxHeight)
 	{
-		int totalWidth = 0;
-		int totalHeight = 0;
-		
-		if(text.size() == 0)
-			totalHeight = 0;
-		
 		int currWidth = 0;
 		int currHeight = 0;
 
@@ -416,75 +293,41 @@ namespace glib
 
 		for(int i=0; i<actualSize; i++)
 		{
-			int charIndexInFont = getCharIndex(text[i]);
-			FontCharInfo fci = getFontCharInfo(charIndexInFont);
-			
+			int charIndex = this->getCharIndex(text[i]);
+			FontCharInfo fci = this->getFontCharInfo(charIndex);
 			if(text[i] == L'\n')
 			{
-				if(maxHeight > 0) //Negative values mean no max height
+				currHeight += this->getVerticalAdvance();
+				if(maxHeight >= 0)
 				{
-					if(totalHeight + verticalAdv > maxHeight)
+					if(currHeight >= maxHeight)
 					{
-						currHeight = 0;
 						break;
 					}
 				}
-				
-				totalHeight += verticalAdv;
-				currWidth = 0;
-				currHeight = 0;
 				continue;
 			}
-			
-			if(fci.unicodeValue == 0)
-				continue;
 
-			if(maxWidth > 0)
+			if(maxWidth >= 0)
 			{
 				if(currWidth + fci.horizAdv > maxWidth)
 				{
-					if(maxHeight < 0)
+					currWidth = 0;
+					currHeight += this->getVerticalAdvance();
+					if(maxHeight >= 0)
 					{
-						//No maximum height
-						totalHeight += verticalAdv;
-						currWidth = 0;
-						currHeight = 0;
-					}
-					else
-					{
-						if(totalHeight + verticalAdv > maxHeight)
+						if(currHeight >= maxHeight)
 						{
-							currHeight = 0;
 							break;
 						}
-						else
-						{
-							totalHeight += verticalAdv;
-							currWidth = 0;
-							currHeight = 0;
-						}
 					}
 				}
-				else
-				{
-					currWidth += fci.horizAdv + fci.xOffset;
-					if(i==text.size()-1)
-						currWidth += fci.width - fci.horizAdv - fci.xOffset;
-					currHeight = MathExt::max(fci.height + fci.yOffset, currHeight);
-				}
-			}
-			else if(maxWidth < 0) //Negative values mean no max width
-			{
-				currWidth += fci.horizAdv + fci.xOffset;
-				if(i==text.size()-1)
-					currWidth += fci.width - fci.horizAdv - fci.xOffset;
-				currHeight = MathExt::max(fci.height + fci.yOffset, currHeight);
 			}
 
-			totalWidth = MathExt::max(currWidth, totalWidth);
+			currWidth += fci.horizAdv;
 		}
 
-		return Vec2f(currWidth, totalHeight);
+		return Vec2f(currWidth, currHeight);
 	}
 
 	void Font::addChar(FontCharInfo a)

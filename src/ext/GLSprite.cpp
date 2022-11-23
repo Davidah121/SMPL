@@ -13,6 +13,7 @@
 
 		GLSprite::GLSprite()
 		{
+			setClass(GLSprite::myClass);
 		}
 
 
@@ -23,14 +24,22 @@
 
 		GLSprite::GLSprite(const GLSprite& o)
 		{
-			images = o.images;
-			delayTimeForFrame = o.delayTimeForFrame;
+			copy(o);
 		}
 
 		void GLSprite::operator=(const GLSprite& o)
 		{
-			images = o.images;
+			copy(o);
+		}
+
+		void GLSprite::copy(const GLSprite& o)
+		{
+			setClass(GLSprite::myClass);
 			delayTimeForFrame = o.delayTimeForFrame;
+			for(int i=0; i<o.images.size(); i++)
+			{
+				images.push_back( new GLTexture(o.getImage(i)) );
+			}
 		}
 
 		GLSprite::GLSprite(Sprite& o)

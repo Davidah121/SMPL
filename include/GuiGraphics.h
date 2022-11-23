@@ -36,6 +36,7 @@ namespace glib
 
 		GuiImageInterface(const GuiImageInterface& other);
 		void operator=(const GuiImageInterface& other);
+		void copy(const GuiImageInterface& other);
 		~GuiImageInterface();
 
 		void* getImage();
@@ -48,6 +49,7 @@ namespace glib
 		GuiImageInterface(File file, unsigned char type);
 		GuiImageInterface();
 
+		bool shouldDelete = true;
 		void* image = nullptr;
 		int type = -1;
 	};
@@ -60,12 +62,21 @@ namespace glib
 
 		GuiSpriteInterface(const GuiSpriteInterface& other);
 		void operator=(const GuiSpriteInterface& other);
+		void copy(const GuiSpriteInterface& other);
 		~GuiSpriteInterface();
 
 		void* getSprite();
 		int getType();
 
-		GuiImageInterface* getImage(int index);
+		/**
+		 * @brief Returns a shallow copy of the image stored by the sprite at the specified index.
+		 * 		The shallow copy can be safely deleted without affecting the image or sprite but will not
+		 * 		be valid when the sprite has been deleted.
+		 * 
+		 * @param index 
+		 * @return GuiImageInterface 
+		 */
+		GuiImageInterface getImage(int index);
 		int getDelayTime(int index);
 		int getSize();
 		bool shouldLoop();
@@ -103,11 +114,8 @@ namespace glib
 		static const unsigned char TYPE_SOFTWARE = 0;
 		static const unsigned char TYPE_OPENGL = 1;
 		static const unsigned char TYPE_INVALID = -1;
+		static const unsigned char TYPE_DEFAULT = 255;
 		
-		GuiGraphicsInterface();
-		GuiGraphicsInterface(unsigned char v);
-		~GuiGraphicsInterface();
-
 		/**
 		 * @brief Creates a GuiSurfaceInterface object that aligns with this
 		 * 		Graphics Interface.
@@ -116,7 +124,7 @@ namespace glib
 		 * @param height 
 		 * @return GuiSurfaceInterface* 
 		 */
-		GuiSurfaceInterface* createSurface(int width, int height);
+		static GuiSurfaceInterface* createSurface(int width, int height, unsigned char type = TYPE_DEFAULT);
 
 		/**
 		 * @brief Create a GuiImageInterface object that aligns with this
@@ -125,7 +133,7 @@ namespace glib
 		 * @param f 
 		 * @return GuiImageInterface* 
 		 */
-		GuiImageInterface* createImage(File f);
+		static GuiImageInterface* createImage(File f, unsigned char type = TYPE_DEFAULT);
 
 		/**
 		 * @brief Create a GuiSpriteInterface object that aligns with this
@@ -134,7 +142,7 @@ namespace glib
 		 * @param f 
 		 * @return GuiSpriteInterface* 
 		 */
-		GuiSpriteInterface* createSprite(File f);
+		static GuiSpriteInterface* createSprite(File f, unsigned char type = TYPE_DEFAULT);
 
 		/**
 		 * @brief Create a GuiFontInterface object that aligns with this
@@ -143,62 +151,81 @@ namespace glib
 		 * @param f 
 		 * @return GuiFontInterface* 
 		 */
-		GuiFontInterface* createFont(File f);
+		static GuiFontInterface* createFont(File f, unsigned char type = TYPE_DEFAULT);
 
-		unsigned char getType();
+		static unsigned char getDefaultType();
+		static void setDefaultType(unsigned char type);
 
-		void setBoundSurface(GuiSurfaceInterface* surface);
-		GuiSurfaceInterface* getBoundSurface();
+		/**
+		 * @brief Gets the mode for the graphics interface. If the input is TYPE_DEFAULT, the default
+		 * 		mode is returned. Otherwise, the input is returned.
+		 * 
+		 * @param v 
+		 * @return unsigned char 
+		 */
+		static unsigned char getType(unsigned char v);
 
-		void setColor(Vec4f color);
-		void setColor(Color color);
-		Color getColor();
-		Vec4f getColorVec4f();
+		/**
+		 * @brief Delete memory that this class allocated that has not been deleted yet.
+		 * 
+		 */
+		static void dispose();
 
-		void setFont(GuiFontInterface* f);
-		GuiFontInterface* getFont();
+		static void setBoundSurface(GuiSurfaceInterface* surface);
+		static GuiSurfaceInterface* getBoundSurface();
 
-		void clear();
+		static void setColor(Vec4f color, unsigned char type = TYPE_DEFAULT);
+		static void setColor(Color color, unsigned char type = TYPE_DEFAULT);
+		static Color getColor(unsigned char type = TYPE_DEFAULT);
+		static Vec4f getColorVec4f(unsigned char type = TYPE_DEFAULT);
 
-		void drawRect(int x, int y, int x2, int y2, bool outline);
-		void drawLine(int x, int y, int x2, int y2);
-		void drawCircle(int x, int y, int radius, bool outline);
-		void drawEllipse(int x, int y, int xRad, int yRad, bool outline);
+		static void setFont(GuiFontInterface* f, unsigned char type = TYPE_DEFAULT);
+		static GuiFontInterface* getFont(unsigned char type = TYPE_DEFAULT);
 
-		void drawSprite(GuiImageInterface* img, int x, int y);
-		void drawSprite(GuiImageInterface* img, int x1, int y1, int x2, int y2);
-		void drawSpritePart(GuiImageInterface* img, int x, int y, int imgX, int imgY, int imgW, int imgH);
+		static void clear(unsigned char type = TYPE_DEFAULT);
 
-		void drawText(std::string str, int x, int y);
-		void drawText(std::wstring str, int x, int y);
+		static void drawRect(int x, int y, int x2, int y2, bool outline, unsigned char type = TYPE_DEFAULT);
+		static void drawLine(int x, int y, int x2, int y2, unsigned char type = TYPE_DEFAULT);
+		static void drawCircle(int x, int y, int radius, bool outline, unsigned char type = TYPE_DEFAULT);
+		static void drawEllipse(int x, int y, int xRad, int yRad, bool outline, unsigned char type = TYPE_DEFAULT);
 
-		void drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak);
-		void drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak);
+		static void drawSprite(GuiImageInterface* img, int x, int y, unsigned char type = TYPE_DEFAULT);
+		static void drawSprite(GuiImageInterface* img, int x1, int y1, int x2, int y2, unsigned char type = TYPE_DEFAULT);
+		static void drawSpritePart(GuiImageInterface* img, int x, int y, int imgX, int imgY, int imgW, int imgH, unsigned char type = TYPE_DEFAULT);
+
+		static void drawText(std::string str, int x, int y, unsigned char type = TYPE_DEFAULT);
+		static void drawText(std::wstring str, int x, int y, unsigned char type = TYPE_DEFAULT);
+
+		static void drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, unsigned char type = TYPE_DEFAULT);
+		static void drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, unsigned char type = TYPE_DEFAULT);
 		
-		void drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor);
-		void drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor);
+		static void drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor, unsigned char type = TYPE_DEFAULT);
+		static void drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor, unsigned char type = TYPE_DEFAULT);
 		
-		void drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Vec4f highlightColor);
-		void drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Vec4f highlightColor);
+		static void drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Vec4f highlightColor, unsigned char type = TYPE_DEFAULT);
+		static void drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Vec4f highlightColor, unsigned char type = TYPE_DEFAULT);
 		
-		void setClippingRect(Box2D b);
-		Box2D getClippingRect();
-		void resetClippingPlane();
+		static void setClippingRect(Box2D b, unsigned char type = TYPE_DEFAULT);
+		static Box2D getClippingRect();
+		static void resetClippingPlane(unsigned char type = TYPE_DEFAULT);
 
-		void drawSurface(GuiSurfaceInterface* img, int x, int y);
-		void drawSurface(GuiSurfaceInterface* img, int x1, int y1, int x2, int y2);
+		static void drawSurface(GuiSurfaceInterface* img, int x, int y, unsigned char type = TYPE_DEFAULT);
+		static void drawSurface(GuiSurfaceInterface* img, int x1, int y1, int x2, int y2, unsigned char type = TYPE_DEFAULT);
 
-		void drawToScreen();
-		void setProjection(Mat4f proj);
-		void setOrthoProjection(int width, int height);
-		void setScalingFactor(Vec2f v);
-		void enableScaling(bool v);
+		static void drawToScreen(unsigned char type = TYPE_DEFAULT);
+		static void setProjection(Mat4f proj, unsigned char type = TYPE_DEFAULT);
+		static void setOrthoProjection(int width, int height, unsigned char type = TYPE_DEFAULT);
+		static void setScalingFactor(Vec2f v);
+		static void enableScaling(bool v);
 		
 	private:
-		unsigned char type = TYPE_INVALID;
-		GuiSurfaceInterface* boundSurface = nullptr;
-		Box2D clippingRect = Box2D(0, 0, 65535, 65535);
-		Vec2f scalingFactor = Vec2f(1, 1);
-		bool useScaling = true;
+
+		static unsigned char type;
+		static GuiSurfaceInterface* boundSurface;
+		static GuiFontInterface* boundFont;
+		static bool ownedFont;
+		static Box2D clippingRect;
+		static Vec2f scalingFactor;
+		static bool useScaling;
 	};
 }

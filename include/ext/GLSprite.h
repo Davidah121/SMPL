@@ -28,7 +28,7 @@
 			 * 
 			 * @param o 
 			 */
-			GLSprite(Sprite& o);
+			GLSprite(const Sprite& o);
 
 			/**
 			 * @brief Construct a new GLSprite object from another GLSprite object
@@ -43,6 +43,14 @@
 			 * @param o 
 			 */
 			void operator=(const GLSprite& o);
+
+			/**
+			 * @brief Copies a GLSprite object
+			 * 		Hard Copy
+			 * 
+			 * @param o 
+			 */
+			void copy(const GLSprite& o);
 
 			/**
 			 * @brief Destroy the GLSprite object

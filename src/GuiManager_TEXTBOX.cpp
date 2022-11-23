@@ -17,10 +17,8 @@ namespace glib
 		onEnterPressedFunction = nullptr;
 		onKeyPressFunction = nullptr;
 
-		includeChildrenInBounds = false;
 		textElement = GuiTextBlock(0, 0, width, height);
 		textElement.setShouldHighlightText(true);
-		addChild( &textElement );
 		boundingBox = Box2D(x, y, x+width, y+height);
 
 		initContextMenu();
@@ -49,15 +47,27 @@ namespace glib
 		backgroundColor = other.backgroundColor;
 		outlineColor = other.outlineColor;
 		focusOutlineColor = other.focusOutlineColor;
+		cursorBlinkColor = other.cursorBlinkColor;
 
 		textElement = other.textElement;
-		includeChildrenInBounds = false;
 
-		removeChild((GuiInstance*)&other.textElement);
-		addChild( &textElement );
+		allowLineBreaks = other.allowLineBreaks;
+		cursorBlinkMaxTime = other.cursorBlinkMaxTime;
+		cursorWidth = other.cursorWidth;
+		contextMenuEnabled = other.contextMenuEnabled;
+
+		removeChild((GuiInstance*)&other.contextMenu);
+
+		//recreate context menu
+		initContextMenu();
 	}
 
 	GuiTextBox::~GuiTextBox()
+	{
+		dispose();
+	}
+
+	void GuiTextBox::dispose()
 	{
 		//delete contextMenuStuff
 		for(int i=0; i<contextMenuButtons.size(); i++)
@@ -70,10 +80,14 @@ namespace glib
 
 		contextMenuText.clear();
 		contextMenuButtons.clear();
+		removeChild(&contextMenu);
 	}
 
 	void GuiTextBox::initContextMenu()
 	{
+		//Delete old context menu data.
+		dispose();
+
 		// Adjust so that the text is always the same size regardless of scale.
 		// Text Size of 12pt or something.
 		contextMenuButtons.push_back( new GuiRectangleButton(0, 0, 96, 24) );
@@ -154,27 +168,25 @@ namespace glib
 
 	void GuiTextBox::render()
 	{
-		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
-		
 		//draw a rectangle
-		graphicsInterface->setColor(backgroundColor);
-		graphicsInterface->drawRect(x, y, x + width, y + height, false);
+		GuiGraphicsInterface::setColor(backgroundColor);
+		GuiGraphicsInterface::drawRect(x, y, x + width, y + height, false);
 
 		if (getFocus() == false)
-			graphicsInterface->setColor(outlineColor);
+			GuiGraphicsInterface::setColor(outlineColor);
 		else
-			graphicsInterface->setColor(focusOutlineColor);
+			GuiGraphicsInterface::setColor(focusOutlineColor);
 		
-		graphicsInterface->drawRect(x, y, x + width, y + height, true);
+		GuiGraphicsInterface::drawRect(x, y, x + width, y + height, true);
 
 		if(getFocus())
 		{
 			if(cursorBlink)
 			{
 				//Font Stuff
-				graphicsInterface->setColor(cursorBlinkColor);
+				GuiGraphicsInterface::setColor(cursorBlinkColor);
 				std::string testText = textElement.getTextRef();
-				GuiFontInterface* fInt = (textElement.getFont() != nullptr) ? textElement.getFont() : graphicsInterface->getFont();
+				GuiFontInterface* fInt = (textElement.getFont() != nullptr) ? textElement.getFont() : GuiGraphicsInterface::getFont();
 				Font* f = fInt->getFont();
 
 				if(f == nullptr)
@@ -185,10 +197,23 @@ namespace glib
 				cursorPos.x += textElement.getBaseX() + xOffsetForText;
 				cursorPos.y += textElement.getBaseY() + yOffsetForText;
 				
-				graphicsInterface->drawRect(x+cursorPos.x, y+cursorPos.y, x+cursorPos.x+cursorWidth, y+cursorPos.y+f->getFontSize(), false);
+				GuiGraphicsInterface::drawRect(x+cursorPos.x, y+cursorPos.y, x+cursorPos.x+cursorWidth, y+cursorPos.y+f->getFontSize(), false);
 			}
 		}
+		
+		//Create new bounding box to put the text in. Must be bound by the textbox size regardless of the total size of the collection of objects.
+		//Collection of objects refering to itself and its children
+		Box2D oldBounds = GuiGraphicsInterface::getClippingRect();
+		Box2D nBounds = oldBounds;
+		nBounds.setLeftBound( MathExt::max((int)nBounds.getLeftBound(), x) );
+		nBounds.setTopBound( MathExt::max((int)nBounds.getTopBound(), y) );
 
+		GuiGraphicsInterface::setClippingRect(nBounds);
+
+		textElement.baseRender();
+		textElement.render();
+
+		GuiGraphicsInterface::setClippingRect(oldBounds);
 	}
 
 	void GuiTextBox::copy()
@@ -453,8 +478,7 @@ namespace glib
 
 	void GuiTextBox::mouseInput()
 	{
-		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
-		GuiFontInterface* fInt = (textElement.getFont() != nullptr) ? textElement.getFont() : graphicsInterface->getFont();
+		GuiFontInterface* fInt = (textElement.getFont() != nullptr) ? textElement.getFont() : GuiGraphicsInterface::getFont();
 		Font* f = fInt->getFont();
 		std::string temp = textElement.getText();
 
@@ -477,8 +501,9 @@ namespace glib
 				if(Input::getMousePressed(Input::LEFT_MOUSE_BUTTON))
 				{
 					//Continue only if the context menu showed is not owned by this object
-					for( GuiInstance* childIns : this->getChildrenRef() )
+					for(int i=0; i<getChildrenRef().size(); i++)
 					{
+						GuiInstance* childIns = getChildrenRef()[i];
 						if(childIns->getClass() == GuiContextMenu::globalClass)
 						{
 							if(((GuiContextMenu*)childIns)->isMenuShowing())
@@ -707,8 +732,7 @@ namespace glib
 
 	void GuiTextBox::selectionCleanup()
 	{
-		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
-		GuiFontInterface* fInt = (textElement.getFont() != nullptr) ? textElement.getFont() : graphicsInterface->getFont();
+		GuiFontInterface* fInt = (textElement.getFont() != nullptr) ? textElement.getFont() : GuiGraphicsInterface::getFont();
 		std::string tempText = textElement.getText();
 		Font* f = fInt->getFont();
 		
@@ -797,6 +821,10 @@ namespace glib
 			setShouldRedraw(true);
 		
 		boundingBox = Box2D(x, y, x+width, y+height);
+		
+		textElement.setOffset(&x, &y);
+		textElement.baseUpdate();
+		textElement.update();
 	}
 
 	GuiTextBlock* GuiTextBox::getTextBlockElement()
@@ -861,9 +889,9 @@ namespace glib
 		boundingBox = Box2D(x, y, x+width, y+height);
 	}
 
-	void GuiTextBox::loadDataFromXML(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter)
+	void GuiTextBox::loadDataFromXML(std::unordered_map<std::string, std::string>& attributes)
 	{
-		GuiInstance::loadDataFromXML(attributes, inter);
+		GuiInstance::loadDataFromXML(attributes);
 
 		std::vector<std::string> possibleNames = { "width", "height", "cursorblinktimer", "cursorwidth", "backgroundcolor", "outlinecolor", "focusoutlinecolor", "cursorblinkcolor", "allowlinebreaks", "enablecontextmenu"};
 
@@ -923,7 +951,7 @@ namespace glib
 		
 		boundingBox = Box2D(x, y, x+width, y+height);
 
-		textElement.loadDataFromXML(attributes, inter);
+		textElement.loadDataFromXML(attributes);
 		
 		if(textElement.getMaxWidth() == 0)
 			textElement.setMaxWidth(width - textElement.getBaseX()*2 - 1);
@@ -932,10 +960,10 @@ namespace glib
 			textElement.setMaxHeight(height - textElement.getBaseY()*2 - 1);
 	}
 
-	GuiInstance* GuiTextBox::loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter)
+	GuiInstance* GuiTextBox::loadFunction(std::unordered_map<std::string, std::string>& attributes)
 	{
 		GuiTextBox* ins = new GuiTextBox(0, 0, 0, 0);
-		ins->loadDataFromXML(attributes, inter);
+		ins->loadDataFromXML(attributes);
 
 		return ins;
 	}

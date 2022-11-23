@@ -10,7 +10,7 @@ namespace glib
 	GuiCanvas::GuiCanvas()
 	{
 		setClass(globalClass);
-		boundingBox = Box2D(0, 0, 0, 0);
+		boundingBox = GuiInstance::getInvalidBox();
 		includeChildrenInBounds = false;
 		setPriority(HIGH_LOW_PRIORITY);
 	}
@@ -20,7 +20,7 @@ namespace glib
 		setClass(globalClass);
 		if(this->getManager() != nullptr)
 		{
-			myImage = this->getManager()->getGraphicsInterface()->createSurface(width, height);
+			myImage = GuiGraphicsInterface::createSurface(width, height);
 		}
 		boundingBox = Box2D(x, y, x+width, y+height);
 		includeChildrenInBounds = false;
@@ -39,29 +39,20 @@ namespace glib
 	{
 		if(this->getManager() != nullptr)
 		{
-			auto graphicsInterface = this->getManager()->getGraphicsInterface();
-
-			if(graphicsInterface != nullptr)
+			if(myImage == nullptr)
 			{
-				if(myImage == nullptr)
-				{
-					//must create image and set the children's canvas
-					//delayed creation
-					myImage = graphicsInterface->createSurface(boundingBox.getWidth(), boundingBox.getHeight());
-					for(GuiInstance* childIns : this->getChildrenRef())
-					{
-						setInstanceCanvas(childIns, true);
-					}
-				}
-
-				auto oldSurface = graphicsInterface->getBoundSurface();
-				graphicsInterface->setBoundSurface(myImage);
-				graphicsInterface->setColor(clearColor);
-				graphicsInterface->clear();
-				graphicsInterface->setBoundSurface(oldSurface);
-
-				setShouldRedraw(true);
+				//removed delayed creation since the graphics interface is static now and always accessible.
+				return;
 			}
+
+			auto oldSurface = GuiGraphicsInterface::getBoundSurface();
+			GuiGraphicsInterface::setBoundSurface(myImage);
+			GuiGraphicsInterface::setColor(clearColor);
+			GuiGraphicsInterface::clear();
+			GuiGraphicsInterface::setBoundSurface(oldSurface);
+
+			setShouldRedraw(true);
+		
 		}
 	}
 
@@ -69,15 +60,10 @@ namespace glib
 	{
 		if(this->getManager() != nullptr)
 		{
-			auto graphicsInterface = this->getManager()->getGraphicsInterface();
-
-			if(graphicsInterface != nullptr)
-			{
-				graphicsInterface->setColor(Color{255,255,255,255});
-				graphicsInterface->drawSurface(myImage, x, y);
-				graphicsInterface->setColor(Color{0,0,0,255});
-				graphicsInterface->drawRect(x, y, x+boundingBox.getWidth(), y+boundingBox.getHeight(), true);
-			}
+			GuiGraphicsInterface::setColor(Color{255,255,255,255});
+			GuiGraphicsInterface::drawSurface(myImage, x, y);
+			GuiGraphicsInterface::setColor(Color{0,0,0,255});
+			GuiGraphicsInterface::drawRect(x, y, x+boundingBox.getWidth(), y+boundingBox.getHeight(), true);
 		}
 	}
 

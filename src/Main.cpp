@@ -175,23 +175,8 @@ void paintFunc(int width, int height)
 
 void initFunction(SimpleWindow* w)
 {
-    w->getGuiManager()->loadElementsFromFile("GuiStuff/layout.xml");
+    w->getGuiManager()->loadElementsFromFile("GuiStuff/layout_old.xml");
     w->setWindowAsInputFocus();
-    
-    // GuiTextBox* boxIns = (GuiTextBox*)w->getGuiManager()->getInstancesByName("textbox")[0]->data;
-    
-    // ((GuiRectangleButton*)w->getGuiManager()->getInstancesByName("b1")[0]->data)->setOnClickReleaseFunction([boxIns](GuiInstance* ins) ->void{
-    //     System::messageBoxPopup(0, "Title", "1-" + boxIns->getSelectedText());
-    // });
-    
-    // ((GuiRectangleButton*)w->getGuiManager()->getInstancesByName("b2")[0]->data)->setOnClickReleaseFunction([boxIns](GuiInstance* ins) ->void{
-    //     System::messageBoxPopup(0, "Title", "2");
-    // });
-    
-    // ((GuiRectangleButton*)w->getGuiManager()->getInstancesByName("b3")[0]->data)->setOnClickReleaseFunction([boxIns](GuiInstance* ins) ->void{
-    //     System::messageBoxPopup(0, "Title", "3");
-    // });
-    
 }
 
 int testWindow()
@@ -206,46 +191,7 @@ int testWindow()
     options.initFunction = initFunction;
 
     SimpleWindow w = SimpleWindow("TITLE", 1280, 720, -1, -1, options);
-    // GuiContainer c1 = GuiContainer();
-    // // c1.setClearColor(Color{255,255,255,255});
-    // c1.setBaseX(32);
-    // c1.setBaseY(32);
-
-    // GuiList l1 = GuiList(8, 8);
-    // l1.setElementSpacing(4);
-    // l1.setOutlineColor(Color{0, 0, 255, 255});
-
-    // GuiRectangleButton b1 = GuiRectangleButton(-12, 0, 24, 24);
-    // l1.addChild(&b1);
-    
-    // GuiTextBox t1 = GuiTextBox(0, 0, 64, 24);
-    // l1.addChild(&t1);
-
-    // c1.addChild(&l1);
-
-    // w.getGuiManager()->addElement(&c1);
-
-    // GuiCustomObject obj = GuiCustomObject();
-    // obj.setRenderFunction([](GuiGraphicsInterface* interface) -> void{
-    //     SimpleGraphics::setAntiAliasing(true);
-    //     interface->setColor(Color{0,0,0,255});
-    //     interface->drawEllipse(128, 128, 32, 48, false);
-    //     interface->drawEllipse(256, 256, 48, 32, false);
-
-    //     interface->setColor(Color{0,0,255,255});
-    //     interface->drawRect(128, 128, 128+1, 128+1, false);
-    //     interface->drawRect(256, 256, 256+1, 256+1, false);
-    // });
-    
-    // GuiTextBox obj = GuiTextBox( 32, 32, 256, 24 );
-    // obj.getTextBlockElement()->setBaseX(4);
-    // obj.getTextBlockElement()->setBaseY(4);
-    // obj.getTextBlockElement()->setMaxWidth( 256-8 );
-    
-    // w.getGuiManager()->addElement(&obj);
-    
     w.getGuiManager()->setExpectedSize(Vec2f(1280, 720));
-    // w.getGuiManager()->alwaysInvalidateImage(true);
     w.waitTillClose();
     return 0;
 }

@@ -364,7 +364,9 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
+		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+
+		static Box2D getInvalidBox();
 
 	protected:
 		std::function<void(GuiInstance*)> onChangedFunction;
@@ -410,8 +412,8 @@ namespace glib
 		bool staticScaling = false;
 		bool includeChildrenInBounds = true;
 
-		Box2D boundingBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
-		Box2D previousBoundingBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
+		Box2D boundingBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, -0x7FFFFFFF, -0x7FFFFFFF);
+		Box2D previousBoundingBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, -0x7FFFFFFF, -0x7FFFFFFF);
 
 		std::string nameID = "";
 
@@ -533,7 +535,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
+		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 	
@@ -541,7 +543,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
+		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
 	};
 
 	class GuiList : public GuiInstance
@@ -583,7 +585,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
+		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 
@@ -591,7 +593,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
+		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
 		void copy(const GuiList& other);
 
 		std::vector<Point*> locations;
@@ -644,7 +646,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
+		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 
@@ -652,7 +654,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
+		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
 		void copy(const GuiGrid& other);
 
 		std::vector<Point*> locations;
@@ -707,14 +709,14 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
+		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
 		static void registerLoadFunction();
 
 	protected:
 		void solveBoundingBox();
 		
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
+		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
 		void copy(const GuiContextMenu& other);
 
 		GuiList listMenu = GuiList(0, 0);
@@ -795,7 +797,7 @@ namespace glib
 		 * 
 		 * @param func 
 		 */
-		void setRenderFunction(std::function<void(GuiGraphicsInterface*)> func);
+		void setRenderFunction(std::function<void()> func);
 
 		/**
 		 * @brief Sets the function used to calculate the bounding box for the object.
@@ -812,7 +814,7 @@ namespace glib
 	private:
 		std::function<void()> updateFunc;
 		std::function<void()> boundCalcFunc;
-		std::function<void(GuiGraphicsInterface*)> renderFunc;
+		std::function<void()> renderFunc;
 	};
 
 	class GuiCanvas : public GuiInstance
@@ -1050,7 +1052,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
+		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 
@@ -1058,7 +1060,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
+		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
 		
 
 		std::function<void(GuiInstance*)> onClickFunction;
@@ -1096,6 +1098,10 @@ namespace glib
 		 * 		The file containing the image(s).
 		 */
 		GuiSprite(File f);
+
+		GuiSprite(const GuiSprite& other);
+		void operator=(const GuiSprite& other);
+		void copy(const GuiSprite& other);
 
 		/**
 		 * @brief Destroy the GuiSprite object
@@ -1220,7 +1226,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
+		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 	
@@ -1228,7 +1234,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
+		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
 
 		time_t lastUpdateTime = 0;
 		int index = 0;
@@ -1497,7 +1503,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
+		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 
@@ -1505,7 +1511,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
+		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
 		void copy(const GuiTextBlock& other);
 		
 		int maxWidth = -1;
@@ -1757,7 +1763,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
+		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 
@@ -1765,7 +1771,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
+		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
 		
 		std::function<void(GuiInstance*)> onEnterPressedFunction;
 		std::function<void(GuiInstance*)> onKeyPressFunction;
@@ -1774,6 +1780,7 @@ namespace glib
 		void mouseInput();
 		void selectionCleanup();
 		void initContextMenu();
+		void dispose();
 
 		int width = 0;
 		int height = 0;
@@ -2159,14 +2166,14 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter);
+		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
 		static void registerLoadFunction();
 
 	protected:
 		void solveBoundingBox();
 		
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter);
+		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
 		
 		/**
 		 * @brief Construct a new Gui Date Picker object
@@ -2203,6 +2210,10 @@ namespace glib
 		GuiRectangleButton gridLeftBut = GuiRectangleButton(0, 0, 0, 0);
 		GuiRectangleButton gridRightBut = GuiRectangleButton(0, 0, 0, 0);
 		GuiTextBlock gridCenterText = GuiTextBlock(0, 0, 0, 0);
+
+		GuiSprite leftButSprite = GuiSprite();
+		GuiSprite rightButSprite = GuiSprite();
+		GuiSprite calendarButSprite = GuiSprite();
 		
 		GuiGrid dateGrid = GuiGrid(0, 0);
 		std::vector<GuiRectangleButton*> gridButtons;
@@ -2422,12 +2433,19 @@ namespace glib
 		Vec2f getExpectedSize();
 
 		/**
-		 * @brief Get the Graphics Interface that this GuiManager uses.
-		 * 		This should be used for all rendering operations by the GuiInstances.
+		 * @brief Sets the Graphics Interface Mode used by the GuiManager. By default, it will use whatever the GraphicsInterface default is.
+		 * 		This can be used to force a particular mode if desired.
 		 * 
-		 * @return GuiGraphicsInterface*
+		 * @param hardwareAccel 
 		 */
-		GuiGraphicsInterface* getGraphicsInterface();
+		void setGraphicsInterfaceMode(int mode);
+
+		/**
+		 * @brief Gets the Graphics Interface Mode used by the GuiManager.
+		 * 
+		 * @return int 
+		 */
+		int getGraphicsInterfaceMode();
 
 		/**
 		 * @brief Gets a list of GuiInstances with the specified name/id.
@@ -2456,7 +2474,7 @@ namespace glib
 		 * @param className 
 		 * @param func 
 		 */
-		static void registerLoadFunction(std::string className, std::function<GuiInstance*(std::unordered_map<std::string, std::string>&, GuiGraphicsInterface* inter)> func);
+		static void registerLoadFunction(std::string className, std::function<GuiInstance*(std::unordered_map<std::string, std::string>&)> func);
 
 		/**
 		 * @brief Adds some default loading functions to be used when loading elements from a file.
@@ -2483,7 +2501,7 @@ namespace glib
 		std::vector<GuiInstance*> objects = std::vector<GuiInstance*>();
 		std::unordered_set<GuiInstance*> shouldDelete = std::unordered_set<GuiInstance*>();
 		
-		static std::unordered_map<std::string, std::function<GuiInstance*(std::unordered_map<std::string, std::string>&, GuiGraphicsInterface* inter)> > elementLoadingFunctions;
+		static std::unordered_map<std::string, std::function<GuiInstance*(std::unordered_map<std::string, std::string>&)> > elementLoadingFunctions;
 
 		SimpleHashMap<std::string, GuiInstance*> objectsByName = SimpleHashMap<std::string, GuiInstance*>();
 		
@@ -2496,11 +2514,11 @@ namespace glib
 		Vec2f expectedSize;
 
 		GuiSurfaceInterface* surf;
-		GuiGraphicsInterface graphicsInterface;
+		unsigned char graphicsInterfaceMode = GuiGraphicsInterface::TYPE_DEFAULT;
 
-		Box2D deletedObjectsBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
-		Box2D preClipBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
-		Box2D newClipBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
+		Box2D deletedObjectsBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, -0x7FFFFFFF, -0x7FFFFFFF);
+		Box2D preClipBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, -0x7FFFFFFF, -0x7FFFFFFF);
+		Box2D newClipBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, -0x7FFFFFFF, -0x7FFFFFFF);
 
 		Color backgroundColor = { 0xA2, 0xB9, 0xBC, 0xFF };
 	};

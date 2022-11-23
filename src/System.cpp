@@ -6,7 +6,13 @@
 
 #ifdef __unix__
 	#include <X11/Xlib.h>
-#else
+	#include <sys/types.h>
+	#include <sys/sysinfo.h>
+	#include <sys/times.h>
+	#include <sys/vtimes.h>
+#endif
+
+#ifdef _WIN32
 	#ifndef WIN32_LEAN_AND_MEAN
 		#define WIN32_LEAN_AND_MEAN
 	#endif
@@ -16,6 +22,9 @@
 	#include <TlHelp32.h>
 	#include <ShlObj.h>
 	#include <commdlg.h>
+
+	#include <Psapi.h>
+	#include <Pdh.h>
 #endif
 
 
@@ -80,7 +89,7 @@ namespace glib
 	void System::emulateKeyPress(int key)
 	{
 		//TODO - __unix__ VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 
 			INPUT i;
 			ZeroMemory(&i, sizeof(INPUT));
@@ -97,7 +106,7 @@ namespace glib
 	void System::emulateKeyRelease(int key)
 	{
 		//TODO - __unix__ VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 
 			INPUT i;
 			ZeroMemory(&i, sizeof(INPUT));
@@ -114,7 +123,7 @@ namespace glib
 	void System::emulateMousePress(int key)
 	{
 		//TODO - __unix__ VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 
 			INPUT i;
 			ZeroMemory(&i, sizeof(INPUT));
@@ -152,7 +161,7 @@ namespace glib
 	void System::emulateMouseRelease(int key)
 	{
 		//TODO - __unix__ VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 
 			INPUT i;
 			ZeroMemory(&i, sizeof(INPUT));
@@ -190,7 +199,7 @@ namespace glib
 	void System::emulateMouseWheel(int wheel, int amount)
 	{
 		//TODO - __unix__ VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 
 			INPUT i;
 			ZeroMemory(&i, sizeof(INPUT));
@@ -227,7 +236,7 @@ namespace glib
 	void System::setMousePosition(int x, int y)
 	{
 		//TODO - __unix__ VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 		SetCursorPos(x, y);
 		#endif
 	}
@@ -235,59 +244,55 @@ namespace glib
 	int System::getMouseX()
 	{
 		//TODO - __unix__ VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 
-		POINT p = {};
-		GetCursorPos(&p);
-		return p.x;
-		
-		#else
-			return -1;
+			POINT p = {};
+			GetCursorPos(&p);
+			return p.x;
+
 		#endif
+		return -1;
 	}
 
 	int System::getMouseY()
 	{
 		//TODO - __unix__ VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 
 			POINT p = {};
 			GetCursorPos(&p);
 			return p.y;
 
-		#else
-			return -1;
 		#endif
+		return -1;
 	}
 
 	bool System::getKeyDown(int key)
 	{
 		//TODO - __unix__ VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 
 			bool v = (GetKeyState(key)>>15 & 0x01) == 1;
 			return v;
 
-		#else
-			return false;
 		#endif
+		return false;
 	}
 
 	bool System::getKeyToggled(int key)
 	{
 		//TODO - __unix__ VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 			bool v = (GetKeyState(key) & 0x01) == 1;
 			return v;
-		#else
-			return false;
 		#endif
+		return false;
 	}
 
 	bool System::getMouseDown(int value)
 	{
 		//TODO - __unix__ VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 
 			switch (value)
 			{
@@ -305,13 +310,16 @@ namespace glib
 				return false;
 			}
 
-		#else
-			return false;
 		#endif
+		return false;
 	}
 
 	int System::getDesktopWidth()
 	{
+		#ifdef _WIN32
+		return GetSystemMetrics(SM_CXSCREEN);
+		#endif
+
 		#ifdef __unix__
 		int w = 0;
 		Display* d = XOpenDisplay(NULL);
@@ -320,13 +328,17 @@ namespace glib
 		int s = DefaultScreen(d);
 		w = DisplayWidth(d, s);
 		return w;
-		#else
-		return GetSystemMetrics(SM_CXSCREEN);
 		#endif
+		
+		return -1;
 	}
 
 	int System::getDesktopHeight()
 	{
+		#ifdef _WIN32
+		return GetSystemMetrics(SM_CYSCREEN);
+		#endif
+
 		#ifdef __unix__
 		int h = 0;
 		Display* d = XOpenDisplay(NULL);
@@ -335,21 +347,23 @@ namespace glib
 		int s = DefaultScreen(d);
 		h = DisplayHeight(d, s);
 		return h;
-		#else
-		return GetSystemMetrics(SM_CYSCREEN);
 		#endif
+
+		return -1;
 	}
 
 	int System::getAmountOfMonitors()
 	{
+		#ifdef _WIN32
+		return GetSystemMetrics(SM_CMONITORS);
+		#endif
+		
 		#ifdef __unix__
 		int m = 0;
 		Display* d = XOpenDisplay(NULL);
 		if(d == nullptr)
 			return m;
 		// return ((_XPrivDisplay)display)->screens; //TODO
-		#else
-		return GetSystemMetrics(SM_CMONITORS);
 		#endif
 		return 0;
 	}
@@ -357,7 +371,7 @@ namespace glib
 	void System::saveScreenShot(size_t hwnd, File file)
 	{
 		//TODO - __unix__ VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 
 			HWND wndHandle = (HWND)hwnd;
 			HDC hdc = GetDC(wndHandle);
@@ -415,7 +429,7 @@ namespace glib
 	Image* System::getScreenShot(size_t hwnd)
 	{
 		//TODO - __unix__ VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 			HWND wndHandle = (HWND)hwnd;
 			HDC hdc = GetDC(wndHandle);
 
@@ -482,21 +496,21 @@ namespace glib
 			delete[] pixels;
 			
 			return finalImage;
-		#else
-			return nullptr;
 		#endif
+
+		return nullptr;
 	}
 
 	void System::saveScreenShotDesktop(File f)
 	{
-		#ifndef __unix__
+		#ifdef _WIN32
 		System::saveScreenShot((size_t)GetDesktopWindow(), f);
 		#endif
 	}
 
 	Image* System::getScreenShotDesktop()
 	{
-		#ifndef __unix__
+		#ifdef _WIN32
 		return System::getScreenShot((size_t)GetDesktopWindow());
 		#endif
 		return nullptr;
@@ -505,7 +519,7 @@ namespace glib
 	void System::paintImageToWindow(size_t hwnd, Image* img, int startX, int startY)
 	{
 		//TODO - __unix__ VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 
 			HDC hdc = GetDC((HWND)hwnd);
 			HDC mem = CreateCompatibleDC(hdc);
@@ -570,47 +584,46 @@ namespace glib
 
 	void System::paintImageToDesktop(Image* img, int startX, int startY)
 	{
-		#ifndef __unix__
+		#ifdef _WIN32
 			System::paintImageToWindow((size_t)GetDesktopWindow(), img, startX, startY);
 		#endif
 	}
 
-	unsigned long System::getProcessID(std::string processName)
+	unsigned long System::getProcessID(std::wstring processName)
 	{
 		//TODO - LINUX VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 
 			DWORD pid = 0;
 			HANDLE hndl = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS | TH32CS_SNAPMODULE, 0);
 			if (hndl)
 			{
-				PROCESSENTRY32 process = { sizeof(PROCESSENTRY32) };
-				Process32First(hndl, &process);
+				PROCESSENTRY32W process = { sizeof(PROCESSENTRY32W) };
+				Process32FirstW(hndl, &process);
 				do
 				{
-					std::string thisProcess = process.szExeFile;
+					std::wstring thisProcess = process.szExeFile;
 					if (thisProcess == processName)
 					{
 						pid = process.th32ProcessID;
 						break;
 					}
 					
-				} while (Process32Next(hndl, &process));
+				} while (Process32NextW(hndl, &process));
 
 				CloseHandle(hndl);
 			}
 
 			return pid;
 
-		#else
-			return 0;
 		#endif
+		return 0;
 	}
 
 	size_t System::getProcessWindow(std::string windowName)
 	{
 		//TODO - LINUX VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 
 			HWND hwnd = FindWindowA(NULL, windowName.c_str());
 			if(hwnd == 0)
@@ -618,15 +631,14 @@ namespace glib
 
 			return (size_t)hwnd;
 
-		#else
-			return 0;
 		#endif
+		return 0;
 	}
 
 	std::string System::fileDialogBox(unsigned char type, std::vector<FileFilter> filters, std::string startDir)
 	{
 		//TODO - __unix__ VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 
 			//older win32 method. Works just fine so I'm keeping it.
 			
@@ -763,17 +775,16 @@ namespace glib
 	int System::messageBoxPopup(unsigned int type, std::string title, std::string message)
 	{
 		//TODO - LINUX VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 			return MessageBoxA(NULL, message.c_str(), title.c_str(), type);
-		#else
-			return 0;
 		#endif
+		return 0;
 	}
 
 	void System::copyToClipboard(std::string str)
 	{
 		//TODO - LINUX VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 
 			if(!OpenClipboard(NULL))
 				return;
@@ -799,7 +810,7 @@ namespace glib
 	void System::copyToClipboard(std::wstring str)
 	{
 		//TODO - LINUX VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 
 			if(!OpenClipboard(NULL))
 				return;
@@ -825,7 +836,7 @@ namespace glib
 	std::string System::pasteFromClipboard()
 	{
 		//TODO - LINUX VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 
 			if(!OpenClipboard(NULL))
 				return "";
@@ -846,17 +857,15 @@ namespace glib
 			CloseClipboard();
 
 			return StringTools::toUTF8String(finalText);
-
-		#else
-			return "";
 		#endif
+		return "";
 	}
 
 	
 	void System::clearClipboard()
 	{
 		//TODO - LINUX VERSION
-		#ifndef __unix__
+		#ifdef _WIN32
 
 			if(!OpenClipboard(NULL))
 				return;
@@ -865,6 +874,81 @@ namespace glib
 			CloseClipboard();
 
 		#endif
+	}
+
+	size_t System::getTotalVirtualMem()
+	{
+		#ifdef _WIN32
+		MEMORYSTATUSEX memInfo;
+		memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+		GlobalMemoryStatusEx(&memInfo);
+		return memInfo.ullTotalPageFile;
+		#endif
+		return 0;
+	}
+
+	size_t System::getTotalPhysicalMem()
+	{
+		#ifdef _WIN32
+		MEMORYSTATUSEX memInfo;
+		memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+		GlobalMemoryStatusEx(&memInfo);
+		return memInfo.ullTotalPhys;
+		#endif
+		return 0;
+	}
+	
+	size_t System::getTotalVirtualMemAvaliable()
+	{
+		#ifdef _WIN32
+		MEMORYSTATUSEX memInfo;
+		memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+		GlobalMemoryStatusEx(&memInfo);
+		return memInfo.ullAvailPageFile;
+		#endif
+		return 0;
+	}
+
+	size_t System::getTotalPhysicalMemAvaliable()
+	{
+		#ifdef _WIN32
+		MEMORYSTATUSEX memInfo;
+		memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+		GlobalMemoryStatusEx(&memInfo);
+		return memInfo.ullAvailPhys;
+		#endif
+		return 0;
+	}
+
+	size_t System::getVirtualMemUsed()
+	{
+		#ifdef _WIN32
+		PROCESS_MEMORY_COUNTERS_EX pmc;
+		GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(PROCESS_MEMORY_COUNTERS_EX));
+		return pmc.PrivateUsage;
+		#endif
+		return 0;
+	}
+
+	size_t System::getPhysicalMemUsed()
+	{
+		#ifdef _WIN32
+		PROCESS_MEMORY_COUNTERS_EX pmc;
+		GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(PROCESS_MEMORY_COUNTERS_EX));
+		return pmc.WorkingSetSize;
+		#endif
+		return 0;
+	}
+	
+	double getTotalCpuUsage()
+	{
+		// PdhOpenQuery(NULL, NULL, )
+		return 0;
+	}
+	
+	double getCpuUsage()
+	{
+		return 0;
 	}
 	
 } //NAMESPACE glib END

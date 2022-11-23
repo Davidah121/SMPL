@@ -63,9 +63,9 @@ namespace glib
 			other.parent->addChild(this);
 		}
 		
-		for(GuiInstance* child : children)
+		for(int i=0; i<children.size(); i++)
 		{
-			child->parent = nullptr;
+			GuiInstance* child = children[i];
 			addChild(child);
 		}
 
@@ -92,9 +92,10 @@ namespace glib
 		{
 			manager->deleteElement(this);
 		}
-
-		for(GuiInstance* ins : children)
+		
+		for(int i=0; i<children.size(); i++)
 		{
+			GuiInstance* ins = children[i];
 			ins->parent = nullptr;
 			ins->setOffset(nullptr, nullptr);
 			ins->setRenderOffset(nullptr, nullptr);
@@ -361,6 +362,11 @@ namespace glib
 		return boundingBox;
 	}
 
+	Box2D GuiInstance::getInvalidBox()
+	{
+		return Box2D(0x7FFFFFFF, 0x7FFFFFFF, -0x7FFFFFFF, -0x7FFFFFFF);
+	}
+
 	void GuiInstance::solveBoundingBox()
 	{
 		//Empty function
@@ -508,7 +514,7 @@ namespace glib
 		return staticScaling;
 	}
 	
-	void GuiInstance::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter)
+	void GuiInstance::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs)
 	{
 		std::vector<std::string> possibleNames = { "id", "visible", "active", "alwaysfocus", "onactive", "onfocus", "onvisible", "ondeactivate", "oninvisible", "onchanged", "x", "y" };
 

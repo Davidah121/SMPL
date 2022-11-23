@@ -205,7 +205,7 @@ namespace glib
                         }
                         std::string keyName, value;
 
-                        if(equalsIndex > 1)
+                        if(equalsIndex >= 1)
                         {
                             keyName = l.substr(0, equalsIndex);
                         }

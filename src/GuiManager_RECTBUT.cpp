@@ -122,28 +122,26 @@ namespace glib
 
 	void GuiRectangleButton::render()
 	{
-		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
-		
 		if(!getFocus())
 		{
 			if(!hover)
-				graphicsInterface->setColor(backgroundColor);
+				GuiGraphicsInterface::setColor(backgroundColor);
 			else
-				graphicsInterface->setColor(hoverColor);
+				GuiGraphicsInterface::setColor(hoverColor);
 		}
 		else
 		{
-			graphicsInterface->setColor(focusBackgroundColor);
+			GuiGraphicsInterface::setColor(focusBackgroundColor);
 		}
 		
-		graphicsInterface->drawRect(x, y, x + width, y + height, false);
+		GuiGraphicsInterface::drawRect(x, y, x + width, y + height, false);
 
 		if (getFocus() == false)
-			graphicsInterface->setColor(outlineColor);
+			GuiGraphicsInterface::setColor(outlineColor);
 		else
-			graphicsInterface->setColor(focusOutlineColor);
+			GuiGraphicsInterface::setColor(focusOutlineColor);
 
-		graphicsInterface->drawRect(x, y, x + width, y + height, true);
+		GuiGraphicsInterface::drawRect(x, y, x + width, y + height, true);
 	}
 
 	void GuiRectangleButton::setOnClickFunction(std::function<void(GuiInstance*)> func)
@@ -217,9 +215,9 @@ namespace glib
 		boundingBox = Box2D(x, y, x+width, y+height);
 	}
 
-	void GuiRectangleButton::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter)
+	void GuiRectangleButton::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs)
 	{
-		GuiInstance::loadDataFromXML(attribs, inter);
+		GuiInstance::loadDataFromXML(attribs);
 		std::vector<std::string> possibleNames = { "width", "height", "backgroundcolor", "outlinecolor", "focusoutlinecolor", "hovercolor", "focusbackgroundcolor"};
 
 		for(int i=0; i<possibleNames.size(); i++)
@@ -272,10 +270,10 @@ namespace glib
 		GuiManager::registerLoadFunction("GuiRectangleButton", GuiRectangleButton::loadFunction);
 	}
 
-	GuiInstance* GuiRectangleButton::loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter)
+	GuiInstance* GuiRectangleButton::loadFunction(std::unordered_map<std::string, std::string>& attributes)
 	{
 		GuiRectangleButton* ins = new GuiRectangleButton(0,0,0,0);
-		ins->loadDataFromXML(attributes, inter);
+		ins->loadDataFromXML(attributes);
 		
 		return ins;
 	}

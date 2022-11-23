@@ -303,7 +303,7 @@ namespace glib
 
 		bool operator==(Box2D other);
 		bool operator!=(Box2D other);
-
+		
 	protected:
 		void onTransformChanged();
 
@@ -313,6 +313,7 @@ namespace glib
 
 		Vec2f baseTopLeft;
 		Vec2f baseBottomRight;
+		
 	};
 
 	class Circle : public Shape

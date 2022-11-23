@@ -194,6 +194,22 @@ namespace glib
 				{
 					continue;
 				}
+				
+				if(currW + fci.width > maxWidth)
+				{
+					if(allowTextWrap)
+					{
+						currX = x;
+						currW = 0;
+						currH += tFont->getVerticalAdvance();
+						currY += tFont->getVerticalAdvance();
+						
+						if(currH >= maxHeight)
+						{
+							break;
+						}
+					}
+				}
 
 				if(currW + fci.width > maxWidth)
 				{
@@ -307,6 +323,22 @@ namespace glib
 				{
 					continue;
 				}
+				
+				if(currW + fci.width > maxWidth)
+				{
+					if(allowTextWrap)
+					{
+						currX = x;
+						currW = 0;
+						currH += tFont->getVerticalAdvance();
+						currY += tFont->getVerticalAdvance();
+						
+						if(currH >= maxHeight)
+						{
+							break;
+						}
+					}
+				}
 
 				if(currW + fci.width > maxWidth)
 				{
@@ -335,7 +367,6 @@ namespace glib
 
 				currX += fci.horizAdv;
 				currW += fci.horizAdv;
-
 
 				if(currW >= maxWidth)
 				{

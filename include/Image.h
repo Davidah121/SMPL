@@ -59,6 +59,13 @@ namespace glib
 		 */
 		~Image();
 
+		/**
+		 * @brief Destroys the Image object
+		 * 		Deletes the array of pixels and the palette for the image.
+		 * 
+		 */
+		void dispose();
+
 		//Object and Class Stuff
 		static const Class globalClass;
 

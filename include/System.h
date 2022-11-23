@@ -279,7 +279,7 @@ namespace glib
 		 * @param processName 
 		 * @return unsigned long 
 		 */
-		static unsigned long getProcessID(std::string processName);
+		static unsigned long getProcessID(std::wstring processName);
 
 		/**
 		 * @brief Gets the Window for a process by the window name.
@@ -357,7 +357,63 @@ namespace glib
 		 * 
 		 */
 		static void clearClipboard();
+
+		//Statistics and stuff
+		/**
+		 * @brief Gets the Total Virtual Memory possible.
+		 * 
+		 * @return size_t 
+		 */
+		static size_t getTotalVirtualMem();
+
+		/**
+		 * @brief Gets the Total amount of RAM available to the system.
+		 * 
+		 * @return size_t 
+		 */
+		static size_t getTotalPhysicalMem();
 		
+		/**
+		 * @brief Gets the Total Virtual Memory available that has not been allocated.
+		 * 
+		 * @return size_t 
+		 */
+		static size_t getTotalVirtualMemAvaliable();
+
+		/**
+		 * @brief Gets the Total amount of RAM available to the system that has not been allocated.
+		 * 
+		 * @return size_t 
+		 */
+		static size_t getTotalPhysicalMemAvaliable();
+
+		/**
+		 * @brief Gets the Total amount of Virtual Memory Used by the program
+		 * 
+		 * @return size_t 
+		 */
+		static size_t getVirtualMemUsed();
+
+		/**
+		 * @brief Get the Total amount of Physical Memory Used by the program
+		 * 
+		 * @return size_t 
+		 */
+		static size_t getPhysicalMemUsed();
+		
+		/**
+		 * @brief Get the Cpu for the entire system.
+		 * 
+		 * @return double 
+		 */
+		static double getTotalCpuUsage(); //TODO
+		
+		/**
+		 * @brief Get the Cpu for the program.
+		 * 
+		 * @return double 
+		 */
+		static double getCpuUsage(); //TODO
 	private:
 		static unsigned int numberOfThreads;
 	};

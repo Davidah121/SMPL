@@ -11,6 +11,7 @@ namespace glib
 	{
 		setClass(globalClass);
 		includeChildrenInBounds = true;
+		boundingBox = GuiInstance::getInvalidBox();
 	}
 
 	GuiCustomObject::~GuiCustomObject()
@@ -29,8 +30,7 @@ namespace glib
 	{
 		if(renderFunc!=nullptr)
 		{
-			GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
-			renderFunc(graphicsInterface);
+			renderFunc();
 		}
 	}
 
@@ -39,7 +39,7 @@ namespace glib
 		updateFunc = func;
 	}
 
-	void GuiCustomObject::setRenderFunction(std::function<void(GuiGraphicsInterface*)> func)
+	void GuiCustomObject::setRenderFunction(std::function<void()> func)
 	{
 		renderFunc = func;
 	}

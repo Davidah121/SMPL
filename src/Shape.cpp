@@ -213,7 +213,7 @@ namespace glib
 	{
 		return !operator==(other);
 	}
-	
+
 	#pragma endregion
 
 	#pragma region CIRCLE

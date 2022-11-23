@@ -85,7 +85,7 @@ namespace glib
 	void GuiContextMenuHelper::solveBoundingBox()
 	{
 		//The size is the size of the children
-		boundingBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
+		boundingBox = GuiInstance::getInvalidBox();
 	}
 
 	#pragma endregion
@@ -200,7 +200,6 @@ namespace glib
 
 	void GuiContextMenu::showMenu(int x, int y)
 	{
-		StringTools::println("SHOW");
 		listMenu.setVisible(true);
 		listMenu.setActive(true);
 
@@ -214,7 +213,6 @@ namespace glib
 
 	void GuiContextMenu::hideMenu()
 	{
-		StringTools::println("HIDE");
 		listMenu.setVisible(false);
 		listMenu.setActive(false);
 		GuiContextMenuHelper* helper = GuiContextMenuHelper::getContextMenuHelper( this->getManager() );
@@ -260,13 +258,13 @@ namespace glib
 	void GuiContextMenu::solveBoundingBox()
 	{
 		//The size is the size of the children
-		boundingBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
+		boundingBox = GuiInstance::getInvalidBox();
 	}
 
-	void GuiContextMenu::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter)
+	void GuiContextMenu::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs)
 	{
-		GuiInstance::loadDataFromXML(attribs, inter);
-		listMenu.loadDataFromXML(attribs, inter);
+		GuiInstance::loadDataFromXML(attribs);
+		listMenu.loadDataFromXML(attribs);
 	}
 
 	void GuiContextMenu::registerLoadFunction()
@@ -274,10 +272,10 @@ namespace glib
 		GuiManager::registerLoadFunction("GuiContextMenu", GuiContextMenu::loadFunction);
 	}
 
-	GuiInstance* GuiContextMenu::loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter)
+	GuiInstance* GuiContextMenu::loadFunction(std::unordered_map<std::string, std::string>& attributes)
 	{
 		GuiContextMenu* ins = new GuiContextMenu();
-		ins->loadDataFromXML(attributes, inter);
+		ins->loadDataFromXML(attributes);
 		
 		return ins;
 	}

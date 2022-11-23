@@ -58,14 +58,7 @@ namespace glib
 
 		if(updateBounds)
 		{
-			if(this->getManager() == nullptr)
-				return;
-			
-			GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
-			if(graphicsInterface == nullptr)
-				return;
-			
-			GuiFontInterface* fInt = (textFont != nullptr) ? textFont : graphicsInterface->getFont();
+			GuiFontInterface* fInt = (textFont != nullptr) ? textFont : GuiGraphicsInterface::getFont();
 
 			if(fInt == nullptr)
 				return;
@@ -121,44 +114,43 @@ namespace glib
 
 	void GuiTextBlock::render()
 	{
-		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
-		GuiFontInterface* fInt = (textFont != nullptr) ? textFont : graphicsInterface->getFont();
-		GuiFontInterface* oldFontInt = graphicsInterface->getFont();
+		GuiFontInterface* fInt = (textFont != nullptr) ? textFont : GuiGraphicsInterface::getFont();
+		GuiFontInterface* oldFontInt = GuiGraphicsInterface::getFont();
 
 		Font* currFont = fInt->getFont();
 
-		graphicsInterface->setFont(fInt);
-		graphicsInterface->setColor(textColor);
+		GuiGraphicsInterface::setFont(fInt);
+		GuiGraphicsInterface::setColor(textColor);
 
 		int actualMaxW = (maxWidth < 0) ? 0xFFFF : maxWidth; //65535 will be considered the maximum width. Most images and textures limit size to this.
 		int actualMaxH = (maxHeight < 0) ? 0xFFFF : maxHeight; //65535 will be considered the maximum height. Most images and textures limit size to this.
 
 		int minHighlight = MathExt::min(startHighlight, endHighlight);
 		int maxHighlight = MathExt::max(startHighlight, endHighlight);
-
+		
 		if(!text.empty())
 		{
 			if(shouldHighlight)
-				graphicsInterface->drawTextLimitsHighlighted(text, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText, minHighlight, maxHighlight, highlightColor);
+				GuiGraphicsInterface::drawTextLimitsHighlighted(text, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText, minHighlight, maxHighlight, highlightColor);
 			else
-				graphicsInterface->drawTextLimits(text, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText);
+				GuiGraphicsInterface::drawTextLimits(text, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText);
 		}
 		else
 		{
-			graphicsInterface->setColor(defaultTextColor);
+			GuiGraphicsInterface::setColor(defaultTextColor);
 			if(shouldHighlight)
-				graphicsInterface->drawTextLimitsHighlighted(defaultString, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText, minHighlight, maxHighlight, highlightColor);
+				GuiGraphicsInterface::drawTextLimitsHighlighted(defaultString, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText, minHighlight, maxHighlight, highlightColor);
 			else
-				graphicsInterface->drawTextLimits(defaultString, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText);
+				GuiGraphicsInterface::drawTextLimits(defaultString, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText);
 		}
 		
-		graphicsInterface->setFont(oldFontInt);
+		GuiGraphicsInterface::setFont(oldFontInt);
 
-		// Box2D oldClip = graphicsInterface->getClippingRect();
-		// graphicsInterface->resetClippingPlane();
-		// graphicsInterface->setColor(Color{255,0,0,255});
-		// graphicsInterface->drawRect(boundingBox.getLeftBound(), boundingBox.getTopBound(), boundingBox.getRightBound(), boundingBox.getBottomBound(), true);
-		// graphicsInterface->setClippingRect(oldClip);
+		// Box2D oldClip = GuiGraphicsInterface::getClippingRect();
+		// GuiGraphicsInterface::resetClippingPlane();
+		// GuiGraphicsInterface::setColor(Color{255,0,0,255});
+		// GuiGraphicsInterface::drawRect(boundingBox.getLeftBound(), boundingBox.getTopBound(), boundingBox.getRightBound(), boundingBox.getBottomBound(), true);
+		// GuiGraphicsInterface::setClippingRect(oldClip);
 		
 	}
 
@@ -365,9 +357,9 @@ namespace glib
 		update();
 	}
 
-	void GuiTextBlock::loadDataFromXML(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter)
+	void GuiTextBlock::loadDataFromXML(std::unordered_map<std::string, std::string>& attributes)
 	{
-		GuiInstance::loadDataFromXML(attributes, inter);
+		GuiInstance::loadDataFromXML(attributes);
 
 		std::vector<std::string> possibleNames = { "maxwidth", "maxheight", "textcolor", "defaulttextcolor", "highlightcolor", "allowhighlight", "allowwraptext", "highlightstart", "highlightend", "textxoffset", "textyoffset", "text", "defaulttext" };
 
@@ -439,10 +431,10 @@ namespace glib
 		update(); //just updates the bounding box
 	}
 
-	GuiInstance* GuiTextBlock::loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter)
+	GuiInstance* GuiTextBlock::loadFunction(std::unordered_map<std::string, std::string>& attributes)
 	{
 		GuiTextBlock* ins = new GuiTextBlock(0, 0);
-		ins->loadDataFromXML(attributes, inter);
+		ins->loadDataFromXML(attributes);
 
 		return ins;
 	}

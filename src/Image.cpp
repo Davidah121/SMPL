@@ -32,7 +32,7 @@ namespace glib
 
 	Image::Image(const Image& other)
 	{
-		this->~Image();
+		dispose();
 
 		setClass(globalClass);
 		this->width = other.width;
@@ -49,7 +49,7 @@ namespace glib
 
 	void Image::operator=(const Image& other)
 	{
-		this->~Image();
+		dispose();
 		this->width = other.width;
 		this->height = other.height;
 		
@@ -64,6 +64,11 @@ namespace glib
 	}
 
 	Image::~Image()
+	{
+		dispose();
+	}
+
+	void Image::dispose()
 	{
 		if(pixels!=nullptr)
 			delete[] pixels;
@@ -306,7 +311,7 @@ namespace glib
 
 	void Image::copyImage(Image* v)
 	{
-		this->~Image();
+		dispose();
 		this->width = v->width;
 		this->height = v->height;
 		pixels = new Color[width * height];

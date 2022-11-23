@@ -32,18 +32,18 @@ namespace glib
 	void GuiContainer::solveBoundingBox()
 	{
 		//Do nothing as the grouping of all of the children's boxes is handled by the instance itself
-		boundingBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
+		boundingBox = GuiInstance::getInvalidBox();
 	}
 	
-	void GuiContainer::loadDataFromXML(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter)
+	void GuiContainer::loadDataFromXML(std::unordered_map<std::string, std::string>& attributes)
 	{
-		GuiInstance::loadDataFromXML(attributes, inter);
+		GuiInstance::loadDataFromXML(attributes);
 	}
 
-	GuiInstance* GuiContainer::loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter)
+	GuiInstance* GuiContainer::loadFunction(std::unordered_map<std::string, std::string>& attributes)
 	{
 		GuiContainer* ins = new GuiContainer();
-		ins->loadDataFromXML(attributes, inter);
+		ins->loadDataFromXML(attributes);
 
 		return ins;
 	}

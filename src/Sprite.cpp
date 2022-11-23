@@ -17,16 +17,26 @@ namespace glib
 
 	Sprite::Sprite(const Sprite& o)
 	{
-		setClass(globalClass);
-		images = o.images;
-		delayTimeForFrame = o.delayTimeForFrame;
+		copy(o);
 	}
 
 	void Sprite::operator=(const Sprite& o)
 	{
+		copy(o);
+	}
+
+	void Sprite::copy(const Sprite& o)
+	{
 		setClass(globalClass);
-		images = o.images;
 		delayTimeForFrame = o.delayTimeForFrame;
+
+		//hard copy
+		for(int i=0; i<o.images.size(); i++)
+		{
+			Image* nImg = new Image();
+			nImg->copyImage(o.images[i]);
+			images.push_back( nImg );
+		}
 	}
 
 	void Sprite::dispose()

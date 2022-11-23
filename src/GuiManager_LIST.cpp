@@ -133,18 +133,16 @@ namespace glib
 		if(x1>x2 || y1>y2)
 			return;
 		
-		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
-		
 		if(backgroundColor.alpha != 0)
 		{
-			graphicsInterface->setColor(backgroundColor);
-			graphicsInterface->drawRect(x1, y1, x2, y2, false);
+			GuiGraphicsInterface::setColor(backgroundColor);
+			GuiGraphicsInterface::drawRect(x1, y1, x2, y2, false);
 		}
 		
 		if(outlineColor.alpha != 0)
 		{
-			graphicsInterface->setColor(outlineColor);
-			graphicsInterface->drawRect(x1, y1, x2, y2, true);
+			GuiGraphicsInterface::setColor(outlineColor);
+			GuiGraphicsInterface::drawRect(x1, y1, x2, y2, true);
 		}
 	}
 
@@ -241,9 +239,9 @@ namespace glib
 		update();
 	}
 
-	void GuiList::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter)
+	void GuiList::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs)
 	{
-		GuiInstance::loadDataFromXML(attribs, inter);
+		GuiInstance::loadDataFromXML(attribs);
 		std::vector<std::string> possibleNames = { "spacing", "isvertical", "backgroundcolor", "outlinecolor"};
 
 		for(int i=0; i<possibleNames.size(); i++)
@@ -280,10 +278,10 @@ namespace glib
 		GuiManager::registerLoadFunction("GuiList", GuiList::loadFunction);
 	}
 
-	GuiInstance* GuiList::loadFunction(std::unordered_map<std::string, std::string>& attributes, GuiGraphicsInterface* inter)
+	GuiInstance* GuiList::loadFunction(std::unordered_map<std::string, std::string>& attributes)
 	{
 		GuiList* ins = new GuiList(0,0);
-		ins->loadDataFromXML(attributes, inter);
+		ins->loadDataFromXML(attributes);
 		
 		return ins;
 	}

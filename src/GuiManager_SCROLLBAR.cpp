@@ -299,14 +299,12 @@ namespace glib
 
 	void GuiScrollBar::render()
 	{
-		GuiGraphicsInterface* graphicsInterface = this->getManager()->getGraphicsInterface();
-
 		//draw the background bar
-		graphicsInterface->setColor(backgroundColor);
-		graphicsInterface->drawRect(x+startX, y+startY, x+endX, y+endY, false);
+		GuiGraphicsInterface::setColor(backgroundColor);
+		GuiGraphicsInterface::drawRect(x+startX, y+startY, x+endX, y+endY, false);
 
-		graphicsInterface->setColor(outlineColor);
-		graphicsInterface->drawRect(x+startX, y+startY, x+endX, y+endY, true);
+		GuiGraphicsInterface::setColor(outlineColor);
+		GuiGraphicsInterface::drawRect(x+startX, y+startY, x+endX, y+endY, true);
 		
 	}
 

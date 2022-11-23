@@ -70,6 +70,11 @@ namespace glib
 		mainContainer = GuiList(0, 0, false);
 		mainContainer.setElementSpacing(12);
 
+		//load sprites for later use
+		leftButSprite = GuiSprite("./Resources/DefaultArrowLeft.png");
+		rightButSprite = GuiSprite("./Resources/DefaultArrowRight.png");
+		calendarButSprite = GuiSprite("./Resources/CogWheel.png");
+
 		dateStringBox = GuiTextBox(0, 0, width, height);
 		dateStringBox.getTextBlockElement()->setDefaultText("mm/dd/yyyy");
 		dateStringBox.getTextBlockElement()->setText(dateString);
@@ -77,6 +82,11 @@ namespace glib
 
 		calendarButton = GuiRectangleButton(0, 0, 16, 16);
 		calendarButton.setBackgroundColor(backgroundColor);
+		calendarButton.setOutlineColor(Color{0,0,0,0});
+		calendarButton.setFocusOutlineColor(Color{0,0,0,0});
+		
+		calendarButton.addChild(&calendarButSprite);
+
 		calendarButton.setOnClickReleaseFunction( [this](glib::GuiInstance* ins) ->void{
 			this->toggleCalendar();
 		});
@@ -94,11 +104,19 @@ namespace glib
 		topHorizontalBar.setElementSpacing(12);
 
 		gridLeftBut = GuiRectangleButton(0, 0, 16, 16);
+		gridLeftBut.setOutlineColor(Color{0,0,0,0});
+		gridLeftBut.setFocusOutlineColor(Color{0,0,0,0});
+		gridLeftBut.addChild(&leftButSprite);
 		gridLeftBut.setOnClickReleaseFunction([this](glib::GuiInstance* ins) ->void{
 			this->shiftLeftMonth();
 		});
+
 		gridCenterText = GuiTextBlock(0, 0, gridWidth-48, height);
+
 		gridRightBut = GuiRectangleButton(0, 0, 16, 16);
+		gridRightBut.setOutlineColor(Color{0,0,0,0});
+		gridRightBut.setFocusOutlineColor(Color{0,0,0,0});
+		gridRightBut.addChild(&rightButSprite);
 		gridRightBut.setOnClickReleaseFunction([this](glib::GuiInstance* ins) ->void{
 			this->shiftRightMonth();
 		});
@@ -154,6 +172,7 @@ namespace glib
 
 		mainContainer.setVisible(true);
 		calendarStack.setVisible(false);
+		calendarStack.setActive(false);
 
 		addChild(&mainContainer);
 
@@ -444,6 +463,7 @@ namespace glib
 	{
 		visibleCalendar = !visibleCalendar;
 		calendarStack.setVisible( visibleCalendar );
+		calendarStack.setActive( visibleCalendar );
 
 		if(visibleCalendar)
 			setCalendarValues();
@@ -463,12 +483,12 @@ namespace glib
 	{
 		//Do nothing as the grouping of all of the children's boxes is handled by the instance itself
 		//Reset the bounds though.
-		boundingBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, 0, 0);
+		boundingBox = GuiInstance::getInvalidBox();
 	}
 	
-	void GuiDatePicker::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter)
+	void GuiDatePicker::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs)
 	{
-		GuiInstance::loadDataFromXML(attribs, inter);
+		GuiInstance::loadDataFromXML(attribs);
 		std::vector<std::string> possibleNames = { "width", "height", "backgroundcolor", "gridheadercolor", "calendarchild" };
 
 		for(int i=0; i<possibleNames.size(); i++)
@@ -494,7 +514,7 @@ namespace glib
 				}
 				else if(possibleNames[i] == "calendarchild")
 				{
-					this->calendarIsChild = it->second == "true";
+					this->calendarIsChild = StringTools::equalsIgnoreCase<char>(it->second, "true");
 				}
 			}
 		}
@@ -504,10 +524,10 @@ namespace glib
 		init(baseX, baseY, width, height, calendarIsChild);
 	}
 
-	GuiInstance* GuiDatePicker::loadFunction(std::unordered_map<std::string, std::string>& attribs, GuiGraphicsInterface* inter)
+	GuiInstance* GuiDatePicker::loadFunction(std::unordered_map<std::string, std::string>& attribs)
 	{
 		GuiDatePicker* ins = new GuiDatePicker();
-		ins->loadDataFromXML(attribs, inter);
+		ins->loadDataFromXML(attribs);
 
 		return ins;
 	}

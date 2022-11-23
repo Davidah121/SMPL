@@ -1448,13 +1448,12 @@ namespace glib
 		while (!getShouldEnd())
 		{
 			time_t t1 = System::getCurrentTimeMicro();
-			
+
 			threadUpdate();
 			if(getShouldEnd())
 				break;
 
 			threadGuiUpdate();
-
 			if(getRepaint())
 				threadRepaint();
 
