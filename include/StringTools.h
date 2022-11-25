@@ -412,23 +412,29 @@ namespace glib
 		 * @return char* 
 		 */
 		template<class T>
-		static char* toHexString(T value)
+		static std::string toHexString(T value)
 		{
 			int size = sizeof(T) * 2;
 
-			char* hexString = new char[size+1];
+			char* hexString = new char[size+1+2];
 			int maxVal = 4*sizeof(T) - 4;
+
+			hexString[0] = '0';
+			hexString[1] = 'x';
 
 			unsigned long long convertedValue = (unsigned long long)value;
 			
 			for(int i=0; i<size; i++)
 			{
-				hexString[size-i-1] = base10ToBase16((convertedValue >> (i*4)) & 0xF);
+				hexString[2 + size-i-1] = base10ToBase16((convertedValue >> (i*4)) & 0xF);
 			}
 
 			hexString[size] = '\0';
 
-			return hexString;
+			std::string retString = hexString;
+			delete[] hexString;
+			
+			return retString;
 		}
 
 		/**

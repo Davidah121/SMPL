@@ -28,15 +28,15 @@ namespace glib
 
 	Network::~Network()
 	{
-		disconnect();
-		setRunning(false);
-		dispose();
-
 		startNetwork(); //Must start the network if it has not ever been started.
-		
+		setRunning(false);
+
 		if(networkThread.joinable())
 			networkThread.join();
-
+		
+		disconnect();
+		dispose();
+		
 		shouldStart = false;
 	}
 
