@@ -2,8 +2,6 @@
 #include <vector>
 #include <string>
 
-
-
 namespace glib
 {
 	class Class
@@ -55,7 +53,7 @@ namespace glib
 	public:
 		struct InvalidClassName : public std::exception
 		{
-			const char* what() noexcept { return "The class name can not be used."; }
+			const char* what() const noexcept { return "The class name can not be used."; }
 		};
 
 		/**
@@ -64,6 +62,7 @@ namespace glib
 		 * 		The class pointer to add.
 		 * @return int
 		 * 		Returns a positive value if successful.
+		 * 		The value returned is the id of the class.
 		 */
 		static int addClass(const Class* k);
 
@@ -76,9 +75,9 @@ namespace glib
 
 		/**
 		 * @brief Returns the total number of classes register into the master class list.
-		 * @return int
+		 * @return size_t
 		 */
-		static int getSize();
+		static size_t getSize();
 
 		/**
 		 * @brief Returns the class with the specified index in the master class list.
@@ -87,7 +86,7 @@ namespace glib
 		 * @return Class*
 		 * 		returns a valid class pointer if index was valid. Otherwise, it returns a nullptr.
 		 */
-		static const Class* findClass(int i);
+		static const Class* findClass(size_t i);
 
 		/**
 		 * @brief Returns the class with the specified name in the master class list.

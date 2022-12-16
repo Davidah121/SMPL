@@ -245,16 +245,16 @@ namespace glib
 		}
 
 		//split into blocks
-		int blocks = MathExt::ceil((double)height/24);
+		int blocks = (int)MathExt::ceil((double)height/24);
 		unsigned int adlerValue = Compression::adler32(scanLines.data(), scanLines.size());
 
 		BinarySet compressedData;
 		Compression::compressDeflate(&compressedData, scanLines.data(), scanLines.size(), blocks, 7, strongCompression);
 		
 		std::vector<unsigned char> binarySetBytes = compressedData.getByteRef();
-		int byteOffset = 0;
-		int maxIDATSize = 0x2000; //Force all IDAT headers to be at most 8192 bytes so libpng doesn't freak out.
-		int totalIDAT = ceil((double)binarySetBytes.size() / maxIDATSize);
+		size_t byteOffset = 0;
+		size_t maxIDATSize = 0x2000; //Force all IDAT headers to be at most 8192 bytes so libpng doesn't freak out.
+		// int totalIDAT = ceil((double)binarySetBytes.size() / maxIDATSize); //Not used
 		
 		//3078
 		while(byteOffset < binarySetBytes.size())
@@ -264,7 +264,7 @@ namespace glib
 			//length
 			int fullSize = 0;
 			bool lastBlock = false;
-			int readSize = min(binarySetBytes.size() - byteOffset, maxIDATSize);
+			size_t readSize = min(binarySetBytes.size() - byteOffset, maxIDATSize);
 			
 			if(readSize < maxIDATSize)
 			{
@@ -298,7 +298,7 @@ namespace glib
 				IDATHeader += 0b00000001;
 			}
 
-			for(int j = 0; j < readSize; j++)
+			for(size_t j = 0; j < readSize; j++)
 			{
 				IDATHeader += (char)binarySetBytes[byteOffset];
 				byteOffset++;
@@ -335,7 +335,7 @@ namespace glib
 		//read first 2 bytes
 		Image* tImg = nullptr;
 		unsigned char CMF = imgData->compressedData[0];
-		unsigned char FLG = imgData->compressedData[1]; //not necessary
+		// unsigned char FLG = imgData->compressedData[1]; //not necessary
 		int compressionMethod = CMF & 0b00001111;
 		if(compressionMethod!=8)
 		{
@@ -353,8 +353,8 @@ namespace glib
 		int x = 0;
 		int y = 0;
 
-		int index = 0;
-		int rawIndex = 0;
+		size_t index = 0;
+		size_t rawIndex = 0;
 
 		int moveBackVal = 1;
 		if(bitDepth>8)
@@ -362,7 +362,7 @@ namespace glib
 			moveBackVal = bitDepth/8;
 		}
 
-		int scanLineBytes = MathExt::ceil(imgData->width * (bitDepth/8.0));
+		int scanLineBytes = (int)MathExt::ceil(imgData->width * (bitDepth/8.0));
 
 		switch(colorType)
 		{
@@ -388,7 +388,7 @@ namespace glib
 		std::vector<unsigned char> preScanLine = std::vector<unsigned char>(scanLineBytes);
 		std::vector<unsigned char> scanLine = std::vector<unsigned char>(scanLineBytes);
 		
-		int imageSize = imgData->width * imgData->height;
+		// int imageSize = imgData->width * imgData->height;
 		
 		//For interlacing, the amount of values in the scanline is the only thing that changes. It doubles on every even pass
 		//The scanlines that are affected are doubled on every odd pass. There can be padding on the scanlines to make it them an even amount.
@@ -704,7 +704,7 @@ namespace glib
 					//Increase Color Amount
 					double ICA = 255.0 / ((2<<(bitDepth-1)) - 1);
 
-					for(int i = 0; i<pixelBits.size(); i+=bitDepth)
+					for(size_t i = 0; i<pixelBits.size(); i+=bitDepth)
 					{
 						Color c;
 						c.red = (unsigned char)(ICA * pixelBits.getBits(i, i + bitDepth, true));
@@ -727,7 +727,7 @@ namespace glib
 				}
 				else if(bitDepth==8)
 				{
-					for(int i = 0; i<scanLine.size(); i++)
+					for(size_t i = 0; i<scanLine.size(); i++)
 					{
 						Color c;
 						c.red = scanLine[i];
@@ -755,7 +755,7 @@ namespace glib
 					//Possible bit depth value are 8, 16
 				if(bitDepth==8)
 				{
-					for(int i = 0; i<scanLine.size(); i+=3)
+					for(size_t i = 0; i<scanLine.size(); i+=3)
 					{
 						Color c;
 						c.red = scanLine[i];
@@ -789,7 +789,7 @@ namespace glib
 					pixelBits.setValues(scanLine.data(), scanLineBytes);
 					pixelBits.setBitOrder(BinarySet::RMSB);
 					
-					for(int i = 0; i<pixelBits.size(); i+=bitDepth)
+					for(size_t i = 0; i<pixelBits.size(); i+=bitDepth)
 					{
 						paletteIndex = pixelBits.getBits(i, i+bitDepth, true);
 
@@ -808,7 +808,7 @@ namespace glib
 				}
 				else if(bitDepth==8)
 				{
-					for(int i = 0; i<scanLine.size(); i++)
+					for(size_t i = 0; i<scanLine.size(); i++)
 					{
 						paletteIndex = scanLine[i];
 
@@ -833,7 +833,7 @@ namespace glib
 					//Possible bit depth value are 8, 16
 				if(bitDepth==8)
 				{
-					for(int i = 0; i<scanLine.size(); i+=2)
+					for(size_t i = 0; i<scanLine.size(); i+=2)
 					{
 						Color c;
 						c.red = scanLine[i];
@@ -861,7 +861,7 @@ namespace glib
 					//Possible bit depth value are 8, 16
 				if(bitDepth==8)
 				{
-					for(int i = 0; i<scanLine.size(); i+=4)
+					for(size_t i = 0; i<scanLine.size(); i+=4)
 					{
 						Color c;
 						c.red = scanLine[i];
@@ -925,17 +925,17 @@ namespace glib
 
 		int bitDepth = 0;
 		int colorType = 0;
-		int filterType = 0;
+		// int filterType = 0;
 		bool interlace = false;
 		Color transparentColor = {0, 0, 0, 255};
 
-		int x=0;
-		int y=0;
+		// int x=0;
+		// int y=0;
 		unsigned int globalWidth = 0;
 		unsigned int globalHeight = 0;
 
 		int currImg = 0;
-		int actualCount = 0;
+		unsigned int actualCount = 0;
 
 		std::vector<fctlData> imgData = std::vector<fctlData>();
 
@@ -944,7 +944,7 @@ namespace glib
 		{
 			//read 4 bytes for the size of a block
 			unsigned int blockSize = 0;
-			blockSize = (int)(fileData[location]<<24) + (int)(fileData[location+1]<<16) + (int)(fileData[location+2]<<8) + (int)fileData[location+3];
+			blockSize = (unsigned int)(fileData[location]<<24) + (unsigned int)(fileData[location+1]<<16) + (unsigned int)(fileData[location+2]<<8) + (unsigned int)fileData[location+3];
 			location+=4;
 
 			//read 4 bytes for the id of a block
@@ -988,7 +988,7 @@ namespace glib
 				if(blockSize%3 == 0)
 				{
 					//std::vector<Color> palette = std::vector<Color>();
-					for(int i=0; i<blockSize; i+=3)
+					for(unsigned int i=0; i<blockSize; i+=3)
 					{
 						Color c;
 						c.red = fileData[location+i];
@@ -1021,7 +1021,7 @@ namespace glib
 					extraData->at(0) = (numPlays == 0) ? 1 : 0;
 				}
 
-				for(int i=0; i<numFrame-1; i++)
+				for(unsigned int i=0; i<numFrame-1; i++)
 				{
 					imgData.push_back( fctlData() );
 				}
@@ -1067,7 +1067,7 @@ namespace glib
 			else if(blockID=="IDAT")
 			{
 				//Concatinate the IDAT data into one block.
-				for(int i=0; i<blockSize; i++)
+				for(unsigned int i=0; i<blockSize; i++)
 				{
 					imgData[0].compressedData.push_back(fileData[location+i]);
 				}
@@ -1076,9 +1076,9 @@ namespace glib
 			}
 			else if(blockID=="fdAT")
 			{
-				unsigned int imgLoc = (unsigned int)(fileData[location]<<24) + (unsigned int)(fileData[location+1]<<16) + (unsigned int)(fileData[location+2]<<8) + (unsigned int)(fileData[location+3]);
+				// unsigned int imgLoc = (unsigned int)(fileData[location]<<24) + (unsigned int)(fileData[location+1]<<16) + (unsigned int)(fileData[location+2]<<8) + (unsigned int)(fileData[location+3]);
 
-				for(int i=0; i<blockSize-4; i++)
+				for(unsigned int i=0; i<blockSize-4; i++)
 				{
 					imgData[actualCount-1].compressedData.push_back(fileData[location+4+i]);
 				}
@@ -1116,7 +1116,7 @@ namespace glib
 					}
 					else
 					{
-						for(int i=0; i<blockSize; i++)
+						for(unsigned int i=0; i<blockSize; i++)
 						{
 							p.getColorRef(i)->alpha = fileData[location+i];
 						}

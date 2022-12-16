@@ -26,17 +26,17 @@ namespace glib
 		
 		struct FileOpenErrorException : public std::exception
 		{
-			const char* what() const throw() { return "Error opening file"; }
+			const char* what() const noexcept { return "Error opening file"; }
 		};
 
 		struct FileReadException : public std::exception
 		{
-			const char* what() const throw() { return "File not opened for reading or another error occured while reading."; }
+			const char* what() const noexcept { return "File not opened for reading or another error occured while reading."; }
 		};
 
 		struct FileWriteException : public std::exception
 		{
-			const char* what() const throw() { return "File not opened for writing or another error occured while writing."; }
+			const char* what() const noexcept { return "File not opened for writing or another error occured while writing."; }
 		};
 
 		/**

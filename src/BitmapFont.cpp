@@ -39,7 +39,7 @@ namespace glib
 	{
 	}
 
-	Image* BitmapFont::getImage(int index)
+	Image* BitmapFont::getImage(size_t index)
 	{
 		if(index>=0 && index<imgPage.size())
 			return img.getImage( imgPage[index] );
@@ -58,7 +58,7 @@ namespace glib
 		return &img;
 	}
 
-	std::vector<int> BitmapFont::getImagePages()
+	std::vector<size_t> BitmapFont::getImagePages()
 	{
 		return imgPage;
 	}
@@ -101,7 +101,8 @@ namespace glib
 		
 		if (fileInfo.size()>0)
 		{
-			int fontSize = StringTools::toInt(fileInfo[2]);
+			// int fontSize = StringTools::toInt(fileInfo[2]); //Not used
+
 			std::string imageFile = dir + "/" + fileInfo[3];
 			int amountOfImages = 0;
 			Image** tempImgPointer = Image::loadImage(imageFile, &amountOfImages);
@@ -120,7 +121,7 @@ namespace glib
 			delete[] tempImgPointer;
 			
 
-			int startIndex = 5;
+			size_t startIndex = 5;
 			while (startIndex < fileInfo.size())
 			{
 				if (fileInfo[startIndex] == "endl;")
@@ -218,44 +219,38 @@ namespace glib
 			{
 				if(n->title == "info")
 				{
-					for(XmlAttribute attrib : n->attributes)
+					//Can simplify
+					auto temp = n->getAttribute("size");
+					if(!temp.first.empty())
 					{
-						if(attrib.name == "size")
-						{
-							fontSize = std::stoi(attrib.value);
-							originalFontSize = fontSize;
-						}
+						fontSize = std::stoi(temp.second);
+						originalFontSize = fontSize;
 					}
 				}
 				else if(n->title == "common")
 				{
-					for(XmlAttribute attrib : n->attributes)
-					{
-						if(attrib.name == "lineHeight")
-						{
-							verticalAdv = std::stoi(attrib.value);
-						}
-					}
+					auto temp = n->getAttribute("lineHeight");
+					if(!temp.first.empty())
+						verticalAdv = std::stoi(temp.second);
+					
 				}
 				else if(n->title == "pages")
 				{
 					for(XmlNode* n2 : n->childNodes)
 					{
-						for(XmlAttribute attrib : n2->attributes)
+						auto temp = n2->getAttribute("file");
+						if(!temp.first.empty())
 						{
-							if(attrib.name == "file")
-							{
-								int imgCount = 0;
-								//Is local image so full path is needed
-								std::string actualFile = path + '/' + attrib.value;
+							int imgCount = 0;
+							//Is local image so full path is needed
+							std::string actualFile = path + '/' + temp.second;
 
-								Image** imgArr = Image::loadImage(actualFile, &imgCount);
-								if(imgCount>0)
-								{
-									img.addImage( imgArr[0] );
-								}
-								delete[] imgArr;
+							Image** imgArr = Image::loadImage(actualFile, &imgCount);
+							if(imgCount>0)
+							{
+								img.addImage( imgArr[0] );
 							}
+							delete[] imgArr;
 						}
 					}
 				}
@@ -266,43 +261,43 @@ namespace glib
 						FontCharInfo fci;
 						int page = 0;
 
-						for(XmlAttribute attrib : n2->attributes)
+						for(std::pair<std::string, std::string> attrib : n2->attributes)
 						{
-							if(attrib.name == "id")
+							if(attrib.first == "id")
 							{
-								fci.unicodeValue = StringTools::toInt(attrib.value);
+								fci.unicodeValue = StringTools::toInt(attrib.second);
 							}
-							else if(attrib.name == "x")
+							else if(attrib.first == "x")
 							{
-								fci.x = StringTools::toInt(attrib.value);
+								fci.x = StringTools::toInt(attrib.second);
 							}
-							else if(attrib.name == "y")
+							else if(attrib.first == "y")
 							{
-								fci.y = StringTools::toInt(attrib.value);
+								fci.y = StringTools::toInt(attrib.second);
 							}
-							else if(attrib.name == "width")
+							else if(attrib.first == "width")
 							{
-								fci.width = StringTools::toInt(attrib.value);
+								fci.width = StringTools::toInt(attrib.second);
 							}
-							else if(attrib.name == "height")
+							else if(attrib.first == "height")
 							{
-								fci.height = StringTools::toInt(attrib.value);
+								fci.height = StringTools::toInt(attrib.second);
 							}
-							else if(attrib.name == "xadvance")
+							else if(attrib.first == "xadvance")
 							{
-								fci.horizAdv = StringTools::toInt(attrib.value);
+								fci.horizAdv = StringTools::toInt(attrib.second);
 							}
-							else if(attrib.name == "page")
+							else if(attrib.first == "page")
 							{
-								page = StringTools::toInt(attrib.value);
+								page = StringTools::toInt(attrib.second);
 							}
-							else if(attrib.name == "xoffset")
+							else if(attrib.first == "xoffset")
 							{
-								fci.xOffset = StringTools::toInt(attrib.value);
+								fci.xOffset = StringTools::toInt(attrib.second);
 							}
-							else if(attrib.name == "yoffset")
+							else if(attrib.first == "yoffset")
 							{
-								fci.yOffset = StringTools::toInt(attrib.value);
+								fci.yOffset = StringTools::toInt(attrib.second);
 							}
 						}
 

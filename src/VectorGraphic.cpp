@@ -37,7 +37,7 @@ namespace glib
 		this->width = c.width;
 		this->height = c.height;
 
-		for(int i=0; i<c.shapes.size(); i++)
+		for(size_t i=0; i<c.shapes.size(); i++)
 		{
 			if(c.shapes[i]->getClass().getClassName() == VectorRectangle::globalClass.getClassName())
 			{
@@ -96,7 +96,7 @@ namespace glib
 
 	void VectorGraphic::clearShapes()
 	{
-		for(int i=0; i<shapes.size(); i++)
+		for(size_t i=0; i<shapes.size(); i++)
 		{
 			delete shapes[i];
 		}
@@ -120,7 +120,7 @@ namespace glib
 				globalHeight = buffer->getHeight();
 			}
 			
-			for (int i = 0; i < shapes.size(); i++)
+			for (size_t i = 0; i < shapes.size(); i++)
 			{
 				temp = shapes[i]->getTransform();
 				finalTransform = globalTransform * temp;
@@ -170,7 +170,6 @@ namespace glib
 
 	bool VectorGraphic::save(File file)
 	{
-
 		return false;
 	}
 
@@ -208,31 +207,31 @@ namespace glib
 		{
 			XmlNode* parentNode = svgParentNode;
 			
-			for(XmlAttribute attrib : parentNode->attributes)
+			for(std::pair<std::string, std::string> attrib : parentNode->attributes)
 			{
-				if(StringTools::equalsIgnoreCase<char>("width", attrib.name))
+				if(StringTools::equalsIgnoreCase<char>("width", attrib.first))
 				{
 					bool percent = false;
-					double value = toNumber(StringTools::toCString(attrib.value), &percent);
+					double value = toNumber(StringTools::toCString(attrib.second), &percent);
 					if(percent)
 						this->width = (int)MathExt::ceil(this->width * value);
 					else
 						this->width = (int)MathExt::ceil(value);
 					
 				}
-				else if(StringTools::equalsIgnoreCase<char>("height", attrib.name))
+				else if(StringTools::equalsIgnoreCase<char>("height", attrib.first))
 				{
 					bool percent = false;
-					double value = toNumber(StringTools::toCString(attrib.value), &percent);
+					double value = toNumber(StringTools::toCString(attrib.second), &percent);
 					if(percent)
 						this->height = (int)MathExt::ceil(this->height * value);
 					else
 						this->height = (int)MathExt::ceil(value);
 				}
-				else if(StringTools::equalsIgnoreCase<char>("viewbox", attrib.name))
+				else if(StringTools::equalsIgnoreCase<char>("viewbox", attrib.first))
 				{
 					//for now, if width and height have not been defined, set them here
-					std::vector<std::string> split = StringTools::splitStringMultipleDeliminators(attrib.value, " ,");
+					std::vector<std::string> split = StringTools::splitStringMultipleDeliminators(attrib.second, " ,");
 					bool percent = false;
 					int minX, minY, tempWidth, tempHeight;
 
@@ -376,23 +375,23 @@ namespace glib
 			shape->setTransform( groupPointer->getTransform() );
 		}
 		
-		for(XmlAttribute& attrib : node->attributes)
+		for(std::pair<std::string, std::string> attrib : node->attributes)
 		{
-			if(StringTools::equalsIgnoreCase<char>(attrib.name, "fill"))
+			if(StringTools::equalsIgnoreCase<char>(attrib.first, "fill"))
 			{
-				Color c = toColor(StringTools::toCString(attrib.value));
+				Color c = toColor(StringTools::toCString(attrib.second));
 				shape->setFillColor( c );
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "fill-opacity"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "fill-opacity"))
 			{
 				Color c = shape->getFillColor();
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				c.alpha = (unsigned char)(255*value);
 				shape->setFillColor( c );
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "fill-rule"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "fill-rule"))
 			{
-				if(StringTools::equalsIgnoreCase<char>(attrib.value, "nonzero"))
+				if(StringTools::equalsIgnoreCase<char>(attrib.second, "nonzero"))
 				{
 					shape->setFillMethod(VectorShape::NON_ZERO_RULE);
 				}
@@ -401,72 +400,72 @@ namespace glib
 					shape->setFillMethod(VectorShape::EVEN_ODD_RULE);
 				}
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "stroke"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "stroke"))
 			{
-				Color c = toColor(StringTools::toCString(attrib.value));
+				Color c = toColor(StringTools::toCString(attrib.second));
 				shape->setStrokeColor( c );
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "stroke-opacity"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "stroke-opacity"))
 			{
 				Color c = shape->getStrokeColor();
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				c.alpha = (unsigned char)(255*value);
 				shape->setStrokeColor( c );
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "stroke-width"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "stroke-width"))
 			{
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				if(percentValue)
 					shape->setStrokeWidth( width* value );
 				else
 					shape->setStrokeWidth( value );
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "stroke-linecap"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "stroke-linecap"))
 			{
-				if(attrib.value=="butt")
+				if(attrib.second=="butt")
 				{
 					shape->setLineCap(VectorShape::LINE_CAP_BUTT);
 				}
-				else if(attrib.value=="square")
+				else if(attrib.second=="square")
 				{
 					shape->setLineCap(VectorShape::LINE_CAP_SQUARE);
 				}
-				else if(attrib.value=="round")
+				else if(attrib.second=="round")
 				{
 					shape->setLineCap(VectorShape::LINE_CAP_ROUND);
 				}
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "stroke-linejoin"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "stroke-linejoin"))
 			{
-				if(attrib.value=="arcs")
+				if(attrib.second=="arcs")
 				{
 					//shape->setLineCap(NULL);
 				}
-				else if(attrib.value=="bevel")
+				else if(attrib.second=="bevel")
 				{
 					shape->setLineJoin(VectorShape::LINE_JOIN_BEVEL);
 				}
-				else if(attrib.value=="miter")
+				else if(attrib.second=="miter")
 				{
 					shape->setLineJoin(VectorShape::LINE_JOIN_MITER);
 				}
-				else if(attrib.value=="miter-clip")
+				else if(attrib.second=="miter-clip")
 				{
 					//shape->setLineCap(NULL);
 				}
-				else if(attrib.value=="round")
+				else if(attrib.second=="round")
 				{
 					shape->setLineJoin(VectorShape::LINE_JOIN_ROUND);
 				}
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "stroke-dasharray"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "stroke-dasharray"))
 			{
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "transform"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "transform"))
 			{
 				Mat3f thisTransform = shape->getTransform();
 
-				std::vector<std::string> splitString = StringTools::splitStringMultipleDeliminators(attrib.value, "()");
+				std::vector<std::string> splitString = StringTools::splitStringMultipleDeliminators(attrib.second, "()");
 				
 				for(int index=0; index<splitString.size()-1; index+=2)
 				{
@@ -577,51 +576,51 @@ namespace glib
 			return;
 		}
 
-		for(XmlAttribute& attrib : node->attributes)
+		for(std::pair<std::string, std::string> attrib : node->attributes)
 		{
-			if(StringTools::equalsIgnoreCase<char>(attrib.name, "x"))
+			if(StringTools::equalsIgnoreCase<char>(attrib.first, "x"))
 			{
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				if(percentValue)
 					shape->setX( width*value );
 				else
 					shape->setX( value );
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "y"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "y"))
 			{
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				if(percentValue)
 					shape->setY( height*value );
 				else
 					shape->setY( value );
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "rx"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "rx"))
 			{
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				if(percentValue)
 					shape->setRX( width*value );
 				else
 					shape->setRX( value );
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "ry"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "ry"))
 			{
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				if(percentValue)
 					shape->setRY( height*value );
 				else
 					shape->setRY( value );
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "width"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "width"))
 			{
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				if(percentValue)
 					shape->setWidth( width*value );
 				else
 					shape->setWidth( value );
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "height"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "height"))
 			{
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				if(percentValue)
 					shape->setHeight( height*value );
 				else
@@ -651,27 +650,27 @@ namespace glib
 			return;
 		}
 
-		for(XmlAttribute attrib : node->attributes)
+		for(std::pair<std::string, std::string> attrib : node->attributes)
 		{
-			if(StringTools::equalsIgnoreCase<char>(attrib.name, "cx"))
+			if(StringTools::equalsIgnoreCase<char>(attrib.first, "cx"))
 			{
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				if(percentValue)
 					shape->setX( width*value );
 				else
 					shape->setX( value );
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "cy"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "cy"))
 			{
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				if(percentValue)
 					shape->setY( height*value );
 				else
 					shape->setY( value );
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "r"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "r"))
 			{
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				if(percentValue)
 					shape->setRadius( width*value );
 				else
@@ -701,35 +700,35 @@ namespace glib
 			return;
 		}
 
-		for(XmlAttribute attrib : node->attributes)
+		for(std::pair<std::string, std::string> attrib : node->attributes)
 		{
-			if(StringTools::equalsIgnoreCase<char>(attrib.name, "cx"))
+			if(StringTools::equalsIgnoreCase<char>(attrib.first, "cx"))
 			{
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				if(percentValue)
 					shape->setX( width*value );
 				else
 					shape->setX( value );
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "cy"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "cy"))
 			{
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				if(percentValue)
 					shape->setY( height*value );
 				else
 					shape->setY( value );
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "rx"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "rx"))
 			{
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				if(percentValue)
 					shape->setXRadius( width*value );
 				else
 					shape->setXRadius( value );
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "ry"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "ry"))
 			{
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				if(percentValue)
 					shape->setYRadius( height*value );
 				else
@@ -759,35 +758,35 @@ namespace glib
 			return;
 		}
 
-		for(XmlAttribute attrib : node->attributes)
+		for(std::pair<std::string, std::string> attrib : node->attributes)
 		{
-			if(StringTools::equalsIgnoreCase<char>(attrib.name, "x1"))
+			if(StringTools::equalsIgnoreCase<char>(attrib.first, "x1"))
 			{
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				if(percentValue)
 					shape->setX1( width*value );
 				else
 					shape->setX1( value );
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "y1"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "y1"))
 			{
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				if(percentValue)
 					shape->setY1( height*value );
 				else
 					shape->setY1( value );
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "x2"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "x2"))
 			{
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				if(percentValue)
 					shape->setX2( width*value );
 				else
 					shape->setX2( value );
 			}
-			else if(StringTools::equalsIgnoreCase<char>(attrib.name, "y2"))
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "y2"))
 			{
-				value = toNumber(StringTools::toCString(attrib.value), &percentValue);
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
 				if(percentValue)
 					shape->setY2( height*value );
 				else
@@ -814,17 +813,15 @@ namespace glib
 			return;
 		}
 
-		for(XmlAttribute attrib : node->attributes)
+		auto tempAttrib = node->getAttribute("points");
+		if(!tempAttrib.first.empty())
 		{
-			if(StringTools::equalsIgnoreCase<char>(attrib.name, "points"))
+			std::vector<std::string> splits = StringTools::splitString(tempAttrib.second, ' ');
+			for(std::string point : splits)
 			{
-				std::vector<std::string> splits = StringTools::splitString(attrib.value, ' ');
-				for(std::string point : splits)
-				{
-					std::vector<std::string> pointSplit = StringTools::splitString(point, ',');
-					if(pointSplit.size()==2)
-						shape->addPoint( std::stod(pointSplit[0]), std::stod(pointSplit[1]) );
-				}
+				std::vector<std::string> pointSplit = StringTools::splitString(point, ',');
+				if(pointSplit.size()==2)
+					shape->addPoint( std::stod(pointSplit[0]), std::stod(pointSplit[1]) );
 			}
 		}
 	}
@@ -847,17 +844,15 @@ namespace glib
 			return;
 		}
 
-		for(XmlAttribute attrib : node->attributes)
+		auto tempAttrib = node->getAttribute("points");
+		if(!tempAttrib.first.empty())
 		{
-			if(StringTools::equalsIgnoreCase<char>(attrib.name, "points"))
+			std::vector<std::string> splits = StringTools::splitString(tempAttrib.second, ' ');
+			for(std::string point : splits)
 			{
-				std::vector<std::string> splits = StringTools::splitString(attrib.value, ' ');
-				for(std::string point : splits)
-				{
-					std::vector<std::string> pointSplit = StringTools::splitString(point, ',');
-					if(pointSplit.size()==2)
-						shape->addPoint( std::stod(pointSplit[0]), std::stod(pointSplit[1]) );
-				}
+				std::vector<std::string> pointSplit = StringTools::splitString(point, ',');
+				if(pointSplit.size()==2)
+					shape->addPoint( std::stod(pointSplit[0]), std::stod(pointSplit[1]) );
 			}
 		}
 	}
@@ -884,212 +879,210 @@ namespace glib
 			return;
 		}
 
-		for(XmlAttribute& attrib : node->attributes)
+		auto attrib = node->getAttribute("d");
+		if(!attrib.first.empty())
 		{
-			if(StringTools::equalsIgnoreCase<char>(attrib.name, "d"))
+			//Method: Separate Letters from values
+			//separate letters first
+			std::vector<char> instructions = std::vector<char>();
+			std::string numbers = "";
+			int argNum = 0;
+			int parsedArgs = 0;
+			bool rel = false;
+			for(char c : attrib.second)
 			{
-				//Method: Separate Letters from values
-				//separate letters first
-				std::vector<char> instructions = std::vector<char>();
-				std::string numbers = "";
-				int argNum = 0;
-				int parsedArgs = 0;
-				bool rel = false;
-				for(char c : attrib.value)
+				if(c>=65 && c<=90 || c>=97 && c<=127)
 				{
-					if(c>=65 && c<=90 || c>=97 && c<=127)
-					{
-						instructions.push_back(c);
+					instructions.push_back(c);
 
-						if(c <= 90)
+					if(c <= 90)
+					{
+						rel = false;
+					}
+					else
+					{
+						rel = true;
+					}
+					
+					switch (std::tolower(c))
+					{
+					case 'm':
+						argNum = 2;
+						break;
+					case 'l':
+						argNum = 2;
+						break;
+					case 'h':
+						argNum = 1;
+						break;
+					case 'v':
+						argNum = 1;
+						break;
+					case 'z':
+						argNum = 0;
+						break;
+					case 'c':
+						argNum = 6;
+						break;
+					case 's':
+						argNum = 4;
+						break;
+					case 'q':
+						argNum = 4;
+						break;
+					case 't':
+						argNum = 2;
+						break;
+					case 'a':
+						argNum = 7;
+						break;
+					default:
+						argNum = -1;
+						break;
+					}
+					parsedArgs = 0;
+					numbers += ' ';
+				}
+				else if(c>=32)
+				{
+					if(parsedArgs>=argNum && c!=' ')
+					{
+						parsedArgs = 0;
+						if(instructions.back() == 'M' || instructions.back() == 'm')
 						{
-							rel = false;
+							if(rel)
+								instructions.push_back( 'l' );
+							else
+								instructions.push_back( 'L' );
+							argNum = 2;
 						}
 						else
-						{
-							rel = true;
-						}
-						
-						switch (std::tolower(c))
-						{
-						case 'm':
-							argNum = 2;
-							break;
-						case 'l':
-							argNum = 2;
-							break;
-						case 'h':
-							argNum = 1;
-							break;
-						case 'v':
-							argNum = 1;
-							break;
-						case 'z':
-							argNum = 0;
-							break;
-						case 'c':
-							argNum = 6;
-							break;
-						case 's':
-							argNum = 4;
-							break;
-						case 'q':
-							argNum = 4;
-							break;
-						case 't':
-							argNum = 2;
-							break;
-						case 'a':
-							argNum = 7;
-							break;
-						default:
-							argNum = -1;
-							break;
-						}
-						parsedArgs = 0;
-						numbers += ' ';
+							instructions.push_back( instructions.back() );
+						// if(rel)
+						// 	instructions.push_back( 'l' );
+						// else
+						// 	instructions.push_back( 'L' );
+						// argNum = 2;
 					}
-					else if(c>=32)
-					{
-						if(parsedArgs>=argNum && c!=' ')
-						{
-							parsedArgs = 0;
-							if(instructions.back() == 'M' || instructions.back() == 'm')
-							{
-								if(rel)
-									instructions.push_back( 'l' );
-								else
-									instructions.push_back( 'L' );
-								argNum = 2;
-							}
-							else
-								instructions.push_back( instructions.back() );
-							// if(rel)
-							// 	instructions.push_back( 'l' );
-							// else
-							// 	instructions.push_back( 'L' );
-							// argNum = 2;
-						}
 
-						if( (c==' ' || c==',' || c=='-') && numbers.back()!= ' ')
+					if( (c==' ' || c==',' || c=='-') && numbers.back()!= ' ')
+					{
+						if(c=='-')
 						{
-							if(c=='-')
+							if(numbers.back()>='0' && numbers.back()<='9')
 							{
-								if(numbers.back()>='0' && numbers.back()<='9')
-								{
-									numbers += ' ';
-									parsedArgs++;
-								}
-							}
-							else
-							{
+								numbers += ' ';
 								parsedArgs++;
 							}
 						}
-
-						numbers += c;
+						else
+						{
+							parsedArgs++;
+						}
 					}
-				}
 
-				std::vector<std::string> splitNumbers = StringTools::splitStringMultipleDeliminators(numbers, " ,");
-				
-				int numberIndex = 0;
-				for(char c : instructions)
-				{
-					switch (c)
-					{
-						case 'M':
-							//move to
-							shape->addMoveTo( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]) );
-							numberIndex += 2;
-							break;
-						case 'm':
-							//move to relative
-							shape->addMoveToRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]) );
-							numberIndex += 2;
-							break;
-						case 'L':
-							//Line to
-							shape->addLineTo( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]) );
-							numberIndex += 2;
-							break;
-						case 'l':
-							//Line to relative
-							shape->addLineToRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]) );
-							numberIndex += 2;
-							break;
-						case 'H':
-							//Horizontal to
-							shape->addHorizontalTo( std::stod(splitNumbers[numberIndex]) );
-							numberIndex += 1;
-							break;
-						case 'h':
-							//horizontal to relative
-							shape->addHorizontalToRel( std::stod(splitNumbers[numberIndex]) );
-							numberIndex += 1;
-							break;
-						case 'V':
-							//Vertical to
-							shape->addVerticalTo( std::stod(splitNumbers[numberIndex]) );
-							numberIndex += 1;
-							break;
-						case 'v':
-							//vertical to relative
-							shape->addVerticalToRel( std::stod(splitNumbers[numberIndex]) );
-							numberIndex += 1;
-							break;
-						case 'Z':
-							shape->addClosePath();
-							break;
-						case 'z':
-							shape->addClosePath();
-							break;
-						case 'Q':
-							shape->addQuadTo( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), std::stod(splitNumbers[numberIndex+3]));
-							numberIndex += 4;
-							break;
-						case 'q':
-							shape->addQuadToRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), std::stod(splitNumbers[numberIndex+3]));
-							numberIndex += 4;
-							break;
-						case 'T':
-							shape->addQuadToShort( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]));
-							numberIndex += 2;
-							break;
-						case 't':
-							shape->addQuadToShortRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]));
-							numberIndex += 2;
-							break;
-						case 'C':
-							shape->addCubicTo( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), std::stod(splitNumbers[numberIndex+3]), std::stod(splitNumbers[numberIndex+4]), std::stod(splitNumbers[numberIndex+5]));
-							numberIndex += 6;
-							break;
-						case 'c':
-							shape->addCubicToRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), std::stod(splitNumbers[numberIndex+3]), std::stod(splitNumbers[numberIndex+4]), std::stod(splitNumbers[numberIndex+5]));
-							numberIndex += 6;
-							break;
-						case 'S':
-							shape->addCubicToShort( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), std::stod(splitNumbers[numberIndex+3]));
-							numberIndex += 4;
-							break;
-						case 's':
-							shape->addCubicToShortRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), std::stod(splitNumbers[numberIndex+3]));
-							numberIndex += 4;
-							break;
-						case 'A':
-							shape->addArcTo( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), splitNumbers[numberIndex+3]=="1", splitNumbers[numberIndex+4]=="1", std::stod(splitNumbers[numberIndex+5]), std::stod(splitNumbers[numberIndex+6]));
-							numberIndex += 7;
-							break;
-						case 'a':
-							shape->addArcToRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), splitNumbers[numberIndex+3]=="1", splitNumbers[numberIndex+4]=="1", std::stod(splitNumbers[numberIndex+5]), std::stod(splitNumbers[numberIndex+6]));
-							numberIndex += 7;
-							break;
-						default:
-							break;
-					}
+					numbers += c;
 				}
-
 			}
+
+			std::vector<std::string> splitNumbers = StringTools::splitStringMultipleDeliminators(numbers, " ,");
+			
+			int numberIndex = 0;
+			for(char c : instructions)
+			{
+				switch (c)
+				{
+					case 'M':
+						//move to
+						shape->addMoveTo( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]) );
+						numberIndex += 2;
+						break;
+					case 'm':
+						//move to relative
+						shape->addMoveToRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]) );
+						numberIndex += 2;
+						break;
+					case 'L':
+						//Line to
+						shape->addLineTo( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]) );
+						numberIndex += 2;
+						break;
+					case 'l':
+						//Line to relative
+						shape->addLineToRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]) );
+						numberIndex += 2;
+						break;
+					case 'H':
+						//Horizontal to
+						shape->addHorizontalTo( std::stod(splitNumbers[numberIndex]) );
+						numberIndex += 1;
+						break;
+					case 'h':
+						//horizontal to relative
+						shape->addHorizontalToRel( std::stod(splitNumbers[numberIndex]) );
+						numberIndex += 1;
+						break;
+					case 'V':
+						//Vertical to
+						shape->addVerticalTo( std::stod(splitNumbers[numberIndex]) );
+						numberIndex += 1;
+						break;
+					case 'v':
+						//vertical to relative
+						shape->addVerticalToRel( std::stod(splitNumbers[numberIndex]) );
+						numberIndex += 1;
+						break;
+					case 'Z':
+						shape->addClosePath();
+						break;
+					case 'z':
+						shape->addClosePath();
+						break;
+					case 'Q':
+						shape->addQuadTo( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), std::stod(splitNumbers[numberIndex+3]));
+						numberIndex += 4;
+						break;
+					case 'q':
+						shape->addQuadToRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), std::stod(splitNumbers[numberIndex+3]));
+						numberIndex += 4;
+						break;
+					case 'T':
+						shape->addQuadToShort( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]));
+						numberIndex += 2;
+						break;
+					case 't':
+						shape->addQuadToShortRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]));
+						numberIndex += 2;
+						break;
+					case 'C':
+						shape->addCubicTo( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), std::stod(splitNumbers[numberIndex+3]), std::stod(splitNumbers[numberIndex+4]), std::stod(splitNumbers[numberIndex+5]));
+						numberIndex += 6;
+						break;
+					case 'c':
+						shape->addCubicToRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), std::stod(splitNumbers[numberIndex+3]), std::stod(splitNumbers[numberIndex+4]), std::stod(splitNumbers[numberIndex+5]));
+						numberIndex += 6;
+						break;
+					case 'S':
+						shape->addCubicToShort( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), std::stod(splitNumbers[numberIndex+3]));
+						numberIndex += 4;
+						break;
+					case 's':
+						shape->addCubicToShortRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), std::stod(splitNumbers[numberIndex+3]));
+						numberIndex += 4;
+						break;
+					case 'A':
+						shape->addArcTo( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), splitNumbers[numberIndex+3]=="1", splitNumbers[numberIndex+4]=="1", std::stod(splitNumbers[numberIndex+5]), std::stod(splitNumbers[numberIndex+6]));
+						numberIndex += 7;
+						break;
+					case 'a':
+						shape->addArcToRel( std::stod(splitNumbers[numberIndex]), std::stod(splitNumbers[numberIndex+1]), std::stod(splitNumbers[numberIndex+2]), splitNumbers[numberIndex+3]=="1", splitNumbers[numberIndex+4]=="1", std::stod(splitNumbers[numberIndex+5]), std::stod(splitNumbers[numberIndex+6]));
+						numberIndex += 7;
+						break;
+					default:
+						break;
+				}
+			}
+
 		}
 	}
 

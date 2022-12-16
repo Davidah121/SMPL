@@ -289,9 +289,9 @@
 			{
 				if (button > 0)
 				{
-					if (previousState[id].rgbButtons[button] == true)
+					if (previousState[id].rgbButtons[button] != 0) //Same as == true
 					{
-						return currentState[id].rgbButtons[button] == false;
+						return currentState[id].rgbButtons[button] == 0; //Same as == false
 					}
 				}
 				else

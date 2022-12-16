@@ -2,6 +2,7 @@
 #include "StringTools.h"
 #include "MathExt.h"
 #include <thread>
+#include <mutex>
 #include "SimpleFile.h"
 
 #ifdef __unix__
@@ -25,6 +26,7 @@
 
 	#include <Psapi.h>
 	#include <Pdh.h>
+	#pragma comment(lib, "Pdh.lib")
 #endif
 
 
@@ -33,11 +35,32 @@ namespace glib
 	
 	size_t System::dbtime[16];
 	unsigned int System::numberOfThreads = std::thread::hardware_concurrency();
+	bool System::hasInit = false;
+
 	const FileFilter System::ALL_FILTER = {"All Files", "."};
 	const FileFilter System::IMAGE_FILTER = {"Image", ".bmp;.gif;.png;.jpg;.jpeg"};
 	const FileFilter System::TEXT_FILTER = {"Text", ".txt"};
 	const FileFilter System::SOUND_FILTER = {"Sound", ".wav;.ogg;.mp3"};
 	const FileFilter System::VIDEO_FILTER = {"Video", ".mp4;.flv;.m4a;.wmv"};
+
+	//Non static but global
+	std::mutex lock;
+	
+	PDH_HQUERY cpuQuery;
+	PDH_HCOUNTER cpuTotal;
+
+	void System::init()
+	{
+		lock.lock();
+		if(!hasInit)
+		{
+			PdhOpenQueryW(NULL, NULL, &cpuQuery);
+			PdhAddEnglishCounterW(cpuQuery, L"\\Processor(_Total)\\% Processor Time", NULL, &cpuTotal);
+			PdhCollectQueryData(cpuQuery);
+			hasInit = true;
+		}
+		lock.unlock();
+	}
 
 	size_t System::getCurrentTimeMillis()
 	{
@@ -61,6 +84,37 @@ namespace glib
 		auto value = std::chrono::duration_cast<std::chrono::nanoseconds>(t.time_since_epoch());
 
 		return value.count();
+	}
+	
+	std::tm System::getCurrentDate()
+	{
+		std::time_t currentTime = time(nullptr);
+		return System::convertTimeToDate(currentTime);
+	}
+
+	std::tm System::convertTimeToDate(std::time_t t)
+	{
+		std::tm currentStoredDate;
+		
+		#ifdef __unix__
+			#ifdef __STDC_LIB_EXT1__
+				localtime_s(&t, &currentStoredDate);
+			#else
+				lock.lock();
+				currentStoredDate = *std::localtime(&t); //No need to delete.
+				lock.unlock();
+			#endif
+		#endif
+
+		#ifdef _WIN32
+			localtime_s(&currentStoredDate, &t);
+		#else
+			lock.lock();
+			currentStoredDate = *std::localtime(&t); //No need to delete.
+			lock.unlock();
+		#endif
+		
+		return currentStoredDate;
 	}
 
 	void System::sleep(int millis, int micros)
@@ -654,7 +708,7 @@ namespace glib
 				filterText.push_back('\0');
 
 				std::vector<std::string> exts = StringTools::splitString(filters[i].extensions, ',');
-				for(int j=0; j<exts.size(); i++)
+				for(int j=0; j<exts.size(); j++)
 				{
 					if(j>0)
 					{
@@ -940,14 +994,23 @@ namespace glib
 		return 0;
 	}
 	
-	double getTotalCpuUsage()
+	double System::getTotalCpuUsage()
 	{
-		// PdhOpenQuery(NULL, NULL, )
-		return 0;
+		System::init();
+		
+		lock.lock();
+		PDH_FMT_COUNTERVALUE counterVal;
+		PdhCollectQueryData(cpuQuery);
+		PdhGetFormattedCounterValue(cpuTotal, PDH_FMT_DOUBLE, NULL, &counterVal);
+		lock.unlock();
+		
+		return counterVal.doubleValue;
 	}
 	
-	double getCpuUsage()
+	double System::getCpuUsage()
 	{
+		System::init();
+		
 		return 0;
 	}
 	

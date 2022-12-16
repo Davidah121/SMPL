@@ -565,7 +565,7 @@ namespace glib
 		checkConcave();
 	}
 
-	Vec2f Polygon2D::getVertex(int index)
+	Vec2f Polygon2D::getVertex(size_t index)
 	{
 		if(index < points.size())
 		{
@@ -605,10 +605,10 @@ namespace glib
 		if(points.size()>3)
 		{
 			double lastDirVal = MathExt::dirToPoint( points[1].x, points[1].y, points[2].x, points[2].y);
-			int lastQuadrant = lastDirVal / (PI/2);
+			int lastQuadrant = (int)(lastDirVal / (PI/2));
 			bool dir = lastQuadrant <= 2; //going counter-clockwise
 
-			for(int i=3; i<points.size()+1; i++)
+			for(size_t i=3; i<points.size()+1; i++)
 			{
 				Vec2f thisToVec;
 				if(i != points.size())
@@ -1502,7 +1502,7 @@ namespace glib
 			if(solutions.size()>0)
 			{
 				//possible collision
-				for(int i=0; i<solutions.size(); i++)
+				for(size_t i=0; i<solutions.size(); i++)
 				{
 					Line l = a->getLine();
 					if( solutions[i] >= l.getMinY() && solutions[i] <= l.getMaxY())
@@ -1525,16 +1525,16 @@ namespace glib
 
 			// double rot = b->getRotation().x;
 
-			double H = b->getPosition().x;
+			// double H = b->getPosition().x;
 			double K = b->getPosition().y;
 
 			double yCheck = a->getPoint1().y;
 
-			// double v1 = 0;
+			// double v1 = 0; //Not used
 			double v2 = (yCheck-K);
 			
 			double A = (1.0 / xRadSqr);
-			// double B = 0;
+			// double B = 0; //Not used
 			double C = (MathExt::sqr(v2)/yRadSqr) - 1;
 
 			double polyA = A;
@@ -1546,7 +1546,7 @@ namespace glib
 			if(solutions.size()>0)
 			{
 				//possible collision
-				for(int i=0; i<solutions.size(); i++)
+				for(size_t i=0; i<solutions.size(); i++)
 				{
 					Line l = a->getLine();
 					if( solutions[i] >= l.getMinX() && solutions[i] <= l.getMaxX())
@@ -1592,7 +1592,7 @@ namespace glib
 			if(solutions.size()>0)
 			{
 				//possible collision
-				for(int i=0; i<solutions.size(); i++)
+				for(size_t i=0; i<solutions.size(); i++)
 				{
 					Line l = a->getLine();
 					if( solutions[i] >= l.getMinY() && solutions[i] <= l.getMaxY())
@@ -1657,9 +1657,9 @@ namespace glib
 		std::vector<BezierCurve> aCurve = BezierCurve::approximateEllipse(a->getXRadius(), a->getYRadius(), a->getPosition().x, a->getPosition().y, true);
 		std::vector<BezierCurve> bCurve = BezierCurve::approximateEllipse(b->getXRadius(), b->getYRadius(), b->getPosition().x, b->getPosition().y, true);
 
-		for(int i=0; i<aCurve.size(); i++)
+		for(size_t i=0; i<aCurve.size(); i++)
 		{
-			for(int i2=0; i2<bCurve.size(); i2++)
+			for(size_t i2=0; i2<bCurve.size(); i2++)
 			{
 				if(bezierCurveCollision(aCurve[i], bCurve[i2]))
 				{
@@ -1704,7 +1704,6 @@ namespace glib
 		//w1*P1y + w2*P2y + w3*P3y = Py
 		//w1+w2+w3=1
 		
-		bool col = false;
 		Vec2f p1, p2, p3;
 		double det,w1,w2,w3;
 		p1 = a->getVertex1();
@@ -1786,7 +1785,7 @@ namespace glib
 		
 		Line2D toPoint = Line2D(a->getCenterPoint(), Vec2f(b->getPosition().x, b->getPosition().y) );
 
-		for(int i=0; i<a->size(); i++)
+		for(size_t i=0; i<a->size(); i++)
 		{
 			Line2D colLine;
 			if(i < a->size()-1 )
@@ -1808,7 +1807,7 @@ namespace glib
 		//n line collisions with a circle
 		//1 point in polygon check
 
-		for(int i=0; i<a->size(); i++)
+		for(size_t i=0; i<a->size(); i++)
 		{
 			Line2D l = Line2D(a->getVertex(i), a->getVertex(i+1));
 			if(collisionMethod(b, &l))
@@ -1825,7 +1824,7 @@ namespace glib
 		//n line collisions with a ellipse
 		//1 point in polygon check
 
-		for(int i=0; i<a->size(); i++)
+		for(size_t i=0; i<a->size(); i++)
 		{
 			Line2D l = Line2D(a->getVertex(i), a->getVertex(i+1));
 			if(collisionMethod(&l, b))
@@ -1844,7 +1843,7 @@ namespace glib
 			return false;
 		}
 
-		for(int i=0; i<b->size(); i++)
+		for(size_t i=0; i<b->size(); i++)
 		{
 			Vec2f toVec;
 			if(i<b->size()-1)
@@ -1859,14 +1858,14 @@ namespace glib
 			double minBVal = INFINITY;
 			double maxBVal = -INFINITY;
 			
-			for(int i2=0; i2<b->size(); i2++)
+			for(size_t i2=0; i2<b->size(); i2++)
 			{
 				double projection = MathExt::scalarVectorProjection(b->getVertex(i2), normal);
 				minBVal = MathExt::min(projection, minBVal);
 				maxBVal = MathExt::max(projection, maxBVal);
 			}
 
-			for(int i2=0; i2<a->size(); i2++)
+			for(size_t i2=0; i2<a->size(); i2++)
 			{
 				double projection = MathExt::scalarVectorProjection(a->getVertex(i2), normal);
 				minAVal = MathExt::min(projection, minAVal);
@@ -1888,7 +1887,7 @@ namespace glib
 			}
 		}
 
-		for(int i=0; i<a->size(); i++)
+		for(size_t i=0; i<a->size(); i++)
 		{
 			Vec2f toVec;
 			if(i<a->size()-1)
@@ -1901,14 +1900,14 @@ namespace glib
 			double minBVal = -INFINITY;
 			double maxBVal = INFINITY;
 			
-			for(int i2=0; i2<b->size(); i2++)
+			for(size_t i2=0; i2<b->size(); i2++)
 			{
 				double projection = MathExt::scalarVectorProjection(b->getVertex(i2), toVec);
 				minBVal = MathExt::min(projection, minBVal);
 				maxBVal = MathExt::max(projection, maxBVal);
 			}
 
-			for(int i2=0; i2<a->size(); i2++)
+			for(size_t i2=0; i2<a->size(); i2++)
 			{
 				double projection = MathExt::scalarVectorProjection(a->getVertex(i2), toVec);
 				minAVal = MathExt::min(projection, minAVal);
@@ -1942,11 +1941,11 @@ namespace glib
 		Vec2f aCenter = a->getCenterPoint();
 		Vec2f bCenter = b->getCenterPoint();
 
-		for(int i=0; i<a->size(); i++)
+		for(size_t i=0; i<a->size(); i++)
 		{
 			Line2D colLine = Line2D(aCenter, a->getVertex(i));
 
-			for(int i2=0; i2<b->size(); i2++)
+			for(size_t i2=0; i2<b->size(); i2++)
 			{
 				Line2D bLine;
 				if(i2 == b->size()-1)
@@ -1961,11 +1960,11 @@ namespace glib
 			}
 		}
 
-		for(int i=0; i<b->size(); i++)
+		for(size_t i=0; i<b->size(); i++)
 		{
 			Line2D colLine = Line2D(bCenter, b->getVertex(i));
 
-			for(int i2=0; i2<a->size(); i2++)
+			for(size_t i2=0; i2<a->size(); i2++)
 			{
 				Line2D aLine;
 				if(i2 == a->size()-1)

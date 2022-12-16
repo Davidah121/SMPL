@@ -10,11 +10,11 @@ namespace glib
 		percentages.clear();
 		percentages = std::vector<double>(256);
 
-		int total = data.size();
+		int total = (int)data.size();
 
 		std::vector<double> percentageRangeVals = std::vector<double>();
 		
-		for(int i=0; i<data.size(); i++)
+		for(size_t i=0; i<data.size(); i++)
 		{
 			percentages[data[i]] += 1;
 		}
@@ -29,7 +29,7 @@ namespace glib
 		double oldMinPer = 0.0;
 		double oldMaxPer = 1.0;
 		
-		for(int i=0; i<data.size(); i++)
+		for(size_t i=0; i<data.size(); i++)
 		{
 			int index = data[i];
 			double minPercentage = percentageRangeVals[index];
@@ -51,7 +51,7 @@ namespace glib
 		return finalValue;
 	}
 
-	std::vector<unsigned char> Compression::decompressArithmetic(double data, int messageSize, std::vector<double> percentages)
+	std::vector<unsigned char> Compression::decompressArithmetic(double data, size_t messageSize, std::vector<double> percentages)
 	{
 		//generate percentageRanges
 
@@ -66,10 +66,10 @@ namespace glib
 		double oldMaxPer = 1.0;
 
 		std::vector<unsigned char> message = std::vector<unsigned char>();
-		while(message.size() < messageSize)
+		while(message.size() < (size_t)messageSize)
 		{
 			bool valid = false;
-			for(int i=1; i<percentageRangeVals.size(); i++)
+			for(size_t i=1; i<percentageRangeVals.size(); i++)
 			{
 				double minPercentage = percentageRangeVals[i-1];
 				double maxPercentage = percentageRangeVals[i];

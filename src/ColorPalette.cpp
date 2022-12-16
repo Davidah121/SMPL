@@ -16,8 +16,8 @@ namespace glib
 
 	struct ColorNode
 	{
-		Color c;
-		int arrayIndex;
+		Color c = {0, 0, 0, 0};
+		size_t arrayIndex = 0;
 	};
 
 	ColorPalette::ColorPalette()
@@ -142,7 +142,7 @@ namespace glib
 		
 	}
 
-	Color ColorPalette::getColor(int index)
+	Color ColorPalette::getColor(size_t index)
 	{
 		if(index >= 0 && index < paletteArr.size())
 			return paletteArr[index];
@@ -156,7 +156,7 @@ namespace glib
 		}
 	}
 
-	Color* ColorPalette::getColorRef(int index)
+	Color* ColorPalette::getColorRef(size_t index)
 	{
 		if(index >= 0 && index < paletteArr.size())
 			return &paletteArr[index];
@@ -170,7 +170,7 @@ namespace glib
 		}
 	}
 
-	int ColorPalette::getColorIndex(Color c)
+	size_t ColorPalette::getColorIndex(Color c)
 	{
 		KDTreeNode<unsigned char> node = paletteTree->search( (unsigned char*)&c );
 
@@ -185,7 +185,7 @@ namespace glib
 		}
 	}
 
-	int ColorPalette::getSize()
+	size_t ColorPalette::getSize()
 	{
 		return paletteArr.size();
 	}
@@ -198,7 +198,7 @@ namespace glib
 	void ColorPalette::setPalette(std::vector<Color> p)
 	{
 		clearPalette();
-		for(int i=0; i<p.size(); i++)
+		for(size_t i=0; i<p.size(); i++)
 		{
 			addNewColor(p[i]);
 		}
@@ -221,9 +221,9 @@ namespace glib
 		return paletteArr[getClosestColorIndex(c)];
 	}
 
-	int ColorPalette::getClosestColorIndex(Color c)
+	size_t ColorPalette::getClosestColorIndex(Color c)
 	{
-		int index = 0;
+		size_t index = 0;
 		/*
 		//For testing purposes with KDTrees
 		int index2 = 0;
@@ -260,7 +260,7 @@ namespace glib
 		paletteTree->balance();
 	}
 
-	ColorPalette ColorPalette::generateOptimalPalette(Color* colorArray, int size, int colors, unsigned char type, bool convertToLab, bool uniqueOnly)
+	ColorPalette ColorPalette::generateOptimalPalette(Color* colorArray, size_t size, int colors, unsigned char type, bool convertToLab, bool uniqueOnly)
 	{
 		ColorPalette temp = ColorPalette();
 		if(colorArray == nullptr)
@@ -287,7 +287,7 @@ namespace glib
 		{
 			ColorPalette f = ColorPalette();
 			f.setPaletteMode(true);
-			for(int i=0; i<size; i++)
+			for(size_t i=0; i<size; i++)
 			{
 				if(colorArray[i].alpha>127)
 				{
@@ -308,7 +308,7 @@ namespace glib
 				{
 					std::vector<Color> p;
 					std::vector<Color> pColors = std::vector<Color>(f.getSize());
-					for(int i=0; i<f.getSize(); i++)
+					for(size_t i=0; i<f.getSize(); i++)
 					{
 						pColors[i] = f.getColor(i);
 					}
@@ -338,7 +338,7 @@ namespace glib
 				{
 					std::vector<std::vector<Vec3f>> p;
 					std::vector<Vec3f> pColors = std::vector<Vec3f>(f.getSize());
-					for(int i=0; i<f.getSize(); i++)
+					for(size_t i=0; i<f.getSize(); i++)
 					{
 						Color c = f.getColor(i);
 						Vec3f beforeConvert = Vec3f(c.red, c.green, c.blue);
@@ -356,7 +356,7 @@ namespace glib
 							p = MathExt::medianCut(pColors, colors, true);
 							break;
 						case K_MEANS:
-							p = MathExt::kMeans(pColors, colors, 10, true);
+							p = MathExt::kMeans(pColors, colors, 10ull, true);
 							break;
 						default:
 							p = MathExt::meanCut(pColors, colors, true);
@@ -384,7 +384,7 @@ namespace glib
 			{
 				std::vector<Color> p;
 				std::vector<Color> pColors = std::vector<Color>(size);
-				for(int i=0; i<size; i++)
+				for(size_t i=0; i<size; i++)
 				{
 					pColors[i] = colorArray[i];
 				}
@@ -414,7 +414,7 @@ namespace glib
 			{
 				std::vector<std::vector<Vec3f>> p;
 				std::vector<Vec3f> pColors = std::vector<Vec3f>(size);
-				for(int i=0; i<size; i++)
+				for(size_t i=0; i<size; i++)
 				{
 					Color c = colorArray[i];
 					Vec3f beforeConvert = Vec3f(c.red, c.green, c.blue);
@@ -480,7 +480,7 @@ namespace glib
 					//first, find mean color
 					Vec3f meanColor = Vec3f();
 					double meanMult = 1.0/f.colors.size();
-					for(int i=0; i<f.colors.size(); i++)
+					for(size_t i=0; i<f.colors.size(); i++)
 					{
 						Color v = f.colors[i];
 						meanColor.x += (double)v.red * meanMult;
@@ -490,7 +490,7 @@ namespace glib
 
 					//then find error^2 for x, y and z.
 					Vec3f error = Vec3f();
-					for(int i=0; i<f.colors.size(); i++)
+					for(size_t i=0; i<f.colors.size(); i++)
 					{
 						Color v = f.colors[i];
 						error.x += MathExt::sqr(meanColor.x - v.red);
@@ -509,10 +509,10 @@ namespace glib
 				break;
 			}
 
-			int indexOfMostError = 0;
+			size_t indexOfMostError = 0;
 			double mostError = 0;
 
-			for(int i=0; i<boxes.size(); i++)
+			for(size_t i=0; i<boxes.size(); i++)
 			{
 				Vec3f errVec = boxes[i].error;
 				double sumError = errVec.x + errVec.y + errVec.z;
@@ -544,7 +544,7 @@ namespace glib
 				if(error.x > error.z)
 				{
 					//split among x
-					for(int i=0; i<box.colors.size(); i++)
+					for(size_t i=0; i<box.colors.size(); i++)
 					{
 						Color c = box.colors[i];
 						if((double)c.red < avg.x)
@@ -560,7 +560,7 @@ namespace glib
 				else
 				{
 					//split among z
-					for(int i=0; i<box.colors.size(); i++)
+					for(size_t i=0; i<box.colors.size(); i++)
 					{
 						Color c = box.colors[i];
 						if((double)c.blue < avg.z)
@@ -579,7 +579,7 @@ namespace glib
 				if(error.y > error.z)
 				{
 					//split among y
-					for(int i=0; i<box.colors.size(); i++)
+					for(size_t i=0; i<box.colors.size(); i++)
 					{
 						Color c = box.colors[i];
 						if((double)c.green < avg.y)
@@ -595,7 +595,7 @@ namespace glib
 				else
 				{
 					//split among z
-					for(int i=0; i<box.colors.size(); i++)
+					for(size_t i=0; i<box.colors.size(); i++)
 					{
 						Color c = box.colors[i];
 						if((double)c.blue < avg.z)
@@ -641,18 +641,18 @@ namespace glib
 
 	std::vector<Color> ColorPalette::medianCut(std::vector<Color> colorArray, int colors)
 	{
-		std::vector<int> endPos = std::vector<int>();
+		std::vector<size_t> endPos = std::vector<size_t>();
 		std::vector<Color> sortArray = std::vector<Color>(colorArray);
 
 		endPos.push_back(colorArray.size());
 
-		while(endPos.size() < colors)
+		while(endPos.size() < (size_t)colors)
 		{
-			int currentSize = endPos.size();
-			for(int i=0; i<currentSize; i++)
+			size_t currentSize = endPos.size();
+			for(size_t i=0; i<currentSize; i++)
 			{
-				int start = 0;
-				int end = endPos[i];
+				size_t start = 0;
+				size_t end = endPos[i];
 				if(i!=0)
 				{
 					start = endPos[i-1];
@@ -665,14 +665,14 @@ namespace glib
 
 				double meanMult = 1.0 / (end-start);
 				
-				for(int v=start; v<end; v++)
+				for(size_t v=start; v<end; v++)
 				{
 					mean.x += meanMult * sortArray[v].red;
 					mean.y += meanMult * sortArray[v].green;
 					mean.z += meanMult * sortArray[v].blue;
 				}
 
-				for(int v=start; v<end; v++)
+				for(size_t v=start; v<end; v++)
 				{
 					variance.x = MathExt::sqr( mean.x - sortArray[v].red);
 					variance.y = MathExt::sqr( mean.y - sortArray[v].green);
@@ -697,14 +697,14 @@ namespace glib
 				});
 			}
 
-			std::vector<int> newEndPos = std::vector<int>();
+			std::vector<size_t> newEndPos = std::vector<size_t>();
 
 			newEndPos.push_back(endPos[0]/2);
 			newEndPos.push_back(endPos[0]);
 
-			for(int i=1; i<currentSize; i++)
+			for(size_t i=1; i<currentSize; i++)
 			{
-				int midIndex = (endPos[i-1] + endPos[i])/2;
+				size_t midIndex = (endPos[i-1] + endPos[i])/2;
 				
 				newEndPos.push_back(midIndex);
 				newEndPos.push_back(endPos[i]);
@@ -715,18 +715,18 @@ namespace glib
 
 		//average out each sections for the final set of colors
 		std::vector<Color> finalColors = std::vector<Color>();
-		for(int i=0; i<endPos.size(); i++)
+		for(size_t i=0; i<endPos.size(); i++)
 		{
-			int start = 0;
-			int end = endPos[i];
+			size_t start = 0;
+			size_t end = endPos[i];
 			if(i!=0)
 			{
 				start = endPos[i-1];
 			}
 
 			Vec3f avgVal = Vec3f();
-			int divVal = end-start;
-			for(int k=start; k<end; k++)
+			size_t divVal = end-start;
+			for(size_t k=start; k<end; k++)
 			{
 				Color c = sortArray[k];
 				avgVal.x += c.red;
@@ -734,7 +734,7 @@ namespace glib
 				avgVal.z += c.blue;
 			}
 
-			avgVal/=divVal;
+			avgVal/=(double)divVal;
 
 			//round
 			double cr = MathExt::clamp(MathExt::round(avgVal.x), 0.0, 255.0);
@@ -747,7 +747,7 @@ namespace glib
 		return finalColors;
 	}
 
-	std::vector<Color> ColorPalette::kMeans(std::vector<Color> colorArray, int colors, int maxIterations)
+	std::vector<Color> ColorPalette::kMeans(std::vector<Color> colorArray, int colors, size_t maxIterations)
 	{
 		struct ColorBoxInfo
 		{
@@ -759,10 +759,10 @@ namespace glib
 		std::vector< ColorBoxInfo > groups = std::vector< ColorBoxInfo >();
 		
 		//pick randomly
-		unsigned int currentAmount = 0;
-		LCG lcg = LCG( (unsigned int)System::getCurrentTimeNano(), 12354, 0, colorArray.size());
+		// unsigned int currentAmount = 0;
+		LCG lcg = LCG( (unsigned int)System::getCurrentTimeNano(), 12354, 0, (unsigned int)colorArray.size());
 
-		for(int i=0; i<colors; i++)
+		for(size_t i=0; i<colors; i++)
 		{
 			int v = lcg.get();
 			ColorBoxInfo b = ColorBoxInfo();
@@ -780,23 +780,23 @@ namespace glib
 		};
 
 		//do k-means
-		for(int i=0; i<maxIterations; i++)
+		for(size_t i=0; i<maxIterations; i++)
 		{
 			//make kdtree for speed
 			KDTree<double> meanTree = KDTree<double>(3);
-			for(int k=0; k<groups.size(); k++)
+			for(size_t k=0; k<groups.size(); k++)
 			{
 				importantData* tmp = new importantData();
 				tmp->a = groups[k].averageColor.x;
 				tmp->b = groups[k].averageColor.y;
 				tmp->c = groups[k].averageColor.z;
-				tmp->location = k;
+				tmp->location = (int)k;
 
 				meanTree.add((double*)tmp);
 			}
 
 			//group into k groups
-			for(int k=0; k<colorArray.size(); k++)
+			for(size_t k=0; k<colorArray.size(); k++)
 			{
 				double* testData = new double[3]{(double)colorArray[k].red, (double)colorArray[k].green, (double)colorArray[k].blue};
 				
@@ -807,7 +807,7 @@ namespace glib
 
 			//recompute average
 			bool same = true;
-			for(int j=0; j<groups.size(); j++)
+			for(size_t j=0; j<groups.size(); j++)
 			{
 				Vec3f avg = Vec3f();
 				double divVal = 1.0 / groups[j].colors.size();

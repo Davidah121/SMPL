@@ -56,7 +56,7 @@ namespace glib
 
 	void GuiSprite::update()
 	{
-		int lastIndex = index;
+		size_t lastIndex = index;
 		if(img == nullptr)
 			return;
 		
@@ -66,7 +66,7 @@ namespace glib
 			{
 				lastUpdateTime = System::getCurrentTimeMicro();
 			}
-			else if(System::getCurrentTimeMicro() - lastUpdateTime >= img->getDelayTime(index))
+			else if(System::getCurrentTimeMicro() - lastUpdateTime >= (size_t)img->getDelayTime(index))
 			{
 				lastUpdateTime = System::getCurrentTimeMicro();
 				
@@ -114,10 +114,10 @@ namespace glib
 			else
 			{
 				int x1 = x;
-				int x2 = x + tempImg.getWidth() * nXScale;
+				int x2 = (int)MathExt::round(x + tempImg.getWidth() * nXScale);
 
 				int y1 = y;
-				int y2 = y + tempImg.getHeight() * nYScale;
+				int y2 = (int)MathExt::round(y + tempImg.getHeight() * nYScale);
 
 				GuiGraphicsInterface::drawSprite(&tempImg, x1, y1, x2, y2);
 			}
@@ -217,7 +217,7 @@ namespace glib
 		GuiInstance::loadDataFromXML(attribs);
 		std::vector<std::string> possibleNames = { "src", "width", "height", "xscale", "yscale", "color"};
 
-		for(int i=0; i<possibleNames.size(); i++)
+		for(size_t i=0; i<possibleNames.size(); i++)
 		{
 			auto it = attribs.find(possibleNames[i]);
 			if(it != attribs.end())

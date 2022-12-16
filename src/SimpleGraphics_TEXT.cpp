@@ -30,7 +30,7 @@ namespace glib
 			}
 			int currX = x;
 			int currY = y;
-			for(int i=0; i<str.size(); i++)
+			for(size_t i=0; i<str.size(); i++)
 			{
 				int charIndex = tFont->getCharIndex(str[i]);
 				Image* charImg = tFont->getImage(charIndex);
@@ -92,7 +92,7 @@ namespace glib
 			}
 			int currX = x;
 			int currY = y;
-			for(int i=0; i<str.size(); i++)
+			for(size_t i=0; i<str.size(); i++)
 			{
 				int charIndex = tFont->getCharIndex(str[i]);
 				Image* charImg = tFont->getImage(charIndex);
@@ -163,7 +163,7 @@ namespace glib
 			int currH = 0;
 			bool waitingOnLineBreak = false;
 			
-			for(int i=0; i<str.size(); i++)
+			for(size_t i=0; i<str.size(); i++)
 			{
 				int charIndex = tFont->getCharIndex(str[i]);
 				Image* charImg = tFont->getImage(charIndex);
@@ -292,7 +292,7 @@ namespace glib
 			int currH = 0;
 			bool waitingOnLineBreak = false;
 			
-			for(int i=0; i<str.size(); i++)
+			for(size_t i=0; i<str.size(); i++)
 			{
 				int charIndex = tFont->getCharIndex(str[i]);
 				Image* charImg = tFont->getImage(charIndex);

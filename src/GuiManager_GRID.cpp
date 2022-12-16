@@ -42,7 +42,7 @@ namespace glib
 
 	GuiGrid::~GuiGrid()
 	{
-		for(int i=0; i<locations.size(); i++)
+		for(size_t i=0; i<locations.size(); i++)
 		{
 			if(locations[i]!=nullptr)
 				delete locations[i];
@@ -62,7 +62,7 @@ namespace glib
 		int minWidthRequired = 0;
 		int minHeightRequired = 0;
 
-		for(int i=0; i<children.size(); i++)
+		for(size_t i=0; i<children.size(); i++)
 		{
 			GuiInstance* child = children[i];
 			Box2D box = child->getBoundingBox();
@@ -73,7 +73,7 @@ namespace glib
 
 		if(!rowMajorOrder)
 		{
-			for(int i=0; i<children.size(); i++)
+			for(size_t i=0; i<children.size(); i++)
 			{
 				int c = i%colSize;
 				int r = i/colSize;
@@ -87,7 +87,7 @@ namespace glib
 		}
 		else
 		{
-			for(int i=0; i<children.size(); i++)
+			for(size_t i=0; i<children.size(); i++)
 			{
 				int r = i%rowSize;
 				int c = i/rowSize;
@@ -120,8 +120,8 @@ namespace glib
 
 	void GuiGrid::render()
 	{
-		int width = boundingBox.getWidth();
-		int height = boundingBox.getHeight();
+		int width = (int)MathExt::round(boundingBox.getWidth());
+		int height = (int)MathExt::round(boundingBox.getHeight());
 
 		GuiGraphicsInterface::setColor(backgroundColor);
 		GuiGraphicsInterface::drawRect(x, y, x+width, y+height, false);
@@ -179,7 +179,7 @@ namespace glib
 		{
 			std::vector<Point*> nPositions;
 			std::vector<GuiInstance*> children = getChildren();
-			for(int i=0; i<children.size(); i++)
+			for(size_t i=0; i<children.size(); i++)
 			{
 				if(children[i] == ins)
 				{
@@ -209,8 +209,8 @@ namespace glib
 
 	bool GuiGrid::pointIsInGrid(int x, int y)
 	{
-		int width = boundingBox.getWidth();
-		int height = boundingBox.getHeight();
+		int width = (int)MathExt::round(boundingBox.getWidth());
+		int height = (int)MathExt::round(boundingBox.getHeight());
 		
 		if(x >= this->x && x <= this->x + width)
 		{
@@ -245,7 +245,7 @@ namespace glib
 		GuiInstance::loadDataFromXML(attribs);
 		std::vector<std::string> possibleNames = { "horizontalspacing", "verticalspacing", "rowmajor", "maxrows", "maxcolumns", "backgroundcolor", "outlinecolor"};
 
-		for(int i=0; i<possibleNames.size(); i++)
+		for(size_t i=0; i<possibleNames.size(); i++)
 		{
 			auto it = attribs.find(possibleNames[i]);
 			if(it != attribs.end())

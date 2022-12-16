@@ -481,8 +481,8 @@ namespace glib
 	{
 		if(img!=nullptr)
 		{
-			int nWidth = img->getWidth() * xScale;
-			int nHeight = img->getHeight() * yScale;
+			int nWidth = (int)MathExt::round(img->getWidth() * xScale);
+			int nHeight = (int)MathExt::round(img->getHeight() * yScale);
 			Image* sImg = new Image( nWidth, nHeight );
 
 			//position top left of image so that it has an equal amount of distance from edges
@@ -494,12 +494,12 @@ namespace glib
 			for(int i=0; i<nHeight; i++)
 			{
 				double yP = ((double)(i-yOffset) / nHeight) * img->getHeight();
-				int nearY = MathExt::clamp(MathExt::round(yP), 0.0, (double)img->getHeight()-1);
+				int nearY = (int)MathExt::clamp(MathExt::round(yP), 0.0, (double)img->getHeight()-1);
 				
 				for(int i2=0; i2<nWidth; i2++)
 				{
 					double xP = ((double)(i2-xOffset) / nWidth) * img->getWidth();
-					int nearX = MathExt::clamp(MathExt::round(xP), 0.0, (double)img->getWidth()-1);
+					int nearX = (int)MathExt::clamp(MathExt::round(xP), 0.0, (double)img->getWidth()-1);
 					
 					sImg->setPixel(i2, i, img->getPixel(nearX, nearY));
 				}
@@ -514,8 +514,8 @@ namespace glib
 	{
 		if(img!=nullptr)
 		{
-			int nWidth = img->getWidth() * xScale;
-			int nHeight = img->getHeight() * yScale;
+			int nWidth = (int)MathExt::round(img->getWidth() * xScale);
+			int nHeight = (int)MathExt::round(img->getHeight() * yScale);
 			
 			//position top left of image so that it has an equal amount of distance from edges
 			//divide distance by size of image to find offset
@@ -532,8 +532,8 @@ namespace glib
 
 				double yFrac = MathExt::frac(yP);
 
-				int y1 = MathExt::clamp(MathExt::floor(yP), 0.0, (double)img->getHeight()-1);
-				int y2 = MathExt::clamp(MathExt::ceil(yP), 0.0, (double)img->getHeight()-1);
+				int y1 = (int)MathExt::clamp(MathExt::floor(yP), 0.0, (double)img->getHeight()-1);
+				int y2 = (int)MathExt::clamp(MathExt::ceil(yP), 0.0, (double)img->getHeight()-1);
 				
 				for(int i2=0; i2<nWidth; i2++)
 				{
@@ -541,8 +541,8 @@ namespace glib
 					//xP -= xOffset;
 					double xFrac = MathExt::frac(xP);
 
-					int x1 = MathExt::clamp(MathExt::floor(xP), 0.0, (double)img->getWidth()-1);
-					int x2 = MathExt::clamp(MathExt::ceil(xP), 0.0, (double)img->getWidth()-1);
+					int x1 = (int)MathExt::clamp(MathExt::floor(xP), 0.0, (double)img->getWidth()-1);
+					int x2 = (int)MathExt::clamp(MathExt::ceil(xP), 0.0, (double)img->getWidth()-1);
 					
 					Color c1 = lerp( img->getPixel(x1, y1), img->getPixel(x2, y1), xFrac);
 					Color c2 = lerp( img->getPixel(x1, y2), img->getPixel(x2, y2), xFrac);
@@ -561,8 +561,8 @@ namespace glib
 	{
 		if(img!=nullptr)
 		{
-			int nWidth = img->getWidth() * xScale;
-			int nHeight = img->getHeight() * yScale;
+			int nWidth = (int)MathExt::round(img->getWidth() * xScale);
+			int nHeight = (int)MathExt::round(img->getHeight() * yScale);
 			
 			//position top left of image so that it has an equal amount of distance from edges
 			//divide distance by size of image to find offset
@@ -579,10 +579,10 @@ namespace glib
 				double yFrac = MathExt::frac(yP);
 
 				int yPoints[4];
-				yPoints[1] = MathExt::clamp(MathExt::floor(yP), 0.0, (double)img->getHeight()-1);
-				yPoints[0] = MathExt::clamp(yPoints[1]-1, 0, img->getHeight()-1);
-				yPoints[2] = MathExt::clamp(MathExt::ceil(yP), 0.0, (double)img->getHeight()-1);
-				yPoints[3] = MathExt::clamp(yPoints[2]+1, 0, img->getHeight()-1);
+				yPoints[1] = (int)MathExt::clamp(MathExt::floor(yP), 0.0, (double)img->getHeight()-1);
+				yPoints[0] = (int)MathExt::clamp(yPoints[1]-1, 0, img->getHeight()-1);
+				yPoints[2] = (int)MathExt::clamp(MathExt::ceil(yP), 0.0, (double)img->getHeight()-1);
+				yPoints[3] = (int)MathExt::clamp(yPoints[2]+1, 0, img->getHeight()-1);
 
 				if(yPoints[0]<0)
 				{
@@ -600,10 +600,10 @@ namespace glib
 					double xFrac = MathExt::frac(xP);
 
 					int xPoints[4];
-					xPoints[1] = MathExt::clamp(MathExt::floor(xP), 0.0, (double)img->getWidth()-1);
-					xPoints[0] = MathExt::clamp(xPoints[1]-1, 0, img->getWidth()-1);
-					xPoints[2] = MathExt::clamp(MathExt::ceil(xP), 0.0, (double)img->getWidth()-1);
-					xPoints[3] = MathExt::clamp(xPoints[2]+1, 0, img->getWidth()-1);
+					xPoints[1] = (int)MathExt::clamp(MathExt::floor(xP), 0.0, (double)img->getWidth()-1);
+					xPoints[0] = (int)MathExt::clamp(xPoints[1]-1, 0, img->getWidth()-1);
+					xPoints[2] = (int)MathExt::clamp(MathExt::ceil(xP), 0.0, (double)img->getWidth()-1);
+					xPoints[3] = (int)MathExt::clamp(xPoints[2]+1, 0, img->getWidth()-1);
 
 					if(xPoints[0]<0)
 					{

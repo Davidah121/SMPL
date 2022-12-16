@@ -29,7 +29,7 @@ namespace glib
 		bool is = false;
 		if(k != nullptr)
 		{
-			for (int i = 0; i < parentClasses.size(); i++)
+			for (size_t i = 0; i < parentClasses.size(); i++)
 			{
 				if (k == parentClasses[i])
 				{
@@ -67,7 +67,7 @@ namespace glib
 	{
 		//Check if the class already exists or if the name already exists
 		bool can = true;
-		for (int i = 0; i < allClasses.size(); i++)
+		for (size_t i = 0; i < allClasses.size(); i++)
 		{
 			if (k->getClassName() == allClasses[i]->getClassName())
 			{
@@ -99,8 +99,8 @@ namespace glib
 
 	void ClassMaster::removeClass(const Class* k)
 	{
-		int index = -1;
-		for (int i = 0; i < allClasses.size(); i++)
+		size_t index = (size_t)-1;
+		for (size_t i = 0; i < allClasses.size(); i++)
 		{
 			if (allClasses[i] == k)
 			{
@@ -109,9 +109,9 @@ namespace glib
 			}
 		}
 
-		if (index != -1)
+		if (index != (size_t)-1)
 		{
-			for (int i = index; i < allClasses.size() - 1; i++)
+			for (size_t i = index; i < allClasses.size() - 1; i++)
 			{
 				allClasses[i] = allClasses[i + 1];
 			}
@@ -120,12 +120,12 @@ namespace glib
 		}
 	}
 
-	int ClassMaster::getSize()
+	size_t ClassMaster::getSize()
 	{
 		return allClasses.size();
 	}
 
-	const Class* ClassMaster::findClass(int i)
+	const Class* ClassMaster::findClass(size_t i)
 	{
 		if (i >= 0 && i < allClasses.size())
 		{
@@ -136,7 +136,7 @@ namespace glib
 
 	const Class* ClassMaster::findClass(std::string className)
 	{
-		for(int i=0; i<allClasses.size(); i++)
+		for(size_t i=0; i<allClasses.size(); i++)
 		{
 			if(allClasses[i]->getClassName() == className)
 				return allClasses[i];

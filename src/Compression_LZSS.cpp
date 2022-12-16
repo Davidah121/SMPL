@@ -10,7 +10,7 @@ namespace glib
 		return compressLZSS(data.data(), data.size());
 	}
 
-	std::vector<unsigned char> Compression::compressLZSS(unsigned char* data, int size)
+	std::vector<unsigned char> Compression::compressLZSS(unsigned char* data, size_t size)
 	{
 		BinarySet bin = BinarySet();
 		bin.setBitOrder(BinarySet::LMSB);
@@ -22,16 +22,7 @@ namespace glib
 		//Other than that, it works just like lz77 with the exception that we can't
 		//copy past the size of the buffer like in lz77.
 
-		int oldTuplev1 = 0;
-		int oldTuplev2 = 0;
-
-		int tuplev1 = 0;//How far to go back
-		int tuplev2 = 0;//length of string
-
 		int maxBufferSize = 0x7FFF;
-
-		int bitsForRef = 15;
-		int bitsForCopy = 8;
 
 		if(size<=0)
 		{
@@ -91,7 +82,7 @@ namespace glib
 		return decompressLZSS(data.data(), data.size(), expectedSize);
 	}
 
-	std::vector<unsigned char> Compression::decompressLZSS(unsigned char* data, int size, size_t expectedSize)
+	std::vector<unsigned char> Compression::decompressLZSS(unsigned char* data, size_t size, size_t expectedSize)
 	{
 		BinarySet bin = BinarySet();
 		bin.setBitOrder(BinarySet::LMSB);
@@ -99,9 +90,6 @@ namespace glib
 		std::vector<unsigned char> output = std::vector<unsigned char>();
 
 		bin.setValues(data, size);
-		
-		int bitsForRef = 15;
-		int bitsForCopy = 8;
 
 		if(size<=0)
 		{
@@ -119,7 +107,7 @@ namespace glib
 			return std::vector<unsigned char>();
 		}
 
-		int i = 0;
+		size_t i = 0;
 		while(i < bin.size())
 		{
 			bool lit = bin.getBit(i);

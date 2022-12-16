@@ -88,9 +88,9 @@ namespace glib
 			audioThread.join();
 		}
 
-		for(int k=0; k<buffers.size(); k++)
+		for(size_t k=0; k<buffers.size(); k++)
 		{
-			unprepareData(k);
+			unprepareData((int)k);
 		}
 		
 		#ifdef __unix__
@@ -151,9 +151,9 @@ namespace glib
 				
 				for(Sound* s : copySounds)
 				{
-					int index = s->getPosition();
+					size_t index = s->getPosition();
 
-					int end = s->getLength();
+					size_t end = s->getLength();
 					if(s->getLoop())
 					{
 						end = s->getLoopEnd();
@@ -344,18 +344,18 @@ namespace glib
 	{
 		audioMutex.lock();
 		int index = -1;
-		for(int i=0; i<sounds.size(); i++)
+		for(size_t i=0; i<sounds.size(); i++)
 		{
 			if(s == sounds[i])
 			{
-				index = i;
+				index = (int)i;
 				break;
 			}
 		}
 
 		if(index >= 0)
 		{
-			for(int i=index; i<sounds.size()-1; i++)
+			for(size_t i=(size_t)index; i<sounds.size()-1; i++)
 			{
 				sounds[i] = sounds[i+1];
 			}
@@ -369,9 +369,8 @@ namespace glib
 		copySounds.clear();
 
 		audioMutex.lock();
-		int maxSize = MathExt::min(amtOfSoundsAllowed, (int)sounds.size());
-		int i=0;
-		for(int i=0; i<sounds.size(); i++)
+		size_t maxSize = MathExt::min((size_t)amtOfSoundsAllowed, sounds.size());
+		for(size_t i=0; i<sounds.size(); i++)
 		{
 			if(sounds[i]->getPlaying())
 			{

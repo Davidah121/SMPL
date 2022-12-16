@@ -21,7 +21,7 @@ namespace glib
 		 * @brief Destroy the Shape object
 		 * 
 		 */
-		~Shape();
+		virtual ~Shape();
 
 		//Object and Class Stuff
 		static const Class globalClass;
@@ -724,7 +724,7 @@ namespace glib
 		 * @param index 
 		 * @return Vec2f 
 		 */
-		Vec2f getVertex(int index);
+		Vec2f getVertex(size_t index);
 
 		/**
 		 * @brief Gets the Center Point of the polygon.

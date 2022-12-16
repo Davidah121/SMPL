@@ -62,9 +62,9 @@ namespace glib
 	/*
 		Gets the name of a reference at the index if possible.
 	*/
-	std::string SimpleDir::getReferenceName(int index)
+	std::string SimpleDir::getReferenceName(size_t index)
 	{
-		if (index >= 0 && index < names.size())
+		if (index < names.size())
 		{
 			File tempF = getReferenceFullPath(index);
 			return tempF.getFileNameWithExt();
@@ -90,9 +90,9 @@ namespace glib
 		}
 	}
 
-	std::string SimpleDir::getReferenceFullPath(int index)
+	std::string SimpleDir::getReferenceFullPath(size_t index)
 	{
-		if (index >= 0 && index < names.size())
+		if (index < names.size())
 		{
 			return names[index].path().u8string();
 		}
@@ -107,11 +107,11 @@ namespace glib
 
 	/*
 		Gets the file size of a reference at the index if possible.
-		Returns an unsigned int.
+		Returns an size_t.
 	*/
-	size_t SimpleDir::getReferenceSize(int index)
+	size_t SimpleDir::getReferenceSize(size_t index)
 	{
-		if (index >= 0 && index < names.size())
+		if (index < names.size())
 		{
 			if(names[index].is_directory())
 				return getFolderSize(names[index]);
@@ -152,9 +152,9 @@ namespace glib
 	/*
 		Returns a time_t that represents the last time it was changed.
 	*/
-	time_t SimpleDir::getLastChangeTime(int index)
+	time_t SimpleDir::getLastChangeTime(size_t index)
 	{
-		if (index >= 0 && index < names.size())
+		if (index < names.size())
 		{
 			std::filesystem::file_time_type ftime = std::filesystem::last_write_time(names[index].path());
 			
@@ -179,9 +179,9 @@ namespace glib
 		Determines if the particular reference at the specified index
 		is another directory or not if possible.
 	*/
-	bool SimpleDir::referenceIsDirectory(int index)
+	bool SimpleDir::referenceIsDirectory(size_t index)
 	{
-		if (index >= 0 && index < names.size())
+		if (index < names.size())
 		{
 			return std::filesystem::is_directory( names[index].path() );
 		}
@@ -199,9 +199,9 @@ namespace glib
 		Changes the name to the new name specified.
 		The new name should not contain the path.
 	*/
-	void SimpleDir::renameResource(std::string newName, int index)
+	void SimpleDir::renameResource(std::string newName, size_t index)
 	{
-		if (index >= 0 && index < names.size())
+		if (index < names.size())
 		{
 			std::string temp = getLocation();
 			temp += "\\";
@@ -230,9 +230,9 @@ namespace glib
 	/*
 		Attempts to delete a resource at the specified location.
 	*/
-	void SimpleDir::deleteResource(int index)
+	void SimpleDir::deleteResource(size_t index)
 	{
-		if (index >= 0 && index < names.size())
+		if (index < names.size())
 		{
 			try
 			{
@@ -267,9 +267,9 @@ namespace glib
 		ends with a / or \, then it will use the current name of the file.
 		Otherwise, it will use the name and file extension you specify.
 	*/
-	void SimpleDir::copyResource(std::string newName, int index)
+	void SimpleDir::copyResource(std::string newName, size_t index)
 	{
-		if (index >= 0 && index < names.size())
+		if (index < names.size())
 		{
 			std::string oth = "";
 			oth += newName;
@@ -307,7 +307,7 @@ namespace glib
 	int SimpleDir::getReferenceLocation(std::string name)
 	{
 		int index = -1;
-		for (int i = 0; i < names.size(); i++)
+		for (size_t i = 0; i < names.size(); i++)
 		{
 			if ( name == getReferenceName(i) )
 			{
@@ -322,7 +322,7 @@ namespace glib
 	/*
 		Gets the amount of references that are stored in this object.
 	*/
-	int SimpleDir::getSize()
+	size_t SimpleDir::getSize()
 	{
 		return names.size();
 	}
@@ -335,7 +335,7 @@ namespace glib
 	{
 		std::vector<std::string> dirs = std::vector<std::string>();
 
-		for (int i = 0; i < getSize(); i++)
+		for (size_t i = 0; i < getSize(); i++)
 		{
 			if (referenceIsDirectory(i))
 			{
@@ -354,7 +354,7 @@ namespace glib
 	{
 		std::vector<std::string> files = std::vector<std::string>();
 
-		for (int i = 0; i < getSize(); i++)
+		for (size_t i = 0; i < getSize(); i++)
 		{
 			if (!referenceIsDirectory(i))
 			{

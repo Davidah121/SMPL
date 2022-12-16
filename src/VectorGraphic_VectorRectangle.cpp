@@ -33,10 +33,10 @@ namespace glib
 		//Same regardless of anti aliasing status.
 
 		//first, calc bounding box
-		int x1 = MathExt::min(x, x + width);
-		int x2 = MathExt::max(x, x + width);
-		int y1 = MathExt::min(y, y + height);
-		int y2 = MathExt::max(y, y + height);
+		int x1 = (int)MathExt::round(MathExt::min(x, x + width));
+		int x2 = (int)MathExt::round(MathExt::max(x, x + width));
+		int y1 = (int)MathExt::round(MathExt::min(y, y + height));
+		int y2 = (int)MathExt::round(MathExt::max(y, y + height));
 
 		x1 = MathExt::clamp(x1, 0, globalWidth);
 		y1 = MathExt::clamp(y1, 0, globalHeight);

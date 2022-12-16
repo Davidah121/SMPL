@@ -36,19 +36,19 @@ namespace glib
 		//Exceptions
 		struct ExistanceError : public std::exception
 		{
-			const char* what() noexcept { return "File or Directory could not be found."; }
+			const char* what() const noexcept { return "File or Directory could not be found."; }
 		};
 		struct CopyError : public std::exception
 		{
-			const char* what() noexcept { return "File or Directory could not be copied."; }
+			const char* what() const noexcept { return "File or Directory could not be copied."; }
 		};
 		struct DeleteError : public std::exception
 		{
-			const char* what() noexcept { return "File or Directory could not be deleted."; }
+			const char* what() const noexcept { return "File or Directory could not be deleted."; }
 		};
 		struct RenameError : public std::exception
 		{
-			const char* what() noexcept { return "File or Directory could not be renamed."; }
+			const char* what() const noexcept { return "File or Directory could not be renamed."; }
 		};
 
 		/**
@@ -68,7 +68,7 @@ namespace glib
 		 * @param index 
 		 * @return std::string 
 		 */
-		std::string getReferenceName(int index);
+		std::string getReferenceName(size_t index);
 
 		/**
 		 * @brief Gets the Reference Full Path at the specified index.
@@ -78,7 +78,7 @@ namespace glib
 		 * @param index 
 		 * @return std::string 
 		 */
-		std::string getReferenceFullPath(int index);
+		std::string getReferenceFullPath(size_t index);
 
 		/**
 		 * @brief Get the size of the file or folder at the index.
@@ -86,7 +86,7 @@ namespace glib
 		 * @param index 
 		 * @return size_t 
 		 */
-		size_t getReferenceSize(int index);
+		size_t getReferenceSize(size_t index);
 
 		/**
 		 * @brief Gets the Last Change Time for the file or folder at the index.
@@ -95,7 +95,7 @@ namespace glib
 		 * @param index 
 		 * @return time_t 
 		 */
-		time_t getLastChangeTime(int index);
+		time_t getLastChangeTime(size_t index);
 
 		/**
 		 * @brief Returns if the reference at the specified index is a directory.
@@ -105,7 +105,7 @@ namespace glib
 		 * @return true 
 		 * @return false 
 		 */
-		bool referenceIsDirectory(int index); //Gets whether the reference is a directory or not
+		bool referenceIsDirectory(size_t index); //Gets whether the reference is a directory or not
 		
 		/**
 		 * @brief Attempts to rename the reference at the index.
@@ -116,7 +116,7 @@ namespace glib
 		 * @param newFileName 
 		 * @param index 
 		 */
-		void renameResource(std::string newFileName, int index);
+		void renameResource(std::string newFileName, size_t index);
 
 		/**
 		 * @brief Attempts to delete the reference at the index.
@@ -127,7 +127,7 @@ namespace glib
 		 * 		Note that deleting in this way will not move the data to the recycle bin.
 		 * @param index 
 		 */
-		void deleteResource(int index);
+		void deleteResource(size_t index);
 
 		/**
 		 * @brief Attempts to copy the reference at the index.
@@ -137,7 +137,7 @@ namespace glib
 		 * @param newFileName 
 		 * @param index 
 		 */
-		void copyResource(std::string newFileName, int index);
+		void copyResource(std::string newFileName, size_t index);
 
 		/**
 		 * @brief Gets the Reference Location by its name.
@@ -152,9 +152,9 @@ namespace glib
 		/**
 		 * @brief Gets the amount of items in the directory.
 		 * 
-		 * @return int 
+		 * @return size_t 
 		 */
-		int getSize();
+		size_t getSize();
 
 		/**
 		 * @brief Returns a list of all the folders.

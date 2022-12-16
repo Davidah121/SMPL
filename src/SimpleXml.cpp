@@ -4,22 +4,6 @@
 
 namespace glib
 {
-
-    #pragma region XML_ATTRIBUTE
-
-    XmlAttribute::XmlAttribute()
-    {
-
-    }
-
-    XmlAttribute::~XmlAttribute()
-    {
-
-    }
-
-    #pragma endregion
-
-
     #pragma region XML_NODE
 
     XmlNode::XmlNode()
@@ -50,6 +34,28 @@ namespace glib
         {
             this->childNodes.push_back( new XmlNode(*cNode) );
         }
+    }
+
+    void XmlNode::addAttribute(std::string key, std::string value)
+    {
+        attributes[StringTools::toLowercase(key)] = value;
+    }
+
+    void XmlNode::addAttribute(std::pair<std::string, std::string> p)
+    {
+        attributes[StringTools::toLowercase(p.first)] = p.second;
+    }
+
+    std::pair<std::string, std::string> XmlNode::getAttribute(std::string key)
+    {
+        std::pair<std::string, std::string> pair;
+        auto temp = attributes.find(StringTools::toLowercase(key));
+        if(temp != attributes.end())
+        {
+            pair.first = temp->first;
+            pair.second = temp->second;
+        }
+        return pair;
     }
 
     bool XmlNode::isEndOfSection()
@@ -101,6 +107,16 @@ namespace glib
             f.close();
         }
     }
+    
+    std::string SimpleXml::convertToString()
+    {
+        std::string s = "";
+        for(XmlNode* v : nodes)
+        {
+            saveNode(s, v);
+        }
+        return s;
+    }
 
     void SimpleXml::saveNode(SimpleFile* f, XmlNode* node)
     {
@@ -116,12 +132,12 @@ namespace glib
 
         line += node->title;
 
-        for(XmlAttribute a : node->attributes)
+        for(std::pair<std::string, std::string> a : node->attributes)
         {
             line += " ";
-            line += a.name;
+            line += a.first;
             line += "=\"";
-            line += a.value;
+            line += a.second;
             line += "\"";
         }
         
@@ -158,9 +174,64 @@ namespace glib
         }
     }
 
+    void SimpleXml::saveNode(std::string& s, XmlNode* node)
+    {
+        std::string line = "";
+
+        line += "<";
+
+        //has no child nodes, no attributes, and no value
+        if(node->childNodes.size()==0 && node->attributes.size()==0 && node->value=="")
+        {
+            line+="/";
+        }
+
+        line += node->title;
+
+        for(std::pair<std::string, std::string> a : node->attributes)
+        {
+            line += " ";
+            line += a.first;
+            line += "=\"";
+            line += a.second;
+            line += "\"";
+        }
+        
+        //has no child nodes and no value, but has at least one attribute
+        if(node->childNodes.size()==0 && node->attributes.size()>0 && node->value=="")
+        {
+            line += "/";
+        }
+        line += ">";
+
+        s += line;
+
+        if(node->value=="" && node->childNodes.size()>0)
+            s += "\n";
+        else if(node->value!="")
+            s += node->value;
+        else
+            s += "\n";
+        
+        
+        for (XmlNode* v : node->childNodes)
+        {
+            saveNode(s, v);
+        }
+
+        if(node->childNodes.size()>0 || node->value!="")
+        {
+            line = "</";
+            line += node->title;
+            line += ">";
+            s += line + "\n";
+        }
+    }
+
     /**
      * No Error Checking currently.
-     * Currently Adding error checking and failures
+     * Currently Adding error checking and failures.
+     * --May Have done that but I can't remember
      */
     bool SimpleXml::load(File file, bool parseEscape)
     {
@@ -307,14 +378,160 @@ namespace glib
         
     }
 
+    bool SimpleXml::loadFromBytes(unsigned char* bytes, size_t size, bool parseEscape)
+    {
+        shouldParseEscape = parseEscape;
+
+        bool parsingNode = false;
+        std::string innerNodeText = "";
+
+        XmlNode* parentNode = nullptr;
+        bool isRecordingText = false;
+        bool hitEnd = true;
+
+        if(bytes != nullptr)
+        {
+            std::vector<unsigned char> fileBytes = removeCommentsAndInvalidChars(bytes, size);
+
+            for(unsigned char byte : fileBytes)
+            {
+                if(byte=='<' && hitEnd==true)
+                {
+                    //set value of node
+                    if(parentNode!=nullptr)
+                    {
+                        parentNode->value = innerNodeText;
+                    }
+                    innerNodeText = "";
+                    isRecordingText = false;
+                    parsingNode = true;
+                    hitEnd=false;
+                }
+                else if(byte=='>' && hitEnd==false)
+                {
+                    parsingNode = false;
+                    hitEnd=true;
+
+                    XmlNode* node = parseXmlLine(innerNodeText);
+
+                    if(node==nullptr)
+                    {
+                        dispose();
+                        return false;
+                    }
+
+                    bool slashAtFront = innerNodeText[0] == '/';
+
+                    innerNodeText = "";
+                    isRecordingText = false;
+                    if(parentNode==nullptr)
+                    {
+                        if(!node->isEndOfSection())
+                        {
+                            nodes.push_back(node);
+                            parentNode = node;
+                        }
+                        else
+                        {
+                            if(node->attributes.size()>0)
+                            {
+                                nodes.push_back(node);
+                            }
+                            parentNode = node->parentNode;
+                        }
+                    }
+                    else
+                    {
+                        node->parentNode = parentNode;
+                        if(!node->isEndOfSection())
+                        {
+                            parentNode->childNodes.push_back(node);
+                            parentNode = node;
+                        }
+                        else
+                        {
+                            if(node->title == parentNode->title && node->isEndOfSection() && slashAtFront)
+                            {
+                                parentNode = parentNode->parentNode;
+                            }
+                            else
+                            {
+                                parentNode->childNodes.push_back(node);
+                                node->parentNode = parentNode;
+                            }
+                            
+                        }
+                    }
+                }
+                else
+                {
+                    if(isRecordingText)
+                    {
+                        innerNodeText += byte;
+                    }
+                    else
+                    {
+                        if(parsingNode)
+                        {
+                            if( StringTools::isAlphaNumerial(byte, true, false) || byte == '/' || byte == '?' || byte == '!')
+                            {
+                                isRecordingText=true;
+                                innerNodeText += byte;
+                            }
+                            else
+                            {
+                                //error has occurred
+                                //Must a number, letter, /, or _ at the start or ? or !
+                                dispose();
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            if(byte > 32)
+                            {
+                                //valid
+                                isRecordingText=true;
+                                innerNodeText += byte;
+                            }
+                        }
+                    }
+                    
+                }
+            }
+
+            if(shouldParseEscape)
+            {
+                for(XmlNode* node : nodes)
+                {
+                    fixParseOnNode(node);
+                }
+            }
+
+        }
+        else
+        {
+            //StringTools::out << "Could not open file" << StringTools::lineBreak;
+            return false;
+        }
+
+        return true;
+        
+    }
+
     std::vector<unsigned char> SimpleXml::removeCommentsAndInvalidChars(std::vector<unsigned char> fileBytes)
+    {
+        return removeCommentsAndInvalidChars(fileBytes.data(), fileBytes.size());
+    }
+
+    std::vector<unsigned char> SimpleXml::removeCommentsAndInvalidChars(unsigned char* fileBytes, size_t size)
     {
         bool inComment = false;
         bool potentialCommentStuff = false;
         std::vector<unsigned char> newBytes = std::vector<unsigned char>();
         std::string potentialBytes = "";
 
-        for(int i=0; i<fileBytes.size(); i++)
+        for(size_t i=0; i<size; i++)
         {
             if(!inComment)
             {
@@ -396,7 +613,7 @@ namespace glib
 
         if(!inComment)
         {
-            for(int i=0; i<potentialBytes.size(); i++)
+            for(size_t i=0; i<potentialBytes.size(); i++)
             {
                 newBytes.push_back( potentialBytes[i] );
             }
@@ -441,7 +658,7 @@ namespace glib
         node->title = title;
         
         //split with parameters. No split if surrounded by quotation marks. split by space then by equals
-        XmlAttribute attrib = XmlAttribute();
+        std::pair<std::string, std::string> attrib = std::pair<std::string, std::string>();
         std::string tempTitle = "";
         std::string tempValue = "";
         bool inQuotes = false;
@@ -449,7 +666,7 @@ namespace glib
 
         if(indexOfFirstSpace!=SIZE_MAX)
         {
-            for(int i=indexOfFirstSpace+1; i<attribString.size(); i++)
+            for(size_t i=indexOfFirstSpace+1; i<attribString.size(); i++)
             {
                 bool doThing=true;
                 if(attribString[i] == '\"')
@@ -458,7 +675,7 @@ namespace glib
                     doThing = false;
                 }
 
-                if(attribString[i] == ' ' && inQuotes == false || i==attribString.size()-1)
+                if((attribString[i] == ' ' && inQuotes == false) || i==attribString.size()-1)
                 {
                     if(i==attribString.size() && doThing)
                     {
@@ -468,13 +685,13 @@ namespace glib
                             delete node;
                             return nullptr;
                         }
-                        attrib.value+=attribString[i];
+                        attrib.second+=attribString[i];
                     }
 
-                    if(attrib.name != "")
-                        node->attributes.push_back(attrib);
+                    if(attrib.first != "")
+                        node->addAttribute(attrib);
                     
-                    attrib = XmlAttribute();
+                    attrib = std::pair<std::string, std::string>();
                     settingValue = false;
                 }
                 else if(doThing)
@@ -493,11 +710,11 @@ namespace glib
                                 delete node;
                                 return nullptr;
                             }
-                            attrib.value += attribString[i];
+                            attrib.second += attribString[i];
                         }
                         else
                         {
-                            attrib.name += attribString[i];
+                            attrib.first += attribString[i];
                         }
                     }
                     else
@@ -510,11 +727,11 @@ namespace glib
                                 delete node;
                                 return nullptr;
                             }
-                            attrib.value += attribString[i];
+                            attrib.second += attribString[i];
                         }
                         else
                         {
-                            attrib.name += attribString[i];
+                            attrib.first += attribString[i];
                         }
                     }
                 }
@@ -534,7 +751,7 @@ namespace glib
             bool num = false;
             bool hex = false;
             std::string infoToParse = "";
-            for(int i=1; i<escString.size()-1; i++)
+            for(size_t i=1; i<escString.size()-1; i++)
             {
                 if(escString[i] == '#')
                 {
@@ -560,7 +777,7 @@ namespace glib
                 {
                     //hex value
                     int charVal = 0;
-                    for(int i=0; i<infoToParse.size(); i++)
+                    for(size_t i=0; i<infoToParse.size(); i++)
                     {
                         charVal <<= 4;
                         charVal += StringTools::base16ToBase10(infoToParse[i]);
@@ -611,12 +828,13 @@ namespace glib
         std::string actualString = "";
         std::string tempString = "";
         bool proc = false;
-        for(XmlAttribute& k : n->attributes)
+
+        for(std::pair<std::string, std::string> k : n->attributes)
         {
             actualString = "";
             tempString = "";
             proc = false;
-            for(char c : k.value)
+            for(char c : k.second)
             {
                 if(!proc)
                 {
@@ -652,7 +870,10 @@ namespace glib
                 }
             }
             actualString += tempString;
-            k.value = actualString;
+            k.second = actualString;
+
+            //No longer done through references so this is required.
+            n->addAttribute(k);
         }
 
 

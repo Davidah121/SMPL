@@ -86,7 +86,7 @@ namespace glib
 		 * @brief Destroy the VectorShape object
 		 * 
 		 */
-		~VectorShape();
+		virtual ~VectorShape();
 		
 		//Object and Class Stuff
 		static const Class globalClass;

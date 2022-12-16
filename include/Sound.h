@@ -249,7 +249,7 @@ namespace glib
 		 * @param index 
 		 * @return Vec2f& 
 		 */
-		Vec2f& operator[](unsigned int index);
+		Vec2f& operator[](size_t index);
 
 		/**
 		 * @brief Gets the sound data at the specified index.
@@ -257,21 +257,21 @@ namespace glib
 		 * @param index 
 		 * @return Vec2f
 		 */
-		Vec2f get(unsigned int index);
+		Vec2f get(size_t index);
 
 		/**
 		 * @brief Gets the time position in the audio.
 		 * 
-		 * @return unsigned int 
+		 * @return size_t 
 		 */
-		unsigned int getPosition();
+		size_t getPosition();
 
 		/**
 		 * @brief Sets the time position in the audio.
 		 * 
 		 * @param index 
 		 */
-		void setPosition(unsigned int index);
+		void setPosition(size_t index);
 
 		/**
 		 * @brief Sets the Priority of the sound. Higher Priority sounds are less likely to be cut when 
@@ -292,30 +292,30 @@ namespace glib
 		 * @brief Get the Length of the sound.
 		 * 		Returns the amount of samples.
 		 * 
-		 * @return unsigned int 
+		 * @return size_t 
 		 */
-		unsigned int getLength();
+		size_t getLength();
 
 		/**
 		 * @brief Gets the time for Loop Start
 		 * 
-		 * @return unsigned int 
+		 * @return size_t 
 		 */
-		unsigned int getLoopStart();
+		size_t getLoopStart();
 
 		/**
 		 * @brief Gets the time for Loop End
 		 * 
-		 * @return unsigned int 
+		 * @return size_t 
 		 */
-		unsigned int getLoopEnd();
+		size_t getLoopEnd();
 
 		/**
 		 * @brief Sets the time for Loop Start
 		 * 
 		 * @param index 
 		 */
-		void setLoopStart(unsigned int index);
+		void setLoopStart(size_t index);
 
 		/**
 		 * @brief Sets the time for Loop Start
@@ -329,7 +329,7 @@ namespace glib
 		 * 
 		 * @param index 
 		 */
-		void setLoopEnd(unsigned int index);
+		void setLoopEnd(size_t index);
 
 		/**
 		 * @brief Sets the time for Loop End
@@ -348,7 +348,7 @@ namespace glib
 		 * 		Whether it will be a shallow copy of the data or take ownership of the data.
 		 * 		Default is false
 		 */
-		void setData(Vec2f* data, unsigned int size, bool isShallowCopy=false);
+		void setData(Vec2f* data, size_t size, bool isShallowCopy=false);
 
 		/**
 		 * @brief Makes a copy of the raw sound data.
@@ -357,7 +357,7 @@ namespace glib
 		 * @param data 
 		 * @param size 
 		 */
-		void copyData(Vec2f* data, unsigned int size);
+		void copyData(Vec2f* data, size_t size);
 
 		/**
 		 * @brief Loads a sound from a file.
@@ -392,12 +392,12 @@ namespace glib
 
 		Vec2f* data = nullptr;
 		
-		unsigned int priority = 0;
-		unsigned int position = 0;
-		unsigned int length = 0;
+		size_t priority = 0;
+		size_t position = 0;
+		size_t length = 0;
 
-		unsigned int loopStart = 0;
-		unsigned int loopEnd = 0;
+		size_t loopStart = 0;
+		size_t loopEnd = 0;
 	};
 
 } //NAMESPACE glib END

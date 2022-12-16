@@ -59,8 +59,8 @@ namespace glib
 
 	void GuiRectangleButton::update()
 	{
-		int mouseX;
-		int mouseY;
+		int mouseX = -1;
+		int mouseY = -1;
 
 		bool oldHover = hover;
 		bool oldFocus = getFocus();
@@ -220,7 +220,7 @@ namespace glib
 		GuiInstance::loadDataFromXML(attribs);
 		std::vector<std::string> possibleNames = { "width", "height", "backgroundcolor", "outlinecolor", "focusoutlinecolor", "hovercolor", "focusbackgroundcolor"};
 
-		for(int i=0; i<possibleNames.size(); i++)
+		for(size_t i=0; i<possibleNames.size(); i++)
 		{
 			auto it = attribs.find(possibleNames[i]);
 			if(it != attribs.end())

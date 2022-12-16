@@ -61,7 +61,7 @@ namespace glib
 		 * 		returns a valid color if index is valid. If index is invalid and USE_EXCEPTIONS is defined, an
 		 * 		OutOfBounds error is thrown. Otherwise, the default Color is returned.
 		 */
-		Color getColor(int index);
+		Color getColor(size_t index);
 
 		/**
 		 * @brief Gets a color by its index in the palette. Returns the reference to the color
@@ -71,16 +71,16 @@ namespace glib
 		 * 		returns a valid color pointer if index is valid. If index is invalid and USE_EXCEPTIONS is defined, an
 		 * 		OutOfBounds error is thrown. Otherwise, a nullptr is returned.
 		 */
-		Color* getColorRef(int index);
+		Color* getColorRef(size_t index);
 
 		/**
 		 * @brief Gets the index of the color in the palette if it exists.
 		 * @param c
 		 * 		The color to check.
-		 * @return int
+		 * @return size_t
 		 * 		returns a valid index if the color was found. -1 is returned otherwise.
 		 */
-		int getColorIndex(Color c);
+		size_t getColorIndex(Color c);
 		
 		/**
 		 * @brief Returns the color in the palette closest to the desired color.
@@ -99,16 +99,16 @@ namespace glib
 		 * 		KD-Trees are used to speed this operation up and performs with O(Log(N)) on average
 		 * @param c
 		 * 		The desired color
-		 * @return int
+		 * @return size_t
 		 * 		The index of the closest color found in the palette.
 		 */
-		int getClosestColorIndex(Color c);
+		size_t getClosestColorIndex(Color c);
 
 		/**
 		 * @brief Returns the amount of colors in the palette.
-		 * @return int
+		 * @return size_t
 		 */
-		int getSize();
+		size_t getSize();
 
 		/**
 		 * @brief Returns the palette used as a vector. It is a reference to avoid copying data.
@@ -184,7 +184,7 @@ namespace glib
 		 * 		Returns a color palette in the same color space as the input if successful.
 		 * 		Otherwise, returns an empty color palette.
 		 */
-		static ColorPalette generateOptimalPalette(Color* colorArray, int size, int colors, unsigned char type, bool convertToLab = false, bool uniqueOnly = false);
+		static ColorPalette generateOptimalPalette(Color* colorArray, size_t size, int colors, unsigned char type, bool convertToLab = false, bool uniqueOnly = false);
 
 		/**
 		 * @brief Rebalances the KD-Tree for color searching.
@@ -198,7 +198,7 @@ namespace glib
 
 		static std::vector<Color> meanCut(std::vector<Color> colorArray, int colors);
 		static std::vector<Color> medianCut(std::vector<Color> colorArray, int colors);
-		static std::vector<Color> kMeans(std::vector<Color> colorArray, int colors, int maxIterations);
+		static std::vector<Color> kMeans(std::vector<Color> colorArray, int colors, size_t maxIterations);
 		
 		std::vector<Color> paletteArr = std::vector<Color>();
 		KDTree<unsigned char>* paletteTree = new KDTree<unsigned char>(3);

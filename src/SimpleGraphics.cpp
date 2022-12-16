@@ -201,10 +201,10 @@ namespace glib
 				break;
 		}
 
-		red = (tAlpha1 * c.red * Fa) + (tAlpha2 * otherColor.red * Fb);
-		green = (tAlpha1 * c.green * Fa) + (tAlpha2 * otherColor.green * Fb);
-		blue = (tAlpha1 * c.blue * Fa) + (tAlpha2 * otherColor.blue * Fb);
-		alpha = (c.alpha * Fa) + (otherColor.alpha * Fb);
+		red = (int)MathExt::round( (tAlpha1 * c.red * Fa) + (tAlpha2 * otherColor.red * Fb) );
+		green = (int)MathExt::round( (tAlpha1 * c.green * Fa) + (tAlpha2 * otherColor.green * Fb) );
+		blue = (int)MathExt::round( (tAlpha1 * c.blue * Fa) + (tAlpha2 * otherColor.blue * Fb) );
+		alpha = (int)MathExt::round( (c.alpha * Fa) + (otherColor.alpha * Fb) );
 
 		unsigned char redB = (unsigned char)MathExt::min(red, 255);
 		unsigned char greenB = (unsigned char)MathExt::min(green, 255);
@@ -294,10 +294,10 @@ namespace glib
 				break;
 		}
 
-		red = (tAlpha1 * src.red * Fa) + (tAlpha2 * dest.red * Fb);
-		green = (tAlpha1 * src.green * Fa) + (tAlpha2 * dest.green * Fb);
-		blue = (tAlpha1 * src.blue * Fa) + (tAlpha2 * dest.blue * Fb);
-		alpha = (src.alpha * Fa) + (dest.alpha * Fb);
+		red = (int)MathExt::round( (tAlpha1 * src.red * Fa) + (tAlpha2 * dest.red * Fb));
+		green = (int)MathExt::round( (tAlpha1 * src.green * Fa) + (tAlpha2 * dest.green * Fb));
+		blue = (int)MathExt::round( (tAlpha1 * src.blue * Fa) + (tAlpha2 * dest.blue * Fb));
+		alpha = (int)MathExt::round( (src.alpha * Fa) + (dest.alpha * Fb));
 
 		unsigned char redB = (unsigned char)MathExt::min(red, 255);
 		unsigned char greenB = (unsigned char)MathExt::min(green, 255);
@@ -463,6 +463,7 @@ namespace glib
 		nBlue = _mm_min_ps( nBlue, _mm_set1_ps(255));
 		nAlpha = _mm_min_ps( nAlpha, _mm_set1_ps(255));
 
+		//round the stuff
 		float* r = (float*)&nRed;
 		float* g = (float*)&nGreen;
 		float* b = (float*)&nBlue;
@@ -668,6 +669,7 @@ namespace glib
 		nBlue = _mm256_min_ps( nBlue, _mm256_set1_ps(255));
 		nAlpha = _mm256_min_ps( nAlpha, _mm256_set1_ps(255));
 
+		//round the stuff
 		float* r = (float*)&nRed;
 		float* g = (float*)&nGreen;
 		float* b = (float*)&nBlue;

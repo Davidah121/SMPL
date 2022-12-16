@@ -42,12 +42,12 @@ namespace glib
 		}
 
 		bool containsTransparency = saveAlpha;
-		time_t t1, t2;
+		// time_t t1, t2;
 
-		t1 = System::getCurrentTimeMicro();
+		// t1 = System::getCurrentTimeMicro();
 		if(containsTransparency)
 		{
-			if(tempImg.getPalette().getSize() > 0 && tempImg.getPalette().getSize() < paletteSize)
+			if(tempImg.getPalette().getSize() > 0 && tempImg.getPalette().getSize() < (size_t)paletteSize)
 			{
 				tempPalette = tempImg.getPalette();
 				tempPalette.setPaletteMode(false);
@@ -61,7 +61,7 @@ namespace glib
 		}
 		else
 		{
-			if(tempImg.getPalette().getSize() > 0 && tempImg.getPalette().getSize() <= paletteSize)
+			if(tempImg.getPalette().getSize() > 0 && tempImg.getPalette().getSize() <= (size_t)paletteSize)
 			{
 				tempPalette = tempImg.getPalette();
 			}
@@ -81,7 +81,7 @@ namespace glib
 			SimpleGraphics::ditherImage(&tempImg, SimpleGraphics::FLOYD_DITHER);
 		}
 
-		t1 = System::getCurrentTimeMicro();
+		// t1 = System::getCurrentTimeMicro();
 		if(containsTransparency)
 		{
 			for(int i=0; i<width*height; i++)
@@ -117,7 +117,7 @@ namespace glib
 		gifHeaderInfo += (char)((height>>8) & 0xFF);
 
 		//packed data
-			int paletteSizeP2 = (MathExt::ceil( MathExt::log( (double)paletteSize, 2.0) - 1 ) );
+			int paletteSizeP2 = (int)(MathExt::ceil( MathExt::log( (double)paletteSize, 2.0) - 1 ) );
 			char c = 0;
 			//paletteSize
 			c += (char)paletteSizeP2;
@@ -141,7 +141,7 @@ namespace glib
 		//addPalette
 		int padding = (1 << (codeSize)) - tempPalette.getSize();
 		
-		for(int i=0; i<tempPalette.getSize(); i++)
+		for(size_t i=0; i<tempPalette.getSize(); i++)
 		{
 			Color c = tempPalette.getColor(i);
 			gifHeaderInfo += c.red;
@@ -208,15 +208,15 @@ namespace glib
 		//Separate into blocks to make it multi threaded
 		//each block should approach the max dictionary size of 4096 entries and try not to exceed it.
 
-		int blocks = MathExt::ceil((double)height/24);
+		int blocks = (int)MathExt::ceil((double)height/24);
 		//compress data
-		t1 = System::getCurrentTimeMicro();
+		// t1 = System::getCurrentTimeMicro();
 		std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, blocks, codeSize);
-		t2 = System::getCurrentTimeMicro();
+		// t2 = System::getCurrentTimeMicro();
 
-		StringTools::println("Time to compress: %u", t2-t1);
+		// StringTools::println("Time to compress: %u", t2-t1);
 
-		for(int i=0; i<compressedData.size(); i++)
+		for(size_t i=0; i<compressedData.size(); i++)
 		{
 			if(i % 255 == 0)
 			{
@@ -281,13 +281,13 @@ namespace glib
 			
 			bool hasGlobalColorTable = (fileData[10] >> 7) == 1;
 			int colorRes = ((fileData[10] >> 4) & 0b00000111) + 1;
-			bool globalTableSorted = ((fileData[10] >> 3) & 0b00000001) == 1;
+			// bool globalTableSorted = ((fileData[10] >> 3) & 0b00000001) == 1; //Not used
 			int sizeOfGlobalTable = 2 << (fileData[10] & 0b00000111);
 
 			int backgroundColorIndex = fileData[11];
-			int pixelAspectRatio = fileData[12]; //Not used
+			// int pixelAspectRatio = fileData[12]; //Not used
 
-			int startIndex = 13;
+			size_t startIndex = 13;
 			if (hasGlobalColorTable)
 			{
 				for (int i = 0; i < sizeOfGlobalTable; i++)
@@ -302,7 +302,7 @@ namespace glib
 			}
 
 			int transparentColorIndex = -1;
-			int backgroundTile = -1;
+			// int backgroundTile = -1; //Not used. Not sure if this should be used???
 
 			while (startIndex < fileData.size())
 			{
@@ -339,7 +339,8 @@ namespace glib
 
 					bool hasLocalTable = ((fileData[startIndex + 9] >> 7) & 0x01) == 1;
 					bool interlaced = ((fileData[startIndex + 9] >> 6) & 0x01) == 1;
-					bool sorted = ((fileData[startIndex + 9] >> 5) & 0x01) == 1;
+					// bool sorted = ((fileData[startIndex + 9] >> 5) & 0x01) == 1; //Not needed
+
 					//Skipping reserved field
 					int sizeOfLocalTable = 2 << (fileData[startIndex + 9] & 0b00000111);
 
@@ -365,7 +366,7 @@ namespace glib
 						localTable = globalColorTable;
 					}
 
-					int lzwMinCodeSize = fileData[startIndex];
+					// int lzwMinCodeSize = fileData[startIndex]; //Not needed. The palette must be the dictionary size. Otherwise, use 1 << lzwCodeSize to get the dictionary size.
 					startIndex++;
 
 					//Start reading the sub blocks
@@ -403,7 +404,7 @@ namespace glib
 					{
 						if(interlaced==false)
 						{
-							int j = 0;
+							size_t j = 0;
 							while (j < pixValues.size())
 							{
 								int paletteIndex = pixValues[j];
@@ -462,7 +463,7 @@ namespace glib
 						}
 						else
 						{
-							int j = 0;
+							size_t j = 0;
 							int incVal = 8;
 							int startY = 0;
 							while (j < pixValues.size())

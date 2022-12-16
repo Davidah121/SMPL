@@ -9,7 +9,7 @@ namespace glib
 		return Compression::compressRLE(data.data(), data.size());
 	}
 
-	std::vector<unsigned char> Compression::compressRLE(unsigned char* data, int size)
+	std::vector<unsigned char> Compression::compressRLE(unsigned char* data, size_t size)
 	{
 		//Runs that are 1 byte in size and data that is 1 byte in size
 		std::vector<unsigned char> output = std::vector<unsigned char>();
@@ -73,7 +73,7 @@ namespace glib
 		return decompressRLE(data.data(), data.size(), expectedSize);
 	}
 
-	std::vector<unsigned char> Compression::decompressRLE(unsigned char* data, int size, size_t expectedSize)
+	std::vector<unsigned char> Compression::decompressRLE(unsigned char* data, size_t size, size_t expectedSize)
 	{
 		std::vector<unsigned char> uncompressedData = std::vector<unsigned char>();
 

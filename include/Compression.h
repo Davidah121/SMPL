@@ -36,7 +36,7 @@ namespace glib
 
 		struct ExceededExpectedSizeError : public std::exception
 		{
-			const char* what() noexcept { return "Error while decompressing data. Exceeded expected size."; }
+			const char* what() const noexcept { return "Error while decompressing data. Exceeded expected size."; }
 		};
 		/**
 		 * @brief Compresses data using Run Length Encoding.
@@ -52,7 +52,7 @@ namespace glib
 		 * @return std::vector<unsigned char>
 		 * 		If successful, returns the compressed data as a vector so that it can be saved into a file later if desired.
 		 */
-		static std::vector<unsigned char> compressRLE(unsigned char* data, int size);
+		static std::vector<unsigned char> compressRLE(unsigned char* data, size_t size);
 
 		/**
 		 * @brief Compresses data using Run Length Encoding.
@@ -86,7 +86,7 @@ namespace glib
 		 * @return std::vector<unsigned char>
 		 * 		If successful, returns the decompressed data as a vector.
 		 */
-		static std::vector<unsigned char> decompressRLE(unsigned char* data, int size, size_t expectedSize = -1);
+		static std::vector<unsigned char> decompressRLE(unsigned char* data, size_t size, size_t expectedSize = -1);
 
 		/**
 		 * @brief Decompresses Run Length Encoded data.
@@ -108,12 +108,12 @@ namespace glib
 
 		struct LZW_ERROR_L317 : public std::exception
 		{
-			const char* what() noexcept { return "Error Code L317 when decompressing LZW data."; }
+			const char* what() const noexcept { return "Error Code L317 when decompressing LZW data."; }
 		};
 
 		struct LZW_ERROR_L340 : public std::exception
 		{
-			const char* what() noexcept { return "Error Code L340 when decompressing LZW data."; }
+			const char* what() const noexcept { return "Error Code L340 when decompressing LZW data."; }
 		};
 
 		/**
@@ -135,7 +135,7 @@ namespace glib
 		 * 		If successful, returns the decompressed data as a vector. The decompressed data will just be the indicies in the dictionary.
 		 * 		The original dictionary is still needed to fully decompress the data.
 		 */
-		static std::vector<unsigned char> decompressLZW(unsigned char* data, int size, int dictionarySize, size_t expectedSize = -1);
+		static std::vector<unsigned char> decompressLZW(unsigned char* data, size_t size, int dictionarySize, size_t expectedSize = -1);
 
 		/**
 		 * @brief Decompresses LZW (Lempel Ziv Welch) data.
@@ -156,7 +156,7 @@ namespace glib
 		static std::vector<unsigned char> decompressLZW(std::vector<unsigned char> data, int dictionarySize, size_t expectedSize = -1);
 
 
-		static std::vector<unsigned char> compressLZW(unsigned char* data, int size, int blocks, int codeSize);
+		static std::vector<unsigned char> compressLZW(unsigned char* data, size_t size, int blocks, int codeSize);
 		static std::vector<unsigned char> compressLZW(std::vector<unsigned char> data, int blocks, int codeSize);
 
 		/**
@@ -175,7 +175,7 @@ namespace glib
 		 * @return std::vector<unsigned char>
 		 * 		If successful, returns the compressed data as a vector.
 		 */
-		static std::vector<unsigned char> compressLZW(unsigned char* data, int size, int codeSize);
+		static std::vector<unsigned char> compressLZW(unsigned char* data, size_t size, int codeSize);
 		
 		/**
 		 * @brief Compresses LZW (Lempel Ziv Welch) data.
@@ -192,7 +192,7 @@ namespace glib
 		 */
 		static std::vector<unsigned char> compressLZW(std::vector<unsigned char> data, int codeSize);
 
-		static void compressLZW(BinarySet* outputData, unsigned char* data, int size, int codeSize, bool omitEndCode = false);
+		static void compressLZW(BinarySet* outputData, unsigned char* data, size_t size, int codeSize, bool omitEndCode = false);
 
 		/**
 		 * @brief Compresses LZ77 (Lempel Ziv 77) data.
@@ -213,7 +213,7 @@ namespace glib
 		 * @return std::vector<unsigned char>
 		 * 		If successful, returns the compressed data as a vector.
 		 */
-		static std::vector<unsigned char> compressLZ77(unsigned char* data, int size, int maxBufferSize = 0x7FFF);
+		static std::vector<unsigned char> compressLZ77(unsigned char* data, size_t size, int maxBufferSize = 0x7FFF);
 
 		/**
 		 * @brief Compresses LZ77 (Lempel Ziv 77) data.
@@ -257,7 +257,7 @@ namespace glib
 		 * @return std::vector<unsigned char>
 		 * 		If successful, returns the decompressed data as a vector.
 		 */
-		static std::vector<unsigned char> decompressLZ77(unsigned char* data, int size, int maxBufferSize = 0x7FFF, size_t expectedSize = -1);
+		static std::vector<unsigned char> decompressLZ77(unsigned char* data, size_t size, int maxBufferSize = 0x7FFF, size_t expectedSize = -1);
 
 		/**
 		 * @brief Decompresses LZ77 (Lempel Ziv 77) data.
@@ -284,7 +284,7 @@ namespace glib
 
 		struct LZSS_ERROR : public std::exception
 		{
-			const char* what() noexcept { return "Error when decompressing LZSS data."; }
+			const char* what() const noexcept { return "Error when decompressing LZSS data."; }
 		};
 
 		/**
@@ -303,7 +303,7 @@ namespace glib
 		 * @return std::vector<unsigned char>
 		 * 		If successful, returns the compressed data as a vector.
 		 */
-		static std::vector<unsigned char> compressLZSS(unsigned char* data, int size);
+		static std::vector<unsigned char> compressLZSS(unsigned char* data, size_t size);
 
 		/**
 		 * @brief Compresses data using LZSS (Lempel Ziv Storer Szymanski)
@@ -341,7 +341,7 @@ namespace glib
 		 * @return std::vector<unsigned char>
 		 * 		If successful, returns the decompressed data as a vector.
 		 */
-		static std::vector<unsigned char> decompressLZSS(unsigned char* data, int size, size_t expectedSize = -1);
+		static std::vector<unsigned char> decompressLZSS(unsigned char* data, size_t size, size_t expectedSize = -1);
 
 		/**
 		 * @brief Decompresses LZSS (Lempel Ziv Storer Szymanski) data.
@@ -365,7 +365,7 @@ namespace glib
 
 		struct HUFFMAN_TREE_ERROR : public std::exception
 		{
-			const char* what() noexcept { return "Invalid Huffman tree used."; }
+			const char* what() const noexcept { return "Invalid Huffman tree used."; }
 		};
 
 		/**
@@ -383,7 +383,7 @@ namespace glib
 		 * 		If successful, returns the compressed data as a vector and the tree pointer should have the
 		 * 		huffman tree used to compress the data.
 		 */
-		static std::vector<unsigned char> compressHuffman(unsigned char* data, int size, BinaryTree<HuffmanNode>* tree);
+		static std::vector<unsigned char> compressHuffman(unsigned char* data, size_t size, BinaryTree<HuffmanNode>* tree);
 
 		/**
 		 * @brief Compresses data using a Huffman tree.
@@ -420,7 +420,7 @@ namespace glib
 		 * @return std::vector<unsigned char>
 		 * 		If successful, returns the decompressed data as a vector.
 		 */
-		static std::vector<unsigned char> decompressHuffman(unsigned char* data, int size, BinaryTree<HuffmanNode>* tree, size_t expectedSize = -1);
+		static std::vector<unsigned char> decompressHuffman(unsigned char* data, size_t size, BinaryTree<HuffmanNode>* tree, size_t expectedSize = -1);
 
 		/**
 		 * @brief Decompresses data using Huffman tree encoding.
@@ -444,7 +444,7 @@ namespace glib
 
 		struct HUFFMAN_CANONICAL_ERROR : public std::exception
 		{
-			const char* what() noexcept { return "Error creating Cannonical Huffman Tree."; }
+			const char* what() const noexcept { return "Error creating Cannonical Huffman Tree."; }
 		};
 
 		/**
@@ -465,7 +465,7 @@ namespace glib
 		 * 		Returns a valid huffman tree if successful. Otherwise, returns a nullptr.
 		 */
 		template<typename T>
-		static BinaryTree<HuffmanNode>* buildHuffmanTree(T* data, int size, int maxCodeLength = -1);
+		static BinaryTree<HuffmanNode>* buildHuffmanTree(T* data, size_t size, int maxCodeLength = -1);
 
 		/**
 		 * @brief Create a Canonical Huffman Tree based on the parameters given.
@@ -493,7 +493,7 @@ namespace glib
 		 * 		Determines whether the code values will be in LMSB or RMSB order.
 		 * 		Default is false | which is LMSB
 		 */
-		static BinaryTree<HuffmanNode>* buildCanonicalHuffmanTree(int* dataValue, int sizeOfData, int* codeLength, int sizeOfCodeLengths, bool separateCodes = true, bool rmsb = false);
+		static BinaryTree<HuffmanNode>* buildCanonicalHuffmanTree(int* dataValue, size_t sizeOfData, int* codeLength, size_t sizeOfCodeLengths, bool separateCodes = true, bool rmsb = false);
 
 		/**
 		 * @brief Compresses data using DELFATE
@@ -524,8 +524,8 @@ namespace glib
 		 * 		If successful, returns a valid deflate stream using a zlib header as a std::vector<unsigned char>.
 		 * 		Otherwise, returns an empty vector.
 		 */
-		static std::vector<unsigned char> compressDeflate(unsigned char* data, int size, int blocks, int compressionLevel = 7, bool customTable = false);
-		static void compressDeflate(BinarySet* outputData, unsigned char* data, int size, int blocks, int compressionLevel = 7, bool customTable = false);
+		static std::vector<unsigned char> compressDeflate(unsigned char* data, size_t size, int blocks, int compressionLevel = 7, bool customTable = false);
+		static void compressDeflate(BinarySet* outputData, unsigned char* data, size_t size, int blocks, int compressionLevel = 7, bool customTable = false);
 		
 		/**
 		 * @brief Compresses data using DELFATE
@@ -557,7 +557,7 @@ namespace glib
 
 		struct DEFLATE_INVALID_MODE : public std::exception
 		{
-			const char* what() noexcept { return "Error when decompressing deflate block. Invalid compression mode found."; }
+			const char* what() const noexcept { return "Error when decompressing deflate block. Invalid compression mode found."; }
 		};
 		
 		/**
@@ -577,7 +577,7 @@ namespace glib
 		 * @return std::vector<unsigned char>
 		 * 		If successful, returns the decompressed data. Otherwise, an empty vector is returned.
 		 */
-		static std::vector<unsigned char> decompressDeflate(unsigned char* data, int size, size_t expectedSize = -1);
+		static std::vector<unsigned char> decompressDeflate(unsigned char* data, size_t size, size_t expectedSize = -1);
 
 		/**
 		 * @brief Decompresses a DEFLATE data stream.
@@ -608,7 +608,7 @@ namespace glib
 		 * @brief Experimental Arithmetic decompression.
 		 * 		Should not be used currently.
 		 */
-		static std::vector<unsigned char> decompressArithmetic(double data, int messageSize, std::vector<double> percentages);
+		static std::vector<unsigned char> decompressArithmetic(double data, size_t messageSize, std::vector<double> percentages);
 
 		/**
 		 * @brief Generates a checksum using ADLER32.
@@ -622,7 +622,7 @@ namespace glib
 		 * 		Returns a valid checksum if successful. Otherwise, 0 is returned.
 		 * 		Note that 0 can be a valid checksum return.
 		 */
-		static unsigned int adler32(unsigned char* data, int size);
+		static unsigned int adler32(unsigned char* data, size_t size);
 
 		/**
 		 * @brief Generates a checksum using ADLER32.
@@ -658,7 +658,7 @@ namespace glib
 		 * 		Returns a valid checksum if successful. Otherwise, 0 is returned.
 		 * 		Note that 0 can be a valid checksum return.
 		 */
-		static unsigned int crc(unsigned char* data, int size, unsigned char type = CRC_32);
+		static unsigned int crc(unsigned char* data, size_t size, unsigned char type = CRC_32);
 
 		/**
 		 * @brief Generates a checksum using CRC.
@@ -697,11 +697,11 @@ namespace glib
 		static void compressDeflateSubFunction(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel = 7);
 		static void compressDeflateSubFunction2(std::vector<lengthPair>* block, BinarySet* output, bool dynamic, bool lastBlock);
 		
-		static void buildCanonicalHuffTreeFromHuffTreeSubFunc(BinaryTreeNode<HuffmanNode>* tree);
+		// static void buildCanonicalHuffTreeFromHuffTreeSubFunc(BinaryTreeNode<HuffmanNode>* tree);
 	};
 
 	template<typename T>
-	BinaryTree<HuffmanNode>* Compression::buildHuffmanTree(T* data, int size, int maxCodeLength)
+	BinaryTree<HuffmanNode>* Compression::buildHuffmanTree(T* data, size_t size, int maxCodeLength)
 	{
 		if(size <= 0)
 		{
@@ -720,7 +720,6 @@ namespace glib
 		}
 
 		//First pass is to fill the frequency table
-		time_t t1, t2;
 		FrequencyTable<int> freqTable = FrequencyTable<int>();
 		for (int i = 0; i < size; i++)
 		{

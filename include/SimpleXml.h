@@ -1,29 +1,9 @@
 #pragma once
 #include "SimpleFile.h"
+#include <unordered_map>
 
 namespace glib
 {
-        
-    class XmlAttribute
-    {
-    public:
-        /**
-         * @brief Construct a new XmlAttribute object
-         *      Contains the name and value of the attribute as utf8 strings.
-         * 
-         */
-        XmlAttribute();
-
-        /**
-         * @brief Destroy the XmlAttribute object
-         * 
-         */
-        ~XmlAttribute();
-
-        std::string name;
-        std::string value;
-    };
-
     class XmlNode
     {
     public:
@@ -47,8 +27,12 @@ namespace glib
          */
         ~XmlNode();
 
+        void addAttribute(std::string key, std::string value);
+        void addAttribute(std::pair<std::string, std::string> p);
+        std::pair<std::string, std::string> getAttribute(std::string key);
+
         std::string title;
-        std::vector<XmlAttribute> attributes = std::vector<XmlAttribute>();
+        std::unordered_map<std::string, std::string> attributes = std::unordered_map<std::string, std::string>();
         std::vector<XmlNode*> childNodes = std::vector<XmlNode*>();
         XmlNode* parentNode = nullptr;
         std::string value;
@@ -100,11 +84,30 @@ namespace glib
         bool load(File file, bool parseEscape = true);
 
         /**
+         * @brief Loads an XML file using the string as text data as opposed to a file.
+         *      
+         * 
+         * @param str 
+         * @param parseEscape 
+         * @return true 
+         * @return false 
+         */
+        bool loadFromBytes(unsigned char* bytes, size_t size, bool parseEscape = true);
+        
+
+        /**
          * @brief Saves the XmlNode data into a file.
          * 
          * @param file 
          */
         void save(File file);
+
+        /**
+         * @brief Converts all of the XML into a compatible string following the XML format.
+         * 
+         * @return std::string 
+         */
+        std::string convertToString();
 
         /**
          * @brief Disposes of the memory used by the object.
@@ -128,11 +131,13 @@ namespace glib
         void fixParseOnNode(XmlNode* n);
 
         void saveNode(SimpleFile* f, XmlNode* node);
+        void saveNode(std::string& s, XmlNode* node);
         void deleteNode(XmlNode* node);
 
         bool shouldParseEscape = true;
 
         std::vector<unsigned char> removeCommentsAndInvalidChars(std::vector<unsigned char> fileBytes);
+        std::vector<unsigned char> removeCommentsAndInvalidChars(unsigned char* fileBytes, size_t size);
     };
 
 } //NAMESPACE glib END

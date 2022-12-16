@@ -43,7 +43,7 @@ namespace glib
 
 	GuiList::~GuiList()
 	{
-		for(int i=0; i<locations.size(); i++)
+		for(size_t i=0; i<locations.size(); i++)
 		{
 			if(locations[i]!=nullptr)
 				delete locations[i];
@@ -68,7 +68,7 @@ namespace glib
 
 		if(isVertical)
 		{
-			for(int i=0; i<children.size(); i++)
+			for(size_t i=0; i<children.size(); i++)
 			{
 				locations[i]->x = x;
 				locations[i]->y = y + height;
@@ -84,7 +84,7 @@ namespace glib
 					boundingBox.setTopBound( MathExt::min(boundingBox.getTopBound(), (double)y+c->getBaseY()) );
 					boundingBox.setBottomBound( MathExt::max(boundingBox.getBottomBound(), (double)y+c->getBaseY()+bounds.getHeight()+height) );
 					
-					height = boundingBox.getHeight();
+					height = (int)MathExt::round(boundingBox.getHeight());
 					if(i<children.size()-1)
 						height += elementSpacing;
 				}
@@ -92,7 +92,7 @@ namespace glib
 		}
 		else
 		{
-			for(int i=0; i<children.size(); i++)
+			for(size_t i=0; i<children.size(); i++)
 			{
 				locations[i]->x = x + width;
 				locations[i]->y = y;
@@ -109,7 +109,7 @@ namespace glib
 					boundingBox.setTopBound( MathExt::min(boundingBox.getTopBound(), (double)y+c->getBaseY()) );
 					boundingBox.setBottomBound( MathExt::max(boundingBox.getBottomBound(), (double)y+c->getBaseY()+bounds.getHeight()) );
 					
-					width = boundingBox.getWidth();
+					width = (int)MathExt::round(boundingBox.getWidth());
 					if(i<children.size()-1)
 						width += elementSpacing;
 				}
@@ -124,11 +124,11 @@ namespace glib
 
 	void GuiList::render()
 	{
-		int x1 = boundingBox.getLeftBound();
-		int y1 = boundingBox.getTopBound();
+		int x1 = (int)MathExt::round(boundingBox.getLeftBound());
+		int y1 = (int)MathExt::round(boundingBox.getTopBound());
 		
-		int x2 = boundingBox.getRightBound();
-		int y2 = boundingBox.getBottomBound();
+		int x2 = (int)MathExt::round(boundingBox.getRightBound());
+		int y2 = (int)MathExt::round(boundingBox.getBottomBound());
 
 		if(x1>x2 || y1>y2)
 			return;
@@ -182,7 +182,7 @@ namespace glib
 		{
 			std::vector<Point*> nPositions;
 			std::vector<GuiInstance*> children = getChildren();
-			for(int i=0; i<children.size(); i++)
+			for(size_t i=0; i<children.size(); i++)
 			{
 				if(children[i] == ins)
 				{
@@ -244,7 +244,7 @@ namespace glib
 		GuiInstance::loadDataFromXML(attribs);
 		std::vector<std::string> possibleNames = { "spacing", "isvertical", "backgroundcolor", "outlinecolor"};
 
-		for(int i=0; i<possibleNames.size(); i++)
+		for(size_t i=0; i<possibleNames.size(); i++)
 		{
 			auto it = attribs.find(possibleNames[i]);
 			if(it != attribs.end())

@@ -408,7 +408,7 @@ namespace glib
 
         //swap based on pivot
 
-        for(int i=start; i<=end; i++)
+        for(size_t i=start; i<=end; i++)
         {
             if(compareFunc(list[i], pivotValue))
             {
@@ -448,7 +448,7 @@ namespace glib
         T pivotValue = list[pivotLocation];
         size_t j = start-1;
 
-        for(int i=start; i<=end; i++)
+        for(size_t i=start; i<=end; i++)
         {
             if(list[i] < pivotValue)
             {

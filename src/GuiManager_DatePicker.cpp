@@ -62,8 +62,7 @@ namespace glib
 		this->gridHeight = width*2;
 		
 		//Get current date and convert to a string
-		std::time_t currentTime = time(nullptr);
-		std::tm currentStoredDate = *std::localtime(&currentTime); //No need to delete.
+		std::tm currentStoredDate = System::getCurrentDate();
 		std::string dateString = StringTools::formatString("%02d/%02d/%04d", currentStoredDate.tm_mon+1, currentStoredDate.tm_mday, currentStoredDate.tm_year+1900);
 
 		//setup
@@ -195,7 +194,7 @@ namespace glib
 
 	void GuiDatePicker::dispose()
 	{
-		for(int i=0; i<gridButtons.size(); i++)
+		for(size_t i=0; i<gridButtons.size(); i++)
 		{
 			if(gridButtons[i] != nullptr)
 			{
@@ -217,8 +216,8 @@ namespace glib
 			
 			//set the calendar stack to the right side of it.
 			Box2D bounds = mainContainer.getBoundingBox();
-			int newX = bounds.getLeftBound() + bounds.getWidth() + 16;
-			int newY = bounds.getTopBound();
+			int newX = (int)MathExt::round(bounds.getLeftBound() + bounds.getWidth() + 16);
+			int newY = (int)MathExt::round(bounds.getTopBound());
 
 			calendarStack.setBaseX(newX);
 			calendarStack.setBaseY(newY);
@@ -251,7 +250,7 @@ namespace glib
 
 			if(splitString.size() == 3)
 			{
-				std::tm tempTime = {0, 0, 0, 0, 0, 0};
+				std::tm tempTime = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 				tempTime.tm_isdst = -1;
 				try
 				{
@@ -269,7 +268,7 @@ namespace glib
 				if(asTimeT == -1)
 					isValid = false;
 				else
-					currentStoredDate = *std::localtime(&asTimeT); //No need to delete.
+					currentStoredDate = System::convertTimeToDate(asTimeT);
 			}
 			else
 			{
@@ -279,8 +278,7 @@ namespace glib
 
 		if(!isValid)
 		{
-			std::time_t currentTime = time(nullptr);
-			currentStoredDate = *std::localtime(&currentTime); //No need to delete.
+			currentStoredDate = System::getCurrentDate();
 			std::string dateString = StringTools::formatString("%02d/%02d/%04d", currentStoredDate.tm_mon+1, currentStoredDate.tm_mday, currentStoredDate.tm_year+1900);
 
 			dateStringBox.getTextBlockElement()->setText( dateString );
@@ -290,7 +288,7 @@ namespace glib
 		gridCenterText.setText( headerText );
 
 		//If feburary, check if leap year
-		std::tm tempTime = {0, 0, 0, 0, 0, 0};
+		std::tm tempTime = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 		tempTime.tm_isdst = -1;
 		tempTime.tm_mon = 1;
 		tempTime.tm_mday = 29;
@@ -309,7 +307,7 @@ namespace glib
 		if(isLeapYear && currentStoredDate.tm_mon == 1)
 			numDays++;
 		
-		for(int i=7; i<gridText.size(); i++)
+		for(size_t i=7; i<gridText.size(); i++)
 		{
 			gridText[i]->setText("");
 			gridButtons[i-7]->setVisible(false);
@@ -326,7 +324,7 @@ namespace glib
 	{
 		//figure out the date based on the month and year.
 		//Get day from the text of the button.
-		if(index >= 0 && index <= gridText.size())
+		if(index >= 0 && index <= (int)gridText.size())
 		{
 			std::string mDayText = gridText[index]->getText();
 			if(mDayText.empty())
@@ -337,7 +335,7 @@ namespace glib
 			std::vector<std::string> headerTextSplit = StringTools::splitString(gridCenterText.getText(), ' ');
 			if(headerTextSplit.size() == 2)
 			{
-				int mon;
+				int mon = 0;
 				int year = StringTools::toInt(headerTextSplit[1]);
 				if(StringTools::equalsIgnoreCase<char>(headerTextSplit[0], "january"))
 					mon = 1;
@@ -361,7 +359,7 @@ namespace glib
 					mon = 10;
 				else if(StringTools::equalsIgnoreCase<char>(headerTextSplit[0], "november"))
 					mon = 11;
-				else if(StringTools::equalsIgnoreCase<char>(headerTextSplit[0], "december"))
+				else
 					mon = 12;
 
 				dateStringBox.getTextBlockElement()->setText( StringTools::formatString("%02d/%02d/%04d", mon, mDay, year) );
@@ -376,7 +374,7 @@ namespace glib
 		std::vector<std::string> headerTextSplit = StringTools::splitString(gridCenterText.getText(), ' ');
 		if(headerTextSplit.size() == 2)
 		{
-			int mon;
+			int mon = 0;
 			int year = StringTools::toInt(headerTextSplit[1]);
 			if(StringTools::equalsIgnoreCase<char>(headerTextSplit[0], "january"))
 				mon = 1;
@@ -400,7 +398,7 @@ namespace glib
 				mon = 10;
 			else if(StringTools::equalsIgnoreCase<char>(headerTextSplit[0], "november"))
 				mon = 11;
-			else if(StringTools::equalsIgnoreCase<char>(headerTextSplit[0], "december"))
+			else
 				mon = 12;
 
 			mon++;
@@ -421,7 +419,7 @@ namespace glib
 		std::vector<std::string> headerTextSplit = StringTools::splitString(gridCenterText.getText(), ' ');
 		if(headerTextSplit.size() == 2)
 		{
-			int mon;
+			int mon = 0;
 			int year = StringTools::toInt(headerTextSplit[1]);
 			if(StringTools::equalsIgnoreCase<char>(headerTextSplit[0], "january"))
 				mon = 1;
@@ -445,7 +443,7 @@ namespace glib
 				mon = 10;
 			else if(StringTools::equalsIgnoreCase<char>(headerTextSplit[0], "november"))
 				mon = 11;
-			else if(StringTools::equalsIgnoreCase<char>(headerTextSplit[0], "december"))
+			else
 				mon = 12;
 
 			mon--;
@@ -491,7 +489,7 @@ namespace glib
 		GuiInstance::loadDataFromXML(attribs);
 		std::vector<std::string> possibleNames = { "width", "height", "backgroundcolor", "gridheadercolor", "calendarchild" };
 
-		for(int i=0; i<possibleNames.size(); i++)
+		for(size_t i=0; i<possibleNames.size(); i++)
 		{
 			auto it = attribs.find(possibleNames[i]);
 			if(it != attribs.end())

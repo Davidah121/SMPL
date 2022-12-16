@@ -33,7 +33,7 @@ namespace glib
 		//Exception Stuff
 		struct BlendPointsError : public std::exception
 		{
-			const char* what() noexcept { return "ERROR ON BLENDING POINTS"; }
+			const char* what() const noexcept { return "ERROR ON BLENDING POINTS"; }
 		};
 
 		/**
@@ -64,7 +64,7 @@ namespace glib
 		 * 		OutOfBoundsError will be thrown.
 		 * 		Otherwise, the default Vec2f is returned.
 		 */
-		Vec2f getPoint(int index);
+		Vec2f getPoint(size_t index);
 
 		/**
 		 * @brief Subdivides the Bezier Curve from [0, 1] into 2 separate Bezier Curves.
@@ -165,9 +165,9 @@ namespace glib
 
 		/**
 		 * @brief Returns the amount of points the bezier curve has.
-		 * @return int
+		 * @return size_t
 		 */
-		int size();
+		size_t size();
 
 		/**
 		 * @brief Solves the function all times where the solution has the specified y value.

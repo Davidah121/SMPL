@@ -1,5 +1,5 @@
 #include "Algorithms.h"
-#include <System.h>
+#include "System.h"
 
 namespace glib
 {
@@ -8,7 +8,7 @@ namespace glib
     {
         std::vector<Grouping*> nL = std::vector<Grouping*>(baseItems.size());
         std::vector<Grouping> results;
-        for(int i=0; i<baseItems.size(); i++)
+        for(size_t i=0; i<baseItems.size(); i++)
         {
             nL[i] = new Grouping();
             nL[i]->weight = baseItems[i].weight;
@@ -57,14 +57,14 @@ namespace glib
                 return std::vector<Grouping>(); // No solution
             }
             
-            int location = -1;
-            for(int i=0; i<nL.size(); i++)
+            size_t location = SIZE_MAX;
+            for(size_t i=0; i<nL.size(); i++)
             {
                 if(nL[i]->valid == true)
                 {
                     if(nL[i]->width <= minDiadicValue)
                     {
-                        if(location==-1)
+                        if(location==SIZE_MAX)
                         {
                             location = i;
                         }
@@ -89,7 +89,7 @@ namespace glib
 
             size_t baseWidthValue = nL[location]->width;
 
-            if(location < 0)
+            if(location != SIZE_MAX)
             {
                 //couldn't find required width or a value lower than it.
                 //no solution
@@ -127,14 +127,14 @@ namespace glib
             //Package
             std::vector<Grouping*> packs = std::vector<Grouping*>();
             
-            int p1Index = -1;
-            int p2Index = -1;
+            size_t p1Index = SIZE_MAX;
+            size_t p2Index = SIZE_MAX;
 
-            for(int i=0; i<nL.size(); i++)
+            for(size_t i=0; i<nL.size(); i++)
             {
                 if(nL[i]->width == baseWidthValue && nL[i]->valid == true)
                 {
-                    if(p1Index == -1)
+                    if(p1Index == SIZE_MAX)
                     {
                         p1Index = i;
                     }
@@ -164,13 +164,13 @@ namespace glib
                         nL[p2Index]->valid = false;
                         totalRemoved+=2;
 
-                        p1Index = -1;
-                        p2Index = -1;
+                        p1Index = SIZE_MAX;
+                        p2Index = SIZE_MAX;
                     }
                 }
             }
 
-            if(p1Index!=-1)
+            if(p1Index != SIZE_MAX)
             {
                 nL[p1Index]->valid = false;
                 totalRemoved++;
@@ -182,12 +182,14 @@ namespace glib
                 nL.push_back(m);
             }
 
+            //sort cause without that, it does not work properly
             Sort::mergeSort<Grouping*>(nL.data(), nL.size(), cmpFunc);
         }
         
-        for(int i=0; i<nL.size(); i++)
+        for(size_t i=0; i<nL.size(); i++)
         {
-            delete nL[i];
+            if(nL[i] != nullptr)
+                delete nL[i];
             nL[i] = nullptr;
         }
 

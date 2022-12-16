@@ -29,19 +29,13 @@ namespace glib
 	{
 		if(node != nullptr)
 		{
-			GuiInstance* parentObj = parent;
+			// GuiInstance* parentObj = parent; //Not used
 			GuiInstance* thisIns = nullptr;
 
 			auto it = elementLoadingFunctions.find(node->title);
 			if(it != elementLoadingFunctions.end())
 			{
-				std::unordered_map<std::string, std::string> map;
-				for(XmlAttribute& attrib : node->attributes)
-				{
-					map[ StringTools::toLowercase(attrib.name) ] = attrib.value;
-				}
-
-				thisIns = it->second(map); //call load function for specific instance
+				thisIns = it->second(node->attributes); //call load function for specific instance
 				
 				if(parent != nullptr)
 					parent->addChild(thisIns);
@@ -89,6 +83,59 @@ namespace glib
 
 		if(parentNode != nullptr)
 		{
+			auto wAttrib = parentNode->getAttribute("width");
+			auto hAttrib = parentNode->getAttribute("height");
+
+			if(!wAttrib.first.empty() && !hAttrib.first.empty())
+			{
+				int w = StringTools::toInt(wAttrib.second);
+				int h = StringTools::toInt(hAttrib.second);
+				resizeImage(w, h);
+				setExpectedSize( Vec2f(w,h) );
+			}
+			
+			for(XmlNode* n : parentNode->childNodes)
+			{
+				bool successful = loadElement(n, nullptr);
+				if(!successful)
+				{
+					StringTools::println("ERROR LOADING NODE: %ls", n->title.c_str());
+				}
+			}
+		}
+		else
+		{
+			StringTools::println("Expected Root Node SimpleGUI was not found.");
+		}
+	}
+
+	void GuiManager::loadElementsFromXML(SimpleXml& xmlFile)
+	{
+		//Everything must be encapsulated in the tag <SimpleGUI> or something
+		XmlNode* parentNode = nullptr;
+
+		for(XmlNode* n : xmlFile.nodes)
+		{
+			if(StringTools::equalsIgnoreCase<char>(n->title, "SimpleGUI"))
+			{
+				parentNode = n;
+				break;
+			}
+		}
+
+		if(parentNode != nullptr)
+		{
+			auto wAttrib = parentNode->getAttribute("width");
+			auto hAttrib = parentNode->getAttribute("height");
+
+			if(!wAttrib.first.empty() && !hAttrib.first.empty())
+			{
+				int w = StringTools::toInt(wAttrib.second);
+				int h = StringTools::toInt(hAttrib.second);
+				resizeImage(w, h);
+				setExpectedSize( Vec2f(w,h) );
+			}
+			
 			for(XmlNode* n : parentNode->childNodes)
 			{
 				bool successful = loadElement(n, nullptr);
@@ -126,6 +173,15 @@ namespace glib
 
 	GuiManager::~GuiManager()
 	{
+		disposeObjects();
+
+		if(surf != nullptr)
+			delete surf;
+		surf = nullptr;
+	}
+
+	void GuiManager::disposeObjects()
+	{
 		for(GuiInstance* k : objects)
 		{
 			deleteElementDelayed(k);
@@ -145,10 +201,6 @@ namespace glib
 		objects.clear();
 		objectsByName.clear();
 		shouldDelete.clear();
-
-		if(surf != nullptr)
-			delete surf;
-		surf = nullptr;
 	}
 
 	void GuiManager::addElement(GuiInstance* k)
@@ -159,7 +211,7 @@ namespace glib
 			{
 				k->setManager(this);
 				objectsByName.add( k->nameID, k);
-				for(int i=0; i<k->getChildren().size(); i++)
+				for(size_t i=0; i<k->getChildren().size(); i++)
 				{
 					GuiInstance* c = k->getChildren().at(i);
 					if(c->getManager() == nullptr)
@@ -273,7 +325,7 @@ namespace glib
 			{
 				//Do not add duplicate
 				bool canAdd = true;
-				for(int i=0; i<rootElements.size(); i++)
+				for(size_t i=0; i<rootElements.size(); i++)
 				{
 					if(objs == rootElements[i])
 					{
@@ -297,7 +349,7 @@ namespace glib
 
 				//Do not add duplicate
 				bool canAdd = true;
-				for(int i=0; i<rootElements.size(); i++)
+				for(size_t i=0; i<rootElements.size(); i++)
 				{
 					if(temp == rootElements[i])
 					{
@@ -318,7 +370,7 @@ namespace glib
 		//Assume that pollInput() was already called
 		//update root elements
 		fixObjects();
-		for(int i=0; i<objects.size(); i++)
+		for(size_t i=0; i<objects.size(); i++)
 		{
 			updateElement( objects[i] );
 		}
@@ -623,14 +675,14 @@ namespace glib
 					if(newClipBox.getLeftBound() <= newClipBox.getRightBound()
 					&& newClipBox.getTopBound() <= newClipBox.getBottomBound())
 					{
-						GuiGraphicsInterface::drawRect(newClipBox.getLeftBound(), newClipBox.getTopBound(), newClipBox.getRightBound(), newClipBox.getBottomBound(), false);
+						GuiGraphicsInterface::drawRect((int)newClipBox.getLeftBound(), (int)newClipBox.getTopBound(), (int)newClipBox.getRightBound(), (int)newClipBox.getBottomBound(), false);
 					}
 					
 					//check if valid box
 					if(preClipBox.getLeftBound() <= preClipBox.getRightBound()
 					&& preClipBox.getTopBound() <= preClipBox.getBottomBound())
 					{
-						GuiGraphicsInterface::drawRect(preClipBox.getLeftBound(), preClipBox.getTopBound(), preClipBox.getRightBound(), preClipBox.getBottomBound(), false);
+						GuiGraphicsInterface::drawRect((int)preClipBox.getLeftBound(), (int)preClipBox.getTopBound(), (int)preClipBox.getRightBound(), (int)preClipBox.getBottomBound(), false);
 					}
 				}
 			}
@@ -660,7 +712,7 @@ namespace glib
 				{
 					GuiGraphicsInterface::setColor(backgroundColor);
 					GuiGraphicsInterface::setBoundSurface(surf);
-					GuiGraphicsInterface::drawRect(deletedObjectsBox.getLeftBound(), deletedObjectsBox.getTopBound(), deletedObjectsBox.getRightBound(), deletedObjectsBox.getBottomBound(), false);
+					GuiGraphicsInterface::drawRect((int)deletedObjectsBox.getLeftBound(), (int)deletedObjectsBox.getTopBound(), (int)deletedObjectsBox.getRightBound(), (int)deletedObjectsBox.getBottomBound(), false);
 					redrawCount++;
 				}
 			}
@@ -703,14 +755,18 @@ namespace glib
 
 	void GuiManager::resizeImage(int width, int height)
 	{
-		bool wasBound = surf == GuiGraphicsInterface::getBoundSurface();
-		if(surf != nullptr)
+		bool wasBound = (surf == GuiGraphicsInterface::getBoundSurface());
+		
+		if(surf->getWidth() != width || surf->getHeight() != height)
 		{
-			delete surf;
+			if(surf != nullptr)
+			{
+				delete surf;
+			}
+			surf = GuiGraphicsInterface::createSurface(width, height);
 		}
-		surf = GuiGraphicsInterface::createSurface(width, height);
-		invalidImage = true;
 
+		invalidImage = true;
 		if(wasBound)
 			GuiGraphicsInterface::setBoundSurface(surf);
 	}
@@ -754,7 +810,7 @@ namespace glib
 		if(surf != nullptr)
 			scaling = expectedSize.x / surf->getWidth();
 
-		return (int)temp*scaling;
+		return (int)(temp*scaling);
 	}
 	
 	int GuiManager::getMouseY()
@@ -765,7 +821,7 @@ namespace glib
 		if(surf != nullptr)
 			scaling = expectedSize.y / surf->getHeight();
 
-		return (int)temp*scaling;
+		return (int)(temp*scaling);
 	}
 
 	bool GuiManager::getFocus()

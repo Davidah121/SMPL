@@ -41,9 +41,9 @@ namespace glib
         if(indexOfSection >= 0)
         {
             std::vector<SectionData> nData;
-            for(int i=0; i<data.size(); i++)
+            for(size_t i=0; i<data.size(); i++)
             {
-                if(i != indexOfSection)
+                if(i != (size_t)indexOfSection)
                     nData.push_back(data[i]);
             }
             data = nData;
@@ -60,9 +60,9 @@ namespace glib
             if(indexOfKey >= 0)
             {
                 std::vector<KeyData> nData;
-                for(int i=0; i<data[indexOfSection].keys.size(); i++)
+                for(size_t i=0; i<data[indexOfSection].keys.size(); i++)
                 {
-                    if(i != indexOfKey)
+                    if(i != (size_t)indexOfKey)
                         nData.push_back(data[indexOfSection].keys[i]);
                 }
                 data[indexOfSection].keys = nData;
@@ -87,7 +87,7 @@ namespace glib
         //find section
         int indexOfSection = findSection(section);
         
-        if(indexOfSection >= 0 && indexOfSection < data.size())
+        if(indexOfSection >= 0 && indexOfSection < (int)data.size())
         {
             std::vector<std::string> keyNames;
             for(KeyData& k : data[indexOfSection].keys)
@@ -111,7 +111,7 @@ namespace glib
     int IniFile::findSection(std::string section)
     {
         int index = 0;
-        while(index < data.size())
+        while(index < (int)data.size())
         {
             if(StringTools::equalsIgnoreCase(section, data[index].name))
             {
@@ -123,11 +123,11 @@ namespace glib
     }
     int IniFile::findKey(std::string key, int sectionID)
     {
-        if(sectionID >= 0 && sectionID < data.size())
+        if(sectionID >= 0 && sectionID < (int)data.size())
         {
             std::vector<KeyData> keysPossible = data[sectionID].keys;
             int index = 0;
-            while(index < keysPossible.size())
+            while(index < (int)keysPossible.size())
             {
                 if(StringTools::equalsIgnoreCase(key, keysPossible[index].key))
                 {

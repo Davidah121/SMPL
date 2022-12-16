@@ -31,7 +31,7 @@ namespace glib
 		delayTimeForFrame = o.delayTimeForFrame;
 
 		//hard copy
-		for(int i=0; i<o.images.size(); i++)
+		for(size_t i=0; i<o.images.size(); i++)
 		{
 			Image* nImg = new Image();
 			nImg->copyImage(o.images[i]);
@@ -41,7 +41,7 @@ namespace glib
 
 	void Sprite::dispose()
 	{
-		for(int i=0; i<images.size(); i++)
+		for(size_t i=0; i<images.size(); i++)
 		{
 			if(images[i]!=nullptr)
 			{
@@ -53,33 +53,33 @@ namespace glib
 		delayTimeForFrame.clear();
 	}
 
-	Image* Sprite::getImage(int index)
+	Image* Sprite::getImage(size_t index)
 	{
-		if (index < images.size() && index >= 0)
+		if (index < images.size())
 		{
 			return images[index];
 		}
 		return nullptr;
 	}
 
-	int Sprite::getDelayTime(int index)
+	int Sprite::getDelayTime(size_t index)
 	{
-		if (index < images.size() && index >= 0)
+		if (index < images.size())
 		{
 			return delayTimeForFrame[index];
 		}
 		return -1;
 	}
 
-	void Sprite::setDelayTime(int index, int microSecondsDelay)
+	void Sprite::setDelayTime(size_t index, int microSecondsDelay)
 	{
-		if (index < images.size() && index >= 0)
+		if (index < images.size())
 		{
 			delayTimeForFrame[index] = microSecondsDelay;
 		}
 	}
 
-	int Sprite::getSize()
+	size_t Sprite::getSize()
 	{
 		return images.size();
 	}
@@ -90,14 +90,14 @@ namespace glib
 		delayTimeForFrame.push_back(microSecondsDelay);
 	}
 
-	void Sprite::removeImage(int index)
+	void Sprite::removeImage(size_t index)
 	{
-		if (index >= 0 && index < images.size())
+		if (index < images.size())
 		{
 			std::vector<Image*> newImages = std::vector<Image*>();
 			std::vector<int> newImageDelay = std::vector<int>();
 
-			for (int i = 0; i < images.size(); i++)
+			for (size_t i = 0; i < images.size(); i++)
 			{
 				if (i != index)
 				{
@@ -128,7 +128,7 @@ namespace glib
 
 		for (int i = 0; i < amountOfImages; i++)
 		{
-			if(extraData.size() == amountOfImages+1)
+			if(extraData.size() == (size_t)amountOfImages+1)
 				addImage(imgs[i], extraData[i+1]);
 			else
 				addImage(imgs[i]);

@@ -2,52 +2,52 @@
 
 namespace glib
 {
-	void SimpleGraphics::testDrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, Image* surf)
-	{
-		int currentComposite = compositeRule;
-		Image* otherImg;
-		if(surf==nullptr)
-			return;
-		else
-			otherImg = surf;
+	// void SimpleGraphics::testDrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, Image* surf)
+	// {
+	// 	int currentComposite = compositeRule;
+	// 	Image* otherImg;
+	// 	if(surf==nullptr)
+	// 		return;
+	// 	else
+	// 		otherImg = surf;
 		
-		if(otherImg!=nullptr)
-		{
-			if(otherImg->getWidth()<=0 || otherImg->getHeight()<=0)
-			{
-				return;
-			}
-			int minY = MathExt::min( {y1,y2,y3} );
-			int maxY = MathExt::max( {y1,y2,y3} );
-			int minX = MathExt::min( {x1,x2,x3} );
-			int maxX = MathExt::max( {x1,x2,x3} );
+	// 	if(otherImg!=nullptr)
+	// 	{
+	// 		if(otherImg->getWidth()<=0 || otherImg->getHeight()<=0)
+	// 		{
+	// 			return;
+	// 		}
+	// 		int minY = MathExt::min( {y1,y2,y3} );
+	// 		int maxY = MathExt::max( {y1,y2,y3} );
+	// 		int minX = MathExt::min( {x1,x2,x3} );
+	// 		int maxX = MathExt::max( {x1,x2,x3} );
 
-			Line l1 = Line(x1,y1,x2,y2);
-			Line l2 = Line(x2,y2,x3,y3);
-			Line l3 = Line(x3,y3,x1,y1);
+	// 		Line l1 = Line(x1,y1,x2,y2);
+	// 		Line l2 = Line(x2,y2,x3,y3);
+	// 		Line l3 = Line(x3,y3,x1,y1);
 			
-			for(int y=minY; y<maxY; y++)
-			{
-				double xv1 = l1.solveForX(y+0.5);
-				double xv2 = l2.solveForX(y+0.5);
-				double xv3 = l3.solveForX(y+0.5);
+	// 		for(int y=minY; y<maxY; y++)
+	// 		{
+	// 			double xv1 = l1.solveForX(y+0.5);
+	// 			double xv2 = l2.solveForX(y+0.5);
+	// 			double xv3 = l3.solveForX(y+0.5);
 
-				std::vector<double> solvedVals = {MathExt::round(xv1), MathExt::round(xv2), MathExt::round(xv3)};
+	// 			std::vector<double> solvedVals = {MathExt::round(xv1), MathExt::round(xv2), MathExt::round(xv3)};
 
-				Sort::insertionSort<double>(solvedVals.data(), 3, [](double a, double b) -> bool{
-					return a < b;
-				});
+	// 			Sort::insertionSort<double>(solvedVals.data(), 3, [](double a, double b) -> bool{
+	// 				return a < b;
+	// 			});
 
-				int guessedMin = solvedVals[0];
-				int guessedMax = solvedVals[1];
+	// 			int guessedMin = solvedVals[0];
+	// 			int guessedMax = solvedVals[1];
 				
-				for(int x=guessedMin; x<guessedMax; x++)
-				{
-					drawPixel(x,y,SimpleGraphics::getColor(), surf);
-				}
-			}
-		}
-	}
+	// 			for(int x=guessedMin; x<guessedMax; x++)
+	// 			{
+	// 				drawPixel(x,y,SimpleGraphics::getColor(), surf);
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	void SimpleGraphics::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline, Image* surf)
 	{
@@ -95,9 +95,9 @@ namespace glib
 				double xv2 = l2.solveForX(y+0.5);
 				double xv3 = l3.solveForX(y+0.5);
 
-				std::vector<double> solvedVals = {MathExt::round(xv1), MathExt::round(xv2), MathExt::round(xv3)};
+				std::vector<int> solvedVals = {(int)MathExt::round(xv1), (int)MathExt::round(xv2), (int)MathExt::round(xv3)};
 
-				Sort::insertionSort<double>(solvedVals.data(), 3, [](double a, double b) -> bool{
+				Sort::insertionSort<int>(solvedVals.data(), 3, [](int a, int b) -> bool{
 					return a < b;
 				});
 
@@ -255,10 +255,10 @@ namespace glib
 			Line l2 = Line(p2.x, p2.y, p3.x, p3.y);
 			Line l3 = Line(p3.x, p3.y, p1.x, p1.y);
 			
-			int minY = MathExt::min( {p1.y,p2.y,p3.y} );
-			int maxY = MathExt::max( {p1.y,p2.y,p3.y} );
-			int minX = MathExt::min( {p1.x,p2.x,p3.x} );
-			int maxX = MathExt::max( {p1.x,p2.x,p3.x} );
+			int minY = (int)MathExt::min( {p1.y,p2.y,p3.y} );
+			int maxY = (int)MathExt::max( {p1.y,p2.y,p3.y} );
+			int minX = (int)MathExt::min( {p1.x,p2.x,p3.x} );
+			int maxX = (int)MathExt::max( {p1.x,p2.x,p3.x} );
 
 			minY = MathExt::clamp(minY, (int)SimpleGraphics::getClippingRect().getTopBound(), (int)SimpleGraphics::getClippingRect().getBottomBound());
 			maxY = MathExt::clamp(maxY, (int)SimpleGraphics::getClippingRect().getTopBound(), (int)SimpleGraphics::getClippingRect().getBottomBound());
@@ -274,9 +274,9 @@ namespace glib
 				double xv2 = l2.solveForX(y+0.5);
 				double xv3 = l3.solveForX(y+0.5);
 
-				std::vector<double> solvedVals = {MathExt::round(xv1), MathExt::round(xv2), MathExt::round(xv3)};
+				std::vector<int> solvedVals = {(int)MathExt::round(xv1), (int)MathExt::round(xv2), (int)MathExt::round(xv3)};
 
-				Sort::insertionSort<double>(solvedVals.data(), 3, [](double a, double b) -> bool{
+				Sort::insertionSort<int>(solvedVals.data(), 3, [](int a, int b) -> bool{
 					return a < b;
 				});
 

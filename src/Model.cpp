@@ -45,26 +45,26 @@ namespace glib
             vertexIndexInfo.push_back( indexInfo );
     }
 
-    void Model::setIndicies(unsigned int vertexLocation, std::vector<unsigned int> indexInfo)
+    void Model::setIndicies(size_t vertexLocation, std::vector<unsigned int> indexInfo)
     {
         if(vertexLocation <= vertexIndexInfo.size())
             if(indexInfo.size() == formatInfo.size())
                 vertexIndexInfo[vertexLocation] = indexInfo;
     }
 
-    void Model::addInt(int value, unsigned int list)
+    void Model::addInt(int value, size_t list)
     {
         if(list<formatInfo.size())
             vertexData[list].push_back( value );
     }
 
-    void Model::addFloat(float value, unsigned int list)
+    void Model::addFloat(float value, size_t list)
     {
         if(list<formatInfo.size())
             vertexData[list].push_back( *((int*)&value) );
     }
     
-    void Model::addVec2f(Vec2f value, unsigned int list)
+    void Model::addVec2f(Vec2f value, size_t list)
     {
         if(list<formatInfo.size())
         {
@@ -77,7 +77,7 @@ namespace glib
         }
     }
 
-    void Model::addVec3f(Vec3f value, unsigned int list)
+    void Model::addVec3f(Vec3f value, size_t list)
     {
         if(list<formatInfo.size())
         {
@@ -93,7 +93,7 @@ namespace glib
         }
     }
 
-    void Model::addVec4f(Vec4f value, unsigned int list)
+    void Model::addVec4f(Vec4f value, size_t list)
     {
         if(list<formatInfo.size())
         {
@@ -112,7 +112,7 @@ namespace glib
         }
     }
 
-    std::vector<std::vector<int>> Model::getVertex(unsigned int i)
+    std::vector<std::vector<int>> Model::getVertex(size_t i)
     {
         std::vector<std::vector<int>> rValues;
 
@@ -123,13 +123,13 @@ namespace glib
 
         if(indexed)
         {
-            for(int j=0; j<formatInfo.size(); j++)
+            for(size_t j=0; j<formatInfo.size(); j++)
             {
                 std::vector<int> values;
-                int valuesToGrab = this->formatInfo[j].size;
-                int index = vertexIndexInfo[i][j];
+                size_t valuesToGrab = this->formatInfo[j].size;
+                size_t index = vertexIndexInfo[i][j];
 
-                for(int k=0; k<valuesToGrab; k++)
+                for(size_t k=0; k<valuesToGrab; k++)
                 {
                     values.push_back( vertexData[j][index*valuesToGrab + k]);
                 }
@@ -139,13 +139,13 @@ namespace glib
         }
         else
         {
-            for(int j=0; j<formatInfo.size(); j++)
+            for(size_t j=0; j<formatInfo.size(); j++)
             {
                 std::vector<int> values;
-                int valuesToGrab = this->formatInfo[j].size;
-                int index = i*valuesToGrab;
+                size_t valuesToGrab = this->formatInfo[j].size;
+                size_t index = i*valuesToGrab;
 
-                for(int k=0; k<valuesToGrab; k++)
+                for(size_t k=0; k<valuesToGrab; k++)
                 {
                     values.push_back( vertexData[j][index*valuesToGrab + k]);
                 }
@@ -157,12 +157,12 @@ namespace glib
         return rValues;
     }
 
-    int Model::getInt(int index, unsigned int list)
+    int Model::getInt(size_t index, size_t list)
     {
         if(list < vertexData.size())
         {
-            int valuesToGrab = 1;
-            unsigned int offset = valuesToGrab*index;
+            size_t valuesToGrab = 1;
+            size_t offset = valuesToGrab*index;
             
             if(offset < vertexData[list].size())
             {
@@ -177,12 +177,12 @@ namespace glib
         return 0;
     
     }
-    float Model::getFloat(int index, unsigned int list)
+    float Model::getFloat(size_t index, size_t list)
     {
         if(list < vertexData.size())
         {
-            int valuesToGrab = 1;
-            unsigned int offset = valuesToGrab*index;
+            size_t valuesToGrab = 1;
+            size_t offset = valuesToGrab*index;
             if(offset < vertexData[list].size())
             {
                 return *((float*)&vertexData[list][offset]);
@@ -196,12 +196,12 @@ namespace glib
         return NAN;
     }
 
-    Vec2f Model::getVec2f(int index, unsigned int list)
+    Vec2f Model::getVec2f(size_t index, size_t list)
     {
         if(list < vertexData.size())
         {
-            int valuesToGrab = 2;
-            unsigned int offset = valuesToGrab*index;
+            size_t valuesToGrab = 2;
+            size_t offset = valuesToGrab*index;
             if(offset+1 < vertexData[list].size())
             {
                 Vec2f v;
@@ -218,12 +218,12 @@ namespace glib
         return Vec2f();
     }
 
-    Vec3f Model::getVec3f(int index, unsigned int list)
+    Vec3f Model::getVec3f(size_t index, size_t list)
     {
         if(list < vertexData.size())
         {
-            int valuesToGrab = 3;
-            unsigned int offset = valuesToGrab*index;
+            size_t valuesToGrab = 3;
+            size_t offset = valuesToGrab*index;
             if(offset+2 < vertexData[list].size())
             {
                 Vec3f v;
@@ -241,12 +241,12 @@ namespace glib
         return Vec3f();
     }
 
-    Vec4f Model::getVec4f(int index, unsigned int list)
+    Vec4f Model::getVec4f(size_t index, size_t list)
     {
         if(list < vertexData.size())
         {
-            int valuesToGrab = 4;
-            unsigned int offset = valuesToGrab*index;
+            size_t valuesToGrab = 4;
+            size_t offset = valuesToGrab*index;
             if(offset+3 < vertexData[list].size())
             {
                 Vec4f v;
@@ -302,19 +302,19 @@ namespace glib
         return 0;
     }
 
-    size_t Model::sizeOfList(int index)
+    size_t Model::sizeOfList(size_t index)
     {
-        if(index >= 0 && index < vertexData.size())
+        if(index < vertexData.size())
         {
             return vertexData[index].size();
         }
         return 0;
     }
 
-    int Model::getSizeOfVertex()
+    size_t Model::getSizeOfVertex()
     {
-        int sum=0;
-        for(int i=0; i<formatInfo.size(); i++)
+        size_t sum=0;
+        for(size_t i=0; i<formatInfo.size(); i++)
         {
             sum += formatInfo[i].size;
         }
@@ -460,7 +460,7 @@ namespace glib
                         v.y = std::stof(split[2]);
                         v.z = std::stof(split[3]);
 
-                        addVec3f(v, posLocation);
+                        addVec3f(v, (size_t)posLocation);
                     }
                 }
                 else if(type == 1)
@@ -472,7 +472,7 @@ namespace glib
                         v.x = std::stof(split[1]);
                         v.y = std::stof(split[2]);
 
-                        addVec2f(v, texLocation);
+                        addVec2f(v, (size_t)texLocation);
                     }
                 }
                 else if(type == 2)
@@ -485,7 +485,7 @@ namespace glib
                         v.y = std::stof(split[2]);
                         v.z = std::stof(split[3]);
 
-                        addVec3f(v, normLocation);
+                        addVec3f(v, (size_t)normLocation);
                     }
                 }
                 else if(type == 3)
@@ -603,7 +603,7 @@ namespace glib
                 std::vector<unsigned char> fileBytes = s.readFullFileAsBytes();
                 s.close();
 
-                int index = 80-5;
+                size_t index = 80-5;
                 size_t totalSize = fileBytes.size();
                 
                 unsigned int numTriangles = fileBytes[index] + ((unsigned int)fileBytes[index+1]<<8) + ((unsigned int)fileBytes[index+2]<<16) + ((unsigned int)fileBytes[index+3]<<24);
@@ -732,19 +732,14 @@ namespace glib
             std::string name = "";
             std::vector<std::string> ids;
             std::string vertexSource = "";
-            int currList = 0;
+            size_t currList = 0;
 
             if(StringTools::equalsIgnoreCase<char>(currNode->title, "geometry"))
             {
-                for(XmlAttribute& attrib : currNode->attributes)
-                {
-                    if(StringTools::equalsIgnoreCase<char>(attrib.name, "name"))
-                    {
-                        name = attrib.value;
-                        break;
-                    }
-                }
-
+                auto nameAttrib = currNode->attributes.find("name");
+                if(nameAttrib != currNode->attributes.end())
+                    name = nameAttrib->second;
+                
                 XmlNode* meshNode = nullptr;
 
                 for(XmlNode* innerNode : currNode->childNodes)
@@ -766,17 +761,14 @@ namespace glib
                         //make safe
                         unsigned char vertAttribType = 0;
 
-                        ids.push_back( innerNode->attributes[0].value );
+                        ids.push_back( innerNode->attributes["id"] );
                         
                         XmlNode* accessorNode = innerNode->childNodes[1]->childNodes[0];
-                        for(XmlAttribute& attrib : accessorNode->attributes)
-                        {
-                            if(StringTools::equalsIgnoreCase<char>(attrib.name, "stride"))
-                            {
-                                vertAttribType = stoi(attrib.value);
-                                break;
-                            }
-                        }
+                        
+                        auto temp = accessorNode->attributes.find("stride");
+                        if(temp != accessorNode->attributes.end())
+                            vertAttribType = stoi(temp->second);
+                        
                         
                         //add format information
                         if(StringTools::equalsIgnoreCase<char>(innerNode->childNodes[0]->title, "float_array"))
@@ -808,14 +800,10 @@ namespace glib
                     }
                     else if(StringTools::equalsIgnoreCase<char>(innerNode->title, "vertices"))
                     {
-                        for(XmlAttribute& attrib : innerNode->attributes)
-                        {
-                            if(StringTools::equalsIgnoreCase<char>(attrib.name, "source"))
-                            {
-                                vertexSource = attrib.value;
-                                break;
-                            }
-                        }
+                        auto temp = innerNode->attributes.find("source");
+                        if(temp != innerNode->attributes.end())
+                            vertexSource = temp->second;
+                        
                     }
                     else if(StringTools::equalsIgnoreCase<char>(innerNode->title, "triangles"))
                     {
@@ -828,35 +816,35 @@ namespace glib
                                 //setting usage for the formats
                                 unsigned char usageNum = USAGE_OTHER;
                                 
-                                for(XmlAttribute& attrib : childNodes->attributes)
+                                for(std::pair<std::string, std::string> attrib : childNodes->attributes)
                                 {
-                                    if(StringTools::equalsIgnoreCase<char>(attrib.name, "semantic"))
+                                    if(StringTools::equalsIgnoreCase<char>(attrib.first, "semantic"))
                                     {
-                                        if(StringTools::equalsIgnoreCase<char>(attrib.value, "VERTEX"))
+                                        if(StringTools::equalsIgnoreCase<char>(attrib.second, "VERTEX"))
                                         {
                                             usageNum = USAGE_POSITION;
                                         }
-                                        else if(StringTools::equalsIgnoreCase<char>(attrib.value, "POSITION"))
+                                        else if(StringTools::equalsIgnoreCase<char>(attrib.second, "POSITION"))
                                         {
                                             usageNum = USAGE_POSITION;
                                         }
-                                        else if(StringTools::equalsIgnoreCase<char>(attrib.value, "NORMAL"))
+                                        else if(StringTools::equalsIgnoreCase<char>(attrib.second, "NORMAL"))
                                         {
                                             usageNum = USAGE_NORMAL;
                                         }
-                                        else if(StringTools::equalsIgnoreCase<char>(attrib.value, "TEXCOORD"))
+                                        else if(StringTools::equalsIgnoreCase<char>(attrib.second, "TEXCOORD"))
                                         {
                                             usageNum = USAGE_TEXTURE;
                                         }
                                     }
-                                    else if(StringTools::equalsIgnoreCase<char>(attrib.name, "source"))
+                                    else if(StringTools::equalsIgnoreCase<char>(attrib.first, "source"))
                                     {
-                                        int index = 0;
+                                        size_t index = 0;
                                         while(index < ids.size())
                                         {
                                             std::string testV = "#" + ids[index];
 
-                                            if(StringTools::equalsIgnoreCase<char>(attrib.value, testV))
+                                            if(StringTools::equalsIgnoreCase<char>(attrib.second, testV))
                                             {
                                                 break;
                                             }

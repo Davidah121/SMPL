@@ -78,15 +78,15 @@ namespace glib
 				if(A!=0)
 				{
 					//vertical line or some other valid line
-					int thisMinY = MathExt::ceil( MathExt::min( actualPoints[i].y, actualPoints[i+1].y));
-					int thisMaxY = MathExt::floor( MathExt::max( actualPoints[i].y, actualPoints[i+1].y));
+					int thisMinY = (int)MathExt::ceil( MathExt::min( actualPoints[i].y, actualPoints[i+1].y));
+					int thisMaxY = (int)MathExt::floor( MathExt::max( actualPoints[i].y, actualPoints[i+1].y));
 
 					thisMinY = MathExt::clamp(thisMinY, minY, maxY);
 					thisMaxY = MathExt::clamp(thisMaxY, minY, maxY);
 
 					for(int j=thisMinY; j<=thisMaxY; j++)
 					{
-						int xValue = MathExt::round(-(B*j + C) / A);
+						int xValue = (int)MathExt::round(-(B*j + C) / A);
 						xValue = MathExt::clamp(xValue, 0, otherImg->getWidth());
 						
 						scanLines[j-minY].push_back({xValue,posDir});

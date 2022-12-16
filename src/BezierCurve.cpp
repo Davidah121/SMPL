@@ -17,7 +17,7 @@ namespace glib
 	{
 		setClass(globalClass);
 		points.clear();
-		for (int i = 0; i < o.points.size(); i++)
+		for (size_t i = 0; i < o.points.size(); i++)
 		{
 			points.push_back(o.points[i]);
 		}
@@ -38,9 +38,9 @@ namespace glib
 		points.push_back(Vec2f(x, y));
 	}
 
-	Vec2f BezierCurve::getPoint(int index)
+	Vec2f BezierCurve::getPoint(size_t index)
 	{
-		if (index >= 0 && index < points.size())
+		if (index < points.size())
 			return points[index];
 		else
 		{
@@ -67,7 +67,7 @@ namespace glib
 		while(true)
 		{
 			std::vector<Vec2f> xPoints;
-			for(int i=0; i<nPoints.size()-1; i++)
+			for(size_t i=0; i<nPoints.size()-1; i++)
 			{
 				Vec2f tempBlendPoint = nPoints[i]*(1-t) + nPoints[i+1]*t;
 				xPoints.push_back(tempBlendPoint);
@@ -95,12 +95,12 @@ namespace glib
 
 		//Form bezier curve from the points
 		BezierCurve b1, b2;
-		for(int i=0; i<pointsForFirst.size(); i++)
+		for(size_t i=0; i<pointsForFirst.size(); i++)
 		{
 			b1.addPoint(pointsForFirst[i]);
 		}
 
-		for(int i=pointsForLast.size()-1; i>=0; i--)
+		for(int i=(int)pointsForLast.size()-1; i>=0; i--)
 		{
 			b2.addPoint(pointsForLast[i]);
 		}
@@ -160,12 +160,12 @@ namespace glib
 			//binomialCoefficient takes n time
 			//called n times
 
-		return blendPointsRecursive(0, points.size()-1, time);
+		return blendPointsRecursive(0, (int)(points.size()-1), time);
 	}
 
 	Vec2f BezierCurve::getDerivativeAt(double time)
 	{
-		return blendPointsDerivativeRecursive(0, points.size()-1, time);
+		return blendPointsDerivativeRecursive(0, (int)(points.size()-1), time);
 	}
 
 	Vec2f BezierCurve::getSimpleDerivativeAt(double time)
@@ -174,7 +174,7 @@ namespace glib
 		//here, we just return the rate of change to the next time segment.
 		//useful only when determining when the average rate switches
 		
-		int segments = points.size()-1;
+		int segments = (int)(points.size()-1);
 		int currentSegment = (int)(time * segments);
 
 		if(time==1)
@@ -193,7 +193,7 @@ namespace glib
 	{
 		//Using Simpson's rule for anything above degree 1
 		double arcLength = 0;
-		int subdivisions = 2 * points.size();
+		int subdivisions = (int)(2 * points.size());
 		double totalTime = endTime-startTime;
 		double deltaX = totalTime/subdivisions;
 		Vec2f derVec = Vec2f(); //Derivative
@@ -241,7 +241,7 @@ namespace glib
 		points.clear();
 	}
 
-	int BezierCurve::size()
+	size_t BezierCurve::size()
 	{
 		return points.size();
 	}
@@ -304,7 +304,7 @@ namespace glib
 		default:
 			//attempt to solve each section of the bezier curve separately.
 			du = 1.0 / size();
-			for(int i=1; i<=size(); i++)
+			for(size_t i=1; i<=size(); i++)
 			{
 				double nTime = du*i;
 				double possibleSolution = MathExt::bisectionMethod(&f, preTime, nTime, 10);
@@ -316,7 +316,7 @@ namespace glib
 
 		std::vector<double> realTimeValues = std::vector<double>();
 		
-		for(int i=0; i<timeValues.size(); i++)
+		for(size_t i=0; i<timeValues.size(); i++)
 		{
 			double roundedValue = MathExt::roundToDecimal(timeValues[i]);
 			if(timeValues[i] == NAN)
@@ -326,7 +326,7 @@ namespace glib
 				bool found = false;
 				if(removeDuplicates)
 				{
-					for(int j=0; j<realTimeValues.size(); j++)
+					for(size_t j=0; j<realTimeValues.size(); j++)
 					{
 						if(realTimeValues[j] == roundedValue)
 						{
@@ -402,7 +402,7 @@ namespace glib
 		default:
 			//attempt to solve each section of the bezier curve separately.
 			du = 1.0 / size();
-			for(int i=1; i<=size(); i++)
+			for(size_t i=1; i<=size(); i++)
 			{
 				double nTime = du*i;
 				double possibleSolution = MathExt::bisectionMethod(&f, preTime, nTime, 10);
@@ -414,7 +414,7 @@ namespace glib
 
 		std::vector<double> realTimeValues = std::vector<double>();
 		
-		for(int i=0; i<timeValues.size(); i++)
+		for(size_t i=0; i<timeValues.size(); i++)
 		{
 			double roundedValue = MathExt::roundToDecimal(timeValues[i]);
 			if(timeValues[i] == NAN)
@@ -424,7 +424,7 @@ namespace glib
 				bool found = false;
 				if(removeDuplicates)
 				{
-					for(int j=0; j<realTimeValues.size(); j++)
+					for(size_t j=0; j<realTimeValues.size(); j++)
 					{
 						if(realTimeValues[j] == roundedValue)
 						{
@@ -450,9 +450,9 @@ namespace glib
 		//for all matching times, add to the final list.
 		std::vector<double> finalTimes;
 
-		for(int i=0; i<xTimes.size(); i++)
+		for(size_t i=0; i<xTimes.size(); i++)
 		{
-			for(int j=0; j<yTimes.size(); j++)
+			for(size_t j=0; j<yTimes.size(); j++)
 			{
 				if(xTimes[i] == yTimes[j])
 				{
@@ -460,7 +460,7 @@ namespace glib
 
 					if(removeDuplicates)
 					{
-						for(int j=0; j<finalTimes.size(); j++)
+						for(size_t j=0; j<finalTimes.size(); j++)
 						{
 							if(finalTimes[j] == xTimes[i])
 							{
@@ -512,11 +512,11 @@ namespace glib
 	{
 		Vec2f finalValue = Vec2f();
 		double tInverse = 1 - time;
-		int n = points.size();
+		int n = (int)points.size();
 
 		for(int i=0; i<n; i++)
 		{
-			finalValue += points[i] * (MathExt::binomialCoefficient(n, i) * MathExt::pow(tInverse,n-i) * MathExt::pow(time,i));
+			finalValue += points[i] * (MathExt::binomialCoefficient(n, i) * MathExt::pow(tInverse,(double)n-i) * MathExt::pow(time,(double)i));
 		}
 
 		return finalValue;

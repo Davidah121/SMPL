@@ -17,7 +17,7 @@ namespace glib
 		return compressHuffman(data.data(), data.size(), tree);
 	}
 
-	std::vector<unsigned char> Compression::compressHuffman(unsigned char* data, int size, BinaryTree<HuffmanNode>* tree)
+	std::vector<unsigned char> Compression::compressHuffman(unsigned char* data, size_t size, BinaryTree<HuffmanNode>* tree)
 	{
 		if(data == nullptr)
 		{
@@ -80,7 +80,7 @@ namespace glib
 		return decompressHuffman(data.data(), data.size(), tree, expectedSize);
 	}
 
-	std::vector<unsigned char> Compression::decompressHuffman(unsigned char* data, int size, BinaryTree<HuffmanNode>* tree, size_t expectedSize)
+	std::vector<unsigned char> Compression::decompressHuffman(unsigned char* data, size_t size, BinaryTree<HuffmanNode>* tree, size_t expectedSize)
 	{
 		std::vector<unsigned char> output = std::vector<unsigned char>();
 
@@ -284,7 +284,7 @@ namespace glib
 	BinaryTree<HuffmanNode>* Compression::buildLimitedHuffmanTreeSubFunc(FrequencyTable<int>* freqTable, int maxCodeLength)
 	{
 		//setup
-		int totalRepresentable = 1 << maxCodeLength;
+		size_t totalRepresentable = 1 << maxCodeLength;
 		if(freqTable->size() > totalRepresentable)
 		{
 			//Error. Max Code Length not usable to represent the entire set of values.
@@ -297,7 +297,7 @@ namespace glib
 		std::vector<int> dataValues = std::vector<int>(freqTable->size());
 		std::vector<int> codeLengths = std::vector<int>(freqTable->size());
 
-		for(int i=0; i<freqTable->size(); i++)
+		for(size_t i=0; i<freqTable->size(); i++)
 		{
 			dataValues[i] = freqTable->getValueAtLocation(i);
 		}
@@ -305,11 +305,11 @@ namespace glib
 		std::vector<Grouping> nList;
 		for(int j=0; j<maxCodeLength; j++)
 		{
-			for(int i=0; i<freqTable->size(); i++)
+			for(size_t i=0; i<freqTable->size(); i++)
 			{
 				Grouping k;
 				k.valid = true;
-				k.ids = { i };
+				k.ids = { (int)i };
 				k.weight = freqTable->getFrequencyAtLocation(i);
 				k.width = 1;
 				k.width <<= (31-j);
@@ -318,7 +318,7 @@ namespace glib
 			}
 		}
 
-		size_t val1 = 0x100000000;
+		size_t val1 = 0x100000000; //Change. Must be possible on 32 bit systems.
 
 		std::vector<Grouping> results = Algorithms::packageMergeAlgorithm(nList, val1 * (freqTable->size()-1)); //copying the results and deleting the list grouping list causes slowness
 
@@ -363,7 +363,7 @@ namespace glib
 		}
 	}
 
-	BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues, int sizeOfData, int* lengths, int sizeOfCodeLengths, bool separateCodeLengths, bool rmsb)
+	BinaryTree<HuffmanNode>* Compression::buildCanonicalHuffmanTree(int* dataValues, size_t sizeOfData, int* lengths, size_t sizeOfCodeLengths, bool separateCodeLengths, bool rmsb)
 	{
 		//We must sort first before building the huffman code
 		//Since this is C++ and we can use structures, we can use MergeSort while keeping the

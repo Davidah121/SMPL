@@ -34,14 +34,14 @@ namespace glib
 					//first, find mean value
 					Vec2f meanVal = Vec2f();
 					double meanMult = 1.0/f.arr.size();
-					for(int i=0; i<f.arr.size(); i++)
+					for(size_t i=0; i<f.arr.size(); i++)
 					{
 						meanVal += f.arr[i] * meanMult;
 					}
 
 					//then find error^2 for all dimensions
 					Vec2f error = Vec2f();
-					for(int i=0; i<f.arr.size(); i++)
+					for(size_t i=0; i<f.arr.size(); i++)
 					{
 						error.x += MathExt::sqr(meanVal.x - f.arr[i].x);
 						error.y += MathExt::sqr(meanVal.y - f.arr[i].y);
@@ -53,7 +53,7 @@ namespace glib
 				}
 			}
 
-			if(boxes.size() >= clusters)
+			if(boxes.size() >= (size_t)clusters)
 			{
 				break;
 			}
@@ -61,7 +61,7 @@ namespace glib
 			int indexOfMostError = 0;
 			double mostError = 0;
 
-			for(int i=0; i<boxes.size(); i++)
+			for(size_t i=0; i<boxes.size(); i++)
 			{
 				Vec2f errVec = boxes[i].error;
 				double sumError = errVec.x + errVec.y;
@@ -90,7 +90,7 @@ namespace glib
 			if(box.error.x > box.error.y)
 			{
 				//split by x
-				for(int i=0; i<box.arr.size(); i++)
+				for(size_t i=0; i<box.arr.size(); i++)
 				{
 					if(box.arr[i].x < avg.x)
 					{
@@ -105,7 +105,7 @@ namespace glib
 			else
 			{
 				//split by y
-				for(int i=0; i<box.arr.size(); i++)
+				for(size_t i=0; i<box.arr.size(); i++)
 				{
 					if(box.arr[i].y < avg.y)
 					{
@@ -162,8 +162,8 @@ namespace glib
 
 		while(endPos.size() < clusters)
 		{
-			int currentSize = endPos.size();
-			for(int i=0; i<currentSize; i++)
+			size_t currentSize = endPos.size();
+			for(size_t i=0; i<currentSize; i++)
 			{
 				int start = 0;
 				int end = endPos[i];
@@ -228,7 +228,7 @@ namespace glib
 			newEndPos.push_back(endPos[0]/2);
 			newEndPos.push_back(endPos[0]);
 
-			for(int i=1; i<currentSize; i++)
+			for(size_t i=1; i<currentSize; i++)
 			{
 				int midIndex = (endPos[i-1] + endPos[i])/2;
 				
@@ -245,7 +245,7 @@ namespace glib
 
 		if(meansOnly)
 		{
-			for(int i=0; i<endPos.size(); i++)
+			for(size_t i=0; i<endPos.size(); i++)
 			{
 				int start = 0;
 				int end = endPos[i];
@@ -269,7 +269,7 @@ namespace glib
 		}
 		else
 		{
-			for(int i=0; i<endPos.size(); i++)
+			for(size_t i=0; i<endPos.size(); i++)
 			{
 				int start = 0;
 				int end = endPos[i];
@@ -326,13 +326,13 @@ namespace glib
 			}
 
 			//group into k groups
-			for(int k=0; k<arr.size(); k++)
+			for(size_t k=0; k<arr.size(); k++)
 			{
 				int minIndex = -1;
 				double minDis = std::numeric_limits<double>::max();
 
 				//measure distance from all means
-				for(int j=0; j<groups.size(); j++)
+				for(size_t j=0; j<groups.size(); j++)
 				{
 					double thisDis = 0;
 					Vec2f lengthVec = Vec2f();
@@ -355,7 +355,7 @@ namespace glib
 
 			//recompute average
 			bool same = true;
-			for(int j=0; j<groups.size(); j++)
+			for(size_t j=0; j<groups.size(); j++)
 			{
 				Vec2f avg = Vec2f();
 				double divVal = 1.0 / groups[j].clusters.size();
@@ -429,14 +429,14 @@ namespace glib
 					//first, find mean value
 					Vec3f meanVal = Vec3f();
 					double meanMult = 1.0/f.arr.size();
-					for(int i=0; i<f.arr.size(); i++)
+					for(size_t i=0; i<f.arr.size(); i++)
 					{
 						meanVal += f.arr[i] * meanMult;
 					}
 
 					//then find error^2 for all dimensions
 					Vec3f error = Vec3f();
-					for(int i=0; i<f.arr.size(); i++)
+					for(size_t i=0; i<f.arr.size(); i++)
 					{
 						error.x += MathExt::sqr(meanVal.x - f.arr[i].x);
 						error.y += MathExt::sqr(meanVal.y - f.arr[i].y);
@@ -449,7 +449,7 @@ namespace glib
 				}
 			}
 
-			if(boxes.size() >= clusters)
+			if(boxes.size() >= (size_t)clusters)
 			{
 				break;
 			}
@@ -457,7 +457,7 @@ namespace glib
 			int indexOfMostError = 0;
 			double mostError = 0;
 
-			for(int i=0; i<boxes.size(); i++)
+			for(size_t i=0; i<boxes.size(); i++)
 			{
 				Vec3f errVec = boxes[i].error;
 				double sumError = errVec.x + errVec.y + errVec.z;
@@ -486,7 +486,7 @@ namespace glib
 			if(box.error.x > box.error.y && box.error.x > box.error.z)
 			{
 				//split by x
-				for(int i=0; i<box.arr.size(); i++)
+				for(size_t i=0; i<box.arr.size(); i++)
 				{
 					if(box.arr[i].x < avg.x)
 					{
@@ -501,7 +501,7 @@ namespace glib
 			else if(box.error.y > box.error.x && box.error.y > box.error.z)
 			{
 				//split by y
-				for(int i=0; i<box.arr.size(); i++)
+				for(size_t i=0; i<box.arr.size(); i++)
 				{
 					if(box.arr[i].y < avg.y)
 					{
@@ -516,7 +516,7 @@ namespace glib
 			else
 			{
 				//split by z
-				for(int i=0; i<box.arr.size(); i++)
+				for(size_t i=0; i<box.arr.size(); i++)
 				{
 					if(box.arr[i].z < avg.z)
 					{
@@ -573,8 +573,8 @@ namespace glib
 
 		while(endPos.size() < clusters)
 		{
-			int currentSize = endPos.size();
-			for(int i=0; i<currentSize; i++)
+			size_t currentSize = endPos.size();
+			for(size_t i=0; i<currentSize; i++)
 			{
 				int start = 0;
 				int end = endPos[i];
@@ -654,7 +654,7 @@ namespace glib
 			newEndPos.push_back(endPos[0]/2);
 			newEndPos.push_back(endPos[0]);
 
-			for(int i=1; i<currentSize; i++)
+			for(size_t i=1; i<currentSize; i++)
 			{
 				int midIndex = (endPos[i-1] + endPos[i])/2;
 				
@@ -671,7 +671,7 @@ namespace glib
 
 		if(meansOnly)
 		{
-			for(int i=0; i<endPos.size(); i++)
+			for(size_t i=0; i<endPos.size(); i++)
 			{
 				int start = 0;
 				int end = endPos[i];
@@ -695,7 +695,7 @@ namespace glib
 		}
 		else
 		{
-			for(int i=0; i<endPos.size(); i++)
+			for(size_t i=0; i<endPos.size(); i++)
 			{
 				int start = 0;
 				int end = endPos[i];
@@ -746,19 +746,19 @@ namespace glib
 		for(int i=0; i<maxIterations; i++)
 		{
 			//clear all groups
-			for(int k=0; k<groups.size(); k++)
+			for(size_t k=0; k<groups.size(); k++)
 			{
 				groups[k].clusters.clear();
 			}
 
 			//group into k groups
-			for(int k=0; k<arr.size(); k++)
+			for(size_t k=0; k<arr.size(); k++)
 			{
 				int minIndex = -1;
 				double minDis = std::numeric_limits<double>::max();
 
 				//measure distance from all means
-				for(int j=0; j<groups.size(); j++)
+				for(size_t j=0; j<groups.size(); j++)
 				{
 					double thisDis = 0;
 					Vec3f lengthVec = Vec3f();
@@ -781,7 +781,7 @@ namespace glib
 
 			//recompute average
 			bool same = true;
-			for(int j=0; j<groups.size(); j++)
+			for(size_t j=0; j<groups.size(); j++)
 			{
 				Vec3f avg = Vec3f();
 				double divVal = 1.0 / groups[j].clusters.size();
@@ -855,14 +855,14 @@ namespace glib
 					//first, find mean value
 					Vec4f meanVal = Vec4f();
 					double meanMult = 1.0/f.arr.size();
-					for(int i=0; i<f.arr.size(); i++)
+					for(size_t i=0; i<f.arr.size(); i++)
 					{
 						meanVal += f.arr[i] * meanMult;
 					}
 
 					//then find error^2 for all dimensions
 					Vec4f error = Vec4f();
-					for(int i=0; i<f.arr.size(); i++)
+					for(size_t i=0; i<f.arr.size(); i++)
 					{
 						error.x += MathExt::sqr(meanVal.x - f.arr[i].x);
 						error.y += MathExt::sqr(meanVal.y - f.arr[i].y);
@@ -876,7 +876,7 @@ namespace glib
 				}
 			}
 
-			if(boxes.size() >= clusters)
+			if(boxes.size() >= (size_t)clusters)
 			{
 				break;
 			}
@@ -884,7 +884,7 @@ namespace glib
 			int indexOfMostError = 0;
 			double mostError = 0;
 
-			for(int i=0; i<boxes.size(); i++)
+			for(size_t i=0; i<boxes.size(); i++)
 			{
 				Vec4f errVec = boxes[i].error;
 				double sumError = errVec.x + errVec.y + errVec.z + errVec.w;
@@ -913,7 +913,7 @@ namespace glib
 			if(box.error.x > box.error.y && box.error.x > box.error.z && box.error.x > box.error.w)
 			{
 				//split by x
-				for(int i=0; i<box.arr.size(); i++)
+				for(size_t i=0; i<box.arr.size(); i++)
 				{
 					if(box.arr[i].x < avg.x)
 					{
@@ -928,7 +928,7 @@ namespace glib
 			else if(box.error.y > box.error.x && box.error.y > box.error.z && box.error.y > box.error.w)
 			{
 				//split by y
-				for(int i=0; i<box.arr.size(); i++)
+				for(size_t i=0; i<box.arr.size(); i++)
 				{
 					if(box.arr[i].y < avg.y)
 					{
@@ -943,7 +943,7 @@ namespace glib
 			else if(box.error.z > box.error.x && box.error.z > box.error.y && box.error.z > box.error.w)
 			{
 				//split by z
-				for(int i=0; i<box.arr.size(); i++)
+				for(size_t i=0; i<box.arr.size(); i++)
 				{
 					if(box.arr[i].z < avg.z)
 					{
@@ -958,7 +958,7 @@ namespace glib
 			else
 			{
 				//split by w
-				for(int i=0; i<box.arr.size(); i++)
+				for(size_t i=0; i<box.arr.size(); i++)
 				{
 					if(box.arr[i].w < avg.w)
 					{
@@ -1013,10 +1013,10 @@ namespace glib
 
 		endPos.push_back(arr.size());
 
-		while(endPos.size() < clusters)
+		while(endPos.size() < (size_t)clusters)
 		{
-			int currentSize = endPos.size();
-			for(int i=0; i<currentSize; i++)
+			size_t currentSize = endPos.size();
+			for(size_t i=0; i<currentSize; i++)
 			{
 				int start = 0;
 				int end = endPos[i];
@@ -1111,7 +1111,7 @@ namespace glib
 			newEndPos.push_back(endPos[0]/2);
 			newEndPos.push_back(endPos[0]);
 
-			for(int i=1; i<currentSize; i++)
+			for(size_t i=1; i<currentSize; i++)
 			{
 				int midIndex = (endPos[i-1] + endPos[i])/2;
 				
@@ -1128,7 +1128,7 @@ namespace glib
 
 		if(meansOnly)
 		{
-			for(int i=0; i<endPos.size(); i++)
+			for(size_t i=0; i<endPos.size(); i++)
 			{
 				int start = 0;
 				int end = endPos[i];
@@ -1152,7 +1152,7 @@ namespace glib
 		}
 		else
 		{
-			for(int i=0; i<endPos.size(); i++)
+			for(size_t i=0; i<endPos.size(); i++)
 			{
 				int start = 0;
 				int end = endPos[i];
@@ -1203,19 +1203,19 @@ namespace glib
 		for(int i=0; i<maxIterations; i++)
 		{
 			//clear all groups
-			for(int k=0; k<groups.size(); k++)
+			for(size_t k=0; k<groups.size(); k++)
 			{
 				groups[k].clusters.clear();
 			}
 
 			//group into k groups
-			for(int k=0; k<arr.size(); k++)
+			for(size_t k=0; k<arr.size(); k++)
 			{
 				int minIndex = -1;
 				double minDis = std::numeric_limits<double>::max();
 
 				//measure distance from all means
-				for(int j=0; j<groups.size(); j++)
+				for(size_t j=0; j<groups.size(); j++)
 				{
 					double thisDis = 0;
 					Vec4f lengthVec = Vec4f();
@@ -1238,7 +1238,7 @@ namespace glib
 
 			//recompute average
 			bool same = true;
-			for(int j=0; j<groups.size(); j++)
+			for(size_t j=0; j<groups.size(); j++)
 			{
 				Vec4f avg = Vec4f();
 				double divVal = 1.0 / groups[j].clusters.size();
@@ -1313,7 +1313,7 @@ namespace glib
 					//first, find mean value
 					GeneralVector meanVal = GeneralVector(dimensions);
 					double meanMult = 1.0/f.arr.size();
-					for(int i=0; i<f.arr.size(); i++)
+					for(size_t i=0; i<f.arr.size(); i++)
 					{
 						GeneralVector v = f.arr[i];
 						for(int k=0; k<dimensions; k++)
@@ -1324,7 +1324,7 @@ namespace glib
 
 					//then find error^2 for all dimensions
 					GeneralVector error = GeneralVector(dimensions);
-					for(int i=0; i<f.arr.size(); i++)
+					for(size_t i=0; i<f.arr.size(); i++)
 					{
 						GeneralVector v = f.arr[i];
 						for(int k=0; k<dimensions; k++)
@@ -1347,7 +1347,7 @@ namespace glib
 			int indexOfMostError = 0;
 			double mostError = 0;
 
-			for(int i=0; i<boxes.size(); i++)
+			for(size_t i=0; i<boxes.size(); i++)
 			{
 				GeneralVector errVec = boxes[i].error;
 				double sumError = 0;
@@ -1388,7 +1388,7 @@ namespace glib
 				}
 			}
 
-			for(int i=0; i<box.arr.size(); i++)
+			for(size_t i=0; i<box.arr.size(); i++)
 			{
 				GeneralVector c = box.arr[i];
 				if(c[dimensionWithMostError] < avg[dimensionWithMostError])
@@ -1444,10 +1444,10 @@ namespace glib
 
 		endPos.push_back(arr.size());
 
-		while(endPos.size() < clusters)
+		while(endPos.size() < (size_t)clusters)
 		{
-			int currentSize = endPos.size();
-			for(int i=0; i<currentSize; i++)
+			size_t currentSize = endPos.size();
+			for(size_t i=0; i<currentSize; i++)
 			{
 				int start = 0;
 				int end = endPos[i];
@@ -1500,7 +1500,7 @@ namespace glib
 			newEndPos.push_back(endPos[0]/2);
 			newEndPos.push_back(endPos[0]);
 
-			for(int i=1; i<currentSize; i++)
+			for(size_t i=1; i<currentSize; i++)
 			{
 				int midIndex = (endPos[i-1] + endPos[i])/2;
 				
@@ -1517,7 +1517,7 @@ namespace glib
 
 		if(meansOnly)
 		{
-			for(int i=0; i<endPos.size(); i++)
+			for(size_t i=0; i<endPos.size(); i++)
 			{
 				int start = 0;
 				int end = endPos[i];
@@ -1542,7 +1542,7 @@ namespace glib
 		}
 		else
 		{
-			for(int i=0; i<endPos.size(); i++)
+			for(size_t i=0; i<endPos.size(); i++)
 			{
 				int start = 0;
 				int end = endPos[i];
@@ -1594,19 +1594,19 @@ namespace glib
 		for(int i=0; i<maxIterations; i++)
 		{
 			//clear all groups
-			for(int k=0; k<groups.size(); k++)
+			for(size_t k=0; k<groups.size(); k++)
 			{
 				groups[k].clusters.clear();
 			}
 
 			//group into k groups
-			for(int k=0; k<arr.size(); k++)
+			for(size_t k=0; k<arr.size(); k++)
 			{
 				int minIndex = -1;
 				double minDis = std::numeric_limits<double>::max();
 
 				//measure distance from all means
-				for(int j=0; j<groups.size(); j++)
+				for(size_t j=0; j<groups.size(); j++)
 				{
 					double thisDis = 0;
 					GeneralVector lengthVec = GeneralVector(dimensions);
@@ -1629,7 +1629,7 @@ namespace glib
 
 			//recompute average
 			bool same = true;
-			for(int j=0; j<groups.size(); j++)
+			for(size_t j=0; j<groups.size(); j++)
 			{
 				GeneralVector avg = GeneralVector(dimensions);
 				double divVal = 1.0 / groups[j].clusters.size();

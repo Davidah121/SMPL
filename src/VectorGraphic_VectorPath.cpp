@@ -340,8 +340,8 @@ namespace glib
 
 						Color col = getFillColor();
 						
-						int fillX = MathExt::round(startX);
-						int endFillX = MathExt::round(endX);
+						int fillX = (int)MathExt::round(startX);
+						int endFillX = (int)MathExt::round(endX);
 						
 						for(int m = fillX; m<endFillX; m++)
 						{
@@ -387,8 +387,8 @@ namespace glib
 						{
 							Color col = getFillColor();
 							
-							int fillX = MathExt::round(startX);
-							int endFillX = MathExt::round(endX);
+							int fillX = (int)MathExt::round(startX);
+							int endFillX = (int)MathExt::round(endX);
 							for(int m = fillX; m<endFillX; m++)
 							{
 								img->drawPixel(m, intYVal, col);
@@ -475,15 +475,15 @@ namespace glib
 		{
 			b.addPoint(command.points[0]);
 
-			actualMinY = MathExt::floor(MathExt::min( currentPos.y, command.points[0].y));
-			actualMaxY = MathExt::ceil(MathExt::max( currentPos.y, command.points[0].y));
+			actualMinY = (int)MathExt::floor(MathExt::min( currentPos.y, command.points[0].y));
+			actualMaxY = (int)MathExt::ceil(MathExt::max( currentPos.y, command.points[0].y));
 		}
 		else
 		{
 			b.addPoint(currentPos + command.points[0]);
 
-			actualMinY = MathExt::floor(MathExt::min( currentPos.y, currentPos.y + command.points[0].y));
-			actualMaxY = MathExt::ceil(MathExt::max( currentPos.y, currentPos.y + command.points[0].y));
+			actualMinY = (int)MathExt::floor(MathExt::min( currentPos.y, currentPos.y + command.points[0].y));
+			actualMaxY = (int)MathExt::ceil(MathExt::max( currentPos.y, currentPos.y + command.points[0].y));
 		}
 
 		actualMinY = MathExt::clamp((int)actualMinY, minY, maxY);
@@ -539,8 +539,8 @@ namespace glib
 			strokeCurveConn2.addPoint( strokeCurve1.getPoint(1) );
 			strokeCurveConn2.addPoint( strokeCurve2.getPoint(1) );
 			
-			actualMinY = MathExt::ceil(MathExt::min( strokeCurve1.getPoint(0).y, strokeCurve1.getPoint(1).y));
-			actualMaxY = MathExt::floor(MathExt::max( strokeCurve1.getPoint(0).y, strokeCurve1.getPoint(1).y));
+			actualMinY = (int)MathExt::ceil(MathExt::min( strokeCurve1.getPoint(0).y, strokeCurve1.getPoint(1).y));
+			actualMaxY = (int)MathExt::floor(MathExt::max( strokeCurve1.getPoint(0).y, strokeCurve1.getPoint(1).y));
 		}
 	}
 
@@ -549,13 +549,13 @@ namespace glib
 		int actualMinY, actualMaxY;
 		if(!relative)
 		{
-			actualMinY = MathExt::ceil(MathExt::min( currentPos.y, command.points[0].y));
-			actualMaxY = MathExt::floor(MathExt::max( currentPos.y, command.points[0].y));
+			actualMinY = (int)MathExt::ceil(MathExt::min( currentPos.y, command.points[0].y));
+			actualMaxY = (int)MathExt::floor(MathExt::max( currentPos.y, command.points[0].y));
 		}
 		else
 		{
-			actualMinY = MathExt::ceil(MathExt::min( currentPos.y, currentPos.y+command.points[0].y));
-			actualMaxY = MathExt::floor(MathExt::max( currentPos.y, currentPos.y+command.points[0].y));
+			actualMinY = (int)MathExt::ceil(MathExt::min( currentPos.y, currentPos.y+command.points[0].y));
+			actualMaxY = (int)MathExt::floor(MathExt::max( currentPos.y, currentPos.y+command.points[0].y));
 		}
 		
 		actualMinY = MathExt::clamp((int)actualMinY, minY, maxY);
@@ -581,7 +581,7 @@ namespace glib
 
 	void VectorPath::drawHorizontalTo(Vec2f currentPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative)
 	{
-		int yVal = currentPos.y;
+		int yVal = (int)MathExt::floor(currentPos.y);
 
 		//horizontal line
 		//because it is only 2 points, we can use get simple derivative and it will be accurate.
@@ -631,8 +631,8 @@ namespace glib
 		BezierCurve b = BezierCurve();
 		b.addPoint(currentPos);
 
-		int actualMinY = MathExt::floor(currentPos.y);
-		int actualMaxY = MathExt::ceil(currentPos.y);
+		int actualMinY = (int)MathExt::floor(currentPos.y);
+		int actualMaxY = (int)MathExt::ceil(currentPos.y);
 
 		for(int j=0; j<2; j++)
 		{
@@ -641,11 +641,11 @@ namespace glib
 				b.addPoint(command.points[j]);
 				if(command.points[j].y < actualMinY)
 				{
-					actualMinY = MathExt::floor(command.points[j].y);
+					actualMinY = (int)MathExt::floor(command.points[j].y);
 				}
 				if(command.points[j].y > actualMaxY)
 				{
-					actualMaxY = MathExt::ceil(command.points[j].y);
+					actualMaxY = (int)MathExt::ceil(command.points[j].y);
 				}
 			}
 			else
@@ -653,11 +653,11 @@ namespace glib
 				b.addPoint(currentPos+command.points[j]);
 				if(currentPos.y+command.points[j].y < actualMinY)
 				{
-					actualMinY = MathExt::floor(currentPos.y+command.points[j].y);
+					actualMinY = (int)MathExt::floor(currentPos.y+command.points[j].y);
 				}
 				if(currentPos.y+command.points[j].y > actualMaxY)
 				{
-					actualMaxY = MathExt::ceil(currentPos.y+command.points[j].y);
+					actualMaxY = (int)MathExt::ceil(currentPos.y+command.points[j].y);
 				}
 			}
 		}
@@ -710,17 +710,17 @@ namespace glib
 		else
 			b.addPoint(currentPos+command.points[0]);
 
-		int actualMinY = MathExt::floor(currentPos.y);
-		int actualMaxY = MathExt::ceil(currentPos.y);
+		int actualMinY = (int)MathExt::floor(currentPos.y);
+		int actualMaxY = (int)MathExt::ceil(currentPos.y);
 		for(int j=0; j<b.size(); j++)
 		{
 			if(b.getPoint(j).y < actualMinY)
 			{
-				actualMinY = MathExt::floor(b.getPoint(j).y);
+				actualMinY = (int)MathExt::floor(b.getPoint(j).y);
 			}
 			if(b.getPoint(j).y > actualMaxY)
 			{
-				actualMaxY = MathExt::ceil(b.getPoint(j).y);
+				actualMaxY = (int)MathExt::ceil(b.getPoint(j).y);
 			}
 		}
 
@@ -762,8 +762,8 @@ namespace glib
 		BezierCurve b = BezierCurve();
 		b.addPoint(currentPos);
 
-		int actualMinY = MathExt::floor(currentPos.y);
-		int actualMaxY = MathExt::ceil(currentPos.y);
+		int actualMinY = (int)MathExt::floor(currentPos.y);
+		int actualMaxY = (int)MathExt::ceil(currentPos.y);
 
 		for(int j=0; j<3; j++)
 		{
@@ -772,11 +772,11 @@ namespace glib
 				b.addPoint(command.points[j]);
 				if(command.points[j].y < actualMinY)
 				{
-					actualMinY = MathExt::floor(command.points[j].y);
+					actualMinY = (int)MathExt::floor(command.points[j].y);
 				}
 				if(command.points[j].y > actualMaxY)
 				{
-					actualMaxY = MathExt::ceil(command.points[j].y);
+					actualMaxY = (int)MathExt::ceil(command.points[j].y);
 				}
 			}
 			else
@@ -784,11 +784,11 @@ namespace glib
 				b.addPoint(currentPos+command.points[j]);
 				if(currentPos.y+command.points[j].y < actualMinY)
 				{
-					actualMinY = MathExt::floor(currentPos.y+command.points[j].y);
+					actualMinY = (int)MathExt::floor(currentPos.y+command.points[j].y);
 				}
 				if(currentPos.y+command.points[j].y > actualMaxY)
 				{
-					actualMaxY = MathExt::ceil(currentPos.y+command.points[j].y);
+					actualMaxY = (int)MathExt::ceil(currentPos.y+command.points[j].y);
 				}
 			}
 		}
@@ -845,17 +845,17 @@ namespace glib
 			b.addPoint(currentPos+command.points[1]);
 		}
 
-		int actualMinY = currentPos.y;
-		int actualMaxY = currentPos.y;
+		int actualMinY = (int)MathExt::floor(currentPos.y);
+		int actualMaxY = (int)MathExt::floor(currentPos.y);
 		for(int j=1; j<b.size(); j++)
 		{
 			if(b.getPoint(j).y < actualMinY)
 			{
-				actualMinY = MathExt::floor(b.getPoint(j).y);
+				actualMinY = (int)MathExt::floor(b.getPoint(j).y);
 			}
 			if(b.getPoint(j).y > actualMaxY)
 			{
-				actualMaxY = MathExt::ceil(b.getPoint(j).y);
+				actualMaxY = (int)MathExt::ceil(b.getPoint(j).y);
 			}
 		}
 
@@ -1062,7 +1062,7 @@ namespace glib
 		}
 
 		//distance from the center of the arc to where we start.
-		radiY = actualMinY - finalArcPosition.y;
+		radiY = (int)MathExt::floor(actualMinY - finalArcPosition.y);
 		arcRadi = arcInfo[0];
 
 		double yAdjustmentMin = 1-MathExt::frac(floatMinY);
@@ -1154,8 +1154,8 @@ namespace glib
 		b.addPoint(currentPos);
 		b.addPoint(closePoint);
 
-		int actualMinY = MathExt::floor(MathExt::min( currentPos.y, closePoint.y));
-		int actualMaxY = MathExt::ceil(MathExt::max( currentPos.y, closePoint.y));
+		int actualMinY = (int)MathExt::floor(MathExt::min( currentPos.y, closePoint.y));
+		int actualMaxY = (int)MathExt::ceil(MathExt::max( currentPos.y, closePoint.y));
 
 		actualMinY = MathExt::clamp((int)actualMinY, minY, maxY);
 		actualMaxY = MathExt::clamp((int)actualMaxY, minY, maxY);

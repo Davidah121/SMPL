@@ -94,7 +94,7 @@ inline void CachedDataList<T>::maintainCache()
 		
 		int keyToRemove = -1;
 		int previousOrder = currOrder;
-		for(std::pair<int, cacheDataInfo<T>> pair : dataList)
+		for(const std::pair<int, cacheDataInfo<T>>& pair : dataList)
 		{
 			if(pair.second.order < previousOrder)
 			{

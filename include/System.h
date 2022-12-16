@@ -1,5 +1,7 @@
 #pragma once
 
+#define __STDC_WANT_LIB_EXT1__ 1
+#include <time.h>
 #include <chrono>
 #include <functional>
 #include <string>
@@ -32,6 +34,12 @@ namespace glib
 		static const int X2_MOUSE_BUTTON = 8;
 
 		/**
+		 * @brief Initializes performance counters.
+		 * 
+		 */
+		static void init();
+
+		/**
 		 * @brief Returns the current time in Milliseconds.
 		 * 		Specifically, returns the time since epoch in Milliseconds.
 		 * 
@@ -54,6 +62,27 @@ namespace glib
 		 * @return size_t 
 		 */
 		static size_t getCurrentTimeNano();
+		
+		/**
+		 * @brief Gets the Current Date as a tm struct.
+		 * 		Thread-Safe
+		 * 		Uses localtime_s or localtime_r if available. 
+		 * 			Otherwise, uses a mutex.
+		 * 
+		 * @return std::tm 
+		 */
+		static std::tm getCurrentDate();
+
+		/**
+		 * @brief Gets the Current Date as a tm struct.
+		 * 		Thread-Safe
+		 * 		Uses localtime_s or localtime_r if available. 
+		 * 			Otherwise, uses a mutex.
+		 * 
+		 * @param t
+		 * @return std::tm 
+		 */
+		static std::tm convertTimeToDate(std::time_t t);
 
 		/**
 		 * @brief Sleeps for the specified amount of time.
@@ -416,6 +445,7 @@ namespace glib
 		static double getCpuUsage(); //TODO
 	private:
 		static unsigned int numberOfThreads;
+		static bool hasInit;
 	};
 
 } //NAMESPACE glib END
