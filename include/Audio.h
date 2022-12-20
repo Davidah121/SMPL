@@ -40,12 +40,12 @@ namespace glib
 
 		struct AudioOutError : public std::exception
 		{
-			const char* what() noexcept { return "Exception occured while submitting buffers."; }
+			const char* what() const noexcept { return "Exception occured while submitting buffers."; }
 		};
 
 		struct AudioOutInitError : public std::exception
 		{
-			const char* what() noexcept { return "Exception occured while initializing AudioOut."; }
+			const char* what() const noexcept { return "Exception occured while initializing AudioOut."; }
 		};
 
 		/**
@@ -205,12 +205,12 @@ namespace glib
 	public:
 		struct AudioInError : public std::exception
 		{
-			const char* what() noexcept { return "Exception occured while retrieving buffers."; }
+			const char* what() const noexcept { return "Exception occured while retrieving buffers."; }
 		};
 
 		struct AudioInInitError : public std::exception
 		{
-			const char* what() noexcept { return "Exception occured while initializing AudioIn."; }
+			const char* what() const noexcept { return "Exception occured while initializing AudioIn."; }
 		};
 
 		/**

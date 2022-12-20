@@ -34,3 +34,8 @@
 # Debugging files
 *.pdb
 *.exp
+*.ilk
+
+# Build files
+*.ninja_deps
+*.ninja_log

@@ -28,15 +28,15 @@ namespace glib
 
 	Network::~Network()
 	{
-		disconnect();
-		setRunning(false);
-		dispose();
-
 		startNetwork(); //Must start the network if it has not ever been started.
-		
+		setRunning(false);
+
 		if(networkThread.joinable())
 			networkThread.join();
-
+		
+		disconnect();
+		dispose();
+		
 		shouldStart = false;
 	}
 
@@ -159,7 +159,7 @@ namespace glib
 	{
 		networkMutex.lock();
 
-		for(int i=0; i<connections.size(); i++)
+		for(size_t i=0; i<connections.size(); i++)
 		{
 			#ifdef __unix__
 				close(connections[i]);
@@ -403,7 +403,7 @@ namespace glib
 	void Network::disconnect()
 	{
 		networkMutex.lock();
-		for(int i=0; i<connections.size(); i++)
+		for(size_t i=0; i<connections.size(); i++)
 		{
 			if(connections[i] != 0)
 			{
@@ -430,7 +430,7 @@ namespace glib
 	std::string Network::getIPFromConnection(int id)
 	{
 		networkMutex.lock();
-		sockaddr_in addr = {0};
+		sockaddr_in addr;
 		int len = sizeof(sockaddr_in);
 		#ifdef __unix__
 			int err = getpeername(connections[id], (sockaddr*)&addr, (socklen_t*)&len);
@@ -451,9 +451,9 @@ namespace glib
 	{
 		int id = -1;
 		networkMutex.lock();
-		for(int i=0; i<connections.size(); i++)
+		for(size_t i=0; i<connections.size(); i++)
 		{
-			sockaddr_in addr = {0};
+			sockaddr_in addr;
 			int len = sizeof(sockaddr_in);
 			#ifdef __unix__
 				int err = getpeername(connections[i], (sockaddr*)&addr, (socklen_t*)&len);
@@ -479,7 +479,7 @@ namespace glib
 		networkMutex.lock();
 		std::vector<SOCKET_TYPE> nSockets;
 		std::vector<bool> nWaitingOnRead;
-		for(int i=0; i<connections.size(); i++)
+		for(size_t i=0; i<connections.size(); i++)
 		{
 			if(connections[i]!=s)
 			{
@@ -630,7 +630,7 @@ namespace glib
 					while(getRunning())
 					{
 						
-						if(connections.size() < totalAllowedConnections)
+						if(connections.size() < (size_t)totalAllowedConnections)
 						{
 							bool incommingConnection = false;
 							networkMutex.lock();
@@ -671,7 +671,7 @@ namespace glib
 						networkMutex.lock();
 
 						std::vector<pollfd> clientConnections;
-						for(int i=0; i<connections.size(); i++)
+						for(size_t i=0; i<connections.size(); i++)
 						{
 							pollfd newFD = {};
 							newFD.fd = connections[i];
@@ -687,7 +687,7 @@ namespace glib
 						
 						if(err>0)
 						{
-							for(int i=0; i<clientConnections.size(); i++)
+							for(size_t i=0; i<clientConnections.size(); i++)
 							{
 								if(clientConnections[i].revents & POLLERR || clientConnections[i].revents & POLLHUP || clientConnections[i].revents & POLLNVAL)
 								{
@@ -934,7 +934,7 @@ namespace glib
 					while(getRunning())
 					{
 						
-						if(connections.size() < totalAllowedConnections)
+						if(connections.size() < (size_t)totalAllowedConnections)
 						{
 							bool incommingConnection = false;
 							networkMutex.lock();
@@ -975,7 +975,7 @@ namespace glib
 						networkMutex.lock();
 
 						std::vector<WSAPOLLFD> clientConnections;
-						for(int i=0; i<connections.size(); i++)
+						for(size_t i=0; i<connections.size(); i++)
 						{
 							WSAPOLLFD newFD = {};
 							newFD.fd = connections[i];
@@ -991,7 +991,7 @@ namespace glib
 						
 						if(err>0)
 						{
-							for(int i=0; i<clientConnections.size(); i++)
+							for(size_t i=0; i<clientConnections.size(); i++)
 							{
 								//check for disconnect
 								if(clientConnections[i].revents & POLLERR || clientConnections[i].revents & POLLHUP || clientConnections[i].revents & POLLNVAL)
@@ -1077,7 +1077,7 @@ namespace glib
 								initNetwork(isTCP);
 							}
 							connect();
-							int lastError = GetLastError();
+							// int lastError = GetLastError(); //Not used
 							wouldConnect = (GetLastError() == WSAEISCONN);
 
 							if(wouldConnect)
@@ -1112,7 +1112,7 @@ namespace glib
 					{
 						networkMutex.lock();
 
-						bool skip = waitingOnRead[0];
+						// bool skip = waitingOnRead[0]; //Not used
 
 						WSAPOLLFD mainSocket = {};
 						mainSocket.fd = connections[0];

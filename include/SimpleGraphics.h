@@ -221,15 +221,7 @@ namespace glib
 		 * 		The image to draw the circle onto.
 		 */
 		static void drawCircle(int x, int y, int radius, bool outline, Image* surf);
-
-		/**
-		 * @brief
-		 * 		Test draw function. Should be ignored.
-		 * 
-		 * 
-		 */
-		static void testDrawCircle(int x, int y, int radius, bool outline, Image* surf);
-
+		
 		/**
 		 * @brief Draws a ellipse using the active color.
 		 * 		If OPTI is defined as 1, SSE instructions are used.
@@ -250,14 +242,6 @@ namespace glib
 		 * 		The image to draw the ellipse onto.
 		 */
 		static void drawEllipse(int x, int y, int xRad, int yRad, bool outline, Image* surf);
-
-		/**
-		 * @brief
-		 * 		Test draw function. Should be ignored.
-		 * 
-		 * 
-		 */
-		static void testDrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, Image* surf);
 
 		/**
 		 * @brief Draws a triangle using the active color.
@@ -316,7 +300,6 @@ namespace glib
 		 * 		The image to draw onto.
 		 */
 		static void drawImage(Image* img, int x, int y, Image* surf);
-		static void drawImage_OLD(Image* img, int x, int y, Image* surf);
 		
 		/**
 		 * @brief Draws an Image that is modified by the active drawing color.
@@ -332,8 +315,7 @@ namespace glib
 		 * 		The image to draw onto.
 		 */
 		static void drawSprite(Image* img, int x, int y, Image* surf);
-		static void drawSprite_OLD(Image* img, int x, int y, Image* surf);
-
+		
 		/**
 		 * @brief Draws an Image that is modified by the active drawing color.
 		 * 		If OPTI is defined as 1, SSE instructions are used.
@@ -352,8 +334,7 @@ namespace glib
 		 * 		The image to draw onto.
 		 */
 		static void drawSprite(Image* img, int x1, int y1, int x2, int y2, Image* surf);
-		static void drawSprite_OLD(Image* img, int x1, int y1, int x2, int y2, Image* surf);
-
+		
 		/**
 		 * @brief Draws a part of an Image that will be modified by the active drawing color.
 		 * 		If OPTI is defined as 1, SSE instructions are used.
@@ -376,8 +357,7 @@ namespace glib
 		 * 		The image to draw onto.
 		 */
 		static void drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH, Image* surf);
-		static void drawSpritePart_OLD(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH, Image* surf);
-
+		
 		/**
 		 * @brief Draws the specified text using the active font. It is affected by the active drawing color.
 		 * 		Linebreaks affect the text.

@@ -53,23 +53,23 @@ namespace glib
 		 * @param index 
 		 * @return Image* 
 		 */
-		Image* getImage(int index);
+		Image* getImage(size_t index);
 
 		/**
 		 * @brief Gets the Delay Time for the image.
 		 * 		Specifies how long before showing the next image in microseconds.
 		 * 
 		 * @param index 
-		 * @return int 
+		 * @return size_t 
 		 */
-		int getDelayTime(int index);
+		int getDelayTime(size_t index);
 
 		/**
 		 * @brief Gets the amount of images in the sprite.
 		 * 
-		 * @return int 
+		 * @return size_t 
 		 */
-		int getSize();
+		size_t getSize();
 
 		/**
 		 * @brief Adds a new image to the sprite with a delay value.
@@ -86,14 +86,14 @@ namespace glib
 		 * @param index 
 		 * @param microSecondsDelay 
 		 */
-		void setDelayTime(int index, int microSecondsDelay);
+		void setDelayTime(size_t index, int microSecondsDelay);
 
 		/**
 		 * @brief Removes an image from the sprite.
 		 * 
 		 * @param index 
 		 */
-		void removeImage(int index);
+		void removeImage(size_t index);
 		
 		/**
 		 * @brief Loads an image from a file. If the file contains multiple images, they will be loaded as well.

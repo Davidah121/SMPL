@@ -124,8 +124,8 @@ namespace glib
 				//first, calc bounding box
 				double tempRad = radius;
 
-				int y1 = cy-tempRad;
-				int y2 = cy+tempRad-1;
+				int y1 = (int)MathExt::floor(cy-tempRad);
+				int y2 = (int)MathExt::floor(cy+tempRad-1);
 
 				y1 = MathExt::clamp(y1, 0, buffer->getHeight());
 				y2 = MathExt::clamp(y2, 0, buffer->getHeight());
@@ -139,7 +139,7 @@ namespace glib
 					startX = -MathExt::sqrt( radSqr - MathExt::sqr(j-cy+0.5) ) + cx;
 					endX = MathExt::sqrt( radSqr - MathExt::sqr(j-cy+0.5) ) + cx;
 
-					for(int i=MathExt::round(startX); i<MathExt::round(endX); i++)
+					for(int i=(int)MathExt::round(startX); i<(int)MathExt::round(endX); i++)
 					{
 						buffer->drawPixel(i, j, getFillColor());
 					}
@@ -157,8 +157,8 @@ namespace glib
 				double nCX = cx*AAadjustment;
 				double nCY = cy*AAadjustment;
 
-				int y1 = (nCY-tempRad);
-				int y2 = (nCY+tempRad) - 1;
+				int y1 = (int)MathExt::floor(nCY-tempRad);
+				int y2 = (int)MathExt::floor(nCY+tempRad - 1);
 
 				int maxXDis = buffer->getWidth() * AAadjustment;
 				int maxYDis = buffer->getHeight() * AAadjustment;
@@ -195,7 +195,7 @@ namespace glib
 						double startX = AAscanLines[i+k].x;
 						double endX = AAscanLines[i+k].y;
 
-						for(int tempX = MathExt::round(startX); tempX < MathExt::round(endX); tempX++)
+						for(int tempX = (int)MathExt::round(startX); tempX < (int)MathExt::round(endX); tempX++)
 						{
 							int location = tempX / AAadjustment;
 							scanLinePercentages[location] += percentageInc;
@@ -239,10 +239,10 @@ namespace glib
 		double tempRad = radius + MathExt::abs(getStrokeWidth()/2);
 		double tempRad2 = radius - MathExt::abs(getStrokeWidth()/2);
 		
-		int x1 = cx-tempRad;
-		int x2 = cx+tempRad;
-		int y1 = cy-tempRad;
-		int y2 = cy+tempRad;
+		int x1 = (int)MathExt::round(cx-tempRad);
+		int x2 = (int)MathExt::round(cx+tempRad);
+		int y1 = (int)MathExt::round(cy-tempRad);
+		int y2 = (int)MathExt::round(cy+tempRad);
 
 		x1 = MathExt::clamp(x1, 0, buffer->getWidth());
 		y1 = MathExt::clamp(y1, 0, buffer->getHeight());
@@ -278,7 +278,7 @@ namespace glib
 					startX = temp;
 				}
 
-				for(int i=MathExt::round(startX); i<=MathExt::round(startX2); i++)
+				for(int i=(int)MathExt::round(startX); i<=(int)MathExt::round(startX2); i++)
 				{
 					buffer->drawPixel(i, j, getStrokeColor());
 				}
@@ -291,7 +291,7 @@ namespace glib
 					endX = temp;
 				}
 
-				for(int i=MathExt::round(endX)-1; i<MathExt::round(endX2); i++)
+				for(int i=(int)MathExt::round(endX)-1; i<(int)MathExt::round(endX2); i++)
 				{
 					buffer->drawPixel(i, j, getStrokeColor());
 				}
@@ -305,7 +305,7 @@ namespace glib
 					startX = temp;
 				}
 
-				for(int i=MathExt::round(startX)-1; i<=MathExt::round(endX); i++)
+				for(int i=(int)MathExt::round(startX)-1; i<=(int)MathExt::round(endX); i++)
 				{
 					buffer->drawPixel(i, j, getStrokeColor());
 				}

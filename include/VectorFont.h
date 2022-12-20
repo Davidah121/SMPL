@@ -62,7 +62,7 @@ namespace glib
          * @param index 
          * @return Image* 
          */
-        Image* getImage(int index);
+        Image* getImage(size_t index);
     private:
 
         bool loadSVGFont(File file);

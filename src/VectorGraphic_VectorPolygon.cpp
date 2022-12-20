@@ -50,11 +50,13 @@ namespace glib
 			{
 				if(i<points.size()-1)
 				{
-					buffer->drawLine(points[i].x, points[i].y, points[i+1].x, points[i+1].y);
+					buffer->drawLine((int)MathExt::floor(points[i].x), (int)MathExt::floor(points[i].y),
+						(int)MathExt::floor(points[i+1].x), (int)MathExt::floor(points[i+1].y));
 				}
 				else
 				{
-					buffer->drawLine(points[i].x, points[i].y, points[0].x, points[0].y);
+					buffer->drawLine((int)MathExt::floor(points[i].x), (int)MathExt::floor(points[i].y),
+						(int)MathExt::floor(points[0].x), (int)MathExt::floor(points[0].y));
 				}
 			}
 		}

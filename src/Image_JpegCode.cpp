@@ -235,10 +235,10 @@ namespace glib
 			dcMode = false;
 		}
 
-		int preShift = predictionForSuccessive >> 4;
+		// int preShift = predictionForSuccessive >> 4; //Not used
 		int postShift = predictionForSuccessive & 0xF;
 
-		int fillSize = selectionEnd - selectionStart + 1;
+		// int fillSize = selectionEnd - selectionStart + 1; //Not used
 
 		Vec3f blockAdd = Vec3f();
 
@@ -286,7 +286,7 @@ namespace glib
 		{
 			currX = 0;
 			currY = 0;
-			for(int i=0; i<nComponentData.size(); i++)
+			for(size_t i=0; i<nComponentData.size(); i++)
 			{
 				unsigned short comD = nComponentData[i];
 				int comNum = comD >> 8;
@@ -333,17 +333,17 @@ namespace glib
 
 						if(comNum==1)
 						{
-							dcValue += blockAdd.x;
+							dcValue += (int)blockAdd.x;
 							blockAdd.x = dcValue;
 						}
 						else if(comNum==2)
 						{
-							dcValue += blockAdd.y;
+							dcValue += (int)blockAdd.y;
 							blockAdd.y = dcValue;
 						}
 						else
 						{
-							dcValue += blockAdd.z;
+							dcValue += (int)blockAdd.z;
 							blockAdd.z = dcValue;
 						}
 						
@@ -547,11 +547,11 @@ namespace glib
 			dcMode = false;
 		}
 
-		int preShift = predictionForSuccessive >> 4;
+		// int preShift = predictionForSuccessive >> 4; //Not used
 		int postShift = predictionForSuccessive & 0xF;
 
-		int fillSize = selectionEnd - selectionStart + 1;
-		int k = selectionStart;
+		// int fillSize = selectionEnd - selectionStart + 1; //Not used
+		// int k = selectionStart; //Not used
 		binNum = 0;
 
 		int p1 = 1 << postShift;
@@ -612,14 +612,14 @@ namespace glib
 		{
 			currX = 0;
 			currY = 0;
-			for(int i=0; i<nComponentData.size(); i++)
+			for(size_t i=0; i<nComponentData.size(); i++)
 			{
 				unsigned short comD = nComponentData[i];
 				int comNum = comD >> 8;
-				int treeIndex1 = (comD >> 4) & 0x0F;
+				// int treeIndex1 = (comD >> 4) & 0x0F; //Not used
 				int treeIndex2 = comD & 0x0F;
 
-				BinaryTree<HuffmanNode>* dcTree = huffmanTreesDC[treeIndex1];
+				// BinaryTree<HuffmanNode>* dcTree = huffmanTreesDC[treeIndex1]; //Not used. Odd since it seems like it should be used. Investigate later
 				BinaryTree<HuffmanNode>* acTree = huffmanTreesAC[treeIndex2];
 
 				if(comNum!=1)
@@ -713,11 +713,11 @@ namespace glib
 									int addX = k%8;
 
 									if(comNum==1)
-										coef = imgMat[startY+addY+currY][startX+addX+currX].x;
+										coef = (int)imgMat[startY+addY+currY][startX+addX+currX].x;
 									else if(comNum==2)
-										coef = imgMat[startY+addY][startX+addX].y;
+										coef = (int)imgMat[startY+addY][startX+addX].y;
 									else
-										coef = imgMat[startY+addY][startX+addX].z;
+										coef = (int)imgMat[startY+addY][startX+addX].z;
 
 									bool nonZeroHistory = (coef!=0);
 									
@@ -799,11 +799,11 @@ namespace glib
 								int addX = k%8;
 
 								if(comNum==1)
-									coef = imgMat[startY+addY+currY][startX+addX+currX].x;
+									coef = (int)imgMat[startY+addY+currY][startX+addX+currX].x;
 								else if(comNum==2)
-									coef = imgMat[startY+addY][startX+addX].y;
+									coef = (int)imgMat[startY+addY][startX+addX].y;
 								else
-									coef = imgMat[startY+addY][startX+addX].z;
+									coef = (int)imgMat[startY+addY][startX+addX].z;
 
 								bool nonZeroHistory = (coef!=0);
 									
@@ -868,7 +868,7 @@ namespace glib
 
 	void baselineProcess(Image* img)
 	{
-		time_t totalTime = 0;
+		// time_t totalTime = 0; //Not used
 		if(img!=nullptr)
 		{
 			//process image data
@@ -877,14 +877,14 @@ namespace glib
 			binSet.setValues(compressedData.data(), compressedData.size());
 
 			//grab a single grid and process that first
-			int matFilled = 0;
+			// int matFilled = 0; //Not used
 			Vec3f blockAdd = Vec3f();
 			Matrix q = Matrix(8,8);
 			Matrix m = Matrix(8,8);
 
 			int actualX = 0;
 			int actualY = 0;
-			int addVal = 0;
+			// int addVal = 0; //Not used
 			int bitNum = 0;
 			bool valid = true;
 
@@ -982,17 +982,17 @@ namespace glib
 
 							if(order[i]==0)
 							{
-								dcValue += blockAdd.x;
+								dcValue += (int)blockAdd.x;
 								blockAdd.x = dcValue;
 							}
 							else if(order[i]==1)
 							{
-								dcValue += blockAdd.y;
+								dcValue += (int)blockAdd.y;
 								blockAdd.y = dcValue;
 							}
 							else
 							{
-								dcValue += blockAdd.z;
+								dcValue += (int)blockAdd.z;
 								blockAdd.z = dcValue;
 							}
 
@@ -1047,8 +1047,8 @@ namespace glib
 
 					int r=0;
 					int c=0;
-					bool zig=false;
-					bool backwards = false;
+					// bool zig=false; //Not used
+					// bool backwards = false; //Not used
 					for(int y=0; y<64; y++)
 					{
 						int zigPos = getZigZagPos(y);
@@ -1157,7 +1157,7 @@ namespace glib
 		// Matrix chrom = getChrominanceQuantizationMatrix(quality);
 	}
 	
-	Image** Image::loadJPG(std::vector<unsigned char> fileData, int* amountOfImages, std::vector<int>* extraData)
+	Image** Image::loadJPG(std::vector<unsigned char> fileData, int* amountOfImages)
 	{
 		//magic number = 0xFF 0xD8
 
@@ -1165,7 +1165,7 @@ namespace glib
 		Image* img = nullptr;
 		Vec3f** imgMat = nullptr;
 
-		int index = 0;
+		size_t index = 0;
 		quantizationTables = std::vector<Matrix>(4);
 		huffmanTreesDC = std::vector<BinaryTree<HuffmanNode>*>(4);
 		huffmanTreesAC = std::vector<BinaryTree<HuffmanNode>*>(4);
@@ -1182,11 +1182,11 @@ namespace glib
 
 		bool processImage = false;
 
-		int width8 = 0;
+		// int width8 = 0; //Not used
 		int height8 = 0;
 
-		int chromaX = 1;
-		int chromaY = 1;
+		// int chromaX = 1; //Not used
+		// int chromaY = 1; //Not used
 
 		while(index < fileData.size())
 		{
@@ -1210,10 +1210,10 @@ namespace glib
 			{
 				//StringTools::println("Found start of baseline frame");
 				frameType = 0;
-				unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
+				// unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
 				index+=2;
 				
-				unsigned char precision = fileData[index];
+				// unsigned char precision = fileData[index];
 				index++;
 
 				unsigned short height = (((unsigned short)fileData[index])<<8) + fileData[index+1];
@@ -1227,9 +1227,9 @@ namespace glib
 				
 				for(int i=0; i<components; i++)
 				{
-					unsigned char id = fileData[index];
+					// unsigned char id = fileData[index];
 					unsigned char sampling = fileData[index+1];
-					unsigned char tableNum = fileData[index+2];
+					// unsigned char tableNum = fileData[index+2];
 
 					//adjust sampling cause it is setup dumb
 					int h1 = (sampling >> 4) & 0x0F;
@@ -1254,10 +1254,10 @@ namespace glib
 			{
 				//StringTools::println("Found start of extended sequential frame");
 				frameType = 1;
-				unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
+				// unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
 				index+=2;
 				
-				unsigned char precision = fileData[index];
+				// unsigned char precision = fileData[index];
 				index++;
 
 				unsigned short height = (((unsigned short)fileData[index])<<8) + fileData[index+1];
@@ -1271,9 +1271,9 @@ namespace glib
 				
 				for(int i=0; i<components; i++)
 				{
-					unsigned char id = fileData[index];
+					// unsigned char id = fileData[index];
 					unsigned char sampling = fileData[index+1];
-					unsigned char tableNum = fileData[index+2];
+					// unsigned char tableNum = fileData[index+2];
 
 					//adjust sampling cause it is setup dumb
 					int h1 = (sampling >> 4) & 0x0F;
@@ -1298,10 +1298,10 @@ namespace glib
 			{
 				//StringTools::println("Found Start of progressive Frame");
 				frameType = 2;
-				unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
+				// unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
 				index+=2;
 				
-				unsigned char precision = fileData[index];
+				// unsigned char precision = fileData[index];
 				index++;
 
 				unsigned short height = (((unsigned short)fileData[index])<<8) + fileData[index+1];
@@ -1315,9 +1315,9 @@ namespace glib
 				
 				for(int i=0; i<components; i++)
 				{
-					unsigned char id = fileData[index];
+					// unsigned char id = fileData[index];
 					unsigned char sampling = fileData[index+1];
-					unsigned char tableNum = fileData[index+2];
+					// unsigned char tableNum = fileData[index+2];
 
 					//adjust sampling cause it is setup dumb
 					int h1 = (sampling >> 4) & 0x0F;
@@ -1357,7 +1357,7 @@ namespace glib
 				//define huffman table
 				unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
 				
-				int finalLoc = index+size;
+				size_t finalLoc = index+size;
 				index+=2;
 
 				while(index < finalLoc)
@@ -1409,7 +1409,7 @@ namespace glib
 			{
 				//define quantization table
 				unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
-				int finalLoc = index+size;
+				size_t finalLoc = index+size;
 
 				index+=2;
 
@@ -1459,7 +1459,7 @@ namespace glib
 			{
 				//Start of Scan
 				// StringTools::println("START OF SCAN");
-				unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
+				// unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
 				index+=2;
 
 				int count = fileData[index];
@@ -1480,7 +1480,7 @@ namespace glib
 				index+=3;
 				
 				//read until 0xFFxx is found where xx is not 00
-				int startInd = index;
+				// int startInd = index; //Not used
 				int nBytes = 0;
 				compressedData.clear();
 				processImage=true;
@@ -1698,12 +1698,12 @@ namespace glib
 			*amountOfImages = 1;
 		}
 
-		for(int i=0; i<huffmanTreesDC.size(); i++)
+		for(size_t i=0; i<huffmanTreesDC.size(); i++)
 		{
 			if(huffmanTreesDC[i]!=nullptr)
 				delete huffmanTreesDC[i];
 		}
-		for(int i=0; i<huffmanTreesAC.size(); i++)
+		for(size_t i=0; i<huffmanTreesAC.size(); i++)
 		{
 			if(huffmanTreesAC[i]!=nullptr)
 				delete huffmanTreesAC[i];

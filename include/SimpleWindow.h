@@ -106,7 +106,7 @@ namespace glib
 		
 		struct WindowCreationError : public std::exception
 		{
-			const char* what() const throw() { return "Error creating window"; }
+			const char* what() const noexcept { return "Error creating window"; }
 		};
 		
 		/**
@@ -233,6 +233,12 @@ namespace glib
 		 * @param height 
 		 */
 		void setSize(int width, int height);
+
+		/**
+		 * @brief Sets the size of the window to the GuiManager surface.
+		 * 
+		 */
+		void resizeToGuiManager();
 
 		/**
 		 * @brief Gets the mouse x position relative to the location of the window.
@@ -473,7 +479,7 @@ namespace glib
 		 * @param millis 
 		 * @param micros 
 		 */
-		void setThreadUpdateTime(unsigned int millis, unsigned int micros = 0);
+		void setThreadUpdateTime(size_t millis, size_t micros = 0);
 
 		/**
 		 * @brief Waits until the window has closed to continue.
@@ -627,16 +633,16 @@ namespace glib
 
 		unsigned char* wndPixels = nullptr;
 
-		int wndPixelsSize;
-		int scanLinePadding;
+		int wndPixelsSize = 0;
+		int scanLinePadding = 0;
 
 		std::thread* wndThread = nullptr;
 		std::mutex myMutex = std::mutex();
 		bool threadOwnership = true;
 		bool shouldRepaint = false;
 		bool autoRepaint = true;
-		unsigned int sleepTimeMillis = 16;
-		unsigned int sleepTimeMicros = 0;
+		size_t sleepTimeMillis = 16;
+		size_t sleepTimeMicros = 0;
 
 		
 		void threadUpdate();
@@ -645,21 +651,21 @@ namespace glib
 		void threadRepaint();
 
 		//At the cost of potential portability and bad code.
-		size_t windowHandle;
+		size_t windowHandle = 0;
 
 		#ifdef __unix__
-			Display* displayServer;
+			Display* displayServer = nullptr;
 			int screen = -1;
-			GC gc;
-			Atom wmDeleteMessage;
-			XImage* drawableImage;
+			GC gc = nullptr;
+			Atom wmDeleteMessage = nullptr;
+			XImage* drawableImage = nullptr;
 		#else
-			WNDCLASSEXW wndClass;
-			HINSTANCE hins;
-			HBITMAP bitmap;
-			HICON handleToIcon;
-			BITMAPINFO bitInfo;
-			HDC myHDC;
+			WNDCLASSEXW wndClass = {};
+			HINSTANCE hins = NULL;
+			HBITMAP bitmap = NULL;
+			HICON handleToIcon = NULL;
+			BITMAPINFO bitInfo = {};
+			HDC myHDC = NULL;
 		#endif
 		
 		GuiManager* gui = nullptr;

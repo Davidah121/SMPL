@@ -41,7 +41,8 @@ namespace glib
 			SimpleGraphics::setFillRule(SimpleGraphics::FILL_EVEN_ODD);
 			for(int i=0; i<points.size()-1; i++)
 			{
-				buffer->drawLine(points[i].x, points[i].y, points[i+1].x, points[i+1].y);
+				buffer->drawLine((int)MathExt::floor(points[i].x), (int)MathExt::floor(points[i].y),
+					(int)MathExt::floor(points[i+1].x), (int)MathExt::floor(points[i+1].y));
 			}
 		}
 		else if(getStrokeWidth()>1)

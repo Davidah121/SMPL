@@ -70,7 +70,7 @@ namespace glib
 	void GuiTextBox::dispose()
 	{
 		//delete contextMenuStuff
-		for(int i=0; i<contextMenuButtons.size(); i++)
+		for(size_t i=0; i<contextMenuButtons.size(); i++)
 		{
 			if(contextMenuText[i] != nullptr)
 				delete contextMenuText[i];
@@ -192,12 +192,18 @@ namespace glib
 				if(f == nullptr)
 					return;
 				
-				Vec2f cursorPos = f->getCursorLocation( testText, cursorLocation, textElement.getMaxWidth(), textElement.getMaxHeight() );
+				Vec2f cursorPos;
 
-				cursorPos.x += textElement.getBaseX() + xOffsetForText;
-				cursorPos.y += textElement.getBaseY() + yOffsetForText;
+				if(textElement.getAllowTextWrap())
+					cursorPos = f->getCursorLocation( testText, cursorLocation, textElement.getMaxWidth() );
+				else
+					cursorPos = f->getCursorLocation( testText, cursorLocation, -1 );
+
+				cursorPos.x += xOffsetForText;
+				cursorPos.y += yOffsetForText;
 				
-				GuiGraphicsInterface::drawRect(x+cursorPos.x, y+cursorPos.y, x+cursorPos.x+cursorWidth, y+cursorPos.y+f->getFontSize(), false);
+				GuiGraphicsInterface::drawRect((int)MathExt::round(x+cursorPos.x), (int)MathExt::round(y+cursorPos.y),
+											(int)MathExt::round(x+cursorPos.x+cursorWidth), (int)MathExt::round(y+cursorPos.y+f->getVerticalAdvance()), false);
 			}
 		}
 		
@@ -244,7 +250,22 @@ namespace glib
 
 	void GuiTextBox::paste()
 	{
+		//Do some additional parsing of the pasted text to remove linebreaks and other invalid characters
 		std::string pasteText = System::pasteFromClipboard();
+		std::string cleanedText = "";
+		for(int i=0; i<pasteText.size(); i++)
+		{
+			if(pasteText[i] >= 32)
+			{
+				cleanedText += pasteText[i];
+			}
+			else if(pasteText[i] == '\n' && allowLineBreaks)
+			{
+				cleanedText += '\n';
+			}
+			//should allow tabs too whenever a method to handle them is implemented.
+		}
+		
 
 		int minSelect = MathExt::min(selectStart, selectEnd);
 		int maxSelect = MathExt::max(selectStart, selectEnd);
@@ -252,8 +273,8 @@ namespace glib
 		std::string prefix = textElement.getText().substr(0, minSelect);
 		std::string suffix = textElement.getText().substr(maxSelect);
 
-		textElement.setText( (prefix + pasteText) + suffix );
-		cursorLocation = minSelect+pasteText.size();
+		textElement.setText( (prefix + cleanedText) + suffix );
+		cursorLocation = minSelect+cleanedText.size();
 		selectStart = cursorLocation;
 		selectEnd = cursorLocation;
 	}
@@ -369,6 +390,8 @@ namespace glib
 					cursorLocation = MathExt::clamp(cursorLocation, 0, (int)textElement.getTextRef().size());
 					selectStart = cursorLocation;
 					selectEnd = cursorLocation;
+
+					StringTools::println("CursorLocation: %d", cursorLocation);
 				}
 				else if(inputChar == Input::KEY_DOWN)
 				{
@@ -387,11 +410,11 @@ namespace glib
 							break;
 						}
 					}
-					for(int i=cursorLocation; i<temp.size(); i++)
+					for(int i=cursorLocation; i<(int)temp.size(); i++)
 					{
 						if(temp[i] == '\n')
 						{
-							if(nextLineStartLoc == temp.size())
+							if(nextLineStartLoc == (int)temp.size())
 								nextLineStartLoc = i+1;
 							else
 							{
@@ -437,7 +460,7 @@ namespace glib
 						if(minSelect==maxSelect)
 							maxSelect++;
 
-						if(maxSelect <= textElement.getTextRef().size())
+						if(maxSelect <= (int)textElement.getTextRef().size())
 						{
 							std::string prefix = textElement.getText().substr(0, minSelect);
 							std::string suffix = textElement.getText().substr(maxSelect);
@@ -462,7 +485,7 @@ namespace glib
 						std::string prefix = textElement.getText().substr(0, minSelect);
 						std::string suffix = textElement.getText().substr(maxSelect);
 
-						for(int i=0; i<values.size(); i++)
+						for(size_t i=0; i<values.size(); i++)
 						{
 							prefix += values[i];
 						}
@@ -501,7 +524,7 @@ namespace glib
 				if(Input::getMousePressed(Input::LEFT_MOUSE_BUTTON))
 				{
 					//Continue only if the context menu showed is not owned by this object
-					for(int i=0; i<getChildrenRef().size(); i++)
+					for(size_t i=0; i<getChildrenRef().size(); i++)
 					{
 						GuiInstance* childIns = getChildrenRef()[i];
 						if(childIns->getClass() == GuiContextMenu::globalClass)
@@ -551,88 +574,42 @@ namespace glib
 			{
 				if (mouseY >= y && mouseY <= y + height)
 				{
+					bool firstFocus = false;
 					if(!getFocus())
+					{
+						firstFocus = true;
 						setShouldRedraw(true);
+					}
 					
 					Input::clearCharactersTyped();
 					setFocus(true);
 					hold = true;
-					bool found = false;
-					//find start location
-					int xStartLoc = x + textElement.getBaseX();
-					int wid = 0;
-					int preXAdv = 0;
-					int yStartLoc = y + textElement.getBaseY();
-
-					if(mouseY < yStartLoc)
+					
+					if(firstFocus)
 					{
-						cursorLocation = 0;
 						selectStart = 0;
-						selectEnd = 0;
 					}
 					else
 					{
-						for(int i=0; i<temp.size(); i++)
+						if(f != nullptr)
 						{
-							bool passedMaxWidth = false;
+							//adjust mouse x and y by the text offsets.
+							int adjustMouseX = (mouseX - x) - xOffsetForText;
+							int adjustMouseY = (mouseY - y) - yOffsetForText;
+							size_t tempSelection = SIZE_MAX;
+
 							if(textElement.getAllowTextWrap())
-							{
-								passedMaxWidth = (wid >= textElement.getMaxWidth());
-							}
-
-							if(temp[i] == '\n' || passedMaxWidth)
-							{
-								if(mouseY >= yStartLoc && mouseY < yStartLoc+f->getVerticalAdvance())
-								{
-									int xS = xStartLoc - (int)MathExt::floor((double)preXAdv/2);
-									if(mouseX >= xS)
-									{
-										cursorLocation = i;
-										selectStart = i;
-										selectEnd = i;
-										found = true;
-										break;
-									}
-								}
-								xStartLoc = x + textElement.getBaseX();
-								wid = 0;
-								preXAdv = 0;
-								yStartLoc += f->getVerticalAdvance();
-							}
+								tempSelection = f->getSelectIndex(textElement.getTextRef(), textElement.getMaxWidth(), adjustMouseX, adjustMouseY);
 							else
-							{
-								int charIndexInFont = f->getCharIndex(temp[i]);
-								FontCharInfo fci = f->getFontCharInfo(charIndexInFont);
-								int xS = xStartLoc - (int)MathExt::floor((double)preXAdv/2);
-								int xE = xStartLoc + (int)MathExt::ceil((double)fci.horizAdv/2);
-								if(mouseY >= yStartLoc && mouseY < yStartLoc+f->getVerticalAdvance())
-								{
-									if(mouseX >= xS && mouseX < xE)
-									{
-										cursorLocation = i;
-										selectStart = i;
-										selectEnd = i;
-										found = true;
-										break;
-									}
-								}
-								xStartLoc += fci.horizAdv;
-								wid += fci.horizAdv;
-								preXAdv = fci.horizAdv;
-							}
-						}
-
-						if(!found)
-						{
-							if(mouseY >= yStartLoc)
-							{
-								cursorLocation = temp.size();
-								selectStart = cursorLocation;
-								selectEnd = cursorLocation;
-							}
+								tempSelection = f->getSelectIndex(textElement.getTextRef(), -1, adjustMouseX, adjustMouseY);
+							
+							// StringTools::println("(%d, %d) - %llu", adjustMouseX, adjustMouseY, tempSelection);
+							if(tempSelection != SIZE_MAX)
+								selectStart = (int)tempSelection;
+							else
+								selectStart = 0;
 						}
 					}
-
 				}
 				else
 				{
@@ -656,78 +633,28 @@ namespace glib
 
 		if(hold)
 		{
-			//find start location
-			bool found = false;
-			int xStartLoc = x + textElement.getBaseX();
-			int wid = 0;
-			int preXAdv = 0;
-			int yStartLoc = y + textElement.getBaseY();
-
-			if(mouseY < yStartLoc)
+			//Find the end select location at the mouse cursor if(f != nullptr)
+			if(f != nullptr)
 			{
-				cursorLocation = 0;
-				selectEnd = 0;
-			}
-			else
-			{
-				for(int i=0; i<temp.size(); i++)
-				{
-					bool passedMaxWidth = false;
-					if(textElement.getAllowTextWrap())
-					{
-						passedMaxWidth = (wid >= textElement.getMaxWidth());
-					}
+				//adjust mouse x and y by the text offsets.
+				int adjustMouseX = (mouseX - x) - xOffsetForText;
+				int adjustMouseY = (mouseY - y) - yOffsetForText;
+				size_t tempSelection = SIZE_MAX;
 
-					if(temp[i] == '\n' || passedMaxWidth)
-					{
-						if(mouseY >= yStartLoc && mouseY < yStartLoc+f->getVerticalAdvance())
-						{
-							int xS = xStartLoc - (int)MathExt::floor((double)preXAdv/2);
-							if(mouseX >= xS)
-							{
-								cursorLocation = i;
-								selectEnd = i;
-								found = true;
-								break;
-							}
-						}
-						xStartLoc = x + textElement.getBaseX();
-						wid = 0;
-						preXAdv = 0;
-						yStartLoc += f->getVerticalAdvance();
-					}
-					else
-					{
-						int charIndexInFont = f->getCharIndex(temp[i]);
-						FontCharInfo fci = f->getFontCharInfo(charIndexInFont);
-						int xS = xStartLoc - (int)MathExt::floor((double)preXAdv/2);
-						int xE = xStartLoc + (int)MathExt::ceil((double)fci.horizAdv/2);
-						if(mouseY >= yStartLoc && mouseY < yStartLoc+f->getVerticalAdvance())
-						{
-							if(mouseX >= xS && mouseX < xE)
-							{
-								cursorLocation = i;
-								selectEnd = i;
-								found = true;
-								break;
-							}
-						}
-						xStartLoc += fci.horizAdv;
-						wid += fci.horizAdv;
-						preXAdv = fci.horizAdv;
-					}
-				}
+				if(textElement.getAllowTextWrap())
+					tempSelection = f->getSelectIndex(textElement.getTextRef(), textElement.getMaxWidth(), adjustMouseX, adjustMouseY);
+				else
+					tempSelection = f->getSelectIndex(textElement.getTextRef(), -1, adjustMouseX, adjustMouseY);
 
-				if(!found)
-				{
-					if(mouseY >= yStartLoc)
-					{
-						cursorLocation = temp.size();
-						selectEnd = cursorLocation;
-					}
-				}
+				if(tempSelection != SIZE_MAX)
+					selectEnd = (int)tempSelection;
+				else
+					selectEnd = 0;
 			}
+			// selectEnd = selectStart;
+			cursorLocation = selectEnd;
 		}
+
 	}
 
 	void GuiTextBox::selectionCleanup()
@@ -747,38 +674,47 @@ namespace glib
 		if(startStringIndex<0)
 			startStringIndex = 0;
 		
-		int xCursorPos, yCursorPos;
-		xCursorPos = 0;
-		yCursorPos = 0;
-		for(int i=0; i<cursorLocation; i++)
-		{
-			if(tempText[i] == '\n')
-			{
-				xCursorPos = 0;
-				yCursorPos += f->getVerticalAdvance();
-			}
-			else
-			{
-				int charIndexInFont = f->getCharIndex(tempText[i]);
-				FontCharInfo fci = f->getFontCharInfo(charIndexInFont);
-				xCursorPos += fci.horizAdv;
-			}
+		Vec2f cursorPos;
 
+		if(f != nullptr)
+		{
 			if(textElement.getAllowTextWrap())
+				cursorPos = f->getCursorLocation(tempText, cursorLocation, textElement.getMaxWidth());
+			else
+				cursorPos = f->getCursorLocation(tempText, cursorLocation, -1);
+		}
+		
+		cursorPos += Vec2f(xOffsetForText, yOffsetForText);
+
+		//Introduce a buffer to allow the text to move before hitting the edge.
+		int rightBuffer = 4;
+		int bottomBuffer = f->getVerticalAdvance();
+		if(!textElement.getAllowTextWrap())
+		{
+			if(cursorPos.x < 0)
 			{
-				if(xCursorPos >= textElement.getMaxWidth())
-				{
-					xCursorPos = 0;
-					yCursorPos += f->getVerticalAdvance();
-				}
+				xOffsetForText -= cursorPos.x;
+			}
+			if(cursorPos.x >= width - rightBuffer)
+			{
+				xOffsetForText += (width-rightBuffer) - cursorPos.x;
 			}
 		}
 
-		xCursorPos += textElement.getBaseX()*2;
-		yCursorPos += textElement.getBaseY()*2;
+		if(cursorPos.y < 0)
+		{
+			yOffsetForText += f->getVerticalAdvance();
+		}
+		if(cursorPos.y >= height-bottomBuffer)
+		{
+			yOffsetForText -= f->getVerticalAdvance();
+		}
 
-		xOffsetForText = MathExt::min(width - xCursorPos, 0);
-		yOffsetForText = MathExt::min(height - yCursorPos, 0);
+		if(cursorLocation == 0)
+		{
+			xOffsetForText = 0;
+			yOffsetForText = 0;
+		}
 
 		textElement.setOffsetX(xOffsetForText);
 		textElement.setOffsetY(yOffsetForText);
@@ -895,7 +831,7 @@ namespace glib
 
 		std::vector<std::string> possibleNames = { "width", "height", "cursorblinktimer", "cursorwidth", "backgroundcolor", "outlinecolor", "focusoutlinecolor", "cursorblinkcolor", "allowlinebreaks", "enablecontextmenu"};
 
-		for(int i=0; i<possibleNames.size(); i++)
+		for(size_t i=0; i<possibleNames.size(); i++)
 		{
 			auto it = attributes.find(possibleNames[i]);
 			if(it != attributes.end())

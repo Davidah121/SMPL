@@ -53,8 +53,8 @@ namespace glib
 
 	void GuiTextBlock::update()
 	{
-		int width = boundingBox.getWidth();
-		int height = boundingBox.getHeight();
+		int width = (int)MathExt::round(boundingBox.getWidth());
+		int height = (int)MathExt::round(boundingBox.getHeight());
 
 		if(updateBounds)
 		{
@@ -77,7 +77,7 @@ namespace glib
 				tempBoundingBox = currFont->getBoundingBox(checkText, -1, maxHeight);
 				if(maxWidth >= 0)
 				{
-					int tempWidth = tempBoundingBox.getRightBound();
+					int tempWidth = (int)MathExt::round(tempBoundingBox.getRightBound());
 					tempWidth = MathExt::clamp(tempWidth, 0, maxWidth);
 					tempBoundingBox.setRightBound( tempBoundingBox.getLeftBound() + tempWidth );
 				}
@@ -117,8 +117,6 @@ namespace glib
 		GuiFontInterface* fInt = (textFont != nullptr) ? textFont : GuiGraphicsInterface::getFont();
 		GuiFontInterface* oldFontInt = GuiGraphicsInterface::getFont();
 
-		Font* currFont = fInt->getFont();
-
 		GuiGraphicsInterface::setFont(fInt);
 		GuiGraphicsInterface::setColor(textColor);
 
@@ -128,6 +126,8 @@ namespace glib
 		int minHighlight = MathExt::min(startHighlight, endHighlight);
 		int maxHighlight = MathExt::max(startHighlight, endHighlight);
 		
+		// Box2D oldClip = GuiGraphicsInterface::getClippingRect();
+
 		if(!text.empty())
 		{
 			if(shouldHighlight)
@@ -363,7 +363,7 @@ namespace glib
 
 		std::vector<std::string> possibleNames = { "maxwidth", "maxheight", "textcolor", "defaulttextcolor", "highlightcolor", "allowhighlight", "allowwraptext", "highlightstart", "highlightend", "textxoffset", "textyoffset", "text", "defaulttext" };
 
-		for(int i=0; i<possibleNames.size(); i++)
+		for(size_t i=0; i<possibleNames.size(); i++)
 		{
 			auto it = attributes.find(possibleNames[i]);
 			if(it != attributes.end())

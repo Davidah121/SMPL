@@ -9,7 +9,7 @@ namespace glib
 		return Compression::adler32(data.data(), data.size());
 	}
 
-	unsigned int Compression::adler32(unsigned char* data, int size)
+	unsigned int Compression::adler32(unsigned char* data, size_t size)
 	{
 		if(size <= 0)
 		{
@@ -30,7 +30,7 @@ namespace glib
 		unsigned long sumA = 1;
 		unsigned long sumB = 0;
 
-		for(int i=0; i<size; i++)
+		for(size_t i=0; i<size; i++)
 		{
 			sumA = (sumA + data[i]) % 65521;
 			sumB = (sumB + sumA) % 65521;
@@ -44,7 +44,7 @@ namespace glib
 		return Compression::crc(data.data(), data.size(), type);
 	}
 
-	unsigned int Compression::crc(unsigned char* data, int size, unsigned char type)
+	unsigned int Compression::crc(unsigned char* data, size_t size, unsigned char type)
 	{
 		if(size <= 0)
 		{

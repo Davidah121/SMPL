@@ -36,7 +36,7 @@ namespace glib
 		static std::wstring toWideString(std::basic_string<T> text)
 		{
 			std::wstring finalText;
-			for (int i = 0; i < text.size(); i++)
+			for (size_t i = 0; i < text.size(); i++)
 			{
 				finalText += (wchar_t)text[i];
 			}
@@ -56,7 +56,7 @@ namespace glib
 		{
 			std::string finalText;
 
-			for (int i = 0; i < text.size(); i++)
+			for (size_t i = 0; i < text.size(); i++)
 			{
 				finalText += (char)text[i];
 			}
@@ -97,7 +97,7 @@ namespace glib
 		static std::basic_string<T> toLowercase(std::basic_string<T> text)
 		{
 			std::basic_string<T> finalText;
-			for (int i = 0; i < text.size(); i++)
+			for (size_t i = 0; i < text.size(); i++)
 			{
 				finalText += tolower(text[i]);
 			}
@@ -116,7 +116,7 @@ namespace glib
 		static std::basic_string<T> toUppercase(std::basic_string<T> text)
 		{
 			std::basic_string<T> finalText = "";
-			for (int i = 0; i < text.size(); i++)
+			for (size_t i = 0; i < text.size(); i++)
 			{
 				finalText += toupper(text[i]);
 			}
@@ -339,7 +339,7 @@ namespace glib
 		{
 			if(a.size() == b.size())
 			{
-				for(int i=0; i<a.size(); i++)
+				for(size_t i=0; i<a.size(); i++)
 				{
 					if( toupper(a[i]) != toupper(b[i]))
 						return false;
@@ -412,23 +412,29 @@ namespace glib
 		 * @return char* 
 		 */
 		template<class T>
-		static char* toHexString(T value)
+		static std::string toHexString(T value)
 		{
 			int size = sizeof(T) * 2;
 
-			char* hexString = new char[size+1];
+			char* hexString = new char[size+1+2];
 			int maxVal = 4*sizeof(T) - 4;
+
+			hexString[0] = '0';
+			hexString[1] = 'x';
 
 			unsigned long long convertedValue = (unsigned long long)value;
 			
-			for(int i=0; i<size; i++)
+			for(size_t i=0; i<size; i++)
 			{
-				hexString[size-i-1] = base10ToBase16((convertedValue >> (i*4)) & 0xF);
+				hexString[2 + size-i-1] = base10ToBase16((convertedValue >> (i*4)) & 0xF);
 			}
 
 			hexString[size] = '\0';
 
-			return hexString;
+			std::string retString = hexString;
+			delete[] hexString;
+			
+			return retString;
 		}
 
 		/**
@@ -445,7 +451,7 @@ namespace glib
 			if(v.size() <= 0)
 				return -1;
 
-			for(int k=0; k<v.size(); k++)
+			for(size_t k=0; k<v.size(); k++)
 			{
 				if(v[k] == 'x')
 				{
@@ -494,7 +500,7 @@ namespace glib
 			b.setBitOrder(LMSB);
 			b.setValues((char*)&value, size);
 
-			for(int i=0; i<bits; i++)
+			for(size_t i=0; i<bits; i++)
 			{
 				binString[bits-i-1] = (b.getBit(i)==false) ? '0':'1';
 			}
@@ -864,9 +870,10 @@ namespace glib
 		 */
 		static void print(std::string fmt, ...)
 		{
+			std::wstring fmtAsWide = StringTools::toWideString<char>(fmt);
 			va_list args;
 			va_start(args, fmt);
-			std::wstring finalString = formatWideStringInternal( StringTools::toWideString(fmt), args);
+			std::wstring finalString = formatWideStringInternal( fmtAsWide, args);
 			va_end(args);
 
 			std::wcout << finalString;
@@ -1049,7 +1056,7 @@ namespace glib
 	}
 
 	template<class T>
-	inline void StringTools::KMP(T* base, int baseSize,T* match, int matchSize, int* index, int* length)
+	inline void StringTools::KMP(T* base, int baseSize, T* match, int matchSize, int* index, int* length)
 	{
 		//preprocess match
 		std::vector<int> lps = longestPrefixSubstring(match, matchSize);
@@ -1175,7 +1182,7 @@ namespace glib
 	template<class T>
 	inline void StringTools::findLongestMatch(T* base, int baseSize, T* match, int matchSize, int* index, int* length)
 	{
-		StringTools::KMP(base, baseSize, match, matchSize, index, length);
+		StringTools::KMP<T>(base, baseSize, match, matchSize, index, length);
 	}
 
 } //NAMESPACE glib END

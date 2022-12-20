@@ -36,7 +36,7 @@
 		{
 			setClass(GLSprite::myClass);
 			delayTimeForFrame = o.delayTimeForFrame;
-			for(int i=0; i<o.images.size(); i++)
+			for(size_t i=0; i<o.images.size(); i++)
 			{
 				images.push_back( new GLTexture(o.getImage(i)) );
 			}
@@ -44,7 +44,7 @@
 
 		GLSprite::GLSprite(Sprite& o)
 		{
-			for(int i=0; i<o.getSize(); i++)
+			for(size_t i=0; i<o.getSize(); i++)
 			{
 				images.push_back( new GLTexture(o.getImage(i)) );
 				delayTimeForFrame.push_back( o.getDelayTime(i) );
@@ -53,7 +53,7 @@
 
 		void GLSprite::dispose()
 		{
-			for(int i=0; i<images.size(); i++)
+			for(size_t i=0; i<images.size(); i++)
 			{
 				if(images[i]!=nullptr)
 				{
@@ -65,33 +65,33 @@
 			delayTimeForFrame.clear();
 		}
 
-		GLTexture* GLSprite::getTexture(int index)
+		GLTexture* GLSprite::getTexture(size_t index)
 		{
-			if (images.size() > index && index >= 0)
+			if (images.size() > index)
 			{
 				return images[index];
 			}
 			return nullptr;
 		}
 
-		int GLSprite::getDelayTime(int index)
+		int GLSprite::getDelayTime(size_t index)
 		{
-			if (images.size() > index && index >= 0)
+			if (images.size() > index)
 			{
 				return delayTimeForFrame[index];
 			}
 			return -1;
 		}
 
-		void GLSprite::setDelayTime(int index, int microSecondsDelay)
+		void GLSprite::setDelayTime(size_t index, int microSecondsDelay)
 		{
-			if (images.size() > index && index >= 0)
+			if (images.size() > index)
 			{
 				delayTimeForFrame[index] = microSecondsDelay;
 			}
 		}
 
-		int GLSprite::getSize()
+		size_t GLSprite::getSize()
 		{
 			return images.size();
 		}
@@ -102,14 +102,14 @@
 			delayTimeForFrame.push_back(microSecondsDelay);
 		}
 
-		void GLSprite::removeImage(int index)
+		void GLSprite::removeImage(size_t index)
 		{
-			if (index >= 0 && index < images.size())
+			if (index < images.size())
 			{
 				std::vector<GLTexture*> newImages = std::vector<GLTexture*>();
 				std::vector<int> newImageDelay = std::vector<int>();
 
-				for (int i = 0; i < images.size(); i++)
+				for (size_t i = 0; i < images.size(); i++)
 				{
 					if (i != index)
 					{

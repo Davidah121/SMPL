@@ -63,7 +63,7 @@ namespace glib
 			GuiGraphicsInterface::setColor(Color{255,255,255,255});
 			GuiGraphicsInterface::drawSurface(myImage, x, y);
 			GuiGraphicsInterface::setColor(Color{0,0,0,255});
-			GuiGraphicsInterface::drawRect(x, y, x+boundingBox.getWidth(), y+boundingBox.getHeight(), true);
+			GuiGraphicsInterface::drawRect(x, y, (int)MathExt::round(x+boundingBox.getWidth()), (int)MathExt::round(y+boundingBox.getHeight()), true);
 		}
 	}
 

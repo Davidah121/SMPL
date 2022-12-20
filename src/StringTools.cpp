@@ -83,6 +83,7 @@ namespace glib
 		#ifdef __unix__
 			setlocale(LC_CTYPE, "");
 		#else
+			//Note that the following return values are not used and cause warnings
 			int outRet = _setmode(_fileno(stdout), _O_U16TEXT);
 			int inRet = _setmode(_fileno(stdin), _O_U16TEXT);
 			int errRet = _setmode(_fileno(stderr), _O_U16TEXT);
@@ -525,7 +526,7 @@ namespace glib
 	std::vector<int> StringTools::wideStringToIntString(std::wstring str)
 	{
 		std::vector<int> results = std::vector<int>(str.size());
-		for(int i=0; i<str.size(); i++)
+		for(size_t i=0; i<str.size(); i++)
 		{
 			results[i] = str[i];
 		}
@@ -695,7 +696,7 @@ namespace glib
 
 		std::string temp = "";
 
-		int i = 0;
+		size_t i = 0;
 		while (i < s.size())
 		{
 			if (s.at(i) != delim)
@@ -730,14 +731,14 @@ namespace glib
 
 		std::string temp = "";
 
-		int i = 0;
-		int dSize = delim.size();
+		size_t i = 0;
+		size_t dSize = delim.size();
 
 		while (i < s.size())
 		{
 			bool valid = true;
 
-			for(int x=0; x<dSize; x++)
+			for(size_t x=0; x<dSize; x++)
 			{
 				if (s.at(i) == delim[x])
 				{
@@ -779,10 +780,10 @@ namespace glib
 		std::string temp = "";
 		std::string otherString = "";
 
-		int dSize = delim.size();
+		size_t dSize = delim.size();
 
-		int i = 0;
-		int count = 0;
+		size_t i = 0;
+		size_t count = 0;
 
 		while (i < s.size())
 		{
@@ -856,7 +857,7 @@ namespace glib
 
 		std::wstring temp = L"";
 
-		int i = 0;
+		size_t i = 0;
 		while (i < s.size())
 		{
 			if (s.at(i) != delim)
@@ -891,14 +892,14 @@ namespace glib
 
 		std::wstring temp = L"";
 
-		int i = 0;
-		int dSize = delim.size();
+		size_t i = 0;
+		size_t dSize = delim.size();
 
 		while (i < s.size())
 		{
 			bool valid = true;
 
-			for(int x=0; x<dSize; x++)
+			for(size_t x=0; x<dSize; x++)
 			{
 				if (s.at(i) == delim[x])
 				{
@@ -940,10 +941,10 @@ namespace glib
 		std::wstring temp = L"";
 		std::wstring otherString = L"";
 
-		int dSize = delim.size();
+		size_t dSize = delim.size();
 
-		int i = 0;
-		int count = 0;
+		size_t i = 0;
+		size_t count = 0;
 
 		while (i < s.size())
 		{
@@ -1033,7 +1034,7 @@ namespace glib
 		{
 			int firstInvalidSpot = -1;
 			bool hitNormalChar = false;
-			for(int i=0; i<originalStr.size(); i++)
+			for(size_t i=0; i<originalStr.size(); i++)
 			{
 				char c = originalStr[i];
 				if(!hitNormalChar)
@@ -1070,7 +1071,7 @@ namespace glib
 				//Add data that was skipped since it is not empty white space at the end.
 				if(firstInvalidSpot >= 0)
 				{
-					for(int k=firstInvalidSpot; k<i; k++)
+					for(size_t k=firstInvalidSpot; k<i; k++)
 					{
 						nStr += originalStr[k];
 					}
@@ -1107,7 +1108,7 @@ namespace glib
 		{
 			int firstInvalidSpot = -1;
 			bool hitNormalChar = false;
-			for(int i=0; i<originalStr.size(); i++)
+			for(size_t i=0; i<originalStr.size(); i++)
 			{
 				wchar_t c = originalStr[i];
 				if(!hitNormalChar)
@@ -1144,7 +1145,7 @@ namespace glib
 				//Add data that was skipped since it is not empty white space at the end.
 				if(firstInvalidSpot >= 0)
 				{
-					for(int k=firstInvalidSpot; k<i; k++)
+					for(size_t k=firstInvalidSpot; k<i; k++)
 					{
 						nStr += originalStr[k];
 					}
@@ -1434,7 +1435,7 @@ namespace glib
 		va_list args;
 		va_copy(args, orgArgs);
 
-		int i=0;
+		size_t i=0;
 
 		while(i<splits.size())
 		{
@@ -1561,7 +1562,7 @@ namespace glib
 		va_list args;
 		va_copy(args, orgArgs);
 
-		int i = 0;
+		size_t i = 0;
 		while(i<splits.size())
 		{
 			std::wstring str = splits[i];

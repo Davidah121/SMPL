@@ -63,7 +63,8 @@ namespace glib
 		{
 			//method 1
 			SimpleGraphics::setColor(getStrokeColor());
-			buffer->drawLine(x1,y1,x2,y2);
+			buffer->drawLine((int)MathExt::round(x1),(int)MathExt::round(y1),
+							(int)MathExt::round(x2),(int)MathExt::round(y2));
 		}
 		else if(getStrokeWidth() > 1)
 		{

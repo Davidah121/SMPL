@@ -456,10 +456,10 @@ namespace glib
 		ColorPalette p = ColorPalette();
 		Color* pixels = nullptr;
 
-		static Image** loadBMP(std::vector<unsigned char> fileData, int* amountOfImages, std::vector<int>* extraData = nullptr);
+		static Image** loadBMP(std::vector<unsigned char> fileData, int* amountOfImages);
 		static Image** loadGIF(std::vector<unsigned char> fileData, int* amountOfImages, std::vector<int>* extraData = nullptr);
 		static Image** loadPNG(std::vector<unsigned char> fileData, int* amountOfImages, std::vector<int>* extraData = nullptr);
-		static Image** loadJPG(std::vector<unsigned char> fileData, int* amountOfImages, std::vector<int>* extraData = nullptr);
+		static Image** loadJPG(std::vector<unsigned char> fileData, int* amountOfImages);
 	};
 
 } //NAMESPACE glib END

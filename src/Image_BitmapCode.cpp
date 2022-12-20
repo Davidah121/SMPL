@@ -125,7 +125,7 @@ namespace glib
 		}
 	}
 
-	Image** Image::loadBMP(std::vector<unsigned char> fileData, int* amountOfImages, std::vector<int>* extraData)
+	Image** Image::loadBMP(std::vector<unsigned char> fileData, int* amountOfImages)
 	{
 		Image** images = nullptr;
 		//Assume that the bitmap is a valid bitmap
@@ -174,7 +174,7 @@ namespace glib
 		{
 			//RLE for 8 bit images
 			//This works like normal so you can use the normal method.
-			int i = pixStart;
+			size_t i = pixStart;
 
 			while (i < fileData.size()-1)
 			{
@@ -197,10 +197,8 @@ namespace glib
 		{
 			//RLE for 4 bit images
 			//Have to do a bit of conversion to get the data like you expect.
-			int i = pixStart;
-
+			size_t i = pixStart;
 			int shift = 4;
-
 			
 			while (i < fileData.size()-1)
 			{
@@ -408,10 +406,10 @@ namespace glib
 				unsigned char highWord = pixData[i];
 				unsigned char lowWord = pixData[i + 1];
 
-				tImg->pixels[y * width + x].blue = (highWord >> 8 & 0xFF);
-				tImg->pixels[y * width + x].green = (highWord & 0xFF);
-				tImg->pixels[y * width + x].red = (lowWord >> 8 & 0xFF);
-				tImg->pixels[y * width + x].alpha = (lowWord & 0xFF);
+				tImg->pixels[y * width + x].blue = (highWord >> 4 & 0x0F);
+				tImg->pixels[y * width + x].green = (highWord & 0x0F);
+				tImg->pixels[y * width + x].red = (lowWord >> 4 & 0x0F);
+				tImg->pixels[y * width + x].alpha = (lowWord & 0x0F);
 
 				x++;
 				if (x >= width)

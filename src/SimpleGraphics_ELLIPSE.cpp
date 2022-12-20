@@ -4,7 +4,7 @@ namespace glib
 {
     void SimpleGraphics::drawEllipse(int x, int y, int xRad, int yRad, bool outline, Image* surf)
 	{
-		int currentComposite = compositeRule;
+		// int currentComposite = compositeRule; //Not used
 
 		Image* otherImg;
 		if (surf == nullptr)
@@ -80,8 +80,8 @@ namespace glib
 						if(xRange.size() <= 0)
 							continue;
 						
-						startX = MathExt::round(xRange[1]);
-						endX = MathExt::round(xRange[0]);
+						startX = (int)MathExt::round(xRange[1]);
+						endX = (int)MathExt::round(xRange[0]);
 
 						startX = MathExt::clamp(startX, minX, maxX);
 						endX = MathExt::clamp(endX, minX, maxX);
@@ -110,8 +110,8 @@ namespace glib
 							if(xRangeOuter.size() > 0 && absXRad <= absYRad)
 							{
 								//all partially transparent
-								x1 = MathExt::floor(xRangeOuter[1]);
-								x2 = MathExt::ceil(xRangeOuter[0]);
+								x1 = (int)MathExt::floor(xRangeOuter[1]);
+								x2 = (int)MathExt::ceil(xRangeOuter[0]);
 
 								x1 = MathExt::clamp(x1, minX, maxX);
 								x2 = MathExt::clamp(x2, minX, maxX);
@@ -143,10 +143,10 @@ namespace glib
 							continue;
 						}
 						
-						x1 = MathExt::floor(xRangeOuter[1]);
-						x2 = MathExt::ceil(xRangeInner[1]);
-						x3 = MathExt::floor(xRangeInner[0])+1;
-						x4 = MathExt::ceil(xRangeOuter[0]);
+						x1 = (int)MathExt::floor(xRangeOuter[1]);
+						x2 = (int)MathExt::ceil(xRangeInner[1]);
+						x3 = (int)MathExt::floor(xRangeInner[0])+1;
+						x4 = (int)MathExt::ceil(xRangeOuter[0]);
 
 						x1 = MathExt::clamp(x1, minX, maxX);
 						x2 = MathExt::clamp(x2, minX, maxX);

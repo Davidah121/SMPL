@@ -70,7 +70,6 @@ namespace glib
 				actualAmount = 0;
 
 			int end = sizeInBits;
-			int actualOffset = offset;
 			if(offset < 0)
 				offset = 0;
 			
@@ -99,7 +98,7 @@ namespace glib
 		 * @param size
 		 * 		The amount of items in the array.
 		 */
-		void add(char* v, int size);
+		void add(char* v, size_t size);
 
 		/**
 		 * @brief Adds an array of unsigned char to the set.
@@ -109,7 +108,7 @@ namespace glib
 		 * @param size
 		 * 		The amount of items in the array.
 		 */
-		void add(unsigned char* v, int size);
+		void add(unsigned char* v, size_t size);
 
 		/**
 		 * @brief Adds another BinarySet to the current set.
@@ -128,7 +127,7 @@ namespace glib
 		 * @param size
 		 * 		The amount of items in the array.
 		 */
-		void setValues(char* v, int size);
+		void setValues(char* v, size_t size);
 
 		/**
 		 * @brief Set an array of unsigned char values to used as the BinarySet data.
@@ -139,7 +138,7 @@ namespace glib
 		 * @param size
 		 * 		The amount of items in the array.
 		 */
-		void setValues(unsigned char* v, int size);
+		void setValues(unsigned char* v, size_t size);
 
 		/**
 		 * @brief Gets a bit from the set.
@@ -149,7 +148,7 @@ namespace glib
 		 * 		Returns the value of the bit.
 		 * 		If the index was invalid, the value 0 is returned.
 		 */
-		bool getBit(int index);
+		bool getBit(size_t index);
 
 		/**
 		 * @brief Gets a collection of bits from the set.
@@ -163,7 +162,7 @@ namespace glib
 		 * @return int
 		 * 		Returns the value of the bits as a number.
 		 */
-		int getBits(int indexStart, int indexEnd, bool lmsb = false);
+		int getBits(size_t indexStart, size_t indexEnd, bool lmsb = false);
 
 		/**
 		 * @brief Sets a bit at the specified location
@@ -173,7 +172,7 @@ namespace glib
 		 * @param index
 		 * 		The index of the bit.
 		 */
-		void setBit(bool value, int index);
+		void setBit(bool value, size_t index);
 		
 		/**
 		 * @brief Returns the binary set data as bytes.
@@ -194,9 +193,9 @@ namespace glib
 
 		/**
 		 * @brief Returns the number of bits in the set.
-		 * @return int
+		 * @return size_t
 		 */
-		int size();
+		size_t size();
 
 		/**
 		 * @brief Clears the set of all bits and the memory it used.
@@ -225,7 +224,7 @@ namespace glib
 		std::vector<unsigned char> set = std::vector<unsigned char>();
 		bool MSB = true;
 		bool addBitOrder = LMSB;
-		long bitNumber = 0;
+		size_t bitNumber = 0;
 	};
 
 }  //NAMESPACE glib END

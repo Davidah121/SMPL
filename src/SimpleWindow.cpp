@@ -128,9 +128,10 @@ namespace glib
 			HDC hdc;
 			PAINTSTRUCT ps;
 			HDC mem;
-			BITMAP img;
+			BITMAP img = {};
 			HGDIOBJ oldImg;
 			RECT* rect = nullptr;
+
 
 			int borderHeight = (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) +
     							GetSystemMetrics(SM_CXPADDEDBORDER) + 1 + 8);
@@ -368,6 +369,7 @@ namespace glib
 					break;
 				case WM_SETCURSOR:
 					SetCursor( LoadCursor(0, IDC_ARROW) );
+					break;
 				default:
 					break;
 				}
@@ -544,6 +546,15 @@ namespace glib
 		this->title = title;
 
 		setAllFunctionsToNull();
+		if(windowList.size() == 1)
+		{
+			setWindowAsInputFocus();
+		}
+		
+		if(windowList.size() == 1)
+		{
+			setWindowAsInputFocus();
+		}
 
 		#ifdef __unix__
 
@@ -697,7 +708,7 @@ namespace glib
 
 				if(windowType.windowType == SimpleWindow::FULLSCREEN_WINDOW)
 				{
-					HMONITOR hmon = MonitorFromWindow(0, MONITOR_DEFAULTTONEAREST);
+					HMONITOR hmon = MonitorFromWindow(GetDesktopWindow(), MONITOR_DEFAULTTONEAREST);
 					MONITORINFO mi = { sizeof(MONITORINFO) };
 
 					style = WS_POPUP|WS_VISIBLE;
@@ -1027,6 +1038,15 @@ namespace glib
 		this->height = height;
 	}
 
+	void SimpleWindow::resizeToGuiManager()
+	{
+		auto guiSurf = gui->getSurface();
+		if(guiSurf != nullptr)
+		{
+			setSize(guiSurf->getWidth(), guiSurf->getHeight());
+		}
+	}
+
 	int SimpleWindow::getMouseX()
 	{
 		int mx = 0;
@@ -1245,6 +1265,10 @@ namespace glib
 		if(canFocus)
 		{
 			setShouldFocus(v);
+			if(threadOwnership == false)
+			{
+				threadSetFocus();
+			}
 		}
 	}
 
@@ -1327,7 +1351,7 @@ namespace glib
 		return canMove;
 	}
 
-	void SimpleWindow::setThreadUpdateTime(unsigned int millis, unsigned int micros)
+	void SimpleWindow::setThreadUpdateTime(size_t millis, size_t micros)
 	{
 		myMutex.lock();
 		sleepTimeMillis = millis;
@@ -1413,7 +1437,7 @@ namespace glib
 				else
 				{
 					Color* imgPixelsStart = g->getPixels();
-					Color* imgPixelsEnds = g->getPixels() + g->getWidth()*g->getHeight();
+					Color* imgPixelsEnds = g->getPixels() + (g->getWidth()*g->getHeight());
 					unsigned char* wndPixelsStart = wndPixels;
 					unsigned char* wndPixelsEnd = wndPixels + wndPixelsSize;
 
@@ -1447,7 +1471,7 @@ namespace glib
 	{
 		while (!getShouldEnd())
 		{
-			time_t t1 = System::getCurrentTimeMicro();
+			size_t t1 = System::getCurrentTimeMicro();
 
 			threadUpdate();
 			if(getShouldEnd())
@@ -1457,15 +1481,15 @@ namespace glib
 			if(getRepaint())
 				threadRepaint();
 
-			time_t timeNeeded = 0;
+			size_t timeNeeded = 0;
 			myMutex.lock();
 			timeNeeded = sleepTimeMillis*1000 + sleepTimeMicros;
 			myMutex.unlock();
 
-			time_t t2 = System::getCurrentTimeMicro();
-			time_t timePassed = t2-t1;
+			size_t t2 = System::getCurrentTimeMicro();
+			size_t timePassed = t2-t1;
 			
-			time_t waitTime = timeNeeded - timePassed;
+			size_t waitTime = timeNeeded - timePassed;
 
 			System::sleep(waitTime/1000, waitTime%1000);
 		}

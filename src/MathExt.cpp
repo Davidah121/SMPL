@@ -54,16 +54,16 @@ namespace glib
 
 	float MathExt::roundToDecimal(float a, int decimalPlaces)
 	{
-		float b = a * MathExt::pow(10.0f, decimalPlaces);
+		float b = a * MathExt::pow(10.0f, (float)decimalPlaces);
 		b = MathExt::round(b);
-		return b * MathExt::pow(10.0f, -decimalPlaces);
+		return b * MathExt::pow(10.0f, (float)-decimalPlaces);
 	}
 
 	double MathExt::roundToDecimal(double a, int decimalPlaces)
 	{
-		double b = a * MathExt::pow(10.0, decimalPlaces);
+		double b = a * MathExt::pow(10.0, (double)decimalPlaces);
 		b = MathExt::round(b);
-		return b * MathExt::pow(10.0, -decimalPlaces);
+		return b * MathExt::pow(10.0, (double)-decimalPlaces);
 	}
 
 	float MathExt::sqrt(float a)
@@ -210,9 +210,9 @@ namespace glib
 			while(true)
 			{
 				if( v >= 2*PI)
-					v -= 2*PI;
+					v -= (float)(2*PI);
 				else if(v < 0)
-					v += 2*PI;
+					v += (float)(2*PI);
 				else
 					break;
 			}
@@ -1368,7 +1368,7 @@ namespace glib
 		if(constants.size()>0)
 		{
 			newConstants[0] = constants[0];
-			for(int i=1; i<constants.size()-1; i++)
+			for(size_t i=1; i<constants.size()-1; i++)
 			{
 				newConstants[i] = constants[i] + newConstants[i-1] * zero;
 			}
@@ -1383,7 +1383,7 @@ namespace glib
 		if(f.size()>0)
 		{
 			newConstants[0] = f.getConstant(0);
-			for(int i=1; i<f.size()-1; i++)
+			for(size_t i=1; i<f.size()-1; i++)
 			{
 				newConstants[i] = f.getConstant(i) + newConstants[i-1] * zero;
 			}
@@ -1522,7 +1522,7 @@ namespace glib
 
 		Matrix xTranspose = Matrix(degree+1, points.size());
 
-		for(int i=0; i<points.size(); i++)
+		for(size_t i=0; i<points.size(); i++)
 		{
 			for(int j=0; j<degree+1; j++)
 			{

@@ -43,10 +43,10 @@ namespace glib
 		preRY = ry;
 
 		//first, calc bounding box
-		int x1 = cx-rx;
-		int x2 = cx+rx;
-		int y1 = cy-ry;
-		int y2 = cy+ry;
+		int x1 = (int)MathExt::round(cx-rx);
+		int x2 = (int)MathExt::round(cx+rx);
+		int y1 = (int)MathExt::round(cy-ry);
+		int y2 = (int)MathExt::round(cy+ry);
 
 		x1 = MathExt::clamp(x1, 0, globalWidth);
 		y1 = MathExt::clamp(y1, 0, globalHeight);
@@ -55,8 +55,8 @@ namespace glib
 
 		double radXSqr = MathExt::sqr(rx);
 		double radYSqr = MathExt::sqr(ry);
-		double strokeXRad = MathExt::sqr(rx-this->getStrokeWidth());
-		double strokeYRad = MathExt::sqr(ry-this->getStrokeWidth());
+		// double strokeXRad = MathExt::sqr(rx-this->getStrokeWidth()); //Not used
+		// double strokeYRad = MathExt::sqr(ry-this->getStrokeWidth()); //Not used
 
 		for(int j=y1; j<y2; j++)
 		{

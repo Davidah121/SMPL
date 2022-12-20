@@ -17,8 +17,8 @@ namespace glib
 
 	void BinarySet::add(bool v)
 	{
-		int byteLocation = bitNumber / 8;
-		int bitLocation = bitNumber % 8;
+		size_t byteLocation = bitNumber / 8;
+		size_t bitLocation = bitNumber % 8;
 		
 		if (byteLocation >= this->set.size())
 		{
@@ -30,22 +30,22 @@ namespace glib
 		bitNumber++;
 	}
 
-	void BinarySet::add(char* v, int size)
+	void BinarySet::add(char* v, size_t size)
 	{
 		if(v != nullptr)
 		{
-			for (int i = 0; i < size; i++)
+			for (size_t i = 0; i < size; i++)
 			{
 				this->add(v[i]);
 			}
 		}
 	}
 
-	void BinarySet::add(unsigned char* v, int size)
+	void BinarySet::add(unsigned char* v, size_t size)
 	{
 		if(v != nullptr)
 		{
-			for (int i = 0; i < size; i++)
+			for (size_t i = 0; i < size; i++)
 			{
 				this->add(v[i]);
 			}
@@ -54,13 +54,13 @@ namespace glib
 
 	void BinarySet::add(BinarySet& other)
 	{
-		for(int i=0; i<other.size(); i++)
+		for(size_t i=0; i<other.size(); i++)
 		{
 			add( other.getBit(i) );
 		}
 	}
 
-	void BinarySet::setValues(char* v, int size)
+	void BinarySet::setValues(char* v, size_t size)
 	{
 		if(v != nullptr)
 		{
@@ -74,7 +74,7 @@ namespace glib
 		}
 	}
 
-	void BinarySet::setValues(unsigned char* v, int size)
+	void BinarySet::setValues(unsigned char* v, size_t size)
 	{
 		if(v != nullptr)
 		{
@@ -88,10 +88,10 @@ namespace glib
 		}
 	}
 
-	bool BinarySet::getBit(int index)
+	bool BinarySet::getBit(size_t index)
 	{
-		int byteLocation = index / 8;
-		int bitLocation = index % 8;
+		size_t byteLocation = index / 8;
+		size_t bitLocation = index % 8;
 
 		if (MSB == BinarySet::LMSB)
 		{
@@ -111,24 +111,24 @@ namespace glib
 		return false;
 	}
 
-	int BinarySet::getBits(int indexStart, int indexEnd, bool lmsb)
+	int BinarySet::getBits(size_t indexStart, size_t indexEnd, bool lmsb)
 	{
 		int value = 0;
 		if(indexStart >= 0 && indexStart <= bitNumber)
 		{
 			if(indexEnd >= 0 && indexEnd <= bitNumber)
 			{
-				int totalSize = indexEnd-indexStart;
+				size_t totalSize = indexEnd-indexStart;
 				if(lmsb)
 				{
-					for (int i = 0; i < totalSize; i++)
+					for (size_t i = 0; i < totalSize; i++)
 					{
 						value += (int)getBit(indexStart + i) << (totalSize - i - 1);
 					}
 				}
 				else 
 				{
-					for (int i = 0; i < totalSize; i++)
+					for (size_t i = 0; i < totalSize; i++)
 					{
 						value += (int)getBit(indexStart + i) << i;
 					}
@@ -139,27 +139,29 @@ namespace glib
 		return value;
 	}
 
-	void BinarySet::setBit(bool value, int index)
+	void BinarySet::setBit(bool value, size_t index)
 	{
 		if(index >= bitNumber)
 		{
 			return;
 		}
 
-		int byteLocation = index / 8;
-		int bitLocation = index % 8;
+		size_t byteLocation = index / 8;
+		size_t bitLocation = index % 8;
 
-		unsigned char byte = 0;
-		for(int i=0; i<8; i++)
+		unsigned char byte = this->set[byteLocation];
+
+		if(value == true)
 		{
-			if(i!=bitLocation)
-			{
-				byte += this->set[byteLocation] & ( 1 << i);
-			}
-			else
-			{
-				byte += ( value << i);
-			}
+			unsigned char v = value << bitLocation;
+			byte |= v;
+		}
+		else
+		{
+			unsigned char nByte = ~byte;
+			unsigned char v = value << bitLocation;
+			nByte |= v;
+			byte = ~nByte;
 		}
 
 		this->set[byteLocation] = byte;
@@ -175,7 +177,7 @@ namespace glib
 		return set;
 	}
 
-	int BinarySet::size()
+	size_t BinarySet::size()
 	{
 		return bitNumber;
 	}

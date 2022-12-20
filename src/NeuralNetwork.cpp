@@ -68,7 +68,7 @@ namespace glib
     {
         if(nextLayer != nullptr)
         {
-            int nSize = nextLayer->size();
+            // int nSize = nextLayer->size();
             nextLayer->neurons = (nextLayer->weightsToConnections * neurons) + nextLayer->biasToConnections;
 
             for(int i=0; i<nextLayer->neurons.getRows(); i++)
@@ -198,9 +198,9 @@ namespace glib
     {
         NeuralLayer* l = startLayer;
 
-        if(inputs.size() == startLayer->size())
+        if((int)inputs.size() == startLayer->size())
         {
-            for(int i=0; i<inputs.size(); i++)
+            for(size_t i=0; i<inputs.size(); i++)
             {
                 startLayer->setNeuronActivation(i, inputs[i]);
             }
@@ -238,7 +238,7 @@ namespace glib
         std::vector< Matrix > biasAdjustments = std::vector< Matrix >(numberOfLayers);
         std::vector< Matrix > layerDelta = std::vector< Matrix >(numberOfLayers);
 
-        NeuralLayer* currLayer = startLayer;
+        // NeuralLayer* currLayer = startLayer; //Not used
 
         if(inputs.size() != expectedOutput.size())
             return;
@@ -258,7 +258,7 @@ namespace glib
             layer = layer->getNextLayer();
         }
 
-        for(int iterations=0; iterations<expectedOutput.size(); iterations++)
+        for(size_t iterations=0; iterations<expectedOutput.size(); iterations++)
         {
             //apply x number of tests
             if(inputs[iterations].size() != sLayerSize)
@@ -309,7 +309,7 @@ namespace glib
 
         layer = startLayer;
 
-        for(int n=0; n<layerDelta.size(); n++)
+        for(size_t n=0; n<layerDelta.size(); n++)
         {
             //update weight values
             layer->getWeightMatrix() -= weightAdjustments[n]*learningRate*averageMult;
@@ -328,14 +328,14 @@ namespace glib
         if(inputs.size() != expectedOutput.size())
             return results;
 
-        for(int iterations=0; iterations<expectedOutput.size(); iterations++)
+        for(size_t iterations=0; iterations<expectedOutput.size(); iterations++)
         {
             //apply x number of tests
 
             //run inputs
             std::vector<double> runOutputs = run(inputs[iterations]);
             double cost = 0;
-            for(int k=0; k<runOutputs.size(); k++)
+            for(size_t k=0; k<runOutputs.size(); k++)
             {
                 cost += 0.5 * MathExt::sqr(expectedOutput[iterations][k] - runOutputs[k]);
             }

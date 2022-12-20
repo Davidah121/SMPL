@@ -76,9 +76,9 @@ namespace glib
 		 * @param index 
 		 * @return GuiImageInterface 
 		 */
-		GuiImageInterface getImage(int index);
-		int getDelayTime(int index);
-		int getSize();
+		GuiImageInterface getImage(size_t index);
+		int getDelayTime(size_t index);
+		size_t getSize();
 		bool shouldLoop();
 	private:
 

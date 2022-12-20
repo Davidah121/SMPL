@@ -91,7 +91,7 @@ namespace glib
          * @param vertexLocation 
          * @param indexInfo 
          */
-        void setIndicies(unsigned int vertexLocation, std::vector<unsigned int> indexInfo);
+        void setIndicies(size_t vertexLocation, std::vector<unsigned int> indexInfo);
 
         /**
          * @brief Adds an int to the vertex data.
@@ -100,7 +100,7 @@ namespace glib
          * @param list
          *      Which list to stick the value into.
          */
-        void addInt(int value, unsigned int list);
+        void addInt(int value, size_t list);
 
         /**
          * @brief Adds an int to the vertex data.
@@ -109,7 +109,7 @@ namespace glib
          * @param list
          *      Which list to stick the value into.
          */
-        void addFloat(float value, unsigned int list);
+        void addFloat(float value, size_t list);
 
         /**
          * @brief Adds a Vec2f to the vertex data.
@@ -118,7 +118,7 @@ namespace glib
          * @param list
          *      Which list to stick the value into.
          */
-        void addVec2f(Vec2f value, unsigned int list);
+        void addVec2f(Vec2f value, size_t list);
 
         /**
          * @brief Adds a Vec3f to the vertex data.
@@ -127,7 +127,7 @@ namespace glib
          * @param list
          *      Which list to stick the value into.
          */
-        void addVec3f(Vec3f value, unsigned int list);
+        void addVec3f(Vec3f value, size_t list);
 
         /**
          * @brief Adds a Vec4f to the vertex data.
@@ -136,7 +136,7 @@ namespace glib
          * @param list
          *      Which list to stick the value into.
          */
-        void addVec4f(Vec4f value, unsigned int list);
+        void addVec4f(Vec4f value, size_t list);
         
         /**
          * @brief Gets the vertex at the specified location.
@@ -147,13 +147,13 @@ namespace glib
          * @param i 
          * @return std::vector<std::vector<int>>
          */
-        std::vector<std::vector<int>> getVertex(unsigned int i);
+        std::vector<std::vector<int>> getVertex(size_t i);
 
-        int getInt(int index, unsigned int list);
-        float getFloat(int index, unsigned int list);
-        Vec2f getVec2f(int index, unsigned int list);
-        Vec3f getVec3f(int index, unsigned int list);
-        Vec4f getVec4f(int index, unsigned int list);
+        int getInt(size_t index, size_t list);
+        float getFloat(size_t index, size_t list);
+        Vec2f getVec2f(size_t index, size_t list);
+        Vec3f getVec3f(size_t index, size_t list);
+        Vec4f getVec4f(size_t index, size_t list);
         
 
         /**
@@ -190,7 +190,7 @@ namespace glib
         /**
          * @brief Returns the amount of verticies in the model.
          * 
-         * @return int 
+         * @return size_t 
          */
         size_t size();
 
@@ -198,17 +198,17 @@ namespace glib
          * @brief Returns the amount of values in a list
          * 
          * @param index 
-         * @return int 
+         * @return size_t 
          */
-        size_t sizeOfList(int index);
+        size_t sizeOfList(size_t index);
 
         /**
          * @brief Gets the size of a single vertex.
          *      Returns how many values are used for a vertex. 
          *      Not how many bytes are used.
-         * @return int 
+         * @return size_t 
          */
-        int getSizeOfVertex();
+        size_t getSizeOfVertex();
 
         /**
          * @brief Clears all of the data for the model.

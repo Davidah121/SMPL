@@ -63,7 +63,7 @@ namespace glib
 			other.parent->addChild(this);
 		}
 		
-		for(int i=0; i<children.size(); i++)
+		for(size_t i=0; i<children.size(); i++)
 		{
 			GuiInstance* child = children[i];
 			addChild(child);
@@ -93,7 +93,7 @@ namespace glib
 			manager->deleteElement(this);
 		}
 		
-		for(int i=0; i<children.size(); i++)
+		for(size_t i=0; i<children.size(); i++)
 		{
 			GuiInstance* ins = children[i];
 			ins->parent = nullptr;
@@ -147,7 +147,7 @@ namespace glib
 		
 		bool found = false;
 		std::vector<GuiInstance*> m = std::vector<GuiInstance*>();
-		for(int i=0; i<children.size(); i++)
+		for(size_t i=0; i<children.size(); i++)
 		{
 			if(children[i] != ins)
 			{
@@ -343,7 +343,7 @@ namespace glib
 		solveBoundingBox();
 		if(includeChildrenInBounds)
 		{
-			for(int i=0; i<children.size(); i++)
+			for(size_t i=0; i<children.size(); i++)
 			{
 				GuiInstance* child = children[i];
 				if(child->getActive())
@@ -414,7 +414,7 @@ namespace glib
 		this->renderOffY = offY;
 	}
 
-	const void GuiInstance::baseRender()
+	void GuiInstance::baseRender()
 	{
 		x = baseX + getOffsetX() - getRenderOffsetX();
 		y = baseY + getOffsetY() - getRenderOffsetY();
@@ -426,7 +426,7 @@ namespace glib
 		oldRenderY = y;
 	}
 
-	const void GuiInstance::baseUpdate()
+	void GuiInstance::baseUpdate()
 	{
 		x = getOffsetX() + baseX;
 		y = getOffsetY() + baseY;
@@ -518,7 +518,7 @@ namespace glib
 	{
 		std::vector<std::string> possibleNames = { "id", "visible", "active", "alwaysfocus", "onactive", "onfocus", "onvisible", "ondeactivate", "oninvisible", "onchanged", "x", "y" };
 
-		for(int i=0; i<possibleNames.size(); i++)
+		for(size_t i=0; i<possibleNames.size(); i++)
 		{
 			auto it = attribs.find(possibleNames[i]);
 			if(it != attribs.end())

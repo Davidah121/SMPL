@@ -309,8 +309,8 @@ namespace glib
 	{
 		std::wstring p = L"";
 		wchar_t c = L'\0';
-		unsigned char p1;
-		unsigned char p2;
+		// unsigned char p1; //Not used
+		// unsigned char p2; //Not used
 		wchar_t n;
 
 		if (isOpen() && type == SimpleFile::READ && !isEndOfFile())
@@ -682,7 +682,7 @@ namespace glib
 				}
 				else if(dataType == WIDECHAR)
 				{
-					for (int i = 0; i < line.size(); i++)
+					for (size_t i = 0; i < line.size(); i++)
 					{
 						file->put(0);
 						file->put(line[i]);
@@ -690,7 +690,7 @@ namespace glib
 				}
 				else
 				{
-					for (int i = 0; i < line.size(); i++)
+					for (size_t i = 0; i < line.size(); i++)
 					{
 						std::vector<unsigned char> bytes = StringTools::toUTF8(line[i]);
 						file->write((char*)bytes.data(), bytes.size());
@@ -727,14 +727,14 @@ namespace glib
 			{
 				if(dataType == ASCII)
 				{
-					for (int i = 0; i < line.size(); i++)
+					for (size_t i = 0; i < line.size(); i++)
 					{
 						file->put(line[i]);
 					}
 				}
 				else if(dataType == WIDECHAR)
 				{
-					for (int i = 0; i < line.size(); i++)
+					for (size_t i = 0; i < line.size(); i++)
 					{
 						unsigned char c1 = line[i]>>8;
 						unsigned char c2 = line[i] & 0xFF;
@@ -744,7 +744,7 @@ namespace glib
 				}
 				else
 				{
-					for (int i = 0; i < line.size(); i++)
+					for (size_t i = 0; i < line.size(); i++)
 					{
 						std::vector<unsigned char> bytes = StringTools::toUTF8(line[i]);
 						file->write((char*)bytes.data(), bytes.size());

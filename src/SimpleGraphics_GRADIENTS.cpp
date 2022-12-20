@@ -47,7 +47,7 @@ namespace glib
 			if(blendColors.size() < 2)
 				return;
 			
-			for(int i=0; i<blendColors.size()-1; i++)
+			for(size_t i=0; i<blendColors.size()-1; i++)
 			{
 				SimpleGraphics::drawLinearGradient(blendColors[i], blendColors[i+1], blendPoints[i], blendPoints[i+1], surf);
 			}

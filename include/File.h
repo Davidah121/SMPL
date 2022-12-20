@@ -124,8 +124,8 @@ namespace glib
         void init(std::string filename);
         
         std::string fullFileName;
-        int locationOfExtension;
-        int locationOfFileName;
+        size_t locationOfExtension;
+        size_t locationOfFileName;
         
     };
     

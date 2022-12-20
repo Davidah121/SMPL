@@ -32,7 +32,7 @@ namespace glib
 
 		struct InvalidFileFormat : public std::exception
 		{
-			const char* what() noexcept { return "File format can not be read."; }
+			const char* what() const noexcept { return "File format can not be read."; }
 		};
 
 		/**
@@ -45,7 +45,7 @@ namespace glib
 		 * @return Image*
 		 * 		A nullptr is returned if no image was found. Otherwise, a valid Image* is returned.
 		 */
-		Image* getImage(int index);
+		Image* getImage(size_t index);
 		
 		/**
 		 * @brief Gets the internal Sprite used to store the image data for the characters.
@@ -57,9 +57,9 @@ namespace glib
 		/**
 		 * @brief Gets the internal data specifying what image in the sprite a character is located in.
 		 * 
-		 * @return std::vector<int> 
+		 * @return std::vector<size_t> 
 		 */
-		std::vector<int> getImagePages();
+		std::vector<size_t> getImagePages();
 
 	private:
 		void loadFT(File file);
@@ -68,7 +68,7 @@ namespace glib
 		void init(File file);
 		Sprite img = Sprite();
 
-		std::vector<int> imgPage = std::vector<int>();
+		std::vector<size_t> imgPage = std::vector<size_t>();
 	};
 
 }  //NAMESPACE glib END

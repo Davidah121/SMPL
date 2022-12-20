@@ -56,8 +56,15 @@ namespace glib
     private:
         unsigned int rotr32(unsigned int x, unsigned int r)
         {
-            return x >> r | x << (-r & 31);
+            return x >> r | x << (negateNumber(r) & 31);
+            //return x >> r | x << (-r & 31);
         }
+
+        unsigned int negateNumber(unsigned int x)
+        {
+            return 1U + ~x;
+        }
+
         uint64_t seed = 0;
         uint64_t multiplier = 0;
         uint64_t increment = 0;

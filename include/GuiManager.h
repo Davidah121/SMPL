@@ -129,14 +129,14 @@ namespace glib
 		 * 		Should not be modified as it handles certain function calls like onFocus.
 		 * 
 		 */
-		const void baseUpdate();
+		void baseUpdate();
 
 		/**
 		 * @brief The base render function.
 		 * 		Should not be modified as it sets the correct render offsets if neccessary.
 		 * 
 		 */
-		const void baseRender();
+		void baseRender();
 
 		/**
 		 * @brief Sets the onActivate Function
@@ -493,6 +493,8 @@ namespace glib
 		GuiManager* manager = nullptr;
 		GuiSurfaceInterface* canvas = nullptr;
 		GuiInstance* parent = nullptr;
+
+		XmlNode dataAsXML;
 	};
 
 	class GuiContainer : public GuiInstance
@@ -1236,8 +1238,8 @@ namespace glib
 	private:
 		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
 
-		time_t lastUpdateTime = 0;
-		int index = 0;
+		size_t lastUpdateTime = 0;
+		size_t index = 0;
 
 		double xScale = 1;
 		double yScale = 1;
@@ -2262,6 +2264,12 @@ namespace glib
 		 */
 		~GuiManager();
 
+		/**
+		 * @brief Removes all objects from the GuiManager.
+		 * 		Similar to the destructor.
+		 */
+		void disposeObjects();
+
 		//Object and Class Stuff
 		static const Class globalClass;
 
@@ -2464,6 +2472,8 @@ namespace glib
 		 */
 		void loadElementsFromFile(File f);
 
+		void loadElementsFromXML(SimpleXml& f);
+
 		/**
 		 * @brief Adds a load function to the list of valid load functions that can be used when loading data from a file.
 		 * 		The function must take in a unordered_map (hashmap) of parameters to be set.
@@ -2490,7 +2500,7 @@ namespace glib
 		 */
 		static void initDefaultLoadFunctions();
 	private:
-
+		
 		void deleteElementDelayed(GuiInstance* k); //Only used in the destructor
 		void fixObjects();
 		void updateBounds(GuiInstance* k, int& redrawCount);

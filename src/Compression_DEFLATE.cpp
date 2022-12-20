@@ -418,7 +418,7 @@ namespace glib
 
 			output->setAddBitOrder(BinarySet::RMSB);
 			//should incorporate block ends
-			for(int i=0; i<block->size(); i++)
+			for(size_t i=0; i<block->size(); i++)
 			{
 				lengthPair lp = block->at(i);
 				if(lp.literal)
@@ -446,7 +446,7 @@ namespace glib
 					}
 					else if(lp.v1 < 258)
 					{
-						additionalBits = MathExt::ceil(log2(lp.v1-2)) - 3;
+						additionalBits = (int)MathExt::ceil(log2(lp.v1-2)) - 3;
 						int expV = (1 << additionalBits);
 						double incVal = 1.0 / expV;
 						int tempV = 3 + expV*4;
@@ -495,7 +495,7 @@ namespace glib
 					}
 					else
 					{
-						additionalBits = MathExt::ceil(log2(lp.v2)) - 2;
+						additionalBits = (int)MathExt::ceil(log2(lp.v2)) - 2;
 						int expV = (1 << additionalBits);
 						double incVal = 1.0 / expV;
 						int tempV = 1 + expV*2;
@@ -538,7 +538,7 @@ namespace glib
 			std::vector<int> dataToBuildHuffTree = std::vector<int>(block->size()+1);
 			std::vector<int> dataToBuildDistHuffTree = std::vector<int>();
 
-			for(int index=0; index<block->size(); index++)
+			for(size_t index=0; index<block->size(); index++)
 			{
 				lengthPair lp = block->at(index);
 				if(lp.literal)
@@ -628,7 +628,7 @@ namespace glib
 
 			for(TraverseInfo<HuffmanNode>& tInfo : litTreeTraversal)
 			{
-				litStuff[tInfo.node->data.value] = {tInfo.node->data.value, tInfo.path.size()};
+				litStuff[tInfo.node->data.value] = {tInfo.node->data.value, (int)tInfo.path.size()};
 			}
 		
 			Sort::quickSort<HCStruct>(litStuff, amountOfLitCodes, [](HCStruct a, HCStruct b) -> bool{
@@ -646,7 +646,7 @@ namespace glib
 
 			for(TraverseInfo<HuffmanNode>& tInfo : distTreeTraversal)
 			{
-				distStuff[tInfo.node->data.value] = {tInfo.node->data.value, tInfo.path.size()};
+				distStuff[tInfo.node->data.value] = {tInfo.node->data.value, (int)tInfo.path.size()};
 			}
 
 			Sort::quickSort<HCStruct>(distStuff, amountOfDistCodes, [](HCStruct a, HCStruct b) -> bool{
@@ -692,12 +692,12 @@ namespace glib
 			//lazy method of putting all literals
 			for(TraverseInfo<HuffmanNode>& tInfo : nLitCanonicalTraversal)
 			{
-				allCodeLengths[ tInfo.node->data.value ] = tInfo.path.size();
+				allCodeLengths[ tInfo.node->data.value ] = (int)tInfo.path.size();
 			}
 
 			for(TraverseInfo<HuffmanNode>& tInfo : nDistCanonicalTraversal)
 			{
-				allCodeLengths[ amountOfLitCodes + tInfo.node->data.value ] = tInfo.path.size();
+				allCodeLengths[ amountOfLitCodes + tInfo.node->data.value ] = (int)tInfo.path.size();
 			}
 
 			//Now we have an array of all the possible values that can appear with their code lengths
@@ -717,7 +717,7 @@ namespace glib
 			for(TraverseInfo<HuffmanNode>& tInfo : codeRecreateTreeInfo)
 			{
 				int codeLengthForBigTree = tInfo.node->data.value;
-				int codeLengthForHCTree = tInfo.path.size();
+				int codeLengthForHCTree = (int)tInfo.path.size();
 				
 				int index = indexingArray[codeLengthForBigTree];
 				hcStuff[index].length = codeLengthForHCTree;
@@ -781,7 +781,7 @@ namespace glib
 			#pragma region ADD_DATA_USING_TREES
 
 			//add data
-			for(int i=0; i<block->size(); i++)
+			for(size_t i=0; i<block->size(); i++)
 			{
 				lengthPair lp = block->at(i);
 
@@ -973,7 +973,7 @@ namespace glib
 		return Compression::compressDeflate(data.data(), data.size(), blocks, compressionLevel, customTable);
 	}
 
-	std::vector<unsigned char> Compression::compressDeflate(unsigned char* data, int size, int blocks, int compressionLevel, bool customTable)
+	std::vector<unsigned char> Compression::compressDeflate(unsigned char* data, size_t size, int blocks, int compressionLevel, bool customTable)
 	{
 		//probably will only use default trees and stuff
 		if(data == nullptr)
@@ -1003,7 +1003,7 @@ namespace glib
 			std::vector<std::vector<lengthPair>> info = std::vector<std::vector<lengthPair>>(blocks);
 			std::vector<std::thread> threads = std::vector<std::thread>( tSize );
 
-			int sizeOfBlock = size/blocks;
+			int sizeOfBlock = (int)(size/blocks);
 
 			for(int block=0; block<blocks; block++)
 			{
@@ -1083,7 +1083,7 @@ namespace glib
 		return bin.toBytes();
 	}
 
-	void Compression::compressDeflate(BinarySet* outputData, unsigned char* data, int size, int blocks, int compressionLevel, bool customTable)
+	void Compression::compressDeflate(BinarySet* outputData, unsigned char* data, size_t size, int blocks, int compressionLevel, bool customTable)
 	{
 		//probably will only use default trees and stuff
 		outputData->clear();
@@ -1174,7 +1174,7 @@ namespace glib
 		return Compression::decompressDeflate(data.data(), data.size(), expectedSize);
 	}
 
-	std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, int size, size_t expectedSize)
+	std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, size_t size, size_t expectedSize)
 	{
 		//determine if it is case 0, 1, or 2
 		//if case 0, or 1, we can deal with it
@@ -1223,7 +1223,7 @@ namespace glib
 		//always create default tree
 		BinaryTree<HuffmanNode>* defaultTree = buildDeflateDefaultTree();
 
-		while(currLoc<binData.size())
+		while(currLoc<(int)binData.size())
 		{
 			bool lastBlock = false;
 			bool blockEnded = false;
@@ -1303,7 +1303,7 @@ namespace glib
 					//then 2 bytes for the complement of the length
 					//remember to adjust the location for the bits as well.
 					int length = (int)data[byteLocation] + ((int)data[byteLocation+1]<<8);
-					int nlength = (int)data[byteLocation+2] + ((int)data[byteLocation+3]<<8);
+					// int nlength = (int)data[byteLocation+2] + ((int)data[byteLocation+3]<<8); //Not used
 					byteLocation+=4;
 					currLoc+=8*4;
 					
@@ -1473,6 +1473,23 @@ namespace glib
 
 								while(true)
 								{
+									if (backNode == nullptr)
+									{
+										//error
+										if (mTree != nullptr)
+											delete mTree;
+										if (backTree != nullptr)
+											delete backTree;
+										if (dynTrees != nullptr)
+											delete[] dynTrees;
+
+										#ifdef USE_EXCEPTIONS
+											throw Compression::HUFFMAN_TREE_ERROR();
+										#endif
+
+										return finalData;
+									}
+
 									if(binData.getBit(currLoc)==false)
 									{
 										backNode = backNode->leftChild;
@@ -1483,7 +1500,24 @@ namespace glib
 									}
 									currLoc+=1;
 
-									if(backNode->leftChild==nullptr && backNode->rightChild==nullptr)
+									if (backNode == nullptr)
+									{
+										//error
+										if (mTree != nullptr)
+											delete mTree;
+										if (backTree != nullptr)
+											delete backTree;
+										if (dynTrees != nullptr)
+											delete[] dynTrees;
+
+										#ifdef USE_EXCEPTIONS
+											throw Compression::HUFFMAN_TREE_ERROR();
+										#endif
+
+										return finalData;
+									}
+
+									if (backNode->leftChild == nullptr && backNode->rightChild == nullptr)
 									{
 										//hit a value;
 										backRefCode = backNode->data.value;
@@ -1727,7 +1761,10 @@ namespace glib
 			int length;
 		};
 		
-		HCStruct* hcStuff = new HCStruct[19]{ {16,0}, {17,0}, {18,0}, {0,0}, {8,0}, {7,0}, {9,0}, {6,0}, {10,0}, {5,0}, {11,0}, {4,0}, {12,0}, {3,0}, {13,0}, {2,0}, {14,0}, {1,0}, {15,0} };
+		HCStruct* hcStuff = new HCStruct[19]{ HCStruct{16,0}, HCStruct{17,0}, HCStruct{18,0}, HCStruct{0,0}, HCStruct{8,0}, 
+												HCStruct{7,0}, HCStruct{9,0}, HCStruct{6,0}, HCStruct{10,0}, HCStruct{5,0}, 
+												HCStruct{11,0}, HCStruct{4,0}, HCStruct{12,0}, HCStruct{3,0}, HCStruct{13,0}, 
+												HCStruct{2,0}, HCStruct{14,0}, HCStruct{1,0}, HCStruct{15,0} };
 
 		int hcValues[19];
 		int hcLengths[19];
@@ -1779,6 +1816,11 @@ namespace glib
 			else
 			{
 				currNode = currNode->rightChild;
+			}
+
+			if (currNode == nullptr)
+			{
+				break; //Will delete everything at the check below
 			}
 
 			if(currNode->leftChild == nullptr && currNode->rightChild == nullptr)
@@ -1938,27 +1980,27 @@ namespace glib
 		else if(loc<=11)
 		{
 			*extraBits = 1;
-			*baseValue = 11 + (loc-8)*(std::pow(2, *extraBits));
+			*baseValue = 11 + (loc-8)*((int)std::pow(2, *extraBits));
 		}
 		else if(loc<=15)
 		{
 			*extraBits = 2;
-			*baseValue = 19 + (loc-12)*(std::pow(2, *extraBits));
+			*baseValue = 19 + (loc-12)*((int)std::pow(2, *extraBits));
 		}
 		else if(loc<=19)
 		{
 			*extraBits = 3;
-			*baseValue = 35 + (loc-16)*(std::pow(2, *extraBits));
+			*baseValue = 35 + (loc-16)*((int)std::pow(2, *extraBits));
 		}
 		else if(loc<=23)
 		{
 			*extraBits = 4;
-			*baseValue = 67 + (loc-20)*(std::pow(2, *extraBits));
+			*baseValue = 67 + (loc-20)*((int)std::pow(2, *extraBits));
 		}
 		else if(loc<=27)
 		{
 			*extraBits = 5;
-			*baseValue = 131 + (loc-24)*(std::pow(2, *extraBits));
+			*baseValue = 131 + (loc-24)*((int)std::pow(2, *extraBits));
 		}
 		else if(loc==28)
 		{
@@ -1985,67 +2027,67 @@ namespace glib
 		else if(code<=5)
 		{
 			*extraBits = 1;
-			*baseValue = 5 + (code-4)*(std::pow(2, *extraBits));
+			*baseValue = 5 + (code-4)*((int)std::pow(2, *extraBits));
 		}
 		else if(code<=7)
 		{
 			*extraBits = 2;
-			*baseValue = 9 + (code-6)*(std::pow(2, *extraBits));
+			*baseValue = 9 + (code-6)*((int)std::pow(2, *extraBits));
 		}
 		else if(code<=9)
 		{
 			*extraBits = 3;
-			*baseValue = 17 + (code-8)*(std::pow(2, *extraBits));
+			*baseValue = 17 + (code-8)*((int)std::pow(2, *extraBits));
 		}
 		else if(code<=11)
 		{
 			*extraBits = 4;
-			*baseValue = 33 + (code-10)*(std::pow(2, *extraBits));
+			*baseValue = 33 + (code-10)*((int)std::pow(2, *extraBits));
 		}
 		else if(code<=13)
 		{
 			*extraBits = 5;
-			*baseValue = 65 + (code-12)*(std::pow(2, *extraBits));
+			*baseValue = 65 + (code-12)*((int)std::pow(2, *extraBits));
 		}
 		else if(code<=15)
 		{
 			*extraBits = 6;
-			*baseValue = 129 + (code-14)*(std::pow(2, *extraBits));
+			*baseValue = 129 + (code-14)*((int)std::pow(2, *extraBits));
 		}
 		else if(code<=17)
 		{
 			*extraBits = 7;
-			*baseValue = 257 + (code-16)*(std::pow(2, *extraBits));
+			*baseValue = 257 + (code-16)*((int)std::pow(2, *extraBits));
 		}
 		else if(code<=19)
 		{
 			*extraBits = 8;
-			*baseValue = 513 + (code-18)*(std::pow(2, *extraBits));
+			*baseValue = 513 + (code-18)*((int)std::pow(2, *extraBits));
 		}
 		else if(code<=21)
 		{
 			*extraBits = 9;
-			*baseValue = 1025 + (code-20)*(std::pow(2, *extraBits));
+			*baseValue = 1025 + (code-20)*((int)std::pow(2, *extraBits));
 		}
 		else if(code<=23)
 		{
 			*extraBits = 10;
-			*baseValue = 2049 + (code-22)*(std::pow(2, *extraBits));
+			*baseValue = 2049 + (code-22)*((int)std::pow(2, *extraBits));
 		}
 		else if(code<=25)
 		{
 			*extraBits = 11;
-			*baseValue = 4097 + (code-24)*(std::pow(2, *extraBits));
+			*baseValue = 4097 + (code-24)*((int)std::pow(2, *extraBits));
 		}
 		else if(code<=27)
 		{
 			*extraBits = 12;
-			*baseValue = 8193 + (code-26)*(std::pow(2, *extraBits));
+			*baseValue = 8193 + (code-26)*((int)std::pow(2, *extraBits));
 		}
 		else if(code<=29)
 		{
 			*extraBits = 13;
-			*baseValue = 16385 + (code-28)*(std::pow(2, *extraBits));
+			*baseValue = 16385 + (code-28)*((int)std::pow(2, *extraBits));
 		}
 	}
 

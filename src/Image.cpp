@@ -126,8 +126,8 @@ namespace glib
 		else if(edgeBehavior == REPEAT)
 		{
 			int tX, tY;
-			tX = tX % width;
-			tY = tY % height;
+			tX = x % width;
+			tY = y % height;
 			
 			return pixels[tY * width + tX];
 		}
@@ -181,14 +181,14 @@ namespace glib
 			double xFrac = MathExt::frac(x);
 
 			int yPoints[4];
-			yPoints[1] = MathExt::floor(y);
+			yPoints[1] = (int)MathExt::floor(y);
 			yPoints[0] = yPoints[1]-1;
-			yPoints[2] = MathExt::ceil(y);
+			yPoints[2] = (int)MathExt::ceil(y);
 			yPoints[3] = yPoints[2]+1;
 			int xPoints[4];
-			xPoints[1] = MathExt::floor(x);
+			xPoints[1] = (int)MathExt::floor(x);
 			xPoints[0] = xPoints[1]-1;
-			xPoints[2] = MathExt::ceil(x);
+			xPoints[2] = (int)MathExt::ceil(x);
 			xPoints[3] = xPoints[2]+1;
 			
 			Vec4f arr[16];
@@ -462,7 +462,7 @@ namespace glib
 				if (amountOfImages != nullptr)
 					* amountOfImages = 1;
 
-				return loadBMP(fileData, amountOfImages, extraData);
+				return loadBMP(fileData, amountOfImages);
 			}
 			else if (filenameExt == ".gif")
 			{
@@ -474,7 +474,7 @@ namespace glib
 			}
 			else if (filenameExt == ".jpg" || filenameExt == ".jpeg" || filenameExt == ".jfif")
 			{
-				return loadJPG(fileData, amountOfImages, extraData);
+				return loadJPG(fileData, amountOfImages);
 			}
 		}
 		else

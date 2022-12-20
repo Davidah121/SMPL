@@ -229,8 +229,8 @@ namespace glib
 	void GuiScrollBar::holdButtonFunction(GuiInstance* ins)
 	{
 		//ins is the rectangle button. Can be disregarded.
-		int mouseX;
-		int mouseY;
+		int mouseX = 0;
+		int mouseY = 0;
 		
 		if(getManager()!=nullptr)
 		{

@@ -1,5 +1,10 @@
 <SimpleGUI>
 
-    <GuiDatePicker x="32" y="32" width="96" height="24" backgroundColor="Gainsboro"/>
+    <!-- <GuiDatePicker x="32" y="32" width="96" height="24" backgroundColor="Gainsboro"/> -->
+    <GuiTextBox x="32" y="32" width="96" height="96" allowLineBreaks="true" allowWrapText="false"/>
 
 </SimpleGUI>
+
+<!-- Test stuff for text boxes:
+    abcdefghijklmnopqrstuvwxyz
+-->

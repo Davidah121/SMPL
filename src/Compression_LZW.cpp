@@ -6,7 +6,7 @@ namespace glib
 #pragma region LZW
 
 	#pragma region THREAD_FUNCTION
-	void LZWThreadFunction(BinarySet* outputData, unsigned char* data, int size, int codeSize, bool omitEndCode)
+	void LZWThreadFunction(BinarySet* outputData, unsigned char* data, size_t size, int codeSize, bool omitEndCode)
 	{
 		Compression::compressLZW(outputData, data, size, codeSize, omitEndCode);
 	}
@@ -17,7 +17,7 @@ namespace glib
 		return Compression::compressLZW(data.data(), data.size(), blocks, codeSize);
 	}
 	
-	std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int size, int blocks, int codeSize)
+	std::vector<unsigned char> Compression::compressLZW(unsigned char* data, size_t size, int blocks, int codeSize)
 	{
 		if(codeSize <= 0)
 		{
@@ -36,7 +36,7 @@ namespace glib
 			return compressLZW(data, size, codeSize);
 		}
 
-		unsigned int threadCount = System::getNumberOfThreads();
+		int threadCount = (int)System::getNumberOfThreads();
 		std::vector<BinarySet> blockDataArray = std::vector<BinarySet>(blocks);
 		std::vector<std::thread> blockThreads = std::vector<std::thread>(threadCount);
 
@@ -89,7 +89,7 @@ namespace glib
 		return Compression::compressLZW(data.data(), data.size(), codeSize);
 	}
 
-	std::vector<unsigned char> Compression::compressLZW(unsigned char* data, int size, int codeSize)
+	std::vector<unsigned char> Compression::compressLZW(unsigned char* data, size_t size, int codeSize)
 	{
 		if(size <= 0)
 		{
@@ -174,7 +174,7 @@ namespace glib
 				newDictionary.insert( pair );
 
 				int shifts = 0;
-				int v = 1;
+				size_t v = 1;
 				while(shifts<32)
 				{
 					if(newDictionary.size()+2 > v)
@@ -218,7 +218,7 @@ namespace glib
 		return binData.toBytes();
 	}
 
-	void Compression::compressLZW(BinarySet* outputData, unsigned char* data, int size, int codeSize, bool omitEndCode)
+	void Compression::compressLZW(BinarySet* outputData, unsigned char* data, size_t size, int codeSize, bool omitEndCode)
 	{
 		outputData->clear();
 		if(size <= 0)
@@ -304,7 +304,7 @@ namespace glib
 				newDictionary.insert( pair );
 
 				int shifts = 0;
-				int v = 1;
+				size_t v = 1;
 				while(shifts<32)
 				{
 					if(newDictionary.size()+2 > v)
@@ -355,7 +355,7 @@ namespace glib
 		return Compression::decompressLZW(data.data(), data.size(), dictionarySize, expectedSize);
 	}
 
-	std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, int size, int dictionarySize, size_t expectedSize)
+	std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, size_t size, int dictionarySize, size_t expectedSize)
 	{
 		//Must know the dictionary size. Do not include the clear dictionary 
 		//and end data symbols
@@ -407,19 +407,19 @@ namespace glib
 			std::vector<std::string> newDictionary = std::vector<std::string>(baseDictionary);
 
 			int lastIndex = -1;
-			int index = 0;
+			size_t index = 0;
 			int shift = 0;
 
 			//We choose to handle the clear dictionary symbol now since it
 			//is simple to do.
-			for (int i = 0; i < binData.size(); i++)
+			for (size_t i = 0; i < binData.size(); i++)
 			{
-				index += ((int)binData.getBit(i) << shift);
+				index += ((size_t)binData.getBit(i) << shift);
 				shift++;
 
 				if (shift >= bitsToRead)
 				{
-					if (index == clearSymLoc)
+					if (index == (size_t)clearSymLoc)
 					{
 						//StringTools::out << "ClearSym at " << i << " of " << binData.size() << StringTools::lineBreak;
 						
@@ -430,7 +430,7 @@ namespace glib
 						index = 0;
 						continue;
 					}
-					else if (index == endSymLoc)
+					else if (index == (size_t)endSymLoc)
 					{
 						//StringTools::out << "EndofSym at " << i << " of " << binData.size() << StringTools::lineBreak;
 						break;
@@ -446,14 +446,14 @@ namespace glib
 						if (index < newDictionary.size())
 						{
 							std::string temp = newDictionary[index];
-							for (int j = 0; j < temp.size(); j++)
+							for (size_t j = 0; j < temp.size(); j++)
 							{
 								output.push_back((unsigned char)temp[j]);
 							}
 
 							if (lastIndex != -1)
 							{
-								if (lastIndex < newDictionary.size())
+								if (lastIndex < (int)newDictionary.size())
 								{
 									std::string newEntry = newDictionary[lastIndex] + newDictionary[index][0];
 									newDictionary.push_back(newEntry);
@@ -476,7 +476,7 @@ namespace glib
 						}
 						else
 						{
-							if (lastIndex < newDictionary.size())
+							if (lastIndex < (int)newDictionary.size())
 							{
 								std::string lastEntry = newDictionary[lastIndex];
 								std::string newEntry = lastEntry + lastEntry[0];
@@ -488,7 +488,7 @@ namespace glib
 								else
 									newDictionary.pop_back();
 						
-								for (int j = 0; j < newEntry.size(); j++)
+								for (size_t j = 0; j < newEntry.size(); j++)
 								{
 									output.push_back((unsigned char)newEntry[j]);
 								}
@@ -504,7 +504,7 @@ namespace glib
 							}
 						}
 
-						lastIndex = index;
+						lastIndex = (int)index;
 						index = 0;
 						shift = 0;
 					}

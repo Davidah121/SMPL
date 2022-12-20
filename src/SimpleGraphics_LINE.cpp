@@ -4,7 +4,7 @@ namespace glib
 {
 	void SimpleGraphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 	{
-		int currentComposite = compositeRule;
+		// int currentComposite = compositeRule;
 
 		if (surf != nullptr)
 		{
@@ -351,7 +351,7 @@ namespace glib
 			for(int i=1; i<=subdivisions; i++)
 			{
 				Vec2f p2 = b.getFuctionAt( equalLengthT[i] );
-				SimpleGraphics::drawLine(MathExt::round(p1.x), MathExt::round(p1.y), MathExt::round(p2.x), MathExt::round(p2.y), surf);
+				SimpleGraphics::drawLine((int)MathExt::round(p1.x), (int)MathExt::round(p1.y), (int)MathExt::round(p2.x), (int)MathExt::round(p2.y), surf);
 				
 				p1 = p2;
 			}
@@ -364,7 +364,7 @@ namespace glib
 			for(int i=1; i<=subdivisions; i++)
 			{
 				Vec2f p2 = b.getFuctionAt( i*du );
-				SimpleGraphics::drawLine(MathExt::round(p1.x), MathExt::round(p1.y), MathExt::round(p2.x), MathExt::round(p2.y), surf);
+				SimpleGraphics::drawLine((int)MathExt::round(p1.x), (int)MathExt::round(p1.y), (int)MathExt::round(p2.x), (int)MathExt::round(p2.y), surf);
 				
 				p1 = p2;
 			}

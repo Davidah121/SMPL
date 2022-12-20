@@ -238,7 +238,7 @@ namespace glib
     {
         int actualType = getType(enteredType);
 
-        Font* f;
+        Font* f = nullptr;
         if(actualType == TYPE_SOFTWARE)
         {
             f = SimpleGraphics::getFont();
@@ -251,6 +251,7 @@ namespace glib
             }
         #endif
 
+
         //check if f is the current bound font.
         if(boundFont != nullptr)
         {
@@ -260,16 +261,22 @@ namespace glib
             }
             else
             {
-                //create a new font interface with the font we got and bind it.
-                setFont( GuiFontInterface::createFromFont(f, actualType), actualType );
-                ownedFont = true;
+                if(f != nullptr)
+                {
+                    //create a new font interface with the font we got and bind it.
+                    setFont(GuiFontInterface::createFromFont(f, actualType), actualType);
+                    ownedFont = true;
+                }
             }
         }
         else
         {
-            //create a new font interface with the font we got and bind it.
-            setFont( GuiFontInterface::createFromFont(f, actualType), actualType );
-            ownedFont = true;
+            if(f != nullptr)
+            {
+                //create a new font interface with the font we got and bind it.
+                setFont(GuiFontInterface::createFromFont(f, actualType), actualType);
+                ownedFont = true;
+            }
         }
 
         return boundFont;
@@ -311,10 +318,10 @@ namespace glib
         int nx, ny, nx2, ny2;
         if(useScaling)
         {
-            nx = x*scalingFactor.x;
-            ny = y*scalingFactor.y;
-            nx2 = x2*scalingFactor.x;
-            ny2 = y2*scalingFactor.y;
+            nx = (int)MathExt::round(x*scalingFactor.x);
+            ny = (int)MathExt::round(y*scalingFactor.y);
+            nx2 = (int)MathExt::round(x2*scalingFactor.x);
+            ny2 = (int)MathExt::round(y2*scalingFactor.y);
         }
         else
         {
@@ -353,10 +360,10 @@ namespace glib
         int nx, ny, nx2, ny2;
         if(useScaling)
         {
-            nx = x*scalingFactor.x;
-            ny = y*scalingFactor.y;
-            nx2 = x2*scalingFactor.x;
-            ny2 = y2*scalingFactor.y;
+            nx = (int)MathExt::round(x * scalingFactor.x);
+            ny = (int)MathExt::round(y * scalingFactor.y);
+            nx2 = (int)MathExt::round(x2 * scalingFactor.x);
+            ny2 = (int)MathExt::round(y2 * scalingFactor.y);
         }
         else
         {
@@ -391,11 +398,13 @@ namespace glib
             return; //Even though opengl does not need a bound surface, return as an error.
         }
         
-        int nx, ny, nRad;
+        int nx, ny;
+        //int nRad; //Currently not used
+        
         if(useScaling)
         {
-            nx = x*scalingFactor.x;
-            ny = y*scalingFactor.y;
+            nx = (int)MathExt::round(x * scalingFactor.x);
+            ny = (int)MathExt::round(y * scalingFactor.y);
         }
         else
         {
@@ -431,10 +440,10 @@ namespace glib
         int nx, ny, nXRad, nYRad;
         if(useScaling)
         {
-            nx = x*scalingFactor.x;
-            ny = y*scalingFactor.y;
-            nXRad = xRad*scalingFactor.x;
-            nYRad = yRad*scalingFactor.y;
+            nx = (int)MathExt::round(x * scalingFactor.x);
+            ny = (int)MathExt::round(y * scalingFactor.y);
+            nXRad = (int)MathExt::round(xRad * scalingFactor.x);
+            nYRad = (int)MathExt::round(yRad * scalingFactor.y);
         }
         else
         {
@@ -473,8 +482,8 @@ namespace glib
             int nx, ny;
             if(useScaling)
             {
-                nx = x*scalingFactor.x;
-                ny = y*scalingFactor.y;
+                nx = (int)MathExt::round(x * scalingFactor.x);
+                ny = (int)MathExt::round(y * scalingFactor.y);
             }
             else
             {
@@ -515,10 +524,10 @@ namespace glib
             int nx, ny, nx2, ny2;
             if(useScaling)
             {
-                nx = x1*scalingFactor.x;
-                ny = y1*scalingFactor.y;
-                nx2 = x2*scalingFactor.x;
-                ny2 = y2*scalingFactor.y;
+                nx = (int)MathExt::round(x1 * scalingFactor.x);
+                ny = (int)MathExt::round(y1 * scalingFactor.y);
+                nx2 = (int)MathExt::round(x2 * scalingFactor.x);
+                ny2 = (int)MathExt::round(y2 * scalingFactor.y);
             }
             else
             {
@@ -561,8 +570,8 @@ namespace glib
             int nx, ny;
             if(useScaling)
             {
-                nx = x*scalingFactor.x;
-                ny = y*scalingFactor.y;
+                nx = (int)MathExt::round(x * scalingFactor.x);
+                ny = (int)MathExt::round(y * scalingFactor.y);
             }
             else
             {
@@ -608,8 +617,8 @@ namespace glib
         int nx, ny;
         if(useScaling)
         {
-            nx = x*scalingFactor.x;
-            ny = y*scalingFactor.y;
+            nx = (int)MathExt::round(x * scalingFactor.x);
+            ny = (int)MathExt::round(y * scalingFactor.y);
         }
         else
         {
@@ -644,8 +653,8 @@ namespace glib
         int nx, ny;
         if(useScaling)
         {
-            nx = x*scalingFactor.x;
-            ny = y*scalingFactor.y;
+            nx = (int)MathExt::round(x * scalingFactor.x);
+            ny = (int)MathExt::round(y * scalingFactor.y);
         }
         else
         {
@@ -681,8 +690,8 @@ namespace glib
         int nx, ny;
         if(useScaling)
         {
-            nx = x*scalingFactor.x;
-            ny = y*scalingFactor.y;
+            nx = (int)MathExt::round(x * scalingFactor.x);
+            ny = (int)MathExt::round(y * scalingFactor.y);
         }
         else
         {
@@ -717,8 +726,8 @@ namespace glib
         int nx, ny;
         if(useScaling)
         {
-            nx = x*scalingFactor.x;
-            ny = y*scalingFactor.y;
+            nx = (int)MathExt::round(x * scalingFactor.x);
+            ny = (int)MathExt::round(y * scalingFactor.y);
         }
         else
         {
@@ -753,8 +762,8 @@ namespace glib
         int nx, ny;
         if(useScaling)
         {
-            nx = x*scalingFactor.x;
-            ny = y*scalingFactor.y;
+            nx = (int)MathExt::round(x * scalingFactor.x);
+            ny = (int)MathExt::round(y * scalingFactor.y);
         }
         else
         {
@@ -790,8 +799,8 @@ namespace glib
         int nx, ny;
         if(useScaling)
         {
-            nx = x*scalingFactor.x;
-            ny = y*scalingFactor.y;
+            nx = (int)MathExt::round(x*scalingFactor.x);
+            ny = (int)MathExt::round(y*scalingFactor.y);
         }
         else
         {
@@ -827,8 +836,8 @@ namespace glib
         int nx, ny;
         if(useScaling)
         {
-            nx = x*scalingFactor.x;
-            ny = y*scalingFactor.y;
+            nx = (int)MathExt::round(x*scalingFactor.x);
+            ny = (int)MathExt::round(y*scalingFactor.y);
         }
         else
         {
@@ -864,8 +873,8 @@ namespace glib
         int nx, ny;
         if(useScaling)
         {
-            nx = x*scalingFactor.x;
-            ny = y*scalingFactor.y;
+            nx = (int)MathExt::round(x*scalingFactor.x);
+            ny = (int)MathExt::round(y*scalingFactor.y);
         }
         else
         {
@@ -951,8 +960,8 @@ namespace glib
         int nx, ny;
         if(useScaling)
         {
-            nx = x*scalingFactor.x;
-            ny = y*scalingFactor.y;
+            nx = (int)MathExt::round(x*scalingFactor.x);
+            ny = (int)MathExt::round(y*scalingFactor.y);
         }
         else
         {
@@ -996,10 +1005,10 @@ namespace glib
         int nx1, ny1, nx2, ny2;
         if(useScaling)
         {
-            nx1 = x1*scalingFactor.x;
-            ny1 = y1*scalingFactor.y;
-            nx2 = x2*scalingFactor.x;
-            ny2 = y2*scalingFactor.y;
+            nx1 = (int)MathExt::round(x1*scalingFactor.x);
+            ny1 = (int)MathExt::round(y1*scalingFactor.y);
+            nx2 = (int)MathExt::round(x2*scalingFactor.x);
+            ny2 = (int)MathExt::round(y2*scalingFactor.y);
         }
         else
         {
@@ -1417,12 +1426,12 @@ namespace glib
         return type;
     }
 
-    GuiImageInterface GuiSpriteInterface::getImage(int index)
+    GuiImageInterface GuiSpriteInterface::getImage(size_t index)
     {
         if(sprite == nullptr)
             return GuiImageInterface();
         
-        if(index < 0 || index >= this->getSize())
+        if(index >= this->getSize())
             return GuiImageInterface();
         
         if(type == GuiGraphicsInterface::TYPE_SOFTWARE)
@@ -1448,7 +1457,7 @@ namespace glib
         return GuiImageInterface();
     }
 
-    int GuiSpriteInterface::getDelayTime(int index)
+    int GuiSpriteInterface::getDelayTime(size_t index)
     {
         if(sprite == nullptr)
             return -1;
@@ -1468,7 +1477,7 @@ namespace glib
         return -1;
     }
 
-    int GuiSpriteInterface::getSize()
+    size_t GuiSpriteInterface::getSize()
     {
         if(sprite == nullptr)
             return -1;

@@ -10,7 +10,7 @@ namespace glib
 		return compressLZ77(data.data(), data.size(), maxBufferSize);
 	}
 
-	std::vector<unsigned char> Compression::compressLZ77(unsigned char* data, int size, int maxBufferSize)
+	std::vector<unsigned char> Compression::compressLZ77(unsigned char* data, size_t size, int maxBufferSize)
 	{
 		std::vector<unsigned char> output = std::vector<unsigned char>();
 
@@ -41,7 +41,7 @@ namespace glib
 		//If the length is greater than the previous, it is better. This also 
 		//means that we search through everything.
 
-		int bytesForRef = ceil(log2(maxBufferSize) / 8.0);
+		int bytesForRef = (int)ceil(log2(maxBufferSize) / 8.0);
 
 		int i = 0;
 		while(i<size)
@@ -165,11 +165,11 @@ namespace glib
 		return decompressLZ77(data.data(), data.size(), maxBufferSize, expectedSize);
 	}
 
-	std::vector<unsigned char> Compression::decompressLZ77(unsigned char* data, int size, int maxBufferSize, size_t expectedSize)
+	std::vector<unsigned char> Compression::decompressLZ77(unsigned char* data, size_t size, int maxBufferSize, size_t expectedSize)
 	{
 		std::vector<unsigned char> output = std::vector<unsigned char>();
 
-		int bytesForRef = ceil(log2(maxBufferSize) / 8.0);
+		int bytesForRef = (int)ceil(log2(maxBufferSize) / 8.0);
 
 		int t1 = 0;
 		int t2 = 0;

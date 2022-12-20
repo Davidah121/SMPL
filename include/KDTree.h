@@ -282,7 +282,7 @@ namespace glib
     template<typename T>
     inline KDTreeNode<T> KDTree<T>::searchNearest(T* data)
     {
-        int depth = 0;
+        // int depth = 0; //Not used
         int indexToTest = 0;
         BinaryTreeNode< KDTreeNode<T> >* currentTreeNode = binTree.getRoot();
 
@@ -292,9 +292,9 @@ namespace glib
         }
 
         int minDistance = 1 << 30;
-        KDTreeNode<T> returnNode = currentTreeNode->data;
+        // KDTreeNode<T> returnNode = currentTreeNode->data; //Not used
 
-        BinaryTreeNode<KDTreeNode<T>>* finalNode = searchRecursive(currentTreeNode, data, &minDistance, currentTreeNode, indexToTest, false);
+        BinaryTreeNode<KDTreeNode<T>>* finalNode = this->searchRecursive(currentTreeNode, data, &minDistance, currentTreeNode, indexToTest, false);
 
         return {finalNode->data};
     }
@@ -318,7 +318,7 @@ namespace glib
                 //go left
                 if(tNode->leftChild != nullptr)
                 {
-                    KDTreeNode<T> childNode = tNode->leftChild->data;
+                    // KDTreeNode<T> childNode = tNode->leftChild->data;
                     
                     myVal = searchRecursive(tNode->leftChild, data, minDistance, tNode->leftChild, nAxis, false);
                 }
@@ -329,7 +329,7 @@ namespace glib
                 //go right
                 if(tNode->rightChild != nullptr)
                 {
-                    KDTreeNode<T> childNode = tNode->rightChild->data;
+                    // KDTreeNode<T> childNode = tNode->rightChild->data;
                     
                     myVal = searchRecursive(tNode->rightChild, data, minDistance, tNode->rightChild, nAxis, false);
                 }
@@ -348,7 +348,7 @@ namespace glib
         if(currDis < *minDistance)
         {
             myVal = tNode;
-            *minDistance = currDis;
+            *minDistance = (int)currDis;
         }
         
         double disToAxis = MathExt::sqr( (double)data[axis] - (double)oKDNode.data[axis] );
@@ -362,7 +362,7 @@ namespace glib
             //left side
             if(tNode->leftChild != nullptr && !leftSide)
             {
-                KDTreeNode<T> childNode = tNode->leftChild->data;
+                // KDTreeNode<T> childNode = tNode->leftChild->data;
                     
                 myVal = searchRecursive(tNode->leftChild, data, minDistance, myVal, tempAxis, true);
             }
@@ -371,7 +371,7 @@ namespace glib
             //right side
             if(tNode->rightChild != nullptr && !rightSide)
             {
-                KDTreeNode<T> childNode = tNode->rightChild->data;
+                // KDTreeNode<T> childNode = tNode->rightChild->data;
                 
                 myVal = searchRecursive(tNode->rightChild, data, minDistance, myVal, tempAxis, true);
             }
@@ -386,7 +386,7 @@ namespace glib
                 //go left
                 if(tNode->leftChild != nullptr && !leftSide)
                 {
-                    KDTreeNode<T> childNode = tNode->leftChild->data;
+                    // KDTreeNode<T> childNode = tNode->leftChild->data;
                 
                     myVal = searchRecursive(tNode->leftChild, data, minDistance, myVal, tempAxis, true);
                 }
@@ -396,7 +396,7 @@ namespace glib
                 //go right
                 if(tNode->rightChild != nullptr && !rightSide)
                 {
-                    KDTreeNode<T> childNode = tNode->rightChild->data;
+                    // KDTreeNode<T> childNode = tNode->rightChild->data;
                 
                     myVal = searchRecursive(tNode->rightChild, data, minDistance, myVal, tempAxis, true);
                 }
@@ -415,8 +415,8 @@ namespace glib
 
         struct Range
         {
-            int start;
-            int end;
+            size_t start;
+            size_t end;
         };
 
         std::vector< KDTreeNode<T> > tempPalette = binTree.getAllElements();
@@ -425,7 +425,7 @@ namespace glib
         std::vector<Range> ranges2 = std::vector<Range>();
 
         int sortBy = 0;
-        int size = tempPalette.size();
+        size_t size = tempPalette.size();
 
         ranges.push_back({0, size});
         
@@ -433,7 +433,7 @@ namespace glib
         {
             for(Range r : ranges)
             {
-                int rSize = (r.end - r.start);
+                size_t rSize = (r.end - r.start);
 
                 if(rSize > 1)
                 {
@@ -443,7 +443,7 @@ namespace glib
                     double mult = 1.0/rSize;
                     
                     //find mean
-                    for(int i=r.start; i<r.end; i++)
+                    for(size_t i=r.start; i<r.end; i++)
                     {
                         for(int d=0; d<dimensions; d++)
                         {
@@ -452,7 +452,7 @@ namespace glib
                     }
 
                     //find variance
-                    for(int i=r.start; i<r.end; i++)
+                    for(size_t i=r.start; i<r.end; i++)
                     {
                         for(int d=0; d<dimensions; d++)
                         {
@@ -477,7 +477,7 @@ namespace glib
                         return a.data[sortBy] < b.data[sortBy];
                     });
 
-                    int midIndex = (r.start + r.end)/2;
+                    size_t midIndex = (r.start + r.end)/2;
 
                     KDTreeNode<T> kdt = (KDTreeNode<T>)tempPalette[midIndex];
 
@@ -506,7 +506,7 @@ namespace glib
 
         //after everything above done
         binTree = BinaryTree< KDTreeNode<T> >();
-        for(int i=0; i<addInOrder.size(); i++)
+        for(size_t i=0; i<addInOrder.size(); i++)
         {
             KDTreeNode<T> k = addInOrder[i];
             add( k.data );
