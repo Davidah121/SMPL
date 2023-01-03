@@ -51,15 +51,18 @@ namespace glib
 
 	void System::init()
 	{
-		lock.lock();
-		if(!hasInit)
-		{
-			PdhOpenQueryW(NULL, NULL, &cpuQuery);
-			PdhAddEnglishCounterW(cpuQuery, L"\\Processor(_Total)\\% Processor Time", NULL, &cpuTotal);
-			PdhCollectQueryData(cpuQuery);
-			hasInit = true;
-		}
-		lock.unlock();
+		#ifdef _WIN32
+			lock.lock();
+			if(!hasInit)
+			{
+				PdhOpenQueryW(NULL, NULL, &cpuQuery);
+				PdhAddEnglishCounterW(cpuQuery, L"\\Processor(_Total)\\% Processor Time", NULL, &cpuTotal);
+				PdhCollectQueryData(cpuQuery);
+				hasInit = true;
+			}
+			lock.unlock();
+		#endif
+
 	}
 
 	size_t System::getCurrentTimeMillis()
@@ -996,6 +999,8 @@ namespace glib
 	
 	double System::getTotalCpuUsage()
 	{
+		
+		#ifdef _WIN32
 		System::init();
 		
 		lock.lock();
@@ -1005,6 +1010,8 @@ namespace glib
 		lock.unlock();
 		
 		return counterVal.doubleValue;
+		#endif
+		return 0;
 	}
 	
 	double System::getCpuUsage()
