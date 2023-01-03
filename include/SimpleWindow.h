@@ -656,8 +656,8 @@ namespace glib
 		#ifdef __unix__
 			Display* displayServer = nullptr;
 			int screen = -1;
-			GC gc = nullptr;
-			Atom wmDeleteMessage = nullptr;
+			GC gc = 0;
+			Atom wmDeleteMessage = 0;
 			XImage* drawableImage = nullptr;
 		#else
 			WNDCLASSEXW wndClass = {};
