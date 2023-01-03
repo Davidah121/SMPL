@@ -174,7 +174,7 @@ namespace glib
 				}
 			}
 
-			return bestHeight
+			return bestHeight;
 		}
 		else
 		{
