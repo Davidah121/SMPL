@@ -53,7 +53,7 @@ namespace glib
         {
             if(totalRemoved == nL.size())
             {
-                StringTools::println("No solution no items. TotalRemoved = %llu", totalRemoved);
+                // StringTools::println("No solution no items. TotalRemoved = %llu", totalRemoved);
                 return std::vector<Grouping>(); // No solution
             }
             
@@ -93,7 +93,7 @@ namespace glib
             {
                 //couldn't find required width or a value lower than it.
                 //no solution
-                StringTools::println("No solution, Couldn't find location");
+                // StringTools::println("No solution, Couldn't find location");
                 return std::vector<Grouping>();
             }
 

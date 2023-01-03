@@ -239,7 +239,7 @@ namespace glib
 		bool isLeapYear;
 		bool isValid = true;
 
-		std::string tempText = dateStringBox.getTextBlockElement()->getText();
+		std::string tempText = getDateString();
 		if(tempText.empty())
 		{
 			isValid = false;
@@ -280,8 +280,8 @@ namespace glib
 		{
 			currentStoredDate = System::getCurrentDate();
 			std::string dateString = StringTools::formatString("%02d/%02d/%04d", currentStoredDate.tm_mon+1, currentStoredDate.tm_mday, currentStoredDate.tm_year+1900);
-
-			dateStringBox.getTextBlockElement()->setText( dateString );
+			
+			setDateString(dateString);
 		}
 
 		std::string headerText = StringTools::formatString("%s %04d", arrayOfMonths[currentStoredDate.tm_mon].c_str(), currentStoredDate.tm_year+1900);
@@ -362,7 +362,8 @@ namespace glib
 				else
 					mon = 12;
 
-				dateStringBox.getTextBlockElement()->setText( StringTools::formatString("%02d/%02d/%04d", mon, mDay, year) );
+				
+				setDateString(StringTools::formatString("%02d/%02d/%04d", mon, mDay, year));
 			}
 		}
 
@@ -407,7 +408,8 @@ namespace glib
 				mon = 1;
 				year++;
 			}
-			dateStringBox.getTextBlockElement()->setText( StringTools::formatString("%02d/%02d/%04d", mon, 1, year) );
+			
+			setDateString(StringTools::formatString("%02d/%02d/%04d", mon, 1, year));
 			setCalendarValues();
 		}
 
@@ -452,7 +454,8 @@ namespace glib
 				mon = 12;
 				year--;
 			}
-			dateStringBox.getTextBlockElement()->setText( StringTools::formatString("%02d/%02d/%04d", mon, 1, year) );
+			
+			setDateString(StringTools::formatString("%02d/%02d/%04d", mon, 1, year));
 			setCalendarValues();
 		}
 	}
@@ -475,6 +478,7 @@ namespace glib
 	void GuiDatePicker::setDateString(std::string text)
 	{
 		dateStringBox.getTextBlockElement()->setText(text);
+		dateStringBox.setShouldRedraw(true);
 	}
 
 	void GuiDatePicker::solveBoundingBox()

@@ -37,6 +37,10 @@
 	#define LOGIC_XOR(a,b) ((!(a)) != (!(b)))
 #endif
 
+#ifndef EPSILON
+	#define EPSILON 1e-10
+#endif
+
 namespace glib
 {
 

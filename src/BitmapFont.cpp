@@ -42,7 +42,17 @@ namespace glib
 	Image* BitmapFont::getImage(size_t index)
 	{
 		if(index>=0 && index<imgPage.size())
-			return img.getImage( imgPage[index] );
+		{
+			if(fontSize == originalFontSize)
+			{
+				return img.getImage( imgPage[index] );
+			}
+			else
+			{
+				double scale = fontSize / originalFontSize;
+				return SimpleGraphics::scaleImage( img.getImage( imgPage[index] ), scale, scale, SimpleGraphics::NEAREST_NEIGHBOR_FILTER);
+			}
+		}
 		else
 		{
 			#ifdef USE_EXCEPTIONS
@@ -223,7 +233,7 @@ namespace glib
 					auto temp = n->getAttribute("size");
 					if(!temp.first.empty())
 					{
-						fontSize = std::stoi(temp.second);
+						fontSize = abs(std::stoi(temp.second));
 						originalFontSize = fontSize;
 					}
 				}
@@ -231,7 +241,7 @@ namespace glib
 				{
 					auto temp = n->getAttribute("lineHeight");
 					if(!temp.first.empty())
-						verticalAdv = std::stoi(temp.second);
+						verticalAdv = abs(std::stoi(temp.second));
 					
 				}
 				else if(n->title == "pages")

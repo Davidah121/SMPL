@@ -86,7 +86,7 @@ namespace glib
 		 * @param index 
 		 * @return size_t 
 		 */
-		size_t getReferenceSize(size_t index);
+		uintmax_t getReferenceSize(size_t index);
 
 		/**
 		 * @brief Gets the Last Change Time for the file or folder at the index.
@@ -196,8 +196,8 @@ namespace glib
 		std::string getLocation();
 
 	private:
-		size_t getFileSize(std::filesystem::directory_entry f);
-		size_t getFolderSize(std::filesystem::directory_entry f);
+		uintmax_t getFileSize(std::filesystem::directory_entry f);
+		uintmax_t getFolderSize(std::filesystem::directory_entry f);
 
 		std::vector<std::filesystem::directory_entry> names = std::vector<std::filesystem::directory_entry>();
 		bool exists = false;

@@ -43,7 +43,7 @@ namespace glib
 		textColor = other.textColor;
 		defaultTextColor = other.defaultTextColor;
 		highlightColor = other.highlightColor;
-		textFont = other.textFont;
+		textFontP = other.textFontP;
 		text = other.text;
 	}
 
@@ -58,8 +58,7 @@ namespace glib
 
 		if(updateBounds)
 		{
-			GuiFontInterface* fInt = (textFont != nullptr) ? textFont : GuiGraphicsInterface::getFont();
-
+			GuiFontInterface* fInt = getFont();
 			if(fInt == nullptr)
 				return;
 			
@@ -114,8 +113,8 @@ namespace glib
 
 	void GuiTextBlock::render()
 	{
-		GuiFontInterface* fInt = (textFont != nullptr) ? textFont : GuiGraphicsInterface::getFont();
-		GuiFontInterface* oldFontInt = GuiGraphicsInterface::getFont();
+		GuiFontInterface* fInt = getFont();
+		// GuiFontInterface* oldFontInt = GuiGraphicsInterface::getFont();
 
 		GuiGraphicsInterface::setFont(fInt);
 		GuiGraphicsInterface::setColor(textColor);
@@ -144,7 +143,7 @@ namespace glib
 				GuiGraphicsInterface::drawTextLimits(defaultString, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText);
 		}
 		
-		GuiGraphicsInterface::setFont(oldFontInt);
+		// GuiGraphicsInterface::setFont(oldFontInt);
 
 		// Box2D oldClip = GuiGraphicsInterface::getClippingRect();
 		// GuiGraphicsInterface::resetClippingPlane();
@@ -216,9 +215,9 @@ namespace glib
 		update();
 	}
 
-	void GuiTextBlock::setFont(GuiFontInterface* f)
+	void GuiTextBlock::setFont(SmartMemory<GuiFontInterface> f)
 	{
-		textFont = f;
+		textFontP = f;
 		updateBounds = true;
 		setShouldRedraw(true);
 		update();
@@ -226,7 +225,12 @@ namespace glib
 
 	GuiFontInterface* GuiTextBlock::getFont()
 	{
-		return textFont;
+		GuiFontInterface* textFont = textFontP.getPointer();
+		GuiFontInterface* fInt = (textFont != nullptr) ? textFont : GuiGraphicsInterface::getFont();
+		
+		if(fInt->getFont() != nullptr)
+			fInt->getFont()->setFontSize(fontSize);
+		return fInt;
 	}
 
 	void GuiTextBlock::setMaxWidth(int v)
@@ -361,7 +365,7 @@ namespace glib
 	{
 		GuiInstance::loadDataFromXML(attributes);
 
-		std::vector<std::string> possibleNames = { "maxwidth", "maxheight", "textcolor", "defaulttextcolor", "highlightcolor", "allowhighlight", "allowwraptext", "highlightstart", "highlightend", "textxoffset", "textyoffset", "text", "defaulttext" };
+		std::vector<std::string> possibleNames = { "maxwidth", "maxheight", "textcolor", "defaulttextcolor", "highlightcolor", "allowhighlight", "allowwraptext", "highlightstart", "highlightend", "textxoffset", "textyoffset", "text", "defaulttext", "fontsrc", "fontsize" };
 
 		for(size_t i=0; i<possibleNames.size(); i++)
 		{
@@ -422,6 +426,19 @@ namespace glib
 				else if(possibleNames[i] == "defaulttext")
 				{
 					this->defaultString = it->second;
+				}
+				else if(possibleNames[i] == "fontsrc")
+				{
+					//check if in resources by name.
+					textFontP = GuiResourceManager::getResourceManager().getFont(it->second);
+				}
+				else if(possibleNames[i] == "fontsize")
+				{
+					this->fontSize = StringTools::toInt(it->second);
+					if(this->fontSize < 0)
+					{
+						this->fontSize = 0;
+					}
 				}
 
 				attributes.erase(possibleNames[i]);

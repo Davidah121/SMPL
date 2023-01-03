@@ -1,0 +1,53 @@
+<SimpleGUI>
+    <!--Menu-->
+    <GuiRectangleButton x="8" y="8" width="32" height="32" ID="MenuToggleID"/>
+    <GuiList ID="SideBarID">
+        <GuiRectangleButton width="96" height="32" ID="MenuHomeButID">
+            <GuiTextBlock maxWidth="96" maxHeight="32" text="HOME" />
+        </GuiRectangleButton>
+        
+        <GuiRectangleButton width="96" height="32" ID="MenuSearchButID">
+            <GuiTextBlock maxWidth="96" maxHeight="32" text="SEARCH" />
+        </GuiRectangleButton>
+        
+        <GuiRectangleButton width="96" height="32" ID="MenuFavoriteButID">
+            <GuiTextBlock maxWidth="96" maxHeight="32" text="FAVORITES" />
+        </GuiRectangleButton>
+        
+        <GuiRectangleButton width="96" height="32" ID="MenuFileExplorerButID">
+            <GuiTextBlock maxWidth="96" maxHeight="32" text="FILE EXPLORER" />
+        </GuiRectangleButton>
+        
+        <GuiRectangleButton width="96" height="32" ID="MenuSettingsButID">
+            <GuiTextBlock maxWidth="96" maxHeight="32" text="SETTINGS" />
+        </GuiRectangleButton>
+    </GuiList>
+    
+    <GuiContainer>
+        <!--Home Menu Stuff-->
+        <GuiContainer ID="HomeMenuContainerID">
+            <GuiList spacing="128">
+                <GuiTextBlock maxWidth="128" maxHeight="64" text="EFM"/>
+                <GuiList spacing="64" isVertical="False">
+                    <GuiRectangleButton width="96" height="96" ID="HomeSearchButID">
+                        <GuiTextBlock maxWidth="96" maxHeight="96" text="SEARCH" />
+                    </GuiRectangleButton>
+                    
+                    <GuiRectangleButton width="96" height="96" ID="HomeFavoriteButID">
+                        <GuiTextBlock maxWidth="96" maxHeight="96" text="FAVORITES" />
+                    </GuiRectangleButton>
+                    
+                    <GuiRectangleButton width="96" height="96" ID="HomeFileExplorerButID">
+                        <GuiTextBlock maxWidth="96" maxHeight="96" text="FILE EXPLORER" />
+                    </GuiRectangleButton>
+                </GuiList>
+            </GuiList>
+            <GuiTextBlock maxWidth="128" maxHeight="64" text="Status: N/A"/>
+        </GuiContainer>
+        
+        <!--Item Grid-->
+        <GuiGrid x="64" y="64" ID="ItemGridID"/>
+        <!--Foreground-->
+        <!--Put transparent rectangle here-->
+    </GuiContainer>
+</SimpleGUI>

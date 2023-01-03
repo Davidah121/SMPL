@@ -15,6 +15,7 @@
 #include <functional>
 
 #include "GuiGraphics.h"
+#include "ResourceManager.h"
 
 //Should use SmartPointers for memory access to avoid accessing memory that has already been deleted.
 
@@ -26,6 +27,32 @@ struct Point
 
 namespace glib
 {
+	class GuiResourceManager
+	{
+	public:
+		~GuiResourceManager();
+
+		void addSprite(GuiSpriteInterface* data, std::string key, bool array);
+		void addFont(GuiFontInterface* data, std::string key, bool array);
+
+		SmartMemory<GuiSpriteInterface> getSprite(std::string key);
+		SmartMemory<GuiFontInterface> getFont(std::string key);
+		
+		void deleteSprite(std::string key);
+		void deleteFont(std::string key);
+		
+		ResourceManager<GuiSpriteInterface>* getSpriteResourceManager();
+		ResourceManager<GuiFontInterface>* getFontResourceManager();
+		
+		static GuiResourceManager& getResourceManager();
+	private:
+		GuiResourceManager();
+		ResourceManager<GuiSpriteInterface> spriteResources = ResourceManager<GuiSpriteInterface>();
+		ResourceManager<GuiFontInterface> fontResources = ResourceManager<GuiFontInterface>();
+
+		static GuiResourceManager singleton;
+	};
+
 	class GuiManager;
 
 	class GuiInstance : public Object
@@ -1095,9 +1122,10 @@ namespace glib
 		/**
 		 * @brief Construct a new GuiSprite object
 		 * 		It contains multiple Images that can be animated.
-		 * 		Loads an image/sprite from a file
+		 * 		Loads an image/sprite from the GuiManager provided.
+		 * 			If it does not exist, it creates a new one and puts it in the GuiManager's resource list with the filename provided.
 		 * @param f
-		 * 		The file containing the image(s).
+		 * 		The file / id-string containing the image(s).
 		 */
 		GuiSprite(File f);
 
@@ -1134,6 +1162,14 @@ namespace glib
 		 * @return GuiSpriteInterface*
 		 */
 		GuiSpriteInterface* getSprite();
+
+		/**
+		 * @brief Sets the Sprite for this object. Must be SmartMemory.
+		 * 		Should not have delete rights if possible as any copying could delete the original data.
+		 * 
+		 * @param spr 
+		 */
+		void setSprite(SmartMemory<GuiSpriteInterface> spr);
 
 		/**
 		 * @brief Sets the x scale for the sprite.
@@ -1247,7 +1283,7 @@ namespace glib
 		int width = -1;
 		int height = -1;
 
-		GuiSpriteInterface* img = nullptr;
+		SmartMemory<GuiSpriteInterface> spr = SmartMemory<GuiSpriteInterface>();
 		Color imgColor = {255,255,255,255};
 	};
 
@@ -1438,20 +1474,34 @@ namespace glib
 
 		/**
 		 * @brief Sets a specific font to use.
-		 * 		If nullptr, the default font set in the SimpleGraphics class will be used.
+		 * 		Should avoid delete access since any copying could delete the original data.
 		 * 
 		 * @param f 
 		 */
-		void setFont(GuiFontInterface* f);
+		void setFont(SmartMemory<GuiFontInterface> f);
 
 		/**
 		 * @brief Gets the Font used.
 		 * 		If nullptr, the default font set in the SimpleGraphics class is being used.
-		 * 
+		 * 		Font will be resized to fit the objects desired size when this is called.
+		 * 			All other objects sharing this font pointer will have their font resized as well.
+		 * 		
 		 * @return GuiFontInterface* 
 		 */
 		GuiFontInterface* getFont();
 
+		/**
+		 * @brief Set the Font Size used by the text.
+		 * @param v 
+		 */
+		void setFontSize(int v);
+
+		/**
+		 * @brief Gets the Font Size used by the text.
+		 * 
+		 * @return int 
+		 */
+		int getFontSize();
 		/**
 		 * @brief Sets the Maximum Width of the text block
 		 * 		If set to < 0, no maximum width will be imposed
@@ -1528,12 +1578,14 @@ namespace glib
 		bool allowWrapText = false;
 		bool updateBounds = true;
 		
+		int fontSize = 12;
+
 		std::string defaultString = "";
 
 		Color textColor = { 0, 0, 0, 255 };
 		Color defaultTextColor = { 0, 0, 0, 64 };
 		Color highlightColor = { 72, 150, 255, 96 };
-		GuiFontInterface* textFont = nullptr;
+		SmartMemory<GuiFontInterface> textFontP = SmartMemory<GuiFontInterface>();
 
 		std::string text = "";
 	};
@@ -2514,7 +2566,7 @@ namespace glib
 		static std::unordered_map<std::string, std::function<GuiInstance*(std::unordered_map<std::string, std::string>&)> > elementLoadingFunctions;
 
 		SimpleHashMap<std::string, GuiInstance*> objectsByName = SimpleHashMap<std::string, GuiInstance*>();
-		
+
 		int windowX = 0;
 		int windowY = 0;
 		bool invalidImage = true;

@@ -210,11 +210,11 @@ namespace glib
 
 		int blocks = (int)MathExt::ceil((double)height/24);
 		//compress data
-		// t1 = System::getCurrentTimeMicro();
-		std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, blocks, codeSize);
-		// t2 = System::getCurrentTimeMicro();
+		// size_t t1 = System::getCurrentTimeMicro();
+		std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, codeSize);
+		// size_t t2 = System::getCurrentTimeMicro();
 
-		// StringTools::println("Time to compress: %u", t2-t1);
+		// StringTools::println("Time to compress: %llu", t2-t1);
 
 		for(size_t i=0; i<compressedData.size(); i++)
 		{
@@ -393,12 +393,12 @@ namespace glib
 
 						startIndex += blockSize;
 					}
-
+					
 					std::vector<unsigned char> pixValues;
 					if(colorRes!=1)
-						pixValues = Compression::decompressLZW(valuesToDecompress, localTable.getSize());
+						pixValues = Compression::decompressLZW(valuesToDecompress.data(), valuesToDecompress.size(), localTable.getSize());
 					else
-						pixValues = Compression::decompressLZW(valuesToDecompress, localTable.getSize()+2);
+						pixValues = Compression::decompressLZW(valuesToDecompress.data(), valuesToDecompress.size(), localTable.getSize()+2);
 					
 					if (localTable.getSize() != 0)
 					{

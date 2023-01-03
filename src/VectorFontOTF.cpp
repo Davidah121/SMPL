@@ -93,6 +93,7 @@ namespace glib
 	void readTableRecord(std::vector<unsigned char>& fBytes, int offset, TableRecordOTF& tr, TableDirectoryOTF& o)
 	{
 		std::memcpy(&tr, &fBytes.data()[offset], sizeof(TableRecordOTF));
+		tr.tag = StringTools::byteSwap(tr.tag);
 		tr.checksum = StringTools::byteSwap(tr.checksum);
 		tr.length = StringTools::byteSwap(tr.length);
 		tr.offset = StringTools::byteSwap(tr.offset);
@@ -160,7 +161,280 @@ namespace glib
 		hh.numberOfHMetrics = StringTools::byteSwap(hh.numberOfHMetrics);
 	}
 
-	void readCMAP(std::vector<unsigned char>& fBytes, int offset, int length, cmapOTF& cm)
+	void cmapFormat0(std::vector<unsigned char>& fBytes, int offset, int length, EncodingRecordOTF& er, std::unordered_map<uint32_t, uint32_t>& characterMapping)
+	{
+		//Make sure that the format says 0
+		int actualOffset = er.subtableOffset + offset;
+		uint16_t format = 0;
+		std::memcpy(&format, &fBytes.data()[actualOffset], 2);
+		format = StringTools::byteSwap(format);
+
+		if(format != 0)
+			return; //Error
+		
+		//4 bytes since we don't need the length, and language.
+		actualOffset+=6;
+
+		//read array of mappings
+		for(int i=0; i<256; i++)
+		{
+			characterMapping[i] = fBytes[actualOffset+i];
+		}
+	}
+
+	void cmapFormat4(std::vector<unsigned char>& fBytes, int offset, int length, EncodingRecordOTF& er, std::unordered_map<uint32_t, uint32_t>& characterMapping)
+	{
+		//Make sure that the format says 4
+		int actualOffset = er.subtableOffset + offset;
+		uint16_t format = 0;
+		std::memcpy(&format, &fBytes.data()[actualOffset], 2);
+		format = StringTools::byteSwap(format);
+
+		if(format != 4)
+			return; //Error
+		
+		uint16_t lengthOfStruct = 0;
+		std::memcpy(&lengthOfStruct, &fBytes.data()[actualOffset+2], 2);
+		lengthOfStruct = StringTools::byteSwap(lengthOfStruct);
+
+		int endOfStruct = offset+er.subtableOffset+lengthOfStruct;
+
+		//4 bytes since we don't need the length, and language.
+		actualOffset+=6;
+
+		uint16_t segCountX2, searchRange, entrySelector, rangeShift;
+		std::memcpy(&segCountX2, &fBytes.data()[actualOffset], 2);
+		std::memcpy(&searchRange, &fBytes.data()[actualOffset+2], 2);
+		std::memcpy(&entrySelector, &fBytes.data()[actualOffset+4], 2);
+		std::memcpy(&rangeShift, &fBytes.data()[actualOffset+6], 2);
+		segCountX2 = StringTools::byteSwap(segCountX2);
+		searchRange = StringTools::byteSwap(searchRange);
+		entrySelector = StringTools::byteSwap(entrySelector);
+		rangeShift = StringTools::byteSwap(rangeShift);
+
+		actualOffset += 8;
+		
+		uint16_t segCount = segCountX2/2;
+		std::vector<uint16_t> endCodes = std::vector<uint16_t>(segCount);
+		std::vector<uint16_t> startCodes = std::vector<uint16_t>(segCount);
+		std::vector<int16_t> idDelta = std::vector<int16_t>(segCount);
+		std::vector<uint16_t> idRangeOffsets = std::vector<uint16_t>(segCount);
+
+		std::memcpy(endCodes.data(), &fBytes.data()[actualOffset], segCountX2);
+		actualOffset+=segCountX2 + 2; //extra reserved padding
+		std::memcpy(startCodes.data(), &fBytes.data()[actualOffset], segCountX2);
+		actualOffset+=segCountX2;
+		std::memcpy(idDelta.data(), &fBytes.data()[actualOffset], segCountX2);
+		actualOffset+=segCountX2;
+
+		int idRangeOfLocation = actualOffset;
+		int glyphIDLocation = actualOffset+segCountX2;
+		
+		std::memcpy(idRangeOffsets.data(), &fBytes.data()[actualOffset], segCountX2);
+		actualOffset+=segCountX2;
+		
+		int lengthOfGlyphIDArray = (endOfStruct - actualOffset)/2;
+		std::vector<uint16_t> glyphIDArray = std::vector<uint16_t>(lengthOfGlyphIDArray);
+		
+		std::memcpy(glyphIDArray.data(), &fBytes.data()[actualOffset], lengthOfGlyphIDArray*2);
+		actualOffset += lengthOfGlyphIDArray*2; //Not needed since we won't be reading in this function anymore.
+
+		//ByteSwap
+		for(int i=0; i<segCount; i++)
+		{
+			endCodes[i] = StringTools::byteSwap(endCodes[i]);
+			startCodes[i] = StringTools::byteSwap(startCodes[i]);
+			idDelta[i] = StringTools::byteSwap(idDelta[i]);
+			idRangeOffsets[i] = StringTools::byteSwap(idRangeOffsets[i]);
+
+			// StringTools::println("Values at %d: %u, %u, %d, %u", i, endCodes[i], startCodes[i], idDelta[i], idRangeOffsets[i]);
+		}
+
+		for(int i=0; i<glyphIDArray.size(); i++)
+		{
+			glyphIDArray[i] = StringTools::byteSwap(glyphIDArray[i]);
+		}
+
+		if(endCodes.size() > 1)
+		{
+			for(int i=0; i<segCount; i++)
+			{
+				int totalRange = endCodes[i] - startCodes[i];
+				for(int j=0; j<=totalRange; j++)
+				{
+					int index = -1;
+					int c = j + startCodes[i] + idDelta[i];
+					if(idRangeOffsets[i] != 0)
+					{
+						//Microsoft did weird things here.
+						//The idRangeOffset specifies how much to move from its current location in the file to find the desired index.
+						//Since we are using data structures around the data, we need to simulate that behavior and deduce the index in the array instead.
+
+						int refIndex = idRangeOffsets[i] + (c-startCodes[i])*2; //How many shorts to move by.
+						int finalLocation = ((refIndex + idRangeOfLocation+(i*2)) - glyphIDLocation)/2; //Divide the final thing by 2 to get the correct index.
+
+						if(finalLocation < glyphIDArray.size() && finalLocation >= 0)
+						{
+							index = glyphIDArray[finalLocation];
+						}
+					}
+					else
+					{
+						index = c;
+					}
+					characterMapping[startCodes[i] + j] = index;
+				}
+			}
+		}
+	}
+
+	void cmapFormat6(std::vector<unsigned char>& fBytes, int offset, int length, EncodingRecordOTF& er, std::unordered_map<uint32_t, uint32_t>& characterMapping)
+	{
+		//Make sure that the format says 6
+		int actualOffset = er.subtableOffset + offset;
+		uint16_t format = 0;
+		uint16_t firstCode = 0;
+		uint16_t entryCount = 0;
+
+		std::memcpy(&format, &fBytes.data()[actualOffset], 2);
+		format = StringTools::byteSwap(format);
+
+		if(format != 6)
+			return; //Error
+		
+		actualOffset += 6; //move past format bytes and skip length and language bytes.
+
+		std::memcpy(&firstCode, &fBytes.data()[actualOffset], 2);
+		std::memcpy(&entryCount, &fBytes.data()[actualOffset+2], 2);
+		actualOffset+=4;
+
+		firstCode = StringTools::byteSwap(firstCode);
+		entryCount = StringTools::byteSwap(entryCount);
+
+		std::vector<uint16_t> glyphIDArray = std::vector<uint16_t>(entryCount);
+		std::memcpy(glyphIDArray.data(), &fBytes.data()[actualOffset], entryCount*2);
+
+		for(int i=0; i<entryCount; i++)
+		{
+			characterMapping[firstCode+i] = StringTools::byteSwap(glyphIDArray[i]);
+		}
+	}
+
+	void cmapFormat12(std::vector<unsigned char>& fBytes, int offset, int length, EncodingRecordOTF& er, std::unordered_map<uint32_t, uint32_t>& characterMapping)
+	{
+		//Make sure that the format says 12
+		int actualOffset = er.subtableOffset + offset;
+		uint16_t format = 0;
+		uint32_t numGroups = 0;
+
+		std::memcpy(&format, &fBytes.data()[actualOffset], 2);
+		format = StringTools::byteSwap(format);
+
+		if(format != 12)
+			return; //Error
+		
+		actualOffset += 4; //Move past format bytes and skip reserved bytes as well.
+		actualOffset += 8; //Skip length and language bytes.
+		
+		std::memcpy(&numGroups, &fBytes.data()[actualOffset], 4);
+
+		struct SequentialMapGroup
+		{
+			uint32_t startCharCode;
+			uint32_t endCharCode;
+			uint32_t startGlyphID;
+		};
+
+		std::vector<SequentialMapGroup> groups = std::vector<SequentialMapGroup>(numGroups);
+		for(uint32_t i=0; i<groups.size(); i++)
+		{
+			for(uint32_t j=groups[i].startCharCode; j<=groups[i].endCharCode; j++)
+			{
+				characterMapping[j] = groups[i].startGlyphID + (j-groups[i].startCharCode);
+			}
+		}
+	}
+
+	void cmapFormat13(std::vector<unsigned char>& fBytes, int offset, int length, EncodingRecordOTF& er, std::unordered_map<uint32_t, uint32_t>& characterMapping)
+	{
+		//Make sure that the format says 13
+		int actualOffset = er.subtableOffset + offset;
+		uint16_t format = 0;
+		uint32_t numGroups = 0;
+
+		std::memcpy(&format, &fBytes.data()[actualOffset], 2);
+		format = StringTools::byteSwap(format);
+
+		if(format != 13)
+			return; //Error
+		
+		actualOffset += 4; //Move past format bytes and skip reserved bytes as well.
+		actualOffset += 8; //Skip length and language bytes.
+		
+		std::memcpy(&numGroups, &fBytes.data()[actualOffset], 4);
+
+		struct SequentialMapGroup
+		{
+			uint32_t startCharCode;
+			uint32_t endCharCode;
+			uint32_t startGlyphID;
+		};
+
+		std::vector<SequentialMapGroup> groups = std::vector<SequentialMapGroup>(numGroups);
+		for(uint32_t i=0; i<groups.size(); i++)
+		{
+			for(uint32_t j=groups[i].startCharCode; j<=groups[i].endCharCode; j++)
+			{
+				characterMapping[j] = groups[i].startGlyphID;
+			}
+		}
+	}
+
+	void cmapFormat14(std::vector<unsigned char>& fBytes, int offset, int length, EncodingRecordOTF& er, std::unordered_map<uint32_t, uint32_t>& characterMapping)
+	{
+		//Make sure that the format says 14
+		int actualOffset = er.subtableOffset + offset;
+		int startOfTable = er.subtableOffset + offset;
+		uint16_t format = 0;
+		uint32_t numVarSelectors = 0;
+
+		std::memcpy(&format, &fBytes.data()[actualOffset], 2);
+		format = StringTools::byteSwap(format);
+
+		if(format != 14)
+			return; //Error
+
+		actualOffset += 6; //Skip length as it is not needed.
+
+		std::memcpy(&numVarSelectors, &fBytes.data()[actualOffset], 4);
+		numVarSelectors = StringTools::byteSwap(numVarSelectors);
+		actualOffset += 4;
+
+		struct VariationSelector
+		{
+			uint32_t varSelector;
+			uint32_t defaultUVSOffset;
+			uint32_t nonDefaultUVSOffset;
+		};
+
+		std::vector<VariationSelector> varSelectors = std::vector<VariationSelector>(numVarSelectors);
+		for(int i=0; i<numVarSelectors; i++)
+		{
+			VariationSelector v;
+			v.varSelector = (((uint32_t)fBytes[actualOffset]) << 16) + (((uint32_t)fBytes[actualOffset+1]) << 8) + (((uint32_t)fBytes[actualOffset+2]));
+			v.defaultUVSOffset = (((uint32_t)fBytes[actualOffset+3]) << 24) + (((uint32_t)fBytes[actualOffset+4]) << 16) + (((uint32_t)fBytes[actualOffset+5]) << 8) + (((uint32_t)fBytes[actualOffset+6]));
+			v.nonDefaultUVSOffset = (((uint32_t)fBytes[actualOffset+7]) << 24) + (((uint32_t)fBytes[actualOffset+8]) << 16) + (((uint32_t)fBytes[actualOffset+9]) << 8) + (((uint32_t)fBytes[actualOffset+10]));
+			actualOffset += 11;
+		}
+
+		//TODO - Do the Variation Selector stuff with the default and non default tables.
+		// for(int i=0; i<varSelectors.size(); i++)
+		// {
+		// 	v.
+		// }
+	} 
+
+	void readCMAP(std::vector<unsigned char>& fBytes, int offset, int length, cmapOTF& cm, std::unordered_map<uint32_t, uint32_t>& characterMapping)
 	{
 		std::memcpy(&cm, &fBytes.data()[offset], 4);
 		cm.version = StringTools::byteSwap(cm.version);
@@ -179,7 +453,43 @@ namespace glib
 			
 			cm.encodingRecords.push_back(er);
 		}
+		
+		//handle mappings.
+		//Not doing all of them. Just 0, 4, 6, 12, 13, 14.
+		//Not dealing with platformID or encodingID unless it causes an issue.
+		for(int i=0; i<cm.encodingRecords.size(); i++)
+		{
+			uint16_t format = 0;
+			std::memcpy(&format, &fBytes.data()[offset + cm.encodingRecords[i].subtableOffset], 2);
+			format = StringTools::byteSwap(format);
 
+			StringTools::println("Format: %d", format);
+			if(format == 0)
+			{
+				cmapFormat0(fBytes, offset, length, cm.encodingRecords[i], characterMapping);
+			}
+			else if(format == 4)
+			{
+				cmapFormat4(fBytes, offset, length, cm.encodingRecords[i], characterMapping);
+			}
+			else if(format == 6)
+			{
+				cmapFormat6(fBytes, offset, length, cm.encodingRecords[i], characterMapping);
+			}
+			else if(format == 12)
+			{
+				cmapFormat12(fBytes, offset, length, cm.encodingRecords[i], characterMapping);
+			}
+			else if(format == 13)
+			{
+				cmapFormat13(fBytes, offset, length, cm.encodingRecords[i], characterMapping);
+			}
+			else if(format == 14)
+			{
+				//Not implemented
+				cmapFormat14(fBytes, offset, length, cm.encodingRecords[i], characterMapping);
+			}
+		}
 	}
 
 	bool VectorFont::loadOTFFont(File file)
@@ -200,8 +510,9 @@ namespace glib
 
 			headOTF header;
 			hheadOTF secondHeader;
-			cmapOTF characterMap;
+			cmapOTF characterMapHeader;
 			TableDirectoryOTF tableDir;
+			std::unordered_map<uint32_t, uint32_t> characterMapping;
 			
 			//read table directory at the start of the file.
 			readTableDir(fileBytes, tableDir);
@@ -215,6 +526,38 @@ namespace glib
 				else if(tr.tag == TagNames::hhea)
 				{
 					readHHead(fileBytes, tr.offset, tr.length, secondHeader);
+				}
+				else if(tr.tag == TagNames::cmap)
+				{
+					readCMAP(fileBytes, tr.offset, tr.length, characterMapHeader, characterMapping);
+				}
+				else if(tr.tag == TagNames::hmtx)
+				{
+
+				}
+				else if(tr.tag == TagNames::maxp)
+				{
+
+				}
+				else if(tr.tag == TagNames::name)
+				{
+
+				}
+				else if(tr.tag == TagNames::os2)
+				{
+
+				}
+				else if(tr.tag == TagNames::post)
+				{
+
+				}
+				else if(tr.tag == TagNames::glyf)
+				{
+
+				}
+				else if(tr.tag == TagNames::loca)
+				{
+
 				}
 			}
 		}

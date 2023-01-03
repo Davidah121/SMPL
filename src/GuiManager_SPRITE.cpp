@@ -16,11 +16,26 @@ namespace glib
 	GuiSprite::GuiSprite(File f) : GuiInstance()
 	{
 		setClass(globalClass);
-		img = GuiGraphicsInterface::createSprite(f);
-		if(img->getSize() > 0)
-			boundingBox = Box2D(x, y, x+img->getImage(0).getWidth(), y+img->getImage(0).getHeight());
-		else
-			boundingBox = GuiInstance::getInvalidBox();
+
+		//check if in resources by name. If not, create a new one as SmartMemory
+		spr = GuiResourceManager::getResourceManager().getSprite(f.getFullFileName());
+
+		if(spr.getPointer() == nullptr)
+		{
+			//create it
+			GuiResourceManager::getResourceManager().addSprite( GuiGraphicsInterface::createSprite(f), f.getFullFileName(), false );
+			spr = GuiResourceManager::getResourceManager().getSprite(f.getFullFileName());
+		}
+		
+		
+		GuiSpriteInterface* tempSpr = spr.getPointer();
+		if(tempSpr != nullptr)
+		{
+			if(tempSpr->getSize() > 0)
+				boundingBox = Box2D(x, y, x+tempSpr->getImage(0).getWidth(), y+tempSpr->getImage(0).getHeight());
+			else
+				boundingBox = GuiInstance::getInvalidBox();
+		}
 	}
 	
 	GuiSprite::GuiSprite(const GuiSprite& other) : GuiInstance(other)
@@ -44,36 +59,36 @@ namespace glib
 		height = other.height;
 		imgColor = other.imgColor;
 
-		img = new GuiSpriteInterface( *other.img );
+		//Should be okay due to smart pointers. As long as it does not have delete rights. It is okay. 
+		spr = other.spr;
 	}
 
 	GuiSprite::~GuiSprite()
 	{
-		if(img != nullptr)
-			delete img;
-		img = nullptr;
+		//No longer needed since SmartMemory is used.
 	}
 
 	void GuiSprite::update()
 	{
 		size_t lastIndex = index;
-		if(img == nullptr)
+		GuiSpriteInterface* tempSpr = spr.getPointer();
+		if(tempSpr == nullptr)
 			return;
 		
-		if(index < img->getSize())
+		if(index < tempSpr->getSize())
 		{
 			if(lastUpdateTime == 0)
 			{
 				lastUpdateTime = System::getCurrentTimeMicro();
 			}
-			else if(System::getCurrentTimeMicro() - lastUpdateTime >= (size_t)img->getDelayTime(index))
+			else if(System::getCurrentTimeMicro() - lastUpdateTime >= (size_t)tempSpr->getDelayTime(index))
 			{
 				lastUpdateTime = System::getCurrentTimeMicro();
 				
 				index++;
-				if(index >= img->getSize())
+				if(index >= tempSpr->getSize())
 				{
-					if(img->shouldLoop())
+					if(tempSpr->shouldLoop())
 					{
 						index = 0;
 					}
@@ -83,7 +98,7 @@ namespace glib
 					setShouldRedraw(true);
 			}
 
-			boundingBox = Box2D(x, y, x+img->getImage(index).getWidth(), y+img->getImage(index).getHeight());
+			boundingBox = Box2D(x, y, x+tempSpr->getImage(index).getWidth(), y+tempSpr->getImage(index).getHeight());
 		}
 		else
 		{
@@ -93,10 +108,11 @@ namespace glib
 
 	void GuiSprite::render()
 	{
-		if(img == nullptr)
+		GuiSpriteInterface* tempSpr = spr.getPointer();
+		if(tempSpr == nullptr)
 			return;
 		
-		GuiImageInterface tempImg = img->getImage(index);
+		GuiImageInterface tempImg = tempSpr->getImage(index);
 		if(tempImg.getType() != GuiGraphicsInterface::TYPE_INVALID)
 		{
 			GuiGraphicsInterface::setColor(imgColor);
@@ -127,7 +143,8 @@ namespace glib
 
 	GuiSpriteInterface* GuiSprite::getSprite()
 	{
-		return img;
+		GuiSpriteInterface* tempSpr = spr.getPointer();
+		return tempSpr;
 	}
 
 	void GuiSprite::setXScale(double v)
@@ -193,11 +210,12 @@ namespace glib
 
 	void GuiSprite::solveBoundingBox()
 	{
-		if(img != nullptr)
+		GuiSpriteInterface* tempSpr = spr.getPointer();
+		if(tempSpr != nullptr)
 		{
-			if(index < img->getSize())
+			if(index < tempSpr->getSize())
 			{
-				GuiImageInterface temp = img->getImage(index);
+				GuiImageInterface temp = tempSpr->getImage(index);
 				boundingBox = Box2D(x, y, x+temp.getWidth(), y+temp.getHeight());
 			}
 			else
@@ -224,7 +242,14 @@ namespace glib
 			{
 				if(it->first == "src")
 				{
-					img = GuiGraphicsInterface::createSprite(it->second);
+					//check if in resources by name.
+					spr = GuiResourceManager::getResourceManager().getSprite(it->second);
+					if(spr.getPointer() == nullptr)
+					{
+						//create it
+						GuiResourceManager::getResourceManager().addSprite( GuiGraphicsInterface::createSprite(it->second), it->second, false );
+						spr = GuiResourceManager::getResourceManager().getSprite(it->second);
+					}
 				}
 				else if(it->first == "width")
 				{
@@ -251,10 +276,12 @@ namespace glib
 			}
 		}
 
-		if(img != nullptr)
+		GuiSpriteInterface* tempSpr = spr.getPointer();
+
+		if(tempSpr->getSprite() != nullptr)
 		{
-			if(img->getSize() > 0)
-				boundingBox = Box2D(x, y, x+img->getImage(0).getWidth(), y+img->getImage(0).getHeight());
+			if(tempSpr->getSize() > 0)
+				boundingBox = Box2D(x, y, x+tempSpr->getImage(0).getWidth(), y+tempSpr->getImage(0).getHeight());
 		}
 	}
 

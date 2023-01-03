@@ -28,12 +28,9 @@ namespace glib
          * @param list 
          * @param size 
          * @param compareFunc 
-         *      If set to nullptr, performs a < b.
-         *          a < b must be defined for the the template type T.
-         *      Default is nullptr.
          */
         template<typename T>
-        static void insertionSort(T* list, size_t size, std::function<bool(T,T)> compareFunc = nullptr);
+        static void insertionSort(T* list, size_t size, std::function<bool(T,T)> compareFunc);
         
         template<typename T>
         static void insertionSort(T* list, size_t size);
@@ -45,12 +42,9 @@ namespace glib
          * @param list 
          * @param size 
          * @param compareFunc 
-         *      If set to nullptr, performs a < b.
-         *          a < b must be defined for the the template type T.
-         *      Default is nullptr.
          */
         template<typename T>
-        static void quickSort(T* list, size_t size, std::function<bool(T,T)> compareFunc = nullptr);
+        static void quickSort(T* list, size_t size, std::function<bool(T,T)> compareFunc);
 
         template<typename T>
         static void quickSort(T* list, size_t size);

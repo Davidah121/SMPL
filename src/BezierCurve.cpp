@@ -100,7 +100,7 @@ namespace glib
 			b1.addPoint(pointsForFirst[i]);
 		}
 
-		for(int i=(int)pointsForLast.size()-1; i>=0; i--)
+		for(long i=(long)pointsForLast.size()-1; i>=0; i--)
 		{
 			b2.addPoint(pointsForLast[i]);
 		}

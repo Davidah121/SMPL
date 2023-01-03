@@ -186,7 +186,8 @@ namespace glib
 				//Font Stuff
 				GuiGraphicsInterface::setColor(cursorBlinkColor);
 				std::string testText = textElement.getTextRef();
-				GuiFontInterface* fInt = (textElement.getFont() != nullptr) ? textElement.getFont() : GuiGraphicsInterface::getFont();
+
+				GuiFontInterface* fInt = textElement.getFont();
 				Font* f = fInt->getFont();
 
 				if(f == nullptr)
@@ -202,8 +203,11 @@ namespace glib
 				cursorPos.x += xOffsetForText;
 				cursorPos.y += yOffsetForText;
 				
-				GuiGraphicsInterface::drawRect((int)MathExt::round(x+cursorPos.x), (int)MathExt::round(y+cursorPos.y),
-											(int)MathExt::round(x+cursorPos.x+cursorWidth), (int)MathExt::round(y+cursorPos.y+f->getVerticalAdvance()), false);
+				int tx = textElement.getX();
+				int ty = textElement.getY();
+				
+				GuiGraphicsInterface::drawRect((int)MathExt::round(tx+cursorPos.x), (int)MathExt::round(ty+cursorPos.y),
+											(int)MathExt::round(tx+cursorPos.x+cursorWidth), (int)MathExt::round(ty+cursorPos.y+f->getVerticalAdvance()), false);
 			}
 		}
 		
@@ -501,7 +505,7 @@ namespace glib
 
 	void GuiTextBox::mouseInput()
 	{
-		GuiFontInterface* fInt = (textElement.getFont() != nullptr) ? textElement.getFont() : GuiGraphicsInterface::getFont();
+		GuiFontInterface* fInt = textElement.getFont();
 		Font* f = fInt->getFont();
 		std::string temp = textElement.getText();
 
@@ -659,7 +663,7 @@ namespace glib
 
 	void GuiTextBox::selectionCleanup()
 	{
-		GuiFontInterface* fInt = (textElement.getFont() != nullptr) ? textElement.getFont() : GuiGraphicsInterface::getFont();
+		GuiFontInterface* fInt = textElement.getFont();
 		std::string tempText = textElement.getText();
 		Font* f = fInt->getFont();
 		
@@ -687,8 +691,8 @@ namespace glib
 		cursorPos += Vec2f(xOffsetForText, yOffsetForText);
 
 		//Introduce a buffer to allow the text to move before hitting the edge.
-		int rightBuffer = 4;
-		int bottomBuffer = f->getVerticalAdvance();
+		int rightBuffer = 4 + textElement.getBaseX();
+		int bottomBuffer = f->getVerticalAdvance() + textElement.getBaseY();
 		if(!textElement.getAllowTextWrap())
 		{
 			if(cursorPos.x < 0)

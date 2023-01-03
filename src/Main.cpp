@@ -5,10 +5,12 @@
 #include "SpatialHashing.h"
 #include "IniFile.h"
 #include "VectorFont.h"
+#include "BitmapFont.h"
 #include "Network.h"
 #include "Input.h"
 #include <stdlib.h>
 #include <atomic>
+#include "ResourceManager.h"
 
 using namespace glib;
 
@@ -100,9 +102,11 @@ void testVectorFont()
 void testFontDrawing()
 {
     SimpleGraphics::init();
-    glib::Font* bitmapFont = SimpleGraphics::getDefaultFont(0);
+    glib::BitmapFont bitmapFont = glib::BitmapFont("SVGFonts/arialBLK_1.fnt");
+    SimpleGraphics::setFont(&bitmapFont);
+    // glib::Font* bitmapFont = SimpleGraphics::getDefaultFont(0);
 
-    FontCharInfo bfci = bitmapFont->getFontCharInfo( bitmapFont->getCharIndex('o') );
+    FontCharInfo bfci = bitmapFont.getFontCharInfo( bitmapFont.getCharIndex('T') );
     StringTools::println("FontInfo: %d, %d, %d, %d, %d", bfci.width, bfci.height, bfci.horizAdv, bfci.xOffset, bfci.yOffset);
     
     Image img = Image(128, 128);
@@ -119,7 +123,7 @@ void testFontDrawing()
     SimpleGraphics::drawText("This is some text", 0, 0, &img2);
     img2.savePNG("TestImg2.png");
 
-    FontCharInfo fci = vF.getFontCharInfo( vF.getCharIndex('o') );
+    FontCharInfo fci = vF.getFontCharInfo( vF.getCharIndex('T') );
     double scaleV = (double)vF.getFontSize() / vF.getOriginalFontSize();
     StringTools::println("FontInfo2: %d, %d, %d, %d, %d", fci.width, fci.height, fci.horizAdv, fci.xOffset, fci.yOffset);
     StringTools::println("FontInfo3: %.3f, %.3f, %.3f, %.3f, %.3f", fci.width/scaleV, fci.height/scaleV, fci.horizAdv/scaleV, fci.xOffset/scaleV, fci.yOffset/scaleV);
@@ -129,7 +133,7 @@ void testFontDrawing()
 void testOTFLoading()
 {
     VectorFont f = VectorFont();
-    f.load("C:/Windows/Fonts/Arial/arial.ttf");
+    f.load("C:/Windows/Fonts/calibri.ttf");
 }
 
 void testAddressSanitizer()
@@ -158,6 +162,49 @@ void testPerformanceCounters()
     StringTools::println("%.3f", System::getTotalCpuUsage());
 }
 
+void testBase64()
+{
+    SimpleFile f = SimpleFile("Base64Stuff.txt", SimpleFile::READ);
+    auto c = f.readFullFileAsBytes();
+    auto d = StringTools::base64Decode(c);
+    StringTools::println("%llu, %llu", c.size(), d.size());
+    f.close();
+
+    SimpleFile f2 = SimpleFile("CMM.db", SimpleFile::WRITE);
+    f2.writeBytes((unsigned char*)d.data(), d.size());
+    f2.close();
+
+}
+
+void testResourceManager()
+{
+    ResourceManager<Image> imageManager = ResourceManager<Image>();
+    imageManager.addResource(new Image(32, 32), "TestImg1", false);
+    imageManager.addResource(new Image(32, 32), "TestImg2", false);
+    imageManager.addResource(new Image(32, 32), "TestImg3", false);
+    imageManager.addResource(imageManager.getResource("TestImg1").getPointer(), "TestImg1", false);
+
+    StringTools::println("%llu", imageManager.size());
+    StringTools::println("%p", imageManager.getResource("TestImg1").getRawPointer());
+    StringTools::println("%p", imageManager.getResource("TestImg2").getRawPointer());
+    StringTools::println("%p", imageManager.getResource("TestImg3").getRawPointer());
+    StringTools::println("%p", imageManager.getResource("TestImg4").getRawPointer());
+    
+    imageManager.clear();
+    StringTools::println("EARLY CLEAR");
+}
+
+void testCompression()
+{
+    Sprite img = Sprite();
+    img.loadImage("testOutput.gif");
+    
+    if(img.getSize() > 0)
+    {
+        img.getImage(0)->saveGIF("TestSave.gif", 256, false, false);
+    }
+}
+
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main(int argc, char** argv)
 {
@@ -170,6 +217,11 @@ int main(int argc, char** argv)
     // testAddressSanitizer();
     // testDialogBox();
 
-    testPerformanceCounters();
+    // testPerformanceCounters();
+    // testBase64();
+
+    // testResourceManager();
+
+    testCompression();
     return 0;
 }

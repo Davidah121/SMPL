@@ -30,6 +30,16 @@
 				"isDefault": true
 			},
 			"problemMatcher": []
+		},
+		{
+			"label": "Unit Test Library",
+			"type": "shell",
+			"command": "${workspaceFolder}/test/build.bat",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": []
 		}
 	]
 }

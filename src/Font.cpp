@@ -38,6 +38,7 @@ namespace glib
 		if (index >= 0 && index < charInfoList.size())
 		{
 			double scaleVal = (double)fontSize / originalFontSize;
+
 			FontCharInfo nFCI = charInfoList[index];
 			nFCI.x = (int)MathExt::round(nFCI.x * scaleVal);
 			nFCI.y = (int)MathExt::round(nFCI.y * scaleVal);

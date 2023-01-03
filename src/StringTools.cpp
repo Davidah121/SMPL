@@ -647,9 +647,41 @@ namespace glib
 		{
 			if(bytes[i] != '=')
 			{
+				//Line breaks can sometimes exist in the base64 data even though the standard does not specify it.
+				//Other base64 decoders fail due to this.
+				//Also, the line breaks are written in plain text instead of the byte for a line break
+				if(bytes[i] == '\\')
+				{
+					if(i < size-1)
+					{
+						if(bytes[i+1] == 'n')
+						{
+							continue;
+						}
+					}
+					else
+					{
+						// StringTools::println("ERROR AT %x for %x", i, bytes[i]);
+						return {}; //Error
+					}
+				}
+				else if(bytes[i] == 'n')
+				{
+					if(i>0)
+					{
+						if(bytes[i-1] == '\\')
+						{
+							continue;
+						}
+					}
+				}
+
 				int charToNum = base64CharToNum(bytes[i]);
 				if(charToNum < 0)
+				{
+					// StringTools::println("ERROR AT %x for %x", i, bytes[i]);
 					return {}; //error
+				}
 				
 				temp = temp << 6;
 				temp += charToNum;

@@ -203,6 +203,15 @@ namespace glib
 		void clear();
 
 		/**
+		 * @brief Set the Number Of Bits stored.
+		 * 		This is useful if the data was set to be an array of bytes but you know the
+		 * 		exact number of bits it actually stores. (Ex: an array of 4 bytes but only 13 bits are used)
+		 * 
+		 * 		This is a work around and is here for performance reasons only.
+		 */
+		void setNumberOfBits(size_t n);
+
+		/**
 		 * @brief Sets the bit order to either LMSB or RMSB.
 		 * 		This adjusts how the function getBit will work but does not
 		 * 		change how the data is stored or how data is added to it.

@@ -13,6 +13,11 @@ namespace glib
 		unsigned char green = 0;
 		unsigned char blue = 0;
 		unsigned char alpha = 0;
+
+		bool const operator==(const Color& o)
+		{
+			return memcmp(this, &o, sizeof(Color)) == 0;
+		}
 	};
 
 	class ColorPalette : public Object

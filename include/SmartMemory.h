@@ -21,7 +21,7 @@ public:
 
     ~StaticMemManager()
     {
-        glib::StringTools::println("DELETE ALL DATA");
+        // glib::StringTools::println("DELETE ALL DATA");
         std::vector<MemClassification<T>> pArr;
         for(auto it = pointerData.begin(); it != pointerData.end(); it++)
         {
@@ -32,6 +32,7 @@ public:
         {
             if(memory.dataPointer != nullptr)
             {
+                // StringTools::println("LATE DELETE: %p", memory.dataPointer);
                 if(memory.array)
                     delete[] memory.dataPointer;
                 else
@@ -88,13 +89,13 @@ public:
             {
                 deleteRights = true;
                 memoryStuff.pointerData.insert( {hashValue, array} );
-                glib::StringTools::println("Added %p", hashValue);
+                // glib::StringTools::println("Added %p", hashValue);
             }
             else
             {
                 deleteRights = false;
                 it->second = array;
-                glib::StringTools::println("Copied %p", hashValue);
+                // glib::StringTools::println("Copied %p", hashValue);
             }
         }
 
@@ -156,7 +157,7 @@ public:
             auto it = memoryStuff.pointerData.find(hashValue);
             if(it != memoryStuff.pointerData.end())
             {
-                return (T*)*it;
+                return hashValue;
             }
             else
             {
@@ -224,7 +225,7 @@ private:
             auto it = memoryStuff.pointerData.find(hashValue);
             if(it != memoryStuff.pointerData.end())
             {
-                glib::StringTools::println("Delete hashValue %p", hashValue);
+                // glib::StringTools::println("Delete hashValue %p", hashValue);
 
                 if(it->second == true)
                     delete[] (T*)hashValue;
@@ -233,9 +234,12 @@ private:
                 
                 memoryStuff.pointerData.erase(hashValue);
             }
-
-            hashValue = nullptr;
         }
+        else
+        {
+            // glib::StringTools::println("Soft Delete");
+        }
+        hashValue = nullptr;
     }
 
     bool deleteRights = false;

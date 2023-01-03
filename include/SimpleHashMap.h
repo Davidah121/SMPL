@@ -506,7 +506,8 @@ namespace glib
         size_t bucketLocation = hasher(key) % buckets.size();
         HashPair<K,T>* collection = nullptr;
 
-        for(size_t i=buckets[bucketLocation].size()-1; i>=0; i--)
+        long startLoc = ((long)buckets[bucketLocation].size())-1;
+        for(long i=startLoc; i>=0; i--)
         {
             if(buckets[bucketLocation][i]->key == key)
             {
@@ -575,7 +576,8 @@ namespace glib
         std::vector<HashPair<K,T>*> collection;
         int currCount = 0;
 
-        for(size_t i=buckets[bucketLocation].size()-1; i>=0; i--)
+        long startLoc = ((long)buckets[bucketLocation].size())-1;
+        for(long i=startLoc; i>=0; i--)
         {
             if(buckets[bucketLocation][i]->key == key)
             {
@@ -621,13 +623,12 @@ namespace glib
 
             if(count > 0)
             {
-                size_t totalSize = buckets[bucketLocation].size();
-
-                for(size_t i=totalSize-1; i>=0; i--)
+                long totalSize = (long)buckets[bucketLocation].size();
+                for(long i=totalSize-1; i>=0; i--)
                 {
                     if(buckets[bucketLocation][i] == nullptr)
                     {
-                        for(size_t j=i; j<totalSize-1; j++)
+                        for(long j=i; j<totalSize-1; j++)
                         {
                             HashPair<K,T>* temp = buckets[bucketLocation][j];
                             buckets[bucketLocation][j] = buckets[bucketLocation][j+1];
@@ -656,9 +657,14 @@ namespace glib
         {
             for(size_t j=0; j<buckets[i].size(); j++)
             {
-                delete buckets[i][j];
+                if(buckets[i][j] == nullptr)
+                {
+                    delete buckets[i][j];
+                }
             }
+            buckets[i].clear();
         }
+
         // buckets.clear(); //Need the buckets still
         // size_t t2 = System::getCurrentTimeMicro();
         // System::dbtime[4] += t2-t1;

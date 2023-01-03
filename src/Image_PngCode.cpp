@@ -252,8 +252,8 @@ namespace glib
 		Compression::compressDeflate(&compressedData, scanLines.data(), scanLines.size(), blocks, 7, strongCompression);
 		
 		std::vector<unsigned char> binarySetBytes = compressedData.getByteRef();
-		size_t byteOffset = 0;
-		size_t maxIDATSize = 0x2000; //Force all IDAT headers to be at most 8192 bytes so libpng doesn't freak out.
+		long byteOffset = 0;
+		long maxIDATSize = 0x2000; //Force all IDAT headers to be at most 8192 bytes so libpng doesn't freak out.
 		// int totalIDAT = ceil((double)binarySetBytes.size() / maxIDATSize); //Not used
 		
 		//3078
@@ -264,7 +264,7 @@ namespace glib
 			//length
 			int fullSize = 0;
 			bool lastBlock = false;
-			size_t readSize = min(binarySetBytes.size() - byteOffset, maxIDATSize);
+			long readSize = min((long)binarySetBytes.size() - byteOffset, maxIDATSize);
 			
 			if(readSize < maxIDATSize)
 			{
@@ -298,7 +298,7 @@ namespace glib
 				IDATHeader += 0b00000001;
 			}
 
-			for(size_t j = 0; j < readSize; j++)
+			for(long j = 0; j < readSize; j++)
 			{
 				IDATHeader += (char)binarySetBytes[byteOffset];
 				byteOffset++;

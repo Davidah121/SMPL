@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include "Tree.h"
 #include "BinaryTree.h"
 #include "BinarySet.h"
 #include "FrequencyTable.h"
@@ -30,6 +31,222 @@ namespace glib
 		int v2;	//backwards distance if not literal; otherwise 0
 	};
 
+	struct streamSavedData
+	{
+		int type;
+		union unknown
+		{
+			unsigned char bytes[16]; //16 bytes to do whatever may be neeeded
+		};
+		union rle
+		{
+			unsigned char byte;
+			unsigned char length;
+		};
+		union lzw
+		{
+			//Using Linear LZW approach so each step should be constant
+			Tree<int>* dictionaryTree;
+			TreeNode<int>* lastTreeNode;
+			int count;
+		};
+		union lzss
+		{
+
+		};
+		union deflate
+		{
+
+		};
+	};
+
+	class StreamCompressionRLE
+	{
+	public:
+		static const bool TYPE_COMPRESSION = false;
+		static const bool TYPE_DECOMPRESSION = true;
+		
+		/**
+		 * @brief Construct a new Stream Compression object for RunLengthEncoding
+		 * 		Can be created to compress or decompress data as a stream instead of all at once.
+		 * 
+		 * @param mode 
+		 * 		Valid values are:		
+		 * 			TYPE_COMPRESSION
+		 * 			TYPE_DECOMPRESSION 
+		 */
+		StreamCompressionRLE(bool mode);
+
+		/**
+		 * @brief Destroy the Stream Compression object for RunLengthEncoding
+		 * 		This clears the saved buffer.
+		 * 
+		 */
+		~StreamCompressionRLE();
+		
+		/**
+		 * @brief Adds new data to be compressed or decompressed.
+		 * 		The size of the buffer may or may not change depending on the value input and
+		 * 		the mode set.
+		 * 
+		 * @param data 
+		 * @param length 
+		 */
+		void addData(unsigned char* data, int length);
+
+		/**
+		 * @brief Gets the Buffer of bytes saved by the object. This represents the compressed
+		 * 		data or decompressed data so far. It can be read from here and stored in another
+		 * 		place as necessary.
+		 * 
+		 * @return std::vector<unsigned char>& 
+		 */
+		std::vector<unsigned char>& getBuffer();
+
+		/**
+		 * @brief Clears the internal buffer of bytes saved by the object. That buffer represents
+		 * 		the compressed data or decompressed data so far. This can be cleared to maintain
+		 * 		space as necessary. It should be cleared after reading the buffer or at least copying
+		 * 		the buffer as to not lose data.
+		 * 
+		 */
+		void clearBuffer();
+
+		/**
+		 * @brief Returns the size in bytes of the internal buffer saved by the object.
+		 * 
+		 * @return size_t 
+		 */
+		size_t size();
+
+	private:
+		void addDataCompression(unsigned char* data, int length);
+		void addDataDecompression(unsigned char* data, int length);
+
+		bool mode = TYPE_COMPRESSION;
+		unsigned char byte = 0;
+		unsigned char run = 0;
+		std::vector<unsigned char> buffer = std::vector<unsigned char>();
+		
+	};
+
+	class StreamCompressionLZW
+	{
+	public:
+		static const bool TYPE_COMPRESSION = false;
+		static const bool TYPE_DECOMPRESSION = true;
+
+		/**
+		 * @brief Construct a new Stream Compression object for LZW compression or decompression.
+		 * 		Mode changes whether to use it for compression or decompression.
+		 * 		CodeSize controls the size of the base dictionary needed by LZW.
+		 * 
+		 * @param mode 
+		 * @param codeSize 
+		 */
+		StreamCompressionLZW(bool mode, int codeSize);
+
+		/**
+		 * @brief Destroy the Stream Compression object for LZW
+		 * 		This clears the saved buffer.
+		 */
+		~StreamCompressionLZW();
+		
+		/**
+		 * @brief Adds data to be either compressed or decompressed based on the mode of the object.
+		 * 		The buffer may or may not change based on the data added and mode set.
+		 * 
+		 * @param data 
+		 * @param length 
+		 */
+		void addData(unsigned char* data, int length);
+
+		/**
+		 * @brief Gets the Buffer of bytes saved by the object. This represents the compressed
+		 * 		data or decompressed data so far. It can be read from here and stored in another
+		 * 		place as necessary.
+		 * 		Here, it is a BinarySet since the data does not have to be exactly divisible by 8.
+		 * 		The buffer may not have an even number of bytes so it should be written out as bits
+		 * 		to preserve what the original data would have been.
+		 * 		
+		 * 		If mode is TYPE_COMPRESSED, the data is not guareenteed to be divisible by 8.
+		 * 		If mode is TYPE_DECOMPRESSED, the data is guareenteed to be divisible by 8.
+		 * 
+		 * @return BinarySet& 
+		 */
+		BinarySet& getBuffer();
+
+		/**
+		 * @brief Marks the end of the data needed to be compressed. This is required by LZW compression
+		 * 		so that it can signal the decompressor when to stop.
+		 * 
+		 */
+		void addEndData();
+
+		/**
+		 * @brief Adds a clear dictionary code into the buffer manually. This is not required
+		 * 		as the addData function handles it but this can be used to force the dictionary
+		 * 		to clear.
+		 * 		Useful when concatenate buffers together into one valid stream.
+		 * 
+		 */
+		void addClearDictionary();
+
+		/**
+		 * @brief Gets whether the object has been signaled that it has reached the end of the data to compress
+		 * 		or decompress. If true, addData() will no longer do anything.
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
+		bool getEndData();
+
+		/**
+		 * @brief Clears the internal buffer used that represents the compressed or decompressed data so far.
+		 * 
+		 */
+		void clearBuffer();
+
+		/**
+		 * @brief Returns the size of the internal buffer in bytes.
+		 * 		This will always be greater than or equal to the amount of bits actually used.
+		 * 		To get the number of bits used, get it from the getBuffer() function.
+		 * 
+		 * @return size_t 
+		 */
+		size_t size();
+		
+
+	private:
+		void addDataCompression(unsigned char* data, int length);
+		void addDataDecompression(unsigned char* data, int length);
+		void buildBaseDictionaryTree(int codeSize);
+
+		//Compression Stuff
+		Tree<int> currentTree = Tree<int>();
+		TreeNode<int>* lastTreeNode = nullptr;
+
+		//Decompression Stuff
+		std::vector<std::string> baseDictionary = std::vector<std::string>();
+		std::vector<std::string> decompressionDictionary = std::vector<std::string>();
+		int previousIndex = -1;
+		size_t ignoreThis = 0;
+		
+		//General Stuff
+		int count = -1;
+		int baseCodeSize = -1;
+		int baseBits = 0;
+		int currBits = 0;
+		int clearDictionaryCode = -1;
+		int endOfDataLocation = -1;
+		bool isEndOfData = false;
+		bool started = false;
+
+		bool mode = TYPE_COMPRESSION;
+		BinarySet buffer = BinarySet();
+		BinarySet leftovers = BinarySet();
+	};
+
 	class Compression
 	{
 	public:
@@ -37,6 +254,11 @@ namespace glib
 		struct ExceededExpectedSizeError : public std::exception
 		{
 			const char* what() const noexcept { return "Error while decompressing data. Exceeded expected size."; }
+		};
+
+		struct InvalidDataStreamEndError : public std::exception
+		{
+			const char* what() const noexcept { return "Error while decompressing data. Invalid end to the data stream."; }
 		};
 		/**
 		 * @brief Compresses data using Run Length Encoding.
@@ -154,7 +376,6 @@ namespace glib
 		 * 		The original dictionary is still needed to fully decompress the data.
 		 */
 		static std::vector<unsigned char> decompressLZW(std::vector<unsigned char> data, int dictionarySize, size_t expectedSize = -1);
-
 
 		static std::vector<unsigned char> compressLZW(unsigned char* data, size_t size, int blocks, int codeSize);
 		static std::vector<unsigned char> compressLZW(std::vector<unsigned char> data, int blocks, int codeSize);

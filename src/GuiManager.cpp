@@ -27,9 +27,47 @@ namespace glib
 
 	bool GuiManager::loadElement(XmlNode* node, GuiInstance* parent)
 	{
-		if(node != nullptr)
+		if(node == nullptr)
+			return false;
+
+		if(StringTools::equalsIgnoreCase<char>(node->title, "SpriteResource"))
 		{
-			// GuiInstance* parentObj = parent; //Not used
+			//separate processing
+			std::pair<std::string, std::string> idPair = node->getAttribute("id");
+			std::pair<std::string, std::string> srcPair = node->getAttribute("src");
+			if(idPair.first == "id" && srcPair.first == "src")
+			{
+				//can probably load stuff
+				if(!idPair.second.empty() && !srcPair.second.empty())
+				{
+					//Unless the file is incorrect, should be in the resource list something
+					GuiResourceManager::getResourceManager().addSprite(GuiGraphicsInterface::createSprite(srcPair.second, graphicsInterfaceMode), idPair.second, false);
+					return true;
+				}
+			}
+			StringTools::println("ERROR LOADING SPRITE RESOURCE: No 'src' or 'id' specified");
+			return false;
+		}
+		else if(StringTools::equalsIgnoreCase<char>(node->title, "FontResource"))
+		{
+			//separate processing
+			std::pair<std::string, std::string> idPair = node->getAttribute("id");
+			std::pair<std::string, std::string> srcPair = node->getAttribute("src");
+			if(idPair.first == "id" && srcPair.first == "src")
+			{
+				//can probably load stuff
+				if(!idPair.second.empty() && !srcPair.second.empty())
+				{
+					//Unless the file is incorrect, should be in the resource list something
+					GuiResourceManager::getResourceManager().addFont(GuiGraphicsInterface::createFont(srcPair.second, graphicsInterfaceMode), idPair.second, false);
+					return true;
+				}
+			}
+			StringTools::println("ERROR LOADING FONT RESOURCE: No 'src' or 'id' specified");
+			return false;
+		}
+		else
+		{
 			GuiInstance* thisIns = nullptr;
 
 			auto it = elementLoadingFunctions.find(node->title);
@@ -47,8 +85,7 @@ namespace glib
 			//add to list
 			addElement(thisIns);
 			addToDeleteList(thisIns);
-			
-			
+
 			for(XmlNode* n : node->childNodes)
 			{
 				bool successful = loadElement(n, thisIns);
@@ -61,8 +98,7 @@ namespace glib
 
 			return true;
 		}
-
-		return false;
+		
 	}
 
 	void GuiManager::loadElementsFromFile(File f)

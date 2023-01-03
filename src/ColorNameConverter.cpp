@@ -18,14 +18,14 @@ namespace glib
     Color ColorNameConverter::NameToColor(std::string n)
     {
         std::string lowerString = StringTools::toLowercase(n);
-        Color p = {0,0,0,255};
+        Color p = {0,0,0,0};
         try
         {
             p = colorNamePair.at(lowerString);
         }
         catch(const std::exception& e)
         {
-            std::cerr << e.what() << '\n';
+            // std::cerr << e.what() << '\n';
         }
         return p;
     }
