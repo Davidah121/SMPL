@@ -316,26 +316,26 @@ namespace glib
 
     void Sound::setLoopStart(size_t index)
     {
-        loopStart = MathExt::clamp(index, 0ull, length);
+        loopStart = MathExt::clamp<size_t>(index, 0ull, length);
     }
 
     void Sound::setLoopStart(double time)
     {
         //time in seconds
         size_t actualIndex = (size_t)(time * 44100);
-        loopStart = MathExt::clamp(actualIndex, 0ull, length);
+        loopStart = MathExt::clamp<size_t>(actualIndex, 0ull, length);
     }
 
     void Sound::setLoopEnd(size_t index)
     {
-        loopEnd = MathExt::clamp(index, 0ull, length);
+        loopEnd = MathExt::clamp<size_t>(index, 0ull, length);
     }
 
     void Sound::setLoopEnd(double time)
     {
         //time in seconds
         size_t actualIndex = (size_t)(time * 44100);
-        loopEnd = MathExt::clamp(actualIndex, 0ull, length);
+        loopEnd = MathExt::clamp<size_t>(actualIndex, 0ull, length);
     }
 
     void Sound::setData(Vec2f* data, size_t size, bool isShallowCopy)
