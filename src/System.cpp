@@ -46,8 +46,10 @@ namespace glib
 	//Non static but global
 	std::mutex lock;
 	
+	#ifdef _WIN32
 	PDH_HQUERY cpuQuery;
 	PDH_HCOUNTER cpuTotal;
+	#endif
 
 	void System::init()
 	{
