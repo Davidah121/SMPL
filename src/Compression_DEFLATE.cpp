@@ -59,6 +59,7 @@ namespace glib
 			return;
 		}
 		
+		
 		//for all bytes, try to match it in the hashmap.
 		//Get 3 bytes and try to find it in the hashmap. If found, try and find match.
 		//If not found, add the 3 values to the hashmap and write the first byte to the output
@@ -160,6 +161,126 @@ namespace glib
 		}
 		map.clear();
 		
+
+		// //Try another method
+		// size_t t1,t2;
+
+		// t1 = System::getCurrentTimeMicro();
+		// LinkedList<unsigned int>* hashmap = new LinkedList<unsigned int>[1<<24]; //Note that even though std::list exists, it is slower than this
+		// t2 = System::getCurrentTimeMicro();
+		// StringTools::println("TIME TO CREATE: %llu", t2-t1);
+
+
+		
+		// t1 = System::getCurrentTimeMicro();
+		// int i = 0;
+		// while(i < size-2)
+		// {
+		// 	int startLoc = i;
+		// 	int loc = data[i] + ((int)data[i+1]<<8) + ((int)data[i+2]<<16);
+		// 	int minDis = __max(i-maxDistance, 0);
+		// 	//get all matches in hashmap
+		// 	LinkNode<unsigned int>* ref = hashmap[loc].getRootNode();
+			
+		// 	if(ref != nullptr)
+		// 	{
+		// 		//go through all ref locations and try to match
+		// 		int bestLength = 0;
+		// 		int bestLocation = 0;
+		// 		int bucketSize = 0;
+		// 		while(ref != nullptr)
+		// 		{
+		// 			unsigned int startIndex = ref->value;
+		// 			auto oldRef = ref;
+		// 			ref = ref->nextNode;
+		// 			bucketSize++;
+
+		// 			if(startIndex >= minDis)
+		// 			{
+		// 				//okay
+		// 				//try to match as many as possible
+		// 				int k = 3;
+		// 				int maxLength = __min(size-startIndex, 258);
+		// 				while(k < maxLength)
+		// 				{
+		// 					if(data[i+k] != data[startIndex+k])
+		// 					{
+		// 						break;
+		// 					}
+		// 					k++;
+		// 				}
+		// 				if(bestLength < k)
+		// 				{
+		// 					bestLength = k;
+		// 					bestLocation = startIndex;
+		// 				}
+		// 				if(bestLength >= 258)
+		// 					break;
+		// 			}
+		// 			else
+		// 			{
+		// 				hashmap[loc].removeNode(oldRef);
+		// 				bucketSize--;
+		// 			}
+		// 		}
+
+		// 		if(bucketSize > 8)
+		// 		{
+		// 			for(int j=bucketSize; j!=8; j--)
+		// 			{
+		// 				hashmap[loc].removeNode( hashmap[loc].getRootNode() );
+		// 			}
+		// 		}
+
+		// 		if(bestLength != 0)
+		// 		{
+		// 			//add current match to hashmap
+		// 			hashmap[loc].addNode(startLoc);
+		// 			//add keys for points past i
+		// 			// int endLoc = bestLength+bestLocation-2;
+		// 			for(int j=i+1; j<i+bestLength-2; j++)
+		// 			{
+		// 				int nKey = data[j] + ((int)data[j+1]<<8) + ((int)data[j+2]<<16);
+		// 				hashmap[nKey].addNode(j);
+		// 			}
+
+		// 			//add reference
+		// 			outputData->push_back( {false, bestLength, i-bestLocation} );
+		// 			i+=bestLength;
+		// 		}
+		// 		else
+		// 		{
+		// 			//add literal
+		// 			outputData->push_back( {true, data[i], 0} );
+		// 			i++;
+		// 			//add current match to hashmap
+		// 			hashmap[loc].addNode(startLoc);
+		// 		}
+		// 	}
+		// 	else
+		// 	{
+		// 		//add literal
+		// 		outputData->push_back( {true, data[i], 0} );
+		// 		i++;
+		// 		//add current match to hashmap
+		// 		hashmap[loc].addNode(startLoc);
+		// 	}
+
+		// }
+		
+		// int remainder = size - i;
+		// for(int j=0; j<remainder; j++)
+		// {
+		// 	outputData->push_back( {true, data[i+j], 0} );
+		// }
+		
+		// t2 = System::getCurrentTimeMicro();
+		// StringTools::println("TIME TO COMPRESS: %llu", t2-t1);
+
+		// t1 = System::getCurrentTimeMicro();
+		// delete[] hashmap;
+		// t2 = System::getCurrentTimeMicro();
+		// StringTools::println("TIME TO CLEAN: %llu", t2-t1);
 	}
 
 	void Compression::compressDeflateSubFunction2(std::vector<lengthPair>* block, BinarySet* output, bool dynamic, bool lastBlock)
@@ -843,6 +964,14 @@ namespace glib
 			#endif
 			return;
 		}
+		if(blocks == 1)
+		{
+			std::vector<lengthPair> info = std::vector<lengthPair>();
+			compressDeflateSubFunction(data, size, &info, compressionLevel);
+			compressDeflateSubFunction2(&info, outputData, customTable, true);
+			outputData->setAddBitOrder(BinarySet::LMSB);
+			return;
+		}
 		
 		int tSize = System::getNumberOfThreads();
 		std::vector<std::vector<lengthPair>> info = std::vector<std::vector<lengthPair>>(blocks);
@@ -1352,7 +1481,8 @@ namespace glib
 				{
 					//left
 					if(currNode->leftChild == nullptr)
-						currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
+						tree->setLeftNode(currNode, new BinaryTreeNode<HuffmanNode>());
+						// currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
 					
 					currNode = currNode->leftChild;
 				}
@@ -1360,7 +1490,8 @@ namespace glib
 				{
 					//right
 					if(currNode->rightChild == nullptr)
-						currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
+						tree->setRightNode(currNode, new BinaryTreeNode<HuffmanNode>());
+						// currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
 					
 					currNode = currNode->rightChild;
 				}
@@ -1384,7 +1515,8 @@ namespace glib
 				{
 					//left
 					if(currNode->leftChild == nullptr)
-						currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
+						tree->setLeftNode(currNode, new BinaryTreeNode<HuffmanNode>());
+						// currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
 					
 					currNode = currNode->leftChild;
 				}
@@ -1392,7 +1524,8 @@ namespace glib
 				{
 					//right
 					if(currNode->rightChild == nullptr)
-						currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
+						tree->setRightNode(currNode, new BinaryTreeNode<HuffmanNode>());
+						// currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
 					
 					currNode = currNode->rightChild;
 				}
@@ -1415,7 +1548,8 @@ namespace glib
 				{
 					//left
 					if(currNode->leftChild == nullptr)
-						currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
+						tree->setLeftNode(currNode, new BinaryTreeNode<HuffmanNode>());
+						// currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
 					
 					currNode = currNode->leftChild;
 				}
@@ -1423,7 +1557,8 @@ namespace glib
 				{
 					//right
 					if(currNode->rightChild == nullptr)
-						currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
+						tree->setRightNode(currNode, new BinaryTreeNode<HuffmanNode>());
+						// currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
 					
 					currNode = currNode->rightChild;
 				}
@@ -1446,7 +1581,8 @@ namespace glib
 				{
 					//left
 					if(currNode->leftChild == nullptr)
-						currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
+						tree->setLeftNode(currNode, new BinaryTreeNode<HuffmanNode>());
+						// currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
 					
 					currNode = currNode->leftChild;
 				}
@@ -1454,7 +1590,8 @@ namespace glib
 				{
 					//right
 					if(currNode->rightChild == nullptr)
-						currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
+						tree->setRightNode(currNode, new BinaryTreeNode<HuffmanNode>());
+						// currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
 					
 					currNode = currNode->rightChild;
 				}

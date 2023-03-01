@@ -685,7 +685,7 @@ namespace glib
 
         SimpleXml xmlData = SimpleXml(file);
 
-        if(xmlData.nodes.size() <= 0)
+        if(xmlData.getNodes().size() <= 0)
         {
             //unsuccessful
             return;
@@ -694,9 +694,9 @@ namespace glib
 
         XmlNode* rootColladaNode = nullptr;
         //Find COLLADA
-        for(XmlNode* currNode : xmlData.nodes)
+        for(XmlNode* currNode : xmlData.getNodes())
         {
-            if(StringTools::equalsIgnoreCase<char>(currNode->title, "COLLADA"))
+            if(StringTools::equalsIgnoreCase<char>(currNode->getTitle(), "COLLADA"))
             {
                 rootColladaNode = currNode;
                 break;
@@ -711,9 +711,9 @@ namespace glib
 
         //search for library_geometries
         XmlNode* libGeometryNodes = nullptr;
-        for(XmlNode* currNode : rootColladaNode->childNodes)
+        for(XmlNode* currNode : rootColladaNode->getChildNodes())
         {
-            if(StringTools::equalsIgnoreCase<char>(currNode->title, "library_geometries"))
+            if(StringTools::equalsIgnoreCase<char>(currNode->getTitle(), "library_geometries"))
             {
                 libGeometryNodes = currNode;
                 break;
@@ -727,24 +727,24 @@ namespace glib
         }
 
         //build geometry arrays
-        for(XmlNode* currNode : libGeometryNodes->childNodes)
+        for(XmlNode* currNode : libGeometryNodes->getChildNodes())
         {
             std::string name = "";
             std::vector<std::string> ids;
             std::string vertexSource = "";
             size_t currList = 0;
 
-            if(StringTools::equalsIgnoreCase<char>(currNode->title, "geometry"))
+            if(StringTools::equalsIgnoreCase<char>(currNode->getTitle(), "geometry"))
             {
-                auto nameAttrib = currNode->attributes.find("name");
-                if(nameAttrib != currNode->attributes.end())
-                    name = nameAttrib->second;
+                auto nameAttrib = currNode->getAttribute("name");
+                if(nameAttrib != nullptr)
+                    name = nameAttrib->data;
                 
                 XmlNode* meshNode = nullptr;
 
-                for(XmlNode* innerNode : currNode->childNodes)
+                for(XmlNode* innerNode : currNode->getChildNodes())
                 {
-                    if(StringTools::equalsIgnoreCase<char>(innerNode->title, "mesh"))
+                    if(StringTools::equalsIgnoreCase<char>(innerNode->getTitle(), "mesh"))
                     {
                         meshNode = innerNode;
                         break;
@@ -754,35 +754,37 @@ namespace glib
                 if(meshNode == nullptr)
                     continue;
                 
-                for(XmlNode* innerNode : meshNode->childNodes)
+                for(XmlNode* innerNode : meshNode->getChildNodes())
                 {
-                    if(StringTools::equalsIgnoreCase<char>(innerNode->title, "source"))
+                    if(StringTools::equalsIgnoreCase<char>(innerNode->getTitle(), "source"))
                     {
                         //make safe
                         unsigned char vertAttribType = 0;
 
-                        ids.push_back( innerNode->attributes["id"] );
+                        auto temp = innerNode->getAttribute("id");
+                        if(temp != nullptr)
+                            ids.push_back( temp->data );
                         
-                        XmlNode* accessorNode = innerNode->childNodes[1]->childNodes[0];
+                        XmlNode* accessorNode = innerNode->getChildNodes()[1]->getChildNodes()[0];
                         
-                        auto temp = accessorNode->attributes.find("stride");
-                        if(temp != accessorNode->attributes.end())
-                            vertAttribType = stoi(temp->second);
+                        temp = accessorNode->getAttribute("stride");
+                        if(temp != nullptr)
+                            vertAttribType = stoi(temp->data);
                         
                         
                         //add format information
-                        if(StringTools::equalsIgnoreCase<char>(innerNode->childNodes[0]->title, "float_array"))
+                        if(StringTools::equalsIgnoreCase<char>(innerNode->getChildNodes()[0]->getTitle(), "float_array"))
                         {
                             addVertexFormatInfo(vertAttribType, USAGE_OTHER);
                         }
-                        else if(StringTools::equalsIgnoreCase<char>(innerNode->childNodes[0]->title, "int_array"))
+                        else if(StringTools::equalsIgnoreCase<char>(innerNode->getChildNodes()[0]->getTitle(), "int_array"))
                         {
                             addVertexFormatInfo(TYPE_INT, USAGE_OTHER);
                             vertAttribType = 0;
                         }
                         
                         //add vertex attribute information
-                        std::vector<std::string> split = StringTools::splitString(innerNode->childNodes[0]->value, ' ');
+                        std::vector<std::string> split = StringTools::splitString(innerNode->getChildNodes()[0]->getValue(), ' ');
                         
                         for(std::string& v : split)
                         {
@@ -798,53 +800,55 @@ namespace glib
 
                         currList++;
                     }
-                    else if(StringTools::equalsIgnoreCase<char>(innerNode->title, "vertices"))
+                    else if(StringTools::equalsIgnoreCase<char>(innerNode->getTitle(), "vertices"))
                     {
-                        auto temp = innerNode->attributes.find("source");
-                        if(temp != innerNode->attributes.end())
-                            vertexSource = temp->second;
+                        auto temp = innerNode->getAttribute("source");
+                        if(temp != nullptr)
+                            vertexSource = temp->data;
                         
                     }
-                    else if(StringTools::equalsIgnoreCase<char>(innerNode->title, "triangles"))
+                    else if(StringTools::equalsIgnoreCase<char>(innerNode->getTitle(), "triangles"))
                     {
                         modelFormat = TRIANGLES;
                         XmlNode* lastParentNode = innerNode;
-                        for(XmlNode* childNodes : lastParentNode->childNodes)
+                        for(XmlNode* childNodes : lastParentNode->getChildNodes())
                         {
-                            if(StringTools::equalsIgnoreCase<char>(childNodes->title, "input"))
+                            if(StringTools::equalsIgnoreCase<char>(childNodes->getTitle(), "input"))
                             {
                                 //setting usage for the formats
                                 unsigned char usageNum = USAGE_OTHER;
                                 
-                                for(std::pair<std::string, std::string> attrib : childNodes->attributes)
+                                std::vector<HashPair<std::string, std::string>*> allAttribs = childNodes->getRawAttributes().getAll();
+
+                                for(HashPair<std::string, std::string>* attrib : allAttribs)
                                 {
-                                    if(StringTools::equalsIgnoreCase<char>(attrib.first, "semantic"))
+                                    if(StringTools::equalsIgnoreCase<char>(attrib->key, "semantic"))
                                     {
-                                        if(StringTools::equalsIgnoreCase<char>(attrib.second, "VERTEX"))
+                                        if(StringTools::equalsIgnoreCase<char>(attrib->data, "VERTEX"))
                                         {
                                             usageNum = USAGE_POSITION;
                                         }
-                                        else if(StringTools::equalsIgnoreCase<char>(attrib.second, "POSITION"))
+                                        else if(StringTools::equalsIgnoreCase<char>(attrib->data, "POSITION"))
                                         {
                                             usageNum = USAGE_POSITION;
                                         }
-                                        else if(StringTools::equalsIgnoreCase<char>(attrib.second, "NORMAL"))
+                                        else if(StringTools::equalsIgnoreCase<char>(attrib->data, "NORMAL"))
                                         {
                                             usageNum = USAGE_NORMAL;
                                         }
-                                        else if(StringTools::equalsIgnoreCase<char>(attrib.second, "TEXCOORD"))
+                                        else if(StringTools::equalsIgnoreCase<char>(attrib->data, "TEXCOORD"))
                                         {
                                             usageNum = USAGE_TEXTURE;
                                         }
                                     }
-                                    else if(StringTools::equalsIgnoreCase<char>(attrib.first, "source"))
+                                    else if(StringTools::equalsIgnoreCase<char>(attrib->key, "source"))
                                     {
                                         size_t index = 0;
                                         while(index < ids.size())
                                         {
                                             std::string testV = "#" + ids[index];
 
-                                            if(StringTools::equalsIgnoreCase<char>(attrib.second, testV))
+                                            if(StringTools::equalsIgnoreCase<char>(attrib->data, testV))
                                             {
                                                 break;
                                             }
@@ -858,10 +862,10 @@ namespace glib
                                     }
                                 }
                             }
-                            else if(StringTools::equalsIgnoreCase<char>(childNodes->title, "p"))
+                            else if(StringTools::equalsIgnoreCase<char>(childNodes->getTitle(), "p"))
                             {
                                 //index information
-                                std::vector<std::string> split = StringTools::splitString(childNodes->value, ' ');
+                                std::vector<std::string> split = StringTools::splitString(childNodes->getValue(), ' ');
 
                                 std::vector<unsigned int> tempIndexInfo;
                                 for(std::string& v : split)

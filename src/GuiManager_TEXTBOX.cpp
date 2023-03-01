@@ -829,7 +829,7 @@ namespace glib
 		boundingBox = Box2D(x, y, x+width, y+height);
 	}
 
-	void GuiTextBox::loadDataFromXML(std::unordered_map<std::string, std::string>& attributes)
+	void GuiTextBox::loadDataFromXML(SimpleHashMap<std::string, std::string>& attributes)
 	{
 		GuiInstance::loadDataFromXML(attributes);
 
@@ -837,55 +837,55 @@ namespace glib
 
 		for(size_t i=0; i<possibleNames.size(); i++)
 		{
-			auto it = attributes.find(possibleNames[i]);
-			if(it != attributes.end())
+			auto it = attributes.get(possibleNames[i]);
+			if(it != nullptr)
 			{
 				if(possibleNames[i] == "width")
 				{
-					this->width = std::abs(StringTools::toInt(it->second));
+					this->width = std::abs(StringTools::toInt(it->data));
 				}
 				else if(possibleNames[i] == "height")
 				{
-					this->height = std::abs(StringTools::toInt(it->second));
+					this->height = std::abs(StringTools::toInt(it->data));
 				}
 				else if(possibleNames[i] == "cursorblinktimer")
 				{
-					this->setCursorBlinkTimer(StringTools::toInt(it->second));
+					this->setCursorBlinkTimer(StringTools::toInt(it->data));
 				}
 				else if(possibleNames[i] == "cursorwidth")
 				{
-					this->cursorWidth = std::abs(StringTools::toInt(it->second));
+					this->cursorWidth = std::abs(StringTools::toInt(it->data));
 				}
 				else if(possibleNames[i] == "backgroundcolor")
 				{
 					//define as color name or rgba
-					this->backgroundColor = ColorNameConverter::NameToColor(it->second);
+					this->backgroundColor = ColorNameConverter::NameToColor(it->data);
 				}
 				else if(possibleNames[i] == "outlinecolor")
 				{
 					//define as color name or rgba
-					this->outlineColor = ColorNameConverter::NameToColor(it->second);
+					this->outlineColor = ColorNameConverter::NameToColor(it->data);
 				}
 				else if(possibleNames[i] == "focusoutlinecolor")
 				{
 					//define as color name or rgba
-					this->focusOutlineColor = ColorNameConverter::NameToColor(it->second);
+					this->focusOutlineColor = ColorNameConverter::NameToColor(it->data);
 				}
 				else if(possibleNames[i] == "cursorblinkcolor")
 				{
 					//define as color name or rgba
-					this->cursorBlinkColor = ColorNameConverter::NameToColor(it->second);
+					this->cursorBlinkColor = ColorNameConverter::NameToColor(it->data);
 				}
 				else if(possibleNames[i] == "allowlinebreaks")
 				{
-					this->allowLineBreaks = StringTools::equalsIgnoreCase<char>(it->second, "true");
+					this->allowLineBreaks = StringTools::equalsIgnoreCase<char>(it->data, "true");
 				}
 				else if(possibleNames[i] == "enablecontextmenu")
 				{
-					this->enableContextMenu( StringTools::equalsIgnoreCase<char>(it->second, "true") );
+					this->enableContextMenu( StringTools::equalsIgnoreCase<char>(it->data, "true") );
 				}
-
-				attributes.erase(possibleNames[i]);
+				
+				attributes.remove(it);
 			}
 		}
 		
@@ -900,7 +900,7 @@ namespace glib
 			textElement.setMaxHeight(height - textElement.getBaseY()*2 - 1);
 	}
 
-	GuiInstance* GuiTextBox::loadFunction(std::unordered_map<std::string, std::string>& attributes)
+	GuiInstance* GuiTextBox::loadFunction(SimpleHashMap<std::string, std::string>& attributes)
 	{
 		GuiTextBox* ins = new GuiTextBox(0, 0, 0, 0);
 		ins->loadDataFromXML(attributes);

@@ -302,5 +302,13 @@ namespace glib
 	{
 		return getPointAsParamtetricValue(p.x, p.y);
 	}
+	
+	Line Line::getPerpendicularBisector()
+	{
+		Vec2f midPoint = (point1+point2)/2;
+		Vec2f directionHalf = Vec2f(toPoint.y, -toPoint.x)/2;
+
+		return Line(midPoint + directionHalf, midPoint - directionHalf);
+	}
 
 } //NAMESPACE glib END

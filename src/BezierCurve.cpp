@@ -38,6 +38,64 @@ namespace glib
 		points.push_back(Vec2f(x, y));
 	}
 
+	bool BezierCurve::insertPoint(size_t index, Vec2f p)
+	{
+		if(index < points.size())
+		{
+			points.push_back(p);
+			for(int i=points.size()-1; i>=index; i--)
+			{
+				Vec2f temp = points[i-1];
+				points[i-1] = points[i];
+				points[i] = temp;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	bool BezierCurve::insertPoint(size_t index, double x, double y)
+	{
+		if(index < points.size())
+		{
+			points.push_back(Vec2f(x, y));
+			for(int i=points.size()-1; i>=index; i--)
+			{
+				Vec2f temp = points[i-1];
+				points[i-1] = points[i];
+				points[i] = temp;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	void BezierCurve::removePoint(size_t index)
+	{
+		if(index < points.size())
+		{
+			std::vector<Vec2f> nPoints;
+			for(int i=0; i<points.size(); i++)
+			{
+				if(i != index)
+					nPoints.push_back(points[i]);
+			}
+			points = nPoints;
+		}
+	}
+
+	void BezierCurve::setPoint(size_t index, Vec2f p)
+	{
+		if(index < points.size())
+			points[index] = p;
+	}
+
+	void BezierCurve::setPoint(size_t index, double x, double y)
+	{
+		if(index < points.size())
+			points[index] = Vec2f(x, y);
+	}
+
 	Vec2f BezierCurve::getPoint(size_t index)
 	{
 		if (index < points.size())
@@ -49,6 +107,11 @@ namespace glib
 			#endif
 		}
 		return Vec2f();
+	}
+
+	std::vector<Vec2f>& BezierCurve::getPoints()
+	{
+		return points;
 	}
 
 	std::vector<BezierCurve> BezierCurve::subdivide(double t)

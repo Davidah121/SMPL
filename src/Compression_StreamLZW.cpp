@@ -317,6 +317,10 @@ namespace glib
 		if(mode == TYPE_COMPRESSION)
 		{
 			//clear dictionary and start over
+			if(lastTreeNode != nullptr)
+			{
+				buffer.add(lastTreeNode->data, currBits);
+			}
 			buffer.add(clearDictionaryCode, currBits);
 			buildBaseDictionaryTree(baseCodeSize);
 			lastTreeNode = currentTree.getRoot();

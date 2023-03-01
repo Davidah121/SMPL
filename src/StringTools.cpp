@@ -1715,9 +1715,9 @@ namespace glib
 	void StringTools::clearConsole(bool clearScrollBuffer)
 	{
 		if(clearScrollBuffer)
-			StringTools::print("\x1B[2J\x1B[3J\x1B[H");
+			StringTools::print("\033[2J\033[3J\033[H");
 		else
-			StringTools::print("\x1B[2J\x1B[H");
+			StringTools::print("\033[2J\033[H");
 	}
 
 	void StringTools::moveConsoleCursor(int horizontal, int vertical, bool absolute)
@@ -1727,28 +1727,28 @@ namespace glib
 			int realHVal = (horizontal>=1) ? horizontal : 1;
 			int realVVal = (vertical>=1) ? vertical : 1;
 			
-			StringTools::print("\x1B[%d;%dH", realVVal, realHVal);
+			StringTools::print("\033[%d;%dH", realVVal, realHVal);
 		}
 		else
 		{
 			if(horizontal>0)
-				StringTools::print("\x1B[%dC", horizontal);
+				StringTools::print("\033[%dC", horizontal);
 			else if(horizontal<0)
-				StringTools::print("\x1B[%dD", std::abs(horizontal));
+				StringTools::print("\033[%dD", std::abs(horizontal));
 
 			if(vertical>0)
-				StringTools::print("\x1B[%dB", vertical);
+				StringTools::print("\033[%dB", vertical);
 			else if(vertical<0)
-				StringTools::print("\x1B[%dA", std::abs(vertical));
+				StringTools::print("\033[%dA", std::abs(vertical));
 		}
 	}
 
 	void StringTools::eraseConsoleLine(bool eraseFromCursor)
 	{
 		if(eraseFromCursor)
-			StringTools::print("\x1B[K");
+			StringTools::print("\033[K");
 		else
-			StringTools::print("\x1B[2K\r");
+			StringTools::print("\033[2K\r");
 	}
 
 	void StringTools::reroutOutput(std::wstreambuf* file)

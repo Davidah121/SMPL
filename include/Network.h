@@ -118,58 +118,6 @@ namespace glib
 		 * @return false 
 		 */
 		bool sendMessage(unsigned char* message, int size, int id=0);
-		
-		/**
-		 * @brief Receives a message from the specified connected IP.
-		 * 		Returns true if it was successful.
-		 * 		Continues to read until the null character is found specifying the end of the string.
-		 * 
-		 * @param message 
-		 * 		The string to receive the message.
-		 * @param id 
-		 * 		Which connection to receive from.
-		 * 		Client will always receive from 0.
-		 * 		Default is 0.
-		 * @return true 
-		 * @return false 
-		 */
-		bool receiveMessage(std::string& message, int id=0);
-
-		/**
-		 * @brief Receives a message from the specified connected IP.
-		 * 		Returns true if it was successful.
-		 * 		Continues to read until the buffer is filled or there is no more data to read.
-		 * 
-		 * @param buffer 
-		 * 		The buffer to receive the message.
-		 * @param maxBufferSize
-		 * 		The maximum size to read. 
-		 * @param id 
-		 * 		Which connection to receive from.
-		 * 		Client will always receive from 0.
-		 * 		Default is 0.
-		 * @return true 
-		 * @return false 
-		 */
-		bool receiveMessage(std::vector<unsigned char>& buffer, int id=0);
-
-		/**
-		 * @brief Receives a message from the specified connected IP.
-		 * 		Returns true if it was successful.
-		 * 		Continues to read until the buffer is filled or there is no more data to read.
-		 * 
-		 * @param buffer 
-		 * 		The buffer to receive the message.
-		 * @param bufferSize
-		 * 		The size of the buffer.
-		 * @param id 
-		 * 		Which connection to receive from.
-		 * 		Client will always receive from 0.
-		 * 		Default is 0.
-		 * @return true 
-		 * @return false 
-		 */
-		bool receiveMessage(unsigned char* buffer, int bufferSize, int id=0);
 
 		/**
 		 * @brief Sends a message to the specified connected IP.
@@ -186,11 +134,61 @@ namespace glib
 		 * @return false 
 		 */
 		bool sendMessage(char* message, int messageSize, int id=0);
+		
+		/**
+		 * @brief Receives a message from the specified connected IP.
+		 * 		Returns the number of bytes read if it was successful.
+		 * 			Returns -1 if unsuccessful
+		 * 		Continues to read until the null character is found specifying the end of the string.
+		 * 		
+		 * 		Resets the waiting on read flag.
+		 * 			This will cause further onDataAvailable calls when data is available.
+		 * 
+		 * @param message 
+		 * 		The string to receive the message.
+		 * @param id 
+		 * 		Which connection to receive from.
+		 * 		Client will always receive from 0.
+		 * 		Default is 0.
+		 * @return true 
+		 * @return false 
+		 */
+		int receiveMessage(std::string& message, int id=0, bool flagRead = true);
 
 		/**
 		 * @brief Receives a message from the specified connected IP.
-		 * 		Returns true if it was successful.
+		 * 		Returns the number of bytes read if it was successful.
+		 * 			Returns -1 if unsuccessful
 		 * 		Continues to read until the buffer is filled or there is no more data to read.
+		 * 
+		 * 		Resets the waiting on read flag.
+		 * 			This will cause further onDataAvailable calls when data is available.
+		 * 
+		 * @param buffer 
+		 * 		The buffer to receive the message.
+		 * @param maxBufferSize
+		 * 		The maximum size to read. 
+		 * @param id 
+		 * 		Which connection to receive from.
+		 * 		Client will always receive from 0.
+		 * 		Default is 0.
+		 * @param flagRead
+		 * 		If set to false, does not change the waiting on read flag.
+		 * 			This must be set by the programmer later.
+		 * 		By default, it is true.
+		 * 
+		 * @return int
+		 */
+		int receiveMessage(std::vector<unsigned char>& buffer, int id=0, bool flagRead = true);
+
+		/**
+		 * @brief Receives a message from the specified connected IP.
+		 * 		Returns the number of bytes read if it was successful.
+		 * 			Returns -1 if unsuccessful
+		 * 		Continues to read until the buffer is filled or there is no more data to read.
+		 * 
+		 * 		Resets the waiting on read flag.
+		 * 			This will cause further onDataAvailable calls when data is available.
 		 * 
 		 * @param buffer 
 		 * 		The buffer to receive the message.
@@ -200,16 +198,49 @@ namespace glib
 		 * 		Which connection to receive from.
 		 * 		Client will always receive from 0.
 		 * 		Default is 0.
+		 * @param flagRead
+		 * 		If set to false, does not change the waiting on read flag.
+		 * 			This must be set by the programmer later.
+		 * 		By default, it is true.
 		 * @return true 
 		 * @return false 
 		 */
-		bool receiveMessage(char* buffer, int bufferSize, int id=0);
+		int receiveMessage(unsigned char* buffer, int bufferSize, int id=0, bool flagRead = true);
 
 		/**
 		 * @brief Receives a message from the specified connected IP.
-		 * 		Returns true if it was successful.
+		 * 		Returns the number of bytes read if it was successful.
+		 * 			Returns -1 if unsuccessful
+		 * 		Continues to read until the buffer is filled or there is no more data to read.
+		 * 
+		 * 		Resets the waiting on read flag.
+		 * 			This will cause further onDataAvailable calls when data is available.
+		 * 
+		 * @param buffer 
+		 * 		The buffer to receive the message.
+		 * @param bufferSize
+		 * 		The size of the buffer.
+		 * @param id 
+		 * 		Which connection to receive from.
+		 * 		Client will always receive from 0.
+		 * 		Default is 0.
+		 * @param flagRead
+		 * 		If set to false, does not change the waiting on read flag.
+		 * 			This must be set by the programmer later.
+		 * 		By default, it is true.
+		 * @return true 
+		 * @return false 
+		 */
+		int receiveMessage(char* buffer, int bufferSize, int id=0, bool flagRead = true);
+
+		/**
+		 * @brief Receives a message from the specified connected IP.
+		 * 		Returns the number of bytes read if it was successful.
+		 * 			Returns -1 if unsuccessful
 		 * 		Does not remove the data from the internal queue. 
 		 * 		Buffer will be resized to the minimum of expected size or the number of bytes read.
+		 * 
+		 * 		Does not reset the waiting on read flag since the data was not removed from the internal queue.
 		 * 
 		 * @param buffer 
 		 * 		The buffer to receive the message.
@@ -222,7 +253,7 @@ namespace glib
 		 * @return true 
 		 * @return false 
 		 */
-		bool peek(std::vector<unsigned char>& buffer, int expectedSize, int id=0);
+		int peek(std::vector<unsigned char>& buffer, int expectedSize, int id=0);
 
 		/**
 		 * @brief Call when done reading data from the internal queue.
@@ -302,13 +333,14 @@ namespace glib
 		void setOnConnectFunction(std::function<void(int)> func);
 
 		/**
-		 * @brief Sets the On Message Arrived Function.
-		 * 		This is called as soon as a message arrives.
+		 * @brief Sets the On Data Available Function.
+		 * 		This is called whenever data is available to be read and has not been read yet.
 		 * 		The int passed into the function is the ID of the connection that sent the message.
-		 * 
+		 * 			Note that this does not mean new data. So, if you got 12 bytes but only read 8, then this will be called again.
+		 * 			Note that this is only called once between reads.
 		 * @param func 
 		 */
-		void setOnMessageArrivedFunction(std::function<void(int)> func);
+		void setOnDataAvailableFunction(std::function<void(int)> func);
 
 		/**
 		 * @brief Sets the On Disconnection Function.
@@ -372,12 +404,12 @@ namespace glib
 		bool isWaitingOnRead(int id);
 
 		std::function<void(int)> getConnectFunc();
-		std::function<void(int)> getMessageArriveFunc();
+		std::function<void(int)> getDataAvailableFunc();
 		std::function<void(int)> getDisconnectFunc();
 		
 
 		std::function<void(int)> onConnectFunc;
-		std::function<void(int)> onMessageArrivedFunc;
+		std::function<void(int)> onDataAvailableFunc;
 		std::function<void(int)> onDisconnectFunc;
 
 		#ifndef __unix__

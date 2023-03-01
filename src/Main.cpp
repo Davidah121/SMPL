@@ -12,6 +12,8 @@
 #include <atomic>
 #include "ResourceManager.h"
 
+#include "BinarySearchTree.h"
+
 using namespace glib;
 
 
@@ -197,12 +199,62 @@ void testResourceManager()
 void testCompression()
 {
     Sprite img = Sprite();
-    img.loadImage("testOutput.gif");
+    img.loadImage("testOutput.png");
     
     if(img.getSize() > 0)
     {
-        img.getImage(0)->saveGIF("TestSave.gif", 256, false, false);
+        // img.getImage(0)->saveGIF("TestSave.gif", 256, false, false);
+        img.getImage(0)->savePNG("TestSave.png", false, false, true);
     }
+}
+
+void printNode(int tabs, bool side, BinaryTreeNode<RBNode<int>>* n)
+{
+    std::string tabStr = "";
+    for(int i=0; i<tabs; i++)
+    {
+        tabStr += '\t';
+    }
+    if(n!=nullptr)
+    {
+        StringTools::println("%s %s %c - %d \033[0m", tabStr.c_str(), (n->data.color == true) ? "\033[31m" : "", (side) ? 'R' : 'L', n->data.data);
+        printNode(tabs+1, true, n->rightChild);
+        printNode(tabs+1, false, n->leftChild);
+    }
+    else
+    {
+        // StringTools::println("%s %c - NIL", tabStr.c_str(), (side) ? 'R' : 'L');
+    }
+}
+
+void printTree()
+{
+    BinarySearchTree<int> values = BinarySearchTree<int>(BinarySearchTree<int>::RED_BLACK);
+    //insert 11, 2, 14, 1, 7, 15, 5, 8
+    values.add(11);
+    values.add(2);
+    values.add(14);
+    values.add(1);
+    values.add(7);
+    values.add(15);
+    values.add(5);
+    values.add(8);
+    values.add(4);
+    StringTools::println("---------------");
+    printNode(0, true, values.getTree()->getRoot());
+    
+    
+    values.remove(5);
+    StringTools::println("---------------");
+    printNode(0, true, values.getTree()->getRoot());
+    
+    values.remove(15);
+    StringTools::println("---------------");
+    printNode(0, true, values.getTree()->getRoot());
+    
+    values.remove(7);
+    StringTools::println("---------------");
+    printNode(0, true, values.getTree()->getRoot());
 }
 
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
@@ -222,6 +274,7 @@ int main(int argc, char** argv)
 
     // testResourceManager();
 
-    testCompression();
+    // testCompression();
+    printTree();
     return 0;
 }

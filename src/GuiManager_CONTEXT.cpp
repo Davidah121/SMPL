@@ -261,7 +261,7 @@ namespace glib
 		boundingBox = GuiInstance::getInvalidBox();
 	}
 
-	void GuiContextMenu::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs)
+	void GuiContextMenu::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs)
 	{
 		GuiInstance::loadDataFromXML(attribs);
 		listMenu.loadDataFromXML(attribs);
@@ -272,7 +272,7 @@ namespace glib
 		GuiManager::registerLoadFunction("GuiContextMenu", GuiContextMenu::loadFunction);
 	}
 
-	GuiInstance* GuiContextMenu::loadFunction(std::unordered_map<std::string, std::string>& attributes)
+	GuiInstance* GuiContextMenu::loadFunction(SimpleHashMap<std::string, std::string>& attributes)
 	{
 		GuiContextMenu* ins = new GuiContextMenu();
 		ins->loadDataFromXML(attributes);

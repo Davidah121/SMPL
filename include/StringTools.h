@@ -15,6 +15,7 @@ namespace glib
 	class StringTools
 	{
 	public:
+
 		/**
 		 * @brief Initializes the StringTools class.
 		 * 		Specifically, it sets up the console to accept wstring data properly.
@@ -966,7 +967,26 @@ namespace glib
 		 * 		Otherwise, clears to the right of the cursor only.
 		 */
 		static void eraseConsoleLine(bool eraseFromCursor);
+		
+		/**
+		 * @brief Gets a string that sets the color for the console.
+		 * 		It can change the text color and background color separately.
+		 * 		This method is compliant with Basic ANSI escape codes which only supports
+		 * 		8 colors.
+		 * 		
+		 * @return std::string 
+		 */
+		static std::string setConsoleColorStringAnsi(int foreground, int background);
 
+		/**
+		 * @brief Gets a string that sets the color for the console.
+		 * 		Uses a 256 color palette
+		 * 
+		 * @return std::string 
+		 */
+		static std::string setConsoleColorString256();
+		static std::string setConsoleColorStringTrueColor();
+		
 		/**
 		 * @brief Rerouts the output of the print functions to somewhere else such as a file.
 		 * 		Could also be a different console if desired.

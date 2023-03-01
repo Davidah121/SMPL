@@ -239,36 +239,36 @@ namespace glib
 		update();
 	}
 
-	void GuiList::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs)
+	void GuiList::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs)
 	{
 		GuiInstance::loadDataFromXML(attribs);
 		std::vector<std::string> possibleNames = { "spacing", "isvertical", "backgroundcolor", "outlinecolor"};
 
 		for(size_t i=0; i<possibleNames.size(); i++)
 		{
-			auto it = attribs.find(possibleNames[i]);
-			if(it != attribs.end())
+			auto it = attribs.get(possibleNames[i]);
+			if(it != nullptr)
 			{
-				if(it->first == "spacing")
+				if(it->key == "spacing")
 				{
-					elementSpacing = std::abs(StringTools::toInt(it->second));
+					elementSpacing = std::abs(StringTools::toInt(it->data));
 				}
-				else if(it->first == "isvertical")
+				else if(it->key == "isvertical")
 				{
-					isVertical = StringTools::equalsIgnoreCase<char>(it->second, "true");
+					isVertical = StringTools::equalsIgnoreCase<char>(it->data, "true");
 				}
-				else if(it->first == "backgroundcolor")
+				else if(it->key == "backgroundcolor")
 				{
 					//define as color name or rgba
-					backgroundColor = ColorNameConverter::NameToColor(it->second);
+					backgroundColor = ColorNameConverter::NameToColor(it->data);
 				}
-				else if(it->first == "outlinecolor")
+				else if(it->key == "outlinecolor")
 				{
 					//define as color name or rgba
-					outlineColor = ColorNameConverter::NameToColor(it->second);
+					outlineColor = ColorNameConverter::NameToColor(it->data);
 				}
 				
-				attribs.erase(possibleNames[i]);
+				attribs.remove(it);
 			}
 		}
 	}
@@ -278,7 +278,7 @@ namespace glib
 		GuiManager::registerLoadFunction("GuiList", GuiList::loadFunction);
 	}
 
-	GuiInstance* GuiList::loadFunction(std::unordered_map<std::string, std::string>& attributes)
+	GuiInstance* GuiList::loadFunction(SimpleHashMap<std::string, std::string>& attributes)
 	{
 		GuiList* ins = new GuiList(0,0);
 		ins->loadDataFromXML(attributes);

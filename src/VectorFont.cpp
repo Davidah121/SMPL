@@ -97,19 +97,19 @@ namespace glib
             return false;
         }
 
-        for(XmlNode* n : f.nodes)
+        for(XmlNode* n : f.getNodes())
         {
-            if(StringTools::equalsIgnoreCase<char>(n->title, "svg"))
+            if(StringTools::equalsIgnoreCase<char>(n->getTitle(), "svg"))
             {
                 XmlNode* cNode = nullptr;
-                for(int index=0; index<n->childNodes.size(); index++)
+                for(int index=0; index<n->getChildNodes().size(); index++)
                 {
-                    cNode = n->childNodes[index];
-                    if( StringTools::equalsIgnoreCase<char>(cNode->title, "defs") )
+                    cNode = n->getChildNodes()[index];
+                    if( StringTools::equalsIgnoreCase<char>(cNode->getTitle(), "defs") )
                     {
-                        for(XmlNode* q : cNode->childNodes)
+                        for(XmlNode* q : cNode->getChildNodes())
                         {
-                            if( StringTools::equalsIgnoreCase<char>(q->title, "font") )
+                            if( StringTools::equalsIgnoreCase<char>(q->getTitle(), "font") )
                             {
                                 cNode = q;
                                 break;
@@ -124,29 +124,29 @@ namespace glib
                     continue;
                 }
 
-                if( StringTools::equalsIgnoreCase<char>(cNode->title, "font") )
+                if( StringTools::equalsIgnoreCase<char>(cNode->getTitle(), "font") )
                 {
                     auto temp = cNode->getAttribute("horiz-adv-x");
-                    if(!temp.first.empty())
-                        baseHorizontalAdvance = (int)MathExt::ceil( stod(temp.second) );
+                    if(temp != nullptr)
+                        baseHorizontalAdvance = (int)MathExt::ceil( stod(temp->data) );
                     
                     int width = 0;
                     int height = 0;
                     
                     XmlNode parentNode = XmlNode();
-                    parentNode.title = "svg";
+                    parentNode.setTitle("svg");
                     
                     std::string transformValue = "translate(0,0) scale(1,-1)";
+                    parentNode.addAttribute("width", "0");
+                    parentNode.addAttribute("height", "0");
                     
-                    parentNode.attributes["width"] = "0";
-                    parentNode.attributes["height"] = "0";
                     
                     
                     //process font information
-                    for(int i=0; i<cNode->childNodes.size(); i++)
+                    for(int i=0; i<cNode->getChildNodes().size(); i++)
                     {
-                        XmlNode* fontChild = cNode->childNodes[i];
-                        if(StringTools::equalsIgnoreCase<char>(fontChild->title, "glyph") || StringTools::equalsIgnoreCase<char>(fontChild->title, "missing-glyph"))
+                        XmlNode* fontChild = cNode->getChildNodes()[i];
+                        if(StringTools::equalsIgnoreCase<char>(fontChild->getTitle(), "glyph") || StringTools::equalsIgnoreCase<char>(fontChild->getTitle(), "missing-glyph"))
                         {
                             FontCharInfo fc = {};
                             fc.x=0;
@@ -159,43 +159,43 @@ namespace glib
                             fc.unicodeValue = -1;   //assuming missing-glyph
 
                             temp = fontChild->getAttribute("unicode");
-                            if(!temp.first.empty())
+                            if(temp != nullptr)
                             {
-                                auto stuff = StringTools::utf8ToIntString(temp.second);
+                                auto stuff = StringTools::utf8ToIntString(temp->data);
                                 if(stuff.size() > 0)
                                     fc.unicodeValue = stuff.front();
                             }
 
                             temp = fontChild->getAttribute("horiz-adv-x");
-                            if(!temp.first.empty())
+                            if(temp != nullptr)
                             {
-                                fc.horizAdv = (int)MathExt::ceil( stod(temp.second) );
+                                fc.horizAdv = (int)MathExt::ceil( stod(temp->data) );
                             }
 
                             //turn the xmlNode into a path and pass it into a vectorgrahpic
                             VectorGraphic* fontGraphic = new VectorGraphic();
                             
                             XmlNode parsedNode = XmlNode(*fontChild);
-                            parsedNode.title = "path";
-                            parsedNode.attributes["transform"] = transformValue;
+                            parsedNode.setTitle("path");
+                            parsedNode.addAttribute("transform", transformValue);
 
-                            parentNode.childNodes.push_back(&parsedNode);
+                            parentNode.addChild(&parsedNode);
 
                             fontGraphic->load(&parentNode);
                             
-                            parentNode.childNodes.pop_back();
+                            parentNode.getChildNodes().pop_back(); // Why this way??? Add a remove Node to avoid this or something
 
                             this->charInfoList.push_back(fc);
                             this->fontSprite.addGraphic(fontGraphic);
                             
                         }
-                        else if(StringTools::equalsIgnoreCase<char>(fontChild->title, "font-face"))
+                        else if(StringTools::equalsIgnoreCase<char>(fontChild->getTitle(), "font-face"))
                         {
                             temp = fontChild->getAttribute("bbox");
-                            if(!temp.first.empty())
+                            if(temp != nullptr)
                             {
                                 //Note that minX and minY do not contribute to the viewBox. Just the transform
-                                auto lazyCode = StringTools::splitStringMultipleDeliminators(temp.second, " ,");
+                                auto lazyCode = StringTools::splitStringMultipleDeliminators(temp->data, " ,");
                                 if(lazyCode.size() == 4)
                                 {
                                     width = MathExt::abs(StringTools::toInt(lazyCode[2]));
@@ -211,9 +211,9 @@ namespace glib
                             }
 
                             temp = fontChild->getAttribute("ascent");
-                            if(!temp.first.empty())
+                            if(temp != nullptr)
                             {
-                                transformValue = "translate(0," + temp.second + ") scale(1,-1)";
+                                transformValue = "translate(0," + temp->data + ") scale(1,-1)";
                             }
                             
                         }

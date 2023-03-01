@@ -95,6 +95,8 @@ namespace glib
 		stream.addData(data, size);
 		if(!omitEndCode)
 			stream.addEndData();
+		else
+			stream.addClearDictionary(); //Must add to reset the dictionary for concatenation. Results in 2 clear dictionaries back to back. Should fix.
 
 		outputData->clear();
 		outputData->setValues( stream.getBuffer().getByteRef().data(), stream.getBuffer().getByteRef().size() );

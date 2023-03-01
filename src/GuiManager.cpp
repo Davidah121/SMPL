@@ -3,7 +3,7 @@
 namespace glib
 {
 	#pragma region GUI_MANAGER
-	std::unordered_map<std::string, std::function<GuiInstance*(std::unordered_map<std::string, std::string>&)> > GuiManager::elementLoadingFunctions;
+	std::unordered_map<std::string, std::function<GuiInstance*(SimpleHashMap<std::string, std::string>&)> > GuiManager::elementLoadingFunctions;
 
 	const Class GuiManager::globalClass = Class("GuiManager", {&Object::globalClass});
 
@@ -20,7 +20,7 @@ namespace glib
 		GuiDatePicker::registerLoadFunction();
 	}
 
-	void GuiManager::registerLoadFunction(std::string className, std::function<GuiInstance*(std::unordered_map<std::string, std::string>&)> func)
+	void GuiManager::registerLoadFunction(std::string className, std::function<GuiInstance*(SimpleHashMap<std::string, std::string>&)> func)
 	{
 		elementLoadingFunctions[className] = func;
 	}
@@ -30,36 +30,36 @@ namespace glib
 		if(node == nullptr)
 			return false;
 
-		if(StringTools::equalsIgnoreCase<char>(node->title, "SpriteResource"))
+		if(StringTools::equalsIgnoreCase<char>(node->getTitle(), "SpriteResource"))
 		{
 			//separate processing
-			std::pair<std::string, std::string> idPair = node->getAttribute("id");
-			std::pair<std::string, std::string> srcPair = node->getAttribute("src");
-			if(idPair.first == "id" && srcPair.first == "src")
+			HashPair<std::string, std::string>* idPair = node->getAttribute("id");
+			HashPair<std::string, std::string>* srcPair = node->getAttribute("src");
+			if(idPair != nullptr && srcPair != nullptr )
 			{
 				//can probably load stuff
-				if(!idPair.second.empty() && !srcPair.second.empty())
+				if(!idPair->data.empty() && !srcPair->data.empty())
 				{
 					//Unless the file is incorrect, should be in the resource list something
-					GuiResourceManager::getResourceManager().addSprite(GuiGraphicsInterface::createSprite(srcPair.second, graphicsInterfaceMode), idPair.second, false);
+					GuiResourceManager::getResourceManager().addSprite(GuiGraphicsInterface::createSprite(srcPair->data, graphicsInterfaceMode), idPair->data, false);
 					return true;
 				}
 			}
 			StringTools::println("ERROR LOADING SPRITE RESOURCE: No 'src' or 'id' specified");
 			return false;
 		}
-		else if(StringTools::equalsIgnoreCase<char>(node->title, "FontResource"))
+		else if(StringTools::equalsIgnoreCase<char>(node->getTitle(), "FontResource"))
 		{
 			//separate processing
-			std::pair<std::string, std::string> idPair = node->getAttribute("id");
-			std::pair<std::string, std::string> srcPair = node->getAttribute("src");
-			if(idPair.first == "id" && srcPair.first == "src")
+			HashPair<std::string, std::string>* idPair = node->getAttribute("id");
+			HashPair<std::string, std::string>* srcPair = node->getAttribute("src");
+			if(idPair != nullptr && srcPair != nullptr )
 			{
 				//can probably load stuff
-				if(!idPair.second.empty() && !srcPair.second.empty())
+				if(!idPair->data.empty() && !srcPair->data.empty())
 				{
 					//Unless the file is incorrect, should be in the resource list something
-					GuiResourceManager::getResourceManager().addFont(GuiGraphicsInterface::createFont(srcPair.second, graphicsInterfaceMode), idPair.second, false);
+					GuiResourceManager::getResourceManager().addFont(GuiGraphicsInterface::createFont(srcPair->data, graphicsInterfaceMode), idPair->data, false);
 					return true;
 				}
 			}
@@ -70,10 +70,10 @@ namespace glib
 		{
 			GuiInstance* thisIns = nullptr;
 
-			auto it = elementLoadingFunctions.find(node->title);
+			auto it = elementLoadingFunctions.find(node->getTitle());
 			if(it != elementLoadingFunctions.end())
 			{
-				thisIns = it->second(node->attributes); //call load function for specific instance
+				thisIns = it->second(node->getRawAttributes()); //call load function for specific instance
 				
 				if(parent != nullptr)
 					parent->addChild(thisIns);
@@ -86,12 +86,12 @@ namespace glib
 			addElement(thisIns);
 			addToDeleteList(thisIns);
 
-			for(XmlNode* n : node->childNodes)
+			for(XmlNode* n : node->getChildNodes())
 			{
 				bool successful = loadElement(n, thisIns);
 				if(!successful)
 				{
-					StringTools::println("ERROR LOADING NODE: %ls", n->title.c_str());
+					StringTools::println("ERROR LOADING NODE: %ls", n->getTitle().c_str());
 					return false;
 				}
 			}
@@ -108,9 +108,9 @@ namespace glib
 		//Everything must be encapsulated in the tag <SimpleGUI> or something
 		XmlNode* parentNode = nullptr;
 
-		for(XmlNode* n : xmlFile.nodes)
+		for(XmlNode* n : xmlFile.getNodes())
 		{
-			if(StringTools::equalsIgnoreCase<char>(n->title, "SimpleGUI"))
+			if(StringTools::equalsIgnoreCase<char>(n->getTitle(), "SimpleGUI"))
 			{
 				parentNode = n;
 				break;
@@ -122,20 +122,20 @@ namespace glib
 			auto wAttrib = parentNode->getAttribute("width");
 			auto hAttrib = parentNode->getAttribute("height");
 
-			if(!wAttrib.first.empty() && !hAttrib.first.empty())
+			if(wAttrib != nullptr && hAttrib != nullptr)
 			{
-				int w = StringTools::toInt(wAttrib.second);
-				int h = StringTools::toInt(hAttrib.second);
+				int w = StringTools::toInt(wAttrib->data);
+				int h = StringTools::toInt(hAttrib->data);
 				resizeImage(w, h);
 				setExpectedSize( Vec2f(w,h) );
 			}
 			
-			for(XmlNode* n : parentNode->childNodes)
+			for(XmlNode* n : parentNode->getChildNodes())
 			{
 				bool successful = loadElement(n, nullptr);
 				if(!successful)
 				{
-					StringTools::println("ERROR LOADING NODE: %ls", n->title.c_str());
+					StringTools::println("ERROR LOADING NODE: %ls", n->getTitle().c_str());
 				}
 			}
 		}
@@ -150,9 +150,9 @@ namespace glib
 		//Everything must be encapsulated in the tag <SimpleGUI> or something
 		XmlNode* parentNode = nullptr;
 
-		for(XmlNode* n : xmlFile.nodes)
+		for(XmlNode* n : xmlFile.getNodes())
 		{
-			if(StringTools::equalsIgnoreCase<char>(n->title, "SimpleGUI"))
+			if(StringTools::equalsIgnoreCase<char>(n->getTitle(), "SimpleGUI"))
 			{
 				parentNode = n;
 				break;
@@ -164,20 +164,20 @@ namespace glib
 			auto wAttrib = parentNode->getAttribute("width");
 			auto hAttrib = parentNode->getAttribute("height");
 
-			if(!wAttrib.first.empty() && !hAttrib.first.empty())
+			if(wAttrib != nullptr && hAttrib != nullptr)
 			{
-				int w = StringTools::toInt(wAttrib.second);
-				int h = StringTools::toInt(hAttrib.second);
+				int w = StringTools::toInt(wAttrib->data);
+				int h = StringTools::toInt(hAttrib->data);
 				resizeImage(w, h);
 				setExpectedSize( Vec2f(w,h) );
 			}
 			
-			for(XmlNode* n : parentNode->childNodes)
+			for(XmlNode* n : parentNode->getChildNodes())
 			{
 				bool successful = loadElement(n, nullptr);
 				if(!successful)
 				{
-					StringTools::println("ERROR LOADING NODE: %ls", n->title.c_str());
+					StringTools::println("ERROR LOADING NODE: %ls", n->getTitle().c_str());
 				}
 			}
 		}

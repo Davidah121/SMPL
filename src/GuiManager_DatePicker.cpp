@@ -488,36 +488,38 @@ namespace glib
 		boundingBox = GuiInstance::getInvalidBox();
 	}
 	
-	void GuiDatePicker::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs)
+	void GuiDatePicker::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs)
 	{
 		GuiInstance::loadDataFromXML(attribs);
 		std::vector<std::string> possibleNames = { "width", "height", "backgroundcolor", "gridheadercolor", "calendarchild" };
 
 		for(size_t i=0; i<possibleNames.size(); i++)
 		{
-			auto it = attribs.find(possibleNames[i]);
-			if(it != attribs.end())
+			auto it = attribs.get(possibleNames[i]);
+			if(it != nullptr)
 			{
 				if(possibleNames[i] == "width")
 				{
-					this->width = std::abs(StringTools::toInt(it->second));
+					this->width = std::abs(StringTools::toInt(it->data));
 				}
 				else if(possibleNames[i] == "height")
 				{
-					this->height = std::abs(StringTools::toInt(it->second));
+					this->height = std::abs(StringTools::toInt(it->data));
 				}
 				else if(possibleNames[i] == "backgroundcolor")
 				{
-					this->backgroundColor = ColorNameConverter::NameToColor(it->second);
+					this->backgroundColor = ColorNameConverter::NameToColor(it->data);
 				}
 				else if(possibleNames[i] == "gridheadercolor")
 				{
-					this->gridHeaderColor = ColorNameConverter::NameToColor(it->second);
+					this->gridHeaderColor = ColorNameConverter::NameToColor(it->data);
 				}
 				else if(possibleNames[i] == "calendarchild")
 				{
-					this->calendarIsChild = StringTools::equalsIgnoreCase<char>(it->second, "true");
+					this->calendarIsChild = StringTools::equalsIgnoreCase<char>(it->data, "true");
 				}
+
+				attribs.remove(it);
 			}
 		}
 
@@ -526,7 +528,7 @@ namespace glib
 		init(baseX, baseY, width, height, calendarIsChild);
 	}
 
-	GuiInstance* GuiDatePicker::loadFunction(std::unordered_map<std::string, std::string>& attribs)
+	GuiInstance* GuiDatePicker::loadFunction(SimpleHashMap<std::string, std::string>& attribs)
 	{
 		GuiDatePicker* ins = new GuiDatePicker();
 		ins->loadDataFromXML(attribs);

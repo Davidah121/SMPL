@@ -206,7 +206,27 @@ namespace glib
 		return sendMessage((char*)message, size, id);
 	}
 
-	bool Network::receiveMessage(std::string& message, int id)
+	bool Network::sendMessage(char * message, int messageSize, int id)
+	{
+		networkMutex.lock();
+
+		int status = SOCKET_ERROR;
+		if(type == Network::TYPE_CLIENT)
+			status = send(connections[0], message, messageSize, 0);
+		else
+			status = send(connections[id], message, messageSize, 0);
+		
+		networkMutex.unlock();
+		
+		if(status == 0 || status == SOCKET_ERROR)
+		{
+			//error, if 0, closed
+			return false;
+		}
+		return true;
+	}
+
+	int Network::receiveMessage(std::string& message, int id, bool flagRead)
 	{
 		//allocate buffer of x size. read till '\0'
 		networkMutex.lock();
@@ -215,6 +235,7 @@ namespace glib
 		bool good = false;
 
 		int status = SOCKET_ERROR;
+		int bytesRead = 0;
 		while(true)
 		{
 			if(type == Network::TYPE_CLIENT)
@@ -224,6 +245,7 @@ namespace glib
 
 			if(status>0)
 			{
+				bytesRead += status;
 				int bytesToRead = -1;
 				for(int i=0; i<status; i++)
 				{
@@ -264,13 +286,27 @@ namespace glib
 			}
 		}
 
+		if(flagRead)
+		{
+			if(type == Network::TYPE_CLIENT)
+				waitingOnRead[0] = false;
+			else
+				waitingOnRead[id] = false;
+		}
+
 		networkMutex.unlock();
 
 		delete[] tempBuffer;
-		return good;
+
+		if(bytesRead > 0)
+			return bytesRead;
+		else if(status < 0)
+			return -1;
+		else 
+			return 0;
 	}
 
-	bool Network::receiveMessage(std::vector<unsigned char>& buffer, int id)
+	int Network::receiveMessage(std::vector<unsigned char>& buffer, int id, bool flagRead)
 	{
 		//allocate buffer of x size. read till status == 0
 		networkMutex.lock();
@@ -279,6 +315,7 @@ namespace glib
 		bool good = false;
 
 		int status = SOCKET_ERROR;
+		int bytesRead = 0;
 		while(true)
 		{
 			if(type == Network::TYPE_CLIENT)
@@ -288,6 +325,8 @@ namespace glib
 
 			if(status <= 0)
 				break;
+			
+			bytesRead += status;
 			
 			if(type == Network::TYPE_CLIENT)
 				status = recv(connections[0], tempBuffer, 4096, 0);
@@ -301,38 +340,32 @@ namespace glib
 			good = true;
 		}
 		
+		if(flagRead)
+		{
+			if(type == Network::TYPE_CLIENT)
+				waitingOnRead[0] = false;
+			else
+				waitingOnRead[id] = false;
+		}
+
 		networkMutex.unlock();
 
 		delete[] tempBuffer;
-		return good;
+
+		if(bytesRead > 0)
+			return bytesRead;
+		else if(status < 0)
+			return -1;
+		else 
+			return 0;
 	}
 
-	bool Network::receiveMessage(unsigned char* buffer, int bufferSize, int id)
+	int Network::receiveMessage(unsigned char* buffer, int bufferSize, int id, bool flagRead)
 	{
-		return receiveMessage((char*)buffer, bufferSize, id);
+		return receiveMessage((char*)buffer, bufferSize, id, flagRead);
 	}
 
-	bool Network::sendMessage(char * message, int messageSize, int id)
-	{
-		networkMutex.lock();
-
-		int status = SOCKET_ERROR;
-		if(type == Network::TYPE_CLIENT)
-			status = send(connections[0], message, messageSize, 0);
-		else
-			status = send(connections[id], message, messageSize, 0);
-		
-		networkMutex.unlock();
-		
-		if(status == 0 || status == SOCKET_ERROR)
-		{
-			//error, if 0, closed
-			return false;
-		}
-		return true;
-	}
-
-	bool Network::receiveMessage(char * buffer, int bufferSize, int id)
+	int Network::receiveMessage(char * buffer, int bufferSize, int id, bool flagRead)
 	{
 		networkMutex.lock();
 
@@ -342,17 +375,26 @@ namespace glib
 		else
 			status = recv(connections[id], buffer, bufferSize, 0);
 		
+		
+		if(flagRead)
+		{
+			if(type == Network::TYPE_CLIENT)
+				waitingOnRead[0] = false;
+			else
+				waitingOnRead[id] = false;
+		}
+
 		networkMutex.unlock();
 
-		if(status == 0 || status == SOCKET_ERROR)
-		{
-			//error, if 0, closed
-			return false;
-		}
-		return true;
+		if(status > 0)
+			return status;
+		else if(status == 0)
+			return 0;
+		else
+			return -1;
 	}
 	
-	bool Network::peek(std::vector<unsigned char>& buffer, int expectedSize, int id)
+	int Network::peek(std::vector<unsigned char>& buffer, int expectedSize, int id)
 	{
 		networkMutex.lock();
 
@@ -369,12 +411,12 @@ namespace glib
 		}
 		networkMutex.unlock();
 
-		if(status == 0 || status == SOCKET_ERROR)
-		{
-			//error, if 0, closed
-			return false;
-		}
-		return true;
+		if(status > 0)
+			return status;
+		else if(status == 0)
+			return 0;
+		else
+			return -1;
 	}
 
 	void Network::dispose()
@@ -506,10 +548,10 @@ namespace glib
 		onConnectFunc = func;
 		networkMutex.unlock();
 	}
-	void Network::setOnMessageArrivedFunction(std::function<void(int)> func)
+	void Network::setOnDataAvailableFunction(std::function<void(int)> func)
 	{
 		networkMutex.lock();
-		onMessageArrivedFunc = func;
+		onDataAvailableFunc = func;
 		networkMutex.unlock();
 	}
 	void Network::setOnDisconnectFunction(std::function<void(int)> func)
@@ -526,10 +568,10 @@ namespace glib
 		networkMutex.unlock();
 		return cpy;
 	}
-	std::function<void(int)> Network::getMessageArriveFunc()
+	std::function<void(int)> Network::getDataAvailableFunc()
 	{
 		networkMutex.lock();
-		std::function<void(int)> cpy = onMessageArrivedFunc;
+		std::function<void(int)> cpy = onDataAvailableFunc;
 		networkMutex.unlock();
 		return cpy;
 	}
@@ -746,7 +788,7 @@ namespace glib
 											networkMutex.unlock();
 
 											//can receive message
-											std::function<void(int)> cpy = getMessageArriveFunc();
+											std::function<void(int)> cpy = getDataAvailableFunc();
 											if(cpy!=nullptr)
 												cpy(i);
 										}
@@ -874,7 +916,7 @@ namespace glib
 										waitingOnRead[0] = true;
 										networkMutex.unlock();
 
-										std::function<void(int)> cpy = getMessageArriveFunc();
+										std::function<void(int)> cpy = getDataAvailableFunc();
 										if(cpy!=nullptr)
 											cpy(0);
 									}
@@ -1018,8 +1060,10 @@ namespace glib
 									//check for disconnect
 									bool valid = true;
 									networkMutex.lock();
+
 									char testChar = 0;
 									valid = recv(clientConnections[i].fd, &testChar, 1, MSG_PEEK) > 0;
+
 									networkMutex.unlock();
 
 									if(!valid)
@@ -1051,7 +1095,7 @@ namespace glib
 											networkMutex.unlock();
 
 											//can receive message
-											std::function<void(int)> cpy = getMessageArriveFunc();
+											std::function<void(int)> cpy = getDataAvailableFunc();
 											if(cpy!=nullptr)
 												cpy(i);
 										}
@@ -1151,8 +1195,10 @@ namespace glib
 								//check for disconnect
 								bool valid = true;
 								networkMutex.lock();
+
 								char testChar = 0;
 								valid = recv(mainSocket.fd, &testChar, 1, MSG_PEEK) > 0;
+
 								networkMutex.unlock();
 
 								if(!valid)
@@ -1184,7 +1230,7 @@ namespace glib
 										networkMutex.unlock();
 
 										//can receive message
-										std::function<void(int)> cpy = getMessageArriveFunc();
+										std::function<void(int)> cpy = getDataAvailableFunc();
 										if(cpy!=nullptr)
 											cpy(0);
 									}

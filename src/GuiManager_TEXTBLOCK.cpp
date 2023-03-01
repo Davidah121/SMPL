@@ -361,7 +361,7 @@ namespace glib
 		update();
 	}
 
-	void GuiTextBlock::loadDataFromXML(std::unordered_map<std::string, std::string>& attributes)
+	void GuiTextBlock::loadDataFromXML(SimpleHashMap<std::string, std::string>& attributes)
 	{
 		GuiInstance::loadDataFromXML(attributes);
 
@@ -369,86 +369,86 @@ namespace glib
 
 		for(size_t i=0; i<possibleNames.size(); i++)
 		{
-			auto it = attributes.find(possibleNames[i]);
-			if(it != attributes.end())
+			auto it = attributes.get(possibleNames[i]);
+			if(it != nullptr)
 			{
 				if(possibleNames[i] == "maxwidth")
 				{
-					this->maxWidth = StringTools::toInt(it->second);
+					this->maxWidth = StringTools::toInt(it->data);
 				}
 				else if(possibleNames[i] == "maxheight")
 				{
-					this->maxHeight = StringTools::toInt(it->second);
+					this->maxHeight = StringTools::toInt(it->data);
 				}
 				else if(possibleNames[i] == "textcolor")
 				{
 					//define as color name or rgba
-					this->textColor = ColorNameConverter::NameToColor(it->second);
+					this->textColor = ColorNameConverter::NameToColor(it->data);
 				}
 				else if(possibleNames[i] == "defaulttextcolor")
 				{
 					//define as color name or rgba
-					this->defaultTextColor = ColorNameConverter::NameToColor(it->second);
+					this->defaultTextColor = ColorNameConverter::NameToColor(it->data);
 				}
 				else if(possibleNames[i] == "highlightcolor")
 				{
 					//define as color name or rgba
-					this->highlightColor = ColorNameConverter::NameToColor(it->second);
+					this->highlightColor = ColorNameConverter::NameToColor(it->data);
 				}
 				else if(possibleNames[i] == "allowhighlight")
 				{
-					this->shouldHighlight = StringTools::equalsIgnoreCase<char>(it->second, "true");
+					this->shouldHighlight = StringTools::equalsIgnoreCase<char>(it->data, "true");
 				}
 				else if(possibleNames[i] == "allowwraptext")
 				{
-					this->allowWrapText = StringTools::equalsIgnoreCase<char>(it->second, "true");
+					this->allowWrapText = StringTools::equalsIgnoreCase<char>(it->data, "true");
 				}
 				else if(possibleNames[i] == "highlightstart")
 				{
-					this->startHighlight = StringTools::toInt(it->second);
+					this->startHighlight = StringTools::toInt(it->data);
 				}
 				else if(possibleNames[i] == "highlightend")
 				{
-					this->endHighlight = StringTools::toInt(it->second);
+					this->endHighlight = StringTools::toInt(it->data);
 				}
 				else if(possibleNames[i] == "textxoffset")
 				{
-					this->baseX = StringTools::toInt(it->second);
+					this->baseX = StringTools::toInt(it->data);
 				}
 				else if(possibleNames[i] == "textyoffset")
 				{
-					this->baseY = StringTools::toInt(it->second);
+					this->baseY = StringTools::toInt(it->data);
 				}
 				else if(possibleNames[i] == "text")
 				{
-					this->text = it->second;
+					this->text = it->data;
 				}
 				else if(possibleNames[i] == "defaulttext")
 				{
-					this->defaultString = it->second;
+					this->defaultString = it->data;
 				}
 				else if(possibleNames[i] == "fontsrc")
 				{
 					//check if in resources by name.
-					textFontP = GuiResourceManager::getResourceManager().getFont(it->second);
+					textFontP = GuiResourceManager::getResourceManager().getFont(it->data);
 				}
 				else if(possibleNames[i] == "fontsize")
 				{
-					this->fontSize = StringTools::toInt(it->second);
+					this->fontSize = StringTools::toInt(it->data);
 					if(this->fontSize < 0)
 					{
 						this->fontSize = 0;
 					}
 				}
 
-				attributes.erase(possibleNames[i]);
+				attributes.remove(it);
 			}
 		}
 
 		update(); //just updates the bounding box
 	}
 
-	GuiInstance* GuiTextBlock::loadFunction(std::unordered_map<std::string, std::string>& attributes)
+	GuiInstance* GuiTextBlock::loadFunction(SimpleHashMap<std::string, std::string>& attributes)
 	{
 		GuiTextBlock* ins = new GuiTextBlock(0, 0);
 		ins->loadDataFromXML(attributes);

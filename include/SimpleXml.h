@@ -1,6 +1,7 @@
 #pragma once
 #include "SimpleFile.h"
-#include <unordered_map>
+#include "SimpleHashMap.h"
+// #include <unordered_map>
 
 namespace glib
 {
@@ -29,16 +30,25 @@ namespace glib
 
         void addAttribute(std::string key, std::string value);
         void addAttribute(std::pair<std::string, std::string> p);
-        std::pair<std::string, std::string> getAttribute(std::string key);
+        void addAttribute(HashPair<std::string, std::string> p);
+        HashPair<std::string, std::string>* getAttribute(std::string key);
 
-        std::string title;
-        std::unordered_map<std::string, std::string> attributes = std::unordered_map<std::string, std::string>();
-        std::vector<XmlNode*> childNodes = std::vector<XmlNode*>();
-        XmlNode* parentNode = nullptr;
-        std::string value;
+        std::string getTitle();
+        std::string getValue();
+        
+        void addChild(XmlNode* n);
+
+        std::vector<XmlNode*> getNodesPattern(std::vector<std::string>& nameOrder, size_t offset=0);
+        std::vector<XmlNode*>& getChildNodes();
+        SimpleHashMap<std::string, std::string>& getRawAttributes();
+
+        void setTitle(std::string s);
+        void setValue(std::string s);
+
     private:
         friend class SimpleXml;
 
+        void getNodesInternal(std::vector<std::string>& nameOrder, size_t offset, std::vector<XmlNode*>& results);
         /**
          * @brief Determines if the node an ending node. Ending nodes are only used when loading data.
          * 
@@ -47,6 +57,15 @@ namespace glib
          */
         bool isEndOfSection();
         bool isEnd = false;
+        
+        std::string title;
+        std::string value;
+
+        
+        SimpleHashMap<std::string, std::string> attributes = SimpleHashMap<std::string, std::string>(true); //Unique only
+        std::vector<XmlNode*> childNodes = std::vector<XmlNode*>();
+        XmlNode* parentNode = nullptr;
+        SimpleHashMap<std::string, size_t> nameToIndexMap = SimpleHashMap<std::string, size_t>(false); //Multimap
     };
 
     class SimpleXml
@@ -99,15 +118,21 @@ namespace glib
          * @brief Saves the XmlNode data into a file.
          * 
          * @param file 
+         * @param includeTabs
+         *      Whether to include tabs for better formatting.
+         *      Default value is true
          */
-        void save(File file);
+        void save(File file, bool includeTabs = true);
 
         /**
          * @brief Converts all of the XML into a compatible string following the XML format.
          * 
          * @return std::string 
+         * @param includeTabs
+         *      Whether to include tabs for better formatting.
+         *      Default value is true
          */
-        std::string convertToString();
+        std::string convertToString(bool includeTabs = true);
 
         /**
          * @brief Disposes of the memory used by the object.
@@ -123,18 +148,22 @@ namespace glib
          */
         static int parseEscapeString(std::string escString);
 
-        std::vector<XmlNode*> nodes = std::vector<XmlNode*>();
-        
+        void addNode(XmlNode* n);
+
+        std::vector<XmlNode*> getNodesPattern(std::vector<std::string>& nameOrder);
+        std::vector<XmlNode*>& getNodes();
+
     private:
         XmlNode* parseXmlLine(std::string line);
 
         void fixParseOnNode(XmlNode* n);
 
-        void saveNode(SimpleFile* f, XmlNode* node);
-        void saveNode(std::string& s, XmlNode* node);
-        void deleteNode(XmlNode* node);
+        void saveNode(SimpleFile* f, XmlNode* node, int tabs);
+        void saveNode(std::string& s, XmlNode* node, int tabs);
 
         bool shouldParseEscape = true;
+        std::vector<XmlNode*> nodes = std::vector<XmlNode*>();
+        SimpleHashMap<std::string, size_t> nameToIndexMap = SimpleHashMap<std::string, size_t>(false); //Multimap
 
         std::vector<unsigned char> removeCommentsAndInvalidChars(std::vector<unsigned char> fileBytes);
         std::vector<unsigned char> removeCommentsAndInvalidChars(unsigned char* fileBytes, size_t size);

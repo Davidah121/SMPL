@@ -211,7 +211,7 @@ namespace glib
 		int blocks = (int)MathExt::ceil((double)height/24);
 		//compress data
 		// size_t t1 = System::getCurrentTimeMicro();
-		std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, codeSize);
+		std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, blocks, codeSize);
 		// size_t t2 = System::getCurrentTimeMicro();
 
 		// StringTools::println("Time to compress: %llu", t2-t1);

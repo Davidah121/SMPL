@@ -32,6 +32,7 @@ namespace glib
         PolynomialMathFunction(std::vector<double> constants);
         ~PolynomialMathFunction();
 
+        PolynomialMathFunction getDerivative();
         void addConstant(double d);
         double getConstant(int index);
         size_t size();

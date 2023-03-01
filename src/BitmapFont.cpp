@@ -207,9 +207,10 @@ namespace glib
 		if(valid)
 		{
 			XmlNode* root = nullptr;
-			for(XmlNode* n : xmlData.nodes)
+
+			for(XmlNode* n : xmlData.getNodes())
 			{
-				if(n->title == "font")
+				if(n->getTitle() == "font")
 				{
 					root = n;
 					break;
@@ -225,35 +226,35 @@ namespace glib
 				return;
 			}
 
-			for(XmlNode* n : root->childNodes)
+			for(XmlNode* n : root->getChildNodes())
 			{
-				if(n->title == "info")
+				if(n->getTitle() == "info")
 				{
 					//Can simplify
 					auto temp = n->getAttribute("size");
-					if(!temp.first.empty())
+					if(temp != nullptr)
 					{
-						fontSize = abs(std::stoi(temp.second));
+						fontSize = abs(std::stoi(temp->data));
 						originalFontSize = fontSize;
 					}
 				}
-				else if(n->title == "common")
+				else if(n->getTitle() == "common")
 				{
 					auto temp = n->getAttribute("lineHeight");
-					if(!temp.first.empty())
-						verticalAdv = abs(std::stoi(temp.second));
+					if(temp != nullptr)
+						verticalAdv = abs(std::stoi(temp->data));
 					
 				}
-				else if(n->title == "pages")
+				else if(n->getTitle() == "pages")
 				{
-					for(XmlNode* n2 : n->childNodes)
+					for(XmlNode* n2 : n->getChildNodes())
 					{
 						auto temp = n2->getAttribute("file");
-						if(!temp.first.empty())
+						if(temp != nullptr)
 						{
 							int imgCount = 0;
 							//Is local image so full path is needed
-							std::string actualFile = path + '/' + temp.second;
+							std::string actualFile = path + '/' + temp->data;
 
 							Image** imgArr = Image::loadImage(actualFile, &imgCount);
 							if(imgCount>0)
@@ -264,52 +265,48 @@ namespace glib
 						}
 					}
 				}
-				else if(n->title == "chars")
+				else if(n->getTitle() == "chars")
 				{
-					for(XmlNode* n2 : n->childNodes)
+					for(XmlNode* n2 : n->getChildNodes())
 					{
 						FontCharInfo fci;
 						int page = 0;
 
-						for(std::pair<std::string, std::string> attrib : n2->attributes)
-						{
-							if(attrib.first == "id")
-							{
-								fci.unicodeValue = StringTools::toInt(attrib.second);
-							}
-							else if(attrib.first == "x")
-							{
-								fci.x = StringTools::toInt(attrib.second);
-							}
-							else if(attrib.first == "y")
-							{
-								fci.y = StringTools::toInt(attrib.second);
-							}
-							else if(attrib.first == "width")
-							{
-								fci.width = StringTools::toInt(attrib.second);
-							}
-							else if(attrib.first == "height")
-							{
-								fci.height = StringTools::toInt(attrib.second);
-							}
-							else if(attrib.first == "xadvance")
-							{
-								fci.horizAdv = StringTools::toInt(attrib.second);
-							}
-							else if(attrib.first == "page")
-							{
-								page = StringTools::toInt(attrib.second);
-							}
-							else if(attrib.first == "xoffset")
-							{
-								fci.xOffset = StringTools::toInt(attrib.second);
-							}
-							else if(attrib.first == "yoffset")
-							{
-								fci.yOffset = StringTools::toInt(attrib.second);
-							}
-						}
+						auto attrib = n2->getAttribute("id");
+						if(attrib != nullptr)
+							fci.unicodeValue = StringTools::toInt(attrib->data);
+						
+						attrib = n2->getAttribute("x");
+						if(attrib != nullptr)
+							fci.x = StringTools::toInt(attrib->data);
+						
+						attrib = n2->getAttribute("y");
+						if(attrib != nullptr)
+							fci.y = StringTools::toInt(attrib->data);
+						
+						attrib = n2->getAttribute("width");
+						if(attrib != nullptr)
+							fci.width = StringTools::toInt(attrib->data);
+						
+						attrib = n2->getAttribute("height");
+						if(attrib != nullptr)
+							fci.height = StringTools::toInt(attrib->data);
+						
+						attrib = n2->getAttribute("xadvance");
+						if(attrib != nullptr)
+							fci.horizAdv = StringTools::toInt(attrib->data);
+						
+						attrib = n2->getAttribute("page");
+						if(attrib != nullptr)
+							page = StringTools::toInt(attrib->data);
+						
+						attrib = n2->getAttribute("xoffset");
+						if(attrib != nullptr)
+							fci.xOffset = StringTools::toInt(attrib->data);
+						
+						attrib = n2->getAttribute("yoffset");
+						if(attrib != nullptr)
+							fci.yOffset = StringTools::toInt(attrib->data);
 
 						this->addChar(fci);
 						imgPage.push_back(page);

@@ -154,6 +154,13 @@ namespace glib
         std::vector<HashPair<K,T>*> getAllCount(K key, int count);
 
         /**
+         * @brief Gets the things that the hashmap stores.
+         * 
+         * @return std::vector<HashPair<K,T>*> 
+         */
+        std::vector<HashPair<K,T>*> getAll();
+
+        /**
          * @brief Rehashes the hash map.
          *      Can help performance if the data has been reorganized.
          *      Automatically happens as data is added if the max load factor has been exceeded.
@@ -548,6 +555,20 @@ namespace glib
         // size_t t2 = System::getCurrentTimeMicro();
         // System::dbtime[2] += t2-t1;
         return collection;
+    }
+        
+    template<typename K, typename T>
+    inline std::vector<HashPair<K, T>*> SimpleHashMap<K, T>::getAll()
+    {
+        std::vector<HashPair<K, T>*> results;
+        for(size_t i=0; i<buckets.size(); i++)
+        {
+            for(size_t j=0; j<buckets[i].size(); j++)
+            {
+                results.push_back(buckets[i][j]);
+            }
+        }
+        return results;
     }
 
     template<typename K, typename T>

@@ -215,51 +215,51 @@ namespace glib
 		boundingBox = Box2D(x, y, x+width, y+height);
 	}
 
-	void GuiRectangleButton::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs)
+	void GuiRectangleButton::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs)
 	{
 		GuiInstance::loadDataFromXML(attribs);
 		std::vector<std::string> possibleNames = { "width", "height", "backgroundcolor", "outlinecolor", "focusoutlinecolor", "hovercolor", "focusbackgroundcolor"};
 
 		for(size_t i=0; i<possibleNames.size(); i++)
 		{
-			auto it = attribs.find(possibleNames[i]);
-			if(it != attribs.end())
+			auto it = attribs.get(possibleNames[i]);
+			if(it != nullptr)
 			{
-				if(it->first == "width")
+				if(it->key == "width")
 				{
-					width = std::abs(StringTools::toInt(it->second));
+					width = std::abs(StringTools::toInt(it->data));
 				}
-				else if(it->first == "height")
+				else if(it->key == "height")
 				{
-					height = std::abs(StringTools::toInt(it->second));
+					height = std::abs(StringTools::toInt(it->data));
 				}
-				else if(it->first == "backgroundcolor")
+				else if(it->key == "backgroundcolor")
 				{
 					//define as color name or rgba
-					backgroundColor = ColorNameConverter::NameToColor(it->second);
+					backgroundColor = ColorNameConverter::NameToColor(it->data);
 				}
-				else if(it->first == "outlinecolor")
+				else if(it->key == "outlinecolor")
 				{
 					//define as color name or rgba
-					outlineColor = ColorNameConverter::NameToColor(it->second);
+					outlineColor = ColorNameConverter::NameToColor(it->data);
 				}
-				else if(it->first == "focusoutlinecolor")
+				else if(it->key == "focusoutlinecolor")
 				{
 					//define as color name or rgba
-					focusOutlineColor = ColorNameConverter::NameToColor(it->second);
+					focusOutlineColor = ColorNameConverter::NameToColor(it->data);
 				}
-				else if(it->first == "focusbackgroundcolor")
+				else if(it->key == "focusbackgroundcolor")
 				{
 					//define as color name or rgba
-					focusBackgroundColor = ColorNameConverter::NameToColor(it->second);
+					focusBackgroundColor = ColorNameConverter::NameToColor(it->data);
 				}
-				else if(it->first == "hovercolor")
+				else if(it->key == "hovercolor")
 				{
 					//define as color name or rgba
-					hoverColor = ColorNameConverter::NameToColor(it->second);
+					hoverColor = ColorNameConverter::NameToColor(it->data);
 				}
 				
-				attribs.erase(possibleNames[i]);
+				attribs.remove(it);
 			}
 		}
 		boundingBox = Box2D(x, y, x+width, y+height);
@@ -270,7 +270,7 @@ namespace glib
 		GuiManager::registerLoadFunction("GuiRectangleButton", GuiRectangleButton::loadFunction);
 	}
 
-	GuiInstance* GuiRectangleButton::loadFunction(std::unordered_map<std::string, std::string>& attributes)
+	GuiInstance* GuiRectangleButton::loadFunction(SimpleHashMap<std::string, std::string>& attributes)
 	{
 		GuiRectangleButton* ins = new GuiRectangleButton(0,0,0,0);
 		ins->loadDataFromXML(attributes);

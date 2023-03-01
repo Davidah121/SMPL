@@ -1,10 +1,11 @@
 #pragma once
-#include "StringTools.h"
 #include <vector>
 #include "BinarySet.h"
 
 namespace glib
 {
+	template<typename T>
+	class BinarySearchTree;
 
 	template<typename T>
 	struct BinaryTreeNode
@@ -12,6 +13,7 @@ namespace glib
 		BinaryTreeNode<T>* leftChild = nullptr;
 		BinaryTreeNode<T>* rightChild = nullptr;
 		T data;
+		BinaryTreeNode<T>* parent = nullptr; //Do this later
 	};
 
 	template<typename T>
@@ -41,6 +43,8 @@ namespace glib
 
 		/**
 		 * @brief Sets the root node of the tree to the specified node pointer.
+		 * 		Note that it will delete the old root and its subtree.
+		 * 
 		 * @param node
 		 * 		The node to become the new root node.
 		 */
@@ -48,6 +52,9 @@ namespace glib
 
 		/**
 		 * @brief Sets the left node of the specified parent node.
+		 * 		Note that it will delete the old child and its subtree.
+		 * 
+		 * 
 		 * @param parent
 		 * 		The node to have its left child node modified.
 		 * @param leftChild
@@ -57,6 +64,8 @@ namespace glib
 
 		/**
 		 * @brief Sets the right node of the specified parent node.
+		 * 		Note that it will delete the old child and its subtree.
+		 * 
 		 * @param parent
 		 * 		The node to have its right child node modified.
 		 * @param rightChild
@@ -112,7 +121,32 @@ namespace glib
 		 */
 		std::vector<T> getAllElements();
 
+		/**
+		 * @brief Rotate elements in the binary tree left around an element.
+		 * 		Useful in Binary Search Trees.
+		 * 
+		 * @param n 
+		 */
+		void leftRotate(BinaryTreeNode<T>* n);
+
+		/**
+		 * @brief Rotate elements in the binary tree right around an element.
+		 * 		Useful in Binary Search Trees.
+		 * 
+		 * @param n 
+		 */
+		void rightRotate(BinaryTreeNode<T>* n);
+
+		/**
+		 * @brief Swaps the position of node A and B. Both must be valid nodes.
+		 * 
+		 * @param A 
+		 * @param B 
+		 */
+		void swapNodes(BinaryTreeNode<T>* A, BinaryTreeNode<T>* B);
+
 	private:
+
 		BinaryTreeNode<T>* rootNode = nullptr;
 		void cleanUp(BinaryTreeNode<T>* node);
 		int traverseCount(BinaryTreeNode<T>* node);
@@ -154,6 +188,9 @@ namespace glib
 			}
 
 			parent->leftChild = leftChild;
+
+			if(leftChild != nullptr)
+				leftChild->parent = parent;
 		}
 	}
 
@@ -169,6 +206,8 @@ namespace glib
 			}
 
 			parent->rightChild = rightChild;
+			if(rightChild != nullptr)
+				rightChild->parent = parent;
 		}
 	}
 
@@ -344,6 +383,127 @@ namespace glib
 			
 			getTraversalInfoRecursive(data, node->leftChild, m1, leafOnly);
 			getTraversalInfoRecursive(data, node->rightChild, m2, leafOnly);
+		}
+	}
+
+	template<typename T>
+	inline void BinaryTree<T>::leftRotate(BinaryTreeNode<T>* A)
+	{
+		if(A != nullptr)
+		{
+			BinaryTreeNode<T>* oldParent = A->parent;
+			BinaryTreeNode<T>* B = A->rightChild;
+			BinaryTreeNode<T>* L = A->leftChild;
+			BinaryTreeNode<T>* R = nullptr;
+			BinaryTreeNode<T>* S = nullptr;
+			
+			if(B != nullptr)
+			{
+				R = B->leftChild;
+				S = B->rightChild;
+			}
+
+			//manually set so nothing gets deleted
+			A->rightChild = R;
+			if(R != nullptr)
+				R->parent = A;
+			A->parent = B;
+			if(B != nullptr)
+			{
+				B->parent = oldParent;
+				B->leftChild = A;
+			}
+			if(oldParent != nullptr)
+			{
+				if(oldParent->leftChild == A)
+					oldParent->leftChild = B;
+				else
+					oldParent->rightChild = B;
+			}
+
+			if(B->parent == nullptr)
+				rootNode = B;
+		}
+	}
+
+	template<typename T>
+	inline void BinaryTree<T>::rightRotate(BinaryTreeNode<T>* B)
+	{
+		if(B != nullptr)
+		{
+			BinaryTreeNode<T>* oldParent = B->parent;
+			BinaryTreeNode<T>* A = B->leftChild;
+			BinaryTreeNode<T>* S = B->rightChild;
+			BinaryTreeNode<T>* R = nullptr;
+			BinaryTreeNode<T>* L = nullptr;
+			
+			if(A != nullptr)
+			{
+				L = A->leftChild;
+				R = A->rightChild;
+			}
+
+			//manually set so nothing gets deleted
+			B->leftChild = R;
+			if(R != nullptr)
+				R->parent = B;
+			B->parent = A;
+			if(A != nullptr)
+			{
+				A->parent = oldParent;
+				A->rightChild = B;
+			}
+			
+			if(oldParent != nullptr)
+			{
+				if(oldParent->leftChild == B)
+					oldParent->leftChild = A;
+				else
+					oldParent->rightChild = A;
+			}
+
+			if(A->parent == nullptr)
+				rootNode = A;
+		}
+	}
+
+	template<typename T>
+	inline void BinaryTree<T>::swapNodes(BinaryTreeNode<T>* A, BinaryTreeNode<T>* B)
+	{
+		if(A != nullptr && B != nullptr)
+		{
+			BinaryTreeNode<T>* AParent = A->parent;
+			BinaryTreeNode<T>* BParent = B->parent;
+			BinaryTreeNode<T>* BSideL = B->leftChild;
+			BinaryTreeNode<T>* BSideR = B->rightChild;
+			
+			B->leftChild = A->leftChild;
+			B->rightChild = A->rightChild;
+			A->leftChild = BSideL;
+			A->rightChild = BSideR;
+
+			A->parent = BParent;
+			B->parent = AParent;
+
+			if(AParent != nullptr)
+			{
+				if(AParent->leftChild == A)
+					AParent->leftChild = B;
+				else
+					AParent->rightChild = B;
+			}
+			if(BParent != nullptr)
+			{
+				if(BParent->leftChild == B)
+					BParent->leftChild = A;
+				else
+					BParent->rightChild = A;
+			}
+
+			if(A == rootNode)
+				rootNode = B;
+			else if(B == rootNode)
+				rootNode = A;
 		}
 	}
 

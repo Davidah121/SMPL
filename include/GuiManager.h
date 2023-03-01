@@ -391,7 +391,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 
 		static Box2D getInvalidBox();
 
@@ -564,7 +564,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 	
@@ -572,7 +572,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
+		static GuiInstance* loadFunction(SimpleHashMap<std::string, std::string>& attributes);
 	};
 
 	class GuiList : public GuiInstance
@@ -614,7 +614,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 
@@ -622,7 +622,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
+		static GuiInstance* loadFunction(SimpleHashMap<std::string, std::string>& attributes);
 		void copy(const GuiList& other);
 
 		std::vector<Point*> locations;
@@ -675,7 +675,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 
@@ -683,7 +683,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
+		static GuiInstance* loadFunction(SimpleHashMap<std::string, std::string>& attributes);
 		void copy(const GuiGrid& other);
 
 		std::vector<Point*> locations;
@@ -738,14 +738,14 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 		static void registerLoadFunction();
 
 	protected:
 		void solveBoundingBox();
 		
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
+		static GuiInstance* loadFunction(SimpleHashMap<std::string, std::string>& attributes);
 		void copy(const GuiContextMenu& other);
 
 		GuiList listMenu = GuiList(0, 0);
@@ -1081,7 +1081,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 
@@ -1089,7 +1089,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
+		static GuiInstance* loadFunction(SimpleHashMap<std::string, std::string>& attributes);
 		
 
 		std::function<void(GuiInstance*)> onClickFunction;
@@ -1264,7 +1264,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 	
@@ -1272,7 +1272,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
+		static GuiInstance* loadFunction(SimpleHashMap<std::string, std::string>& attributes);
 
 		size_t lastUpdateTime = 0;
 		size_t index = 0;
@@ -1555,7 +1555,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 
@@ -1563,7 +1563,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
+		static GuiInstance* loadFunction(SimpleHashMap<std::string, std::string>& attributes);
 		void copy(const GuiTextBlock& other);
 		
 		int maxWidth = -1;
@@ -1817,7 +1817,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 
@@ -1825,7 +1825,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
+		static GuiInstance* loadFunction(SimpleHashMap<std::string, std::string>& attributes);
 		
 		std::function<void(GuiInstance*)> onEnterPressedFunction;
 		std::function<void(GuiInstance*)> onKeyPressFunction;
@@ -2220,14 +2220,14 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 		static void registerLoadFunction();
 
 	protected:
 		void solveBoundingBox();
 		
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
+		static GuiInstance* loadFunction(SimpleHashMap<std::string, std::string>& attributes);
 		
 		/**
 		 * @brief Construct a new Gui Date Picker object
@@ -2536,7 +2536,7 @@ namespace glib
 		 * @param className 
 		 * @param func 
 		 */
-		static void registerLoadFunction(std::string className, std::function<GuiInstance*(std::unordered_map<std::string, std::string>&)> func);
+		static void registerLoadFunction(std::string className, std::function<GuiInstance*(SimpleHashMap<std::string, std::string>&)> func);
 
 		/**
 		 * @brief Adds some default loading functions to be used when loading elements from a file.
@@ -2563,7 +2563,7 @@ namespace glib
 		std::vector<GuiInstance*> objects = std::vector<GuiInstance*>();
 		std::unordered_set<GuiInstance*> shouldDelete = std::unordered_set<GuiInstance*>();
 		
-		static std::unordered_map<std::string, std::function<GuiInstance*(std::unordered_map<std::string, std::string>&)> > elementLoadingFunctions;
+		static std::unordered_map<std::string, std::function<GuiInstance*(SimpleHashMap<std::string, std::string>&)> > elementLoadingFunctions;
 
 		SimpleHashMap<std::string, GuiInstance*> objectsByName = SimpleHashMap<std::string, GuiInstance*>();
 

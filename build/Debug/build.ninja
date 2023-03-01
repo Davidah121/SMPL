@@ -16,6 +16,8 @@ build $objDir/AudioOut.o: buildToObject src/AudioOut.cpp
 build $objDir/BezierCurve.o: buildToObject src/BezierCurve.cpp
 build $objDir/BinarySet.o: buildToObject src/BinarySet.cpp
 build $objDir/BitmapFont.o: buildToObject src/BitmapFont.cpp
+build $objDir/CatmullRom.o: buildToObject src/CatmullRom.cpp
+build $objDir/CemYukselSpline.o: buildToObject src/CemYukselSpline.cpp
 build $objDir/Class.o: buildToObject src/Class.cpp
 build $objDir/ColorNameConverter.o: buildToObject src/ColorNameConverter.cpp
 build $objDir/ColorPalette.o: buildToObject src/ColorPalette.cpp
@@ -23,7 +25,6 @@ build $objDir/ColorSpaceConverter.o: buildToObject src/ColorSpaceConverter.cpp
 build $objDir/ComplexNumber.o: buildToObject src/ComplexNumber.cpp
 build $objDir/Compression.o: buildToObject src/Compression.cpp
 build $objDir/Compression_ARITHMETIC.o: buildToObject src/Compression_ARITHMETIC.cpp
-build $objDir/Compression_CHECKSUM.o: buildToObject src/Compression_CHECKSUM.cpp
 build $objDir/Compression_DEFLATE.o: buildToObject src/Compression_DEFLATE.cpp
 build $objDir/Compression_HUFFMAN.o: buildToObject src/Compression_HUFFMAN.cpp
 build $objDir/Compression_LZ77.o: buildToObject src/Compression_LZ77.cpp
@@ -32,6 +33,7 @@ build $objDir/Compression_LZW.o: buildToObject src/Compression_LZW.cpp
 build $objDir/Compression_RLE.o: buildToObject src/Compression_RLE.cpp
 build $objDir/Compression_StreamLZW.o: buildToObject src/Compression_StreamLZW.cpp
 build $objDir/Compression_StreamRLE.o: buildToObject src/Compression_StreamRLE.cpp
+build $objDir/Cryptography.o: buildToObject src/Cryptography.cpp
 build $objDir/DXFont.o: buildToObject src/ext/DXFont.cpp
 build $objDir/DXGraphics.o: buildToObject src/ext/DXGraphics.cpp
 build $objDir/DXModel.o: buildToObject src/ext/DXModel.cpp
@@ -52,6 +54,7 @@ build $objDir/File.o: buildToObject src/File.cpp
 build $objDir/Font.o: buildToObject src/Font.cpp
 build $objDir/GamepadDInput.o: buildToObject src/GamepadDInput.cpp
 build $objDir/GamepadXInput.o: buildToObject src/GamepadXInput.cpp
+build $objDir/GeneralSpline.o: buildToObject src/GeneralSpline.cpp
 build $objDir/GeneralVector.o: buildToObject src/GeneralVector.cpp
 build $objDir/GuiManager.o: buildToObject src/GuiManager.cpp
 build $objDir/GuiManagerGraphicsInterface.o: buildToObject src/GuiManagerGraphicsInterface.cpp
@@ -92,6 +95,7 @@ build $objDir/NeuralNetwork.o: buildToObject src/NeuralNetwork.cpp
 build $objDir/Object.o: buildToObject src/Object.cpp
 build $objDir/PolarCoordinate.o: buildToObject src/PolarCoordinate.cpp
 build $objDir/Quaternion.o: buildToObject src/Quaternion.cpp
+build $objDir/Serializable.o: buildToObject src/Serializable.cpp
 build $objDir/Shape.o: buildToObject src/Shape.cpp
 build $objDir/SimpleDir.o: buildToObject src/SimpleDir.cpp
 build $objDir/SimpleFile.o: buildToObject src/SimpleFile.cpp
@@ -128,3 +132,5 @@ build $objDir/VectorGraphic_VectorPolyline.o: buildToObject src/VectorGraphic_Ve
 build $objDir/VectorGraphic_VectorRectangle.o: buildToObject src/VectorGraphic_VectorRectangle.cpp
 build $objDir/VectorGraphic_VectorShape.o: buildToObject src/VectorGraphic_VectorShape.cpp
 build $objDir/VectorSprite.o: buildToObject src/VectorSprite.cpp
+build $objDir/WebRequest.o: buildToObject src/WebRequest.cpp
+build $objDir/WebSocket.o: buildToObject src/WebSocket.cpp

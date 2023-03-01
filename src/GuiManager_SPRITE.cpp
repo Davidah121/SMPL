@@ -230,49 +230,49 @@ namespace glib
 	}
 
 
-	void GuiSprite::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs)
+	void GuiSprite::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs)
 	{
 		GuiInstance::loadDataFromXML(attribs);
 		std::vector<std::string> possibleNames = { "src", "width", "height", "xscale", "yscale", "color"};
 
 		for(size_t i=0; i<possibleNames.size(); i++)
 		{
-			auto it = attribs.find(possibleNames[i]);
-			if(it != attribs.end())
+			auto it = attribs.get(possibleNames[i]);
+			if(it != nullptr)
 			{
-				if(it->first == "src")
+				if(it->key == "src")
 				{
 					//check if in resources by name.
-					spr = GuiResourceManager::getResourceManager().getSprite(it->second);
+					spr = GuiResourceManager::getResourceManager().getSprite(it->data);
 					if(spr.getPointer() == nullptr)
 					{
 						//create it
-						GuiResourceManager::getResourceManager().addSprite( GuiGraphicsInterface::createSprite(it->second), it->second, false );
-						spr = GuiResourceManager::getResourceManager().getSprite(it->second);
+						GuiResourceManager::getResourceManager().addSprite( GuiGraphicsInterface::createSprite(it->data), it->data, false );
+						spr = GuiResourceManager::getResourceManager().getSprite(it->data);
 					}
 				}
-				else if(it->first == "width")
+				else if(it->key == "width")
 				{
-					width = std::abs(StringTools::toInt(it->second));
+					width = std::abs(StringTools::toInt(it->data));
 				}
-				else if(it->first == "height")
+				else if(it->key == "height")
 				{
-					height = std::abs(StringTools::toInt(it->second));
+					height = std::abs(StringTools::toInt(it->data));
 				}
-				else if(it->first == "xscale")
+				else if(it->key == "xscale")
 				{
-					xScale = StringTools::toFloat(it->second);
+					xScale = StringTools::toFloat(it->data);
 				}
-				else if(it->first == "yscale")
+				else if(it->key == "yscale")
 				{
-					yScale = StringTools::toFloat(it->second);
+					yScale = StringTools::toFloat(it->data);
 				}
-				else if(it->first == "color")
+				else if(it->key == "color")
 				{
-					imgColor = ColorNameConverter::NameToColor(it->second);
+					imgColor = ColorNameConverter::NameToColor(it->data);
 				}
 
-				attribs.erase(possibleNames[i]);
+				attribs.remove(it);
 			}
 		}
 
@@ -290,7 +290,7 @@ namespace glib
 		GuiManager::registerLoadFunction("GuiSprite", GuiSprite::loadFunction);
 	}
 
-	GuiInstance* GuiSprite::loadFunction(std::unordered_map<std::string, std::string>& attributes)
+	GuiInstance* GuiSprite::loadFunction(SimpleHashMap<std::string, std::string>& attributes)
 	{
 		GuiSprite* ins = new GuiSprite();
 		ins->loadDataFromXML(attributes);

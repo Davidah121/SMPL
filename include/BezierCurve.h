@@ -55,6 +55,53 @@ namespace glib
 		void addPoint(double x, double y);
 
 		/**
+		 * @brief Inserts a new point at the specified index. This allows you to add
+		 * 		control points where desired and to insert a new start or end point.
+		 * 
+		 * @param index 
+		 * @param p 
+		 * @return true 
+		 * @return false 
+		 */
+		bool insertPoint(size_t index, Vec2f p);
+
+		/**
+		 * @brief Inserts a new point at the specified index. This allows you to add
+		 * 		control points where desired and to insert a new start or end point.
+		 * 
+		 * @param index 
+		 * @param x 
+		 * @param y 
+		 * @return true 
+		 * @return false 
+		 */
+		bool insertPoint(size_t index, double x, double y);
+
+		/**
+		 * @brief Removes the point at the specified index.
+		 * 
+		 * @param index 
+		 */
+		void removePoint(size_t index);
+
+		/**
+		 * @brief Sets the point at the specified index
+		 * 
+		 * @param index 
+		 * @param p 
+		 */
+		void setPoint(size_t index, Vec2f p);
+
+		/**
+		 * @brief Sets the point at the specified index
+		 * 
+		 * @param index 
+		 * @param x 
+		 * @param y 
+		 */
+		void setPoint(size_t index, double x, double y);
+		
+		/**
 		 * @brief Gets a point from the Bezier Curve.
 		 * @param index
 		 * 		The index of the point in the list.
@@ -65,6 +112,13 @@ namespace glib
 		 * 		Otherwise, the default Vec2f is returned.
 		 */
 		Vec2f getPoint(size_t index);
+
+		/**
+		 * @brief Get the Points used by the Bezier Curve
+		 * 
+		 * @return std::vector<Vec2f>& 
+		 */
+		std::vector<Vec2f>& getPoints();
 
 		/**
 		 * @brief Subdivides the Bezier Curve from [0, 1] into 2 separate Bezier Curves.
