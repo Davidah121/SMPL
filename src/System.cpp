@@ -4,6 +4,7 @@
 #include <thread>
 #include <mutex>
 #include "SimpleFile.h"
+#include "Input.h"
 
 #ifdef __unix__
 	#include <X11/Xlib.h>
@@ -93,11 +94,11 @@ namespace glib
 	
 	std::tm System::getCurrentDate()
 	{
-		std::time_t currentTime = time(nullptr);
+		time_t currentTime = time(nullptr);
 		return System::convertTimeToDate(currentTime);
 	}
 
-	std::tm System::convertTimeToDate(std::time_t t)
+	std::tm System::convertTimeToDate(time_t t)
 	{
 		std::tm currentStoredDate;
 		
@@ -143,161 +144,6 @@ namespace glib
 	unsigned int System::getNumberOfThreads()
 	{
 		return numberOfThreads;
-	}
-
-	void System::emulateKeyPress(int key)
-	{
-		//TODO - __unix__ VERSION
-		#ifdef _WIN32
-
-			INPUT i;
-			ZeroMemory(&i, sizeof(INPUT));
-
-			i.type = INPUT_KEYBOARD;
-			i.ki.wVk = key;
-			i.ki.dwFlags = NULL;
-
-			SendInput(1, &i, sizeof(INPUT));
-
-		#endif
-	}
-
-	void System::emulateKeyRelease(int key)
-	{
-		//TODO - __unix__ VERSION
-		#ifdef _WIN32
-
-			INPUT i;
-			ZeroMemory(&i, sizeof(INPUT));
-
-			i.type = INPUT_KEYBOARD;
-			i.ki.wVk = key;
-			i.ki.dwFlags = KEYEVENTF_KEYUP;
-
-			SendInput(1, &i, sizeof(INPUT));
-
-		#endif
-	}
-
-	void System::emulateMousePress(int key)
-	{
-		//TODO - __unix__ VERSION
-		#ifdef _WIN32
-
-			INPUT i;
-			ZeroMemory(&i, sizeof(INPUT));
-
-			i.type = INPUT_MOUSE;
-			
-			switch (key)
-			{
-			case LEFT_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-				break;
-			case RIGHT_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
-				break;
-			case MIDDLE_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_MIDDLEDOWN;
-				break;
-			case X1_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_XDOWN;
-				i.mi.mouseData = XBUTTON1;
-				break;
-			case X2_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_XDOWN;
-				i.mi.mouseData = XBUTTON2;
-				break;
-			default:
-				break;
-			}
-
-			SendInput(1, &i, sizeof(INPUT));
-
-		#endif
-	}
-
-	void System::emulateMouseRelease(int key)
-	{
-		//TODO - __unix__ VERSION
-		#ifdef _WIN32
-
-			INPUT i;
-			ZeroMemory(&i, sizeof(INPUT));
-
-			i.type = INPUT_MOUSE;
-
-			switch (key)
-			{
-			case LEFT_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_LEFTUP;
-				break;
-			case RIGHT_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
-				break;
-			case MIDDLE_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
-				break;
-			case X1_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_XUP;
-				i.mi.mouseData = XBUTTON1;
-				break;
-			case X2_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_XUP;
-				i.mi.mouseData = XBUTTON2;
-				break;
-			default:
-				break;
-			}
-
-			SendInput(1, &i, sizeof(INPUT));
-		
-		#endif
-	}
-
-	void System::emulateMouseWheel(int wheel, int amount)
-	{
-		//TODO - __unix__ VERSION
-		#ifdef _WIN32
-
-			INPUT i;
-			ZeroMemory(&i, sizeof(INPUT));
-
-			i.type = INPUT_MOUSE;
-
-			switch (wheel)
-			{
-			case MOUSE_WHEEL_UP:
-				i.mi.mouseData = -WHEEL_DELTA * amount;
-				i.mi.dwFlags = MOUSEEVENTF_WHEEL;
-				break;
-			case MOUSE_WHEEL_DOWN:
-				i.mi.mouseData = WHEEL_DELTA * amount;
-				i.mi.dwFlags = MOUSEEVENTF_WHEEL;
-				break;
-			case MOUSE_WHEEL_LEFT:
-				i.mi.mouseData = -WHEEL_DELTA * amount;
-				i.mi.dwFlags = MOUSEEVENTF_HWHEEL;
-				break;
-			case MOUSE_WHEEL_RIGHT:
-				i.mi.mouseData = WHEEL_DELTA * amount;
-				i.mi.dwFlags = MOUSEEVENTF_HWHEEL;
-				break;
-			default:
-				break;
-			}
-
-			SendInput(1, &i, sizeof(INPUT));
-
-		#endif
-	}
-
-	void System::setMousePosition(int x, int y)
-	{
-		//TODO - __unix__ VERSION
-		#ifdef _WIN32
-		SetCursorPos(x, y);
-		#endif
 	}
 
 	int System::getMouseX()
@@ -355,15 +201,15 @@ namespace glib
 
 			switch (value)
 			{
-			case LEFT_MOUSE_BUTTON:
+			case Input::LEFT_MOUSE_BUTTON:
 				return (GetKeyState(VK_LBUTTON) >> 15) == 1;
-			case RIGHT_MOUSE_BUTTON:
+			case Input::RIGHT_MOUSE_BUTTON:
 				return (GetKeyState(VK_RBUTTON) >> 15) == 1;
-			case MIDDLE_MOUSE_BUTTON:
+			case Input::MIDDLE_MOUSE_BUTTON:
 				return (GetKeyState(VK_MBUTTON) >> 15) == 1;
-			case X1_MOUSE_BUTTON:
+			case Input::X1_MOUSE_BUTTON:
 				return (GetKeyState(VK_XBUTTON1) >> 15) == 1;
-			case X2_MOUSE_BUTTON:
+			case Input::X2_MOUSE_BUTTON:
 				return (GetKeyState(VK_XBUTTON2) >> 15) == 1;
 			default:
 				return false;

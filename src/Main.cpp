@@ -14,6 +14,8 @@
 
 #include "BinarySearchTree.h"
 
+#include "ext/TouchSimulator.h"
+
 using namespace glib;
 
 
@@ -257,6 +259,13 @@ void printTree()
     printNode(0, true, values.getTree()->getRoot());
 }
 
+void simulateTouch()
+{
+    TouchSimulator::init();
+    TouchSimulator::injectDown(0, 1920-320, 320);
+    TouchSimulator::injectUp(0, 1920-320, 320);
+}
+
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main(int argc, char** argv)
 {
@@ -275,6 +284,7 @@ int main(int argc, char** argv)
     // testResourceManager();
 
     // testCompression();
-    printTree();
+    // printTree();
+    simulateTouch();
     return 0;
 }

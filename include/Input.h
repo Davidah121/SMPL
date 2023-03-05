@@ -95,6 +95,13 @@ namespace glib
 		static const int KEY_BACK_SLASH = 0xDC | NEGATIVE;
 		static const int KEY_RIGHT_SQUARE_BRACKET = 0xDD | NEGATIVE;
 		static const int KEY_SINGLE_QUOTE = 0xDE | NEGATIVE;
+
+		
+		static const int LEFT_MOUSE_BUTTON = 0;
+		static const int RIGHT_MOUSE_BUTTON = 1;
+		static const int MIDDLE_MOUSE_BUTTON = 2;
+		static const int X1_MOUSE_BUTTON = 3;
+		static const int X2_MOUSE_BUTTON = 4;
 		
 		/**
 		 * @brief Polls input from the the Keyboard and Mouse using the OS tools.
@@ -263,18 +270,13 @@ namespace glib
 		static void adjustVerticalScroll(int v);
 		static void adjustHorizontalScroll(int v);
 		static void adjustCurrCharVal(unsigned int v1, unsigned int v2);
-		
-
-		const static int LEFT_MOUSE_BUTTON = 0x00;
-		const static int MIDDLE_MOUSE_BUTTON = 0x01;
-		const static int RIGHT_MOUSE_BUTTON = 0x02;
 
 	private:
 		static bool keyState[256];
-		static bool mouseState[3];
+		static bool mouseState[5];
 
 		static bool preKeyState[256];
-		static bool preMouseState[3];
+		static bool preMouseState[5];
 		
 		static int verticalScrollValue;
 		static int horizontalScrollValue;
