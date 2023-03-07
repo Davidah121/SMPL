@@ -50,6 +50,9 @@ build $objDir/GLSprite.o: buildToObject src/ext/GLSprite.cpp
 build $objDir/GLSurface.o: buildToObject src/ext/GLSurface.cpp
 build $objDir/GLTexture.o: buildToObject src/ext/GLTexture.cpp
 build $objDir/GLWindow.o: buildToObject src/ext/GLWindow.cpp
+build $objDir/KeyboardSimulator.o: buildToObject src/ext/KeyboardSimulator.cpp
+build $objDir/MouseSimulator.o: buildToObject src/ext/MouseSimulator.cpp
+build $objDir/TouchSimulator.o: buildToObject src/ext/TouchSimulator.cpp
 build $objDir/File.o: buildToObject src/File.cpp
 build $objDir/Font.o: buildToObject src/Font.cpp
 build $objDir/GamepadDInput.o: buildToObject src/GamepadDInput.cpp

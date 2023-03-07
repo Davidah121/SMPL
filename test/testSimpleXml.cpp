@@ -17,6 +17,13 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 			</body>
 		</html>
 	)R0N0";
+
+	const std::string rawXML2 = R"R0N0(
+		<TouchMacros>
+			<Macro type="touch" x1="960" y1="540" padattribute="a"/>
+		</TouchMacros>
+	)R0N0";
+
 	SECTION("Test loading an xml from a file or series of bytes")
 	{
 		glib::SimpleXml xml = glib::SimpleXml();
@@ -73,5 +80,19 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 		searches = {"body", "body", "p"};
 		result = xml.getNodesPattern(searches);
 		REQUIRE(result.size() == 0);
+	}
+
+	SECTION("Test searching for node 2")
+	{
+		glib::SimpleXml xml = glib::SimpleXml();
+		xml.loadFromBytes((unsigned char*)rawXML2.data(), rawXML2.size());
+
+		std::vector<std::string> searches = {"TouchMacros", "Macro"};
+		std::vector<glib::XmlNode*> result = xml.getNodesPattern(searches);
+		REQUIRE(result.size() == 1);
+
+		glib::HashPair<std::string, std::string>* attribs = result[0]->getAttribute("type");
+		REQUIRE(attribs != nullptr);
+		REQUIRE(attribs->data == "touch");
 	}
 }

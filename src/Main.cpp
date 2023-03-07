@@ -262,8 +262,34 @@ void printTree()
 void simulateTouch()
 {
     TouchSimulator::init();
-    TouchSimulator::injectDown(0, 1920-320, 320);
-    TouchSimulator::injectUp(0, 1920-320, 320);
+    // TouchSimulator::test();
+    TouchSimulator::setDown(0, 320, 320);
+    TouchSimulator::setDown(1, 640, 640);
+    TouchSimulator::inject();
+    // if(TouchSimulator::inject())
+    //     StringTools::println("OKAY");
+    // else
+    //     StringTools::println("NOT OKAY");
+    
+    for(int i=0; i<100; i++)
+    {
+        TouchSimulator::setDown(0, 320+i, 320+i);
+        TouchSimulator::setDown(1, 640+i, 640+i);
+        TouchSimulator::inject();
+        // if(TouchSimulator::inject())
+        //     StringTools::println("OKAY-loop");
+        // else
+        //     StringTools::println("NOT OKAY-loop");
+        Sleep(1);
+    }
+
+    TouchSimulator::setUp(0);
+    TouchSimulator::setUp(1);
+    TouchSimulator::inject();
+    // if(TouchSimulator::inject())
+    //     StringTools::println("OKAY");
+    // else
+    //     StringTools::println("NOT OKAY");
 }
 
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)

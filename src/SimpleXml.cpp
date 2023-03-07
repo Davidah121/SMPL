@@ -72,6 +72,7 @@ namespace glib
         if(offset < nameOrder.size())
         {
             //attempt to find nameOrder[offset] in the nameToIndexMap
+            auto allStuff = nameToIndexMap.getAll();
             std::vector<HashPair<std::string, size_t>*> it = nameToIndexMap.getAll(nameOrder[offset]);
             for(HashPair<std::string, size_t>* c : it)
             {
@@ -625,15 +626,13 @@ namespace glib
             
             if(line[line.size()-1]=='/')
             {
-                attribString.pop_back();
-                title = attribString.substr(0, indexOfFirstSpace);
+                attribString.pop_back(); //remove the slash at the end for easier parsing
             }
         }
         else if((line[0] == '?' && line[line.size()-1] == '?') || line[0] == '!')
         {
             //xml declaration
             node->isEnd = true;
-            title = line.substr(0, indexOfFirstSpace); //not sure why it started after the first character
         }
 
         node->title = title;
@@ -670,9 +669,7 @@ namespace glib
                             delete node;
                             return nullptr;
                         }
-                        if(settingValue)
-                            attrib.second+=attribString[i]; //Case 2. Possible malformed value string but will keep.
-                        else
+                        if(!settingValue)
                             attrib.first+=attribString[i]; //Case 1. No value
                     }
 
