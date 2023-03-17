@@ -37,6 +37,7 @@ namespace glib
 
 		size_t size();
 		int getType();
+		
 	private:
 		static const bool COLOR_BLACK = false;
 		static const bool COLOR_RED = true;

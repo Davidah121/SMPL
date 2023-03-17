@@ -98,8 +98,8 @@ namespace glib
 
 		
 		static const int LEFT_MOUSE_BUTTON = 0;
-		static const int RIGHT_MOUSE_BUTTON = 1;
-		static const int MIDDLE_MOUSE_BUTTON = 2;
+		static const int MIDDLE_MOUSE_BUTTON = 1;
+		static const int RIGHT_MOUSE_BUTTON = 2;
 		static const int X1_MOUSE_BUTTON = 3;
 		static const int X2_MOUSE_BUTTON = 4;
 		

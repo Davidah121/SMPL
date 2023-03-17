@@ -8,7 +8,6 @@
 
 namespace glib
 {
-
 	std::vector<SimpleWindow*> SimpleWindow::windowList = std::vector<SimpleWindow*>();
 	int SimpleWindow::screenWidth = System::getDesktopWidth();
 	int SimpleWindow::screenHeight = System::getDesktopHeight();
@@ -126,11 +125,18 @@ namespace glib
 			bool canDo = false;
 
 			HDC hdc;
+			HDC deskHDC;
 			PAINTSTRUCT ps;
 			HDC mem;
 			BITMAP img = {};
 			HGDIOBJ oldImg;
 			RECT* rect = nullptr;
+			BLENDFUNCTION blend;
+			blend.BlendOp = AC_SRC_OVER;
+			blend.BlendFlags = 0;
+			blend.SourceConstantAlpha = 255;
+			blend.AlphaFormat = AC_SRC_ALPHA;
+
 
 
 			int borderHeight = (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) +
@@ -139,6 +145,16 @@ namespace glib
 
 			if (currentWindow != nullptr)
 			{
+				POINT pt;
+				pt.x = currentWindow->getX();
+				pt.y = currentWindow->getY();
+
+				POINT ptZero = {0}; //The origin point of the monitor its drawn on. 0,0 for primary. 
+
+				SIZE siz;
+				siz.cx=currentWindow->getWidth();
+				siz.cy=currentWindow->getHeight();
+
 				switch (msg)
 				{
 				case WM_SETFOCUS:
@@ -160,7 +176,17 @@ namespace glib
 						oldImg = SelectObject(mem, currentWindow->bitmap);
 						GetObject(currentWindow->bitmap, sizeof(BITMAP), &img);
 
-						BitBlt(hdc, 0, 0, img.bmWidth, img.bmHeight, mem, 0, 0, SRCCOPY);
+						
+						if(currentWindow->windowType.windowType == TRANSPARENT_WINDOW)
+						{
+							// Alpha blend with the pixels below on the desktop
+							deskHDC = GetDC(NULL);
+							UpdateLayeredWindow(hwnd, deskHDC, &pt, &siz, mem, &ptZero, RGB(0, 0, 0), &blend, ULW_ALPHA);
+						}
+						else
+						{
+							BitBlt(hdc, 0, 0, img.bmWidth, img.bmHeight, mem, 0, 0, SRCCOPY);
+						}
 
 						DeleteDC(mem);
 						EndPaint(hwnd, &ps);
@@ -699,6 +725,9 @@ namespace glib
 					case SimpleWindow::BORDERLESS_WINDOW:
 						style = WS_POPUP|WS_VISIBLE|WS_SYSMENU;
 						break;
+					case SimpleWindow::TRANSPARENT_WINDOW:
+						style = WS_POPUP|WS_VISIBLE|WS_SYSMENU;
+						break;
 					default:
 						style = WS_OVERLAPPEDWINDOW;
 						trueWidth += 16;
@@ -746,7 +775,11 @@ namespace glib
 
 				if(!failed)
 				{
-					windowHandle = (size_t)CreateWindowExW(0, text.c_str(), title.c_str(), style, trueX, trueY, trueWidth, trueHeight, 0, 0, hins, 0);
+					if(windowType.windowType == TRANSPARENT_WINDOW)
+						windowHandle = (size_t)CreateWindowExW(WS_EX_LAYERED, text.c_str(), title.c_str(), style, trueX, trueY, trueWidth, trueHeight, 0, 0, hins, 0);
+					else
+						windowHandle = (size_t)CreateWindowExW(0, text.c_str(), title.c_str(), style, trueX, trueY, trueWidth, trueHeight, 0, 0, hins, 0);
+						
 
 					DWORD attribValue = windowType.cornerType;
 					DwmSetWindowAttribute((HWND)windowHandle, DWMWA_WINDOW_CORNER_PREFERENCE_CONST, &attribValue, sizeof(attribValue));
@@ -833,7 +866,7 @@ namespace glib
 			bitInfo.bmiHeader.biHeight = -height;
 			bitInfo.bmiHeader.biCompression = BI_RGB;
 			bitInfo.bmiHeader.biPlanes = 1;
-			bitInfo.bmiHeader.biBitCount = 24;
+			bitInfo.bmiHeader.biBitCount = 32;
 			bitInfo.bmiHeader.biSizeImage = 0;
 
 			bitInfo.bmiHeader.biXPelsPerMeter = width;
@@ -857,8 +890,10 @@ namespace glib
 				wndPixels = nullptr;
 			}
 
-			scanLinePadding = width%4;
-			wndPixelsSize = (width*3 + scanLinePadding) * height;
+			// scanLinePadding = width%4;
+			// wndPixelsSize = (width*3 + scanLinePadding) * height;
+			scanLinePadding = 0;
+			wndPixelsSize = width*height*4;
 
 			wndPixels = new unsigned char[wndPixelsSize];
 			memset(wndPixels,0,wndPixelsSize);
@@ -1419,11 +1454,24 @@ namespace glib
 					int tX = 0;
 					while (wndPixelsStart < wndPixelsEnd)
 					{
-						*wndPixelsStart = (*imgPixelsStart).blue;
-						*(wndPixelsStart + 1) = (*imgPixelsStart).green;
-						*(wndPixelsStart + 2) = (*imgPixelsStart).red;
+						//switch from rgba to bgra
+						//normally a byteswap and left rotation is all that is neccessary but must use premultiplied alpha
+						
+						if(this->windowType.windowType == TRANSPARENT_WINDOW)
+						{
+							*wndPixelsStart = (unsigned char)(imgPixelsStart->alpha * ((float)imgPixelsStart->blue/255.0));
+							*(wndPixelsStart + 1) = (unsigned char)(imgPixelsStart->alpha * ((float)imgPixelsStart->green/255.0));
+							*(wndPixelsStart + 2) = (unsigned char)(imgPixelsStart->alpha * ((float)imgPixelsStart->red/255.0));
+						}
+						else
+						{
+							*wndPixelsStart = imgPixelsStart->blue;
+							*(wndPixelsStart + 1) = imgPixelsStart->green;
+							*(wndPixelsStart + 2) = imgPixelsStart->red;
+						}
+						*(wndPixelsStart + 3) = (*imgPixelsStart).alpha;
 
-						wndPixelsStart += 3;
+						wndPixelsStart += 4;
 						imgPixelsStart++;
 						tX++;
 
@@ -1448,11 +1496,21 @@ namespace glib
 
 					while(wndPixelsStart < wndPixelsEnd && imgPixelsStart < imgPixelsEnds)
 					{
-						wndPixelsStart[0] = imgPixelsStart->blue;
-						wndPixelsStart[1] = imgPixelsStart->green;
-						wndPixelsStart[2] = imgPixelsStart->red;
+						if(this->windowType.windowType == TRANSPARENT_WINDOW)
+						{
+							wndPixelsStart[0] = (unsigned char)(imgPixelsStart->alpha * ((float)imgPixelsStart->blue/255.0));
+							wndPixelsStart[1] = (unsigned char)(imgPixelsStart->alpha * ((float)imgPixelsStart->green/255.0));
+							wndPixelsStart[2] = (unsigned char)(imgPixelsStart->alpha * ((float)imgPixelsStart->red/255.0));
+						}
+						else
+						{
+							wndPixelsStart[0] = imgPixelsStart->blue;
+							wndPixelsStart[1] = imgPixelsStart->green;
+							wndPixelsStart[2] = imgPixelsStart->red;
+						}
+						wndPixelsStart[3] = imgPixelsStart->red;
 						
-						wndPixelsStart+=3; 
+						wndPixelsStart+=4; 
 						imgPixelsStart++;
 						tX++;
 						if(tX >= minWidth)

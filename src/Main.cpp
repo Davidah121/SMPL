@@ -292,6 +292,48 @@ void simulateTouch()
     //     StringTools::println("NOT OKAY");
 }
 
+
+void testAlphaWindow()
+{
+    WindowOptions options;
+    // options.windowType = SimpleWindow::BORDERLESS_WINDOW;
+    options.windowType = SimpleWindow::TRANSPARENT_WINDOW;
+    options.threadManaged = false;
+
+    Image img = Image(320, 240);
+    for(int y=0; y<240; y++)
+    {
+        for(int x=0; x<320; x++)
+        {
+            img.setPixel(x, y, {255, 0, 0, (unsigned char)(255-y)});
+        }
+    }
+
+    SimpleWindow w = SimpleWindow("Test", 320, 240, 32, 32, options);
+    w.setActivateGui(false);
+    w.setPaintFunction([&w, &img]()->void{
+        w.drawImage(&img);
+    });
+
+    while(w.getRunning())
+    {
+        Input::pollInput();
+
+        w.setX( Input::getMouseX()-(w.getWidth()/2) );
+        w.setY( Input::getMouseY()-(w.getHeight()/2) );
+        
+        w.update();
+        w.repaint();
+
+        if(Input::getKeyDown(Input::KEY_ESCAPE) && Input::getMouseDown(Input::RIGHT_MOUSE_BUTTON))
+        {
+            break;
+        }
+        Sleep(10);
+    }
+    // w.waitTillClose();
+}
+
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main(int argc, char** argv)
 {
@@ -310,7 +352,8 @@ int main(int argc, char** argv)
     // testResourceManager();
 
     // testCompression();
-    // printTree();
-    simulateTouch();
+    printTree();
+    // simulateTouch();
+    // testAlphaWindow();
     return 0;
 }

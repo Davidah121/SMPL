@@ -38,8 +38,9 @@
 	
 	#include <Windows.h>
 	#include <dwmapi.h>
-
-	#pragma comment(lib,"Dwmapi.lib")
+	
+	#pragma comment(lib, "Msimg32.lib")
+	#pragma comment(lib, "Dwmapi.lib")
 #endif
 
 #include <exception>
@@ -88,6 +89,7 @@ namespace glib
 		static const unsigned char NORMAL_WINDOW = 0;
 		static const unsigned char BORDERLESS_WINDOW = 1;
 		static const unsigned char FULLSCREEN_WINDOW = 2;
+		static const unsigned char TRANSPARENT_WINDOW = 3;
 
 		static const unsigned char STATE_NORMAL = 0x00;
 		static const unsigned char STATE_MAXIMIZED = 0x01;
