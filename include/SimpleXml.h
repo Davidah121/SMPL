@@ -71,6 +71,10 @@ namespace glib
     class SimpleXml
     {
     public:
+        static const bool TYPE_XML = false;
+        static const bool TYPE_HTML = true;
+        static const std::vector<std::string> knownVoidTags;
+        
         /**
          * @brief Construct a new SimpleXml object
          *      Contains information about an XML file.
@@ -153,7 +157,13 @@ namespace glib
         std::vector<XmlNode*> getNodesPattern(std::vector<std::string>& nameOrder);
         std::vector<XmlNode*>& getNodes();
 
+        bool getType();
+        bool getValidXml();
+
     private:
+        bool type = TYPE_XML;
+        bool validXml = true;
+
         XmlNode* parseXmlLine(std::string line);
 
         void fixParseOnNode(XmlNode* n);

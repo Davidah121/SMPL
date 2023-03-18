@@ -24,6 +24,22 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 		</TouchMacros>
 	)R0N0";
 
+	const std::string rawHTML = R"R0N0(
+		<!DOCTYPE html>
+		<html>
+			<head>
+				<meta stuff="I don't know"/>
+			</head>
+			<body>
+				<form>
+					<input id="1" type="text" value="default">
+					<input id="2" type="text" value="default"></input>
+					<input id="3" type="text" value="default"/>
+				</form>
+			</body>
+		</html>
+	)R0N0";
+
 	SECTION("Test loading an xml from a file or series of bytes")
 	{
 		glib::SimpleXml xml = glib::SimpleXml();
@@ -31,7 +47,7 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 		//check for the right stuff
 
 		REQUIRE(xml.getNodes().size() == 2);
-		REQUIRE(xml.getNodes()[0]->getTitle() == "!DOCTYPE");
+		REQUIRE(xml.getNodes()[0]->getTitle() == "!doctype");
 		REQUIRE(xml.getNodes()[0]->getRawAttributes().getSize() > 0);
 		REQUIRE(xml.getNodes()[0]->getAttribute("html") != nullptr);
 		REQUIRE(xml.getNodes()[1]->getTitle() == "html");
@@ -87,12 +103,31 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 		glib::SimpleXml xml = glib::SimpleXml();
 		xml.loadFromBytes((unsigned char*)rawXML2.data(), rawXML2.size());
 
-		std::vector<std::string> searches = {"TouchMacros", "Macro"};
+		std::vector<std::string> searches = {"touchmacros", "macro"};
 		std::vector<glib::XmlNode*> result = xml.getNodesPattern(searches);
 		REQUIRE(result.size() == 1);
 
 		glib::HashPair<std::string, std::string>* attribs = result[0]->getAttribute("type");
 		REQUIRE(attribs != nullptr);
 		REQUIRE(attribs->data == "touch");
+	}
+
+	SECTION("Test HTML void elements")
+	{
+		glib::SimpleXml html = glib::SimpleXml();
+		html.loadFromBytes((unsigned char*)rawHTML.data(), rawHTML.size());
+
+		//Check type and valid xml. Should be html and invalid xml since one tag is not closed
+		REQUIRE(html.getType() == glib::SimpleXml::TYPE_HTML);
+		REQUIRE(html.getValidXml() == false);
+
+		//Check Sizes
+		REQUIRE(html.getNodes().size() == 2);
+		REQUIRE(html.getNodes()[1]->getChildNodes().size() == 2);
+		REQUIRE(html.getNodes()[1]->getChildNodes()[0]->getChildNodes().size() == 1);
+		REQUIRE(html.getNodes()[1]->getChildNodes()[1]->getChildNodes().size() == 1);
+		REQUIRE(html.getNodes()[1]->getChildNodes()[1]->getChildNodes()[0]->getChildNodes().size() == 3);
+		
+
 	}
 }

@@ -115,7 +115,7 @@ namespace glib
 
     void XmlNode::setTitle(std::string s)
     {
-        title = s;
+        title = StringTools::toLowercase(s);
     }
     void XmlNode::setValue(std::string s)
     {
@@ -130,6 +130,9 @@ namespace glib
     #pragma endregion
 
     #pragma region SIMPLE_XML
+
+    
+    const std::vector<std::string> SimpleXml::knownVoidTags = {"area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr"};
 
     SimpleXml::SimpleXml()
     {
@@ -347,11 +350,16 @@ namespace glib
      */
     bool SimpleXml::load(File file, bool parseEscape)
     {
+        type = TYPE_XML;
         SimpleFile f = SimpleFile(file, SimpleFile::READ | SimpleFile::UTF8);
         if(f.isOpen())
         {
             std::vector<unsigned char> fileBytes = f.readFullFileAsBytes();
             f.close();
+
+            if(file.getExtension() == ".html" || file.getExtension() == ".htm")
+                type = TYPE_HTML;
+            
             return SimpleXml::loadFromBytes(fileBytes.data(), fileBytes.size(), parseEscape);
         }
         return false;
@@ -365,6 +373,7 @@ namespace glib
         std::string innerNodeText = "";
 
         XmlNode* parentNode = nullptr;
+        XmlNode* lastNodeParsed = nullptr;
         bool isRecordingText = false;
         bool hitEnd = true;
 
@@ -399,6 +408,8 @@ namespace glib
                         return false;
                     }
 
+                    lastNodeParsed = node;
+
                     bool slashAtFront = innerNodeText[0] == '/';
 
                     innerNodeText = "";
@@ -408,7 +419,6 @@ namespace glib
                         if(!node->isEndOfSection())
                         {
                             addNode(node);
-                            // nodes.push_back(node);
                             parentNode = node;
                         }
                         else
@@ -416,7 +426,6 @@ namespace glib
                             if(node->attributes.getSize()>0)
                             {
                                 addNode(node);
-                                // nodes.push_back(node);
                             }
                             parentNode = node->parentNode;
                         }
@@ -427,21 +436,50 @@ namespace glib
                         if(!node->isEndOfSection())
                         {
                             parentNode->addChild(node);
-                            // parentNode->childNodes.push_back(node);
                             parentNode = node;
                         }
                         else
                         {
-                            if(node->title == parentNode->title && node->isEndOfSection() && slashAtFront)
+                            
+                            if(node->title == parentNode->title && slashAtFront)
                             {
                                 parentNode = parentNode->parentNode;
                             }
                             else
                             {
-                                parentNode->addChild(node);
-                                // parentNode->childNodes.push_back(node);
-                                node->parentNode = parentNode;
+                                if(slashAtFront)
+                                {
+                                    //error of some sort. closing tag that does not correspond to the parent.
+                                    //delete and continue parsing
+                                    if(type == TYPE_HTML)
+                                    {
+                                        //may be a void tag
+                                        if(lastNodeParsed != nullptr)
+                                        {
+                                            if(lastNodeParsed->getTitle() != node->getTitle())
+                                            {
+                                                validXml = false;
+                                            }
+                                            //otherwise valid xml. Still delete the node though.
+                                        }
+                                    }
+                                    else
+                                    {
+                                        validXml = false;
+                                    }
+                                }
+                                else
+                                {
+                                    parentNode->addChild(node);
+                                    node->parentNode = parentNode;
+                                }
                             }
+
+                            // if(slashAtFront == true)
+                            // {
+                            //     delete node;
+                            //     node = nullptr;
+                            // }
                             
                         }
                     }
@@ -609,6 +647,7 @@ namespace glib
     {
         //first, get the title. Will always be first and separated by a space from everything else
         XmlNode* node;
+        bool checkDoctype = false;
 
         size_t indexOfFirstSpace = line.find_first_of(' ');
         std::string title = line.substr(0, indexOfFirstSpace);
@@ -635,7 +674,29 @@ namespace glib
             node->isEnd = true;
         }
 
-        node->title = title;
+        node->setTitle(title);
+
+        if(type == TYPE_HTML)
+        {
+            //extra work since it could be a void tag where there is no end marker
+            if(!node->isEnd)
+            {
+                std::string tempTitle = node->getTitle();
+                for(int i=0; i<knownVoidTags.size(); i++)
+                {
+                    if(tempTitle == knownVoidTags[i])
+                    {
+                        node->isEnd = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(node->getTitle() == "!doctype")
+        {
+            checkDoctype = true;
+        }
         
         //split with parameters. No split if surrounded by quotation marks. split by space then by equals
         std::pair<std::string, std::string> attrib = std::pair<std::string, std::string>();
@@ -723,6 +784,13 @@ namespace glib
             }
         }
         
+        if(checkDoctype)
+        {
+            //check if html
+            if(node->getAttribute("html") != nullptr)
+                type = TYPE_HTML;
+        }
+
         return node;
     }
 
@@ -943,6 +1011,16 @@ namespace glib
             nameToIndexMap.add(n->getTitle(), nodes.size());
             nodes.push_back(n);
         }
+    }
+
+    bool SimpleXml::getType()
+    {
+        return type;
+    }
+
+    bool SimpleXml::getValidXml()
+    {
+        return validXml;
     }
 
     #pragma endregion
