@@ -371,6 +371,7 @@ namespace glib
 
         bool parsingNode = false;
         std::string innerNodeText = "";
+        bool previousHasClosingTag = false;
 
         XmlNode* parentNode = nullptr;
         XmlNode* lastNodeParsed = nullptr;
@@ -399,7 +400,7 @@ namespace glib
                 {
                     parsingNode = false;
                     hitEnd=true;
-
+                    
                     XmlNode* node = parseXmlLine(innerNodeText);
 
                     if(node==nullptr)
@@ -408,9 +409,8 @@ namespace glib
                         return false;
                     }
 
-                    lastNodeParsed = node;
-
                     bool slashAtFront = innerNodeText[0] == '/';
+                    bool slashAtEnd = innerNodeText.back() == '/';
 
                     innerNodeText = "";
                     isRecordingText = false;
@@ -440,9 +440,12 @@ namespace glib
                         }
                         else
                         {
-                            
                             if(node->title == parentNode->title && slashAtFront)
                             {
+                                //valid closing tag. Contains nothing and can be discarded.
+                                delete node;
+                                node = nullptr;
+
                                 parentNode = parentNode->parentNode;
                             }
                             else
@@ -467,22 +470,33 @@ namespace glib
                                     {
                                         validXml = false;
                                     }
+
+                                    delete node;
+                                    node = nullptr;
                                 }
                                 else
                                 {
+                                    //valid close but contains stuff
                                     parentNode->addChild(node);
                                     node->parentNode = parentNode;
+
+                                    if(lastNodeParsed != nullptr)
+                                    {
+                                        if(!previousHasClosingTag && lastNodeParsed->isEndOfSection())
+                                        {
+                                            //the previous may have been a void tag
+                                            validXml = false;
+                                        }
+                                    }
                                 }
                             }
-
-                            // if(slashAtFront == true)
-                            // {
-                            //     delete node;
-                            //     node = nullptr;
-                            // }
                             
                         }
                     }
+
+                    lastNodeParsed = node;
+                    if(node != nullptr)
+                        previousHasClosingTag = (slashAtEnd || slashAtFront);
                 }
                 else
                 {

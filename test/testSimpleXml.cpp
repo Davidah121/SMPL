@@ -128,6 +128,9 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 		REQUIRE(html.getNodes()[1]->getChildNodes()[1]->getChildNodes().size() == 1);
 		REQUIRE(html.getNodes()[1]->getChildNodes()[1]->getChildNodes()[0]->getChildNodes().size() == 3);
 		
-
+		//Check search code
+		std::vector<std::string> searches = {"html", "body", "form", "input"};
+		std::vector<glib::XmlNode*> result = html.getNodesPattern(searches);
+		REQUIRE(result.size() == 3);
 	}
 }

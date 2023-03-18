@@ -334,6 +334,28 @@ void testAlphaWindow()
     // w.waitTillClose();
 }
 
+void testXML()
+{
+    const std::string rawHTML = R"R0N0(
+		<!DOCTYPE html>
+		<html>
+			<head>
+				<meta stuff="I don't know"/>
+			</head>
+			<body>
+				<form>
+					<input id="1" type="text" value="default">
+					<input id="2" type="text" value="default"></input>
+					<input id="3" type="text" value="default"/>
+				</form>
+			</body>
+		</html>
+	)R0N0";
+    
+    glib::SimpleXml html = glib::SimpleXml();
+    html.loadFromBytes((unsigned char*)rawHTML.data(), rawHTML.size());
+}
+
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main(int argc, char** argv)
 {
@@ -352,8 +374,9 @@ int main(int argc, char** argv)
     // testResourceManager();
 
     // testCompression();
-    printTree();
+    // printTree();
     // simulateTouch();
     // testAlphaWindow();
+    testXML();
     return 0;
 }
