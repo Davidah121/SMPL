@@ -13,8 +13,13 @@
 #include "ResourceManager.h"
 
 #include "BinarySearchTree.h"
+#include "BSAT.h"
+#include "Compression.h"
+#include "SuffixArray.h"
 
 #include "ext/TouchSimulator.h"
+
+#include <zlib/zlib.h>
 
 using namespace glib;
 
@@ -229,6 +234,25 @@ void printNode(int tabs, bool side, BinaryTreeNode<RBNode<int>>* n)
     }
 }
 
+void printNode(int tabs, bool side, BinaryTreeNode<RBNode<uint32_t>>* n)
+{
+    std::string tabStr = "";
+    for(int i=0; i<tabs; i++)
+    {
+        tabStr += '\t';
+    }
+    if(n!=nullptr)
+    {
+        StringTools::println("%s %s %c - %u \033[0m", tabStr.c_str(), (n->data.color == true) ? "\033[31m" : "", (side) ? 'R' : 'L', n->data.data);
+        printNode(tabs+1, true, n->rightChild);
+        printNode(tabs+1, false, n->leftChild);
+    }
+    else
+    {
+        // StringTools::println("%s %c - NIL", tabStr.c_str(), (side) ? 'R' : 'L');
+    }
+}
+
 void printTree()
 {
     BinarySearchTree<int> values = BinarySearchTree<int>(BinarySearchTree<int>::RED_BLACK);
@@ -356,6 +380,190 @@ void testXML()
     html.loadFromBytes((unsigned char*)rawHTML.data(), rawHTML.size());
 }
 
+void traverseInOrder(BinaryTreeNode<RBNode<uint32_t>>* n)
+{
+    if(n != nullptr)
+    {
+        traverseInOrder(n->leftChild);
+        StringTools::println("%u", n->data.data);
+        traverseInOrder(n->rightChild);
+    }
+}
+
+void testBSAT()
+{
+    glib::BSAT tree = glib::BSAT();
+
+    tree.push('b');
+    tree.push('a');
+    tree.push('n');
+    tree.push('a');
+    tree.push('n');
+    tree.push('a');
+    StringTools::println("---------------");
+    printNode(0, true, tree.getRawTree()->getRoot());
+    
+    BinaryTreeNode<RBNode<uint32_t>>* n = tree.getRawTree()->getRoot();
+    traverseInOrder(n);
+
+    StringTools::println("nan found at: %u", tree.searchIndex("nan"));
+
+    BRS<RBNode<uint32_t>> range1 = tree.binaryRangeSearch('n', 0);
+    BRS<RBNode<uint32_t>> range2 = tree.binaryRangeSearch('a', 1, range1);
+    BRS<RBNode<uint32_t>> range3 = tree.binaryRangeSearch('n', 2, range2);
+    if(range1.commonAncestor != nullptr)
+    {
+        StringTools::println("RANGE1 BETWEEN: %u and %u with ancestor %u", range1.mostLeft->data.data, range1.mostRight->data.data, range1.commonAncestor->data.data);
+
+        if(range2.commonAncestor != nullptr)
+        {
+            StringTools::println("RANGE2 BETWEEN: %u and %u with ancestor %u", range2.mostLeft->data.data, range2.mostRight->data.data, range2.commonAncestor->data.data);
+
+            if(range3.commonAncestor != nullptr)
+            {
+                StringTools::println("RANGE3 BETWEEN: %u and %u with ancestor %u", range3.mostLeft->data.data, range3.mostRight->data.data, range3.commonAncestor->data.data);
+            }
+            else
+            {
+                StringTools::println("RANGE3 FAILED");
+            }
+        }
+        else
+        {
+            StringTools::println("RANGE2 FAILED");
+        }
+        
+    }
+    else
+    {
+        StringTools::println("RANGE1 FAILED");
+    }
+}
+
+void testStreamLZSS(int type)
+{
+    //!Does not work. A bunch of memory errors and junk.
+    //!Also, Just not as fast as I thought it would be. ( sad :( )
+    //! Put into visual studios and profile it.
+
+    Sprite spr = Sprite();
+    spr.loadImage("testOutput.png");
+
+    unsigned char* dataToCompress = (unsigned char*)spr.getImage(0)->getPixels();
+    size_t sizeOfData = spr.getImage(0)->getWidth()*spr.getImage(0)->getHeight()*4;
+
+    size_t t1, t2;
+
+    if (type == 0)
+    {
+        t1 = System::getCurrentTimeNano();
+        StreamCompressionLZSS com = StreamCompressionLZSS(StreamCompressionLZSS::TYPE_COMPRESSION);
+        com.addData(dataToCompress, sizeOfData);
+        t2 = System::getCurrentTimeNano();
+
+        StringTools::println("Time for updated stream compression: %lluns", t2 - t1);
+    }
+    else if (type == 1)
+    {
+        //28966929600ns
+        t1 = System::getCurrentTimeNano();
+        Compression::compressLZSS(dataToCompress, sizeOfData);
+        t2 = System::getCurrentTimeNano();
+
+        StringTools::println("Time for default compression: %lluns", t2 - t1);
+    }
+    else
+    {
+        t1 = System::getCurrentTimeNano();
+        std::vector<unsigned char> output = Compression::compressDeflate(dataToCompress, sizeOfData, 1, 7);
+        t2 = System::getCurrentTimeNano();
+        StringTools::println("Time for my deflate: %lluns, %llu", t2-t1, output.size());
+    }
+
+    // std::vector<unsigned char> buffer = std::vector<unsigned char>(1<<24);
+    // unsigned long bufferLen = 1<<24;
+
+    // t1 = System::getCurrentTimeNano();
+    // compress2(buffer.data(), &bufferLen, dataToCompress, sizeOfData/12, 9);
+    // t2 = System::getCurrentTimeNano();
+    // StringTools::println("Time for zlib: %lluns, %llu", t2-t1, bufferLen);
+
+}
+
+void testBST()
+{
+    BinaryTree<int> tree1 = BinaryTree<int>();
+    auto k1 = new BinaryTreeNode<int>();
+    auto k2 = new BinaryTreeNode<int>();
+
+    k1->data = 1;
+    k2->data = 2;
+
+    
+    tree1.setRootNode(k1);
+    tree1.setLeftNode(k1, k2);
+    
+    StringTools::println("K1 = %p, %p, %p, %p", k1->parent, k1->leftChild, k1->rightChild, k1);
+    StringTools::println("K2 = %p, %p, %p, %p", k2->parent, k2->leftChild, k2->rightChild, k2);
+
+    tree1.swapNodes(k1, k2);
+    
+    StringTools::println("K1 = %p, %p, %p, %p", k1->parent, k1->leftChild, k1->rightChild, k1);
+    StringTools::println("K2 = %p, %p, %p, %p", k2->parent, k2->leftChild, k2->rightChild, k2);
+
+}
+
+void testSuffixStuff()
+{
+    
+    std::string baseString = "abazas";
+    for(int i=1; i<=baseString.size(); i++)
+    {
+        std::string testStr = baseString.substr(0, i);
+        SuffixArray arr = SuffixArray(testStr);
+        std::vector<int> results = arr.getArray();
+
+        StringTools::println("RESULTS: ");
+        StringTools::println(testStr);
+        for(int& i : results)
+        {
+            std::string str = testStr.substr(i);
+            StringTools::println("%d, %s", i, str.c_str());
+        }
+        StringTools::println("");
+    }
+
+    StringTools::println("OTHER RESULTS: ");
+    glib::BSAT tree = glib::BSAT();
+
+    for(int i=0; i<baseString.size(); i++)
+    {
+        tree.push(baseString[i]);
+        StringTools::println("---------------");
+        printNode(0, true, tree.getRawTree()->getRoot());
+        if(i==3)
+        {
+            StringTools::println("SWAP");
+            auto k = tree.getRawTree()->getRoot();
+            tree.getRawTree()->swapNodes(k, k->leftChild);
+        }
+    }
+
+    // auto k = tree.getRawTree()->getRoot();
+    // if(k != nullptr)
+    // {
+    //     //get lowest
+    //     // tree.getRawTree()->leftRotate( k );
+    //     k = tree.getRawTree()->getRoot();
+    //     tree.getRawTree()->swapNodes(k, k->leftChild);
+    //     StringTools::println("---------------");
+    //     printNode(0, true, tree.getRawTree()->getRoot());
+    // }
+    
+    BinaryTreeNode<RBNode<uint32_t>>* n = tree.getRawTree()->getRoot();
+    traverseInOrder(n);
+}
+
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main(int argc, char** argv)
 {
@@ -377,6 +585,12 @@ int main(int argc, char** argv)
     // printTree();
     // simulateTouch();
     // testAlphaWindow();
-    testXML();
+    // testXML();
+    // testBSAT();
+    // testStreamLZSS(0);
+    // testBST();
+
+    testSuffixStuff();
+
     return 0;
 }

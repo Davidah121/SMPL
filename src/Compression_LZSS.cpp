@@ -54,6 +54,9 @@ namespace glib
 			int matchLength = 0;
 			int matchStartIndex = 0;
 
+			// if(i > 0xFFFF)
+			// 	break;
+
 			StringTools::findLongestMatch(startBase, baseSize, startMatch, lengthMax, &matchStartIndex, &matchLength);
 
 			int tempLength = matchLength;
@@ -63,13 +66,15 @@ namespace glib
 			{
 				bin.add(true);
 				bin.add(data[i]);
+				// StringTools::println("Literal: %c", data[i]);
 				i++;
 			}
 			else
 			{
 				bin.add(false);
-				bin.add(tempLength, 15);
-				bin.add(tempBackwards, 8);
+				bin.add(tempBackwards, 15);
+				bin.add(tempLength-3, 8);
+				// StringTools::println("Length Pair: %d, %d", tempBackwards, tempLength);
 				i += tempLength;
 			}
 		}
@@ -77,12 +82,12 @@ namespace glib
 		return bin.toBytes();
 	}
 
-	std::vector<unsigned char> Compression::decompressLZSS(std::vector<unsigned char> data, size_t expectedSize)
+	std::vector<unsigned char> Compression::decompressLZSS(std::vector<unsigned char> data, size_t bitSize, size_t expectedSize)
 	{
-		return decompressLZSS(data.data(), data.size(), expectedSize);
+		return decompressLZSS(data.data(), data.size(), bitSize, expectedSize);
 	}
 
-	std::vector<unsigned char> Compression::decompressLZSS(unsigned char* data, size_t size, size_t expectedSize)
+	std::vector<unsigned char> Compression::decompressLZSS(unsigned char* data, size_t size, size_t bitSize, size_t expectedSize)
 	{
 		BinarySet bin = BinarySet();
 		bin.setBitOrder(BinarySet::LMSB);
@@ -90,6 +95,7 @@ namespace glib
 		std::vector<unsigned char> output = std::vector<unsigned char>();
 
 		bin.setValues(data, size);
+		bin.setNumberOfBits(bitSize);
 
 		if(size<=0)
 		{
@@ -114,15 +120,15 @@ namespace glib
 			i++;
 			if(lit)
 			{
-				unsigned char literalValue = bin.getBits(i, i+8, true);
+				unsigned char literalValue = bin.getBits(i, i+8, false);
 				i += 8;
 				output.push_back(literalValue);
 			}
 			else
 			{
-				int backwardsDis = bin.getBits(i, i+15, true);
+				int backwardsDis = bin.getBits(i, i+15, false);
 				i += 15;
-				int copyLength = bin.getBits(i, i+8, true);
+				int copyLength = bin.getBits(i, i+8, false) + 3;
 				i += 8;
 
 				int startLoc = output.size() - backwardsDis;

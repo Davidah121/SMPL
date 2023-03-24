@@ -145,10 +145,10 @@ namespace glib
 		 */
 		void swapNodes(BinaryTreeNode<T>* A, BinaryTreeNode<T>* B);
 
+		void cleanUp(BinaryTreeNode<T>* node);
 	private:
 
 		BinaryTreeNode<T>* rootNode = nullptr;
-		void cleanUp(BinaryTreeNode<T>* node);
 		int traverseCount(BinaryTreeNode<T>* node);
 		void getElementsRecursive(std::vector<T>* data, BinaryTreeNode<T>* startNode);
 
@@ -470,33 +470,90 @@ namespace glib
 	template<typename T>
 	inline void BinaryTree<T>::swapNodes(BinaryTreeNode<T>* A, BinaryTreeNode<T>* B)
 	{
-		if(A != nullptr && B != nullptr)
+		if(A != nullptr && B != nullptr && A != B)
 		{
 			BinaryTreeNode<T>* AParent = A->parent;
 			BinaryTreeNode<T>* BParent = B->parent;
 			BinaryTreeNode<T>* BSideL = B->leftChild;
 			BinaryTreeNode<T>* BSideR = B->rightChild;
-			
-			B->leftChild = A->leftChild;
-			B->rightChild = A->rightChild;
-			A->leftChild = BSideL;
-			A->rightChild = BSideR;
+			BinaryTreeNode<T>* ASideL = A->leftChild;
+			BinaryTreeNode<T>* ASideR = A->rightChild;
 
-			A->parent = BParent;
-			B->parent = AParent;
+			if(A == B->parent)
+			{
+				//special case 1. A is parent of B. 
+				B->parent = A->parent;
+				A->parent = B;
+
+				A->leftChild = BSideL;
+				A->rightChild = BSideR;
+
+				if(ASideL == B)
+				{
+					B->leftChild = A;
+					B->rightChild = ASideR;
+				}
+				else
+				{
+					B->leftChild = ASideL;
+					B->rightChild = A;
+				}
+			}
+			else if(B == A->parent)
+			{
+				//special case 2. B is parent of A. 
+				A->parent = B->parent;
+				B->parent = A;
+
+				B->leftChild = ASideL;
+				B->rightChild = ASideR;
+
+				if(BSideL == A)
+				{
+					A->leftChild = B;
+					A->rightChild = BSideR;
+				}
+				else
+				{
+					A->leftChild = BSideL;
+					A->rightChild = B;
+				}
+			}
+			else
+			{
+				//special case 3. Neither is of direct relation
+				B->leftChild = ASideL;
+				B->rightChild = ASideR;
+
+				A->leftChild = BSideL;
+				A->rightChild = BSideR;
+				
+				A->parent = BParent;
+				B->parent = AParent;
+			}
+
+			if(B->leftChild != nullptr)
+				B->leftChild->parent = B;
+			if(B->rightChild != nullptr)
+				B->rightChild->parent = B;
+
+			if(A->leftChild != nullptr)
+				A->leftChild->parent = A;
+			if(A->rightChild != nullptr)
+				A->rightChild->parent = A;
 
 			if(AParent != nullptr)
 			{
 				if(AParent->leftChild == A)
 					AParent->leftChild = B;
-				else
+				else if(AParent->rightChild == A)
 					AParent->rightChild = B;
 			}
 			if(BParent != nullptr)
 			{
 				if(BParent->leftChild == B)
 					BParent->leftChild = A;
-				else
+				else if(BParent->rightChild == B)
 					BParent->rightChild = A;
 			}
 

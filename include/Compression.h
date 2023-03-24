@@ -7,6 +7,7 @@
 #include "FrequencyTable.h"
 
 #include "GeneralExceptions.h"
+#include "BSAT.h"
 
 namespace glib
 {
@@ -245,6 +246,66 @@ namespace glib
 		bool mode = TYPE_COMPRESSION;
 		BinarySet buffer = BinarySet();
 		BinarySet leftovers = BinarySet();
+	};
+
+	class StreamCompressionLZSS
+	{
+	public:
+		static const bool TYPE_COMPRESSION = false;
+		static const bool TYPE_DECOMPRESSION = true;
+
+		StreamCompressionLZSS(bool mode, unsigned int maxBackwardsDistance = 32767, unsigned char maxLength = 255);
+		~StreamCompressionLZSS();
+
+		void addData(unsigned char* data, int length);
+
+		/**
+		 * @brief Gets the Buffer of bytes saved by the object. This represents the compressed
+		 * 		data or decompressed data so far. It can be read from here and stored in another
+		 * 		place as necessary.
+		 * 		Here, it is a BinarySet since the data does not have to be exactly divisible by 8.
+		 * 		The buffer may not have an even number of bytes so it should be written out as bits
+		 * 		to preserve what the original data would have been.
+		 * 		
+		 * 		If mode is TYPE_COMPRESSED, the data is not guareenteed to be divisible by 8.
+		 * 		If mode is TYPE_DECOMPRESSED, the data is guareenteed to be divisible by 8.
+		 * 
+		 * @return BinarySet& 
+		 */
+		BinarySet& getBuffer();
+
+		/**
+		 * @brief Clears the internal buffer used that represents the compressed or decompressed data so far.
+		 * 
+		 */
+		void clearBuffer();
+
+		/**
+		 * @brief Returns the size of the internal buffer in bytes.
+		 * 		This will always be greater than or equal to the amount of bits actually used.
+		 * 		To get the number of bits used, get it from the getBuffer() function.
+		 * 
+		 * @return size_t 
+		 */
+		size_t size();
+	private:
+		void addDataCompression(unsigned char* data, int length);
+		void addDataDecompression(unsigned char* data, int length);
+
+		bool mode;
+		BSAT sufTree;
+		LinkedList<BinaryTreeNode<RBNode<uint32_t>>*> queueOfNodes;
+		int queueSize = 0;
+
+		BRS<RBNode<uint32_t>> lastKnownRange;
+		int lastKnownMatch = -1;
+		int offset = 0;
+		unsigned int maxBackDist = 32767;
+		unsigned char maxLength = 255;
+
+		BinarySet buffer = BinarySet();
+		BinarySet leftovers = BinarySet();
+		
 	};
 
 	class Compression
@@ -556,13 +617,15 @@ namespace glib
 		 * 		The data to compress.
 		 * @param size
 		 * 		The size of the data.
+		 * @param bitSize
+		 * 		The number of bits in the LZSS data. This is important to know when to stop.
 		 * @param expectedSize
 		 * 		The expected size of the decompressed data. Set this if you know what the data size should be when decompressed.
 		 * 		By default, it is set to the max that a vector can store.
 		 * @return std::vector<unsigned char>
 		 * 		If successful, returns the decompressed data as a vector.
 		 */
-		static std::vector<unsigned char> decompressLZSS(unsigned char* data, size_t size, size_t expectedSize = -1);
+		static std::vector<unsigned char> decompressLZSS(unsigned char* data, size_t size, size_t bitSize, size_t expectedSize = -1);
 
 		/**
 		 * @brief Decompresses LZSS (Lempel Ziv Storer Szymanski) data.
@@ -576,13 +639,15 @@ namespace glib
 		 * 		In a referencePair, the backwards distance is 15 bits and the copy length is 8 bits.
 		 * @param data
 		 * 		The data to compress.
+		 * @param bitSize
+		 * 		The number of bits in the LZSS data. This is important to know when to stop.
 		 * @param expectedSize
 		 * 		The expected size of the decompressed data. Set this if you know what the data size should be when decompressed.
 		 * 		By default, it is set to the max that a vector can store.
 		 * @return std::vector<unsigned char>
 		 * 		If successful, returns the decompressed data as a vector.
 		 */
-		static std::vector<unsigned char> decompressLZSS(std::vector<unsigned char> data, size_t expectedSize = -1);
+		static std::vector<unsigned char> decompressLZSS(std::vector<unsigned char> data, size_t bitSize, size_t expectedSize = -1);
 
 		struct HUFFMAN_TREE_ERROR : public std::exception
 		{

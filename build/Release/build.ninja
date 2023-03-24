@@ -16,6 +16,7 @@ build $objDir/AudioOut.o: buildToObject src/AudioOut.cpp
 build $objDir/BezierCurve.o: buildToObject src/BezierCurve.cpp
 build $objDir/BinarySet.o: buildToObject src/BinarySet.cpp
 build $objDir/BitmapFont.o: buildToObject src/BitmapFont.cpp
+build $objDir/BSAT.o: buildToObject src/BSAT.cpp
 build $objDir/CatmullRom.o: buildToObject src/CatmullRom.cpp
 build $objDir/CemYukselSpline.o: buildToObject src/CemYukselSpline.cpp
 build $objDir/Class.o: buildToObject src/Class.cpp
@@ -31,6 +32,7 @@ build $objDir/Compression_LZ77.o: buildToObject src/Compression_LZ77.cpp
 build $objDir/Compression_LZSS.o: buildToObject src/Compression_LZSS.cpp
 build $objDir/Compression_LZW.o: buildToObject src/Compression_LZW.cpp
 build $objDir/Compression_RLE.o: buildToObject src/Compression_RLE.cpp
+build $objDir/Compression_StreamLZSS.o: buildToObject src/Compression_StreamLZSS.cpp
 build $objDir/Compression_StreamLZW.o: buildToObject src/Compression_StreamLZW.cpp
 build $objDir/Compression_StreamRLE.o: buildToObject src/Compression_StreamRLE.cpp
 build $objDir/Cryptography.o: buildToObject src/Cryptography.cpp
@@ -119,6 +121,7 @@ build $objDir/SimpleXml.o: buildToObject src/SimpleXml.cpp
 build $objDir/Sound.o: buildToObject src/Sound.cpp
 build $objDir/Sprite.o: buildToObject src/Sprite.cpp
 build $objDir/StringTools.o: buildToObject src/StringTools.cpp
+build $objDir/SuffixArray.o: buildToObject src/SuffixArray.cpp
 build $objDir/System.o: buildToObject src/System.cpp
 build $objDir/Vec2f.o: buildToObject src/Vec2f.cpp
 build $objDir/Vec3f.o: buildToObject src/Vec3f.cpp

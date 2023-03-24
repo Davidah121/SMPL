@@ -4,6 +4,14 @@
 namespace glib
 {
 	template<typename T>
+	struct BRS
+	{
+		BinaryTreeNode<T>* commonAncestor = nullptr;
+		BinaryTreeNode<T>* mostLeft = nullptr;
+		BinaryTreeNode<T>* mostRight = nullptr;
+	};
+
+	template<typename T>
 	struct RBNode
 	{
 		bool color = false; //false == black, true == red
@@ -35,10 +43,12 @@ namespace glib
 		BinaryTreeNode<RBNode<T>>* search(T data);
 		BinaryTree<RBNode<T>>* getTree();
 
+		BRS<RBNode<T>> binaryRangeSearch(T minData, T maxData, BRS<RBNode<T>> existingRange = {});
+
 		size_t size();
 		int getType();
 		
-	private:
+	protected:
 		static const bool COLOR_BLACK = false;
 		static const bool COLOR_RED = true;
 
@@ -46,7 +56,6 @@ namespace glib
 		void redBlackReBalance(BinaryTreeNode<RBNode<T>>* n);
 		void redBlackDeleteFix(BinaryTreeNode<RBNode<T>>* node);
 		
-
 		int type = 0;
 		size_t count = 0;
 	};
@@ -95,6 +104,109 @@ namespace glib
 				node = node->rightChild;
 		}
 		return nullptr;
+	}
+
+	template<typename T>
+	inline BRS<RBNode<T>> BinarySearchTree<T>::binaryRangeSearch(T minData, T maxData, BRS<RBNode<T>> existingRange)
+	{
+		//Red-Black Balancing does not affect the inorder traversal of the tree so this still works
+		BinaryTreeNode<RBNode<T>>* currNode = existingRange.commonAncestor;
+		if(existingRange.commonAncestor == nullptr)
+		{
+			//no existing range
+			currNode = tree.getRoot();
+		}
+
+		BRS<RBNode<T>> newRange;
+		//First, find the common ancestor
+		while(true)
+		{
+			if(currNode->data.data < minData)
+			{
+				//try to go right since we are not within the correct bounds
+				if(currNode != existingRange.mostRight)
+				{
+					if(currNode->rightChild == nullptr)
+					{
+						//went as far right as possible
+						newRange.commonAncestor = currNode;
+						break;
+					}
+					currNode = currNode->rightChild;
+				}
+				else
+					break; //can't go right any more
+			}
+			else if(currNode->data.data > maxData)
+			{
+				//try to go left since we are not within the correct bounds
+				if(currNode != existingRange.mostLeft)
+				{
+						//went as far left as possible
+						newRange.commonAncestor = currNode;
+						break;
+				}
+				else
+					break; //can't go left any more
+			}
+			else
+			{
+				newRange.commonAncestor = currNode;
+				break;
+			}
+		}
+
+		if(newRange.commonAncestor == nullptr)
+		{
+			//could not find a node using the existing range that was in these bounds
+			return {};
+		}
+
+		//using the new common ancestor, find the most left node
+		currNode = newRange.commonAncestor;
+		while(true)
+		{
+			if(currNode->data.data >= minData)
+			{
+				//go left if possible
+				if(currNode != existingRange.mostLeft && currNode->leftChild != nullptr)
+					currNode = currNode->leftChild;
+				else
+					break; //hit the furthest left point
+			}
+			else
+			{
+				//Outside the valid range.
+				//go back one and return that since that must be valid.
+				currNode = currNode->parent;
+				break;
+			}
+		}
+		newRange.mostLeft = currNode;
+
+		//using the new common ancestor, find the most right node
+		currNode = newRange.commonAncestor;
+		while(true)
+		{
+			if(currNode->data.data <= maxData)
+			{
+				//go right if possible
+				if(currNode != existingRange.mostRight && currNode->rightChild != nullptr)
+					currNode = currNode->rightChild;
+				else
+					break; //hit the furthest right point
+			}
+			else
+			{
+				//Outside the valid range.
+				//go back one and return that since that must be valid.
+				currNode = currNode->parent;
+				break;
+			}
+		}
+		newRange.mostRight = currNode;
+
+		return newRange;
 	}
 
 	template<typename T>
@@ -213,19 +325,22 @@ namespace glib
 			if(n->leftChild == nullptr && n->rightChild == nullptr)
 			{
 				//do normal delete
-				//case 1
+				//case 1. No children
 				if(parentNode != nullptr)
 				{
 					newNode = parentNode;
 					if(parentNode->leftChild == n)
-						tree.setLeftNode(parentNode, nullptr);
+						parentNode->leftChild = nullptr;
 					else
-						tree.setRightNode(parentNode, nullptr);
+						parentNode->rightChild = nullptr;
+
+					delete n; //manual delete
 				}
 				else
 				{
 					//deleting root
-					tree.setRootNode(nullptr);
+					tree.setRootNode(nullptr); //special case. Must use tree function
+					newNode = nullptr;
 				}
 			}
 			else
@@ -233,6 +348,7 @@ namespace glib
 				if(n->leftChild != nullptr && n->rightChild != nullptr)
 				{
 					//case 3. Find successor
+					//Has 2 children
 					//go right then left as much as possible
 					BinaryTreeNode<RBNode<T>>* successor = n->rightChild;
 					
@@ -250,16 +366,29 @@ namespace glib
 					parentNode = n->parent;
 					if(parentNode != nullptr)
 					{
+						//Can't have a left child cause we would go more left if so.
+						//May have a right child though. Assume that right child is nullptr otherwise.
 						if(parentNode->leftChild == n)
-							tree.setLeftNode(parentNode, nullptr);
+						{
+							parentNode->leftChild = n->rightChild;
+							if(n->rightChild != nullptr)
+								n->rightChild->parent = parentNode;
+						}
 						else
-							tree.setRightNode(parentNode, nullptr);
+						{
+							parentNode->rightChild = n->rightChild;
+							if(n->rightChild != nullptr)
+								n->rightChild->parent = parentNode;
+						}
 					}
-					
+					delete n;
+					n = nullptr;
+					newNode = parentNode;
 				}
 				else
 				{
 					//case 2
+					//has one child
 					BinaryTreeNode<RBNode<T>>* child = n->leftChild;
 					if(child == nullptr)
 						child = n->rightChild;
@@ -277,16 +406,19 @@ namespace glib
 							parentNode->rightChild = child;
 							child->parent = parentNode;
 						}
+						
+						delete n;
 					}
 					else
 					{
 						//is root
 						child->parent = nullptr;
-						tree.setRootNode(child);
+						n->leftChild = nullptr;
+						n->rightChild = nullptr;
+						tree.setRootNode(child); // n will be deleted here
 					}
+
 					newNode = child;
-					
-					delete n;
 				}
 			}
 
