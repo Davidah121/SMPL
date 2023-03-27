@@ -19,7 +19,7 @@
 
 #include "ext/TouchSimulator.h"
 
-#include <zlib/zlib.h>
+// #include <zlib/zlib.h>
 
 using namespace glib;
 
@@ -364,20 +364,21 @@ void testXML()
 		<!DOCTYPE html>
 		<html>
 			<head>
-				<meta stuff="I don't know"/>
+                <script>
+                    //<end>
+                    var v = 1;
+                    var start = "<script>";
+                    var end = "</script>";
+                    //</end>
+                </script>
 			</head>
-			<body>
-				<form>
-					<input id="1" type="text" value="default">
-					<input id="2" type="text" value="default"></input>
-					<input id="3" type="text" value="default"/>
-				</form>
-			</body>
 		</html>
 	)R0N0";
     
     glib::SimpleXml html = glib::SimpleXml();
     html.loadFromBytes((unsigned char*)rawHTML.data(), rawHTML.size());
+
+    StringTools::println("%llu", html.getNodes().size());
 }
 
 void traverseInOrder(BinaryTreeNode<RBNode<uint32_t>>* n)
@@ -564,6 +565,22 @@ void testSuffixStuff()
     traverseInOrder(n);
 }
 
+void testXML2()
+{
+    SimpleXml f = SimpleXml("test1.html");
+    StringTools::println("%llu", f.getNodes().size());
+    std::vector<std::string> pattern = {"html", "body", "div", "div", "table", "tr", "td","textarea"};
+    auto results = f.getNodesPattern(pattern);
+
+    if(results.size() == 0)
+        StringTools::println("No Nodes Found");
+    
+    for(auto r : results)
+    {
+        StringTools::println("Potential Node: %s", r->getTitle().c_str());
+    }
+}
+
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main(int argc, char** argv)
 {
@@ -590,7 +607,9 @@ int main(int argc, char** argv)
     // testStreamLZSS(0);
     // testBST();
 
-    testSuffixStuff();
+    // testSuffixStuff();
+
+    testXML();
 
     return 0;
 }

@@ -574,7 +574,9 @@ namespace glib
     template<typename K, typename T>
     inline std::vector<HashPair<K,T>*> SimpleHashMap<K, T>::getAll(K key)
     {
-
+        if(buckets.size() == 0)
+            return {};
+        
         size_t bucketLocation = hasher(key) % buckets.size();
         std::vector<HashPair<K,T>*> collection;
 
@@ -592,6 +594,8 @@ namespace glib
     inline std::vector<HashPair<K,T>*> SimpleHashMap<K, T>::getAllCount(K key, int count)
     {
         // size_t t1 = System::getCurrentTimeMicro();
+        if(buckets.size() == 0)
+            return {};
 
         size_t bucketLocation = hasher(key) % buckets.size();
         std::vector<HashPair<K,T>*> collection;
@@ -619,7 +623,7 @@ namespace glib
     inline void SimpleHashMap<K, T>::rehash()
     {
         // size_t t1 = System::getCurrentTimeMicro();
-
+        
         size_t oldSize = buckets.size();
         buckets.resize(oldSize*2);
 

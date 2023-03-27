@@ -5,12 +5,45 @@
 
 namespace glib
 {
+    struct ChildNode;
+    class XmlNode;
+    class SimpleXml;
+    struct ChildNode
+    {
+        static const bool TYPE_VALUE = false;
+        static const bool TYPE_NODE = true;
+        
+        bool type = false;
+        std::string value = "";
+        XmlNode* node = nullptr;
+        ChildNode()
+        {
+
+        }
+
+        ChildNode(XmlNode* n)
+        {
+            type = TYPE_NODE;
+            node = n;
+            value.clear();
+        }
+        ChildNode(std::string v)
+        {
+            type = TYPE_VALUE;
+            value = v;
+            node = nullptr;
+        }
+    };
+
     class XmlNode
     {
     public:
         /**
          * @brief Construct a new XmlNode object
-         *      Contains the title of the node, a value if it has one, childNodes, attributes for the node, and its parent node.
+         *      Contains the title of the node, childNodes, attributes for the node, and its parent node.
+         * 
+         *      If it contains a value, it will be the concatenation of the values of the children nodes that are of TYPE_VALUE.
+         *          This way allows children's values to be considered as well and maintain their placement.
          * 
          */
         XmlNode();
@@ -37,13 +70,13 @@ namespace glib
         std::string getValue();
         
         void addChild(XmlNode* n);
+        void addValue(std::string s);
 
         std::vector<XmlNode*> getNodesPattern(std::vector<std::string>& nameOrder, size_t offset=0);
-        std::vector<XmlNode*>& getChildNodes();
+        std::vector<ChildNode>& getChildNodes();
         SimpleHashMap<std::string, std::string>& getRawAttributes();
 
         void setTitle(std::string s);
-        void setValue(std::string s);
 
     private:
         friend class SimpleXml;
@@ -59,11 +92,9 @@ namespace glib
         bool isEnd = false;
         
         std::string title;
-        std::string value;
 
-        
         SimpleHashMap<std::string, std::string> attributes = SimpleHashMap<std::string, std::string>(true); //Unique only
-        std::vector<XmlNode*> childNodes = std::vector<XmlNode*>();
+        std::vector<ChildNode> childNodes = std::vector<ChildNode>();
         XmlNode* parentNode = nullptr;
         SimpleHashMap<std::string, size_t> nameToIndexMap = SimpleHashMap<std::string, size_t>(false); //Multimap
     };
@@ -166,6 +197,13 @@ namespace glib
 
         XmlNode* parseXmlLine(std::string line);
 
+        /**
+         * @brief parses all escape strings in the xml node.
+         *      Parses the attributes and value nodes for escape sequences. 
+         *      Handles the children nodes as well so it should only be called on the root node.
+         * 
+         * @param n 
+         */
         void fixParseOnNode(XmlNode* n);
 
         void saveNode(SimpleFile* f, XmlNode* node, int tabs);
