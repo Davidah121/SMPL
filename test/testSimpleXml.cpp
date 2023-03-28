@@ -14,6 +14,7 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 			<body>
 				<!--<h1>Title Header</h1> -->
 				<p class="testClass" id="42P">This is text</p>
+				<p>this is a <a href="link">link</a> and it is cool.</p>
 			</body>
 		</html>
 	)R0N0";
@@ -54,19 +55,30 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 
 		REQUIRE(xml.getNodes()[1]->getChildNodes().size() == 2);
 		
-		REQUIRE(xml.getNodes()[1]->getChildNodes()[0]->getTitle() == "head");
-		REQUIRE(xml.getNodes()[1]->getChildNodes()[1]->getTitle() == "body");
+		REQUIRE(xml.getNodes()[1]->getChildNodes()[0].node->getTitle() == "head");
+		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getTitle() == "body");
 
 		
-		REQUIRE(xml.getNodes()[1]->getChildNodes()[0]->getChildNodes().size() == 1);
-		REQUIRE(xml.getNodes()[1]->getChildNodes()[0]->getChildNodes()[0]->getTitle() == "title");
-		REQUIRE(xml.getNodes()[1]->getChildNodes()[0]->getChildNodes()[0]->getValue() == "Title 123");
+		REQUIRE(xml.getNodes()[1]->getChildNodes()[0].node->getChildNodes().size() == 1);
+		REQUIRE(xml.getNodes()[1]->getChildNodes()[0].node->getChildNodes()[0].node->getTitle() == "title");
+		REQUIRE(xml.getNodes()[1]->getChildNodes()[0].node->getChildNodes()[0].node->getValue() == "Title 123");
 
-		REQUIRE(xml.getNodes()[1]->getChildNodes()[1]->getChildNodes().size() == 1);
-		REQUIRE(xml.getNodes()[1]->getChildNodes()[1]->getChildNodes()[0]->getTitle() == "p");
-		REQUIRE(xml.getNodes()[1]->getChildNodes()[1]->getChildNodes()[0]->getValue() == "This is text");
-		REQUIRE(xml.getNodes()[1]->getChildNodes()[1]->getChildNodes()[0]->getAttribute("class") != nullptr);
-		REQUIRE(xml.getNodes()[1]->getChildNodes()[1]->getChildNodes()[0]->getAttribute("id") != nullptr);
+		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes().size() == 2);
+		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[0].node->getTitle() == "p");
+		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[0].node->getValue() == "This is text");
+		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[0].node->getAttribute("class") != nullptr);
+		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[0].node->getAttribute("id") != nullptr);
+		
+		//Test where value and child nodes appear together and make sure that they appear one after the other.
+		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[1].node->getTitle() == "p");
+		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[1].node->getChildNodes().size() == 3);
+		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[1].node->getChildNodes()[0].type == false);
+		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[1].node->getChildNodes()[0].value == "this is a ");
+		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[1].node->getChildNodes()[1].type == true);
+		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[1].node->getChildNodes()[1].node->getTitle() == "a");
+		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[1].node->getChildNodes()[2].type == false);
+		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[1].node->getChildNodes()[2].value == " and it is cool.");
+		
 	}
 
 	SECTION("Test searching for node")
@@ -85,7 +97,7 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 
 		searches = {"html", "body", "p"};
 		result = xml.getNodesPattern(searches);
-		REQUIRE(result.size() == 1);
+		REQUIRE(result.size() == 2);
 		
 		
 		searches = {"html", "body", "q"};
@@ -124,9 +136,9 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 		//Check Sizes
 		REQUIRE(html.getNodes().size() == 2);
 		REQUIRE(html.getNodes()[1]->getChildNodes().size() == 2);
-		REQUIRE(html.getNodes()[1]->getChildNodes()[0]->getChildNodes().size() == 1);
-		REQUIRE(html.getNodes()[1]->getChildNodes()[1]->getChildNodes().size() == 1);
-		REQUIRE(html.getNodes()[1]->getChildNodes()[1]->getChildNodes()[0]->getChildNodes().size() == 3);
+		REQUIRE(html.getNodes()[1]->getChildNodes()[0].node->getChildNodes().size() == 1);
+		REQUIRE(html.getNodes()[1]->getChildNodes()[1].node->getChildNodes().size() == 1);
+		REQUIRE(html.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[0].node->getChildNodes().size() == 3);
 		
 		//Check search code
 		std::vector<std::string> searches = {"html", "body", "form", "input"};

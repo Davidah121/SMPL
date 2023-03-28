@@ -678,212 +678,229 @@ namespace glib
         }
     }
 
+    //TODO - Rewrite
     void Model::loadCollada(File file)
     {
-        clear();
-        indexed = true;
+        return;
 
-        SimpleXml xmlData = SimpleXml(file);
+        // clear();
+        // indexed = true;
 
-        if(xmlData.getNodes().size() <= 0)
-        {
-            //unsuccessful
-            return;
-        }
+        // SimpleXml xmlData = SimpleXml(file);
+
+        // if(xmlData.getNodes().size() <= 0)
+        // {
+        //     //unsuccessful
+        //     return;
+        // }
 
 
-        XmlNode* rootColladaNode = nullptr;
-        //Find COLLADA
-        for(XmlNode* currNode : xmlData.getNodes())
-        {
-            if(StringTools::equalsIgnoreCase<char>(currNode->getTitle(), "COLLADA"))
-            {
-                rootColladaNode = currNode;
-                break;
-            }
-        }
+        // XmlNode* rootColladaNode = nullptr;
+        // //Find COLLADA
+        // for(XmlNode* currNode : xmlData.getNodes())
+        // {
+        //     if(StringTools::equalsIgnoreCase<char>(currNode->getTitle(), "COLLADA"))
+        //     {
+        //         rootColladaNode = currNode;
+        //         break;
+        //     }
+        // }
 
-        if(rootColladaNode == nullptr)
-        {
-            //unsuccessful
-            return;
-        }
+        // if(rootColladaNode == nullptr)
+        // {
+        //     //unsuccessful
+        //     return;
+        // }
 
-        //search for library_geometries
-        XmlNode* libGeometryNodes = nullptr;
-        for(XmlNode* currNode : rootColladaNode->getChildNodes())
-        {
-            if(StringTools::equalsIgnoreCase<char>(currNode->getTitle(), "library_geometries"))
-            {
-                libGeometryNodes = currNode;
-                break;
-            }
-        }
+        // //search for library_geometries
+        // XmlNode* libGeometryNodes = nullptr;
+        // for(ChildNode& c : rootColladaNode->getChildNodes())
+        // {
+        //     if(c.type != ChildNode::TYPE_NODE)
+        //         continue;
+        //     XmlNode* currNode = c.node;
+        //     if(StringTools::equalsIgnoreCase<char>(currNode->getTitle(), "library_geometries"))
+        //     {
+        //         libGeometryNodes = currNode;
+        //         break;
+        //     }
+        // }
 
-        if(libGeometryNodes == nullptr)
-        {
-            //unsuccessful
-            return;
-        }
+        // if(libGeometryNodes == nullptr)
+        // {
+        //     //unsuccessful
+        //     return;
+        // }
 
-        //build geometry arrays
-        for(XmlNode* currNode : libGeometryNodes->getChildNodes())
-        {
-            std::string name = "";
-            std::vector<std::string> ids;
-            std::string vertexSource = "";
-            size_t currList = 0;
+        // //build geometry arrays
+        // for(ChildNode& c : libGeometryNodes->getChildNodes())
+        // {
+        //     if(c.type != ChildNode::TYPE_NODE)
+        //         continue;
+        //     XmlNode* currNode = c.node;
 
-            if(StringTools::equalsIgnoreCase<char>(currNode->getTitle(), "geometry"))
-            {
-                auto nameAttrib = currNode->getAttribute("name");
-                if(nameAttrib != nullptr)
-                    name = nameAttrib->data;
+        //     std::string name = "";
+        //     std::vector<std::string> ids;
+        //     std::string vertexSource = "";
+        //     size_t currList = 0;
+
+        //     if(StringTools::equalsIgnoreCase<char>(currNode->getTitle(), "geometry"))
+        //     {
+        //         auto nameAttrib = currNode->getAttribute("name");
+        //         if(nameAttrib != nullptr)
+        //             name = nameAttrib->data;
                 
-                XmlNode* meshNode = nullptr;
+        //         XmlNode* meshNode = nullptr;
 
-                for(XmlNode* innerNode : currNode->getChildNodes())
-                {
-                    if(StringTools::equalsIgnoreCase<char>(innerNode->getTitle(), "mesh"))
-                    {
-                        meshNode = innerNode;
-                        break;
-                    }
-                }
+        //         for(ChildNode& innerNode : currNode->getChildNodes())
+        //         {
+        //             if(innerNode.type != ChildNode::TYPE_NODE)
+        //                 continue;
 
-                if(meshNode == nullptr)
-                    continue;
+        //             if(StringTools::equalsIgnoreCase<char>(innerNode.node->getTitle(), "mesh"))
+        //             {
+        //                 meshNode = innerNode.node;
+        //                 break;
+        //             }
+        //         }
+
+        //         if(meshNode == nullptr)
+        //             continue;
                 
-                for(XmlNode* innerNode : meshNode->getChildNodes())
-                {
-                    if(StringTools::equalsIgnoreCase<char>(innerNode->getTitle(), "source"))
-                    {
-                        //make safe
-                        unsigned char vertAttribType = 0;
+        //         for(ChildNode& c2 : meshNode->getChildNodes())
+        //         {
+        //             if(c2.type != ChildNode::TYPE_NODE)
+        //                 continue;
+        //             XmlNode* innerNode = c2.node;
 
-                        auto temp = innerNode->getAttribute("id");
-                        if(temp != nullptr)
-                            ids.push_back( temp->data );
-                        
-                        XmlNode* accessorNode = innerNode->getChildNodes()[1]->getChildNodes()[0];
-                        
-                        temp = accessorNode->getAttribute("stride");
-                        if(temp != nullptr)
-                            vertAttribType = stoi(temp->data);
-                        
-                        
-                        //add format information
-                        if(StringTools::equalsIgnoreCase<char>(innerNode->getChildNodes()[0]->getTitle(), "float_array"))
-                        {
-                            addVertexFormatInfo(vertAttribType, USAGE_OTHER);
-                        }
-                        else if(StringTools::equalsIgnoreCase<char>(innerNode->getChildNodes()[0]->getTitle(), "int_array"))
-                        {
-                            addVertexFormatInfo(TYPE_INT, USAGE_OTHER);
-                            vertAttribType = 0;
-                        }
-                        
-                        //add vertex attribute information
-                        std::vector<std::string> split = StringTools::splitString(innerNode->getChildNodes()[0]->getValue(), ' ');
-                        
-                        for(std::string& v : split)
-                        {
-                            if(vertAttribType == 0)
-                            {
-                                addInt( stoi(v), currList);
-                            }
-                            else
-                            {
-                                addFloat( stof(v), currList);
-                            }
-                        }
+        //             if(StringTools::equalsIgnoreCase<char>(innerNode->getTitle(), "source"))
+        //             {
+        //                 //make safe
+        //                 unsigned char vertAttribType = 0;
 
-                        currList++;
-                    }
-                    else if(StringTools::equalsIgnoreCase<char>(innerNode->getTitle(), "vertices"))
-                    {
-                        auto temp = innerNode->getAttribute("source");
-                        if(temp != nullptr)
-                            vertexSource = temp->data;
+        //                 auto temp = innerNode->getAttribute("id");
+        //                 if(temp != nullptr)
+        //                     ids.push_back( temp->data );
                         
-                    }
-                    else if(StringTools::equalsIgnoreCase<char>(innerNode->getTitle(), "triangles"))
-                    {
-                        modelFormat = TRIANGLES;
-                        XmlNode* lastParentNode = innerNode;
-                        for(XmlNode* childNodes : lastParentNode->getChildNodes())
-                        {
-                            if(StringTools::equalsIgnoreCase<char>(childNodes->getTitle(), "input"))
-                            {
-                                //setting usage for the formats
-                                unsigned char usageNum = USAGE_OTHER;
+        //                 XmlNode* accessorNode = innerNode->getChildNodes()[1]->getChildNodes()[0];
+                        
+        //                 temp = accessorNode->getAttribute("stride");
+        //                 if(temp != nullptr)
+        //                     vertAttribType = stoi(temp->data);
+                        
+                        
+        //                 //add format information
+        //                 if(StringTools::equalsIgnoreCase<char>(innerNode->getChildNodes()[0]->getTitle(), "float_array"))
+        //                 {
+        //                     addVertexFormatInfo(vertAttribType, USAGE_OTHER);
+        //                 }
+        //                 else if(StringTools::equalsIgnoreCase<char>(innerNode->getChildNodes()[0]->getTitle(), "int_array"))
+        //                 {
+        //                     addVertexFormatInfo(TYPE_INT, USAGE_OTHER);
+        //                     vertAttribType = 0;
+        //                 }
+                        
+        //                 //add vertex attribute information
+        //                 std::vector<std::string> split = StringTools::splitString(innerNode->getChildNodes()[0]->getValue(), ' ');
+                        
+        //                 for(std::string& v : split)
+        //                 {
+        //                     if(vertAttribType == 0)
+        //                     {
+        //                         addInt( stoi(v), currList);
+        //                     }
+        //                     else
+        //                     {
+        //                         addFloat( stof(v), currList);
+        //                     }
+        //                 }
+
+        //                 currList++;
+        //             }
+        //             else if(StringTools::equalsIgnoreCase<char>(innerNode->getTitle(), "vertices"))
+        //             {
+        //                 auto temp = innerNode->getAttribute("source");
+        //                 if(temp != nullptr)
+        //                     vertexSource = temp->data;
+                        
+        //             }
+        //             else if(StringTools::equalsIgnoreCase<char>(innerNode->getTitle(), "triangles"))
+        //             {
+        //                 modelFormat = TRIANGLES;
+        //                 XmlNode* lastParentNode = innerNode;
+        //                 for(XmlNode* childNodes : lastParentNode->getChildNodes())
+        //                 {
+        //                     if(StringTools::equalsIgnoreCase<char>(childNodes->getTitle(), "input"))
+        //                     {
+        //                         //setting usage for the formats
+        //                         unsigned char usageNum = USAGE_OTHER;
                                 
-                                std::vector<HashPair<std::string, std::string>*> allAttribs = childNodes->getRawAttributes().getAll();
+        //                         std::vector<HashPair<std::string, std::string>*> allAttribs = childNodes->getRawAttributes().getAll();
 
-                                for(HashPair<std::string, std::string>* attrib : allAttribs)
-                                {
-                                    if(StringTools::equalsIgnoreCase<char>(attrib->key, "semantic"))
-                                    {
-                                        if(StringTools::equalsIgnoreCase<char>(attrib->data, "VERTEX"))
-                                        {
-                                            usageNum = USAGE_POSITION;
-                                        }
-                                        else if(StringTools::equalsIgnoreCase<char>(attrib->data, "POSITION"))
-                                        {
-                                            usageNum = USAGE_POSITION;
-                                        }
-                                        else if(StringTools::equalsIgnoreCase<char>(attrib->data, "NORMAL"))
-                                        {
-                                            usageNum = USAGE_NORMAL;
-                                        }
-                                        else if(StringTools::equalsIgnoreCase<char>(attrib->data, "TEXCOORD"))
-                                        {
-                                            usageNum = USAGE_TEXTURE;
-                                        }
-                                    }
-                                    else if(StringTools::equalsIgnoreCase<char>(attrib->key, "source"))
-                                    {
-                                        size_t index = 0;
-                                        while(index < ids.size())
-                                        {
-                                            std::string testV = "#" + ids[index];
+        //                         for(HashPair<std::string, std::string>* attrib : allAttribs)
+        //                         {
+        //                             if(StringTools::equalsIgnoreCase<char>(attrib->key, "semantic"))
+        //                             {
+        //                                 if(StringTools::equalsIgnoreCase<char>(attrib->data, "VERTEX"))
+        //                                 {
+        //                                     usageNum = USAGE_POSITION;
+        //                                 }
+        //                                 else if(StringTools::equalsIgnoreCase<char>(attrib->data, "POSITION"))
+        //                                 {
+        //                                     usageNum = USAGE_POSITION;
+        //                                 }
+        //                                 else if(StringTools::equalsIgnoreCase<char>(attrib->data, "NORMAL"))
+        //                                 {
+        //                                     usageNum = USAGE_NORMAL;
+        //                                 }
+        //                                 else if(StringTools::equalsIgnoreCase<char>(attrib->data, "TEXCOORD"))
+        //                                 {
+        //                                     usageNum = USAGE_TEXTURE;
+        //                                 }
+        //                             }
+        //                             else if(StringTools::equalsIgnoreCase<char>(attrib->key, "source"))
+        //                             {
+        //                                 size_t index = 0;
+        //                                 while(index < ids.size())
+        //                                 {
+        //                                     std::string testV = "#" + ids[index];
 
-                                            if(StringTools::equalsIgnoreCase<char>(attrib->data, testV))
-                                            {
-                                                break;
-                                            }
-                                            index++;
-                                        }
+        //                                     if(StringTools::equalsIgnoreCase<char>(attrib->data, testV))
+        //                                     {
+        //                                         break;
+        //                                     }
+        //                                     index++;
+        //                                 }
 
-                                        if(index < ids.size())
-                                            formatInfo[index].usage = usageNum;
+        //                                 if(index < ids.size())
+        //                                     formatInfo[index].usage = usageNum;
 
-                                        break;
-                                    }
-                                }
-                            }
-                            else if(StringTools::equalsIgnoreCase<char>(childNodes->getTitle(), "p"))
-                            {
-                                //index information
-                                std::vector<std::string> split = StringTools::splitString(childNodes->getValue(), ' ');
+        //                                 break;
+        //                             }
+        //                         }
+        //                     }
+        //                     else if(StringTools::equalsIgnoreCase<char>(childNodes->getTitle(), "p"))
+        //                     {
+        //                         //index information
+        //                         std::vector<std::string> split = StringTools::splitString(childNodes->getValue(), ' ');
 
-                                std::vector<unsigned int> tempIndexInfo;
-                                for(std::string& v : split)
-                                {
-                                    tempIndexInfo.push_back( stoi(v) );
-                                    if(tempIndexInfo.size() >= formatInfo.size())
-                                    {
-                                        addIndicies(tempIndexInfo);
-                                        tempIndexInfo.clear();
-                                    }
-                                }
+        //                         std::vector<unsigned int> tempIndexInfo;
+        //                         for(std::string& v : split)
+        //                         {
+        //                             tempIndexInfo.push_back( stoi(v) );
+        //                             if(tempIndexInfo.size() >= formatInfo.size())
+        //                             {
+        //                                 addIndicies(tempIndexInfo);
+        //                                 tempIndexInfo.clear();
+        //                             }
+        //                         }
 
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
     }
 
 

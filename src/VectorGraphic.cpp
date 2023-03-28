@@ -273,8 +273,12 @@ namespace glib
 
 	void VectorGraphic::loadNode(XmlNode* parentNode, VectorShape* groupPointer)
 	{
-		for(XmlNode* childNode : parentNode->getChildNodes())
+		for(ChildNode& child : parentNode->getChildNodes())
 		{
+			if(child.type != ChildNode::TYPE_NODE)
+				continue;
+			
+			XmlNode* childNode = child.node;
 			if(childNode==nullptr)
 			{
 				continue;

@@ -91,138 +91,138 @@ namespace glib
 
     bool VectorFont::loadSVGFont(File file)
     {
-        SimpleXml f = SimpleXml();
-        if(!f.load(file))
-        {
-            return false;
-        }
+        // SimpleXml f = SimpleXml();
+        // if(!f.load(file))
+        // {
+        //     return false;
+        // }
 
-        for(XmlNode* n : f.getNodes())
-        {
-            if(StringTools::equalsIgnoreCase<char>(n->getTitle(), "svg"))
-            {
-                XmlNode* cNode = nullptr;
-                for(int index=0; index<n->getChildNodes().size(); index++)
-                {
-                    cNode = n->getChildNodes()[index];
-                    if( StringTools::equalsIgnoreCase<char>(cNode->getTitle(), "defs") )
-                    {
-                        for(XmlNode* q : cNode->getChildNodes())
-                        {
-                            if( StringTools::equalsIgnoreCase<char>(q->getTitle(), "font") )
-                            {
-                                cNode = q;
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
+        // for(XmlNode* n : f.getNodes())
+        // {
+        //     if(StringTools::equalsIgnoreCase<char>(n->getTitle(), "svg"))
+        //     {
+        //         XmlNode* cNode = nullptr;
+        //         for(int index=0; index<n->getChildNodes().size(); index++)
+        //         {
+        //             cNode = n->getChildNodes()[index];
+        //             if( StringTools::equalsIgnoreCase<char>(cNode->getTitle(), "defs") )
+        //             {
+        //                 for(XmlNode* q : cNode->getChildNodes())
+        //                 {
+        //                     if( StringTools::equalsIgnoreCase<char>(q->getTitle(), "font") )
+        //                     {
+        //                         cNode = q;
+        //                         break;
+        //                     }
+        //                 }
+        //                 break;
+        //             }
+        //         }
 
-                if( cNode == nullptr )
-                {
-                    continue;
-                }
+        //         if( cNode == nullptr )
+        //         {
+        //             continue;
+        //         }
 
-                if( StringTools::equalsIgnoreCase<char>(cNode->getTitle(), "font") )
-                {
-                    auto temp = cNode->getAttribute("horiz-adv-x");
-                    if(temp != nullptr)
-                        baseHorizontalAdvance = (int)MathExt::ceil( stod(temp->data) );
+        //         if( StringTools::equalsIgnoreCase<char>(cNode->getTitle(), "font") )
+        //         {
+        //             auto temp = cNode->getAttribute("horiz-adv-x");
+        //             if(temp != nullptr)
+        //                 baseHorizontalAdvance = (int)MathExt::ceil( stod(temp->data) );
                     
-                    int width = 0;
-                    int height = 0;
+        //             int width = 0;
+        //             int height = 0;
                     
-                    XmlNode parentNode = XmlNode();
-                    parentNode.setTitle("svg");
+        //             XmlNode parentNode = XmlNode();
+        //             parentNode.setTitle("svg");
                     
-                    std::string transformValue = "translate(0,0) scale(1,-1)";
-                    parentNode.addAttribute("width", "0");
-                    parentNode.addAttribute("height", "0");
+        //             std::string transformValue = "translate(0,0) scale(1,-1)";
+        //             parentNode.addAttribute("width", "0");
+        //             parentNode.addAttribute("height", "0");
                     
                     
                     
-                    //process font information
-                    for(int i=0; i<cNode->getChildNodes().size(); i++)
-                    {
-                        XmlNode* fontChild = cNode->getChildNodes()[i];
-                        if(StringTools::equalsIgnoreCase<char>(fontChild->getTitle(), "glyph") || StringTools::equalsIgnoreCase<char>(fontChild->getTitle(), "missing-glyph"))
-                        {
-                            FontCharInfo fc = {};
-                            fc.x=0;
-                            fc.y=0;
-                            fc.xOffset = 0;
-                            fc.yOffset = 0;
-                            fc.width = width;
-                            fc.height = height;
-                            fc.horizAdv = baseHorizontalAdvance;
-                            fc.unicodeValue = -1;   //assuming missing-glyph
+        //             //process font information
+        //             for(int i=0; i<cNode->getChildNodes().size(); i++)
+        //             {
+        //                 XmlNode* fontChild = cNode->getChildNodes()[i];
+        //                 if(StringTools::equalsIgnoreCase<char>(fontChild->getTitle(), "glyph") || StringTools::equalsIgnoreCase<char>(fontChild->getTitle(), "missing-glyph"))
+        //                 {
+        //                     FontCharInfo fc = {};
+        //                     fc.x=0;
+        //                     fc.y=0;
+        //                     fc.xOffset = 0;
+        //                     fc.yOffset = 0;
+        //                     fc.width = width;
+        //                     fc.height = height;
+        //                     fc.horizAdv = baseHorizontalAdvance;
+        //                     fc.unicodeValue = -1;   //assuming missing-glyph
 
-                            temp = fontChild->getAttribute("unicode");
-                            if(temp != nullptr)
-                            {
-                                auto stuff = StringTools::utf8ToIntString(temp->data);
-                                if(stuff.size() > 0)
-                                    fc.unicodeValue = stuff.front();
-                            }
+        //                     temp = fontChild->getAttribute("unicode");
+        //                     if(temp != nullptr)
+        //                     {
+        //                         auto stuff = StringTools::utf8ToIntString(temp->data);
+        //                         if(stuff.size() > 0)
+        //                             fc.unicodeValue = stuff.front();
+        //                     }
 
-                            temp = fontChild->getAttribute("horiz-adv-x");
-                            if(temp != nullptr)
-                            {
-                                fc.horizAdv = (int)MathExt::ceil( stod(temp->data) );
-                            }
+        //                     temp = fontChild->getAttribute("horiz-adv-x");
+        //                     if(temp != nullptr)
+        //                     {
+        //                         fc.horizAdv = (int)MathExt::ceil( stod(temp->data) );
+        //                     }
 
-                            //turn the xmlNode into a path and pass it into a vectorgrahpic
-                            VectorGraphic* fontGraphic = new VectorGraphic();
+        //                     //turn the xmlNode into a path and pass it into a vectorgrahpic
+        //                     VectorGraphic* fontGraphic = new VectorGraphic();
                             
-                            XmlNode parsedNode = XmlNode(*fontChild);
-                            parsedNode.setTitle("path");
-                            parsedNode.addAttribute("transform", transformValue);
+        //                     XmlNode parsedNode = XmlNode(*fontChild);
+        //                     parsedNode.setTitle("path");
+        //                     parsedNode.addAttribute("transform", transformValue);
 
-                            parentNode.addChild(&parsedNode);
+        //                     parentNode.addChild(&parsedNode);
 
-                            fontGraphic->load(&parentNode);
+        //                     fontGraphic->load(&parentNode);
                             
-                            parentNode.getChildNodes().pop_back(); // Why this way??? Add a remove Node to avoid this or something
+        //                     parentNode.getChildNodes().pop_back(); // Why this way??? Add a remove Node to avoid this or something
 
-                            this->charInfoList.push_back(fc);
-                            this->fontSprite.addGraphic(fontGraphic);
+        //                     this->charInfoList.push_back(fc);
+        //                     this->fontSprite.addGraphic(fontGraphic);
                             
-                        }
-                        else if(StringTools::equalsIgnoreCase<char>(fontChild->getTitle(), "font-face"))
-                        {
-                            temp = fontChild->getAttribute("bbox");
-                            if(temp != nullptr)
-                            {
-                                //Note that minX and minY do not contribute to the viewBox. Just the transform
-                                auto lazyCode = StringTools::splitStringMultipleDeliminators(temp->data, " ,");
-                                if(lazyCode.size() == 4)
-                                {
-                                    width = MathExt::abs(StringTools::toInt(lazyCode[2]));
-                                    height = MathExt::abs(StringTools::toInt(lazyCode[3]));
-                                    parentNode.addAttribute("width", lazyCode[2]);
-                                    parentNode.addAttribute("height", lazyCode[3]);
+        //                 }
+        //                 else if(StringTools::equalsIgnoreCase<char>(fontChild->getTitle(), "font-face"))
+        //                 {
+        //                     temp = fontChild->getAttribute("bbox");
+        //                     if(temp != nullptr)
+        //                     {
+        //                         //Note that minX and minY do not contribute to the viewBox. Just the transform
+        //                         auto lazyCode = StringTools::splitStringMultipleDeliminators(temp->data, " ,");
+        //                         if(lazyCode.size() == 4)
+        //                         {
+        //                             width = MathExt::abs(StringTools::toInt(lazyCode[2]));
+        //                             height = MathExt::abs(StringTools::toInt(lazyCode[3]));
+        //                             parentNode.addAttribute("width", lazyCode[2]);
+        //                             parentNode.addAttribute("height", lazyCode[3]);
 
-                                    this->originalFontSize = height;
-                                    fontSize = height;
-                                    baseWidth = width;
-                                    baseHeight = height;
-                                }
-                            }
+        //                             this->originalFontSize = height;
+        //                             fontSize = height;
+        //                             baseWidth = width;
+        //                             baseHeight = height;
+        //                         }
+        //                     }
 
-                            temp = fontChild->getAttribute("ascent");
-                            if(temp != nullptr)
-                            {
-                                transformValue = "translate(0," + temp->data + ") scale(1,-1)";
-                            }
+        //                     temp = fontChild->getAttribute("ascent");
+        //                     if(temp != nullptr)
+        //                     {
+        //                         transformValue = "translate(0," + temp->data + ") scale(1,-1)";
+        //                     }
                             
-                        }
+        //                 }
                         
-                    }
-                }
-            }
+        //             }
+        //         }
+        //     }
 
-        }
+        // }
 
         return true;
     }

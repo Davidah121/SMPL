@@ -1,10 +1,11 @@
 
-		<html>
-             value1  j
-			<head>
-                <script>
-                    var v = 1;
-                    var c = 2;
-                </script>
-			</head>
-		</html>
+<html>
+    value1
+    j
+    <head>
+        <script>
+            var v = 1;
+            var c = 2;
+        </script>
+    </head>
+</html>

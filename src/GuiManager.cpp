@@ -86,12 +86,15 @@ namespace glib
 			addElement(thisIns);
 			addToDeleteList(thisIns);
 
-			for(XmlNode* n : node->getChildNodes())
+			for(ChildNode& c : node->getChildNodes())
 			{
-				bool successful = loadElement(n, thisIns);
+				if(c.type != ChildNode::TYPE_NODE)
+					continue;
+
+				bool successful = loadElement(c.node, thisIns);
 				if(!successful)
 				{
-					StringTools::println("ERROR LOADING NODE: %ls", n->getTitle().c_str());
+					StringTools::println("ERROR LOADING NODE: %ls", c.node->getTitle().c_str());
 					return false;
 				}
 			}
@@ -129,13 +132,16 @@ namespace glib
 				resizeImage(w, h);
 				setExpectedSize( Vec2f(w,h) );
 			}
-			
-			for(XmlNode* n : parentNode->getChildNodes())
+
+			for(ChildNode& c : parentNode->getChildNodes())
 			{
-				bool successful = loadElement(n, nullptr);
+				if(c.type != ChildNode::TYPE_NODE)
+					continue;
+				
+				bool successful = loadElement(c.node, nullptr);
 				if(!successful)
 				{
-					StringTools::println("ERROR LOADING NODE: %ls", n->getTitle().c_str());
+					StringTools::println("ERROR LOADING NODE: %ls", c.node->getTitle().c_str());
 				}
 			}
 		}
@@ -172,8 +178,12 @@ namespace glib
 				setExpectedSize( Vec2f(w,h) );
 			}
 			
-			for(XmlNode* n : parentNode->getChildNodes())
+			for(ChildNode& c : parentNode->getChildNodes())
 			{
+				if(c.type != ChildNode::TYPE_NODE)
+					continue;
+				
+				XmlNode* n = c.node;
 				bool successful = loadElement(n, nullptr);
 				if(!successful)
 				{

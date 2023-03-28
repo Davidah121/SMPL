@@ -7,7 +7,6 @@
 #include "FrequencyTable.h"
 
 #include "GeneralExceptions.h"
-#include "BSAT.h"
 
 namespace glib
 {
@@ -248,65 +247,63 @@ namespace glib
 		BinarySet leftovers = BinarySet();
 	};
 
-	class StreamCompressionLZSS
-	{
-	public:
-		static const bool TYPE_COMPRESSION = false;
-		static const bool TYPE_DECOMPRESSION = true;
+	// class StreamCompressionLZSS
+	// {
+	// public:
+	// 	static const bool TYPE_COMPRESSION = false;
+	// 	static const bool TYPE_DECOMPRESSION = true;
 
-		StreamCompressionLZSS(bool mode, unsigned int maxBackwardsDistance = 32767, unsigned char maxLength = 255);
-		~StreamCompressionLZSS();
+	// 	StreamCompressionLZSS(bool mode, unsigned int maxBackwardsDistance = 32767, unsigned char maxLength = 255);
+	// 	~StreamCompressionLZSS();
 
-		void addData(unsigned char* data, int length);
+	// 	void addData(unsigned char* data, int length);
 
-		/**
-		 * @brief Gets the Buffer of bytes saved by the object. This represents the compressed
-		 * 		data or decompressed data so far. It can be read from here and stored in another
-		 * 		place as necessary.
-		 * 		Here, it is a BinarySet since the data does not have to be exactly divisible by 8.
-		 * 		The buffer may not have an even number of bytes so it should be written out as bits
-		 * 		to preserve what the original data would have been.
-		 * 		
-		 * 		If mode is TYPE_COMPRESSED, the data is not guareenteed to be divisible by 8.
-		 * 		If mode is TYPE_DECOMPRESSED, the data is guareenteed to be divisible by 8.
-		 * 
-		 * @return BinarySet& 
-		 */
-		BinarySet& getBuffer();
+	// 	/**
+	// 	 * @brief Gets the Buffer of bytes saved by the object. This represents the compressed
+	// 	 * 		data or decompressed data so far. It can be read from here and stored in another
+	// 	 * 		place as necessary.
+	// 	 * 		Here, it is a BinarySet since the data does not have to be exactly divisible by 8.
+	// 	 * 		The buffer may not have an even number of bytes so it should be written out as bits
+	// 	 * 		to preserve what the original data would have been.
+	// 	 * 		
+	// 	 * 		If mode is TYPE_COMPRESSED, the data is not guareenteed to be divisible by 8.
+	// 	 * 		If mode is TYPE_DECOMPRESSED, the data is guareenteed to be divisible by 8.
+	// 	 * 
+	// 	 * @return BinarySet& 
+	// 	 */
+	// 	BinarySet& getBuffer();
 
-		/**
-		 * @brief Clears the internal buffer used that represents the compressed or decompressed data so far.
-		 * 
-		 */
-		void clearBuffer();
+	// 	/**
+	// 	 * @brief Clears the internal buffer used that represents the compressed or decompressed data so far.
+	// 	 * 
+	// 	 */
+	// 	void clearBuffer();
 
-		/**
-		 * @brief Returns the size of the internal buffer in bytes.
-		 * 		This will always be greater than or equal to the amount of bits actually used.
-		 * 		To get the number of bits used, get it from the getBuffer() function.
-		 * 
-		 * @return size_t 
-		 */
-		size_t size();
-	private:
-		void addDataCompression(unsigned char* data, int length);
-		void addDataDecompression(unsigned char* data, int length);
+	// 	/**
+	// 	 * @brief Returns the size of the internal buffer in bytes.
+	// 	 * 		This will always be greater than or equal to the amount of bits actually used.
+	// 	 * 		To get the number of bits used, get it from the getBuffer() function.
+	// 	 * 
+	// 	 * @return size_t 
+	// 	 */
+	// 	size_t size();
+	// private:
+	// 	void addDataCompression(unsigned char* data, int length);
+	// 	void addDataDecompression(unsigned char* data, int length);
 
-		bool mode;
-		BSAT sufTree;
-		LinkedList<BinaryTreeNode<RBNode<uint32_t>>*> queueOfNodes;
-		int queueSize = 0;
+	// 	bool mode;
+	// 	int queueSize = 0;
 
-		BRS<RBNode<uint32_t>> lastKnownRange;
-		int lastKnownMatch = -1;
-		int offset = 0;
-		unsigned int maxBackDist = 32767;
-		unsigned char maxLength = 255;
+	// 	// BRS<RBNode<uint32_t>> lastKnownRange;
+	// 	int lastKnownMatch = -1;
+	// 	int offset = 0;
+	// 	unsigned int maxBackDist = 32767;
+	// 	unsigned char maxLength = 255;
 
-		BinarySet buffer = BinarySet();
-		BinarySet leftovers = BinarySet();
+	// 	BinarySet buffer = BinarySet();
+	// 	BinarySet leftovers = BinarySet();
 		
-	};
+	// };
 
 	class Compression
 	{

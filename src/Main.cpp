@@ -13,7 +13,6 @@
 #include "ResourceManager.h"
 
 #include "BinarySearchTree.h"
-#include "BSAT.h"
 #include "Compression.h"
 #include "SuffixArray.h"
 
@@ -367,13 +366,25 @@ void testXML()
                 <script>
                     //<end>
                     var v = 1;
-                    var start = "<script>";
-                    var end = "</script>";
+
                     //</end>
                 </script>
 			</head>
 		</html>
 	)R0N0";
+
+    const std::string rawHTML2 = R"R0N0(
+        <html>
+            value1
+            j
+            <head>
+                <script>
+                    var v = 1;
+                    var c = 2;
+                </script>
+            </head>
+        </html>
+    )R0N0";
     
     glib::SimpleXml html = glib::SimpleXml();
     html.loadFromBytes((unsigned char*)rawHTML.data(), rawHTML.size());
@@ -388,56 +399,6 @@ void traverseInOrder(BinaryTreeNode<RBNode<uint32_t>>* n)
         traverseInOrder(n->leftChild);
         StringTools::println("%u", n->data.data);
         traverseInOrder(n->rightChild);
-    }
-}
-
-void testBSAT()
-{
-    glib::BSAT tree = glib::BSAT();
-
-    tree.push('b');
-    tree.push('a');
-    tree.push('n');
-    tree.push('a');
-    tree.push('n');
-    tree.push('a');
-    StringTools::println("---------------");
-    printNode(0, true, tree.getRawTree()->getRoot());
-    
-    BinaryTreeNode<RBNode<uint32_t>>* n = tree.getRawTree()->getRoot();
-    traverseInOrder(n);
-
-    StringTools::println("nan found at: %u", tree.searchIndex("nan"));
-
-    BRS<RBNode<uint32_t>> range1 = tree.binaryRangeSearch('n', 0);
-    BRS<RBNode<uint32_t>> range2 = tree.binaryRangeSearch('a', 1, range1);
-    BRS<RBNode<uint32_t>> range3 = tree.binaryRangeSearch('n', 2, range2);
-    if(range1.commonAncestor != nullptr)
-    {
-        StringTools::println("RANGE1 BETWEEN: %u and %u with ancestor %u", range1.mostLeft->data.data, range1.mostRight->data.data, range1.commonAncestor->data.data);
-
-        if(range2.commonAncestor != nullptr)
-        {
-            StringTools::println("RANGE2 BETWEEN: %u and %u with ancestor %u", range2.mostLeft->data.data, range2.mostRight->data.data, range2.commonAncestor->data.data);
-
-            if(range3.commonAncestor != nullptr)
-            {
-                StringTools::println("RANGE3 BETWEEN: %u and %u with ancestor %u", range3.mostLeft->data.data, range3.mostRight->data.data, range3.commonAncestor->data.data);
-            }
-            else
-            {
-                StringTools::println("RANGE3 FAILED");
-            }
-        }
-        else
-        {
-            StringTools::println("RANGE2 FAILED");
-        }
-        
-    }
-    else
-    {
-        StringTools::println("RANGE1 FAILED");
     }
 }
 
@@ -457,12 +418,12 @@ void testStreamLZSS(int type)
 
     if (type == 0)
     {
-        t1 = System::getCurrentTimeNano();
-        StreamCompressionLZSS com = StreamCompressionLZSS(StreamCompressionLZSS::TYPE_COMPRESSION);
-        com.addData(dataToCompress, sizeOfData);
-        t2 = System::getCurrentTimeNano();
+        // t1 = System::getCurrentTimeNano();
+        // StreamCompressionLZSS com = StreamCompressionLZSS(StreamCompressionLZSS::TYPE_COMPRESSION);
+        // com.addData(dataToCompress, sizeOfData);
+        // t2 = System::getCurrentTimeNano();
 
-        StringTools::println("Time for updated stream compression: %lluns", t2 - t1);
+        // StringTools::println("Time for updated stream compression: %lluns", t2 - t1);
     }
     else if (type == 1)
     {
@@ -512,57 +473,6 @@ void testBST()
     StringTools::println("K1 = %p, %p, %p, %p", k1->parent, k1->leftChild, k1->rightChild, k1);
     StringTools::println("K2 = %p, %p, %p, %p", k2->parent, k2->leftChild, k2->rightChild, k2);
 
-}
-
-void testSuffixStuff()
-{
-    
-    std::string baseString = "abazas";
-    for(int i=1; i<=baseString.size(); i++)
-    {
-        std::string testStr = baseString.substr(0, i);
-        SuffixArray arr = SuffixArray(testStr);
-        std::vector<int> results = arr.getArray();
-
-        StringTools::println("RESULTS: ");
-        StringTools::println(testStr);
-        for(int& i : results)
-        {
-            std::string str = testStr.substr(i);
-            StringTools::println("%d, %s", i, str.c_str());
-        }
-        StringTools::println("");
-    }
-
-    StringTools::println("OTHER RESULTS: ");
-    glib::BSAT tree = glib::BSAT();
-
-    for(int i=0; i<baseString.size(); i++)
-    {
-        tree.push(baseString[i]);
-        StringTools::println("---------------");
-        printNode(0, true, tree.getRawTree()->getRoot());
-        if(i==3)
-        {
-            StringTools::println("SWAP");
-            auto k = tree.getRawTree()->getRoot();
-            tree.getRawTree()->swapNodes(k, k->leftChild);
-        }
-    }
-
-    // auto k = tree.getRawTree()->getRoot();
-    // if(k != nullptr)
-    // {
-    //     //get lowest
-    //     // tree.getRawTree()->leftRotate( k );
-    //     k = tree.getRawTree()->getRoot();
-    //     tree.getRawTree()->swapNodes(k, k->leftChild);
-    //     StringTools::println("---------------");
-    //     printNode(0, true, tree.getRawTree()->getRoot());
-    // }
-    
-    BinaryTreeNode<RBNode<uint32_t>>* n = tree.getRawTree()->getRoot();
-    traverseInOrder(n);
 }
 
 void testXML2()

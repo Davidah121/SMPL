@@ -1,6 +1,9 @@
 #include "SimpleXml.h"
 #include "StringTools.h"
 
+#define PARSING_VALUE false
+#define PARSING_NODE true
+
 namespace glib
 {
     #pragma region XML_NODE
@@ -109,6 +112,7 @@ namespace glib
         {
             nameToIndexMap.add(n->getTitle(), childNodes.size());
             childNodes.push_back(ChildNode(n)); //Create a child node using n as the XMLNode
+            n->parentNode = this;
         }
     }
     
@@ -177,7 +181,8 @@ namespace glib
 
     SimpleXml::SimpleXml(File f)
     {
-        load(f);
+        if(!load(f))
+            validXml = false;
     }
 
     SimpleXml::~SimpleXml()
@@ -403,216 +408,403 @@ namespace glib
 
     bool SimpleXml::loadFromBytes(unsigned char* bytes, size_t size, bool parseEscape)
     {
+        //rule set: (assuming no comments and invalid characters)
+        //'<' must be followed by a valid character. No space in front of title text.
+        //'>' signifies the end of a tag.
+        //All text between '>' and the next '<' are considered to be apart of the value of the node. (Can be multiple values)
+        //All text between '<' and '>' are considered to be apart of the attributes of the node.
+        //All things must be encapsulated in a root parent. (Not going to enforce)
+
+        //Linebreaks and tabs are ignored. Extra spaces are ignored (only the first is counted.)
+        //When parsing html, some nodes may not be ended correctly and the script node may contain tags in it.
+        //In that case, anything between the script node is considered apart of its value and all spacing should be perserved.
+
+        
         shouldParseEscape = parseEscape;
 
-        bool parsingNode = false;
-        std::string innerNodeText = "";
-        bool previousHasClosingTag = false;
-
         XmlNode* parentNode = nullptr;
-        XmlNode* lastNodeParsed = nullptr;
-        bool isRecordingText = false;
-        bool hitEnd = true;
+        XmlNode* lastNodeClosed = nullptr;
+        std::string tempValue = "";
 
-        if(bytes != nullptr)
+        bool potentialProblem = false; //used for html parsing to determine if it is valid xml.
+        bool potentialSpace = false;
+        bool mode = PARSING_VALUE; //false=parsing value. true=parsing node
+
+        if(bytes == nullptr)
+            return false;
+        
+        std::vector<unsigned char> fileBytes = removeCommentsAndInvalidChars(bytes, size); //Should do inline so that it does not create more memory than necessary.
+        for(unsigned char byte : fileBytes)
         {
-            std::vector<unsigned char> fileBytes = removeCommentsAndInvalidChars(bytes, size);
-
-            for(unsigned char byte : fileBytes)
+            if(byte == '<')
             {
-                if(byte=='<' && hitEnd==true)
+                if(parentNode != nullptr)
                 {
-                    //set value of node
-                    if(parentNode!=nullptr)
-                    {
-                        parentNode->value += innerNodeText;
-                    }
-                    innerNodeText = "";
-                    isRecordingText = false;
-                    parsingNode = true;
-                    hitEnd=false;
+                    if(potentialSpace)
+                        if(parentNode->childNodes.size() > 0 && tempValue.size() > 0)
+                            tempValue = " " + tempValue;
+
+                    if(tempValue != "")
+                        parentNode->addValue(tempValue);
                 }
-                else if(byte=='>' && hitEnd==false)
+                mode = PARSING_NODE;
+                tempValue = "";
+                potentialSpace = false;
+            }
+            else if(byte == '>')
+            {
+                mode = PARSING_VALUE;
+                //check if it was potentially the script title for the parent
+                if(type == TYPE_HTML && parentNode != nullptr)
                 {
-                    if(type==TYPE_HTML && parentNode != nullptr)
+                    if(parentNode->getTitle() == "script" && tempValue != "/script")
                     {
-                        if(parentNode->getTitle() == "script" && innerNodeText != "/script")
-                        {
-                            //add to parent inner node text and jump back to start
-                            hitEnd = true;
-                            parsingNode = false;
-                            parentNode->value += "<" + innerNodeText + ">";
-                            isRecordingText = false;
-                            innerNodeText = "";
-                            continue;
-                        }
+                        //the data is apart of the value.
+                        if(tempValue != "")
+                            parentNode->addValue("<" + tempValue + "> ");
+                        
+                        tempValue = "";
+                        continue;
                     }
+                }
 
-                    parsingNode = false;
-                    hitEnd=true;
-                    XmlNode* node = parseXmlLine(innerNodeText);
+                XmlNode* n = parseXmlLine(tempValue);
+                if(n == nullptr)
+                {
+                    //error when parsing node
+                    validXml = false;
+                    return false;
+                }
 
-                    if(node==nullptr)
+                //set the nodes parent if required and stuff.
+                //html has tags that can not contain a value so they are considered closed and don't have children but don't have to end with a slash.
+                //Results in invalid xml but it is necessary to be able to read them.
+                bool slashAtFront = tempValue[0] == '/';
+                bool slashAtEnd = tempValue.back() == '/';
+                bool endingTag = n->isEndOfSection();
+
+                tempValue = "";
+
+                if(parentNode == nullptr)
+                {
+                    //store at the root and if not ending tag. set as new parent
+                    addNode(n);
+                    if(!endingTag)
                     {
-                        dispose();
-                        return false;
+                        parentNode = n;
                     }
-
-                    bool slashAtFront = innerNodeText[0] == '/';
-                    bool slashAtEnd = innerNodeText.back() == '/';
-
-                    innerNodeText = "";
-                    isRecordingText = false;
-                    if(parentNode==nullptr)
-                    {
-                        if(!node->isEndOfSection())
-                        {
-                            addNode(node);
-                            parentNode = node;
-                        }
-                        else
-                        {
-                            if(node->attributes.getSize()>0)
-                            {
-                                addNode(node);
-                            }
-                            parentNode = node->parentNode;
-                        }
-                    }
-                    else
-                    {
-                        node->parentNode = parentNode;
-                        if(!node->isEndOfSection())
-                        {
-                            parentNode->addChild(node);
-                            parentNode = node;
-                        }
-                        else
-                        {
-                            if(node->title == parentNode->title && slashAtFront)
-                            {
-                                //valid closing tag. Contains nothing and can be discarded.
-                                delete node;
-                                node = nullptr;
-
-                                parentNode = parentNode->parentNode;
-                            }
-                            else
-                            {
-                                if(slashAtFront)
-                                {
-                                    //error of some sort. closing tag that does not correspond to the parent.
-                                    //delete and continue parsing
-                                    if(type == TYPE_HTML)
-                                    {
-                                        //may be a void tag
-                                        if(lastNodeParsed != nullptr)
-                                        {
-                                            if(lastNodeParsed->getTitle() != node->getTitle())
-                                            {
-                                                validXml = false;
-                                            }
-                                            //otherwise valid xml. Still delete the node though.
-                                        }
-                                    }
-                                    else
-                                    {
-                                        validXml = false;
-                                    }
-
-                                    delete node;
-                                    node = nullptr;
-                                }
-                                else
-                                {
-                                    //valid close but contains stuff
-                                    parentNode->addChild(node);
-                                    node->parentNode = parentNode;
-
-                                    if(lastNodeParsed != nullptr)
-                                    {
-                                        if(!previousHasClosingTag && lastNodeParsed->isEndOfSection())
-                                        {
-                                            //the previous may have been a void tag
-                                            validXml = false;
-                                        }
-                                    }
-                                }
-                            }
-                            
-                        }
-                    }
-
-                    lastNodeParsed = node;
-                    if(node != nullptr)
-                        previousHasClosingTag = (slashAtEnd || slashAtFront);
                 }
                 else
                 {
-                    if(isRecordingText)
+                    if(endingTag)
                     {
-                        innerNodeText += byte;
-                    }
-                    else
-                    {
-                        if(parsingNode)
+                        if(parentNode->getTitle() == n->getTitle())
                         {
-                            if( StringTools::isAlphaNumerial(byte, true, false) || byte == '/' || byte == '?' || byte == '!')
-                            {
-                                isRecordingText=true;
-                                innerNodeText += byte;
-                            }
-                            else
-                            {
-                                //error has occurred
-                                //Must a number, letter, /, or _ at the start or ? or !
-                                dispose();
-                                return false;
-                            }
+                            //ending tag for the parent. Set parent to grandparent
+                            parentNode = parentNode->parentNode;
+                            delete n;
                         }
                         else
                         {
-                            if(byte > 32)
+                            if(!slashAtFront)
                             {
-                                //valid
-                                isRecordingText=true;
-                                innerNodeText += byte;
-                            }
-                            else
-                            {
-                                if(type==TYPE_HTML && parentNode != nullptr)
+                                //if there is no slash at the front. It is a single element.
+                                parentNode->addChild(n);
+
+                                //check if it is valid xml since html can have tags with no closing mark. They may be closed later though so keep that in mind.
+                                if(!slashAtEnd)
                                 {
-                                    if(parentNode->getTitle() == "script" && (byte == 32 || byte == '\n' || byte == '\t'))
+                                    if(type == TYPE_HTML)
                                     {
-                                        isRecordingText = true;
-                                        innerNodeText += byte;
+                                        potentialProblem = true;
+                                        lastNodeClosed = n;
                                     }
                                 }
                             }
+                            else
+                            {
+                                if(potentialProblem)
+                                {
+                                    //check the last problem node to determine if this was suppose to close it.
+                                    if(lastNodeClosed != nullptr)
+                                    {
+                                        if(lastNodeClosed->getTitle() == n->getTitle())
+                                        {
+                                            //this is okay.
+                                            delete n;
+                                            continue;
+                                        }
+                                    }
+                                }
+
+                                //error. Ending tag does not line up with the parent.
+                                delete n;
+                                validXml = false;
+                                return false;
+                            }
                         }
                     }
-                    
+                    else
+                    {
+                        parentNode->addChild(n);
+                        parentNode = n;
+                    }
                 }
             }
-
-            if(shouldParseEscape)
+            else
             {
-                for(XmlNode* node : nodes)
+                if(tempValue.size() == 0 && mode == PARSING_NODE)
                 {
-                    fixParseOnNode(node);
+                    if( StringTools::isAlphaNumerial(byte, true, false) || byte == '/' || byte == '?' || byte == '!')
+                    {
+                        tempValue += byte;
+                    }
+                    else
+                    {
+                        //error. Only certain characters allowed at the start of the nodes title.
+                        validXml = false;
+                        return false;
+                    }
                 }
+                else if(byte > 32)
+                {
+                    tempValue += byte;
+                }
+                else
+                {
+                    //only add a space if the last value was not a space or some other character that would be considered a space.
+                    if(tempValue.size() > 0)
+                    {
+                        if(tempValue.back() > 32)
+                        {
+                            tempValue += ' ';
+                        }
+                    }
+                    else
+                        potentialSpace = true;
+                }
+                
             }
+        }
 
-        }
-        else
-        {
-            //StringTools::out << "Could not open file" << StringTools::lineBreak;
-            return false;
-        }
+        if(potentialProblem)
+            validXml = false;
 
         return true;
-        
     }
+
+    // bool SimpleXml::loadFromBytes(unsigned char* bytes, size_t size, bool parseEscape)
+    // {
+    //     shouldParseEscape = parseEscape;
+
+    //     bool parsingNode = false;
+    //     std::string innerNodeText = "";
+    //     bool previousHasClosingTag = false;
+
+    //     XmlNode* parentNode = nullptr;
+    //     XmlNode* lastNodeParsed = nullptr;
+    //     bool isRecordingText = false;
+    //     bool hitEnd = true;
+
+    //     if(bytes != nullptr)
+    //     {
+    //         std::vector<unsigned char> fileBytes = removeCommentsAndInvalidChars(bytes, size);
+
+    //         for(unsigned char byte : fileBytes)
+    //         {
+    //             if(byte=='<' && hitEnd==true)
+    //             {
+    //                 //set value of node
+    //                 if(parentNode!=nullptr)
+    //                 {
+    //                     parentNode->value += innerNodeText;
+    //                 }
+    //                 innerNodeText = "";
+    //                 isRecordingText = false;
+    //                 parsingNode = true;
+    //                 hitEnd=false;
+    //             }
+    //             else if(byte=='>' && hitEnd==false)
+    //             {
+    //                 if(type==TYPE_HTML && parentNode != nullptr)
+    //                 {
+    //                     if(parentNode->getTitle() == "script" && innerNodeText != "/script")
+    //                     {
+    //                         //add to parent inner node text and jump back to start
+    //                         hitEnd = true;
+    //                         parsingNode = false;
+    //                         parentNode->value += "<" + innerNodeText + ">";
+    //                         isRecordingText = false;
+    //                         innerNodeText = "";
+    //                         continue;
+    //                     }
+    //                 }
+
+    //                 parsingNode = false;
+    //                 hitEnd=true;
+    //                 XmlNode* node = parseXmlLine(innerNodeText);
+
+    //                 if(node==nullptr)
+    //                 {
+    //                     dispose();
+    //                     return false;
+    //                 }
+
+    //                 bool slashAtFront = innerNodeText[0] == '/';
+    //                 bool slashAtEnd = innerNodeText.back() == '/';
+
+    //                 innerNodeText = "";
+    //                 isRecordingText = false;
+    //                 if(parentNode==nullptr)
+    //                 {
+    //                     if(!node->isEndOfSection())
+    //                     {
+    //                         addNode(node);
+    //                         parentNode = node;
+    //                     }
+    //                     else
+    //                     {
+    //                         if(node->attributes.getSize()>0)
+    //                         {
+    //                             addNode(node);
+    //                         }
+    //                         parentNode = node->parentNode;
+    //                     }
+    //                 }
+    //                 else
+    //                 {
+    //                     node->parentNode = parentNode;
+    //                     if(!node->isEndOfSection())
+    //                     {
+    //                         parentNode->addChild(node);
+    //                         parentNode = node;
+    //                     }
+    //                     else
+    //                     {
+    //                         if(node->title == parentNode->title && slashAtFront)
+    //                         {
+    //                             //valid closing tag. Contains nothing and can be discarded.
+    //                             delete node;
+    //                             node = nullptr;
+
+    //                             parentNode = parentNode->parentNode;
+    //                         }
+    //                         else
+    //                         {
+    //                             if(slashAtFront)
+    //                             {
+    //                                 //error of some sort. closing tag that does not correspond to the parent.
+    //                                 //delete and continue parsing
+    //                                 if(type == TYPE_HTML)
+    //                                 {
+    //                                     //may be a void tag
+    //                                     if(lastNodeParsed != nullptr)
+    //                                     {
+    //                                         if(lastNodeParsed->getTitle() != node->getTitle())
+    //                                         {
+    //                                             validXml = false;
+    //                                         }
+    //                                         //otherwise valid xml. Still delete the node though.
+    //                                     }
+    //                                 }
+    //                                 else
+    //                                 {
+    //                                     validXml = false;
+    //                                 }
+
+    //                                 delete node;
+    //                                 node = nullptr;
+    //                             }
+    //                             else
+    //                             {
+    //                                 //valid close but contains stuff
+    //                                 parentNode->addChild(node);
+    //                                 node->parentNode = parentNode;
+
+    //                                 if(lastNodeParsed != nullptr)
+    //                                 {
+    //                                     if(!previousHasClosingTag && lastNodeParsed->isEndOfSection())
+    //                                     {
+    //                                         //the previous may have been a void tag
+    //                                         validXml = false;
+    //                                     }
+    //                                 }
+    //                             }
+    //                         }
+                            
+    //                     }
+    //                 }
+
+    //                 lastNodeParsed = node;
+    //                 if(node != nullptr)
+    //                     previousHasClosingTag = (slashAtEnd || slashAtFront);
+    //             }
+    //             else
+    //             {
+    //                 if(isRecordingText)
+    //                 {
+    //                     innerNodeText += byte;
+    //                 }
+    //                 else
+    //                 {
+    //                     if(parsingNode)
+    //                     {
+    //                         if( StringTools::isAlphaNumerial(byte, true, false) || byte == '/' || byte == '?' || byte == '!')
+    //                         {
+    //                             isRecordingText=true;
+    //                             innerNodeText += byte;
+    //                         }
+    //                         else
+    //                         {
+    //                             //error has occurred
+    //                             //Must a number, letter, /, or _ at the start or ? or !
+    //                             dispose();
+    //                             return false;
+    //                         }
+    //                     }
+    //                     else
+    //                     {
+    //                         if(byte > 32)
+    //                         {
+    //                             //valid
+    //                             isRecordingText=true;
+    //                             innerNodeText += byte;
+    //                         }
+    //                         else
+    //                         {
+    //                             if(type==TYPE_HTML && parentNode != nullptr)
+    //                             {
+    //                                 if(parentNode->getTitle() == "script" && (byte == 32 || byte == '\n' || byte == '\t'))
+    //                                 {
+    //                                     isRecordingText = true;
+    //                                     innerNodeText += byte;
+    //                                 }
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+                    
+    //             }
+    //         }
+
+    //         if(shouldParseEscape)
+    //         {
+    //             for(XmlNode* node : nodes)
+    //             {
+    //                 fixParseOnNode(node);
+    //             }
+    //         }
+
+    //     }
+    //     else
+    //     {
+    //         //StringTools::out << "Could not open file" << StringTools::lineBreak;
+    //         return false;
+    //     }
+
+    //     return true;
+        
+    // }
 
     std::vector<unsigned char> SimpleXml::removeCommentsAndInvalidChars(std::vector<unsigned char> fileBytes)
     {

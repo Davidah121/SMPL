@@ -226,8 +226,11 @@ namespace glib
 				return;
 			}
 
-			for(XmlNode* n : root->getChildNodes())
+			for(ChildNode& c : root->getChildNodes())
 			{
+				if(c.type != ChildNode::TYPE_NODE)
+					continue;
+				XmlNode* n = c.node;
 				if(n->getTitle() == "info")
 				{
 					//Can simplify
@@ -247,8 +250,12 @@ namespace glib
 				}
 				else if(n->getTitle() == "pages")
 				{
-					for(XmlNode* n2 : n->getChildNodes())
+					for(ChildNode& c2 : n->getChildNodes())
 					{
+						if(c2.type != ChildNode::TYPE_NODE)
+							continue;
+						XmlNode* n2 = c2.node;
+
 						auto temp = n2->getAttribute("file");
 						if(temp != nullptr)
 						{
@@ -267,8 +274,11 @@ namespace glib
 				}
 				else if(n->getTitle() == "chars")
 				{
-					for(XmlNode* n2 : n->getChildNodes())
+					for(ChildNode& c2 : n->getChildNodes())
 					{
+						if(c2.type != ChildNode::TYPE_NODE)
+							continue;
+						XmlNode* n2 = c2.node;
 						FontCharInfo fci;
 						int page = 0;
 

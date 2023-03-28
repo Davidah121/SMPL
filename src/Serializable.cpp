@@ -255,7 +255,8 @@ namespace glib
 		if(serData.getNodes().size() > 0)
 		{
 			//Skip Serializer and grab first child.
-			deserialize(serData.getNodes()[0]->getChildNodes()[0]);
+			auto c = serData.getNodes()[0]->getChildNodes()[0];
+			deserialize(c.node);
 		}
 	}
 
@@ -267,8 +268,12 @@ namespace glib
 		
 		int varNum = 0;
 		//assumes that the data appears in the same order so no checks are done.
-		for(XmlNode* cNodes : n->getChildNodes())
+		for(ChildNode& c : n->getChildNodes())
 		{
+			if(c.type != ChildNode::TYPE_NODE)
+				continue;
+			
+			XmlNode* cNodes = c.node;
 			if(cNodes->getTitle() == "SerializedObject")
 			{
 				((SerializedObject*)variables[varNum])->deserialize(cNodes);
