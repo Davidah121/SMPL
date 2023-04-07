@@ -29,41 +29,28 @@
 
 // 	void StreamCompressionLZSS::addDataCompression(unsigned char* data, int length)
 // 	{
+// 		BRS<RBNode<HashValue>> lastRange = {};
+// 		HashValue hv = {};
+		
 // 		for(int i=0; i<length; i++)
 // 		{
-// 			BRS<RBNode<uint32_t>> newRange = {};
 // 			int addType = 0; //0 = delayed, 1 = add literals, 2 = add length pair
-
-// 			if(sufTree.getBuffer().size() >= 3)
+// 			memcpy(&hv.key, data, 3);
+// 			if(lastRange.commonAncestor == nullptr)
 // 			{
-// 				newRange = sufTree.binaryRangeSearch(data[i], offset, lastKnownRange);
+// 				lastRange = searchTree.binaryRangeSearch(hv, hv);
+// 			}
 
-// 				if(newRange.commonAncestor == nullptr)
-// 				{
-// 					if(lastKnownRange.commonAncestor == nullptr || offset < 3)
-// 					{
-// 						addType = 1;
-// 					}
-// 					else if(offset >= 3 && lastKnownRange.commonAncestor != nullptr)
-// 					{
-// 						addType = 2;
-// 					}
-// 				}
-// 				else
-// 				{
-// 					if(offset >= maxLength)
-// 					{
-// 						addType = 2;
-// 					}
-// 				}
+// 			if(lastRange.commonAncestor != nullptr)
+// 			{
+// 				//a series of matches found. At least 3 so it will be a reference pair
+
 // 			}
 // 			else
 // 			{
-// 				// not enough data to form a length pair.
-// 				addType = 1;
+// 				//nothing found. add literals
 // 			}
-
-
+			
 // 			if(addType == 1)
 // 			{
 // 				//add last couple of literals

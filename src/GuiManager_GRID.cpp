@@ -123,11 +123,11 @@ namespace glib
 		int width = (int)MathExt::round(boundingBox.getWidth());
 		int height = (int)MathExt::round(boundingBox.getHeight());
 
-		GuiGraphicsInterface::setColor(backgroundColor);
-		GuiGraphicsInterface::drawRect(x, y, x+width, y+height, false);
+		GraphicsInterface::setColor(backgroundColor);
+		GraphicsInterface::drawRect(x, y, x+width, y+height, false);
 
-		GuiGraphicsInterface::setColor(outlineColor);
-		GuiGraphicsInterface::drawRect(x, y, x+width, y+height, true);
+		GraphicsInterface::setColor(outlineColor);
+		GraphicsInterface::drawRect(x, y, x+width, y+height, true);
 	}
 
 	void GuiGrid::setGridSpacing(int x, int y)

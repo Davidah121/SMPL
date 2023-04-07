@@ -23,12 +23,12 @@ namespace glib
 		if(spr.getPointer() == nullptr)
 		{
 			//create it
-			GuiResourceManager::getResourceManager().addSprite( GuiGraphicsInterface::createSprite(f), f.getFullFileName(), false );
+			GuiResourceManager::getResourceManager().addSprite( GraphicsInterface::createSprite(f), f.getFullFileName(), false );
 			spr = GuiResourceManager::getResourceManager().getSprite(f.getFullFileName());
 		}
 		
 		
-		GuiSpriteInterface* tempSpr = spr.getPointer();
+		SpriteInterface* tempSpr = spr.getPointer();
 		if(tempSpr != nullptr)
 		{
 			if(tempSpr->getSize() > 0)
@@ -71,7 +71,7 @@ namespace glib
 	void GuiSprite::update()
 	{
 		size_t lastIndex = index;
-		GuiSpriteInterface* tempSpr = spr.getPointer();
+		SpriteInterface* tempSpr = spr.getPointer();
 		if(tempSpr == nullptr)
 			return;
 		
@@ -108,14 +108,14 @@ namespace glib
 
 	void GuiSprite::render()
 	{
-		GuiSpriteInterface* tempSpr = spr.getPointer();
+		SpriteInterface* tempSpr = spr.getPointer();
 		if(tempSpr == nullptr)
 			return;
 		
-		GuiImageInterface tempImg = tempSpr->getImage(index);
-		if(tempImg.getType() != GuiGraphicsInterface::TYPE_INVALID)
+		ImageInterface tempImg = tempSpr->getImage(index);
+		if(tempImg.getType() != GraphicsInterface::TYPE_INVALID)
 		{
-			GuiGraphicsInterface::setColor(imgColor);
+			GraphicsInterface::setColor(imgColor);
 
 			int tempWidth = (width > 0) ? width : tempImg.getWidth();
 			int tempHeight = (height > 0) ? height : tempImg.getHeight();
@@ -125,7 +125,7 @@ namespace glib
 			
 			if(nXScale == 1 && nYScale == 1)
 			{
-				GuiGraphicsInterface::drawSprite(&tempImg, x, y);
+				GraphicsInterface::drawSprite(&tempImg, x, y);
 			}
 			else
 			{
@@ -135,15 +135,15 @@ namespace glib
 				int y1 = y;
 				int y2 = (int)MathExt::round(y + tempImg.getHeight() * nYScale);
 
-				GuiGraphicsInterface::drawSprite(&tempImg, x1, y1, x2, y2);
+				GraphicsInterface::drawSprite(&tempImg, x1, y1, x2, y2);
 			}
 		}
 	
 	}
 
-	GuiSpriteInterface* GuiSprite::getSprite()
+	SpriteInterface* GuiSprite::getSprite()
 	{
-		GuiSpriteInterface* tempSpr = spr.getPointer();
+		SpriteInterface* tempSpr = spr.getPointer();
 		return tempSpr;
 	}
 
@@ -210,12 +210,12 @@ namespace glib
 
 	void GuiSprite::solveBoundingBox()
 	{
-		GuiSpriteInterface* tempSpr = spr.getPointer();
+		SpriteInterface* tempSpr = spr.getPointer();
 		if(tempSpr != nullptr)
 		{
 			if(index < tempSpr->getSize())
 			{
-				GuiImageInterface temp = tempSpr->getImage(index);
+				ImageInterface temp = tempSpr->getImage(index);
 				boundingBox = Box2D(x, y, x+temp.getWidth(), y+temp.getHeight());
 			}
 			else
@@ -247,7 +247,7 @@ namespace glib
 					if(spr.getPointer() == nullptr)
 					{
 						//create it
-						GuiResourceManager::getResourceManager().addSprite( GuiGraphicsInterface::createSprite(it->data), it->data, false );
+						GuiResourceManager::getResourceManager().addSprite( GraphicsInterface::createSprite(it->data), it->data, false );
 						spr = GuiResourceManager::getResourceManager().getSprite(it->data);
 					}
 				}
@@ -276,7 +276,7 @@ namespace glib
 			}
 		}
 
-		GuiSpriteInterface* tempSpr = spr.getPointer();
+		SpriteInterface* tempSpr = spr.getPointer();
 
 		if(tempSpr->getSprite() != nullptr)
 		{

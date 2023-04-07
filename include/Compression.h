@@ -3,6 +3,7 @@
 #include <string>
 #include "Tree.h"
 #include "BinaryTree.h"
+#include "BinarySearchTree.h"
 #include "BinarySet.h"
 #include "FrequencyTable.h"
 
@@ -247,6 +248,18 @@ namespace glib
 		BinarySet leftovers = BinarySet();
 	};
 
+	// struct HashValue
+	// {
+	// 	int32_t key;
+	// 	int32_t location;
+	// 	bool operator==(const HashValue& rhs) const { return key == rhs.key; }
+	// 	bool operator!=(const HashValue& rhs) const { return !operator==(rhs); }
+	// 	bool operator<(const HashValue& rhs) const { return key < rhs.key; }
+	// 	bool operator>(const HashValue& rhs) const { return key > rhs.key; }
+	// 	bool operator<=(const HashValue& rhs) const { return !operator>(rhs); }
+	// 	bool operator>=(const HashValue& rhs) const { return !operator<(rhs); }
+	// };
+
 	// class StreamCompressionLZSS
 	// {
 	// public:
@@ -287,6 +300,7 @@ namespace glib
 	// 	 * @return size_t 
 	// 	 */
 	// 	size_t size();
+
 	// private:
 	// 	void addDataCompression(unsigned char* data, int length);
 	// 	void addDataDecompression(unsigned char* data, int length);
@@ -294,12 +308,14 @@ namespace glib
 	// 	bool mode;
 	// 	int queueSize = 0;
 
-	// 	// BRS<RBNode<uint32_t>> lastKnownRange;
 	// 	int lastKnownMatch = -1;
 	// 	int offset = 0;
 	// 	unsigned int maxBackDist = 32767;
 	// 	unsigned char maxLength = 255;
 
+	// 	BinarySearchTree<HashValue> searchTree = BinarySearchTree<HashValue>(true);
+
+	// 	std::vector<unsigned char> backBuffer = std::vector<unsigned char>();
 	// 	BinarySet buffer = BinarySet();
 	// 	BinarySet leftovers = BinarySet();
 		

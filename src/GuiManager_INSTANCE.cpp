@@ -494,12 +494,12 @@ namespace glib
 		return manager;
 	}
 
-	void GuiInstance::setCanvas(GuiSurfaceInterface* m)
+	void GuiInstance::setCanvas(SurfaceInterface* m)
 	{
 		canvas = m;
 	}
 
-	GuiSurfaceInterface* GuiInstance::getCanvas()
+	SurfaceInterface* GuiInstance::getCanvas()
 	{
 		return canvas;
 	}

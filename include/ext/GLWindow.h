@@ -1,4 +1,5 @@
 #pragma once
+#define USE_OPENGL
 
 #ifdef USE_OPENGL
 
@@ -94,21 +95,6 @@
 
 			//Object and Class Stuff
 			static const Class globalClass;
-
-			/**
-			 * @brief Repaints the window.
-			 * 		When the window is in USER_MANAGED mode, it repaints immediately.
-			 * 		When the window is in THREAD_MANAGED mode, it request the thread to repaint.
-			 * 			This is used when thread auto repaint is set to false.
-			 */
-			void repaint();
-
-			
-			/**
-			 * @brief Waits until the window has closed to continue.
-			 * 		It will process the window messages and gui until closed.
-			 */
-			void waitTillClose();
 			
 			/**
 			 * @brief Sets the swap interval for vsync. 
@@ -123,14 +109,14 @@
 			 * @param interval 
 			 * 		Specifies which frame to sync on. 
 			 */
-			void setVSync(int interval);
+			void setVSync(unsigned int interval);
 			
 			/**
 			 * @brief Gets the swap interval for vsync.
 			 * 
 			 * @return int 
 			 */
-			int getVSyncInterval();
+			unsigned int getVSyncInterval();
 
 			void testGL();
 			void swapBuffers();
@@ -157,7 +143,7 @@
 			void setPixelFormat();
 			void initGL();
 			void disposeGL();
-			int swapInterval = 0;
+			unsigned int swapInterval = 0;
 			//
 
 			void init(int x, int y, int width, int height, std::wstring title, WindowOptions windowType);

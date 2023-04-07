@@ -1,3 +1,4 @@
+#define USE_OPENGL
 #ifdef USE_OPENGL
 
     #include "ext/GLGraphics.h"
@@ -23,7 +24,6 @@
         GLFont* GLGraphics::activeFont = nullptr;
 
         bool GLGraphics::hasInit = false;
-
         GLGraphics GLGraphics::singleton;
 
         void GLGraphics::init()
@@ -236,6 +236,7 @@
         {
             if(!hasInit)
                 return; //throw error
+                
             //create rectangle
             std::vector<float> positions = {
                 (float)x1, (float)y1,

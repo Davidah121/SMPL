@@ -169,25 +169,25 @@ namespace glib
 	void GuiTextBox::render()
 	{
 		//draw a rectangle
-		GuiGraphicsInterface::setColor(backgroundColor);
-		GuiGraphicsInterface::drawRect(x, y, x + width, y + height, false);
+		GraphicsInterface::setColor(backgroundColor);
+		GraphicsInterface::drawRect(x, y, x + width, y + height, false);
 
 		if (getFocus() == false)
-			GuiGraphicsInterface::setColor(outlineColor);
+			GraphicsInterface::setColor(outlineColor);
 		else
-			GuiGraphicsInterface::setColor(focusOutlineColor);
+			GraphicsInterface::setColor(focusOutlineColor);
 		
-		GuiGraphicsInterface::drawRect(x, y, x + width, y + height, true);
+		GraphicsInterface::drawRect(x, y, x + width, y + height, true);
 
 		if(getFocus())
 		{
 			if(cursorBlink)
 			{
 				//Font Stuff
-				GuiGraphicsInterface::setColor(cursorBlinkColor);
+				GraphicsInterface::setColor(cursorBlinkColor);
 				std::string testText = textElement.getTextRef();
 
-				GuiFontInterface* fInt = textElement.getFont();
+				FontInterface* fInt = textElement.getFont();
 				Font* f = fInt->getFont();
 
 				if(f == nullptr)
@@ -206,24 +206,24 @@ namespace glib
 				int tx = textElement.getX();
 				int ty = textElement.getY();
 				
-				GuiGraphicsInterface::drawRect((int)MathExt::round(tx+cursorPos.x), (int)MathExt::round(ty+cursorPos.y),
+				GraphicsInterface::drawRect((int)MathExt::round(tx+cursorPos.x), (int)MathExt::round(ty+cursorPos.y),
 											(int)MathExt::round(tx+cursorPos.x+cursorWidth), (int)MathExt::round(ty+cursorPos.y+f->getVerticalAdvance()), false);
 			}
 		}
 		
 		//Create new bounding box to put the text in. Must be bound by the textbox size regardless of the total size of the collection of objects.
 		//Collection of objects refering to itself and its children
-		Box2D oldBounds = GuiGraphicsInterface::getClippingRect();
+		Box2D oldBounds = GraphicsInterface::getClippingRect();
 		Box2D nBounds = oldBounds;
 		nBounds.setLeftBound( MathExt::max((int)nBounds.getLeftBound(), x) );
 		nBounds.setTopBound( MathExt::max((int)nBounds.getTopBound(), y) );
 
-		GuiGraphicsInterface::setClippingRect(nBounds);
+		GraphicsInterface::setClippingRect(nBounds);
 
 		textElement.baseRender();
 		textElement.render();
 
-		GuiGraphicsInterface::setClippingRect(oldBounds);
+		GraphicsInterface::setClippingRect(oldBounds);
 	}
 
 	void GuiTextBox::copy()
@@ -505,7 +505,7 @@ namespace glib
 
 	void GuiTextBox::mouseInput()
 	{
-		GuiFontInterface* fInt = textElement.getFont();
+		FontInterface* fInt = textElement.getFont();
 		Font* f = fInt->getFont();
 		std::string temp = textElement.getText();
 
@@ -663,7 +663,7 @@ namespace glib
 
 	void GuiTextBox::selectionCleanup()
 	{
-		GuiFontInterface* fInt = textElement.getFont();
+		FontInterface* fInt = textElement.getFont();
 		std::string tempText = textElement.getText();
 		Font* f = fInt->getFont();
 		

@@ -58,7 +58,7 @@ namespace glib
 
 		if(updateBounds)
 		{
-			GuiFontInterface* fInt = getFont();
+			FontInterface* fInt = getFont();
 			if(fInt == nullptr)
 				return;
 			
@@ -113,11 +113,11 @@ namespace glib
 
 	void GuiTextBlock::render()
 	{
-		GuiFontInterface* fInt = getFont();
-		// GuiFontInterface* oldFontInt = GuiGraphicsInterface::getFont();
+		FontInterface* fInt = getFont();
+		// FontInterface* oldFontInt = GraphicsInterface::getFont();
 
-		GuiGraphicsInterface::setFont(fInt);
-		GuiGraphicsInterface::setColor(textColor);
+		GraphicsInterface::setFont(fInt);
+		GraphicsInterface::setColor(textColor);
 
 		int actualMaxW = (maxWidth < 0) ? 0xFFFF : maxWidth; //65535 will be considered the maximum width. Most images and textures limit size to this.
 		int actualMaxH = (maxHeight < 0) ? 0xFFFF : maxHeight; //65535 will be considered the maximum height. Most images and textures limit size to this.
@@ -125,31 +125,31 @@ namespace glib
 		int minHighlight = MathExt::min(startHighlight, endHighlight);
 		int maxHighlight = MathExt::max(startHighlight, endHighlight);
 		
-		// Box2D oldClip = GuiGraphicsInterface::getClippingRect();
+		// Box2D oldClip = GraphicsInterface::getClippingRect();
 
 		if(!text.empty())
 		{
 			if(shouldHighlight)
-				GuiGraphicsInterface::drawTextLimitsHighlighted(text, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText, minHighlight, maxHighlight, highlightColor);
+				GraphicsInterface::drawTextLimitsHighlighted(text, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText, minHighlight, maxHighlight, highlightColor);
 			else
-				GuiGraphicsInterface::drawTextLimits(text, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText);
+				GraphicsInterface::drawTextLimits(text, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText);
 		}
 		else
 		{
-			GuiGraphicsInterface::setColor(defaultTextColor);
+			GraphicsInterface::setColor(defaultTextColor);
 			if(shouldHighlight)
-				GuiGraphicsInterface::drawTextLimitsHighlighted(defaultString, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText, minHighlight, maxHighlight, highlightColor);
+				GraphicsInterface::drawTextLimitsHighlighted(defaultString, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText, minHighlight, maxHighlight, highlightColor);
 			else
-				GuiGraphicsInterface::drawTextLimits(defaultString, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText);
+				GraphicsInterface::drawTextLimits(defaultString, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText);
 		}
 		
-		// GuiGraphicsInterface::setFont(oldFontInt);
+		// GraphicsInterface::setFont(oldFontInt);
 
-		// Box2D oldClip = GuiGraphicsInterface::getClippingRect();
-		// GuiGraphicsInterface::resetClippingPlane();
-		// GuiGraphicsInterface::setColor(Color{255,0,0,255});
-		// GuiGraphicsInterface::drawRect(boundingBox.getLeftBound(), boundingBox.getTopBound(), boundingBox.getRightBound(), boundingBox.getBottomBound(), true);
-		// GuiGraphicsInterface::setClippingRect(oldClip);
+		// Box2D oldClip = GraphicsInterface::getClippingRect();
+		// GraphicsInterface::resetClippingPlane();
+		// GraphicsInterface::setColor(Color{255,0,0,255});
+		// GraphicsInterface::drawRect(boundingBox.getLeftBound(), boundingBox.getTopBound(), boundingBox.getRightBound(), boundingBox.getBottomBound(), true);
+		// GraphicsInterface::setClippingRect(oldClip);
 		
 	}
 
@@ -215,7 +215,7 @@ namespace glib
 		update();
 	}
 
-	void GuiTextBlock::setFont(SmartMemory<GuiFontInterface> f)
+	void GuiTextBlock::setFont(SmartMemory<FontInterface> f)
 	{
 		textFontP = f;
 		updateBounds = true;
@@ -223,10 +223,10 @@ namespace glib
 		update();
 	}
 
-	GuiFontInterface* GuiTextBlock::getFont()
+	FontInterface* GuiTextBlock::getFont()
 	{
-		GuiFontInterface* textFont = textFontP.getPointer();
-		GuiFontInterface* fInt = (textFont != nullptr) ? textFont : GuiGraphicsInterface::getFont();
+		FontInterface* textFont = textFontP.getPointer();
+		FontInterface* fInt = (textFont != nullptr) ? textFont : GraphicsInterface::getFont();
 		
 		if(fInt->getFont() != nullptr)
 			fInt->getFont()->setFontSize(fontSize);

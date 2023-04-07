@@ -135,14 +135,14 @@ namespace glib
 		
 		if(backgroundColor.alpha != 0)
 		{
-			GuiGraphicsInterface::setColor(backgroundColor);
-			GuiGraphicsInterface::drawRect(x1, y1, x2, y2, false);
+			GraphicsInterface::setColor(backgroundColor);
+			GraphicsInterface::drawRect(x1, y1, x2, y2, false);
 		}
 		
 		if(outlineColor.alpha != 0)
 		{
-			GuiGraphicsInterface::setColor(outlineColor);
-			GuiGraphicsInterface::drawRect(x1, y1, x2, y2, true);
+			GraphicsInterface::setColor(outlineColor);
+			GraphicsInterface::drawRect(x1, y1, x2, y2, true);
 		}
 	}
 

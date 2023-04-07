@@ -14,20 +14,20 @@ namespace glib
 		
 	}
 
-	void GuiResourceManager::addSprite(GuiSpriteInterface* data, std::string key, bool array)
+	void GuiResourceManager::addSprite(SpriteInterface* data, std::string key, bool array)
 	{
 		spriteResources.addResource(data, key, array);
 	}
-	void GuiResourceManager::addFont(GuiFontInterface* data, std::string key, bool array)
+	void GuiResourceManager::addFont(FontInterface* data, std::string key, bool array)
 	{
 		fontResources.addResource(data, key, array);
 	}
 
-	SmartMemory<GuiSpriteInterface> GuiResourceManager::getSprite(std::string key)
+	SmartMemory<SpriteInterface> GuiResourceManager::getSprite(std::string key)
 	{
 		return spriteResources.getResource(key);
 	}
-	SmartMemory<GuiFontInterface> GuiResourceManager::getFont(std::string key)
+	SmartMemory<FontInterface> GuiResourceManager::getFont(std::string key)
 	{
 		return fontResources.getResource(key);
 	}
@@ -41,11 +41,11 @@ namespace glib
 		fontResources.deleteResource(key);
 	}
 	
-	ResourceManager<GuiSpriteInterface>* GuiResourceManager::getSpriteResourceManager()
+	ResourceManager<SpriteInterface>* GuiResourceManager::getSpriteResourceManager()
 	{
 		return &spriteResources;
 	}
-	ResourceManager<GuiFontInterface>* GuiResourceManager::getFontResourceManager()
+	ResourceManager<FontInterface>* GuiResourceManager::getFontResourceManager()
 	{
 		return &fontResources;
 	}

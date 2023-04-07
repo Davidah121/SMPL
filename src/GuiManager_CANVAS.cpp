@@ -20,7 +20,7 @@ namespace glib
 		setClass(globalClass);
 		if(this->getManager() != nullptr)
 		{
-			myImage = GuiGraphicsInterface::createSurface(width, height);
+			myImage = GraphicsInterface::createSurface(width, height);
 		}
 		boundingBox = Box2D(x, y, x+width, y+height);
 		includeChildrenInBounds = false;
@@ -45,11 +45,11 @@ namespace glib
 				return;
 			}
 
-			auto oldSurface = GuiGraphicsInterface::getBoundSurface();
-			GuiGraphicsInterface::setBoundSurface(myImage);
-			GuiGraphicsInterface::setColor(clearColor);
-			GuiGraphicsInterface::clear();
-			GuiGraphicsInterface::setBoundSurface(oldSurface);
+			auto oldSurface = GraphicsInterface::getBoundSurface();
+			GraphicsInterface::setBoundSurface(myImage);
+			GraphicsInterface::setColor(clearColor);
+			GraphicsInterface::clear();
+			GraphicsInterface::setBoundSurface(oldSurface);
 
 			setShouldRedraw(true);
 		
@@ -60,10 +60,10 @@ namespace glib
 	{
 		if(this->getManager() != nullptr)
 		{
-			GuiGraphicsInterface::setColor(Color{255,255,255,255});
-			GuiGraphicsInterface::drawSurface(myImage, x, y);
-			GuiGraphicsInterface::setColor(Color{0,0,0,255});
-			GuiGraphicsInterface::drawRect(x, y, (int)MathExt::round(x+boundingBox.getWidth()), (int)MathExt::round(y+boundingBox.getHeight()), true);
+			GraphicsInterface::setColor(Color{255,255,255,255});
+			GraphicsInterface::drawSurface(myImage, x, y);
+			GraphicsInterface::setColor(Color{0,0,0,255});
+			GraphicsInterface::drawRect(x, y, (int)MathExt::round(x+boundingBox.getWidth()), (int)MathExt::round(y+boundingBox.getHeight()), true);
 		}
 	}
 

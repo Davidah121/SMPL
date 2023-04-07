@@ -14,7 +14,7 @@
 
 #include <functional>
 
-#include "GuiGraphics.h"
+#include "GraphicsExt.h"
 #include "ResourceManager.h"
 
 //Should use SmartPointers for memory access to avoid accessing memory that has already been deleted.
@@ -32,23 +32,23 @@ namespace glib
 	public:
 		~GuiResourceManager();
 
-		void addSprite(GuiSpriteInterface* data, std::string key, bool array);
-		void addFont(GuiFontInterface* data, std::string key, bool array);
+		void addSprite(SpriteInterface* data, std::string key, bool array);
+		void addFont(FontInterface* data, std::string key, bool array);
 
-		SmartMemory<GuiSpriteInterface> getSprite(std::string key);
-		SmartMemory<GuiFontInterface> getFont(std::string key);
+		SmartMemory<SpriteInterface> getSprite(std::string key);
+		SmartMemory<FontInterface> getFont(std::string key);
 		
 		void deleteSprite(std::string key);
 		void deleteFont(std::string key);
 		
-		ResourceManager<GuiSpriteInterface>* getSpriteResourceManager();
-		ResourceManager<GuiFontInterface>* getFontResourceManager();
+		ResourceManager<SpriteInterface>* getSpriteResourceManager();
+		ResourceManager<FontInterface>* getFontResourceManager();
 		
 		static GuiResourceManager& getResourceManager();
 	private:
 		GuiResourceManager();
-		ResourceManager<GuiSpriteInterface> spriteResources = ResourceManager<GuiSpriteInterface>();
-		ResourceManager<GuiFontInterface> fontResources = ResourceManager<GuiFontInterface>();
+		ResourceManager<SpriteInterface> spriteResources = ResourceManager<SpriteInterface>();
+		ResourceManager<FontInterface> fontResources = ResourceManager<FontInterface>();
 
 		static GuiResourceManager singleton;
 	};
@@ -370,14 +370,14 @@ namespace glib
 		 * 
 		 * @param m 
 		 */
-		void setCanvas(GuiSurfaceInterface* m);
+		void setCanvas(SurfaceInterface* m);
 
 		/**
 		 * @brief Returns the pointer to the canvas for the GuiInstance if it has one.
 		 * 
-		 * @return GuiSurfaceInterface* 
+		 * @return SurfaceInterface* 
 		 */
-		GuiSurfaceInterface* getCanvas();
+		SurfaceInterface* getCanvas();
 
 		void setStaticScaling(bool v);
 		bool getStaticScaling();
@@ -518,7 +518,7 @@ namespace glib
 
 		std::vector<GuiInstance*> children = std::vector<GuiInstance*>();
 		GuiManager* manager = nullptr;
-		GuiSurfaceInterface* canvas = nullptr;
+		SurfaceInterface* canvas = nullptr;
 		GuiInstance* parent = nullptr;
 
 		XmlNode dataAsXML;
@@ -929,7 +929,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		GuiSurfaceInterface* myImage = nullptr;
+		SurfaceInterface* myImage = nullptr;
 		Color clearColor = {0,0,0,0};
 	};
 
@@ -1159,9 +1159,9 @@ namespace glib
 		/**
 		 * @brief Gets the Sprite
 		 * 
-		 * @return GuiSpriteInterface*
+		 * @return SpriteInterface*
 		 */
-		GuiSpriteInterface* getSprite();
+		SpriteInterface* getSprite();
 
 		/**
 		 * @brief Sets the Sprite for this object. Must be SmartMemory.
@@ -1169,7 +1169,7 @@ namespace glib
 		 * 
 		 * @param spr 
 		 */
-		void setSprite(SmartMemory<GuiSpriteInterface> spr);
+		void setSprite(SmartMemory<SpriteInterface> spr);
 
 		/**
 		 * @brief Sets the x scale for the sprite.
@@ -1283,7 +1283,7 @@ namespace glib
 		int width = -1;
 		int height = -1;
 
-		SmartMemory<GuiSpriteInterface> spr = SmartMemory<GuiSpriteInterface>();
+		SmartMemory<SpriteInterface> spr = SmartMemory<SpriteInterface>();
 		Color imgColor = {255,255,255,255};
 	};
 
@@ -1478,7 +1478,7 @@ namespace glib
 		 * 
 		 * @param f 
 		 */
-		void setFont(SmartMemory<GuiFontInterface> f);
+		void setFont(SmartMemory<FontInterface> f);
 
 		/**
 		 * @brief Gets the Font used.
@@ -1486,9 +1486,9 @@ namespace glib
 		 * 		Font will be resized to fit the objects desired size when this is called.
 		 * 			All other objects sharing this font pointer will have their font resized as well.
 		 * 		
-		 * @return GuiFontInterface* 
+		 * @return FontInterface* 
 		 */
-		GuiFontInterface* getFont();
+		FontInterface* getFont();
 
 		/**
 		 * @brief Set the Font Size used by the text.
@@ -1585,7 +1585,7 @@ namespace glib
 		Color textColor = { 0, 0, 0, 255 };
 		Color defaultTextColor = { 0, 0, 0, 64 };
 		Color highlightColor = { 72, 150, 255, 96 };
-		SmartMemory<GuiFontInterface> textFontP = SmartMemory<GuiFontInterface>();
+		SmartMemory<FontInterface> textFontP = SmartMemory<FontInterface>();
 
 		std::string text = "";
 	};
@@ -2281,6 +2281,7 @@ namespace glib
 	
 		static const unsigned char TYPE_SOFTWARE = 0;
 		static const unsigned char TYPE_OPENGL = 1;
+		static const unsigned char TYPE_DIRECTX = 2;
 		static const unsigned char TYPE_INVALID = -1;
 
 		/**
@@ -2377,9 +2378,9 @@ namespace glib
 		/**
 		 * @brief Gets the Surface for the GuiManager
 		 * 
-		 * @return GuiSurfaceInterface* 
+		 * @return SurfaceInterface* 
 		 */
-		GuiSurfaceInterface* getSurface();
+		SurfaceInterface* getSurface();
 
 		/**
 		 * @brief Gets the amount of GuiInstances in the list.
@@ -2531,7 +2532,7 @@ namespace glib
 		 * 		The function must take in a unordered_map (hashmap) of parameters to be set.
 		 * 		Not all parameters must be set and some are expected to be passed to the parent class.
 		 * 
-		 *  	The function must also take in the GuiGraphicsInterface used. Best used for loading additional graphics data.
+		 *  	The function must also take in the GraphicsInterface used. Best used for loading additional graphics data.
 		 * 
 		 * @param className 
 		 * @param func 
@@ -2575,8 +2576,8 @@ namespace glib
 
 		Vec2f expectedSize;
 
-		GuiSurfaceInterface* surf;
-		unsigned char graphicsInterfaceMode = GuiGraphicsInterface::TYPE_DEFAULT;
+		SurfaceInterface* surf;
+		unsigned char graphicsInterfaceMode = GraphicsInterface::TYPE_DEFAULT;
 
 		Box2D deletedObjectsBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, -0x7FFFFFFF, -0x7FFFFFFF);
 		Box2D preClipBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, -0x7FFFFFFF, -0x7FFFFFFF);

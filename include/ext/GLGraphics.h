@@ -94,8 +94,13 @@
             static void drawTextLimitsHighlighted(std::wstring text, double x, double y, double maxWidth, double maxHeight, bool useLineBreaks, int highlightStart, int highlightEnd, Vec4f highlightColor, GLFont* fontPointer = nullptr);
 
             static void drawRectangle(double x1, double y1, double x2, double y2, bool outline);
+            
             static void drawCircle(double x, double y, double radius, bool outline);
             static void drawCircle(double x, double y, double innerRadius, double outerRadius);
+
+            static void drawEllipse(double x, double y, double xRadius, double yRadius, bool outline);
+            static void drawEllipse(double x, double y, double xRadius, double yRadius, double innerRadiusDistance);
+
             static void drawTriangle(Vec2f p1, Vec2f p2, Vec2f p3, bool outline);
 
             static void drawLine(double x1, double y1, double x2, double y2);

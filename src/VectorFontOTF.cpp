@@ -35,6 +35,17 @@ namespace glib
 		std::vector<TableRecordOTF> tableRecords;
 	};
 
+	
+	struct EncodingRecordOTF
+	{
+		uint16_t platformID;
+		uint16_t encodingID;
+		uint32_t subtableOffset;
+	};
+
+	//Set alignment to 1 byte. Packs everything together with no additional padding.
+	//MSVC syntax but works on GCC and Clang
+	#pragma pack(push, 1)
 	struct headOTF
 	{
 		uint16_t majorVersion;
@@ -76,18 +87,123 @@ namespace glib
 		uint16_t numberOfHMetrics;
 	};
 
-	struct EncodingRecordOTF
+	struct maxpOTF
 	{
-		uint16_t platformID;
-		uint16_t encodingID;
-		uint32_t subtableOffset;
+		uint32_t version; //packed major and minor as 2 16-bit numbers
+		uint16_t numGlyphs;
+		uint16_t maxPoints;
+		uint16_t maxContours;
+		uint16_t maxCompositePoints;
+		uint16_t maxCompositeContours;
+		uint16_t maxZones;
+		uint16_t maxTwilightPoints;
+		uint16_t maxStorage;
+		uint16_t maxFunctionDefs;
+		uint16_t maxInstructionDef;
+		uint16_t maxStackElements;
+		uint16_t maxSizeOfInstructions;
+		uint16_t maxComponentElements;
+		uint16_t maxComponentDepth;
 	};
 
+	struct os2OTF
+	{
+		uint16_t version;
+		int16_t xAvgCharWidth;
+		uint16_t usWeightClass;
+		uint16_t usWidthClass;
+		uint16_t fsType;
+
+		int16_t ySubscriptXSize;
+		int16_t ySubscriptYSize;
+
+		int16_t ySubscriptXOffset;
+		int16_t ySubscriptYOffset;
+
+		int16_t ySuperscriptXSize;
+		int16_t ySuperscriptYSize;
+
+		int16_t ySuperscriptXOffset;
+		int16_t ySuperscriptYOffset;
+
+		int16_t yStrikeoutSize;
+		int16_t yStrikeoutPosition;
+		
+		int16_t sFamilyClass;
+		uint8_t panose[10];
+		uint32_t ulUnicodeRange1;
+		uint32_t ulUnicodeRange2;
+		uint32_t ulUnicodeRange3;
+		uint32_t ulUnicodeRange4;
+
+		uint32_t achVendID; //TAG
+		uint16_t fsSelection;
+		uint16_t usFirstCharIndex;
+		uint16_t usLastCharIndex;
+		int16_t sTypoAscender;
+		int16_t sTypoDescender;
+		int16_t sTypoLineGap;
+		uint16_t usWinAscent;
+		uint16_t usWinDescent;
+		//END OF VERSION 0
+
+		uint32_t ulCodePageRange1;
+		uint32_t ulCodePageRange2;
+		//END OF VERSION 1
+
+		int16_t sxHeight;
+		int16_t sCapHeight;
+		uint16_t usDefaultChar;
+		uint16_t usBreakChar;
+		uint16_t usMaxContext;
+		//END OF VERSION 2,3,4
+
+		uint16_t usLowerOpticalPointSize;
+		uint16_t usUpperOpticalPointSize;
+		//END OF VERSION 5
+	};
+
+	struct postOTF
+	{
+		uint32_t version; //packed major and minor as 2 16-bit numbers
+		uint32_t italicAngle; //fixed decimal number. split in half so upper half is significant. lower half is decimal.
+		int16_t underlinePosition; //font unit
+		int16_t underlineThickness; //font unit
+		uint32_t isFixedPitch;
+
+		//useless 
+		uint32_t minMemType42;
+		uint32_t maxMemType42;
+		uint32_t minMemType1;
+		uint32_t maxMemType1;
+	};
+	
+	//Reset alignment to default behaviour
+	#pragma pack(pop)
+
+	
 	struct cmapOTF //size of 4 bytes plus list
 	{
 		uint16_t version;
 		uint16_t numTables;
 		std::vector<EncodingRecordOTF> encodingRecords;
+	};
+
+	struct longHorMetric
+	{
+		uint16_t advanceWidth;
+		int16_t lsb;
+	};
+
+	struct htmxOTF
+	{
+		std::vector<longHorMetric> hMetrics;
+		std::vector<int16_t> leftSideBearingsEX;
+	};
+
+	struct locaOTF
+	{
+		std::vector<uint32_t> offsets;
 	};
 
 	void readTableRecord(std::vector<unsigned char>& fBytes, int offset, TableRecordOTF& tr, TableDirectoryOTF& o)
@@ -121,7 +237,9 @@ namespace glib
 
 	void readHead(std::vector<unsigned char>& fBytes, int offset, int length, headOTF& h)
 	{
+		StringTools::println("%d, %d", sizeof(headOTF), length);
 		std::memcpy(&h, &fBytes.data()[offset], length);
+		
 		h.majorVersion = StringTools::byteSwap(h.majorVersion);
 		h.minorVersion = StringTools::byteSwap(h.minorVersion);
 		h.fontRevision = StringTools::byteSwap(h.fontRevision);
@@ -337,6 +455,8 @@ namespace glib
 		actualOffset += 8; //Skip length and language bytes.
 		
 		std::memcpy(&numGroups, &fBytes.data()[actualOffset], 4);
+		numGroups = StringTools::byteSwap(numGroups);
+		actualOffset += 4;
 
 		struct SequentialMapGroup
 		{
@@ -348,6 +468,12 @@ namespace glib
 		std::vector<SequentialMapGroup> groups = std::vector<SequentialMapGroup>(numGroups);
 		for(uint32_t i=0; i<groups.size(); i++)
 		{
+			std::memcpy(&groups[i], &fBytes.data()[actualOffset], sizeof(SequentialMapGroup));
+			groups[i].startCharCode = StringTools::byteSwap(groups[i].startCharCode);
+			groups[i].endCharCode = StringTools::byteSwap(groups[i].endCharCode);
+			groups[i].startGlyphID = StringTools::byteSwap(groups[i].startGlyphID);
+			actualOffset += sizeof(SequentialMapGroup);
+
 			for(uint32_t j=groups[i].startCharCode; j<=groups[i].endCharCode; j++)
 			{
 				characterMapping[j] = groups[i].startGlyphID + (j-groups[i].startCharCode);
@@ -372,6 +498,8 @@ namespace glib
 		actualOffset += 8; //Skip length and language bytes.
 		
 		std::memcpy(&numGroups, &fBytes.data()[actualOffset], 4);
+		numGroups = StringTools::byteSwap(numGroups);
+		actualOffset += 4;
 
 		struct SequentialMapGroup
 		{
@@ -383,6 +511,11 @@ namespace glib
 		std::vector<SequentialMapGroup> groups = std::vector<SequentialMapGroup>(numGroups);
 		for(uint32_t i=0; i<groups.size(); i++)
 		{
+			std::memcpy(&groups[i], &fBytes.data()[actualOffset], sizeof(SequentialMapGroup));
+			groups[i].startCharCode = StringTools::byteSwap(groups[i].startCharCode);
+			groups[i].endCharCode = StringTools::byteSwap(groups[i].endCharCode);
+			groups[i].startGlyphID = StringTools::byteSwap(groups[i].startGlyphID);
+
 			for(uint32_t j=groups[i].startCharCode; j<=groups[i].endCharCode; j++)
 			{
 				characterMapping[j] = groups[i].startGlyphID;
@@ -492,6 +625,611 @@ namespace glib
 		}
 	}
 
+	void readHMTX(std::vector<unsigned char>& fBytes, int offset, int length, htmxOTF& horizontalMetrics, uint16_t numberOfHMetrics, uint32_t numGlyphs)
+	{
+		uint16_t additionalMetrics = numGlyphs - numberOfHMetrics;
+		if(numGlyphs < numberOfHMetrics)
+			additionalMetrics = 0; //just in case
+		
+		horizontalMetrics.hMetrics = std::vector<longHorMetric>(numberOfHMetrics);
+		horizontalMetrics.leftSideBearingsEX = std::vector<int16_t>(additionalMetrics);
+
+		for(int i=0; i<numberOfHMetrics; i++)
+		{
+			int j = 2*i;
+			horizontalMetrics.hMetrics[i].advanceWidth = (((uint16_t)fBytes[j+offset+1]) << 8) + ((uint16_t)fBytes[j+offset]);
+			horizontalMetrics.hMetrics[i].lsb = (((int16_t)fBytes[j+offset+1]) << 8) + ((int16_t)fBytes[j+offset]);
+		}
+		
+		int secondOffset = offset + numberOfHMetrics*2;
+		for(int i=0; i<additionalMetrics; i++)
+		{
+			int j = 2*i;
+			horizontalMetrics.leftSideBearingsEX[i] = (((int16_t)fBytes[j+secondOffset+1]) << 8) + ((int16_t)fBytes[j+secondOffset]);
+		}
+	}
+
+	void readMAXP(std::vector<unsigned char>& fBytes, int offset, int length, maxpOTF& profile)
+	{
+		int helperIndex = offset;
+		profile.version = (uint32_t)fBytes[helperIndex+3] + (((uint32_t)fBytes[helperIndex+2]) << 8) + (((uint32_t)fBytes[helperIndex+1]) << 16) + (((uint32_t)fBytes[helperIndex]) << 24);
+		helperIndex+=4;
+
+		profile.numGlyphs = (uint16_t)fBytes[helperIndex+1] + (((uint16_t)fBytes[helperIndex] )<< 8);
+		helperIndex+=2;
+
+		if(profile.version == 0x00005000)
+			return;
+		
+		profile.maxPoints = (uint16_t)fBytes[helperIndex+1] +  (((uint16_t)fBytes[helperIndex] )<< 8);
+		helperIndex+=2;
+
+		profile.maxContours = (uint16_t)fBytes[helperIndex+1] +  (((uint16_t)fBytes[helperIndex] )<< 8);
+		helperIndex+=2;
+
+		profile.maxCompositePoints = (uint16_t)fBytes[helperIndex+1] +  (((uint16_t)fBytes[helperIndex] )<< 8);
+		helperIndex+=2;
+
+		profile.maxCompositeContours = (uint16_t)fBytes[helperIndex+1] +  (((uint16_t)fBytes[helperIndex] )<< 8);
+		helperIndex+=2;
+
+		profile.maxZones = (uint16_t)fBytes[helperIndex+1] +  (((uint16_t)fBytes[helperIndex] )<< 8);
+		helperIndex+=2;
+
+		profile.maxTwilightPoints = (uint16_t)fBytes[helperIndex+1] +  (((uint16_t)fBytes[helperIndex] )<< 8);
+		helperIndex+=2;
+
+		profile.maxStorage = (uint16_t)fBytes[helperIndex+1] +  (((uint16_t)fBytes[helperIndex] )<< 8);
+		helperIndex+=2;
+
+		profile.maxFunctionDefs = (uint16_t)fBytes[helperIndex+1] +  (((uint16_t)fBytes[helperIndex] )<< 8);
+		helperIndex+=2;
+
+		profile.maxInstructionDef = (uint16_t)fBytes[helperIndex+1] +  (((uint16_t)fBytes[helperIndex] )<< 8);
+		helperIndex+=2;
+
+		profile.maxStackElements = (uint16_t)fBytes[helperIndex+1] +  (((uint16_t)fBytes[helperIndex] )<< 8);
+		helperIndex+=2;
+
+		profile.maxSizeOfInstructions = (uint16_t)fBytes[helperIndex+1] +  (((uint16_t)fBytes[helperIndex] )<< 8);
+		helperIndex+=2;
+
+		profile.maxComponentElements = (uint16_t)fBytes[helperIndex+1] +  (((uint16_t)fBytes[helperIndex] )<< 8);
+		helperIndex+=2;
+
+		profile.maxComponentDepth = (uint16_t)fBytes[helperIndex+1] +  (((uint16_t)fBytes[helperIndex] )<< 8);
+		helperIndex+=2;
+	}
+
+	void readOS2(std::vector<unsigned char>& fBytes, int offset, int length, os2OTF& os2Table)
+	{
+		//Since we allocate enough for version 5 of the table, we just fill to the specified length which should not
+		//be more than the largest possible table. If it does, just fill to the size of the table. (future proofing)
+		int maxLength = (sizeof(os2OTF) < length) ? sizeof(os2OTF) : length;
+
+		//just use memcpy and some byte swaps. Im lazy
+		memcpy((unsigned char*)&os2Table, &fBytes[offset], maxLength);
+
+		//now byte swap everything but the array
+		uint16_t* dataAsShorts = (uint16_t*)&os2Table;
+		
+		for(int i=0; i<16; i++)
+		{
+			dataAsShorts[i] = StringTools::byteSwap(dataAsShorts[i]);
+		}
+		
+		os2Table.ulUnicodeRange1 = StringTools::byteSwap(os2Table.ulUnicodeRange1);
+		os2Table.ulUnicodeRange2 = StringTools::byteSwap(os2Table.ulUnicodeRange2);
+		os2Table.ulUnicodeRange3 = StringTools::byteSwap(os2Table.ulUnicodeRange3);
+		os2Table.ulUnicodeRange4 = StringTools::byteSwap(os2Table.ulUnicodeRange4);
+
+		os2Table.ulCodePageRange1 = StringTools::byteSwap(os2Table.ulCodePageRange1);
+		os2Table.ulCodePageRange2 = StringTools::byteSwap(os2Table.ulCodePageRange2);
+
+		dataAsShorts = (uint16_t*)&os2Table.fsSelection;
+		for(int i=0; i<8; i++)
+		{
+			dataAsShorts[i] = StringTools::byteSwap(dataAsShorts[i]);
+		}
+
+		dataAsShorts = (uint16_t*)&os2Table.sxHeight;
+		for(int i=0; i<7; i++)
+		{
+			dataAsShorts[i] = StringTools::byteSwap(dataAsShorts[i]);
+		}
+	}
+
+	void readPost(std::vector<unsigned char>& fBytes, int offset, int length, postOTF& postTable)
+	{
+		//Version 2 and 2.5 have additional stuff but I'm not going to use those likely.
+		//Just mac stuff
+		int maxLength = (sizeof(postOTF) < length) ? sizeof(postOTF) : length;
+
+		//just use memcpy and some byte swaps. Im lazy
+		memcpy((unsigned char*)&postTable, &fBytes[offset], maxLength);
+
+		//byte swaps by hand.
+		postTable.version = StringTools::byteSwap(postTable.version);
+		postTable.italicAngle = StringTools::byteSwap(postTable.italicAngle);
+		postTable.underlinePosition = StringTools::byteSwap(postTable.underlinePosition);
+		postTable.underlineThickness = StringTools::byteSwap(postTable.underlineThickness);
+		postTable.isFixedPitch = StringTools::byteSwap(postTable.isFixedPitch);
+		postTable.minMemType42 = StringTools::byteSwap(postTable.minMemType42);
+		postTable.maxMemType42 = StringTools::byteSwap(postTable.maxMemType42);
+		postTable.minMemType1 = StringTools::byteSwap(postTable.minMemType1);
+		postTable.maxMemType1 = StringTools::byteSwap(postTable.maxMemType1);
+	}
+
+	void readLoca(std::vector<unsigned char>& fBytes, int offset, int length, locaOTF& locaTable, int16_t version, uint16_t n)
+	{
+		//Based on the wording, may be 2 bytes per value or 4 bytes per value.
+		locaTable.offsets = std::vector<uint32_t>(n);
+
+		int startIndex = offset;
+
+		if(version == 0)
+		{
+			//uint16_t
+			for(int i=0; i<n; i++)
+			{
+				locaTable.offsets[i] = ((uint32_t)fBytes[startIndex+1]) +  (((uint32_t)fBytes[startIndex]) << 8);
+				startIndex+=2;
+			}
+		}
+		else
+		{
+			//uint32_t
+			for(int i=0; i<n; i++)
+			{
+				locaTable.offsets[i] = ((uint32_t)fBytes[startIndex+3]) +  (((uint32_t)fBytes[startIndex+2]) << 8) + (((uint32_t)fBytes[startIndex+1]) << 16) + (((uint32_t)fBytes[startIndex]) << 24);
+				startIndex+=4;
+			}
+		}
+	}
+
+	void readGlyf(std::vector<unsigned char>& fBytes, int offset, int length, VectorSprite& mainSprite, locaOTF& locaTable)
+	{
+		//convert each glyph into a svg and store it in the VectorSprite
+		
+		//read header, read simple or composite glyph. (just simple for now)
+		struct GlyphHeader
+		{
+			int16_t numberOfContours;
+			int16_t xMin;
+			int16_t yMin;
+			int16_t xMax;
+			int16_t yMax;
+		};
+
+		struct SimpleGlyphTable
+		{
+			std::vector<uint16_t> endPtsOfContours;
+			uint16_t instructionLength;
+			std::vector<uint8_t> instructions;
+			// std::vector<uint8_t> flags;
+			// std::vector<int16_t> xCoordinates; //could be uint8_t but is contained in int16_t
+			// std::vector<int16_t> yCoordinates; //could be uint8_t but is contained in int16_t
+		};
+
+		for(int indexInLoc = 0; indexInLoc < locaTable.offsets.size(); indexInLoc++)
+		{
+			StringTools::println("Index: %d : %u", indexInLoc, locaTable.offsets[indexInLoc]);
+			if(indexInLoc == 64)
+				break;
+			
+			if(indexInLoc < locaTable.offsets.size()-1)
+			{
+				if(locaTable.offsets[indexInLoc] == locaTable.offsets[indexInLoc+1])
+				{
+					//empty glyph. Add blank graphic
+					StringTools::println("%d: EMPTY GRAPH", indexInLoc);
+
+					VectorGraphic* glyphAsSVG = new VectorGraphic(); //Width and Height should be known so fill this out later.
+					VectorPath* currentPath = new VectorPath();
+					
+					currentPath->setFillMethod( VectorPath::NON_ZERO_RULE );
+					// currentPath->setFillColor( {255,255,255,255} );
+					glyphAsSVG->addShape(currentPath);
+					mainSprite.addGraphic(glyphAsSVG);
+
+					continue;
+				}
+			}
+
+			int currIndex = offset + locaTable.offsets[indexInLoc];
+
+			//readHeader
+			GlyphHeader header = GlyphHeader();
+			memcpy(&header, &fBytes[currIndex], sizeof(GlyphHeader));
+
+			//do some byte swaps
+			uint16_t* headerAsShorts = (uint16_t*)&header;
+			for(int i=0; i<5; i++)
+			{
+				headerAsShorts[i] = StringTools::byteSwap(headerAsShorts[i]);
+			}
+
+			// StringTools::println("START INDEX: %d", currIndex);
+			// StringTools::println("%d", header.numberOfContours);
+
+			currIndex += sizeof(GlyphHeader);
+			
+			if(header.numberOfContours >= 0)
+			{
+				SimpleGlyphTable glyph;
+				glyph.endPtsOfContours = std::vector<uint16_t>(header.numberOfContours);
+
+				for(int i=0; i<header.numberOfContours; i++)
+				{
+					glyph.endPtsOfContours[i] = ((uint16_t)fBytes[currIndex+1]) + (((uint16_t)fBytes[currIndex]) << 8);
+					currIndex+=2;
+				}
+
+				glyph.instructionLength = ((uint16_t)fBytes[currIndex+1]) + (((uint16_t)fBytes[currIndex]) << 8);
+				currIndex+=2;
+
+				if(glyph.instructionLength > 0)
+				{
+					glyph.instructions = std::vector<uint8_t>(glyph.instructionLength);
+					for(int i=0; i<glyph.instructionLength; i++)
+					{
+						glyph.instructions[i] = fBytes[currIndex];
+						currIndex++;
+					}
+
+					//ignore for now. Should not need
+				}
+
+				if(header.numberOfContours == 0)
+				{
+					//probably add empty glyph
+					// StringTools::println("SIMPLE BUT NO DATA");
+					StringTools::println("%d: SIMPLE BUT NO DATA", indexInLoc);
+
+					VectorGraphic* glyphAsSVG = new VectorGraphic(); //Width and Height should be known so fill this out later.
+					VectorPath* currentPath = new VectorPath();
+					
+					currentPath->setFillMethod( VectorPath::NON_ZERO_RULE );
+					// currentPath->setFillColor( {255,255,255,255} );
+					glyphAsSVG->addShape(currentPath);
+					mainSprite.addGraphic(glyphAsSVG);
+
+					continue;
+				}
+
+				//read points. They depend on how many points from previous end contour point
+				uint16_t size = glyph.endPtsOfContours.back() + 1;
+				std::vector<uint8_t> flags = std::vector<uint8_t>(size);
+				std::vector<Vec2f> points = std::vector<Vec2f>(size);
+
+				int i = 0;
+				while(i < size)
+				{
+					uint8_t newFlag = fBytes[currIndex];
+					currIndex++;
+					flags[i] = newFlag;
+					i++;
+					if(newFlag & 0x08)
+					{
+						int repeatCount = fBytes[currIndex];
+						currIndex++;
+						for(int j=0; j<repeatCount; j++)
+						{
+							flags[i+j] = newFlag;
+						}
+						i+=repeatCount;
+					}
+				}
+
+				// StringTools::println("START OF COORDS: %d", currIndex);
+				
+				int16_t lastPoint = 0;
+				for(int i=0; i<size; i++)
+				{
+					//read x coords
+					uint8_t flag = flags[i];
+					if(flag & 0x02)
+					{
+						//read 1 byte
+						if(flag & 0x10)
+							points[i].x = fBytes[currIndex] + lastPoint;
+						else
+							points[i].x = -fBytes[currIndex] + lastPoint;
+						
+						currIndex++;
+					}
+					else
+					{
+						//read 2 bytes
+						if(flag & 0x10)
+						{
+							if(i == 0)
+								points[i].x = 0;
+							else
+								points[i].x = points[i-1].x;
+						}
+						else
+						{
+							int16_t nPoint = ((int16_t)fBytes[currIndex+1]) + (((int16_t)fBytes[currIndex])<<8);
+							int16_t relMove = nPoint + lastPoint;
+							points[i].x = relMove;
+							currIndex+=2;
+						}
+					}
+					lastPoint = points[i].x;
+				}
+
+				//read y coords
+				lastPoint = 0;
+				for(int i=0; i<size; i++)
+				{
+					uint8_t flag = flags[i];
+					if(flag & 0x04)
+					{
+						//read 1 byte
+						if(flag & 0x20)
+							points[i].y = fBytes[currIndex] + lastPoint;
+						else
+							points[i].y = -fBytes[currIndex] + lastPoint;
+						
+						currIndex++;
+					}
+					else
+					{
+						//read 2 bytes
+						if(flag & 0x20)
+						{
+							if(i == 0)
+								points[i].y = 0;
+							else
+								points[i].y = points[i-1].y;
+						}
+						else
+						{
+							int16_t nPoint = ((int16_t)fBytes[currIndex+1]) + (((int16_t)fBytes[currIndex])<<8);
+							int16_t relMove = nPoint + lastPoint;
+							points[i].y = relMove;
+							currIndex+=2;
+						}
+					}
+					lastPoint = points[i].y;
+				}
+
+				// if(indexInLoc == 455)
+				// {
+				// 	for(int i=0; i<size; i++)
+				// 	{
+				// 		if(flags[i] & 0x01)
+				// 		{
+				// 			StringTools::println("ON: x=%d y=%d", (int)points[i].x, (int)points[i].y);
+				// 		}
+				// 		else
+				// 		{
+				// 			StringTools::println("OFF: x=%d y=%d", (int)points[i].x, (int)points[i].y);
+				// 		}
+				// 	}
+				// }
+
+				//add them to a vector path in an SVG
+				VectorGraphic* glyphAsSVG = new VectorGraphic(); //Width and Height should be known so fill this out later.
+				VectorPath* currentPath = new VectorPath();
+
+				std::vector<Vec2f> collectionOfPoints;
+				int lastOnCurvePoint = 0;
+				int lastEndPoint = 0;
+
+				//MS made things complicated since control points can occur right after each other but there are only quadratic curves.
+				//Some interpolation is needed along with collecting points.
+				i=0;
+				int j=0;
+				Vec2f startP;
+
+				while(i < size)
+				{
+					if(indexInLoc == 4)
+					{
+						StringTools::println("i = %d", i);
+					}
+
+					if(i > lastEndPoint || i == 0)
+					{
+						if(i != 0)
+						{
+							currentPath->addClosePath();
+							if(indexInLoc == 4)
+							{
+								StringTools::println("Z");
+							}
+						}
+						
+						if(indexInLoc == 4)
+						{
+							StringTools::println("M x=%d, y=%d", (int)points[i].x, (int)points[i].y);
+						}
+
+						currentPath->addMoveTo(points[i]);
+						startP = points[i];
+						lastOnCurvePoint = i;
+						i++;
+
+						lastEndPoint = glyph.endPtsOfContours[j];
+						j++;
+					}
+					else
+					{
+						// StringTools::println("x=%d, y=%d", (int)points[i].x, (int)points[i].y);
+						int extraPoints = i - lastOnCurvePoint;
+
+						if(flags[i] & 0x01 || i == lastEndPoint)
+						{
+							if(extraPoints == 1)
+							{
+								if(indexInLoc == 4)
+								{
+									StringTools::println("L x=%d, y=%d", (int)points[i].x, (int)points[i].y);
+								}
+								currentPath->addLineTo(points[i]);
+							}
+							else if(extraPoints == 2)
+							{
+								if(indexInLoc == 4)
+								{
+									StringTools::println("Q x=%d, y=%d, x2=%d, y2=%d", (int)points[i-1].x, (int)points[i-1].y, (int)points[i].x, (int)points[i].y);
+								}
+								currentPath->addQuadTo(points[i-1], points[i]);
+							}
+							else if(extraPoints >=3)
+							{
+								if((flags[i] & 0x01) == false)
+								{
+									for(int k=lastOnCurvePoint+1; k<i; k++)
+									{
+										Vec2f impliedPoint;
+										
+										// if(k < i-1)
+											impliedPoint = (points[k] + points[k+1])/2;
+										// else
+										// 	impliedPoint = (points[k] + startP)/2;
+										
+										currentPath->addQuadTo(points[k], impliedPoint);
+										if(indexInLoc == 4)
+										{
+											StringTools::println("Q x=%d, y=%d, x2=%d, y2=%d", (int)points[k].x, (int)points[k].y, (int)impliedPoint.x, (int)impliedPoint.y);
+										}
+									}
+									currentPath->addQuadTo(points[i], startP);
+									if(indexInLoc == 4)
+									{
+										StringTools::println("Q x=%d, y=%d, x2=%d, y2=%d", (int)points[i].x, (int)points[i].y, (int)startP.x, (int)startP.y);
+									}
+								}
+								else
+								{
+									for(int k=lastOnCurvePoint+1; k<i-1; k++)
+									{
+										Vec2f impliedPoint = (points[k] + points[k+1])/2;
+										currentPath->addQuadTo(points[k], impliedPoint);
+										if(indexInLoc == 4)
+										{
+											StringTools::println("Q x=%d, y=%d, x2=%d, y2=%d", (int)points[k].x, (int)points[k].y, (int)impliedPoint.x, (int)impliedPoint.y);
+										}
+									}
+									currentPath->addQuadTo(points[i-1], points[i]);
+									if(indexInLoc == 4)
+									{
+										StringTools::println("Q x=%d, y=%d, x2=%d, y2=%d", (int)points[i-1].x, (int)points[i-1].y, (int)points[i].x, (int)points[i].y);
+									}
+								}
+							}
+							lastOnCurvePoint = i;
+						}
+
+						i++;
+					}
+				}
+				
+				//Add to path to the graphic, add graphic to sprite.
+				//DON'T DELETE HERE. THE SPRITE SHOULD DELETE THEM.
+				currentPath->addClosePath();
+				StringTools::println("%d: SIMPLE", indexInLoc);
+				currentPath->setFillMethod( VectorPath::NON_ZERO_RULE );
+				currentPath->setFillColor( {0,0,0,255} );
+				glyphAsSVG->addShape(currentPath);
+				mainSprite.addGraphic(glyphAsSVG);
+			
+			}
+			else
+			{
+				//composite. Ignore for now
+				StringTools::println("%d: COMPOSITE", indexInLoc);
+				
+				VectorGraphic* glyphAsSVG = new VectorGraphic(); //Width and Height should be known so fill this out later.
+				VectorPath* currentPath = new VectorPath();
+				currentPath->setFillMethod( VectorPath::NON_ZERO_RULE );
+				currentPath->setFillColor( {0,0,0,255} );
+				glyphAsSVG->addShape(currentPath);
+				mainSprite.addGraphic(glyphAsSVG);
+
+
+				struct ComponentGlyphTable
+				{
+					uint16_t flags;
+					uint16_t glyphIndex;
+					int32_t arg1; //Im lazy
+					int32_t arg2; //Im lazy
+				};
+
+				std::vector<ComponentGlyphTable> cgTables;
+
+				while(true)
+				{
+					ComponentGlyphTable cgTable;
+
+					cgTable.flags = ((uint16_t)fBytes[currIndex+1]) + (((uint16_t)fBytes[currIndex]) << 8);
+					currIndex+=2;
+					cgTable.glyphIndex = ((uint16_t)fBytes[currIndex+1]) + (((uint16_t)fBytes[currIndex]) << 8);
+					currIndex+=2;
+
+					if(cgTable.flags & 0x0001)
+					{
+						if(cgTable.flags & 0x0002)
+						{
+							cgTable.arg1 = ((int16_t)fBytes[currIndex+1]) + (((int16_t)fBytes[currIndex]) << 8);
+							currIndex+=2;
+							cgTable.arg2 = ((int16_t)fBytes[currIndex+1]) + (((int16_t)fBytes[currIndex]) << 8);
+							currIndex+=2;
+						}
+						else
+						{
+							cgTable.arg1 = ((uint16_t)fBytes[currIndex+1]) + (((uint16_t)fBytes[currIndex]) << 8);
+							currIndex+=2;
+							cgTable.arg2 = ((uint16_t)fBytes[currIndex+1]) + (((uint16_t)fBytes[currIndex]) << 8);
+							currIndex+=2;
+						}
+					}
+					else
+					{
+						if(cgTable.flags & 0x0002)
+						{
+							cgTable.arg1 = (char)fBytes[currIndex];
+							currIndex+=1;
+							cgTable.arg2 = (char)fBytes[currIndex];
+							currIndex+=1;
+						}
+						else
+						{
+							
+							cgTable.arg1 = fBytes[currIndex];
+							currIndex+=1;
+							cgTable.arg2 = fBytes[currIndex];
+							currIndex+=1;
+						}
+					}
+
+					cgTables.push_back(cgTable);
+					if((cgTable.flags & 0x0020) == false)
+					{
+						break;
+					}
+				}
+
+				if(cgTables.front().flags & 0x0100)
+				{
+					int16_t instructionLength = ((uint16_t)fBytes[currIndex+1]) + (((uint16_t)fBytes[currIndex]) << 8);
+					currIndex+=2;
+					std::vector<uint8_t> instructions = std::vector<uint8_t>(instructionLength);
+					for(int i=0; i<instructionLength; i++)
+					{
+						instructions[i] = fBytes[currIndex];
+						currIndex++;
+					}
+				}
+
+			}
+		}
+		
+	}
+
 	bool VectorFont::loadOTFFont(File file)
 	{
 		//REQUIRED: cmap, head, hhea, hmtx, maxp, name, OS/2, post
@@ -511,11 +1249,22 @@ namespace glib
 			headOTF header;
 			hheadOTF secondHeader;
 			cmapOTF characterMapHeader;
+			htmxOTF horizontalMetricsTable;
+			maxpOTF maximumProfileTable;
+			os2OTF os2Table;
+			locaOTF locaTable;
+			postOTF postTable;
+
 			TableDirectoryOTF tableDir;
 			std::unordered_map<uint32_t, uint32_t> characterMapping;
 			
 			//read table directory at the start of the file.
 			readTableDir(fileBytes, tableDir);
+
+			//order to read:
+			//		head, hhea, maxp, cmap, hmtx, os2, post, loca, glyf
+			// Can read like this to avoid issues: head, hhea, maxp, cmap, os2, post, glyf (In any order)
+			// Then in a separate loop: hmtx, loca 
 
 			for(TableRecordOTF& tr : tableDir.tableRecords)
 			{
@@ -531,35 +1280,107 @@ namespace glib
 				{
 					readCMAP(fileBytes, tr.offset, tr.length, characterMapHeader, characterMapping);
 				}
-				else if(tr.tag == TagNames::hmtx)
-				{
-
-				}
 				else if(tr.tag == TagNames::maxp)
 				{
-
+					readMAXP(fileBytes, tr.offset, tr.length, maximumProfileTable);
 				}
 				else if(tr.tag == TagNames::name)
 				{
-
+					//skipping but could be necessary for certain cases. (normal text editors and stuff)
 				}
 				else if(tr.tag == TagNames::os2)
 				{
-
+					readOS2(fileBytes, tr.offset, tr.length, os2Table);
 				}
 				else if(tr.tag == TagNames::post)
 				{
-
+					readPost(fileBytes, tr.offset, tr.length, postTable);
 				}
-				else if(tr.tag == TagNames::glyf)
-				{
+				
+				//may need GSUB
+			}
 
+			for(TableRecordOTF& tr : tableDir.tableRecords)
+			{
+				if(tr.tag == TagNames::loca)
+				{
+					readLoca(fileBytes, tr.offset, tr.length, locaTable, header.indexToLocFormat, maximumProfileTable.numGlyphs+1);
+					// for(int i=0; i<locaTable.offsets.size(); i++)
+					// {
+					// 	StringTools::println("%d: offset = %u", i, locaTable.offsets[i]);
+					// 	if(i == 64)
+					// 	{
+					// 		break;
+					// 	}
+					// }
 				}
-				else if(tr.tag == TagNames::loca)
+				else if(tr.tag == TagNames::hmtx)
 				{
-
+					readHMTX(fileBytes, tr.offset, tr.length, horizontalMetricsTable, secondHeader.numberOfHMetrics, maximumProfileTable.numGlyphs);
 				}
 			}
+
+			for(TableRecordOTF& tr : tableDir.tableRecords)
+			{
+				if(tr.tag == TagNames::glyf)
+				{
+					readGlyf(fileBytes, tr.offset, tr.length, fontSprite, locaTable);
+				}
+			}
+
+			// return false;
+			//draw the first 5 letters starting from 'A' to 'E'
+
+			// for(int i='A'; i<='E'; i++)
+			// {
+			// 	uint32_t glyphLocation = characterMapping[i];
+			// 	StringTools::println("glyphLocation is %u", glyphLocation);
+				
+			// 	VectorGraphic* glyph = fontSprite.getGraphic(glyphLocation);
+			// 	if(glyph == nullptr)
+			// 	{
+			// 		StringTools::println("ERROR FINDING %c. Its location is %u", i, glyphLocation);
+			// 	}
+			// 	else
+			// 	{
+			// 		Image img = Image(1024, 1024);
+			// 		img.setAllPixels({255,255,255,255});
+			// 		glyph->draw(&img);
+					
+			// 		std::string fileString = "TTFTest/img_";
+			// 		fileString += (char)i;
+			// 		img.saveBMP(fileString+".bmp");
+			// 	}
+			// }
+
+			for(int i=0; i<=28; i++)
+			{
+				uint32_t glyphLocation = i;
+				
+				StringTools::println("Location: %u", glyphLocation);
+				VectorGraphic* glyph = fontSprite.getGraphic(glyphLocation);
+
+				if(glyph == nullptr)
+				{
+					StringTools::println("ERROR FINDING %c. Its location is %u", i, glyphLocation);
+				}
+				else
+				{
+					glyph->setTransform(MathExt::scale2D(0.5, 0.5));
+					Image img = Image(1024, 1024);
+					img.setAllPixels({255,255,255,255});
+					glyph->draw(&img);
+					
+					std::string fileString = "TTFTest/img_";
+					fileString += std::to_string(i);
+					img.saveBMP(fileString+".bmp");
+				}
+			}
+
+			// return false;
+
+			//Set the FontCharInfo and match glyphs with characters
+			//need glyph to be done, hmtx, cmap, head. maybe loca
 		}
 		else
 		{

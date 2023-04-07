@@ -825,7 +825,7 @@ namespace glib
 				//dispose
 				//Nothing because the window wasn't created and the
 				//class failed to register
-				StringTools::println("%d", GetLastError());
+				// StringTools::println("%d", GetLastError());
 				setValid(false);
 				setShouldEnd(true);
 				setRunning(false);

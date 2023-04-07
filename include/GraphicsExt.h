@@ -7,15 +7,16 @@
 namespace glib
 {
 	    
-    class GuiSurfaceInterface
+    class SurfaceInterface
 	{
 	public:
-		static GuiSurfaceInterface* createSoftwareSurface(int width, int height);
-		static GuiSurfaceInterface* createGLSurface(int width, int height);
+		static SurfaceInterface* createSoftwareSurface(int width, int height);
+		static SurfaceInterface* createGLSurface(int width, int height);
+		static SurfaceInterface* createDXSurface(int width, int height);
 		
-		GuiSurfaceInterface(const GuiSurfaceInterface& other);
-		void operator=(const GuiSurfaceInterface& other);
-		~GuiSurfaceInterface();
+		SurfaceInterface(const SurfaceInterface& other);
+		void operator=(const SurfaceInterface& other);
+		~SurfaceInterface();
 
 		void* getSurface();
 		int getType();
@@ -23,21 +24,22 @@ namespace glib
 		int getWidth();
 		int getHeight();
 	private:
-		GuiSurfaceInterface(int width, int height, unsigned char type);
+		SurfaceInterface(int width, int height, unsigned char type);
 		void* surface = nullptr;
 		int type = -1;
 	};
 
-	class GuiImageInterface
+	class ImageInterface
 	{
 	public:
-		static GuiImageInterface* createSoftwareImage(File f);
-		static GuiImageInterface* createGLImage(File f);
+		static ImageInterface* createSoftwareImage(File f);
+		static ImageInterface* createGLImage(File f);
+		static ImageInterface* createDXImage(File f);
 
-		GuiImageInterface(const GuiImageInterface& other);
-		void operator=(const GuiImageInterface& other);
-		void copy(const GuiImageInterface& other);
-		~GuiImageInterface();
+		ImageInterface(const ImageInterface& other);
+		void operator=(const ImageInterface& other);
+		void copy(const ImageInterface& other);
+		~ImageInterface();
 
 		void* getImage();
 		int getType();
@@ -45,25 +47,26 @@ namespace glib
 		int getWidth();
 		int getHeight();
 	private:
-		friend class GuiSpriteInterface;
-		GuiImageInterface(File file, unsigned char type);
-		GuiImageInterface();
+		friend class SpriteInterface;
+		ImageInterface(File file, unsigned char type);
+		ImageInterface();
 
 		bool shouldDelete = true;
 		void* image = nullptr;
 		int type = -1;
 	};
 
-	class GuiSpriteInterface
+	class SpriteInterface
 	{
 	public:
-		static GuiSpriteInterface* createSoftwareSprite(File f);
-		static GuiSpriteInterface* createGLSprite(File f);
+		static SpriteInterface* createSoftwareSprite(File f);
+		static SpriteInterface* createGLSprite(File f);
+		static SpriteInterface* createDXSprite(File f);
 
-		GuiSpriteInterface(const GuiSpriteInterface& other);
-		void operator=(const GuiSpriteInterface& other);
-		void copy(const GuiSpriteInterface& other);
-		~GuiSpriteInterface();
+		SpriteInterface(const SpriteInterface& other);
+		void operator=(const SpriteInterface& other);
+		void copy(const SpriteInterface& other);
+		~SpriteInterface();
 
 		void* getSprite();
 		int getType();
@@ -74,84 +77,86 @@ namespace glib
 		 * 		be valid when the sprite has been deleted.
 		 * 
 		 * @param index 
-		 * @return GuiImageInterface 
+		 * @return ImageInterface 
 		 */
-		GuiImageInterface getImage(size_t index);
+		ImageInterface getImage(size_t index);
 		int getDelayTime(size_t index);
 		size_t getSize();
 		bool shouldLoop();
 	private:
 
-		GuiSpriteInterface(File file, unsigned char type);
+		SpriteInterface(File file, unsigned char type);
 		void* sprite = nullptr;
 		int type = -1;
 	};
 
-	class GuiFontInterface
+	class FontInterface
 	{
 	public:
-		static GuiFontInterface* createSoftwareFont(File f);
-		static GuiFontInterface* createGLFont(File f);
-		static GuiFontInterface* createFromFont(Font* f, unsigned char type);
+		static FontInterface* createSoftwareFont(File f);
+		static FontInterface* createGLFont(File f);
+		static FontInterface* createDXFont(File f);
+		static FontInterface* createFromFont(Font* f, unsigned char type);
 
-		GuiFontInterface(const GuiFontInterface& other);
-		void operator=(const GuiFontInterface& other);
-		~GuiFontInterface();
+		FontInterface(const FontInterface& other);
+		void operator=(const FontInterface& other);
+		~FontInterface();
 		Font* getFont();
 		int getType();
 	private:
 	
-		GuiFontInterface(File file, unsigned char type);
-		GuiFontInterface(Font* f, unsigned char type);
+		FontInterface(File file, unsigned char type);
+		FontInterface(Font* f, unsigned char type);
 		Font* font = nullptr;
 		int type = -1;
 		bool shouldDelete = true;
 	};
 
-	class GuiGraphicsInterface
+	class GraphicsInterface
 	{
 	public:
 		static const unsigned char TYPE_SOFTWARE = 0;
 		static const unsigned char TYPE_OPENGL = 1;
+		static const unsigned char TYPE_DIRECTX = 2;
 		static const unsigned char TYPE_INVALID = -1;
 		static const unsigned char TYPE_DEFAULT = 255;
 		
 		/**
-		 * @brief Creates a GuiSurfaceInterface object that aligns with this
+		 * @brief Creates a SurfaceInterface object that aligns with this
 		 * 		Graphics Interface.
 		 * 
 		 * @param width 
 		 * @param height 
-		 * @return GuiSurfaceInterface* 
+		 * @return SurfaceInterface* 
 		 */
-		static GuiSurfaceInterface* createSurface(int width, int height, unsigned char type = TYPE_DEFAULT);
+		static SurfaceInterface* createSurface(int width, int height, unsigned char type = TYPE_DEFAULT);
 
 		/**
-		 * @brief Create a GuiImageInterface object that aligns with this
+		 * @brief Create a ImageInterface object that aligns with this
 		 * 		Graphics Interface.
 		 * 
 		 * @param f 
-		 * @return GuiImageInterface* 
+		 * @return ImageInterface* 
 		 */
-		static GuiImageInterface* createImage(File f, unsigned char type = TYPE_DEFAULT);
+		static ImageInterface* createImage(File f, unsigned char type = TYPE_DEFAULT);
 
 		/**
-		 * @brief Create a GuiSpriteInterface object that aligns with this
+		 * @brief Create a SpriteInterface object that aligns with this
 		 * 		Graphics Interface.
 		 * 
 		 * @param f 
-		 * @return GuiSpriteInterface* 
+		 * @return SpriteInterface* 
 		 */
-		static GuiSpriteInterface* createSprite(File f, unsigned char type = TYPE_DEFAULT);
+		static SpriteInterface* createSprite(File f, unsigned char type = TYPE_DEFAULT);
 
 		/**
-		 * @brief Create a GuiFontInterface object that aligns with this
+		 * @brief Create a FontInterface object that aligns with this
 		 * 		Graphics Interface.
 		 * 
 		 * @param f 
-		 * @return GuiFontInterface* 
+		 * @return FontInterface* 
 		 */
-		static GuiFontInterface* createFont(File f, unsigned char type = TYPE_DEFAULT);
+		static FontInterface* createFont(File f, unsigned char type = TYPE_DEFAULT);
 
 		static unsigned char getDefaultType();
 		static void setDefaultType(unsigned char type);
@@ -171,16 +176,16 @@ namespace glib
 		 */
 		static void dispose();
 
-		static void setBoundSurface(GuiSurfaceInterface* surface);
-		static GuiSurfaceInterface* getBoundSurface();
+		static void setBoundSurface(SurfaceInterface* surface);
+		static SurfaceInterface* getBoundSurface();
 
 		static void setColor(Vec4f color, unsigned char type = TYPE_DEFAULT);
 		static void setColor(Color color, unsigned char type = TYPE_DEFAULT);
 		static Color getColor(unsigned char type = TYPE_DEFAULT);
 		static Vec4f getColorVec4f(unsigned char type = TYPE_DEFAULT);
 
-		static void setFont(GuiFontInterface* f, unsigned char type = TYPE_DEFAULT);
-		static GuiFontInterface* getFont(unsigned char type = TYPE_DEFAULT);
+		static void setFont(FontInterface* f, unsigned char type = TYPE_DEFAULT);
+		static FontInterface* getFont(unsigned char type = TYPE_DEFAULT);
 
 		static void clear(unsigned char type = TYPE_DEFAULT);
 
@@ -189,9 +194,9 @@ namespace glib
 		static void drawCircle(int x, int y, int radius, bool outline, unsigned char type = TYPE_DEFAULT);
 		static void drawEllipse(int x, int y, int xRad, int yRad, bool outline, unsigned char type = TYPE_DEFAULT);
 
-		static void drawSprite(GuiImageInterface* img, int x, int y, unsigned char type = TYPE_DEFAULT);
-		static void drawSprite(GuiImageInterface* img, int x1, int y1, int x2, int y2, unsigned char type = TYPE_DEFAULT);
-		static void drawSpritePart(GuiImageInterface* img, int x, int y, int imgX, int imgY, int imgW, int imgH, unsigned char type = TYPE_DEFAULT);
+		static void drawSprite(ImageInterface* img, int x, int y, unsigned char type = TYPE_DEFAULT);
+		static void drawSprite(ImageInterface* img, int x1, int y1, int x2, int y2, unsigned char type = TYPE_DEFAULT);
+		static void drawSpritePart(ImageInterface* img, int x, int y, int imgX, int imgY, int imgW, int imgH, unsigned char type = TYPE_DEFAULT);
 
 		static void drawText(std::string str, int x, int y, unsigned char type = TYPE_DEFAULT);
 		static void drawText(std::wstring str, int x, int y, unsigned char type = TYPE_DEFAULT);
@@ -209,8 +214,8 @@ namespace glib
 		static Box2D getClippingRect();
 		static void resetClippingPlane(unsigned char type = TYPE_DEFAULT);
 
-		static void drawSurface(GuiSurfaceInterface* img, int x, int y, unsigned char type = TYPE_DEFAULT);
-		static void drawSurface(GuiSurfaceInterface* img, int x1, int y1, int x2, int y2, unsigned char type = TYPE_DEFAULT);
+		static void drawSurface(SurfaceInterface* img, int x, int y, unsigned char type = TYPE_DEFAULT);
+		static void drawSurface(SurfaceInterface* img, int x1, int y1, int x2, int y2, unsigned char type = TYPE_DEFAULT);
 
 		static void drawToScreen(unsigned char type = TYPE_DEFAULT);
 		static void setProjection(Mat4f proj, unsigned char type = TYPE_DEFAULT);
@@ -221,8 +226,8 @@ namespace glib
 	private:
 
 		static unsigned char type;
-		static GuiSurfaceInterface* boundSurface;
-		static GuiFontInterface* boundFont;
+		static SurfaceInterface* boundSurface;
+		static FontInterface* boundFont;
 		static bool ownedFont;
 		static Box2D clippingRect;
 		static Vec2f scalingFactor;

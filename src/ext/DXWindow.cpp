@@ -1,3 +1,5 @@
+#define USE_DIRECTX
+
 #ifdef USE_DIRECTX
 
 	#include "ext/DXWindow.h"
@@ -13,17 +15,7 @@
 	{
 
 		std::vector<DXWindow*> DXWindow::windowList = std::vector<DXWindow*>();
-		int DXWindow::screenWidth = System::getDesktopWidth();
-		int DXWindow::screenHeight = System::getDesktopHeight();
-
-		int* DXWindow::mouseVWheelPointer = nullptr;
-		int* DXWindow::mouseHWheelPointer = nullptr;
-
-		const Class DXWindow::myClass = Class("DXWindow", {&Object::myClass});
-		const Class* DXWindow::getClass()
-		{
-			return &DXWindow::myClass;
-		}
+		const Class DXWindow::globalClass = Class("DXWindow", {&SimpleWindow::globalClass});
 
 		DXWindow* DXWindow::getWindowByHandle(size_t handle)
 		{
@@ -60,7 +52,7 @@
 		void DXWindow::initDirectX()
 		{
 			StringTools::println("INIT");
-			myDC = GetDC((HWND)windowHandle);
+			this->myHDC = GetDC((HWND)windowHandle);
 
 			// DXGI_SWAP_CHAIN_DESC scd;
 			// ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC));
@@ -140,328 +132,29 @@
 		{
 			swapFlags = flags;
 		}
-		
-		LRESULT _stdcall DXWindow::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
-		{
-			DXWindow* currentWindow = DXWindow::getWindowByHandle((size_t)hwnd);
-
-			bool canDo = false;
-
-			HDC hdc;
-			PAINTSTRUCT ps;
-			HDC mem;
-			BITMAP img;
-			HGDIOBJ oldImg;
-			RECT* rect = nullptr;
-
-			if (currentWindow != nullptr)
-			{
-				switch (msg)
-				{
-				case WM_ERASEBKGND:
-					break;
-				case WM_PAINT:
-					BeginPaint(hwnd, &ps);
-					EndPaint(hwnd, &ps);
-					break;
-				case WM_CLOSE:
-					if (currentWindow->closingFunction != nullptr)
-						currentWindow->closingFunction();
-					PostQuitMessage(0);
-					currentWindow->setShouldEnd(true);
-					break;
-				case WM_DESTROY:
-					/*
-					if (currentWindow->closingFunction != nullptr)
-						currentWindow->closingFunction();
-					PostQuitMessage(0);
-					currentWindow->setRunning(false);
-					*/
-					break;
-				case WM_KEYDOWN:
-					if (currentWindow->keyDownFunction != nullptr)
-						currentWindow->keyDownFunction(wparam, lparam);
-					break;
-				case WM_KEYUP:
-					if (currentWindow->keyUpFunction != nullptr)
-						currentWindow->keyUpFunction(wparam, lparam);
-					break;
-				case WM_LBUTTONDOWN:
-					if (currentWindow->mouseButtonDownFunction != nullptr)
-						currentWindow->mouseButtonDownFunction(MOUSE_LEFT);
-					break;
-				case WM_MBUTTONDOWN:
-					if (currentWindow->mouseButtonDownFunction != nullptr)
-						currentWindow->mouseButtonDownFunction(MOUSE_MIDDLE);
-					break;
-				case WM_RBUTTONDOWN:
-					if (currentWindow->mouseButtonDownFunction != nullptr)
-						currentWindow->mouseButtonDownFunction(MOUSE_RIGHT);
-					break;
-				case WM_LBUTTONUP:
-					if (currentWindow->mouseButtonUpFunction != nullptr)
-						currentWindow->mouseButtonUpFunction(MOUSE_LEFT);
-					break;
-				case WM_MBUTTONUP:
-					if (currentWindow->mouseButtonUpFunction != nullptr)
-						currentWindow->mouseButtonUpFunction(MOUSE_MIDDLE);
-					break;
-				case WM_RBUTTONUP:
-					if (currentWindow->mouseButtonUpFunction != nullptr)
-						currentWindow->mouseButtonUpFunction(MOUSE_RIGHT);
-					break;
-				case WM_MOUSEWHEEL:
-					if (currentWindow->mouseWheelFunction != nullptr)
-						currentWindow->mouseWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
-					
-					if(DXWindow::mouseVWheelPointer)
-						*DXWindow::mouseVWheelPointer = GET_WHEEL_DELTA_WPARAM(wparam)/120;
-					break;
-				case WM_MOUSEHWHEEL:
-					if (currentWindow->mouseHWheelFunction != nullptr)
-						currentWindow->mouseHWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
-					
-					if(DXWindow::mouseHWheelPointer)
-						*DXWindow::mouseHWheelPointer = GET_WHEEL_DELTA_WPARAM(wparam)/120;
-					break;
-				case WM_MOUSEMOVE:
-					if (currentWindow->mouseMovedFunction != nullptr)
-						currentWindow->mouseMovedFunction();
-					break;
-				case WM_MOVING:
-					rect = (RECT*)lparam;
-					currentWindow->x = rect->left;
-					currentWindow->y = rect->top;
-					
-					currentWindow->width = rect->right - rect->left;
-					currentWindow->height = rect->bottom - rect->top;
-					break;
-				case WM_ENTERSIZEMOVE:
-					currentWindow->setResizing(true);
-					break;
-				case WM_SIZING:
-					rect = (RECT*)lparam;
-					
-					currentWindow->preX = rect->left;
-					currentWindow->preY = rect->top;
-
-					currentWindow->x = rect->left;
-					currentWindow->y = rect->top;
-
-					currentWindow->width = rect->right - rect->left;
-					currentWindow->height = rect->bottom - rect->top;
-					break;
-				case WM_SIZE:
-					if(wparam == SIZE_MAXIMIZED)
-					{
-						currentWindow->windowState = STATE_MAXIMIZED;
-						//FIX LATER
-						if(currentWindow->getResizing())
-						{
-							currentWindow->preX = currentWindow->x;
-							currentWindow->preY = currentWindow->y;
-
-							currentWindow->x = 0;
-							currentWindow->y = 0;
-
-							currentWindow->width = LOWORD(lparam);
-							currentWindow->height = HIWORD(lparam);
-						}
-						else
-						{
-							currentWindow->setResizeMe(true);
-
-							currentWindow->preX = currentWindow->x;
-							currentWindow->preY = currentWindow->y;
-
-							currentWindow->x = 0;
-							currentWindow->y = 0;
-
-							currentWindow->width = LOWORD(lparam);
-							currentWindow->height = HIWORD(lparam);
-						}
-					}
-					else if(wparam == SIZE_RESTORED)
-					{
-						currentWindow->windowState = STATE_NORMAL;
-						//FIX LATER
-						if(currentWindow->getResizing())
-						{
-							currentWindow->x = currentWindow->preX;
-							currentWindow->y = currentWindow->preY;
-
-							currentWindow->width = LOWORD(lparam);
-							currentWindow->height = HIWORD(lparam);
-						}
-						else
-						{
-							currentWindow->setResizeMe(true);
-
-							currentWindow->x = currentWindow->preX;
-							currentWindow->y = currentWindow->preY;
-
-							currentWindow->width = LOWORD(lparam);
-							currentWindow->height = HIWORD(lparam);
-						}
-					}
-					else if(wparam == SIZE_MINIMIZED)
-					{
-						currentWindow->preX = currentWindow->x;
-						currentWindow->preY = currentWindow->y;
-
-						currentWindow->width = LOWORD(lparam);
-						currentWindow->height = HIWORD(lparam);
-
-						currentWindow->windowState = STATE_MINIMIZED;
-					}
-					break;
-				case WM_EXITSIZEMOVE:
-					currentWindow->setResizing(false);
-					break;
-				case WM_MDIMAXIMIZE:
-					break;
-				case WM_SYSCOMMAND:
-					if(wparam == SC_MOVE)
-					{
-						if(!currentWindow->getMovable())
-						{
-							return 0;
-						}
-					}
-					else if(wparam == SC_SIZE)
-					{
-						if(!currentWindow->getResizable())
-						{
-							return 0;
-						}
-					}
-					break;
-				case WM_SETCURSOR:
-					SetCursor( LoadCursor(NULL, IDC_ARROW) );
-				default:
-					break;
-				}
-			}
-
-			return DefWindowProcW(hwnd, msg, wparam, lparam);
-		}
 
 		DXWindow::DXWindow()
+			: SimpleWindow(true)
 		{
-			x = screenWidth / 2 - 160;
-			y = screenHeight / 2 - 120;
-			width = 320;
-			height = 240;
-			title = L"";
-
-			setAllFunctionsToNull();
-
-			int threadManaged = windowType & 0b0100;
-			
-			if(threadManaged == TYPE_THREAD_MANAGED)
-			{
-				threadOwnership = true;
-				wndThread = new std::thread(&DXWindow::init, this, this->x, this->y, this->width, this->height, this->title, this->windowType);
-			}
-			else
-			{
-				threadOwnership = false;
-				init(this->x, this->y, this->width, this->height, this->title, this->windowType);
-			}
-
-			while (getFinishInit() != true)
-			{
-				std::this_thread::yield();
-			}
+			DXWindow::windowList.push_back(this);
+			threadOwnership = false;
+			init(-1, -1, 320, 240, L"", windowType);
 		}
 
-		DXWindow::DXWindow(std::wstring title, int width, int height, int x, int y, unsigned char windowType)
+		DXWindow::DXWindow(std::wstring title, int width, int height, int x, int y, WindowOptions windowType)
+			: SimpleWindow(true)
 		{
-			this->x = x;
-			this->y = y;
-			this->width = width;
-			this->height = height;
-
-			this->windowType = windowType;
-
-			if (this->width < 0)
-				this->width = 320;
-
-			if (this->height < 0)
-				this->height = 240;
-
-			if (this->x < 0)
-				this->x = screenWidth / 2 - (width/2);
-
-			if (this->y < 0)
-				this->y = screenHeight / 2 - (height/2);
-
-
-			setAllFunctionsToNull();
-			
-			this->title = title;
-
-			int threadManaged = windowType & 0b0100;
-			
-			if(threadManaged == TYPE_THREAD_MANAGED)
-			{
-				threadOwnership = true;
-				wndThread = new std::thread(&DXWindow::init, this, this->x, this->y, this->width, this->height, this->title, this->windowType);
-			}
-			else
-			{
-				threadOwnership = false;
-				init(this->x, this->y, this->width, this->height, this->title, this->windowType);
-			}
-
-			while (getFinishInit() != true)
-			{
-				std::this_thread::yield();
-			}
+			DXWindow::windowList.push_back(this);
+			threadOwnership = false;
+			init(x, y, width, height, title, windowType);
 		}
 
-		DXWindow::DXWindow(std::string title, int width, int height, int x, int y, unsigned char windowType)
+		DXWindow::DXWindow(std::string title, int width, int height, int x, int y, WindowOptions windowType)
+			: SimpleWindow(true)
 		{
-			this->x = x;
-			this->y = y;
-			this->width = width;
-			this->height = height;
-			
-			this->windowType = windowType;
-
-			if (this->width < 0)
-				this->width = 320;
-
-			if (this->height < 0)
-				this->height = 240;
-
-			if (this->x < 0)
-				this->x = screenWidth / 2 - (width/2);
-
-			if (this->y < 0)
-				this->y = screenHeight / 2 - (height/2);
-
-			setAllFunctionsToNull();
-
-			this->title = StringTools::toWideString(title);
-
-			int threadManaged = windowType & 0b0100;
-
-			if(threadManaged == TYPE_THREAD_MANAGED)
-			{
-				threadOwnership = true;
-				wndThread = new std::thread(&DXWindow::init, this, this->x, this->y, this->width, this->height, this->title, this->windowType);
-			}
-			else
-			{
-				threadOwnership = false;
-				init(this->x, this->y, this->width, this->height, this->title, this->windowType);
-			}
-
-			while (getFinishInit() != true)
-			{
-				std::this_thread::yield();
-			}
+			DXWindow::windowList.push_back(this);
+			threadOwnership = false;
+			init(x, y, width, height, StringTools::toWideString(title), windowType);
 		}
 
 		DXWindow::~DXWindow()
@@ -469,91 +162,99 @@
 			dispose();
 		}
 
-		void DXWindow::close()
-		{
-			if(closingFunction!=nullptr)
-				closingFunction();
-			
-			dispose();
-		}
-
 		void DXWindow::dispose()
 		{
 			if (getValid())
 			{
-				std::wstring text = title;
-				text += L"_CLASS";
-
-				setShouldEnd(true);
-				setValid(false);
-
-				if (wndThread != nullptr)
-				{
-					if (wndThread->joinable())
-						wndThread->join();
-					
-					wndThread = nullptr;
-				}
-				
-				if (IsWindow((HWND)windowHandle))
-				{
-					CloseWindow((HWND)windowHandle);
-					DestroyWindow((HWND)windowHandle);
-				}
-				UnregisterClassW(text.c_str(), hins);
-				DeleteDC(myDC);
-					
+				SimpleWindow::dispose();
 				DXWindow::removeWindowFromList(this);
 			}
 		}
 
-		void DXWindow::init(int x, int y, int width, int height, std::wstring title, unsigned char windowType)
+		void DXWindow::init(int x, int y, int width, int height, std::wstring title, WindowOptions windowType)
 		{
-			#ifdef LINUX
+			setClass(globalClass);
+			this->x = x;
+			this->y = y;
+			this->width = width;
+			this->height = height;
+			
+			this->windowType = windowType;
+			this->windowType.threadManaged = SimpleWindow::TYPE_USER_MANAGED; //Must be user managed
 
+			if (this->width < 0)
+				this->width = 320;
+
+			if (this->height < 0)
+				this->height = 240;
+
+			if (this->x < 0)
+				this->x = (screenWidth / 2) - (width/2);
+
+			if (this->y < 0)
+				this->y = (screenHeight / 2) - (height/2);
+			
+			
+			this->title = title;
+
+			setAllFunctionsToNull();
+			if(windowList.size() == 1)
+			{
+				setWindowAsInputFocus();
+			}
+
+			#ifdef __unix__
+				//throw error cause linux does not have DirectX
 			#else
 
 				std::wstring text = title;
 				text += L"_CLASS";
 
-				hins = GetModuleHandle(NULL);
+				hins = GetModuleHandle(0);
 
 				wndClass.cbClsExtra = 0;
+				wndClass.cbSize = sizeof(WNDCLASSEX);
 				wndClass.cbWndExtra = 0;
 				wndClass.hbrBackground = (HBRUSH)(BLACK_BRUSH);
 				wndClass.hCursor = LoadCursor(hins, IDC_ARROW);
-				wndClass.hIcon = LoadIcon(hins, IDI_APPLICATION);
+
+				if(windowType.iconFileString.empty())
+					wndClass.hIcon = LoadIcon(hins, IDI_APPLICATION);
+				else
+				{
+					if(windowType.iconIsFile)
+						handleToIcon = (HICON)LoadImageA(NULL, windowType.iconFileString.c_str(), IMAGE_ICON, 0, 0, LR_LOADFROMFILE);
+					else
+						handleToIcon = (HICON)LoadImageA(hins, windowType.iconFileString.c_str(), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR);
+
+					wndClass.hIcon = handleToIcon;
+				}
+				
+				wndClass.hIconSm = LoadIcon(hins, IDI_APPLICATION);
 				wndClass.hInstance = hins;
-				wndClass.lpfnWndProc = DXWindow::wndProc;
+				wndClass.lpfnWndProc = SimpleWindow::wndProc;
 				wndClass.lpszClassName = text.c_str();
-				wndClass.lpszMenuName = NULL;
+				wndClass.lpszMenuName = 0;
 				wndClass.style = CS_HREDRAW | CS_VREDRAW;
 
-				int trueWidth = width;
-				int trueHeight = height;
-				int trueX = x;
-				int trueY = y;
+				int trueWidth = this->width;
+				int trueHeight = this->height;
+				int trueX = this->x;
+				int trueY = this->y;
 
-				if (RegisterClassW(&wndClass) != NULL)
+				if (RegisterClassExW(&wndClass) != NULL)
 				{
-					int wType = windowType & 0b0001;
-					if(windowType & 0b1000)
-						wType = FULLSCREEN_WINDOW;
-					
-					int focusable = windowType & 0b0010;
-					int threadManaged = windowType & 0b0100;
-
 					DWORD style = 0;
 					bool failed = false;
 
-					switch(wType)
+					switch(windowType.windowType)
 					{
-						case DXWindow::NORMAL_WINDOW:
+						case SimpleWindow::NORMAL_WINDOW:
 							style = WS_OVERLAPPEDWINDOW;
 							trueWidth += 16;
 							trueHeight += 40;
 							break;
-						case DXWindow::BORDERLESS_WINDOW:
+						case SimpleWindow::BORDERLESS_WINDOW:
 							style = WS_POPUP|WS_VISIBLE|WS_SYSMENU;
 							break;
 						default:
@@ -563,7 +264,7 @@
 							break;
 					}
 
-					if(wType == DXWindow::FULLSCREEN_WINDOW)
+					if(windowType.windowType == SimpleWindow::FULLSCREEN_WINDOW)
 					{
 						HMONITOR hmon = MonitorFromWindow(NULL, MONITOR_DEFAULTTONEAREST);
 						MONITORINFO mi = { sizeof(MONITORINFO) };
@@ -577,7 +278,7 @@
 							setValid(false);
 							setShouldEnd(true);
 							setRunning(false);
-
+							
 							setFinishInit(true);
 
 							#ifdef USE_EXCEPTIONS
@@ -596,31 +297,39 @@
 						this->y = trueY;
 					}
 
-					if(focusable==TYPE_NONFOCUSABLE)
+					if(windowType.focusable==TYPE_NONFOCUSABLE)
 					{
 						style |= WS_EX_NOACTIVATE;
 					}
 
 					if(!failed)
 					{
-						windowHandle = (size_t)CreateWindowW(text.c_str(), title.c_str(), style, trueX, trueY, trueWidth, trueHeight, NULL, NULL, hins, NULL);
+						windowHandle = (size_t)CreateWindowExW(NULL, text.c_str(), title.c_str(), style, trueX, trueY, trueWidth, trueHeight, NULL, NULL, hins, NULL);
+
+						DWORD attribValue = windowType.cornerType;
+						DwmSetWindowAttribute((HWND)windowHandle, DWMWA_WINDOW_CORNER_PREFERENCE_CONST, &attribValue, sizeof(attribValue));
 					}
 					
 					if (windowHandle != NULL)
 					{
+						this->preX = this->x;
+						this->preY = this->y;
+						
 						setVisible(true);
 						setValid(true);
 						setShouldEnd(false);
 						setRunning(true);
 
-						DXWindow::windowList.push_back(this);
-
 						initDirectX();
 
-						setFinishInit(true);
+						//Must init gui here so DirectX is initialized first
+						gui = new GuiManager(GuiManager::TYPE_DIRECTX, this->width, this->height);
 
-						if(threadManaged == TYPE_THREAD_MANAGED)
-							run();
+						if(windowType.initFunction != nullptr)
+							windowType.initFunction(this);
+
+						gui->setFocus(true);
+						setFinishInit(true);
 					}
 					else
 					{
@@ -651,355 +360,6 @@
 
 		}
 
-		void DXWindow::setRunning(bool value)
-		{
-			myMutex.lock();
-			running = value;
-			myMutex.unlock();
-		}
-
-		bool DXWindow::getRunning()
-		{
-			bool v = true;
-			myMutex.lock();
-			v = running;
-			myMutex.unlock();
-
-			return v;
-		}
-
-		void DXWindow::setValid(bool value)
-		{
-			myMutex.lock();
-			valid = value;
-			myMutex.unlock();
-		}
-
-		void DXWindow::setFinishInit(bool value)
-		{
-			myMutex.lock();
-			finishedInit = value;
-			myMutex.unlock();
-		}
-
-		void DXWindow::setResizing(bool value)
-		{
-			resizing = value;
-		}
-
-		void DXWindow::setResizeMe(bool value)
-		{
-			resizeMe = value;
-		}
-
-		bool DXWindow::getFinishInit()
-		{
-			return finishedInit;
-		}
-
-		bool DXWindow::getResizing()
-		{
-			return resizing;
-		}
-
-		bool DXWindow::getResizeMe()
-		{
-			return resizeMe;
-		}
-
-		void DXWindow::waitTillClose()
-		{
-			while(getRunning())
-			{
-				System::sleep(1);
-			}
-		}
-
-		void DXWindow::setVisible(bool value)
-		{
-			if (value == true)
-				ShowWindow((HWND)windowHandle, SW_SHOW);
-			else
-				ShowWindow((HWND)windowHandle, SW_HIDE);
-		}
-
-		void DXWindow::setX(int x)
-		{
-			SetWindowPos((HWND)windowHandle, HWND_TOP, x, this->y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
-			this->x = x;
-		}
-
-		void DXWindow::setY(int y)
-		{
-			SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
-			this->y = y;
-		}
-
-		void DXWindow::setPosition(int x, int y)
-		{
-			SetWindowPos((HWND)windowHandle, HWND_TOP, x, y, this->width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
-			this->x = x;
-			this->y = y;
-		}
-
-		void DXWindow::setWidth(int width)
-		{
-			SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, this->y, width, this->height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
-			this->width = width;
-		}
-
-		void DXWindow::setHeight(int height)
-		{
-			SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, this->y, this->width, height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
-			this->height = height;
-		}
-
-		void DXWindow::setSize(int width, int height)
-		{
-			SetWindowPos((HWND)windowHandle, HWND_TOP, this->x, this->y, width, height, SWP_ASYNCWINDOWPOS | SWP_NOREDRAW);
-			this->width = width;
-			this->height = height;
-		}
-
-		int DXWindow::getMouseX()
-		{
-			POINT p;
-			GetCursorPos(&p);
-			int borderWidth = GetSystemMetrics(SM_CXFRAME);
-			
-			switch (windowType)
-			{
-			case DXWindow::NORMAL_WINDOW:
-				return p.x-(x+borderWidth);
-				break;
-			case DXWindow::BORDERLESS_WINDOW:
-				return p.x-x;
-				break;
-			case DXWindow::FULLSCREEN_WINDOW:
-				return p.x-x;
-				break;
-			default:
-				return p.x-(x+borderWidth);
-				break;
-			}
-
-			return 0;
-		}
-
-		int DXWindow::getMouseY()
-		{
-			POINT p;
-			GetCursorPos(&p);
-			int borderHeight = (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) +
-									GetSystemMetrics(SM_CXPADDEDBORDER));
-
-			switch (windowType)
-			{
-			case DXWindow::NORMAL_WINDOW:
-				return p.y-(y+borderHeight);
-				break;
-			case DXWindow::BORDERLESS_WINDOW:
-				return p.y-y;
-				break;
-			case DXWindow::FULLSCREEN_WINDOW:
-				return p.x-x;
-				break;
-			default:
-				return p.y-(y+borderHeight);
-				break;
-			}
-
-			return 0;
-		}
-
-		int DXWindow::getWidth()
-		{
-			return width;
-		}
-
-		int DXWindow::getHeight()
-		{
-			return height;
-		}
-
-		int DXWindow::getX()
-		{
-			return x;
-		}
-
-		int DXWindow::getY()
-		{
-			return y;
-		}
-
-		std::wstring DXWindow::getTitle()
-		{
-			return title;
-		}
-
-		bool DXWindow::getValid()
-		{
-			bool value = true;
-
-			myMutex.lock();
-			value = this->valid;
-			myMutex.unlock();
-
-			return value;
-		}
-
-		size_t DXWindow::getWindowHandle()
-		{
-			return windowHandle;
-		}
-
-		void DXWindow::setAllFunctionsToNull()
-		{
-			keyUpFunction = nullptr;
-			keyDownFunction = nullptr;
-			mouseDoubleClickFunction = nullptr;
-			mouseButtonDownFunction = nullptr;
-			mouseButtonUpFunction = nullptr;
-			mouseWheelFunction = nullptr;
-			mouseHWheelFunction = nullptr;
-			mouseMovedFunction = nullptr;
-			closingFunction = nullptr;
-		}
-
-		void DXWindow::setMouseMovedFunction(std::function<void()> function)
-		{
-			mouseMovedFunction = function;
-		}
-
-		void DXWindow::setClosingFunction(std::function<void()> function)
-		{
-			closingFunction = function;
-		}
-
-		void DXWindow::setKeyUpFunction(std::function<void(unsigned long, long)> function)
-		{
-			keyUpFunction = function;
-		}
-
-		void DXWindow::setKeyDownFunction(std::function<void(unsigned long, long)> function)
-		{
-			keyDownFunction = function;
-		}
-
-		void DXWindow::setMouseButtonDownFunction(std::function<void(int)> function)
-		{
-			mouseButtonDownFunction = function;
-		}
-
-		void DXWindow::setMouseButtonUpFunction(std::function<void(int)> function)
-		{
-			mouseButtonUpFunction = function;
-		}
-
-		void DXWindow::setMouseHWheelFunction(std::function<void(int)> function)
-		{
-			mouseHWheelFunction = function;
-		}
-
-		void DXWindow::setMouseWheelFunction(std::function<void(int)> function)
-		{
-			mouseWheelFunction = function;
-		}
-
-		void DXWindow::setMouseVWheelValuePointer(int* v)
-		{
-			DXWindow::mouseVWheelPointer = v;
-		}
-
-		void DXWindow::setMouseHWheelValuePointer(int* v)
-		{
-			DXWindow::mouseHWheelPointer = v;
-		}
-
-		void DXWindow::setFocus(bool v)
-		{
-			if(canFocus)
-			{
-				setShouldFocus(v);
-			}
-		}
-
-		bool DXWindow::getFocus()
-		{
-			return GetFocus()==(HWND)windowHandle;
-		}
-
-		bool DXWindow::getCanFocus()
-		{
-			return canFocus;
-		}
-
-		void DXWindow::setShouldFocus(bool v)
-		{
-			myMutex.lock();
-			shouldFocus = v;
-			myMutex.unlock();
-		}
-
-		void DXWindow::threadSetFocus()
-		{
-			SetFocus((HWND)windowHandle);
-		}
-
-		bool DXWindow::getShouldFocus()
-		{
-			myMutex.lock();
-			bool v = shouldFocus;
-			myMutex.unlock();
-			return v;
-		}
-
-		
-		void DXWindow::setShouldEnd(bool v)
-		{
-			myMutex.lock();
-			shouldEnd = v;
-			if(threadOwnership == false)
-				running = false;
-			myMutex.unlock();
-		}
-
-		bool DXWindow::getShouldEnd()
-		{
-			myMutex.lock();
-			bool v = shouldEnd;
-			myMutex.unlock();
-			return v;
-		}
-		
-		void DXWindow::setResizable(bool v)
-		{
-			canResize = v;
-		}
-
-		bool DXWindow::getResizable()
-		{
-			return canResize;
-		}
-
-		void DXWindow::setMovable(bool v)
-		{
-			canMove = v;
-		}
-
-		bool DXWindow::getMovable()
-		{
-			return canMove;
-		}
-
-		void DXWindow::setThreadUpdateTime(unsigned int millis, unsigned int micros)
-		{
-			myMutex.lock();
-			sleepTimeMillis = millis;
-			sleepTimeMicros = micros;
-			myMutex.unlock();
-		}
-
 		void DXWindow::run()
 		{
 			while (!getShouldEnd())
@@ -1007,7 +367,10 @@
 				time_t t1 = System::getCurrentTimeMicro();
 				
 				threadUpdate();
-				testDirectX();
+				threadGuiUpdate();
+
+				if(getRepaint())
+					threadRepaint();
 
 				time_t timeNeeded = 0;
 				myMutex.lock();
@@ -1025,27 +388,50 @@
 			setRunning(false);
 		}
 
-		void DXWindow::threadUpdate()
+		bool DXWindow::threadRender()
 		{
-			MSG m;
-			ZeroMemory(&m, sizeof(MSG));
-			while(PeekMessage(&m, (HWND)windowHandle, NULL, NULL, PM_REMOVE))
+			bool changed = false;
+
+			if(windowState != STATE_MINIMIZED)
 			{
-				TranslateMessage(&m);
-				DispatchMessage(&m);
+				if (gui != nullptr && activateGui)
+				{
+					changed = gui->renderGuiElements();
+				}
 			}
-			
-			if(getShouldFocus())
-			{
-				threadSetFocus();
-			}
+
+			return changed;
 		}
 
-		void DXWindow::update()
+		void DXWindow::threadRepaint()
 		{
-			if(threadOwnership==false)
+			//TODO - LINUX VERSION
+			bool changed = false;
+
+			//draw and send redraw message
+			if(getResizing())
 			{
-				threadUpdate();
+				return;
+			}
+
+			if(getResizeMe())
+			{
+				setResizeMe(false);
+				changed = true;
+			}
+
+			if(windowState != STATE_MINIMIZED)
+			{
+				bool imgChanged = threadRender();
+
+				if(changed || imgChanged)
+				{
+					swapBuffers();
+				}
+
+				myMutex.lock();
+				shouldRepaint=false;
+				myMutex.unlock();
 			}
 		}
 

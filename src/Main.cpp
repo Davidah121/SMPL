@@ -14,11 +14,6 @@
 
 #include "BinarySearchTree.h"
 #include "Compression.h"
-#include "SuffixArray.h"
-
-#include "ext/TouchSimulator.h"
-
-// #include <zlib/zlib.h>
 
 using namespace glib;
 
@@ -60,6 +55,8 @@ void testVectorGraphic()
     g4.load("SVGs/_ionicons_svg_md-pin.svg");
     // VectorGraphic g5 = VectorGraphic();
     // g4.load("SVGs/_ionicons_svg_md-pin.svg");
+    VectorGraphic g5 = VectorGraphic();
+    g5.load("test.svg");
     
     Image buffer = Image(512, 512);
     buffer.setAllPixels({0,0,0,0});
@@ -77,6 +74,11 @@ void testVectorGraphic()
     buffer.setAllPixels({0,0,0,0});
     g4.draw(&buffer);
     buffer.savePNG("Test4.png");
+    
+    buffer.setAllPixels({0,0,0,0});
+    g5.setTransform(MathExt::scale2D(0.25, 0.25));
+    g5.draw(&buffer);
+    buffer.savePNG("Test5.png");
 
 }
 
@@ -144,64 +146,6 @@ void testOTFLoading()
     f.load("C:/Windows/Fonts/calibri.ttf");
 }
 
-void testAddressSanitizer()
-{
-    int* p = new int[2];
-    p[0] = 1;
-    p[1] = 2;
-
-    delete[] p;
-    int a = p[0];
-    int b = p[1];
-    StringTools::println("%d, %d", a, b);
-}
-
-void testDialogBox()
-{
-	glib::FileFilter xmlFileFilter = {"XML", ".xml"};
-
-	glib::File f = glib::System::fileDialogBox( glib::System::TYPE_OPEN_FILE, {xmlFileFilter} );
-}
-
-void testPerformanceCounters()
-{
-    StringTools::println("%.3f", System::getTotalCpuUsage());
-    System::sleep(1000);
-    StringTools::println("%.3f", System::getTotalCpuUsage());
-}
-
-void testBase64()
-{
-    SimpleFile f = SimpleFile("Base64Stuff.txt", SimpleFile::READ);
-    auto c = f.readFullFileAsBytes();
-    auto d = StringTools::base64Decode(c);
-    StringTools::println("%llu, %llu", c.size(), d.size());
-    f.close();
-
-    SimpleFile f2 = SimpleFile("CMM.db", SimpleFile::WRITE);
-    f2.writeBytes((unsigned char*)d.data(), d.size());
-    f2.close();
-
-}
-
-void testResourceManager()
-{
-    ResourceManager<Image> imageManager = ResourceManager<Image>();
-    imageManager.addResource(new Image(32, 32), "TestImg1", false);
-    imageManager.addResource(new Image(32, 32), "TestImg2", false);
-    imageManager.addResource(new Image(32, 32), "TestImg3", false);
-    imageManager.addResource(imageManager.getResource("TestImg1").getPointer(), "TestImg1", false);
-
-    StringTools::println("%llu", imageManager.size());
-    StringTools::println("%p", imageManager.getResource("TestImg1").getRawPointer());
-    StringTools::println("%p", imageManager.getResource("TestImg2").getRawPointer());
-    StringTools::println("%p", imageManager.getResource("TestImg3").getRawPointer());
-    StringTools::println("%p", imageManager.getResource("TestImg4").getRawPointer());
-    
-    imageManager.clear();
-    StringTools::println("EARLY CLEAR");
-}
-
 void testCompression()
 {
     Sprite img = Sprite();
@@ -224,25 +168,6 @@ void printNode(int tabs, bool side, BinaryTreeNode<RBNode<int>>* n)
     if(n!=nullptr)
     {
         StringTools::println("%s %s %c - %d \033[0m", tabStr.c_str(), (n->data.color == true) ? "\033[31m" : "", (side) ? 'R' : 'L', n->data.data);
-        printNode(tabs+1, true, n->rightChild);
-        printNode(tabs+1, false, n->leftChild);
-    }
-    else
-    {
-        // StringTools::println("%s %c - NIL", tabStr.c_str(), (side) ? 'R' : 'L');
-    }
-}
-
-void printNode(int tabs, bool side, BinaryTreeNode<RBNode<uint32_t>>* n)
-{
-    std::string tabStr = "";
-    for(int i=0; i<tabs; i++)
-    {
-        tabStr += '\t';
-    }
-    if(n!=nullptr)
-    {
-        StringTools::println("%s %s %c - %u \033[0m", tabStr.c_str(), (n->data.color == true) ? "\033[31m" : "", (side) ? 'R' : 'L', n->data.data);
         printNode(tabs+1, true, n->rightChild);
         printNode(tabs+1, false, n->leftChild);
     }
@@ -280,39 +205,6 @@ void printTree()
     values.remove(7);
     StringTools::println("---------------");
     printNode(0, true, values.getTree()->getRoot());
-}
-
-void simulateTouch()
-{
-    TouchSimulator::init();
-    // TouchSimulator::test();
-    TouchSimulator::setDown(0, 320, 320);
-    TouchSimulator::setDown(1, 640, 640);
-    TouchSimulator::inject();
-    // if(TouchSimulator::inject())
-    //     StringTools::println("OKAY");
-    // else
-    //     StringTools::println("NOT OKAY");
-    
-    for(int i=0; i<100; i++)
-    {
-        TouchSimulator::setDown(0, 320+i, 320+i);
-        TouchSimulator::setDown(1, 640+i, 640+i);
-        TouchSimulator::inject();
-        // if(TouchSimulator::inject())
-        //     StringTools::println("OKAY-loop");
-        // else
-        //     StringTools::println("NOT OKAY-loop");
-        Sleep(1);
-    }
-
-    TouchSimulator::setUp(0);
-    TouchSimulator::setUp(1);
-    TouchSimulator::inject();
-    // if(TouchSimulator::inject())
-    //     StringTools::println("OKAY");
-    // else
-    //     StringTools::println("NOT OKAY");
 }
 
 
@@ -357,169 +249,10 @@ void testAlphaWindow()
     // w.waitTillClose();
 }
 
-void testXML()
-{
-    const std::string rawHTML = R"R0N0(
-		<!DOCTYPE html>
-		<html>
-			<head>
-                <script>
-                    //<end>
-                    var v = 1;
-
-                    //</end>
-                </script>
-			</head>
-		</html>
-	)R0N0";
-
-    const std::string rawHTML2 = R"R0N0(
-        <html>
-            value1
-            j
-            <head>
-                <script>
-                    var v = 1;
-                    var c = 2;
-                </script>
-            </head>
-        </html>
-    )R0N0";
-    
-    glib::SimpleXml html = glib::SimpleXml();
-    html.loadFromBytes((unsigned char*)rawHTML.data(), rawHTML.size());
-
-    StringTools::println("%llu", html.getNodes().size());
-}
-
-void traverseInOrder(BinaryTreeNode<RBNode<uint32_t>>* n)
-{
-    if(n != nullptr)
-    {
-        traverseInOrder(n->leftChild);
-        StringTools::println("%u", n->data.data);
-        traverseInOrder(n->rightChild);
-    }
-}
-
-void testStreamLZSS(int type)
-{
-    //!Does not work. A bunch of memory errors and junk.
-    //!Also, Just not as fast as I thought it would be. ( sad :( )
-    //! Put into visual studios and profile it.
-
-    Sprite spr = Sprite();
-    spr.loadImage("testOutput.png");
-
-    unsigned char* dataToCompress = (unsigned char*)spr.getImage(0)->getPixels();
-    size_t sizeOfData = spr.getImage(0)->getWidth()*spr.getImage(0)->getHeight()*4;
-
-    size_t t1, t2;
-
-    if (type == 0)
-    {
-        // t1 = System::getCurrentTimeNano();
-        // StreamCompressionLZSS com = StreamCompressionLZSS(StreamCompressionLZSS::TYPE_COMPRESSION);
-        // com.addData(dataToCompress, sizeOfData);
-        // t2 = System::getCurrentTimeNano();
-
-        // StringTools::println("Time for updated stream compression: %lluns", t2 - t1);
-    }
-    else if (type == 1)
-    {
-        //28966929600ns
-        t1 = System::getCurrentTimeNano();
-        Compression::compressLZSS(dataToCompress, sizeOfData);
-        t2 = System::getCurrentTimeNano();
-
-        StringTools::println("Time for default compression: %lluns", t2 - t1);
-    }
-    else
-    {
-        t1 = System::getCurrentTimeNano();
-        std::vector<unsigned char> output = Compression::compressDeflate(dataToCompress, sizeOfData, 1, 7);
-        t2 = System::getCurrentTimeNano();
-        StringTools::println("Time for my deflate: %lluns, %llu", t2-t1, output.size());
-    }
-
-    // std::vector<unsigned char> buffer = std::vector<unsigned char>(1<<24);
-    // unsigned long bufferLen = 1<<24;
-
-    // t1 = System::getCurrentTimeNano();
-    // compress2(buffer.data(), &bufferLen, dataToCompress, sizeOfData/12, 9);
-    // t2 = System::getCurrentTimeNano();
-    // StringTools::println("Time for zlib: %lluns, %llu", t2-t1, bufferLen);
-
-}
-
-void testBST()
-{
-    BinaryTree<int> tree1 = BinaryTree<int>();
-    auto k1 = new BinaryTreeNode<int>();
-    auto k2 = new BinaryTreeNode<int>();
-
-    k1->data = 1;
-    k2->data = 2;
-
-    
-    tree1.setRootNode(k1);
-    tree1.setLeftNode(k1, k2);
-    
-    StringTools::println("K1 = %p, %p, %p, %p", k1->parent, k1->leftChild, k1->rightChild, k1);
-    StringTools::println("K2 = %p, %p, %p, %p", k2->parent, k2->leftChild, k2->rightChild, k2);
-
-    tree1.swapNodes(k1, k2);
-    
-    StringTools::println("K1 = %p, %p, %p, %p", k1->parent, k1->leftChild, k1->rightChild, k1);
-    StringTools::println("K2 = %p, %p, %p, %p", k2->parent, k2->leftChild, k2->rightChild, k2);
-
-}
-
-void testXML2()
-{
-    SimpleXml f = SimpleXml("test1.html");
-    StringTools::println("%llu", f.getNodes().size());
-    std::vector<std::string> pattern = {"html", "body", "div", "div", "table", "tr", "td","textarea"};
-    auto results = f.getNodesPattern(pattern);
-
-    if(results.size() == 0)
-        StringTools::println("No Nodes Found");
-    
-    for(auto r : results)
-    {
-        StringTools::println("Potential Node: %s", r->getTitle().c_str());
-    }
-}
-
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main(int argc, char** argv)
 {
-    // testWindow();
+    testOTFLoading();
     // testVectorGraphic();
-    // testVectorFont();
-    // testFontDrawing();
-
-    // testOTFLoading();
-    // testAddressSanitizer();
-    // testDialogBox();
-
-    // testPerformanceCounters();
-    // testBase64();
-
-    // testResourceManager();
-
-    // testCompression();
-    // printTree();
-    // simulateTouch();
-    // testAlphaWindow();
-    // testXML();
-    // testBSAT();
-    // testStreamLZSS(0);
-    // testBST();
-
-    // testSuffixStuff();
-
-    testXML();
-
     return 0;
 }

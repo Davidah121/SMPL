@@ -125,23 +125,23 @@ namespace glib
 		if(!getFocus())
 		{
 			if(!hover)
-				GuiGraphicsInterface::setColor(backgroundColor);
+				GraphicsInterface::setColor(backgroundColor);
 			else
-				GuiGraphicsInterface::setColor(hoverColor);
+				GraphicsInterface::setColor(hoverColor);
 		}
 		else
 		{
-			GuiGraphicsInterface::setColor(focusBackgroundColor);
+			GraphicsInterface::setColor(focusBackgroundColor);
 		}
 		
-		GuiGraphicsInterface::drawRect(x, y, x + width, y + height, false);
+		GraphicsInterface::drawRect(x, y, x + width, y + height, false);
 
 		if (getFocus() == false)
-			GuiGraphicsInterface::setColor(outlineColor);
+			GraphicsInterface::setColor(outlineColor);
 		else
-			GuiGraphicsInterface::setColor(focusOutlineColor);
+			GraphicsInterface::setColor(focusOutlineColor);
 
-		GuiGraphicsInterface::drawRect(x, y, x + width, y + height, true);
+		GraphicsInterface::drawRect(x, y, x + width, y + height, true);
 	}
 
 	void GuiRectangleButton::setOnClickFunction(std::function<void(GuiInstance*)> func)

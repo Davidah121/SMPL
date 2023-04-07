@@ -69,7 +69,9 @@ namespace glib
 
     VectorGraphic* VectorSprite::getGraphic(int index)
     {
-        return vectorGraphicList[index];
+        if(index < vectorGraphicList.size())
+            return vectorGraphicList[index];
+        return nullptr;
     }
 
 } //NAMESPACE glib END

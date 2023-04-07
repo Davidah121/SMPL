@@ -94,6 +94,18 @@ namespace glib
 		shapes.push_back(k);
 	}
 
+	VectorShape* VectorGraphic::getShape(size_t index)
+	{
+		if(index < shapes.size())
+			return shapes[index];
+		return nullptr;
+	}
+
+	size_t VectorGraphic::size()
+	{
+		return shapes.size();
+	}
+
 	void VectorGraphic::clearShapes()
 	{
 		for(size_t i=0; i<shapes.size(); i++)
@@ -896,12 +908,12 @@ namespace glib
 			//separate letters first
 			std::vector<char> instructions = std::vector<char>();
 			std::string numbers = "";
-			int argNum = 0;
+			int argNum = -1;
 			int parsedArgs = 0;
 			bool rel = false;
 			for(char c : attrib->data)
 			{
-				if(c>=65 && c<=90 || c>=97 && c<=127)
+				if(c>='A' && c<='Z' || c>='a' && c<='z')
 				{
 					instructions.push_back(c);
 
@@ -953,10 +965,11 @@ namespace glib
 					parsedArgs = 0;
 					numbers += ' ';
 				}
-				else if(c>=32)
+				else if(c>=32 && argNum >= 0)
 				{
 					if(parsedArgs>=argNum && c!=' ')
 					{
+						//should never be here if there are no instructions in the list yet.
 						parsedArgs = 0;
 						if(instructions.back() == 'M' || instructions.back() == 'm')
 						{
@@ -975,11 +988,15 @@ namespace glib
 						// argNum = 2;
 					}
 
-					if( (c==' ' || c==',' || c=='-') && numbers.back()!= ' ')
+					int lastNumChar = 0;
+					if(numbers.size() > 0)
+						lastNumChar = numbers.back();
+
+					if( (c==' ' || c==',' || c=='-') && (lastNumChar >= '0' && lastNumChar <= '9') )
 					{
 						if(c=='-')
 						{
-							if(numbers.back()>='0' && numbers.back()<='9')
+							if(lastNumChar>='0' && lastNumChar<='9')
 							{
 								numbers += ' ';
 								parsedArgs++;
@@ -996,7 +1013,7 @@ namespace glib
 			}
 
 			std::vector<std::string> splitNumbers = StringTools::splitStringMultipleDeliminators(numbers, " ,");
-			
+
 			int numberIndex = 0;
 			for(char c : instructions)
 			{
