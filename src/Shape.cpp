@@ -540,6 +540,46 @@ namespace glib
 
 	#pragma endregion
 
+	#pragma region TRIANGLE2D_MODEL
+
+		#pragma region ClassStuff
+		const Class Triangle2DModel::globalClass = Class("Triangle2DModel", {&Shape::globalClass});
+		#pragma endregion
+
+	Triangle2DModel::Triangle2DModel()
+	{
+
+	}
+	Triangle2DModel::~Triangle2DModel()
+	{
+
+	}
+
+	void Triangle2DModel::add(Triangle2D tri)
+	{
+		tris.push_back(tri);
+	}
+	Triangle2D Triangle2DModel::get(size_t index)
+	{
+		if(index < tris.size())
+		{
+			return tris[index];
+		}
+		return Triangle2D();
+	}
+	
+	std::vector<Triangle2D>& Triangle2DModel::getTriangles()
+	{
+		return tris;
+	}
+
+	size_t Triangle2DModel::size()
+	{
+		return tris.size();
+	}
+
+	#pragma endregion
+
 	#pragma region POLYGON2D
 
 		#pragma region ClassStuff
@@ -720,6 +760,149 @@ namespace glib
 	double Polygon2D::generateBoundingRadius()
 	{
 		return 0;
+	}
+
+	#pragma endregion
+
+	#pragma region TRIANGLE_3D
+	
+		#pragma region ClassStuff
+		const Class Triangle3D::globalClass = Class("Triangle3D", {&Shape::globalClass});
+		#pragma endregion
+
+	Triangle3D::Triangle3D()
+	{
+
+	}
+
+	Triangle3D::Triangle3D(Vec3f p1, Vec3f p2, Vec3f p3)
+	{
+		v1 = p1;
+		v2 = p2;
+		v3 = p3;
+	}
+
+	Triangle3D::Triangle3D(double x1, double y1, double z1, double x2, double y2, double z2, double x3, double y3, double z3)
+	{
+		v1 = Vec3f(x1,y1,z1);
+		v2 = Vec3f(x2,y2,z2);
+		v3 = Vec3f(x3,y3,z3);
+	}
+
+	Triangle3D::~Triangle3D()
+	{
+
+	}
+
+	//Object and Class Stuff
+
+	void Triangle3D::setVertex1(Vec3f p)
+	{
+		v1 = p;
+	}
+
+	void Triangle3D::setVertex1(double x, double y, double z)
+	{
+		v1 = Vec3f(x,y,z);
+	}
+
+	void Triangle3D::setVertex2(Vec3f p)
+	{
+		v2 = p;
+	}
+
+	void Triangle3D::setVertex3(double x, double y, double z)
+	{
+		v2 = Vec3f(x,y,z);
+	}
+
+	void Triangle3D::setVertex3(Vec3f p)
+	{
+		v3 = p;
+	}
+
+	void Triangle3D::setVertex3(double x, double y, double z)
+	{
+		v3 = Vec3f(x,y,z);
+	}
+
+	Vec3f Triangle3D::getVertex1()
+	{
+		return v1;
+	}
+
+	Vec3f Triangle3D::getVertex2()
+	{
+		return v2;
+	}
+
+	Vec3f Triangle3D::getVertex3()
+	{
+		return v3;
+	}
+
+	Vec3f Triangle3D::getCenterPosition()
+	{
+		return (v1+v2+v3)/3;
+	}
+
+	Vec3f Triangle3D::getNormal()
+	{
+		return MathExt::crossProduct(v1, v2).normalize();
+	}
+
+	double Triangle3D::generateBoundingRadius()
+	{
+		Vec3f midP = getCenterPosition();
+		double maxDis = (v1-midP).getLength();
+		maxDis = __max( maxDis, (v2-midP).getLength() );
+		maxDis = __max( maxDis, (v3-midP).getLength() );
+		return maxDis;
+	}
+
+	void Triangle3D::onTransformChanged()
+	{
+
+	}
+
+	#pragma endregion
+
+	#pragma region TRIANGLE3D_MODEL
+
+		#pragma region ClassStuff
+		const Class Triangle3DModel::globalClass = Class("Triangle3DModel", {&Shape::globalClass});
+		#pragma endregion
+
+	Triangle3DModel::Triangle3DModel()
+	{
+
+	}
+	Triangle3DModel::~Triangle3DModel()
+	{
+
+	}
+
+	void Triangle3DModel::add(Triangle3D tri)
+	{
+		tris.push_back(tri);
+	}
+	Triangle3D Triangle3DModel::get(size_t index)
+	{
+		if(index < tris.size())
+		{
+			return tris[index];
+		}
+		return Triangle3D();
+	}
+	
+	std::vector<Triangle3D>& Triangle3DModel::getTriangles()
+	{
+		return tris;
+	}
+
+	size_t Triangle3DModel::size()
+	{
+		return tris.size();
 	}
 
 	#pragma endregion

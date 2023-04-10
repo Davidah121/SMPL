@@ -1,4 +1,3 @@
-#define USE_OPENGL
 
 #ifdef USE_OPENGL
 

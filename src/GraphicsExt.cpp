@@ -2,8 +2,6 @@
 #include "SimpleGraphics.h"
 #include "BitmapFont.h"
 
-#define USE_DIRECTX
-
 #ifdef USE_OPENGL
     #include "ext/GLGraphics.h"
 #endif

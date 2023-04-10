@@ -342,6 +342,370 @@ namespace glib
         return indexed;
     }
 
+    Triangle2DModel Model::convertTo2DTriModel()
+    {
+        Triangle2DModel mod;
+
+        if(modelFormat < TRIANGLES || modelFormat > QUAD_STRIP)
+            return Triangle2DModel();   //NOT Correct format. Will be lines or points which are not triangles.
+
+        int formatNum = -1;
+        int offset = 0;
+        for(int i=0; i<formatInfo.size(); i++)
+        {
+            if(formatInfo[i].usage == USAGE_POSITION)
+            {
+                formatNum = i;
+                break;
+            }
+            offset += formatInfo[i].size;
+        }
+        
+        if(formatNum < 0)
+            return Triangle2DModel(); //NO USAGE_POSITION. Can't tell what information to use.
+
+        if(formatInfo[formatNum].size < 2)
+            return Triangle2DModel(); //NOT Enough dimensions in each vertex. Need at least 2
+
+        
+        size_t amtVert = size();
+        bool order = false;
+
+        switch (modelFormat)
+        {
+        case Model::TRIANGLES:
+            //draw triangles at point x,y to point x2,y2 to point x3,y3
+            for(int i=2; i<amtVert; i+=3)
+            {
+                std::vector<std::vector<int>> vertInfo = getVertex(i-2);
+                std::vector<std::vector<int>> vertInfo2 = getVertex(i-1);
+                std::vector<std::vector<int>> vertInfo3 = getVertex(i);
+
+                float* positionData1 = (float*)vertInfo[offset].data();
+                float* positionData2 = (float*)vertInfo2[offset].data();
+                float* positionData3 = (float*)vertInfo3[offset].data();
+
+                Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
+                Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
+                Vec2f pos3 = Vec2f( positionData3[0], positionData3[1] );
+
+                mod.add( Triangle2D(pos, pos2, pos3) );
+            }
+            break;
+        case Model::TRIANGLE_FAN:
+            //draw triangles using first point to point x2,y2 to point x3,y3
+            
+            for(int i=2; i<amtVert; i+=1)
+            {
+                std::vector<std::vector<int>> vertInfo = getVertex(0);
+                std::vector<std::vector<int>> vertInfo2 = getVertex(i-1);
+                std::vector<std::vector<int>> vertInfo3 = getVertex(i);
+
+                float* positionData1 = (float*)vertInfo[offset].data();
+                float* positionData2 = (float*)vertInfo2[offset].data();
+                float* positionData3 = (float*)vertInfo3[offset].data();
+                
+                Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
+                Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
+                Vec2f pos3 = Vec2f( positionData3[0], positionData3[1] );
+                
+                mod.add( Triangle2D(pos, pos2, pos3) );
+            }
+            break;
+        case Model::TRIANGLE_STRIP:
+            for(int i=2; i<amtVert; i++)
+            {
+                std::vector<std::vector<int>> vertInfo, vertInfo2, vertInfo3;
+
+                if(!order)
+                {
+                    vertInfo = getVertex(i-2);
+                    vertInfo2 = getVertex(i-1);
+                }
+                else
+                {
+                    vertInfo = getVertex(i-1);
+                    vertInfo2 = getVertex(i-2);
+                }
+
+                vertInfo3 = getVertex(i);
+                
+                float* positionData1 = (float*)vertInfo[offset].data();
+                float* positionData2 = (float*)vertInfo2[offset].data();
+                float* positionData3 = (float*)vertInfo3[offset].data();
+
+                Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
+                Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
+                Vec2f pos3 = Vec2f( positionData3[0], positionData3[1] );
+                    
+                mod.add( Triangle2D(pos, pos2, pos3) );
+                
+                order = !order;
+            }
+
+            break;
+        case Model::QUADS:
+            //draw 2 triangles using 4 points
+            for(int i=3; i<amtVert; i+=4)
+            {
+                std::vector<std::vector<int>> vertInfo, vertInfo2, vertInfo3, vertInfo4;
+
+                vertInfo = getVertex(i-3);
+                vertInfo2 = getVertex(i-2);
+                vertInfo3 = getVertex(i-1);
+                vertInfo4 = getVertex(i);
+                
+                
+                float* positionData1 = (float*)vertInfo[offset].data();
+                float* positionData2 = (float*)vertInfo2[offset].data();
+                float* positionData3 = (float*)vertInfo3[offset].data();
+                float* positionData4 = (float*)vertInfo4[offset].data();
+                
+                Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
+                Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
+                Vec2f pos3 = Vec2f( positionData3[0], positionData3[1] );
+                
+                mod.add( Triangle2D(pos, pos2, pos3) );
+
+                pos = Vec2f( positionData1[0], positionData1[1] );
+                pos2 = Vec2f( positionData3[0], positionData3[1] );
+                pos3 = Vec2f( positionData4[0], positionData4[1] );
+                
+                mod.add( Triangle2D(pos, pos2, pos3) );
+                
+            }
+            break;
+        case Model::QUAD_STRIP:
+            //draw 2 triangles using 4 points
+
+            for(int i=3; i<amtVert; i+=2)
+            {
+                std::vector<std::vector<int>> vertInfo, vertInfo2, vertInfo3, vertInfo4;
+
+                if(!order)
+                {
+                    vertInfo = getVertex(i-3);
+                    vertInfo2 = getVertex(i-2);
+                    vertInfo3 = getVertex(i-1);
+                    vertInfo4 = getVertex(i);
+                }
+                else
+                {
+                    vertInfo = getVertex(i-1);
+                    vertInfo2 = getVertex(i-2);
+                    vertInfo3 = getVertex(i-3);
+                    vertInfo4 = getVertex(i);
+                }
+
+                float* positionData1 = (float*)vertInfo[offset].data();
+                float* positionData2 = (float*)vertInfo2[offset].data();
+                float* positionData3 = (float*)vertInfo3[offset].data();
+                float* positionData4 = (float*)vertInfo4[offset].data();
+            
+                Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
+                Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
+                Vec2f pos3 = Vec2f( positionData3[0], positionData3[1] );
+                    
+                mod.add( Triangle2D(pos, pos2, pos3) );
+
+                pos = Vec2f( positionData1[0], positionData1[1] );
+                pos2 = Vec2f( positionData3[0], positionData3[1] );
+                pos3 = Vec2f( positionData4[0], positionData4[1] );
+                
+                mod.add( Triangle2D(pos, pos2, pos3) );
+
+                order = !order;
+            }
+            break;
+        default:
+            break;
+        }
+        
+        return mod;
+    }
+
+    Triangle3DModel Model::convertTo3DTriModel()
+    {
+        Triangle3DModel mod;
+
+        if(modelFormat < TRIANGLES || modelFormat > QUAD_STRIP)
+            return Triangle3DModel();   //NOT Correct format. Will be lines or points which are not triangles.
+
+        int formatNum = -1;
+        int offset = 0;
+        for(int i=0; i<formatInfo.size(); i++)
+        {
+            if(formatInfo[i].usage == USAGE_POSITION)
+            {
+                formatNum = i;
+                break;
+            }
+            offset += formatInfo[i].size;
+        }
+        
+        if(formatNum < 0)
+            return Triangle3DModel(); //NO USAGE_POSITION. Can't tell what information to use.
+
+        if(formatInfo[formatNum].size < 3)
+            return Triangle3DModel(); //NOT Enough dimensions in each vertex. Need at least 3
+
+        
+        size_t amtVert = size();
+        bool order = false;
+
+        switch (modelFormat)
+        {
+        case Model::TRIANGLES:
+            //draw triangles at point x,y to point x2,y2 to point x3,y3
+            for(int i=2; i<amtVert; i+=3)
+            {
+                std::vector<std::vector<int>> vertInfo = getVertex(i-2);
+                std::vector<std::vector<int>> vertInfo2 = getVertex(i-1);
+                std::vector<std::vector<int>> vertInfo3 = getVertex(i);
+
+                float* positionData1 = (float*)vertInfo[offset].data();
+                float* positionData2 = (float*)vertInfo2[offset].data();
+                float* positionData3 = (float*)vertInfo3[offset].data();
+
+                Vec3f pos = Vec3f( positionData1[0], positionData1[1], positionData1[2] );
+                Vec3f pos2 = Vec3f( positionData2[0], positionData2[1], positionData2[2] );
+                Vec3f pos3 = Vec3f( positionData3[0], positionData3[1], positionData3[2] );
+
+                mod.add( Triangle3D(pos, pos2, pos3) );
+            }
+            break;
+        case Model::TRIANGLE_FAN:
+            //draw triangles using first point to point x2,y2 to point x3,y3
+            
+            for(int i=2; i<amtVert; i+=1)
+            {
+                std::vector<std::vector<int>> vertInfo = getVertex(0);
+                std::vector<std::vector<int>> vertInfo2 = getVertex(i-1);
+                std::vector<std::vector<int>> vertInfo3 = getVertex(i);
+
+                float* positionData1 = (float*)vertInfo[offset].data();
+                float* positionData2 = (float*)vertInfo2[offset].data();
+                float* positionData3 = (float*)vertInfo3[offset].data();
+                
+                Vec3f pos = Vec3f( positionData1[0], positionData1[1], positionData1[2] );
+                Vec3f pos2 = Vec3f( positionData2[0], positionData2[1], positionData2[2] );
+                Vec3f pos3 = Vec3f( positionData3[0], positionData3[1], positionData3[2] );
+                
+                mod.add( Triangle3D(pos, pos2, pos3) );
+            }
+            break;
+        case Model::TRIANGLE_STRIP:
+            for(int i=2; i<amtVert; i++)
+            {
+                std::vector<std::vector<int>> vertInfo, vertInfo2, vertInfo3;
+
+                if(!order)
+                {
+                    vertInfo = getVertex(i-2);
+                    vertInfo2 = getVertex(i-1);
+                }
+                else
+                {
+                    vertInfo = getVertex(i-1);
+                    vertInfo2 = getVertex(i-2);
+                }
+
+                vertInfo3 = getVertex(i);
+                
+                float* positionData1 = (float*)vertInfo[offset].data();
+                float* positionData2 = (float*)vertInfo2[offset].data();
+                float* positionData3 = (float*)vertInfo3[offset].data();
+
+                Vec3f pos = Vec3f( positionData1[0], positionData1[1], positionData1[2] );
+                Vec3f pos2 = Vec3f( positionData2[0], positionData2[1], positionData2[2] );
+                Vec3f pos3 = Vec3f( positionData3[0], positionData3[1], positionData3[2] );
+                    
+                mod.add( Triangle3D(pos, pos2, pos3) );
+                
+                order = !order;
+            }
+
+            break;
+        case Model::QUADS:
+            //draw 2 triangles using 4 points
+            for(int i=3; i<amtVert; i+=4)
+            {
+                std::vector<std::vector<int>> vertInfo, vertInfo2, vertInfo3, vertInfo4;
+
+                vertInfo = getVertex(i-3);
+                vertInfo2 = getVertex(i-2);
+                vertInfo3 = getVertex(i-1);
+                vertInfo4 = getVertex(i);
+                
+                
+                float* positionData1 = (float*)vertInfo[offset].data();
+                float* positionData2 = (float*)vertInfo2[offset].data();
+                float* positionData3 = (float*)vertInfo3[offset].data();
+                float* positionData4 = (float*)vertInfo4[offset].data();
+                
+                Vec3f pos = Vec3f( positionData1[0], positionData1[1], positionData1[2] );
+                Vec3f pos2 = Vec3f( positionData2[0], positionData2[1], positionData2[2] );
+                Vec3f pos3 = Vec3f( positionData3[0], positionData3[1], positionData3[2] );
+                
+                mod.add( Triangle3D(pos, pos2, pos3) );
+
+                pos = Vec3f( positionData1[0], positionData1[1], positionData1[2] );
+                pos2 = Vec3f( positionData3[0], positionData3[1], positionData3[2] );
+                pos3 = Vec3f( positionData4[0], positionData4[1], positionData4[2] );
+                
+                mod.add( Triangle3D(pos, pos2, pos3) );
+                
+            }
+            break;
+        case Model::QUAD_STRIP:
+            //draw 2 triangles using 4 points
+
+            for(int i=3; i<amtVert; i+=2)
+            {
+                std::vector<std::vector<int>> vertInfo, vertInfo2, vertInfo3, vertInfo4;
+
+                if(!order)
+                {
+                    vertInfo = getVertex(i-3);
+                    vertInfo2 = getVertex(i-2);
+                    vertInfo3 = getVertex(i-1);
+                    vertInfo4 = getVertex(i);
+                }
+                else
+                {
+                    vertInfo = getVertex(i-1);
+                    vertInfo2 = getVertex(i-2);
+                    vertInfo3 = getVertex(i-3);
+                    vertInfo4 = getVertex(i);
+                }
+
+                float* positionData1 = (float*)vertInfo[offset].data();
+                float* positionData2 = (float*)vertInfo2[offset].data();
+                float* positionData3 = (float*)vertInfo3[offset].data();
+                float* positionData4 = (float*)vertInfo4[offset].data();
+                
+                Vec3f pos = Vec3f( positionData1[0], positionData1[1], positionData1[2] );
+                Vec3f pos2 = Vec3f( positionData2[0], positionData2[1], positionData2[2] );
+                Vec3f pos3 = Vec3f( positionData3[0], positionData3[1], positionData3[2] );
+                
+                mod.add( Triangle3D(pos, pos2, pos3) );
+
+                pos = Vec3f( positionData1[0], positionData1[1], positionData1[2] );
+                pos2 = Vec3f( positionData3[0], positionData3[1], positionData3[2] );
+                pos3 = Vec3f( positionData4[0], positionData4[1], positionData4[2] );
+                
+                mod.add( Triangle3D(pos, pos2, pos3) );
+
+                order = !order;
+            }
+            break;
+        default:
+            break;
+        }
+
+        return mod;
+    }
+
     void Model::loadModel(File file)
     {
         std::string ext = file.getExtension();

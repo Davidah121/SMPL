@@ -1,4 +1,4 @@
-#define USE_OPENGL
+
 #ifdef USE_OPENGL
 
     #include "ext/GLGraphics.h"

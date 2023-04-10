@@ -1,4 +1,3 @@
-#define USE_DIRECTX
 
 #ifdef USE_DIRECTX
 
