@@ -28,6 +28,7 @@
             
             GLTexture(File f, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});
             GLTexture(Image* img, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});
+            GLTexture(const GLTexture& o);
             ~GLTexture();
 
             void loadImage(File f, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});

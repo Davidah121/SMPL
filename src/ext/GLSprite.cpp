@@ -1,19 +1,14 @@
+#include "ext/GLSprite.h"
+
 #ifdef USE_OPENGL
-
-	#include "ext/GLSprite.h"
-
 	namespace glib
 	{
 			
-		const Class GLSprite::myClass = Class("GLSprite", {&Object::myClass});
-		const Class* GLSprite::getClass()
-		{
-			return &GLSprite::myClass;
-		}
+		const Class GLSprite::globalClass = Class("GLSprite", {&Object::globalClass});
 
 		GLSprite::GLSprite()
 		{
-			setClass(GLSprite::myClass);
+			setClass(GLSprite::globalClass);
 		}
 
 
@@ -34,16 +29,14 @@
 
 		void GLSprite::copy(const GLSprite& o)
 		{
-			setClass(GLSprite::myClass);
+			setClass(GLSprite::globalClass);
 			delayTimeForFrame = o.delayTimeForFrame;
-			for(size_t i=0; i<o.images.size(); i++)
-			{
-				images.push_back( new GLTexture(o.getImage(i)) );
-			}
+			images = o.images;
 		}
 
 		GLSprite::GLSprite(Sprite& o)
 		{
+			setClass(GLSprite::globalClass);
 			for(size_t i=0; i<o.getSize(); i++)
 			{
 				images.push_back( new GLTexture(o.getImage(i)) );
@@ -74,13 +67,13 @@
 			return nullptr;
 		}
 
-		int GLSprite::getDelayTime(size_t index)
+		size_t GLSprite::getDelayTime(size_t index)
 		{
 			if (images.size() > index)
 			{
 				return delayTimeForFrame[index];
 			}
-			return -1;
+			return 0;
 		}
 
 		void GLSprite::setDelayTime(size_t index, int microSecondsDelay)

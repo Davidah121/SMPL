@@ -20,10 +20,11 @@ namespace glib
         std::string getName();
         void setName(std::string n);
 
-        JNode* getNode(std::vector<std::string>& s, int offset=0);
+        std::vector<JNode*> getNodesPattern(std::vector<std::string>& s, int offset=0);
 
     private:
-        
+        void getNodesPatternInternal(std::vector<std::string>& s, int offset, std::vector<JNode*>& results);
+
         std::string name;
         int type = 0;
     };
@@ -55,7 +56,7 @@ namespace glib
     private:
         friend JNode;
         std::vector<JNode*> vars;
-        std::unordered_map<std::string, size_t> nameToIndexMap;
+        std::unordered_multimap<std::string, size_t> nameToIndexMap;
     };
 
     class JArray : public JNode
@@ -70,7 +71,7 @@ namespace glib
     private:
         friend JNode;
         std::vector<JNode*> vars;
-        std::unordered_map<std::string, size_t> nameToIndexMap;
+        std::unordered_multimap<std::string, size_t> nameToIndexMap;
     };
 
     class SimpleJSON
@@ -91,11 +92,10 @@ namespace glib
 
         std::string getString();
 
-        JNode* getNode(std::vector<std::string>& s, int offset=0);
+        std::vector<JNode*> getNodesPattern(std::vector<std::string>& s, int offset=0);
     private:
         JObject* loadJObject(std::fstream& file, std::string name);
         JArray* loadJArray(std::fstream& file, std::string name);
-
         
         JObject* loadJObject(unsigned char* data, size_t size, size_t& index, std::string name);
         JArray* loadJArray(unsigned char* data, size_t size, size_t& index, std::string name);

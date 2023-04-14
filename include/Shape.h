@@ -992,7 +992,7 @@ namespace glib
 		 * @param y 
 		 * @param z
 		 */
-		void setVertex3(double x, double y, double z);
+		void setVertex2(double x, double y, double z);
 
 		/**
 		 * @brief Sets the third vertex of the triangle

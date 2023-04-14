@@ -1,7 +1,6 @@
+#include "ext/GLSurface.h"
+
 #ifdef USE_OPENGL
-
-    #include "ext/GLSurface.h"
-
     namespace glib
     {
         GLSurface* GLSurface::previousSurfaceBound = nullptr;

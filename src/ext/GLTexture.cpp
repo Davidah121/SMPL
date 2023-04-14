@@ -1,7 +1,6 @@
+#include "ext/GLTexture.h"
+
 #ifdef USE_OPENGL
-
-    #include "ext/GLTexture.h"
-
     namespace glib
     {
 
@@ -21,6 +20,20 @@
                 return;
             }
             setImage(img, includeAlpha, params);
+        }
+
+        GLTexture::GLTexture(const GLTexture& o)
+        {
+            edgeBehavior = o.edgeBehavior;
+            filterType = o.filterType;
+
+            textureType = o.textureType;
+
+            width = o.width;
+            height = o.height;
+            
+            //hard copy probably. Do later
+            textureID = 0;
         }
 
         GLTexture::~GLTexture()

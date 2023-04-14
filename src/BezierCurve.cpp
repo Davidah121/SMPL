@@ -299,6 +299,78 @@ namespace glib
 		return arcLength;
 	}
 
+	double BezierCurve::findTimeForMinDis(double x, double y, unsigned int maxIterations)
+	{
+		return findTimeForMinDis( Vec2f(x, y), maxIterations );
+	}
+
+	double BezierCurve::findTimeForMinDis(Vec2f p, unsigned int maxIterations)
+	{
+		//use secant method to solve 
+		double xn[3] = {NAN, 1, 0};
+		double sol[3] = {NAN, 0, 0};
+
+		double solAt0 = 0;
+		double solAt1 = 0;
+
+		Vec2f bt = this->getFuctionAt(0);
+		Vec2f bpt = this->getDerivativeAt(0);
+		sol[2] = 2*(p.x - bt.x)*(-bpt.x) + 2*(p.y - bt.y)*(-bpt.y);
+		
+		bt = this->getFuctionAt(1);
+		bpt = this->getDerivativeAt(1);
+		sol[1] = 2*(p.x - bt.x)*(-bpt.x) + 2*(p.y - bt.y)*(-bpt.y);
+		
+		if(sol[2] == 0)
+			return 0;
+		if(sol[1] == 0)
+			return 1;
+
+		solAt0 = sol[2];
+		solAt1 = sol[1];
+		
+		for(int i=0; i<maxIterations; i++)
+		{
+			double num = sol[1]*(xn[1] - xn[2]);
+			double div = sol[1] - sol[2];
+			if(div == 0)
+			{
+				//error occured
+				xn[0] = NAN;
+				break;
+			}
+
+			xn[0] = xn[1] - num/div;
+			
+			bt = this->getFuctionAt(xn[0]);
+			bpt = this->getDerivativeAt(xn[0]);
+			sol[0] = 2*(p.x - bt.x)*(-bpt.x) + 2*(p.y - bt.y)*(-bpt.y);
+
+			if(sol[0] == 0)
+			{
+				break;
+			}
+
+			//move xn to xn-1 and move xn-1 to xn-2
+			xn[2] = xn[1];
+			xn[1] = xn[0];
+
+			sol[2] = sol[1];
+			sol[1] = sol[0];
+		}
+
+		if(xn[0] != NAN)
+		{
+			if(xn[0] >= 0 && xn[0] <= 1)
+				return xn[0];
+		}
+		
+		if(solAt0 < solAt1)
+			return 0;
+		else
+			return 1;
+	}
+
 	void BezierCurve::clear()
 	{
 		points.clear();

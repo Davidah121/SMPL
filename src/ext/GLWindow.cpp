@@ -1,14 +1,12 @@
+#include "ext/GLWindow.h"
+#include <iostream>
+#include "MathExt.h"
+#include "System.h"
+#include "StringTools.h"
+#include "Input.h"
+#include "ext/GLGraphics.h"
 
 #ifdef USE_OPENGL
-
-	#include "ext/GLWindow.h"
-	#include <iostream>
-	#include "MathExt.h"
-	#include "System.h"
-	#include "StringTools.h"
-	#include "Input.h"
-	#include "ext/GLGraphics.h"
-
 	namespace glib
 	{
 
@@ -147,6 +145,11 @@
 		void GLWindow::swapBuffers()
 		{
 			SwapBuffers(ghDC);
+		}
+
+		void GLWindow::repaint()
+		{
+			swapBuffers();
 		}
 
 		void GLWindow::disposeGL()

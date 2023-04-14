@@ -6,17 +6,17 @@ out vec4 frag_color;
 
 uniform vec4 activeColor;
 uniform vec2 circleCenter;
-uniform float innerRad;
-uniform float outerRad;
+uniform float radius;
+uniform float maxDisFromEdge;
 
 void main()
 {
     float distVal = length(circleCenter - pixelPosition);
-    float minOutDis = outerRad-1;
-    float maxOutDis = outerRad;
+    float minOutDis = radius-1;
+    float maxOutDis = radius;
 
-    float minInDis = ((innerRad-1) < 0) ? 0 : innerRad-1;
-    float maxInDis = ((innerRad) < 0) ? 0 : innerRad;
+    float minInDis = radius-maxDisFromEdge-1;
+    float maxInDis = radius-maxDisFromEdge;
     float alpha = 1.0;
 
     if(distVal > maxOutDis)

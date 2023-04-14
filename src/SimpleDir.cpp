@@ -94,7 +94,7 @@ namespace glib
 	{
 		if (index < names.size())
 		{
-			return names[index].path().u8string();
+			return std::filesystem::canonical( names[index].path() ).u8string();
 		}
 		else
 		{

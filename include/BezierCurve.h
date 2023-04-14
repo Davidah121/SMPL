@@ -213,6 +213,39 @@ namespace glib
 		double getArcLengthAt(double startTime, double endTime);
 
 		/**
+		 * @brief Finds a time t in the range [0, 1] such that
+		 * 		the bezier curve at that point results in the smallest distance
+		 * 		to p. 
+		 * 			i.e. length( b(t) - p ) is the smallest possible
+		 * 		In other words, find the closest point on the bezier curve to p.
+		 * 		This uses secant method to approximate the answer with a default of a maximum of 10 iterations.
+		 * 
+		 * @param p 
+		 * @param maxIterations
+		 * 		The maximum number of iterations of secant method to use.
+		 * 		Default value is 10.
+		 * @return double 
+		 */
+		double findTimeForMinDis(Vec2f p, unsigned int maxIterations = 10);
+
+		/**
+		 * @brief Finds a time t in the range [0, 1] such that
+		 * 		the bezier curve at that point results in the smallest distance
+		 * 		to p. 
+		 * 			i.e. length( b(t) - p ) is the smallest possible
+		 * 		In other words, find the closest point on the bezier curve to p.
+		 * 		This uses secant method to approximate the answer with a default of a maximum of 10 iterations.
+		 * 
+		 * @param x 
+		 * @param y 
+		 * @param maxIterations
+		 * 		The maximum number of iterations of secant method to use.
+		 * 		Default value is 10.
+		 * @return double 
+		 */
+		double findTimeForMinDis(double x, double y, unsigned int maxIterations = 10);
+
+		/**
 		 * @brief Clears all points from the BezierCurve's list of points
 		 */
 		void clear();

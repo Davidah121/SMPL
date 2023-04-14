@@ -117,6 +117,9 @@
 			 */
 			unsigned int getVSyncInterval();
 
+			
+			void repaint();
+
 			void testGL();
 			void swapBuffers();
 

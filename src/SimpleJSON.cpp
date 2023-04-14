@@ -27,48 +27,42 @@ namespace glib
         name = n;
     }
 
-    JNode* JNode::getNode(std::vector<std::string>& s, int offset)
+    std::vector<JNode*> JNode::getNodesPattern(std::vector<std::string>& s, int offset)
     {
-        if(type == SimpleJSON::TYPE_OBJECT)
+        std::vector<JNode*> nodes;
+        getNodesPatternInternal(s, offset, nodes);
+        return nodes;
+    }
+
+    void JNode::getNodesPatternInternal(std::vector<std::string>& s, int offset, std::vector<JNode*>& results)
+    {
+        if(offset == s.size())
         {
-            if(offset < s.size())
+            results.push_back(this);
+        }
+        else if(offset < s.size())
+        {
+            if(type == SimpleJSON::TYPE_OBJECT)
             {
                 JObject* obj = (JObject*)this;
-                auto it = obj->nameToIndexMap.find(s[offset]);
-                if(it != obj->nameToIndexMap.end())
+                auto pairIt = obj->nameToIndexMap.equal_range(s[offset]);
+
+                for(auto p=pairIt.first; p!=pairIt.second; p++)
                 {
-                    if(offset == s.size()-1)
-                    {
-                        return obj->vars[it->second];
-                    }
-                    else
-                    {
-                        return obj->vars[it->second]->getNode(s, offset+1);
-                    }
+                    obj->vars[p->second]->getNodesPatternInternal(s, offset+1, results);
                 }
             }
-        }
-        else if(type == SimpleJSON::TYPE_ARRAY)
-        {
-            if(offset < s.size())
+            else if(type == SimpleJSON::TYPE_ARRAY)
             {
                 JArray* obj = (JArray*)this;
-                auto it = obj->nameToIndexMap.find(s[offset]);
-                if(it != obj->nameToIndexMap.end())
+                auto pairIt = obj->nameToIndexMap.equal_range(s[offset]);
+
+                for(auto p=pairIt.first; p!=pairIt.second; p++)
                 {
-                    if(offset == s.size()-1)
-                    {
-                        return obj->vars[it->second];
-                    }
-                    else
-                    {
-                        return obj->vars[it->second]->getNode(s, offset+1);
-                    }
+                    obj->vars[p->second]->getNodesPatternInternal(s, offset+1, results);
                 }
             }
         }
-
-        return nullptr; //Some type that does not have children
     }
 
     #pragma endregion
@@ -128,23 +122,13 @@ namespace glib
     {
         if(o != nullptr)
         {
-            //check if it exist already
-            auto it = nameToIndexMap.find(o->getName());
-            if(it != nameToIndexMap.end())
-            {
-                //override existing entry
-                JNode* oldNode = vars[it->second];
-                if(oldNode != nullptr)
-                    delete oldNode;
-                
-                vars[it->second] = o;
-            }
-            else
-            {
-                //add new entry
-                vars.push_back(o);
-                nameToIndexMap[o->getName()] = vars.size()-1;
-            }
+            std::pair<std::string, size_t> p;
+            p.first = o->getName();
+            p.second = vars.size();
+            nameToIndexMap.insert( p );
+
+            //always add new entry. It is a multimap so all can be referenced/obtained.
+            vars.push_back(o);
         }
     }
 
@@ -209,23 +193,13 @@ namespace glib
     {
         if(o != nullptr)
         {
-            //check if it exist already
-            auto it = nameToIndexMap.find(o->getName());
-            if(it != nameToIndexMap.end())
-            {
-                //override existing entry
-                JNode* oldNode = vars[it->second];
-                if(oldNode != nullptr)
-                    delete oldNode;
-                
-                vars[it->second] = o;
-            }
-            else
-            {
-                //add new entry
-                vars.push_back(o);
-                nameToIndexMap[o->getName()] = vars.size()-1;
-            }
+            std::pair<std::string, size_t> p;
+            p.first = o->getName();
+            p.second = vars.size();
+            nameToIndexMap.insert( p );
+
+            //always add new entry. It is a multimap so all can be referenced/obtained.
+            vars.push_back(o);
         }
     }
 
@@ -389,12 +363,12 @@ namespace glib
         return rootNode;
     }
 
-    JNode* SimpleJSON::getNode(std::vector<std::string>& s, int offset)
+    std::vector<JNode*> SimpleJSON::getNodesPattern(std::vector<std::string>& s, int offset)
     {
         if(rootNode != nullptr)
-            return rootNode->getNode(s, offset);
+            return rootNode->getNodesPattern(s, offset);
         
-        return nullptr;
+        return {};
     }
 
     JObject* SimpleJSON::loadJObject(std::fstream& file, std::string name)

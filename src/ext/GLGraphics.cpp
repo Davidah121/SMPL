@@ -1,7 +1,6 @@
+#include "ext/GLGraphics.h"
 
 #ifdef USE_OPENGL
-
-    #include "ext/GLGraphics.h"
 
     namespace glib
     {
@@ -19,6 +18,7 @@
         
         GLShader* GLGraphics::textureShader = nullptr;
         GLShader* GLGraphics::circleShader = nullptr;
+        GLShader* GLGraphics::ellipseShader = nullptr;
         GLShader* GLGraphics::rectangleShader = nullptr;
         GLShader* GLGraphics::textShader = nullptr;
         GLFont* GLGraphics::activeFont = nullptr;
@@ -32,6 +32,7 @@
             {
                 GLGraphics::textureShader = new GLShader("Resources/glsl/vs/rectTextureVertShader.vs", "Resources/glsl/fs/rectTextureFragShader.fs");
                 GLGraphics::circleShader = new GLShader("Resources/glsl/vs/circleVertShader.vs", "Resources/glsl/fs/circleFragShader.fs");
+                GLGraphics::ellipseShader = new GLShader("Resources/glsl/vs/ellipseVertShader.vs", "Resources/glsl/fs/ellipseFragShader.fs");
                 GLGraphics::rectangleShader = new GLShader("Resources/glsl/vs/rectangleVertShader.vs", "Resources/glsl/fs/rectangleFragShader.fs");
                 GLGraphics::textShader = new GLShader("Resources/glsl/vs/textVertShader.vs", "Resources/glsl/fs/textFragShader.fs");
 
@@ -52,12 +53,16 @@
 
             if(GLGraphics::circleShader != nullptr)
                 delete circleShader;
+                
+            if(GLGraphics::ellipseShader != nullptr)
+                delete ellipseShader;
 
             if(GLGraphics::textShader != nullptr)
                 delete textShader;
 
             GLGraphics::textureShader = nullptr;
             GLGraphics::circleShader = nullptr;
+            GLGraphics::ellipseShader = nullptr;
             GLGraphics::rectangleShader = nullptr;
             GLGraphics::textShader = nullptr;
 
@@ -578,22 +583,22 @@
         void GLGraphics::drawCircle(double x, double y, double radius, bool outline)
         {
             if(outline)
-                drawCircle(x, y, radius-0.5, radius+0.5);
+                drawCircle(x, y, radius, 1.0);
             else
-                drawCircle(x, y, 0, radius);
+                drawCircle(x, y, radius, radius);
         }
 
-        void GLGraphics::drawCircle(double x, double y, double innerRadius, double outerRadius)
+        void GLGraphics::drawCircle(double x, double y, double rad, double maxDisFromRad)
         {
             if(!hasInit)
                 return; //throw error
 
             //create rectangle to surround the circle
             std::vector<float> positions = {
-                (float)(x-outerRadius), (float)(y-outerRadius),
-                (float)(x-outerRadius), (float)(y+outerRadius),
-                (float)(x+outerRadius), (float)(y+outerRadius),
-                (float)(x+outerRadius), (float)(y-outerRadius)
+                (float)(x-rad), (float)(y-rad),
+                (float)(x-rad), (float)(y+rad),
+                (float)(x+rad), (float)(y+rad),
+                (float)(x+rad), (float)(y-rad)
             };
 
             drawModel.storeDataFloat(0, positions, 2);
@@ -605,14 +610,74 @@
             circleShader->setVec4("activeColor", drawColor);
             circleShader->setMat4("projectionMatrix", orthoMat);
             circleShader->setVec2("circleCenter", Vec2f(x, y));
-            circleShader->setFloat("innerRad", innerRadius);
-            circleShader->setFloat("outerRad", outerRadius);
+            circleShader->setFloat("radius", rad);
+            circleShader->setFloat("maxDisFromEdge", maxDisFromRad);
 
             //draw model
             drawModel.draw();
 
             GLShader::deactivateCurrentShader();
         }
+        
+        void GLGraphics::drawEllipse(double x, double y, double xRadius, double yRadius, bool outline)
+        {
+            if(xRadius == yRadius)
+                drawCircle(x, y, xRadius, outline);
+            else
+            {
+                if(!outline)
+                    drawEllipse(x, y, xRadius, yRadius, __max(xRadius, yRadius));
+                else
+                    drawEllipse(x, y, xRadius, yRadius, 1.0);
+            }
+        }
+        void GLGraphics::drawEllipse(double x, double y, double xRadius, double yRadius, double maxDisFromEdge)
+        {
+            drawEllipse(x, y, Vec2f(xRadius, 0), Vec2f(0, yRadius), maxDisFromEdge);
+        }
+
+        void GLGraphics::drawEllipse(double x, double y, Vec2f dir1, Vec2f dir2, double maxDisFromEdge)
+        {
+            if(!hasInit)
+                return; //throw error
+
+            double x1 = x-__max(abs(dir1.x), abs(dir2.x));
+            double x2 = x+__max(abs(dir1.x), abs(dir2.x));
+            double y1 = y-__max(abs(dir1.y), abs(dir2.y));
+            double y2 = y+__max(abs(dir1.y), abs(dir2.y));
+
+            double minX = __min(x1, x2)-16;
+            double maxX = __max(x1, x2)+16;
+            double minY = __min(y1, y2)-16;
+            double maxY = __max(y1, y2)+16;
+            
+            //create rectangle to surround the ellipse
+            std::vector<float> positions = {
+                (float)(minX), (float)(minY),
+                (float)(minX), (float)(maxY),
+                (float)(maxX), (float)(maxY),
+                (float)(maxX), (float)(minY)
+            };
+
+            drawModel.storeDataFloat(0, positions, 2);
+            drawModel.setAttributeEnabled(0, true);
+            drawModel.setDrawType(Model::QUADS);
+
+            //setup shader
+            ellipseShader->setAsActive();
+            ellipseShader->setVec4("activeColor", drawColor);
+            ellipseShader->setMat4("projectionMatrix", orthoMat);
+            ellipseShader->setVec2("ellipseCenter", Vec2f(x, y));
+            ellipseShader->setVec2("dir1", dir1);
+            ellipseShader->setVec2("dir2", dir2);
+            ellipseShader->setFloat("maxDisFromEdge", maxDisFromEdge);
+
+            //draw model
+            drawModel.draw();
+
+            GLShader::deactivateCurrentShader();
+        }
+
         
         void GLGraphics::drawLine(double x1, double y1, double x2, double y2)
         {

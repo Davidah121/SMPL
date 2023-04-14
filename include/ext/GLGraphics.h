@@ -100,6 +100,7 @@
 
             static void drawEllipse(double x, double y, double xRadius, double yRadius, bool outline);
             static void drawEllipse(double x, double y, double xRadius, double yRadius, double innerRadiusDistance);
+            static void drawEllipse(double x, double y, Vec2f dir1, Vec2f dir2, double innerRadiusDistance);
 
             static void drawTriangle(Vec2f p1, Vec2f p2, Vec2f p3, bool outline);
 
@@ -125,6 +126,7 @@
             //This may change to being literal strings
             static GLShader* textureShader;
             static GLShader* circleShader;
+            static GLShader* ellipseShader;
             static GLShader* rectangleShader;
             static GLShader* textShader;
             static GLFont* activeFont;

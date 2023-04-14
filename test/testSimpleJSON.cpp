@@ -17,7 +17,17 @@ TEST_CASE("Testing of the SimpleJSON class", "[SimpleJSON]")
 				"v1",
 				"v2",
 				"v3"
-			]
+			],
+			[
+				"pair1": "data1",
+				"pair2": "data2",
+				"pair3": "1"
+			],
+			{
+				"pairO1": "data01",
+				"pair02": "dataO2",
+				"pair3": "1"
+			}
 		}
 	)R0N0";
 	SECTION("Test loading an json from a file or series of bytes")
@@ -27,7 +37,7 @@ TEST_CASE("Testing of the SimpleJSON class", "[SimpleJSON]")
 		//check for the right stuff
 
 		REQUIRE(json.getRootNode() != nullptr);
-		REQUIRE(json.getRootNode()->getNodes().size() == 4);
+		REQUIRE(json.getRootNode()->getNodes().size() == 6);
 		REQUIRE(json.getRootNode()->getNodes()[0]->getType() == glib::SimpleJSON::TYPE_PAIR);
 		REQUIRE(json.getRootNode()->getNodes()[1]->getType() == glib::SimpleJSON::TYPE_PAIR);
 
@@ -61,19 +71,31 @@ TEST_CASE("Testing of the SimpleJSON class", "[SimpleJSON]")
 		json.load((unsigned char*)rawJSON.data(), rawJSON.size());
 
 		std::vector<std::string> searches = {"index1"};
-		glib::JNode* result = json.getNode(searches);
-		REQUIRE(result != nullptr);
+		std::vector<glib::JNode*> result = json.getNodesPattern(searches);
+		REQUIRE(result.size() == 1);
 
 		searches = {"object"};
-		result = json.getNode(searches);
-		REQUIRE(result != nullptr);
+		result = json.getNodesPattern(searches);
+		REQUIRE(result.size() == 1);
 
 		searches = {"object", "objVar1"};
-		result = json.getNode(searches);
-		REQUIRE(result != nullptr);
+		result = json.getNodesPattern(searches);
+		REQUIRE(result.size() == 1);
 
 		searches = {"array", "v4"};
-		result = json.getNode(searches);
-		REQUIRE(result == nullptr);
+		result = json.getNodesPattern(searches);
+		REQUIRE(result.size() == 0);
+		
+		searches = {""};
+		result = json.getNodesPattern(searches);
+		REQUIRE(result.size() == 2);
+		
+		searches = {"", "pairO1"};
+		result = json.getNodesPattern(searches);
+		REQUIRE(result.size() == 1);
+		
+		searches = {"", "pair3"};
+		result = json.getNodesPattern(searches);
+		REQUIRE(result.size() == 2);
 	}
 }

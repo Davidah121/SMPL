@@ -811,7 +811,7 @@ namespace glib
 		v2 = p;
 	}
 
-	void Triangle3D::setVertex3(double x, double y, double z)
+	void Triangle3D::setVertex2(double x, double y, double z)
 	{
 		v2 = Vec3f(x,y,z);
 	}

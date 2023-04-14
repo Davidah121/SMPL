@@ -1,9 +1,11 @@
 
 cbuffer UniformData : register(b0)
 {
-    float2 circleCenter;
-    float radius;
-    float maxDisFromEdge;
+    float2 ellipseCenter;
+    float2 dir1;
+    float2 dir2;
+    
+    float innerDisFromEdge;
 };
 
 struct VS_OUTPUT
@@ -15,12 +17,18 @@ struct VS_OUTPUT
 float4 main( VS_OUTPUT inputData) : SV_TARGET
 {
     float2 pixelPosition = inputData.position.xy;
-    float distVal = length(circleCenter - pixelPosition);
-    float minOutDis = outerRadius-1;
-    float maxOutDis = outerRadius;
+    float2 toPoint = ellipseCenter - pixelPosition;
+    float ang = atan2(toPoint.y, toPoint.x);
+    float2 onEllipsePoint = dir1*cos(ang) + dir2*sin(ang); //Ellipse center not added for simplicity
 
-    float minInDis = ((innerRadius-1) < 0) ? 0 : innerRadius-1;
-    float maxInDis = ((innerRadius) < 0) ? 0 : innerRadius;
+    float distVal = length(toPoint);
+    float shapeDis = length(onEllipsePoint);
+    
+    float maxOutDis = shapeDis;
+    float maxInDis = shapeDis-innerDisFromEdge;
+    float minOutDis = shapeDis-1;
+    float minInDis = shapeDis-innerDisFromEdge-1;
+
     float alpha = 1.0;
     
     if(distVal > maxOutDis)
