@@ -1,5 +1,7 @@
 #include "ext/KeyboardSimulator.h"
 
+#ifdef _WIN32
+
 namespace glib
 {
     void KeyboardSimulator::emulateKeyPress(int key)
@@ -36,3 +38,5 @@ namespace glib
 		#endif
 	}
 }
+
+#endif

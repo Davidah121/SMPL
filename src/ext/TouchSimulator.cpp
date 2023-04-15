@@ -1,5 +1,7 @@
 #include "ext/TouchSimulator.h"
 
+#ifdef _WIN32
+
 namespace glib
 {
     std::vector<POINTER_TOUCH_INFO> TouchSimulator::inputs = std::vector<POINTER_TOUCH_INFO>(TouchSimulator::INPUTS_ALLOWED); //10 inputs since 10 fingers
@@ -79,3 +81,5 @@ namespace glib
         return err;
     }
 };
+
+#endif

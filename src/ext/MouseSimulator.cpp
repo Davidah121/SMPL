@@ -1,6 +1,8 @@
 #include "ext/MouseSimulator.h"
 #include "Input.h"
 
+#ifdef _WIN32
+
 namespace glib
 {
     void MouseSimulator::emulateMousePress(int key, int x, int y)
@@ -138,3 +140,5 @@ namespace glib
 		#endif
 	}
 }
+
+#endif
