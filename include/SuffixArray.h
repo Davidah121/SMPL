@@ -1,8 +1,8 @@
 #pragma once
 #include<vector>
 #include<iostream>
-#include<string>
-#include<stdio.h>
+#include<cstring>
+#include<cstdio>
 
 class SuffixArray
 {
