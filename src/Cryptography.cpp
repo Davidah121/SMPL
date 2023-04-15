@@ -69,7 +69,7 @@ namespace glib
 			//extend w into 80 uint32_t
 			for(int i=16; i<80; i++)
 			{
-				uint32_t v = _rotl(w[i-3] ^ w[i-8] ^ w[i-14] ^ w[i-16], 1);
+				uint32_t v = StringTools::leftRotate(w[i-3] ^ w[i-8] ^ w[i-14] ^ w[i-16], 1);
 				w.push_back(v);
 			}
 
@@ -103,10 +103,10 @@ namespace glib
 					f = b ^ c ^ d;
 					k = 0xCA62C1D6;
 				}
-				uint32_t temp = _rotl(a, 5) + f + e + k + w[i];
+				uint32_t temp = StringTools::leftRotate(a, 5) + f + e + k + w[i];
 				e = d;
 				d = c;
-				c = _rotl(b, 30);
+				c = StringTools::leftRotate(b, 30);
 				b = a;
 				a = temp;
 			}
