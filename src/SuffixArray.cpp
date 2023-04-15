@@ -42,7 +42,7 @@ int SuffixArray::search(std::string match)
 	while(l <= r)
 	{
 		int mid = l + (r-l)/2;
-		int equal = strncmp(match.c_str(), s.c_str()+arr[mid], match.size());
+		int equal = std::strncmp(match.c_str(), s.c_str()+arr[mid], match.size());
 
 		if(equal == 0)
 		{
@@ -65,7 +65,7 @@ std::vector<int> SuffixArray::searchRange(std::string match)
 
 int cmp(const SufStuff& a1, const SufStuff& a2)
 {
-	return strcmp(a1.str, a2.str) < 0 ? 1 : 0;
+	return std::strcmp(a1.str, a2.str) < 0 ? 1 : 0;
 }
 
 void SuffixArray::buildNaive(std::string s)
