@@ -43,3 +43,9 @@
 <p>This is mainly used when you add a new file to update the .ninja files for you.</p>
 <p>You can get cppPS here: <a href="https://github.com/Davidah121/cppPS/">https://github.com/Davidah121/cppPS/</a></p>
 
+<h2>Windows SDK</h2>
+<p>The windows SDK is needed and can be installed in different ways.</p>
+<p>The build files reference the include files and library files through environment variables.</p>
+<p>cppPS can setup the environment variables for you however if compiled using Visual Studios, it is not required.</p>
+<p>Note that with Visual Studios, modification will be needed to compile and use the files in the 'ext' folders.</p>
+
