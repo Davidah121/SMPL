@@ -7,7 +7,11 @@
 #include "Input.h"
 
 #ifdef __unix__
-	#include <X11/Xlib.h>
+	
+	#ifndef NO_WINDOW
+		#include <X11/Xlib.h>
+	#endif
+	
 	#include <sys/types.h>
 	#include <sys/sysinfo.h>
 	#include <sys/times.h>
@@ -221,18 +225,22 @@ namespace glib
 
 	int System::getDesktopWidth()
 	{
-		#ifdef _WIN32
-		return GetSystemMetrics(SM_CXSCREEN);
-		#endif
+		#ifndef NO_WINDOW
 
-		#ifdef __unix__
-		int w = 0;
-		Display* d = XOpenDisplay(NULL);
-		if(d == nullptr)
+			#ifdef _WIN32
+			return GetSystemMetrics(SM_CXSCREEN);
+			#endif
+
+			#ifdef __unix__
+			int w = 0;
+			Display* d = XOpenDisplay(NULL);
+			if(d == nullptr)
+				return w;
+			int s = DefaultScreen(d);
+			w = DisplayWidth(d, s);
 			return w;
-		int s = DefaultScreen(d);
-		w = DisplayWidth(d, s);
-		return w;
+			#endif
+
 		#endif
 		
 		return -1;
@@ -240,18 +248,22 @@ namespace glib
 
 	int System::getDesktopHeight()
 	{
-		#ifdef _WIN32
-		return GetSystemMetrics(SM_CYSCREEN);
-		#endif
+		#ifndef NO_WINDOW
 
-		#ifdef __unix__
-		int h = 0;
-		Display* d = XOpenDisplay(NULL);
-		if(d == nullptr)
+			#ifdef _WIN32
+			return GetSystemMetrics(SM_CYSCREEN);
+			#endif
+
+			#ifdef __unix__
+			int h = 0;
+			Display* d = XOpenDisplay(NULL);
+			if(d == nullptr)
+				return h;
+			int s = DefaultScreen(d);
+			h = DisplayHeight(d, s);
 			return h;
-		int s = DefaultScreen(d);
-		h = DisplayHeight(d, s);
-		return h;
+			#endif
+
 		#endif
 
 		return -1;
@@ -259,17 +271,22 @@ namespace glib
 
 	int System::getAmountOfMonitors()
 	{
-		#ifdef _WIN32
-		return GetSystemMetrics(SM_CMONITORS);
+		#ifndef NO_WINDOW
+
+			#ifdef _WIN32
+			return GetSystemMetrics(SM_CMONITORS);
+			#endif
+			
+			#ifdef __unix__
+			int m = 0;
+			Display* d = XOpenDisplay(NULL);
+			if(d == nullptr)
+				return m;
+			// return ((_XPrivDisplay)display)->screens; //TODO
+			#endif
+
 		#endif
-		
-		#ifdef __unix__
-		int m = 0;
-		Display* d = XOpenDisplay(NULL);
-		if(d == nullptr)
-			return m;
-		// return ((_XPrivDisplay)display)->screens; //TODO
-		#endif
+
 		return 0;
 	}
 
