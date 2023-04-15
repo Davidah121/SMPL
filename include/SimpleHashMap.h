@@ -154,6 +154,13 @@ namespace glib
         std::vector<HashPair<K,T>*> getAllCount(K key, int count);
 
         /**
+         * @brief Gets the things that the hashmap stores.
+         * 
+         * @return std::vector<HashPair<K,T>*> 
+         */
+        std::vector<HashPair<K,T>*> getAll();
+
+        /**
          * @brief Rehashes the hash map.
          *      Can help performance if the data has been reorganized.
          *      Automatically happens as data is added if the max load factor has been exceeded.
@@ -506,7 +513,8 @@ namespace glib
         size_t bucketLocation = hasher(key) % buckets.size();
         HashPair<K,T>* collection = nullptr;
 
-        for(size_t i=buckets[bucketLocation].size()-1; i>=0; i--)
+        long startLoc = ((long)buckets[bucketLocation].size())-1;
+        for(long i=startLoc; i>=0; i--)
         {
             if(buckets[bucketLocation][i]->key == key)
             {
@@ -548,11 +556,27 @@ namespace glib
         // System::dbtime[2] += t2-t1;
         return collection;
     }
+        
+    template<typename K, typename T>
+    inline std::vector<HashPair<K, T>*> SimpleHashMap<K, T>::getAll()
+    {
+        std::vector<HashPair<K, T>*> results;
+        for(size_t i=0; i<buckets.size(); i++)
+        {
+            for(size_t j=0; j<buckets[i].size(); j++)
+            {
+                results.push_back(buckets[i][j]);
+            }
+        }
+        return results;
+    }
 
     template<typename K, typename T>
     inline std::vector<HashPair<K,T>*> SimpleHashMap<K, T>::getAll(K key)
     {
-
+        if(buckets.size() == 0)
+            return {};
+        
         size_t bucketLocation = hasher(key) % buckets.size();
         std::vector<HashPair<K,T>*> collection;
 
@@ -570,12 +594,15 @@ namespace glib
     inline std::vector<HashPair<K,T>*> SimpleHashMap<K, T>::getAllCount(K key, int count)
     {
         // size_t t1 = System::getCurrentTimeMicro();
+        if(buckets.size() == 0)
+            return {};
 
         size_t bucketLocation = hasher(key) % buckets.size();
         std::vector<HashPair<K,T>*> collection;
         int currCount = 0;
 
-        for(size_t i=buckets[bucketLocation].size()-1; i>=0; i--)
+        long startLoc = ((long)buckets[bucketLocation].size())-1;
+        for(long i=startLoc; i>=0; i--)
         {
             if(buckets[bucketLocation][i]->key == key)
             {
@@ -596,7 +623,7 @@ namespace glib
     inline void SimpleHashMap<K, T>::rehash()
     {
         // size_t t1 = System::getCurrentTimeMicro();
-
+        
         size_t oldSize = buckets.size();
         buckets.resize(oldSize*2);
 
@@ -621,13 +648,12 @@ namespace glib
 
             if(count > 0)
             {
-                size_t totalSize = buckets[bucketLocation].size();
-
-                for(size_t i=totalSize-1; i>=0; i--)
+                long totalSize = (long)buckets[bucketLocation].size();
+                for(long i=totalSize-1; i>=0; i--)
                 {
                     if(buckets[bucketLocation][i] == nullptr)
                     {
-                        for(size_t j=i; j<totalSize-1; j++)
+                        for(long j=i; j<totalSize-1; j++)
                         {
                             HashPair<K,T>* temp = buckets[bucketLocation][j];
                             buckets[bucketLocation][j] = buckets[bucketLocation][j+1];
@@ -656,9 +682,14 @@ namespace glib
         {
             for(size_t j=0; j<buckets[i].size(); j++)
             {
-                delete buckets[i][j];
+                if(buckets[i][j] == nullptr)
+                {
+                    delete buckets[i][j];
+                }
             }
+            buckets[i].clear();
         }
+
         // buckets.clear(); //Need the buckets still
         // size_t t2 = System::getCurrentTimeMicro();
         // System::dbtime[4] += t2-t1;

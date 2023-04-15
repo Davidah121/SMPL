@@ -59,21 +59,14 @@ namespace glib
 			return;
 		}
 		
+		
 		//for all bytes, try to match it in the hashmap.
 		//Get 3 bytes and try to find it in the hashmap. If found, try and find match.
 		//If not found, add the 3 values to the hashmap and write the first byte to the output
 
 		//Method 5 - SIMPLE_HASH_MAP : Best Performance and Good Size.
-		// System::dbtime[0] = 0;
-		// System::dbtime[1] = 0;
-		// System::dbtime[2] = 0;
-		// System::dbtime[3] = 0;
-		// System::dbtime[4] = 0;
-		
-
 		SimpleHashMap<int, int> map = SimpleHashMap<int, int>( SimpleHashMap<int, int>::MODE_KEEP_ALL, 1<<15 );
 		map.setMaxLoadFactor(-1);
-
 
 		int i = 0;
 		while(i < size-2)
@@ -138,7 +131,7 @@ namespace glib
 
 				//always insert
 				map.add( key, i );
-				for(int j=1; j<bestLength; j++)
+				for(int j=1; j<bestLength-2; j++)
 				{
 					int nkey = data[i+j] + ((int)data[i+j+1]<<8) + ((int)data[i+j+2]<<16);
 					map.add( nkey, i+j );
@@ -167,244 +160,127 @@ namespace glib
 			outputData->push_back( {true, data[i+j], 0} );
 		}
 		map.clear();
-
-		// StringTools::println("TIME TO DELETE %llu", t2-t1);
-
-		#pragma region OLD_CODE
-		//Method 4 - HASHED_LINKED_LIST : same as Method 3 but slow delete time causing slower overall time
 		
-		// //deleting the map is the slowest part.
-		// //It for whatever reason takes around 90% of the time just to delete.
-		// std::unordered_multimap<int, int> map = std::unordered_multimap<int, int>();
 
-		// time_t findTime = 0;
-		// time_t searchTime = 0;
-		// time_t insertDNE = 0;
-		// time_t insertExists = 0;
+		// //Try another method
+		// size_t t1,t2;
+
+		// t1 = System::getCurrentTimeMicro();
+		// LinkedList<unsigned int>* hashmap = new LinkedList<unsigned int>[1<<24]; //Note that even though std::list exists, it is slower than this
+		// t2 = System::getCurrentTimeMicro();
+		// StringTools::println("TIME TO CREATE: %llu", t2-t1);
+
+
 		
+		// t1 = System::getCurrentTimeMicro();
 		// int i = 0;
 		// while(i < size-2)
 		// {
-		// 	int key = data[i] + ((int)data[i+1]<<8) + ((int)data[i+2]<<16);
+		// 	int startLoc = i;
+		// 	int loc = data[i] + ((int)data[i+1]<<8) + ((int)data[i+2]<<16);
+		// 	int minDis = __max(i-maxDistance, 0);
+		// 	//get all matches in hashmap
+		// 	LinkNode<unsigned int>* ref = hashmap[loc].getRootNode();
 			
-		// 	time_t t1 = System::getCurrentTimeMicro();
-		// 	//adjust the find part because it is the second slowest part
-		// 	auto k = map.equal_range(key);
-		// 	time_t t2 = System::getCurrentTimeMicro();
-
-		// 	findTime += t2-t1;
-
-		// 	if(k.first == k.second)
+		// 	if(ref != nullptr)
 		// 	{
-		// 		//not found
-
-		// 		//always insert
-		// 		t1 = System::getCurrentTimeMicro();
-		// 		map.insert( {key, i } );
-		// 		t2 = System::getCurrentTimeMicro();
-
-		// 		insertDNE += t2-t1;
-
-		// 		outputData->push_back( {true, data[i], 0} );
-		// 		i++;
-		// 	}
-		// 	else
-		// 	{
-		// 		int lowestPoint = max(i-maxDistance, 0);
+		// 		//go through all ref locations and try to match
 		// 		int bestLength = 0;
 		// 		int bestLocation = 0;
-
-		// 		t1 = System::getCurrentTimeMicro();
-
-		// 		for(auto it = k.first; it != k.second; it++)
+		// 		int bucketSize = 0;
+		// 		while(ref != nullptr)
 		// 		{
-		// 			int locationOfMatch = it->second;
+		// 			unsigned int startIndex = ref->value;
+		// 			auto oldRef = ref;
+		// 			ref = ref->nextNode;
+		// 			bucketSize++;
 
-		// 			if(locationOfMatch < lowestPoint)
+		// 			if(startIndex >= minDis)
 		// 			{
-		// 				//maximum backwards distance reached
-		// 				continue;
-		// 			}
-
-		// 			int lengthMax = min(size-i, 258);
-					
-		// 			unsigned char* startBase = (data+locationOfMatch);
-		// 			unsigned char* startMatch = (data+i);
-
-		// 			int len = 3;
-					
-		// 			for(len=3; len<lengthMax; len++)
-		// 			{
-		// 				if(startMatch[len] != startBase[len])
+		// 				//okay
+		// 				//try to match as many as possible
+		// 				int k = 3;
+		// 				int maxLength = __min(size-startIndex, 258);
+		// 				while(k < maxLength)
 		// 				{
-		// 					break;
+		// 					if(data[i+k] != data[startIndex+k])
+		// 					{
+		// 						break;
+		// 					}
+		// 					k++;
 		// 				}
+		// 				if(bestLength < k)
+		// 				{
+		// 					bestLength = k;
+		// 					bestLocation = startIndex;
+		// 				}
+		// 				if(bestLength >= 258)
+		// 					break;
 		// 			}
-
-		// 			if(len>bestLength)
+		// 			else
 		// 			{
-		// 				bestLength = len;
-		// 				bestLocation = locationOfMatch;
-		// 			}
-
-		// 			if(bestLength>=lengthMax)
-		// 			{
-		// 				break;
+		// 				hashmap[loc].removeNode(oldRef);
+		// 				bucketSize--;
 		// 			}
 		// 		}
-		// 		t2 = System::getCurrentTimeMicro();
 
-		// 		searchTime += t2-t1;
-
-		// 		//always insert
-		// 		t1 = System::getCurrentTimeMicro();
-		// 		map.insert( {key, i } );
-		// 		t2 = System::getCurrentTimeMicro();
-
-		// 		insertExists += t2-t1;
-
-		// 		int backwardsDis = i - bestLocation;
-				
-		// 		if(bestLength>0)
+		// 		if(bucketSize > 8)
 		// 		{
-		// 			outputData->push_back( {false, bestLength, backwardsDis} );
-		// 			i += bestLength;
+		// 			for(int j=bucketSize; j!=8; j--)
+		// 			{
+		// 				hashmap[loc].removeNode( hashmap[loc].getRootNode() );
+		// 			}
+		// 		}
+
+		// 		if(bestLength != 0)
+		// 		{
+		// 			//add current match to hashmap
+		// 			hashmap[loc].addNode(startLoc);
+		// 			//add keys for points past i
+		// 			// int endLoc = bestLength+bestLocation-2;
+		// 			for(int j=i+1; j<i+bestLength-2; j++)
+		// 			{
+		// 				int nKey = data[j] + ((int)data[j+1]<<8) + ((int)data[j+2]<<16);
+		// 				hashmap[nKey].addNode(j);
+		// 			}
+
+		// 			//add reference
+		// 			outputData->push_back( {false, bestLength, i-bestLocation} );
+		// 			i+=bestLength;
 		// 		}
 		// 		else
 		// 		{
-		// 			//couldn't find match within max allowed distance
+		// 			//add literal
 		// 			outputData->push_back( {true, data[i], 0} );
 		// 			i++;
+		// 			//add current match to hashmap
+		// 			hashmap[loc].addNode(startLoc);
 		// 		}
+		// 	}
+		// 	else
+		// 	{
+		// 		//add literal
+		// 		outputData->push_back( {true, data[i], 0} );
+		// 		i++;
+		// 		//add current match to hashmap
+		// 		hashmap[loc].addNode(startLoc);
 		// 	}
 
 		// }
-
+		
 		// int remainder = size - i;
 		// for(int j=0; j<remainder; j++)
 		// {
 		// 	outputData->push_back( {true, data[i+j], 0} );
 		// }
-
-		// StringTools::println("FindTime: %llu", findTime);
-		// StringTools::println("SearchTime: %llu", searchTime);
-		// StringTools::println("InsertDNE: %llu", insertDNE);
-		// StringTools::println("InsertExists: %llu", insertExists);
-
-		// StringTools::println("SizeOfContainer: %lu", map.size());
-
-		// time_t t1 = System::getCurrentTimeMicro();
-		// map.clear();
-		// time_t t2 = System::getCurrentTimeMicro();
-
-		// StringTools::println("Time to clear: %lu", t2-t1);
-
-		//Method 2 - Fast, near smallest size
-		// std::unordered_map<std::string, int> map = std::unordered_map<std::string, int>();
-		// int i = 0;
-		// while(i < size)
-		// {
-		// 	std::string key = "";
-		// 	key += data[i]; key += data[i+1]; key += data[i+2];
-			
-		// 	auto k = map.find(key);
-
-		// 	//always insert / set new data.
-			
-		// 	map.insert( {key, i} );
-		// 	//map[key] = i;
-
-		// 	if(k == map.end())
-		// 	{
-		// 		//not found
-		// 		outputData->push_back( {true, data[i], 0} );
-		// 		i++;
-		// 		//map.insert( {key, i} );
-		// 	}
-		// 	else
-		// 	{
-		// 		//found potential match
-		// 		//map[key] = i;
-
-		// 		//lazy matching. If location is outside the bounds allowed by the maximum distance, it no exist
-		// 		int locationOfMatch = k->second;
-				
-		// 		int lowestPoint = max(i-maxDistance, 0);
-
-		// 		if(locationOfMatch < lowestPoint)
-		// 		{
-		// 			//no exist
-		// 			// outputData->push_back( {true, data[i], 0} );
-		// 			// i++;
-		// 			// continue;
-		// 		}
-		// 		else
-		// 		{
-		// 			lowestPoint = locationOfMatch;
-		// 		}
-
-		// 		int baseSize = i - lowestPoint;
-
-		// 		int lengthMax = min(size-i, 258);
-
-		// 		unsigned char* startBase = (data+lowestPoint);
-		// 		unsigned char* startMatch = (data+i);
-
-		// 		int matchLength = 0;
-		// 		int matchStartIndex = 0;
-
-		// 		StringTools::findLongestMatch(startBase, baseSize, startMatch, lengthMax, &matchStartIndex, &matchLength);
-
-		// 		int tempLength = matchLength;
-		// 		int tempBackwards = i - (lowestPoint + matchStartIndex);
-
-		// 		if(tempLength<3)
-		// 		{
-		// 			outputData->push_back( {true, data[i], 0} );
-		// 			i++;
-		// 		}
-		// 		else
-		// 		{
-		// 			outputData->push_back( {false, tempLength, tempBackwards} );
-		// 			i += tempLength;
-		// 		}
-		// 	}
-
-		// }
 		
-		//Old Method - smallest size
-		// int i = 0;
-		// while(i < size)
-		// {
-		// 	int lowestPoint = max(i-maxDistance, 0);
-		// 	int baseSize = i - lowestPoint;
+		// t2 = System::getCurrentTimeMicro();
+		// StringTools::println("TIME TO COMPRESS: %llu", t2-t1);
 
-		// 	int lengthMax = min(size-i, 258);
-
-		// 	unsigned char* startBase = (data+lowestPoint);
-		// 	unsigned char* startMatch = (data+i);
-
-		// 	int matchLength = 0;
-		// 	int matchStartIndex = 0;
-
-		// 	StringTools::findLongestMatch(startBase, baseSize, startMatch, lengthMax, &matchStartIndex, &matchLength);
-
-		// 	int tempLength = matchLength;
-		// 	int tempBackwards = i - (lowestPoint + matchStartIndex);
-
-		// 	if(tempLength<3)
-		// 	{
-		// 		outputData->push_back( {true, data[i], 0} );
-		// 		i++;
-		// 	}
-		// 	else
-		// 	{
-		// 		outputData->push_back( {false, tempLength, tempBackwards} );
-		// 		i += tempLength;
-		// 	}
-		// }
-		#pragma endregion
-		
+		// t1 = System::getCurrentTimeMicro();
+		// delete[] hashmap;
+		// t2 = System::getCurrentTimeMicro();
+		// StringTools::println("TIME TO CLEAN: %llu", t2-t1);
 	}
 
 	void Compression::compressDeflateSubFunction2(std::vector<lengthPair>* block, BinarySet* output, bool dynamic, bool lastBlock)
@@ -1060,22 +936,8 @@ namespace glib
 		else
 		{
 			std::vector<lengthPair> info = std::vector<lengthPair>();
-			size_t t1, t2;
-			t1 = System::getCurrentTimeMicro();
 			compressDeflateSubFunction(data, size, &info, compressionLevel);
-			t2 = System::getCurrentTimeMicro();
-			StringTools::println("TIME FOR SUBFUNCTION1: %llu", t2-t1);
-			
-			t1 = System::getCurrentTimeMicro();
 			compressDeflateSubFunction2(&info, &bin, customTable, true);
-			t2 = System::getCurrentTimeMicro();
-			StringTools::println("TIME FOR SUBFUNCTION2: %llu", t2-t1);
-
-			StringTools::println("Time to add in hashmap: %llu", System::dbtime[0]);
-			StringTools::println("Time to rehash in hashmap: %llu", System::dbtime[1]);
-			StringTools::println("Time to getAll in hashmap: %llu", System::dbtime[2]);
-			StringTools::println("Time to remove in hashmap: %llu", System::dbtime[3]);
-			StringTools::println("Time to clear in hashmap: %llu", System::dbtime[4]);
 		}
 
 		bin.setAddBitOrder(BinarySet::LMSB);
@@ -1100,6 +962,14 @@ namespace glib
 			#ifdef USE_EXCEPTIONS
 			throw InvalidSizeError();
 			#endif
+			return;
+		}
+		if(blocks == 1)
+		{
+			std::vector<lengthPair> info = std::vector<lengthPair>();
+			compressDeflateSubFunction(data, size, &info, compressionLevel);
+			compressDeflateSubFunction2(&info, outputData, customTable, true);
+			outputData->setAddBitOrder(BinarySet::LMSB);
 			return;
 		}
 		
@@ -1177,8 +1047,6 @@ namespace glib
 	std::vector<unsigned char> Compression::decompressDeflate(unsigned char* data, size_t size, size_t expectedSize)
 	{
 		//determine if it is case 0, 1, or 2
-		//if case 0, or 1, we can deal with it
-		//case 2 will come later
 		//case 3 is not valid
 
 		//general rule, go down huffmanTree till you hit a valid value
@@ -1613,7 +1481,8 @@ namespace glib
 				{
 					//left
 					if(currNode->leftChild == nullptr)
-						currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
+						tree->setLeftNode(currNode, new BinaryTreeNode<HuffmanNode>());
+						// currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
 					
 					currNode = currNode->leftChild;
 				}
@@ -1621,7 +1490,8 @@ namespace glib
 				{
 					//right
 					if(currNode->rightChild == nullptr)
-						currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
+						tree->setRightNode(currNode, new BinaryTreeNode<HuffmanNode>());
+						// currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
 					
 					currNode = currNode->rightChild;
 				}
@@ -1645,7 +1515,8 @@ namespace glib
 				{
 					//left
 					if(currNode->leftChild == nullptr)
-						currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
+						tree->setLeftNode(currNode, new BinaryTreeNode<HuffmanNode>());
+						// currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
 					
 					currNode = currNode->leftChild;
 				}
@@ -1653,7 +1524,8 @@ namespace glib
 				{
 					//right
 					if(currNode->rightChild == nullptr)
-						currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
+						tree->setRightNode(currNode, new BinaryTreeNode<HuffmanNode>());
+						// currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
 					
 					currNode = currNode->rightChild;
 				}
@@ -1676,7 +1548,8 @@ namespace glib
 				{
 					//left
 					if(currNode->leftChild == nullptr)
-						currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
+						tree->setLeftNode(currNode, new BinaryTreeNode<HuffmanNode>());
+						// currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
 					
 					currNode = currNode->leftChild;
 				}
@@ -1684,7 +1557,8 @@ namespace glib
 				{
 					//right
 					if(currNode->rightChild == nullptr)
-						currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
+						tree->setRightNode(currNode, new BinaryTreeNode<HuffmanNode>());
+						// currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
 					
 					currNode = currNode->rightChild;
 				}
@@ -1707,7 +1581,8 @@ namespace glib
 				{
 					//left
 					if(currNode->leftChild == nullptr)
-						currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
+						tree->setLeftNode(currNode, new BinaryTreeNode<HuffmanNode>());
+						// currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
 					
 					currNode = currNode->leftChild;
 				}
@@ -1715,7 +1590,8 @@ namespace glib
 				{
 					//right
 					if(currNode->rightChild == nullptr)
-						currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
+						tree->setRightNode(currNode, new BinaryTreeNode<HuffmanNode>());
+						// currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
 					
 					currNode = currNode->rightChild;
 				}

@@ -1,6 +1,8 @@
 #include "SimpleXml.h"
 #include "StringTools.h"
-#include "MathExt.h"
+
+#define PARSING_VALUE false
+#define PARSING_NODE true
 
 namespace glib
 {
@@ -13,9 +15,10 @@ namespace glib
 
     XmlNode::~XmlNode()
     {
-        for(XmlNode* child : childNodes)
+        for(ChildNode& child : childNodes)
         {
-            delete child;
+            if(child.node != nullptr && child.type == ChildNode::TYPE_NODE)
+                delete child.node;
         }
         childNodes.clear();
         attributes.clear();
@@ -25,37 +28,138 @@ namespace glib
     XmlNode::XmlNode(const XmlNode &other)
     {
         this->title = other.title;
-        this->value = other.value;
         this->attributes = other.attributes;
         this->isEnd = other.isEnd;
         this->parentNode = other.parentNode;
         
-        for(XmlNode* cNode : other.childNodes)
+        for(const ChildNode& cNode : other.childNodes)
         {
-            this->childNodes.push_back( new XmlNode(*cNode) );
+            ChildNode n = ChildNode();
+            if(cNode.node != nullptr)
+                n = ChildNode(cNode.node);
+            else
+                n = ChildNode(n.value);
+                
+            this->childNodes.push_back( n );
         }
     }
 
     void XmlNode::addAttribute(std::string key, std::string value)
     {
-        attributes[StringTools::toLowercase(key)] = value;
+        attributes.add(StringTools::toLowercase(key), value);
     }
 
     void XmlNode::addAttribute(std::pair<std::string, std::string> p)
     {
-        attributes[StringTools::toLowercase(p.first)] = p.second;
+        attributes.add(StringTools::toLowercase(p.first), p.second);
     }
 
-    std::pair<std::string, std::string> XmlNode::getAttribute(std::string key)
+    void XmlNode::addAttribute(HashPair<std::string, std::string> p)
     {
-        std::pair<std::string, std::string> pair;
-        auto temp = attributes.find(StringTools::toLowercase(key));
-        if(temp != attributes.end())
+        attributes.add(StringTools::toLowercase(p.key), p.data);
+    }
+
+    HashPair<std::string, std::string>* XmlNode::getAttribute(std::string key)
+    {
+        return attributes.get(key);
+    }
+
+    std::vector<XmlNode*> XmlNode::getNodesPattern(std::vector<std::string>& nameOrder, size_t offset)
+    {
+        std::vector<XmlNode*> result;
+        getNodesInternal(nameOrder, offset, result);
+        return result;
+    }
+
+    void XmlNode::getNodesInternal(std::vector<std::string>& nameOrder, size_t offset, std::vector<XmlNode*>& results)
+    {
+        if(offset == nameOrder.size())
         {
-            pair.first = temp->first;
-            pair.second = temp->second;
+            results.push_back(this);
+            return;
         }
-        return pair;
+        if(offset < nameOrder.size())
+        {
+            //attempt to find nameOrder[offset] in the nameToIndexMap
+            std::vector<HashPair<std::string, size_t>*> it = nameToIndexMap.getAll(nameOrder[offset]);
+            for(HashPair<std::string, size_t>* c : it)
+            {
+                if(c != nullptr)
+                {
+                    ChildNode n = childNodes[c->data];
+                    if( n.type == ChildNode::TYPE_NODE && n.node != nullptr)
+                    {
+                        n.node->getNodesInternal(nameOrder, offset+1, results);
+                    }
+                }
+            }
+        }
+    }
+
+    std::vector<ChildNode>& XmlNode::getChildNodes()
+    {
+        return childNodes;
+    }
+
+    SimpleHashMap<std::string, std::string>& XmlNode::getRawAttributes()
+    {
+        return attributes;
+    }
+
+    void XmlNode::addChild(XmlNode* n)
+    {
+        if(n != nullptr)
+        {
+            nameToIndexMap.add(n->getTitle(), childNodes.size());
+            childNodes.push_back(ChildNode(n)); //Create a child node using n as the XMLNode
+            n->parentNode = this;
+        }
+    }
+    
+    void XmlNode::addValue(std::string s)
+    {
+        //determine if possible to concatenate with the previous one
+        if(childNodes.size() > 0)
+        {
+            if(childNodes.back().type == ChildNode::TYPE_VALUE)
+            {
+                //concatenate with the previous one
+                childNodes.back().value += s;
+                return;
+            }
+        }
+
+        //add new one
+        nameToIndexMap.add("", childNodes.size());
+        childNodes.push_back(ChildNode(s));
+    }
+
+    std::string XmlNode::getTitle()
+    {
+        return title;
+    }
+
+    std::string XmlNode::getValue()
+    {
+        std::string finalStr = "";
+        std::vector<HashPair<std::string, size_t>*> it = nameToIndexMap.getAll("");
+        for(HashPair<std::string, size_t>* c : it)
+        {
+            if(c != nullptr)
+            {
+                ChildNode n = childNodes[c->data];
+                if( n.type == ChildNode::TYPE_VALUE)
+                {
+                    finalStr += n.value;
+                }
+            }
+        }
+        return finalStr;
+    }
+
+    void XmlNode::setTitle(std::string s)
+    {
+        title = StringTools::toLowercase(s);
     }
 
     bool XmlNode::isEndOfSection()
@@ -67,6 +171,9 @@ namespace glib
 
     #pragma region SIMPLE_XML
 
+    
+    const std::vector<std::string> SimpleXml::knownVoidTags = {"area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr"};
+
     SimpleXml::SimpleXml()
     {
 
@@ -74,7 +181,8 @@ namespace glib
 
     SimpleXml::SimpleXml(File f)
     {
-        load(f);
+        if(!load(f))
+            validXml = false;
     }
 
     SimpleXml::~SimpleXml()
@@ -92,139 +200,187 @@ namespace glib
         nodes.clear();
     }
 
-
-    void SimpleXml::save(File file)
+    void SimpleXml::save(File file, bool includeTabs)
     {
         SimpleFile f = SimpleFile(file, SimpleFile::WRITE);
 
         if(f.isOpen())
         {
-            for(XmlNode* v : nodes)
+            if(includeTabs)
             {
-                saveNode(&f, v);
+                for(XmlNode* v : nodes)
+                {
+                    saveNode(&f, v, 0);
+                }
+            }
+            else
+            {
+                for(XmlNode* v : nodes)
+                {
+                    saveNode(&f, v, -1);
+                }
             }
 
             f.close();
         }
     }
     
-    std::string SimpleXml::convertToString()
+    std::string SimpleXml::convertToString(bool includeTabs)
     {
         std::string s = "";
-        for(XmlNode* v : nodes)
+        if(includeTabs)
         {
-            saveNode(s, v);
+            for(XmlNode* v : nodes)
+            {
+                saveNode(s, v, 0);
+            }
+        }
+        else
+        {
+            for(XmlNode* v : nodes)
+            {
+                saveNode(s, v, -1);
+            }
         }
         return s;
     }
 
-    void SimpleXml::saveNode(SimpleFile* f, XmlNode* node)
+    void SimpleXml::saveNode(SimpleFile* f, XmlNode* node, int tabs)
     {
         std::string line = "";
-
+        std::string tabStr = "";
+        for(int i=0; i<tabs; i++)
+        {
+            tabStr += "\t";
+        }
         line += "<";
 
         //has no child nodes, no attributes, and no value
-        if(node->childNodes.size()==0 && node->attributes.size()==0 && node->value=="")
+        std::vector<HashPair<std::string, std::string>*> attribsAsArr = node->attributes.getAll();
+
+        if(node->childNodes.size()==0 && attribsAsArr.size()==0)
         {
             line+="/";
         }
 
         line += node->title;
 
-        for(std::pair<std::string, std::string> a : node->attributes)
+        for(HashPair<std::string, std::string>* a : attribsAsArr)
         {
             line += " ";
-            line += a.first;
+            line += a->key;
             line += "=\"";
-            line += a.second;
+            line += a->data;
             line += "\"";
         }
         
-        //has no child nodes and no value, but has at least one attribute
-        if(node->childNodes.size()==0 && node->attributes.size()>0 && node->value=="")
+        //has no child nodes and no value, but has at least one attribute.
+        if(node->childNodes.size()==0 && attribsAsArr.size()>0)
         {
             line += "/";
         }
         line += ">";
 
+        f->writeString(tabStr);
         f->writeString(line);
+        f->writeLineBreak();
 
-        if(node->value=="" && node->childNodes.size()>0)
-            f->writeLineBreak();
-        else if(node->value!="")
-            f->writeString(node->value);
-        else
-            f->writeLineBreak();
-        
-        
-        for (XmlNode* v : node->childNodes)
+        for (ChildNode& c : node->childNodes)
         {
-            saveNode(f, v);
+            if( c.type == ChildNode::TYPE_VALUE )
+            {
+                f->writeString(tabStr);
+                f->writeString(c.value);
+                f->writeLineBreak();
+            }
+            else if( c.type == ChildNode::TYPE_NODE )
+            {
+                if(tabs >= 0)
+                    saveNode(f, c.node, tabs+1);
+                else
+                    saveNode(f, c.node, tabs);
+            }
         }
 
-        if(node->childNodes.size()>0 || node->value!="")
+        if(node->childNodes.size()>0)
         {
-            line = "</";
+            line = "";
+            line += "</";
             line += node->title;
             line += ">";
-
+            f->writeString(tabStr);
             f->writeString(line);
             f->writeLineBreak();
         }
     }
 
-    void SimpleXml::saveNode(std::string& s, XmlNode* node)
+    void SimpleXml::saveNode(std::string& s, XmlNode* node, int tabs)
     {
         std::string line = "";
+        std::string tabStr = "";
+        for(int i=0; i<tabs; i++)
+        {
+            tabStr += "\t";
+        }
 
         line += "<";
 
         //has no child nodes, no attributes, and no value
-        if(node->childNodes.size()==0 && node->attributes.size()==0 && node->value=="")
+        std::vector<HashPair<std::string, std::string>*> attribsAsArr = node->attributes.getAll();
+        
+        if(node->childNodes.size()==0 && attribsAsArr.size()==0)
         {
             line+="/";
         }
 
         line += node->title;
 
-        for(std::pair<std::string, std::string> a : node->attributes)
+        for(HashPair<std::string, std::string>* a : attribsAsArr)
         {
             line += " ";
-            line += a.first;
+            line += a->key;
             line += "=\"";
-            line += a.second;
+            line += a->data;
             line += "\"";
         }
         
         //has no child nodes and no value, but has at least one attribute
-        if(node->childNodes.size()==0 && node->attributes.size()>0 && node->value=="")
+        if(node->childNodes.size()==0 && attribsAsArr.size()>0)
         {
             line += "/";
         }
         line += ">";
 
+        s += tabStr;
         s += line;
+        s += '\n';
 
-        if(node->value=="" && node->childNodes.size()>0)
-            s += "\n";
-        else if(node->value!="")
-            s += node->value;
-        else
-            s += "\n";
-        
-        
-        for (XmlNode* v : node->childNodes)
+        for (ChildNode& c : node->childNodes)
         {
-            saveNode(s, v);
+            if( c.type == ChildNode::TYPE_VALUE )
+            {
+                s += tabStr;
+                s += c.value;
+                s += '\n';
+            }
+            else if( c.type == ChildNode::TYPE_NODE )
+            {
+                if(tabs >= 0)
+                    saveNode(s, c.node, tabs+1);
+                else
+                    saveNode(s, c.node, tabs);
+            }
         }
 
-        if(node->childNodes.size()>0 || node->value!="")
+        if(node->childNodes.size()>0)
         {
-            line = "</";
+            line = "";
+            line += "</";
             line += node->title;
             line += ">";
-            s += line + "\n";
+            s += tabStr;
+            s += line;
+            s += '\n';
         }
     }
 
@@ -235,289 +391,420 @@ namespace glib
      */
     bool SimpleXml::load(File file, bool parseEscape)
     {
-        shouldParseEscape = parseEscape;
+        type = TYPE_XML;
         SimpleFile f = SimpleFile(file, SimpleFile::READ | SimpleFile::UTF8);
-
-        bool parsingNode = false;
-        std::string innerNodeText = "";
-
-        XmlNode* parentNode = nullptr;
-        bool isRecordingText = false;
-        bool hitEnd = true;
-
         if(f.isOpen())
         {
             std::vector<unsigned char> fileBytes = f.readFullFileAsBytes();
             f.close();
+
+            if(file.getExtension() == ".html" || file.getExtension() == ".htm")
+                type = TYPE_HTML;
             
-            fileBytes = removeCommentsAndInvalidChars(fileBytes);
-
-            for(unsigned char byte : fileBytes)
-            {
-                if(byte=='<' && hitEnd==true)
-                {
-                    //set value of node
-                    if(parentNode!=nullptr)
-                    {
-                        parentNode->value = innerNodeText;
-                    }
-                    innerNodeText = "";
-                    isRecordingText = false;
-                    parsingNode = true;
-                    hitEnd=false;
-                }
-                else if(byte=='>' && hitEnd==false)
-                {
-                    parsingNode = false;
-                    hitEnd=true;
-
-                    XmlNode* node = parseXmlLine(innerNodeText);
-
-                    if(node==nullptr)
-                    {
-                        dispose();
-                        return false;
-                    }
-
-                    bool slashAtFront = innerNodeText[0] == '/';
-
-                    innerNodeText = "";
-                    isRecordingText = false;
-                    if(parentNode==nullptr)
-                    {
-                        if(!node->isEndOfSection())
-                        {
-                            nodes.push_back(node);
-                            parentNode = node;
-                        }
-                        else
-                        {
-                            if(node->attributes.size()>0)
-                            {
-                                nodes.push_back(node);
-                            }
-                            parentNode = node->parentNode;
-                        }
-                    }
-                    else
-                    {
-                        node->parentNode = parentNode;
-                        if(!node->isEndOfSection())
-                        {
-                            parentNode->childNodes.push_back(node);
-                            parentNode = node;
-                        }
-                        else
-                        {
-                            if(node->title == parentNode->title && node->isEndOfSection() && slashAtFront)
-                            {
-                                parentNode = parentNode->parentNode;
-                            }
-                            else
-                            {
-                                parentNode->childNodes.push_back(node);
-                                node->parentNode = parentNode;
-                            }
-                            
-                        }
-                    }
-                }
-                else
-                {
-                    if(isRecordingText)
-                    {
-                        innerNodeText += byte;
-                    }
-                    else
-                    {
-                        if(parsingNode)
-                        {
-                            if( StringTools::isAlphaNumerial(byte, true, false) || byte == '/' || byte == '?' || byte == '!')
-                            {
-                                isRecordingText=true;
-                                innerNodeText += byte;
-                            }
-                            else
-                            {
-                                //error has occurred
-                                //Must a number, letter, /, or _ at the start or ? or !
-                                dispose();
-                                return false;
-                            }
-                        }
-                        else
-                        {
-                            if(byte > 32)
-                            {
-                                //valid
-                                isRecordingText=true;
-                                innerNodeText += byte;
-                            }
-                        }
-                    }
-                    
-                }
-            }
-
-            if(shouldParseEscape)
-            {
-                for(XmlNode* node : nodes)
-                {
-                    fixParseOnNode(node);
-                }
-            }
-
+            return SimpleXml::loadFromBytes(fileBytes.data(), fileBytes.size(), parseEscape);
         }
-        else
-        {
-            //StringTools::out << "Could not open file" << StringTools::lineBreak;
-            return false;
-        }
-
-        return true;
-        
+        return false;
     }
 
     bool SimpleXml::loadFromBytes(unsigned char* bytes, size_t size, bool parseEscape)
     {
+        //rule set: (assuming no comments and invalid characters)
+        //'<' must be followed by a valid character. No space in front of title text.
+        //'>' signifies the end of a tag.
+        //All text between '>' and the next '<' are considered to be apart of the value of the node. (Can be multiple values)
+        //All text between '<' and '>' are considered to be apart of the attributes of the node.
+        //All things must be encapsulated in a root parent. (Not going to enforce)
+
+        //Linebreaks and tabs are ignored. Extra spaces are ignored (only the first is counted.)
+        //When parsing html, some nodes may not be ended correctly and the script node may contain tags in it.
+        //In that case, anything between the script node is considered apart of its value and all spacing should be perserved.
+
+        
         shouldParseEscape = parseEscape;
 
-        bool parsingNode = false;
-        std::string innerNodeText = "";
-
         XmlNode* parentNode = nullptr;
-        bool isRecordingText = false;
-        bool hitEnd = true;
+        XmlNode* lastNodeClosed = nullptr;
+        std::string tempValue = "";
 
-        if(bytes != nullptr)
+        bool potentialProblem = false; //used for html parsing to determine if it is valid xml.
+        bool potentialSpace = false;
+        bool mode = PARSING_VALUE; //false=parsing value. true=parsing node
+
+        if(bytes == nullptr)
+            return false;
+        
+        std::vector<unsigned char> fileBytes = removeCommentsAndInvalidChars(bytes, size); //Should do inline so that it does not create more memory than necessary.
+        for(unsigned char byte : fileBytes)
         {
-            std::vector<unsigned char> fileBytes = removeCommentsAndInvalidChars(bytes, size);
-
-            for(unsigned char byte : fileBytes)
+            if(byte == '<')
             {
-                if(byte=='<' && hitEnd==true)
+                if(parentNode != nullptr)
                 {
-                    //set value of node
-                    if(parentNode!=nullptr)
-                    {
-                        parentNode->value = innerNodeText;
-                    }
-                    innerNodeText = "";
-                    isRecordingText = false;
-                    parsingNode = true;
-                    hitEnd=false;
+                    if(potentialSpace)
+                        if(parentNode->childNodes.size() > 0 && tempValue.size() > 0)
+                            tempValue = " " + tempValue;
+
+                    if(tempValue != "")
+                        parentNode->addValue(tempValue);
                 }
-                else if(byte=='>' && hitEnd==false)
+                mode = PARSING_NODE;
+                tempValue = "";
+                potentialSpace = false;
+            }
+            else if(byte == '>')
+            {
+                mode = PARSING_VALUE;
+                //check if it was potentially the script title for the parent
+                if(type == TYPE_HTML && parentNode != nullptr)
                 {
-                    parsingNode = false;
-                    hitEnd=true;
-
-                    XmlNode* node = parseXmlLine(innerNodeText);
-
-                    if(node==nullptr)
+                    if(parentNode->getTitle() == "script" && tempValue != "/script")
                     {
-                        dispose();
-                        return false;
+                        //the data is apart of the value.
+                        if(tempValue != "")
+                            parentNode->addValue("<" + tempValue + "> ");
+                        
+                        tempValue = "";
+                        continue;
                     }
+                }
 
-                    bool slashAtFront = innerNodeText[0] == '/';
+                XmlNode* n = parseXmlLine(tempValue);
+                if(n == nullptr)
+                {
+                    //error when parsing node
+                    validXml = false;
+                    return false;
+                }
 
-                    innerNodeText = "";
-                    isRecordingText = false;
-                    if(parentNode==nullptr)
+                //set the nodes parent if required and stuff.
+                //html has tags that can not contain a value so they are considered closed and don't have children but don't have to end with a slash.
+                //Results in invalid xml but it is necessary to be able to read them.
+                bool slashAtFront = tempValue[0] == '/';
+                bool slashAtEnd = tempValue.back() == '/';
+                bool endingTag = n->isEndOfSection();
+
+                tempValue = "";
+
+                if(parentNode == nullptr)
+                {
+                    //store at the root and if not ending tag. set as new parent
+                    addNode(n);
+                    if(!endingTag)
                     {
-                        if(!node->isEndOfSection())
-                        {
-                            nodes.push_back(node);
-                            parentNode = node;
-                        }
-                        else
-                        {
-                            if(node->attributes.size()>0)
-                            {
-                                nodes.push_back(node);
-                            }
-                            parentNode = node->parentNode;
-                        }
-                    }
-                    else
-                    {
-                        node->parentNode = parentNode;
-                        if(!node->isEndOfSection())
-                        {
-                            parentNode->childNodes.push_back(node);
-                            parentNode = node;
-                        }
-                        else
-                        {
-                            if(node->title == parentNode->title && node->isEndOfSection() && slashAtFront)
-                            {
-                                parentNode = parentNode->parentNode;
-                            }
-                            else
-                            {
-                                parentNode->childNodes.push_back(node);
-                                node->parentNode = parentNode;
-                            }
-                            
-                        }
+                        parentNode = n;
                     }
                 }
                 else
                 {
-                    if(isRecordingText)
+                    if(endingTag)
                     {
-                        innerNodeText += byte;
-                    }
-                    else
-                    {
-                        if(parsingNode)
+                        if(parentNode->getTitle() == n->getTitle())
                         {
-                            if( StringTools::isAlphaNumerial(byte, true, false) || byte == '/' || byte == '?' || byte == '!')
-                            {
-                                isRecordingText=true;
-                                innerNodeText += byte;
-                            }
-                            else
-                            {
-                                //error has occurred
-                                //Must a number, letter, /, or _ at the start or ? or !
-                                dispose();
-                                return false;
-                            }
+                            //ending tag for the parent. Set parent to grandparent
+                            parentNode = parentNode->parentNode;
+                            delete n;
                         }
                         else
                         {
-                            if(byte > 32)
+                            if(!slashAtFront)
                             {
-                                //valid
-                                isRecordingText=true;
-                                innerNodeText += byte;
+                                //if there is no slash at the front. It is a single element.
+                                parentNode->addChild(n);
+
+                                //check if it is valid xml since html can have tags with no closing mark. They may be closed later though so keep that in mind.
+                                if(!slashAtEnd)
+                                {
+                                    if(type == TYPE_HTML)
+                                    {
+                                        potentialProblem = true;
+                                        lastNodeClosed = n;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if(potentialProblem)
+                                {
+                                    //check the last problem node to determine if this was suppose to close it.
+                                    if(lastNodeClosed != nullptr)
+                                    {
+                                        if(lastNodeClosed->getTitle() == n->getTitle())
+                                        {
+                                            //this is okay.
+                                            delete n;
+                                            continue;
+                                        }
+                                    }
+                                }
+
+                                //error. Ending tag does not line up with the parent.
+                                delete n;
+                                validXml = false;
+                                return false;
                             }
                         }
                     }
-                    
+                    else
+                    {
+                        parentNode->addChild(n);
+                        parentNode = n;
+                    }
                 }
             }
-
-            if(shouldParseEscape)
+            else
             {
-                for(XmlNode* node : nodes)
+                if(tempValue.size() == 0 && mode == PARSING_NODE)
                 {
-                    fixParseOnNode(node);
+                    if( StringTools::isAlphaNumerial(byte, true, false) || byte == '/' || byte == '?' || byte == '!')
+                    {
+                        tempValue += byte;
+                    }
+                    else
+                    {
+                        //error. Only certain characters allowed at the start of the nodes title.
+                        validXml = false;
+                        return false;
+                    }
                 }
+                else if(byte > 32)
+                {
+                    tempValue += byte;
+                }
+                else
+                {
+                    //only add a space if the last value was not a space or some other character that would be considered a space.
+                    if(tempValue.size() > 0)
+                    {
+                        if(tempValue.back() > 32)
+                        {
+                            tempValue += ' ';
+                        }
+                    }
+                    else
+                        potentialSpace = true;
+                }
+                
             }
+        }
 
-        }
-        else
-        {
-            //StringTools::out << "Could not open file" << StringTools::lineBreak;
-            return false;
-        }
+        if(potentialProblem)
+            validXml = false;
 
         return true;
-        
     }
+
+    // bool SimpleXml::loadFromBytes(unsigned char* bytes, size_t size, bool parseEscape)
+    // {
+    //     shouldParseEscape = parseEscape;
+
+    //     bool parsingNode = false;
+    //     std::string innerNodeText = "";
+    //     bool previousHasClosingTag = false;
+
+    //     XmlNode* parentNode = nullptr;
+    //     XmlNode* lastNodeParsed = nullptr;
+    //     bool isRecordingText = false;
+    //     bool hitEnd = true;
+
+    //     if(bytes != nullptr)
+    //     {
+    //         std::vector<unsigned char> fileBytes = removeCommentsAndInvalidChars(bytes, size);
+
+    //         for(unsigned char byte : fileBytes)
+    //         {
+    //             if(byte=='<' && hitEnd==true)
+    //             {
+    //                 //set value of node
+    //                 if(parentNode!=nullptr)
+    //                 {
+    //                     parentNode->value += innerNodeText;
+    //                 }
+    //                 innerNodeText = "";
+    //                 isRecordingText = false;
+    //                 parsingNode = true;
+    //                 hitEnd=false;
+    //             }
+    //             else if(byte=='>' && hitEnd==false)
+    //             {
+    //                 if(type==TYPE_HTML && parentNode != nullptr)
+    //                 {
+    //                     if(parentNode->getTitle() == "script" && innerNodeText != "/script")
+    //                     {
+    //                         //add to parent inner node text and jump back to start
+    //                         hitEnd = true;
+    //                         parsingNode = false;
+    //                         parentNode->value += "<" + innerNodeText + ">";
+    //                         isRecordingText = false;
+    //                         innerNodeText = "";
+    //                         continue;
+    //                     }
+    //                 }
+
+    //                 parsingNode = false;
+    //                 hitEnd=true;
+    //                 XmlNode* node = parseXmlLine(innerNodeText);
+
+    //                 if(node==nullptr)
+    //                 {
+    //                     dispose();
+    //                     return false;
+    //                 }
+
+    //                 bool slashAtFront = innerNodeText[0] == '/';
+    //                 bool slashAtEnd = innerNodeText.back() == '/';
+
+    //                 innerNodeText = "";
+    //                 isRecordingText = false;
+    //                 if(parentNode==nullptr)
+    //                 {
+    //                     if(!node->isEndOfSection())
+    //                     {
+    //                         addNode(node);
+    //                         parentNode = node;
+    //                     }
+    //                     else
+    //                     {
+    //                         if(node->attributes.getSize()>0)
+    //                         {
+    //                             addNode(node);
+    //                         }
+    //                         parentNode = node->parentNode;
+    //                     }
+    //                 }
+    //                 else
+    //                 {
+    //                     node->parentNode = parentNode;
+    //                     if(!node->isEndOfSection())
+    //                     {
+    //                         parentNode->addChild(node);
+    //                         parentNode = node;
+    //                     }
+    //                     else
+    //                     {
+    //                         if(node->title == parentNode->title && slashAtFront)
+    //                         {
+    //                             //valid closing tag. Contains nothing and can be discarded.
+    //                             delete node;
+    //                             node = nullptr;
+
+    //                             parentNode = parentNode->parentNode;
+    //                         }
+    //                         else
+    //                         {
+    //                             if(slashAtFront)
+    //                             {
+    //                                 //error of some sort. closing tag that does not correspond to the parent.
+    //                                 //delete and continue parsing
+    //                                 if(type == TYPE_HTML)
+    //                                 {
+    //                                     //may be a void tag
+    //                                     if(lastNodeParsed != nullptr)
+    //                                     {
+    //                                         if(lastNodeParsed->getTitle() != node->getTitle())
+    //                                         {
+    //                                             validXml = false;
+    //                                         }
+    //                                         //otherwise valid xml. Still delete the node though.
+    //                                     }
+    //                                 }
+    //                                 else
+    //                                 {
+    //                                     validXml = false;
+    //                                 }
+
+    //                                 delete node;
+    //                                 node = nullptr;
+    //                             }
+    //                             else
+    //                             {
+    //                                 //valid close but contains stuff
+    //                                 parentNode->addChild(node);
+    //                                 node->parentNode = parentNode;
+
+    //                                 if(lastNodeParsed != nullptr)
+    //                                 {
+    //                                     if(!previousHasClosingTag && lastNodeParsed->isEndOfSection())
+    //                                     {
+    //                                         //the previous may have been a void tag
+    //                                         validXml = false;
+    //                                     }
+    //                                 }
+    //                             }
+    //                         }
+                            
+    //                     }
+    //                 }
+
+    //                 lastNodeParsed = node;
+    //                 if(node != nullptr)
+    //                     previousHasClosingTag = (slashAtEnd || slashAtFront);
+    //             }
+    //             else
+    //             {
+    //                 if(isRecordingText)
+    //                 {
+    //                     innerNodeText += byte;
+    //                 }
+    //                 else
+    //                 {
+    //                     if(parsingNode)
+    //                     {
+    //                         if( StringTools::isAlphaNumerial(byte, true, false) || byte == '/' || byte == '?' || byte == '!')
+    //                         {
+    //                             isRecordingText=true;
+    //                             innerNodeText += byte;
+    //                         }
+    //                         else
+    //                         {
+    //                             //error has occurred
+    //                             //Must a number, letter, /, or _ at the start or ? or !
+    //                             dispose();
+    //                             return false;
+    //                         }
+    //                     }
+    //                     else
+    //                     {
+    //                         if(byte > 32)
+    //                         {
+    //                             //valid
+    //                             isRecordingText=true;
+    //                             innerNodeText += byte;
+    //                         }
+    //                         else
+    //                         {
+    //                             if(type==TYPE_HTML && parentNode != nullptr)
+    //                             {
+    //                                 if(parentNode->getTitle() == "script" && (byte == 32 || byte == '\n' || byte == '\t'))
+    //                                 {
+    //                                     isRecordingText = true;
+    //                                     innerNodeText += byte;
+    //                                 }
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+                    
+    //             }
+    //         }
+
+    //         if(shouldParseEscape)
+    //         {
+    //             for(XmlNode* node : nodes)
+    //             {
+    //                 fixParseOnNode(node);
+    //             }
+    //         }
+
+    //     }
+    //     else
+    //     {
+    //         //StringTools::out << "Could not open file" << StringTools::lineBreak;
+    //         return false;
+    //     }
+
+    //     return true;
+        
+    // }
 
     std::vector<unsigned char> SimpleXml::removeCommentsAndInvalidChars(std::vector<unsigned char> fileBytes)
     {
@@ -626,11 +913,12 @@ namespace glib
     {
         //first, get the title. Will always be first and separated by a space from everything else
         XmlNode* node;
+        bool checkDoctype = false;
 
         size_t indexOfFirstSpace = line.find_first_of(' ');
         std::string title = line.substr(0, indexOfFirstSpace);
 
-        std::string attribString = line;
+        std::string attribString = line.substr(indexOfFirstSpace+1);
 
         node = new XmlNode();
 
@@ -643,19 +931,38 @@ namespace glib
             
             if(line[line.size()-1]=='/')
             {
-                attribString.pop_back();
-                title = attribString.substr(0, indexOfFirstSpace);
+                attribString.pop_back(); //remove the slash at the end for easier parsing
             }
         }
         else if((line[0] == '?' && line[line.size()-1] == '?') || line[0] == '!')
         {
             //xml declaration
             node->isEnd = true;
-            title = line.substr(1, indexOfFirstSpace);
-            attribString.pop_back();
         }
 
-        node->title = title;
+        node->setTitle(title);
+
+        if(type == TYPE_HTML)
+        {
+            //extra work since it could be a void tag where there is no end marker
+            if(!node->isEnd)
+            {
+                std::string tempTitle = node->getTitle();
+                for(int i=0; i<knownVoidTags.size(); i++)
+                {
+                    if(tempTitle == knownVoidTags[i])
+                    {
+                        node->isEnd = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(node->getTitle() == "!doctype")
+        {
+            checkDoctype = true;
+        }
         
         //split with parameters. No split if surrounded by quotation marks. split by space then by equals
         std::pair<std::string, std::string> attrib = std::pair<std::string, std::string>();
@@ -666,26 +973,31 @@ namespace glib
 
         if(indexOfFirstSpace!=SIZE_MAX)
         {
-            for(size_t i=indexOfFirstSpace+1; i<attribString.size(); i++)
+            for(size_t i=0; i<attribString.size(); i++)
             {
-                bool doThing=true;
+                bool parseValues=true;
                 if(attribString[i] == '\"')
                 {
                     inQuotes = !inQuotes;
-                    doThing = false;
+                    parseValues = false;
                 }
 
                 if((attribString[i] == ' ' && inQuotes == false) || i==attribString.size()-1)
                 {
-                    if(i==attribString.size() && doThing)
+                    if(parseValues)
                     {
-                        if(!inQuotes)
+                        //still parsing values
+                        //possible cases: no value, malformed value string
+                        
+                        if(inQuotes)
                         {
+                            //value but haven't ended quote yet. Malformed error.
                             //invalid
                             delete node;
                             return nullptr;
                         }
-                        attrib.second+=attribString[i];
+                        if(!settingValue)
+                            attrib.first+=attribString[i]; //Case 1. No value
                     }
 
                     if(attrib.first != "")
@@ -694,7 +1006,7 @@ namespace glib
                     attrib = std::pair<std::string, std::string>();
                     settingValue = false;
                 }
-                else if(doThing)
+                else if(parseValues)
                 {
                     if(!inQuotes)
                     {
@@ -738,6 +1050,13 @@ namespace glib
             }
         }
         
+        if(checkDoctype)
+        {
+            //check if html
+            if(node->getAttribute("html") != nullptr)
+                type = TYPE_HTML;
+        }
+
         return node;
     }
 
@@ -825,16 +1144,23 @@ namespace glib
 
     void SimpleXml::fixParseOnNode(XmlNode* n)
     {
+        if( n == nullptr )
+            return;
+        if(!shouldParseEscape)
+            return;
+        
         std::string actualString = "";
         std::string tempString = "";
         bool proc = false;
 
-        for(std::pair<std::string, std::string> k : n->attributes)
+        std::vector<HashPair<std::string, std::string>*> attribsAsArr = n->attributes.getAll();
+
+        for(HashPair<std::string, std::string>* k : attribsAsArr)
         {
             actualString = "";
             tempString = "";
             proc = false;
-            for(char c : k.second)
+            for(char c : k->data)
             {
                 if(!proc)
                 {
@@ -870,62 +1196,104 @@ namespace glib
                 }
             }
             actualString += tempString;
-            k.second = actualString;
+            k->data = actualString;
 
             //No longer done through references so this is required.
-            n->addAttribute(k);
+            // n->addAttribute(k->key, k->data);
         }
 
-
-        //repeat for the value of the node if it has one
-        actualString = "";
-        tempString = "";
-        proc = false;
-        for(char c : n->value)
+        for(ChildNode& child : n->childNodes)
         {
-            if(!proc)
+            if(child.type == ChildNode::TYPE_VALUE)
             {
-                if(c != '&')
+                //repeat for the value of the node if it has one
+                actualString = "";
+                tempString = "";
+                proc = false;
+                for(char c : child.value)
                 {
-                    actualString += c;
+                    if(!proc)
+                    {
+                        if(c != '&')
+                        {
+                            actualString += c;
+                        }
+                        else
+                        {
+                            tempString += c;
+                            proc=true;
+                        }
+                    }
+                    else
+                    {
+                        if(c==';')
+                        {
+                            tempString += ';';
+                            int t = parseEscapeString(tempString);
+                            std::vector<unsigned char> asUTFSet = StringTools::toUTF8(t);
+
+                            for(unsigned char& c : asUTFSet)
+                            {
+                                actualString += c;
+                            }
+                            proc=false;
+                            tempString = "";
+                        }
+                        else
+                        {
+                            tempString += c;
+                        }
+                    }
                 }
-                else
-                {
-                    tempString += c;
-                    proc=true;
-                }
+                actualString += tempString;
+                child.value = actualString;
             }
             else
             {
-                if(c==';')
-                {
-                    tempString += ';';
-                    int t = parseEscapeString(tempString);
-                    std::vector<unsigned char> asUTFSet = StringTools::toUTF8(t);
-
-                    for(unsigned char& c : asUTFSet)
-                    {
-                        actualString += c;
-                    }
-                    proc=false;
-                    tempString = "";
-                }
-                else
-                {
-                    tempString += c;
-                }
+                fixParseOnNode(child.node);
             }
         }
-        actualString += tempString;
-        n->value = actualString;
         
-        if(shouldParseEscape)
+    }
+
+    std::vector<XmlNode*> SimpleXml::getNodesPattern(std::vector<std::string>& nameOrder)
+    {
+        std::vector<XmlNode*> results;
+        if(nameOrder.size() > 0)
         {
-            for(XmlNode* q : n->childNodes)
+            std::vector<HashPair<std::string, size_t>*> it = nameToIndexMap.getAll(nameOrder[0]);
+            for(HashPair<std::string, size_t>* c : it)
             {
-                fixParseOnNode(q);
+                if(c != nullptr)
+                {
+                    nodes[c->data]->getNodesInternal(nameOrder, 1, results);
+                }
             }
         }
+        return results;
+    }
+    std::vector<XmlNode*>& SimpleXml::getNodes()
+    {
+        return nodes;
+    }
+    
+    void SimpleXml::addNode(XmlNode* n)
+    {
+        if( n != nullptr )
+        {
+            nameToIndexMap.add(n->getTitle(), nodes.size());
+            nodes.push_back(n);
+        }
+    }
+
+    bool SimpleXml::getType()
+    {
+        return type;
+    }
+
+    bool SimpleXml::getValidXml()
+    {
+        return validXml;
     }
 
     #pragma endregion

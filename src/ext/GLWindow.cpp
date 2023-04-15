@@ -1,23 +1,17 @@
+#include "ext/GLWindow.h"
+#include <iostream>
+#include "MathExt.h"
+#include "System.h"
+#include "StringTools.h"
+#include "Input.h"
+#include "ext/GLGraphics.h"
+
 #ifdef USE_OPENGL
-
-	#include "ext/GLWindow.h"
-	#include <iostream>
-	#include "MathExt.h"
-	#include "System.h"
-	#include "StringTools.h"
-	#include "Input.h"
-	#include "ext/GLGraphics.h"
-
 	namespace glib
 	{
 
 		std::vector<GLWindow*> GLWindow::windowList = std::vector<GLWindow*>();
-
-		const Class GLWindow::myClass = Class("GLWindow", {&SimpleWindow::myClass});
-		const Class* GLWindow::getClass()
-		{
-			return &GLWindow::myClass;
-		}
+		const Class GLWindow::globalClass = Class("GLWindow", {&SimpleWindow::globalClass});
 
 		GLWindow* GLWindow::getWindowByHandle(size_t handle)
 		{
@@ -153,6 +147,11 @@
 			SwapBuffers(ghDC);
 		}
 
+		void GLWindow::repaint()
+		{
+			swapBuffers();
+		}
+
 		void GLWindow::disposeGL()
 		{
 			if(ghRC!=0)
@@ -160,13 +159,13 @@
 			ghRC = 0;
 		}
 
-		void GLWindow::setVSync(int interval)
+		void GLWindow::setVSync(unsigned int interval)
 		{
 			wglSwapIntervalEXT(interval);
 			swapInterval = interval;
 		}
 
-		int GLWindow::getVSyncInterval()
+		unsigned int GLWindow::getVSyncInterval()
 		{
 			return swapInterval;
 		}
@@ -175,14 +174,8 @@
 			: SimpleWindow(true)
 		{
 			GLWindow::windowList.push_back(this);
-			x = screenWidth / 2 - 160;
-			y = screenHeight / 2 - 120;
-			width = 320;
-			height = 240;
-			title = L"";
-
 			threadOwnership = false;
-			init(x, y, width, height, title, windowType);
+			init(-1, -1, 320, 240, L"", windowType);
 		}
 
 		GLWindow::GLWindow(std::wstring title, int width, int height, int x, int y, WindowOptions windowType)
@@ -225,6 +218,7 @@
 
 		void GLWindow::init(int x, int y, int width, int height, std::wstring title, WindowOptions windowType)
 		{
+			setClass(globalClass);
 			this->x = x;
 			this->y = y;
 			this->width = width;
@@ -249,8 +243,12 @@
 			this->title = title;
 
 			setAllFunctionsToNull();
+			if(windowList.size() == 1)
+			{
+				setWindowAsInputFocus();
+			}
 
-			#ifdef LINUX
+			#ifdef __unix__
 
 				displayServer = XOpenDisplay(NULL);
 
@@ -276,10 +274,17 @@
 				{
 					
 				}
+				XVisualInfo vInfo;
+				XMatchVisualInfo(displayServer, DefaultScreen(displayServer), 32, TrueColor, &vInfo);
 
+				XSetWindowAttributes attr;
+				attr.colormap = XCreateColormap(displayServer, DefaultRootWindow(displayServer), vInfo.visual, AllocNone);
+				attr.border_pixel = borderWidth;
+				attr.background_pixel = 0;
+				
 				screen = DefaultScreen(displayServer);
-				windowHandle = XCreateSimpleWindow(displayServer, RootWindow(displayServer, screen), trueX, trueY, trueWidth, trueHeight, borderWidth, BlackPixel(displayServer, screen), WhitePixel(displayServer, screen));
-
+				windowHandle = XCreateWindow(displayServer, DefaultRootWindow(displayServer), trueX, trueY, trueWidth, trueHeight, borderWidth, vInfo.depth, InputOutput, vInfo.visual, CWColormap | CWBorderPixel | CWBackPixel, &attr);
+				
 				//set window name
 				std::string cTitle = StringTools::toCString(title);
 				XStoreName(displayServer, windowHandle, cTitle.c_str());
@@ -310,14 +315,26 @@
 				XSelectInput(displayServer, windowHandle, ExposureMask | StructureNotifyMask | KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask);
 				XMapWindow(displayServer, windowHandle);
 
+				wmDeleteMessage = XInternAtom(displayServer, "WM_DELETE_WINDOW", 0);
+				XSetWMProtocols(displayServer, windowHandle, &wmDeleteMessage, 1);
+
+				gc = XCreateGC(displayServer, windowHandle, 0, 0);
+
+				this->preX = this->x;
+				this->preY = this->y;
+				
 				setVisible(true);
 				setValid(true);
 				setShouldEnd(false);
 				setRunning(true);
 
-				initBitmap();
-				SimpleWindow::windowList.push_back(this);
+				initGL();
+				gui = new GuiManager(GuiManager::TYPE_OPENGL, this->width, this->height);
 
+				if(windowType.initFunction != nullptr)
+					windowType.initFunction(this);
+				
+				gui->setFocus(true);
 				setFinishInit(true);
 
 				if(threadManaged == TYPE_THREAD_MANAGED)
@@ -327,19 +344,31 @@
 				std::wstring text = title;
 				text += L"_CLASS";
 
-				hins = GetModuleHandle(NULL);
+				hins = GetModuleHandle(0);
 
 				wndClass.cbClsExtra = 0;
 				wndClass.cbSize = sizeof(WNDCLASSEX);
 				wndClass.cbWndExtra = 0;
 				wndClass.hbrBackground = (HBRUSH)(BLACK_BRUSH);
 				wndClass.hCursor = LoadCursor(hins, IDC_ARROW);
-				wndClass.hIcon = LoadIcon(hins, IDI_APPLICATION);
+
+				if(windowType.iconFileString.empty())
+					wndClass.hIcon = LoadIcon(hins, IDI_APPLICATION);
+				else
+				{
+					if(windowType.iconIsFile)
+						handleToIcon = (HICON)LoadImageA(NULL, windowType.iconFileString.c_str(), IMAGE_ICON, 0, 0, LR_LOADFROMFILE);
+					else
+						handleToIcon = (HICON)LoadImageA(hins, windowType.iconFileString.c_str(), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR);
+
+					wndClass.hIcon = handleToIcon;
+				}
+				
 				wndClass.hIconSm = LoadIcon(hins, IDI_APPLICATION);
 				wndClass.hInstance = hins;
 				wndClass.lpfnWndProc = SimpleWindow::wndProc;
 				wndClass.lpszClassName = text.c_str();
-				wndClass.lpszMenuName = NULL;
+				wndClass.lpszMenuName = 0;
 				wndClass.style = CS_HREDRAW | CS_VREDRAW;
 
 				int trueWidth = this->width;
@@ -433,6 +462,7 @@
 						if(windowType.initFunction != nullptr)
 							windowType.initFunction(this);
 
+						gui->setFocus(true);
 						setFinishInit(true);
 					}
 					else
@@ -462,11 +492,6 @@
 
 			#endif
 
-		}
-
-		void GLWindow::waitTillClose()
-		{
-			run();
 		}
 
 		void GLWindow::run()
@@ -540,20 +565,6 @@
 
 				myMutex.lock();
 				shouldRepaint=false;
-				myMutex.unlock();
-			}
-		}
-
-		void GLWindow::repaint()
-		{
-			if(threadOwnership==false)
-			{
-				threadRepaint();
-			}
-			else
-			{
-				myMutex.lock();
-				shouldRepaint=true;
 				myMutex.unlock();
 			}
 		}

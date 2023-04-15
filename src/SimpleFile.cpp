@@ -539,20 +539,7 @@ namespace glib
 		{
 			if (type == WRITE || type == WRITE_APPEND)
 			{
-				if(dataType == ASCII)
-				{
-					file->put(c);
-				}
-				else if(dataType == WIDECHAR)
-				{
-					file->put(0);
-					file->put(c);
-				}
-				else
-				{
-					std::vector<unsigned char> bytes = StringTools::toUTF8(c);
-					file->write((char*)bytes.data(), bytes.size());
-				}
+				file->put(c);
 			}
 			else
 			{
@@ -582,22 +569,41 @@ namespace glib
 		{
 			if (type == WRITE || type == WRITE_APPEND)
 			{
-				if(dataType == ASCII)
-				{
-					file->put(c);
-				}
-				else if(dataType == WIDECHAR)
-				{
-					unsigned char c1 = c>>8;
-					unsigned char c2 = c & 0xFF;
-					file->put(c1);
-					file->put(c2);
-				}
-				else
-				{
-					std::vector<unsigned char> bytes = StringTools::toUTF8(c);
-					file->write((char*)bytes.data(), bytes.size());
-				}
+				unsigned char c1 = c>>8;
+				unsigned char c2 = c & 0xFF;
+				file->put(c1);
+				file->put(c2);
+			}
+			else
+			{
+				//File is not opened for writing
+				#ifdef USE_EXCEPTIONS
+				
+				throw SimpleFile::FileWriteException();
+
+				#endif
+			}
+		}
+		else
+		{
+			//File is not opened
+			#ifdef USE_EXCEPTIONS
+
+			//not open for writing. could be file access or the file may not exist.
+			throw SimpleFile::FileWriteException();
+
+			#endif
+		}
+	}
+
+	void SimpleFile::writeUTF8Char(int c)
+	{
+		if (isOpen())
+		{
+			if (type == WRITE || type == WRITE_APPEND)
+			{
+				std::vector<unsigned char> bytes = StringTools::toUTF8(c);
+				file->write((char*)bytes.data(), bytes.size());
 			}
 			else
 			{
@@ -627,26 +633,7 @@ namespace glib
 		{
 			if (type == WRITE || type == WRITE_APPEND)
 			{
-				if(dataType == ASCII)
-				{
-					file->write((char*)data, size);
-				}
-				else if(dataType == WIDECHAR)
-				{
-					for(int i=0; i<size; i++)
-					{
-						file->put( 0 );
-						file->put( data[i] );
-					}
-				}
-				else
-				{
-					for(int i=0; i<size; i++)
-					{
-						std::vector<unsigned char> bytes = StringTools::toUTF8(data[i]);
-						file->write((char*)bytes.data(), bytes.size());
-					}
-				}
+				file->write((char*)data, size);
 			}
 			else
 			{

@@ -3,7 +3,7 @@
 namespace glib
 {
 	#pragma region GUI_MANAGER
-	std::unordered_map<std::string, std::function<GuiInstance*(std::unordered_map<std::string, std::string>&)> > GuiManager::elementLoadingFunctions;
+	std::unordered_map<std::string, std::function<GuiInstance*(SimpleHashMap<std::string, std::string>&)> > GuiManager::elementLoadingFunctions;
 
 	const Class GuiManager::globalClass = Class("GuiManager", {&Object::globalClass});
 
@@ -20,22 +20,60 @@ namespace glib
 		GuiDatePicker::registerLoadFunction();
 	}
 
-	void GuiManager::registerLoadFunction(std::string className, std::function<GuiInstance*(std::unordered_map<std::string, std::string>&)> func)
+	void GuiManager::registerLoadFunction(std::string className, std::function<GuiInstance*(SimpleHashMap<std::string, std::string>&)> func)
 	{
 		elementLoadingFunctions[className] = func;
 	}
 
 	bool GuiManager::loadElement(XmlNode* node, GuiInstance* parent)
 	{
-		if(node != nullptr)
+		if(node == nullptr)
+			return false;
+
+		if(StringTools::equalsIgnoreCase<char>(node->getTitle(), "SpriteResource"))
 		{
-			// GuiInstance* parentObj = parent; //Not used
+			//separate processing
+			HashPair<std::string, std::string>* idPair = node->getAttribute("id");
+			HashPair<std::string, std::string>* srcPair = node->getAttribute("src");
+			if(idPair != nullptr && srcPair != nullptr )
+			{
+				//can probably load stuff
+				if(!idPair->data.empty() && !srcPair->data.empty())
+				{
+					//Unless the file is incorrect, should be in the resource list something
+					GuiResourceManager::getResourceManager().addSprite(GraphicsInterface::createSprite(srcPair->data, graphicsInterfaceMode), idPair->data, false);
+					return true;
+				}
+			}
+			StringTools::println("ERROR LOADING SPRITE RESOURCE: No 'src' or 'id' specified");
+			return false;
+		}
+		else if(StringTools::equalsIgnoreCase<char>(node->getTitle(), "FontResource"))
+		{
+			//separate processing
+			HashPair<std::string, std::string>* idPair = node->getAttribute("id");
+			HashPair<std::string, std::string>* srcPair = node->getAttribute("src");
+			if(idPair != nullptr && srcPair != nullptr )
+			{
+				//can probably load stuff
+				if(!idPair->data.empty() && !srcPair->data.empty())
+				{
+					//Unless the file is incorrect, should be in the resource list something
+					GuiResourceManager::getResourceManager().addFont(GraphicsInterface::createFont(srcPair->data, graphicsInterfaceMode), idPair->data, false);
+					return true;
+				}
+			}
+			StringTools::println("ERROR LOADING FONT RESOURCE: No 'src' or 'id' specified");
+			return false;
+		}
+		else
+		{
 			GuiInstance* thisIns = nullptr;
 
-			auto it = elementLoadingFunctions.find(node->title);
+			auto it = elementLoadingFunctions.find(node->getTitle());
 			if(it != elementLoadingFunctions.end())
 			{
-				thisIns = it->second(node->attributes); //call load function for specific instance
+				thisIns = it->second(node->getRawAttributes()); //call load function for specific instance
 				
 				if(parent != nullptr)
 					parent->addChild(thisIns);
@@ -47,22 +85,23 @@ namespace glib
 			//add to list
 			addElement(thisIns);
 			addToDeleteList(thisIns);
-			
-			
-			for(XmlNode* n : node->childNodes)
+
+			for(ChildNode& c : node->getChildNodes())
 			{
-				bool successful = loadElement(n, thisIns);
+				if(c.type != ChildNode::TYPE_NODE)
+					continue;
+
+				bool successful = loadElement(c.node, thisIns);
 				if(!successful)
 				{
-					StringTools::println("ERROR LOADING NODE: %ls", n->title.c_str());
+					StringTools::println("ERROR LOADING NODE: %ls", c.node->getTitle().c_str());
 					return false;
 				}
 			}
 
 			return true;
 		}
-
-		return false;
+		
 	}
 
 	void GuiManager::loadElementsFromFile(File f)
@@ -72,9 +111,9 @@ namespace glib
 		//Everything must be encapsulated in the tag <SimpleGUI> or something
 		XmlNode* parentNode = nullptr;
 
-		for(XmlNode* n : xmlFile.nodes)
+		for(XmlNode* n : xmlFile.getNodes())
 		{
-			if(StringTools::equalsIgnoreCase<char>(n->title, "SimpleGUI"))
+			if(StringTools::equalsIgnoreCase<char>(n->getTitle(), "SimpleGUI"))
 			{
 				parentNode = n;
 				break;
@@ -86,20 +125,23 @@ namespace glib
 			auto wAttrib = parentNode->getAttribute("width");
 			auto hAttrib = parentNode->getAttribute("height");
 
-			if(!wAttrib.first.empty() && !hAttrib.first.empty())
+			if(wAttrib != nullptr && hAttrib != nullptr)
 			{
-				int w = StringTools::toInt(wAttrib.second);
-				int h = StringTools::toInt(hAttrib.second);
+				int w = StringTools::toInt(wAttrib->data);
+				int h = StringTools::toInt(hAttrib->data);
 				resizeImage(w, h);
 				setExpectedSize( Vec2f(w,h) );
 			}
-			
-			for(XmlNode* n : parentNode->childNodes)
+
+			for(ChildNode& c : parentNode->getChildNodes())
 			{
-				bool successful = loadElement(n, nullptr);
+				if(c.type != ChildNode::TYPE_NODE)
+					continue;
+				
+				bool successful = loadElement(c.node, nullptr);
 				if(!successful)
 				{
-					StringTools::println("ERROR LOADING NODE: %ls", n->title.c_str());
+					StringTools::println("ERROR LOADING NODE: %ls", c.node->getTitle().c_str());
 				}
 			}
 		}
@@ -114,9 +156,9 @@ namespace glib
 		//Everything must be encapsulated in the tag <SimpleGUI> or something
 		XmlNode* parentNode = nullptr;
 
-		for(XmlNode* n : xmlFile.nodes)
+		for(XmlNode* n : xmlFile.getNodes())
 		{
-			if(StringTools::equalsIgnoreCase<char>(n->title, "SimpleGUI"))
+			if(StringTools::equalsIgnoreCase<char>(n->getTitle(), "SimpleGUI"))
 			{
 				parentNode = n;
 				break;
@@ -128,20 +170,24 @@ namespace glib
 			auto wAttrib = parentNode->getAttribute("width");
 			auto hAttrib = parentNode->getAttribute("height");
 
-			if(!wAttrib.first.empty() && !hAttrib.first.empty())
+			if(wAttrib != nullptr && hAttrib != nullptr)
 			{
-				int w = StringTools::toInt(wAttrib.second);
-				int h = StringTools::toInt(hAttrib.second);
+				int w = StringTools::toInt(wAttrib->data);
+				int h = StringTools::toInt(hAttrib->data);
 				resizeImage(w, h);
 				setExpectedSize( Vec2f(w,h) );
 			}
 			
-			for(XmlNode* n : parentNode->childNodes)
+			for(ChildNode& c : parentNode->getChildNodes())
 			{
+				if(c.type != ChildNode::TYPE_NODE)
+					continue;
+				
+				XmlNode* n = c.node;
 				bool successful = loadElement(n, nullptr);
 				if(!successful)
 				{
-					StringTools::println("ERROR LOADING NODE: %ls", n->title.c_str());
+					StringTools::println("ERROR LOADING NODE: %ls", n->getTitle().c_str());
 				}
 			}
 		}
@@ -154,8 +200,8 @@ namespace glib
 	GuiManager::GuiManager(unsigned char type)
 	{
 		setClass(globalClass);
-		GuiGraphicsInterface::setDefaultType(type);
-		surf = GuiGraphicsInterface::createSurface(320, 240);
+		GraphicsInterface::setDefaultType(type);
+		surf = GraphicsInterface::createSurface(320, 240);
 		expectedSize = Vec2f(320, 240);
 
 		// surf.setAllPixels(backgroundColor); //Clear to background color
@@ -164,8 +210,8 @@ namespace glib
 	GuiManager::GuiManager(unsigned char type, int width, int height)
 	{
 		setClass(globalClass);
-		GuiGraphicsInterface::setDefaultType(type);
-		surf = GuiGraphicsInterface::createSurface(width, height);
+		GraphicsInterface::setDefaultType(type);
+		surf = GraphicsInterface::createSurface(width, height);
 		expectedSize = Vec2f(width, height);
 
 		// surf.setAllPixels(backgroundColor); //Clear to background color
@@ -447,7 +493,7 @@ namespace glib
 
 				if(k->getStaticScaling())
 				{
-					GuiGraphicsInterface::enableScaling(false);
+					GraphicsInterface::enableScaling(false);
 				}
 
 				if(!this->invalidImage)
@@ -458,7 +504,7 @@ namespace glib
 						{
 							k->shouldRedraw = true;
 							clip1 = true;
-							GuiGraphicsInterface::setClippingRect(newClipBox);
+							GraphicsInterface::setClippingRect(newClipBox);
 						}
 					}
 
@@ -468,7 +514,7 @@ namespace glib
 						{
 							k->shouldRedraw = true;
 							clip2 = true;
-							GuiGraphicsInterface::setClippingRect(preClipBox);
+							GraphicsInterface::setClippingRect(preClipBox);
 						}
 					}
 					
@@ -486,9 +532,9 @@ namespace glib
 				{
 					k->baseRender();
 					if(k->getCanvas() == nullptr)
-						GuiGraphicsInterface::setBoundSurface(surf);
+						GraphicsInterface::setBoundSurface(surf);
 					else
-						GuiGraphicsInterface::setBoundSurface(k->getCanvas());
+						GraphicsInterface::setBoundSurface(k->getCanvas());
 					
 					if(!clip1 && !clip2)
 					{
@@ -498,12 +544,12 @@ namespace glib
 					{
 						if(clip1 && !clip2)
 						{
-							GuiGraphicsInterface::setClippingRect(newClipBox);
+							GraphicsInterface::setClippingRect(newClipBox);
 							k->render();
 						}
 						else if(clip2 && !clip1)
 						{
-							GuiGraphicsInterface::setClippingRect(preClipBox);
+							GraphicsInterface::setClippingRect(preClipBox);
 							k->render();
 						}
 						else if(clip1 && clip2)
@@ -536,22 +582,22 @@ namespace glib
 							{
 								//neither box fully encapsulates the other.
 								//Use both boxes
-								GuiGraphicsInterface::setClippingRect(newClipBox);
+								GraphicsInterface::setClippingRect(newClipBox);
 								k->render();
-								GuiGraphicsInterface::setClippingRect(preClipBox);
+								GraphicsInterface::setClippingRect(preClipBox);
 								k->render();
 							}
 							else if(box1Col && !box2Col)
 							{
 								//previousBox is in new box. Only do new box
-								GuiGraphicsInterface::setClippingRect(newClipBox);
+								GraphicsInterface::setClippingRect(newClipBox);
 								k->render();
 							}
 							else
 							{
 								//Possible that both are the same
 								//newBox is in the previousBox. Only do previous box
-								GuiGraphicsInterface::setClippingRect(preClipBox);
+								GraphicsInterface::setClippingRect(preClipBox);
 								k->render();
 							}
 						}
@@ -562,7 +608,7 @@ namespace glib
 				}
 			}
 
-			GuiGraphicsInterface::enableScaling(true);
+			GraphicsInterface::enableScaling(true);
 
 			if(v)
 			{
@@ -636,12 +682,12 @@ namespace glib
 		int width = surf->getWidth();
 		int height = surf->getHeight();
 		
-		GuiGraphicsInterface::setOrthoProjection(width, height);
-		GuiGraphicsInterface::resetClippingPlane();
-		GuiGraphicsInterface::setColor(backgroundColor);
-		GuiGraphicsInterface::setBoundSurface(surf);
+		GraphicsInterface::setOrthoProjection(width, height);
+		GraphicsInterface::resetClippingPlane();
+		GraphicsInterface::setColor(backgroundColor);
+		GraphicsInterface::setBoundSurface(surf);
 		
-		GuiGraphicsInterface::setScalingFactor( Vec2f((double)width/expectedSize.x, (double)height/expectedSize.y) );
+		GraphicsInterface::setScalingFactor( Vec2f((double)width/expectedSize.x, (double)height/expectedSize.y) );
 
 		if(shouldRedrawCount > 0)
 		{
@@ -653,19 +699,19 @@ namespace glib
 			redrawCount++;
 			if(invalidImage)
 			{
-				GuiGraphicsInterface::clear();
+				GraphicsInterface::clear();
 			}
 			else
 			{
 				if(newClipBox.getLeftBound() <= 0 && newClipBox.getRightBound() >= surf->getWidth() 
 					&& newClipBox.getTopBound() <= 0 && newClipBox.getBottomBound() >= surf->getHeight())
 				{
-					GuiGraphicsInterface::clear(); //Clear everything
+					GraphicsInterface::clear(); //Clear everything
 				}
 				else if(preClipBox.getLeftBound() <= 0 && preClipBox.getRightBound() >= surf->getWidth() 
 						&& preClipBox.getTopBound() <= 0 && preClipBox.getBottomBound() >= surf->getHeight())
 				{
-					GuiGraphicsInterface::clear(); //Clear everything
+					GraphicsInterface::clear(); //Clear everything
 				}
 				else
 				{
@@ -675,14 +721,14 @@ namespace glib
 					if(newClipBox.getLeftBound() <= newClipBox.getRightBound()
 					&& newClipBox.getTopBound() <= newClipBox.getBottomBound())
 					{
-						GuiGraphicsInterface::drawRect((int)newClipBox.getLeftBound(), (int)newClipBox.getTopBound(), (int)newClipBox.getRightBound(), (int)newClipBox.getBottomBound(), false);
+						GraphicsInterface::drawRect((int)newClipBox.getLeftBound(), (int)newClipBox.getTopBound(), (int)newClipBox.getRightBound(), (int)newClipBox.getBottomBound(), false);
 					}
 					
 					//check if valid box
 					if(preClipBox.getLeftBound() <= preClipBox.getRightBound()
 					&& preClipBox.getTopBound() <= preClipBox.getBottomBound())
 					{
-						GuiGraphicsInterface::drawRect((int)preClipBox.getLeftBound(), (int)preClipBox.getTopBound(), (int)preClipBox.getRightBound(), (int)preClipBox.getBottomBound(), false);
+						GraphicsInterface::drawRect((int)preClipBox.getLeftBound(), (int)preClipBox.getTopBound(), (int)preClipBox.getRightBound(), (int)preClipBox.getBottomBound(), false);
 					}
 				}
 			}
@@ -698,9 +744,9 @@ namespace glib
 		{
 			if(invalidImage)
 			{
-				GuiGraphicsInterface::setColor(backgroundColor);
-				GuiGraphicsInterface::setBoundSurface(surf);
-				GuiGraphicsInterface::clear();
+				GraphicsInterface::setColor(backgroundColor);
+				GraphicsInterface::setBoundSurface(surf);
+				GraphicsInterface::clear();
 				redrawCount++;
 			}
 			else
@@ -710,23 +756,23 @@ namespace glib
 				if(deletedObjectsBox.getLeftBound() <= deletedObjectsBox.getRightBound()
 				&& deletedObjectsBox.getTopBound() <= deletedObjectsBox.getBottomBound())
 				{
-					GuiGraphicsInterface::setColor(backgroundColor);
-					GuiGraphicsInterface::setBoundSurface(surf);
-					GuiGraphicsInterface::drawRect((int)deletedObjectsBox.getLeftBound(), (int)deletedObjectsBox.getTopBound(), (int)deletedObjectsBox.getRightBound(), (int)deletedObjectsBox.getBottomBound(), false);
+					GraphicsInterface::setColor(backgroundColor);
+					GraphicsInterface::setBoundSurface(surf);
+					GraphicsInterface::drawRect((int)deletedObjectsBox.getLeftBound(), (int)deletedObjectsBox.getTopBound(), (int)deletedObjectsBox.getRightBound(), (int)deletedObjectsBox.getBottomBound(), false);
 					redrawCount++;
 				}
 			}
 		}
 
-		GuiGraphicsInterface::resetClippingPlane();
+		GraphicsInterface::resetClippingPlane();
 		invalidImage = false;
 		deletedObjectsBox = GuiInstance::getInvalidBox();
 
 		if(redrawCount != 0)
 		{
-			GuiGraphicsInterface::setBoundSurface(surf);
-			GuiGraphicsInterface::setColor(Vec4f(1,1,1,1));
-			GuiGraphicsInterface::drawToScreen();
+			GraphicsInterface::setBoundSurface(surf);
+			GraphicsInterface::setColor(Vec4f(1,1,1,1));
+			GraphicsInterface::drawToScreen();
 			// StringTools::println("RedrawCount: %d", redrawCount);
 		}
 		
@@ -743,7 +789,7 @@ namespace glib
 		return objectsByName.getAll(name);
 	}
 
-	GuiSurfaceInterface* GuiManager::getSurface()
+	SurfaceInterface* GuiManager::getSurface()
 	{
 		return surf;
 	}
@@ -755,7 +801,7 @@ namespace glib
 
 	void GuiManager::resizeImage(int width, int height)
 	{
-		bool wasBound = (surf == GuiGraphicsInterface::getBoundSurface());
+		bool wasBound = (surf == GraphicsInterface::getBoundSurface());
 		
 		if(surf->getWidth() != width || surf->getHeight() != height)
 		{
@@ -763,12 +809,12 @@ namespace glib
 			{
 				delete surf;
 			}
-			surf = GuiGraphicsInterface::createSurface(width, height);
+			surf = GraphicsInterface::createSurface(width, height);
 		}
 
 		invalidImage = true;
 		if(wasBound)
-			GuiGraphicsInterface::setBoundSurface(surf);
+			GraphicsInterface::setBoundSurface(surf);
 	}
 
 	void GuiManager::invalidateImage()

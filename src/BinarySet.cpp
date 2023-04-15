@@ -153,18 +153,26 @@ namespace glib
 
 		if(value == true)
 		{
-			unsigned char v = value << bitLocation;
+			unsigned char v = 1 << bitLocation;
 			byte |= v;
 		}
 		else
 		{
 			unsigned char nByte = ~byte;
-			unsigned char v = value << bitLocation;
+			unsigned char v = 1 << bitLocation;
 			nByte |= v;
 			byte = ~nByte;
 		}
 
 		this->set[byteLocation] = byte;
+	}
+
+	void BinarySet::setNumberOfBits(size_t n)
+	{
+		if(n > set.size()*8)
+			bitNumber = set.size()*8;
+		else
+			bitNumber = n;
 	}
 
 	std::vector<unsigned char> BinarySet::toBytes()

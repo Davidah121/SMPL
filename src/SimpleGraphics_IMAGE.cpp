@@ -44,6 +44,9 @@ namespace glib
 		if(y > maxY || x > maxX)
 			return; //Outside of the bounds that can be rendered
 
+		if(minX >= img->getWidth() || minY >= img->getHeight())
+			return; //Not valid bounds for the image we are drawing.
+		
 		Color* surfPixels = surf->getPixels();
 		Color* drawImgPixels = img->getPixels(); //Not using any pixel filtering and no edge conditions
 
@@ -119,6 +122,9 @@ namespace glib
 		if(y > maxY || x > maxX)
 			return; //Outside of the bounds that can be rendered
 
+		if(minX >= img->getWidth() || minY >= img->getHeight())
+			return; //Not valid bounds for the image we are drawing.
+		
 		Color* surfPixels = surf->getPixels();
 		Color* drawImgPixels = img->getPixels(); //Not using any pixel filtering and no edge conditions
 		Vec4f colorMult = Vec4f((double)SimpleGraphics::activeColor.red / 255.0, (double)SimpleGraphics::activeColor.green / 255.0, (double)SimpleGraphics::activeColor.blue / 255.0, (double)SimpleGraphics::activeColor.alpha / 255.0);
@@ -299,7 +305,7 @@ namespace glib
 		nImgW = MathExt::clamp(nImgW, 0, img->getWidth());
 		nImgH = MathExt::clamp(nImgH, 0, img->getHeight());
 		
-		
+
 		
 		int maxX = MathExt::clamp(minX+(nImgW-1), minXBound, maxXBound);
 		int maxY = MathExt::clamp(minY+(nImgH-1), minYBound, maxYBound);
@@ -308,6 +314,9 @@ namespace glib
 			return; //Outside of the bounds that can be rendered
 		if(y > maxY || x > maxX)
 			return; //Outside of the bounds that can be rendered
+		
+		if(minX >= img->getWidth() || minY >= img->getHeight())
+			return; //Not valid bounds for the image we are drawing.
 		
 		Color* surfPixels = surf->getPixels();
 		Color* drawImgPixels = img->getPixels(); //Not using any pixel filtering and no edge conditions

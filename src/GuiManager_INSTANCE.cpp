@@ -494,12 +494,12 @@ namespace glib
 		return manager;
 	}
 
-	void GuiInstance::setCanvas(GuiSurfaceInterface* m)
+	void GuiInstance::setCanvas(SurfaceInterface* m)
 	{
 		canvas = m;
 	}
 
-	GuiSurfaceInterface* GuiInstance::getCanvas()
+	SurfaceInterface* GuiInstance::getCanvas()
 	{
 		return canvas;
 	}
@@ -514,41 +514,41 @@ namespace glib
 		return staticScaling;
 	}
 	
-	void GuiInstance::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs)
+	void GuiInstance::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs)
 	{
 		std::vector<std::string> possibleNames = { "id", "visible", "active", "alwaysfocus", "onactive", "onfocus", "onvisible", "ondeactivate", "oninvisible", "onchanged", "x", "y" };
 
 		for(size_t i=0; i<possibleNames.size(); i++)
 		{
-			auto it = attribs.find(possibleNames[i]);
-			if(it != attribs.end())
+			auto it = attribs.get(possibleNames[i]);
+			if(it != nullptr)
 			{
 				if(possibleNames[i] == "id")
 				{
-					this->nameID = it->second;
+					this->nameID = it->data;
 				}
 				else if(possibleNames[i] == "visible")
 				{
-					this->setVisible(StringTools::equalsIgnoreCase<char>(it->second, "true"));
+					this->setVisible(StringTools::equalsIgnoreCase<char>(it->data, "true"));
 				}
 				else if(possibleNames[i] == "active")
 				{
-					this->setActive(StringTools::equalsIgnoreCase<char>(it->second, "true"));
+					this->setActive(StringTools::equalsIgnoreCase<char>(it->data, "true"));
 				}
 				else if(possibleNames[i] == "alwaysfocus")
 				{
-					this->setAlwaysFocus(StringTools::equalsIgnoreCase<char>(it->second, "true"));
+					this->setAlwaysFocus(StringTools::equalsIgnoreCase<char>(it->data, "true"));
 				}				
 				else if(possibleNames[i] == "x")
 				{
-					this->setBaseX( StringTools::toInt(it->second) );
+					this->setBaseX( StringTools::toInt(it->data) );
 				}
 				else if(possibleNames[i] == "y")
 				{
-					this->setBaseY( StringTools::toInt(it->second) );
+					this->setBaseY( StringTools::toInt(it->data) );
 				}
 
-				attribs.erase(possibleNames[i]);
+				attribs.remove(it);
 			}
 		}
 	}

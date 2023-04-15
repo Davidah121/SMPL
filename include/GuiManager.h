@@ -14,7 +14,8 @@
 
 #include <functional>
 
-#include "GuiGraphics.h"
+#include "GraphicsExt.h"
+#include "ResourceManager.h"
 
 //Should use SmartPointers for memory access to avoid accessing memory that has already been deleted.
 
@@ -26,6 +27,32 @@ struct Point
 
 namespace glib
 {
+	class GuiResourceManager
+	{
+	public:
+		~GuiResourceManager();
+
+		void addSprite(SpriteInterface* data, std::string key, bool array);
+		void addFont(FontInterface* data, std::string key, bool array);
+
+		SmartMemory<SpriteInterface> getSprite(std::string key);
+		SmartMemory<FontInterface> getFont(std::string key);
+		
+		void deleteSprite(std::string key);
+		void deleteFont(std::string key);
+		
+		ResourceManager<SpriteInterface>* getSpriteResourceManager();
+		ResourceManager<FontInterface>* getFontResourceManager();
+		
+		static GuiResourceManager& getResourceManager();
+	private:
+		GuiResourceManager();
+		ResourceManager<SpriteInterface> spriteResources = ResourceManager<SpriteInterface>();
+		ResourceManager<FontInterface> fontResources = ResourceManager<FontInterface>();
+
+		static GuiResourceManager singleton;
+	};
+
 	class GuiManager;
 
 	class GuiInstance : public Object
@@ -343,14 +370,14 @@ namespace glib
 		 * 
 		 * @param m 
 		 */
-		void setCanvas(GuiSurfaceInterface* m);
+		void setCanvas(SurfaceInterface* m);
 
 		/**
 		 * @brief Returns the pointer to the canvas for the GuiInstance if it has one.
 		 * 
-		 * @return GuiSurfaceInterface* 
+		 * @return SurfaceInterface* 
 		 */
-		GuiSurfaceInterface* getCanvas();
+		SurfaceInterface* getCanvas();
 
 		void setStaticScaling(bool v);
 		bool getStaticScaling();
@@ -364,7 +391,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 
 		static Box2D getInvalidBox();
 
@@ -491,7 +518,7 @@ namespace glib
 
 		std::vector<GuiInstance*> children = std::vector<GuiInstance*>();
 		GuiManager* manager = nullptr;
-		GuiSurfaceInterface* canvas = nullptr;
+		SurfaceInterface* canvas = nullptr;
 		GuiInstance* parent = nullptr;
 
 		XmlNode dataAsXML;
@@ -537,7 +564,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 	
@@ -545,7 +572,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
+		static GuiInstance* loadFunction(SimpleHashMap<std::string, std::string>& attributes);
 	};
 
 	class GuiList : public GuiInstance
@@ -587,7 +614,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 
@@ -595,7 +622,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
+		static GuiInstance* loadFunction(SimpleHashMap<std::string, std::string>& attributes);
 		void copy(const GuiList& other);
 
 		std::vector<Point*> locations;
@@ -648,7 +675,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 
@@ -656,7 +683,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
+		static GuiInstance* loadFunction(SimpleHashMap<std::string, std::string>& attributes);
 		void copy(const GuiGrid& other);
 
 		std::vector<Point*> locations;
@@ -711,14 +738,14 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 		static void registerLoadFunction();
 
 	protected:
 		void solveBoundingBox();
 		
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
+		static GuiInstance* loadFunction(SimpleHashMap<std::string, std::string>& attributes);
 		void copy(const GuiContextMenu& other);
 
 		GuiList listMenu = GuiList(0, 0);
@@ -902,7 +929,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		GuiSurfaceInterface* myImage = nullptr;
+		SurfaceInterface* myImage = nullptr;
 		Color clearColor = {0,0,0,0};
 	};
 
@@ -1054,7 +1081,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 
@@ -1062,7 +1089,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
+		static GuiInstance* loadFunction(SimpleHashMap<std::string, std::string>& attributes);
 		
 
 		std::function<void(GuiInstance*)> onClickFunction;
@@ -1095,9 +1122,10 @@ namespace glib
 		/**
 		 * @brief Construct a new GuiSprite object
 		 * 		It contains multiple Images that can be animated.
-		 * 		Loads an image/sprite from a file
+		 * 		Loads an image/sprite from the GuiManager provided.
+		 * 			If it does not exist, it creates a new one and puts it in the GuiManager's resource list with the filename provided.
 		 * @param f
-		 * 		The file containing the image(s).
+		 * 		The file / id-string containing the image(s).
 		 */
 		GuiSprite(File f);
 
@@ -1131,9 +1159,17 @@ namespace glib
 		/**
 		 * @brief Gets the Sprite
 		 * 
-		 * @return GuiSpriteInterface*
+		 * @return SpriteInterface*
 		 */
-		GuiSpriteInterface* getSprite();
+		SpriteInterface* getSprite();
+
+		/**
+		 * @brief Sets the Sprite for this object. Must be SmartMemory.
+		 * 		Should not have delete rights if possible as any copying could delete the original data.
+		 * 
+		 * @param spr 
+		 */
+		void setSprite(SmartMemory<SpriteInterface> spr);
 
 		/**
 		 * @brief Sets the x scale for the sprite.
@@ -1228,7 +1264,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 	
@@ -1236,7 +1272,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
+		static GuiInstance* loadFunction(SimpleHashMap<std::string, std::string>& attributes);
 
 		size_t lastUpdateTime = 0;
 		size_t index = 0;
@@ -1247,7 +1283,7 @@ namespace glib
 		int width = -1;
 		int height = -1;
 
-		GuiSpriteInterface* img = nullptr;
+		SmartMemory<SpriteInterface> spr = SmartMemory<SpriteInterface>();
 		Color imgColor = {255,255,255,255};
 	};
 
@@ -1438,20 +1474,34 @@ namespace glib
 
 		/**
 		 * @brief Sets a specific font to use.
-		 * 		If nullptr, the default font set in the SimpleGraphics class will be used.
+		 * 		Should avoid delete access since any copying could delete the original data.
 		 * 
 		 * @param f 
 		 */
-		void setFont(GuiFontInterface* f);
+		void setFont(SmartMemory<FontInterface> f);
 
 		/**
 		 * @brief Gets the Font used.
 		 * 		If nullptr, the default font set in the SimpleGraphics class is being used.
-		 * 
-		 * @return GuiFontInterface* 
+		 * 		Font will be resized to fit the objects desired size when this is called.
+		 * 			All other objects sharing this font pointer will have their font resized as well.
+		 * 		
+		 * @return FontInterface* 
 		 */
-		GuiFontInterface* getFont();
+		FontInterface* getFont();
 
+		/**
+		 * @brief Set the Font Size used by the text.
+		 * @param v 
+		 */
+		void setFontSize(int v);
+
+		/**
+		 * @brief Gets the Font Size used by the text.
+		 * 
+		 * @return int 
+		 */
+		int getFontSize();
 		/**
 		 * @brief Sets the Maximum Width of the text block
 		 * 		If set to < 0, no maximum width will be imposed
@@ -1505,7 +1555,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 
@@ -1513,7 +1563,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
+		static GuiInstance* loadFunction(SimpleHashMap<std::string, std::string>& attributes);
 		void copy(const GuiTextBlock& other);
 		
 		int maxWidth = -1;
@@ -1528,12 +1578,14 @@ namespace glib
 		bool allowWrapText = false;
 		bool updateBounds = true;
 		
+		int fontSize = 12;
+
 		std::string defaultString = "";
 
 		Color textColor = { 0, 0, 0, 255 };
 		Color defaultTextColor = { 0, 0, 0, 64 };
 		Color highlightColor = { 72, 150, 255, 96 };
-		GuiFontInterface* textFont = nullptr;
+		SmartMemory<FontInterface> textFontP = SmartMemory<FontInterface>();
 
 		std::string text = "";
 	};
@@ -1765,7 +1817,7 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 
 		static void registerLoadFunction();
 
@@ -1773,7 +1825,7 @@ namespace glib
 		void solveBoundingBox();
 
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
+		static GuiInstance* loadFunction(SimpleHashMap<std::string, std::string>& attributes);
 		
 		std::function<void(GuiInstance*)> onEnterPressedFunction;
 		std::function<void(GuiInstance*)> onKeyPressFunction;
@@ -2168,14 +2220,14 @@ namespace glib
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(std::unordered_map<std::string, std::string>& attribs);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs);
 		static void registerLoadFunction();
 
 	protected:
 		void solveBoundingBox();
 		
 	private:
-		static GuiInstance* loadFunction(std::unordered_map<std::string, std::string>& attributes);
+		static GuiInstance* loadFunction(SimpleHashMap<std::string, std::string>& attributes);
 		
 		/**
 		 * @brief Construct a new Gui Date Picker object
@@ -2229,6 +2281,7 @@ namespace glib
 	
 		static const unsigned char TYPE_SOFTWARE = 0;
 		static const unsigned char TYPE_OPENGL = 1;
+		static const unsigned char TYPE_DIRECTX = 2;
 		static const unsigned char TYPE_INVALID = -1;
 
 		/**
@@ -2325,9 +2378,9 @@ namespace glib
 		/**
 		 * @brief Gets the Surface for the GuiManager
 		 * 
-		 * @return GuiSurfaceInterface* 
+		 * @return SurfaceInterface* 
 		 */
-		GuiSurfaceInterface* getSurface();
+		SurfaceInterface* getSurface();
 
 		/**
 		 * @brief Gets the amount of GuiInstances in the list.
@@ -2479,12 +2532,12 @@ namespace glib
 		 * 		The function must take in a unordered_map (hashmap) of parameters to be set.
 		 * 		Not all parameters must be set and some are expected to be passed to the parent class.
 		 * 
-		 *  	The function must also take in the GuiGraphicsInterface used. Best used for loading additional graphics data.
+		 *  	The function must also take in the GraphicsInterface used. Best used for loading additional graphics data.
 		 * 
 		 * @param className 
 		 * @param func 
 		 */
-		static void registerLoadFunction(std::string className, std::function<GuiInstance*(std::unordered_map<std::string, std::string>&)> func);
+		static void registerLoadFunction(std::string className, std::function<GuiInstance*(SimpleHashMap<std::string, std::string>&)> func);
 
 		/**
 		 * @brief Adds some default loading functions to be used when loading elements from a file.
@@ -2511,10 +2564,10 @@ namespace glib
 		std::vector<GuiInstance*> objects = std::vector<GuiInstance*>();
 		std::unordered_set<GuiInstance*> shouldDelete = std::unordered_set<GuiInstance*>();
 		
-		static std::unordered_map<std::string, std::function<GuiInstance*(std::unordered_map<std::string, std::string>&)> > elementLoadingFunctions;
+		static std::unordered_map<std::string, std::function<GuiInstance*(SimpleHashMap<std::string, std::string>&)> > elementLoadingFunctions;
 
 		SimpleHashMap<std::string, GuiInstance*> objectsByName = SimpleHashMap<std::string, GuiInstance*>();
-		
+
 		int windowX = 0;
 		int windowY = 0;
 		bool invalidImage = true;
@@ -2523,8 +2576,8 @@ namespace glib
 
 		Vec2f expectedSize;
 
-		GuiSurfaceInterface* surf;
-		unsigned char graphicsInterfaceMode = GuiGraphicsInterface::TYPE_DEFAULT;
+		SurfaceInterface* surf;
+		unsigned char graphicsInterfaceMode = GraphicsInterface::TYPE_DEFAULT;
 
 		Box2D deletedObjectsBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, -0x7FFFFFFF, -0x7FFFFFFF);
 		Box2D preClipBox = Box2D(0x7FFFFFFF, 0x7FFFFFFF, -0x7FFFFFFF, -0x7FFFFFFF);

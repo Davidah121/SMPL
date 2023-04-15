@@ -180,7 +180,8 @@ namespace glib
 		/**
 		 * @brief Writes a byte to the file
 		 * 		This function is affected by the character type the file was set as.
-		 * 		
+		 * 		It will write exactly 1 byte to the file.
+		 * 
 		 * 		If the file was not opened for writing
 		 * 		and USE_EXCEPTIONS is defined, a FileWriteException may be thrown.
 		 * @param c 
@@ -189,7 +190,8 @@ namespace glib
 
 		/**
 		 * @brief Writes a wide char to the file
-		 * 		This function is affected by the character type the file was set as.
+		 * 		This function is not affected by the character type the file was set as.
+		 * 		It will write exactly 2 bytes to the file.
 		 * 		
 		 * 		If the file was not opened for writing
 		 * 		and USE_EXCEPTIONS is defined, a FileWriteException may be thrown.
@@ -198,8 +200,18 @@ namespace glib
 		void writeWideChar(wchar_t c);
 
 		/**
+		 * @brief Writes a utf8 character to the file.
+		 * 		This function is not affected by the character type the file was set as.
+		 * 		It will always write a utf8 character to the file.
+		 * 		
+		 * 
+		 * @param c 
+		 */
+		void writeUTF8Char(int c);
+
+		/**
 		 * @brief Writes a series of bytes to the file.
-		 * 		This function is affected by the character type the file was set as.
+		 * 		It will write the exact number of bytes specified and not modify it based on the character type of the file.
 		 * 		
 		 * 		If the file was not opened for writing
 		 * 		and USE_EXCEPTIONS is defined, a FileWriteException may be thrown.

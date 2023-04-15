@@ -689,6 +689,59 @@ namespace glib
 		Vec2f v3;
 	};
 
+	class Triangle2DModel : public Shape
+	{
+	public:
+		/**
+		 * @brief Construct a new Triangle 2D Model object
+		 * 		Consider this a special case of Combination Shape that only contains 2D triangles.
+		 * 		Good for converting polygons and other shapes into a simpler shape and either rendering them or performing collision.
+		 * 			Note that this model is "uncompressed" meanining it is equivalent to a non-indexed model with a triangle strip so there are duplicate points.
+		 * 
+		 */
+		Triangle2DModel();
+
+		/**
+		 * @brief Destroy the Triangle 2D Model object
+		 * 
+		 */
+		~Triangle2DModel();
+
+		//Object and Class Stuff
+		static const Class globalClass;
+
+		/**
+		 * @brief Adds a 2D triangle to the list of triangles in the shape.
+		 * 
+		 * @param tri 
+		 */
+		void add(Triangle2D tri);
+
+		/**
+		 * @brief Gets a 2D triangle at the specified index.
+		 * 
+		 * @param index 
+		 * @return Triangle2D 
+		 */
+		Triangle2D get(size_t index);
+
+		/**
+		 * @brief Get the raw list of triangles
+		 * 
+		 * @return std::vector<Triangle2D>& 
+		 */
+		std::vector<Triangle2D>& getTriangles();
+
+		/**
+		 * @brief Returns the number of triangles in the model.
+		 * 
+		 * @return size_t 
+		 */
+		size_t size();
+	private:
+		std::vector<Triangle2D> tris;
+	};
+
 	class Polygon2D : public Shape
 	{
 	public:
@@ -865,7 +918,200 @@ namespace glib
 
 	class Triangle3D : public Shape
 	{
+	public:
+		/**
+		 * @brief Construct a new Triangle3D object
+		 * 		All transforms affect this shape.
+		 * 		Default position are all (0,0)
+		 * 
+		 */
+		Triangle3D();
 
+		/**
+		 * @brief Construct a new Triangle3D object
+		 * 		All transforms affect this shape.
+		 * 
+		 * @param p1 
+		 * @param p2 
+		 * @param p3 
+		 */
+		Triangle3D(Vec3f p1, Vec3f p2, Vec3f p3);
+
+		/**
+		 * @brief Construct a new Triangle3D object
+		 * 		All transforms affect this shape.
+		 * 
+		 * @param x1 
+		 * @param y1 
+		 * @param z1
+		 * @param x2 
+		 * @param y2 
+		 * @param z2
+		 * @param x3 
+		 * @param y3 
+		 * @param z3
+		 */
+		Triangle3D(double x1, double y1, double z1, double x2, double y2, double z2, double x3, double y3, double z3);
+
+		/**
+		 * @brief Destroy the Triangle3D object
+		 * 
+		 */
+		~Triangle3D();
+
+		//Object and Class Stuff
+		static const Class globalClass;
+		
+		/**
+		 * @brief Sets the first vertex of the triangle
+		 * 
+		 * @param p 
+		 */
+		void setVertex1(Vec3f p);
+
+		/**
+		 * @brief Sets the first vertex of the triangle
+		 * 
+		 * @param x 
+		 * @param y 
+		 * @param z
+		 */
+		void setVertex1(double x, double y, double z);
+
+		/**
+		 * @brief Sets the second vertex of the triangle
+		 * 
+		 * @param p 
+		 */
+		void setVertex2(Vec3f p);
+
+		/**
+		 * @brief Sets the second vertex of the triangle
+		 * 
+		 * @param x 
+		 * @param y 
+		 * @param z
+		 */
+		void setVertex2(double x, double y, double z);
+
+		/**
+		 * @brief Sets the third vertex of the triangle
+		 * 
+		 * @param p 
+		 */
+		void setVertex3(Vec3f p);
+
+		/**
+		 * @brief Sets the third vertex of the triangle
+		 * 
+		 * @param x 
+		 * @param y 
+		 * @param z
+		 */
+		void setVertex3(double x, double y, double z);
+
+		/**
+		 * @brief Gets the first vertex of the triangle after transforms
+		 * 
+		 * @return Vec3f 
+		 */
+		Vec3f getVertex1();
+
+		/**
+		 * @brief Gets the first vertex of the triangle after transforms
+		 * 
+		 * @return Vec3f 
+		 */
+		Vec3f getVertex2();
+
+		/**
+		 * @brief Gets the first vertex of the triangle after transforms
+		 * 
+		 * @return Vec3f 
+		 */
+		Vec3f getVertex3();
+
+		/**
+		 * @brief Get the Center Position of the triangle after transforms
+		 * 
+		 * @return Vec3f 
+		 */
+		Vec3f getCenterPosition();
+		
+		/**
+		 * @brief Gets the Normal vector for the triangle
+		 * 
+		 * @return Vec3f 
+		 */
+		Vec3f getNormal();
+
+		/**
+		 * @brief Generates a bounding radius for the triangle.
+		 * 
+		 * @return double 
+		 */
+		double generateBoundingRadius();
+	
+	protected:
+		void onTransformChanged(); //TODO
+
+	private:
+		Vec3f v1;
+		Vec3f v2;
+		Vec3f v3;
+	};
+
+	class Triangle3DModel : public Shape
+	{
+	public:
+		/**
+		 * @brief Construct a new Triangle 3D Model object
+		 * 		Consider this a special case of Combination Shape that only contains 3D triangles.
+		 * 		Good for converting polygons and other shapes into a simpler shape and either rendering them or performing collision.
+		 * 			Note that this model is "uncompressed" meanining it is equivalent to a non-indexed model with a triangle strip so there are duplicate points.
+		 * 
+		 */
+		Triangle3DModel();
+
+		/**
+		 * @brief Destroy the Triangle 3D Model object
+		 * 
+		 */
+		~Triangle3DModel();
+
+		//Object and Class Stuff
+		static const Class globalClass;
+
+		/**
+		 * @brief Adds a 3D triangle to the list of triangles in the shape.
+		 * 
+		 * @param tri 
+		 */
+		void add(Triangle3D tri);
+
+		/**
+		 * @brief Gets a 3D triangle at the specified index.
+		 * 
+		 * @param index 
+		 * @return Triangle3D 
+		 */
+		Triangle3D get(size_t index);
+
+		/**
+		 * @brief Get the raw list of triangles
+		 * 
+		 * @return std::vector<Triangle3D>& 
+		 */
+		std::vector<Triangle3D>& getTriangles();
+
+		/**
+		 * @brief Returns the number of triangles in the model.
+		 * 
+		 * @return size_t 
+		 */
+		size_t size();
+	private:
+		std::vector<Triangle3D> tris;
 	};
 
 	class Polygon3D : public Shape

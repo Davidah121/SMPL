@@ -38,6 +38,64 @@ namespace glib
 		points.push_back(Vec2f(x, y));
 	}
 
+	bool BezierCurve::insertPoint(size_t index, Vec2f p)
+	{
+		if(index < points.size())
+		{
+			points.push_back(p);
+			for(int i=points.size()-1; i>=index; i--)
+			{
+				Vec2f temp = points[i-1];
+				points[i-1] = points[i];
+				points[i] = temp;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	bool BezierCurve::insertPoint(size_t index, double x, double y)
+	{
+		if(index < points.size())
+		{
+			points.push_back(Vec2f(x, y));
+			for(int i=points.size()-1; i>=index; i--)
+			{
+				Vec2f temp = points[i-1];
+				points[i-1] = points[i];
+				points[i] = temp;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	void BezierCurve::removePoint(size_t index)
+	{
+		if(index < points.size())
+		{
+			std::vector<Vec2f> nPoints;
+			for(int i=0; i<points.size(); i++)
+			{
+				if(i != index)
+					nPoints.push_back(points[i]);
+			}
+			points = nPoints;
+		}
+	}
+
+	void BezierCurve::setPoint(size_t index, Vec2f p)
+	{
+		if(index < points.size())
+			points[index] = p;
+	}
+
+	void BezierCurve::setPoint(size_t index, double x, double y)
+	{
+		if(index < points.size())
+			points[index] = Vec2f(x, y);
+	}
+
 	Vec2f BezierCurve::getPoint(size_t index)
 	{
 		if (index < points.size())
@@ -49,6 +107,11 @@ namespace glib
 			#endif
 		}
 		return Vec2f();
+	}
+
+	std::vector<Vec2f>& BezierCurve::getPoints()
+	{
+		return points;
 	}
 
 	std::vector<BezierCurve> BezierCurve::subdivide(double t)
@@ -100,7 +163,7 @@ namespace glib
 			b1.addPoint(pointsForFirst[i]);
 		}
 
-		for(int i=(int)pointsForLast.size()-1; i>=0; i--)
+		for(long i=(long)pointsForLast.size()-1; i>=0; i--)
 		{
 			b2.addPoint(pointsForLast[i]);
 		}
@@ -234,6 +297,78 @@ namespace glib
 		}
 
 		return arcLength;
+	}
+
+	double BezierCurve::findTimeForMinDis(double x, double y, unsigned int maxIterations)
+	{
+		return findTimeForMinDis( Vec2f(x, y), maxIterations );
+	}
+
+	double BezierCurve::findTimeForMinDis(Vec2f p, unsigned int maxIterations)
+	{
+		//use secant method to solve 
+		double xn[3] = {NAN, 1, 0};
+		double sol[3] = {NAN, 0, 0};
+
+		double solAt0 = 0;
+		double solAt1 = 0;
+
+		Vec2f bt = this->getFuctionAt(0);
+		Vec2f bpt = this->getDerivativeAt(0);
+		sol[2] = 2*(p.x - bt.x)*(-bpt.x) + 2*(p.y - bt.y)*(-bpt.y);
+		
+		bt = this->getFuctionAt(1);
+		bpt = this->getDerivativeAt(1);
+		sol[1] = 2*(p.x - bt.x)*(-bpt.x) + 2*(p.y - bt.y)*(-bpt.y);
+		
+		if(sol[2] == 0)
+			return 0;
+		if(sol[1] == 0)
+			return 1;
+
+		solAt0 = sol[2];
+		solAt1 = sol[1];
+		
+		for(int i=0; i<maxIterations; i++)
+		{
+			double num = sol[1]*(xn[1] - xn[2]);
+			double div = sol[1] - sol[2];
+			if(div == 0)
+			{
+				//error occured
+				xn[0] = NAN;
+				break;
+			}
+
+			xn[0] = xn[1] - num/div;
+			
+			bt = this->getFuctionAt(xn[0]);
+			bpt = this->getDerivativeAt(xn[0]);
+			sol[0] = 2*(p.x - bt.x)*(-bpt.x) + 2*(p.y - bt.y)*(-bpt.y);
+
+			if(sol[0] == 0)
+			{
+				break;
+			}
+
+			//move xn to xn-1 and move xn-1 to xn-2
+			xn[2] = xn[1];
+			xn[1] = xn[0];
+
+			sol[2] = sol[1];
+			sol[1] = sol[0];
+		}
+
+		if(xn[0] != NAN)
+		{
+			if(xn[0] >= 0 && xn[0] <= 1)
+				return xn[0];
+		}
+		
+		if(solAt0 < solAt1)
+			return 0;
+		else
+			return 1;
 	}
 
 	void BezierCurve::clear()

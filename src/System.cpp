@@ -4,9 +4,14 @@
 #include <thread>
 #include <mutex>
 #include "SimpleFile.h"
+#include "Input.h"
 
 #ifdef __unix__
-	#include <X11/Xlib.h>
+	
+	#ifndef NO_WINDOW
+		#include <X11/Xlib.h>
+	#endif
+	
 	#include <sys/types.h>
 	#include <sys/sysinfo.h>
 	#include <sys/times.h>
@@ -46,20 +51,25 @@ namespace glib
 	//Non static but global
 	std::mutex lock;
 	
+	#ifdef _WIN32
 	PDH_HQUERY cpuQuery;
 	PDH_HCOUNTER cpuTotal;
+	#endif
 
 	void System::init()
 	{
-		lock.lock();
-		if(!hasInit)
-		{
-			PdhOpenQueryW(NULL, NULL, &cpuQuery);
-			PdhAddEnglishCounterW(cpuQuery, L"\\Processor(_Total)\\% Processor Time", NULL, &cpuTotal);
-			PdhCollectQueryData(cpuQuery);
-			hasInit = true;
-		}
-		lock.unlock();
+		#ifdef _WIN32
+			lock.lock();
+			if(!hasInit)
+			{
+				PdhOpenQueryW(NULL, NULL, &cpuQuery);
+				PdhAddEnglishCounterW(cpuQuery, L"\\Processor(_Total)\\% Processor Time", NULL, &cpuTotal);
+				PdhCollectQueryData(cpuQuery);
+				hasInit = true;
+			}
+			lock.unlock();
+		#endif
+
 	}
 
 	size_t System::getCurrentTimeMillis()
@@ -88,11 +98,11 @@ namespace glib
 	
 	std::tm System::getCurrentDate()
 	{
-		std::time_t currentTime = time(nullptr);
+		time_t currentTime = time(nullptr);
 		return System::convertTimeToDate(currentTime);
 	}
 
-	std::tm System::convertTimeToDate(std::time_t t)
+	std::tm System::convertTimeToDate(time_t t)
 	{
 		std::tm currentStoredDate;
 		
@@ -138,161 +148,6 @@ namespace glib
 	unsigned int System::getNumberOfThreads()
 	{
 		return numberOfThreads;
-	}
-
-	void System::emulateKeyPress(int key)
-	{
-		//TODO - __unix__ VERSION
-		#ifdef _WIN32
-
-			INPUT i;
-			ZeroMemory(&i, sizeof(INPUT));
-
-			i.type = INPUT_KEYBOARD;
-			i.ki.wVk = key;
-			i.ki.dwFlags = NULL;
-
-			SendInput(1, &i, sizeof(INPUT));
-
-		#endif
-	}
-
-	void System::emulateKeyRelease(int key)
-	{
-		//TODO - __unix__ VERSION
-		#ifdef _WIN32
-
-			INPUT i;
-			ZeroMemory(&i, sizeof(INPUT));
-
-			i.type = INPUT_KEYBOARD;
-			i.ki.wVk = key;
-			i.ki.dwFlags = KEYEVENTF_KEYUP;
-
-			SendInput(1, &i, sizeof(INPUT));
-
-		#endif
-	}
-
-	void System::emulateMousePress(int key)
-	{
-		//TODO - __unix__ VERSION
-		#ifdef _WIN32
-
-			INPUT i;
-			ZeroMemory(&i, sizeof(INPUT));
-
-			i.type = INPUT_MOUSE;
-			
-			switch (key)
-			{
-			case LEFT_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-				break;
-			case RIGHT_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
-				break;
-			case MIDDLE_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_MIDDLEDOWN;
-				break;
-			case X1_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_XDOWN;
-				i.mi.mouseData = XBUTTON1;
-				break;
-			case X2_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_XDOWN;
-				i.mi.mouseData = XBUTTON2;
-				break;
-			default:
-				break;
-			}
-
-			SendInput(1, &i, sizeof(INPUT));
-
-		#endif
-	}
-
-	void System::emulateMouseRelease(int key)
-	{
-		//TODO - __unix__ VERSION
-		#ifdef _WIN32
-
-			INPUT i;
-			ZeroMemory(&i, sizeof(INPUT));
-
-			i.type = INPUT_MOUSE;
-
-			switch (key)
-			{
-			case LEFT_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_LEFTUP;
-				break;
-			case RIGHT_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
-				break;
-			case MIDDLE_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
-				break;
-			case X1_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_XUP;
-				i.mi.mouseData = XBUTTON1;
-				break;
-			case X2_MOUSE_BUTTON:
-				i.mi.dwFlags = MOUSEEVENTF_XUP;
-				i.mi.mouseData = XBUTTON2;
-				break;
-			default:
-				break;
-			}
-
-			SendInput(1, &i, sizeof(INPUT));
-		
-		#endif
-	}
-
-	void System::emulateMouseWheel(int wheel, int amount)
-	{
-		//TODO - __unix__ VERSION
-		#ifdef _WIN32
-
-			INPUT i;
-			ZeroMemory(&i, sizeof(INPUT));
-
-			i.type = INPUT_MOUSE;
-
-			switch (wheel)
-			{
-			case MOUSE_WHEEL_UP:
-				i.mi.mouseData = -WHEEL_DELTA * amount;
-				i.mi.dwFlags = MOUSEEVENTF_WHEEL;
-				break;
-			case MOUSE_WHEEL_DOWN:
-				i.mi.mouseData = WHEEL_DELTA * amount;
-				i.mi.dwFlags = MOUSEEVENTF_WHEEL;
-				break;
-			case MOUSE_WHEEL_LEFT:
-				i.mi.mouseData = -WHEEL_DELTA * amount;
-				i.mi.dwFlags = MOUSEEVENTF_HWHEEL;
-				break;
-			case MOUSE_WHEEL_RIGHT:
-				i.mi.mouseData = WHEEL_DELTA * amount;
-				i.mi.dwFlags = MOUSEEVENTF_HWHEEL;
-				break;
-			default:
-				break;
-			}
-
-			SendInput(1, &i, sizeof(INPUT));
-
-		#endif
-	}
-
-	void System::setMousePosition(int x, int y)
-	{
-		//TODO - __unix__ VERSION
-		#ifdef _WIN32
-		SetCursorPos(x, y);
-		#endif
 	}
 
 	int System::getMouseX()
@@ -350,15 +205,15 @@ namespace glib
 
 			switch (value)
 			{
-			case LEFT_MOUSE_BUTTON:
+			case Input::LEFT_MOUSE_BUTTON:
 				return (GetKeyState(VK_LBUTTON) >> 15) == 1;
-			case RIGHT_MOUSE_BUTTON:
+			case Input::RIGHT_MOUSE_BUTTON:
 				return (GetKeyState(VK_RBUTTON) >> 15) == 1;
-			case MIDDLE_MOUSE_BUTTON:
+			case Input::MIDDLE_MOUSE_BUTTON:
 				return (GetKeyState(VK_MBUTTON) >> 15) == 1;
-			case X1_MOUSE_BUTTON:
+			case Input::X1_MOUSE_BUTTON:
 				return (GetKeyState(VK_XBUTTON1) >> 15) == 1;
-			case X2_MOUSE_BUTTON:
+			case Input::X2_MOUSE_BUTTON:
 				return (GetKeyState(VK_XBUTTON2) >> 15) == 1;
 			default:
 				return false;
@@ -370,18 +225,22 @@ namespace glib
 
 	int System::getDesktopWidth()
 	{
-		#ifdef _WIN32
-		return GetSystemMetrics(SM_CXSCREEN);
-		#endif
+		#ifndef NO_WINDOW
 
-		#ifdef __unix__
-		int w = 0;
-		Display* d = XOpenDisplay(NULL);
-		if(d == nullptr)
+			#ifdef _WIN32
+			return GetSystemMetrics(SM_CXSCREEN);
+			#endif
+
+			#ifdef __unix__
+			int w = 0;
+			Display* d = XOpenDisplay(NULL);
+			if(d == nullptr)
+				return w;
+			int s = DefaultScreen(d);
+			w = DisplayWidth(d, s);
 			return w;
-		int s = DefaultScreen(d);
-		w = DisplayWidth(d, s);
-		return w;
+			#endif
+
 		#endif
 		
 		return -1;
@@ -389,18 +248,22 @@ namespace glib
 
 	int System::getDesktopHeight()
 	{
-		#ifdef _WIN32
-		return GetSystemMetrics(SM_CYSCREEN);
-		#endif
+		#ifndef NO_WINDOW
 
-		#ifdef __unix__
-		int h = 0;
-		Display* d = XOpenDisplay(NULL);
-		if(d == nullptr)
+			#ifdef _WIN32
+			return GetSystemMetrics(SM_CYSCREEN);
+			#endif
+
+			#ifdef __unix__
+			int h = 0;
+			Display* d = XOpenDisplay(NULL);
+			if(d == nullptr)
+				return h;
+			int s = DefaultScreen(d);
+			h = DisplayHeight(d, s);
 			return h;
-		int s = DefaultScreen(d);
-		h = DisplayHeight(d, s);
-		return h;
+			#endif
+
 		#endif
 
 		return -1;
@@ -408,17 +271,22 @@ namespace glib
 
 	int System::getAmountOfMonitors()
 	{
-		#ifdef _WIN32
-		return GetSystemMetrics(SM_CMONITORS);
+		#ifndef NO_WINDOW
+
+			#ifdef _WIN32
+			return GetSystemMetrics(SM_CMONITORS);
+			#endif
+			
+			#ifdef __unix__
+			int m = 0;
+			Display* d = XOpenDisplay(NULL);
+			if(d == nullptr)
+				return m;
+			// return ((_XPrivDisplay)display)->screens; //TODO
+			#endif
+
 		#endif
-		
-		#ifdef __unix__
-		int m = 0;
-		Display* d = XOpenDisplay(NULL);
-		if(d == nullptr)
-			return m;
-		// return ((_XPrivDisplay)display)->screens; //TODO
-		#endif
+
 		return 0;
 	}
 
@@ -996,6 +864,8 @@ namespace glib
 	
 	double System::getTotalCpuUsage()
 	{
+		
+		#ifdef _WIN32
 		System::init();
 		
 		lock.lock();
@@ -1005,6 +875,8 @@ namespace glib
 		lock.unlock();
 		
 		return counterVal.doubleValue;
+		#endif
+		return 0;
 	}
 	
 	double System::getCpuUsage()

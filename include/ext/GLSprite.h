@@ -28,10 +28,12 @@
 			 * 
 			 * @param o 
 			 */
-			GLSprite(const Sprite& o);
+			GLSprite(Sprite& o);
 
 			/**
 			 * @brief Construct a new GLSprite object from another GLSprite object
+			 * 		Does not re-create the textures but instead just copies them.
+			 * 			Equivalent to a shallow copy.
 			 * 
 			 * @param o 
 			 */

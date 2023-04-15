@@ -43,6 +43,7 @@
             
             
             static void init();
+            static void dispose();
 
             static void clear(int clearCodes);
             static void setClearColor(Vec4f color);
@@ -64,7 +65,10 @@
             static void setBlendFunction(int src, int dest);
 
             static void setOrthoProjection(int width, int height);
-            static void setOrthoProjection(Mat4f mat);
+            static void setProjection(Mat4f mat);
+            
+            static void setClippingRectangle(int x, int y, int width, int height);
+            static void resetClippingRectangle();
 
             static void setFont(DXFont* font);
             static DXFont* getFont();
@@ -72,6 +76,8 @@
             static void drawSurface(double x1, double y1, double x2, double y2, DXSurface* s);
             static void drawTexture(double x1, double y1, double x2, double y2, DXTexture* tex);
             static void drawTexture(double x, double y, DXTexture* tex);
+            
+            static void drawTexturePart(Vec4f positionData, Vec4f textureData, DXTexture* tex);
             
             static void drawSprite(double x1, double y1, double x2, double y2, DXSprite* sprite, int index);
             static void drawSprite(double x, double y, DXSprite* sprite, int index);
@@ -82,8 +88,17 @@
             static void drawTextLimits(std::string text, double x, double y, double maxWidth, double maxHeight, bool useLineBreaks, DXFont* fontPointer = nullptr);
             static void drawTextLimits(std::wstring text, double x, double y, double maxWidth, double maxHeight, bool useLineBreaks, DXFont* fontPointer = nullptr);
 
+            static void drawTextLimitsHighlighted(std::string text, double x, double y, double maxWidth, double maxHeight, bool useLineBreaks, int highlightStart, int highlightEnd, Vec4f highlightColor, DXFont* fontPointer = nullptr);
+            static void drawTextLimitsHighlighted(std::wstring text, double x, double y, double maxWidth, double maxHeight, bool useLineBreaks, int highlightStart, int highlightEnd, Vec4f highlightColor, DXFont* fontPointer = nullptr);
+
             static void drawRectangle(double x1, double y1, double x2, double y2, bool outline);
-            static void drawCircle(double x, double y, double radius);
+            
+            static void drawCircle(double x, double y, double radius, bool outline);
+            static void drawCircle(double x, double y, double innerRadius, double outerRadius);
+            
+            static void drawEllipse(double x, double y, double xRadius, double yRadius, bool outline);
+            static void drawEllipse(double x, double y, double xRadius, double yRadius, double innerRadiusDistance);
+
             static void drawTriangle(Vec2f p1, Vec2f p2, Vec2f p3, bool outline);
 
             static void drawLine(double x1, double y1, double x2, double y2);
@@ -101,6 +116,7 @@
             static Vec4f clearColor;
             static Vec4f drawColor;
             static Mat4f orthoMat;
+            static Mat4f surfaceMat;
 
             //Note that the following shaders will be implemented in the resource folder
             //This may change to being literal strings
@@ -111,7 +127,7 @@
             static DXFont* activeFont;
 
             static DXModel drawModel;
-
+            static bool hasInit;
             static DXGraphics singleton;
 
             static D3D11_DEPTH_STENCIL_DESC depthStencilDesc;

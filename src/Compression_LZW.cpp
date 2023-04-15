@@ -89,266 +89,43 @@ namespace glib
 		return Compression::compressLZW(data.data(), data.size(), codeSize);
 	}
 
-	std::vector<unsigned char> Compression::compressLZW(unsigned char* data, size_t size, int codeSize)
-	{
-		if(size <= 0)
-		{
-			#ifdef USE_EXCEPTIONS
-			throw InvalidSizeError();
-			#endif
-		}
-
-		if(data == nullptr)
-		{
-			#ifdef USE_EXCEPTIONS
-			throw InvalidDataError();
-			#endif
-			return {};
-		}
-
-		if(codeSize <= 0)
-		{
-			return {};
-		}
-		
-		//First make the base dictionary
-		
-		std::unordered_map<std::string, int> baseDictionary = std::unordered_map<std::string, int>();
-
-		int s = 1 << codeSize;
-		for(int i=0; i < s; i++)
-		{
-			std::string k = "";
-			k += (char)i;
-			std::pair<std::string, int> pair = {k, i};
-			baseDictionary.insert( pair ); //fix
-		}
-
-		//Add the clearDictionary and endOfData values.
-		//We need to store the location so that it can be excluded in compression
-		//when we compare what data is in the dictionary.
-
-		int clearDictionaryLocation = baseDictionary.size();
-		int EndOfDataLocation = baseDictionary.size()+1;
-
-		std::unordered_map<std::string, int> newDictionary = baseDictionary;
-
-		//Compress
-		//First note how many bits to use
-		int baseBits = (int)ceil(log2(newDictionary.size()+2));
-		int currBits = baseBits;
-
-		//Now store the values as a binary string of sorts
-		//We are using a custom class BinarySet that does the
-		//conversion for us.
-		BinarySet binData = BinarySet();
-		binData.setBitOrder(BinarySet::LMSB);
-
-		std::string lastString = "";
-		std::string newString = "";
-		int preIndex = 0;
-
-		binData.add(clearDictionaryLocation, currBits);
-
-		int i = 0;
-		while(i<size)
-		{
-			newString += data[i];
-
-			auto itr = newDictionary.find(newString);
-			
-			bool exists = (itr != newDictionary.end());
-
-			if (exists == true)
-			{
-				preIndex = itr->second;
-				lastString = newString;
-				i++;
-			}
-			else
-			{
-				binData.add(preIndex, currBits);
-
-				std::pair<std::string, int> pair = {newString, newDictionary.size()+2 };
-				
-				newDictionary.insert( pair );
-
-				int shifts = 0;
-				size_t v = 1;
-				while(shifts<32)
-				{
-					if(newDictionary.size()+2 > v)
-					{
-						v = v << 1;
-						shifts++;
-					}
-					else
-					{
-						break;
-					}
-				}
-
-				currBits = shifts;
-
-				preIndex = -1;
-				newString = "";
-				lastString = "";
-			}
-
-			if(newDictionary.size()+2 == 4096)
-			{
-				//clear Dictionary and start over
-				binData.add(clearDictionaryLocation, currBits);
-				currBits = baseBits;
-				newDictionary = baseDictionary;
-				preIndex = -1;
-				newString = "";
-				lastString = "";
-			}
-			
-		}
-
-		if (newString != "")
-		{
-			binData.add(preIndex, currBits, 0);
-		}
-
-		binData.add(EndOfDataLocation, currBits, 0);
-
-		return binData.toBytes();
-	}
-
 	void Compression::compressLZW(BinarySet* outputData, unsigned char* data, size_t size, int codeSize, bool omitEndCode)
 	{
-		outputData->clear();
-		if(size <= 0)
-		{
-			#ifdef USE_EXCEPTIONS
-			throw InvalidSizeError();
-			#endif
-		}
+		StreamCompressionLZW stream = StreamCompressionLZW(StreamCompressionLZW::TYPE_COMPRESSION, codeSize);
+		stream.addData(data, size);
+		if(!omitEndCode)
+			stream.addEndData();
+		else
+			stream.addClearDictionary(); //Must add to reset the dictionary for concatenation. Results in 2 clear dictionaries back to back. Should fix.
 
+		outputData->clear();
+		outputData->setValues( stream.getBuffer().getByteRef().data(), stream.getBuffer().getByteRef().size() );
+		outputData->setNumberOfBits( stream.getBuffer().size() );
+	}
+
+	std::vector<unsigned char> Compression::compressLZW(unsigned char* data, size_t size, int codeSize)
+	{
 		if(data == nullptr)
 		{
 			#ifdef USE_EXCEPTIONS
 			throw InvalidDataError();
 			#endif
-			return;
+			return {};
 		}
-
-		if(codeSize <= 0)
+		if(size == 0)
 		{
-			return;
-		}
-		
-		//First make the base dictionary
-		
-		std::unordered_map<std::string, int> baseDictionary = std::unordered_map<std::string, int>();
-
-		int s = 1 << codeSize;
-		for(int i=0; i < s; i++)
-		{
-			std::string k = "";
-			k += (char)i;
-			std::pair<std::string, int> pair = {k, i};
-			baseDictionary.insert( pair ); //fix
+			#ifdef USE_EXCEPTIONS
+			throw InvalidSizeError();
+			#endif
+			return {};
 		}
 
-		//Add the clearDictionary and endOfData values.
-		//We need to store the location so that it can be excluded in compression
-		//when we compare what data is in the dictionary.
+		StreamCompressionLZW stream = StreamCompressionLZW(StreamCompressionLZW::TYPE_COMPRESSION, codeSize);
+		stream.addData(data, size);
+		stream.addEndData();
 
-		int clearDictionaryLocation = baseDictionary.size();
-		int EndOfDataLocation = baseDictionary.size()+1;
-
-		std::unordered_map<std::string, int> newDictionary = baseDictionary;
-
-		//Compress
-		//First note how many bits to use
-		int baseBits = (int)ceil(log2(newDictionary.size()+2));
-		int currBits = baseBits;
-
-		//Now store the values as a binary string of sorts
-		//We are using a custom class BinarySet that does the
-		//conversion for us.
-		// BinarySet binData = BinarySet();
-		outputData->setBitOrder(BinarySet::LMSB);
-
-		std::string lastString = "";
-		std::string newString = "";
-		int preIndex = 0;
-
-		outputData->add(clearDictionaryLocation, currBits);
-
-		int i = 0;
-		while(i<size)
-		{
-			newString += data[i];
-
-			auto itr = newDictionary.find(newString);
-			
-			bool exists = (itr != newDictionary.end());
-
-			if (exists == true)
-			{
-				preIndex = itr->second;
-				lastString = newString;
-				i++;
-			}
-			else
-			{
-				outputData->add(preIndex, currBits);
-
-				std::pair<std::string, int> pair = {newString, newDictionary.size()+2 };
-				
-				newDictionary.insert( pair );
-
-				int shifts = 0;
-				size_t v = 1;
-				while(shifts<32)
-				{
-					if(newDictionary.size()+2 > v)
-					{
-						v = v << 1;
-						shifts++;
-					}
-					else
-					{
-						break;
-					}
-				}
-
-				currBits = shifts;
-
-				preIndex = -1;
-				newString = "";
-				lastString = "";
-			}
-
-			if(newDictionary.size()+2 == 4096)
-			{
-				//clear Dictionary and start over
-				outputData->add(clearDictionaryLocation, currBits);
-				currBits = baseBits;
-				newDictionary = baseDictionary;
-				preIndex = -1;
-				newString = "";
-				lastString = "";
-			}
-			
-		}
-
-		if (newString != "")
-		{
-			outputData->add(preIndex, currBits, 0);
-		}
-
-		if(!omitEndCode)
-			outputData->add(EndOfDataLocation, currBits, 0);
-		else
-			outputData->add(clearDictionaryLocation, currBits);
+		return stream.getBuffer().toBytes();
 	}
-
 
 	std::vector<unsigned char> Compression::decompressLZW(std::vector<unsigned char> data, int dictionarySize, size_t expectedSize)
 	{
@@ -357,171 +134,233 @@ namespace glib
 
 	std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, size_t size, int dictionarySize, size_t expectedSize)
 	{
-		//Must know the dictionary size. Do not include the clear dictionary 
-		//and end data symbols
-		//Will return the index in the dictionary for each value
-		//This way, you don't need to provide the dictionary for
-		//your data, but just the size.
-		std::vector<unsigned char> output = std::vector<unsigned char>();
+		StreamCompressionLZW stream = StreamCompressionLZW(StreamCompressionLZW::TYPE_DECOMPRESSION, dictionarySize);
+		// stream.addData(data, size);
+		for(int i=0; i<size; i+=4096)
+		{
+			int nSize = ((size - i) > 4096) ? 4096 : (size-i);
+			stream.addData(&data[i], nSize);
+			if(stream.size() > expectedSize)
+			{
+				#ifdef USE_EXCEPTIONS
+				throw ExceededExpectedSizeError();
+				#endif
+				return {}; //EXCEEDED EXPECTED SIZE
+			}
 
-		if(data == nullptr)
+		}
+
+		if(!stream.getEndData())
 		{
 			#ifdef USE_EXCEPTIONS
-			throw InvalidDataError();
+			throw InvalidDataStreamEndError();
 			#endif
-			return output;
+			return {}; //ERROR IN DATA
 		}
 
-		if (size > 0 && dictionarySize > 0)
-		{
-			//First, create a tempDictionary
-			//We will assume that the dictionary's max size is a byte based
-			//on our implementation above. It can be expanded however, for
-			//many purposes, it is unnecessary.
-			std::vector<std::string> baseDictionary = std::vector<std::string>();
-			for (int i = 0; i < dictionarySize; i++)
-			{
-				std::string temp = "";
-				temp += (unsigned char)i;
-
-				baseDictionary.push_back(temp);
-			}
-
-			baseDictionary.push_back("");
-			baseDictionary.push_back("");
-
-			int clearSymLoc = dictionarySize;
-			int endSymLoc = dictionarySize + 1;
-
-			int bitsToRead = (int)ceil(log2(baseDictionary.size()));
-			int baseBitsToRead = bitsToRead;
-			//Next, we load all of our data into a more friendly format
-			//for dealing with binary data directly.
-			BinarySet binData = BinarySet();
-			binData.setBitOrder(BinarySet::LMSB);
-
-			binData.setValues(data, size);
-
-			//Our data is oriented in an odd way. We read bits and add onto
-			//end of the value. kinda like a queue.
-			std::vector<std::string> newDictionary = std::vector<std::string>(baseDictionary);
-
-			int lastIndex = -1;
-			size_t index = 0;
-			int shift = 0;
-
-			//We choose to handle the clear dictionary symbol now since it
-			//is simple to do.
-			for (size_t i = 0; i < binData.size(); i++)
-			{
-				index += ((size_t)binData.getBit(i) << shift);
-				shift++;
-
-				if (shift >= bitsToRead)
-				{
-					if (index == (size_t)clearSymLoc)
-					{
-						//StringTools::out << "ClearSym at " << i << " of " << binData.size() << StringTools::lineBreak;
-						
-						newDictionary = std::vector<std::string>(baseDictionary);
-						lastIndex = -1;
-						bitsToRead = baseBitsToRead;
-						shift = 0;
-						index = 0;
-						continue;
-					}
-					else if (index == (size_t)endSymLoc)
-					{
-						//StringTools::out << "EndofSym at " << i << " of " << binData.size() << StringTools::lineBreak;
-						break;
-					}
-					else
-					{
-						//add the dictionary value to the output
-						//Add a new dictionary value if the lastIndex is valid
-							//You add the lastValue + newValue[0]
-							//This is for when your values go over 1 byte
-
-						//If the index is invalid, add it as the lastIndex + lastIndex[0]
-						if (index < newDictionary.size())
-						{
-							std::string temp = newDictionary[index];
-							for (size_t j = 0; j < temp.size(); j++)
-							{
-								output.push_back((unsigned char)temp[j]);
-							}
-
-							if (lastIndex != -1)
-							{
-								if (lastIndex < (int)newDictionary.size())
-								{
-									std::string newEntry = newDictionary[lastIndex] + newDictionary[index][0];
-									newDictionary.push_back(newEntry);
-									int tempBits = (int)ceil(log2(newDictionary.size()+1));
-									if(tempBits<=12)
-										bitsToRead = tempBits;
-									else
-										newDictionary.pop_back();
-								}
-								else
-								{
-									#ifdef USE_EXCEPTIONS
-									throw Compression::LZW_ERROR_L317();
-									#endif
-									//StringTools::println("L317 ERROR: %d", newDictionary.size());
-									//There is an error in the data
-									break;
-								}
-							}
-						}
-						else
-						{
-							if (lastIndex < (int)newDictionary.size())
-							{
-								std::string lastEntry = newDictionary[lastIndex];
-								std::string newEntry = lastEntry + lastEntry[0];
-								newDictionary.push_back(newEntry);
-								int tempBits = (int)ceil(log2(newDictionary.size()+1));
-
-								if(tempBits<=12)
-									bitsToRead = tempBits;
-								else
-									newDictionary.pop_back();
-						
-								for (size_t j = 0; j < newEntry.size(); j++)
-								{
-									output.push_back((unsigned char)newEntry[j]);
-								}
-							}
-							else
-							{
-								#ifdef USE_EXCEPTIONS
-								throw Compression::LZW_ERROR_L340();
-								#endif
-								//StringTools::println("L340 ERROR");
-								//StringTools::out << "L340 Error in getting last index, " << lastIndex << ", Index=" << index << " dictionary: " << newDictionary.size() << StringTools::lineBreak;
-								break;
-							}
-						}
-
-						lastIndex = (int)index;
-						index = 0;
-						shift = 0;
-					}
-				}
-
-				if(output.size() > expectedSize)
-				{
-					#ifdef USE_EXCEPTIONS
-					throw ExceededExpectedSizeError();
-					#endif
-					return std::vector<unsigned char>();
-				}
-			}
-		}
-
-		return output;
+		return stream.getBuffer().toBytes();
 	}
+
+	// std::vector<unsigned char> Compression::decompressLZW(unsigned char* data, size_t size, int dictionarySize, size_t expectedSize)
+	// {
+	// 	//Must know the dictionary size. Do not include the clear dictionary 
+	// 	//and end data symbols
+	// 	//Will return the index in the dictionary for each value
+	// 	//This way, you don't need to provide the dictionary for
+	// 	//your data, but just the size.
+	// 	std::vector<unsigned char> output = std::vector<unsigned char>();
+
+	// 	if(data == nullptr)
+	// 	{
+	// 		#ifdef USE_EXCEPTIONS
+	// 		throw InvalidDataError();
+	// 		#endif
+	// 		return output;
+	// 	}
+
+	// 	if (size > 0 && dictionarySize > 0)
+	// 	{
+	// 		//First, create a tempDictionary
+	// 		//We will assume that the dictionary's max size is a byte based
+	// 		//on our implementation above. It can be expanded however, for
+	// 		//many purposes, it is unnecessary.
+	// 		std::vector<std::string> baseDictionary = std::vector<std::string>();
+	// 		for (int i = 0; i < dictionarySize; i++)
+	// 		{
+	// 			std::string temp = "";
+	// 			temp += (unsigned char)i;
+
+	// 			baseDictionary.push_back(temp);
+	// 		}
+
+	// 		baseDictionary.push_back("");
+	// 		baseDictionary.push_back("");
+
+	// 		int clearSymLoc = dictionarySize;
+	// 		int endSymLoc = dictionarySize + 1;
+
+	// 		int bitsToRead = (int)ceil(log2(baseDictionary.size()));
+	// 		int baseBitsToRead = bitsToRead;
+	// 		//Next, we load all of our data into a more friendly format
+	// 		//for dealing with binary data directly.
+	// 		BinarySet binData = BinarySet();
+	// 		binData.setBitOrder(BinarySet::LMSB);
+
+	// 		binData.setValues(data, size);
+
+	// 		//Our data is oriented in an odd way. We read bits and add onto
+	// 		//end of the value. kinda like a queue.
+	// 		std::vector<std::string> newDictionary = std::vector<std::string>(baseDictionary);
+
+	// 		int lastIndex = -1;
+	// 		size_t index = 0;
+	// 		int shift = 0;
+
+	// 		size_t t1,t2;
+	// 		size_t add1Time, add2Time;
+
+	// 		add1Time = 0;
+	// 		add2Time = 0;
+	// 		int count = 0;
+
+	// 		//We choose to handle the clear dictionary symbol now since it
+	// 		//is simple to do.
+	// 		for (size_t i = 0; i < binData.size(); i++)
+	// 		{
+	// 			index += ((size_t)binData.getBit(i) << shift);
+	// 			shift++;
+
+	// 			if (shift >= bitsToRead)
+	// 			{
+	// 				count++;
+	// 				if(count == 2966 || count == 5931)
+	// 					StringTools::println("Count = %d, Index = %d", count, index);
+					
+	// 				if (index == (size_t)clearSymLoc)
+	// 				{
+	// 					// StringTools::out << "ClearSym at " << i << " of " << binData.size() << StringTools::lineBreak;
+	// 					// StringTools::println("CLEAR at %d", counter);
+						
+	// 					newDictionary = std::vector<std::string>(baseDictionary);
+	// 					lastIndex = -1;
+	// 					bitsToRead = baseBitsToRead;
+	// 					shift = 0;
+	// 					index = 0;
+						
+	// 					continue;
+	// 				}
+	// 				else if (index == (size_t)endSymLoc)
+	// 				{
+	// 					//StringTools::out << "EndofSym at " << i << " of " << binData.size() << StringTools::lineBreak;
+	// 					break;
+	// 				}
+	// 				else
+	// 				{
+	// 					//add the dictionary value to the output
+	// 					//Add a new dictionary value if the lastIndex is valid
+	// 						//You add the lastValue + newValue[0]
+	// 						//This is for when your values go over 1 byte
+
+	// 					//If the index is invalid, add it as the lastIndex + lastIndex[0]
+	// 					if (index < newDictionary.size())
+	// 					{
+	// 						t1 = System::getCurrentTimeNano();
+	// 						std::string temp = newDictionary[index];
+							
+	// 						// if(count < 128)
+	// 						// 	StringTools::println("Size: %llu", temp.size());
+	// 						// count++;
+
+	// 						for (size_t j = 0; j < temp.size(); j++)
+	// 						{
+	// 							output.push_back((unsigned char)temp[j]);
+	// 						}
+	// 						t2 = System::getCurrentTimeNano();
+	// 						add1Time += t2-t1;
+
+							
+	// 						t1 = System::getCurrentTimeNano();
+	// 						if (lastIndex != -1)
+	// 						{
+	// 							if (lastIndex < (int)newDictionary.size())
+	// 							{
+	// 								std::string newEntry = newDictionary[lastIndex] + newDictionary[index][0];
+	// 								newDictionary.push_back(newEntry);
+	// 								int tempBits = (int)ceil(log2(newDictionary.size()+1));
+	// 								if(tempBits<=12)
+	// 									bitsToRead = tempBits;
+	// 								else
+	// 									newDictionary.pop_back();
+									
+	// 								if(newDictionary.size() == 4095)
+	// 									StringTools::println("%llu", newDictionary.size());
+	// 							}
+	// 							else
+	// 							{
+	// 								#ifdef USE_EXCEPTIONS
+	// 								throw Compression::LZW_ERROR_L317();
+	// 								#endif
+	// 								//StringTools::println("L317 ERROR: %d", newDictionary.size());
+	// 								//There is an error in the data
+	// 								break;
+	// 							}
+	// 						}
+							
+	// 						t2 = System::getCurrentTimeNano();
+	// 						add2Time += t2-t1;
+	// 					}
+	// 					else
+	// 					{
+	// 						if (lastIndex < (int)newDictionary.size())
+	// 						{
+	// 							std::string lastEntry = newDictionary[lastIndex];
+	// 							std::string newEntry = lastEntry + lastEntry[0];
+	// 							newDictionary.push_back(newEntry);
+	// 							int tempBits = (int)ceil(log2(newDictionary.size()+1));
+
+	// 							if(tempBits<=12)
+	// 								bitsToRead = tempBits;
+	// 							else
+	// 								newDictionary.pop_back();
+						
+	// 							for (size_t j = 0; j < newEntry.size(); j++)
+	// 							{
+	// 								output.push_back((unsigned char)newEntry[j]);
+	// 							}
+	// 						}
+	// 						else
+	// 						{
+	// 							#ifdef USE_EXCEPTIONS
+	// 							throw Compression::LZW_ERROR_L340();
+	// 							#endif
+	// 							//StringTools::println("L340 ERROR");
+	// 							//StringTools::out << "L340 Error in getting last index, " << lastIndex << ", Index=" << index << " dictionary: " << newDictionary.size() << StringTools::lineBreak;
+	// 							break;
+	// 						}
+	// 					}
+
+	// 					lastIndex = (int)index;
+	// 					index = 0;
+	// 					shift = 0;
+	// 				}
+	// 			}
+
+	// 			if(output.size() > expectedSize)
+	// 			{
+	// 				#ifdef USE_EXCEPTIONS
+	// 				throw ExceededExpectedSizeError();
+	// 				#endif
+	// 				return std::vector<unsigned char>();
+	// 			}
+	// 		}
+
+	// 	StringTools::println("Time to add 1: %llu", add1Time);
+	// 	StringTools::println("Time to add 2: %llu", add2Time);
+	// 	}
+		
+	// 	StringTools::println("Size: %llu", output.size());
+	// 	return output;
+	// }
 
 	#pragma endregion
 

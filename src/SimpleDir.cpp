@@ -94,7 +94,7 @@ namespace glib
 	{
 		if (index < names.size())
 		{
-			return names[index].path().u8string();
+			return std::filesystem::canonical( names[index].path() ).u8string();
 		}
 		else
 		{
@@ -109,7 +109,7 @@ namespace glib
 		Gets the file size of a reference at the index if possible.
 		Returns an size_t.
 	*/
-	size_t SimpleDir::getReferenceSize(size_t index)
+	uintmax_t SimpleDir::getReferenceSize(size_t index)
 	{
 		if (index < names.size())
 		{
@@ -127,14 +127,14 @@ namespace glib
 		}
 	}
 	
-	size_t SimpleDir::getFileSize(std::filesystem::directory_entry f)
+	uintmax_t SimpleDir::getFileSize(std::filesystem::directory_entry f)
 	{
 		return std::filesystem::file_size(f);
 	}
 
-	size_t SimpleDir::getFolderSize(std::filesystem::directory_entry f)
+	uintmax_t SimpleDir::getFolderSize(std::filesystem::directory_entry f)
 	{
-		size_t totalSize = 0;
+		uintmax_t totalSize = 0;
 		for (auto& entry: std::filesystem::directory_iterator(f))
 		{
 			if(entry.is_directory())
@@ -309,7 +309,7 @@ namespace glib
 		int index = -1;
 		for (size_t i = 0; i < names.size(); i++)
 		{
-			if ( name == getReferenceName(i) )
+			if (StringTools::equalsIgnoreCase(name, getReferenceName(i)))
 			{
 				index = i;
 				break;

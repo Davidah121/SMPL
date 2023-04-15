@@ -123,11 +123,11 @@ namespace glib
 		int width = (int)MathExt::round(boundingBox.getWidth());
 		int height = (int)MathExt::round(boundingBox.getHeight());
 
-		GuiGraphicsInterface::setColor(backgroundColor);
-		GuiGraphicsInterface::drawRect(x, y, x+width, y+height, false);
+		GraphicsInterface::setColor(backgroundColor);
+		GraphicsInterface::drawRect(x, y, x+width, y+height, false);
 
-		GuiGraphicsInterface::setColor(outlineColor);
-		GuiGraphicsInterface::drawRect(x, y, x+width, y+height, true);
+		GraphicsInterface::setColor(outlineColor);
+		GraphicsInterface::drawRect(x, y, x+width, y+height, true);
 	}
 
 	void GuiGrid::setGridSpacing(int x, int y)
@@ -240,48 +240,48 @@ namespace glib
 		update();
 	}
 
-	void GuiGrid::loadDataFromXML(std::unordered_map<std::string, std::string>& attribs)
+	void GuiGrid::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs)
 	{
 		GuiInstance::loadDataFromXML(attribs);
 		std::vector<std::string> possibleNames = { "horizontalspacing", "verticalspacing", "rowmajor", "maxrows", "maxcolumns", "backgroundcolor", "outlinecolor"};
 
 		for(size_t i=0; i<possibleNames.size(); i++)
 		{
-			auto it = attribs.find(possibleNames[i]);
-			if(it != attribs.end())
+			auto it = attribs.get(possibleNames[i]);
+			if(it != nullptr)
 			{
-				if(it->first == "horizontalspacing")
+				if(it->key == "horizontalspacing")
 				{
-					gridXSpacing = std::abs(StringTools::toInt(it->second));
+					gridXSpacing = std::abs(StringTools::toInt(it->data));
 				}
-				else if(it->first == "verticalspacing")
+				else if(it->key == "verticalspacing")
 				{
-					gridYSpacing = std::abs(StringTools::toInt(it->second));
+					gridYSpacing = std::abs(StringTools::toInt(it->data));
 				}
-				else if(it->first == "maxrows")
+				else if(it->key == "maxrows")
 				{
-					rowSize = std::abs(StringTools::toInt(it->second));
+					rowSize = std::abs(StringTools::toInt(it->data));
 				}
-				else if(it->first == "maxcolumns")
+				else if(it->key == "maxcolumns")
 				{
-					colSize = std::abs(StringTools::toInt(it->second));
+					colSize = std::abs(StringTools::toInt(it->data));
 				}
-				else if(it->first == "rowmajor")
+				else if(it->key == "rowmajor")
 				{
-					rowMajorOrder = StringTools::equalsIgnoreCase<char>(it->second, "true");
+					rowMajorOrder = StringTools::equalsIgnoreCase<char>(it->data, "true");
 				}
-				else if(it->first == "backgroundcolor")
+				else if(it->key == "backgroundcolor")
 				{
 					//define as color name or rgba
-					backgroundColor = ColorNameConverter::NameToColor(it->second);
+					backgroundColor = ColorNameConverter::NameToColor(it->data);
 				}
-				else if(it->first == "outlinecolor")
+				else if(it->key == "outlinecolor")
 				{
 					//define as color name or rgba
-					outlineColor = ColorNameConverter::NameToColor(it->second);
+					outlineColor = ColorNameConverter::NameToColor(it->data);
 				}
 				
-				attribs.erase(possibleNames[i]);
+				attribs.remove(it);
 			}
 		}
 	}
@@ -291,7 +291,7 @@ namespace glib
 		GuiManager::registerLoadFunction("GuiGrid", GuiGrid::loadFunction);
 	}
 
-	GuiInstance* GuiGrid::loadFunction(std::unordered_map<std::string, std::string>& attributes)
+	GuiInstance* GuiGrid::loadFunction(SimpleHashMap<std::string, std::string>& attributes)
 	{
 		GuiGrid* ins = new GuiGrid(0,0);
 		ins->loadDataFromXML(attributes);

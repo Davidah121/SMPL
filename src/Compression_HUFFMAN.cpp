@@ -225,8 +225,9 @@ namespace glib
 			BinaryTreeNode<HuffmanNode>* rNode = new BinaryTreeNode<HuffmanNode>();
 
 			rNode->data.frequency = maxFrequency;
-			rNode->leftChild = nodes[0];
-			rNode->rightChild = nullptr;
+			huffmanTree->setLeftNode(nodes[0], rNode);
+			// rNode->leftChild = nodes[0];
+			// rNode->rightChild = nullptr;
 
 			huffmanTree->setRootNode( rNode );
 			return huffmanTree;
@@ -242,13 +243,17 @@ namespace glib
 
 			if (min2->leftChild == nullptr && min2->rightChild == nullptr)
 			{
-				newTreeNode->leftChild = min2;
-				newTreeNode->rightChild = min;
+				huffmanTree->setLeftNode(newTreeNode, min2);
+				huffmanTree->setRightNode(newTreeNode, min);
+				// newTreeNode->leftChild = min2;
+				// newTreeNode->rightChild = min;
 			}
 			else
 			{
-				newTreeNode->leftChild = min;
-				newTreeNode->rightChild = min2;
+				huffmanTree->setLeftNode(newTreeNode, min);
+				huffmanTree->setRightNode(newTreeNode, min2);
+				// newTreeNode->leftChild = min;
+				// newTreeNode->rightChild = min2;
 			}
 
 			newTreeNode->data.value = 0xFFFFFFFF;
@@ -520,7 +525,11 @@ namespace glib
 				{
 					//left
 					if(currNode->leftChild == nullptr)
-						currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
+					{
+						BinaryTreeNode<HuffmanNode>* nNode = new BinaryTreeNode<HuffmanNode>();
+						tree->setLeftNode(currNode, nNode);
+						// currNode->leftChild = new BinaryTreeNode<HuffmanNode>();
+					}
 
 					currNode = currNode->leftChild;
 				}
@@ -528,7 +537,11 @@ namespace glib
 				{
 					//right
 					if(currNode->rightChild == nullptr)
-						currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
+					{
+						BinaryTreeNode<HuffmanNode>* nNode = new BinaryTreeNode<HuffmanNode>();
+						tree->setRightNode(currNode, nNode);
+						// currNode->rightChild = new BinaryTreeNode<HuffmanNode>();
+					}
 
 					currNode = currNode->rightChild;
 				}

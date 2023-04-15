@@ -7,8 +7,8 @@ namespace glib
 	bool Input::preKeyState[256];
 	bool Input::keyState[256];
 
-	bool Input::preMouseState[3];
-	bool Input::mouseState[3];
+	bool Input::preMouseState[5];
+	bool Input::mouseState[5];
 
 	std::queue<int> Input::charBuffer;
 	std::queue<int> Input::charBackBuffer;
@@ -101,20 +101,29 @@ namespace glib
 				}
 			}
 		}
+		
 		preMouseState[0] = mouseState[0];
 		preMouseState[1] = mouseState[1];
 		preMouseState[2] = mouseState[2];
+		preMouseState[3] = mouseState[3];
+		preMouseState[4] = mouseState[4];
+		
 
 		#ifdef __unix__
 		#else
 			mouseState[0] = (GetAsyncKeyState(VK_LBUTTON) >> 15 & 0x01) == 1;
 			mouseState[1] = (GetAsyncKeyState(VK_MBUTTON) >> 15 & 0x01) == 1;
 			mouseState[2] = (GetAsyncKeyState(VK_RBUTTON) >> 15 & 0x01) == 1;
+			mouseState[3] = (GetAsyncKeyState(VK_XBUTTON1) >> 15 & 0x01) == 1;
+			mouseState[4] = (GetAsyncKeyState(VK_XBUTTON2) >> 15 & 0x01) == 1;
+			
 		#endif
 
 		if (preMouseState[0] != mouseState[0]
 			|| preMouseState[1] != mouseState[1]
-			|| preMouseState[2] != mouseState[2])
+			|| preMouseState[2] != mouseState[2]
+			|| preMouseState[3] != mouseState[3]
+			|| preMouseState[4] != mouseState[4])
 		{
 			mouseClicked = true;
 		}
@@ -155,19 +164,19 @@ namespace glib
 
 	bool Input::getMousePressed(int v)
 	{
-		if (preMouseState[v] == false && mouseState[v] == true)
+		if (preMouseState[MathExt::clamp(v, 0, 4)] == false && mouseState[MathExt::clamp(v, 0, 4)] == true)
 			return true;
 		return false;
 	}
 
 	bool Input::getMouseDown(int v)
 	{
-		return mouseState[v & 0xFF];
+		return mouseState[ MathExt::clamp(v, 0, 4) ];
 	}
 
 	bool Input::getMouseUp(int v)
 	{
-		if (preMouseState[v & 0xFF] == true && mouseState[v & 0xFF] == false)
+		if (preMouseState[MathExt::clamp(v, 0, 4)] == true && mouseState[MathExt::clamp(v, 0, 4)] == false)
 			return true;
 		return false;
 	}

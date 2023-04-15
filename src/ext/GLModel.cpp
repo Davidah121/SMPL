@@ -1,7 +1,6 @@
+#include "ext/GLModel.h"
+
 #ifdef USE_OPENGL
-
-    #include "ext/GLModel.h"
-
     namespace glib
     {
 

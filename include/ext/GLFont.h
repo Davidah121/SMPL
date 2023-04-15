@@ -64,7 +64,7 @@
 			GLSprite img = GLSprite();
 			std::vector<GLModel*> models = std::vector<GLModel*>();
 
-			std::vector<int> imgPage = std::vector<int>();
+			std::vector<size_t> imgPage = std::vector<size_t>();
 
 		};
 	}

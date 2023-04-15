@@ -55,6 +55,53 @@ namespace glib
 		void addPoint(double x, double y);
 
 		/**
+		 * @brief Inserts a new point at the specified index. This allows you to add
+		 * 		control points where desired and to insert a new start or end point.
+		 * 
+		 * @param index 
+		 * @param p 
+		 * @return true 
+		 * @return false 
+		 */
+		bool insertPoint(size_t index, Vec2f p);
+
+		/**
+		 * @brief Inserts a new point at the specified index. This allows you to add
+		 * 		control points where desired and to insert a new start or end point.
+		 * 
+		 * @param index 
+		 * @param x 
+		 * @param y 
+		 * @return true 
+		 * @return false 
+		 */
+		bool insertPoint(size_t index, double x, double y);
+
+		/**
+		 * @brief Removes the point at the specified index.
+		 * 
+		 * @param index 
+		 */
+		void removePoint(size_t index);
+
+		/**
+		 * @brief Sets the point at the specified index
+		 * 
+		 * @param index 
+		 * @param p 
+		 */
+		void setPoint(size_t index, Vec2f p);
+
+		/**
+		 * @brief Sets the point at the specified index
+		 * 
+		 * @param index 
+		 * @param x 
+		 * @param y 
+		 */
+		void setPoint(size_t index, double x, double y);
+		
+		/**
 		 * @brief Gets a point from the Bezier Curve.
 		 * @param index
 		 * 		The index of the point in the list.
@@ -65,6 +112,13 @@ namespace glib
 		 * 		Otherwise, the default Vec2f is returned.
 		 */
 		Vec2f getPoint(size_t index);
+
+		/**
+		 * @brief Get the Points used by the Bezier Curve
+		 * 
+		 * @return std::vector<Vec2f>& 
+		 */
+		std::vector<Vec2f>& getPoints();
 
 		/**
 		 * @brief Subdivides the Bezier Curve from [0, 1] into 2 separate Bezier Curves.
@@ -157,6 +211,39 @@ namespace glib
 		 * 		returns the measured arc length.
 		 */
 		double getArcLengthAt(double startTime, double endTime);
+
+		/**
+		 * @brief Finds a time t in the range [0, 1] such that
+		 * 		the bezier curve at that point results in the smallest distance
+		 * 		to p. 
+		 * 			i.e. length( b(t) - p ) is the smallest possible
+		 * 		In other words, find the closest point on the bezier curve to p.
+		 * 		This uses secant method to approximate the answer with a default of a maximum of 10 iterations.
+		 * 
+		 * @param p 
+		 * @param maxIterations
+		 * 		The maximum number of iterations of secant method to use.
+		 * 		Default value is 10.
+		 * @return double 
+		 */
+		double findTimeForMinDis(Vec2f p, unsigned int maxIterations = 10);
+
+		/**
+		 * @brief Finds a time t in the range [0, 1] such that
+		 * 		the bezier curve at that point results in the smallest distance
+		 * 		to p. 
+		 * 			i.e. length( b(t) - p ) is the smallest possible
+		 * 		In other words, find the closest point on the bezier curve to p.
+		 * 		This uses secant method to approximate the answer with a default of a maximum of 10 iterations.
+		 * 
+		 * @param x 
+		 * @param y 
+		 * @param maxIterations
+		 * 		The maximum number of iterations of secant method to use.
+		 * 		Default value is 10.
+		 * @return double 
+		 */
+		double findTimeForMinDis(double x, double y, unsigned int maxIterations = 10);
 
 		/**
 		 * @brief Clears all points from the BezierCurve's list of points

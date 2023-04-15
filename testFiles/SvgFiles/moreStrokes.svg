@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0,0,320,240">
-    <rect width="320" height="240" fill="white"/>
-    <!-- <path d="M10,30 Q30,10,50,30" stroke="blue" stroke-width="0.5"/> -->
-    <path d="M128,128 Q196,128,196,196" stroke="green" stroke-width="4" fill-opacity="0"/>
-    <!-- <path d="M128,128 Q196,128,196,196" stroke="black" stroke-width="1" fill-opacity="0"/> -->
-</svg>

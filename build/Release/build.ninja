@@ -16,6 +16,8 @@ build $objDir/AudioOut.o: buildToObject src/AudioOut.cpp
 build $objDir/BezierCurve.o: buildToObject src/BezierCurve.cpp
 build $objDir/BinarySet.o: buildToObject src/BinarySet.cpp
 build $objDir/BitmapFont.o: buildToObject src/BitmapFont.cpp
+build $objDir/CatmullRom.o: buildToObject src/CatmullRom.cpp
+build $objDir/CemYukselSpline.o: buildToObject src/CemYukselSpline.cpp
 build $objDir/Class.o: buildToObject src/Class.cpp
 build $objDir/ColorNameConverter.o: buildToObject src/ColorNameConverter.cpp
 build $objDir/ColorPalette.o: buildToObject src/ColorPalette.cpp
@@ -23,13 +25,16 @@ build $objDir/ColorSpaceConverter.o: buildToObject src/ColorSpaceConverter.cpp
 build $objDir/ComplexNumber.o: buildToObject src/ComplexNumber.cpp
 build $objDir/Compression.o: buildToObject src/Compression.cpp
 build $objDir/Compression_ARITHMETIC.o: buildToObject src/Compression_ARITHMETIC.cpp
-build $objDir/Compression_CHECKSUM.o: buildToObject src/Compression_CHECKSUM.cpp
 build $objDir/Compression_DEFLATE.o: buildToObject src/Compression_DEFLATE.cpp
 build $objDir/Compression_HUFFMAN.o: buildToObject src/Compression_HUFFMAN.cpp
 build $objDir/Compression_LZ77.o: buildToObject src/Compression_LZ77.cpp
 build $objDir/Compression_LZSS.o: buildToObject src/Compression_LZSS.cpp
 build $objDir/Compression_LZW.o: buildToObject src/Compression_LZW.cpp
 build $objDir/Compression_RLE.o: buildToObject src/Compression_RLE.cpp
+build $objDir/Compression_StreamLZSS.o: buildToObject src/Compression_StreamLZSS.cpp
+build $objDir/Compression_StreamLZW.o: buildToObject src/Compression_StreamLZW.cpp
+build $objDir/Compression_StreamRLE.o: buildToObject src/Compression_StreamRLE.cpp
+build $objDir/Cryptography.o: buildToObject src/Cryptography.cpp
 build $objDir/DXFont.o: buildToObject src/ext/DXFont.cpp
 build $objDir/DXGraphics.o: buildToObject src/ext/DXGraphics.cpp
 build $objDir/DXModel.o: buildToObject src/ext/DXModel.cpp
@@ -46,13 +51,17 @@ build $objDir/GLSprite.o: buildToObject src/ext/GLSprite.cpp
 build $objDir/GLSurface.o: buildToObject src/ext/GLSurface.cpp
 build $objDir/GLTexture.o: buildToObject src/ext/GLTexture.cpp
 build $objDir/GLWindow.o: buildToObject src/ext/GLWindow.cpp
+build $objDir/KeyboardSimulator.o: buildToObject src/ext/KeyboardSimulator.cpp
+build $objDir/MouseSimulator.o: buildToObject src/ext/MouseSimulator.cpp
+build $objDir/TouchSimulator.o: buildToObject src/ext/TouchSimulator.cpp
 build $objDir/File.o: buildToObject src/File.cpp
 build $objDir/Font.o: buildToObject src/Font.cpp
 build $objDir/GamepadDInput.o: buildToObject src/GamepadDInput.cpp
 build $objDir/GamepadXInput.o: buildToObject src/GamepadXInput.cpp
+build $objDir/GeneralSpline.o: buildToObject src/GeneralSpline.cpp
 build $objDir/GeneralVector.o: buildToObject src/GeneralVector.cpp
+build $objDir/GraphicsExt.o: buildToObject src/GraphicsExt.cpp
 build $objDir/GuiManager.o: buildToObject src/GuiManager.cpp
-build $objDir/GuiManagerGraphicsInterface.o: buildToObject src/GuiManagerGraphicsInterface.cpp
 build $objDir/GuiManager_CANVAS.o: buildToObject src/GuiManager_CANVAS.cpp
 build $objDir/GuiManager_CONTAINER.o: buildToObject src/GuiManager_CONTAINER.cpp
 build $objDir/GuiManager_CONTEXT.o: buildToObject src/GuiManager_CONTEXT.cpp
@@ -66,6 +75,7 @@ build $objDir/GuiManager_SCROLLBAR.o: buildToObject src/GuiManager_SCROLLBAR.cpp
 build $objDir/GuiManager_SPRITE.o: buildToObject src/GuiManager_SPRITE.cpp
 build $objDir/GuiManager_TEXTBLOCK.o: buildToObject src/GuiManager_TEXTBLOCK.cpp
 build $objDir/GuiManager_TEXTBOX.o: buildToObject src/GuiManager_TEXTBOX.cpp
+build $objDir/GuiResourceManager.o: buildToObject src/GuiResourceManager.cpp
 build $objDir/Image.o: buildToObject src/Image.cpp
 build $objDir/Image_BitmapCode.o: buildToObject src/Image_BitmapCode.cpp
 build $objDir/Image_GifCode.o: buildToObject src/Image_GifCode.cpp
@@ -89,6 +99,7 @@ build $objDir/NeuralNetwork.o: buildToObject src/NeuralNetwork.cpp
 build $objDir/Object.o: buildToObject src/Object.cpp
 build $objDir/PolarCoordinate.o: buildToObject src/PolarCoordinate.cpp
 build $objDir/Quaternion.o: buildToObject src/Quaternion.cpp
+build $objDir/Serializable.o: buildToObject src/Serializable.cpp
 build $objDir/Shape.o: buildToObject src/Shape.cpp
 build $objDir/SimpleDir.o: buildToObject src/SimpleDir.cpp
 build $objDir/SimpleFile.o: buildToObject src/SimpleFile.cpp
@@ -109,6 +120,7 @@ build $objDir/SimpleXml.o: buildToObject src/SimpleXml.cpp
 build $objDir/Sound.o: buildToObject src/Sound.cpp
 build $objDir/Sprite.o: buildToObject src/Sprite.cpp
 build $objDir/StringTools.o: buildToObject src/StringTools.cpp
+build $objDir/SuffixArray.o: buildToObject src/SuffixArray.cpp
 build $objDir/System.o: buildToObject src/System.cpp
 build $objDir/Vec2f.o: buildToObject src/Vec2f.cpp
 build $objDir/Vec3f.o: buildToObject src/Vec3f.cpp
@@ -125,3 +137,5 @@ build $objDir/VectorGraphic_VectorPolyline.o: buildToObject src/VectorGraphic_Ve
 build $objDir/VectorGraphic_VectorRectangle.o: buildToObject src/VectorGraphic_VectorRectangle.cpp
 build $objDir/VectorGraphic_VectorShape.o: buildToObject src/VectorGraphic_VectorShape.cpp
 build $objDir/VectorSprite.o: buildToObject src/VectorSprite.cpp
+build $objDir/WebRequest.o: buildToObject src/WebRequest.cpp
+build $objDir/WebSocket.o: buildToObject src/WebSocket.cpp

@@ -88,7 +88,15 @@
         "string_view": "cpp",
         "deque": "cpp",
         "stack": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "condition_variable": "cpp",
+        "future": "cpp",
+        "numeric": "cpp",
+        "random": "cpp",
+        "ranges": "cpp",
+        "regex": "cpp",
+        "span": "cpp",
+        "variant": "cpp"
     },
     "files.exclude": {
         "**/.classpath": true,

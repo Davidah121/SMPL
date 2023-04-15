@@ -2,6 +2,7 @@
 #include <vector>
 #include "SimpleFile.h"
 #include "Compression.h"
+#include "Cryptography.h"
 #include "SimpleGraphics.h"
 #include <iostream>
 #include "StringTools.h"
@@ -37,7 +38,7 @@ namespace glib
 
 	void savePNGIDAT(std::string* output, unsigned char* data, size_t size, bool strongCompression)
 	{
-		unsigned int crcVal = Compression::adler32(data, size);
+		unsigned int crcVal = Cryptography::adler32(data, size);
 
 		BinarySet compressedData;
 		Compression::compressDeflate(&compressedData, data, size, 1, 7, strongCompression);
@@ -67,7 +68,7 @@ namespace glib
 		IDATHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
 
 		//crc
-		crcVal = Compression::crc((unsigned char*)IDATHeader.data()+4, IDATHeader.size()-4);
+		crcVal = Cryptography::crc((unsigned char*)IDATHeader.data()+4, IDATHeader.size()-4);
 		IDATHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
 
 		output->clear();
@@ -132,7 +133,7 @@ namespace glib
 		IHDRHeader += (char)0x00;
 
 		//CRC
-		crcVal = Compression::crc((unsigned char*)IHDRHeader.data()+4, IHDRHeader.size()-4);
+		crcVal = Cryptography::crc((unsigned char*)IHDRHeader.data()+4, IHDRHeader.size()-4);
 		IHDRHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
 
 		f.writeString(IHDRHeader);
@@ -246,14 +247,17 @@ namespace glib
 
 		//split into blocks
 		int blocks = (int)MathExt::ceil((double)height/24);
-		unsigned int adlerValue = Compression::adler32(scanLines.data(), scanLines.size());
+		unsigned int adlerValue = Cryptography::adler32(scanLines.data(), scanLines.size());
 
 		BinarySet compressedData;
-		Compression::compressDeflate(&compressedData, scanLines.data(), scanLines.size(), blocks, 7, strongCompression);
+		size_t t1 = System::getCurrentTimeMicro();
+		Compression::compressDeflate(&compressedData, scanLines.data(), scanLines.size(), 1, 7, strongCompression);
+		size_t t2 = System::getCurrentTimeMicro();
+		StringTools::println("%llu", t2-t1);
 		
 		std::vector<unsigned char> binarySetBytes = compressedData.getByteRef();
-		size_t byteOffset = 0;
-		size_t maxIDATSize = 0x2000; //Force all IDAT headers to be at most 8192 bytes so libpng doesn't freak out.
+		long byteOffset = 0;
+		long maxIDATSize = 0x2000; //Force all IDAT headers to be at most 8192 bytes so libpng doesn't freak out.
 		// int totalIDAT = ceil((double)binarySetBytes.size() / maxIDATSize); //Not used
 		
 		//3078
@@ -264,7 +268,7 @@ namespace glib
 			//length
 			int fullSize = 0;
 			bool lastBlock = false;
-			size_t readSize = min(binarySetBytes.size() - byteOffset, maxIDATSize);
+			long readSize = min((long)binarySetBytes.size() - byteOffset, maxIDATSize);
 			
 			if(readSize < maxIDATSize)
 			{
@@ -298,7 +302,7 @@ namespace glib
 				IDATHeader += 0b00000001;
 			}
 
-			for(size_t j = 0; j < readSize; j++)
+			for(long j = 0; j < readSize; j++)
 			{
 				IDATHeader += (char)binarySetBytes[byteOffset];
 				byteOffset++;
@@ -311,7 +315,7 @@ namespace glib
 			}
 
 			//crc
-			crcVal = Compression::crc((unsigned char*)IDATHeader.data()+4, IDATHeader.size()-4);
+			crcVal = Cryptography::crc((unsigned char*)IDATHeader.data()+4, IDATHeader.size()-4);
 			IDATHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
 
 			f.writeString(IDATHeader);
@@ -320,7 +324,7 @@ namespace glib
 		std::string IENDHeader = {(char)0, (char)0, (char)0, (char)0, 'I', 'E', 'N', 'D'};
 		
 		//CRC
-		crcVal = Compression::crc((unsigned char*)IENDHeader.data()+4, IENDHeader.size()-4);
+		crcVal = Cryptography::crc((unsigned char*)IENDHeader.data()+4, IENDHeader.size()-4);
 		IENDHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
 		f.writeString(IENDHeader);
 

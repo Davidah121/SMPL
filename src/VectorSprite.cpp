@@ -24,9 +24,9 @@ namespace glib
         bool valid = file.load(StringTools::toWideString(filename));
         if(valid)
         {
-            for(XmlNode* n : file.nodes)
+            for(XmlNode* n : file.getNodes())
             {
-                if(StringTools::equalsIgnoreCase<char>(n->title, "svg"))
+                if(StringTools::equalsIgnoreCase<char>(n->getTitle(), "svg"))
                 {
                     VectorGraphic* g = new VectorGraphic();
                     g->load(n);
@@ -42,7 +42,7 @@ namespace glib
         for(int i=0; i<vectorGraphicList.size(); i++)
         {
             XmlNode* n = vectorGraphicList[i]->writeAsXmlNode();
-            f.nodes.push_back(n);
+            f.addNode(n);
         }
         f.save(StringTools::toWideString(filename));
     }
@@ -69,7 +69,9 @@ namespace glib
 
     VectorGraphic* VectorSprite::getGraphic(int index)
     {
-        return vectorGraphicList[index];
+        if(index < vectorGraphicList.size())
+            return vectorGraphicList[index];
+        return nullptr;
     }
 
 } //NAMESPACE glib END

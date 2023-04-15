@@ -161,7 +161,7 @@ namespace glib
 			{
 				int refLoc = paletteStart + (4 * i);
 				
-				cPalette.addNewColor({ (unsigned char)fileData[refLoc + 2], (unsigned char)fileData[refLoc + 1], (unsigned char)fileData[refLoc], (unsigned char)fileData[refLoc + 3] });
+				cPalette.addNewColor({ (unsigned char)fileData[refLoc + 2], (unsigned char)fileData[refLoc + 1], (unsigned char)fileData[refLoc], 255 });
 			}
 		}
 

@@ -1,0 +1,7 @@
+inc = -I ./include %WLIBPATH64% -I C:/Libraries/glew-2.1.0/include
+objDir = ./bin/Debug/obj
+compiler = cmd /c clang++ 
+CXXFLAGS = -std=c++17 -march=skylake
+DEFINES = -D OPTI=0
+OPTIONS = -c -pipe -g -fsanitize=address -Wno-unused-command-line-argument
+compilerFlags = $OPTIONS $CXXFLAGS $DEFINES

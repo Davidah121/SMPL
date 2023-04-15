@@ -1,7 +1,0 @@
-<?xml version="1.0" standalone="no"?>
-<svg width="512" height="512"
-     xmlns="http://www.w3.org/2000/svg" version="1.1">
-
-    <path d="M64,64 q32,32,64,0 t32,32 Z" fill="blue" transform="scale(2,3), rotate(90,96,96)"/>
-
-</svg>

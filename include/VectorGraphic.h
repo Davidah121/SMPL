@@ -1558,6 +1558,21 @@ namespace glib
 		void clearShapes();
 
 		/**
+		 * @brief Gets a vector shape in the vector graphic.
+		 * 
+		 * @param index 
+		 * @return VectorShape* 
+		 */
+		VectorShape* getShape(size_t index);
+
+		/**
+		 * @brief Returns the number of vector shapes in the vector graphic
+		 * 
+		 * @return size_t 
+		 */
+		size_t size();
+
+		/**
 		 * @brief Draws the VectorGraphic on an image.
 		 * 
 		 * @param buffer 

@@ -194,6 +194,14 @@ namespace glib
 		 */
 		double getPointAsParamtetricValue(Vec2f p);
 
+		/**
+		 * @brief Gets the line that is Perpendicular to the current line and crosses
+		 * 		the mid point.
+		 * 
+		 * @return Line 
+		 */
+		Line getPerpendicularBisector();
+
 
 	private:
 		void setMinMax();

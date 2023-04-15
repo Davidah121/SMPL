@@ -1,8 +1,0 @@
-<SimpleGUI>
-    <GuiSprite width="320" height="240" src="TestImages/JPEG/61eY5p914hL._AC_SX466_.jpg"/>
-    <GuiContainer x="32" y="32">
-        <GuiTextBlock text="Some generic text" />
-        <GuiTextBox width="128" height="24" y="32" backgroundColor="Gray" textColor="RED" text="Value" />
-    </GuiContainer>
-
-</SimpleGUI>

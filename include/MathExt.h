@@ -37,6 +37,10 @@
 	#define LOGIC_XOR(a,b) ((!(a)) != (!(b)))
 #endif
 
+#ifndef EPSILON
+	#define EPSILON 1e-10
+#endif
+
 namespace glib
 {
 
@@ -901,6 +905,32 @@ namespace glib
 		static double angleClampDeg(double testAngle, double startAngle, double endAngle, bool clockwise);
 		
 		/**
+		 * @brief Returns 2 values that represent the range of all angles between the 2 values.
+		 * 		This has the option of returning the smallest angle range or largest angle range.
+		 * 		The output may or may not match the input values.
+		 * 		Returns answer in radians and may not be in standard range.
+		 * 
+		 * @param angle1 
+		 * @param angle2 
+		 * @param smallest 
+		 * @return Vec2f 
+		 */
+		static Vec2f angleRange(double angle1, double angle2, bool smallest=true);
+		
+		/**
+		 * @brief Returns 2 values that represent the range of all angles between the 2 values.
+		 * 		This has the option of returning the smallest angle range or largest angle range.
+		 * 		The output may or may not match the input values.
+		 * 		Expects the angles to be in degrees and will return degrees as well and may not be in standard range.
+		 * 
+		 * @param angle1 
+		 * @param angle2 
+		 * @param smallest 
+		 * @return Vec2f 
+		 */
+		static Vec2f angleRangeDeg(double angle1, double angle2, bool smallest=true);
+
+		/**
 		 * @brief Returns a Vec2f that has the specified length and direction.
 		 * 
 		 * @param length 
@@ -1739,9 +1769,33 @@ namespace glib
 		 */
 		static PolynomialMathFunction linearRegression(std::vector<Vec2f> points, int degree);
 
+		/**
+		 * @brief Fits a polynomial of at most n degree that crosses all points where n is the number of input data points.
+		 * 		Can be less that n degree.
+		 * 		May fail if it is not possible to fit a polynomial that crosses all points.
+		 * 
+		 * @param points 
+		 * @return PolynomialMathFunction 
+		 */
+		static PolynomialMathFunction fitPolynomial(std::vector<Vec2f> points);
+
 		static std::vector<double> getIntersectionQuadratic(double A1, double B1, double C1, double A2, double B2, double C2);
 		static std::vector<double> getIntersectionQuadratic(PolynomialMathFunction a, PolynomialMathFunction b);
 		
+		/**
+		 * @brief Fits a circle to either the 3 points of the triangle or 
+		 * 		fits the largest circle inside of the triangle.
+		 * 		Returns 3 values.
+		 * 			x, y, radius
+		 * 
+		 * @param p1 
+		 * @param p2 
+		 * @param p3 
+		 * @param inside 
+		 * @return Vec3f 
+		 */
+		static Vec3f fitCircleToTriangle(Vec2f p1, Vec2f p2, Vec2f p3, bool inside);
+
 		/**
 		 * @brief Returns the factorial of the specified input
 		 * 

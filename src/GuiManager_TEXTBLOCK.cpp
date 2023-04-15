@@ -43,7 +43,7 @@ namespace glib
 		textColor = other.textColor;
 		defaultTextColor = other.defaultTextColor;
 		highlightColor = other.highlightColor;
-		textFont = other.textFont;
+		textFontP = other.textFontP;
 		text = other.text;
 	}
 
@@ -58,8 +58,7 @@ namespace glib
 
 		if(updateBounds)
 		{
-			GuiFontInterface* fInt = (textFont != nullptr) ? textFont : GuiGraphicsInterface::getFont();
-
+			FontInterface* fInt = getFont();
 			if(fInt == nullptr)
 				return;
 			
@@ -114,11 +113,11 @@ namespace glib
 
 	void GuiTextBlock::render()
 	{
-		GuiFontInterface* fInt = (textFont != nullptr) ? textFont : GuiGraphicsInterface::getFont();
-		GuiFontInterface* oldFontInt = GuiGraphicsInterface::getFont();
+		FontInterface* fInt = getFont();
+		// FontInterface* oldFontInt = GraphicsInterface::getFont();
 
-		GuiGraphicsInterface::setFont(fInt);
-		GuiGraphicsInterface::setColor(textColor);
+		GraphicsInterface::setFont(fInt);
+		GraphicsInterface::setColor(textColor);
 
 		int actualMaxW = (maxWidth < 0) ? 0xFFFF : maxWidth; //65535 will be considered the maximum width. Most images and textures limit size to this.
 		int actualMaxH = (maxHeight < 0) ? 0xFFFF : maxHeight; //65535 will be considered the maximum height. Most images and textures limit size to this.
@@ -126,31 +125,31 @@ namespace glib
 		int minHighlight = MathExt::min(startHighlight, endHighlight);
 		int maxHighlight = MathExt::max(startHighlight, endHighlight);
 		
-		// Box2D oldClip = GuiGraphicsInterface::getClippingRect();
+		// Box2D oldClip = GraphicsInterface::getClippingRect();
 
 		if(!text.empty())
 		{
 			if(shouldHighlight)
-				GuiGraphicsInterface::drawTextLimitsHighlighted(text, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText, minHighlight, maxHighlight, highlightColor);
+				GraphicsInterface::drawTextLimitsHighlighted(text, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText, minHighlight, maxHighlight, highlightColor);
 			else
-				GuiGraphicsInterface::drawTextLimits(text, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText);
+				GraphicsInterface::drawTextLimits(text, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText);
 		}
 		else
 		{
-			GuiGraphicsInterface::setColor(defaultTextColor);
+			GraphicsInterface::setColor(defaultTextColor);
 			if(shouldHighlight)
-				GuiGraphicsInterface::drawTextLimitsHighlighted(defaultString, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText, minHighlight, maxHighlight, highlightColor);
+				GraphicsInterface::drawTextLimitsHighlighted(defaultString, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText, minHighlight, maxHighlight, highlightColor);
 			else
-				GuiGraphicsInterface::drawTextLimits(defaultString, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText);
+				GraphicsInterface::drawTextLimits(defaultString, x+offsetX, y+offsetY, actualMaxW-offsetX, actualMaxH-offsetY, allowWrapText);
 		}
 		
-		GuiGraphicsInterface::setFont(oldFontInt);
+		// GraphicsInterface::setFont(oldFontInt);
 
-		// Box2D oldClip = GuiGraphicsInterface::getClippingRect();
-		// GuiGraphicsInterface::resetClippingPlane();
-		// GuiGraphicsInterface::setColor(Color{255,0,0,255});
-		// GuiGraphicsInterface::drawRect(boundingBox.getLeftBound(), boundingBox.getTopBound(), boundingBox.getRightBound(), boundingBox.getBottomBound(), true);
-		// GuiGraphicsInterface::setClippingRect(oldClip);
+		// Box2D oldClip = GraphicsInterface::getClippingRect();
+		// GraphicsInterface::resetClippingPlane();
+		// GraphicsInterface::setColor(Color{255,0,0,255});
+		// GraphicsInterface::drawRect(boundingBox.getLeftBound(), boundingBox.getTopBound(), boundingBox.getRightBound(), boundingBox.getBottomBound(), true);
+		// GraphicsInterface::setClippingRect(oldClip);
 		
 	}
 
@@ -216,17 +215,22 @@ namespace glib
 		update();
 	}
 
-	void GuiTextBlock::setFont(GuiFontInterface* f)
+	void GuiTextBlock::setFont(SmartMemory<FontInterface> f)
 	{
-		textFont = f;
+		textFontP = f;
 		updateBounds = true;
 		setShouldRedraw(true);
 		update();
 	}
 
-	GuiFontInterface* GuiTextBlock::getFont()
+	FontInterface* GuiTextBlock::getFont()
 	{
-		return textFont;
+		FontInterface* textFont = textFontP.getPointer();
+		FontInterface* fInt = (textFont != nullptr) ? textFont : GraphicsInterface::getFont();
+		
+		if(fInt->getFont() != nullptr)
+			fInt->getFont()->setFontSize(fontSize);
+		return fInt;
 	}
 
 	void GuiTextBlock::setMaxWidth(int v)
@@ -357,81 +361,94 @@ namespace glib
 		update();
 	}
 
-	void GuiTextBlock::loadDataFromXML(std::unordered_map<std::string, std::string>& attributes)
+	void GuiTextBlock::loadDataFromXML(SimpleHashMap<std::string, std::string>& attributes)
 	{
 		GuiInstance::loadDataFromXML(attributes);
 
-		std::vector<std::string> possibleNames = { "maxwidth", "maxheight", "textcolor", "defaulttextcolor", "highlightcolor", "allowhighlight", "allowwraptext", "highlightstart", "highlightend", "textxoffset", "textyoffset", "text", "defaulttext" };
+		std::vector<std::string> possibleNames = { "maxwidth", "maxheight", "textcolor", "defaulttextcolor", "highlightcolor", "allowhighlight", "allowwraptext", "highlightstart", "highlightend", "textxoffset", "textyoffset", "text", "defaulttext", "fontsrc", "fontsize" };
 
 		for(size_t i=0; i<possibleNames.size(); i++)
 		{
-			auto it = attributes.find(possibleNames[i]);
-			if(it != attributes.end())
+			auto it = attributes.get(possibleNames[i]);
+			if(it != nullptr)
 			{
 				if(possibleNames[i] == "maxwidth")
 				{
-					this->maxWidth = StringTools::toInt(it->second);
+					this->maxWidth = StringTools::toInt(it->data);
 				}
 				else if(possibleNames[i] == "maxheight")
 				{
-					this->maxHeight = StringTools::toInt(it->second);
+					this->maxHeight = StringTools::toInt(it->data);
 				}
 				else if(possibleNames[i] == "textcolor")
 				{
 					//define as color name or rgba
-					this->textColor = ColorNameConverter::NameToColor(it->second);
+					this->textColor = ColorNameConverter::NameToColor(it->data);
 				}
 				else if(possibleNames[i] == "defaulttextcolor")
 				{
 					//define as color name or rgba
-					this->defaultTextColor = ColorNameConverter::NameToColor(it->second);
+					this->defaultTextColor = ColorNameConverter::NameToColor(it->data);
 				}
 				else if(possibleNames[i] == "highlightcolor")
 				{
 					//define as color name or rgba
-					this->highlightColor = ColorNameConverter::NameToColor(it->second);
+					this->highlightColor = ColorNameConverter::NameToColor(it->data);
 				}
 				else if(possibleNames[i] == "allowhighlight")
 				{
-					this->shouldHighlight = StringTools::equalsIgnoreCase<char>(it->second, "true");
+					this->shouldHighlight = StringTools::equalsIgnoreCase<char>(it->data, "true");
 				}
 				else if(possibleNames[i] == "allowwraptext")
 				{
-					this->allowWrapText = StringTools::equalsIgnoreCase<char>(it->second, "true");
+					this->allowWrapText = StringTools::equalsIgnoreCase<char>(it->data, "true");
 				}
 				else if(possibleNames[i] == "highlightstart")
 				{
-					this->startHighlight = StringTools::toInt(it->second);
+					this->startHighlight = StringTools::toInt(it->data);
 				}
 				else if(possibleNames[i] == "highlightend")
 				{
-					this->endHighlight = StringTools::toInt(it->second);
+					this->endHighlight = StringTools::toInt(it->data);
 				}
 				else if(possibleNames[i] == "textxoffset")
 				{
-					this->baseX = StringTools::toInt(it->second);
+					this->baseX = StringTools::toInt(it->data);
 				}
 				else if(possibleNames[i] == "textyoffset")
 				{
-					this->baseY = StringTools::toInt(it->second);
+					this->baseY = StringTools::toInt(it->data);
 				}
 				else if(possibleNames[i] == "text")
 				{
-					this->text = it->second;
+					this->text = it->data;
 				}
 				else if(possibleNames[i] == "defaulttext")
 				{
-					this->defaultString = it->second;
+					this->defaultString = it->data;
+				}
+				else if(possibleNames[i] == "fontsrc")
+				{
+					//check if in resources by name.
+					textFontP = GuiResourceManager::getResourceManager().getFont(it->data);
+				}
+				else if(possibleNames[i] == "fontsize")
+				{
+					this->fontSize = StringTools::toInt(it->data);
+					if(this->fontSize < 0)
+					{
+						this->fontSize = 0;
+					}
 				}
 
-				attributes.erase(possibleNames[i]);
+				attributes.remove(it);
 			}
 		}
 
 		update(); //just updates the bounding box
 	}
 
-	GuiInstance* GuiTextBlock::loadFunction(std::unordered_map<std::string, std::string>& attributes)
+	GuiInstance* GuiTextBlock::loadFunction(SimpleHashMap<std::string, std::string>& attributes)
 	{
 		GuiTextBlock* ins = new GuiTextBlock(0, 0);
 		ins->loadDataFromXML(attributes);

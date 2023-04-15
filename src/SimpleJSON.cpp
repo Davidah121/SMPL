@@ -3,6 +3,9 @@
 
 namespace glib
 {
+
+    #pragma region JNODE
+
     JNode::JNode(int type)
     {
         this->type = type;
@@ -24,6 +27,47 @@ namespace glib
         name = n;
     }
 
+    std::vector<JNode*> JNode::getNodesPattern(std::vector<std::string>& s, int offset)
+    {
+        std::vector<JNode*> nodes;
+        getNodesPatternInternal(s, offset, nodes);
+        return nodes;
+    }
+
+    void JNode::getNodesPatternInternal(std::vector<std::string>& s, int offset, std::vector<JNode*>& results)
+    {
+        if(offset == s.size())
+        {
+            results.push_back(this);
+        }
+        else if(offset < s.size())
+        {
+            if(type == SimpleJSON::TYPE_OBJECT)
+            {
+                JObject* obj = (JObject*)this;
+                auto pairIt = obj->nameToIndexMap.equal_range(s[offset]);
+
+                for(auto p=pairIt.first; p!=pairIt.second; p++)
+                {
+                    obj->vars[p->second]->getNodesPatternInternal(s, offset+1, results);
+                }
+            }
+            else if(type == SimpleJSON::TYPE_ARRAY)
+            {
+                JArray* obj = (JArray*)this;
+                auto pairIt = obj->nameToIndexMap.equal_range(s[offset]);
+
+                for(auto p=pairIt.first; p!=pairIt.second; p++)
+                {
+                    obj->vars[p->second]->getNodesPatternInternal(s, offset+1, results);
+                }
+            }
+        }
+    }
+
+    #pragma endregion
+
+    #pragma region JPAIR
 
     JPair::JPair() : JNode(1)
     {
@@ -57,6 +101,10 @@ namespace glib
         return result;
     }
 
+    #pragma endregion
+
+    #pragma region JOBJECT
+
     JObject::JObject() : JNode(2)
     {
 
@@ -72,8 +120,18 @@ namespace glib
 
     void JObject::addNode(JNode* o)
     {
-        vars.push_back(o);
+        if(o != nullptr)
+        {
+            std::pair<std::string, size_t> p;
+            p.first = o->getName();
+            p.second = vars.size();
+            nameToIndexMap.insert( p );
+
+            //always add new entry. It is a multimap so all can be referenced/obtained.
+            vars.push_back(o);
+        }
     }
+
     std::vector<JNode*>& JObject::getNodes()
     {
         return vars;
@@ -114,6 +172,9 @@ namespace glib
         return result;
     }
 
+    #pragma endregion
+
+    #pragma region JARRAY
 
     JArray::JArray() : JNode(3)
     {
@@ -130,12 +191,23 @@ namespace glib
 
     void JArray::addNode(JNode* o)
     {
-        vars.push_back(o);
+        if(o != nullptr)
+        {
+            std::pair<std::string, size_t> p;
+            p.first = o->getName();
+            p.second = vars.size();
+            nameToIndexMap.insert( p );
+
+            //always add new entry. It is a multimap so all can be referenced/obtained.
+            vars.push_back(o);
+        }
     }
+
     std::vector<JNode*>& JArray::getNodes()
     {
         return vars;
     }
+
     std::string JArray::getString(bool last)
     {
         std::string result;
@@ -172,6 +244,10 @@ namespace glib
             result += "],\n";
         return result;
     }
+
+    #pragma endregion
+
+    #pragma region SIMPLEJSON
 
     SimpleJSON::SimpleJSON()
     {
@@ -236,9 +312,63 @@ namespace glib
         file.close();
     }
 
+    void SimpleJSON::load(unsigned char* data, size_t size)
+    {
+        if(data != nullptr && size > 0)
+        {
+            std::string temp;
+            std::string temp2;
+            bool inP = false;
+            bool separatorHit = false;
+            size_t index = 0;
+            while(index < size)
+            {
+                char c = data[index];
+                index++;
+
+                if(c == '\"')
+                {
+                    inP = !inP;
+                    continue;
+                }
+
+                if(!inP)
+                {
+                    if(c == ':')
+                    {
+                        //separator between name and whatever comes after
+                        separatorHit = true;
+                    }
+                    else if(c == ',')
+                    {
+                        //separator between pairs
+                        separatorHit = false;
+                        temp = "";
+                        temp2 = "";
+                    }
+                    else if(c == '{')
+                    {
+                        //begin of object
+                        //Note that only one root node is allowed. I think???
+                        rootNode = loadJObject(data, size, index, temp);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     JObject* SimpleJSON::getRootNode()
     {
         return rootNode;
+    }
+
+    std::vector<JNode*> SimpleJSON::getNodesPattern(std::vector<std::string>& s, int offset)
+    {
+        if(rootNode != nullptr)
+            return rootNode->getNodesPattern(s, offset);
+        
+        return {};
     }
 
     JObject* SimpleJSON::loadJObject(std::fstream& file, std::string name)
@@ -436,4 +566,202 @@ namespace glib
         
         return newArray;
     }
+
+    JObject* SimpleJSON::loadJObject(unsigned char* data, size_t size, size_t& index, std::string name)
+    {
+        JObject* newObject = new JObject();
+        newObject->setName(name);
+        if(data != nullptr && size > 0)
+        {
+            std::string temp;
+            std::string temp2;
+            bool inP = false;
+            bool separatorHit = false;
+            while(index < size)
+            {
+                char c = data[index];
+                index++;
+
+                if(c == '\"')
+                {
+                    inP = !inP;
+                    continue;
+                }
+
+                if(!inP)
+                {
+                    if(c == ':')
+                    {
+                        //separator between name and whatever comes after
+                        separatorHit = true;
+                    }
+                    else if(c == ',')
+                    {
+                        if(!temp.empty())
+                        {
+                            //separator between pairs or items
+                            JPair* pair = new JPair();
+                            pair->setName(temp);
+                            pair->setValue(temp2);
+                            newObject->addNode(pair);
+                        }
+
+                        separatorHit = false;
+                        temp = "";
+                        temp2 = "";
+                    }
+                    else if(c == '{')
+                    {
+                        //begin of object
+                        newObject->addNode(loadJObject(data, size, index, temp));
+                        separatorHit = false;
+                        temp = "";
+                        temp2 = "";
+                    }
+                    else if(c == '}')
+                    {
+                        //end of object
+                        break;
+                    }
+                    else if(c == '[')
+                    {
+                        //begin of array
+                        newObject->addNode(loadJArray(data, size, index, temp));
+                        separatorHit = false;
+                        temp = "";
+                        temp2 = "";
+                    }
+                    else
+                    {
+                        if(c>' ')
+                        {
+                            if(!separatorHit)
+                                temp += c;
+                            else
+                                temp2 += c;
+                        }
+                    }
+                }
+                else
+                {
+                    if(!separatorHit)
+                        temp += c;
+                    else
+                        temp2 += c;
+                }
+            }
+
+            if(!temp.empty())
+            {
+                //separator between pairs or items
+                JPair* pair = new JPair();
+                pair->setName(temp);
+                pair->setValue(temp2);
+                newObject->addNode(pair);
+            }
+        }
+
+        return newObject;
+    }
+
+    JArray* SimpleJSON::loadJArray(unsigned char* data, size_t size, size_t& index, std::string name)
+    {
+        JArray* newArray = new JArray();
+        newArray->setName(name);
+        if(data != nullptr && size > 0)
+        {
+            std::string temp;
+            std::string temp2;
+            bool inP = false;
+            bool separatorHit = false;
+            while(index < size)
+            {
+                char c = data[index];
+                index++;
+                
+                if(c == '\"')
+                {
+                    inP = !inP;
+                    continue;
+                }
+
+                if(!inP)
+                {
+                    if(c == ':')
+                    {
+                        //separator between name and whatever comes after
+                        separatorHit = true;
+                    }
+                    else if(c == ',')
+                    {
+                        if(!temp.empty())
+                        {
+                            //separator between pairs or items
+                            JPair* pair = new JPair();
+                            pair->setName(temp);
+                            pair->setValue(temp2);
+                            newArray->addNode(pair);
+                        }
+
+                        separatorHit = false;
+                        temp = "";
+                        temp2 = "";
+                    }
+                    else if(c == '{')
+                    {
+                        //begin of object
+                        newArray->addNode(loadJObject(data, size, index, temp));
+                        separatorHit = false;
+                        temp = "";
+                        temp2 = "";
+                    }
+                    else if(c == '[')
+                    {
+                        //begin of array
+                        newArray->addNode(loadJArray(data, size, index, temp));
+                        separatorHit = false;
+                        temp = "";
+                        temp2 = "";
+                    }
+                    else if(c == ']')
+                    {
+                        //end of array
+                        break;
+                    }
+                    else
+                    {
+                        if(c>' ')
+                        {
+                            if(!separatorHit)
+                                temp += c;
+                            else
+                                temp2 += c;
+                        }
+                    }
+                }
+                else
+                {
+                    if(!separatorHit)
+                        temp += c;
+                    else
+                        temp2 += c;
+                }
+            }
+
+            if(!temp.empty())
+            {
+                //separator between pairs or items
+                JPair* pair = new JPair();
+                pair->setName(temp);
+                pair->setValue(temp2);
+                newArray->addNode(pair);
+            }
+        }
+
+        
+        return newArray;
+    }
+
+    #pragma endregion
+    
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "MathExt.h"
 #include "File.h"
+#include "Shape.h"
 
 namespace glib
 {
@@ -254,6 +255,30 @@ namespace glib
          * @return false 
          */
         bool getIndexed();
+
+        /**
+         * @brief Attempts to convert the model into a series of 2D triangles.
+         *      It will fail and return an empty model if this model is not in the following formats:
+         *          TRIANGLES, TRIANGLE_FAN, TRIANGLE_STRIP, QUADS, QUAD_STRIP.
+         *      At least on format must have the USAGE_POSITION or the function will fail.
+         *      It will not fail if position has more 2 points and will just drop the later points.
+         *          It will fail if position does not have at least 2 points.
+         * 
+         * @return Triangle2DModel 
+         */
+        Triangle2DModel convertTo2DTriModel();
+
+        /**
+         * @brief Attempts to convert the model into a series of 3D triangles.
+         *      It will fail and return an empty model if this model is not in the following formats:
+         *          TRIANGLES, TRIANGLE_FAN, TRIANGLE_STRIP, QUADS, QUAD_STRIP.
+         *      At least on format must have the USAGE_POSITION or the function will fail.
+         *      It will not fail if position has more 3 points and will just drop the later points.
+         *          It will fail if position does not have at least 3 points.
+         * 
+         * @return Triangle3DModel 
+         */
+        Triangle3DModel convertTo3DTriModel();
 
     private:
         void loadOBJ(File file);

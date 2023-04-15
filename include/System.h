@@ -23,15 +23,6 @@ namespace glib
 	public:
 
 		static size_t dbtime[16];
-		static const int LEFT_MOUSE_BUTTON = 0;
-		static const int RIGHT_MOUSE_BUTTON = 1;
-		static const int MIDDLE_MOUSE_BUTTON = 2;
-		static const int MOUSE_WHEEL_UP = 3;
-		static const int MOUSE_WHEEL_DOWN = 4;
-		static const int MOUSE_WHEEL_LEFT = 5;
-		static const int MOUSE_WHEEL_RIGHT = 6;
-		static const int X1_MOUSE_BUTTON = 7;
-		static const int X2_MOUSE_BUTTON = 8;
 
 		/**
 		 * @brief Initializes performance counters.
@@ -82,7 +73,7 @@ namespace glib
 		 * @param t
 		 * @return std::tm 
 		 */
-		static std::tm convertTimeToDate(std::time_t t);
+		static std::tm convertTimeToDate(time_t t);
 
 		/**
 		 * @brief Sleeps for the specified amount of time.
@@ -121,62 +112,6 @@ namespace glib
 		static const long NANOSECOND_SEC = 1000000000L;
 		static const long MICROSECOND_SEC = 1000000L;
 		static const long MILLISECOND_SEC = 1000L;
-
-		/**
-		 * @brief Emulates a key press.
-		 * 		Key is considered down until it is released.
-		 * 		May not work in other OS.
-		 * 
-		 * @param key 
-		 */
-		static void emulateKeyPress(int key);
-
-		/**
-		 * @brief Emulates a key release.
-		 * 		May not work in other OS.
-		 * 
-		 * @param key 
-		 */
-		static void emulateKeyRelease(int key);
-
-		/**
-		 * @brief Emulates a mouse press.
-		 * 		The button is considered down until it is released.
-		 * 		May not work in other OS.
-		 * 
-		 * @param button 
-		 */
-		static void emulateMousePress(int button);
-
-		/**
-		 * @brief Emulates a mouse release.
-		 * 		May not work in other OS.
-		 * 
-		 * @param key 
-		 */
-		static void emulateMouseRelease(int button);
-
-		/**
-		 * @brief Emulates the mouse wheel moving.
-		 * 		
-		 * @param wheel 
-		 * 		Valid values are:
-		 * 			MOUSE_WHEEL_UP
-		 * 			MOUSE_WHEEL_DOWN
-		 * 			MOUSE_WHEEL_LEFT
-		 * 			MOUSE_WHEEL_RIGHT
-		 * @param amount 
-		 * 		Any positive or negative value.
-		 */
-		static void emulateMouseWheel(int wheel, int amount);
-
-		/**
-		 * @brief Sets the Mouse Position
-		 * 
-		 * @param x 
-		 * @param y 
-		 */
-		static void setMousePosition(int x, int y);
 
 		/**
 		 * @brief Gets the Mouse X position

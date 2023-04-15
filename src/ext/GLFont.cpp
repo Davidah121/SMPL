@@ -1,18 +1,14 @@
+#include "ext/GLFont.h"
 
 #ifdef USE_OPENGL
 
-    #include "ext/GLFont.h"
-
     namespace glib
     {
-        const Class GLFont::myClass = Class("GLFont", {&Font::myClass});
-        const Class* GLFont::getClass()
-        {
-            return &GLFont::myClass;
-        }
+        const Class GLFont::globalClass = Class("GLFont", {&Font::globalClass});
 
         GLFont::GLFont(File f)
         {
+			setClass(GLFont::globalClass);
             BitmapFont k = BitmapFont(f);
             convertBitmapFont(k);
         }

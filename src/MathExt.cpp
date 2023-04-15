@@ -561,6 +561,68 @@ namespace glib
 			return closestAngleDeg(tA, sA, eA);
 	}
 	
+	Vec2f MathExt::angleRange(double angle1, double angle2, bool smallest)
+	{
+		//first, convert to standard range
+		double v1 = MathExt::angleToStandardRange(angle1, false);
+		double v2 = MathExt::angleToStandardRange(angle2, false);
+
+		if(v2 < v1)
+		{
+			double temp = v2;
+			v2 = v1;
+			v1 = temp;
+		}
+		
+		if(smallest)
+		{
+			if(v2-v1 <= PI)
+				return Vec2f(v1, v2);
+			
+			//adjust stuff
+			return Vec2f(v2, v1+(2*PI));
+		}
+		else
+		{
+			if(v2-v1 >= PI)
+				return Vec2f(v1, v2);
+			
+			//adjust stuff
+			return Vec2f(v2, v1+(2*PI));
+		}
+	}
+
+	Vec2f MathExt::angleRangeDeg(double angle1, double angle2, bool smallest)
+	{
+		//first, convert to standard range
+		double v1 = MathExt::angleToStandardRange(angle1, true);
+		double v2 = MathExt::angleToStandardRange(angle2, true);
+
+		if(v2 < v1)
+		{
+			double temp = v2;
+			v2 = v1;
+			v1 = temp;
+		}
+		
+		if(smallest)
+		{
+			if(v2-v1 <= 180)
+				return Vec2f(v1, v2);
+			
+			//adjust stuff
+			return Vec2f(v2, v1+(360));
+		}
+		else
+		{
+			if(v2-v1 >= 180)
+				return Vec2f(v1, v2);
+			
+			//adjust stuff
+			return Vec2f(v2, v1+(360));
+		}
+	}
+
 	Vec2f MathExt::lengthDir(double length, double direction, bool counterClockwise)
 	{
 		if(counterClockwise)
@@ -1542,6 +1604,73 @@ namespace glib
 		}
 
 		return f;
+	}
+
+	PolynomialMathFunction MathExt::fitPolynomial(std::vector<Vec2f> points)
+	{
+		if(points.size() <= 0)
+			return PolynomialMathFunction();
+
+		Matrix A = Matrix(points.size(), points.size());
+		Matrix Y = Matrix(points.size(), 1);
+
+		for(size_t i=0; i<points.size(); i++)
+		{
+			for(size_t j=0; j<points.size(); j++)
+			{
+				A[i][j] = MathExt::pow(points[i].x, j);
+			}
+			Y[i][0] = points[i].y;
+		}
+
+		Matrix X = A.getInverse() * Y;
+		if(!X.getValid())
+			return PolynomialMathFunction();
+		
+		PolynomialMathFunction f = PolynomialMathFunction();
+		for(int i=0; i<X.getRows(); i++)
+		{
+			f.addConstant(X[i][0]);
+		}
+		return f;
+	}
+
+	Vec3f MathExt::fitCircleToTriangle(Vec2f p1, Vec2f p2, Vec2f p3, bool inside)
+	{
+		if(inside)
+		{
+			//find mid point in triangle
+			Vec2f midPoint = (p1+p2+p3)/3;
+
+			//find radius. Using heron's formula or at least an adapted version for this.
+			double a, b, c, s, radius;
+			a = (p2-p1).getLength();
+			b = (p3-p2).getLength();
+			c = (p1-p3).getLength();
+			s = (a+b+c)/2;
+
+			if(s != 0)
+				radius = MathExt::sqrt( ((s-a)*(s-b)*(s-c)) / s );
+			else
+				radius = 0;
+
+			return Vec3f(midPoint, radius);
+		}
+		else
+		{
+			//get perpendicular bisector of lines p1->p2 and p2->p3
+			//already goes through mid point
+			Line l1 = Line(p1, p2).getPerpendicularBisector();
+			Line l2 = Line(p2, p3).getPerpendicularBisector();
+
+			//find intersection point between the lines
+			Vec2f circleCenter = l1.getIntersection(l2);
+
+			//find radius
+			double radius = (circleCenter-p1).getLength();
+
+			return Vec3f(circleCenter, radius);
+		}
 	}
 
 	std::vector<double> MathExt::getIntersectionQuadratic(double A1, double B1, double C1, double A2, double B2, double C2)

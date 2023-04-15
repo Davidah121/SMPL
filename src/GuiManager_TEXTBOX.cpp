@@ -169,24 +169,25 @@ namespace glib
 	void GuiTextBox::render()
 	{
 		//draw a rectangle
-		GuiGraphicsInterface::setColor(backgroundColor);
-		GuiGraphicsInterface::drawRect(x, y, x + width, y + height, false);
+		GraphicsInterface::setColor(backgroundColor);
+		GraphicsInterface::drawRect(x, y, x + width, y + height, false);
 
 		if (getFocus() == false)
-			GuiGraphicsInterface::setColor(outlineColor);
+			GraphicsInterface::setColor(outlineColor);
 		else
-			GuiGraphicsInterface::setColor(focusOutlineColor);
+			GraphicsInterface::setColor(focusOutlineColor);
 		
-		GuiGraphicsInterface::drawRect(x, y, x + width, y + height, true);
+		GraphicsInterface::drawRect(x, y, x + width, y + height, true);
 
 		if(getFocus())
 		{
 			if(cursorBlink)
 			{
 				//Font Stuff
-				GuiGraphicsInterface::setColor(cursorBlinkColor);
+				GraphicsInterface::setColor(cursorBlinkColor);
 				std::string testText = textElement.getTextRef();
-				GuiFontInterface* fInt = (textElement.getFont() != nullptr) ? textElement.getFont() : GuiGraphicsInterface::getFont();
+
+				FontInterface* fInt = textElement.getFont();
 				Font* f = fInt->getFont();
 
 				if(f == nullptr)
@@ -202,24 +203,27 @@ namespace glib
 				cursorPos.x += xOffsetForText;
 				cursorPos.y += yOffsetForText;
 				
-				GuiGraphicsInterface::drawRect((int)MathExt::round(x+cursorPos.x), (int)MathExt::round(y+cursorPos.y),
-											(int)MathExt::round(x+cursorPos.x+cursorWidth), (int)MathExt::round(y+cursorPos.y+f->getVerticalAdvance()), false);
+				int tx = textElement.getX();
+				int ty = textElement.getY();
+				
+				GraphicsInterface::drawRect((int)MathExt::round(tx+cursorPos.x), (int)MathExt::round(ty+cursorPos.y),
+											(int)MathExt::round(tx+cursorPos.x+cursorWidth), (int)MathExt::round(ty+cursorPos.y+f->getVerticalAdvance()), false);
 			}
 		}
 		
 		//Create new bounding box to put the text in. Must be bound by the textbox size regardless of the total size of the collection of objects.
 		//Collection of objects refering to itself and its children
-		Box2D oldBounds = GuiGraphicsInterface::getClippingRect();
+		Box2D oldBounds = GraphicsInterface::getClippingRect();
 		Box2D nBounds = oldBounds;
 		nBounds.setLeftBound( MathExt::max((int)nBounds.getLeftBound(), x) );
 		nBounds.setTopBound( MathExt::max((int)nBounds.getTopBound(), y) );
 
-		GuiGraphicsInterface::setClippingRect(nBounds);
+		GraphicsInterface::setClippingRect(nBounds);
 
 		textElement.baseRender();
 		textElement.render();
 
-		GuiGraphicsInterface::setClippingRect(oldBounds);
+		GraphicsInterface::setClippingRect(oldBounds);
 	}
 
 	void GuiTextBox::copy()
@@ -501,7 +505,7 @@ namespace glib
 
 	void GuiTextBox::mouseInput()
 	{
-		GuiFontInterface* fInt = (textElement.getFont() != nullptr) ? textElement.getFont() : GuiGraphicsInterface::getFont();
+		FontInterface* fInt = textElement.getFont();
 		Font* f = fInt->getFont();
 		std::string temp = textElement.getText();
 
@@ -659,7 +663,7 @@ namespace glib
 
 	void GuiTextBox::selectionCleanup()
 	{
-		GuiFontInterface* fInt = (textElement.getFont() != nullptr) ? textElement.getFont() : GuiGraphicsInterface::getFont();
+		FontInterface* fInt = textElement.getFont();
 		std::string tempText = textElement.getText();
 		Font* f = fInt->getFont();
 		
@@ -687,8 +691,8 @@ namespace glib
 		cursorPos += Vec2f(xOffsetForText, yOffsetForText);
 
 		//Introduce a buffer to allow the text to move before hitting the edge.
-		int rightBuffer = 4;
-		int bottomBuffer = f->getVerticalAdvance();
+		int rightBuffer = 4 + textElement.getBaseX();
+		int bottomBuffer = f->getVerticalAdvance() + textElement.getBaseY();
 		if(!textElement.getAllowTextWrap())
 		{
 			if(cursorPos.x < 0)
@@ -825,7 +829,7 @@ namespace glib
 		boundingBox = Box2D(x, y, x+width, y+height);
 	}
 
-	void GuiTextBox::loadDataFromXML(std::unordered_map<std::string, std::string>& attributes)
+	void GuiTextBox::loadDataFromXML(SimpleHashMap<std::string, std::string>& attributes)
 	{
 		GuiInstance::loadDataFromXML(attributes);
 
@@ -833,55 +837,55 @@ namespace glib
 
 		for(size_t i=0; i<possibleNames.size(); i++)
 		{
-			auto it = attributes.find(possibleNames[i]);
-			if(it != attributes.end())
+			auto it = attributes.get(possibleNames[i]);
+			if(it != nullptr)
 			{
 				if(possibleNames[i] == "width")
 				{
-					this->width = std::abs(StringTools::toInt(it->second));
+					this->width = std::abs(StringTools::toInt(it->data));
 				}
 				else if(possibleNames[i] == "height")
 				{
-					this->height = std::abs(StringTools::toInt(it->second));
+					this->height = std::abs(StringTools::toInt(it->data));
 				}
 				else if(possibleNames[i] == "cursorblinktimer")
 				{
-					this->setCursorBlinkTimer(StringTools::toInt(it->second));
+					this->setCursorBlinkTimer(StringTools::toInt(it->data));
 				}
 				else if(possibleNames[i] == "cursorwidth")
 				{
-					this->cursorWidth = std::abs(StringTools::toInt(it->second));
+					this->cursorWidth = std::abs(StringTools::toInt(it->data));
 				}
 				else if(possibleNames[i] == "backgroundcolor")
 				{
 					//define as color name or rgba
-					this->backgroundColor = ColorNameConverter::NameToColor(it->second);
+					this->backgroundColor = ColorNameConverter::NameToColor(it->data);
 				}
 				else if(possibleNames[i] == "outlinecolor")
 				{
 					//define as color name or rgba
-					this->outlineColor = ColorNameConverter::NameToColor(it->second);
+					this->outlineColor = ColorNameConverter::NameToColor(it->data);
 				}
 				else if(possibleNames[i] == "focusoutlinecolor")
 				{
 					//define as color name or rgba
-					this->focusOutlineColor = ColorNameConverter::NameToColor(it->second);
+					this->focusOutlineColor = ColorNameConverter::NameToColor(it->data);
 				}
 				else if(possibleNames[i] == "cursorblinkcolor")
 				{
 					//define as color name or rgba
-					this->cursorBlinkColor = ColorNameConverter::NameToColor(it->second);
+					this->cursorBlinkColor = ColorNameConverter::NameToColor(it->data);
 				}
 				else if(possibleNames[i] == "allowlinebreaks")
 				{
-					this->allowLineBreaks = StringTools::equalsIgnoreCase<char>(it->second, "true");
+					this->allowLineBreaks = StringTools::equalsIgnoreCase<char>(it->data, "true");
 				}
 				else if(possibleNames[i] == "enablecontextmenu")
 				{
-					this->enableContextMenu( StringTools::equalsIgnoreCase<char>(it->second, "true") );
+					this->enableContextMenu( StringTools::equalsIgnoreCase<char>(it->data, "true") );
 				}
-
-				attributes.erase(possibleNames[i]);
+				
+				attributes.remove(it);
 			}
 		}
 		
@@ -896,7 +900,7 @@ namespace glib
 			textElement.setMaxHeight(height - textElement.getBaseY()*2 - 1);
 	}
 
-	GuiInstance* GuiTextBox::loadFunction(std::unordered_map<std::string, std::string>& attributes)
+	GuiInstance* GuiTextBox::loadFunction(SimpleHashMap<std::string, std::string>& attributes)
 	{
 		GuiTextBox* ins = new GuiTextBox(0, 0, 0, 0);
 		ins->loadDataFromXML(attributes);

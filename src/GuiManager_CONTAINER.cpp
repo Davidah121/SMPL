@@ -35,12 +35,12 @@ namespace glib
 		boundingBox = GuiInstance::getInvalidBox();
 	}
 	
-	void GuiContainer::loadDataFromXML(std::unordered_map<std::string, std::string>& attributes)
+	void GuiContainer::loadDataFromXML(SimpleHashMap<std::string, std::string>& attributes)
 	{
 		GuiInstance::loadDataFromXML(attributes);
 	}
 
-	GuiInstance* GuiContainer::loadFunction(std::unordered_map<std::string, std::string>& attributes)
+	GuiInstance* GuiContainer::loadFunction(SimpleHashMap<std::string, std::string>& attributes)
 	{
 		GuiContainer* ins = new GuiContainer();
 		ins->loadDataFromXML(attributes);
