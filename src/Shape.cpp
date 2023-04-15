@@ -855,8 +855,8 @@ namespace glib
 	{
 		Vec3f midP = getCenterPosition();
 		double maxDis = (v1-midP).getLength();
-		maxDis = __max( maxDis, (v2-midP).getLength() );
-		maxDis = __max( maxDis, (v3-midP).getLength() );
+		maxDis = MathExt::max( maxDis, (v2-midP).getLength() );
+		maxDis = MathExt::max( maxDis, (v3-midP).getLength() );
 		return maxDis;
 	}
 
