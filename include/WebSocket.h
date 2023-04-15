@@ -3,6 +3,8 @@
 #include "Cryptography.h"
 #include "Network.h"
 #include "LCG.h"
+#include <vector>
+#include <list>
 
 namespace glib
 {
