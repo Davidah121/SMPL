@@ -124,13 +124,13 @@ namespace glib
 			//paletteSorted
 			c += (char)(0 << 3);
 			//colorRes
-			c += (char)(paletteSizeP2 << 4);
+			c += (char)(7 << 4);
 			//hasGlobalColorTable
 			c += (char)(1 << 7);
 		gifHeaderInfo += c;
 
 		//backgroundColorIndex
-		gifHeaderInfo += (char)0;
+		gifHeaderInfo += (char)0xFF;
 
 		//aspect ratio
 		gifHeaderInfo += (char)0;
@@ -243,6 +243,206 @@ namespace glib
 		f.writeString(gifHeaderInfo);
 
 		f.close();
+	}
+
+	bool Image::saveAGIF(File file, Image** images, int size, int delayTimePerFrame, bool loops, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold, bool greyscale)
+	{
+		SimpleFile f = SimpleFile(file, SimpleFile::WRITE);
+
+		if(!f.isOpen())
+			return false; //invalid so return from function
+		
+		std::string gifType = "GIF89a";
+		std::string gifHeaderInfo = "";
+
+		//first check if all images have the same size
+		int w,h;
+		if(images == nullptr || size <= 0)
+		{
+			return false; //No images
+		}
+		w = images[0]->getWidth();
+		h = images[0]->getHeight();
+
+		for(int i=1; i<size; i++)
+		{
+			if(w != images[i]->getWidth())
+				return false; //Not all the same width
+			
+			if(h != images[i]->getHeight())
+				return false; //Not all the same height
+		}
+
+		//width
+		gifHeaderInfo += (char)((w) & 0xFF);
+		gifHeaderInfo += (char)((w>>8) & 0xFF);
+
+		//height
+		gifHeaderInfo += (char)((h) & 0xFF);
+		gifHeaderInfo += (char)((h>>8) & 0xFF);
+
+		//packed data
+			//colorRes
+			char c = (char)(7 << 4);
+		gifHeaderInfo += c;
+
+		//backgroundColorIndex
+		gifHeaderInfo += (char)0xFF;
+
+		//aspect ratio
+		gifHeaderInfo += (char)0;
+
+		
+		//Graphic Control Extension
+		gifHeaderInfo += (char)0x21;
+		
+		//Label
+		gifHeaderInfo += (char)0xF9;
+
+		//BlockSize
+		gifHeaderInfo += (char)0x04;
+
+		//PackedField
+			//Note that most of this is reserved. Includes disposal method too
+			//0x00 = no transparency, no disposal | 0x09 = has transparency, dispose to background
+			gifHeaderInfo += (saveAlpha) ? 0x00 : 0x05;
+		
+		//Delay Time
+		//Time expected to be in milliseconds but this needs to be in 1/100s of a second
+		int tempTime = (delayTimePerFrame) / 10;
+		gifHeaderInfo += (char)(tempTime & 0xFF);
+		gifHeaderInfo += (char)((tempTime >> 8) & 0xFF);
+
+		//Transparent Color Index, will always be the last value
+		gifHeaderInfo += (char)0xFF;
+
+		//Block Terminator
+		gifHeaderInfo += (char)0x00;
+
+		f.writeString(gifType);
+		f.writeString(gifHeaderInfo);
+
+		std::vector<unsigned char> pixs = std::vector<unsigned char>(w*h);
+		Image oldImg;
+		Image tempImg;
+		for(int i=0; i<size; i++)
+		{
+			gifHeaderInfo = "";
+			//Image Descriptor
+			gifHeaderInfo += (char)0x2C;
+
+			//x
+			gifHeaderInfo += (char)0;
+			gifHeaderInfo += (char)0;
+
+			//y
+			gifHeaderInfo += (char)0;
+			gifHeaderInfo += (char)0;
+
+			//width
+			gifHeaderInfo += (char)((w) & 0xFF);
+			gifHeaderInfo += (char)((w>>8) & 0xFF);
+
+			//height
+			gifHeaderInfo += (char)((h) & 0xFF);
+			gifHeaderInfo += (char)((h>>8) & 0xFF);
+
+			//packedInfo
+			char packed = 0b10000000;
+			char codeSize = (int)MathExt::ceil( MathExt::log((double)paletteSize, 2.0) );
+			packed |= codeSize-1;
+			gifHeaderInfo += packed;
+
+			//create palette
+			ColorPalette palette;
+			if(saveAlpha)
+				palette = ColorPalette::generateOptimalPalette(images[i]->getPixels(), w*h, paletteSize-1, ColorPalette::MEAN_CUT);
+			else
+				palette = ColorPalette::generateOptimalPalette(images[i]->getPixels(), w*h, paletteSize, ColorPalette::MEAN_CUT);
+			
+			//store palette
+			for(int k=0; k<palette.getSize(); k++)
+			{
+				Color c = palette.getColor(k);
+				gifHeaderInfo += c.red;
+				gifHeaderInfo += c.green;
+				gifHeaderInfo += c.blue;
+			}
+			if(saveAlpha)
+			{
+				gifHeaderInfo += (char)0;
+				gifHeaderInfo += (char)0;
+				gifHeaderInfo += (char)0;
+			}
+			//min code size
+			gifHeaderInfo += (char)codeSize;
+			
+			//Separate into blocks to make it multi threaded
+			//each block should approach the max dictionary size of 4096 entries and try not to exceed it.
+
+			//gotta copy the image, dither if necessary, and replace the pixels with a number in the palette.
+			// oldImg.copyImage(&tempImg);
+			tempImg.copyImage(images[i]);
+			Color* nPixels = tempImg.getPixels();
+			if(dither)
+			{
+				tempImg.setPalette(palette);
+				SimpleGraphics::ditherImage(&tempImg, SimpleGraphics::FLOYD_DITHER);
+			}
+
+			if(saveAlpha)
+			{
+				for(int i=0; i<w*h; i++)
+				{
+					if(nPixels[i].alpha <= alphaThreshold)
+					{
+						pixs[i] = 0xFF;
+					}
+					else
+					{
+						pixs[i] = (unsigned char)palette.getClosestColorIndex(nPixels[i]);
+					}
+				}
+			}
+			else
+			{
+				for(int i=0; i<w*h; i++)
+				{
+					pixs[i] = (unsigned char)palette.getClosestColorIndex(nPixels[i]);
+				}
+			}
+
+			//compress data
+			int blocks = (int)MathExt::ceil((double)h/24);
+			std::vector<unsigned char> compressedData = Compression::compressLZW(pixs.data(), w*h, blocks, codeSize);
+
+			for(size_t i=0; i<compressedData.size(); i++)
+			{
+				if(i % 255 == 0)
+				{
+					if(compressedData.size() - i >= 255)
+					{
+						gifHeaderInfo += (char)0xFF;
+					}
+					else
+					{
+						gifHeaderInfo += (compressedData.size() - i);
+					}
+				}
+
+				gifHeaderInfo += compressedData[i];
+			}
+
+			//end of image data
+			gifHeaderInfo += (char)0x00;
+
+			f.writeString(gifHeaderInfo); //write everything out
+		}
+
+		f.writeByte(0x3B); //end of data
+
+		f.close();
+		return true;
 	}
 
 	Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages, std::vector<int>* extraData)
@@ -565,7 +765,7 @@ namespace glib
 						
 						if(extraData!=nullptr)
 						{
-							extraData->push_back( delayTime*10000 );
+							extraData->push_back( delayTime*10 );
 						}
 						
 						transparentColorIndex = fileData[startIndex + 6];

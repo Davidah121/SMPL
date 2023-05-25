@@ -80,7 +80,7 @@ namespace glib
 		 * @return ImageInterface 
 		 */
 		ImageInterface getImage(size_t index);
-		int getDelayTime(size_t index);
+		int getDelayTime();
 		size_t getSize();
 		bool shouldLoop();
 	private:

@@ -57,12 +57,20 @@ namespace glib
 
 		/**
 		 * @brief Gets the Delay Time for the image.
-		 * 		Specifies how long before showing the next image in microseconds.
+		 * 		Specifies how long before showing the next image in milliseconds.
 		 * 
 		 * @param index 
 		 * @return size_t 
 		 */
-		int getDelayTime(size_t index);
+		int getDelayTime();
+
+		/**
+		 * @brief Set the Delay Time in milliseconds.
+		 * 		This is how much time to wait between each image to display it.
+		 * 
+		 * @param millis 
+		 */
+		void setDelayTime(int millis);
 
 		/**
 		 * @brief Gets the amount of images in the sprite.
@@ -74,19 +82,9 @@ namespace glib
 		/**
 		 * @brief Adds a new image to the sprite with a delay value.
 		 * 
-		 * @param p 
-		 * @param microSecondsDelay 
-		 * 		Default value is 0
+		 * @param p
 		 */
-		void addImage(Image* p, int microSecondsDelay = 0);
-
-		/**
-		 * @brief Set the Delay Time for an image in the sprite specified by the index.
-		 * 
-		 * @param index 
-		 * @param microSecondsDelay 
-		 */
-		void setDelayTime(size_t index, int microSecondsDelay);
+		void addImage(Image* p);
 
 		/**
 		 * @brief Removes an image from the sprite.
@@ -101,6 +99,29 @@ namespace glib
 		 * @param file 
 		 */
 		void loadImage(File file);
+
+		/**
+		 * @brief Loads a folder of images into a sprite. All images in the folder are loaded.
+		 * 
+		 * @param dir 
+		 */
+		void loadFolder(File dir);
+
+		/**
+		 * @brief Saves the sprite as a APNG.
+		 * 		Whether it loops and delay time per frame are expected to be defined.
+		 * 
+		 * @param file 
+		 */
+		bool saveAPNG(File file);
+
+		/**
+		 * @brief Saves the sprite as a Animated GIF.
+		 * 		Whether it loops and delay time per frame are expected to be defined.
+		 * 
+		 * @param file 
+		 */
+		bool saveAGIF(File file);
 
 		/**
 		 * @brief Deletes the images from the sprite. Any images added to the sprite, including those that were loaded,
@@ -127,7 +148,7 @@ namespace glib
 	private:
 		bool loops = true;
 		std::vector<Image*> images = std::vector<Image*>();
-		std::vector<int> delayTimeForFrame = std::vector<int>();
+		int delayTimeForFrame = 100; //0.1 seconds
 	};
 
 } //NAMESPACE glib END
