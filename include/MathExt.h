@@ -41,12 +41,34 @@
 	#define EPSILON 1e-10
 #endif
 
+#ifndef IS_POWER_2
+	#define IS_POWER_2(x) (((x) & ((x)-1)) == 0)
+#endif
+
 namespace glib
 {
 
 	class MathExt
 	{
 	public:
+
+		/**
+		 * @brief Returns the number of 1 bits in the value x.
+		 * 		Uses some bit hacks and is cross platform.
+		 * 
+		 * @param x 
+		 * @return int 
+		 */
+		static int popcount(uint32_t x);
+
+		/**
+		 * @brief Returns the number of 1 bits in the value x.
+		 * 		Uses some bit hacks and is cross platform.
+		 * 
+		 * @param x 
+		 * @return int 
+		 */
+		static int popcount(uint64_t x);
 
 		/**
 		 * @brief Returns the max of the 2 template values.
@@ -1860,9 +1882,12 @@ namespace glib
 		static std::vector<ComplexNumber> fourierTransform(ComplexNumber* arr, int size, bool inverse=false);
 
 		/**
-		 * @brief Computes the Fast Discrete Fourier Transform using the Cooley Tukey algorithm
+		 * @brief Computes the Fast Discrete Fourier Transform using an adaptation of the Cooley Tukey algorithm
 		 * 		Runs in O(NLogN) time.
 		 * 		Fails if the input array is not a power of 2.
+		 * 		
+		 * 		Reference: 
+		 * 			(https://cp-algorithms.com/algebra/fft.html#improved-implementation-in-place-computation)
 		 * 
 		 * @param arr 
 		 * 		An array of Complex Numbers to perform the Fourier Transform on.
@@ -1875,27 +1900,25 @@ namespace glib
 		 * 		Default is false.
 		 * @return std::vector<ComplexNumber> 
 		 */
-		static std::vector<ComplexNumber> fastFourierTransform(ComplexNumber* arr, int size, bool inverse=false);
-
+		static std::vector<ComplexNumber> fastFourierTransform(ComplexNumber* arr, size_t size, bool inverse=false);
+		
 		/**
-		 * @brief Computes the Fast Discrete Fourier Transform using the Cooley Tukey algorithm
+		 * @brief Computes the Fast Discrete Fourier Transform using an adaptation of the Cooley Tukey algorithm
 		 * 		Runs in O(NLogN) time.
 		 * 		Fails if the input array is not a power of 2.
-		 * 		This is a test version that runs faster. Soon to be removed to replace the original version.
+		 * 		This performs the operation on arr itself and therefore modifies it.
+		 * 		
+		 * 		Reference: 
+		 * 			(https://cp-algorithms.com/algebra/fft.html#improved-implementation-in-place-computation)
+		 * 
 		 * 
 		 * @param arr 
-		 * 		An array of Complex Numbers to perform the Fourier Transform on.
-		 * 		If not doing the inverse, the imaginary values can be ignored and set to 0.
 		 * @param size 
-		 * 		The size of the array.
-		 * 		Must be a power of 2.
 		 * @param inverse 
-		 * 		Whether to solve for the inverse.
-		 * 		Default is false.
-		 * @return std::vector<ComplexNumber> 
+		 * @return bool
 		 */
-		static std::vector<ComplexNumber> fastFourierTransformTest(ComplexNumber* arr, int size, bool inverse=false);
-
+		static bool fastFourierTransformInline(ComplexNumber* arr, size_t size, bool inverse=false);
+		
 		/**
 		 * @brief Computes the Discrete Cosine Transform on the array.
 		 * 		Runs in O(N) time. Solves for a single point.
@@ -1926,27 +1949,23 @@ namespace glib
 		static std::vector<double> cosineTransform(double* arr, int size, bool inverse=false);
 
 		/**
-		 * @brief NOT IMPLEMENTED YET
+		 * @brief Computes the Discrete Cosine Transform for all possible values.
+		 * 		Runs in O(NlogN)
+		 * 		Can fail if the size is not a power of 2.
+		 * 			Returns an empty vector if it fails.
 		 * 
+		 * 		References:
+		 * 			(https://www.nayuki.io/res/fast-discrete-cosine-transform-algorithms/lee-new-algo-discrete-cosine-transform.pdf)
+		 * 			(https://www.nayuki.io/page/fast-discrete-cosine-transform-algorithms)
 		 * @param arr 
 		 * @param size 
-		 * @param inverse 
-		 * @return std::vector<double> 
-		 */
-		static std::vector<double> fastCosineTransform(double* arr, int size, bool inverse=false);
-
-		/**
-		 * @brief Computes the 2D Discrete Cosine Transform for a specific location.
-		 * 
-		 * @param arr 
-		 * @param u 
-		 * @param v 
+		 * 		Must be a power of 2
 		 * @param inverse 
 		 * 		Whether to solve for the inverse.
 		 * 		Default is false.
-		 * @return double 
+		 * @return std::vector<double> 
 		 */
-		static double discreteCosineTransform2D(Matrix& arr, int u, int v, bool inverse=false);
+		static std::vector<double> fastCosineTransform(double* arr, size_t size, bool inverse=false);
 
 		/**
 		 * @brief Computes the 2D Discrete Cosine Transform for all possible locations.
@@ -1960,7 +1979,8 @@ namespace glib
 		static Matrix cosineTransform2D(Matrix& arr, bool inverse=false);
 
 		/**
-		 * @brief NOT IMPLEMENTED YET
+		 * @brief Computes the 2D Discrete Cosine Transform for all possible locations.
+		 * 		Uses the FCT (Fast Cosine Transform) algorithm to speed up computation.
 		 * 
 		 * @param arr 
 		 * @param size 
@@ -2001,14 +2021,29 @@ namespace glib
 
 
 		/**
-		 * @brief NOT IMPLEMENTED
+		 * @brief Calculates the Discrete Sine Transform using DST-I
+		 * 		This formula is muliplied by sqrt(2.0 / (size+1)) so it can also calculate the inverse without changing anything.
+		 * 		
+		 * 		Reference: 
+		 * 			(https://en.wikipedia.org/wiki/Discrete_sine_transform)
 		 * 
 		 * @param size 
 		 * @param u 
-		 * @param inverse 
 		 * @return double 
 		 */
-		static double discreteSineTransform(double*, int size, int u, bool inverse=false);
+		static double discreteSineTransform(double*, size_t size, size_t u);
+
+		/**
+		 * @brief Calculates the Discrete Sine Transform using DST-I
+		 * 		Calls discreteSineTransform multiple times.
+		 * 		Calculates the inverse without needing additional parameters.
+		 * 		Runs in O(N^2) time
+		 * 
+		 * @param arr 
+		 * @param size 
+		 * @return std::vector<double> 
+		 */
+		static std::vector<double> sineTransform(double* arr, size_t size);
 
 		/**
 		 * @brief NOT IMPLEMENTED
@@ -2018,37 +2053,17 @@ namespace glib
 		 * @param inverse 
 		 * @return std::vector<double> 
 		 */
-		static std::vector<double> sineTransform(double* arr, int size, bool inverse=false);
+		static std::vector<double> fastSineTransform(double* arr, size_t size, bool inverse=false);
 
 		/**
-		 * @brief NOT IMPLEMENTED
+		 * @brief Calculates the 2D Discrete Sine Transform for a matrix.
+		 * 		Utilizes the function sineTransform (slow version)
+		 * 		The inverse can be calculated by calling this function as is with no additional options.
 		 * 
 		 * @param arr 
-		 * @param size 
-		 * @param inverse 
-		 * @return std::vector<double> 
-		 */
-		static std::vector<double> fastSineTransform(double* arr, int size, bool inverse=false);
-
-		/**
-		 * @brief NOT IMPLEMENTED
-		 * 
-		 * @param arr 
-		 * @param u 
-		 * @param v 
-		 * @param inverse 
-		 * @return double 
-		 */
-		static double discreteSineTransform2D(Matrix& arr, int u, int v, bool inverse=false);
-
-		/**
-		 * @brief NOT IMPLEMENTED
-		 * 
-		 * @param arr 
-		 * @param inverse 
 		 * @return Matrix 
 		 */
-		static Matrix sineTransform2D(Matrix& arr, bool inverse=false);
+		static Matrix sineTransform2D(Matrix& arr);
 
 		/**
 		 * @brief NOT IMPLEMENTED
@@ -2230,8 +2245,6 @@ namespace glib
 		static std::vector<std::vector<GeneralVector>> kMeans(std::vector<GeneralVector> arr, int clusters, int maxIterations, bool meansOnly = false);
 		
 	private:
-		static std::vector<ComplexNumber> doFFT(ComplexNumber* arr, int size, bool inverse=false);
-		static void doFFTTest(ComplexNumber* output, int size, int incVal, bool inverse=false, ComplexNumber* tempData=nullptr);
 		
 	};
 

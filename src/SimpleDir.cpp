@@ -94,7 +94,19 @@ namespace glib
 	{
 		if (index < names.size())
 		{
-			return std::filesystem::canonical( names[index].path() ).u8string();
+			auto p = names[index].path();
+			std::string s;
+			try
+			{
+				s = std::filesystem::canonical( p ).u8string();
+			}
+			catch(const std::exception& e)
+			{
+				//error. Likely access denied but can't print errors. Causes another fatal error.
+				//Shouldn't keep it but it will be kept.
+				s = p.u8string();
+			}
+			return s;
 		}
 		else
 		{

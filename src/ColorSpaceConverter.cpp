@@ -2,9 +2,40 @@
 
 namespace glib
 {
+    Color rgbtoycbcr(Color c)
+    {
+        Color finalColor;
+
+        finalColor.red = (unsigned char)(0 + (0.299*c.red) + (0.587*c.green) + (0.114*c.blue));
+        finalColor.green = (unsigned char)(128 - (0.168736*c.red) - (0.331264*c.green) + (0.5*c.blue));
+        finalColor.blue = (unsigned char)(128 + (0.5*c.red) - (0.418688*c.green) - (0.081312*c.blue));
+        finalColor.alpha = c.alpha;
+        return finalColor;
+    }
+
+    Color ycbcrtorgb(Color c)
+    {
+        Color finalColor;
+
+        finalColor.red = (unsigned char)(c.red + 1.402 * (c.blue - 128));
+        finalColor.green = (unsigned char)(c.red - 0.344136 * (c.green - 128) - 0.714136*(c.blue - 128));
+        finalColor.blue = (unsigned char)(c.red + 1.772*(c.green - 128));
+        finalColor.alpha = c.alpha;
+        return finalColor;
+    }
 
     Color ColorSpaceConverter::convert(Color a, unsigned char type)
     {
+        // switch (type)
+        // {
+        // case RGB_TO_YCBCR:
+        //     return rgbtoycbcr(a);
+        // case YCBCR_TO_RGB:
+        //     return ycbcrtorgb(a);
+        // default:
+        //     break;
+        // }
+
         Vec3f c = Vec3f((double)a.red, (double)a.green, (double)a.blue);
         switch (type)
         {

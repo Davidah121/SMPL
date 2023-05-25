@@ -34,6 +34,7 @@ build $objDir/Compression_RLE.o: buildToObject src/Compression_RLE.cpp
 build $objDir/Compression_StreamLZSS.o: buildToObject src/Compression_StreamLZSS.cpp
 build $objDir/Compression_StreamLZW.o: buildToObject src/Compression_StreamLZW.cpp
 build $objDir/Compression_StreamRLE.o: buildToObject src/Compression_StreamRLE.cpp
+build $objDir/ComputerVision.o: buildToObject src/ComputerVision.cpp
 build $objDir/Cryptography.o: buildToObject src/Cryptography.cpp
 build $objDir/DXFont.o: buildToObject src/ext/DXFont.cpp
 build $objDir/DXGraphics.o: buildToObject src/ext/DXGraphics.cpp

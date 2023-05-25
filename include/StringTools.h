@@ -416,26 +416,24 @@ namespace glib
 		static std::string toHexString(T value)
 		{
 			int size = sizeof(T) * 2;
-
-			char* hexString = new char[size+1+2];
-			int maxVal = 4*sizeof(T) - 4;
+			std::string hexString;
+			for(int i=0; i<size+2; i++)
+			{
+				hexString += '0';
+			}
 
 			hexString[0] = '0';
 			hexString[1] = 'x';
-
+			
+			char* startOfHexValues = &hexString[2];
 			unsigned long long convertedValue = (unsigned long long)value;
 			
 			for(size_t i=0; i<size; i++)
 			{
-				hexString[2 + size-i-1] = base10ToBase16((convertedValue >> (i*4)) & 0xF);
+				startOfHexValues[size-i-1] = base10ToBase16((convertedValue >> (i*4)) & 0xF);
 			}
 
-			hexString[size] = '\0';
-
-			std::string retString = hexString;
-			delete[] hexString;
-			
-			return retString;
+			return hexString;
 		}
 
 		/**

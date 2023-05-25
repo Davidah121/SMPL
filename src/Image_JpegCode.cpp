@@ -1684,7 +1684,11 @@ namespace glib
 
 		while(startC<endC)
 		{
-			Color cVec = ColorSpaceConverter::convert(*startC, ColorSpaceConverter::YCBCR_TO_RGB);
+			//do it manually
+			Color cVec;
+			cVec.red = (unsigned char)(startC->red + 1.402 * (startC->green - 0x80));
+			cVec.green = (unsigned char)(startC->red - 0.344136*(startC->green - 0x80) - 0.714136*(startC->blue - 0x80));
+			cVec.blue = (unsigned char)(startC->red + 1.772*(startC->green - 0x80));
 			cVec.alpha = 255;
 			
 			*startC = cVec;

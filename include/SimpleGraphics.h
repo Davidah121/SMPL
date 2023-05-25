@@ -662,11 +662,6 @@ namespace glib
 		static const unsigned char NEAREST_NEIGHBOR_FILTER = 0;
 		static const unsigned char BILINEAR_FILTER = 1;
 		static const unsigned char BICUBIC_FILTER = 2;
-
-		static const unsigned char RED_CHANNEL = 0;
-		static const unsigned char GREEN_CHANNEL = 1;
-		static const unsigned char BLUE_CHANNEL = 2;
-		static const unsigned char ALPHA_CHANNEL = 3;
 		
 		/**
 		 * @brief Returns a new cropped image. Should be deleted when no longer needed.
@@ -758,22 +753,6 @@ namespace glib
 		 * 		Not implemented.
 		 */
 		static Image* sobelEdgeFilter(Image* img);
-		
-		/**
-		 * @brief Calculates the gradient of the specified color channel using
-		 * 		central differences.
-		 * @param img
-		 * 		The image to operate on.
-		 * @param type
-		 * 		Must be one of the following types.
-		 * 			RED_CHANNEL
-		 * 			GREEN_CHANNEL
-		 * 			BLUE_CHANNEL
-		 * 			ALPHA_CHANNEL
-		 * @return std::vector<std::vector<Vec2f>>
-		 * 		Returns a 2D vector of Vec2f where each Vec2f stores the gradient at that point.
-		 */
-		static std::vector<std::vector<Vec2f>> calculateGradient(Image* img, unsigned char type);
 		
 		/**
 		 * @brief Dithers the image using either Bayer dithering or Floyd Steinburg dithering.

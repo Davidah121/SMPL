@@ -77,7 +77,7 @@ namespace glib
 			#ifdef __unix__
 
 			#else
-				keyValue = (GetAsyncKeyState(i) >> 15 & 0x01) == 1;
+				keyValue = (GetAsyncKeyState(i) >> 15) == 1;
 			#endif
 
 			preKeyState[i] = keyState[i];
