@@ -449,6 +449,48 @@ namespace glib
 		 */
 		void saveJPG(File file, int quality = 8, int subsampleMode = 0);
 
+		/**
+		 * @brief Attempts to save an animated gif. It uses the same options as the normal GIF save function but
+		 * 		it allows each image to have its own palette. This will be the lazy approach for now meaning that
+		 * 		it will just replace each image as a whole regardless of how much changed and each will have a local palette.
+		 * 		
+		 * 		All images in the set must have the same size. If they do not, the function will fail.
+		 * 		The default delayTimePerFrame is 100 (0.1 seconds) so the array delayTimePerFrame does not have to be defined and can be null.
+		 * 		For a gif
+		 * 
+		 * @param file 
+		 * @param images 
+		 * @param size 
+		 * @param delayTimePerFrame 
+		 * @param loops 
+		 * @param paletteSize 
+		 * @param dither 
+		 * @param saveAlpha 
+		 * @param alphaThreshold 
+		 * @param greyscale 
+		 */
+		static bool saveAGIF(File file, Image** images, int size, int delayTimePerFrame, bool loops, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127, bool greyscale = false);
+
+		/**
+		 * @brief Attempts to save an animated png. It uses the same options as the normal PNG save function. This will be the lazy
+		 * 		approach for now meaning that it will just replace each image as a whole.
+		 * 
+		 * 		All images in the set must have the same size. If they do not, the function will fail.
+		 * 		The default delayTimePerFrame is 100 (0.1 seconds) so the array delayTimePerFrame does not have to be defined and can be null.
+		 * 
+		 * @param file 
+		 * @param images 
+		 * @param size 
+		 * @param delayTimePerFrame 
+		 * @param loops 
+		 * @param saveAlpha 
+		 * @param greyscale 
+		 * @param strongCompression 
+		 * @return true 
+		 * @return false 
+		 */
+		static bool saveAPNG(File file, Image** images, int size, int delayTimePerFrame, bool loops, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false);
+		
 	private:
 		int width = 0;
 		int height = 0;

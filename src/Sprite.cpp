@@ -29,6 +29,7 @@ namespace glib
 	{
 		setClass(globalClass);
 		delayTimeForFrame = o.delayTimeForFrame;
+		loops = o.loops;
 
 		//hard copy
 		for(size_t i=0; i<o.images.size(); i++)
@@ -50,7 +51,6 @@ namespace glib
 		}
 		
 		images.clear();
-		delayTimeForFrame.clear();
 	}
 
 	Image* Sprite::getImage(size_t index)
@@ -62,21 +62,14 @@ namespace glib
 		return nullptr;
 	}
 
-	int Sprite::getDelayTime(size_t index)
+	int Sprite::getDelayTime()
 	{
-		if (index < images.size())
-		{
-			return delayTimeForFrame[index];
-		}
-		return -1;
+		return delayTimeForFrame;
 	}
 
-	void Sprite::setDelayTime(size_t index, int microSecondsDelay)
+	void Sprite::setDelayTime(int milliSecondsDelay)
 	{
-		if (index < images.size())
-		{
-			delayTimeForFrame[index] = microSecondsDelay;
-		}
+		delayTimeForFrame = milliSecondsDelay;
 	}
 
 	size_t Sprite::getSize()
@@ -84,10 +77,9 @@ namespace glib
 		return images.size();
 	}
 
-	void Sprite::addImage(Image* p, int microSecondsDelay)
+	void Sprite::addImage(Image* p)
 	{
 		images.push_back(p);
-		delayTimeForFrame.push_back(microSecondsDelay);
 	}
 
 	void Sprite::removeImage(size_t index)
@@ -95,21 +87,18 @@ namespace glib
 		if (index < images.size())
 		{
 			std::vector<Image*> newImages = std::vector<Image*>();
-			std::vector<int> newImageDelay = std::vector<int>();
 
 			for (size_t i = 0; i < images.size(); i++)
 			{
 				if (i != index)
 				{
 					newImages.push_back(images[i]);
-					newImageDelay.push_back(delayTimeForFrame[i]);
 				}
 				else
 					delete images[i];
 			}
 
 			images = newImages;
-			delayTimeForFrame = newImageDelay;
 		}
 	}
 
@@ -124,15 +113,22 @@ namespace glib
 		if(extraData.size()>=1)
 		{
 			this->loops = extraData[0] == 1;
+			this->delayTimeForFrame = extraData[1];
 		}
 
 		for (int i = 0; i < amountOfImages; i++)
 		{
 			if(extraData.size() == (size_t)amountOfImages+1)
-				addImage(imgs[i], extraData[i+1]);
+				addImage(imgs[i]);
 			else
 				addImage(imgs[i]);
 		}
+
+	}
+
+	bool Sprite::saveAGIF(File f)
+	{
+		return Image::saveAGIF(f, images.data(), images.size(), delayTimeForFrame, loops, 256, true, false);
 	}
 
 	bool Sprite::shouldLoop()

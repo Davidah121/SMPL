@@ -1906,14 +1906,14 @@ namespace glib
         return ImageInterface();
     }
 
-    int SpriteInterface::getDelayTime(size_t index)
+    int SpriteInterface::getDelayTime()
     {
         if(sprite == nullptr)
             return -1;
         
         if(type == GraphicsInterface::TYPE_SOFTWARE)
         {
-            return ((Sprite*)sprite)->getDelayTime(index);
+            return ((Sprite*)sprite)->getDelayTime();
         }
         
         #ifdef USE_OPENGL
