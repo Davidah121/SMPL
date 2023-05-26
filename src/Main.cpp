@@ -203,22 +203,10 @@ void stressCompare(int count)
     StringTools::println("Minimum Distance: %d", dis);
 }
 
-void saveAnimatedGif()
-{
-	Sprite s;
-	s.loadImage("C:\\Stuff\\avatar_1.gif");
-	// StringTools::println("%llu, %d", s.getSize(), s.shouldLoop());
-    // s.saveAGIF("multipleGCE.gif", 256, false, false);
-
-	bool v = s.saveAPNG("apng_test.png");
-	StringTools::println("Successful = %d", v);
-
-}
 
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main(int argc, char** argv)
 {
-	saveAnimatedGif();
     // quickTest();
     // testOGLWindow();
     // testOTFLoading();
