@@ -410,7 +410,7 @@ namespace glib
 		 * 		and not the image data in memory.
 		 * 		Default is false
 		 */
-		void saveGIF(File file, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127, bool greyscale = false);
+		void saveGIF(File file, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127);
 
 		/**
 		 * @brief Save an image as a .png file.
@@ -469,7 +469,7 @@ namespace glib
 		 * @param alphaThreshold 
 		 * @param greyscale 
 		 */
-		static bool saveAGIF(File file, Image** images, int size, int delayTimePerFrame, bool loops, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127, bool greyscale = false);
+		static bool saveAGIF(File file, Image** images, int size, int* delayTimePerFrame, bool loops, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127);
 
 		/**
 		 * @brief Attempts to save an animated png. It uses the same options as the normal PNG save function. This will be the lazy
@@ -489,7 +489,7 @@ namespace glib
 		 * @return true 
 		 * @return false 
 		 */
-		static bool saveAPNG(File file, Image** images, int size, int delayTimePerFrame, bool loops, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false);
+		static bool saveAPNG(File file, Image** images, int size, int* delayTimePerFrame, bool loops, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false);
 		
 	private:
 		int width = 0;

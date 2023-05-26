@@ -81,7 +81,7 @@ namespace glib
 			{
 				lastUpdateTime = System::getCurrentTimeMicro();
 			}
-			else if(System::getCurrentTimeMicro() - lastUpdateTime >= (size_t)tempSpr->getDelayTime())
+			else if(System::getCurrentTimeMicro() - lastUpdateTime >= (size_t)tempSpr->getDelayTime(index))
 			{
 				lastUpdateTime = System::getCurrentTimeMicro();
 				

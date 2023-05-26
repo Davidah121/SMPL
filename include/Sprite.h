@@ -62,7 +62,7 @@ namespace glib
 		 * @param index 
 		 * @return size_t 
 		 */
-		int getDelayTime();
+		int getDelayTime(size_t index);
 
 		/**
 		 * @brief Set the Delay Time in milliseconds.
@@ -70,7 +70,7 @@ namespace glib
 		 * 
 		 * @param millis 
 		 */
-		void setDelayTime(int millis);
+		void setDelayTime(size_t index, int millis);
 
 		/**
 		 * @brief Gets the amount of images in the sprite.
@@ -97,23 +97,22 @@ namespace glib
 		 * @brief Loads an image from a file. If the file contains multiple images, they will be loaded as well.
 		 * 
 		 * @param file 
+		 * @param clear
+		 * 		Clears the sprite when called
+		 * 		Default is true.
 		 */
-		void loadImage(File file);
-
-		/**
-		 * @brief Loads a folder of images into a sprite. All images in the folder are loaded.
-		 * 
-		 * @param dir 
-		 */
-		void loadFolder(File dir);
+		void loadImage(File file, bool clear = true);
 
 		/**
 		 * @brief Saves the sprite as a APNG.
 		 * 		Whether it loops and delay time per frame are expected to be defined.
 		 * 
 		 * @param file 
+		 * @param saveAlpha
+		 * @param greyscale
+		 * @param strongCompression
 		 */
-		bool saveAPNG(File file);
+		bool saveAPNG(File file, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false);
 
 		/**
 		 * @brief Saves the sprite as a Animated GIF.
@@ -121,7 +120,7 @@ namespace glib
 		 * 
 		 * @param file 
 		 */
-		bool saveAGIF(File file);
+		bool saveAGIF(File file, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127);
 
 		/**
 		 * @brief Deletes the images from the sprite. Any images added to the sprite, including those that were loaded,
@@ -148,7 +147,7 @@ namespace glib
 	private:
 		bool loops = true;
 		std::vector<Image*> images = std::vector<Image*>();
-		int delayTimeForFrame = 100; //0.1 seconds
+		std::vector<int> delayTimeForFrame = std::vector<int>();
 	};
 
 } //NAMESPACE glib END

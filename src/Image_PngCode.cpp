@@ -36,43 +36,129 @@ namespace glib
 		std::vector<unsigned char> compressedData = std::vector<unsigned char>();
 	};
 
-	void savePNGIDAT(std::string* output, unsigned char* data, size_t size, bool strongCompression)
+	std::string savePNGIDAT(unsigned char* data, size_t size, bool strongCompression)
 	{
-		unsigned int crcVal = Cryptography::adler32(data, size);
+		std::string output;
+		unsigned int adlerValue = Cryptography::adler32(data, size);
 
 		BinarySet compressedData;
 		Compression::compressDeflate(&compressedData, data, size, 1, 7, strongCompression);
 		
-		int fullSize = compressedData.size()+2+4;
-		std::string IDATHeader = "";
-
-		//length
-		IDATHeader += (fullSize>>24) & 0xFF;
-		IDATHeader += (fullSize>>16) & 0xFF;
-		IDATHeader += (fullSize>>8) & 0xFF;
-		IDATHeader += (fullSize>>0) & 0xFF;
-		//ID
-		IDATHeader += "IDAT";
-		
-		//ZLIB STUFF
-		IDATHeader += 0b01111000;
-		IDATHeader += 0b00000001;
-
 		std::vector<unsigned char> binarySetBytes = compressedData.getByteRef();
-		for(unsigned char& c : binarySetBytes)
+		unsigned long byteOffset = 0;
+		unsigned long maxIDATSize = 0x2000;
+		
+		while(byteOffset < binarySetBytes.size())
 		{
-			IDATHeader += (char)c;
+			std::string IDATHeader = "";
+
+			//length
+			int fullSize = 0;
+			bool lastBlock = false;
+			long readSize = min((long)binarySetBytes.size() - byteOffset, maxIDATSize);
+			
+			if(readSize < maxIDATSize)
+			{
+				//last block. Adler Checksum value
+				lastBlock = true;
+				fullSize += 4;
+			}
+			
+			if(byteOffset == 0)
+			{
+				//first block. Needs zlib header
+				fullSize += 2;
+			}
+
+			//In order for the block to remain <= 8192, remove headers and checksum from the amount of compressed
+			//data in the block.
+			if(readSize + fullSize > maxIDATSize)
+			{
+				readSize = (maxIDATSize - fullSize);
+			}
+			fullSize += readSize;
+
+			
+			IDATHeader += (fullSize>>24) & 0xFF;
+			IDATHeader += (fullSize>>16) & 0xFF;
+			IDATHeader += (fullSize>>8) & 0xFF;
+			IDATHeader += (fullSize>>0) & 0xFF;
+			//ID
+			IDATHeader += "IDAT";
+			
+			if(byteOffset == 0)
+			{
+				//ZLIB STUFF
+				IDATHeader += 0b01111000;
+				IDATHeader += 0b00000001;
+			}
+
+			for(long j = 0; j < readSize; j++)
+			{
+				IDATHeader += (char)binarySetBytes[byteOffset];
+				byteOffset++;
+			}
+
+			if(lastBlock)
+			{
+				//adler
+				IDATHeader += {(char)((adlerValue>>24) & 0xFF), (char)((adlerValue>>16) & 0xFF), (char)((adlerValue>>8) & 0xFF), (char)((adlerValue>>0) & 0xFF)};
+			}
+
+			//crc
+			unsigned int crcVal = Cryptography::crc((unsigned char*)IDATHeader.data()+4, IDATHeader.size()-4);
+			IDATHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
+
+			output += IDATHeader;
+		}
+
+		return output;
+	}
+
+	std::string savePNGFDAT(int seqNum, unsigned char* data, size_t size, bool strongCompression)
+	{
+		//No separating into 8192 chunks since libpng probably won't even load this anyway.
+		//Better filesize overall anyway.
+		unsigned int adlerValue = Cryptography::adler32(data, size);
+
+		BinarySet compressedData;
+		Compression::compressDeflate(&compressedData, data, size, 1, 7, strongCompression);
+		
+		std::vector<unsigned char> binarySetBytes = compressedData.getByteRef();
+
+		unsigned int fullSize = 4 + 2 + 4 + binarySetBytes.size(); //sequence, zlib header, adler checksum
+		std::string FDATHeader = "";
+		FDATHeader += (fullSize>>24) & 0xFF;
+		FDATHeader += (fullSize>>16) & 0xFF;
+		FDATHeader += (fullSize>>8) & 0xFF;
+		FDATHeader += (fullSize>>0) & 0xFF;
+
+		//ID
+		FDATHeader += "fdAT";
+
+		//Sequence Number
+		FDATHeader += (seqNum>>24) & 0xFF;
+		FDATHeader += (seqNum>>16) & 0xFF;
+		FDATHeader += (seqNum>>8) & 0xFF;
+		FDATHeader += (seqNum>>0) & 0xFF;
+
+		//ZLIB STUFF
+		FDATHeader += 0b01111000;
+		FDATHeader += 0b00000001;
+
+		for(long j = 0; j < binarySetBytes.size(); j++)
+		{
+			FDATHeader += (char)binarySetBytes[j];
 		}
 
 		//adler
-		IDATHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
-
+		FDATHeader += {(char)((adlerValue>>24) & 0xFF), (char)((adlerValue>>16) & 0xFF), (char)((adlerValue>>8) & 0xFF), (char)((adlerValue>>0) & 0xFF)};
+		
 		//crc
-		crcVal = Cryptography::crc((unsigned char*)IDATHeader.data()+4, IDATHeader.size()-4);
-		IDATHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
+		unsigned int crcVal = Cryptography::crc((unsigned char*)FDATHeader.data()+4, FDATHeader.size()-4);
+		FDATHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
 
-		output->clear();
-		output->append(IDATHeader);
+		return FDATHeader;
 	}
 
 	void Image::savePNG(File file, bool saveAlpha, bool greyscale, bool strongCompression)
@@ -152,38 +238,231 @@ namespace glib
 
 			if(!true)
 			{
-			for(int k=0; k<width; k++)
-			{
-				if(k!=0)
-					subDisFromZero += MathExt::abs((int)pixels[k + i*width].red - pixels[k-1 + i*width].red);
-				else
-					subDisFromZero += pixels[k + i*width].red;
-				
-				if(i!=0)
-					upDisFromZero += MathExt::abs((int)pixels[k + i*width].red - pixels[k + (i-1)*width].red);
-				else
-					upDisFromZero += 255;
-			}
+				for(int k=0; k<width; k++)
+				{
+					if(k!=0)
+						subDisFromZero += MathExt::abs((int)pixels[k + i*width].red - pixels[k-1 + i*width].red);
+					else
+						subDisFromZero += pixels[k + i*width].red;
+					
+					if(i!=0)
+						upDisFromZero += MathExt::abs((int)pixels[k + i*width].red - pixels[k + (i-1)*width].red);
+					else
+						upDisFromZero += 255;
+				}
 
-			if(subDisFromZero < upDisFromZero)
-			{
-				//subtractiveFilter
-				scanlineFilter = 1;
-			}
-			else
-			{
-				//upwardFilter
-				if(i!=0)
-					scanlineFilter = 2;
-			}
+				if(subDisFromZero < upDisFromZero)
+				{
+					//subtractiveFilter
+					scanlineFilter = 1;
+				}
+				else
+				{
+					//upwardFilter
+					if(i!=0)
+						scanlineFilter = 2;
+				}
 			}
 			
 			scanLines.push_back(scanlineFilter);
 			for(int k=0; k<width; k++)
 			{
 				Color c = pixels[k + i*width];
-				if(!greyscale)
+				if(scanlineFilter==1)
 				{
+					if(k!=0)
+					{
+						Color preColor = pixels[(k-1) + i*width];
+						c.red -= preColor.red;
+						c.green -= preColor.green;
+						c.blue -= preColor.blue;
+						c.alpha -= preColor.alpha;
+					}
+				}
+				else if(scanlineFilter==2)
+				{
+					Color preColor = pixels[k + (i-1)*width];
+					c.red -= preColor.red;
+					c.green -= preColor.green;
+					c.blue -= preColor.blue;
+					c.alpha -= preColor.alpha;
+				}
+
+				if(greyscale)
+				{
+					scanLines.push_back(c.red);
+				}
+				else
+				{
+					scanLines.push_back(c.red);
+					scanLines.push_back(c.green);
+					scanLines.push_back(c.blue);
+				}
+				
+				if(saveAlpha)
+					scanLines.push_back(c.alpha);
+			}
+		}
+
+		f.writeString( savePNGIDAT(scanLines.data(), scanLines.size(), strongCompression) );
+
+		std::string IENDHeader = {(char)0, (char)0, (char)0, (char)0, 'I', 'E', 'N', 'D'};
+		
+		//CRC
+		crcVal = Cryptography::crc((unsigned char*)IENDHeader.data()+4, IENDHeader.size()-4);
+		IENDHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
+		f.writeString(IENDHeader);
+
+		f.close();
+	}
+
+	bool Image::saveAPNG(File file, Image** images, int size, int* delayTimePerFrame, bool loops, bool saveAlpha, bool greyscale, bool strongCompression)
+	{
+		if(images == nullptr || size == 0)
+			return false; //No images to save
+		
+		int width = images[0]->getWidth();
+		int height = images[0]->getHeight();
+
+		for(int i=0; i<size; i++)
+		{
+			if(images[i]->getWidth() != width)
+				return false; //Must match in width for each image
+			if(images[i]->getHeight() != height)
+				return false; //Must match in height for each image
+		}
+		
+		SimpleFile f = SimpleFile(file, SimpleFile::WRITE);
+
+		unsigned int crcVal;
+		std::string fileHeader = {(char)0x89, (char)0x50, (char)0x4e, (char)0x47, (char)0x0d, (char)0x0a, (char)0x1a, (char)0x0a};
+		f.writeString(fileHeader);
+
+		std::string IHDRHeader = {(char)0, (char)0, (char)0, (char)0x0D, 'I', 'H', 'D', 'R'};
+
+		//width
+		IHDRHeader += (char)((width >> 24) & 0xFF);
+		IHDRHeader += (char)((width >> 16) & 0xFF);
+		IHDRHeader += (char)((width >> 8) & 0xFF);
+		IHDRHeader += (char)((width >> 0) & 0xFF);
+		//height
+		IHDRHeader += (char)((height >> 24) & 0xFF);
+		IHDRHeader += (char)((height >> 16) & 0xFF);
+		IHDRHeader += (char)((height >> 8) & 0xFF);
+		IHDRHeader += (char)((height >> 0) & 0xFF);
+		//bitDepth
+		IHDRHeader += (char)0x08;
+
+		if(saveAlpha==true)
+		{
+			if(greyscale==true)
+			{
+				//ColourType
+				IHDRHeader += (char)0x04;
+			}
+			else
+			{
+				//ColourType
+				IHDRHeader += (char)0x06;
+			}
+		}
+		else
+		{
+			if(greyscale==true)
+			{
+				//ColourType
+				IHDRHeader += (char)0x00;
+			}
+			else
+			{
+				//ColourType
+				IHDRHeader += (char)0x02;
+			}
+		}
+		
+		//Compresssion Method
+		IHDRHeader += (char)0x00;
+		//Filter Method
+		IHDRHeader += (char)0x00;
+		//Interlace Method
+		IHDRHeader += (char)0x00;
+
+		//CRC
+		crcVal = Cryptography::crc((unsigned char*)IHDRHeader.data()+4, IHDRHeader.size()-4);
+		IHDRHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
+
+		f.writeString(IHDRHeader);
+
+		//save acTL (animation control chunk)
+		std::string acTLHeader = {(char)0, (char)0, (char)0, (char)0x08, 'a', 'c', 'T', 'L'};
+		
+		//number of frames
+		acTLHeader += (char)((size>>24) & 0xFF);
+		acTLHeader += (char)((size>>16) & 0xFF);
+		acTLHeader += (char)((size>>8) & 0xFF);
+		acTLHeader += (char)((size) & 0xFF);
+
+		//Infinite looping
+		acTLHeader += (char)0;
+		acTLHeader += (char)0;
+		acTLHeader += (char)0;
+		acTLHeader += (char)0;
+
+		crcVal = Cryptography::crc((unsigned char*)acTLHeader.data()+4, acTLHeader.size()-4);
+		acTLHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
+		
+		f.writeString(acTLHeader);
+
+		Color* pixels = nullptr;
+		
+		unsigned int seqCounter = 0; //Weird cause fcTL does not contain the value of fdAT after it. Its just a counter
+		for(int seq=0; seq<size; seq++)
+		{
+			std::vector<unsigned char> scanLines = std::vector<unsigned char>();
+			pixels = images[seq]->getPixels();
+
+			for(int i=0; i<height; i++)
+			{
+				//Find approximate distance from zero
+				//pick the one with a smaller sum
+				//just the red pixel as a test
+				unsigned long subDisFromZero = 0;
+				unsigned long upDisFromZero = 0;
+
+				unsigned char scanlineFilter = 0;
+
+				if(!true)
+				{
+					for(int k=0; k<width; k++)
+					{
+						if(k!=0)
+							subDisFromZero += MathExt::abs((int)pixels[k + i*width].red - pixels[k-1 + i*width].red);
+						else
+							subDisFromZero += pixels[k + i*width].red;
+						
+						if(i!=0)
+							upDisFromZero += MathExt::abs((int)pixels[k + i*width].red - pixels[k + (i-1)*width].red);
+						else
+							upDisFromZero += 255;
+					}
+
+					if(subDisFromZero < upDisFromZero)
+					{
+						//subtractiveFilter
+						scanlineFilter = 1;
+					}
+					else
+					{
+						//upwardFilter
+						if(i!=0)
+							scanlineFilter = 2;
+					}
+				}
+				
+				scanLines.push_back(scanlineFilter);
+				for(int k=0; k<width; k++)
+				{
+					Color c = pixels[k + i*width];
 					if(scanlineFilter==1)
 					{
 						if(k!=0)
@@ -203,123 +482,79 @@ namespace glib
 						c.blue -= preColor.blue;
 						c.alpha -= preColor.alpha;
 					}
-				}
-				else
-				{
-					c = ColorSpaceConverter::convert(c, ColorSpaceConverter::RGB_TO_YCBCR);
 
-					if(scanlineFilter==1)
+					if(greyscale)
 					{
-						Color preColor = pixels[(k-1) + i*width];
-						preColor = ColorSpaceConverter::convert(preColor, ColorSpaceConverter::RGB_TO_YCBCR);
-
-						c.red -= preColor.red;
-						c.green -= preColor.green;
-						c.blue -= preColor.blue;
-						c.alpha -= preColor.alpha;
+						scanLines.push_back(c.red);
 					}
-					else if(scanlineFilter==2)
+					else
 					{
-						Color preColor = pixels[k + (i-1)*width];
-						preColor = ColorSpaceConverter::convert(preColor, ColorSpaceConverter::RGB_TO_YCBCR);
-						c.red -= preColor.red;
-						c.green -= preColor.green;
-						c.blue -= preColor.blue;
-						c.alpha -= preColor.alpha;
+						scanLines.push_back(c.red);
+						scanLines.push_back(c.green);
+						scanLines.push_back(c.blue);
 					}
+					
+					if(saveAlpha)
+						scanLines.push_back(c.alpha);
 				}
+			}
 
-				if(greyscale)
-				{
-					scanLines.push_back(c.red);
-				}
-				else
-				{
-					scanLines.push_back(c.red);
-					scanLines.push_back(c.green);
-					scanLines.push_back(c.blue);
-				}
+			//save fcTL
+			std::string fcTL = {(char)0, (char)0, (char)0, (char)26, 'f', 'c', 'T', 'L'};
+			//save sequence number
+			fcTL += (char)((seqCounter >> 24) & 0xFF);
+			fcTL += (char)((seqCounter >> 16) & 0xFF);
+			fcTL += (char)((seqCounter >> 8) & 0xFF);
+			fcTL += (char)((seqCounter >> 0) & 0xFF);
+			seqCounter++;
+			//save width
+			fcTL += (char)((width >> 24) & 0xFF);
+			fcTL += (char)((width >> 16) & 0xFF);
+			fcTL += (char)((width >> 8) & 0xFF);
+			fcTL += (char)((width >> 0) & 0xFF);
+			//save height
+			fcTL += (char)((height >> 24) & 0xFF);
+			fcTL += (char)((height >> 16) & 0xFF);
+			fcTL += (char)((height >> 8) & 0xFF);
+			fcTL += (char)((height >> 0) & 0xFF);
+			//save x
+			fcTL += (char)0;
+			fcTL += (char)0;
+			fcTL += (char)0;
+			fcTL += (char)0;
+			//save y
+			fcTL += (char)0;
+			fcTL += (char)0;
+			fcTL += (char)0;
+			fcTL += (char)0;
+			
+			//save delay as numerator (unsigned short) and denominator (unsigned short)
+			//expected to be in milliseconds so delay / 1000
+			fcTL += (char)(delayTimePerFrame[seq] >> 8) & 0xFF;
+			fcTL += (char)(delayTimePerFrame[seq] >> 0) & 0xFF;
+			fcTL += (char)0x03;
+			fcTL += (char)0xE8;
+
+			//Don't dispose.
+			fcTL += (char)0x00;
+			//APNG_BLEND_OP_SOURCE (replace)
+			fcTL += (char)0x00;
 				
-				if(saveAlpha)
-					scanLines.push_back(c.alpha);
+			crcVal = Cryptography::crc((unsigned char*)fcTL.data()+4, fcTL.size()-4);
+			fcTL += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
+			
+			f.writeString(fcTL);
+			
+			//save fdat or idat
+			if(seq == 0)
+				f.writeString( savePNGIDAT(scanLines.data(), scanLines.size(), strongCompression) );
+			else
+			{
+				f.writeString( savePNGFDAT(seqCounter, scanLines.data(), scanLines.size(), strongCompression) );
+				seqCounter++;
 			}
 		}
 
-		//split into blocks
-		int blocks = (int)MathExt::ceil((double)height/24);
-		unsigned int adlerValue = Cryptography::adler32(scanLines.data(), scanLines.size());
-
-		BinarySet compressedData;
-		size_t t1 = System::getCurrentTimeMicro();
-		Compression::compressDeflate(&compressedData, scanLines.data(), scanLines.size(), 1, 7, strongCompression);
-		size_t t2 = System::getCurrentTimeMicro();
-		StringTools::println("%llu", t2-t1);
-		
-		std::vector<unsigned char> binarySetBytes = compressedData.getByteRef();
-		long byteOffset = 0;
-		long maxIDATSize = 0x2000; //Force all IDAT headers to be at most 8192 bytes so libpng doesn't freak out.
-		// int totalIDAT = ceil((double)binarySetBytes.size() / maxIDATSize); //Not used
-		
-		//3078
-		while(byteOffset < binarySetBytes.size())
-		{
-			std::string IDATHeader = "";
-
-			//length
-			int fullSize = 0;
-			bool lastBlock = false;
-			long readSize = min((long)binarySetBytes.size() - byteOffset, maxIDATSize);
-			
-			if(readSize < maxIDATSize)
-			{
-				//last block. Adler Checksum value
-				lastBlock = true;
-				fullSize += 4;
-			}
-			
-			if(byteOffset == 0)
-			{
-				//first block. Needs zlib header
-				fullSize += 2;
-			}
-
-			//In order for the block to remain <= 8192, remove headers and checksum from the amount of compressed
-			//data in the block.
-			readSize -= max( (fullSize+readSize) - maxIDATSize, 0);
-			fullSize += readSize;
-			
-			IDATHeader += (fullSize>>24) & 0xFF;
-			IDATHeader += (fullSize>>16) & 0xFF;
-			IDATHeader += (fullSize>>8) & 0xFF;
-			IDATHeader += (fullSize>>0) & 0xFF;
-			//ID
-			IDATHeader += "IDAT";
-			
-			if(byteOffset == 0)
-			{
-				//ZLIB STUFF
-				IDATHeader += 0b01111000;
-				IDATHeader += 0b00000001;
-			}
-
-			for(long j = 0; j < readSize; j++)
-			{
-				IDATHeader += (char)binarySetBytes[byteOffset];
-				byteOffset++;
-			}
-
-			if(lastBlock)
-			{
-				//adler
-				IDATHeader += {(char)((adlerValue>>24) & 0xFF), (char)((adlerValue>>16) & 0xFF), (char)((adlerValue>>8) & 0xFF), (char)((adlerValue>>0) & 0xFF)};
-			}
-
-			//crc
-			crcVal = Cryptography::crc((unsigned char*)IDATHeader.data()+4, IDATHeader.size()-4);
-			IDATHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
-
-			f.writeString(IDATHeader);
-		}
 
 		std::string IENDHeader = {(char)0, (char)0, (char)0, (char)0, 'I', 'E', 'N', 'D'};
 		
@@ -329,7 +564,9 @@ namespace glib
 		f.writeString(IENDHeader);
 
 		f.close();
+		return true;
 	}
+		
 
 	#pragma region LOADING_PNG_SUBFUNCTION
 
@@ -1022,7 +1259,7 @@ namespace glib
 
 				if(extraData!=nullptr)
 				{
-					extraData->at(0) = (numPlays == 0) ? 1 : 0;
+					extraData->push_back((numPlays == 0) ? 1 : 0);
 				}
 
 				for(unsigned int i=0; i<numFrame-1; i++)
@@ -1059,7 +1296,7 @@ namespace glib
 						delayTime = (double)chunk.delay_num / 100;
 					}
 
-					extraData->push_back((int)(delayTime * 1000000));
+					extraData->push_back((int)(delayTime*1000));
 				}
 
 				if(actualCount < imgData.size())

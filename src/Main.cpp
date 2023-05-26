@@ -207,10 +207,12 @@ void saveAnimatedGif()
 {
 	Sprite s;
 	s.loadImage("C:\\Stuff\\avatar_1.gif");
-	StringTools::println("%llu, %d, %d", s.getSize(), s.shouldLoop(), s.getDelayTime());
+	// StringTools::println("%llu, %d", s.getSize(), s.shouldLoop());
+    // s.saveAGIF("multipleGCE.gif", 256, false, false);
 
-	bool v = s.saveAGIF("test.gif");
+	bool v = s.saveAPNG("apng_test.png");
 	StringTools::println("Successful = %d", v);
+
 }
 
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
@@ -223,7 +225,7 @@ int main(int argc, char** argv)
     // testVectorGraphic();
 
     // testImgCompare();
-    stressCompare(0xFFFFFF);
+    // stressCompare(0xFFFFFF);
 
     return 0;
 }

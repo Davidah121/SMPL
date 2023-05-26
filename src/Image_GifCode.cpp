@@ -12,7 +12,7 @@
 
 namespace glib
 {
-	void Image::saveGIF(File file, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold, bool greyscale)
+	void Image::saveGIF(File file, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold)
 	{
 		SimpleFile f = SimpleFile(file, SimpleFile::WRITE);
 
@@ -28,18 +28,6 @@ namespace glib
 		unsigned char* pixs = new unsigned char[width*height];
 
 		Color* nPixels = tempImg.getPixels();
-
-		if(greyscale)
-		{
-			Color* startPixs = nPixels;
-			Color* endPixs = nPixels + (width*height);
-
-			while(startPixs < endPixs)
-			{
-				Color ycbcr = ColorSpaceConverter::convert(*startPixs, ColorSpaceConverter::RGB_TO_YCBCR);
-				*startPixs = {ycbcr.red, ycbcr.red, ycbcr.red, ycbcr.alpha};
-			}
-		}
 
 		bool containsTransparency = saveAlpha;
 		// time_t t1, t2;
@@ -208,10 +196,9 @@ namespace glib
 		//Separate into blocks to make it multi threaded
 		//each block should approach the max dictionary size of 4096 entries and try not to exceed it.
 
-		int blocks = (int)MathExt::ceil((double)height/24);
 		//compress data
 		// size_t t1 = System::getCurrentTimeMicro();
-		std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, blocks, codeSize);
+		std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, 1, codeSize);
 		// size_t t2 = System::getCurrentTimeMicro();
 
 		// StringTools::println("Time to compress: %llu", t2-t1);
@@ -245,12 +232,14 @@ namespace glib
 		f.close();
 	}
 
-	bool Image::saveAGIF(File file, Image** images, int size, int delayTimePerFrame, bool loops, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold, bool greyscale)
+	bool Image::saveAGIF(File file, Image** images, int size, int* delayTimePerFrame, bool loops, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold)
 	{
 		SimpleFile f = SimpleFile(file, SimpleFile::WRITE);
 
 		if(!f.isOpen())
+		{
 			return false; //invalid so return from function
+		}
 		
 		std::string gifType = "GIF89a";
 		std::string gifHeaderInfo = "";
@@ -283,41 +272,25 @@ namespace glib
 
 		//packed data
 			//colorRes
-			char c = (char)(7 << 4);
+			char c = 0b01110111;
 		gifHeaderInfo += c;
 
 		//backgroundColorIndex
-		gifHeaderInfo += (char)0xFF;
+		gifHeaderInfo += (char)0x00;
 
 		//aspect ratio
 		gifHeaderInfo += (char)0;
 
-		
-		//Graphic Control Extension
-		gifHeaderInfo += (char)0x21;
-		
-		//Label
-		gifHeaderInfo += (char)0xF9;
-
-		//BlockSize
-		gifHeaderInfo += (char)0x04;
-
-		//PackedField
-			//Note that most of this is reserved. Includes disposal method too
-			//0x00 = no transparency, no disposal | 0x09 = has transparency, dispose to background
-			gifHeaderInfo += (saveAlpha) ? 0x00 : 0x05;
-		
-		//Delay Time
-		//Time expected to be in milliseconds but this needs to be in 1/100s of a second
-		int tempTime = (delayTimePerFrame) / 10;
-		gifHeaderInfo += (char)(tempTime & 0xFF);
-		gifHeaderInfo += (char)((tempTime >> 8) & 0xFF);
-
-		//Transparent Color Index, will always be the last value
-		gifHeaderInfo += (char)0xFF;
-
-		//Block Terminator
-		gifHeaderInfo += (char)0x00;
+		///Need NETSCAPE to specify looping
+		gifHeaderInfo += (char)0x21; //extension code
+		gifHeaderInfo += (char)0xFF; //application extension
+		gifHeaderInfo += (char)0x0B; //length of application block (11 bytes)
+		gifHeaderInfo += "NETSCAPE2.0";
+		gifHeaderInfo += (char)0x03;
+		gifHeaderInfo += (char)loops; 
+		gifHeaderInfo += (char)0x00; //loop infinitely.
+		gifHeaderInfo += (char)0x00; //loop infinitely.
+		gifHeaderInfo += (char)0x00; //end of block
 
 		f.writeString(gifType);
 		f.writeString(gifHeaderInfo);
@@ -328,6 +301,33 @@ namespace glib
 		for(int i=0; i<size; i++)
 		{
 			gifHeaderInfo = "";
+
+			//Graphic Control Extension
+			gifHeaderInfo += (char)0x21;
+			
+			//Label
+			gifHeaderInfo += (char)0xF9;
+
+			//BlockSize
+			gifHeaderInfo += (char)0x04;
+
+			//PackedField
+				//Note that most of this is reserved. Includes disposal method too
+				//0x09 = has transparency, dispose to background | 0x05 = transparency, do not dispose (Transparency needed to record differences between frames)
+				gifHeaderInfo += (saveAlpha) ? 0x09 : 0x05;
+			
+			//Delay Time
+			//Time expected to be in milliseconds (1/1000s) but this needs to be in 1/100s of a second
+			int tempTime = (delayTimePerFrame[i]) / 10;
+			gifHeaderInfo += (char)(tempTime & 0xFF);
+			gifHeaderInfo += (char)((tempTime >> 8) & 0xFF);
+
+			//Transparent Color Index, will always be the last value
+			gifHeaderInfo += (char)0xFF;
+
+			//Block Terminator
+			gifHeaderInfo += (char)0x00;
+
 			//Image Descriptor
 			gifHeaderInfo += (char)0x2C;
 
@@ -355,10 +355,7 @@ namespace glib
 
 			//create palette
 			ColorPalette palette;
-			if(saveAlpha)
-				palette = ColorPalette::generateOptimalPalette(images[i]->getPixels(), w*h, paletteSize-1, ColorPalette::MEAN_CUT);
-			else
-				palette = ColorPalette::generateOptimalPalette(images[i]->getPixels(), w*h, paletteSize, ColorPalette::MEAN_CUT);
+			palette = ColorPalette::generateOptimalPalette(images[i]->getPixels(), w*h, paletteSize-1, ColorPalette::MEAN_CUT);
 			
 			//store palette
 			for(int k=0; k<palette.getSize(); k++)
@@ -368,12 +365,11 @@ namespace glib
 				gifHeaderInfo += c.green;
 				gifHeaderInfo += c.blue;
 			}
-			if(saveAlpha)
-			{
-				gifHeaderInfo += (char)0;
-				gifHeaderInfo += (char)0;
-				gifHeaderInfo += (char)0;
-			}
+			//padding for the transparent value. Needed regardless of alpha choice
+			gifHeaderInfo += (char)0;
+			gifHeaderInfo += (char)0;
+			gifHeaderInfo += (char)0;
+		
 			//min code size
 			gifHeaderInfo += (char)codeSize;
 			
@@ -381,7 +377,9 @@ namespace glib
 			//each block should approach the max dictionary size of 4096 entries and try not to exceed it.
 
 			//gotta copy the image, dither if necessary, and replace the pixels with a number in the palette.
-			// oldImg.copyImage(&tempImg);
+			if(i>0)
+				oldImg.copyImage(&tempImg);
+			
 			tempImg.copyImage(images[i]);
 			Color* nPixels = tempImg.getPixels();
 			if(dither)
@@ -390,31 +388,30 @@ namespace glib
 				SimpleGraphics::ditherImage(&tempImg, SimpleGraphics::FLOYD_DITHER);
 			}
 
-			if(saveAlpha)
+			Color* oldImgPixs = oldImg.getPixels();
+			for(int j=0; j<w*h; j++)
 			{
-				for(int i=0; i<w*h; i++)
+				if(i != 0)
 				{
-					if(nPixels[i].alpha <= alphaThreshold)
+					if(nPixels[j] == oldImgPixs[j])
 					{
-						pixs[i] = 0xFF;
-					}
-					else
-					{
-						pixs[i] = (unsigned char)palette.getClosestColorIndex(nPixels[i]);
+						pixs[j] = 0xFF;
+						continue;
 					}
 				}
-			}
-			else
-			{
-				for(int i=0; i<w*h; i++)
-				{
-					pixs[i] = (unsigned char)palette.getClosestColorIndex(nPixels[i]);
-				}
-			}
 
+				if(nPixels[j].alpha <= alphaThreshold && saveAlpha)
+				{
+					pixs[j] = 0xFF;
+				}
+				else
+				{
+					pixs[j] = (unsigned char)palette.getClosestColorIndex(nPixels[j]);
+				}
+			}
+			
 			//compress data
-			int blocks = (int)MathExt::ceil((double)h/24);
-			std::vector<unsigned char> compressedData = Compression::compressLZW(pixs.data(), w*h, blocks, codeSize);
+			std::vector<unsigned char> compressedData = Compression::compressLZW(pixs.data(), w*h, 1, codeSize);
 
 			for(size_t i=0; i<compressedData.size(); i++)
 			{
@@ -471,7 +468,7 @@ namespace glib
 		if(extraData!=nullptr)
 		{
 			extraData->clear();
-			extraData->push_back(1);
+			extraData->push_back(0); //Set to not loop by default
 		}
 		
 		if (valid == true)
@@ -774,6 +771,55 @@ namespace glib
 						startIndex += blockSize;
 
 						startIndex++;//block terminator
+					}
+					else if(fileData[startIndex+1] == 0xFF)
+					{
+						int blockSize = fileData[startIndex + 2];
+						startIndex += 3;
+						if(blockSize == 11)
+						{
+							std::string s = "";
+							for(int j=0; j<11; j++)
+							{
+								s += fileData[startIndex + j];
+							}
+							if(s == "NETSCAPE2.0")
+							{
+								startIndex += blockSize;
+								//read 4 bytes then terminator
+								if(extraData != nullptr)
+								{
+									extraData->at(0) = fileData[startIndex+1];
+								}
+								startIndex+=5;
+							}
+							else
+							{
+								//Not sure what it is. Skip
+								startIndex += blockSize;
+								
+								while(fileData[startIndex]!=0x00)
+								{
+									//datablock probably
+									blockSize = fileData[startIndex];
+									startIndex+=blockSize+1;
+								}
+								startIndex++;
+							}
+						}
+						else
+						{
+							//Not sure what it is. Skip
+							startIndex += blockSize;
+							
+							while(fileData[startIndex]!=0x00)
+							{
+								//datablock probably
+								blockSize = fileData[startIndex];
+								startIndex+=blockSize+1;
+							}
+							startIndex++;
+						}
 					}
 					else 
 					{

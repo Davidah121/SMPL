@@ -51,6 +51,7 @@ namespace glib
 		}
 		
 		images.clear();
+		delayTimeForFrame.clear();
 	}
 
 	Image* Sprite::getImage(size_t index)
@@ -62,14 +63,16 @@ namespace glib
 		return nullptr;
 	}
 
-	int Sprite::getDelayTime()
+	int Sprite::getDelayTime(size_t index)
 	{
-		return delayTimeForFrame;
+		if(index < delayTimeForFrame.size())
+			return delayTimeForFrame[index];
+		return 100;
 	}
 
-	void Sprite::setDelayTime(int milliSecondsDelay)
+	void Sprite::setDelayTime(size_t index, int milliSecondsDelay)
 	{
-		delayTimeForFrame = milliSecondsDelay;
+		delayTimeForFrame[index] = milliSecondsDelay;
 	}
 
 	size_t Sprite::getSize()
@@ -87,24 +90,29 @@ namespace glib
 		if (index < images.size())
 		{
 			std::vector<Image*> newImages = std::vector<Image*>();
+			std::vector<int> nDelay = std::vector<int>();
 
 			for (size_t i = 0; i < images.size(); i++)
 			{
 				if (i != index)
 				{
 					newImages.push_back(images[i]);
+					nDelay.push_back(delayTimeForFrame[i]);
 				}
 				else
 					delete images[i];
 			}
 
 			images = newImages;
+			delayTimeForFrame = nDelay;
 		}
 	}
 
-	void Sprite::loadImage(File file)
+	void Sprite::loadImage(File file, bool clear)
 	{
-		dispose();
+		if(clear)
+			dispose();
+
 		int amountOfImages = 0;
 
 		std::vector<int> extraData;
@@ -113,22 +121,26 @@ namespace glib
 		if(extraData.size()>=1)
 		{
 			this->loops = extraData[0] == 1;
-			this->delayTimeForFrame = extraData[1];
 		}
 
 		for (int i = 0; i < amountOfImages; i++)
 		{
+			addImage(imgs[i]);
 			if(extraData.size() == (size_t)amountOfImages+1)
-				addImage(imgs[i]);
+				delayTimeForFrame.push_back(extraData[i]);
 			else
-				addImage(imgs[i]);
+				delayTimeForFrame.push_back(100);
 		}
-
 	}
 
-	bool Sprite::saveAGIF(File f)
+	bool Sprite::saveAGIF(File f, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold)
 	{
-		return Image::saveAGIF(f, images.data(), images.size(), delayTimeForFrame, loops, 256, true, false);
+		return Image::saveAGIF(f, images.data(), images.size(), delayTimeForFrame.data(), loops, paletteSize, dither, saveAlpha, alphaThreshold);
+	}
+
+	bool Sprite::saveAPNG(File f, bool saveAlpha, bool greyscale, bool strongCompression)
+	{
+		return Image::saveAPNG(f, images.data(), images.size(), delayTimeForFrame.data(), loops, saveAlpha, greyscale, strongCompression);
 	}
 
 	bool Sprite::shouldLoop()
