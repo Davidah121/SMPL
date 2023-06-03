@@ -18,6 +18,8 @@
 
 #include "ComputerVision.h"
 
+#include "WebRequest.h"
+
 using namespace glib;
 
 
@@ -96,9 +98,9 @@ void dirTest()
 	StringTools::println("Enter location:");
     std::string l = StringTools::getString();
 
-    SimpleDir dir = SimpleDir(l);
-    if(dir.doesExist())
+    if(SimpleDir::doesExist(l))
     {
+        SimpleDir dir = SimpleDir(l);
         std::vector<std::string> files = dir.getFiles();
         std::vector<std::string> folders = dir.getFolders();
 
@@ -132,9 +134,9 @@ void dirTest()
 
 void testImgCompare()
 {
-    SimpleDir d = SimpleDir("./TestImages/compareThese");
-    if(d.doesExist())
+    if(SimpleDir::doesExist("./TestImages/compareThese"))
     {
+        SimpleDir d = SimpleDir("./TestImages/compareThese");
         std::vector<std::pair<std::string, uint64_t>> pairs;
         std::vector<std::string> files = d.getFiles();
         size_t t1,t2,loadTime,hashTime;
@@ -203,10 +205,116 @@ void stressCompare(int count)
     StringTools::println("Minimum Distance: %d", dis);
 }
 
+void test()
+{
+    StringTools::println("Enter the directory to load");
+    std::string s = StringTools::getString();
+    SimpleDir d = SimpleDir(s);
+    auto fileList = d.getFiles();
+    Sprite spr;
+    for(File file : fileList)
+    {
+        spr.loadImage(file, false);
+    }
+
+    StringTools::println("Images loaded: %llu", spr.getSize());
+    if(spr.getSize() > 0)
+    {
+        StringTools::println("Set the delay time between frames in milliseconds");
+        s = StringTools::getString();
+        int delay = StringTools::toInt(s);
+        for(int i=0; i<spr.getSize(); i++)
+        {
+            spr.setDelayTime(i, delay);
+        }
+
+        StringTools::println("Enter the type: 0 = GIF, 1 = APNG");
+        s = StringTools::getString();
+        if(s[0] == '1')
+            spr.saveAPNG("AnimatedPNG.png", false);
+        else
+            spr.saveAGIF("AnimatedGif.gif", 256, false, false);
+    }
+}
+
+void testHTTPRequest()
+{
+    Network n = Network(Network::TYPE_CLIENT, 80, "httpbin.org", 1, true);
+    n.setOnConnectFunction([&n](int id)->void {
+        StringTools::println("Connected to https://httpbin.org");
+    });
+    n.setOnDataAvailableFunction([&n](int id)->void {
+        StringTools::println("Data available: Attempting to receive");
+        std::vector<char> buffer = std::vector<char>(1024);
+        int count = n.receiveMessage(buffer.data(), buffer.size(), 0, true);
+        StringTools::println("Read %d bytes", count);
+        for(char& c : buffer)
+        {
+            StringTools::print("%c", c);
+        }
+        StringTools::println("");
+    });
+    n.setOnDisconnectFunction([&n](int id)->void {
+        StringTools::println("Disconnected");
+    });
+
+    n.startNetwork();
+    while(n.getRunning())
+    {
+        std::string input = StringTools::getString();
+        if(input == "GET")
+        {
+            //form get request and send
+            // GET /get HTTP/2
+            // Host: httpbin.org
+            // User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0
+            // Accept: application/json
+            // Accept-Language: en-US,en;q=0.5
+            // Accept-Encoding: gzip, deflate, br
+            // Referer: https://httpbin.org/
+            // DNT: 1
+            // Connection: keep-alive
+            // Sec-Fetch-Dest: empty
+            // Sec-Fetch-Mode: cors
+            // Sec-Fetch-Site: same-origin
+            // Sec-GPC: 1
+            // TE: trailers
+
+            WebRequest w = WebRequest();
+            w.setHeader(WebRequest::TYPE_GET, "/get", true);
+            w.addKeyValue("Host", "httpbin.org");
+            w.addKeyValue("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/113.0");
+            w.addKeyValue("Accept", "application/json");
+            w.addKeyValue("Accept-Language", "en-US,en;q=0.5");
+            w.addKeyValue("Accept-Encoding", "gzip, deflate, br");
+            w.addKeyValue("Referer", "https://httpbin.org/");
+            w.addKeyValue("DNT", "1");
+            w.addKeyValue("Connection", "keep-alive");
+            w.addKeyValue("Sec-Fetch-Dest", "empty");
+            w.addKeyValue("Sec-Fetch-Mode", "cors");
+            w.addKeyValue("Sec-Fetch-Dest", "empty");
+            w.addKeyValue("Sec-Fetch-Site", "same-origin");
+            w.addKeyValue("Sec-GPC", "1");
+            w.addKeyValue("TE", "trailers");
+
+            std::string request = w.getRequestAsString();
+            StringTools::println("SENDING THIS:\n");
+            StringTools::println(request);
+            StringTools::println("");
+            n.sendMessage(request);
+        }
+        else if(input == "END")
+            break;
+    }
+    StringTools::println("Attempting to end network");
+    n.endNetwork();
+}
 
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main(int argc, char** argv)
 {
+    testHTTPRequest();
+    // test();
     // quickTest();
     // testOGLWindow();
     // testOTFLoading();

@@ -970,14 +970,25 @@ namespace glib
         std::string tempValue = "";
         bool inQuotes = false;
         bool settingValue = false;
+        char startQuoteChar = 0;
 
         if(indexOfFirstSpace!=SIZE_MAX)
         {
             for(size_t i=0; i<attribString.size(); i++)
             {
                 bool parseValues=true;
-                if(attribString[i] == '\"')
+                if(startQuoteChar == 0)
                 {
+                    if(attribString[i] == '\"' || attribString[i] == '\'')
+                    {
+                        startQuoteChar = attribString[i];
+                        inQuotes = !inQuotes;
+                        parseValues = false;
+                    }
+                }
+                else if(attribString[i] == startQuoteChar)
+                {
+                    startQuoteChar = 0;
                     inQuotes = !inQuotes;
                     parseValues = false;
                 }

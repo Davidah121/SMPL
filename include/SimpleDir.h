@@ -81,34 +81,34 @@ namespace glib
 		std::string getReferenceFullPath(size_t index);
 
 		/**
-		 * @brief Get the size of the file or folder at the index.
+		 * @brief Gets the Reference Full Path for the specified reference
+		 * 		May be a file or folder.
+		 * 		If USE_EXCEPTIONS is defined, an OutOfBounds Error may be thrown.
+		 * 
+		 * @param n 
+		 * @return std::string 
+		 */
+		static std::string getReferenceFullPath(std::string n);
+
+		/**
+		 * @brief Get the size of the file or folder
 		 * 		If USE_EXCEPTIONS is defined, an OutOfBounds Error may be thrown.
 		 * @param index 
 		 * @return size_t 
 		 */
-		uintmax_t getReferenceSize(size_t index);
+		static uintmax_t getReferenceSize(std::string name);
 
 		/**
-		 * @brief Gets the Last Change Time for the file or folder at the index.
+		 * @brief Gets the Last Change Time for the file or folder
 		 * 		If USE_EXCEPTIONS is defined, an OutOfBounds Error may be thrown.
 		 * 
 		 * @param index 
 		 * @return time_t 
 		 */
-		time_t getLastChangeTime(size_t index);
-
-		/**
-		 * @brief Returns if the reference at the specified index is a directory.
-		 * 		If USE_EXCEPTIONS is defined, an OutOfBounds Error may be thrown.
-		 * 
-		 * @param index 
-		 * @return true 
-		 * @return false 
-		 */
-		bool referenceIsDirectory(size_t index); //Gets whether the reference is a directory or not
+		static time_t getLastChangeTime(std::string name);
 		
 		/**
-		 * @brief Attempts to rename the reference at the index.
+		 * @brief Attempts to rename the reference.
 		 * 		The function may fail to rename the resource.
 		 * 		If USE_EXCEPTIONS is defined, an RenameError may be thrown.
 		 * 		If USE_EXCEPTIONS is defined, an OutOfBoundsError may be thrown.
@@ -116,10 +116,10 @@ namespace glib
 		 * @param newFileName 
 		 * @param index 
 		 */
-		void renameResource(std::string newFileName, size_t index);
+		static void renameResource(std::string oldFileName, std::string newFileName);
 
 		/**
-		 * @brief Attempts to delete the reference at the index.
+		 * @brief Attempts to delete the reference.
 		 * 		The function may fail to delete the resource.
 		 * 		If USE_EXCEPTIONS is defined, an DeleteError may be thrown.
 		 * 		If USE_EXCEPTIONS is defined, an OutOfBoundsError may be thrown.
@@ -127,7 +127,7 @@ namespace glib
 		 * 		Note that deleting in this way will not move the data to the recycle bin.
 		 * @param index 
 		 */
-		void deleteResource(size_t index);
+		static void deleteResource(std::string filename);
 
 		/**
 		 * @brief Attempts to copy the reference at the index.
@@ -137,15 +137,7 @@ namespace glib
 		 * @param newFileName 
 		 * @param index 
 		 */
-		void copyResource(std::string newFileName, size_t index);
-
-		/**
-		 * @brief Gets the Reference Location by its name.
-		 * 
-		 * @param name 
-		 * @return int 
-		 */
-		int getReferenceLocation(std::string name);
+		static void copyResource(std::string oldFileName, std::string newFileName);
 
 		//Directory Stuff
 
@@ -157,34 +149,35 @@ namespace glib
 		size_t getSize();
 
 		/**
-		 * @brief Returns a list of all the folders.
+		 * @brief Returns a list of all the folders in this directory.
 		 * 		Returns utf8 strings
+		 * 		Does not return the path.
 		 * 
 		 * @return std::vector<std::string> 
 		 */
 		std::vector<std::string> getFolders();
 
 		/**
-		 * @brief Returns a list of all the files.
+		 * @brief Returns a list of all the files in this directory.
 		 * 		Returns utf8 strings
+		 * 		Does not return the path.
 		 * 
 		 * @return std::vector<std::string> 
 		 */
 		std::vector<std::string> getFiles();
 
 		/**
-		 * @brief Determines if the directory specified exists.
+		 * @brief Gets the raw Directory Entries that were found for this directory.
 		 * 
-		 * @return true 
-		 * @return false 
+		 * @return std::vector<std::filesystem::directory_entry> 
 		 */
-		bool doesExist();
+		std::vector<std::filesystem::directory_entry> getEntries();
 
 		/**
 		 * @brief Creates a Directory with the path that the object was created with.
 		 * 
 		 */
-		void createDirectory();
+		static void createDirectory(std::string n);
 
 		/**
 		 * @brief Gets the name of the directory.
@@ -195,12 +188,40 @@ namespace glib
 		 */
 		std::string getLocation();
 
+		/**
+		 * @brief Returns if the input is a directory.
+		 * 		If it does not exist, this returns false.
+		 * 
+		 * @param n 
+		 * @return true 
+		 * @return false 
+		 */
+		static bool isDirectory(std::string n);
+
+		/**
+		 * @brief Returns if the input is a normal file.
+		 * 		If it does not exist, this returns false.
+		 * 
+		 * @param n 
+		 * @return true 
+		 * @return false 
+		 */
+		static bool isFile(std::string n);
+		
+		/**
+		 * @brief Returns if the input does exist.
+		 * 
+		 * @param n 
+		 * @return true 
+		 * @return false 
+		 */
+		static bool doesExist(std::string n);
+
 	private:
-		uintmax_t getFileSize(std::filesystem::directory_entry f);
-		uintmax_t getFolderSize(std::filesystem::directory_entry f);
+		static uintmax_t getFileSize(std::filesystem::directory_entry f);
+		static uintmax_t getFolderSize(std::filesystem::directory_entry f);
 
 		std::vector<std::filesystem::directory_entry> names = std::vector<std::filesystem::directory_entry>();
-		bool exists = false;
 		std::string location = "";
 	};
 

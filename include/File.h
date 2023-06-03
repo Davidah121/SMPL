@@ -119,7 +119,34 @@ namespace glib
          * @return std::string 
          */
         std::string getFileNameWithExt();
-        
+
+        /**
+         * @brief Returns if the object represents a directory.
+         *      It is a wrapper around SimpleDir::isDirectory
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool isDirectory();
+
+        /**
+         * @brief Returns if the object represents a normal file.
+         *      It is a wrapper around SimpleDir::isFile
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool isFile();
+
+        /**
+         * @brief Returns if the object represents something that exists.
+         *      It is a wrapper around SimpleDir::doesExist
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool doesExist();
+
     private:
         void init(std::string filename);
         

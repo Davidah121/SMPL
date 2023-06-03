@@ -418,6 +418,11 @@ namespace glib
 		
 		SOCKET_TYPE sock;
 		sockaddr_in socketAddress;
+		
+		// addrinfo* result = nullptr;
+		// addrinfo* ptr = nullptr;
+		// addrinfo hints;
+		
 		std::vector<SOCKET_TYPE> connections;
 		std::vector<bool> waitingOnRead;
 		// std::vector<bool> canWriteToSocket;
