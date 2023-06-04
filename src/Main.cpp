@@ -98,9 +98,9 @@ void dirTest()
 	StringTools::println("Enter location:");
     std::string l = StringTools::getString();
 
-    if(SimpleDir::doesExist(l))
+    SimpleDir dir = SimpleDir(l);
+    if(dir.doesExist(dir.getLocation()))
     {
-        SimpleDir dir = SimpleDir(l);
         std::vector<std::string> files = dir.getFiles();
         std::vector<std::string> folders = dir.getFolders();
 
@@ -111,25 +111,22 @@ void dirTest()
         for(std::string& s : folders)
         {
             StringTools::println(s);
+            StringTools::println("\t%llu", dir.getLastChangeTime(s));
         }
 
         StringTools::print(defaultColor);
         for(std::string& s : files)
         {
             StringTools::println(s);
-        }
-        
-        for(int i=0; i<dir.getSize(); i++)
-        {
-            StringTools::println("%llu", dir.getLastChangeTime(0));
+            StringTools::println("\t%llu", dir.getLastChangeTime(s));
         }
     }
     else
     {
         StringTools::println("Directory does not exist (or can't be accessed).");
     }
-
-    system("pause");
+    
+    StringTools::getChar();
 }
 
 void testImgCompare()
@@ -313,7 +310,9 @@ void testHTTPRequest()
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main(int argc, char** argv)
 {
-    testHTTPRequest();
+    StringTools::init();
+    dirTest();
+    // testHTTPRequest();
     // test();
     // quickTest();
     // testOGLWindow();

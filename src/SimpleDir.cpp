@@ -15,20 +15,26 @@ namespace glib
 	{
 		setClass(globalClass);
 		std::string dir = directory.getFullFileName();
+		#ifdef __unix__
+			//In order for this to work in linux, replace all '\' with '/'. Yes, Linux sucks.
+			for(int i=0; i<dir.size(); i++)
+			{
+				if(dir[i] == '\\')
+					dir[i] = '/';
+			}
+		#endif
 		if(dir.size() > 0)
 		{
-			if(dir.back() != L'/' && dir.back() != L'\\')
-				dir += L'\\';
+			if(dir.back() != '/' && dir.back() != '\\')
+				dir += '/';
+			else if(dir.back() == '\\')
+				dir.back() = '/'; //For linux compatibility
 		}
 
 		try
 		{
 			location = dir;
-
-			if (std::filesystem::is_directory(dir))
-			{
-				update();
-			}
+			update();
 		}
 		catch (...)
 		{
