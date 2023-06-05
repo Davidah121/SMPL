@@ -307,11 +307,41 @@ void testHTTPRequest()
     n.endNetwork();
 }
 
+void printNodes(XmlNode* n)
+{
+    if(n != nullptr)
+    {
+        StringTools::print("<%s>", n->getTitle().c_str());
+        bool needLinebreak = false;
+        for(int i=0; i<n->getChildNodes().size(); i++)
+        {
+            ChildNode c = n->getChildNodes()[i];
+            needLinebreak = !c.type;
+            if(c.type == ChildNode::TYPE_VALUE)
+                StringTools::print("%s", c.value.c_str());
+            else
+                printNodes(c.node);
+        }
+        StringTools::println("</%s>", n->getTitle().c_str());
+    }
+}
+
+void testHTML()
+{
+    SimpleXml xml = SimpleXml("test.html");
+    auto nodes = xml.getNodes();
+    for(auto n : nodes)
+    {
+        printNodes(n);
+    }
+}
+
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main(int argc, char** argv)
 {
-    StringTools::init();
-    dirTest();
+    testHTML();
+    // StringTools::init();
+    // dirTest();
     // testHTTPRequest();
     // test();
     // quickTest();
