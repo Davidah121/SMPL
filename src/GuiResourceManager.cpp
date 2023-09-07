@@ -1,4 +1,4 @@
-#include "GuiManager.h"
+#include "NewGui.h"
 
 namespace glib
 {
@@ -14,13 +14,13 @@ namespace glib
 		
 	}
 
-	void GuiResourceManager::addSprite(SpriteInterface* data, std::string key, bool array)
+	void GuiResourceManager::addSprite(SpriteInterface* data, std::string key, bool array, bool localMemory)
 	{
-		spriteResources.addResource(data, key, array);
+		spriteResources.addResource(data, key, array, localMemory);
 	}
-	void GuiResourceManager::addFont(FontInterface* data, std::string key, bool array)
+	void GuiResourceManager::addFont(FontInterface* data, std::string key, bool array, bool localMemory)
 	{
-		fontResources.addResource(data, key, array);
+		fontResources.addResource(data, key, array, localMemory);
 	}
 
 	SmartMemory<SpriteInterface> GuiResourceManager::getSprite(std::string key)

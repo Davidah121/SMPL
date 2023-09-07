@@ -757,6 +757,96 @@ namespace glib
 		return stringArray;
 	}
 
+	std::string StringTools::urlEncode(std::string str)
+	{
+		//Test This: ./Stuff/Stuff/Vids/Hentai/xiangweitudou/[%E7%AC%AC%E4%B8%89%E9%9B%86]%E8%9C%98%E8%9B%9B%E8%85%BF%E6%8C%91%E6%88%98%EF%BC%88English%20subtitles%EF%BC%89/1648037211_9XZ69CJvWGsZakQVK_Source.mp4
+		std::string nStr = "";
+		bool queryMode = false;
+		for(int i=0; i<str.size(); i++)
+		{
+			bool adjustmentNeeded = true;
+			if(StringTools::isAlphaNumerial(str[i], true, true))
+				adjustmentNeeded = 0;
+			else if(str[i] == '.' || str[i] == '~' || str[i] == ':' || str[i] == '/' || str[i] == '\\')
+				adjustmentNeeded = 0;
+			else if(str[i] == '?')
+			{
+				adjustmentNeeded = 0;
+				queryMode = true;
+			}
+
+			if(adjustmentNeeded)
+			{
+				if(queryMode && str[i] == ' ')
+				{
+					nStr += '+';
+				}
+				else
+				{
+					//convert to hex
+					std::string hexStr = "%";
+					hexStr += StringTools::base10ToBase16((str[i]>>4)&0x0F);
+					hexStr += StringTools::base10ToBase16(str[i]&0x0F);
+					nStr += hexStr;
+				}
+			}
+			else
+			{
+				nStr += str[i];
+			}
+		}
+		return nStr;
+	}
+
+	std::string StringTools::urlDecode(std::string str)
+	{
+		//Test This: ./Stuff/Stuff/Vids/Hentai/xiangweitudou/[%E7%AC%AC%E4%B8%89%E9%9B%86]%E8%9C%98%E8%9B%9B%E8%85%BF%E6%8C%91%E6%88%98%EF%BC%88English%20subtitles%EF%BC%89/1648037211_9XZ69CJvWGsZakQVK_Source.mp4
+		std::string nStr = "";
+		bool queryMode = false;
+		int i=0;
+		while(i < str.size())
+		{
+			bool adjustmentNeeded = false;
+			if(str[i] == '?')
+			{
+				adjustmentNeeded = false;
+				queryMode = true;
+			}
+			else if(str[i] == '%')
+			{
+				adjustmentNeeded = true;
+			}
+			else if(str[i] == '+' && queryMode)
+			{
+				adjustmentNeeded = true;
+			}
+
+			if(adjustmentNeeded)
+			{
+				if(queryMode && str[i] == '+')
+				{
+					nStr += ' ';
+					i++;
+				}
+				else
+				{
+					//convert to hex. Skip the first % since we don't need it.
+					char v = StringTools::base16ToBase10(str[i+1]) << 4;
+					v += StringTools::base16ToBase10(str[i+2]);
+					
+					nStr += v;
+					i+=3;
+				}
+			}
+			else
+			{
+				nStr += str[i];
+				i++;
+			}
+		}
+		return nStr;
+	}
+
 	std::vector<std::string> StringTools::splitStringMultipleDeliminators(std::string s, std::string delim, bool removeEmpty)
 	{
 		std::vector<std::string> stringArray = std::vector<std::string>();
@@ -1454,11 +1544,223 @@ namespace glib
 		}
 	}
 
-	void StringTools::findLongestMatch(std::string base, std::string match, int* index, int* length)
+	
+	void StringTools::computeMatchDFA(unsigned char* input, int size, int* output)
 	{
-		StringTools::KMP(base.c_str(), base.size(), match.c_str(), match.size(), index, length);
+		int i = 1;
+		int lps = 0;
+		//set first row to 0
+		memset(output, 0, sizeof(int)*256);
+		output[input[0]] = 1;
+
+		while(i <= size)
+		{
+			memcpy(&output[lps*256], &output[i*256], sizeof(int)*256);
+			output[input[i] + i*256] = i + 1;
+			if(i < size)
+				lps = output[input[i] + lps*256];
+			i++;
+		}
 	}
 
+	void StringTools::longestPrefixSubstring(unsigned char* array, int size, int* lps)
+	{
+		int m = 0;
+		lps[0] = 0;
+
+		for(int pos=1; pos<size; pos++)
+		{
+			while(m>0 && array[pos] != array[m])
+			{
+				m = lps[m-1];
+			}
+
+			if(array[pos] == array[m])
+			{
+				m++;
+			}
+
+			lps[pos] = m;
+		}
+		
+		for(int i=0; i<size; i++)
+		{
+			lps[i] -= 1;
+		}
+	}
+
+	void StringTools::findLongestMatch(std::string base, std::string match, int* index, int* length)
+	{
+		StringTools::findLongestMatchKMP((unsigned char*)base.data(), base.size(), (unsigned char*)match.data(), match.size(), index, length);
+	}
+
+	void StringTools::findLongestMatch(unsigned char* base, int baseSize, unsigned char* match, int matchSize, int* index, int* length)
+	{
+		StringTools::findLongestMatchKMP(base, baseSize, match, matchSize, index, length);
+	}
+
+	void StringTools::findLongestMatchNaive(unsigned char* base, int baseSize, unsigned char* match, int matchSize, int* index, int* length)
+	{
+		if(length!=nullptr && index!=nullptr)
+		{
+			int maxVal = 0;
+			int indexOfMax = 0;
+
+			int x = 0;
+			int y = 0;
+
+			int currSize = 0;
+			int currStartIndex = -1;
+
+			int nextPossibleIndex = -1;
+
+			unsigned char* sB = base;
+			unsigned char* sM = match;
+
+			char startValue = match[0];
+			
+			while(x < baseSize)
+			{
+				if(*sB == *sM)
+				{
+					if(currStartIndex!=-1)
+					{
+						if(*sB == startValue)
+						{
+							nextPossibleIndex = x; 
+						}
+					}
+
+					if(currStartIndex==-1)
+						currStartIndex = x;
+					
+					currSize++;
+					sM++;
+
+					if(currSize >= matchSize)
+					{
+						maxVal = currSize;
+						indexOfMax = currStartIndex;
+						break;
+					}
+				}
+				else
+				{
+					if(currSize >= maxVal)
+					{
+						maxVal = currSize;
+						indexOfMax = currStartIndex;
+					}
+
+					if(nextPossibleIndex>0)
+					{
+						x = nextPossibleIndex;
+						sB = base + nextPossibleIndex;
+					}
+
+					currSize = 0;
+					currStartIndex = -1;
+					nextPossibleIndex = -1;
+
+					sM = match;
+				}
+
+				sB++;
+				x++;
+			}
+			
+			if(currSize >= maxVal)
+			{
+				maxVal = currSize;
+				indexOfMax = currStartIndex;
+			}
+			
+			*length = maxVal;
+			*index = indexOfMax;
+		}
+	}
+
+	void StringTools::findLongestMatchKMP(unsigned char* base, int baseSize, unsigned char* match, int matchSize, int* index, int* length)
+	{
+		//preprocess match
+		std::vector<int> lps = std::vector<int>(matchSize);
+		longestPrefixSubstring(match, matchSize, lps.data());
+
+		int i = 0;
+		int j = -1;
+
+		int currMaxLength = 0;
+		
+		while(i < baseSize)
+		{
+			if(base[i] == match[j+1])
+			{
+				j++;
+				i++;
+
+				if((j+1)>=currMaxLength)
+				{
+					currMaxLength = j+1;
+					*index = i-currMaxLength;
+					*length = currMaxLength;
+				}
+			}
+			else
+			{
+				if(j>=0)
+					j = lps[j];
+				else
+					i++;
+			}
+
+			if(currMaxLength==matchSize)
+			{
+				//found match
+				break;
+			}
+		}
+	}
+
+	void StringTools::findLongestMatchDFA(unsigned char* base, int baseSize, unsigned char* match, int matchSize, int* index, int* length)
+	{
+		//Go until a match is found.
+		std::vector<int> DFA = std::vector<int>((matchSize+1)*256);
+		computeMatchDFA(match, matchSize, DFA.data());
+
+		int nodeIndex = 0;
+		int indexOfBestMatch = -1;
+		int sizeOfBestMatch = -1;
+		for(int i=0; i < baseSize; i++)
+		{
+			nodeIndex = DFA[base[i] + nodeIndex*256];
+			if(nodeIndex > sizeOfBestMatch)
+			{
+				sizeOfBestMatch = nodeIndex;
+				indexOfBestMatch = (i - nodeIndex + 1);
+				if(nodeIndex == matchSize)
+					break;
+			}
+		}
+	}
+
+	std::vector<int> StringTools::findAllMatchDFA(unsigned char* base, int baseSize, unsigned char* match, int matchSize)
+	{
+		std::vector<int> output;
+		std::vector<int> DFA = std::vector<int>((matchSize+1)*256);
+		computeMatchDFA(match, matchSize, DFA.data());
+
+		int nodeIndex = 0;
+		for(int i=0; i < baseSize; i++)
+		{
+			nodeIndex = DFA[base[i] + nodeIndex*256];
+			if(nodeIndex == matchSize)
+			{
+				output.push_back( i-matchSize+1 );
+			}
+		}
+		return output;
+	}
+	
 	std::string StringTools::formatStringInternal(std::string text, va_list orgArgs)
 	{
 		std::string finalText = "";

@@ -1,7 +1,8 @@
 #pragma once
-#include<iostream>
-#include<stdio.h>
 #include<string.h>
+#include<iostream>
+#include<sstream>
+#include<stdio.h>
 #include<vector>
 #include<fcntl.h>
 #include "BinarySet.h"
@@ -76,6 +77,28 @@ namespace glib
 			std::string finalText;
 
 			for (wchar_t& c : s)
+			{
+				std::vector<unsigned char> values = StringTools::toUTF8(c);
+				for(unsigned char& v : values)
+				{
+					finalText += (char)v;
+				}
+			}
+
+			return finalText;
+		}
+
+		/**
+		 * @brief Converts an int string to a valid UTF8 string
+		 * 
+		 * @param s 
+		 * @return std::string 
+		 */
+		static std::string toUTF8String(std::vector<int> s)
+		{
+			std::string finalText;
+
+			for (int& c : s)
 			{
 				std::vector<unsigned char> values = StringTools::toUTF8(c);
 				for(unsigned char& v : values)
@@ -214,6 +237,26 @@ namespace glib
 		 * @return std::vector<unsigned char> 
 		 */
 		static std::vector<unsigned char> base64Decode(unsigned char* bytes, size_t size);
+
+		/**
+		 * @brief Encodes the data to be URL safe.
+		 * 		This replaces spaces and unallowed characters with a hexidecimal value.
+		 * 		For the query section, the characters are encoded differently.
+		 * 
+		 * @param str 
+		 * @return std::string 
+		 */
+		static std::string urlEncode(std::string str);
+
+		/**
+		 * @brief Decodes the data from a URL to a normal string.
+		 * 		This undoes the Encoded version to add back spaces and other characters.
+		 * 
+		 * @param str 
+		 * @return std::string 
+		 */
+		static std::string urlDecode(std::string str);
+
 		/**
 		 * @brief Performs a bitwise left rotate on the data type.
 		 * 
@@ -818,7 +861,6 @@ namespace glib
 		/**
 		 * @brief Finds the longest match in the string base.
 		 * 
-		 * @tparam T 
 		 * @param base 
 		 * @param baseSize 
 		 * @param match 
@@ -828,8 +870,60 @@ namespace glib
 		 * @param length 
 		 * 		A pointer to an int that will record the length of the longest match
 		 */
-		template<class T>
-		static void findLongestMatch(T* base, int baseSize, T* match, int matchSize, int* index, int* length);
+		static void findLongestMatch(unsigned char* base, int baseSize, unsigned char* match, int matchSize, int* index, int* length);
+
+		/**
+		 * @brief Finds the pattern using the naive pattern matching algorithm.
+		 * 		If the pattern does not appear in the data but only partially, finds the closest match.
+		 * 		Runs in O(N*M).
+		 * 
+		 * @param base 
+		 * @param baseSize 
+		 * @param match 
+		 * @param matchSize 
+		 * @param index 
+		 * @param length 
+		 */
+		static void findLongestMatchNaive(unsigned char* base, int baseSize, unsigned char* match, int matchSize, int* index, int* length);
+
+		/**
+		 * @brief Finds the pattern using the KMP matching algorithm.
+		 * 		If the pattern does not appear in the data but only partially, finds the closest match.
+		 * 		Runs in O(N + M).
+		 * 
+		 * @param base 
+		 * @param baseSize 
+		 * @param match 
+		 * @param matchSize 
+		 * @param index 
+		 * @param length 
+		 */
+		static void findLongestMatchKMP(unsigned char* base, int baseSize, unsigned char* match, int matchSize, int* index, int* length);
+
+		/**
+		 * @brief Finds the pattern using a DFA matching algorithm.
+		 * 		If the pattern does not appear in the data but only partially, finds the closest match.
+		 * 		Runs in O(N + M).
+		 * 
+		 * @param base 
+		 * @param baseSize 
+		 * @param match 
+		 * @param matchSize 
+		 * @param index 
+		 * @param length 
+		 */
+		static void findLongestMatchDFA(unsigned char* base, int baseSize, unsigned char* match, int matchSize, int* index, int* length);
+
+		/**
+		 * @brief Finds all patterns using the DFA matching algorithm.
+		 * 		Runs in O(N + M).
+		 * 
+		 * @param base 
+		 * @param baseSize 
+		 * @param match 
+		 * @param matchSize 
+		 */
+		static std::vector<int> findAllMatchDFA(unsigned char* base, int baseSize, unsigned char* match, int matchSize);
 
 		/**
 		 * @brief Formats a string like printf() would but converts std::wstring to std::string to avoid errors.
@@ -1025,182 +1119,23 @@ namespace glib
 		/**
 		 * @brief Pre Processing for the KMP string matching algorithm.
 		 * 
-		 * @tparam T 
 		 * @param array 
 		 * @param size 
-		 * @return std::vector<int> 
 		 */
-		template<class T>
-		static std::vector<int> longestPrefixSubstring(T* array, int size);
+		static void longestPrefixSubstring(unsigned char* input, int size, int* output);
 
-		template<class T>
-		static void KMP(T* base, int baseSize,T* match, int matchSize, int* index, int* length);
-
-		template<class T>
-		static void NaivePatternSearch(T* base, int baseSize, T* match, int matchSize, int* index, int* length);
+		/**
+		 * @brief Computes a finite automaton for pattern matching.
+		 * 
+		 * @param input 
+		 * @param size 
+		 * @param output 
+		 * 		1D array instead of 2D array.
+		 * 		Must be of the size [ (inputSize+1)*256 ]
+		 */
+		static void computeMatchDFA(unsigned char* input, int size, int* output);
 
 		static bool hasInit;
 	};
-
-	template<class T>
-	inline std::vector<int> StringTools::longestPrefixSubstring(T* array, int size)
-	{
-		std::vector<int> lps = std::vector<int>(size);
-
-		int m = 0;
-		lps[0] = 0;
-
-		for(int pos=1; pos<size; pos++)
-		{
-			while(m>0 && array[pos] != array[m])
-			{
-				m = lps[m-1];
-			}
-
-			if(array[pos] == array[m])
-			{
-				m++;
-			}
-
-			lps[pos] = m;
-		}
-		
-		for(int i=0; i<size; i++)
-		{
-			lps[i] -= 1;
-		}
-
-		return lps;
-	}
-
-	template<class T>
-	inline void StringTools::KMP(T* base, int baseSize, T* match, int matchSize, int* index, int* length)
-	{
-		//preprocess match
-		std::vector<int> lps = longestPrefixSubstring(match, matchSize);
-
-		int i = 0;
-		int j = -1;
-
-		int currMaxLength = 0;
-		
-		while(i < baseSize)
-		{
-			if(base[i] == match[j+1])
-			{
-				j++;
-				i++;
-
-				if((j+1)>=currMaxLength)
-				{
-					currMaxLength = j+1;
-					*index = i-currMaxLength;
-					*length = currMaxLength;
-				}
-			}
-			else
-			{
-				if(j>=0)
-					j = lps[j];
-				else
-					i++;
-			}
-
-			if(currMaxLength==matchSize)
-			{
-				//found match
-				break;
-			}
-		}
-
-	}
-
-	template<class T>
-	inline void StringTools::NaivePatternSearch(T* base, int baseSize, T* match, int matchSize, int* index, int* length)
-	{
-		if(length!=nullptr && index!=nullptr)
-		{
-			int maxVal = 0;
-			int indexOfMax = 0;
-
-			int x = 0;
-			int y = 0;
-
-			int currSize = 0;
-			int currStartIndex = -1;
-
-			int nextPossibleIndex = -1;
-
-			T* sB = base;
-			T* sM = match;
-
-			char startValue = match[0];
-			
-			while(x < baseSize)
-			{
-				if(*sB == *sM)
-				{
-					if(currStartIndex!=-1)
-					{
-						if(*sB == startValue)
-						{
-							nextPossibleIndex = x; 
-						}
-					}
-
-					if(currStartIndex==-1)
-						currStartIndex = x;
-					
-					currSize++;
-					sM++;
-
-					if(currSize >= matchSize)
-					{
-						maxVal = currSize;
-						indexOfMax = currStartIndex;
-						break;
-					}
-				}
-				else
-				{
-					if(currSize >= maxVal)
-					{
-						maxVal = currSize;
-						indexOfMax = currStartIndex;
-					}
-
-					if(nextPossibleIndex>0)
-					{
-						x = nextPossibleIndex;
-						sB = base + nextPossibleIndex;
-					}
-
-					currSize = 0;
-					currStartIndex = -1;
-					nextPossibleIndex = -1;
-
-					sM = match;
-				}
-
-				sB++;
-				x++;
-			}
-			
-			if(currSize >= maxVal)
-			{
-				maxVal = currSize;
-				indexOfMax = currStartIndex;
-			}
-			
-			*length = maxVal;
-			*index = indexOfMax;
-		}
-	}
-
-	template<class T>
-	inline void StringTools::findLongestMatch(T* base, int baseSize, T* match, int matchSize, int* index, int* length)
-	{
-		StringTools::KMP<T>(base, baseSize, match, matchSize, index, length);
-	}
 
 } //NAMESPACE glib END

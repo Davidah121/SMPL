@@ -177,12 +177,12 @@ namespace glib
 		}
 		return '\0';
 	}
-	
-	void SimpleFile::readBytes(char* buffer, int size)
+
+	char SimpleFile::peekByte()
 	{
 		if (isOpen() && type == SimpleFile::READ && !isEndOfFile())
 		{
-			file->read(buffer, size);
+			return file->peek();
 		}
 		else
 		{
@@ -194,6 +194,27 @@ namespace glib
 
 			#endif
 		}
+		return '\0';
+	}
+	
+	size_t SimpleFile::readBytes(char* buffer, int size)
+	{
+		if (isOpen() && type == SimpleFile::READ && !isEndOfFile())
+		{
+			file->read(buffer, size);
+			return file->gcount();
+		}
+		else
+		{
+			//File is not opened for reading
+			#ifdef USE_EXCEPTIONS
+
+			//not open for reading. could be file access or the file may not exist.
+			throw SimpleFile::FileReadException();
+
+			#endif
+		}
+		return 0;
 	}
 
 	wchar_t toWideChar(unsigned char p, unsigned char p2)

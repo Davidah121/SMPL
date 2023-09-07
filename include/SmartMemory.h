@@ -3,12 +3,17 @@
 #include "StringTools.h"
 
 //TESTING FOR SAFE MEMORY MANAGEMENT
+template<class T>
+class StaticMemManager;
 
 template<class T>
-struct MemClassification
+class SmartMemory;
+
+struct MemInfo
 {
-    T* dataPointer = nullptr;
     bool array = false;
+    bool shouldDelete = true;
+    int counter = 0;
 };
 
 template<class T>
@@ -22,21 +27,23 @@ public:
     ~StaticMemManager()
     {
         // glib::StringTools::println("DELETE ALL DATA");
-        std::vector<MemClassification<T>> pArr;
+        std::vector<std::pair<T*, bool>> pArr;
         for(auto it = pointerData.begin(); it != pointerData.end(); it++)
         {
-            pArr.push_back({it->first, it->second});
+            MemInfo info = it->second;
+            if(info.shouldDelete == true)
+                pArr.push_back({it->first, info.array});
         }
 
-        for(MemClassification<T>& memory : pArr)
+        for(std::pair<T*, bool>& memory : pArr)
         {
-            if(memory.dataPointer != nullptr)
+            if(memory.first != nullptr)
             {
                 // StringTools::println("LATE DELETE: %p", memory.dataPointer);
-                if(memory.array)
-                    delete[] memory.dataPointer;
+                if(memory.second)
+                    delete[] memory.first;
                 else
-                    delete memory.dataPointer;
+                    delete memory.first;
             }
         }
 
@@ -44,7 +51,45 @@ public:
         pArr.clear();
     }
 
-    std::unordered_map<T*, bool> pointerData;
+    void deletePointer(T* p)
+    {
+        //decrement the counter.
+        auto it = pointerData.find(p);
+        if(it != pointerData.end())
+        {
+            it->second.counter--;
+            if(it->second.counter == 0)
+            {
+                if(it->second.shouldDelete == true)
+                {
+                    if(it->second.array)
+                        delete[] (T*)p;
+                    else
+                        delete (T*)p;
+                }
+                pointerData.erase(p);
+            }
+        }
+    }
+
+    void forceDeletePointer(T* p)
+    {
+        //just remove it regardless of the counter or if it should be deleted.
+        auto it = pointerData.find(p);
+        if(it != pointerData.end())
+        {
+            if(it->second.array)
+                delete[] (T*)p;
+            else
+                delete (T*)p;
+            
+            pointerData.erase(p);
+        }
+    }
+
+protected:
+    friend SmartMemory<T>;
+    std::unordered_map<T*, MemInfo> pointerData;
 private:
 };
 
@@ -73,29 +118,36 @@ public:
      * @param data 
      *      A non zero pointer to some data.
      *      If zero, it is considered invalid.
+     * @param array
+     *      If set to true, the pointer is considered an array.
+     *      This will affect how it is deleted.
+     *      By default, it is false.
      * @param bypassOwnership 
      *      If set to true, the created SmartMemory object will always has delete rights.
      *      It will delete the pointer when the SmartMemory is destroyed.
      *      By default, it is false.
+     * @param deleteOnLast
+     *      If set to true, the created SmartMemory will change how data is deleted. It will only delete
+     *      the pointer if it is the last known reference to it.
+     *      By default, it is set false.
      */
-    SmartMemory(T* data, bool array = false, bool bypassOwnership = false)
+    SmartMemory(T* data, bool array = false, bool deleteOnLast = true, bool bypassOwnership = false)
     {
+        isArray = array;
         hashValue = data;
+        this->deleteOnLast = deleteOnLast;
 
         if(hashValue != nullptr)
         {
             auto it = memoryStuff.pointerData.find(hashValue);
             if(it == memoryStuff.pointerData.end())
             {
-                deleteRights = true;
-                memoryStuff.pointerData.insert( {hashValue, array} );
-                // glib::StringTools::println("Added %p", hashValue);
+                memoryStuff.pointerData[hashValue] = {array, deleteOnLast || bypassOwnership, 1};
             }
             else
             {
-                deleteRights = false;
-                it->second = array;
-                // glib::StringTools::println("Copied %p", hashValue);
+                isArray = it->second.array;
+                it->second.counter += 1;
             }
         }
 
@@ -103,6 +155,50 @@ public:
             deleteRights = true;
     }
 
+    /**
+     * @brief Shortcut function. Creates a SmartMemory such that the data will be deleted when the last
+     *      known instance of this pointer exists. This functionality is passed to all copied instances.
+     *      This behavior is similar to std::shared_pointer
+     *      This is also the default behavior of this class when called with default options.
+     * 
+     * @param data 
+     * @param array 
+     * @return SmartMemory<T> 
+     */
+    static SmartMemory<T> createDeleteOnLast(T* data, bool array = false)
+    {
+        return SmartMemory(data, array, true, false);
+    }
+
+    /**
+     * @brief Shortcut function. Creates a SmartMemory such that the data will be never be deleted.
+     *      Good for local objects being passed around via pointers without worrying if it will be deleted improperly.
+     *      This functionality is passed to all copied instances.
+     * 
+     * @param data 
+     * @param array 
+     * @return SmartMemory<T> 
+     */
+    static SmartMemory<T> createNoDelete(T* data, bool array = false)
+    {
+        return SmartMemory(data, array, false, false);
+    }
+
+    /**
+     * @brief Shortcut function. Creates a SmartMemory such that the data will be whenever this object is deleted.
+     *      This establishes a sort of ownership relationship with the object and the data.
+     *      All other SmartMemory instances created from this one will not shared the same functionality but will not 
+     *          be able to delete the pointer when they are destroyed.
+     * 
+     * @param data 
+     * @param array 
+     * @return SmartMemory<T> 
+     */
+    static SmartMemory<T> createDeleteRights(T* data, bool array = false)
+    {
+        return SmartMemory(data, array, false, true);
+    }
+    
     /**
      * @brief Construct a new SmartMemory object from another SmartMemory object.
      *      It will not have delete rights.
@@ -115,7 +211,19 @@ public:
     SmartMemory(const SmartMemory<T>& other)
     {
         deletePointer();
-        hashValue = other.hashValue;
+        if(other.hashValue != nullptr)
+        {
+            auto it = memoryStuff.pointerData.find(other.hashValue);
+            if(it != memoryStuff.pointerData.end())
+            {
+                hashValue = other.hashValue;
+                it->second.counter += 1;
+            }
+            else
+                hashValue = nullptr;
+        }
+        isArray = other.isArray;
+        deleteOnLast = other.deleteOnLast;
         deleteRights = false;
     }
 
@@ -131,7 +239,19 @@ public:
     void operator=(const SmartMemory<T>& other)
     {
         deletePointer();
-        hashValue = other.hashValue;
+        if(other.hashValue != nullptr)
+        {
+            auto it = memoryStuff.pointerData.find(other.hashValue);
+            if(it != memoryStuff.pointerData.end())
+            {
+                hashValue = other.hashValue;
+                it->second.counter += 1;
+            }
+            else
+                hashValue = nullptr;
+        }
+        isArray = other.isArray;
+        deleteOnLast = other.deleteOnLast;
         deleteRights = false;
     }
 
@@ -169,24 +289,6 @@ public:
     }
 
     /**
-     * @brief Removes the pointer from the memory list without deleting it if it has delete rights.
-     *      Useful if the data has been deleted outside of the SmartMemory scope.
-     *      
-     *      An example of such is an object created on the stack and the reference being stored in
-     *      a SmartMemory object. 
-     * 
-     *      Special care should be taken to ensure that data is not deleted twice or not delete at all.
-     */
-    void unsafeRemove()
-    {
-        if(hashValue != nullptr && deleteRights)
-        {
-            memoryStuff.pointerData.erase(hashValue);
-            hashValue = nullptr;
-        }
-    }
-
-    /**
      * @brief Returns if the object has delete rights.
      *      If it has delete rights, the data pointer will be deleted when the object is destroyed.
      * 
@@ -196,6 +298,31 @@ public:
     bool getDeleteRights()
     {
         return deleteRights;
+    }
+
+    /**
+     * @brief Returns in the object will delete the pointer if it is the last known holder of it.
+     *      By default, most objects will have this property but if an object is not intended to be
+     *          deleted at all, this should be false and delete rights should also be false.
+     * 
+     * @return true 
+     * @return false 
+     */
+    bool getWillDeleteOnLast()
+    {
+        return deleteOnLast;
+    }
+
+    /**
+     * @brief Returns if the object is an array.
+     *      This is mostly for internal use for how to delete the object.
+     * 
+     * @return true 
+     * @return false 
+     */
+    bool getIsArray()
+    {
+        return isArray;
     }
 
     /**
@@ -212,6 +339,12 @@ public:
         return hashValue;
     }
 
+    bool const operator==(const SmartMemory<T>& other)
+    {
+        //should not matter if they both exist or not.
+        return hashValue == other.hashValue;
+    }
+
 private:
 
     /**
@@ -220,29 +353,23 @@ private:
      */
     void deletePointer()
     {
-        if(deleteRights && hashValue != nullptr)
+        if(hashValue != nullptr)
         {
-            auto it = memoryStuff.pointerData.find(hashValue);
-            if(it != memoryStuff.pointerData.end())
+            if(deleteRights)
             {
-                // glib::StringTools::println("Delete hashValue %p", hashValue);
-
-                if(it->second == true)
-                    delete[] (T*)hashValue;
-                else
-                    delete (T*)hashValue;
-                
-                memoryStuff.pointerData.erase(hashValue);
+                memoryStuff.forceDeletePointer(hashValue);
             }
-        }
-        else
-        {
-            // glib::StringTools::println("Soft Delete");
+            else
+            {
+                memoryStuff.deletePointer(hashValue);
+            }
         }
         hashValue = nullptr;
     }
 
+    bool isArray = false;
     bool deleteRights = false;
+    bool deleteOnLast = false;
     T* hashValue = nullptr;
     static StaticMemManager<T> memoryStuff;
 };

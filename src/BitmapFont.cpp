@@ -243,7 +243,7 @@ namespace glib
 				}
 				else if(n->getTitle() == "common")
 				{
-					auto temp = n->getAttribute("lineHeight");
+					auto temp = n->getAttribute("lineheight");
 					if(temp != nullptr)
 						verticalAdv = abs(std::stoi(temp->data));
 					

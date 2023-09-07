@@ -1,0 +1,76 @@
+<SimpleGUI>
+    <LayoutList margin="{4,4,4,4}">
+
+        <LayoutList margin="{4,4,4,4}">
+            <Text text="This is equivalent to a paragraph element in html"/>
+        </LayoutList>
+
+        <LayoutList margin="{4,4,4,4}">
+            <Text text="Even more text"/>
+        </LayoutList>
+
+        <LayoutTable margin="{4,4,4,4}" columns="4" inner-padding="4">
+            <!-- Row 1 -->
+            <LayoutList>
+                <Text text="NUM LOCK"/>
+            </LayoutList>
+            <LayoutList>
+                <Text text="/"/>
+            </LayoutList>
+            <LayoutList>
+                <Text text="*"/>
+            </LayoutList>
+            <LayoutList>
+                <Text text="-"/>
+            </LayoutList>
+            
+            <!-- Row 2 -->
+            <LayoutList>
+                <Text text="7"/>
+            </LayoutList>
+            <LayoutList>
+                <Text text="8"/>
+            </LayoutList>
+            <LayoutList>
+                <Text text="9"/>
+            </LayoutList>
+            <LayoutList row-span="2">
+                <Text text="+"/>
+            </LayoutList>
+
+            <!-- Row 3 -->
+            <LayoutList>
+                <Text text="4"/>
+            </LayoutList>
+            <LayoutList>
+                <Text text="5"/>
+            </LayoutList>
+            <LayoutList>
+                <Text text="6"/>
+            </LayoutList>
+
+            <!-- Row 4 -->
+            <LayoutList>
+                <Text text="1"/>
+            </LayoutList>
+            <LayoutList>
+                <Text text="2"/>
+            </LayoutList>
+            <LayoutList>
+                <Text text="3"/>
+            </LayoutList>
+            <LayoutList row-span="2">
+                <Text text="ENT"/>
+            </LayoutList>
+
+            <!-- Row 5 -->
+            <LayoutList col-span="2">
+                <Text text="0"/>
+            </LayoutList>
+            <LayoutList>
+                <Text text="."/>
+            </LayoutList>
+
+        </LayoutTable>
+    </LayoutList>
+</SimpleGUI>

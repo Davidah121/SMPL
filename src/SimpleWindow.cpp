@@ -120,6 +120,71 @@
 			}
 		#else
 
+			#ifdef _WIN32
+
+			bool SimpleWindow::processRawTouch(HWND hwnd, WPARAM wparam, LPARAM lparam)
+			{
+				bool bHandled = false;
+				uint32_t cInputs = LOWORD(wparam);
+				PTOUCHINPUT pInputs = new TOUCHINPUT[cInputs];
+
+				if(pInputs != nullptr)
+				{
+					if(GetTouchInputInfo((HTOUCHINPUT)lparam, cInputs, pInputs, sizeof(TOUCHINPUT)))
+					{
+						//always consider it handled
+						bHandled = true;
+						if(rawTouchInput != nullptr)
+							rawTouchInput(pInputs, cInputs);
+					}
+					delete[] pInputs;
+				}
+
+				if(bHandled)
+				{
+					CloseTouchInputHandle((HTOUCHINPUT)lparam);
+				}
+				return bHandled;
+			}
+			
+			bool SimpleWindow::processGesture(HWND hwnd, WPARAM wparam, LPARAM lparam)
+			{
+				GESTUREINFO gi;
+				ZeroMemory(&gi, sizeof(GESTUREINFO));
+				gi.cbSize = sizeof(GESTUREINFO);
+
+				bool res = GetGestureInfo((HGESTUREINFO)lparam, &gi);
+				bool handled = false;
+
+				if(res)
+				{
+					if(gestureTouchInput != nullptr)
+					{
+						handled = true;
+						gestureTouchInput(gi);
+					}
+					handled = true;
+				}
+
+				return handled;
+			}
+
+			void SimpleWindow::setRawTouchFunction(std::function<void(TOUCHINPUT*, int)> function)
+			{
+				if(function != nullptr)
+				{
+					rawTouchInput = function;
+					RegisterTouchWindow((HWND)windowHandle, 0); //register for raw touch input
+				}
+			}
+
+			void SimpleWindow::setGestureInputFunction(std::function<void(GESTUREINFO)> function)
+			{
+				gestureTouchInput = function;
+			}
+
+			#endif
+
 			LRESULT _stdcall SimpleWindow::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			{
 				SimpleWindow* currentWindow = SimpleWindow::getWindowByHandle((size_t)hwnd);
@@ -202,11 +267,32 @@
 						break;
 					case WM_DESTROY:
 						break;
+						
+					//The following exist just to prevent multilingual text input from creating a new popup box when not desired.
+					case WM_SYSCHAR:
+						if(!currentWindow->getAllowKeyInput())
+							return 0;
+						break;
+					case WM_SYSDEADCHAR:
+						if(!currentWindow->getAllowKeyInput())
+							return 0;
+						break;
+					case WM_DEADCHAR:
+						if(!currentWindow->getAllowKeyInput())
+							return 0;
+						break;
+					/////////////////////////////////////////
+
 					case WM_CHAR:
+						if(!currentWindow->getAllowKeyInput())
+							return 0;
 						if(currentWindow->internalCharValFunction != nullptr)
 							currentWindow->internalCharValFunction(wparam, lparam);
 						break;
 					case WM_KEYDOWN:
+						if(!currentWindow->getAllowKeyInput())
+							return 0;
+
 						if (currentWindow->keyDownFunction != nullptr)
 							currentWindow->keyDownFunction(wparam, lparam);
 						
@@ -221,6 +307,8 @@
 						
 						break;
 					case WM_KEYUP:
+						if(!currentWindow->getAllowKeyInput())
+							return 0;
 						if (currentWindow->keyUpFunction != nullptr)
 							currentWindow->keyUpFunction(wparam, lparam);
 						break;
@@ -267,6 +355,8 @@
 					case WM_MOUSEMOVE:
 						if (currentWindow->mouseMovedFunction != nullptr)
 							currentWindow->mouseMovedFunction();
+						break;
+					case WM_GESTURE:
 						break;
 					case WM_MOVING:
 						rect = (RECT*)lparam;
@@ -377,8 +467,6 @@
 						currentWindow->initBitmap();
 						currentWindow->setResizing(false);
 						break;
-					case WM_MDIMAXIMIZE:
-						break;
 					case WM_SYSCOMMAND:
 						if(wparam == SC_MOVE)
 						{
@@ -397,6 +485,10 @@
 						break;
 					case WM_SETCURSOR:
 						SetCursor( LoadCursor(0, IDC_ARROW) );
+						break;
+					case WM_TOUCH:
+						if(currentWindow->processRawTouch(hwnd, wparam, lparam))
+							return 0;
 						break;
 					default:
 						break;
@@ -515,6 +607,10 @@
 					windowHandle = 0;
 					displayServer = nullptr;
 				#else
+					RevokeDragDrop((HWND)windowHandle);
+					delete myDragDrop;
+					myDragDrop = nullptr;
+					
 					if (IsWindow((HWND)windowHandle))
 					{
 						CloseWindow((HWND)windowHandle);
@@ -665,7 +761,7 @@
 				setRunning(true);
 
 				initBitmap();
-				gui = new GuiManager(GuiManager::TYPE_SOFTWARE, this->width, this->height);
+				gui = new GuiManager(GraphicsInterface::TYPE_SOFTWARE, this->width, this->height);
 
 				if(windowType.initFunction != nullptr)
 					windowType.initFunction(this);
@@ -797,8 +893,13 @@
 						setShouldEnd(false);
 						setRunning(true);
 
+						WinSingleton::tryInit();
+						myDragDrop = new DragDrop((HWND)windowHandle);
+						RegisterDragDrop((HWND)windowHandle, (LPDROPTARGET)myDragDrop);
+
+
 						initBitmap();
-						gui = new GuiManager(GuiManager::TYPE_SOFTWARE, this->width, this->height);
+						gui = new GuiManager(GraphicsInterface::TYPE_SOFTWARE, this->width, this->height);
 
 						if(windowType.initFunction != nullptr)
 							windowType.initFunction(this);
@@ -1388,6 +1489,22 @@
 			return canMove;
 		}
 
+		void SimpleWindow::allowKeyInput(bool k)
+		{
+			myMutex.lock();
+			this->processKeyInputs = k;
+			myMutex.unlock();
+		}
+
+		bool SimpleWindow::getAllowKeyInput()
+		{
+			bool b;
+			myMutex.lock();
+			b = processKeyInputs;
+			myMutex.unlock();
+			return b;
+		}
+
 		void SimpleWindow::setThreadUpdateTime(size_t millis, size_t micros)
 		{
 			myMutex.lock();
@@ -1564,7 +1681,7 @@
 			#else
 				MSG m;
 				ZeroMemory(&m, sizeof(MSG));
-				while(PeekMessage(&m, (HWND)windowHandle, 0, 0, PM_REMOVE))
+				while(PeekMessage(&m, NULL, 0, 0, PM_REMOVE))
 				{
 					TranslateMessage(&m);
 					DispatchMessage(&m);

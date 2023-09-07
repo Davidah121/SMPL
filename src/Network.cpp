@@ -40,6 +40,16 @@ namespace glib
 		shouldStart = false;
 	}
 
+	int Network::getPort()
+	{
+		return port;
+	}
+
+	std::string Network::getLocation()
+	{
+		return location;
+	}
+
 	bool Network::init()
 	{
 		#ifndef __unix__
@@ -193,21 +203,25 @@ namespace glib
 		}
 	}
 
-	bool Network::sendMessage(std::string message, int id)
+	int Network::sendMessage(std::string message, int id)
 	{
 		return sendMessage((char*)message.c_str(), message.size()+1, id);
 	}
-	bool Network::sendMessage(std::vector<unsigned char> message, int id)
+	int Network::sendMessage(std::vector<unsigned char> message, int id)
 	{
 		return sendMessage((char*)message.data(), message.size(), id);
 	}
-	bool Network::sendMessage(unsigned char* message, int size, int id)
+	int Network::sendMessage(unsigned char* message, int size, int id)
 	{
 		return sendMessage((char*)message, size, id);
 	}
 
-	bool Network::sendMessage(char * message, int messageSize, int id)
+	int Network::sendMessage(char * message, int messageSize, int id)
 	{
+		//It is okay to do this but makes no sense. No error though.
+		if(messageSize == 0)
+			return 0;
+
 		networkMutex.lock();
 
 		int status = SOCKET_ERROR;
@@ -221,9 +235,9 @@ namespace glib
 		if(status == 0 || status == SOCKET_ERROR)
 		{
 			//error, if 0, closed
-			return false;
+			return -1;
 		}
-		return true;
+		return status;
 	}
 
 	int Network::receiveMessage(std::string& message, int id, bool flagRead)

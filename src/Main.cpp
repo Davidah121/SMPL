@@ -20,6 +20,9 @@
 
 #include "WebRequest.h"
 
+#include "HttpServer.h"
+#include "SuffixAutomaton.h"
+
 using namespace glib;
 
 
@@ -307,39 +310,260 @@ void testHTTPRequest()
     n.endNetwork();
 }
 
-void printNodes(XmlNode* n)
+void testHTML()
 {
-    if(n != nullptr)
+    std::vector<std::string> pattern = {"html", "body", "div", "div", "div", "div", "ul", "li", "span", "a"};
+    SimpleXml xml = SimpleXml("temp/temp.data");
+    auto results = xml.getNodesPattern(pattern);
+    StringTools::println("%llu", results.size());
+    for(int i=0; i<results.size(); i++)
     {
-        StringTools::print("<%s>", n->getTitle().c_str());
-        bool needLinebreak = false;
-        for(int i=0; i<n->getChildNodes().size(); i++)
-        {
-            ChildNode c = n->getChildNodes()[i];
-            needLinebreak = !c.type;
-            if(c.type == ChildNode::TYPE_VALUE)
-                StringTools::print("%s", c.value.c_str());
-            else
-                printNodes(c.node);
-        }
-        StringTools::println("</%s>", n->getTitle().c_str());
+        StringTools::println(results[i]->getValue());
     }
 }
 
-void testHTML()
+#include "WebSocket.h"
+
+WebSocket* sock;
+
+void onConnection(int id)
 {
-    SimpleXml xml = SimpleXml("test.html");
-    auto nodes = xml.getNodes();
-    for(auto n : nodes)
+    StringTools::println("Connected: %d", id);
+}
+
+void onDisconnection(int id)
+{
+    StringTools::println("Disconnected: %d", id);
+}
+
+void onNewPacket(int id)
+{
+    StringTools::println("PACKET REC: %d", id);
+    auto packet = sock->receivePacket(id);
+    switch(packet.type)
     {
-        printNodes(n);
+        case WebSocket::TYPE_TEXT:
+            for(int i=0; i<packet.buffer.size(); i++)
+            {
+                StringTools::print("%c", packet.buffer[i]);
+            }
+            break;
+        case WebSocket::TYPE_BINARY:
+            for(int i=0; i<packet.buffer.size(); i++)
+            {
+                StringTools::print("%x", packet.buffer[i]);
+            }
+            break;
+        default:
+            break;
     }
+}
+
+void init(bool type, int port)
+{
+    sock = new WebSocket(type, port, "localhost");
+    sock->setOnConnectFunction(onConnection);
+    sock->setOnDisconnectFunction(onDisconnection);
+    sock->setNewPacketFunction(onNewPacket);
+
+    sock->startNetwork();
+}
+
+void dispose()
+{
+    delete sock;
+    sock = nullptr;
+}
+
+void run()
+{
+    while(true)
+    {
+        std::string input = StringTools::getString();
+        if(input == "quit" || input == "exit")
+        {
+            break;
+        }
+        else if(input == "send")
+        {
+            sock->sendText("Hello");
+        }
+    }
+}
+
+void testWebSocketServer()
+{
+    init(WebSocket::TYPE_SERVER, 4040);
+    run();
+    dispose();
+}
+
+void testWebSocketClient()
+{
+    init(WebSocket::TYPE_CLIENT, 4040);
+    run();
+    dispose();
+}
+
+void testDropFiles()
+{
+    WindowOptions wo;
+    wo.threadManaged = false;
+
+    SimpleWindow w = SimpleWindow("Title", 320, 240, -1, -1, wo);
+    w.waitTillClose();
+}
+
+void testHTTPServer()
+{
+    HttpServer server = HttpServer("127.0.0.1", 4041, 64);
+    server.setLogInfo(true);
+    server.start();
+    while(server.getRunning())
+    {
+        Input::pollInput();
+        if(Input::getKeyPressed(Input::KEY_ESCAPE))
+        {
+            break;
+        }
+        System::sleep(10);
+    }
+}
+
+void initGui(SimpleWindow* w)
+{
+    w->getGuiManager()->loadElementsFromFile("GuiLayoutFile.xml");
+    w->getGuiManager()->setBackgroundColor(Color{255,255,255,255});
+}
+
+void testNewGui()
+{
+    SimpleGraphics::init();
+    GuiManager::initDefaultLoadFunctions();
+
+    WindowOptions o;
+    o.initFunction = initGui;
+    SimpleWindow w = SimpleWindow("New Gui Window", 320, 240, -1, -1, o);
+
+    w.waitTillClose();
+    SimpleGraphics::dispose();
+}
+
+void testHashSpeed()
+{
+    Sprite s = Sprite();
+    // s.loadImage("TestImages/BMP/BMPTestData/large.bmp");
+    s.loadImage("TestImages/compareThese/img4_1.png");
+    size_t length = s.getImage(0)->getWidth() * s.getImage(0)->getHeight();
+    unsigned char* pixs = (unsigned char*)s.getImage(0)->getPixels();
+    
+    size_t index = 0;
+    size_t endIndex = length*4;
+    unsigned char* endPixs = pixs + endIndex;
+    size_t t1, t2;
+    size_t timeForHV1 = 0;
+
+    // size_t actualBytes = 0;
+
+    // t1 = System::getCurrentTimeNano();
+    // std::vector<lengthPair> output1;
+    // Compression::getLZ77RefPairsCHash(pixs, endIndex, &output1, 7);
+    // t2 = System::getCurrentTimeNano();
+    // timeForHV1 = t2-t1;
+    
+    // StringTools::println("Time For CHash: %llu", timeForHV1);
+    // StringTools::println("OUTPUT1 SIZE: %llu", output1.size());
+    
+    t1 = System::getCurrentTimeNano();
+    std::vector<lengthPair> output2;
+    Compression::getLZ77RefPairsCSA(pixs, endIndex, &output2, 7);
+    t2 = System::getCurrentTimeNano();
+    timeForHV1 = t2-t1;
+    
+    StringTools::println("Time For CSA: %llu", timeForHV1);
+    StringTools::println("OUTPUT2 SIZE: %llu", output2.size());
+    
+    // t1 = System::getCurrentTimeNano();
+    // std::vector<lengthPair> output3;
+    // Compression::getLZ77RefPairsKMP(pixs, endIndex, &output3, 7);
+    // t2 = System::getCurrentTimeNano();
+    // timeForHV1 = t2-t1;
+    
+    // StringTools::println("Time For KMP: %llu", timeForHV1);
+    // StringTools::println("OUTPUT3 SIZE: %llu", output3.size());
+
+    SimpleFile f = SimpleFile("OutputLZ1.txt", SimpleFile::WRITE);
+    for(lengthPair& l : output2)
+    {
+        if(l.literal)
+            f.writeString("LIT: " + StringTools::toString(l.v1));
+        else
+            f.writeString("REF: " + StringTools::toString(l.v1) + " - " + StringTools::toString(l.v2));
+        f.writeLineBreak();
+    }
+    f.close();
+
+    /*
+    Stats:
+        Time For CHash: 625554000 ns
+        OUTPUT1 SIZE: 1571307 pairs
+
+        Time For CSA: 836515700 ns
+        OUTPUT2 SIZE: 1723374 pairs
+
+        Time For KMP: 35839262700 ns
+        OUTPUT3 SIZE: 1486075 pairs
+     */
+}
+
+void testStreamLZSS()
+{
+    Sprite s = Sprite();
+    s.loadImage("TestImages/BMP/BMPTestData/large.bmp");
+
+    StreamCompressionLZSS lzCompressor = StreamCompressionLZSS(StreamCompressionLZSS::TYPE_COMPRESSION);
+    size_t length = s.getImage(0)->getWidth() * s.getImage(0)->getHeight() * 4;
+    unsigned char* pixs = (unsigned char*)s.getImage(0)->getPixels();
+
+    for(int i=0; i<length; i+=4)
+    {
+        lzCompressor.addData(pixs, 4);
+        pixs+=4;
+    }
+    lzCompressor.endData();
+
+    //Get Binary Set
+    BinarySet bin = lzCompressor.getBuffer();
+
+    StringTools::println("Final Bit size = %llu", bin.size());
+
+    // std::vector<unsigned char> compareMe = Compression::compressLZSS(pixs, length);
+    // lzCompressor.clearBuffer();
+
+    // for(int i=0; i<length; i++)
+    // {
+    //     if(compareMe[i] != pixs[i])
+    //     {
+    //         StringTools::println("BROKEN AT %d", i);
+    //         break;
+    //     }
+    // }
 }
 
 // int WinMain(HINSTANCE hins, HINSTANCE preIns, LPSTR cmdline, int nShowCMD)
 int main(int argc, char** argv)
 {
-    testHTML();
+    // testStreamLZSS();
+    testHashSpeed();
+    // testSATime();
+    // StringTools::println("%d", sizeof(SFA_State));
+    // testSuffixAutomaton();
+    // SAVerification();
+    // testNewGui();
+    // testHTTPServer();
+    // testDropFiles();
+    // testWebSocketClient();
+    // testHTML();
     // StringTools::init();
     // dirTest();
     // testHTTPRequest();

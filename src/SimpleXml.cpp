@@ -441,6 +441,8 @@ namespace glib
         XmlNode* parentNode = nullptr;
         XmlNode* lastNodeClosed = nullptr;
         std::string tempValue = "";
+        bool inQuotes = false;
+        char quoteVal = 0;
 
         bool potentialProblem = false; //used for html parsing to determine if it is valid xml.
         bool potentialSpace = false;
@@ -474,6 +476,24 @@ namespace glib
                 validXml = false;
                 if(type == TYPE_HTML)
                 {
+                    //If inside quotes, ignore
+                    if(inQuotes)
+                    {
+                        tempValue += byte;
+                        continue;
+                    }
+
+                    if(parentNode != nullptr)
+                    {
+                        if(parentNode->getTitle() == "script")
+                        {
+                            //ignore
+                            tempValue += byte;
+                            continue;
+                        }
+                    }
+
+
                     //everything gathered should go to the parent node as apart of its value. and then we restart
                     tempValue = "<"+tempValue;
                     if(parentNode != nullptr)
@@ -481,7 +501,7 @@ namespace glib
                         if(potentialSpace)
                             if(parentNode->childNodes.size() > 0 && tempValue.size() > 0)
                                 tempValue = " " + tempValue;
-
+                                
                         if(tempValue != "")
                             parentNode->addValue(tempValue);
                     }
@@ -634,20 +654,45 @@ namespace glib
                 }
                 else if(byte > 32)
                 {
+                    //need to factor in escaped quotes
+                    if(!inQuotes)
+                    {
+                        if(byte == '"' || byte == '\'')
+                        {
+                            inQuotes = true;
+                            quoteVal = byte;
+                        }
+                    }
+                    else
+                    {
+                        if(byte == quoteVal)
+                        {
+                            inQuotes = false;
+                            quoteVal = 0;
+                        }
+                    }
+
                     tempValue += byte;
                 }
                 else
                 {
                     //only add a space if the last value was not a space or some other character that would be considered a space.
-                    if(tempValue.size() > 0)
+                    if(inQuotes)
                     {
-                        if(tempValue.back() > 32)
-                        {
-                            tempValue += ' ';
-                        }
+                        tempValue += ' ';
                     }
                     else
-                        potentialSpace = true;
+                    {
+                        if(tempValue.size() > 0)
+                        {
+                            if(tempValue.back() > 32)
+                            {
+                                tempValue += ' ';
+                            }
+                        }
+                        else
+                            potentialSpace = true;
+                    }
                 }
                 
             }
@@ -655,8 +700,6 @@ namespace glib
 
         if(potentialProblem)
             validXml = false;
-        
-        //IMPORTANT: If we are parsing html, only html tags are valid. Everything else is considered a value of its parent.
 
         return true;
     }
@@ -1087,7 +1130,7 @@ namespace glib
                             delete node;
                             return nullptr;
                         }
-                        if(!settingValue)
+                        if(!settingValue && attribString[i] != ' ')
                             attrib.first+=attribString[i]; //Case 1. No value
                     }
 

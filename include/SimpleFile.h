@@ -79,16 +79,28 @@ namespace glib
 		char readByte();
 
 		/**
+		 * @brief Reads a byte of data but does not advance the read position of the file.
+		 * 
+		 * 		If the file was not opened for reading
+		 * 		and USE_EXCEPTIONS is defined, a FileReadException may be thrown.
+		 * 
+		 * @return char 
+		 */
+		char peekByte();
+
+		/**
 		 * @brief Reads bytes of data into a buffer.
+		 * 		Returns the total number of bytes read.
 		 * 
 		 * 		If the file was not opened for reading
 		 * 		and USE_EXCEPTIONS is defined, a FileReadException may be thrown.
 		 * 
 		 * @param buffer 
 		 * @param size 
+		 * @return size_t
 		 */
-		void readBytes(char* buffer, int size);
-
+		size_t readBytes(char* buffer, int size);
+		
 		/**
 		 * @brief Reads an byte of data as an int.
 		 * 		Not sure why this is here.

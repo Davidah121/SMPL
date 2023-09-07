@@ -6,7 +6,7 @@
 #include "BinarySearchTree.h"
 #include "BinarySet.h"
 #include "FrequencyTable.h"
-
+#include "SimpleHashMap.h"
 #include "GeneralExceptions.h"
 
 namespace glib
@@ -248,78 +248,98 @@ namespace glib
 		BinarySet leftovers = BinarySet();
 	};
 
-	// struct HashValue
-	// {
-	// 	int32_t key;
-	// 	int32_t location;
-	// 	bool operator==(const HashValue& rhs) const { return key == rhs.key; }
-	// 	bool operator!=(const HashValue& rhs) const { return !operator==(rhs); }
-	// 	bool operator<(const HashValue& rhs) const { return key < rhs.key; }
-	// 	bool operator>(const HashValue& rhs) const { return key > rhs.key; }
-	// 	bool operator<=(const HashValue& rhs) const { return !operator>(rhs); }
-	// 	bool operator>=(const HashValue& rhs) const { return !operator<(rhs); }
-	// };
+	class StreamCompressionLZSS
+	{
+	public:
+		static const bool TYPE_COMPRESSION = false;
+		static const bool TYPE_DECOMPRESSION = true;
 
-	// class StreamCompressionLZSS
-	// {
-	// public:
-	// 	static const bool TYPE_COMPRESSION = false;
-	// 	static const bool TYPE_DECOMPRESSION = true;
+		/**
+		 * @brief Construct a new Stream Compression LZSS object.
+		 * 		Uses Chained Hashmaps for compression.
+		 * 
+		 * @param mode 
+		 * @param maxBackwardsDistance 
+		 * 		Maximum sliding window size.
+		 * 		Must be able to fit in 15 bits worth of data.
+		 * 		Default is 32768.
+		 * @param maxLength 
+		 * 		The maximum allowed length - 3.
+		 * 		If 0, max match length allowed is 3.
+		 * 		Default is 255 which allows a max match length of 258.
+		 */
+		StreamCompressionLZSS(bool mode, unsigned int maxBackwardsDistance = 32768, unsigned char maxLength = 255);
 
-	// 	StreamCompressionLZSS(bool mode, unsigned int maxBackwardsDistance = 32767, unsigned char maxLength = 255);
-	// 	~StreamCompressionLZSS();
+		/**
+		 * @brief Destroy the Stream Compression LZSS object.
+		 * 
+		 */
+		~StreamCompressionLZSS();
 
-	// 	void addData(unsigned char* data, int length);
+		/**
+		 * @brief Adds some data to be compressed.
+		 * 
+		 * @param data 
+		 * @param length 
+		 */
+		void addData(unsigned char* data, int length);
 
-	// 	/**
-	// 	 * @brief Gets the Buffer of bytes saved by the object. This represents the compressed
-	// 	 * 		data or decompressed data so far. It can be read from here and stored in another
-	// 	 * 		place as necessary.
-	// 	 * 		Here, it is a BinarySet since the data does not have to be exactly divisible by 8.
-	// 	 * 		The buffer may not have an even number of bytes so it should be written out as bits
-	// 	 * 		to preserve what the original data would have been.
-	// 	 * 		
-	// 	 * 		If mode is TYPE_COMPRESSED, the data is not guareenteed to be divisible by 8.
-	// 	 * 		If mode is TYPE_DECOMPRESSED, the data is guareenteed to be divisible by 8.
-	// 	 * 
-	// 	 * @return BinarySet& 
-	// 	 */
-	// 	BinarySet& getBuffer();
+		/**
+		 * @brief Signals the end of the data. Any data left over in the temporary buffer will
+		 * 		be processed.
+		 * 		Once set, no new data should be added.
+		 */
+		void endData();
 
-	// 	/**
-	// 	 * @brief Clears the internal buffer used that represents the compressed or decompressed data so far.
-	// 	 * 
-	// 	 */
-	// 	void clearBuffer();
+		/**
+		 * @brief Gets the Buffer of bytes saved by the object. This represents the compressed
+		 * 		data or decompressed data so far. It can be read from here and stored in another
+		 * 		place as necessary.
+		 * 		Here, it is a BinarySet since the data does not have to be exactly divisible by 8.
+		 * 		The buffer may not have an even number of bytes so it should be written out as bits
+		 * 		to preserve what the original data would have been.
+		 * 		
+		 * 		If mode is TYPE_COMPRESSED, the data is not guareenteed to be divisible by 8.
+		 * 		If mode is TYPE_DECOMPRESSED, the data is guareenteed to be divisible by 8.
+		 * 
+		 * @return BinarySet& 
+		 */
+		BinarySet& getBuffer();
 
-	// 	/**
-	// 	 * @brief Returns the size of the internal buffer in bytes.
-	// 	 * 		This will always be greater than or equal to the amount of bits actually used.
-	// 	 * 		To get the number of bits used, get it from the getBuffer() function.
-	// 	 * 
-	// 	 * @return size_t 
-	// 	 */
-	// 	size_t size();
+		/**
+		 * @brief Clears the internal buffer used that represents the compressed or decompressed data so far.
+		 * 
+		 */
+		void clearBuffer();
 
-	// private:
-	// 	void addDataCompression(unsigned char* data, int length);
-	// 	void addDataDecompression(unsigned char* data, int length);
+		/**
+		 * @brief Returns the size of the internal buffer in bytes.
+		 * 		This will always be greater than or equal to the amount of bits actually used.
+		 * 		To get the number of bits used, get it from the getBuffer() function.
+		 * 
+		 * @return size_t 
+		 */
+		size_t size();
 
-	// 	bool mode;
-	// 	int queueSize = 0;
+	private:
+		void addDataCompression(unsigned char* data, int length);
+		void addDataDecompression(unsigned char* data, int length);
 
-	// 	int lastKnownMatch = -1;
-	// 	int offset = 0;
-	// 	unsigned int maxBackDist = 32767;
-	// 	unsigned char maxLength = 255;
+		bool mode;
 
-	// 	BinarySearchTree<HashValue> searchTree = BinarySearchTree<HashValue>(true);
+		size_t offset = 0;
+		unsigned int maxBackDist = 32768;
+		unsigned int maxLength = 255;
+		unsigned short backBuffLocation = 0;
 
-	// 	std::vector<unsigned char> backBuffer = std::vector<unsigned char>();
-	// 	BinarySet buffer = BinarySet();
-	// 	BinarySet leftovers = BinarySet();
+		SimpleHashMap<int, int> map;
+		std::vector<unsigned char> lzBuffer = std::vector<unsigned char>();
+		std::vector<unsigned char> backBuffer = std::vector<unsigned char>();
+
+		BinarySet buffer = BinarySet();
+		BinarySet leftovers = BinarySet();
 		
-	// };
+	};
 
 	class Compression
 	{
@@ -898,6 +918,89 @@ namespace glib
 		static std::vector<unsigned char> decompressDeflate(std::vector<unsigned char> data, size_t expectedSize = -1);
 
 		/**
+		 * @brief Compresses all of the data as LengthPairs which can then be processed in another corresponding
+		 * 		compression method for the final output. LZ77, Deflate, LZSS all use this method.
+		 * 		
+		 * @param data 
+		 * 		The data to be compressed.
+		 * @param size 
+		 * 		The size of the data to be compressed.
+		 * @param outputData 
+		 * 		The vector that stores the output length pairs.
+		 * @param compressionLevel 
+		 * 		The desired level of compression. Some algorithms only support certain levels.
+		 * 		Generally, 0-7
+		 * @param algo 
+		 * 		The desired Algorithm to use.
+		 * 		Each has different advantages. These are general guidelines to follow
+		 * 			ChainedHash: Fast and average size.
+		 * 			ChainedSA: Slower but close to maximum compression.
+		 * 			KMP: Slowest but best compression.
+		 */
+		static void getLZ77RefPairs(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel, int algo);
+
+		/**
+		 * @brief Compresses all of the data as LengthPairs which can then be processed in another corresponding
+		 * 		compression method for the final output. LZ77, Deflate, LZSS all use this method.
+		 * 		
+		 * 		Fastest but only approximate. No short chains used. Prefers closer matches.
+		 * 		Best when speed is more important than size.
+		 * 
+		 * @param data 
+		 * 		The data to be compressed.
+		 * @param size 
+		 * 		The size of the data to be compressed.
+		 * @param outputData 
+		 * 		The vector that stores the output length pairs.
+		 * @param compressionLevel 
+		 * 		The desired level of compression. Some algorithms only support certain levels.
+		 * 		Generally, 0-7
+		 */
+		static void getLZ77RefPairsCHash(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel);
+		
+		/**
+		 * @brief Compresses all of the data as LengthPairs which can then be processed in another corresponding
+		 * 		compression method for the final output. LZ77, Deflate, LZSS all use this method.
+		 * 		
+		 * 		Fast and approaches best compression. No short chains used. Usually has matches further back than possible.
+		 * 		Slower than KMP if the data has a lot of repetition due to building the Suffix Automaton.
+		 * 		Best when size is more important than speed regardless of where the match is.
+		 * 		Worse when data is too simple (like an image that is entirely white). KMP out performs in this case.
+		 * 
+		 * @param data 
+		 * 		The data to be compressed.
+		 * @param size 
+		 * 		The size of the data to be compressed.
+		 * @param outputData 
+		 * 		The vector that stores the output length pairs.
+		 * @param compressionLevel 
+		 * 		The desired level of compression. Some algorithms only support certain levels.
+		 * 		This one does not support any levels. It is equivalent to level 7.
+		 */
+		static void getLZ77RefPairsCSA(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel);
+
+		/**
+		 * @brief Compresses all of the data as LengthPairs which can then be processed in another corresponding
+		 * 		compression method for the final output. LZ77, Deflate, LZSS all use this method.
+		 * 		
+		 * 		Slow but has best compression. No short chains used.
+		 * 		Best when data has a lot of repetition (like an image that is entirely white).
+		 * 		Worse when data is a little too complex (Typical image).
+		 * 		Perhaps good for situations where the data is known to have long runs of 0s.
+		 * 
+		 * @param data 
+		 * 		The data to be compressed.
+		 * @param size 
+		 * 		The size of the data to be compressed.
+		 * @param outputData 
+		 * 		The vector that stores the output length pairs.
+		 * @param compressionLevel 
+		 * 		The desired level of compression. Some algorithms only support certain levels.
+		 * 		Generally, 0-7
+		 */
+		static void getLZ77RefPairsKMP(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel);
+		
+		/**
 		 * @brief Experimental Arithmetic compression.
 		 * 		Should not be used currently.
 		 */
@@ -908,6 +1011,7 @@ namespace glib
 		 * 		Should not be used currently.
 		 */
 		static std::vector<unsigned char> decompressArithmetic(double data, size_t messageSize, std::vector<double> percentages);
+
 
 	private:
 
@@ -922,8 +1026,7 @@ namespace glib
 		static void getCopyLengthInformation(int code, int* baseValue, int* extraBits);
 		static void getBackDistanceInformation(int code, int* baseValue, int* extraBits);
 
-		static void compressDeflateSubFunction(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel = 7);
-		static void compressDeflateSubFunction2(std::vector<lengthPair>* block, BinarySet* output, bool dynamic, bool lastBlock);
+		static void refPairToDeflateBlocks(std::vector<lengthPair>* block, BinarySet* output, bool dynamic, bool lastBlock);
 		
 		// static void buildCanonicalHuffTreeFromHuffTreeSubFunc(BinaryTreeNode<HuffmanNode>* tree);
 	};

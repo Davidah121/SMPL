@@ -1,6 +1,7 @@
 #pragma once
 #include "Image.h"
-#include "GuiManager.h"
+#include "NewGui.h"
+// #include "GuiManager.h"
 
 #ifndef NO_WINDOW
 
@@ -37,6 +38,9 @@
 		#ifndef NOMINMAX
 			#define NOMINMAX
 		#endif
+
+		
+		#include "ext/DragDrop.h"
 		
 		#include <Windows.h>
 		#include <dwmapi.h>
@@ -567,6 +571,67 @@
 			 */
 			void setWindowAsInputFocus();
 
+			/**
+			 * @brief Sets whether the window should disable key processing temporarily.
+			 * 		This is useful for things like textboxes since keyboard input shouldn't be processed until
+			 * 		some textbox is active. This can normally be ignored but windows has a separate menu that pops up
+			 * 		for multiligual text which doesn't make since when the program isn't suppose to process text yet.
+			 * 		Also useful so that the text buffer does not have to be cleared and does not waste memory as it accumalates.
+			 * 		
+			 * 		This only applies to keyboard input and nothing else. It does not apply to raw keyboard input but all window messages.
+			 * 
+			 * @param k 
+			 */
+			void allowKeyInput(bool k);
+
+			/**
+			 * @brief Gets whether the window is currently allowing keyboard input.
+			 * 		This refers to all window messages regarding the keyboard. Raw keyboard input, as used in the Input class, does not
+			 * 		rely on a window to get keyboard input but does not handle repeated keys nor does it handle multiligual input.
+			 * 
+			 * @return true 
+			 * @return false 
+			 */
+			bool getAllowKeyInput();
+
+			#ifdef _WIN32
+				/**
+				 * @brief Set the Raw Touch Function.
+				 * 		This function is only valid on Windows as touch input on linux is not as simple. (may need additional work)
+				 * 		This function has 2 inputs. The array of touch inputs and the size of the array.
+				 * 		These are raw touch inputs so gestures are not processed here but it does record where the touch points are.
+				 * 
+				 * 		Once a function is set to process raw touch input, the window will be registered to process them and will no longer
+				 * 			process gestures. This can not be undone. Gestures must be manually processed by the program if they are needed.
+				 * 			(Gestures refering to zoom, pan, rotate, etc.)
+				 * 		
+				 * 		https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-touchinput
+				 * 
+				 * @param function 
+				 */
+				void setRawTouchFunction(std::function<void(TOUCHINPUT*, int)> function);
+
+				/**
+				 * @brief Set the Gesture Input Function.
+				 * 		This function is only valid on Windows as gesture input on linux is not as simple. (may need additional work)
+				 * 		This function has 1 input which is the gesture info provided by windows.
+				 * 			Note that some gestures may require info from the last gesture so this info should be retained.
+				 * 			Also note that some gestures just indicate the start or end of the gesture.
+				 * 		
+				 * 		This function is only called if the window is not registered to process raw touch inputs. Once the function setRawTouchFunction() is called,
+				 * 			this function will no longer be called for this window.
+				 * 		
+				 * 		Gestures refer to zoom, pan, rotate, tap, tap and hold, etc.
+				 * 		These may not be enough for fine tune usage such as games but for many other GUI applications, this is usually enough.
+				 * 
+				 * 		https://learn.microsoft.com/en-us/windows/win32/wintouch/getting-started-with-multi-touch-gestures
+				 * 
+				 * @param function 
+				 */
+				void setGestureInputFunction(std::function<void(GESTUREINFO)> function);
+				
+			#endif
+
 		protected:
 			
 			/**
@@ -671,6 +736,13 @@
 				HICON handleToIcon = NULL;
 				BITMAPINFO bitInfo = {};
 				HDC myHDC = NULL;
+
+				DragDrop* myDragDrop = nullptr;
+				
+				std::function<void(TOUCHINPUT*, int)> rawTouchInput;
+				std::function<void(GESTUREINFO)> gestureTouchInput;
+				bool processRawTouch(HWND hwnd, WPARAM wparam, LPARAM lparam);
+				bool processGesture(HWND hwnd, WPARAM wparam, LPARAM lparam);
 			#endif
 			
 			GuiManager* gui = nullptr;
@@ -689,6 +761,7 @@
 			bool canResize = true;
 			bool canMove = true;
 			bool noWindowProcPaint = false;
+			bool processKeyInputs = true;
 
 			std::function<void()> paintFunction;
 			std::function<void()> mouseMovedFunction;
