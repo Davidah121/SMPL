@@ -2,6 +2,7 @@
 #include <vector>
 #include "Object.h"
 #include "KDTree.h"
+#include "MathExt.h"
 #include "GeneralExceptions.h"
 
 namespace glib
@@ -17,6 +18,61 @@ namespace glib
 		bool const operator==(const Color& o)
 		{
 			return memcmp(this, &o, sizeof(Color)) == 0;
+		}
+	};
+
+	struct Color4f
+	{
+		UFP16 red;
+		UFP16 green;
+		UFP16 blue;
+		UFP16 alpha;
+		
+		Color4f operator-(Color4f other) { return Color4f{red - other.red, green - other.green, blue - other.blue, alpha - other.alpha}; }
+		Color4f operator+(Color4f other) { return Color4f{red + other.red, green + other.green, blue + other.blue, alpha + other.alpha}; }
+
+		Color4f operator-() { return Color4f{-red, -green, -blue, -alpha}; }
+
+		void operator+=(Color4f other)
+		{ 
+			red += other.red; 
+			green += other.green;
+			blue += other.blue;
+			alpha += other.alpha;
+		}
+		void operator-=(Color4f other)
+		{ 
+			red -= other.red; 
+			green -= other.green;
+			blue -= other.blue;
+			alpha -= other.alpha;
+		}
+
+		void operator*=(double other)
+		{ 
+			red *= other; 
+			green *= other;
+			blue *= other;
+			alpha *= other;
+		}
+		void operator/=(double other)
+		{ 
+			red /= other; 
+			green /= other;
+			blue /= other;
+			alpha /= other;
+		}
+
+		Color4f operator*(double other) { return Color4f{red * other, green * other, blue * other, alpha * other}; }
+		Color4f operator/(double other) { return Color4f{red / other, green / other, blue / other, alpha / other}; }
+
+		bool const operator==(const Color4f& o)
+		{
+			return memcmp(this, &o, sizeof(Color4f)) == 0;
+		}
+		bool const operator!=(const Color4f& o)
+		{
+			return memcmp(this, &o, sizeof(Color4f)) != 0;
 		}
 	};
 
@@ -45,10 +101,15 @@ namespace glib
 		 * @brief Destroys a ColorPalette Object.
 		 */
 		~ColorPalette();
-		
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		/**
+		 * @brief Disposes data for the ColorPalette Object.
+		 * 
+		 */
+		void dispose();
+
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
 		
 		/**
 		 * @brief Adds a new color to the palette.

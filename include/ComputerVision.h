@@ -22,10 +22,12 @@ namespace glib
 		 * 			GREEN_CHANNEL
 		 * 			BLUE_CHANNEL
 		 * 			ALPHA_CHANNEL
-		 * @return std::vector<std::vector<Vec2f>>
-		 * 		Returns a 2D vector of Vec2f where each Vec2f stores the gradient at that point.
+		 * @return std::vector<Vec2f>
+		 * 		Returns a vector of Vec2f where each Vec2f stores the gradient at that point.
+		 * 		It has the size width*height and the vectors are stored scanline by scanline.
+		 * 			The same way pixels are stored.
 		 */
-		static std::vector<std::vector<Vec2f>> calculateGradient(Image* img, unsigned char type);
+		static std::vector<Vec2f> calculateGradient(Image* img, unsigned char type);
 		
 		/**
 		 * @brief Calculates an image hash using Average hash.
@@ -107,7 +109,70 @@ namespace glib
 		 * @return int 
 		 */
 		static int hammingDistanceImageHash(uint64_t img1, uint64_t img2);
+
+		/**
+		 * @brief Computes the convolution of a image and a kernel (which is a matrix).
+		 * 		The convolution is the sum of the kernel applied centered on a point for each point in the base image.
+		 * 			Meaning (f*g)(x) = SUM( f[i]*g[x-i] ) from -INF to INF
+		 * 			which for the discrete case, the sum is limited by the size of the kernel.
+		 * 
+		 * 		Computed in O(N^2) operations but it is possible to do it in O(NLogN) with a FFT.
+		 * 		Returns the baseImage convolved with the kernel.
+		 * @param baseImage 
+		 * @param kernel 
+		 * @param colorChannel
+		 * 		Possible values are
+		 * 			RED_CHANNEL
+		 * 			GREEN_CHANNEL
+		 * 			BLUE_CHANNEL
+		 * 			ALPHA_CHANNEL
+		 * @return Matrix 
+		 */
+		static Matrix convolution(Image* baseImage, Matrix* kernel, int colorChannel);
+
+		/**
+		 * @brief Computes the normalized convolution of a image and a kernel (which is a matrix).
+		 * 		The convolution is the sum of the kernel applied centered on a point for each point in the base image.
+		 * 			Meaning (f*g)(x) = SUM( f[i]*g[x-i] ) from -INF to INF
+		 * 			which for the discrete case, the sum is limited by the size of the kernel.
+		 * 
+		 * 		Computed in O(N^2) operations but it is possible to do it in O(NLogN) with a FFT.
+		 * 		Returns the baseImage convolved with the kernel.
+		 * @param baseImage 
+		 * @param kernel 
+		 * @param colorChannel
+		 * 		Possible values are
+		 * 			RED_CHANNEL
+		 * 			GREEN_CHANNEL
+		 * 			BLUE_CHANNEL
+		 * 			ALPHA_CHANNEL
+		 * @return Matrix 
+		 */
+		static Matrix convolutionNormalized(Image* baseImage, Matrix* kernel, int colorChannel);
 		
+		/**
+		 * @brief Computes the cross correlation of a image and another image.
+		 * 		Computes the normalized version of the cross correlation.
+		 * 		The cross correlation is the sum of the kernel applied centered on a point for each point in the base image.
+		 * 			Meaning (f*g)(x) = SUM( f[i]*g[x+i] ) from -INF to INF
+		 * 			which for the discrete case, the sum is limited by the size of the kernel.
+		 * 
+		 * 		Similar to convolution, but effectively computes the similarity of the baseImage to the kernel at a given point.
+		 * 			Note that it is not communitive like a convolution
+		 * 
+		 * 		Computed in O(N^2) operations but it is possible to do it in O(NLogN) with a FFT.
+		 * 		Returns the baseImage convolved with the kernel.
+		 * @param baseImage 
+		 * @param kernel 
+		 * @param colorChannel
+		 * 		Possible values are
+		 * 			RED_CHANNEL
+		 * 			GREEN_CHANNEL
+		 * 			BLUE_CHANNEL
+		 * 			ALPHA_CHANNEL
+		 * @return Matrix 
+		 */
+		static Matrix crossCorrelation(Image* baseImage, Image* kernel, int colorChannel);
 	private:
 
 	};

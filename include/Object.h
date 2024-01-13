@@ -10,14 +10,11 @@ namespace glib
 		Object();
 		~Object();
 
-		const Class& getClass();
-		static const Class globalClass;
+		Class getClass();
+		static const RootClass globalClass;
 	
 	protected:
-		void setClass(Class c)
-		{
-			myClass = c;
-		}
+		void setClass(Class c);
 	private:
 		Class myClass;
 	};

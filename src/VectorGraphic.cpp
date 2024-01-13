@@ -12,7 +12,7 @@ namespace glib
 
 	unsigned char VectorGraphic::AA_LEVEL = 0;
 
-	const Class VectorGraphic::globalClass = Class("VectorGraphic", {&Object::globalClass});
+	const RootClass VectorGraphic::globalClass = RootClass("VectorGraphic", {"Object"});
 
 	VectorGraphic::VectorGraphic(int width, int height)
 	{
@@ -39,43 +39,43 @@ namespace glib
 
 		for(size_t i=0; i<c.shapes.size(); i++)
 		{
-			if(c.shapes[i]->getClass().getClassName() == VectorRectangle::globalClass.getClassName())
+			if(c.shapes[i]->getClass() == VectorRectangle::globalClass)
 			{
 				//rectangle
 				VectorRectangle* g = new VectorRectangle(*(VectorRectangle*)c.shapes[i]);
 				shapes.push_back(g);
 			}
-			else if(c.shapes[i]->getClass().getClassName() == VectorLine::globalClass.getClassName())
+			else if(c.shapes[i]->getClass() == VectorLine::globalClass)
 			{
 				//line
 				VectorLine* g = new VectorLine(*(VectorLine*)c.shapes[i]);
 				shapes.push_back(g);
 			}
-			else if(c.shapes[i]->getClass().getClassName() == VectorCircle::globalClass.getClassName())
+			else if(c.shapes[i]->getClass() == VectorCircle::globalClass)
 			{
 				//circle
 				VectorCircle* g = new VectorCircle(*(VectorCircle*)c.shapes[i]);
 				shapes.push_back(g);
 			}
-			else if(c.shapes[i]->getClass().getClassName() == VectorEllipse::globalClass.getClassName())
+			else if(c.shapes[i]->getClass() == VectorEllipse::globalClass)
 			{
 				//ellipse
 				VectorEllipse* g = new VectorEllipse(*(VectorEllipse*)c.shapes[i]);
 				shapes.push_back(g);
 			}
-			else if(c.shapes[i]->getClass().getClassName() == VectorPolygon::globalClass.getClassName())
+			else if(c.shapes[i]->getClass() == VectorPolygon::globalClass)
 			{
 				//polygon
 				VectorPolygon* g = new VectorPolygon(*(VectorPolygon*)c.shapes[i]);
 				shapes.push_back(g);
 			}
-			else if(c.shapes[i]->getClass().getClassName() == VectorPolyline::globalClass.getClassName())
+			else if(c.shapes[i]->getClass() == VectorPolyline::globalClass)
 			{
 				//polyline
 				VectorPolyline* g = new VectorPolyline(*(VectorPolyline*)c.shapes[i]);
 				shapes.push_back(g);
 			}
-			else if(c.shapes[i]->getClass().getClassName() == VectorPath::globalClass.getClassName())
+			else if(c.shapes[i]->getClass() == VectorPath::globalClass)
 			{
 				//path
 				//StringTools::println("PATH");

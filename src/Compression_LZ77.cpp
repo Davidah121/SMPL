@@ -243,8 +243,12 @@ namespace glib
 		size_t index = 0;
     	size_t endIndex = size;
 
-		ChainedSuffixAutomaton SA = ChainedSuffixAutomaton(32768, 4096, 258);
+		ChainedSuffixAutomaton SA = ChainedSuffixAutomaton(32768, 4096, 259);
 		int startLoc = 0;
+
+		size_t totalOutputSize = 0;
+		size_t wrongAdd = 0;
+		size_t refs = 0;
 		
 		SA.resetSearch();
 		while(index < endIndex)
@@ -253,42 +257,57 @@ namespace glib
 			if(!newMatch || index == endIndex-1)
 			{
 				bool includedCurrByte = true;
-				std::pair<int, int> pairStuff = SA.extractSearch();
+				SearchState pairStuff = SA.extractSearch();
 				SA.resetSearch();
 
-				if(pairStuff.second >= 3)
+				if(pairStuff.length >= 3)
 				{
-					int backwardsDis = startLoc - pairStuff.first;
-					outputData->push_back({false, pairStuff.second, backwardsDis});
-					if(pairStuff.second != 258)
+					int backwardsDis = startLoc - pairStuff.start;
+					outputData->push_back({false, pairStuff.length, backwardsDis});
+					if(pairStuff.length != 258)
 						includedCurrByte = false;
 					
-					startLoc += pairStuff.second;
+					startLoc += pairStuff.length;
+					totalOutputSize += pairStuff.length;
+					refs += pairStuff.length;
 					
 					if(index == endIndex-1)
 						break;
 				}
 				else
 				{
-					includedCurrByte = false;
-					for(int i=pairStuff.second; i>0; i--)
-					{
-						outputData->push_back({true, data[index-i], 0});
-						startLoc++;
-					}
-					
-					if(pairStuff.second == 0)
+					if(pairStuff.length == 0)
 					{
 						includedCurrByte = true;
 						outputData->push_back({true, data[index], 0});
 						startLoc++;
+						totalOutputSize++;
+						
+						SA.extend(data[index]);
+						index++;
 					}
-				}
+					else
+					{
+						//found a match of length 1 or 2.
+						//If 1, no problem. If 2, we probably added it to the SA and need to reverse a bit.
 
-				if(includedCurrByte)
-				{
-					SA.extend(data[index]);
-					index++;
+						includedCurrByte = false;
+						outputData->push_back({true, data[index-pairStuff.length], 0});
+						startLoc++;
+						totalOutputSize++;
+
+						// if(pairStuff.second == 2)
+						// {
+						// 	outputData->push_back({true, data[index-pairStuff.second+1], 0});
+						// 	startLoc++;
+						// 	totalOutputSize++;
+						// }
+
+						//We need special care if we have already added the data to the SA to avoid making
+						//patterns that don't exist yet. For now, see what it does.
+						if(pairStuff.length == 2)
+							index--; //go back a character and start pattern matching again.
+					}
 				}
 			}
 			else
@@ -298,6 +317,147 @@ namespace glib
 			}
 		}
 		
+		StringTools::println("CSA: %llu", totalOutputSize);
+		StringTools::println("CSA REFS: %llu", refs);
+		StringTools::println("CSA WRONG ADD: %llu", wrongAdd);
+	}
+
+	void Compression::getLZ77RefPairsCSATest(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel)
+	{
+		int maxDistance = 1<<15;
+
+		size_t index = 0;
+    	size_t endIndex = size;
+
+		ChainedSuffixAutomaton csa = ChainedSuffixAutomaton(32768, 2048, 259);
+		int startLoc = 0;
+
+		size_t totalOutputSize = 0;
+		size_t refs = 0;
+		size_t lits = 0;
+		size_t size1Matches = 0;
+		size_t size2Matches = 0;
+		size_t couldBeLarger = 0;
+		size_t specialCase = 0;
+		size_t smallMatches = 0;
+		bool checkForRecover = false;
+		int resetIndex = -1;
+		SearchState lastState;
+		SearchState searchState;
+		csa.resetSearch();
+
+		while(index < endIndex)
+		{
+			//
+			bool foundMatch = csa.searchNext(data[index]);
+			searchState = csa.extractSearch();
+
+			if(foundMatch && searchState.length != 258)
+			{
+				resetIndex = csa.extend(data[index]); //need to know if SA that is apart of the current best match has been reset. If so, if the next match is not greater, use the last one.
+				index++;
+			}
+			else
+			{
+				//if the search length >= 258 && foundMatch, store match and extend.
+				//else, just store match.
+				csa.resetSearch();
+				int backwardsDis = startLoc - searchState.start;
+				
+				if(searchState.length == 0 && !foundMatch)
+				{
+					specialCase++;
+					outputData->push_back({true, data[index], 0});
+					startLoc++;
+					totalOutputSize++;
+					lits++;
+					csa.extend(data[index]);
+					index++;
+				}
+				else if(searchState.length > 0)
+				{
+					//manually check for data past the length given for longer match
+					int tempIndex = searchState.length;
+					int origIndex = index;
+					while(tempIndex < 258 && origIndex+tempIndex < endIndex)
+					{
+						if(data[origIndex+tempIndex] != data[searchState.start+tempIndex])
+						{
+							break;
+						}
+						else
+						{
+							csa.extend(data[origIndex+tempIndex]);
+							index++;
+						}
+						tempIndex++;
+					}
+					
+
+					int finalLength = tempIndex;
+					outputData->push_back({false, finalLength, backwardsDis});
+					
+					startLoc+=finalLength;
+					totalOutputSize+=finalLength;
+
+					if(finalLength >= 3)
+						refs++;
+					else
+					{
+						smallMatches++;
+						if(finalLength==1)
+							size1Matches++;
+						else if(finalLength==2)
+							size2Matches++;
+						
+						if(data[index+1] == data[searchState.start+finalLength+1])
+							couldBeLarger++;
+						
+						lits += finalLength;
+					}
+
+					if(foundMatch && searchState.length == 258)
+					{
+						csa.extend(data[index]);
+						index++;
+					}
+					
+				}
+
+				// if((foundMatch && searchState.length >= 258) || searchState.length == 0)
+				// {
+				// 	csa.extend(data[index]);
+				// 	index++;
+				// }
+			}
+		}
+
+		//should add remaining stuff
+		searchState = csa.extractSearch();
+		int backwardsDis = startLoc - searchState.start;
+		if(searchState.length > 0)
+		{
+			outputData->push_back({false, searchState.length, backwardsDis});
+			startLoc+=searchState.length;
+			totalOutputSize+=searchState.length;
+			if(searchState.length >= 3)
+				refs++;
+			else
+			{
+				smallMatches++;
+				lits += searchState.length;
+			}
+		}
+		
+		
+		StringTools::println("CSA: %llu", totalOutputSize);
+		StringTools::println("CSA LITS: %llu", lits);
+		StringTools::println("CSA REFS: %llu", refs);
+		StringTools::println("CSA SPECIAL CASE: %llu", specialCase);
+		StringTools::println("CSA SMALL MATCHES: %llu", smallMatches);
+		StringTools::println("CSA size1Matches: %llu", size1Matches);
+		StringTools::println("CSA size2Matches: %llu", size2Matches);
+		StringTools::println("CSA couldBeLarger: %llu", couldBeLarger);
 	}
 
 	void Compression::getLZ77RefPairsCHash(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel)
@@ -334,6 +494,8 @@ namespace glib
 				break;
 		}
 
+		maxDistance = (1<<15) - 4096 - 258;
+
 		if(data == nullptr || outputData == nullptr)
 		{
 			#ifdef USE_EXCEPTIONS
@@ -359,6 +521,11 @@ namespace glib
 		SimpleHashMap<int, int> map = SimpleHashMap<int, int>( SimpleHashMap<int, int>::MODE_KEEP_ALL, 1<<15 );
 		map.setMaxLoadFactor(-1);
 
+		size_t totalOutputSize = 0;
+		size_t refs = 0;
+		size_t lits = 0;
+		size_t smallMatches = 0;
+
 		int i = 0;
 		while(i < size-2)
 		{
@@ -373,7 +540,9 @@ namespace glib
 				map.add(key, i);
 
 				outputData->push_back( {true, data[i], 0} );
+				lits++;
 				i++;
+				totalOutputSize++;
 			}
 			else
 			{
@@ -425,17 +594,32 @@ namespace glib
 
 				int backwardsDis = i - bestLocation;
 				
-				if(bestLength>=3)
-				{
-					outputData->push_back( {false, bestLength, backwardsDis} );
-					i += bestLength;
-				}
+				outputData->push_back( {false, bestLength, backwardsDis} );
+				i += bestLength;
+				totalOutputSize += bestLength;
+				if(bestLength >= 3)
+					refs += bestLength;
 				else
 				{
-					//couldn't find match within max allowed distance
-					outputData->push_back( {true, data[i], 0} );
-					i++;
+					smallMatches++;
+					lits += bestLength;
 				}
+				
+				// if(bestLength>=3)
+				// {
+				// 	outputData->push_back( {false, bestLength, backwardsDis} );
+				// 	i += bestLength;
+				// 	totalOutputSize += bestLength;
+				// 	refs += bestLength;
+				// }
+				// else
+				// {
+				// 	//couldn't find match within max allowed distance
+				// 	outputData->push_back( {true, data[i], 0} );
+				// 	i++;
+				// 	lits++;
+				// 	totalOutputSize++;
+				// }
 			}
 
 		}
@@ -444,7 +628,13 @@ namespace glib
 		for(int j=0; j<remainder; j++)
 		{
 			outputData->push_back( {true, data[i+j], 0} );
+			totalOutputSize++;
 		}
+		
+		StringTools::println("CHASH: %llu", totalOutputSize);
+		StringTools::println("CHASH REFs: %llu", refs);
+		StringTools::println("CHASH LITs: %llu", lits);
+		StringTools::println("CHASH SMALL MATCHES: %llu", smallMatches);
 	}
 
 	void Compression::getLZ77RefPairsKMP(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel)

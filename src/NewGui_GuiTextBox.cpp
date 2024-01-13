@@ -277,10 +277,10 @@ namespace glib
         boxLayout.update(manager);
     }
 
-    void GuiTextBox::render()
+    void GuiTextBox::render(SmartMemory<GuiManager> manager)
     {
         //just draw the layout
-        boxLayout.render();
+        boxLayout.render(manager);
 
         //draw line where at highlight end of text
         //The return rectangle is relative to the start position of the text

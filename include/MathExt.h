@@ -45,12 +45,311 @@
 	#define IS_POWER_2(x) (((x) & ((x)-1)) == 0)
 #endif
 
+struct FP16
+{
+    int16_t a;
+    FP16() {};
+    FP16(const float b)
+	{ 
+		if(b>=1)
+			a=0x7FFF;
+		else if(b<=-1)
+			a=0x8000;
+		else
+			a = (int16_t)(b*0x7FFF);
+	}
+    FP16(const double b)
+	{ 
+		if(b>=1)
+			a=0x7FFF;
+		else if(b<=-1)
+			a=0x8000;
+		else
+			a = (int16_t)(b*0x7FFF);
+	}
+    FP16(const FP16& other) { a = other.a; }
+    void operator=(const FP16& other) { a = other.a; }
+    void operator=(const float& b)
+	{ 
+		if(b>=1)
+			a=0x7FFF;
+		else if(b<=-1)
+			a=0x8000;
+		else
+			a = (int16_t)(b*0x7FFF);
+	}
+    void operator=(const double& b)
+	{ 
+		if(b>=1)
+			a=0x7FFF;
+		else if(b<=-1)
+			a=0x8000;
+		else
+			a = (int16_t)(b*0x7FFF);
+	}
+
+    void operator+=(const float b) { a += (int16_t)(b*0x7FFF); }
+    void operator+=(const double b) { a += (int16_t)(b*0x7FFF); }
+    void operator+=(const FP16 b) { a += b.a; }
+    void operator-=(const float b) { a -= (int16_t)(b*0x7FFF); }
+    void operator-=(const double b) { a -= (int16_t)(b*0x7FFF); }
+    void operator-=(const FP16 b) { a -= b.a; }
+    void operator*=(const float b) { a = ((float)*this) * b; }
+    void operator*=(const double b) { a = ((double)*this) * b; }
+    void operator*=(const FP16 b) { a = ((float)*this) * ((float)b); }
+    void operator/=(const float b) { a = ((float)*this) / b; }
+    void operator/=(const double b) { a = ((double)*this) / b; }
+    void operator/=(const FP16 b) { a = ((float)*this) / ((float)b); }
+
+	FP16 operator-() { return -((double)*this); }
+
+    bool operator==(const FP16 b) { return a == b.a; };
+    bool operator!=(const FP16 b) { return a != b.a; };
+    bool operator<(const FP16 b) { return a < b.a; };
+    bool operator>(const FP16 b) { return a > b.a; };
+    bool operator<=(const FP16 b) { return a <= b.a; };
+    bool operator>=(const FP16 b) { return a >= b.a; };
+
+    friend double operator*(double value, FP16 other) { return value*(double)other; }
+    friend float operator*(float value, FP16 other) { return value*(float)other; }
+    friend double operator/(double value, FP16 other) { return value/(double)other; }
+    friend float operator/(float value, FP16 other) { return value/(float)other; }
+    friend double operator+(double value, FP16 other) { return value+(double)other; }
+    friend float operator+(float value, FP16 other) { return value+(float)other; }
+    friend double operator-(double value, FP16 other) { return value-(double)other; }
+    friend float operator-(float value, FP16 other) { return value-(float)other; }
+
+    FP16 operator+(const float b)
+    {
+        FP16 res;
+        res.a = a + (int16_t)(b*0x7FFF);
+        return res;
+    }
+
+    FP16 operator+(const double b)
+    {
+        FP16 res;
+        res.a = a + (int16_t)(b*0x7FFF);
+        return res;
+    }
+    
+    FP16 operator+(const FP16 b)
+    {
+        FP16 res;
+        res.a = a + b.a;
+        return res;
+    }
+
+    FP16 operator-(const float b)
+    {
+        FP16 res;
+        res.a = a - (int16_t)(b*0x7FFF);
+        return res;
+    }
+
+    FP16 operator-(const double b)
+    {
+        FP16 res;
+		double ignoreThis;
+        res.a = a - (int16_t)(b*0x7FFF);
+        return res;
+    }
+
+    FP16 operator-(const FP16 b)
+    {
+        FP16 res;
+        res.a = a - b.a;
+        return res;
+    }
+
+    FP16 operator*(const float b)
+    {
+        return ((float)*this) * b;
+    }
+
+    FP16 operator*(const double b)
+    {
+        return ((double)*this) * b;
+    }
+
+    FP16 operator*(const FP16 b)
+    {
+        return ((float)*this) * ((float)b);
+    }
+
+    FP16 operator/(const float b)
+    {
+        return ((float)*this) / b;
+    }
+
+    FP16 operator/(const double b)
+    {
+        return ((double)*this) / b;
+    }
+
+    FP16 operator/(const FP16 b)
+    {
+        return ((float)*this) / ((float)b);
+    }
+
+    operator float() const
+    {
+        return (a&0x8000) ? ((float)(a & 0x7FFF) / 0x7FFF)-1.0 : (float)(a & 0x7FFF) / 0x7FFF;
+    }
+    operator double() const
+    {
+        return (a&0x8000) ? ((double)(a & 0x7FFF) / 0x7FFF)-1.0 : (double)(a & 0x7FFF) / 0x7FFF;
+    }
+};
+
+struct UFP16
+{
+    uint16_t a;
+    UFP16() {};
+    UFP16(const float b) { a = (b<1.0) ? (uint16_t)(b*0xFFFF) : 0xFFFF; }
+    UFP16(const double b) { a = (b<1.0) ? (uint16_t)(b*0xFFFF) : 0xFFFF; }
+    UFP16(const UFP16& other) { a = other.a; }
+    void operator=(const UFP16& other) { a = other.a; }
+    void operator=(const float& b) { a = (b<1.0) ? (uint16_t)(b*0xFFFF) : 0xFFFF; }
+    void operator=(const double& b) { a = (b<1.0) ? (uint16_t)(b*0xFFFF) : 0xFFFF; }
+
+    void operator+=(const float b) { a += (uint16_t)(b*0xFFFF); }
+    void operator+=(const double b) { a += (uint16_t)(b*0xFFFF); }
+    void operator+=(const UFP16 b) { a += b.a; }
+    void operator-=(const float b) { a -= (uint16_t)(b*0xFFFF); }
+    void operator-=(const double b) { a -= (uint16_t)(b*0xFFFF); }
+    void operator-=(const UFP16 b) { a -= b.a; }
+    void operator*=(const float b) { a = ((float)*this) * b; }
+    void operator*=(const double b) { a = ((double)*this) * b; }
+    void operator*=(const UFP16 b) { a = ((float)*this) * ((float)b); }
+    void operator/=(const float b) { a = ((float)*this) / b; }
+    void operator/=(const double b) { a = ((double)*this) / b; }
+    void operator/=(const FP16 b) { a = ((float)*this) / ((float)b); }
+
+	UFP16 operator-() { return -((double)*this); }
+
+    bool operator==(const UFP16 b) { return a == b.a; };
+    bool operator!=(const UFP16 b) { return a != b.a; };
+    bool operator<(const UFP16 b) { return a < b.a; };
+    bool operator>(const UFP16 b) { return a > b.a; };
+    bool operator<=(const UFP16 b) { return a <= b.a; };
+    bool operator>=(const UFP16 b) { return a >= b.a; };
+
+    friend double operator*(double value, UFP16 other) { return value*(double)other; }
+    friend float operator*(float value, UFP16 other) { return value*(float)other; }
+    friend double operator/(double value, UFP16 other) { return value/(double)other; }
+    friend float operator/(float value, UFP16 other) { return value/(float)other; }
+    friend double operator+(double value, UFP16 other) { return value+(double)other; }
+    friend float operator+(float value, UFP16 other) { return value+(float)other; }
+    friend double operator-(double value, UFP16 other) { return value-(double)other; }
+    friend float operator-(float value, UFP16 other) { return value-(float)other; }
+
+    UFP16 operator+(const float b)
+    {
+        UFP16 res;
+        res.a = a + (uint16_t)(b*0xFFFF);
+        return res;
+    }
+
+    UFP16 operator+(const double b)
+    {
+        UFP16 res;
+        res.a = a + (uint16_t)(b*0xFFFF);
+        return res;
+    }
+    
+    UFP16 operator+(const UFP16 b)
+    {
+        UFP16 res;
+        res.a = a + b.a;
+        return res;
+    }
+
+    UFP16 operator-(const float b)
+    {
+        UFP16 res;
+        res.a = a - (uint16_t)(b*0xFFFF);
+        return res;
+    }
+
+    UFP16 operator-(const double b)
+    {
+        UFP16 res;
+        res.a = a - (uint16_t)(b*0xFFFF);
+        return res;
+    }
+
+    UFP16 operator-(const UFP16 b)
+    {
+        UFP16 res;
+        res.a = a - b.a;
+        return res;
+    }
+
+    UFP16 operator*(const float b)
+    {
+        return ((float)*this) * b;
+    }
+
+    UFP16 operator*(const double b)
+    {
+        return ((double)*this) * b;
+    }
+
+    UFP16 operator*(const UFP16 b)
+    {
+        return ((float)*this) * ((float)b);
+    }
+
+    UFP16 operator/(const float b)
+    {
+        return ((float)*this) / b;
+    }
+
+    UFP16 operator/(const double b)
+    {
+        return ((double)*this) / b;
+    }
+
+    UFP16 operator/(const UFP16 b)
+    {
+        return ((float)*this) / ((float)b);
+    }
+
+    operator float() const
+    {
+        return ((float)(a & 0xFFFF) / 0xFFFF);
+    }
+    operator double() const
+    {
+        return ((double)(a & 0xFFFF) / 0xFFFF);
+    }
+};
+
 namespace glib
 {
 
 	class MathExt
 	{
 	public:
+
+		/**
+		 * @brief Returns the number of 1 bits in the value x.
+		 * 		Uses some bit hacks and is cross platform.
+		 * 
+		 * @param x 
+		 * @return int 
+		 */
+		static int popcount(uint8_t x);
+		
+		/**
+		 * @brief Returns the number of 1 bits in the value x.
+		 * 		Uses some bit hacks and is cross platform.
+		 * 
+		 * @param x 
+		 * @return int 
+		 */
+		static int popcount(uint16_t x);
 
 		/**
 		 * @brief Returns the number of 1 bits in the value x.
@@ -69,6 +368,11 @@ namespace glib
 		 * @return int 
 		 */
 		static int popcount(uint64_t x);
+		
+		static int hammingDistance(uint8_t v1, uint8_t v2);
+		static int hammingDistance(uint16_t v1, uint16_t v2);
+		static int hammingDistance(uint32_t v1, uint32_t v2);
+		static int hammingDistance(uint64_t v1, uint64_t v2);
 
 		/**
 		 * @brief Returns the max of the 2 template values.
@@ -1995,6 +2299,10 @@ namespace glib
 		 * @brief Computes the Fast Discrete Cosine Transform for a list of 8 values.
 		 * 		Special case.
 		 * 
+		 * 		New version comes from https://github.com/norishigefukushima/dct_simd/blob/master/dct/dct8x8_simd.cpp#L410
+		 * 			Based off of https://ieeexplore.ieee.org/document/266596
+		 * 				Practical_fast_1-D_DCT_algorithms_with_11_multiplications
+		 * 
 		 * @param arr 
 		 * 		The input array
 		 * @param output 
@@ -2073,6 +2381,72 @@ namespace glib
 		 * @return Matrix 
 		 */
 		static Matrix fastSineTransform2D(Matrix& arr, bool inverse=false);
+		
+		/**
+		 * @brief Computes the convolution of a matrix and a kernel (which is a matrix).
+		 * 		The convolution is the sum of the kernel applied centered on a point for each point in the base image.
+		 * 			Meaning (f*g)(x) = SUM( f[i]*g[x-i] ) from -INF to INF
+		 * 			which for the discrete case, the sum is limited by the size of the kernel.
+		 * 
+		 * 		Computed in O(N^2) operations but it is possible to do it in O(NLogN) with a FFT.
+		 * 		Returns the baseImage convolved with the kernel.
+		 * @param baseImage 
+		 * @param kernel 
+		 * @return Matrix 
+		 */
+		static Matrix convolution(Matrix* baseImage, Matrix* kernel);
+
+		/**
+		 * @brief Computes the convolution of a matrix and a kernel (which is a matrix).
+		 * 		This version is normalized so to account for energy differences at each point.
+		 * 
+		 * 		The convolution is the sum of the kernel applied centered on a point for each point in the base image.
+		 * 			Meaning (f*g)(x) = SUM( f[i]*g[x-i] ) from -INF to INF
+		 * 			which for the discrete case, the sum is limited by the size of the kernel.
+		 * 
+		 * 		Computed in O(N^2) operations but it is possible to do it in O(NLogN) with a FFT.
+		 * 		Returns the baseImage convolved with the kernel.
+		 * @param baseImage 
+		 * @param kernel 
+		 * @return Matrix 
+		 */
+		static Matrix convolutionNormalized(Matrix* baseImage, Matrix* kernel);
+
+		/**
+		 * @brief Computes the cross correlation of a matrix and a kernel (which is a matrix).
+		 * 		The cross correlation is the sum of the kernel applied centered on a point for each point in the base image.
+		 * 			Meaning (f*g)(x) = SUM( f[i]*g[x+i] ) from -INF to INF
+		 * 			which for the discrete case, the sum is limited by the size of the kernel.
+		 * 
+		 * 		Similar to convolution, but effectively computes the similarity of the baseImage to the kernel at a given point.
+		 * 			Note that it is not communitive like a convolution
+		 * 
+		 * 		Computed in O(N^2) operations but it is possible to do it in O(NLogN) with a FFT.
+		 * 		Returns the baseImage convolved with the kernel.
+		 * @param baseImage 
+		 * @param kernel 
+		 * @return Matrix 
+		 */
+		static Matrix crossCorrelation(Matrix* baseImage, Matrix* kernel);
+
+		/**
+		 * @brief Computes the cross correlation of a matrix and a kernel (which is a matrix).
+		 * 		This version is normalized so to account for energy differences at each point.
+		 * 
+		 * 		The cross correlation is the sum of the kernel applied centered on a point for each point in the base image.
+		 * 			Meaning (f*g)(x) = SUM( f[i]*g[x+i] ) from -INF to INF
+		 * 			which for the discrete case, the sum is limited by the size of the kernel.
+		 * 
+		 * 		Similar to convolution, but effectively computes the similarity of the baseImage to the kernel at a given point.
+		 * 			Note that it is not communitive like a convolution
+		 * 
+		 * 		Computed in O(N^2) operations but it is possible to do it in O(NLogN) with a FFT.
+		 * 		Returns the baseImage convolved with the kernel.
+		 * @param baseImage 
+		 * @param kernel 
+		 * @return Matrix 
+		 */
+		static Matrix crossCorrelationNormalized(Matrix* baseImage, Matrix* kernel);
 
 		//Clustering algorigthms
 

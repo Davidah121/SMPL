@@ -93,7 +93,7 @@ namespace glib
         if(f != nullptr)
         {
             Vec2f v = f->getFont()->getCursorLocation(text, highlightStartIndex, maxWidth);
-            return {(uint32_t)v.x, (uint32_t)v.y, (uint32_t)v.x+2, (uint32_t)v.y + f->getFont()->getVerticalAdvance()};
+            return {(int32_t)v.x, (int32_t)v.y, (int32_t)v.x+2, (int32_t)v.y + f->getFont()->getVerticalAdvance()};
         }
         return {0,0,0,0};
     }
@@ -216,7 +216,7 @@ namespace glib
         }
     }
 
-    void GuiText::render()
+    void GuiText::render(SmartMemory<GuiManager> manager)
     {
         //assume that trueX and trueY have been properly updated.
         int actualMaxWidth = maxWidth;
@@ -232,11 +232,11 @@ namespace glib
         GraphicsInterface::setColor(fontColor);
         if(isSelectable)
         {
-            GraphicsInterface::drawTextLimitsHighlighted(text, getTrueX(), getTrueY(), actualMaxWidth, actualMaxHeight, true, highlightStartIndex, highlightEndIndex, highlightColor);
+            GraphicsInterface::drawTextLimitsHighlighted(text, getTrueX(), getTrueY(), actualMaxWidth, actualMaxHeight, canWrap, highlightStartIndex, highlightEndIndex, highlightColor);
         }
         else
         {
-            GraphicsInterface::drawTextLimits(text, getTrueX(), getTrueY(), actualMaxWidth, actualMaxHeight, true);
+            GraphicsInterface::drawTextLimits(text, getTrueX(), getTrueY(), actualMaxWidth, actualMaxHeight, canWrap);
         }
     }
 
@@ -261,13 +261,13 @@ namespace glib
 
         pair = attribs.get("max-width");
         if(pair != nullptr)
-            if(loadValueStuff(maxWidth, pair->data))
+            if(loadValueFromAttrib(maxWidth, pair->data))
                 maxWidth = -1;
         attribs.remove(pair);
 
         pair = attribs.get("max-height");
         if(pair != nullptr)
-            if(loadValueStuff(maxHeight, pair->data))
+            if(loadValueFromAttrib(maxHeight, pair->data))
                 maxHeight = -1;
         attribs.remove(pair);
 

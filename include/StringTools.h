@@ -656,15 +656,24 @@ namespace glib
 		 * @param s 
 		 * @return int 
 		 */
-		static int toInt(std::string s);
-
-		/**
-		 * @brief Converts a string into an integer.
-		 * 
-		 * @param s 
-		 * @return int 
-		 */
-		static int toInt(std::wstring s);
+		template<typename T>
+		static int toInt(std::basic_string<T> s, bool* err = nullptr)
+		{
+			int ret = 0;
+			try
+			{
+				ret = std::stoi(s.c_str());
+				if(err != nullptr)
+					*err = false;
+			}
+			catch(...)
+			{
+				if(err != nullptr)
+					*err = true;
+			}
+			
+			return ret;
+		}
 
 		/**
 		 * @brief Converts a string into a long.
@@ -672,15 +681,49 @@ namespace glib
 		 * @param s 
 		 * @return long 
 		 */
-		static long toLong(std::string s);
+		template<typename T>
+		static long toLong(std::basic_string<T> s, bool* err = nullptr)
+		{
+			long ret = 0;
+			try
+			{
+				ret = std::stol(s.c_str());
+				if(err != nullptr)
+					*err = false;
+			}
+			catch(...)
+			{
+				if(err != nullptr)
+					*err = true;
+			}
+			
+			return ret;
+		}
 
 		/**
-		 * @brief Converts a string into a long.
+		 * @brief Converts a string into a unsigned long long.
 		 * 
 		 * @param s 
 		 * @return long 
 		 */
-		static long toLong(std::wstring s);
+		template<typename T>
+		static unsigned long long toULongLong(std::basic_string<T> s, bool* err = nullptr)
+		{
+			unsigned long long ret = 0;
+			try
+			{
+				ret = std::stoull(s.c_str());
+				if(err != nullptr)
+					*err = false;
+			}
+			catch(...)
+			{
+				if(err != nullptr)
+					*err = true;
+			}
+			
+			return ret;
+		}
 
 		/**
 		 * @brief Converts a string into a double.
@@ -688,15 +731,24 @@ namespace glib
 		 * @param s 
 		 * @return double 
 		 */
-		static double toDouble(std::string s);
-
-		/**
-		 * @brief Converts a string into a double.
-		 * 
-		 * @param s 
-		 * @return double 
-		 */
-		static double toDouble(std::wstring s);
+		template<typename T>
+		static double toDouble(std::basic_string<T> s, bool* err = nullptr)
+		{
+			double ret = 0;
+			try
+			{
+				ret = std::stod(s.c_str());
+				if(err != nullptr)
+					*err = false;
+			}
+			catch(...)
+			{
+				if(err != nullptr)
+					*err = true;
+			}
+			
+			return ret;
+		}
 
 		/**
 		 * @brief Converts a string into a float.
@@ -704,15 +756,24 @@ namespace glib
 		 * @param s 
 		 * @return float 
 		 */
-		static float toFloat(std::string s);
-
-		/**
-		 * @brief Converts a string into a float.
-		 * 
-		 * @param s 
-		 * @return float 
-		 */
-		static float toFloat(std::wstring s);
+		template<typename T>
+		static float toFloat(std::basic_string<T> s, bool* err = nullptr)
+		{
+			float ret = 0;
+			try
+			{
+				ret = std::stof(s.c_str());
+				if(err != nullptr)
+					*err = false;
+			}
+			catch(...)
+			{
+				if(err != nullptr)
+					*err = true;
+			}
+			
+			return ret;
+		}
 
 		/**
 		 * @brief Converts the value into a string
@@ -963,13 +1024,12 @@ namespace glib
 		 */
 		static void print(std::string fmt, ...)
 		{
-			std::wstring fmtAsWide = StringTools::toWideString<char>(fmt);
 			va_list args;
 			va_start(args, fmt);
-			std::wstring finalString = formatWideStringInternal( fmtAsWide, args);
+			std::string finalString = formatStringInternal( fmt, args);
 			va_end(args);
 
-			std::wcout << finalString;
+			std::cout << finalString;
 		}
 
 		/**
@@ -983,10 +1043,10 @@ namespace glib
 		{
 			va_list args;
 			va_start(args, fmt);
-			std::wstring finalString = formatWideStringInternal( StringTools::toWideString(fmt), args);
+			std::string finalString = formatStringInternal(fmt, args);
 			va_end(args);
 
-			std::wcout << finalString << L"\n";
+			std::cout << finalString << std::endl;
 		}
 
 		/**
@@ -999,10 +1059,10 @@ namespace glib
 		{
 			va_list args;
 			va_start(args, fmt);
-			std::wstring finalString = formatWideStringInternal(fmt, args);
+			std::string finalString = formatStringInternal( StringTools::toUTF8String(fmt), args);
 			va_end(args);
 
-			std::wcout << finalString;
+			std::cout << finalString;
 		}
 
 		/**
@@ -1016,10 +1076,10 @@ namespace glib
 		{
 			va_list args;
 			va_start(args, fmt);
-			std::wstring finalString = formatWideStringInternal(fmt, args);
+			std::string finalString = formatStringInternal( StringTools::toUTF8String(fmt), args);
 			va_end(args);
 
-			std::wcout << finalString << L"\n";
+			std::cout << finalString << std::endl;
 		}
 
 		static const wchar_t lineBreak;
@@ -1112,9 +1172,9 @@ namespace glib
 		static std::wstreambuf* inputBuffer;
 		static std::wstreambuf* outputBuffer;
 		static std::wstreambuf* errorBuffer;
-		
-		static std::string formatStringInternal(std::string text, va_list orgArgs);
-		static std::wstring formatWideStringInternal(std::wstring text, va_list orgArgs);
+
+		static std::string formatStringInternal(std::string format, va_list args);
+		static std::wstring formatStringInternal(std::wstring format, va_list args);
 
 		/**
 		 * @brief Pre Processing for the KMP string matching algorithm.

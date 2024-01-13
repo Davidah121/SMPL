@@ -179,7 +179,7 @@ namespace glib
 
 						do
 						{
-							otherImg->drawPixel(fillX, j+minY, SimpleGraphics::activeColor);
+							SimpleGraphics::drawPixel(fillX, j+minY, SimpleGraphics::activeColor, otherImg);
 							fillX++;
 						} while (fillX<=endX);
 						
@@ -216,7 +216,7 @@ namespace glib
 
 							do
 							{
-								otherImg->drawPixel(fillX, j+minY, SimpleGraphics::activeColor);
+								SimpleGraphics::drawPixel(fillX, j+minY, SimpleGraphics::activeColor, otherImg);
 								fillX++;
 							} while (fillX<=endX);
 							
@@ -286,7 +286,8 @@ namespace glib
 					float* positionData = (float*)vertInfo[startOfPosition].data();
 
 					Vec2f pos = Vec2f( positionData[0], positionData[1] );
-					surf->drawPixel(pos.x, pos.y, SimpleGraphics::activeColor);
+					
+					SimpleGraphics::drawPixel(pos.x, pos.y, SimpleGraphics::activeColor, surf);
 				}
 				break;
 			case Model::LINES:
@@ -302,7 +303,7 @@ namespace glib
 					Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
 					Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
 
-					surf->drawLine((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y);
+					SimpleGraphics::drawLine((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, surf);
 				}
 				break;
             case Model::LINE_STRIP:
@@ -318,7 +319,7 @@ namespace glib
 					Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
 					Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
 
-					surf->drawLine((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y);
+					SimpleGraphics::drawLine((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, surf);
 				}
 				break;
             case Model::LINE_LOOP:
@@ -338,7 +339,7 @@ namespace glib
 					Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
 					Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
 
-					surf->drawLine((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y);
+					SimpleGraphics::drawLine((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, surf);
 				}
 				break;
 			case Model::TRIANGLES:
@@ -359,7 +360,7 @@ namespace glib
 						Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
 						Vec2f pos3 = Vec2f( positionData3[0], positionData3[1] );
 						
-						surf->drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false);
+						SimpleGraphics::drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false, surf);
 					}
 					else
 					{
@@ -371,7 +372,7 @@ namespace glib
 						Vec4f pos2 = Vec4f( positionData2[0], positionData2[1], textureData2[0], textureData2[1] );
 						Vec4f pos3 = Vec4f( positionData3[0], positionData3[1], textureData3[0], textureData3[1] );
 
-						surf->drawTexturedTriangle(pos, pos2, pos3, texture);
+						SimpleGraphics::drawTexturedTriangle(pos, pos2, pos3, texture, surf);
 					}
 				}
 				break;
@@ -394,7 +395,7 @@ namespace glib
 						Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
 						Vec2f pos3 = Vec2f( positionData3[0], positionData3[1] );
 						
-						surf->drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false);
+						SimpleGraphics::drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false, surf);
 					}
 					else
 					{
@@ -406,7 +407,7 @@ namespace glib
 						Vec4f pos2 = Vec4f( positionData2[0], positionData2[1], textureData2[0], textureData2[1] );
 						Vec4f pos3 = Vec4f( positionData3[0], positionData3[1], textureData3[0], textureData3[1] );
 
-						surf->drawTexturedTriangle(pos, pos2, pos3, texture);
+						SimpleGraphics::drawTexturedTriangle(pos, pos2, pos3, texture, surf);
 					}
 				}
 				break;
@@ -438,7 +439,7 @@ namespace glib
 						Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
 						Vec2f pos3 = Vec2f( positionData3[0], positionData3[1] );
 						
-						surf->drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false);
+						SimpleGraphics::drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false, surf);
 					}
 					else
 					{
@@ -450,7 +451,7 @@ namespace glib
 						Vec4f pos2 = Vec4f( positionData2[0], positionData2[1], textureData2[0], textureData2[1] );
 						Vec4f pos3 = Vec4f( positionData3[0], positionData3[1], textureData3[0], textureData3[1] );
 
-						surf->drawTexturedTriangle(pos, pos2, pos3, texture);
+						SimpleGraphics::drawTexturedTriangle(pos, pos2, pos3, texture, surf);
 					}
                     order = !order;
                 }
@@ -479,13 +480,13 @@ namespace glib
 						Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
 						Vec2f pos3 = Vec2f( positionData3[0], positionData3[1] );
 						
-						surf->drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false);
+						SimpleGraphics::drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false, surf);
 
 						pos = Vec2f( positionData1[0], positionData1[1] );
 						pos2 = Vec2f( positionData3[0], positionData3[1] );
 						pos3 = Vec2f( positionData4[0], positionData4[1] );
 						
-						surf->drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false);
+						SimpleGraphics::drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false, surf);
 					}
 					else
 					{
@@ -498,13 +499,13 @@ namespace glib
 						Vec4f pos2 = Vec4f( positionData2[0], positionData2[1], textureData2[0], textureData2[1] );
 						Vec4f pos3 = Vec4f( positionData3[0], positionData3[1], textureData3[0], textureData3[1] );
 
-						surf->drawTexturedTriangle(pos, pos2, pos3, texture);
+						SimpleGraphics::drawTexturedTriangle(pos, pos2, pos3, texture, surf);
 
 						pos = Vec4f( positionData1[0], positionData1[1], textureData1[0], textureData1[1] );
 						pos2 = Vec4f( positionData3[0], positionData3[1], textureData3[0], textureData3[1] );
 						pos3 = Vec4f( positionData4[0], positionData4[1], textureData4[0], textureData4[1] );
 
-						surf->drawTexturedTriangle(pos, pos2, pos3, texture);
+						SimpleGraphics::drawTexturedTriangle(pos, pos2, pos3, texture, surf);
 					}
 				}
 				break;
@@ -541,13 +542,13 @@ namespace glib
 						Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
 						Vec2f pos3 = Vec2f( positionData3[0], positionData3[1] );
 						
-						surf->drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false);
+						SimpleGraphics::drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false, surf);
 
 						pos = Vec2f( positionData1[0], positionData1[1] );
 						pos2 = Vec2f( positionData3[0], positionData3[1] );
 						pos3 = Vec2f( positionData4[0], positionData4[1] );
 						
-						surf->drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false);
+						SimpleGraphics::drawTriangle((int)pos.x, (int)pos.y, (int)pos2.x, (int)pos2.y, (int)pos3.x, (int)pos3.y, false, surf);
 					}
 					else
 					{
@@ -560,13 +561,13 @@ namespace glib
 						Vec4f pos2 = Vec4f( positionData2[0], positionData2[1], textureData2[0], textureData2[1] );
 						Vec4f pos3 = Vec4f( positionData3[0], positionData3[1], textureData3[0], textureData3[1] );
 
-						surf->drawTexturedTriangle(pos, pos2, pos3, texture);
+						SimpleGraphics::drawTexturedTriangle(pos, pos2, pos3, texture, surf);
 
 						pos = Vec4f( positionData1[0], positionData1[1], textureData1[0], textureData1[1] );
 						pos2 = Vec4f( positionData3[0], positionData3[1], textureData3[0], textureData3[1] );
 						pos3 = Vec4f( positionData4[0], positionData4[1], textureData4[0], textureData4[1] );
 
-						surf->drawTexturedTriangle(pos, pos2, pos3, texture);
+						SimpleGraphics::drawTexturedTriangle(pos, pos2, pos3, texture, surf);
 					}
 
                     order = !order;

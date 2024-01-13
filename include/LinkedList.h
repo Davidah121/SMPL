@@ -76,6 +76,14 @@ namespace glib
 		int size();
 
 		/**
+		 * @brief Returns whether the list is empty.
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
+		bool empty();
+
+		/**
 		 * @brief Clears the data for the Linked List.
 		 * 		Does not delete the template values if they are pointers.
 		 */
@@ -137,6 +145,7 @@ namespace glib
 			else
 			{
 				//blank node
+				rootNode = nullptr;
 				lastNode = nullptr;
 			}
 		}
@@ -255,6 +264,12 @@ namespace glib
 			}
 		}
 		return i;
+	}
+
+	template<typename T>
+	inline bool LinkedList<T>::empty()
+	{
+		return (rootNode == nullptr && lastNode == nullptr);
 	}
 
 	template<typename T>

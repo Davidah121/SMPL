@@ -6,7 +6,7 @@ namespace glib
 {
     #pragma region GUI_MANAGER
 	std::unordered_map<std::string, std::function<SmartMemory<GuiItem>(SimpleHashMap<std::string, std::string>&, SmartMemory<GuiManager>)> > GuiManager::elementLoadingFunctions;
-	const Class GuiManager::globalClass = Class("GuiManager", {&Object::globalClass});
+	const RootClass GuiManager::globalClass = RootClass("GuiManager", {"Object"});
 
 	void GuiManager::initDefaultLoadFunctions()
 	{
@@ -238,18 +238,24 @@ namespace glib
 
 	GuiManager::~GuiManager()
 	{
-		disposeObjects();
+		clear();
 
 		if(surf != nullptr)
 			delete surf;
 		surf = nullptr;
 	}
 
-	void GuiManager::disposeObjects()
+	void GuiManager::clear()
 	{
 		//Because we are using smart pointers, any object that should be deleted will be deleted when
 		//the smart pointer goes out of scope. This includes when we clear the list of objects to delete.
 		//removes the work we need to do.
+		
+		objectInFocus = nullptr;
+		rootLayout = GuiLayoutFixed(); //should be okay
+		resetRenderValues();
+		previousRectsDrawn.clear();
+		knownRectsToDraw.clear();
 		objectsByName.clear();
 		shouldDelete.clear();
 	}
@@ -262,7 +268,6 @@ namespace glib
 		}
 	}
 	
-
 	void GuiManager::removeElement(SmartMemory<GuiItem> k)
 	{
 		if(k.getPointer() != nullptr)
@@ -278,18 +283,53 @@ namespace glib
 			}
 		}
 	}
+	
+	void GuiManager::resetRenderValues()
+	{
+		previousRectsDrawn = knownRectsToDraw;
+		renderCounter = 0;
+		currDepthCounter = 0;
+		knownRectsToDraw.clear();
+	}
+
+	void GuiManager::updateRenderCounter()
+	{
+		renderCounter++;
+	}
+
+	uint32_t GuiManager::getNextDepthValue()
+	{
+		return currDepthCounter++;
+	}
+
+	void GuiManager::addNewDrawnArea(GRect r)
+	{
+		knownRectsToDraw.push_back(r);
+	}
+
+	std::vector<GRect>& GuiManager::getNewDrawingRects()
+	{
+		return knownRectsToDraw;
+	}
+
+	std::vector<GRect>& GuiManager::getOldDrawingRects()
+	{
+		return previousRectsDrawn;
+	}
 
 	void GuiManager::updateGuiElements()
 	{
 		//Assume that pollInput() was already called
 		//update root elements
-		rootLayout.processLayout(0, 0, surf->getWidth(), surf->getHeight());
+		rootLayout.layoutUpdate(0, 0, surf->getWidth(), surf->getHeight());
 		rootLayout.preUpdate();
 		rootLayout.update( SmartMemory<GuiManager>::createNoDelete(this) );
 	}
-
+	
 	bool GuiManager::renderGuiElements()
 	{
+		resetRenderValues();
+
 		int width = surf->getWidth();
 		int height = surf->getHeight();
 		
@@ -299,13 +339,13 @@ namespace glib
 		GraphicsInterface::setColor(backgroundColor);
 		GraphicsInterface::clear();
 
-		rootLayout.render();
+		rootLayout.doRender( SmartMemory<GuiManager>::createNoDelete(this) );
 		
 		GraphicsInterface::setBoundSurface(surf);
 		GraphicsInterface::setColor(Vec4f(1,1,1,1));
 		GraphicsInterface::drawToScreen();
 		
-		return true;
+		return renderCounter > 0;
 	}
 
 	GuiLayoutFixed& GuiManager::getRootLayout()

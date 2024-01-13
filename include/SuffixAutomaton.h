@@ -215,16 +215,23 @@ namespace glib
         SFA_State_Short* states = nullptr;
     };
 
+    struct SearchState
+    {
+        int stateNumber;
+        int start;
+        int length;
+    };
+
     class ChainedSuffixAutomaton
     {
     public:
         ChainedSuffixAutomaton(int maxSize, int individualSize, int overlap);
         ~ChainedSuffixAutomaton();
 
-        void extend(unsigned char  c);
+        int extend(unsigned char  c);
         bool searchNext(unsigned char  c);
         void resetSearch();
-        std::pair<int, int> extractSearch();
+        SearchState extractSearch();
         void printStuff();
 
     private:
@@ -240,7 +247,7 @@ namespace glib
         std::vector<ShortSuffixAutomaton*> SAs;
         std::vector<int> searchStates;
         int lastGoodState = 0;
-        std::pair<int, int> currMatch;
+        SearchState currMatch;
     };
 
 }

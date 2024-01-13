@@ -1,4 +1,4 @@
-// #ifdef _WIN32
+#ifdef _WIN32
     #include "ext/DragDrop.h"
     #include "StringTools.h"
     
@@ -152,4 +152,4 @@
 		return S_OK;
     }
 
-// #endif
+#endif

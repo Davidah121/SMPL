@@ -978,6 +978,7 @@ namespace glib
 		 * 		This one does not support any levels. It is equivalent to level 7.
 		 */
 		static void getLZ77RefPairsCSA(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel);
+		static void getLZ77RefPairsCSATest(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel);
 
 		/**
 		 * @brief Compresses all of the data as LengthPairs which can then be processed in another corresponding

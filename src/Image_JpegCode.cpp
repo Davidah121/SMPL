@@ -9,6 +9,7 @@
 #include "ColorSpaceConverter.h"
 #include "System.h"
 
+//TODO: JPEG IS OFFICIALLY BROKEN. DO NOT USE UNTIL FIX
 namespace glib
 {
 
@@ -18,17 +19,46 @@ namespace glib
 		BinarySet codeVal;
 	};
 
-	int eobRun = 0;
-	int dri = 0;
+	struct DCTChannel
+	{
+		int16_t y = 0;
+		int16_t cb = 0;
+		int16_t cr = 0;
+	};
 
-	std::vector<Matrix> quantizationTables;
-	std::vector<BinaryTree<HuffmanNode>*> huffmanTreesDC;
-	std::vector<BinaryTree<HuffmanNode>*> huffmanTreesAC;
+	struct quickVec3f
+	{
+		float x=0;
+		float y=0;
+		float z=0;
 
-	std::vector<unsigned char> compressedData;
-	std::vector<unsigned short> componentData;
+		quickVec3f() {}
+		quickVec3f(float v1, float v2, float v3)
+		{
+			x = v1;
+			y = v2;
+			z = v3;
+		}
+	};
 
-	std::vector<unsigned short> samplingRate;
+	struct JPEGData
+	{
+		int eobRun = 0;
+		int dri = 0;
+		int precisionDiv = 255; //8 bit precision
+		int precisionSub = 128; //8 bit precision subtraction
+		int widthRoundedTo8;
+		int heightRoundedTo8;
+
+		std::vector<Matrix> quantizationTables;
+		std::vector<BinaryTree<HuffmanNode>*> huffmanTreesDC;
+		std::vector<BinaryTree<HuffmanNode>*> huffmanTreesAC;
+
+		std::vector<unsigned char> compressedData;
+		std::vector<unsigned short> componentData;
+
+		std::vector<unsigned short> samplingRate;
+	};
 
 	Matrix getLuminanceQuantizationMatrix(int qualityLevel)
 	{
@@ -135,10 +165,10 @@ namespace glib
 		return pos[index];
 	}
 
-	void progressiveProcessEnd(Image* img, Vec3f** imgMat)
+	void progressiveProcessEnd(HiResImage* img, DCTChannel* dctTableValues, JPEGData& jpegData)
 	{
-		int xMult = ((samplingRate[0]>>4) & 0xF);
-		int yMult = ((samplingRate[0]) & 0xF);
+		int xMult = ((jpegData.samplingRate[0]>>4) & 0xF);
+		int yMult = ((jpegData.samplingRate[0]) & 0xF);
 		
 		int addWidth = 8 / xMult;
 		int addHeight = 8 / yMult;
@@ -168,18 +198,19 @@ namespace glib
 					int oY2 = pos>>4;
 					int oX2 = pos&0x0F;
 					
-					yMat[oY2][oX2] = imgMat[y+y2][x+x2].x;
-					cbMat[oY2][oX2] = imgMat[y+y2][x+x2].y;
-					crMat[oY2][oX2] = imgMat[y+y2][x+x2].z;
+					
+					yMat[oY2][oX2] = dctTableValues[(y+y2)*jpegData.widthRoundedTo8 + (x+x2)].y;
+					cbMat[oY2][oX2] = dctTableValues[(y+y2)*jpegData.widthRoundedTo8 + (x+x2)].cb;
+					crMat[oY2][oX2] = dctTableValues[(y+y2)*jpegData.widthRoundedTo8 + (x+x2)].cr;
 				}
 
 				for(int y2=0; y2<8; y2++)
 				{
 					for(int x2=0; x2<8; x2++)
 					{
-						yMat[y2][x2] *= quantizationTables[0].get(x2, y2);
-						cbMat[y2][x2] *= quantizationTables[1].get(x2, y2);
-						crMat[y2][x2] *= quantizationTables[1].get(x2, y2);
+						yMat[y2][x2] *= jpegData.quantizationTables[0][y2][x2];
+						cbMat[y2][x2] *= jpegData.quantizationTables[1][y2][x2];
+						crMat[y2][x2] *= jpegData.quantizationTables[1][y2][x2];
 					}
 				}
 
@@ -187,20 +218,29 @@ namespace glib
 				MathExt::FCT8x8(cbMat, &q2, true);
 				MathExt::FCT8x8(crMat, &q3, true);
 
-				for(int y2=0; y2<8; y2++)
+				int yRange = img->getHeight() - y;
+				yRange = MathExt::min(yRange, 8);
+				int xRange = img->getWidth() - x;
+				xRange = MathExt::min(xRange, 8);
+				
+				for(int y2=0; y2<yRange; y2++)
 				{
 					int chromaY = y2/yMult;
 
-					for(int x2=0; x2<8; x2++)
+					for(int x2=0; x2<xRange; x2++)
 					{
 						int chromaX = x2/xMult;
-						Color c = {0, 0, 0, 255};
-						
-						c.red = (unsigned char)MathExt::clamp(MathExt::round(q1[y2][x2]+128), 0.0, 255.0);
-						c.green = (unsigned char)MathExt::clamp(MathExt::round(q2[chromaY+offY][chromaX+offX]+128), 0.0, 255.0);
-						c.blue = (unsigned char)MathExt::clamp(MathExt::round(q3[chromaY+offY][chromaX+offX]+128), 0.0, 255.0);
-						
-						img->setPixel(x+x2, y+y2, c);
+						Color4f c;
+						double v1 = (q1[y2][x2]+jpegData.precisionSub)/jpegData.precisionDiv;
+						double v2 = (q2[chromaY+offY][chromaX+offX]+jpegData.precisionSub)/jpegData.precisionDiv;
+						double v3 = (q3[chromaY+offY][chromaX+offX]+jpegData.precisionSub)/jpegData.precisionDiv;
+
+						c.red = MathExt::clamp(v1, 0.0, 1.0);
+						c.green = MathExt::clamp(v2, 0.0, 1.0);
+						c.blue = MathExt::clamp(v3, 0.0, 1.0);
+						c.alpha = 1.0;
+
+						img->getPixels()[(y+y2)*img->getWidth() + (x+x2)] = c;
 					}
 				}
 
@@ -210,7 +250,7 @@ namespace glib
 		}
 	}
 
-	void progressiveProcessFirst(Image* img, Vec3f** imgMat, int selectionStart, int selectionEnd, int predictionForSuccessive)
+	void progressiveProcessFirst(HiResImage* img, DCTChannel* dctTableValues, JPEGData& jpegData, int selectionStart, int selectionEnd, int predictionForSuccessive)
 	{
 		//some notes: for each repeated matrix value, add the components together
 		//progressive for 8x8 test1 consist of 2 passes over the matrix where the 1st pass is half the quality of the original
@@ -221,7 +261,7 @@ namespace glib
 		BinarySet binSet = BinarySet();
 		int binNum = 0;
 		binSet.setBitOrder(BinarySet::RMSB);
-		binSet.setValues(compressedData.data(), compressedData.size());
+		binSet.setValues(jpegData.compressedData.data(), jpegData.compressedData.size());
 
 		bool dcMode = false;
 		if(selectionStart==0)
@@ -235,12 +275,14 @@ namespace glib
 			dcMode = false;
 		}
 
-		// int preShift = predictionForSuccessive >> 4; //Not used
-		int postShift = predictionForSuccessive & 0xF;
+		//the following 4 variables are named the exact same way they are named in the specifications
+		int Ss = selectionStart; //Spectral Select Start
+		int Se = selectionEnd; //Spectral Select End
+		
+		int Ah = predictionForSuccessive >> 4; //Successive Approximation High (shift used in the last scan)
+		int Al = predictionForSuccessive & 0xF; //Successive Approximation Low (shift to use for this scan)
 
-		// int fillSize = selectionEnd - selectionStart + 1; //Not used
-
-		Vec3f blockAdd = Vec3f();
+		DCTChannel blockAdd = DCTChannel();
 
 		int addWidth = 8;
 		int addHeight = 8;
@@ -250,36 +292,36 @@ namespace glib
 
 		std::vector<unsigned short> nComponentData = std::vector<unsigned short>();
 
-		if(componentData.size() == 3)
+		if(jpegData.componentData.size() == 3)
 		{
 			//y, cb, cr
-			addWidth = 8 * ((samplingRate[0]>>4) & 0xF);
-			addHeight = 8 * ((samplingRate[0]) & 0xF);
+			addWidth = 8 * ((jpegData.samplingRate[0]>>4) & 0xF);
+			addHeight = 8 * ((jpegData.samplingRate[0]) & 0xF);
 
-			nComponentData.push_back(componentData[0]);
+			nComponentData.push_back(jpegData.componentData[0]);
 
 			if(addWidth>8)
-				nComponentData.push_back(componentData[0]);
+				nComponentData.push_back(jpegData.componentData[0]);
 			if(addHeight>8)
-				nComponentData.push_back(componentData[0]);
+				nComponentData.push_back(jpegData.componentData[0]);
 			if(addWidth>8 && addHeight>8)
-				nComponentData.push_back(componentData[0]);
+				nComponentData.push_back(jpegData.componentData[0]);
 			
-			nComponentData.push_back(componentData[1]);
-			nComponentData.push_back(componentData[2]);
+			nComponentData.push_back(jpegData.componentData[1]);
+			nComponentData.push_back(jpegData.componentData[2]);
 		}
 		else
 		{
 			//just y or cb or cr
-			addWidth = 8 * ((samplingRate[0]>>4) & 0xF);
-			addHeight = 8 * ((samplingRate[0]) & 0xF);
+			addWidth = 8 * ((jpegData.samplingRate[0]>>4) & 0xF);
+			addHeight = 8 * ((jpegData.samplingRate[0]) & 0xF);
 
-			if(componentData[0]>>8 == 1)
+			if(jpegData.componentData[0]>>8 == 1)
 			{
 				addWidth = 8;
 				addHeight = 8;
 			}
-			nComponentData.push_back(componentData[0]);
+			nComponentData.push_back(jpegData.componentData[0]);
 		}
 
 		while(true)
@@ -293,8 +335,8 @@ namespace glib
 				int treeIndex1 = (comD >> 4) & 0x0F;
 				int treeIndex2 = comD & 0x0F;
 
-				BinaryTree<HuffmanNode>* dcTree = huffmanTreesDC[treeIndex1];
-				BinaryTree<HuffmanNode>* acTree = huffmanTreesAC[treeIndex2];
+				BinaryTree<HuffmanNode>* dcTree = jpegData.huffmanTreesDC[treeIndex1];
+				BinaryTree<HuffmanNode>* acTree = jpegData.huffmanTreesAC[treeIndex2];
 
 				if(comNum!=1)
 				{
@@ -302,16 +344,16 @@ namespace glib
 					currY = 0;
 				}
 
-				int k = selectionStart;
+				int k = Ss;
 
-				while(k <= selectionEnd)
+				while(k <= Se)
 				{
 					if(dcMode)
 					{
 						BinaryTreeNode<HuffmanNode>* node = traverseTree(&binSet, dcTree, &binNum);
 						if(node==nullptr)
 						{
-							StringTools::println("Error traversing tree DC FIRST");
+							StringTools::println("Error traversing tree DC PROG FIRST");
 							return;
 						}
 
@@ -333,25 +375,26 @@ namespace glib
 
 						if(comNum==1)
 						{
-							dcValue += (int)blockAdd.x;
-							blockAdd.x = dcValue;
-						}
-						else if(comNum==2)
-						{
 							dcValue += (int)blockAdd.y;
 							blockAdd.y = dcValue;
 						}
+						else if(comNum==2)
+						{
+							dcValue += (int)blockAdd.cb;
+							blockAdd.cb = dcValue;
+						}
 						else
 						{
-							dcValue += (int)blockAdd.z;
-							blockAdd.z = dcValue;
+							dcValue += (int)blockAdd.cr;
+							blockAdd.cr = dcValue;
 						}
 						
-						dcValue = dcValue << postShift;
+						dcValue = dcValue << Al;
 
 						if(comNum==1)
 						{
-							imgMat[startY+currY][startX+currX].x = dcValue;
+							dctTableValues[(startY+currY)*jpegData.widthRoundedTo8 + (startX+currX)].y = dcValue;
+							// imgMat[startY+currY][startX+currX].x = dcValue;
 						}
 						else if(comNum==2)
 						{
@@ -365,11 +408,11 @@ namespace glib
 							{
 								addY = 0;
 							}
-
-							imgMat[startY][startX].y = dcValue;
-							imgMat[startY][startX+addX].y = dcValue;
-							imgMat[startY+addY][startX+addX].y = dcValue;
-							imgMat[startY+addY][startX].y = dcValue;
+							
+							dctTableValues[(startY)*jpegData.widthRoundedTo8 + (startX)].cb = dcValue;
+							dctTableValues[(startY)*jpegData.widthRoundedTo8 + (startX+addX)].cb = dcValue;
+							dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX)].cb = dcValue;
+							dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX)].cb = dcValue;
 						}
 						else
 						{
@@ -384,10 +427,10 @@ namespace glib
 								addY = 0;
 							}
 
-							imgMat[startY][startX].z = dcValue;
-							imgMat[startY][startX+addX].z = dcValue;
-							imgMat[startY+addY][startX+addX].z = dcValue;
-							imgMat[startY+addY][startX].z = dcValue;
+							dctTableValues[(startY)*jpegData.widthRoundedTo8 + (startX)].cr = dcValue;
+							dctTableValues[(startY)*jpegData.widthRoundedTo8 + (startX+addX)].cr = dcValue;
+							dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX)].cr = dcValue;
+							dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX)].cr = dcValue;
 						}
 
 						binNum += category;
@@ -396,10 +439,10 @@ namespace glib
 					}
 					else
 					{
-						if(eobRun>0)
+						if(jpegData.eobRun>0)
 						{
-							k = selectionEnd+1;
-							eobRun--;
+							k = Se+1;
+							jpegData.eobRun--;
 							break;
 						}
 
@@ -424,10 +467,10 @@ namespace glib
 							}
 							else
 							{
-								eobRun = 1 << r;
+								jpegData.eobRun = 1 << r;
 								if(r>0)
 								{
-									eobRun += binSet.getBits(binNum, binNum+r, true);
+									jpegData.eobRun += binSet.getBits(binNum, binNum+r, true);
 									binNum += r;
 								}
 							}
@@ -449,7 +492,7 @@ namespace glib
 							}
 							binNum+=s;
 							
-							acValue = acValue << postShift;
+							acValue = acValue << Al;
 
 							
 							int addY = k/8;
@@ -457,7 +500,8 @@ namespace glib
 
 							if(comNum==1)
 							{
-								imgMat[startY+currY+addY][startX+currX+addX].x = acValue;
+								dctTableValues[(startY+currY+addY)*jpegData.widthRoundedTo8 + (startX+currX+addX)].y = acValue;
+								// imgMat[startY+currY+addY][startX+currX+addX].x = acValue;
 							}
 							else if(comNum==2)
 							{
@@ -471,11 +515,11 @@ namespace glib
 								{
 									oAddY = 0;
 								}
-
-								imgMat[startY+addY][startX+addX].y = acValue;
-								imgMat[startY+addY][startX+addX+oAddX].y = acValue;
-								imgMat[startY+addY+oAddY][startX+addX+oAddX].y = acValue;
-								imgMat[startY+addY+oAddY][startX+addX].y = acValue;
+								
+								dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX)].cb = acValue;
+								dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX+oAddX)].cb = acValue;
+								dctTableValues[(startY+addY+oAddY)*jpegData.widthRoundedTo8 + (startX+addX+oAddX)].cb = acValue;
+								dctTableValues[(startY+addY+oAddY)*jpegData.widthRoundedTo8 + (startX+addX)].cb = acValue;
 							}
 							else
 							{
@@ -490,10 +534,10 @@ namespace glib
 									oAddY = 0;
 								}
 
-								imgMat[startY+addY][startX+addX].z = acValue;
-								imgMat[startY+addY][startX+addX+oAddX].z = acValue;
-								imgMat[startY+addY+oAddY][startX+addX+oAddX].z = acValue;
-								imgMat[startY+addY+oAddY][startX+addX].z = acValue;
+								dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX)].cr = acValue;
+								dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX+oAddX)].cr = acValue;
+								dctTableValues[(startY+addY+oAddY)*jpegData.widthRoundedTo8 + (startX+addX+oAddX)].cr = acValue;
+								dctTableValues[(startY+addY+oAddY)*jpegData.widthRoundedTo8 + (startX+addX)].cr = acValue;
 							}
 
 							k++;
@@ -526,14 +570,14 @@ namespace glib
 		}
 	}
 
-	void progressiveProcessRefine(Image* img, Vec3f** imgMat, int selectionStart, int selectionEnd, int predictionForSuccessive)
+	void progressiveProcessRefine(HiResImage* img, DCTChannel* dctTableValues, JPEGData& jpegData, int selectionStart, int selectionEnd, int predictionForSuccessive)
 	{
 		int startX = 0;
 		int startY = 0;
 		BinarySet binSet = BinarySet();
 		int binNum = 0;
 		binSet.setBitOrder(BinarySet::RMSB);
-		binSet.setValues(compressedData.data(), compressedData.size());
+		binSet.setValues(jpegData.compressedData.data(), jpegData.compressedData.size());
 
 		bool dcMode = false;
 		if(selectionStart==0)
@@ -547,15 +591,18 @@ namespace glib
 			dcMode = false;
 		}
 
-		// int preShift = predictionForSuccessive >> 4; //Not used
-		int postShift = predictionForSuccessive & 0xF;
+		int Ss = selectionStart; //Spectral Select Start
+		int Se = selectionEnd; //Spectral Select End
+		
+		int Ah = predictionForSuccessive >> 4; //Successive Approximation High (shift used in the last scan)
+		int Al = predictionForSuccessive & 0xF; //Successive Approximation Low (shift to use for this scan)
 
 		// int fillSize = selectionEnd - selectionStart + 1; //Not used
 		// int k = selectionStart; //Not used
 		binNum = 0;
 
-		int p1 = 1 << postShift;
-		int m1 = (-1) << postShift;
+		int p1 = 1 << Al;
+		int m1 = (-1) << Al;
 
 		int addWidth = 8;
 		int addHeight = 8;
@@ -565,36 +612,36 @@ namespace glib
 
 		std::vector<unsigned short> nComponentData = std::vector<unsigned short>();
 
-		if(componentData.size() == 3)
+		if(jpegData.componentData.size() == 3)
 		{
 			//y, cb, cr
-			addWidth = 8 * ((samplingRate[0]>>4) & 0xF);
-			addHeight = 8 * ((samplingRate[0]) & 0xF);
+			addWidth = 8 * ((jpegData.samplingRate[0]>>4) & 0xF);
+			addHeight = 8 * ((jpegData.samplingRate[0]) & 0xF);
 
-			nComponentData.push_back(componentData[0]);
+			nComponentData.push_back(jpegData.componentData[0]);
 
 			if(addWidth>8)
-				nComponentData.push_back(componentData[0]);
+				nComponentData.push_back(jpegData.componentData[0]);
 			if(addHeight>8)
-				nComponentData.push_back(componentData[0]);
+				nComponentData.push_back(jpegData.componentData[0]);
 			if(addWidth>8 && addHeight>8)
-				nComponentData.push_back(componentData[0]);
+				nComponentData.push_back(jpegData.componentData[0]);
 			
-			nComponentData.push_back(componentData[1]);
-			nComponentData.push_back(componentData[2]);
+			nComponentData.push_back(jpegData.componentData[1]);
+			nComponentData.push_back(jpegData.componentData[2]);
 		}
 		else
 		{
 			//just y or cb or cr
-			addWidth = 8 * ((samplingRate[0]>>4) & 0xF);
-			addHeight = 8 * ((samplingRate[0]) & 0xF);
+			addWidth = 8 * ((jpegData.samplingRate[0]>>4) & 0xF);
+			addHeight = 8 * ((jpegData.samplingRate[0]) & 0xF);
 
-			if(componentData[0]>>8 == 1)
+			if(jpegData.componentData[0]>>8 == 1)
 			{
 				addWidth = 8;
 				addHeight = 8;
 			}
-			nComponentData.push_back(componentData[0]);
+			nComponentData.push_back(jpegData.componentData[0]);
 		}
 
 		int oAddX = addWidth/2;
@@ -620,7 +667,7 @@ namespace glib
 				int treeIndex2 = comD & 0x0F;
 
 				// BinaryTree<HuffmanNode>* dcTree = huffmanTreesDC[treeIndex1]; //Not used. Odd since it seems like it should be used. Investigate later
-				BinaryTree<HuffmanNode>* acTree = huffmanTreesAC[treeIndex2];
+				BinaryTree<HuffmanNode>* acTree = jpegData.huffmanTreesAC[treeIndex2];
 
 				if(comNum!=1)
 				{
@@ -628,46 +675,44 @@ namespace glib
 					currY = 0;
 				}
 
-				int k = selectionStart;
-				while(k <= selectionEnd)
+				int k = Ss;
+				while(k <= Se)
 				{
 					if(dcMode)
 					{
-						int val = binSet.getBit(binNum) << postShift;
+						int val = binSet.getBit(binNum) << Al;
 						binNum++;
 
 						if(comNum==1)
 						{
-							int oldV = (int)imgMat[startY+currY][startX+currX].x;
-							oldV |= val;
-							imgMat[startY+currY][startX+currX].x = oldV;
+							int dctTableIndex = (startY+currY)*jpegData.widthRoundedTo8 + (startX+currX);
+							int oldV = dctTableValues[dctTableIndex].y | val;
+							dctTableValues[dctTableIndex].y = oldV;
 						}
 						else if(comNum==2)
 						{
-							int oldV = (int)imgMat[startY][startX].y;
-							oldV |= val;
-							imgMat[startY][startX].y = oldV;
-							imgMat[startY][startX+oAddX].y = oldV;
-							imgMat[startY+oAddY][startX+oAddX].y = oldV;
-							imgMat[startY+oAddY][startX].y = oldV;
+							int oldV = dctTableValues[(startY)*jpegData.widthRoundedTo8 + (startX)].cb | val;
+							dctTableValues[(startY)*jpegData.widthRoundedTo8 + (startX)].cb = oldV;
+							dctTableValues[(startY)*jpegData.widthRoundedTo8 + (startX+oAddX)].cb = oldV;
+							dctTableValues[(startY+oAddY)*jpegData.widthRoundedTo8 + (startX+oAddX)].cb = oldV;
+							dctTableValues[(startY+oAddY)*jpegData.widthRoundedTo8 + (startX)].cb = oldV;
 						}
 						else
 						{
-							int oldV = (int)imgMat[startY][startX].z;
-							oldV |= val;
-							imgMat[startY][startX].z = oldV;
-							imgMat[startY][startX+oAddX].z = oldV;
-							imgMat[startY+oAddY][startX+oAddX].z = oldV;
-							imgMat[startY+oAddY][startX].z = oldV;
+							int oldV = dctTableValues[(startY)*jpegData.widthRoundedTo8 + (startX)].cr | val;
+							dctTableValues[(startY)*jpegData.widthRoundedTo8 + (startX)].cr = oldV;
+							dctTableValues[(startY)*jpegData.widthRoundedTo8 + (startX+oAddX)].cr = oldV;
+							dctTableValues[(startY+oAddY)*jpegData.widthRoundedTo8 + (startX+oAddX)].cr = oldV;
+							dctTableValues[(startY+oAddY)*jpegData.widthRoundedTo8 + (startX)].cr = oldV;
 						}
 
 						k++;
 					}
 					else
 					{
-						if(eobRun == 0)
+						if(jpegData.eobRun == 0)
 						{
-							while(k <= selectionEnd)
+							while(k <= Se)
 							{
 								BinaryTreeNode<HuffmanNode>* node = traverseTree(&binSet, acTree, &binNum);
 								if(node==nullptr)
@@ -687,10 +732,10 @@ namespace glib
 									//eob or zrl
 									if(r!=15)
 									{
-										eobRun = 1 << r;
+										jpegData.eobRun = 1 << r;
 										if(r>0)
 										{
-											eobRun += binSet.getBits(binNum, binNum+r, true);
+											jpegData.eobRun += binSet.getBits(binNum, binNum+r, true);
 											binNum+=r;
 										}
 										break;
@@ -713,11 +758,11 @@ namespace glib
 									int addX = k%8;
 
 									if(comNum==1)
-										coef = (int)imgMat[startY+addY+currY][startX+addX+currX].x;
+										coef = dctTableValues[(startY+addY+currY)*jpegData.widthRoundedTo8 + (startX+addX+currX)].y;
 									else if(comNum==2)
-										coef = (int)imgMat[startY+addY][startX+addX].y;
+										coef = dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX)].cb;
 									else
-										coef = (int)imgMat[startY+addY][startX+addX].z;
+										coef = dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX)].cr;
 
 									bool nonZeroHistory = (coef!=0);
 									
@@ -731,20 +776,22 @@ namespace glib
 												coef += m1;
 
 											if(comNum==1)
-												imgMat[startY+addY+currY][startX+addX+currX].x = coef;
+											{
+												dctTableValues[(startY+addY+currY)*jpegData.widthRoundedTo8 + (startX+addX+currX)].y = coef;
+											}
 											else if(comNum==2)
 											{
-												imgMat[startY+addY][startX+addX].y = coef;
-												imgMat[startY+addY][startX+addX+oAddX].y = coef;
-												imgMat[startY+addY+oAddY][startX+addX+oAddX].y = coef;
-												imgMat[startY+addY+oAddY][startX+addX].y = coef;
+												dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX)].cb = coef;
+												dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX+oAddX)].cb = coef;
+												dctTableValues[(startY+addY+oAddY)*jpegData.widthRoundedTo8 + (startX+addX+oAddX)].cb = coef;
+												dctTableValues[(startY+addY+oAddY)*jpegData.widthRoundedTo8 + (startX+addX)].cb = coef;
 											}
 											else
 											{
-												imgMat[startY+addY][startX+addX].z = coef;
-												imgMat[startY+addY][startX+addX+oAddX].z = coef;
-												imgMat[startY+addY+oAddY][startX+addX+oAddX].z = coef;
-												imgMat[startY+addY+oAddY][startX+addX].z = coef;
+												dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX)].cr = coef;
+												dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX+oAddX)].cr = coef;
+												dctTableValues[(startY+addY+oAddY)*jpegData.widthRoundedTo8 + (startX+addX+oAddX)].cr = coef;
+												dctTableValues[(startY+addY+oAddY)*jpegData.widthRoundedTo8 + (startX+addX)].cr = coef;
 											}
 										}
 										binNum++;
@@ -768,21 +815,21 @@ namespace glib
 
 									if(comNum==1)
 									{
-										imgMat[startY+addY+currY][startX+addX+currX].x = acValue;
+										dctTableValues[(startY+addY+currY)*jpegData.widthRoundedTo8 + (startX+addX+currX)].y = acValue;
 									}
 									else if(comNum==2)
 									{
-										imgMat[startY+addY][startX+addX].y = acValue;
-										imgMat[startY+addY][startX+addX+oAddX].y = acValue;
-										imgMat[startY+addY+oAddY][startX+addX+oAddX].y = acValue;
-										imgMat[startY+addY+oAddY][startX+addX].y = acValue;
+										dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX)].cb = acValue;
+										dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX+oAddX)].cb = acValue;
+										dctTableValues[(startY+addY+oAddY)*jpegData.widthRoundedTo8 + (startX+addX+oAddX)].cb = acValue;
+										dctTableValues[(startY+addY+oAddY)*jpegData.widthRoundedTo8 + (startX+addX)].cb = acValue;
 									}
 									else
 									{
-										imgMat[startY+addY][startX+addX].z = acValue;
-										imgMat[startY+addY][startX+addX+oAddX].z = acValue;
-										imgMat[startY+addY+oAddY][startX+addX+oAddX].z = acValue;
-										imgMat[startY+addY+oAddY][startX+addX].z = acValue;
+										dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX)].cr = acValue;
+										dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX+oAddX)].cr = acValue;
+										dctTableValues[(startY+addY+oAddY)*jpegData.widthRoundedTo8 + (startX+addX+oAddX)].cr = acValue;
+										dctTableValues[(startY+addY+oAddY)*jpegData.widthRoundedTo8 + (startX+addX)].cr = acValue;
 									}
 								}
 
@@ -790,7 +837,7 @@ namespace glib
 							}
 						}
 						
-						if(eobRun>0)
+						if(jpegData.eobRun>0)
 						{
 							while(k<=selectionEnd)
 							{
@@ -799,14 +846,13 @@ namespace glib
 								int addX = k%8;
 
 								if(comNum==1)
-									coef = (int)imgMat[startY+addY+currY][startX+addX+currX].x;
+									coef = dctTableValues[(startY+addY+currY)*jpegData.widthRoundedTo8 + (startX+addX+currX)].y;
 								else if(comNum==2)
-									coef = (int)imgMat[startY+addY][startX+addX].y;
+									coef = dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX)].cb;
 								else
-									coef = (int)imgMat[startY+addY][startX+addX].z;
-
+									coef = dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX)].cr;
+								
 								bool nonZeroHistory = (coef!=0);
-									
 								if(nonZeroHistory)
 								{
 									if(binSet.getBit(binNum))
@@ -817,27 +863,29 @@ namespace glib
 											coef += m1;
 
 										if(comNum==1)
-											imgMat[startY+addY+currY][startX+addX+currX].x = coef;
+										{
+											dctTableValues[(startY+addY+currY)*jpegData.widthRoundedTo8 + (startX+addX+currX)].y = coef;
+										}
 										else if(comNum==2)
 										{
-											imgMat[startY+addY][startX+addX].y = coef;
-											imgMat[startY+addY][startX+addX+oAddX].y = coef;
-											imgMat[startY+addY+oAddY][startX+addX+oAddX].y = coef;
-											imgMat[startY+addY+oAddY][startX+addX].y = coef;
+											dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX)].cb = coef;
+											dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX+oAddX)].cb = coef;
+											dctTableValues[(startY+addY+oAddY)*jpegData.widthRoundedTo8 + (startX+addX+oAddX)].cb = coef;
+											dctTableValues[(startY+addY+oAddY)*jpegData.widthRoundedTo8 + (startX+addX)].cb = coef;
 										}
 										else
 										{
-											imgMat[startY+addY][startX+addX].z = coef;
-											imgMat[startY+addY][startX+addX+oAddX].z = coef;
-											imgMat[startY+addY+oAddY][startX+addX+oAddX].z = coef;
-											imgMat[startY+addY+oAddY][startX+addX].z = coef;
+											dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX)].cr = coef;
+											dctTableValues[(startY+addY)*jpegData.widthRoundedTo8 + (startX+addX+oAddX)].cr = coef;
+											dctTableValues[(startY+addY+oAddY)*jpegData.widthRoundedTo8 + (startX+addX+oAddX)].cr = coef;
+											dctTableValues[(startY+addY+oAddY)*jpegData.widthRoundedTo8 + (startX+addX)].cr = coef;
 										}
 									}
 									binNum++;
 								}
 								k++;
 							}
-							eobRun--;
+							jpegData.eobRun--;
 						}
 					}
 				}
@@ -866,7 +914,7 @@ namespace glib
 		}
 	}
 
-	void baselineProcess(Image* img)
+	void baselineProcess(HiResImage* img, JPEGData& jpegData)
 	{
 		// time_t totalTime = 0; //Not used
 		if(img!=nullptr)
@@ -874,11 +922,11 @@ namespace glib
 			//process image data
 			BinarySet binSet = BinarySet();
 			binSet.setBitOrder(BinarySet::RMSB);
-			binSet.setValues(compressedData.data(), compressedData.size());
+			binSet.setValues(jpegData.compressedData.data(), jpegData.compressedData.size());
 
 			//grab a single grid and process that first
 			// int matFilled = 0; //Not used
-			Vec3f blockAdd = Vec3f();
+			quickVec3f blockAdd = quickVec3f();
 			Matrix q = Matrix(8,8);
 			Matrix m = Matrix(8,8);
 
@@ -895,10 +943,10 @@ namespace glib
 			int currX = 0;
 			int currY = 0;
 
-			addWidth = 8 * ((samplingRate[0]>>4) & 0xF);
-			addHeight = 8 * ((samplingRate[0]) & 0xF);
+			addWidth = 8 * ((jpegData.samplingRate[0]>>4) & 0xF);
+			addHeight = 8 * ((jpegData.samplingRate[0]) & 0xF);
 
-			int yVals = (samplingRate[0]>>4) * (samplingRate[0] & 0x0F);
+			int yVals = (jpegData.samplingRate[0]>>4) * (jpegData.samplingRate[0] & 0x0F);
 			
 			order = new int[yVals+2];
 			for(int i=0; i<yVals; i++)
@@ -916,8 +964,8 @@ namespace glib
 
 				for(int i=0; i<yVals+2; i++)
 				{	
-					int treeIndex1 = (componentData.at(order[i]) >> 4) & 0x0F;
-					int treeIndex2 = componentData.at(order[i]) & 0x0F;
+					int treeIndex1 = (jpegData.componentData.at(order[i]) >> 4) & 0x0F;
+					int treeIndex2 = jpegData.componentData.at(order[i]) & 0x0F;
 					int quanTable = 0;
 
 					if(order[i]==0)
@@ -931,8 +979,8 @@ namespace glib
 						currY = 0;
 					}
 					
-					BinaryTree<HuffmanNode>* dcTree = huffmanTreesDC[treeIndex1];
-					BinaryTree<HuffmanNode>* acTree = huffmanTreesAC[treeIndex2];
+					BinaryTree<HuffmanNode>* dcTree = jpegData.huffmanTreesDC[treeIndex1];
+					BinaryTree<HuffmanNode>* acTree = jpegData.huffmanTreesAC[treeIndex2];
 
 					if(dcTree==nullptr || acTree==nullptr)
 					{
@@ -1054,7 +1102,7 @@ namespace glib
 						int zigPos = getZigZagPos(y);
 						r = zigPos>>4;
 						c = zigPos & 0x0F;
-						m[r][c] = decompData[y] * quantizationTables[quanTable][r][c];
+						m[r][c] = decompData[y] * jpegData.quantizationTables[quanTable][r][c];
 					}
 
 					MathExt::FCT8x8(m, &q, true);
@@ -1063,13 +1111,17 @@ namespace glib
 					{
 						for(int x=0; x<8; x++)
 						{
-							double value = MathExt::round(q[y][x] + 128);
-
+							double value = (q[y][x] + jpegData.precisionSub) / jpegData.precisionDiv;
+							int queryX = actualX+x+currX;
+							int queryY = actualY+y+currY;
+							
 							if(order[i]==0)
 							{
-								Color c = img->getPixel(actualX+x+currX, actualY+y+currY);
-								c.red = (unsigned char) MathExt::clamp(value, 0.0, 255.0);
-								img->setPixel(actualX+x+currX, actualY+y+currY, c);
+								if(queryX < img->getWidth() && queryY < img->getHeight())
+								{
+									img->getPixels()[queryY*img->getWidth() + queryX].red = value;
+								}
+								
 							}
 							else
 							{
@@ -1093,31 +1145,56 @@ namespace glib
 									y2 = y1+1;
 								}
 
-								Color c = img->getPixel(actualX+x1, actualY+y1);
-								Color c1 = img->getPixel(actualX+x2, actualY+y1);
-								Color c2 = img->getPixel(actualX+x2, actualY+y2);
-								Color c3 = img->getPixel(actualX+x1, actualY+y2);
+								Color4f c0, c1, c2, c3;
+								
+								if(actualX+x1 < img->getWidth())
+								{
+									if(actualY+y1 < img->getHeight())
+										c0 = img->getPixels()[(actualY+y1)*img->getWidth() + actualX+x1];
+									
+									if(actualY+y2 < img->getHeight())
+										c3 = img->getPixels()[(actualY+y2)*img->getWidth() + actualX+x1];
+								}
+								if(actualX+x2 < img->getWidth())
+								{
+									if(actualY+y1 < img->getHeight())
+										c1 = img->getPixels()[(actualY+y1)*img->getWidth() + actualX+x2];
+									
+									if(actualY+y2 < img->getHeight())
+										c2 = img->getPixels()[(actualY+y2)*img->getWidth() + actualX+x2];
+								}
+
 								if(order[i]==1)
 								{
-									c.green = (unsigned char) MathExt::clamp(value, 0.0, 255.0);
-
-									c1.green = c.green;
-									c2.green = c.green;
-									c3.green = c.green;
+									c0.green = value;
+									c1.green = c0.green;
+									c2.green = c0.green;
+									c3.green = c0.green;
 								}
 								else
 								{
-									c.blue = (unsigned char) MathExt::clamp(value, 0.0, 255.0);
-
-									c1.blue = c.blue;
-									c2.blue = c.blue;
-									c3.blue = c.blue;
+									c0.blue = value;
+									c1.blue = c0.blue;
+									c2.blue = c0.blue;
+									c3.blue = c0.blue;
 								}
 
-								img->setPixel(actualX+x1, actualY+y1, c);
-								img->setPixel(actualX+x2, actualY+y1, c1);
-								img->setPixel(actualX+x2, actualY+y2, c2);
-								img->setPixel(actualX+x1, actualY+y2, c3);
+								if(actualX+x1 < img->getWidth())
+								{
+									if(actualY+y1 < img->getHeight())
+										img->getPixels()[(actualY+y1)*img->getWidth() + actualX+x1] = c0;
+									
+									if(actualY+y2 < img->getHeight())
+										img->getPixels()[(actualY+y2)*img->getWidth() + actualX+x1] = c3;
+								}
+								if(actualX+x2 < img->getWidth())
+								{
+									if(actualY+y1 < img->getHeight())
+										img->getPixels()[(actualY+y1)*img->getWidth() + actualX+x2] = c1;
+									
+									if(actualY+y2 < img->getHeight())
+										img->getPixels()[(actualY+y2)*img->getWidth() + actualX+x2] = c2;
+								}
 							}
 						}
 					}
@@ -1150,30 +1227,32 @@ namespace glib
 		}
 	}
 
-	void Image::saveJPG(File file, int quality, int subsampleMode)
+	void HiResImage::saveJPG(File file, int quality, int subsampleMode)
 	{
 		//save using jpeg quantization matrix
 		// Matrix lum = getLuminanceQuantizationMatrix(quality);
 		// Matrix chrom = getChrominanceQuantizationMatrix(quality);
 	}
 	
-	Image** Image::loadJPG(std::vector<unsigned char> fileData, int* amountOfImages)
+	HiResImage** HiResImage::loadJPG(std::vector<unsigned char> fileData, int* amountOfImages)
 	{
 		//magic number = 0xFF 0xD8
 
-		Image** imgArr = nullptr;
-		Image* img = nullptr;
-		Vec3f** imgMat = nullptr;
+		HiResImage** imgArr = nullptr;
+		HiResImage* img = nullptr;
+		DCTChannel* dctValueTable = nullptr;
+		JPEGData jpegData;
+
 
 		size_t index = 0;
-		quantizationTables = std::vector<Matrix>(4);
-		huffmanTreesDC = std::vector<BinaryTree<HuffmanNode>*>(4);
-		huffmanTreesAC = std::vector<BinaryTree<HuffmanNode>*>(4);
+		jpegData.quantizationTables = std::vector<Matrix>(4);
+		jpegData.huffmanTreesDC = std::vector<BinaryTree<HuffmanNode>*>(4);
+		jpegData.huffmanTreesAC = std::vector<BinaryTree<HuffmanNode>*>(4);
 
-		compressedData = std::vector<unsigned char>();
-		componentData = std::vector<unsigned short>();
+		jpegData.compressedData = std::vector<unsigned char>();
+		jpegData.componentData = std::vector<unsigned short>();
 
-		samplingRate = std::vector<unsigned short>();
+		jpegData.samplingRate = std::vector<unsigned short>();
 
 		int frameType = 0;
 		int selectStart = 0;
@@ -1208,13 +1287,16 @@ namespace glib
 			}
 			else if(header == 0xFFC0)
 			{
-				//StringTools::println("Found start of baseline frame");
 				frameType = 0;
-				// unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
+				unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
 				index+=2;
 				
-				// unsigned char precision = fileData[index];
+				unsigned char precision = fileData[index];
 				index++;
+
+				//required to deal with higher bit precision.
+				jpegData.precisionDiv = (1<<precision)-1; //The division value needed to get a value in [0-1]. (usually 255)
+				jpegData.precisionSub = (1<<(precision-1)); //The subtraction value at the mid point. (usually 128)
 
 				unsigned short height = (((unsigned short)fileData[index])<<8) + fileData[index+1];
 				index+=2;
@@ -1242,23 +1324,26 @@ namespace glib
 					{
 						v1 = 2;
 					}
-					samplingRate.push_back((h1<<4) + v1);
+					jpegData.samplingRate.push_back((h1<<4) + v1);
 					
 					index+=3;
 				}
 				
 				if(img==nullptr)
-					img = new Image(width, height);
+					img = new HiResImage(width, height);
 			}
 			else if(header == 0xFFC1)
 			{
-				//StringTools::println("Found start of extended sequential frame");
 				frameType = 1;
-				// unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
+				unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
 				index+=2;
 				
-				// unsigned char precision = fileData[index];
+				unsigned char precision = fileData[index];
 				index++;
+
+				//required to deal with higher bit precision.
+				jpegData.precisionDiv = (1<<precision)-1; //The division value needed to get a value in [0-1]. (usually 255)
+				jpegData.precisionSub = (1<<(precision-1)); //The subtraction value at the mid point. (usually 128)
 
 				unsigned short height = (((unsigned short)fileData[index])<<8) + fileData[index+1];
 				index+=2;
@@ -1286,23 +1371,26 @@ namespace glib
 					{
 						v1 = 2;
 					}
-					samplingRate.push_back((h1<<4) + v1);
+					jpegData.samplingRate.push_back((h1<<4) + v1);
 					
 					index+=3;
 				}
 
 				if(img==nullptr)
-					img = new Image(width, height);
+					img = new HiResImage(width, height);
 			}
 			else if(header == 0xFFC2)
 			{
-				//StringTools::println("Found Start of progressive Frame");
 				frameType = 2;
-				// unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
+				unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
 				index+=2;
 				
-				// unsigned char precision = fileData[index];
+				unsigned char precision = fileData[index];
 				index++;
+
+				//required to deal with higher bit precision.
+				jpegData.precisionDiv = (1<<precision)-1; //The division value needed to get a value in [0-1]. (usually 255)
+				jpegData.precisionSub = (1<<(precision-1)); //The subtraction value at the mid point. (usually 128)
 
 				unsigned short height = (((unsigned short)fileData[index])<<8) + fileData[index+1];
 				index+=2;
@@ -1330,14 +1418,14 @@ namespace glib
 					{
 						v1 = 2;
 					}
-					samplingRate.push_back((h1<<4) + v1);
+					jpegData.samplingRate.push_back((h1<<4) + v1);
 					
 					index+=3;
 				}
 
 				if(img==nullptr)
 				{
-					img = new Image(width, height);
+					img = new HiResImage(width, height);
 
 					int addW = (width%8 > 0)? (8-width%8) : 0;
 					int addH = (height%8 > 0)? (8-height%8) : 0;
@@ -1345,11 +1433,10 @@ namespace glib
 					int width8 = width + addW + 8;
 					int height8 = height + addH + 8;
 					
-					imgMat = new Vec3f*[height8];
-					for(int i=0; i<height8; i++)
-					{
-						imgMat[i] = new Vec3f[width8];
-					}
+					jpegData.widthRoundedTo8 = width8;
+					jpegData.heightRoundedTo8 = height8;
+					
+					dctValueTable = new DCTChannel[width8*height8];
 				}
 			}
 			else if(header == 0xFFC4)
@@ -1387,19 +1474,19 @@ namespace glib
 
 					if(type==0)
 					{
-						if(huffmanTreesDC[treeNum] != nullptr)
+						if(jpegData.huffmanTreesDC[treeNum] != nullptr)
 						{
-							delete huffmanTreesDC[treeNum];
+							delete jpegData.huffmanTreesDC[treeNum];
 						}
-						huffmanTreesDC[treeNum] = tree;
+						jpegData.huffmanTreesDC[treeNum] = tree;
 					}
 					else
 					{
-						if(huffmanTreesAC[treeNum] != nullptr)
+						if(jpegData.huffmanTreesAC[treeNum] != nullptr)
 						{
-							delete huffmanTreesAC[treeNum];
+							delete jpegData.huffmanTreesAC[treeNum];
 						}
-						huffmanTreesAC[treeNum] = tree;
+						jpegData.huffmanTreesAC[treeNum] = tree;
 					}
 				}
 
@@ -1450,7 +1537,7 @@ namespace glib
 						}
 					}
 					
-					quantizationTables[tableNum] = m;
+					jpegData.quantizationTables[tableNum] = m;
 				}
 
 				index = finalLoc;
@@ -1465,13 +1552,13 @@ namespace glib
 				int count = fileData[index];
 				index++;
 
-				componentData.clear();
+				jpegData.componentData.clear();
 
 				for(int i=0; i<count; i++)
 				{
 					unsigned short comData = (((unsigned short)fileData[index])<<8) + fileData[index+1];
 					index+=2;
-					componentData.push_back(comData);
+					jpegData.componentData.push_back(comData);
 				}
 
 				selectStart = fileData[index];
@@ -1482,14 +1569,14 @@ namespace glib
 				//read until 0xFFxx is found where xx is not 00
 				// int startInd = index; //Not used
 				int nBytes = 0;
-				compressedData.clear();
+				jpegData.compressedData.clear();
 				processImage=true;
 
 				while(true)
 				{
 					if(fileData[index]!=0xFF)
 					{
-						compressedData.push_back( fileData[index] );
+						jpegData.compressedData.push_back( fileData[index] );
 						index++;
 						nBytes++;
 					}
@@ -1497,14 +1584,14 @@ namespace glib
 					{
 						if(fileData[index+1]==0x00)
 						{
-							compressedData.push_back( 0xFF );
+							jpegData.compressedData.push_back( 0xFF );
 							index+=2;
 							nBytes+=2;
 						}
 						else if(fileData[index+1] >= 0xD0 && fileData[index+1] <= 0xD7)
 						{
-							compressedData.push_back( 0xFF );
-							compressedData.push_back( fileData[index+1] );
+							jpegData.compressedData.push_back( 0xFF );
+							jpegData.compressedData.push_back( fileData[index+1] );
 							index+=2;
 							nBytes+=2;
 						}
@@ -1520,16 +1607,40 @@ namespace glib
 				//DRI - Define Restart Interval
 				//could be useful later
 				index += 2;
-				dri = (((unsigned short)fileData[index])<<8) + fileData[index+1];
+				jpegData.dri = (((unsigned short)fileData[index])<<8) + fileData[index+1];
 				index += 2;
-				// StringTools::println("DRI");
+				StringTools::println("DRI NOT SUPPORTED YET");
+
+				if(imgArr != nullptr)
+					delete[] imgArr;
+				
+				if(img != nullptr)
+					delete img;
+				
+				for(size_t i=0; i<jpegData.huffmanTreesDC.size(); i++)
+				{
+					if(jpegData.huffmanTreesDC[i]!=nullptr)
+						delete jpegData.huffmanTreesDC[i];
+				}
+				for(size_t i=0; i<jpegData.huffmanTreesAC.size(); i++)
+				{
+					if(jpegData.huffmanTreesAC[i]!=nullptr)
+						delete jpegData.huffmanTreesAC[i];
+				}
+				if(amountOfImages!=nullptr)
+					*amountOfImages = -1;
+				return nullptr;
+
 			}
 			else if(header >= 0xFFD0 && header <= 0xFFD7)
 			{
 				//RSTn - Restart
 				//DRI must be defined
-				
-				// StringTools::println("RST");
+				// finish remaining eobrun
+				// set eobrun to 0
+				// jpegData.eobRun = 0;
+				// Not sure how to deal with this yet so assume that it can not be done.
+				StringTools::println("RST");
 			}
 			else if(header == 0xFF01)
 			{
@@ -1607,17 +1718,17 @@ namespace glib
 
 				if(frameType==0 || frameType==1)
 				{
-					baselineProcess(img);
+					baselineProcess(img, jpegData);
 				}
 				else if(frameType==2)
 				{
 					if(predictionForSuccessive>>4 == 0)
 					{
-						progressiveProcessFirst(img, imgMat, selectStart, selectEnd, predictionForSuccessive);
+						progressiveProcessFirst(img, dctValueTable, jpegData, selectStart, selectEnd, predictionForSuccessive);
 					}
 					else
 					{
-						progressiveProcessRefine(img, imgMat, selectStart, selectEnd, predictionForSuccessive);
+						progressiveProcessRefine(img, dctValueTable, jpegData, selectStart, selectEnd, predictionForSuccessive);
 					}
 				}
 			}
@@ -1627,90 +1738,90 @@ namespace glib
 		if(frameType==2)
 		{
 			//convert imgMat using dct to get final image
-			progressiveProcessEnd(img, imgMat);
-			if(imgMat!=nullptr)
+			progressiveProcessEnd(img, dctValueTable, jpegData);
+			if(dctValueTable!=nullptr)
 			{
-				for(int i=0; i<height8; i++)
-				{
-					if(imgMat[i]!=nullptr)
-						delete[] imgMat[i];
-				}
-				delete[] imgMat;
+				delete[] dctValueTable;
 			}
 		}
 
 		//convert from ycbcr to rgb and store into image
 
 		//chroma averaging if necessary
-		if(((samplingRate[0]>>4)&0x0F) != 1)
+		if(((jpegData.samplingRate[0]>>4)&0x0F) != 1)
 		{
 			//subsample in the x
 			for(int y=0; y<img->getHeight(); y++)
 			{
 				for(int x=1; x<img->getWidth()-1; x++)
 				{
-					Color c = img->getPixel(x-1,y);
-					Color c2 = img->getPixel(x+1,y);
-					Color f = img->getPixel(x,y);
+					Color4f c = img->pixels[y*img->getWidth() + x-1];
+					Color4f c2 = img->pixels[y*img->getWidth() + x+1];
+					Color4f f = img->pixels[y*img->getWidth() + x];
 
-					f.green = (unsigned char)MathExt::round(((double)c.green+(double)c2.green)/2.0);
-					f.blue = (unsigned char)MathExt::round(((double)c.blue+(double)c2.blue)/2.0);
+					f.green = ((double)c.green + (double)c2.green)/2.0;
+					f.blue = ((double)c.blue + (double)c2.blue)/2.0;
 
-					img->setPixel(x,y,f);
+					img->pixels[y*img->getWidth() + x] = f;
 				}
 			}
 		}
-		if((samplingRate[0]&0x0F) != 1)
+		if((jpegData.samplingRate[0]&0x0F) != 1)
 		{
 			//subsample in the y
 			for(int y=1; y<img->getHeight()-1; y++)
 			{
 				for(int x=0; x<img->getWidth(); x++)
 				{
-					Color c = img->getPixel(x,y-1);
-					Color c2 = img->getPixel(x,y+1);
-					Color f = img->getPixel(x,y);
+					Color4f c = img->pixels[(y-1)*img->getWidth() + x];
+					Color4f c2 = img->pixels[(y+1)*img->getWidth() + x];
+					Color4f f = img->pixels[y*img->getWidth() + x];
 
-					f.green = (unsigned char)MathExt::round(((double)c.green+(double)c2.green)/2.0);
-					f.blue = (unsigned char)MathExt::round(((double)c.blue+(double)c2.blue)/2.0);
+					f.green = ((double)c.green + (double)c2.green)/2.0;
+					f.blue = ((double)c.blue + (double)c2.blue)/2.0;
 
-					img->setPixel(x,y,f);
+					img->pixels[y*img->getWidth() + x] = f;
 				}
 			}
 		}
 
-		Color* startC = img->getPixels();
-		Color* endC = startC + (img->getWidth()*img->getHeight());
+		Color4f* startC = img->getPixels();
+		Color4f* endC = startC + (img->getWidth()*img->getHeight());
 
 		while(startC<endC)
 		{
 			//do it manually
-			Color cVec;
-			cVec.red = (unsigned char)(startC->red + 1.402 * (startC->green - 0x80));
-			cVec.green = (unsigned char)(startC->red - 0.344136*(startC->green - 0x80) - 0.714136*(startC->blue - 0x80));
-			cVec.blue = (unsigned char)(startC->red + 1.772*(startC->green - 0x80));
-			cVec.alpha = 255;
+			//Values already have 16 bit precision but as floats in range [0-1] so this still preserves the precision
+			quickVec3f cVec = quickVec3f(255*(float)startC->red, 255*(float)startC->green, 255*(float)startC->blue);
+			Color4f finalC;
 			
-			*startC = cVec;
+			//Also convert to [0-1]
+			//Must clamp to prevent overflow or underflow. Internally, these values are just uint16_t which don't do well with negative values.
+			finalC.red = MathExt::clamp((cVec.x + 1.402 * (cVec.z - 128)) / 255.0, 0.0, 1.0);
+			finalC.green = MathExt::clamp((cVec.x - 0.344136*(cVec.y - 128) - 0.714136*(cVec.z - 128)) / 255.0, 0.0, 1.0);
+			finalC.blue = MathExt::clamp((cVec.x + 1.772*(cVec.y - 128)) / 255.0, 0.0, 1.0);
+			finalC.alpha = 1.0;
+
+			*startC = finalC;
 			startC++;
 		}
 		
 
-		imgArr = new Image*[1]{img};
+		imgArr = new HiResImage*[1]{img};
 		if(amountOfImages!=nullptr)
 		{
 			*amountOfImages = 1;
 		}
 
-		for(size_t i=0; i<huffmanTreesDC.size(); i++)
+		for(size_t i=0; i<jpegData.huffmanTreesDC.size(); i++)
 		{
-			if(huffmanTreesDC[i]!=nullptr)
-				delete huffmanTreesDC[i];
+			if(jpegData.huffmanTreesDC[i]!=nullptr)
+				delete jpegData.huffmanTreesDC[i];
 		}
-		for(size_t i=0; i<huffmanTreesAC.size(); i++)
+		for(size_t i=0; i<jpegData.huffmanTreesAC.size(); i++)
 		{
-			if(huffmanTreesAC[i]!=nullptr)
-				delete huffmanTreesAC[i];
+			if(jpegData.huffmanTreesAC[i]!=nullptr)
+				delete jpegData.huffmanTreesAC[i];
 		}
 
 		return imgArr;

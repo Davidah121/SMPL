@@ -134,6 +134,7 @@ namespace glib
 					//cleanup first
 					cleanUp(parent->children[index]);
 				}
+				
 				parent->children[index] = child;
 			}
 		}

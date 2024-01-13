@@ -5,7 +5,7 @@
 namespace glib
 {
 
-	const Class Vec2f::globalClass = Class("Vec2f", {&Object::globalClass});
+	const RootClass Vec2f::globalClass = RootClass("Vec2f", {"Object"});
 
 	Vec2f::Vec2f(double x, double y)
 	{

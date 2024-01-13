@@ -4,7 +4,7 @@
 namespace glib
 {
 
-	const Class Line::globalClass = Class("Line", {&Object::globalClass});
+	const RootClass Line::globalClass = RootClass("Line", {"Object"});
 
 	Line::Line()
 	{

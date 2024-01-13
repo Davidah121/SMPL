@@ -7,7 +7,7 @@
 namespace glib
 {
 
-    const Class Model::globalClass = Class("Model", {&Object::globalClass});
+    const RootClass Model::globalClass = RootClass("Model", {"Object"});
     
     Model::Model()
     {

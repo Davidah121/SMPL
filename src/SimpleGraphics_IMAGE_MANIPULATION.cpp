@@ -228,6 +228,30 @@ namespace glib
 
 		return result;
 	}
+	
+	Image* SimpleGraphics::convertToGrayscale(Image* img)
+	{
+		if(img != nullptr)
+		{
+			Image* greyImg = new Image(img->getWidth(), img->getHeight());
+			Color* greyImgPixels = greyImg->getPixels();
+			Color* baseImgPixels = img->getPixels();
+			Color* endGreyImgPixels = greyImgPixels + (greyImg->getWidth() * greyImg->getHeight());
+			while(greyImgPixels < endGreyImgPixels)
+			{
+				Color c = *baseImgPixels;
+				c.red = (unsigned char)MathExt::clamp((0.299*c.red) + (0.587*c.green) + (0.144*c.blue), 0.0, 255.0);
+				c.green = c.red;
+				c.blue = c.red;
+				*greyImgPixels = c;
+				baseImgPixels++;
+				greyImgPixels++;
+			}
+
+			return greyImg;
+		}
+		return nullptr;
+	}
 
 	Image* SimpleGraphics::cannyEdgeFilter(Image* img)
 	{
@@ -236,7 +260,33 @@ namespace glib
 
 	Image* SimpleGraphics::sobelEdgeFilter(Image* img)
 	{
-		return nullptr;
+		Image* grayscaleImg = SimpleGraphics::convertToGrayscale(img);
+		Mat3f gx = Mat3f(1, 0, -1,
+						 2, 0, -2,
+						 1, 0, -1);
+		Mat3f gy = Mat3f( 1,  2,  1,
+						  0,  0,  0,
+						 -1, -2, -1);
+
+		Matrix imgXDerivative = ComputerVision::convolutionNormalized(grayscaleImg, &gx, ComputerVision::RED_CHANNEL);
+		Matrix imgYDerivative = ComputerVision::convolutionNormalized(grayscaleImg, &gy, ComputerVision::RED_CHANNEL);
+
+		//Saving memory allocation cost by resuing grayscaleImg
+		Color* finalImgPixels = grayscaleImg->getPixels();
+		for(int y=0; y<grayscaleImg->getHeight(); y++)
+		{
+			for(int x=0; x<grayscaleImg->getWidth(); x++)
+			{
+				Color c;
+				c.red = MathExt::sqrt( MathExt::sqr(imgXDerivative[y][x]) + MathExt::sqr(imgYDerivative[y][x]) );
+				c.green = c.red;
+				c.blue = c.red;
+				*finalImgPixels = c;
+				finalImgPixels++;
+			}
+		}
+
+		return grayscaleImg;
 	}
 
 	void SimpleGraphics::ditherImage(Image* img, unsigned char method)

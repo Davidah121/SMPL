@@ -127,12 +127,13 @@ namespace glib
                 if(wentToNewFrame == true)
                 {
                     lastUpdateTime = currTime;
+                    setShouldRender();
                 }
             }
         }
     }
 
-    void GuiSprite::render()
+    void GuiSprite::render(SmartMemory<GuiManager> manager)
     {
         //assume that trueX and trueY have been properly updated.
         if(spr.getPointer() != nullptr)

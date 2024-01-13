@@ -570,11 +570,11 @@ namespace glib
 
 	#pragma region LOADING_PNG_SUBFUNCTION
 
-	Image* processData(fctlData* imgData, int colorType, int bitDepth, bool interlace, ColorPalette* p)
+	HiResImage* processData(fctlData* imgData, int colorType, int bitDepth, bool interlace, ColorPalette* p)
 	{
 		//Pretty sure it is always a zlib stream
 		//read first 2 bytes
-		Image* tImg = nullptr;
+		HiResImage* tImg = nullptr;
 		unsigned char CMF = imgData->compressedData[0];
 		// unsigned char FLG = imgData->compressedData[1]; //not necessary
 		int compressionMethod = CMF & 0b00001111;
@@ -583,7 +583,7 @@ namespace glib
 			return nullptr;
 		}
 
-		tImg = new Image(imgData->width, imgData->height);
+		tImg = new HiResImage(imgData->width, imgData->height);
 
 		std::vector<unsigned char> decompressedData = Compression::decompressDeflate(&imgData->compressedData.data()[2], imgData->compressedData.size()-4);
 		//note that when reading different bit depths, they are packed into bytes
@@ -648,12 +648,15 @@ namespace glib
 		int pass = 1;
 		int scanlinesDone = 0;
 		int yGridsNeeded = 0;
+		int scanLineBits = 0;
 		if(interlace)
 		{
 			xGrids = (int)MathExt::ceil((double)xGrids / 8.0);
 			yGrids = (int)MathExt::ceil((double)yGrids / 8.0);
 			
 			scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0));
+			scanLineBits = xGrids * bitDepth;
+
 			yGridsNeeded = yGrids;
 
 			//note that scanLineBytes was changed to a completely new value
@@ -878,7 +881,7 @@ namespace glib
 
 			//Take the unfiltered scanline and put into image
 			//For now, only when not interlaced
-			Color* rawPixs = tImg->getPixels();
+			Color4f* rawPixs = tImg->getPixels();
 			
 			int interlacedX = 0;
 			int interlacedY = 0;
@@ -939,19 +942,19 @@ namespace glib
 				{
 					BinarySet pixelBits = BinarySet();
 					pixelBits.setValues(scanLine.data(), scanLineBytes);
-
+					pixelBits.setNumberOfBits(scanLineBits);
 					pixelBits.setBitOrder(BinarySet::RMSB);
 					
 					//Increase Color Amount
-					double ICA = 255.0 / ((2<<(bitDepth-1)) - 1);
+					double ICA = 1.0 / ((2<<(bitDepth-1)) - 1);
 
 					for(size_t i = 0; i<pixelBits.size(); i+=bitDepth)
 					{
-						Color c;
-						c.red = (unsigned char)(ICA * pixelBits.getBits(i, i + bitDepth, true));
+						Color4f c;
+						c.red = (ICA * pixelBits.getBits(i, i + bitDepth, true));
 						c.green = c.red;
 						c.blue = c.red;
-						c.alpha = 255;
+						c.alpha = 1.0;
 
 						if(!interlace)
 						{
@@ -960,7 +963,7 @@ namespace glib
 						}
 						else
 						{
-							tImg->setPixel(interlacedX, interlacedY, c);
+							rawPixs[interlacedY*tImg->getWidth() + interlacedX] = c;
 							interlacedX += incVal;
 						}
 						
@@ -970,11 +973,11 @@ namespace glib
 				{
 					for(size_t i = 0; i<scanLine.size(); i++)
 					{
-						Color c;
-						c.red = scanLine[i];
-						c.green = c.red;
-						c.blue = c.red;
-						c.alpha = 255;
+						Color4f c;
+						c.red = (double)scanLine[i] / 255.0;
+						c.green = c.green;
+						c.blue = c.blue;
+						c.alpha = 1.0;
 
 						if(!interlace)
 						{
@@ -983,7 +986,29 @@ namespace glib
 						}
 						else
 						{
-							tImg->setPixel(interlacedX, interlacedY, c);
+							rawPixs[interlacedY*tImg->getWidth() + interlacedX] = c;
+							interlacedX += incVal;
+						}
+					}
+				}
+				else if(bitDepth==16)
+				{
+					for(size_t i = 0; i<scanLine.size(); i+=2)
+					{
+						Color4f c;
+						c.red = (double)(((int)scanLine[i]<<8) + scanLine[i+1]) / 65535.0;
+						c.green = c.red;
+						c.blue = c.red;
+						c.alpha = 1.0;
+
+						if(!interlace)
+						{
+							rawPixs[rawIndex] = c;
+							rawIndex++;
+						}
+						else
+						{
+							rawPixs[interlacedY*tImg->getWidth() + interlacedX] = c;
 							interlacedX += incVal;
 						}
 					}
@@ -998,11 +1023,11 @@ namespace glib
 				{
 					for(size_t i = 0; i<scanLine.size(); i+=3)
 					{
-						Color c;
-						c.red = scanLine[i];
-						c.green = scanLine[i+1];
-						c.blue = scanLine[i+2];
-						c.alpha = 255;
+						Color4f c;
+						c.red = (double)scanLine[i] / 255.0;
+						c.green = (double)scanLine[i+1] / 255.0;
+						c.blue = (double)scanLine[i+2] / 255.0;
+						c.alpha = 1.0;
 
 						if(!interlace)
 						{
@@ -1011,7 +1036,29 @@ namespace glib
 						}
 						else
 						{
-							tImg->setPixel(interlacedX, interlacedY, c);
+							rawPixs[interlacedY*tImg->getWidth() + interlacedX] = c;
+							interlacedX += incVal;
+						}
+					}
+				}
+				else if(bitDepth==16)
+				{
+					for(size_t i = 0; i<scanLine.size(); i+=6)
+					{
+						Color4f c;
+						c.red = (double)(((int)scanLine[i]<<8) + scanLine[i+1]) / 65535.0;
+						c.green = (double)(((int)scanLine[i+2]<<8) + scanLine[i+3]) / 65535.0;
+						c.blue = (double)(((int)scanLine[i+4]<<8) + scanLine[i+5]) / 65535.0;
+						c.alpha = 1.0;
+
+						if(!interlace)
+						{
+							rawPixs[rawIndex] = c;
+							rawIndex++;
+						}
+						else
+						{
+							rawPixs[interlacedY*tImg->getWidth() + interlacedX] = c;
 							interlacedX += incVal;
 						}
 					}
@@ -1028,13 +1075,15 @@ namespace glib
 				{
 					BinarySet pixelBits = BinarySet();
 					pixelBits.setValues(scanLine.data(), scanLineBytes);
+					pixelBits.setNumberOfBits(scanLineBits);
 					pixelBits.setBitOrder(BinarySet::RMSB);
 					
 					for(size_t i = 0; i<pixelBits.size(); i+=bitDepth)
 					{
 						paletteIndex = pixelBits.getBits(i, i+bitDepth, true);
 
-						Color c = p->getColor(paletteIndex);
+						Color pColor = p->getColor(paletteIndex);
+						Color4f c = SimpleGraphics::convertColorToColor4f(pColor);
 						if(!interlace)
 						{
 							rawPixs[rawIndex] = c;
@@ -1042,7 +1091,7 @@ namespace glib
 						}
 						else
 						{
-							tImg->setPixel(interlacedX, interlacedY, c);
+							rawPixs[interlacedY*tImg->getWidth() + interlacedX] = c;
 							interlacedX += incVal;
 						}
 					}
@@ -1053,7 +1102,8 @@ namespace glib
 					{
 						paletteIndex = scanLine[i];
 
-						Color c = p->getColor(paletteIndex);
+						Color pColor = p->getColor(paletteIndex);
+						Color4f c = SimpleGraphics::convertColorToColor4f(pColor);
 						if(!interlace)
 						{
 							rawPixs[rawIndex] = c;
@@ -1061,7 +1111,7 @@ namespace glib
 						}
 						else
 						{
-							tImg->setPixel(interlacedX, interlacedY, c);
+							rawPixs[interlacedY*tImg->getWidth() + interlacedX] = c;
 							interlacedX += incVal;
 						}
 					}
@@ -1076,11 +1126,11 @@ namespace glib
 				{
 					for(size_t i = 0; i<scanLine.size(); i+=2)
 					{
-						Color c;
-						c.red = scanLine[i];
+						Color4f c;
+						c.red = (double)scanLine[i] / 255.0;
 						c.green = c.red;
 						c.blue = c.red;
-						c.alpha = scanLine[i+1];
+						c.alpha = (double)scanLine[i+1] / 255.0;
 
 						if(!interlace)
 						{
@@ -1089,11 +1139,34 @@ namespace glib
 						}
 						else
 						{
-							tImg->setPixel(interlacedX, interlacedY, c);
+							rawPixs[interlacedY*tImg->getWidth() + interlacedX] = c;
 							interlacedX += incVal;
 						}
 					}
 				}
+				else if(bitDepth==16)
+				{
+					for(size_t i = 0; i<scanLine.size(); i+=4)
+					{
+						Color4f c;
+						c.red = (double)(((int)scanLine[i]<<8) + scanLine[i+1]) / 65535.0;
+						c.green = c.red;
+						c.blue = c.red;
+						c.alpha = (double)(((int)scanLine[i+2]<<8) + scanLine[i+3]) / 65535.0;
+
+						if(!interlace)
+						{
+							rawPixs[rawIndex] = c;
+							rawIndex++;
+						}
+						else
+						{
+							rawPixs[interlacedY*tImg->getWidth() + interlacedX] = c;
+							interlacedX += incVal;
+						}
+					}
+				}
+
 			}
 			else if(colorType==6)
 			{
@@ -1104,11 +1177,11 @@ namespace glib
 				{
 					for(size_t i = 0; i<scanLine.size(); i+=4)
 					{
-						Color c;
-						c.red = scanLine[i];
-						c.green = scanLine[i+1];
-						c.blue = scanLine[i+2];
-						c.alpha = scanLine[i+3];
+						Color4f c;
+						c.red = (double)scanLine[i] / 255.0;
+						c.green = (double)scanLine[i+1] / 255.0;
+						c.blue = (double)scanLine[i+2] / 255.0;
+						c.alpha = (double)scanLine[i+3] / 255.0;
 
 						if(!interlace)
 						{
@@ -1117,7 +1190,30 @@ namespace glib
 						}
 						else
 						{
-							tImg->setPixel(interlacedX, interlacedY, c);
+							// tImg->setPixel(interlacedX, interlacedY, c);
+							rawPixs[interlacedY*tImg->getWidth() + interlacedX] = c;
+							interlacedX += incVal;
+						}
+					}
+				}
+				else if(bitDepth==16)
+				{
+					for(size_t i = 0; i<scanLine.size(); i+=8)
+					{
+						Color4f c;
+						c.red = (double)(((int)scanLine[i]<<8) + scanLine[i+1]) / 65535.0;
+						c.green = (double)(((int)scanLine[i+2]<<8) + scanLine[i+3]) / 65535.0;
+						c.blue = (double)(((int)scanLine[i+4]<<8) + scanLine[i+5]) / 65535.0;
+						c.alpha = (double)(((int)scanLine[i+6]<<8) + scanLine[i+7]) / 65535.0;
+
+						if(!interlace)
+						{
+							rawPixs[rawIndex] = c;
+							rawIndex++;
+						}
+						else
+						{
+							rawPixs[interlacedY*tImg->getWidth() + interlacedX] = c;
 							interlacedX += incVal;
 						}
 					}
@@ -1134,9 +1230,9 @@ namespace glib
 
 	#pragma endregion
 
-	Image** Image::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages, std::vector<int>* extraData)
+	HiResImage** HiResImage::loadPNG(std::vector<unsigned char> fileData, int* amountOfImages, std::vector<int>* extraData)
 	{
-		Image** images = nullptr;
+		HiResImage** images = nullptr;
 		
 		int fileSize = fileData.size();
 		int location = 0;
@@ -1209,14 +1305,7 @@ namespace glib
 					break;
 				}
 
-				if(bitDepth==16)
-				{
-					//invalid for now
-					//Doesn't support 16 bitdepth. Maybe later using ColorHiDef
-					
-					valid = false;
-					break;
-				}
+				//supports 16 bit depth now
 
 				fctlData d = fctlData();
 				d.width = globalWidth;
@@ -1383,12 +1472,12 @@ namespace glib
 			if(images==nullptr)
 			{
 				*amountOfImages = imgData.size();
-				images = new Image*[*amountOfImages];
+				images = new HiResImage*[*amountOfImages];
 			}
 
 			for(int i=0; i<*amountOfImages; i++)
 			{
-				Image* tImg = processData(&imgData[i], colorType, bitDepth, interlace, &p);
+				HiResImage* tImg = processData(&imgData[i], colorType, bitDepth, interlace, &p);
 				if(tImg != nullptr)
 				{
 					if(i==0)
@@ -1398,21 +1487,21 @@ namespace glib
 					else
 					{
 						//draw tImg onto a new image if the previous image at the x,y position with the blend options
-						Image* actualImg = nullptr;
+						HiResImage* actualImg = nullptr;
 						if(imgData[i-1].dispose_op == 0)
 						{
-							actualImg = new Image( *(images[i-1]) );
+							actualImg = new HiResImage( *(images[i-1]) );
 						}
 						else if(imgData[i-1].dispose_op == 1)
 						{
-							actualImg = new Image( globalWidth, globalHeight );
+							actualImg = new HiResImage( globalWidth, globalHeight );
 						}
 						else if(imgData[i-1].dispose_op == 2)
 						{
 							if(i>=2)
-								actualImg = new Image( *(images[i-2]) );
+								actualImg = new HiResImage( *(images[i-2]) );
 							else
-								actualImg = new Image( globalWidth, globalHeight );
+								actualImg = new HiResImage( globalWidth, globalHeight );
 						}
 						else
 						{
@@ -1424,7 +1513,8 @@ namespace glib
 						
 						if(imgData[i].blend_op == 0)
 						{
-							actualImg->drawImage(tImg, imgData[i].x_offset, imgData[i].y_offset);
+							SimpleGraphics::drawImage(tImg, imgData[i].x_offset, imgData[i].y_offset, actualImg);
+							// actualImg->drawImage(tImg, imgData[i].x_offset, imgData[i].y_offset);
 						}
 						else if(imgData[i].blend_op == 1)
 						{
@@ -1434,7 +1524,9 @@ namespace glib
 							SimpleGraphics::setColor( {255,255,255,255} );
 							SimpleGraphics::setCompositeRule( SimpleGraphics::COMPOSITE_SRC_OVER );
 
-							actualImg->drawSprite(tImg, imgData[i].x_offset, imgData[i].y_offset);
+							
+							SimpleGraphics::drawImage(tImg, imgData[i].x_offset, imgData[i].y_offset, actualImg);
+							// actualImg->drawSprite(tImg, imgData[i].x_offset, imgData[i].y_offset);
 
 							SimpleGraphics::setColor(oldColor);
 							SimpleGraphics::setCompositeRule(oldCompositeRule);

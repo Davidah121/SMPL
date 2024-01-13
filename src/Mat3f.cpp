@@ -3,7 +3,7 @@
 namespace glib
 {
 		
-	const Class Mat3f::globalClass = Class("Mat3f", {&Matrix::globalClass});
+	const RootClass Mat3f::globalClass = RootClass("Mat3f", {"Matrix"});
 
 	Mat3f::Mat3f() : Matrix(3, 3)
 	{

@@ -4,7 +4,7 @@
 
     namespace glib
     {
-        const Class GLFont::globalClass = Class("GLFont", {&Font::globalClass});
+        const RootClass GLFont::globalClass = RootClass("GLFont", {"Font"});
 
         GLFont::GLFont(File f)
         {

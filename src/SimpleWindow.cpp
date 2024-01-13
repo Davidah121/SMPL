@@ -14,7 +14,7 @@
 		int SimpleWindow::screenWidth = System::getDesktopWidth();
 		int SimpleWindow::screenHeight = System::getDesktopHeight();
 
-		const Class SimpleWindow::globalClass = Class("SimpleWindow", {&Object::globalClass});
+		const RootClass SimpleWindow::globalClass = RootClass("SimpleWindow", {"Object"});
 
 		SimpleWindow* SimpleWindow::getWindowByHandle(size_t handle)
 		{

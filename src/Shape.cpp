@@ -8,7 +8,7 @@ namespace glib
 
 
 		#pragma region ClassStuff
-		const Class Shape::globalClass = Class("Shape", {&Object::globalClass});
+		const RootClass Shape::globalClass = RootClass("Shape", {"Object"});
 		#pragma endregion
 
 
@@ -66,7 +66,7 @@ namespace glib
 	#pragma region POINT2D
 
 		#pragma region ClassStuff
-		const Class Point2D::globalClass = Class("Point2D", { &Shape::globalClass });
+		const RootClass Point2D::globalClass = RootClass("Point2D", { "Shape" });
 		#pragma endregion
 
 	Point2D::Point2D()
@@ -106,7 +106,7 @@ namespace glib
 	#pragma region Box2D
 
 		#pragma region ClassStuff
-		const Class Box2D::globalClass = Class("Box2D", { &Shape::globalClass });
+		const RootClass Box2D::globalClass = RootClass("Box2D", { "Shape" });
 		#pragma endregion
 
 	Box2D::Box2D()
@@ -219,7 +219,7 @@ namespace glib
 	#pragma region CIRCLE
 
 		#pragma region ClassStuff
-		const Class Circle::globalClass = Class("Circle", { &Shape::globalClass });
+		const RootClass Circle::globalClass = RootClass("Circle", { "Shape" });
 		#pragma endregion
 
 	Circle::Circle()
@@ -264,7 +264,7 @@ namespace glib
 	#pragma region ELLIPSE
 
 		#pragma region ClassStuff
-		const Class Ellipse::globalClass = Class("Ellipse", { &Shape::globalClass });
+		const RootClass Ellipse::globalClass = RootClass("Ellipse", { "Shape" });
 		#pragma endregion
 
 	Ellipse::Ellipse()
@@ -325,7 +325,7 @@ namespace glib
 	#pragma region LINE2D
 
 		#pragma region ClassStuff
-		const Class Line2D::globalClass = Class("Line2D", { &Shape::globalClass });
+		const RootClass Line2D::globalClass = RootClass("Line2D", { "Shape" });
 		#pragma endregion
 
 	Line2D::Line2D()
@@ -438,7 +438,7 @@ namespace glib
 	#pragma region TRIANGLE2D
 
 		#pragma region ClassStuff
-		const Class Triangle2D::globalClass = Class("Triangle2D", { &Shape::globalClass });
+		const RootClass Triangle2D::globalClass = RootClass("Triangle2D", { "Shape" });
 		#pragma endregion
 
 	Triangle2D::Triangle2D()
@@ -543,7 +543,7 @@ namespace glib
 	#pragma region TRIANGLE2D_MODEL
 
 		#pragma region ClassStuff
-		const Class Triangle2DModel::globalClass = Class("Triangle2DModel", {&Shape::globalClass});
+		const RootClass Triangle2DModel::globalClass = RootClass("Triangle2DModel", {"Shape"});
 		#pragma endregion
 
 	Triangle2DModel::Triangle2DModel()
@@ -583,7 +583,7 @@ namespace glib
 	#pragma region POLYGON2D
 
 		#pragma region ClassStuff
-		const Class Polygon2D::globalClass = Class("Polygon2D", {&Shape::globalClass});
+		const RootClass Polygon2D::globalClass = RootClass("Polygon2D", {"Shape"});
 		#pragma endregion
 
 	Polygon2D::Polygon2D()
@@ -767,7 +767,7 @@ namespace glib
 	#pragma region TRIANGLE_3D
 	
 		#pragma region ClassStuff
-		const Class Triangle3D::globalClass = Class("Triangle3D", {&Shape::globalClass});
+		const RootClass Triangle3D::globalClass = RootClass("Triangle3D", {"Shape"});
 		#pragma endregion
 
 	Triangle3D::Triangle3D()
@@ -794,7 +794,7 @@ namespace glib
 
 	}
 
-	//Object and Class Stuff
+	//Object and RootClass Stuff
 
 	void Triangle3D::setVertex1(Vec3f p)
 	{
@@ -870,7 +870,7 @@ namespace glib
 	#pragma region TRIANGLE3D_MODEL
 
 		#pragma region ClassStuff
-		const Class Triangle3DModel::globalClass = Class("Triangle3DModel", {&Shape::globalClass});
+		const RootClass Triangle3DModel::globalClass = RootClass("Triangle3DModel", {"Shape"});
 		#pragma endregion
 
 	Triangle3DModel::Triangle3DModel()

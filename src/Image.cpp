@@ -11,7 +11,7 @@
 namespace glib
 {
 
-	const Class Image::globalClass = Class("Image", {&Object::globalClass});
+	const RootClass Image::globalClass = RootClass("Image", {"Object"});
 
 	Image::Image()
 	{
@@ -50,10 +50,11 @@ namespace glib
 	void Image::operator=(const Image& other)
 	{
 		dispose();
+
+		setClass(globalClass);
 		this->width = other.width;
 		this->height = other.height;
 		
-		setClass(globalClass);
 		if(other.pixels != nullptr)
 		{
 			pixels = new Color[width * height];
@@ -74,7 +75,7 @@ namespace glib
 			delete[] pixels;
 		
 		pixels = nullptr;
-		p.~ColorPalette();
+		p.clearPalette();
 	}
 	
 	void Image::setSamplingMethod(int m)
@@ -321,6 +322,28 @@ namespace glib
 		p = v->p;
 	}
 
+	
+	void Image::copyImage(HiResImage* v)
+	{
+		dispose();
+		this->width = v->getWidth();
+		this->height = v->getHeight();
+		pixels = new Color[width * height];
+
+		Color* sPixels = pixels;
+		Color* ePixels = pixels + (width*height);
+		Color4f* oPixels = v->getPixels();
+
+		while(sPixels < ePixels)
+		{
+			*sPixels = SimpleGraphics::convertColor4fToColor(*oPixels);
+			sPixels++;
+			oPixels++;
+		}
+
+		p = v->getPalette();
+	}
+
 	void Image::setPalette(ColorPalette p)
 	{
 		this->p = p;
@@ -348,141 +371,29 @@ namespace glib
 		}
 	}
 
-	#pragma region GRAPHICS_WRAPPER
-
-	void Image::clearImage()
-	{
-		SimpleGraphics::clearImage(this);
-	}
-
-	void Image::drawRect(int x, int y, int x2, int y2, bool outline)
-	{
-		SimpleGraphics::drawRect(x, y, x2, y2, outline, this);
-	}
-
-	void Image::drawLine(int x, int y, int x2, int y2)
-	{
-		SimpleGraphics::drawLine(x, y, x2, y2, this);
-	}
-
-	void Image::drawCircle(int x, int y, int radius, bool outline)
-	{
-		SimpleGraphics::drawCircle(x, y, radius, outline, this);
-	}
-
-	void Image::drawPolygon(Vec2f* points, int size)
-	{
-		SimpleGraphics::drawPolygon(points, size, this);
-	}
-
-	void Image::drawImage(Image* img, int x, int y)
-	{
-		SimpleGraphics::drawImage(img, x, y, this);
-	}
-
-	void Image::drawSprite(Image* img, int x, int y)
-	{
-		SimpleGraphics::drawSprite(img, x, y, this);
-	}
-
-	void Image::drawSprite(Image* img, int x, int y, int x2, int y2)
-	{
-		SimpleGraphics::drawSprite(img, x, y, x2, y2, this);
-	}
-
-	void Image::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH)
-	{
-		SimpleGraphics::drawSpritePart(img, x, y, imgX, imgY, imgW, imgH, this);
-	}
-
-	void Image::drawText(std::string str, int x, int y)
-	{
-		SimpleGraphics::drawText(str, x, y, this);
-	}
-
-	void Image::drawText(std::wstring str, int x, int y)
-	{
-		SimpleGraphics::drawText(str, x, y, this);
-	}
-
-	void Image::drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowLineBreak)
-	{
-		SimpleGraphics::drawTextLimits(str, x, y, maxWidth, maxHeight, allowLineBreak, this);
-	}
-
-	void Image::drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool allowLineBreak)
-	{
-		SimpleGraphics::drawTextLimits(str, x, y, maxWidth, maxHeight, allowLineBreak, this);
-	}
-
-	void Image::drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor)
-	{
-		SimpleGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor, this);
-	}
-
-	void Image::drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor)
-	{
-		SimpleGraphics::drawTextLimitsHighlighted(str, x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor, this);
-	}
-
-	void Image::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline)
-	{
-		SimpleGraphics::drawTriangle(x1, y1, x2, y2, x3, y3, outline, this);
-	}
-
-	void Image::drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture)
-	{
-		SimpleGraphics::drawTexturedTriangle(p1, p2, p3, texture, this);
-	}
-
-	void Image::drawPixel(int x, int y, Color c)
-	{
-		SimpleGraphics::drawPixel(x, y, c, this);
-	}
-
-	void Image::drawPixel(double x, double y, Color c)
-	{
-		SimpleGraphics::drawPixel(x, y, c, this);
-	}
-
-	#pragma endregion
-
 	Image** Image::loadImage(File filename, int* amountOfImages, std::vector<int>* extraData)
 	{
-		SimpleFile file(filename, SimpleFile::READ);
-
-		if (file.isOpen())
+		//lazy approach. Use HighRes version and convert from there.
+		int totalImgs = 0;
+		HiResImage** arrOfHiResImages = HiResImage::loadImage(filename, &totalImgs, extraData);
+		
+		if(amountOfImages != nullptr)
+			*amountOfImages = totalImgs;
+		
+		if(arrOfHiResImages != nullptr)
 		{
-			std::vector<unsigned char> fileData = file.readFullFileAsBytes();
-			file.close();
+			Image** arrOfImages = new Image*[totalImgs];
 
-			std::string filenameExt = filename.getExtension();
-			if (filenameExt == ".bmp")
+			for(int i=0; i<totalImgs; i++)
 			{
-				if (amountOfImages != nullptr)
-					* amountOfImages = 1;
+				arrOfImages[i] = new Image();
+				arrOfImages[i]->copyImage( arrOfHiResImages[i] );
+				
+				delete arrOfHiResImages[i];
+			}
+			delete[] arrOfHiResImages;
 
-				return loadBMP(fileData, amountOfImages);
-			}
-			else if (filenameExt == ".gif")
-			{
-				return loadGIF(fileData, amountOfImages, extraData);
-			}
-			else if (filenameExt == ".png")
-			{
-				return loadPNG(fileData, amountOfImages, extraData);
-			}
-			else if (filenameExt == ".jpg" || filenameExt == ".jpeg" || filenameExt == ".jfif")
-			{
-				return loadJPG(fileData, amountOfImages);
-			}
-		}
-		else
-		{
-			if (amountOfImages != nullptr)
-				* amountOfImages = 0;
-
-			return nullptr;
+			return arrOfImages;
 		}
 
 		return nullptr;

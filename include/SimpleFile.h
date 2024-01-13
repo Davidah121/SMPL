@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include<vector>
 #include<fstream>
 #include "Object.h"
@@ -62,10 +66,10 @@ namespace glib
 		 * @brief Destroy the SimpleFile object
 		 * 
 		 */
-		~SimpleFile();
+		virtual ~SimpleFile();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
 
 		//Read functions
 		/**
@@ -99,7 +103,7 @@ namespace glib
 		 * @param size 
 		 * @return size_t
 		 */
-		size_t readBytes(char* buffer, int size);
+		size_t readBytes(char* buffer, size_t size);
 		
 		/**
 		 * @brief Reads an byte of data as an int.
@@ -232,7 +236,7 @@ namespace glib
 		 * @param size
 		 * 		The size of the data.
 		 */
-		void writeBytes(unsigned char* data, int size);
+		void writeBytes(unsigned char* data, size_t size);
 
 		/**
 		 * @brief Writes a string to the file. Does not write a line break.
@@ -310,14 +314,25 @@ namespace glib
 		 */
 		size_t getBytesLeft();
 
-	private:
+	protected:
+		/**
+		 * @brief Construct a new Simple File object
+		 * 		It will be empty and invalid. Useful for subclasses
+		 * 
+		 */
+		SimpleFile();
+
 		void init(std::string filename, char type);
+		void init(FILE* openFilePointer, std::string filename, char type);
 		int getChar();
 
+		FILE* getFilePointer();
+		
 		std::string filename;
 		char type=0;
 		char dataType=0;
-		std::fstream* file = nullptr;
+		FILE* cFile = nullptr;
+		// std::fstream* file = nullptr;
 		size_t size;
 		
 	};

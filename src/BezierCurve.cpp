@@ -5,7 +5,7 @@
 namespace glib
 {
 
-	const Class BezierCurve::globalClass = Class("BezierCurve", {&Object::globalClass});
+	const RootClass BezierCurve::globalClass = RootClass("BezierCurve", {"Object"});
 
 
 	BezierCurve::BezierCurve()

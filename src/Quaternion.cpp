@@ -4,7 +4,7 @@
 namespace glib
 {
 
-    const Class Quaternion::globalClass = Class("Quaternion", {&Object::globalClass});
+    const RootClass Quaternion::globalClass = RootClass("Quaternion", {"Object"});
 
     Quaternion::Quaternion()
     {

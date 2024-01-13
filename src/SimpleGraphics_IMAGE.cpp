@@ -80,6 +80,84 @@ namespace glib
 		}
 	}
 
+	void SimpleGraphics::drawImage(HiResImage* img, int x, int y, HiResImage* surf)
+	{
+		int currentComposite = compositeRule;
+		if(surf == nullptr)
+			return;
+		if(img == nullptr)
+			return;
+		if(surf->getWidth()<=0 || surf->getHeight()<=0)
+		{
+			return;
+		}
+		if(img->getWidth()<=0 || img->getHeight()<=0)
+		{
+			return;
+		}
+
+		int tempWidth = surf->getWidth();
+		int tempHeight = surf->getHeight();
+
+		int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
+		int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+
+		int maxXBound = MathExt::min(tempWidth-1, (int)clippingRect.getRightBound());
+		int maxYBound = MathExt::min(tempHeight-1, (int)clippingRect.getBottomBound());
+
+		int minX = MathExt::clamp(x, minXBound, maxXBound);
+		int minY = MathExt::clamp(y, minYBound, maxYBound);
+
+		int startImgY = MathExt::max(minY - y, 0);
+		int startImgX = MathExt::max(minX - x, 0);
+
+		int imgDrawWidth = img->getWidth() - startImgX;
+		int imgDrawHeight = img->getHeight() - startImgY;
+		
+		int maxX = MathExt::clamp(minX+(imgDrawWidth-1), minXBound, maxXBound);
+		int maxY = MathExt::clamp(minY+(imgDrawHeight-1), minYBound, maxYBound);
+		
+		if(x+tempWidth < minX || y+tempHeight < minY)
+			return; //Outside of the bounds that can be rendered
+		if(y > maxY || x > maxX)
+			return; //Outside of the bounds that can be rendered
+
+		if(minX >= img->getWidth() || minY >= img->getHeight())
+			return; //Not valid bounds for the image we are drawing.
+		
+		Color4f* surfPixels = surf->getPixels();
+		Color4f* drawImgPixels = img->getPixels(); //Not using any pixel filtering and no edge conditions
+
+		if(currentComposite == NO_COMPOSITE)
+		{
+			int imgY = startImgY;
+			for(int tY=minY; tY<=maxY; tY++)
+			{
+				int imgX = startImgX; //distance from x to minX
+				for(int tX=minX; tX<=maxX; tX++)
+				{
+					surfPixels[tX + tY*tempWidth] = drawImgPixels[imgX + imgY*img->getWidth()];
+					imgX++;
+				}
+				imgY++;
+			}
+		}
+		else
+		{
+			int imgY = startImgY;
+			for(int tY=minY; tY<=maxY; tY++)
+			{
+				int imgX = startImgX; //distance from x to minX
+				for(int tX=minX; tX<=maxX; tX++)
+				{
+					drawPixel(tX, tY, drawImgPixels[imgX + imgY*img->getWidth()], surf);
+					imgX++;
+				}
+				imgY++;
+			}
+		}
+	}
+
 	void SimpleGraphics::drawSprite(Image* img, int x, int y, Image* surf)
 	{
 		int currentComposite = compositeRule;
@@ -304,7 +382,6 @@ namespace glib
 
 		nImgW = MathExt::clamp(nImgW, 0, img->getWidth());
 		nImgH = MathExt::clamp(nImgH, 0, img->getHeight());
-		
 
 		
 		int maxX = MathExt::clamp(minX+(nImgW-1), minXBound, maxXBound);
@@ -315,7 +392,7 @@ namespace glib
 		if(y > maxY || x > maxX)
 			return; //Outside of the bounds that can be rendered
 		
-		if(minX >= img->getWidth() || minY >= img->getHeight())
+		if(startImgX >= img->getWidth() || startImgY >= img->getHeight())
 			return; //Not valid bounds for the image we are drawing.
 		
 		Color* surfPixels = surf->getPixels();

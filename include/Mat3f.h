@@ -54,8 +54,8 @@ namespace glib
 		 */
 		void operator=(const Mat3f& o);
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
 
 		/**
 		 * @brief Returns the Identity 3x3 matrix

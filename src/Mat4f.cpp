@@ -3,7 +3,7 @@
 namespace glib
 {
 		
-	const Class Mat4f::globalClass = Class("Mat4f", {&Matrix::globalClass});
+	const RootClass Mat4f::globalClass = RootClass("Mat4f", {"Matrix"});
 
 	Mat4f::Mat4f() : Matrix(4, 4)
 	{

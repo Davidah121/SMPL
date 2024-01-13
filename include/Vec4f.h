@@ -25,6 +25,9 @@ namespace glib
 		 */
 		Vec4f(double x, double y, double z, double w);
 
+		Vec4f(const Vec4f& other);
+		void operator=(const Vec4f& other);
+		
 		/**
 		 * @brief Construct a new Vec4f object from a Vec3f object and
 		 * 		an optional additional value for w.
@@ -47,8 +50,8 @@ namespace glib
 		 */
 		~Vec4f();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
 
 		double x = 0;
 		double y = 0;

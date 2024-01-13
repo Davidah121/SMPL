@@ -5,6 +5,7 @@
 #include <mutex>
 #include "SimpleFile.h"
 #include "Input.h"
+#include <signal.h>
 
 #ifdef __unix__
 	
@@ -148,6 +149,14 @@ namespace glib
 	unsigned int System::getNumberOfThreads()
 	{
 		return numberOfThreads;
+	}
+	
+	void System::mapInteruptSignal(void(*func)(int))
+	{
+		if(func == nullptr)
+			signal(SIGINT, SIG_DFL);
+		else
+			signal(SIGINT, func);
 	}
 
 	int System::getMouseX()

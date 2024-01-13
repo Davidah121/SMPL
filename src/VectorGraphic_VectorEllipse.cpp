@@ -10,7 +10,7 @@ namespace glib
 		
 	#pragma region VectorEllipse
 
-	const Class VectorEllipse::globalClass = Class("VectorEllipse", {&VectorShape::globalClass});
+	const RootClass VectorEllipse::globalClass = RootClass("VectorEllipse", {"VectorShape"});
 
 	VectorEllipse::VectorEllipse() : VectorShape()
 	{
@@ -79,7 +79,7 @@ namespace glib
 					// else
 					// {
 						//fill
-						buffer->drawPixel(i, j, getFillColor());
+						SimpleGraphics::drawPixel(i, j, getFillColor(), buffer);
 					// }
 				}
 				

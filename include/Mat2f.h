@@ -50,8 +50,8 @@ namespace glib
 		 */
 		~Mat2f();
 		
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
 
 		/**
 		 * @brief Returns the Identity 2x2 matrix

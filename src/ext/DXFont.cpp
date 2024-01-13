@@ -4,11 +4,7 @@
 
     namespace glib
     {
-        const Class DXFont::myClass = Class("DXFont", {&Font::myClass});
-        const Class* DXFont::getClass()
-        {
-            return &DXFont::myClass;
-        }
+        const RootClass DXFont::myClass = RootClass("DXFont", {"Font"});
 
         DXFont::DXFont(File f)
         {

@@ -10,7 +10,7 @@ namespace glib
 		
 	#pragma region VectorRectangle
 
-	const Class VectorRectangle::globalClass = Class("VectorRectangle", {&VectorShape::globalClass});
+	const RootClass VectorRectangle::globalClass = RootClass("VectorRectangle", {"VectorShape"});
 
 	VectorRectangle::VectorRectangle() : VectorShape()
 	{
@@ -77,11 +77,11 @@ namespace glib
 
 				if(!onStroke)
 				{
-					buffer->drawPixel(tx, ty, getFillColor());
+					SimpleGraphics::drawPixel(tx, ty, getFillColor(), buffer);
 				}
 				else
 				{
-					buffer->drawPixel(tx, ty, getStrokeColor());
+					SimpleGraphics::drawPixel(tx, ty, getStrokeColor(), buffer);
 				}
 				
 			}

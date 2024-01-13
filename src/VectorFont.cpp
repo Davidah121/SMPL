@@ -4,7 +4,7 @@
 namespace glib
 {
         
-    const Class VectorFont::globalClass = Class("VectorFont", {&Font::globalClass});
+    const RootClass VectorFont::globalClass = RootClass("VectorFont", {"Font"});
 
     VectorFont::VectorFont() : Font()
     {

@@ -5,8 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/include/*",
                 "C:/Libraries/glew-2.1.0/include/*",
-                "C:/Libraries/catch2_UnitTest",
-                "C:/Libraries/zlib/include"
+                "C:/Libraries/catch2_UnitTest"
             ],
             "defines": [
                 "_DEBUG",

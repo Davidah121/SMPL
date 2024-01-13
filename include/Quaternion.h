@@ -31,7 +31,7 @@ namespace glib
          */
         ~Quaternion();
 
-        static const Class globalClass;
+        static const RootClass globalClass;
 
         Quaternion operator*(double val);
         void operator*=(double val);

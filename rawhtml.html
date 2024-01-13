@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            function send()
+            {
+                const array = new Uint8Array(8).map((v, i) => (i+65));
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "http://127.0.0.1:4096/posturl", false);
+                
+                xhr.setRequestHeader("CustomHeader1", "data1");
+                xhr.setRequestHeader("CustomHeader2", "data2");
+
+                xhr.send(array);
+            }
+        </script>
+    </head>
+    <body>
+        <button onclick="send()">Press me</button>
+    </body>
+</html>

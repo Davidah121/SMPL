@@ -2,19 +2,25 @@
 
 namespace glib
 {
-	const Class Object::globalClass = Class("Object", {});
+	const RootClass Object::globalClass = RootClass("Object", {""});
 
 	Object::Object()
 	{
-		myClass = this->globalClass;
+		myClass = globalClass;
 	}
+	
 	Object::~Object()
 	{
 
 	}
 
-	const Class& Object::getClass()
+	Class Object::getClass()
 	{
 		return myClass;
+	}
+
+	void Object::setClass(Class c)
+	{
+		myClass = c;
 	}
 } //NAMESPACE glib END

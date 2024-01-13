@@ -5,7 +5,7 @@
 namespace glib
 {
 		
-	const Class Vec4f::globalClass = Class("Vec4f", {&Object::globalClass});
+	const RootClass Vec4f::globalClass = RootClass("Vec4f", {"Object"});
 
 	Vec4f::Vec4f()
 	{
@@ -19,6 +19,23 @@ namespace glib
 		this->y = y;
 		this->z = z;
 		this->w = w;
+	}
+
+	Vec4f::Vec4f(const Vec4f& other)
+	{
+		setClass(globalClass);
+		x = other.x;
+		y = other.y;
+		z = other.z;
+		w = other.w;
+	}
+
+	void Vec4f::operator=(const Vec4f& other)
+	{
+		x = other.x;
+		y = other.y;
+		z = other.z;
+		w = other.w;
 	}
 
 	Vec4f::Vec4f(Vec3f other, double w)

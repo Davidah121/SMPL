@@ -4,7 +4,7 @@
 namespace glib
 {
 
-	const Class GeneralVector::globalClass = Class("GeneralVector", {&Object::globalClass});
+	const RootClass GeneralVector::globalClass = RootClass("GeneralVector", {"Object"});
 
 	GeneralVector::GeneralVector(int size)
 	{

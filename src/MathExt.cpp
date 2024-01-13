@@ -11,23 +11,85 @@
 namespace glib
 {
 
-	
+	int MathExt::popcount(uint8_t x)
+	{
+		#ifdef _MSC_VER
+		return __popcnt16(x);
+		#else
+		return __builtin_popcount(x);
+		#endif
+	}
+
+	int MathExt::popcount(uint16_t x)
+	{
+		#ifdef _MSC_VER
+		return __popcnt16(x);
+		#else
+		return __builtin_popcount(x);
+		#endif
+	}
+
 	int MathExt::popcount(uint32_t x)
 	{
-		x = x - ((x >> 1) & 0x55555555);
-		x = (x & 0x33333333) + ((x >> 2) & 0x33333333);
-		x = (x + (x >> 4)) & 0x0F0F0F0F;
-		return (x * 0x01010101) >> 24;
+		#ifdef _MSC_VER
+		return __popcnt(x);
+		#else
+		return __builtin_popcount(x);
+		#endif
 	}
 
 	int MathExt::popcount(uint64_t x)
 	{
-		uint64_t temp;
-		temp = x * 0x00020004000800010ULL;
-		temp = temp & 0x1111111111111111ULL;
-		temp = temp * 0x1111111111111111ULL;
-		return (temp >> 60);
+		#ifdef _MSC_VER
+		return __popcnt64(x);
+		#else
+		return __builtin_popcountll(x);
+		#endif
 	}
+
+	
+	int MathExt::hammingDistance(uint8_t v1, uint8_t v2)
+	{
+		return MathExt::popcount((uint8_t)(v1 ^ v2));
+	}
+	int MathExt::hammingDistance(uint16_t v1, uint16_t v2)
+	{
+		return MathExt::popcount((uint16_t)(v1 ^ v2));
+	}
+	int MathExt::hammingDistance(uint32_t v1, uint32_t v2)
+	{
+		return MathExt::popcount((uint32_t)(v1 ^ v2));
+	}
+	int MathExt::hammingDistance(uint64_t v1, uint64_t v2)
+	{
+		return MathExt::popcount((uint64_t)(v1 ^ v2));
+	}
+
+	// int MathExt::hammingDistance(uint8_t v1, uint8_t v2)
+	// {
+	// 	int counter = 0;
+	// 	for(int i=0; i<8; i++)
+	// 	{
+	// 		if((v1 & 0x01) != (v2 & 0x01))
+	// 			counter++;
+	// 		v1 = v1 >> 1;
+	// 		v2 = v2 >> 1;
+	// 	}
+	// 	return counter;
+	// }
+
+	// int MathExt::hammingDistance(uint64_t v1, uint64_t v2)
+	// {
+	// 	int counter = 0;
+	// 	for(int i=0; i<64; i++)
+	// 	{
+	// 		if((v1 & 0x01) != (v2 & 0x01))
+	// 			counter++;
+	// 		v1 = v1 >> 1;
+	// 		v2 = v2 >> 1;
+	// 	}
+	// 	return counter;
+	// }
 	
 	float MathExt::floor(float a)
 	{
@@ -1923,6 +1985,31 @@ namespace glib
 
 	#pragma region COSINE_TRANSFORM_1D
 
+	#pragma region NAYUKI_FDCT_STUFF
+
+	/* 
+	* Fast discrete cosine transform algorithms (C++)
+	* 
+	* Copyright (c) 2019 Project Nayuki. (MIT License)
+	* https://www.nayuki.io/page/fast-discrete-cosine-transform-algorithms
+	* 
+	* Permission is hereby granted, free of charge, to any person obtaining a copy of
+	* this software and associated documentation files (the "Software"), to deal in
+	* the Software without restriction, including without limitation the rights to
+	* use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+	* the Software, and to permit persons to whom the Software is furnished to do so,
+	* subject to the following conditions:
+	* - The above copyright notice and this permission notice shall be included in
+	*   all copies or substantial portions of the Software.
+	* - The Software is provided "as is", without warranty of any kind, express or
+	*   implied, including but not limited to the warranties of merchantability,
+	*   fitness for a particular purpose and noninfringement. In no event shall the
+	*   authors or copyright holders be liable for any claim, damages or other
+	*   liability, whether in an action of contract, tort or otherwise, arising from,
+	*   out of or in connection with the Software or the use or other dealings in the
+	*   Software.
+	*/
+
 	void doFDCT(double* arr, double* temp, size_t size)
 	{
 		if(size == 1)
@@ -1936,8 +2023,8 @@ namespace glib
 			temp[i + halfSize] = (x-y) / (MathExt::cos((i + 0.5) * PI / size) * 2);
 		}
 
-		doFDCT(arr, temp, halfSize);
-		doFDCT(arr, &temp[halfSize], halfSize);
+		doFDCT(temp, arr, halfSize);
+		doFDCT(&temp[halfSize], arr, halfSize);
 
 		for(size_t i=0; i<halfSize-1; i++)
 		{
@@ -1962,10 +2049,10 @@ namespace glib
 			temp[i + halfSize] = arr[i*2 - 1] + arr[i*2 + 1];
 		}
 
-		doIDCT(arr, temp, halfSize);
-		doIDCT(arr, &temp[halfSize], halfSize);
+		doIDCT(temp, arr, halfSize);
+		doIDCT(&temp[halfSize], arr, halfSize);
 
-		for(size_t i=0; i<halfSize-1; i++)
+		for(size_t i=0; i<halfSize; i++)
 		{
 			double x = temp[i];
 			double y = temp[i + halfSize] / (MathExt::cos((i + 0.5) * PI / size) * 2);
@@ -1974,35 +2061,40 @@ namespace glib
 		}
 	}
 
+	#pragma endregion
+
 	double MathExt::discreteCosineTransform(double* arr, int size, int u, bool inverse)
 	{
-		double sum = 0;
-		double alpha = 1;
-
-		if(u==0)
-			alpha = 1.0/MathExt::sqrt(2.0);
-
-		for(int x=0; x<size; x++)
+		double factor = PI/size;
+		if(inverse == false)
 		{
-			double cosCoeff = 0;
-			if(inverse)
+			double sum = 0;
+			double scaleFactor = 0;
+			for(int x=0; x<size; x++)
 			{
-				if(x==0)
-					alpha = 1.0/MathExt::sqrt(2.0);
-				else
-					alpha = 1.0;
-
-				cosCoeff = (PI*( (2*u) + 1)*x) / (2*size);
+				double cosCoeff = (x+0.5)*u*factor;
+				sum += arr[x]*MathExt::cos(cosCoeff);
 			}
+
+			if(u == 0)
+				scaleFactor = 1.0/MathExt::sqrt(size);
 			else
-			{
-				cosCoeff = (PI*( (2*x) + 1)*u) / (2*size);
-			}
+				scaleFactor = MathExt::sqrt(2.0/size);
 
-			sum += alpha * arr[x] * MathExt::cos( cosCoeff );
+			return sum * scaleFactor;
 		}
-
-		return sum * MathExt::sqrt(2.0/size);
+		else
+		{
+			double sum = arr[0]/MathExt::sqrt(2.0);
+			double scaleFactor = MathExt::sqrt(2.0/size);
+			for(int x=1; x<size; x++)
+			{
+				double cosCoeff = (u+0.5)*x*factor;
+				sum += arr[x]*MathExt::cos(cosCoeff);
+			}
+			
+			return sum * scaleFactor;
+		}
 	}
 
 	std::vector<double> MathExt::cosineTransform(double* arr, int size, bool inverse)
@@ -2034,9 +2126,25 @@ namespace glib
 			temp = std::vector<double>(size);
 			memcpy(output.data(), arr, size*sizeof(double));
 			if(!inverse)
+			{
+				double factor = MathExt::sqrt(2.0/size);
 				doFDCT(output.data(), temp.data(), size);
+				output[0] *= 1.0/MathExt::sqrt(size);
+				for(int i=1; i<size; i++)
+				{
+					output[i] *= factor;
+				}
+			}
 			else
+			{
+				double factor = MathExt::sqrt(2.0/size);
+				output[0] /= MathExt::sqrt(2.0);
 				doIDCT(output.data(), temp.data(), size);
+				for(int i=0; i<size; i++)
+				{
+					output[i] *= factor;
+				}
+			}
 		}
 
 		return output;
@@ -2389,118 +2497,177 @@ namespace glib
 
 	void MathExt::FCT8(double* arr, double* output, bool inverse)
 	{
-		//assume arr has a size of 8
-		double v[29];
+		// //assume arr has a size of 8
+		// double v[29];
+
+		// if(!inverse)
+		// {
+		// 	v[0] = arr[0]+arr[7];
+		// 	v[1] = arr[1]+arr[6];
+		// 	v[2] = arr[2]+arr[5];
+		// 	v[3] = arr[3]+arr[4];
+		// 	v[4] = arr[3]-arr[4];
+		// 	v[5] = arr[2]-arr[5];
+		// 	v[6] = arr[1]-arr[6];
+		// 	v[7] = arr[0]-arr[7];
+
+		// 	v[8] = v[0] + v[3];
+		// 	v[9] = v[1] + v[2];
+		// 	v[10] = v[1] - v[2];
+		// 	v[11] = v[0] - v[3];
+		// 	v[12] = -v[4] - v[5];
+		// 	v[13] = (v[5]+v[6]) * A[3];
+		// 	v[14] = v[6] + v[7];
+
+		// 	v[15] = v[8] + v[9];
+		// 	v[16] = v[8] - v[9];
+		// 	v[17] = (v[10] + v[11]) * A[1];
+		// 	v[18] = (v[12] + v[14]) * A[5];
+			
+		// 	v[19] = -v[12]*A[2] - v[18];
+		// 	v[20] = v[14]*A[4] - v[18];
+
+		// 	v[21] = v[17] + v[11];
+		// 	v[22] = v[11] - v[17];
+		// 	v[23] = v[13] + v[7];
+		// 	v[24] = v[7] - v[13];
+
+		// 	v[25] = v[19] + v[24];
+		// 	v[26] = v[23] + v[20];
+		// 	v[27] = v[23] - v[20];
+		// 	v[28] = v[24] - v[19];
+
+		// 	output[0] = S[0] * v[15];
+		// 	output[1] = S[1] * v[26];
+		// 	output[2] = S[2] * v[21];
+		// 	output[3] = S[3] * v[28];
+		// 	output[4] = S[4] * v[16];
+		// 	output[5] = S[5] * v[25];
+		// 	output[6] = S[6] * v[22];
+		// 	output[7] = S[7] * v[27];
+		// }
+		// else
+		// {
+		// 	v[15] = arr[0]/S[0];
+		// 	v[26] = arr[1]/S[1];
+		// 	v[21] = arr[2]/S[2];
+		// 	v[28] = arr[3]/S[3];
+		// 	v[16] = arr[4]/S[4];
+		// 	v[25] = arr[5]/S[5];
+		// 	v[22] = arr[6]/S[6];
+		// 	v[27] = arr[7]/S[7];
+
+		// 	v[19] = (v[25]-v[28])/2;
+		// 	v[20] = (v[26]-v[27])/2;
+		// 	v[23] = (v[26]+v[27])/2;
+		// 	v[24] = (v[25]+v[28])/2;
+
+		// 	v[7] = (v[23]+v[24])/2;
+		// 	v[11] = (v[21]+v[22])/2;
+		// 	v[13] = (v[23]-v[24])/2;
+		// 	v[17] = (v[21]-v[22])/2;
+
+		// 	v[8] = (v[15]+v[16])/2;
+		// 	v[9] = (v[15]-v[16])/2;
+
+		// 	v[18] = (v[19]-v[20]) * A[5];
+		// 	v[12] = (v[19]*A[4] - v[18]) / (A[2]*A[5] - A[2]*A[4] - A[4]*A[5]);
+		// 	v[14] = (v[18]-v[20] * A[2]) / (A[2]*A[5] - A[2]*A[4] - A[4]*A[5]);
+
+		// 	v[6] = v[14] - v[7];
+		// 	v[5] = v[13] / A[3] - v[6];
+		// 	v[4] = -v[5] - v[12];
+		// 	v[10] = v[17] / A[1] - v[11];
+
+		// 	v[0] = (v[8]+v[11])/2;
+		// 	v[1] = (v[9]+v[10])/2;
+		// 	v[2] = (v[9]-v[10])/2;
+		// 	v[3] = (v[8]-v[11])/2;
+
+		// 	output[0] = (v[0] + v[7]) / 2;
+		// 	output[1] = (v[1] + v[6]) / 2;
+		// 	output[2] = (v[2] + v[5]) / 2;
+		// 	output[3] = (v[3] + v[4]) / 2;
+		// 	output[4] = (v[3] - v[4]) / 2;
+		// 	output[5] = (v[2] - v[5]) / 2;
+		// 	output[6] = (v[1] - v[6]) / 2;
+		// 	output[7] = (v[0] - v[7]) / 2;
+		// }
 
 		if(!inverse)
 		{
-			v[0] = arr[0]+arr[7];
-			v[1] = arr[1]+arr[6];
-			v[2] = arr[2]+arr[5];
-			v[3] = arr[3]+arr[4];
-			v[4] = arr[3]-arr[4];
-			v[5] = arr[2]-arr[5];
-			v[6] = arr[1]-arr[6];
-			v[7] = arr[0]-arr[7];
-
-			v[8] = v[0] + v[3];
-			v[9] = v[1] + v[2];
-			v[10] = v[1] - v[2];
-			v[11] = v[0] - v[3];
-			v[12] = -v[4] - v[5];
-			v[13] = (v[5]+v[6]) * A[3];
-			v[14] = v[6] + v[7];
-
-			v[15] = v[8] + v[9];
-			v[16] = v[8] - v[9];
-			v[17] = (v[10] + v[11]) * A[1];
-			v[18] = (v[12] + v[14]) * A[5];
-			
-			v[19] = -v[12]*A[2] - v[18];
-			v[20] = v[14]*A[4] - v[18];
-
-			v[21] = v[17] + v[11];
-			v[22] = v[11] - v[17];
-			v[23] = v[13] + v[7];
-			v[24] = v[7] - v[13];
-
-			v[25] = v[19] + v[24];
-			v[26] = v[23] + v[20];
-			v[27] = v[23] - v[20];
-			v[28] = v[24] - v[19];
-
-			output[0] = S[0] * v[15];
-			output[1] = S[1] * v[26];
-			output[2] = S[2] * v[21];
-			output[3] = S[3] * v[28];
-			output[4] = S[4] * v[16];
-			output[5] = S[5] * v[25];
-			output[6] = S[6] * v[22];
-			output[7] = S[7] * v[27];
+			const float mx00 = arr[0] + arr[7];
+			const float mx01 = arr[1] + arr[6];
+			const float mx02 = arr[2] + arr[5];
+			const float mx03 = arr[3] + arr[4];
+			const float mx04 = arr[0] - arr[7];
+			const float mx05 = arr[1] - arr[6];
+			const float mx06 = arr[2] - arr[5];
+			const float mx07 = arr[3] - arr[4];
+			const float mx08 = mx00 + mx03;
+			const float mx09 = mx01 + mx02;
+			const float mx0a = mx00 - mx03;
+			const float mx0b = mx01 - mx02;
+			const float mx0c = 1.38703984532215f*mx04 + 0.275899379282943f*mx07;
+			const float mx0d = 1.17587560241936f*mx05 + 0.785694958387102f*mx06;
+			const float mx0e = -0.785694958387102f*mx05 + 1.17587560241936f*mx06;
+			const float mx0f = 0.275899379282943f*mx04 - 1.38703984532215f*mx07;
+			const float mx10 = 0.353553390593274f * (mx0c - mx0d);
+			const float mx11 = 0.353553390593274f * (mx0e - mx0f);
+			output[0] = 0.353553390593274f * (mx08 + mx09);
+			output[1] = 0.353553390593274f * (mx0c + mx0d);
+			output[2] = 0.461939766255643f*mx0a + 0.191341716182545f*mx0b;
+			output[3] = 0.707106781186547f * (mx10 - mx11);
+			output[4] = 0.353553390593274f * (mx08 - mx09);
+			output[5] = 0.707106781186547f * (mx10 + mx11);
+			output[6] = 0.191341716182545f*mx0a - 0.461939766255643f*mx0b;
+			output[7] = 0.353553390593274f * (mx0e + mx0f);
 		}
 		else
 		{
-			v[15] = arr[0]/S[0];
-			v[26] = arr[1]/S[1];
-			v[21] = arr[2]/S[2];
-			v[28] = arr[3]/S[3];
-			v[16] = arr[4]/S[4];
-			v[25] = arr[5]/S[5];
-			v[22] = arr[6]/S[6];
-			v[27] = arr[7]/S[7];
-
-			v[19] = (v[25]-v[28])/2;
-			v[20] = (v[26]-v[27])/2;
-			v[23] = (v[26]+v[27])/2;
-			v[24] = (v[25]+v[28])/2;
-
-			v[7] = (v[23]+v[24])/2;
-			v[11] = (v[21]+v[22])/2;
-			v[13] = (v[23]-v[24])/2;
-			v[17] = (v[21]-v[22])/2;
-
-			v[8] = (v[15]+v[16])/2;
-			v[9] = (v[15]-v[16])/2;
-
-			v[18] = (v[19]-v[20]) * A[5];
-			v[12] = (v[19]*A[4] - v[18]) / (A[2]*A[5] - A[2]*A[4] - A[4]*A[5]);
-			v[14] = (v[18]-v[20] * A[2]) / (A[2]*A[5] - A[2]*A[4] - A[4]*A[5]);
-
-			v[6] = v[14] - v[7];
-			v[5] = v[13] / A[3] - v[6];
-			v[4] = -v[5] - v[12];
-			v[10] = v[17] / A[1] - v[11];
-
-			v[0] = (v[8]+v[11])/2;
-			v[1] = (v[9]+v[10])/2;
-			v[2] = (v[9]-v[10])/2;
-			v[3] = (v[8]-v[11])/2;
-
-			output[0] = (v[0] + v[7]) / 2;
-			output[1] = (v[1] + v[6]) / 2;
-			output[2] = (v[2] + v[5]) / 2;
-			output[3] = (v[3] + v[4]) / 2;
-			output[4] = (v[3] - v[4]) / 2;
-			output[5] = (v[2] - v[5]) / 2;
-			output[6] = (v[1] - v[6]) / 2;
-			output[7] = (v[0] - v[7]) / 2;
+			const float mx00 = 1.4142135623731f  *arr[0];
+			const float mx01 = 1.38703984532215f *arr[1] + 0.275899379282943f*arr[7];
+			const float mx02 = 1.30656296487638f *arr[2] + 0.541196100146197f*arr[6];
+			const float mx03 = 1.17587560241936f *arr[3] + 0.785694958387102f*arr[5];
+			const float mx04 = 1.4142135623731f  *arr[4];
+			const float mx05 = -0.785694958387102f*arr[3] + 1.17587560241936f*arr[5];
+			const float mx06 = 0.541196100146197f*arr[2] - 1.30656296487638f*arr[6];
+			const float mx07 = -0.275899379282943f*arr[1] + 1.38703984532215f*arr[7];
+			const float mx09 = mx00 + mx04;
+			const float mx0a = mx01 + mx03;
+			const float mx0b = 1.4142135623731f*mx02;
+			const float mx0c = mx00 - mx04;
+			const float mx0d = mx01 - mx03;
+			const float mx0e = 0.353553390593274f * (mx09 - mx0b);
+			const float mx0f = 0.353553390593274f * (mx0c + mx0d);
+			const float mx10 = 0.353553390593274f * (mx0c - mx0d);
+			const float mx11 = 1.4142135623731f*mx06;
+			const float mx12 = mx05 + mx07;
+			const float mx13 = mx05 - mx07;
+			const float mx14 = 0.353553390593274f * (mx11 + mx12);
+			const float mx15 = 0.353553390593274f * (mx11 - mx12);
+			const float mx16 = 0.5f*mx13;
+			output[0] = 0.25f * (mx09 + mx0b) + 0.353553390593274f*mx0a;
+			output[1] = 0.707106781186547f * (mx0f + mx15);
+			output[2] = 0.707106781186547f * (mx0f - mx15);
+			output[3] = 0.707106781186547f * (mx0e + mx16);
+			output[4] = 0.707106781186547f * (mx0e - mx16);
+			output[5] = 0.707106781186547f * (mx10 - mx14);
+			output[6] = 0.707106781186547f * (mx10 + mx14);
+			output[7] = 0.25f * (mx09 + mx0b) - 0.353553390593274f*mx0a;
 		}
 	}
 
 	void MathExt::FCT8x8(Matrix& arr, Matrix* output, bool inverse)
 	{
 		//for each row
-		double* newArr = new double[8];
-		double* passArr = new double[8];
+		double* outputAsDoubleArr = output->getData();
+		double newArr[8];
+		double colArr[8];
 
 		for(int v=0; v<arr.getRows(); v++)
 		{
-			MathExt::FCT8(arr[v], newArr, inverse);
-
-			for(int i=0; i<arr.getCols(); i++)
-			{
-				output->operator[](v)[i] = newArr[i];
-			}
+			MathExt::FCT8(arr[v], &outputAsDoubleArr[v*8], inverse);
 		}
 
 		//for each column
@@ -2508,19 +2675,264 @@ namespace glib
 		{
 			for(int i=0; i<arr.getRows(); i++)
 			{
-				passArr[i] = output->operator[](i)[u];
+				colArr[i] = outputAsDoubleArr[u + i*8];
 			}
 
-			MathExt::FCT8(passArr, newArr, inverse);
+			MathExt::FCT8(colArr, newArr, inverse);
 
 			for(int i=0; i<arr.getRows(); i++)
 			{
-				output->operator[](i)[u] = newArr[i];
+				outputAsDoubleArr[u + i*8] = newArr[i];
 			}
 		}
+	}
 
-		delete[] newArr;
-		delete[] passArr;
+	#pragma endregion
+
+	#pragma COMPUTER_VISION_STUFF
+
+	Matrix MathExt::convolution(Matrix* baseImage, Matrix* kernel)
+	{
+		if(baseImage == nullptr || kernel == nullptr)
+			return Matrix();
+		
+		Matrix output = Matrix(baseImage->getRows(), baseImage->getCols());
+		double* baseImageDataArr = baseImage->getData();
+		double* kernelDataArr = kernel->getData();
+
+		int baseImageRows = baseImage->getRows();
+		int kernelRows = kernel->getRows();
+		
+		int kernelColsDiv2 = kernel->getCols()/2;
+		int kernelRowsDiv2 = kernel->getRows()/2;
+		
+		for(int r=0; r<output.getRows(); r++)
+		{
+			int minY = -kernelRowsDiv2;
+			int maxY = kernelRowsDiv2;
+			
+			if(r + minY < 0)
+				minY = -r;
+
+			if(r + maxY >= output.getRows())
+				maxY = output.getRows()-r-1;
+			
+			for(int c=0; c<output.getCols(); c++)
+			{
+				double sum = 0;
+				int minX = -kernelColsDiv2;
+				int maxX = kernelColsDiv2;
+
+				// x x x x x
+				//   x x x
+				if(c + minX < 0)
+					minX = -c;
+				
+				if(c + maxX >= output.getCols())
+					maxX = output.getCols()-c-1;
+
+				for(int y=minY; y<=maxY; y++)
+				{
+					for(int x=minX; x<=maxX; x++)
+					{
+						sum += baseImageDataArr[(r+y)*baseImageRows + (c+x)] * kernelDataArr[(kernelRowsDiv2-y)*kernelRows + (kernelColsDiv2-x)];
+					}
+				}
+
+				output[r][c] = sum;
+			}
+		}
+		return output;
+	}
+
+	Matrix MathExt::convolutionNormalized(Matrix* baseImage, Matrix* kernel)
+	{
+		if(baseImage == nullptr || kernel == nullptr)
+			return Matrix();
+		
+		Matrix output = Matrix(baseImage->getRows(), baseImage->getCols());
+		double* baseImageDataArr = baseImage->getData();
+		double* kernelDataArr = kernel->getData();
+
+		int baseImageRows = baseImage->getRows();
+		int kernelRows = kernel->getRows();
+		
+		int kernelColsDiv2 = kernel->getCols()/2;
+		int kernelRowsDiv2 = kernel->getRows()/2;
+		
+		double kernelEnergy = 0;
+		for(int i=0; i<kernel->getRows()*kernel->getCols(); i++)
+		{
+			kernelEnergy += kernelDataArr[i]*kernelDataArr[i];
+		}
+		kernelEnergy = MathExt::sqrt(kernelEnergy);
+		
+		for(int r=0; r<output.getRows(); r++)
+		{
+			int minY = -kernelRowsDiv2;
+			int maxY = kernelRowsDiv2;
+			
+			if(r + minY < 0)
+				minY = -r;
+
+			if(r + maxY >= output.getRows())
+				maxY = output.getRows()-r-1;
+			
+			for(int c=0; c<output.getCols(); c++)
+			{
+				double sum = 0;
+				double baseImageEnergySum = 0;
+				int minX = -kernelColsDiv2;
+				int maxX = kernelColsDiv2;
+
+				// x x x x x
+				//   x x x
+				if(c + minX < 0)
+					minX = -c;
+				
+				if(c + maxX >= output.getCols())
+					maxX = output.getCols()-c-1;
+
+				for(int y=minY; y<=maxY; y++)
+				{
+					for(int x=minX; x<=maxX; x++)
+					{
+						double baseImageValue = baseImageDataArr[(r+y)*baseImageRows + (c+x)];
+						baseImageEnergySum += (baseImageValue*baseImageValue);
+						sum += baseImageValue * kernelDataArr[(kernelRowsDiv2-y)*kernelRows + (kernelColsDiv2-x)];
+					}
+				}
+
+				baseImageEnergySum = MathExt::sqrt(baseImageEnergySum);
+				double energyWeight = baseImageEnergySum*kernelEnergy;
+				
+				if(energyWeight == 0)
+					output[r][c] = sum;
+				else
+					output[r][c] = sum / energyWeight;
+			}
+		}
+		return output;
+	}
+
+	Matrix MathExt::crossCorrelation(Matrix* baseImage, Matrix* kernel)
+	{
+		if(baseImage == nullptr || kernel == nullptr)
+			return Matrix();
+		
+		Matrix output = Matrix(baseImage->getRows(), baseImage->getCols());
+		double* baseImageDataArr = baseImage->getData();
+		double* kernelDataArr = kernel->getData();
+
+		int baseImageRows = baseImage->getRows();
+		int kernelRows = kernel->getRows();
+		
+		int kernelColsDiv2 = kernel->getCols()/2;
+		int kernelRowsDiv2 = kernel->getRows()/2;
+		
+		for(int r=0; r<output.getRows(); r++)
+		{
+			int minY = -kernelRowsDiv2;
+			int maxY = kernelRowsDiv2;
+			
+			if(r + minY < 0)
+				minY = -r;
+
+			if(r + maxY >= output.getRows())
+				maxY = output.getRows()-r-1;
+			
+			for(int c=0; c<output.getCols(); c++)
+			{
+				double sum = 0;
+				int minX = -kernelColsDiv2;
+				int maxX = kernelColsDiv2;
+				
+				if(c + minX < 0)
+					minX = -c;
+				
+				if(c + maxX >= output.getCols())
+					maxX = output.getCols()-c-1;
+
+				for(int y=minY; y<=maxY; y++)
+				{
+					for(int x=minX; x<=maxX; x++)
+					{
+						sum += baseImageDataArr[(r+y)*baseImageRows + (c+x)] * kernelDataArr[(kernelRowsDiv2+y)*kernelRows + (kernelColsDiv2+x)];
+					}
+				}
+
+				output[r][c] = sum;
+			}
+		}
+		return output;
+	}
+
+	Matrix MathExt::crossCorrelationNormalized(Matrix* baseImage, Matrix* kernel)
+	{
+		if(baseImage == nullptr || kernel == nullptr)
+			return Matrix();
+		
+		Matrix output = Matrix(baseImage->getRows(), baseImage->getCols());
+		double* baseImageDataArr = baseImage->getData();
+		double* kernelDataArr = kernel->getData();
+
+		int baseImageRows = baseImage->getRows();
+		int kernelRows = kernel->getRows();
+		
+		int kernelColsDiv2 = kernel->getCols()/2;
+		int kernelRowsDiv2 = kernel->getRows()/2;
+
+		double kernelEnergy = 0;
+		for(int i=0; i<kernel->getRows()*kernel->getCols(); i++)
+		{
+			kernelEnergy += kernelDataArr[i]*kernelDataArr[i];
+		}
+		kernelEnergy = MathExt::sqrt(kernelEnergy);
+		
+		for(int r=0; r<output.getRows(); r++)
+		{
+			int minY = -kernelRowsDiv2;
+			int maxY = kernelRowsDiv2;
+			
+			if(r + minY < 0)
+				minY = -r;
+
+			if(r + maxY >= output.getRows())
+				maxY = output.getRows()-r-1;
+			
+			for(int c=0; c<output.getCols(); c++)
+			{
+				double sum = 0;
+				double baseImageEnergySum = 0;
+
+				int minX = -kernelColsDiv2;
+				int maxX = kernelColsDiv2;
+
+				if(c + minX < 0)
+					minX = -c;
+				
+				if(c + maxX >= output.getCols())
+					maxX = output.getCols()-c-1;
+
+				for(int y=minY; y<=maxY; y++)
+				{
+					for(int x=minX; x<=maxX; x++)
+					{
+						double baseImageValue = baseImageDataArr[(r+y)*baseImageRows + (c+x)];
+						baseImageEnergySum += (baseImageValue * baseImageValue);
+						sum += baseImageValue * kernelDataArr[(kernelRowsDiv2+y)*kernelRows + (kernelColsDiv2+x)];
+					}
+				}
+				baseImageEnergySum = MathExt::sqrt(baseImageEnergySum);
+				double energyWeight = baseImageEnergySum*kernelEnergy;
+				
+				if(energyWeight == 0)
+					output[r][c] = sum;
+				else
+					output[r][c] = sum / energyWeight;
+			}
+		}
+		return output;
 	}
 
 	#pragma endregion

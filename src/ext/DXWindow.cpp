@@ -14,7 +14,7 @@
 	{
 
 		std::vector<DXWindow*> DXWindow::windowList = std::vector<DXWindow*>();
-		const Class DXWindow::globalClass = Class("DXWindow", {&SimpleWindow::globalClass});
+		const RootClass DXWindow::globalClass = RootClass("DXWindow", {"SimpleWindow"});
 
 		DXWindow* DXWindow::getWindowByHandle(size_t handle)
 		{

@@ -9,41 +9,31 @@
 #include "SmartMemory.h"
 #include "ResourceManager.h"
 
+#ifndef __min
+#define __min(a, b) (((a) < (b)) ? (a) : (b))
+#endif
+
+#ifndef __max
+#define __max(a, b) (((a) > (b)) ? (a) : (b))
+#endif
+
 namespace glib
 {
-
 
     #pragma region BASE_GUI_CLASSES
     class GuiManager;
     class GuiItem;
 
-    template<typename T>
-    bool loadValueStuff(T& value, std::string data)
-    {
-        //check for %
-        size_t indexOfPercent = data.find('%');
-        if(indexOfPercent != SIZE_MAX)
-        {
-            //is percent
-            try
-            {
-                value = (T)(GuiItem::PERCENTAGE_DIVIDE * (StringTools::toDouble(data.substr(indexOfPercent)) / 100.0));
-            }
-            catch(...) { }
-            
-            return true;
-        }
-        else
-        {
-            try
-            {
-                value = (T)StringTools::toDouble(data);
-            }
-            catch(...) { }
-            return false;
-        }
-        return false;
-    }
+    bool loadValueFromAttrib(int8_t& value, std::string data);
+    bool loadValueFromAttrib(uint8_t& value, std::string data);
+    bool loadValueFromAttrib(int16_t& value, std::string data);
+    bool loadValueFromAttrib(uint16_t& value, std::string data);
+    bool loadValueFromAttrib(int32_t& value, std::string data);
+    bool loadValueFromAttrib(uint32_t& value, std::string data);
+    bool loadValueFromAttrib(int64_t& value, std::string data);
+    bool loadValueFromAttrib(uint64_t& value, std::string data);
+    bool loadValueFromAttrib(double& value, std::string data);
+
     Color loadColor(std::string data);
 
     class GuiResourceManager
@@ -78,10 +68,11 @@ namespace glib
      */
     struct GRect
     {
-        uint32_t left;
-        uint32_t top;
-        uint32_t right;
-        uint32_t bottom;
+        int32_t left;
+        int32_t top;
+        int32_t right;
+        int32_t bottom;
+        uint32_t depth;
     };
 
     //GuiItem - The base class that everything is built off of. It contains the static flag constants, 
@@ -121,10 +112,10 @@ namespace glib
         static const int32_t PERCENTAGE_DIVIDE = 0xFFFF;
 
         GuiItem();
-        ~GuiItem();
+        virtual ~GuiItem();
         
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
 
         /**
          * @brief This functions purpose is to adjust the TrueX and TrueY values for this
@@ -166,7 +157,7 @@ namespace glib
          * @param maximumWidth 
          * @param maximumHeight 
          */
-        virtual void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
+        virtual void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight) = 0;
 
         /**
          * @brief Called to update the object.
@@ -181,21 +172,29 @@ namespace glib
          *          All layouts have this functionality by default.
          * @param manager 
          */
-        virtual void update(SmartMemory<GuiManager> manager);
-
+        virtual void update(SmartMemory<GuiManager> manager) = 0;
+        
         /**
          * @brief Called to draw the object.
          *      Should be called whenever the object needs to be redrawn.
          *          (Currently all of the time)
-         *      Does not need a surface interface passed through it as it will be bound
-         *          before hand.
-         *          (Will be removed)
          *      
          *      If the object has children, they should be manually rendered through this method.
          *          All layouts have this functionality by default.
-         * @param surface 
+         * @param manager 
          */
-        virtual void render();
+        virtual void render(SmartMemory<GuiManager> manager) = 0;
+
+        /**
+         * @brief This is the proper method that should be called to draw an object.
+         *      
+         * 
+         * @param manager 
+         */
+        void doRender(SmartMemory<GuiManager> manager);
+
+        GRect getPreviousRenderRect();
+        void setShouldRender();
         
         bool getFocused(SmartMemory<GuiManager> manager);
         void setFocused(SmartMemory<GuiManager> manager, bool f);
@@ -239,8 +238,19 @@ namespace glib
         friend GuiManager;
         int32_t trueX = 0;
         int32_t trueY = 0;
+        
+        void determineChangeFromLastTime();
+        void determineChangeInOverlap(SmartMemory<GuiManager> manager, GRect& r);
+        void doPreRenderOperations(SmartMemory<GuiManager> manager);
+
+        void doPreRenderOperationsForChildren(SmartMemory<GuiManager> manager);
 
         std::string nameID = "";
+
+        GRect lastKnownRenderRect = {-1, -1, -1, -1, 0};
+        
+        bool overlapped = false;
+        bool shouldReRender = true;
     };
 
     /**
@@ -255,7 +265,7 @@ namespace glib
      *              offX and offY are the desired x and y positions for this item. maximum width and height can be used to wrap text or scale.
      * 
      *          virtual void update(SmartMemory<GuiManager>);
-     *          virtual void render(SurfaceInterface*);
+     *          virtual void render(SmartMemory<GuiManager> manager);
      * 
      *      Content Width and Height must be set by the extended class. If set after the layout has been updated, it could lead to
      *          improper rendering. 
@@ -268,10 +278,10 @@ namespace glib
     {
     public:
         GuiContent();
-        ~GuiContent();
+        virtual ~GuiContent();
         
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
 
         int contentWidth = 0;
         int contentHeight = 0;
@@ -291,15 +301,16 @@ namespace glib
         GuiEmpty();
         ~GuiEmpty();
         
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
         
         void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
-        void update();
-        void render();
+        void update(SmartMemory<GuiManager> manager);
+        void render(SmartMemory<GuiManager> manager);
 
     	void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
 		static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+    
     };
 
     /**
@@ -329,13 +340,12 @@ namespace glib
         GuiLayout();
         ~GuiLayout();
         
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
         
         void preUpdate();
         void update(SmartMemory<GuiManager> manager);
-        void baseRender();
-        void render();
+        void render(SmartMemory<GuiManager> manager);
         void addChild(SmartMemory<GuiItem> c);
         void removeChild(SmartMemory<GuiItem> c);
         
@@ -352,7 +362,7 @@ namespace glib
         void setYPercentage(bool t);
         void setAbsolutePosition(bool t);
 
-        virtual void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
+        virtual void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight) = 0;
 
         void setMargin(GRect r);
         void setPadding(GRect r);
@@ -380,10 +390,13 @@ namespace glib
         uint16_t getRowSpan();
         
         void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
+        
     protected:
         friend GuiItem;
         uint16_t flags = 0;
         void loadRectStuff(GRect& input, std::string data, bool autoAllowed);
+        
+        void baseRender();
 
         uint16_t maxWidth = 0xFFFF;
         uint16_t maxHeight = 0xFFFF;
@@ -391,6 +404,9 @@ namespace glib
         uint16_t minHeight = 0;
 
         std::vector<SmartMemory<GuiItem>> children;
+        
+        std::vector<GRect> removedChildrenRect; //Just here for rendering purposes
+
         GRect margin = {0,0,0,0};
         GRect padding = {0,0,0,0};
         GRect border = {0,0,0,0};
@@ -416,10 +432,10 @@ namespace glib
         GuiLayoutFixed();
         ~GuiLayoutFixed();
         
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
         
-        void processLayout(int offX, int offY, int maximumWidth, int maximumHeight);
+        void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
 
         void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
         static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
@@ -445,8 +461,8 @@ namespace glib
         GuiLayoutList(bool direction = DIRECTION_VERTICAL, bool wrap = true);
         ~GuiLayoutList();
         
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
 
         void setDirection(bool d);
         void setWrap(bool w);
@@ -467,6 +483,8 @@ namespace glib
      *      In a table, a row shares the same height across and a column shares the same width down.
      *      Also, it is possible for a single child to occupy more than 1 cell. This is done through the
      *          colspan and rowspan.
+     *      
+     *      TODO: Add Minimum width and height for cells.
      * 
      *      The number of columns allowed per row must be set and defaults to 1.
      *          Empty GuiItems can be used to occupy unneeded cells. Spanning may also be used but results in a different appearance.
@@ -481,18 +499,19 @@ namespace glib
         GuiLayoutTable(uint16_t numColumns);
         ~GuiLayoutTable();
         
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
 
         void setShowInnerGrid(bool v);
         void setNumberOfColumns(uint16_t c);
         void setInnerTablePadding(uint16_t p);
 
-        void render();
         void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
+        void render(SmartMemory<GuiManager> manager);
         
         void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
         static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+
     private:
         static const uint8_t COLSPAN = 0b0001;
         static const uint8_t ROWSPAN = 0b0010;
@@ -519,8 +538,8 @@ namespace glib
         GuiButton();
         ~GuiButton();
         
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
 
         void update(SmartMemory<GuiManager> manager);
 
@@ -546,12 +565,12 @@ namespace glib
         GuiText();
         ~GuiText();
         
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
 
         void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
         void update(SmartMemory<GuiManager> manager);
-        void render();
+        void render(SmartMemory<GuiManager> manager);
 
         void setText(std::string s);
         std::string getText();
@@ -571,9 +590,10 @@ namespace glib
         
         void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
         static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+
     private:
         bool isSelectable = false;
-        bool canWrap = false;
+        bool canWrap = true;
         bool selecting = false;
         int highlightStartIndex = -1;
         int highlightEndIndex = -1;
@@ -590,12 +610,12 @@ namespace glib
         GuiSprite();
         ~GuiSprite();
         
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
 
         void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
         void update(SmartMemory<GuiManager> manager);
-        void render();
+        void render(SmartMemory<GuiManager> manager);
 
         void setSprite(SmartMemory<SpriteInterface> spr);
         void setColor(Color c);
@@ -608,6 +628,7 @@ namespace glib
         
         void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
         static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+
     private:
         bool shouldMaintainAspectRatio = false;
         bool isScalable = false;
@@ -637,13 +658,13 @@ namespace glib
         GuiTextBox();
         ~GuiTextBox();
 
-        //Object and Class Stuff
-		static const Class globalClass;
+        //Object and RootClass Stuff
+		static const RootClass globalClass;
 
         void preUpdate();
         void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
         void update(SmartMemory<GuiManager> manager);
-        void render();
+        void render(SmartMemory<GuiManager> manager);
 
         std::string getText();
 
@@ -655,6 +676,7 @@ namespace glib
         
         void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
         static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+        
     private:
         void keyboardInput();
         bool allowLineBreaks = false;
@@ -685,10 +707,14 @@ namespace glib
         GuiManager(unsigned char type, int width, int height);
         ~GuiManager();
 
-        //Class Stuff
-        static const Class globalClass;
+        //RootClass Stuff
+        static const RootClass globalClass;
 
-        void disposeObjects();
+        /**
+         * @brief Removes all objects from the GuiManager.
+         * 
+         */
+        void clear();
 
         void addElement(SmartMemory<GuiItem> k);
         void removeElement(SmartMemory<GuiItem> k);
@@ -813,6 +839,14 @@ namespace glib
 
         GuiLayoutFixed& getRootLayout();
 
+        void updateRenderCounter();
+
+        uint32_t getNextDepthValue();
+
+        void addNewDrawnArea(GRect r);
+        std::vector<GRect>& getNewDrawingRects();
+        std::vector<GRect>& getOldDrawingRects();
+
         /**
 		 * @brief Gets a list of GuiInstances with the specified name/id.
 		 * 
@@ -859,15 +893,23 @@ namespace glib
 		 */
 		static void initDefaultLoadFunctions();
 
+
     private:
-        // void addToRemovedObjectBox(SmartMemory<GuiItem> k);
-		// void updateBounds(SmartMemory<GuiItem> k, int& redrawCount);
 		bool loadElement(XmlNode* node, SmartMemory<GuiItem> parent);
         
         GuiLayoutFixed rootLayout = GuiLayoutFixed();
-		std::vector<SmartMemory<GuiItem>> shouldDelete = std::vector<SmartMemory<GuiItem>>();
+
 		static std::unordered_map<std::string, std::function<SmartMemory<GuiItem>(SimpleHashMap<std::string, std::string>&, SmartMemory<GuiManager>)> > elementLoadingFunctions;
+		std::vector<SmartMemory<GuiItem>> shouldDelete = std::vector<SmartMemory<GuiItem>>();
 		SimpleHashMap<std::string, SmartMemory<GuiItem>> objectsByName = SimpleHashMap<std::string, SmartMemory<GuiItem>>();
+
+        std::vector<GRect> previousRectsDrawn; //space that was previously used for objects that rendered. So stuff from the previous frame.
+        std::vector<GRect> knownRectsToDraw; //space allocated for objects that are going to render.
+        
+        void resetRenderValues();
+
+        int renderCounter = 0;
+        uint32_t currDepthCounter = 0;
 
 		int windowX = 0;
 		int windowY = 0;

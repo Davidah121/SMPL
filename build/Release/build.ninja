@@ -64,6 +64,7 @@ build $objDir/GeneralSpline.o: buildToObject src/GeneralSpline.cpp
 build $objDir/GeneralVector.o: buildToObject src/GeneralVector.cpp
 build $objDir/GraphicsExt.o: buildToObject src/GraphicsExt.cpp
 build $objDir/GuiResourceManager.o: buildToObject src/GuiResourceManager.cpp
+build $objDir/HiResImage.o: buildToObject src/HiResImage.cpp
 build $objDir/HttpServer.o: buildToObject src/HttpServer.cpp
 build $objDir/Image.o: buildToObject src/Image.cpp
 build $objDir/Image_BitmapCode.o: buildToObject src/Image_BitmapCode.cpp
@@ -87,6 +88,13 @@ build $objDir/Network.o: buildToObject src/Network.cpp
 build $objDir/NeuralNetwork.o: buildToObject src/NeuralNetwork.cpp
 build $objDir/NewGui.o: buildToObject src/NewGui.cpp
 build $objDir/NewGui_GuiButton.o: buildToObject src/NewGui_GuiButton.cpp
+build $objDir/NewGui_GuiContent.o: buildToObject src/NewGui_GuiContent.cpp
+build $objDir/NewGui_GuiEmpty.o: buildToObject src/NewGui_GuiEmpty.cpp
+build $objDir/NewGui_GuiItem.o: buildToObject src/NewGui_GuiItem.cpp
+build $objDir/NewGui_GuiLayout.o: buildToObject src/NewGui_GuiLayout.cpp
+build $objDir/NewGui_GuiLayoutFixed.o: buildToObject src/NewGui_GuiLayoutFixed.cpp
+build $objDir/NewGui_GuiLayoutList.o: buildToObject src/NewGui_GuiLayoutList.cpp
+build $objDir/NewGui_GuiLayoutTable.o: buildToObject src/NewGui_GuiLayoutTable.cpp
 build $objDir/NewGui_GuiManager.o: buildToObject src/NewGui_GuiManager.cpp
 build $objDir/NewGui_GuiSprite.o: buildToObject src/NewGui_GuiSprite.cpp
 build $objDir/NewGui_GuiText.o: buildToObject src/NewGui_GuiText.cpp
@@ -94,6 +102,7 @@ build $objDir/NewGui_GuiTextBox.o: buildToObject src/NewGui_GuiTextBox.cpp
 build $objDir/Object.o: buildToObject src/Object.cpp
 build $objDir/PolarCoordinate.o: buildToObject src/PolarCoordinate.cpp
 build $objDir/Quaternion.o: buildToObject src/Quaternion.cpp
+build $objDir/RadixTree.o: buildToObject src/RadixTree.cpp
 build $objDir/Serializable.o: buildToObject src/Serializable.cpp
 build $objDir/Shape.o: buildToObject src/Shape.cpp
 build $objDir/SimpleDir.o: buildToObject src/SimpleDir.cpp
@@ -109,7 +118,9 @@ build $objDir/SimpleGraphics_MODEL.o: buildToObject src/SimpleGraphics_MODEL.cpp
 build $objDir/SimpleGraphics_RECT.o: buildToObject src/SimpleGraphics_RECT.cpp
 build $objDir/SimpleGraphics_TEXT.o: buildToObject src/SimpleGraphics_TEXT.cpp
 build $objDir/SimpleGraphics_TRIANGLE.o: buildToObject src/SimpleGraphics_TRIANGLE.cpp
+build $objDir/SimpleJobQueue.o: buildToObject src/SimpleJobQueue.cpp
 build $objDir/SimpleJSON.o: buildToObject src/SimpleJSON.cpp
+build $objDir/SimplePipe.o: buildToObject src/SimplePipe.cpp
 build $objDir/SimpleWindow.o: buildToObject src/SimpleWindow.cpp
 build $objDir/SimpleXml.o: buildToObject src/SimpleXml.cpp
 build $objDir/Sound.o: buildToObject src/Sound.cpp

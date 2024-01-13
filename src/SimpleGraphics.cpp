@@ -76,6 +76,16 @@ namespace glib
 		result.w = (double)c.alpha / 255.0;
 		return result;
 	}
+	
+	Color4f SimpleGraphics::convertColorToColor4f(Color c)
+	{
+		Color4f result;
+		result.red = (double)c.red / 255.0;
+		result.green = (double)c.green / 255.0;
+		result.blue = (double)c.blue / 255.0;
+		result.alpha = (double)c.alpha / 255.0;
+		return result;
+	}
 
 	Color SimpleGraphics::convertVec4fToColor(Vec4f v)
 	{
@@ -84,6 +94,16 @@ namespace glib
 		result.green = (unsigned char)MathExt::clamp(v.y*255, 0.0, 255.0);
 		result.blue = (unsigned char)MathExt::clamp(v.z*255, 0.0, 255.0);
 		result.alpha = (unsigned char)MathExt::clamp(v.w*255, 0.0, 255.0);
+		return result;
+	}
+	
+	Color SimpleGraphics::convertColor4fToColor(Color4f c)
+	{
+		Color result;
+		result.red = (unsigned char)((float)c.red*255);
+		result.green = (unsigned char)((float)c.green*255);
+		result.blue = (unsigned char)((float)c.blue*255);
+		result.alpha = (unsigned char)((float)c.alpha*255);
 		return result;
 	}
 
@@ -114,6 +134,34 @@ namespace glib
 		drawPixel( (int)p2.x, (int)p2.y, c3, surf);
 		drawPixel( (int)p1.x, (int)p2.y, c4, surf);
 	}
+	
+	void SimpleGraphics::drawPixel(double x, double y, Color4f c, HiResImage* surf)
+	{
+		//convert into four separate pixels
+		Vec2f p1 = Vec2f(floor(x), floor(y));
+		Vec2f p2 = Vec2f(ceil(x), ceil(y));
+
+		double xAlpha = 1.0f - (x-p1.x);
+		double yAlpha = 1.0f - (y-p1.y);
+
+		Color4f c1, c2, c3, c4;
+		c1 = c;
+		c1.alpha = (c1.alpha * xAlpha * yAlpha);
+
+		c2 = c;
+		c2.alpha = (c2.alpha * (1-xAlpha) * yAlpha);
+		
+		c3 = c;
+		c3.alpha = (c3.alpha * (1-xAlpha) * (1-yAlpha));
+		
+		c4 = c;
+		c4.alpha = (c4.alpha * xAlpha * (1-yAlpha));
+		
+		drawPixel( (int)p1.x, (int)p1.y, c1, surf);
+		drawPixel( (int)p2.x, (int)p1.y, c2, surf);
+		drawPixel( (int)p2.x, (int)p2.y, c3, surf);
+		drawPixel( (int)p1.x, (int)p2.y, c4, surf);
+	}
 
 	void SimpleGraphics::drawPixel(int x, int y, Color c, Image* surf)
 	{
@@ -125,95 +173,30 @@ namespace glib
 		if(compositeRule == NO_COMPOSITE)
 		{
 			otherImg->setPixel(x, y, c);
-			return;
 		}
-
-		float Fa = 0;
-		float Fb = 0;
-
-		int red = 0;
-		int green = 0;
-		int blue = 0;
-		int alpha = 0;
-
-		//other stuff to
-		float tAlpha1 = (float)c.alpha/255;
-		Color otherColor = otherImg->getPixel(x,y);
-		float tAlpha2 = (float)otherColor.alpha/255;
-
-		switch(compositeRule)
+		else
 		{
-			case COMPOSITE_CLEAR:
-				Fa=0;
-				Fb=0;
-				break;
-			case COMPOSITE_COPY:
-				Fa = 1;
-				Fb = 0;
-				break;
-			case COMPOSITE_DEST:
-				Fa = 0;
-				Fb = 1;
-				break;
-			case COMPOSITE_SRC_OVER:
-				Fa = 1;
-				Fb = 1-tAlpha1;
-				break;
-			case COMPOSITE_DEST_OVER:
-				Fa = 1-tAlpha2;
-				Fb = 1;
-				break;
-			case COMPOSITE_SRC_IN:
-				Fa = tAlpha2;
-				Fb = 0;
-				break;
-			case COMPOSITE_DEST_IN:
-				Fa = 0;
-				Fb = tAlpha1;
-				break;
-			case COMPOSITE_SRC_OUT:
-				Fa = 1-tAlpha2;
-				Fb = 0;
-				break;
-			case COMPOSITE_DEST_OUT:
-				Fa = 0;
-				Fb = 1-tAlpha1;
-				break;
-			case COMPOSITE_SRC_ATOP:
-				Fa = tAlpha2;
-				Fb = 1-tAlpha1;
-				break;
-			case COMPOSITE_DEST_ATOP:
-				Fa = 1-tAlpha2;
-				Fb = tAlpha1;
-				break;
-			case COMPOSITE_XOR:
-				Fa = 1-tAlpha2;
-				Fb = 1-tAlpha1;
-				break;
-			case COMPOSITE_LIGHTER:
-				Fa = 1;
-				Fb = 1;
-				break;
-			default:
-				Fa = 0;
-				Fb = 0;
-				break;
+			Color newColor = blend(c, otherImg->getPixel(x,y));
+			otherImg->setPixel(x, y, newColor);
 		}
-
-		red = (int)MathExt::round( (tAlpha1 * c.red * Fa) + (tAlpha2 * otherColor.red * Fb) );
-		green = (int)MathExt::round( (tAlpha1 * c.green * Fa) + (tAlpha2 * otherColor.green * Fb) );
-		blue = (int)MathExt::round( (tAlpha1 * c.blue * Fa) + (tAlpha2 * otherColor.blue * Fb) );
-		alpha = (int)MathExt::round( (c.alpha * Fa) + (otherColor.alpha * Fb) );
-
-		unsigned char redB = (unsigned char)MathExt::min(red, 255);
-		unsigned char greenB = (unsigned char)MathExt::min(green, 255);
-		unsigned char blueB = (unsigned char)MathExt::min(blue, 255);
-		unsigned char alphaB = (unsigned char)MathExt::min(alpha, 255);
-
-		otherImg->setPixel(x,y,{redB,greenB,blueB,alphaB});
-	
 	}
+
+	void SimpleGraphics::drawPixel(int x, int y, Color4f c, HiResImage* surf)
+	{
+		if (surf == nullptr)
+			return;
+
+		if(compositeRule == NO_COMPOSITE)
+		{
+			surf->setPixel(x, y, c);
+		}
+		else
+		{
+			Color4f newColor = blend(c, surf->getPixel(x,y));
+			surf->setPixel(x, y, newColor);
+		}
+	}
+	
 
 	Color SimpleGraphics::blend(Color src, Color dest)
 	{
@@ -306,6 +289,172 @@ namespace glib
 
 		return {redB,greenB,blueB,alphaB};
 
+	}
+
+	Vec4f SimpleGraphics::blend(Vec4f src, Vec4f dest)
+	{
+		if(compositeRule == NO_COMPOSITE)
+		{
+			return src;
+		}
+
+		double Fa = 0;
+		double Fb = 0;
+
+		//other stuff to
+		double tAlpha1 = src.w;
+		double tAlpha2 = dest.w;
+
+		switch(compositeRule)
+		{
+			case COMPOSITE_CLEAR:
+				Fa=0;
+				Fb=0;
+				break;
+			case COMPOSITE_COPY:
+				Fa = 1;
+				Fb = 0;
+				break;
+			case COMPOSITE_DEST:
+				Fa = 0;
+				Fb = 1;
+				break;
+			case COMPOSITE_SRC_OVER:
+				Fa = 1;
+				Fb = 1-tAlpha1;
+				break;
+			case COMPOSITE_DEST_OVER:
+				Fa = 1-tAlpha2;
+				Fb = 1;
+				break;
+			case COMPOSITE_SRC_IN:
+				Fa = tAlpha2;
+				Fb = 0;
+				break;
+			case COMPOSITE_DEST_IN:
+				Fa = 0;
+				Fb = tAlpha1;
+				break;
+			case COMPOSITE_SRC_OUT:
+				Fa = 1-tAlpha2;
+				Fb = 0;
+				break;
+			case COMPOSITE_DEST_OUT:
+				Fa = 0;
+				Fb = 1-tAlpha1;
+				break;
+			case COMPOSITE_SRC_ATOP:
+				Fa = tAlpha2;
+				Fb = 1-tAlpha1;
+				break;
+			case COMPOSITE_DEST_ATOP:
+				Fa = 1-tAlpha2;
+				Fb = tAlpha1;
+				break;
+			case COMPOSITE_XOR:
+				Fa = 1-tAlpha2;
+				Fb = 1-tAlpha1;
+				break;
+			case COMPOSITE_LIGHTER:
+				Fa = 1;
+				Fb = 1;
+				break;
+			default:
+				Fa = 0;
+				Fb = 0;
+				break;
+		}
+
+		Vec4f retValue;
+		retValue.x = (tAlpha1 * src.x * Fa) + (tAlpha2 * dest.x * Fb);
+		retValue.y = (tAlpha1 * src.y * Fa) + (tAlpha2 * dest.y * Fb);
+		retValue.z = (tAlpha1 * src.z * Fa) + (tAlpha2 * dest.z * Fb);
+		retValue.w = (src.w * Fa) + (dest.w * Fb);
+
+		return retValue;
+	}
+
+	Color4f SimpleGraphics::blend(Color4f src, Color4f dest)
+	{
+		if(compositeRule == NO_COMPOSITE)
+		{
+			return src;
+		}
+
+		double Fa = 0;
+		double Fb = 0;
+
+		//other stuff to
+		double tAlpha1 = src.alpha;
+		double tAlpha2 = dest.alpha;
+
+		switch(compositeRule)
+		{
+			case COMPOSITE_CLEAR:
+				Fa=0;
+				Fb=0;
+				break;
+			case COMPOSITE_COPY:
+				Fa = 1;
+				Fb = 0;
+				break;
+			case COMPOSITE_DEST:
+				Fa = 0;
+				Fb = 1;
+				break;
+			case COMPOSITE_SRC_OVER:
+				Fa = 1;
+				Fb = 1-tAlpha1;
+				break;
+			case COMPOSITE_DEST_OVER:
+				Fa = 1-tAlpha2;
+				Fb = 1;
+				break;
+			case COMPOSITE_SRC_IN:
+				Fa = tAlpha2;
+				Fb = 0;
+				break;
+			case COMPOSITE_DEST_IN:
+				Fa = 0;
+				Fb = tAlpha1;
+				break;
+			case COMPOSITE_SRC_OUT:
+				Fa = 1-tAlpha2;
+				Fb = 0;
+				break;
+			case COMPOSITE_DEST_OUT:
+				Fa = 0;
+				Fb = 1-tAlpha1;
+				break;
+			case COMPOSITE_SRC_ATOP:
+				Fa = tAlpha2;
+				Fb = 1-tAlpha1;
+				break;
+			case COMPOSITE_DEST_ATOP:
+				Fa = 1-tAlpha2;
+				Fb = tAlpha1;
+				break;
+			case COMPOSITE_XOR:
+				Fa = 1-tAlpha2;
+				Fb = 1-tAlpha1;
+				break;
+			case COMPOSITE_LIGHTER:
+				Fa = 1;
+				Fb = 1;
+				break;
+			default:
+				Fa = 0;
+				Fb = 0;
+				break;
+		}
+
+		Color4f retValue;
+		retValue.red = (tAlpha1 * src.red * Fa) + (tAlpha2 * dest.red * Fb);
+		retValue.green = (tAlpha1 * src.green * Fa) + (tAlpha2 * dest.green * Fb);
+		retValue.blue = (tAlpha1 * src.blue * Fa) + (tAlpha2 * dest.blue * Fb);
+		retValue.alpha = (src.alpha * Fa) + (dest.alpha * Fb);
+
+		return retValue;
 	}
 
 	#pragma region SSE_AND_AVX_BLENDS
@@ -705,6 +854,11 @@ namespace glib
 				(unsigned char)MathExt::clamp(v3.y, 0.0, 255.0),
 				(unsigned char)MathExt::clamp(v3.z, 0.0, 255.0),
 				(unsigned char)MathExt::clamp(v3.w, 0.0, 255.0) };
+	}
+
+	Vec4f SimpleGraphics::lerp(Vec4f src, Vec4f dest, double lerpVal)
+	{
+		return src*(1.0-lerpVal) + dest*(lerpVal);
 	}
 
 	void SimpleGraphics::setClippingRect(Box2D b)

@@ -3,7 +3,7 @@
 namespace glib
 {
 		
-	const Class Sprite::globalClass = Class("Sprite", {&Object::globalClass});
+	const RootClass Sprite::globalClass = RootClass("Sprite", {"Object"});
 	
 	Sprite::Sprite()
 	{
@@ -118,6 +118,9 @@ namespace glib
 		std::vector<int> extraData;
 		Image** imgs = Image::loadImage(file, &amountOfImages, &extraData);
 		
+		if(imgs == nullptr)
+			return;
+		
 		if(extraData.size()>=1)
 		{
 			this->loops = extraData[0] == 1;
@@ -131,6 +134,8 @@ namespace glib
 			else
 				delayTimeForFrame.push_back(100);
 		}
+		if(imgs != nullptr)
+			delete[] imgs;
 	}
 
 	bool Sprite::saveAGIF(File f, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold)

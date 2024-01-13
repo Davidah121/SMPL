@@ -8,7 +8,6 @@
 #include "Image.h"
 
 
-
 namespace glib
 {
 
@@ -108,6 +107,15 @@ namespace glib
 		 * @return unsigned int 
 		 */
 		static unsigned int getNumberOfThreads();
+
+		/**
+		 * @brief Map the interupt signal raised by CTRL-C to a specific function.
+		 * 		This is useful if you need to end a program but don't have access 
+		 * 		to raw inputs. Can also do other cool things.
+		 * 
+		 * @param func 
+		 */
+		static void mapInteruptSignal(void(*func)(int));
 
 		static const long NANOSECOND_SEC = 1000000000L;
 		static const long MICROSECOND_SEC = 1000000L;

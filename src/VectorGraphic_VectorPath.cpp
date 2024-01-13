@@ -12,7 +12,7 @@ namespace glib
 	int count = 0;
 
 	#pragma region VectorPath
-	const Class VectorPath::globalClass = Class("VectorPath", {&VectorShape::globalClass});
+	const RootClass VectorPath::globalClass = RootClass("VectorPath", {"VectorShape"});
 
 	VectorPath::VectorPath() : VectorShape()
 	{
@@ -345,7 +345,7 @@ namespace glib
 						
 						for(int m = fillX; m<endFillX; m++)
 						{
-							img->drawPixel(m, intYVal, col);
+							SimpleGraphics::drawPixel(m, intYVal, col, img);
 						}
 					}
 				}
@@ -391,7 +391,7 @@ namespace glib
 							int endFillX = (int)MathExt::round(endX);
 							for(int m = fillX; m<endFillX; m++)
 							{
-								img->drawPixel(m, intYVal, col);
+								SimpleGraphics::drawPixel(m, intYVal, col, img);
 							}
 							
 						}

@@ -918,9 +918,7 @@ namespace glib
 					}
 					
 					currLoc+=8*length;
-
 					blockEnded=true;
-					break;
 				}
 			}
 			else
@@ -1171,11 +1169,12 @@ namespace glib
 				mTree = nullptr;
 				backTree = nullptr;
 				dynTrees = nullptr;
-					
-				if(lastBlock)
-				{
-					break;
-				}
+				
+			}
+
+			if(lastBlock)
+			{
+				break;
 			}
 			
 		}

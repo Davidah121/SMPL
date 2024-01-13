@@ -4,7 +4,7 @@
 	namespace glib
 	{
 			
-		const Class GLSprite::globalClass = Class("GLSprite", {&Object::globalClass});
+		const RootClass GLSprite::globalClass = RootClass("GLSprite", {"Object"});
 
 		GLSprite::GLSprite()
 		{

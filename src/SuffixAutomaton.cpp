@@ -117,7 +117,7 @@ namespace glib
         states[0].map.fill(0);
         states[0].len = 0;
         states[0].link = -1;
-        stateSize=1;
+        stateSize = 1;
         charsAdded = 0;
         last = 0;
     }
@@ -137,8 +137,8 @@ namespace glib
         states[0].len = 0;
         states[0].link = -1;
         stateSize = 1;
-        last = 0;
         charsAdded = 0;
+        last = 0;
     }
 
     void ShortSuffixAutomaton::extend(unsigned char c)
@@ -236,7 +236,7 @@ namespace glib
             delete SAs[i];
     }
 
-    void ChainedSuffixAutomaton::extend(unsigned char  c)
+    int ChainedSuffixAutomaton::extend(unsigned char c)
     {
         int i = currIndex;
 
@@ -256,6 +256,7 @@ namespace glib
                 offsets.push_back(currOffset);
                 SAs.push_back(new ShortSuffixAutomaton(individualSize+overlap));
                 searchStates.push_back(-1);
+                return searchStates.size()-1;
             }
             else
             {
@@ -263,8 +264,10 @@ namespace glib
                 offsets[currIndex] = currOffset;
                 SAs[currIndex]->reset();
                 searchStates[currIndex] = -1;
+                return currIndex;
             }
         }
+        return -1;
     }
 
     bool ChainedSuffixAutomaton::searchNext(unsigned char c)
@@ -282,16 +285,12 @@ namespace glib
             if (sState > 0)
             {
                 int actualPos = offsets[i] + (SAs[i]->getState(sState)->firstPos - currSearchLen);
-                bool shouldUpdate = (currMatch.second < currSearchLen+1) || (currMatch.first < actualPos);
+                // bool shouldUpdate = (currMatch.second < currSearchLen+1) || (currMatch.first < actualPos);
+                bool shouldUpdate = true;
                 if(shouldUpdate)
                 {
-                    currMatch = { actualPos, currSearchLen + 1 };
+                    currMatch = { i, actualPos, currSearchLen + 1 };
                     lastGoodState = i;
-                    if (currMatch.second >= overlap)
-                    {
-                        ok = false;
-                        break;
-                    }
                 }
                 ok = true;
             }
@@ -304,6 +303,9 @@ namespace glib
         {
             currSearchLen++;
         }
+        if(currMatch.length >= overlap)
+            ok = false;
+
         return ok;
     }
 
@@ -317,7 +319,7 @@ namespace glib
         }
     }
 
-    std::pair<int, int> ChainedSuffixAutomaton::extractSearch()
+    SearchState ChainedSuffixAutomaton::extractSearch()
     {
         return currMatch;
     }

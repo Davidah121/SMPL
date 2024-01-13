@@ -36,8 +36,8 @@ namespace glib
 		 */
 		~GeneralVector();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
 
 		/**
 		 * @brief Returns the value at the specified location or dimension.

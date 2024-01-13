@@ -5,45 +5,58 @@
 
 namespace glib
 {
-
-	Class::Class(std::string name, std::vector<const Class*> parentClasses)
+	RootClass::RootClass(std::string name, std::unordered_set<std::string> parentClassNames)
 	{
-		this->className = name;
-		this->parentClasses = parentClasses;
-		if (name != "")
+		this->name = name;
+		this->parentClassesByName = parentClassNames;
+		if(name != "")
 		{
-			classID = ClassMaster::addClass(this);
+			ClassMaster::addClass(this);
 		}
+	}
+
+	RootClass::~RootClass()
+	{
+
+	}
+
+	int RootClass::getID() const 
+	{
+		return id;
+	}
+
+	std::string RootClass::getName() const
+	{
+		return name;
+	}
+
+	std::unordered_set<std::string> RootClass::getListOfParents() const
+	{
+		return parentClassesByName;
+	}
+
+
+	Class::Class(const RootClass& rootClass)
+	{
+		this->classID = rootClass.getID();
+	}
+	
+	Class::Class()
+	{
+		
 	}
 
 	Class::~Class()
 	{
-		ClassMaster::removeClass(this);
-		className.clear();
-		parentClasses.clear();
-		classID = -1;
-	}
 
-	bool Class::isParentClass(const Class* k) const
-	{
-		bool is = false;
-		if(k != nullptr)
-		{
-			for (size_t i = 0; i < parentClasses.size(); i++)
-			{
-				if (k == parentClasses[i])
-				{
-					is = true;
-					break;
-				}
-			}
-		}
-		return is;
 	}
 
 	std::string Class::getClassName() const
 	{
-		return className;
+		const RootClass* rootClass = ClassMaster::getRootClass(classID);
+		if(rootClass != nullptr)
+			return rootClass->getName();
+		return "";
 	}
 
 	bool Class::operator==(const Class other) const
@@ -56,90 +69,118 @@ namespace glib
 		return classID != other.classID;
 	}
 
+	bool Class::operator==(const RootClass& other) const
+	{
+		return classID == other.getID();
+	}
+	
+	bool Class::operator!=(const RootClass& other) const
+	{
+		return classID != other.getID();
+	}
+	
+	int Class::getClassID()
+	{
+		return classID;
+	}
+	
+	const std::unordered_set<std::string> Class::getParentClasses()
+	{
+		const RootClass* rootClass = ClassMaster::getRootClass(classID);
+		if(rootClass != nullptr)
+			return rootClass->getListOfParents();
+		return {};
+	}
+
+	const RootClass* Class::getRootClass()
+	{
+		return ClassMaster::getRootClass(classID);
+	}
+
 	#pragma endregion
 
 	#pragma region CLASS_MASTER
+	ClassMaster* ClassMaster::singleton = nullptr;
 
-	std::vector<const Class*> ClassMaster::allClasses = std::vector<const Class*>();
-	int ClassMaster::maxID = 0;
+	ClassMaster::ClassMaster()
+	{
+		nameToClassIndex = std::map<std::string, int>();
+		allClasses = std::vector<const RootClass*>();
+	}
 
-	int ClassMaster::addClass(const Class* k)
+	ClassMaster::~ClassMaster()
+	{
+
+	}
+	
+	ClassMaster* ClassMaster::getInstance()
+	{
+		if(singleton == nullptr)
+			singleton = new ClassMaster();
+		
+		return singleton;
+	}
+
+	int ClassMaster::addClass(const RootClass* k)
 	{
 		//Check if the class already exists or if the name already exists
-		bool can = true;
-		for (size_t i = 0; i < allClasses.size(); i++)
-		{
-			if (k->getClassName() == allClasses[i]->getClassName())
-			{
-				//Can't have more than one class with the same name.
-				can = false;
-				break;
-			}
-		}
 
-		if (can)
-		{
-			allClasses.push_back(k);
-		}
-		else
+		ClassMaster* instance = getInstance();
+		if(instance == nullptr)
+			return -1;
+		
+		auto it = instance->nameToClassIndex.find(k->getName());
+		if(it != instance->nameToClassIndex.end())
 		{
 			#ifdef USE_EXCEPTIONS
 			throw ClassMaster::InvalidClassName;
 			#endif
-			//No exit of fail
+			//No exit on fail
+			return it->second;
 		}
-
-		if(can)
+		else
 		{
-			maxID++;
-			return maxID;
+			//add it
+			int newID = instance->allClasses.size();
+			instance->allClasses.push_back(k);
+
+			instance->nameToClassIndex.insert({k->getName(), newID});
+			return newID;
 		}
 		return -1;
 	}
 
-	void ClassMaster::removeClass(const Class* k)
-	{
-		size_t index = (size_t)-1;
-		for (size_t i = 0; i < allClasses.size(); i++)
-		{
-			if (allClasses[i] == k)
-			{
-				index = i;
-				break;
-			}
-		}
-
-		if (index != (size_t)-1)
-		{
-			for (size_t i = index; i < allClasses.size() - 1; i++)
-			{
-				allClasses[i] = allClasses[i + 1];
-			}
-
-			allClasses.pop_back();
-		}
-	}
-
 	size_t ClassMaster::getSize()
 	{
-		return allClasses.size();
+		ClassMaster* instance = getInstance();
+		if(instance != nullptr)
+			return instance->allClasses.size();
+		return 0;
 	}
 
-	const Class* ClassMaster::findClass(size_t i)
+	const RootClass* ClassMaster::getRootClass(std::string name)
 	{
-		if (i >= 0 && i < allClasses.size())
+		ClassMaster* instance = getInstance();
+		if(instance == nullptr)
+			return nullptr;
+		
+		auto it = instance->nameToClassIndex.find(name);
+		if(it != instance->nameToClassIndex.end())
 		{
-			return allClasses[i];
+			return instance->allClasses[it->second];
 		}
 		return nullptr;
 	}
 
-	const Class* ClassMaster::findClass(std::string className)
+	const RootClass* ClassMaster::getRootClass(int id)
 	{
-		for(size_t i=0; i<allClasses.size(); i++)
+		ClassMaster* instance = getInstance();
+		if(instance == nullptr)
+			return nullptr;
+		
+		if(id >= 0 && id < instance->allClasses.size())
 		{
-			if(allClasses[i]->getClassName() == className)
-				return allClasses[i];
+			return instance->allClasses[id];
 		}
 		return nullptr;
 	}

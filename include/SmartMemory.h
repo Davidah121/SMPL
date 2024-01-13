@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_map>
+#include <mutex>
 #include "StringTools.h"
 
 //TESTING FOR SAFE MEMORY MANAGEMENT
@@ -27,6 +28,7 @@ public:
     ~StaticMemManager()
     {
         // glib::StringTools::println("DELETE ALL DATA");
+        inDestructor = true;
         std::vector<std::pair<T*, bool>> pArr;
         for(auto it = pointerData.begin(); it != pointerData.end(); it++)
         {
@@ -53,6 +55,10 @@ public:
 
     void deletePointer(T* p)
     {
+        if(inDestructor)
+            return;
+            
+        staticMemMutex.lock();
         //decrement the counter.
         auto it = pointerData.find(p);
         if(it != pointerData.end())
@@ -62,35 +68,63 @@ public:
             {
                 if(it->second.shouldDelete == true)
                 {
-                    if(it->second.array)
+                    bool isArray = it->second.array;
+                    pointerData.erase(p);
+                    
+                    staticMemMutex.unlock();
+                    if(isArray)
                         delete[] (T*)p;
                     else
                         delete (T*)p;
                 }
-                pointerData.erase(p);
+                else
+                {
+                    staticMemMutex.unlock();
+                }
             }
+            else
+            {
+                staticMemMutex.unlock();
+            }
+        }
+        else
+        {
+            staticMemMutex.unlock();
         }
     }
 
     void forceDeletePointer(T* p)
     {
+        if(inDestructor)
+            return;
+        
+        staticMemMutex.lock();
         //just remove it regardless of the counter or if it should be deleted.
         auto it = pointerData.find(p);
         if(it != pointerData.end())
         {
-            if(it->second.array)
+            bool isArray = it->second.array;
+
+            pointerData.erase(p);
+            staticMemMutex.unlock();
+
+            if(isArray)
                 delete[] (T*)p;
             else
                 delete (T*)p;
-            
-            pointerData.erase(p);
+        }
+        else
+        { 
+            staticMemMutex.unlock();
         }
     }
 
 protected:
     friend SmartMemory<T>;
     std::unordered_map<T*, MemInfo> pointerData;
+    std::mutex staticMemMutex;
 private:
+    bool inDestructor = false;
 };
 
 template<typename T>
@@ -122,14 +156,14 @@ public:
      *      If set to true, the pointer is considered an array.
      *      This will affect how it is deleted.
      *      By default, it is false.
+     * @param deleteOnLast
+     *      If set to true, the created SmartMemory will change how data is deleted. It will only delete
+     *      the pointer if it is the last known reference to it.
+     *      By default, it is set true.
      * @param bypassOwnership 
      *      If set to true, the created SmartMemory object will always has delete rights.
      *      It will delete the pointer when the SmartMemory is destroyed.
      *      By default, it is false.
-     * @param deleteOnLast
-     *      If set to true, the created SmartMemory will change how data is deleted. It will only delete
-     *      the pointer if it is the last known reference to it.
-     *      By default, it is set false.
      */
     SmartMemory(T* data, bool array = false, bool deleteOnLast = true, bool bypassOwnership = false)
     {

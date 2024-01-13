@@ -11,7 +11,7 @@ namespace glib
 		
 	#pragma region VectorShape
 
-	const Class VectorShape::globalClass = Class("VectorShape", {&Object::globalClass});
+	const RootClass VectorShape::globalClass = RootClass("VectorShape", {"Object"});
 
 	VectorShape::VectorShape()
 	{

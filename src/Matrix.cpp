@@ -4,7 +4,7 @@
 namespace glib
 {
 
-	const Class Matrix::globalClass = Class("Matrix", {&Object::globalClass});
+	const RootClass Matrix::globalClass = RootClass("Matrix", {"Object"});
 
 	Matrix::Matrix()
 	{

@@ -71,6 +71,8 @@ namespace glib
 		 */
 		static Vec4f convertColorToVec4f(Color c);
 
+		static Color4f convertColorToColor4f(Color c);
+
 		/**
 		 * @brief Converts a Vec4f (which is 4 doubles) to a Color.
 		 * 		Each color channel is converted from [0, 1] to [0, 255]
@@ -79,6 +81,8 @@ namespace glib
 		 * @return Color 
 		 */
 		static Color convertVec4fToColor(Vec4f v);
+		
+		static Color convertColor4fToColor(Color4f c);
 
 		/**
 		 * @brief Draws a pixel to the specified image using Porter Duff rules.
@@ -92,6 +96,7 @@ namespace glib
 		 * 		If set to nullptr, no error is thrown.
 		 */
 		static void drawPixel(int x, int y, Color c, Image* surf);
+		static void drawPixel(int x, int y, Color4f c, HiResImage* surf);
 
 		/**
 		 * @brief Draws a pixel to the specified image using Porter Duff rules.
@@ -107,6 +112,7 @@ namespace glib
 		 * 		If set to nullptr, no error is thrown.
 		 */
 		static void drawPixel(double x, double y, Color c, Image* surf);
+		static void drawPixel(double x, double y, Color4f c, HiResImage* surf);
 
 		/**
 		 * @brief Blends 2 colors using Porter Duff rules.
@@ -119,6 +125,8 @@ namespace glib
 		 * @return Color
 		 */
 		static Color blend(Color src, Color dest);
+		static Vec4f blend(Vec4f src, Vec4f dest);
+		static Color4f blend(Color4f src, Color4f dest);
 
 		#if (OPTI>=1)
 			static __m128i blend(__m128i src, __m128i dest);
@@ -142,6 +150,8 @@ namespace glib
 		 * 		Returns the blended color.
 		 */
 		static Color lerp(Color src, Color dest, double lerpVal);
+		static Vec4f lerp(Vec4f src, Vec4f dest, double lerpVal);
+		
 
 		/**
 		 * @brief Draws a rectangle using the active color.
@@ -300,6 +310,7 @@ namespace glib
 		 * 		The image to draw onto.
 		 */
 		static void drawImage(Image* img, int x, int y, Image* surf);
+		static void drawImage(HiResImage* img, int x, int y, HiResImage* surf);
 		
 		/**
 		 * @brief Draws an Image that is modified by the active drawing color.
@@ -742,17 +753,31 @@ namespace glib
 		static Image* gaussianBlur(Image* img, int kernelRadius, double sigma = -1.0);
 
 		/**
+		 * @brief Converts the image to grayscale by converting the
+		 * 		color space from RGB to YCBCR and only keeping the Y component.
+		 * 		This process skips computing the CB and CR components for speed.
+		 * 
+		 * 		A new image is returned as a pointer and it is the responsibility of
+		 * 			the programmer to delete the memory when no longer needed.
+		 * 
+		 * 		May return nullptr if the image provided does not exist.
+		 * @param img 
+		 * @return Image* 
+		 */
+		static Image* convertToGrayscale(Image* img);
+
+		/**
 		 * @brief Applies an canny edge filter to the image.
 		 * 		Not implemented.
 		 */
-		static Image* cannyEdgeFilter(Image* img);
+		static Image* cannyEdgeFilter(Image* img); //TODO
 
 		/**
 		 * @brief
 		 * 		Applies a sobel edge filter to the image.
 		 * 		Not implemented.
 		 */
-		static Image* sobelEdgeFilter(Image* img);
+		static Image* sobelEdgeFilter(Image* img); //TODO
 		
 		/**
 		 * @brief Dithers the image using either Bayer dithering or Floyd Steinburg dithering.

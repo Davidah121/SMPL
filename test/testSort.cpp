@@ -1,5 +1,5 @@
 #include <catch2/catch_amalgamated.hpp>
-#include <Sort.h>
+#include "Sort.h"
 
 TEST_CASE("Testing of Sorting and Shuffle Algorithms", "[Sort]")
 {

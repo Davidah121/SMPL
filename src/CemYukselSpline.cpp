@@ -262,14 +262,15 @@ namespace glib
 		GeneralMathFunction f = GeneralMathFunction();
 		f.setFunction([circleMid, circleRadius, mainP, longerP ](double t) -> double{
 			//solve ellipse 
+			return 0.0;
 		});
 
-		return Vec2f(); //FINISH LATER
+		return Vec2f(); //TODO: FINISH LATER
 	}
 
 	Vec2f CemYukselSpline::hybridFormulation(size_t index, double weight)
 	{
-		return Vec2f(); //FINISH LATER
+		return Vec2f(); //TODO: FINISH LATER
 	}
 
 	size_t CemYukselSpline::size()

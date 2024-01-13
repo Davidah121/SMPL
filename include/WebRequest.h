@@ -1,4 +1,9 @@
 #pragma once
+
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include <unordered_map>
 #include <vector>
 #include <string>
@@ -9,33 +14,94 @@ namespace glib
 	class WebRequest
 	{
 		public:
-			static const char TYPE_GET = 0;
-			static const char TYPE_POST = 1;
-			static const char TYPE_HEAD = 2;
-			static const char TYPE_PUT = 3;
-			static const char TYPE_DELETE = 4;
-			static const char TYPE_CONNECT = 5;
-			static const char TYPE_OPTIONS = 6;
-			static const char TYPE_TRACE = 7;
-			static const char TYPE_PATCH = 8;
-			static const char TYPE_UNKNOWN = -1;
+			static const unsigned int TYPE_GET = 0x01;
+			static const unsigned int TYPE_POST = 0x02;
+			static const unsigned int TYPE_HEAD = 0x04;
+			static const unsigned int TYPE_PUT = 0x08;
+			static const unsigned int TYPE_DELETE = 0x10;
+			static const unsigned int TYPE_CONNECT = 0x20;
+			static const unsigned int TYPE_OPTIONS = 0x40;
+			static const unsigned int TYPE_TRACE = 0x80;
+			static const unsigned int TYPE_PATCH = 0x100;
+			static const unsigned int TYPE_UNKNOWN = 0xFFFFFFFF;
 
 			WebRequest();
 			WebRequest(char* buffer, size_t size);
 			WebRequest(std::string buffer);
 			WebRequest(std::vector<unsigned char> buffer);
+			
+			/**
+			 * @brief Reads values and sets up the web request.
+			 * 		Returns whether the web request properly ended.
+			 * 			This indicates whether it should have more bytes or not.
+			 * 			It properly ends when an empty line is found. Everything after 
+			 * 				is the body which is not included in the request.
+			 * @param buffer 
+			 * @param size 
+			 * @param bytesRead 
+			 * 		A pointer to a size_t that will store how many bytes were actually read
+			 * 		to form the web request.
+			 * @return size_t 
+			 */
+			bool init(unsigned char* buffer, size_t size, size_t* bytesRead);
 
-			void setHeader(char type, std::string data, bool includeHTTP = true);
+			/**
+			 * @brief Sets the header for the request/response.
+			 * 		If type is not UNKNOWN, data is assumed to be the url of the request.
+			 * 		It is also assumed that HTTP should be included. This is best for request.
+			 * 		
+			 * 		If the type is UNKNOWN, url is assumed to be empty. This is best for responses.
+			 * 
+			 * @param type 
+			 * @param data 
+			 * @param includeHTTP 
+			 */
+			void setHeader(unsigned int type, std::string data, bool includeHTTP = true);
+
+			/**
+			 * @brief Gets the full Header of the request/response
+			 * 
+			 * @return std::string 
+			 */
 			std::string getHeader();
-			char getType();
+
+			/**
+			 * @brief Gets the Type of the request/response
+			 * 		Note that for responses, it will likely be TYPE_UNKNOWN
+			 * 
+			 * @return unsigned int 
+			 */
+			unsigned int getType();
+
+			/**
+			 * @brief Gets the url from the header of the request/response
+			 * 		Note that for responses, it will likely be empty.
+			 * 
+			 * @return std::string 
+			 */
+			std::string getUrl();
+
 			void addKeyValue(std::string key, std::string value);
 			std::string readKeyValue(std::string key);
-
-			void setBody(std::string s);
-			void setBody(unsigned char* buffer, size_t size);
-			std::string getBody();
 			
 			std::string getRequestAsString();
+
+			/**
+			 * @brief Returns if the request is empty.
+			 * 
+			 * @return true 
+			 * @return false 
+			 */
+			bool empty();
+
+			/**
+			 * @brief Get the total number of bytes used in the request.
+			 * 		This is only modified by init or the constructor currently.
+			 * 		Adding new key values or changing the header does not modify this value currently.
+			 * 
+			 * @return size_t 
+			 */
+			size_t getBytesInRequest();
 
 			/**
 			 * @brief Gets the Mime Type From the extension of a file.
@@ -55,11 +121,13 @@ namespace glib
 			static std::string getDateAsGMT();
 			
 		private:
-			void init(unsigned char* buffer, size_t size);
-			char type;
+			void reset();
+			
+			unsigned int type;
+			size_t bytesInHeader;
 			std::string header;
+			std::string url;
 			std::unordered_map<std::string, std::string> data;
-			std::string body;
 			
         	static const std::unordered_map<std::string, std::string> mimeTypes;
 	};

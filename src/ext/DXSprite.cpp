@@ -5,11 +5,7 @@
 	namespace glib
 	{
 			
-		const Class DXSprite::myClass = Class("DXSprite", {&Object::myClass});
-		const Class* DXSprite::getClass()
-		{
-			return &DXSprite::myClass;
-		}
+		const RootClass DXSprite::myClass = RootClass("DXSprite", {"Object"});
 
 		DXSprite::DXSprite()
 		{

@@ -3,7 +3,7 @@
 namespace glib
 {
 
-	const Class Mat2f::globalClass = Class("Mat2f", {&Matrix::globalClass});
+	const RootClass Mat2f::globalClass = RootClass("Mat2f", {"Matrix"});
 
 	Mat2f::Mat2f() : Matrix(2,2)
 	{

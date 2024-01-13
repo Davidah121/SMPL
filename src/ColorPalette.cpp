@@ -11,7 +11,7 @@ namespace glib
 {
 
 	#pragma region ClassStuff
-	const Class ColorPalette::globalClass = Class("ColorPalette", {&Object::globalClass});
+	const RootClass ColorPalette::globalClass = RootClass("ColorPalette", {"Object"});
 	#pragma endregion
 
 	struct ColorNode
@@ -26,6 +26,11 @@ namespace glib
 	}
 
 	ColorPalette::~ColorPalette()
+	{
+		dispose();
+	}
+
+	void ColorPalette::dispose()
 	{
 		paletteArr.clear();
 		if(paletteTree != nullptr)
@@ -46,7 +51,7 @@ namespace glib
 
 	void ColorPalette::copy(const ColorPalette& other)
 	{
-		this->~ColorPalette();
+		dispose();
 		
 		setClass(globalClass);
 		uniquePalette = other.uniquePalette;

@@ -442,9 +442,9 @@ namespace glib
 		return true;
 	}
 
-	Image** Image::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages, std::vector<int>* extraData)
+	HiResImage** HiResImage::loadGIF(std::vector<unsigned char> fileData, int* amountOfImages, std::vector<int>* extraData)
 	{
-		std::vector<Image*>* images = new std::vector<Image*>();
+		std::vector<HiResImage*>* images = new std::vector<HiResImage*>();
 
 		ColorPalette globalColorTable = ColorPalette();
 		globalColorTable.setPaletteMode(false);
@@ -505,7 +505,7 @@ namespace glib
 			{
 				if (fileData[startIndex] == 0x2C)
 				{
-					Image* tempImage = new Image(globalWidth, globalHeight);
+					HiResImage* tempImage = new HiResImage(globalWidth, globalHeight);
 					
 					if (images->size() > 0)
 					{
@@ -617,14 +617,14 @@ namespace glib
 
 								if(c.alpha!=0)
 								{
-									tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
+									tempImage->setPixel(x + leftScreenPos, y + topScreenPos, SimpleGraphics::convertColorToColor4f(c));
 								}
 								else
 								{
 									if(disposeMethod==0)
 									{
 										c.alpha=255;
-										tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
+										tempImage->setPixel(x + leftScreenPos, y + topScreenPos, SimpleGraphics::convertColorToColor4f(c));
 									}
 									else if(disposeMethod==2)
 									{
@@ -636,13 +636,13 @@ namespace glib
 											c.alpha = 0;
 										}
 										
-										tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
+										tempImage->setPixel(x + leftScreenPos, y + topScreenPos, SimpleGraphics::convertColorToColor4f(c));
 									}
 									else if(disposeMethod==3)
 									{
 										if(indexOfLastNotDisposed>0)
 										{
-											Color c = (images->at(indexOfLastNotDisposed))->getPixel(x + leftScreenPos, y + topScreenPos);
+											Color4f c = (images->at(indexOfLastNotDisposed))->getPixel(x + leftScreenPos, y + topScreenPos);
 											
 											tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
 										}
@@ -678,14 +678,14 @@ namespace glib
 
 								if(c.alpha!=0)
 								{
-									tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
+									tempImage->setPixel(x + leftScreenPos, y + topScreenPos, SimpleGraphics::convertColorToColor4f(c));
 								}
 								else
 								{
 									if(disposeMethod==0)
 									{
 										c.alpha=255;
-										tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
+										tempImage->setPixel(x + leftScreenPos, y + topScreenPos, SimpleGraphics::convertColorToColor4f(c));
 									}
 									else if(disposeMethod==2)
 									{
@@ -697,13 +697,13 @@ namespace glib
 											c.alpha = 0;
 										}
 										
-										tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
+										tempImage->setPixel(x + leftScreenPos, y + topScreenPos, SimpleGraphics::convertColorToColor4f(c));
 									}
 									else if(disposeMethod==3)
 									{
 										if(indexOfLastNotDisposed>0)
 										{
-											Color c = (images->at(indexOfLastNotDisposed))->getPixel(x + leftScreenPos, y + topScreenPos);
+											Color4f c = (images->at(indexOfLastNotDisposed))->getPixel(x + leftScreenPos, y + topScreenPos);
 											
 											tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
 										}

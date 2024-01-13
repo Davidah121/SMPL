@@ -4,7 +4,7 @@ namespace glib
 {
 
 	#pragma region ClassStuff
-	const Class ComplexNumber::globalClass = Class("ComplexNumber", {&Object::globalClass});
+	const RootClass ComplexNumber::globalClass = RootClass("ComplexNumber", {"Object"});
 	#pragma endregion
 
 	ComplexNumber::ComplexNumber()

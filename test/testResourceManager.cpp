@@ -9,7 +9,7 @@ TEST_CASE("Testing of the ResourceManager class", "[ResourceManager]")
 
 	SECTION("Test adding and deletion of a resource")
 	{
-		man.addResource(new int[1], "Key1", false);
+		man.addResource(new int[1], "Key1", false, false);
 		REQUIRE(man.getResource("Key1").getPointer() != nullptr);
 		man.deleteResource("Key1");
 		REQUIRE(man.getResource("Key1").getPointer() == nullptr);

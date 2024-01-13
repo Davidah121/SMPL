@@ -11,24 +11,37 @@ namespace glib
 
 	WebRequest::WebRequest(char* buffer, size_t size)
 	{
-		init((unsigned char*)buffer, size);
+		init((unsigned char*)buffer, size, nullptr);
 	}
 
 	WebRequest::WebRequest(std::string buffer)
 	{
-		init((unsigned char*)buffer.data(), buffer.size());
+		init((unsigned char*)buffer.data(), buffer.size(), nullptr);
 	}
 
 	WebRequest::WebRequest(std::vector<unsigned char> buffer)
 	{
 		//fill out data using buffer
-		init((unsigned char*)buffer.data(), buffer.size());
+		init((unsigned char*)buffer.data(), buffer.size(), nullptr);
 	}
 
-	void WebRequest::init(unsigned char* buffer, size_t size)
+	void WebRequest::reset()
 	{
-		//assume first line is header which has the type and HTTP/1.1
+		type = TYPE_UNKNOWN;
+		bytesInHeader = 0;
+		header = "";
+		data.clear();
+	}
 
+	bool WebRequest::init(unsigned char* buffer, size_t size, size_t* bytesRead)
+	{
+		//delete everything and restart
+		reset();
+
+		//assume first line is header which has the type and HTTP/1.1
+		if(size == 0)
+			return 0;
+		
 		size_t i = 0;
 		while(i < size)
 		{
@@ -42,7 +55,10 @@ namespace glib
 		i++;
 
 		//get type from header
-		std::string typeName = header.substr(0, header.find(' '));
+		size_t firstSpaceIndex = header.find_first_of(' ');
+		size_t lastSpaceIndex = header.find_last_of(' ');
+		
+		std::string typeName = header.substr(0, firstSpaceIndex);
 		if(typeName == "CONNECT")
 			type = TYPE_CONNECT;
 		else if(typeName == "DELETE")
@@ -64,9 +80,14 @@ namespace glib
 		else
 			type = TYPE_UNKNOWN;
 		
+		//url is everything between header and http version
+		//basically, stuff between the first space and the last space
+		url = header.substr(firstSpaceIndex+1, lastSpaceIndex-firstSpaceIndex-1);
+		
 		//read all key value pairs
 		std::string key, value;
 		bool mode = false;
+		bool properEnd = false;
 		while(i < size)
 		{
 			if(mode == false)
@@ -79,7 +100,11 @@ namespace glib
 				else if(buffer[i] >= 32)
 					key += buffer[i];
 				else if(buffer[i] == '\n')
+				{
+					i++;
+					properEnd = true;
 					break; //Empty line. Everything after is body
+				}
 			}
 			else
 			{
@@ -99,15 +124,13 @@ namespace glib
 			i++;
 		}
 
-		//Process body. May not exist. It should be valid base64
-		while(i < size)
-		{
-			body += (char)buffer[i];
-			i++;
-		}
+		bytesInHeader = i;
+		if(bytesRead != nullptr)
+			*bytesRead = i;
+		return properEnd;
 	}
 
-	void WebRequest::setHeader(char type, std::string data, bool includeHTTP)
+	void WebRequest::setHeader(unsigned int type, std::string data, bool includeHTTP)
 	{
 		this->type = type;
 		if(type == TYPE_CONNECT)
@@ -129,8 +152,16 @@ namespace glib
 		else if(type == TYPE_TRACE)
 			header = "TRACE ";
 		else
+		{
 			header = "";
+			this->type = TYPE_UNKNOWN;
+		}
 
+		if(this->type != TYPE_UNKNOWN)
+			url = data; //assume url is data
+		else
+			url = "";
+		
 		header += data;
 		if(includeHTTP)
 			header += " HTTP/1.1";
@@ -141,7 +172,12 @@ namespace glib
 		return header;
 	}
 
-	char WebRequest::getType()
+	std::string WebRequest::getUrl()
+	{
+		return url;
+	}
+
+	unsigned int WebRequest::getType()
 	{
 		return type;
 	}
@@ -158,24 +194,15 @@ namespace glib
 			return it->second;
 		return "";
 	}
-	
-	void WebRequest::setBody(std::string s)
+
+	bool WebRequest::empty()
 	{
-		body = s;
-	}
-	
-	void WebRequest::setBody(unsigned char* buffer, size_t size)
-	{
-		body.clear();
-		for(size_t i=0; i<size; i++)
-		{
-			body += (char)buffer[i];
-		}
+		return header.empty() && data.empty();
 	}
 
-	std::string WebRequest::getBody()
+	size_t WebRequest::getBytesInRequest()
 	{
-		return body;
+		return bytesInHeader;
 	}
 
 	std::string WebRequest::getRequestAsString()
@@ -192,11 +219,6 @@ namespace glib
 		}
 		buffer += "\r\n";
 
-		if(!body.empty())
-		{
-			buffer += body;
-			// buffer += "\r\n";
-		}
 		return buffer;
 	}
 
@@ -260,6 +282,7 @@ namespace glib
         {"mid", "audio/midi"},
         {"midi", "audio/midi"},
         {"mjs", "text/javascript"},
+		{"mkv", "video/x-matroska"},
         {"mp3", "audio/mpeg"},
         {"mp4", "video/mp4"},
         {"mpeg", "video/mpeg"},

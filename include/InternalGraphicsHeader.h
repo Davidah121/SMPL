@@ -3,6 +3,7 @@
 //ONLY FOR INTERNAL USE WITH GRAPHICS FILES
 
 #include "SimpleGraphics.h"
+#include "ComputerVision.h"
 #include "MathExt.h"
 #include <iostream>
 #include "Sort.h"

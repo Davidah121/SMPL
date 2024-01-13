@@ -5,7 +5,7 @@
 namespace glib
 {
 
-	const Class SimpleDir::globalClass = Class("SimpleDir", {&Object::globalClass});
+	const RootClass SimpleDir::globalClass = RootClass("SimpleDir", {"Object"});
 
 	/*
 		Creates an object that will hold information about a directory
@@ -270,7 +270,7 @@ namespace glib
 		{
 			if (names[i].is_directory())
 			{
-				dirs.push_back(getReferenceFullPath(i));
+				dirs.push_back(names[i].path().filename().u8string());
 			}
 		}
 
@@ -289,7 +289,7 @@ namespace glib
 		{
 			if (names[i].is_regular_file())
 			{
-				files.push_back(getReferenceFullPath(i));
+				files.push_back(names[i].path().filename().u8string());
 			}
 		}
 

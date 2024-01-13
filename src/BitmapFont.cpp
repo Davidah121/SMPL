@@ -6,8 +6,7 @@
 
 namespace glib
 {
-
-	const Class BitmapFont::globalClass = Class("BitmapFont", {&Font::globalClass});
+	const RootClass BitmapFont::globalClass = RootClass("BitmapFont", {"Font"});
 
 	BitmapFont::BitmapFont(File file) : Font()
 	{

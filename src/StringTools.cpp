@@ -52,6 +52,8 @@
 		return glib::StringTools::utf8ToChar(bytes);
 	}
 #else
+	//Need WINSDK for io.h so might as well use Windows.h too
+	#include<Windows.h>
 	#include<io.h>
 #endif
 
@@ -80,16 +82,18 @@ namespace glib
 
 	void StringTools::init()
 	{
-		#ifdef __unix__
-			setlocale(LC_CTYPE, "");
-		#else
-			//Note that the following return values are not used and cause warnings
-			int outRet = _setmode(_fileno(stdout), _O_U16TEXT);
-			int inRet = _setmode(_fileno(stdin), _O_U16TEXT);
-			int errRet = _setmode(_fileno(stderr), _O_U16TEXT);
+		#if defined(__unix__)
+			// Enable buffering to prevent chopping up UTF-8 byte sequences. Just to mimic the WIN32 approach.
+			setvbuf(stdout, nullptr, _IOFBF, 0xFFFF);
+		#elif defined(_WIN32)
+			// Set console code page to UTF-8 so console known how to interpret string data
+			SetConsoleOutputCP(CP_UTF8);
+
+			// Enable buffering to prevent VS from chopping up UTF-8 byte sequences
+			setvbuf(stdout, nullptr, _IOFBF, 0xFFFF);
 		#endif
 
-		std::ios_base::sync_with_stdio(true);
+		std::ios_base::sync_with_stdio(false);
 
 		hasInit = true;
 	}
@@ -800,7 +804,6 @@ namespace glib
 
 	std::string StringTools::urlDecode(std::string str)
 	{
-		//Test This: ./Stuff/Stuff/Vids/Hentai/xiangweitudou/[%E7%AC%AC%E4%B8%89%E9%9B%86]%E8%9C%98%E8%9B%9B%E8%85%BF%E6%8C%91%E6%88%98%EF%BC%88English%20subtitles%EF%BC%89/1648037211_9XZ69CJvWGsZakQVK_Source.mp4
 		std::string nStr = "";
 		bool queryMode = false;
 		int i=0;
@@ -1281,46 +1284,6 @@ namespace glib
 		return nStr;
 	}
 
-	int StringTools::toInt(std::string s)
-	{
-		return std::stoi(s.c_str());
-	}
-
-	long StringTools::toLong(std::string s)
-	{
-		return std::stol(s.c_str());
-	}
-
-	double StringTools::toDouble(std::string s)
-	{
-		return std::stod(s.c_str());
-	}
-
-	float StringTools::toFloat(std::string s)
-	{
-		return std::stof(s.c_str());
-	}
-
-	int StringTools::toInt(std::wstring s)
-	{
-		return std::stoi(s.c_str());
-	}
-
-	long StringTools::toLong(std::wstring s)
-	{
-		return std::stol(s.c_str());
-	}
-
-	double StringTools::toDouble(std::wstring s)
-	{
-		return std::stod(s.c_str());
-	}
-
-	float StringTools::toFloat(std::wstring s)
-	{
-		return std::stof(s.c_str());
-	}
-
 	std::string StringTools::toString(int k)
 	{
 		return std::to_string(k);
@@ -1760,258 +1723,96 @@ namespace glib
 		}
 		return output;
 	}
-	
-	std::string StringTools::formatStringInternal(std::string text, va_list orgArgs)
-	{
-		std::string finalText = "";
-		std::vector<std::string> splits = splitString(text, "%ls", false);
-
-		va_list args;
-		va_copy(args, orgArgs);
-
-		size_t i=0;
-
-		while(i<splits.size())
-		{
-			std::string str = splits[i];
-			
-			int bufferSize = 1024;
-			char* nText = new char[bufferSize];
-			while(true)
-			{
-				int size = vsnprintf(nText, bufferSize, str.c_str(), args);
-				if(size < 0)
-				{
-					bufferSize*=2;
-					delete[] nText;
-					nText = new char[bufferSize];
-				}
-				else
-				{
-					break;
-				}
-			}
-			
-			finalText += nText;
-			delete[] nText;
-			
-			int count = 0;
-			size_t loc = 0;
-			
-			while(true)
-			{
-				size_t nLoc = str.find('%', loc);
-				if(nLoc != SIZE_MAX)
-				{
-					loc = nLoc;
-					
-					while(loc < str.size())
-					{
-						loc++;
-						//read till flag
-						if(str[loc] == 'd' || str[loc] == 'i' || str[loc] == 'u' || str[loc] == 'o'
-						|| str[loc] == 'x' || str[loc] == 'X' || str[loc] == 'c')
-						{
-							va_arg(args, size_t);
-							count++;
-							break;
-						}
-						else if(str[loc] == 'f' || str[loc] == 'F' || str[loc] == 'e' || str[loc] == 'E'
-						|| str[loc] == 'g' || str[loc] == 'G' || str[loc] == 'a' || str[loc] == 'A')
-						{
-							va_arg(args, long double);
-							count++;
-							break;
-						}
-						else if(str[loc] == 's')
-						{
-							//should always be char*
-							va_arg(args, char*);
-							count++;
-							break;
-						}
-						else if(str[loc] == 'p')
-						{
-							va_arg(args, void*);
-							count++;
-							break;
-						}
-						else if(str[loc] == 'n')
-						{
-							va_arg(args, void*);
-							count++;
-							break;
-						}
-						else if(str[loc] == L'%')
-						{
-							break;
-						}
-						else if(str[loc] == '*')
-						{
-							va_arg(args, int);
-							count++;
-						}
-					}
-				}
-				else
-				{
-					break;
-				}
-			}
-
-			if(i < splits.size()-1)
-			{
-				std::wstring delayedStr = va_arg(args, wchar_t*);
-				finalText += StringTools::toCString(delayedStr);
-				count++;
-			}
-
-			i++;
-		}
-
-		va_end(args);
-
-		return finalText;
-	}
 
 	std::string StringTools::formatString(std::string text, ...)
 	{
-		std::string finalText = "";
-
 		va_list args;
 		va_start(args, text);
-
-		finalText = StringTools::formatStringInternal(text, args);
-
+		std::string ret = formatStringInternal(text, args);
 		va_end(args);
 
-		return finalText;
-	}
-
-	std::wstring StringTools::formatWideStringInternal(std::wstring text, va_list orgArgs)
-	{
-		std::wstring finalText = L"";
-		std::vector<std::wstring> splits = splitString(text, L"%s", false);
-
-		va_list args;
-		va_copy(args, orgArgs);
-
-		size_t i = 0;
-		while(i<splits.size())
-		{
-			std::wstring str = splits[i];
-			
-			int bufferSize = 1024;
-			wchar_t* nText = new wchar_t[bufferSize];
-			while(true)
-			{
-				int size = vswprintf(nText, bufferSize, str.c_str(), args);
-				if(size < 0)
-				{
-					bufferSize*=2;
-					delete[] nText;
-					nText = new wchar_t[bufferSize];
-				}
-				else
-				{
-					break;
-				}
-			}
-			
-			finalText += nText;
-			delete[] nText;
-			
-			int count = 0;
-			size_t loc = 0;
-			
-			while(true)
-			{
-				size_t nLoc = str.find(L'%', loc);
-				if(nLoc != SIZE_MAX)
-				{
-					loc = nLoc;
-					
-					while(loc < str.size())
-					{
-						loc++;
-						//read till flag
-						if(str[loc] == L'd' || str[loc] == L'i' || str[loc] == L'u' || str[loc] == L'o'
-						|| str[loc] == L'x' || str[loc] == L'X' || str[loc] == L'c')
-						{
-							va_arg(args, size_t);
-							count++;
-							break;
-						}
-						else if(str[loc] == L'f' || str[loc] == L'F' || str[loc] == L'e' || str[loc] == L'E'
-						|| str[loc] == L'g' || str[loc] == L'G' || str[loc] == L'a' || str[loc] == L'A')
-						{
-							va_arg(args, long double);
-							count++;
-							break;
-						}
-						else if(str[loc] == L's')
-						{
-							//should always be wchar_t*
-							va_arg(args, wchar_t*);
-							count++;
-							break;
-						}
-						else if(str[loc] == L'p')
-						{
-							va_arg(args, void*);
-							count++;
-							break;
-						}
-						else if(str[loc] == L'n')
-						{
-							va_arg(args, void*);
-							count++;
-							break;
-						}
-						else if(str[loc] == L'%')
-						{
-							break;
-						}
-						else if(str[loc] == L'*')
-						{
-							va_arg(args, int);
-							count++;
-						}
-					}
-				}
-				else
-				{
-					break;
-				}
-			}
-
-			if(i < splits.size()-1)
-			{
-				std::string delayedStr = va_arg(args, char*);
-				finalText += StringTools::toWideString(delayedStr);
-				count++;
-			}
-
-			i++;
-		}
-
-		va_end(args);
-
-		return finalText;
+		return ret;
 	}
 
 	std::wstring StringTools::formatWideString(std::wstring text, ...)
 	{
-		std::wstring finalText = L"";
-
 		va_list args;
 		va_start(args, text);
-
-		finalText = StringTools::formatWideStringInternal(text, args);
-
+		std::wstring ret = formatStringInternal(text, args);
 		va_end(args);
 
-		return finalText;
+		return ret;
+	}
+
+	
+	std::string StringTools::formatStringInternal(std::string format, va_list args)
+	{
+		int bytesWritten = 0;
+		std::vector<char> buffer = std::vector<char>(0xFFFF);
+		
+		while(true)
+		{
+			va_list copyArgs;
+			va_copy(copyArgs, args);
+			bytesWritten = vsnprintf(buffer.data(), buffer.size(), format.c_str(), args);
+			va_end(copyArgs);
+
+			if(bytesWritten < 0)
+			{
+				//error
+				break;
+			}
+			else if(bytesWritten == buffer.size()-1)
+			{
+				//potentially a problem. May need a larger buffer
+				buffer.resize( buffer.size() * 2 );
+			}
+			else
+			{
+				//probably fine
+				break;
+			}
+		}
+		
+		if(bytesWritten >= 0)
+			return buffer.data();
+		else
+			return "";
+	}
+
+	std::wstring StringTools::formatStringInternal(std::wstring format, va_list args)
+	{
+		int bytesWritten = 0;
+		std::vector<wchar_t> buffer = std::vector<wchar_t>(0xFFFF);
+		
+		while(true)
+		{
+			va_list copyArgs;
+			va_copy(copyArgs, args);
+			bytesWritten = vswprintf(buffer.data(), buffer.size(), format.c_str(), args);
+			va_end(copyArgs);
+
+			if(bytesWritten < 0)
+			{
+				//error
+				break;
+			}
+			else if(bytesWritten == buffer.size()-1)
+			{
+				//potentially a problem. May need a larger buffer
+				buffer.resize( buffer.size() * 2 );
+			}
+			else
+			{
+				//probably fine
+				break;
+			}
+		}
+		
+		if(bytesWritten >= 0)
+			return buffer.data();
+		else
+			return L"";
 	}
 
 	void StringTools::clearConsole(bool clearScrollBuffer)

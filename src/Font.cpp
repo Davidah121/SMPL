@@ -6,7 +6,7 @@
 namespace glib
 {
 		
-	const Class Font::globalClass = Class("Font", {&Object::globalClass});
+	const RootClass Font::globalClass = RootClass("Font", {"Object"});
 
 	Font::Font()
 	{
