@@ -3,7 +3,7 @@
 #include "System.h"
 #include "GraphicsExt.h"
 
-namespace glib
+namespace smpl
 {
     GuiText::GuiText() : GuiContent()
     {

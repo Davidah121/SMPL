@@ -4,9 +4,11 @@
 #include <vector>
 #include <functional>
 #include <mutex>
+#include <atomic>
 #include <unordered_map>
+#include <condition_variable>
 
-namespace glib
+namespace smpl
 {
     class SimpleJobQueue
     {
@@ -62,6 +64,13 @@ namespace glib
         void clearAllJobs();
 
         /**
+         * @brief Removes all jobs in the queue.
+         *      May not remove a job if it has already or is in the process of being executed.
+         * 
+         */
+        void removeAllJobs();
+
+        /**
          * @brief Returns whether there are jobs in the queue still.
          * 
          * @return true 
@@ -87,9 +96,10 @@ namespace glib
         bool getRunning();
         
         std::mutex jobQueueMutex;
+        std::mutex importantMutex;
         bool running = false;
         SmartQueue<std::function<void()>> jobs;
-        std::vector<bool> busy;
         std::vector<std::thread*> jobThreads;
+        std::condition_variable cv;
     };
 }

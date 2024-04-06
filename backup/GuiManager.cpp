@@ -1,6 +1,6 @@
 #include "InternalGuiManagerHeader.h"
 
-namespace glib
+namespace smpl
 {
 	#pragma region GUI_MANAGER
 	std::unordered_map<std::string, std::function<GuiInstance*(SimpleHashMap<std::string, std::string>&)> > GuiManager::elementLoadingFunctions;
@@ -912,4 +912,4 @@ namespace glib
 
 	#pragma endregion
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

@@ -2,7 +2,7 @@
 #include "Input.h"
 #include "ResourceManager.h"
 
-namespace glib
+namespace smpl
 {
     #pragma region GUI_MANAGER
 	std::unordered_map<std::string, std::function<SmartMemory<GuiItem>(SimpleHashMap<std::string, std::string>&, SmartMemory<GuiManager>)> > GuiManager::elementLoadingFunctions;
@@ -290,6 +290,10 @@ namespace glib
 		renderCounter = 0;
 		currDepthCounter = 0;
 		knownRectsToDraw.clear();
+		newDrawnArea.left = INT_MAX;
+		newDrawnArea.right = INT_MIN;
+		newDrawnArea.top = INT_MAX;
+		newDrawnArea.bottom = INT_MIN;
 	}
 
 	void GuiManager::updateRenderCounter()
@@ -304,7 +308,20 @@ namespace glib
 
 	void GuiManager::addNewDrawnArea(GRect r)
 	{
-		knownRectsToDraw.push_back(r);
+		newDrawnArea.left = MathExt::min(newDrawnArea.left, r.left);
+		newDrawnArea.right = MathExt::max(newDrawnArea.right, r.right);
+		newDrawnArea.top = MathExt::min(newDrawnArea.top, r.top);
+		newDrawnArea.bottom = MathExt::max(newDrawnArea.bottom, r.bottom);
+	}
+	
+	GRect GuiManager::getNewDrawnArea()
+	{
+		return newDrawnArea;
+	}
+
+	GRect GuiManager::getOldDrawnArea()
+	{
+		return oldDrawnArea;
 	}
 
 	std::vector<GRect>& GuiManager::getNewDrawingRects()
@@ -321,13 +338,17 @@ namespace glib
 	{
 		//Assume that pollInput() was already called
 		//update root elements
-		rootLayout.layoutUpdate(0, 0, surf->getWidth(), surf->getHeight());
-		rootLayout.preUpdate();
-		rootLayout.update( SmartMemory<GuiManager>::createNoDelete(this) );
+		rootLayout.doLayoutUpdate(0, 0, surf->getWidth(), surf->getHeight());
+		rootLayout.doPreUpdate();
+		rootLayout.doUpdate( SmartMemory<GuiManager>::createNoDelete(this) );
 	}
 	
 	bool GuiManager::renderGuiElements()
 	{
+		bool newImg = oldDrawnArea.right > 0xFFFFFF || oldDrawnArea.bottom > 0xFFFFFF;
+		if(alwaysForceRedraw || newImg)
+			forceRedraw();
+		
 		resetRenderValues();
 
 		int width = surf->getWidth();
@@ -336,15 +357,30 @@ namespace glib
 		GraphicsInterface::setOrthoProjection(width, height);
 		GraphicsInterface::resetClippingPlane();
 		GraphicsInterface::setBoundSurface(surf);
-		GraphicsInterface::setColor(backgroundColor);
-		GraphicsInterface::clear();
 
-		rootLayout.doRender( SmartMemory<GuiManager>::createNoDelete(this) );
+		rootLayout.doPreRender( SmartMemory<GuiManager>::createNoDelete(this) );
+		if(newDrawnArea.left > newDrawnArea.right || newDrawnArea.top > newDrawnArea.bottom || newImg)
+			newDrawnArea = {0, 0, 0xFFFF, 0xFFFF};
+		
+		if(renderCounter > 0)
+		{
+			GraphicsInterface::setClippingRect(Box2D(newDrawnArea.left, newDrawnArea.top, newDrawnArea.right, newDrawnArea.bottom));
+			GraphicsInterface::setColor(backgroundColor);
+			GraphicsInterface::drawRect(newDrawnArea.left, newDrawnArea.top, newDrawnArea.right, newDrawnArea.bottom, false);
+			
+			rootLayout.doRender( SmartMemory<GuiManager>::createNoDelete(this) );
+		}
+		
+		GraphicsInterface::resetClippingPlane();
 		
 		GraphicsInterface::setBoundSurface(surf);
 		GraphicsInterface::setColor(Vec4f(1,1,1,1));
 		GraphicsInterface::drawToScreen();
 		
+		if(renderCounter > 0)
+			oldDrawnArea = newDrawnArea;
+		
+		shouldForceRedraw = false;
 		return renderCounter > 0;
 	}
 
@@ -373,15 +409,34 @@ namespace glib
 			{
 				delete surf;
 				surf = GraphicsInterface::createSurface(width, height);
+				oldDrawnArea = {INT_MIN, INT_MAX, INT_MIN, INT_MAX};
+				forceRedraw();
 			}
 		}
 		else
 		{
 			surf = GraphicsInterface::createSurface(width, height);
+			oldDrawnArea = {INT_MIN, INT_MAX, INT_MIN, INT_MAX};
+			forceRedraw();
 		}
 
 		if(wasBound)
 			GraphicsInterface::setBoundSurface(surf);
+	}
+
+	void GuiManager::forceRedraw()
+	{
+		shouldForceRedraw = true;
+	}
+
+	bool GuiManager::getMustRedraw()
+	{
+		return shouldForceRedraw;
+	}
+
+	void GuiManager::alwaysRedraw(bool v)
+	{
+		alwaysForceRedraw = v;
 	}
 
 	void GuiManager::setWindowX(int v)

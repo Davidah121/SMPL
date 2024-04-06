@@ -1,6 +1,6 @@
 #pragma once
 
-namespace glib
+namespace smpl
 {
     
     class LCG
@@ -69,4 +69,4 @@ namespace glib
         unsigned int mod;
     };
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

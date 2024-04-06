@@ -7,7 +7,7 @@
 #include "ext/GLGraphics.h"
 
 #ifdef USE_OPENGL
-	namespace glib
+	namespace smpl
 	{
 
 		std::vector<GLWindow*> GLWindow::windowList = std::vector<GLWindow*>();
@@ -329,7 +329,7 @@
 				setRunning(true);
 
 				initGL();
-				gui = new GuiManager(GuiManager::TYPE_OPENGL, this->width, this->height);
+				gui = new GuiManager(GraphicsInterface::TYPE_OPENGL, this->width, this->height);
 
 				if(windowType.initFunction != nullptr)
 					windowType.initFunction(this);
@@ -457,12 +457,13 @@
 						initGL();
 
 						//Must init gui here so openGL is initialized first
-						// gui = new GuiManager(GuiManager::TYPE_OPENGL, this->width, this->height);
+						gui = new GuiManager(GraphicsInterface::TYPE_OPENGL, this->width, this->height);
 
 						if(windowType.initFunction != nullptr)
 							windowType.initFunction(this);
 
-						gui->setFocus(true);
+						if(gui!=nullptr)
+							gui->setFocus(true);
 						setFinishInit(true);
 					}
 					else
@@ -493,33 +494,13 @@
 			#endif
 
 		}
-
-		void GLWindow::run()
+		
+		void GLWindow::finishResize()
 		{
-			while (!getShouldEnd())
-			{
-				time_t t1 = System::getCurrentTimeMicro();
-				
-				threadUpdate();
-				threadGuiUpdate();
-
-				if(getRepaint())
-					threadRepaint();
-
-				time_t timeNeeded = 0;
-				myMutex.lock();
-				timeNeeded = sleepTimeMillis*1000 + sleepTimeMicros;
-				myMutex.unlock();
-
-				time_t t2 = System::getCurrentTimeMicro();
-				time_t timePassed = t2-t1;
-				
-				time_t waitTime = timeNeeded - timePassed;
-
-				System::sleep(waitTime/1000, waitTime%1000);
-			}
-
-			setRunning(false);
+			GLGraphics::setViewport(0, 0, width, height);
+			GLGraphics::setClearColor( Vec4f(0, 0, 0, 0) );
+			GLGraphics::clear(GLGraphics::COLOR_BUFFER | GLGraphics::DEPTH_BUFFER);
+			GLGraphics::setOrthoProjection(width, height);
 		}
 
 		bool GLWindow::threadRender()
@@ -569,6 +550,6 @@
 			}
 		}
 
-	} //NAMESPACE glib END
+	} //NAMESPACE smpl END
 
 #endif

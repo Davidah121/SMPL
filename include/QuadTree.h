@@ -2,7 +2,7 @@
 #include "Tree.h"
 #include "Shape.h"
 
-namespace glib
+namespace smpl
 {
     struct QuadTreeRect
     {

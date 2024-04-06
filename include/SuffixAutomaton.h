@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <array>
 
-namespace glib
+namespace smpl
 {
     struct SFA_State
     {

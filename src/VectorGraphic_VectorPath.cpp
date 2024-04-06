@@ -5,7 +5,7 @@
 #include "BezierCurve.h"
 #include "ColorNameConverter.h"
 
-namespace glib
+namespace smpl
 {
 	bool VectorPath::oldMethod = false;
 	Image* surfImg = nullptr;

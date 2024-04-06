@@ -6,7 +6,7 @@
 #else
 	#pragma warning (disable : 4995)
 
-	namespace glib
+	namespace smpl
 	{
 
 		bool GamepadXInput::buttonPressed[56] = {};

@@ -1,9 +1,11 @@
 #include "PolarCoordinate.h"
 #include "MathExt.h"
 
-namespace glib
+namespace smpl
 {
-        
+    
+    const RootClass PolarCoordinate::globalClass = RootClass("PolarCoordinate", {"SerializedObject"});
+
     PolarCoordinate::PolarCoordinate()
     {
 
@@ -25,6 +27,11 @@ namespace glib
     {
         
     }
+
+    std::unordered_map<std::string, SerializedData> PolarCoordinate::getSerializedVariables()
+	{
+		return {SERIALIZE_MAP(length), SERIALIZE_MAP(angle)};
+	}
 
     double PolarCoordinate::getLength()
     {

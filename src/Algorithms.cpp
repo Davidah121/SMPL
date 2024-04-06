@@ -1,7 +1,7 @@
 #include "Algorithms.h"
 #include "System.h"
 
-namespace glib
+namespace smpl
 {
 
     std::vector<Grouping> Algorithms::packageMergeAlgorithm(std::vector<Grouping> baseItems, size_t desiredTotal)

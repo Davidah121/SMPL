@@ -1,6 +1,7 @@
 #include "StringTools.h"
 #include <string>
 #include "Input.h"
+#include "BinarySet.h"
 
 #ifdef __unix__
 	#include <unistd.h>
@@ -60,7 +61,7 @@
 #define getch() (_getwch() % 0xFF)
 #define getwch() _getwch()
 
-namespace glib
+namespace smpl
 {
 
 	//Used in base64 conversions
@@ -848,6 +849,131 @@ namespace glib
 			}
 		}
 		return nStr;
+	}
+
+	std::string StringTools::translateEnvironmentVariables(std::string n)
+	{
+		std::string finalStr = "";
+		std::string temp = "";
+		#ifdef _WIN32
+		bool mode = false;
+		for(char c : n)
+		{
+			if(c == '%')
+			{
+				mode = !mode;
+				if(mode == false)
+				{
+					//try to translate the data
+					std::string environmentValue = std::getenv(temp.c_str());
+					if(!environmentValue.empty())
+						finalStr += StringTools::splitString(environmentValue, ';', true)[0];
+					else
+						finalStr += "%"+temp+"%";
+					
+					temp = "";
+				}
+			}
+			else
+			{
+				if(mode == true)
+					temp += c;
+				else
+					finalStr += c;
+			}
+			
+		}
+
+		if(!temp.empty())
+			finalStr += "%"+temp;
+
+		#else
+
+		bool mode = false;
+		bool longMode = false;
+		bool processEnv = false;
+		for(int i=0; i<n.size(); i++)
+		{
+			char c = n[i];
+			if(c == '$' && mode==false)
+			{
+				mode = true;
+				temp += c;
+			}
+			else
+			{
+				if(mode == true)
+				{
+					if(temp.size() == 1 && c == '{')
+						longMode = true;
+					temp += c;
+
+					if(c == '}' && longMode)
+					{
+						processEnv = true;
+					}
+					else if(!longMode)
+					{
+						if(c == ' ' || c == '/' || c == '\\')
+						{
+							processEnv = true;
+						}
+					}
+				}
+				else
+					finalStr += c;
+			}
+
+			if(processEnv || i == n.size()-1)
+			{
+				int offset = 1;
+				int lengthSub = 0;
+				if(longMode)
+				{
+					offset = 2;
+					lengthSub = 1;
+				}
+				
+				std::string environmentValue = std::getenv(temp.substr(offset, temp.size()-offset-lengthSub).c_str());
+				if(!environmentValue.empty())
+				{
+					finalStr += StringTools::splitString(environmentValue, ':', true)[0];
+					if(!longMode)
+					{
+						if(processEnv)
+							finalStr += temp.back();
+					}
+				}
+				else
+					finalStr += temp;
+				
+				temp = "";
+				processEnv = false;
+				longMode = false;
+				mode = false;
+			}
+			
+		}
+		#endif
+
+		return finalStr;
+	}
+
+	std::string StringTools::toBinaryString(char* data, int size, int bits, bool LMSB)
+	{
+		char* binString = new char[bits+1];
+
+		BinarySet b = BinarySet();
+		b.setBitOrder(LMSB);
+		b.setValues(data, size);
+
+		for(size_t i=0; i<bits; i++)
+		{
+			binString[bits-i-1] = (b.getBit(i)==false) ? '0':'1';
+		}
+		binString[bits] = '\0';
+
+		return binString;
 	}
 
 	std::vector<std::string> StringTools::splitStringMultipleDeliminators(std::string s, std::string delim, bool removeEmpty)

@@ -8,7 +8,7 @@
 
 #define min(a,b) ((a<b) ? a:b)
 
-namespace glib
+namespace smpl
 {
 
 	const RootClass Image::globalClass = RootClass("Image", {"Object"});

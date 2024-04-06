@@ -2,7 +2,7 @@
 #include <vector>
 #include "BinarySet.h"
 
-namespace glib
+namespace smpl
 {
 	template<typename T>
 	class BinarySearchTree;
@@ -564,4 +564,4 @@ namespace glib
 		}
 	}
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

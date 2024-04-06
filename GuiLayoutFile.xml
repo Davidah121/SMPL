@@ -1,78 +1,78 @@
 <SimpleGUI>
     <LayoutList margin="{4,4,4,4}">
 
-        <LayoutList margin="{4,4,4,4}">
+        <LayoutList margin="{4,4,4,4}" border-color="red" border="{1, 1, 1, 1}">
             <Text text="This is equivalent to a paragraph element in html"/>
         </LayoutList>
 
         
-        <LayoutList margin="{4,4,4,4}">
+        <LayoutList margin="{4,4,4,4}" border-color="blue" border="{1, 1, 1, 1}">
             <Text text="This is really long 12312312312312321312136285741651658g749f6ds8g4df3s5f19  284 6fd54sa9f87e265 f43e625qf1 9e87saaf9d8s4 af3521 9f8474e239f 84d6s5aaf1 d9w8 f62q5f1 ew8f7 9esd84af6ds51f9e284q f9e241f dsa1fd+s897af+9e28q41f3 2d1saf"/>
         </LayoutList>
 
-        <LayoutList margin="{4,4,4,4}">
+        <LayoutList margin="{4,4,4,4}" border-color="green" border="{1, 1, 1, 1}">
             <Text text="Even more text"/>
         </LayoutList>
 
         <LayoutTable margin="{4,4,4,4}" num-columns="4" inner-padding="8" show-inner-grid="true" border-color="black">
             <!-- Row 1 -->
-            <LayoutList id="NL" margin="{auto,auto,auto,auto}">
+            <LayoutList id="NL" margin="{auto,auto,auto,auto}" border-color="red" border="{1, 1, 1, 1}">
                 <Text text="NL"/>
             </LayoutList>
-            <LayoutList id="/" margin="{auto,auto,auto,auto}">
+            <LayoutList id="/" margin="{auto,auto,auto,auto}" border-color="red" border="{1, 1, 1, 1}">
                 <Text text="/"/>
             </LayoutList>
-            <LayoutList id="*" margin="{auto,auto,auto,auto}">
+            <LayoutList id="*" margin="{auto,auto,auto,auto}" border-color="red" border="{1, 1, 1, 1}">
                 <Text text="*"/>
             </LayoutList>
-            <LayoutList id="-" margin="{auto,auto,auto,auto}">
+            <LayoutList id="-" margin="{auto,auto,auto,auto}" border-color="red" border="{1, 1, 1, 1}">
                 <Text text="-"/>
             </LayoutList>
             
             <!-- Row 2 -->
-            <LayoutList id="7" margin="{auto,auto,auto,auto}">
+            <LayoutList id="7" margin="{auto,auto,auto,auto}" border-color="red" border="{1, 1, 1, 1}">
                 <Text text="7"/>
             </LayoutList>
-            <LayoutList id="8" margin="{auto,auto,auto,auto}">
+            <LayoutList id="8" margin="{auto,auto,auto,auto}" border-color="red" border="{1, 1, 1, 1}">
                 <Text text="8"/>
             </LayoutList>
-            <LayoutList id="9" margin="{auto,auto,auto,auto}">
+            <LayoutList id="9" margin="{auto,auto,auto,auto}" border-color="red" border="{1, 1, 1, 1}">
                 <Text text="9"/>
             </LayoutList>
-            <LayoutList id="+" row-span="2" margin="{auto,auto,auto,auto}">
+            <LayoutList id="+" row-span="2" margin="{auto,auto,auto,auto}" border-color="red" border="{1, 1, 1, 1}">
                 <Text text="+"/>
             </LayoutList>
 
             <!-- Row 3 -->
-            <LayoutList id="4" margin="{auto,auto,auto,auto}">
+            <LayoutList id="4" margin="{auto,auto,auto,auto}" border-color="red" border="{1, 1, 1, 1}">
                 <Text text="4"/>
             </LayoutList>
-            <LayoutList id="5" margin="{auto,auto,auto,auto}">
+            <LayoutList id="5" margin="{auto,auto,auto,auto}" border-color="red" border="{1, 1, 1, 1}">
                 <Text text="5"/>
             </LayoutList>
-            <LayoutList id="6" margin="{auto,auto,auto,auto}">
+            <LayoutList id="6" margin="{auto,auto,auto,auto}" border-color="red" border="{1, 1, 1, 1}">
                 <Text text="6"/>
             </LayoutList>
 
             <!-- Row 4 -->
-            <LayoutList id="1" margin="{auto,auto,auto,auto}">
+            <LayoutList id="1" margin="{auto,auto,auto,auto}" border-color="red" border="{1, 1, 1, 1}">
                 <Text text="1"/>
             </LayoutList>
-            <LayoutList id="2" margin="{auto,auto,auto,auto}">
+            <LayoutList id="2" margin="{auto,auto,auto,auto}" border-color="red" border="{1, 1, 1, 1}">
                 <Text text="2"/>
             </LayoutList>
-            <LayoutList id="3" margin="{auto,auto,auto,auto}">
+            <LayoutList id="3" margin="{auto,auto,auto,auto}" border-color="red" border="{1, 1, 1, 1}">
                 <Text text="3"/>
             </LayoutList>
-            <LayoutList id="ENT" row-span="2" margin="{auto,auto,auto,auto}">
+            <LayoutList id="ENT" row-span="2" margin="{auto,auto,auto,auto}" border-color="red" border="{1, 1, 1, 1}">
                 <Text text="ENT"/>
             </LayoutList>
 
             <!-- Row 5 -->
-            <LayoutList id="0" col-span="2" margin="{auto,auto,auto,auto}">
+            <LayoutList id="0" col-span="2" margin="{auto,auto,auto,auto}" border-color="red" border="{1, 1, 1, 1}">
                 <Text text="0"/>
             </LayoutList>
-            <LayoutList id="." margin="{auto,auto,auto,auto}">
+            <LayoutList id="." margin="{auto,auto,auto,auto}" border-color="red" border="{1, 1, 1, 1}">
                 <Text text="."/>
             </LayoutList>
 

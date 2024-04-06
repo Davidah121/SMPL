@@ -4,7 +4,7 @@
 
     #include "ext/GLTexture.h"
 
-    namespace glib
+    namespace smpl
     {
         struct GLSurfaceParameters
         {

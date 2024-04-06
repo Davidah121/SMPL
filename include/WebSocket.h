@@ -9,7 +9,7 @@
 	#include <vector>
 	#include <list>
 
-	namespace glib
+	namespace smpl
 	{
 		struct WebSocketPacket
 		{
@@ -27,8 +27,8 @@
 		class WebSocket
 		{
 		public:
-			static const bool TYPE_CLIENT = glib::Network::TYPE_CLIENT;
-			static const bool TYPE_SERVER = glib::Network::TYPE_SERVER;
+			static const bool TYPE_CLIENT = smpl::Network::TYPE_CLIENT;
+			static const bool TYPE_SERVER = smpl::Network::TYPE_SERVER;
 			
 			static const int TYPE_TEXT = 0;
 			static const int TYPE_BINARY = 1;
@@ -65,7 +65,7 @@
 			uint32_t getRandomMask();
 			
 			bool type = TYPE_SERVER;
-			glib::Network* conn = nullptr;
+			smpl::Network* conn = nullptr;
 			std::function<void(int a)> onConnectFunc;
 			std::function<void(int a)> onNewPacketFunc;
 			std::function<void(int a)> onDisconnectFunc;
@@ -73,7 +73,7 @@
 			std::vector< std::list<WebSocketPacket> > packetQueue;
 			std::vector< ClientInfo > clients;
 			size_t clientsConnected = 0;
-			glib::LCG maskRandom = glib::LCG();
+			smpl::LCG maskRandom = smpl::LCG();
 			std::mutex optMutex;
 			std::string location;
 			int port;

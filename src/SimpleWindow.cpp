@@ -8,7 +8,7 @@
 
 #ifndef NO_WINDOW
 
-	namespace glib
+	namespace smpl
 	{
 		std::vector<SimpleWindow*> SimpleWindow::windowList = std::vector<SimpleWindow*>();
 		int SimpleWindow::screenWidth = System::getDesktopWidth();
@@ -61,27 +61,27 @@
 					break;
 				case KeyPress:
 					if(keyDownFunction != nullptr)
-						keyDownFunction(event.xkey.keycode, 0);
+						keyDownFunction(this, event.xkey.keycode, 0);
 					break;
 				case KeyRelease:
 					if(keyUpFunction != nullptr)
-						keyUpFunction(event.xkey.keycode, 0);
+						keyUpFunction(this, event.xkey.keycode, 0);
 					break;
 				case ButtonPress:
 					if(mouseButtonDownFunction != nullptr)
-						mouseButtonDownFunction(event.xbutton.button);
+						mouseButtonDownFunction(this, event.xbutton.button);
 					break;
 				case ButtonRelease:
 					if(mouseButtonUpFunction != nullptr)
-						mouseButtonUpFunction(event.xbutton.button);
+						mouseButtonUpFunction(this, event.xbutton.button);
 					break;
 				case MotionNotify:
 					if(mouseMovedFunction != nullptr)
-						mouseMovedFunction();
+						mouseMovedFunction(this);
 					break;
 				case DestroyNotify:
 					if(closingFunction != nullptr)
-						closingFunction();
+						closingFunction(this);
 					setShouldEnd(true);
 					break;
 				case CreateNotify:
@@ -92,7 +92,7 @@
 					if (event.xclient.data.l[0] == wmDeleteMessage)
 					{
 						if(closingFunction != nullptr)
-							closingFunction();
+							closingFunction(this);
 						setShouldEnd(true);
 					}
 					break;
@@ -135,7 +135,7 @@
 						//always consider it handled
 						bHandled = true;
 						if(rawTouchInput != nullptr)
-							rawTouchInput(pInputs, cInputs);
+							rawTouchInput(this, pInputs, cInputs);
 					}
 					delete[] pInputs;
 				}
@@ -161,7 +161,7 @@
 					if(gestureTouchInput != nullptr)
 					{
 						handled = true;
-						gestureTouchInput(gi);
+						gestureTouchInput(this, gi);
 					}
 					handled = true;
 				}
@@ -169,7 +169,7 @@
 				return handled;
 			}
 
-			void SimpleWindow::setRawTouchFunction(std::function<void(TOUCHINPUT*, int)> function)
+			void SimpleWindow::setRawTouchFunction(std::function<void(SimpleWindow*, TOUCHINPUT*, int)> function)
 			{
 				if(function != nullptr)
 				{
@@ -178,7 +178,7 @@
 				}
 			}
 
-			void SimpleWindow::setGestureInputFunction(std::function<void(GESTUREINFO)> function)
+			void SimpleWindow::setGestureInputFunction(std::function<void(SimpleWindow*, GESTUREINFO)> function)
 			{
 				gestureTouchInput = function;
 			}
@@ -261,7 +261,7 @@
 						break;
 					case WM_CLOSE:
 						if (currentWindow->closingFunction != nullptr)
-							currentWindow->closingFunction();
+							currentWindow->closingFunction(currentWindow);
 						PostQuitMessage(0);
 						currentWindow->setShouldEnd(true);
 						break;
@@ -287,14 +287,14 @@
 						if(!currentWindow->getAllowKeyInput())
 							return 0;
 						if(currentWindow->internalCharValFunction != nullptr)
-							currentWindow->internalCharValFunction(wparam, lparam);
+							currentWindow->internalCharValFunction(currentWindow, wparam, lparam);
 						break;
 					case WM_KEYDOWN:
 						if(!currentWindow->getAllowKeyInput())
 							return 0;
 
 						if (currentWindow->keyDownFunction != nullptr)
-							currentWindow->keyDownFunction(wparam, lparam);
+							currentWindow->keyDownFunction(currentWindow, wparam, lparam);
 						
 						if(wparam == (Input::KEY_DELETE&0xFF) || wparam == (Input::KEY_LEFT&0xFF) || wparam == (Input::KEY_RIGHT&0xFF)
 						|| wparam == (Input::KEY_DOWN&0xFF) || wparam == (Input::KEY_UP&0xFF) || wparam == (Input::KEY_BACKSPACE&0xFF)
@@ -302,7 +302,7 @@
 						{
 							//Exceptions. These keys are not apart of WM_CHAR but are useful when editing text.
 							if(currentWindow->internalCharValFunction != nullptr)
-								currentWindow->internalCharValFunction(wparam | Input::NEGATIVE, lparam);
+								currentWindow->internalCharValFunction(currentWindow, wparam | Input::NEGATIVE, lparam);
 						}
 						
 						break;
@@ -310,51 +310,51 @@
 						if(!currentWindow->getAllowKeyInput())
 							return 0;
 						if (currentWindow->keyUpFunction != nullptr)
-							currentWindow->keyUpFunction(wparam, lparam);
+							currentWindow->keyUpFunction(currentWindow, wparam, lparam);
 						break;
 					case WM_LBUTTONDOWN:
 						if (currentWindow->mouseButtonDownFunction != nullptr)
-							currentWindow->mouseButtonDownFunction(MOUSE_LEFT);
+							currentWindow->mouseButtonDownFunction(currentWindow, MOUSE_LEFT);
 						break;
 					case WM_MBUTTONDOWN:
 						if (currentWindow->mouseButtonDownFunction != nullptr)
-							currentWindow->mouseButtonDownFunction(MOUSE_MIDDLE);
+							currentWindow->mouseButtonDownFunction(currentWindow, MOUSE_MIDDLE);
 						break;
 					case WM_RBUTTONDOWN:
 						if (currentWindow->mouseButtonDownFunction != nullptr)
-							currentWindow->mouseButtonDownFunction(MOUSE_RIGHT);
+							currentWindow->mouseButtonDownFunction(currentWindow, MOUSE_RIGHT);
 						break;
 					case WM_LBUTTONUP:
 						if (currentWindow->mouseButtonUpFunction != nullptr)
-							currentWindow->mouseButtonUpFunction(MOUSE_LEFT);
+							currentWindow->mouseButtonUpFunction(currentWindow, MOUSE_LEFT);
 						break;
 					case WM_MBUTTONUP:
 						if (currentWindow->mouseButtonUpFunction != nullptr)
-							currentWindow->mouseButtonUpFunction(MOUSE_MIDDLE);
+							currentWindow->mouseButtonUpFunction(currentWindow, MOUSE_MIDDLE);
 						break;
 					case WM_RBUTTONUP:
 						if (currentWindow->mouseButtonUpFunction != nullptr)
-							currentWindow->mouseButtonUpFunction(MOUSE_RIGHT);
+							currentWindow->mouseButtonUpFunction(currentWindow, MOUSE_RIGHT);
 						break;
 					case WM_MOUSEWHEEL:
 						if (currentWindow->mouseWheelFunction != nullptr)
-							currentWindow->mouseWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
+							currentWindow->mouseWheelFunction(currentWindow, GET_WHEEL_DELTA_WPARAM(wparam)/120);
 
 						if(currentWindow->internalMouseWheelFunction != nullptr)
-							currentWindow->internalMouseWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
+							currentWindow->internalMouseWheelFunction(currentWindow, GET_WHEEL_DELTA_WPARAM(wparam)/120);
 
 						break;
 					case WM_MOUSEHWHEEL:
 						if (currentWindow->mouseHWheelFunction != nullptr)
-							currentWindow->mouseHWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
+							currentWindow->mouseHWheelFunction(currentWindow, GET_WHEEL_DELTA_WPARAM(wparam)/120);
 						
 						if(currentWindow->internalMouseHWheelFunction != nullptr)
-							currentWindow->internalMouseHWheelFunction(GET_WHEEL_DELTA_WPARAM(wparam)/120);
+							currentWindow->internalMouseHWheelFunction(currentWindow, GET_WHEEL_DELTA_WPARAM(wparam)/120);
 
 						break;
 					case WM_MOUSEMOVE:
 						if (currentWindow->mouseMovedFunction != nullptr)
-							currentWindow->mouseMovedFunction();
+							currentWindow->mouseMovedFunction(currentWindow);
 						break;
 					case WM_GESTURE:
 						break;
@@ -403,57 +403,51 @@
 						if(wparam == SIZE_MAXIMIZED)
 						{
 							currentWindow->windowState = STATE_MAXIMIZED;
+							// StringTools::println("MAXIMUM, %d, %d", currentWindow->getResizeMe(), currentWindow->getResizing());
 							//FIX LATER
-							if(currentWindow->getResizing())
-							{
-								currentWindow->preX = currentWindow->x;
-								currentWindow->preY = currentWindow->y;
+							currentWindow->preX = currentWindow->x;
+							currentWindow->preY = currentWindow->y;
 
-								currentWindow->x = 0;
-								currentWindow->y = 0;
+							currentWindow->x = 0;
+							currentWindow->y = 0;
 
-								currentWindow->width = LOWORD(lparam);
-								currentWindow->height = HIWORD(lparam)-1;
-							}
-							else
-							{
+							if(currentWindow->width != LOWORD(lparam))
 								currentWindow->setResizeMe(true);
+							if(currentWindow->height != HIWORD(lparam)-1)
+								currentWindow->setResizeMe(true);
+							
+							currentWindow->width = LOWORD(lparam);
+							currentWindow->height = HIWORD(lparam)-1;
 
-								currentWindow->preX = currentWindow->x;
-								currentWindow->preY = currentWindow->y;
-
-								currentWindow->x = 0;
-								currentWindow->y = 0;
-
-								currentWindow->width = LOWORD(lparam);
-								currentWindow->height = HIWORD(lparam)-1;
-							}
+							currentWindow->redrawGui = true;
+							currentWindow->finishResize();
 						}
 						else if(wparam == SIZE_RESTORED)
 						{
-							currentWindow->windowState = STATE_NORMAL;
-							//FIX LATER
-							if(currentWindow->getResizing())
-							{
-								currentWindow->x = currentWindow->preX;
-								currentWindow->y = currentWindow->preY;
-
-								currentWindow->width = LOWORD(lparam);
-								currentWindow->height = HIWORD(lparam)-1;
-							}
-							else
+							if(currentWindow->windowState == STATE_MAXIMIZED || currentWindow->windowState == STATE_MINIMIZED)
 							{
 								currentWindow->setResizeMe(true);
-
-								currentWindow->x = currentWindow->preX;
-								currentWindow->y = currentWindow->preY;
-
-								currentWindow->width = LOWORD(lparam);
-								currentWindow->height = HIWORD(lparam)-1;
+								currentWindow->redrawGui = true;
+							}
+							
+							currentWindow->windowState = STATE_NORMAL;
+							//FIX LATER
+							
+							currentWindow->x = currentWindow->preX;
+							currentWindow->y = currentWindow->preY;
+							
+							currentWindow->width = LOWORD(lparam);
+							currentWindow->height = HIWORD(lparam)-1;
+							
+							if(!currentWindow->getResizing() || currentWindow->redrawGui)
+							{
+								currentWindow->setResizeMe(true);
+								currentWindow->finishResize();
 							}
 						}
 						else if(wparam == SIZE_MINIMIZED)
 						{
+							// StringTools::println("MINIMUM, %d, %d", currentWindow->getResizeMe(), currentWindow->getResizing());
 							currentWindow->preX = currentWindow->x;
 							currentWindow->preY = currentWindow->y;
 
@@ -464,7 +458,8 @@
 						}
 						break;
 					case WM_EXITSIZEMOVE:
-						currentWindow->initBitmap();
+						// StringTools::println("FINISH RESIZE");
+						currentWindow->finishResize();
 						currentWindow->setResizing(false);
 						break;
 					case WM_SYSCOMMAND:
@@ -574,7 +569,7 @@
 		void SimpleWindow::close()
 		{
 			if(closingFunction!=nullptr)
-				closingFunction();
+				closingFunction(this);
 			
 			dispose();
 		}
@@ -796,7 +791,7 @@
 					wndClass.hIcon = handleToIcon;
 				}
 				
-				wndClass.hIconSm = LoadIcon(hins, IDI_APPLICATION);
+				wndClass.hIconSm = wndClass.hIcon;
 				wndClass.hInstance = hins;
 				wndClass.lpfnWndProc = SimpleWindow::wndProc;
 				wndClass.lpszClassName = text.c_str();
@@ -940,6 +935,23 @@
 
 		}
 
+		void SimpleWindow::finishResize()
+		{
+			initBitmap();
+			if(gui!=nullptr)
+			{
+				gui->resizeImage(width, height);
+				if(redrawGui)
+				{
+					gui->forceRedraw();
+					redrawGui = false;
+				}
+			}
+			
+			resizing = false;
+			resizeMe = false;
+		}
+
 		void SimpleWindow::initBitmap()
 		{
 			#ifdef __unix__
@@ -1001,11 +1013,6 @@
 				wndPixels = new unsigned char[wndPixelsSize];
 				memset(wndPixels,0,wndPixelsSize);
 			#endif
-
-			if(gui!=nullptr)
-			{
-				gui->resizeImage(width, height);
-			}
 		}
 
 		void SimpleWindow::setRunning(bool value)
@@ -1331,47 +1338,47 @@
 			closingFunction = nullptr;
 		}
 
-		void SimpleWindow::setPaintFunction(std::function<void()> function)
+		void SimpleWindow::setPaintFunction(std::function<void(SimpleWindow*)> function)
 		{
 			paintFunction = function;
 		}
 
-		void SimpleWindow::setMouseMovedFunction(std::function<void()> function)
+		void SimpleWindow::setMouseMovedFunction(std::function<void(SimpleWindow*)> function)
 		{
 			mouseMovedFunction = function;
 		}
 
-		void SimpleWindow::setClosingFunction(std::function<void()> function)
+		void SimpleWindow::setClosingFunction(std::function<void(SimpleWindow*)> function)
 		{
 			closingFunction = function;
 		}
 
-		void SimpleWindow::setKeyUpFunction(std::function<void(unsigned long, long)> function)
+		void SimpleWindow::setKeyUpFunction(std::function<void(SimpleWindow*, unsigned long, long)> function)
 		{
 			keyUpFunction = function;
 		}
 
-		void SimpleWindow::setKeyDownFunction(std::function<void(unsigned long, long)> function)
+		void SimpleWindow::setKeyDownFunction(std::function<void(SimpleWindow*, unsigned long, long)> function)
 		{
 			keyDownFunction = function;
 		}
 
-		void SimpleWindow::setMouseButtonDownFunction(std::function<void(int)> function)
+		void SimpleWindow::setMouseButtonDownFunction(std::function<void(SimpleWindow*, int)> function)
 		{
 			mouseButtonDownFunction = function;
 		}
 
-		void SimpleWindow::setMouseButtonUpFunction(std::function<void(int)> function)
+		void SimpleWindow::setMouseButtonUpFunction(std::function<void(SimpleWindow*, int)> function)
 		{
 			mouseButtonUpFunction = function;
 		}
 
-		void SimpleWindow::setMouseHWheelFunction(std::function<void(int)> function)
+		void SimpleWindow::setMouseHWheelFunction(std::function<void(SimpleWindow*, int)> function)
 		{
 			mouseHWheelFunction = function;
 		}
 
-		void SimpleWindow::setMouseWheelFunction(std::function<void(int)> function)
+		void SimpleWindow::setMouseWheelFunction(std::function<void(SimpleWindow*, int)> function)
 		{
 			mouseWheelFunction = function;
 		}
@@ -1737,18 +1744,21 @@
 				if (gui != nullptr && activateGui)
 				{
 					changed = gui->renderGuiElements();
-					if(changed)
+					if(changed && gui->getSurface() != nullptr)
 					{
-						Image* surface = (Image*)gui->getSurface()->getSurface();
-						if(surface != nullptr)
-							drawImage(surface);
+						if(gui->getSurface()->getType() == GraphicsInterface::TYPE_SOFTWARE)
+						{
+							Image* surface = (Image*)gui->getSurface()->getSurface();
+							if(surface != nullptr)
+								drawImage(surface);
+						}
 					}
 				}
 			}
 
 			if (paintFunction != nullptr)
 			{
-				paintFunction();
+				paintFunction(this);
 				changed = true;
 			}
 
@@ -1768,7 +1778,7 @@
 
 			if(getResizeMe())
 			{
-				initBitmap();
+				finishResize();
 				setResizeMe(false);
 
 				changed = true;

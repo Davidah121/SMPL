@@ -326,7 +326,7 @@ struct UFP16
     }
 };
 
-namespace glib
+namespace smpl
 {
 
 	class MathExt
@@ -2392,25 +2392,10 @@ namespace glib
 		 * 		Returns the baseImage convolved with the kernel.
 		 * @param baseImage 
 		 * @param kernel 
+		 * @param normalized
 		 * @return Matrix 
 		 */
-		static Matrix convolution(Matrix* baseImage, Matrix* kernel);
-
-		/**
-		 * @brief Computes the convolution of a matrix and a kernel (which is a matrix).
-		 * 		This version is normalized so to account for energy differences at each point.
-		 * 
-		 * 		The convolution is the sum of the kernel applied centered on a point for each point in the base image.
-		 * 			Meaning (f*g)(x) = SUM( f[i]*g[x-i] ) from -INF to INF
-		 * 			which for the discrete case, the sum is limited by the size of the kernel.
-		 * 
-		 * 		Computed in O(N^2) operations but it is possible to do it in O(NLogN) with a FFT.
-		 * 		Returns the baseImage convolved with the kernel.
-		 * @param baseImage 
-		 * @param kernel 
-		 * @return Matrix 
-		 */
-		static Matrix convolutionNormalized(Matrix* baseImage, Matrix* kernel);
+		static Matrix convolution(Matrix* baseImage, Matrix* kernel, bool normalized);
 
 		/**
 		 * @brief Computes the cross correlation of a matrix and a kernel (which is a matrix).
@@ -2425,28 +2410,10 @@ namespace glib
 		 * 		Returns the baseImage convolved with the kernel.
 		 * @param baseImage 
 		 * @param kernel 
+		 * @param normalized
 		 * @return Matrix 
 		 */
-		static Matrix crossCorrelation(Matrix* baseImage, Matrix* kernel);
-
-		/**
-		 * @brief Computes the cross correlation of a matrix and a kernel (which is a matrix).
-		 * 		This version is normalized so to account for energy differences at each point.
-		 * 
-		 * 		The cross correlation is the sum of the kernel applied centered on a point for each point in the base image.
-		 * 			Meaning (f*g)(x) = SUM( f[i]*g[x+i] ) from -INF to INF
-		 * 			which for the discrete case, the sum is limited by the size of the kernel.
-		 * 
-		 * 		Similar to convolution, but effectively computes the similarity of the baseImage to the kernel at a given point.
-		 * 			Note that it is not communitive like a convolution
-		 * 
-		 * 		Computed in O(N^2) operations but it is possible to do it in O(NLogN) with a FFT.
-		 * 		Returns the baseImage convolved with the kernel.
-		 * @param baseImage 
-		 * @param kernel 
-		 * @return Matrix 
-		 */
-		static Matrix crossCorrelationNormalized(Matrix* baseImage, Matrix* kernel);
+		static Matrix crossCorrelation(Matrix* baseImage, Matrix* kernel, bool normalized);
 
 		//Clustering algorigthms
 
@@ -2622,4 +2589,4 @@ namespace glib
 		
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

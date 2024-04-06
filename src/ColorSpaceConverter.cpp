@@ -1,6 +1,6 @@
 #include "ColorSpaceConverter.h"
 
-namespace glib
+namespace smpl
 {
     Color rgbtoycbcr(Color c)
     {

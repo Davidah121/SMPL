@@ -1,7 +1,7 @@
 #include "NewGui.h"
 #include "Input.h"
 
-namespace glib
+namespace smpl
 {
     GuiButton::GuiButton() : GuiLayoutList()
     {
@@ -48,6 +48,9 @@ namespace glib
 
     void GuiButton::update(SmartMemory<GuiManager> manager)
     {
+        if(!hovering && !depressed)
+            originalBackgroundColor = getBackgroundColor();
+        
         //get mouseX and mouseY
         int mouseX = 0;
         int mouseY = 0;
@@ -77,12 +80,53 @@ namespace glib
         }
         
         if(Input::getMousePressed(Input::LEFT_MOUSE_BUTTON) && hovering == true)
-            depressed = true;
-        
-        if(Input::getMouseUp(Input::LEFT_MOUSE_BUTTON) && hovering == true && depressed == true)
         {
-            if(onClickFunc != nullptr)
-                onClickFunc();
+            depressed = true;
+        }
+        
+
+        if(depressed)
+        {
+            Color currColor = getBackgroundColor();
+            if(memcmp(&currColor, &depressedColor, sizeof(Color)) != 0)
+            {
+                setBackgroundColor(depressedColor);
+                setShouldRender();
+            }
+        }
+        else if(hovering)
+        {
+            Color currColor = getBackgroundColor();
+            if(memcmp(&currColor, &hoverColor, sizeof(Color)) != 0)
+            {
+                setBackgroundColor(hoverColor);
+                setShouldRender();
+            }
+        }
+        else
+        {
+            Color currColor = getBackgroundColor();
+            if(memcmp(&currColor, &originalBackgroundColor, sizeof(Color)) != 0)
+            {
+                setBackgroundColor(originalBackgroundColor);
+                setShouldRender();
+            }
+        }
+
+        if(Input::getMouseUp(Input::LEFT_MOUSE_BUTTON))
+        {
+            if(hovering == true && depressed == true)
+            {
+                if(onClickFunc != nullptr)
+                    onClickFunc();
+            }
+            
+            if(depressed == true)
+            {
+                depressed = false;
+                setBackgroundColor(originalBackgroundColor);
+                setShouldRender();
+            }
         }
         
         //update the children
@@ -92,6 +136,20 @@ namespace glib
     void GuiButton::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
     {
         GuiLayoutList::loadDataFromXML(attribs, manager);
+
+        HashPair<std::string, std::string>* hoverColorInfo = attribs.get("hover-color");
+        HashPair<std::string, std::string>* pressedColorInfo = attribs.get("pressed-color");
+
+        if(hoverColorInfo != nullptr)
+        {
+            hoverColor = loadColor(hoverColorInfo->data);
+            attribs.remove(hoverColorInfo);
+        }
+        if(pressedColorInfo != nullptr)
+        {
+            depressedColor = loadColor(pressedColorInfo->data);
+            attribs.remove(pressedColorInfo);
+        }
     }
 
     SmartMemory<GuiItem> GuiButton::loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager)

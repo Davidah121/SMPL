@@ -2,7 +2,7 @@
 #include "Matrix.h"
 #include "Vec2f.h"
 
-namespace glib
+namespace smpl
 {
 
 	///A special Matrix that is a 2x2 matrix. Commonly used
@@ -102,4 +102,4 @@ namespace glib
 		void fillArray(double* buffer);
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

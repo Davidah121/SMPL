@@ -23,7 +23,7 @@
 		#pragma comment(lib, "dinput8.lib")
 		#pragma comment(lib, "dxguid.lib")
 
-		namespace glib
+		namespace smpl
 		{
 
 			struct DeviceStruct

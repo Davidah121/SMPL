@@ -2,18 +2,14 @@
 #include "StringTools.h"
 #include <iomanip>
 
-namespace glib
+namespace smpl
 {
-
-	const RootClass SimpleDir::globalClass = RootClass("SimpleDir", {"Object"});
-
 	/*
 		Creates an object that will hold information about a directory
 		such as the folders and files in it.
 	*/
 	SimpleDir::SimpleDir(File directory)
 	{
-		setClass(globalClass);
 		std::string dir = directory.getFullFileName();
 		#ifdef __unix__
 			//In order for this to work in linux, replace all '\' with '/'. Yes, Linux sucks.
@@ -242,8 +238,9 @@ namespace glib
 		{
 			std::filesystem::copy(oldName, newName);
 		}
-		catch(...)
+		catch(std::exception e)
 		{
+			StringTools::println("%s", e.what());
 			#ifdef USE_EXCEPTIONS
 			throw SimpleDir::CopyError();
 			#endif

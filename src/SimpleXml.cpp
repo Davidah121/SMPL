@@ -4,7 +4,7 @@
 #define PARSING_VALUE false
 #define PARSING_NODE true
 
-namespace glib
+namespace smpl
 {
     #pragma region XML_NODE
 

@@ -4,7 +4,7 @@
 #include <unordered_set>
 #include <map>
 
-namespace glib
+namespace smpl
 {
 	class Class;
 	class ClassMaster;
@@ -140,4 +140,4 @@ namespace glib
 		static ClassMaster* singleton;
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

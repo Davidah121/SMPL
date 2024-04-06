@@ -1,6 +1,6 @@
 #include "NewGui.h"
 
-namespace glib
+namespace smpl
 {
     GuiLayout::GuiLayout() : GuiItem()
     {
@@ -17,7 +17,7 @@ namespace glib
         {
             GuiItem* rawP = child.getPointer();
             if(rawP != nullptr)
-                rawP->preUpdate();
+                rawP->doPreUpdate();
         }
     }
 
@@ -28,7 +28,7 @@ namespace glib
         {
             GuiItem* p = c.getPointer();
             if(p != nullptr)
-                p->update(manager);
+                p->doUpdate(manager);
         }
     }
 
@@ -40,26 +40,26 @@ namespace glib
         int ty2 = getTrueY() + height - 1;
 
         //render border first. Then background
-        glib::GraphicsInterface::setColor(borderColor);
+        smpl::GraphicsInterface::setColor(borderColor);
         if(border.left > 0)
         {
             //left border
-            glib::GraphicsInterface::drawRect(tx, ty, tx+(border.left-1), ty2, false);
+            smpl::GraphicsInterface::drawRect(tx, ty, tx+(border.left-1), ty2, false);
         }
         if(border.right > 0)
         {
             //right border
-            glib::GraphicsInterface::drawRect(tx2-(border.right-1), ty, tx2, ty2, false);
+            smpl::GraphicsInterface::drawRect(tx2-(border.right-1), ty, tx2, ty2, false);
         }
         if(border.top > 0)
         {
             //top border
-            glib::GraphicsInterface::drawRect(tx, ty, tx2, ty+(border.top-1), false);
+            smpl::GraphicsInterface::drawRect(tx, ty, tx2, ty+(border.top-1), false);
         }
         if(border.bottom > 0)
         {
             //bottom border
-            glib::GraphicsInterface::drawRect(tx, ty2-(border.bottom-1), tx2, ty2, false);
+            smpl::GraphicsInterface::drawRect(tx, ty2-(border.bottom-1), tx2, ty2, false);
         }
 
         //readjust x,y,x2,y2 to remove border
@@ -68,8 +68,8 @@ namespace glib
         tx2 -= border.right;
         ty2 -= border.bottom;
         
-        glib::GraphicsInterface::setColor(backgroundColor);
-        glib::GraphicsInterface::drawRect(tx, ty, tx2, ty2, false);
+        smpl::GraphicsInterface::setColor(backgroundColor);
+        smpl::GraphicsInterface::drawRect(tx, ty, tx2, ty2, false);
     }
 
     void GuiLayout::render(SmartMemory<GuiManager> manager)
@@ -223,11 +223,11 @@ namespace glib
         border = r;
     }
 
-    void GuiLayout::setBorderColor(glib::Color c)
+    void GuiLayout::setBorderColor(smpl::Color c)
     {
         borderColor = c;
     }
-    void GuiLayout::setBackgroundColor(glib::Color c)
+    void GuiLayout::setBackgroundColor(smpl::Color c)
     {
         backgroundColor = c;
     }
@@ -248,11 +248,11 @@ namespace glib
     {
         return border;
     }
-    glib::Color GuiLayout::getBorderColor()
+    smpl::Color GuiLayout::getBorderColor()
     {
         return borderColor;
     }
-    glib::Color GuiLayout::getBackgroundColor()
+    smpl::Color GuiLayout::getBackgroundColor()
     {
         return backgroundColor;
     }

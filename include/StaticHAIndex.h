@@ -8,7 +8,7 @@
 #include <cmath>
 #include "MathExt.h"
 
-namespace glib
+namespace smpl
 {
     template<typename T>
     struct HANode

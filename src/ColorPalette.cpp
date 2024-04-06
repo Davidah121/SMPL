@@ -7,7 +7,7 @@
 #include "System.h"
 #include "ColorSpaceConverter.h"
 
-namespace glib
+namespace smpl
 {
 
 	#pragma region ClassStuff

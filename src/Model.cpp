@@ -4,7 +4,7 @@
 #include "SimpleFile.h"
 #include "SimpleXml.h"
 
-namespace glib
+namespace smpl
 {
 
     const RootClass Model::globalClass = RootClass("Model", {"Object"});
@@ -127,11 +127,11 @@ namespace glib
             {
                 std::vector<int> values;
                 size_t valuesToGrab = this->formatInfo[j].size;
-                size_t index = vertexIndexInfo[i][j];
+                size_t index = vertexIndexInfo[i][j]*valuesToGrab;
 
                 for(size_t k=0; k<valuesToGrab; k++)
                 {
-                    values.push_back( vertexData[j][index*valuesToGrab + k]);
+                    values.push_back( vertexData[j][index + k]);
                 }
 
                 rValues.push_back(values);
@@ -147,7 +147,7 @@ namespace glib
 
                 for(size_t k=0; k<valuesToGrab; k++)
                 {
-                    values.push_back( vertexData[j][index*valuesToGrab + k]);
+                    values.push_back( vertexData[j][index + k]);
                 }
 
                 rValues.push_back(values);
@@ -706,6 +706,14 @@ namespace glib
         return mod;
     }
 
+    void Model::saveModel(File file, unsigned char type)
+    {
+        if(type == MODEL_TYPE_STL)
+            saveSTL(file);
+        // else if(type == MODEL_TYPE_OBJ)
+        //     saveOBJ(file);
+    }
+
     void Model::loadModel(File file)
     {
         std::string ext = file.getExtension();
@@ -1032,7 +1040,10 @@ namespace glib
                     addVec3f(normal, 1);
                     addVec3f(normal, 1);
 
-                    index+=2;
+                    //custom attribute byte count. Will skip
+                    unsigned int extraAttribByteCount = fileBytes[index] + ((unsigned int)fileBytes[index+1] << 8);
+                    index += 2 + extraAttribByteCount;
+
                 }
             }
         }
@@ -1267,5 +1278,107 @@ namespace glib
         // }
     }
 
+    void Model::saveSTL(File file)
+    {
+        //must be a valid format type. So triangles or quads
+        if(modelFormat <= LINE_LOOP)
+            return;
+        
+        //must have at least position defined. Normal will be calculated from triangle def
+        int indexOfPositions = -1;
+        int sizeOfPosition = 0;
+        for(int i=0; i<formatInfo.size(); i++)
+        {
+            if(formatInfo[i].usage == USAGE_POSITION)
+            {
+                indexOfPositions = i;
+                sizeOfPosition = formatInfo[i].size;
+                break;
+            }
+        }
+
+        if(indexOfPositions <0 || sizeOfPosition < 2)
+        {
+            //can't reliably save stl
+            return;
+        }
+
+        SimpleFile outputFile = SimpleFile(file, SimpleFile::WRITE | SimpleFile::ASCII);
+        if(outputFile.isOpen())
+        {
+            //write 80 bytes of junk. Specify Standard Binary STL created with GLib
+            std::string headerWithoutJunk = "Standard Binary STL created with GLib.";
+            outputFile.writeString(headerWithoutJunk);
+            //write a bunch of zeros as junk
+            for(int i=headerWithoutJunk.size(); i<80; i++)
+                outputFile.writeByte(0);
+
+            //now write the number of triangles
+            uint32_t numTriangles = 0;
+            
+            //simplify things by using Triangle2DModel and Triangle3DModel classes
+            if(sizeOfPosition == 2)
+            {
+                Triangle2DModel justTriangles = convertTo2DTriModel();
+                numTriangles = justTriangles.size();
+                outputFile.writeBytes((unsigned char*)&numTriangles, 4);
+                
+                for(int i=0; i<numTriangles; i++)
+                {
+                    Triangle2D tri = justTriangles.get(i);
+                    Vec3f v1 = tri.getVertex1();
+                    Vec3f v2 = tri.getVertex2();
+                    Vec3f v3 = tri.getVertex3();
+                    
+                    Vec3f normal = Vec3f(0, 0, 1);
+
+                    saveSTLVec3f(outputFile, normal);
+                    saveSTLVec3f(outputFile, v1);
+                    saveSTLVec3f(outputFile, v2);
+                    saveSTLVec3f(outputFile, v3);
+                    //no additional attributes
+                    outputFile.writeByte(0);
+                    outputFile.writeByte(0);
+                }
+            }
+            else if(sizeOfPosition > 2)
+            {
+                Triangle3DModel justTriangles = convertTo3DTriModel();
+                numTriangles = justTriangles.size();
+                outputFile.writeBytes((unsigned char*)&numTriangles, 4);
+                
+                for(int i=0; i<numTriangles; i++)
+                {
+                    Triangle3D tri = justTriangles.get(i);
+                    Vec3f v1 = tri.getVertex1();
+                    Vec3f v2 = tri.getVertex2();
+                    Vec3f v3 = tri.getVertex3();
+                    
+                    Vec3f normal = MathExt::crossProduct(v1, v2);
+
+                    saveSTLVec3f(outputFile, normal);
+                    saveSTLVec3f(outputFile, v1);
+                    saveSTLVec3f(outputFile, v2);
+                    saveSTLVec3f(outputFile, v3);
+                    //no additional attributes
+                    outputFile.writeByte(0);
+                    outputFile.writeByte(0);
+                }
+            }
+        }
+
+        outputFile.close();
+    }
+
+    void Model::saveSTLVec3f(SimpleFile& file, Vec3f v)
+    {
+        saveSTLFloat(file, v.x);
+        saveSTLFloat(file, v.y);
+        saveSTLFloat(file, v.z);
+    }
+    void Model::saveSTLFloat(SimpleFile& file, float v)
+    {
+        file.writeBytes((unsigned char*)&v, 4);
+    }
 
 } //NAMESPACE glib END

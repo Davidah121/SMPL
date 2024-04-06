@@ -5,7 +5,7 @@
 #include "Object.h"
 #include "BezierCurve.h"
 
-namespace glib
+namespace smpl
 {
 	class Shape : public Object
 	{

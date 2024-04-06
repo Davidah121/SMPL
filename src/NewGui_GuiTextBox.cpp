@@ -1,14 +1,15 @@
 #include "NewGui.h"
 #include "Input.h"
+#include "System.h"
 
-namespace glib
+namespace smpl
 {
-    GuiTextBox::GuiTextBox() : GuiContent()
+    GuiTextBox::GuiTextBox() : GuiLayoutList()
     {
-        boxLayout.setPadding({5, 5, 5, 5});
-        boxLayout.setBorder({1, 1, 1, 1});
-        boxLayout.setBackgroundColor({128, 128, 128, 255});
-        boxLayout.addChild(&textElement);
+        setPadding({5, 5, 5, 5});
+        setBorder({1, 1, 1, 1});
+        setBackgroundColor({128, 128, 128, 255});
+        addChild( SmartMemory<GuiItem>::createNoDelete(&textElement) );
         textElement.setSelectable(true);
     }
 
@@ -17,9 +18,16 @@ namespace glib
 
     }
 
-    GuiLayoutList& GuiTextBox::getBoxLayout()
+    void GuiTextBox::addChild(SmartMemory<GuiItem> item)
     {
-        return boxLayout;
+        if(children.size() <= 0)
+        {
+            GuiLayoutList::addChild(item);
+        }
+    }
+    void GuiTextBox::removeChild(SmartMemory<GuiItem> item)
+    {
+        GuiLayoutList::removeChild(item);
     }
 
     GuiText& GuiTextBox::getTextElement()
@@ -45,27 +53,6 @@ namespace glib
             return textElement.getText();
     }
 
-    void GuiTextBox::preUpdate()
-    {
-        //need to call pre update for itself and the items it manages.
-        //calling preUpdate on the boxLayout will do so for its children as well.
-        GuiItem::preUpdate();
-        boxLayout.preUpdate();
-    }
-
-    void GuiTextBox::layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight)
-    {
-        //update the GuiLayout assuming that it is not nullptr
-        x = offX;
-        y = offY;
-
-        boxLayout.layoutUpdate(offX, offY, maximumWidth, maximumHeight);
-
-        //update size
-        width = boxLayout.width;
-        height = boxLayout.height;
-    }
-    
     void GuiTextBox::keyboardInput()
     {
         std::queue<int> chars = Input::getCharactersTyped();
@@ -257,7 +244,7 @@ namespace glib
             mouseY = rawGPointer->getMouseY();
 
             //check if in focus before doing anything.
-            if(rawGPointer->getObjectInFocus( SmartMemory<GuiItem>(this, false, false, true) ))
+            if(rawGPointer->getObjectInFocus( SmartMemory<GuiItem>::createNoDelete(this) ))
             {
                 keyboardInput();
             }
@@ -266,7 +253,7 @@ namespace glib
             {
                 if(Input::getMousePressed(Input::LEFT_MOUSE_BUTTON))
                 {
-                    rawGPointer->setObjectInFocus( SmartMemory<GuiItem>(this, false, false, true) );
+                    rawGPointer->setObjectInFocus( SmartMemory<GuiItem>::createNoDelete(this) );
                     //clear buffer of characters typed.
                     Input::clearCharactersTyped();
                 }
@@ -274,13 +261,13 @@ namespace glib
         }
 
         //Update the layout which will update the text element too.
-        boxLayout.update(manager);
+        GuiLayoutList::update(manager);
     }
 
     void GuiTextBox::render(SmartMemory<GuiManager> manager)
     {
         //just draw the layout
-        boxLayout.render(manager);
+        GuiLayoutList::render(manager);
 
         //draw line where at highlight end of text
         //The return rectangle is relative to the start position of the text
@@ -297,8 +284,7 @@ namespace glib
     void GuiTextBox::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
     {
         //Important that we call the parent first. The other elements are called later
-        GuiContent::loadDataFromXML(attribs, manager);
-        boxLayout.loadDataFromXML(attribs, manager);
+        GuiLayoutList::loadDataFromXML(attribs, manager);
         textElement.loadDataFromXML(attribs, manager);
 
         auto pair = attribs.get("allow-linebreaks");

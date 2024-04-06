@@ -2,7 +2,7 @@
 #include "Object.h"
 #include "Shape.h"
 
-namespace glib
+namespace smpl
 {
     template<typename T>
     class SpatialHashing;

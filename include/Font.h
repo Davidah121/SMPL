@@ -5,7 +5,7 @@
 #include "GeneralExceptions.h"
 #include "Shape.h"
 
-namespace glib
+namespace smpl
 {
 
 	struct FontCharInfo
@@ -241,4 +241,4 @@ namespace glib
 		bool sorted = false;
 	};
 
-}  //NAMESPACE glib END
+}  //NAMESPACE smpl END

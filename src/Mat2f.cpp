@@ -1,6 +1,6 @@
 #include "Mat2f.h"
 
-namespace glib
+namespace smpl
 {
 
 	const RootClass Mat2f::globalClass = RootClass("Mat2f", {"Matrix"});

@@ -2,7 +2,7 @@
 #include "SmartMemory.h"
 #include "SmartLinkedList.h"
 
-namespace glib
+namespace smpl
 {
 
     template<typename T>
@@ -37,16 +37,17 @@ namespace glib
                 sList.removeNode( sList.getRootNode() );
                 knownSize--;
             }
-            else
-            {
-                printf("FAILED TO POP\n");
-            }
         }
 
         void erase(SmartMemory<SLinkNode<T>> node)
         {
             if(sList.removeNode(node))
                 knownSize--;
+        }
+
+        void clear()
+        {
+            sList.clear();
         }
 
         size_t size()
@@ -56,7 +57,7 @@ namespace glib
 
         bool empty()
         {
-            return sList.empty();
+            return knownSize == 0;
         }
     private:
         SmartLinkedList<T> sList;

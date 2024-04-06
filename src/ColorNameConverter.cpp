@@ -2,7 +2,7 @@
 #include <algorithm>
 #include "StringTools.h"
 
-namespace glib
+namespace smpl
 {
     std::string ColorNameConverter::ColorToName(Color c)
     {

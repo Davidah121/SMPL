@@ -27,7 +27,7 @@
 
 	#endif
 
-	namespace glib
+	namespace smpl
 	{
 
 		struct AudioSegment
@@ -328,6 +328,6 @@
 			#endif
 		};
 
-	} //NAMESPACE glib END
+	} //NAMESPACE smpl END
 
 #endif

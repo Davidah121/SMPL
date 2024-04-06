@@ -1,6 +1,6 @@
 #include "InternalGraphicsHeader.h"
 
-namespace glib
+namespace smpl
 {
 	void SimpleGraphics::drawPolygon(Vec2f* points, int size, Image* surf)
 	{

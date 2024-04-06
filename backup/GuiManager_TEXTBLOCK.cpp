@@ -1,6 +1,6 @@
 #include "InternalGuiManagerHeader.h"
 
-namespace glib
+namespace smpl
 {
     
 	#pragma region GUI_TEXTBLOCK_CLASS
@@ -464,4 +464,4 @@ namespace glib
 
 	#pragma endregion
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

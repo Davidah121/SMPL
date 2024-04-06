@@ -1,7 +1,7 @@
 #include "Matrix.h"
 #include "StringTools.h"
 
-namespace glib
+namespace smpl
 {
 
 	const RootClass Matrix::globalClass = RootClass("Matrix", {"Object"});

@@ -1,7 +1,7 @@
 #include "Line.h"
 #include "MathExt.h"
 
-namespace glib
+namespace smpl
 {
 
 	const RootClass Line::globalClass = RootClass("Line", {"Object"});

@@ -2,7 +2,7 @@
 #include <iostream>
 #include "StringTools.h"
 
-namespace glib
+namespace smpl
 {
 
     class File

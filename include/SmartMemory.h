@@ -27,7 +27,7 @@ public:
 
     ~StaticMemManager()
     {
-        // glib::StringTools::println("DELETE ALL DATA");
+        // smpl::StringTools::println("DELETE ALL DATA");
         inDestructor = true;
         std::vector<std::pair<T*, bool>> pArr;
         for(auto it = pointerData.begin(); it != pointerData.end(); it++)
@@ -139,6 +139,10 @@ public:
      */
     SmartMemory()
     {
+        hashValue = nullptr;
+        isArray = false;
+        deleteRights = false;
+        deleteOnLast = false;
     }
 
     /**

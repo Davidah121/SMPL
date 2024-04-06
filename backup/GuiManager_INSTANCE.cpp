@@ -1,6 +1,6 @@
 #include "InternalGuiManagerHeader.h"
 
-namespace glib
+namespace smpl
 {
 
 #pragma region GUI_INSTANCE_CLASS
@@ -555,4 +555,4 @@ namespace glib
 
 	#pragma endregion
     
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

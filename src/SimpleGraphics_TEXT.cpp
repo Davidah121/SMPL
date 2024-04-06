@@ -1,6 +1,6 @@
 #include "InternalGraphicsHeader.h"
 
-namespace glib
+namespace smpl
 {
 	void SimpleGraphics::drawText(std::string str, int x, int y, Image* surf)
 	{

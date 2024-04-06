@@ -3,7 +3,7 @@
 #include "StringTools.h"
 #include "Sort.h"
 
-namespace glib
+namespace smpl
 {
 		
 	const RootClass Font::globalClass = RootClass("Font", {"Object"});

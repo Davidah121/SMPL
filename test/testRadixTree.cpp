@@ -5,14 +5,14 @@ TEST_CASE("Testing RadixTree Class", "[RadixTree]")
 {
     SECTION("INSERT TEST 1")
     {
-        glib::RadixTree tree = glib::RadixTree();
+        smpl::RadixTree tree = smpl::RadixTree();
         tree.insert("test");
         tree.insert("slow");
         tree.insert("water");
 
         tree.insert("test"); //already exist. Shouldn't do anything
 
-        glib::Tree<std::pair<std::string, bool>>* rawTree = tree.getRawTree();
+        smpl::Tree<std::pair<std::string, bool>>* rawTree = tree.getRawTree();
         REQUIRE(rawTree->getRoot()->children['t']->data.first == "test");
         REQUIRE(rawTree->getRoot()->children['t']->data.second == true);
         REQUIRE(rawTree->getRoot()->children['s']->data.first == "slow");
@@ -27,11 +27,11 @@ TEST_CASE("Testing RadixTree Class", "[RadixTree]")
 
     SECTION("INSERT TEST 2")
     {
-        glib::RadixTree tree = glib::RadixTree();
+        smpl::RadixTree tree = smpl::RadixTree();
         tree.insert("tester");
         tree.insert("test");
 
-        glib::Tree<std::pair<std::string, bool>>* rawTree = tree.getRawTree();
+        smpl::Tree<std::pair<std::string, bool>>* rawTree = tree.getRawTree();
         REQUIRE(rawTree->getRoot()->children['t']->data.first == "test");
         REQUIRE(rawTree->getRoot()->children['t']->data.second == true);
         REQUIRE(rawTree->getRoot()->children['t']->children['e']->data.first == "er");
@@ -40,11 +40,11 @@ TEST_CASE("Testing RadixTree Class", "[RadixTree]")
 
     SECTION("INSERT TEST 3")
     {
-        glib::RadixTree tree = glib::RadixTree();
+        smpl::RadixTree tree = smpl::RadixTree();
         tree.insert("test");
         tree.insert("team");
 
-        glib::Tree<std::pair<std::string, bool>>* rawTree = tree.getRawTree();
+        smpl::Tree<std::pair<std::string, bool>>* rawTree = tree.getRawTree();
         REQUIRE(rawTree->getRoot()->children['t']->data.first == "te");
         REQUIRE(rawTree->getRoot()->children['t']->data.second == false);
         REQUIRE(rawTree->getRoot()->children['t']->children['s']->data.first == "st");

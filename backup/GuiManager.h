@@ -25,7 +25,7 @@ struct Point
 	int y=0;
 };
 
-namespace glib
+namespace smpl
 {
 	class GuiResourceManager
 	{
@@ -2586,4 +2586,4 @@ namespace glib
 		Color backgroundColor = { 0xA2, 0xB9, 0xBC, 0xFF };
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

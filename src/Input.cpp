@@ -1,7 +1,7 @@
 #include "Input.h"
 #include "SimpleWindow.h"
 
-namespace glib
+namespace smpl
 {
 
 	bool Input::preKeyState[256];
@@ -244,21 +244,21 @@ namespace glib
 		return tempBuff;
 	}
 
-	void Input::adjustVerticalScroll(int v)
+	void Input::adjustVerticalScroll(void* windowPointer, int v)
 	{
 		inputMutex.lock();
 		nVerticalScrollValue += v;
 		inputMutex.unlock();
 	}
 
-	void Input::adjustHorizontalScroll(int v)
+	void Input::adjustHorizontalScroll(void* windowPointer, int v)
 	{
 		inputMutex.lock();
 		nHorizontalScrollValue += v;
 		inputMutex.unlock();
 	}
 
-	void Input::adjustCurrCharVal(unsigned int v1, unsigned int v2)
+	void Input::adjustCurrCharVal(void* windowPointer, unsigned int v1, unsigned int v2)
 	{
 		inputMutex.lock();
 		int repeatV = v2 & 0xFFFF;

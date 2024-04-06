@@ -36,6 +36,7 @@ build $objDir/Compression_StreamLZW.o: buildToObject src/Compression_StreamLZW.c
 build $objDir/Compression_StreamRLE.o: buildToObject src/Compression_StreamRLE.cpp
 build $objDir/ComputerVision.o: buildToObject src/ComputerVision.cpp
 build $objDir/Cryptography.o: buildToObject src/Cryptography.cpp
+build $objDir/DirectoryNotifier.o: buildToObject src/ext/DirectoryNotifier.cpp
 build $objDir/DragDrop.o: buildToObject src/ext/DragDrop.cpp
 build $objDir/DXFont.o: buildToObject src/ext/DXFont.cpp
 build $objDir/DXGraphics.o: buildToObject src/ext/DXGraphics.cpp
@@ -88,6 +89,7 @@ build $objDir/Network.o: buildToObject src/Network.cpp
 build $objDir/NeuralNetwork.o: buildToObject src/NeuralNetwork.cpp
 build $objDir/NewGui.o: buildToObject src/NewGui.cpp
 build $objDir/NewGui_GuiButton.o: buildToObject src/NewGui_GuiButton.cpp
+build $objDir/NewGui_GuiCanvas.o: buildToObject src/NewGui_GuiCanvas.cpp
 build $objDir/NewGui_GuiContent.o: buildToObject src/NewGui_GuiContent.cpp
 build $objDir/NewGui_GuiEmpty.o: buildToObject src/NewGui_GuiEmpty.cpp
 build $objDir/NewGui_GuiItem.o: buildToObject src/NewGui_GuiItem.cpp
@@ -144,5 +146,6 @@ build $objDir/VectorGraphic_VectorPolyline.o: buildToObject src/VectorGraphic_Ve
 build $objDir/VectorGraphic_VectorRectangle.o: buildToObject src/VectorGraphic_VectorRectangle.cpp
 build $objDir/VectorGraphic_VectorShape.o: buildToObject src/VectorGraphic_VectorShape.cpp
 build $objDir/VectorSprite.o: buildToObject src/VectorSprite.cpp
+build $objDir/WebClient.o: buildToObject src/WebClient.cpp
 build $objDir/WebRequest.o: buildToObject src/WebRequest.cpp
 build $objDir/WebSocket.o: buildToObject src/WebSocket.cpp

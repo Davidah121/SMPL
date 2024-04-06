@@ -3,7 +3,7 @@
 #include "Object.h"
 #include "GeneralVector.h"
 
-namespace glib
+namespace smpl
 {
 
 	class Matrix : public Object
@@ -184,4 +184,4 @@ namespace glib
 		bool valid = false;
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

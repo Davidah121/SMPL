@@ -7,7 +7,7 @@
 	#include "Sort.h"
 	#include "Input.h"
 
-	namespace glib
+	namespace smpl
 	{
 
 		#ifdef __unix__

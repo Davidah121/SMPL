@@ -8,7 +8,7 @@
 #define __max(a, b) (((a) > (b)) ? (a) : (b))
 #endif
 
-namespace glib
+namespace smpl
 {
 
 	StreamCompressionLZSS::StreamCompressionLZSS(bool mode, unsigned int maxBackwardsDistance, unsigned char maxLength)
@@ -68,7 +68,7 @@ namespace glib
             {
                 buffer.add(true);
                 buffer.add(lzBuffer[index], 8);
-                StringTools::println("LIT: %d", lzBuffer[index]);
+                // StringTools::println("LIT: %d", lzBuffer[index]);
                 offset++;
             }
             else
@@ -116,7 +116,7 @@ namespace glib
                     buffer.add(false);
                     buffer.add(bestLength, 8);
                     buffer.add((int)(offset - bestLocation), 15);
-                    StringTools::println("REF: (%d, %d)", bestLength, (int)(offset-bestLocation));
+                    // StringTools::println("REF: (%d, %d)", bestLength, (int)(offset-bestLocation));
 
                     index += bestLength-1;
                     offset += bestLength;
@@ -126,7 +126,7 @@ namespace glib
                     //couldn't find match within max allowed distance
                     buffer.add(true);
                     buffer.add(lzBuffer[index], 8);
-                    StringTools::println("LIT: %d", lzBuffer[index]);
+                    // StringTools::println("LIT: %d", lzBuffer[index]);
                     offset++;
                 }
             }

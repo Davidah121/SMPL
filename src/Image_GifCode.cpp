@@ -10,7 +10,7 @@
 
 #include "System.h"
 
-namespace glib
+namespace smpl
 {
 	void Image::saveGIF(File file, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold)
 	{

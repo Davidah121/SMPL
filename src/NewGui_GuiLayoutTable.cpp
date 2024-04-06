@@ -1,6 +1,6 @@
 #include "NewGui.h"
 
-namespace glib
+namespace smpl
 {
     GuiLayoutTable::GuiLayoutTable(uint16_t numColumns) : GuiLayout()
     {
@@ -36,26 +36,26 @@ namespace glib
 
         
         //render border first. Then background
-        glib::GraphicsInterface::setColor(borderColor);
+        smpl::GraphicsInterface::setColor(borderColor);
         if(border.left > 0)
         {
             //left border
-            glib::GraphicsInterface::drawRect(tx, ty, tx+(border.left-1), ty2, false);
+            smpl::GraphicsInterface::drawRect(tx, ty, tx+(border.left-1), ty2, false);
         }
         if(border.right > 0)
         {
             //right border
-            glib::GraphicsInterface::drawRect(tx2-(border.right-1), ty, tx2, ty2, false);
+            smpl::GraphicsInterface::drawRect(tx2-(border.right-1), ty, tx2, ty2, false);
         }
         if(border.top > 0)
         {
             //top border
-            glib::GraphicsInterface::drawRect(tx, ty, tx2, ty+(border.top-1), false);
+            smpl::GraphicsInterface::drawRect(tx, ty, tx2, ty+(border.top-1), false);
         }
         if(border.bottom > 0)
         {
             //bottom border
-            glib::GraphicsInterface::drawRect(tx, ty2-(border.bottom-1), tx2, ty2, false);
+            smpl::GraphicsInterface::drawRect(tx, ty2-(border.bottom-1), tx2, ty2, false);
         }
 
         //readjust x,y,x2,y2 to remove border
@@ -64,12 +64,12 @@ namespace glib
         tx2 -= border.right;
         ty2 -= border.bottom;
         
-        glib::GraphicsInterface::setColor(backgroundColor);
-        glib::GraphicsInterface::drawRect(tx, ty, tx2, ty2, false);
+        smpl::GraphicsInterface::setColor(backgroundColor);
+        smpl::GraphicsInterface::drawRect(tx, ty, tx2, ty2, false);
 
         if(showInnerGrid)
         {
-            glib::GraphicsInterface::setColor(borderColor);
+            smpl::GraphicsInterface::setColor(borderColor);
 
             //get start point
             int tempX = tx + padding.left;
@@ -84,21 +84,21 @@ namespace glib
                     if(!(tableCellSkip[r][c] & COLSPAN))
                     {
                         //draw vertical line to the left.
-                        glib::GraphicsInterface::drawLine(tempX, tempY, tempX, tempY + tableHeightPerRow[r]);
+                        smpl::GraphicsInterface::drawLine(tempX, tempY, tempX, tempY + tableHeightPerRow[r]);
                     }
 
                     //Do not draw horizontal line here if the cel is apart of a row span
                     if(!(tableCellSkip[r][c] & ROWSPAN))
                     {
                         //draw horizontal line above.
-                        glib::GraphicsInterface::drawLine(tempX, tempY, tempX + tableWidthPerCol[c], tempY);
+                        smpl::GraphicsInterface::drawLine(tempX, tempY, tempX + tableWidthPerCol[c], tempY);
                     }
                     
                     tempX += tableWidthPerCol[c];
                 }
 
                 //draw vertical line to the left.
-                glib::GraphicsInterface::drawLine(tempX, tempY, tempX, tempY + tableHeightPerRow[r]);
+                smpl::GraphicsInterface::drawLine(tempX, tempY, tempX, tempY + tableHeightPerRow[r]);
 
                 tempY += tableHeightPerRow[r];
             }
@@ -106,7 +106,7 @@ namespace glib
             //draw last horizontal line at the bottom
             tempX = tx + padding.left;
             int endX = tx2 - padding.right;
-            glib::GraphicsInterface::drawLine(tempX, tempY, endX, tempY);
+            smpl::GraphicsInterface::drawLine(tempX, tempY, endX, tempY);
         }
 
         for(SmartMemory<GuiItem> child : children)
@@ -136,8 +136,8 @@ namespace glib
                 y += margin.top;
             
             
-            actualMaxW = maximumWidth - x;
-            actualMaxH = maximumHeight - y;
+            actualMaxW = maximumWidth - margin.left;
+            actualMaxH = maximumHeight - margin.top;
             
             if(!(flags & FLAG_AUTO_RIGHT_MARGIN))
                 actualMaxW -= margin.right;
@@ -187,8 +187,8 @@ namespace glib
         int nOffY = padding.top + border.top;
 
         //The maximum width and height for all content this layout contains.
-        int maxContentWidth = actualMaxW - nOffX - x - padding.right - border.right;
-        int maxContentHeight = actualMaxH - nOffY - y - padding.bottom - border.bottom;
+        int maxContentWidth = actualMaxW - nOffX - padding.right - border.right;
+        int maxContentHeight = actualMaxH - nOffY - padding.bottom - border.bottom;
 
         //The maximum allowed width and height for a child of this layout.
         //Changes per child
@@ -220,7 +220,6 @@ namespace glib
         //add the first cell skip to avoid issues. It must always be false. Should default to false but could memset if necessary
         //add the entire row cause why not
         tableCellSkip.push_back( std::vector<uint8_t>(columns) );
-
         while(childIndex < children.size())
         {
             SmartMemory<GuiItem> _child = children[childIndex];
@@ -271,7 +270,7 @@ namespace glib
             else if(child->getType() == TYPE_CONTENT)
             {
                 //just need to get the finalbox. It has no margin, padding, etc.
-                ((GuiContent*)child)->layoutUpdate(nOffX, nOffY, maxChildWidth, maxChildHeight);
+                ((GuiContent*)child)->doLayoutUpdate(nOffX, nOffY, maxChildWidth, maxChildHeight);
                 child->x = nOffX;
                 child->y = nOffY;
 
@@ -284,7 +283,7 @@ namespace glib
                 GRect childMargin = ((GuiLayout*)child)->getMargin();
 
                 //Need to call preprocess on the child
-                ((GuiLayout*)child)->layoutUpdate(nOffX, nOffY, maxChildWidth, maxChildHeight);
+                ((GuiLayout*)child)->doLayoutUpdate(nOffX, nOffY, maxChildWidth, maxChildHeight);
                 x2 = child->x + child->width; //x + width
                 y2 = child->y + child->height; //y + height
 
@@ -405,8 +404,8 @@ namespace glib
                 nOffY = y2;
             }
 
-            maxChildWidth = actualMaxW - nOffX - x - padding.right - border.right;
-            maxChildHeight = actualMaxH - nOffY - y - padding.bottom - border.bottom;
+            maxChildWidth = actualMaxW - nOffX - padding.right - border.right;
+            maxChildHeight = actualMaxH - nOffY - padding.bottom - border.bottom;
         }
         
         //post processing of children objects. This is alignment done on each cell after setting new width and height for each cell.
@@ -538,6 +537,10 @@ namespace glib
         //Add in padding and border to the right and bottom edges
         width = actualWidth + padding.right + border.right;
         height += padding.bottom + border.bottom;
+
+        // StringTools::println("(%d, %d)", width, height);
+        // StringTools::println("\t(%d, %d)", actualMaxW, actualMaxH);
+        // StringTools::println("\t\t(%d, %d)", maxContentWidth, maxContentHeight);
 
         //May have exceeded the maximum allowed width and height.
         // //insure that width and height have not exceeded the min and max

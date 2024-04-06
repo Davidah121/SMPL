@@ -3,7 +3,7 @@
 
 #ifdef _WIN32
 
-namespace glib
+namespace smpl
 {
     void MouseSimulator::emulateMousePress(int key, int x, int y)
 	{

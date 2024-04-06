@@ -3,7 +3,7 @@
 
 #pragma region CLASS
 
-namespace glib
+namespace smpl
 {
 	RootClass::RootClass(std::string name, std::unordered_set<std::string> parentClassNames)
 	{

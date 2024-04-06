@@ -1,7 +1,7 @@
 #include "ext/GLTexture.h"
 
 #ifdef USE_OPENGL
-    namespace glib
+    namespace smpl
     {
 
         GLTexture::GLTexture(File f, bool includeAlpha, GLTextureParams params)

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <vector>
-#include "System.h"
+#include <cmath>
 
-namespace glib
+namespace smpl
 {
     template<typename K, typename T>
     struct HashPair

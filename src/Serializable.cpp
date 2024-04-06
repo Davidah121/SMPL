@@ -1,95 +1,14 @@
 #include "Serializable.h"
+#include "SimpleXml.h"
 #include <string>
 
-namespace glib
+namespace smpl
 {
-	std::unordered_map<std::string, std::string> SerializedObject::prettyName;
-	std::function<std::string(void*, std::string)> SerializedObject::externalSaver;
-	std::function<void(void*, std::string, std::string)> SerializedObject::externalLoader;
+	std::unordered_map<std::string, std::string> SerializedData::prettyName;
+	std::function<std::string(void*, std::string)> SerializedData::externalSaver;
+	std::function<void(void*, std::string, std::string)> SerializedData::externalLoader;
 
-	SerializedData::SerializedData()
-	{
-		
-	}
-
-	SerializedData::SerializedData(void* d, std::string name, std::string typeString)
-	{
-		this->type = SerializedObject::getAlternateName(typeString);
-		this->name = name;
-		data = d;
-		parent = nullptr;
-		objType = TYPE_DATA;
-	}
-
-	SerializedData::SerializedData(void* d, std::string name, std::string typeString, SerializedObject* parent)
-	{
-		this->type = SerializedObject::getAlternateName(typeString);
-		this->name = name;
-		data = d;
-		this->parent = parent;
-		objType = TYPE_DATA;
-
-		if(parent != nullptr)
-		{
-			parent->variables.push_back(this);
-		}
-	}
-
-	SerializedData::SerializedData(SerializedObject* d, std::string name, std::string typeString)
-	{
-		this->type = SerializedObject::getAlternateName(typeString);
-		this->name = name;
-		data = d;
-		parent = nullptr;
-		objType = TYPE_OBJECT;
-
-		d->type = SerializedObject::getAlternateName(typeString);
-		d->name = name;
-		d->data = d;
-		d->objType = TYPE_OBJECT;
-	}
-
-	SerializedData::SerializedData(SerializedObject* d, std::string name, std::string typeString, SerializedObject* parent)
-	{
-		this->type = SerializedObject::getAlternateName(typeString);
-		this->name = name;
-		data = d;
-		this->parent = parent;
-		objType = TYPE_OBJECT;
-
-		if(parent != nullptr)
-		{
-			parent->variables.push_back(d);
-		}
-		
-		d->type = SerializedObject::getAlternateName(typeString);
-		d->name = name;
-		d->data = d;
-		d->objType = TYPE_OBJECT;
-		d->parent = parent;
-	}
-
-	SerializedData::~SerializedData()
-	{
-
-	}
-
-	void* SerializedData::getData()
-	{
-		return data;
-	}
-
-	std::string SerializedData::getName()
-	{
-		return name;
-	}
-
-	std::string SerializedData::getType()
-	{
-		return type;
-	}
-
-	void SerializedObject::init()
+	void SerializedData::init()
 	{
 		addPrettyName(typeid(std::string).name(), "class std::string");
 		addPrettyName(typeid(char).name(), "int8_t");
@@ -103,305 +22,337 @@ namespace glib
 		addPrettyName(typeid(unsigned long long).name(), "uint64_t");
 	}
 
-	SerializedObject::SerializedObject() : SerializedData()
+	SerializedData::SerializedData()
 	{
+		
+	}
+
+	SerializedData::SerializedData(void* d, std::string name, std::string typeString, size_t size)
+	{
+		init(d, name, typeString, size);
+		objType = TYPE_DATA;
+	}
+
+	SerializedData::SerializedData(SerializedObject* d, std::string name, std::string typeString, size_t size)
+	{
+		init(d, name, typeString, size);
 		objType = TYPE_OBJECT;
 	}
-	SerializedObject::~SerializedObject()
+
+	void SerializedData::init(void* d, std::string name, std::string typeString, size_t size)
+	{
+		this->type = SerializedData::getAlternateName(typeString);
+		this->name = name;
+		this->size = size;
+		data = d;
+	}
+
+	SerializedData::~SerializedData()
 	{
 
 	}
 
-	void SerializedObject::serialize(std::string s)
+	void* SerializedData::getData()
 	{
-		XmlNode* thisNode = new XmlNode();
-		thisNode->setTitle("SERIALIZER");
-		serialize(thisNode);
-
-		SimpleXml xml = SimpleXml(); //Pointers will all be deleted when function exits
-		xml.addNode(thisNode);
-		xml.save(s);
+		return data;
 	}
 
-	void SerializedObject::serialize(XmlNode* parent)
+	std::string SerializedData::getType()
+	{
+		return type;
+	}
+
+	std::string SerializedData::getName()
+	{
+		return name;
+	}
+
+
+	void SerializedData::serialize(XmlNode* parent)
 	{
 		//save as xml
-
 		XmlNode* thisNode = new XmlNode();
-		thisNode->setTitle("SerializedObject");
-		thisNode->addAttribute("TYPE", type);
-		thisNode->addAttribute("NAME", name);
 
-		for(SerializedData* temp : variables)
+		if(objType == TYPE_OBJECT)
 		{
-			if(temp->objType == TYPE_OBJECT)
+			thisNode->setTitle("SerializedObject");
+			thisNode->addAttribute("TYPE", type);
+			thisNode->addAttribute("NAME", name);
+			std::unordered_map<std::string, SerializedData> variables = ((SerializedObject*)this)->getSerializedVariables();
+
+			for(std::pair<const std::string, SerializedData>& v : variables)
 			{
-				((SerializedObject*)temp)->serialize(thisNode);
+				v.second.serialize(thisNode);
+			}
+		}
+		else
+		{
+			std::string valueString = "";
+			thisNode->setTitle("SerializedData");
+			thisNode->addAttribute("TYPE", type);
+			thisNode->addAttribute("NAME", name);
+
+			if( type == typeid(double).name()
+			|| type == getAlternateName(typeid(double).name()) )
+			{
+				//save as double
+				valueString += std::to_string(*((double*)data));
+			}
+			else if( type == typeid(float).name()
+			|| type == getAlternateName(typeid(float).name()) )
+			{
+				//save as float
+				valueString += std::to_string(*((float*)data));
+			}
+			else if(type == typeid(char).name()
+			|| type == getAlternateName(typeid(char).name()) )
+			{
+				//save as char
+				valueString += std::to_string(*((char*)data));
+			}
+			else if(type == typeid(unsigned char).name()
+			|| type == getAlternateName(typeid(unsigned char).name()) )
+			{
+				//save as unsigned char
+				valueString += std::to_string(*((unsigned char*)data));
+			}
+			else if(type == typeid(short).name()
+			|| type == getAlternateName(typeid(short).name()) )
+			{
+				//save as short
+				valueString += std::to_string(*((short*)data));
+			}
+			else if(type == typeid(unsigned short).name()
+			|| type == getAlternateName(typeid(unsigned short).name()) )
+			{
+				//save as unsigned short
+				valueString += std::to_string(*((unsigned short*)data));
+			}
+			else if(type == typeid(int).name()
+			|| type == getAlternateName(typeid(int).name()) )
+			{
+				//save as int
+				valueString += std::to_string(*((int*)data));
+			}
+			else if(type == typeid(unsigned int).name()
+			|| type == getAlternateName(typeid(unsigned int).name()) )
+			{
+				//save as unsigned int
+				valueString += std::to_string(*((unsigned int*)data));
+			}
+			else if(type == typeid(long).name()
+			|| type == getAlternateName(typeid(long).name()) )
+			{
+				//save as long
+				valueString += std::to_string(*((long*)data));
+			}
+			else if(type == typeid(unsigned long).name()
+			|| type == getAlternateName(typeid(unsigned long).name()) )
+			{
+				//save as unsigned long
+				valueString += std::to_string(*((unsigned long*)data));
+			}
+			else if(type == typeid(long long).name()
+			|| type == getAlternateName(typeid(long long).name()) )
+			{
+				//save as long long
+				valueString += std::to_string(*((long long*)data));
+			}
+			else if(type == typeid(unsigned long long).name()
+			|| type == getAlternateName(typeid(unsigned long long).name()) )
+			{
+				//save as unsigned long long
+				valueString += std::to_string(*((unsigned long long*)data));
+			}
+			else if(type == typeid(bool).name()
+			|| type == getAlternateName(typeid(bool).name()) )
+			{
+				valueString += std::to_string(*((bool*)data));
+			}
+			else if(type == typeid(std::string).name()
+			|| type == getAlternateName(typeid(std::string).name()) )
+			{
+				//save as string
+				valueString += ((std::string*)data)->c_str();
 			}
 			else
 			{
-				std::string valueString = "";
-				XmlNode* nNode = new XmlNode();
-				nNode->setTitle("SerializedData");
-				nNode->addAttribute("TYPE", temp->getType());
-				nNode->addAttribute("NAME", temp->getName());
-
-				if( temp->getType() == typeid(double).name()
-				|| temp->getType() == getAlternateName(typeid(double).name()) )
-				{
-					//save as double
-					valueString += std::to_string(*((double*)temp->data));
-				}
-				else if( temp->getType() == typeid(float).name()
-				|| temp->getType() == getAlternateName(typeid(float).name()) )
-				{
-					//save as float
-					valueString += std::to_string(*((float*)temp->data));
-				}
-				else if(temp->getType() == typeid(char).name()
-				|| temp->getType() == getAlternateName(typeid(char).name()) )
-				{
-					//save as char
-					valueString += std::to_string(*((char*)temp->data));
-				}
-				else if(temp->getType() == typeid(unsigned char).name()
-				|| temp->getType() == getAlternateName(typeid(unsigned char).name()) )
-				{
-					//save as unsigned char
-					valueString += std::to_string(*((unsigned char*)temp->data));
-				}
-				else if(temp->getType() == typeid(short).name()
-				|| temp->getType() == getAlternateName(typeid(short).name()) )
-				{
-					//save as short
-					valueString += std::to_string(*((short*)temp->data));
-				}
-				else if(temp->getType() == typeid(unsigned short).name()
-				|| temp->getType() == getAlternateName(typeid(unsigned short).name()) )
-				{
-					//save as unsigned short
-					valueString += std::to_string(*((unsigned short*)temp->data));
-				}
-				else if(temp->getType() == typeid(int).name()
-				|| temp->getType() == getAlternateName(typeid(int).name()) )
-				{
-					//save as int
-					valueString += std::to_string(*((int*)temp->data));
-				}
-				else if(temp->getType() == typeid(unsigned int).name()
-				|| temp->getType() == getAlternateName(typeid(unsigned int).name()) )
-				{
-					//save as unsigned int
-					valueString += std::to_string(*((unsigned int*)temp->data));
-				}
-				else if(temp->getType() == typeid(long).name()
-				|| temp->getType() == getAlternateName(typeid(long).name()) )
-				{
-					//save as long
-					valueString += std::to_string(*((long*)temp->data));
-				}
-				else if(temp->getType() == typeid(unsigned long).name()
-				|| temp->getType() == getAlternateName(typeid(unsigned long).name()) )
-				{
-					//save as unsigned long
-					valueString += std::to_string(*((unsigned long*)temp->data));
-				}
-				else if(temp->getType() == typeid(long long).name()
-				|| temp->getType() == getAlternateName(typeid(long long).name()) )
-				{
-					//save as long long
-					valueString += std::to_string(*((long long*)temp->data));
-				}
-				else if(temp->getType() == typeid(unsigned long long).name()
-				|| temp->getType() == getAlternateName(typeid(unsigned long long).name()) )
-				{
-					//save as unsigned long long
-					valueString += std::to_string(*((unsigned long long*)temp->data));
-				}
-				else if(temp->getType() == typeid(bool).name()
-				|| temp->getType() == getAlternateName(typeid(bool).name()) )
-				{
-					valueString += std::to_string(*((bool*)temp->data));
-				}
-				else if(temp->getType() == typeid(std::string).name()
-				|| temp->getType() == getAlternateName(typeid(std::string).name()) )
-				{
-					//save as string
-					valueString += ((std::string*)temp->data)->c_str();
-				}
-				else
-				{
-					//try external loader
-					if(externalSaver != nullptr)
-						valueString += externalSaver(temp->data, temp->getType());
-				}
-
-				nNode->addAttribute("VALUE", valueString);
-				thisNode->addChild(nNode);
+				//try external loader
+				if(externalSaver != nullptr)
+					valueString += externalSaver(data, type);
 			}
+
+			thisNode->addAttribute("VALUE", valueString);
 		}
 
-		if(parent != nullptr)
-		{
-			parent->addChild(thisNode);
-		}
+		parent->addChild(thisNode);
 	}
 
-	void SerializedObject::deserialize(std::string s)
-	{
-		SimpleXml serData = SimpleXml();
-		serData.load(s);
-
-		if(serData.getNodes().size() > 0)
-		{
-			//Skip Serializer and grab first child.
-			auto c = serData.getNodes()[0]->getChildNodes()[0];
-			deserialize(c.node);
-		}
-	}
-
-	void SerializedObject::deserialize(XmlNode* n)
+	void SerializedData::deserialize(XmlNode* n)
 	{
 		//read xml
 		if(n == nullptr)
 			return;
 		
-		int varNum = 0;
-		//assumes that the data appears in the same order so no checks are done.
-		for(ChildNode& c : n->getChildNodes())
+		if(objType == TYPE_OBJECT)
 		{
-			if(c.type != ChildNode::TYPE_NODE)
-				continue;
-			
-			XmlNode* cNodes = c.node;
-			if(cNodes->getTitle() == "SerializedObject")
-			{
-				((SerializedObject*)variables[varNum])->deserialize(cNodes);
-			}
-			else if(cNodes->getTitle() == "SerializedData")
-			{
-				auto typeStringPointer = cNodes->getAttribute("TYPE");
-				auto valueStringPointer = cNodes->getAttribute("VALUE");
+			std::unordered_map<std::string, SerializedData> variables = ((SerializedObject*)this)->getSerializedVariables();
 
-				std::string typeString, valueString;
+			///put into an unordered map
+			for(ChildNode& c : n->getChildNodes())
+			{
+				if(c.type != ChildNode::TYPE_NODE)
+					continue;
 				
-				if(typeStringPointer != nullptr)
-					typeString = typeStringPointer->data;
-				if(valueStringPointer != nullptr)
-					valueString = valueStringPointer->data;
-				
-				if( typeString == typeid(double).name()
-				|| typeString == getAlternateName(typeid(double).name()) )
+				XmlNode* childNode = c.node;
+				HashPair<std::string, std::string>* nameAttrib = childNode->getAttribute("NAME");
+				SerializedData dataToModify;
+				if(nameAttrib != nullptr)
 				{
-					*((double*)variables[varNum]->data) = std::stod(valueString);
-				}
-				else if( typeString == typeid(float).name()
-				|| typeString == getAlternateName(typeid(float).name()) )
-				{
-					*((float*)variables[varNum]->data) = std::stof(valueString);
-				}
-				else if(typeString == typeid(char).name()
-				|| typeString == getAlternateName(typeid(char).name()) )
-				{
-					*((char*)variables[varNum]->data) = std::stoi(valueString);
-				}
-				else if(typeString == typeid(unsigned char).name()
-				|| typeString == getAlternateName(typeid(unsigned char).name()) )
-				{
-					*((unsigned char*)variables[varNum]->data) = std::stoi(valueString);
-				}
-				else if(typeString == typeid(short).name()
-				|| typeString == getAlternateName(typeid(short).name()) )
-				{
-					*((short*)variables[varNum]->data) = std::stoi(valueString);
-				}
-				else if(typeString == typeid(unsigned short).name()
-				|| typeString == getAlternateName(typeid(unsigned short).name()) )
-				{
-					*((unsigned short*)variables[varNum]->data) = std::stoi(valueString);
-				}
-				else if(typeString == typeid(int).name()
-				|| typeString == getAlternateName(typeid(int).name()) )
-				{
-					*((int*)variables[varNum]->data) = std::stoi(valueString);
-				}
-				else if(typeString == typeid(unsigned int).name()
-				|| typeString == getAlternateName(typeid(unsigned int).name()) )
-				{
-					*((unsigned int*)variables[varNum]->data) = std::stoul(valueString); //Go one up for unsigned int
-				}
-				else if(typeString == typeid(long).name()
-				|| typeString == getAlternateName(typeid(long).name()) )
-				{
-					*((long*)variables[varNum]->data) = std::stol(valueString);
-				}
-				else if(typeString == typeid(unsigned long).name()
-				|| typeString == getAlternateName(typeid(unsigned long).name()) )
-				{
-					*((unsigned long*)variables[varNum]->data) = std::stoul(valueString); //Go one up for unsigned int
-				}
-				else if(typeString == typeid(long long).name()
-				|| typeString == getAlternateName(typeid(long long).name()) )
-				{
-					*((long long*)variables[varNum]->data) = std::stoll(valueString);
-				}
-				else if(typeString == typeid(unsigned long long).name()
-				|| typeString == getAlternateName(typeid(unsigned long long).name()) )
-				{
-					*((unsigned long long*)variables[varNum]->data) = std::stoull(valueString); //Go one up for unsigned int
-				}
-				else if(typeString == typeid(bool).name()
-				|| typeString == getAlternateName(typeid(bool).name()) )
-				{
-					*((bool*)variables[varNum]->data) = std::stoi(valueString);
-				}
-				else if(typeString == typeid(std::string).name()
-				|| typeString == getAlternateName(typeid(std::string).name()) )
-				{
-					*((std::string*)variables[varNum]->data) = valueString;
+					auto varIterator = variables.find(nameAttrib->data);
+					if(varIterator != variables.end())
+					{
+						dataToModify = varIterator->second;
+					}
 				}
 				else
 				{
-					//pass off to external loader.
-					if(externalLoader != nullptr)
-						externalLoader(variables[varNum]->data, typeString, valueString);
+					//ignore
+					continue;
 				}
+				dataToModify.serialize(childNode);
 			}
-			varNum++;
+		}
+		else
+		{
+			HashPair<std::string, std::string>* typeAttrib = n->getAttribute("TYPE");
+			HashPair<std::string, std::string>* valueAttrib = n->getAttribute("VALUE");
+			
+			if(valueAttrib == nullptr && typeAttrib == nullptr)
+			{
+				//ignore
+				return;
+			}
+
+			if( typeAttrib->data == typeid(double).name()
+			|| typeAttrib->data == getAlternateName(typeid(double).name()) )
+			{
+				*((double*)data) = std::stod(valueAttrib->data);
+			}
+			else if( typeAttrib->data == typeid(float).name()
+			|| typeAttrib->data == getAlternateName(typeid(float).name()) )
+			{
+				*((float*)data) = std::stof(valueAttrib->data);
+			}
+			else if(typeAttrib->data == typeid(char).name()
+			|| typeAttrib->data == getAlternateName(typeid(char).name()) )
+			{
+				*((char*)data) = std::stoi(valueAttrib->data);
+			}
+			else if(typeAttrib->data == typeid(unsigned char).name()
+			|| typeAttrib->data == getAlternateName(typeid(unsigned char).name()) )
+			{
+				*((unsigned char*)data) = std::stoi(valueAttrib->data);
+			}
+			else if(typeAttrib->data == typeid(short).name()
+			|| typeAttrib->data == getAlternateName(typeid(short).name()) )
+			{
+				*((short*)data) = std::stoi(valueAttrib->data);
+			}
+			else if(typeAttrib->data == typeid(unsigned short).name()
+			|| typeAttrib->data == getAlternateName(typeid(unsigned short).name()) )
+			{
+				*((unsigned short*)data) = std::stoi(valueAttrib->data);
+			}
+			else if(typeAttrib->data == typeid(int).name()
+			|| typeAttrib->data == getAlternateName(typeid(int).name()) )
+			{
+				*((int*)data) = std::stoi(valueAttrib->data);
+			}
+			else if(typeAttrib->data == typeid(unsigned int).name()
+			|| typeAttrib->data == getAlternateName(typeid(unsigned int).name()) )
+			{
+				*((unsigned int*)data) = std::stoul(valueAttrib->data); //Go one up for unsigned int
+			}
+			else if(typeAttrib->data == typeid(long).name()
+			|| typeAttrib->data == getAlternateName(typeid(long).name()) )
+			{
+				*((long*)data) = std::stol(valueAttrib->data);
+			}
+			else if(typeAttrib->data == typeid(unsigned long).name()
+			|| typeAttrib->data == getAlternateName(typeid(unsigned long).name()) )
+			{
+				*((unsigned long*)data) = std::stoul(valueAttrib->data); //Go one up for unsigned int
+			}
+			else if(typeAttrib->data == typeid(long long).name()
+			|| typeAttrib->data == getAlternateName(typeid(long long).name()) )
+			{
+				*((long long*)data) = std::stoll(valueAttrib->data);
+			}
+			else if(typeAttrib->data == typeid(unsigned long long).name()
+			|| typeAttrib->data == getAlternateName(typeid(unsigned long long).name()) )
+			{
+				*((unsigned long long*)data) = std::stoull(valueAttrib->data); //Go one up for unsigned int
+			}
+			else if(typeAttrib->data == typeid(bool).name()
+			|| typeAttrib->data == getAlternateName(typeid(bool).name()) )
+			{
+				*((bool*)data) = std::stoi(valueAttrib->data);
+			}
+			else if(typeAttrib->data == typeid(std::string).name()
+			|| typeAttrib->data == getAlternateName(typeid(std::string).name()) )
+			{
+				*((std::string*)data) = valueAttrib->data;
+			}
+			else
+			{
+				//pass off to external loader.
+				if(externalLoader != nullptr)
+					externalLoader(data, typeAttrib->data, valueAttrib->data);
+			}
 		}
 	}
-
-	std::vector<SerializedData*>& SerializedObject::getVariables()
+	
+	void SerializedData::addPrettyName(std::string className, std::string prettyName)
 	{
-		return variables;
+		SerializedData::prettyName[prettyName] = className;
+		SerializedData::prettyName[className] = prettyName;
 	}
 
-	void SerializedObject::addPrettyName(std::string className, std::string prettyName)
+	std::string SerializedData::getAlternateName(std::string className)
 	{
-		SerializedObject::prettyName[prettyName] = className;
-		SerializedObject::prettyName[className] = prettyName;
-	}
-
-	std::string SerializedObject::getAlternateName(std::string className)
-	{
-		auto altNameIt = SerializedObject::prettyName.find(className);
+		auto altNameIt = SerializedData::prettyName.find(className);
 		std::string altType = className;
 
-		if(altNameIt != SerializedObject::prettyName.end())
+		if(altNameIt != SerializedData::prettyName.end())
 		{
 			altType = altNameIt->second;
 		}
 		return altType;
 	}
 
-	void SerializedObject::setExternalSaver(std::function<std::string(void*, std::string)> extSaver)
+	void SerializedData::setExternalSaver(std::function<std::string(void*, std::string)> extSaver)
 	{
 		externalSaver = extSaver;
 	}
 
-	void SerializedObject::setExternalLoader(std::function<void(void*, std::string, std::string)> extLoader)
+	void SerializedData::setExternalLoader(std::function<void(void*, std::string, std::string)> extLoader)
 	{
 		externalLoader = extLoader;
 	}
+
+	SerializedObject::SerializedObject()
+	{
+
+	}
+	SerializedObject::~SerializedObject()
+	{
+
+	}
+
+	// std::unordered_map<std::string, SerializedData> SerializedObject::getVariables()
+	// {
+	// 	return {};
+	// }
 
 }

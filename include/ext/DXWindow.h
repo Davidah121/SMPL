@@ -6,7 +6,7 @@
 
 	#include "ext/DXSingleton.h"
 
-	namespace glib
+	namespace smpl
 	{
 
 		class DXWindow : public SimpleWindow
@@ -151,6 +151,6 @@
 			void threadRepaint();
 		};
 
-	} //NAMESPACE glib END
+	} //NAMESPACE smpl END
 	
 #endif

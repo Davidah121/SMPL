@@ -3,7 +3,7 @@
 #include "Matrix.h"
 #include "SimpleXml.h"
 
-namespace glib
+namespace smpl
 {
     class NeuralLayer
     {
@@ -250,4 +250,4 @@ namespace glib
         double learningRate = 0.03;
     };
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

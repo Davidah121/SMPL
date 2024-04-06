@@ -10,7 +10,7 @@
     #include "ext/DXGraphics.h"
 #endif
 
-namespace glib
+namespace smpl
 {
     #pragma region GRAPHICS_STUFF
 
@@ -20,6 +20,7 @@ namespace glib
     bool GraphicsInterface::ownedFont = false;
     Box2D GraphicsInterface::clippingRect = Box2D(0, 0, 65535, 65535);
     Vec2f GraphicsInterface::scalingFactor = Vec2f(1, 1);
+    Vec2f GraphicsInterface::translationFactor = Vec2f(0, 0);
     bool GraphicsInterface::useScaling = true;
 
 
@@ -404,6 +405,10 @@ namespace glib
             return; //Even though opengl does not need a bound surface, return as an error.
         }
         int nx, ny, nx2, ny2;
+        x += translationFactor.x;
+        x2 += translationFactor.x;
+        y += translationFactor.y;
+        y2 += translationFactor.y;
         if(useScaling)
         {
             nx = (int)MathExt::round(x*scalingFactor.x);
@@ -458,6 +463,10 @@ namespace glib
         }
         
         int nx, ny, nx2, ny2;
+        x += translationFactor.x;
+        x2 += translationFactor.x;
+        y += translationFactor.y;
+        y2 += translationFactor.y;
         if(useScaling)
         {
             nx = (int)MathExt::round(x * scalingFactor.x);
@@ -510,6 +519,8 @@ namespace glib
         }
         
         int nx, ny;
+        x += translationFactor.x;
+        y += translationFactor.y;
         //int nRad; //Currently not used
         
         if(useScaling)
@@ -560,6 +571,9 @@ namespace glib
         }
         
         int nx, ny, nXRad, nYRad;
+        x += translationFactor.x;
+        y += translationFactor.y;
+
         if(useScaling)
         {
             nx = (int)MathExt::round(x * scalingFactor.x);
@@ -613,6 +627,9 @@ namespace glib
         if(img != nullptr)
         {
             int nx, ny;
+            x += translationFactor.x;
+            y += translationFactor.y;
+
             if(useScaling)
             {
                 nx = (int)MathExt::round(x * scalingFactor.x);
@@ -667,6 +684,10 @@ namespace glib
         {
             
             int nx, ny, nx2, ny2;
+            x1 += translationFactor.x;
+            y1 += translationFactor.y;
+            x2 += translationFactor.x;
+            y2 += translationFactor.y;
             if(useScaling)
             {
                 nx = (int)MathExt::round(x1 * scalingFactor.x);
@@ -725,6 +746,8 @@ namespace glib
         if(img != nullptr)
         {
             int nx, ny;
+            x += translationFactor.x;
+            y += translationFactor.y;
             if(useScaling)
             {
                 nx = (int)MathExt::round(x * scalingFactor.x);
@@ -791,6 +814,8 @@ namespace glib
         }
         
         int nx, ny;
+        x += translationFactor.x;
+        y += translationFactor.y;
         if(useScaling)
         {
             nx = (int)MathExt::round(x * scalingFactor.x);
@@ -838,6 +863,8 @@ namespace glib
             return; //Even though opengl does not need a bound surface, return as an error.
         }
         int nx, ny;
+        x += translationFactor.x;
+        y += translationFactor.y;
         if(useScaling)
         {
             nx = (int)MathExt::round(x * scalingFactor.x);
@@ -886,6 +913,8 @@ namespace glib
         }
         
         int nx, ny;
+        x += translationFactor.x;
+        y += translationFactor.y;
         if(useScaling)
         {
             nx = (int)MathExt::round(x * scalingFactor.x);
@@ -933,6 +962,8 @@ namespace glib
             return; //Even though opengl does not need a bound surface, return as an error.
         }
         int nx, ny;
+        x += translationFactor.x;
+        y += translationFactor.y;
         if(useScaling)
         {
             nx = (int)MathExt::round(x * scalingFactor.x);
@@ -980,6 +1011,8 @@ namespace glib
             return; //Even though opengl does not need a bound surface, return as an error.
         }
         int nx, ny;
+        x += translationFactor.x;
+        y += translationFactor.y;
         if(useScaling)
         {
             nx = (int)MathExt::round(x * scalingFactor.x);
@@ -1029,6 +1062,8 @@ namespace glib
             return; //Even though opengl does not need a bound surface, return as an error.
         }
         int nx, ny;
+        x += translationFactor.x;
+        y += translationFactor.y;
         if(useScaling)
         {
             nx = (int)MathExt::round(x*scalingFactor.x);
@@ -1078,6 +1113,8 @@ namespace glib
             return; //Even though opengl does not need a bound surface, return as an error.
         }
         int nx, ny;
+        x += translationFactor.x;
+        y += translationFactor.y;
         if(useScaling)
         {
             nx = (int)MathExt::round(x*scalingFactor.x);
@@ -1126,6 +1163,8 @@ namespace glib
             return; //Even though opengl does not need a bound surface, return as an error.
         }
         int nx, ny;
+        x += translationFactor.x;
+        y += translationFactor.y;
         if(useScaling)
         {
             nx = (int)MathExt::round(x*scalingFactor.x);
@@ -1243,6 +1282,8 @@ namespace glib
             return; //Even though opengl does not need a bound surface, return as an error.
         }
         int nx, ny;
+        x += translationFactor.x;
+        y += translationFactor.y;
         if(useScaling)
         {
             nx = (int)MathExt::round(x*scalingFactor.x);
@@ -1306,6 +1347,10 @@ namespace glib
             return; //Even though opengl does not need a bound surface, return as an error.
         }
         int nx1, ny1, nx2, ny2;
+        x1 += translationFactor.x;
+        y1 += translationFactor.y;
+        x2 += translationFactor.x;
+        y2 += translationFactor.y;
         if(useScaling)
         {
             nx1 = (int)MathExt::round(x1*scalingFactor.x);
@@ -1420,6 +1465,21 @@ namespace glib
         #endif
     }
     
+    Vec2f GraphicsInterface::getTranslationFactor()
+    {
+        return translationFactor;
+    }
+
+    void GraphicsInterface::setTranslationFactor(Vec2f v)
+    {
+        translationFactor = v;
+    }
+
+    Vec2f GraphicsInterface::getScalingFactor()
+    {
+        return scalingFactor;
+    }
+
     void GraphicsInterface::setScalingFactor(Vec2f v)
     {
         scalingFactor = v;
@@ -1509,6 +1569,9 @@ namespace glib
     {
         if(surface != nullptr)
         {
+            if(this == GraphicsInterface::getBoundSurface())
+                GraphicsInterface::setBoundSurface(nullptr);
+
             if(type == GraphicsInterface::TYPE_SOFTWARE)
                 delete ((Image*)surface);
             

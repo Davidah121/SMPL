@@ -2,7 +2,7 @@
 #include "MathExt.h"
 #include "StringTools.h"
 
-namespace glib
+namespace smpl
 {
 
 	const RootClass BezierCurve::globalClass = RootClass("BezierCurve", {"Object"});

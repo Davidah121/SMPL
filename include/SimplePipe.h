@@ -1,6 +1,6 @@
 #include "SimpleFile.h"
 
-namespace glib
+namespace smpl
 {
     class SimplePipe : public SimpleFile
     {

@@ -1,7 +1,7 @@
 #include "ext/GLSprite.h"
 
 #ifdef USE_OPENGL
-	namespace glib
+	namespace smpl
 	{
 			
 		const RootClass GLSprite::globalClass = RootClass("GLSprite", {"Object"});
@@ -146,6 +146,6 @@
 			loops = v;
 		}
 
-	} //NAMESPACE glib END
+	} //NAMESPACE smpl END
 	
 #endif

@@ -2,7 +2,7 @@
 #include "Image.h"
 #include "MathExt.h"
 
-namespace glib
+namespace smpl
 {
 
     class ColorSpaceConverter
@@ -49,4 +49,4 @@ namespace glib
         static Vec3f convert(Vec3f a, unsigned char type);
     };
 
-}  //NAMESPACE glib END
+}  //NAMESPACE smpl END

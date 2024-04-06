@@ -70,7 +70,7 @@
     
     STDMETHODIMP DragDrop::DragEnter(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect)
     {
-        glib::StringTools::println("DRAG ENTER");
+        smpl::StringTools::println("DRAG ENTER");
         if(pdwEffect == NULL)
 			return E_INVALIDARG;
 
@@ -85,7 +85,7 @@
     STDMETHODIMP DragDrop::DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect)
     {
         //put visual feedback here. Just change return to specify.
-        glib::StringTools::println("STUFF");
+        smpl::StringTools::println("STUFF");
         if(pdwEffect == NULL)
 			return E_INVALIDARG;
 
@@ -97,14 +97,14 @@
     STDMETHODIMP DragDrop::DragLeave()
     {
         //remove visual feedback
-        glib::StringTools::println("DRAG EXIT");
+        smpl::StringTools::println("DRAG EXIT");
         return S_OK;
     }
 
     STDMETHODIMP DragDrop::Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect)
     {
         //Actual DragDrop Stuff
-        glib::StringTools::println("DROP");
+        smpl::StringTools::println("DROP");
 
         if(pdwEffect == NULL)
 			return E_INVALIDARG;

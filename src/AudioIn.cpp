@@ -4,7 +4,7 @@
     #include "StringTools.h"
     #include "System.h"
 
-    namespace glib
+    namespace smpl
     {
 
         #ifdef __unix__

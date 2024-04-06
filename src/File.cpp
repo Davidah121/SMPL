@@ -2,7 +2,7 @@
 #include "StringTools.h"
 #include "SimpleDir.h"
 
-namespace glib
+namespace smpl
 {
 
     File::~File()

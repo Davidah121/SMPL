@@ -2,7 +2,7 @@
 
     #include "ext/DXTexture.h"
 
-    namespace glib
+    namespace smpl
     {
         DXTexture::DXTexture(File f, bool includeAlpha)
         {

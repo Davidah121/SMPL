@@ -1,5 +1,5 @@
 #include "MathFunction.h"
-namespace glib
+namespace smpl
 {
 
     #pragma region MATH_FUNCTION

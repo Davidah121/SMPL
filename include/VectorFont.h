@@ -4,7 +4,7 @@
 #include "VectorSprite.h"
 #include "CachedDataList.h"
 
-namespace glib
+namespace smpl
 {
 
     class VectorFont : public Font

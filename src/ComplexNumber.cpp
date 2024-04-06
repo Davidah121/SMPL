@@ -1,6 +1,6 @@
 #include "ComplexNumber.h"
 
-namespace glib
+namespace smpl
 {
 
 	#pragma region ClassStuff

@@ -1,7 +1,7 @@
 #ifdef USE_DIRECTX
     #include "ext/DXModel.h"
 
-    namespace glib
+    namespace smpl
     {
 
         DXModel::DXModel()

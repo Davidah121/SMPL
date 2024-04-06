@@ -6,6 +6,9 @@
 #include "SimpleJobQueue.h"
 #include "File.h"
 
+
+#ifndef NO_SOCKETS
+
 //A bit on Range Size Limit:
 //
 //      This is the maximum size of a buffer to be sent. Must be greater than 64KB. A good size is about 16MB as shown below.
@@ -22,7 +25,7 @@
 //          30 milliseconds to load data, 10 millis to get to the job, 10 millis to send so approx = 50 milliseconds per 16MB
 //          which is about 320 Megabytes per second or 2560 Megabit per second
 
-namespace glib
+namespace smpl
 {
     class HttpServer
     {
@@ -34,24 +37,28 @@ namespace glib
          *          or most options HTTP options.
          *          Example: Keep-Alive does not work and always closes connection
          * 
-         * @param ip 
-         *      Must be the IP of the server being created.
-         *      It can be the local IP, external IP, localhost or 127.0.0.1
-         * @param port 
-         *      The desired port to open the connection on.
-         *      80 or 8080 are typical HTTP ports.
-         * @param connectionsAllowed 
-         *      The maximum simultaneous connections allowed.
-         *      This refers to the number of sockets for the server to allow at a given time.
-         *          Effectively, this limits the job queue since each request waits for a response before closing.
-         *      A good default could be 1000 or a multiple of the number of threads.
-         * @param threads
+         * @param configuration
+         *      The network configuration used for the TCP socket. 
+         *      Must be TCP.
+         *          Will force TCP otherwise.
+         *      Must be Server.
+         *          Will force Server otherwise.
+         * @param workerThreads
          *      The number of threads to use in the job queue.
          *      This does not have to be the same as the number of connections allowed and may be limited
          *          to the number of threads the system has.
-         *      
+         * @param https
+         *      Determines whether to create an SSL server or just a normal socket server.
+         *          USE_OPENSSL must be defined in order for this option to work. It will fail otherwise.
+         * @param certificateFile
+         *      If you are creating an HTTPS server, this must be provided.
+         *          This is the certificate which must be signed (perferrably signed by a CA) that will be sent on connection.
+         *          This is the public key and may have a warning associated with it if it was not signed by a CA.
+         * @param keyFile
+         *      If you are creating an HTTPS server, this must be provided.
+         *          This is the private key which must never be leaked. It is used for decryption.
          */
-        HttpServer(std::string ip, int port, unsigned int connectionsAllowed, int threads);
+        HttpServer(NetworkConfig configuration, int threads, bool useHTTPS = false, std::string certificateFile = "", std::string keyFile = "");
 
         /**
          * @brief Destroy the Http Server object
@@ -340,8 +347,11 @@ namespace glib
         std::mutex logMutex;
         std::mutex jobMutex;
 
-        std::vector<SmartMemory<SLinkNode<std::function<void()>>>> jobPointers;
-        std::vector<SmartMemory<SLinkNode<std::function<void()>>>> jobSendPointers;
+        std::map< size_t, SmartMemory<SLinkNode<std::function<void()>>> > jobPointers;
+        std::map< size_t, SmartMemory<SLinkNode<std::function<void()>>> > jobSendPointers;
+        
+        // std::vector<SmartMemory<SLinkNode<std::function<void()>>>> jobPointers;
+        // std::vector<SmartMemory<SLinkNode<std::function<void()>>>> jobSendPointers;
         
         bool logInfo = false;
         bool redirectToIndex = true;
@@ -371,3 +381,5 @@ namespace glib
         void staggeredSend(size_t id, File f, size_t startPoint, size_t endPoint);
     };
 }
+
+#endif

@@ -1,7 +1,7 @@
 #include "GuiManager.h"
 #include <ctime>
 
-namespace glib
+namespace smpl
 {
 	std::string arrayOfMonths[12] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 	int arrayForDaysInMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -86,7 +86,7 @@ namespace glib
 		
 		calendarButton.addChild(&calendarButSprite);
 
-		calendarButton.setOnClickReleaseFunction( [this](glib::GuiInstance* ins) ->void{
+		calendarButton.setOnClickReleaseFunction( [this](smpl::GuiInstance* ins) ->void{
 			this->toggleCalendar();
 		});
 
@@ -106,7 +106,7 @@ namespace glib
 		gridLeftBut.setOutlineColor(Color{0,0,0,0});
 		gridLeftBut.setFocusOutlineColor(Color{0,0,0,0});
 		gridLeftBut.addChild(&leftButSprite);
-		gridLeftBut.setOnClickReleaseFunction([this](glib::GuiInstance* ins) ->void{
+		gridLeftBut.setOnClickReleaseFunction([this](smpl::GuiInstance* ins) ->void{
 			this->shiftLeftMonth();
 		});
 
@@ -116,7 +116,7 @@ namespace glib
 		gridRightBut.setOutlineColor(Color{0,0,0,0});
 		gridRightBut.setFocusOutlineColor(Color{0,0,0,0});
 		gridRightBut.addChild(&rightButSprite);
-		gridRightBut.setOnClickReleaseFunction([this](glib::GuiInstance* ins) ->void{
+		gridRightBut.setOnClickReleaseFunction([this](smpl::GuiInstance* ins) ->void{
 			this->shiftRightMonth();
 		});
 
@@ -152,7 +152,7 @@ namespace glib
 		for(int i=0; i<42; i++)
 		{
 			GuiRectangleButton* newGridBut = new GuiRectangleButton(0, 0, 24, 24);
-			newGridBut->setOnClickReleaseFunction( [this, i](glib::GuiInstance* ins) ->void{
+			newGridBut->setOnClickReleaseFunction( [this, i](smpl::GuiInstance* ins) ->void{
 				this->gridButtonPress(i+7);
 			});
 

@@ -10,7 +10,7 @@
         #include <d3dcompiler.h>
     #endif
 
-    namespace glib
+    namespace smpl
     {
         class DXShader
         {
@@ -73,6 +73,6 @@
             static DXShader* activeShader;
         };
 
-    } //NAMESPACE glib END
+    } //NAMESPACE smpl END
 
 #endif

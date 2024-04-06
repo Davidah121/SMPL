@@ -1,6 +1,6 @@
 #include "InternalGraphicsHeader.h"
 
-namespace glib
+namespace smpl
 {
 
 	#pragma region DRAWING_FUNCTIONS

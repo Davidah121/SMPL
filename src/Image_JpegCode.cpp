@@ -10,7 +10,7 @@
 #include "System.h"
 
 //TODO: JPEG IS OFFICIALLY BROKEN. DO NOT USE UNTIL FIX
-namespace glib
+namespace smpl
 {
 
 	struct huffThing

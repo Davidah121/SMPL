@@ -4,7 +4,7 @@
 #include "Object.h"
 #include "GeneralExceptions.h"
 
-namespace glib
+namespace smpl
 {
 
 	class BezierCurve : public Object
@@ -354,4 +354,4 @@ namespace glib
 		std::vector<Vec2f> points = std::vector<Vec2f>();
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

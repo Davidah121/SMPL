@@ -1,7 +1,7 @@
 #pragma once
 #include "SmartMemory.h"
 
-namespace glib
+namespace smpl
 {
 
 	template<typename T>

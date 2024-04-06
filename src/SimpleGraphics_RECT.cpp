@@ -1,6 +1,6 @@
 #include "InternalGraphicsHeader.h"
 
-namespace glib
+namespace smpl
 {
 
     //works properly now
@@ -33,7 +33,10 @@ namespace glib
 
             int minY = MathExt::clamp(MathExt::min(y, y2), minYBound, maxYBound);
             int maxY = MathExt::clamp(MathExt::max(y, y2), minYBound, maxYBound);
-
+            
+            if(minX==maxX && minY==maxY)
+                return;
+            
             if(outline == false)
             {
                 #if(OPTI>=2)

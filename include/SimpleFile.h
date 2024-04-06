@@ -6,14 +6,13 @@
 
 #include<vector>
 #include<fstream>
-#include "Object.h"
 #include<exception>
 #include "File.h"
 
-namespace glib
+namespace smpl
 {
 
-	class SimpleFile : public Object
+	class SimpleFile
 	{
 
 	public:
@@ -67,9 +66,6 @@ namespace glib
 		 * 
 		 */
 		virtual ~SimpleFile();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
 
 		//Read functions
 		/**

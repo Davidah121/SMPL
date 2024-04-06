@@ -2,7 +2,7 @@
 #include "Matrix.h"
 #include "Vec3f.h"
 
-namespace glib
+namespace smpl
 {
 
 	class Mat3f : public Matrix
@@ -104,4 +104,4 @@ namespace glib
 		void fillArray(double* buffer);
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

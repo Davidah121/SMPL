@@ -8,7 +8,7 @@
 
 #define min(a,b) ((a<b) ? a:b)
 
-namespace glib
+namespace smpl
 {
 	const RootClass HiResImage::globalClass = RootClass("HiResImage", {"Object"});
 

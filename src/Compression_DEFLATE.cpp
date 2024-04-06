@@ -1,7 +1,7 @@
 #include "InternalCompressionHeader.h"
 #include "SuffixAutomaton.h"
 
-namespace glib
+namespace smpl
 {
 
 	#pragma region DEFLATE

@@ -11,19 +11,26 @@
 #define __max(a, b) (((a) > (b)) ? (a) : (b))
 #endif
 
-namespace glib
+#ifndef NO_SOCKETS
+
+namespace smpl
 {
-    HttpServer::HttpServer(std::string ip, int port, unsigned int connectionsAllowed, int threads)
+    std::map<size_t, size_t> timingPerRequest;
+    
+    HttpServer::HttpServer(NetworkConfig config, int threads, bool useHTTPS, std::string certificateFile, std::string keyFile)
     {
         //create new job queue
         jobQueue = new SimpleJobQueue(threads);
 
         //create network connection
-        conn = new Network(Network::TYPE_SERVER, port, ip, connectionsAllowed);
+        config.type = Network::TYPE_SERVER;
+        config.TCP = true;
+        config.secure = useHTTPS;
+        conn = new Network(config);
         conn->setTimeoutLength(knownTimeout);
 
-        jobPointers = std::vector<SmartMemory<SLinkNode<std::function<void()>>>>(connectionsAllowed);
-        jobSendPointers = std::vector<SmartMemory<SLinkNode<std::function<void()>>>>(connectionsAllowed);
+        jobPointers = std::map<size_t, SmartMemory<SLinkNode<std::function<void()>>>>();
+        jobSendPointers = std::map<size_t, SmartMemory<SLinkNode<std::function<void()>>>>();
 
         //setup connection functions
         conn->setOnConnectFunction([this](size_t id) -> void {
@@ -45,14 +52,11 @@ namespace glib
     HttpServer::~HttpServer()
     {
         this->jobMutex.lock();
-        for(size_t id = 0; id < jobPointers.size(); id++)
-        {
-            this->jobQueue->removeJob( this->jobPointers[id] );
-            this->jobPointers[id] = nullptr;
-            
-            this->jobQueue->removeJob( this->jobSendPointers[id] );
-            this->jobSendPointers[id] = nullptr;
-        }
+
+        this->jobPointers.clear();
+        this->jobSendPointers.clear();
+        this->jobQueue->removeAllJobs();
+
         this->jobMutex.unlock();
 
         if(conn != nullptr)
@@ -80,7 +84,7 @@ namespace glib
     {
         //Recv WebRequest
         this->jobMutex.lock();
-        this->jobPointers[id] = nullptr;
+        this->jobPointers.erase(id);
         this->jobMutex.unlock();
 
         //Try to get as much as possible. Should be no more than 8KB bytes. If so, send entity too large.
@@ -134,7 +138,9 @@ namespace glib
             StringTools::println("%s on port %d as ID = %llu : %s", ipString.c_str(), portNum, id, req.getHeader().c_str());
             logMutex.unlock();
         }
-
+        
+        // ///no need to read, send 404
+        // send404Error(id);
         bool status = this->handleRecv(req, body, id);
 
         if(!allowKeepAlive || !status)
@@ -149,10 +155,10 @@ namespace glib
         //May need to adjust job queue to remove a job. It may have already been removed though.
         this->jobMutex.lock();
         this->jobQueue->removeJob( this->jobPointers[id] );
-        this->jobPointers[id] = nullptr;
+        this->jobPointers.erase(id);
         
         this->jobQueue->removeJob( this->jobSendPointers[id] );
-        this->jobSendPointers[id] = nullptr;
+        this->jobSendPointers.erase(id);
         this->jobMutex.unlock();
 
         if(this->getLoggingInfo())
@@ -265,10 +271,8 @@ namespace glib
             response.addKeyValue("Access-Control-Allow-Headers", allowedHeaders);
         response.addKeyValue("Access-Control-Max-Age", StringTools::toString(maxAgeCache)); //In seconds. Basically 5 minutes for debugging
         
-        std::string s = response.getRequestAsString();
-
         //send header first. Should be able to send the entire thing at once.
-        int bytesSent = conn->sendMessage(s.data(), s.size(), id);
+        int bytesSent = conn->sendMessage(response, id);
         if(bytesSent < 0)
         {
             //problem
@@ -378,6 +382,7 @@ namespace glib
             req.addKeyValue("Connection", "close");
         
         req.addKeyValue("Date", WebRequest::getDateAsGMT());
+        req.addKeyValue("Server", "SimpleHTTPServer/0.8 C++");
     }
 
     void HttpServer::send404Error(size_t id)
@@ -398,12 +403,9 @@ namespace glib
         resp.setHeader(WebRequest::TYPE_UNKNOWN, "HTTP/1.1 404 Not Found", false);
         resp.addKeyValue("Content-Length", "5");
         fillGetResponseHeaders(resp);
-        
-        std::string s = resp.getRequestAsString();
-        s += "ERROR";
 
         //send header first. Should be able to send the entire thing at once.
-        int bytesSent = conn->sendMessage(s.data(), s.size(), id);
+        int bytesSent = conn->sendMessage(resp, id);
         if(bytesSent < 0)
         {
             //problem
@@ -436,11 +438,8 @@ namespace glib
         resp.addKeyValue("Content-Length", "5");
         fillGetResponseHeaders(resp);
         
-        std::string s = resp.getRequestAsString();
-        s += "ERROR";
-
         //send header first. Should be able to send the entire thing at once.
-        int bytesSent = conn->sendMessage(s.data(), s.size(), id);
+        int bytesSent = conn->sendMessage(resp, id);
         if(bytesSent < 0)
         {
             //problem
@@ -473,12 +472,9 @@ namespace glib
         resp.addKeyValue("Content-Length", "5");
         resp.addKeyValue("Content-Range", ranges);
         fillGetResponseHeaders(resp);
-        
-        std::string s = resp.getRequestAsString();
-        s += "ERROR";
 
         //send header first. Should be able to send the entire thing at once.
-        int bytesSent = conn->sendMessage(s.data(), s.size(), id);
+        int bytesSent = conn->sendMessage(resp, id);
         if(bytesSent < 0)
         {
             //problem
@@ -511,12 +507,9 @@ namespace glib
         resp.setHeader(WebRequest::TYPE_UNKNOWN, "HTTP/1.1 400 Bad Request", false);
         resp.addKeyValue("Content-Length", "5");
         fillGetResponseHeaders(resp);
-        
-        std::string s = resp.getRequestAsString();
-        s += "ERROR";
 
         //send header first. Should be able to send the entire thing at once.
-        int bytesSent = conn->sendMessage(s.data(), s.size(), id);
+        int bytesSent = conn->sendMessage(resp, id);
         if(bytesSent < 0)
         {
             //problem
@@ -548,12 +541,9 @@ namespace glib
         resp.setHeader(WebRequest::TYPE_UNKNOWN, "HTTP/1.1 413 Entity Too Large", false);
         resp.addKeyValue("Content-Length", "5");
         fillGetResponseHeaders(resp);
-        
-        std::string s = resp.getRequestAsString();
-        s += "ERROR";
 
         //send header first. Should be able to send the entire thing at once.
-        int bytesSent = conn->sendMessage(s.data(), s.size(), id);
+        int bytesSent = conn->sendMessage(resp, id);
         if(bytesSent < 0)
         {
             //problem
@@ -774,7 +764,7 @@ namespace glib
         if(req.getType() == WebRequest::TYPE_HEAD)
         {
             //end early
-            int bytesSent = conn->sendMessage(resp.getRequestAsString(), id);
+            int bytesSent = conn->sendMessage(resp, id);
             if(bytesSent < 0)
             {
                 //problem
@@ -789,8 +779,8 @@ namespace glib
             return true;
         }
         
-        std::string respStr = resp.getRequestAsString();
-        int bytesSent = conn->sendMessage(respStr.data(), respStr.size(), id);
+        int bytesSent = conn->sendMessage(resp, id);
+
         staggeredSend(id, f, startRange, endRange);
         return true;
     }
@@ -841,5 +831,11 @@ namespace glib
             this->jobSendPointers[id] = this->jobQueue->addJob( [this, id, f, startPoint, endPoint, bytesSent]() ->void { this->staggeredSend(id, f, startPoint + bytesSent, endPoint); } );
             this->jobMutex.unlock();
         }
+        else
+        {
+            // totalTimeForRequest += System::getCurrentTimeMillis() - timingPerRequest[id];
+        }
     }
 }
+
+#endif

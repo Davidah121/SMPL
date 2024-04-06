@@ -4,7 +4,7 @@
 #include "SimpleXml.h"
 #include "SimpleGraphics.h"
 
-namespace glib
+namespace smpl
 {
 	const RootClass BitmapFont::globalClass = RootClass("BitmapFont", {"Font"});
 

@@ -11,7 +11,7 @@
      * 
      */
 
-    namespace glib
+    namespace smpl
     {
         class DXTexture
         {

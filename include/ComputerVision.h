@@ -1,7 +1,7 @@
 #pragma once
 #include "SimpleGraphics.h"
 
-namespace glib
+namespace smpl
 {
 	class ComputerVision
 	{
@@ -111,6 +111,19 @@ namespace glib
 		static int hammingDistanceImageHash(uint64_t img1, uint64_t img2);
 
 		/**
+		 * @brief Readjusts the matrix values so that they fit between the min and max intensities but
+		 * 		also maintain relative scaling between the values.
+		 * 
+		 * 		Useful for converting back into an image where the matrix values may be larger or smaller
+		 * 			than what can be represented with an 8bit value.
+		 * 
+		 * @param baseImg 
+		 * @param minIntensity 
+		 * @param maxIntensity 
+		 */
+		static Matrix readjustIntensity(Matrix* baseImg, double minIntensity, double maxIntensity);
+
+		/**
 		 * @brief Computes the convolution of a image and a kernel (which is a matrix).
 		 * 		The convolution is the sum of the kernel applied centered on a point for each point in the base image.
 		 * 			Meaning (f*g)(x) = SUM( f[i]*g[x-i] ) from -INF to INF
@@ -126,33 +139,13 @@ namespace glib
 		 * 			GREEN_CHANNEL
 		 * 			BLUE_CHANNEL
 		 * 			ALPHA_CHANNEL
+		 * @param normalize
 		 * @return Matrix 
 		 */
-		static Matrix convolution(Image* baseImage, Matrix* kernel, int colorChannel);
-
-		/**
-		 * @brief Computes the normalized convolution of a image and a kernel (which is a matrix).
-		 * 		The convolution is the sum of the kernel applied centered on a point for each point in the base image.
-		 * 			Meaning (f*g)(x) = SUM( f[i]*g[x-i] ) from -INF to INF
-		 * 			which for the discrete case, the sum is limited by the size of the kernel.
-		 * 
-		 * 		Computed in O(N^2) operations but it is possible to do it in O(NLogN) with a FFT.
-		 * 		Returns the baseImage convolved with the kernel.
-		 * @param baseImage 
-		 * @param kernel 
-		 * @param colorChannel
-		 * 		Possible values are
-		 * 			RED_CHANNEL
-		 * 			GREEN_CHANNEL
-		 * 			BLUE_CHANNEL
-		 * 			ALPHA_CHANNEL
-		 * @return Matrix 
-		 */
-		static Matrix convolutionNormalized(Image* baseImage, Matrix* kernel, int colorChannel);
+		static Matrix convolution(Image* baseImage, Matrix* kernel, int colorChannel, bool normalize);
 		
 		/**
 		 * @brief Computes the cross correlation of a image and another image.
-		 * 		Computes the normalized version of the cross correlation.
 		 * 		The cross correlation is the sum of the kernel applied centered on a point for each point in the base image.
 		 * 			Meaning (f*g)(x) = SUM( f[i]*g[x+i] ) from -INF to INF
 		 * 			which for the discrete case, the sum is limited by the size of the kernel.
@@ -170,10 +163,11 @@ namespace glib
 		 * 			GREEN_CHANNEL
 		 * 			BLUE_CHANNEL
 		 * 			ALPHA_CHANNEL
+		 * @param normalize
 		 * @return Matrix 
 		 */
-		static Matrix crossCorrelation(Image* baseImage, Image* kernel, int colorChannel);
-	private:
+		static Matrix crossCorrelation(Image* baseImage, Image* kernel, int colorChannel, bool normalized);
 
+	private:
 	};
 }

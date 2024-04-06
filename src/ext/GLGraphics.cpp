@@ -2,7 +2,7 @@
 
 #ifdef USE_OPENGL
 
-    namespace glib
+    namespace smpl
     {
         Vec4f GLGraphics::clearColor = Vec4f();
         Vec4f GLGraphics::drawColor = Vec4f(1,1,1,1);
@@ -21,6 +21,7 @@
         GLShader* GLGraphics::ellipseShader = nullptr;
         GLShader* GLGraphics::rectangleShader = nullptr;
         GLShader* GLGraphics::textShader = nullptr;
+        GLFont* GLGraphics::defaultFont = nullptr;
         GLFont* GLGraphics::activeFont = nullptr;
 
         bool GLGraphics::hasInit = false;
@@ -36,6 +37,8 @@
                 GLGraphics::rectangleShader = new GLShader("Resources/glsl/vs/rectangleVertShader.vs", "Resources/glsl/fs/rectangleFragShader.fs");
                 GLGraphics::textShader = new GLShader("Resources/glsl/vs/textVertShader.vs", "Resources/glsl/fs/textFragShader.fs");
 
+                GLGraphics::defaultFont = new GLFont("./Resources/DefaultFont.fnt");
+                GLGraphics::activeFont = GLGraphics::defaultFont;
                 
                 enableBlending();
                 setBlendFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -59,12 +62,17 @@
 
             if(GLGraphics::textShader != nullptr)
                 delete textShader;
+                
+            if(GLGraphics::defaultFont != nullptr)
+                delete defaultFont;
 
             GLGraphics::textureShader = nullptr;
             GLGraphics::circleShader = nullptr;
             GLGraphics::ellipseShader = nullptr;
             GLGraphics::rectangleShader = nullptr;
             GLGraphics::textShader = nullptr;
+            GLGraphics::defaultFont = nullptr;
+            GLGraphics::activeFont = nullptr;
 
             GLGraphics::hasInit = false;
         }

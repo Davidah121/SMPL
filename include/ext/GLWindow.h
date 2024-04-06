@@ -13,7 +13,7 @@
 	#endif
 
 
-	namespace glib
+	namespace smpl
 	{
 
 		class GLWindow : public SimpleWindow
@@ -150,11 +150,11 @@
 
 			void init(int x, int y, int width, int height, std::wstring title, WindowOptions windowType);
 			
-			void run();
 			void dispose();
 			
-			bool threadRender();
-			void threadRepaint();
+			bool virtual threadRender();
+			void virtual threadRepaint();
+			void virtual finishResize();
 
 			#ifdef LINUX
 			#else
@@ -163,6 +163,6 @@
 			#endif
 		};
 
-	} //NAMESPACE glib END
+	} //NAMESPACE smpl END
 
 #endif

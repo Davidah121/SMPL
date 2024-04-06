@@ -1,7 +1,7 @@
 #pragma once
 #include "BinaryTree.h"
 
-namespace glib
+namespace smpl
 {
 	template<typename T>
 	struct BRS

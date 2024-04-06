@@ -1,13 +1,12 @@
 #include "SimpleJobQueue.h"
 #include "System.h"
 
-namespace glib
+namespace smpl
 {
     SimpleJobQueue::SimpleJobQueue(int threads)
     {
         running = true;
         jobThreads = std::vector<std::thread*>(threads);
-        busy = std::vector<bool>(threads);
         
         for(int i=0; i<jobThreads.size(); i++)
         {
@@ -32,18 +31,27 @@ namespace glib
 
     SmartMemory<SLinkNode<std::function<void()>>> SimpleJobQueue::addJob(std::function<void()> j)
     {
-        jobQueueMutex.lock();
+        importantMutex.lock();
         SmartMemory<SLinkNode<std::function<void()>>> node = jobs.add(j);
-        jobQueueMutex.unlock();
+        importantMutex.unlock();
+        cv.notify_one();
         return node;
     }
     
 
     void SimpleJobQueue::removeJob(SmartMemory<SLinkNode<std::function<void()>>> n)
     {
-        jobQueueMutex.lock();
+        importantMutex.lock();
         jobs.erase(n);
-        jobQueueMutex.unlock();
+        importantMutex.unlock();
+    }
+
+    
+    void SimpleJobQueue::removeAllJobs()
+    {
+        importantMutex.lock();
+        jobs.clear();
+        importantMutex.unlock();
     }
     
     bool SimpleJobQueue::getRunning()
@@ -58,42 +66,38 @@ namespace glib
     {
         while(true)
         {
-            jobQueueMutex.lock();
-            
-            //check if all threads are not busy
-            bool noneBusy = true;
-            for(int i=0; i<jobThreads.size(); i++)
-            {
-                if(busy[i])
-                {
-                    noneBusy = false;
-                    break;
-                }
-            }
-            
+            importantMutex.lock();
             //check if there is something in the job queue.
-            bool jobQueueEmpty = jobs.size() == 0;
-            jobQueueMutex.unlock();
+            bool jobQueueEmpty = jobs.empty();
+            importantMutex.unlock();
 
-            if(jobQueueEmpty && noneBusy)
+            if(jobQueueEmpty)
                 break;
             
-            //Otherwise, wait. Could sleep for 1 millisecond but this is okay.
-            std::this_thread::yield();
-            System::sleep(1);
+            //Otherwise, wait.
+            System::sleep(1, 0, false);
         }
     }
 
     void SimpleJobQueue::threadRun(int id)
     {
+        bool knownToHaveMoreWork = false;
+        std::mutex waitMutex;
+
         while(true)
         {
             if(!getRunning())
                 break;
             
+            if(!knownToHaveMoreWork)
+            {
+                std::unique_lock<std::mutex> ulock(waitMutex);
+                cv.wait_for(ulock, std::chrono::milliseconds(1));
+            }
+            
             //try to get a job from the queue
             std::function<void()> execJob = nullptr;
-            jobQueueMutex.lock();
+            importantMutex.lock();
             if(!jobs.empty())
             {
                 //get job and remove from queue. Mark as busy
@@ -103,22 +107,16 @@ namespace glib
                     execJob = node.getRawPointer()->value;
                 }
                 jobs.pop();
-                busy[id] = true;
             }
-            jobQueueMutex.unlock();
+
+            knownToHaveMoreWork = !jobs.empty();
+            importantMutex.unlock();
 
             //execute job if we got one
             if(execJob != nullptr)
+            {
                 execJob();
-            
-            //mark as not busy anymore
-            jobQueueMutex.lock();
-            busy[id] = false;
-            jobQueueMutex.unlock();
-            
-            //wait for a bit
-            std::this_thread::yield();
-            System::sleep(1);
+            }
         }
     }
     

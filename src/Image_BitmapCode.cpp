@@ -8,7 +8,7 @@
 
 #include "ColorSpaceConverter.h"
 
-namespace glib
+namespace smpl
 {
 	void Image::saveBMP(File file, unsigned char alphaThreshold, bool greyscale)
 	{

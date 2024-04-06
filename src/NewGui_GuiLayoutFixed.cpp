@@ -1,6 +1,6 @@
 #include "NewGui.h"
 
-namespace glib
+namespace smpl
 {
     GuiLayoutFixed::GuiLayoutFixed() : GuiLayout()
     {
@@ -32,8 +32,8 @@ namespace glib
                 y += margin.top;
             
             
-            actualMaxW = maximumWidth - x;
-            actualMaxH = maximumHeight - y;
+            actualMaxW = maximumWidth - margin.left;
+            actualMaxH = maximumHeight - margin.top;
             
             if(!(flags & FLAG_AUTO_RIGHT_MARGIN))
                 actualMaxW -= margin.right;
@@ -82,8 +82,8 @@ namespace glib
         int nOffY = padding.top + border.top;
 
         //The maximum width and height for all content this layout contains.
-        int maxContentWidth = actualMaxW - nOffX - x - padding.right - border.right;
-        int maxContentHeight = actualMaxH - nOffY - y - padding.bottom - border.bottom;
+        int maxContentWidth = actualMaxW - nOffX - padding.right - border.right;
+        int maxContentHeight = actualMaxH - nOffY - padding.bottom - border.bottom;
 
         //The maximum allowed width and height for a child of this layout.
         //Changes per child
@@ -127,7 +127,7 @@ namespace glib
             else if(child->getType() == TYPE_CONTENT)
             {
                 //just need to get the finalbox. It has no margin, padding, etc.
-                ((GuiContent*)child)->layoutUpdate(nOffX, nOffY, maxChildWidth, maxChildHeight);
+                ((GuiContent*)child)->doLayoutUpdate(nOffX, nOffY, maxChildWidth, maxChildHeight);
                 child->x = nOffX;
                 child->y = nOffY;
 
@@ -141,7 +141,7 @@ namespace glib
 
                 //Need to call preprocess on the child
                 ((GuiLayout*)child)->setAbsolutePosition(true);
-                ((GuiLayout*)child)->layoutUpdate(nOffX, nOffY, maxChildWidth, maxChildHeight);
+                ((GuiLayout*)child)->doLayoutUpdate(nOffX, nOffY, maxChildWidth, maxChildHeight);
                 
                 //No need to do any additional processing. Should add the offsets in though
                 child->x += nOffX;

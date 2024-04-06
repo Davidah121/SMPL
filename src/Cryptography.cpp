@@ -2,7 +2,7 @@
 #include "StringTools.h"
 #include "SimpleFile.h"
 
-namespace glib
+namespace smpl
 {
 	std::vector<uint32_t> Cryptography::SHA1(unsigned char* bytes, size_t size)
 	{
@@ -54,7 +54,7 @@ namespace glib
 
 				if(addedPadding >= 8)
 				{
-					((uint64_t*)block.data())[7] = glib::StringTools::byteSwap(ml);
+					((uint64_t*)block.data())[7] = smpl::StringTools::byteSwap(ml);
 				}
 			}
 			
@@ -63,7 +63,7 @@ namespace glib
 			std::vector<unsigned int> w;
 			for(int i=0; i<16; i++)
 			{
-				unsigned int temp = glib::StringTools::byteSwap(blockAsChunk[i]);
+				unsigned int temp = smpl::StringTools::byteSwap(blockAsChunk[i]);
 				w.push_back(temp);
 			}
 			
@@ -192,7 +192,7 @@ namespace glib
 
 				if(addedPadding >= 8)
 				{
-					((uint64_t*)block.data())[7] = glib::StringTools::byteSwap(ml);
+					((uint64_t*)block.data())[7] = smpl::StringTools::byteSwap(ml);
 				}
 			}
 			
@@ -201,7 +201,7 @@ namespace glib
 			std::vector<unsigned int> w;
 			for(int i=0; i<16; i++)
 			{
-				unsigned int temp = glib::StringTools::byteSwap(blockAsChunk[i]);
+				unsigned int temp = smpl::StringTools::byteSwap(blockAsChunk[i]);
 				w.push_back(temp);
 			}
 			

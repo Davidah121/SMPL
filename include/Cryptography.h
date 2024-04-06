@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 
-namespace glib
+namespace smpl
 {
     class Cryptography
     {

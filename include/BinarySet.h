@@ -1,14 +1,14 @@
 #pragma once
 #include <vector>
-#include "Object.h"
+#include <cstddef>
 
 //NOTE THAT SOME IMPLEMENTATION MAY BE BROKEN DUE TO SWAPING TO TEMPLATES
 //FOR ADDING BITS.
 
-namespace glib
+namespace smpl
 {
 
-	class BinarySet : public Object
+	class BinarySet
 	{
 		
 	public:
@@ -25,9 +25,6 @@ namespace glib
 		 * @brief Destroys a BinarySet object clearing the memory used by it.
 		 */
 		~BinarySet();
-		
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
 
 		//CONSTANTS
 		
@@ -236,4 +233,4 @@ namespace glib
 		size_t bitNumber = 0;
 	};
 
-}  //NAMESPACE glib END
+}  //NAMESPACE smpl END

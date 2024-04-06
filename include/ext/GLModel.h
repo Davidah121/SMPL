@@ -6,7 +6,7 @@
     #include "ext/GLSingleton.h"
     #include "Model.h"
 
-    namespace glib
+    namespace smpl
     {
         
         class GLModel

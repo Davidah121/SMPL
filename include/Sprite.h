@@ -2,7 +2,7 @@
 #include"Image.h"
 #include "Object.h"
 
-namespace glib
+namespace smpl
 {
 
 	class Sprite : public Object

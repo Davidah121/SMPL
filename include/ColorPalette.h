@@ -5,7 +5,7 @@
 #include "MathExt.h"
 #include "GeneralExceptions.h"
 
-namespace glib
+namespace smpl
 {
 
 	struct Color

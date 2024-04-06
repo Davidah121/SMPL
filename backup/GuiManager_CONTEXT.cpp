@@ -1,6 +1,6 @@
 #include "InternalGuiManagerHeader.h"
 
-namespace glib
+namespace smpl
 {
 	#pragma region GUI_CONTEXT_MENU_HELPER_CLASS
 	const Class GuiContextMenuHelper::globalClass = Class("GuiContextMenuHelper", {&GuiInstance::globalClass});
@@ -282,4 +282,4 @@ namespace glib
 	
 	#pragma endregion
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

@@ -1,6 +1,6 @@
 #include "InternalGraphicsHeader.h"
 
-namespace glib
+namespace smpl
 {
 	void SimpleGraphics::drawImage(Image* img, int x, int y, Image* surf)
 	{
@@ -44,7 +44,7 @@ namespace glib
 		if(y > maxY || x > maxX)
 			return; //Outside of the bounds that can be rendered
 
-		if(minX >= img->getWidth() || minY >= img->getHeight())
+		if(startImgX >= img->getWidth() || startImgY >= img->getHeight())
 			return; //Not valid bounds for the image we are drawing.
 		
 		Color* surfPixels = surf->getPixels();
@@ -122,7 +122,7 @@ namespace glib
 		if(y > maxY || x > maxX)
 			return; //Outside of the bounds that can be rendered
 
-		if(minX >= img->getWidth() || minY >= img->getHeight())
+		if(startImgX >= img->getWidth() || startImgY >= img->getHeight())
 			return; //Not valid bounds for the image we are drawing.
 		
 		Color4f* surfPixels = surf->getPixels();
@@ -200,7 +200,7 @@ namespace glib
 		if(y > maxY || x > maxX)
 			return; //Outside of the bounds that can be rendered
 
-		if(minX >= img->getWidth() || minY >= img->getHeight())
+		if(startImgX >= img->getWidth() || startImgY >= img->getHeight())
 			return; //Not valid bounds for the image we are drawing.
 		
 		Color* surfPixels = surf->getPixels();

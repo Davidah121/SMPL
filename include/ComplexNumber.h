@@ -2,7 +2,7 @@
 #include "Object.h"
 #include "Vec2f.h"
 
-namespace glib
+namespace smpl
 {
 
 	class ComplexNumber : public Object

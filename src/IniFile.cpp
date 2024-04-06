@@ -1,6 +1,6 @@
 #include "IniFile.h"
 
-namespace glib
+namespace smpl
 {
     IniFile::IniFile()
     {

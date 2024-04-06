@@ -1,0 +1,28 @@
+TimeTaken: 81330
+Threshold = 1.000, Lowest Subdivision Size = 64, Subdivisions: 256
+Final Size Before Compression = 394784
+Final Size After Compression = 115796
+TimeTaken: 89477
+Threshold = 1.000, Lowest Subdivision Size = 32, Subdivisions: 1372
+Final Size Before Compression = 398762
+Final Size After Compression = 152248
+TimeTaken: 99167
+Threshold = 1.000, Lowest Subdivision Size = 16, Subdivisions: 5304
+Final Size Before Compression = 411786
+Final Size After Compression = 203739
+TimeTaken: 109295
+Threshold = 1.000, Lowest Subdivision Size = 8, Subdivisions: 18440
+Final Size Before Compression = 454354
+Final Size After Compression = 298865
+TimeTaken: 119246
+Threshold = 1.000, Lowest Subdivision Size = 4, Subdivisions: 60480
+Final Size Before Compression = 588035
+Final Size After Compression = 501920
+TimeTaken: 147893
+Threshold = 1.000, Lowest Subdivision Size = 2, Subdivisions: 188476
+Final Size Before Compression = 985582
+Final Size After Compression = 972812
+TimeTaken: 176496
+Threshold = 1.000, Lowest Subdivision Size = 1, Subdivisions: 534608
+Final Size Before Compression = 1994461
+Final Size After Compression = 1933534

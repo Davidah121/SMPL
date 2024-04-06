@@ -2,7 +2,7 @@
 #include "StringTools.h"
 #include <iomanip>
 
-namespace glib
+namespace smpl
 {
 	WebRequest::WebRequest()
 	{
@@ -23,6 +23,33 @@ namespace glib
 	{
 		//fill out data using buffer
 		init((unsigned char*)buffer.data(), buffer.size(), nullptr);
+	}
+	
+	WebRequest::WebRequest(WebRequest& other)
+	{
+		reset();
+		type = other.type;
+		bytesInHeader = other.bytesInHeader;
+		header = other.header;
+		data = other.data;
+	}
+	
+	void WebRequest::operator=(WebRequest other)
+	{
+		reset();
+		type = other.type;
+		bytesInHeader = other.bytesInHeader;
+		header = other.header;
+		data = other.data;
+	}
+
+	void WebRequest::operator=(WebRequest& other)
+	{
+		reset();
+		type = other.type;
+		bytesInHeader = other.bytesInHeader;
+		header = other.header;
+		data = other.data;
 	}
 
 	void WebRequest::reset()
@@ -184,7 +211,19 @@ namespace glib
 
 	void WebRequest::addKeyValue(std::string k, std::string v)
 	{
-		data[k] = v;
+		//if its new, add k.size() + v.size() + 4
+		auto it = data.find(k);
+		if(it != data.end())
+		{
+			bytesInHeader -= it->second.size();
+			bytesInHeader += v.size();
+			it->second = v;
+		}
+		else
+		{
+			data[k] = v;
+			bytesInHeader += k.size() + v.size() + 4;
+		}
 	}
 
 	std::string WebRequest::readKeyValue(std::string k)

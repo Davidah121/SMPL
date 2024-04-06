@@ -1,0 +1,28 @@
+MEAN SQUARED ERROR: (291.891, 290.572, 276.226)
+Threshold = 1.000, Lowest Subdivision Size = 64, Subdivisions: 256
+Final Size Before Compression = 394784
+Final Size After Compression = 121519
+MEAN SQUARED ERROR: (177.527, 179.546, 166.972)
+Threshold = 1.000, Lowest Subdivision Size = 32, Subdivisions: 1372
+Final Size Before Compression = 398762
+Final Size After Compression = 160537
+MEAN SQUARED ERROR: (115.019, 111.441, 103.094)
+Threshold = 1.000, Lowest Subdivision Size = 16, Subdivisions: 5304
+Final Size Before Compression = 411786
+Final Size After Compression = 207891
+MEAN SQUARED ERROR: (66.067, 62.781, 58.009)
+Threshold = 1.000, Lowest Subdivision Size = 8, Subdivisions: 18440
+Final Size Before Compression = 454354
+Final Size After Compression = 277626
+MEAN SQUARED ERROR: (32.973, 31.308, 28.141)
+Threshold = 1.000, Lowest Subdivision Size = 4, Subdivisions: 60480
+Final Size Before Compression = 588035
+Final Size After Compression = 436167
+MEAN SQUARED ERROR: (7.673, 7.008, 6.296)
+Threshold = 1.000, Lowest Subdivision Size = 2, Subdivisions: 188476
+Final Size Before Compression = 985582
+Final Size After Compression = 822660
+MEAN SQUARED ERROR: (0.387, 0.229, 0.476)
+Threshold = 1.000, Lowest Subdivision Size = 1, Subdivisions: 534608
+Final Size Before Compression = 1994461
+Final Size After Compression = 1673195

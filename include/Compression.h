@@ -9,7 +9,7 @@
 #include "SimpleHashMap.h"
 #include "GeneralExceptions.h"
 
-namespace glib
+namespace smpl
 {
 
 	struct HuffmanNode

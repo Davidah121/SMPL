@@ -1,6 +1,6 @@
 #include "Mat4f.h"
 
-namespace glib
+namespace smpl
 {
 		
 	const RootClass Mat4f::globalClass = RootClass("Mat4f", {"Matrix"});

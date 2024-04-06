@@ -4,7 +4,7 @@
 #include "MathExt.h"
 #include "Opti.h"
 
-namespace glib
+namespace smpl
 {
 
 	class Image;
@@ -676,4 +676,4 @@ namespace glib
 		static HiResImage** loadJPG(std::vector<unsigned char> fileData, int* amountOfImages);
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

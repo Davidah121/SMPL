@@ -1,6 +1,6 @@
 #include "Mat3f.h"
 
-namespace glib
+namespace smpl
 {
 		
 	const RootClass Mat3f::globalClass = RootClass("Mat3f", {"Matrix"});

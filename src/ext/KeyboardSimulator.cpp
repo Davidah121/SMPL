@@ -2,7 +2,7 @@
 
 #ifdef _WIN32
 
-namespace glib
+namespace smpl
 {
     void KeyboardSimulator::emulateKeyPress(int key)
 	{

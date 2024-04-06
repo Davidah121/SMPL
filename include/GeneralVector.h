@@ -1,7 +1,7 @@
 #pragma once
 #include "Object.h"
 
-namespace glib
+namespace smpl
 {
 
 	class GeneralVector : public Object
@@ -103,4 +103,4 @@ namespace glib
 		double* values = nullptr;
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

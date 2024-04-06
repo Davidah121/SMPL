@@ -1,6 +1,6 @@
 #include "NewGui.h"
 
-namespace glib
+namespace smpl
 {
     Color loadColor(std::string data)
     {

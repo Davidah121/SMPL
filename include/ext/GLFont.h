@@ -8,7 +8,7 @@
 	#include "ext/GLModel.h"
 	#include "BitmapFont.h"
 
-	namespace glib
+	namespace smpl
 	{
 		class GLFont : public Font
 		{

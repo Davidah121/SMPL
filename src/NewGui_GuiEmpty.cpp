@@ -1,5 +1,5 @@
 #include "NewGui.h"
-namespace glib
+namespace smpl
 {
     GuiEmpty::GuiEmpty() : GuiItem()
     {

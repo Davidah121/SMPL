@@ -1,6 +1,6 @@
 #include "InternalGraphicsHeader.h"
 
-namespace glib
+namespace smpl
 {
 
     #pragma region IMAGE_MANIPULATION
@@ -268,22 +268,41 @@ namespace glib
 						  0,  0,  0,
 						 -1, -2, -1);
 
-		Matrix imgXDerivative = ComputerVision::convolutionNormalized(grayscaleImg, &gx, ComputerVision::RED_CHANNEL);
-		Matrix imgYDerivative = ComputerVision::convolutionNormalized(grayscaleImg, &gy, ComputerVision::RED_CHANNEL);
+		Matrix imgXDerivative = ComputerVision::convolution(grayscaleImg, &gx, ComputerVision::RED_CHANNEL, true);
+		Matrix imgYDerivative = ComputerVision::convolution(grayscaleImg, &gy, ComputerVision::RED_CHANNEL, true);
+
+		//reuse imgXDerivative
+		double* imgXDerData = imgXDerivative.getData();
+		double* imgXDerDataEnd = imgXDerivative.getData() + (img->getWidth() * img->getHeight());
+		double* imgYDerData = imgYDerivative.getData();
+
+		while(imgXDerData < imgXDerDataEnd)
+		{
+			*imgXDerData = MathExt::sqrt( MathExt::sqr(*imgXDerData) + MathExt::sqr(*imgYDerData) );
+			imgXDerData++;
+			imgYDerData++;
+		}
+
+		imgXDerivative = ComputerVision::readjustIntensity(&imgXDerivative, 0, 255);
+		
 
 		//Saving memory allocation cost by resuing grayscaleImg
 		Color* finalImgPixels = grayscaleImg->getPixels();
-		for(int y=0; y<grayscaleImg->getHeight(); y++)
+		imgXDerData = imgXDerivative.getData();
+		imgXDerDataEnd = imgXDerivative.getData() + (img->getWidth() * img->getHeight());
+		
+		while(imgXDerData < imgXDerDataEnd)
 		{
-			for(int x=0; x<grayscaleImg->getWidth(); x++)
-			{
-				Color c;
-				c.red = MathExt::sqrt( MathExt::sqr(imgXDerivative[y][x]) + MathExt::sqr(imgYDerivative[y][x]) );
-				c.green = c.red;
-				c.blue = c.red;
-				*finalImgPixels = c;
-				finalImgPixels++;
-			}
+			Color c;
+			c.red = *imgXDerData;
+			c.green = c.red;
+			c.blue = c.red;
+			c.alpha = 255;
+
+			*finalImgPixels = c;
+			
+			imgXDerData++;
+			finalImgPixels++;
 		}
 
 		return grayscaleImg;

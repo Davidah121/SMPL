@@ -1,7 +1,7 @@
 #include "InternalCompressionHeader.h"
 #include "SuffixAutomaton.h"
 
-namespace glib
+namespace smpl
 {
 
 #pragma region LZ77
@@ -580,6 +580,8 @@ namespace glib
 						bestLength = len;
 						bestLocation = locationOfMatch;
 					}
+					if(bestLength == 258)
+						break;
 					
 					k = map.getNext();
 				} while(k != nullptr);
@@ -594,32 +596,32 @@ namespace glib
 
 				int backwardsDis = i - bestLocation;
 				
-				outputData->push_back( {false, bestLength, backwardsDis} );
-				i += bestLength;
-				totalOutputSize += bestLength;
-				if(bestLength >= 3)
-					refs += bestLength;
-				else
-				{
-					smallMatches++;
-					lits += bestLength;
-				}
-				
-				// if(bestLength>=3)
-				// {
-				// 	outputData->push_back( {false, bestLength, backwardsDis} );
-				// 	i += bestLength;
-				// 	totalOutputSize += bestLength;
+				// outputData->push_back( {false, bestLength, backwardsDis} );
+				// i += bestLength;
+				// totalOutputSize += bestLength;
+				// if(bestLength >= 3)
 				// 	refs += bestLength;
-				// }
 				// else
 				// {
-				// 	//couldn't find match within max allowed distance
-				// 	outputData->push_back( {true, data[i], 0} );
-				// 	i++;
-				// 	lits++;
-				// 	totalOutputSize++;
+				// 	smallMatches++;
+				// 	lits += bestLength;
 				// }
+				
+				if(bestLength>=3)
+				{
+					outputData->push_back( {false, bestLength, backwardsDis} );
+					i += bestLength;
+					totalOutputSize += bestLength;
+					refs += bestLength;
+				}
+				else
+				{
+					//couldn't find match within max allowed distance
+					outputData->push_back( {true, data[i], 0} );
+					i++;
+					lits++;
+					totalOutputSize++;
+				}
 			}
 
 		}
@@ -631,10 +633,10 @@ namespace glib
 			totalOutputSize++;
 		}
 		
-		StringTools::println("CHASH: %llu", totalOutputSize);
-		StringTools::println("CHASH REFs: %llu", refs);
-		StringTools::println("CHASH LITs: %llu", lits);
-		StringTools::println("CHASH SMALL MATCHES: %llu", smallMatches);
+		// StringTools::println("CHASH: %llu", totalOutputSize);
+		// StringTools::println("CHASH REFs: %llu", refs);
+		// StringTools::println("CHASH LITs: %llu", lits);
+		// StringTools::println("CHASH SMALL MATCHES: %llu", smallMatches);
 	}
 
 	void Compression::getLZ77RefPairsKMP(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel)

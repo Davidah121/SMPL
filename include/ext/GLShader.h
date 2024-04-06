@@ -7,7 +7,7 @@
     #include "MathExt.h"
     #include "SimpleFile.h"
 
-    namespace glib
+    namespace smpl
     {
         class GLShader
         {
@@ -55,6 +55,6 @@
             static GLShader* activeShader;
         };
 
-    } //NAMESPACE glib END
+    } //NAMESPACE smpl END
 
 #endif

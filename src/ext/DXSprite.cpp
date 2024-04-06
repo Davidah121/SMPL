@@ -2,7 +2,7 @@
 
 	#include "ext/DXSprite.h"
 
-	namespace glib
+	namespace smpl
 	{
 			
 		const RootClass DXSprite::myClass = RootClass("DXSprite", {"Object"});
@@ -137,6 +137,6 @@
 			loops = v;
 		}
 
-	} //NAMESPACE glib END
+	} //NAMESPACE smpl END
 
 #endif

@@ -7,10 +7,10 @@
 #include "GeneralExceptions.h"
 #include "Object.h"
 
-namespace glib
+namespace smpl
 {
 	
-	class SimpleDir : public Object
+	class SimpleDir
 	{
 	public:
 
@@ -29,9 +29,6 @@ namespace glib
 		 * 
 		 */
 		~SimpleDir();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
 
 		//Exceptions
 		struct ExistanceError : public std::exception

@@ -2,7 +2,7 @@
 #include "Vec2f.h"
 #include "Object.h"
 
-namespace glib
+namespace smpl
 {
 
 	class Line : public Object
@@ -220,4 +220,4 @@ namespace glib
 
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

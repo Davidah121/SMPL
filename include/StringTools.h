@@ -5,12 +5,11 @@
 #include<stdio.h>
 #include<vector>
 #include<fcntl.h>
-#include "BinarySet.h"
 
 #include <stdarg.h>
 #include <initializer_list>
 
-namespace glib
+namespace smpl
 {
 
 	class StringTools
@@ -256,6 +255,16 @@ namespace glib
 		 * @return std::string 
 		 */
 		static std::string urlDecode(std::string str);
+
+		
+		/**
+		 * @brief Attempts to translate Environment Variables in
+		 * 		the string to be a valid.
+		 * 		
+		 * @param n 
+		 * @return std::string 
+		 */
+		static std::string translateEnvironmentVariables(std::string n);
 
 		/**
 		 * @brief Performs a bitwise left rotate on the data type.
@@ -521,35 +530,22 @@ namespace glib
 		}
 
 		/**
-		 * @brief Converts the value to a Binary string.
+		 * @brief Converts the data to a Binary string.
+		 * 		Expects a list of bytes.
 		 * 
-		 * @tparam T 
-		 * @param value 
+		 * @param data 
+		 * 		The data to be converted.
+		 * @param size
+		 * 		The total number of bytes in data.
+		 * 			typically using sizeof() is appropriate.
 		 * @param bits 
 		 * 		How many bits to grab.
 		 * @param LMSB 
 		 * 		Left Most Significant Bit
 		 * 		Default is true
-		 * @return char* 
+		 * @return std::string 
 		 */
-		template<class T>
-		static char* toBinaryString(T value, int bits, bool LMSB = true)
-		{
-			int size = sizeof(T);
-			char* binString = new char[bits+1];
-
-			BinarySet b = BinarySet();
-			b.setBitOrder(LMSB);
-			b.setValues((char*)&value, size);
-
-			for(size_t i=0; i<bits; i++)
-			{
-				binString[bits-i-1] = (b.getBit(i)==false) ? '0':'1';
-			}
-			binString[bits] = '\0';
-
-			return binString;
-		}
+		static std::string toBinaryString(char* data, int size, int bits, bool LMSB = true);
 
 		/**
 		 * @brief Splits a string using a single character deliminator.

@@ -1,6 +1,6 @@
 #include "RadixTree.h"
 
-namespace glib
+namespace smpl
 {
     RadixTree::RadixTree()
     {

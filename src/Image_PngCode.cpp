@@ -18,7 +18,7 @@
 	#define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
 
-namespace glib
+namespace smpl
 {
 
 	struct fctlData
@@ -36,9 +36,8 @@ namespace glib
 		std::vector<unsigned char> compressedData = std::vector<unsigned char>();
 	};
 
-	std::string savePNGIDAT(unsigned char* data, size_t size, bool strongCompression)
+	void savePNGIDAT(SimpleFile& f, unsigned char* data, size_t size, bool strongCompression)
 	{
-		std::string output;
 		unsigned int adlerValue = Cryptography::adler32(data, size);
 
 		BinarySet compressedData;
@@ -109,13 +108,12 @@ namespace glib
 			unsigned int crcVal = Cryptography::crc((unsigned char*)IDATHeader.data()+4, IDATHeader.size()-4);
 			IDATHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
 
-			output += IDATHeader;
+			f.writeBytes((unsigned char*)IDATHeader.data(), IDATHeader.size());
 		}
 
-		return output;
 	}
 
-	std::string savePNGFDAT(int seqNum, unsigned char* data, size_t size, bool strongCompression)
+	void savePNGFDAT(SimpleFile& f, int seqNum, unsigned char* data, size_t size, bool strongCompression)
 	{
 		//No separating into 8192 chunks since libpng probably won't even load this anyway.
 		//Better filesize overall anyway.
@@ -158,7 +156,7 @@ namespace glib
 		unsigned int crcVal = Cryptography::crc((unsigned char*)FDATHeader.data()+4, FDATHeader.size()-4);
 		FDATHeader += {(char)((crcVal>>24) & 0xFF), (char)((crcVal>>16) & 0xFF), (char)((crcVal>>8) & 0xFF), (char)((crcVal>>0) & 0xFF)};
 
-		return FDATHeader;
+		f.writeBytes((unsigned char*)FDATHeader.data(), FDATHeader.size());
 	}
 
 	void Image::savePNG(File file, bool saveAlpha, bool greyscale, bool strongCompression)
@@ -304,7 +302,7 @@ namespace glib
 			}
 		}
 
-		f.writeString( savePNGIDAT(scanLines.data(), scanLines.size(), strongCompression) );
+		savePNGIDAT(f, scanLines.data(), scanLines.size(), strongCompression);
 
 		std::string IENDHeader = {(char)0, (char)0, (char)0, (char)0, 'I', 'E', 'N', 'D'};
 		
@@ -547,10 +545,10 @@ namespace glib
 			
 			//save fdat or idat
 			if(seq == 0)
-				f.writeString( savePNGIDAT(scanLines.data(), scanLines.size(), strongCompression) );
+				savePNGIDAT(f, scanLines.data(), scanLines.size(), strongCompression);
 			else
 			{
-				f.writeString( savePNGFDAT(seqCounter, scanLines.data(), scanLines.size(), strongCompression) );
+				savePNGFDAT(f, seqCounter, scanLines.data(), scanLines.size(), strongCompression);
 				seqCounter++;
 			}
 		}

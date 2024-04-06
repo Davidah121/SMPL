@@ -1,7 +1,7 @@
 #include "Shape.h"
 #include "StringTools.h"
 
-namespace glib
+namespace smpl
 {
 	
 	#pragma region SHAPE
@@ -24,6 +24,7 @@ namespace glib
 	void Shape::setPosition(Vec3f posPointer)
 	{
 		position = posPointer;
+		onTransformChanged();
 	}
 
 	Vec3f Shape::getPosition()
@@ -34,6 +35,7 @@ namespace glib
 	void Shape::setScale(Vec3f posScale)
 	{
 		scale = posScale;
+		onTransformChanged();
 	}
 
 	Vec3f Shape::getScale()
@@ -44,6 +46,7 @@ namespace glib
 	void Shape::setRotation(Vec3f posRotation)
 	{
 		rotation = posRotation;
+		onTransformChanged();
 	}
 
 	Vec3f Shape::getRotation()

@@ -5,7 +5,7 @@
 #include "MathExt.h"
 #include "SimpleXml.h"
 
-namespace glib
+namespace smpl
 {
 
 	struct criticalPoint

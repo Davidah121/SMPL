@@ -1,6 +1,6 @@
 #include "SimplePipe.h"
 
-namespace glib
+namespace smpl
 {
     SimplePipe::SimplePipe(std::string command, char type)
     : SimpleFile()
@@ -9,10 +9,10 @@ namespace glib
         switch(type & 0x0F)
         {
         case SimpleFile::READ:
-            openType = "rb";
+            openType = "r";
             break;
         case SimpleFile::WRITE:
-            openType = "wb";
+            openType = "w";
             break;
         default:
             //error should throw exception
@@ -44,11 +44,14 @@ namespace glib
 
     void SimplePipe::close()
     {
-        #ifdef _WIN32
-            exitCode = _pclose(getFilePointer()) >> 8;
-        #else
-            exitCode = pclose(getFilePointer()) >> 8;
-        #endif
+        if(getFilePointer() != nullptr)
+        {
+            #ifdef _WIN32
+                exitCode = _pclose(getFilePointer()) >> 8;
+            #else
+                exitCode = pclose(getFilePointer()) >> 8;
+            #endif
+        }
         cFile = nullptr;
     }
 }

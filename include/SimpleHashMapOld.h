@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace glib
+namespace smpl
 {
 
     template<class K, class T>

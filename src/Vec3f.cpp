@@ -2,10 +2,10 @@
 #include <cmath>
 #include <math.h>
 
-namespace glib
+namespace smpl
 {
 
-	const RootClass Vec3f::globalClass = RootClass("Vec3f", {"Object"});
+	const RootClass Vec3f::globalClass = RootClass("Vec3f", {"SerializedObject"});
 
 	Vec3f::Vec3f(double x, double y, double z)
 	{
@@ -33,6 +33,10 @@ namespace glib
 	{
 	}
 
+	std::unordered_map<std::string, SerializedData> Vec3f::getSerializedVariables()
+	{
+		return {SERIALIZE_MAP(x), SERIALIZE_MAP(y), SERIALIZE_MAP(z)};
+	}
 
 	double Vec3f::getX()
 	{

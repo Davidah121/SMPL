@@ -10,7 +10,7 @@
 
 	#include <shobjidl.h>
 
-	namespace glib
+	namespace smpl
 	{
 
 		std::vector<DXWindow*> DXWindow::windowList = std::vector<DXWindow*>();
@@ -434,6 +434,6 @@
 			}
 		}
 
-	} //NAMESPACE glib END
+	} //NAMESPACE smpl END
 
 #endif

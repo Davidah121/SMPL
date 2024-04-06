@@ -2,7 +2,7 @@
 #include "Matrix.h"
 #include "Vec4f.h"
 
-namespace glib
+namespace smpl
 {
 
 	class Mat4f : public Matrix
@@ -121,4 +121,4 @@ namespace glib
 		void fillArray(double* buffer);
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

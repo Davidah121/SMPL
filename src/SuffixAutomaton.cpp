@@ -1,7 +1,7 @@
 #include "SuffixAutomaton.h"
 #include "System.h"
 
-namespace glib
+namespace smpl
 {
     SuffixAutomaton::SuffixAutomaton(size_t s)
     {

@@ -1,10 +1,10 @@
 #pragma once
 #include "Vec2f.h"
 
-namespace glib
+namespace smpl
 {
 
-    class PolarCoordinate
+    class PolarCoordinate : SerializedObject
     {
     public:
         /**
@@ -36,6 +36,9 @@ namespace glib
          */
         ~PolarCoordinate();
 
+        static const RootClass globalClass;
+        std::unordered_map<std::string, SerializedData> getSerializedVariables();
+
         /**
          * @brief Gets the Length of the polar coordinate
          * 
@@ -56,4 +59,4 @@ namespace glib
         double angle;
     };
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

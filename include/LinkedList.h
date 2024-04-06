@@ -1,6 +1,6 @@
 #pragma once
 
-namespace glib
+namespace smpl
 {
 
 	template<typename T>
@@ -296,4 +296,4 @@ namespace glib
 		rootNode = nullptr;
 	}
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

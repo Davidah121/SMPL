@@ -1,10 +1,10 @@
 #include "Quaternion.h"
 #include "MathExt.h"
 
-namespace glib
+namespace smpl
 {
 
-    const RootClass Quaternion::globalClass = RootClass("Quaternion", {"Object"});
+    const RootClass Quaternion::globalClass = RootClass("Quaternion", {"SerializedObject"});
 
     Quaternion::Quaternion()
     {
@@ -25,6 +25,11 @@ namespace glib
     {
 
     }
+
+    std::unordered_map<std::string, SerializedData> Quaternion::getSerializedVariables()
+	{
+		return {SERIALIZE_MAP(x), SERIALIZE_MAP(y), SERIALIZE_MAP(z), SERIALIZE_MAP(w)};
+	}
 
     Quaternion Quaternion::operator*(double val)
     {

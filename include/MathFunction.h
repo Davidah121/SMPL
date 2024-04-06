@@ -1,7 +1,7 @@
 #pragma once
 #include<functional>
 
-namespace glib
+namespace smpl
 {
     class MathFunction
     {
@@ -42,4 +42,4 @@ namespace glib
         std::vector<double> constants;
     };
 
-} // namespace glib
+} // namespace smpl

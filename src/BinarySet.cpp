@@ -1,14 +1,11 @@
 #include "BinarySet.h"
 #include <iostream>
 
-namespace glib
+namespace smpl
 {
-
-	const RootClass BinarySet::globalClass = RootClass("BinarySet", {"Object"});
-
+	
 	BinarySet::BinarySet()
 	{
-		setClass(globalClass);
 	}
 
 	BinarySet::~BinarySet()

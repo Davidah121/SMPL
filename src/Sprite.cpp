@@ -1,6 +1,6 @@
 #include "Sprite.h"
 
-namespace glib
+namespace smpl
 {
 		
 	const RootClass Sprite::globalClass = RootClass("Sprite", {"Object"});

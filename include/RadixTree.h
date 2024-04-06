@@ -11,7 +11,7 @@
             Delete
             Search
 */
-namespace glib
+namespace smpl
 {
     class RadixTree
     {

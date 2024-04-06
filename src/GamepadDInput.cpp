@@ -12,7 +12,7 @@
 
 	#pragma warning(disable : 4996)
 
-	namespace glib
+	namespace smpl
 	{
 
 		std::vector< DeviceStruct > GamepadDInput::devices = std::vector< DeviceStruct >();

@@ -9,7 +9,7 @@
 	#include "ext/DXModel.h"
 	#include "BitmapFont.h"
 
-	namespace glib
+	namespace smpl
 	{
 		class DXFont : public Font
 		{

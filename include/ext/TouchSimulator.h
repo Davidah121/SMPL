@@ -5,7 +5,7 @@
     #include <Windows.h>
     #include <vector>
 
-    namespace glib
+    namespace smpl
     {
         class TouchSimulator
         {
@@ -57,7 +57,10 @@
              */
             static bool inject();
         private:
+
+            static void internalSetUp(int inputID);
             static std::vector<bool> updatePoints;
+            static std::vector<bool> setToUp;
             static std::vector<POINTER_TOUCH_INFO> inputs;
         };
     }

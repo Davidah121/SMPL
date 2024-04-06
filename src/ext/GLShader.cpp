@@ -1,7 +1,7 @@
 #include "ext/GLShader.h"
 
 #ifdef USE_OPENGL
-    namespace glib
+    namespace smpl
     {
         GLShader* GLShader::activeShader = nullptr;
 

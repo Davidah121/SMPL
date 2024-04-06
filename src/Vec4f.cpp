@@ -2,10 +2,10 @@
 #include <cmath>
 #include <math.h>
 
-namespace glib
+namespace smpl
 {
 		
-	const RootClass Vec4f::globalClass = RootClass("Vec4f", {"Object"});
+	const RootClass Vec4f::globalClass = RootClass("Vec4f", {"SerializedObject"});
 
 	Vec4f::Vec4f()
 	{
@@ -58,6 +58,11 @@ namespace glib
 
 	Vec4f::~Vec4f()
 	{
+	}
+	
+	std::unordered_map<std::string, SerializedData> Vec4f::getSerializedVariables()
+	{
+		return {SERIALIZE_MAP(x), SERIALIZE_MAP(y), SERIALIZE_MAP(z), SERIALIZE_MAP(w)};
 	}
 
 	double Vec4f::getX()

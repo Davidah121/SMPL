@@ -1,6 +1,6 @@
 #include "NewGui.h"
 
-namespace glib
+namespace smpl
 {
     GuiLayoutList::GuiLayoutList(bool direction, bool wrap) : GuiLayout()
     {
@@ -40,8 +40,8 @@ namespace glib
                 y += margin.top;
             
             
-            actualMaxW = maximumWidth - x;
-            actualMaxH = maximumHeight - y;
+            actualMaxW = maximumWidth - margin.left;
+            actualMaxH = maximumHeight - margin.top;
             
             if(!(flags & FLAG_AUTO_RIGHT_MARGIN))
                 actualMaxW -= margin.right;
@@ -90,8 +90,8 @@ namespace glib
         int nOffY = padding.top + border.top;
 
         //The maximum width and height for all content this layout contains.
-        int maxContentWidth = actualMaxW - nOffX - x - padding.right - border.right;
-        int maxContentHeight = actualMaxH - nOffY - y - padding.bottom - border.bottom;
+        int maxContentWidth = actualMaxW - nOffX - padding.right - border.right;
+        int maxContentHeight = actualMaxH - nOffY - padding.bottom - border.bottom;
 
         // StringTools::println("%d - %d", maxContentWidth, actualMaxW);
 
@@ -138,7 +138,7 @@ namespace glib
             else if(child->getType() == TYPE_CONTENT)
             {
                 //just need to get the finalbox. It has no margin, padding, etc.
-                ((GuiContent*)child)->layoutUpdate(nOffX, nOffY, maxChildWidth, maxChildHeight);
+                ((GuiContent*)child)->doLayoutUpdate(nOffX, nOffY, maxChildWidth, maxChildHeight);
                 child->x = nOffX;
                 child->y = nOffY;
 
@@ -162,7 +162,7 @@ namespace glib
                     verticalMarginAutoCount++;
 
                 //Need to call preprocess on the child
-                ((GuiLayout*)child)->layoutUpdate(nOffX, nOffY, maxChildWidth, maxChildHeight);
+                ((GuiLayout*)child)->doLayoutUpdate(nOffX, nOffY, maxChildWidth, maxChildHeight);
                 x2 = child->x + child->width; //x + width
                 y2 = child->y + child->height; //y + height
 
@@ -181,7 +181,7 @@ namespace glib
                 //Ignore second violation for this instance and treat like normal.
                 if(direction == DIRECTION_VERTICAL)
                 {
-                    if(y2 > maxContentHeight)
+                    if(y2 > maxContentHeight && maxXOffsetSeen < maxContentWidth)
                     {
                         nOffY = padding.top + border.top;
                         nOffX = maxXOffsetSeen;
@@ -206,7 +206,7 @@ namespace glib
                 }
                 else
                 {
-                    if(x2 > maxContentWidth)
+                    if(x2 > maxContentWidth && maxYOffsetSeen < maxContentHeight)
                     {
                         nOffX = padding.left + border.left;
                         nOffY = maxYOffsetSeen;
@@ -251,8 +251,8 @@ namespace glib
             maxXOffsetSeen = __max(maxXOffsetSeen, x2);
             maxYOffsetSeen = __max(maxYOffsetSeen, y2);
             
-            maxChildWidth = actualMaxW - nOffX - x - padding.right - border.right;
-            maxChildHeight = actualMaxH - nOffY - y - padding.bottom - border.bottom;
+            maxChildWidth = actualMaxW - nOffX - padding.right - border.right;
+            maxChildHeight = actualMaxH - nOffY - padding.bottom - border.bottom;
             skipped = false;
             childIndex++;
         }

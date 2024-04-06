@@ -4,7 +4,7 @@
 #include <time.h>
 #include "StringTools.h"
 
-namespace glib
+namespace smpl
 {
     #pragma region NEURAL_LAYER
     NeuralLayer::NeuralLayer(int size, NeuralLayer* nextLayer, NeuralLayer* previousLayer)

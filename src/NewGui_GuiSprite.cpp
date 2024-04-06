@@ -3,7 +3,7 @@
 #include "GraphicsExt.h"
 #include "System.h"
 
-namespace glib
+namespace smpl
 {
     GuiSprite::GuiSprite() : GuiContent()
     {

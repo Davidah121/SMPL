@@ -1,9 +1,8 @@
 #pragma once
 #include "Class.h"
 
-namespace glib
+namespace smpl
 {
-
 	class Object
 	{
 	public:
@@ -19,4 +18,4 @@ namespace glib
 		Class myClass;
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

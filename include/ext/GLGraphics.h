@@ -13,7 +13,7 @@
     #include "ext/GLFont.h"
 
 
-    namespace glib
+    namespace smpl
     {
 
         class GLGraphics
@@ -130,6 +130,8 @@
             static GLShader* rectangleShader;
             static GLShader* textShader;
             static GLFont* activeFont;
+
+            static GLFont* defaultFont;
 
             static GLModel drawModel;
             static bool hasInit;

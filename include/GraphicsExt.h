@@ -4,7 +4,7 @@
 #include "Shape.h"
 #include "Font.h"
 
-namespace glib
+namespace smpl
 {
 	    
     class SurfaceInterface
@@ -220,6 +220,11 @@ namespace glib
 		static void drawToScreen(unsigned char type = TYPE_DEFAULT);
 		static void setProjection(Mat4f proj, unsigned char type = TYPE_DEFAULT);
 		static void setOrthoProjection(int width, int height, unsigned char type = TYPE_DEFAULT);
+
+		static Vec2f getTranslationFactor();
+		static void setTranslationFactor(Vec2f v);
+		
+		static Vec2f getScalingFactor();
 		static void setScalingFactor(Vec2f v);
 		static void enableScaling(bool v);
 		
@@ -231,6 +236,7 @@ namespace glib
 		static bool ownedFont;
 		static Box2D clippingRect;
 		static Vec2f scalingFactor;
+		static Vec2f translationFactor;
 		static bool useScaling;
 	};
 }

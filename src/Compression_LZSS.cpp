@@ -1,6 +1,6 @@
 #include "InternalCompressionHeader.h"
 
-namespace glib
+namespace smpl
 {
 
 #pragma region LZSS
@@ -66,7 +66,7 @@ namespace glib
 			{
 				bin.add(true);
 				bin.add(data[i]);
-				StringTools::println("LIT: %d", data[i]);
+				// StringTools::println("LIT: %d", data[i]);
 				i++;
 			}
 			else
@@ -74,7 +74,7 @@ namespace glib
 				bin.add(false);
 				bin.add(tempBackwards, 15);
 				bin.add(tempLength-3, 8);
-				StringTools::println("REF: (%d, %d)", tempBackwards, tempLength);
+				// StringTools::println("REF: (%d, %d)", tempBackwards, tempLength);
 				i += tempLength;
 			}
 		}

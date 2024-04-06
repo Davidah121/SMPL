@@ -1,6 +1,6 @@
 #include "NewGui.h"
 
-namespace glib
+namespace smpl
 {
     GuiItem::GuiItem()
     {
@@ -51,17 +51,53 @@ namespace glib
         y = offY;
     }
 
+    
+    void GuiItem::doLayoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight)
+    {
+        if(getVisible())
+            layoutUpdate(offX, offY, maximumWidth, maximumHeight);
+        else
+            resetPosition();
+    }
+    
+    void GuiItem::doUpdate(SmartMemory<GuiManager> manager)
+    {
+        fixPosition();
+        if(getVisible())
+            update(manager);
+    }
+
+    void GuiItem::doPreUpdate()
+    {
+        if(getVisible())
+            preUpdate();
+    }
+
+    
+    void GuiItem::doPreRender(SmartMemory<GuiManager> manager)
+    {
+        if(!getVisible())
+            return;
+        
+        doPreRenderOperations(manager);
+        determineChangeInOverlap(manager);
+        updateManagerRenderCounter(manager);
+    }
+
     void GuiItem::doRender(SmartMemory<GuiManager> manager)
     {
-        doPreRenderOperations(manager);
+        if(!getVisible())
+            return;
         
-        if(shouldReRender)
+        if(getShouldReRender())
         {
+            GRect newDrawnArea = {0, 0, 65535, 65535};
             if(manager.getPointer() != nullptr)
             {
-                manager.getRawPointer()->updateRenderCounter();
+                newDrawnArea = manager.getRawPointer()->getNewDrawnArea();
             }
             
+            smpl::GraphicsInterface::setClippingRect(Box2D(newDrawnArea.left, newDrawnArea.top, newDrawnArea.right, newDrawnArea.bottom));
             render(manager);
             shouldReRender = false;
         }
@@ -83,7 +119,6 @@ namespace glib
 
     void GuiItem::doPreRenderOperationsForChildren(SmartMemory<GuiManager> manager)
     {
-        //nothing here
         if(this->type == TYPE_LAYOUT)
         {
             for(SmartMemory<GuiItem>& mem : ((GuiLayout*)this)->children)
@@ -103,33 +138,45 @@ namespace glib
         }
     }
 
-    void GuiItem::determineChangeInOverlap(SmartMemory<GuiManager> manager, GRect& currRect)
+    void GuiItem::determineChangeInOverlap(SmartMemory<GuiManager> manager)
     {
-        //Get all areas known to be redrawing
-        std::vector<GRect> newDrawingRects = manager.getRawPointer()->getNewDrawingRects();
+        if(!getVisible())
+            return;
 
-        for(GRect& nRect : newDrawingRects)
+        //Get all area known to be redrawing
+        GRect newlyDrawnArea = manager.getRawPointer()->getNewDrawnArea();
+        if(newlyDrawnArea.left == newlyDrawnArea.right || newlyDrawnArea.top == newlyDrawnArea.bottom) //invalid box.
+            return;
+        
+        //check for overlap. If so, this item should probably be re-rendered
+        if(lastKnownRenderRect.left <= newlyDrawnArea.right && lastKnownRenderRect.right >= newlyDrawnArea.left)
+            if(lastKnownRenderRect.top <= newlyDrawnArea.bottom && lastKnownRenderRect.bottom >= newlyDrawnArea.top)
+                setShouldRender();
+        
+        if(newlyDrawnArea.left <= lastKnownRenderRect.right && newlyDrawnArea.right >= lastKnownRenderRect.left)
+            if(newlyDrawnArea.top <= lastKnownRenderRect.bottom && newlyDrawnArea.bottom >= lastKnownRenderRect.top)
+                setShouldRender();
+        
+        determineChangeInOverlapForChildren(manager);
+    }
+
+    void GuiItem::determineChangeInOverlapForChildren(SmartMemory<GuiManager> manager)
+    {
+        if(this->type == TYPE_LAYOUT)
         {
-            if(nRect.depth <= currRect.depth)
-                continue;
-            
-            //check for overlap. If so, this item should probably be re-rendered
-            if(currRect.left <= nRect.right && currRect.right >= nRect.left)
-                if(currRect.top <= nRect.bottom && currRect.bottom >= nRect.top)
-                    setShouldRender();
-            
-            //have to do from the other perspective too
-            if(nRect.left <= currRect.right && nRect.right >= currRect.left)
-                if(nRect.top <= currRect.bottom && nRect.bottom >= currRect.top)
-                    setShouldRender();
-            
-            //actually want to determine if the overlap polygon changed. This is a little too much work
-            //so we cheat a little and take the additional performance cost due to additional draws
+            for(SmartMemory<GuiItem>& mem : ((GuiLayout*)this)->children)
+            {
+                if(mem.getPointer() != nullptr)
+                    mem.getRawPointer()->determineChangeInOverlap(manager);
+            }
         }
     }
 
     void GuiItem::doPreRenderOperations(SmartMemory<GuiManager> manager)
     {
+        if(!getVisible())
+            return;
+        
         fixPosition();
         GRect currRect = {trueX, trueY, trueX+width, trueY+height, 0};
 
@@ -140,19 +187,50 @@ namespace glib
             uint32_t myDepth = manager.getRawPointer()->getNextDepthValue();
             currRect.depth = myDepth;
 
-            if(shouldReRender)
+            if(manager.getRawPointer()->getMustRedraw())
+                setShouldRender();
+
+            if(getShouldReRender())
                 manager.getRawPointer()->addNewDrawnArea(currRect);
         }
 
         doPreRenderOperationsForChildren(manager);
-        determineChangeInOverlap(manager, currRect);
 
         lastKnownRenderRect = currRect;
+    }
+
+    void GuiItem::updateManagerRenderCounter(SmartMemory<GuiManager> manager)
+    {
+        if(getShouldReRender())
+        {
+            if(manager.getPointer() != nullptr)
+            {
+                manager.getRawPointer()->updateRenderCounter();
+                updateManagerRenderCounterForChildren(manager);
+            }
+        }
+    }
+
+    void GuiItem::updateManagerRenderCounterForChildren(SmartMemory<GuiManager> manager)
+    {
+        if(this->type == TYPE_LAYOUT)
+        {
+            for(SmartMemory<GuiItem>& mem : ((GuiLayout*)this)->children)
+            {
+                if(mem.getPointer() != nullptr)
+                    mem.getRawPointer()->updateManagerRenderCounter(manager);
+            }
+        }
     }
 
     void GuiItem::setShouldRender()
     {
         shouldReRender = true;
+    }
+
+    bool GuiItem::getShouldReRender()
+    {
+        return shouldReRender && getVisible();
     }
     
     GRect GuiItem::getPreviousRenderRect()
@@ -160,10 +238,11 @@ namespace glib
         return lastKnownRenderRect;
     }
 
-    bool GuiItem::isColliding(int x, int y)
+    bool GuiItem::isColliding(int px, int py)
     {
-        if(x >= trueX && x <= trueX + width)
-            if(y >= trueY && y <= trueY + height)
+        fixPosition();
+        if(px >= trueX && px <= trueX + width)
+            if(py >= trueY && py <= trueY + height)
                 return true;
         return false;
     }
@@ -228,6 +307,19 @@ namespace glib
     {
         return trueY;
     }
+
+    bool GuiItem::getVisible()
+    {
+        return visible;
+    }
+    void GuiItem::setVisible(bool v)
+    {
+        if(v == true && visible == false)
+        {
+            setShouldRender();
+        }
+        visible = v;
+    }
     
     std::string GuiItem::getNameID()
     {
@@ -239,6 +331,11 @@ namespace glib
         HashPair<std::string, std::string>* pair = attribs.get("id");
         if(pair != nullptr)
             nameID = pair->data;
+        attribs.remove(pair);
+
+        pair = attribs.get("visible");
+        if(pair != nullptr)
+            setVisible(pair->data == "true");
         attribs.remove(pair);
     }
 }

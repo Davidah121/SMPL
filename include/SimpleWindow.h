@@ -71,7 +71,7 @@
 	#endif
 
 
-	namespace glib
+	namespace smpl
 	{
 		class SimpleWindow;
 		
@@ -347,7 +347,7 @@
 			 * 
 			 * @param function 
 			 */
-			void setPaintFunction(std::function<void()> function);
+			void setPaintFunction(std::function<void(SimpleWindow*)> function);
 
 			/**
 			 * @brief Sets the Mouse Moved Function
@@ -355,7 +355,7 @@
 			 * 
 			 * @param function 
 			 */
-			void setMouseMovedFunction(std::function<void()> function);
+			void setMouseMovedFunction(std::function<void(SimpleWindow*)> function);
 
 			/**
 			 * @brief Sets the Closing Function
@@ -363,7 +363,7 @@
 			 * 
 			 * @param function 
 			 */
-			void setClosingFunction(std::function<void()> function);
+			void setClosingFunction(std::function<void(SimpleWindow*)> function);
 
 			/**
 			 * @brief Sets the Key Up Function
@@ -373,7 +373,7 @@
 			 * 
 			 * @param function 
 			 */
-			void setKeyUpFunction(std::function<void(unsigned long, long)> function);
+			void setKeyUpFunction(std::function<void(SimpleWindow*, unsigned long, long)> function);
 
 			/**
 			 * @brief Sets the Key Down Function
@@ -383,7 +383,7 @@
 			 * 
 			 * @param function 
 			 */
-			void setKeyDownFunction(std::function<void(unsigned long, long)> function);
+			void setKeyDownFunction(std::function<void(SimpleWindow*, unsigned long, long)> function);
 
 			/**
 			 * @brief Sets the Mouse Button Down Function
@@ -392,7 +392,7 @@
 			 * 
 			 * @param function 
 			 */
-			void setMouseButtonDownFunction(std::function<void(int)> function);
+			void setMouseButtonDownFunction(std::function<void(SimpleWindow*, int)> function);
 
 			/**
 			 * @brief Sets the Mouse Button Up Function
@@ -401,7 +401,7 @@
 			 * 
 			 * @param function 
 			 */
-			void setMouseButtonUpFunction(std::function<void(int)> function);
+			void setMouseButtonUpFunction(std::function<void(SimpleWindow*, int)> function);
 
 			/**
 			 * @brief Sets the Mouse HWheel Function
@@ -411,7 +411,7 @@
 			 * 
 			 * @param function 
 			 */
-			void setMouseHWheelFunction(std::function<void(int)> function);
+			void setMouseHWheelFunction(std::function<void(SimpleWindow*, int)> function);
 
 			/**
 			 * @brief Sets the Mouse Wheel Function
@@ -421,7 +421,7 @@
 			 * 
 			 * @param function 
 			 */
-			void setMouseWheelFunction(std::function<void(int)> function);
+			void setMouseWheelFunction(std::function<void(SimpleWindow*, int)> function);
 
 			/**
 			 * @brief Gets the GuiManager for the window
@@ -609,7 +609,7 @@
 				 * 
 				 * @param function 
 				 */
-				void setRawTouchFunction(std::function<void(TOUCHINPUT*, int)> function);
+				void setRawTouchFunction(std::function<void(SimpleWindow*, TOUCHINPUT*, int)> function);
 
 				/**
 				 * @brief Set the Gesture Input Function.
@@ -628,7 +628,7 @@
 				 * 
 				 * @param function 
 				 */
-				void setGestureInputFunction(std::function<void(GESTUREINFO)> function);
+				void setGestureInputFunction(std::function<void(SimpleWindow*, GESTUREINFO)> function);
 				
 			#endif
 
@@ -675,6 +675,8 @@
 
 			bool getResizing();
 			bool getResizeMe();
+			
+			void virtual finishResize();
 
 			void run();
 			void dispose();
@@ -711,14 +713,15 @@
 			bool threadOwnership = true;
 			bool shouldRepaint = false;
 			bool autoRepaint = true;
+			bool redrawGui = false;
 			size_t sleepTimeMillis = 16;
 			size_t sleepTimeMicros = 0;
 
 			
 			void threadUpdate();
 			void threadGuiUpdate();
-			bool threadRender();
-			void threadRepaint();
+			bool virtual threadRender();
+			void virtual threadRepaint();
 
 			//At the cost of potential portability and bad code.
 			size_t windowHandle = 0;
@@ -739,8 +742,8 @@
 
 				DragDrop* myDragDrop = nullptr;
 				
-				std::function<void(TOUCHINPUT*, int)> rawTouchInput;
-				std::function<void(GESTUREINFO)> gestureTouchInput;
+				std::function<void(SimpleWindow*, TOUCHINPUT*, int)> rawTouchInput;
+				std::function<void(SimpleWindow*, GESTUREINFO)> gestureTouchInput;
 				bool processRawTouch(HWND hwnd, WPARAM wparam, LPARAM lparam);
 				bool processGesture(HWND hwnd, WPARAM wparam, LPARAM lparam);
 			#endif
@@ -763,21 +766,21 @@
 			bool noWindowProcPaint = false;
 			bool processKeyInputs = true;
 
-			std::function<void()> paintFunction;
-			std::function<void()> mouseMovedFunction;
-			std::function<void()> closingFunction;
+			std::function<void(SimpleWindow*)> paintFunction;
+			std::function<void(SimpleWindow*)> mouseMovedFunction;
+			std::function<void(SimpleWindow*)> closingFunction;
 
-			std::function<void(unsigned long, long)> keyUpFunction;
-			std::function<void(unsigned long, long)> keyDownFunction;
+			std::function<void(SimpleWindow*, unsigned long, long)> keyUpFunction;
+			std::function<void(SimpleWindow*, unsigned long, long)> keyDownFunction;
 			
-			std::function<void(int)> mouseButtonDownFunction;
-			std::function<void(int)> mouseButtonUpFunction;
-			std::function<void(int)> mouseWheelFunction;
-			std::function<void(int)> mouseHWheelFunction;
+			std::function<void(SimpleWindow*, int)> mouseButtonDownFunction;
+			std::function<void(SimpleWindow*, int)> mouseButtonUpFunction;
+			std::function<void(SimpleWindow*, int)> mouseWheelFunction;
+			std::function<void(SimpleWindow*, int)> mouseHWheelFunction;
 
-			std::function<void(int)> internalMouseWheelFunction;
-			std::function<void(int)> internalMouseHWheelFunction;
-			std::function<void(unsigned int, unsigned int)> internalCharValFunction;
+			std::function<void(SimpleWindow*, int)> internalMouseWheelFunction;
+			std::function<void(SimpleWindow*, int)> internalMouseHWheelFunction;
+			std::function<void(SimpleWindow*, unsigned int, unsigned int)> internalCharValFunction;
 		};
 
 	} //NAMESPACE glib END

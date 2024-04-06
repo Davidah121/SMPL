@@ -1,7 +1,7 @@
 #pragma once
 #include<exception>
 
-namespace glib
+namespace smpl
 {
 
     struct OutOfBoundsError : public std::exception
@@ -19,4 +19,4 @@ namespace glib
         const char* what() const noexcept { return "Invalid Input Data"; }
     };
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

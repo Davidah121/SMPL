@@ -8,7 +8,7 @@
 #undef max
 #undef min
 
-namespace glib
+namespace smpl
 {
 
 	int MathExt::popcount(uint8_t x)
@@ -2691,247 +2691,121 @@ namespace glib
 
 	#pragma COMPUTER_VISION_STUFF
 
-	Matrix MathExt::convolution(Matrix* baseImage, Matrix* kernel)
+	Matrix MathExt::convolution(Matrix* baseImage, Matrix* kernel, bool normalize)
 	{
-		if(baseImage == nullptr || kernel == nullptr)
+		if(baseImage == nullptr)
 			return Matrix();
 		
 		Matrix output = Matrix(baseImage->getRows(), baseImage->getCols());
-		double* baseImageDataArr = baseImage->getData();
-		double* kernelDataArr = kernel->getData();
+		int kernelRowSizeHalf = kernel->getRows()/2;
+		int kernelColSizeHalf = kernel->getCols()/2;
+		double normalizationFactor = 1.0;
 
-		int baseImageRows = baseImage->getRows();
-		int kernelRows = kernel->getRows();
-		
-		int kernelColsDiv2 = kernel->getCols()/2;
-		int kernelRowsDiv2 = kernel->getRows()/2;
+		if(normalize)
+		{
+			double kernelSum = 0;
+			for(int r=0; r<kernel->getRows(); r++)
+			{
+				for(int c=0; c<kernel->getCols(); c++)
+				{
+					kernelSum += kernel->getData()[c + r*kernel->getCols()];
+				}
+			}
+
+			if(kernelSum != 0.0)
+				normalizationFactor *= 1.0/normalizationFactor;
+		}
 		
 		for(int r=0; r<output.getRows(); r++)
 		{
-			int minY = -kernelRowsDiv2;
-			int maxY = kernelRowsDiv2;
-			
-			if(r + minY < 0)
-				minY = -r;
-
-			if(r + maxY >= output.getRows())
-				maxY = output.getRows()-r-1;
-			
 			for(int c=0; c<output.getCols(); c++)
 			{
 				double sum = 0;
-				int minX = -kernelColsDiv2;
-				int maxX = kernelColsDiv2;
-
-				// x x x x x
-				//   x x x
-				if(c + minX < 0)
-					minX = -c;
-				
-				if(c + maxX >= output.getCols())
-					maxX = output.getCols()-c-1;
-
-				for(int y=minY; y<=maxY; y++)
+				for(int kernelY=kernelRowSizeHalf; kernelY >= -kernelRowSizeHalf; kernelY--)
 				{
-					for(int x=minX; x<=maxX; x++)
+					int newImgY = r + kernelY;
+					int actualKernelY = kernelY + kernelRowSizeHalf;
+					if(newImgY >= 0 && newImgY < baseImage->getRows())
 					{
-						sum += baseImageDataArr[(r+y)*baseImageRows + (c+x)] * kernelDataArr[(kernelRowsDiv2-y)*kernelRows + (kernelColsDiv2-x)];
+						for(int kernelX=kernelColSizeHalf; kernelX >= -kernelColSizeHalf; kernelX--)
+						{
+							int newImgX = c + kernelX;
+							int actualKernelX = kernelX + kernelColSizeHalf;
+							if(newImgX >= 0 && newImgX < baseImage->getCols())
+							{
+								double baseImgValue = baseImage->getData()[newImgX + newImgY*baseImage->getCols()];
+								double kernelValue = kernel->getData()[actualKernelX + actualKernelY*kernel->getCols()] * normalizationFactor;
+								sum += kernelValue * baseImgValue;
+							}
+						}
 					}
 				}
 
 				output[r][c] = sum;
 			}
 		}
+		
 		return output;
 	}
 
-	Matrix MathExt::convolutionNormalized(Matrix* baseImage, Matrix* kernel)
+	Matrix MathExt::crossCorrelation(Matrix* baseImage, Matrix* kernel, bool normalize)
 	{
-		if(baseImage == nullptr || kernel == nullptr)
+		if(baseImage == nullptr)
 			return Matrix();
 		
 		Matrix output = Matrix(baseImage->getRows(), baseImage->getCols());
-		double* baseImageDataArr = baseImage->getData();
-		double* kernelDataArr = kernel->getData();
-
-		int baseImageRows = baseImage->getRows();
-		int kernelRows = kernel->getRows();
-		
-		int kernelColsDiv2 = kernel->getCols()/2;
-		int kernelRowsDiv2 = kernel->getRows()/2;
-		
-		double kernelEnergy = 0;
-		for(int i=0; i<kernel->getRows()*kernel->getCols(); i++)
-		{
-			kernelEnergy += kernelDataArr[i]*kernelDataArr[i];
-		}
-		kernelEnergy = MathExt::sqrt(kernelEnergy);
+		int kernelRowSizeHalf = kernel->getRows()/2;
+		int kernelColSizeHalf = kernel->getCols()/2;
 		
 		for(int r=0; r<output.getRows(); r++)
 		{
-			int minY = -kernelRowsDiv2;
-			int maxY = kernelRowsDiv2;
-			
-			if(r + minY < 0)
-				minY = -r;
-
-			if(r + maxY >= output.getRows())
-				maxY = output.getRows()-r-1;
-			
 			for(int c=0; c<output.getCols(); c++)
 			{
 				double sum = 0;
-				double baseImageEnergySum = 0;
-				int minX = -kernelColsDiv2;
-				int maxX = kernelColsDiv2;
+				double kernelEnergy = 0;
+				double baseImgEnergy = 0;
 
-				// x x x x x
-				//   x x x
-				if(c + minX < 0)
-					minX = -c;
-				
-				if(c + maxX >= output.getCols())
-					maxX = output.getCols()-c-1;
-
-				for(int y=minY; y<=maxY; y++)
+				for(int kernelY=-kernelRowSizeHalf; kernelY <= kernelRowSizeHalf; kernelY++)
 				{
-					for(int x=minX; x<=maxX; x++)
+					int newImgY = r + kernelY;
+					int actualKernelY = kernelY + kernelRowSizeHalf;
+					if(newImgY >= 0 && newImgY < baseImage->getRows())
 					{
-						double baseImageValue = baseImageDataArr[(r+y)*baseImageRows + (c+x)];
-						baseImageEnergySum += (baseImageValue*baseImageValue);
-						sum += baseImageValue * kernelDataArr[(kernelRowsDiv2-y)*kernelRows + (kernelColsDiv2-x)];
+						for(int kernelX=-kernelColSizeHalf; kernelX <= kernelColSizeHalf; kernelX++)
+						{
+							int newImgX = c + kernelX;
+							int actualKernelX = kernelX + kernelColSizeHalf;
+							if(newImgX >= 0 && newImgX < baseImage->getCols())
+							{
+								double baseImgValue = baseImage->getData()[newImgX + newImgY*baseImage->getCols()];
+								double kernelMultiplier = kernel->getData()[actualKernelX + actualKernelY*kernel->getCols()];
+								if(normalize)
+								{
+									kernelEnergy += MathExt::sqr(kernelMultiplier);
+									baseImgEnergy += MathExt::sqr(baseImgValue);
+								}
+								
+								sum += kernelMultiplier * baseImgValue;
+							}
+						}
 					}
 				}
 
-				baseImageEnergySum = MathExt::sqrt(baseImageEnergySum);
-				double energyWeight = baseImageEnergySum*kernelEnergy;
-				
-				if(energyWeight == 0)
-					output[r][c] = sum;
+				if(normalize)
+				{
+					double totalEnergy = MathExt::sqrt(kernelEnergy + baseImgEnergy);
+					if(totalEnergy != 0)
+						output[r][c] = sum / totalEnergy;
+					else
+						output[r][c] = sum;
+				}
 				else
-					output[r][c] = sum / energyWeight;
-			}
-		}
-		return output;
-	}
-
-	Matrix MathExt::crossCorrelation(Matrix* baseImage, Matrix* kernel)
-	{
-		if(baseImage == nullptr || kernel == nullptr)
-			return Matrix();
-		
-		Matrix output = Matrix(baseImage->getRows(), baseImage->getCols());
-		double* baseImageDataArr = baseImage->getData();
-		double* kernelDataArr = kernel->getData();
-
-		int baseImageRows = baseImage->getRows();
-		int kernelRows = kernel->getRows();
-		
-		int kernelColsDiv2 = kernel->getCols()/2;
-		int kernelRowsDiv2 = kernel->getRows()/2;
-		
-		for(int r=0; r<output.getRows(); r++)
-		{
-			int minY = -kernelRowsDiv2;
-			int maxY = kernelRowsDiv2;
-			
-			if(r + minY < 0)
-				minY = -r;
-
-			if(r + maxY >= output.getRows())
-				maxY = output.getRows()-r-1;
-			
-			for(int c=0; c<output.getCols(); c++)
-			{
-				double sum = 0;
-				int minX = -kernelColsDiv2;
-				int maxX = kernelColsDiv2;
-				
-				if(c + minX < 0)
-					minX = -c;
-				
-				if(c + maxX >= output.getCols())
-					maxX = output.getCols()-c-1;
-
-				for(int y=minY; y<=maxY; y++)
 				{
-					for(int x=minX; x<=maxX; x++)
-					{
-						sum += baseImageDataArr[(r+y)*baseImageRows + (c+x)] * kernelDataArr[(kernelRowsDiv2+y)*kernelRows + (kernelColsDiv2+x)];
-					}
-				}
-
-				output[r][c] = sum;
-			}
-		}
-		return output;
-	}
-
-	Matrix MathExt::crossCorrelationNormalized(Matrix* baseImage, Matrix* kernel)
-	{
-		if(baseImage == nullptr || kernel == nullptr)
-			return Matrix();
-		
-		Matrix output = Matrix(baseImage->getRows(), baseImage->getCols());
-		double* baseImageDataArr = baseImage->getData();
-		double* kernelDataArr = kernel->getData();
-
-		int baseImageRows = baseImage->getRows();
-		int kernelRows = kernel->getRows();
-		
-		int kernelColsDiv2 = kernel->getCols()/2;
-		int kernelRowsDiv2 = kernel->getRows()/2;
-
-		double kernelEnergy = 0;
-		for(int i=0; i<kernel->getRows()*kernel->getCols(); i++)
-		{
-			kernelEnergy += kernelDataArr[i]*kernelDataArr[i];
-		}
-		kernelEnergy = MathExt::sqrt(kernelEnergy);
-		
-		for(int r=0; r<output.getRows(); r++)
-		{
-			int minY = -kernelRowsDiv2;
-			int maxY = kernelRowsDiv2;
-			
-			if(r + minY < 0)
-				minY = -r;
-
-			if(r + maxY >= output.getRows())
-				maxY = output.getRows()-r-1;
-			
-			for(int c=0; c<output.getCols(); c++)
-			{
-				double sum = 0;
-				double baseImageEnergySum = 0;
-
-				int minX = -kernelColsDiv2;
-				int maxX = kernelColsDiv2;
-
-				if(c + minX < 0)
-					minX = -c;
-				
-				if(c + maxX >= output.getCols())
-					maxX = output.getCols()-c-1;
-
-				for(int y=minY; y<=maxY; y++)
-				{
-					for(int x=minX; x<=maxX; x++)
-					{
-						double baseImageValue = baseImageDataArr[(r+y)*baseImageRows + (c+x)];
-						baseImageEnergySum += (baseImageValue * baseImageValue);
-						sum += baseImageValue * kernelDataArr[(kernelRowsDiv2+y)*kernelRows + (kernelColsDiv2+x)];
-					}
-				}
-				baseImageEnergySum = MathExt::sqrt(baseImageEnergySum);
-				double energyWeight = baseImageEnergySum*kernelEnergy;
-				
-				if(energyWeight == 0)
 					output[r][c] = sum;
-				else
-					output[r][c] = sum / energyWeight;
+				}
 			}
 		}
+		
 		return output;
 	}
 

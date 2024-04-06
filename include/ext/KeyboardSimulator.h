@@ -3,7 +3,7 @@
 #ifdef _WIN32
 	#include <Windows.h>
 
-	namespace glib
+	namespace smpl
 	{
 		class KeyboardSimulator
 		{

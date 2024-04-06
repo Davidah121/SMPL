@@ -1,6 +1,6 @@
 #include "Object.h"
 
-namespace glib
+namespace smpl
 {
 	const RootClass Object::globalClass = RootClass("Object", {""});
 

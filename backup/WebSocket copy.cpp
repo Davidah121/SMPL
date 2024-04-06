@@ -2,17 +2,17 @@
 #include "StringTools.h"
 #include "System.h"
 
-namespace glib
+namespace smpl
 {
 	WebSocket::WebSocket(bool type, int port, std::string location, int amountOfConnectionsAllowed)
 	{
 		if(type != TYPE_SERVER)
 			return;
 		
-		conn = new glib::Network(type, port, location, amountOfConnectionsAllowed, true);
+		conn = new smpl::Network(type, port, location, amountOfConnectionsAllowed, true);
 
 		srand(time(0));
-		maskRandom = glib::LCG(rand());
+		maskRandom = smpl::LCG(rand());
 
 		packetQueue = std::vector<std::list<WebSocketPacket>>(amountOfConnectionsAllowed);
 		clients = std::vector<ClientInfo>(amountOfConnectionsAllowed);
@@ -358,7 +358,7 @@ namespace glib
 
 		//MAGIC-STRING: 258EAFA5-E914-47DA-95CA-C5AB0DC85B11
 		std::string base64Key = rec.readKeyValue("Sec-WebSocket-Key");
-		glib::StringTools::println("Base64Key: ", base64Key.c_str());
+		smpl::StringTools::println("Base64Key: ", base64Key.c_str());
 		base64Key += "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
 		std::vector<uint32_t> newKey = Cryptography::SHA1((unsigned char*)base64Key.data(), base64Key.size());
@@ -366,7 +366,7 @@ namespace glib
 		for(int i=0; i<5; i++)
 			newKey[i] = StringTools::byteSwap(newKey[i]);
 		
-		std::string base64NewKey = glib::StringTools::base64Encode((unsigned char*)newKey.data(), newKey.size()*4, false);
+		std::string base64NewKey = smpl::StringTools::base64Encode((unsigned char*)newKey.data(), newKey.size()*4, false);
 
 		response.addKeyValue("Sec-WebSocket-Accept", base64NewKey);
 		

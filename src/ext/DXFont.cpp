@@ -2,7 +2,7 @@
 
     #include "ext/DXFont.h"
 
-    namespace glib
+    namespace smpl
     {
         const RootClass DXFont::myClass = RootClass("DXFont", {"Font"});
 

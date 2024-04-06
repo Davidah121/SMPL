@@ -1,7 +1,7 @@
 #include "VectorSprite.h"
 #include "StringTools.h"
 
-namespace glib
+namespace smpl
 {
         
     VectorSprite::VectorSprite()

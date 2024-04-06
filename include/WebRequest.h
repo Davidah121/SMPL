@@ -9,7 +9,7 @@
 #include <string>
 #include <ctime>
 
-namespace glib
+namespace smpl
 {
 	class WebRequest
 	{
@@ -29,6 +29,10 @@ namespace glib
 			WebRequest(char* buffer, size_t size);
 			WebRequest(std::string buffer);
 			WebRequest(std::vector<unsigned char> buffer);
+
+			WebRequest(WebRequest& other);
+			void operator=(WebRequest other);
+			void operator=(WebRequest& other);
 			
 			/**
 			 * @brief Reads values and sets up the web request.
@@ -81,9 +85,30 @@ namespace glib
 			 */
 			std::string getUrl();
 
+			/**
+			 * @brief Adds a key value pair to the web request.
+			 * 		Will replace the existing key value pair if it already exists.
+			 * 
+			 * @param key 
+			 * @param value 
+			 */
 			void addKeyValue(std::string key, std::string value);
+
+			/**
+			 * @brief Attempts to read a key value pair. If the key does not
+			 * 		exist, it returns an empty string.
+			 * 
+			 * @param key 
+			 * @return std::string 
+			 */
 			std::string readKeyValue(std::string key);
 			
+			/**
+			 * @brief Gets the entire request as a string that can be sent
+			 * 		or stored directly.
+			 * 
+			 * @return std::string 
+			 */
 			std::string getRequestAsString();
 
 			/**

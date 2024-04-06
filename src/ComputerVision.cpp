@@ -1,6 +1,6 @@
 #include "ComputerVision.h"
 
-namespace glib
+namespace smpl
 {
 	std::vector<Vec2f> ComputerVision::calculateGradient(Image* img, unsigned char type)
 	{
@@ -232,204 +232,167 @@ namespace glib
 		return count;
 	}
 
-	Matrix ComputerVision::convolution(Image* baseImage, Matrix* kernel, int colorChannel)
+	Matrix ComputerVision::readjustIntensity(Matrix* baseImg, double minIntensity, double maxIntensity)
 	{
-		if(baseImage == nullptr || kernel == nullptr)
+		if(baseImg == nullptr)
 			return Matrix();
 		
-		Matrix output = Matrix(baseImage->getHeight(), baseImage->getWidth());
-		int* baseImageDataArr = (int*)baseImage->getPixels();
-		double* kernelDataArr = kernel->getData();
+		//find min and max of baseImg
+		Matrix readjustedMatrix = Matrix(baseImg->getRows(), baseImg->getCols());
+		size_t sizeOfBaseImg = baseImg->getRows() * baseImg->getCols();
+		double* baseImgData = baseImg->getData();
+		double* baseImgDataEnd = baseImg->getData() + sizeOfBaseImg;
 
-		int baseImageRows = baseImage->getHeight();
+		double minIntensityBaseImg = INFINITY;
+		double maxIntensityBaseImg = -INFINITY;
 		
-		int kernelCols = kernel->getCols();
-		int kernelRows = kernel->getRows();
-
-		int kernelColsDiv2 = kernel->getCols()/2;
-		int kernelRowsDiv2 = kernel->getRows()/2;
-
-		for(int r=0; r<output.getRows(); r++)
+		while(baseImgData < baseImgDataEnd)
 		{
-			int minY = MathExt::min(r-kernelRowsDiv2, 0);
-			int maxY = MathExt::max(r+kernelRowsDiv2, output.getRows()-1);
-
-			int kernelYMin = kernelRowsDiv2 - r;
-			if(r >= kernelRowsDiv2)
-				kernelYMin = 0;
-			else
-				kernelYMin = MathExt::abs(kernelYMin);
-			
-			int kernelYMax = (output.getRows() - r)+kernelRowsDiv2;
-			if(kernelYMax >= kernelRows)
-				kernelYMax = kernelRows;
-			
-			
-			for(int c=0; c<output.getCols(); c++)
-			{
-				int minX = MathExt::min(c-kernelColsDiv2, 0);
-				int maxX = MathExt::max(c+kernelColsDiv2, output.getCols()-1);
-
-				int kernelXMin = kernelColsDiv2 - c;
-				if(c >= kernelColsDiv2)
-					kernelXMin = 0;
-				else
-					kernelXMin = MathExt::abs(kernelXMin);
-				
-				int kernelXMax = (output.getCols() - c)+kernelColsDiv2;
-				if(kernelXMax >= kernelCols)
-					kernelXMax = kernelCols;
-			}
+			minIntensityBaseImg = MathExt::min(*baseImgData, minIntensityBaseImg);
+			maxIntensityBaseImg = MathExt::max(*baseImgData, maxIntensityBaseImg);
+			baseImgData++;
 		}
 		
-		// for(int r=0; r<output.getRows(); r++)
-		// {
-		// 	for(int c=0; c<output.getCols(); c++)
-		// 	{
-		// 		double sum = 0;
+		baseImgData = baseImg->getData();
+		double* readjustedMatrixData = readjustedMatrix.getData();
 
-		// 		for(int y=-kernelColsDiv2, kernelY=kernelCols-1; y<=kernelColsDiv2; y++, kernelY--)
-		// 		{
-		// 			if(y+r < baseImage->getHeight() && y+r >= 0)
-		// 			{
-		// 				for(int x=-kernelColsDiv2, kernelX=kernelRows-1; x<=kernelColsDiv2; x++, kernelX--)
-		// 				{
-		// 					if(x+c < baseImage->getWidth() && x+c >= 0)
-		// 					{
-		// 						unsigned char* pixelAsByteArr = (unsigned char*)&baseImageDataArr[(r+y)*baseImageRows + (c+x)];
-		// 						double actualColorValue = ((double)pixelAsByteArr[colorChannel]) / 255.0;
-		// 						sum += actualColorValue * kernelDataArr[(kernelY)*kernelRows + (kernelX)];
-		// 					}
-		// 				}
-		// 			}
-		// 		}
-
-		// 		output[r][c] = sum;
-		// 	}
-		// }
-		return output;
+		double desiredRange = maxIntensity - minIntensity;
+		double currentRange = maxIntensityBaseImg - minIntensityBaseImg;
+		
+		while(baseImgData < baseImgDataEnd)
+		{
+			*readjustedMatrixData = ((*baseImgData - minIntensityBaseImg) * (desiredRange / currentRange)) + minIntensity;
+			baseImgData++;
+			readjustedMatrixData++;
+		}
+		
+		return readjustedMatrix;
 	}
 
-	Matrix ComputerVision::convolutionNormalized(Image* baseImage, Matrix* kernel, int colorChannel)
+	Matrix ComputerVision::convolution(Image* baseImage, Matrix* kernel, int colorChannel, bool normalize)
 	{
-		if(baseImage == nullptr || kernel == nullptr)
+		if(baseImage == nullptr)
 			return Matrix();
 		
 		Matrix output = Matrix(baseImage->getHeight(), baseImage->getWidth());
-		int* baseImageDataArr = (int*)baseImage->getPixels();
-		double* kernelDataArr = kernel->getData();
+		Color* baseImagePixels = baseImage->getPixels();
+		int kernelRowSizeHalf = kernel->getRows()/2;
+		int kernelColSizeHalf = kernel->getCols()/2;
+		double normalizationFactor = 1.0;
 
-		int baseImageRows = baseImage->getHeight();
-		
-		int kernelCols = kernel->getCols();
-		int kernelRows = kernel->getRows();
-		
-		int kernelColsDiv2 = kernel->getCols()/2;
-		int kernelRowsDiv2 = kernel->getRows()/2;
-
-		double kernelEnergy = 0;
-		for(int i=0; i<kernel->getRows()*kernel->getCols(); i++)
+		if(normalize)
 		{
-			kernelEnergy += kernelDataArr[i]*kernelDataArr[i];
+			double kernelSum = 0;
+			for(int r=0; r<kernel->getRows(); r++)
+			{
+				for(int c=0; c<kernel->getCols(); c++)
+				{
+					kernelSum += kernel->getData()[c + r*kernel->getCols()];
+				}
+			}
+
+			if(kernelSum != 0.0)
+				normalizationFactor = 1.0/kernelSum;
 		}
-		kernelEnergy = MathExt::sqrt(kernelEnergy);
 		
 		for(int r=0; r<output.getRows(); r++)
 		{
 			for(int c=0; c<output.getCols(); c++)
 			{
 				double sum = 0;
-				double baseImageEnergySum = 0;
-
-				for(int y=-kernelColsDiv2, kernelY=kernelRows-1; y<=kernelColsDiv2; y++, kernelY--)
+				for(int kernelY=kernelRowSizeHalf; kernelY >= -kernelRowSizeHalf; kernelY--)
 				{
-					if(y+r < baseImage->getHeight() && y+r >= 0)
+					int newImgY = r + kernelY;
+					int actualKernelY = kernelY + kernelRowSizeHalf;
+					if(newImgY >= 0 && newImgY < baseImage->getHeight())
 					{
-						for(int x=-kernelColsDiv2, kernelX=kernelCols-1; x<=kernelColsDiv2; x++, kernelX--)
+						for(int kernelX=kernelColSizeHalf; kernelX >= -kernelColSizeHalf; kernelX--)
 						{
-							if(x+c < baseImage->getWidth() && x+c >= 0)
+							int newImgX = c + kernelX;
+							int actualKernelX = kernelX + kernelColSizeHalf;
+							if(newImgX >= 0 && newImgX < baseImage->getWidth())
 							{
-								unsigned char* pixelAsByteArr = (unsigned char*)&baseImageDataArr[(r+y)*baseImageRows + (c+x)];
-								double actualColorValue = ((double)pixelAsByteArr[colorChannel]) / 255.0;
-								baseImageEnergySum += (actualColorValue * actualColorValue);
-								
-								sum += actualColorValue * kernelDataArr[(kernelY)*kernelRows + (kernelX)];
+								Color color = baseImagePixels[newImgX + newImgY*baseImage->getWidth()];
+								double baseImgValue = ((unsigned char*)&color)[colorChannel];
+								//convert to [0 - 1]
+								baseImgValue /= 255.0;
+
+								double kernelValue = kernel->getData()[actualKernelX + actualKernelY*kernel->getCols()] * normalizationFactor;
+								sum += kernelValue * baseImgValue;
 							}
 						}
 					}
 				}
 
-				baseImageEnergySum = MathExt::sqrt(baseImageEnergySum);
-				double energyWeight = baseImageEnergySum*kernelEnergy;
-				
-				if(energyWeight == 0)
-					output[r][c] = 0; //either all of the image in the area is 0 or all of the kernel is 0. So everything should be 0 anyway.
-				else
-					output[r][c] = sum / energyWeight;
+				output[r][c] = sum;
 			}
 		}
+		
 		return output;
 	}
 	
-	Matrix ComputerVision::crossCorrelation(Image* baseImage, Image* kernel, int colorChannel)
+	Matrix ComputerVision::crossCorrelation(Image* baseImage, Image* kernel, int colorChannel, bool normalized)
 	{
-		if(baseImage == nullptr || kernel == nullptr)
+		if(baseImage == nullptr)
 			return Matrix();
 		
 		Matrix output = Matrix(baseImage->getHeight(), baseImage->getWidth());
-		int* baseImageDataArr = (int*)baseImage->getPixels();
-		int* kernelDataArr = (int*)kernel->getPixels();
-
-		int baseImageRows = baseImage->getHeight();
-		int kernelRows = kernel->getHeight();
-		
-		int kernelColsDiv2 = kernel->getWidth()/2;
-		int kernelRowsDiv2 = kernel->getHeight()/2;
-
-		double kernelEnergy = 0;
-		for(int i=0; i<kernel->getWidth()*kernel->getHeight(); i++)
-		{
-			unsigned char* kernelDataAsByteArr = (unsigned char*)&kernelDataArr[i];
-			kernelEnergy += MathExt::sqr((double)kernelDataAsByteArr[colorChannel] / 255.0);
-		}
-		kernelEnergy = MathExt::sqrt(kernelEnergy);
+		int kernelRowSizeHalf = kernel->getHeight()/2;
+		int kernelColSizeHalf = kernel->getWidth()/2;
 		
 		for(int r=0; r<output.getRows(); r++)
 		{
 			for(int c=0; c<output.getCols(); c++)
 			{
 				double sum = 0;
-				double baseImageEnergySum = 0;
+				double kernelEnergy = 0;
+				double baseImgEnergy = 0;
 
-				for(int y=-kernelRowsDiv2, kernelY=0; kernelY<kernel->getHeight(); y++, kernelY++)
+				for(int kernelY=-kernelRowSizeHalf; kernelY <= kernelRowSizeHalf; kernelY++)
 				{
-					if(y+r < baseImage->getHeight() && y+r >= 0)
+					int newImgY = r + kernelY;
+					int actualKernelY = kernelY + kernelRowSizeHalf;
+					if(newImgY >= 0 && newImgY < baseImage->getHeight())
 					{
-						for(int x=-kernelColsDiv2, kernelX=0; kernelX<kernel->getWidth(); x++, kernelX++)
+						for(int kernelX=-kernelColSizeHalf; kernelX <= kernelColSizeHalf; kernelX++)
 						{
-							if(x+c < baseImage->getWidth() && x+c >= 0)
+							int newImgX = c + kernelX;
+							int actualKernelX = kernelX + kernelColSizeHalf;
+							if(newImgX >= 0 && newImgX < baseImage->getWidth())
 							{
-								unsigned char* pixelAsByteArr = (unsigned char*)&baseImageDataArr[(r+y)*baseImage->getWidth() + (c+x)];
-								double actualColorValue = ((double)pixelAsByteArr[colorChannel]) / 255.0;
-								baseImageEnergySum += (actualColorValue * actualColorValue);
+								unsigned char* c1 = (unsigned char*)&(baseImage->getPixels()[newImgX + newImgY*baseImage->getWidth()]);
+								unsigned char* c2 = (unsigned char*)&(kernel->getPixels()[actualKernelX + actualKernelY*kernel->getWidth()]);
 
-								unsigned char* kernelDataAsByteArr = (unsigned char*)&kernelDataArr[(kernelY)*kernel->getWidth() + (kernelX)];
-								double actualKernelColorValue = ((double)kernelDataAsByteArr[colorChannel]) / 255.0;
+								double baseImgValue = (double)c1[colorChannel] / 255.0;
+								double kernelMultiplier = (double)c2[colorChannel] / 255.0;
+
+								if(normalized)
+								{
+									kernelEnergy += MathExt::sqr(kernelMultiplier);
+									baseImgEnergy += MathExt::sqr(baseImgValue);
+								}
 								
-								sum += actualColorValue * actualKernelColorValue;
+								sum += kernelMultiplier * baseImgValue;
 							}
 						}
 					}
 				}
-				baseImageEnergySum = MathExt::sqrt(baseImageEnergySum);
-				double energyWeight = baseImageEnergySum*kernelEnergy;
-				
-				if(energyWeight == 0)
-					output[r][c] = 0; //either all of the image in the area is 0 or all of the kernel is 0. So everything should be 0 anyway.
+
+				if(normalized)
+				{
+					double totalEnergy = MathExt::sqrt(kernelEnergy + baseImgEnergy);
+					if(totalEnergy != 0)
+						output[r][c] = sum / totalEnergy;
+					else
+						output[r][c] = sum;
+				}
 				else
-					output[r][c] = sum / energyWeight;
+				{
+					output[r][c] = sum;
+				}
 			}
 		}
+		
 		return output;
 	}
 }

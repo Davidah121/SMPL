@@ -7,7 +7,7 @@
 	#include "Object.h"
 	#include "Sprite.h"
 
-	namespace glib
+	namespace smpl
 	{
 
 		class GLSprite : public Object
@@ -144,6 +144,6 @@
 			std::vector<int> delayTimeForFrame = std::vector<int>();
 		};
 
-	} //NAMESPACE glib END
+	} //NAMESPACE smpl END
 	
 #endif

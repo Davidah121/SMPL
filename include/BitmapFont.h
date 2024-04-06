@@ -3,7 +3,7 @@
 #include "Sprite.h"
 #include "GeneralExceptions.h"
 
-namespace glib
+namespace smpl
 {
 	
 	class BitmapFont : public Font
@@ -71,4 +71,4 @@ namespace glib
 		std::vector<size_t> imgPage = std::vector<size_t>();
 	};
 
-}  //NAMESPACE glib END
+}  //NAMESPACE smpl END

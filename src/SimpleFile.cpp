@@ -8,11 +8,8 @@
 #define ftell64(file) ftello64(file)
 #endif
 
-namespace glib
+namespace smpl
 {
-
-	const RootClass SimpleFile::globalClass = RootClass("SimpleFile", {"Object"});
-
 	SimpleFile::SimpleFile()
 	{
 
@@ -25,7 +22,6 @@ namespace glib
 
 	void SimpleFile::init(std::string filename, char type)
 	{
-		setClass(globalClass);
 		this->type = type&0x0F;
 		dataType = type&0xF0;
 		size = 0;
@@ -110,7 +106,6 @@ namespace glib
 
 	void SimpleFile::init(FILE* filePointer, std::string name, char type)
 	{
-		setClass(globalClass);
 		this->type = type&0x0F;
 		dataType = type&0xF0;
 		size = 0;

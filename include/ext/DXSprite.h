@@ -6,7 +6,7 @@
 	#include "ext/DXTexture.h"
 	#include "Object.h"
 
-	namespace glib
+	namespace smpl
 	{
 
 		class DXSprite : public Object
@@ -126,6 +126,6 @@
 			std::vector<int> delayTimeForFrame = std::vector<int>();
 		};
 
-	} //NAMESPACE glib END
+	} //NAMESPACE smpl END
 
 #endif

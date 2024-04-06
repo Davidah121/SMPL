@@ -6,7 +6,7 @@
 #include "SimpleXml.h"
 #include "ColorNameConverter.h"
 
-namespace glib
+namespace smpl
 {
 		
 	#pragma region VectorShape

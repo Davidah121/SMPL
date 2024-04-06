@@ -3,7 +3,7 @@
 #include "SimpleHashMap.h"
 // #include <unordered_map>
 
-namespace glib
+namespace smpl
 {
     struct ChildNode;
     class XmlNode;

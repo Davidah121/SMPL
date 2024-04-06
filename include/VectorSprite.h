@@ -1,7 +1,7 @@
 #pragma once
 #include "VectorGraphic.h"
 
-namespace glib
+namespace smpl
 {
 
     class VectorSprite

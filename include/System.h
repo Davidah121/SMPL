@@ -8,7 +8,7 @@
 #include "Image.h"
 
 
-namespace glib
+namespace smpl
 {
 
 	struct FileFilter
@@ -80,8 +80,14 @@ namespace glib
 		 * 
 		 * @param millis 
 		 * @param micros 
+		 * 		Default is 0.
+		 * @param accurate
+		 * 		Whether to use std::this_thread::yield for a more accurate time or use std::this_thread::sleep_for()
+		 * 			sleep_for() will likely cause a context switch which will result in worse accuracy but potentially better
+		 * 			system performance.
+		 * 		Default is true.
 		 */
-		static void sleep(int millis, int micros=0);
+		static void sleep(int millis, int micros=0, bool accurate=true);
 
 		/**
 		 * @brief Runs the function after a specified amount of time has passed.
@@ -89,8 +95,14 @@ namespace glib
 		 * @param function 
 		 * @param millis 
 		 * @param micros 
+		 * 		Default is 0.
+		 * @param accurate
+		 * 		Whether to use std::this_thread::yield for a more accurate time or use std::this_thread::sleep_for()
+		 * 			sleep_for() will likely cause a context switch which will result in worse accuracy but potentially better
+		 * 			system performance.
+		 * 		Default is true.
 		 */
-		static void delayRun(void (*function)(), int millis, int micros = 0);
+		static void delayRun(void (*function)(), int millis, int micros = 0, bool accurate=true);
 
 		/**
 		 * @brief Runs the function after a specified amount of time has passed.
@@ -98,8 +110,14 @@ namespace glib
 		 * @param function 
 		 * @param millis 
 		 * @param micros 
+		 * 		Default is 0.
+		 * @param accurate
+		 * 		Whether to use std::this_thread::yield for a more accurate time or use std::this_thread::sleep_for()
+		 * 			sleep_for() will likely cause a context switch which will result in worse accuracy but potentially better
+		 * 			system performance.
+		 * 		Default is true.
 		 */
-		static void delayRun(std::function<void()> function, int millis, int micros = 0);
+		static void delayRun(std::function<void()> function, int millis, int micros = 0, bool accurate=true);
 
 		/**
 		 * @brief Gets the number of threads that the processor has.
@@ -387,6 +405,9 @@ namespace glib
 		 */
 		static double getCpuUsage(); //TODO
 	private:
+		System();
+		~System();
+		static System singleton;
 		static unsigned int numberOfThreads;
 		static bool hasInit;
 	};

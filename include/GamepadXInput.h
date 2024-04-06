@@ -20,7 +20,7 @@
 	#include <Xinput.h>
 	#include <iostream>
 
-	namespace glib
+	namespace smpl
 	{
 
 		class GamepadXInput
@@ -176,7 +176,7 @@
 			static void setAxis(int id, int axis, float value);
 		};
 
-	}  //NAMESPACE glib END
+	}  //NAMESPACE smpl END
 
 	#endif
 

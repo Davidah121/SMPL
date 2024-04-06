@@ -6,7 +6,7 @@
 #include "Shape.h"
 #include "BezierCurve.h"
 
-namespace glib
+namespace smpl
 {
 
 	class SimpleGraphics
@@ -773,11 +773,16 @@ namespace glib
 		static Image* cannyEdgeFilter(Image* img); //TODO
 
 		/**
-		 * @brief
-		 * 		Applies a sobel edge filter to the image.
-		 * 		Not implemented.
+		 * @brief Applies a sobel operator to the image.
+		 * 		Returns the magnitude of the X and Y gradients.
+		 * 		
+		 * 		The image does undergo an additional operation.
+		 * 			The image's intesity is rescaled to fit between [0 - 255]
+		 * 
+		 * @param img 
+		 * @return Image* 
 		 */
-		static Image* sobelEdgeFilter(Image* img); //TODO
+		static Image* sobelEdgeFilter(Image* img);
 		
 		/**
 		 * @brief Dithers the image using either Bayer dithering or Floyd Steinburg dithering.

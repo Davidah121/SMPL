@@ -1,7 +1,7 @@
 #include "GeneralVector.h"
 #include <math.h>
 
-namespace glib
+namespace smpl
 {
 
 	const RootClass GeneralVector::globalClass = RootClass("GeneralVector", {"Object"});
