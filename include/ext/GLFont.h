@@ -33,6 +33,7 @@
 			
 			//Object and RootClass Stuff
 			static const RootClass globalClass;
+			virtual const RootClass* getClass();
 
 			/**
 			 * @brief Get the texture where the desired character is stored.

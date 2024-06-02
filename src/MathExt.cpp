@@ -1957,7 +1957,11 @@ namespace smpl
 		else
 		{
 			//copy into output
-			memcpy(output.data(), arr, size);
+			output.resize(size);
+			for(int i=0; i<size; i++)
+			{
+				output[i] = arr[i];
+			}
 			doFFTInline(output.data(), size, inverse);
 		}
 

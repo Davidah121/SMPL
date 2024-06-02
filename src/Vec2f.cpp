@@ -4,19 +4,19 @@
 
 namespace smpl
 {
-
-	const RootClass Vec2f::globalClass = RootClass("Vec2f", {"SerializedObject"});
-
+	const RootClass Vec2f::globalClass = CREATE_ROOT_CLASS(Vec2f, &SerializedObject::globalClass);
+    const RootClass* Vec2f::getClass()
+	{
+		return &Vec2f::globalClass;
+	}
 	Vec2f::Vec2f(double x, double y)
 	{
-		setClass(globalClass);
 		this->x = x;
 		this->y = y;
 	}
 
 	Vec2f::Vec2f()
 	{
-		setClass(globalClass);
 	}
 
 	Vec2f::~Vec2f()

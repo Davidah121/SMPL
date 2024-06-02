@@ -118,6 +118,7 @@ namespace smpl
         
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+        virtual const RootClass* getClass();
 
         /**
          * @brief This functions purpose is to adjust the TrueX and TrueY values for this
@@ -212,6 +213,9 @@ namespace smpl
         int32_t width = 0;
         int32_t height = 0;
 
+        uint16_t getMaximumWidthAllowedByLayout();
+        uint16_t getMaximumHeightAllowedByLayout();
+
         /**
 		 * @brief Loads data from an Xml Attribute.
 		 * 		This allows a large list of attributes to be defined
@@ -277,6 +281,7 @@ namespace smpl
         virtual void render(SmartMemory<GuiManager> manager) = 0;
 
         virtual void onChildRemoved(SmartMemory<GuiItem> removedChild);
+        virtual void onFocusChanged(SmartMemory<GuiManager> manager, bool changedTo);
 
         SmartMemory<GuiItem> parent = nullptr;
         int type = 0;
@@ -285,6 +290,10 @@ namespace smpl
         friend GuiManager;
         int32_t trueX = 0;
         int32_t trueY = 0;
+        
+        //The maximum allowed with and height given by the previous layout
+        uint16_t currentLayoutMaxWidth = 0;
+        uint16_t currentLayoutMaxHeight = 0;
         
         void determineChangeFromLastTime();
         
@@ -306,6 +315,7 @@ namespace smpl
         bool overlapped = false;
         bool shouldReRender = true;
         bool visible = true;
+        bool oldFocus = false;
     };
 
     /**
@@ -337,6 +347,7 @@ namespace smpl
         
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+        virtual const RootClass* getClass();
 
         int contentWidth = 0;
         int contentHeight = 0;
@@ -358,6 +369,7 @@ namespace smpl
         
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+        virtual const RootClass* getClass();
 
     	void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
 		static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
@@ -397,6 +409,7 @@ namespace smpl
         
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+        virtual const RootClass* getClass();
         
         void addChild(SmartMemory<GuiItem> c);
         void removeChild(SmartMemory<GuiItem> c);
@@ -457,7 +470,7 @@ namespace smpl
         uint16_t maxHeight = 0xFFFF;
         uint16_t minWidth = 0;
         uint16_t minHeight = 0;
-
+        
         std::vector<SmartMemory<GuiItem>> children;
         
         std::vector<GRect> removedChildrenRect; //Just here for rendering purposes
@@ -489,6 +502,7 @@ namespace smpl
         
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+        virtual const RootClass* getClass();
 
         void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
         static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
@@ -512,11 +526,12 @@ namespace smpl
         static const bool DIRECTION_VERTICAL = false;
         static const bool DIRECTION_HORIZONTAL = true;
 
-        GuiLayoutList(bool direction = DIRECTION_VERTICAL, bool wrap = true);
+        GuiLayoutList(bool direction = DIRECTION_VERTICAL, bool wrap = false);
         ~GuiLayoutList();
         
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+        virtual const RootClass* getClass();
 
         void setDirection(bool d);
         void setWrap(bool w);
@@ -529,7 +544,7 @@ namespace smpl
 
     private:
         bool direction = DIRECTION_VERTICAL;
-        bool wrap = true;
+        bool wrap = false;
         
         void fixAlignmentAndLayout(int autoMarginWidth, int autoMarginHeight, int startIndex, int endIndex);
     };
@@ -557,6 +572,7 @@ namespace smpl
         
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+        virtual const RootClass* getClass();
 
         void setShowInnerGrid(bool v);
         void setNumberOfColumns(uint16_t c);
@@ -597,11 +613,15 @@ namespace smpl
         
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+        virtual const RootClass* getClass();
 
         void setOnClickFunction(std::function<void()> onClick);
         void setOnMouseInFunction(std::function<void()> onMouseIn);
         void setOnMouseOutFunction(std::function<void()> onMouseOut);
 
+        void setHoverColor(Color c);
+        void setPressedColor(Color c);
+        
         void addChild(SmartMemory<GuiItem> child);
         
         void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
@@ -630,6 +650,7 @@ namespace smpl
         
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+        virtual const RootClass* getClass();
 
         void setText(std::string s);
         std::string getText();
@@ -642,6 +663,9 @@ namespace smpl
         void increaseSelectIndex();
         void decreaseSelectIndex();
         void setSelectIndex(int index);
+        void setSelectIndex(int startIndex, int endIndex);
+        void setCaretSide(bool v);
+        bool getCaretSide();
         GRect getCaretBox();
 
         void setSelectable(bool s);
@@ -659,8 +683,10 @@ namespace smpl
         bool isSelectable = false;
         bool canWrap = true;
         bool selecting = false;
+        bool caretOnRight = true;
         int highlightStartIndex = -1;
         int highlightEndIndex = -1;
+        int startSelectIndex = -1;
         int maxWidth = -1;
         int maxHeight = -1;
         std::string text;
@@ -676,6 +702,7 @@ namespace smpl
         
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+        virtual const RootClass* getClass();
 
         void setSprite(SmartMemory<SpriteInterface> spr);
         void setColor(Color c);
@@ -718,6 +745,7 @@ namespace smpl
         
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+        virtual const RootClass* getClass();
 
         void addChild(SmartMemory<GuiItem> item);
         void setSurfaceInterface(SmartMemory<SurfaceInterface> s);
@@ -749,6 +777,7 @@ namespace smpl
 
         //Object and RootClass Stuff
 		static const RootClass globalClass;
+        virtual const RootClass* getClass();
 
         std::string getText();
         GuiText& getTextElement();
@@ -765,18 +794,43 @@ namespace smpl
     protected:
         void update(SmartMemory<GuiManager> manager);
         void render(SmartMemory<GuiManager> manager);
+        
+        virtual void onFocusChanged(SmartMemory<GuiManager> manager, bool changedTo);
 
     private:
         void keyboardInput();
         bool allowLineBreaks = false;
         bool textEmpty = true;
+        bool blink = false;
+        int counter = 30;
         std::string defaultText = "";
         GuiText textElement = GuiText();
     };
 
-    class GuiScrollBar : public GuiContent
+    class GuiScrollBar : public GuiLayoutFixed
     {
+    public:
+        GuiScrollBar();
+        ~GuiScrollBar();
 
+    	//Object and RootClass Stuff
+		static const RootClass globalClass;
+        virtual const RootClass* getClass();
+
+        void addChild(SmartMemory<GuiItem> child);
+        
+        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
+        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+    
+    protected:
+        void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
+        void update(SmartMemory<GuiManager> manager);
+
+    private:
+        int offsetX = 0;
+        int offsetY = 0;
+        GuiButton horizontalScrollButton;
+        GuiButton verticalScrollButton;
     };
 
     class GuiDatePicker : public GuiContent
@@ -797,6 +851,7 @@ namespace smpl
 
         //RootClass Stuff
         static const RootClass globalClass;
+        virtual const RootClass* getClass();
 
         /**
          * @brief Removes all objects from the GuiManager.
@@ -811,6 +866,7 @@ namespace smpl
         void addToDisposeList(SmartMemory<GuiItem> k);
         void setObjectInFocus(SmartMemory<GuiItem> k);
         bool getObjectInFocus(SmartMemory<GuiItem> k);
+        SmartMemory<GuiItem> getFocusObject();
 
         void setBackgroundColor(Color c);
 

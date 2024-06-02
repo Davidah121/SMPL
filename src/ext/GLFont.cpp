@@ -4,11 +4,14 @@
 
     namespace smpl
     {
-        const RootClass GLFont::globalClass = RootClass("GLFont", {"Font"});
+        const RootClass GLFont::globalClass = CREATE_ROOT_CLASS(GLFont, &Font::globalClass);
+        const RootClass* GLFont::getClass()
+        {
+            return &GLFont::globalClass;
+        }
 
         GLFont::GLFont(File f)
         {
-			setClass(GLFont::globalClass);
             BitmapFont k = BitmapFont(f);
             convertBitmapFont(k);
         }

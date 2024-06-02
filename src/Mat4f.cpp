@@ -3,11 +3,14 @@
 namespace smpl
 {
 		
-	const RootClass Mat4f::globalClass = RootClass("Mat4f", {"Matrix"});
+	const RootClass Mat4f::globalClass = CREATE_ROOT_CLASS(Mat4f, &Matrix::globalClass);
+	const RootClass* Mat4f::getClass()
+	{
+		return &Mat4f::globalClass;
+	}
 
 	Mat4f::Mat4f() : Matrix(4, 4)
 	{
-		setClass(globalClass);
 	}
 
 	Mat4f::Mat4f(double v1, double v2, double v3, double v4, 
@@ -15,7 +18,6 @@ namespace smpl
 			double v9, double v10, double v11, double v12, 
 			double v13, double v14, double v15, double v16) : Matrix(4, 4)
 	{
-		setClass(globalClass);
 		data[0] = v1;
 		data[1] = v2;
 		data[2] = v3;
@@ -40,13 +42,11 @@ namespace smpl
 	Mat4f::Mat4f(const Mat4f& c)
 	{
 		this->copy(c);
-		setClass(globalClass);
 	}
 
 	void Mat4f::operator=(const Mat4f& o)
 	{
 		this->copy(o);
-		setClass(globalClass);
 	}
 
 	Mat4f::~Mat4f()

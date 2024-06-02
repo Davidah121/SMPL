@@ -2,25 +2,14 @@
 
 namespace smpl
 {
-	const RootClass Object::globalClass = RootClass("Object", {""});
+	const RootClass Object::globalClass = CREATE_ROOT_CLASS(Object);
 
 	Object::Object()
 	{
-		myClass = globalClass;
 	}
 	
 	Object::~Object()
 	{
-
 	}
 
-	Class Object::getClass()
-	{
-		return myClass;
-	}
-
-	void Object::setClass(Class c)
-	{
-		myClass = c;
-	}
 } //NAMESPACE glib END

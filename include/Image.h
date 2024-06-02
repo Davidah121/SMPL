@@ -58,6 +58,8 @@ namespace smpl
 		 */
 		void operator=(const Image& other);
 
+		// Image(Image&& other);
+
 		/**
 		 * @brief Destroy the Image object
 		 * 		Deletes the array of pixels and the palette for the image.
@@ -73,6 +75,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Sets the Sampling Method used to get pixels that are not aligned.
@@ -394,6 +397,8 @@ namespace smpl
 		 */
 		void operator=(const HiResImage& other);
 
+		// HiResImage(HiResImage&& other);
+
 		/**
 		 * @brief Destroy the HiResImage object
 		 * 		Deletes the array of pixels and the palette for the image.
@@ -409,6 +414,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Sets the Sampling Method used to get pixels that are not aligned.

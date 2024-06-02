@@ -101,6 +101,7 @@ build $objDir/NewGui_GuiManager.o: buildToObject src/NewGui_GuiManager.cpp
 build $objDir/NewGui_GuiSprite.o: buildToObject src/NewGui_GuiSprite.cpp
 build $objDir/NewGui_GuiText.o: buildToObject src/NewGui_GuiText.cpp
 build $objDir/NewGui_GuiTextBox.o: buildToObject src/NewGui_GuiTextBox.cpp
+build $objDir/NewGui_Scrollbar.o: buildToObject src/NewGui_Scrollbar.cpp
 build $objDir/Object.o: buildToObject src/Object.cpp
 build $objDir/PolarCoordinate.o: buildToObject src/PolarCoordinate.cpp
 build $objDir/Quaternion.o: buildToObject src/Quaternion.cpp

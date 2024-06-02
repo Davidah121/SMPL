@@ -1,7 +1,14 @@
 #include "NewGui.h"
+#include "Input.h"
 
 namespace smpl
 {
+    const RootClass GuiItem::globalClass = CREATE_ROOT_CLASS(GuiItem, &Object::globalClass);
+    const RootClass* GuiItem::getClass()
+	{
+		return &GuiItem::globalClass;
+	}
+
     GuiItem::GuiItem()
     {
 
@@ -34,6 +41,8 @@ namespace smpl
         trueY = 0;
         width = 0;
         height = 0;
+        // currentLayoutMaxWidth = 0;
+        // currentLayoutMaxHeight = 0;
     }
 
     void GuiItem::preUpdate()
@@ -54,6 +63,9 @@ namespace smpl
     
     void GuiItem::doLayoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight)
     {
+        currentLayoutMaxWidth = maximumWidth;
+        currentLayoutMaxHeight = maximumHeight;
+
         if(getVisible())
             layoutUpdate(offX, offY, maximumWidth, maximumHeight);
         else
@@ -62,9 +74,37 @@ namespace smpl
     
     void GuiItem::doUpdate(SmartMemory<GuiManager> manager)
     {
+        int mouseX = 0;
+        int mouseY = 0;
+        GuiManager* rawGPointer = manager.getPointer();
+
         fixPosition();
         if(getVisible())
+        {
+            if(rawGPointer != nullptr)
+            {
+                //do focused stuff
+                if(Input::getMousePressed(Input::LEFT_MOUSE_BUTTON))
+                {
+                    mouseX = rawGPointer->getMouseX();
+                    mouseY = rawGPointer->getMouseY();
+                    if(isColliding(mouseX, mouseY))
+                    {
+                        setFocused(manager, true);
+                    }
+                    else
+                    {
+                        setFocused(manager, false);
+                    }
+                }
+                if(oldFocus != getFocused(manager))
+                {
+                    onFocusChanged(manager, !oldFocus);
+                    oldFocus = !oldFocus;
+                }
+            }
             update(manager);
+        }
     }
 
     void GuiItem::doPreUpdate()
@@ -98,6 +138,7 @@ namespace smpl
             }
             
             smpl::GraphicsInterface::setClippingRect(Box2D(newDrawnArea.left, newDrawnArea.top, newDrawnArea.right, newDrawnArea.bottom));
+
             render(manager);
             shouldReRender = false;
         }
@@ -271,6 +312,11 @@ namespace smpl
         //nothing
     }
 
+    void GuiItem::onFocusChanged(SmartMemory<GuiManager> manager, bool changedTo)
+    {
+        //nothing
+    }
+
     bool GuiItem::getFocused(SmartMemory<GuiManager> manager)
     {
         if(manager.getPointer() != nullptr)
@@ -324,6 +370,16 @@ namespace smpl
     std::string GuiItem::getNameID()
     {
         return nameID;
+    }
+    
+    uint16_t GuiItem::getMaximumWidthAllowedByLayout()
+    {
+        return currentLayoutMaxWidth;
+    }
+
+    uint16_t GuiItem::getMaximumHeightAllowedByLayout()
+    {
+        return currentLayoutMaxHeight;
     }
 
     void GuiItem::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)

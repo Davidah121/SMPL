@@ -59,6 +59,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Returns a pointer to the start of the specified row

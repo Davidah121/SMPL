@@ -11,11 +11,14 @@ namespace smpl
 		
 	#pragma region VectorShape
 
-	const RootClass VectorShape::globalClass = RootClass("VectorShape", {"Object"});
+	const RootClass VectorShape::globalClass = CREATE_ROOT_CLASS(VectorShape, &Object::globalClass);
+    const RootClass* VectorShape::getClass()
+	{
+		return &VectorShape::globalClass;
+	}
 
 	VectorShape::VectorShape()
 	{
-		setClass(globalClass);
 		transform = Mat3f::getIdentity();
 	}
 
@@ -26,12 +29,12 @@ namespace smpl
 
 	void VectorShape::draw(Image* buffer, int globalWidth, int globalHeight)
 	{
-		StringTools::println("Basic one");
+		// StringTools::println("Basic one");
 	}
 
 	void VectorShape::drawStroke(Image* buffer, int globalWidth, int globalHeight)
 	{
-		StringTools::println("Basic one");
+		// StringTools::println("Basic one");
 	}
 
 	void VectorShape::setFillMethod(bool value)

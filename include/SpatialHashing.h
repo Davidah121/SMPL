@@ -8,7 +8,7 @@ namespace smpl
     class SpatialHashing;
 
     template<typename T>
-    class SpatialHashingObject : public Object
+    class SpatialHashingObject
     {
     public:
         SpatialHashingObject(T data, Shape shape)
@@ -46,7 +46,7 @@ namespace smpl
     };
 
     template<typename T>
-    class SpatialHashing : public Object
+    class SpatialHashing
     {
     public:
         SpatialHashing(int xGrids, int yGrids, double width, double height)

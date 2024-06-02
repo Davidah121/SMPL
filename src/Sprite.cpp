@@ -3,11 +3,14 @@
 namespace smpl
 {
 		
-	const RootClass Sprite::globalClass = RootClass("Sprite", {"Object"});
-	
+	const RootClass Sprite::globalClass = CREATE_ROOT_CLASS(Sprite, &Object::globalClass);
+    const RootClass* Sprite::getClass()
+	{
+		return &Sprite::globalClass;
+	}
+
 	Sprite::Sprite()
 	{
-		setClass(globalClass);
 	}
 
 	Sprite::~Sprite()
@@ -27,7 +30,6 @@ namespace smpl
 
 	void Sprite::copy(const Sprite& o)
 	{
-		setClass(globalClass);
 		delayTimeForFrame = o.delayTimeForFrame;
 		loops = o.loops;
 

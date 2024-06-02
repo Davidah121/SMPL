@@ -139,10 +139,6 @@ public:
      */
     SmartMemory()
     {
-        hashValue = nullptr;
-        isArray = false;
-        deleteRights = false;
-        deleteOnLast = false;
     }
 
     /**
@@ -236,7 +232,41 @@ public:
     {
         return SmartMemory(data, array, false, true);
     }
-    
+
+    /**
+     * @brief Move Constructor
+     * 
+     * @param other 
+     */
+    SmartMemory(SmartMemory<T>&& other) noexcept
+    {
+        deletePointer();
+
+        isArray = other.isArray;
+        deleteOnLast = other.deleteOnLast;
+        deleteRights = other.deleteRights;
+        hashValue = other.hashValue;
+
+        other.hashValue = nullptr;
+    }
+
+    /**
+     * @brief Move Assign a new SmartMemory object from another SmartMemory object.
+     * 
+     * @param other 
+     */
+    void operator=(SmartMemory<T>&& other) noexcept
+    {
+        deletePointer();
+
+        isArray = other.isArray;
+        deleteOnLast = other.deleteOnLast;
+        deleteRights = other.deleteRights;
+        hashValue = other.hashValue;
+
+        other.hashValue = nullptr;
+    }
+
     /**
      * @brief Construct a new SmartMemory object from another SmartMemory object.
      *      It will not have delete rights.
@@ -266,7 +296,7 @@ public:
     }
 
     /**
-     * @brief Construct a new SmartMemory object from another SmartMemory object.
+     * @brief Copy Assign a new SmartMemory object from another SmartMemory object.
      *      It will not have delete rights.
      *      If the object originally stored a pointer and had delete rights, it will delete its pointer.
      * 

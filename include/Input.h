@@ -22,7 +22,7 @@ namespace smpl
 		static const int KEY_PAGEUP = 0x21 | NEGATIVE;
 		static const int KEY_PAGEDOWN = 0x22 | NEGATIVE;
 
-		static const int KEY_END= 0x23 | NEGATIVE;
+		static const int KEY_END = 0x23 | NEGATIVE;
 		static const int KEY_HOME = 0x24 | NEGATIVE;
 		static const int KEY_LEFT = 0x25 | NEGATIVE;
 		static const int KEY_UP = 0x26 | NEGATIVE;

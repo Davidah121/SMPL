@@ -32,6 +32,7 @@ namespace smpl
         ~Quaternion();
 
         static const RootClass globalClass;
+        virtual const RootClass* getClass();
         std::unordered_map<std::string, SerializedData> getSerializedVariables();
 
         Quaternion operator*(double val);

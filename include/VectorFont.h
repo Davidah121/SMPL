@@ -28,6 +28,7 @@ namespace smpl
 
         //Object and RootClass Stuff
         static const RootClass globalClass;
+        virtual const RootClass* getClass();
 
         /**
          * @brief Loads a vector font from a valid file
@@ -65,8 +66,8 @@ namespace smpl
         Image* getImage(size_t index);
     private:
 
-        bool loadSVGFont(File file);
-        bool loadOTFFont(File file);
+        bool loadSVGFont(File file); //TODO: Re-Write this
+        bool loadOTFFont(File file); //TODO: Fix
 
         //FontCharInfo should have a direct 1-to-1 mapping to fontSprite to avoid
         //saving the sprite index information and stuff.

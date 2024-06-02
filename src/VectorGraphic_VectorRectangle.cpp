@@ -10,11 +10,14 @@ namespace smpl
 		
 	#pragma region VectorRectangle
 
-	const RootClass VectorRectangle::globalClass = RootClass("VectorRectangle", {"VectorShape"});
+	const RootClass VectorRectangle::globalClass = CREATE_ROOT_CLASS(VectorRectangle, &VectorShape::globalClass);
+    const RootClass* VectorRectangle::getClass()
+	{
+		return &VectorRectangle::globalClass;
+	}
 
 	VectorRectangle::VectorRectangle() : VectorShape()
 	{
-		setClass(globalClass);
 	}
 
 	VectorRectangle::~VectorRectangle()

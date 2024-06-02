@@ -25,6 +25,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Set the Position of the shape.
@@ -113,6 +114,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Adds a shape to the list.
@@ -183,6 +185,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Generates the bounding radius for the point.
@@ -223,6 +226,7 @@ namespace smpl
 		
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Set the Left Bound of the AABB
@@ -359,6 +363,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Generates the bounding radius for the circle.
@@ -432,6 +437,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Generates the bounding radius of the Ellipse.
@@ -490,6 +496,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Sets the first point of the line
@@ -599,6 +606,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Sets the first vertex of the triangle
@@ -709,6 +717,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Adds a 2D triangle to the list of triangles in the shape.
@@ -762,6 +771,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Adds a vertex to the polygon.
@@ -961,6 +971,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Sets the first vertex of the triangle
@@ -1081,6 +1092,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Adds a 3D triangle to the list of triangles in the shape.

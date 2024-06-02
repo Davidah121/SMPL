@@ -4,24 +4,25 @@ namespace smpl
 {
 
 	#pragma region ClassStuff
-	const RootClass ComplexNumber::globalClass = RootClass("ComplexNumber", {"Object"});
+	const RootClass ComplexNumber::globalClass = CREATE_ROOT_CLASS(ComplexNumber, &Object::globalClass);
+	const RootClass* ComplexNumber::getClass()
+	{
+		return &ComplexNumber::globalClass;
+	}
 	#pragma endregion
 
 	ComplexNumber::ComplexNumber()
 	{
-		setClass(globalClass);
 	}
 
 	ComplexNumber::ComplexNumber(double real, double imaginary)
 	{
-		setClass(globalClass);
 		this->real = real;
 		this->imaginary = imaginary;
 	}
 
 	ComplexNumber::ComplexNumber(const ComplexNumber& other)
 	{
-		setClass(globalClass);
 		real = other.real;
 		imaginary = other.imaginary;
 	}

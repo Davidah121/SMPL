@@ -236,228 +236,198 @@ namespace smpl
 		return output;
 	}
 
+	// void Compression::getLZ77RefPairsCSA(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel)
+	// {
+	// 	int maxDistance = 1<<15;
+
+	// 	size_t index = 0;
+    // 	size_t endIndex = size;
+
+	// 	ChainedSuffixAutomaton SA = ChainedSuffixAutomaton(32768, 4096, 259);
+	// 	int startLoc = 0;
+
+	// 	size_t totalOutputSize = 0;
+	// 	size_t wrongAdd = 0;
+	// 	size_t refs = 0;
+		
+	// 	SA.resetSearch();
+	// 	while(index < endIndex)
+	// 	{
+	// 		bool newMatch = SA.searchNext(data[index]);
+	// 		if(!newMatch || index == endIndex-1)
+	// 		{
+	// 			bool includedCurrByte = true;
+	// 			SearchState pairStuff = SA.extractSearch();
+	// 			SA.resetSearch();
+
+	// 			if(pairStuff.length >= 3)
+	// 			{
+	// 				int backwardsDis = startLoc - pairStuff.start;
+	// 				outputData->push_back({false, pairStuff.length, backwardsDis});
+	// 				if(pairStuff.length != 258)
+	// 					includedCurrByte = false;
+					
+	// 				startLoc += pairStuff.length;
+	// 				totalOutputSize += pairStuff.length;
+	// 				refs += pairStuff.length;
+					
+	// 				if(index == endIndex-1)
+	// 					break;
+	// 			}
+	// 			else
+	// 			{
+	// 				if(pairStuff.length == 0)
+	// 				{
+	// 					includedCurrByte = true;
+	// 					outputData->push_back({true, data[index], 0});
+	// 					startLoc++;
+	// 					totalOutputSize++;
+						
+	// 					SA.extend(data[index]);
+	// 					index++;
+	// 				}
+	// 				else
+	// 				{
+	// 					//found a match of length 1 or 2.
+	// 					//If 1, no problem. If 2, we probably added it to the SA and need to reverse a bit.
+
+	// 					includedCurrByte = false;
+	// 					outputData->push_back({true, data[index-pairStuff.length], 0});
+	// 					startLoc++;
+	// 					totalOutputSize++;
+
+	// 					// if(pairStuff.second == 2)
+	// 					// {
+	// 					// 	outputData->push_back({true, data[index-pairStuff.second+1], 0});
+	// 					// 	startLoc++;
+	// 					// 	totalOutputSize++;
+	// 					// }
+
+	// 					//We need special care if we have already added the data to the SA to avoid making
+	// 					//patterns that don't exist yet. For now, see what it does.
+	// 					if(pairStuff.length == 2)
+	// 						index--; //go back a character and start pattern matching again.
+	// 				}
+	// 			}
+	// 		}
+	// 		else
+	// 		{
+	// 			SA.extend(data[index]);
+	// 			index++;
+	// 		}
+	// 	}
+		
+	// 	StringTools::println("CSA: %llu", totalOutputSize);
+	// 	StringTools::println("CSA REFS: %llu", refs);
+	// 	StringTools::println("CSA WRONG ADD: %llu", wrongAdd);
+	// }
+
 	void Compression::getLZ77RefPairsCSA(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel)
 	{
-		int maxDistance = 1<<15;
-
+		int maxDistance = 1 << 15;
+		int chains = 2;
+		if(compressionLevel < 4 && compressionLevel >= 0)
+			maxDistance = 1 << (12+compressionLevel);
+		if(compressionLevel >= 4 && compressionLevel <=9)
+			chains = compressionLevel-1;
+		if(compressionLevel >= 9)
+			chains = 8;
+		
 		size_t index = 0;
-    	size_t endIndex = size;
+		size_t endIndex = size;
 
-		ChainedSuffixAutomaton SA = ChainedSuffixAutomaton(32768, 4096, 259);
+		unsigned char delayedBuffer[8];
+		int delayedBufferSize = 0;
+		int startOfQueue = 0;
+		int currQueueIndex = 0;
+
+		ChainedSuffixAutomaton csa = ChainedSuffixAutomaton(maxDistance, 3, 255);
 		int startLoc = 0;
 
-		size_t totalOutputSize = 0;
-		size_t wrongAdd = 0;
-		size_t refs = 0;
-		
-		SA.resetSearch();
-		while(index < endIndex)
-		{
-			bool newMatch = SA.searchNext(data[index]);
-			if(!newMatch || index == endIndex-1)
-			{
-				bool includedCurrByte = true;
-				SearchState pairStuff = SA.extractSearch();
-				SA.resetSearch();
-
-				if(pairStuff.length >= 3)
-				{
-					int backwardsDis = startLoc - pairStuff.start;
-					outputData->push_back({false, pairStuff.length, backwardsDis});
-					if(pairStuff.length != 258)
-						includedCurrByte = false;
-					
-					startLoc += pairStuff.length;
-					totalOutputSize += pairStuff.length;
-					refs += pairStuff.length;
-					
-					if(index == endIndex-1)
-						break;
-				}
-				else
-				{
-					if(pairStuff.length == 0)
-					{
-						includedCurrByte = true;
-						outputData->push_back({true, data[index], 0});
-						startLoc++;
-						totalOutputSize++;
-						
-						SA.extend(data[index]);
-						index++;
-					}
-					else
-					{
-						//found a match of length 1 or 2.
-						//If 1, no problem. If 2, we probably added it to the SA and need to reverse a bit.
-
-						includedCurrByte = false;
-						outputData->push_back({true, data[index-pairStuff.length], 0});
-						startLoc++;
-						totalOutputSize++;
-
-						// if(pairStuff.second == 2)
-						// {
-						// 	outputData->push_back({true, data[index-pairStuff.second+1], 0});
-						// 	startLoc++;
-						// 	totalOutputSize++;
-						// }
-
-						//We need special care if we have already added the data to the SA to avoid making
-						//patterns that don't exist yet. For now, see what it does.
-						if(pairStuff.length == 2)
-							index--; //go back a character and start pattern matching again.
-					}
-				}
-			}
-			else
-			{
-				SA.extend(data[index]);
-				index++;
-			}
-		}
-		
-		StringTools::println("CSA: %llu", totalOutputSize);
-		StringTools::println("CSA REFS: %llu", refs);
-		StringTools::println("CSA WRONG ADD: %llu", wrongAdd);
-	}
-
-	void Compression::getLZ77RefPairsCSATest(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel)
-	{
-		int maxDistance = 1<<15;
-
-		size_t index = 0;
-    	size_t endIndex = size;
-
-		ChainedSuffixAutomaton csa = ChainedSuffixAutomaton(32768, 2048, 259);
-		int startLoc = 0;
-
-		size_t totalOutputSize = 0;
-		size_t refs = 0;
-		size_t lits = 0;
-		size_t size1Matches = 0;
-		size_t size2Matches = 0;
-		size_t couldBeLarger = 0;
-		size_t specialCase = 0;
-		size_t smallMatches = 0;
-		bool checkForRecover = false;
-		int resetIndex = -1;
-		SearchState lastState;
 		SearchState searchState;
 		csa.resetSearch();
 
-		while(index < endIndex)
+		while (index < endIndex)
 		{
-			//
-			bool foundMatch = csa.searchNext(data[index]);
+			if (delayedBufferSize < 3)
+			{
+				int endOfQueue = (delayedBufferSize + startOfQueue) % 8;
+
+				delayedBuffer[endOfQueue] = data[index];
+				delayedBufferSize++;
+				index++;
+			}
+			unsigned char currCharacter = delayedBuffer[currQueueIndex];
+			currQueueIndex = (currQueueIndex + 1) % 8;
+
+			bool foundMatch = csa.searchNext(currCharacter);
 			searchState = csa.extractSearch();
 
-			if(foundMatch && searchState.length != 258)
+			if (foundMatch && searchState.length != 258)
 			{
-				resetIndex = csa.extend(data[index]); //need to know if SA that is apart of the current best match has been reset. If so, if the next match is not greater, use the last one.
-				index++;
+				if (searchState.length >= 3)
+				{
+					while (delayedBufferSize > 0)
+					{
+						csa.extend(delayedBuffer[startOfQueue]);
+						startOfQueue = (startOfQueue + 1) % 8;
+						delayedBufferSize--;
+					}
+					currQueueIndex = startOfQueue;
+				}
 			}
 			else
 			{
 				//if the search length >= 258 && foundMatch, store match and extend.
 				//else, just store match.
+				//checkForRecover = false;
 				csa.resetSearch();
 				int backwardsDis = startLoc - searchState.start;
-				
-				if(searchState.length == 0 && !foundMatch)
-				{
-					specialCase++;
-					outputData->push_back({true, data[index], 0});
-					startLoc++;
-					totalOutputSize++;
-					lits++;
-					csa.extend(data[index]);
-					index++;
-				}
-				else if(searchState.length > 0)
+
+				if (searchState.length >= 3)
 				{
 					//manually check for data past the length given for longer match
-					int tempIndex = searchState.length;
-					int origIndex = index;
-					while(tempIndex < 258 && origIndex+tempIndex < endIndex)
-					{
-						if(data[origIndex+tempIndex] != data[searchState.start+tempIndex])
-						{
-							break;
-						}
-						else
-						{
-							csa.extend(data[origIndex+tempIndex]);
-							index++;
-						}
-						tempIndex++;
-					}
-					
+					outputData->push_back({ false, searchState.length, backwardsDis });
+					startLoc += searchState.length;
 
-					int finalLength = tempIndex;
-					outputData->push_back({false, finalLength, backwardsDis});
-					
-					startLoc+=finalLength;
-					totalOutputSize+=finalLength;
-
-					if(finalLength >= 3)
-						refs++;
-					else
+					//if we found this match, add this too. Otherwise, delay it.
+					if (foundMatch)
 					{
-						smallMatches++;
-						if(finalLength==1)
-							size1Matches++;
-						else if(finalLength==2)
-							size2Matches++;
-						
-						if(data[index+1] == data[searchState.start+finalLength+1])
-							couldBeLarger++;
-						
-						lits += finalLength;
+						csa.extend(delayedBuffer[startOfQueue]);
+						startOfQueue = (startOfQueue + 1) % 8;
+						delayedBufferSize--;
 					}
+				}
+				else
+				{
+					//only add 1
+					outputData->push_back({ true, delayedBuffer[startOfQueue], 0 });
+					startLoc++;
 
-					if(foundMatch && searchState.length == 258)
-					{
-						csa.extend(data[index]);
-						index++;
-					}
-					
+					csa.extend(delayedBuffer[startOfQueue]);
+					startOfQueue = (startOfQueue + 1) % 8;
+					delayedBufferSize--;
 				}
 
-				// if((foundMatch && searchState.length >= 258) || searchState.length == 0)
-				// {
-				// 	csa.extend(data[index]);
-				// 	index++;
-				// }
+				currQueueIndex = startOfQueue;
 			}
+
 		}
 
 		//should add remaining stuff
 		searchState = csa.extractSearch();
 		int backwardsDis = startLoc - searchState.start;
-		if(searchState.length > 0)
+		if (searchState.length >= 3)
 		{
-			outputData->push_back({false, searchState.length, backwardsDis});
-			startLoc+=searchState.length;
-			totalOutputSize+=searchState.length;
-			if(searchState.length >= 3)
-				refs++;
-			else
-			{
-				smallMatches++;
-				lits += searchState.length;
-			}
+			outputData->push_back({ false, searchState.length, backwardsDis });
 		}
-		
-		
-		StringTools::println("CSA: %llu", totalOutputSize);
-		StringTools::println("CSA LITS: %llu", lits);
-		StringTools::println("CSA REFS: %llu", refs);
-		StringTools::println("CSA SPECIAL CASE: %llu", specialCase);
-		StringTools::println("CSA SMALL MATCHES: %llu", smallMatches);
-		StringTools::println("CSA size1Matches: %llu", size1Matches);
-		StringTools::println("CSA size2Matches: %llu", size2Matches);
-		StringTools::println("CSA couldBeLarger: %llu", couldBeLarger);
+		while (delayedBufferSize > 0)
+		{
+			unsigned char c = delayedBuffer[startOfQueue];
+			startOfQueue = (startOfQueue + 1) % 8;
+			delayedBufferSize--;
+			outputData->push_back({ true, c, 0 });
+		}
 	}
 
 	void Compression::getLZ77RefPairsCHash(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel)
@@ -494,7 +464,7 @@ namespace smpl
 				break;
 		}
 
-		maxDistance = (1<<15) - 4096 - 258;
+		// maxDistance = (1<<15) - 4096 - 258;
 
 		if(data == nullptr || outputData == nullptr)
 		{

@@ -8,6 +8,7 @@
 #include "FrequencyTable.h"
 #include "SimpleHashMap.h"
 #include "GeneralExceptions.h"
+#include "SuffixAutomaton.h"
 
 namespace smpl
 {
@@ -325,20 +326,33 @@ namespace smpl
 		void addDataCompression(unsigned char* data, int length);
 		void addDataDecompression(unsigned char* data, int length);
 
+		bool getBitFromLeftovers();
+		int getBitsFromLeftoversAndRemove(int size);
+		void addByteToLeftovers(unsigned char v);
+		void removeFlagBitLeftovers();
+
 		bool mode;
 
+		size_t startLoc = 0;
 		size_t offset = 0;
 		unsigned int maxBackDist = 32768;
 		unsigned int maxLength = 255;
 		unsigned short backBuffLocation = 0;
 
-		SimpleHashMap<int, int> map;
-		std::vector<unsigned char> lzBuffer = std::vector<unsigned char>();
+		unsigned char delayedBuffer[8];
+		int delayedBufferSize = 0;
+		int startOfQueue = 0;
+		int currQueueIndex = 0;
+		
+		SearchState lastState;
+		SearchState searchState;
+
+		ChainedSuffixAutomaton* csa = nullptr;
 		std::vector<unsigned char> backBuffer = std::vector<unsigned char>();
 
 		BinarySet buffer = BinarySet();
-		BinarySet leftovers = BinarySet();
-		
+		unsigned int leftoversInt = 0;
+		unsigned int leftoversSize = 0;
 	};
 
 	class Compression
@@ -978,7 +992,7 @@ namespace smpl
 		 * 		This one does not support any levels. It is equivalent to level 7.
 		 */
 		static void getLZ77RefPairsCSA(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel);
-		static void getLZ77RefPairsCSATest(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel);
+		// static void getLZ77RefPairsCSATest(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel);
 
 		/**
 		 * @brief Compresses all of the data as LengthPairs which can then be processed in another corresponding

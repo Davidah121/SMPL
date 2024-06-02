@@ -5,42 +5,25 @@
 namespace smpl
 {
 		
-	const RootClass Vec4f::globalClass = RootClass("Vec4f", {"SerializedObject"});
-
+	const RootClass Vec4f::globalClass = CREATE_ROOT_CLASS(Vec4f, &SerializedObject::globalClass);
+    const RootClass* Vec4f::getClass()
+	{
+		return &Vec4f::globalClass;
+	}
 	Vec4f::Vec4f()
 	{
-		setClass(globalClass);
 	}
 
 	Vec4f::Vec4f(double x, double y, double z, double w)
 	{
-		setClass(globalClass);
 		this->x = x;
 		this->y = y;
 		this->z = z;
 		this->w = w;
 	}
 
-	Vec4f::Vec4f(const Vec4f& other)
-	{
-		setClass(globalClass);
-		x = other.x;
-		y = other.y;
-		z = other.z;
-		w = other.w;
-	}
-
-	void Vec4f::operator=(const Vec4f& other)
-	{
-		x = other.x;
-		y = other.y;
-		z = other.z;
-		w = other.w;
-	}
-
 	Vec4f::Vec4f(Vec3f other, double w)
 	{
-		setClass(globalClass);
 		this->x = other.x;
 		this->y = other.y;
 		this->z = other.z;
@@ -49,7 +32,6 @@ namespace smpl
 
 	Vec4f::Vec4f(Vec2f other, double z, double w)
 	{
-		setClass(globalClass);
 		this->x = other.x;
 		this->y = other.y;
 		this->z = z;

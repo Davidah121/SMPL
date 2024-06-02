@@ -2,6 +2,7 @@
 #include "MathExt.h"
 #include "File.h"
 #include "Shape.h"
+#include "SimpleFile.h"
 
 namespace smpl
 {
@@ -33,6 +34,7 @@ namespace smpl
 
         //Object and RootClass Stuff
         static const RootClass globalClass;
+        virtual const RootClass* getClass();
 
         static const unsigned char TYPE_INT = 0;
         static const unsigned char TYPE_FLOAT = 1;

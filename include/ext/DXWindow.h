@@ -87,6 +87,7 @@
 
 			//Object and RootClass Stuff
 			static const RootClass globalClass;
+			virtual const RootClass* getClass();
 
 			/**
 			 * @brief Sets the swap interval for vsync. 

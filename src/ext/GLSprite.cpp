@@ -3,14 +3,15 @@
 #ifdef USE_OPENGL
 	namespace smpl
 	{
-			
-		const RootClass GLSprite::globalClass = RootClass("GLSprite", {"Object"});
+		const RootClass GLSprite::globalClass = CREATE_ROOT_CLASS(GLSprite, &Object::globalClass);
+        const RootClass* GLSprite::getClass()
+        {
+            return &GLSprite::globalClass;
+        }
 
 		GLSprite::GLSprite()
 		{
-			setClass(GLSprite::globalClass);
 		}
-
 
 		GLSprite::~GLSprite()
 		{
@@ -29,14 +30,12 @@
 
 		void GLSprite::copy(const GLSprite& o)
 		{
-			setClass(GLSprite::globalClass);
 			delayTimeForFrame = o.delayTimeForFrame;
 			images = o.images;
 		}
 
 		GLSprite::GLSprite(Sprite& o)
 		{
-			setClass(GLSprite::globalClass);
 			for(size_t i=0; i<o.getSize(); i++)
 			{
 				images.push_back( new GLTexture(o.getImage(i)) );

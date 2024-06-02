@@ -622,7 +622,7 @@ namespace smpl
 				if(block<tSize)
 				{
 					info[block].clear();
-					threads[ block%tSize ] = std::thread(getLZ77RefPairsCHash, nData, nSize, &info[block], compressionLevel);
+					threads[ block%tSize ] = std::thread(getLZ77RefPairsCSA, nData, nSize, &info[block], compressionLevel);
 				}
 				else
 				{
@@ -630,7 +630,7 @@ namespace smpl
 						threads[block%tSize].join();
 
 					info[block].clear();
-					threads[ block%tSize ] = std::thread(getLZ77RefPairsCHash, nData, nSize, &info[block], compressionLevel);
+					threads[ block%tSize ] = std::thread(getLZ77RefPairsCSA, nData, nSize, &info[block], compressionLevel);
 				}
 			}
 
@@ -664,7 +664,9 @@ namespace smpl
 		else
 		{
 			std::vector<lengthPair> info = std::vector<lengthPair>();
-			getLZ77RefPairsCHash(data, size, &info, compressionLevel);
+			getLZ77RefPairsCSA(data, size, &info, compressionLevel);
+			// getLZ77RefPairsCHash(data, size, &info, compressionLevel);
+			
 			refPairToDeflateBlocks(&info, &bin, customTable, true);
 		}
 

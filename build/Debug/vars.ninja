@@ -3,5 +3,5 @@ objDir = ./bin/Debug/obj
 compiler = cmd /c clang++ 
 CXXFLAGS = -std=c++17 -march=skylake
 DEFINES = -D OPTI=0 -D USE_OPENSSL
-OPTIONS = -c -pipe -g -Wno-unused-command-line-argument
+OPTIONS = -c -pipe -g -Wno-unused-command-line-argument -fsanitize=address
 compilerFlags = $OPTIONS $CXXFLAGS $DEFINES

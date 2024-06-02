@@ -236,7 +236,7 @@ namespace smpl
 	{
 		try
 		{
-			std::filesystem::copy(oldName, newName);
+			std::filesystem::copy(oldName, newName, std::filesystem::copy_options::overwrite_existing);
 		}
 		catch(std::exception e)
 		{

@@ -2,6 +2,12 @@
 
 namespace smpl
 {
+    const RootClass GuiLayoutFixed::globalClass = CREATE_ROOT_CLASS(GuiLayoutFixed, &GuiLayout::globalClass);
+    const RootClass* GuiLayoutFixed::getClass()
+	{
+		return &GuiLayoutFixed::globalClass;
+	}
+
     GuiLayoutFixed::GuiLayoutFixed() : GuiLayout()
     {
 
@@ -70,10 +76,10 @@ namespace smpl
 
         if(children.size() == 0)
         {
-            x = 0;
-            y = 0;
-            width = 0;
-            height = 0;
+            // x = 0;
+            // y = 0;
+            // width = 0;
+            // height = 0;
             return;
         }
 

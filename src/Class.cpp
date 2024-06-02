@@ -1,18 +1,37 @@
 #include "Class.h"
 #include <iostream>
 
-#pragma region CLASS
+#ifdef _unix_
+#include <cstdlib>
+#include <cxxabi.h>
+#endif
+
+
 
 namespace smpl
 {
-	RootClass::RootClass(std::string name, std::unordered_set<std::string> parentClassNames)
+	std::string demangleClassName(std::string name)
 	{
-		this->name = name;
-		this->parentClassesByName = parentClassNames;
-		if(name != "")
-		{
-			ClassMaster::addClass(this);
-		}
+		#ifdef _unix_
+		std::string finalName = "";
+		int status = 0;
+		char* realName = abi::__cxa_demagle(name.c_str(), 0, 0, &status);
+		finalName = realName;
+		std::free(realName);
+		return finalName;
+		#endif
+		return name;
+	}
+
+	RootClass::RootClass(std::string name, int sizeOfClass, std::unordered_set<const RootClass*> parentClassNames)
+	{
+		this->name = demangleClassName(name);
+		this->parentClasses = parentClassNames;
+		this->sizeOfClass = sizeOfClass;
+		if(!name.empty())
+			id = ClassMaster::addClass(this);
+		else
+			id = -1;
 	}
 
 	RootClass::~RootClass()
@@ -30,74 +49,38 @@ namespace smpl
 		return name;
 	}
 
-	std::unordered_set<std::string> RootClass::getListOfParents() const
+	std::unordered_set<const RootClass*> RootClass::getListOfParents() const
 	{
-		return parentClassesByName;
-	}
-
-
-	Class::Class(const RootClass& rootClass)
-	{
-		this->classID = rootClass.getID();
+		return parentClasses;
 	}
 	
-	Class::Class()
+	bool RootClass::isDerivedFrom(const RootClass* baseClass) const
 	{
+		if(baseClass == nullptr) //invalid pointer
+			return false;
+		if(baseClass->getID() == baseClass->getID()) //same class
+			return true;
 		
-	}
+		for(const RootClass* parent : parentClasses)
+		{
+			//check if any of these
+			if(parent == baseClass)
+				return true;
+			else
+			{
+				//check their parents
+				if(parent->isDerivedFrom(baseClass))
+					return true;
+			}
+		}
 
-	Class::~Class()
-	{
-
-	}
-
-	std::string Class::getClassName() const
-	{
-		const RootClass* rootClass = ClassMaster::getRootClass(classID);
-		if(rootClass != nullptr)
-			return rootClass->getName();
-		return "";
-	}
-
-	bool Class::operator==(const Class other) const
-	{
-		return classID == other.classID;
+		return false;
 	}
 	
-	bool Class::operator!=(const Class other) const
+	int RootClass::getSizeOfClass() const
 	{
-		return classID != other.classID;
+		return sizeOfClass;
 	}
-
-	bool Class::operator==(const RootClass& other) const
-	{
-		return classID == other.getID();
-	}
-	
-	bool Class::operator!=(const RootClass& other) const
-	{
-		return classID != other.getID();
-	}
-	
-	int Class::getClassID()
-	{
-		return classID;
-	}
-	
-	const std::unordered_set<std::string> Class::getParentClasses()
-	{
-		const RootClass* rootClass = ClassMaster::getRootClass(classID);
-		if(rootClass != nullptr)
-			return rootClass->getListOfParents();
-		return {};
-	}
-
-	const RootClass* Class::getRootClass()
-	{
-		return ClassMaster::getRootClass(classID);
-	}
-
-	#pragma endregion
 
 	#pragma region CLASS_MASTER
 	ClassMaster* ClassMaster::singleton = nullptr;

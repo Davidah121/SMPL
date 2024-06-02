@@ -14,7 +14,11 @@
 		int SimpleWindow::screenWidth = System::getDesktopWidth();
 		int SimpleWindow::screenHeight = System::getDesktopHeight();
 
-		const RootClass SimpleWindow::globalClass = RootClass("SimpleWindow", {"Object"});
+		const RootClass SimpleWindow::globalClass = CREATE_ROOT_CLASS(SimpleWindow, &Object::globalClass);
+		const RootClass* SimpleWindow::getClass()
+		{
+			return &SimpleWindow::globalClass;
+		}
 
 		SimpleWindow* SimpleWindow::getWindowByHandle(size_t handle)
 		{
@@ -286,7 +290,7 @@
 					case WM_CHAR:
 						if(!currentWindow->getAllowKeyInput())
 							return 0;
-						if(currentWindow->internalCharValFunction != nullptr)
+						if(currentWindow->internalCharValFunction != nullptr && wparam >= 0x20)
 							currentWindow->internalCharValFunction(currentWindow, wparam, lparam);
 						break;
 					case WM_KEYDOWN:
@@ -302,7 +306,12 @@
 						{
 							//Exceptions. These keys are not apart of WM_CHAR but are useful when editing text.
 							if(currentWindow->internalCharValFunction != nullptr)
-								currentWindow->internalCharValFunction(currentWindow, wparam | Input::NEGATIVE, lparam);
+							{
+								if(wparam == (Input::KEY_ENTER & 0xFF))
+									currentWindow->internalCharValFunction(currentWindow, '\n', lparam);
+								else
+									currentWindow->internalCharValFunction(currentWindow, wparam | Input::NEGATIVE, lparam);
+							}
 						}
 						
 						break;
@@ -403,7 +412,6 @@
 						if(wparam == SIZE_MAXIMIZED)
 						{
 							currentWindow->windowState = STATE_MAXIMIZED;
-							// StringTools::println("MAXIMUM, %d, %d", currentWindow->getResizeMe(), currentWindow->getResizing());
 							//FIX LATER
 							currentWindow->preX = currentWindow->x;
 							currentWindow->preY = currentWindow->y;
@@ -447,7 +455,6 @@
 						}
 						else if(wparam == SIZE_MINIMIZED)
 						{
-							// StringTools::println("MINIMUM, %d, %d", currentWindow->getResizeMe(), currentWindow->getResizing());
 							currentWindow->preX = currentWindow->x;
 							currentWindow->preY = currentWindow->y;
 
@@ -458,7 +465,8 @@
 						}
 						break;
 					case WM_EXITSIZEMOVE:
-						// StringTools::println("FINISH RESIZE");
+						//TODO: do this stuff on actual resize. Lazy
+						currentWindow->redrawGui = true;
 						currentWindow->finishResize();
 						currentWindow->setResizing(false);
 						break;
@@ -642,7 +650,6 @@
 
 		void SimpleWindow::init(int x, int y, int width, int height, std::wstring title, WindowOptions windowType)
 		{
-			setClass(globalClass);
 			this->x = x;
 			this->y = y;
 			this->width = width;
@@ -947,7 +954,6 @@
 					redrawGui = false;
 				}
 			}
-			
 			resizing = false;
 			resizeMe = false;
 		}
@@ -1013,6 +1019,8 @@
 				wndPixels = new unsigned char[wndPixelsSize];
 				memset(wndPixels,0,wndPixelsSize);
 			#endif
+			
+			mustRepaint = true;
 		}
 
 		void SimpleWindow::setRunning(bool value)
@@ -1673,9 +1681,11 @@
 				size_t t2 = System::getCurrentTimeMicro();
 				size_t timePassed = t2-t1;
 				
-				size_t waitTime = timeNeeded - timePassed;
-
-				System::sleep(waitTime/1000, waitTime%1000);
+				if(timePassed < timeNeeded)
+				{
+					size_t waitTime = timeNeeded - timePassed;
+					System::sleep(waitTime/1000, waitTime%1000);
+				}
 			}
 
 			setRunning(false);
@@ -1776,13 +1786,7 @@
 				return;
 			}
 
-			if(getResizeMe())
-			{
-				finishResize();
-				setResizeMe(false);
-
-				changed = true;
-			}
+			changed |= mustRepaint;
 
 			if(windowState != STATE_MINIMIZED)
 			{
@@ -1800,7 +1804,8 @@
 				}
 
 				myMutex.lock();
-				shouldRepaint=false;
+				shouldRepaint = false;
+				mustRepaint = false;
 				myMutex.unlock();
 			}
 		}

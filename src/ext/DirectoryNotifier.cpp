@@ -63,7 +63,7 @@ void DirectoryNotifier::addDirectoryToWatch(std::string dir, bool includeSubDire
 
         if(includeSubDirectories)
         {
-            glib::SimpleDir d = glib::SimpleDir(dir);
+            smpl::SimpleDir d = smpl::SimpleDir(dir);
             std::vector<std::string> dirs = d.getFolders();
             for(std::string subDirectory : dirs)
             {
@@ -230,7 +230,7 @@ void DirectoryNotifier::watchForEvents()
                 currEvent.operation = OP_TYPE_CREATE;
                 currEvent.v1 = dirInfo.directory + event->name;
 
-                if(glib::SimpleDir::isDirectory(currEvent.v1) && dirInfo.subDirectoriesToo)
+                if(smpl::SimpleDir::isDirectory(currEvent.v1) && dirInfo.subDirectoriesToo)
                 {
                     addDirectoryToWatch(currEvent.v1, true);
                 }

@@ -25,9 +25,6 @@ namespace smpl
 		 * @param w 
 		 */
 		Vec4f(double x, double y, double z, double w);
-
-		Vec4f(const Vec4f& other);
-		void operator=(const Vec4f& other);
 		
 		/**
 		 * @brief Construct a new Vec4f object from a Vec3f object and
@@ -53,6 +50,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 		std::unordered_map<std::string, SerializedData> getSerializedVariables();
 
 		double x = 0;

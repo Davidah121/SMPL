@@ -7,9 +7,12 @@ namespace smpl
     {
         //create init state. No need to init the mapping array yet. Only needed after adding something to it.
         states = new SFA_State[s*2];
-        states[0].map.fill(0);
+        memset(states[0].map, 0, 1024);
         states[0].len = 0;
         states[0].link = -1;
+        states[0].isClone = false;
+        states[0].invLink.clear();
+        
         stateSize = 1;
         charsAdded = 0;
         last = 0;
@@ -17,7 +20,7 @@ namespace smpl
 
     SuffixAutomaton::~SuffixAutomaton()
     {
-        delete states;
+        delete[] states;
         states = nullptr;
         stateSize = 0;
         charsAdded = 0;
@@ -26,9 +29,11 @@ namespace smpl
 
     void SuffixAutomaton::reset()
     {
-        states[0].map.fill(0);
+        memset(states[0].map, 0, 1024);
         states[0].len = 0;
         states[0].link = -1;
+        states[0].isClone = false;
+        states[0].invLink.clear();
         stateSize = 1;
         last = 0;
         charsAdded = 0;
@@ -38,9 +43,11 @@ namespace smpl
     {
         charsAdded++;
         int curr = stateSize;
-        states[curr].map.fill(0);
+        memset(states[curr].map, 0, 1024);
         states[curr].len = states[last].len + 1;
         states[curr].firstPos = states[last].len;
+        states[curr].isClone = false;
+        states[curr].invLink.clear();
         stateSize++;
 
         int p = last;
@@ -65,8 +72,12 @@ namespace smpl
             {
                 //clone
                 int cloneIndex = stateSize;
-                states[cloneIndex] = states[q];
+                states[cloneIndex].firstPos = states[q].firstPos;
+                states[cloneIndex].link = states[q].link;
+                memcpy(states[cloneIndex].map, states[q].map, 1024);
                 states[cloneIndex].len = states[p].len + 1;
+                states[cloneIndex].isClone = true;
+                states[cloneIndex].invLink.clear();
                 stateSize++;
 
                 //Change things that pointed to stateQ to point to the clone
@@ -83,6 +94,14 @@ namespace smpl
         }
     
         last = curr;
+    }
+    
+    void SuffixAutomaton::mapAllPositions()
+    {
+        for(int i=1; i<stateSize; i++)
+        {
+            states[states[i].link].invLink.push_back(i);
+        }
     }
 
     SFA_State* SuffixAutomaton::getRootState()
@@ -104,6 +123,23 @@ namespace smpl
     {
         return &states[index];
     }
+    
+    std::vector<int> SuffixAutomaton::getAllOccurences(int v, int length)
+    {
+        std::vector<int> output;
+        getAllOccurences(v, length, output);
+        return output;
+    }
+    void SuffixAutomaton::getAllOccurences(int v, int length, std::vector<int>& output)
+    {
+        if(!states[v].isClone)
+            output.push_back( states[v].firstPos - length + 1 );
+        
+        for(int u : states[v].invLink)
+        {
+            getAllOccurences(u, length, output);
+        }
+    }
 
     int SuffixAutomaton::traverse(int startP, unsigned char character)
     {
@@ -114,7 +150,7 @@ namespace smpl
     {
         //create init state. No need to init the mapping array yet. Only needed after adding something to it.
         states = new SFA_State_Short[s*2];
-        states[0].map.fill(0);
+        memset(states[0].map, 0, 512);
         states[0].len = 0;
         states[0].link = -1;
         stateSize = 1;
@@ -124,7 +160,7 @@ namespace smpl
 
     ShortSuffixAutomaton::~ShortSuffixAutomaton()
     {
-        delete states;
+        delete[] states;
         states = nullptr;
         stateSize = 0;
         charsAdded = 0;
@@ -133,7 +169,7 @@ namespace smpl
 
     void ShortSuffixAutomaton::reset()
     {
-        states[0].map.fill(0);
+        memset(states[0].map, 0, 512);
         states[0].len = 0;
         states[0].link = -1;
         stateSize = 1;
@@ -145,7 +181,7 @@ namespace smpl
     {
         charsAdded++;
         int curr = stateSize++;
-        states[curr].map.fill(0);
+        memset(states[curr].map, 0, 512);
         states[curr].len = states[last].len + 1;
         states[curr].firstPos = states[last].len;
 
@@ -171,7 +207,10 @@ namespace smpl
             {
                 //clone
                 int cloneIndex = stateSize++;
-                states[cloneIndex] = states[q];
+                //states[cloneIndex] = states[q];
+                states[cloneIndex].firstPos = states[q].firstPos;
+                states[cloneIndex].link = states[q].link;
+                memcpy(states[cloneIndex].map, states[q].map, 512);
                 states[cloneIndex].len = states[p].len + 1;
 
                 //Change things that pointed to stateQ to point to the clone
@@ -215,25 +254,30 @@ namespace smpl
         return states[startP].map[character];
     }
 
-    ChainedSuffixAutomaton::ChainedSuffixAutomaton(int maxSize, int individualSize, int overlap)
+    ChainedSuffixAutomaton::ChainedSuffixAutomaton(int maxSize, int totalBuffers, int maxMatchLength)
     {
         this->maxSize = maxSize;
-        this->individualSize = individualSize;
-        this->overlap = overlap;
-        
-        totalAmount = (maxSize/individualSize) - 1;
+        this->overlap = maxMatchLength + 1;
+        totalAmount = __max(totalBuffers, 2);
+        this->individualSize = maxSize / totalAmount;
 
-        //create first
-        SAs.push_back( new ShortSuffixAutomaton(individualSize+overlap) );
-        searchStates.push_back(0);
-        offsets.push_back(0);
+        //create all possible automatons
+        for (int i = 0; i < totalAmount; i++)
+        {
+            SAs.push_back(new ShortSuffixAutomaton(individualSize + overlap));
+            searchStates.push_back(0);
+            offsets.push_back(0);
+        }
+
         currIndex = 0;
+        lastIndex = totalAmount - 1;
     }
 
     ChainedSuffixAutomaton::~ChainedSuffixAutomaton()
     {
-        for(int i=0; i<SAs.size(); i++)
-            delete SAs[i];
+        for (int i = 0; i < SAs.size(); i++)
+            if (SAs[i] != nullptr)
+                delete SAs[i];
     }
 
     int ChainedSuffixAutomaton::extend(unsigned char c)
@@ -241,31 +285,20 @@ namespace smpl
         int i = currIndex;
 
         SAs[i]->extend(c);
-        if(lastIndex >= 0 && currOffset < offsets[lastIndex] + individualSize + overlap)
+        if (currOffset < offsets[lastIndex] + individualSize + overlap)
             SAs[lastIndex]->extend(c);
-        
+
         currOffset++;
-        if((currOffset % individualSize) == 0)
+        if ((currOffset % individualSize) == 0)
         {
             lastIndex = currIndex;
             currIndex = (currIndex + 1) % totalAmount;
 
-            if(currIndex >= SAs.size())
-            {
-                //extend
-                offsets.push_back(currOffset);
-                SAs.push_back(new ShortSuffixAutomaton(individualSize+overlap));
-                searchStates.push_back(-1);
-                return searchStates.size()-1;
-            }
-            else
-            {
-                //replace
-                offsets[currIndex] = currOffset;
-                SAs[currIndex]->reset();
-                searchStates[currIndex] = -1;
-                return currIndex;
-            }
+            //replace
+            offsets[currIndex] = currOffset;
+            SAs[currIndex]->reset();
+            searchStates[currIndex] = -1;
+            return currIndex;
         }
         return -1;
     }
@@ -274,7 +307,7 @@ namespace smpl
     {
         //do it for every Suffix Automaton
         bool ok = false;
-        for(int i=0; i<SAs.size(); i++)
+        for (int i = 0; i < SAs.size(); i++)
         {
             int sState = searchStates[i];
 
@@ -285,13 +318,8 @@ namespace smpl
             if (sState > 0)
             {
                 int actualPos = offsets[i] + (SAs[i]->getState(sState)->firstPos - currSearchLen);
-                // bool shouldUpdate = (currMatch.second < currSearchLen+1) || (currMatch.first < actualPos);
-                bool shouldUpdate = true;
-                if(shouldUpdate)
-                {
-                    currMatch = { i, actualPos, currSearchLen + 1 };
-                    lastGoodState = i;
-                }
+                currMatch = { i, actualPos, currSearchLen + 1 };
+                lastGoodState = i;
                 ok = true;
             }
             else
@@ -299,21 +327,18 @@ namespace smpl
 
             searchStates[i] = sState;
         }
+        //currSearchLen += (int)ok;
         if(ok == true)
-        {
             currSearchLen++;
-        }
-        if(currMatch.length >= overlap)
-            ok = false;
 
         return ok;
     }
 
     void ChainedSuffixAutomaton::resetSearch()
     {
-        currMatch = {0, 0};
+        currMatch = { 0, 0 };
         currSearchLen = 0;
-        for(int i=0; i<SAs.size(); i++)
+        for (int i = 0; i < SAs.size(); i++)
         {
             searchStates[i] = 0;
         }
@@ -322,22 +347,6 @@ namespace smpl
     SearchState ChainedSuffixAutomaton::extractSearch()
     {
         return currMatch;
-    }
-
-    void ChainedSuffixAutomaton::printStuff()
-    {
-        StringTools::println("CurrOffset: %d", currOffset);
-        StringTools::println("CurrIndex: %d", currIndex);
-        StringTools::println("LastIndex: %d", lastIndex);
-        StringTools::println("Last State Index Thing: %d", lastGoodState);
-        
-        for(int i=0; i<SAs.size(); i++)
-        {
-            StringTools::println("Size of SA[%d] = %llu", i, SAs[i]->size());
-            StringTools::println("OFFSET = %d", offsets[i]);
-            StringTools::println("\tRootState = %p", SAs[i]->getRootState());
-            StringTools::println("\tCurrentState = %p", searchStates[i]);
-        }
     }
 
 }

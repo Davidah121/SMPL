@@ -12,7 +12,11 @@ namespace smpl
 
 	unsigned char VectorGraphic::AA_LEVEL = 0;
 
-	const RootClass VectorGraphic::globalClass = RootClass("VectorGraphic", {"Object"});
+	const RootClass VectorGraphic::globalClass = CREATE_ROOT_CLASS(VectorGraphic, &Object::globalClass);
+    const RootClass* VectorGraphic::getClass()
+	{
+		return &VectorGraphic::globalClass;
+	}
 
 	VectorGraphic::VectorGraphic(int width, int height)
 	{
@@ -39,43 +43,43 @@ namespace smpl
 
 		for(size_t i=0; i<c.shapes.size(); i++)
 		{
-			if(c.shapes[i]->getClass() == VectorRectangle::globalClass)
+			if(c.shapes[i]->getClass() == &VectorRectangle::globalClass)
 			{
 				//rectangle
 				VectorRectangle* g = new VectorRectangle(*(VectorRectangle*)c.shapes[i]);
 				shapes.push_back(g);
 			}
-			else if(c.shapes[i]->getClass() == VectorLine::globalClass)
+			else if(c.shapes[i]->getClass() == &VectorLine::globalClass)
 			{
 				//line
 				VectorLine* g = new VectorLine(*(VectorLine*)c.shapes[i]);
 				shapes.push_back(g);
 			}
-			else if(c.shapes[i]->getClass() == VectorCircle::globalClass)
+			else if(c.shapes[i]->getClass() == &VectorCircle::globalClass)
 			{
 				//circle
 				VectorCircle* g = new VectorCircle(*(VectorCircle*)c.shapes[i]);
 				shapes.push_back(g);
 			}
-			else if(c.shapes[i]->getClass() == VectorEllipse::globalClass)
+			else if(c.shapes[i]->getClass() == &VectorEllipse::globalClass)
 			{
 				//ellipse
 				VectorEllipse* g = new VectorEllipse(*(VectorEllipse*)c.shapes[i]);
 				shapes.push_back(g);
 			}
-			else if(c.shapes[i]->getClass() == VectorPolygon::globalClass)
+			else if(c.shapes[i]->getClass() == &VectorPolygon::globalClass)
 			{
 				//polygon
 				VectorPolygon* g = new VectorPolygon(*(VectorPolygon*)c.shapes[i]);
 				shapes.push_back(g);
 			}
-			else if(c.shapes[i]->getClass() == VectorPolyline::globalClass)
+			else if(c.shapes[i]->getClass() == &VectorPolyline::globalClass)
 			{
 				//polyline
 				VectorPolyline* g = new VectorPolyline(*(VectorPolyline*)c.shapes[i]);
 				shapes.push_back(g);
 			}
-			else if(c.shapes[i]->getClass() == VectorPath::globalClass)
+			else if(c.shapes[i]->getClass() == &VectorPath::globalClass)
 			{
 				//path
 				//StringTools::println("PATH");

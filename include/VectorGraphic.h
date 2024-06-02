@@ -90,6 +90,7 @@ namespace smpl
 		
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief An abstract draw function.
@@ -274,6 +275,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws the VectorRectangle
@@ -432,6 +434,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws the VectorCircle
@@ -544,6 +547,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws a VectorEllipse
@@ -669,6 +673,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws a VectorLine
@@ -799,6 +804,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws the VectorPolyline.
@@ -918,6 +924,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws the VectorPolygon.
@@ -1095,6 +1102,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws the VectorPath
@@ -1542,6 +1550,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Adds a VectorShape to the VectorGraphic

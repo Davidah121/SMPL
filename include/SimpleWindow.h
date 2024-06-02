@@ -188,6 +188,7 @@
 
 			//Object and RootClass Stuff
 			static const RootClass globalClass;
+			virtual const RootClass* getClass();
 
 			/**
 			 * @brief Sets if the window should be visible.
@@ -756,6 +757,7 @@
 
 			bool resizing = false;
 			bool resizeMe = false;
+			bool mustRepaint = false;
 
 			bool finishedInit = false;
 

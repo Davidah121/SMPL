@@ -3,7 +3,12 @@
 
 namespace smpl
 {
-        
+    const RootClass VectorSprite::globalClass = CREATE_ROOT_CLASS(VectorSprite, &Object::globalClass);
+    const RootClass* VectorSprite::getClass()
+	{
+		return &VectorSprite::globalClass;
+	}
+
     VectorSprite::VectorSprite()
     {
 

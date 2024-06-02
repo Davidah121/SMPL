@@ -3,12 +3,15 @@
 #include <string>
 #include <unordered_set>
 #include <map>
+#include <typeinfo>
 
 namespace smpl
 {
-	class Class;
+	// class Class;
 	class ClassMaster;
 	class RootClass;
+
+	std::string demangleClassName(std::string name);
 
 	class RootClass
 	{
@@ -28,7 +31,7 @@ namespace smpl
 		 * @param name 
 		 * @param parentClassesByName 
 		 */
-		RootClass(std::string name, std::unordered_set<std::string> parentClassesByName);
+		RootClass(std::string name, int sizeOfClass, std::unordered_set<const RootClass*> parentClasses);
 
 		/**
 		 * @brief Destroy the Root Class object
@@ -38,69 +41,16 @@ namespace smpl
 
 		int getID() const;
 		std::string getName() const;
-		std::unordered_set<std::string> getListOfParents() const;
+		std::unordered_set<const RootClass*> getListOfParents() const;
+		
+		bool isDerivedFrom(const RootClass* rootClass) const;
+		int getSizeOfClass() const;
 	private:
 		friend ClassMaster;
 		int id = -1;
 		std::string name = "";
-		std::unordered_set<std::string> parentClassesByName; //Stores name of parent classes. May not exist
-	};
-
-	class Class
-	{
-	public:
-		/**
-		 * @brief The base Class object.
-		 * 		Its purpose is to provide a more object oriented feel similar to Java.
-		 * 		It stores a class ID which can be used to get the name and list of parent classes by id.
-		 * 			This allows the class to use much less data and therefore less copying giving back performance.
-		 * @param name
-		 * 		The name of the class. It should be unique.
-		 * @param parentClasses
-		 * 		The list of parent classes for the current class. It should be a reference to the class object.
-		 */
-		Class(const RootClass& rootClass);
-
-		/**
-		 * @brief Construct a new Class
-		 * 		This is an invalid class as it has an ID of -1
-		 * 
-		 */
-		Class();
-
-		/**
-		 * @brief Destroys a Class object and removes it from the ClassMaster list of all classes.
-		 */
-		~Class();
-
-		/**
-		 * @brief Returns the name of the class.
-		 * @return std::string
-		 */
-		std::string getClassName() const;
-
-		/**
-		 * @brief Returns the class ID given by the ClassMaster class.
-		 * 		This must be >= 0 to be valid. 
-		 * 		If < 0, it is invalid for some reason or another.
-		 * 
-		 * @return int 
-		 */
-		int getClassID();
-
-		const std::unordered_set<std::string> getParentClasses();
-
-		const RootClass* getRootClass();
-		
-		
-		bool operator==(const Class other) const;
-		bool operator!=(const Class other) const;
-		
-		bool operator==(const RootClass& other) const;
-		bool operator!=(const RootClass& other) const;
-
-	private:
-		int classID = -1;
+		int sizeOfClass = 0;
+		std::unordered_set<const RootClass*> parentClasses; //Stores name of parent classes. May not exist
 	};
 
 	class ClassMaster
@@ -139,5 +89,9 @@ namespace smpl
 		static ClassMaster* getInstance();
 		static ClassMaster* singleton;
 	};
+
+	#ifndef CREATE_ROOT_CLASS
+	#define CREATE_ROOT_CLASS(ClassName, ...) RootClass(typeid(ClassName).name(), sizeof(ClassName), {__VA_ARGS__})
+	#endif
 
 } //NAMESPACE smpl END

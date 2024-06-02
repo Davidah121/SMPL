@@ -10,8 +10,12 @@
 
 namespace smpl
 {
-	const RootClass HiResImage::globalClass = RootClass("HiResImage", {"Object"});
-
+	const RootClass HiResImage::globalClass = CREATE_ROOT_CLASS(HiResImage, &Object::globalClass);
+	const RootClass* HiResImage::getClass()
+	{
+		return &HiResImage::globalClass;
+	}
+	
 	void quickCopy(Color4f* src, Color4f* dest, size_t size)
 	{
 		Color4f* startSrc = src;
@@ -27,7 +31,6 @@ namespace smpl
 
 	HiResImage::HiResImage()
 	{
-		setClass(globalClass);
 		width = 0;
 		height = 0;
 		pixels = nullptr;
@@ -35,7 +38,6 @@ namespace smpl
 
 	HiResImage::HiResImage(int width, int height)
 	{
-		setClass(globalClass);
 		this->width = width;
 		this->height = height;
 		pixels = new Color4f[width * height];
@@ -45,7 +47,6 @@ namespace smpl
 	{
 		dispose();
 
-		setClass(globalClass);
 		this->width = other.width;
 		this->height = other.height;
 
@@ -62,7 +63,6 @@ namespace smpl
 	{
 		dispose();
 
-		setClass(globalClass);
 		this->width = other.width;
 		this->height = other.height;
 		
@@ -74,6 +74,16 @@ namespace smpl
 
 		p = other.p;
 	}
+		
+	// HiResImage::HiResImage(HiResImage&& other)
+	// {
+	// 	width = other.width;
+	// 	height = other.height;
+	// 	samplingMethod = other.samplingMethod;
+	// 	p = other.p;
+	// 	pixels = other.pixels;
+	// 	other.pixels = nullptr;
+	// }
 
 	HiResImage::~HiResImage()
 	{

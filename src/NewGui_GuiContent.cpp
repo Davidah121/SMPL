@@ -2,6 +2,12 @@
 
 namespace smpl
 {
+    const RootClass GuiContent::globalClass = CREATE_ROOT_CLASS(GuiContent, &GuiItem::globalClass);
+    const RootClass* GuiContent::getClass()
+	{
+		return &GuiContent::globalClass;
+	}
+
     GuiContent::GuiContent() : GuiItem()
     {
         type = TYPE_CONTENT;

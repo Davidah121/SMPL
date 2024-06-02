@@ -64,14 +64,14 @@ namespace smpl
 	System::System()
 	{
 		#ifdef _WIN32
-    	timeBeginPeriod(1);
+    	// timeBeginPeriod(1);
 		#endif
 	}
 
 	System::~System()
 	{
 		#ifdef _WIN32
-    	timeEndPeriod(1);
+    	// timeEndPeriod(1);
 		#endif
 	}
 

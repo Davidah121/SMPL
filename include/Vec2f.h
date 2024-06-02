@@ -30,7 +30,8 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
-		std::unordered_map<std::string, SerializedData> getSerializedVariables();
+		virtual const RootClass* getClass();
+		virtual std::unordered_map<std::string, SerializedData> getSerializedVariables();
 
 		double x = 0;
 		double y = 0;

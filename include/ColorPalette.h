@@ -97,6 +97,8 @@ namespace smpl
 		 */
 		void operator=(const ColorPalette& other);
 
+		// ColorPalette(ColorPalette&& other);
+
 		/**
 		 * @brief Destroys a ColorPalette Object.
 		 */
@@ -110,6 +112,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Adds a new color to the palette.

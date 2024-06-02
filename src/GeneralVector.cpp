@@ -4,11 +4,14 @@
 namespace smpl
 {
 
-	const RootClass GeneralVector::globalClass = RootClass("GeneralVector", {"Object"});
+	const RootClass GeneralVector::globalClass = CREATE_ROOT_CLASS(GeneralVector, &Object::globalClass);
+	const RootClass* GeneralVector::getClass()
+	{
+		return &GeneralVector::globalClass;
+	}
 
 	GeneralVector::GeneralVector(int size)
 	{
-		setClass(globalClass);
 		this->size = size;
 		if (size > 0)
 		{
@@ -33,8 +36,7 @@ namespace smpl
 	void GeneralVector::copy(const GeneralVector& o)
 	{
 		this->~GeneralVector();
-
-		setClass(globalClass);
+		
 		this->size = o.size;
 		if(size>0)
 		{

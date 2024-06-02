@@ -41,7 +41,7 @@ namespace smpl
 		unsigned int adlerValue = Cryptography::adler32(data, size);
 
 		BinarySet compressedData;
-		Compression::compressDeflate(&compressedData, data, size, 1, 7, strongCompression);
+		Compression::compressDeflate(&compressedData, data, size, 24, 7, strongCompression);
 		
 		std::vector<unsigned char> binarySetBytes = compressedData.getByteRef();
 		unsigned long byteOffset = 0;

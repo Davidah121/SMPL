@@ -3,7 +3,6 @@
 #include <vector>
 #include <typeinfo>
 #include <functional>
-#include "SimpleXml.h"
 #include "Object.h"
 
 namespace smpl
@@ -11,6 +10,25 @@ namespace smpl
 	class SerializedData;
 	class SerializedObject;
 
+	struct WritableSerialzedData
+	{
+		static const bool TYPE_PRIMITIVE = false;
+		static const bool TYPE_VECTOR = true;
+		
+		bool type = 0;
+		unsigned int size = 0; //size of the data in bytes
+		unsigned char* data = nullptr; //the data as bytes
+		unsigned int numberOfOffsets = 0;
+		unsigned int* offsets = nullptr;
+	};
+
+	//so for every object
+	//type, name size, name bytes, numberOfOffsets, list of offsets
+	//for every primitive
+	//type, size, data
+	//Total required space for an object is 9 bytes + n bytes for name and k bytes for the offsets. Those can actually be 0 so at least 9 is required.
+	//Total required space for a primitive is 5 bytes + n bytes for the data. This too can also be 0 so at least 5 bytes is required.
+	//for each function, pass in a vector of unsigned bytes or an array of unsigned bytes with a size
 	class SerializedData
 	{
 	public:
@@ -22,7 +40,7 @@ namespace smpl
 		 * 		Optional
 		 * 
 		 */
-		static void init();
+		// static void init();
 		
 		/**
 		 * @brief Construct a new Serialized Data object
@@ -88,7 +106,16 @@ namespace smpl
 		std::string getName();
 
 		/**
-		 * @brief Recreates the data stored as a child XmlNode of the parentNode provided.
+		 * @brief Get the Number Of Elements object
+		 * 
+		 * @return size_t 
+		 */
+		size_t getNumberOfElements();
+
+		bool getObjectType();
+
+		/**
+		 * @brief Recreates the data stored as a child JObject of the parentNode provided.
 		 * 		If it is a SerializedObject, it will serialize its variables too.
 		 * 
 		 * 		The type must be a serializable type to be properly saved.
@@ -97,10 +124,10 @@ namespace smpl
 		 * 
 		 * @param parentNode 
 		 */
-		void serialize(XmlNode* parentNode);
+		void serialize(std::vector<unsigned char>& data, int offset);
 
 		/**
-		 * @brief Attempts to set the data stored by using the provided XmlNode.
+		 * @brief Attempts to set the data stored by using the provided JObject.
 		 * 		If it is a SerializedObject, it will deserialize its variables too.
 		 * 
 		 * 		The type must be a serializable type to be properly loaded.
@@ -109,7 +136,7 @@ namespace smpl
 		 * 
 		 * @param node 
 		 */
-		void deserialize(XmlNode* node);
+		void deserialize(std::vector<unsigned char>& data, int offset);
 		
 		/**
 		 * @brief Sets an alias for the specified class name.
@@ -137,31 +164,6 @@ namespace smpl
 		 */
 		static std::string getAlternateName(std::string className);
 
-		/**
-		 * @brief Sets the External Saver function.
-		 * 		This is used to save data types that are not the standard primitives typically used. std::string is the exception.
-		 * 			i.e. Not an int, long, char, string, etc.
-		 * 		An example of this is a std::vector<int>. These are not handled because they are templates.
-		 * 		
-		 * 		The inputs into the function are the data as a void* and the typename.
-		 * 			Note that the typename has not undergone any conversions and a alternate name may be available.
-		 * @param extSaver 
-		 */
-		static void setExternalSaver(std::function<std::string(void*, std::string)> extSaver);
-
-		/**
-		 * @brief Sets the External Loader function.
-		 * 		This is used to load data types that are not the standard primitives typically used. std::string is the exception.
-		 * 			i.e. Not an int, long, char, string, etc.
-		 * 		An example of this is a std::vector<int>. These are not handled because they are templates.
-		 * 		
-		 * 		
-		 * 		The inputs into the function are the data to set as a void*, the typename, and the data being loaded as a string.
-		 * 			Note that the typename will have the pretty name applied if available.
-		 * @param extLoader 
-		 */
-		static void setExternalLoader(std::function<void(void*, std::string, std::string)> extLoader);
-
 	private:
 		friend SerializedObject;
 		void init(void* d, std::string name, std::string typeString, size_t size);
@@ -171,11 +173,8 @@ namespace smpl
 		size_t size = 1;
 		void* data = nullptr;
 		int objType = TYPE_DATA;
-
 		
 		static std::unordered_map<std::string, std::string> prettyName;
-		static std::function<std::string(void*, std::string)> externalSaver;
-		static std::function<void(void*, std::string, std::string)> externalLoader;
 	};
 
 	class SerializedObject : public Object
@@ -208,6 +207,10 @@ namespace smpl
 		 */
 		virtual std::unordered_map<std::string, SerializedData> getSerializedVariables() = 0;
 
+		//class stuff
+		static const RootClass globalClass;
+		//note that getClass() is still a pure virtual function
+		
 	private:
 		friend SerializedData;
 	};
@@ -215,13 +218,13 @@ namespace smpl
 } //Namespace end
 
 #ifndef SERIALIZE
-	#define SERIALIZE(var) smpl::SerializedData(&var, #var, typeid(var).name(), 1)
+	#define SERIALIZE(var) smpl::SerializedData(&var, #var, smpl::demangleClassName(typeid(var).name()), 1)
 	#define SERIALIZE_TYPENAME(var, name) smpl::SerializedData(&var, #var, name, 1)
-	#define SERIALIZE_POINTER(var, size) smpl::SerializedData(&var, #var, typeid(var).name(), size)
+	#define SERIALIZE_POINTER(var, size) smpl::SerializedData(&var, #var, smpl::demangleClassName(typeid(var).name()), size)
 	#define SERIALIZE_POINTER_TYPENAME(var, name, size) smpl::SerializedData(&var, #var, typeid(var).name(), size)
 	
-	#define SERIALIZE_MAP(var) {#var, smpl::SerializedData(&var, #var, typeid(var).name(), 1)}
+	#define SERIALIZE_MAP(var) {#var, smpl::SerializedData(&var, #var, smpl::demangleClassName(typeid(var).name()), 1)}
 	#define SERIALIZE_MAP_TYPENAME(var, name) {#var, smpl::SerializedData(&var, #var, name, 1)}
-	#define SERIALIZE_MAP_POINTER(var, size) {#var, smpl::SerializedData(&var, #var, typeid(var).name(), size)}
+	#define SERIALIZE_MAP_POINTER(var, size) {#var, smpl::SerializedData(&var, #var, smpl::demangleClassName(typeid(var).name()), size)}
 	#define SERIALIZE_MAP_POINTER_TYPENAME(var, name, size) {#var, smpl::SerializedData(&var, #var, name, size)}
 #endif

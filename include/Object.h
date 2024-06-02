@@ -9,13 +9,10 @@ namespace smpl
 		Object();
 		~Object();
 
-		Class getClass();
+		virtual const RootClass* getClass() = 0;
 		static const RootClass globalClass;
 	
-	protected:
-		void setClass(Class c);
 	private:
-		Class myClass;
 	};
 
 } //NAMESPACE smpl END

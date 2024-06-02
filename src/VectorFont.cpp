@@ -4,11 +4,14 @@
 namespace smpl
 {
         
-    const RootClass VectorFont::globalClass = RootClass("VectorFont", {"Font"});
+    const RootClass VectorFont::globalClass = CREATE_ROOT_CLASS(VectorFont, &Font::globalClass);
+    const RootClass* VectorFont::getClass()
+	{
+		return &VectorFont::globalClass;
+	}
 
     VectorFont::VectorFont() : Font()
     {
-		setClass(globalClass);
     }
 
     VectorFont::~VectorFont()

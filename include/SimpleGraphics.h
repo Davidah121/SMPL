@@ -746,11 +746,11 @@ namespace smpl
 		 * 
 		 * @param kernelRadius
 		 * 		The radius of the kernel used when blurring
+		 * 		If the radius <= 0, nothing is done
 		 * @param sigma
-		 * 		If sigma is <=0, the value will be half of the kernel radius
-		 * @return Image*
+		 * 		If sigma is <= 0, the value will be half of the kernel radius
 		 */
-		static Image* gaussianBlur(Image* img, int kernelRadius, double sigma = -1.0);
+		static void gaussianBlur(Image* img, int kernelRadius, double sigma = -1.0);
 
 		/**
 		 * @brief Converts the image to grayscale by converting the
@@ -768,9 +768,19 @@ namespace smpl
 
 		/**
 		 * @brief Applies an canny edge filter to the image.
-		 * 		Not implemented.
+		 * 		A weakThreshold and strongThreshold must be specified to determine which edges to consider.
+		 * 			Edges between the weakThreshold and strongThreshold may or may not appear in the final output.
+		 * 		
+		 * @param img
+		 * @param weakThreshold
+		 * 		A value perferably between [0.0 - 1.0] that specifies what edges are considered too weak
+		 * 			to be considered
+		 * @param strongThreshold
+		 * 		A value perferably between [0.0 - 1.0] that should be larger than weakThreashold.
+		 * 			Specifies which edges are strong edges. These edges will be in the final output.
+		 * @return Image*
 		 */
-		static Image* cannyEdgeFilter(Image* img); //TODO
+		static Image* cannyEdgeFilter(Image* img, double weakThreshold = 0.5, double strongThreshold = 0.75);
 
 		/**
 		 * @brief Applies a sobel operator to the image.

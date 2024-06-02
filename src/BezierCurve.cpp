@@ -4,23 +4,14 @@
 
 namespace smpl
 {
-
-	const RootClass BezierCurve::globalClass = RootClass("BezierCurve", {"Object"});
-
+	const RootClass BezierCurve::globalClass = CREATE_ROOT_CLASS(BezierCurve, &Object::globalClass);
+	const RootClass* BezierCurve::getClass()
+	{
+		return &BezierCurve::globalClass;
+	}
 
 	BezierCurve::BezierCurve()
 	{
-		setClass(globalClass);
-	}
-
-	BezierCurve::BezierCurve(const BezierCurve& o)
-	{
-		setClass(globalClass);
-		points.clear();
-		for (size_t i = 0; i < o.points.size(); i++)
-		{
-			points.push_back(o.points[i]);
-		}
 	}
 
 	BezierCurve::~BezierCurve()

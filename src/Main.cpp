@@ -172,7 +172,7 @@ void recursivePass(Image* img, int startX, int startY, int size, int lowestSize,
 
         int v = 0;
 
-        if(avgDirection.getLength() < 0.01)
+        if(true)
         {
             v = 0;
             output.add(v, 7);
@@ -247,7 +247,7 @@ void testQuadTreeLikeCompression()
     //the is a small amount of variance in it.
     
     Sprite imgs = Sprite();
-    imgs.loadImage("TestImages/examples/zjkp5ph9huj11.png");
+    imgs.loadImage("TestImages/examples/Flat2/screenshot_2.png");
 
     if(imgs.getSize() > 0)
     {
@@ -271,7 +271,7 @@ void testQuadTreeLikeCompression()
         Matrix imgYDerivative = ComputerVision::convolution(imgs.getImage(0), &gy, ComputerVision::RED_CHANNEL, true);
 
         //save these as images
-        for(int i=4; i>=4; i/=2)
+        for(int i=64; i>=1; i/=2)
         {
             Image newImg = Image();
             BinarySet output;
@@ -307,7 +307,7 @@ void testQuadTreeLikeCompression()
             
             StringTools::println("Final Size Before Compression = %llu", output.getByteRef().size());
             StringTools::println("Final Size After Compression = %llu", compressedData.size());
-            newImg.saveBMP("TestImages/examples/QuadTreeLikeCompression_" + StringTools::toString(i) + "_GradTest_2.bmp");
+            newImg.saveBMP("TestImages/examples/Grad2/QuadTreeLikeCompression_" + StringTools::toString(i) + "_FlatTest_2.bmp");
         }
     }
     else
@@ -322,10 +322,325 @@ void testCopyDirectory()
     SimpleDir::copyResource("C:/Drive_D/Games/Steam/userdata/167820327/2054970/remote/win64_save", "TestImages/examples/BT3");
 }
 
+void streamDecompressTest()
+{
+    size_t t1 = System::getCurrentTimeMillis();
+    std::string file1 = "BigCompressTest";
+    std::string file2 = "C:/Users/Alan/Desktop/DoThese/2023_11_05/Launch out into the deep_uncompressed.mp4";
+    // std::string file1 = "BaselineCompressedData";
+    // std::string file2 = "BaselineOutput2";
+    SimpleFile f = SimpleFile(file1, SimpleFile::READ);
+    SimpleFile f2 = SimpleFile(file2, SimpleFile::WRITE);
+    StreamCompressionLZSS compressor = StreamCompressionLZSS(StreamCompressionLZSS::TYPE_DECOMPRESSION);
+
+    if(f.isOpen() && f2.isOpen())
+    {
+        unsigned char* buffer = new unsigned char[0xFFFF];
+        while(true)
+        {
+            size_t actualRead = f.readBytes((char*)buffer, 0xFFFF);
+            if(actualRead > 0)
+            {
+                compressor.addData(buffer, actualRead);
+                
+                if(compressor.getBuffer().getByteRef().size() > 0)
+                {
+                    //try to write.
+                    f2.writeBytes(compressor.getBuffer().getByteRef().data(), compressor.getBuffer().getByteRef().size());
+                    compressor.clearBuffer();
+                }
+            }
+            else
+                break;
+        }
+
+        f2.close();
+        f.close();
+        delete[] buffer;
+    }
+    
+    size_t t2 = System::getCurrentTimeMillis();
+    size_t readSize = SimpleDir::getReferenceSize(file1);
+    size_t writeSize = SimpleDir::getReferenceSize(file2);
+    StringTools::println("Time to read and decompress = %llu", t2-t1);
+
+    StringTools::println("Read in %llu bytes", readSize);
+    StringTools::println("Wrote out %llu bytes", writeSize);
+
+    double timeInSeconds = (double)(t2-t1) / 1000;
+    double speedInBytes = (double)readSize / timeInSeconds;
+    double speedInMB = speedInBytes / 1000000;
+
+    StringTools::println("Decompression Speed = %.3f MB/s", speedInMB);
+}
+
+void streamCompressTest()
+{
+    size_t timeToCompress = 0;
+
+    // size_t t1 = System::getCurrentTimeMillis();
+    std::string file1 = "C:/Users/Alan/Desktop/DoThese/2023_11_05/Launch out into the deep.mp4";
+    std::string file2 = "BigCompressTest";
+    // std::string file1 = "BaselineOutput";
+    // std::string file2 = "BaselineCompressedData";
+    SimpleFile f = SimpleFile(file1, SimpleFile::READ);
+    SimpleFile f2 = SimpleFile(file2, SimpleFile::WRITE);
+    StreamCompressionLZSS compressor = StreamCompressionLZSS(StreamCompressionLZSS::TYPE_COMPRESSION);
+
+    if(f.isOpen() && f2.isOpen())
+    {
+        unsigned char* buffer = new unsigned char[0xFFFF];
+        BinarySet leftovers;
+        while(true)
+        {
+            size_t actualRead = f.readBytes((char*)buffer, 0xFFFF);
+            if(actualRead > 0)
+            {
+                size_t t1 = System::getCurrentTimeMicro();
+                compressor.addData(buffer, actualRead);
+                size_t t2 = System::getCurrentTimeMicro();
+                timeToCompress += (t2-t1);
+                
+                if(compressor.getBuffer().size() % 8 == 0)
+                {
+                    //try to write.
+                    f2.writeBytes(compressor.getBuffer().getByteRef().data(), compressor.getBuffer().getByteRef().size());
+                    compressor.clearBuffer();
+                }
+            }
+            else
+                break;
+        }
+        compressor.endData();
+        //try to write.
+        f2.writeBytes(compressor.getBuffer().getByteRef().data(), compressor.getBuffer().getByteRef().size());
+
+        f2.close();
+        f.close();
+        delete[] buffer;
+    }
+    
+    // size_t t2 = System::getCurrentTimeMillis();
+
+    size_t readSize = SimpleDir::getReferenceSize(file1);
+    size_t writeSize = SimpleDir::getReferenceSize(file2);
+    StringTools::println("Time to read and compress = %lluus", timeToCompress);
+
+    StringTools::println("Read in %llu bytes", readSize);
+    StringTools::println("Wrote out %llu bytes", writeSize);
+
+    double timeInSeconds = (double)(timeToCompress) / 1000000;
+    double compressRatio = (double)readSize/(double)writeSize;
+    double speedInBytes = (double)readSize / timeInSeconds;
+    double speedInMB = speedInBytes / 1000000;
+
+    StringTools::println("Compression Ratio = %.3f", compressRatio);
+    StringTools::println("Compression Speed = %.3f MB/s", speedInMB);
+}
+
+void testLZ77CSA()
+{
+    std::string file1 = "BaselineOutput";
+    SimpleFile f = SimpleFile(file1, SimpleFile::READ);
+    std::vector<lengthPair> outputPairs1;
+    std::vector<lengthPair> outputPairs2;
+    bool same = false;
+    if(f.isOpen())
+    {
+        auto data = f.readFullFileAsBytes();
+        f.close();
+
+        Compression::getLZ77RefPairsCHash(data.data(), data.size(), &outputPairs1, 7);
+        Compression::getLZ77RefPairsCSA(data.data(), data.size(), &outputPairs2, 7);
+    }
+    
+    StringTools::println("TotalSize: %llu", SimpleDir::getReferenceSize(file1));
+    StringTools::println("%llu", outputPairs1.size());
+    StringTools::println("%llu", outputPairs2.size());
+}
+
+void quickCompression()
+{
+    std::string file1 = "screenshot.png";
+    Sprite s;
+    s.loadImage(file1);
+    std::vector<unsigned char> outputData;
+    size_t compressTime = 0;
+    if(s.getSize() > 0)
+    {
+
+        size_t t1,t2;
+        t1 = System::getCurrentTimeMillis();
+        // outputData = Compression::compressDeflate(data, 1, 7, true);
+        // s.getImage(0)->savePNG("betterScreenshot.png", false, false, true);
+        s.getImage(0)->saveGIF("betterScreenshot.gif", 256, false, false);
+        compressTime = System::getCurrentTimeMillis() - t1;
+        // s.getImage(0)->saveBMP("ScreenshotAsBMP.bmp");
+
+        // SimpleFile f2 = SimpleFile("MyCurrentImplementation2", SimpleFile::WRITE);
+        // f2.writeBytes(outputData.data(), outputData.size());
+        // f2.close();
+    }
+    
+    StringTools::println("TotalSize: %llu", SimpleDir::getReferenceSize(file1));
+    StringTools::println("Time to compress = %llu", compressTime);
+}
+
+template<typename T>
+class Streamable
+{
+public:
+    virtual void push_back(T) = 0;
+    virtual void seek(size_t) = 0;
+    virtual T get() = 0;
+    virtual void get(T*, size_t size) = 0;
+    virtual void pop_back() = 0;
+    virtual size_t size() = 0;
+};
+
+template<typename T>
+class StreamableVector : public Streamable<T>
+{
+public:
+    StreamableVector()
+    {
+        buffer = std::shared_ptr<std::vector<T>>(new std::vector<T>());
+    }
+    ~StreamableVector()
+    {
+
+    }
+
+    virtual void push_back(T data)
+    {
+        buffer->push_back(data);
+    }
+    virtual void seek(size_t index)
+    {
+        offset = index;
+    }
+    virtual T get()
+    {
+        return buffer->at(offset++);
+    }
+    virtual void get(T* input, size_t size)
+    {
+        for(size_t i=0; i<size; i++)
+            input[i] = buffer->at(offset+i);
+    }
+    virtual void pop_back()
+    {
+        buffer->pop_back();
+    }
+    virtual size_t size()
+    {
+        return buffer->size();
+    }
+private:
+    std::shared_ptr<std::vector<T>> buffer = nullptr;
+    size_t offset = 0;
+};
+
+void testSerialization()
+{
+    // Vec2f p;
+    // SerializedObject* so = &p;
+    // StringTools::println("Class of p = %s", so->getClass()->getName().c_str());
+    // StringTools::println("Direct parents of P:");
+    // auto parentList = so->getClass()->getListOfParents();
+    // for(const RootClass* parentClass : parentList)
+    // {
+    //     StringTools::println("\t%s", parentClass->getName().c_str());
+    // }
+
+    // if(so->getClass()->isDerivedFrom(&Object::globalClass))
+    //     StringTools::println("P also derives from Object");
+    // else
+    //     StringTools::println("P does not derive from Object");
+
+    // std::streambuf buffer = std::basic_streambuf()
+    // std::iostream inputStream = std::iostream();
+
+}
+
+void init(SimpleWindow* win)
+{
+    // GuiButton* but = new GuiButton();
+    // but->setMinWidth(32);
+    // but->setMinHeight(32);
+    // but->setBackgroundColor({255,0,0,255});
+    
+    
+    win->getGuiManager()->loadElementsFromFile("GuiLayoutFile.xml");
+    // win->getGuiManager()->addElement(SmartMemory<GuiItem>::createNoDelete(but, false));
+    // win->getGuiManager()->addToDisposeList(SmartMemory<GuiItem>::createNoDelete(but, false));
+    // win->setActivateGui(false);
+}
+
+void testGuiPart2()
+{
+    GuiManager::initDefaultLoadFunctions();
+    SimpleGraphics::init();
+    WindowOptions options;
+    options.initFunction = init;
+    SimpleWindow win = SimpleWindow("Title", 320, 240, -1, -1, options);
+
+    win.waitTillClose();
+}
+
+void saStuff()
+{
+    Sprite s;
+    s.loadImage("screenshot.png");
+    if(s.getSize() > 0)
+    {
+        size_t N = s.getImage(0)->getWidth() * s.getImage(0)->getHeight();
+        Color* pixels = s.getImage(0)->getPixels();
+        size_t t1 = System::getCurrentTimeNano();
+        SuffixAutomaton sa = SuffixAutomaton(N*4);
+        for(int i=0; i<N; i++)
+        {
+            sa.extend(pixels[i].red);
+            sa.extend(pixels[i].green);
+            sa.extend(pixels[i].blue);
+            sa.extend(pixels[i].alpha);
+        }
+        sa.mapAllPositions();
+        size_t t2 = System::getCurrentTimeNano();
+        StringTools::println("%lluns", t2-t1);
+    }
+}
+
+void tryCannyEdgeDetection()
+{
+    Sprite s;
+    s.loadImage("Large_Scaled_Forest_Lizard.bmp");
+    if(s.getSize() > 0)
+    {
+        Image* newImage = SimpleGraphics::cannyEdgeFilter(s.getImage(0), 0.09, 0.21);
+        if(newImage != nullptr)
+        {
+            newImage->savePNG("TestCanny.png", false);
+            delete newImage;
+        }
+    }
+}
+
 int main(int argc, char** argv)
 {
+    //TODO: Add all patterns found for SuffixAutomaton. (Should give all start indicies) (Post processing function O(N))
+    //TODO: Add min and max adjustments for canny edge filter
     // testWebClient();
     // testQuadTreeLikeCompression();
-    testCopyDirectory();
+    // testCopyDirectory();
+    // testLZ77CSA();
+    // quickCompression();
+    // streamCompressTest();
+    // streamDecompressTest();
+
+    testSerialization();
+    // testGuiPart2();
+    // saStuff();
+    // tryCannyEdgeDetection();
     return 0;
 }

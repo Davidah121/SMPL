@@ -96,7 +96,8 @@
         "ranges": "cpp",
         "regex": "cpp",
         "span": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "typeindex": "cpp"
     },
     "files.exclude": {
         "**/.classpath": true,

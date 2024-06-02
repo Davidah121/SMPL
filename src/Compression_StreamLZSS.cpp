@@ -17,10 +17,12 @@ namespace smpl
 		this->maxBackDist = __min(maxBackwardsDistance, 32768);
 		this->maxLength = maxLength+3;
 
+        buffer.setBitOrder(BinarySet::LMSB);
+
         if(mode == TYPE_COMPRESSION)
         {
-            map = SimpleHashMap<int, int>( SimpleHashMap<int, int>::MODE_KEEP_ALL, 1<<15 );
-            map.setMaxLoadFactor(-1);
+            csa = new ChainedSuffixAutomaton(this->maxBackDist, 3, this->maxLength);
+            csa->resetSearch();
         }
         else
         {
@@ -30,7 +32,9 @@ namespace smpl
 
 	StreamCompressionLZSS::~StreamCompressionLZSS()
 	{
-
+        if(csa != nullptr)
+            delete csa;
+        csa = nullptr;
 	}
 
 	void StreamCompressionLZSS::addData(unsigned char* data, int length)
@@ -44,179 +48,138 @@ namespace smpl
 			addDataDecompression(data, length);
 		}
 	}
-
+    
 	void StreamCompressionLZSS::addDataCompression(unsigned char* data, int length)
 	{
-		for(int i=0; i<length; i++)
-        {
-            lzBuffer.push_back(data[i]);
-        }
-
         size_t index = 0;
-        size_t startOffset = offset;
-        size_t endOffset = offset + lzBuffer.size();
-        if(lzBuffer.size() < 258)
-            return;
 
-        while(offset < endOffset - 258)
+        while(index < length)
         {
-            int v = ((int)lzBuffer[index+2] << 16) | ((int)lzBuffer[index+1] << 8) | (lzBuffer[index]);
-            HashPair<int, int>* k = map.get(v);
-            map.add(v, index);
+            if (delayedBufferSize < 3)
+			{
+				int endOfQueue = (delayedBufferSize + startOfQueue) % 8;
 
-            if(k == nullptr)
+				delayedBuffer[endOfQueue] = data[index];
+				delayedBufferSize++;
+				index++;
+			}
+            unsigned char c = delayedBuffer[currQueueIndex];
+			currQueueIndex = (currQueueIndex + 1) % 8;
+
+			bool foundMatch = csa->searchNext(c);
+			searchState = csa->extractSearch();
+
+            if(foundMatch && searchState.length != maxLength)
             {
-                buffer.add(true);
-                buffer.add(lzBuffer[index], 8);
-                // StringTools::println("LIT: %d", lzBuffer[index]);
-                offset++;
+                if (searchState.length >= 3)
+				{
+					while (delayedBufferSize > 0)
+					{
+						csa->extend(delayedBuffer[startOfQueue]);
+						startOfQueue = (startOfQueue + 1) % 8;
+						delayedBufferSize--;
+					}
+					currQueueIndex = startOfQueue;
+				}
             }
             else
             {
-                //do more
-                int lowestPoint = __max(offset-maxBackDist, 0);
-                int bestLength = 0;
-                int bestLocation = 0;
-                unsigned char* startMatch = (lzBuffer.data()+index);
-                
-                do
-                {
-                    int locationOfMatch = k->data;
-                    if(locationOfMatch < lowestPoint)
-                        break;
-                    
-                    unsigned char* startBase = (lzBuffer.data()+(offset - locationOfMatch));
+                csa->resetSearch();
+                int backwardsDis = startLoc - searchState.start;
 
-                    int len = 3;
-                    while(len < maxLength && startMatch[len] == startBase[len])
-                    {
-                        len++;
-                    }
-
-                    if(len >= bestLength)
-                    {
-                        bestLength = len;
-                        bestLocation = locationOfMatch;
-                    }
-
-                    k = map.getNext();
-                } while (k != nullptr);
-                
-                //always insert
-                int tInd = index+1;
-                for(int j=1; j<bestLength-2; j++)
-                {
-                    int nkey = lzBuffer[tInd] + ((int)lzBuffer[tInd+1]<<8) + ((int)lzBuffer[tInd+2]<<16);
-                    map.add( nkey, tInd );
-                    tInd++;
-                }
-
-                if(bestLength>=3)
+                if(searchState.length >= 3)
                 {
                     buffer.add(false);
-                    buffer.add(bestLength, 8);
-                    buffer.add((int)(offset - bestLocation), 15);
-                    // StringTools::println("REF: (%d, %d)", bestLength, (int)(offset-bestLocation));
-
-                    index += bestLength-1;
-                    offset += bestLength;
+                    buffer.add(backwardsDis, 15);
+                    buffer.add(searchState.length-3, 8);
+                    startLoc += searchState.length;
+                    
+                    if(foundMatch && searchState.length == maxLength)
+                    {
+						csa->extend(delayedBuffer[startOfQueue]);
+						startOfQueue = (startOfQueue + 1) % 8;
+						delayedBufferSize--;
+                    }
                 }
                 else
                 {
-                    //couldn't find match within max allowed distance
+					//only add 1
                     buffer.add(true);
-                    buffer.add(lzBuffer[index], 8);
-                    // StringTools::println("LIT: %d", lzBuffer[index]);
-                    offset++;
+                    buffer.add(delayedBuffer[startOfQueue]);
+					startLoc++;
+
+					csa->extend(delayedBuffer[startOfQueue]);
+					startOfQueue = (startOfQueue + 1) % 8;
+					delayedBufferSize--;
                 }
+                
+				currQueueIndex = startOfQueue;
             }
-
-            index++;
         }
-
-        if(offset > startOffset)
-        {
-            std::vector<unsigned char> newLZBuffer;
-            
-            for(int i=offset-startOffset; i<lzBuffer.size(); i++)
-            {
-                newLZBuffer.push_back(lzBuffer[i]);
-            }
-            lzBuffer = newLZBuffer;
-        }
-        
 	}
 
-	void StreamCompressionLZSS::addDataDecompression(unsigned char* data, int length)
+    void StreamCompressionLZSS::addDataDecompression(unsigned char* data, int length)
 	{
         size_t index = 0;
         while(true)
         {
-            //read bit
-            if(leftovers.size() >= 9)
+            if(leftoversSize > 0)
             {
-                bool type = leftovers.getBit(0);
-                if(type == false)
+                if(getBitFromLeftovers())
                 {
-                    //ref pair - 24 bits
-                    while(index < length && leftovers.size() < 24)
+                    //literal. read 8 more bits
+                    if(leftoversSize < 9)
                     {
-                        leftovers.add(data[index]);
+                        if(index >= length)
+                            break;
+                        addByteToLeftovers(data[index]);
                         index++;
                     }
-                    if(leftovers.size() >= 24)
-                    {
-                        int copyLen = leftovers.getBits(1, 9) + 3;
-                        int backDis = leftovers.getBits(10, 24);
-
-                        //do copy into buffer
-                        for(int i=0; i<copyLen; i++)
-                        {
-                            buffer.getByteRef().push_back( backBuffer[backBuffLocation - backDis] );
-                            backBuffer[backBuffLocation] = backBuffer[backBuffLocation - backDis];
-                            backBuffLocation++;
-                        }
-
-                        //remove from leftovers
-                        int actualLeftovers = leftovers.size() - 24;
-                        BinarySet nLeftovers;
-                        for(int i=actualLeftovers; i<leftovers.size(); i++)
-                        {
-                            nLeftovers.add(leftovers.getBit(i));
-                        }
-                        leftovers = nLeftovers;
-                    }
-                    else
-                    {
+                    if(leftoversSize < 9) //need more data
                         break;
-                    }
+                    
+                    //read the next 8 bits
+                    removeFlagBitLeftovers();
+                    unsigned char lit = getBitsFromLeftoversAndRemove(8);
+                    buffer.getByteRef().push_back(lit);
+
+                    backBuffer[backBuffLocation] = lit;
+                    backBuffLocation++;
                 }
                 else
                 {
-                    //literal - 9 bits
-                    int lit = leftovers.getBits(1, 9);
-
-                    //write into buffer
-                    buffer.getByteRef().push_back(lit);
-                    backBuffer[backBuffLocation] = lit;
-                    backBuffLocation++;
-                    
-                    //remove from leftovers
-                    int actualLeftovers = leftovers.size() - 9;
-                    BinarySet nLeftovers;
-                    for(int i=actualLeftovers; i<leftovers.size(); i++)
+                    //reference read 15+8 more bits
+                    while(leftoversSize < 24)
                     {
-                        nLeftovers.add(leftovers.getBit(i));
+                        if(index >= length)
+                            break;
+                        addByteToLeftovers(data[index]);
+                        index++;
                     }
-                    leftovers = nLeftovers;
+                    if(leftoversSize < 24) //need more data
+                        break;
+                    
+                    //read the next 24 bits
+                    removeFlagBitLeftovers();
+                    unsigned short backwards = getBitsFromLeftoversAndRemove(15);
+                    int copyLength = getBitsFromLeftoversAndRemove(8) + 3;
+                    unsigned short copyLoc = backBuffLocation - backwards;
+
+                    for(int i=0; i<copyLength; i++)
+                    {
+                        buffer.getByteRef().push_back(backBuffer[copyLoc]);
+                        backBuffer[backBuffLocation] = backBuffer[copyLoc];
+                        copyLoc++;
+                        backBuffLocation++;
+                    }
+                    
                 }
             }
             else
             {
                 if(index >= length)
-                    break;
-                
-                leftovers.add(data[index]);
+                    break; //need more data to continue
+                addByteToLeftovers(data[index]);
                 index++;
             }
         }
@@ -224,91 +187,30 @@ namespace smpl
 
     void StreamCompressionLZSS::endData()
     {
-        size_t index = 0;
-        while(index < lzBuffer.size()-2)
-        {
-            int v = ((int)lzBuffer[index+2] << 16) | ((int)lzBuffer[index+1] << 8) | (lzBuffer[index]);
-            HashPair<int, int>* k = map.get(v);
-            map.add(v, index);
-
-            if(k == nullptr)
-            {
-                buffer.add(true);
-                buffer.add(lzBuffer[index], 8);
-            }
-            else
-            {
-                //do more
-                int lowestPoint = __max(offset-maxBackDist, 0);
-                int bestLength = 0;
-                int bestLocation = 0;
-                unsigned char* startMatch = (lzBuffer.data()+index);
-                
-                do
-                {
-                    int locationOfMatch = k->data;
-                    if(locationOfMatch < lowestPoint)
-                        break;
-                    
-                    unsigned char* startBase = (lzBuffer.data()+(offset - locationOfMatch));
-
-                    int len = 3;
-                    while(len < maxLength && startMatch[len] == startBase[len])
-                    {
-                        len++;
-                    }
-
-                    if(len >= bestLength)
-                    {
-                        bestLength = len;
-                        bestLocation = locationOfMatch;
-                    }
-
-                    k = map.getNext();
-                } while (k != nullptr);
-                
-                //always insert
-                int tInd = index+1;
-                for(int j=1; j<bestLength-2; j++)
-                {
-                    int nkey = lzBuffer[tInd] + ((int)lzBuffer[tInd+1]<<8) + ((int)lzBuffer[tInd+2]<<16);
-                    map.add( nkey, tInd );
-                    tInd++;
-                }
-
-                if(bestLength>=3)
-                {
-                    buffer.add(false);
-                    buffer.add(bestLength, 8);
-                    buffer.add((int)(offset - bestLocation), 15);
-
-                    index += bestLength-1;
-                    offset += bestLength-1;
-                }
-                else
-                {
-                    //couldn't find match within max allowed distance
-                    buffer.add(true);
-                    buffer.add(lzBuffer[index], 8);
-                }
-            }
-
-            index++;
-            offset++;
-        }
-        
-		int remainder = lzBuffer.size() - index;
-		for(int j=0; j<remainder; j++)
+        //here we just need to do the very last bit which is get the remaining match
+        //and add anything left in the delayed buffer
+		searchState = csa->extractSearch();
+		int backwardsDis = startLoc - searchState.start;
+		if (searchState.length >= 3)
+		{
+            buffer.add(false);
+            buffer.add(backwardsDis, 15);
+            buffer.add(searchState.length-3, 8);
+		}
+		while (delayedBufferSize > 0)
 		{
             buffer.add(true);
-            buffer.add(lzBuffer[index + j]);
-		}
+            buffer.add(delayedBuffer[startOfQueue]);
 
-        lzBuffer.clear();
+			startOfQueue = (startOfQueue + 1) % 8;
+			delayedBufferSize--;
+		}
     }
 
 	BinarySet& StreamCompressionLZSS::getBuffer()
 	{
+        if(mode == TYPE_DECOMPRESSION)
+            buffer.setNumberOfBits( buffer.getByteRef().size() * 8 ); //decompressed data is byte aligned
 		return buffer;
 	}
 
@@ -321,4 +223,31 @@ namespace smpl
 	{
 		return buffer.getByteRef().size();
 	}
+    
+    bool StreamCompressionLZSS::getBitFromLeftovers()
+    {
+        bool bit = leftoversInt & 0x01;
+        return bit;
+    }
+    int StreamCompressionLZSS::getBitsFromLeftoversAndRemove(int size)
+    {
+        int mask = ((1<<size)-1);
+        int v = leftoversInt & mask;
+        
+        leftoversInt = leftoversInt >> size;
+        leftoversSize -= size;
+        return v;
+    }
+    void StreamCompressionLZSS::addByteToLeftovers(unsigned char v)
+    {
+        int mask = ((1<<leftoversSize)-1);
+        leftoversInt = (v << leftoversSize) + (leftoversInt & mask);
+        leftoversSize += 8;
+    }
+    
+    void StreamCompressionLZSS::removeFlagBitLeftovers()
+    {
+        leftoversInt = leftoversInt >> 1;
+        leftoversSize -= 1;
+    }
 }

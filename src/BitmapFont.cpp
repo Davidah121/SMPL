@@ -6,11 +6,14 @@
 
 namespace smpl
 {
-	const RootClass BitmapFont::globalClass = RootClass("BitmapFont", {"Font"});
+	const RootClass BitmapFont::globalClass = CREATE_ROOT_CLASS(BitmapFont, &Font::globalClass);
+	const RootClass* BitmapFont::getClass()
+	{
+		return &BitmapFont::globalClass;
+	}
 
 	BitmapFont::BitmapFont(File file) : Font()
 	{
-		setClass(globalClass);
 		init( file );
 	}
 

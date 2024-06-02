@@ -12,11 +12,14 @@ namespace smpl
 	int count = 0;
 
 	#pragma region VectorPath
-	const RootClass VectorPath::globalClass = RootClass("VectorPath", {"VectorShape"});
+	const RootClass VectorPath::globalClass = CREATE_ROOT_CLASS(VectorPath, &VectorShape::globalClass);
+    const RootClass* VectorPath::getClass()
+	{
+		return &VectorPath::globalClass;
+	}
 
 	VectorPath::VectorPath() : VectorShape()
 	{
-		setClass(globalClass);
 	}
 
 	VectorPath::VectorPath(const VectorPath& other) : VectorShape()
@@ -34,7 +37,6 @@ namespace smpl
 	void VectorPath::copy(VectorPath& other)
 	{
 		//StringTools::println("Copy Function");
-		setClass(globalClass);
 		this->setFillColor( other.getFillColor() );
 		this->setStrokeColor( other.getStrokeColor() );
 		this->setFillMethod( other.getFillMethod() );

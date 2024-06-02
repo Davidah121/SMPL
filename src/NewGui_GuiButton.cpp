@@ -3,6 +3,13 @@
 
 namespace smpl
 {
+
+    const RootClass GuiButton::globalClass = CREATE_ROOT_CLASS(GuiButton, &GuiLayoutList::globalClass);
+    const RootClass* GuiButton::getClass()
+	{
+		return &GuiButton::globalClass;
+	}
+
     GuiButton::GuiButton() : GuiLayoutList()
     {
 
@@ -130,7 +137,16 @@ namespace smpl
         }
         
         //update the children
-        GuiLayout::update(manager);
+        GuiLayoutList::update(manager);
+    }
+
+    void GuiButton::setHoverColor(smpl::Color c)
+    {
+        hoverColor = c;
+    }
+    void GuiButton::setPressedColor(smpl::Color c)
+    {
+        depressedColor = c;
     }
 
     void GuiButton::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)

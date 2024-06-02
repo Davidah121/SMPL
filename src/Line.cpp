@@ -4,16 +4,18 @@
 namespace smpl
 {
 
-	const RootClass Line::globalClass = RootClass("Line", {"Object"});
+	const RootClass Line::globalClass = CREATE_ROOT_CLASS(Line, &Object::globalClass);
+	const RootClass* Line::getClass()
+	{
+		return &Line::globalClass;
+	}
 
 	Line::Line()
 	{
-		setClass(globalClass);
 	}
 
 	Line::Line(int x1, int y1, int x2, int y2)
 	{
-		setClass(globalClass);
 		point1.x = x1;
 		point1.y = y1;
 		point2.x = x2;
@@ -26,7 +28,6 @@ namespace smpl
 
 	Line::Line(double x1, double y1, double x2, double y2)
 	{
-		setClass(globalClass);
 		point1.x = x1;
 		point1.y = y1;
 		point2.x = x2;
@@ -39,7 +40,6 @@ namespace smpl
 
 	Line::Line(Vec2f p1, Vec2f p2)
 	{
-		setClass(globalClass);
 		point1 = p1;
 		point2 = p2;
 

@@ -1,12 +1,18 @@
 #include "NewGui.h"
 #include "Input.h"
 #include "ResourceManager.h"
+#include "System.h"
 
 namespace smpl
 {
     #pragma region GUI_MANAGER
 	std::unordered_map<std::string, std::function<SmartMemory<GuiItem>(SimpleHashMap<std::string, std::string>&, SmartMemory<GuiManager>)> > GuiManager::elementLoadingFunctions;
-	const RootClass GuiManager::globalClass = RootClass("GuiManager", {"Object"});
+
+	const RootClass GuiManager::globalClass = CREATE_ROOT_CLASS(GuiManager, &Object::globalClass);
+    const RootClass* GuiManager::getClass()
+	{
+		return &GuiManager::globalClass;
+	}
 
 	void GuiManager::initDefaultLoadFunctions()
 	{
@@ -19,6 +25,7 @@ namespace smpl
 		GuiManager::registerLoadFunction("LayoutFixed", GuiLayoutFixed::loadFunction);
 		GuiManager::registerLoadFunction("LayoutList", GuiLayoutList::loadFunction);
 		GuiManager::registerLoadFunction("LayoutTable", GuiLayoutTable::loadFunction);
+		GuiManager::registerLoadFunction("ScrollBar", GuiScrollBar::loadFunction);
 		// GuiRectangleButton::registerLoadFunction();
 		// GuiTextBlock::registerLoadFunction();
 		// GuiTextBox::registerLoadFunction();
@@ -222,7 +229,6 @@ namespace smpl
 
 	GuiManager::GuiManager(unsigned char type)
 	{
-		setClass(globalClass);
 		GraphicsInterface::setDefaultType(type);
 		surf = GraphicsInterface::createSurface(320, 240);
 		expectedSize = Vec2f(320, 240);
@@ -230,7 +236,6 @@ namespace smpl
 
 	GuiManager::GuiManager(unsigned char type, int width, int height)
 	{
-		setClass(globalClass);
 		GraphicsInterface::setDefaultType(type);
 		surf = GraphicsInterface::createSurface(width, height);
 		expectedSize = Vec2f(width, height);
@@ -461,25 +466,12 @@ namespace smpl
 
 	int GuiManager::getMouseX()
 	{
-		double temp = 0;
-		double scaling = 1;
-
-		temp = (double)(Input::getMouseX() - getWindowX());
-		if(surf != nullptr)
-			scaling = expectedSize.x / surf->getWidth();
-
-		return (int)(temp*scaling);
+		return Input::getMouseX() - getWindowX();
 	}
 	
 	int GuiManager::getMouseY()
 	{
-		double temp = 0;
-		double scaling = 1;
-		temp = (double)(Input::getMouseY() - getWindowY());
-		if(surf != nullptr)
-			scaling = expectedSize.y / surf->getHeight();
-
-		return (int)(temp*scaling);
+		return Input::getMouseY() - getWindowY();
 	}
 
 	bool GuiManager::getFocus()
@@ -504,7 +496,7 @@ namespace smpl
 
 	void GuiManager::addToDisposeList(SmartMemory<GuiItem> k)
 	{
-		shouldDelete.push_back(k);
+		shouldDelete.push_back(SmartMemory<GuiItem>::createDeleteRights(k.getRawPointer(), false));
 	}
 
 	void GuiManager::setObjectInFocus(SmartMemory<GuiItem> k)
@@ -515,6 +507,11 @@ namespace smpl
 	bool GuiManager::getObjectInFocus(SmartMemory<GuiItem> k)
 	{
 		return objectInFocus.getPointer() == k.getPointer();
+	}
+	
+	SmartMemory<GuiItem> GuiManager::getFocusObject()
+	{
+		return objectInFocus;
 	}
 	
     void GuiManager::setBackgroundColor(Color c)

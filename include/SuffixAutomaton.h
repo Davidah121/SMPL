@@ -5,6 +5,12 @@
 #include <cstdio>
 #include <array>
 
+#ifndef __max
+#define __max(a, b) (((a) >= (b)) ? (a) : (b))
+#endif
+#ifndef __min
+#define __min(a, b) (((a) <= (b)) ? (a) : (b))
+#endif
 namespace smpl
 {
     struct SFA_State
@@ -12,7 +18,10 @@ namespace smpl
         int len = 0;
         int firstPos = 0;
         int link = -1;
-        std::array<unsigned int, 256> map = std::array<unsigned int, 256>();
+        unsigned int map[256];
+
+        bool isClone = false;
+        std::vector<int> invLink;
     };
 
     struct SFA_State_Short
@@ -20,7 +29,7 @@ namespace smpl
         int len = 0;
         int firstPos = 0;
         int link = -1;
-        std::array<unsigned short, 256> map = std::array<unsigned short, 256>();
+        unsigned short map[256];
     };
 
     class SuffixAutomaton
@@ -62,6 +71,17 @@ namespace smpl
         void extend(unsigned char c);
 
         /**
+         * @brief Maps all possible positions for each pattern.
+         *      Called at the end after fully constructing the automaton.
+         *      Does not clear all of the existing links so this must only be called
+         *      after fully constructing the automaton otherwise, invalid positions will be recorded.
+         * 
+         *      O(N) time
+         * 
+         */
+        void mapAllPositions();
+
+        /**
          * @brief Get the Root State of the Suffix Automaton.
          *      This is equivalent to getState(0)
          * 
@@ -76,6 +96,17 @@ namespace smpl
          * @return SFA_State* 
          */
         SFA_State* getState(int index);
+
+        /**
+         * @brief Get the All Occurences of the pattern represented by the state at index v.
+         *      The length of the pattern is needed to determine the correct position.
+         * 
+         * @param v 
+         * @param length 
+         * @return std::vector<int> 
+         */
+        std::vector<int> getAllOccurences(int v, int length);
+        void getAllOccurences(int v, int length, std::vector<int>& output);
 
         /**
          * @brief Returns a state by traversing from the specified state with desired character.
@@ -225,19 +256,18 @@ namespace smpl
     class ChainedSuffixAutomaton
     {
     public:
-        ChainedSuffixAutomaton(int maxSize, int individualSize, int overlap);
+        ChainedSuffixAutomaton(int maxSize, int totalBuffers, int maxMatchLength);
         ~ChainedSuffixAutomaton();
 
         int extend(unsigned char  c);
         bool searchNext(unsigned char  c);
         void resetSearch();
         SearchState extractSearch();
-        void printStuff();
 
     private:
         int overlap = 258;
         int maxSize = 32768;
-        int individualSize = 4096;
+        int individualSize = 0;
         int totalAmount = 0;
         int currOffset = 0;
         int currIndex = 0;

@@ -10,11 +10,14 @@ namespace smpl
 		
 	#pragma region VectorLine
 
-	const RootClass VectorLine::globalClass = RootClass("VectorLine", {"VectorShape"});
+	const RootClass VectorLine::globalClass = CREATE_ROOT_CLASS(VectorLine, &VectorShape::globalClass);
+    const RootClass* VectorLine::getClass()
+	{
+		return &VectorLine::globalClass;
+	}
 
 	VectorLine::VectorLine() : VectorShape()
 	{
-		setClass(globalClass);
 	}
 
 	VectorLine::~VectorLine()

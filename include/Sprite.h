@@ -46,6 +46,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Gets an image from the sprite at the specified index.

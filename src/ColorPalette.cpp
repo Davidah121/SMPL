@@ -11,7 +11,11 @@ namespace smpl
 {
 
 	#pragma region ClassStuff
-	const RootClass ColorPalette::globalClass = RootClass("ColorPalette", {"Object"});
+	const RootClass ColorPalette::globalClass = CREATE_ROOT_CLASS(ColorPalette, &Object::globalClass);
+	const RootClass* ColorPalette::getClass()
+	{
+		return &ColorPalette::globalClass;
+	}
 	#pragma endregion
 
 	struct ColorNode
@@ -22,7 +26,6 @@ namespace smpl
 
 	ColorPalette::ColorPalette()
 	{
-		setClass(globalClass);
 	}
 
 	ColorPalette::~ColorPalette()
@@ -53,7 +56,6 @@ namespace smpl
 	{
 		dispose();
 		
-		setClass(globalClass);
 		uniquePalette = other.uniquePalette;
 		paletteTree = new KDTree<unsigned char>(3);
 
@@ -62,6 +64,14 @@ namespace smpl
 			addNewColor(c);
 		}
 	}
+	
+	// ColorPalette::ColorPalette(ColorPalette&& other)
+	// {
+	// 	paletteArr = other.paletteArr;
+	// 	paletteTree = other.paletteTree;
+	// 	uniquePalette = other.uniquePalette;
+	// 	other.paletteTree = nullptr;
+	// }
 
 	ColorPalette ColorPalette::createColorPalette(int reds, int greens, int blues)
 	{

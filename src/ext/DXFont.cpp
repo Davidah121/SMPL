@@ -4,7 +4,11 @@
 
     namespace smpl
     {
-        const RootClass DXFont::myClass = RootClass("DXFont", {"Font"});
+        const RootClass DXFont::myClass = CREATE_ROOT_CLASS(DXFont, &Font::globalClass);
+        const RootClass* DXFont::getClass()
+        {
+            return &DXFont::globalClass;
+        }
 
         DXFont::DXFont(File f)
         {

@@ -21,7 +21,7 @@
         <LayoutList direction="vertical" margin="{4,4,4,4}">
             <LayoutList direction="horizontal">
                 <Text text="Type : " selectable="true"/>
-                <Textbox min-width="64" min-height="18">
+                <Textbox min-width="64" min-height="18" allow-linebreaks="true">
                 </Textbox>
             </LayoutList>
             
@@ -62,5 +62,6 @@
             </LayoutList>
             
         </LayoutList>
+
     </LayoutList>
 </SimpleGUI>

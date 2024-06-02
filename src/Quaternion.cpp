@@ -4,17 +4,19 @@
 namespace smpl
 {
 
-    const RootClass Quaternion::globalClass = RootClass("Quaternion", {"SerializedObject"});
+    const RootClass Quaternion::globalClass = CREATE_ROOT_CLASS(Quaternion, &SerializedObject::globalClass);
+    const RootClass* Quaternion::getClass()
+	{
+		return &Quaternion::globalClass;
+	}
 
     Quaternion::Quaternion()
     {
-		setClass(globalClass);
     }
 
 
     Quaternion::Quaternion(double x, double y, double z, double w)
     {
-		setClass(globalClass);
         this->x=x;
         this->y=y;
         this->z=z;

@@ -46,6 +46,7 @@ namespace smpl
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 		
 		ComplexNumber operator+(ComplexNumber other);
 		ComplexNumber operator-(ComplexNumber other);

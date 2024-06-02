@@ -50,7 +50,7 @@
 			}
 		}
 		
-		return glib::StringTools::utf8ToChar(bytes);
+		return smpl::StringTools::utf8ToChar(bytes);
 	}
 #else
 	//Need WINSDK for io.h so might as well use Windows.h too
@@ -2002,4 +2002,4 @@ namespace smpl
 		std::wcerr.rdbuf(errorBuffer);
 	}
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

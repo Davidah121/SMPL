@@ -37,6 +37,8 @@ namespace smpl
         ~PolarCoordinate();
 
         static const RootClass globalClass;
+        virtual const RootClass* getClass();
+        
         std::unordered_map<std::string, SerializedData> getSerializedVariables();
 
         /**

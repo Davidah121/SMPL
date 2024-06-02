@@ -6,11 +6,14 @@
 namespace smpl
 {
 		
-	const RootClass Font::globalClass = RootClass("Font", {"Object"});
+	const RootClass Font::globalClass = CREATE_ROOT_CLASS(Font, &Object::globalClass);
+	const RootClass* Font::getClass()
+	{
+		return &Font::globalClass;
+	}
 
 	Font::Font()
 	{
-		setClass(globalClass);
 	}
 
 	Font::~Font()
@@ -19,7 +22,6 @@ namespace smpl
 	
 	void Font::copyFont(Font& f)
 	{
-		setClass( f.getClass() );
 		charInfoList = f.charInfoList;
 
 		maxHorizAdv = f.maxHorizAdv;
@@ -252,6 +254,8 @@ namespace smpl
 
 		if(x < 0 || y < 0)
 			return SIZE_MAX;
+		if(x >= maxWidth)
+			return SIZE_MAX;
 
 		size_t currIndex = 0;
 
@@ -300,6 +304,8 @@ namespace smpl
 		int currHeight = 0;
 
 		if(x < 0 || y < 0)
+			return SIZE_MAX;
+		if(x >= maxWidth)
 			return SIZE_MAX;
 
 		size_t currIndex = 0;

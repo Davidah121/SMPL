@@ -7,11 +7,14 @@
 namespace smpl
 {
 
-    const RootClass Model::globalClass = RootClass("Model", {"Object"});
-    
+    const RootClass Model::globalClass = CREATE_ROOT_CLASS(Model, &Object::globalClass);
+    const RootClass* Model::getClass()
+	{
+		return &Model::globalClass;
+	}
+
     Model::Model()
     {
-		setClass(globalClass);
     }
 
     Model::~Model()

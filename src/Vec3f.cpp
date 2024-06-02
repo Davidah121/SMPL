@@ -5,11 +5,14 @@
 namespace smpl
 {
 
-	const RootClass Vec3f::globalClass = RootClass("Vec3f", {"SerializedObject"});
-
+	const RootClass Vec3f::globalClass = CREATE_ROOT_CLASS(Vec3f, &SerializedObject::globalClass);
+    const RootClass* Vec3f::getClass()
+	{
+		return &Vec3f::globalClass;
+	}
+	
 	Vec3f::Vec3f(double x, double y, double z)
 	{
-		setClass(globalClass);
 		this->x = x;
 		this->y = y;
 		this->z = z;
@@ -17,12 +20,10 @@ namespace smpl
 
 	Vec3f::Vec3f()
 	{
-		setClass(globalClass);
 	}
 
 	Vec3f::Vec3f(Vec2f other, double z)
 	{
-		setClass(globalClass);
 		this->x = other.x;
 		this->y = other.y;
 		this->z = z;

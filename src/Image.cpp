@@ -11,11 +11,14 @@
 namespace smpl
 {
 
-	const RootClass Image::globalClass = RootClass("Image", {"Object"});
+	const RootClass Image::globalClass = CREATE_ROOT_CLASS(Image, &Object::globalClass);
+	const RootClass* Image::getClass()
+	{
+		return &Image::globalClass;
+	}
 
 	Image::Image()
 	{
-		setClass(globalClass);
 		width = 0;
 		height = 0;
 		pixels = nullptr;
@@ -23,7 +26,6 @@ namespace smpl
 
 	Image::Image(int width, int height)
 	{
-		setClass(globalClass);
 		this->width = width;
 		this->height = height;
 		pixels = new Color[width * height];
@@ -33,8 +35,6 @@ namespace smpl
 	Image::Image(const Image& other)
 	{
 		dispose();
-
-		setClass(globalClass);
 		this->width = other.width;
 		this->height = other.height;
 
@@ -50,8 +50,6 @@ namespace smpl
 	void Image::operator=(const Image& other)
 	{
 		dispose();
-
-		setClass(globalClass);
 		this->width = other.width;
 		this->height = other.height;
 		
@@ -63,6 +61,16 @@ namespace smpl
 
 		p = other.p;
 	}
+	
+	// Image::Image(Image&& other)
+	// {
+	// 	width = other.width;
+	// 	height = other.height;
+	// 	samplingMethod = other.samplingMethod;
+	// 	p = other.p;
+	// 	pixels = other.pixels;
+	// 	other.pixels = nullptr;
+	// }
 
 	Image::~Image()
 	{

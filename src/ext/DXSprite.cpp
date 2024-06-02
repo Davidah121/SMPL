@@ -5,7 +5,11 @@
 	namespace smpl
 	{
 			
-		const RootClass DXSprite::myClass = RootClass("DXSprite", {"Object"});
+		const RootClass DXSprite::myClass = CREATE_ROOT_CLASS(DXSprite, &Object::globalClass);
+        const RootClass* DXSprite::getClass()
+        {
+            return &DXSprite::globalClass;
+        }
 
 		DXSprite::DXSprite()
 		{

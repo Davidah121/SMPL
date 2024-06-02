@@ -4,7 +4,7 @@
 namespace smpl
 {
 
-    class VectorSprite
+    class VectorSprite : public Object
     {
     public:
         /**
@@ -21,6 +21,10 @@ namespace smpl
          * 
          */
         ~VectorSprite();
+        
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
         /**
          * @brief Loads a VectorGraphic from a .svg file.

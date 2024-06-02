@@ -11,7 +11,11 @@
 	{
 
 		std::vector<GLWindow*> GLWindow::windowList = std::vector<GLWindow*>();
-		const RootClass GLWindow::globalClass = RootClass("GLWindow", {"SimpleWindow"});
+		const RootClass GLWindow::globalClass = CREATE_ROOT_CLASS(GLWindow, &SimpleWindow::globalClass);
+        const RootClass* GLWindow::getClass()
+        {
+            return &GLWindow::globalClass;
+        }
 
 		GLWindow* GLWindow::getWindowByHandle(size_t handle)
 		{
@@ -218,7 +222,6 @@
 
 		void GLWindow::init(int x, int y, int width, int height, std::wstring title, WindowOptions windowType)
 		{
-			setClass(globalClass);
 			this->x = x;
 			this->y = y;
 			this->width = width;

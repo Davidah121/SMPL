@@ -5,6 +5,12 @@
 
 namespace smpl
 {
+    const RootClass GuiText::globalClass = CREATE_ROOT_CLASS(GuiText, &GuiContent::globalClass);
+    const RootClass* GuiText::getClass()
+	{
+		return &GuiText::globalClass;
+	}
+
     GuiText::GuiText() : GuiContent()
     {
     }
@@ -16,6 +22,7 @@ namespace smpl
     void GuiText::setText(std::string s)
     {
         text = s;
+        setShouldRender();
     }
 
     std::string GuiText::getText()
@@ -26,11 +33,13 @@ namespace smpl
     void GuiText::setColor(Color c)
     {
         fontColor = c;
+        setShouldRender();
     }
 
     void GuiText::setHighlightColor(Color c)
     {
         highlightColor = c;
+        setShouldRender();
     }
 
     void GuiText::setSelectable(bool s)
@@ -56,6 +65,7 @@ namespace smpl
             maxWidth = -1;
             maxHeight = -1;
         }
+        setShouldRender();
     }
 
     void GuiText::increaseSelectIndex()
@@ -82,18 +92,46 @@ namespace smpl
             highlightEndIndex = highlightStartIndex;
         }
     }
+
     void GuiText::setSelectIndex(int index)
     {
-        highlightStartIndex = index;
-        highlightEndIndex = index;
+        if(index < 0)
+        {
+            highlightStartIndex = text.size();
+            highlightEndIndex = text.size();
+        }
+        else
+        {
+            highlightStartIndex = index;
+            highlightEndIndex = index;
+        }
     }
+    void GuiText::setSelectIndex(int startIndex, int endIndex)
+    {
+        highlightStartIndex = startIndex;
+        highlightEndIndex = endIndex;
+    }
+    void GuiText::setCaretSide(bool v)
+    {
+        caretOnRight = v;
+    }
+    
+    bool GuiText::getCaretSide()
+    {
+        return caretOnRight;
+    }
+
     GRect GuiText::getCaretBox()
     {
         FontInterface* f = GraphicsInterface::getFont();
         if(f != nullptr)
         {
-            Vec2f v = f->getFont()->getCursorLocation(text, highlightStartIndex, maxWidth);
-            return {(int32_t)v.x, (int32_t)v.y, (int32_t)v.x+2, (int32_t)v.y + f->getFont()->getVerticalAdvance()};
+            Vec2f v;
+            if(!caretOnRight)
+                v = f->getFont()->getCursorLocation(text, highlightStartIndex, maxWidth);
+            else
+                v = f->getFont()->getCursorLocation(text, highlightEndIndex, maxWidth);
+            return {(int32_t)v.x, (int32_t)v.y, (int32_t)v.x+1, (int32_t)v.y + f->getFont()->getVerticalAdvance()};
         }
         return {0,0,0,0};
     }
@@ -105,6 +143,11 @@ namespace smpl
         y = offY;
         
         FontInterface* f = GraphicsInterface::getFont();
+        if(f == nullptr)
+            return;
+        if(f->getFont() == nullptr)
+            return;
+        
         if(canWrap == false)
         {
             //max width and height are just the fonts bounds
@@ -125,6 +168,9 @@ namespace smpl
 
     void GuiText::update(SmartMemory<GuiManager> manager)
     {
+        int oldSelectStart = highlightStartIndex;
+        int oldSelectEnd = highlightEndIndex;
+        
         if(isSelectable)
         {
             //get mouseX and mouseY
@@ -146,7 +192,7 @@ namespace smpl
                 {
                     selecting = true;
                     FontInterface* f = GraphicsInterface::getFont();
-                    size_t sIndex = f->getFont()->getSelectIndex(text, maxWidth, mouseX, mouseY);
+                    size_t sIndex = f->getFont()->getSelectIndex(text, maxWidth, mouseX-getTrueX(), mouseY-getTrueY());
 
                     if(sIndex != SIZE_MAX)
                     {
@@ -156,15 +202,15 @@ namespace smpl
                     else
                     {
                         //something went wrong. should never occur
-                        selecting = false;
-                        highlightStartIndex = -1;
-                        highlightEndIndex = -1;
+                        highlightStartIndex = text.size()-1;
+                        highlightEndIndex = text.size()-1;
                     }
+                    startSelectIndex = highlightStartIndex;
                 }
                 else
                 {
-                    highlightStartIndex = -1;
-                    highlightEndIndex = -1;
+                    highlightStartIndex = 0;
+                    highlightEndIndex = 0;
                 }
             }
 
@@ -176,31 +222,32 @@ namespace smpl
             if(selecting)
             {
                 FontInterface* f = GraphicsInterface::getFont();
-                size_t sIndex = f->getFont()->getSelectIndex(text, maxWidth, mouseX, mouseY);
+                size_t sIndex = f->getFont()->getSelectIndex(text, maxWidth,  mouseX-getTrueX(), mouseY-getTrueY());
 
                 //set to endIndex
                 if(sIndex != SIZE_MAX)
                 {
-                    highlightEndIndex = -1;
+                    if(sIndex < startSelectIndex)
+                    {
+                        highlightStartIndex = sIndex;
+                        highlightEndIndex = startSelectIndex;
+                        setCaretSide(false);
+                    }
+                    else
+                    {
+                        highlightEndIndex = sIndex;
+                        highlightStartIndex = startSelectIndex;
+                        setCaretSide(true);
+                    }
                 }
                 else
                 {
-                    //something went wrong. should never occur
-                    selecting = false;
-                    highlightStartIndex = -1;
-                    highlightEndIndex = -1;
-                }
-
-                //if endIndex < startIndex, swap
-                if(highlightEndIndex < highlightStartIndex)
-                {
-                    int temp = highlightStartIndex;
-                    highlightStartIndex = highlightEndIndex;
-                    highlightEndIndex = temp;
+                    highlightEndIndex = text.size()-1;
+                    highlightStartIndex = startSelectIndex;
                 }
             }
 
-            if(highlightStartIndex >= 0)
+            if(highlightStartIndex < highlightEndIndex)
             {
                 if(Input::getKeyDown(Input::KEY_CONTROL) && Input::getKeyPressed('C'))
                 {
@@ -211,9 +258,12 @@ namespace smpl
         }
         else
         {
-            highlightStartIndex = -1;
-            highlightEndIndex = -1;
+            highlightStartIndex = 0;
+            highlightEndIndex = 0;
         }
+
+        if(oldSelectStart != highlightStartIndex || oldSelectEnd != highlightEndIndex)
+            setShouldRender();
     }
 
     void GuiText::render(SmartMemory<GuiManager> manager)

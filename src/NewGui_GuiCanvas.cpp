@@ -2,7 +2,11 @@
 
 namespace smpl
 {
-	const RootClass GuiCanvas::globalClass = RootClass("GuiCanvas", {"GuiLayoutFixed"});
+    const RootClass GuiCanvas::globalClass = CREATE_ROOT_CLASS(GuiCanvas, &GuiLayoutFixed::globalClass);
+    const RootClass* GuiCanvas::getClass()
+	{
+		return &GuiCanvas::globalClass;
+	}
 
     GuiCanvas::GuiCanvas() : GuiLayoutFixed()
     {

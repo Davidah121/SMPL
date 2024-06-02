@@ -18,17 +18,13 @@ namespace smpl
 		BezierCurve();
 
 		/**
-		 *	@brief Creates a BezierCurve Object from another BezierCurve Object
-		 */
-		BezierCurve(const BezierCurve& o);
-
-		/**
 		 * @brief Destroys a BezierCurve Object freeing its memory usage
 		 */
 		~BezierCurve();
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		//Exception Stuff
 		struct BlendPointsError : public std::exception

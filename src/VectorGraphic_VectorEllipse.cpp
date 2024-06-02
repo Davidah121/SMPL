@@ -10,11 +10,14 @@ namespace smpl
 		
 	#pragma region VectorEllipse
 
-	const RootClass VectorEllipse::globalClass = RootClass("VectorEllipse", {"VectorShape"});
+	const RootClass VectorEllipse::globalClass = CREATE_ROOT_CLASS(VectorEllipse, &VectorShape::globalClass);
+    const RootClass* VectorEllipse::getClass()
+	{
+		return &VectorEllipse::globalClass;
+	}
 
 	VectorEllipse::VectorEllipse() : VectorShape()
 	{
-		setClass(globalClass);
 	}
 
 	VectorEllipse::~VectorEllipse()

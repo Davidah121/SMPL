@@ -2,6 +2,12 @@
 
 namespace smpl
 {
+    const RootClass GuiLayoutTable::globalClass = CREATE_ROOT_CLASS(GuiLayoutTable, &GuiLayout::globalClass);
+    const RootClass* GuiLayoutTable::getClass()
+	{
+		return &GuiLayoutTable::globalClass;
+	}
+
     GuiLayoutTable::GuiLayoutTable(uint16_t numColumns) : GuiLayout()
     {
         columns = numColumns;
@@ -175,10 +181,10 @@ namespace smpl
 
         if(children.size() == 0)
         {
-            x = 0;
-            y = 0;
-            width = 0;
-            height = 0;
+            // x = 0;
+            // y = 0;
+            // width = 0;
+            // height = 0;
             return;
         }
 

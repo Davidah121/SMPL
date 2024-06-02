@@ -243,8 +243,8 @@ namespace smpl
 		double* baseImgData = baseImg->getData();
 		double* baseImgDataEnd = baseImg->getData() + sizeOfBaseImg;
 
-		double minIntensityBaseImg = INFINITY;
-		double maxIntensityBaseImg = -INFINITY;
+		double minIntensityBaseImg = *baseImgData;
+		double maxIntensityBaseImg = *baseImgData;
 		
 		while(baseImgData < baseImgDataEnd)
 		{
@@ -275,6 +275,7 @@ namespace smpl
 			return Matrix();
 		
 		Matrix output = Matrix(baseImage->getHeight(), baseImage->getWidth());
+
 		Color* baseImagePixels = baseImage->getPixels();
 		int kernelRowSizeHalf = kernel->getRows()/2;
 		int kernelColSizeHalf = kernel->getCols()/2;

@@ -1,6 +1,12 @@
 #include "NewGui.h"
 namespace smpl
 {
+    const RootClass GuiEmpty::globalClass = CREATE_ROOT_CLASS(GuiEmpty, &GuiItem::globalClass);
+    const RootClass* GuiEmpty::getClass()
+	{
+		return &GuiEmpty::globalClass;
+	}
+
     GuiEmpty::GuiEmpty() : GuiItem()
     {
 

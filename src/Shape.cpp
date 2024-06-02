@@ -6,15 +6,14 @@ namespace smpl
 	
 	#pragma region SHAPE
 
-
-		#pragma region ClassStuff
-		const RootClass Shape::globalClass = RootClass("Shape", {"Object"});
-		#pragma endregion
-
+	const RootClass Shape::globalClass = CREATE_ROOT_CLASS(Shape, &Object::globalClass);
+	const RootClass* Shape::getClass()
+	{
+		return &Shape::globalClass;
+	}
 
 	Shape::Shape()
 	{
-		setClass(globalClass);
 	}
 
 	Shape::~Shape()
@@ -68,24 +67,23 @@ namespace smpl
 
 	#pragma region POINT2D
 
-		#pragma region ClassStuff
-		const RootClass Point2D::globalClass = RootClass("Point2D", { "Shape" });
-		#pragma endregion
+	const RootClass Point2D::globalClass = CREATE_ROOT_CLASS(Point2D, &Shape::globalClass);
+	const RootClass* Point2D::getClass()
+	{
+		return &Point2D::globalClass;
+	}
 
 	Point2D::Point2D()
 	{
-		setClass(globalClass);
 	}
 
 	Point2D::Point2D(double x, double y)
 	{
-		setClass(globalClass);
 		position.x = x;
 		position.y = y;
 	}
 	Point2D::Point2D(Vec2f pos)
 	{
-		setClass(globalClass);
 		position.x = pos.x;
 		position.y = pos.y;
 	}
@@ -108,18 +106,18 @@ namespace smpl
 
 	#pragma region Box2D
 
-		#pragma region ClassStuff
-		const RootClass Box2D::globalClass = RootClass("Box2D", { "Shape" });
-		#pragma endregion
+	const RootClass Box2D::globalClass = CREATE_ROOT_CLASS(Box2D, &Shape::globalClass);
+	const RootClass* Box2D::getClass()
+	{
+		return &Box2D::globalClass;
+	}
 
 	Box2D::Box2D()
 	{
-		setClass(globalClass);
 	}
 
 	Box2D::Box2D(double leftBound, double topBound, double rightBound, double bottomBound)
 	{
-		setClass(globalClass);
 		baseTopLeft.x = leftBound;
 		baseTopLeft.y = topBound;
 		baseBottomRight.x = rightBound;
@@ -221,18 +219,18 @@ namespace smpl
 
 	#pragma region CIRCLE
 
-		#pragma region ClassStuff
-		const RootClass Circle::globalClass = RootClass("Circle", { "Shape" });
-		#pragma endregion
+	const RootClass Circle::globalClass = CREATE_ROOT_CLASS(Circle, &Shape::globalClass);
+	const RootClass* Circle::getClass()
+	{
+		return &Circle::globalClass;
+	}
 
 	Circle::Circle()
 	{
-		setClass(globalClass);
 	}
 
 	Circle::Circle(double rad)
 	{
-		setClass(globalClass);
 		radius = rad;
 		baseRadius = rad;
 	}
@@ -266,18 +264,18 @@ namespace smpl
 
 	#pragma region ELLIPSE
 
-		#pragma region ClassStuff
-		const RootClass Ellipse::globalClass = RootClass("Ellipse", { "Shape" });
-		#pragma endregion
+	const RootClass Ellipse::globalClass = CREATE_ROOT_CLASS(Ellipse, &Shape::globalClass);
+	const RootClass* Ellipse::getClass()
+	{
+		return &Ellipse::globalClass;
+	}
 
 	Ellipse::Ellipse()
 	{
-		setClass(globalClass);
 	}
 
 	Ellipse::Ellipse(double xRad, double yRad)
 	{
-		setClass(globalClass);
 		xRadius = xRad;
 		yRadius = yRad;
 
@@ -327,25 +325,24 @@ namespace smpl
 
 	#pragma region LINE2D
 
-		#pragma region ClassStuff
-		const RootClass Line2D::globalClass = RootClass("Line2D", { "Shape" });
-		#pragma endregion
+	const RootClass Line2D::globalClass = CREATE_ROOT_CLASS(Line2D, &Shape::globalClass);
+	const RootClass* Line2D::getClass()
+	{
+		return &Line2D::globalClass;
+	}
 
 	Line2D::Line2D()
 	{
-		setClass(globalClass);
 	}
 
 	Line2D::Line2D(double x1, double y1, double x2, double y2)
 	{
-		setClass(globalClass);
 		baseL = Line(x1, y1, x2, y2);
 		l = Line(x1, y1, x2, y2);
 	}
 
 	Line2D::Line2D(Vec2f p1, Vec2f p2)
 	{
-		setClass(globalClass);
 		baseL = Line(p1, p2);
 		l = Line(p1, p2);
 	}
@@ -440,18 +437,18 @@ namespace smpl
 
 	#pragma region TRIANGLE2D
 
-		#pragma region ClassStuff
-		const RootClass Triangle2D::globalClass = RootClass("Triangle2D", { "Shape" });
-		#pragma endregion
+	const RootClass Triangle2D::globalClass = CREATE_ROOT_CLASS(Triangle2D, &Shape::globalClass);
+    const RootClass* Triangle2D::getClass()
+	{
+		return &Triangle2D::globalClass;
+	}
 
 	Triangle2D::Triangle2D()
 	{
-		setClass(globalClass);
 	}
 
 	Triangle2D::Triangle2D(Vec2f p1, Vec2f p2, Vec2f p3)
 	{
-		setClass(globalClass);
 		v1 = p1;
 		v2 = p2;
 		v3 = p3;
@@ -459,7 +456,6 @@ namespace smpl
 
 	Triangle2D::Triangle2D(double x1, double y1, double x2, double y2, double x3, double y3)
 	{
-		setClass(globalClass);
 		v1.x = x1;
 		v1.y = y1;
 		v2.x = x2;
@@ -545,9 +541,11 @@ namespace smpl
 
 	#pragma region TRIANGLE2D_MODEL
 
-		#pragma region ClassStuff
-		const RootClass Triangle2DModel::globalClass = RootClass("Triangle2DModel", {"Shape"});
-		#pragma endregion
+	const RootClass Triangle2DModel::globalClass = CREATE_ROOT_CLASS(Triangle2DModel, &Shape::globalClass);
+    const RootClass* Triangle2DModel::getClass()
+	{
+		return &Triangle2DModel::globalClass;
+	}
 
 	Triangle2DModel::Triangle2DModel()
 	{
@@ -585,13 +583,14 @@ namespace smpl
 
 	#pragma region POLYGON2D
 
-		#pragma region ClassStuff
-		const RootClass Polygon2D::globalClass = RootClass("Polygon2D", {"Shape"});
-		#pragma endregion
+	const RootClass Polygon2D::globalClass = CREATE_ROOT_CLASS(Polygon2D, &Shape::globalClass);
+    const RootClass* Polygon2D::getClass()
+	{
+		return &Polygon2D::globalClass;
+	}
 
 	Polygon2D::Polygon2D()
 	{
-		setClass(globalClass);
 	}
 
 	Polygon2D::~Polygon2D()
@@ -768,10 +767,12 @@ namespace smpl
 	#pragma endregion
 
 	#pragma region TRIANGLE_3D
-	
-		#pragma region ClassStuff
-		const RootClass Triangle3D::globalClass = RootClass("Triangle3D", {"Shape"});
-		#pragma endregion
+
+	const RootClass Triangle3D::globalClass = CREATE_ROOT_CLASS(Triangle3D, &Shape::globalClass);
+    const RootClass* Triangle3D::getClass()
+	{
+		return &Triangle3D::globalClass;
+	}
 
 	Triangle3D::Triangle3D()
 	{
@@ -872,9 +873,11 @@ namespace smpl
 
 	#pragma region TRIANGLE3D_MODEL
 
-		#pragma region ClassStuff
-		const RootClass Triangle3DModel::globalClass = RootClass("Triangle3DModel", {"Shape"});
-		#pragma endregion
+	const RootClass Triangle3DModel::globalClass = CREATE_ROOT_CLASS(Triangle3DModel, &Shape::globalClass);
+    const RootClass* Triangle3DModel::getClass()
+	{
+		return &Triangle3DModel::globalClass;
+	}
 
 	Triangle3DModel::Triangle3DModel()
 	{
@@ -915,8 +918,8 @@ namespace smpl
 	//Functions
 	bool CollisionMaster::getCollision(Shape* a, Shape* b, bool overrideQuickCheck)
 	{
-		std::string aClassName = a->getClass().getClassName();
-		std::string bClassName = b->getClass().getClassName();
+		const RootClass* aClass = a->getClass();
+		const RootClass* bClass = b->getClass();
 
 		if(!overrideQuickCheck)
 		{
@@ -931,174 +934,174 @@ namespace smpl
 			}
 		}
 
-		if (aClassName == "Box2D")
+		if (aClass == &Box2D::globalClass)
 		{
-			if (bClassName == "Box2D")
+			if (bClass == &Box2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Box2D*)a, (Box2D*)b);
 			}
-			else if (bClassName == "Point2D")
+			else if (bClass == &Point2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Point2D*)b, (Box2D*)a);
 			}
-			else if (bClassName == "Circle")
+			else if (bClass == &Circle::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Box2D*)a, (Circle*)b);
 			}
-			else if (bClassName == "Ellipse")
+			else if (bClass == &Ellipse::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Box2D*)a, (Ellipse*)b);
 			}
-			else if (bClassName == "Triangle2D")
+			else if (bClass == &Triangle2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Box2D*)a, (Triangle2D*)b);
 			}
-			else if (bClassName == "Line2D")
+			else if (bClass == &Line2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Box2D*)a, (Line2D*)b);
 			}
 
 			//No matching function found
 		}
-		else if (aClassName == "Point2D")
+		else if (aClass == &Point2D::globalClass)
 		{
-			if (bClassName == "Box2D")
+			if (bClass == &Box2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Point2D*)a, (Box2D*)b);
 			}
-			else if (bClassName == "Point2D")
+			else if (bClass == &Point2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Point2D*)a, (Point2D*)b);
 			}
-			else if (bClassName == "Circle")
+			else if (bClass == &Circle::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Point2D*)a, (Circle*)b);
 			}
-			else if (bClassName == "Ellipse")
+			else if (bClass == &Ellipse::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Point2D*)a, (Ellipse*)b);
 			}
-			else if (bClassName == "Triangle2D")
+			else if (bClass == &Triangle2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Point2D*)a, (Triangle2D*)b);
 			}
-			else if (bClassName == "Line2D")
+			else if (bClass == &Line2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Point2D*)a, (Line2D*)b);
 			}
 
 			//No matching function found
 		}
-		else if (aClassName == "Circle")
+		else if (aClass == &Circle::globalClass)
 		{
-			if (bClassName == "Box2D")
+			if (bClass == &Box2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Box2D*)b, (Circle*)a);
 			}
-			else if (bClassName == "Point2D")
+			else if (bClass == &Point2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Point2D*)b, (Circle*)a);
 			}
-			else if (bClassName == "Circle")
+			else if (bClass == &Circle::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Circle*)a, (Circle*)b);
 			}
-			else if (bClassName == "Ellipse")
+			else if (bClass == &Ellipse::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Circle*)a, (Ellipse*)b);
 			}
-			else if (bClassName == "Triangle2D")
+			else if (bClass == &Triangle2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Circle*)a, (Triangle2D*)b);
 			}
-			else if (bClassName == "Line2D")
+			else if (bClass == &Line2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Circle*)a, (Line2D*)b);
 			}
 
 			//No matching function found
 		}
-		else if (aClassName == "Line2D")
+		else if (aClass == &Line2D::globalClass)
 		{
-			if (bClassName == "Box2D")
+			if (bClass == &Box2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Box2D*)b, (Line2D*)a);
 			}
-			else if (bClassName == "Point2D")
+			else if (bClass == &Point2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Point2D*)b, (Line2D*)a);
 			}
-			else if (bClassName == "Circle")
+			else if (bClass == &Circle::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Circle*)b, (Line2D*)a);
 			}
-			else if (bClassName == "Ellipse")
+			else if (bClass == &Ellipse::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Line2D*)a, (Ellipse*)b);
 			}
-			else if (bClassName == "Triangle2D")
+			else if (bClass == &Triangle2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Line2D*)a, (Triangle2D*)b);
 			}
-			else if (bClassName == "Line2D")
+			else if (bClass == &Line2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Line2D*)a, (Line2D*)b);
 			}
 
 			//No matching function found
 		}
-		else if (aClassName == "Triangle2D")
+		else if (aClass == &Triangle2D::globalClass)
 		{
-			if (bClassName == "Box2D")
+			if (bClass == &Box2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Box2D*)b, (Triangle2D*)a);
 			}
-			else if (bClassName == "Point2D")
+			else if (bClass == &Point2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Point2D*)b, (Triangle2D*)a);
 			}
-			else if (bClassName == "Circle")
+			else if (bClass == &Circle::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Circle*)b, (Triangle2D*)a);
 			}
-			else if (bClassName == "Ellipse")
+			else if (bClass == &Ellipse::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Ellipse*)b, (Triangle2D*)a);
 			}
-			else if (bClassName == "Triangle2D")
+			else if (bClass == &Triangle2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Triangle2D*)a, (Triangle2D*)b);
 			}
-			else if (bClassName == "Line2D")
+			else if (bClass == &Line2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Line2D*)b, (Triangle2D*)a);
 			}
 
 			//No matching function found
 		}
-		else if (aClassName == "Ellipse")
+		else if (aClass == &Ellipse::globalClass)
 		{
-			if (bClassName == "Box2D")
+			if (bClass == &Box2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Box2D*)b, (Ellipse*)a);
 			}
-			else if (bClassName == "Point2D")
+			else if (bClass == &Point2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Point2D*)b, (Ellipse*)a);
 			}
-			else if (bClassName == "Circle")
+			else if (bClass == &Circle::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Circle*)b, (Ellipse*)a);
 			}
-			else if (bClassName == "Ellipse")
+			else if (bClass == &Ellipse::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Ellipse*)a, (Ellipse*)b);
 			}
-			else if (bClassName == "Triangle2D")
+			else if (bClass == &Triangle2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Ellipse*)a, (Triangle2D*)b);
 			}
-			else if (bClassName == "Line2D")
+			else if (bClass == &Line2D::globalClass)
 			{
 				return CollisionMaster::collisionMethod((Line2D*)b, (Triangle2D*)a);
 			}

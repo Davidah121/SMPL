@@ -42,6 +42,7 @@
 
 			//Object and RootClass Stuff
 			static const RootClass globalClass;
+			virtual const RootClass* getClass();
 
 			/**
 			 * @brief Gets an texture from the sprite at the specified index.

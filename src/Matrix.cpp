@@ -4,11 +4,14 @@
 namespace smpl
 {
 
-	const RootClass Matrix::globalClass = RootClass("Matrix", {"Object"});
+	const RootClass Matrix::globalClass = CREATE_ROOT_CLASS(Matrix, &Object::globalClass);
+	const RootClass* Matrix::getClass()
+	{
+		return &Matrix::globalClass;
+	}
 
 	Matrix::Matrix()
 	{
-		setClass(globalClass);
 		this->columns = 0;
 		this->rows = 0;
 		this->size = 0;
@@ -19,7 +22,6 @@ namespace smpl
 
 	Matrix::Matrix(int rows, int cols)
 	{
-		setClass(globalClass);
 		this->columns = cols;
 		this->rows = rows;
 		this->size = rows*cols;
@@ -45,12 +47,12 @@ namespace smpl
 
 	void Matrix::copy(const Matrix& c)
 	{
-		setClass(globalClass);
 		if(data!=nullptr)
 		{
 			//clear first
 			if(data!=nullptr)
 				delete[] data;
+			data = nullptr;
 		}
 
 		valid = c.valid;
