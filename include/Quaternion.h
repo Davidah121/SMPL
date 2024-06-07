@@ -1,11 +1,11 @@
 #pragma once
-#include "Object.h"
+#include "Serializable.h"
 #include "Vec4f.h"
 
-namespace glib
+namespace smpl
 {
 
-    class Quaternion : public Object
+    class Quaternion : public SerializedObject
     {
     public:
         /**
@@ -31,7 +31,9 @@ namespace glib
          */
         ~Quaternion();
 
-        static const Class globalClass;
+        static const RootClass globalClass;
+        virtual const RootClass* getClass();
+        std::unordered_map<std::string, SerializedData> getSerializedVariables();
 
         Quaternion operator*(double val);
         void operator*=(double val);

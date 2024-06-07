@@ -1,6 +1,6 @@
 #include "InternalGraphicsHeader.h"
 
-namespace glib
+namespace smpl
 {
     void SimpleGraphics::drawEllipse(int x, int y, int xRad, int yRad, bool outline, Image* surf)
 	{

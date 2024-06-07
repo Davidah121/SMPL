@@ -3,7 +3,7 @@
     #include "ext/DXSurface.h"
     #include "StringTools.h"
 
-    namespace glib
+    namespace smpl
     {
         
         DXSurface* DXSurface::currentSurface = nullptr;

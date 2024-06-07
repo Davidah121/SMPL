@@ -2,17 +2,27 @@
 #include "StringTools.h"
 #include "System.h"
 
-namespace glib
+
+#ifndef NO_SOCKETS
+
+namespace smpl
 {
 	WebSocket::WebSocket(bool type, int port, std::string location, int amountOfConnectionsAllowed)
 	{
-		if(type != TYPE_SERVER)
-			return;
-		
-		conn = new glib::Network(type, port, location, amountOfConnectionsAllowed, true);
+		this->type = type;
+		this->location = location;
+		this->port = port;
+
+		NetworkConfig config;
+		config.amountOfConnectionsAllowed = amountOfConnectionsAllowed;
+		config.location = location;
+		config.port = port;
+		config.type = type;
+		config.TCP = true;
+		conn = new smpl::Network(config);
 
 		srand(time(0));
-		maskRandom = glib::LCG(rand());
+		maskRandom = smpl::LCG(rand());
 
 		packetQueue = std::vector<std::list<WebSocketPacket>>(amountOfConnectionsAllowed);
 		clients = std::vector<ClientInfo>(amountOfConnectionsAllowed);
@@ -24,29 +34,51 @@ namespace glib
 			this->clients[id].connected = false;
 			this->clients[id].buffer = false;
 			this->clients[id].first = true;
+
+			if(this->type == TYPE_CLIENT)
+			{
+				//send upgrade request
+				this->firstConnectClient(id);
+			}
 			
 			//wait on first message received then call on the firstConnect
 			optMutex.unlock();
 		});
 
 		conn->setOnDataAvailableFunction([this](int id) ->void{
+			bool shouldCall = false;
 			optMutex.lock();
 			//check if it is the first message
 			if(this->clients[id].first)
 			{
-				//first message is a connection message requesting upgrade
-				this->firstConnect(id);
-				this->clients[id].connected = true;
-				this->clients[id].first = false;
-				this->clientsConnected++;
+				if(this->type == TYPE_SERVER)
+				{
+					//first message is a connection message requesting upgrade
+					this->firstConnectServer(id);
+					this->clients[id].connected = true;
+					this->clients[id].first = false;
+					this->clientsConnected++;
+				}
+				else
+				{
+					//first message is a confirmation of the upgrade or refusal
+					this->firstConnectClientPart2(id);
+					this->clients[id].connected = true;
+					this->clients[id].first = false;
+					this->clientsConnected++;
+				}
 			}
 			else
 			{
 				//process the message into a WebSocketPacket.
 				//calls packetArrivedFunction when neccessary.
-				this->specialRecv(id);
+				shouldCall = this->specialRecv(id);
+				if(shouldCall == true)
+					shouldCall = this->onNewPacketFunc != nullptr; //Must have a valid callback
 			}
 			optMutex.unlock();
+			
+			this->onNewPacketFunc(id);
 		});
 
 		conn->setOnDisconnectFunction([this](int id) ->void{
@@ -136,9 +168,16 @@ namespace glib
 		
 		//send as a single and not fragmented cause I'm lazy
 		std::vector<unsigned char> sendBuffer;
+		unsigned int mask = 0;
 		sendBuffer.push_back(0b10000001); //last message and is text
 
-		unsigned char tmp = 0b00000000; //no mask
+		unsigned char tmp = 0; //No mask
+		if(type == TYPE_CLIENT)
+		{
+			mask = maskRandom.get();
+			tmp = 128;
+		}
+		
 		size_t len = s.size();
 		if(len <= 125)
 		{
@@ -167,9 +206,22 @@ namespace glib
 			return false; //unsupported size
 		}
 
+		if(type == TYPE_CLIENT)
+		{
+			sendBuffer.push_back((mask >> 24) & 0xFF);
+			sendBuffer.push_back((mask >> 16) & 0xFF);
+			sendBuffer.push_back((mask >> 8) & 0xFF);
+			sendBuffer.push_back((mask >> 0) & 0xFF);
+		}
+
+		unsigned char* maskAsBytes = (unsigned char*)&mask;
+		int maskIndex = 3;
 		for(char c : s)
 		{
-			sendBuffer.push_back( (unsigned char)c );
+			sendBuffer.push_back( (unsigned char)c ^ maskAsBytes[maskIndex] );
+			maskIndex -= 1;
+			if(maskIndex < 0)
+				maskIndex = 3;
 		}
 
 		bool status = conn->sendMessage(sendBuffer, id);
@@ -203,9 +255,16 @@ namespace glib
 
 		//send as a single and not fragmented cause I'm lazy
 		std::vector<unsigned char> sendBuffer;
+		unsigned int mask = 0;
 		sendBuffer.push_back(0b10000010); //last message and is text
 
-		unsigned char tmp = 0b00000000; //No mask. (Error on send if mask used)
+		unsigned char tmp = 0; //No mask
+		if(type == TYPE_CLIENT)
+		{
+			mask = maskRandom.get();
+			tmp = 128;
+		}
+
 		size_t len = size;
 		if(len <= 125)
 		{
@@ -234,9 +293,23 @@ namespace glib
 			return false; //unsupported size
 		}
 
+		if(type == TYPE_CLIENT)
+		{
+			sendBuffer.push_back((mask >> 24) & 0xFF);
+			sendBuffer.push_back((mask >> 16) & 0xFF);
+			sendBuffer.push_back((mask >> 8) & 0xFF);
+			sendBuffer.push_back((mask >> 0) & 0xFF);
+		}
+
+		unsigned char* maskAsBytes = (unsigned char*)&mask;
+		int maskIndex = 3;
+
 		for(size_t i=0; i<size; i++)
 		{
-			sendBuffer.push_back( (unsigned char)buffer[i]);
+			sendBuffer.push_back( (unsigned char)buffer[i] ^ maskAsBytes[maskIndex] );
+			maskIndex -= 1;
+			if(maskIndex < 0)
+				maskIndex = 3;
 		}
 
 		bool status = conn->sendMessage(buffer, id);
@@ -328,7 +401,7 @@ namespace glib
 		return c;
 	}
 
-	void WebSocket::firstConnect(int id)
+	void WebSocket::firstConnectServer(int id)
 	{
 		if(conn == nullptr)
 			return; //error
@@ -353,7 +426,7 @@ namespace glib
 
 		//MAGIC-STRING: 258EAFA5-E914-47DA-95CA-C5AB0DC85B11
 		std::string base64Key = rec.readKeyValue("Sec-WebSocket-Key");
-		glib::StringTools::println("Base64Key: ", base64Key.c_str());
+		smpl::StringTools::println("Base64Key: ", base64Key.c_str());
 		base64Key += "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
 		std::vector<uint32_t> newKey = Cryptography::SHA1((unsigned char*)base64Key.data(), base64Key.size());
@@ -361,7 +434,7 @@ namespace glib
 		for(int i=0; i<5; i++)
 			newKey[i] = StringTools::byteSwap(newKey[i]);
 		
-		std::string base64NewKey = glib::StringTools::base64Encode((unsigned char*)newKey.data(), newKey.size()*4, false);
+		std::string base64NewKey = smpl::StringTools::base64Encode((unsigned char*)newKey.data(), newKey.size()*4, false);
 
 		response.addKeyValue("Sec-WebSocket-Accept", base64NewKey);
 		
@@ -370,10 +443,61 @@ namespace glib
 		this->conn->sendMessage((unsigned char*)responseStr.data(), responseStr.size(), id);
 	}
 
-	void WebSocket::specialRecv(int id)
+	void WebSocket::firstConnectClient(int id)
 	{
 		if(conn == nullptr)
 			return; //error
+
+		//Make an HTTP GET Request
+
+		//Parse as WebRequest
+		WebRequest rec = WebRequest();
+		rec.setHeader(WebRequest::TYPE_GET, "/", true);
+		rec.addKeyValue("Host", location+":"+StringTools::toString(port));
+		rec.addKeyValue("Connection", "keep-alive, Upgrade");
+		rec.addKeyValue("Upgrade", "websocket");
+		rec.addKeyValue("Accept", "*/*");
+		rec.addKeyValue("Sec-Fetch-Dest", "websocket"); //May not be required
+		rec.addKeyValue("Sec-Fetch-Mode", "websocket"); //May not be required
+		rec.addKeyValue("Sec-Fetch-Site", "cross-site"); //May not be required
+		rec.addKeyValue("Sec-WebSocket-Version", "13"); //Not sure if needed
+
+		//generate 16 random bytes
+		websocketKey.push_back(maskRandom.get());
+		websocketKey.push_back(maskRandom.get());
+		websocketKey.push_back(maskRandom.get());
+		websocketKey.push_back(maskRandom.get());
+		
+		//encode into base64
+		std::string base64 = StringTools::base64Encode((unsigned char*)websocketKey.data(), websocketKey.size()*4, false);
+
+		rec.addKeyValue("Sec-WebSocket-Key", base64); //Required. Fix later
+		this->conn->sendMessage(rec, id);
+	}
+
+	void WebSocket::firstConnectClientPart2(int id)
+	{
+		if(conn == nullptr)
+			return; //error
+
+		//recv from server, check if the message is correct. If not, close
+		//gonna be lazy and just consider it fine
+		
+		//Get their HTTP GET Request. Have to get it to remove from the queue of things.
+		std::vector<unsigned char> buffer = std::vector<unsigned char>();
+		bool err = this->conn->receiveMessage(buffer, id) <= 0;
+		
+		if(err)
+		{
+			conn->disconnect();
+			return; //error
+		}
+	}
+
+	bool WebSocket::specialRecv(int id)
+	{
+		if(conn == nullptr)
+			return false; //error
 		
 		//read the message in its entirety
 		bool newPacket = true;
@@ -414,7 +538,7 @@ namespace glib
 		{
 			p.type = TYPE_DISCONNECT;
 			specialDisconnect(id);
-			return;
+			return false;
 		}
 		else
 		{
@@ -461,10 +585,10 @@ namespace glib
 		{
 			if(p.type == TYPE_TEXT || p.type == TYPE_BINARY)
 			{
-				if(this->onNewPacketFunc != nullptr)
-					this->onNewPacketFunc(id);
+				return true;
 			}
 		}
+		return false;
 	}
 
 	void WebSocket::disconnect(int id)
@@ -488,3 +612,5 @@ namespace glib
 		this->conn->disconnect(id);
 	}
 }
+
+#endif

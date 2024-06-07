@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 
-namespace glib
+namespace smpl
 {
 
     class PCG
@@ -70,4 +70,4 @@ namespace glib
         uint64_t increment = 0;
     };
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

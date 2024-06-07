@@ -12,9 +12,9 @@ TEST_CASE("Testing of the BinarySet class", "[BinarySet]")
 	
 	SECTION("SET BYTES AND COPY")
 	{
-		glib::BinarySet bSet;
-		bSet.setBitOrder(glib::BinarySet::LMSB);
-		bSet.setAddBitOrder(glib::BinarySet::LMSB);
+		smpl::BinarySet bSet;
+		bSet.setBitOrder(smpl::BinarySet::LMSB);
+		bSet.setAddBitOrder(smpl::BinarySet::LMSB);
 		bSet.setValues(bytes.data(), bytes.size());
 		
 		REQUIRE(bSet.size() == bits.size());
@@ -24,7 +24,7 @@ TEST_CASE("Testing of the BinarySet class", "[BinarySet]")
 			REQUIRE(x == (int)bytes[i]);
 		}
 
-		glib::BinarySet bSet2 = bSet;
+		smpl::BinarySet bSet2 = bSet;
 		REQUIRE(bSet2.size() == bSet.size());
 		for(int i=0; i<bSet.size(); i++)
 		{
@@ -34,9 +34,9 @@ TEST_CASE("Testing of the BinarySet class", "[BinarySet]")
 
 	SECTION("ADD & SET BITS")
 	{
-		glib::BinarySet bSet;
-		bSet.setBitOrder(glib::BinarySet::LMSB);
-		bSet.setAddBitOrder(glib::BinarySet::LMSB);
+		smpl::BinarySet bSet;
+		bSet.setBitOrder(smpl::BinarySet::LMSB);
+		bSet.setAddBitOrder(smpl::BinarySet::LMSB);
 		bSet.setValues(bytes.data(), bytes.size());
 		
 		bSet.add(true);

@@ -43,7 +43,7 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 
 	SECTION("Test loading an xml from a file or series of bytes")
 	{
-		glib::SimpleXml xml = glib::SimpleXml();
+		smpl::SimpleXml xml = smpl::SimpleXml();
 		xml.loadFromBytes((unsigned char*)rawXML.data(), rawXML.size());
 		//check for the right stuff
 
@@ -83,11 +83,11 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 
 	SECTION("Test searching for node")
 	{
-		glib::SimpleXml xml = glib::SimpleXml();
+		smpl::SimpleXml xml = smpl::SimpleXml();
 		xml.loadFromBytes((unsigned char*)rawXML.data(), rawXML.size());
 
 		std::vector<std::string> searches = {"html"};
-		std::vector<glib::XmlNode*> result = xml.getNodesPattern(searches);
+		std::vector<smpl::XmlNode*> result = xml.getNodesPattern(searches);
 		REQUIRE(result.size() == 1);
 
 		searches = {"html", "body"};
@@ -112,25 +112,25 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 
 	SECTION("Test searching for node 2")
 	{
-		glib::SimpleXml xml = glib::SimpleXml();
+		smpl::SimpleXml xml = smpl::SimpleXml();
 		xml.loadFromBytes((unsigned char*)rawXML2.data(), rawXML2.size());
 
 		std::vector<std::string> searches = {"touchmacros", "macro"};
-		std::vector<glib::XmlNode*> result = xml.getNodesPattern(searches);
+		std::vector<smpl::XmlNode*> result = xml.getNodesPattern(searches);
 		REQUIRE(result.size() == 1);
 
-		glib::HashPair<std::string, std::string>* attribs = result[0]->getAttribute("type");
+		smpl::HashPair<std::string, std::string>* attribs = result[0]->getAttribute("type");
 		REQUIRE(attribs != nullptr);
 		REQUIRE(attribs->data == "touch");
 	}
 
 	SECTION("Test HTML void elements")
 	{
-		glib::SimpleXml html = glib::SimpleXml();
+		smpl::SimpleXml html = smpl::SimpleXml();
 		html.loadFromBytes((unsigned char*)rawHTML.data(), rawHTML.size());
 
 		//Check type and valid xml. Should be html and invalid xml since one tag is not closed
-		REQUIRE(html.getType() == glib::SimpleXml::TYPE_HTML);
+		REQUIRE(html.getType() == smpl::SimpleXml::TYPE_HTML);
 		REQUIRE(html.getValidXml() == false);
 
 		//Check Sizes
@@ -142,7 +142,7 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 		
 		//Check search code
 		std::vector<std::string> searches = {"html", "body", "form", "input"};
-		std::vector<glib::XmlNode*> result = html.getNodesPattern(searches);
+		std::vector<smpl::XmlNode*> result = html.getNodesPattern(searches);
 		REQUIRE(result.size() == 3);
 	}
 }

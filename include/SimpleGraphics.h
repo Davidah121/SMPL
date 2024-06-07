@@ -6,7 +6,7 @@
 #include "Shape.h"
 #include "BezierCurve.h"
 
-namespace glib
+namespace smpl
 {
 
 	class SimpleGraphics
@@ -71,6 +71,8 @@ namespace glib
 		 */
 		static Vec4f convertColorToVec4f(Color c);
 
+		static Color4f convertColorToColor4f(Color c);
+
 		/**
 		 * @brief Converts a Vec4f (which is 4 doubles) to a Color.
 		 * 		Each color channel is converted from [0, 1] to [0, 255]
@@ -79,6 +81,8 @@ namespace glib
 		 * @return Color 
 		 */
 		static Color convertVec4fToColor(Vec4f v);
+		
+		static Color convertColor4fToColor(Color4f c);
 
 		/**
 		 * @brief Draws a pixel to the specified image using Porter Duff rules.
@@ -92,6 +96,7 @@ namespace glib
 		 * 		If set to nullptr, no error is thrown.
 		 */
 		static void drawPixel(int x, int y, Color c, Image* surf);
+		static void drawPixel(int x, int y, Color4f c, HiResImage* surf);
 
 		/**
 		 * @brief Draws a pixel to the specified image using Porter Duff rules.
@@ -107,6 +112,7 @@ namespace glib
 		 * 		If set to nullptr, no error is thrown.
 		 */
 		static void drawPixel(double x, double y, Color c, Image* surf);
+		static void drawPixel(double x, double y, Color4f c, HiResImage* surf);
 
 		/**
 		 * @brief Blends 2 colors using Porter Duff rules.
@@ -119,6 +125,8 @@ namespace glib
 		 * @return Color
 		 */
 		static Color blend(Color src, Color dest);
+		static Vec4f blend(Vec4f src, Vec4f dest);
+		static Color4f blend(Color4f src, Color4f dest);
 
 		#if (OPTI>=1)
 			static __m128i blend(__m128i src, __m128i dest);
@@ -142,6 +150,8 @@ namespace glib
 		 * 		Returns the blended color.
 		 */
 		static Color lerp(Color src, Color dest, double lerpVal);
+		static Vec4f lerp(Vec4f src, Vec4f dest, double lerpVal);
+		
 
 		/**
 		 * @brief Draws a rectangle using the active color.
@@ -300,6 +310,7 @@ namespace glib
 		 * 		The image to draw onto.
 		 */
 		static void drawImage(Image* img, int x, int y, Image* surf);
+		static void drawImage(HiResImage* img, int x, int y, HiResImage* surf);
 		
 		/**
 		 * @brief Draws an Image that is modified by the active drawing color.
@@ -662,11 +673,6 @@ namespace glib
 		static const unsigned char NEAREST_NEIGHBOR_FILTER = 0;
 		static const unsigned char BILINEAR_FILTER = 1;
 		static const unsigned char BICUBIC_FILTER = 2;
-
-		static const unsigned char RED_CHANNEL = 0;
-		static const unsigned char GREEN_CHANNEL = 1;
-		static const unsigned char BLUE_CHANNEL = 2;
-		static const unsigned char ALPHA_CHANNEL = 3;
 		
 		/**
 		 * @brief Returns a new cropped image. Should be deleted when no longer needed.
@@ -740,40 +746,53 @@ namespace glib
 		 * 
 		 * @param kernelRadius
 		 * 		The radius of the kernel used when blurring
+		 * 		If the radius <= 0, nothing is done
 		 * @param sigma
-		 * 		If sigma is <=0, the value will be half of the kernel radius
-		 * @return Image*
+		 * 		If sigma is <= 0, the value will be half of the kernel radius
 		 */
-		static Image* gaussianBlur(Image* img, int kernelRadius, double sigma = -1.0);
+		static void gaussianBlur(Image* img, int kernelRadius, double sigma = -1.0);
+
+		/**
+		 * @brief Converts the image to grayscale by converting the
+		 * 		color space from RGB to YCBCR and only keeping the Y component.
+		 * 		This process skips computing the CB and CR components for speed.
+		 * 
+		 * 		A new image is returned as a pointer and it is the responsibility of
+		 * 			the programmer to delete the memory when no longer needed.
+		 * 
+		 * 		May return nullptr if the image provided does not exist.
+		 * @param img 
+		 * @return Image* 
+		 */
+		static Image* convertToGrayscale(Image* img);
 
 		/**
 		 * @brief Applies an canny edge filter to the image.
-		 * 		Not implemented.
+		 * 		A weakThreshold and strongThreshold must be specified to determine which edges to consider.
+		 * 			Edges between the weakThreshold and strongThreshold may or may not appear in the final output.
+		 * 		
+		 * @param img
+		 * @param weakThreshold
+		 * 		A value perferably between [0.0 - 1.0] that specifies what edges are considered too weak
+		 * 			to be considered
+		 * @param strongThreshold
+		 * 		A value perferably between [0.0 - 1.0] that should be larger than weakThreashold.
+		 * 			Specifies which edges are strong edges. These edges will be in the final output.
+		 * @return Image*
 		 */
-		static Image* cannyEdgeFilter(Image* img);
+		static Image* cannyEdgeFilter(Image* img, double weakThreshold = 0.5, double strongThreshold = 0.75);
 
 		/**
-		 * @brief
-		 * 		Applies a sobel edge filter to the image.
-		 * 		Not implemented.
+		 * @brief Applies a sobel operator to the image.
+		 * 		Returns the magnitude of the X and Y gradients.
+		 * 		
+		 * 		The image does undergo an additional operation.
+		 * 			The image's intesity is rescaled to fit between [0 - 255]
+		 * 
+		 * @param img 
+		 * @return Image* 
 		 */
 		static Image* sobelEdgeFilter(Image* img);
-		
-		/**
-		 * @brief Calculates the gradient of the specified color channel using
-		 * 		central differences.
-		 * @param img
-		 * 		The image to operate on.
-		 * @param type
-		 * 		Must be one of the following types.
-		 * 			RED_CHANNEL
-		 * 			GREEN_CHANNEL
-		 * 			BLUE_CHANNEL
-		 * 			ALPHA_CHANNEL
-		 * @return std::vector<std::vector<Vec2f>>
-		 * 		Returns a 2D vector of Vec2f where each Vec2f stores the gradient at that point.
-		 */
-		static std::vector<std::vector<Vec2f>> calculateGradient(Image* img, unsigned char type);
 		
 		/**
 		 * @brief Dithers the image using either Bayer dithering or Floyd Steinburg dithering.

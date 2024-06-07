@@ -10,11 +10,15 @@
 
 	#include <shobjidl.h>
 
-	namespace glib
+	namespace smpl
 	{
 
 		std::vector<DXWindow*> DXWindow::windowList = std::vector<DXWindow*>();
-		const Class DXWindow::globalClass = Class("DXWindow", {&SimpleWindow::globalClass});
+		const RootClass DXWindow::globalClass = CREATE_ROOT_CLASS(DXWindow, &SimpleWindow::globalClass);
+        const RootClass* DXWindow::getClass()
+        {
+            return &DXWindow::globalClass;
+        }
 
 		DXWindow* DXWindow::getWindowByHandle(size_t handle)
 		{
@@ -172,7 +176,6 @@
 
 		void DXWindow::init(int x, int y, int width, int height, std::wstring title, WindowOptions windowType)
 		{
-			setClass(globalClass);
 			this->x = x;
 			this->y = y;
 			this->width = width;
@@ -434,6 +437,6 @@
 			}
 		}
 
-	} //NAMESPACE glib END
+	} //NAMESPACE smpl END
 
 #endif

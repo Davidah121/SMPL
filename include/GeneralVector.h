@@ -1,7 +1,7 @@
 #pragma once
 #include "Object.h"
 
-namespace glib
+namespace smpl
 {
 
 	class GeneralVector : public Object
@@ -36,8 +36,9 @@ namespace glib
 		 */
 		~GeneralVector();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Returns the value at the specified location or dimension.
@@ -103,4 +104,4 @@ namespace glib
 		double* values = nullptr;
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

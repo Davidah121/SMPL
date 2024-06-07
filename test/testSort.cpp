@@ -1,5 +1,5 @@
 #include <catch2/catch_amalgamated.hpp>
-#include <Sort.h>
+#include "Sort.h"
 
 TEST_CASE("Testing of Sorting and Shuffle Algorithms", "[Sort]")
 {
@@ -8,7 +8,7 @@ TEST_CASE("Testing of Sorting and Shuffle Algorithms", "[Sort]")
 	SECTION( "INSERTION SORT TEST" )
 	{
 		std::vector<int> testData = data;
-		glib::Sort::insertionSort(testData.data(), testData.size());
+		smpl::Sort::insertionSort(testData.data(), testData.size());
 		bool valid = true;
 		for(int i=0; i<testData.size(); i++)
 		{
@@ -24,7 +24,7 @@ TEST_CASE("Testing of Sorting and Shuffle Algorithms", "[Sort]")
 	SECTION( "MERGE SORT TEST" )
 	{
 		std::vector<int> testData = data;
-		glib::Sort::mergeSort(testData.data(), testData.size());
+		smpl::Sort::mergeSort(testData.data(), testData.size());
 		bool valid = true;
 		for(int i=0; i<testData.size(); i++)
 		{
@@ -40,7 +40,7 @@ TEST_CASE("Testing of Sorting and Shuffle Algorithms", "[Sort]")
 	SECTION( "QUICK SORT TEST" )
 	{
 		std::vector<int> testData = data;
-		glib::Sort::quickSort(testData.data(), testData.size());
+		smpl::Sort::quickSort(testData.data(), testData.size());
 		bool valid = true;
 		for(int i=0; i<testData.size(); i++)
 		{
@@ -58,7 +58,7 @@ TEST_CASE("Testing of Sorting and Shuffle Algorithms", "[Sort]")
 		std::vector<int> testData = data;
 		std::vector<bool> appeared = std::vector<bool>(data.size());
 
-		glib::Sort::shuffle(testData.data(), testData.size());
+		smpl::Sort::shuffle(testData.data(), testData.size());
 		bool valid = true;
 		//All points must appear. All unique and up to 10 so simple test without frequency checking.
 		for(int i=0; i<appeared.size(); i++)

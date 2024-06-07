@@ -2,14 +2,14 @@
 
 	#include "ext/DXSprite.h"
 
-	namespace glib
+	namespace smpl
 	{
 			
-		const Class DXSprite::myClass = Class("DXSprite", {&Object::myClass});
-		const Class* DXSprite::getClass()
-		{
-			return &DXSprite::myClass;
-		}
+		const RootClass DXSprite::myClass = CREATE_ROOT_CLASS(DXSprite, &Object::globalClass);
+        const RootClass* DXSprite::getClass()
+        {
+            return &DXSprite::globalClass;
+        }
 
 		DXSprite::DXSprite()
 		{
@@ -141,6 +141,6 @@
 			loops = v;
 		}
 
-	} //NAMESPACE glib END
+	} //NAMESPACE smpl END
 
 #endif

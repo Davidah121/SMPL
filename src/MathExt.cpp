@@ -8,9 +8,89 @@
 #undef max
 #undef min
 
-namespace glib
+namespace smpl
 {
 
+	int MathExt::popcount(uint8_t x)
+	{
+		#ifdef _MSC_VER
+		return __popcnt16(x);
+		#else
+		return __builtin_popcount(x);
+		#endif
+	}
+
+	int MathExt::popcount(uint16_t x)
+	{
+		#ifdef _MSC_VER
+		return __popcnt16(x);
+		#else
+		return __builtin_popcount(x);
+		#endif
+	}
+
+	int MathExt::popcount(uint32_t x)
+	{
+		#ifdef _MSC_VER
+		return __popcnt(x);
+		#else
+		return __builtin_popcount(x);
+		#endif
+	}
+
+	int MathExt::popcount(uint64_t x)
+	{
+		#ifdef _MSC_VER
+		return __popcnt64(x);
+		#else
+		return __builtin_popcountll(x);
+		#endif
+	}
+
+	
+	int MathExt::hammingDistance(uint8_t v1, uint8_t v2)
+	{
+		return MathExt::popcount((uint8_t)(v1 ^ v2));
+	}
+	int MathExt::hammingDistance(uint16_t v1, uint16_t v2)
+	{
+		return MathExt::popcount((uint16_t)(v1 ^ v2));
+	}
+	int MathExt::hammingDistance(uint32_t v1, uint32_t v2)
+	{
+		return MathExt::popcount((uint32_t)(v1 ^ v2));
+	}
+	int MathExt::hammingDistance(uint64_t v1, uint64_t v2)
+	{
+		return MathExt::popcount((uint64_t)(v1 ^ v2));
+	}
+
+	// int MathExt::hammingDistance(uint8_t v1, uint8_t v2)
+	// {
+	// 	int counter = 0;
+	// 	for(int i=0; i<8; i++)
+	// 	{
+	// 		if((v1 & 0x01) != (v2 & 0x01))
+	// 			counter++;
+	// 		v1 = v1 >> 1;
+	// 		v2 = v2 >> 1;
+	// 	}
+	// 	return counter;
+	// }
+
+	// int MathExt::hammingDistance(uint64_t v1, uint64_t v2)
+	// {
+	// 	int counter = 0;
+	// 	for(int i=0; i<64; i++)
+	// 	{
+	// 		if((v1 & 0x01) != (v2 & 0x01))
+	// 			counter++;
+	// 		v1 = v1 >> 1;
+	// 		v2 = v2 >> 1;
+	// 	}
+	// 	return counter;
+	// }
+	
 	float MathExt::floor(float a)
 	{
 		return ::floorf(a);
@@ -1720,101 +1800,9 @@ namespace glib
 
 	#pragma region FOURIER_TRANSFORM_1D
 
-	ComplexNumber MathExt::discreteFourierTransform(ComplexNumber* arr, int size, double x, bool inverse)
-	{
-		//Xk = sumFrom 0 to N-1 of ( xn * e ^ -(i2pi*kn)/N )
-		//or
-		//xn * cos(2pi*kn/N) - i*sin(2pi*kn/N)
-		//We can separate the real and imaginary parts and only do the real part
-
-		ComplexNumber finalAnswer = ComplexNumber();
-		double xFactor = 0;
-
-		if(!inverse)
-			xFactor = (-2.0*PI*x)/size;
-		else
-			xFactor = (2.0*PI*x)/size;
-
-		for (int n = 0; n < size; n++)
-		{
-			ComplexNumber c = ComplexNumber( MathExt::cos(xFactor*n), MathExt::sin(xFactor*n));
-			finalAnswer += arr[n] * c;
-		}
-
-		if(!inverse)
-			return finalAnswer;
-		else
-			return finalAnswer/size;
-	}
-
-	std::vector<ComplexNumber> MathExt::fourierTransform(ComplexNumber* arr, int size, bool inverse)
-	{
-		std::vector<ComplexNumber> output = std::vector<ComplexNumber>(size);
-
-		for(int i=0; i<size; i++)
-		{
-			ComplexNumber frequency = MathExt::discreteFourierTransform(arr, size, (double)i, inverse);
-			output[i] = frequency;
-		}
-
-		return output;
-	}
-
-	std::vector<ComplexNumber> MathExt::fastFourierTransform(ComplexNumber* arr, int size, bool inverse)
-	{
-		//cooley tukey algorithm
-		//must be a power of 2
-
-		int powerSize = 1 << (int)MathExt::ceil(log2(size));
-		std::vector<ComplexNumber> output;
-
-		if(size < powerSize)
-		{
-			//can't do unless it is a power of 2
-			return output;
-		}
-		else
-		{
-			output = MathExt::doFFT(arr, size, inverse);
-		}
-
-		return output;
-	}
-
-	std::vector<ComplexNumber> MathExt::fastFourierTransformTest(ComplexNumber* arr, int size, bool inverse)
-	{
-		//cooley tukey algorithm
-		//must be a power of 2
-
-		int powerSize = 1 << (int)MathExt::ceil(log2(size));
-		std::vector<ComplexNumber> output;
-
-		if(size < powerSize)
-		{
-			//can't do unless it is a power of 2
-			return output;
-		}
-		else
-		{
-			// output = MathExt::doFFT(arr, size, inverse);
-
-			output = std::vector<ComplexNumber>(size);
-			for(int i=0; i<size; i++)
-			{
-				output[i] = arr[i];
-			}
-
-			std::vector<ComplexNumber> tempData = std::vector<ComplexNumber>(size);
-
-			doFFTTest(output.data(), size, 1, inverse, tempData.data());
-		}
-
-		return output;
-	}
-
 	//Should run faster. It still is faster than the normal naive way, but it is not
 	//on par with other modern implementations
-	std::vector<ComplexNumber> MathExt::doFFT(ComplexNumber* arr, int size, bool inverse)
+	std::vector<ComplexNumber> doFFT(ComplexNumber* arr, int size, bool inverse)
 	{
 		//split into even and odd indicies.
 		//regroup them by adding them with a root of unity multiplied to the odd indicies.
@@ -1872,86 +1860,245 @@ namespace glib
 		}
 	}
 
-	void MathExt::doFFTTest(ComplexNumber* output, int size, int incVal, bool inverse, ComplexNumber* tempData)
+	//Not sure how this works just yet. Will keep old code for the recursive call. I worked hard on understanding that.
+	void doFFTInline(ComplexNumber* output, size_t size, bool inverse)
 	{
-		//split into even and odd indicies.
-		//regroup them by adding them with a root of unity multiplied to the odd indicies.
-		//root of unity chosen is e^(2*PI*j/N)
-		
-		if(size>1)
+		//Reference: (https://cp-algorithms.com/algebra/fft.html#improved-implementation-in-place-computation)
+		for(int i=1, j=0; i<size; i++)
 		{
-			ComplexNumber* split1 = output;
-			ComplexNumber* split2 = output+incVal;
-			
-			int newSize = (size/2);
-			int newInc = incVal*2;
+			int bit = size >> 1;
+			for(; j & bit; bit >>=1)
+				j ^= bit;
+			j ^= bit;
 
-			doFFTTest(split1, newSize, newInc, inverse, tempData);
-			doFFTTest(split2, newSize, newInc, inverse, tempData);
-			
-			double angle = 0;
-			if(!inverse)
-				angle = (-2.0*PI)/size;
-			else
-				angle = (2.0*PI)/size;
+			if(i<j)
+				std::swap(output[i], output[j]);
+		}
 
-			for(int i=0; i<newSize; i++)
+		double angle = (inverse) ? -2*PI : 2*PI;
+		for(int l = 2; l<=size; l<<=1)
+		{
+			double ang = angle/l;
+			ComplexNumber wLen = ComplexNumber(MathExt::cos(ang), MathExt::sin(ang));
+			for(int i=0; i<size; i+=l)
 			{
-				ComplexNumber sp1 = split1[i*newInc];
-				ComplexNumber sp2 = split2[i*newInc];
-				
-				ComplexNumber multiplier = ComplexNumber( MathExt::cos(angle*i), MathExt::sin(angle*i) );
-				output[i*incVal] = sp1 + (sp2*multiplier);
-				tempData[(i+newSize)*incVal] = sp1 - (sp2*multiplier);
-
-				if(inverse)
+				ComplexNumber w = ComplexNumber(1, 0);
+				for(int j=0; j<l/2; j++)
 				{
-					output[i*incVal] /= 2;
-					tempData[(i+newSize)*incVal] /= 2;
+					ComplexNumber u = output[i+j];
+					ComplexNumber v = output[i+j+l/2] * w;
+					output[i+j] = u+v;
+					output[i+j+l/2] = u-v;
+					w *= wLen;
 				}
 			}
+		}
 
-			//copy tempData to output
-			for(int i=0; i<newSize; i++)
+		if(inverse)
+		{
+			for(int i=0; i<size; i++)
 			{
-				output[(i+newSize)*incVal] = tempData[(i+newSize)*incVal];
+				output[i] /= size;
 			}
 		}
+	}
+
+	ComplexNumber MathExt::discreteFourierTransform(ComplexNumber* arr, int size, double x, bool inverse)
+	{
+		//Xk = sumFrom 0 to N-1 of ( xn * e ^ -(i2pi*kn)/N )
+		//or
+		//xn * cos(2pi*kn/N) - i*sin(2pi*kn/N)
+		//We can separate the real and imaginary parts and only do the real part
+
+		ComplexNumber finalAnswer = ComplexNumber();
+		double xFactor = 0;
+
+		if(!inverse)
+			xFactor = (-2.0*PI*x)/size;
+		else
+			xFactor = (2.0*PI*x)/size;
+
+		for (int n = 0; n < size; n++)
+		{
+			ComplexNumber c = ComplexNumber( MathExt::cos(xFactor*n), MathExt::sin(xFactor*n));
+			finalAnswer += arr[n] * c;
+		}
+
+		if(!inverse)
+			return finalAnswer;
+		else
+			return finalAnswer/size;
+	}
+
+	std::vector<ComplexNumber> MathExt::fourierTransform(ComplexNumber* arr, int size, bool inverse)
+	{
+		std::vector<ComplexNumber> output = std::vector<ComplexNumber>(size);
+
+		for(int i=0; i<size; i++)
+		{
+			ComplexNumber frequency = MathExt::discreteFourierTransform(arr, size, (double)i, inverse);
+			output[i] = frequency;
+		}
+
+		return output;
+	}
+
+	std::vector<ComplexNumber> MathExt::fastFourierTransform(ComplexNumber* arr, size_t size, bool inverse)
+	{
+		//cooley tukey algorithm
+		//must be a power of 2
+
+		std::vector<ComplexNumber> output;
+		if(size == 0 || !IS_POWER_2(size))
+		{
+			//can't do unless it is a power of 2
+			return output;
+		}
+		else
+		{
+			//copy into output
+			output.resize(size);
+			for(int i=0; i<size; i++)
+			{
+				output[i] = arr[i];
+			}
+			doFFTInline(output.data(), size, inverse);
+		}
+
+		return output;
+	}
+
+	bool MathExt::fastFourierTransformInline(ComplexNumber* arr, size_t size, bool inverse)
+	{
+		//cooley tukey algorithm
+		//must be a power of 2
+		if(size == 0 || !IS_POWER_2(size))
+		{
+			//can't do unless it is a power of 2
+			return false;
+		}
+		else
+		{
+			doFFTInline(arr, size, inverse);
+		}
+
+		return true;
 	}
 
 	#pragma endregion
 
 	#pragma region COSINE_TRANSFORM_1D
 
-	double MathExt::discreteCosineTransform(double* arr, int size, int u, bool inverse)
+	#pragma region NAYUKI_FDCT_STUFF
+
+	/* 
+	* Fast discrete cosine transform algorithms (C++)
+	* 
+	* Copyright (c) 2019 Project Nayuki. (MIT License)
+	* https://www.nayuki.io/page/fast-discrete-cosine-transform-algorithms
+	* 
+	* Permission is hereby granted, free of charge, to any person obtaining a copy of
+	* this software and associated documentation files (the "Software"), to deal in
+	* the Software without restriction, including without limitation the rights to
+	* use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+	* the Software, and to permit persons to whom the Software is furnished to do so,
+	* subject to the following conditions:
+	* - The above copyright notice and this permission notice shall be included in
+	*   all copies or substantial portions of the Software.
+	* - The Software is provided "as is", without warranty of any kind, express or
+	*   implied, including but not limited to the warranties of merchantability,
+	*   fitness for a particular purpose and noninfringement. In no event shall the
+	*   authors or copyright holders be liable for any claim, damages or other
+	*   liability, whether in an action of contract, tort or otherwise, arising from,
+	*   out of or in connection with the Software or the use or other dealings in the
+	*   Software.
+	*/
+
+	void doFDCT(double* arr, double* temp, size_t size)
 	{
-		double sum = 0;
-		double alpha = 1;
-
-		if(u==0)
-			alpha = 1.0/MathExt::sqrt(2.0);
-
-		for(int x=0; x<size; x++)
+		if(size == 1)
+			return;
+		size_t halfSize = size/2;
+		for(size_t i=0; i<halfSize; i++)
 		{
-			double cosCoeff = 0;
-			if(inverse)
-			{
-				if(x==0)
-					alpha = 1.0/MathExt::sqrt(2.0);
-				else
-					alpha = 1.0;
-
-				cosCoeff = (PI*( (2*u) + 1)*x) / (2*size);
-			}
-			else
-			{
-				cosCoeff = (PI*( (2*x) + 1)*u) / (2*size);
-			}
-
-			sum += alpha * arr[x] * MathExt::cos( cosCoeff );
+			double x = arr[i];
+			double y = arr[size - 1 - i];
+			temp[i] = x + y;
+			temp[i + halfSize] = (x-y) / (MathExt::cos((i + 0.5) * PI / size) * 2);
 		}
 
-		return sum * MathExt::sqrt(2.0/size);
+		doFDCT(temp, arr, halfSize);
+		doFDCT(&temp[halfSize], arr, halfSize);
+
+		for(size_t i=0; i<halfSize-1; i++)
+		{
+			arr[2*i] = temp[i];
+			arr[2*i + 1] = temp[i+halfSize] + temp[i+halfSize+1];
+		}
+		arr[size-2] = temp[halfSize-1];
+		arr[size-1] = temp[size-1];
+	}
+
+	void doIDCT(double* arr, double* temp, size_t size)
+	{
+		if(size == 1)
+			return;
+		size_t halfSize = size/2;
+
+		temp[0] = arr[0];
+		temp[halfSize] = arr[1];
+		for(size_t i=1; i<halfSize; i++)
+		{
+			temp[i] = arr[i*2];
+			temp[i + halfSize] = arr[i*2 - 1] + arr[i*2 + 1];
+		}
+
+		doIDCT(temp, arr, halfSize);
+		doIDCT(&temp[halfSize], arr, halfSize);
+
+		for(size_t i=0; i<halfSize; i++)
+		{
+			double x = temp[i];
+			double y = temp[i + halfSize] / (MathExt::cos((i + 0.5) * PI / size) * 2);
+			arr[i] = x+y;
+			arr[size-1-i] = x-y;
+		}
+	}
+
+	#pragma endregion
+
+	double MathExt::discreteCosineTransform(double* arr, int size, int u, bool inverse)
+	{
+		double factor = PI/size;
+		if(inverse == false)
+		{
+			double sum = 0;
+			double scaleFactor = 0;
+			for(int x=0; x<size; x++)
+			{
+				double cosCoeff = (x+0.5)*u*factor;
+				sum += arr[x]*MathExt::cos(cosCoeff);
+			}
+
+			if(u == 0)
+				scaleFactor = 1.0/MathExt::sqrt(size);
+			else
+				scaleFactor = MathExt::sqrt(2.0/size);
+
+			return sum * scaleFactor;
+		}
+		else
+		{
+			double sum = arr[0]/MathExt::sqrt(2.0);
+			double scaleFactor = MathExt::sqrt(2.0/size);
+			for(int x=1; x<size; x++)
+			{
+				double cosCoeff = (u+0.5)*x*factor;
+				sum += arr[x]*MathExt::cos(cosCoeff);
+			}
+			
+			return sum * scaleFactor;
+		}
 	}
 
 	std::vector<double> MathExt::cosineTransform(double* arr, int size, bool inverse)
@@ -1967,87 +2114,152 @@ namespace glib
 	}
 
 	//should be a fast version of the normal discreteCosineTransform
-	std::vector<double> MathExt::fastCosineTransform(double* arr, int size, bool inverse)
+	std::vector<double> MathExt::fastCosineTransform(double* arr, size_t size, bool inverse)
 	{
-		
-		return std::vector<double>();
+		std::vector<double> output;
+		std::vector<double> temp;
+		if(size == 0 || !IS_POWER_2(size))
+		{
+			//can't do unless it is a power of 2
+			return output;
+		}
+		else
+		{
+			//copy arr into output
+			output = std::vector<double>(size);
+			temp = std::vector<double>(size);
+			memcpy(output.data(), arr, size*sizeof(double));
+			if(!inverse)
+			{
+				double factor = MathExt::sqrt(2.0/size);
+				doFDCT(output.data(), temp.data(), size);
+				output[0] *= 1.0/MathExt::sqrt(size);
+				for(int i=1; i<size; i++)
+				{
+					output[i] *= factor;
+				}
+			}
+			else
+			{
+				double factor = MathExt::sqrt(2.0/size);
+				output[0] /= MathExt::sqrt(2.0);
+				doIDCT(output.data(), temp.data(), size);
+				for(int i=0; i<size; i++)
+				{
+					output[i] *= factor;
+				}
+			}
+		}
+
+		return output;
 	}
 
 	#pragma endregion
 
 	#pragma region SINE_TRANSFORM_1D
 
+	double MathExt::discreteSineTransform(double* arr, size_t size, size_t u)
+	{
+		double sum = 0;
+		double ang = PI*(u+1);
+		for(int x=0; x<size; x++)
+		{
+			sum += arr[x]*MathExt::sin(ang*(x+1) / (size+1));
+		}
+		sum *= MathExt::sqrt(2.0 / (size+1));
+		return sum;
+	}
+
+	std::vector<double> MathExt::sineTransform(double* arr, size_t size)
+	{
+		std::vector<double> newArr = std::vector<double>(size);
+		for(int u=0; u<size; u++)
+		{
+			newArr[u] = discreteSineTransform(arr, size, u);
+		}
+
+		return newArr;
+	}
+
+	//should be a fast version of the normal discreteSineTransform
+	// std::vector<double> MathExt::fastSineTransform(double* arr, size_t size, bool inverse)
+	// {
+	// 	// std::vector<double> output;
+	// 	// std::vector<double> temp;
+	// 	// if(size == 0 || !IS_POWER_2(size))
+	// 	// {
+	// 	// 	//can't do unless it is a power of 2
+	// 	// 	return output;
+	// 	// }
+	// 	// else
+	// 	// {
+	// 	// 	//copy arr into output
+	// 	// 	output = std::vector<double>(size);
+	// 	// 	temp = std::vector<double>(size);
+	// 	// 	memcpy(output.data(), arr, size*sizeof(double));
+	// 	// 	if(!inverse)
+	// 	// 		doFDST(output.data(), temp.data(), size);
+	// 	// 	else
+	// 	// 		doIDST(output.data(), temp.data(), size);
+	// 	// }
+
+	// 	// return output;
+	// }
+
+	// void doFDST(double* arr, double* temp, size_t size)
+	// {
+	// 	// if(size == 1)
+	// 	// 	return;
+	// 	// size_t halfSize = size/2;
+	// 	// for(size_t i=0; i<halfSize; i++)
+	// 	// {
+	// 	// 	double x = arr[i];
+	// 	// 	double y = arr[size - 1 - i];
+	// 	// 	temp[i] = x + y;
+	// 	// 	temp[i + halfSize] = (x-y) / (MathExt::cos((i + 0.5) * PI / size) * 2);
+	// 	// }
+
+	// 	// doFDST(arr, temp, halfSize);
+	// 	// doFDST(arr, &temp[halfSize], halfSize);
+
+	// 	// for(size_t i=0; i<halfSize-1; i++)
+	// 	// {
+	// 	// 	arr[2*i] = temp[i];
+	// 	// 	arr[2*i + 1] = temp[i+halfSize] + temp[i+halfSize+1];
+	// 	// }
+	// 	// arr[size-2] = temp[halfSize-1];
+	// 	// arr[size-1] = temp[size-1];
+	// }
+
+	// void doIDST(double* arr, double* temp, size_t size)
+	// {
+	// 	// if(size == 1)
+	// 	// 	return;
+	// 	// size_t halfSize = size/2;
+
+	// 	// temp[0] = arr[0];
+	// 	// temp[halfSize] = arr[1];
+	// 	// for(size_t i=1; i<halfSize; i++)
+	// 	// {
+	// 	// 	temp[i] = arr[i*2];
+	// 	// 	temp[i + halfSize] = arr[i*2 - 1] + arr[i*2 + 1];
+	// 	// }
+
+	// 	// doIDCT(arr, temp, halfSize);
+	// 	// doIDCT(arr, &temp[halfSize], halfSize);
+
+	// 	// for(size_t i=0; i<halfSize-1; i++)
+	// 	// {
+	// 	// 	double x = temp[i];
+	// 	// 	double y = temp[i + halfSize] / (MathExt::cos((i + 0.5) * PI / size) * 2);
+	// 	// 	arr[i] = x+y;
+	// 	// 	arr[size-1-i] = x-y;
+	// 	// }
+	// }
+
 	#pragma endregion
 
 	#pragma region COSINE_TRANSFORM_2D
-
-	double MathExt::discreteCosineTransform2D(Matrix& arr, int u, int v, bool inverse)
-	{
-		double xCoeff = 0;
-		double yCoeff = 0;
-		double uV = 1;
-		double uU = 1;
-
-		if(u==0)
-		{
-			uU = 1.0/MathExt::sqrt(2.0);
-		}
-		if(v==0)
-		{
-			uV = 1.0/MathExt::sqrt(2.0);
-		}
-
-		double sum = 0;
-		
-		for(int y=0; y<arr.getRows(); y++)
-		{
-			if(inverse)
-			{
-				if(y==0)
-				{
-					uV = 1.0/MathExt::sqrt(2.0);
-				}
-				else
-				{
-					uV = 1;
-				}
-				yCoeff = (PI*(2*v + 1)*y) / (2*arr.getRows());
-			}
-			else
-			{
-				yCoeff = (PI*(2*y + 1)*v) / (2*arr.getRows());
-			}
-
-			for(int x=0; x<arr.getCols(); x++)
-			{
-				if(inverse)
-				{
-					if(x==0)
-					{
-						uU = 1.0/MathExt::sqrt(2.0);
-					}
-					else
-					{
-						uU = 1;
-					}
-					xCoeff = (PI*(2*u + 1)*x) / (2*arr.getCols());
-				}
-				else
-				{
-					xCoeff = (PI*(2*x + 1)*u) / (2*arr.getCols());
-				}
-				
-				double val = arr[y][x] * MathExt::cos(xCoeff) * MathExt::cos(yCoeff);
-				
-				sum += val*uU*uV;
-			}
-		}
-		
-		double divVal = MathExt::sqrt(4.0 / (arr.getCols()*arr.getRows()) );
-		sum = sum * divVal;
-
-		return sum;
-	}
 
 	Matrix MathExt::cosineTransform2D(Matrix& arr, bool inverse)
 	{
@@ -2088,13 +2300,181 @@ namespace glib
 
 	Matrix MathExt::fastCosineTransform2D(Matrix& arr, bool inverse)
 	{
-		return Matrix();
+		if(!arr.getValid())
+			return Matrix();
+		if(arr.getRows() != arr.getCols())
+			return Matrix();
+		if(!IS_POWER_2(arr.getRows()))
+			return Matrix();
+		
+		//copy arr into finalArr
+		Matrix finalArr = Matrix(arr);
+		std::vector<double> temp = std::vector<double>(finalArr.getRows());
+		std::vector<double> columnArr = std::vector<double>(arr.getRows());
+
+		if(!inverse)
+		{
+			//for each row
+			for(int v=0; v<finalArr.getRows(); v++)
+			{
+				double* passArr = finalArr[v];
+				doFDCT(passArr, temp.data(), temp.size());
+			}
+
+			//for each column
+			for(int u=0; u<finalArr.getCols(); u++)
+			{
+				for(int i=0; i<finalArr.getRows(); i++)
+				{
+					columnArr[i] = finalArr[i][u];
+				}
+
+				doFDCT(columnArr.data(), temp.data(), temp.size());
+				//copy into final arr column
+				for(int i=0; i<finalArr.getRows(); i++)
+				{
+					finalArr[i][u] = columnArr[i];
+				}
+			}
+		}
+		else
+		{
+			//for each row
+			for(int v=0; v<finalArr.getRows(); v++)
+			{
+				double* passArr = finalArr[v];
+				doIDCT(passArr, temp.data(), temp.size());
+			}
+
+			//for each column
+			for(int u=0; u<finalArr.getCols(); u++)
+			{
+				for(int i=0; i<finalArr.getRows(); i++)
+				{
+					columnArr[i] = finalArr[i][u];
+				}
+
+				doIDCT(columnArr.data(), temp.data(), temp.size());
+				//copy into final arr column
+				for(int i=0; i<finalArr.getRows(); i++)
+				{
+					finalArr[i][u] = columnArr[i];
+				}
+			}
+		}
+
+		return finalArr;
 	}
 
 	#pragma endregion
 
 	
 	#pragma region SINE_TRANSFORM_2D
+	
+	Matrix MathExt::sineTransform2D(Matrix& arr)
+	{
+		Matrix finalArr = Matrix(arr.getRows(), arr.getCols());
+
+		//for each row
+		for(int v=0; v<arr.getRows(); v++)
+		{
+			double* passArr = arr[v];
+			std::vector<double> newArr = MathExt::sineTransform(passArr, arr.getCols());
+
+			for(int i=0; i<arr.getCols(); i++)
+			{
+				finalArr[v][i] = newArr[i];
+			}
+		}
+
+		//for each column
+		for(int u=0; u<arr.getCols(); u++)
+		{
+			std::vector<double> passArr = std::vector<double>(arr.getRows());
+
+			for(int i=0; i<arr.getRows(); i++)
+			{
+				passArr[i] = finalArr[i][u];
+			}
+
+			std::vector<double> newArr = MathExt::sineTransform(passArr.data(), arr.getCols());
+
+			for(int i=0; i<arr.getRows(); i++)
+			{
+				finalArr[i][u] = newArr[i];
+			}
+		}
+
+		return finalArr;
+	}
+
+	// Matrix MathExt::fastCosineTransform2D(Matrix& arr, bool inverse)
+	// {
+	// 	if(!arr.getValid())
+	// 		return Matrix();
+	// 	if(arr.getRows() != arr.getCols())
+	// 		return Matrix();
+	// 	if(!IS_POWER_2(arr.getRows()))
+	// 		return Matrix();
+		
+	// 	//copy arr into finalArr
+	// 	Matrix finalArr = Matrix(arr);
+	// 	std::vector<double> temp = std::vector<double>(finalArr.getRows());
+	// 	std::vector<double> columnArr = std::vector<double>(arr.getRows());
+
+	// 	if(!inverse)
+	// 	{
+	// 		//for each row
+	// 		for(int v=0; v<finalArr.getRows(); v++)
+	// 		{
+	// 			double* passArr = finalArr[v];
+	// 			doFDCT(passArr, temp.data(), temp.size());
+	// 		}
+
+	// 		//for each column
+	// 		for(int u=0; u<finalArr.getCols(); u++)
+	// 		{
+	// 			for(int i=0; i<finalArr.getRows(); i++)
+	// 			{
+	// 				columnArr[i] = finalArr[i][u];
+	// 			}
+
+	// 			doFDCT(columnArr.data(), temp.data(), temp.size());
+	// 			//copy into final arr column
+	// 			for(int i=0; i<finalArr.getRows(); i++)
+	// 			{
+	// 				finalArr[i][u] = columnArr[i];
+	// 			}
+	// 		}
+	// 	}
+	// 	else
+	// 	{
+	// 		//for each row
+	// 		for(int v=0; v<finalArr.getRows(); v++)
+	// 		{
+	// 			double* passArr = finalArr[v];
+	// 			doIDCT(passArr, temp.data(), temp.size());
+	// 		}
+
+	// 		//for each column
+	// 		for(int u=0; u<finalArr.getCols(); u++)
+	// 		{
+	// 			for(int i=0; i<finalArr.getRows(); i++)
+	// 			{
+	// 				columnArr[i] = finalArr[i][u];
+	// 			}
+
+	// 			doIDCT(columnArr.data(), temp.data(), temp.size());
+	// 			//copy into final arr column
+	// 			for(int i=0; i<finalArr.getRows(); i++)
+	// 			{
+	// 				finalArr[i][u] = columnArr[i];
+	// 			}
+	// 		}
+	// 	}
+
+	// 	return finalArr;
+	// }
 
 	#pragma endregion
 
@@ -2121,118 +2501,177 @@ namespace glib
 
 	void MathExt::FCT8(double* arr, double* output, bool inverse)
 	{
-		//assume arr has a size of 8
-		double v[29];
+		// //assume arr has a size of 8
+		// double v[29];
+
+		// if(!inverse)
+		// {
+		// 	v[0] = arr[0]+arr[7];
+		// 	v[1] = arr[1]+arr[6];
+		// 	v[2] = arr[2]+arr[5];
+		// 	v[3] = arr[3]+arr[4];
+		// 	v[4] = arr[3]-arr[4];
+		// 	v[5] = arr[2]-arr[5];
+		// 	v[6] = arr[1]-arr[6];
+		// 	v[7] = arr[0]-arr[7];
+
+		// 	v[8] = v[0] + v[3];
+		// 	v[9] = v[1] + v[2];
+		// 	v[10] = v[1] - v[2];
+		// 	v[11] = v[0] - v[3];
+		// 	v[12] = -v[4] - v[5];
+		// 	v[13] = (v[5]+v[6]) * A[3];
+		// 	v[14] = v[6] + v[7];
+
+		// 	v[15] = v[8] + v[9];
+		// 	v[16] = v[8] - v[9];
+		// 	v[17] = (v[10] + v[11]) * A[1];
+		// 	v[18] = (v[12] + v[14]) * A[5];
+			
+		// 	v[19] = -v[12]*A[2] - v[18];
+		// 	v[20] = v[14]*A[4] - v[18];
+
+		// 	v[21] = v[17] + v[11];
+		// 	v[22] = v[11] - v[17];
+		// 	v[23] = v[13] + v[7];
+		// 	v[24] = v[7] - v[13];
+
+		// 	v[25] = v[19] + v[24];
+		// 	v[26] = v[23] + v[20];
+		// 	v[27] = v[23] - v[20];
+		// 	v[28] = v[24] - v[19];
+
+		// 	output[0] = S[0] * v[15];
+		// 	output[1] = S[1] * v[26];
+		// 	output[2] = S[2] * v[21];
+		// 	output[3] = S[3] * v[28];
+		// 	output[4] = S[4] * v[16];
+		// 	output[5] = S[5] * v[25];
+		// 	output[6] = S[6] * v[22];
+		// 	output[7] = S[7] * v[27];
+		// }
+		// else
+		// {
+		// 	v[15] = arr[0]/S[0];
+		// 	v[26] = arr[1]/S[1];
+		// 	v[21] = arr[2]/S[2];
+		// 	v[28] = arr[3]/S[3];
+		// 	v[16] = arr[4]/S[4];
+		// 	v[25] = arr[5]/S[5];
+		// 	v[22] = arr[6]/S[6];
+		// 	v[27] = arr[7]/S[7];
+
+		// 	v[19] = (v[25]-v[28])/2;
+		// 	v[20] = (v[26]-v[27])/2;
+		// 	v[23] = (v[26]+v[27])/2;
+		// 	v[24] = (v[25]+v[28])/2;
+
+		// 	v[7] = (v[23]+v[24])/2;
+		// 	v[11] = (v[21]+v[22])/2;
+		// 	v[13] = (v[23]-v[24])/2;
+		// 	v[17] = (v[21]-v[22])/2;
+
+		// 	v[8] = (v[15]+v[16])/2;
+		// 	v[9] = (v[15]-v[16])/2;
+
+		// 	v[18] = (v[19]-v[20]) * A[5];
+		// 	v[12] = (v[19]*A[4] - v[18]) / (A[2]*A[5] - A[2]*A[4] - A[4]*A[5]);
+		// 	v[14] = (v[18]-v[20] * A[2]) / (A[2]*A[5] - A[2]*A[4] - A[4]*A[5]);
+
+		// 	v[6] = v[14] - v[7];
+		// 	v[5] = v[13] / A[3] - v[6];
+		// 	v[4] = -v[5] - v[12];
+		// 	v[10] = v[17] / A[1] - v[11];
+
+		// 	v[0] = (v[8]+v[11])/2;
+		// 	v[1] = (v[9]+v[10])/2;
+		// 	v[2] = (v[9]-v[10])/2;
+		// 	v[3] = (v[8]-v[11])/2;
+
+		// 	output[0] = (v[0] + v[7]) / 2;
+		// 	output[1] = (v[1] + v[6]) / 2;
+		// 	output[2] = (v[2] + v[5]) / 2;
+		// 	output[3] = (v[3] + v[4]) / 2;
+		// 	output[4] = (v[3] - v[4]) / 2;
+		// 	output[5] = (v[2] - v[5]) / 2;
+		// 	output[6] = (v[1] - v[6]) / 2;
+		// 	output[7] = (v[0] - v[7]) / 2;
+		// }
 
 		if(!inverse)
 		{
-			v[0] = arr[0]+arr[7];
-			v[1] = arr[1]+arr[6];
-			v[2] = arr[2]+arr[5];
-			v[3] = arr[3]+arr[4];
-			v[4] = arr[3]-arr[4];
-			v[5] = arr[2]-arr[5];
-			v[6] = arr[1]-arr[6];
-			v[7] = arr[0]-arr[7];
-
-			v[8] = v[0] + v[3];
-			v[9] = v[1] + v[2];
-			v[10] = v[1] - v[2];
-			v[11] = v[0] - v[3];
-			v[12] = -v[4] - v[5];
-			v[13] = (v[5]+v[6]) * A[3];
-			v[14] = v[6] + v[7];
-
-			v[15] = v[8] + v[9];
-			v[16] = v[8] - v[9];
-			v[17] = (v[10] + v[11]) * A[1];
-			v[18] = (v[12] + v[14]) * A[5];
-			
-			v[19] = -v[12]*A[2] - v[18];
-			v[20] = v[14]*A[4] - v[18];
-
-			v[21] = v[17] + v[11];
-			v[22] = v[11] - v[17];
-			v[23] = v[13] + v[7];
-			v[24] = v[7] - v[13];
-
-			v[25] = v[19] + v[24];
-			v[26] = v[23] + v[20];
-			v[27] = v[23] - v[20];
-			v[28] = v[24] - v[19];
-
-			output[0] = S[0] * v[15];
-			output[1] = S[1] * v[26];
-			output[2] = S[2] * v[21];
-			output[3] = S[3] * v[28];
-			output[4] = S[4] * v[16];
-			output[5] = S[5] * v[25];
-			output[6] = S[6] * v[22];
-			output[7] = S[7] * v[27];
+			const float mx00 = arr[0] + arr[7];
+			const float mx01 = arr[1] + arr[6];
+			const float mx02 = arr[2] + arr[5];
+			const float mx03 = arr[3] + arr[4];
+			const float mx04 = arr[0] - arr[7];
+			const float mx05 = arr[1] - arr[6];
+			const float mx06 = arr[2] - arr[5];
+			const float mx07 = arr[3] - arr[4];
+			const float mx08 = mx00 + mx03;
+			const float mx09 = mx01 + mx02;
+			const float mx0a = mx00 - mx03;
+			const float mx0b = mx01 - mx02;
+			const float mx0c = 1.38703984532215f*mx04 + 0.275899379282943f*mx07;
+			const float mx0d = 1.17587560241936f*mx05 + 0.785694958387102f*mx06;
+			const float mx0e = -0.785694958387102f*mx05 + 1.17587560241936f*mx06;
+			const float mx0f = 0.275899379282943f*mx04 - 1.38703984532215f*mx07;
+			const float mx10 = 0.353553390593274f * (mx0c - mx0d);
+			const float mx11 = 0.353553390593274f * (mx0e - mx0f);
+			output[0] = 0.353553390593274f * (mx08 + mx09);
+			output[1] = 0.353553390593274f * (mx0c + mx0d);
+			output[2] = 0.461939766255643f*mx0a + 0.191341716182545f*mx0b;
+			output[3] = 0.707106781186547f * (mx10 - mx11);
+			output[4] = 0.353553390593274f * (mx08 - mx09);
+			output[5] = 0.707106781186547f * (mx10 + mx11);
+			output[6] = 0.191341716182545f*mx0a - 0.461939766255643f*mx0b;
+			output[7] = 0.353553390593274f * (mx0e + mx0f);
 		}
 		else
 		{
-			v[15] = arr[0]/S[0];
-			v[26] = arr[1]/S[1];
-			v[21] = arr[2]/S[2];
-			v[28] = arr[3]/S[3];
-			v[16] = arr[4]/S[4];
-			v[25] = arr[5]/S[5];
-			v[22] = arr[6]/S[6];
-			v[27] = arr[7]/S[7];
-
-			v[19] = (v[25]-v[28])/2;
-			v[20] = (v[26]-v[27])/2;
-			v[23] = (v[26]+v[27])/2;
-			v[24] = (v[25]+v[28])/2;
-
-			v[7] = (v[23]+v[24])/2;
-			v[11] = (v[21]+v[22])/2;
-			v[13] = (v[23]-v[24])/2;
-			v[17] = (v[21]-v[22])/2;
-
-			v[8] = (v[15]+v[16])/2;
-			v[9] = (v[15]-v[16])/2;
-
-			v[18] = (v[19]-v[20]) * A[5];
-			v[12] = (v[19]*A[4] - v[18]) / (A[2]*A[5] - A[2]*A[4] - A[4]*A[5]);
-			v[14] = (v[18]-v[20] * A[2]) / (A[2]*A[5] - A[2]*A[4] - A[4]*A[5]);
-
-			v[6] = v[14] - v[7];
-			v[5] = v[13] / A[3] - v[6];
-			v[4] = -v[5] - v[12];
-			v[10] = v[17] / A[1] - v[11];
-
-			v[0] = (v[8]+v[11])/2;
-			v[1] = (v[9]+v[10])/2;
-			v[2] = (v[9]-v[10])/2;
-			v[3] = (v[8]-v[11])/2;
-
-			output[0] = (v[0] + v[7]) / 2;
-			output[1] = (v[1] + v[6]) / 2;
-			output[2] = (v[2] + v[5]) / 2;
-			output[3] = (v[3] + v[4]) / 2;
-			output[4] = (v[3] - v[4]) / 2;
-			output[5] = (v[2] - v[5]) / 2;
-			output[6] = (v[1] - v[6]) / 2;
-			output[7] = (v[0] - v[7]) / 2;
+			const float mx00 = 1.4142135623731f  *arr[0];
+			const float mx01 = 1.38703984532215f *arr[1] + 0.275899379282943f*arr[7];
+			const float mx02 = 1.30656296487638f *arr[2] + 0.541196100146197f*arr[6];
+			const float mx03 = 1.17587560241936f *arr[3] + 0.785694958387102f*arr[5];
+			const float mx04 = 1.4142135623731f  *arr[4];
+			const float mx05 = -0.785694958387102f*arr[3] + 1.17587560241936f*arr[5];
+			const float mx06 = 0.541196100146197f*arr[2] - 1.30656296487638f*arr[6];
+			const float mx07 = -0.275899379282943f*arr[1] + 1.38703984532215f*arr[7];
+			const float mx09 = mx00 + mx04;
+			const float mx0a = mx01 + mx03;
+			const float mx0b = 1.4142135623731f*mx02;
+			const float mx0c = mx00 - mx04;
+			const float mx0d = mx01 - mx03;
+			const float mx0e = 0.353553390593274f * (mx09 - mx0b);
+			const float mx0f = 0.353553390593274f * (mx0c + mx0d);
+			const float mx10 = 0.353553390593274f * (mx0c - mx0d);
+			const float mx11 = 1.4142135623731f*mx06;
+			const float mx12 = mx05 + mx07;
+			const float mx13 = mx05 - mx07;
+			const float mx14 = 0.353553390593274f * (mx11 + mx12);
+			const float mx15 = 0.353553390593274f * (mx11 - mx12);
+			const float mx16 = 0.5f*mx13;
+			output[0] = 0.25f * (mx09 + mx0b) + 0.353553390593274f*mx0a;
+			output[1] = 0.707106781186547f * (mx0f + mx15);
+			output[2] = 0.707106781186547f * (mx0f - mx15);
+			output[3] = 0.707106781186547f * (mx0e + mx16);
+			output[4] = 0.707106781186547f * (mx0e - mx16);
+			output[5] = 0.707106781186547f * (mx10 - mx14);
+			output[6] = 0.707106781186547f * (mx10 + mx14);
+			output[7] = 0.25f * (mx09 + mx0b) - 0.353553390593274f*mx0a;
 		}
 	}
 
 	void MathExt::FCT8x8(Matrix& arr, Matrix* output, bool inverse)
 	{
 		//for each row
-		double* newArr = new double[8];
-		double* passArr = new double[8];
+		double* outputAsDoubleArr = output->getData();
+		double newArr[8];
+		double colArr[8];
 
 		for(int v=0; v<arr.getRows(); v++)
 		{
-			MathExt::FCT8(arr[v], newArr, inverse);
-
-			for(int i=0; i<arr.getCols(); i++)
-			{
-				output->operator[](v)[i] = newArr[i];
-			}
+			MathExt::FCT8(arr[v], &outputAsDoubleArr[v*8], inverse);
 		}
 
 		//for each column
@@ -2240,19 +2679,138 @@ namespace glib
 		{
 			for(int i=0; i<arr.getRows(); i++)
 			{
-				passArr[i] = output->operator[](i)[u];
+				colArr[i] = outputAsDoubleArr[u + i*8];
 			}
 
-			MathExt::FCT8(passArr, newArr, inverse);
+			MathExt::FCT8(colArr, newArr, inverse);
 
 			for(int i=0; i<arr.getRows(); i++)
 			{
-				output->operator[](i)[u] = newArr[i];
+				outputAsDoubleArr[u + i*8] = newArr[i];
 			}
 		}
+	}
 
-		delete[] newArr;
-		delete[] passArr;
+	#pragma endregion
+
+	#pragma COMPUTER_VISION_STUFF
+
+	Matrix MathExt::convolution(Matrix* baseImage, Matrix* kernel, bool normalize)
+	{
+		if(baseImage == nullptr)
+			return Matrix();
+		
+		Matrix output = Matrix(baseImage->getRows(), baseImage->getCols());
+		int kernelRowSizeHalf = kernel->getRows()/2;
+		int kernelColSizeHalf = kernel->getCols()/2;
+		double normalizationFactor = 1.0;
+
+		if(normalize)
+		{
+			double kernelSum = 0;
+			for(int r=0; r<kernel->getRows(); r++)
+			{
+				for(int c=0; c<kernel->getCols(); c++)
+				{
+					kernelSum += kernel->getData()[c + r*kernel->getCols()];
+				}
+			}
+
+			if(kernelSum != 0.0)
+				normalizationFactor *= 1.0/normalizationFactor;
+		}
+		
+		for(int r=0; r<output.getRows(); r++)
+		{
+			for(int c=0; c<output.getCols(); c++)
+			{
+				double sum = 0;
+				for(int kernelY=kernelRowSizeHalf; kernelY >= -kernelRowSizeHalf; kernelY--)
+				{
+					int newImgY = r + kernelY;
+					int actualKernelY = kernelY + kernelRowSizeHalf;
+					if(newImgY >= 0 && newImgY < baseImage->getRows())
+					{
+						for(int kernelX=kernelColSizeHalf; kernelX >= -kernelColSizeHalf; kernelX--)
+						{
+							int newImgX = c + kernelX;
+							int actualKernelX = kernelX + kernelColSizeHalf;
+							if(newImgX >= 0 && newImgX < baseImage->getCols())
+							{
+								double baseImgValue = baseImage->getData()[newImgX + newImgY*baseImage->getCols()];
+								double kernelValue = kernel->getData()[actualKernelX + actualKernelY*kernel->getCols()] * normalizationFactor;
+								sum += kernelValue * baseImgValue;
+							}
+						}
+					}
+				}
+
+				output[r][c] = sum;
+			}
+		}
+		
+		return output;
+	}
+
+	Matrix MathExt::crossCorrelation(Matrix* baseImage, Matrix* kernel, bool normalize)
+	{
+		if(baseImage == nullptr)
+			return Matrix();
+		
+		Matrix output = Matrix(baseImage->getRows(), baseImage->getCols());
+		int kernelRowSizeHalf = kernel->getRows()/2;
+		int kernelColSizeHalf = kernel->getCols()/2;
+		
+		for(int r=0; r<output.getRows(); r++)
+		{
+			for(int c=0; c<output.getCols(); c++)
+			{
+				double sum = 0;
+				double kernelEnergy = 0;
+				double baseImgEnergy = 0;
+
+				for(int kernelY=-kernelRowSizeHalf; kernelY <= kernelRowSizeHalf; kernelY++)
+				{
+					int newImgY = r + kernelY;
+					int actualKernelY = kernelY + kernelRowSizeHalf;
+					if(newImgY >= 0 && newImgY < baseImage->getRows())
+					{
+						for(int kernelX=-kernelColSizeHalf; kernelX <= kernelColSizeHalf; kernelX++)
+						{
+							int newImgX = c + kernelX;
+							int actualKernelX = kernelX + kernelColSizeHalf;
+							if(newImgX >= 0 && newImgX < baseImage->getCols())
+							{
+								double baseImgValue = baseImage->getData()[newImgX + newImgY*baseImage->getCols()];
+								double kernelMultiplier = kernel->getData()[actualKernelX + actualKernelY*kernel->getCols()];
+								if(normalize)
+								{
+									kernelEnergy += MathExt::sqr(kernelMultiplier);
+									baseImgEnergy += MathExt::sqr(baseImgValue);
+								}
+								
+								sum += kernelMultiplier * baseImgValue;
+							}
+						}
+					}
+				}
+
+				if(normalize)
+				{
+					double totalEnergy = MathExt::sqrt(kernelEnergy + baseImgEnergy);
+					if(totalEnergy != 0)
+						output[r][c] = sum / totalEnergy;
+					else
+						output[r][c] = sum;
+				}
+				else
+				{
+					output[r][c] = sum;
+				}
+			}
+		}
+		
+		return output;
 	}
 
 	#pragma endregion

@@ -2,7 +2,7 @@
 #include "SimpleFile.h"
 #include "StringTools.h"
 
-namespace glib
+namespace smpl
 {
     class IniFile
     {

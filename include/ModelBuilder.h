@@ -1,7 +1,7 @@
 #pragma once
 #include "Model.h"
 
-namespace glib
+namespace smpl
 {
     class ModelBuilder
     {

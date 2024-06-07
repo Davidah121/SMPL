@@ -5,7 +5,7 @@
 #include "Object.h"
 #include "BezierCurve.h"
 
-namespace glib
+namespace smpl
 {
 	class Shape : public Object
 	{
@@ -23,8 +23,9 @@ namespace glib
 		 */
 		virtual ~Shape();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Set the Position of the shape.
@@ -111,8 +112,9 @@ namespace glib
 		 */
 		~CombinationShape();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Adds a shape to the list.
@@ -181,8 +183,9 @@ namespace glib
 		 */
 		~Point2D();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Generates the bounding radius for the point.
@@ -221,8 +224,9 @@ namespace glib
 		Box2D(double leftBound, double topBound, double rightBound, double bottomBound);
 		~Box2D();
 		
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Set the Left Bound of the AABB
@@ -357,8 +361,9 @@ namespace glib
 		 */
 		void setRadius(double rad);
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Generates the bounding radius for the circle.
@@ -430,8 +435,9 @@ namespace glib
 		 */
 		void setYRadius(double rad);
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Generates the bounding radius of the Ellipse.
@@ -488,8 +494,9 @@ namespace glib
 		 */
 		~Line2D();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Sets the first point of the line
@@ -597,8 +604,9 @@ namespace glib
 		 */
 		~Triangle2D();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Sets the first vertex of the triangle
@@ -707,8 +715,9 @@ namespace glib
 		 */
 		~Triangle2DModel();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Adds a 2D triangle to the list of triangles in the shape.
@@ -760,8 +769,9 @@ namespace glib
 		 */
 		~Polygon2D();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Adds a vertex to the polygon.
@@ -959,8 +969,9 @@ namespace glib
 		 */
 		~Triangle3D();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Sets the first vertex of the triangle
@@ -1079,8 +1090,9 @@ namespace glib
 		 */
 		~Triangle3DModel();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Adds a 3D triangle to the list of triangles in the shape.

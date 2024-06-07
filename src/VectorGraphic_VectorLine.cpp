@@ -5,16 +5,19 @@
 #include "BezierCurve.h"
 #include "ColorNameConverter.h"
 
-namespace glib
+namespace smpl
 {
 		
 	#pragma region VectorLine
 
-	const Class VectorLine::globalClass = Class("VectorLine", {&VectorShape::globalClass});
+	const RootClass VectorLine::globalClass = CREATE_ROOT_CLASS(VectorLine, &VectorShape::globalClass);
+    const RootClass* VectorLine::getClass()
+	{
+		return &VectorLine::globalClass;
+	}
 
 	VectorLine::VectorLine() : VectorShape()
 	{
-		setClass(globalClass);
 	}
 
 	VectorLine::~VectorLine()
@@ -63,8 +66,8 @@ namespace glib
 		{
 			//method 1
 			SimpleGraphics::setColor(getStrokeColor());
-			buffer->drawLine((int)MathExt::round(x1),(int)MathExt::round(y1),
-							(int)MathExt::round(x2),(int)MathExt::round(y2));
+			SimpleGraphics::drawLine((int)MathExt::round(x1),(int)MathExt::round(y1),
+							(int)MathExt::round(x2),(int)MathExt::round(y2), buffer);
 		}
 		else if(getStrokeWidth() > 1)
 		{
@@ -81,7 +84,7 @@ namespace glib
 			Vec2f newPoint3 = newPoint2 + toEndPoint;
 			Vec2f newPoint4 = newPoint1 + toEndPoint;
 
-			buffer->drawPolygon(new Vec2f[4]{newPoint1, newPoint2, newPoint3, newPoint4}, 4);
+			SimpleGraphics::drawPolygon(new Vec2f[4]{newPoint1, newPoint2, newPoint3, newPoint4}, 4, buffer);
 		}
 		
 		x1 = preX1;

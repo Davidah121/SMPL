@@ -1,0 +1,6 @@
+<serializer>
+	<serializedobject name="p" type="class SerializedVec2f">
+		<serializeddata value="12.000000" name="x" type="double"/>
+		<serializeddata value="23.000000" name="y" type="double"/>
+	</serializedobject>
+</serializer>

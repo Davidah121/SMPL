@@ -2,10 +2,18 @@
 #include "StringTools.h"
 #include "SimpleDir.h"
 
-namespace glib
-{
+#ifdef _WIN32
+#define ftell64(file) _ftelli64(file)
+#else
+#define ftell64(file) ftello64(file)
+#endif
 
-	const Class SimpleFile::globalClass = Class("SimpleFile", {&Object::globalClass});
+namespace smpl
+{
+	SimpleFile::SimpleFile()
+	{
+
+	}
 
 	SimpleFile::SimpleFile(File file, char type)
 	{
@@ -14,78 +22,55 @@ namespace glib
 
 	void SimpleFile::init(std::string filename, char type)
 	{
-		setClass(globalClass);
 		this->type = type&0x0F;
-		this->dataType = type&0xF0;
-		this->size = 0;
+		dataType = type&0xF0;
+		size = 0;
 		switch (this->type)
 		{
 		case SimpleFile::READ:
 			
 			//try to open
-			this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
-
-			#ifdef USE_EXCEPTIONS
-			if(!this->file->is_open())
-			{
-				//not open. could be file access or the file may not exist.
-				throw SimpleFile::FileOpenErrorException();
-			}
-			#endif
-
-			size = (size_t)file->tellg();
-			file->close();
-
-			this->file->open(filename, std::fstream::in | std::fstream::binary);
-
-			#ifdef USE_EXCEPTIONS
-			if(!this->file->is_open())
-			{
-				//not open. could be file access or the file may not exist.
-				throw SimpleFile::FileOpenErrorException();
-			}
-			#endif
-
-			//remove signifier
-			if(dataType==WIDECHAR)
-			{
-				int c1 = file->get();
-				int c2 = file->get();
-
-				if(c1 == 0xFE && c2 == 0xFF)
-				{
-					//utf-16 file
-				}
-				else
-				{
-					//no header
-					file->putback(c2);
-					file->putback(c1);
-				}
-			}
-			else if(dataType==UTF8)
-			{
-				int c1 = file->get();
-				int c2 = file->get();
-				int c3 = file->get();
-
-				if(c1 == 0xEF && c2 == 0xBB && c3 == 0xBF)
-				{
-					//utf-8 file
-				}
-				else
-				{
-					//no header
-					file->putback(c3);
-					file->putback(c2);
-					file->putback(c1);
-				}
-			}
+			cFile = fopen(filename.c_str(), "rb");
 			this->filename = filename;
+			if(cFile)
+			{
+				fseek(cFile, 0, SEEK_END);
+				size = ftell64(cFile);
+				rewind(cFile);
+				if(dataType == WIDECHAR)
+				{
+					int c1 = fgetc(cFile);
+					int c2 = fgetc(cFile);
+					if(c1 != 0xFE || c2 != 0xFF)
+					{
+						//no utf-16 header. Put back the bytes
+						fseek(cFile, -2, SEEK_CUR);
+					}
+				}
+				else if(dataType == UTF8)
+				{
+					int c1 = fgetc(cFile);
+					int c2 = fgetc(cFile);
+					int c3 = fgetc(cFile);
+					if(c1 != 0xEF || c2 != 0xBB || c3 != 0xBF)
+					{
+						//no utf-8 header. Put back the bytes
+						fseek(cFile, -3, SEEK_CUR);
+					}
+				}
+			}
+			else
+			{
+				#ifdef USE_EXCEPTIONS
+					//not open.  could be file access or the file may not exist.
+					throw SimpleFile::FileOpenErrorException();
+				#endif
+			}
+			
 			break;
 		case SimpleFile::WRITE:
 			//
-			this->file = new std::fstream(filename, std::fstream::out | std::fstream::binary);
+			cFile = fopen(filename.c_str(), "wb");
 			this->filename = filename;
 
 			#ifdef USE_EXCEPTIONS
@@ -99,34 +84,38 @@ namespace glib
 			break;
 		case SimpleFile::WRITE_APPEND:
 			//
-			this->file = new std::fstream(filename, std::fstream::in | std::fstream::ate | std::fstream::binary);
-
-			#ifdef USE_EXCEPTIONS
-			if(!this->file->is_open())
-			{
-				//not open. could be file access or the file may not exist.
-				throw SimpleFile::FileOpenErrorException();
-			}
-			#endif
-
-			size = (size_t)file->tellg();
-			file->close();
-
-			this->file->open(filename, std::fstream::out | std::fstream::app | std::fstream::binary);
-
-			#ifdef USE_EXCEPTIONS
-			if(!this->file->is_open())
-			{
-				//not open. could be file access or the file may not exist.
-				throw SimpleFile::FileOpenErrorException();
-			}
-			#endif
-
+			cFile = fopen(filename.c_str(), "ab");
 			this->filename = filename;
+			if(cFile)
+			{
+				size = ftell64(cFile);
+			}
+			else
+			{
+				#ifdef USE_EXCEPTIONS
+				//not open. could be file access or the file may not exist.
+				throw SimpleFile::FileOpenErrorException();
+				#endif
+			}
+
 			break;
 		default:
 			break;
 		}
+	}
+
+	void SimpleFile::init(FILE* filePointer, std::string name, char type)
+	{
+		this->type = type&0x0F;
+		dataType = type&0xF0;
+		size = 0;
+		cFile = filePointer;
+		this->filename = name;
+	}
+
+	FILE* SimpleFile::getFilePointer()
+	{
+		return cFile;
 	}
 
 	SimpleFile::~SimpleFile()
@@ -135,15 +124,13 @@ namespace glib
 		{
 			close();
 		}
-		
-		delete file;
 	}
 
 	int SimpleFile::readInt()
 	{
 		if (isOpen() && type == SimpleFile::READ && !isEndOfFile())
 		{
-			return file->get();
+			return fgetc(cFile);
 		}
 		else
 		{
@@ -163,7 +150,28 @@ namespace glib
 	{
 		if (isOpen() && type == SimpleFile::READ && !isEndOfFile())
 		{
-			return file->get();
+			return fgetc(cFile);
+		}
+		else
+		{
+			//File is not opened for reading
+			#ifdef USE_EXCEPTIONS
+
+			//not open for reading. could be file access or the file may not exist.
+			throw SimpleFile::FileReadException();
+
+			#endif
+		}
+		return '\0';
+	}
+
+	char SimpleFile::peekByte()
+	{
+		if (isOpen() && type == SimpleFile::READ && !isEndOfFile())
+		{
+			int c = fgetc(cFile);
+			ungetc(c, cFile);
+			return c;
 		}
 		else
 		{
@@ -178,11 +186,11 @@ namespace glib
 		return '\0';
 	}
 	
-	void SimpleFile::readBytes(char* buffer, int size)
+	size_t SimpleFile::readBytes(char* buffer, size_t size)
 	{
 		if (isOpen() && type == SimpleFile::READ && !isEndOfFile())
 		{
-			file->read(buffer, size);
+			return fread(buffer, sizeof(char), size, cFile);
 		}
 		else
 		{
@@ -194,6 +202,7 @@ namespace glib
 
 			#endif
 		}
+		return 0;
 	}
 
 	wchar_t toWideChar(unsigned char p, unsigned char p2)
@@ -209,19 +218,13 @@ namespace glib
 
 	wchar_t SimpleFile::readWideChar()
 	{
-		unsigned char p1;
-		unsigned char p2;
+		wchar_t c;
 		if (isOpen() && type == SimpleFile::READ && !isEndOfFile())
 		{
-			p1 = file->get();
-			if(isEndOfFile())
+			if(fread(&c, sizeof(wchar_t), 1, cFile) == 2)
+				return c;
+			else
 				return -1;
-
-			p2 = file->get();
-			if(isEndOfFile())
-				return -1;
-
-			return toWideChar(p1, p2);
 		}
 		else
 		{
@@ -372,7 +375,7 @@ namespace glib
 		if (isOpen() && type == SimpleFile::READ && !isEndOfFile())
 		{
 			std::vector<unsigned char> chars = std::vector<unsigned char>();
-			unsigned char c1 = file->get();
+			unsigned char c1 = fgetc(cFile);
 
 			if(isEndOfFile())
 				return -1;
@@ -384,7 +387,7 @@ namespace glib
 			else if( ((c1 >> 5) & 0x01) == 0)
 			{
 				chars.push_back(c1);
-				c1 = file->get();
+				c1 = fgetc(cFile);
 				
 				if(isEndOfFile())
 					return -1;
@@ -398,18 +401,18 @@ namespace glib
 				else
 				{
 					//invalid
-					file->putback(c1);
+					ungetc(c1, cFile);
 					return chars[0];
 				}
 			}
 			else if( ((c1 >> 4) & 0x01) == 0)
 			{
 				chars.push_back(c1);
-				chars.push_back( (unsigned char)file->get() );
+				chars.push_back( (unsigned char)fgetc(cFile) );
 				if(isEndOfFile())
 					return -1;
 
-				chars.push_back( (unsigned char)file->get() );
+				chars.push_back( (unsigned char)fgetc(cFile) );
 				if(isEndOfFile())
 					return -1;
 				return StringTools::utf8ToChar(chars);
@@ -417,15 +420,15 @@ namespace glib
 			else if( ((c1 >> 3) & 0x01) == 0)
 			{
 				chars.push_back(c1);
-				chars.push_back( (unsigned char)file->get() );
+				chars.push_back( (unsigned char)fgetc(cFile) );
 				if(isEndOfFile())
 					return -1;
 
-				chars.push_back( (unsigned char)file->get() );
+				chars.push_back( (unsigned char)fgetc(cFile) );
 				if(isEndOfFile())
 					return -1;
 
-				chars.push_back( (unsigned char)file->get() );
+				chars.push_back( (unsigned char)fgetc(cFile) );
 				if(isEndOfFile())
 					return -1;
 				return StringTools::utf8ToChar(chars);
@@ -512,9 +515,9 @@ namespace glib
 			while (true)
 			{
 				//read
-				unsigned char c = file->get();
+				unsigned char c = fgetc(cFile);
 
-				if(!file->eof())
+				if(!feof(cFile))
 					info.push_back(c);
 				else
 					break;
@@ -539,7 +542,7 @@ namespace glib
 		{
 			if (type == WRITE || type == WRITE_APPEND)
 			{
-				file->put(c);
+				fputc(c, cFile);
 			}
 			else
 			{
@@ -569,10 +572,7 @@ namespace glib
 		{
 			if (type == WRITE || type == WRITE_APPEND)
 			{
-				unsigned char c1 = c>>8;
-				unsigned char c2 = c & 0xFF;
-				file->put(c1);
-				file->put(c2);
+				fwrite(&c, sizeof(wchar_t), 1, cFile);
 			}
 			else
 			{
@@ -603,7 +603,7 @@ namespace glib
 			if (type == WRITE || type == WRITE_APPEND)
 			{
 				std::vector<unsigned char> bytes = StringTools::toUTF8(c);
-				file->write((char*)bytes.data(), bytes.size());
+				fwrite(bytes.data(), sizeof(unsigned char), bytes.size(), cFile);
 			}
 			else
 			{
@@ -627,13 +627,13 @@ namespace glib
 		}
 	}
 
-	void SimpleFile::writeBytes(unsigned char* data, int size)
+	void SimpleFile::writeBytes(unsigned char* data, size_t size)
 	{
 		if (isOpen())
 		{
 			if (type == WRITE || type == WRITE_APPEND)
 			{
-				file->write((char*)data, size);
+				fwrite(data, sizeof(unsigned char), size, cFile);
 			}
 			else
 			{
@@ -665,14 +665,14 @@ namespace glib
 			{
 				if(dataType == ASCII)
 				{
-					file->write(line.c_str(), line.size());
+					fwrite(line.c_str(), sizeof(char), line.size(), cFile);
 				}
 				else if(dataType == WIDECHAR)
 				{
 					for (size_t i = 0; i < line.size(); i++)
 					{
-						file->put(0);
-						file->put(line[i]);
+						fputc(0, cFile);
+						fputc(line[i], cFile);
 					}
 				}
 				else
@@ -680,7 +680,7 @@ namespace glib
 					for (size_t i = 0; i < line.size(); i++)
 					{
 						std::vector<unsigned char> bytes = StringTools::toUTF8(line[i]);
-						file->write((char*)bytes.data(), bytes.size());
+						fwrite(bytes.data(), sizeof(unsigned char), bytes.size(), cFile);
 					}
 				}
 			}
@@ -716,25 +716,19 @@ namespace glib
 				{
 					for (size_t i = 0; i < line.size(); i++)
 					{
-						file->put(line[i]);
+						fputc(line[i] & 0xFF, cFile);
 					}
 				}
 				else if(dataType == WIDECHAR)
 				{
-					for (size_t i = 0; i < line.size(); i++)
-					{
-						unsigned char c1 = line[i]>>8;
-						unsigned char c2 = line[i] & 0xFF;
-						file->put(c1);
-						file->put(c2);
-					}
+					fwrite(line.c_str(), sizeof(wchar_t), line.size(), cFile);
 				}
 				else
 				{
 					for (size_t i = 0; i < line.size(); i++)
 					{
 						std::vector<unsigned char> bytes = StringTools::toUTF8(line[i]);
-						file->write((char*)bytes.data(), bytes.size());
+						fwrite(bytes.data(), sizeof(unsigned char), bytes.size(), cFile);
 					}
 				}
 			}
@@ -768,16 +762,11 @@ namespace glib
 			{
 				if(dataType == ASCII || dataType == UTF8)
 				{
-					file->put(LINE_BREAK_1);
-					file->put(LINE_BREAK_2);
+					fwrite("\r\n", sizeof(char), 2, cFile);
 				}
 				else
 				{
-					file->put(0);
-					file->put(LINE_BREAK_1);
-					
-					file->put(0);
-					file->put(LINE_BREAK_2);
+					fwrite(L"\r\n", sizeof(wchar_t), 2, cFile);
 				}
 			}
 			else
@@ -804,34 +793,24 @@ namespace glib
 
 	bool SimpleFile::isOpen()
 	{
-		if(file != nullptr)
-		{
-			return file->is_open();
-		}
-		else
-		{
-			return false;
-		}
+		return cFile != nullptr;
 	}
 
 	void SimpleFile::close()
 	{
-		if(file != nullptr)
+		if(cFile != nullptr)
 		{
-			file->close();
+			fclose(cFile);
+			cFile = nullptr;
 		}
 	}
 
 	bool SimpleFile::isEndOfFile()
 	{
-		if(file != nullptr)
-		{
-			return !file->good();
-		}
-		else
-		{
-			return true;
-		}
+		if(cFile != nullptr)
+			return feof(cFile);
+		
+		return true;
 	}
 
 	std::string SimpleFile::getFileName()
@@ -848,7 +827,7 @@ namespace glib
 	{
 		if(isOpen() && type == READ)
 		{
-			return (size - file->tellg());
+			return (size - ftell64(cFile));
 		}
 		else
 		{
@@ -858,14 +837,8 @@ namespace glib
 	
 	void SimpleFile::seek(size_t index)
 	{
-		if(type == READ)
-		{
-			file->seekg(index);
-		}
-		else
-		{
-			file->seekp(index);
-		}
+		if(isOpen())
+			fseek(cFile, index, SEEK_SET);
 	}
 	
 } //NAMESPACE glib END

@@ -5,7 +5,7 @@
 #include "MathExt.h"
 #include "SimpleXml.h"
 
-namespace glib
+namespace smpl
 {
 
 	struct criticalPoint
@@ -88,8 +88,9 @@ namespace glib
 		 */
 		virtual ~VectorShape();
 		
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief An abstract draw function.
@@ -272,8 +273,9 @@ namespace glib
 		 */
 		~VectorRectangle();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws the VectorRectangle
@@ -430,8 +432,9 @@ namespace glib
 		 */
 		~VectorCircle();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws the VectorCircle
@@ -542,8 +545,9 @@ namespace glib
 		 */
 		~VectorEllipse();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws a VectorEllipse
@@ -667,8 +671,9 @@ namespace glib
 		 */
 		~VectorLine();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws a VectorLine
@@ -797,8 +802,9 @@ namespace glib
 		 */
 		~VectorPolyline();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws the VectorPolyline.
@@ -916,8 +922,9 @@ namespace glib
 		 */
 		~VectorPolygon();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws the VectorPolygon.
@@ -1093,8 +1100,9 @@ namespace glib
 		 */
 		~VectorPath();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws the VectorPath
@@ -1540,8 +1548,9 @@ namespace glib
 		 */
 		~VectorGraphic();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Adds a VectorShape to the VectorGraphic

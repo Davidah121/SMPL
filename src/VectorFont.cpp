@@ -1,14 +1,17 @@
 #include "VectorFont.h"
 #include "StringTools.h"
 
-namespace glib
+namespace smpl
 {
         
-    const Class VectorFont::globalClass = Class("VectorFont", {&Font::globalClass});
+    const RootClass VectorFont::globalClass = CREATE_ROOT_CLASS(VectorFont, &Font::globalClass);
+    const RootClass* VectorFont::getClass()
+	{
+		return &VectorFont::globalClass;
+	}
 
     VectorFont::VectorFont() : Font()
     {
-		setClass(globalClass);
     }
 
     VectorFont::~VectorFont()

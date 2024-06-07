@@ -8,7 +8,7 @@
 	#include "ext/GLModel.h"
 	#include "BitmapFont.h"
 
-	namespace glib
+	namespace smpl
 	{
 		class GLFont : public Font
 		{
@@ -31,8 +31,9 @@
 			 */
 			~GLFont();
 			
-			//Object and Class Stuff
-			static const Class globalClass;
+			//Object and RootClass Stuff
+			static const RootClass globalClass;
+			virtual const RootClass* getClass();
 
 			/**
 			 * @brief Get the texture where the desired character is stored.

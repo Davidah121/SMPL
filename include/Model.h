@@ -2,8 +2,9 @@
 #include "MathExt.h"
 #include "File.h"
 #include "Shape.h"
+#include "SimpleFile.h"
 
-namespace glib
+namespace smpl
 {
 
     struct VertexFormat
@@ -31,8 +32,9 @@ namespace glib
          */
         ~Model();
 
-        //Object and Class Stuff
-        static const Class globalClass;
+        //Object and RootClass Stuff
+        static const RootClass globalClass;
+        virtual const RootClass* getClass();
 
         static const unsigned char TYPE_INT = 0;
         static const unsigned char TYPE_FLOAT = 1;
@@ -57,6 +59,9 @@ namespace glib
 
         static const unsigned char QUADS = 7;
         static const unsigned char QUAD_STRIP = 8;
+
+        static const unsigned char MODEL_TYPE_STL = 0;
+        static const unsigned char MODEL_TYPE_OBJ = 1;
         
         /**
          * @brief Adds new format information for the verticies of the model.
@@ -231,10 +236,17 @@ namespace glib
          */
         std::vector<std::vector<unsigned int>> getRawIndexData();
         
+        /**
+         * @brief Saves a model to a file with the specified model type.
+         *      Not yet implemented
+         * 
+         * @param file 
+         * @param type 
+         */
+        void saveModel(File file, unsigned char type);
 
         /**
          * @brief Loads a model from a file.
-         *      Not yet implemented
          * 
          * @param file 
          */
@@ -285,6 +297,12 @@ namespace glib
         void loadSTL(File file);
         void loadCollada(File file);
 
+        void saveSTL(File file);
+        void saveOBJ(File file);
+        
+        void saveSTLVec3f(SimpleFile& file, Vec3f v);
+        void saveSTLFloat(SimpleFile& file, float v);
+
         std::vector<std::vector<int>> vertexData = std::vector<std::vector<int>>();
         std::vector<std::vector<unsigned int>> vertexIndexInfo = std::vector<std::vector<unsigned int>>();
         std::vector<VertexFormat> formatInfo = std::vector<VertexFormat>();
@@ -293,4 +311,4 @@ namespace glib
         bool indexed = false;
     };
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

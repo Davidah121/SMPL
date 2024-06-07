@@ -5,16 +5,19 @@
 #include "BezierCurve.h"
 #include "ColorNameConverter.h"
 
-namespace glib
+namespace smpl
 {
 		
 	#pragma region VectorCircle
 
-	const Class VectorCircle::globalClass = Class("VectorCircle", {&VectorShape::globalClass});
+	const RootClass VectorCircle::globalClass = CREATE_ROOT_CLASS(VectorCircle, &VectorShape::globalClass);
+    const RootClass* VectorCircle::getClass()
+	{
+		return &VectorCircle::globalClass;
+	}
 
 	VectorCircle::VectorCircle() : VectorShape()
 	{
-		setClass(globalClass);
 	}
 
 	VectorCircle::~VectorCircle()
@@ -48,7 +51,7 @@ namespace glib
 					{
 						if(dis <= insideRad)
 						{
-							buffer->drawPixel(x, y, getFillColor()); // fully filled inside circle
+							SimpleGraphics::drawPixel(x, y, getFillColor(), buffer); // fully filled inside circle
 						}
 						else
 						{
@@ -57,14 +60,14 @@ namespace glib
 							Color c = getFillColor();
 							c.alpha = (unsigned char)(c.alpha * percentFilled);
 
-							buffer->drawPixel(x, y, c);
+							SimpleGraphics::drawPixel(x, y, c, buffer);
 						}
 					}
 					else
 					{
 						if(dis <= insideRad)
 						{
-							buffer->drawPixel(x, y, getFillColor()); // fully filled inside circle
+							SimpleGraphics::drawPixel(x, y, getFillColor(), buffer); // fully filled inside circle
 						}
 						else
 						{
@@ -74,7 +77,7 @@ namespace glib
 								//inside stroke or inside edge of stroke
 								if(dis >= insideRad2)
 								{
-									buffer->drawPixel(x, y, getStrokeColor());
+									SimpleGraphics::drawPixel(x, y, getStrokeColor(), buffer);
 								}
 								else
 								{
@@ -82,8 +85,8 @@ namespace glib
 									Color c = getStrokeColor();
 									c.alpha = (unsigned char)(c.alpha * percentFilled);
 
-									buffer->drawPixel(x, y, getFillColor());
-									buffer->drawPixel(x, y, c);
+									SimpleGraphics::drawPixel(x, y, getFillColor(), buffer);
+									SimpleGraphics::drawPixel(x, y, c, buffer);
 								}
 							}
 							else
@@ -93,7 +96,7 @@ namespace glib
 								Color c = getStrokeColor();
 								c.alpha = (unsigned char)(c.alpha * percentFilled);
 
-								buffer->drawPixel(x, y, c);
+								SimpleGraphics::drawPixel(x, y, c, buffer);
 							}
 						}
 					}
@@ -141,7 +144,7 @@ namespace glib
 
 					for(int i=(int)MathExt::round(startX); i<(int)MathExt::round(endX); i++)
 					{
-						buffer->drawPixel(i, j, getFillColor());
+						SimpleGraphics::drawPixel(i, j, getFillColor(), buffer);
 					}
 				}
 
@@ -210,7 +213,7 @@ namespace glib
 							Color col = getFillColor();
 							col.alpha = (unsigned char)(tempPercentage*col.alpha);
 							
-							buffer->drawPixel(tX, j, col);
+							SimpleGraphics::drawPixel(tX, j, col, buffer);
 						}
 					}
 					
@@ -280,7 +283,7 @@ namespace glib
 
 				for(int i=(int)MathExt::round(startX); i<=(int)MathExt::round(startX2); i++)
 				{
-					buffer->drawPixel(i, j, getStrokeColor());
+					SimpleGraphics::drawPixel(i, j, getStrokeColor(), buffer);
 				}
 
 				//Fill from endX to endX2.
@@ -293,7 +296,7 @@ namespace glib
 
 				for(int i=(int)MathExt::round(endX)-1; i<(int)MathExt::round(endX2); i++)
 				{
-					buffer->drawPixel(i, j, getStrokeColor());
+					SimpleGraphics::drawPixel(i, j, getStrokeColor(), buffer);
 				}
 			}
 			else
@@ -307,7 +310,7 @@ namespace glib
 
 				for(int i=(int)MathExt::round(startX)-1; i<=(int)MathExt::round(endX); i++)
 				{
-					buffer->drawPixel(i, j, getStrokeColor());
+					SimpleGraphics::drawPixel(i, j, getStrokeColor(), buffer);
 				}
 			}
 

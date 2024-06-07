@@ -1,20 +1,15 @@
 #include "Object.h"
 
-namespace glib
+namespace smpl
 {
-	const Class Object::globalClass = Class("Object", {});
+	const RootClass Object::globalClass = CREATE_ROOT_CLASS(Object);
 
 	Object::Object()
 	{
-		myClass = this->globalClass;
 	}
+	
 	Object::~Object()
 	{
-
 	}
 
-	const Class& Object::getClass()
-	{
-		return myClass;
-	}
 } //NAMESPACE glib END

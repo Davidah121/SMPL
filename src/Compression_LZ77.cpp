@@ -1,6 +1,7 @@
 #include "InternalCompressionHeader.h"
+#include "SuffixAutomaton.h"
 
-namespace glib
+namespace smpl
 {
 
 #pragma region LZ77
@@ -233,6 +234,468 @@ namespace glib
 		}
 
 		return output;
+	}
+
+	// void Compression::getLZ77RefPairsCSA(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel)
+	// {
+	// 	int maxDistance = 1<<15;
+
+	// 	size_t index = 0;
+    // 	size_t endIndex = size;
+
+	// 	ChainedSuffixAutomaton SA = ChainedSuffixAutomaton(32768, 4096, 259);
+	// 	int startLoc = 0;
+
+	// 	size_t totalOutputSize = 0;
+	// 	size_t wrongAdd = 0;
+	// 	size_t refs = 0;
+		
+	// 	SA.resetSearch();
+	// 	while(index < endIndex)
+	// 	{
+	// 		bool newMatch = SA.searchNext(data[index]);
+	// 		if(!newMatch || index == endIndex-1)
+	// 		{
+	// 			bool includedCurrByte = true;
+	// 			SearchState pairStuff = SA.extractSearch();
+	// 			SA.resetSearch();
+
+	// 			if(pairStuff.length >= 3)
+	// 			{
+	// 				int backwardsDis = startLoc - pairStuff.start;
+	// 				outputData->push_back({false, pairStuff.length, backwardsDis});
+	// 				if(pairStuff.length != 258)
+	// 					includedCurrByte = false;
+					
+	// 				startLoc += pairStuff.length;
+	// 				totalOutputSize += pairStuff.length;
+	// 				refs += pairStuff.length;
+					
+	// 				if(index == endIndex-1)
+	// 					break;
+	// 			}
+	// 			else
+	// 			{
+	// 				if(pairStuff.length == 0)
+	// 				{
+	// 					includedCurrByte = true;
+	// 					outputData->push_back({true, data[index], 0});
+	// 					startLoc++;
+	// 					totalOutputSize++;
+						
+	// 					SA.extend(data[index]);
+	// 					index++;
+	// 				}
+	// 				else
+	// 				{
+	// 					//found a match of length 1 or 2.
+	// 					//If 1, no problem. If 2, we probably added it to the SA and need to reverse a bit.
+
+	// 					includedCurrByte = false;
+	// 					outputData->push_back({true, data[index-pairStuff.length], 0});
+	// 					startLoc++;
+	// 					totalOutputSize++;
+
+	// 					// if(pairStuff.second == 2)
+	// 					// {
+	// 					// 	outputData->push_back({true, data[index-pairStuff.second+1], 0});
+	// 					// 	startLoc++;
+	// 					// 	totalOutputSize++;
+	// 					// }
+
+	// 					//We need special care if we have already added the data to the SA to avoid making
+	// 					//patterns that don't exist yet. For now, see what it does.
+	// 					if(pairStuff.length == 2)
+	// 						index--; //go back a character and start pattern matching again.
+	// 				}
+	// 			}
+	// 		}
+	// 		else
+	// 		{
+	// 			SA.extend(data[index]);
+	// 			index++;
+	// 		}
+	// 	}
+		
+	// 	StringTools::println("CSA: %llu", totalOutputSize);
+	// 	StringTools::println("CSA REFS: %llu", refs);
+	// 	StringTools::println("CSA WRONG ADD: %llu", wrongAdd);
+	// }
+
+	void Compression::getLZ77RefPairsCSA(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel)
+	{
+		int maxDistance = 1 << 15;
+		int chains = 2;
+		if(compressionLevel < 4 && compressionLevel >= 0)
+			maxDistance = 1 << (12+compressionLevel);
+		if(compressionLevel >= 4 && compressionLevel <=9)
+			chains = compressionLevel-1;
+		if(compressionLevel >= 9)
+			chains = 8;
+		
+		size_t index = 0;
+		size_t endIndex = size;
+
+		unsigned char delayedBuffer[8];
+		int delayedBufferSize = 0;
+		int startOfQueue = 0;
+		int currQueueIndex = 0;
+
+		ChainedSuffixAutomaton csa = ChainedSuffixAutomaton(maxDistance, 3, 255);
+		int startLoc = 0;
+
+		SearchState searchState;
+		csa.resetSearch();
+
+		while (index < endIndex)
+		{
+			if (delayedBufferSize < 3)
+			{
+				int endOfQueue = (delayedBufferSize + startOfQueue) % 8;
+
+				delayedBuffer[endOfQueue] = data[index];
+				delayedBufferSize++;
+				index++;
+			}
+			unsigned char currCharacter = delayedBuffer[currQueueIndex];
+			currQueueIndex = (currQueueIndex + 1) % 8;
+
+			bool foundMatch = csa.searchNext(currCharacter);
+			searchState = csa.extractSearch();
+
+			if (foundMatch && searchState.length != 258)
+			{
+				if (searchState.length >= 3)
+				{
+					while (delayedBufferSize > 0)
+					{
+						csa.extend(delayedBuffer[startOfQueue]);
+						startOfQueue = (startOfQueue + 1) % 8;
+						delayedBufferSize--;
+					}
+					currQueueIndex = startOfQueue;
+				}
+			}
+			else
+			{
+				//if the search length >= 258 && foundMatch, store match and extend.
+				//else, just store match.
+				//checkForRecover = false;
+				csa.resetSearch();
+				int backwardsDis = startLoc - searchState.start;
+
+				if (searchState.length >= 3)
+				{
+					//manually check for data past the length given for longer match
+					outputData->push_back({ false, searchState.length, backwardsDis });
+					startLoc += searchState.length;
+
+					//if we found this match, add this too. Otherwise, delay it.
+					if (foundMatch)
+					{
+						csa.extend(delayedBuffer[startOfQueue]);
+						startOfQueue = (startOfQueue + 1) % 8;
+						delayedBufferSize--;
+					}
+				}
+				else
+				{
+					//only add 1
+					outputData->push_back({ true, delayedBuffer[startOfQueue], 0 });
+					startLoc++;
+
+					csa.extend(delayedBuffer[startOfQueue]);
+					startOfQueue = (startOfQueue + 1) % 8;
+					delayedBufferSize--;
+				}
+
+				currQueueIndex = startOfQueue;
+			}
+
+		}
+
+		//should add remaining stuff
+		searchState = csa.extractSearch();
+		int backwardsDis = startLoc - searchState.start;
+		if (searchState.length >= 3)
+		{
+			outputData->push_back({ false, searchState.length, backwardsDis });
+		}
+		while (delayedBufferSize > 0)
+		{
+			unsigned char c = delayedBuffer[startOfQueue];
+			startOfQueue = (startOfQueue + 1) % 8;
+			delayedBufferSize--;
+			outputData->push_back({ true, c, 0 });
+		}
+	}
+
+	void Compression::getLZ77RefPairsCHash(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel)
+	{
+		int maxDistance = 1<<15;
+		switch(compressionLevel)
+		{
+			case 7:
+				maxDistance = 1<<15;
+				break;
+			case 6:
+				maxDistance = 1<<14;
+				break;
+			case 5:
+				maxDistance = 1<<13;
+				break;
+			case 4:
+				maxDistance = 1<<12;
+				break;
+			case 3:
+				maxDistance = 1<<11;
+				break;
+			case 2:
+				maxDistance = 1<<10;
+				break;
+			case 1:
+				maxDistance = 1<<9;
+				break;
+			case 0:
+				maxDistance = 1<<8;
+				break;
+			default:
+				maxDistance = 1<<15;
+				break;
+		}
+
+		// maxDistance = (1<<15) - 4096 - 258;
+
+		if(data == nullptr || outputData == nullptr)
+		{
+			#ifdef USE_EXCEPTIONS
+			throw InvalidDataError();
+			#endif
+			return;
+		}
+		
+		if(size <= 0)
+		{
+			#ifdef USE_EXCEPTIONS
+			throw InvalidSizeError();
+			#endif
+			return;
+		}
+		
+		
+		//for all bytes, try to match it in the hashmap.
+		//Get 3 bytes and try to find it in the hashmap. If found, try and find match.
+		//If not found, add the 3 values to the hashmap and write the first byte to the output
+
+		//Method 5 - SIMPLE_HASH_MAP : Best Performance and Good Size.
+		SimpleHashMap<int, int> map = SimpleHashMap<int, int>( SimpleHashMap<int, int>::MODE_KEEP_ALL, 1<<15 );
+		map.setMaxLoadFactor(-1);
+
+		size_t totalOutputSize = 0;
+		size_t refs = 0;
+		size_t lits = 0;
+		size_t smallMatches = 0;
+
+		int i = 0;
+		while(i < size-2)
+		{
+			int key = data[i] + ((int)data[i+1]<<8) + ((int)data[i+2]<<16);
+			
+			HashPair<int, int>* k = map.get(key);
+
+			if(k == nullptr)
+			{
+				//not found or size too small
+				//always insert
+				map.add(key, i);
+
+				outputData->push_back( {true, data[i], 0} );
+				lits++;
+				i++;
+				totalOutputSize++;
+			}
+			else
+			{
+				int lowestPoint = max(i-maxDistance, 0);
+				int bestLength = 0;
+				int bestLocation = 0;
+
+				do
+				{
+					int locationOfMatch = k->data;
+
+					if(locationOfMatch < lowestPoint)
+					{
+						//maximum backwards distance reached
+						break;
+					}
+
+					int lengthMax = min(size-i, 258);
+					
+					unsigned char* startBase = (data+locationOfMatch);
+					unsigned char* startMatch = (data+i);
+
+					int len;
+					
+					for(len=3; len<lengthMax; len++)
+					{
+						if(startMatch[len] != startBase[len])
+						{
+							break;
+						}
+					}
+
+					if(len>=bestLength)
+					{
+						bestLength = len;
+						bestLocation = locationOfMatch;
+					}
+					if(bestLength == 258)
+						break;
+					
+					k = map.getNext();
+				} while(k != nullptr);
+
+				//always insert
+				map.add( key, i );
+				for(int j=1; j<bestLength-2; j++)
+				{
+					int nkey = data[i+j] + ((int)data[i+j+1]<<8) + ((int)data[i+j+2]<<16);
+					map.add( nkey, i+j );
+				}
+
+				int backwardsDis = i - bestLocation;
+				
+				// outputData->push_back( {false, bestLength, backwardsDis} );
+				// i += bestLength;
+				// totalOutputSize += bestLength;
+				// if(bestLength >= 3)
+				// 	refs += bestLength;
+				// else
+				// {
+				// 	smallMatches++;
+				// 	lits += bestLength;
+				// }
+				
+				if(bestLength>=3)
+				{
+					outputData->push_back( {false, bestLength, backwardsDis} );
+					i += bestLength;
+					totalOutputSize += bestLength;
+					refs += bestLength;
+				}
+				else
+				{
+					//couldn't find match within max allowed distance
+					outputData->push_back( {true, data[i], 0} );
+					i++;
+					lits++;
+					totalOutputSize++;
+				}
+			}
+
+		}
+
+		int remainder = size - i;
+		for(int j=0; j<remainder; j++)
+		{
+			outputData->push_back( {true, data[i+j], 0} );
+			totalOutputSize++;
+		}
+		
+		// StringTools::println("CHASH: %llu", totalOutputSize);
+		// StringTools::println("CHASH REFs: %llu", refs);
+		// StringTools::println("CHASH LITs: %llu", lits);
+		// StringTools::println("CHASH SMALL MATCHES: %llu", smallMatches);
+	}
+
+	void Compression::getLZ77RefPairsKMP(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel)
+	{
+		//unlike lz77, we need to deal with raw binary. We will use our BinarySet
+		//class since it provides an easy way to deal with binary and std::vector
+		//helps deal with properly storing booleans.
+		
+		//Other than that, it works just like lz77 with the exception that we can't
+		//copy past the size of the buffer like in lz77.
+
+		int maxDistance = 1<<15;
+		switch(compressionLevel)
+		{
+			case 7:
+				maxDistance = 1<<15;
+				break;
+			case 6:
+				maxDistance = 1<<14;
+				break;
+			case 5:
+				maxDistance = 1<<13;
+				break;
+			case 4:
+				maxDistance = 1<<12;
+				break;
+			case 3:
+				maxDistance = 1<<11;
+				break;
+			case 2:
+				maxDistance = 1<<10;
+				break;
+			case 1:
+				maxDistance = 1<<9;
+				break;
+			case 0:
+				maxDistance = 1<<8;
+				break;
+			default:
+				maxDistance = 1<<15;
+				break;
+		}
+
+		if(data == nullptr || outputData == nullptr)
+		{
+			#ifdef USE_EXCEPTIONS
+			throw InvalidDataError();
+			#endif
+			return;
+		}
+		
+		if(size <= 0)
+		{
+			#ifdef USE_EXCEPTIONS
+			throw InvalidSizeError();
+			#endif
+			return;
+		}
+
+		int i = 0;
+		while(i < size)
+		{
+			int lowestPoint = max(i-maxDistance, 0);
+			int baseSize = i - lowestPoint;
+
+			int lengthMax = min(size-i, 258);
+
+			unsigned char* startBase = (data+lowestPoint);
+			unsigned char* startMatch = (data+i);
+
+			int matchLength = 0;
+			int matchStartIndex = 0;
+
+			StringTools::findLongestMatch(startBase, baseSize, startMatch, lengthMax, &matchStartIndex, &matchLength);
+
+			int tempLength = matchLength;
+			int tempBackwards = i - (lowestPoint + matchStartIndex);
+
+			if(tempLength<3)
+			{
+				outputData->push_back({true, data[i], 0});
+				i++;
+			}
+			else
+			{
+				outputData->push_back({false, tempLength, tempBackwards});
+				i += tempLength;
+			}
+		}
 	}
 
 	#pragma endregion

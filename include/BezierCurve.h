@@ -4,7 +4,7 @@
 #include "Object.h"
 #include "GeneralExceptions.h"
 
-namespace glib
+namespace smpl
 {
 
 	class BezierCurve : public Object
@@ -18,17 +18,13 @@ namespace glib
 		BezierCurve();
 
 		/**
-		 *	@brief Creates a BezierCurve Object from another BezierCurve Object
-		 */
-		BezierCurve(const BezierCurve& o);
-
-		/**
 		 * @brief Destroys a BezierCurve Object freeing its memory usage
 		 */
 		~BezierCurve();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		//Exception Stuff
 		struct BlendPointsError : public std::exception
@@ -354,4 +350,4 @@ namespace glib
 		std::vector<Vec2f> points = std::vector<Vec2f>();
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

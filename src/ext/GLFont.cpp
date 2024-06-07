@@ -2,13 +2,16 @@
 
 #ifdef USE_OPENGL
 
-    namespace glib
+    namespace smpl
     {
-        const Class GLFont::globalClass = Class("GLFont", {&Font::globalClass});
+        const RootClass GLFont::globalClass = CREATE_ROOT_CLASS(GLFont, &Font::globalClass);
+        const RootClass* GLFont::getClass()
+        {
+            return &GLFont::globalClass;
+        }
 
         GLFont::GLFont(File f)
         {
-			setClass(GLFont::globalClass);
             BitmapFont k = BitmapFont(f);
             convertBitmapFont(k);
         }
@@ -58,7 +61,7 @@
             Sprite* otherImgs = p.getSprite();
             for(int i=0; i<otherImgs->getSize(); i++)
             {
-                GLTexture* nTexture = new GLTexture(otherImgs->getImage(i), true, {GLTexture::BEHAVIOR_CLAMP_TO_EDGE, GLTexture::FILTER_NEAREST});
+                GLTexture* nTexture = new GLTexture(otherImgs->getImage(i), true, {GLTexture::BEHAVIOR_CLAMP_TO_EDGE, GLTexture::FILTER_LINEAR});
                 img.addTexture(nTexture);
             }
 

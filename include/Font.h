@@ -5,7 +5,7 @@
 #include "GeneralExceptions.h"
 #include "Shape.h"
 
-namespace glib
+namespace smpl
 {
 
 	struct FontCharInfo
@@ -45,8 +45,9 @@ namespace glib
 		 */
 		void copyFont(Font& f);
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Gets the character information for rendering.
@@ -241,4 +242,4 @@ namespace glib
 		bool sorted = false;
 	};
 
-}  //NAMESPACE glib END
+}  //NAMESPACE smpl END

@@ -1,8 +1,8 @@
 #include "File.h"
 #include "StringTools.h"
-#include <filesystem>
+#include "SimpleDir.h"
 
-namespace glib
+namespace smpl
 {
 
     File::~File()
@@ -44,12 +44,20 @@ namespace glib
             }
         }
 
+        if(locationOfExtension < locationOfFileName)
+        {
+            //no extension
+            locationOfExtension = SIZE_MAX;
+        }
+
         fullFileName = filename;
     }
 
     std::string File::getFileName()
     {
-        return fullFileName.substr(locationOfFileName, locationOfExtension-(locationOfFileName));
+        if(locationOfFileName < fullFileName.size())
+            return fullFileName.substr(locationOfFileName, locationOfExtension-(locationOfFileName));
+        return "";
     }
 
     std::string File::getFullFileName()
@@ -75,9 +83,24 @@ namespace glib
 
     std::string File::getFileNameWithExt()
     {
-        if(locationOfFileName+1 < fullFileName.size())
+        if(locationOfFileName < fullFileName.size())
             return fullFileName.substr(locationOfFileName, fullFileName.size());
         return "";
+    }
+
+    bool File::isDirectory()
+    {
+        return SimpleDir::isDirectory(fullFileName);
+    }
+
+    bool File::isFile()
+    {
+        return SimpleDir::isFile(fullFileName);
+    }
+
+    bool File::doesExist()
+    {
+        return SimpleDir::doesExist(fullFileName);
     }
 
 } //NAMESPACE glib END

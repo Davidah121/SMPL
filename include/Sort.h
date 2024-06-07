@@ -2,7 +2,7 @@
 #include <functional>
 #include "PCG.h"
 
-namespace glib
+namespace smpl
 {
 
     class Sort

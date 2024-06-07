@@ -1,7 +1,7 @@
 #include "Algorithms.h"
 #include "System.h"
 
-namespace glib
+namespace smpl
 {
 
     std::vector<Grouping> Algorithms::packageMergeAlgorithm(std::vector<Grouping> baseItems, size_t desiredTotal)
@@ -87,15 +87,15 @@ namespace glib
                 }
             }
 
-            size_t baseWidthValue = nL[location]->width;
-
-            if(location != SIZE_MAX)
+            if(location == SIZE_MAX)
             {
                 //couldn't find required width or a value lower than it.
                 //no solution
                 // StringTools::println("No solution, Couldn't find location");
                 return std::vector<Grouping>();
             }
+            
+            size_t baseWidthValue = nL[location]->width;
 
             if(nL[location]->width == minDiadicValue)
             {

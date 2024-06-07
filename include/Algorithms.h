@@ -1,7 +1,7 @@
 #include "MathExt.h"
 #include "Sort.h"
 
-namespace glib
+namespace smpl
 {
     struct Grouping
     {
@@ -36,5 +36,5 @@ namespace glib
 
     };
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END
 

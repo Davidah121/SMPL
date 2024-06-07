@@ -2,14 +2,32 @@
 #include <iostream>
 #include <vector>
 #include <typeinfo>
-#include "SimpleXml.h"
 #include <functional>
+#include "Object.h"
+#include "Streamable.h"
 
-namespace glib
+namespace smpl
 {
 	class SerializedData;
 	class SerializedObject;
 
+	struct WritableSerialzedData
+	{
+		static const bool TYPE_PRIMITIVE = false;
+		static const bool TYPE_OBJECT = true;
+		
+		bool type = 0;
+		unsigned int size = 0; //size of the data in bytes
+		unsigned char* data = nullptr; //the data as bytes
+	};
+
+	//so for every object
+	//type, name size, name bytes, numberOfOffsets, list of offsets
+	//for every primitive
+	//type, size, data
+	//Total required space for an object is 9 bytes + n bytes for name and k bytes for the offsets. Those can actually be 0 so at least 9 is required.
+	//Total required space for a primitive is 5 bytes + n bytes for the data. This too can also be 0 so at least 5 bytes is required.
+	//for each function, pass in a vector of unsigned bytes or an array of unsigned bytes with a size
 	class SerializedData
 	{
 	public:
@@ -17,16 +35,18 @@ namespace glib
 		static const int TYPE_OBJECT = 1;
 
 		/**
-		 * @brief Construct a new Serialized Data object
+		 * @brief Adds a few default pretty names.
+		 * 		Optional
 		 * 
-		 * @param d 
-		 * 		Assumes that d is a pointer to the data
-		 * @param name 
-		 * 		The name of the variable as a string
-		 * @param typeString 
-		 * 		The type of the variable as a string
 		 */
-		SerializedData(void* d, std::string name, std::string typeString);
+		// static void init();
+		
+		/**
+		 * @brief Construct a new Serialized Data object
+		 * 		Empty Constructor used by SerializedObject.
+		 * 
+		 */
+		SerializedData();
 
 		/**
 		 * @brief Construct a new Serialized Data object
@@ -37,26 +57,8 @@ namespace glib
 		 * 		The name of the variable as a string
 		 * @param typeString 
 		 * 		The type of the variable as a string
-		 * @param SerializedObject*
-		 * 		The parent object for this SerializedData variable
-		 * 		Gets added to the parent's list of variables.
 		 */
-		SerializedData(void* d, std::string name, std::string typeString, SerializedObject* parent);
-
-		/**
-		 * @brief Construct a new Serialized Data object
-		 * 
-		 * @param d 
-		 * 		Assumes that d is a pointer to the data
-		 * 		Special case:
-		 * 			Will set the name and type of the SerializedObject.
-		 * 			The data for the SerializedObject will be itself.
-		 * @param name 
-		 * 		The name of the variable as a string
-		 * @param typeString 
-		 * 		The type of the variable as a string
-		 */
-		SerializedData(SerializedObject* d, std::string name, std::string typeString);
+		SerializedData(void* d, std::string name, std::string typeString, size_t size);
 
 		/**
 		 * @brief Construct a new Serialized Data object
@@ -70,11 +72,8 @@ namespace glib
 		 * 		The name of the variable as a string
 		 * @param typeString 
 		 * 		The type of the variable as a string
-		 * @param SerializedObject*
-		 * 		The parent object for this SerializedData variable
-		 * 		Gets added to the parent's list of variables.
 		 */
-		SerializedData(SerializedObject* d, std::string name, std::string typeString, SerializedObject* parent);
+		SerializedData(SerializedObject* d, std::string name, std::string typeString, size_t size);
 
 		/**
 		 * @brief Destroy the Serialized Data object
@@ -105,31 +104,74 @@ namespace glib
 		 */
 		std::string getName();
 
+		/**
+		 * @brief Get the Number Of Elements object
+		 * 
+		 * @return size_t 
+		 */
+		size_t getNumberOfElements();
+
+		bool getObjectType();
+
+		/**
+		 * @brief Recreates the data stored as a child JObject of the parentNode provided.
+		 * 		If it is a SerializedObject, it will serialize its variables too.
+		 * 
+		 * 		The type must be a serializable type to be properly saved.
+		 * 			(Meaning a valid conversion must exist. This can be provided via a external function through
+		 * 			the function setExternalSaver()).
+		 * 
+		 * @param parentNode 
+		 */
+		void serialize(StreamableList<unsigned char> data);
+
+		/**
+		 * @brief Attempts to set the data stored by using the provided JObject.
+		 * 		If it is a SerializedObject, it will deserialize its variables too.
+		 * 
+		 * 		The type must be a serializable type to be properly loaded.
+		 * 			(Meaning a valid conversion must exist. This can be provided via a external function through
+		 * 			the function setExternalLoader()).
+		 * 
+		 * @param node 
+		 */
+		void deserialize(StreamableList<unsigned char> data);
+
+		/**
+		 * @brief adds a new function to save data corresponding to a specific class.
+		 * 		
+		 * 
+		 * @param className 
+		 * @param func 
+		 */
+		static void addSaveFunction(std::string className, std::function<void(std::vector<std::string>, StreamableList<unsigned char>, SerializedData)> func);
+
+		
+		/**
+		 * @brief adds a new function to load data corresponding to a specific class.
+		 * 		
+		 * 
+		 * @param className 
+		 * @param func 
+		 */
+		static void addLoadFunction(std::string className, std::function<void(std::vector<std::string>, StreamableList<unsigned char>, SerializedData)> func);
+
 	private:
 		friend SerializedObject;
-		/**
-		 * @brief Construct a new Serialized Data object
-		 * 		Empty Constructor used by SerializedObject.
-		 * 
-		 */
-		SerializedData();
+		void init(void* d, std::string name, std::string typeString, size_t size);
+
 		std::string name = "";
 		std::string type = "";
+		size_t size = 1;
 		void* data = nullptr;
-		SerializedObject* parent = nullptr;
 		int objType = TYPE_DATA;
+		
+		static std::unordered_map<std::string, std::function<void(std::vector<std::string>, StreamableList<unsigned char>, SerializedData)>> loadFunctions;
 	};
 
-	class SerializedObject : public SerializedData
+	class SerializedObject : public Object
 	{
 	public:
-
-		/**
-		 * @brief Adds a few default pretty names.
-		 * 		Optional
-		 * 
-		 */
-		static void init();
 
 		/**
 		 * @brief Construct a new Serialized Object object
@@ -153,112 +195,29 @@ namespace glib
 		 * @brief Gets a reference to the serialized variables stored by this object.
 		 * 		These pointers may not be valid if the object has gone out of scope.
 		 * 
-		 * @return std::vector<SerializedData*>& 
+		 * @return std::unordered_map<std::string, SerializedData>
 		 */
-		std::vector<SerializedData*>& getVariables();
+		virtual std::unordered_map<std::string, SerializedData> getSerializedVariables() = 0;
 
-		/**
-		 * @brief Serializes the object into an XML file specified.
-		 * 		Note that the type and name may be empty if SERIALIZE or SERIALIZE_NOCLASS
-		 * 		is not used on this object. This is normal behavior and will not affect the
-		 * 		deserialization function.
-		 * 
-		 * @param s 
-		 */
-		void serialize(std::string s);
-
-		/**
-		 * @brief Deserializes the object from an XML file specified.
-		 * 		Assumes that this is the main object in the XML file meaning that it is the
-		 * 		first child node off of the SERIALIZER title.
-		 * 		Assumes that the order the variables are stored in the file is the same in memory.
-		 * 		An error can occur otherwise.
-		 * 
-		 * @param s 
-		 */
-		void deserialize(std::string s);
+		//class stuff
+		static const RootClass globalClass;
+		//note that getClass() is still a pure virtual function
 		
-		/**
-		 * @brief Serializes the object as an XmlNode under the parent node.
-		 * 		Useful for more custom file formatting and better loading conditions.
-		 * 
-		 * @param parent 
-		 */
-		void serialize(XmlNode* parent);
-
-		/**
-		 * @brief Attempts to deserialize the object from the specified XmlNode.
-		 * 		Assumes that the order the variables are stored in the XmlNode is the same in memory.
-		 * 
-		 * @param n 
-		 */
-		void deserialize(XmlNode* n);
-
-		/**
-		 * @brief Sets an alias for the specified class name.
-		 * 		Some classes have alternate names that may be prefered where possible.
-		 * 			Ex: std::string vs class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >
-		 * 		This will replace that class name with the pretty name when saving and loading.
-		 * 		Good for portability since typeid(typename).name() is not guaranteed to be the same across implementations.
-		 * 
-		 * 		There can only be one alternate name for a class.
-		 * 		New alternate names replace the previous names.
-		 * 			Meaning that all pretty names can be the same as one class name but the class name can only have one alternate.
-		 * 
-		 * @param className 
-		 * @param prettyName 
-		 */
-		static void addPrettyName(std::string className, std::string prettyName);
-
-		/**
-		 * @brief Gets an alternate name for the specified class.
-		 * 		There can only be one alternate name for a class.
-		 * 		New alternate names replace the previous names.
-		 * 
-		 * @param className 
-		 * @return std::string 
-		 */
-		static std::string getAlternateName(std::string className);
-
-		/**
-		 * @brief Sets the External Saver function.
-		 * 		This is used to save data types that are not the standard primitives typically used. std::string is the exception.
-		 * 			i.e. Not an int, long, char, string, etc.
-		 * 		An example of this is a std::vector<int>. These are not handled because they are templates.
-		 * 		
-		 * 		The inputs into the function are the data as a void* and the typename.
-		 * 			Note that the typename has not undergone any conversions and a alternate name may be available.
-		 * @param extSaver 
-		 */
-		static void setExternalSaver(std::function<std::string(void*, std::string)> extSaver);
-
-		/**
-		 * @brief Sets the External Loader function.
-		 * 		This is used to load data types that are not the standard primitives typically used. std::string is the exception.
-		 * 			i.e. Not an int, long, char, string, etc.
-		 * 		An example of this is a std::vector<int>. These are not handled because they are templates.
-		 * 		
-		 * 		
-		 * 		The inputs into the function are the data to set as a void*, the typename, and the data being loaded as a string.
-		 * 			Note that the typename will have the pretty name applied if available.
-		 * @param extLoader 
-		 */
-		static void setExternalLoader(std::function<void(void*, std::string, std::string)> extLoader);
-
 	private:
 		friend SerializedData;
-		static std::unordered_map<std::string, std::string> prettyName;
-		static std::function<std::string(void*, std::string)> externalSaver;
-		static std::function<void(void*, std::string, std::string)> externalLoader;
-
-		std::vector<SerializedData*> variables;
 	};
 
 } //Namespace end
 
 #ifndef SERIALIZE
-	#define SERIALIZE(var) SerializedData SERIALIZED__##var##__ = glib::SerializedData(&var, #var, typeid(var).name(), this)
-	#define SERIALIZE_TYPENAME(var, name) SerializedData SERIALIZED__##var##__ = glib::SerializedData(&var, #var, name, this)
-	#define SERIALIZE_NOCLASS(var) SerializedData SERIALIZED__##var##__ = glib::SerializedData(&var, #var, typeid(var).name())
-	#define SERIALIZE_TYPENAME_NOCLASS(var, name) SerializedData SERIALIZED__##var##__ = glib::SerializedData(&var, #var, name)
+	#define GET_CLASS_NAME(var) smpl::demangleClassName(typeid(var).name())
+	#define SERIALIZE(var) smpl::SerializedData(&var, #var, smpl::demangleClassName(typeid(var).name()), 1)
+	#define SERIALIZE_TYPENAME(var, name) smpl::SerializedData(&var, #var, name, 1)
+	#define SERIALIZE_POINTER(var, size) smpl::SerializedData(&var, #var, smpl::demangleClassName(typeid(var).name()), size)
+	#define SERIALIZE_POINTER_TYPENAME(var, name, size) smpl::SerializedData(&var, #var, typeid(var).name(), size)
+	
+	#define SERIALIZE_MAP(var) {#var, smpl::SerializedData(&var, #var, smpl::demangleClassName(typeid(var).name()), 1)}
+	#define SERIALIZE_MAP_TYPENAME(var, name) {#var, smpl::SerializedData(&var, #var, name, 1)}
+	#define SERIALIZE_MAP_POINTER(var, size) {#var, smpl::SerializedData(&var, #var, smpl::demangleClassName(typeid(var).name()), size)}
+	#define SERIALIZE_MAP_POINTER_TYPENAME(var, name, size) {#var, smpl::SerializedData(&var, #var, name, size)}
 #endif

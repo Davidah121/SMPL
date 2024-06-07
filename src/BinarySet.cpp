@@ -1,14 +1,11 @@
 #include "BinarySet.h"
 #include <iostream>
 
-namespace glib
+namespace smpl
 {
-
-	const Class BinarySet::globalClass = Class("BinarySet", {&Object::globalClass});
-
+	
 	BinarySet::BinarySet()
 	{
-		setClass(globalClass);
 	}
 
 	BinarySet::~BinarySet()
@@ -111,6 +108,12 @@ namespace glib
 		return false;
 	}
 
+	unsigned char reverseBits(unsigned char b)
+	{
+		unsigned char ret = (b * 0x0202020202ULL & 0x010884422010ULL) % 1023;
+		return ret;
+	}
+
 	int BinarySet::getBits(size_t indexStart, size_t indexEnd, bool lmsb)
 	{
 		int value = 0;
@@ -121,10 +124,72 @@ namespace glib
 				size_t totalSize = indexEnd-indexStart;
 				if(lmsb)
 				{
-					for (size_t i = 0; i < totalSize; i++)
+					// for (size_t i = 0; i < totalSize; i++)
+					// {
+					// 	value += (int)getBit(indexStart + i) << (totalSize - i - 1);
+					// }
+					// return value;
+					size_t sByteLocation = indexStart / 8;
+					size_t sBitLocation = indexStart % 8;
+					
+					size_t eByteLocation = indexEnd / 8;
+					size_t eBitLocation = indexEnd % 8;
+
+					if(MSB == BinarySet::LMSB)
 					{
-						value += (int)getBit(indexStart + i) << (totalSize - i - 1);
+						for (size_t i = indexStart; i < indexEnd; i++)
+						{
+							size_t byteLocation = i / 8;
+							size_t bitLocation = i % 8;
+							value = (value<<1) | ((set[byteLocation] >> bitLocation) & 0x01);
+						}
+						return value;
+						
+						// //case 2
+						// unsigned char revB1 = set[sByteLocation];
+						// value = revB1 & ((1<<(8-sBitLocation))-1);
+
+						// int startI = sByteLocation+1;
+						// int endI = eByteLocation-1;
+						// if(endI < startI)
+						// 	return value;
+						
+						// for(int i=startI; i<endI; i++)
+						// {
+						// 	value = (value << 8) | set[i];
+						// }
+						
+						// unsigned char revB2 = set[eByteLocation];
+						// value = (value<<eBitLocation) | ((revB2>>(8-eBitLocation)) & ((1<<eBitLocation)-1));
 					}
+					else
+					{
+						for (size_t i = indexStart; i < indexEnd; i++)
+						{
+							size_t byteLocation = i / 8;
+							size_t bitLocation = i % 8;
+							value = (value<<1) | ((set[byteLocation] >> (7-bitLocation)) & 0x01);
+						}
+						return value;
+
+					// 	//case 4
+					// 	unsigned char revB1 = reverseBits(set[sByteLocation]);
+					// 	value = revB1 & ((1<<(8-sBitLocation))-1);
+
+					// 	int startI = sByteLocation+1;
+					// 	int endI = eByteLocation-1;
+					// 	if(endI < startI)
+					// 		return value;
+						
+					// 	for(int i=startI; i<endI; i++)
+					// 	{
+					// 		value = (value << 8) | reverseBits(set[i]);
+					// 	}
+						
+					// 	unsigned char revB2 = reverseBits(set[eByteLocation]);
+					// 	value = (value<<eBitLocation) | ((revB2>>(8-eBitLocation)) & ((1<<eBitLocation)-1));
+					}
+					
 				}
 				else 
 				{
@@ -132,6 +197,59 @@ namespace glib
 					{
 						value += (int)getBit(indexStart + i) << i;
 					}
+					return value;
+					
+					// int firstBitsToGrab = 8-(indexStart % 8);
+					// int firstByteLoc = indexStart / 8;
+					// int lastBitsToGrab = (indexEnd % 8);
+					// int lastByteLoc = indexEnd / 8;
+					
+					// int firstShiftAmount = (indexStart % 8);
+					// int firstBitAndAmount = ((1<<firstBitsToGrab)-1);
+					// int lastBitAndAmount = ((1<<lastBitsToGrab)-1);
+
+					// if(MSB == BinarySet::LMSB)
+					// {
+					// 	//case 1
+						
+					// 	//grab the bits from the first byte. May not be 8
+					// 	value = set[lastByteLoc] & lastBitAndAmount;
+						
+					// 	size_t startI = lastByteLoc-1;
+					// 	size_t endI = firstByteLoc;
+					// 	if(endI > startI)
+					// 		return value;
+						
+					// 	//grab the bytes between first and last byte. Always 8 bits
+					// 	for (size_t i=startI; i>endI; i--)
+					// 	{
+					// 		value = (value << 8) | set[i];
+					// 	}
+						
+					// 	//grab the last bits. May not be 8
+					// 	value = (value << firstBitsToGrab) | ((set[firstByteLoc]>>firstShiftAmount) & firstBitAndAmount);
+					// }
+					// else
+					// {
+					// 	//case 3
+
+					// 	//grab the bits from the first byte. May not be 8
+					// 	value = reverseBits(set[lastByteLoc]) & lastBitAndAmount;
+						
+					// 	size_t startI = lastByteLoc-1;
+					// 	size_t endI = firstByteLoc;
+					// 	if(endI > startI)
+					// 		return value;
+						
+					// 	//grab the bytes between first and last byte. Always 8 bits
+					// 	for (size_t i=startI; i>endI; i--)
+					// 	{
+					// 		value = (value << 8) | reverseBits(set[i]);
+					// 	}
+						
+					// 	//grab the last bits. May not be 8
+					// 	value = (value << firstBitsToGrab) | ((reverseBits(set[firstByteLoc])>>firstShiftAmount) & firstBitAndAmount);
+					// }
 				}
 			}
 		}

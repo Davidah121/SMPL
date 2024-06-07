@@ -2,14 +2,17 @@
 #include <cmath>
 #include <math.h>
 
-namespace glib
+namespace smpl
 {
 
-	const Class Vec3f::globalClass = Class("Vec3f", {&Object::globalClass});
-
+	const RootClass Vec3f::globalClass = CREATE_ROOT_CLASS(Vec3f, &SerializedObject::globalClass);
+    const RootClass* Vec3f::getClass()
+	{
+		return &Vec3f::globalClass;
+	}
+	
 	Vec3f::Vec3f(double x, double y, double z)
 	{
-		setClass(globalClass);
 		this->x = x;
 		this->y = y;
 		this->z = z;
@@ -17,12 +20,10 @@ namespace glib
 
 	Vec3f::Vec3f()
 	{
-		setClass(globalClass);
 	}
 
 	Vec3f::Vec3f(Vec2f other, double z)
 	{
-		setClass(globalClass);
 		this->x = other.x;
 		this->y = other.y;
 		this->z = z;
@@ -33,6 +34,10 @@ namespace glib
 	{
 	}
 
+	std::unordered_map<std::string, SerializedData> Vec3f::getSerializedVariables()
+	{
+		return {SERIALIZE_MAP(x), SERIALIZE_MAP(y), SERIALIZE_MAP(z)};
+	}
 
 	double Vec3f::getX()
 	{

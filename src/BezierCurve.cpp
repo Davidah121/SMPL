@@ -2,25 +2,16 @@
 #include "MathExt.h"
 #include "StringTools.h"
 
-namespace glib
+namespace smpl
 {
-
-	const Class BezierCurve::globalClass = Class("BezierCurve", {&Object::globalClass});
-
+	const RootClass BezierCurve::globalClass = CREATE_ROOT_CLASS(BezierCurve, &Object::globalClass);
+	const RootClass* BezierCurve::getClass()
+	{
+		return &BezierCurve::globalClass;
+	}
 
 	BezierCurve::BezierCurve()
 	{
-		setClass(globalClass);
-	}
-
-	BezierCurve::BezierCurve(const BezierCurve& o)
-	{
-		setClass(globalClass);
-		points.clear();
-		for (size_t i = 0; i < o.points.size(); i++)
-		{
-			points.push_back(o.points[i]);
-		}
 	}
 
 	BezierCurve::~BezierCurve()

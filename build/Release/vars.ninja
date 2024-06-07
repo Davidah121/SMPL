@@ -1,7 +1,7 @@
-inc = -I ./include %WLIBPATH64% -I C:/Libraries/glew-2.1.0/include
+inc = -I ./include %WLIBPATH64% -I C:/Libraries/glew-2.1.0/include -I C:/Libraries/openssl/Static/Release/include
 objDir = ./bin/Release/obj
 compiler = cmd /c clang++ 
 CXXFLAGS = -std=c++17 -O3 -march=skylake
-DEFINES = -D OPTI=2
-OPTIONS = -c -pipe -Wno-unused-command-line-argument
+DEFINES = -D OPTI=2 -D USE_OPENSSL
+OPTIONS = -g -c -pipe -Wno-unused-command-line-argument
 compilerFlags = $OPTIONS $CXXFLAGS $DEFINES

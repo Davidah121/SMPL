@@ -3,7 +3,7 @@
 #include "SimpleHashMap.h"
 // #include <unordered_map>
 
-namespace glib
+namespace smpl
 {
     struct ChildNode;
     class XmlNode;
@@ -105,6 +105,9 @@ namespace glib
         static const bool TYPE_XML = false;
         static const bool TYPE_HTML = true;
         static const std::vector<std::string> knownVoidTags;
+        static const std::vector<std::string> knownHTMLTags;
+        static const std::vector<std::string> knownHTMLBlockTags;
+        static const std::vector<std::string> knownHTMLInlineTags;
         
         /**
          * @brief Construct a new SimpleXml object

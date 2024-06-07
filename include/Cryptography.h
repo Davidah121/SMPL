@@ -1,7 +1,8 @@
 #pragma once
 #include <iostream>
 #include <vector>
-namespace glib
+
+namespace smpl
 {
     class Cryptography
     {
@@ -14,6 +15,31 @@ namespace glib
          * @return std::vector<uint32_t> 
          */
         static std::vector<uint32_t> SHA1(unsigned char* bytes, size_t size);
+
+		/**
+		 * @brief Generates a SHA1 Hash using stream of bytes. This method is continuous and does not require all data to be in memory first.
+		 * 		The function needs a buffer of bytes, the number of bytes in that buffer, the ongoing hash value, and whether this is the end of the stream of data.
+		 * 		The function returns how many bytes were processed. The data left over should be included in the next pass.
+		 * 		
+		 * 		On the first function call, hashValue must be empty. On successive calls, the hashValue should not be modified by outside sources and should be 5 elements.
+		 * 		On the last call, end must be set and totalSize must be set. 
+		 * 
+		 * @param bytes 
+		 * @param size 
+		 * @param hashValue 
+		 * @param end
+		 * @param totalSize
+		 * @return size_t 
+		 */
+		static size_t SHA1Stream(unsigned char* bytes, size_t size, std::vector<uint32_t>& hashValue, bool end, size_t totalSize);
+
+		/**
+		 * @brief Computes the SHA1 Hash for a file. This method uses the SHA1Stream function to compute the hash.
+		 * 
+		 * @param filename 
+		 * @return std::vector<uint32_t> 
+		 */
+		static std::vector<uint32_t> SHA1(std::string filename);
 
         /**
 		 * @brief Generates a checksum using ADLER32.

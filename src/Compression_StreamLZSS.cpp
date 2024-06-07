@@ -1,167 +1,253 @@
-// #include "InternalCompressionHeader.h"
+#include "InternalCompressionHeader.h"
 
-// namespace glib
-// {
+#ifndef __min
+#define __min(a, b) (((a) < (b)) ? (a) : (b))
+#endif
 
-// 	StreamCompressionLZSS::StreamCompressionLZSS(bool mode, unsigned int maxBackwardsDistance, unsigned char maxLength)
-// 	{
-// 		this->mode = mode;
-// 		this->maxBackDist = maxBackwardsDistance;
-// 		this->maxLength = maxLength;
-// 	}
+#ifndef __max
+#define __max(a, b) (((a) > (b)) ? (a) : (b))
+#endif
 
-// 	StreamCompressionLZSS::~StreamCompressionLZSS()
-// 	{
+namespace smpl
+{
 
-// 	}
+	StreamCompressionLZSS::StreamCompressionLZSS(bool mode, unsigned int maxBackwardsDistance, unsigned char maxLength)
+	{
+		this->mode = mode;
+		this->maxBackDist = __min(maxBackwardsDistance, 32768);
+		this->maxLength = maxLength+3;
 
-// 	void StreamCompressionLZSS::addData(unsigned char* data, int length)
-// 	{
-// 		if(mode == TYPE_COMPRESSION)
-// 		{
-// 			addDataCompression(data, length);
-// 		}
-// 		else
-// 		{
-// 			addDataDecompression(data, length);
-// 		}
-// 	}
+        buffer.setBitOrder(BinarySet::LMSB);
 
-// 	void StreamCompressionLZSS::addDataCompression(unsigned char* data, int length)
-// 	{
-// 		BRS<RBNode<HashValue>> lastRange = {};
-// 		HashValue hv = {};
-		
-// 		for(int i=0; i<length; i++)
-// 		{
-// 			int addType = 0; //0 = delayed, 1 = add literals, 2 = add length pair
-// 			memcpy(&hv.key, data, 3);
-// 			if(lastRange.commonAncestor == nullptr)
-// 			{
-// 				lastRange = searchTree.binaryRangeSearch(hv, hv);
-// 			}
+        if(mode == TYPE_COMPRESSION)
+        {
+            csa = new ChainedSuffixAutomaton(this->maxBackDist, 3, this->maxLength);
+            csa->resetSearch();
+        }
+        else
+        {
+            backBuffer = std::vector<unsigned char>(65536);
+        }
+	}
 
-// 			if(lastRange.commonAncestor != nullptr)
-// 			{
-// 				//a series of matches found. At least 3 so it will be a reference pair
+	StreamCompressionLZSS::~StreamCompressionLZSS()
+	{
+        if(csa != nullptr)
+            delete csa;
+        csa = nullptr;
+	}
 
-// 			}
-// 			else
-// 			{
-// 				//nothing found. add literals
-// 			}
-			
-// 			if(addType == 1)
-// 			{
-// 				//add last couple of literals
-// 				for(int j=offset; j>=0; j--)
-// 				{
-// 					//add literal
-// 					unsigned char c;
-// 					buffer.add(true);
+	void StreamCompressionLZSS::addData(unsigned char* data, int length)
+	{
+		if(mode == TYPE_COMPRESSION)
+		{
+			addDataCompression(data, length);
+		}
+		else
+		{
+			addDataDecompression(data, length);
+		}
+	}
+    
+	void StreamCompressionLZSS::addDataCompression(unsigned char* data, int length)
+	{
+        size_t index = 0;
 
-// 					//extra work for handling incoming stream data and dealing with the previous buffer
-// 					if(i-j >= 0)
-// 					{
-// 						c = data[i-j];
-// 					}
-// 					else
-// 					{
-// 						int extraOffset = i-j; //starts at -1
-// 						c = sufTree.getBuffer()[ sufTree.getBuffer().size()+extraOffset ];
-// 					}
+        while(index < length)
+        {
+            if (delayedBufferSize < 3)
+			{
+				int endOfQueue = (delayedBufferSize + startOfQueue) % 8;
 
-// 					buffer.add(c, 8);
-// 					// StringTools::println("Literal: %c", c);
-// 				}
-// 				lastKnownRange = {};
-// 				offset = 0;
-// 			}
-// 			else if(addType == 2)
-// 			{
-// 				//add length pair
-// 				unsigned short dist;
-// 				unsigned char len = offset-3;
+				delayedBuffer[endOfQueue] = data[index];
+				delayedBufferSize++;
+				index++;
+			}
+            unsigned char c = delayedBuffer[currQueueIndex];
+			currQueueIndex = (currQueueIndex + 1) % 8;
 
-// 				if(newRange.commonAncestor != nullptr)
-// 					dist = sufTree.getBuffer().size() - newRange.commonAncestor->data.data;
-// 				else
-// 					dist = sufTree.getBuffer().size() - lastKnownRange.commonAncestor->data.data;
-				
-// 				buffer.add(false);
-// 				buffer.add(dist-offset, 15);
-// 				buffer.add(len, 8);
-				
-// 				// StringTools::println("Length Pair: %d, %d", dist-offset, len+3);
+			bool foundMatch = csa->searchNext(c);
+			searchState = csa->extractSearch();
 
-// 				lastKnownRange = {};
-// 				offset = 0;
+            if(foundMatch && searchState.length != maxLength)
+            {
+                if (searchState.length >= 3)
+				{
+					while (delayedBufferSize > 0)
+					{
+						csa->extend(delayedBuffer[startOfQueue]);
+						startOfQueue = (startOfQueue + 1) % 8;
+						delayedBufferSize--;
+					}
+					currQueueIndex = startOfQueue;
+				}
+            }
+            else
+            {
+                csa->resetSearch();
+                int backwardsDis = startLoc - searchState.start;
 
-// 				//add literal that did not get added
-// 				if(newRange.commonAncestor == nullptr)
-// 				{
-// 					buffer.add(true);
-// 					buffer.add(data[i], 8);
+                if(searchState.length >= 3)
+                {
+                    buffer.add(false);
+                    buffer.add(backwardsDis, 15);
+                    buffer.add(searchState.length-3, 8);
+                    startLoc += searchState.length;
+                    
+                    if(foundMatch && searchState.length == maxLength)
+                    {
+						csa->extend(delayedBuffer[startOfQueue]);
+						startOfQueue = (startOfQueue + 1) % 8;
+						delayedBufferSize--;
+                    }
+                }
+                else
+                {
+					//only add 1
+                    buffer.add(true);
+                    buffer.add(delayedBuffer[startOfQueue]);
+					startLoc++;
 
-// 					// StringTools::println("Literal: %c", data[i]);
-// 				}
-// 			}
-// 			else
-// 			{
-// 				offset++;
-// 				lastKnownRange = newRange;
-// 			}
+					csa->extend(delayedBuffer[startOfQueue]);
+					startOfQueue = (startOfQueue + 1) % 8;
+					delayedBufferSize--;
+                }
+                
+				currQueueIndex = startOfQueue;
+            }
+        }
+	}
 
-// 			//add to tree and add that node to a linked list
-// 			BinaryTreeNode<RBNode<uint32_t>>* newNode = sufTree.push(data[i]);
-// 			queueOfNodes.addNode(newNode);
-// 			queueSize++;
+    void StreamCompressionLZSS::addDataDecompression(unsigned char* data, int length)
+	{
+        size_t index = 0;
+        while(true)
+        {
+            if(leftoversSize > 0)
+            {
+                if(getBitFromLeftovers())
+                {
+                    //literal. read 8 more bits
+                    if(leftoversSize < 9)
+                    {
+                        if(index >= length)
+                            break;
+                        addByteToLeftovers(data[index]);
+                        index++;
+                    }
+                    if(leftoversSize < 9) //need more data
+                        break;
+                    
+                    //read the next 8 bits
+                    removeFlagBitLeftovers();
+                    unsigned char lit = getBitsFromLeftoversAndRemove(8);
+                    buffer.getByteRef().push_back(lit);
 
-// 			if(addType > 0)
-// 			{
-// 				//safe to delete stuff
-// 				//at worst, O(maxLength) which is a constant. So 255 deletions at most
-// 				while(queueSize > maxBackDist)
-// 				{
-// 					LinkNode<BinaryTreeNode<RBNode<uint32_t>>*>* lNode = queueOfNodes.getRootNode();
-// 					if(lNode != nullptr)
-// 					{
-// 						// StringTools::println("Deleting: %p", lNode->value);
-// 						sufTree.remove( lNode->value );
-// 						queueOfNodes.removeNode(lNode);
-// 						queueSize--;
-// 					}
-// 					else
-// 					{
-// 						break;
-// 					}
-// 				}
-// 			}
+                    backBuffer[backBuffLocation] = lit;
+                    backBuffLocation++;
+                }
+                else
+                {
+                    //reference read 15+8 more bits
+                    while(leftoversSize < 24)
+                    {
+                        if(index >= length)
+                            break;
+                        addByteToLeftovers(data[index]);
+                        index++;
+                    }
+                    if(leftoversSize < 24) //need more data
+                        break;
+                    
+                    //read the next 24 bits
+                    removeFlagBitLeftovers();
+                    unsigned short backwards = getBitsFromLeftoversAndRemove(15);
+                    int copyLength = getBitsFromLeftoversAndRemove(8) + 3;
+                    unsigned short copyLoc = backBuffLocation - backwards;
 
-// 			// if(sufTree.getBuffer().size() > 0xFFFF)
-// 			// {
-// 			// 	return;
-// 			// }
-// 		}
-// 	}
+                    for(int i=0; i<copyLength; i++)
+                    {
+                        buffer.getByteRef().push_back(backBuffer[copyLoc]);
+                        backBuffer[backBuffLocation] = backBuffer[copyLoc];
+                        copyLoc++;
+                        backBuffLocation++;
+                    }
+                    
+                }
+            }
+            else
+            {
+                if(index >= length)
+                    break; //need more data to continue
+                addByteToLeftovers(data[index]);
+                index++;
+            }
+        }
+	}
 
-// 	void StreamCompressionLZSS::addDataDecompression(unsigned char* data, int length)
-// 	{
+    void StreamCompressionLZSS::endData()
+    {
+        //here we just need to do the very last bit which is get the remaining match
+        //and add anything left in the delayed buffer
+		searchState = csa->extractSearch();
+		int backwardsDis = startLoc - searchState.start;
+		if (searchState.length >= 3)
+		{
+            buffer.add(false);
+            buffer.add(backwardsDis, 15);
+            buffer.add(searchState.length-3, 8);
+		}
+		while (delayedBufferSize > 0)
+		{
+            buffer.add(true);
+            buffer.add(delayedBuffer[startOfQueue]);
 
-// 	}
+			startOfQueue = (startOfQueue + 1) % 8;
+			delayedBufferSize--;
+		}
+    }
 
-// 	BinarySet& StreamCompressionLZSS::getBuffer()
-// 	{
-// 		return buffer;
-// 	}
+	BinarySet& StreamCompressionLZSS::getBuffer()
+	{
+        if(mode == TYPE_DECOMPRESSION)
+            buffer.setNumberOfBits( buffer.getByteRef().size() * 8 ); //decompressed data is byte aligned
+		return buffer;
+	}
 
-// 	void StreamCompressionLZSS::clearBuffer()
-// 	{
-// 		buffer.clear();
-// 	}
+	void StreamCompressionLZSS::clearBuffer()
+	{
+		buffer.clear();
+	}
 
-// 	size_t StreamCompressionLZSS::size()
-// 	{
-// 		return buffer.getByteRef().size();
-// 	}
-// }
+	size_t StreamCompressionLZSS::size()
+	{
+		return buffer.getByteRef().size();
+	}
+    
+    bool StreamCompressionLZSS::getBitFromLeftovers()
+    {
+        bool bit = leftoversInt & 0x01;
+        return bit;
+    }
+    int StreamCompressionLZSS::getBitsFromLeftoversAndRemove(int size)
+    {
+        int mask = ((1<<size)-1);
+        int v = leftoversInt & mask;
+        
+        leftoversInt = leftoversInt >> size;
+        leftoversSize -= size;
+        return v;
+    }
+    void StreamCompressionLZSS::addByteToLeftovers(unsigned char v)
+    {
+        int mask = ((1<<leftoversSize)-1);
+        leftoversInt = (v << leftoversSize) + (leftoversInt & mask);
+        leftoversSize += 8;
+    }
+    
+    void StreamCompressionLZSS::removeFlagBitLeftovers()
+    {
+        leftoversInt = leftoversInt >> 1;
+        leftoversSize -= 1;
+    }
+}

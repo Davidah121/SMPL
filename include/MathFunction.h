@@ -1,7 +1,7 @@
 #pragma once
 #include<functional>
 
-namespace glib
+namespace smpl
 {
     class MathFunction
     {
@@ -20,7 +20,7 @@ namespace glib
         ~GeneralMathFunction();
 
         void setFunction(std::function<double(double)> f);
-        double solve(double x);
+        virtual double solve(double x);
     private:
         std::function<double(double)> func;
     };
@@ -37,9 +37,9 @@ namespace glib
         double getConstant(int index);
         size_t size();
 
-        double solve(double x);
+        virtual double solve(double x);
     private:
         std::vector<double> constants;
     };
 
-} // namespace glib
+} // namespace smpl

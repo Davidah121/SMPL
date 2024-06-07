@@ -1,6 +1,6 @@
 #include "InternalGraphicsHeader.h"
 
-namespace glib
+namespace smpl
 {
     void SimpleGraphics::drawCircle(int x, int y, int radius, bool outline, Image* surf)
 	{

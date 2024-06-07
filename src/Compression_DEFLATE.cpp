@@ -1,5 +1,7 @@
 #include "InternalCompressionHeader.h"
-namespace glib
+#include "SuffixAutomaton.h"
+
+namespace smpl
 {
 
 	#pragma region DEFLATE
@@ -9,281 +11,7 @@ namespace glib
 	//EndOfBlock is 256
 	//286 and 287 never occur
 
-	void Compression::compressDeflateSubFunction(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel)
-	{
-		int maxDistance = 1<<15;
-		switch(compressionLevel)
-		{
-			case 7:
-				maxDistance = 1<<15;
-				break;
-			case 6:
-				maxDistance = 1<<14;
-				break;
-			case 5:
-				maxDistance = 1<<13;
-				break;
-			case 4:
-				maxDistance = 1<<12;
-				break;
-			case 3:
-				maxDistance = 1<<11;
-				break;
-			case 2:
-				maxDistance = 1<<10;
-				break;
-			case 1:
-				maxDistance = 1<<9;
-				break;
-			case 0:
-				maxDistance = 1<<8;
-				break;
-			default:
-				maxDistance = 1<<15;
-				break;
-		}
-
-		if(data == nullptr || outputData == nullptr)
-		{
-			#ifdef USE_EXCEPTIONS
-			throw InvalidDataError();
-			#endif
-			return;
-		}
-		
-		if(size <= 0)
-		{
-			#ifdef USE_EXCEPTIONS
-			throw InvalidSizeError();
-			#endif
-			return;
-		}
-		
-		
-		//for all bytes, try to match it in the hashmap.
-		//Get 3 bytes and try to find it in the hashmap. If found, try and find match.
-		//If not found, add the 3 values to the hashmap and write the first byte to the output
-
-		//Method 5 - SIMPLE_HASH_MAP : Best Performance and Good Size.
-		SimpleHashMap<int, int> map = SimpleHashMap<int, int>( SimpleHashMap<int, int>::MODE_KEEP_ALL, 1<<15 );
-		map.setMaxLoadFactor(-1);
-
-		int i = 0;
-		while(i < size-2)
-		{
-			int key = data[i] + ((int)data[i+1]<<8) + ((int)data[i+2]<<16);
-			
-			HashPair<int, int>* k = map.get(key);
-
-			if(k == nullptr)
-			{
-				//not found or size too small
-				//always insert
-				map.add(key, i);
-
-				outputData->push_back( {true, data[i], 0} );
-				i++;
-			}
-			else
-			{
-				int lowestPoint = max(i-maxDistance, 0);
-				int bestLength = 0;
-				int bestLocation = 0;
-
-				do
-				{
-					int locationOfMatch = k->data;
-
-					if(locationOfMatch < lowestPoint)
-					{
-						//maximum backwards distance reached
-						break;
-					}
-
-					int lengthMax = min(size-i, 258);
-					
-					unsigned char* startBase = (data+locationOfMatch);
-					unsigned char* startMatch = (data+i);
-
-					int len;
-					
-					for(len=3; len<lengthMax; len++)
-					{
-						if(startMatch[len] != startBase[len])
-						{
-							break;
-						}
-					}
-
-					if(len>=bestLength)
-					{
-						bestLength = len;
-						bestLocation = locationOfMatch;
-					}
-
-					if(bestLength>=lengthMax)
-					{
-						break;
-					}
-					
-					k = map.getNext();
-				} while(k != nullptr);
-
-				//always insert
-				map.add( key, i );
-				for(int j=1; j<bestLength-2; j++)
-				{
-					int nkey = data[i+j] + ((int)data[i+j+1]<<8) + ((int)data[i+j+2]<<16);
-					map.add( nkey, i+j );
-				}
-
-				int backwardsDis = i - bestLocation;
-				
-				if(bestLength>=3)
-				{
-					outputData->push_back( {false, bestLength, backwardsDis} );
-					i += bestLength;
-				}
-				else
-				{
-					//couldn't find match within max allowed distance
-					outputData->push_back( {true, data[i], 0} );
-					i++;
-				}
-			}
-
-		}
-
-		int remainder = size - i;
-		for(int j=0; j<remainder; j++)
-		{
-			outputData->push_back( {true, data[i+j], 0} );
-		}
-		map.clear();
-		
-
-		// //Try another method
-		// size_t t1,t2;
-
-		// t1 = System::getCurrentTimeMicro();
-		// LinkedList<unsigned int>* hashmap = new LinkedList<unsigned int>[1<<24]; //Note that even though std::list exists, it is slower than this
-		// t2 = System::getCurrentTimeMicro();
-		// StringTools::println("TIME TO CREATE: %llu", t2-t1);
-
-
-		
-		// t1 = System::getCurrentTimeMicro();
-		// int i = 0;
-		// while(i < size-2)
-		// {
-		// 	int startLoc = i;
-		// 	int loc = data[i] + ((int)data[i+1]<<8) + ((int)data[i+2]<<16);
-		// 	int minDis = __max(i-maxDistance, 0);
-		// 	//get all matches in hashmap
-		// 	LinkNode<unsigned int>* ref = hashmap[loc].getRootNode();
-			
-		// 	if(ref != nullptr)
-		// 	{
-		// 		//go through all ref locations and try to match
-		// 		int bestLength = 0;
-		// 		int bestLocation = 0;
-		// 		int bucketSize = 0;
-		// 		while(ref != nullptr)
-		// 		{
-		// 			unsigned int startIndex = ref->value;
-		// 			auto oldRef = ref;
-		// 			ref = ref->nextNode;
-		// 			bucketSize++;
-
-		// 			if(startIndex >= minDis)
-		// 			{
-		// 				//okay
-		// 				//try to match as many as possible
-		// 				int k = 3;
-		// 				int maxLength = __min(size-startIndex, 258);
-		// 				while(k < maxLength)
-		// 				{
-		// 					if(data[i+k] != data[startIndex+k])
-		// 					{
-		// 						break;
-		// 					}
-		// 					k++;
-		// 				}
-		// 				if(bestLength < k)
-		// 				{
-		// 					bestLength = k;
-		// 					bestLocation = startIndex;
-		// 				}
-		// 				if(bestLength >= 258)
-		// 					break;
-		// 			}
-		// 			else
-		// 			{
-		// 				hashmap[loc].removeNode(oldRef);
-		// 				bucketSize--;
-		// 			}
-		// 		}
-
-		// 		if(bucketSize > 8)
-		// 		{
-		// 			for(int j=bucketSize; j!=8; j--)
-		// 			{
-		// 				hashmap[loc].removeNode( hashmap[loc].getRootNode() );
-		// 			}
-		// 		}
-
-		// 		if(bestLength != 0)
-		// 		{
-		// 			//add current match to hashmap
-		// 			hashmap[loc].addNode(startLoc);
-		// 			//add keys for points past i
-		// 			// int endLoc = bestLength+bestLocation-2;
-		// 			for(int j=i+1; j<i+bestLength-2; j++)
-		// 			{
-		// 				int nKey = data[j] + ((int)data[j+1]<<8) + ((int)data[j+2]<<16);
-		// 				hashmap[nKey].addNode(j);
-		// 			}
-
-		// 			//add reference
-		// 			outputData->push_back( {false, bestLength, i-bestLocation} );
-		// 			i+=bestLength;
-		// 		}
-		// 		else
-		// 		{
-		// 			//add literal
-		// 			outputData->push_back( {true, data[i], 0} );
-		// 			i++;
-		// 			//add current match to hashmap
-		// 			hashmap[loc].addNode(startLoc);
-		// 		}
-		// 	}
-		// 	else
-		// 	{
-		// 		//add literal
-		// 		outputData->push_back( {true, data[i], 0} );
-		// 		i++;
-		// 		//add current match to hashmap
-		// 		hashmap[loc].addNode(startLoc);
-		// 	}
-
-		// }
-		
-		// int remainder = size - i;
-		// for(int j=0; j<remainder; j++)
-		// {
-		// 	outputData->push_back( {true, data[i+j], 0} );
-		// }
-		
-		// t2 = System::getCurrentTimeMicro();
-		// StringTools::println("TIME TO COMPRESS: %llu", t2-t1);
-
-		// t1 = System::getCurrentTimeMicro();
-		// delete[] hashmap;
-		// t2 = System::getCurrentTimeMicro();
-		// StringTools::println("TIME TO CLEAN: %llu", t2-t1);
-	}
-
-	void Compression::compressDeflateSubFunction2(std::vector<lengthPair>* block, BinarySet* output, bool dynamic, bool lastBlock)
+	void Compression::refPairToDeflateBlocks(std::vector<lengthPair>* block, BinarySet* output, bool dynamic, bool lastBlock)
 	{
 		output->setAddBitOrder(BinarySet::LMSB);
 		output->add(lastBlock);
@@ -894,7 +622,7 @@ namespace glib
 				if(block<tSize)
 				{
 					info[block].clear();
-					threads[ block%tSize ] = std::thread(compressDeflateSubFunction, nData, nSize, &info[block], compressionLevel);
+					threads[ block%tSize ] = std::thread(getLZ77RefPairsCSA, nData, nSize, &info[block], compressionLevel);
 				}
 				else
 				{
@@ -902,7 +630,7 @@ namespace glib
 						threads[block%tSize].join();
 
 					info[block].clear();
-					threads[ block%tSize ] = std::thread(compressDeflateSubFunction, nData, nSize, &info[block], compressionLevel);
+					threads[ block%tSize ] = std::thread(getLZ77RefPairsCSA, nData, nSize, &info[block], compressionLevel);
 				}
 			}
 
@@ -919,7 +647,7 @@ namespace glib
 				if(threads[block%tSize].joinable())
 					threads[block%tSize].join();
 					
-				threads[ block%tSize ] = std::thread(compressDeflateSubFunction2, &info[block], &threadBinData[block], customTable, block == (blocks-1) );
+				threads[ block%tSize ] = std::thread(refPairToDeflateBlocks, &info[block], &threadBinData[block], customTable, block == (blocks-1) );
 			}
 			for(int t=0; t<tSize; t++)
 			{
@@ -936,8 +664,10 @@ namespace glib
 		else
 		{
 			std::vector<lengthPair> info = std::vector<lengthPair>();
-			compressDeflateSubFunction(data, size, &info, compressionLevel);
-			compressDeflateSubFunction2(&info, &bin, customTable, true);
+			getLZ77RefPairsCSA(data, size, &info, compressionLevel);
+			// getLZ77RefPairsCHash(data, size, &info, compressionLevel);
+			
+			refPairToDeflateBlocks(&info, &bin, customTable, true);
 		}
 
 		bin.setAddBitOrder(BinarySet::LMSB);
@@ -967,8 +697,8 @@ namespace glib
 		if(blocks == 1)
 		{
 			std::vector<lengthPair> info = std::vector<lengthPair>();
-			compressDeflateSubFunction(data, size, &info, compressionLevel);
-			compressDeflateSubFunction2(&info, outputData, customTable, true);
+			getLZ77RefPairsCHash(data, size, &info, compressionLevel);
+			refPairToDeflateBlocks(&info, outputData, customTable, true);
 			outputData->setAddBitOrder(BinarySet::LMSB);
 			return;
 		}
@@ -997,7 +727,7 @@ namespace glib
 			if(block<tSize)
 			{
 				info[block].clear();
-				threads[ block%tSize ] = std::thread(compressDeflateSubFunction, nData, nSize, &info[block], compressionLevel);
+				threads[ block%tSize ] = std::thread(getLZ77RefPairsCHash, nData, nSize, &info[block], compressionLevel);
 			}
 			else
 			{
@@ -1005,7 +735,7 @@ namespace glib
 					threads[block%tSize].join();
 
 				info[block].clear();
-				threads[ block%tSize ] = std::thread(compressDeflateSubFunction, nData, nSize, &info[block], compressionLevel);
+				threads[ block%tSize ] = std::thread(getLZ77RefPairsCHash, nData, nSize, &info[block], compressionLevel);
 			}
 		}
 
@@ -1022,7 +752,7 @@ namespace glib
 			if(threads[block%tSize].joinable())
 				threads[block%tSize].join();
 				
-			threads[ block%tSize ] = std::thread(compressDeflateSubFunction2, &info[block], &threadBinData[block], customTable, block == (blocks-1) );
+			threads[ block%tSize ] = std::thread(refPairToDeflateBlocks, &info[block], &threadBinData[block], customTable, block == (blocks-1) );
 		}
 		for(int t=0; t<tSize; t++)
 		{
@@ -1190,9 +920,7 @@ namespace glib
 					}
 					
 					currLoc+=8*length;
-
 					blockEnded=true;
-					break;
 				}
 			}
 			else
@@ -1443,11 +1171,12 @@ namespace glib
 				mTree = nullptr;
 				backTree = nullptr;
 				dynTrees = nullptr;
-					
-				if(lastBlock)
-				{
-					break;
-				}
+				
+			}
+
+			if(lastBlock)
+			{
+				break;
 			}
 			
 		}

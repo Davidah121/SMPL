@@ -2,7 +2,7 @@
 #include "Matrix.h"
 #include "Vec4f.h"
 
-namespace glib
+namespace smpl
 {
 
 	class Mat4f : public Matrix
@@ -64,8 +64,9 @@ namespace glib
 		 */
 		~Mat4f();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Returns the Identity 4x4 matrix.
@@ -121,4 +122,4 @@ namespace glib
 		void fillArray(double* buffer);
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

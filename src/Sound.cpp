@@ -2,7 +2,7 @@
 #include "SimpleFile.h"
 #include "MathExt.h"
 
-namespace glib
+namespace smpl
 {
 
     const float Sound::C0 = 16.35f;

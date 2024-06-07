@@ -2,7 +2,7 @@
 #include "Object.h"
 #include "Vec2f.h"
 
-namespace glib
+namespace smpl
 {
 
 	class ComplexNumber : public Object
@@ -44,8 +44,9 @@ namespace glib
 		 */
 		Vec2f toVec2f();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 		
 		ComplexNumber operator+(ComplexNumber other);
 		ComplexNumber operator-(ComplexNumber other);

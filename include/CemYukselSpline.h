@@ -5,7 +5,7 @@
  * 		http://www.cemyuksel.com/research/interpolating_splines/
  */
 
-namespace glib
+namespace smpl
 {
 	class CemYukselSpline
 	{

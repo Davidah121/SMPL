@@ -1,15 +1,15 @@
 #pragma once
-#include<iostream>
-#include<stdio.h>
 #include<string.h>
+#include<iostream>
+#include<sstream>
+#include<stdio.h>
 #include<vector>
 #include<fcntl.h>
-#include "BinarySet.h"
 
 #include <stdarg.h>
 #include <initializer_list>
 
-namespace glib
+namespace smpl
 {
 
 	class StringTools
@@ -76,6 +76,28 @@ namespace glib
 			std::string finalText;
 
 			for (wchar_t& c : s)
+			{
+				std::vector<unsigned char> values = StringTools::toUTF8(c);
+				for(unsigned char& v : values)
+				{
+					finalText += (char)v;
+				}
+			}
+
+			return finalText;
+		}
+
+		/**
+		 * @brief Converts an int string to a valid UTF8 string
+		 * 
+		 * @param s 
+		 * @return std::string 
+		 */
+		static std::string toUTF8String(std::vector<int> s)
+		{
+			std::string finalText;
+
+			for (int& c : s)
 			{
 				std::vector<unsigned char> values = StringTools::toUTF8(c);
 				for(unsigned char& v : values)
@@ -214,6 +236,36 @@ namespace glib
 		 * @return std::vector<unsigned char> 
 		 */
 		static std::vector<unsigned char> base64Decode(unsigned char* bytes, size_t size);
+
+		/**
+		 * @brief Encodes the data to be URL safe.
+		 * 		This replaces spaces and unallowed characters with a hexidecimal value.
+		 * 		For the query section, the characters are encoded differently.
+		 * 
+		 * @param str 
+		 * @return std::string 
+		 */
+		static std::string urlEncode(std::string str);
+
+		/**
+		 * @brief Decodes the data from a URL to a normal string.
+		 * 		This undoes the Encoded version to add back spaces and other characters.
+		 * 
+		 * @param str 
+		 * @return std::string 
+		 */
+		static std::string urlDecode(std::string str);
+
+		
+		/**
+		 * @brief Attempts to translate Environment Variables in
+		 * 		the string to be a valid.
+		 * 		
+		 * @param n 
+		 * @return std::string 
+		 */
+		static std::string translateEnvironmentVariables(std::string n);
+
 		/**
 		 * @brief Performs a bitwise left rotate on the data type.
 		 * 
@@ -416,26 +468,24 @@ namespace glib
 		static std::string toHexString(T value)
 		{
 			int size = sizeof(T) * 2;
-
-			char* hexString = new char[size+1+2];
-			int maxVal = 4*sizeof(T) - 4;
+			std::string hexString;
+			for(int i=0; i<size+2; i++)
+			{
+				hexString += '0';
+			}
 
 			hexString[0] = '0';
 			hexString[1] = 'x';
-
+			
+			char* startOfHexValues = &hexString[2];
 			unsigned long long convertedValue = (unsigned long long)value;
 			
 			for(size_t i=0; i<size; i++)
 			{
-				hexString[2 + size-i-1] = base10ToBase16((convertedValue >> (i*4)) & 0xF);
+				startOfHexValues[size-i-1] = base10ToBase16((convertedValue >> (i*4)) & 0xF);
 			}
 
-			hexString[size] = '\0';
-
-			std::string retString = hexString;
-			delete[] hexString;
-			
-			return retString;
+			return hexString;
 		}
 
 		/**
@@ -480,35 +530,22 @@ namespace glib
 		}
 
 		/**
-		 * @brief Converts the value to a Binary string.
+		 * @brief Converts the data to a Binary string.
+		 * 		Expects a list of bytes.
 		 * 
-		 * @tparam T 
-		 * @param value 
+		 * @param data 
+		 * 		The data to be converted.
+		 * @param size
+		 * 		The total number of bytes in data.
+		 * 			typically using sizeof() is appropriate.
 		 * @param bits 
 		 * 		How many bits to grab.
 		 * @param LMSB 
 		 * 		Left Most Significant Bit
 		 * 		Default is true
-		 * @return char* 
+		 * @return std::string 
 		 */
-		template<class T>
-		static char* toBinaryString(T value, int bits, bool LMSB = true)
-		{
-			int size = sizeof(T);
-			char* binString = new char[bits+1];
-
-			BinarySet b = BinarySet();
-			b.setBitOrder(LMSB);
-			b.setValues((char*)&value, size);
-
-			for(size_t i=0; i<bits; i++)
-			{
-				binString[bits-i-1] = (b.getBit(i)==false) ? '0':'1';
-			}
-			binString[bits] = '\0';
-
-			return binString;
-		}
+		static std::string toBinaryString(char* data, int size, int bits, bool LMSB = true);
 
 		/**
 		 * @brief Splits a string using a single character deliminator.
@@ -615,15 +652,24 @@ namespace glib
 		 * @param s 
 		 * @return int 
 		 */
-		static int toInt(std::string s);
-
-		/**
-		 * @brief Converts a string into an integer.
-		 * 
-		 * @param s 
-		 * @return int 
-		 */
-		static int toInt(std::wstring s);
+		template<typename T>
+		static int toInt(std::basic_string<T> s, bool* err = nullptr)
+		{
+			int ret = 0;
+			try
+			{
+				ret = std::stoi(s.c_str());
+				if(err != nullptr)
+					*err = false;
+			}
+			catch(...)
+			{
+				if(err != nullptr)
+					*err = true;
+			}
+			
+			return ret;
+		}
 
 		/**
 		 * @brief Converts a string into a long.
@@ -631,15 +677,49 @@ namespace glib
 		 * @param s 
 		 * @return long 
 		 */
-		static long toLong(std::string s);
+		template<typename T>
+		static long toLong(std::basic_string<T> s, bool* err = nullptr)
+		{
+			long ret = 0;
+			try
+			{
+				ret = std::stol(s.c_str());
+				if(err != nullptr)
+					*err = false;
+			}
+			catch(...)
+			{
+				if(err != nullptr)
+					*err = true;
+			}
+			
+			return ret;
+		}
 
 		/**
-		 * @brief Converts a string into a long.
+		 * @brief Converts a string into a unsigned long long.
 		 * 
 		 * @param s 
 		 * @return long 
 		 */
-		static long toLong(std::wstring s);
+		template<typename T>
+		static unsigned long long toULongLong(std::basic_string<T> s, bool* err = nullptr)
+		{
+			unsigned long long ret = 0;
+			try
+			{
+				ret = std::stoull(s.c_str());
+				if(err != nullptr)
+					*err = false;
+			}
+			catch(...)
+			{
+				if(err != nullptr)
+					*err = true;
+			}
+			
+			return ret;
+		}
 
 		/**
 		 * @brief Converts a string into a double.
@@ -647,15 +727,24 @@ namespace glib
 		 * @param s 
 		 * @return double 
 		 */
-		static double toDouble(std::string s);
-
-		/**
-		 * @brief Converts a string into a double.
-		 * 
-		 * @param s 
-		 * @return double 
-		 */
-		static double toDouble(std::wstring s);
+		template<typename T>
+		static double toDouble(std::basic_string<T> s, bool* err = nullptr)
+		{
+			double ret = 0;
+			try
+			{
+				ret = std::stod(s.c_str());
+				if(err != nullptr)
+					*err = false;
+			}
+			catch(...)
+			{
+				if(err != nullptr)
+					*err = true;
+			}
+			
+			return ret;
+		}
 
 		/**
 		 * @brief Converts a string into a float.
@@ -663,15 +752,24 @@ namespace glib
 		 * @param s 
 		 * @return float 
 		 */
-		static float toFloat(std::string s);
-
-		/**
-		 * @brief Converts a string into a float.
-		 * 
-		 * @param s 
-		 * @return float 
-		 */
-		static float toFloat(std::wstring s);
+		template<typename T>
+		static float toFloat(std::basic_string<T> s, bool* err = nullptr)
+		{
+			float ret = 0;
+			try
+			{
+				ret = std::stof(s.c_str());
+				if(err != nullptr)
+					*err = false;
+			}
+			catch(...)
+			{
+				if(err != nullptr)
+					*err = true;
+			}
+			
+			return ret;
+		}
 
 		/**
 		 * @brief Converts the value into a string
@@ -820,7 +918,6 @@ namespace glib
 		/**
 		 * @brief Finds the longest match in the string base.
 		 * 
-		 * @tparam T 
 		 * @param base 
 		 * @param baseSize 
 		 * @param match 
@@ -830,8 +927,60 @@ namespace glib
 		 * @param length 
 		 * 		A pointer to an int that will record the length of the longest match
 		 */
-		template<class T>
-		static void findLongestMatch(T* base, int baseSize, T* match, int matchSize, int* index, int* length);
+		static void findLongestMatch(unsigned char* base, int baseSize, unsigned char* match, int matchSize, int* index, int* length);
+
+		/**
+		 * @brief Finds the pattern using the naive pattern matching algorithm.
+		 * 		If the pattern does not appear in the data but only partially, finds the closest match.
+		 * 		Runs in O(N*M).
+		 * 
+		 * @param base 
+		 * @param baseSize 
+		 * @param match 
+		 * @param matchSize 
+		 * @param index 
+		 * @param length 
+		 */
+		static void findLongestMatchNaive(unsigned char* base, int baseSize, unsigned char* match, int matchSize, int* index, int* length);
+
+		/**
+		 * @brief Finds the pattern using the KMP matching algorithm.
+		 * 		If the pattern does not appear in the data but only partially, finds the closest match.
+		 * 		Runs in O(N + M).
+		 * 
+		 * @param base 
+		 * @param baseSize 
+		 * @param match 
+		 * @param matchSize 
+		 * @param index 
+		 * @param length 
+		 */
+		static void findLongestMatchKMP(unsigned char* base, int baseSize, unsigned char* match, int matchSize, int* index, int* length);
+
+		/**
+		 * @brief Finds the pattern using a DFA matching algorithm.
+		 * 		If the pattern does not appear in the data but only partially, finds the closest match.
+		 * 		Runs in O(N + M).
+		 * 
+		 * @param base 
+		 * @param baseSize 
+		 * @param match 
+		 * @param matchSize 
+		 * @param index 
+		 * @param length 
+		 */
+		static void findLongestMatchDFA(unsigned char* base, int baseSize, unsigned char* match, int matchSize, int* index, int* length);
+
+		/**
+		 * @brief Finds all patterns using the DFA matching algorithm.
+		 * 		Runs in O(N + M).
+		 * 
+		 * @param base 
+		 * @param baseSize 
+		 * @param match 
+		 * @param matchSize 
+		 */
+		static std::vector<int> findAllMatchDFA(unsigned char* base, int baseSize, unsigned char* match, int matchSize);
 
 		/**
 		 * @brief Formats a string like printf() would but converts std::wstring to std::string to avoid errors.
@@ -871,13 +1020,12 @@ namespace glib
 		 */
 		static void print(std::string fmt, ...)
 		{
-			std::wstring fmtAsWide = StringTools::toWideString<char>(fmt);
 			va_list args;
 			va_start(args, fmt);
-			std::wstring finalString = formatWideStringInternal( fmtAsWide, args);
+			std::string finalString = formatStringInternal( fmt, args);
 			va_end(args);
 
-			std::wcout << finalString;
+			std::cout << finalString;
 		}
 
 		/**
@@ -891,10 +1039,10 @@ namespace glib
 		{
 			va_list args;
 			va_start(args, fmt);
-			std::wstring finalString = formatWideStringInternal( StringTools::toWideString(fmt), args);
+			std::string finalString = formatStringInternal(fmt, args);
 			va_end(args);
 
-			std::wcout << finalString << L"\n";
+			std::cout << finalString << std::endl;
 		}
 
 		/**
@@ -907,10 +1055,10 @@ namespace glib
 		{
 			va_list args;
 			va_start(args, fmt);
-			std::wstring finalString = formatWideStringInternal(fmt, args);
+			std::string finalString = formatStringInternal( StringTools::toUTF8String(fmt), args);
 			va_end(args);
 
-			std::wcout << finalString;
+			std::cout << finalString;
 		}
 
 		/**
@@ -924,10 +1072,10 @@ namespace glib
 		{
 			va_list args;
 			va_start(args, fmt);
-			std::wstring finalString = formatWideStringInternal(fmt, args);
+			std::string finalString = formatStringInternal( StringTools::toUTF8String(fmt), args);
 			va_end(args);
 
-			std::wcout << finalString << L"\n";
+			std::cout << finalString << std::endl;
 		}
 
 		static const wchar_t lineBreak;
@@ -1020,189 +1168,30 @@ namespace glib
 		static std::wstreambuf* inputBuffer;
 		static std::wstreambuf* outputBuffer;
 		static std::wstreambuf* errorBuffer;
-		
-		static std::string formatStringInternal(std::string text, va_list orgArgs);
-		static std::wstring formatWideStringInternal(std::wstring text, va_list orgArgs);
+
+		static std::string formatStringInternal(std::string format, va_list args);
+		static std::wstring formatStringInternal(std::wstring format, va_list args);
 
 		/**
 		 * @brief Pre Processing for the KMP string matching algorithm.
 		 * 
-		 * @tparam T 
 		 * @param array 
 		 * @param size 
-		 * @return std::vector<int> 
 		 */
-		template<class T>
-		static std::vector<int> longestPrefixSubstring(T* array, int size);
+		static void longestPrefixSubstring(unsigned char* input, int size, int* output);
 
-		template<class T>
-		static void KMP(T* base, int baseSize,T* match, int matchSize, int* index, int* length);
-
-		template<class T>
-		static void NaivePatternSearch(T* base, int baseSize, T* match, int matchSize, int* index, int* length);
+		/**
+		 * @brief Computes a finite automaton for pattern matching.
+		 * 
+		 * @param input 
+		 * @param size 
+		 * @param output 
+		 * 		1D array instead of 2D array.
+		 * 		Must be of the size [ (inputSize+1)*256 ]
+		 */
+		static void computeMatchDFA(unsigned char* input, int size, int* output);
 
 		static bool hasInit;
 	};
-
-	template<class T>
-	inline std::vector<int> StringTools::longestPrefixSubstring(T* array, int size)
-	{
-		std::vector<int> lps = std::vector<int>(size);
-
-		int m = 0;
-		lps[0] = 0;
-
-		for(int pos=1; pos<size; pos++)
-		{
-			while(m>0 && array[pos] != array[m])
-			{
-				m = lps[m-1];
-			}
-
-			if(array[pos] == array[m])
-			{
-				m++;
-			}
-
-			lps[pos] = m;
-		}
-		
-		for(int i=0; i<size; i++)
-		{
-			lps[i] -= 1;
-		}
-
-		return lps;
-	}
-
-	template<class T>
-	inline void StringTools::KMP(T* base, int baseSize, T* match, int matchSize, int* index, int* length)
-	{
-		//preprocess match
-		std::vector<int> lps = longestPrefixSubstring(match, matchSize);
-
-		int i = 0;
-		int j = -1;
-
-		int currMaxLength = 0;
-		
-		while(i < baseSize)
-		{
-			if(base[i] == match[j+1])
-			{
-				j++;
-				i++;
-
-				if((j+1)>=currMaxLength)
-				{
-					currMaxLength = j+1;
-					*index = i-currMaxLength;
-					*length = currMaxLength;
-				}
-			}
-			else
-			{
-				if(j>=0)
-					j = lps[j];
-				else
-					i++;
-			}
-
-			if(currMaxLength==matchSize)
-			{
-				//found match
-				break;
-			}
-		}
-
-	}
-
-	template<class T>
-	inline void StringTools::NaivePatternSearch(T* base, int baseSize, T* match, int matchSize, int* index, int* length)
-	{
-		if(length!=nullptr && index!=nullptr)
-		{
-			int maxVal = 0;
-			int indexOfMax = 0;
-
-			int x = 0;
-			int y = 0;
-
-			int currSize = 0;
-			int currStartIndex = -1;
-
-			int nextPossibleIndex = -1;
-
-			T* sB = base;
-			T* sM = match;
-
-			char startValue = match[0];
-			
-			while(x < baseSize)
-			{
-				if(*sB == *sM)
-				{
-					if(currStartIndex!=-1)
-					{
-						if(*sB == startValue)
-						{
-							nextPossibleIndex = x; 
-						}
-					}
-
-					if(currStartIndex==-1)
-						currStartIndex = x;
-					
-					currSize++;
-					sM++;
-
-					if(currSize >= matchSize)
-					{
-						maxVal = currSize;
-						indexOfMax = currStartIndex;
-						break;
-					}
-				}
-				else
-				{
-					if(currSize >= maxVal)
-					{
-						maxVal = currSize;
-						indexOfMax = currStartIndex;
-					}
-
-					if(nextPossibleIndex>0)
-					{
-						x = nextPossibleIndex;
-						sB = base + nextPossibleIndex;
-					}
-
-					currSize = 0;
-					currStartIndex = -1;
-					nextPossibleIndex = -1;
-
-					sM = match;
-				}
-
-				sB++;
-				x++;
-			}
-			
-			if(currSize >= maxVal)
-			{
-				maxVal = currSize;
-				indexOfMax = currStartIndex;
-			}
-			
-			*length = maxVal;
-			*index = indexOfMax;
-		}
-	}
-
-	template<class T>
-	inline void StringTools::findLongestMatch(T* base, int baseSize, T* match, int matchSize, int* index, int* length)
-	{
-		StringTools::KMP<T>(base, baseSize, match, matchSize, index, length);
-	}
 
 } //NAMESPACE glib END

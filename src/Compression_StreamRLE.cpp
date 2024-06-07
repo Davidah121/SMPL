@@ -1,6 +1,6 @@
 #include "InternalCompressionHeader.h"
 
-namespace glib
+namespace smpl
 {
 	StreamCompressionRLE::StreamCompressionRLE(bool mode)
 	{

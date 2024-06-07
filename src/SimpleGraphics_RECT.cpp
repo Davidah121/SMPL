@@ -1,6 +1,6 @@
 #include "InternalGraphicsHeader.h"
 
-namespace glib
+namespace smpl
 {
 
     //works properly now
@@ -28,12 +28,25 @@ namespace glib
             int maxXBound = MathExt::min(tempWidth-1, (int)clippingRect.getRightBound());
             int maxYBound = MathExt::min(tempHeight-1, (int)clippingRect.getBottomBound());
 
-            int minX = MathExt::clamp(MathExt::min(x, x2), minXBound, maxXBound);
-            int maxX = MathExt::clamp(MathExt::max(x, x2), minXBound, maxXBound);
+            int minX = MathExt::min(x, x2);
+            int maxX = MathExt::max(x, x2);
+            if(minX > maxXBound || maxX < minXBound)
+                return;
 
-            int minY = MathExt::clamp(MathExt::min(y, y2), minYBound, maxYBound);
-            int maxY = MathExt::clamp(MathExt::max(y, y2), minYBound, maxYBound);
-
+            int minY = MathExt::min(y, y2);
+            int maxY = MathExt::max(y, y2);
+            if(minY > maxYBound || maxY < minYBound)
+                return;
+            
+            minX = MathExt::clamp(minX, minXBound, maxXBound);
+            maxX = MathExt::clamp(maxX, minXBound, maxXBound);
+            minY = MathExt::clamp(minY, minYBound, maxYBound);
+            maxY = MathExt::clamp(maxY, minYBound, maxYBound);
+            
+            if(minX==maxX && minY==maxY)
+                return;
+            
+            
             if(outline == false)
             {
                 #if(OPTI>=2)

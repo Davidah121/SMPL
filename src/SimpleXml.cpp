@@ -4,7 +4,7 @@
 #define PARSING_VALUE false
 #define PARSING_NODE true
 
-namespace glib
+namespace smpl
 {
     #pragma region XML_NODE
 
@@ -171,9 +171,25 @@ namespace glib
 
     #pragma region SIMPLE_XML
 
-    
+    //known html tags that are expected to not have an end. (They can not have children so they should be considered closed immediately.)
     const std::vector<std::string> SimpleXml::knownVoidTags = {"area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr"};
-
+    
+    //A bunch of html tags.
+    const std::vector<std::string> SimpleXml::knownHTMLTags = {"!DOCTYPE", "a", "abbr", "acronym", "address", "applet", "area", "article", "aside", "audio", "b", "base", "basefont", "bdi", "bdo",
+                                                                "big", "blockquote", "body", "br", "button", "canvas", "caption", "center", "cite", "code", "col", "colgroup", "data", "datalist",
+                                                                "dd", "del", "details", "dfn", "dialog", "dir", "div", "dl", "dt", "em", "embed", "fieldset", "figcaption", "figure", "font", "footer",
+                                                                "form", "frame", "frameset", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hr", "html", "i", "iframe", "img", "input", "ins",
+                                                                "kbd", "label", "legend", "li", "link", "main", "map", "mark", "meta", "meter", "nav", "noframes", "noscript", "object", "ol", "optgroup",
+                                                                "option", "output", "p", "param", "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "script", "section", "select", "small",
+                                                                "source", "span", "strike", "strong", "style", "sub", "summary", "sup", "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th",
+                                                                "thead", "time", "title", "tr", "track", "tt", "u", "ul", "var", "video", "wbr"};
+    
+    //Block elements for html. These close when another element is encoutered if they haven't been closed yet.
+    const std::vector<std::string> SimpleXml::knownHTMLBlockTags = {};
+    
+    //Block elements for html. These close when another element is encoutered if they haven't been closed yet.
+    const std::vector<std::string> SimpleXml::knownHTMLInlineTags = {};
+    
     SimpleXml::SimpleXml()
     {
 
@@ -425,6 +441,8 @@ namespace glib
         XmlNode* parentNode = nullptr;
         XmlNode* lastNodeClosed = nullptr;
         std::string tempValue = "";
+        bool inQuotes = false;
+        char quoteVal = 0;
 
         bool potentialProblem = false; //used for html parsing to determine if it is valid xml.
         bool potentialSpace = false;
@@ -436,8 +454,9 @@ namespace glib
         std::vector<unsigned char> fileBytes = removeCommentsAndInvalidChars(bytes, size); //Should do inline so that it does not create more memory than necessary.
         for(unsigned char byte : fileBytes)
         {
-            if(byte == '<')
+            if(byte == '<' && mode==PARSING_VALUE)
             {
+                //came across a new node potentially
                 if(parentNode != nullptr)
                 {
                     if(potentialSpace)
@@ -451,7 +470,57 @@ namespace glib
                 tempValue = "";
                 potentialSpace = false;
             }
-            else if(byte == '>')
+            else if(byte == '<' && mode==PARSING_NODE)
+            {
+                //problem in normal XML but okay in html for some reason.
+                validXml = false;
+                if(type == TYPE_HTML)
+                {
+                    //If inside quotes, ignore
+                    if(inQuotes)
+                    {
+                        tempValue += byte;
+                        continue;
+                    }
+
+                    if(parentNode != nullptr)
+                    {
+                        if(parentNode->getTitle() == "script")
+                        {
+                            //ignore
+                            tempValue += byte;
+                            continue;
+                        }
+                    }
+
+
+                    //everything gathered should go to the parent node as apart of its value. and then we restart
+                    tempValue = "<"+tempValue;
+                    if(parentNode != nullptr)
+                    {
+                        if(potentialSpace)
+                            if(parentNode->childNodes.size() > 0 && tempValue.size() > 0)
+                                tempValue = " " + tempValue;
+                                
+                        if(tempValue != "")
+                            parentNode->addValue(tempValue);
+                    }
+                    else
+                    {
+                        //problem not valid xml or html
+                        return false;
+                    }
+                    mode = PARSING_NODE;
+                    tempValue = "";
+                    potentialSpace = false;
+                }
+                else
+                {
+                    //problem
+                    return false;
+                }
+            }
+            else if(byte == '>' && mode==PARSING_NODE)
             {
                 mode = PARSING_VALUE;
                 //check if it was potentially the script title for the parent
@@ -471,6 +540,15 @@ namespace glib
                 XmlNode* n = parseXmlLine(tempValue);
                 if(n == nullptr)
                 {
+                    if(type == TYPE_HTML && parentNode != nullptr)
+                    {
+                        //Considered okay under HTML for some reason. (Web browsers will load it even if it is invalid.)
+                        if(tempValue != "")
+                            parentNode->addValue("<"+tempValue+">");
+                        tempValue = "";
+                        continue;
+                    }
+                    
                     //error when parsing node
                     validXml = false;
                     return false;
@@ -484,6 +562,12 @@ namespace glib
                 bool endingTag = n->isEndOfSection();
 
                 tempValue = "";
+
+                //One additional note regarding HTML. For HTML, it seems that if certains tags are not closed, they are closed automatically.
+                //This results in invalid xml but can result in valid html. It is a bad part of the standard since it becomes ambiguous as too what is a child or not.
+                //Block elements all close when another block element is encountered (except in some cases) but divs don't behave this way eventhough they are block elements.
+                //Probably other elements like this too. Here, we won't automatically close any tags and just consider it completely invalid. This will likely be fixed later.
+                //Only known void tags will automatically be closed.
 
                 if(parentNode == nullptr)
                 {
@@ -540,7 +624,9 @@ namespace glib
                                 //error. Ending tag does not line up with the parent.
                                 delete n;
                                 validXml = false;
-                                return false;
+
+                                if(type == TYPE_XML)
+                                    return false; //fatal error for XML. For HTML, this is apparently accepted behavior
                             }
                         }
                     }
@@ -568,20 +654,45 @@ namespace glib
                 }
                 else if(byte > 32)
                 {
+                    //need to factor in escaped quotes
+                    if(!inQuotes)
+                    {
+                        if(byte == '"' || byte == '\'')
+                        {
+                            inQuotes = true;
+                            quoteVal = byte;
+                        }
+                    }
+                    else
+                    {
+                        if(byte == quoteVal)
+                        {
+                            inQuotes = false;
+                            quoteVal = 0;
+                        }
+                    }
+
                     tempValue += byte;
                 }
                 else
                 {
                     //only add a space if the last value was not a space or some other character that would be considered a space.
-                    if(tempValue.size() > 0)
+                    if(inQuotes)
                     {
-                        if(tempValue.back() > 32)
-                        {
-                            tempValue += ' ';
-                        }
+                        tempValue += ' ';
                     }
                     else
-                        potentialSpace = true;
+                    {
+                        if(tempValue.size() > 0)
+                        {
+                            if(tempValue.back() > 32)
+                            {
+                                tempValue += ' ';
+                            }
+                        }
+                        else
+                            potentialSpace = true;
+                    }
                 }
                 
             }
@@ -942,6 +1053,18 @@ namespace glib
 
         node->setTitle(title);
 
+        //title can not begin with an invalid character. _ or [a-z] or [A-Z]
+        char frontChar = node->getTitle().front();
+        bool validRange1 = frontChar >= 'a' && frontChar <= 'z';
+        bool validRange2 = frontChar >= 'A' && frontChar <= 'Z';
+        
+        if(frontChar != '_' && !validRange1 && !validRange2 && frontChar != '?' && frontChar != '!')
+        {
+            //invalid
+            delete node;
+            return nullptr;
+        }
+
         if(type == TYPE_HTML)
         {
             //extra work since it could be a void tag where there is no end marker
@@ -970,14 +1093,25 @@ namespace glib
         std::string tempValue = "";
         bool inQuotes = false;
         bool settingValue = false;
+        char startQuoteChar = 0;
 
         if(indexOfFirstSpace!=SIZE_MAX)
         {
             for(size_t i=0; i<attribString.size(); i++)
             {
                 bool parseValues=true;
-                if(attribString[i] == '\"')
+                if(startQuoteChar == 0)
                 {
+                    if(attribString[i] == '\"' || attribString[i] == '\'')
+                    {
+                        startQuoteChar = attribString[i];
+                        inQuotes = !inQuotes;
+                        parseValues = false;
+                    }
+                }
+                else if(attribString[i] == startQuoteChar)
+                {
+                    startQuoteChar = 0;
                     inQuotes = !inQuotes;
                     parseValues = false;
                 }
@@ -996,7 +1130,7 @@ namespace glib
                             delete node;
                             return nullptr;
                         }
-                        if(!settingValue)
+                        if(!settingValue && attribString[i] != ' ')
                             attrib.first+=attribString[i]; //Case 1. No value
                     }
 

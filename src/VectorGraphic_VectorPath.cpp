@@ -5,18 +5,21 @@
 #include "BezierCurve.h"
 #include "ColorNameConverter.h"
 
-namespace glib
+namespace smpl
 {
 	bool VectorPath::oldMethod = false;
 	Image* surfImg = nullptr;
 	int count = 0;
 
 	#pragma region VectorPath
-	const Class VectorPath::globalClass = Class("VectorPath", {&VectorShape::globalClass});
+	const RootClass VectorPath::globalClass = CREATE_ROOT_CLASS(VectorPath, &VectorShape::globalClass);
+    const RootClass* VectorPath::getClass()
+	{
+		return &VectorPath::globalClass;
+	}
 
 	VectorPath::VectorPath() : VectorShape()
 	{
-		setClass(globalClass);
 	}
 
 	VectorPath::VectorPath(const VectorPath& other) : VectorShape()
@@ -34,7 +37,6 @@ namespace glib
 	void VectorPath::copy(VectorPath& other)
 	{
 		//StringTools::println("Copy Function");
-		setClass(globalClass);
 		this->setFillColor( other.getFillColor() );
 		this->setStrokeColor( other.getStrokeColor() );
 		this->setFillMethod( other.getFillMethod() );
@@ -345,7 +347,7 @@ namespace glib
 						
 						for(int m = fillX; m<endFillX; m++)
 						{
-							img->drawPixel(m, intYVal, col);
+							SimpleGraphics::drawPixel(m, intYVal, col, img);
 						}
 					}
 				}
@@ -391,7 +393,7 @@ namespace glib
 							int endFillX = (int)MathExt::round(endX);
 							for(int m = fillX; m<endFillX; m++)
 							{
-								img->drawPixel(m, intYVal, col);
+								SimpleGraphics::drawPixel(m, intYVal, col, img);
 							}
 							
 						}

@@ -9,7 +9,7 @@
 	#include "ext/DXModel.h"
 	#include "BitmapFont.h"
 
-	namespace glib
+	namespace smpl
 	{
 		class DXFont : public Font
 		{
@@ -32,8 +32,9 @@
 			 */
 			~DXFont();
 			
-			//Object and Class Stuff
-			static const Class globalClass;
+			//Object and RootClass Stuff
+			static const RootClass globalClass;
+			virtual const RootClass* getClass();
 
 			/**
 			 * @brief Get the texture where the desired character is stored.

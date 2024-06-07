@@ -2,7 +2,7 @@
 #include "Vec2f.h"
 #include "File.h"
 
-namespace glib
+namespace smpl
 {
 
 	class Sound

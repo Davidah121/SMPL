@@ -3,7 +3,7 @@
 #include "GeneralExceptions.h"
 #include "Sort.h"
 
-namespace glib
+namespace smpl
 {
 
 	template<typename T>
@@ -276,4 +276,4 @@ namespace glib
 		
 	}
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

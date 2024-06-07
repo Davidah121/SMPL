@@ -7,7 +7,7 @@
 	#include "Object.h"
 	#include "Sprite.h"
 
-	namespace glib
+	namespace smpl
 	{
 
 		class GLSprite : public Object
@@ -60,8 +60,9 @@
 			 */
 			~GLSprite();
 
-			//Object and Class Stuff
-			static const Class globalClass;
+			//Object and RootClass Stuff
+			static const RootClass globalClass;
+			virtual const RootClass* getClass();
 
 			/**
 			 * @brief Gets an texture from the sprite at the specified index.
@@ -70,15 +71,6 @@
 			 * @return GLTexture* 
 			 */
 			GLTexture* getTexture(size_t index);
-
-			/**
-			 * @brief Gets the Delay Time for the image.
-			 * 		Specifies how long before showing the next image in microseconds.
-			 * 
-			 * @param index 
-			 * @return size_t 
-			 */
-			size_t getDelayTime(size_t index);
 
 			/**
 			 * @brief Gets the amount of images in the sprite.
@@ -91,18 +83,25 @@
 			 * @brief Adds a new image to the sprite with a delay value.
 			 * 
 			 * @param p 
-			 * @param microSecondsDelay 
-			 * 		Default value is 0
 			 */
-			void addTexture(GLTexture* p, int microSecondsDelay = 0);
+			void addTexture(GLTexture* p);
 
 			/**
-			 * @brief Set the Delay Time for an image in the sprite specified by the index.
+			 * @brief Gets the Delay Time for the image.
+			 * 		Specifies how long before showing the next image in milliseconds.
 			 * 
 			 * @param index 
-			 * @param microSecondsDelay 
+			 * @return size_t 
 			 */
-			void setDelayTime(size_t index, int microSecondsDelay);
+			int getDelayTime(size_t index);
+
+			/**
+			 * @brief Set the Delay Time in milliseconds.
+			 * 		This is how much time to wait between each image to display it.
+			 * 
+			 * @param millis 
+			 */
+			void setDelayTime(size_t index, int millis);
 
 			/**
 			 * @brief Removes an image from the sprite.
@@ -146,6 +145,6 @@
 			std::vector<int> delayTimeForFrame = std::vector<int>();
 		};
 
-	} //NAMESPACE glib END
+	} //NAMESPACE smpl END
 	
 #endif

@@ -1,6 +1,6 @@
 #include "InternalGraphicsHeader.h"
 
-namespace glib
+namespace smpl
 {
 	void SimpleGraphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 	{

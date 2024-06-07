@@ -1,10 +1,10 @@
 #pragma once
 #include "VectorGraphic.h"
 
-namespace glib
+namespace smpl
 {
 
-    class VectorSprite
+    class VectorSprite : public Object
     {
     public:
         /**
@@ -21,6 +21,10 @@ namespace glib
          * 
          */
         ~VectorSprite();
+        
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
         /**
          * @brief Loads a VectorGraphic from a .svg file.

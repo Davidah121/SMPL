@@ -13,7 +13,7 @@
     #include "ext/DXFont.h"
 
 
-    namespace glib
+    namespace smpl
     {
 
         class DXGraphics

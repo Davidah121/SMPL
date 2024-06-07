@@ -5,6 +5,7 @@
 #include <mutex>
 #include "SimpleFile.h"
 #include "Input.h"
+#include <signal.h>
 
 #ifdef __unix__
 	
@@ -15,7 +16,6 @@
 	#include <sys/types.h>
 	#include <sys/sysinfo.h>
 	#include <sys/times.h>
-	#include <sys/vtimes.h>
 #endif
 
 #ifdef _WIN32
@@ -24,6 +24,7 @@
 	#endif
 	
 	#include <Windows.h>
+	#include <timeapi.h>
 
 	#include <TlHelp32.h>
 	#include <ShlObj.h>
@@ -32,15 +33,18 @@
 	#include <Psapi.h>
 	#include <Pdh.h>
 	#pragma comment(lib, "Pdh.lib")
+	#pragma comment(lib, "Winmm.lib")
 #endif
 
 
-namespace glib
+namespace smpl
 {
 	
 	size_t System::dbtime[16];
 	unsigned int System::numberOfThreads = std::thread::hardware_concurrency();
 	bool System::hasInit = false;
+	System System::singleton = System();
+
 
 	const FileFilter System::ALL_FILTER = {"All Files", "."};
 	const FileFilter System::IMAGE_FILTER = {"Image", ".bmp;.gif;.png;.jpg;.jpeg"};
@@ -55,6 +59,21 @@ namespace glib
 	PDH_HQUERY cpuQuery;
 	PDH_HCOUNTER cpuTotal;
 	#endif
+
+
+	System::System()
+	{
+		#ifdef _WIN32
+    	// timeBeginPeriod(1);
+		#endif
+	}
+
+	System::~System()
+	{
+		#ifdef _WIN32
+    	// timeEndPeriod(1);
+		#endif
+	}
 
 	void System::init()
 	{
@@ -127,27 +146,61 @@ namespace glib
 		return currentStoredDate;
 	}
 
-	void System::sleep(int millis, int micros)
+	void System::sleep(int millis, int micros, bool accurate)
 	{
-		std::chrono::microseconds timespan(millis*1000 + micros);
-		std::this_thread::sleep_for(timespan);
+		size_t t1 = System::getCurrentTimeMicro();
+		size_t totalTime = millis*1000 + micros;
+		size_t osSleepAccuracy = 2000; //can't expect sleep under 2 milliseconds to be accurate enough. Really close though
+
+		if(accurate)
+		{
+			while(true)
+			{
+				size_t elapsedTime = (System::getCurrentTimeMicro() - t1);
+				if( elapsedTime >= totalTime )
+					break;
+				else
+				{
+					size_t timeLeft = totalTime - elapsedTime;
+					if(timeLeft >= osSleepAccuracy)
+						std::this_thread::sleep_for(std::chrono::milliseconds(1));
+					else
+					{
+						std::this_thread::yield();
+					}
+				}
+			}
+		}
+		else
+		{
+			std::this_thread::sleep_for(std::chrono::microseconds(totalTime));
+		}
+		
 	}
 
-	void System::delayRun(void(*function)(), int millis, int micros)
+	void System::delayRun(void(*function)(), int millis, int micros, bool accurate)
 	{
-		sleep(millis, micros);
+		sleep(millis, micros, accurate);
 		function();
 	}
 
-	void System::delayRun(std::function<void()> function, int millis, int micros)
+	void System::delayRun(std::function<void()> function, int millis, int micros, bool accurate)
 	{
-		sleep(millis, micros);
+		sleep(millis, micros, accurate);
 		function();
 	}
 
 	unsigned int System::getNumberOfThreads()
 	{
 		return numberOfThreads;
+	}
+	
+	void System::mapInteruptSignal(void(*func)(int))
+	{
+		if(func == nullptr)
+			signal(SIGINT, SIG_DFL);
+		else
+			signal(SIGINT, func);
 	}
 
 	int System::getMouseX()
@@ -386,7 +439,7 @@ namespace glib
 
 			HDC capDC = CreateCompatibleDC(hdc);
 			HGDIOBJ hOld = SelectObject(capDC, bitmap);
-			BitBlt(capDC, 0, 0, bmi.bmiHeader.biWidth, bmi.bmiHeader.biHeight, hdc, 0, 0, SRCCOPY);
+			BOOL v = BitBlt(capDC, 0, 0, bmi.bmiHeader.biWidth, bmi.bmiHeader.biHeight, hdc, 0, 0, SRCCOPY);
 			SelectObject(capDC, hOld);
 			DeleteDC(capDC);
 

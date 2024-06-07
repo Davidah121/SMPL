@@ -12,7 +12,7 @@
      *      Enable and disable attributes.
      */
 
-    namespace glib
+    namespace smpl
     {
         class DXModel
         {

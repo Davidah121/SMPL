@@ -2,10 +2,11 @@
 
 #ifdef _WIN32
 
-namespace glib
+namespace smpl
 {
     std::vector<POINTER_TOUCH_INFO> TouchSimulator::inputs = std::vector<POINTER_TOUCH_INFO>(TouchSimulator::INPUTS_ALLOWED); //10 inputs since 10 fingers
     std::vector<bool> TouchSimulator::updatePoints = std::vector<bool>(TouchSimulator::INPUTS_ALLOWED); //10 inputs since 10 fingers
+    std::vector<bool> TouchSimulator::setToUp = std::vector<bool>(TouchSimulator::INPUTS_ALLOWED); //10 inputs since 10 fingers
 
     void TouchSimulator::init()
     {
@@ -21,6 +22,7 @@ namespace glib
             inputs[i].pointerInfo.pointerId = i;
             inputs[i].pointerInfo.pointerFlags = POINTER_FLAG_UP;
             updatePoints[i] = false;
+            setToUp[i] = false;
         }
 
     }
@@ -42,16 +44,28 @@ namespace glib
                 inputs[inputID].pointerInfo.pointerFlags = POINTER_FLAG_DOWN | POINTER_FLAG_INRANGE | POINTER_FLAG_INCONTACT;
             
             updatePoints[inputID] = true;
+            setToUp[inputID] = false;
         }
     }
 
     void TouchSimulator::setUp(int inputID)
     {
-        if(inputID >= 0 && inputID < TouchSimulator::INPUTS_ALLOWED)
+        if(inputID >= 0 && inputID < TouchSimulator::INPUTS_ALLOWED && !updatePoints[inputID])
+        {
+            setToUp[inputID] = true;
+        }
+    }
+
+    void TouchSimulator::internalSetUp(int inputID)
+    {
+        if(inputID >= 0 && inputID < TouchSimulator::INPUTS_ALLOWED && setToUp[inputID] == true)
         {
             if(inputs[inputID].pointerInfo.pointerFlags != POINTER_FLAG_UP)
             {
-                inputs[inputID].pointerInfo.pointerFlags = POINTER_FLAG_UP;
+                if(!(inputs[inputID].pointerInfo.pointerFlags & POINTER_FLAG_UPDATE))
+                    inputs[inputID].pointerInfo.pointerFlags = POINTER_FLAG_CANCELED | POINTER_FLAG_UP;
+                else
+                    inputs[inputID].pointerInfo.pointerFlags = POINTER_FLAG_UP;
                 updatePoints[inputID] = true;
             }
         }
@@ -59,6 +73,10 @@ namespace glib
 
     bool TouchSimulator::inject()
     {
+        for(int i=0; i<inputs.size(); i++)
+        {
+            internalSetUp(i);
+        }
         //collect inputs that need to be updated
         std::vector<POINTER_TOUCH_INFO> validInputs;
         for(int i=0; i<inputs.size(); i++)
@@ -67,18 +85,22 @@ namespace glib
                 validInputs.push_back(inputs[i]);
         }
 
-        BOOL err = InjectTouchInput(validInputs.size(), validInputs.data());
-
-        //set all inputs with POINTER_DOWN to be POINTER_UPDATE
-        for(int i=0; i<inputs.size(); i++)
+        if(validInputs.size() > 0)
         {
-            if((inputs[i].pointerInfo.pointerFlags & POINTER_FLAG_DOWN))
-                inputs[i].pointerInfo.pointerFlags = POINTER_FLAG_UPDATE | POINTER_FLAG_INRANGE | POINTER_FLAG_INCONTACT;
+            BOOL err = InjectTouchInput(validInputs.size(), validInputs.data());
+
+            //set all inputs with POINTER_DOWN to be POINTER_UPDATE
+            for(int i=0; i<inputs.size(); i++)
+            {
+                if((inputs[i].pointerInfo.pointerFlags & POINTER_FLAG_DOWN))
+                    inputs[i].pointerInfo.pointerFlags = POINTER_FLAG_UPDATE | POINTER_FLAG_INRANGE | POINTER_FLAG_INCONTACT;
+                
+                updatePoints[i] = false;
+            }
             
-            updatePoints[i] = false;
+            return err;
         }
-        
-        return err;
+        return true;
     }
 };
 

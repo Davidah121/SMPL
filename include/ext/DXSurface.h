@@ -4,7 +4,7 @@
 
     #include "ext/DXSingleton.h"
 
-    namespace glib
+    namespace smpl
     {
         struct DXSurfaceParameters
         {

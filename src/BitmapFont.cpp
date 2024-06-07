@@ -4,14 +4,16 @@
 #include "SimpleXml.h"
 #include "SimpleGraphics.h"
 
-namespace glib
+namespace smpl
 {
-
-	const Class BitmapFont::globalClass = Class("BitmapFont", {&Font::globalClass});
+	const RootClass BitmapFont::globalClass = CREATE_ROOT_CLASS(BitmapFont, &Font::globalClass);
+	const RootClass* BitmapFont::getClass()
+	{
+		return &BitmapFont::globalClass;
+	}
 
 	BitmapFont::BitmapFont(File file) : Font()
 	{
-		setClass(globalClass);
 		init( file );
 	}
 
@@ -243,7 +245,7 @@ namespace glib
 				}
 				else if(n->getTitle() == "common")
 				{
-					auto temp = n->getAttribute("lineHeight");
+					auto temp = n->getAttribute("lineheight");
 					if(temp != nullptr)
 						verticalAdv = abs(std::stoi(temp->data));
 					

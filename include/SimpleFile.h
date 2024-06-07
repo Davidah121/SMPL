@@ -1,15 +1,18 @@
 #pragma once
 
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include<vector>
 #include<fstream>
-#include "Object.h"
 #include<exception>
 #include "File.h"
 
-namespace glib
+namespace smpl
 {
 
-	class SimpleFile : public Object
+	class SimpleFile
 	{
 
 	public:
@@ -62,10 +65,7 @@ namespace glib
 		 * @brief Destroy the SimpleFile object
 		 * 
 		 */
-		~SimpleFile();
-
-		//Object and Class Stuff
-		static const Class globalClass;
+		virtual ~SimpleFile();
 
 		//Read functions
 		/**
@@ -79,16 +79,28 @@ namespace glib
 		char readByte();
 
 		/**
+		 * @brief Reads a byte of data but does not advance the read position of the file.
+		 * 
+		 * 		If the file was not opened for reading
+		 * 		and USE_EXCEPTIONS is defined, a FileReadException may be thrown.
+		 * 
+		 * @return char 
+		 */
+		char peekByte();
+
+		/**
 		 * @brief Reads bytes of data into a buffer.
+		 * 		Returns the total number of bytes read.
 		 * 
 		 * 		If the file was not opened for reading
 		 * 		and USE_EXCEPTIONS is defined, a FileReadException may be thrown.
 		 * 
 		 * @param buffer 
 		 * @param size 
+		 * @return size_t
 		 */
-		void readBytes(char* buffer, int size);
-
+		size_t readBytes(char* buffer, size_t size);
+		
 		/**
 		 * @brief Reads an byte of data as an int.
 		 * 		Not sure why this is here.
@@ -220,7 +232,7 @@ namespace glib
 		 * @param size
 		 * 		The size of the data.
 		 */
-		void writeBytes(unsigned char* data, int size);
+		void writeBytes(unsigned char* data, size_t size);
 
 		/**
 		 * @brief Writes a string to the file. Does not write a line break.
@@ -298,14 +310,25 @@ namespace glib
 		 */
 		size_t getBytesLeft();
 
-	private:
+	protected:
+		/**
+		 * @brief Construct a new Simple File object
+		 * 		It will be empty and invalid. Useful for subclasses
+		 * 
+		 */
+		SimpleFile();
+
 		void init(std::string filename, char type);
+		void init(FILE* openFilePointer, std::string filename, char type);
 		int getChar();
 
+		FILE* getFilePointer();
+		
 		std::string filename;
 		char type=0;
 		char dataType=0;
-		std::fstream* file = nullptr;
+		FILE* cFile = nullptr;
+		// std::fstream* file = nullptr;
 		size_t size;
 		
 	};

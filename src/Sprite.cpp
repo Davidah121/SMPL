@@ -1,13 +1,16 @@
 #include "Sprite.h"
 
-namespace glib
+namespace smpl
 {
 		
-	const Class Sprite::globalClass = Class("Sprite", {&Object::globalClass});
-	
+	const RootClass Sprite::globalClass = CREATE_ROOT_CLASS(Sprite, &Object::globalClass);
+    const RootClass* Sprite::getClass()
+	{
+		return &Sprite::globalClass;
+	}
+
 	Sprite::Sprite()
 	{
-		setClass(globalClass);
 	}
 
 	Sprite::~Sprite()
@@ -27,8 +30,8 @@ namespace glib
 
 	void Sprite::copy(const Sprite& o)
 	{
-		setClass(globalClass);
 		delayTimeForFrame = o.delayTimeForFrame;
+		loops = o.loops;
 
 		//hard copy
 		for(size_t i=0; i<o.images.size(); i++)
@@ -64,19 +67,14 @@ namespace glib
 
 	int Sprite::getDelayTime(size_t index)
 	{
-		if (index < images.size())
-		{
+		if(index < delayTimeForFrame.size())
 			return delayTimeForFrame[index];
-		}
-		return -1;
+		return 100;
 	}
 
-	void Sprite::setDelayTime(size_t index, int microSecondsDelay)
+	void Sprite::setDelayTime(size_t index, int milliSecondsDelay)
 	{
-		if (index < images.size())
-		{
-			delayTimeForFrame[index] = microSecondsDelay;
-		}
+		delayTimeForFrame[index] = milliSecondsDelay;
 	}
 
 	size_t Sprite::getSize()
@@ -84,10 +82,9 @@ namespace glib
 		return images.size();
 	}
 
-	void Sprite::addImage(Image* p, int microSecondsDelay)
+	void Sprite::addImage(Image* p)
 	{
 		images.push_back(p);
-		delayTimeForFrame.push_back(microSecondsDelay);
 	}
 
 	void Sprite::removeImage(size_t index)
@@ -95,31 +92,36 @@ namespace glib
 		if (index < images.size())
 		{
 			std::vector<Image*> newImages = std::vector<Image*>();
-			std::vector<int> newImageDelay = std::vector<int>();
+			std::vector<int> nDelay = std::vector<int>();
 
 			for (size_t i = 0; i < images.size(); i++)
 			{
 				if (i != index)
 				{
 					newImages.push_back(images[i]);
-					newImageDelay.push_back(delayTimeForFrame[i]);
+					nDelay.push_back(delayTimeForFrame[i]);
 				}
 				else
 					delete images[i];
 			}
 
 			images = newImages;
-			delayTimeForFrame = newImageDelay;
+			delayTimeForFrame = nDelay;
 		}
 	}
 
-	void Sprite::loadImage(File file)
+	void Sprite::loadImage(File file, bool clear)
 	{
-		dispose();
+		if(clear)
+			dispose();
+
 		int amountOfImages = 0;
 
 		std::vector<int> extraData;
 		Image** imgs = Image::loadImage(file, &amountOfImages, &extraData);
+		
+		if(imgs == nullptr)
+			return;
 		
 		if(extraData.size()>=1)
 		{
@@ -128,11 +130,24 @@ namespace glib
 
 		for (int i = 0; i < amountOfImages; i++)
 		{
+			addImage(imgs[i]);
 			if(extraData.size() == (size_t)amountOfImages+1)
-				addImage(imgs[i], extraData[i+1]);
+				delayTimeForFrame.push_back(extraData[i]);
 			else
-				addImage(imgs[i]);
+				delayTimeForFrame.push_back(100);
 		}
+		if(imgs != nullptr)
+			delete[] imgs;
+	}
+
+	bool Sprite::saveAGIF(File f, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold)
+	{
+		return Image::saveAGIF(f, images.data(), images.size(), delayTimeForFrame.data(), loops, paletteSize, dither, saveAlpha, alphaThreshold);
+	}
+
+	bool Sprite::saveAPNG(File f, bool saveAlpha, bool greyscale, bool strongCompression)
+	{
+		return Image::saveAPNG(f, images.data(), images.size(), delayTimeForFrame.data(), loops, saveAlpha, greyscale, strongCompression);
 	}
 
 	bool Sprite::shouldLoop()

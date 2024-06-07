@@ -2,7 +2,7 @@
 #include "StringTools.h"
 #include <vector>
 
-namespace glib
+namespace smpl
 {
 
 	template<typename T>
@@ -134,6 +134,7 @@ namespace glib
 					//cleanup first
 					cleanUp(parent->children[index]);
 				}
+				
 				parent->children[index] = child;
 			}
 		}

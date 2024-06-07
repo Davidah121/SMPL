@@ -1,7 +1,7 @@
 #include "ext/GLModel.h"
 
 #ifdef USE_OPENGL
-    namespace glib
+    namespace smpl
     {
 
         GLModel::GLModel()

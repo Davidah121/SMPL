@@ -1,7 +1,7 @@
 #pragma once
 #include "BezierCurve.h"
 
-namespace glib
+namespace smpl
 {
 	class GeneralSpline
 	{

@@ -5,23 +5,23 @@
 			"name": "(MVSC) Debug Launch",
 			"type": "cppvsdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/bin/Debug/GLib.exe",
+			"program": "${workspaceFolder}/bin/Debug/Smpl.exe",
 			"args": [],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",
 			"environment": [],
-			"console": "externalTerminal"
+			"console": "integratedTerminal"
 		},
 		{
 			"name": "(MVSC) Release Launch",
 			"type": "cppvsdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/bin/Release/GLib.exe",
+			"program": "${workspaceFolder}/bin/Release/Smpl.exe",
 			"args": [],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",
 			"environment": [],
-			"console": "externalTerminal"
+			"console": "integratedTerminal"
 		},
 		{
 			"name": "(Catch2) Unit Test",
@@ -32,7 +32,7 @@
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",
 			"environment": [],
-			"console": "externalTerminal"
+			"console": "integratedTerminal"
 		}
 	]
 }

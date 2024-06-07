@@ -3,7 +3,7 @@
 #include "LCG.h"
 #include "System.h"
 
-namespace glib
+namespace smpl
 {
 
 	#pragma region VEC2F_CLUSTERING

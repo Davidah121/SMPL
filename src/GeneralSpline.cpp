@@ -1,6 +1,6 @@
 #include "GeneralSpline.h"
 
-namespace glib
+namespace smpl
 {
 
 	GeneralSpline::GeneralSpline()

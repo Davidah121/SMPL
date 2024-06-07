@@ -1,6 +1,6 @@
 #include "InternalCompressionHeader.h"
 
-namespace glib
+namespace smpl
 {
 	#pragma region ARITHMETIC
 

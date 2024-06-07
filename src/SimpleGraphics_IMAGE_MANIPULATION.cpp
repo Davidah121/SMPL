@@ -1,6 +1,6 @@
 #include "InternalGraphicsHeader.h"
 
-namespace glib
+namespace smpl
 {
 
     #pragma region IMAGE_MANIPULATION
@@ -152,7 +152,7 @@ namespace glib
 		}
 	}
 
-	Image* SimpleGraphics::gaussianBlur(Image* img, int kernelRadius, double sigma)
+	void SimpleGraphics::gaussianBlur(Image* img, int kernelRadius, double sigma)
 	{
 		double actualSigma = sigma;
 		if(sigma <= 0)
@@ -160,162 +160,254 @@ namespace glib
 			actualSigma = 0.5*kernelRadius;
 		}
 
-		if(kernelRadius == 0)
+		if(kernelRadius <= 0)
 		{
-			Image* newImg = new Image(img->getWidth(), img->getHeight());
-			img->copyImage(newImg);
-			return newImg;
+			return;
 		}
 
 		int n = 2*kernelRadius + 1;
-		Matrix verticalMat = Matrix(1, n);
-		Matrix horizontalMat = Matrix(n, 1);
+		Matrix kernel = Matrix(n, n);
 
 		double variance = MathExt::sqr(actualSigma);
-		double A = 1.0/(MathExt::sqrt(2*PI*variance));
+		double A = 1.0/(2*PI*variance);
 
-		double sigX = -kernelRadius;
-
-		for(int i=0; i<n; i++)
+		for(int y=0; y<n; y++)
 		{
-			double B = exp( -MathExt::sqr(sigX)/(2*variance) );
-			
-			verticalMat[i][0] = A*B;
-			horizontalMat[0][i] = A*B;
-			sigX++;
-		}
-
-		Matrix k = verticalMat*horizontalMat;
-		
-		double sum = 0;
-		for(int j=0; j<n; j++)
-		{
-			for(int i=0; i<n; i++)
+			for(int x=0; x<n; x++)
 			{
-				sum += k[j][i];
+				double B = exp( -(MathExt::sqr(x-kernelRadius) + MathExt::sqr(y-kernelRadius))/(2*variance) );
+				kernel[y][x] = A*B;
 			}
 		}
 
-		k *= 1.0/sum;
-		
-		Image* result = new Image(img->getWidth(), img->getHeight());
+		Matrix rChannel = ComputerVision::convolution(img, &kernel, ComputerVision::RED_CHANNEL, true);
+		Matrix gChannel = ComputerVision::convolution(img, &kernel, ComputerVision::GREEN_CHANNEL, true);
+		Matrix bChannel = ComputerVision::convolution(img, &kernel, ComputerVision::BLUE_CHANNEL, true);
 
-		for(int y=0; y<result->getHeight(); y++)
+		Color* imgPixels = img->getPixels();
+		for(int y=0; y<img->getHeight(); y++)
 		{
-			for(int x=0; x<result->getWidth(); x++)
+			for(int x=0; x<img->getWidth(); x++)
 			{
-				Vec3f kernelResult;
-
-				for(int j=0; j<n; j++)
-				{
-					int actualY = y+j-kernelRadius;
-					for(int i=0; i<n; i++)
-					{
-						int actualX = x+i-kernelRadius;
-						Color c = img->getPixel(actualX, actualY, true);
-						kernelResult += k[j][i] * Vec3f(c.red, c.green, c.blue);
-					}
-				}
-
-				result->setPixel( x, y, {
-					(unsigned char)MathExt::round(kernelResult.x),
-					(unsigned char)MathExt::round(kernelResult.y),
-					(unsigned char)MathExt::round(kernelResult.z),
-					255
-				});
+				imgPixels->red = (unsigned char)MathExt::clamp(MathExt::round(rChannel[y][x]*255), 0.0, 255.0);
+				imgPixels->green = (unsigned char)MathExt::clamp(MathExt::round(gChannel[y][x]*255), 0.0, 255.0);
+				imgPixels->blue = (unsigned char)MathExt::clamp(MathExt::round(bChannel[y][x]*255), 0.0, 255.0);
+				imgPixels++;
 			}
 		}
+	}
+	
+	Image* SimpleGraphics::convertToGrayscale(Image* img)
+	{
+		if(img != nullptr)
+		{
+			Image* greyImg = new Image(img->getWidth(), img->getHeight());
+			Color* greyImgPixels = greyImg->getPixels();
+			Color* baseImgPixels = img->getPixels();
+			Color* endGreyImgPixels = greyImgPixels + (greyImg->getWidth() * greyImg->getHeight());
+			while(greyImgPixels < endGreyImgPixels)
+			{
+				Color c = *baseImgPixels;
+				c.red = (unsigned char)MathExt::clamp((0.299*c.red) + (0.587*c.green) + (0.144*c.blue), 0.0, 255.0);
+				c.green = c.red;
+				c.blue = c.red;
+				*greyImgPixels = c;
+				baseImgPixels++;
+				greyImgPixels++;
+			}
 
-		return result;
+			return greyImg;
+		}
+		return nullptr;
 	}
 
-	Image* SimpleGraphics::cannyEdgeFilter(Image* img)
+	Image* SimpleGraphics::cannyEdgeFilter(Image* img, double weakThreshold, double strongThreshold)
 	{
-		return nullptr;
+		// apply gaussian filter
+		// apply sobel edge filter
+		// apply gradient magnitude thresholding
+		// apply more thresholding
+		// suppress weak edges
+
+		Image* grayscaleImg = SimpleGraphics::convertToGrayscale(img);
+		SimpleGraphics::gaussianBlur(grayscaleImg, 2, 1);
+
+		Mat3f gx = Mat3f(1, 0, -1,
+						 2, 0, -2,
+						 1, 0, -1);
+		Mat3f gy = Mat3f( 1,  2,  1,
+						  0,  0,  0,
+						 -1, -2, -1);
+
+		Matrix imgXDerivative = ComputerVision::convolution(grayscaleImg, &gx, ComputerVision::RED_CHANNEL, true);
+		Matrix imgYDerivative = ComputerVision::convolution(grayscaleImg, &gy, ComputerVision::RED_CHANNEL, true);
+		Matrix derivativeMagnitude = Matrix(imgXDerivative.getRows(), imgXDerivative.getCols());
+
+		//remove the pixels on the edge of the image.
+		for(int x=0; x<img->getWidth(); x++)
+		{
+			grayscaleImg->getPixels()[x] = {0, 0, 0, 255};
+			grayscaleImg->getPixels()[x + img->getWidth()*(img->getHeight()-1)] = {0, 0, 0, 255};
+		}
+		
+		for(int y=0; y<img->getHeight(); y++)
+		{
+			grayscaleImg->getPixels()[y*img->getWidth()] = {0, 0, 0, 255};
+			grayscaleImg->getPixels()[y*img->getWidth() + (img->getWidth()-1)] = {0, 0, 0, 255};
+		}
+
+		for(int y=0; y<img->getHeight(); y++)
+		{
+			for(int x=0; x<img->getWidth(); x++)
+			{
+				derivativeMagnitude[y][x] = MathExt::sqrt(MathExt::sqr(imgXDerivative[y][x]) + MathExt::sqr(imgYDerivative[y][x]));
+			}
+		}
+
+		derivativeMagnitude = ComputerVision::readjustIntensity(&derivativeMagnitude, 0.0, 1.0);
+
+		//non maximum suppression
+		for(int y=1; y<img->getHeight()-1; y++)
+		{
+			for(int x=1; x<img->getWidth()-1; x++)
+			{
+				double mag = derivativeMagnitude[y][x];
+				double angle = MathExt::darctan2(imgYDerivative[y][x], imgXDerivative[y][x]);
+				if(angle < 0)
+					angle += 180;
+
+				double v1 = 0;
+				double v2 = 0;
+				
+				if((angle >= 0 && angle < 22.5) || (angle >= 157.5 && angle <= 180))
+				{
+					//horizontal derivative
+					v1 = derivativeMagnitude[y][x-1];
+					v2 = derivativeMagnitude[y][x+1];
+				}
+				else if(angle >= 22.5 && angle < 67.5)
+				{
+					//diagonal derivative (upright)
+					v1 = derivativeMagnitude[y-1][x-1];
+					v2 = derivativeMagnitude[y+1][x+1];
+				}
+				else if(angle >= 67.5 && angle < 112.5)
+				{
+					//vertical derivative
+					v1 = derivativeMagnitude[y-1][x];
+					v2 = derivativeMagnitude[y+1][x];
+				}
+				else
+				{
+					//diagonal derivative (downright)
+					v1 = derivativeMagnitude[y+1][x-1];
+					v2 = derivativeMagnitude[y-1][x+1];
+				}
+
+				unsigned char outputV = 0;
+				if(mag >= v1 && mag >= v2)
+				{
+					//double threshold step here.
+					if(mag <= weakThreshold)
+						outputV = 0;
+					else if(mag > strongThreshold)
+						outputV = 255;
+					else
+						outputV = 128;
+				}
+
+				grayscaleImg->getPixels()[x + y*grayscaleImg->getWidth()] = {outputV, outputV, outputV, 255};
+			}
+		}
+
+		//Hysteresis
+		//note that the very edge of the image is all set to zero for convenience.
+		for(int y=1; y<img->getHeight()-1; y++)
+		{
+			for(int x=1; x<img->getWidth()-1; x++)
+			{
+				bool keep = false;
+				Color c = grayscaleImg->getPixels()[x + y*img->getWidth()];
+				if(c.red != 128)
+					continue;
+						
+				for(int ydiff = -1; ydiff <= 1; ydiff++)
+				{
+					for(int xdiff = -1; xdiff <= 1; xdiff++)
+					{
+						Color c2 = grayscaleImg->getPixels()[(x+xdiff) + (y+ydiff)*img->getWidth()];
+						if(c2.red == 255)
+						{
+							keep = true;
+							break;
+						}
+					}
+					if(keep)
+						break;
+				}
+				if(keep == true)
+				{
+					grayscaleImg->getPixels()[x + y*img->getWidth()] = {255, 255, 255, 255};
+				}
+				else
+				{
+					grayscaleImg->getPixels()[x + y*img->getWidth()] = {0, 0, 0, 255};
+				}
+			}
+		}
+
+		return grayscaleImg;
 	}
 
 	Image* SimpleGraphics::sobelEdgeFilter(Image* img)
 	{
-		return nullptr;
-	}
+		Image* grayscaleImg = SimpleGraphics::convertToGrayscale(img);
 
-	std::vector<std::vector<Vec2f>> SimpleGraphics::calculateGradient(Image* img, unsigned char type)
-	{
-		std::vector< std::vector<Vec2f> > gradientImage;
-		if(img!=nullptr)
+		Mat3f gx = Mat3f(1, 0, -1,
+						 2, 0, -2,
+						 1, 0, -1);
+		Mat3f gy = Mat3f( 1,  2,  1,
+						  0,  0,  0,
+						 -1, -2, -1);
+
+		Matrix imgXDerivative = ComputerVision::convolution(grayscaleImg, &gx, ComputerVision::RED_CHANNEL, true);
+		Matrix imgYDerivative = ComputerVision::convolution(grayscaleImg, &gy, ComputerVision::RED_CHANNEL, true);
+
+		//reuse imgXDerivative
+		double* imgXDerData = imgXDerivative.getData();
+		double* imgXDerDataEnd = imgXDerivative.getData() + (img->getWidth() * img->getHeight());
+		double* imgYDerData = imgYDerivative.getData();
+
+		while(imgXDerData < imgXDerDataEnd)
 		{
-			gradientImage = std::vector< std::vector<Vec2f> >(img->getHeight());
-
-			for(int y=0; y<img->getHeight(); y++)
-			{
-				for(int x=0; x<img->getWidth(); x++)
-				{
-					Vec2f grad;
-					Color c1, c2;
-					switch(type)
-					{
-						case RED_CHANNEL:
-							//central x difference
-							c1 = img->getPixel(x-1, y, true);
-							c2 = img->getPixel(x+1, y, true);
-							
-							grad.x = (double)(c2.red - c1.red)/2.0;
-
-							//central y difference
-							c1 = img->getPixel(x, y-1, true);
-							c2 = img->getPixel(x, y+1, true);
-							
-							grad.y = (double)(c2.red - c1.red)/2.0;
-							break;
-						case GREEN_CHANNEL:
-							//central x difference
-							c1 = img->getPixel(x-1, y, true);
-							c2 = img->getPixel(x+1, y, true);
-							
-							grad.x = (double)(c2.green - c1.green)/2.0;
-
-							//central y difference
-							c1 = img->getPixel(x, y-1, true);
-							c2 = img->getPixel(x, y+1, true);
-							
-							grad.y = (double)(c2.green - c1.green)/2.0;
-							break;
-						case BLUE_CHANNEL:
-							//central x difference
-							c1 = img->getPixel(x-1, y, true);
-							c2 = img->getPixel(x+1, y, true);
-							
-							grad.x = (double)(c2.blue - c1.blue)/2.0;
-
-							//central y difference
-							c1 = img->getPixel(x, y-1, true);
-							c2 = img->getPixel(x, y+1, true);
-							
-							grad.y = (double)(c2.blue - c1.blue)/2.0;
-							break;
-						case ALPHA_CHANNEL:
-							//central x difference
-							c1 = img->getPixel(x-1, y, true);
-							c2 = img->getPixel(x+1, y, true);
-							
-							grad.x = (double)(c2.alpha - c1.alpha)/2.0;
-
-							//central y difference
-							c1 = img->getPixel(x, y-1, true);
-							c2 = img->getPixel(x, y+1, true);
-							
-							grad.y = (double)(c2.alpha - c1.alpha)/2.0;
-							break;
-						default:
-							break;
-					}
-					
-					gradientImage[y].push_back(grad);
-				}
-			}
+			*imgXDerData = MathExt::sqrt( MathExt::sqr(*imgXDerData) + MathExt::sqr(*imgYDerData) );
+			imgXDerData++;
+			imgYDerData++;
 		}
 
-		return gradientImage;
+		imgXDerivative = ComputerVision::readjustIntensity(&imgXDerivative, 0, 255);
+		
+
+		//Saving memory allocation cost by resuing grayscaleImg
+		Color* finalImgPixels = grayscaleImg->getPixels();
+		imgXDerData = imgXDerivative.getData();
+		imgXDerDataEnd = imgXDerivative.getData() + (img->getWidth() * img->getHeight());
+		
+		while(imgXDerData < imgXDerDataEnd)
+		{
+			Color c;
+			c.red = *imgXDerData;
+			c.green = c.red;
+			c.blue = c.red;
+			c.alpha = 255;
+
+			*finalImgPixels = c;
+			
+			imgXDerData++;
+			finalImgPixels++;
+		}
+
+		return grayscaleImg;
 	}
 
 	void SimpleGraphics::ditherImage(Image* img, unsigned char method)

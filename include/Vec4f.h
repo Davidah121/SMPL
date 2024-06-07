@@ -1,11 +1,12 @@
 #pragma once
+#include "Serializable.h"
 #include "Vec3f.h"
 #include "Vec2f.h"
 
-namespace glib
+namespace smpl
 {
 
-	class Vec4f : public Object
+	class Vec4f : public SerializedObject
 	{
 	public:
 
@@ -24,7 +25,7 @@ namespace glib
 		 * @param w 
 		 */
 		Vec4f(double x, double y, double z, double w);
-
+		
 		/**
 		 * @brief Construct a new Vec4f object from a Vec3f object and
 		 * 		an optional additional value for w.
@@ -47,8 +48,10 @@ namespace glib
 		 */
 		~Vec4f();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
+		std::unordered_map<std::string, SerializedData> getSerializedVariables();
 
 		double x = 0;
 		double y = 0;

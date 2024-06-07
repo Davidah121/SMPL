@@ -5,16 +5,19 @@
 #include "BezierCurve.h"
 #include "ColorNameConverter.h"
 
-namespace glib
+namespace smpl
 {
 		
 	#pragma region VectorEllipse
 
-	const Class VectorEllipse::globalClass = Class("VectorEllipse", {&VectorShape::globalClass});
+	const RootClass VectorEllipse::globalClass = CREATE_ROOT_CLASS(VectorEllipse, &VectorShape::globalClass);
+    const RootClass* VectorEllipse::getClass()
+	{
+		return &VectorEllipse::globalClass;
+	}
 
 	VectorEllipse::VectorEllipse() : VectorShape()
 	{
-		setClass(globalClass);
 	}
 
 	VectorEllipse::~VectorEllipse()
@@ -79,7 +82,7 @@ namespace glib
 					// else
 					// {
 						//fill
-						buffer->drawPixel(i, j, getFillColor());
+						SimpleGraphics::drawPixel(i, j, getFillColor(), buffer);
 					// }
 				}
 				

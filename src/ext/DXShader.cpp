@@ -2,7 +2,7 @@
 
     #include "ext/DXShader.h"
 
-    namespace glib
+    namespace smpl
     {
         DXShader* DXShader::activeShader = nullptr;
 

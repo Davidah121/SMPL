@@ -1,14 +1,17 @@
 #include "GeneralVector.h"
 #include <math.h>
 
-namespace glib
+namespace smpl
 {
 
-	const Class GeneralVector::globalClass = Class("GeneralVector", {&Object::globalClass});
+	const RootClass GeneralVector::globalClass = CREATE_ROOT_CLASS(GeneralVector, &Object::globalClass);
+	const RootClass* GeneralVector::getClass()
+	{
+		return &GeneralVector::globalClass;
+	}
 
 	GeneralVector::GeneralVector(int size)
 	{
-		setClass(globalClass);
 		this->size = size;
 		if (size > 0)
 		{
@@ -33,8 +36,7 @@ namespace glib
 	void GeneralVector::copy(const GeneralVector& o)
 	{
 		this->~GeneralVector();
-
-		setClass(globalClass);
+		
 		this->size = o.size;
 		if(size>0)
 		{

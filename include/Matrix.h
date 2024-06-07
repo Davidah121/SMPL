@@ -3,7 +3,7 @@
 #include "Object.h"
 #include "GeneralVector.h"
 
-namespace glib
+namespace smpl
 {
 
 	class Matrix : public Object
@@ -57,8 +57,9 @@ namespace glib
 		 */
 		void copy(const Matrix& o);
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Returns a pointer to the start of the specified row
@@ -184,4 +185,4 @@ namespace glib
 		bool valid = false;
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

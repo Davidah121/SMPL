@@ -1,6 +1,6 @@
 #include "ModelBuilder.h"
 
-namespace glib
+namespace smpl
 {
     Model* ModelBuilder::createSphere(double radius, int steps, bool faceNormals)
     {

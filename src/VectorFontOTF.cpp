@@ -1,7 +1,7 @@
 #include "VectorFont.h"
 #include "StringTools.h"
 
-namespace glib
+namespace smpl
 {
 	enum TagNames
 	{

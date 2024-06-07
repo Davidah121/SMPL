@@ -2,12 +2,12 @@
 
     #include "ext/DXFont.h"
 
-    namespace glib
+    namespace smpl
     {
-        const Class DXFont::myClass = Class("DXFont", {&Font::myClass});
-        const Class* DXFont::getClass()
+        const RootClass DXFont::myClass = CREATE_ROOT_CLASS(DXFont, &Font::globalClass);
+        const RootClass* DXFont::getClass()
         {
-            return &DXFont::myClass;
+            return &DXFont::globalClass;
         }
 
         DXFont::DXFont(File f)

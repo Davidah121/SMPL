@@ -5,7 +5,7 @@
     #include "ext/GLSingleton.h"
     #include "Image.h"
 
-    namespace glib
+    namespace smpl
     {
 
         struct GLTextureParams
@@ -50,6 +50,6 @@
             int height = 0;
         };
 
-    } // namespace glib
+    } // namespace smpl
 
 #endif

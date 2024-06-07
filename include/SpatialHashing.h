@@ -2,13 +2,13 @@
 #include "Object.h"
 #include "Shape.h"
 
-namespace glib
+namespace smpl
 {
     template<typename T>
     class SpatialHashing;
 
     template<typename T>
-    class SpatialHashingObject : public Object
+    class SpatialHashingObject
     {
     public:
         SpatialHashingObject(T data, Shape shape)
@@ -46,7 +46,7 @@ namespace glib
     };
 
     template<typename T>
-    class SpatialHashing : public Object
+    class SpatialHashing
     {
     public:
         SpatialHashing(int xGrids, int yGrids, double width, double height)

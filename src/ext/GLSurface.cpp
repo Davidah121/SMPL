@@ -1,7 +1,8 @@
 #include "ext/GLSurface.h"
+#include "GraphicsExt.h"
 
 #ifdef USE_OPENGL
-    namespace glib
+    namespace smpl
     {
         GLSurface* GLSurface::previousSurfaceBound = nullptr;
         
@@ -24,6 +25,9 @@
             {
                 return;
             }
+
+            if(previousSurfaceBound == this)
+                unbind();
 
             if(fboID!=0)
                 glDeleteFramebuffers(1, &fboID);
@@ -107,6 +111,8 @@
                 glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
             }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+            previousSurfaceBound = nullptr;
         }
 
         bool GLSurface::getValid()

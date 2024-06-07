@@ -1,6 +1,7 @@
 #include "StringTools.h"
 #include <string>
 #include "Input.h"
+#include "BinarySet.h"
 
 #ifdef __unix__
 	#include <unistd.h>
@@ -49,16 +50,18 @@
 			}
 		}
 		
-		return glib::StringTools::utf8ToChar(bytes);
+		return smpl::StringTools::utf8ToChar(bytes);
 	}
 #else
+	//Need WINSDK for io.h so might as well use Windows.h too
+	#include<Windows.h>
 	#include<io.h>
 #endif
 
 #define getch() (_getwch() % 0xFF)
 #define getwch() _getwch()
 
-namespace glib
+namespace smpl
 {
 
 	//Used in base64 conversions
@@ -80,16 +83,18 @@ namespace glib
 
 	void StringTools::init()
 	{
-		#ifdef __unix__
-			setlocale(LC_CTYPE, "");
-		#else
-			//Note that the following return values are not used and cause warnings
-			int outRet = _setmode(_fileno(stdout), _O_U16TEXT);
-			int inRet = _setmode(_fileno(stdin), _O_U16TEXT);
-			int errRet = _setmode(_fileno(stderr), _O_U16TEXT);
+		#if defined(__unix__)
+			// Enable buffering to prevent chopping up UTF-8 byte sequences. Just to mimic the WIN32 approach.
+			setvbuf(stdout, nullptr, _IOFBF, 0xFFFF);
+		#elif defined(_WIN32)
+			// Set console code page to UTF-8 so console known how to interpret string data
+			SetConsoleOutputCP(CP_UTF8);
+
+			// Enable buffering to prevent VS from chopping up UTF-8 byte sequences
+			setvbuf(stdout, nullptr, _IOFBF, 0xFFFF);
 		#endif
 
-		std::ios_base::sync_with_stdio(true);
+		std::ios_base::sync_with_stdio(false);
 
 		hasInit = true;
 	}
@@ -757,6 +762,220 @@ namespace glib
 		return stringArray;
 	}
 
+	std::string StringTools::urlEncode(std::string str)
+	{
+		//Test This: ./Stuff/Stuff/Vids/Hentai/xiangweitudou/[%E7%AC%AC%E4%B8%89%E9%9B%86]%E8%9C%98%E8%9B%9B%E8%85%BF%E6%8C%91%E6%88%98%EF%BC%88English%20subtitles%EF%BC%89/1648037211_9XZ69CJvWGsZakQVK_Source.mp4
+		std::string nStr = "";
+		bool queryMode = false;
+		for(int i=0; i<str.size(); i++)
+		{
+			bool adjustmentNeeded = true;
+			if(StringTools::isAlphaNumerial(str[i], true, true))
+				adjustmentNeeded = 0;
+			else if(str[i] == '.' || str[i] == '~' || str[i] == ':' || str[i] == '/' || str[i] == '\\')
+				adjustmentNeeded = 0;
+			else if(str[i] == '?')
+			{
+				adjustmentNeeded = 0;
+				queryMode = true;
+			}
+
+			if(adjustmentNeeded)
+			{
+				if(queryMode && str[i] == ' ')
+				{
+					nStr += '+';
+				}
+				else
+				{
+					//convert to hex
+					std::string hexStr = "%";
+					hexStr += StringTools::base10ToBase16((str[i]>>4)&0x0F);
+					hexStr += StringTools::base10ToBase16(str[i]&0x0F);
+					nStr += hexStr;
+				}
+			}
+			else
+			{
+				nStr += str[i];
+			}
+		}
+		return nStr;
+	}
+
+	std::string StringTools::urlDecode(std::string str)
+	{
+		std::string nStr = "";
+		bool queryMode = false;
+		int i=0;
+		while(i < str.size())
+		{
+			bool adjustmentNeeded = false;
+			if(str[i] == '?')
+			{
+				adjustmentNeeded = false;
+				queryMode = true;
+			}
+			else if(str[i] == '%')
+			{
+				adjustmentNeeded = true;
+			}
+			else if(str[i] == '+' && queryMode)
+			{
+				adjustmentNeeded = true;
+			}
+
+			if(adjustmentNeeded)
+			{
+				if(queryMode && str[i] == '+')
+				{
+					nStr += ' ';
+					i++;
+				}
+				else
+				{
+					//convert to hex. Skip the first % since we don't need it.
+					char v = StringTools::base16ToBase10(str[i+1]) << 4;
+					v += StringTools::base16ToBase10(str[i+2]);
+					
+					nStr += v;
+					i+=3;
+				}
+			}
+			else
+			{
+				nStr += str[i];
+				i++;
+			}
+		}
+		return nStr;
+	}
+
+	std::string StringTools::translateEnvironmentVariables(std::string n)
+	{
+		std::string finalStr = "";
+		std::string temp = "";
+		#ifdef _WIN32
+		bool mode = false;
+		for(char c : n)
+		{
+			if(c == '%')
+			{
+				mode = !mode;
+				if(mode == false)
+				{
+					//try to translate the data
+					std::string environmentValue = std::getenv(temp.c_str());
+					if(!environmentValue.empty())
+						finalStr += StringTools::splitString(environmentValue, ';', true)[0];
+					else
+						finalStr += "%"+temp+"%";
+					
+					temp = "";
+				}
+			}
+			else
+			{
+				if(mode == true)
+					temp += c;
+				else
+					finalStr += c;
+			}
+			
+		}
+
+		if(!temp.empty())
+			finalStr += "%"+temp;
+
+		#else
+
+		bool mode = false;
+		bool longMode = false;
+		bool processEnv = false;
+		for(int i=0; i<n.size(); i++)
+		{
+			char c = n[i];
+			if(c == '$' && mode==false)
+			{
+				mode = true;
+				temp += c;
+			}
+			else
+			{
+				if(mode == true)
+				{
+					if(temp.size() == 1 && c == '{')
+						longMode = true;
+					temp += c;
+
+					if(c == '}' && longMode)
+					{
+						processEnv = true;
+					}
+					else if(!longMode)
+					{
+						if(c == ' ' || c == '/' || c == '\\')
+						{
+							processEnv = true;
+						}
+					}
+				}
+				else
+					finalStr += c;
+			}
+
+			if(processEnv || i == n.size()-1)
+			{
+				int offset = 1;
+				int lengthSub = 0;
+				if(longMode)
+				{
+					offset = 2;
+					lengthSub = 1;
+				}
+				
+				std::string environmentValue = std::getenv(temp.substr(offset, temp.size()-offset-lengthSub).c_str());
+				if(!environmentValue.empty())
+				{
+					finalStr += StringTools::splitString(environmentValue, ':', true)[0];
+					if(!longMode)
+					{
+						if(processEnv)
+							finalStr += temp.back();
+					}
+				}
+				else
+					finalStr += temp;
+				
+				temp = "";
+				processEnv = false;
+				longMode = false;
+				mode = false;
+			}
+			
+		}
+		#endif
+
+		return finalStr;
+	}
+
+	std::string StringTools::toBinaryString(char* data, int size, int bits, bool LMSB)
+	{
+		char* binString = new char[bits+1];
+
+		BinarySet b = BinarySet();
+		b.setBitOrder(LMSB);
+		b.setValues(data, size);
+
+		for(size_t i=0; i<bits; i++)
+		{
+			binString[bits-i-1] = (b.getBit(i)==false) ? '0':'1';
+		}
+		binString[bits] = '\0';
+
+		return binString;
+	}
+
 	std::vector<std::string> StringTools::splitStringMultipleDeliminators(std::string s, std::string delim, bool removeEmpty)
 	{
 		std::vector<std::string> stringArray = std::vector<std::string>();
@@ -1191,46 +1410,6 @@ namespace glib
 		return nStr;
 	}
 
-	int StringTools::toInt(std::string s)
-	{
-		return std::stoi(s.c_str());
-	}
-
-	long StringTools::toLong(std::string s)
-	{
-		return std::stol(s.c_str());
-	}
-
-	double StringTools::toDouble(std::string s)
-	{
-		return std::stod(s.c_str());
-	}
-
-	float StringTools::toFloat(std::string s)
-	{
-		return std::stof(s.c_str());
-	}
-
-	int StringTools::toInt(std::wstring s)
-	{
-		return std::stoi(s.c_str());
-	}
-
-	long StringTools::toLong(std::wstring s)
-	{
-		return std::stol(s.c_str());
-	}
-
-	double StringTools::toDouble(std::wstring s)
-	{
-		return std::stod(s.c_str());
-	}
-
-	float StringTools::toFloat(std::wstring s)
-	{
-		return std::stof(s.c_str());
-	}
-
 	std::string StringTools::toString(int k)
 	{
 		return std::to_string(k);
@@ -1454,262 +1633,312 @@ namespace glib
 		}
 	}
 
-	void StringTools::findLongestMatch(std::string base, std::string match, int* index, int* length)
+	
+	void StringTools::computeMatchDFA(unsigned char* input, int size, int* output)
 	{
-		StringTools::KMP(base.c_str(), base.size(), match.c_str(), match.size(), index, length);
+		int i = 1;
+		int lps = 0;
+		//set first row to 0
+		memset(output, 0, sizeof(int)*256);
+		output[input[0]] = 1;
+
+		while(i <= size)
+		{
+			memcpy(&output[lps*256], &output[i*256], sizeof(int)*256);
+			output[input[i] + i*256] = i + 1;
+			if(i < size)
+				lps = output[input[i] + lps*256];
+			i++;
+		}
 	}
 
-	std::string StringTools::formatStringInternal(std::string text, va_list orgArgs)
+	void StringTools::longestPrefixSubstring(unsigned char* array, int size, int* lps)
 	{
-		std::string finalText = "";
-		std::vector<std::string> splits = splitString(text, "%ls", false);
+		int m = 0;
+		lps[0] = 0;
 
-		va_list args;
-		va_copy(args, orgArgs);
-
-		size_t i=0;
-
-		while(i<splits.size())
+		for(int pos=1; pos<size; pos++)
 		{
-			std::string str = splits[i];
-			
-			int bufferSize = 1024;
-			char* nText = new char[bufferSize];
-			while(true)
+			while(m>0 && array[pos] != array[m])
 			{
-				int size = vsnprintf(nText, bufferSize, str.c_str(), args);
-				if(size < 0)
-				{
-					bufferSize*=2;
-					delete[] nText;
-					nText = new char[bufferSize];
-				}
-				else
-				{
-					break;
-				}
+				m = lps[m-1];
 			}
-			
-			finalText += nText;
-			delete[] nText;
-			
-			int count = 0;
-			size_t loc = 0;
-			
-			while(true)
+
+			if(array[pos] == array[m])
 			{
-				size_t nLoc = str.find('%', loc);
-				if(nLoc != SIZE_MAX)
+				m++;
+			}
+
+			lps[pos] = m;
+		}
+		
+		for(int i=0; i<size; i++)
+		{
+			lps[i] -= 1;
+		}
+	}
+
+	void StringTools::findLongestMatch(std::string base, std::string match, int* index, int* length)
+	{
+		StringTools::findLongestMatchKMP((unsigned char*)base.data(), base.size(), (unsigned char*)match.data(), match.size(), index, length);
+	}
+
+	void StringTools::findLongestMatch(unsigned char* base, int baseSize, unsigned char* match, int matchSize, int* index, int* length)
+	{
+		StringTools::findLongestMatchKMP(base, baseSize, match, matchSize, index, length);
+	}
+
+	void StringTools::findLongestMatchNaive(unsigned char* base, int baseSize, unsigned char* match, int matchSize, int* index, int* length)
+	{
+		if(length!=nullptr && index!=nullptr)
+		{
+			int maxVal = 0;
+			int indexOfMax = 0;
+
+			int x = 0;
+			int y = 0;
+
+			int currSize = 0;
+			int currStartIndex = -1;
+
+			int nextPossibleIndex = -1;
+
+			unsigned char* sB = base;
+			unsigned char* sM = match;
+
+			char startValue = match[0];
+			
+			while(x < baseSize)
+			{
+				if(*sB == *sM)
 				{
-					loc = nLoc;
-					
-					while(loc < str.size())
+					if(currStartIndex!=-1)
 					{
-						loc++;
-						//read till flag
-						if(str[loc] == 'd' || str[loc] == 'i' || str[loc] == 'u' || str[loc] == 'o'
-						|| str[loc] == 'x' || str[loc] == 'X' || str[loc] == 'c')
+						if(*sB == startValue)
 						{
-							va_arg(args, size_t);
-							count++;
-							break;
+							nextPossibleIndex = x; 
 						}
-						else if(str[loc] == 'f' || str[loc] == 'F' || str[loc] == 'e' || str[loc] == 'E'
-						|| str[loc] == 'g' || str[loc] == 'G' || str[loc] == 'a' || str[loc] == 'A')
-						{
-							va_arg(args, long double);
-							count++;
-							break;
-						}
-						else if(str[loc] == 's')
-						{
-							//should always be char*
-							va_arg(args, char*);
-							count++;
-							break;
-						}
-						else if(str[loc] == 'p')
-						{
-							va_arg(args, void*);
-							count++;
-							break;
-						}
-						else if(str[loc] == 'n')
-						{
-							va_arg(args, void*);
-							count++;
-							break;
-						}
-						else if(str[loc] == L'%')
-						{
-							break;
-						}
-						else if(str[loc] == '*')
-						{
-							va_arg(args, int);
-							count++;
-						}
+					}
+
+					if(currStartIndex==-1)
+						currStartIndex = x;
+					
+					currSize++;
+					sM++;
+
+					if(currSize >= matchSize)
+					{
+						maxVal = currSize;
+						indexOfMax = currStartIndex;
+						break;
 					}
 				}
 				else
 				{
-					break;
+					if(currSize >= maxVal)
+					{
+						maxVal = currSize;
+						indexOfMax = currStartIndex;
+					}
+
+					if(nextPossibleIndex>0)
+					{
+						x = nextPossibleIndex;
+						sB = base + nextPossibleIndex;
+					}
+
+					currSize = 0;
+					currStartIndex = -1;
+					nextPossibleIndex = -1;
+
+					sM = match;
+				}
+
+				sB++;
+				x++;
+			}
+			
+			if(currSize >= maxVal)
+			{
+				maxVal = currSize;
+				indexOfMax = currStartIndex;
+			}
+			
+			*length = maxVal;
+			*index = indexOfMax;
+		}
+	}
+
+	void StringTools::findLongestMatchKMP(unsigned char* base, int baseSize, unsigned char* match, int matchSize, int* index, int* length)
+	{
+		//preprocess match
+		std::vector<int> lps = std::vector<int>(matchSize);
+		longestPrefixSubstring(match, matchSize, lps.data());
+
+		int i = 0;
+		int j = -1;
+
+		int currMaxLength = 0;
+		
+		while(i < baseSize)
+		{
+			if(base[i] == match[j+1])
+			{
+				j++;
+				i++;
+
+				if((j+1)>=currMaxLength)
+				{
+					currMaxLength = j+1;
+					*index = i-currMaxLength;
+					*length = currMaxLength;
 				}
 			}
-
-			if(i < splits.size()-1)
+			else
 			{
-				std::wstring delayedStr = va_arg(args, wchar_t*);
-				finalText += StringTools::toCString(delayedStr);
-				count++;
+				if(j>=0)
+					j = lps[j];
+				else
+					i++;
 			}
 
-			i++;
+			if(currMaxLength==matchSize)
+			{
+				//found match
+				break;
+			}
 		}
+	}
 
-		va_end(args);
+	void StringTools::findLongestMatchDFA(unsigned char* base, int baseSize, unsigned char* match, int matchSize, int* index, int* length)
+	{
+		//Go until a match is found.
+		std::vector<int> DFA = std::vector<int>((matchSize+1)*256);
+		computeMatchDFA(match, matchSize, DFA.data());
 
-		return finalText;
+		int nodeIndex = 0;
+		int indexOfBestMatch = -1;
+		int sizeOfBestMatch = -1;
+		for(int i=0; i < baseSize; i++)
+		{
+			nodeIndex = DFA[base[i] + nodeIndex*256];
+			if(nodeIndex > sizeOfBestMatch)
+			{
+				sizeOfBestMatch = nodeIndex;
+				indexOfBestMatch = (i - nodeIndex + 1);
+				if(nodeIndex == matchSize)
+					break;
+			}
+		}
+	}
+
+	std::vector<int> StringTools::findAllMatchDFA(unsigned char* base, int baseSize, unsigned char* match, int matchSize)
+	{
+		std::vector<int> output;
+		std::vector<int> DFA = std::vector<int>((matchSize+1)*256);
+		computeMatchDFA(match, matchSize, DFA.data());
+
+		int nodeIndex = 0;
+		for(int i=0; i < baseSize; i++)
+		{
+			nodeIndex = DFA[base[i] + nodeIndex*256];
+			if(nodeIndex == matchSize)
+			{
+				output.push_back( i-matchSize+1 );
+			}
+		}
+		return output;
 	}
 
 	std::string StringTools::formatString(std::string text, ...)
 	{
-		std::string finalText = "";
-
 		va_list args;
 		va_start(args, text);
-
-		finalText = StringTools::formatStringInternal(text, args);
-
+		std::string ret = formatStringInternal(text, args);
 		va_end(args);
 
-		return finalText;
-	}
-
-	std::wstring StringTools::formatWideStringInternal(std::wstring text, va_list orgArgs)
-	{
-		std::wstring finalText = L"";
-		std::vector<std::wstring> splits = splitString(text, L"%s", false);
-
-		va_list args;
-		va_copy(args, orgArgs);
-
-		size_t i = 0;
-		while(i<splits.size())
-		{
-			std::wstring str = splits[i];
-			
-			int bufferSize = 1024;
-			wchar_t* nText = new wchar_t[bufferSize];
-			while(true)
-			{
-				int size = vswprintf(nText, bufferSize, str.c_str(), args);
-				if(size < 0)
-				{
-					bufferSize*=2;
-					delete[] nText;
-					nText = new wchar_t[bufferSize];
-				}
-				else
-				{
-					break;
-				}
-			}
-			
-			finalText += nText;
-			delete[] nText;
-			
-			int count = 0;
-			size_t loc = 0;
-			
-			while(true)
-			{
-				size_t nLoc = str.find(L'%', loc);
-				if(nLoc != SIZE_MAX)
-				{
-					loc = nLoc;
-					
-					while(loc < str.size())
-					{
-						loc++;
-						//read till flag
-						if(str[loc] == L'd' || str[loc] == L'i' || str[loc] == L'u' || str[loc] == L'o'
-						|| str[loc] == L'x' || str[loc] == L'X' || str[loc] == L'c')
-						{
-							va_arg(args, size_t);
-							count++;
-							break;
-						}
-						else if(str[loc] == L'f' || str[loc] == L'F' || str[loc] == L'e' || str[loc] == L'E'
-						|| str[loc] == L'g' || str[loc] == L'G' || str[loc] == L'a' || str[loc] == L'A')
-						{
-							va_arg(args, long double);
-							count++;
-							break;
-						}
-						else if(str[loc] == L's')
-						{
-							//should always be wchar_t*
-							va_arg(args, wchar_t*);
-							count++;
-							break;
-						}
-						else if(str[loc] == L'p')
-						{
-							va_arg(args, void*);
-							count++;
-							break;
-						}
-						else if(str[loc] == L'n')
-						{
-							va_arg(args, void*);
-							count++;
-							break;
-						}
-						else if(str[loc] == L'%')
-						{
-							break;
-						}
-						else if(str[loc] == L'*')
-						{
-							va_arg(args, int);
-							count++;
-						}
-					}
-				}
-				else
-				{
-					break;
-				}
-			}
-
-			if(i < splits.size()-1)
-			{
-				std::string delayedStr = va_arg(args, char*);
-				finalText += StringTools::toWideString(delayedStr);
-				count++;
-			}
-
-			i++;
-		}
-
-		va_end(args);
-
-		return finalText;
+		return ret;
 	}
 
 	std::wstring StringTools::formatWideString(std::wstring text, ...)
 	{
-		std::wstring finalText = L"";
-
 		va_list args;
 		va_start(args, text);
-
-		finalText = StringTools::formatWideStringInternal(text, args);
-
+		std::wstring ret = formatStringInternal(text, args);
 		va_end(args);
 
-		return finalText;
+		return ret;
+	}
+
+	
+	std::string StringTools::formatStringInternal(std::string format, va_list args)
+	{
+		int bytesWritten = 0;
+		std::vector<char> buffer = std::vector<char>(0xFFFF);
+		
+		while(true)
+		{
+			va_list copyArgs;
+			va_copy(copyArgs, args);
+			bytesWritten = vsnprintf(buffer.data(), buffer.size(), format.c_str(), args);
+			va_end(copyArgs);
+
+			if(bytesWritten < 0)
+			{
+				//error
+				break;
+			}
+			else if(bytesWritten == buffer.size()-1)
+			{
+				//potentially a problem. May need a larger buffer
+				buffer.resize( buffer.size() * 2 );
+			}
+			else
+			{
+				//probably fine
+				break;
+			}
+		}
+		
+		if(bytesWritten >= 0)
+			return buffer.data();
+		else
+			return "";
+	}
+
+	std::wstring StringTools::formatStringInternal(std::wstring format, va_list args)
+	{
+		int bytesWritten = 0;
+		std::vector<wchar_t> buffer = std::vector<wchar_t>(0xFFFF);
+		
+		while(true)
+		{
+			va_list copyArgs;
+			va_copy(copyArgs, args);
+			bytesWritten = vswprintf(buffer.data(), buffer.size(), format.c_str(), args);
+			va_end(copyArgs);
+
+			if(bytesWritten < 0)
+			{
+				//error
+				break;
+			}
+			else if(bytesWritten == buffer.size()-1)
+			{
+				//potentially a problem. May need a larger buffer
+				buffer.resize( buffer.size() * 2 );
+			}
+			else
+			{
+				//probably fine
+				break;
+			}
+		}
+		
+		if(bytesWritten >= 0)
+			return buffer.data();
+		else
+			return L"";
 	}
 
 	void StringTools::clearConsole(bool clearScrollBuffer)
@@ -1773,4 +2002,4 @@ namespace glib
 		std::wcerr.rdbuf(errorBuffer);
 	}
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

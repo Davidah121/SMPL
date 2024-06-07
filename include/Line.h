@@ -2,7 +2,7 @@
 #include "Vec2f.h"
 #include "Object.h"
 
-namespace glib
+namespace smpl
 {
 
 	class Line : public Object
@@ -51,8 +51,9 @@ namespace glib
 		 */
 		~Line();
 
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Gets the first point of the line.
@@ -220,4 +221,4 @@ namespace glib
 
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

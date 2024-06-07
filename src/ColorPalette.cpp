@@ -7,11 +7,15 @@
 #include "System.h"
 #include "ColorSpaceConverter.h"
 
-namespace glib
+namespace smpl
 {
 
 	#pragma region ClassStuff
-	const Class ColorPalette::globalClass = Class("ColorPalette", {&Object::globalClass});
+	const RootClass ColorPalette::globalClass = CREATE_ROOT_CLASS(ColorPalette, &Object::globalClass);
+	const RootClass* ColorPalette::getClass()
+	{
+		return &ColorPalette::globalClass;
+	}
 	#pragma endregion
 
 	struct ColorNode
@@ -22,10 +26,14 @@ namespace glib
 
 	ColorPalette::ColorPalette()
 	{
-		setClass(globalClass);
 	}
 
 	ColorPalette::~ColorPalette()
+	{
+		dispose();
+	}
+
+	void ColorPalette::dispose()
 	{
 		paletteArr.clear();
 		if(paletteTree != nullptr)
@@ -46,9 +54,8 @@ namespace glib
 
 	void ColorPalette::copy(const ColorPalette& other)
 	{
-		this->~ColorPalette();
+		dispose();
 		
-		setClass(globalClass);
 		uniquePalette = other.uniquePalette;
 		paletteTree = new KDTree<unsigned char>(3);
 
@@ -57,6 +64,14 @@ namespace glib
 			addNewColor(c);
 		}
 	}
+	
+	// ColorPalette::ColorPalette(ColorPalette&& other)
+	// {
+	// 	paletteArr = other.paletteArr;
+	// 	paletteTree = other.paletteTree;
+	// 	uniquePalette = other.uniquePalette;
+	// 	other.paletteTree = nullptr;
+	// }
 
 	ColorPalette ColorPalette::createColorPalette(int reds, int greens, int blues)
 	{

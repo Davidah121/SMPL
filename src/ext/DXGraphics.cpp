@@ -3,7 +3,7 @@
 
     #include "ext/DXGraphics.h"
 
-    namespace glib
+    namespace smpl
     {
         Vec4f DXGraphics::clearColor = Vec4f(0,0,0,0);
         Vec4f DXGraphics::drawColor = Vec4f(1,1,1,1);

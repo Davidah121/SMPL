@@ -6,7 +6,7 @@
 
 	#include "ext/DXSingleton.h"
 
-	namespace glib
+	namespace smpl
 	{
 
 		class DXWindow : public SimpleWindow
@@ -85,8 +85,9 @@
 			 */
 			~DXWindow();
 
-			//Object and Class Stuff
-			static const Class globalClass;
+			//Object and RootClass Stuff
+			static const RootClass globalClass;
+			virtual const RootClass* getClass();
 
 			/**
 			 * @brief Sets the swap interval for vsync. 
@@ -151,6 +152,6 @@
 			void threadRepaint();
 		};
 
-	} //NAMESPACE glib END
+	} //NAMESPACE smpl END
 	
 #endif

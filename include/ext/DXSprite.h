@@ -6,7 +6,7 @@
 	#include "ext/DXTexture.h"
 	#include "Object.h"
 
-	namespace glib
+	namespace smpl
 	{
 
 		class DXSprite : public Object
@@ -40,8 +40,9 @@
 			 */
 			~DXSprite();
 
-			//Object and Class Stuff
-			static const Class globalClass;
+			//Object and RootClass Stuff
+			static const RootClass globalClass;
+			virtual const RootClass* getClass();
 
 			/**
 			 * @brief Gets an texture from the sprite at the specified index.
@@ -126,6 +127,6 @@
 			std::vector<int> delayTimeForFrame = std::vector<int>();
 		};
 
-	} //NAMESPACE glib END
+	} //NAMESPACE smpl END
 
 #endif

@@ -5,16 +5,19 @@
 #include "BezierCurve.h"
 #include "ColorNameConverter.h"
 
-namespace glib
+namespace smpl
 {
 		
 	#pragma region VectorRectangle
 
-	const Class VectorRectangle::globalClass = Class("VectorRectangle", {&VectorShape::globalClass});
+	const RootClass VectorRectangle::globalClass = CREATE_ROOT_CLASS(VectorRectangle, &VectorShape::globalClass);
+    const RootClass* VectorRectangle::getClass()
+	{
+		return &VectorRectangle::globalClass;
+	}
 
 	VectorRectangle::VectorRectangle() : VectorShape()
 	{
-		setClass(globalClass);
 	}
 
 	VectorRectangle::~VectorRectangle()
@@ -77,11 +80,11 @@ namespace glib
 
 				if(!onStroke)
 				{
-					buffer->drawPixel(tx, ty, getFillColor());
+					SimpleGraphics::drawPixel(tx, ty, getFillColor(), buffer);
 				}
 				else
 				{
-					buffer->drawPixel(tx, ty, getStrokeColor());
+					SimpleGraphics::drawPixel(tx, ty, getStrokeColor(), buffer);
 				}
 				
 			}

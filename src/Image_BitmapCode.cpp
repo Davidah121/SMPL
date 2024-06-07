@@ -8,7 +8,7 @@
 
 #include "ColorSpaceConverter.h"
 
-namespace glib
+namespace smpl
 {
 	void Image::saveBMP(File file, unsigned char alphaThreshold, bool greyscale)
 	{
@@ -125,11 +125,16 @@ namespace glib
 		}
 	}
 
-	Image** Image::loadBMP(std::vector<unsigned char> fileData, int* amountOfImages)
+	HiResImage** HiResImage::loadBMP(std::vector<unsigned char> fileData, int* amountOfImages)
 	{
-		Image** images = nullptr;
+		HiResImage** images = nullptr;
 		//Assume that the bitmap is a valid bitmap
+		int ID = ((int)fileData[0] << 8) + fileData[1];
+		int size = ((int)fileData[5] << 24) + ((int)fileData[4]<<16)
+			+((int)fileData[3]<<8) + ((int)fileData[2]);
 		
+		//skip the reserved data
+
 		int pixStart = ((int)fileData[13] << 24) + ((int)fileData[12]<<16)
 			+((int)fileData[11]<<8) + ((int)fileData[10]);
 
@@ -141,12 +146,60 @@ namespace glib
 
 		int bpp = ((int)fileData[29] << 8) + ((int)fileData[28]);
 
-		int compressionMethod = ((int)fileData[33] << 24) + ((int)fileData[32] << 16)
-			+ ((int)fileData[31] << 8) + ((int)fileData[30]);
+		int compressionMethod = 0;
+		int colorsInPalette = 0;
+		unsigned int bitFieldsR = 0;
+		unsigned int bitFieldsG = 0;
+		unsigned int bitFieldsB = 0;
+		unsigned int bitFieldsA = 0;
 
-		int colorsInPalette = ((int)fileData[49] << 24) + ((int)fileData[48] << 16)
-			+ ((int)fileData[47] << 8) + ((int)fileData[46]);
+		int shiftAmountR = 32;
+		int shiftAmountG = 32;
+		int shiftAmountB = 32;
+		int shiftAmountA = 32;
 
+		if(size >= 40)
+		{
+			int compressionMethod = ((int)fileData[33] << 24) + ((int)fileData[32] << 16)
+				+ ((int)fileData[31] << 8) + ((int)fileData[30]);
+
+			int colorsInPalette = ((int)fileData[49] << 24) + ((int)fileData[48] << 16)
+				+ ((int)fileData[47] << 8) + ((int)fileData[46]);
+		}
+
+		if(size >= 52)
+		{
+			bitFieldsR = ((int)fileData[0x39] << 24) + ((int)fileData[0x38] << 16)
+				+ ((int)fileData[0x37] << 8) + ((int)fileData[0x36]);
+			bitFieldsG = ((int)fileData[0x3D] << 24) + ((int)fileData[0x3C] << 16)
+				+ ((int)fileData[0x3B] << 8) + ((int)fileData[0x3A]);
+			bitFieldsB = ((int)fileData[0x41] << 24) + ((int)fileData[0x40] << 16)
+				+ ((int)fileData[0x3F] << 8) + ((int)fileData[0x3E]);
+		}
+		if(size >= 56)
+		{
+			bitFieldsA = ((int)fileData[0x45] << 24) + ((int)fileData[0x44] << 16)
+				+ ((int)fileData[0x43] << 8) + ((int)fileData[0x42]);
+		}
+		else
+		{
+			bitFieldsA = 0;
+		}
+
+		for(int i=0; i<32; i++)
+		{
+			if((bitFieldsA >> i) & 0x01)
+				shiftAmountA = MathExt::min(shiftAmountA, i);
+				
+			if((bitFieldsR >> i) & 0x01)
+				shiftAmountR = MathExt::min(shiftAmountR, i);
+				
+			if((bitFieldsG >> i) & 0x01)
+				shiftAmountG = MathExt::min(shiftAmountG, i);
+				
+			if((bitFieldsB >> i) & 0x01)
+				shiftAmountB = MathExt::min(shiftAmountB, i);
+		}
 
 		//Load palette if it exists
 
@@ -231,6 +284,23 @@ namespace glib
 		{
 			//Nothing
 		}
+		else if (compressionMethod == 3 || compressionMethod == 6)
+		{
+			//if size == 64, it is OS22XBITMAPHEADER which uses more stuff that can't be ignored.
+			//It uses Huffman 1D compression which we won't bother with here
+			if(size == 64)
+				return nullptr;
+		}
+		else if (compressionMethod == 4)
+		{
+			//not a bmp. Contains a different image format inside of it. Contains a JPEG
+			return nullptr;
+		}
+		else if (compressionMethod == 5)
+		{
+			//not a bmp. Contains a different image format inside of it. Contains a PNG
+			return nullptr;
+		}
 		else
 		{
 			//can't be loaded
@@ -238,7 +308,7 @@ namespace glib
 		}
 
 		//Load pixels
-		Image* tImg = new Image(width, height);
+		HiResImage* tImg = new HiResImage(width, height);
 
 		if (bpp == 1)
 		{
@@ -257,7 +327,8 @@ namespace glib
 					{
 						int v1 = (pixData[i] >> (7 - i)) & 0b00000001;
 						Color setC = cPalette.getColor(v1);
-						tImg->pixels[y * width + x] = setC;
+						Color4f actualColor = Color4f{(double)setC.red / 255, (double)setC.green / 255, (double)setC.blue / 255, (double)setC.alpha / 255};
+						tImg->pixels[y * width + x] = actualColor;
 						x++;
 					}
 					else
@@ -297,7 +368,8 @@ namespace glib
 					{
 						int v1 = (pixData[i] >> (6 - k * 2)) & 0b00000011;
 						Color setC = cPalette.getColor(v1);
-						tImg->pixels[y * width + x] = setC;
+						Color4f actualColor = Color4f{(double)setC.red / 255, (double)setC.green / 255, (double)setC.blue / 255, (double)setC.alpha / 255};
+						tImg->pixels[y * width + x] = actualColor;
 						x++;
 					}
 					else
@@ -337,7 +409,8 @@ namespace glib
 					{
 						int v1 = (pixData[i] >> (4 - k * 4)) & 0b00001111;
 						Color setC = cPalette.getColor(v1);
-						tImg->pixels[y * width + x] = setC;
+						Color4f actualColor = Color4f{(double)setC.red / 255, (double)setC.green / 255, (double)setC.blue / 255, (double)setC.alpha / 255};
+						tImg->pixels[y * width + x] = actualColor;
 						x++;
 					}
 					else
@@ -372,7 +445,8 @@ namespace glib
 			while (i < pixsDataSize)
 			{
 				Color setC = cPalette.getColor(pixData[i]);
-				tImg->pixels[y * width + x] = setC;
+				Color4f actualColor = Color4f{(double)setC.red / 255, (double)setC.green / 255, (double)setC.blue / 255, (double)setC.alpha / 255};
+				tImg->pixels[y * width + x] = actualColor;
 
 				x++;
 				if (x >= width)
@@ -401,15 +475,29 @@ namespace glib
 			int x = 0;
 			int y = height - 1;
 
+			if(compressionMethod != 3 && compressionMethod != 6)
+			{
+				bitFieldsR = 0x00F0;
+				bitFieldsG = 0x0F00;
+				bitFieldsB = 0xF000;
+				bitFieldsA = 0x000F;
+
+				shiftAmountR = 4;
+				shiftAmountG = 8;
+				shiftAmountB = 12;
+				shiftAmountA = 0;
+			}
 			while (i < pixsDataSize)
 			{
-				unsigned char highWord = pixData[i];
-				unsigned char lowWord = pixData[i + 1];
-
-				tImg->pixels[y * width + x].blue = (highWord >> 4 & 0x0F);
-				tImg->pixels[y * width + x].green = (highWord & 0x0F);
-				tImg->pixels[y * width + x].red = (lowWord >> 4 & 0x0F);
-				tImg->pixels[y * width + x].alpha = (lowWord & 0x0F);
+				unsigned int colorAsInt = ((unsigned int)pixData[i+1] << 8) + pixData[i];
+				Color setC;
+				setC.red = (colorAsInt & bitFieldsR) >> shiftAmountR;
+				setC.green = (colorAsInt & bitFieldsG) >> shiftAmountG;
+				setC.blue = (colorAsInt & bitFieldsB) >> shiftAmountB;
+				setC.alpha = (colorAsInt & bitFieldsA) >> shiftAmountA;
+				
+				Color4f actualColor = Color4f{(double)setC.red / 255, (double)setC.green / 255, (double)setC.blue / 255, (double)setC.alpha / 255};
+				tImg->pixels[y * width + x] = actualColor;
 
 				x++;
 				if (x >= width)
@@ -439,8 +527,9 @@ namespace glib
 
 			while (i < pixsDataSize)
 			{
-				Color c = {pixData[i+2], pixData[i+1], pixData[i], 255};
-				tImg->pixels[y * width + x] = c;
+				Color setC = {pixData[i+2], pixData[i+1], pixData[i], 255};
+				Color4f actualColor = Color4f{(double)setC.red / 255, (double)setC.green / 255, (double)setC.blue / 255, (double)setC.alpha / 255};
+				tImg->pixels[y * width + x] = actualColor;
 
 				x++;
 				if (x >= width)
@@ -469,10 +558,32 @@ namespace glib
 			int x = 0;
 			int y = height - 1;
 
+			if(compressionMethod != 3 && compressionMethod != 6)
+			{
+				unsigned int bitFieldsR = 0x0000FF00;
+				unsigned int bitFieldsG = 0x00FF0000;
+				unsigned int bitFieldsB = 0xFF000000;
+				unsigned int bitFieldsA = 0x000000FF;
+
+				int shiftAmountR = 8;
+				int shiftAmountG = 16;
+				int shiftAmountB = 24;
+				int shiftAmountA = 0;
+			}
+
 			while (i < pixsDataSize)
 			{
-				Color c = {pixData[i+2], pixData[i+1], pixData[i], pixData[i+3]};
-				tImg->pixels[y * width + x] = c;
+				unsigned int colorAsInt = ((unsigned int)pixData[i] << 24) + ((unsigned int)pixData[i+1] << 16)
+										+ ((unsigned int)pixData[i+2] << 8) + ((unsigned int)pixData[i+3]);
+				
+				Color setC;
+				setC.red = (colorAsInt & bitFieldsR) >> shiftAmountR;
+				setC.green = (colorAsInt & bitFieldsG) >> shiftAmountG;
+				setC.blue = (colorAsInt & bitFieldsB) >> shiftAmountB;
+				setC.alpha = (colorAsInt & bitFieldsA) >> shiftAmountA;
+
+				Color4f actualColor = Color4f{(double)setC.red / 255, (double)setC.green / 255, (double)setC.blue / 255, (double)setC.alpha / 255};
+				tImg->pixels[y * width + x] = actualColor;
 
 				x++;
 				if (x >= width)
@@ -493,9 +604,8 @@ namespace glib
 		if(amountOfImages!=nullptr)
 			*amountOfImages = 1;
 
-		images = new Image * [*amountOfImages]{ tImg };
+		images = new HiResImage*[1]{ tImg };
 		return images;
-		
 	}
 
 } //NAMESPACE glib END

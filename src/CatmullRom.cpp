@@ -1,7 +1,7 @@
 #include "CatmullRom.h"
 #include "MathExt.h"
 
-namespace glib
+namespace smpl
 {
 
 	CatmullRom::CatmullRom()

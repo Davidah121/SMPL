@@ -2,25 +2,30 @@
 #include <cmath>
 #include <math.h>
 
-namespace glib
+namespace smpl
 {
-
-	const Class Vec2f::globalClass = Class("Vec2f", {&Object::globalClass});
-
+	const RootClass Vec2f::globalClass = CREATE_ROOT_CLASS(Vec2f, &SerializedObject::globalClass);
+    const RootClass* Vec2f::getClass()
+	{
+		return &Vec2f::globalClass;
+	}
 	Vec2f::Vec2f(double x, double y)
 	{
-		setClass(globalClass);
 		this->x = x;
 		this->y = y;
 	}
 
 	Vec2f::Vec2f()
 	{
-		setClass(globalClass);
 	}
 
 	Vec2f::~Vec2f()
 	{
+	}
+	
+	std::unordered_map<std::string, SerializedData> Vec2f::getSerializedVariables()
+	{
+		return {SERIALIZE_MAP(x), SERIALIZE_MAP(y)};
 	}
 
 	double Vec2f::getX()

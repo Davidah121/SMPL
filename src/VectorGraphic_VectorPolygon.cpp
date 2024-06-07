@@ -5,16 +5,19 @@
 #include "BezierCurve.h"
 #include "ColorNameConverter.h"
 
-namespace glib
+namespace smpl
 {
 		
 	#pragma region VectorPolygon
 
-	const Class VectorPolygon::globalClass = Class("VectorPolygon", {&VectorShape::globalClass});
+	const RootClass VectorPolygon::globalClass = CREATE_ROOT_CLASS(VectorPolygon, &VectorShape::globalClass);
+    const RootClass* VectorPolygon::getClass()
+	{
+		return &VectorPolygon::globalClass;
+	}
 
 	VectorPolygon::VectorPolygon() : VectorShape()
 	{
-		setClass(globalClass);
 	}
 
 	VectorPolygon::~VectorPolygon()
@@ -32,7 +35,7 @@ namespace glib
 		std::vector<Vec2f> prePoints = points;
 		applyTransform();
 
-		buffer->drawPolygon(points.data(), points.size());
+		SimpleGraphics::drawPolygon(points.data(), points.size(), buffer);
 		points = prePoints;
 	}
 
@@ -50,13 +53,13 @@ namespace glib
 			{
 				if(i<points.size()-1)
 				{
-					buffer->drawLine((int)MathExt::floor(points[i].x), (int)MathExt::floor(points[i].y),
-						(int)MathExt::floor(points[i+1].x), (int)MathExt::floor(points[i+1].y));
+					SimpleGraphics::drawLine((int)MathExt::floor(points[i].x), (int)MathExt::floor(points[i].y),
+						(int)MathExt::floor(points[i+1].x), (int)MathExt::floor(points[i+1].y), buffer);
 				}
 				else
 				{
-					buffer->drawLine((int)MathExt::floor(points[i].x), (int)MathExt::floor(points[i].y),
-						(int)MathExt::floor(points[0].x), (int)MathExt::floor(points[0].y));
+					SimpleGraphics::drawLine((int)MathExt::floor(points[i].x), (int)MathExt::floor(points[i].y),
+						(int)MathExt::floor(points[0].x), (int)MathExt::floor(points[0].y), buffer);
 				}
 			}
 		}
@@ -75,7 +78,7 @@ namespace glib
 					Vec2f newPoint3 = newPoint2 + toEndPoint;
 					Vec2f newPoint4 = newPoint1 + toEndPoint;
 					
-					buffer->drawPolygon(new Vec2f[4]{newPoint1, newPoint2, newPoint3, newPoint4}, 4);
+					SimpleGraphics::drawPolygon(new Vec2f[4]{newPoint1, newPoint2, newPoint3, newPoint4}, 4, buffer);
 				}
 				else
 				{
@@ -87,7 +90,7 @@ namespace glib
 					Vec2f newPoint3 = newPoint2 + toEndPoint;
 					Vec2f newPoint4 = newPoint1 + toEndPoint;
 					
-					buffer->drawPolygon(new Vec2f[4]{newPoint1, newPoint2, newPoint3, newPoint4}, 4);
+					SimpleGraphics::drawPolygon(new Vec2f[4]{newPoint1, newPoint2, newPoint3, newPoint4}, 4, buffer);
 				}
 			}
 		}

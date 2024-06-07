@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include "ColorPalette.h"
 
-namespace glib
+namespace smpl
 {
 
 	class ColorNameConverter
@@ -37,4 +37,4 @@ namespace glib
 		static const std::unordered_map<std::string, Color> colorNamePair;
 	};
 
-}  //NAMESPACE glib END
+}  //NAMESPACE smpl END

@@ -1,11 +1,14 @@
 #pragma once
 
+#ifndef NO_SOCKETS
+
 #ifdef __unix__
 	#include <unistd.h>
 	#include <sys/types.h>
 	#include <sys/socket.h>
 	#include <poll.h>
 	#include <netinet/in.h>
+	#include <netinet/tcp.h>
 
 	#include <arpa/inet.h> //inet_addr
 	#include <netdb.h> //hostent
@@ -22,20 +25,46 @@
 	#pragma comment(lib, "Ws2_32.lib")
 	#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
-	#include <WinSock2.h>
+	#include <Winsock2.h>
+	#include <winerror.h>
 	#include <ws2tcpip.h>
+	
 	#define SOCKET_TYPE SOCKET
 #endif
 
 #include <vector>
+#include <map>
 #include <iostream>
 #include <thread>
 #include <mutex>
 #include <functional>
+#include <chrono>
+#include <cstring>
+#include <atomic>
+#include <condition_variable>
+#include "WebRequest.h"
+#include "ext/SSLSingleton.h"
 
-
-namespace glib
+namespace smpl
 {
+	struct SocketInfo
+	{
+		SOCKET_TYPE socket = 0;
+		std::string ip = "";
+		size_t id = 0;
+		bool waitingOnRead = false;
+		std::chrono::system_clock::time_point lastInteractTime;
+	};
+
+	struct NetworkConfig
+	{
+		bool type = true;
+		bool TCP = true;
+		bool secure = false;
+		int port = 4000;
+		unsigned int amountOfConnectionsAllowed = 64;
+		std::string location = "";
+	};
 
 	class Network
 	{
@@ -48,24 +77,16 @@ namespace glib
 		 * 
 		 *		Note that in a linux environment, the OS will keep sockets open for 60 seconds and they can not be
 		 * 			reopened. This may cause errors when re-running a program
-		 * @param type 
-		 * 		Servers can have multiple connections where a client can only have one connection.
-		 * 		valid types are:
-		 * 			TYPE_SERVER
-		 * 			TYPE_CLIENT
-		 * @param port 
-		 * 		Must be a valid port between [0,65535]
-		 * @param location 
-		 * 		Must be a valid ipv4 address or website name.
-		 * 		For clients, it is the IP or name to connect to.
-		 * 		For servers, it is the IP or name that will receive connections.
-		 * @param amountOfConnectionsAllowed 
-		 * 		Default is 64.
-		 * @param TCP 
-		 * 		If set to false, UDP is used.
-		 * 		Default is true
+		 * @param NetworkConfig
+		 * 		Configuration information for the network.
+		 * 			Controls whether its UDP or TCP, the port, location to connect to, etc.
+		 * 			The extraInfo part is for subclasses.
+		 * @param certificateFile
+		 * 		For a server that is secure (SSL), it must provide a certificate file.
+		 * @param keyFile
+		 * 		For a server that is secure (SSL), it must provide a key file.
 		 */
-		Network(bool type, int port, std::string location, int amountOfConnectionsAllowed = 64, bool TCP = true);
+		Network(NetworkConfig configuration, std::string certificateFile = "", std::string keyFile = "");
 
 		/**
 		 * @brief Destroy the Network object
@@ -77,35 +98,53 @@ namespace glib
 
 		/**
 		 * @brief Sends a message to the specified connected IP.
-		 * 		Returns true if it was successful.
+		 * 		Returns how many bytes were sent.
+		 * 			Returns -1 if unsuccessful
+		 * 		Sends a 0 to specify the end of the string.
+		 * 			When receiving data, you can receive a string which will stop when a 0 is encountered.
+		 * 			If this behavior is not desired, use sendMessage(message.c_str(), message.size(), id);
+		 * 		
+		 * @param message 
+		 * @param id 
+		 * 		Which connection to send to.
+		 * 		Client will always send to 0
+		 * 		Default is 0.
+		 * @return size_t
+		 */
+		int sendMessage(std::string message, size_t id=0);
+
+		/**
+		 * @brief Sends a message to the specified connected IP.
+		 * 		Returns how many bytes were sent.
+		 * 			Returns -1 if unsuccessful
 		 * 
 		 * @param message 
 		 * @param id 
 		 * 		Which connection to send to.
 		 * 		Client will always send to 0
 		 * 		Default is 0.
-		 * @return true 
-		 * @return false 
+		 * @return int 
 		 */
-		bool sendMessage(std::string message, int id=0);
+		int sendMessage(std::vector<unsigned char> message, size_t id=0);
 
 		/**
-		 * @brief Sends a message to the specified connected IP.
-		 * 		Returns true if it was successful.
+		 * @brief Sends a WebRequest. Just used to prevent errors.
+		 * 		Returns how many bytes were sent.
+		 * 			Returns -1 if unsuccessful
 		 * 
 		 * @param message 
 		 * @param id 
 		 * 		Which connection to send to.
 		 * 		Client will always send to 0
 		 * 		Default is 0.
-		 * @return true 
-		 * @return false 
+		 * @return int 
 		 */
-		bool sendMessage(std::vector<unsigned char> message, int id=0);
+		int sendMessage(WebRequest& message, size_t id=0);
 
 		/**
 		 * @brief Sends a message to the specified connected IP.
-		 * 		Returns true if it was successful.
+		 * 		Returns how many bytes were sent.
+		 * 			Returns -1 if unsuccessful
 		 * 
 		 * @param message 
 		 * @param size
@@ -114,14 +153,14 @@ namespace glib
 		 * 		Which connection to send to.
 		 * 		Client will always send to 0
 		 * 		Default is 0.
-		 * @return true 
-		 * @return false 
+		 * @return int 
 		 */
-		bool sendMessage(unsigned char* message, int size, int id=0);
+		int sendMessage(unsigned char* message, int size, size_t id=0);
 
 		/**
 		 * @brief Sends a message to the specified connected IP.
-		 * 		Returns true if it was successful.
+		 * 		Returns how many bytes were sent.
+		 * 			Returns -1 if unsuccessful
 		 * 
 		 * @param message 
 		 * @param size
@@ -130,16 +169,16 @@ namespace glib
 		 * 		Which connection to send to.
 		 * 		Client will always send to 0
 		 * 		Default is 0.
-		 * @return true 
-		 * @return false 
+		 * @return int
 		 */
-		bool sendMessage(char* message, int messageSize, int id=0);
+		int sendMessage(char* message, int messageSize, size_t id=0);
 		
 		/**
 		 * @brief Receives a message from the specified connected IP.
 		 * 		Returns the number of bytes read if it was successful.
 		 * 			Returns -1 if unsuccessful
 		 * 		Continues to read until the null character is found specifying the end of the string.
+		 * 			null character is 0.
 		 * 		
 		 * 		Resets the waiting on read flag.
 		 * 			This will cause further onDataAvailable calls when data is available.
@@ -150,10 +189,14 @@ namespace glib
 		 * 		Which connection to receive from.
 		 * 		Client will always receive from 0.
 		 * 		Default is 0.
+		 * @param flagRead
+		 * 		If set to false, does not change the waiting on read flag.
+		 * 			This must be set by the programmer later.
+		 * 		By default, it is true.
 		 * @return true 
 		 * @return false 
 		 */
-		int receiveMessage(std::string& message, int id=0, bool flagRead = true);
+		int receiveMessage(std::string& message, size_t id=0, bool flagRead = true);
 
 		/**
 		 * @brief Receives a message from the specified connected IP.
@@ -179,7 +222,7 @@ namespace glib
 		 * 
 		 * @return int
 		 */
-		int receiveMessage(std::vector<unsigned char>& buffer, int id=0, bool flagRead = true);
+		int receiveMessage(std::vector<unsigned char>& buffer, size_t id=0, bool flagRead = true);
 
 		/**
 		 * @brief Receives a message from the specified connected IP.
@@ -205,7 +248,7 @@ namespace glib
 		 * @return true 
 		 * @return false 
 		 */
-		int receiveMessage(unsigned char* buffer, int bufferSize, int id=0, bool flagRead = true);
+		int receiveMessage(unsigned char* buffer, int bufferSize, size_t id=0, bool flagRead = true);
 
 		/**
 		 * @brief Receives a message from the specified connected IP.
@@ -231,7 +274,7 @@ namespace glib
 		 * @return true 
 		 * @return false 
 		 */
-		int receiveMessage(char* buffer, int bufferSize, int id=0, bool flagRead = true);
+		int receiveMessage(char* buffer, int bufferSize, size_t id=0, bool flagRead = true);
 
 		/**
 		 * @brief Receives a message from the specified connected IP.
@@ -253,7 +296,25 @@ namespace glib
 		 * @return true 
 		 * @return false 
 		 */
-		int peek(std::vector<unsigned char>& buffer, int expectedSize, int id=0);
+		int peek(std::vector<unsigned char>& buffer, int expectedSize, size_t id=0);
+
+		/**
+		 * @brief Attempts to dump bytes from the receive buffer.
+		 * 
+		 * @param bytesToDump 
+		 * @param id 
+		 * @return int 
+		 */
+		int dumpReceiveBytes(int bytesToDump, size_t id=0);
+
+		/**
+		 * @brief Gets the amount of bytes available for receiving currently for
+		 * 		the specified ID.
+		 * 
+		 * @param id 
+		 * @return size_t 
+		 */
+		size_t getReadSizeAvailable(size_t id=0);
 
 		/**
 		 * @brief Call when done reading data from the internal queue.
@@ -265,7 +326,7 @@ namespace glib
 		 * 		Client will always receive from 0.
 		 * 		Default is 0.
 		 */
-		void setDoneReceiving(int id=0);
+		void setDoneReceiving(size_t id=0);
 
 		/**
 		 * @brief Attempts to reconnect.
@@ -287,8 +348,9 @@ namespace glib
 		 * 		
 		 * 		Note that in a linux environment, the OS will keep sockets open for 60 seconds and they can not be
 		 * 			reopened. This may cause errors when re-running a program.
+		 * @param id
 		 */
-		void disconnect(int id);
+		void disconnect(size_t id);
 
 		/**
 		 * @brief Returns a string representing the ipaddress of the specified connection id.
@@ -296,16 +358,30 @@ namespace glib
 		 * @param id 
 		 * @return std::string 
 		 */
-		std::string getIPFromConnection(int id);
+		std::string getIPFromConnection(size_t id);
 
 		/**
 		 * @brief Returns a connection id using the ipaddress provided.
-		 * 		Returns -1 if nothing was found.
+		 * 		Returns SIZE_MAX if nothing was found.
 		 * 
 		 * @param s 
+		 * @return size_t 
+		 */
+		size_t getIDFromIP(std::string s);
+
+		/**
+		 * @brief Get the Port that the network was opened on.
+		 * 
 		 * @return int 
 		 */
-		int getIDFromIP(std::string s);
+		int getPort();
+
+		/**
+		 * @brief Get the Location that the network was opened on.
+		 * 
+		 * @return std::string 
+		 */
+		std::string getLocation();
 
 		/**
 		 * @brief Returns if the thread maintaining the Network connection is running.
@@ -322,6 +398,41 @@ namespace glib
 		 * @return false 
 		 */
 		bool getTimeoutOccurred();
+
+		/**
+		 * @brief Gets whether the client is connected or not.
+		 * 		Must check before attempting any network operations.
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
+		bool getClientConnected();
+
+		/**
+		 * @brief Sets the timeout length.
+		 * 		This is specified in milliseconds.
+		 * 		This applies to all connections so for a server,
+		 * 			this can be used to determine when to disconnect from a client that doesn't do anything.
+		 * 		
+		 * 		If set to a value less than 0, no timeout exist.
+		 * 		
+		 * 		Implementation notes:
+		 * 			For a client, the timeout is only for establishing a connection.
+		 * 			For a server, the timeout is for the time between interactions.
+		 * 				The interactions are reads or writes. Not ACKs or anything else.
+		 * @param millis 
+		 * 		Default is 5000
+		 * 			or 5 seconds
+		 */
+		void setTimeoutLength(long millis);
+
+		/**
+		 * @brief Gets the length of the timeout.
+		 * 
+		 * @param millis 
+		 * @return long 
+		 */
+		long getTimeoutLength();
 		
 		/**
 		 * @brief Sets the On Connection Function.
@@ -330,7 +441,7 @@ namespace glib
 		 * 
 		 * @param func 
 		 */
-		void setOnConnectFunction(std::function<void(int)> func);
+		void setOnConnectFunction(std::function<void(size_t)> func);
 
 		/**
 		 * @brief Sets the On Data Available Function.
@@ -340,7 +451,7 @@ namespace glib
 		 * 			Note that this is only called once between reads.
 		 * @param func 
 		 */
-		void setOnDataAvailableFunction(std::function<void(int)> func);
+		void setOnDataAvailableFunction(std::function<void(size_t)> func);
 
 		/**
 		 * @brief Sets the On Disconnection Function.
@@ -349,7 +460,7 @@ namespace glib
 		 * 
 		 * @param func 
 		 */
-		void setOnDisconnectFunction(std::function<void(int)> func);
+		void setOnDisconnectFunction(std::function<void(size_t)> func);
 		
 		/**
 		 * @brief Starts up the network allowing it to connect 
@@ -373,26 +484,42 @@ namespace glib
 		 */
 		void endNetwork();
 
+		/**
+		 * @brief Get the total number of sockets connected
+		 * 
+		 * @return size_t 
+		 */
+		size_t getSocketsConnectedSize();
+
 		static const bool TYPE_SERVER = false;
 		static const bool TYPE_CLIENT = true;
+		
+	protected:
+		SocketInfo mainSocketInfo;
+		void sslInit();
+		int internalRecv(SOCKET_TYPE sock, char* buff, int len); //negative value == problem. zero == fail but okay. positive value == success.
+		int internalPeek(SOCKET_TYPE sock, char* buff, int len); //negative value == problem. zero == fail but okay. positive value == success.
+		int internalSend(SOCKET_TYPE sock, char* buff, int len); //negative value == problem. zero == fail but okay. positive value == success.
+		int internalOnAccept(SOCKET_TYPE sock); //negative value == problem. zero == fail but okay. positive value == success.
+		int internalOnConnect(SOCKET_TYPE sock); //negative value == problem. zero == fail but okay. positive value == success.
+		void internalOnDelete(SOCKET_TYPE sock);
+
 	private:
 		
 		bool init();
-
+		void initNetwork();
 		void dispose();
-
-		void initNetwork(bool TCP);
 		
-		void createSocket(bool TCP);
 		void closeSocket();
 
 		void setupSocket();
+		void createSocket(int, int, int);
 		bool bindSocket();
 
 
 		void listen();
-		void acceptConnection();
-		void connect();
+		bool acceptConnection();
+		bool connect();
 
 		void setRunning(bool v);
 
@@ -401,51 +528,76 @@ namespace glib
 		bool getReconnect();
 		bool getShouldStart();
 
-		bool isWaitingOnRead(int id);
+		void runClient();
+		void runServer();
+		
+		SocketInfo* getSocketInformation(size_t id);
 
-		std::function<void(int)> getConnectFunc();
-		std::function<void(int)> getDataAvailableFunc();
-		std::function<void(int)> getDisconnectFunc();
+		std::function<void(size_t)> getConnectFunc();
+		std::function<void(size_t)> getDataAvailableFunc();
+		std::function<void(size_t)> getDisconnectFunc();
 		
 
-		std::function<void(int)> onConnectFunc;
-		std::function<void(int)> onDataAvailableFunc;
-		std::function<void(int)> onDisconnectFunc;
+		std::function<void(size_t)> onConnectFunc;
+		std::function<void(size_t)> onDataAvailableFunc;
+		std::function<void(size_t)> onDisconnectFunc;
+
+		static const bool LOCK_TYPE_IMPORTANT = true;
+		static const bool LOCK_TYPE_NONIMPORTANT = false;
+		
+		void obtainLock(bool type); //Important = true | Non Important = false
+		void releaseLock(bool type); //Important = true | Non Important = false
 
 		#ifndef __unix__
 			WSADATA wsaData;
 		#endif
 		
-		SOCKET_TYPE sock;
-		sockaddr_in socketAddress;
-		std::vector<SOCKET_TYPE> connections;
-		std::vector<bool> waitingOnRead;
-		// std::vector<bool> canWriteToSocket;
+		SOCKET_TYPE temporarySocket;
+		sockaddr sockAddrInfo;
+		
+		std::map<size_t, SocketInfo*> connections;
 
-		void removeSocket(SOCKET_TYPE s);
+		void removeSocket(size_t id);
+		void removeSocketInternal(SOCKET_TYPE s);
 
-		int sizeAddress = 0;
-		unsigned long timeoutTimer = 5000; //In milliseconds. 5 seconds total
-		unsigned long timeWaited = 0;
+		socklen_t sizeAddress = 0;
+		long timeoutTimer = 5000; //In milliseconds. 5 seconds total
+		long timeWaited = 0;
 		bool shouldStart = false;
 
 		bool timeoutOccurred = false;
 
-		int totalAllowedConnections = 64;
+		NetworkConfig config;
+		static unsigned int totalNetworks;
 
-		bool type = TYPE_SERVER;
-		int port = 0;
-		std::string location;
-		bool isTCP = true;
-
-		static int totalNetworks;
+		size_t runningID = 0;
 		
 		std::thread networkThread;
 		std::mutex networkMutex;
 
+		bool inDispose = false;
 		bool running = false;
 		bool shouldConnect = true;
 		bool isConnected = false;
+		bool isSecureNetwork = false;
+		std::string certificateFile = "";
+		std::string keyFile = "";
+
+		//Secure Socket stuff (SSL) Must have OpenSSL
+		#ifdef USE_OPENSSL
+		SSL* getSSLFromSocket(SOCKET_TYPE s);
+		std::map<SOCKET_TYPE, SSL*> sslConnectionMapping;
+		#endif
+
+		//basically semaphores
+		std::condition_variable cv;
+		std::condition_variable cv2;
+		std::atomic_bool mainNetworkThreadLocked = false;
+		std::atomic_int otherNetworkThreadLocked = 0;
+		std::atomic_ullong timeWaitedOnImportantLock = 0;
+		std::atomic_ullong timeWaitedOnNonImportantLock = 0;
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END
+
+#endif

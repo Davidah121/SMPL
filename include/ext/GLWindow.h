@@ -13,7 +13,7 @@
 	#endif
 
 
-	namespace glib
+	namespace smpl
 	{
 
 		class GLWindow : public SimpleWindow
@@ -92,8 +92,9 @@
 			 */
 			~GLWindow();
 
-			//Object and Class Stuff
-			static const Class globalClass;
+			//Object and RootClass Stuff
+			static const RootClass globalClass;
+			virtual const RootClass* getClass();
 			
 			/**
 			 * @brief Sets the swap interval for vsync. 
@@ -150,11 +151,11 @@
 
 			void init(int x, int y, int width, int height, std::wstring title, WindowOptions windowType);
 			
-			void run();
 			void dispose();
 			
-			bool threadRender();
-			void threadRepaint();
+			bool virtual threadRender();
+			void virtual threadRepaint();
+			void virtual finishResize();
 
 			#ifdef LINUX
 			#else
@@ -163,6 +164,6 @@
 			#endif
 		};
 
-	} //NAMESPACE glib END
+	} //NAMESPACE smpl END
 
 #endif

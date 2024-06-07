@@ -2,7 +2,7 @@
 #include "Matrix.h"
 #include "Vec2f.h"
 
-namespace glib
+namespace smpl
 {
 
 	///A special Matrix that is a 2x2 matrix. Commonly used
@@ -50,8 +50,9 @@ namespace glib
 		 */
 		~Mat2f();
 		
-		//Object and Class Stuff
-		static const Class globalClass;
+		//Object and RootClass Stuff
+		static const RootClass globalClass;
+		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Returns the Identity 2x2 matrix
@@ -102,4 +103,4 @@ namespace glib
 		void fillArray(double* buffer);
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

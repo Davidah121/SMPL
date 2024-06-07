@@ -1,25 +1,18 @@
 #pragma once
 #include "Class.h"
 
-namespace glib
+namespace smpl
 {
-
 	class Object
 	{
 	public:
 		Object();
 		~Object();
 
-		const Class& getClass();
-		static const Class globalClass;
+		virtual const RootClass* getClass() = 0;
+		static const RootClass globalClass;
 	
-	protected:
-		void setClass(Class c)
-		{
-			myClass = c;
-		}
 	private:
-		Class myClass;
 	};
 
-} //NAMESPACE glib END
+} //NAMESPACE smpl END

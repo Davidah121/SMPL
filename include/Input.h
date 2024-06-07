@@ -2,7 +2,7 @@
 #include <mutex>
 #include <queue>
 
-namespace glib
+namespace smpl
 {
 
 	class Input
@@ -22,7 +22,7 @@ namespace glib
 		static const int KEY_PAGEUP = 0x21 | NEGATIVE;
 		static const int KEY_PAGEDOWN = 0x22 | NEGATIVE;
 
-		static const int KEY_END= 0x23 | NEGATIVE;
+		static const int KEY_END = 0x23 | NEGATIVE;
 		static const int KEY_HOME = 0x24 | NEGATIVE;
 		static const int KEY_LEFT = 0x25 | NEGATIVE;
 		static const int KEY_UP = 0x26 | NEGATIVE;
@@ -109,7 +109,7 @@ namespace glib
 		 * 		This may be changed.
 		 * 		pollInput should be called to update the status of each key.
 		 */
-		static void pollInput();
+		static void pollInput(); //TODO: Add Linux Implemenation
 
 		/**
 		 * @brief Returns whether the specified key has just been pressed.
@@ -267,9 +267,10 @@ namespace glib
 		 */
 		static std::queue<int> getCharactersTyped();
 
-		static void adjustVerticalScroll(int v);
-		static void adjustHorizontalScroll(int v);
-		static void adjustCurrCharVal(unsigned int v1, unsigned int v2);
+		//void* here instead of SimpleWindow*. Doesn't matter cause it isn't used. Prevents compiler errors when NO_WINDOW is defined
+		static void adjustVerticalScroll(void*, int v);
+		static void adjustHorizontalScroll(void*, int v);
+		static void adjustCurrCharVal(void*, unsigned int v1, unsigned int v2);
 
 	private:
 		static bool keyState[256];
