@@ -1,23 +1,22 @@
-# GLib
+# SMPL
  A static C++ library that encompasses many of the tools I have made to make development easier.
 
 <h1>Current features</h1>
 <ul>
     <li>Basic File input and output</li>
-    <li>Basic XML support</li>
+    <li>XML support</li>
     <li>Partial Gui Support</li>
     <li>Partial SVG support</li>
     <li>Audio Support</li>
     <li>Image Support</li>
     <li>Basic Window Support</li>
     <li>Basic Compression Support</li>
-    <li>Mathematical functionality</li>
+    <li>Basic OpenGL 4.6 Support</li>
+    <li>Basic DirectX 11.0 Support</li>
 </ul>
 
 <h1>Planed features and improvments</h1>
 <ul>
-    <li>Basic OpenGL 4.6 Support</li>
-    <li>Basic DirectX 11.0 Support</li>
     <li>Full Gui Support</li>
     <li>Full Linux Support</li>
     <li>Improvements to documentation</li>
@@ -48,4 +47,11 @@
 <p>The build files reference the include files and library files through environment variables.</p>
 <p>cppPS can setup the environment variables for you however if compiled using Visual Studios, it is not required.</p>
 <p>Note that with Visual Studios, modification will be needed to compile and use the files in the 'ext' folders.</p>
+
+<h2>Additional Notes:</h2>
+<p>There are libraries that are not fundamentally required to compile as you can ignore them using Preprocessor defines.</p>
+<p>Without these though, you may find certain classes no longer work or performance may be lacking.</p>
+<p>For instance, not using -mavx and setting the preprocessor OPTI to a value above 0 can result in the library not using intrinsics instructions.</p>
+<p>OpenSSL is required to use SSL. This includes SecureSockets and HTTPS.</p>
+<p>pthreads is required on linux.</p>
 
