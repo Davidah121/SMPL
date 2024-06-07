@@ -4,6 +4,7 @@
 #include <typeinfo>
 #include <functional>
 #include "Object.h"
+#include "Streamable.h"
 
 namespace smpl
 {
@@ -13,13 +14,11 @@ namespace smpl
 	struct WritableSerialzedData
 	{
 		static const bool TYPE_PRIMITIVE = false;
-		static const bool TYPE_VECTOR = true;
+		static const bool TYPE_OBJECT = true;
 		
 		bool type = 0;
 		unsigned int size = 0; //size of the data in bytes
 		unsigned char* data = nullptr; //the data as bytes
-		unsigned int numberOfOffsets = 0;
-		unsigned int* offsets = nullptr;
 	};
 
 	//so for every object
@@ -124,7 +123,7 @@ namespace smpl
 		 * 
 		 * @param parentNode 
 		 */
-		void serialize(std::vector<unsigned char>& data, int offset);
+		void serialize(StreamableList<unsigned char> data);
 
 		/**
 		 * @brief Attempts to set the data stored by using the provided JObject.
@@ -136,33 +135,26 @@ namespace smpl
 		 * 
 		 * @param node 
 		 */
-		void deserialize(std::vector<unsigned char>& data, int offset);
-		
-		/**
-		 * @brief Sets an alias for the specified class name.
-		 * 		Some classes have alternate names that may be prefered where possible.
-		 * 			Ex: std::string vs class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >
-		 * 		This will replace that class name with the pretty name when saving and loading.
-		 * 		Good for portability since typeid(typename).name() is not guaranteed to be the same across implementations.
-		 * 
-		 * 		There can only be one alternate name for a class.
-		 * 		New alternate names replace the previous names.
-		 * 			Meaning that all pretty names can be the same as one class name but the class name can only have one alternate.
-		 * 
-		 * @param className 
-		 * @param prettyName 
-		 */
-		static void addPrettyName(std::string className, std::string prettyName);
+		void deserialize(StreamableList<unsigned char> data);
 
 		/**
-		 * @brief Gets an alternate name for the specified class.
-		 * 		There can only be one alternate name for a class.
-		 * 		New alternate names replace the previous names.
+		 * @brief adds a new function to save data corresponding to a specific class.
+		 * 		
 		 * 
 		 * @param className 
-		 * @return std::string 
+		 * @param func 
 		 */
-		static std::string getAlternateName(std::string className);
+		static void addSaveFunction(std::string className, std::function<void(std::vector<std::string>, StreamableList<unsigned char>, SerializedData)> func);
+
+		
+		/**
+		 * @brief adds a new function to load data corresponding to a specific class.
+		 * 		
+		 * 
+		 * @param className 
+		 * @param func 
+		 */
+		static void addLoadFunction(std::string className, std::function<void(std::vector<std::string>, StreamableList<unsigned char>, SerializedData)> func);
 
 	private:
 		friend SerializedObject;
@@ -174,7 +166,7 @@ namespace smpl
 		void* data = nullptr;
 		int objType = TYPE_DATA;
 		
-		static std::unordered_map<std::string, std::string> prettyName;
+		static std::unordered_map<std::string, std::function<void(std::vector<std::string>, StreamableList<unsigned char>, SerializedData)>> loadFunctions;
 	};
 
 	class SerializedObject : public Object
@@ -218,6 +210,7 @@ namespace smpl
 } //Namespace end
 
 #ifndef SERIALIZE
+	#define GET_CLASS_NAME(var) smpl::demangleClassName(typeid(var).name())
 	#define SERIALIZE(var) smpl::SerializedData(&var, #var, smpl::demangleClassName(typeid(var).name()), 1)
 	#define SERIALIZE_TYPENAME(var, name) smpl::SerializedData(&var, #var, name, 1)
 	#define SERIALIZE_POINTER(var, size) smpl::SerializedData(&var, #var, smpl::demangleClassName(typeid(var).name()), size)

@@ -4,7 +4,30 @@
 
 namespace smpl
 {
-	std::unordered_map<std::string, std::string> SerializedData::prettyName;
+	std::unordered_map<std::string, std::function<void(std::vector<std::string>, StreamableList<unsigned char>, SerializedData)>> SerializedData::loadFunctions;
+
+	std::vector<std::string> extractClassAndTemplates(std::string s)
+	{
+		std::vector<std::string> output;
+		std::vector<std::string> splits = StringTools::splitStringMultipleDeliminators(s, ",<>");
+		//don't want empty spaces either
+		for(std::string arg : splits)
+		{
+			bool somethingOtherThanSpace = false;
+			for(char c : arg)
+			{
+				if(c != ' ')
+				{
+					somethingOtherThanSpace = true;
+					break;
+				}
+			}
+			if(somethingOtherThanSpace)
+				output.push_back(arg);
+		}
+		
+		return output;
+	}
 
 	SerializedData::SerializedData()
 	{
@@ -25,7 +48,7 @@ namespace smpl
 
 	void SerializedData::init(void* d, std::string name, std::string typeString, size_t size)
 	{
-		this->type = SerializedData::getAlternateName(typeString);
+		this->type = typeString;
 		this->name = name;
 		this->size = size;
 		data = d;
@@ -60,25 +83,62 @@ namespace smpl
 	{
 		return objType;
 	}
-	
-	void SerializedData::addPrettyName(std::string className, std::string prettyName)
+
+	void SerializedData::serialize(StreamableList<unsigned char> data)
 	{
-		SerializedData::prettyName[prettyName] = className;
-		SerializedData::prettyName[className] = prettyName;
+
 	}
 
-	std::string SerializedData::getAlternateName(std::string className)
+	void SerializedData::deserialize(StreamableList<unsigned char> data)
 	{
-		auto altNameIt = SerializedData::prettyName.find(className);
-		std::string altType = className;
+		//its stored as the struct Writable Serialized Data is laid out.
+		//not all fields are used. Check type first
+		WritableSerialzedData objData;
 
-		if(altNameIt != SerializedData::prettyName.end())
+		objData.type = data.get();
+		if(objData.type == TYPE_OBJECT)
 		{
-			altType = altNameIt->second;
-		}
-		return altType;
-	}
+			if(this->objType != TYPE_OBJECT)
+			{
+				//throw exception
+			}
 
+			//it contains a name (may be empty).
+			data.get((unsigned char*)&objData.size, 4);
+			for(int i=0; i<objData.size; i++)
+			{
+				this->name += (char)data.get();
+			}
+
+			//for each serialized variable, call deserialize on it.
+			//assume order matters
+			auto variables = ((SerializedObject*)this)->getSerializedVariables();
+			for(auto var : variables)
+			{
+				var.second.deserialize(data);
+			}
+		}
+		else
+		{
+			if(this->objType != TYPE_DATA)
+			{
+				//throw exception
+			}
+			
+			std::vector<std::string> args = extractClassAndTemplates(this->getType());
+			std::function<void(std::vector<std::string>, StreamableList<unsigned char>, SerializedData)> loader;
+			auto it = loadFunctions.find(args[0]);
+			if(it != loadFunctions.end())
+			{
+				loader = it->second;
+				loader(args, data, *this);
+			}
+			else
+			{
+				//throw exception
+			}
+		}
+	}
 
 	const RootClass SerializedObject::globalClass = CREATE_ROOT_CLASS(SerializedObject, &Object::globalClass);
 
@@ -89,10 +149,5 @@ namespace smpl
 	{
 
 	}
-
-	// std::unordered_map<std::string, SerializedData> SerializedObject::getVariables()
-	// {
-	// 	return {};
-	// }
 
 }

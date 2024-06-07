@@ -486,81 +486,97 @@ void quickCompression()
     StringTools::println("Time to compress = %llu", compressTime);
 }
 
-template<typename T>
-class Streamable
+class testClass : public SerializedObject
 {
 public:
-    virtual void push_back(T) = 0;
-    virtual void seek(size_t) = 0;
-    virtual T get() = 0;
-    virtual void get(T*, size_t size) = 0;
-    virtual void pop_back() = 0;
-    virtual size_t size() = 0;
-};
-
-template<typename T>
-class StreamableVector : public Streamable<T>
-{
-public:
-    StreamableVector()
-    {
-        buffer = std::shared_ptr<std::vector<T>>(new std::vector<T>());
-    }
-    ~StreamableVector()
+    testClass()
     {
 
     }
+    ~testClass()
+    {
 
-    virtual void push_back(T data)
-    {
-        buffer->push_back(data);
     }
-    virtual void seek(size_t index)
+    static const RootClass globalClass;
+    const RootClass* getClass()
     {
-        offset = index;
+        return &globalClass;
     }
-    virtual T get()
+
+    std::unordered_map<std::string, SerializedData> getSerializedVariables()
     {
-        return buffer->at(offset++);
-    }
-    virtual void get(T* input, size_t size)
-    {
-        for(size_t i=0; i<size; i++)
-            input[i] = buffer->at(offset+i);
-    }
-    virtual void pop_back()
-    {
-        buffer->pop_back();
-    }
-    virtual size_t size()
-    {
-        return buffer->size();
+        return {SERIALIZE_MAP(x), SERIALIZE_MAP(otherVars), SERIALIZE_MAP(list12), SERIALIZE_MAP(doubleList)};
     }
 private:
-    std::shared_ptr<std::vector<T>> buffer = nullptr;
-    size_t offset = 0;
+    double x;
+    std::vector<unsigned char> otherVars;
+    std::vector<Vec2f> list12;
+    std::vector<std::vector<Vec2f>> doubleList;
 };
+const RootClass testClass::globalClass = CREATE_ROOT_CLASS(testClass);
+
+std::string extractClass(std::string s)
+{
+    //assume the word class is separated from the actual class name
+    //move upto the first < or end of the string
+    size_t index = s.find_first_of('<');
+    return s.substr(0, index);
+}
+
+std::vector<std::string> extractClassAndTemplates(std::string s)
+{
+    std::vector<std::string> output;
+    std::vector<std::string> splits = StringTools::splitStringMultipleDeliminators(s, ",<>");
+    //don't want empty spaces either
+    for(std::string arg : splits)
+    {
+        bool somethingOtherThanSpace = false;
+        for(char c : arg)
+        {
+            if(c != ' ')
+            {
+                somethingOtherThanSpace = true;
+                break;
+            }
+        }
+        if(somethingOtherThanSpace)
+            output.push_back(arg);
+    }
+    
+    return output;
+}
 
 void testSerialization()
 {
-    // Vec2f p;
-    // SerializedObject* so = &p;
-    // StringTools::println("Class of p = %s", so->getClass()->getName().c_str());
-    // StringTools::println("Direct parents of P:");
-    // auto parentList = so->getClass()->getListOfParents();
-    // for(const RootClass* parentClass : parentList)
+    // // Vec2f p;
+    // // SerializedObject* so = &p;
+    // // StringTools::println("Class of p = %s", so->getClass()->getName().c_str());
+    // // StringTools::println("Direct parents of P:");
+    // // auto parentList = so->getClass()->getListOfParents();
+    // // for(const RootClass* parentClass : parentList)
+    // // {
+    // //     StringTools::println("\t%s", parentClass->getName().c_str());
+    // // }
+
+    // // if(so->getClass()->isDerivedFrom(&Object::globalClass))
+    // //     StringTools::println("P also derives from Object");
+    // // else
+    // //     StringTools::println("P does not derive from Object");
+
+    // // std::streambuf buffer = std::basic_streambuf()
+    // // std::iostream inputStream = std::iostream();
+    // testClass c;
+    // auto listOfVars = c.getSerializedVariables();
+    // // for(auto var : listOfVars)
+    // // {
+    // //     StringTools::println("%s %s", var.second.getType().c_str(), var.first.c_str());
+    // // }
+    // auto vec1 = listOfVars["x"];
+    // std::vector<std::string> allStuff = extractTemplateStuff(vec1.getType());
+    // for(int i=0; i<allStuff.size(); i++)
     // {
-    //     StringTools::println("\t%s", parentClass->getName().c_str());
+    //     StringTools::println("| %s |", allStuff[i].c_str());
     // }
-
-    // if(so->getClass()->isDerivedFrom(&Object::globalClass))
-    //     StringTools::println("P also derives from Object");
-    // else
-    //     StringTools::println("P does not derive from Object");
-
-    // std::streambuf buffer = std::basic_streambuf()
-    // std::iostream inputStream = std::iostream();
-
 }
 
 void init(SimpleWindow* win)
@@ -626,6 +642,33 @@ void tryCannyEdgeDetection()
     }
 }
 
+std::vector<HWND> handles;
+
+BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lparam)
+{
+    // if(IsWindowVisible(hwnd))
+    // {
+        handles.push_back(hwnd);
+        StringTools::println("HWND FOUND: %llx", hwnd);
+    // }
+    return TRUE;
+}
+
+void insertWindowTest()
+{
+    // EnumWindows(EnumWindowsProc, 0);
+    //hard coding stuff
+    WindowOptions options;
+    options.windowType = SimpleWindow::BORDERLESS_WINDOW;
+
+    SimpleWindow f = SimpleWindow("TestTitle", 320, 240, -1, -1, options);
+    
+    HWND parent = (HWND)0x1017E; //maybe dangerous
+    HWND actualParent = SetParent((HWND)f.getWindowHandle(), parent);
+    StringTools::println("ACTUAL PARENT: %llu", actualParent);
+    f.waitTillClose();
+}
+
 int main(int argc, char** argv)
 {
     //TODO: Add all patterns found for SuffixAutomaton. (Should give all start indicies) (Post processing function O(N))
@@ -638,9 +681,10 @@ int main(int argc, char** argv)
     // streamCompressTest();
     // streamDecompressTest();
 
-    testSerialization();
+    // testSerialization();
     // testGuiPart2();
     // saStuff();
-    // tryCannyEdgeDetection();
+    tryCannyEdgeDetection();
+    // insertWindowTest();
     return 0;
 }
