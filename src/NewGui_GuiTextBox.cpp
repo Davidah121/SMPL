@@ -356,12 +356,12 @@ namespace smpl
 
         auto pair = attribs.get("allow-linebreaks");
         if(pair != nullptr)
-            allowLineBreaks = (pair->data == "true");
+            allowLineBreaks = (pair->second == "true");
         attribs.remove(pair);
 
         pair = attribs.get("default-text");
         if(pair != nullptr)
-            defaultText = pair->data;
+            defaultText = pair->second;
         attribs.remove(pair);
     }
 

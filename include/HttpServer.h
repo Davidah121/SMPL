@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include <queue>
 #include "SmartMemory.h"
 #include "Network.h"
@@ -27,7 +28,7 @@
 
 namespace smpl
 {
-    class HttpServer
+    class DLL_OPTION HttpServer
     {
     public:
         /**
@@ -347,8 +348,8 @@ namespace smpl
         std::mutex logMutex;
         std::mutex jobMutex;
 
-        std::map< size_t, SmartMemory<SLinkNode<std::function<void()>>> > jobPointers;
-        std::map< size_t, SmartMemory<SLinkNode<std::function<void()>>> > jobSendPointers;
+        std::map< size_t, size_t > jobPointers;
+        std::map< size_t, size_t > jobSendPointers;
         
         // std::vector<SmartMemory<SLinkNode<std::function<void()>>>> jobPointers;
         // std::vector<SmartMemory<SLinkNode<std::function<void()>>>> jobSendPointers;

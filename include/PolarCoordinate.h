@@ -1,10 +1,11 @@
 #pragma once
+#include "BuildOptions.h"
 #include "Vec2f.h"
 
 namespace smpl
 {
 
-    class PolarCoordinate : SerializedObject
+    class DLL_OPTION PolarCoordinate : SerializedObject
     {
     public:
         /**

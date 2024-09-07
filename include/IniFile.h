@@ -1,10 +1,11 @@
 #pragma once
+#include "BuildOptions.h"
 #include "SimpleFile.h"
 #include "StringTools.h"
 
 namespace smpl
 {
-    class IniFile
+    class DLL_OPTION IniFile
     {
     private:
         struct KeyData

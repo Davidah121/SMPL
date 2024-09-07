@@ -1,11 +1,12 @@
 #pragma once
+#include "BuildOptions.h"
 #include "Serializable.h"
 #include "Vec2f.h"
 
 namespace smpl
 {
 
-	class Vec3f : public SerializedObject
+	class DLL_OPTION Vec3f : public SerializedObject
 	{
 	public:
 		/**
@@ -20,7 +21,7 @@ namespace smpl
 		 * 
 		 * @param other 
 		 */
-		Vec3f(Vec2f other, double z=0.0);
+		Vec3f(Vec2f other, float z=0.0);
 
 		/**
 		 * @brief Construct a new Vec3f object
@@ -29,7 +30,7 @@ namespace smpl
 		 * @param y 
 		 * @param z 
 		 */
-		Vec3f(double x, double y, double z);
+		Vec3f(float x, float y, float z);
 
 		/**
 		 * @brief Destroy the Vec3f object
@@ -42,51 +43,51 @@ namespace smpl
 		virtual const RootClass* getClass();
 		std::unordered_map<std::string, SerializedData> getSerializedVariables();
 
-		double x = 0;
-		double y = 0;
-		double z = 0;
+		float x = 0;
+		float y = 0;
+		float z = 0;
 
 		/**
 		 * @brief Gets the X value for the vector
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getX();
+		float getX();
 
 		/**
 		 * @brief Gets the Y value for the vector
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getY();
+		float getY();
 
 		/**
 		 * @brief Gets the Z value for the vector
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getZ();
+		float getZ();
 
 		/**
 		 * @brief Sets the X value for the vector
 		 * 
 		 * @param value 
 		 */
-		void setX(double value);
+		void setX(float value);
 
 		/**
 		 * @brief Sets the Y value for the vector
 		 * 
 		 * @param value 
 		 */
-		void setY(double value);
+		void setY(float value);
 
 		/**
 		 * @brief Sets the Z value for the vector
 		 * 
 		 * @param value 
 		 */
-		void setZ(double value);
+		void setZ(float value);
 
 		/**
 		 * @brief Copies another Vec3f objects values
@@ -113,9 +114,9 @@ namespace smpl
 		/**
 		 * @brief Get the Length of the vector
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getLength();
+		float getLength();
 
 		/**
 		 * @brief Gets the normalized version of the vector.
@@ -132,50 +133,19 @@ namespace smpl
 		void operator+=(Vec3f other);
 		void operator-=(Vec3f other);
 
-		void operator*=(double other);
-		void operator/=(double other);
+		void operator*=(float other);
+		void operator/=(float other);
 
 		bool operator==(Vec3f other);
 		bool operator!=(Vec3f other);
 
-		Vec3f operator*(double value);
-		Vec3f operator/(double value);
+		Vec3f operator*(float value);
+		Vec3f operator/(float value);
 
-		friend Vec3f operator*(double value, Vec3f other)
+		friend Vec3f operator*(float value, Vec3f other)
 		{
 			return other*value;
 		}
-
-		//Converting into an array
-		/**
-		 * @brief Fills a float array of at least size 3 with the
-		 * 		x, y, and z values.
-		 * 		
-		 * @param buffer 
-		 * 		Must be of size 3 or greater.
-		 */
-		void fillArray(float* buffer);
-
-		/**
-		 * @brief Fills a float array of at least size 3 with the
-		 * 		x, y, and z values.
-		 * 		
-		 * @param buffer 
-		 * 		Must be of size 3 or greater.
-		 */
-		void fillArray(double* buffer);
-
-		/**
-		 * @brief Creates a new float array of size 3 and fills it
-		 * 		with the x, y, and z values.
-		 */
-		float* convertToFloatArray();
-
-		/**
-		 * @brief Creates a new double array of size 3 and fills it
-		 * 		with the x, y, and z values.
-		 */
-		double* convertToDoubleArray();
 
 		/**
 		 * @brief Converts the Vec3f to a GeneralVector object

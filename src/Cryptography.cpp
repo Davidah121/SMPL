@@ -1,6 +1,7 @@
 #include "Cryptography.h"
 #include "StringTools.h"
 #include "SimpleFile.h"
+#include "Concurrency.h"
 
 namespace smpl
 {
@@ -318,10 +319,9 @@ namespace smpl
 			#endif
 			return 0;
 		}
-
+		
 		unsigned long sumA = 1;
 		unsigned long sumB = 0;
-
 		for(size_t i=0; i<size; i++)
 		{
 			sumA = (sumA + data[i]) % 65521;

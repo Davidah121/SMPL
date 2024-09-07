@@ -1,7 +1,7 @@
 #pragma once
-
-#include<vector>
-#include<filesystem>
+#include "BuildOptions.h"
+#include <vector>
+#include <filesystem>
 
 #include "File.h"
 #include "GeneralExceptions.h"
@@ -10,7 +10,7 @@
 namespace smpl
 {
 	
-	class SimpleDir
+	class DLL_OPTION SimpleDir
 	{
 	public:
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include "Image.h"
 #include "Font.h"
 #include "Model.h"
@@ -6,10 +7,42 @@
 #include "Shape.h"
 #include "BezierCurve.h"
 
+#ifndef GRAPHICS_SHIFT_AMOUNT
+	#if (OPTI == 0)
+		#define GRAPHICS_SHIFT_AMOUNT 0
+		#define GRAPHICS_INC_AMOUNT 1
+	#else
+		#define GRAPHICS_SHIFT_AMOUNT (1+OPTI)
+		#define GRAPHICS_INC_AMOUNT (1<<GRAPHICS_SHIFT_AMOUNT)
+		#define GET_GRAPHICS_SIMD_BOUND(x) ((x>>GRAPHICS_SHIFT_AMOUNT)<<GRAPHICS_SHIFT_AMOUNT)
+		#if (OPTI == 1)
+			#define GRAPHICS_SIMD_DATATYPE __m128i
+			#define GRAPHICS_SIMD_LOAD _mm_loadu_si128
+			#define GRAPHICS_SIMD_STORE _mm_storeu_si128
+			#define COLOR_TO_SIMD(x) _mm_set_epi8(x.alpha, x.blue, x.green, x.red,\
+													x.alpha, x.blue, x.green, x.red,\
+													x.alpha, x.blue, x.green, x.red,\
+													x.alpha, x.blue, x.green, x.red)
+		#elif (OPTI >= 2)
+			#define GRAPHICS_SIMD_DATATYPE __m256i
+			#define GRAPHICS_SIMD_LOAD _mm256_loadu_si256
+			#define GRAPHICS_SIMD_STORE _mm256_storeu_si256
+			#define COLOR_TO_SIMD(x) _mm256_set_epi8(x.alpha, x.blue, x.green, x.red,\
+													x.alpha, x.blue, x.green, x.red,\
+													x.alpha, x.blue, x.green, x.red,\
+													x.alpha, x.blue, x.green, x.red,\
+													x.alpha, x.blue, x.green, x.red,\
+													x.alpha, x.blue, x.green, x.red,\
+													x.alpha, x.blue, x.green, x.red,\
+													x.alpha, x.blue, x.green, x.red)
+		#endif
+	#endif
+#endif
+
 namespace smpl
 {
 
-	class SimpleGraphics
+	class DLL_OPTION SimpleGraphics
 	{
 	public:
 		static const unsigned char NO_COMPOSITE = 255;
@@ -140,6 +173,7 @@ namespace smpl
 		 * @brief Linearly blends 2 colors together.
 		 * 		At value 0, src is the output color.
 		 * 		At value 1, dest is the output color.
+		 * 		For non floating points, an approximation is used.
 		 * @param src
 		 * 		The start color.
 		 * @param dest
@@ -150,7 +184,27 @@ namespace smpl
 		 * 		Returns the blended color.
 		 */
 		static Color lerp(Color src, Color dest, double lerpVal);
+		static Color4f lerp(Color4f src, Color4f dest, double lerpVal);
 		static Vec4f lerp(Vec4f src, Vec4f dest, double lerpVal);
+
+		/**
+		 * @brief Multiplies a color with another. This behaves similarly to a mask.
+		 * 		It does element wise multiplication. For non floating points, an approximation is used.
+		 * 
+		 * @param src 
+		 * @param multiplier 
+		 * @return Color 
+		 */
+		static Color multColor(Color src, Color multiplier);
+		static Color4f multColor(Color4f src, Color4f multiplier);
+		static Vec4f multColor(Vec4f src, Vec4f multiplier);
+		#if (OPTI>=1)
+			static __m128i multColor(__m128i src, __m128i multiplier); //4 Colors. Uses 8 bits per channel
+		#endif
+
+		#if (OPTI>=2)
+			static __m256i multColor(__m256i src, __m256i multiplier); //8 Colors. Uses 8 bits per channel
+		#endif
 		
 
 		/**
@@ -772,6 +826,9 @@ namespace smpl
 		 * 			Edges between the weakThreshold and strongThreshold may or may not appear in the final output.
 		 * 		
 		 * @param img
+		 * @param sigma
+		 * 		The value to use for the guassian blur. Higher values remove more noise but also potential edges.
+		 * 			Lower values keep more noise but also more potential edges.
 		 * @param weakThreshold
 		 * 		A value perferably between [0.0 - 1.0] that specifies what edges are considered too weak
 		 * 			to be considered
@@ -780,7 +837,7 @@ namespace smpl
 		 * 			Specifies which edges are strong edges. These edges will be in the final output.
 		 * @return Image*
 		 */
-		static Image* cannyEdgeFilter(Image* img, double weakThreshold = 0.5, double strongThreshold = 0.75);
+		static Image* cannyEdgeFilter(Image* img, double sigma = 1.0, double weakThreshold = 0.2, double strongThreshold = 0.5);
 
 		/**
 		 * @brief Applies a sobel operator to the image.

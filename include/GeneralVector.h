@@ -1,10 +1,11 @@
 #pragma once
+#include "BuildOptions.h"
 #include "Object.h"
 
 namespace smpl
 {
 
-	class GeneralVector : public Object
+	class DLL_OPTION GeneralVector : public Object
 	{
 	public:
 		/**
@@ -32,6 +33,20 @@ namespace smpl
 		void operator=(const GeneralVector& o);
 
 		/**
+		 * @brief Moves a GeneralVector object from another GeneralVector object
+		 * @param o
+		 * 		The other valid GeneralVector object to copy.
+		 */
+		GeneralVector(GeneralVector&& o) noexcept;
+
+		/**
+		 * @brief Moves a GeneralVector object from another GeneralVector object
+		 * @param o
+		 * 		The other valid GeneralVector object to copy.
+		 */
+		void operator=(GeneralVector&& o) noexcept;
+
+		/**
 		 * @brief Destroys a GeneralVector object and clears the memory used.
 		 */
 		~GeneralVector();
@@ -44,9 +59,9 @@ namespace smpl
 		 * @brief Returns the value at the specified location or dimension.
 		 * @param location
 		 * 		The dimension or location to get.
-		 * @return double
+		 * @return float
 		 */
-		double getValue(int location);
+		float getValue(int location);
 
 		/**
 		 * @brief Sets the value at the specified location or dimension.
@@ -55,14 +70,14 @@ namespace smpl
 		 * @param location
 		 * 		The dimension or location to get.
 		 */
-		void setValue(double value, int location);
+		void setValue(float value, int location);
 
 		/**
 		 * @brief Get the Length of the vector
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getLength();
+		float getLength();
 
 		/**
 		 * @brief Gets the normalized version of the vector.
@@ -72,10 +87,10 @@ namespace smpl
 		 */
 		GeneralVector normalize();
 
-		GeneralVector operator*(double value);
-		GeneralVector operator/(double value);
+		GeneralVector operator*(float value);
+		GeneralVector operator/(float value);
 
-		friend GeneralVector operator*(double value, GeneralVector other)
+		friend GeneralVector operator*(float value, GeneralVector other)
 		{
 			return other*value;
 		}
@@ -83,15 +98,15 @@ namespace smpl
 		GeneralVector operator+(GeneralVector o);
 		GeneralVector operator-(GeneralVector o);
 
-		void operator*=(double value);
-		void operator/=(double value);
+		void operator*=(float value);
+		void operator/=(float value);
 
 		void operator+=(GeneralVector o);
 		void operator-=(GeneralVector o);
 
 		GeneralVector operator-();
 
-		double& operator[](int index);
+		float& operator[](int index);
 
 		bool operator==(GeneralVector other);
 		bool operator!=(GeneralVector other);
@@ -101,7 +116,7 @@ namespace smpl
 		
 		void copy(const GeneralVector& o);
 		int size = 0;
-		double* values = nullptr;
+		float* values = nullptr;
 	};
 
 } //NAMESPACE smpl END

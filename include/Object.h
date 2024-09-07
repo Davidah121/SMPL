@@ -1,9 +1,10 @@
 #pragma once
+#include "BuildOptions.h"
 #include "Class.h"
 
 namespace smpl
 {
-	class Object
+	class DLL_OPTION Object
 	{
 	public:
 		Object();

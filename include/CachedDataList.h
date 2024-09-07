@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include <unordered_map>
 
 template<typename T>

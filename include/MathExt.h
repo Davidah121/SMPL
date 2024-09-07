@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include <limits>
 #include <math.h>
 #include <cmath>
@@ -30,6 +31,10 @@
 
 #ifndef E
 	#define E 2.718281828
+#endif
+
+#ifndef EPSILON
+	#define EPSILON 1E-6
 #endif
 
 //Temporary location
@@ -329,7 +334,7 @@ struct UFP16
 namespace smpl
 {
 
-	class MathExt
+	class DLL_OPTION MathExt
 	{
 	public:
 
@@ -373,6 +378,16 @@ namespace smpl
 		static int hammingDistance(uint16_t v1, uint16_t v2);
 		static int hammingDistance(uint32_t v1, uint32_t v2);
 		static int hammingDistance(uint64_t v1, uint64_t v2);
+
+		static uint8_t saturatedAdd(uint8_t v1, uint8_t v2);
+		static uint16_t saturatedAdd(uint16_t v1, uint16_t v2);
+		static uint32_t saturatedAdd(uint32_t v1, uint32_t v2);
+		static uint64_t saturatedAdd(uint64_t v1, uint64_t v2);
+		
+		static uint8_t saturatedSub(uint8_t v1, uint8_t v2);
+		static uint16_t saturatedSub(uint16_t v1, uint16_t v2);
+		static uint32_t saturatedSub(uint32_t v1, uint32_t v2);
+		static uint64_t saturatedSub(uint64_t v1, uint64_t v2);
 
 		/**
 		 * @brief Returns the max of the 2 template values.
@@ -2238,6 +2253,7 @@ namespace smpl
 		 * @return double 
 		 */
 		static double discreteCosineTransform(double* arr, int size, int u, bool inverse=false);
+		static float discreteCosineTransform(float* arr, int size, int u, bool inverse=false);
 
 		/**
 		 * @brief Computes the Discrete Cosine Transform for all possible values.
@@ -2251,6 +2267,7 @@ namespace smpl
 		 * @return std::vector<double> 
 		 */
 		static std::vector<double> cosineTransform(double* arr, int size, bool inverse=false);
+		static std::vector<float> cosineTransform(float* arr, int size, bool inverse=false);
 
 		/**
 		 * @brief Computes the Discrete Cosine Transform for all possible values.
@@ -2267,9 +2284,9 @@ namespace smpl
 		 * @param inverse 
 		 * 		Whether to solve for the inverse.
 		 * 		Default is false.
-		 * @return std::vector<double> 
+		 * @return std::vector<float> 
 		 */
-		static std::vector<double> fastCosineTransform(double* arr, size_t size, bool inverse=false);
+		static std::vector<float> fastCosineTransform(float* arr, size_t size, bool inverse=false);
 
 		/**
 		 * @brief Computes the 2D Discrete Cosine Transform for all possible locations.
@@ -2311,7 +2328,7 @@ namespace smpl
 		 * 		Whether to solve for the inverse.
 		 * 		Default is false.
 		 */
-		static void FCT8(double* arr, double* output, bool inverse=false);
+		static void FCT8(float* arr, float* output, bool inverse=false);
 
 		/**
 		 * @brief Computes the Fast Discrete Cosine Transform for an 8x8 matrix.
@@ -2340,6 +2357,7 @@ namespace smpl
 		 * @return double 
 		 */
 		static double discreteSineTransform(double*, size_t size, size_t u);
+		static float discreteSineTransform(float*, size_t size, size_t u);
 
 		/**
 		 * @brief Calculates the Discrete Sine Transform using DST-I
@@ -2352,6 +2370,7 @@ namespace smpl
 		 * @return std::vector<double> 
 		 */
 		static std::vector<double> sineTransform(double* arr, size_t size);
+		static std::vector<float> sineTransform(float* arr, size_t size);
 
 		/**
 		 * @brief NOT IMPLEMENTED
@@ -2359,9 +2378,9 @@ namespace smpl
 		 * @param arr 
 		 * @param size 
 		 * @param inverse 
-		 * @return std::vector<double> 
+		 * @return std::vector<float> 
 		 */
-		static std::vector<double> fastSineTransform(double* arr, size_t size, bool inverse=false);
+		static std::vector<float> fastSineTransform(float* arr, size_t size, bool inverse=false);
 
 		/**
 		 * @brief Calculates the 2D Discrete Sine Transform for a matrix.
@@ -2585,6 +2604,67 @@ namespace smpl
 		 */
 		static std::vector<std::vector<GeneralVector>> kMeans(std::vector<GeneralVector> arr, int clusters, int maxIterations, bool meansOnly = false);
 		
+		/**
+		 * @brief Calculates the mean from a list of data
+		 * 		Must be able to add the template type T and must be able
+		 * 		to divide the template type by a number.
+		 * 		Must be able to initialize T without arguments.
+		 * 			T sum; //should be valid.
+		 * @tparam T 
+		 * @param data 
+		 * @return T 
+		 */
+		template<typename T>
+		static T mean(T* data, size_t size)
+		{
+			T sum;
+			for(size_t i=0; i<size; i++)
+			{
+				sum += data[i];
+			}
+			return sum / size;
+		}
+
+		/**
+		 * @brief Calculates the variance from a list of data
+		 * 		Must be able to add the template type T and must be able
+		 * 		to divide the template type by a number.
+		 * 		Must be able to initialize T without arguments.
+		 * 			T sum; //should be valid.
+		 * @tparam T 
+		 * @param data 
+		 * @param size 
+		 * @param mean 
+		 * @return T 
+		 */
+		template<typename T>
+		static T variance(T* data, size_t size, T mean)
+		{
+			T sum;
+			for(size_t i=0; i<size; i++)
+			{
+				sum += data[i];
+			}
+			return sum / size;
+		}
+
+		/**
+		 * @brief Calculates the std deviation from a list of data
+		 * 		Must be able to add the template type T and must be able
+		 * 		to divide the template type by a number.
+		 * 		Must be able to initialize T without arguments.
+		 * 			T sum; //should be valid.
+		 * @tparam T 
+		 * @param data 
+		 * @param size 
+		 * @param mean 
+		 * @return T 
+		 */
+		template<typename T>
+		static T stddev(T* data, size_t size, T mean)
+		{
+			return MathExt::sqrt(variance(data, size, mean));
+		}
 	private:
 		
 	};

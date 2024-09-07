@@ -239,7 +239,7 @@ namespace smpl
 					auto temp = n->getAttribute("size");
 					if(temp != nullptr)
 					{
-						fontSize = abs(std::stoi(temp->data));
+						fontSize = abs(std::stoi(temp->second));
 						originalFontSize = fontSize;
 					}
 				}
@@ -247,7 +247,7 @@ namespace smpl
 				{
 					auto temp = n->getAttribute("lineheight");
 					if(temp != nullptr)
-						verticalAdv = abs(std::stoi(temp->data));
+						verticalAdv = abs(std::stoi(temp->second));
 					
 				}
 				else if(n->getTitle() == "pages")
@@ -263,7 +263,7 @@ namespace smpl
 						{
 							int imgCount = 0;
 							//Is local image so full path is needed
-							std::string actualFile = path + '/' + temp->data;
+							std::string actualFile = path + '/' + temp->second;
 
 							Image** imgArr = Image::loadImage(actualFile, &imgCount);
 							if(imgCount>0)
@@ -286,39 +286,39 @@ namespace smpl
 
 						auto attrib = n2->getAttribute("id");
 						if(attrib != nullptr)
-							fci.unicodeValue = StringTools::toInt(attrib->data);
+							fci.unicodeValue = StringTools::toInt(attrib->second);
 						
 						attrib = n2->getAttribute("x");
 						if(attrib != nullptr)
-							fci.x = StringTools::toInt(attrib->data);
+							fci.x = StringTools::toInt(attrib->second);
 						
 						attrib = n2->getAttribute("y");
 						if(attrib != nullptr)
-							fci.y = StringTools::toInt(attrib->data);
+							fci.y = StringTools::toInt(attrib->second);
 						
 						attrib = n2->getAttribute("width");
 						if(attrib != nullptr)
-							fci.width = StringTools::toInt(attrib->data);
+							fci.width = StringTools::toInt(attrib->second);
 						
 						attrib = n2->getAttribute("height");
 						if(attrib != nullptr)
-							fci.height = StringTools::toInt(attrib->data);
+							fci.height = StringTools::toInt(attrib->second);
 						
 						attrib = n2->getAttribute("xadvance");
 						if(attrib != nullptr)
-							fci.horizAdv = StringTools::toInt(attrib->data);
+							fci.horizAdv = StringTools::toInt(attrib->second);
 						
 						attrib = n2->getAttribute("page");
 						if(attrib != nullptr)
-							page = StringTools::toInt(attrib->data);
+							page = StringTools::toInt(attrib->second);
 						
 						attrib = n2->getAttribute("xoffset");
 						if(attrib != nullptr)
-							fci.xOffset = StringTools::toInt(attrib->data);
+							fci.xOffset = StringTools::toInt(attrib->second);
 						
 						attrib = n2->getAttribute("yoffset");
 						if(attrib != nullptr)
-							fci.yOffset = StringTools::toInt(attrib->data);
+							fci.yOffset = StringTools::toInt(attrib->second);
 
 						this->addChar(fci);
 						imgPage.push_back(page);

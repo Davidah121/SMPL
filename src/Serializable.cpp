@@ -4,7 +4,8 @@
 
 namespace smpl
 {
-	std::unordered_map<std::string, std::function<void(std::vector<std::string>, StreamableList<unsigned char>, SerializedData)>> SerializedData::loadFunctions;
+	std::unordered_map<std::string, std::function<void(std::vector<std::string>, Streamable<unsigned char>*, SerializedData)>> SerializedData::loadFunctions;
+	std::unordered_map<std::string, std::function<void(std::vector<std::string>, Streamable<unsigned char>*, SerializedData)>> SerializedData::saveFunctions;
 
 	std::vector<std::string> extractClassAndTemplates(std::string s)
 	{
@@ -84,18 +85,51 @@ namespace smpl
 		return objType;
 	}
 
-	void SerializedData::serialize(StreamableList<unsigned char> data)
+	void SerializedData::serialize(Streamable<unsigned char>* data)
 	{
-
+		//Store as WritableSerialziedData.
+		//save the type
+		data->add(this->getObjectType());
+		if(this->getObjectType() == SerializedData::TYPE_OBJECT)
+		{
+			//save the name
+			//save the variables
+		}
+		else
+		{
+			if(this->getType().find("class ") == SIZE_MAX)
+			{
+				//Primitive Type or structure. Save bytes.
+				//save the size of the data
+				data->add((unsigned char*)&size, 8);
+				//save the data
+				data->add((unsigned char*)this->data, size);
+			}
+			else
+			{
+				std::vector<std::string> args = extractClassAndTemplates(this->getType());
+				std::function<void(std::vector<std::string>, Streamable<unsigned char>*, SerializedData)> saver;
+				auto it = saveFunctions.find(args[0]);
+				if(it != saveFunctions.end())
+				{
+					saver = it->second;
+					saver(args, data, *this);
+				}
+				else
+				{
+					//throw exception
+				}
+			}
+		}
 	}
 
-	void SerializedData::deserialize(StreamableList<unsigned char> data)
+	void SerializedData::deserialize(Streamable<unsigned char>* data)
 	{
 		//its stored as the struct Writable Serialized Data is laid out.
 		//not all fields are used. Check type first
 		WritableSerialzedData objData;
 
-		objData.type = data.get();
+		objData.type = data->get();
 		if(objData.type == TYPE_OBJECT)
 		{
 			if(this->objType != TYPE_OBJECT)
@@ -104,10 +138,10 @@ namespace smpl
 			}
 
 			//it contains a name (may be empty).
-			data.get((unsigned char*)&objData.size, 4);
+			data->get((unsigned char*)&objData.size, 4);
 			for(int i=0; i<objData.size; i++)
 			{
-				this->name += (char)data.get();
+				this->name += (char)data->get();
 			}
 
 			//for each serialized variable, call deserialize on it.
@@ -126,7 +160,7 @@ namespace smpl
 			}
 			
 			std::vector<std::string> args = extractClassAndTemplates(this->getType());
-			std::function<void(std::vector<std::string>, StreamableList<unsigned char>, SerializedData)> loader;
+			std::function<void(std::vector<std::string>, Streamable<unsigned char>*, SerializedData)> loader;
 			auto it = loadFunctions.find(args[0]);
 			if(it != loadFunctions.end())
 			{

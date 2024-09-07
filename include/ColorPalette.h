@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include <vector>
 #include "Object.h"
 #include "KDTree.h"
@@ -19,6 +20,10 @@ namespace smpl
 		{
 			return memcmp(this, &o, sizeof(Color)) == 0;
 		}
+		bool const operator!=(const Color& o)
+		{
+			return memcmp(this, &o, sizeof(Color)) != 0;
+		}
 	};
 
 	struct Color4f
@@ -33,6 +38,7 @@ namespace smpl
 
 		Color4f operator-() { return Color4f{-red, -green, -blue, -alpha}; }
 
+		friend Color4f operator*(double a, Color4f other) { return Color4f{a*other.red, a*other.green, a*other.blue, a*other.alpha}; }
 		void operator+=(Color4f other)
 		{ 
 			red += other.red; 
@@ -76,7 +82,7 @@ namespace smpl
 		}
 	};
 
-	class ColorPalette : public Object
+	class DLL_OPTION ColorPalette : public Object
 	{
 	public:
 

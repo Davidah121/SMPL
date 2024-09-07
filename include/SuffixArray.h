@@ -1,10 +1,11 @@
 #pragma once
-#include<vector>
-#include<iostream>
-#include<cstring>
-#include<cstdio>
+#include "BuildOptions.h"
+#include <vector>
+#include <iostream>
+#include <cstring>
+#include <cstdio>
 
-class SuffixArray
+class DLL_OPTION SuffixArray
 {
 public:
 	SuffixArray(std::string s);

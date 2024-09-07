@@ -1,3 +1,5 @@
+#pragma once
+#include "BuildOptions.h"
 #include "MathExt.h"
 #include "Sort.h"
 
@@ -11,7 +13,7 @@ namespace smpl
         std::vector<int> ids = std::vector<int>();
     };
 
-    class Algorithms
+    class DLL_OPTION Algorithms
     {
     public:
         /**

@@ -154,44 +154,26 @@ namespace smpl
 
 	void SimpleGraphics::gaussianBlur(Image* img, int kernelRadius, double sigma)
 	{
-		double actualSigma = sigma;
-		if(sigma <= 0)
-		{
-			actualSigma = 0.5*kernelRadius;
-		}
-
-		if(kernelRadius <= 0)
-		{
+		Matrix kernel = ComputerVision::guassianKernel(kernelRadius, sigma);
+		if(!kernel.getValid())
 			return;
-		}
+		
+		Matrix rChannel = ComputerVision::imageToMatrix(img, ComputerVision::RED_CHANNEL);
+		Matrix gChannel = ComputerVision::imageToMatrix(img, ComputerVision::GREEN_CHANNEL);
+		Matrix bChannel = ComputerVision::imageToMatrix(img, ComputerVision::BLUE_CHANNEL);
 
-		int n = 2*kernelRadius + 1;
-		Matrix kernel = Matrix(n, n);
-
-		double variance = MathExt::sqr(actualSigma);
-		double A = 1.0/(2*PI*variance);
-
-		for(int y=0; y<n; y++)
-		{
-			for(int x=0; x<n; x++)
-			{
-				double B = exp( -(MathExt::sqr(x-kernelRadius) + MathExt::sqr(y-kernelRadius))/(2*variance) );
-				kernel[y][x] = A*B;
-			}
-		}
-
-		Matrix rChannel = ComputerVision::convolution(img, &kernel, ComputerVision::RED_CHANNEL, true);
-		Matrix gChannel = ComputerVision::convolution(img, &kernel, ComputerVision::GREEN_CHANNEL, true);
-		Matrix bChannel = ComputerVision::convolution(img, &kernel, ComputerVision::BLUE_CHANNEL, true);
-
+		rChannel = ComputerVision::convolution(&rChannel, &kernel);
+		gChannel = ComputerVision::convolution(&gChannel, &kernel);
+		bChannel = ComputerVision::convolution(&bChannel, &kernel);
+		
 		Color* imgPixels = img->getPixels();
 		for(int y=0; y<img->getHeight(); y++)
 		{
 			for(int x=0; x<img->getWidth(); x++)
 			{
-				imgPixels->red = (unsigned char)MathExt::clamp(MathExt::round(rChannel[y][x]*255), 0.0, 255.0);
-				imgPixels->green = (unsigned char)MathExt::clamp(MathExt::round(gChannel[y][x]*255), 0.0, 255.0);
-				imgPixels->blue = (unsigned char)MathExt::clamp(MathExt::round(bChannel[y][x]*255), 0.0, 255.0);
+				imgPixels->red = (unsigned char)MathExt::clamp(MathExt::round(rChannel[y][x]*255), 0.0f, 255.0f);
+				imgPixels->green = (unsigned char)MathExt::clamp(MathExt::round(gChannel[y][x]*255), 0.0f, 255.0f);
+				imgPixels->blue = (unsigned char)MathExt::clamp(MathExt::round(bChannel[y][x]*255), 0.0f, 255.0f);
 				imgPixels++;
 			}
 		}
@@ -221,7 +203,7 @@ namespace smpl
 		return nullptr;
 	}
 
-	Image* SimpleGraphics::cannyEdgeFilter(Image* img, double weakThreshold, double strongThreshold)
+	Image* SimpleGraphics::cannyEdgeFilter(Image* img, double sigma, double weakThreshold, double strongThreshold)
 	{
 		// apply gaussian filter
 		// apply sobel edge filter
@@ -230,7 +212,7 @@ namespace smpl
 		// suppress weak edges
 
 		Image* grayscaleImg = SimpleGraphics::convertToGrayscale(img);
-		SimpleGraphics::gaussianBlur(grayscaleImg, 2, 1);
+		SimpleGraphics::gaussianBlur(grayscaleImg, 2, sigma);
 
 		Mat3f gx = Mat3f(1, 0, -1,
 						 2, 0, -2,
@@ -239,8 +221,9 @@ namespace smpl
 						  0,  0,  0,
 						 -1, -2, -1);
 
-		Matrix imgXDerivative = ComputerVision::convolution(grayscaleImg, &gx, ComputerVision::RED_CHANNEL, true);
-		Matrix imgYDerivative = ComputerVision::convolution(grayscaleImg, &gy, ComputerVision::RED_CHANNEL, true);
+		Matrix grayscaleMatrix = ComputerVision::imageToMatrix(grayscaleImg, ComputerVision::RED_CHANNEL);
+		Matrix imgXDerivative = ComputerVision::convolution(&grayscaleMatrix, &gx);
+		Matrix imgYDerivative = ComputerVision::convolution(&grayscaleMatrix, &gy);
 		Matrix derivativeMagnitude = Matrix(imgXDerivative.getRows(), imgXDerivative.getCols());
 
 		//remove the pixels on the edge of the image.
@@ -310,7 +293,7 @@ namespace smpl
 					//double threshold step here.
 					if(mag <= weakThreshold)
 						outputV = 0;
-					else if(mag > strongThreshold)
+					else if(mag >= strongThreshold)
 						outputV = 255;
 					else
 						outputV = 128;
@@ -319,6 +302,8 @@ namespace smpl
 				grayscaleImg->getPixels()[x + y*grayscaleImg->getWidth()] = {outputV, outputV, outputV, 255};
 			}
 		}
+
+		// grayscaleImg->savePNG("Step3.png", false);
 
 		//Hysteresis
 		//note that the very edge of the image is all set to zero for convenience.
@@ -370,13 +355,14 @@ namespace smpl
 						  0,  0,  0,
 						 -1, -2, -1);
 
-		Matrix imgXDerivative = ComputerVision::convolution(grayscaleImg, &gx, ComputerVision::RED_CHANNEL, true);
-		Matrix imgYDerivative = ComputerVision::convolution(grayscaleImg, &gy, ComputerVision::RED_CHANNEL, true);
+		Matrix grayscaleMatrix = ComputerVision::imageToMatrix(grayscaleImg, ComputerVision::RED_CHANNEL);
+		Matrix imgXDerivative = ComputerVision::convolution(&grayscaleMatrix, &gx);
+		Matrix imgYDerivative = ComputerVision::convolution(&grayscaleMatrix, &gy);
 
 		//reuse imgXDerivative
-		double* imgXDerData = imgXDerivative.getData();
-		double* imgXDerDataEnd = imgXDerivative.getData() + (img->getWidth() * img->getHeight());
-		double* imgYDerData = imgYDerivative.getData();
+		float* imgXDerData = imgXDerivative.getData();
+		float* imgXDerDataEnd = imgXDerivative.getData() + (img->getWidth() * img->getHeight());
+		float* imgYDerData = imgYDerivative.getData();
 
 		while(imgXDerData < imgXDerDataEnd)
 		{
@@ -735,10 +721,10 @@ namespace smpl
 
 					Vec4f finalC = ((a*yFrac + b)*yFrac + c)*yFrac + d;
 					
-					unsigned char red = (unsigned char)MathExt::clamp(finalC.x, 0.0, 255.0);
-					unsigned char green = (unsigned char)MathExt::clamp(finalC.y, 0.0, 255.0);
-					unsigned char blue = (unsigned char)MathExt::clamp(finalC.z, 0.0, 255.0);
-					unsigned char alpha = (unsigned char)MathExt::clamp(finalC.w, 0.0, 255.0);
+					unsigned char red = (unsigned char)MathExt::clamp(finalC.x, 0.0f, 255.0f);
+					unsigned char green = (unsigned char)MathExt::clamp(finalC.y, 0.0f, 255.0f);
+					unsigned char blue = (unsigned char)MathExt::clamp(finalC.z, 0.0f, 255.0f);
+					unsigned char alpha = (unsigned char)MathExt::clamp(finalC.w, 0.0f, 255.0f);
 					
 					sImg->setPixel(i2, i, {red,green,blue,alpha});
 				}

@@ -1,8 +1,10 @@
+#pragma once
+#include "BuildOptions.h"
 #include "SimpleFile.h"
 
 namespace smpl
 {
-    class SimplePipe : public SimpleFile
+    class DLL_OPTION SimplePipe : public SimpleFile
     {
     public:
         SimplePipe(std::string command, char type);

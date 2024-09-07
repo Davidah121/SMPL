@@ -1,4 +1,6 @@
 #pragma once
+//TODO: REMOVE OS SPECIFIC CODE FROM HEADER
+#include "BuildOptions.h"
 #include "Image.h"
 #include "NewGui.h"
 // #include "GuiManager.h"
@@ -50,9 +52,8 @@
 	#endif
 
 	#include <exception>
-	#include <thread>
+	#include "Concurrency.h"
 	#include <vector>
-	#include <mutex>
 
 	#ifndef DWMWA_WINDOW_CORNER_PREFERENCE_CONST
 		#define DWMWA_WINDOW_CORNER_PREFERENCE_CONST 33
@@ -475,6 +476,13 @@
 			void repaint();
 
 			/**
+			 * @brief Sets whether the window should repaint.
+			 * 		Used to force the window to repaint once.
+			 * 
+			 */
+			void forceRepaint();
+
+			/**
 			 * @brief Sets if the window should auto repaint when managed by a thread.
 			 * 
 			 * @param v 
@@ -710,7 +718,7 @@
 			int scanLinePadding = 0;
 
 			std::thread* wndThread = nullptr;
-			std::mutex myMutex = std::mutex();
+			HybridSpinLock myMutex;
 			bool threadOwnership = true;
 			bool shouldRepaint = false;
 			bool autoRepaint = true;

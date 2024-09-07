@@ -54,12 +54,7 @@ namespace smpl
         attributes.add(StringTools::toLowercase(p.first), p.second);
     }
 
-    void XmlNode::addAttribute(HashPair<std::string, std::string> p)
-    {
-        attributes.add(StringTools::toLowercase(p.key), p.data);
-    }
-
-    HashPair<std::string, std::string>* XmlNode::getAttribute(std::string key)
+    std::pair<std::string, std::string>* XmlNode::getAttribute(std::string key)
     {
         return attributes.get(key);
     }
@@ -81,12 +76,12 @@ namespace smpl
         if(offset < nameOrder.size())
         {
             //attempt to find nameOrder[offset] in the nameToIndexMap
-            std::vector<HashPair<std::string, size_t>*> it = nameToIndexMap.getAll(nameOrder[offset]);
-            for(HashPair<std::string, size_t>* c : it)
+            std::vector<std::pair<std::string, size_t>*> it = nameToIndexMap.getAll(nameOrder[offset]);
+            for(std::pair<std::string, size_t>* c : it)
             {
                 if(c != nullptr)
                 {
-                    ChildNode n = childNodes[c->data];
+                    ChildNode n = childNodes[c->second];
                     if( n.type == ChildNode::TYPE_NODE && n.node != nullptr)
                     {
                         n.node->getNodesInternal(nameOrder, offset+1, results);
@@ -142,12 +137,12 @@ namespace smpl
     std::string XmlNode::getValue()
     {
         std::string finalStr = "";
-        std::vector<HashPair<std::string, size_t>*> it = nameToIndexMap.getAll("");
-        for(HashPair<std::string, size_t>* c : it)
+        std::vector<std::pair<std::string, size_t>*> it = nameToIndexMap.getAll("");
+        for(std::pair<std::string, size_t>* c : it)
         {
             if(c != nullptr)
             {
-                ChildNode n = childNodes[c->data];
+                ChildNode n = childNodes[c->second];
                 if( n.type == ChildNode::TYPE_VALUE)
                 {
                     finalStr += n.value;
@@ -272,7 +267,7 @@ namespace smpl
         line += "<";
 
         //has no child nodes, no attributes, and no value
-        std::vector<HashPair<std::string, std::string>*> attribsAsArr = node->attributes.getAll();
+        std::vector<std::vector<std::pair<std::string, std::string>*>> attribsAsArr = node->attributes.getRawData();
 
         if(node->childNodes.size()==0 && attribsAsArr.size()==0)
         {
@@ -281,13 +276,16 @@ namespace smpl
 
         line += node->title;
 
-        for(HashPair<std::string, std::string>* a : attribsAsArr)
+        for(std::vector<std::pair<std::string, std::string>*>& bucket : attribsAsArr)
         {
-            line += " ";
-            line += a->key;
-            line += "=\"";
-            line += a->data;
-            line += "\"";
+            for(std::pair<std::string, std::string>* a : bucket)
+            {
+                line += " ";
+                line += a->first;
+                line += "=\"";
+                line += a->second;
+                line += "\"";
+            }
         }
         
         //has no child nodes and no value, but has at least one attribute.
@@ -342,7 +340,7 @@ namespace smpl
         line += "<";
 
         //has no child nodes, no attributes, and no value
-        std::vector<HashPair<std::string, std::string>*> attribsAsArr = node->attributes.getAll();
+        std::vector<std::vector<std::pair<std::string, std::string>*>> attribsAsArr = node->attributes.getRawData();
         
         if(node->childNodes.size()==0 && attribsAsArr.size()==0)
         {
@@ -351,15 +349,18 @@ namespace smpl
 
         line += node->title;
 
-        for(HashPair<std::string, std::string>* a : attribsAsArr)
+        for(std::vector<std::pair<std::string, std::string>*>& bucket : attribsAsArr)
         {
-            line += " ";
-            line += a->key;
-            line += "=\"";
-            line += a->data;
-            line += "\"";
+            for(std::pair<std::string, std::string>* a : bucket)
+            {
+                line += " ";
+                line += a->first;
+                line += "=\"";
+                line += a->second;
+                line += "\"";
+            }
         }
-        
+
         //has no child nodes and no value, but has at least one attribute
         if(node->childNodes.size()==0 && attribsAsArr.size()>0)
         {
@@ -703,219 +704,6 @@ namespace smpl
 
         return true;
     }
-
-    // bool SimpleXml::loadFromBytes(unsigned char* bytes, size_t size, bool parseEscape)
-    // {
-    //     shouldParseEscape = parseEscape;
-
-    //     bool parsingNode = false;
-    //     std::string innerNodeText = "";
-    //     bool previousHasClosingTag = false;
-
-    //     XmlNode* parentNode = nullptr;
-    //     XmlNode* lastNodeParsed = nullptr;
-    //     bool isRecordingText = false;
-    //     bool hitEnd = true;
-
-    //     if(bytes != nullptr)
-    //     {
-    //         std::vector<unsigned char> fileBytes = removeCommentsAndInvalidChars(bytes, size);
-
-    //         for(unsigned char byte : fileBytes)
-    //         {
-    //             if(byte=='<' && hitEnd==true)
-    //             {
-    //                 //set value of node
-    //                 if(parentNode!=nullptr)
-    //                 {
-    //                     parentNode->value += innerNodeText;
-    //                 }
-    //                 innerNodeText = "";
-    //                 isRecordingText = false;
-    //                 parsingNode = true;
-    //                 hitEnd=false;
-    //             }
-    //             else if(byte=='>' && hitEnd==false)
-    //             {
-    //                 if(type==TYPE_HTML && parentNode != nullptr)
-    //                 {
-    //                     if(parentNode->getTitle() == "script" && innerNodeText != "/script")
-    //                     {
-    //                         //add to parent inner node text and jump back to start
-    //                         hitEnd = true;
-    //                         parsingNode = false;
-    //                         parentNode->value += "<" + innerNodeText + ">";
-    //                         isRecordingText = false;
-    //                         innerNodeText = "";
-    //                         continue;
-    //                     }
-    //                 }
-
-    //                 parsingNode = false;
-    //                 hitEnd=true;
-    //                 XmlNode* node = parseXmlLine(innerNodeText);
-
-    //                 if(node==nullptr)
-    //                 {
-    //                     dispose();
-    //                     return false;
-    //                 }
-
-    //                 bool slashAtFront = innerNodeText[0] == '/';
-    //                 bool slashAtEnd = innerNodeText.back() == '/';
-
-    //                 innerNodeText = "";
-    //                 isRecordingText = false;
-    //                 if(parentNode==nullptr)
-    //                 {
-    //                     if(!node->isEndOfSection())
-    //                     {
-    //                         addNode(node);
-    //                         parentNode = node;
-    //                     }
-    //                     else
-    //                     {
-    //                         if(node->attributes.getSize()>0)
-    //                         {
-    //                             addNode(node);
-    //                         }
-    //                         parentNode = node->parentNode;
-    //                     }
-    //                 }
-    //                 else
-    //                 {
-    //                     node->parentNode = parentNode;
-    //                     if(!node->isEndOfSection())
-    //                     {
-    //                         parentNode->addChild(node);
-    //                         parentNode = node;
-    //                     }
-    //                     else
-    //                     {
-    //                         if(node->title == parentNode->title && slashAtFront)
-    //                         {
-    //                             //valid closing tag. Contains nothing and can be discarded.
-    //                             delete node;
-    //                             node = nullptr;
-
-    //                             parentNode = parentNode->parentNode;
-    //                         }
-    //                         else
-    //                         {
-    //                             if(slashAtFront)
-    //                             {
-    //                                 //error of some sort. closing tag that does not correspond to the parent.
-    //                                 //delete and continue parsing
-    //                                 if(type == TYPE_HTML)
-    //                                 {
-    //                                     //may be a void tag
-    //                                     if(lastNodeParsed != nullptr)
-    //                                     {
-    //                                         if(lastNodeParsed->getTitle() != node->getTitle())
-    //                                         {
-    //                                             validXml = false;
-    //                                         }
-    //                                         //otherwise valid xml. Still delete the node though.
-    //                                     }
-    //                                 }
-    //                                 else
-    //                                 {
-    //                                     validXml = false;
-    //                                 }
-
-    //                                 delete node;
-    //                                 node = nullptr;
-    //                             }
-    //                             else
-    //                             {
-    //                                 //valid close but contains stuff
-    //                                 parentNode->addChild(node);
-    //                                 node->parentNode = parentNode;
-
-    //                                 if(lastNodeParsed != nullptr)
-    //                                 {
-    //                                     if(!previousHasClosingTag && lastNodeParsed->isEndOfSection())
-    //                                     {
-    //                                         //the previous may have been a void tag
-    //                                         validXml = false;
-    //                                     }
-    //                                 }
-    //                             }
-    //                         }
-                            
-    //                     }
-    //                 }
-
-    //                 lastNodeParsed = node;
-    //                 if(node != nullptr)
-    //                     previousHasClosingTag = (slashAtEnd || slashAtFront);
-    //             }
-    //             else
-    //             {
-    //                 if(isRecordingText)
-    //                 {
-    //                     innerNodeText += byte;
-    //                 }
-    //                 else
-    //                 {
-    //                     if(parsingNode)
-    //                     {
-    //                         if( StringTools::isAlphaNumerial(byte, true, false) || byte == '/' || byte == '?' || byte == '!')
-    //                         {
-    //                             isRecordingText=true;
-    //                             innerNodeText += byte;
-    //                         }
-    //                         else
-    //                         {
-    //                             //error has occurred
-    //                             //Must a number, letter, /, or _ at the start or ? or !
-    //                             dispose();
-    //                             return false;
-    //                         }
-    //                     }
-    //                     else
-    //                     {
-    //                         if(byte > 32)
-    //                         {
-    //                             //valid
-    //                             isRecordingText=true;
-    //                             innerNodeText += byte;
-    //                         }
-    //                         else
-    //                         {
-    //                             if(type==TYPE_HTML && parentNode != nullptr)
-    //                             {
-    //                                 if(parentNode->getTitle() == "script" && (byte == 32 || byte == '\n' || byte == '\t'))
-    //                                 {
-    //                                     isRecordingText = true;
-    //                                     innerNodeText += byte;
-    //                                 }
-    //                             }
-    //                         }
-    //                     }
-    //                 }
-                    
-    //             }
-    //         }
-
-    //         if(shouldParseEscape)
-    //         {
-    //             for(XmlNode* node : nodes)
-    //             {
-    //                 fixParseOnNode(node);
-    //             }
-    //         }
-
-    //     }
-    //     else
-    //     {
-    //         //StringTools::out << "Could not open file" << StringTools::lineBreak;
-    //         return false;
-    //     }
-
-    //     return true;
-        
-    // }
 
     std::vector<unsigned char> SimpleXml::removeCommentsAndInvalidChars(std::vector<unsigned char> fileBytes)
     {
@@ -1287,53 +1075,57 @@ namespace smpl
         std::string tempString = "";
         bool proc = false;
 
-        std::vector<HashPair<std::string, std::string>*> attribsAsArr = n->attributes.getAll();
+        std::vector<std::vector<std::pair<std::string, std::string>*>> attribsAsArr = n->attributes.getRawData();
 
-        for(HashPair<std::string, std::string>* k : attribsAsArr)
+
+        for(std::vector<std::pair<std::string, std::string>*>& bucket : attribsAsArr)
         {
-            actualString = "";
-            tempString = "";
-            proc = false;
-            for(char c : k->data)
+            for(std::pair<std::string, std::string>* k : bucket)
             {
-                if(!proc)
+                actualString = "";
+                tempString = "";
+                proc = false;
+                for(char c : k->second)
                 {
-                    if(c != '&')
+                    if(!proc)
                     {
-                        actualString += c;
-                    }
-                    else
-                    {
-                        tempString += c;
-                        proc=true;
-                    }
-                }
-                else
-                {
-                    if(c==';')
-                    {
-                        tempString += ';';
-                        int t = parseEscapeString(tempString);
-                        std::vector<unsigned char> asUTFSet = StringTools::toUTF8(t);
-
-                        for(unsigned char& c : asUTFSet)
+                        if(c != '&')
                         {
                             actualString += c;
                         }
-                        proc=false;
-                        tempString = "";
+                        else
+                        {
+                            tempString += c;
+                            proc=true;
+                        }
                     }
                     else
                     {
-                        tempString += c;
+                        if(c==';')
+                        {
+                            tempString += ';';
+                            int t = parseEscapeString(tempString);
+                            std::vector<unsigned char> asUTFSet = StringTools::toUTF8(t);
+
+                            for(unsigned char& c : asUTFSet)
+                            {
+                                actualString += c;
+                            }
+                            proc=false;
+                            tempString = "";
+                        }
+                        else
+                        {
+                            tempString += c;
+                        }
                     }
                 }
-            }
-            actualString += tempString;
-            k->data = actualString;
+                actualString += tempString;
+                k->second = actualString;
 
-            //No longer done through references so this is required.
-            // n->addAttribute(k->key, k->data);
+                //No longer done through references so this is required.
+                // n->addAttribute(k->key, k->data);
+            }
         }
 
         for(ChildNode& child : n->childNodes)
@@ -1395,12 +1187,12 @@ namespace smpl
         std::vector<XmlNode*> results;
         if(nameOrder.size() > 0)
         {
-            std::vector<HashPair<std::string, size_t>*> it = nameToIndexMap.getAll(nameOrder[0]);
-            for(HashPair<std::string, size_t>* c : it)
+            std::vector<std::pair<std::string, size_t>*> it = nameToIndexMap.getAll(nameOrder[0]);
+            for(std::pair<std::string, size_t>* c : it)
             {
                 if(c != nullptr)
                 {
-                    nodes[c->data]->getNodesInternal(nameOrder, 1, results);
+                    nodes[c->second]->getNodesInternal(nameOrder, 1, results);
                 }
             }
         }

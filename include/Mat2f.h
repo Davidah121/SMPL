@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include "Matrix.h"
 #include "Vec2f.h"
 
@@ -6,7 +7,7 @@ namespace smpl
 {
 
 	///A special Matrix that is a 2x2 matrix. Commonly used
-	class Mat2f : public Matrix
+	class DLL_OPTION Mat2f : public Matrix
 	{
 	public:
 		/**
@@ -26,7 +27,7 @@ namespace smpl
 		 * @param v3 
 		 * @param v4 
 		 */
-		Mat2f(double v1, double v2, double v3, double v4);
+		Mat2f(float v1, float v2, float v3, float v4);
 
 		/**
 		 * @brief Construct a new Mat2f object from another.
@@ -61,16 +62,16 @@ namespace smpl
 		 */
 		static Mat2f getIdentity();
 
-		double* operator[](int row);
+		float* operator[](int row);
 
-		Mat2f operator*(double value);
+		Mat2f operator*(float value);
 
-		friend Mat2f operator*(double value, Mat2f other)
+		friend Mat2f operator*(float value, Mat2f other)
 		{
 			return other * value;
 		}
 
-		void operator*=(double value);
+		void operator*=(float value);
 
 		Mat2f operator+(Mat2f other);
 		void operator+=(Mat2f other);
@@ -84,23 +85,6 @@ namespace smpl
 
 		bool operator==(Mat2f other);
 		bool operator!=(Mat2f other);
-
-		//Converting into an array
-		/**
-		 * @brief Fills a float array of at least size 4 with the matrix values
-		 * 		
-		 * @param buffer 
-		 * 		Must be of size 4 or greater.
-		 */
-		void fillArray(float* buffer);
-
-		/**
-		 * @brief Fills a float array of at least size 4 with the matrix values
-		 * 		
-		 * @param buffer 
-		 * 		Must be of size 4 or greater.
-		 */
-		void fillArray(double* buffer);
 	};
 
 } //NAMESPACE smpl END

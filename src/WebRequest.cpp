@@ -33,15 +33,6 @@ namespace smpl
 		header = other.header;
 		data = other.data;
 	}
-	
-	void WebRequest::operator=(WebRequest other)
-	{
-		reset();
-		type = other.type;
-		bytesInHeader = other.bytesInHeader;
-		header = other.header;
-		data = other.data;
-	}
 
 	void WebRequest::operator=(WebRequest& other)
 	{
@@ -50,6 +41,25 @@ namespace smpl
 		bytesInHeader = other.bytesInHeader;
 		header = other.header;
 		data = other.data;
+	}
+	
+	WebRequest::WebRequest(WebRequest&& other) noexcept
+	{
+		reset();
+		type = std::move(other.type);
+		bytesInHeader = std::move(other.bytesInHeader);
+		header = std::move(other.header);
+		data = std::move(other.data);
+		other.reset();
+	}
+	void WebRequest::operator=(WebRequest&& other) noexcept
+	{
+		reset();
+		type = std::move(other.type);
+		bytesInHeader = std::move(other.bytesInHeader);
+		header = std::move(other.header);
+		data = std::move(other.data);
+		other.reset();
 	}
 
 	void WebRequest::reset()

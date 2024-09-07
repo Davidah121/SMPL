@@ -1,11 +1,12 @@
 #pragma once
+#include "BuildOptions.h"
 #include "Matrix.h"
 #include "Vec4f.h"
 
 namespace smpl
 {
 
-	class Mat4f : public Matrix
+	class DLL_OPTION Mat4f : public Matrix
 	{
 	public:
 		/**
@@ -37,10 +38,10 @@ namespace smpl
 		 * @param v15 
 		 * @param v16 
 		 */
-		Mat4f(double v1, double v2, double v3, double v4, 
-			double v5, double v6, double v7, double v8,
-			double v9, double v10, double v11, double v12, 
-			double v13, double v14, double v15, double v16);
+		Mat4f(float v1, float v2, float v3, float v4, 
+			float v5, float v6, float v7, float v8,
+			float v9, float v10, float v11, float v12, 
+			float v13, float v14, float v15, float v16);
 
 		/**
 		 * @brief Construct a new Mat4f object from another.
@@ -82,19 +83,19 @@ namespace smpl
 		 */
 		Mat4f getTranspose();
 
-		double* operator[](int row);
+		float* operator[](int row);
 
 		Mat4f operator+(Mat4f other);
 		Mat4f operator-(Mat4f other);
 		Mat4f operator*(Mat4f other);
 
-		Mat4f operator*(double other);
-		friend Mat4f operator*(double value, Mat4f other)
+		Mat4f operator*(float other);
+		friend Mat4f operator*(float value, Mat4f other)
 		{
 			return other*value;
 		}
 
-		void operator*=(double other);
+		void operator*=(float other);
 
 		void operator+=(Mat4f other);
 		void operator-=(Mat4f other);
@@ -103,23 +104,6 @@ namespace smpl
 
 		bool operator==(Mat4f other);
 		bool operator!=(Mat4f other);
-
-		//Converting into an array
-		/**
-		 * @brief Fills a float array of at least size 16 with the matrix values
-		 * 		
-		 * @param buffer 
-		 * 		Must be of size 16 or greater.
-		 */
-		void fillArray(float* buffer);
-
-		/**
-		 * @brief Fills a float array of at least size 16 with the matrix values
-		 * 		
-		 * @param buffer 
-		 * 		Must be of size 16 or greater.
-		 */
-		void fillArray(double* buffer);
 	};
 
 } //NAMESPACE smpl END

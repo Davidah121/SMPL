@@ -382,12 +382,12 @@ namespace smpl
 				//else, just store match.
 				//checkForRecover = false;
 				csa.resetSearch();
-				int backwardsDis = startLoc - searchState.start;
+				unsigned int backwardsDis = startLoc - searchState.start;
 
 				if (searchState.length >= 3)
 				{
 					//manually check for data past the length given for longer match
-					outputData->push_back({ false, searchState.length, backwardsDis });
+					outputData->push_back({ false, (unsigned int)searchState.length, backwardsDis });
 					startLoc += searchState.length;
 
 					//if we found this match, add this too. Otherwise, delay it.
@@ -416,10 +416,10 @@ namespace smpl
 
 		//should add remaining stuff
 		searchState = csa.extractSearch();
-		int backwardsDis = startLoc - searchState.start;
+		unsigned int backwardsDis = startLoc - searchState.start;
 		if (searchState.length >= 3)
 		{
-			outputData->push_back({ false, searchState.length, backwardsDis });
+			outputData->push_back({ false, (unsigned int)searchState.length, backwardsDis });
 		}
 		while (delayedBufferSize > 0)
 		{
@@ -432,39 +432,9 @@ namespace smpl
 
 	void Compression::getLZ77RefPairsCHash(unsigned char* data, int size, std::vector<lengthPair>* outputData, int compressionLevel)
 	{
-		int maxDistance = 1<<15;
-		switch(compressionLevel)
-		{
-			case 7:
-				maxDistance = 1<<15;
-				break;
-			case 6:
-				maxDistance = 1<<14;
-				break;
-			case 5:
-				maxDistance = 1<<13;
-				break;
-			case 4:
-				maxDistance = 1<<12;
-				break;
-			case 3:
-				maxDistance = 1<<11;
-				break;
-			case 2:
-				maxDistance = 1<<10;
-				break;
-			case 1:
-				maxDistance = 1<<9;
-				break;
-			case 0:
-				maxDistance = 1<<8;
-				break;
-			default:
-				maxDistance = 1<<15;
-				break;
-		}
-
-		// maxDistance = (1<<15) - 4096 - 258;
+		int shiftValue = 8 + compressionLevel;
+		shiftValue = MathExt::clamp(shiftValue, 8, 15);
+		int maxDistance = 1<<shiftValue;
 
 		if(data == nullptr || outputData == nullptr)
 		{
@@ -484,12 +454,13 @@ namespace smpl
 		
 		
 		//for all bytes, try to match it in the hashmap.
-		//Get 3 bytes and try to find it in the hashmap. If found, try and find match.
-		//If not found, add the 3 values to the hashmap and write the first byte to the output
+		//Get 4 bytes and try to find it in the hashmap. If found, try and find match.
+		//If not found, add the 4 values to the hashmap and write the first byte to the output
 
 		//Method 5 - SIMPLE_HASH_MAP : Best Performance and Good Size.
-		SimpleHashMap<int, int> map = SimpleHashMap<int, int>( SimpleHashMap<int, int>::MODE_KEEP_ALL, 1<<15 );
-		map.setMaxLoadFactor(-1);
+		SimpleHashMap<int, int> map = SimpleHashMap<int, int>( SimpleHashMap<int, int>::MODE_KEEP_ALL );
+		// map.setMaxLoadFactor(-1);
+		std::vector<std::pair<int, int>*> deleteRefs;
 
 		size_t totalOutputSize = 0;
 		size_t refs = 0;
@@ -497,11 +468,10 @@ namespace smpl
 		size_t smallMatches = 0;
 
 		int i = 0;
-		while(i < size-2)
+		while(i < size-3)
 		{
-			int key = data[i] + ((int)data[i+1]<<8) + ((int)data[i+2]<<16);
-			
-			HashPair<int, int>* k = map.get(key);
+			int key = *(int*)&data[i];
+			std::pair<int, int>* k = map.get(key);
 
 			if(k == nullptr)
 			{
@@ -522,12 +492,13 @@ namespace smpl
 
 				do
 				{
-					int locationOfMatch = k->data;
-
+					int locationOfMatch = k->second;
 					if(locationOfMatch < lowestPoint)
 					{
 						//maximum backwards distance reached
-						break;
+						deleteRefs.push_back(k);
+						k = map.getNext();
+						continue;
 					}
 
 					int lengthMax = min(size-i, 258);
@@ -535,13 +506,27 @@ namespace smpl
 					unsigned char* startBase = (data+locationOfMatch);
 					unsigned char* startMatch = (data+i);
 
-					int len;
-					
-					for(len=3; len<lengthMax; len++)
+					int len = 0;
+					int bound = (lengthMax>>2)<<2;
+					bool failed = false;
+					while(len < bound)
 					{
-						if(startMatch[len] != startBase[len])
+						int v1 = *(int*)&startBase[len];
+						int v2 = *(int*)&startMatch[len];
+						if(v1 != v2)
 						{
+							failed = true;
 							break;
+						}
+						len+=4;
+					}
+					if(!failed)
+					{
+						while(len < lengthMax)
+						{
+							if(startMatch[len] != startBase[len])
+								break;
+							len++;
 						}
 					}
 
@@ -556,30 +541,25 @@ namespace smpl
 					k = map.getNext();
 				} while(k != nullptr);
 
+				for(int j=0; j<deleteRefs.size(); j++)
+				{
+					map.remove(deleteRefs[j]);
+				}
+				deleteRefs.clear();
+
 				//always insert
 				map.add( key, i );
-				for(int j=1; j<bestLength-2; j++)
+				for(int j=1; j<bestLength-3; j++)
 				{
-					int nkey = data[i+j] + ((int)data[i+j+1]<<8) + ((int)data[i+j+2]<<16);
+					int nkey = *(int*)&data[i+j];
 					map.add( nkey, i+j );
 				}
 
-				int backwardsDis = i - bestLocation;
+				unsigned int backwardsDis = i - bestLocation;
 				
-				// outputData->push_back( {false, bestLength, backwardsDis} );
-				// i += bestLength;
-				// totalOutputSize += bestLength;
-				// if(bestLength >= 3)
-				// 	refs += bestLength;
-				// else
-				// {
-				// 	smallMatches++;
-				// 	lits += bestLength;
-				// }
-				
-				if(bestLength>=3)
+				if(bestLength>=4)
 				{
-					outputData->push_back( {false, bestLength, backwardsDis} );
+					outputData->push_back( {false, (unsigned int)bestLength, backwardsDis} );
 					i += bestLength;
 					totalOutputSize += bestLength;
 					refs += bestLength;
@@ -682,8 +662,8 @@ namespace smpl
 
 			StringTools::findLongestMatch(startBase, baseSize, startMatch, lengthMax, &matchStartIndex, &matchLength);
 
-			int tempLength = matchLength;
-			int tempBackwards = i - (lowestPoint + matchStartIndex);
+			unsigned int tempLength = matchLength;
+			unsigned int tempBackwards = i - (lowestPoint + matchStartIndex);
 
 			if(tempLength<3)
 			{

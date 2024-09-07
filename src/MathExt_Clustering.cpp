@@ -33,7 +33,7 @@ namespace smpl
 				{
 					//first, find mean value
 					Vec2f meanVal = Vec2f();
-					double meanMult = 1.0/f.arr.size();
+					float meanMult = 1.0/f.arr.size();
 					for(size_t i=0; i<f.arr.size(); i++)
 					{
 						meanVal += f.arr[i] * meanMult;
@@ -59,12 +59,12 @@ namespace smpl
 			}
 
 			int indexOfMostError = 0;
-			double mostError = 0;
+			float mostError = 0;
 
 			for(size_t i=0; i<boxes.size(); i++)
 			{
 				Vec2f errVec = boxes[i].error;
-				double sumError = errVec.x + errVec.y;
+				float sumError = errVec.x + errVec.y;
 
 				if(sumError > mostError)
 				{
@@ -329,12 +329,12 @@ namespace smpl
 			for(size_t k=0; k<arr.size(); k++)
 			{
 				int minIndex = -1;
-				double minDis = std::numeric_limits<double>::max();
+				float minDis = std::numeric_limits<float>::max();
 
 				//measure distance from all means
 				for(size_t j=0; j<groups.size(); j++)
 				{
-					double thisDis = 0;
+					float thisDis = 0;
 					Vec2f lengthVec = Vec2f();
 					lengthVec = groups[j].averageVal - arr[k];
 
@@ -358,7 +358,7 @@ namespace smpl
 			for(size_t j=0; j<groups.size(); j++)
 			{
 				Vec2f avg = Vec2f();
-				double divVal = 1.0 / groups[j].clusters.size();
+				float divVal = 1.0 / groups[j].clusters.size();
 
 				for(Vec2f c : groups[j].clusters)
 				{
@@ -428,7 +428,7 @@ namespace smpl
 				{
 					//first, find mean value
 					Vec3f meanVal = Vec3f();
-					double meanMult = 1.0/f.arr.size();
+					float meanMult = 1.0/f.arr.size();
 					for(size_t i=0; i<f.arr.size(); i++)
 					{
 						meanVal += f.arr[i] * meanMult;
@@ -455,12 +455,12 @@ namespace smpl
 			}
 
 			int indexOfMostError = 0;
-			double mostError = 0;
+			float mostError = 0;
 
 			for(size_t i=0; i<boxes.size(); i++)
 			{
 				Vec3f errVec = boxes[i].error;
-				double sumError = errVec.x + errVec.y + errVec.z;
+				float sumError = errVec.x + errVec.y + errVec.z;
 
 				if(sumError > mostError)
 				{
@@ -755,12 +755,12 @@ namespace smpl
 			for(size_t k=0; k<arr.size(); k++)
 			{
 				int minIndex = -1;
-				double minDis = std::numeric_limits<double>::max();
+				float minDis = std::numeric_limits<float>::max();
 
 				//measure distance from all means
 				for(size_t j=0; j<groups.size(); j++)
 				{
-					double thisDis = 0;
+					float thisDis = 0;
 					Vec3f lengthVec = Vec3f();
 					lengthVec = groups[j].averageVal - arr[k];
 
@@ -784,7 +784,7 @@ namespace smpl
 			for(size_t j=0; j<groups.size(); j++)
 			{
 				Vec3f avg = Vec3f();
-				double divVal = 1.0 / groups[j].clusters.size();
+				float divVal = 1.0 / groups[j].clusters.size();
 
 				for(Vec3f c : groups[j].clusters)
 				{
@@ -854,7 +854,7 @@ namespace smpl
 				{
 					//first, find mean value
 					Vec4f meanVal = Vec4f();
-					double meanMult = 1.0/f.arr.size();
+					float meanMult = 1.0/f.arr.size();
 					for(size_t i=0; i<f.arr.size(); i++)
 					{
 						meanVal += f.arr[i] * meanMult;
@@ -882,12 +882,12 @@ namespace smpl
 			}
 
 			int indexOfMostError = 0;
-			double mostError = 0;
+			float mostError = 0;
 
 			for(size_t i=0; i<boxes.size(); i++)
 			{
 				Vec4f errVec = boxes[i].error;
-				double sumError = errVec.x + errVec.y + errVec.z + errVec.w;
+				float sumError = errVec.x + errVec.y + errVec.z + errVec.w;
 
 				if(sumError > mostError)
 				{
@@ -1212,12 +1212,12 @@ namespace smpl
 			for(size_t k=0; k<arr.size(); k++)
 			{
 				int minIndex = -1;
-				double minDis = std::numeric_limits<double>::max();
+				float minDis = std::numeric_limits<float>::max();
 
 				//measure distance from all means
 				for(size_t j=0; j<groups.size(); j++)
 				{
-					double thisDis = 0;
+					float thisDis = 0;
 					Vec4f lengthVec = Vec4f();
 					lengthVec = groups[j].averageVal - arr[k];
 
@@ -1241,7 +1241,7 @@ namespace smpl
 			for(size_t j=0; j<groups.size(); j++)
 			{
 				Vec4f avg = Vec4f();
-				double divVal = 1.0 / groups[j].clusters.size();
+				float divVal = 1.0 / groups[j].clusters.size();
 
 				for(Vec4f c : groups[j].clusters)
 				{
@@ -1312,7 +1312,7 @@ namespace smpl
 				{
 					//first, find mean value
 					GeneralVector meanVal = GeneralVector(dimensions);
-					double meanMult = 1.0/f.arr.size();
+					float meanMult = 1.0/f.arr.size();
 					for(size_t i=0; i<f.arr.size(); i++)
 					{
 						GeneralVector v = f.arr[i];
@@ -1345,12 +1345,12 @@ namespace smpl
 			}
 
 			int indexOfMostError = 0;
-			double mostError = 0;
+			float mostError = 0;
 
 			for(size_t i=0; i<boxes.size(); i++)
 			{
 				GeneralVector errVec = boxes[i].error;
-				double sumError = 0;
+				float sumError = 0;
 				for(int k=0; k<dimensions; k++)
 				{
 					sumError += errVec[k];
@@ -1378,7 +1378,7 @@ namespace smpl
 			
 			//split the box along the part with the most error
 			int dimensionWithMostError = 0;
-			double dimensionMostError = 0;
+			float dimensionMostError = 0;
 			for(int i=0; i<dimensions; i++)
 			{
 				if(box.error[i] > dimensionMostError)
@@ -1479,7 +1479,7 @@ namespace smpl
 				}
 
 				ranges[0] = maxVals[0] - minVals[0];
-				double maxRange = ranges[0];
+				float maxRange = ranges[0];
 				for(int k=1; k<dimensions; k++)
 				{
 					ranges[k] = maxVals[k] - minVals[k];
@@ -1603,12 +1603,12 @@ namespace smpl
 			for(size_t k=0; k<arr.size(); k++)
 			{
 				int minIndex = -1;
-				double minDis = std::numeric_limits<double>::max();
+				float minDis = std::numeric_limits<float>::max();
 
 				//measure distance from all means
 				for(size_t j=0; j<groups.size(); j++)
 				{
-					double thisDis = 0;
+					float thisDis = 0;
 					GeneralVector lengthVec = GeneralVector(dimensions);
 					lengthVec = groups[j].averageVal - arr[k];
 
@@ -1632,7 +1632,7 @@ namespace smpl
 			for(size_t j=0; j<groups.size(); j++)
 			{
 				GeneralVector avg = GeneralVector(dimensions);
-				double divVal = 1.0 / groups[j].clusters.size();
+				float divVal = 1.0 / groups[j].clusters.size();
 
 				for(GeneralVector c : groups[j].clusters)
 				{

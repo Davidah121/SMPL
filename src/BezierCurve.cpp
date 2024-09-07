@@ -605,6 +605,135 @@ namespace smpl
 		return finalTimes;
 	}
 
+	
+	bool BezierCurve::checkForPotentialSelfIntersection()
+	{
+		//check if the polyline intersects. O(N^2)
+		if(points.size() < 4)
+			return false;
+		
+		for(int i=0; i<points.size()-1; i++)
+		{
+			Line l1 = Line(points[i], points[i+1]);
+			for(int j=i+2; j<points.size()-1; j++)
+			{
+				Line l2 = Line(points[j], points[j+1]);
+				Vec2f intersectionPoint;
+				if(l1.getIntersection(l2, intersectionPoint))
+				{
+					double t1 = l1.getPointAsParamtetricValue(intersectionPoint);
+					double t2 = l2.getPointAsParamtetricValue(intersectionPoint);
+					if(t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1)
+						return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	
+	void BezierCurve::subdivideTillNoIntersection(BezierCurve c, double t1, double t2, std::vector<BezierCurve>& outputCurves, std::vector<std::pair<double, double>>& outputTimes)
+	{
+		if(c.checkForPotentialSelfIntersection())
+		{
+			std::vector<BezierCurve> splits = subdivide(0.5);
+			double midPoint = (t1+t2)/2;
+			subdivideTillNoIntersection(splits[0], t1, midPoint, outputCurves, outputTimes);
+			subdivideTillNoIntersection(splits[1], midPoint, t2, outputCurves, outputTimes);
+		}
+		else
+		{
+			outputCurves.push_back(c);
+			outputTimes.push_back({t1, t2});
+		}
+	}
+	
+	std::vector<double> BezierCurve::findSelfIntersection(double tolerance)
+	{
+		//check if it could even self intersect.
+		std::vector<BezierCurve> allCurves;
+		std::vector<std::pair<double, double>> timePointsForAllCurves;
+		
+		subdivideTillNoIntersection(*this, 0, 1, allCurves, timePointsForAllCurves);
+		if(allCurves.size() < 2)
+			return {};
+		
+		//for each bezier curve, check for collision
+		//To handle the cases where its the connection point, check derivative. Assume they won't match.
+		//or check the time point and if they are significantly different, assume its valid. (Different less than some epsilon means same point)
+		return {};
+	}
+	
+	std::vector<double> BezierCurve::findIntersectionPoints(BezierCurve& other, double tolerance)
+	{
+		std::vector<double> output;
+		//sanity check
+		if(size() < 2 || other.size() < 2)
+			return {};
+		
+		findIntersectionPoints(*this, other, tolerance, {0, 1}, output);
+		return output;
+	}
+	
+	void BezierCurve::findIntersectionPoints(BezierCurve c1, BezierCurve c2, double tolerance, std::pair<double, double> timePoints, std::vector<double>& output)
+	{
+		//get bounding boxes
+		std::vector<Vec2f> box1Corners = c1.getBoundingBox();
+		std::vector<Vec2f> box2Corners = c2.getBoundingBox();
+
+		//If they collide, its possible there is a collision. Otherwise, just return
+		bool possible = false;
+		if(box1Corners[0].x <= box2Corners[1].x && box1Corners[1].x >= box2Corners[0].x)
+			if(box1Corners[0].y <= box2Corners[1].y && box1Corners[1].y >= box2Corners[0].y)
+				possible = true;
+				
+		if(box2Corners[0].x <= box1Corners[1].x && box2Corners[1].x >= box1Corners[0].x)
+			if(box2Corners[0].y <= box1Corners[1].y && box2Corners[1].y >= box1Corners[0].y)
+				possible = true;
+		
+		if(!possible)
+			return;
+		
+		double area1 = MathExt::abs((box1Corners[1].x - box1Corners[0].x) * (box1Corners[1].y - box1Corners[1].y));
+		double area2 = MathExt::abs((box2Corners[1].x - box2Corners[0].x) * (box2Corners[1].y - box2Corners[1].y));
+		if(area1 < tolerance && area2 < tolerance)
+		{
+			//return the middle of the 2 time points
+			output.push_back((timePoints.first + timePoints.second)/2.0);
+			return;
+		}
+
+		//split each into 2. Repeat
+		std::vector<BezierCurve> split1;
+		std::vector<BezierCurve> split2;
+		std::vector<std::pair<double, double>> newTimePoints;
+		if(area1 < tolerance)
+		{
+			split1.push_back(c1);
+			newTimePoints.push_back(timePoints);
+		}
+		else
+		{
+			split1 = c1.subdivide(0.5);
+			double midPoint = (timePoints.first + timePoints.second)/2;
+			newTimePoints.push_back({timePoints.first, midPoint});
+			newTimePoints.push_back({midPoint, timePoints.second});
+		}
+		if(area2 < tolerance)
+			split2.push_back(c2);
+		else
+			split2 = c2.subdivide(0.5);
+
+
+		for(int i=0; i<split1.size(); i++)
+		{
+			for(int j=0; j<split2.size(); j++)
+			{
+				findIntersectionPoints(split1[i], split2[j], tolerance, newTimePoints[i], output);
+			}
+		}
+	}
+
 	Vec2f BezierCurve::blendPointsRecursive(int start, int end, double time)
 	{
 		if (start<end)

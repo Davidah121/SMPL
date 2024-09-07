@@ -153,7 +153,8 @@
 
 		void GLWindow::repaint()
 		{
-			swapBuffers();
+			threadRepaint();
+			// swapBuffers();
 		}
 
 		void GLWindow::disposeGL()
@@ -504,6 +505,18 @@
 			GLGraphics::setClearColor( Vec4f(0, 0, 0, 0) );
 			GLGraphics::clear(GLGraphics::COLOR_BUFFER | GLGraphics::DEPTH_BUFFER);
 			GLGraphics::setOrthoProjection(width, height);
+			
+			if(gui!=nullptr)
+			{
+				gui->resizeImage(width, height);
+				if(redrawGui)
+				{
+					gui->forceRedraw();
+					redrawGui = false;
+				}
+			}
+			resizing = false;
+			resizeMe = false;
 		}
 
 		bool GLWindow::threadRender()
@@ -518,6 +531,11 @@
 				}
 			}
 
+			if (paintFunction != nullptr)
+			{
+				paintFunction(this);
+				changed = true;
+			}
 			return changed;
 		}
 
@@ -532,11 +550,12 @@
 				return;
 			}
 
-			if(getResizeMe())
-			{
-				setResizeMe(false);
-				changed = true;
-			}
+			// if(getResizeMe())
+			// {
+			// 	setResizeMe(false);
+			// 	changed = true;
+			// }
+			changed |= mustRepaint;
 
 			if(windowState != STATE_MINIMIZED)
 			{
@@ -549,6 +568,7 @@
 
 				myMutex.lock();
 				shouldRepaint=false;
+				mustRepaint = false;
 				myMutex.unlock();
 			}
 		}

@@ -1,10 +1,11 @@
 #pragma once
+#include "BuildOptions.h"
 #include <iostream>
 #include <vector>
 
 namespace smpl
 {
-    class Cryptography
+    class DLL_OPTION Cryptography
     {
     public:
         /**

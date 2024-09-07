@@ -1,11 +1,12 @@
 #pragma once
+#include "BuildOptions.h"
 #include "Serializable.h"
 #include "GeneralVector.h"
 
 namespace smpl
 {
 		
-	class Vec2f : public SerializedObject
+	class DLL_OPTION Vec2f : public SerializedObject
 	{
 	public:
 		/**
@@ -14,7 +15,7 @@ namespace smpl
 		 * @param x 
 		 * @param y 
 		 */
-		Vec2f(double x, double y);
+		Vec2f(float x, float y);
 
 		/**
 		 * @brief Construct a new Vec2f object
@@ -33,36 +34,36 @@ namespace smpl
 		virtual const RootClass* getClass();
 		virtual std::unordered_map<std::string, SerializedData> getSerializedVariables();
 
-		double x = 0;
-		double y = 0;
+		float x = 0;
+		float y = 0;
 
 		/**
 		 * @brief Gets the X value for the vector
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getX();
+		float getX();
 
 		/**
 		 * @brief Gets the Y value for the vector
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getY();
+		float getY();
 
 		/**
 		 * @brief Sets the X value for the vector
 		 * 
 		 * @param value 
 		 */
-		void setX(double value);
+		void setX(float value);
 
 		/**
 		 * @brief Sets the Y value for the vector
 		 * 
 		 * @param value 
 		 */
-		void setY(double value);
+		void setY(float value);
 
 		/**
 		 * @brief Copies the values of another Vec2f
@@ -74,9 +75,9 @@ namespace smpl
 		/**
 		 * @brief Get the Length of the vector
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getLength();
+		float getLength();
 
 		/**
 		 * @brief Gets the normalized version of the vector.
@@ -85,6 +86,15 @@ namespace smpl
 		 * @return Vec2f 
 		 */
 		Vec2f normalize();
+
+		/**
+		 * @brief Computes the piecewise multiplication between
+		 * 		the 2 vectors
+		 * 
+		 * @param other 
+		 * @return Vec2f 
+		 */
+		Vec2f hadamardProduct(Vec2f other);
 		
 		Vec2f operator-(Vec2f other);
 		Vec2f operator+(Vec2f other);
@@ -92,52 +102,21 @@ namespace smpl
 		void operator+=(Vec2f other);
 		void operator-=(Vec2f other);
 
-		void operator*=(double other);
-		void operator/=(double other);
+		void operator*=(float other);
+		void operator/=(float other);
 
 		bool operator==(Vec2f other);
 		bool operator!=(Vec2f other);
 
 		Vec2f operator-();
 
-		Vec2f operator*(double value);
-		Vec2f operator/(double value);
+		Vec2f operator*(float value);
+		Vec2f operator/(float value);
 
-		friend Vec2f operator*(double value, Vec2f other)
+		friend Vec2f operator*(float value, Vec2f other)
 		{
 			return other*value;
 		}
-
-		//Converting into an array
-		/**
-		 * @brief Fills a float array of at least size 2 with the
-		 * 		x and y values.
-		 * 		
-		 * @param buffer 
-		 * 		Must be of size 2 or greater.
-		 */
-		void fillArray(float* buffer);
-
-		/**
-		 * @brief Fills a float array of at least size 2 with the
-		 * 		x and y values.
-		 * 		
-		 * @param buffer 
-		 * 		Must be of size 2 or greater.
-		 */
-		void fillArray(double* buffer);
-
-		/**
-		 * @brief Creates a new float array of size 2 and fills it
-		 * 		with the x and y values.
-		 */
-		float* convertToFloatArray();
-
-		/**
-		 * @brief Creates a new double array of size 2 and fills it
-		 * 		with the x and y values.
-		 */
-		double* convertToDoubleArray();
 
 		//casting to generic vector
 		/**

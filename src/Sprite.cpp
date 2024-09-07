@@ -140,6 +140,63 @@ namespace smpl
 			delete[] imgs;
 	}
 
+	
+	void Sprite::loadSpriteSheet(File file, int width, int height, int xStride, int yStride, int count, bool clear)
+	{
+		if(clear)
+			dispose();
+
+		int amountOfImages = 0;
+		Image** imgs = Image::loadImage(file, &amountOfImages);
+		
+		if(imgs == nullptr)
+			return;
+		
+		for (int i = 0; i < amountOfImages; i++)
+		{
+			Color* origPixels = imgs[i]->getPixels();
+			int origWidth = imgs[i]->getWidth();
+			int origHeight = imgs[i]->getHeight();
+			for(int y=0; y<imgs[i]->getHeight(); y+=height + yStride)
+			{
+				for(int x=0; x<imgs[i]->getWidth(); x+=width + xStride)
+				{
+					Image* extractedImg = new Image(width, height);
+					Color* extractedImgPixels = extractedImg->getPixels();
+
+					int maxWidthAllowed = ((origWidth - (x+width)) >= 0) ? width : (origWidth - (x+width));
+					int maxHeightAllowed = ((origHeight - (y + height)) >= 0) ? height : (origHeight - (y+height));
+					
+					for(int ty=0; ty<maxHeightAllowed; ty++)
+					{
+						for(int tx=0; tx<maxWidthAllowed; tx++)
+						{
+							extractedImgPixels[ty*width + tx] = origPixels[ty*origWidth + tx];
+						}
+					}
+					images.push_back(extractedImg);
+					delayTimeForFrame.push_back(0);
+
+					if(count > 0 && images.size() >= count)
+						break;
+				}
+
+				if(count > 0 && images.size() >= count)
+					break;
+			}
+
+			if(count > 0 && images.size() >= count)
+				break;
+		}
+		
+		if(imgs != nullptr)
+		{
+			for(int i=0; i<amountOfImages; i++)
+				delete imgs[i];
+			delete[] imgs;
+		}
+	}
+
 	bool Sprite::saveAGIF(File f, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold)
 	{
 		return Image::saveAGIF(f, images.data(), images.size(), delayTimeForFrame.data(), loops, paletteSize, dither, saveAlpha, alphaThreshold);

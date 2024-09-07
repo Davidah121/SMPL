@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include "ColorPalette.h"
 #include "File.h"
 #include "MathExt.h"
@@ -7,10 +8,10 @@
 namespace smpl
 {
 
-	class Image;
-	class HiResImage;
+	class DLL_OPTION Image;
+	class DLL_OPTION HiResImage;
 	
-	class Image : public Object
+	class DLL_OPTION Image : public Object
 	{
 	public:
 		const static int NONE = 0;
@@ -349,7 +350,7 @@ namespace smpl
 	};
 
 	//almost identical. Just load functions and storage
-	class HiResImage : public Object
+	class DLL_OPTION HiResImage : public Object
 	{
 	public:
 		const static int NONE = 0;

@@ -1,10 +1,11 @@
 #pragma once
+#include "BuildOptions.h"
 #include "VectorGraphic.h"
 
 namespace smpl
 {
 
-    class VectorSprite : public Object
+    class DLL_OPTION VectorSprite : public Object
     {
     public:
         /**

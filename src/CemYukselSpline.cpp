@@ -157,7 +157,7 @@ namespace smpl
 	Vec2f CemYukselSpline::circularFormulation(size_t index, double weight)
 	{
 		//Find the circle that fits all 3 points p[i-1] p[i] and p[i+1]
-		double normalizedWeight = weight / PI;
+		float normalizedWeight = weight / PI;
 		int indexI = (index-1+size()) % size(); //wraps around to the end if neccessary.
 		int indexJ = (index+1) % size(); //wraps around to the beginning if neccessary.
 

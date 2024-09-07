@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include <vector>
 #include "Vec2f.h"
 #include "Object.h"
@@ -7,7 +8,7 @@
 namespace smpl
 {
 
-	class BezierCurve : public Object
+	class DLL_OPTION BezierCurve : public Object
 	{
 	public:
 		/**
@@ -289,6 +290,29 @@ namespace smpl
 		std::vector<double> findTimeForPoint(double x, double y, bool removeDuplicates = false);
 
 		/**
+		 * @brief Finds the times at which this bezier curve intersects with the other bezier curve in space.
+		 * 		Approximates using an iterative method.
+		 * 		Tolerance refers to the smallest area of the bounding box for both curves needed to confirm collision.
+		 * 
+		 * @param other 
+		 * @param tolerance 
+		 * @return std::vector<double> 
+		 */
+		std::vector<double> findIntersectionPoints(BezierCurve& other, double tolerance);
+
+		/**
+		 * @brief Finds all points where the curve intersects itself.
+		 * 		Approximates using an iterative method.
+		 * 		The curve is subdivided and intersection is checked between the split parts.
+		 * 		Tolerance refers to the smallest area of the bounding box for both curves needed to confirm collision.
+		 * 
+		 * @param tolerance 
+		 * @return std::vector<double> 
+		 */
+		std::vector<double> findSelfIntersection(double tolerance); //TODO
+
+
+		/**
 		 * @brief Approximates a Circle using a series of bezier curves.
 		 * 		If cubic bezier curves are selected, 4 Cubic Bezier curves are used for approximation.
 		 * 		If quadratic bezier curves are selected, 8 Quadratic Bezier curves are used for approximation.
@@ -343,9 +367,13 @@ namespace smpl
 		
 		
 	private:
+		static void findIntersectionPoints(BezierCurve c1, BezierCurve c2, double tolerance, std::pair<double, double> timePoints, std::vector<double>& output);
 		Vec2f blendPointsRecursive(int start, int end, double time);
 		Vec2f blendPointsExplicit(double time);
 		Vec2f blendPointsDerivativeRecursive(int start, int end, double time);
+		bool checkForPotentialSelfIntersection();
+		void subdivideTillNoIntersection(BezierCurve c, double t1, double t2, std::vector<BezierCurve>& outputCurves, std::vector<std::pair<double, double>>& outputTimes);
+	
 
 		std::vector<Vec2f> points = std::vector<Vec2f>();
 	};

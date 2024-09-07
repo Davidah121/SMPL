@@ -50,15 +50,15 @@ namespace smpl
 		if(StringTools::equalsIgnoreCase<char>(node->getTitle(), "SpriteResource"))
 		{
 			//separate processing
-			HashPair<std::string, std::string>* idPair = node->getAttribute("id");
-			HashPair<std::string, std::string>* srcPair = node->getAttribute("src");
+			std::pair<std::string, std::string>* idPair = node->getAttribute("id");
+			std::pair<std::string, std::string>* srcPair = node->getAttribute("src");
 			if(idPair != nullptr && srcPair != nullptr )
 			{
 				//can probably load stuff
-				if(!idPair->data.empty() && !srcPair->data.empty())
+				if(!idPair->second.empty() && !srcPair->second.empty())
 				{
 					//Unless the file is incorrect, should be in the resource list something
-					GuiResourceManager::getResourceManager().addSprite(GraphicsInterface::createSprite(srcPair->data, graphicsInterfaceMode), idPair->data, false, false);
+					GuiResourceManager::getResourceManager().addSprite(GraphicsInterface::createSprite(srcPair->second, graphicsInterfaceMode), idPair->second, false, false);
 					return true;
 				}
 			}
@@ -68,15 +68,15 @@ namespace smpl
 		else if(StringTools::equalsIgnoreCase<char>(node->getTitle(), "FontResource"))
 		{
 			//separate processing
-			HashPair<std::string, std::string>* idPair = node->getAttribute("id");
-			HashPair<std::string, std::string>* srcPair = node->getAttribute("src");
+			std::pair<std::string, std::string>* idPair = node->getAttribute("id");
+			std::pair<std::string, std::string>* srcPair = node->getAttribute("src");
 			if(idPair != nullptr && srcPair != nullptr )
 			{
 				//can probably load stuff
-				if(!idPair->data.empty() && !srcPair->data.empty())
+				if(!idPair->second.empty() && !srcPair->second.empty())
 				{
 					//Unless the file is incorrect, should be in the resource list something
-					GuiResourceManager::getResourceManager().addFont(GraphicsInterface::createFont(srcPair->data, graphicsInterfaceMode), idPair->data, false, false);
+					GuiResourceManager::getResourceManager().addFont(GraphicsInterface::createFont(srcPair->second, graphicsInterfaceMode), idPair->second, false, false);
 					return true;
 				}
 			}
@@ -159,8 +159,8 @@ namespace smpl
 
 			if(wAttrib != nullptr && hAttrib != nullptr)
 			{
-				int w = StringTools::toInt(wAttrib->data);
-				int h = StringTools::toInt(hAttrib->data);
+				int w = StringTools::toInt(wAttrib->second);
+				int h = StringTools::toInt(hAttrib->second);
 				resizeImage(w, h);
 			}
 
@@ -203,8 +203,8 @@ namespace smpl
 
 			if(wAttrib != nullptr && hAttrib != nullptr)
 			{
-				int w = StringTools::toInt(wAttrib->data);
-				int h = StringTools::toInt(hAttrib->data);
+				int w = StringTools::toInt(wAttrib->second);
+				int h = StringTools::toInt(hAttrib->second);
 				resizeImage(w, h);
 			}
 			
@@ -394,7 +394,7 @@ namespace smpl
 		return rootLayout;
 	}
 	
-	std::vector< HashPair<std::string, SmartMemory<GuiItem>>* > GuiManager::getItemsByName(std::string name)
+	std::vector< std::pair<std::string, SmartMemory<GuiItem>>* > GuiManager::getItemsByName(std::string name)
 	{
 		return objectsByName.getAll(name);
 	}

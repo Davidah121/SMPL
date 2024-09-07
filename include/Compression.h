@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include <vector>
 #include <string>
 #include "Tree.h"
@@ -29,8 +30,8 @@ namespace smpl
 	struct lengthPair
 	{
 		bool literal;
-		int v1;	//if literal, this is the value else it is length
-		int v2;	//backwards distance if not literal; otherwise 0
+		unsigned int v1;	//if literal, this is the value else it is length
+		unsigned int v2;	//backwards distance if not literal; otherwise 0
 	};
 
 	struct streamSavedData
@@ -62,7 +63,7 @@ namespace smpl
 		};
 	};
 
-	class StreamCompressionRLE
+	class DLL_OPTION StreamCompressionRLE
 	{
 	public:
 		static const bool TYPE_COMPRESSION = false;
@@ -132,7 +133,7 @@ namespace smpl
 		
 	};
 
-	class StreamCompressionLZW
+	class DLL_OPTION StreamCompressionLZW
 	{
 	public:
 		static const bool TYPE_COMPRESSION = false;
@@ -249,7 +250,103 @@ namespace smpl
 		BinarySet leftovers = BinarySet();
 	};
 
-	class StreamCompressionLZSS
+	class DLL_OPTION StreamCompressionLZ77
+	{
+	public:
+		static const bool TYPE_COMPRESSION = false;
+		static const bool TYPE_DECOMPRESSION = true;
+
+		/**
+		 * @brief Construct a new Stream Compression LZ77 object.
+		 * 		Uses Chained Hashmaps for compression.
+		 * 
+		 * @param mode 
+		 * @param maxBackwardsDistance 
+		 * 		Maximum sliding window size.
+		 * 		Must be able to fit in 15 bits worth of data.
+		 * 		Default is 32768.
+		 * @param maxLength 
+		 * 		The maximum allowed length - 3.
+		 * 		If 0, max match length allowed is 3.
+		 * 		Default is 255 which allows a max match length of 258.
+		 */
+		StreamCompressionLZ77(bool mode, unsigned int maxBackwardsDistance = 32768, unsigned char maxLength = 255);
+
+		/**
+		 * @brief Destroy the Stream Compression LZSS object.
+		 * 
+		 */
+		~StreamCompressionLZ77();
+
+		/**
+		 * @brief Adds some data to be compressed.
+		 * 
+		 * @param data 
+		 * @param length 
+		 */
+		void addData(unsigned char* data, int length);
+
+		/**
+		 * @brief Signals the end of the data. Any data left over in the temporary buffer will
+		 * 		be processed.
+		 * 		Once set, no new data should be added.
+		 */
+		void endData();
+
+		/**
+		 * @brief Gets the Buffer of bytes saved by the object. This represents the compressed
+		 * 		data or decompressed data so far. It can be read from here and stored in another
+		 * 		place as necessary.
+		 * 		A vector of lengthPairs are used. Good as an intermediate form that can be converted
+		 * 		to LZSS, LZ77, DEFLATE, etc.
+		 * 		
+		 * 
+		 * @return std::vector<lengthPair>& 
+		 */
+		std::vector<lengthPair>& getBuffer();
+
+		/**
+		 * @brief Clears the internal buffer used that represents the compressed or decompressed data so far.
+		 * 
+		 */
+		void clearBuffer();
+
+		/**
+		 * @brief Returns the size of the internal buffer in bytes.
+		 * 		This will always be greater than or equal to the amount of bits actually used.
+		 * 		To get the number of bits used, get it from the getBuffer() function.
+		 * 
+		 * @return size_t 
+		 */
+		size_t size();
+
+	private:
+		void addDataCompression(unsigned char* data, int length);
+		void addDataDecompression(unsigned char* data, int length);
+
+		bool mode;
+
+		size_t startLoc = 0;
+		size_t offset = 0;
+		unsigned int maxBackDist = 32768;
+		unsigned int maxLength = 258;
+		unsigned short backBuffLocation = 0;
+
+		unsigned char delayedBuffer[8];
+		int delayedBufferSize = 0;
+		int startOfQueue = 0;
+		int currQueueIndex = 0;
+		
+		SearchState lastState;
+		SearchState searchState;
+
+		ChainedSuffixAutomaton* csa = nullptr;
+		std::vector<unsigned char> backBuffer = std::vector<unsigned char>();
+		std::vector<lengthPair> buffer = std::vector<lengthPair>();
+		lengthPair currPair;
+	};
+
+	class DLL_OPTION StreamCompressionLZSS
 	{
 	public:
 		static const bool TYPE_COMPRESSION = false;
@@ -355,7 +452,7 @@ namespace smpl
 		unsigned int leftoversSize = 0;
 	};
 
-	class Compression
+	class DLL_OPTION Compression
 	{
 	public:
 
@@ -836,7 +933,6 @@ namespace smpl
 		 * 		
 		 * 		This method will use multiple threads to compress to maintain reasonable speed unless the amount of blocks is 1.
 		 * 		Custom huffman trees are supported.
-		 * 		Uses a zlib header.
 		 * @param data
 		 * 		The data to decompress
 		 * @param size
@@ -854,7 +950,7 @@ namespace smpl
 		 * 		Slower but results in a unique table for each block and better compression.
 		 * 		Default value is false
 		 * @return std::vector<unsigned char>
-		 * 		If successful, returns a valid deflate stream using a zlib header as a std::vector<unsigned char>.
+		 * 		If successful, returns a valid deflate stream as a std::vector<unsigned char>.
 		 * 		Otherwise, returns an empty vector.
 		 */
 		static std::vector<unsigned char> compressDeflate(unsigned char* data, size_t size, int blocks, int compressionLevel = 7, bool customTable = false);
@@ -867,7 +963,6 @@ namespace smpl
 		 * 		
 		 * 		This method will use multiple threads to compress to maintain reasonable speed unless the amount of blocks is 1.
 		 * 		Custom huffman trees are supported.
-		 * 		Uses a zlib header.
 		 * @param data
 		 * 		The data to decompress
 		 * @param blocks
@@ -883,7 +978,7 @@ namespace smpl
 		 * 		Slower but results in a unique table for each block and better compression.
 		 * 		Default value is false
 		 * @return std::vector<unsigned char>
-		 * 		If successful, returns a valid deflate stream using a zlib header as a std::vector<unsigned char>.
+		 * 		If successful, returns a valid deflate stream as a std::vector<unsigned char>.
 		 * 		Otherwise, returns an empty vector.
 		 */
 		static std::vector<unsigned char> compressDeflate(std::vector<unsigned char> data, int blocks, int compressionLevel = 7, bool customTable = false);

@@ -20,6 +20,25 @@ namespace smpl
 		init(file.getFullFileName(), type);
 	}
 
+	SimpleFile::SimpleFile(SimpleFile&& other) noexcept
+	{
+		filename = other.filename;
+		type = other.type;
+		dataType = other.dataType;
+		size = other.size;
+		cFile = other.cFile;
+		other.cFile = nullptr;
+	}
+    void SimpleFile::operator=(SimpleFile&& other) noexcept
+	{
+		filename = other.filename;
+		type = other.type;
+		dataType = other.dataType;
+		size = other.size;
+		cFile = other.cFile;
+		other.cFile = nullptr;
+	}
+
 	void SimpleFile::init(std::string filename, char type)
 	{
 		this->type = type&0x0F;

@@ -1,5 +1,5 @@
 #pragma once
-
+#include "BuildOptions.h"
 #include "Image.h"
 #include "Shape.h"
 #include "Font.h"
@@ -7,7 +7,7 @@
 namespace smpl
 {
 	    
-    class SurfaceInterface
+    class DLL_OPTION SurfaceInterface
 	{
 	public:
 		static SurfaceInterface* createSoftwareSurface(int width, int height);
@@ -29,7 +29,7 @@ namespace smpl
 		int type = -1;
 	};
 
-	class ImageInterface
+	class DLL_OPTION ImageInterface
 	{
 	public:
 		static ImageInterface* createSoftwareImage(File f);
@@ -56,7 +56,7 @@ namespace smpl
 		int type = -1;
 	};
 
-	class SpriteInterface
+	class DLL_OPTION SpriteInterface
 	{
 	public:
 		static SpriteInterface* createSoftwareSprite(File f);
@@ -90,7 +90,7 @@ namespace smpl
 		int type = -1;
 	};
 
-	class FontInterface
+	class DLL_OPTION FontInterface
 	{
 	public:
 		static FontInterface* createSoftwareFont(File f);
@@ -112,7 +112,7 @@ namespace smpl
 		bool shouldDelete = true;
 	};
 
-	class GraphicsInterface
+	class DLL_OPTION GraphicsInterface
 	{
 	public:
 		static const unsigned char TYPE_SOFTWARE = 0;

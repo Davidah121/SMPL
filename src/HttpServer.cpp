@@ -26,11 +26,11 @@ namespace smpl
         config.type = Network::TYPE_SERVER;
         config.TCP = true;
         config.secure = useHTTPS;
-        conn = new Network(config);
+        conn = new Network(config, certificateFile, keyFile);
         conn->setTimeoutLength(knownTimeout);
 
-        jobPointers = std::map<size_t, SmartMemory<SLinkNode<std::function<void()>>>>();
-        jobSendPointers = std::map<size_t, SmartMemory<SLinkNode<std::function<void()>>>>();
+        jobPointers = std::map<size_t, size_t>();
+        jobSendPointers = std::map<size_t, size_t>();
 
         //setup connection functions
         conn->setOnConnectFunction([this](size_t id) -> void {
@@ -788,27 +788,10 @@ namespace smpl
     void HttpServer::staggeredSend(size_t id, File f, size_t startPoint, size_t endPoint)
     {
         this->jobMutex.lock();
-        this->jobSendPointers[id] = nullptr;
+        this->jobSendPointers.erase(id);
         this->jobMutex.unlock();
 
-        SimpleFile rawFile = SimpleFile(f, SimpleFile::READ);
-        if(!rawFile.isOpen())
-        {
-            return;
-        }
-
-        std::vector<unsigned char> buffer = std::vector<unsigned char>(rangeLimit);
-        rawFile.seek(startPoint);
-
-        size_t bytesWanted = (endPoint - startPoint)+1;
-        if(bytesWanted >= rangeLimit)
-            bytesWanted = rangeLimit;
-        
-        size_t bytesRead = rawFile.readBytes((char*)buffer.data(), bytesWanted);
-        rawFile.close();
-
-        int bytesSent = conn->sendMessage((char*)buffer.data(), bytesRead, id);
-
+        int bytesSent = conn->sendFile((char*)f.getFullFileName().c_str(), 1+endPoint-startPoint, startPoint, id);
         if(bytesSent < 0)
         {
             //problem

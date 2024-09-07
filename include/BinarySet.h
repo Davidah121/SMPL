@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include <vector>
 #include <cstddef>
 
@@ -8,7 +9,7 @@
 namespace smpl
 {
 
-	class BinarySet
+	class DLL_OPTION BinarySet
 	{
 		
 	public:

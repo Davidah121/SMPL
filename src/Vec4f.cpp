@@ -14,7 +14,7 @@ namespace smpl
 	{
 	}
 
-	Vec4f::Vec4f(double x, double y, double z, double w)
+	Vec4f::Vec4f(float x, float y, float z, float w)
 	{
 		this->x = x;
 		this->y = y;
@@ -22,7 +22,7 @@ namespace smpl
 		this->w = w;
 	}
 
-	Vec4f::Vec4f(Vec3f other, double w)
+	Vec4f::Vec4f(Vec3f other, float w)
 	{
 		this->x = other.x;
 		this->y = other.y;
@@ -30,7 +30,7 @@ namespace smpl
 		this->w = w;
 	}
 
-	Vec4f::Vec4f(Vec2f other, double z, double w)
+	Vec4f::Vec4f(Vec2f other, float z, float w)
 	{
 		this->x = other.x;
 		this->y = other.y;
@@ -47,42 +47,42 @@ namespace smpl
 		return {SERIALIZE_MAP(x), SERIALIZE_MAP(y), SERIALIZE_MAP(z), SERIALIZE_MAP(w)};
 	}
 
-	double Vec4f::getX()
+	float Vec4f::getX()
 	{
 		return x;
 	}
 
-	double Vec4f::getY()
+	float Vec4f::getY()
 	{
 		return y;
 	}
 
-	double Vec4f::getZ()
+	float Vec4f::getZ()
 	{
 		return z;
 	}
 
-	double Vec4f::getW()
+	float Vec4f::getW()
 	{
 		return w;
 	}
 
-	void Vec4f::setX(double value)
+	void Vec4f::setX(float value)
 	{
 		x = value;
 	}
 
-	void Vec4f::setY(double value)
+	void Vec4f::setY(float value)
 	{
 		y = value;
 	}
 
-	void Vec4f::setZ(double value)
+	void Vec4f::setZ(float value)
 	{
 		z = value;
 	}
 
-	void Vec4f::setW(double value)
+	void Vec4f::setW(float value)
 	{
 		w = value;
 	}
@@ -113,14 +113,14 @@ namespace smpl
 		return Vec3f(x,y,z);
 	}
 
-	double Vec4f::getLength()
+	float Vec4f::getLength()
 	{
 		return std::sqrt((x*x) + (y*y) + (z*z) + (w*w));
 	}
 
 	Vec4f Vec4f::normalize()
 	{
-		double length = getLength();
+		float length = getLength();
 		if(length!=0)
 			return Vec4f(x/length, y/length, z/length, w/length);
 		else
@@ -137,7 +137,7 @@ namespace smpl
 		return Vec4f(x + other.x, y + other.y, z + other.z, w + other.w);
 	}
 
-	Vec4f Vec4f::operator*(double other)
+	Vec4f Vec4f::operator*(float other)
 	{
 		return Vec4f(x*other, y*other, z*other, w*other);
 	}
@@ -173,14 +173,14 @@ namespace smpl
 		w -= other.w;
 	}
 
-	void Vec4f::operator*=(double other)
+	void Vec4f::operator*=(float other)
 	{
 		x *= other;
 		y *= other;
 		z *= other;
 		w *= other;
 	}
-	void Vec4f::operator/=(double other)
+	void Vec4f::operator/=(float other)
 	{
 		x /= other;
 		y /= other;
@@ -188,35 +188,11 @@ namespace smpl
 		w /= other;
 	}
 
-	Vec4f Vec4f::operator/(double other)
+	Vec4f Vec4f::operator/(float other)
 	{
 		return Vec4f(x / other, y / other, z / other, w / other);
 	}
-
-	void Vec4f::fillArray(float* buffer)
-	{
-		buffer[0] = (float)x;
-		buffer[1] = (float)y;
-		buffer[2] = (float)z;
-		buffer[3] = (float)w;
-	}
-	void Vec4f::fillArray(double* buffer)
-	{
-		buffer[0] = x;
-		buffer[1] = y;
-		buffer[2] = z;
-		buffer[3] = w;
-	}
-
-	float* Vec4f::convertToFloatArray()
-	{
-		return new float[4] {(float)x, (float)y, (float)z, (float)z};
-	}
-	double* Vec4f::convertToDoubleArray()
-	{
-		return new double[4] {x, y, z, w};
-	}
-
+	
 	GeneralVector Vec4f::toGeneralVector()
 	{
 		return (GeneralVector)* this;

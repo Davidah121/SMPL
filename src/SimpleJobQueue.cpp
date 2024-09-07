@@ -7,16 +7,18 @@ namespace smpl
     {
         running = true;
         jobThreads = std::vector<std::thread*>(threads);
+        jobsInProgress = std::vector<size_t>(threads);
         
         for(int i=0; i<jobThreads.size(); i++)
         {
+            jobsInProgress[i] = SIZE_MAX;
             jobThreads[i] = new std::thread(&SimpleJobQueue::threadRun, this, i);
         }
     }
     
     SimpleJobQueue::~SimpleJobQueue()
     {
-        jobQueueMutex.lock();
+        jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
         running = false;
         jobQueueMutex.unlock();
 
@@ -27,53 +29,102 @@ namespace smpl
         }
 
         jobThreads.clear();
+        jobsInProgress.clear();
+        jobID = 0;
     }
 
-    SmartMemory<SLinkNode<std::function<void()>>> SimpleJobQueue::addJob(std::function<void()> j)
+    size_t SimpleJobQueue::addJob(std::function<void()> j)
     {
-        importantMutex.lock();
-        SmartMemory<SLinkNode<std::function<void()>>> node = jobs.add(j);
-        importantMutex.unlock();
-        cv.notify_one();
-        return node;
+        JobInfo info;
+        info.func = j;
+        jobQueueMutex.lock(HybridSpinLock::MODE_AGRESSIVE);
+        info.ID = jobID++;
+        jobs.add(info);
+        jobQueueMutex.unlock();
+        return info.ID;
     }
     
 
-    void SimpleJobQueue::removeJob(SmartMemory<SLinkNode<std::function<void()>>> n)
+    void SimpleJobQueue::removeJob(size_t ID)
     {
-        importantMutex.lock();
-        jobs.erase(n);
-        importantMutex.unlock();
+        JobInfo info;
+        info.ID = ID;
+
+        jobQueueMutex.lock(HybridSpinLock::MODE_AGRESSIVE);
+        jobs.erase(info);
+        jobQueueMutex.unlock();
     }
 
+    bool SimpleJobQueue::jobDone(size_t ID)
+    {
+        bool found = false;
+        jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
+
+        //check if its in the list of inprogress functions
+        for(int i=0; i<jobsInProgress.size(); i++)
+        {
+            if(jobsInProgress[i] == ID)
+            {
+                found = true;
+                break;
+            }
+        }
+        if(found)
+        {
+            jobQueueMutex.unlock();
+            return false;
+        }
+        
+        //check if its in the list of remaining functions
+        if(jobs.find({ID, nullptr}))
+        {
+            jobQueueMutex.unlock();
+            return false;
+        }
+
+        jobQueueMutex.unlock();
+        return true;
+    }
+    
+    bool SimpleJobQueue::allJobsDone()
+    {
+        bool finishedEverything = true;
+        jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
+        for(int i=0; i<jobsInProgress.size(); i++)
+        {
+            if(jobsInProgress[i] != SIZE_MAX)
+            {
+                finishedEverything = false;
+                break;
+            }
+        }
+        
+        if(jobs.size() > 0)
+            finishedEverything = false;
+        
+        jobQueueMutex.unlock();
+        return finishedEverything;
+    }
     
     void SimpleJobQueue::removeAllJobs()
     {
-        importantMutex.lock();
+        jobQueueMutex.lock(HybridSpinLock::MODE_AGRESSIVE);
         jobs.clear();
-        importantMutex.unlock();
+        jobQueueMutex.unlock();
     }
     
     bool SimpleJobQueue::getRunning()
     {
-        jobQueueMutex.lock();
+        jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
         bool res = running;
         jobQueueMutex.unlock();
         return res;
     }
 
-    void SimpleJobQueue::clearAllJobs()
+    void SimpleJobQueue::waitForAllJobs()
     {
-        while(true)
+        while(!allJobsDone())
         {
-            importantMutex.lock();
-            //check if there is something in the job queue.
-            bool jobQueueEmpty = jobs.empty();
-            importantMutex.unlock();
-
-            if(jobQueueEmpty)
-                break;
-            
             //Otherwise, wait.
             System::sleep(1, 0, false);
         }
@@ -82,48 +133,42 @@ namespace smpl
     void SimpleJobQueue::threadRun(int id)
     {
         bool knownToHaveMoreWork = false;
-        std::mutex waitMutex;
-
-        while(true)
+        while(getRunning())
         {
-            if(!getRunning())
-                break;
-            
-            if(!knownToHaveMoreWork)
-            {
-                std::unique_lock<std::mutex> ulock(waitMutex);
-                cv.wait_for(ulock, std::chrono::milliseconds(1));
-            }
-            
             //try to get a job from the queue
-            std::function<void()> execJob = nullptr;
-            importantMutex.lock();
-            if(!jobs.empty())
+            JobInfo node;
+
+            if(!knownToHaveMoreWork)
+                System::sleep(1, 0, false);
+            
+            jobQueueMutex.lock(HybridSpinLock::MODE_STANDARD);
+            if(jobs.size() > 0)
             {
                 //get job and remove from queue. Mark as busy
-                SmartMemory<SLinkNode<std::function<void()>>> node = jobs.get();
-                if(node.getPointer() != nullptr)
-                {
-                    execJob = node.getRawPointer()->value;
-                }
-                jobs.pop();
+                node = jobs.get();
+                jobs.popFront();
+                jobsInProgress[id] = node.ID;
             }
 
-            knownToHaveMoreWork = !jobs.empty();
-            importantMutex.unlock();
+            knownToHaveMoreWork = jobs.size() > 0;
+            jobQueueMutex.unlock();
 
             //execute job if we got one
-            if(execJob != nullptr)
+            if(node.ID != SIZE_MAX && node.func != nullptr)
             {
-                execJob();
+                node.func();
             }
+            
+            jobQueueMutex.lock(HybridSpinLock::MODE_STANDARD);
+            jobsInProgress[id] = SIZE_MAX;
+            jobQueueMutex.unlock();
         }
     }
     
     bool SimpleJobQueue::hasJobs()
     {
         jobQueueMutex.lock();
-        bool v = jobs.empty();
+        bool v = jobs.size() != 0;
         jobQueueMutex.unlock();
         return !v;
     }

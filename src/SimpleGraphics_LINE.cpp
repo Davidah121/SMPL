@@ -2,6 +2,8 @@
 
 namespace smpl
 {
+	#if (OPTI == 0)
+
 	void SimpleGraphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 	{
 		// int currentComposite = compositeRule;
@@ -63,62 +65,12 @@ namespace smpl
 
 				Color* startPoint = surf->getPixels() + minX + (surf->getWidth()*y1);
 				Color* endPoint = surf->getPixels() + maxX + (surf->getWidth()*y1);
-				
-				#if (OPTI >= 2)
-					int avxWidth = (1+maxX-minX) >> 3;
-					int remainder = (1+maxX-minX) - (avxWidth << 3);
 
-					__m256i* avxStart = (__m256i*)startPoint;
-					__m256i* avxEnd = avxStart + avxWidth;
-					__m256i avxColor = _mm256_set1_epi32( *((int*)&activeColor) );
-
-					while(avxStart < avxEnd)
-					{
-						__m256i srcColor = _mm256_loadu_si256(avxStart);
-						__m256i outputColor = blend(avxColor, srcColor);
-						_mm256_storeu_si256(avxStart, outputColor);
-						avxStart++;
-					}
-
-					//fill remainder
-					startPoint += avxWidth << 3;
-					for(int i=0; i<remainder; i++)
-					{
-						*startPoint = blend(activeColor, *startPoint);
-						startPoint++;
-					}
-
-				#elif (OPTI >= 1)
-
-					int sseWidth = (1+maxX-minX) >> 2;
-					int remainder = (1+maxX-minX) - (sseWidth << 2);
-
-					__m128i* sseStart = (__m128i*)startPoint;
-					__m128i* sseEnd = sseStart + sseWidth;
-					__m128i sseColor = _mm_set1_epi32( *((int*)&activeColor) );
-
-					while(sseStart < sseEnd)
-					{
-						__m128i srcColor = _mm_loadu_si128(sseStart);
-						__m128i outputColor = blend(sseColor, srcColor);
-						_mm_storeu_si128(sseStart, outputColor);
-						sseStart++;
-					}
-
-					//fill remainder
-					startPoint += sseWidth << 2;
-					for(int i=0; i<remainder; i++)
-					{
-						*startPoint = blend(activeColor, *startPoint);
-						startPoint++;
-					}
-				#else
-					while(startPoint <= endPoint)
-					{
-						*startPoint = blend(activeColor, *startPoint);
-						startPoint++;
-					}
-				#endif
+				while(startPoint <= endPoint)
+				{
+					*startPoint = blend(activeColor, *startPoint);
+					startPoint++;
+				}
 			}
 			else if(dx == 0 && dy != 0)
 			{
@@ -372,4 +324,5 @@ namespace smpl
 
 	}
     
+	#endif
 } //NAMESPACE glib END

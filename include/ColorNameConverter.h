@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include <iostream>
 #include <unordered_map>
 #include "ColorPalette.h"
@@ -6,7 +7,7 @@
 namespace smpl
 {
 
-	class ColorNameConverter
+	class DLL_OPTION ColorNameConverter
 	{
 	public:
 

@@ -64,10 +64,9 @@ namespace smpl
 				index++;
 			}
             unsigned char c = delayedBuffer[currQueueIndex];
-			currQueueIndex = (currQueueIndex + 1) % 8;
-
 			bool foundMatch = csa->searchNext(c);
 			searchState = csa->extractSearch();
+			currQueueIndex = (currQueueIndex + 1) % 8;
 
             if(foundMatch && searchState.length != maxLength)
             {

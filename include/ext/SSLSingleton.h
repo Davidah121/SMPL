@@ -35,6 +35,7 @@ namespace smpl
             OpenSSL_add_all_algorithms();
             ssl_ctx = SSL_CTX_new(TLS_method());
             SSL_CTX_set_mode(ssl_ctx, SSL_MODE_ENABLE_PARTIAL_WRITE);
+            // SSL_CTX_set_options(ssl_ctx, SSL_OP_ENABLE_KTLS);
             
         }
 

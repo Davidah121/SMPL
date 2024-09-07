@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 
 #ifndef NO_GAME_INPUT
 
@@ -32,8 +33,7 @@
 				LPDIRECTINPUTDEVICE8 gamepadDevice;
 			};
 
-
-			class GamepadDInput
+			class DLL_OPTION GamepadDInput
 			{
 			public:
 

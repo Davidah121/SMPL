@@ -1,13 +1,35 @@
-import numpy as np
 
-def convolution2d(image, kernel, bias):
-    m, n = kernel.shape
-    if (m == n):
-        y, x = image.shape
-        y = y - m + 1
-        x = x - m + 1
-        new_image = np.zeros((y,x))
-        for i in range(y):
-            for j in range(x):
-                new_image[i][j] = np.sum(image[i:i+m, j:j+m]*kernel) + bias
-    return new_image
+# Python program to illustrate  
+# adaptive thresholding type on an image 
+       
+# organizing imports  
+import cv2  
+import numpy as np  
+   
+# path to input image is specified and   
+# image is loaded with imread command  
+image1 = cv2.imread('contourStuff/artifact.png')  
+   
+# cv2.cvtColor is applied over the 
+# image input with applied parameters 
+# to convert the image in grayscale  
+img = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY) 
+   
+# applying different thresholding  
+# techniques on the input image 
+thresh1 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, 
+                                          cv2.THRESH_BINARY, 199, 5) 
+  
+thresh2 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+                                          cv2.THRESH_BINARY, 199, 5) 
+  
+# the window showing output images 
+# with the corresponding thresholding  
+# techniques applied to the input image 
+cv2.imshow('Adaptive Mean', thresh1) 
+cv2.imshow('Adaptive Gaussian', thresh2) 
+  
+     
+# De-allocate any associated memory usage   
+if cv2.waitKey(0) & 0xff == 27:  
+    cv2.destroyAllWindows()  

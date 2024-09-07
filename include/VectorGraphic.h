@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include<vector>
 #include<map>
 #include "Image.h"
@@ -17,7 +18,7 @@ namespace smpl
 		bool horizontal;
 	};
 
-	class VectorShape : public Object
+	class DLL_OPTION VectorShape : public Object
 	{
 	public:
 		/**
@@ -240,7 +241,7 @@ namespace smpl
 		Mat3f transform = Mat3f();
 	};
 
-	class VectorRectangle : public VectorShape
+	class DLL_OPTION VectorRectangle : public VectorShape
 	{
 	public:
 		/**
@@ -403,7 +404,7 @@ namespace smpl
 
 	};
 
-	class VectorCircle : public VectorShape
+	class DLL_OPTION VectorCircle : public VectorShape
 	{
 	public:
 
@@ -514,7 +515,7 @@ namespace smpl
 		
 	};
 
-	class VectorEllipse : public VectorShape
+	class DLL_OPTION VectorEllipse : public VectorShape
 	{
 	public:
 
@@ -640,7 +641,7 @@ namespace smpl
 		
 	};
 
-	class VectorLine : public VectorShape
+	class DLL_OPTION VectorLine : public VectorShape
 	{
 	public:
 
@@ -765,7 +766,7 @@ namespace smpl
 		double y2 = 0;
 	};
 
-	class VectorPolyline : public VectorShape
+	class DLL_OPTION VectorPolyline : public VectorShape
 	{
 	public:
 
@@ -888,7 +889,7 @@ namespace smpl
 		std::vector<Vec2f> points = std::vector<Vec2f>();
 	};
 
-	class VectorPolygon : public VectorShape
+	class DLL_OPTION VectorPolygon : public VectorShape
 	{
 	public:
 
@@ -1013,7 +1014,7 @@ namespace smpl
 		std::vector<Vec2f> points;
 	};
 
-	class VectorPath : public VectorShape
+	class DLL_OPTION VectorPath : public VectorShape
 	{
 	public:
 
@@ -1475,7 +1476,7 @@ namespace smpl
 		void copy(VectorPath& other);
 	};
 
-	class VectorGraphic : public Object
+	class DLL_OPTION VectorGraphic : public Object
 	{
 	public:
 

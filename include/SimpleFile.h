@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
@@ -12,7 +13,7 @@
 namespace smpl
 {
 
-	class SimpleFile
+	class DLL_OPTION SimpleFile
 	{
 
 	public:
@@ -60,6 +61,27 @@ namespace smpl
 		 * 			UTF8
 		 */
 		SimpleFile(File file, char type);
+
+		/**
+		 * @brief Construct a new Simple File object
+		 * 		It will be empty and invalid. Useful for subclasses
+		 * 
+		 */
+		SimpleFile();
+
+		/**
+		 * @brief Move constructor for a Simple File Object.
+		 * 
+		 * @param other 
+		 */
+		SimpleFile(SimpleFile&& other) noexcept;
+
+		/**
+		 * @brief Move Assignment for a Simple File Object.
+		 * 
+		 * @param other 
+		 */
+    	void operator=(SimpleFile&& other) noexcept;
 
 		/**
 		 * @brief Destroy the SimpleFile object
@@ -311,12 +333,6 @@ namespace smpl
 		size_t getBytesLeft();
 
 	protected:
-		/**
-		 * @brief Construct a new Simple File object
-		 * 		It will be empty and invalid. Useful for subclasses
-		 * 
-		 */
-		SimpleFile();
 
 		void init(std::string filename, char type);
 		void init(FILE* openFilePointer, std::string filename, char type);
@@ -328,7 +344,6 @@ namespace smpl
 		char type=0;
 		char dataType=0;
 		FILE* cFile = nullptr;
-		// std::fstream* file = nullptr;
 		size_t size;
 		
 	};
