@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include <vector>
 #include <string>
 #include <unordered_set>
@@ -8,12 +9,12 @@
 namespace smpl
 {
 	// class Class;
-	class ClassMaster;
-	class RootClass;
+	class DLL_OPTION ClassMaster;
+	class DLL_OPTION RootClass;
 
-	std::string demangleClassName(std::string name);
+	DLL_OPTION std::string demangleClassName(std::string name);
 
-	class RootClass
+	class DLL_OPTION RootClass
 	{
 	public:
 
@@ -53,7 +54,7 @@ namespace smpl
 		std::unordered_set<const RootClass*> parentClasses; //Stores name of parent classes. May not exist
 	};
 
-	class ClassMaster
+	class DLL_OPTION ClassMaster
 	{
 	public:
 		struct InvalidClassName : public std::exception

@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include "BinaryTree.h"
 
 namespace smpl

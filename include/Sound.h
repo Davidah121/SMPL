@@ -1,11 +1,12 @@
 #pragma once
+#include "BuildOptions.h"
 #include "Vec2f.h"
 #include "File.h"
 
 namespace smpl
 {
 
-	class Sound
+	class DLL_OPTION Sound
 	{
 	public:
 

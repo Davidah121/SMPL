@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include "Image.h"
 #include "Object.h"
 #include "MathExt.h"
@@ -20,7 +21,7 @@ namespace smpl
 		int yOffset = 0;
 	};
 
-	class Font : public Object
+	class DLL_OPTION Font : public Object
 	{
 	public:
 		/**

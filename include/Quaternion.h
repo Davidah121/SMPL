@@ -1,11 +1,12 @@
 #pragma once
+#include "BuildOptions.h"
 #include "Serializable.h"
 #include "Vec4f.h"
 
 namespace smpl
 {
 
-    class Quaternion : public SerializedObject
+    class DLL_OPTION Quaternion : public SerializedObject
     {
     public:
         /**

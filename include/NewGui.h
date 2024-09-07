@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 
 #include "GraphicsExt.h"
 #include "ColorNameConverter.h"
@@ -23,22 +24,22 @@ namespace smpl
 {
 
     #pragma region BASE_GUI_CLASSES
-    class GuiManager;
-    class GuiItem;
+    class DLL_OPTION GuiManager;
+    class DLL_OPTION GuiItem;
 
-    bool loadValueFromAttrib(int8_t& value, std::string data);
-    bool loadValueFromAttrib(uint8_t& value, std::string data);
-    bool loadValueFromAttrib(int16_t& value, std::string data);
-    bool loadValueFromAttrib(uint16_t& value, std::string data);
-    bool loadValueFromAttrib(int32_t& value, std::string data);
-    bool loadValueFromAttrib(uint32_t& value, std::string data);
-    bool loadValueFromAttrib(int64_t& value, std::string data);
-    bool loadValueFromAttrib(uint64_t& value, std::string data);
-    bool loadValueFromAttrib(double& value, std::string data);
+    DLL_OPTION bool loadValueFromAttrib(int8_t& value, std::string data);
+    DLL_OPTION bool loadValueFromAttrib(uint8_t& value, std::string data);
+    DLL_OPTION bool loadValueFromAttrib(int16_t& value, std::string data);
+    DLL_OPTION bool loadValueFromAttrib(uint16_t& value, std::string data);
+    DLL_OPTION bool loadValueFromAttrib(int32_t& value, std::string data);
+    DLL_OPTION bool loadValueFromAttrib(uint32_t& value, std::string data);
+    DLL_OPTION bool loadValueFromAttrib(int64_t& value, std::string data);
+    DLL_OPTION bool loadValueFromAttrib(uint64_t& value, std::string data);
+    DLL_OPTION bool loadValueFromAttrib(double& value, std::string data);
 
-    Color loadColor(std::string data);
+    DLL_OPTION Color loadColor(std::string data);
 
-    class GuiResourceManager
+    class DLL_OPTION GuiResourceManager
 	{
 	public:
 		~GuiResourceManager();
@@ -91,7 +92,7 @@ namespace smpl
      *          has a parent. These are updated by the function fixPosition() which is called during the preUpdate() function.
      * 
      */
-    class GuiItem : public Object
+    class DLL_OPTION GuiItem : public Object
     {
     public:
         static const unsigned char TYPE_EMPTY = 0;
@@ -339,7 +340,7 @@ namespace smpl
      *      The first update is used for things like initialization.
      *      Rendering is not done on the first update but on subsequent calls.
      */
-    class GuiContent : public GuiItem
+    class DLL_OPTION GuiContent : public GuiItem
     {
     public:
         GuiContent();
@@ -361,7 +362,7 @@ namespace smpl
      *      This is equivalent to a GuiContent with no rendering or update functionality.
      * 
      */
-    class GuiEmpty : public GuiItem
+    class DLL_OPTION GuiEmpty : public GuiItem
     {
     public:
         GuiEmpty();
@@ -401,7 +402,7 @@ namespace smpl
      * 
      *      Any layout that does not have a parent is positioned in an absolute manner instead of a relative manner.
      */
-    class GuiLayout : public GuiItem
+    class DLL_OPTION GuiLayout : public GuiItem
     {
     public:
         GuiLayout();
@@ -494,7 +495,7 @@ namespace smpl
      *      This layout is considered special since it is almost equivalent to its children not having a parent.
      * 
      */
-    class GuiLayoutFixed : public GuiLayout
+    class DLL_OPTION GuiLayoutFixed : public GuiLayout
     {
     public:
         GuiLayoutFixed();
@@ -520,7 +521,7 @@ namespace smpl
      *      This layout has 2 options. Whether it is a horizontal or vertical list and whether it is allowed to wrap around.
      * 
      */
-    class GuiLayoutList : public GuiLayout
+    class DLL_OPTION GuiLayoutList : public GuiLayout
     {
     public:
         static const bool DIRECTION_VERTICAL = false;
@@ -564,7 +565,7 @@ namespace smpl
      *      It is possible to show the border that make up the table. This can be set using the setShowInnerGrid() function.
      *      Also, the table can have additional padding for the cells.
      */
-    class GuiLayoutTable : public GuiLayout
+    class DLL_OPTION GuiLayoutTable : public GuiLayout
     {
     public:
         GuiLayoutTable(uint16_t numColumns);
@@ -605,7 +606,7 @@ namespace smpl
 
     #pragma region STANDARD_GUI_ELEMENTS
 
-    class GuiButton : public GuiLayoutList
+    class DLL_OPTION GuiButton : public GuiLayoutList
     {
     public:
         GuiButton();
@@ -642,7 +643,7 @@ namespace smpl
         std::function<void()> onMouseOutFunc = nullptr;
     };
 
-    class GuiText : public GuiContent
+    class DLL_OPTION GuiText : public GuiContent
     {
     public:
         GuiText();
@@ -694,7 +695,7 @@ namespace smpl
         Color highlightColor = {64,128,255,128};
     };
 
-    class GuiSprite : public GuiContent
+    class DLL_OPTION GuiSprite : public GuiContent
     {
     public:
         GuiSprite();
@@ -736,7 +737,7 @@ namespace smpl
         Color imgColor = {255,255,255,255};
     };
     
-    class GuiCanvas : public GuiLayoutFixed
+    class DLL_OPTION GuiCanvas : public GuiLayoutFixed
     {
     public:
         GuiCanvas();
@@ -769,7 +770,7 @@ namespace smpl
         Color drawColor = {255, 255, 255, 255};
     };
 
-    class GuiTextBox : public GuiLayoutList
+    class DLL_OPTION GuiTextBox : public GuiLayoutList
     {
     public:
         GuiTextBox();
@@ -807,7 +808,7 @@ namespace smpl
         GuiText textElement = GuiText();
     };
 
-    class GuiScrollBar : public GuiLayoutFixed
+    class DLL_OPTION GuiScrollBar : public GuiLayoutFixed
     {
     public:
         GuiScrollBar();
@@ -833,7 +834,7 @@ namespace smpl
         GuiButton verticalScrollButton;
     };
 
-    class GuiDatePicker : public GuiContent
+    class DLL_OPTION GuiDatePicker : public GuiContent
     {
 
     };
@@ -842,7 +843,7 @@ namespace smpl
 
     #pragma region GUI_MANAGER
 
-    class GuiManager : public Object
+    class DLL_OPTION GuiManager : public Object
     {
     public:
         GuiManager(unsigned char type);
@@ -1008,9 +1009,9 @@ namespace smpl
 		 * @brief Gets a list of GuiInstances with the specified name/id.
 		 * 
 		 * @param name 
-		 * @return std::vector<HashPair<std::string, SmartMemory<GuiItem>>*> 
+		 * @return std::vector<std::pair<std::string, SmartMemory<GuiItem>>*> 
 		 */
-		std::vector< HashPair<std::string, SmartMemory<GuiItem>>* > getItemsByName(std::string name);
+		std::vector< std::pair<std::string, SmartMemory<GuiItem>>* > getItemsByName(std::string name);
 
         /**
 		 * @brief Loads a series of GuiInstances from a file. All instances loaded from the file are managed by the

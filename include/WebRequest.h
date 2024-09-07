@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
@@ -11,7 +12,7 @@
 
 namespace smpl
 {
-	class WebRequest
+	class DLL_OPTION WebRequest
 	{
 		public:
 			static const unsigned int TYPE_GET = 0x01;
@@ -31,8 +32,9 @@ namespace smpl
 			WebRequest(std::vector<unsigned char> buffer);
 
 			WebRequest(WebRequest& other);
-			void operator=(WebRequest other);
 			void operator=(WebRequest& other);
+			WebRequest(WebRequest&& other) noexcept;
+			void operator=(WebRequest&& other) noexcept;
 			
 			/**
 			 * @brief Reads values and sets up the web request.

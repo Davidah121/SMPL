@@ -1,3 +1,4 @@
+#pragma once
 //TODO: Implement
 #include "Tree.h"
 #include "Shape.h"
@@ -155,11 +156,12 @@ namespace smpl
             }
             else
             {
+                //TODO: Fix this.....
                 //try to insert into it's children
-                for(int j=0; j<currNode->children.size(); j++)
-                {
-                    insertRecursive(x1, y1, x2, y2, currNode->data.children[i], currNode->children[j]);
-                }
+                // for(int j=0; j<currNode->children.size(); j++)
+                // {
+                //     insertRecursive(x1, y1, x2, y2, currNode->data.children[i], currNode->children[j]);
+                // }
             }
         }
     }

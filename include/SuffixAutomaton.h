@@ -1,9 +1,12 @@
 #pragma once
+#include "BuildOptions.h"
 #include <vector>
 #include <iostream>
 #include <cstring>
 #include <cstdio>
 #include <array>
+#include <unordered_map>
+#include "SimpleHashMap.h"
 
 #ifndef __max
 #define __max(a, b) (((a) >= (b)) ? (a) : (b))
@@ -32,7 +35,7 @@ namespace smpl
         unsigned short map[256];
     };
 
-    class SuffixAutomaton
+    class DLL_OPTION SuffixAutomaton
     {
     public:
         /**
@@ -44,7 +47,7 @@ namespace smpl
          * @param s
          *      The expected size of the string.
          *      Used to initialize the state array.
-         *      Can be larger than the expected string size but can never be smaller otherwise, an error occurs.
+         *      Can be larger than the expected string size but can never be smaller otherwise, an error could occur.
          */
         SuffixAutomaton(size_t s);
 
@@ -148,7 +151,7 @@ namespace smpl
         SFA_State* states = nullptr;
     };
 
-    class ShortSuffixAutomaton
+    class DLL_OPTION ShortSuffixAutomaton
     {
     public:
         /**
@@ -276,7 +279,7 @@ namespace smpl
         std::vector<int> offsets;
         std::vector<ShortSuffixAutomaton*> SAs;
         std::vector<int> searchStates;
-        int lastGoodState = 0;
+        
         SearchState currMatch;
     };
 

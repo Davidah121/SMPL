@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 
 #ifndef NO_SOCKETS
 
@@ -24,7 +25,7 @@
 			bool buffer = false;
 		};
 
-		class WebSocket
+		class DLL_OPTION WebSocket
 		{
 		public:
 			static const bool TYPE_CLIENT = smpl::Network::TYPE_CLIENT;
@@ -74,7 +75,7 @@
 			std::vector< ClientInfo > clients;
 			size_t clientsConnected = 0;
 			smpl::LCG maskRandom = smpl::LCG();
-			std::mutex optMutex;
+			HybridSpinLock optMutex;
 			std::string location;
 			int port;
 			std::vector<unsigned int> websocketKey;

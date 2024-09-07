@@ -234,10 +234,16 @@ namespace smpl
 						double v1 = (q1[y2][x2]+jpegData.precisionSub)/jpegData.precisionDiv;
 						double v2 = (q2[chromaY+offY][chromaX+offX]+jpegData.precisionSub)/jpegData.precisionDiv;
 						double v3 = (q3[chromaY+offY][chromaX+offX]+jpegData.precisionSub)/jpegData.precisionDiv;
+						if(v1 < 0)
+							v1 = 0;
+						if(v2 < 0)
+							v2 = 0;
+						if(v3 < 0)
+							v3 = 0;
 
-						c.red = MathExt::clamp(v1, 0.0, 1.0);
-						c.green = MathExt::clamp(v2, 0.0, 1.0);
-						c.blue = MathExt::clamp(v3, 0.0, 1.0);
+						c.red = v1;
+						c.green = v2;
+						c.blue = v3;
 						c.alpha = 1.0;
 
 						img->getPixels()[(y+y2)*img->getWidth() + (x+x2)] = c;
@@ -1112,8 +1118,11 @@ namespace smpl
 						for(int x=0; x<8; x++)
 						{
 							double value = (q[y][x] + jpegData.precisionSub) / jpegData.precisionDiv;
+							if(value < 0)
+								value = 0;
 							int queryX = actualX+x+currX;
 							int queryY = actualY+y+currY;
+							
 							
 							if(order[i]==0)
 							{
@@ -1287,6 +1296,7 @@ namespace smpl
 			}
 			else if(header == 0xFFC0)
 			{
+				// StringTools::println("BASELINE");
 				frameType = 0;
 				unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
 				index+=2;
@@ -1334,6 +1344,7 @@ namespace smpl
 			}
 			else if(header == 0xFFC1)
 			{
+				// StringTools::println("EXT SEQ");
 				frameType = 1;
 				unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
 				index+=2;
@@ -1381,6 +1392,7 @@ namespace smpl
 			}
 			else if(header == 0xFFC2)
 			{
+				// StringTools::println("PROGRESSIVE");
 				frameType = 2;
 				unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
 				index+=2;
@@ -1546,7 +1558,7 @@ namespace smpl
 			{
 				//Start of Scan
 				// StringTools::println("START OF SCAN");
-				// unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
+				unsigned short size = (((unsigned short)fileData[index])<<8) + fileData[index+1];
 				index+=2;
 
 				int count = fileData[index];

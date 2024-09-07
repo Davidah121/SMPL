@@ -1,9 +1,10 @@
 #pragma once
-#include<functional>
+#include "BuildOptions.h"
+#include <functional>
 
 namespace smpl
 {
-    class MathFunction
+    class DLL_OPTION MathFunction
     {
     public:
         MathFunction();
@@ -13,7 +14,7 @@ namespace smpl
     private:
     };
 
-    class GeneralMathFunction : public MathFunction
+    class DLL_OPTION GeneralMathFunction : public MathFunction
     {
     public:
         GeneralMathFunction();
@@ -25,7 +26,7 @@ namespace smpl
         std::function<double(double)> func;
     };
 
-    class PolynomialMathFunction
+    class DLL_OPTION PolynomialMathFunction
     {
     public:
         PolynomialMathFunction();

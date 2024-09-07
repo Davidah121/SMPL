@@ -1,9 +1,10 @@
 #pragma once
+#include "BuildOptions.h"
 #include "BezierCurve.h"
 
 namespace smpl
 {
-	class CatmullRom
+	class DLL_OPTION CatmullRom
 	{
 	public:
 		/**

@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include "SimpleFile.h"
 #include "SimpleHashMap.h"
 // #include <unordered_map>
@@ -6,8 +7,8 @@
 namespace smpl
 {
     struct ChildNode;
-    class XmlNode;
-    class SimpleXml;
+    class DLL_OPTION XmlNode;
+    class DLL_OPTION SimpleXml;
     struct ChildNode
     {
         static const bool TYPE_VALUE = false;
@@ -35,7 +36,7 @@ namespace smpl
         }
     };
 
-    class XmlNode
+    class DLL_OPTION XmlNode
     {
     public:
         /**
@@ -63,8 +64,7 @@ namespace smpl
 
         void addAttribute(std::string key, std::string value);
         void addAttribute(std::pair<std::string, std::string> p);
-        void addAttribute(HashPair<std::string, std::string> p);
-        HashPair<std::string, std::string>* getAttribute(std::string key);
+        std::pair<std::string, std::string>* getAttribute(std::string key);
 
         std::string getTitle();
         std::string getValue();
@@ -99,7 +99,7 @@ namespace smpl
         SimpleHashMap<std::string, size_t> nameToIndexMap = SimpleHashMap<std::string, size_t>(false); //Multimap
     };
 
-    class SimpleXml
+    class DLL_OPTION SimpleXml
     {
     public:
         static const bool TYPE_XML = false;

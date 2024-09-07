@@ -9,7 +9,7 @@ namespace smpl
 	{
 		return &Vec2f::globalClass;
 	}
-	Vec2f::Vec2f(double x, double y)
+	Vec2f::Vec2f(float x, float y)
 	{
 		this->x = x;
 		this->y = y;
@@ -28,23 +28,23 @@ namespace smpl
 		return {SERIALIZE_MAP(x), SERIALIZE_MAP(y)};
 	}
 
-	double Vec2f::getX()
+	float Vec2f::getX()
 	{
 		return x;
 	}
 
-	double Vec2f::getY()
+	float Vec2f::getY()
 	{
 		return y;
 	}
 
 
-	void Vec2f::setX(double value)
+	void Vec2f::setX(float value)
 	{
 		x = value;
 	}
 
-	void Vec2f::setY(double value)
+	void Vec2f::setY(float value)
 	{
 		y = value;
 	}
@@ -55,18 +55,23 @@ namespace smpl
 		y = other.y;
 	}
 
-	double Vec2f::getLength()
+	float Vec2f::getLength()
 	{
 		return std::sqrt((x*x) + (y*y));
 	}
 
 	Vec2f Vec2f::normalize()
 	{
-		double length = getLength();
+		float length = getLength();
 		if(length!=0)
 			return Vec2f(x/length, y/length);
 		else
 			return Vec2f();
+	}
+	
+	Vec2f Vec2f::hadamardProduct(Vec2f other)
+	{
+		return Vec2f(x*other.x, y*other.y);
 	}
 	
 	Vec2f Vec2f::operator-(Vec2f other)
@@ -91,13 +96,13 @@ namespace smpl
 		y -= other.y;
 	}
 
-	void Vec2f::operator*=(double other)
+	void Vec2f::operator*=(float other)
 	{
 		x *= other;
 		y *= other;
 	}
 
-	void Vec2f::operator/=(double other)
+	void Vec2f::operator/=(float other)
 	{
 		x /= other;
 		y /= other;
@@ -118,34 +123,14 @@ namespace smpl
 		return Vec2f(-x, -y);
 	}
 
-	Vec2f Vec2f::operator*(double value)
+	Vec2f Vec2f::operator*(float value)
 	{
 		return Vec2f(x*value, y*value);
 	}
 
-	Vec2f Vec2f::operator/(double value)
+	Vec2f Vec2f::operator/(float value)
 	{
 		return Vec2f(x / value, y / value);
-	}
-
-	void Vec2f::fillArray(float* buffer)
-	{
-		buffer[0] = (float)x;
-		buffer[1] = (float)y;
-	}
-	void Vec2f::fillArray(double* buffer)
-	{
-		buffer[0] = x;
-		buffer[1] = y;
-	}
-
-	float* Vec2f::convertToFloatArray()
-	{
-		return new float[2] {(float)x, (float)y};
-	}
-	double* Vec2f::convertToDoubleArray()
-	{
-		return new double[2] {x, y};
 	}
 
 	GeneralVector Vec2f::toGeneralVector()

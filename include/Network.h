@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 
 #ifndef NO_SOCKETS
 
@@ -6,6 +7,7 @@
 	#include <unistd.h>
 	#include <sys/types.h>
 	#include <sys/socket.h>
+	#include <sys/sendfile.h>
 	#include <poll.h>
 	#include <netinet/in.h>
 	#include <netinet/tcp.h>
@@ -23,11 +25,13 @@
 	#endif
 #else
 	#pragma comment(lib, "Ws2_32.lib")
+	#pragma comment(lib, "Mswsock.lib")
 	#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 	#include <Winsock2.h>
 	#include <winerror.h>
 	#include <ws2tcpip.h>
+	#include <MSWSock.h>
 	
 	#define SOCKET_TYPE SOCKET
 #endif
@@ -35,15 +39,12 @@
 #include <vector>
 #include <map>
 #include <iostream>
-#include <thread>
-#include <mutex>
 #include <functional>
 #include <chrono>
 #include <cstring>
-#include <atomic>
-#include <condition_variable>
 #include "WebRequest.h"
 #include "ext/SSLSingleton.h"
+#include "Concurrency.h"
 
 namespace smpl
 {
@@ -172,6 +173,8 @@ namespace smpl
 		 * @return int
 		 */
 		int sendMessage(char* message, int messageSize, size_t id=0);
+
+		int sendFile(char* filename, size_t length, size_t offset, size_t id=0);
 		
 		/**
 		 * @brief Receives a message from the specified connected IP.
@@ -500,6 +503,7 @@ namespace smpl
 		int internalRecv(SOCKET_TYPE sock, char* buff, int len); //negative value == problem. zero == fail but okay. positive value == success.
 		int internalPeek(SOCKET_TYPE sock, char* buff, int len); //negative value == problem. zero == fail but okay. positive value == success.
 		int internalSend(SOCKET_TYPE sock, char* buff, int len); //negative value == problem. zero == fail but okay. positive value == success.
+		int internalSendfile(SOCKET_TYPE sock, char* filename, long offset, size_t length);
 		int internalOnAccept(SOCKET_TYPE sock); //negative value == problem. zero == fail but okay. positive value == success.
 		int internalOnConnect(SOCKET_TYPE sock); //negative value == problem. zero == fail but okay. positive value == success.
 		void internalOnDelete(SOCKET_TYPE sock);
@@ -546,7 +550,7 @@ namespace smpl
 		static const bool LOCK_TYPE_NONIMPORTANT = false;
 		
 		void obtainLock(bool type); //Important = true | Non Important = false
-		void releaseLock(bool type); //Important = true | Non Important = false
+		void releaseLock();
 
 		#ifndef __unix__
 			WSADATA wsaData;
@@ -573,7 +577,6 @@ namespace smpl
 		size_t runningID = 0;
 		
 		std::thread networkThread;
-		std::mutex networkMutex;
 
 		bool inDispose = false;
 		bool running = false;
@@ -589,11 +592,7 @@ namespace smpl
 		std::map<SOCKET_TYPE, SSL*> sslConnectionMapping;
 		#endif
 
-		//basically semaphores
-		std::condition_variable cv;
-		std::condition_variable cv2;
-		std::atomic_bool mainNetworkThreadLocked = false;
-		std::atomic_int otherNetworkThreadLocked = 0;
+		HybridSpinSemaphore networkSemaphore;
 		std::atomic_ullong timeWaitedOnImportantLock = 0;
 		std::atomic_ullong timeWaitedOnNonImportantLock = 0;
 	};

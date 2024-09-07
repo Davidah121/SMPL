@@ -65,6 +65,65 @@ namespace smpl
 		return MathExt::popcount((uint64_t)(v1 ^ v2));
 	}
 
+	
+	uint8_t MathExt::saturatedAdd(uint8_t v1, uint8_t v2)
+	{
+		uint8_t c = v1+v2;
+		if(c < v1)
+			c = -1;
+		return c;
+	}
+	uint16_t MathExt::saturatedAdd(uint16_t v1, uint16_t v2)
+	{
+		uint16_t c = v1+v2;
+		if(c < v1)
+			c = -1;
+		return c;
+	}
+	uint32_t MathExt::saturatedAdd(uint32_t v1, uint32_t v2)
+	{
+		uint32_t c = v1+v2;
+		if(c < v1)
+			c = -1;
+		return c;
+	}
+	uint64_t MathExt::saturatedAdd(uint64_t v1, uint64_t v2)
+	{
+		uint64_t c = v1+v2;
+		if(c < v1)
+			c = -1;
+		return c;
+	}
+	
+	uint8_t MathExt::saturatedSub(uint8_t v1, uint8_t v2)
+	{
+		uint8_t c = v1-v2;
+		if(c > v1)
+			c = 0;
+		return c;
+	}
+	uint16_t MathExt::saturatedSub(uint16_t v1, uint16_t v2)
+	{
+		uint16_t c = v1-v2;
+		if(c > v1)
+			c = 0;
+		return c;
+	}
+	uint32_t MathExt::saturatedSub(uint32_t v1, uint32_t v2)
+	{
+		uint32_t c = v1-v2;
+		if(c > v1)
+			c = 0;
+		return c;
+	}
+	uint64_t MathExt::saturatedSub(uint64_t v1, uint64_t v2)
+	{
+		uint64_t c = v1-v2;
+		if(c > v1)
+			c = 0;
+		return c;
+	}
+
 	// int MathExt::hammingDistance(uint8_t v1, uint8_t v2)
 	// {
 	// 	int counter = 0;
@@ -1744,7 +1803,8 @@ namespace smpl
 			Line l2 = Line(p2, p3).getPerpendicularBisector();
 
 			//find intersection point between the lines
-			Vec2f circleCenter = l1.getIntersection(l2);
+			Vec2f circleCenter;
+			l1.getIntersection(l2, circleCenter);
 
 			//find radius
 			double radius = (circleCenter-p1).getLength();
@@ -2014,15 +2074,15 @@ namespace smpl
 	*   Software.
 	*/
 
-	void doFDCT(double* arr, double* temp, size_t size)
+	void doFDCT(float* arr, float* temp, size_t size)
 	{
 		if(size == 1)
 			return;
 		size_t halfSize = size/2;
 		for(size_t i=0; i<halfSize; i++)
 		{
-			double x = arr[i];
-			double y = arr[size - 1 - i];
+			float x = arr[i];
+			float y = arr[size - 1 - i];
 			temp[i] = x + y;
 			temp[i + halfSize] = (x-y) / (MathExt::cos((i + 0.5) * PI / size) * 2);
 		}
@@ -2039,7 +2099,7 @@ namespace smpl
 		arr[size-1] = temp[size-1];
 	}
 
-	void doIDCT(double* arr, double* temp, size_t size)
+	void doIDCT(float* arr, float* temp, size_t size)
 	{
 		if(size == 1)
 			return;
@@ -2058,8 +2118,8 @@ namespace smpl
 
 		for(size_t i=0; i<halfSize; i++)
 		{
-			double x = temp[i];
-			double y = temp[i + halfSize] / (MathExt::cos((i + 0.5) * PI / size) * 2);
+			float x = temp[i];
+			float y = temp[i + halfSize] / (MathExt::cos((i + 0.5) * PI / size) * 2);
 			arr[i] = x+y;
 			arr[size-1-i] = x-y;
 		}
@@ -2100,6 +2160,39 @@ namespace smpl
 			return sum * scaleFactor;
 		}
 	}
+	float MathExt::discreteCosineTransform(float* arr, int size, int u, bool inverse)
+	{
+		float factor = PI/size;
+		if(inverse == false)
+		{
+			float sum = 0;
+			float scaleFactor = 0;
+			for(int x=0; x<size; x++)
+			{
+				float cosCoeff = (x+0.5)*u*factor;
+				sum += arr[x]*MathExt::cos(cosCoeff);
+			}
+
+			if(u == 0)
+				scaleFactor = 1.0/MathExt::sqrt(size);
+			else
+				scaleFactor = MathExt::sqrt(2.0/size);
+
+			return sum * scaleFactor;
+		}
+		else
+		{
+			float sum = arr[0]/MathExt::sqrt(2.0);
+			float scaleFactor = MathExt::sqrt(2.0/size);
+			for(int x=1; x<size; x++)
+			{
+				float cosCoeff = (u+0.5)*x*factor;
+				sum += arr[x]*MathExt::cos(cosCoeff);
+			}
+			
+			return sum * scaleFactor;
+		}
+	}
 
 	std::vector<double> MathExt::cosineTransform(double* arr, int size, bool inverse)
 	{
@@ -2112,12 +2205,23 @@ namespace smpl
 
 		return newArr;
 	}
+	std::vector<float> MathExt::cosineTransform(float* arr, int size, bool inverse)
+	{
+		std::vector<float> newArr = std::vector<float>(size);
+
+		for(int u=0; u<size; u++)
+		{
+			newArr[u] = discreteCosineTransform(arr, size, u, inverse);
+		}
+
+		return newArr;
+	}
 
 	//should be a fast version of the normal discreteCosineTransform
-	std::vector<double> MathExt::fastCosineTransform(double* arr, size_t size, bool inverse)
+	std::vector<float> MathExt::fastCosineTransform(float* arr, size_t size, bool inverse)
 	{
-		std::vector<double> output;
-		std::vector<double> temp;
+		std::vector<float> output;
+		std::vector<float> temp;
 		if(size == 0 || !IS_POWER_2(size))
 		{
 			//can't do unless it is a power of 2
@@ -2126,12 +2230,12 @@ namespace smpl
 		else
 		{
 			//copy arr into output
-			output = std::vector<double>(size);
-			temp = std::vector<double>(size);
-			memcpy(output.data(), arr, size*sizeof(double));
+			output = std::vector<float>(size);
+			temp = std::vector<float>(size);
+			memcpy(output.data(), arr, size*sizeof(float));
 			if(!inverse)
 			{
-				double factor = MathExt::sqrt(2.0/size);
+				float factor = MathExt::sqrt(2.0/size);
 				doFDCT(output.data(), temp.data(), size);
 				output[0] *= 1.0/MathExt::sqrt(size);
 				for(int i=1; i<size; i++)
@@ -2141,7 +2245,7 @@ namespace smpl
 			}
 			else
 			{
-				double factor = MathExt::sqrt(2.0/size);
+				float factor = MathExt::sqrt(2.0/size);
 				output[0] /= MathExt::sqrt(2.0);
 				doIDCT(output.data(), temp.data(), size);
 				for(int i=0; i<size; i++)
@@ -2170,9 +2274,32 @@ namespace smpl
 		return sum;
 	}
 
+	float MathExt::discreteSineTransform(float* arr, size_t size, size_t u)
+	{
+		float sum = 0;
+		float ang = PI*(u+1);
+		for(int x=0; x<size; x++)
+		{
+			sum += arr[x]*MathExt::sin(ang*(x+1) / (size+1));
+		}
+		sum *= MathExt::sqrt(2.0 / (size+1));
+		return sum;
+	}
+
 	std::vector<double> MathExt::sineTransform(double* arr, size_t size)
 	{
 		std::vector<double> newArr = std::vector<double>(size);
+		for(int u=0; u<size; u++)
+		{
+			newArr[u] = discreteSineTransform(arr, size, u);
+		}
+
+		return newArr;
+	}
+
+	std::vector<float> MathExt::sineTransform(float* arr, size_t size)
+	{
+		std::vector<float> newArr = std::vector<float>(size);
 		for(int u=0; u<size; u++)
 		{
 			newArr[u] = discreteSineTransform(arr, size, u);
@@ -2268,8 +2395,8 @@ namespace smpl
 		//for each row
 		for(int v=0; v<arr.getRows(); v++)
 		{
-			double* passArr = arr[v];
-			std::vector<double> newArr = MathExt::cosineTransform(passArr, arr.getCols(), inverse);
+			float* passArr = arr[v];
+			std::vector<float> newArr = MathExt::cosineTransform(passArr, arr.getCols(), inverse);
 
 			for(int i=0; i<arr.getCols(); i++)
 			{
@@ -2280,14 +2407,14 @@ namespace smpl
 		//for each column
 		for(int u=0; u<arr.getCols(); u++)
 		{
-			std::vector<double> passArr = std::vector<double>(arr.getRows());
+			std::vector<float> passArr = std::vector<float>(arr.getRows());
 
 			for(int i=0; i<arr.getRows(); i++)
 			{
 				passArr[i] = finalArr[i][u];
 			}
 
-			std::vector<double> newArr = MathExt::cosineTransform(passArr.data(), arr.getCols(), inverse);
+			std::vector<float> newArr = MathExt::cosineTransform(passArr.data(), arr.getCols(), inverse);
 
 			for(int i=0; i<arr.getRows(); i++)
 			{
@@ -2309,15 +2436,15 @@ namespace smpl
 		
 		//copy arr into finalArr
 		Matrix finalArr = Matrix(arr);
-		std::vector<double> temp = std::vector<double>(finalArr.getRows());
-		std::vector<double> columnArr = std::vector<double>(arr.getRows());
+		std::vector<float> temp = std::vector<float>(finalArr.getRows());
+		std::vector<float> columnArr = std::vector<float>(arr.getRows());
 
 		if(!inverse)
 		{
 			//for each row
 			for(int v=0; v<finalArr.getRows(); v++)
 			{
-				double* passArr = finalArr[v];
+				float* passArr = finalArr[v];
 				doFDCT(passArr, temp.data(), temp.size());
 			}
 
@@ -2342,7 +2469,7 @@ namespace smpl
 			//for each row
 			for(int v=0; v<finalArr.getRows(); v++)
 			{
-				double* passArr = finalArr[v];
+				float* passArr = finalArr[v];
 				doIDCT(passArr, temp.data(), temp.size());
 			}
 
@@ -2378,8 +2505,8 @@ namespace smpl
 		//for each row
 		for(int v=0; v<arr.getRows(); v++)
 		{
-			double* passArr = arr[v];
-			std::vector<double> newArr = MathExt::sineTransform(passArr, arr.getCols());
+			float* passArr = arr[v];
+			std::vector<float> newArr = MathExt::sineTransform(passArr, arr.getCols());
 
 			for(int i=0; i<arr.getCols(); i++)
 			{
@@ -2390,14 +2517,14 @@ namespace smpl
 		//for each column
 		for(int u=0; u<arr.getCols(); u++)
 		{
-			std::vector<double> passArr = std::vector<double>(arr.getRows());
+			std::vector<float> passArr = std::vector<float>(arr.getRows());
 
 			for(int i=0; i<arr.getRows(); i++)
 			{
 				passArr[i] = finalArr[i][u];
 			}
 
-			std::vector<double> newArr = MathExt::sineTransform(passArr.data(), arr.getCols());
+			std::vector<float> newArr = MathExt::sineTransform(passArr.data(), arr.getCols());
 
 			for(int i=0; i<arr.getRows(); i++)
 			{
@@ -2499,7 +2626,7 @@ namespace smpl
 						MathExt::cos(6*PI/16),
 						};
 
-	void MathExt::FCT8(double* arr, double* output, bool inverse)
+	void MathExt::FCT8(float* arr, float* output, bool inverse)
 	{
 		// //assume arr has a size of 8
 		// double v[29];
@@ -2665,9 +2792,9 @@ namespace smpl
 	void MathExt::FCT8x8(Matrix& arr, Matrix* output, bool inverse)
 	{
 		//for each row
-		double* outputAsDoubleArr = output->getData();
-		double newArr[8];
-		double colArr[8];
+		float* outputAsDoubleArr = output->getData();
+		float newArr[8];
+		float colArr[8];
 
 		for(int v=0; v<arr.getRows(); v++)
 		{

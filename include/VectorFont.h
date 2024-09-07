@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 
 #include "Font.h"
 #include "VectorSprite.h"
@@ -7,7 +8,7 @@
 namespace smpl
 {
 
-    class VectorFont : public Font
+    class DLL_OPTION VectorFont : public Font
     {
     public:
         /**

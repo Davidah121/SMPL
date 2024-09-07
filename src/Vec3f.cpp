@@ -11,7 +11,7 @@ namespace smpl
 		return &Vec3f::globalClass;
 	}
 	
-	Vec3f::Vec3f(double x, double y, double z)
+	Vec3f::Vec3f(float x, float y, float z)
 	{
 		this->x = x;
 		this->y = y;
@@ -22,7 +22,7 @@ namespace smpl
 	{
 	}
 
-	Vec3f::Vec3f(Vec2f other, double z)
+	Vec3f::Vec3f(Vec2f other, float z)
 	{
 		this->x = other.x;
 		this->y = other.y;
@@ -39,32 +39,32 @@ namespace smpl
 		return {SERIALIZE_MAP(x), SERIALIZE_MAP(y), SERIALIZE_MAP(z)};
 	}
 
-	double Vec3f::getX()
+	float Vec3f::getX()
 	{
 		return x;
 	}
 
-	double Vec3f::getY()
+	float Vec3f::getY()
 	{
 		return y;
 	}
 
-	double Vec3f::getZ()
+	float Vec3f::getZ()
 	{
 		return z;
 	}
 
-	void Vec3f::setX(double value)
+	void Vec3f::setX(float value)
 	{
 		x = value;
 	}
 
-	void Vec3f::setY(double value)
+	void Vec3f::setY(float value)
 	{
 		y = value;
 	}
 
-	void Vec3f::setZ(double value)
+	void Vec3f::setZ(float value)
 	{
 		z = value;
 	}
@@ -87,14 +87,14 @@ namespace smpl
 		return Vec2f(x,y);
 	}
 
-	double Vec3f::getLength()
+	float Vec3f::getLength()
 	{
 		return std::sqrt((x*x) + (y*y) + (z*z));
 	}
 
 	Vec3f Vec3f::normalize()
 	{
-		double length = getLength();
+		float length = getLength();
 		if(length!=0)
 			return Vec3f(x/length, y/length, z/length);
 		else
@@ -140,50 +140,28 @@ namespace smpl
 		z -= other.z;
 	}
 
-	void Vec3f::operator*=(double other)
+	void Vec3f::operator*=(float other)
 	{
 		x *= other;
 		y *= other;
 		z *= other;
 	}
 
-	void Vec3f::operator/=(double other)
+	void Vec3f::operator/=(float other)
 	{
 		x /= other;
 		y /= other;
 		z /= other;
 	}
 
-	Vec3f Vec3f::operator*(double value)
+	Vec3f Vec3f::operator*(float value)
 	{
 		return Vec3f(x*value, y*value, z*value);
 	}
 
-	Vec3f Vec3f::operator/(double value)
+	Vec3f Vec3f::operator/(float value)
 	{
 		return Vec3f(x/value, y/value, z/value);
-	}
-
-	void Vec3f::fillArray(float* buffer)
-	{
-		buffer[0] = (float)x;
-		buffer[1] = (float)y;
-		buffer[2] = (float)z;
-	}
-	void Vec3f::fillArray(double* buffer)
-	{
-		buffer[0] = x;
-		buffer[1] = y;
-		buffer[2] = z;
-	}
-
-	float* Vec3f::convertToFloatArray()
-	{
-		return new float[3] {(float)x, (float)y, (float)z};
-	}
-	double* Vec3f::convertToDoubleArray()
-	{
-		return new double[3] {x, y, z};
 	}
 
 	GeneralVector Vec3f::toGeneralVector()

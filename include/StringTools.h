@@ -1,10 +1,11 @@
 #pragma once
-#include<string.h>
-#include<iostream>
-#include<sstream>
-#include<stdio.h>
-#include<vector>
-#include<fcntl.h>
+#include "BuildOptions.h"
+#include <string.h>
+#include <iostream>
+#include <sstream>
+#include <stdio.h>
+#include <vector>
+#include <fcntl.h>
 
 #include <stdarg.h>
 #include <initializer_list>
@@ -12,7 +13,7 @@
 namespace smpl
 {
 
-	class StringTools
+	class DLL_OPTION StringTools
 	{
 	public:
 

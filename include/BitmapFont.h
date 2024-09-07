@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include "Font.h"
 #include "Sprite.h"
 #include "GeneralExceptions.h"
@@ -6,7 +7,7 @@
 namespace smpl
 {
 	
-	class BitmapFont : public Font
+	class DLL_OPTION BitmapFont : public Font
 	{
 	public:
 		/**

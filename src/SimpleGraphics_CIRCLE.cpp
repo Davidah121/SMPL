@@ -2,10 +2,10 @@
 
 namespace smpl
 {
+	#if (OPTI == 0)
+
     void SimpleGraphics::drawCircle(int x, int y, int radius, bool outline, Image* surf)
 	{
-		// int currentComposite = compositeRule;
-
 		Image* otherImg;
 		if (surf == nullptr)
 			return;
@@ -36,7 +36,7 @@ namespace smpl
 			int maxY = MathExt::clamp(y+absRad-1, minYBound, maxYBound);
 			
 			// int tX = minX;
-			int tY = minY;
+			// int tY = minY;
 			double radSqr = MathExt::sqr(absRad-1);
 			double radSqr2 = MathExt::sqr(absRad);
 			
@@ -45,18 +45,14 @@ namespace smpl
 				double A = 1;
 				double B = -2*x;
 
-				#if(OPTI>=2)
+				Color* srcPixels = otherImg->getPixels();
 
-					Color* startPoint = otherImg->getPixels() + (minY * tempWidth);
-					Color* endPoint = otherImg->getPixels() + maxX + (maxY * tempWidth);
-
-					__m256i* ssePoint;
-					
-					__m256i sseColor = _mm256_set1_epi32( *((int*)&activeColor) );
-
-					if(!antiAliasing)
+				if(!antiAliasing)
+				{
+					if(compositeRule == NO_COMPOSITE)
 					{
-						while (startPoint < endPoint)
+						#pragma omp parallel for
+						for(int tY=minY; tY<=maxY; tY++)
 						{
 							double C = 0;
 							if(tY < y)
@@ -68,371 +64,6 @@ namespace smpl
 
 							if(xRangeInCircle.size()<=0)
 							{
-								tY++;
-								startPoint += tempWidth;
-								continue;
-							}
-
-							int x1 = MathExt::round(xRangeInCircle[1]);
-							int x2 = MathExt::round(xRangeInCircle[0]);
-							x1 = MathExt::clamp( x1, minX, maxX);
-							x2 = MathExt::clamp( x2, minX, maxX);
-
-							int addAmount = x1;
-							int addAmount2 = tempWidth-x2;
-
-							if(x1==x2)
-							{
-								startPoint += addAmount;
-								*startPoint = blend(activeColor, *startPoint);
-								startPoint += addAmount2;
-								tY++;
-								continue;
-							}
-
-							int wid = ((x2-x1) >> 3);
-							int remainder = (x2-x1) - (wid<<3);
-
-							startPoint += addAmount;
-							ssePoint = (__m256i*)startPoint;
-
-							for(int i=0; i<wid; i++)
-							{
-								__m256i currentColor = _mm256_loadu_si256(ssePoint);
-								__m256i blendC = blend(sseColor, currentColor);
-								_mm256_storeu_si256(ssePoint, blendC);
-								ssePoint++;
-							}
-
-							startPoint += wid<<3;
-
-							for(int i=0; i<=remainder; i++)
-							{
-								*startPoint = blend(activeColor, *startPoint);
-								startPoint++;
-							}
-
-							tY++;
-							startPoint += addAmount2-1;
-						}
-
-					}
-					else
-					{
-						while (startPoint < endPoint)
-						{
-							double C = MathExt::sqr(y-tY) + MathExt::sqr(x);
-
-							std::vector<double> xRangeInCircle = MathExt::solveQuadraticReal(A, B, C-radSqr);
-							std::vector<double> xRangeOnEdgeCircle = MathExt::solveQuadraticReal(A, B, C-radSqr2);
-
-							if(xRangeInCircle.size()<=0)
-							{
-								tY++;
-								startPoint += tempWidth;
-								continue;
-							}
-							
-							//Fill outer xRange. Does not use sse instructions as it is likely that
-							//it won't fit in the registers properly. (Less than 8 color values)
-							int startX, endX, startX2, endX2;
-							
-							startX = MathExt::floor(xRangeOnEdgeCircle[1]);
-							endX = MathExt::ceil(xRangeInCircle[1]);
-
-							startX2 = MathExt::floor(xRangeInCircle[0])+1;
-							endX2 = MathExt::ceil(xRangeOnEdgeCircle[0]);
-							
-							startX = MathExt::clamp( startX, minX, maxX);
-							endX = MathExt::clamp( endX, minX, maxX);
-							
-							startX2 = MathExt::clamp( startX2, minX, maxX);
-							endX2 = MathExt::clamp( endX2, minX, maxX);
-
-							//draw left side
-							for(int tX = startX; tX < endX; tX++)
-							{
-								int dis = MathExt::sqr(tY - y) + MathExt::sqr(tX - x);
-								double maxAddDis = radSqr2 - radSqr;
-								double lerpVal = (double)(radSqr2 - dis) / maxAddDis;
-
-								if(lerpVal < 0)
-									continue;
-								
-								Color newBlendColor = activeColor;
-								newBlendColor.alpha = (unsigned char)(lerpVal*newBlendColor.alpha);
-
-								startPoint[tX] = blend(newBlendColor, startPoint[tX]);
-							}
-
-							//draw right side
-							for(int tX = startX2; tX <= endX2; tX++)
-							{
-								int dis = MathExt::sqr(tY - y) + MathExt::sqr(tX - x);
-								double maxAddDis = radSqr2 - radSqr;
-								double lerpVal = (double)(radSqr2 - dis) / maxAddDis;
-								
-								if(lerpVal < 0)
-									continue;
-								
-								Color newBlendColor = activeColor;
-								newBlendColor.alpha = (unsigned char)(lerpVal*newBlendColor.alpha);
-
-								startPoint[tX] = blend(newBlendColor, startPoint[tX]);
-							}
-
-							//Fill inner x ranges
-							int x1 = MathExt::ceil(xRangeInCircle[1]);
-							int x2 = MathExt::floor(xRangeInCircle[0]);
-							
-							x1 = MathExt::clamp( x1, minX, maxX);
-							x2 = MathExt::clamp( x2, minX, maxX);
-
-							int addAmount = x1;
-							int addAmount2 = tempWidth-x2;
-
-							if(x1==x2)
-							{
-								startPoint += addAmount;
-								*startPoint = blend(activeColor, *startPoint);
-								startPoint += addAmount2;
-								tY++;
-								continue;
-							}
-
-							int wid = ((x2-x1) >> 3);
-							int remainder = (x2-x1) - (wid<<3);
-
-							startPoint += addAmount;
-							ssePoint = (__m256i*)startPoint;
-
-							for(int i=0; i<wid; i++)
-							{
-								__m256i currentColor = _mm256_loadu_si256(ssePoint);
-								__m256i blendC = blend(sseColor, currentColor);
-								_mm256_storeu_si256(ssePoint, blendC);
-								ssePoint++;
-							}
-
-							startPoint += wid<<3;
-
-							for(int i=0; i<=remainder; i++)
-							{
-								*startPoint = blend(activeColor, *startPoint);
-								startPoint++;
-							}
-
-							tY++;
-							startPoint += addAmount2-1;
-						}
-					}
-
-					
-				
-
-				#elif(OPTI>=1)
-
-					Color* startPoint = otherImg->getPixels() + (minY * tempWidth);
-					Color* endPoint = otherImg->getPixels() + maxX + (maxY * tempWidth);
-
-					__m128i* ssePoint;
-					
-					__m128i sseColor = _mm_set1_epi32( *((int*)&activeColor) );
-					if(!antiAliasing)
-					{
-						while (startPoint < endPoint)
-						{
-							double C = 0;
-							if(tY < y)
-								C = MathExt::sqr(y-tY-0.5) + MathExt::sqr(x)+1;
-							else
-								C = MathExt::sqr(y-tY+0.5) + MathExt::sqr(x)+1;
-
-							std::vector<double> xRangeInCircle = MathExt::solveQuadraticReal(A, B, C-radSqr);
-
-							if(xRangeInCircle.size()<=0)
-							{
-								tY++;
-								startPoint += tempWidth;
-								continue;
-							}
-
-							int x1 = MathExt::round(xRangeInCircle[1]);
-							int x2 = MathExt::round(xRangeInCircle[0]);
-							
-							x1 = MathExt::clamp( x1, minX, maxX);
-							x2 = MathExt::clamp( x2, minX, maxX);
-
-							int addAmount = x1;
-							int addAmount2 = tempWidth-x2;
-
-							if(x1==x2)
-							{
-								startPoint += addAmount;
-								*startPoint = blend(activeColor, *startPoint);
-								startPoint += addAmount2;
-								tY++;
-								continue;
-							}
-
-							int wid = ((x2-x1) >> 2);
-							int remainder = (x2-x1) - (wid<<2);
-
-							startPoint += addAmount;
-							ssePoint = (__m128i*)startPoint;
-
-							for(int i=0; i<wid; i++)
-							{
-								__m128i currentColor = _mm_loadu_si128(ssePoint);
-								__m128i blendC = blend(sseColor, currentColor);
-								_mm_storeu_si128(ssePoint, blendC);
-								ssePoint++;
-							}
-
-							startPoint += wid<<2;
-
-							for(int i=0; i<=remainder; i++)
-							{
-								*startPoint = blend(activeColor, *startPoint);;
-								startPoint++;
-							}
-
-							tY++;
-							startPoint += addAmount2-1;
-						}
-					}
-					else
-					{
-						while (startPoint < endPoint)
-						{
-							double C = MathExt::sqr(y-tY) + MathExt::sqr(x);
-
-							std::vector<double> xRangeInCircle = MathExt::solveQuadraticReal(A, B, C-radSqr);
-							std::vector<double> xRangeOnEdgeCircle = MathExt::solveQuadraticReal(A, B, C-radSqr2);
-
-							if(xRangeInCircle.size()<=0)
-							{
-								tY++;
-								startPoint += tempWidth;
-								continue;
-							}
-							
-							//Fill outer xRange. Does not use sse instructions as it is likely that
-							//it won't fit in the registers properly. (Less than 8 color values)
-							int startX, endX, startX2, endX2;
-							
-							startX = MathExt::floor(xRangeOnEdgeCircle[1]);
-							endX2 = MathExt::ceil(xRangeOnEdgeCircle[0]);
-
-							endX = MathExt::ceil(xRangeInCircle[1]);
-							startX2 = MathExt::floor(xRangeInCircle[0])+1;
-
-							
-							startX = MathExt::clamp( startX, minX, maxX);
-							endX = MathExt::clamp( endX, minX, maxX);
-							
-							startX2 = MathExt::clamp( startX2, minX, maxX);
-							endX2 = MathExt::clamp( endX2, minX, maxX);
-
-							//draw left side
-							for(int tX = startX; tX < endX; tX++)
-							{
-								int dis = MathExt::sqr(tY - y) + MathExt::sqr(tX - x);
-								double maxAddDis = radSqr2 - radSqr;
-								double lerpVal = (double)(radSqr2 - dis) / maxAddDis;
-
-								if(lerpVal < 0)
-									continue;
-								
-								Color newBlendColor = activeColor;
-								newBlendColor.alpha = (unsigned char)(lerpVal*newBlendColor.alpha);
-
-								startPoint[tX] = blend(newBlendColor, startPoint[tX]);
-							}
-
-							//draw right side
-							for(int tX = startX2; tX <= endX2; tX++)
-							{
-								int dis = MathExt::sqr(tY - y) + MathExt::sqr(tX - x);
-								double maxAddDis = radSqr2 - radSqr;
-								double lerpVal = (double)(radSqr2 - dis) / maxAddDis;
-								
-								if(lerpVal < 0)
-									continue;
-								
-								Color newBlendColor = activeColor;
-								newBlendColor.alpha = (unsigned char)(lerpVal*newBlendColor.alpha);
-
-								startPoint[tX] = blend(newBlendColor, startPoint[tX]);
-							}
-
-							//Fill inner x ranges
-							int x1 = MathExt::ceil(xRangeInCircle[1]);
-							int x2 = MathExt::floor(xRangeInCircle[0]);
-							
-							x1 = MathExt::clamp( x1, minX, maxX);
-							x2 = MathExt::clamp( x2, minX, maxX);
-
-							int addAmount = x1;
-							int addAmount2 = tempWidth-x2;
-
-							if(x1==x2)
-							{
-								startPoint += addAmount;
-								*startPoint = blend(activeColor, *startPoint);
-								startPoint += addAmount2;
-								tY++;
-								continue;
-							}
-
-							int wid = ((x2-x1) >> 2);
-							int remainder = (x2-x1) - (wid<<2);
-
-							startPoint += addAmount;
-							ssePoint = (__m128i*)startPoint;
-
-							for(int i=0; i<wid; i++)
-							{
-								__m128i currentColor = _mm_loadu_si128(ssePoint);
-								__m128i blendC = blend(sseColor, currentColor);
-								_mm_storeu_si128(ssePoint, blendC);
-								ssePoint++;
-							}
-
-							startPoint += wid<<2;
-
-							for(int i=0; i<=remainder; i++)
-							{
-								*startPoint = blend(activeColor, *startPoint);
-								startPoint++;
-							}
-
-							tY++;
-							startPoint += addAmount2-1;
-						}
-					}
-
-				#else
-				
-					Color* startPoint = otherImg->getPixels() + (minY * tempWidth);
-					Color* endPoint = otherImg->getPixels() + maxX + (maxY * tempWidth);
-
-					if(!antiAliasing)
-					{
-						while (startPoint < endPoint)
-						{
-							double C = 0;
-							if(tY < y)
-								C = MathExt::sqr(y-tY-0.5) + MathExt::sqr(x)+1;
-							else
-								C = MathExt::sqr(y-tY+0.5) + MathExt::sqr(x)+1;
-
-							std::vector<double> xRangeInCircle = MathExt::solveQuadraticReal(A, B, C-radSqr);
-
-							if(xRangeInCircle.size()<=0)
-							{
-								tY++;
-								startPoint += tempWidth;
 								continue;
 							}
 
@@ -442,23 +73,49 @@ namespace smpl
 							x1 = MathExt::clamp( x1, minX, maxX);
 							x2 = MathExt::clamp( x2, minX, maxX);
 
-							int addAmount = x1;
-							int addAmount2 = tempWidth-x2;
-
-							startPoint += addAmount;
 							for(int i=x1; i<=x2; i++)
 							{
-								*startPoint = blend(activeColor, *startPoint);
-								startPoint++;
+								srcPixels[i + tY*tempWidth] = activeColor;
 							}
-
-							tY++;
-							startPoint += addAmount2-1;
 						}
 					}
 					else
 					{
-						while (startPoint < endPoint)
+						#pragma omp parallel for
+						for(int tY=minY; tY<=maxY; tY++)
+						{
+							double C = 0;
+							if(tY < y)
+								C = MathExt::sqr(y-tY-0.5) + MathExt::sqr(x)+1;
+							else
+								C = MathExt::sqr(y-tY+0.5) + MathExt::sqr(x)+1;
+
+							std::vector<double> xRangeInCircle = MathExt::solveQuadraticReal(A, B, C-radSqr);
+
+							if(xRangeInCircle.size()<=0)
+							{
+								continue;
+							}
+
+							int x1 = (int)MathExt::round(xRangeInCircle[1]);
+							int x2 = (int)MathExt::round(xRangeInCircle[0]);
+							
+							x1 = MathExt::clamp( x1, minX, maxX);
+							x2 = MathExt::clamp( x2, minX, maxX);
+
+							for(int i=x1; i<=x2; i++)
+							{
+								srcPixels[i + tY*tempWidth] = blend(activeColor, srcPixels[i + tY*tempWidth]);
+							}
+						}
+					}
+				}
+				else
+				{
+					if(compositeRule == NO_COMPOSITE)
+					{
+						#pragma omp parallel for
+						for(int tY=minY; tY<=maxY; tY++)
 						{
 							//create polynomial to describe distance
 							double C = MathExt::sqr(y-tY) + MathExt::sqr(x);
@@ -466,12 +123,9 @@ namespace smpl
 							std::vector<double> xRangeInCircle = MathExt::solveQuadraticReal(A, B, C-radSqr);
 							std::vector<double> xRangeOnEdgeCircle = MathExt::solveQuadraticReal(A, B, C-radSqr2);
 
-
 							//fill inner xRange
 							if(xRangeInCircle.size()<=0)
 							{
-								tY++;
-								startPoint += tempWidth;
 								continue;
 							}
 
@@ -503,7 +157,7 @@ namespace smpl
 								Color newBlendColor = activeColor;
 								newBlendColor.alpha = (unsigned char)(lerpVal*newBlendColor.alpha);
 
-								startPoint[tX] = blend(newBlendColor, startPoint[tX]);
+								srcPixels[tX + tY*tempWidth] = newBlendColor;
 							}
 
 							//draw right side
@@ -519,7 +173,7 @@ namespace smpl
 								Color newBlendColor = activeColor;
 								newBlendColor.alpha = (unsigned char)(lerpVal*newBlendColor.alpha);
 								
-								startPoint[tX] = blend(newBlendColor, startPoint[tX]);
+								srcPixels[tX + tY*tempWidth] = newBlendColor;
 							}
 
 							int x1 = (int)MathExt::ceil(xRangeInCircle[1]);
@@ -527,22 +181,88 @@ namespace smpl
 							x1 = MathExt::clamp( x1, minX, maxX);
 							x2 = MathExt::clamp( x2, minX, maxX);
 
-							int addAmount = x1;
-							int addAmount2 = tempWidth-x2;
-
-							startPoint += addAmount;
 							for(int i=x1; i<=x2; i++)
 							{
-								*startPoint = blend(activeColor, *startPoint);
-								startPoint++;
+								srcPixels[i + tY*tempWidth] = activeColor;
 							}
-
-							tY++;
-							startPoint += addAmount2-1; //sets startPoint to the beginning of the next scanline
 						}
 					}
+					else
+					{
+						#pragma omp parallel for
+						for(int tY=minY; tY<=maxY; tY++)
+						{
+							//create polynomial to describe distance
+							double C = MathExt::sqr(y-tY) + MathExt::sqr(x);
 
-				#endif
+							std::vector<double> xRangeInCircle = MathExt::solveQuadraticReal(A, B, C-radSqr);
+							std::vector<double> xRangeOnEdgeCircle = MathExt::solveQuadraticReal(A, B, C-radSqr2);
+
+							//fill inner xRange
+							if(xRangeInCircle.size()<=0)
+							{
+								continue;
+							}
+
+							//fill outer xRange
+							int startX, endX, startX2, endX2;
+
+							startX = (int)MathExt::floor(xRangeOnEdgeCircle[1]);
+							endX = (int)MathExt::ceil(xRangeInCircle[1]);
+
+							startX2 = (int)MathExt::floor(xRangeInCircle[0])+1;
+							endX2 = (int)MathExt::ceil(xRangeOnEdgeCircle[0]);
+							
+							startX = (int)MathExt::clamp( startX, minX, maxX);
+							endX = (int)MathExt::clamp( endX, minX, maxX);
+							
+							startX2 = (int)MathExt::clamp( startX2, minX, maxX);
+							endX2 = (int)MathExt::clamp( endX2, minX, maxX);
+							
+							//draw left side
+							for(int tX = startX; tX < endX; tX++)
+							{
+								int dis = MathExt::sqr(tY - y) + MathExt::sqr(tX - x);
+								double maxAddDis = radSqr2 - radSqr;
+								double lerpVal = (double)(radSqr2 - dis) / maxAddDis;
+
+								if(lerpVal < 0)
+									continue;
+								
+								Color newBlendColor = activeColor;
+								newBlendColor.alpha = (unsigned char)(lerpVal*newBlendColor.alpha);
+
+								srcPixels[tX + tY*tempWidth] = blend(newBlendColor, srcPixels[tX + tY*tempWidth]);
+							}
+
+							//draw right side
+							for(int tX = startX2; tX <= endX2; tX++)
+							{
+								int dis = MathExt::sqr(tY - y) + MathExt::sqr(tX - x);
+								double maxAddDis = radSqr2 - radSqr;
+								double lerpVal = (double)(radSqr2 - dis) / maxAddDis;
+								
+								if(lerpVal < 0)
+									continue;
+								
+								Color newBlendColor = activeColor;
+								newBlendColor.alpha = (unsigned char)(lerpVal*newBlendColor.alpha);
+								
+								srcPixels[tX + tY*tempWidth] = blend(newBlendColor, srcPixels[tX + tY*tempWidth]);
+							}
+
+							int x1 = (int)MathExt::ceil(xRangeInCircle[1]);
+							int x2 = (int)MathExt::floor(xRangeInCircle[0]);
+							x1 = MathExt::clamp( x1, minX, maxX);
+							x2 = MathExt::clamp( x2, minX, maxX);
+
+							for(int i=x1; i<=x2; i++)
+							{
+								srcPixels[i + tY*tempWidth] = blend(activeColor, srcPixels[i + tY*tempWidth]);
+							}
+						}
+					}
+				}
 			}
 			else
 			{
@@ -551,6 +271,7 @@ namespace smpl
 				oldX1 = x;
 				oldX2 = x;
 
+				#pragma omp parallel for
 				for(int tY = minY; tY<=maxY+1; tY++)
 				{
 					double startX, endX;
@@ -601,6 +322,6 @@ namespace smpl
 			}
 		}
 	}
-    
+    #endif
 
 } //NAMESPACE glib END

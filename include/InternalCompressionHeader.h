@@ -10,7 +10,7 @@
 #include "StringTools.h"
 #include "MathExt.h"
 #include "System.h"
-#include <thread>
+#include "Concurrency.h"
 #include "SimpleFile.h"
 
 #include "SimpleHashMap.h"

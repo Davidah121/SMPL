@@ -13,7 +13,7 @@ namespace smpl
 	{
 	}
 
-	Mat3f::Mat3f(double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8, double v9) : Matrix(3,3)
+	Mat3f::Mat3f(float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8, float v9) : Matrix(3,3)
 	{
 		data[0] = v1;
 		data[1] = v2;
@@ -53,7 +53,7 @@ namespace smpl
 		return k;
 	}
 
-	double* Mat3f::operator[](int row)
+	float* Mat3f::operator[](int row)
 	{
 		return Matrix::operator[](row);
 	}
@@ -90,7 +90,7 @@ namespace smpl
 		return v;
 	}
 
-	Mat3f Mat3f::operator*(double other)
+	Mat3f Mat3f::operator*(float other)
 	{
 		Mat3f v = Mat3f();
 
@@ -100,7 +100,7 @@ namespace smpl
 		return v;
 	}
 
-	void Mat3f::operator*=(double other)
+	void Mat3f::operator*=(float other)
 	{
 		for (int i = 0; i < 9; i++)
 			data[i] *= other;
@@ -137,20 +137,4 @@ namespace smpl
 	{
 		return !(this->operator==(other));
 	}
-
-	void Mat3f::fillArray(float* buffer)
-	{
-		for(int i=0; i<9; i++)
-		{
-			buffer[i] = (float)data[i];
-		}
-	}
-	void Mat3f::fillArray(double* buffer)
-	{
-		for(int i=0; i<9; i++)
-		{
-			buffer[i] = data[i];
-		}
-	}
-
 } //NAMESPACE glib END

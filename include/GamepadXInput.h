@@ -1,7 +1,9 @@
 #pragma once
+#include "BuildOptions.h"
 
 #ifndef NO_GAME_INPUT
 
+	#include <vector>
 	#ifdef __unix__
 
 	#else
@@ -23,7 +25,7 @@
 	namespace smpl
 	{
 
-		class GamepadXInput
+		class DLL_OPTION GamepadXInput
 		{
 		public:
 

@@ -1,11 +1,12 @@
 #pragma once
+#include "BuildOptions.h"
 #include "Vec2f.h"
 #include "Object.h"
 
 namespace smpl
 {
 
-	class Line : public Object
+	class DLL_OPTION Line : public Object
 	{
 	public:
 		/**
@@ -156,25 +157,22 @@ namespace smpl
 		/**
 		 * @brief Gets a point of intersection with another line.
 		 * 		May be invalid if the lines never intersect.
-		 * 		If invalid, NAN will be returned.
 		 * 
 		 * @param other 
 		 * 		The other line to check for intersection with.
-		 * @return Vec2f 
+		 * @return bool 
 		 */
-		Vec2f getIntersection(Line other);
+		bool getIntersection(Line other, Vec2f& output);
 		
 		/**
 		 * @brief Get the point of intersection with another line as a time value.
 		 * 		The answer, if valid, will describe a point of intersection as
 		 * 		P = getPoint1() + getToPoint()*t;
 		 * 
-		 * 		If invalid, NAN will be returned.
-		 * 
 		 * @param other 
-		 * @return double 
+		 * @return bool 
 		 */
-		double getIntersectionParametric(Line other);
+		bool getIntersectionParametric(Line other, double& timePoint);
 
 		/**
 		 * @brief Get the point on the line as Paramtetric time value.

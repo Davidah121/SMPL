@@ -1,7 +1,7 @@
 #pragma once
-
 #ifndef NO_AUDIO
 
+	#include "BuildOptions.h"
 	#include <vector>
 	#include "Sound.h"
 	#include <thread>
@@ -30,13 +30,13 @@
 	namespace smpl
 	{
 
-		struct AudioSegment
+		struct DLL_OPTION AudioSegment
 		{
 			void* audioStuff;
 			bool used;
 		};
 
-		class AudioOut
+		class DLL_OPTION AudioOut
 		{
 		public:
 
@@ -202,7 +202,7 @@
 			#endif
 		};
 
-		class AudioIn
+		class DLL_OPTION AudioIn
 		{
 		public:
 			struct AudioInError : public std::exception

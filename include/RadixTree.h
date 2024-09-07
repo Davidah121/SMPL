@@ -1,3 +1,5 @@
+#pragma once
+#include "BuildOptions.h"
 #include "Tree.h"
 #include <iostream>
 
@@ -13,7 +15,7 @@
 */
 namespace smpl
 {
-    class RadixTree
+    class DLL_OPTION RadixTree
     {
     public:
         RadixTree();

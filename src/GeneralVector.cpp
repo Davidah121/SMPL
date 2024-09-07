@@ -15,7 +15,7 @@ namespace smpl
 		this->size = size;
 		if (size > 0)
 		{
-			values = new double[size];
+			values = new float[size];
 			for(int i=0; i<size; i++)
 			{
 				values[i] = 0;
@@ -33,6 +33,25 @@ namespace smpl
 		copy(o);
 	}
 
+
+	GeneralVector::GeneralVector(GeneralVector&& o) noexcept
+	{
+		this->~GeneralVector();
+		this->size = o.size;
+		this->values = o.values;
+		o.values = nullptr;
+		o.size = 0;
+	}
+
+	void GeneralVector::operator=(GeneralVector&& o) noexcept
+	{
+		this->~GeneralVector();
+		this->size = o.size;
+		this->values = o.values;
+		o.values = nullptr;
+		o.size = 0;
+	}
+
 	void GeneralVector::copy(const GeneralVector& o)
 	{
 		this->~GeneralVector();
@@ -40,7 +59,7 @@ namespace smpl
 		this->size = o.size;
 		if(size>0)
 		{
-			values = new double[size];
+			values = new float[size];
 			for (int i = 0; i < size; i++)
 			{
 				values[i] = o.values[i];
@@ -50,14 +69,15 @@ namespace smpl
 
 	GeneralVector::~GeneralVector()
 	{
-		if (size > 0)
+		if (values != nullptr)
 		{
 			delete[] values;
-			values = nullptr;
 		}
+		values = nullptr;
+		size = 0;
 	}
 
-	double GeneralVector::getValue(int location)
+	float GeneralVector::getValue(int location)
 	{
 		if (location >= 0 && location < size)
 		{
@@ -66,7 +86,7 @@ namespace smpl
 		return 0.0;
 	}
 
-	void GeneralVector::setValue(double value, int location)
+	void GeneralVector::setValue(float value, int location)
 	{
 		if (location >= 0 && location < size)
 		{
@@ -74,9 +94,9 @@ namespace smpl
 		}
 	}
 
-	double GeneralVector::getLength()
+	float GeneralVector::getLength()
 	{
-		double sum = 0;
+		float sum = 0;
 		for(int i=0; i<size; i++)
 		{
 			sum += values[i]*values[i];
@@ -87,11 +107,11 @@ namespace smpl
 
 	GeneralVector GeneralVector::normalize()
 	{
-		double l = getLength();
+		float l = getLength();
 		return operator/(l);
 	}
 
-	GeneralVector GeneralVector::operator*(double value)
+	GeneralVector GeneralVector::operator*(float value)
 	{
 		GeneralVector k = GeneralVector(size);
 		for (int i = 0; i < size; i++)
@@ -101,7 +121,7 @@ namespace smpl
 		return k;
 	}
 
-	GeneralVector GeneralVector::operator/(double value)
+	GeneralVector GeneralVector::operator/(float value)
 	{
 		GeneralVector k = GeneralVector(size);
 		for (int i = 0; i < size; i++)
@@ -151,7 +171,7 @@ namespace smpl
 		return k;
 	}
 
-	void GeneralVector::operator*=(double value)
+	void GeneralVector::operator*=(float value)
 	{
 		for (int i = 0; i < size; i++)
 		{
@@ -159,7 +179,7 @@ namespace smpl
 		}
 	}
 
-	void GeneralVector::operator/=(double value)
+	void GeneralVector::operator/=(float value)
 	{
 		for (int i = 0; i < size; i++)
 		{
@@ -226,7 +246,7 @@ namespace smpl
 	}
 
 
-	double& GeneralVector::operator[](int index)
+	float& GeneralVector::operator[](int index)
 	{
 		return values[index];
 	}

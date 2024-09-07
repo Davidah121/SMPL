@@ -296,39 +296,39 @@ namespace smpl
         
         auto pair = attribs.get("text");
         if(pair != nullptr)
-            text = pair->data;
+            text = pair->second;
         attribs.remove(pair);
 
         pair = attribs.get("font-color");
         if(pair != nullptr)
-            fontColor = loadColor(pair->data);
+            fontColor = loadColor(pair->second);
         attribs.remove(pair);
 
         pair = attribs.get("highlight-color");
         if(pair != nullptr)
-            highlightColor = loadColor(pair->data);
+            highlightColor = loadColor(pair->second);
         attribs.remove(pair);
 
         pair = attribs.get("max-width");
         if(pair != nullptr)
-            if(loadValueFromAttrib(maxWidth, pair->data))
+            if(loadValueFromAttrib(maxWidth, pair->second))
                 maxWidth = -1;
         attribs.remove(pair);
 
         pair = attribs.get("max-height");
         if(pair != nullptr)
-            if(loadValueFromAttrib(maxHeight, pair->data))
+            if(loadValueFromAttrib(maxHeight, pair->second))
                 maxHeight = -1;
         attribs.remove(pair);
 
         pair = attribs.get("selectable");
         if(pair != nullptr)
-            isSelectable = (pair->data == "true");
+            isSelectable = (pair->second == "true");
         attribs.remove(pair);
 
         pair = attribs.get("can-wrap");
         if(pair != nullptr)
-            canWrap = (pair->data == "true");
+            canWrap = (pair->second == "true");
         attribs.remove(pair);
     }
 

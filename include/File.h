@@ -1,11 +1,12 @@
 #pragma once
+#include "BuildOptions.h"
 #include <iostream>
 #include "StringTools.h"
 
 namespace smpl
 {
 
-    class File
+    class DLL_OPTION File
     {
     public:
         /**

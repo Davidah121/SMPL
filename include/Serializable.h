@@ -1,15 +1,17 @@
 #pragma once
+#include "BuildOptions.h"
 #include <iostream>
 #include <vector>
 #include <typeinfo>
 #include <functional>
 #include "Object.h"
 #include "Streamable.h"
+#include <unordered_map>
 
 namespace smpl
 {
-	class SerializedData;
-	class SerializedObject;
+	class DLL_OPTION SerializedData;
+	class DLL_OPTION SerializedObject;
 
 	struct WritableSerialzedData
 	{
@@ -17,7 +19,7 @@ namespace smpl
 		static const bool TYPE_OBJECT = true;
 		
 		bool type = 0;
-		unsigned int size = 0; //size of the data in bytes
+		size_t size = 0; //size of the data in bytes
 		unsigned char* data = nullptr; //the data as bytes
 	};
 
@@ -28,11 +30,11 @@ namespace smpl
 	//Total required space for an object is 9 bytes + n bytes for name and k bytes for the offsets. Those can actually be 0 so at least 9 is required.
 	//Total required space for a primitive is 5 bytes + n bytes for the data. This too can also be 0 so at least 5 bytes is required.
 	//for each function, pass in a vector of unsigned bytes or an array of unsigned bytes with a size
-	class SerializedData
+	class DLL_OPTION SerializedData
 	{
 	public:
-		static const int TYPE_DATA = 0;
-		static const int TYPE_OBJECT = 1;
+		static const bool TYPE_DATA = false;
+		static const bool TYPE_OBJECT = true;
 
 		/**
 		 * @brief Adds a few default pretty names.
@@ -123,7 +125,7 @@ namespace smpl
 		 * 
 		 * @param parentNode 
 		 */
-		void serialize(StreamableList<unsigned char> data);
+		void serialize(Streamable<unsigned char>* data);
 
 		/**
 		 * @brief Attempts to set the data stored by using the provided JObject.
@@ -135,7 +137,7 @@ namespace smpl
 		 * 
 		 * @param node 
 		 */
-		void deserialize(StreamableList<unsigned char> data);
+		void deserialize(Streamable<unsigned char>* data);
 
 		/**
 		 * @brief adds a new function to save data corresponding to a specific class.
@@ -144,7 +146,7 @@ namespace smpl
 		 * @param className 
 		 * @param func 
 		 */
-		static void addSaveFunction(std::string className, std::function<void(std::vector<std::string>, StreamableList<unsigned char>, SerializedData)> func);
+		static void addSaveFunction(std::string className, std::function<void(std::vector<std::string>, Streamable<unsigned char>*, SerializedData)> func);
 
 		
 		/**
@@ -154,7 +156,7 @@ namespace smpl
 		 * @param className 
 		 * @param func 
 		 */
-		static void addLoadFunction(std::string className, std::function<void(std::vector<std::string>, StreamableList<unsigned char>, SerializedData)> func);
+		static void addLoadFunction(std::string className, std::function<void(std::vector<std::string>, Streamable<unsigned char>*, SerializedData)> func);
 
 	private:
 		friend SerializedObject;
@@ -164,12 +166,13 @@ namespace smpl
 		std::string type = "";
 		size_t size = 1;
 		void* data = nullptr;
-		int objType = TYPE_DATA;
+		bool objType = TYPE_DATA;
 		
-		static std::unordered_map<std::string, std::function<void(std::vector<std::string>, StreamableList<unsigned char>, SerializedData)>> loadFunctions;
+		static std::unordered_map<std::string, std::function<void(std::vector<std::string>, Streamable<unsigned char>*, SerializedData)>> loadFunctions;
+		static std::unordered_map<std::string, std::function<void(std::vector<std::string>, Streamable<unsigned char>*, SerializedData)>> saveFunctions;
 	};
 
-	class SerializedObject : public Object
+	class DLL_OPTION SerializedObject : public Object
 	{
 	public:
 

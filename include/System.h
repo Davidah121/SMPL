@@ -1,5 +1,5 @@
 #pragma once
-
+#include "BuildOptions.h"
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <time.h>
 #include <chrono>
@@ -17,7 +17,7 @@ namespace smpl
 		std::string extensions;
 	};
 
-	class System
+	class DLL_OPTION System
 	{
 	public:
 

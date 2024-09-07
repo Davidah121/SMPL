@@ -1716,6 +1716,9 @@
 
 		void SimpleWindow::threadGuiUpdate()
 		{
+			if(!activateGui)
+				return;
+
 			Input::pollInput();
 			if(windowState != STATE_MINIMIZED)
 			{
@@ -1831,6 +1834,13 @@
 				shouldRepaint=true;
 				myMutex.unlock();
 			}
+		}
+		
+		void SimpleWindow::forceRepaint()
+		{
+			myMutex.lock();
+			mustRepaint = true;
+			myMutex.unlock();
 		}
 
 		void SimpleWindow::guiUpdate()

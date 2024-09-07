@@ -383,9 +383,9 @@ namespace smpl
 						Color c;
 						Vec3f afterConvert = ColorSpaceConverter::convert(g[0], ColorSpaceConverter::LAB_TO_RGB);
 
-						c.red = (unsigned char)MathExt::clamp(afterConvert.x, 0.0, 255.0);
-						c.green = (unsigned char)MathExt::clamp(afterConvert.y, 0.0, 255.0);
-						c.blue = (unsigned char)MathExt::clamp(afterConvert.z, 0.0, 255.0);
+						c.red = (unsigned char)MathExt::clamp(afterConvert.x, 0.0f, 255.0f);
+						c.green = (unsigned char)MathExt::clamp(afterConvert.y, 0.0f, 255.0f);
+						c.blue = (unsigned char)MathExt::clamp(afterConvert.z, 0.0f, 255.0f);
 						
 						temp.addNewColor(c);
 					}
@@ -459,9 +459,9 @@ namespace smpl
 					Color c;
 					Vec3f afterConvert = ColorSpaceConverter::convert(g[0], ColorSpaceConverter::LAB_TO_RGB);
 
-					c.red = (unsigned char)MathExt::clamp(afterConvert.x, 0.0, 255.0);
-					c.green = (unsigned char)MathExt::clamp(afterConvert.y, 0.0, 255.0);
-					c.blue = (unsigned char)MathExt::clamp(afterConvert.z, 0.0, 255.0);
+					c.red = (unsigned char)MathExt::clamp(afterConvert.x, 0.0f, 255.0f);
+					c.green = (unsigned char)MathExt::clamp(afterConvert.y, 0.0f, 255.0f);
+					c.blue = (unsigned char)MathExt::clamp(afterConvert.z, 0.0f, 255.0f);
 					
 					temp.addNewColor(c);
 				}
@@ -644,9 +644,9 @@ namespace smpl
 			//avg color for each box has already been found
 			Vec3f meanColor = b.averageColor;
 			//round
-			double cr = MathExt::clamp(MathExt::round(meanColor.x), 0.0, 255.0);
-			double cg = MathExt::clamp(MathExt::round(meanColor.y), 0.0, 255.0);
-			double cb = MathExt::clamp(MathExt::round(meanColor.z), 0.0, 255.0);
+			double cr = MathExt::clamp(MathExt::round(meanColor.x), 0.0f, 255.0f);
+			double cg = MathExt::clamp(MathExt::round(meanColor.y), 0.0f, 255.0f);
+			double cb = MathExt::clamp(MathExt::round(meanColor.z), 0.0f, 255.0f);
 
 			finalColors.push_back( {(unsigned char)cr, (unsigned char)cg, (unsigned char)cb, 255} );
 		}
@@ -752,9 +752,9 @@ namespace smpl
 			avgVal/=(double)divVal;
 
 			//round
-			double cr = MathExt::clamp(MathExt::round(avgVal.x), 0.0, 255.0);
-			double cg = MathExt::clamp(MathExt::round(avgVal.y), 0.0, 255.0);
-			double cb = MathExt::clamp(MathExt::round(avgVal.z), 0.0, 255.0);
+			double cr = MathExt::clamp(MathExt::round(avgVal.x), 0.0f, 255.0f);
+			double cg = MathExt::clamp(MathExt::round(avgVal.y), 0.0f, 255.0f);
+			double cb = MathExt::clamp(MathExt::round(avgVal.z), 0.0f, 255.0f);
 
 			finalColors.push_back( {(unsigned char)cr, (unsigned char)cg, (unsigned char)cb, 255} );
 		}
@@ -853,9 +853,9 @@ namespace smpl
 		for(ColorBoxInfo k : groups)
 		{
 			//round
-			double cr = MathExt::clamp(MathExt::round(k.averageColor.x), 0.0, 255.0);
-			double cg = MathExt::clamp(MathExt::round(k.averageColor.y), 0.0, 255.0);
-			double cb = MathExt::clamp(MathExt::round(k.averageColor.z), 0.0, 255.0);
+			double cr = MathExt::clamp(MathExt::round(k.averageColor.x), 0.0f, 255.0f);
+			double cg = MathExt::clamp(MathExt::round(k.averageColor.y), 0.0f, 255.0f);
+			double cb = MathExt::clamp(MathExt::round(k.averageColor.z), 0.0f, 255.0f);
 
 			avgColors.push_back( {(unsigned char)cr, (unsigned char)cg, (unsigned char)cb, 255} );
 		}

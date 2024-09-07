@@ -1,15 +1,21 @@
 #pragma once
+#include "BuildOptions.h"
 #include "SimpleGraphics.h"
+#include "ColorSpaceConverter.h"
 
 namespace smpl
 {
-	class ComputerVision
+	class DLL_OPTION ComputerVision
 	{
 	public:
 		static const unsigned char RED_CHANNEL = 0;
 		static const unsigned char GREEN_CHANNEL = 1;
 		static const unsigned char BLUE_CHANNEL = 2;
 		static const unsigned char ALPHA_CHANNEL = 3;
+
+		static const unsigned char THRESH_ADAPTIVE_MEAN = 0;
+		static const unsigned char THRESH_ADAPTIVE_GUASSIAN = 1;
+		
 
 		/**
 		 * @brief Calculates the gradient of the specified color channel using
@@ -111,6 +117,100 @@ namespace smpl
 		static int hammingDistanceImageHash(uint64_t img1, uint64_t img2);
 
 		/**
+		 * @brief Generates a guassian kernel that can be used in convolution
+		 * 		to do guassian blur.
+		 * 
+		 * @param kernelRadius 
+		 * @param sigma 
+		 * @return Matrix 
+		 */
+		static Matrix guassianKernel(int kernelRadius, float sigma);
+
+		/**
+		 * @brief Converts the image to a matrix only keeping 1 color channel
+		 * 
+		 * @param img 
+		 * @param colorChannel 
+		 * @return Matrix 
+		 */
+		static Matrix imageToMatrix(Image* img, unsigned char colorChannel);
+
+		/**
+		 * @brief Converts the matrix to a grayscale image.
+		 * 
+		 * @param mat 
+		 * @return Image* 
+		 */
+		static Image* matrixToImage(Matrix* mat);
+
+		/**
+		 * @brief Converts the matrix back to an image. Only modifies a single color channel.
+		 * 		Allows multiple matrices that represent a different color channel to be combined.
+		 * 
+		 * @param mat 
+		 * @param img 
+		 * @param colorChannel 
+		 */
+		static void matrixToImage(Matrix* mat, Image* img, unsigned char colorChannel);
+
+		/**
+		 * @brief Converts the image to a matrix while keeping all values above some threshold.
+		 * 		Converts only 1 color channel
+		 * 		Values above the threshold are set to 1. Otherwise, they are set to 0.
+		 * 
+		 * @param img 
+		 * @param threshold 
+		 * @param colorChannel 
+		 * @param inverse
+		 * 		If its inverse, values below the threshold are 1.
+		 * @return Matrix 
+		 */
+		static Matrix thresholding(Image* img, unsigned char threshold, unsigned char colorChannel, bool inverse);
+
+		/**
+		 * @brief Converts the image to a matrix while keeping all values above some threshold.
+		 * 		Values above the threshold are set to 1. Otherwise, they are set to 0.
+		 * 
+		 * @param img 
+		 * @param threshold 
+		 * @param inverse
+		 * 		If its inverse, values below the threshold are 1.
+		 * @return Matrix 
+		 */
+		static Matrix thresholding(Matrix* img, float threshold, bool inverse);
+
+		/**
+		 * @brief Converts the image to a matrix while keeping all values above some threshold.
+		 * 		Converts only 1 color channel
+		 * 		Values above the threshold are set to 1. Otherwise, they are set to 0.
+		 * 
+		 * @param img 
+		 * @param adjustment
+		 * @param radius 
+		 * @param colorChannel 
+		 * @param mode
+		 * 		The type of adaptive thresholding
+		 * @param inverse
+		 * 		If its inverse, values below the threshold are 1.
+		 * @return Matrix 
+		 */
+		static Matrix adaptiveThresholding(Image* img, unsigned char adjustment, unsigned char radius, unsigned char colorChannel, unsigned char mode, bool inverse);
+
+		/**
+		 * @brief Converts the image to a matrix while keeping all values above some threshold.
+		 * 		Values above the threshold are set to 1. Otherwise, they are set to 0.
+		 * 
+		 * @param img 
+		 * @param threshold 
+		 * @param mode
+		 * 		The type of adaptive thresholding
+		 * @param inverse
+		 * 		If its inverse, values below the threshold are 1.
+		 * @return Matrix 
+		 */
+		static Matrix adaptiveThresholding(Matrix* img, unsigned char mode, bool inverse);
+
+		/**
 		 * @brief Readjusts the matrix values so that they fit between the min and max intensities but
 		 * 		also maintain relative scaling between the values.
 		 * 
@@ -133,16 +233,10 @@ namespace smpl
 		 * 		Returns the baseImage convolved with the kernel.
 		 * @param baseImage 
 		 * @param kernel 
-		 * @param colorChannel
-		 * 		Possible values are
-		 * 			RED_CHANNEL
-		 * 			GREEN_CHANNEL
-		 * 			BLUE_CHANNEL
-		 * 			ALPHA_CHANNEL
 		 * @param normalize
 		 * @return Matrix 
 		 */
-		static Matrix convolution(Image* baseImage, Matrix* kernel, int colorChannel, bool normalize);
+		static Matrix convolution(Matrix* baseImage, Matrix* kernel);
 		
 		/**
 		 * @brief Computes the cross correlation of a image and another image.
@@ -157,16 +251,34 @@ namespace smpl
 		 * 		Returns the baseImage convolved with the kernel.
 		 * @param baseImage 
 		 * @param kernel 
-		 * @param colorChannel
-		 * 		Possible values are
-		 * 			RED_CHANNEL
-		 * 			GREEN_CHANNEL
-		 * 			BLUE_CHANNEL
-		 * 			ALPHA_CHANNEL
 		 * @param normalize
 		 * @return Matrix 
 		 */
-		static Matrix crossCorrelation(Image* baseImage, Image* kernel, int colorChannel, bool normalized);
+		static Matrix crossCorrelation(Matrix* baseImage, Matrix* kernel, bool normalized);
+
+		/**
+		 * @brief Attempts to find a contour from some starting point x,y that is on the contour using
+		 * 		the direction it entered from defined by preX,preY. Due to the exit condition, it may not
+		 * 		trace the entire contour. It will not find holes in the shape.
+		 * 
+		 * @param m 
+		 * @param x 
+		 * @param y 
+		 * @param preX 
+		 * @param preY 
+		 * @param points 
+		 */
+		static void mooreNeighborTracing(Matrix* m, int x, int y, int preX, int preY, std::vector<Vec2f>& points);
+
+		/**
+		 * @brief Attempts to find all contours using moore's neighbor tracing.
+		 * 		Finds contours that are 8 way connected.
+		 * 		Due to the exit condition, it currently may not trace the entire contour.
+		 * 
+		 * @param img 
+		 * @return std::vector<std::vector<Vec2f>> 
+		 */
+		static std::vector<std::vector<Vec2f>> findContours(Image* img);
 
 	private:
 	};

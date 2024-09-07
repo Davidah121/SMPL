@@ -1,11 +1,12 @@
 #pragma once
+#include "BuildOptions.h"
 #include "Image.h"
 #include "MathExt.h"
 
 namespace smpl
 {
 
-    class ColorSpaceConverter
+    class DLL_OPTION ColorSpaceConverter
     {
     public:
         static const unsigned char RGB_TO_YCBCR = 0;

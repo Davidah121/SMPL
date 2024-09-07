@@ -367,28 +367,28 @@ namespace smpl
         auto pair = attribs.get("margin");
         if(pair != nullptr)
         {
-            loadRectStuff(margin, pair->data, true);
+            loadRectStuff(margin, pair->second, true);
         }
         attribs.remove(pair);
 
         pair = attribs.get("padding");
         if(pair != nullptr)
         {
-            loadRectStuff(padding, pair->data, false);
+            loadRectStuff(padding, pair->second, false);
         }
         attribs.remove(pair);
 
         pair = attribs.get("border");
         if(pair != nullptr)
         {
-            loadRectStuff(border, pair->data, false);
+            loadRectStuff(border, pair->second, false);
         }
         attribs.remove(pair);
 
         pair = attribs.get("max-width");
         if(pair != nullptr)
         {
-            if(loadValueFromAttrib(maxWidth, pair->data))
+            if(loadValueFromAttrib(maxWidth, pair->second))
                 setMaxWidthPercentage(true);
         }
         attribs.remove(pair);
@@ -396,7 +396,7 @@ namespace smpl
         pair = attribs.get("min-width");
         if(pair != nullptr)
         {
-            if(loadValueFromAttrib(minWidth, pair->data))
+            if(loadValueFromAttrib(minWidth, pair->second))
                 setMinWidthPercentage(true);
         }
         attribs.remove(pair);
@@ -404,7 +404,7 @@ namespace smpl
         pair = attribs.get("max-height");
         if(pair != nullptr)
         {
-            if(loadValueFromAttrib(maxHeight, pair->data))
+            if(loadValueFromAttrib(maxHeight, pair->second))
                 setMaxHeightPercentage(true);
         }
         attribs.remove(pair);
@@ -412,7 +412,7 @@ namespace smpl
         pair = attribs.get("min-height");
         if(pair != nullptr)
         {
-            if(loadValueFromAttrib(minHeight, pair->data))
+            if(loadValueFromAttrib(minHeight, pair->second))
                 setMinHeightPercentage(true);
         }
         attribs.remove(pair);
@@ -420,21 +420,21 @@ namespace smpl
         pair = attribs.get("background-color");
         if(pair != nullptr)
         {
-            backgroundColor = loadColor(pair->data);
+            backgroundColor = loadColor(pair->second);
         }
         attribs.remove(pair);
 
         pair = attribs.get("border-color");
         if(pair != nullptr)
         {
-            borderColor = loadColor(pair->data);
+            borderColor = loadColor(pair->second);
         }
         attribs.remove(pair);
 
         pair = attribs.get("col-span");
         if(pair != nullptr)
         {
-            if(loadValueFromAttrib(colSpan, pair->data))
+            if(loadValueFromAttrib(colSpan, pair->second))
                 colSpan = 1;
             colSpan = __max(colSpan, 1);
         }
@@ -443,7 +443,7 @@ namespace smpl
         pair = attribs.get("row-span");
         if(pair != nullptr)
         {
-            if(loadValueFromAttrib(rowSpan, pair->data))
+            if(loadValueFromAttrib(rowSpan, pair->second))
                 rowSpan = 1;
             rowSpan = __max(rowSpan, 1);
         }

@@ -1,11 +1,12 @@
 #pragma once
+#include "BuildOptions.h"
 #include <mutex>
 #include <queue>
 
 namespace smpl
 {
 
-	class Input
+	class DLL_OPTION Input
 	{
 	public:
 		static const int NEGATIVE = 0x80000000;

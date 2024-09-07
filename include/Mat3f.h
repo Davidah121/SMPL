@@ -1,11 +1,12 @@
 #pragma once
+#include "BuildOptions.h"
 #include "Matrix.h"
 #include "Vec3f.h"
 
 namespace smpl
 {
 
-	class Mat3f : public Matrix
+	class DLL_OPTION Mat3f : public Matrix
 	{
 	public:
 		/**
@@ -30,7 +31,7 @@ namespace smpl
 		 * @param v8 
 		 * @param v9 
 		 */
-		Mat3f(double v1, double v2, double v3, double v4, double v5, double v6, double v7, double v8, double v9);
+		Mat3f(float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8, float v9);
 
 		/**
 		 * @brief Destroys the Mat3f object
@@ -65,19 +66,19 @@ namespace smpl
 		 */
 		static Mat3f getIdentity();
 
-		double* operator[](int row);
+		float* operator[](int row);
 
 		Mat3f operator+(Mat3f other);
 		Mat3f operator-(Mat3f other);
 		Mat3f operator*(Mat3f other);
 
-		Mat3f operator*(double other);
-		friend Mat3f operator*(double value, Mat3f other)
+		Mat3f operator*(float other);
+		friend Mat3f operator*(float value, Mat3f other)
 		{
 			return other*value;
 		}
 		
-		void operator*=(double other);
+		void operator*=(float other);
 
 		void operator+=(Mat3f other);
 		void operator-=(Mat3f other);
@@ -86,23 +87,6 @@ namespace smpl
 
 		bool operator==(Mat3f other);
 		bool operator!=(Mat3f other);
-
-		//Converting into an array
-		/**
-		 * @brief Fills a float array of at least size 9 with the matrix values
-		 * 		
-		 * @param buffer 
-		 * 		Must be of size 9 or greater.
-		 */
-		void fillArray(float* buffer);
-
-		/**
-		 * @brief Fills a float array of at least size 9 with the matrix values
-		 * 		
-		 * @param buffer 
-		 * 		Must be of size 9 or greater.
-		 */
-		void fillArray(double* buffer);
 	};
 
 } //NAMESPACE smpl END

@@ -1,86 +1,16 @@
 #include "StringTools.h"
-#include "SimpleDir.h"
 #include "System.h"
 #include "SimpleWindow.h"
 #include <atomic>
-#include "WebClient.h"
-#include "Input.h"
 #include "Sprite.h"
-#include "QuadTree.h"
-#include "ColorSpaceConverter.h"
 #include "SimpleGraphics.h"
 #include "Compression.h"
 #include "ComputerVision.h"
+#include "SimpleJobQueue.h"
+
+
 
 using namespace smpl;
-
-bool firstConnect = true;
-void testWebClient()
-{
-    // WebClient client = WebClient("https://www.google.com");
-    WebClient client = WebClient("http://developer.mozilla.org");
-    // WebClient client = WebClient("https://stackoverflow.com/questions/73916302/how-can-i-use-an-https-client-certificate-protected-api-with-firefox");
-    client.setOnConnectFunc([](WebClient* wc) ->void {
-        StringTools::println("CONNECTED TO %s", wc->getWebname().c_str());
-        
-        if(firstConnect)
-        {
-            WebRequest req;
-            req.setHeader(WebRequest::TYPE_GET, "/en-US/docs/Web/HTTP/Redirections", true);
-            wc->sendRequest(req);
-            firstConnect = false;
-        }
-    });
-
-    client.setOnBufferChangedFunc([](WebClient* wc, WebRequest& response, unsigned char* buffer, size_t sizeOfBuffer) ->void {
-        if(wc->getLastResponseCode() == 200)
-        {
-            StringTools::println("Writing %llu bytes", sizeOfBuffer);
-            SimpleFile testFile = SimpleFile("firefox.html", SimpleFile::WRITE_APPEND);
-            if(testFile.isOpen())
-            {
-                testFile.writeBytes(buffer, sizeOfBuffer);
-                testFile.close();
-            }
-        }
-        else
-        {
-            StringTools::println("ERROR: Returned some other response that is not 200.");
-            StringTools::println("Response Code = %d", wc->getLastResponseCode());
-
-            if(sizeOfBuffer > 0)
-            {
-                StringTools::println("Writing %llu bytes to error buffer", sizeOfBuffer);
-                SimpleFile testFile = SimpleFile("error.html", SimpleFile::WRITE_APPEND);
-                if(testFile.isOpen())
-                {
-                    testFile.writeBytes(buffer, sizeOfBuffer);
-                    testFile.close();
-                }
-            }
-        }
-    });
-
-    client.setOnDisconnectFunc([](WebClient* wc) ->void {
-        StringTools::println("DISCONNECTED From %s", wc->getHost().c_str());
-    });
-    
-    client.alwaysSendKeepAlive(false);
-    SimpleDir::deleteResource("./firefox.html");
-    client.start();
-
-    while(true)
-    {
-        if(client.getShouldRedirect())
-            client.completeRedirect();
-        
-        Input::pollInput();
-        if(Input::getKeyDown(Input::KEY_ESCAPE))
-            break;
-        System::sleep(1, 0, false);
-    }
-    StringTools::println("ENDING");
-}
 
 size_t subDivisions = 0;
 size_t subDivisionsPerSize[8];
@@ -133,9 +63,9 @@ void recursivePass(Image* img, int startX, int startY, int size, int lowestSize,
     stdDev.y = MathExt::sqrt(stdDev.y);
 
     Color avgColor;
-    avgColor.red = MathExt::clamp(MathExt::round(avgColorVec.x), 0.0, 255.0);
-    avgColor.green = MathExt::clamp(MathExt::round(avgColorVec.y), 0.0, 255.0);
-    avgColor.blue = MathExt::clamp(MathExt::round(avgColorVec.z), 0.0, 255.0);
+    avgColor.red = MathExt::clamp(MathExt::round(avgColorVec.x), 0.0f, 255.0f);
+    avgColor.green = MathExt::clamp(MathExt::round(avgColorVec.y), 0.0f, 255.0f);
+    avgColor.blue = MathExt::clamp(MathExt::round(avgColorVec.z), 0.0f, 255.0f);
     avgColor.alpha = 255;
     
     // StringTools::println("(%d, %d) - avg: (%.3f, %.3f) std deviation: (%.3f, %.3f)", startX, startY, avgDirection.x, avgDirection.y, stdDev.x, stdDev.y);
@@ -267,8 +197,10 @@ void testQuadTreeLikeCompression()
                         0,  0,  0,
                         -1, -2, -1);
 
-        Matrix imgXDerivative = ComputerVision::convolution(imgs.getImage(0), &gx, ComputerVision::RED_CHANNEL, true);
-        Matrix imgYDerivative = ComputerVision::convolution(imgs.getImage(0), &gy, ComputerVision::RED_CHANNEL, true);
+        Matrix imgAsMatrix = ComputerVision::imageToMatrix(imgs.getImage(0), ComputerVision::RED_CHANNEL);
+
+        Matrix imgXDerivative = ComputerVision::convolution(&imgAsMatrix, &gx);
+        Matrix imgYDerivative = ComputerVision::convolution(&imgAsMatrix, &gy);
 
         //save these as images
         for(int i=64; i>=1; i/=2)
@@ -317,266 +249,17 @@ void testQuadTreeLikeCompression()
 
 }
 
-void testCopyDirectory()
-{
-    SimpleDir::copyResource("C:/Drive_D/Games/Steam/userdata/167820327/2054970/remote/win64_save", "TestImages/examples/BT3");
-}
-
-void streamDecompressTest()
-{
-    size_t t1 = System::getCurrentTimeMillis();
-    std::string file1 = "BigCompressTest";
-    std::string file2 = "C:/Users/Alan/Desktop/DoThese/2023_11_05/Launch out into the deep_uncompressed.mp4";
-    // std::string file1 = "BaselineCompressedData";
-    // std::string file2 = "BaselineOutput2";
-    SimpleFile f = SimpleFile(file1, SimpleFile::READ);
-    SimpleFile f2 = SimpleFile(file2, SimpleFile::WRITE);
-    StreamCompressionLZSS compressor = StreamCompressionLZSS(StreamCompressionLZSS::TYPE_DECOMPRESSION);
-
-    if(f.isOpen() && f2.isOpen())
-    {
-        unsigned char* buffer = new unsigned char[0xFFFF];
-        while(true)
-        {
-            size_t actualRead = f.readBytes((char*)buffer, 0xFFFF);
-            if(actualRead > 0)
-            {
-                compressor.addData(buffer, actualRead);
-                
-                if(compressor.getBuffer().getByteRef().size() > 0)
-                {
-                    //try to write.
-                    f2.writeBytes(compressor.getBuffer().getByteRef().data(), compressor.getBuffer().getByteRef().size());
-                    compressor.clearBuffer();
-                }
-            }
-            else
-                break;
-        }
-
-        f2.close();
-        f.close();
-        delete[] buffer;
-    }
-    
-    size_t t2 = System::getCurrentTimeMillis();
-    size_t readSize = SimpleDir::getReferenceSize(file1);
-    size_t writeSize = SimpleDir::getReferenceSize(file2);
-    StringTools::println("Time to read and decompress = %llu", t2-t1);
-
-    StringTools::println("Read in %llu bytes", readSize);
-    StringTools::println("Wrote out %llu bytes", writeSize);
-
-    double timeInSeconds = (double)(t2-t1) / 1000;
-    double speedInBytes = (double)readSize / timeInSeconds;
-    double speedInMB = speedInBytes / 1000000;
-
-    StringTools::println("Decompression Speed = %.3f MB/s", speedInMB);
-}
-
-void streamCompressTest()
-{
-    size_t timeToCompress = 0;
-
-    // size_t t1 = System::getCurrentTimeMillis();
-    std::string file1 = "C:/Users/Alan/Desktop/DoThese/2023_11_05/Launch out into the deep.mp4";
-    std::string file2 = "BigCompressTest";
-    // std::string file1 = "BaselineOutput";
-    // std::string file2 = "BaselineCompressedData";
-    SimpleFile f = SimpleFile(file1, SimpleFile::READ);
-    SimpleFile f2 = SimpleFile(file2, SimpleFile::WRITE);
-    StreamCompressionLZSS compressor = StreamCompressionLZSS(StreamCompressionLZSS::TYPE_COMPRESSION);
-
-    if(f.isOpen() && f2.isOpen())
-    {
-        unsigned char* buffer = new unsigned char[0xFFFF];
-        BinarySet leftovers;
-        while(true)
-        {
-            size_t actualRead = f.readBytes((char*)buffer, 0xFFFF);
-            if(actualRead > 0)
-            {
-                size_t t1 = System::getCurrentTimeMicro();
-                compressor.addData(buffer, actualRead);
-                size_t t2 = System::getCurrentTimeMicro();
-                timeToCompress += (t2-t1);
-                
-                if(compressor.getBuffer().size() % 8 == 0)
-                {
-                    //try to write.
-                    f2.writeBytes(compressor.getBuffer().getByteRef().data(), compressor.getBuffer().getByteRef().size());
-                    compressor.clearBuffer();
-                }
-            }
-            else
-                break;
-        }
-        compressor.endData();
-        //try to write.
-        f2.writeBytes(compressor.getBuffer().getByteRef().data(), compressor.getBuffer().getByteRef().size());
-
-        f2.close();
-        f.close();
-        delete[] buffer;
-    }
-    
-    // size_t t2 = System::getCurrentTimeMillis();
-
-    size_t readSize = SimpleDir::getReferenceSize(file1);
-    size_t writeSize = SimpleDir::getReferenceSize(file2);
-    StringTools::println("Time to read and compress = %lluus", timeToCompress);
-
-    StringTools::println("Read in %llu bytes", readSize);
-    StringTools::println("Wrote out %llu bytes", writeSize);
-
-    double timeInSeconds = (double)(timeToCompress) / 1000000;
-    double compressRatio = (double)readSize/(double)writeSize;
-    double speedInBytes = (double)readSize / timeInSeconds;
-    double speedInMB = speedInBytes / 1000000;
-
-    StringTools::println("Compression Ratio = %.3f", compressRatio);
-    StringTools::println("Compression Speed = %.3f MB/s", speedInMB);
-}
-
-void testLZ77CSA()
-{
-    std::string file1 = "BaselineOutput";
-    SimpleFile f = SimpleFile(file1, SimpleFile::READ);
-    std::vector<lengthPair> outputPairs1;
-    std::vector<lengthPair> outputPairs2;
-    bool same = false;
-    if(f.isOpen())
-    {
-        auto data = f.readFullFileAsBytes();
-        f.close();
-
-        Compression::getLZ77RefPairsCHash(data.data(), data.size(), &outputPairs1, 7);
-        Compression::getLZ77RefPairsCSA(data.data(), data.size(), &outputPairs2, 7);
-    }
-    
-    StringTools::println("TotalSize: %llu", SimpleDir::getReferenceSize(file1));
-    StringTools::println("%llu", outputPairs1.size());
-    StringTools::println("%llu", outputPairs2.size());
-}
-
-void quickCompression()
-{
-    std::string file1 = "screenshot.png";
-    Sprite s;
-    s.loadImage(file1);
-    std::vector<unsigned char> outputData;
-    size_t compressTime = 0;
-    if(s.getSize() > 0)
-    {
-
-        size_t t1,t2;
-        t1 = System::getCurrentTimeMillis();
-        // outputData = Compression::compressDeflate(data, 1, 7, true);
-        // s.getImage(0)->savePNG("betterScreenshot.png", false, false, true);
-        s.getImage(0)->saveGIF("betterScreenshot.gif", 256, false, false);
-        compressTime = System::getCurrentTimeMillis() - t1;
-        // s.getImage(0)->saveBMP("ScreenshotAsBMP.bmp");
-
-        // SimpleFile f2 = SimpleFile("MyCurrentImplementation2", SimpleFile::WRITE);
-        // f2.writeBytes(outputData.data(), outputData.size());
-        // f2.close();
-    }
-    
-    StringTools::println("TotalSize: %llu", SimpleDir::getReferenceSize(file1));
-    StringTools::println("Time to compress = %llu", compressTime);
-}
-
-class testClass : public SerializedObject
-{
-public:
-    testClass()
-    {
-
-    }
-    ~testClass()
-    {
-
-    }
-    static const RootClass globalClass;
-    const RootClass* getClass()
-    {
-        return &globalClass;
-    }
-
-    std::unordered_map<std::string, SerializedData> getSerializedVariables()
-    {
-        return {SERIALIZE_MAP(x), SERIALIZE_MAP(otherVars), SERIALIZE_MAP(list12), SERIALIZE_MAP(doubleList)};
-    }
-private:
-    double x;
-    std::vector<unsigned char> otherVars;
-    std::vector<Vec2f> list12;
-    std::vector<std::vector<Vec2f>> doubleList;
-};
-const RootClass testClass::globalClass = CREATE_ROOT_CLASS(testClass);
-
-std::string extractClass(std::string s)
-{
-    //assume the word class is separated from the actual class name
-    //move upto the first < or end of the string
-    size_t index = s.find_first_of('<');
-    return s.substr(0, index);
-}
-
-std::vector<std::string> extractClassAndTemplates(std::string s)
-{
-    std::vector<std::string> output;
-    std::vector<std::string> splits = StringTools::splitStringMultipleDeliminators(s, ",<>");
-    //don't want empty spaces either
-    for(std::string arg : splits)
-    {
-        bool somethingOtherThanSpace = false;
-        for(char c : arg)
-        {
-            if(c != ' ')
-            {
-                somethingOtherThanSpace = true;
-                break;
-            }
-        }
-        if(somethingOtherThanSpace)
-            output.push_back(arg);
-    }
-    
-    return output;
-}
-
 void testSerialization()
 {
-    // // Vec2f p;
-    // // SerializedObject* so = &p;
-    // // StringTools::println("Class of p = %s", so->getClass()->getName().c_str());
-    // // StringTools::println("Direct parents of P:");
-    // // auto parentList = so->getClass()->getListOfParents();
-    // // for(const RootClass* parentClass : parentList)
-    // // {
-    // //     StringTools::println("\t%s", parentClass->getName().c_str());
-    // // }
+    Vec2f p;
+    p.x = 0.2;
+    p.y = 3.1;
+    
+    StreamableVector<unsigned char> outputData;
+    SerializedData pSerialized = SERIALIZE(p);
+    pSerialized.serialize(&outputData);
 
-    // // if(so->getClass()->isDerivedFrom(&Object::globalClass))
-    // //     StringTools::println("P also derives from Object");
-    // // else
-    // //     StringTools::println("P does not derive from Object");
-
-    // // std::streambuf buffer = std::basic_streambuf()
-    // // std::iostream inputStream = std::iostream();
-    // testClass c;
-    // auto listOfVars = c.getSerializedVariables();
-    // // for(auto var : listOfVars)
-    // // {
-    // //     StringTools::println("%s %s", var.second.getType().c_str(), var.first.c_str());
-    // // }
-    // auto vec1 = listOfVars["x"];
-    // std::vector<std::string> allStuff = extractTemplateStuff(vec1.getType());
-    // for(int i=0; i<allStuff.size(); i++)
-    // {
-    //     StringTools::println("| %s |", allStuff[i].c_str());
-    // }
+    
 }
 
 void init(SimpleWindow* win)
@@ -604,87 +287,496 @@ void testGuiPart2()
     win.waitTillClose();
 }
 
-void saStuff()
+void quickBezierTest()
 {
-    Sprite s;
-    s.loadImage("screenshot.png");
-    if(s.getSize() > 0)
-    {
-        size_t N = s.getImage(0)->getWidth() * s.getImage(0)->getHeight();
-        Color* pixels = s.getImage(0)->getPixels();
-        size_t t1 = System::getCurrentTimeNano();
-        SuffixAutomaton sa = SuffixAutomaton(N*4);
-        for(int i=0; i<N; i++)
-        {
-            sa.extend(pixels[i].red);
-            sa.extend(pixels[i].green);
-            sa.extend(pixels[i].blue);
-            sa.extend(pixels[i].alpha);
-        }
-        sa.mapAllPositions();
-        size_t t2 = System::getCurrentTimeNano();
-        StringTools::println("%lluns", t2-t1);
-    }
-}
+    BezierCurve b = BezierCurve();
+    b.addPoint(0, 1);
+    b.addPoint(1.614, 0.333);
+    b.addPoint(1.84, 2.13);
+    b.addPoint(0.805, 0.228);
 
-void tryCannyEdgeDetection()
-{
-    Sprite s;
-    s.loadImage("Large_Scaled_Forest_Lizard.bmp");
-    if(s.getSize() > 0)
+    std::vector<BezierCurve> curveSubdivisions = b.subdivide(0.5);
+    for(BezierCurve& curve : curveSubdivisions)
     {
-        Image* newImage = SimpleGraphics::cannyEdgeFilter(s.getImage(0), 0.09, 0.21);
-        if(newImage != nullptr)
+        StringTools::println("CURVE: ");
+        for(Vec2f& p : curve.getPoints())
         {
-            newImage->savePNG("TestCanny.png", false);
-            delete newImage;
+            StringTools::println("\t(%.3f, %.3f)", p.x, p.y);
         }
     }
 }
 
-std::vector<HWND> handles;
-
-BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lparam)
+void testDrawEfficiency()
 {
-    // if(IsWindowVisible(hwnd))
-    // {
-        handles.push_back(hwnd);
-        StringTools::println("HWND FOUND: %llx", hwnd);
-    // }
-    return TRUE;
-}
-
-void insertWindowTest()
-{
-    // EnumWindows(EnumWindowsProc, 0);
-    //hard coding stuff
-    WindowOptions options;
-    options.windowType = SimpleWindow::BORDERLESS_WINDOW;
-
-    SimpleWindow f = SimpleWindow("TestTitle", 320, 240, -1, -1, options);
+    SimpleGraphics::setAntiAliasing(true);
+    Image buffer = Image(512, 512);
+    Sprite loadedSprite = Sprite();
+    loadedSprite.loadImage("Large_Scaled_Forest_Lizard.jpg");
+    //13256100ns with no simd
+    //6584300ns with sse
+    //9319300ns with avx
+    if(loadedSprite.getSize()>0)
+        loadedSprite.getImage(0)->savePNG("JPEGLOADTEST.png", true, false, true);
+    // buffer.saveBMP("testbmp.bmp", 128);
     
-    HWND parent = (HWND)0x1017E; //maybe dangerous
-    HWND actualParent = SetParent((HWND)f.getWindowHandle(), parent);
-    StringTools::println("ACTUAL PARENT: %llu", actualParent);
-    f.waitTillClose();
+    // Image buffer = Image(1920, 1080);
+    // Image drawImg = Image(1920, 1080);
+
+    // //currently at 36 images per frame.
+    // for(int i=0; i<10; i++)
+    // {
+    //     size_t count = 0;
+    //     size_t t1 = System::getCurrentTimeMicro();
+    //     size_t timeUsed = 0;
+    //     while(true)
+    //     {
+    //         size_t t2 = System::getCurrentTimeMicro();
+    //         if(t2-t1 >= 16666)
+    //         {
+    //             timeUsed = t2-t1;
+    //             break;
+    //         }
+    //         SimpleGraphics::setColor(Color{255,255,255,255});
+    //         SimpleGraphics::drawSprite(&drawImg, 0, 0, &buffer);
+    //         count++;
+    //     }
+    //     StringTools::println("Total Time Used: %llu", timeUsed);
+    //     StringTools::println("ImagesDrawn = %llu", count);
+    // }
+    // system("pause");
+}
+
+void contourRecursiveCall(Image* img, int x, int y, int preX, int preY, std::vector<Vec2f>& points)
+{
+    //moore-neighbor tracing
+    const std::pair<int, int> boundaryPointsClockwise[8] = {{-1, -1}, {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}};
+
+    Vec2f newPoint = Vec2f(x, y);
+    Vec2f enterPoint = Vec2f(preX, preY);
+
+    while(true)
+    {
+        if(newPoint.x < 0 || newPoint.y < 0)
+            break;
+
+        //if this point is already in the list of points, return
+        for(int i=0; i<points.size(); i++)
+        {
+            if(newPoint == points[i])
+                return;
+        }
+        
+        points.push_back(newPoint);
+
+        //find start of the boundary checks
+        int tempX = enterPoint.x - newPoint.x;
+        int tempY = enterPoint.y - newPoint.y;
+        int startP = -1;
+        for(int i=0; i<8; i++)
+        {
+            if(tempX == boundaryPointsClockwise[i].first && tempY == boundaryPointsClockwise[i].second)
+            {
+                startP = i % 8;
+                break;
+            }
+        }
+
+        if(startP < 0)
+            return; //problem
+        
+        Vec2f nextPotentialPoint = {-1, -1};
+        int oldCheckX, oldCheckY;
+        for(int i=0; i<8; i++)
+        {
+            //move around pixel clockwise till a white pixel is found (white being a valid pixel and black being background).
+            std::pair<int, int> adjustments = boundaryPointsClockwise[startP];
+            int checkX = newPoint.x + adjustments.first;
+            int checkY = newPoint.y + adjustments.second;
+
+            if(checkX >= img->getWidth() || checkX < 0 || checkY >= img->getHeight() || checkY < 0)
+            {
+                //do nothing
+            }
+            else
+            {
+                //assume grayscale
+                Color c = img->getPixels()[checkX + checkY*img->getWidth()];
+                if(c.red > 0)
+                {
+                    //valid pixel. Part of boundary.
+                    nextPotentialPoint = Vec2f(checkX, checkY);
+                    enterPoint = Vec2f(oldCheckX, oldCheckY);
+                    break;
+                }
+            }
+
+            oldCheckX = checkX;
+            oldCheckY = checkY;
+            startP = (startP+1) % 8;
+        }
+
+        newPoint = nextPotentialPoint;
+    }
+}
+
+std::vector<std::vector<Vec2f>> findContours(Image* img)
+{
+    SmartMemory<Image> edgeImg;
+    edgeImg = SmartMemory<Image>::createDeleteOnLast(SimpleGraphics::cannyEdgeFilter(img, 1.0, 0.2, 0.5));
+    Image copyImg;
+    copyImg.copyImage(edgeImg.getRawPointer());
+
+    std::vector<std::vector<Vec2f>> allShapesFound;
+    for(int y=0; y<copyImg.getHeight(); y++)
+    {
+        for(int x=0; x<copyImg.getWidth(); x++)
+        {
+            if(copyImg.getPixels()[x + y*copyImg.getWidth()].red == 255)
+            {
+                std::vector<Vec2f> boundaryPoints;
+                contourRecursiveCall(&copyImg, x, y, x-1, y, boundaryPoints);
+
+                if(boundaryPoints.size() > 0)
+                {
+                    StringTools::println("FOUND SOMETHING");
+                    allShapesFound.push_back(boundaryPoints);
+                    //remove the polygon formed by connecting the points together with lines. Assume even-odd rule
+                    //Gonna cheat a little and use existing code
+                    SimpleGraphics::setColor({0, 0, 0, 0});
+                    SimpleGraphics::setBlendMode(SimpleGraphics::NO_COMPOSITE);
+                    SimpleGraphics::setFillRule(SimpleGraphics::FILL_EVEN_ODD);
+                    SimpleGraphics::drawPolygon(boundaryPoints.data(), boundaryPoints.size(), &copyImg);
+
+                    for(int i=0; i<boundaryPoints.size(); i++)
+                    {
+                        img->setPixel(boundaryPoints[i].x+1, boundaryPoints[i].y, {255, 0, 0, 255});
+                    }
+                    return allShapesFound;
+                }
+            }
+        }
+    }
+
+    return allShapesFound;
+}
+
+void removeBoundaryShape2(std::vector<Vec2f>& boundaryShape)
+{
+    std::vector<std::vector<std::pair<int, char>>> criticalPoints = std::vector<std::vector<std::pair<int, char>>>(32);
+    std::vector<std::vector<std::pair<int, int>>> horizontalLines = std::vector<std::vector<std::pair<int, int>>>(32);
+    // Vec2f lastToPoint = Vec2f();
+    // for(int i=0; i<boundaryShape.size(); i++)
+    // {
+    //     int p1 = i;
+    //     int p2 = (i+1) % boundaryShape.size();
+    //     Vec2f v1 = boundaryShape[p1];
+    //     Vec2f v2 = boundaryShape[p2];
+    //     Vec2f toPoint = boundaryShape[p2] - boundaryShape[p1];
+    //     if(toPoint.y == 0)
+    //     {
+    //         // criticalPoints[(int)v1.y].push_back({(int)v1.x, 0});
+    //         // criticalPoints[(int)v2.y].push_back({(int)v2.x, 0});
+    //     }
+    //     else if(toPoint.y > 0)
+    //     {
+    //         criticalPoints[(int)v1.y].push_back({(int)v1.x, 1});
+    //         if(i == boundaryShape.size()-1)
+    //             criticalPoints[(int)v2.y].push_back({(int)v2.x, 1});
+    //     }
+    //     else
+    //     {
+    //         criticalPoints[(int)v1.y].push_back({(int)v1.x, -1});
+    //         if(i == boundaryShape.size()-1)
+    //             criticalPoints[(int)v2.y].push_back({(int)v2.x, -1});
+    //     }
+    //     if(toPoint.y * lastToPoint.y < 0)
+    //     {
+    //         criticalPoints[(int)v1.y].push_back({(int)v1.x, -2}); //duplication
+    //     }
+    //     lastToPoint = toPoint;
+    // }
+
+    for(int i=0; i<boundaryShape.size(); i++)
+    {
+        int p1 = i;
+        int p2 = (i+1) % boundaryShape.size();
+        Vec2f v1 = boundaryShape[p1];
+        Vec2f v2 = boundaryShape[p2];
+        Vec2f toPoint = v2-v1;
+        BezierCurve b;
+        b.addPoint(v1);
+        b.addPoint(v2);
+
+        if(toPoint.y == 0)
+        {
+            //special case
+            if(v1.y >= 0 && v1.y < criticalPoints.size())
+            {
+                horizontalLines[(int)v1.y].push_back({(int)v1.x, (int)v2.x});
+            }
+            continue;
+        }
+
+        for(int y=0; y<criticalPoints.size(); y++)
+        {
+            std::vector<double> timeValues = b.findTimeForY(y);
+            for(double& d : timeValues)
+            {
+                if(d >= 0 && d <= 1)
+                {
+                    Vec2f intersection = b.getFuctionAt(d);
+                    if(toPoint.y > 0)
+                    {
+                        if(d > 0 && d < 1)
+                            criticalPoints[y].push_back({(int)intersection.x, 1});
+                        else
+                            criticalPoints[y].push_back({(int)intersection.x, 2});
+                    }
+                    else if(toPoint.y < 0)
+                    {
+                        if(d > 0 && d < 1)
+                            criticalPoints[y].push_back({(int)intersection.x, -1});
+                        else
+                            criticalPoints[y].push_back({(int)intersection.x, -2});
+                    }
+                }
+            }
+        }
+    }
+
+    for(int y=0; y<criticalPoints.size(); y++)
+    {
+        StringTools::println("%d : %llu", y, criticalPoints[y].size());
+        Sort::insertionSort<std::pair<int, char>>(criticalPoints[y].data(), criticalPoints[y].size(), [](std::pair<int, char> A, std::pair<int, char> B) ->bool{
+            if(A.first == B.first)
+                return A.second < B.second;
+            return A.first < B.first;
+        });
+
+
+        std::vector<int> reducedPoints = std::vector<int>();
+        int lastSlope = 0;
+        // bool addedLast = false;
+        for(int k=0; k<criticalPoints[y].size(); k++)
+        {
+            //no duplicates. if 2 or -2, must include. Its on a vertex
+
+            StringTools::println("\t(%d, %d)", criticalPoints[y][k].first, criticalPoints[y][k].second);
+            //make sure it wasn't the same as the last one
+            if(k > 0 && criticalPoints[y][k-1] == criticalPoints[y][k])
+            {
+                //skip this
+                continue;
+            }
+
+            //check last slope vs this one. If the same, ignore. If opposite, include.
+            //only if the points are connected via a horizontal line
+            if(reducedPoints.size() > 0)
+            {
+                //check if last point added and the current point are connected via horizontal line
+                bool connected = false;
+                if(reducedPoints.size() > 0)
+                {
+                    for(std::pair<int, int>& potentialPair : horizontalLines[y])
+                    {
+                        if(potentialPair.first == criticalPoints[y][k].first)
+                        {
+                            if(potentialPair.second == reducedPoints.back())
+                            {
+                                connected = true;
+                                break;
+                            }
+                        }
+                        if(potentialPair.second == criticalPoints[y][k].first)
+                        {
+                            if(potentialPair.first == reducedPoints.back())
+                            {
+                                connected = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if(connected)
+                {
+                    if(lastSlope != criticalPoints[y][k].second)
+                    {
+                        reducedPoints.push_back(criticalPoints[y][k].first);
+                    }
+                }
+                else
+                {
+                    reducedPoints.push_back(criticalPoints[y][k].first);
+                }
+            }
+            else
+            {
+                reducedPoints.push_back(criticalPoints[y][k].first);
+            }
+            lastSlope = criticalPoints[y][k].second;
+        
+        }
+
+        for(int k=0; k<reducedPoints.size(); k++)
+        {
+            auto p = reducedPoints[k];
+            StringTools::println("\t(%d)", p);
+        }
+    }
+}
+
+void contourTest()
+{
+    // Matrix kernel = ComputerVision::guassianKernel(2, 1);
+    // for(int y=0; y<kernel.getRows(); y++)
+    // {
+    //     for(int x=0; x<kernel.getCols(); x++)
+    //     {
+    //         StringTools::print("%.4f\t", kernel[y][x]);
+    //     }
+    //     StringTools::println("");
+    // }
+
+    // // std::vector<Vec2f> validPoints = {Vec2f(0, 0), Vec2f(1,0), Vec2f(2,0), Vec2f(3,0), Vec2f(4,0), Vec2f(5, 0), Vec2f(5, 1), Vec2f(5, 2), Vec2f(5, 3), Vec2f(5, 4), Vec2f(4, 3), Vec2f(2, 3), Vec2f(1, 2), Vec2f(0, 3), Vec2f(0, 2), Vec2f(0, 1)};
+    // // removeBoundaryShape2(validPoints);
+    Sprite s;
+    s.loadImage("./contourStuff/artifact.png");
+    if(s.getSize() <= 0)
+    {
+        StringTools::println("FAILED TO LOAD");
+        return;
+    }
+    //make grayscale
+    Image* grayscaleImg = SimpleGraphics::convertToGrayscale(s.getImage(0));
+    // Matrix threshMatrix = ComputerVision::thresholding(grayscaleImg, 127, 0, true);
+    // Matrix threshMatrix = ComputerVision::adaptiveThresholding(grayscaleImg, 10, 5, 0, 0, true);
+    // Image* threshImg = ComputerVision::matrixToImage(&threshMatrix);
+
+
+    Image* derivativeImg = SimpleGraphics::convertToGrayscale(s.getImage(0));
+    Matrix threshMatrix = ComputerVision::adaptiveThresholding(grayscaleImg, 5, 4, 0, 0, true);
+    Image* threshImg = ComputerVision::matrixToImage(&threshMatrix);
+
+    std::vector<std::vector<Vec2f>> contours = ComputerVision::findContours(threshImg);
+
+    for(std::vector<Vec2f>& boundary : contours)
+    {
+        Vec2f minPoint = Vec2f((float)INT_MAX, (float)INT_MAX);
+        Vec2f maxPoint = Vec2f((float)INT_MIN, (float)INT_MIN);
+        
+        for(Vec2f& point : boundary)
+        {
+            minPoint.x = MathExt::min(minPoint.x, point.x);
+            minPoint.y = MathExt::min(minPoint.y, point.y);
+            maxPoint.x = MathExt::max(maxPoint.x, point.x);
+            maxPoint.y = MathExt::max(maxPoint.y, point.y);
+            // s.getImage(0)->setPixel((int)point.x, (int)point.y, {255, 0, 0, 255});
+        }
+        SimpleGraphics::setColor({255, 0, 0, 255});
+        SimpleGraphics::drawRect((int)minPoint.x, (int)minPoint.y, (int)maxPoint.x, (int)maxPoint.y, true, s.getImage(0));
+    }
+
+    s.getImage(0)->savePNG("contourStuff/FoundContours.png", false);
+    threshImg->savePNG("contourStuff/preProcess.png", false);
+    delete derivativeImg;
+}
+
+#ifndef USE_OPENGL
+    #define USE_OPENGL
+#endif
+#include "ext/GLSingleton.h"
+#include "ext/GLGraphics.h"
+#include "ext/GLWindow.h"
+#include "Input.h"
+
+void openGLTest()
+{
+    GLWindow window = GLWindow("TestOPENGL", 640, 480);
+    window.setActivateGui(false);
+    window.setVSync(1);
+    int fps = 0;
+    size_t timeEllapsed = 0;
+
+    while(window.getRunning())
+    {
+        size_t startTime = System::getCurrentTimeMicro();
+        Input::pollInput();
+        window.update();
+
+        //other stuff
+        GLGraphics::setClearColor(Vec4f(1, 1, 1, 1));
+        GLGraphics::clear(GLGraphics::COLOR_BUFFER);
+        GLGraphics::setDrawColor(Vec4f(1, 0, 0, 1));
+        GLGraphics::drawRectangle(0, 0, 64, 64, false);
+        GLGraphics::setDrawColor(Vec4f(1, 0, 1, 1));
+        GLGraphics::drawCircle(64, 64, 32, false);
+
+        window.forceRepaint();
+        window.repaint();
+        size_t timeUsed = System::getCurrentTimeMicro()-startTime;
+
+        if(timeUsed < 16666) //1/60
+        {
+            size_t timeNeeded = 16666 - timeUsed;
+            System::sleep(0, timeNeeded, true);
+            timeEllapsed += 16666;
+        }
+        else
+        {
+            timeEllapsed += timeUsed;
+        }
+        fps++;
+
+        if(timeEllapsed >= 16666*60)
+        {
+            StringTools::println("FPS: %d - %llu", fps, timeEllapsed);
+            fps = 0;
+            timeEllapsed -= 16666*60;
+            if(timeEllapsed < 16666)
+                timeEllapsed = 0; //less than 1 frame left. Consider it okay
+        }
+    }
+}
+
+#include "Graph.h"
+void testGraph()
+{
+    std::vector<double> heuristicValues = {0.0, 4.0, 2.0, 4.0, 4.5, 2.0, 0.0};
+    UndirectedMatrixGraph graph = UndirectedMatrixGraph(7);
+    graph.addEdge(0, 1, 1.5);
+    graph.addEdge(1, 2, 2.0);
+    graph.addEdge(2, 3, 3.0);
+
+    graph.addEdge(3, 6, 4.0);
+    graph.addEdge(0, 4, 2.0);
+    graph.addEdge(4, 5, 3.0);
+    graph.addEdge(5, 6, 2.0);
+
+    //A* should give back {0, 4, 5, 6}. Not {0, 1, 2, 3, 6}
+    PathInfo p = graph.shortestPath(0, 6, [&heuristicValues](size_t v1, size_t v2) -> double{
+        return heuristicValues[v1];
+    });
+
+    StringTools::println("PathCost = %.3f", p.cost);
+    StringTools::print("{");
+    for(int i=0; i<p.path.size(); i++)
+    {
+        StringTools::print("  %llu  ", p.path[i]);
+    }
+    StringTools::println("}");
 }
 
 int main(int argc, char** argv)
 {
-    //TODO: Add all patterns found for SuffixAutomaton. (Should give all start indicies) (Post processing function O(N))
-    //TODO: Add min and max adjustments for canny edge filter
-    // testWebClient();
-    // testQuadTreeLikeCompression();
-    // testCopyDirectory();
-    // testLZ77CSA();
-    // quickCompression();
-    // streamCompressTest();
-    // streamDecompressTest();
-
+    // testGraph();
+    openGLTest();
+    // contourTest();
+    // testDrawEfficiency();
+    // quickBezierTest();
     // testSerialization();
-    // testGuiPart2();
-    // saStuff();
-    tryCannyEdgeDetection();
-    // insertWindowTest();
+    // quickMapDatastructure();
     return 0;
 }
+
+//TODO: CONTOUR TRACING, POLYGON TRIANGULATION

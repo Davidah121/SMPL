@@ -1,9 +1,11 @@
+#pragma once
+#include "BuildOptions.h"
 #include "Network.h"
 #include "WebRequest.h"
 
 namespace smpl
 {
-    class WebClient
+    class DLL_OPTION WebClient
     {
     public:
         static const int TYPE_NO_ERROR = 0;

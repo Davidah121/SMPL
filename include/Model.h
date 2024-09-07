@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include "MathExt.h"
 #include "File.h"
 #include "Shape.h"
@@ -14,7 +15,7 @@ namespace smpl
         unsigned char size = 0;
     };
 
-    class Model : public Object
+    class DLL_OPTION Model : public Object
     {
     public:
         /**

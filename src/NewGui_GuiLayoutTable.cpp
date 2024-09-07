@@ -560,7 +560,7 @@ namespace smpl
         auto pair = attribs.get("inner-padding");
         if(pair != nullptr)
         {
-            if(loadValueFromAttrib(innerTablePadding, pair->data))
+            if(loadValueFromAttrib(innerTablePadding, pair->second))
                 innerTablePadding = 0;
         }
         attribs.remove(pair);
@@ -568,7 +568,7 @@ namespace smpl
         pair = attribs.get("num-columns");
         if(pair != nullptr)
         {
-            if(loadValueFromAttrib(columns, pair->data))
+            if(loadValueFromAttrib(columns, pair->second))
                 columns = 1;
         }
         attribs.remove(pair);
@@ -576,7 +576,7 @@ namespace smpl
         pair = attribs.get("show-inner-grid");
         if(pair != nullptr)
         {
-            showInnerGrid = (pair->data == "true");
+            showInnerGrid = (pair->second == "true");
         }
         attribs.remove(pair);
     }

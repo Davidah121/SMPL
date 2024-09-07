@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include <vector>
 #include <functional>
 #include "MathExt.h"
@@ -7,7 +8,7 @@
 
 namespace smpl
 {
-	class Shape : public Object
+	class DLL_OPTION Shape : public Object
 	{
 	public:
 		/**
@@ -82,7 +83,7 @@ namespace smpl
 		 * 
 		 * @return double 
 		 */
-		virtual double generateBoundingRadius();
+		virtual float generateBoundingRadius();
 		
 	protected:
 		Vec3f position = Vec3f();
@@ -149,7 +150,7 @@ namespace smpl
 
 	#pragma region SHAPES_2D
 
-	class Point2D : public Shape
+	class DLL_OPTION Point2D : public Shape
 	{
 	public:
 		/**
@@ -167,7 +168,7 @@ namespace smpl
 		 * @param y
 		 * 		The y position
 		 */
-		Point2D(double x, double y);
+		Point2D(float x, float y);
 
 		/**
 		 * @brief Construct a new Point2D object
@@ -191,15 +192,15 @@ namespace smpl
 		 * @brief Generates the bounding radius for the point.
 		 * 		Returns the value 0 because it is a point.
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double generateBoundingRadius();
+		float generateBoundingRadius();
 		
 	protected:
 		void onTransformChanged();
 	};
 
-	class Box2D : public Shape
+	class DLL_OPTION Box2D : public Shape
 	{
 	public:
 		/**
@@ -221,7 +222,7 @@ namespace smpl
 		 * @param rightBound 
 		 * @param bottomBound 
 		 */
-		Box2D(double leftBound, double topBound, double rightBound, double bottomBound);
+		Box2D(float leftBound, float topBound, float rightBound, float bottomBound);
 		~Box2D();
 		
 		//Object and RootClass Stuff
@@ -233,77 +234,77 @@ namespace smpl
 		 * 
 		 * @param lb 
 		 */
-		void setLeftBound(double lb);
+		void setLeftBound(float lb);
 
 		/**
 		 * @brief Get the Left Bound of the AABB
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getLeftBound();
+		float getLeftBound();
 
 		/**
 		 * @brief Set the Top Bound of the AABB
 		 * 
 		 * @param tb 
 		 */
-		void setTopBound(double tb);
+		void setTopBound(float tb);
 
 		/**
 		 * @brief Get the Top Bound of the AABB
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getTopBound();
+		float getTopBound();
 
 		/**
 		 * @brief Set the Right Bound of the AABB
 		 * 
 		 * @param tb 
 		 */
-		void setRightBound(double rb);
+		void setRightBound(float rb);
 
 		/**
 		 * @brief Get the Right Bound of the AABB
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getRightBound();
+		float getRightBound();
 
 		/**
 		 * @brief Set the Bottom Bound of the AABB
 		 * 
 		 * @param tb 
 		 */
-		void setBottomBound(double bb);
+		void setBottomBound(float bb);
 
 		/**
 		 * @brief Get the Bottom Bound of the AABB
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getBottomBound();
+		float getBottomBound();
 
 		/**
 		 * @brief Gets the Width of the AABB
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getWidth();
+		float getWidth();
 
 		/**
 		 * @brief Gets the Height of the AABB
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getHeight();
+		float getHeight();
 
 		/**
 		 * @brief Generates a bounding radius for the AABB.
 		 * 		(Implement later)
-		 * @return double 
+		 * @return float 
 		 */
-		double generateBoundingRadius();
+		float generateBoundingRadius();
 
 		bool operator==(Box2D other);
 		bool operator!=(Box2D other);
@@ -320,7 +321,7 @@ namespace smpl
 		
 	};
 
-	class Circle : public Shape
+	class DLL_OPTION Circle : public Shape
 	{
 	public:
 		/**
@@ -339,7 +340,7 @@ namespace smpl
 		 * 
 		 * @param rad 
 		 */
-		Circle(double rad);
+		Circle(float rad);
 
 		/**
 		 * @brief Destroy the Circle object
@@ -350,16 +351,16 @@ namespace smpl
 		/**
 		 * @brief Get the Radius of the Circle
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getRadius();
+		float getRadius();
 
 		/**
 		 * @brief Set the Radius of the Circle
 		 * 
 		 * @param rad 
 		 */
-		void setRadius(double rad);
+		void setRadius(float rad);
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
@@ -369,19 +370,19 @@ namespace smpl
 		 * @brief Generates the bounding radius for the circle.
 		 * 		Returns the radius of the circle.
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double generateBoundingRadius();
+		float generateBoundingRadius();
 		
 	protected:
 		void onTransformChanged();
 
 	private:
-		double radius = 0;
-		double baseRadius;
+		float radius = 0;
+		float baseRadius;
 	};
 
-	class Ellipse : public Shape
+	class DLL_OPTION Ellipse : public Shape
 	{
 	public:
 		/**
@@ -399,7 +400,7 @@ namespace smpl
 		 * @param xRad 
 		 * @param yRad 
 		 */
-		Ellipse(double xRad, double yRad);
+		Ellipse(float xRad, float yRad);
 
 		/**
 		 * @brief Destroy the Ellipse object
@@ -410,30 +411,30 @@ namespace smpl
 		/**
 		 * @brief Gets the X radius of the Ellipse.
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getXRadius();
+		float getXRadius();
 
 		/**
 		 * @brief Sets the X radius of the Ellipse.
 		 * 
 		 * @param rad 
 		 */
-		void setXRadius(double rad);
+		void setXRadius(float rad);
 
 		/**
 		 * @brief Gets the Y radius of the Ellipse.
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getYRadius();
+		float getYRadius();
 
 		/**
 		 * @brief Sets the Y radius of the Ellipse.
 		 * 
 		 * @param rad 
 		 */
-		void setYRadius(double rad);
+		void setYRadius(float rad);
 
 		//Object and RootClass Stuff
 		static const RootClass globalClass;
@@ -442,22 +443,21 @@ namespace smpl
 		/**
 		 * @brief Generates the bounding radius of the Ellipse.
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double generateBoundingRadius();
+		float generateBoundingRadius();
 	
 	protected:
 		void onTransformChanged();
 
 	private:
-		double xRadius = 0;
-		double yRadius = 0;
-
-		double baseXRadius = 0;
-		double baseYRadius = 0;
+		float xRadius = 0;
+		float yRadius = 0;
+		float baseXRadius = 0;
+		float baseYRadius = 0;
 	};
 
-	class Line2D : public Shape
+	class DLL_OPTION Line2D : public Shape
 	{
 	public:
 		/**
@@ -477,7 +477,7 @@ namespace smpl
 		 * @param x2 
 		 * @param y2 
 		 */
-		Line2D(double x1, double y1, double x2, double y2);
+		Line2D(float x1, float y1, float x2, float y2);
 
 		/**
 		 * @brief Construct a new Line2D object
@@ -511,7 +511,7 @@ namespace smpl
 		 * @param x 
 		 * @param y 
 		 */
-		void setPoint1(double x, double y);
+		void setPoint1(float x, float y);
 
 		/**
 		 * @brief Sets the second point of the line
@@ -526,7 +526,7 @@ namespace smpl
 		 * @param x 
 		 * @param y 
 		 */
-		void setPoint2(double x, double y);
+		void setPoint2(float x, float y);
 
 		/**
 		 * @brief Gets the first point of the line
@@ -552,9 +552,9 @@ namespace smpl
 		/**
 		 * @brief Generates a bounding radius for the Line.
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double generateBoundingRadius();
+		float generateBoundingRadius();
 
 	protected:
 		void onTransformChanged();
@@ -564,7 +564,7 @@ namespace smpl
 		Line l;
 	};
 
-	class Triangle2D : public Shape
+	class DLL_OPTION Triangle2D : public Shape
 	{
 	public:
 		/**
@@ -596,7 +596,7 @@ namespace smpl
 		 * @param x3 
 		 * @param y3 
 		 */
-		Triangle2D(double x1, double y1, double x2, double y2, double x3, double y3);
+		Triangle2D(float x1, float y1, float x2, float y2, float x3, float y3);
 
 		/**
 		 * @brief Destroy the Triangle2D object
@@ -621,7 +621,7 @@ namespace smpl
 		 * @param x 
 		 * @param y 
 		 */
-		void setVertex1(double x, double y);
+		void setVertex1(float x, float y);
 
 		/**
 		 * @brief Sets the second vertex of the triangle
@@ -636,7 +636,7 @@ namespace smpl
 		 * @param x 
 		 * @param y 
 		 */
-		void setVertex2(double x, double y);
+		void setVertex2(float x, float y);
 
 		/**
 		 * @brief Sets the third vertex of the triangle
@@ -651,7 +651,7 @@ namespace smpl
 		 * @param x 
 		 * @param y 
 		 */
-		void setVertex3(double x, double y);
+		void setVertex3(float x, float y);
 
 		/**
 		 * @brief Gets the first vertex of the triangle after transforms
@@ -684,9 +684,9 @@ namespace smpl
 		/**
 		 * @brief Generates a bounding radius for the triangle.
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double generateBoundingRadius();
+		float generateBoundingRadius();
 	
 	protected:
 		void onTransformChanged(); //TODO
@@ -697,7 +697,7 @@ namespace smpl
 		Vec2f v3;
 	};
 
-	class Triangle2DModel : public Shape
+	class DLL_OPTION Triangle2DModel : public Shape
 	{
 	public:
 		/**
@@ -751,7 +751,7 @@ namespace smpl
 		std::vector<Triangle2D> tris;
 	};
 
-	class Polygon2D : public Shape
+	class DLL_OPTION Polygon2D : public Shape
 	{
 	public:
 		/**
@@ -821,9 +821,9 @@ namespace smpl
 		/**
 		 * @brief Generates a bounding radius for the polygon.
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double generateBoundingRadius();
+		float generateBoundingRadius();
 
 		/**
 		 * @brief Generates a 2D polygon that approximates a circle.
@@ -834,7 +834,7 @@ namespace smpl
 		 * 		The amount of samples from the circle to create the polygon
 		 * @return Polygon2D 
 		 */
-		static Polygon2D approximateCircle(double radius, int n);
+		static Polygon2D approximateCircle(float radius, int n);
 
 		/**
 		 * @brief Generates a 2D polygon that approximates a ellipse.
@@ -847,7 +847,7 @@ namespace smpl
 		 * 		The amount of samples from the ellipse to create the polygon
 		 * @return Polygon2D 
 		 */
-		static Polygon2D approximateEllipse(double xRadius, double yRadius, int n);
+		static Polygon2D approximateEllipse(float xRadius, float yRadius, int n);
 
 		/**
 		 * @brief Generates a 2D polygon that approximates an arc from an ellipse.
@@ -867,7 +867,7 @@ namespace smpl
 		 * 		The amount of samples from the ellipse to create the polygon
 		 * @return Polygon2D 
 		 */
-		static Polygon2D approximateArc(double xRadius, double yRadius, double startAngle, double endAngle, int n);
+		static Polygon2D approximateArc(float xRadius, float yRadius, float startAngle, float endAngle, int n);
 	
 	protected:
 		void onTransformChanged(); //TODO
@@ -896,37 +896,37 @@ namespace smpl
 
 	#pragma region SHAPES_3D
 
-	class Sphere : public Shape
+	class DLL_OPTION Sphere : public Shape
 	{
 
 	};
 
-	class Ellipsoid : public Shape
+	class DLL_OPTION Ellipsoid : public Shape
 	{
 
 	};
 
-	class Cylinder : public Shape
+	class DLL_OPTION Cylinder : public Shape
 	{
 
 	};
 
-	class Box3D : public Shape
+	class DLL_OPTION Box3D : public Shape
 	{
 
 	};
 
-	class Point3D : public Shape
+	class DLL_OPTION Point3D : public Shape
 	{
 
 	};
 
-	class Line3D : public Shape
+	class DLL_OPTION Line3D : public Shape
 	{
 
 	};
 
-	class Triangle3D : public Shape
+	class DLL_OPTION Triangle3D : public Shape
 	{
 	public:
 		/**
@@ -961,7 +961,7 @@ namespace smpl
 		 * @param y3 
 		 * @param z3
 		 */
-		Triangle3D(double x1, double y1, double z1, double x2, double y2, double z2, double x3, double y3, double z3);
+		Triangle3D(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3);
 
 		/**
 		 * @brief Destroy the Triangle3D object
@@ -987,7 +987,7 @@ namespace smpl
 		 * @param y 
 		 * @param z
 		 */
-		void setVertex1(double x, double y, double z);
+		void setVertex1(float x, float y, float z);
 
 		/**
 		 * @brief Sets the second vertex of the triangle
@@ -1003,7 +1003,7 @@ namespace smpl
 		 * @param y 
 		 * @param z
 		 */
-		void setVertex2(double x, double y, double z);
+		void setVertex2(float x, float y, float z);
 
 		/**
 		 * @brief Sets the third vertex of the triangle
@@ -1019,7 +1019,7 @@ namespace smpl
 		 * @param y 
 		 * @param z
 		 */
-		void setVertex3(double x, double y, double z);
+		void setVertex3(float x, float y, float z);
 
 		/**
 		 * @brief Gets the first vertex of the triangle after transforms
@@ -1059,9 +1059,9 @@ namespace smpl
 		/**
 		 * @brief Generates a bounding radius for the triangle.
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double generateBoundingRadius();
+		float generateBoundingRadius();
 	
 	protected:
 		void onTransformChanged(); //TODO
@@ -1072,7 +1072,7 @@ namespace smpl
 		Vec3f v3;
 	};
 
-	class Triangle3DModel : public Shape
+	class DLL_OPTION Triangle3DModel : public Shape
 	{
 	public:
 		/**
@@ -1126,14 +1126,14 @@ namespace smpl
 		std::vector<Triangle3D> tris;
 	};
 
-	class Polygon3D : public Shape
+	class DLL_OPTION Polygon3D : public Shape
 	{
 
 	};
 
 	#pragma endregion
 
-	class CollisionMaster
+	class DLL_OPTION CollisionMaster
 	{
 	public:
 		//Returns false if there is no matching function for both shapes

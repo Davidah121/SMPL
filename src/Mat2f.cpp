@@ -13,7 +13,7 @@ namespace smpl
 	{
 	}
 
-	Mat2f::Mat2f(double v1, double v2, double v3, double v4) : Matrix(2,2)
+	Mat2f::Mat2f(float v1, float v2, float v3, float v4) : Matrix(2,2)
 	{
 		data[0] = v1;
 		data[1] = v2;
@@ -45,12 +45,12 @@ namespace smpl
 		return k;
 	}
 
-	double* Mat2f::operator[](int row)
+	float* Mat2f::operator[](int row)
 	{
 		return Matrix::operator[](row);
 	}
 
-	Mat2f Mat2f::operator*(double value)
+	Mat2f Mat2f::operator*(float value)
 	{
 		Mat2f v = Mat2f();
 
@@ -60,7 +60,7 @@ namespace smpl
 		return v;
 	}
 
-	void Mat2f::operator*=(double value)
+	void Mat2f::operator*=(float value)
 	{
 		for (int i = 0; i < 2; i++)
 			data[i] *= value;
@@ -127,21 +127,6 @@ namespace smpl
 	bool Mat2f::operator!=(Mat2f other)
 	{
 		return !(this->operator==(other));
-	}
-
-	void Mat2f::fillArray(float* buffer)
-	{
-		for(int i=0; i<4; i++)
-		{
-			buffer[i] = (float)data[i];
-		}
-	}
-	void Mat2f::fillArray(double* buffer)
-	{
-		for(int i=0; i<4; i++)
-		{
-			buffer[i] = data[i];
-		}
 	}
 
 } //NAMESPACE glib END

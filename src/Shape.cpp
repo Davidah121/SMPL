@@ -58,7 +58,7 @@ namespace smpl
 		
 	}
 
-	double Shape::generateBoundingRadius()
+	float Shape::generateBoundingRadius()
 	{
 		return 0;
 	}
@@ -77,7 +77,7 @@ namespace smpl
 	{
 	}
 
-	Point2D::Point2D(double x, double y)
+	Point2D::Point2D(float x, float y)
 	{
 		position.x = x;
 		position.y = y;
@@ -92,7 +92,7 @@ namespace smpl
 	{
 	}
 
-	double Point2D::generateBoundingRadius()
+	float Point2D::generateBoundingRadius()
 	{
 		return 0;
 	}
@@ -116,7 +116,7 @@ namespace smpl
 	{
 	}
 
-	Box2D::Box2D(double leftBound, double topBound, double rightBound, double bottomBound)
+	Box2D::Box2D(float leftBound, float topBound, float rightBound, float bottomBound)
 	{
 		baseTopLeft.x = leftBound;
 		baseTopLeft.y = topBound;
@@ -131,56 +131,56 @@ namespace smpl
 	{
 	}
 
-	void Box2D::setLeftBound(double lb)
+	void Box2D::setLeftBound(float lb)
 	{
 		baseTopLeft.x = lb;
 		onTransformChanged();
 	}
 
-	double Box2D::getLeftBound()
+	float Box2D::getLeftBound()
 	{
 		return topLeft.x;
 	}
 
-	void Box2D::setTopBound(double tb)
+	void Box2D::setTopBound(float tb)
 	{
 		baseTopLeft.y = tb;
 		onTransformChanged();
 	}
 
-	double Box2D::getTopBound()
+	float Box2D::getTopBound()
 	{
 		return topLeft.y;
 	}
 
-	void Box2D::setRightBound(double rb)
+	void Box2D::setRightBound(float rb)
 	{
 		baseBottomRight.x = rb;
 		onTransformChanged();
 	}
 
-	double Box2D::getRightBound()
+	float Box2D::getRightBound()
 	{
 		return bottomRight.x;
 	}
 
-	void Box2D::setBottomBound(double bb)
+	void Box2D::setBottomBound(float bb)
 	{
 		baseBottomRight.y = bb;
 		onTransformChanged();
 	}
 
-	double Box2D::getBottomBound()
+	float Box2D::getBottomBound()
 	{
 		return bottomRight.y;
 	}
 	
-	double Box2D::getWidth()
+	float Box2D::getWidth()
 	{
 		return bottomRight.x - topLeft.x;
 	}
 	
-	double Box2D::getHeight()
+	float Box2D::getHeight()
 	{
 		return bottomRight.y - topLeft.y;
 	}
@@ -196,7 +196,7 @@ namespace smpl
 		bottomRight += getPosition().toVec2f();
 	}	
 
-	double Box2D::generateBoundingRadius()
+	float Box2D::generateBoundingRadius()
 	{
 		Vec2f midPoint = (topLeft + bottomRight)/2.0;
 		Vec2f toTopLeft = topLeft - midPoint;
@@ -229,7 +229,7 @@ namespace smpl
 	{
 	}
 
-	Circle::Circle(double rad)
+	Circle::Circle(float rad)
 	{
 		radius = rad;
 		baseRadius = rad;
@@ -239,12 +239,12 @@ namespace smpl
 	{
 	}
 
-	double Circle::getRadius()
+	float Circle::getRadius()
 	{
 		return radius;
 	}
 
-	void Circle::setRadius(double rad)
+	void Circle::setRadius(float rad)
 	{
 		baseRadius = rad;
 		onTransformChanged();
@@ -255,7 +255,7 @@ namespace smpl
 		radius = baseRadius*getScale().x;
 	}
 
-	double Circle::generateBoundingRadius()
+	float Circle::generateBoundingRadius()
 	{
 		return radius;
 	}
@@ -274,7 +274,7 @@ namespace smpl
 	{
 	}
 
-	Ellipse::Ellipse(double xRad, double yRad)
+	Ellipse::Ellipse(float xRad, float yRad)
 	{
 		xRadius = xRad;
 		yRadius = yRad;
@@ -288,23 +288,23 @@ namespace smpl
 
 	}
 
-	double Ellipse::getXRadius()
+	float Ellipse::getXRadius()
 	{
 		return xRadius;
 	}
 
-	void Ellipse::setXRadius(double rad)
+	void Ellipse::setXRadius(float rad)
 	{
 		baseXRadius = rad;
 		onTransformChanged();
 	}
 
-	double Ellipse::getYRadius()
+	float Ellipse::getYRadius()
 	{
 		return yRadius;
 	}
 
-	void Ellipse::setYRadius(double rad)
+	void Ellipse::setYRadius(float rad)
 	{
 		baseYRadius = rad;
 		onTransformChanged();
@@ -316,7 +316,7 @@ namespace smpl
 		yRadius = baseYRadius*getScale().y;
 	}
 
-	double Ellipse::generateBoundingRadius()
+	float Ellipse::generateBoundingRadius()
 	{
 		return MathExt::max(xRadius, yRadius);
 	}
@@ -335,7 +335,7 @@ namespace smpl
 	{
 	}
 
-	Line2D::Line2D(double x1, double y1, double x2, double y2)
+	Line2D::Line2D(float x1, float y1, float x2, float y2)
 	{
 		baseL = Line(x1, y1, x2, y2);
 		l = Line(x1, y1, x2, y2);
@@ -357,7 +357,7 @@ namespace smpl
 		onTransformChanged();
 	}
 
-	void Line2D::setPoint1(double x, double y)
+	void Line2D::setPoint1(float x, float y)
 	{
 		baseL = Line(Vec2f(x,y), baseL.getPoint2());
 		onTransformChanged();
@@ -369,7 +369,7 @@ namespace smpl
 		onTransformChanged();
 	}
 
-	void Line2D::setPoint2(double x, double y)
+	void Line2D::setPoint2(float x, float y)
 	{
 		baseL = Line(baseL.getPoint1(), Vec2f(x,y));
 		onTransformChanged();
@@ -427,7 +427,7 @@ namespace smpl
 		l = Line(p1, p2);
 	}
 
-	double Line2D::generateBoundingRadius()
+	float Line2D::generateBoundingRadius()
 	{
 		Vec2f dir = l.getToPoint()/2;
 		return dir.getLength();
@@ -454,7 +454,7 @@ namespace smpl
 		v3 = p3;
 	}
 
-	Triangle2D::Triangle2D(double x1, double y1, double x2, double y2, double x3, double y3)
+	Triangle2D::Triangle2D(float x1, float y1, float x2, float y2, float x3, float y3)
 	{
 		v1.x = x1;
 		v1.y = y1;
@@ -473,7 +473,7 @@ namespace smpl
 		v1 = p;
 	}
 
-	void Triangle2D::setVertex1(double x, double y)
+	void Triangle2D::setVertex1(float x, float y)
 	{
 		v1.x = x;
 		v1.y = y;
@@ -484,7 +484,7 @@ namespace smpl
 		v2 = p;
 	}
 
-	void Triangle2D::setVertex2(double x, double y)
+	void Triangle2D::setVertex2(float x, float y)
 	{
 		v2.x = x;
 		v2.y = y;
@@ -495,7 +495,7 @@ namespace smpl
 		v3 = p;
 	}
 
-	void Triangle2D::setVertex3(double x, double y)
+	void Triangle2D::setVertex3(float x, float y)
 	{
 		v3.x = x;
 		v3.y = y;
@@ -532,7 +532,7 @@ namespace smpl
 		
 	}
 
-	double Triangle2D::generateBoundingRadius()
+	float Triangle2D::generateBoundingRadius()
 	{
 		return 0;
 	}
@@ -646,7 +646,7 @@ namespace smpl
 	{
 		if(points.size()>3)
 		{
-			double lastDirVal = MathExt::dirToPoint( points[1].x, points[1].y, points[2].x, points[2].y);
+			float lastDirVal = MathExt::dirToPoint( points[1].x, points[1].y, points[2].x, points[2].y);
 			int lastQuadrant = (int)(lastDirVal / (PI/2));
 			bool dir = lastQuadrant <= 2; //going counter-clockwise
 
@@ -658,12 +658,12 @@ namespace smpl
 				else
 					thisToVec = points[0] - points[i-1];
 				
-				double thisDirVal = MathExt::dirToPoint(0, 0, thisToVec.x, thisToVec.y);
+				float thisDirVal = MathExt::dirToPoint(0, 0, thisToVec.x, thisToVec.y);
 				bool thisDir = false;
 
 				if(dir)
 				{
-					double dirDis = 0;
+					float dirDis = 0;
 					if(lastDirVal > thisDirVal)
 					{
 						dirDis = thisDirVal + (2*PI - lastDirVal);
@@ -677,7 +677,7 @@ namespace smpl
 				}
 				else
 				{
-					double dirDis = 0;
+					float dirDis = 0;
 					if(lastDirVal < thisDirVal)
 					{
 						dirDis = lastDirVal + (2*PI - thisDirVal);
@@ -699,17 +699,17 @@ namespace smpl
 		}
 	}
 
-	Polygon2D Polygon2D::approximateCircle(double radius, int n)
+	Polygon2D Polygon2D::approximateCircle(float radius, int n)
 	{
 		if(n <= 3)
 			return Polygon2D();
 		
 		Polygon2D out;
-		double du = 2*PI / n;
+		float du = 2*PI / n;
 		for(int i=0; i<=n; i++)
 		{
-			double x = radius * MathExt::cos(du*i);
-			double y = radius * MathExt::sin(du*i);
+			float x = radius * MathExt::cos(du*i);
+			float y = radius * MathExt::sin(du*i);
 
 			out.addVertex( Vec2f(x,y) );
 		}
@@ -717,17 +717,17 @@ namespace smpl
 		return out;
 	}
 
-	Polygon2D Polygon2D::approximateEllipse(double xRadius, double yRadius, int n)
+	Polygon2D Polygon2D::approximateEllipse(float xRadius, float yRadius, int n)
 	{
 		if(n <= 3)
 			return Polygon2D();
 		
 		Polygon2D out;
-		double du = 2*PI / n;
+		float du = 2*PI / n;
 		for(int i=0; i<=n; i++)
 		{
-			double x = xRadius * MathExt::cos(du*i);
-			double y = yRadius * MathExt::sin(du*i);
+			float x = xRadius * MathExt::cos(du*i);
+			float y = yRadius * MathExt::sin(du*i);
 
 			out.addVertex( Vec2f(x,y) );
 		}
@@ -735,18 +735,18 @@ namespace smpl
 		return out;
 	}
 
-	Polygon2D Polygon2D::approximateArc(double xRadius, double yRadius, double startAngle, double endAngle, int n)
+	Polygon2D Polygon2D::approximateArc(float xRadius, float yRadius, float startAngle, float endAngle, int n)
 	{
 		if(n <= 3)
 			return Polygon2D();
 		
 		Polygon2D out;
 		out.addVertex( Vec2f(0,0) );
-		double du = (endAngle - startAngle) / n;
+		float du = (endAngle - startAngle) / n;
 		for(int i=0; i<=n; i++)
 		{
-			double x = xRadius * MathExt::cos(startAngle + du*i);
-			double y = yRadius * MathExt::sin(startAngle + du*i);
+			float x = xRadius * MathExt::cos(startAngle + du*i);
+			float y = yRadius * MathExt::sin(startAngle + du*i);
 
 			out.addVertex( Vec2f(x,y) );
 		}
@@ -759,7 +759,7 @@ namespace smpl
 		
 	}
 
-	double Polygon2D::generateBoundingRadius()
+	float Polygon2D::generateBoundingRadius()
 	{
 		return 0;
 	}
@@ -786,7 +786,7 @@ namespace smpl
 		v3 = p3;
 	}
 
-	Triangle3D::Triangle3D(double x1, double y1, double z1, double x2, double y2, double z2, double x3, double y3, double z3)
+	Triangle3D::Triangle3D(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3)
 	{
 		v1 = Vec3f(x1,y1,z1);
 		v2 = Vec3f(x2,y2,z2);
@@ -805,7 +805,7 @@ namespace smpl
 		v1 = p;
 	}
 
-	void Triangle3D::setVertex1(double x, double y, double z)
+	void Triangle3D::setVertex1(float x, float y, float z)
 	{
 		v1 = Vec3f(x,y,z);
 	}
@@ -815,7 +815,7 @@ namespace smpl
 		v2 = p;
 	}
 
-	void Triangle3D::setVertex2(double x, double y, double z)
+	void Triangle3D::setVertex2(float x, float y, float z)
 	{
 		v2 = Vec3f(x,y,z);
 	}
@@ -825,7 +825,7 @@ namespace smpl
 		v3 = p;
 	}
 
-	void Triangle3D::setVertex3(double x, double y, double z)
+	void Triangle3D::setVertex3(float x, float y, float z)
 	{
 		v3 = Vec3f(x,y,z);
 	}
@@ -855,10 +855,10 @@ namespace smpl
 		return MathExt::crossProduct(v1, v2).normalize();
 	}
 
-	double Triangle3D::generateBoundingRadius()
+	float Triangle3D::generateBoundingRadius()
 	{
 		Vec3f midP = getCenterPosition();
-		double maxDis = (v1-midP).getLength();
+		float maxDis = (v1-midP).getLength();
 		maxDis = MathExt::max( maxDis, (v2-midP).getLength() );
 		maxDis = MathExt::max( maxDis, (v3-midP).getLength() );
 		return maxDis;
@@ -924,8 +924,8 @@ namespace smpl
 		if(!overrideQuickCheck)
 		{
 			//check if the bounding radius collides before continuing
-			double r1 = a->generateBoundingRadius();
-			double r2 = b->generateBoundingRadius();
+			float r1 = a->generateBoundingRadius();
+			float r2 = b->generateBoundingRadius();
 			Vec3f toB = b->getPosition() - a->getPosition();
 			if(toB.getLength() > r1+r2)
 			{
@@ -1132,8 +1132,8 @@ namespace smpl
 
 	bool CollisionMaster::collisionMethod(Point2D* a, Circle* b)
 	{
-		double dX = MathExt::sqr(a->getPosition().x - b->getPosition().x);
-		double dY = MathExt::sqr(a->getPosition().y - b->getPosition().y);
+		float dX = MathExt::sqr(a->getPosition().x - b->getPosition().x);
+		float dY = MathExt::sqr(a->getPosition().y - b->getPosition().y);
 
 		if (dX + dY <= MathExt::sqr(b->getRadius()))
 		{
@@ -1144,8 +1144,8 @@ namespace smpl
 
 	bool CollisionMaster::collisionMethod(Point2D* a, Ellipse* b)
 	{
-		double dX = MathExt::sqr(a->getPosition().x - b->getPosition().x);
-		double dY = MathExt::sqr(a->getPosition().y - b->getPosition().y);
+		float dX = MathExt::sqr(a->getPosition().x - b->getPosition().x);
+		float dY = MathExt::sqr(a->getPosition().y - b->getPosition().y);
 
 		if(b->getXRadius()!=0)
 			dX /= MathExt::sqr(b->getXRadius());
@@ -1222,7 +1222,7 @@ namespace smpl
 		}
 		else
 		{
-			double yNeeded = bLine.solveForY( a->getPosition().x);
+			float yNeeded = bLine.solveForY( a->getPosition().x);
 
 			if (yNeeded == a->getPosition().y)
 			{
@@ -1259,10 +1259,10 @@ namespace smpl
 
 	bool CollisionMaster::collisionMethod(Box2D* a, Circle* b)
 	{
-		double curX = MathExt::clamp(b->getPosition().x, a->getLeftBound(), a->getRightBound());
-		double curY = MathExt::clamp(b->getPosition().y, a->getTopBound(), a->getBottomBound());
+		float curX = MathExt::clamp(b->getPosition().x, a->getLeftBound(), a->getRightBound());
+		float curY = MathExt::clamp(b->getPosition().y, a->getTopBound(), a->getBottomBound());
 
-		double length = MathExt::sqr(curX - b->getPosition().x) + MathExt::sqr(curY - b->getPosition().y);
+		float length = MathExt::sqr(curX - b->getPosition().x) + MathExt::sqr(curY - b->getPosition().y);
 		
 		if (length <= MathExt::sqr(b->getRadius()))
 		{
@@ -1273,8 +1273,8 @@ namespace smpl
 
 	bool CollisionMaster::collisionMethod(Box2D* a, Ellipse* b)
 	{
-		double curX = MathExt::clamp(b->getPosition().x, a->getLeftBound(), a->getRightBound());
-		double curY = MathExt::clamp(b->getPosition().y, a->getTopBound(), a->getBottomBound());
+		float curX = MathExt::clamp(b->getPosition().x, a->getLeftBound(), a->getRightBound());
+		float curY = MathExt::clamp(b->getPosition().y, a->getTopBound(), a->getBottomBound());
 
 		Point2D tempPoint(Vec2f(curX, curY));
 
@@ -1296,9 +1296,10 @@ namespace smpl
 		
 		for(int i=0; i<4; i++)
 		{
-			Vec2f pos1 = triLine1.getIntersection(boxLines[i]);
-			Vec2f pos2 = triLine2.getIntersection(boxLines[i]);
-			Vec2f pos3 = triLine3.getIntersection(boxLines[i]);
+			Vec2f pos1, pos2, pos3;
+			bool valid1 = triLine1.getIntersection(boxLines[i], pos1);
+			bool valid2 = triLine2.getIntersection(boxLines[i], pos2);
+			bool valid3 = triLine3.getIntersection(boxLines[i], pos3);
 
 			if(pos1.x >= a->getLeftBound() && pos1.x <= a->getRightBound())
 				if(pos1.y >= a->getTopBound() && pos1.y <= a->getBottomBound())
@@ -1334,17 +1335,17 @@ namespace smpl
 		}
 		else
 		{
-			double yNeeded1 = bLine.solveForY(a->getLeftBound());
-			double yNeeded2 = bLine.solveForY(a->getRightBound());
+			float yNeeded1 = bLine.solveForY(a->getLeftBound());
+			float yNeeded2 = bLine.solveForY(a->getRightBound());
 
-			double maY = MathExt::max(yNeeded1, yNeeded2);
-			double miY = MathExt::min(yNeeded1, yNeeded2);
+			float maY = MathExt::max(yNeeded1, yNeeded2);
+			float miY = MathExt::min(yNeeded1, yNeeded2);
 
-			maY = MathExt::clamp(maY, bLine.getMinY(), bLine.getMaxY());
-			miY = MathExt::clamp(miY, bLine.getMinY(), bLine.getMaxY());
+			maY = MathExt::clamp<float>(maY, bLine.getMinY(), bLine.getMaxY());
+			miY = MathExt::clamp<float>(miY, bLine.getMinY(), bLine.getMaxY());
 			
-			double maX = MathExt::clamp(a->getLeftBound(), bLine.getMinX(), bLine.getMaxX());
-			double miX = MathExt::clamp(a->getRightBound(), bLine.getMinX(), bLine.getMaxX());
+			float maX = MathExt::clamp<float>(a->getLeftBound(), bLine.getMinX(), bLine.getMaxX());
+			float miX = MathExt::clamp<float>(a->getRightBound(), bLine.getMinX(), bLine.getMaxX());
 
 			if (a->getLeftBound() <= maX && a->getRightBound() >= miX)
 			{
@@ -1372,11 +1373,11 @@ namespace smpl
 
 	bool CollisionMaster::collisionMethod(Circle* a, Circle* b)
 	{
-		double disX = MathExt::sqr(a->getPosition().x - b->getPosition().x);
-		double disY = MathExt::sqr(a->getPosition().y - b->getPosition().y);
-		double len1 = disX + disY;
+		float disX = MathExt::sqr(a->getPosition().x - b->getPosition().x);
+		float disY = MathExt::sqr(a->getPosition().y - b->getPosition().y);
+		float len1 = disX + disY;
 
-		double len2 = MathExt::sqr(a->getRadius()) + MathExt::sqr(b->getRadius());
+		float len2 = MathExt::sqr(a->getRadius()) + MathExt::sqr(b->getRadius());
 
 		if (len1 <= len2)
 		{
@@ -1396,7 +1397,7 @@ namespace smpl
 		
 		toVec.z = 0;
 
-		double dis = MathExt::vecLength(toVec);
+		float dis = MathExt::vecLength(toVec);
 		int colCount = 0;
 
 		if(dis < b->getXRadius()+a->getRadius())
@@ -1416,13 +1417,13 @@ namespace smpl
 			//Find closest point within reason.
 			//actual closest point is described by this: -sin(t)*(sqr(ry) - sqr(rx)) = x*rx*tan(t) - y*ry
 			GeneralMathFunction f = GeneralMathFunction();
-			double rx = b->getXRadius();
-			double ry = b->getYRadius();
-			double x = toVec.x;
-			double y = toVec.y;
+			float rx = b->getXRadius();
+			float ry = b->getYRadius();
+			float x = toVec.x;
+			float y = toVec.y;
 
-			f.setFunction( [rx, ry, x, y](double t) ->double{
-				double val = -MathExt::sin(t)*(MathExt::sqr(ry) - MathExt::sqr(rx));
+			f.setFunction( [rx, ry, x, y](float t) ->float{
+				float val = -MathExt::sin(t)*(MathExt::sqr(ry) - MathExt::sqr(rx));
 				val +=  y*ry;
 				val -= (x*rx*MathExt::tan(t));
 
@@ -1430,8 +1431,8 @@ namespace smpl
 			});
 
 			//reduce [0, 2*PI] to a smaller range of values
-			double minRange, maxRange;
-			double offset = 0.000001;
+			float minRange, maxRange;
+			float offset = 0.000001;
 			Vec2f circlePos = Vec2f(a->getPosition().x, a->getPosition().y);
 			Vec2f ellipsePos = Vec2f(b->getPosition().x, b->getPosition().y);
 
@@ -1476,7 +1477,7 @@ namespace smpl
 			//Close approximation with only 10 steps. Equation is complex though and
 			//is being called through a pointer. Possibly implement here instead.
 
-			double angleValue = MathExt::bisectionMethod(&f, minRange, maxRange, 10);
+			float angleValue = MathExt::bisectionMethod(&f, minRange, maxRange, 10);
 			
 			Vec2f closestPoint = ellipsePos + Vec2f(rx*MathExt::cos(angleValue),
 												ry*MathExt::sin(angleValue));
@@ -1524,14 +1525,14 @@ namespace smpl
 		//check if circle collides with lines in the triangle
 		for(int i=0; i<3; i++)
 		{
-			double A = lineArr[i].getToPoint().x;
-			double B = lineArr[i].getToPoint().y;
-			double t;
+			float A = lineArr[i].getToPoint().x;
+			float B = lineArr[i].getToPoint().y;
+			float t;
 			if(A != 0 && B != 0)
 			{
 				t = -(A*(lineArr[i].getPoint1().x - circlePos.x) + B*(lineArr[i].getPoint1().y - circlePos.y)) / (MathExt::sqr(A) + MathExt::sqr(B));
 
-				t = MathExt::clamp(t, 0.0, 1.0);
+				t = MathExt::clamp<float>(t, 0.0, 1.0);
 
 				Vec2f nPoint = lineArr[i].getPoint1() + lineArr[i].getToPoint()*t;
 
@@ -1580,15 +1581,15 @@ namespace smpl
 			// y = (py + slope*px - slope*b) / (1+slope*slope)
 
 			//find the point with the minimum distance
-			double y = (a->getPosition().y + bLine.getSlopeRelativeY() * (a->getPosition().x - bLine.getXInt())) / (1 + MathExt::sqr(bLine.getSlopeRelativeY()));
+			float y = (a->getPosition().y + bLine.getSlopeRelativeY() * (a->getPosition().x - bLine.getXInt())) / (1 + MathExt::sqr(bLine.getSlopeRelativeY()));
 
 			//clamp it down to the max or min possible x value then solve for y
-			y = MathExt::clamp(y, bLine.getMinY(), bLine.getMaxY());
-			double x = y * bLine.getSlopeRelativeY() + bLine.getXInt();
+			y = MathExt::clamp<float>(y, bLine.getMinY(), bLine.getMaxY());
+			float x = y * bLine.getSlopeRelativeY() + bLine.getXInt();
 
 			//now solve distance
-			double disX = MathExt::sqr(a->getPosition().x - x);
-			double disY = MathExt::sqr(a->getPosition().y - y);
+			float disX = MathExt::sqr(a->getPosition().x - x);
+			float disY = MathExt::sqr(a->getPosition().y - y);
 
 			if (disX + disY <= MathExt::sqr(a->getRadius()))
 			{
@@ -1605,15 +1606,15 @@ namespace smpl
 			// x = (px + slope*py - slope*b) / (1 + slope * slope)
 
 			//find the point with the minimum distance
-			double x = (a->getPosition().x + bLine.getSlope() * (a->getPosition().y - bLine.getYInt())) / (1 + MathExt::sqr(bLine.getSlope()));
+			float x = (a->getPosition().x + bLine.getSlope() * (a->getPosition().y - bLine.getYInt())) / (1 + MathExt::sqr(bLine.getSlope()));
 
 			//clamp it down to the max or min possible x value then solve for y
-			x = MathExt::clamp(x, bLine.getMinX(), bLine.getMaxX());
-			double y = x * bLine.getSlope() + bLine.getYInt();
+			x = MathExt::clamp<float>(x, bLine.getMinX(), bLine.getMaxX());
+			float y = x * bLine.getSlope() + bLine.getYInt();
 
 			//now solve distance
-			double disX = MathExt::sqr(a->getPosition().x - x);
-			double disY = MathExt::sqr(a->getPosition().y - y);
+			float disX = MathExt::sqr(a->getPosition().x - x);
+			float disY = MathExt::sqr(a->getPosition().y - y);
 
 			if (disX + disY <= MathExt::sqr(a->getRadius()))
 			{
@@ -1635,7 +1636,10 @@ namespace smpl
 		Line l1 = Line(a->getPoint1(), a->getPoint2());
 		Line l2 = Line(b->getPoint1(), b->getPoint2());
 
-		Vec2f pointOfCol = l1.getIntersection(l2);
+		Vec2f pointOfCol;
+		bool couldCollide = l1.getIntersection(l2, pointOfCol);
+		if(!couldCollide)
+			return false;
 		
 		if(pointOfCol.x < l1.getMinX() || pointOfCol.x > l1.getMaxX())
 		{
@@ -1667,24 +1671,24 @@ namespace smpl
 		if(a->getPoint1().x == a->getPoint2().x)
 		{
 			//vertical line, do quicker method
-			double xRadSqr = MathExt::sqr(b->getXRadius());
-			double yRadSqr = MathExt::sqr(b->getYRadius());
+			float xRadSqr = MathExt::sqr(b->getXRadius());
+			float yRadSqr = MathExt::sqr(b->getYRadius());
 
-			double H = b->getPosition().x;
-			double K = b->getPosition().y;
+			float H = b->getPosition().x;
+			float K = b->getPosition().y;
 
-			double xCheck = a->getPoint1().x;
+			float xCheck = a->getPoint1().x;
 
-			double v1 = (xCheck-H);
-			// double v2 = 0;
+			float v1 = (xCheck-H);
+			// float v2 = 0;
 			
-			double A = (1.0 / yRadSqr);
-			// double B = 0;
-			double C = (MathExt::sqr(v1)/xRadSqr) - 1;
+			float A = (1.0 / yRadSqr);
+			// float B = 0;
+			float C = (MathExt::sqr(v1)/xRadSqr) - 1;
 
-			double polyA = A;
-			double polyB = 2*(-A*K);
-			double polyC = A*MathExt::sqr(K) + C;
+			float polyA = A;
+			float polyB = 2*(-A*K);
+			float polyC = A*MathExt::sqr(K) + C;
 
 			std::vector<double> solutions = MathExt::solveQuadraticReal(polyA, polyB, polyC);
 
@@ -1709,26 +1713,26 @@ namespace smpl
 		else if(a->getPoint1().y == a->getPoint2().y)
 		{
 			//horizontal line, do quicker method
-			double xRadSqr = MathExt::sqr(b->getXRadius());
-			double yRadSqr = MathExt::sqr(b->getYRadius());
+			float xRadSqr = MathExt::sqr(b->getXRadius());
+			float yRadSqr = MathExt::sqr(b->getYRadius());
 
-			// double rot = b->getRotation().x;
+			// float rot = b->getRotation().x;
 
-			// double H = b->getPosition().x;
-			double K = b->getPosition().y;
+			// float H = b->getPosition().x;
+			float K = b->getPosition().y;
 
-			double yCheck = a->getPoint1().y;
+			float yCheck = a->getPoint1().y;
 
-			// double v1 = 0; //Not used
-			double v2 = (yCheck-K);
+			// float v1 = 0; //Not used
+			float v2 = (yCheck-K);
 			
-			double A = (1.0 / xRadSqr);
-			// double B = 0; //Not used
-			double C = (MathExt::sqr(v2)/yRadSqr) - 1;
+			float A = (1.0 / xRadSqr);
+			// float B = 0; //Not used
+			float C = (MathExt::sqr(v2)/yRadSqr) - 1;
 
-			double polyA = A;
-			double polyB = 2*(-A*K);
-			double polyC = A*MathExt::sqr(K) + C;
+			float polyA = A;
+			float polyB = 2*(-A*K);
+			float polyC = A*MathExt::sqr(K) + C;
 
 			std::vector<double> solutions = MathExt::solveQuadraticReal(polyA, polyB, polyC);
 
@@ -1755,26 +1759,26 @@ namespace smpl
 			//Convert line to general equation
 			//Assume no rotation currently but factor it in
 			
-			double A = a->getPoint2().y - a->getPoint1().y;
-			double B = a->getPoint1().x - a->getPoint2().x;
-			double C = a->getPoint2().x*a->getPoint1().y - a->getPoint2().y*a->getPoint1().x;
+			float A = a->getPoint2().y - a->getPoint1().y;
+			float B = a->getPoint1().x - a->getPoint2().x;
+			float C = a->getPoint2().x*a->getPoint1().y - a->getPoint2().y*a->getPoint1().x;
 
-			double xRadSqr = MathExt::sqr(b->getXRadius());
-			double yRadSqr = MathExt::sqr(b->getYRadius());
+			float xRadSqr = MathExt::sqr(b->getXRadius());
+			float yRadSqr = MathExt::sqr(b->getYRadius());
 
-			// double rot = b->getRotation().x;
+			// float rot = b->getRotation().x;
 
-			double H = b->getPosition().x;
-			double K = b->getPosition().y;
+			float H = b->getPosition().x;
+			float K = b->getPosition().y;
 
-			double V1 = -( (C/A) + H );
-			double V2 = -(B/A);
-			double V3 = (-K);
-			double V4 = 1.0;
+			float V1 = -( (C/A) + H );
+			float V2 = -(B/A);
+			float V3 = (-K);
+			float V4 = 1.0;
 
-			double polyA = (MathExt::sqr(V2) / xRadSqr) + (MathExt::sqr(V4) / yRadSqr);
-			double polyB = 2*((V1*V2 / xRadSqr) + (V3*V4 / yRadSqr));
-			double polyC = (MathExt::sqr(V1) / xRadSqr) + (MathExt::sqr(V3) / yRadSqr) - 1;
+			float polyA = (MathExt::sqr(V2) / xRadSqr) + (MathExt::sqr(V4) / yRadSqr);
+			float polyB = 2*((V1*V2 / xRadSqr) + (V3*V4 / yRadSqr));
+			float polyC = (MathExt::sqr(V1) / xRadSqr) + (MathExt::sqr(V3) / yRadSqr) - 1;
 
 			std::vector<double> solutions = MathExt::solveQuadraticReal(polyA, polyB, polyC);
 			
@@ -1810,21 +1814,25 @@ namespace smpl
 		Line tl2 = Line(b->getVertex2(), b->getVertex3());
 		Line tl3 = Line(b->getVertex3(), b->getVertex1());
 		
-		Vec2f posColPoint1 = l.getIntersection(tl1);
-		Vec2f posColPoint2 = l.getIntersection(tl2);
-		Vec2f posColPoint3 = l.getIntersection(tl3);
+		Vec2f posColPoint1, posColPoint2, posColPoint3;
+		bool couldCol1 = l.getIntersection(tl1, posColPoint1);
+		bool couldCol2 = l.getIntersection(tl2, posColPoint2);
+		bool couldCol3 = l.getIntersection(tl3, posColPoint3);
 
-		if(posColPoint1.x >= l.getMinX() && posColPoint1.x <= l.getMaxX())
-			if(posColPoint1.y >= l.getMinY() && posColPoint1.y <= l.getMaxY())
-				return true;
+		if(couldCol1)
+			if(posColPoint1.x >= l.getMinX() && posColPoint1.x <= l.getMaxX())
+				if(posColPoint1.y >= l.getMinY() && posColPoint1.y <= l.getMaxY())
+					return true;
 
-		if(posColPoint2.x >= l.getMinX() && posColPoint2.x <= l.getMaxX())
-			if(posColPoint2.y >= l.getMinY() && posColPoint2.y <= l.getMaxY())
-				return true;
+		if(couldCol2)
+			if(posColPoint2.x >= l.getMinX() && posColPoint2.x <= l.getMaxX())
+				if(posColPoint2.y >= l.getMinY() && posColPoint2.y <= l.getMaxY())
+					return true;
 
-		if(posColPoint3.x >= l.getMinX() && posColPoint3.x <= l.getMaxX())
-			if(posColPoint3.y >= l.getMinY() && posColPoint3.y <= l.getMaxY())
-				return true;
+		if(couldCol3)
+			if(posColPoint3.x >= l.getMinX() && posColPoint3.x <= l.getMaxX())
+				if(posColPoint3.y >= l.getMinY() && posColPoint3.y <= l.getMaxY())
+					return true;
 		
 		//potentially inside triangle
 		Point2D p = Point2D(a->getPoint1());
@@ -1894,7 +1902,7 @@ namespace smpl
 		//w1+w2+w3=1
 		
 		Vec2f p1, p2, p3;
-		double det,w1,w2,w3;
+		float det,w1,w2,w3;
 		p1 = a->getVertex1();
 		p2 = a->getVertex2();
 		p3 = a->getVertex3();
@@ -1949,7 +1957,8 @@ namespace smpl
 		{
 			for(int i2=0; i2<2; i2++)
 			{
-				double t = aArr[i].getIntersectionParametric( bArr[i2] );
+				double t = -1;
+				aArr[i].getIntersectionParametric( bArr[i2], t );
 				if(t >=0 && t <= 1)
 				{
 					return true;
@@ -2042,28 +2051,28 @@ namespace smpl
 
 			Vec2f normal = Vec2f(-toVec.y, toVec.x);
 
-			double minAVal = INFINITY;
-			double maxAVal = -INFINITY;
-			double minBVal = INFINITY;
-			double maxBVal = -INFINITY;
+			float minAVal = INFINITY;
+			float maxAVal = -INFINITY;
+			float minBVal = INFINITY;
+			float maxBVal = -INFINITY;
 			
 			for(size_t i2=0; i2<b->size(); i2++)
 			{
-				double projection = MathExt::scalarVectorProjection(b->getVertex(i2), normal);
+				float projection = MathExt::scalarVectorProjection(b->getVertex(i2), normal);
 				minBVal = MathExt::min(projection, minBVal);
 				maxBVal = MathExt::max(projection, maxBVal);
 			}
 
 			for(size_t i2=0; i2<a->size(); i2++)
 			{
-				double projection = MathExt::scalarVectorProjection(a->getVertex(i2), normal);
+				float projection = MathExt::scalarVectorProjection(a->getVertex(i2), normal);
 				minAVal = MathExt::min(projection, minAVal);
 				maxAVal = MathExt::max(projection, maxAVal);
 			}
 
 			//find percentage of overlap
-			double overlapVal = maxAVal - minBVal;
-			double overlapVal2 = maxBVal - minAVal;
+			float overlapVal = maxAVal - minBVal;
+			float overlapVal2 = maxBVal - minAVal;
 			
 			if(overlapVal >= 0 && overlapVal2 >= 0)
 			{
@@ -2084,28 +2093,28 @@ namespace smpl
 			else
 				toVec = a->getVertex(0) - a->getVertex(i);
 
-			double minAVal = -INFINITY;
-			double maxAVal = INFINITY;
-			double minBVal = -INFINITY;
-			double maxBVal = INFINITY;
+			float minAVal = -INFINITY;
+			float maxAVal = INFINITY;
+			float minBVal = -INFINITY;
+			float maxBVal = INFINITY;
 			
 			for(size_t i2=0; i2<b->size(); i2++)
 			{
-				double projection = MathExt::scalarVectorProjection(b->getVertex(i2), toVec);
+				float projection = MathExt::scalarVectorProjection(b->getVertex(i2), toVec);
 				minBVal = MathExt::min(projection, minBVal);
 				maxBVal = MathExt::max(projection, maxBVal);
 			}
 
 			for(size_t i2=0; i2<a->size(); i2++)
 			{
-				double projection = MathExt::scalarVectorProjection(a->getVertex(i2), toVec);
+				float projection = MathExt::scalarVectorProjection(a->getVertex(i2), toVec);
 				minAVal = MathExt::min(projection, minAVal);
 				maxAVal = MathExt::max(projection, maxAVal);
 			}
 
 			//find percentage of overlap
-			double overlapVal = maxAVal - minBVal;
-			double overlapVal2 = maxBVal - minAVal;
+			float overlapVal = maxAVal - minBVal;
+			float overlapVal2 = maxBVal - minAVal;
 			
 			if(overlapVal >= 0 && overlapVal2 >= 0)
 			{
@@ -2207,8 +2216,8 @@ namespace smpl
 			{
 				//potential collision
 				//If size of box is less than 1 in both the x and y, consider it a collision
-				double b1Area = (box1[1].x - box1[0].x)*(box1[1].y - box1[0].y);
-				double b2Area = (box2[1].x - box2[0].x)*(box2[1].y - box2[0].y);
+				float b1Area = MathExt::abs((box1[1].x - box1[0].x)*(box1[1].y - box1[0].y));
+				float b2Area = MathExt::abs((box2[1].x - box2[0].x)*(box2[1].y - box2[0].y));
 
 				if(b1Area + b2Area <= tolerance)
 				{

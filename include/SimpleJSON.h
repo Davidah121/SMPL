@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include <fstream>
 #include <vector>
 #include <unordered_map>
@@ -6,12 +7,12 @@
 
 namespace smpl
 {
-    class JNode;
-    class JPair;
-    class JArray;
-    class JObject;
+    class DLL_OPTION JNode;
+    class DLL_OPTION JPair;
+    class DLL_OPTION JArray;
+    class DLL_OPTION JObject;
 
-    class JNode
+    class DLL_OPTION JNode
     {
     public:
         JNode(int type);
@@ -29,7 +30,7 @@ namespace smpl
         int type = 0;
     };
 
-    class JPair : public JNode
+    class DLL_OPTION JPair : public JNode
     {
     public:
         JPair();
@@ -44,7 +45,7 @@ namespace smpl
         std::string value;
     };
 
-    class JObject : public JNode
+    class DLL_OPTION JObject : public JNode
     {
     public:
         JObject();
@@ -59,7 +60,7 @@ namespace smpl
         std::unordered_multimap<std::string, size_t> nameToIndexMap;
     };
 
-    class JArray : public JNode
+    class DLL_OPTION JArray : public JNode
     {
     public:
         JArray();
@@ -74,7 +75,7 @@ namespace smpl
         std::unordered_multimap<std::string, size_t> nameToIndexMap;
     };
 
-    class SimpleJSON
+    class DLL_OPTION SimpleJSON
     {
     public:
         static const int TYPE_NODE = 0;

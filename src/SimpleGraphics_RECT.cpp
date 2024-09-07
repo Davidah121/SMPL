@@ -2,6 +2,7 @@
 
 namespace smpl
 {
+    #if (OPTI == 0)
 
     //works properly now
     void SimpleGraphics::drawRect(int x, int y, int x2, int y2, bool outline, Image* surf)
@@ -49,185 +50,42 @@ namespace smpl
             
             if(outline == false)
             {
-                #if(OPTI>=2)
+                int offWidth = maxX - minX;
+                int addAmount = (tempWidth - offWidth)-1;
 
-                    __m256i* avxPoint;
-                    
-                    Color* startPoint = (otherImg->getPixels() + minX + (minY * tempWidth));
-                    Color* endPoint = (otherImg->getPixels() + maxX + (maxY * tempWidth));
-                    
-                    //int startOffset = (maxX - minX) % 4;
-                    
-                    int offWidth = (1+maxX - minX)>>3;
-                    int remainder = (1+maxX - minX) - (offWidth<<3);
-                    int addAmount = (tempWidth - (maxX-minX)-1);
+                int tX = 0;
 
-                    int tX = 0;
-
-                    int actualX = minX;
-                    int actualY = minY;
-
-                    __m256i avxColor = _mm256_set1_epi32( *((int*)&activeColor) );
-                    
-                    if(currentComposite == NO_COMPOSITE)
+                int actualX = minX;
+                int actualY = minY;
+                
+                if(currentComposite == NO_COMPOSITE)
+                {
+					#pragma omp parallel for
+                    for(int tY = minY; tY <= maxY; tY++)
                     {
-                        while (startPoint < endPoint)
+                        Color* startPoint = &otherImg->getPixels()[minX + tY*otherImg->getWidth()];
+                        Color* endPoint = &otherImg->getPixels()[maxX + tY*otherImg->getWidth()];
+                        while(startPoint <= endPoint)
                         {
-                            avxPoint = (__m256i*)startPoint;
-                            for(int i=0; i<offWidth; i++)
-                            {
-                                _mm256_storeu_si256(avxPoint, avxColor);
-                                avxPoint++;
-                            }
-
-                            //fill remainder
-                            startPoint += offWidth<<3;
-
-                            for(int i=0; i<remainder; i++)
-                            {
-                                *startPoint = activeColor;
-                                startPoint++;
-                            }
-
-                            startPoint += addAmount;
+                            *startPoint = activeColor;
+                            startPoint++;
                         }
                     }
-                    else
+                }
+                else
+                {
+                    #pragma omp parallel for
+                    for(int tY = minY; tY <= maxY; tY++)
                     {
-                        while (startPoint < endPoint)
+                        Color* startPoint = &otherImg->getPixels()[minX + tY*otherImg->getWidth()];
+                        Color* endPoint = &otherImg->getPixels()[maxX + tY*otherImg->getWidth()];
+                        while(startPoint <= endPoint)
                         {
-                            avxPoint = (__m256i*)startPoint;
-                            for(int i=0; i<offWidth; i++)
-                            {
-                                __m256i currentColors = _mm256_loadu_si256(avxPoint);
-                                __m256i blendC = blend(avxColor, currentColors);
-                                _mm256_storeu_si256(avxPoint, blendC );
-                                avxPoint++;
-                            }
-
-                            //fill remainder
-                            startPoint += offWidth<<3;
-
-                            for(int i=0; i<remainder; i++)
-                            {
-                                *startPoint = blend(activeColor, *startPoint);
-                                startPoint++;
-                            }
-
-                            startPoint += addAmount;
-                        }
-                        
-                    }
-
-                #elif (OPTI>=1)
-
-                    __m128i* ssePoint;
-                    
-                    Color* startPoint = (otherImg->getPixels() + minX + (minY * tempWidth));
-                    Color* endPoint = (otherImg->getPixels() + maxX + (maxY * tempWidth));
-                    
-                    //int startOffset = (maxX - minX) % 4;
-                    
-                    int offWidth = (1+maxX - minX)>>2;
-                    int remainder = (1+maxX - minX) - (offWidth<<2);
-                    int addAmount = (tempWidth - (maxX-minX)-1);
-
-                    int tX = 0;
-
-                    int actualX = minX;
-                    int actualY = minY;
-
-                    __m128i sseColor = _mm_set1_epi32( *((int*)&activeColor) );
-                    
-                    if(currentComposite == NO_COMPOSITE)
-                    {
-                        while (startPoint < endPoint)
-                        {
-                            ssePoint = (__m128i*)startPoint;
-                            for(int i=0; i<offWidth; i++)
-                            {
-                                _mm_storeu_si128(ssePoint, sseColor);
-                                ssePoint++;
-                            }
-
-                            //fill remainder
-                            startPoint += offWidth<<2;
-
-                            for(int i=0; i<remainder; i++)
-                            {
-                                *startPoint = activeColor;
-                                startPoint++;
-                            }
-
-                            startPoint += addAmount;
+                            *startPoint = blend(activeColor, *startPoint);
+                            startPoint++;
                         }
                     }
-                    else
-                    {
-                        while (startPoint < endPoint)
-                        {
-                            ssePoint = (__m128i*)startPoint;
-                            for(int i=0; i<offWidth; i++)
-                            {
-                                __m128i currentColors = _mm_loadu_si128(ssePoint);
-                                __m128i blendC = blend(sseColor, currentColors);
-                                _mm_storeu_si128(ssePoint, blendC );
-                                ssePoint++;
-                            }
-
-                            //fill remainder
-                            startPoint += offWidth<<2;
-
-                            for(int i=0; i<remainder; i++)
-                            {
-                                *startPoint = blend(activeColor, *startPoint);
-                                startPoint++;
-                            }
-
-                            startPoint += addAmount;
-                        }
-                        
-                    }
-                    
-                #else
-
-                    Color* startPoint = otherImg->getPixels() + minX + (minY * tempWidth);
-                    Color* endPoint = otherImg->getPixels() + maxX + (maxY * tempWidth);
-                    
-                    int offWidth = maxX - minX;
-                    int addAmount = (tempWidth - offWidth)-1;
-
-                    int tX = 0;
-
-                    int actualX = minX;
-                    int actualY = minY;
-                    
-                    if(currentComposite == NO_COMPOSITE)
-                    {
-                        while (startPoint < endPoint)
-                        {
-                            for(int i=0; i<=offWidth; i++)
-                            {
-                                *startPoint = activeColor;
-                                startPoint++;
-                            }
-                            startPoint += addAmount;
-                        }
-                    }
-                    else
-                    {
-                        while (startPoint < endPoint)
-                        {
-                            for(int i=0; i<=offWidth; i++)
-                            {
-                                *startPoint = blend(activeColor, *startPoint);
-                                startPoint++;
-                            }
-                            startPoint += addAmount;
-                        }
-                    }
-
-                #endif
+                }
             }
             else
             {
@@ -241,5 +99,5 @@ namespace smpl
             }
         }
     }
-    
+    #endif
 } //NAMESPACE glib END

@@ -6,13 +6,6 @@
 namespace smpl
 {
     template<typename K, typename T>
-    struct HashPair
-    {
-        K key;
-        T data;
-    };
-
-    template<typename K, typename T>
     class SimpleHashMap
     {
     public:
@@ -33,14 +26,13 @@ namespace smpl
          *      Default value is MODE_KEEP_ALL
          * @param initBuckets 
          *      The initial amount of buckets
-         *      The amount of buckets must be a power of 2. 
-         *          Will be rounded up to a power of 2.
-         *      Default value is 16384
+         *      Default value is 0x1000 = 4096
          */
-        SimpleHashMap(bool mode = MODE_KEEP_ALL, size_t initBucketCount = 16384);
+        SimpleHashMap(bool mode = MODE_KEEP_ALL, size_t initBucketCount = 0x1000);
 
         /**
-         * @brief Construct a new SimpleHashMap object from another SimpleHashMap
+         * @brief Copy Constructor.
+         *      Makes new copy from another SimpleHashMap
          * 
          * @param other 
          */
@@ -52,6 +44,22 @@ namespace smpl
          * @param other 
          */
         void operator=(const SimpleHashMap<K, T>& other);
+
+        /**
+         * @brief Move Constructor.
+         *      Moves a SimpleHashMap to another
+         * 
+         * @param other 
+         */
+        SimpleHashMap(SimpleHashMap<K, T>&& other) noexcept;
+
+        /**
+         * @brief Moves a SimpleHashMap to another
+         * 
+         * @param other 
+         */
+        void operator=(SimpleHashMap<K, T>&& other) noexcept;
+        
 
         /**
          * @brief Destroy the SimpleHashMap object
@@ -68,16 +76,16 @@ namespace smpl
         void add(K key, T data);
 
         /**
-         * @brief Removes the HashPair entry.
+         * @brief Removes the std::pair entry.
          * 
          * @param pair 
          * @return true 
          * @return false 
          */
-        bool remove(HashPair<K,T>* pair);
+        bool remove(std::pair<K,T>* pair);
 
         /**
-         * @brief Removes the HashPair entry with the specified key and data.
+         * @brief Removes the std::pair entry with the specified key and data.
          * 
          * @param key 
          * @param data 
@@ -90,29 +98,18 @@ namespace smpl
          * @brief Removes the first entry found for the key.
          *      Returns if successful.
          * 
-         *      All HashPair references to the removed data will be invalid as the reference will be deleted.
+         *      All std::pair references to the removed data will be invalid as the reference will be deleted.
          * 
          * @param key 
          * @return bool
          */
-        bool removeFirst(K key);
-
-        /**
-         * @brief Removes the last entry found for the key.
-         *      Returns if successful.
-         * 
-         *      All HashPair references to the removed data will be invalid as the reference will be deleted.
-         * 
-         * @param key 
-         * @return bool
-         */
-        bool removeLast(K key);
+        bool remove(K key);
 
         /**
          * @brief Removes all entries found for the key.
          *      Returns if successful.
          * 
-         *      All HashPair references to the removed data will be invalid as the reference will be deleted.
+         *      All std::pair references to the removed data will be invalid as the reference will be deleted.
          * 
          * @param key 
          * @return bool
@@ -123,47 +120,55 @@ namespace smpl
          * @brief Gets the first entry with the specified key.
          * 
          * @param key 
-         * @return HashPair<K, T>* 
+         * @return std::pair<K, T>* 
          */
-        HashPair<K,T>* get(K key);
+        std::pair<K,T>* get(K key);
 
         /**
          * @brief Gets the next entry using the previous key.
          *      get() must have been called before.
          * 
          * @param key 
-         * @return HashPair<K, T>* 
+         * @return std::pair<K, T>* 
          */
-        HashPair<K,T>* getNext();
+        std::pair<K,T>* getNext();
 
         /**
          * @brief Gets all entries with the specified key.
          * 
          * @param key 
-         * @return std::vector<HashPair<K, T>*> 
+         * @return std::vector<std::pair<K, T>*> 
          */
-        std::vector<HashPair<K,T>*> getAll(K key);
+        std::vector<std::pair<K,T>*> getAll(K key);
 
         /**
          * @brief Gets a selection of entries with the specified key.
          *      The maximum number of entries grabbed will limited by count.
          * 
          * @param key 
-         * @return std::vector<HashPair<K, T>*> 
+         * @return std::vector<std::pair<K, T>*> 
          */
-        std::vector<HashPair<K,T>*> getAllCount(K key, int count);
+        std::vector<std::pair<K,T>*> getAllCount(K key, int count);
 
         /**
          * @brief Gets the things that the hashmap stores.
+         *      Not intended for raw modification but reading only.
+         *      Modifying of key data may cause failures to find data without doing a rehash.
          * 
-         * @return std::vector<HashPair<K,T>*> 
+         * @return std::vector<std::vector<std::pair<K,T>*>>&
          */
-        std::vector<HashPair<K,T>*> getAll();
+        std::vector<std::vector<std::pair<K,T>*>>& getRawData();
 
         /**
          * @brief Rehashes the hash map.
          *      Can help performance if the data has been reorganized.
          *      Automatically happens as data is added if the max load factor has been exceeded.
+         * 
+         *      Rehashing is a O(N) operation and requires O(N) space however,
+         *          It specifically requires 2-3x more memory. This causes a spike in
+         *          memory usage that drops after rehashing is done. This may be undersired.
+         * 
+         *      Automatic Rehashing can be disabled.
          */
         void rehash();
 
@@ -185,17 +190,14 @@ namespace smpl
          * 
          * @return size_t 
          */
-        size_t getSize();
+        size_t size();
 
         /**
          * @brief Sets the Max Load Factor for the hash map.
          *      If the load factor exceeds the max load factor, it causes a rehash.
          *      load factor = size/buckets
          * 
-         *      By default, it is set to 10
-         * 
-         *      Note that if set to a value less than 0, no rehash will happen unless
-         *      explicitly requested
+         *      By default, it is set to 0.75
          * @param f 
          */
         void setMaxLoadFactor(double f);
@@ -207,12 +209,40 @@ namespace smpl
          */
         double getMaxLoadFactor();
 
+        /**
+         * @brief Gets the Current Load Factor.
+         *      The load factor is the size / buckets*MAX_BUCKET_LOAD
+         *      MAX_BUCKET_LOAD = 24
+         * 
+         * @return double 
+         */
+        double getCurrentLoadFactor();
+
+        /**
+         * @brief Returns whether rehashing is allowed.
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool getRehashAllowed();
+        
+        /**
+         * @brief Sets whether rehashing is allowed.
+         *      This maybe turned off for performance reasons.
+         * 
+         * @param v 
+         */
+        void setRehashAllowed(bool v);
+
     private:
-        std::vector<std::vector<HashPair<K,T>*>> buckets;
-        size_t size = 0;
-        double maxLoadFactor = 10;
+        static const int MAX_BUCKET_LOAD = 24;
+        std::vector<std::vector<std::pair<K,T>*>> buckets;
+        size_t elements = 0;
+        double maxLoadFactor = 0.75;
         bool mode = MODE_KEEP_ALL;
         std::hash<K> hasher;
+        size_t initialBucketSize = 512;
+        bool rehashAllowed = true;
 
         size_t offset = -1;
         K lastKey;
@@ -221,8 +251,8 @@ namespace smpl
     template<typename K, typename T>
     inline SimpleHashMap<K, T>::SimpleHashMap(bool mode, size_t initBuckets)
     {
-        size_t actualBucketCount =  1ull << (int)ceil(log2((double)initBuckets));
-        buckets = std::vector<std::vector<HashPair<K,T>*>>(actualBucketCount);
+        initialBucketSize = initBuckets;
+        buckets = std::vector<std::vector<std::pair<K,T>*>>(initBuckets);
         this->mode = mode;
     }
 
@@ -230,42 +260,74 @@ namespace smpl
     inline SimpleHashMap<K, T>::SimpleHashMap(const SimpleHashMap<K, T>& other)
     {
         mode = other.mode;
-        size = other.size;
+        elements = other.elements;
         maxLoadFactor = other.maxLoadFactor;
         
-        buckets = std::vector< std::vector<HashPair<K, T>*> >(other.buckets.size());
-
+        buckets = std::vector< std::vector<std::pair<K, T>*> >(other.buckets.size());
         for(size_t bucketLocation=0; bucketLocation<other.buckets.size(); bucketLocation++)
         {
             buckets[bucketLocation].reserve( other.buckets[bucketLocation].size() );
             for(size_t k=0; k<other.buckets[bucketLocation].size(); k++)
             {
-                buckets[bucketLocation].push_back(new HashPair<K, T>());
-                buckets[bucketLocation].back()->key = other.buckets[bucketLocation][k]->key;
-                buckets[bucketLocation].back()->data = other.buckets[bucketLocation][k]->data;
+                buckets[bucketLocation].push_back(new std::pair<K, T>());
+                buckets[bucketLocation].back()->first = other.buckets[bucketLocation][k]->first;
+                buckets[bucketLocation].back()->second = other.buckets[bucketLocation][k]->second;
             }
         }
+        
+        initialBucketSize = other.initialBucketSize;
+        offset = other.offset;
+        lastKey = other.lastKey;
     }
 
     template<class K, class T>
     inline void SimpleHashMap<K, T>::operator=(const SimpleHashMap<K, T>& other)
     {
         mode = other.mode;
-        size = other.size;
+        elements = other.elements;
         maxLoadFactor = other.maxLoadFactor;
         
-        buckets = std::vector< std::vector<HashPair<K, T>*> >(other.buckets.size());
-
+        buckets = std::vector< std::vector<std::pair<K, T>*> >(other.buckets.size());
         for(size_t bucketLocation=0; bucketLocation<other.buckets.size(); bucketLocation++)
         {
             buckets[bucketLocation].reserve( other.buckets[bucketLocation].size() );
             for(size_t k=0; k<other.buckets[bucketLocation].size(); k++)
             {
-                buckets[bucketLocation].push_back(new HashPair<K, T>());
-                buckets[bucketLocation].back()->key = other.buckets[bucketLocation][k]->key;
-                buckets[bucketLocation].back()->data = other.buckets[bucketLocation][k]->data;
+                buckets[bucketLocation].push_back(new std::pair<K, T>());
+                buckets[bucketLocation].back() = other.buckets[bucketLocation][k];
             }
         }
+        
+        initialBucketSize = other.initialBucketSize;
+        offset = other.offset;
+        lastKey = other.lastKey;
+    }
+
+    
+    template<class K, class T>
+    inline SimpleHashMap<K, T>::SimpleHashMap(SimpleHashMap<K, T>&& other) noexcept
+    {
+        mode = other.mode;
+        elements = other.elements;
+        maxLoadFactor = other.maxLoadFactor;
+        buckets = std::move(other.buckets);
+
+        initialBucketSize = other.initialBucketSize;
+        offset = other.offset;
+        lastKey = other.lastKey;
+    }
+
+    template<class K, class T>
+    inline void SimpleHashMap<K, T>::operator=(SimpleHashMap<K, T>&& other) noexcept
+    {
+        mode = other.mode;
+        elements = other.elements;
+        maxLoadFactor = other.maxLoadFactor;
+        buckets = std::move(other.buckets);
+
+        initialBucketSize = other.initialBucketSize;
+        offset = other.offset;
+        lastKey = other.lastKey;
     }
 
     template<typename K, typename T>
@@ -277,190 +339,95 @@ namespace smpl
     template<typename K, typename T>
     inline void SimpleHashMap<K, T>::add(K key, T data)
     {
-        // size_t t1 = System::getCurrentTimeMicro();
-
         size_t bucketLocation = hasher(key) % buckets.size();
-        HashPair<K,T>* pair = new HashPair<K,T>();
-        pair->key = key;
-        pair->data = data;
-
-        if(mode == MODE_KEEP_ALL)
+        size_t existingLocation = SIZE_MAX;
+        if(mode == MODE_UNIQUE_KEY)
         {
-            buckets[bucketLocation].push_back( pair );
-            this->size++;
-        }
-        else if(mode == MODE_UNIQUE_KEY)
-        {
-            //find if the key already exists
-            bool found = false;
             for(size_t i=0; i<buckets[bucketLocation].size(); i++)
             {
-                if(buckets[bucketLocation][i]->key == key)
+                if(buckets[bucketLocation][i]->first == key)
                 {
-                    buckets[bucketLocation][i]->data = data;
-                    found = true;
-                    break;
+                    buckets[bucketLocation][i]->second = data;
+                    return;
                 }
-            }
-
-            if(!found)
-            {
-                buckets[bucketLocation].push_back( pair );
-                this->size++;
             }
         }
 
-        // size_t t2 = System::getCurrentTimeMicro();
-        // System::dbtime[0] += t2-t1;
-
-        if(maxLoadFactor >= 0)
+        buckets[bucketLocation].push_back( new std::pair<K, T>{key, data});
+        elements++;
+        if(rehashAllowed)
         {
-            double loadFactor = (double)this->size / buckets.size();
-            if(loadFactor > maxLoadFactor)
-            {
+            double load = (double)elements / (buckets.size()*MAX_BUCKET_LOAD);
+            if(load >= maxLoadFactor)
                 rehash();
-            }
         }
     }
 
     template<typename K, typename T>
-    inline bool SimpleHashMap<K, T>::remove(HashPair<K,T>* pair)
+    inline bool SimpleHashMap<K, T>::remove(std::pair<K,T>* pair)
     {
-        // size_t t1 = System::getCurrentTimeMicro();
-
-        int indexOfKey = -1;
         if(pair != nullptr)
         {
-            size_t bucketLocation = hasher(pair->key) % buckets.size();
+            size_t bucketLocation = hasher(pair->first) % buckets.size();
+            std::vector<std::pair<K, T>*>& bucket = buckets[bucketLocation];
 
-            for(size_t i=0; i<buckets[bucketLocation].size(); i++)
+            for(size_t i=0; i<bucket.size(); i++)
             {
-                if(buckets[bucketLocation][i] == pair)
+                if(bucket[i] == pair)
                 {
-                    indexOfKey = (int)i;
-                    delete pair;
-                    break;
+                    //delete
+                    delete bucket[i];
+                    bucket[i] = bucket[bucket.size() - 1];
+                    bucket.pop_back();
+                    elements--;
+                    return true;
                 }
             }
-
-            if(indexOfKey != -1)
-            {
-                for(size_t i=indexOfKey; i<buckets[bucketLocation].size()-1; i++)
-                {
-                    HashPair<K,T>* temp = buckets[bucketLocation][i];
-                    buckets[bucketLocation][i] = buckets[bucketLocation][i+1];
-                    buckets[bucketLocation][i+1] = temp;
-                }
-                buckets[bucketLocation].pop_back();
-                this->size--;
-            }
-        }
-
-        // size_t t2 = System::getCurrentTimeMicro();
-        // System::dbtime[3] += t2-t1;
-
-        return indexOfKey != -1;
-    }
-
-    template<typename K, typename T>
-    inline bool SimpleHashMap<K, T>::remove(K key, T data)
-    {
-        // size_t t1 = System::getCurrentTimeMicro();
-
-        size_t bucketLocation = hasher(key) % buckets.size();
-
-        int indexOfKey = -1;
-        for(size_t i=0; i<buckets[bucketLocation].size(); i++)
-        {
-            if(buckets[bucketLocation][i]->data == data)
-            {
-                indexOfKey = (int)i;
-                delete buckets[bucketLocation][i];
-                break;
-            }
-        }
-
-        if(indexOfKey != -1)
-        {
-            for(size_t i=indexOfKey; i<buckets[bucketLocation].size()-1; i++)
-            {
-                HashPair<K,T>* temp = buckets[bucketLocation][i];
-                buckets[bucketLocation][i] = buckets[bucketLocation][i+1];
-                buckets[bucketLocation][i+1] = temp;
-            }
-            buckets[bucketLocation].pop_back();
-            this->size--;
-        }
-
-        
-        // size_t t2 = System::getCurrentTimeMicro();
-        // System::dbtime[3] += t2-t1;
-
-
-        return indexOfKey != -1;
-    }
-
-    template<typename K, typename T>
-    inline bool SimpleHashMap<K, T>::removeFirst(K key)
-    {
-        size_t bucketLocation = hasher(key) % buckets.size();
-
-        int indexOfKey = -1;
-        for(size_t i=buckets[bucketLocation].size()-1; i>=0; i--)
-        {
-            HashPair<K,T>* pair = buckets[bucketLocation][i];
-            if(pair->key == key)
-            {
-                indexOfKey = (int)i;
-                delete pair;
-                break;
-            }
-        }
-
-        if(indexOfKey != -1)
-        {
-            for(size_t i=indexOfKey; i<buckets[bucketLocation].size()-1; i++)
-            {
-                HashPair<K,T>* temp = buckets[bucketLocation][i];
-                buckets[bucketLocation][i] = buckets[bucketLocation][i+1];
-                buckets[bucketLocation][i+1] = temp;
-            }
-            buckets[bucketLocation].pop_back();
-            this->size--;
-            return true;
         }
         return false;
     }
 
     template<typename K, typename T>
-    inline bool SimpleHashMap<K, T>::removeLast(K key)
+    inline bool SimpleHashMap<K, T>::remove(K key, T data)
     {
         size_t bucketLocation = hasher(key) % buckets.size();
+        std::vector<std::pair<K, T>*>& bucket = buckets[bucketLocation];
 
-        int indexOfKey = -1;
-        for(size_t i=0; i<buckets[bucketLocation].size(); i++)
+        for(size_t i=0; i<bucket.size(); i++)
         {
-            HashPair<K,T>* pair = buckets[bucketLocation][i];
-            if(pair->key == key)
+            if(bucket[i]->first == key && bucket[i]->second == data)
             {
-                indexOfKey = (int)i;
-                delete pair;
-                break;
+                //delete
+                delete bucket[i];
+                bucket[i] = bucket[bucket.size() - 1];
+                bucket.pop_back();
+                elements--;
+                return true;
             }
         }
+    
+        return false;
+    }
 
-        if(indexOfKey != -1)
+    template<typename K, typename T>
+    inline bool SimpleHashMap<K, T>::remove(K key)
+    {
+        size_t bucketLocation = hasher(key) % buckets.size();
+        std::vector<std::pair<K, T>*>& bucket = buckets[bucketLocation];
+
+        for(size_t i=0; i<bucket.size(); i++)
         {
-            for(int i=indexOfKey; i<buckets[bucketLocation].size()-1; i++)
+            if(bucket[i]->first == key)
             {
-                HashPair<K,T>* temp = buckets[bucketLocation][i];
-                buckets[bucketLocation][i] = buckets[bucketLocation][i+1];
-                buckets[bucketLocation][i+1] = temp;
+                //delete
+                delete bucket[i];
+                bucket[i] = bucket[bucket.size() - 1];
+                bucket.pop_back();
+                elements--;
+                return true;
             }
-            buckets[bucketLocation].pop_back();
-            this->size--;
-            return true;
         }
+    
         return false;
     }
 
@@ -468,153 +435,84 @@ namespace smpl
     inline bool SimpleHashMap<K, T>::removeAll(K key)
     {
         size_t bucketLocation = hasher(key) % buckets.size();
+        std::vector<std::pair<K, T>*>& bucket = buckets[bucketLocation];
+        size_t origSize = bucket.size();
 
-        size_t count = 0;
-        for(size_t i=0; i<buckets[bucketLocation].size(); i++)
+        for(size_t i=bucket.size()-1; i!=-1; i--)
         {
-            HashPair<K,T>* pair = buckets[bucketLocation][i];
-            if(pair->key == key)
+            if(bucket[i]->first == key)
             {
-                delete pair;
-                buckets[bucketLocation][i] = nullptr;
-                count++;
+                //delete
+                delete bucket[i];
+                bucket[i] = bucket[bucket.size() - 1];
+                bucket.pop_back();
+                elements--;
             }
         }
-
-        if(count > 0)
-        {
-            size_t totalSize = buckets[bucketLocation].size();
-
-            for(size_t i=totalSize-1; i>=0; i--)
-            {
-                if(buckets[bucketLocation][i] == nullptr)
-                {
-                    for(size_t j=i; j<totalSize-1; j++)
-                    {
-                        HashPair<K,T>* temp = buckets[bucketLocation][j];
-                        buckets[bucketLocation][j] = buckets[bucketLocation][j+1];
-                        buckets[bucketLocation][j+1] = temp;
-                    }
-                }
-                
-                buckets[bucketLocation].pop_back();
-                totalSize--;
-                this->size--;
-            }
-            return true;
-        }
-        return false;
+    
+        return elements != origSize;
     }
 
     template<typename K, typename T>
-    inline HashPair<K,T>* SimpleHashMap<K, T>::get(K key)
+    inline std::pair<K,T>* SimpleHashMap<K, T>::get(K key)
     {
-        // size_t t1 = System::getCurrentTimeMicro();
         size_t bucketLocation = hasher(key) % buckets.size();
-        HashPair<K,T>* collection = nullptr;
-
-        long startLoc = ((long)buckets[bucketLocation].size())-1;
-        for(long i=startLoc; i>=0; i--)
+        std::vector<std::pair<K, T>*>& bucket = buckets[bucketLocation];
+        
+        for(size_t i=bucket.size()-1; i!=-1; i--)
         {
-            if(buckets[bucketLocation][i]->key == key)
+            if(bucket[i]->first == key)
             {
-                collection = buckets[bucketLocation][i];
                 offset = i-1;
                 lastKey = key;
-                break;
+                return bucket[i];
             }
-            if(i == 0)
-                break;
         }
-        // size_t t2 = System::getCurrentTimeMicro();
-        // System::dbtime[2] += t2-t1;
-        return collection;
+        offset = SIZE_MAX;
+        return nullptr;
     }
 
     template<typename K, typename T>
-    inline HashPair<K,T>* SimpleHashMap<K, T>::getNext()
+    inline std::pair<K,T>* SimpleHashMap<K, T>::getNext()
     {
-        // size_t t1 = System::getCurrentTimeMicro();
-        HashPair<K,T>* collection = nullptr;
-        
-        if(offset >= 0)
+        if(offset != SIZE_MAX)
         {
             size_t bucketLocation = hasher(lastKey) % buckets.size();
+            std::vector<std::pair<K, T>*>& bucket = buckets[bucketLocation];
 
-            for(int i=offset; i>=0; i--)
+            for(size_t i=offset; i!=-1; i--)
             {
-                if(buckets[bucketLocation][i]->key == lastKey)
+                if(bucket[i]->first == lastKey)
                 {
-                    collection = buckets[bucketLocation][i];
                     offset = i-1;
-                    break;
+                    return bucket[i];
                 }
             }
+            offset = SIZE_MAX;
         }
-
-        // size_t t2 = System::getCurrentTimeMicro();
-        // System::dbtime[2] += t2-t1;
-        return collection;
+        return nullptr;
     }
         
     template<typename K, typename T>
-    inline std::vector<HashPair<K, T>*> SimpleHashMap<K, T>::getAll()
+    inline std::vector<std::vector<std::pair<K,T>*>>& SimpleHashMap<K, T>::getRawData()
     {
-        std::vector<HashPair<K, T>*> results;
-        for(size_t i=0; i<buckets.size(); i++)
-        {
-            for(size_t j=0; j<buckets[i].size(); j++)
-            {
-                results.push_back(buckets[i][j]);
-            }
-        }
-        return results;
+        return buckets;
     }
 
     template<typename K, typename T>
-    inline std::vector<HashPair<K,T>*> SimpleHashMap<K, T>::getAll(K key)
+    inline std::vector<std::pair<K,T>*> SimpleHashMap<K, T>::getAll(K key)
     {
         if(buckets.size() == 0)
             return {};
         
         size_t bucketLocation = hasher(key) % buckets.size();
-        std::vector<HashPair<K,T>*> collection;
+        std::vector<std::pair<K,T>*> collection;
 
         for(size_t i=0; i<buckets[bucketLocation].size(); i++)
         {
-            if(buckets[bucketLocation][i]->key == key)
+            if(buckets[bucketLocation][i]->first == key)
                 collection.push_back(buckets[bucketLocation][i]);
         }
-
-
-        return collection;
-    }
-
-    template<typename K, typename T>
-    inline std::vector<HashPair<K,T>*> SimpleHashMap<K, T>::getAllCount(K key, int count)
-    {
-        // size_t t1 = System::getCurrentTimeMicro();
-        if(buckets.size() == 0)
-            return {};
-
-        size_t bucketLocation = hasher(key) % buckets.size();
-        std::vector<HashPair<K,T>*> collection;
-        int currCount = 0;
-
-        long startLoc = ((long)buckets[bucketLocation].size())-1;
-        for(long i=startLoc; i>=0; i--)
-        {
-            if(buckets[bucketLocation][i]->key == key)
-            {
-                collection.push_back(buckets[bucketLocation][i]);
-                currCount++;
-                if(currCount >= count)
-                    break;
-            }
-        }
-
-        // size_t t2 = System::getCurrentTimeMicro();
-        // System::dbtime[2] += t2-t1;
 
         return collection;
     }
@@ -622,62 +520,28 @@ namespace smpl
     template<typename K, typename T>
     inline void SimpleHashMap<K, T>::rehash()
     {
-        // size_t t1 = System::getCurrentTimeMicro();
-        
-        size_t oldSize = buckets.size();
-        buckets.resize(oldSize*2);
-
-        for(size_t bucketLocation=0; bucketLocation<oldSize; bucketLocation++)
+        std::vector<std::vector<std::pair<K, T>*>> newBuckets = std::vector<std::vector<std::pair<K, T>*>>(buckets.size()*2);
+        for(size_t i=0; i<newBuckets.size(); i++)
         {
-            if(buckets[bucketLocation].size()>0)
-                buckets[bucketLocation+oldSize].reserve( buckets[bucketLocation].size() );
+            newBuckets[i].reserve(MAX_BUCKET_LOAD/2);
+        }
 
-            size_t count = 0;
-
-            for(size_t j=0; j<buckets[bucketLocation].size(); j++)
+        for(size_t bucketLocation=0; bucketLocation<buckets.size(); bucketLocation++)
+        {
+            std::vector<std::pair<K, T>*>& currBucket = buckets[bucketLocation];
+            for(size_t j=0; j<currBucket.size(); j++)
             {
-                size_t newLocation = hasher(buckets[bucketLocation][j]->key) % buckets.size();
-                
-                if(newLocation != bucketLocation)
-                {
-                    buckets[newLocation].push_back(buckets[bucketLocation][j]);
-                    buckets[bucketLocation][j] = nullptr;
-                    count++;
-                }
-            }
-
-            if(count > 0)
-            {
-                long totalSize = (long)buckets[bucketLocation].size();
-                for(long i=totalSize-1; i>=0; i--)
-                {
-                    if(buckets[bucketLocation][i] == nullptr)
-                    {
-                        for(long j=i; j<totalSize-1; j++)
-                        {
-                            HashPair<K,T>* temp = buckets[bucketLocation][j];
-                            buckets[bucketLocation][j] = buckets[bucketLocation][j+1];
-                            buckets[bucketLocation][j+1] = temp;
-                        }
-                    }
-                    
-                    
-                    buckets[bucketLocation].pop_back();
-                    totalSize--;
-                    if (i == 0)
-                        break;
-                }
+                size_t newLocation = hasher(currBucket[j]->first) % newBuckets.size();
+                newBuckets[newLocation].push_back(currBucket[j]);
             }
         }
-        // size_t t2 = System::getCurrentTimeMicro();
-        // System::dbtime[1] += t2-t1;
+        buckets = std::move(newBuckets);
     }
 
 
     template<typename K, typename T>
     inline void SimpleHashMap<K, T>::clear()
     {
-        // size_t t1 = System::getCurrentTimeMicro();
         for(size_t i=0; i<buckets.size(); i++)
         {
             for(size_t j=0; j<buckets[i].size(); j++)
@@ -689,10 +553,7 @@ namespace smpl
             }
             buckets[i].clear();
         }
-
-        // buckets.clear(); //Need the buckets still
-        // size_t t2 = System::getCurrentTimeMicro();
-        // System::dbtime[4] += t2-t1;
+        elements = 0;
     }
 
     template<typename K, typename T>
@@ -702,9 +563,9 @@ namespace smpl
     }
 
     template<typename K, typename T>
-    inline size_t SimpleHashMap<K, T>::getSize()
+    inline size_t SimpleHashMap<K, T>::size()
     {
-        return size;
+        return elements;
     }
 
     template<typename K, typename T>
@@ -717,5 +578,25 @@ namespace smpl
     inline double SimpleHashMap<K, T>::getMaxLoadFactor()
     {
         return maxLoadFactor;
+    }
+
+    template<typename K, typename T>
+    inline double SimpleHashMap<K, T>::getCurrentLoadFactor()
+    {
+        if(buckets.size() == 0)
+            return 0;
+        return (double)elements / (buckets.size()*MAX_BUCKET_LOAD);
+    }
+    
+    template<typename K, typename T>
+    inline bool SimpleHashMap<K, T>::getRehashAllowed()
+    {
+        return rehashAllowed;
+    }
+
+    template<typename K, typename T>
+    inline void SimpleHashMap<K, T>::setRehashAllowed(bool v)
+    {
+        rehashAllowed = v;
     }
 } //NAMESPACE glib END

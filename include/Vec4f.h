@@ -1,4 +1,5 @@
 #pragma once
+#include "BuildOptions.h"
 #include "Serializable.h"
 #include "Vec3f.h"
 #include "Vec2f.h"
@@ -6,7 +7,7 @@
 namespace smpl
 {
 
-	class Vec4f : public SerializedObject
+	class DLL_OPTION Vec4f : public SerializedObject
 	{
 	public:
 
@@ -24,7 +25,7 @@ namespace smpl
 		 * @param z 
 		 * @param w 
 		 */
-		Vec4f(double x, double y, double z, double w);
+		Vec4f(float x, float y, float z, float w);
 		
 		/**
 		 * @brief Construct a new Vec4f object from a Vec3f object and
@@ -32,7 +33,7 @@ namespace smpl
 		 * 
 		 * @param other 
 		 */
-		Vec4f(Vec3f other, double w);
+		Vec4f(Vec3f other, float w);
 
 		/**
 		 * @brief Construct a new Vec4f object from a Vec3f object and 2 optional
@@ -40,7 +41,7 @@ namespace smpl
 		 * 
 		 * @param other 
 		 */
-		Vec4f(Vec2f other, double z, double w);
+		Vec4f(Vec2f other, float z, float w);
 
 		/**
 		 * @brief Destroy the Vec4f object
@@ -53,66 +54,66 @@ namespace smpl
 		virtual const RootClass* getClass();
 		std::unordered_map<std::string, SerializedData> getSerializedVariables();
 
-		double x = 0;
-		double y = 0;
-		double z = 0;
-		double w = 0;
+		float x = 0;
+		float y = 0;
+		float z = 0;
+		float w = 0;
 
 		/**
 		 * @brief Gets the X value for the vector
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getX();
+		float getX();
 
 		/**
 		 * @brief Gets the Y value for the vector
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getY();
+		float getY();
 
 		/**
 		 * @brief Gets the Z value for the vector
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getZ();
+		float getZ();
 
 		/**
 		 * @brief Gets the W value for the vector
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getW();
+		float getW();
 
 		/**
 		 * @brief Sets the X value for the vector
 		 * 
 		 * @param value 
 		 */
-		void setX(double value);
+		void setX(float value);
 
 		/**
 		 * @brief Sets the Y value for the vector
 		 * 
 		 * @param value 
 		 */
-		void setY(double value);
+		void setY(float value);
 
 		/**
 		 * @brief Sets the Z value for the vector
 		 * 
 		 * @param value 
 		 */
-		void setZ(double value);
+		void setZ(float value);
 
 		/**
 		 * @brief Sets the W value for the vector
 		 * 
 		 * @param value 
 		 */
-		void setW(double value);
+		void setW(float value);
 
 
 		/**
@@ -148,9 +149,9 @@ namespace smpl
 		/**
 		 * @brief Get the Length of the vector
 		 * 
-		 * @return double 
+		 * @return float 
 		 */
-		double getLength();
+		float getLength();
 
 		/**
 		 * @brief Gets the normalized version of the vector.
@@ -170,47 +171,16 @@ namespace smpl
 		void operator+=(Vec4f other);
 		void operator-=(Vec4f other);
 
-		void operator*=(double other);
-		void operator/=(double other);
+		void operator*=(float other);
+		void operator/=(float other);
 
-		Vec4f operator*(double other);
-		Vec4f operator/(double other);
+		Vec4f operator*(float other);
+		Vec4f operator/(float other);
 
-		friend Vec4f operator*(double value, Vec4f other)
+		friend Vec4f operator*(float value, Vec4f other)
 		{
 			return other*value;
 		}
-
-		//Converting into an array
-		/**
-		 * @brief Fills a float array of at least size 4 with the
-		 * 		x, y, z, and w values.
-		 * 		
-		 * @param buffer 
-		 * 		Must be of size 4 or greater.
-		 */
-		void fillArray(float* buffer);
-
-		/**
-		 * @brief Fills a float array of at least size 4 with the
-		 * 		x, y, z, and w values.
-		 * 		
-		 * @param buffer 
-		 * 		Must be of size 4 or greater.
-		 */
-		void fillArray(double* buffer);
-
-		/**
-		 * @brief Creates a new float array of size 4 and fills it
-		 * 		with the x, y, z, and w values.
-		 */
-		float* convertToFloatArray();
-
-		/**
-		 * @brief Creates a new double array of size 4 and fills it
-		 * 		with the x, y, z, and w values.
-		 */
-		double* convertToDoubleArray();
 
 		/**
 		 * @brief Converts the Vec4f object to a GeneralVector object

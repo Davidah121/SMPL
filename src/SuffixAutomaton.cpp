@@ -283,7 +283,6 @@ namespace smpl
     int ChainedSuffixAutomaton::extend(unsigned char c)
     {
         int i = currIndex;
-
         SAs[i]->extend(c);
         if (currOffset < offsets[lastIndex] + individualSize + overlap)
             SAs[lastIndex]->extend(c);
@@ -306,32 +305,42 @@ namespace smpl
     bool ChainedSuffixAutomaton::searchNext(unsigned char c)
     {
         //do it for every Suffix Automaton
+        int threadMem[24];
+        for(int i=0; i<SAs.size(); i++) { threadMem[i] = -1; }
+
         bool ok = false;
         for (int i = 0; i < SAs.size(); i++)
         {
             int sState = searchStates[i];
-
             if (sState == -1)
                 continue;
 
             sState = SAs[i]->traverse(sState, c);
+            int actualPos = offsets[i] + (SAs[i]->getState(sState)->firstPos - currSearchLen);
             if (sState > 0)
             {
-                int actualPos = offsets[i] + (SAs[i]->getState(sState)->firstPos - currSearchLen);
-                currMatch = { i, actualPos, currSearchLen + 1 };
-                lastGoodState = i;
-                ok = true;
+                threadMem[i] = actualPos;
+                searchStates[i] = sState;
             }
             else
-                sState = -1;
-
-            searchStates[i] = sState;
+            {
+                threadMem[i] = -1;
+                searchStates[i] = -1;
+            }
         }
-        //currSearchLen += (int)ok;
-        if(ok == true)
-            currSearchLen++;
 
-        return ok;
+        for (int i = 0; i < SAs.size(); i++)
+        {
+            //find 1 that is valid
+            if (threadMem[i] >= 0)
+            {
+                currMatch.start = threadMem[i];
+                currMatch.length = currSearchLen+1;
+                currSearchLen++;
+                return true;
+            }
+        }
+        return false;
     }
 
     void ChainedSuffixAutomaton::resetSearch()

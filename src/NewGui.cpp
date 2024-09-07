@@ -2,7 +2,7 @@
 
 namespace smpl
 {
-    Color loadColor(std::string data)
+    DLL_OPTION Color loadColor(std::string data)
     {
         //check if first character is '{'
         if(!data.empty())
@@ -73,7 +73,7 @@ namespace smpl
         return {0, 0, 0, 0};
     }
 
-    bool tryToloadValueStuff(double& value, std::string data)
+    DLL_OPTION bool tryToloadValueStuff(double& value, std::string data)
     {
         //check for %
         size_t indexOfPercent = data.find('%');
@@ -100,56 +100,56 @@ namespace smpl
         return false;
     }
 
-    bool loadValueFromAttrib(int8_t& value, std::string data)
+    DLL_OPTION bool loadValueFromAttrib(int8_t& value, std::string data)
     {
         double temp = 0;
         bool isPercentage = tryToloadValueStuff(temp, data);
         value = (int8_t)temp;
         return isPercentage;
     }
-    bool loadValueFromAttrib(uint8_t& value, std::string data)
+    DLL_OPTION bool loadValueFromAttrib(uint8_t& value, std::string data)
     {
         double temp = 0;
         bool isPercentage = tryToloadValueStuff(temp, data);
         value = (uint8_t)temp;
         return isPercentage;
     }
-    bool loadValueFromAttrib(int16_t& value, std::string data)
+    DLL_OPTION bool loadValueFromAttrib(int16_t& value, std::string data)
     {
         double temp = 0;
         bool isPercentage = tryToloadValueStuff(temp, data);
         value = (int16_t)temp;
         return isPercentage;
     }
-    bool loadValueFromAttrib(uint16_t& value, std::string data)
+    DLL_OPTION bool loadValueFromAttrib(uint16_t& value, std::string data)
     {
         double temp = 0;
         bool isPercentage = tryToloadValueStuff(temp, data);
         value = (uint16_t)temp;
         return isPercentage;
     }
-    bool loadValueFromAttrib(int32_t& value, std::string data)
+    DLL_OPTION bool loadValueFromAttrib(int32_t& value, std::string data)
     {
         double temp = 0;
         bool isPercentage = tryToloadValueStuff(temp, data);
         value = (int32_t)temp;
         return isPercentage;
     }
-    bool loadValueFromAttrib(uint32_t& value, std::string data)
+    DLL_OPTION bool loadValueFromAttrib(uint32_t& value, std::string data)
     {
         double temp = 0;
         bool isPercentage = tryToloadValueStuff(temp, data);
         value = (uint32_t)temp;
         return isPercentage;
     }
-    bool loadValueFromAttrib(int64_t& value, std::string data)
+    DLL_OPTION bool loadValueFromAttrib(int64_t& value, std::string data)
     {
         double temp = 0;
         bool isPercentage = tryToloadValueStuff(temp, data);
         value = (int64_t)temp;
         return isPercentage;
     }
-    bool loadValueFromAttrib(uint64_t& value, std::string data)
+    DLL_OPTION bool loadValueFromAttrib(uint64_t& value, std::string data)
     {
         double temp = 0;
         bool isPercentage = tryToloadValueStuff(temp, data);
@@ -157,7 +157,7 @@ namespace smpl
         return isPercentage;
     }
 
-    bool loadValueFromAttrib(double& value, std::string data)
+    DLL_OPTION bool loadValueFromAttrib(double& value, std::string data)
     {
         return tryToloadValueStuff(value, data);
     }

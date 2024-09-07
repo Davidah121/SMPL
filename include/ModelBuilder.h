@@ -1,9 +1,10 @@
 #pragma once
+#include "BuildOptions.h"
 #include "Model.h"
 
 namespace smpl
 {
-    class ModelBuilder
+    class DLL_OPTION ModelBuilder
     {
     public:
         static Model* createSphere(double radius, int steps, bool faceNormals = true);

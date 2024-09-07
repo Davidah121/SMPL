@@ -1,16 +1,26 @@
 #pragma once
-#include "SmartQueue.h"
+#include "PriorityQueue.h"
+#include "BuildOptions.h"
+#include "Concurrency.h"
+#include "Queue.h"
 #include <thread>
 #include <vector>
 #include <functional>
-#include <mutex>
-#include <atomic>
 #include <unordered_map>
-#include <condition_variable>
 
 namespace smpl
 {
-    class SimpleJobQueue
+    struct JobInfo
+    {
+        size_t ID = SIZE_MAX;
+        std::function<void()> func = nullptr;
+        bool operator==(const JobInfo& other)
+        {
+            return ID == other.ID;
+        }
+    };
+
+    class DLL_OPTION SimpleJobQueue
     {
     public:
         /**
@@ -38,30 +48,28 @@ namespace smpl
         /**
          * @brief Adds a new job to the job queue. It is any valid function call which
          *      can be a lamda function if other inputs are needed.
-         *      Returns a pointer that can be used to delete the job from the queue if desired.
-         *          Should not be used for any other reason as it is not thread safe.
+         *      Returns a ID for the job if it needs to be deleted.
          * 
          * @param j 
-         * @return SmartMemory<SLinkNode<std::function<void()>>>
+         * @return size_t
          */
-        SmartMemory<SLinkNode<std::function<void()>>> addJob(std::function<void()> j);
+        size_t addJob(std::function<void()> j);
 
         /**
-         * @brief Attempts to remove a job with the specified pointer.
-         *      Must be a valid pointer for the queue.
+         * @brief Attempts to remove a job with the specified ID.
          *      The expected input here is returned from addJob()
          * 
          *      May not remove the job if it has already been executed or is in the process of being executed.
          * 
          * @param it 
          */
-        void removeJob(SmartMemory<SLinkNode<std::function<void()>>> it);
+        void removeJob(size_t jobID);
 
         /**
          * @brief Forces the current thread / program to wait until all jobs in the queue are finished.
          * 
          */
-        void clearAllJobs();
+        void waitForAllJobs();
 
         /**
          * @brief Removes all jobs in the queue.
@@ -77,6 +85,24 @@ namespace smpl
          * @return false 
          */
         bool hasJobs();
+
+        /**
+         * @brief Determines if the job with the specified ID is done.
+         * 
+         * @param ID 
+         * @return true 
+         * @return false 
+         */
+        bool jobDone(size_t ID);
+
+        /**
+         * @brief Determines if all jobs in the queue have been finished.
+         *      All threads must not be busy working on anything as well.
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool allJobsDone();
 
     private:
         /**
@@ -95,11 +121,137 @@ namespace smpl
          */
         bool getRunning();
         
-        std::mutex jobQueueMutex;
-        std::mutex importantMutex;
+        HybridSpinLock jobQueueMutex;
         bool running = false;
-        SmartQueue<std::function<void()>> jobs;
+        size_t jobID = 0;
+        Queue<JobInfo> jobs;
+        std::vector<size_t> jobsInProgress;
         std::vector<std::thread*> jobThreads;
-        std::condition_variable cv;
+    };
+
+    class DLL_OPTION SmartJobQueue
+    {
+    public:
+        /**
+         * @brief Construct a new Smart Job Queue object
+         *      Jobs are added to a queue to be executed by individual threads.
+         *      There is no order to when a job is finished. The jobs are only guaranteed to start in the order presented.
+         *      The jobs start in order of priority (higher priority starts first)
+         * 
+         *      A minimum of 2 threads are used.
+         *      The maximum number of threads can be set
+         * @param minThreads
+         *      If the minThreads < 1, it starts with just 1 thread.
+         *      Otherwise, these are the total number of threads that will always be allocated.
+         * @param maxThreads
+         *      If the maxThreads = -1,
+         *          It will have no limits to the total number of threads.
+         */
+        SmartJobQueue(int minThreads, int maxThreads);
+
+        /**
+         * @brief Destroy the Smart Job Queue object
+         *      Does not wait until all jobs are done. Just waits until the threads are done
+         *      with their current job to exit.
+         *      If waiting till all jobs are done is required, use clearAllJobs() first.
+         * 
+         *      The SmartJobQueue Object is invalid after being destroyed.
+         */
+        ~SmartJobQueue();
+
+        /**
+         * @brief Adds a new job to the job queue with some priority. It is any valid function call which
+         *      can be a lamda function if other inputs are needed.
+         *      Returns a ID for the job if it needs to be deleted.
+         * 
+         * @param j 
+         * @return size_t
+         */
+        size_t addJob(std::function<void()> j, double priority);
+
+        /**
+         * @brief Attempts to remove a job with the specified ID.
+         *      The expected input here is returned from addJob()
+         * 
+         *      May not remove the job if it has already been executed or is in the process of being executed.
+         * 
+         * @param it 
+         */
+        void removeJob(size_t jobID);
+
+        /**
+         * @brief Forces the current thread / program to wait until all jobs in the queue are finished.
+         * 
+         */
+        void waitForAllJobs();
+
+        /**
+         * @brief Removes all jobs in the queue.
+         *      May not remove a job if it has already or is in the process of being executed.
+         * 
+         */
+        void removeAllJobs();
+
+        /**
+         * @brief Returns whether there are jobs in the queue still.
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool hasJobs();
+
+        /**
+         * @brief Determines if the job with the specified ID is done.
+         * 
+         * @param ID 
+         * @return true 
+         * @return false 
+         */
+        bool jobDone(size_t ID);
+
+        /**
+         * @brief Determines if all jobs in the queue have been finished.
+         *      All threads must not be busy working on anything as well.
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool allJobsDone();
+
+    private:
+        /**
+         * @brief An internal function for the created threads.
+         *      Will pick jobs from the queue to execute and yield control as long as there is nothing to do.
+         * 
+         */
+        void threadRun(size_t ID, bool temporary);
+
+        /**
+         * @brief A thread that spawns new threads to run
+         * 
+         */
+        void analysisThreadRun();
+
+        /**
+         * @brief An internal function to determine if the threads should keep running
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool getRunning();
+        
+        HybridSpinLock jobQueueMutex;
+        bool running = false;
+        size_t jobID = 0;
+        size_t threadID = 0;
+        PriorityQueue<JobInfo> jobs;
+        std::unordered_map<size_t, size_t> jobsInProgress;
+        std::unordered_map<size_t, bool> threadDone;
+        std::unordered_map<size_t, std::thread*> jobThreads;
+        std::thread analysisThread;
+        uint64_t jobsDoneSinceCheck = 0;
+        uint64_t threadLoad = 0;
+        uint16_t maxThreadsAllowed = -1;
+        
     };
 }

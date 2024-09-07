@@ -580,98 +580,8 @@ namespace smpl
 	std::vector<unsigned char> Compression::compressDeflate(unsigned char* data, size_t size, int blocks, int compressionLevel, bool customTable)
 	{
 		//probably will only use default trees and stuff
-		if(data == nullptr)
-		{
-			#ifdef USE_EXCEPTIONS
-			throw InvalidDataError();
-			#endif
-			return {};
-		}
-
-		if(size <=0 || blocks <=0 )
-		{
-			#ifdef USE_EXCEPTIONS
-			throw InvalidSizeError();
-			#endif
-			return {};
-		}
-
-		BinarySet bin = BinarySet();
-
-		bin.setBitOrder(BinarySet::LMSB);
-		bin.setAddBitOrder(BinarySet::RMSB);
-
-		if(blocks > 1)
-		{
-			int tSize = System::getNumberOfThreads();
-			std::vector<std::vector<lengthPair>> info = std::vector<std::vector<lengthPair>>(blocks);
-			std::vector<std::thread> threads = std::vector<std::thread>( tSize );
-
-			int sizeOfBlock = (int)(size/blocks);
-
-			for(int block=0; block<blocks; block++)
-			{
-				int nSize = sizeOfBlock;
-				unsigned char* nData = data + block*sizeOfBlock;
-				if(block == blocks-1)
-				{
-					nSize = size - (block*sizeOfBlock);
-				}
-				info[block].clear();
-
-				if(block<tSize)
-				{
-					info[block].clear();
-					threads[ block%tSize ] = std::thread(getLZ77RefPairsCSA, nData, nSize, &info[block], compressionLevel);
-				}
-				else
-				{
-					if(threads[block%tSize].joinable())
-						threads[block%tSize].join();
-
-					info[block].clear();
-					threads[ block%tSize ] = std::thread(getLZ77RefPairsCSA, nData, nSize, &info[block], compressionLevel);
-				}
-			}
-
-			for(int t=0; t<tSize; t++)
-			{
-				if(threads[t].joinable())
-					threads[t].join();
-			}
-
-			std::vector<BinarySet> threadBinData = std::vector<BinarySet>(blocks);
-
-			for(int block=0; block<blocks; block++)
-			{
-				if(threads[block%tSize].joinable())
-					threads[block%tSize].join();
-					
-				threads[ block%tSize ] = std::thread(refPairToDeflateBlocks, &info[block], &threadBinData[block], customTable, block == (blocks-1) );
-			}
-			for(int t=0; t<tSize; t++)
-			{
-				if(threads[t].joinable())
-					threads[t].join();
-			}
-			
-			//Construct
-			for(int block=0; block<blocks; block++)
-			{
-				bin.add( threadBinData[block] );
-			}
-		}
-		else
-		{
-			std::vector<lengthPair> info = std::vector<lengthPair>();
-			getLZ77RefPairsCSA(data, size, &info, compressionLevel);
-			// getLZ77RefPairsCHash(data, size, &info, compressionLevel);
-			
-			refPairToDeflateBlocks(&info, &bin, customTable, true);
-		}
-
-		bin.setAddBitOrder(BinarySet::LMSB);
-		
+		BinarySet bin;
+		Compression::compressDeflate(&bin, data, size, blocks, compressionLevel);
 		return bin.toBytes();
 	}
 
@@ -694,26 +604,26 @@ namespace smpl
 			#endif
 			return;
 		}
+		
 		if(blocks == 1)
 		{
 			std::vector<lengthPair> info = std::vector<lengthPair>();
 			getLZ77RefPairsCHash(data, size, &info, compressionLevel);
+			// getLZ77RefPairsCSA(data, size, &info, compressionLevel);
 			refPairToDeflateBlocks(&info, outputData, customTable, true);
 			outputData->setAddBitOrder(BinarySet::LMSB);
 			return;
 		}
-		
-		int tSize = System::getNumberOfThreads();
-		std::vector<std::vector<lengthPair>> info = std::vector<std::vector<lengthPair>>(blocks);
-		std::vector<std::thread> threads = std::vector<std::thread>( tSize );
 
+		std::vector<std::vector<lengthPair>> info = std::vector<std::vector<lengthPair>>(blocks);
+		std::vector<BinarySet> threadBinData = std::vector<BinarySet>(blocks);
 		BinarySet bin = BinarySet();
 
 		outputData->setBitOrder(BinarySet::LMSB);
 		outputData->setAddBitOrder(BinarySet::RMSB);
-
 		int sizeOfBlock = size/blocks;
 
+		#pragma omp parallel for
 		for(int block=0; block<blocks; block++)
 		{
 			int nSize = sizeOfBlock;
@@ -723,41 +633,8 @@ namespace smpl
 				nSize = size - (block*sizeOfBlock);
 			}
 			info[block].clear();
-
-			if(block<tSize)
-			{
-				info[block].clear();
-				threads[ block%tSize ] = std::thread(getLZ77RefPairsCHash, nData, nSize, &info[block], compressionLevel);
-			}
-			else
-			{
-				if(threads[block%tSize].joinable())
-					threads[block%tSize].join();
-
-				info[block].clear();
-				threads[ block%tSize ] = std::thread(getLZ77RefPairsCHash, nData, nSize, &info[block], compressionLevel);
-			}
-		}
-
-		for(int t=0; t<tSize; t++)
-		{
-			if(threads[t].joinable())
-				threads[t].join();
-		}
-
-		std::vector<BinarySet> threadBinData = std::vector<BinarySet>(blocks);
-
-		for(int block=0; block<blocks; block++)
-		{
-			if(threads[block%tSize].joinable())
-				threads[block%tSize].join();
-				
-			threads[ block%tSize ] = std::thread(refPairToDeflateBlocks, &info[block], &threadBinData[block], customTable, block == (blocks-1) );
-		}
-		for(int t=0; t<tSize; t++)
-		{
-			if(threads[t].joinable())
-				threads[t].join();
+			getLZ77RefPairsCSA(nData, nSize, &info[block], compressionLevel);
+			refPairToDeflateBlocks(&info[block], &threadBinData[block], customTable, block == (blocks-1) );
 		}
 
 		//Construct

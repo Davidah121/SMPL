@@ -164,12 +164,12 @@ namespace smpl
         
         auto pair = attribs.get("src");
         if(pair != nullptr)
-            spr = GuiResourceManager::getResourceManager().getSprite(pair->data);
+            spr = GuiResourceManager::getResourceManager().getSprite(pair->second);
         attribs.remove(pair);
 
         pair = attribs.get("color");
         if(pair != nullptr)
-            imgColor = loadColor(pair->data);
+            imgColor = loadColor(pair->second);
         attribs.remove(pair);
 
         pair = attribs.get("sprite-index");
@@ -177,7 +177,7 @@ namespace smpl
         {
             try
             {
-                spriteIndex = StringTools::toInt(pair->data);
+                spriteIndex = StringTools::toInt(pair->second);
             }
             catch(...) { }
         }
@@ -185,22 +185,22 @@ namespace smpl
 
         pair = attribs.get("scalable");
         if(pair != nullptr)
-            isScalable = (pair->data == "true");
+            isScalable = (pair->second == "true");
         attribs.remove(pair);
 
         pair = attribs.get("maintain-aspect-ratio");
         if(pair != nullptr)
-            shouldMaintainAspectRatio = (pair->data == "true");
+            shouldMaintainAspectRatio = (pair->second == "true");
         attribs.remove(pair);
         
         pair = attribs.get("auto-animate");
         if(pair != nullptr)
-            autoAnimate = (pair->data == "true");
+            autoAnimate = (pair->second == "true");
         attribs.remove(pair);
         
         pair = attribs.get("loop");
         if(pair != nullptr)
-            shouldLoop = (pair->data == "true");
+            shouldLoop = (pair->second == "true");
         attribs.remove(pair);
     }
 

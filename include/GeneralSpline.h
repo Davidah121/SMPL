@@ -1,9 +1,10 @@
 #pragma once
+#include "BuildOptions.h"
 #include "BezierCurve.h"
 
 namespace smpl
 {
-	class GeneralSpline
+	class DLL_OPTION GeneralSpline
 	{
 	public:
 		/**

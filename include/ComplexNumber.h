@@ -1,11 +1,12 @@
 #pragma once
+#include "BuildOptions.h"
 #include "Object.h"
 #include "Vec2f.h"
 
 namespace smpl
 {
 
-	class ComplexNumber : public Object
+	class DLL_OPTION ComplexNumber : public Object
 	{
 	public:
 		/**

@@ -175,7 +175,7 @@ namespace smpl
 		}
 	}
 
-	Vec2f Line::getIntersection(Line other)
+	bool Line::getIntersection(Line other, Vec2f& output)
 	{
 		if(toPoint.x == 0)
 		{
@@ -186,17 +186,15 @@ namespace smpl
 				if(other.point1.x == point1.x)
 				{
 					//intersection
-					return Vec2f(point1.x, (other.minY + maxY) / 2);
-				}
-				else
-				{
-					return Vec2f( NAN, NAN);
+					output = Vec2f(point1.x, (other.minY + maxY) / 2);
+					return true;
 				}
 			}
 			else
 			{
 				double yVal = other.solveForY(point1.x);
-				return Vec2f(point1.x, yVal);
+				output = Vec2f(point1.x, yVal);
+				return true;
 			}
 		}
 		else
@@ -205,7 +203,8 @@ namespace smpl
 			{
 				//other is vertical line
 				double yVal = solveForY(other.point1.x);
-				return Vec2f(other.point1.x, yVal);
+				output = Vec2f(other.point1.x, yVal);
+				return true;
 			}
 			else
 			{
@@ -213,8 +212,8 @@ namespace smpl
 				{
 					double xVal = (other.yInt - yInt) / (slope-other.slope);
 					double yVal = solveForY(xVal);
-
-					return Vec2f(xVal, yVal);
+					output = Vec2f(xVal, yVal);
+					return true;
 				}
 				else
 				{
@@ -222,38 +221,33 @@ namespace smpl
 					if(other.yInt == yInt)
 					{
 						//same line
-						return point1;
-					}
-					else
-					{
-						return Vec2f( NAN, NAN); 
+						output = point1;
+						return true;
 					}
 				}
 
 			}
 		}
 
-		return Vec2f( NAN, NAN);
+		return false;
 	}
 
-	double Line::getIntersectionParametric(Line other)
+	bool Line::getIntersectionParametric(Line other, double& timePoint)
 	{
-		Vec2f point = getIntersection(other);
-
-		if(point.x != NAN)
+		Vec2f point;
+		if(getIntersection(other, point))
 		{
 			Vec2f temp = point - getPoint1();
-			double t = 0;
 
 			if(getToPoint().x != 0)
-				t = temp.x / getToPoint().x;
+				timePoint = temp.x / getToPoint().x;
 			else if(getToPoint().y != 0)
-				t = temp.y / getToPoint().y;
+				timePoint = temp.y / getToPoint().y;
 
-			return t;	
+			return true;
 		}
 
-		return NAN;
+		return false;
 	}
 
 	double Line::getPointAsParamtetricValue(double x, double y)

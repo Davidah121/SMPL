@@ -24,7 +24,6 @@
 	#endif
 	
 	#include <Windows.h>
-	#include <timeapi.h>
 
 	#include <TlHelp32.h>
 	#include <ShlObj.h>
@@ -148,22 +147,46 @@ namespace smpl
 
 	void System::sleep(int millis, int micros, bool accurate)
 	{
+		if(millis == 0 && micros == 0)
+			return;
+		
 		size_t t1 = System::getCurrentTimeMicro();
 		size_t totalTime = millis*1000 + micros;
-		size_t osSleepAccuracy = 2000; //can't expect sleep under 2 milliseconds to be accurate enough. Really close though
-
+		size_t osSleepAccuracy = 1500; //can't expect sleep under 1.5 millisecond to be accurate enough. Really close though
+	
 		if(accurate)
 		{
+			#ifdef _WIN32
+			HANDLE timer = CreateWaitableTimerEx(NULL, NULL, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS);
+			if(timer == NULL)
+			{
+				//problem. Use inaccurate sleep
+				std::this_thread::sleep_for(std::chrono::microseconds(totalTime));
+			}
+			#endif
+
 			while(true)
 			{
 				size_t elapsedTime = (System::getCurrentTimeMicro() - t1);
-				if( elapsedTime >= totalTime )
+				if(elapsedTime >= totalTime)
 					break;
 				else
 				{
 					size_t timeLeft = totalTime - elapsedTime;
-					if(timeLeft >= osSleepAccuracy)
-						std::this_thread::sleep_for(std::chrono::milliseconds(1));
+					int64_t desiredSleepTime = timeLeft - osSleepAccuracy;
+					if(desiredSleepTime >= 0)
+					{
+						int64_t millisLeft = timeLeft / 1000;
+						#ifdef _WIN32
+						LARGE_INTEGER due;
+						due.QuadPart = -(10000LL*millisLeft);
+
+						SetWaitableTimerEx(timer, &due, 0, NULL, NULL, NULL, 0);
+						WaitForSingleObject(timer, INFINITE);
+						#else
+						std::this_thread::sleep_for(std::chrono::milliseconds(millisLeft));
+						#endif
+					}
 					else
 					{
 						std::this_thread::yield();
@@ -175,7 +198,6 @@ namespace smpl
 		{
 			std::this_thread::sleep_for(std::chrono::microseconds(totalTime));
 		}
-		
 	}
 
 	void System::delayRun(void(*function)(), int millis, int micros, bool accurate)

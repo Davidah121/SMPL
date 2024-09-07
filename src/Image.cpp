@@ -230,10 +230,10 @@ namespace smpl
 			Vec4f finalC = ((a*yFrac + b)*yFrac + c)*yFrac + d;
 
 			return {
-				(unsigned char)MathExt::clamp(finalC.x, 0.0, 255.0),
-				(unsigned char)MathExt::clamp(finalC.y, 0.0, 255.0),
-				(unsigned char)MathExt::clamp(finalC.z, 0.0, 255.0),
-				(unsigned char)MathExt::clamp(finalC.w, 0.0, 255.0)
+				(unsigned char)MathExt::clamp(finalC.x, 0.0f, 255.0f),
+				(unsigned char)MathExt::clamp(finalC.y, 0.0f, 255.0f),
+				(unsigned char)MathExt::clamp(finalC.z, 0.0f, 255.0f),
+				(unsigned char)MathExt::clamp(finalC.w, 0.0f, 255.0f)
 			};
 		}
 		
@@ -341,7 +341,7 @@ namespace smpl
 		Color* sPixels = pixels;
 		Color* ePixels = pixels + (width*height);
 		Color4f* oPixels = v->getPixels();
-
+		
 		while(sPixels < ePixels)
 		{
 			*sPixels = SimpleGraphics::convertColor4fToColor(*oPixels);

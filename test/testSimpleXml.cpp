@@ -49,7 +49,7 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 
 		REQUIRE(xml.getNodes().size() == 2);
 		REQUIRE(xml.getNodes()[0]->getTitle() == "!doctype");
-		REQUIRE(xml.getNodes()[0]->getRawAttributes().getSize() > 0);
+		REQUIRE(xml.getNodes()[0]->getRawAttributes().size() > 0);
 		REQUIRE(xml.getNodes()[0]->getAttribute("html") != nullptr);
 		REQUIRE(xml.getNodes()[1]->getTitle() == "html");
 
@@ -119,9 +119,9 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 		std::vector<smpl::XmlNode*> result = xml.getNodesPattern(searches);
 		REQUIRE(result.size() == 1);
 
-		smpl::HashPair<std::string, std::string>* attribs = result[0]->getAttribute("type");
+		std::pair<std::string, std::string>* attribs = result[0]->getAttribute("type");
 		REQUIRE(attribs != nullptr);
-		REQUIRE(attribs->data == "touch");
+		REQUIRE(attribs->second == "touch");
 	}
 
 	SECTION("Test HTML void elements")

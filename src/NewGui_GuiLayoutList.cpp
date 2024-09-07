@@ -418,7 +418,7 @@ namespace smpl
         auto pair = attribs.get("direction");
         if(pair != nullptr)
         {
-            if(pair->data == "horizontal")
+            if(pair->second == "horizontal")
                 setDirection(DIRECTION_HORIZONTAL);
             else
                 setDirection(DIRECTION_VERTICAL);
@@ -428,7 +428,7 @@ namespace smpl
         pair = attribs.get("wrap");
         if(pair != nullptr)
         {
-            if(pair->data == "true")
+            if(pair->second == "true")
                 setWrap(true);
             else
                 setWrap(false);

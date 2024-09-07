@@ -1,3 +1,5 @@
+#pragma once
+#include "BuildOptions.h"
 #include "BezierCurve.h"
 
 /*
@@ -7,7 +9,7 @@
 
 namespace smpl
 {
-	class CemYukselSpline
+	class DLL_OPTION CemYukselSpline
 	{
 	public:
 		static const int TYPE_BEZIER = 0;

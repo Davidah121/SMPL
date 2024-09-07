@@ -28,12 +28,51 @@ namespace smpl
 		~LinkedList();
 
 		/**
+		 * @brief Construct a new Linked List object from another
+		 * 		It copies the other leaving the other intact
+		 * 
+		 * @param other 
+		 */
+		LinkedList(const LinkedList<T>& other);
+		/**
+		 * @brief Copies another LinkedList leaving the both intact
+		 * 
+		 * @param other 
+		 */
+		void operator=(const LinkedList<T>& other);
+
+		/**
+		 * @brief Construct a new Linked List object.
+		 * 		Moves one object into the other. The other object will no longer be valid.
+		 * 
+		 * @param other 
+		 */
+		LinkedList(LinkedList<T>&& other) noexcept;
+		
+		/**
+		 * @brief Moves one object into the other. 
+		 * 		The other object will no longer be valid.
+		 * 
+		 * @param other 
+		 */
+		void operator=(LinkedList<T>&& other) noexcept;
+
+		/**
 		 * @brief Adds a new node at the end of the Linked List.
 		 * 
 		 * @param n 
 		 * 		The data to add.
 		 */
 		void addNode(T n);
+
+		/**
+		 * @brief Adds a new node right after the parent node specified.
+		 * 		It is assumed that this parent node is apart of the linked list.
+		 * 
+		 * @param n 
+		 * @param parentNode 
+		 */
+		void addNode(T n, LinkNode<T>* parentNode);
 
 		/**
 		 * @brief Removes a node from the list.
@@ -53,6 +92,8 @@ namespace smpl
 		 * 		The second node.
 		 */
 		void swapNodes(LinkNode<T>* n1, LinkNode<T>* n2);
+		
+		void removeFirst();
 
 		/**
 		 * @brief Gets the Root Node
@@ -94,6 +135,23 @@ namespace smpl
 	};
 
 	template<typename T>
+	inline void LinkedList<T>::removeFirst()
+	{
+		if(rootNode != nullptr)
+		{
+			LinkNode<T>* oldRootNode = rootNode;
+			rootNode = oldRootNode->nextNode;
+			if(rootNode != nullptr)
+				rootNode->parentNode = nullptr;
+			else
+			{
+				lastNode = nullptr;
+			}
+			delete oldRootNode;
+		}
+	}
+
+	template<typename T>
 	inline LinkedList<T>::LinkedList()
 	{
 	}
@@ -102,6 +160,52 @@ namespace smpl
 	inline LinkedList<T>::~LinkedList()
 	{
 		clear();
+	}
+
+	template<typename T>
+	LinkedList<T>::LinkedList(const LinkedList<T>& other)
+	{
+		clear();
+		LinkNode<T>* otherNode = other.rootNode;
+		while(otherNode != nullptr)
+		{
+			this->addNode(otherNode->value);
+			otherNode = otherNode->nextNode;
+		}
+	}
+
+	template<typename T>
+	void LinkedList<T>::operator=(const LinkedList<T>& other)
+	{
+		clear();
+		LinkNode<T>* otherNode = other.rootNode;
+		while(otherNode != nullptr)
+		{
+			this->addNode(otherNode->value);
+			otherNode = otherNode->nextNode;
+		}
+	}
+
+	template<typename T>
+	LinkedList<T>::LinkedList(LinkedList<T>&& other) noexcept
+	{
+		clear();
+		//quick move. A bit unsafe but should be fine.
+		rootNode = other.rootNode;
+		lastNode = other.lastNode;
+		other.rootNode = nullptr;
+		other.lastNode = nullptr;
+	}
+	
+	template<typename T>
+	void LinkedList<T>::operator=(LinkedList<T>&& other) noexcept
+	{
+		clear();
+		//quick move. A bit unsafe but should be fine.
+		rootNode = other.rootNode;
+		lastNode = other.lastNode;
+		other.rootNode = nullptr;
+		other.lastNode = nullptr;
 	}
 
 	template<typename T>
@@ -127,8 +231,33 @@ namespace smpl
 	}
 
 	template<typename T>
+	inline void LinkedList<T>::addNode(T n, LinkNode<T>* parentNode)
+	{
+		if(parentNode == nullptr)
+			return;
+		if(parentNode == lastNode)
+		{
+			addNode(n);
+			return;
+		}
+
+		//set parent of newNode and set its next link
+		//set parent's next node to be newNode
+		//set newNode's next link parent to newNode
+		LinkNode<T>* newNode = new LinkNode<T>;
+		newNode->value = n;
+		newNode->parentNode = parentNode;
+		newNode->nextNode = parentNode->nextNode;
+		parentNode->nextNode = newNode;
+		newNode->nextNode->parentNode = newNode;
+	}
+
+	template<typename T>
 	inline void LinkedList<T>::removeNode(LinkNode<T>* n)
 	{
+		if(n == nullptr)
+			return;
+		
 		LinkNode<T>* parent = n->parentNode;
 		LinkNode<T>* next = n->nextNode;
 
