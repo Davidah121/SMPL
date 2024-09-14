@@ -259,7 +259,7 @@ namespace smpl
 
 	float Matrix::get(int row, int col)
 	{
-		if (row < rows && col < columns)
+		if (row < rows && row >= 0 && col < columns && col >= 0)
 			return data[col + row*columns];
 		else
 			return 0;

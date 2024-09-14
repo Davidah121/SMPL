@@ -249,15 +249,104 @@ void testQuadTreeLikeCompression()
 
 }
 
+#define FACTORY_HELPER(className) class className ## Factory : public SerializedFactory\
+{\
+public:\
+    SerializedData createInstance(Streamable<unsigned char>* data);\
+protected:\
+    className ## Factory() : SerializedFactory(&className::globalClass) {}\
+private:\
+    static className ## Factory singleton;\
+}\
+
+FACTORY_HELPER(Vec2f);
+Vec2fFactory Vec2fFactory::singleton = Vec2fFactory();
+SerializedData Vec2fFactory::createInstance(Streamable<unsigned char>* data)
+{
+    return SerializedData();
+}
+
+class testClass1
+{
+public:
+    testClass1()
+    {
+        StringTools::println("CREATE T1");
+    }
+    ~testClass1()
+    {
+        StringTools::println("DESTORY T1");
+    }
+};
+
+class testClass2
+{
+public:
+    testClass2()
+    {
+        StringTools::println("CREATE T2");
+    }
+    ~testClass2()
+    {
+        StringTools::println("DESTORY T2");
+    }
+};
+
+// class GenericSmartMemory
+// {
+// public:
+//     virtual ~GenericSmartMemory() {}
+// };
+
+// template<typename T>
+// class TestSmartMemory : public GenericSmartMemory
+// {
+// public:
+//     TestSmartMemory(T* pointer)
+//     {
+//         data = pointer;
+//     }
+//     ~TestSmartMemory()
+//     {
+//         if(data != nullptr)
+//             delete data;
+//         data = nullptr;
+//     }
+// private:
+//     T* data = nullptr;
+// };
+
 void testSerialization()
 {
-    Vec2f p;
-    p.x = 0.2;
-    p.y = 3.1;
+    // Vec2f p;
+    // p.x = 0.2;
+    // p.y = 3.1;
     
-    StreamableVector<unsigned char> outputData;
-    SerializedData pSerialized = SERIALIZE(p);
-    pSerialized.serialize(&outputData);
+    // StreamableVector<unsigned char> outputData;
+    // SerializedData pSerialized = SERIALIZE(p);
+    // pSerialized.serialize(&outputData);
+
+    // SerializedFactory* factory = SerializedFactoryMapper::getInstance().getFactory(&Vec2f::globalClass);
+    // if(factory != nullptr)
+    // {
+    //     SerializedData sd = factory->createInstance(nullptr);
+    //     Vec2f* p = (Vec2f*)sd.getData();
+
+    //     StringTools::println("%.3f, %.3f", p->x, p->y);
+    //     delete p;
+    // }
+
+    SmartMemory<testClass1> v = SmartMemory<testClass1>::createDeleteOnLast(new testClass1());
+    SmartMemory<testClass2> v2 = SmartMemory<testClass2>::createDeleteOnLast(new testClass2());
+
+    StringTools::println("%p", v.getRawPointer());
+    StringTools::println("%p", v2.getRawPointer());
+
+    GenericSmartMemory testV = v;
+    StringTools::println("%p", testV.getRawPointer());
+
+
+    // SmartMemory<testClass1> mem1 = SmartMemory<testClass1>::createDeleteRights(new testClass1(), false);
 
     
 }
@@ -648,18 +737,24 @@ void contourTest()
         return;
     }
     //make grayscale
-    Image* grayscaleImg = SimpleGraphics::convertToGrayscale(s.getImage(0));
+    // Image* grayscaleImg = SimpleGraphics::convertToGrayscale(s.getImage(0));
     // Matrix threshMatrix = ComputerVision::thresholding(grayscaleImg, 127, 0, true);
     // Matrix threshMatrix = ComputerVision::adaptiveThresholding(grayscaleImg, 10, 5, 0, 0, true);
     // Image* threshImg = ComputerVision::matrixToImage(&threshMatrix);
 
 
-    Image* derivativeImg = SimpleGraphics::convertToGrayscale(s.getImage(0));
-    Matrix threshMatrix = ComputerVision::adaptiveThresholding(grayscaleImg, 5, 4, 0, 0, true);
+    Image* derivativeImg = SimpleGraphics::cannyEdgeFilter(s.getImage(0), 1, 0.05, 0.19);
+    // Image* derivativeImg = SimpleGraphics::sobelEdgeFilter(s.getImage(0));
+    // Matrix threshMatrix = ComputerVision::adaptiveThresholding(derivativeImg, 5, 4, 0, 0, true);
+    // Matrix threshMatrix = ComputerVision::thresholding(derivativeImg, 64, 0, false);
+    Matrix threshMatrix = ComputerVision::imageToMatrix(derivativeImg, 0);
     Image* threshImg = ComputerVision::matrixToImage(&threshMatrix);
 
+    StringTools::println("FINDING CONTOURS");
     std::vector<std::vector<Vec2f>> contours = ComputerVision::findContours(threshImg);
+    StringTools::println("CONTOURS FOUND");
 
+    SimpleGraphics::setColor({255, 0, 0, 255});
     for(std::vector<Vec2f>& boundary : contours)
     {
         Vec2f minPoint = Vec2f((float)INT_MAX, (float)INT_MAX);
@@ -671,73 +766,73 @@ void contourTest()
             minPoint.y = MathExt::min(minPoint.y, point.y);
             maxPoint.x = MathExt::max(maxPoint.x, point.x);
             maxPoint.y = MathExt::max(maxPoint.y, point.y);
-            // s.getImage(0)->setPixel((int)point.x, (int)point.y, {255, 0, 0, 255});
+            s.getImage(0)->setPixel((int)point.x, (int)point.y, {255, 0, 0, 255});
         }
-        SimpleGraphics::setColor({255, 0, 0, 255});
-        SimpleGraphics::drawRect((int)minPoint.x, (int)minPoint.y, (int)maxPoint.x, (int)maxPoint.y, true, s.getImage(0));
+        // SimpleGraphics::drawRect((int)minPoint.x, (int)minPoint.y, (int)maxPoint.x, (int)maxPoint.y, true, s.getImage(0));
     }
 
     s.getImage(0)->savePNG("contourStuff/FoundContours.png", false);
     threshImg->savePNG("contourStuff/preProcess.png", false);
+    delete threshImg;
     delete derivativeImg;
 }
 
-#ifndef USE_OPENGL
-    #define USE_OPENGL
-#endif
-#include "ext/GLSingleton.h"
-#include "ext/GLGraphics.h"
-#include "ext/GLWindow.h"
-#include "Input.h"
+// #ifndef USE_OPENGL
+//     #define USE_OPENGL
+// #endif
+// #include "ext/GLSingleton.h"
+// #include "ext/GLGraphics.h"
+// #include "ext/GLWindow.h"
+// #include "Input.h"
 
-void openGLTest()
-{
-    GLWindow window = GLWindow("TestOPENGL", 640, 480);
-    window.setActivateGui(false);
-    window.setVSync(1);
-    int fps = 0;
-    size_t timeEllapsed = 0;
+// void openGLTest()
+// {
+//     GLWindow window = GLWindow("TestOPENGL", 640, 480);
+//     window.setActivateGui(false);
+//     window.setVSync(1);
+//     int fps = 0;
+//     size_t timeEllapsed = 0;
 
-    while(window.getRunning())
-    {
-        size_t startTime = System::getCurrentTimeMicro();
-        Input::pollInput();
-        window.update();
+//     while(window.getRunning())
+//     {
+//         size_t startTime = System::getCurrentTimeMicro();
+//         Input::pollInput();
+//         window.update();
 
-        //other stuff
-        GLGraphics::setClearColor(Vec4f(1, 1, 1, 1));
-        GLGraphics::clear(GLGraphics::COLOR_BUFFER);
-        GLGraphics::setDrawColor(Vec4f(1, 0, 0, 1));
-        GLGraphics::drawRectangle(0, 0, 64, 64, false);
-        GLGraphics::setDrawColor(Vec4f(1, 0, 1, 1));
-        GLGraphics::drawCircle(64, 64, 32, false);
+//         //other stuff
+//         GLGraphics::setClearColor(Vec4f(1, 1, 1, 1));
+//         GLGraphics::clear(GLGraphics::COLOR_BUFFER);
+//         GLGraphics::setDrawColor(Vec4f(1, 0, 0, 1));
+//         GLGraphics::drawRectangle(0, 0, 64, 64, false);
+//         GLGraphics::setDrawColor(Vec4f(1, 0, 1, 1));
+//         GLGraphics::drawCircle(64, 64, 32, false);
 
-        window.forceRepaint();
-        window.repaint();
-        size_t timeUsed = System::getCurrentTimeMicro()-startTime;
+//         window.forceRepaint();
+//         window.repaint();
+//         size_t timeUsed = System::getCurrentTimeMicro()-startTime;
 
-        if(timeUsed < 16666) //1/60
-        {
-            size_t timeNeeded = 16666 - timeUsed;
-            System::sleep(0, timeNeeded, true);
-            timeEllapsed += 16666;
-        }
-        else
-        {
-            timeEllapsed += timeUsed;
-        }
-        fps++;
+//         if(timeUsed < 16666) //1/60
+//         {
+//             size_t timeNeeded = 16666 - timeUsed;
+//             System::sleep(0, timeNeeded, true);
+//             timeEllapsed += 16666;
+//         }
+//         else
+//         {
+//             timeEllapsed += timeUsed;
+//         }
+//         fps++;
 
-        if(timeEllapsed >= 16666*60)
-        {
-            StringTools::println("FPS: %d - %llu", fps, timeEllapsed);
-            fps = 0;
-            timeEllapsed -= 16666*60;
-            if(timeEllapsed < 16666)
-                timeEllapsed = 0; //less than 1 frame left. Consider it okay
-        }
-    }
-}
+//         if(timeEllapsed >= 16666*60)
+//         {
+//             StringTools::println("FPS: %d - %llu", fps, timeEllapsed);
+//             fps = 0;
+//             timeEllapsed -= 16666*60;
+//             if(timeEllapsed < 16666)
+//                 timeEllapsed = 0; //less than 1 frame left. Consider it okay
+//         }
+//     }
+// }
 
 #include "Graph.h"
 void testGraph()
@@ -770,11 +865,11 @@ void testGraph()
 int main(int argc, char** argv)
 {
     // testGraph();
-    openGLTest();
+    // openGLTest();
     // contourTest();
     // testDrawEfficiency();
     // quickBezierTest();
-    // testSerialization();
+    testSerialization();
     // quickMapDatastructure();
     return 0;
 }

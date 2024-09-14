@@ -1,6 +1,6 @@
 #pragma once
 #include <unordered_map>
-#include <mutex>
+#include "Concurrency.h"
 #include "StringTools.h"
 
 //TESTING FOR SAFE MEMORY MANAGEMENT
@@ -9,6 +9,8 @@ class StaticMemManager;
 
 template<class T>
 class SmartMemory;
+
+class GenericSmartMemory;
 
 struct MemInfo
 {
@@ -55,10 +57,14 @@ public:
 
     void deletePointer(T* p)
     {
+        if(p == nullptr)
+            return;
         if(inDestructor)
             return;
             
-        staticMemMutex.lock();
+        bool shouldDelete = false;
+        bool isArray = false;
+        staticMemSemaphore.lock(smpl::HybridSpinSemaphore::TYPE_WRITE);
         //decrement the counter.
         auto it = pointerData.find(p);
         if(it != pointerData.end())
@@ -68,67 +74,203 @@ public:
             {
                 if(it->second.shouldDelete == true)
                 {
-                    bool isArray = it->second.array;
+                    isArray = it->second.array;
                     pointerData.erase(p);
-                    
-                    staticMemMutex.unlock();
-                    if(isArray)
-                        delete[] (T*)p;
-                    else
-                        delete (T*)p;
+                    shouldDelete = true;
                 }
-                else
-                {
-                    staticMemMutex.unlock();
-                }
-            }
-            else
-            {
-                staticMemMutex.unlock();
             }
         }
+        staticMemSemaphore.unlock();
+        if(isArray)
+            delete[] (T*)p;
         else
-        {
-            staticMemMutex.unlock();
-        }
+            delete (T*)p;
     }
 
     void forceDeletePointer(T* p)
     {
+        if(p == nullptr)
+            return;
         if(inDestructor)
             return;
         
-        staticMemMutex.lock();
+        bool shouldDelete = false;
+        bool isArray = false;
+        staticMemSemaphore.lock(smpl::HybridSpinSemaphore::TYPE_WRITE);
         //just remove it regardless of the counter or if it should be deleted.
         auto it = pointerData.find(p);
         if(it != pointerData.end())
         {
-            bool isArray = it->second.array;
-
+            isArray = it->second.array;
             pointerData.erase(p);
-            staticMemMutex.unlock();
+        }
+        staticMemSemaphore.unlock();
 
-            if(isArray)
-                delete[] (T*)p;
-            else
-                delete (T*)p;
-        }
+        if(isArray)
+            delete[] (T*)p;
         else
-        { 
-            staticMemMutex.unlock();
-        }
+            delete (T*)p;
     }
 
+    MemInfo addPointer(T* p, bool array, bool deleteOnLast, bool bypassOwnership)
+    {
+        if(p == nullptr)
+            return {};
+
+        MemInfo m;
+        staticMemSemaphore.lock(smpl::HybridSpinSemaphore::TYPE_WRITE);
+        auto it = pointerData.find(p);
+        if(it != pointerData.end())
+        {
+            it->second.counter++;
+            m = it->second;
+        }
+        else
+        {
+            m = {array, deleteOnLast || bypassOwnership, 1};
+            pointerData[p] = {array, deleteOnLast || bypassOwnership, 1};
+        }
+        staticMemSemaphore.unlock();
+        return m;
+    }
+
+    T* duplicateExistingPointer(T* p)
+    {
+        if(p == nullptr)
+            return nullptr;
+
+        T* v = nullptr;
+        staticMemSemaphore.lock(smpl::HybridSpinSemaphore::TYPE_WRITE);
+        auto it = pointerData.find(p);
+        if(it != pointerData.end())
+        {
+            it->second.counter++;
+            v = p;
+        }
+        staticMemSemaphore.unlock();
+        return v;
+    }
+
+    bool pointerExists(T* p)
+    {
+        if(p == nullptr)
+            return false;
+        
+        bool valid = false;
+        staticMemSemaphore.lock(smpl::HybridSpinSemaphore::TYPE_READ);
+        auto it = pointerData.find(p);
+        if(it != pointerData.end())
+            valid = true;
+        staticMemSemaphore.unlock();
+        return valid;
+    }
 protected:
     friend SmartMemory<T>;
     std::unordered_map<T*, MemInfo> pointerData;
-    std::mutex staticMemMutex;
+    smpl::HybridSpinSemaphore staticMemSemaphore;
 private:
     bool inDestructor = false;
 };
 
+class GenericSmartMemory
+{
+public:
+    GenericSmartMemory() {}
+    virtual ~GenericSmartMemory() {}
+
+    /**
+     * @brief Returns if the object has delete rights.
+     *      If it has delete rights, the data pointer will be deleted when the object is destroyed.
+     * 
+     * @return true 
+     * @return false 
+     */
+    bool getDeleteRights()
+    {
+        return deleteRights;
+    }
+
+    /**
+     * @brief Returns in the object will delete the pointer if it is the last known holder of it.
+     *      By default, most objects will have this property but if an object is not intended to be
+     *          deleted at all, this should be false and delete rights should also be false.
+     * 
+     * @return true 
+     * @return false 
+     */
+    bool getWillDeleteOnLast()
+    {
+        return deleteOnLast;
+    }
+
+    /**
+     * @brief Returns if the object is an array.
+     *      This is mostly for internal use for how to delete the object.
+     * 
+     * @return true 
+     * @return false 
+     */
+    bool getIsArray()
+    {
+        return isArray;
+    }
+
+    /**
+     * @brief Gets the stored pointer.
+     *      If it has been deleted, a nullptr will be returned.
+     * 
+     * @return void* 
+     */
+    void* getPointer()
+    {
+        if(isValid(hashValue))
+            return hashValue;
+        
+        hashValue = nullptr;
+        return nullptr;
+    }
+
+    /**
+     * @brief Gets the Raw Pointer that is stored.
+     *      Does not check if the pointer is valid.
+     * 
+     *      If the pointer at a previous point was discovered to be deleted,
+     *      this will return a nullptr.
+     * 
+     * @return void* 
+     */
+    void* getRawPointer()
+    {
+        return hashValue;
+    }
+
+    bool const operator==(const GenericSmartMemory& other)
+    {
+        //should not matter if they both exist or not.
+        return hashValue == other.hashValue;
+    }
+
+    bool const operator==(const void* p)
+    {
+        //should not matter if they both exist or not.
+        return hashValue == p;
+    }
+
+    virtual bool isValid(void* p)
+    {
+        return false;
+    };
+protected:
+    virtual void deletePointer() {};
+
+    bool isArray = false;
+    bool deleteRights = false;
+    bool deleteOnLast = false;
+    void* hashValue = nullptr;
+};
+
 template<typename T>
-class SmartMemory
+class SmartMemory : public GenericSmartMemory
 {
 public:
 
@@ -167,26 +309,11 @@ public:
      */
     SmartMemory(T* data, bool array = false, bool deleteOnLast = true, bool bypassOwnership = false)
     {
-        isArray = array;
+        MemInfo m = memoryStuff.addPointer(data, array, deleteOnLast, bypassOwnership);
         hashValue = data;
+        isArray = m.array;
         this->deleteOnLast = deleteOnLast;
-
-        if(hashValue != nullptr)
-        {
-            auto it = memoryStuff.pointerData.find(hashValue);
-            if(it == memoryStuff.pointerData.end())
-            {
-                memoryStuff.pointerData[hashValue] = {array, deleteOnLast || bypassOwnership, 1};
-            }
-            else
-            {
-                isArray = it->second.array;
-                it->second.counter += 1;
-            }
-        }
-
-        if(bypassOwnership)
-            deleteRights = true;
+        this->deleteRights = bypassOwnership;
     }
 
     /**
@@ -279,17 +406,7 @@ public:
     SmartMemory(const SmartMemory<T>& other)
     {
         deletePointer();
-        if(other.hashValue != nullptr)
-        {
-            auto it = memoryStuff.pointerData.find(other.hashValue);
-            if(it != memoryStuff.pointerData.end())
-            {
-                hashValue = other.hashValue;
-                it->second.counter += 1;
-            }
-            else
-                hashValue = nullptr;
-        }
+        hashValue = memoryStuff.duplicateExistingPointer((T*)other.hashValue);
         isArray = other.isArray;
         deleteOnLast = other.deleteOnLast;
         deleteRights = false;
@@ -307,17 +424,7 @@ public:
     void operator=(const SmartMemory<T>& other)
     {
         deletePointer();
-        if(other.hashValue != nullptr)
-        {
-            auto it = memoryStuff.pointerData.find(other.hashValue);
-            if(it != memoryStuff.pointerData.end())
-            {
-                hashValue = other.hashValue;
-                it->second.counter += 1;
-            }
-            else
-                hashValue = nullptr;
-        }
+        hashValue = memoryStuff.duplicateExistingPointer((T*)other.hashValue);
         isArray = other.isArray;
         deleteOnLast = other.deleteOnLast;
         deleteRights = false;
@@ -340,105 +447,44 @@ public:
      */
     T* getPointer()
     {
-        if(hashValue != nullptr)
-        {
-            auto it = memoryStuff.pointerData.find(hashValue);
-            if(it != memoryStuff.pointerData.end())
-            {
-                return hashValue;
-            }
-            else
-            {
-                hashValue = nullptr;
-            }
-        }
-
+        if(memoryStuff.pointerExists((T*)hashValue))
+            return (T*)hashValue;
+        
+        hashValue = nullptr;
         return nullptr;
     }
-
-    /**
-     * @brief Returns if the object has delete rights.
-     *      If it has delete rights, the data pointer will be deleted when the object is destroyed.
-     * 
-     * @return true 
-     * @return false 
-     */
-    bool getDeleteRights()
-    {
-        return deleteRights;
-    }
-
-    /**
-     * @brief Returns in the object will delete the pointer if it is the last known holder of it.
-     *      By default, most objects will have this property but if an object is not intended to be
-     *          deleted at all, this should be false and delete rights should also be false.
-     * 
-     * @return true 
-     * @return false 
-     */
-    bool getWillDeleteOnLast()
-    {
-        return deleteOnLast;
-    }
-
-    /**
-     * @brief Returns if the object is an array.
-     *      This is mostly for internal use for how to delete the object.
-     * 
-     * @return true 
-     * @return false 
-     */
-    bool getIsArray()
-    {
-        return isArray;
-    }
-
-    /**
-     * @brief Gets the Raw Pointer that is stored.
-     *      Does not check if the pointer is valid.
-     * 
-     *      If the pointer at a previous point was discovered to be deleted,
-     *      this will return a nullptr.
-     * 
-     * @return T* 
-     */
+    
     T* getRawPointer()
     {
-        return hashValue;
+        return (T*)hashValue;
     }
 
-    bool const operator==(const SmartMemory<T>& other)
+    bool isValid(void* p)
     {
-        //should not matter if they both exist or not.
-        return hashValue == other.hashValue;
+        return memoryStuff.pointerExists((T*)hashValue);
     }
+    
 
-private:
-
+protected:
     /**
      * @brief Deletes the pointer from the global memory list for the specified type.
      * 
      */
     void deletePointer()
     {
+        smpl::StringTools::println("DELETING %p", hashValue);
         if(hashValue != nullptr)
         {
             if(deleteRights)
-            {
-                memoryStuff.forceDeletePointer(hashValue);
-            }
+                memoryStuff.forceDeletePointer((T*)hashValue);
             else
-            {
-                memoryStuff.deletePointer(hashValue);
-            }
+                memoryStuff.deletePointer((T*)hashValue);
         }
         hashValue = nullptr;
     }
 
-    bool isArray = false;
-    bool deleteRights = false;
-    bool deleteOnLast = false;
-    T* hashValue = nullptr;
+private:
+    // static std::unordered_map<T*, MemInfo> globalListOfPointers;
     static StaticMemManager<T> memoryStuff;
 };
 

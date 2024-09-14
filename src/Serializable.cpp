@@ -4,6 +4,30 @@
 
 namespace smpl
 {
+	SerializedFactory::SerializedFactory(const RootClass* c)
+	{
+		SerializedFactoryMapper::getInstance().registerFactory(c, this);
+	}
+
+	void SerializedFactoryMapper::registerFactory(const RootClass* c, SerializedFactory* t)
+	{
+		registeredFactories[(RootClass*)c] = t; //lazy approach. Should throw exception if it already exist
+	}
+
+	SerializedFactory* SerializedFactoryMapper::getFactory(const RootClass* c)
+	{
+		auto it = registeredFactories.find((RootClass*)c);
+		if(it != registeredFactories.end())
+			return it->second;
+		return nullptr;
+	}
+
+	SerializedFactoryMapper& SerializedFactoryMapper::getInstance()
+	{
+		static SerializedFactoryMapper instance;
+		return instance;
+	}
+	
 	std::unordered_map<std::string, std::function<void(std::vector<std::string>, Streamable<unsigned char>*, SerializedData)>> SerializedData::loadFunctions;
 	std::unordered_map<std::string, std::function<void(std::vector<std::string>, Streamable<unsigned char>*, SerializedData)>> SerializedData::saveFunctions;
 

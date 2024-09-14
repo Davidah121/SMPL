@@ -283,7 +283,7 @@ namespace smpl
 
 		while(matrixValues != endMatrixValues)
 		{
-			*matrixValues = (float)*colorValues;
+			*matrixValues = ((float)*colorValues) / 255.0;
 			matrixValues++;
 			colorValues+=4;
 		}

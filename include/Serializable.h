@@ -12,6 +12,7 @@ namespace smpl
 {
 	class DLL_OPTION SerializedData;
 	class DLL_OPTION SerializedObject;
+	class DLL_OPTION SerializedFactory;
 
 	struct WritableSerialzedData
 	{
@@ -209,8 +210,34 @@ namespace smpl
 	private:
 		friend SerializedData;
 	};
+	
+	class DLL_OPTION SerializedFactoryMapper
+	{
+	public:
+		static SerializedFactoryMapper& getInstance();
+
+		void registerFactory(const RootClass* c, SerializedFactory* t);
+		SerializedFactory* getFactory(const RootClass* c);
+		
+	private:
+		SerializedFactoryMapper() = default;
+		SerializedFactoryMapper(const SerializedFactoryMapper&) = delete;
+		void operator=(const SerializedFactoryMapper&) = delete;
+		
+		std::unordered_map<RootClass*, SerializedFactory*> registeredFactories;
+	};
+
+
+	class DLL_OPTION SerializedFactory
+	{
+	public:
+		SerializedFactory(const RootClass* c);
+		virtual SerializedData createInstance(Streamable<unsigned char>* data) = 0;
+	private:
+	};
 
 } //Namespace end
+
 
 #ifndef SERIALIZE
 	#define GET_CLASS_NAME(var) smpl::demangleClassName(typeid(var).name())
