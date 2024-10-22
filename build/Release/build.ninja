@@ -63,7 +63,6 @@ build $objDir/Font.o: buildToObject src/Font.cpp
 build $objDir/GamepadDInput.o: buildToObject src/GamepadDInput.cpp
 build $objDir/GamepadXInput.o: buildToObject src/GamepadXInput.cpp
 build $objDir/GeneralSpline.o: buildToObject src/GeneralSpline.cpp
-build $objDir/GeneralVector.o: buildToObject src/GeneralVector.cpp
 build $objDir/Graph.o: buildToObject src/Graph.cpp
 build $objDir/GraphicsExt.o: buildToObject src/GraphicsExt.cpp
 build $objDir/GuiResourceManager.o: buildToObject src/GuiResourceManager.cpp
@@ -83,12 +82,14 @@ build $objDir/Mat3f.o: buildToObject src/Mat3f.cpp
 build $objDir/Mat4f.o: buildToObject src/Mat4f.cpp
 build $objDir/MathExt.o: buildToObject src/MathExt.cpp
 build $objDir/MathExt_Clustering.o: buildToObject src/MathExt_Clustering.cpp
+build $objDir/MathExt_SIMD.o: buildToObject src/MathExt_SIMD.cpp
 build $objDir/MathFunction.o: buildToObject src/MathFunction.cpp
 build $objDir/Matrix.o: buildToObject src/Matrix.cpp
 build $objDir/Model.o: buildToObject src/Model.cpp
 build $objDir/ModelBuilder.o: buildToObject src/ModelBuilder.cpp
 build $objDir/Network.o: buildToObject src/Network.cpp
 build $objDir/NeuralNetwork.o: buildToObject src/NeuralNetwork.cpp
+build $objDir/NeuralNetwork_Layers.o: buildToObject src/NeuralNetwork_Layers.cpp
 build $objDir/NewGui.o: buildToObject src/NewGui.cpp
 build $objDir/NewGui_GuiButton.o: buildToObject src/NewGui_GuiButton.cpp
 build $objDir/NewGui_GuiCanvas.o: buildToObject src/NewGui_GuiCanvas.cpp
@@ -110,6 +111,14 @@ build $objDir/Quaternion.o: buildToObject src/Quaternion.cpp
 build $objDir/RadixTree.o: buildToObject src/RadixTree.cpp
 build $objDir/Serializable.o: buildToObject src/Serializable.cpp
 build $objDir/Shape.o: buildToObject src/Shape.cpp
+build $objDir/SIMD_16.o: buildToObject src/SIMD_16.cpp
+build $objDir/SIMD_32.o: buildToObject src/SIMD_32.cpp
+build $objDir/SIMD_8.o: buildToObject src/SIMD_8.cpp
+build $objDir/SIMD_FP32.o: buildToObject src/SIMD_FP32.cpp
+build $objDir/SIMD_FP64.o: buildToObject src/SIMD_FP64.cpp
+build $objDir/SIMD_U16.o: buildToObject src/SIMD_U16.cpp
+build $objDir/SIMD_U32.o: buildToObject src/SIMD_U32.cpp
+build $objDir/SIMD_U8.o: buildToObject src/SIMD_U8.cpp
 build $objDir/SimpleDir.o: buildToObject src/SimpleDir.cpp
 build $objDir/SimpleFile.o: buildToObject src/SimpleFile.cpp
 build $objDir/SimpleGraphics.o: buildToObject src/SimpleGraphics.cpp

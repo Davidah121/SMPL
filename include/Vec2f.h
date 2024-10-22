@@ -1,7 +1,7 @@
 #pragma once
 #include "BuildOptions.h"
 #include "Serializable.h"
-#include "GeneralVector.h"
+#include "Matrix.h"
 
 namespace smpl
 {
@@ -77,7 +77,7 @@ namespace smpl
 		 * 
 		 * @return float 
 		 */
-		float getLength();
+		float getLength() const;
 
 		/**
 		 * @brief Gets the normalized version of the vector.
@@ -85,7 +85,7 @@ namespace smpl
 		 * 
 		 * @return Vec2f 
 		 */
-		Vec2f normalize();
+		Vec2f normalize() const;
 
 		/**
 		 * @brief Computes the piecewise multiplication between
@@ -94,38 +94,75 @@ namespace smpl
 		 * @param other 
 		 * @return Vec2f 
 		 */
-		Vec2f hadamardProduct(Vec2f other);
+		Vec2f hadamardProduct(const Vec2f& b) const;
+
+		/**
+		 * @brief Computes the dot product between this vector and another
+		 * 
+		 * @param other 
+		 * @return float 
+		 */
+		float dot(const Vec2f& b) const;
+
+		/**
+		 * @brief Computes the scalar vector projection between 2 vectors
+		 * 
+		 * @param other 
+		 * @return float 
+		 */
+		float project(const Vec2f& b) const;
+
+		/**
+		 * @brief Reflects this vector across the vector "b"
+		 * 
+		 * @param other 
+		 * @return Vec2f 
+		 */
+		Vec2f reflect(const Vec2f& b) const;
+
+		/**
+		 * @brief Returns a new vector that is the inverse.
+		 * 		Returns this : Vec2f( -f.y, f.x )
+		 * 
+		 * @return Vec2f 
+		 */
+		Vec2f inverse() const;
 		
-		Vec2f operator-(Vec2f other);
-		Vec2f operator+(Vec2f other);
+		Vec2f operator-(const Vec2f& b) const;
+		Vec2f operator+(const Vec2f& b) const;
 
-		void operator+=(Vec2f other);
-		void operator-=(Vec2f other);
+		void operator+=(const Vec2f& b);
+		void operator-=(const Vec2f& b);
 
-		void operator*=(float other);
-		void operator/=(float other);
+		void operator*=(float b);
+		void operator/=(float b);
 
-		bool operator==(Vec2f other);
-		bool operator!=(Vec2f other);
+		bool operator==(const Vec2f& b) const;
+		bool operator!=(const Vec2f& b) const;
 
-		Vec2f operator-();
+		Vec2f operator-() const;
 
-		Vec2f operator*(float value);
-		Vec2f operator/(float value);
+		Vec2f operator*(float value) const;
+		Vec2f operator/(float value) const;
 
-		friend Vec2f operator*(float value, Vec2f other)
+		friend Vec2f operator*(float value, const Vec2f& other)
 		{
 			return other*value;
 		}
 
+		Vec2f broadcastAdd(float v);
+		Vec2f broadcastSubtract(float v);
+		Vec2f broadcastFunction(std::function<float(float)> func);
+		Vec2f broadcastFunction(float (*func)(float));
+
 		//casting to generic vector
 		/**
-		 * @brief Converts the Vec2f to a GeneralVector Object
+		 * @brief Converts the Vec2f to a Column Matrix
 		 * 
-		 * @return GeneralVector 
+		 * @return Matrix 
 		 */
-		GeneralVector toGeneralVector();
-		operator GeneralVector() const;
+		Matrix toMatrix() const;
+		operator Matrix() const;
 
 	};
 

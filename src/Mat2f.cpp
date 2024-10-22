@@ -45,12 +45,12 @@ namespace smpl
 		return k;
 	}
 
-	float* Mat2f::operator[](int row)
+	float* Mat2f::operator[](int row) const
 	{
 		return Matrix::operator[](row);
 	}
 
-	Mat2f Mat2f::operator*(float value)
+	Mat2f Mat2f::operator*(float value) const
 	{
 		Mat2f v = Mat2f();
 
@@ -66,7 +66,7 @@ namespace smpl
 			data[i] *= value;
 	}
 
-	Mat2f Mat2f::operator+(Mat2f other)
+	Mat2f Mat2f::operator+(const Mat2f& other) const
 	{
 		Mat2f v = Mat2f();
 
@@ -76,13 +76,13 @@ namespace smpl
 		return v;
 	}
 
-	void Mat2f::operator+=(Mat2f other)
+	void Mat2f::operator+=(const Mat2f& other)
 	{
 		for (int i = 0; i < 2; i++)
 			data[i] += other.data[i];
 	}
 
-	Mat2f Mat2f::operator-(Mat2f other)
+	Mat2f Mat2f::operator-(const Mat2f& other) const
 	{
 		Mat2f v = Mat2f();
 
@@ -92,13 +92,13 @@ namespace smpl
 		return v;
 	}
 
-	void Mat2f::operator-=(Mat2f other)
+	void Mat2f::operator-=(const Mat2f& other)
 	{
 		for (int i = 0; i < 2; i++)
 			data[i] -= other.data[i];
 	}
 
-	Mat2f Mat2f::operator*(Mat2f other)
+	Mat2f Mat2f::operator*(const Mat2f& other) const
 	{
 		Mat2f n = Mat2f();
 		n[0][0] = data[0] * other.data[0] + data[1] * other.data[2];
@@ -110,7 +110,7 @@ namespace smpl
 		return n;
 	}
 
-	Vec2f Mat2f::operator*(Vec2f other)
+	Vec2f Mat2f::operator*(const Vec2f& other) const
 	{
 		Vec2f v = Vec2f();
 		v.x = data[0] * other.x + data[1]*other.y;
@@ -119,12 +119,12 @@ namespace smpl
 		return v;
 	}
 
-	bool Mat2f::operator==(Mat2f other)
+	bool Mat2f::operator==(const Mat2f& other) const
 	{
 		return Matrix::operator==(other);
 	}
 
-	bool Mat2f::operator!=(Mat2f other)
+	bool Mat2f::operator!=(const Mat2f& other) const
 	{
 		return !(this->operator==(other));
 	}

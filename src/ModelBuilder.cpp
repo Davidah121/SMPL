@@ -76,7 +76,7 @@ namespace smpl
                         Vec3f p2 = Vec3f(positionData[posIndex3*3], positionData[1 + posIndex3*3], positionData[2 + posIndex3*3]);
                         Vec3f p3 = Vec3f(positionData[posIndex4*3], positionData[1 + posIndex4*3], positionData[2 + posIndex4*3]);
                         
-                        Vec3f normal = MathExt::crossProduct((p3-p1), (p2-p1));
+                        Vec3f normal = (p3-p1).crossProduct((p2-p1));
                         m->addVec3f(normal.normalize(), 2);
                         normalIndex++;
                     }
@@ -99,7 +99,7 @@ namespace smpl
                         Vec3f p2 = Vec3f(positionData[posIndex2*3], positionData[1 + posIndex2*3], positionData[2 + posIndex2*3]);
                         Vec3f p3 = Vec3f(positionData[posIndex4*3], positionData[1 + posIndex4*3], positionData[2 + posIndex4*3]);
                         
-                        Vec3f normal = MathExt::crossProduct((p3-p1), (p2-p1));
+                        Vec3f normal = (p3-p1).crossProduct((p2-p1));
                         m->addVec3f(normal.normalize(), 2);
                         normalIndex++;
                     }
@@ -127,7 +127,7 @@ namespace smpl
                         Vec3f p3 = Vec3f(positionData[posIndex3*3], positionData[1 + posIndex3*3], positionData[2 + posIndex3*3]);
                         Vec3f p4 = Vec3f(positionData[posIndex4*3], positionData[1 + posIndex4*3], positionData[2 + posIndex4*3]);
                         
-                        Vec3f normal = MathExt::crossProduct((p3-p1), (p2-p1));
+                        Vec3f normal = (p3-p1).crossProduct((p2-p1));
                         m->addVec3f(normal.normalize(), 2);
                         normalIndex++;
 
@@ -135,7 +135,7 @@ namespace smpl
                         m->addIndicies({posIndex4, posIndex4, normalIndex});
                         m->addIndicies({posIndex3, posIndex3, normalIndex});
 
-                        normal = MathExt::crossProduct((p4-p1), (p3-p1));
+                        normal = (p4-p1).crossProduct((p3-p1));
                         m->addVec3f(normal.normalize(), 2);
                         normalIndex++;
                     }
@@ -321,7 +321,7 @@ namespace smpl
                         Vec3f p2 = Vec3f(positionData[posIndex3*3], positionData[1 + posIndex3*3], positionData[2 + posIndex3*3]);
                         Vec3f p3 = Vec3f(positionData[posIndex4*3], positionData[1 + posIndex4*3], positionData[2 + posIndex4*3]);
                         
-                        Vec3f normal = MathExt::crossProduct((p3-p1), (p2-p1));
+                        Vec3f normal = (p3-p1).crossProduct((p2-p1));
                         m->addVec3f(normal.normalize(), 2);
                         normalIndex++;
                     }
@@ -344,7 +344,7 @@ namespace smpl
                         Vec3f p2 = Vec3f(positionData[posIndex2*3], positionData[1 + posIndex2*3], positionData[2 + posIndex2*3]);
                         Vec3f p3 = Vec3f(positionData[posIndex4*3], positionData[1 + posIndex4*3], positionData[2 + posIndex4*3]);
                         
-                        Vec3f normal = MathExt::crossProduct((p3-p1), (p2-p1));
+                        Vec3f normal = (p3-p1).crossProduct((p2-p1));
                         m->addVec3f(normal.normalize(), 2);
                         normalIndex++;
                     }
@@ -372,7 +372,7 @@ namespace smpl
                         Vec3f p3 = Vec3f(positionData[posIndex3*3], positionData[1 + posIndex3*3], positionData[2 + posIndex3*3]);
                         Vec3f p4 = Vec3f(positionData[posIndex4*3], positionData[1 + posIndex4*3], positionData[2 + posIndex4*3]);
                         
-                        Vec3f normal = MathExt::crossProduct((p3-p1), (p2-p1));
+                        Vec3f normal = (p3-p1).crossProduct((p2-p1));
                         m->addVec3f(normal.normalize(), 2);
                         normalIndex++;
 
@@ -380,7 +380,7 @@ namespace smpl
                         m->addIndicies({posIndex4, posIndex4, normalIndex});
                         m->addIndicies({posIndex3, posIndex3, normalIndex});
 
-                        normal = MathExt::crossProduct((p4-p1), (p3-p1));
+                        normal = (p4-p1).crossProduct((p3-p1));
                         m->addVec3f(normal.normalize(), 2);
                         normalIndex++;
                     }
@@ -478,7 +478,7 @@ namespace smpl
                 v3 = m->getVec3f(index3, 0);
                 v4 = m->getVec3f(index4, 0);
                 
-                normal = MathExt::crossProduct( v2-v1, v3-v1 );
+                normal = (v2-v1).crossProduct( v3-v1 );
                 m->addVec3f(normal.normalize(), 2);
 
                 m->addIndicies( {index1, index1, normalIndex});
@@ -486,7 +486,7 @@ namespace smpl
                 m->addIndicies( {index3, index3, normalIndex});
                 normalIndex++;
 
-                normal = MathExt::crossProduct( v3-v1, v4-v1 );
+                normal = (v3-v1).crossProduct( v4-v1 );
                 m->addVec3f(normal.normalize(), 2);
 
                 m->addIndicies( {index1, index1, normalIndex});
@@ -634,7 +634,7 @@ namespace smpl
                         Vec3f p2 = Vec3f(positionData[posIndex3*3], positionData[1 + posIndex3*3], positionData[2 + posIndex3*3]);
                         Vec3f p3 = Vec3f(positionData[posIndex4*3], positionData[1 + posIndex4*3], positionData[2 + posIndex4*3]);
                         
-                        Vec3f normal = MathExt::crossProduct((p3-p1), (p2-p1));
+                        Vec3f normal = (p3-p1).crossProduct((p2-p1));
                         m->addVec3f(normal.normalize(), 2);
                         normalIndex++;
                     }
@@ -657,7 +657,7 @@ namespace smpl
                         Vec3f p2 = Vec3f(positionData[posIndex2*3], positionData[1 + posIndex2*3], positionData[2 + posIndex2*3]);
                         Vec3f p3 = Vec3f(positionData[posIndex4*3], positionData[1 + posIndex4*3], positionData[2 + posIndex4*3]);
                         
-                        Vec3f normal = MathExt::crossProduct((p3-p1), (p2-p1));
+                        Vec3f normal = (p3-p1).crossProduct((p2-p1));
                         m->addVec3f(normal.normalize(), 2);
                         normalIndex++;
                     }
@@ -685,7 +685,7 @@ namespace smpl
                         Vec3f p3 = Vec3f(positionData[posIndex3*3], positionData[1 + posIndex3*3], positionData[2 + posIndex3*3]);
                         Vec3f p4 = Vec3f(positionData[posIndex4*3], positionData[1 + posIndex4*3], positionData[2 + posIndex4*3]);
                         
-                        Vec3f normal = MathExt::crossProduct((p3-p1), (p2-p1));
+                        Vec3f normal = (p3-p1).crossProduct((p2-p1));
                         m->addVec3f(normal.normalize(), 2);
                         normalIndex++;
 
@@ -693,7 +693,7 @@ namespace smpl
                         m->addIndicies({posIndex4, posIndex4, normalIndex});
                         m->addIndicies({posIndex3, posIndex3, normalIndex});
 
-                        normal = MathExt::crossProduct((p4-p1), (p3-p1));
+                        normal = (p4-p1).crossProduct((p3-p1));
                         m->addVec3f(normal.normalize(), 2);
                         normalIndex++;
                     }

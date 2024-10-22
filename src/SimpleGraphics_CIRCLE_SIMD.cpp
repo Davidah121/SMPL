@@ -40,7 +40,7 @@ namespace smpl
 			double radSqr = MathExt::sqr(absRad-1);
 			double radSqr2 = MathExt::sqr(absRad);
 
-			GRAPHICS_SIMD_DATATYPE activeColorAsSIMD = COLOR_TO_SIMD(activeColor);
+			SIMD_U8 activeColorAsSIMD = COLOR_TO_SIMD(activeColor);
 			
 			if (outline == false)
 			{
@@ -76,12 +76,12 @@ namespace smpl
 							x2 = MathExt::clamp( x2, minX, maxX);
 
 							int len = x2-x1;
-							int simdBound = GET_GRAPHICS_SIMD_BOUND(len);
+							int simdBound = SIMD_U8::getSIMDBound(len);
 							int i=x1;
-							for(int k=0; k<simdBound; k+=GRAPHICS_INC_AMOUNT)
+							for(int k=0; k<simdBound; k+=SIMD_U8::SIZE)
 							{
-								GRAPHICS_SIMD_STORE((GRAPHICS_SIMD_DATATYPE*)&srcPixels[i + tY*tempWidth], activeColorAsSIMD);
-								i+=GRAPHICS_INC_AMOUNT;
+								activeColorAsSIMD.store((unsigned char*)&srcPixels[i + tY*tempWidth]);
+								i+=SIMD_U8::SIZE;
 							}
 							while(i <= x2)
 							{
@@ -115,14 +115,14 @@ namespace smpl
 							x2 = MathExt::clamp( x2, minX, maxX);
 
 							int len = x2-x1;
-							int simdBound = GET_GRAPHICS_SIMD_BOUND(len);
+							int simdBound = SIMD_U8::getSIMDBound(len);
 							int i=x1;
-							for(int k=0; k<simdBound; k+=GRAPHICS_INC_AMOUNT)
+							for(int k=0; k<simdBound; k+=SIMD_U8::SIZE)
 							{
-								GRAPHICS_SIMD_DATATYPE destColor = GRAPHICS_SIMD_LOAD((GRAPHICS_SIMD_DATATYPE*)&srcPixels[i + tY*tempWidth]);
-								GRAPHICS_SIMD_DATATYPE blendedColor = blend(activeColorAsSIMD, destColor);
-								GRAPHICS_SIMD_STORE((GRAPHICS_SIMD_DATATYPE*)&srcPixels[i + tY*tempWidth], blendedColor);
-								i+=GRAPHICS_INC_AMOUNT;
+								SIMD_U8 destColor = SIMD_U8::load((unsigned char*)&srcPixels[i + tY*tempWidth]);
+								SIMD_U8 blendedColor = blend(activeColorAsSIMD.values, destColor.values);
+								blendedColor.store((unsigned char*)&srcPixels[i + tY*tempWidth]);
+								i+=SIMD_U8::SIZE;
 							}
 							while(i <= x2)
 							{
@@ -204,12 +204,12 @@ namespace smpl
 							x2 = MathExt::clamp( x2, minX, maxX);
 
 							int len = x2-x1;
-							int simdBound = GET_GRAPHICS_SIMD_BOUND(len);
+							int simdBound = SIMD_U8::getSIMDBound(len);
 							int i=x1;
-							for(int k=0; k<simdBound; k+=GRAPHICS_INC_AMOUNT)
+							for(int k=0; k<simdBound; k+=SIMD_U8::SIZE)
 							{
-								GRAPHICS_SIMD_STORE((GRAPHICS_SIMD_DATATYPE*)&srcPixels[i + tY*tempWidth], activeColorAsSIMD);
-								i+=GRAPHICS_INC_AMOUNT;
+								activeColorAsSIMD.store((unsigned char*)&srcPixels[i + tY*tempWidth]);
+								i+=SIMD_U8::SIZE;
 							}
 							while(i <= x2)
 							{
@@ -288,14 +288,14 @@ namespace smpl
 							x2 = MathExt::clamp( x2, minX, maxX);
 
 							int len = x2-x1;
-							int simdBound = GET_GRAPHICS_SIMD_BOUND(len);
+							int simdBound = SIMD_U8::getSIMDBound(len);
 							int i=x1;
-							for(int k=0; k<simdBound; k+=GRAPHICS_INC_AMOUNT)
+							for(int k=0; k<simdBound; k+=SIMD_U8::SIZE)
 							{
-								GRAPHICS_SIMD_DATATYPE destColor = GRAPHICS_SIMD_LOAD((GRAPHICS_SIMD_DATATYPE*)&srcPixels[i + tY*tempWidth]);
-								GRAPHICS_SIMD_DATATYPE blendedColor = blend(activeColorAsSIMD, destColor);
-								GRAPHICS_SIMD_STORE((GRAPHICS_SIMD_DATATYPE*)&srcPixels[i + tY*tempWidth], blendedColor);
-								i+=GRAPHICS_INC_AMOUNT;
+								SIMD_U8 destColor = SIMD_U8::load((unsigned char*)&srcPixels[i + tY*tempWidth]);
+								SIMD_U8 blendedColor = blend(activeColorAsSIMD.values, destColor.values);
+								blendedColor.store((unsigned char*)&srcPixels[i + tY*tempWidth]);
+								i+=SIMD_U8::SIZE;
 							}
 							while(i <= x2)
 							{

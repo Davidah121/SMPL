@@ -77,7 +77,7 @@ namespace smpl
 			//deal with the linecaps
 			//create the 4 points
 			Vec2f toEndPoint = Vec2f(x2-x1, y2-y1);
-			Vec2f toEndPointScaled = MathExt::normalize(toEndPoint) * (getStrokeWidth()/2);
+			Vec2f toEndPointScaled = toEndPoint.normalize() * (getStrokeWidth()/2);
 			
 			Vec2f newPoint1 = Vec2f( x1-toEndPointScaled.y, y1+toEndPointScaled.x);
 			Vec2f newPoint2 = Vec2f( x1+toEndPointScaled.y, y1-toEndPointScaled.x);

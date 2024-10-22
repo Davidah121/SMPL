@@ -55,12 +55,12 @@ namespace smpl
 		y = other.y;
 	}
 
-	float Vec2f::getLength()
+	float Vec2f::getLength() const
 	{
 		return std::sqrt((x*x) + (y*y));
 	}
 
-	Vec2f Vec2f::normalize()
+	Vec2f Vec2f::normalize() const
 	{
 		float length = getLength();
 		if(length!=0)
@@ -69,28 +69,46 @@ namespace smpl
 			return Vec2f();
 	}
 	
-	Vec2f Vec2f::hadamardProduct(Vec2f other)
+	Vec2f Vec2f::hadamardProduct(const Vec2f& other) const
 	{
 		return Vec2f(x*other.x, y*other.y);
 	}
 	
-	Vec2f Vec2f::operator-(Vec2f other)
+	float Vec2f::dot(const Vec2f& b) const
+	{
+		return x*b.x + y*b.y;
+	}
+	float Vec2f::project(const Vec2f& b) const
+	{
+		return dot(b.normalize());
+	}
+	Vec2f Vec2f::reflect(const Vec2f& b) const
+	{
+		Vec2f n = b.normalize();
+		return this->operator-(n*(dot(n)*2));
+	}
+	Vec2f Vec2f::inverse() const
+	{
+		return Vec2f(-y, x);
+	}
+	
+	Vec2f Vec2f::operator-(const Vec2f& other) const
 	{
 		return Vec2f(x-other.x, y-other.y);
 	}
 
-	Vec2f Vec2f::operator+(Vec2f other)
+	Vec2f Vec2f::operator+(const Vec2f& other) const
 	{
 		return Vec2f(x+other.x, y+other.y);
 	}
 
-	void Vec2f::operator+=(Vec2f other)
+	void Vec2f::operator+=(const Vec2f& other)
 	{
 		x += other.x;
 		y += other.y;
 	}
 
-	void Vec2f::operator-=(Vec2f other)
+	void Vec2f::operator-=(const Vec2f& other)
 	{
 		x -= other.x;
 		y -= other.y;
@@ -108,42 +126,62 @@ namespace smpl
 		y /= other;
 	}
 
-	bool Vec2f::operator==(Vec2f other)
+	bool Vec2f::operator==(const Vec2f& other) const
 	{
 		return (x==other.x) && (y==other.y);
 	}
 
-	bool Vec2f::operator!=(Vec2f other)
+	bool Vec2f::operator!=(const Vec2f& other) const
 	{
 		return (x!=other.x) || (y!=other.y);
 	}
 
-	Vec2f Vec2f::operator-()
+	Vec2f Vec2f::operator-() const
 	{
 		return Vec2f(-x, -y);
 	}
 
-	Vec2f Vec2f::operator*(float value)
+	Vec2f Vec2f::operator*(float value) const
 	{
 		return Vec2f(x*value, y*value);
 	}
 
-	Vec2f Vec2f::operator/(float value)
+	Vec2f Vec2f::operator/(float value) const
 	{
 		return Vec2f(x / value, y / value);
 	}
-
-	GeneralVector Vec2f::toGeneralVector()
+	
+	Vec2f Vec2f::broadcastAdd(float v)
 	{
-		return (GeneralVector)* this;
+		return Vec2f(x + v, y + v);
+	}
+	Vec2f Vec2f::broadcastSubtract(float v)
+	{
+		return Vec2f(x - v, y - v);
+	}
+	Vec2f Vec2f::broadcastFunction(std::function<float(float)> func)
+	{
+		if(func == nullptr)
+			throw std::bad_function_call();
+		return Vec2f(func(x), func(y));
+	}
+	Vec2f Vec2f::broadcastFunction(float (*func)(float))
+	{
+		if(func == nullptr)
+			throw std::bad_function_call();
+		return Vec2f(func(x), func(y));
+	}
+	
+	Matrix Vec2f::toMatrix() const
+	{
+		return (Matrix)* this;
 	}
 
-	Vec2f::operator GeneralVector() const
+	Vec2f::operator Matrix() const
 	{
-		GeneralVector k = GeneralVector(2);
-		k.setValue(x, 0);
-		k.setValue(y, 1);
-
+		Matrix k = Matrix(1, 2);
+		k[0][0] = x;
+		k[0][1] = y;
 		return k;
 	}
 

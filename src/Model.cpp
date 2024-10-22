@@ -1357,7 +1357,7 @@ namespace smpl
                     Vec3f v2 = tri.getVertex2();
                     Vec3f v3 = tri.getVertex3();
                     
-                    Vec3f normal = MathExt::crossProduct(v1, v2);
+                    Vec3f normal = v1.crossProduct(v2);
 
                     saveSTLVec3f(outputFile, normal);
                     saveSTLVec3f(outputFile, v1);

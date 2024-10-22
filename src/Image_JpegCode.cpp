@@ -9,10 +9,8 @@
 #include "ColorSpaceConverter.h"
 #include "System.h"
 
-//TODO: JPEG IS OFFICIALLY BROKEN. DO NOT USE UNTIL FIX
 namespace smpl
 {
-
 	struct huffThing
 	{
 		int value;

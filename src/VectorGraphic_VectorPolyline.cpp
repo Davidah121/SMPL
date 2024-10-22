@@ -56,7 +56,7 @@ namespace smpl
 			{
 				//create the 4 points
 				Vec2f toEndPoint = Vec2f(points[i+1].x-points[i].x, points[i+1].y-points[i].y);
-				Vec2f toEndPointScaled = MathExt::normalize(toEndPoint) * getStrokeWidth()/2;
+				Vec2f toEndPointScaled = toEndPoint.normalize() * getStrokeWidth()/2;
 				
 				Vec2f newPoint1 = Vec2f( points[i].x-toEndPointScaled.y, points[i].y+toEndPointScaled.x);
 				Vec2f newPoint2 = Vec2f( points[i].x+toEndPointScaled.y, points[i].y-toEndPointScaled.x);

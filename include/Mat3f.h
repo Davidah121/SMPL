@@ -66,27 +66,27 @@ namespace smpl
 		 */
 		static Mat3f getIdentity();
 
-		float* operator[](int row);
+		float* operator[](int row) const;
 
-		Mat3f operator+(Mat3f other);
-		Mat3f operator-(Mat3f other);
-		Mat3f operator*(Mat3f other);
+		Mat3f operator+(const Mat3f& other) const;
+		Mat3f operator-(const Mat3f& other) const;
+		Mat3f operator*(const Mat3f& other) const;
 
-		Mat3f operator*(float other);
-		friend Mat3f operator*(float value, Mat3f other)
+		Mat3f operator*(float other) const;
+		friend Mat3f operator*(float value, const Mat3f& other)
 		{
 			return other*value;
 		}
 		
 		void operator*=(float other);
 
-		void operator+=(Mat3f other);
-		void operator-=(Mat3f other);
+		void operator+=(const Mat3f& other);
+		void operator-=(const Mat3f& other);
 
-		Vec3f operator*(Vec3f other);
+		Vec3f operator*(const Vec3f& other) const;
 
-		bool operator==(Mat3f other);
-		bool operator!=(Mat3f other);
+		bool operator==(const Mat3f& other) const;
+		bool operator!=(const Mat3f& other) const;
 	};
 
 } //NAMESPACE smpl END

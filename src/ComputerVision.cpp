@@ -269,6 +269,37 @@ namespace smpl
 		return kernel;
 	}
 	
+	Matrix ComputerVision::identityKernel()
+	{
+		Matrix kernel = Matrix(3, 3);
+		kernel[1][1] = 1;
+		return kernel;
+	}
+	Matrix ComputerVision::sharpenKernel(float intensity)
+	{
+		Matrix kernel = Matrix(3, 3);
+		kernel[0][1] = -1; kernel[1][0] = -1; kernel[1][2] = -1; kernel[2][1] = -1;
+		kernel[1][1] = intensity;
+		return kernel;
+	}
+	Matrix ComputerVision::blurKernel(int kernelRadius)
+	{
+		if(kernelRadius <= 0)
+			return Matrix();
+
+		int n = 2*kernelRadius + 1;
+		float avgValue = 1.0/n*n;
+		Matrix kernel = Matrix(n, n);
+		float* kernelData = kernel.getData();
+		float* kernelDataEnd = kernelData + kernel.getCols()*kernel.getRows();
+		while(kernelData != kernelDataEnd)
+		{
+			*kernelData = avgValue;
+			kernelData++;
+		}
+		return kernel;
+	}
+	
 	Matrix ComputerVision::imageToMatrix(Image* img, unsigned char colorChannel)
 	{
 		if(img == nullptr)
@@ -291,17 +322,15 @@ namespace smpl
 		return m;
 	}
 	
-	Image* ComputerVision::matrixToImage(Matrix* mat)
+	Image* ComputerVision::matrixToImage(const Matrix& mat)
 	{
-		if(mat == nullptr)
-			return nullptr;
-		Image* img = new Image(mat->getCols(), mat->getRows());
-		for(int y=0; y<mat->getRows(); y++)
+		Image* img = new Image(mat.getCols(), mat.getRows());
+		for(int y=0; y<mat.getRows(); y++)
 		{
-			for(int x=0; x<mat->getCols(); x++)
+			for(int x=0; x<mat.getCols(); x++)
 			{
 				Color c;
-				c.red = (unsigned char)MathExt::clamp(mat->operator[](y)[x]*255.0, 0.0, 255.0);
+				c.red = (unsigned char)MathExt::clamp(mat[y][x]*255.0, 0.0, 255.0);
 				c.alpha = 255;
 				c.green = c.red;
 				c.blue = c.red;
@@ -311,20 +340,20 @@ namespace smpl
 		}
 		return img;
 	}
-	void ComputerVision::matrixToImage(Matrix* mat, Image* img, unsigned char colorChannel)
+	void ComputerVision::matrixToImage(const Matrix& mat, Image* img, unsigned char colorChannel)
 	{
-		if(mat == nullptr || img == nullptr)
+		if(img == nullptr)
 			return;
 		
 		int offset = MathExt::clamp<int>(colorChannel, 0, 3);
 		unsigned char* imgPixels = (unsigned char*)img->getPixels();
 		imgPixels += offset;
 
-		for(int y=0; y<mat->getRows(); y++)
+		for(int y=0; y<mat.getRows(); y++)
 		{
-			for(int x=0; x<mat->getCols(); x++)
+			for(int x=0; x<mat.getCols(); x++)
 			{
-				*imgPixels = (unsigned char)MathExt::clamp(mat->operator[](y)[x]*255.0, 0.0, 255.0);
+				*imgPixels = (unsigned char)MathExt::clamp(mat[y][x]*255.0, 0.0, 255.0);
 				imgPixels += 4;
 			}
 		}
@@ -361,12 +390,12 @@ namespace smpl
 		return m;
 	}
 
-	Matrix ComputerVision::thresholding(Matrix* img, float threshold, bool inverse)
+	Matrix ComputerVision::thresholding(const Matrix& img, float threshold, bool inverse)
 	{
-		Matrix m = Matrix(img->getRows(), img->getCols());
+		Matrix m = Matrix(img.getRows(), img.getCols());
 		float* matrixValues = m.getData();
-		float* endMatrixValues = m.getData()+(img->getRows()*img->getCols());
-		float* otherMatrixValues = img->getData();
+		float* endMatrixValues = m.getData()+(img.getRows()*img.getCols());
+		float* otherMatrixValues = img.getData();
 
 		if(!inverse)
 		{
@@ -464,16 +493,13 @@ namespace smpl
 		return m;
 	}
 
-	Matrix ComputerVision::readjustIntensity(Matrix* baseImg, double minIntensity, double maxIntensity)
+	Matrix ComputerVision::readjustIntensity(const Matrix& baseImg, double minIntensity, double maxIntensity)
 	{
-		if(baseImg == nullptr)
-			return Matrix();
-		
 		//find min and max of baseImg
-		Matrix readjustedMatrix = Matrix(baseImg->getRows(), baseImg->getCols());
-		size_t sizeOfBaseImg = baseImg->getRows() * baseImg->getCols();
-		float* baseImgData = baseImg->getData();
-		float* baseImgDataEnd = baseImg->getData() + sizeOfBaseImg;
+		Matrix readjustedMatrix = Matrix(baseImg.getRows(), baseImg.getCols());
+		size_t sizeOfBaseImg = baseImg.getRows() * baseImg.getCols();
+		float* baseImgData = baseImg.getData();
+		float* baseImgDataEnd = baseImg.getData() + sizeOfBaseImg;
 
 		double minIntensityBaseImg = *baseImgData;
 		double maxIntensityBaseImg = *baseImgData;
@@ -485,7 +511,7 @@ namespace smpl
 			baseImgData++;
 		}
 		
-		baseImgData = baseImg->getData();
+		baseImgData = baseImg.getData();
 		float* readjustedMatrixData = readjustedMatrix.getData();
 
 		double desiredRange = maxIntensity - minIntensity;
@@ -501,16 +527,13 @@ namespace smpl
 		return readjustedMatrix;
 	}
 
-	Matrix ComputerVision::convolution(Matrix* baseImage, Matrix* kernel)
+	Matrix ComputerVision::convolution(const Matrix& baseImage, const Matrix& kernel)
 	{
-		if(baseImage == nullptr)
-			return Matrix();
-		
-		Matrix output = Matrix(baseImage->getRows(), baseImage->getCols());
+		Matrix output = Matrix(baseImage.getRows(), baseImage.getCols());
 
-		float* baseImagePixels = baseImage->getData();
-		int kernelRowSizeHalf = kernel->getRows()/2;
-		int kernelColSizeHalf = kernel->getCols()/2;
+		float* baseImagePixels = baseImage.getData();
+		int kernelRowSizeHalf = kernel.getRows()/2;
+		int kernelColSizeHalf = kernel.getCols()/2;
 		
 		for(int r=0; r<output.getRows(); r++)
 		{
@@ -521,16 +544,16 @@ namespace smpl
 				{
 					int newImgY = r + kernelY;
 					int actualKernelY = kernelY + kernelRowSizeHalf;
-					if(newImgY >= 0 && newImgY < baseImage->getRows())
+					if(newImgY >= 0 && newImgY < baseImage.getRows())
 					{
 						for(int kernelX=kernelColSizeHalf; kernelX >= -kernelColSizeHalf; kernelX--)
 						{
 							int newImgX = c + kernelX;
 							int actualKernelX = kernelX + kernelColSizeHalf;
-							if(newImgX >= 0 && newImgX < baseImage->getCols())
+							if(newImgX >= 0 && newImgX < baseImage.getCols())
 							{
-								float baseImgValue = baseImagePixels[newImgX + newImgY*baseImage->getCols()];
-								float kernelValue = kernel->getData()[actualKernelX + actualKernelY*kernel->getCols()];
+								float baseImgValue = baseImagePixels[newImgX + newImgY*baseImage.getCols()];
+								float kernelValue = kernel.getData()[actualKernelX + actualKernelY*kernel.getCols()];
 								sum += kernelValue * baseImgValue;
 							}
 						}
@@ -544,14 +567,11 @@ namespace smpl
 		return output;
 	}
 	
-	Matrix ComputerVision::crossCorrelation(Matrix* baseImage, Matrix* kernel, bool normalized)
+	Matrix ComputerVision::crossCorrelation(const Matrix& baseImage, const Matrix& kernel, bool normalized)
 	{
-		if(baseImage == nullptr)
-			return Matrix();
-		
-		Matrix output = Matrix(baseImage->getRows(), baseImage->getCols());
-		int kernelRowSizeHalf = kernel->getRows()/2;
-		int kernelColSizeHalf = kernel->getCols()/2;
+		Matrix output = Matrix(baseImage.getRows(), baseImage.getCols());
+		int kernelRowSizeHalf = kernel.getRows()/2;
+		int kernelColSizeHalf = kernel.getCols()/2;
 		
 		for(int r=0; r<output.getRows(); r++)
 		{
@@ -565,16 +585,16 @@ namespace smpl
 				{
 					int newImgY = r + kernelY;
 					int actualKernelY = kernelY + kernelRowSizeHalf;
-					if(newImgY >= 0 && newImgY < baseImage->getRows())
+					if(newImgY >= 0 && newImgY < baseImage.getRows())
 					{
 						for(int kernelX=-kernelColSizeHalf; kernelX <= kernelColSizeHalf; kernelX++)
 						{
 							int newImgX = c + kernelX;
 							int actualKernelX = kernelX + kernelColSizeHalf;
-							if(newImgX >= 0 && newImgX < baseImage->getCols())
+							if(newImgX >= 0 && newImgX < baseImage.getCols())
 							{
-								float baseImgValue = baseImage->getData()[newImgX + newImgY*baseImage->getRows()];
-								float kernelMultiplier = kernel->getData()[actualKernelX + actualKernelY*kernel->getRows()];
+								float baseImgValue = baseImage.getData()[newImgX + newImgY*baseImage.getRows()];
+								float kernelMultiplier = kernel.getData()[actualKernelX + actualKernelY*kernel.getRows()];
 								
 								if(normalized)
 								{
@@ -604,6 +624,36 @@ namespace smpl
 		}
 		
 		return output;
+	}
+
+	Matrix ComputerVision::verticalHistogram(const Matrix& baseImg)
+	{
+		return baseImg.verticalSum();
+	}
+	Matrix ComputerVision::horizontalHistogram(const Matrix& baseImg)
+	{
+		return baseImg.horizontalSum();
+	}
+	
+	std::vector<unsigned int> ComputerVision::colorHistogram(Image* img, unsigned char bins)
+	{
+		std::vector<unsigned int> colorBins = std::vector<unsigned int>(bins*3);
+		Color* pixels = img->getPixels();
+		Color* endPixels = pixels + img->getWidth()*img->getHeight();
+		int rangePerBin = 256/bins;
+		while(pixels != endPixels)
+		{
+			int redLocation = ((int)pixels->red*bins) >> 8;
+			int greenLocation = bins + (((int)pixels->green*bins) >> 8);
+			int blueLocation = 2*bins + (((int)pixels->blue*bins) >> 8);
+
+			colorBins[redLocation]++;
+			colorBins[greenLocation]++;
+			colorBins[blueLocation]++;
+			pixels++;
+		}
+
+		return colorBins;
 	}
 
 	void removeBoundaryShape(Matrix* m, std::vector<Vec2f>& boundaryShape)
@@ -765,7 +815,7 @@ namespace smpl
 		}
 	}
 	
-	void ComputerVision::mooreNeighborTracing(Matrix* m, int x, int y, int preX, int preY, std::vector<Vec2f>& points)
+	void ComputerVision::mooreNeighborTracing(const Matrix& m, int x, int y, int preX, int preY, std::vector<Vec2f>& points)
 	{
 		//moore-neighbor tracing
 		const std::pair<int, int> boundaryPointsClockwise[8] = {{-1, -1}, {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}};
@@ -811,7 +861,7 @@ namespace smpl
 
 				//assume thresholding
 				//returns 0 if invalid as well
-				if(m->get(checkY, checkX) > 0)
+				if(m.get(checkY, checkX) > 0)
 				{
 					//valid pixel. Part of boundary.
 					nextPotentialPoint = Vec2f(checkX, checkY);
@@ -841,7 +891,7 @@ namespace smpl
 				if(thresholdedMat[y][x] != 0.0)
 				{
 					std::vector<Vec2f> boundaryPoints;
-					mooreNeighborTracing(&thresholdedMat, x, y, x-1, y, boundaryPoints);
+					mooreNeighborTracing(thresholdedMat, x, y, x-1, y, boundaryPoints);
 					if(!boundaryPoints.empty())
 					{
 						//found a contour.
@@ -850,6 +900,74 @@ namespace smpl
 						//remove all stuff captured by the contour. Helps to prevent duplicates
 						//its a polygon but the lines are really short
 						removeBoundaryShape(&thresholdedMat, boundaryPoints);
+					}
+				}
+			}
+		}
+		return allShapesFound;
+	}
+
+	std::vector<std::vector<Vec2f>> ComputerVision::findContours2(Image* img)
+	{
+		//just use thresholding. Assume its already grayscale and thresholded.
+		std::vector<std::vector<Vec2f>> allShapesFound;
+		Matrix thresholdedMat = ComputerVision::imageToMatrix(img, ComputerVision::RED_CHANNEL);
+		std::vector<bool> boundaryImg = std::vector<bool>(img->getWidth() * img->getHeight());
+
+		bool mode = true;
+		for(int y=0; y<thresholdedMat.getRows(); y++)
+		{
+			mode = true;
+			for(int x=0; x<thresholdedMat.getCols(); x++)
+			{
+				if(mode)
+				{
+					if(thresholdedMat[y][x] != 0.0)
+					{
+						if(!boundaryImg[x + y*img->getWidth()])
+						{
+							std::vector<Vec2f> boundaryPoints;
+							mooreNeighborTracing(thresholdedMat, x, y, x-1, y, boundaryPoints);
+							if(!boundaryPoints.empty())
+							{
+								//found a contour.
+								allShapesFound.push_back(boundaryPoints);
+
+								//remove all stuff captured by the contour. Helps to prevent duplicates
+								//its a polygon but the lines are really short
+								// removeBoundaryShape(&thresholdedMat, boundaryPoints);
+								for(Vec2f& p : boundaryPoints)
+								{
+									boundaryImg[p.x + p.y*img->getWidth()] = true;
+								}
+							}
+						}
+						mode = !mode;
+					}
+				}
+				else
+				{
+					if(thresholdedMat[y][x] != 1.0)
+					{
+						if(!boundaryImg[x-1 + y*img->getWidth()])
+						{
+							std::vector<Vec2f> boundaryPoints;
+							mooreNeighborTracing(thresholdedMat, x-1, y, x, y, boundaryPoints);
+							if(!boundaryPoints.empty())
+							{
+								//found a contour.
+								allShapesFound.push_back(boundaryPoints);
+
+								//remove all stuff captured by the contour. Helps to prevent duplicates
+								//its a polygon but the lines are really short
+								// removeBoundaryShape(&thresholdedMat, boundaryPoints);
+								for(Vec2f& p : boundaryPoints)
+								{
+									boundaryImg[p.x + p.y*img->getWidth()] = true;
+								}
+							}
+						}
+						mode = !mode;
 					}
 				}
 			}

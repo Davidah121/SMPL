@@ -63,7 +63,7 @@ namespace smpl
 		if(c.data!=nullptr)
 		{
 			data = new float[size];
-			for (int i = 0; i < size; i++)
+			for (size_t i = 0; i < size; i++)
 			{
 				data[i] = c.data[i];
 			}
@@ -84,17 +84,17 @@ namespace smpl
 		valid = false;
 	}
 
-	float * Matrix::operator[](int row)
+	float * Matrix::operator[](int row) const
 	{
 		return &data[row*columns];
 	}
 
-	Matrix Matrix::operator*(float value)
+	Matrix Matrix::operator*(float value) const
 	{
 		Matrix m = Matrix(rows, columns);
 
 		#pragma omp parallel for
-		for (int i = 0; i < size; i++)
+		for (size_t i = 0; i < size; i++)
 		{
 			m.data[i] = value * data[i];
 		}
@@ -102,52 +102,27 @@ namespace smpl
 		return m;
 	}
 
-	Matrix Matrix::operator*(Matrix other)
+	Matrix Matrix::operator*(const Matrix& other) const
 	{
 		return multiply(other);
 	}
 
-	//TODO: Make SIMD????
-	GeneralVector Matrix::operator*(GeneralVector other)
-	{
-		if(other.getSize() == this->getRows())
-		{
-			//treat vector as column matrix
-			GeneralVector v = GeneralVector(other.getSize());
-			for (int i = 0; i < rows; i++)
-			{
-				#pragma omp parallel for private(i)
-				for(int i3=0; i3 < rows; i3++)
-				{
-					v[i] += data[i3 + i*columns] * other[i3];
-				}
-			}
-
-			return v;
-		}
-		else
-		{
-			return GeneralVector();
-		}
-		
-	}
-
 	void Matrix::operator*=(float value)
 	{
-		for (int i = 0; i < size; i++)
+		for (size_t i = 0; i < size; i++)
 		{
 			data[i] *= value;
 		}
 	}
 
-	Matrix Matrix::operator+(Matrix other)
+	Matrix Matrix::operator+(const Matrix& other) const
 	{
 		if (rows == other.rows && columns == other.columns)
 		{
 			Matrix m = Matrix(rows, columns);
 
 			#pragma omp parallel for
-			for (int i = 0; i < size; i++)
+			for (size_t i = 0; i < size; i++)
 			{
 				m.data[i] = other.data[i] + data[i];
 			}
@@ -160,26 +135,26 @@ namespace smpl
 		}
 	}
 
-	void Matrix::operator+=(Matrix other)
+	void Matrix::operator+=(const Matrix& other)
 	{
 		if (columns == other.columns && rows == other.rows)
 		{
 			#pragma omp parallel for
-			for (int i = 0; i < size; i++)
+			for (size_t i = 0; i < size; i++)
 			{
 				data[i] += other.data[i];
 			}
 		}
 	}
 
-	Matrix Matrix::operator-(Matrix other)
+	Matrix Matrix::operator-(const Matrix& other) const
 	{
 		if (rows == other.rows && columns == other.columns)
 		{
 			Matrix m = Matrix(rows, columns);
 
 			#pragma omp parallel for
-			for (int i = 0; i < size; i++)
+			for (size_t i = 0; i < size; i++)
 			{
 				m.data[i] = other.data[i] - data[i];
 			}
@@ -192,26 +167,26 @@ namespace smpl
 		}
 	}
 
-	void Matrix::operator-=(Matrix other)
+	void Matrix::operator-=(const Matrix& other)
 	{
 		if (columns == other.columns && rows == other.rows)
 		{
 			#pragma omp parallel for
-			for (int i = 0; i < size; i++)
+			for (size_t i = 0; i < size; i++)
 			{
 				data[i] -= other.data[i];
 			}
 		}
 	}
 
-	bool Matrix::operator==(Matrix other)
+	bool Matrix::operator==(const Matrix& other) const
 	{
 		if(rows != other.rows || columns != other.columns)
 		{
 			return false;
 		}
 
-		for(int i=0; i<size; i++)
+		for(size_t i=0; i<size; i++)
 		{
 			if(data[i] != other.data[i])
 			{
@@ -221,7 +196,7 @@ namespace smpl
 		return true;
 	}
 
-	bool Matrix::operator!=(Matrix other)
+	bool Matrix::operator!=(const Matrix& other) const
 	{
 		return !(this->operator==(other));
 	}
@@ -230,34 +205,293 @@ namespace smpl
 	Matrix Matrix::getIdentityMatrix(int rows)
 	{
 		Matrix res = Matrix(rows, rows);
-		for(int i=0; i<rows; i++)
+		for(size_t i=0; i<rows; i++)
 		{
 			res[i][i] = 1;
 		}
 		return res;
 	}
 
-	float* Matrix::getData()
+	
+	void Matrix::setAllValues(float v)
+	{
+		#if (OPTI==0)
+		#pragma omp parallel for
+		for (size_t i = 0; i < rows*columns; i++)
+		{
+			data[i] = v;
+		}
+		#else
+		size_t simdBound = SIMD_FP32::getSIMDBound(rows*columns);
+		SIMD_FP32 setValues = v;
+		#pragma omp parallel for
+		for (size_t i=0; i < simdBound; i+=SIMD_FP32::SIZE)
+		{
+			setValues.store(&data[i]);
+		}
+		for(size_t i=simdBound; i<rows*columns; i++)
+		{
+			data[i] = v;
+		}
+		#endif
+	}
+
+	
+	Matrix Matrix::broadcastAdd(float v)
+	{
+		Matrix result = Matrix(rows, columns);
+		size_t size = rows*columns;
+		#if (OPTI == 0)
+			#pragma omp parallel for
+			for(size_t i=0; i<size; i++)
+				result.data[i] = data[i] + v;
+		#else
+			size_t simdSize = SIMD_FP32::getSIMDBound(size);
+			SIMD_FP32 addV = v;
+			#pragma omp parallel for
+			for(size_t i=0; i<simdSize; i+=SIMD_FP32::SIZE)
+			{
+				SIMD_FP32 v = SIMD_FP32::load(&data[i]);
+				v += addV;
+				v.store(&result.data[i]);
+			}
+			for(size_t i=simdSize; i<size; i++)
+				result.data[i] = data[i] + v;
+		#endif
+		return result;
+	}
+	
+	Matrix Matrix::broadcastAdd(const Matrix& B)
+	{
+		if(B.rows != 1 && B.columns != 1)
+			return Matrix(); //throw an exception lol
+		Matrix result = Matrix(rows, columns);
+		size_t size = rows*columns;
+		
+		if(B.rows != 1)
+		{
+			//broadcast about the rows
+			#if (OPTI == 0)
+				#pragma omp parallel for
+				for(size_t i=0; i<size; i++)
+				{
+					result.data[i] = data[i] + B.data[i/rows];
+				}
+			#else
+				#pragma omp parallel for
+				for(size_t i=0; i<rows; i++)
+				{
+					size_t simdSize = SIMD_FP32::getSIMDBound(columns);
+					SIMD_FP32 addV = B.data[i];
+					for(size_t j=0; j<simdSize; j+=SIMD_FP32::SIZE)
+					{
+						SIMD_FP32 v = SIMD_FP32::load(&data[j + i*columns]);
+						v += addV;
+						v.store(&result.data[i]);
+					}
+					for(size_t j=simdSize; j<columns; j++)
+					{
+						result.data[j + i*columns] = data[j + i*columns] + B.data[i];
+					}
+				}
+			#endif
+		}
+		else
+		{
+			//broadcast about the columns
+			#if (OPTI == 0)
+				#pragma omp parallel for
+				for(size_t i=0; i<size; i++)
+				{
+					result.data[i] = data[i] + B.data[i%rows];
+				}
+			#else
+				#pragma omp parallel for
+				for(size_t i=0; i<rows; i++)
+				{
+					size_t simdSize = SIMD_FP32::getSIMDBound(columns);
+					for(size_t j=0; j<simdSize; j+=SIMD_FP32::SIZE)
+					{
+						SIMD_FP32 v = SIMD_FP32::load(&data[j + i*columns]);
+						SIMD_FP32 addV = SIMD_FP32::load(&B.data[j]);
+						v += addV;
+						v.store(&result.data[i]);
+					}
+					for(size_t j=simdSize; j<columns; j++)
+					{
+						result.data[j + i*columns] = data[j + i*columns] + B.data[j];
+					}
+				}
+			#endif
+		}
+		return result;
+	}
+
+	Matrix Matrix::broadcastSubtract(float v)
+	{
+		Matrix result = Matrix(rows, columns);
+		size_t size = rows*columns;
+		#if (OPTI == 0)
+			#pragma omp parallel for
+			for(size_t i=0; i<size; i++)
+				result.data[i] = data[i] - v;
+		#else
+			size_t simdSize = SIMD_FP32::getSIMDBound(size);
+			SIMD_FP32 addV = v;
+			#pragma omp parallel for
+			for(size_t i=0; i<simdSize; i+=SIMD_FP32::SIZE)
+			{
+				SIMD_FP32 v = SIMD_FP32::load(&data[i]);
+				v -= addV;
+				v.store(&result.data[i]);
+			}
+			for(size_t i=simdSize; i<size; i++)
+				result.data[i] = data[i] - v;
+		#endif
+		return result;
+	}
+	Matrix Matrix::broadcastSubtract(const Matrix& B)
+	{
+		if(B.rows != 1 && B.columns != 1)
+			return Matrix(); //throw an exception lol
+		Matrix result = Matrix(rows, columns);
+		size_t size = rows*columns;
+		
+		if(B.rows != 1)
+		{
+			//broadcast about the rows
+			#if (OPTI == 0)
+				#pragma omp parallel for
+				for(size_t i=0; i<size; i++)
+				{
+					result.data[i] = data[i] - B.data[i/rows];
+				}
+			#else
+				#pragma omp parallel for
+				for(size_t i=0; i<rows; i++)
+				{
+					size_t simdSize = SIMD_FP32::getSIMDBound(columns);
+					SIMD_FP32 subV = B.data[i];
+					for(size_t j=0; j<simdSize; j+=SIMD_FP32::SIZE)
+					{
+						SIMD_FP32 v = SIMD_FP32::load(&data[j + i*columns]);
+						v -= subV;
+						v.store(&result.data[i]);
+					}
+					for(size_t j=simdSize; j<columns; j++)
+					{
+						result.data[j + i*columns] = data[j + i*columns] - B.data[i];
+					}
+				}
+			#endif
+		}
+		else
+		{
+			//broadcast about the columns
+			#if (OPTI == 0)
+				#pragma omp parallel for
+				for(size_t i=0; i<size; i++)
+				{
+					result.data[i] = data[i] - B.data[i%rows];
+				}
+			#else
+				#pragma omp parallel for
+				for(size_t i=0; i<rows; i++)
+				{
+					size_t simdSize = SIMD_FP32::getSIMDBound(columns);
+					for(size_t j=0; j<simdSize; j+=SIMD_FP32::SIZE)
+					{
+						SIMD_FP32 v = SIMD_FP32::load(&data[j + i*columns]);
+						SIMD_FP32 subV = SIMD_FP32::load(&B.data[j]);
+						v -= subV;
+						v.store(&result.data[i]);
+					}
+					for(size_t j=simdSize; j<columns; j++)
+					{
+						result.data[j + i*columns] = data[j + i*columns] - B.data[j];
+					}
+				}
+			#endif
+		}
+		return result;
+	}
+
+	Matrix Matrix::broadcastFunction(std::function<float(float)> func, std::function<SIMD_FP32(SIMD_FP32)> simdFunc)
+	{
+		if(func == nullptr)
+			throw std::bad_function_call();
+		
+		Matrix result = Matrix(rows, columns);
+		size_t size = rows*columns;
+		#if (OPTI == 0)
+			#pragma omp parallel for
+			for(size_t i=0; i<size; i++)
+				result.data[i] = func(data[i]);
+		#else
+			size_t simdSize = SIMD_FP32::getSIMDBound(size);
+			if(simdFunc == nullptr)
+				simdSize = 0; //Don't do any SIMD work
+			#pragma omp parallel for
+			for(size_t i=0; i<simdSize; i+=SIMD_FP32::SIZE)
+			{
+				SIMD_FP32 v = SIMD_FP32::load(&data[i]);
+				v = simdFunc(v);
+				v.store(&result.data[i]);
+			}
+			for(size_t i=simdSize; i<size; i++)
+				result.data[i] = func(data[i]);
+		#endif
+		return result;
+	}
+	Matrix Matrix::broadcastFunction(float (*func)(float), SIMD_FP32 (*simdFunc)(SIMD_FP32))
+	{
+		if(func == nullptr)
+			throw std::bad_function_call();
+		
+		Matrix result = Matrix(rows, columns);
+		size_t size = rows*columns;
+		#if (OPTI == 0)
+			#pragma omp parallel for
+			for(size_t i=0; i<size; i++)
+				result.data[i] = func(data[i]);
+		#else
+			size_t simdSize = SIMD_FP32::getSIMDBound(size);
+			if(simdFunc == nullptr)
+				simdSize = 0; //Don't do any SIMD work
+			#pragma omp parallel for
+			for(size_t i=0; i<simdSize; i+=SIMD_FP32::SIZE)
+			{
+				SIMD_FP32 v = SIMD_FP32::load(&data[i]);
+				v = simdFunc(v);
+				v.store(&result.data[i]);
+			}
+			for(size_t i=simdSize; i<size; i++)
+				result.data[i] = func(data[i]);
+		#endif
+		return result;
+	}
+
+	float* Matrix::getData() const
 	{
 		return data;
 	}
 
-	int Matrix::getRows()
+	int Matrix::getRows() const
 	{
 		return rows;
 	}
 
-	int Matrix::getCols()
+	int Matrix::getCols() const
 	{
 		return columns;
 	}
 
-	bool Matrix::getValid()
+	bool Matrix::getValid() const
 	{
 		return valid;
 	}
 
-	float Matrix::get(int row, int col)
+	float Matrix::get(int row, int col) const
 	{
 		if (row < rows && row >= 0 && col < columns && col >= 0)
 			return data[col + row*columns];
@@ -265,7 +499,7 @@ namespace smpl
 			return 0;
 	}
 
-	Matrix Matrix::hadamardProduct(Matrix other)
+	Matrix Matrix::hadamardProduct(const Matrix& other) const
 	{
 		if(rows != other.rows || columns != other.columns)
 		{
@@ -276,20 +510,21 @@ namespace smpl
 
 		#if (OPTI==0)
 		#pragma omp parallel for
-		for (int i = 0; i < rows*columns; i++)
+		for (size_t i = 0; i < rows*columns; i++)
 		{
 			m.data[i] = other.data[i] * data[i];
 		}
 		#else
-		int simdBound = GET_MATRIX_SIMD_BOUND(rows*columns);
+		int simdBound = SIMD_FP32::getSIMDBound(rows*columns);
 		#pragma omp parallel for
-		for (int i=0; i < simdBound; i+=MATRIX_INC_AMOUNT)
+		for (size_t i=0; i < simdBound; i+=SIMD_FP32::SIZE)
 		{
-			MATRIX_SIMD_DATATYPE aValues = MATRIX_SIMD_LOAD(&data[i]);
-			MATRIX_SIMD_DATATYPE bValues = MATRIX_SIMD_LOAD(&other.data[i]);
-			MATRIX_SIMD_STORE(&m.data[i], MATRIX_SIMD_MULT(aValues, bValues));
+			SIMD_FP32 aValues = SIMD_FP32::load(&data[i]);
+			SIMD_FP32 bValues = SIMD_FP32::load(&other.data[i]);
+			aValues*=bValues;
+			aValues.store(&m.data[i]);
 		}
-		for(int i=simdBound; i<rows*columns; i++)
+		for(size_t i=simdBound; i<rows*columns; i++)
 		{
 			m.data[i] = data[i]*other.data[i];
 		}
@@ -299,7 +534,7 @@ namespace smpl
 	}
 
 	
-	Matrix Matrix::inverseHadamardProduct(Matrix other)
+	Matrix Matrix::inverseHadamardProduct(const Matrix& other) const
 	{
 		if(rows != other.rows || columns != other.columns)
 		{
@@ -310,20 +545,21 @@ namespace smpl
 
 		#if (OPTI==0)
 		#pragma omp parallel for
-		for (int i = 0; i < rows*columns; i++)
+		for (size_t i = 0; i < rows*columns; i++)
 		{
 			m.data[i] = other.data[i] * data[i];
 		}
 		#else
-		int simdBound = GET_MATRIX_SIMD_BOUND(rows*columns);
+		int simdBound = SIMD_FP32::getSIMDBound(rows*columns);
 		#pragma omp parallel for
-		for (int i=0; i < simdBound; i+=MATRIX_INC_AMOUNT)
+		for (size_t i=0; i < simdBound; i+=SIMD_FP32::SIZE)
 		{
-			MATRIX_SIMD_DATATYPE aValues = MATRIX_SIMD_LOAD(&data[i]);
-			MATRIX_SIMD_DATATYPE bValues = MATRIX_SIMD_LOAD(&other.data[i]);
-			MATRIX_SIMD_STORE(&m.data[i], MATRIX_SIMD_DIV(aValues, bValues));
+			SIMD_FP32 aValues = SIMD_FP32::load(&data[i]);
+			SIMD_FP32 bValues = SIMD_FP32::load(&other.data[i]);
+			aValues *= bValues;
+			aValues.store(&m.data[i]);
 		}
-		for(int i=simdBound; i<rows*columns; i++)
+		for(size_t i=simdBound; i<rows*columns; i++)
 		{
 			m.data[i] = data[i]*other.data[i];
 		}
@@ -332,7 +568,7 @@ namespace smpl
 		return m;
 	}
 
-	Matrix Matrix::getInverse()
+	Matrix Matrix::getInverse() const
 	{
 		float det = getDeterminate();
 
@@ -353,19 +589,28 @@ namespace smpl
 			{
 				// float multValue = 1;
 				
+				size_t totalSize = rows*columns;
 				#pragma omp parallel for
-				for(int i=0; i<rows; i++)
+				for(size_t index = 0; index<totalSize; index++)
 				{
-					for(int j=0; j<columns; j++)
-					{
-						inverse[i][j] = getMatrixOfMinors(i, j).getDeterminate();
+					size_t i = index/columns;
+					size_t j = index%columns;
+					double mult = ((i+j)%2) ? -1 : 1;
 
-						if((i+j) % 2 == 1)
-						{
-							inverse[i][j] *= -1;
-						}
-					}
+					inverse[i][j] = mult * getMatrixOfMinors(i, j).getDeterminate();
 				}
+				// for(size_t i=0; i<rows; i++)
+				// {
+				// 	for(size_t j=0; j<columns; j++)
+				// 	{
+				// 		inverse[i][j] = getMatrixOfMinors(i, j).getDeterminate();
+
+				// 		if((i+j) % 2 == 1)
+				// 		{
+				// 			inverse[i][j] *= -1;
+				// 		}
+				// 	}
+				// }
 
 				return inverse.getTranspose() * (1.0/det);
 			}
@@ -374,13 +619,13 @@ namespace smpl
 		return Matrix();
 	}
 
-	Matrix Matrix::getTranspose()
+	Matrix Matrix::getTranspose() const
 	{
 		Matrix m = Matrix(columns, rows);
 		int totalSize = columns*rows;
 
 		#pragma omp parallel for
-		for(int i=0; i<totalSize; i++)
+		for(size_t i=0; i<totalSize; i++)
 		{
 			int y = i / columns;
 			int x = i % columns;
@@ -390,7 +635,7 @@ namespace smpl
 		return m;
 	}
 
-	float Matrix::getDeterminate()
+	float Matrix::getDeterminate() const
 	{
 		if(rows == columns && rows > 1)
 		{
@@ -401,7 +646,7 @@ namespace smpl
 			else
 			{
 				float sumValue = 0;
-				for(int i=0; i<columns; i++)
+				for(size_t i=0; i<columns; i++)
 				{
 					if(i%2 == 0)
 					{
@@ -419,32 +664,30 @@ namespace smpl
 		return NAN;
 	}
 
-	Matrix Matrix::getMatrixOfMinors(int row, int col)
+	Matrix Matrix::getMatrixOfMinors(int row, int col) const
 	{
 		Matrix m = Matrix(rows-1, columns-1);
 		
-		if(m.getValid() && getValid())
+		if(!m.getValid() || !getValid())
+			throw InvalidMatrixSize();
+	
+		float* arrP = m.data;
+		for(size_t i=0; i<rows; i++)
 		{
-			float* arrP = m.data;
-
-			for(int i=0; i<rows; i++)
+			if(i != row)
 			{
-				if(i != row)
+				float* dataP = arrP;
+				for(size_t j=0; j<columns; j++)
 				{
-					float* dataP = arrP;
-					for(int j=0; j<columns; j++)
+					if(j != col)
 					{
-						if(j != col)
-						{
-							*(dataP) = data[j + i*columns];
-							dataP++;
-						}
+						*(dataP) = data[j + i*columns];
+						dataP++;
 					}
-					arrP+=m.columns;
 				}
+				arrP+=m.columns;
 			}
 		}
-
 		return m;
 	}
 
@@ -478,139 +721,271 @@ namespace smpl
 		return sumSIMDRegister(_mm256_extractf128_ps(simdTempSum, 0));
 	}
 	
-	Matrix Matrix::multiply(Matrix& A, Matrix& B)
+	Matrix Matrix::multiply(const Matrix& A, const Matrix& B)
 	{
 		return A.multiply(B);
 	}
-	Matrix Matrix::multiplyTranspose(Matrix& A, Matrix& B)
+	Matrix Matrix::multiplyTranspose(const Matrix& A, const Matrix& B)
 	{
 		return A.multiplyTranspose(B);
 	}
-
-	Matrix Matrix::multiply(Matrix& B)
+	
+	Matrix Matrix::multiply(const Matrix& B) const
 	{
 		//for large size matricies, do transpose then do matrix multiplication.
-		if(valid && B.valid && columns == B.rows)
+		if(!valid || !B.valid || columns != B.rows)
+			throw InvalidMatrixSize();
+		
+		// //quick fix
+		// Matrix C = Matrix(rows, B.columns);
+		// int totalSize = rows*B.columns;
+		// for(size_t i=0; i<totalSize; i++)
+		// {
+		// 	int y = i / B.columns;
+		// 	int x = i % B.columns;
+		// 	float sum=0;
+		// 	for(int k=0; k<columns; k++)
+		// 	{
+		// 		sum += data[k + y*columns] * B.data[x + k*B.columns];
+		// 	}
+		// 	C.data[x + y*B.columns] = sum;
+		// }
+		// return C;
+		
+		if(rows * B.columns > EXCEPTIONALY_LARGE_MATRIX_AREA)
 		{
-			if(rows * B.columns > EXCEPTIONALY_LARGE_MATRIX_AREA)
-			{
-				Matrix BT = B.getTranspose(); //O(N^2)
-				return Matrix::multiplyTranspose(BT); //O(N^3) but better cache locality
-			}
-
-			Matrix C = Matrix(rows, B.columns);
-			int totalSize = rows*B.columns;
-
-			//expose more work to make parallel. only 1 join instead of O(N) joins
-			#pragma omp parallel for
-			for(int i=0; i<totalSize; i++)
-			{
-				int y = i / B.columns;
-				int x = i % B.columns;
-				#if (OPTI == 0)
-					float sum = 0;
-					for(int k=0; k<columns; k++)
-					{
-						sum += data[k + y*columns] * B.data[x + k*columns];
-					}
-					C.data[x + y*columns] = sum;
-				#else
-					MATRIX_SIMD_DATATYPE simdSum = MATRIX_SIMD_ZERO();
-					float finalSum = 0;
-					float rowFloats[MATRIX_INC_AMOUNT];
-					int k=0;
-					int simdBound = GET_MATRIX_SIMD_BOUND(columns);
-					while(k < simdBound)
-					{
-						MATRIX_SIMD_DATATYPE aValues = MATRIX_SIMD_LOAD(&data[k + y*columns]);
-						for(int count=0; count<MATRIX_INC_AMOUNT; count++)
-						{
-							rowFloats[count] = B.data[x + (k+count)*columns];
-						}
-						MATRIX_SIMD_DATATYPE bValues = MATRIX_SIMD_LOAD(rowFloats);
-
-						simdSum = MATRIX_SIMD_ADD(simdSum, MATRIX_SIMD_MULT(aValues, bValues));
-						k += MATRIX_INC_AMOUNT;
-					}
-					while(k < columns)
-					{
-						finalSum += data[k + y*columns] * B.data[x + k*B.columns];
-						k++;
-					}
-
-					finalSum += sumSIMDRegister(simdSum);
-					C.data[x + y*columns] = finalSum;
-				#endif
-			}
-			return C;
+			Matrix BT = B.getTranspose(); //O(N^2)
+			return Matrix::multiplyTranspose(BT); //O(N^3) but better cache locality
 		}
-		return Matrix();
+
+		Matrix C = Matrix(rows, B.columns);
+		int totalSize = rows*B.columns;
+
+		//expose more work to make parallel. only 1 join instead of O(N) joins
+		#pragma omp parallel for
+		for(size_t i=0; i<totalSize; i++)
+		{
+			int y = i / B.columns;
+			int x = i % B.columns;
+			#if (OPTI == 0)
+				float sum = 0;
+				for(int k=0; k<columns; k++)
+				{
+					sum += data[k + y*columns] * B.data[x + k*B.columns];
+				}
+				C.data[x + y*B.columns] = sum;
+			#else
+				SIMD_FP32 simdSum = 0;
+				float finalSum = 0;
+				float rowFloats[SIMD_FP32::SIZE];
+				int k=0;
+				int simdBound = SIMD_FP32::getSIMDBound(columns);
+				while(k < simdBound)
+				{
+					SIMD_FP32 aValues = SIMD_FP32::load(&data[k + y*columns]);
+					for(int count=0; count<SIMD_FP32::SIZE; count++)
+					{
+						rowFloats[count] = B.data[x + (k+count)*B.columns];
+					}
+					SIMD_FP32 bValues = SIMD_FP32::load(rowFloats);
+					simdSum += aValues*bValues;
+					k += SIMD_FP32::SIZE;
+				}
+				while(k < columns)
+				{
+					finalSum += data[k + y*columns] * B.data[x + k*B.columns];
+					k++;
+				}
+
+				finalSum += sumSIMDRegister(simdSum.values);
+				C.data[x + y*B.columns] = finalSum;
+			#endif
+		}
+		return C;
 	}
-	Matrix Matrix::multiplyTranspose(Matrix& B)
+	Matrix Matrix::multiplyTranspose(const Matrix& B) const
 	{
-		if(valid && B.valid && columns == B.columns)
+		if(!valid || !B.valid || columns != B.columns)
+			throw InvalidMatrixSize();
+		
+		Matrix C = Matrix(rows, B.rows);
+		int totalSize = rows*B.rows;
+
+		#pragma omp parallel for
+		for(size_t i=0; i<totalSize; i++)
 		{
-			Matrix C = Matrix(rows, B.rows);
-			int totalSize = rows*B.rows;
+			int y = i / B.rows;
+			int x = i % B.rows;
+			#if (OPTI == 0)
+				float sum = 0;
+				for(int k=0; k<columns; k++)
+				{
+					sum += data[k + y*columns] * B.data[k + x*B.columns];
+				}
+				C.data[x + y*B.rows] = sum;
+			#else
+				float finalSum = 0;
+				SIMD_FP32 simdSum = 0;
+				int k = 0;
+				int simdBound = SIMD_FP32::getSIMDBound(columns);
+				while(k < simdBound)
+				{
+					SIMD_FP32 aValues = SIMD_FP32::load(&data[k + y*columns]);
+					SIMD_FP32 bValues = SIMD_FP32::load(&B.data[k + x*B.columns]);
+					simdSum += aValues*bValues;
+					k+=SIMD_FP32::SIZE;
+				}
+				while(k < columns)
+				{
+					finalSum += data[k + y*columns] * B.data[k + x*B.columns];
+					k++;
+				}
 
-			#pragma omp parallel for
-			for(int i=0; i<totalSize; i++)
-			{
-				int y = i / B.rows;
-				int x = i % B.rows;
-				#if (OPTI == 0)
-					float sum = 0;
-					for(int k=0; k<columns; k++)
-					{
-						sum += data[k + y*columns] * B.data[k + x*columns];
-					}
-					C.data[x + y*columns] = sum;
-				#else
-					float finalSum = 0;
-					MATRIX_SIMD_DATATYPE simdSum = MATRIX_SIMD_ZERO();
-					int k = 0;
-					int simdBound = GET_MATRIX_SIMD_BOUND(columns);
-					while(k < simdBound)
-					{
-						MATRIX_SIMD_DATATYPE aValues = MATRIX_SIMD_LOAD(&data[k + y*columns]);
-						MATRIX_SIMD_DATATYPE bValues = MATRIX_SIMD_LOAD(&B.data[k + x*columns]);
-						simdSum = MATRIX_SIMD_ADD(simdSum, MATRIX_SIMD_MULT(aValues, bValues));
-						k+=MATRIX_INC_AMOUNT;
-					}
-					while(k < columns)
-					{
-						finalSum += data[k + y*columns] * B.data[k + x*B.columns];
-						k++;
-					}
-
-					finalSum += sumSIMDRegister(simdSum);
-					C.data[x + y*columns] = finalSum;
-				#endif
-			
-			}
-			return C;
+				finalSum += sumSIMDRegister(simdSum.values);
+				C.data[x + y*B.rows] = finalSum;
+			#endif
+		
 		}
-		return Matrix();
+		return C;
+	}
+	
+	Matrix Matrix::fusedMultiplyAdd(const Matrix& A, const Matrix& B, const Matrix& C)
+	{
+		return A.fusedMultiplyAdd(B, C);
+	}
+	Matrix Matrix::fusedMultiplyAddTranspose(const Matrix& A, const Matrix& B, const Matrix& C)
+	{
+		return A.fusedMultiplyAddTranspose(B, C);
 	}
 
-	float Matrix::sum()
+	Matrix Matrix::fusedMultiplyAdd(const Matrix& B, const Matrix& C) const
+	{
+		//for large size matricies, do transpose then do matrix multiplication.
+		if(!valid || !B.valid || columns != B.rows)
+			throw InvalidMatrixSize();
+		
+		if(C.rows != rows || C.columns != B.columns)
+			throw InvalidMatrixSize();
+			
+		if(rows * B.columns > EXCEPTIONALY_LARGE_MATRIX_AREA)
+		{
+			Matrix BT = B.getTranspose(); //O(N^2)
+			return Matrix::fusedMultiplyAddTranspose(BT, C); //O(N^3) but better cache locality
+		}
+
+		Matrix result = Matrix(rows, B.columns);
+		int totalSize = rows*B.columns;
+
+		//expose more work to make parallel. only 1 join instead of O(N) joins
+		#pragma omp parallel for
+		for(size_t i=0; i<totalSize; i++)
+		{
+			int y = i / B.columns;
+			int x = i % B.columns;
+			#if (OPTI == 0)
+				float sum = C[y][x];
+				for(int k=0; k<columns; k++)
+				{
+					sum += data[k + y*columns] * B.data[x + k*B.columns];
+				}
+				result.data[x + y*B.columns] = sum;
+			#else
+				SIMD_FP32 simdSum = 0;
+				float finalSum = C[y][x];
+				float rowFloats[SIMD_FP32::SIZE];
+				int k=0;
+				int simdBound = SIMD_FP32::getSIMDBound(columns);
+				while(k < simdBound)
+				{
+					SIMD_FP32 aValues = SIMD_FP32::load(&data[k + y*columns]);
+					for(int count=0; count<SIMD_FP32::SIZE; count++)
+					{
+						rowFloats[count] = B.data[x + (k+count)*B.columns];
+					}
+					SIMD_FP32 bValues = SIMD_FP32::load(rowFloats);
+
+					simdSum += aValues*bValues;
+					k += SIMD_FP32::SIZE;
+				}
+				while(k < columns)
+				{
+					finalSum += data[k + y*columns] * B.data[x + k*B.columns];
+					k++;
+				}
+
+				finalSum += sumSIMDRegister(simdSum.values);
+				result.data[x + y*B.columns] = finalSum;
+			#endif
+		}
+		return result;
+	}
+	Matrix Matrix::fusedMultiplyAddTranspose(const Matrix& B, const Matrix& C) const
+	{
+		if(!valid || !B.valid || columns != B.columns)
+			throw InvalidMatrixSize();
+		
+		if(C.rows != rows || C.columns != B.rows)
+			throw InvalidMatrixSize();
+		
+		Matrix result = Matrix(rows, B.rows);
+		int totalSize = rows*B.rows;
+
+		#pragma omp parallel for
+		for(size_t i=0; i<totalSize; i++)
+		{
+			int y = i / B.rows;
+			int x = i % B.rows;
+			#if (OPTI == 0)
+				float sum = C[y][x];
+				for(int k=0; k<columns; k++)
+				{
+					sum += data[k + y*columns] * B.data[k + x*B.columns];
+				}
+				result.data[x + y*B.rows] = sum;
+			#else
+				float finalSum = C[y][x];
+				SIMD_FP32 simdSum = 0;
+				int k = 0;
+				int simdBound = SIMD_FP32::getSIMDBound(columns);
+				while(k < simdBound)
+				{
+					SIMD_FP32 aValues = SIMD_FP32::load(&data[k + y*columns]);
+					SIMD_FP32 bValues = SIMD_FP32::load(&B.data[k + x*B.columns]);
+					simdSum += aValues*bValues;
+					k+=SIMD_FP32::SIZE;
+				}
+				while(k < columns)
+				{
+					finalSum += data[k + y*columns] * B.data[k + x*B.columns];
+					k++;
+				}
+
+				finalSum += sumSIMDRegister(simdSum.values);
+				result.data[x + y*B.rows] = finalSum;
+			#endif
+		
+		}
+		return result;
+	}
+
+	float Matrix::sum() const
 	{
 		float sum = 0;
-		for(int i=0; i<rows*columns; i++)
+		for(size_t i=0; i<rows*columns; i++)
 		{
 			sum += data[i];
 		}
 		return sum;
 	}
 
-	Matrix Matrix::horizontalSum()
+	Matrix Matrix::horizontalSum() const
 	{
 		Matrix m = Matrix(rows, 1);
 		#pragma omp parallel for
-		for(int i=0; i<rows; i++)
+		for(size_t i=0; i<rows; i++)
 		{
 			float sum = 0;
-			for(int j=0; j<columns; j++)
+			for(size_t j=0; j<columns; j++)
 			{
 				sum += data[j + i*rows];
 			}
@@ -619,12 +994,12 @@ namespace smpl
 		return m;
 	}
 
-	Matrix Matrix::verticalSum()
+	Matrix Matrix::verticalSum() const
 	{
 		Matrix m = Matrix(1, columns);
-		for(int i=0; i<rows; i++)
+		for(size_t i=0; i<rows; i++)
 		{
-			for(int j=0; j<columns; j++)
+			for(size_t j=0; j<columns; j++)
 			{
 				m[0][j] += data[j + i*rows];
 			}

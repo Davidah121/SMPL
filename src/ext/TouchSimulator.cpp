@@ -88,6 +88,15 @@ namespace smpl
         if(validInputs.size() > 0)
         {
             BOOL err = InjectTouchInput(validInputs.size(), validInputs.data());
+            
+            if(err == FALSE)
+            {
+                if(GetLastError() == ERROR_NOT_READY)
+                {
+                    //retry once
+                    err = InjectTouchInput(validInputs.size(), validInputs.data());
+                }
+            }
 
             //set all inputs with POINTER_DOWN to be POINTER_UPDATE
             for(int i=0; i<inputs.size(); i++)
@@ -97,7 +106,25 @@ namespace smpl
                 
                 updatePoints[i] = false;
             }
-            
+
+            if(err == FALSE)
+            {
+                //RESET
+                for(int i=0; i<inputs.size(); i++)
+                {
+                    memset(&inputs[i], 0, sizeof(POINTER_TOUCH_INFO)); //Zero Memory
+
+                    inputs[i].touchFlags = TOUCH_FLAG_NONE;
+                    inputs[i].touchMask = TOUCH_MASK_CONTACTAREA; //Could add pressure
+                    
+                    inputs[i].pointerInfo.pointerType = PT_TOUCH;
+                    inputs[i].pointerInfo.pointerId = i;
+                    inputs[i].pointerInfo.pointerFlags = POINTER_FLAG_UP;
+                    updatePoints[i] = false;
+                    setToUp[i] = false;
+                }
+            }
+
             return err;
         }
         return true;

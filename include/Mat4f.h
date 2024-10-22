@@ -76,34 +76,27 @@ namespace smpl
 		 */
 		static Mat4f getIdentity();
 
-		/**
-		 * @brief Returns the Transpose of the matrix as a Mat4f.
-		 * 
-		 * @return Mat4f 
-		 */
-		Mat4f getTranspose();
+		float* operator[](int row) const;
 
-		float* operator[](int row);
+		Mat4f operator+(const Mat4f& other) const;
+		Mat4f operator-(const Mat4f& other) const;
+		Mat4f operator*(const Mat4f& other) const;
 
-		Mat4f operator+(Mat4f other);
-		Mat4f operator-(Mat4f other);
-		Mat4f operator*(Mat4f other);
-
-		Mat4f operator*(float other);
-		friend Mat4f operator*(float value, Mat4f other)
+		Mat4f operator*(float other) const;
+		friend Mat4f operator*(float value, const Mat4f& other)
 		{
 			return other*value;
 		}
 
 		void operator*=(float other);
 
-		void operator+=(Mat4f other);
-		void operator-=(Mat4f other);
+		void operator+=(const Mat4f& other);
+		void operator-=(const Mat4f& other);
 
-		Vec4f operator*(Vec4f other);
+		Vec4f operator*(const Vec4f& other) const;
 
-		bool operator==(Mat4f other);
-		bool operator!=(Mat4f other);
+		bool operator==(const Mat4f& other) const;
+		bool operator!=(const Mat4f& other) const;
 	};
 
 } //NAMESPACE smpl END

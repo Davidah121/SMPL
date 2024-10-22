@@ -162,9 +162,9 @@ namespace smpl
 		Matrix gChannel = ComputerVision::imageToMatrix(img, ComputerVision::GREEN_CHANNEL);
 		Matrix bChannel = ComputerVision::imageToMatrix(img, ComputerVision::BLUE_CHANNEL);
 
-		rChannel = ComputerVision::convolution(&rChannel, &kernel);
-		gChannel = ComputerVision::convolution(&gChannel, &kernel);
-		bChannel = ComputerVision::convolution(&bChannel, &kernel);
+		rChannel = ComputerVision::convolution(rChannel, kernel);
+		gChannel = ComputerVision::convolution(gChannel, kernel);
+		bChannel = ComputerVision::convolution(bChannel, kernel);
 		
 		Color* imgPixels = img->getPixels();
 		for(int y=0; y<img->getHeight(); y++)
@@ -222,8 +222,8 @@ namespace smpl
 						 -1, -2, -1);
 
 		Matrix grayscaleMatrix = ComputerVision::imageToMatrix(grayscaleImg, ComputerVision::RED_CHANNEL);
-		Matrix imgXDerivative = ComputerVision::convolution(&grayscaleMatrix, &gx);
-		Matrix imgYDerivative = ComputerVision::convolution(&grayscaleMatrix, &gy);
+		Matrix imgXDerivative = ComputerVision::convolution(grayscaleMatrix, gx);
+		Matrix imgYDerivative = ComputerVision::convolution(grayscaleMatrix, gy);
 		Matrix derivativeMagnitude = Matrix(imgXDerivative.getRows(), imgXDerivative.getCols());
 
 		//remove the pixels on the edge of the image.
@@ -247,7 +247,7 @@ namespace smpl
 			}
 		}
 
-		derivativeMagnitude = ComputerVision::readjustIntensity(&derivativeMagnitude, 0.0, 1.0);
+		derivativeMagnitude = ComputerVision::readjustIntensity(derivativeMagnitude, 0.0, 1.0);
 
 		//non maximum suppression
 		for(int y=1; y<img->getHeight()-1; y++)
@@ -356,8 +356,8 @@ namespace smpl
 						 -1, -2, -1);
 
 		Matrix grayscaleMatrix = ComputerVision::imageToMatrix(grayscaleImg, ComputerVision::RED_CHANNEL);
-		Matrix imgXDerivative = ComputerVision::convolution(&grayscaleMatrix, &gx);
-		Matrix imgYDerivative = ComputerVision::convolution(&grayscaleMatrix, &gy);
+		Matrix imgXDerivative = ComputerVision::convolution(grayscaleMatrix, gx);
+		Matrix imgYDerivative = ComputerVision::convolution(grayscaleMatrix, gy);
 
 		//reuse imgXDerivative
 		float* imgXDerData = imgXDerivative.getData();
@@ -371,7 +371,7 @@ namespace smpl
 			imgYDerData++;
 		}
 
-		imgXDerivative = ComputerVision::readjustIntensity(&imgXDerivative, 0, 255);
+		imgXDerivative = ComputerVision::readjustIntensity(imgXDerivative, 0, 255);
 		
 
 		//Saving memory allocation cost by resuing grayscaleImg

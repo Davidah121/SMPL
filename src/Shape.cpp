@@ -852,7 +852,7 @@ namespace smpl
 
 	Vec3f Triangle3D::getNormal()
 	{
-		return MathExt::crossProduct(v1, v2).normalize();
+		return v1.crossProduct(v2).normalize();
 	}
 
 	float Triangle3D::generateBoundingRadius()
@@ -1187,7 +1187,7 @@ namespace smpl
 		//v1*v2 = v1*toPoint + v2*tPoint
 
 		
-		if (MathExt::dot(v1, v2) == MathExt::dot(v1, toPoint) + MathExt::dot(v2, toPoint))
+		if (v1.dot(v2) == v1.dot(toPoint) + v2.dot(toPoint))
 		{
 			//Possible collision
 			v1 = -v1;
@@ -1195,7 +1195,7 @@ namespace smpl
 
 			toPoint = Vec2f(a->getPosition().x - b->getVertex2().x, a->getPosition().y - b->getVertex2().y);
 
-			if (MathExt::dot(v1, v2) == MathExt::dot(v1, toPoint) + MathExt::dot(v2, toPoint))
+			if (v1.dot(v2) == v1.dot(toPoint) + v2.dot(toPoint))
 			{
 				return true;
 			}
@@ -1397,7 +1397,7 @@ namespace smpl
 		
 		toVec.z = 0;
 
-		float dis = MathExt::vecLength(toVec);
+		float dis = toVec.getLength();
 		int colCount = 0;
 
 		if(dis < b->getXRadius()+a->getRadius())
@@ -2058,14 +2058,14 @@ namespace smpl
 			
 			for(size_t i2=0; i2<b->size(); i2++)
 			{
-				float projection = MathExt::scalarVectorProjection(b->getVertex(i2), normal);
+				float projection = b->getVertex(i2).project(normal);
 				minBVal = MathExt::min(projection, minBVal);
 				maxBVal = MathExt::max(projection, maxBVal);
 			}
 
 			for(size_t i2=0; i2<a->size(); i2++)
 			{
-				float projection = MathExt::scalarVectorProjection(a->getVertex(i2), normal);
+				float projection = a->getVertex(i2).project(normal);
 				minAVal = MathExt::min(projection, minAVal);
 				maxAVal = MathExt::max(projection, maxAVal);
 			}
@@ -2100,14 +2100,14 @@ namespace smpl
 			
 			for(size_t i2=0; i2<b->size(); i2++)
 			{
-				float projection = MathExt::scalarVectorProjection(b->getVertex(i2), toVec);
+				float projection = b->getVertex(i2).project(toVec);
 				minBVal = MathExt::min(projection, minBVal);
 				maxBVal = MathExt::max(projection, maxBVal);
 			}
 
 			for(size_t i2=0; i2<a->size(); i2++)
 			{
-				float projection = MathExt::scalarVectorProjection(a->getVertex(i2), toVec);
+				float projection = a->getVertex(i2).project(toVec);
 				minAVal = MathExt::min(projection, minAVal);
 				maxAVal = MathExt::max(projection, maxAVal);
 			}

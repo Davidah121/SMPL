@@ -122,10 +122,10 @@ namespace smpl
 		temp1 = b0 - points[index];
 		temp2 = b2 - points[index];
 
-		A = -MathExt::dot(temp1,temp1);
-		B = -MathExt::dot(b0, b2)/3;
+		A = -temp1.dot(temp1);
+		B = -b0.dot(b2)/3;
 		C = -B;
-		D = MathExt::dot(temp2,temp2);
+		D = temp2.dot(temp2);
 
 		//Can also use Bisection since a solution should be in [0, 1]
 		std::vector<double> solutions = MathExt::solveCubicReal(A, B, C, D);

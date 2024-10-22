@@ -23,7 +23,7 @@ namespace smpl
 
     PolarCoordinate::PolarCoordinate(Vec2f coord)
     {
-        length = MathExt::vecLength(coord);
+        length = coord.getLength();
         angle = MathExt::dirToPoint(0, 0, coord.x, coord.y);
     }
 

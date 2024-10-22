@@ -42,7 +42,7 @@ namespace smpl
 			minX = MathExt::clamp(minX, (int)SimpleGraphics::getClippingRect().getLeftBound(), (int)SimpleGraphics::getClippingRect().getRightBound());
 			maxX = MathExt::clamp(maxX, (int)SimpleGraphics::getClippingRect().getLeftBound(), (int)SimpleGraphics::getClippingRect().getRightBound());
 			
-			GRAPHICS_SIMD_DATATYPE activeColorAsSIMD = COLOR_TO_SIMD(activeColor);
+			SIMD_U8 activeColorAsSIMD = COLOR_TO_SIMD(activeColor);
 			
 			#pragma omp parallel for
 			for(int y=minY; y<maxY; y++)
@@ -67,11 +67,11 @@ namespace smpl
 				//fill from cX1 to cX2
 				if(compositeRule == NO_COMPOSITE)
 				{
-					int stopPoint = GET_GRAPHICS_SIMD_BOUND((endX-startX));
-					for(int i=0; i<stopPoint; i+=GRAPHICS_INC_AMOUNT)
+					int stopPoint = SIMD_U8::getSIMDBound((endX-startX));
+					for(int i=0; i<stopPoint; i+=SIMD_U8::SIZE)
 					{
-						GRAPHICS_SIMD_STORE((GRAPHICS_SIMD_DATATYPE*)startFill, activeColorAsSIMD);
-						startFill += GRAPHICS_INC_AMOUNT;
+						activeColorAsSIMD.store((unsigned char*)startFill);
+						startFill += SIMD_U8::SIZE;
 					}
 					while(startFill < endFill)
 					{
@@ -81,13 +81,13 @@ namespace smpl
 				}
 				else
 				{
-					int stopPoint = GET_GRAPHICS_SIMD_BOUND((endX-startX));
-					for(int i=0; i<stopPoint; i+=GRAPHICS_INC_AMOUNT)
+					int stopPoint = SIMD_U8::getSIMDBound((endX-startX));
+					for(int i=0; i<stopPoint; i+=SIMD_U8::SIZE)
 					{
-						GRAPHICS_SIMD_DATATYPE destC = GRAPHICS_SIMD_LOAD((GRAPHICS_SIMD_DATATYPE*)startFill);
-						GRAPHICS_SIMD_DATATYPE blendC = blend(activeColorAsSIMD, destC);
-						GRAPHICS_SIMD_STORE((GRAPHICS_SIMD_DATATYPE*)startFill, blendC);
-						startFill += GRAPHICS_INC_AMOUNT;
+						SIMD_U8 destC = SIMD_U8::load((unsigned char*)startFill);
+						SIMD_U8 blendC = blend(activeColorAsSIMD.values, destC.values);
+						blendC.store((unsigned char*)startFill);
+						startFill += SIMD_U8::SIZE;
 					}
 					while(startFill < endFill)
 					{

@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "Opti.h"
 #include <limits>
 #include <math.h>
 #include <cmath>
@@ -12,7 +13,6 @@
 #include "Mat3f.h"
 #include "Mat4f.h"
 #include "Quaternion.h"
-#include "GeneralVector.h"
 #include "ComplexNumber.h"
 #include "PolarCoordinate.h"
 #include "MathFunction.h"
@@ -48,6 +48,10 @@
 
 #ifndef IS_POWER_2
 	#define IS_POWER_2(x) (((x) & ((x)-1)) == 0)
+#endif
+
+#ifndef TYPE_PUN
+	#define TYPE_PUN(x, type) (*(type*)&x)
 #endif
 
 struct FP16
@@ -686,7 +690,7 @@ namespace smpl
 		 * @param a 
 		 * @return float 
 		 */
-		static float cubeRoot(float a);
+		static float cuberoot(float a);
 
 		/**
 		 * @brief Returns the cube root of the value.
@@ -694,7 +698,7 @@ namespace smpl
 		 * @param a 
 		 * @return double 
 		 */
-		static double cubeRoot(double a);
+		static double cuberoot(double a);
 		
 		/**
 		 * @brief Returns the cube root of the template value.
@@ -703,7 +707,7 @@ namespace smpl
 		 * @return double 
 		 */
 		template<typename T>
-		static double cubeRoot(T a)
+		static double cuberoot(T a)
 		{
 			return std::cbrt(a);
 		}
@@ -1283,242 +1287,12 @@ namespace smpl
 		static Vec3f sphericalCoord(double length, double theta, double phi);
 
 		/**
-		 * @brief Returns the dot product of the 2 vectors.
-		 * 
-		 * @param v1 
-		 * @param v2 
-		 * @return double 
-		 */
-		static double dot(Vec2f v1, Vec2f v2);
-
-		/**
-		 * @brief Returns the dot product of the 2 vectors.
-		 * 
-		 * @param v1 
-		 * @param v2 
-		 * @return double 
-		 */
-		static double dot(Vec3f v1, Vec3f v2);
-
-		/**
-		 * @brief Returns the dot product of the 2 vectors.
-		 * 
-		 * @param v1 
-		 * @param v2 
-		 * @return double 
-		 */
-		static double dot(Vec4f v1, Vec4f v2);
-
-		/**
-		 * @brief Returns the dot product of the 2 vectors.
-		 * 		Both GeneralVector Objects must have the same size.
-		 * 
-		 * @param v1 
-		 * @param v2 
-		 * @return double 
-		 */
-		static double dot(GeneralVector v1, GeneralVector v2);
-
-		/**
-		 * @brief Returns the length of the vector.
-		 * 
-		 * @param v 
-		 * @return double 
-		 */
-		static double vecLength(Vec2f v);
-
-		/**
-		 * @brief Returns the length of the vector.
-		 * 
-		 * @param v 
-		 * @return double 
-		 */
-		static double vecLength(Vec3f v);
-
-		/**
-		 * @brief Returns the length of the vector.
-		 * 
-		 * @param v 
-		 * @return double 
-		 */
-		static double vecLength(Vec4f v);
-
-		/**
-		 * @brief Returns the length of the vector.
-		 * 
-		 * @param v 
-		 * @return double 
-		 */
-		static double vecLength(GeneralVector v);
-
-		/**
-		 * @brief Projects vector a onto vector b.
-		 * 
-		 * @param a 
-		 * @param b 
-		 * @return double 
-		 */
-		static double scalarVectorProjection(Vec2f a, Vec2f b);
-
-		/**
-		 * @brief Projects vector a onto vector b.
-		 * 
-		 * @param a 
-		 * @param b 
-		 * @return double 
-		 */
-		static double scalarVectorProjection(Vec3f a, Vec3f b);
-
-		/**
-		 * @brief Projects vector a onto vector b.
-		 * 
-		 * @param a 
-		 * @param b 
-		 * @return double 
-		 */
-		static double scalarVectorProjection(Vec4f a, Vec4f b);
-
-		/**
-		 * @brief Projects vector a onto vector b.
-		 * 		Both GeneralVector Objects must have the same size.
-		 * 
-		 * @param a 
-		 * @param b 
-		 * @return double 
-		 */
-		static double scalarVectorProjection(GeneralVector a, GeneralVector b);
-		
-		/**
-		 * @brief Normalizes the vector.
-		 * 
-		 * @param v1 
-		 * @return Vec2f 
-		 */
-		static Vec2f normalize(Vec2f v1);
-
-		/**
-		 * @brief Normalizes the vector.
-		 * 
-		 * @param v1 
-		 * @return Vec3f 
-		 */
-		static Vec3f normalize(Vec3f v1);
-
-		/**
-		 * @brief Normalizes the vector.
-		 * 
-		 * @param v1 
-		 * @return Vec4f 
-		 */
-		static Vec4f normalize(Vec4f v1);
-
-		/**
-		 * @brief Normalizes the vector.
-		 * 
-		 * @param v1 
-		 * @return GeneralVector 
-		 */
-		static GeneralVector normalize(GeneralVector v1);
-
-		/**
 		 * @brief Normalizes the Quaternion.
 		 * 
 		 * @param q1 
 		 * @return Quaternion
 		 */
 		static Quaternion normalize(Quaternion q1);
-
-		/**
-		 * @brief Returns the cross product of the 2 vectors.
-		 * 
-		 * @param v1 
-		 * @param v2 
-		 * @return Vec3f 
-		 */
-		static Vec3f crossProduct(Vec3f v1, Vec3f v2);
-
-		/**
-		 * @brief Reflects the Vector a across Vector b.
-		 * 
-		 * @param a 
-		 * @param b 
-		 * @return Vec2f 
-		 */
-		static Vec2f reflect(Vec2f a, Vec2f b);
-
-		/**
-		 * @brief Reflects the Vector a across Vector b.
-		 * 
-		 * @param a 
-		 * @param b 
-		 * @return Vec3f 
-		 */
-		static Vec3f reflect(Vec3f a, Vec3f b);
-
-		/**
-		 * @brief Reflects the Vector a across Vector b.
-		 * 
-		 * @param a 
-		 * @param b 
-		 * @return Vec4f 
-		 */
-		static Vec4f reflect(Vec4f a, Vec4f b);
-
-		/**
-		 * @brief Reflects the Vector a across Vector b.
-		 * 		Both GeneralVector Objects must have the same size.
-		 * 
-		 * @param a 
-		 * @param b 
-		 * @return Vec4f 
-		 */
-		static GeneralVector reflect(GeneralVector a, GeneralVector b);
-
-		/**
-		 * @brief Returns a new vector that is the inverse.
-		 * 		Returns this : Vec2f( -f.y, f.x )
-		 * 
-		 * @param f 
-		 * @return Vec2f 
-		 */
-		static Vec2f inverseVec(Vec2f f);
-
-		/**
-		 * @brief Returns the dot product of both vectors after normalizing them.
-		 * 
-		 * @param v1 
-		 * @param v2 
-		 * @return double 
-		 */
-		static double dotNorm(Vec2f v1, Vec2f v2);
-
-		/**
-		 * @brief Returns the dot product of both vectors after normalizing them.
-		 * 
-		 * @param v1 
-		 * @param v2 
-		 * @return double 
-		 */
-		static double dotNorm(Vec3f v1, Vec3f v2);
-
-		/**
-		 * @brief Returns the dot product of both vectors after normalizing them.
-		 * 
-		 * @param v1 
-		 * @param v2 
-		 * @return double 
-		 */
-		static double dotNorm(Vec4f v1, Vec4f v2);
-
-		/**
-		 * @brief Returns the dot product of both vectors after normalizing them.
-		 * 		Both GeneralVector Objects must have the same size.
-		 * 
-		 * @param v1 
-		 * @param v2 
-		 * @return double 
-		 */
-		static double dotNorm(GeneralVector v1, GeneralVector v2);
 
 		/**
 		 * @brief Returns the distance from (x1,y1) to (x2,y2)
@@ -1560,16 +1334,6 @@ namespace smpl
 
 		/**
 		 * @brief Returns the distance from p1 to p2.
-		 * 		Both GeneralVector Objects must have the same size.
-		 * 
-		 * @param p1 
-		 * @param p2 
-		 * @return double 
-		 */
-		static double distanceTo(GeneralVector p1, GeneralVector p2);
-
-		/**
-		 * @brief Returns the distance from p1 to p2.
 		 * 
 		 * @param p1 
 		 * @param p2 
@@ -1578,57 +1342,6 @@ namespace smpl
 		static double distanceTo(PolarCoordinate p1, PolarCoordinate p2);
 		
 		//Matrix operations
-
-		/**
-		 * @brief Returns the hadamard product of the 2 matrices.
-		 * 		The hadamard product requires that the matricies are the same size.
-		 * 			rows = other.rows, columns = other.columns
-		 * 		
-		 * 		It does component to component multiplication.
-		 * 
-		 * @param a
-		 * @param b 
-		 * @return Matrix 
-		 */
-		Matrix hadamardProduct(Matrix& a, Matrix& b);
-
-		/**
-		 * @brief Get the Inverse of the Matrix m.
-		 * 		A wrapper around the Matrix class's getInverse function
-		 * 
-		 * @param m 
-		 * @return Matrix 
-		 */
-		static Matrix getInverse(Matrix& m);
-
-		/**
-		 * @brief Get the Transpose of the Matrix m.
-		 * 		A wrapper around the Matrix class's getTranspose function
-		 * 
-		 * @param m 
-		 * @return Matrix 
-		 */
-		static Matrix getTranspose(Matrix& m);
-
-		/**
-		 * @brief Get the Determinate of the Matrix m.
-		 * 		A wrapper around the Matrix class's getDeterminate function
-		 * 
-		 * @param m 
-		 * @return double 
-		 */
-		static double getDeterminate(Matrix& m);
-
-		/**
-		 * @brief Get the Matrix Of Minors from the Matrix m.
-		 * 		A wrapper around the Matrix class's getMatrixOfMinors function
-		 * 
-		 * @param m 
-		 * @param row 
-		 * @param col 
-		 * @return Matrix 
-		 */
-		static Matrix getMatrixOfMinors(Matrix& m, int row, int col);
 
 		//2D transformations
 		/**
@@ -2120,8 +1833,44 @@ namespace smpl
 		 */
 		static PolynomialMathFunction fitPolynomial(std::vector<Vec2f> points);
 
+		/**
+		 * @brief Finds the intersection between the 2 quadratic functions
+		 * 		Provided that they actually intersect.
+		 * 
+		 * @param A1 
+		 * @param B1 
+		 * @param C1 
+		 * @param A2 
+		 * @param B2 
+		 * @param C2 
+		 * @return std::vector<double> 
+		 */
 		static std::vector<double> getIntersectionQuadratic(double A1, double B1, double C1, double A2, double B2, double C2);
 		static std::vector<double> getIntersectionQuadratic(PolynomialMathFunction a, PolynomialMathFunction b);
+
+		/**
+		 * @brief Creates the chebyshev polynomial of the first or second kind of the specified degree.
+		 * 		It follows the following pattern
+		 * 			T[0] = 1
+		 * 			T[1] = x
+		 * 			T[2] = 2x^2 - 1
+		 * 			T[n+1] = 2xT[n] - T[n-1]
+		 * 
+		 * @param degree 
+		 * @return PolynomialMathFunction 
+		 */
+		static PolynomialMathFunction chebyshevPolynomial(int degree, bool secondKind = false);
+
+		/**
+		 * @brief Attempts to approximate the given math function over some interval [a, b]
+		 * 		with chebyshev polynomial approximation to some specified degree.
+		 * 		Must be continous over the specified interval.
+		 * 
+		 * @param degree 
+		 * @param secondKind 
+		 * @return PolynomialMathFunction 
+		 */
+		static PolynomialMathFunction chebyshevApproximation(MathFunction* f, double a, double b, int degree, bool secondKind = false);
 		
 		/**
 		 * @brief Fits a circle to either the 3 points of the triangle or 
@@ -2297,7 +2046,7 @@ namespace smpl
 		 * 		Default is false.
 		 * @return double 
 		 */
-		static Matrix cosineTransform2D(Matrix& arr, bool inverse=false);
+		static Matrix cosineTransform2D(const Matrix& arr, bool inverse=false);
 
 		/**
 		 * @brief Computes the 2D Discrete Cosine Transform for all possible locations.
@@ -2308,7 +2057,7 @@ namespace smpl
 		 * @param inverse 
 		 * @return std::vector<double> 
 		 */
-		static Matrix fastCosineTransform2D(Matrix& arr, bool inverse=false);
+		static Matrix fastCosineTransform2D(const Matrix& arr, bool inverse=false);
 		
 		
 		//Special Case for JPEG
@@ -2342,7 +2091,7 @@ namespace smpl
 		 * 		Whether to solve for the inverse.
 		 * 		Default is false.
 		 */
-		static void FCT8x8(Matrix& arr, Matrix* output, bool inverse=false);
+		static void FCT8x8(const Matrix& arr, Matrix* output, bool inverse=false);
 
 
 		/**
@@ -2390,7 +2139,7 @@ namespace smpl
 		 * @param arr 
 		 * @return Matrix 
 		 */
-		static Matrix sineTransform2D(Matrix& arr);
+		static Matrix sineTransform2D(const Matrix& arr);
 
 		/**
 		 * @brief NOT IMPLEMENTED
@@ -2399,7 +2148,7 @@ namespace smpl
 		 * @param inverse 
 		 * @return Matrix 
 		 */
-		static Matrix fastSineTransform2D(Matrix& arr, bool inverse=false);
+		static Matrix fastSineTransform2D(const Matrix& arr, bool inverse=false);
 		
 		/**
 		 * @brief Computes the convolution of a matrix and a kernel (which is a matrix).
@@ -2563,48 +2312,6 @@ namespace smpl
 		static std::vector<std::vector<Vec4f>> kMeans(std::vector<Vec4f> arr, int clusters, int maxIterations, bool meansOnly = false);
 		
 		/**
-		 * @brief Clusters data into groups using a custom made function.
-		 * 
-		 * @param arr 
-		 * 		The data to separate into clusters
-		 * @param clusters 
-		 * 		The amount of clusters desired.
-		 * @param meansOnly 
-		 * 		Whether to return the average of each cluster or return all values in the clusters.
-		 * @return std::vector<std::vector<GeneralVector>> 
-		 */
-		static std::vector<std::vector<GeneralVector>> meanCut(std::vector<GeneralVector> arr, int clusters, bool meansOnly = false);
-
-		/**
-		 * @brief Clusters data into groups using a MedianCut.
-		 * 
-		 * @param arr 
-		 * 		The data to separate into clusters
-		 * @param clusters 
-		 * 		The amount of clusters desired.
-		 * @param meansOnly 
-		 * 		Whether to return the average of each cluster or return all values in the clusters.
-		 * @return std::vector<std::vector<GeneralVector>> 
-		 */
-		static std::vector<std::vector<GeneralVector>> medianCut(std::vector<GeneralVector> arr, int clusters, bool meansOnly = false);
-
-		/**
-		 * @brief Clusters data into groups using KMeans.
-		 * 		Initial means are chosen at random.
-		 * 
-		 * @param arr 
-		 * 		The data to separate into clusters
-		 * @param clusters 
-		 * 		The amount of clusters desired.
-		 * @param maxIterations
-		 * 		The maximum amount of times to iterate over the data to find the best clusters.
-		 * @param meansOnly 
-		 * 		Whether to return the average of each cluster or return all values in the clusters.
-		 * @return std::vector<std::vector<GeneralVector>> 
-		 */
-		static std::vector<std::vector<GeneralVector>> kMeans(std::vector<GeneralVector> arr, int clusters, int maxIterations, bool meansOnly = false);
-		
-		/**
 		 * @brief Calculates the mean from a list of data
 		 * 		Must be able to add the template type T and must be able
 		 * 		to divide the template type by a number.
@@ -2665,6 +2372,131 @@ namespace smpl
 		{
 			return MathExt::sqrt(variance(data, size, mean));
 		}
+
+		//SIMD MATH FUNCTIONS
+
+		#if (OPTI >= 1)
+		static __m128  sin(__m128 a);
+		static __m128d sin(__m128d a);
+		
+		static __m128  cos(__m128 a);
+		static __m128d cos(__m128d a);
+		
+		static __m128  tan(__m128 a);
+		static __m128d tan(__m128d a);
+		
+		static __m128  ln(__m128 a);
+		static __m128d ln(__m128d a);
+		
+		static __m128  log(__m128 a);
+		static __m128d log(__m128d a);
+		
+		static __m128  log2(__m128 a);
+		static __m128d log2(__m128d a);
+		
+		static __m128  log(__m128 a, float base);
+		static __m128d log(__m128d a, float base);
+		
+		static __m128  exp(__m128 a);
+		static __m128d exp(__m128d a);
+		
+		static __m128  pow(__m128 a, __m128 b);
+		static __m128d pow(__m128d a, __m128d b);
+
+		static __m128  reciprocal(__m128 a);
+		static __m128d reciprocal(__m128d a);
+		
+		static __m128  sqr(__m128 a);
+		static __m128d sqr(__m128d a);
+
+		static __m128  cube(__m128 a);
+		static __m128d cube(__m128d a);
+		
+		static __m128  sqrt(__m128 a);
+		static __m128d sqrt(__m128d a);
+
+		static __m128  invSqrt(__m128 a);
+		static __m128d invSqrt(__m128d a);
+		
+		static __m128  cuberoot(__m128 a);
+		static __m128d cuberoot(__m128d a);
+
+		static __m128  arcsin(__m128 a);
+		static __m128d arcsin(__m128d a);
+		
+		static __m128  arccos(__m128 a);
+		static __m128d arccos(__m128d a);
+		
+		static __m128  arctan(__m128 a);
+		static __m128d arctan(__m128d a);
+		
+		static __m128  toRad(__m128 a);
+		static __m128d toRad(__m128d a);
+		
+		static __m128  toDeg(__m128 a);
+		static __m128d toDeg(__m128d a);
+		#endif
+
+		
+		#if (OPTI >= 2)
+		static __m256  sin(__m256 a);
+		static __m256d sin(__m256d a);
+		
+		static __m256  cos(__m256 a);
+		static __m256d cos(__m256d a);
+		
+		static __m256  tan(__m256 a);
+		static __m256d tan(__m256d a);
+		
+		static __m256  ln(__m256 a);
+		static __m256d ln(__m256d a);
+		
+		static __m256  log(__m256 a);
+		static __m256d log(__m256d a);
+		
+		static __m256  log2(__m256 a);
+		static __m256d log2(__m256d a);
+		
+		static __m256  log(__m256 a, float base);
+		static __m256d log(__m256d a, float base);
+		
+		static __m256  exp(__m256 a);
+		static __m256d exp(__m256d a);
+		
+		static __m256  pow(__m256 a, __m256 b);
+		static __m256d pow(__m256d a, __m256d b);
+		
+		static __m256  sqr(__m256 a);
+		static __m256d sqr(__m256d a);
+
+		static __m256  cube(__m256 a);
+		static __m256d cube(__m256d a);
+		
+		static __m256  sqrt(__m256 a);
+		static __m256d sqrt(__m256d a);
+
+		static __m256  invSqrt(__m256 a);
+		static __m256d invSqrt(__m256d a);
+		
+		static __m256  cuberoot(__m256 a);
+		static __m256d cuberoot(__m256d a);
+
+		static __m256  arcsin(__m256 a);
+		static __m256d arcsin(__m256d a);
+		
+		static __m256  arccos(__m256 a);
+		static __m256d arccos(__m256d a);
+		
+		static __m256  arctan(__m256 a);
+		static __m256d arctan(__m256d a);
+		
+		static __m256  toRad(__m256 a);
+		static __m256d toRad(__m256d a);
+		
+		static __m256  toDeg(__m256 a);
+		static __m256d toDeg(__m256d a);
+		#endif
+		
 	private:
 		
 	};
