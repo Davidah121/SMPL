@@ -10,12 +10,6 @@ namespace smpl
 		
 	#pragma region VectorCircle
 
-	const RootClass VectorCircle::globalClass = CREATE_ROOT_CLASS(VectorCircle, &VectorShape::globalClass);
-    const RootClass* VectorCircle::getClass()
-	{
-		return &VectorCircle::globalClass;
-	}
-
 	VectorCircle::VectorCircle() : VectorShape()
 	{
 	}

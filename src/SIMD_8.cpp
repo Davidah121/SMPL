@@ -330,4 +330,24 @@ SIMD_128_8 SIMD_128_8::operator!=(const SIMD_128_8& other) const
     return _mm_andnot_si128(temp, temp); //does not bitwise not
 }
 
+SIMD_128_8 SIMD_128_8::horizontalAdd(const SIMD_128_8& other) const
+{
+    return sse8HorizontalAdd(values, other.values);
+}
+
+short SIMD_128_8::sum() const
+{
+    //sum of all items into the largest datatype NEEDED to avoid overflow.
+    //Ensures no overflow
+    short temp[2];
+    __m128i low = _mm_cvtepi8_epi16(values); //(A1, A2, A3, A4, A5, A6, A7, A8)
+    __m128i high = _mm_cvtepi8_epi16(_mm_srli_si128(values, 8)); //(A9, A10, A11, A12, A13, A14, A15, A16)
+
+    //add 16 bit values
+    __m128i result = _mm_add_epi16(low, high); //(A1+A9, A2+A10, A3+A11, A4+A12, A5+A13, A6+A14, A7+A15, A8+A16)
+    result = sse8HorizontalAdd(result, result); //(A1+A9+A2+A10, A3+A11+A4+A12, A5+A13+A6+A14, A7+A15+A8+A16, duplicates)
+    result = sse8HorizontalAdd(result, result); //(A1+A9+A2+A10+A3+A11+A4+A12, A5+A13+A6+A14+A7+A15+A8+A16, duplicates)
+    _mm_storeu_si128((__m128i*)temp, result);
+    return temp[0] + temp[1];
+}
 #endif

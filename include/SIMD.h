@@ -34,9 +34,7 @@ class SIMD_128_FP64;
 //AVX
 // class SIMD_256_U8;
 
-#if (OPTI>=2)
-typedef SIMD_128_U8 SIMD_U8;
-#elif (OPTI==1)
+#if (OPTI>=1)
 typedef SIMD_128_8 SIMD_8;
 typedef SIMD_128_U8 SIMD_U8;
 typedef SIMD_128_16 SIMD_16;

@@ -12,11 +12,6 @@ namespace smpl
 	int count = 0;
 
 	#pragma region VectorPath
-	const RootClass VectorPath::globalClass = CREATE_ROOT_CLASS(VectorPath, &VectorShape::globalClass);
-    const RootClass* VectorPath::getClass()
-	{
-		return &VectorPath::globalClass;
-	}
 
 	VectorPath::VectorPath() : VectorShape()
 	{

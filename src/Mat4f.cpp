@@ -2,13 +2,6 @@
 
 namespace smpl
 {
-		
-	const RootClass Mat4f::globalClass = CREATE_ROOT_CLASS(Mat4f, &Matrix::globalClass);
-	const RootClass* Mat4f::getClass()
-	{
-		return &Mat4f::globalClass;
-	}
-
 	Mat4f::Mat4f() : Matrix(4, 4)
 	{
 	}

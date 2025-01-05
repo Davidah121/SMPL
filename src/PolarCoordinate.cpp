@@ -3,13 +3,6 @@
 
 namespace smpl
 {
-    
-    const RootClass PolarCoordinate::globalClass = CREATE_ROOT_CLASS(PolarCoordinate, &SerializedObject::globalClass);
-    const RootClass* PolarCoordinate::getClass()
-	{
-		return &PolarCoordinate::globalClass;
-	}
-
     PolarCoordinate::PolarCoordinate()
     {
 
@@ -31,11 +24,6 @@ namespace smpl
     {
         
     }
-
-    std::unordered_map<std::string, SerializedData> PolarCoordinate::getSerializedVariables()
-	{
-		return {SERIALIZE_MAP(length), SERIALIZE_MAP(angle)};
-	}
 
     double PolarCoordinate::getLength()
     {

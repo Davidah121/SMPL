@@ -10,14 +10,6 @@
 namespace smpl
 {
 
-	#pragma region ClassStuff
-	const RootClass ColorPalette::globalClass = CREATE_ROOT_CLASS(ColorPalette, &Object::globalClass);
-	const RootClass* ColorPalette::getClass()
-	{
-		return &ColorPalette::globalClass;
-	}
-	#pragma endregion
-
 	struct ColorNode
 	{
 		Color c = {0, 0, 0, 0};

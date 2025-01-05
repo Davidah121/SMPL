@@ -70,10 +70,10 @@ namespace smpl
 
 				if(compositeRule == NO_COMPOSITE)
 				{
-					for(int i=0; i<simdWidth; i += SIMD_U8::SIZE)
+					for(int i=0; i<simdWidth; i += SIMD_GRAPHICS_INC)
 					{
 						activeColorAsSIMD.store((unsigned char*)startPoint);
-						startPoint += SIMD_U8::SIZE;
+						startPoint += SIMD_GRAPHICS_INC;
 					}
 					while(startPoint <= endPoint)
 					{
@@ -83,12 +83,12 @@ namespace smpl
 				}
 				else
 				{
-					for(int i=0; i<simdWidth; i += SIMD_U8::SIZE)
+					for(int i=0; i<simdWidth; i += SIMD_GRAPHICS_INC)
 					{
 						SIMD_U8 destC = SIMD_U8::load((unsigned char*)startPoint);
 						SIMD_U8 blendedC = blend(activeColorAsSIMD.values, destC.values);
 						blendedC.store((unsigned char*)startPoint);
-						startPoint += SIMD_U8::SIZE;
+						startPoint += SIMD_GRAPHICS_INC;
 					}
 					while(startPoint <= endPoint)
 					{

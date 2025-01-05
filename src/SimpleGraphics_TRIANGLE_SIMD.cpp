@@ -44,7 +44,7 @@ namespace smpl
 			
 			SIMD_U8 activeColorAsSIMD = COLOR_TO_SIMD(activeColor);
 			
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int y=minY; y<maxY; y++)
 			{
 				double xv1 = l1.solveForX(y+0.5);
@@ -68,10 +68,10 @@ namespace smpl
 				if(compositeRule == NO_COMPOSITE)
 				{
 					int stopPoint = SIMD_U8::getSIMDBound((endX-startX));
-					for(int i=0; i<stopPoint; i+=SIMD_U8::SIZE)
+					for(int i=0; i<stopPoint; i+=SIMD_GRAPHICS_INC)
 					{
 						activeColorAsSIMD.store((unsigned char*)startFill);
-						startFill += SIMD_U8::SIZE;
+						startFill += SIMD_GRAPHICS_INC;
 					}
 					while(startFill < endFill)
 					{
@@ -82,12 +82,12 @@ namespace smpl
 				else
 				{
 					int stopPoint = SIMD_U8::getSIMDBound((endX-startX));
-					for(int i=0; i<stopPoint; i+=SIMD_U8::SIZE)
+					for(int i=0; i<stopPoint; i+=SIMD_GRAPHICS_INC)
 					{
 						SIMD_U8 destC = SIMD_U8::load((unsigned char*)startFill);
 						SIMD_U8 blendC = blend(activeColorAsSIMD.values, destC.values);
 						blendC.store((unsigned char*)startFill);
-						startFill += SIMD_U8::SIZE;
+						startFill += SIMD_GRAPHICS_INC;
 					}
 					while(startFill < endFill)
 					{
@@ -135,7 +135,7 @@ namespace smpl
 			
 			double det = (p2.y-p3.y)*(p1.x-p3.x) + (p3.x-p2.x)*(p1.y-p3.y);
 
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int y=minY; y<maxY; y++)
 			{
 				double xv1 = l1.solveForX(y+0.5);

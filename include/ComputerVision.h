@@ -123,27 +123,27 @@ namespace smpl
 		 * 
 		 * @param kernelRadius 
 		 * @param sigma 
-		 * @return Matrix 
+		 * @return MatrixF 
 		 */
-		static Matrix guassianKernel(int kernelRadius, float sigma);
+		static MatrixF guassianKernel(int kernelRadius, float sigma);
 		
 		/**
 		 * @brief Returns the identity kernel. That is a 3x3 kernel with all 0s except in the middle
 		 * 		which is 1.
 		 * 		Not a separable kernel
 		 * 
-		 * @return Matrix 
+		 * @return MatrixF 
 		 */
-		static Matrix identityKernel();
+		static MatrixF identityKernel();
 
 		/**
 		 * @brief Returns a sharpen kernel. A 3x3 kernel where the center is the intensity value.
 		 * 		Not a separable kernel
 		 * 
 		 * @param intensity 
-		 * @return Matrix 
+		 * @return MatrixF 
 		 */
-		static Matrix sharpenKernel(float intensity);
+		static MatrixF sharpenKernel(float intensity);
 
 		/**
 		 * @brief Returns a box blur kernel. 
@@ -151,18 +151,18 @@ namespace smpl
 		 * 			Box blur can be separable by multiplying the separated 1D kernels by the radius
 		 * 
 		 * @param kernelRadius 
-		 * @return Matrix 
+		 * @return MatrixF 
 		 */
-		static Matrix blurKernel(int kernelRadius);
+		static MatrixF blurKernel(int kernelRadius);
 
 		/**
 		 * @brief Converts the image to a matrix only keeping 1 color channel
 		 * 
 		 * @param img 
 		 * @param colorChannel 
-		 * @return Matrix 
+		 * @return MatrixF 
 		 */
-		static Matrix imageToMatrix(Image* img, unsigned char colorChannel);
+		static MatrixF imageToMatrix(Image* img, unsigned char colorChannel);
 
 		/**
 		 * @brief Converts the matrix to a grayscale image.
@@ -170,7 +170,7 @@ namespace smpl
 		 * @param mat 
 		 * @return Image* 
 		 */
-		static Image* matrixToImage(const Matrix& mat);
+		static Image* matrixToImage(const MatrixF& mat);
 
 		/**
 		 * @brief Converts the matrix back to an image. Only modifies a single color channel.
@@ -180,7 +180,7 @@ namespace smpl
 		 * @param img 
 		 * @param colorChannel 
 		 */
-		static void matrixToImage(const Matrix& mat, Image* img, unsigned char colorChannel);
+		static void matrixToImage(const MatrixF& mat, Image* img, unsigned char colorChannel);
 
 		/**
 		 * @brief Converts the image to a matrix while keeping all values above some threshold.
@@ -192,9 +192,9 @@ namespace smpl
 		 * @param colorChannel 
 		 * @param inverse
 		 * 		If its inverse, values below the threshold are 1.
-		 * @return Matrix 
+		 * @return MatrixF 
 		 */
-		static Matrix thresholding(Image* img, unsigned char threshold, unsigned char colorChannel, bool inverse);
+		static MatrixF thresholding(Image* img, unsigned char threshold, unsigned char colorChannel, bool inverse);
 
 		/**
 		 * @brief Converts the image to a matrix while keeping all values above some threshold.
@@ -204,9 +204,9 @@ namespace smpl
 		 * @param threshold 
 		 * @param inverse
 		 * 		If its inverse, values below the threshold are 1.
-		 * @return Matrix 
+		 * @return MatrixF 
 		 */
-		static Matrix thresholding(const Matrix& img, float threshold, bool inverse);
+		static MatrixF thresholding(const MatrixF& img, float threshold, bool inverse);
 
 		/**
 		 * @brief Converts the image to a matrix while keeping all values above some threshold.
@@ -221,9 +221,9 @@ namespace smpl
 		 * 		The type of adaptive thresholding
 		 * @param inverse
 		 * 		If its inverse, values below the threshold are 1.
-		 * @return Matrix 
+		 * @return MatrixF 
 		 */
-		static Matrix adaptiveThresholding(Image* img, unsigned char adjustment, unsigned char radius, unsigned char colorChannel, unsigned char mode, bool inverse);
+		static MatrixF adaptiveThresholding(Image* img, unsigned char adjustment, unsigned char radius, unsigned char colorChannel, unsigned char mode, bool inverse);
 
 		/**
 		 * @brief Converts the image to a matrix while keeping all values above some threshold.
@@ -235,9 +235,9 @@ namespace smpl
 		 * 		The type of adaptive thresholding
 		 * @param inverse
 		 * 		If its inverse, values below the threshold are 1.
-		 * @return Matrix 
+		 * @return MatrixF 
 		 */
-		static Matrix adaptiveThresholding(const Matrix& img, unsigned char mode, bool inverse);
+		static MatrixF adaptiveThresholding(const MatrixF& img, unsigned char mode, bool inverse);
 
 		/**
 		 * @brief Readjusts the matrix values so that they fit between the min and max intensities but
@@ -250,7 +250,7 @@ namespace smpl
 		 * @param minIntensity 
 		 * @param maxIntensity 
 		 */
-		static Matrix readjustIntensity(const Matrix& baseImg, double minIntensity, double maxIntensity);
+		static MatrixF readjustIntensity(const MatrixF& baseImg, double minIntensity, double maxIntensity);
 
 		/**
 		 * @brief Computes the convolution of a image and a kernel (which is a matrix).
@@ -263,9 +263,9 @@ namespace smpl
 		 * @param baseImage 
 		 * @param kernel 
 		 * @param normalize
-		 * @return Matrix 
+		 * @return MatrixF 
 		 */
-		static Matrix convolution(const Matrix& baseImage, const Matrix& kernel);
+		static MatrixF convolution(const MatrixF& baseImage, const MatrixF& kernel);
 		
 		/**
 		 * @brief Computes the cross correlation of a image and another image.
@@ -281,27 +281,27 @@ namespace smpl
 		 * @param baseImage 
 		 * @param kernel 
 		 * @param normalize
-		 * @return Matrix 
+		 * @return MatrixF 
 		 */
-		static Matrix crossCorrelation(const Matrix& baseImage, const Matrix& kernel, bool normalized);
+		static MatrixF crossCorrelation(const MatrixF& baseImage, const MatrixF& kernel, bool normalized);
 
 		/**
 		 * @brief Computes the vertical histogram of an image. Returns a column vector that is the sum
 		 * 		of each column.
 		 * 
 		 * @param baseImg 
-		 * @return Matrix 
+		 * @return MatrixF 
 		 */
-		static Matrix verticalHistogram(const Matrix& baseImg);
+		static MatrixF verticalHistogram(const MatrixF& baseImg);
 
 		/**
 		 * @brief Computes the horizontal histogram of an image. Returns a row vector that is the sum
 		 * 		of each row.
 		 * 
 		 * @param baseImg 
-		 * @return Matrix 
+		 * @return MatrixF 
 		 */
-		static Matrix horizontalHistogram(const Matrix& baseImg);
+		static MatrixF horizontalHistogram(const MatrixF& baseImg);
 
 		/**
 		 * @brief Computes a color histogram filling x number of bins per color channel
@@ -330,7 +330,7 @@ namespace smpl
 		 * @param preY 
 		 * @param points 
 		 */
-		static void mooreNeighborTracing(const Matrix& m, int x, int y, int preX, int preY, std::vector<Vec2f>& points);
+		static void mooreNeighborTracing(const MatrixF& m, int x, int y, int preX, int preY, std::vector<Vec2f>& points);
 
 		/**
 		 * @brief Attempts to find all contours using moore's neighbor tracing.

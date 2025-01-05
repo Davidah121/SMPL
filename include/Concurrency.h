@@ -6,7 +6,6 @@
 #include <condition_variable>
 #include <chrono>
 #include <immintrin.h>
-#include "StringTools.h"
 #include <omp.h>
 
 namespace smpl

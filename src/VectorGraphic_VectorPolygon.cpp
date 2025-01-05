@@ -10,12 +10,6 @@ namespace smpl
 		
 	#pragma region VectorPolygon
 
-	const RootClass VectorPolygon::globalClass = CREATE_ROOT_CLASS(VectorPolygon, &VectorShape::globalClass);
-    const RootClass* VectorPolygon::getClass()
-	{
-		return &VectorPolygon::globalClass;
-	}
-
 	VectorPolygon::VectorPolygon() : VectorShape()
 	{
 	}

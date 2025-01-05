@@ -2,13 +2,6 @@
 
 namespace smpl
 {
-		
-	const RootClass Mat3f::globalClass = CREATE_ROOT_CLASS(Mat3f, &Matrix::globalClass);
-	const RootClass* Mat3f::getClass()
-	{
-		return &Mat3f::globalClass;
-	}
-	
 	Mat3f::Mat3f() : Matrix(3, 3)
 	{
 	}

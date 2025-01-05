@@ -4,12 +4,6 @@
 namespace smpl
 {
 
-	const RootClass Line::globalClass = CREATE_ROOT_CLASS(Line, &Object::globalClass);
-	const RootClass* Line::getClass()
-	{
-		return &Line::globalClass;
-	}
-
 	Line::Line()
 	{
 	}

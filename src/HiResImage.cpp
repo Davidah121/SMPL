@@ -10,12 +10,6 @@
 
 namespace smpl
 {
-	const RootClass HiResImage::globalClass = CREATE_ROOT_CLASS(HiResImage, &Object::globalClass);
-	const RootClass* HiResImage::getClass()
-	{
-		return &HiResImage::globalClass;
-	}
-	
 	void quickCopy(Color4f* src, Color4f* dest, size_t size)
 	{
 		Color4f* startSrc = src;

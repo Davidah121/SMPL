@@ -6,7 +6,7 @@
 namespace smpl
 {
 
-	class DLL_OPTION Mat4f : public Matrix
+	class DLL_OPTION Mat4f : public MatrixF
 	{
 	public:
 		/**
@@ -64,10 +64,7 @@ namespace smpl
 		 * 
 		 */
 		~Mat4f();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
+		
 
 		/**
 		 * @brief Returns the Identity 4x4 matrix.
@@ -97,6 +94,10 @@ namespace smpl
 
 		bool operator==(const Mat4f& other) const;
 		bool operator!=(const Mat4f& other) const;
+		
+		
+		SERIALIZE_SUPER_CLASS(MatrixF)
+		SERIALIZE_CLASS() //Override class TypeInfo only
 	};
 
 } //NAMESPACE smpl END

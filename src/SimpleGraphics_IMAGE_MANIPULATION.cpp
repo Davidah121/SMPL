@@ -154,13 +154,13 @@ namespace smpl
 
 	void SimpleGraphics::gaussianBlur(Image* img, int kernelRadius, double sigma)
 	{
-		Matrix kernel = ComputerVision::guassianKernel(kernelRadius, sigma);
+		MatrixF kernel = ComputerVision::guassianKernel(kernelRadius, sigma);
 		if(!kernel.getValid())
 			return;
 		
-		Matrix rChannel = ComputerVision::imageToMatrix(img, ComputerVision::RED_CHANNEL);
-		Matrix gChannel = ComputerVision::imageToMatrix(img, ComputerVision::GREEN_CHANNEL);
-		Matrix bChannel = ComputerVision::imageToMatrix(img, ComputerVision::BLUE_CHANNEL);
+		MatrixF rChannel = ComputerVision::imageToMatrix(img, ComputerVision::RED_CHANNEL);
+		MatrixF gChannel = ComputerVision::imageToMatrix(img, ComputerVision::GREEN_CHANNEL);
+		MatrixF bChannel = ComputerVision::imageToMatrix(img, ComputerVision::BLUE_CHANNEL);
 
 		rChannel = ComputerVision::convolution(rChannel, kernel);
 		gChannel = ComputerVision::convolution(gChannel, kernel);
@@ -221,10 +221,10 @@ namespace smpl
 						  0,  0,  0,
 						 -1, -2, -1);
 
-		Matrix grayscaleMatrix = ComputerVision::imageToMatrix(grayscaleImg, ComputerVision::RED_CHANNEL);
-		Matrix imgXDerivative = ComputerVision::convolution(grayscaleMatrix, gx);
-		Matrix imgYDerivative = ComputerVision::convolution(grayscaleMatrix, gy);
-		Matrix derivativeMagnitude = Matrix(imgXDerivative.getRows(), imgXDerivative.getCols());
+		MatrixF grayscaleMatrix = ComputerVision::imageToMatrix(grayscaleImg, ComputerVision::RED_CHANNEL);
+		MatrixF imgXDerivative = ComputerVision::convolution(grayscaleMatrix, gx);
+		MatrixF imgYDerivative = ComputerVision::convolution(grayscaleMatrix, gy);
+		MatrixF derivativeMagnitude = MatrixF(imgXDerivative.getRows(), imgXDerivative.getCols());
 
 		//remove the pixels on the edge of the image.
 		for(int x=0; x<img->getWidth(); x++)
@@ -355,9 +355,9 @@ namespace smpl
 						  0,  0,  0,
 						 -1, -2, -1);
 
-		Matrix grayscaleMatrix = ComputerVision::imageToMatrix(grayscaleImg, ComputerVision::RED_CHANNEL);
-		Matrix imgXDerivative = ComputerVision::convolution(grayscaleMatrix, gx);
-		Matrix imgYDerivative = ComputerVision::convolution(grayscaleMatrix, gy);
+		MatrixF grayscaleMatrix = ComputerVision::imageToMatrix(grayscaleImg, ComputerVision::RED_CHANNEL);
+		MatrixF imgXDerivative = ComputerVision::convolution(grayscaleMatrix, gx);
+		MatrixF imgYDerivative = ComputerVision::convolution(grayscaleMatrix, gy);
 
 		//reuse imgXDerivative
 		float* imgXDerData = imgXDerivative.getData();
@@ -469,7 +469,7 @@ namespace smpl
 		int size = (int)MathExt::sqr(rows);
 		double exp = MathExt::log(size, 2.0);
 
-		Matrix bayerMatrix = generateBayerMatrix(Matrix(), rows);
+		MatrixF bayerMatrix = generateBayerMatrix(MatrixF(), rows);
 
 		bayerMatrix *= 1.0/size;
 		double r = 255.0/((double)exp/3.0);
@@ -496,12 +496,12 @@ namespace smpl
 		}
 	}
 
-	Matrix SimpleGraphics::generateBayerMatrix(Matrix mat, int rowSize)
+	MatrixF SimpleGraphics::generateBayerMatrix(MatrixF mat, int rowSize)
 	{
-		Matrix mat2;
+		MatrixF mat2;
 		if(mat.getCols() == 0 || mat.getRows() == 0)
 		{
-			mat2 = Matrix(2, 2);
+			mat2 = MatrixF(2, 2);
 			mat2[0][0] = 0;
 			mat2[0][1] = 2;
 			mat2[1][0] = 3;
@@ -509,7 +509,7 @@ namespace smpl
 		}
 		else
 		{
-			mat2 = Matrix(mat.getRows()*2, mat.getCols()*2);
+			mat2 = MatrixF(mat.getRows()*2, mat.getCols()*2);
 
 			int inc = mat.getRows();
 			for(int y=0; y<mat.getRows(); y++)

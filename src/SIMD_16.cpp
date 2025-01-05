@@ -236,4 +236,25 @@ SIMD_128_16 SIMD_128_16::operator!=(const SIMD_128_16& other) const
     __m128i temp = _mm_cmpeq_epi16(values, other.values);
     return _mm_andnot_si128(temp, temp); //does not bitwise not
 }
+
+SIMD_128_16 SIMD_128_16::horizontalAdd(const SIMD_128_16& other) const
+{
+    return _mm_hadd_epi16(values, other.values);
+}
+
+int SIMD_128_16::sum() const
+{
+    //sum of all items into the largest datatype NEEDED to avoid overflow.
+    //Ensures no overflow
+    int temp[2];
+    __m128i low = _mm_cvtepi16_epi32(values); //(A1, A2, A3, A4)
+    __m128i high = _mm_cvtepi16_epi32(_mm_srli_si128(values, 8)); //(A5, A6, A7, A8)
+
+    //add 32 bit values
+    __m128i result = _mm_add_epi32(low, high); //(A1+A5, A2+A6, A3+A7, A4+A8)
+    result = _mm_hadd_epi32(result, result); //(A1+A5+A2+A6, A3+A7+A4+A8, duplicates)
+    _mm_storeu_si128((__m128i*)temp, result);
+    return temp[0] + temp[1];
+}
+
 #endif

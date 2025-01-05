@@ -55,16 +55,17 @@ namespace smpl
                 int stopPoint = minX + SIMD_U8::getSIMDBound((maxX-minX));
                 if(currentComposite == NO_COMPOSITE)
                 {
-					#pragma omp parallel for
+					//#pragma omp parallel for
                     for(int tY = minY; tY <= maxY; tY++)
                     {
                         int tX = minX;
                         Color* startPoint = &otherImg->getPixels()[tX + tY*otherImg->getWidth()];
+
                         while(tX < stopPoint)
                         {
                             activeColorAsSIMD.store((unsigned char*)startPoint);
-                            startPoint += SIMD_U8::SIZE;
-                            tX += SIMD_U8::SIZE;
+                            startPoint += SIMD_GRAPHICS_INC;
+                            tX += SIMD_GRAPHICS_INC;
                         }
                         while(tX <= maxX)
                         {
@@ -76,7 +77,7 @@ namespace smpl
                 }
                 else
                 {
-					#pragma omp parallel for
+					//#pragma omp parallel for
                     for(int tY = minY; tY <= maxY; tY++)
                     {
                         int tX = minX;
@@ -86,8 +87,8 @@ namespace smpl
                             SIMD_U8 destC = SIMD_U8::load((unsigned char*)startPoint);
                             SIMD_U8 blendC = blend(activeColorAsSIMD.values, destC.values);
                             blendC.store((unsigned char*)startPoint);
-                            startPoint += SIMD_U8::SIZE;
-                            tX += SIMD_U8::SIZE;
+                            startPoint += SIMD_GRAPHICS_INC;
+                            tX += SIMD_GRAPHICS_INC;
                         }
                         while(tX <= maxX)
                         {

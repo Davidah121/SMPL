@@ -64,10 +64,14 @@ public:
 	SIMD_128_FP32 operator!=(const float byte) const;
 	SIMD_128_FP32 operator!=(const SIMD_128_FP32& other) const;
 
-	//cast / convert operations
-	SIMD_128_U16 convertToU16(int location) const;
-	SIMD_128_U32 convertToU32(int location) const;
-	SIMD_128_FP32 convertToFP32(int location) const;
+	//special case functions
+	SIMD_128_FP32 horizontalAdd(const SIMD_128_FP32& other) const;
+	float sum() const;
+
+	// //cast / convert operations
+	// SIMD_128_U16 convertToU16(int location) const;
+	// SIMD_128_U32 convertToU32(int location) const;
+	// SIMD_128_FP32 convertToFP32(int location) const;
 	
 	__m128 values;
 };

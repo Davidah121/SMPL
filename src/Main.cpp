@@ -13,7 +13,7 @@ using namespace smpl;
 size_t subDivisions = 0;
 size_t subDivisionsPerSize[8];
 
-void recursivePass(Image* img, int startX, int startY, int size, int lowestSize, double threshold, BinarySet& output, Matrix& xDer, Matrix& yDer)
+void recursivePass(Image* img, int startX, int startY, int size, int lowestSize, double threshold, BinarySet& output, MatrixF& xDer, MatrixF& yDer)
 {
     subDivisions++;
     int totalSize = size*size;
@@ -198,10 +198,10 @@ void testQuadTreeLikeCompression()
                         0,  0,  0,
                         -1, -2, -1);
 
-        Matrix imgAsMatrix = ComputerVision::imageToMatrix(imgs.getImage(0), ComputerVision::RED_CHANNEL);
+        MatrixF imgAsMatrix = ComputerVision::imageToMatrix(imgs.getImage(0), ComputerVision::RED_CHANNEL);
 
-        Matrix imgXDerivative = ComputerVision::convolution(imgAsMatrix, gx);
-        Matrix imgYDerivative = ComputerVision::convolution(imgAsMatrix, gy);
+        MatrixF imgXDerivative = ComputerVision::convolution(imgAsMatrix, gx);
+        MatrixF imgYDerivative = ComputerVision::convolution(imgAsMatrix, gy);
 
         //save these as images
         for(int i=64; i>=1; i/=2)
@@ -248,306 +248,6 @@ void testQuadTreeLikeCompression()
         StringTools::println("Failed to load image");
     }
 
-}
-
-#define FACTORY_HELPER(className) class className ## Factory : public SerializedFactory\
-{\
-public:\
-    SerializedData createInstance(Streamable<unsigned char>* data);\
-protected:\
-    className ## Factory() : SerializedFactory(&className::globalClass) {}\
-private:\
-    static className ## Factory singleton;\
-}\
-
-FACTORY_HELPER(Vec2f);
-Vec2fFactory Vec2fFactory::singleton = Vec2fFactory();
-SerializedData Vec2fFactory::createInstance(Streamable<unsigned char>* data)
-{
-    return SerializedData();
-}
-
-class testClass1
-{
-public:
-    testClass1()
-    {
-        StringTools::println("CREATE T1");
-    }
-    ~testClass1()
-    {
-        StringTools::println("DESTORY T1");
-    }
-};
-
-class testClass2
-{
-public:
-    testClass2()
-    {
-        StringTools::println("CREATE T2");
-    }
-    ~testClass2()
-    {
-        StringTools::println("DESTORY T2");
-    }
-};
-
-// class GenericSmartMemory
-// {
-// public:
-//     virtual ~GenericSmartMemory() {}
-// };
-
-// template<typename T>
-// class TestSmartMemory : public GenericSmartMemory
-// {
-// public:
-//     TestSmartMemory(T* pointer)
-//     {
-//         data = pointer;
-//     }
-//     ~TestSmartMemory()
-//     {
-//         if(data != nullptr)
-//             delete data;
-//         data = nullptr;
-//     }
-// private:
-//     T* data = nullptr;
-// };
-
-void testSerialization()
-{
-    // Vec2f p;
-    // p.x = 0.2;
-    // p.y = 3.1;
-    
-    // StreamableVector<unsigned char> outputData;
-    // SerializedData pSerialized = SERIALIZE(p);
-    // pSerialized.serialize(&outputData);
-
-    // SerializedFactory* factory = SerializedFactoryMapper::getInstance().getFactory(&Vec2f::globalClass);
-    // if(factory != nullptr)
-    // {
-    //     SerializedData sd = factory->createInstance(nullptr);
-    //     Vec2f* p = (Vec2f*)sd.getData();
-
-    //     StringTools::println("%.3f, %.3f", p->x, p->y);
-    //     delete p;
-    // }
-
-    SmartMemory<testClass1> v = SmartMemory<testClass1>::createDeleteOnLast(new testClass1());
-    SmartMemory<testClass2> v2 = SmartMemory<testClass2>::createDeleteOnLast(new testClass2());
-
-    StringTools::println("%p", v.getRawPointer());
-    StringTools::println("%p", v2.getRawPointer());
-
-    GenericSmartMemory testV = v;
-    StringTools::println("%p", testV.getRawPointer());
-
-
-    // SmartMemory<testClass1> mem1 = SmartMemory<testClass1>::createDeleteRights(new testClass1(), false);
-
-    
-}
-
-void init(SimpleWindow* win)
-{
-    // GuiButton* but = new GuiButton();
-    // but->setMinWidth(32);
-    // but->setMinHeight(32);
-    // but->setBackgroundColor({255,0,0,255});
-    
-    
-    win->getGuiManager()->loadElementsFromFile("GuiLayoutFile.xml");
-    // win->getGuiManager()->addElement(SmartMemory<GuiItem>::createNoDelete(but, false));
-    // win->getGuiManager()->addToDisposeList(SmartMemory<GuiItem>::createNoDelete(but, false));
-    // win->setActivateGui(false);
-}
-
-void testGuiPart2()
-{
-    GuiManager::initDefaultLoadFunctions();
-    SimpleGraphics::init();
-    WindowOptions options;
-    options.initFunction = init;
-    SimpleWindow win = SimpleWindow("Title", 320, 240, -1, -1, options);
-
-    win.waitTillClose();
-}
-
-void quickBezierTest()
-{
-    BezierCurve b = BezierCurve();
-    b.addPoint(0, 1);
-    b.addPoint(1.614, 0.333);
-    b.addPoint(1.84, 2.13);
-    b.addPoint(0.805, 0.228);
-
-    std::vector<BezierCurve> curveSubdivisions = b.subdivide(0.5);
-    for(BezierCurve& curve : curveSubdivisions)
-    {
-        StringTools::println("CURVE: ");
-        for(Vec2f& p : curve.getPoints())
-        {
-            StringTools::println("\t(%.3f, %.3f)", p.x, p.y);
-        }
-    }
-}
-
-void testDrawEfficiency()
-{
-    SimpleGraphics::setAntiAliasing(true);
-    Image buffer = Image(512, 512);
-    Sprite loadedSprite = Sprite();
-    loadedSprite.loadImage("Large_Scaled_Forest_Lizard.jpg");
-    //13256100ns with no simd
-    //6584300ns with sse
-    //9319300ns with avx
-    if(loadedSprite.getSize()>0)
-        loadedSprite.getImage(0)->savePNG("JPEGLOADTEST.png", true, false, true);
-    // buffer.saveBMP("testbmp.bmp", 128);
-    
-    // Image buffer = Image(1920, 1080);
-    // Image drawImg = Image(1920, 1080);
-
-    // //currently at 36 images per frame.
-    // for(int i=0; i<10; i++)
-    // {
-    //     size_t count = 0;
-    //     size_t t1 = System::getCurrentTimeMicro();
-    //     size_t timeUsed = 0;
-    //     while(true)
-    //     {
-    //         size_t t2 = System::getCurrentTimeMicro();
-    //         if(t2-t1 >= 16666)
-    //         {
-    //             timeUsed = t2-t1;
-    //             break;
-    //         }
-    //         SimpleGraphics::setColor(Color{255,255,255,255});
-    //         SimpleGraphics::drawSprite(&drawImg, 0, 0, &buffer);
-    //         count++;
-    //     }
-    //     StringTools::println("Total Time Used: %llu", timeUsed);
-    //     StringTools::println("ImagesDrawn = %llu", count);
-    // }
-    // system("pause");
-}
-
-void contourRecursiveCall(Image* img, int x, int y, int preX, int preY, std::vector<Vec2f>& points)
-{
-    //moore-neighbor tracing
-    const std::pair<int, int> boundaryPointsClockwise[8] = {{-1, -1}, {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}};
-
-    Vec2f newPoint = Vec2f(x, y);
-    Vec2f enterPoint = Vec2f(preX, preY);
-
-    while(true)
-    {
-        if(newPoint.x < 0 || newPoint.y < 0)
-            break;
-
-        //if this point is already in the list of points, return
-        for(int i=0; i<points.size(); i++)
-        {
-            if(newPoint == points[i])
-                return;
-        }
-        
-        points.push_back(newPoint);
-
-        //find start of the boundary checks
-        int tempX = enterPoint.x - newPoint.x;
-        int tempY = enterPoint.y - newPoint.y;
-        int startP = -1;
-        for(int i=0; i<8; i++)
-        {
-            if(tempX == boundaryPointsClockwise[i].first && tempY == boundaryPointsClockwise[i].second)
-            {
-                startP = i % 8;
-                break;
-            }
-        }
-
-        if(startP < 0)
-            return; //problem
-        
-        Vec2f nextPotentialPoint = {-1, -1};
-        int oldCheckX, oldCheckY;
-        for(int i=0; i<8; i++)
-        {
-            //move around pixel clockwise till a white pixel is found (white being a valid pixel and black being background).
-            std::pair<int, int> adjustments = boundaryPointsClockwise[startP];
-            int checkX = newPoint.x + adjustments.first;
-            int checkY = newPoint.y + adjustments.second;
-
-            if(checkX >= img->getWidth() || checkX < 0 || checkY >= img->getHeight() || checkY < 0)
-            {
-                //do nothing
-            }
-            else
-            {
-                //assume grayscale
-                Color c = img->getPixels()[checkX + checkY*img->getWidth()];
-                if(c.red > 0)
-                {
-                    //valid pixel. Part of boundary.
-                    nextPotentialPoint = Vec2f(checkX, checkY);
-                    enterPoint = Vec2f(oldCheckX, oldCheckY);
-                    break;
-                }
-            }
-
-            oldCheckX = checkX;
-            oldCheckY = checkY;
-            startP = (startP+1) % 8;
-        }
-
-        newPoint = nextPotentialPoint;
-    }
-}
-
-std::vector<std::vector<Vec2f>> findContours(Image* img)
-{
-    SmartMemory<Image> edgeImg;
-    edgeImg = SmartMemory<Image>::createDeleteOnLast(SimpleGraphics::cannyEdgeFilter(img, 1.0, 0.2, 0.5));
-    Image copyImg;
-    copyImg.copyImage(edgeImg.getRawPointer());
-
-    std::vector<std::vector<Vec2f>> allShapesFound;
-    for(int y=0; y<copyImg.getHeight(); y++)
-    {
-        for(int x=0; x<copyImg.getWidth(); x++)
-        {
-            if(copyImg.getPixels()[x + y*copyImg.getWidth()].red == 255)
-            {
-                std::vector<Vec2f> boundaryPoints;
-                contourRecursiveCall(&copyImg, x, y, x-1, y, boundaryPoints);
-
-                if(boundaryPoints.size() > 0)
-                {
-                    StringTools::println("FOUND SOMETHING");
-                    allShapesFound.push_back(boundaryPoints);
-                    //remove the polygon formed by connecting the points together with lines. Assume even-odd rule
-                    //Gonna cheat a little and use existing code
-                    SimpleGraphics::setColor({0, 0, 0, 0});
-                    SimpleGraphics::setBlendMode(SimpleGraphics::NO_COMPOSITE);
-                    SimpleGraphics::setFillRule(SimpleGraphics::FILL_EVEN_ODD);
-                    SimpleGraphics::drawPolygon(boundaryPoints.data(), boundaryPoints.size(), &copyImg);
-
-                    for(int i=0; i<boundaryPoints.size(); i++)
-                    {
-                        img->setPixel(boundaryPoints[i].x+1, boundaryPoints[i].y, {255, 0, 0, 255});
-                    }
-                    return allShapesFound;
-                }
-            }
-        }
-    }
-
-    return allShapesFound;
 }
 
 void removeBoundaryShape2(std::vector<Vec2f>& boundaryShape)
@@ -718,7 +418,7 @@ void removeBoundaryShape2(std::vector<Vec2f>& boundaryShape)
 
 void contourTest()
 {
-    // Matrix kernel = ComputerVision::guassianKernel(2, 1);
+    // MatrixF kernel = ComputerVision::guassianKernel(2, 1);
     // for(int y=0; y<kernel.getRows(); y++)
     // {
     //     for(int x=0; x<kernel.getCols(); x++)
@@ -741,7 +441,7 @@ void contourTest()
 
 
     Image* derivativeImg = SimpleGraphics::cannyEdgeFilter(s.getImage(0), 1, 0.05, 0.19);
-    Matrix threshMatrix = ComputerVision::imageToMatrix(derivativeImg, 0);
+    MatrixF threshMatrix = ComputerVision::imageToMatrix(derivativeImg, 0);
     Image* threshImg = ComputerVision::matrixToImage(threshMatrix);
 
     StringTools::println("FINDING CONTOURS");
@@ -856,358 +556,49 @@ void testGraph()
     StringTools::println("}");
 }
 
-float fastExp4(float x)  // quartic spline approximation
+void init(SimpleWindow* win)
 {
-    union { float f; int32_t i; } reinterpreter;
-
-    reinterpreter.i = (int32_t)(12102203.0f*x) + 127*(1 << 23);
-    int32_t m = (reinterpreter.i >> 7) & 0xFFFF;  // copy mantissa
-    // empirical values for small maximum relative error (1.21e-5):
-    reinterpreter.i += (((((((((((3537*m) >> 16)
-        + 13668)*m) >> 18) + 15817)*m) >> 14) - 80470)*m) >> 11);
-    return reinterpreter.f;
+    win->getGuiManager()->loadElementsFromFile("GuiLayoutFile_JustTextBox.xml");
 }
 
-float fastExpOther(float x)
+#include <omp.h>
+void testGuiPart2()
 {
-    const float a = (1<<22) / 0.69314718056;
-    const int b = 127 * (1<<23);
-    int r = a*x;
-    int s = b+r;
-    int t = b-r;
-    return (*(float*)&s) / (*(float*)&t);
+    GuiManager::initDefaultLoadFunctions();
+    SimpleGraphics::init();
+    WindowOptions options;
+    options.initFunction = init;
+    SimpleWindow win = SimpleWindow("Title", 1280, 720, -1, -1, options);
+
+    win.waitTillClose();
 }
 
-float fastExpOther2(float x)
+void testDrawFunctions()
 {
-    const float a = 12102203.0f;
-    const int b = 127 * (1<<23) - 298765;
-    int r = a*x;
-    int s = b+r;
-    return (*(float*)&s);
-}
-
-float fastExpOther3(float x)
-{
-    const float a = 12102203.0f;
-    const int b = 127 * (1<<23);
-    int r = a*x;
-    int s = b+r;
-    return (*(float*)&s);
-}
-
-float approxExp2(float x)
-{
-    double act = 1 + ((double)x / (1LL<<32));
-    for(int i=0; i<32; i++)
-        act *= act;
-    return act;
-}
-
-__m128 powInt(__m128 x, int power)
-{
-    __m128 result = _mm_set1_ps(1.0f);
-    for(int i=0; i<power; i++)
+    //Will make into unit test somehow
+    Image img = Image(320, 240);
+    size_t t1 = System::getCurrentTimeMicro();
+    for(int i=0; i<1000000; i++)
     {
-        result = _mm_mul_ps(result, x);
+        SimpleGraphics::setColor(Color{255, 0, 0, 255});
+        SimpleGraphics::drawRect(15, 217, 20, 229, true, &img);
     }
-    return result;
-}
-
-__m128 exp(__m128 x)
-{
-    const __m128 divValue1 = _mm_set1_ps(1.0f/2.0f);
-    const __m128 divValue2 = _mm_set1_ps(1.0f/6.0f);
-    const __m128 divValue3 = _mm_set1_ps(1.0f/24.0f);
-    const __m128 divValue4 = _mm_set1_ps(1.0f/120.0f);
-    const __m128 divValue5 = _mm_set1_ps(1.0f/720.0f);
-
-    __m128 approx = _mm_add_ps(_mm_set1_ps(1.0f), x);
-    __m128 powValue = _mm_mul_ps(x, x);
-
-    approx = _mm_add_ps(approx, _mm_mul_ps(divValue1, powValue));
-    powValue = _mm_mul_ps(powValue, x);
-    approx = _mm_add_ps(approx, _mm_mul_ps(divValue2, powValue));
-    powValue = _mm_mul_ps(powValue, x);
-    approx = _mm_add_ps(approx, _mm_mul_ps(divValue3, powValue));
-    powValue = _mm_mul_ps(powValue, x);
-    approx = _mm_add_ps(approx, _mm_mul_ps(divValue4, powValue));
-    powValue = _mm_mul_ps(powValue, x);
-    approx = _mm_add_ps(approx, _mm_mul_ps(divValue5, powValue));
-    
-    return approx;
-}
-
-float agm(float a, float b, int iterations)
-{
-    float lastA = a;
-    float lastB = b;
-    for(int i=0; i<iterations; i++)
-    {
-        float currA = (lastA + lastB)/2.0;
-        float currB = sqrtf(lastA*lastB);
-
-        lastA = currA;
-        lastB = currB;
-    }
-
-    return lastA;
-}
-
-//pretty high accuracy.
-//33 instructions. Approx Cycles = 126
-//~4 cycles per instructions
-__m128 ln(__m128 x)
-{
-    //let a = 1. Center around 1 such that ln(1) = 0
-    //uses the ln(x + a) taylor series. Converges faster
-    const int ONLY_EXPONENT = 0b01111111100000000000000000000000;
-    const __m128 LN2  = _mm_set1_ps(0.69314718056);
-    const __m128 DIV1 = _mm_set1_ps(1.0/3.0);
-    const __m128 DIV2 = _mm_set1_ps(1.0/5.0);
-    const __m128 DIV3 = _mm_set1_ps(1.0/7.0);
-    const __m128 DIV4 = _mm_set1_ps(1.0/9.0);
-    const __m128 DIV5 = _mm_set1_ps(1.0/11.0);
-    const __m128 DIV6 = _mm_set1_ps(1.0/13.0);
-
-    //extract the base 2 exponent
-    __m128i exponent = _mm_srli_epi32(TYPE_PUN(x, __m128i), 23);
-    exponent = _mm_and_si128(exponent, _mm_set1_epi32(0xFF));
-    exponent = _mm_sub_epi32(exponent, _mm_set1_epi32(127));
-    __m128 finalAdjustment = _mm_mul_ps(_mm_cvtepi32_ps(exponent), LN2);
-    __m128 exponentAdjust = _mm_and_ps(x, _mm_set1_ps(TYPE_PUN(ONLY_EXPONENT, float)));
-
-    x = _mm_sub_ps(_mm_div_ps(x, exponentAdjust), _mm_set1_ps(1));
-    __m128 y = _mm_div_ps(x, _mm_add_ps(x, _mm_set1_ps(2)));
-
-    __m128 approx = y;
-    __m128 ySqr = _mm_mul_ps(y, y);
-    __m128 yExp = _mm_mul_ps(y, ySqr);
-
-    approx = _mm_add_ps(approx, _mm_mul_ps(yExp, DIV1));
-    yExp = _mm_mul_ps(yExp, ySqr);
-    approx = _mm_add_ps(approx, _mm_mul_ps(yExp, DIV2));
-    yExp = _mm_mul_ps(yExp, ySqr);
-    approx = _mm_add_ps(approx, _mm_mul_ps(yExp, DIV3));
-    yExp = _mm_mul_ps(yExp, ySqr);
-    approx = _mm_add_ps(approx, _mm_mul_ps(yExp, DIV4));
-    yExp = _mm_mul_ps(yExp, ySqr);
-    approx = _mm_add_ps(approx, _mm_mul_ps(yExp, DIV5));
-    yExp = _mm_mul_ps(yExp, ySqr);
-    approx = _mm_add_ps(approx, _mm_mul_ps(yExp, DIV6));
-
-    approx = _mm_mul_ps(approx, _mm_set1_ps(2));
-    return _mm_add_ps(approx, finalAdjustment);
-}
-
-__m128 log2(__m128 x)
-{
-    const __m128 adjustment = _mm_set1_ps(log(E)/log(2));
-    return _mm_mul_ps(ln(x), adjustment);
-}
-
-__m128 log10(__m128 x)
-{
-    const __m128 adjustment = _mm_set1_ps(log(E));
-    return _mm_mul_ps(ln(x), adjustment);
-}
-
-__m128 logBase(__m128 x, float base)
-{
-    __m128 adjustment = _mm_set1_ps(log(E) / log(base));
-    return _mm_mul_ps(ln(x), adjustment);
-}
-
-__m128 pow(__m128 x, __m128 y)
-{
-    //exp(y*ln(x))
-    return exp( _mm_mul_ps(y, ln(x)) );
-}
-
-void approxFunctions()
-{
-    const size_t size = 174*256;
-    // for(int polyDegree = 1; polyDegree <= 10; polyDegree++)
-    // {
-        float totalError = 0;
-        float minError = 0xFFFFFF;
-        float maxError = 0;
-        for(size_t i=0; i<size; i++)
-        {
-            float x = -87 + (float)i/256;
-            float exactValue = exp(x);
-            // float approxValue = fastExp4(x);
-            float approxValue = fastExpOther(x);
-            // float approxValue = 1 + x;
-            // float powValue = x*x;
-            // for(int j=2; j<=polyDegree; j++)
-            // {
-            //     approxValue += powValue / MathExt::factorial(j);
-            //     powValue *= x;
-            // }
-
-            // float currErr = MathExt::abs((approxValue - exactValue)/exactValue);
-            float currErr = MathExt::abs(approxValue - exactValue);
-            minError = MathExt::min(minError, currErr);
-            maxError = MathExt::max(maxError, currErr);
-            totalError += currErr;
-        }
-        // StringTools::println("Statistics for Taylor Series of Degree %d", polyDegree);
-        StringTools::println("\tTOTAL ERROR = %.9f", totalError);
-        StringTools::println("\tMIN ERROR = %.9f", minError);
-        StringTools::println("\tMAX ERROR = %.9f", maxError);
-
-        StringTools::println("EXACT = %.9f", exp(87));
-        StringTools::println("APPROX1 = %.9f", approxExp2(87));
-        StringTools::println("RELATIVE ERROR = %.9f", (approxExp2(87)-exp(87)) / exp(87));
-        
-    // }
-
-    // const float LN2 = 0.69314718056f;
-    // for(int i=0; i<10; i++)
-    // {
-    //     float totalError = 0;
-    //     float minError = 0xFFFFFF;
-    //     float maxError = 0;
-    //     for(int j=2; j<size; j++)
-    //     {
-    //         float v = 1.0f/j;
-    //         float s = v*256;
-    //         float div = 2*agm(1, 4.0f/s, i);
-    //         float approxValue = PI / div;
-    //         approxValue -= 8*LN2;
-    //         // if(div == 0)
-    //         //     StringTools::println("%d", j);
-
-    //         //compare approxValue to ln(v)
-    //         float exactValue = std::log(v) / std::log(E);
-
-    //         float currErr = MathExt::abs((approxValue - exactValue)/exactValue);
-    //         minError = MathExt::min(minError, currErr);
-    //         maxError = MathExt::max(maxError, currErr);
-    //         totalError += currErr;
-    //     }
-    //     StringTools::println("Statistics for HALLEY's Method of Degree %d", i);
-    //     StringTools::println("\tTOTAL ERROR = %.9f", totalError);
-    //     StringTools::println("\tMIN ERROR = %.9f", minError);
-    //     StringTools::println("\tMAX ERROR = %.9f", maxError);
-    // }
-
-    // float maxError = 0;
-
-    // for(int i=0; i<1000; i++)
-    // {
-    //     float x = (float)i/100.0f;
-    //     float approx = approxLN2_quadratic(x);
-    //     float real = std::log2f(x);
-    //     float currErr = MathExt::abs((approx - real)/real);
-    //     // StringTools::println("RELATIVE ERROR ln(%.5f) = %.5f", x, currErr);
-    //     maxError = __max(currErr, maxError);
-    // }
-    // StringTools::println("MAX ERROR = %.5f", maxError);
-
-    // int v = 0b00111110100000000000000000000000;
-    // float b = *(float*)&v;
-
-    // StringTools::println("%.3f", b);
-}
-
-void findApproximations()
-{
-    std::vector<Vec2f> desiredPoints;
-    float incV = PI/6;
-    for(int i=0; i<=6; i++)
-    {
-        desiredPoints.push_back(Vec2f(incV*i, sin(incV*i)));
-    }
-    // PolynomialMathFunction f = MathExt::fitPolynomial({Vec2f(0, 0), Vec2f(PI/4, sin(PI/4)), Vec2f(PI/2, 1), Vec2f(3*PI/4, sin(3*PI/4)), Vec2f(PI, 0)});
-    PolynomialMathFunction f = MathExt::fitPolynomial(desiredPoints);
-
-    std::vector<Vec2f> potentialPoints;
-    incV = PI / 63;
-    for(int i=0; i<64; i++)
-    {
-        potentialPoints.push_back(Vec2f(incV*i, sin(incV*i)));
-    }
-    PolynomialMathFunction g = MathExt::linearRegression(potentialPoints, 7);
-
-    StringTools::print("F(x) = ");
-    for(int i=0; i<f.size(); i++)
-    {
-        StringTools::print("%.9fx^%d + ", f.getConstant(i), i);
-    }
-    StringTools::println("\n\n\n");
-    StringTools::print("G(x) = ");
-    for(int i=0; i<g.size(); i++)
-    {
-        StringTools::print("%.9fx^%d + ", g.getConstant(i), i);
-    }
-    StringTools::println("");
-}
-
-void testChebyShev()
-{
-    GeneralMathFunction f = GeneralMathFunction();
-    f.setFunction([](double x) ->double{
-        return std::exp2(x);
-    });
-
-    int degree = 5;
-    double a = 0;
-    double b = 1;
-    //try linear spaced
-    //range [0, 1]
-    std::vector<Vec2f> linPoints;
-    for(int i=0; i<degree+1; i++)
-    {
-        double x = a + ((b-a)/degree)*i;
-        double y = f.solve(x);
-        linPoints.push_back(Vec2f(x, y));
-    }
-    PolynomialMathFunction p = MathExt::fitPolynomial(linPoints);
-
-    //try chebyshev
-    PolynomialMathFunction p2 = MathExt::chebyshevApproximation(&f, a, b, degree, false);
-
-    StringTools::println("Polynomial for linear spaced points: ");
-    StringTools::println("\t%s", p.toString().c_str());
-    
-    StringTools::println("Polynomial for chebyshev nodes: ");
-    StringTools::println("\t%s", p2.toString().c_str());
-}
-
-float divExponent(float x)
-{
-    union {float floatP; int floatAsInt;} v, v2;
-    v.floatP = x;
-    int expOnly = (v.floatAsInt >> 23) & 0xFF;
-    v2.floatAsInt = expOnly << 23;
-
-    return v.floatP / v2.floatP;
+    size_t t2 = System::getCurrentTimeMicro();
+    StringTools::println("TIME TAKEN: %llu", t2-t1);
 }
 
 int main(int argc, char** argv)
 {
-    testChebyShev();
-    // float potentialValue = 3.99999;
-    // float potentialValue2 = 0.5124;
-    // float potentialValue3 = 0.0;
-    
-    // StringTools::println("%.5f -> %.5f", potentialValue, divExponent(potentialValue));
-    // StringTools::println("%.5f -> %.5f", potentialValue2, divExponent(potentialValue2));
-    // StringTools::println("%.5f -> %.5f", potentialValue3, divExponent(potentialValue3));
-
-    // findApproximations();
-    // approxFunctions();
     // testGraph();
     // openGLTest();
     // contourTest();
-    // testDrawEfficiency();
-    // quickBezierTest();
-    // testSerialization();
-    // quickMapDatastructure();
+    testGuiPart2();
+    // testSmartMem();
+    // testDrawFunctions();
 
     return 0;
 }
 
 //TODO: POLYGON TRIANGULATION, MAKE MANY OPERATIONS CONST&
+//TODO: ADD LARGE ENOUGH CLAUSE BEFORE APPLYING OPENMP
+//TODO: 

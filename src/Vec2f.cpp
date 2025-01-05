@@ -4,11 +4,6 @@
 
 namespace smpl
 {
-	const RootClass Vec2f::globalClass = CREATE_ROOT_CLASS(Vec2f, &SerializedObject::globalClass);
-    const RootClass* Vec2f::getClass()
-	{
-		return &Vec2f::globalClass;
-	}
 	Vec2f::Vec2f(float x, float y)
 	{
 		this->x = x;
@@ -21,11 +16,6 @@ namespace smpl
 
 	Vec2f::~Vec2f()
 	{
-	}
-	
-	std::unordered_map<std::string, SerializedData> Vec2f::getSerializedVariables()
-	{
-		return {SERIALIZE_MAP(x), SERIALIZE_MAP(y)};
 	}
 
 	float Vec2f::getX()
@@ -49,7 +39,7 @@ namespace smpl
 		y = value;
 	}
 
-	void Vec2f::setValues(Vec2f other)
+	void Vec2f::setValues(const Vec2f& other)
 	{
 		x = other.x;
 		y = other.y;
@@ -172,14 +162,14 @@ namespace smpl
 		return Vec2f(func(x), func(y));
 	}
 	
-	Matrix Vec2f::toMatrix() const
+	MatrixF Vec2f::toMatrix() const
 	{
-		return (Matrix)* this;
+		return (MatrixF)* this;
 	}
 
-	Vec2f::operator Matrix() const
+	Vec2f::operator MatrixF() const
 	{
-		Matrix k = Matrix(1, 2);
+		MatrixF k = MatrixF(1, 2);
 		k[0][0] = x;
 		k[0][1] = y;
 		return k;

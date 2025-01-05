@@ -4,12 +4,6 @@
 
 namespace smpl
 {
-		
-	const RootClass Vec4f::globalClass = CREATE_ROOT_CLASS(Vec4f, &SerializedObject::globalClass);
-    const RootClass* Vec4f::getClass()
-	{
-		return &Vec4f::globalClass;
-	}
 	Vec4f::Vec4f()
 	{
 	}
@@ -40,11 +34,6 @@ namespace smpl
 
 	Vec4f::~Vec4f()
 	{
-	}
-	
-	std::unordered_map<std::string, SerializedData> Vec4f::getSerializedVariables()
-	{
-		return {SERIALIZE_MAP(x), SERIALIZE_MAP(y), SERIALIZE_MAP(z), SERIALIZE_MAP(w)};
 	}
 
 	float Vec4f::getX()
@@ -87,20 +76,20 @@ namespace smpl
 		w = value;
 	}
 
-	void Vec4f::setValues(Vec2f value)
+	void Vec4f::setValues(const Vec2f& value)
 	{
 		x = value.x;
 		y = value.y;
 	}
 
-	void Vec4f::setValues(Vec3f value)
+	void Vec4f::setValues(const Vec3f& value)
 	{
 		x = value.x;
 		y = value.y;
 		z = value.z;
 	}
 
-	void Vec4f::setValues(Vec4f value)
+	void Vec4f::setValues(const Vec4f& value)
 	{
 		x = value.x;
 		y = value.y;
@@ -233,14 +222,14 @@ namespace smpl
 		return Vec4f(func(x), func(y), func(z), func(w));
 	}
 	
-	Matrix Vec4f::toMatrix() const
+	MatrixF Vec4f::toMatrix() const
 	{
-		return (Matrix)* this;
+		return (MatrixF)* this;
 	}
 
-	Vec4f::operator Matrix() const
+	Vec4f::operator MatrixF() const
 	{
-		Matrix k = Matrix(1, 4);
+		MatrixF k = MatrixF(1, 4);
 		k[0][0] = x;
 		k[0][1] = y;
 		k[0][2] = z;

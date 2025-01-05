@@ -78,6 +78,10 @@ public:
 	SIMD_128_U32 operator!=(const unsigned int byte) const;
 	SIMD_128_U32 operator!=(const SIMD_128_U32& other) const;
 
+	//special case functions
+	SIMD_128_U32 horizontalAdd(const SIMD_128_U32& other) const;
+	unsigned long long sum() const;
+
 	//cast / convert operations
 	// SIMD_128_U16 convertToU16(int location) const;
 	// SIMD_128_U32 convertToU32(int location) const;
@@ -159,6 +163,10 @@ public:
 	
 	SIMD_128_32 operator!=(const int byte) const;
 	SIMD_128_32 operator!=(const SIMD_128_32& other) const;
+
+	//special case functions
+	SIMD_128_32 horizontalAdd(const SIMD_128_32& other) const;
+	long long sum() const;
 
 	//cast / convert operations
 	// SIMD_128_U16 convertToU16(int location) const;

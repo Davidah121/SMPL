@@ -13,12 +13,12 @@ namespace smpl
     class NeuralLayer
     {
     public:
-        Matrix feedForward(const Matrix& input);
-        virtual Matrix derivative(const Matrix& input) = 0;
+        MatrixF feedForward(const MatrixF& input);
+        virtual MatrixF derivative(const MatrixF& input) = 0;
 
     protected:
-        virtual Matrix solve(const Matrix& input) = 0;
-        // virtual Matrix backpropagation(const Matrix& input) = 0;
+        virtual MatrixF solve(const MatrixF& input) = 0;
+        // virtual MatrixF backpropagation(const MatrixF& input) = 0;
         
         NeuralLayer* previousLayer = nullptr;
         NeuralLayer* nextLayer = nullptr;
@@ -28,11 +28,11 @@ namespace smpl
     class InputLayer : public NeuralLayer
     {
     public:
-        InputLayer(const Matrix& trainingData);
+        InputLayer(const MatrixF& trainingData);
         ~InputLayer();
         
-        Matrix solve(const Matrix& input);
-        Matrix derivative(const Matrix& input);
+        MatrixF solve(const MatrixF& input);
+        MatrixF derivative(const MatrixF& input);
     private:
         //stuff needed to zscore probably
     };
@@ -42,11 +42,11 @@ namespace smpl
     public:
         FullyConnectedLayer(size_t inputNeurons, size_t outputNeurons);
         ~FullyConnectedLayer();
-        Matrix solve(const Matrix& input);
-        Matrix derivative(const Matrix& input);
+        MatrixF solve(const MatrixF& input);
+        MatrixF derivative(const MatrixF& input);
     private:
-        Matrix weights;
-        Matrix bias;
+        MatrixF weights;
+        MatrixF bias;
     };
 
     class SigmoidActivationLayer : public NeuralLayer
@@ -54,8 +54,8 @@ namespace smpl
     public:
         SigmoidActivationLayer();
         ~SigmoidActivationLayer();
-        Matrix solve(const Matrix& input);
-        Matrix derivative(const Matrix& input);
+        MatrixF solve(const MatrixF& input);
+        MatrixF derivative(const MatrixF& input);
     private:
     };
 
@@ -64,8 +64,8 @@ namespace smpl
     public:
         TanhActivationLayer();
         ~TanhActivationLayer();
-        Matrix solve(const Matrix& input);
-        Matrix derivative(const Matrix& input);
+        MatrixF solve(const MatrixF& input);
+        MatrixF derivative(const MatrixF& input);
     private:
     };
 
@@ -74,8 +74,8 @@ namespace smpl
     public:
         LinearActivationLayer();
         ~LinearActivationLayer();
-        Matrix solve(const Matrix& input);
-        Matrix derivative(const Matrix& input);
+        MatrixF solve(const MatrixF& input);
+        MatrixF derivative(const MatrixF& input);
     private:
     };
 
@@ -84,8 +84,8 @@ namespace smpl
     public:
         ReluActivationLayer();
         ~ReluActivationLayer();
-        Matrix solve(const Matrix& input);
-        Matrix derivative(const Matrix& input);
+        MatrixF solve(const MatrixF& input);
+        MatrixF derivative(const MatrixF& input);
     private:
     };
 
@@ -94,8 +94,8 @@ namespace smpl
     public:
         StepActivationLayer();
         ~StepActivationLayer();
-        Matrix solve(const Matrix& input);
-        Matrix derivative(const Matrix& input);
+        MatrixF solve(const MatrixF& input);
+        MatrixF derivative(const MatrixF& input);
     private:
     };
 
@@ -185,10 +185,10 @@ namespace smpl
     //      */
     //     double derivativeActivationFunction(double value);
 
-    //     Matrix getDerivativeMatrix();
-    //     Matrix& getNeuronMatrix();
-    //     Matrix& getWeightMatrix();
-    //     Matrix& getBiasMatrix();
+    //     MatrixF getDerivativeMatrix();
+    //     MatrixF& getNeuronMatrix();
+    //     MatrixF& getWeightMatrix();
+    //     MatrixF& getBiasMatrix();
 
 
     //     /**
@@ -238,11 +238,11 @@ namespace smpl
     //     NeuralLayer* nextLayer = nullptr;
     //     NeuralLayer* previousLayer = nullptr;
         
-    //     Matrix neurons = Matrix();
+    //     MatrixF neurons = MatrixF();
 
     //     //weights and bias connected to this layer from the previous.
-    //     Matrix weightsToConnections = Matrix();
-    //     Matrix biasToConnections = Matrix();
+    //     MatrixF weightsToConnections = MatrixF();
+    //     MatrixF biasToConnections = MatrixF();
     // };
 
     // class NeuralNetwork

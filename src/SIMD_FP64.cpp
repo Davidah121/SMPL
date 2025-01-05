@@ -164,4 +164,13 @@ SIMD_128_FP64 SIMD_128_FP64::operator!=(const SIMD_128_FP64& other) const
     return _mm_cmpneq_pd(values, other.values);
 }
 
+SIMD_128_FP64 SIMD_128_FP64::horizontalAdd(const SIMD_128_FP64& other) const
+{
+    return _mm_hadd_pd(values, other.values);
+}
+double SIMD_128_FP64::sum() const
+{
+    __m128d temp = _mm_hadd_pd(values, values); //contains A1+B1, A1+B1
+    return _mm_cvtsd_f64(temp);
+}
 #endif

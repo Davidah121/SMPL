@@ -4,6 +4,7 @@
 #if (OPTI >= 1)
 #define SIMD_128_U8_BLEND(x, y, mask) _mm_blendv_epi8(x, y, mask)
 #define SIMD_128_8_BLEND(x, y, mask) _mm_blendv_epi8(x, y, mask)
+__m128i sse8HorizontalAdd(__m128i A, __m128i B);
 
 class SIMD_128_U8
 {
@@ -76,6 +77,10 @@ public:
 	SIMD_128_U8 operator!=(const unsigned char byte) const;
 	SIMD_128_U8 operator!=(const SIMD_128_U8& other) const;
 	
+	//special case functions
+	SIMD_128_U8 horizontalAdd(const SIMD_128_U8& other) const;
+	unsigned short sum() const;
+
 	//cast / convert operations
 	// SIMD_128_U16 convertToU16(int location) const;
 	// SIMD_128_U32 convertToU32(int location) const;
@@ -157,6 +162,10 @@ public:
 	
 	SIMD_128_8 operator!=(const char byte) const;
 	SIMD_128_8 operator!=(const SIMD_128_8& other) const;
+
+	//special case functions
+	SIMD_128_8 horizontalAdd(const SIMD_128_8& other) const;
+	short sum() const;
 
 	//cast / convert operations
 	// SIMD_128_U16 convertToU16(int location) const;

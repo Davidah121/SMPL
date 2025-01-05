@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "SimpleSerialization.h"
 #include <vector>
 #include <cstddef>
 
@@ -9,7 +10,7 @@
 namespace smpl
 {
 
-	class DLL_OPTION BinarySet
+	class DLL_OPTION BinarySet : public SerializedObject
 	{
 		
 	public:
@@ -232,6 +233,8 @@ namespace smpl
 		bool MSB = true;
 		bool addBitOrder = LMSB;
 		size_t bitNumber = 0;
+
+	SERIALIZE_CLASS(MSB, addBitOrder, bitNumber, set)
 	};
 
 }  //NAMESPACE smpl END

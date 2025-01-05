@@ -85,10 +85,6 @@
 			 */
 			~DXWindow();
 
-			//Object and RootClass Stuff
-			static const RootClass globalClass;
-			virtual const RootClass* getClass();
-
 			/**
 			 * @brief Sets the swap interval for vsync. 
 			 * 		If set to 0, vsync will be disabled.
@@ -150,6 +146,9 @@
 
 			bool threadRender();
 			void threadRepaint();
+			
+		SERIALIZE_SUPER_CLASS(SimpleWindow)
+		SERIALIZE_CLASS()
 		};
 
 	} //NAMESPACE smpl END

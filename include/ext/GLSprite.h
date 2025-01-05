@@ -4,13 +4,13 @@
 
 	#include "Image.h"
 	#include "ext/GLTexture.h"
-	#include "Object.h"
+	#include "SimpleSerialization.h"
 	#include "Sprite.h"
 
 	namespace smpl
 	{
 
-		class GLSprite : public Object
+		class GLSprite : public SerializedObject
 		{
 		public:
 			/**
@@ -59,10 +59,6 @@
 			 * 
 			 */
 			~GLSprite();
-
-			//Object and RootClass Stuff
-			static const RootClass globalClass;
-			virtual const RootClass* getClass();
 
 			/**
 			 * @brief Gets an texture from the sprite at the specified index.
@@ -143,6 +139,8 @@
 			bool loops = true;
 			std::vector<GLTexture*> images = std::vector<GLTexture*>();
 			std::vector<int> delayTimeForFrame = std::vector<int>();
+
+		SERIALIZE_CLASS(loops, images, delayTimeForFrame)
 		};
 
 	} //NAMESPACE smpl END

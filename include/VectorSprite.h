@@ -5,7 +5,7 @@
 namespace smpl
 {
 
-    class DLL_OPTION VectorSprite : public Object
+    class DLL_OPTION VectorSprite : public SerializedObject
     {
     public:
         /**
@@ -22,10 +22,6 @@ namespace smpl
          * 
          */
         ~VectorSprite();
-        
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
         /**
          * @brief Loads a VectorGraphic from a .svg file.
@@ -81,6 +77,8 @@ namespace smpl
     private:
         Mat3f transform;
         std::vector<VectorGraphic*> vectorGraphicList = std::vector<VectorGraphic*>();
+
+    SERIALIZE_CLASS(transform, vectorGraphicList)
     };
 
 } //NAMESPACE glib END

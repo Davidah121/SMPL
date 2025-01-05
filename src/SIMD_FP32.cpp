@@ -164,4 +164,19 @@ SIMD_128_FP32 SIMD_128_FP32::operator!=(const SIMD_128_FP32& other) const
     return _mm_cmpneq_ps(values, other.values);
 }
 
+
+SIMD_128_FP32 SIMD_128_FP32::horizontalAdd(const SIMD_128_FP32& other) const
+{
+    return _mm_hadd_ps(values, other.values);
+}
+float SIMD_128_FP32::sum() const
+{
+    //https://stackoverflow.com/questions/6996764/fastest-way-to-do-horizontal-sse-vector-sum-or-other-reduction
+    //faster than 2 hadd_ps. has a throughput faster by 2 than using hadd_ps
+    __m128 shuf = _mm_movehdup_ps(values);
+    __m128 sums = _mm_add_ps(values, shuf);
+    shuf = _mm_movehl_ps(shuf, sums);
+    sums = _mm_add_ps(sums, shuf);
+    return _mm_cvtss_f32(sums);
+}
 #endif

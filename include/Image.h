@@ -11,7 +11,7 @@ namespace smpl
 	class DLL_OPTION Image;
 	class DLL_OPTION HiResImage;
 	
-	class DLL_OPTION Image : public Object
+	class DLL_OPTION Image : public SerializedObject
 	{
 	public:
 		const static int NONE = 0;
@@ -73,10 +73,6 @@ namespace smpl
 		 * 
 		 */
 		void dispose();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Sets the Sampling Method used to get pixels that are not aligned.
@@ -345,12 +341,13 @@ namespace smpl
 		int height = 0;
 		int samplingMethod = NEAREST;
 		ColorPalette p = ColorPalette();
-
 		Color* pixels = nullptr;
+
+	SERIALIZE_CLASS()
 	};
 
 	//almost identical. Just load functions and storage
-	class DLL_OPTION HiResImage : public Object
+	class DLL_OPTION HiResImage : public SerializedObject
 	{
 	public:
 		const static int NONE = 0;
@@ -412,10 +409,6 @@ namespace smpl
 		 * 
 		 */
 		void dispose();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Sets the Sampling Method used to get pixels that are not aligned.
@@ -681,6 +674,8 @@ namespace smpl
 		static HiResImage** loadGIF(std::vector<unsigned char> fileData, int* amountOfImages, std::vector<int>* extraData = nullptr);
 		static HiResImage** loadPNG(std::vector<unsigned char> fileData, int* amountOfImages, std::vector<int>* extraData = nullptr);
 		static HiResImage** loadJPG(std::vector<unsigned char> fileData, int* amountOfImages);
+	
+	SERIALIZE_CLASS()
 	};
 
 } //NAMESPACE smpl END

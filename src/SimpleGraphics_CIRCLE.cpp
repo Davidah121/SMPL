@@ -51,7 +51,7 @@ namespace smpl
 				{
 					if(compositeRule == NO_COMPOSITE)
 					{
-						#pragma omp parallel for
+						//#pragma omp parallel for
 						for(int tY=minY; tY<=maxY; tY++)
 						{
 							double C = 0;
@@ -81,7 +81,7 @@ namespace smpl
 					}
 					else
 					{
-						#pragma omp parallel for
+						//#pragma omp parallel for
 						for(int tY=minY; tY<=maxY; tY++)
 						{
 							double C = 0;
@@ -114,7 +114,7 @@ namespace smpl
 				{
 					if(compositeRule == NO_COMPOSITE)
 					{
-						#pragma omp parallel for
+						//#pragma omp parallel for
 						for(int tY=minY; tY<=maxY; tY++)
 						{
 							//create polynomial to describe distance
@@ -189,7 +189,7 @@ namespace smpl
 					}
 					else
 					{
-						#pragma omp parallel for
+						//#pragma omp parallel for
 						for(int tY=minY; tY<=maxY; tY++)
 						{
 							//create polynomial to describe distance
@@ -271,7 +271,7 @@ namespace smpl
 				oldX1 = x;
 				oldX2 = x;
 
-				#pragma omp parallel for
+				//#pragma omp parallel for
 				for(int tY = minY; tY<=maxY+1; tY++)
 				{
 					double startX, endX;

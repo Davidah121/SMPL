@@ -201,14 +201,14 @@ namespace smpl
 		static void drawText(std::string str, int x, int y, unsigned char type = TYPE_DEFAULT);
 		static void drawText(std::wstring str, int x, int y, unsigned char type = TYPE_DEFAULT);
 
-		static void drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, unsigned char type = TYPE_DEFAULT);
-		static void drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, unsigned char type = TYPE_DEFAULT);
+		static void drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool canWrap, unsigned char type = TYPE_DEFAULT);
+		static void drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool canWrap, unsigned char type = TYPE_DEFAULT);
 		
-		static void drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor, unsigned char type = TYPE_DEFAULT);
-		static void drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor, unsigned char type = TYPE_DEFAULT);
+		static void drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool canWrap, int highlightStart, int highlightEnd, Color highlightColor, unsigned char type = TYPE_DEFAULT);
+		static void drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool canWrap, int highlightStart, int highlightEnd, Color highlightColor, unsigned char type = TYPE_DEFAULT);
 		
-		static void drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Vec4f highlightColor, unsigned char type = TYPE_DEFAULT);
-		static void drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Vec4f highlightColor, unsigned char type = TYPE_DEFAULT);
+		static void drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool canWrap, int highlightStart, int highlightEnd, Vec4f highlightColor, unsigned char type = TYPE_DEFAULT);
+		static void drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool canWrap, int highlightStart, int highlightEnd, Vec4f highlightColor, unsigned char type = TYPE_DEFAULT);
 		
 		static void setClippingRect(Box2D b, unsigned char type = TYPE_DEFAULT);
 		static Box2D getClippingRect();

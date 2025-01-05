@@ -1,6 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
-#include "Serializable.h"
+#include "SimpleSerialization.h"
 #include "Vec3f.h"
 #include "Vec2f.h"
 
@@ -48,11 +48,6 @@ namespace smpl
 		 * 
 		 */
 		~Vec4f();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
-		std::unordered_map<std::string, SerializedData> getSerializedVariables();
 
 		float x = 0;
 		float y = 0;
@@ -122,7 +117,7 @@ namespace smpl
 		 * 
 		 * @param value 
 		 */
-		void setValues(Vec2f value);
+		void setValues(const Vec2f& value);
 
 		/**
 		 * @brief Copies values from a Vec3f.
@@ -130,14 +125,14 @@ namespace smpl
 		 * 
 		 * @param value 
 		 */
-		void setValues(Vec3f value);
+		void setValues(const Vec3f& value);
 
 		/**
 		 * @brief Copies values from a Vec4f.
 		 * 
 		 * @param value 
 		 */
-		void setValues(Vec4f value);
+		void setValues(const Vec4f& value);
 
 		/**
 		 * @brief Converts the Vec4f object to a Vec3f object by dropping the w value.
@@ -224,10 +219,12 @@ namespace smpl
 		/**
 		 * @brief Converts the Vec4f object to a Column Matrix object
 		 * 
-		 * @return Matrix 
+		 * @return MatrixF 
 		 */
-		Matrix toMatrix() const;
-		operator Matrix() const;
+		MatrixF toMatrix() const;
+		operator MatrixF() const;
+
+	SERIALIZE_CLASS(x, y, z, w)
 	};
 
 } //NAMESPACE glib END

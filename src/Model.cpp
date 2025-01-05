@@ -6,13 +6,6 @@
 
 namespace smpl
 {
-
-    const RootClass Model::globalClass = CREATE_ROOT_CLASS(Model, &Object::globalClass);
-    const RootClass* Model::getClass()
-	{
-		return &Model::globalClass;
-	}
-
     Model::Model()
     {
     }

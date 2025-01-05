@@ -54,7 +54,7 @@ namespace smpl
 		if(currentComposite == NO_COMPOSITE)
 		{
 			int imgY = startImgY;
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int tY=minY; tY<=maxY; tY++)
 			{
 				int imgX = startImgX; //distance from x to minX
@@ -69,7 +69,7 @@ namespace smpl
 		else
 		{
 			int imgY = startImgY;
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int tY=minY; tY<=maxY; tY++)
 			{
 				int imgX = startImgX; //distance from x to minX
@@ -135,32 +135,30 @@ namespace smpl
 
 		if(currentComposite == NO_COMPOSITE)
 		{
-			int imgY = startImgY;
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int tY=minY; tY<=maxY; tY++)
 			{
-				int imgX = startImgX; //distance from x to minX
+				int v = startImgY + (tY-minY);
+				int u = startImgX; //distance from x to minX
 				for(int tX=minX; tX<=maxX; tX++)
 				{
-					surfPixels[tX + tY*tempWidth] = drawImgPixels[imgX + imgY*img->getWidth()];
-					imgX++;
+					surfPixels[tX + tY*tempWidth] = drawImgPixels[u + v*img->getWidth()];
+					u++;
 				}
-				imgY++;
 			}
 		}
 		else
 		{
-			int imgY = startImgY;
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int tY=minY; tY<=maxY; tY++)
 			{
-				int imgX = startImgX; //distance from x to minX
+				int v = startImgY + (tY-minY);
+				int u = startImgX; //distance from x to minX
 				for(int tX=minX; tX<=maxX; tX++)
 				{
-					drawPixel(tX, tY, drawImgPixels[imgX + imgY*img->getWidth()], surf);
-					imgX++;
+					drawPixel(tX, tY, drawImgPixels[u + v*img->getWidth()], surf);
+					u++;
 				}
-				imgY++;
 			}
 		}
 	}
@@ -216,10 +214,10 @@ namespace smpl
 
 		if(currentComposite == NO_COMPOSITE)
 		{
-			int v = startImgY;
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int tY=minY; tY<=maxY; tY++)
 			{
+				int v = startImgY + (tY-minY);
 				int u = startImgX; //distance from x to minX
 				for(int tX=minX; tX<=maxX; tX++)
 				{
@@ -231,27 +229,25 @@ namespace smpl
 					surfPixels[tX + tY*tempWidth] = c;
 					u++;
 				}
-				v++;
 			}
 		}
 		else
 		{
-			int imgY = startImgY;
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int tY=minY; tY<=maxY; tY++)
 			{
-				int imgX = startImgX; //distance from x to minX
+				int v = startImgY + (tY-minY);
+				int u = startImgX; //distance from x to minX
 				for(int tX=minX; tX<=maxX; tX++)
 				{
-					Color c = drawImgPixels[imgX + imgY*img->getWidth()];
+					Color c = drawImgPixels[u + v*img->getWidth()];
 					c.red = (unsigned char)MathExt::clamp<float>(c.red * colorMult.x, 0.0, 255.0);
 					c.green = (unsigned char)MathExt::clamp<float>(c.green * colorMult.y, 0.0, 255.0);
 					c.blue = (unsigned char)MathExt::clamp<float>(c.blue * colorMult.z, 0.0, 255.0);
 					c.alpha = (unsigned char)MathExt::clamp<float>(c.alpha * colorMult.w, 0.0, 255.0);
 					drawPixel(tX, tY, c, surf);
-					imgX++;
+					u++;
 				}
-				imgY++;
 			}
 		}
 	}
@@ -316,10 +312,10 @@ namespace smpl
 
 		if(currentComposite == NO_COMPOSITE)
 		{
-			int imgY = startImgY;
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int tY=minY; tY<=maxY; tY++)
 			{
+				int imgY = startImgY + (tY-minY);
 				double v = imgDrawHeight * (imgY / (y2-y1));
 				int imgX = startImgX;
 				for(int tX=minX; tX<=maxX; tX++)
@@ -334,15 +330,14 @@ namespace smpl
 
 					imgX++;
 				}
-				imgY++;
 			}
 		}
 		else
 		{
-			int imgY = startImgY;
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int tY=minY; tY<=maxY; tY++)
 			{
+				int imgY = startImgY + (tY-minY);
 				double v = imgDrawHeight * (imgY / (y2-y1));
 				int imgX = startImgX;
 				for(int tX=minX; tX<=maxX; tX++)
@@ -357,7 +352,6 @@ namespace smpl
 
 					imgX++;
 				}
-				imgY++;
 			}
 		}
 	}
@@ -412,10 +406,10 @@ namespace smpl
 
 		if(currentComposite == NO_COMPOSITE)
 		{
-			int v = startImgY;
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int tY=minY; tY<=maxY; tY++)
 			{
+				int v = startImgY + (tY-minY);
 				int u = startImgX; //distance from x to minX
 				for(int tX=minX; tX<=maxX; tX++)
 				{
@@ -427,15 +421,14 @@ namespace smpl
 					surfPixels[tX + tY*tempWidth] = c;
 					u++;
 				}
-				v++;
 			}
 		}
 		else
 		{
-			int v = startImgY;
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int tY=minY; tY<=maxY; tY++)
 			{
+				int v = startImgY + (tY-minY);
 				int u = startImgX; //distance from x to minX
 				for(int tX=minX; tX<=maxX; tX++)
 				{
@@ -447,7 +440,6 @@ namespace smpl
 					drawPixel(tX, tY, c, surf);
 					u++;
 				}
-				v++;
 			}
 		}
 	}

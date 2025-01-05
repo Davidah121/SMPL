@@ -5,7 +5,6 @@
 
 #include "File.h"
 #include "GeneralExceptions.h"
-#include "Object.h"
 
 namespace smpl
 {

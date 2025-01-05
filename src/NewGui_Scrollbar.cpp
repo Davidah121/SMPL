@@ -3,13 +3,6 @@
 
 namespace smpl
 {
-
-    const RootClass GuiScrollBar::globalClass = CREATE_ROOT_CLASS(GuiScrollBar, &GuiLayoutFixed::globalClass);
-    const RootClass* GuiScrollBar::getClass()
-    {
-        return &GuiScrollBar::globalClass;
-    }
-
     GuiScrollBar::GuiScrollBar() : GuiLayoutFixed()
     {
         GuiLayoutFixed::addChild( SmartMemory<GuiItem>::createNoDelete(&horizontalScrollButton, false) );
@@ -76,27 +69,27 @@ namespace smpl
         int currMaxY = getTrueY() + height;
         int scrollYValue = Input::getMouseScrollVertical();
         int scrollXValue = Input::getMouseScrollHorizontal();
-        if(Input::getKeyDown(Input::KEY_LEFT))
-        {
-            if(scrollXValue == 0)
-                scrollXValue = 1;
-        }
-        if(Input::getKeyDown(Input::KEY_RIGHT))
-        {
-            if(scrollXValue == 0)
-                scrollXValue = -1;
-        }
+        // if(Input::getKeyDown(Input::KEY_LEFT))
+        // {
+        //     if(scrollXValue == 0)
+        //         scrollXValue = 1;
+        // }
+        // if(Input::getKeyDown(Input::KEY_RIGHT))
+        // {
+        //     if(scrollXValue == 0)
+        //         scrollXValue = -1;
+        // }
 
-        if(Input::getKeyDown(Input::KEY_UP))
-        {
-            if(scrollYValue == 0)
-                scrollYValue = 1;
-        }
-        if(Input::getKeyDown(Input::KEY_DOWN))
-        {
-            if(scrollYValue == 0)
-                scrollYValue = -1;
-        }
+        // if(Input::getKeyDown(Input::KEY_UP))
+        // {
+        //     if(scrollYValue == 0)
+        //         scrollYValue = 1;
+        // }
+        // if(Input::getKeyDown(Input::KEY_DOWN))
+        // {
+        //     if(scrollYValue == 0)
+        //         scrollYValue = -1;
+        // }
 
         if(padding.left < 0)
         {

@@ -4,10 +4,9 @@
 #include <time.h>
 #include "StringTools.h"
 
-//TODO: ADD SIMD FUNCTIONS
 namespace smpl
 {
-    Matrix NeuralLayer::feedForward(const Matrix& input)
+    MatrixF NeuralLayer::feedForward(const MatrixF& input)
     {
         if(nextLayer != nullptr)
             return nextLayer->feedForward(solve(input));
@@ -24,9 +23,9 @@ namespace smpl
         
     }
     
-    Matrix SigmoidActivationLayer::solve(const Matrix& input)
+    MatrixF SigmoidActivationLayer::solve(const MatrixF& input)
     {
-        Matrix output = Matrix(input.getRows(), input.getCols());
+        MatrixF output = MatrixF(input.getRows(), input.getCols());
         size_t totalSize = input.getRows() * input.getCols();
         float* inputData = input.getData();
         float* outputData = output.getData();
@@ -45,9 +44,9 @@ namespace smpl
             for(size_t i=0; i<simdBound; i+=SIMD_FP32::SIZE)
             {
                 SIMD_FP32 inputAsSIMD = SIMD_FP32::load(&inputData[i]);
-                SIMD_FP32 negativeSIMD = negative1*inputAsSIMD;
-                SIMD_FP32 expValue = MathExt::exp(negativeSIMD.values);
-                SIMD_FP32 finalValue = MathExt::reciprocal((ones+expValue).values);
+                SIMD_FP32 negativeSIMD = SEML::negate(inputAsSIMD.values);
+                SIMD_FP32 expValue = SEML::exp(negativeSIMD.values);
+                SIMD_FP32 finalValue = SEML::reciprocal((ones+expValue).values);
                 finalValue.store(&outputData[i]);
             }
             for(size_t i=simdBound; i<totalSize; i++)
@@ -59,9 +58,9 @@ namespace smpl
         return output;
     }
 
-    Matrix SigmoidActivationLayer::derivative(const Matrix& input)
+    MatrixF SigmoidActivationLayer::derivative(const MatrixF& input)
     {
-        Matrix matrixOf1s = Matrix(input.getRows(), input.getCols());
+        MatrixF matrixOf1s = MatrixF(input.getRows(), input.getCols());
         matrixOf1s.setAllValues(1);
 
         //Fully multithreaded.
@@ -77,9 +76,9 @@ namespace smpl
         
     }
     
-    Matrix TanhActivationLayer::solve(const Matrix& input)
+    MatrixF TanhActivationLayer::solve(const MatrixF& input)
     {
-        Matrix output = Matrix(input.getRows(), input.getCols());
+        MatrixF output = MatrixF(input.getRows(), input.getCols());
         size_t totalSize = input.getRows() * input.getCols();
         float* inputData = input.getData();
         float* outputData = output.getData();
@@ -93,24 +92,18 @@ namespace smpl
                 outputData[i] = (eX - eNegX) / (eX + eNegX);
             }
         #elif(OPTI > 0)
-            SIMD_FP32 negative1 = -1;
 		    int simdBound = SIMD_FP32::getSIMDBound(totalSize);
             #pragma omp parallel for
             for(size_t i=0; i<simdBound; i+=SIMD_FP32::SIZE)
             {
                 SIMD_FP32 inputAsSIMD = SIMD_FP32::load(&inputData[i]);
-                SIMD_FP32 negativeSIMD = negative1*inputAsSIMD;
-
-                SIMD_FP32 expValue = MathExt::exp(inputAsSIMD.values);
-                SIMD_FP32 negExpValue = MathExt::exp(negativeSIMD.values);
-                
-                SIMD_FP32 finalValue = (expValue-negExpValue)/(expValue+negExpValue);
+                SIMD_FP32 finalValue = SEML::tanh(inputAsSIMD.values);
                 finalValue.store(&outputData[i]);
             }
             for(size_t i=simdBound; i<totalSize; i++)
             {
                 float eX = exp(inputData[i]);
-                float eNegX = exp(-inputData[i]);
+                float eNegX = 1.0/eX;
                 outputData[i] = (eX - eNegX) / (eX + eNegX);
             }
         #endif
@@ -118,9 +111,9 @@ namespace smpl
         return output;
     }
 
-    Matrix TanhActivationLayer::derivative(const Matrix& input)
+    MatrixF TanhActivationLayer::derivative(const MatrixF& input)
     {
-        Matrix matrixOf1s = Matrix(input.getRows(), input.getCols());
+        MatrixF matrixOf1s = MatrixF(input.getRows(), input.getCols());
         matrixOf1s.setAllValues(1);
 
         //Fully multithreaded.
@@ -136,14 +129,14 @@ namespace smpl
         
     }
     
-    Matrix LinearActivationLayer::solve(const Matrix& input)
+    MatrixF LinearActivationLayer::solve(const MatrixF& input)
     {
         return input;
     }
 
-    Matrix LinearActivationLayer::derivative(const Matrix& input)
+    MatrixF LinearActivationLayer::derivative(const MatrixF& input)
     {
-        Matrix matrixOf1s = Matrix(input.getRows(), input.getCols());
+        MatrixF matrixOf1s = MatrixF(input.getRows(), input.getCols());
         matrixOf1s.setAllValues(1);
         return matrixOf1s;
     }
@@ -157,9 +150,9 @@ namespace smpl
         
     }
     
-    Matrix ReluActivationLayer::solve(const Matrix& input)
+    MatrixF ReluActivationLayer::solve(const MatrixF& input)
     {
-        Matrix output = Matrix(input.getRows(), input.getCols());
+        MatrixF output = MatrixF(input.getRows(), input.getCols());
         size_t totalSize = input.getRows() * input.getCols();
         float* inputData = input.getData();
         float* outputData = output.getData();
@@ -190,9 +183,9 @@ namespace smpl
         return output;
     }
 
-    Matrix ReluActivationLayer::derivative(const Matrix& input)
+    MatrixF ReluActivationLayer::derivative(const MatrixF& input)
     {
-        Matrix output = Matrix(input.getRows(), input.getCols());
+        MatrixF output = MatrixF(input.getRows(), input.getCols());
         size_t totalSize = input.getRows() * input.getCols();
         float* inputData = input.getData();
         float* outputData = output.getData();
@@ -233,9 +226,9 @@ namespace smpl
         
     }
     
-    Matrix StepActivationLayer::solve(const Matrix& input)
+    MatrixF StepActivationLayer::solve(const MatrixF& input)
     {
-        Matrix output = Matrix(input.getRows(), input.getCols());
+        MatrixF output = MatrixF(input.getRows(), input.getCols());
         size_t totalSize = input.getRows() * input.getCols();
         float* inputData = input.getData();
         float* outputData = output.getData();
@@ -267,34 +260,34 @@ namespace smpl
         return output;
     }
 
-    Matrix StepActivationLayer::derivative(const Matrix& input)
+    MatrixF StepActivationLayer::derivative(const MatrixF& input)
     {
-        return Matrix(input.getRows(), input.getCols()); //initialized to all 0s
+        return MatrixF(input.getRows(), input.getCols()); //initialized to all 0s
     }
 
     
     FullyConnectedLayer::FullyConnectedLayer(size_t inputNeurons, size_t outputNeurons)
     {
-        weights = Matrix(inputNeurons, outputNeurons);
-        bias = Matrix(1, outputNeurons);
+        weights = MatrixF(inputNeurons, outputNeurons);
+        bias = MatrixF(1, outputNeurons);
     }
     FullyConnectedLayer::~FullyConnectedLayer()
     {
 
     }
-    Matrix FullyConnectedLayer::solve(const Matrix& input)
+    MatrixF FullyConnectedLayer::solve(const MatrixF& input)
     {
         //xW + b
-        return Matrix::fusedMultiplyAdd(input, weights, bias);
+        return MatrixF::fusedMultiplyAdd(input, weights, bias);
     }
-    Matrix FullyConnectedLayer::derivative(const Matrix& input)
+    MatrixF FullyConnectedLayer::derivative(const MatrixF& input)
     {
         //just W^t
         return weights.getTranspose();
     }
 
     
-    InputLayer::InputLayer(const Matrix& trainingData)
+    InputLayer::InputLayer(const MatrixF& trainingData)
     {
         //find mean and std dev per column
         
@@ -304,14 +297,14 @@ namespace smpl
 
     }
     
-    Matrix InputLayer::solve(const Matrix& input)
+    MatrixF InputLayer::solve(const MatrixF& input)
     {
         //zscore on each column
-        return Matrix();
+        return MatrixF();
     }
-    Matrix InputLayer::derivative(const Matrix& input)
+    MatrixF InputLayer::derivative(const MatrixF& input)
     {
         //throw exception lol
-        return Matrix();
+        return MatrixF();
     }
 } //NAMESPACE glib END

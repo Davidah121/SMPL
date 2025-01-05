@@ -16,6 +16,7 @@
 #include "ComplexNumber.h"
 #include "PolarCoordinate.h"
 #include "MathFunction.h"
+#include "SEML.h"
 
 #ifdef max
 	#undef max
@@ -2046,7 +2047,8 @@ namespace smpl
 		 * 		Default is false.
 		 * @return double 
 		 */
-		static Matrix cosineTransform2D(const Matrix& arr, bool inverse=false);
+		static MatrixF cosineTransform2D(const MatrixF& arr, bool inverse=false);
+		static MatrixD cosineTransform2D(const MatrixD& arr, bool inverse=false);
 
 		/**
 		 * @brief Computes the 2D Discrete Cosine Transform for all possible locations.
@@ -2057,7 +2059,8 @@ namespace smpl
 		 * @param inverse 
 		 * @return std::vector<double> 
 		 */
-		static Matrix fastCosineTransform2D(const Matrix& arr, bool inverse=false);
+		static MatrixF fastCosineTransform2D(const MatrixF& arr, bool inverse=false);
+		static MatrixD fastCosineTransform2D(const MatrixD& arr, bool inverse=false);
 		
 		
 		//Special Case for JPEG
@@ -2091,7 +2094,8 @@ namespace smpl
 		 * 		Whether to solve for the inverse.
 		 * 		Default is false.
 		 */
-		static void FCT8x8(const Matrix& arr, Matrix* output, bool inverse=false);
+		static void FCT8x8(const MatrixF& arr, MatrixF* output, bool inverse=false);
+		static void FCT8x8(const MatrixD& arr, MatrixD* output, bool inverse=false);
 
 
 		/**
@@ -2139,7 +2143,8 @@ namespace smpl
 		 * @param arr 
 		 * @return Matrix 
 		 */
-		static Matrix sineTransform2D(const Matrix& arr);
+		static MatrixF sineTransform2D(const MatrixF& arr);
+		static MatrixD sineTransform2D(const MatrixD& arr);
 
 		/**
 		 * @brief NOT IMPLEMENTED
@@ -2148,7 +2153,8 @@ namespace smpl
 		 * @param inverse 
 		 * @return Matrix 
 		 */
-		static Matrix fastSineTransform2D(const Matrix& arr, bool inverse=false);
+		static MatrixF fastSineTransform2D(const MatrixF& arr, bool inverse=false);
+		static MatrixD fastSineTransform2D(const MatrixD& arr, bool inverse=false);
 		
 		/**
 		 * @brief Computes the convolution of a matrix and a kernel (which is a matrix).
@@ -2163,7 +2169,8 @@ namespace smpl
 		 * @param normalized
 		 * @return Matrix 
 		 */
-		static Matrix convolution(Matrix* baseImage, Matrix* kernel, bool normalized);
+		static MatrixF convolution(MatrixF* baseImage, MatrixF* kernel, bool normalized);
+		static MatrixD convolution(MatrixD* baseImage, MatrixD* kernel, bool normalized);
 
 		/**
 		 * @brief Computes the cross correlation of a matrix and a kernel (which is a matrix).
@@ -2181,7 +2188,8 @@ namespace smpl
 		 * @param normalized
 		 * @return Matrix 
 		 */
-		static Matrix crossCorrelation(Matrix* baseImage, Matrix* kernel, bool normalized);
+		static MatrixF crossCorrelation(MatrixF* baseImage, MatrixF* kernel, bool normalized);
+		static MatrixD crossCorrelation(MatrixD* baseImage, MatrixD* kernel, bool normalized);
 
 		//Clustering algorigthms
 
@@ -2372,130 +2380,6 @@ namespace smpl
 		{
 			return MathExt::sqrt(variance(data, size, mean));
 		}
-
-		//SIMD MATH FUNCTIONS
-
-		#if (OPTI >= 1)
-		static __m128  sin(__m128 a);
-		static __m128d sin(__m128d a);
-		
-		static __m128  cos(__m128 a);
-		static __m128d cos(__m128d a);
-		
-		static __m128  tan(__m128 a);
-		static __m128d tan(__m128d a);
-		
-		static __m128  ln(__m128 a);
-		static __m128d ln(__m128d a);
-		
-		static __m128  log(__m128 a);
-		static __m128d log(__m128d a);
-		
-		static __m128  log2(__m128 a);
-		static __m128d log2(__m128d a);
-		
-		static __m128  log(__m128 a, float base);
-		static __m128d log(__m128d a, float base);
-		
-		static __m128  exp(__m128 a);
-		static __m128d exp(__m128d a);
-		
-		static __m128  pow(__m128 a, __m128 b);
-		static __m128d pow(__m128d a, __m128d b);
-
-		static __m128  reciprocal(__m128 a);
-		static __m128d reciprocal(__m128d a);
-		
-		static __m128  sqr(__m128 a);
-		static __m128d sqr(__m128d a);
-
-		static __m128  cube(__m128 a);
-		static __m128d cube(__m128d a);
-		
-		static __m128  sqrt(__m128 a);
-		static __m128d sqrt(__m128d a);
-
-		static __m128  invSqrt(__m128 a);
-		static __m128d invSqrt(__m128d a);
-		
-		static __m128  cuberoot(__m128 a);
-		static __m128d cuberoot(__m128d a);
-
-		static __m128  arcsin(__m128 a);
-		static __m128d arcsin(__m128d a);
-		
-		static __m128  arccos(__m128 a);
-		static __m128d arccos(__m128d a);
-		
-		static __m128  arctan(__m128 a);
-		static __m128d arctan(__m128d a);
-		
-		static __m128  toRad(__m128 a);
-		static __m128d toRad(__m128d a);
-		
-		static __m128  toDeg(__m128 a);
-		static __m128d toDeg(__m128d a);
-		#endif
-
-		
-		#if (OPTI >= 2)
-		static __m256  sin(__m256 a);
-		static __m256d sin(__m256d a);
-		
-		static __m256  cos(__m256 a);
-		static __m256d cos(__m256d a);
-		
-		static __m256  tan(__m256 a);
-		static __m256d tan(__m256d a);
-		
-		static __m256  ln(__m256 a);
-		static __m256d ln(__m256d a);
-		
-		static __m256  log(__m256 a);
-		static __m256d log(__m256d a);
-		
-		static __m256  log2(__m256 a);
-		static __m256d log2(__m256d a);
-		
-		static __m256  log(__m256 a, float base);
-		static __m256d log(__m256d a, float base);
-		
-		static __m256  exp(__m256 a);
-		static __m256d exp(__m256d a);
-		
-		static __m256  pow(__m256 a, __m256 b);
-		static __m256d pow(__m256d a, __m256d b);
-		
-		static __m256  sqr(__m256 a);
-		static __m256d sqr(__m256d a);
-
-		static __m256  cube(__m256 a);
-		static __m256d cube(__m256d a);
-		
-		static __m256  sqrt(__m256 a);
-		static __m256d sqrt(__m256d a);
-
-		static __m256  invSqrt(__m256 a);
-		static __m256d invSqrt(__m256d a);
-		
-		static __m256  cuberoot(__m256 a);
-		static __m256d cuberoot(__m256d a);
-
-		static __m256  arcsin(__m256 a);
-		static __m256d arcsin(__m256d a);
-		
-		static __m256  arccos(__m256 a);
-		static __m256d arccos(__m256d a);
-		
-		static __m256  arctan(__m256 a);
-		static __m256d arctan(__m256d a);
-		
-		static __m256  toRad(__m256 a);
-		static __m256d toRad(__m256d a);
-		
-		static __m256  toDeg(__m256 a);
-		static __m256d toDeg(__m256d a);
-		#endif
 		
 	private:
 		

@@ -27,10 +27,6 @@ namespace smpl
          */
         ~VectorFont();
 
-        //Object and RootClass Stuff
-        static const RootClass globalClass;
-        virtual const RootClass* getClass();
-
         /**
          * @brief Loads a vector font from a valid file
          *      Valid formats: .svg | .ttf | .otf
@@ -77,6 +73,9 @@ namespace smpl
         int baseHorizontalAdvance = 0;
         int baseWidth = 0;
         int baseHeight = 0;
+        
+        SERIALIZE_SUPER_CLASS(Font)
+        SERIALIZE_CLASS()
     };
 
 } //NAMESPACE glib END

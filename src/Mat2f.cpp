@@ -2,13 +2,6 @@
 
 namespace smpl
 {
-
-	const RootClass Mat2f::globalClass = CREATE_ROOT_CLASS(Mat2f, &Matrix::globalClass);
-	const RootClass* Mat2f::getClass()
-	{
-		return &Mat2f::globalClass;
-	}
-
 	Mat2f::Mat2f() : Matrix(2,2)
 	{
 	}

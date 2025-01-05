@@ -14,7 +14,7 @@ namespace smpl
 
 	}
 
-	void CatmullRom::addPoint(Vec2f p)
+	void CatmullRom::addPoint(const Vec2f& p)
 	{
 		points.push_back(p);
 	}
@@ -26,13 +26,13 @@ namespace smpl
 		return Vec2f();
 	}
 
-	void CatmullRom::editPoint(size_t index, Vec2f p)
+	void CatmullRom::editPoint(size_t index, const Vec2f& p)
 	{
 		if(index < points.size())
 			points[index] = p;
 	}
 
-	bool CatmullRom::insertPoint(size_t index, Vec2f p)
+	bool CatmullRom::insertPoint(size_t index, const Vec2f& p)
 	{
 		if(index < points.size())
 		{

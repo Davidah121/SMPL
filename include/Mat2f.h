@@ -7,7 +7,7 @@ namespace smpl
 {
 
 	///A special Matrix that is a 2x2 matrix. Commonly used
-	class DLL_OPTION Mat2f : public Matrix
+	class DLL_OPTION Mat2f : public MatrixF
 	{
 	public:
 		/**
@@ -50,10 +50,6 @@ namespace smpl
 		 * 
 		 */
 		~Mat2f();
-		
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Returns the Identity 2x2 matrix
@@ -80,6 +76,9 @@ namespace smpl
 		{
 			return other*value;
 		}
+		
+		SERIALIZE_SUPER_CLASS(MatrixF)
+		SERIALIZE_CLASS() //Override class TypeInfo only
 	};
 
 } //NAMESPACE smpl END

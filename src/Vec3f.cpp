@@ -5,12 +5,6 @@
 namespace smpl
 {
 
-	const RootClass Vec3f::globalClass = CREATE_ROOT_CLASS(Vec3f, &SerializedObject::globalClass);
-    const RootClass* Vec3f::getClass()
-	{
-		return &Vec3f::globalClass;
-	}
-	
 	Vec3f::Vec3f(float x, float y, float z)
 	{
 		this->x = x;
@@ -32,11 +26,6 @@ namespace smpl
 
 	Vec3f::~Vec3f()
 	{
-	}
-
-	std::unordered_map<std::string, SerializedData> Vec3f::getSerializedVariables()
-	{
-		return {SERIALIZE_MAP(x), SERIALIZE_MAP(y), SERIALIZE_MAP(z)};
 	}
 
 	float Vec3f::getX()
@@ -69,14 +58,14 @@ namespace smpl
 		z = value;
 	}
 
-	void Vec3f::setValues(Vec3f other)
+	void Vec3f::setValues(const Vec3f& other)
 	{
 		x = other.x;
 		y = other.y;
 		z = other.z;
 	}
 
-	void Vec3f::setValues(Vec2f other)
+	void Vec3f::setValues(const Vec2f& other)
 	{
 		x = other.x;
 		y = other.y;
@@ -213,14 +202,14 @@ namespace smpl
 		return Vec3f(func(x), func(y), func(z));
 	}
 	
-	Matrix Vec3f::toMatrix() const
+	MatrixF Vec3f::toMatrix() const
 	{
-		return (Matrix)* this;
+		return (MatrixF)* this;
 	}
 
-	Vec3f::operator Matrix() const
+	Vec3f::operator MatrixF() const
 	{
-		Matrix k = Matrix(1, 3);
+		MatrixF k = MatrixF(1, 3);
 		k[0][0] = x;
 		k[0][1] = y;
 		k[0][2] = z;

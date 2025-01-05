@@ -9,11 +9,13 @@
 #include "SIMD.h"
 
 #if (OPTI == 1)
+	#define SIMD_GRAPHICS_INC (SIMD_U8::SIZE/sizeof(Color))
 	#define COLOR_TO_SIMD(x) _mm_set_epi8(x.alpha, x.blue, x.green, x.red,\
 											x.alpha, x.blue, x.green, x.red,\
 											x.alpha, x.blue, x.green, x.red,\
 											x.alpha, x.blue, x.green, x.red)
 #elif (OPTI >= 2)
+	#define SIMD_GRAPHICS_INC (SIMD_U8::SIZE/sizeof(Color))
 	#define COLOR_TO_SIMD(x) _mm256_set_epi8(x.alpha, x.blue, x.green, x.red,\
 											x.alpha, x.blue, x.green, x.red,\
 											x.alpha, x.blue, x.green, x.red,\
@@ -878,7 +880,7 @@ namespace smpl
 
 		static void floydSteinburgDithering(Image* img);
 		static void orderedBayerDithering(Image* img);
-		static Matrix generateBayerMatrix(Matrix m, int rowSize);
+		static MatrixF generateBayerMatrix(MatrixF m, int rowSize);
 
 		static Image* scaleNearestNeighbor(Image* img, double xScale, double yScale);
 		static Image* scaleBilinear(Image* img, double xScale, double yScale);

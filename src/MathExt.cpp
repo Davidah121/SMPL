@@ -219,13 +219,13 @@ namespace smpl
 
 	float MathExt::fastInvSqrt(float number)
 	{
-		long i;
+		int32_t i;
 		float x2, y;
 		const float threehalfs = 1.5F;
 
 		x2 = number * 0.5F;
 		y  = number;
-		i  = * ( long * ) &y;
+		i  = * ( int32_t * ) &y;
 		i  = 0x5f3759df - ( i >> 1 );
 		y  = * ( float * ) &i;
 		y  = y * ( threehalfs - ( x2 * y * y ) );
@@ -1483,8 +1483,8 @@ namespace smpl
 		if(points.size() <= 0)
 			return PolynomialMathFunction();
 		
-		Matrix X = Matrix(points.size(), degree);
-		Matrix Y = Matrix(points.size(), 1);
+		MatrixD X = MatrixD(points.size(), degree);
+		MatrixD Y = MatrixD(points.size(), 1);
 
 		for(size_t i=0; i<points.size(); i++)
 		{
@@ -1496,9 +1496,9 @@ namespace smpl
 			Y[i][0] = points[i].y;
 		}
 
-		Matrix xTranspose = X.getTranspose();
+		MatrixD xTranspose = X.getTranspose();
 		
-		Matrix constants = (xTranspose*X).getInverse() * xTranspose * Y;
+		MatrixD constants = (xTranspose*X).getInverse() * xTranspose * Y;
 		PolynomialMathFunction f = PolynomialMathFunction();
 
 		for(int i=0; i<constants.getRows(); i++)
@@ -1514,8 +1514,8 @@ namespace smpl
 		if(points.size() <= 0)
 			return PolynomialMathFunction();
 
-		Matrix A = Matrix(points.size(), points.size());
-		Matrix Y = Matrix(points.size(), 1);
+		MatrixD A = MatrixD(points.size(), points.size());
+		MatrixD Y = MatrixD(points.size(), 1);
 
 		for(size_t i=0; i<points.size(); i++)
 		{
@@ -1526,7 +1526,7 @@ namespace smpl
 			Y[i][0] = points[i].y;
 		}
 
-		Matrix X = A.getInverse() * Y;
+		MatrixD X = A.getInverse() * Y;
 		if(!X.getValid())
 			return PolynomialMathFunction();
 		
@@ -2199,9 +2199,9 @@ namespace smpl
 
 	#pragma region COSINE_TRANSFORM_2D
 
-	Matrix MathExt::cosineTransform2D(const Matrix& arr, bool inverse)
+	MatrixF MathExt::cosineTransform2D(const MatrixF& arr, bool inverse)
 	{
-		Matrix finalArr = Matrix(arr.getRows(), arr.getCols());
+		MatrixF finalArr = MatrixF(arr.getRows(), arr.getCols());
 
 		//for each row
 		for(int v=0; v<arr.getRows(); v++)
@@ -2235,18 +2235,54 @@ namespace smpl
 
 		return finalArr;
 	}
+	MatrixD MathExt::cosineTransform2D(const MatrixD& arr, bool inverse)
+	{
+		MatrixD finalArr = MatrixD(arr.getRows(), arr.getCols());
 
-	Matrix MathExt::fastCosineTransform2D(const Matrix& arr, bool inverse)
+		//for each row
+		for(int v=0; v<arr.getRows(); v++)
+		{
+			double* passArr = arr[v];
+			std::vector<double> newArr = MathExt::cosineTransform(passArr, arr.getCols(), inverse);
+
+			for(int i=0; i<arr.getCols(); i++)
+			{
+				finalArr[v][i] = newArr[i];
+			}
+		}
+
+		//for each column
+		for(int u=0; u<arr.getCols(); u++)
+		{
+			std::vector<double> passArr = std::vector<double>(arr.getRows());
+
+			for(int i=0; i<arr.getRows(); i++)
+			{
+				passArr[i] = finalArr[i][u];
+			}
+
+			std::vector<double> newArr = MathExt::cosineTransform(passArr.data(), arr.getCols(), inverse);
+
+			for(int i=0; i<arr.getRows(); i++)
+			{
+				finalArr[i][u] = newArr[i];
+			}
+		}
+
+		return finalArr;
+	}
+
+	MatrixF MathExt::fastCosineTransform2D(const MatrixF& arr, bool inverse)
 	{
 		if(!arr.getValid())
-			return Matrix();
+			return MatrixF();
 		if(arr.getRows() != arr.getCols())
-			return Matrix();
+			return MatrixF();
 		if(!IS_POWER_2(arr.getRows()))
-			return Matrix();
+			return MatrixF();
 		
 		//copy arr into finalArr
-		Matrix finalArr = Matrix(arr);
+		MatrixF finalArr = MatrixF(arr);
 		std::vector<float> temp = std::vector<float>(finalArr.getRows());
 		std::vector<float> columnArr = std::vector<float>(arr.getRows());
 
@@ -2303,15 +2339,16 @@ namespace smpl
 
 		return finalArr;
 	}
+	
 
 	#pragma endregion
 
 	
 	#pragma region SINE_TRANSFORM_2D
 	
-	Matrix MathExt::sineTransform2D(const Matrix& arr)
+	MatrixF MathExt::sineTransform2D(const MatrixF& arr)
 	{
-		Matrix finalArr = Matrix(arr.getRows(), arr.getCols());
+		MatrixF finalArr = MatrixF(arr.getRows(), arr.getCols());
 
 		//for each row
 		for(int v=0; v<arr.getRows(); v++)
@@ -2600,7 +2637,7 @@ namespace smpl
 		}
 	}
 
-	void MathExt::FCT8x8(const Matrix& arr, Matrix* output, bool inverse)
+	void MathExt::FCT8x8(const MatrixF& arr, MatrixF* output, bool inverse)
 	{
 		//for each row
 		float* outputAsDoubleArr = output->getData();
@@ -2633,12 +2670,12 @@ namespace smpl
 
 	#pragma COMPUTER_VISION_STUFF
 
-	Matrix MathExt::convolution(Matrix* baseImage, Matrix* kernel, bool normalize)
+	MatrixF MathExt::convolution(MatrixF* baseImage, MatrixF* kernel, bool normalize)
 	{
 		if(baseImage == nullptr)
-			return Matrix();
+			return MatrixF();
 		
-		Matrix output = Matrix(baseImage->getRows(), baseImage->getCols());
+		MatrixF output = MatrixF(baseImage->getRows(), baseImage->getCols());
 		int kernelRowSizeHalf = kernel->getRows()/2;
 		int kernelColSizeHalf = kernel->getCols()/2;
 		double normalizationFactor = 1.0;
@@ -2690,12 +2727,12 @@ namespace smpl
 		return output;
 	}
 
-	Matrix MathExt::crossCorrelation(Matrix* baseImage, Matrix* kernel, bool normalize)
+	MatrixF MathExt::crossCorrelation(MatrixF* baseImage, MatrixF* kernel, bool normalize)
 	{
 		if(baseImage == nullptr)
-			return Matrix();
+			return MatrixF();
 		
-		Matrix output = Matrix(baseImage->getRows(), baseImage->getCols());
+		MatrixF output = MatrixF(baseImage->getRows(), baseImage->getCols());
 		int kernelRowSizeHalf = kernel->getRows()/2;
 		int kernelColSizeHalf = kernel->getCols()/2;
 		

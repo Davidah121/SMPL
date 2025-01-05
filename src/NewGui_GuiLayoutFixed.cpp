@@ -2,12 +2,6 @@
 
 namespace smpl
 {
-    const RootClass GuiLayoutFixed::globalClass = CREATE_ROOT_CLASS(GuiLayoutFixed, &GuiLayout::globalClass);
-    const RootClass* GuiLayoutFixed::getClass()
-	{
-		return &GuiLayoutFixed::globalClass;
-	}
-
     GuiLayoutFixed::GuiLayoutFixed() : GuiLayout()
     {
 

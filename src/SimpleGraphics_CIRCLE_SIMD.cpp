@@ -53,7 +53,7 @@ namespace smpl
 				{
 					if(compositeRule == NO_COMPOSITE)
 					{
-						#pragma omp parallel for
+						//#pragma omp parallel for
 						for(int tY=minY; tY<=maxY; tY++)
 						{
 							double C = 0;
@@ -78,10 +78,10 @@ namespace smpl
 							int len = x2-x1;
 							int simdBound = SIMD_U8::getSIMDBound(len);
 							int i=x1;
-							for(int k=0; k<simdBound; k+=SIMD_U8::SIZE)
+							for(int k=0; k<simdBound; k+=SIMD_GRAPHICS_INC)
 							{
 								activeColorAsSIMD.store((unsigned char*)&srcPixels[i + tY*tempWidth]);
-								i+=SIMD_U8::SIZE;
+								i+=SIMD_GRAPHICS_INC;
 							}
 							while(i <= x2)
 							{
@@ -92,7 +92,7 @@ namespace smpl
 					}
 					else
 					{
-						#pragma omp parallel for
+						//#pragma omp parallel for
 						for(int tY=minY; tY<=maxY; tY++)
 						{
 							double C = 0;
@@ -117,12 +117,12 @@ namespace smpl
 							int len = x2-x1;
 							int simdBound = SIMD_U8::getSIMDBound(len);
 							int i=x1;
-							for(int k=0; k<simdBound; k+=SIMD_U8::SIZE)
+							for(int k=0; k<simdBound; k+=SIMD_GRAPHICS_INC)
 							{
 								SIMD_U8 destColor = SIMD_U8::load((unsigned char*)&srcPixels[i + tY*tempWidth]);
 								SIMD_U8 blendedColor = blend(activeColorAsSIMD.values, destColor.values);
 								blendedColor.store((unsigned char*)&srcPixels[i + tY*tempWidth]);
-								i+=SIMD_U8::SIZE;
+								i+=SIMD_GRAPHICS_INC;
 							}
 							while(i <= x2)
 							{
@@ -136,7 +136,7 @@ namespace smpl
 				{
 					if(compositeRule == NO_COMPOSITE)
 					{
-						#pragma omp parallel for
+						//#pragma omp parallel for
 						for(int tY=minY; tY<=maxY; tY++)
 						{
 							//create polynomial to describe distance
@@ -206,10 +206,10 @@ namespace smpl
 							int len = x2-x1;
 							int simdBound = SIMD_U8::getSIMDBound(len);
 							int i=x1;
-							for(int k=0; k<simdBound; k+=SIMD_U8::SIZE)
+							for(int k=0; k<simdBound; k+=SIMD_GRAPHICS_INC)
 							{
 								activeColorAsSIMD.store((unsigned char*)&srcPixels[i + tY*tempWidth]);
-								i+=SIMD_U8::SIZE;
+								i+=SIMD_GRAPHICS_INC;
 							}
 							while(i <= x2)
 							{
@@ -220,7 +220,7 @@ namespace smpl
 					}
 					else
 					{
-						#pragma omp parallel for
+						//#pragma omp parallel for
 						for(int tY=minY; tY<=maxY; tY++)
 						{
 							//create polynomial to describe distance
@@ -290,12 +290,12 @@ namespace smpl
 							int len = x2-x1;
 							int simdBound = SIMD_U8::getSIMDBound(len);
 							int i=x1;
-							for(int k=0; k<simdBound; k+=SIMD_U8::SIZE)
+							for(int k=0; k<simdBound; k+=SIMD_GRAPHICS_INC)
 							{
 								SIMD_U8 destColor = SIMD_U8::load((unsigned char*)&srcPixels[i + tY*tempWidth]);
 								SIMD_U8 blendedColor = blend(activeColorAsSIMD.values, destColor.values);
 								blendedColor.store((unsigned char*)&srcPixels[i + tY*tempWidth]);
-								i+=SIMD_U8::SIZE;
+								i+=SIMD_GRAPHICS_INC;
 							}
 							while(i <= x2)
 							{
@@ -313,7 +313,7 @@ namespace smpl
 				oldX1 = x;
 				oldX2 = x;
 
-				#pragma omp parallel for
+				//#pragma omp parallel for
 				for(int tY = minY; tY<=maxY+1; tY++)
 				{
 					double startX, endX;

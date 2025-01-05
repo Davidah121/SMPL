@@ -1,6 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
-#include "Serializable.h"
+#include "SimpleSerialization.h"
 #include "Matrix.h"
 
 namespace smpl
@@ -28,12 +28,7 @@ namespace smpl
 		 * 
 		 */
 		~Vec2f();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
-		virtual std::unordered_map<std::string, SerializedData> getSerializedVariables();
-
+		
 		float x = 0;
 		float y = 0;
 
@@ -70,7 +65,7 @@ namespace smpl
 		 * 
 		 * @param other 
 		 */
-		void setValues(Vec2f other);
+		void setValues(const Vec2f& other);
 
 		/**
 		 * @brief Get the Length of the vector
@@ -161,9 +156,10 @@ namespace smpl
 		 * 
 		 * @return Matrix 
 		 */
-		Matrix toMatrix() const;
-		operator Matrix() const;
+		MatrixF toMatrix() const;
+		operator MatrixF() const;
 
+	SERIALIZE_CLASS(x, y)
 	};
 
 } //NAMESPACE glib END

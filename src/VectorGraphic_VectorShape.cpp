@@ -11,12 +11,6 @@ namespace smpl
 		
 	#pragma region VectorShape
 
-	const RootClass VectorShape::globalClass = CREATE_ROOT_CLASS(VectorShape, &Object::globalClass);
-    const RootClass* VectorShape::getClass()
-	{
-		return &VectorShape::globalClass;
-	}
-
 	VectorShape::VectorShape()
 	{
 		transform = Mat3f::getIdentity();

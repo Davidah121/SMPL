@@ -6,7 +6,7 @@
 namespace smpl
 {
 
-	class DLL_OPTION Mat3f : public Matrix
+	class DLL_OPTION Mat3f : public MatrixF
 	{
 	public:
 		/**
@@ -55,10 +55,6 @@ namespace smpl
 		 */
 		void operator=(const Mat3f& o);
 
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
-
 		/**
 		 * @brief Returns the Identity 3x3 matrix
 		 * 
@@ -87,6 +83,10 @@ namespace smpl
 
 		bool operator==(const Mat3f& other) const;
 		bool operator!=(const Mat3f& other) const;
+		
+		
+		SERIALIZE_SUPER_CLASS(MatrixF)
+		SERIALIZE_CLASS() //Override class TypeInfo only
 	};
 
 } //NAMESPACE smpl END

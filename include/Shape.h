@@ -3,12 +3,12 @@
 #include <vector>
 #include <functional>
 #include "MathExt.h"
-#include "Object.h"
+#include "SimpleSerialization.h"
 #include "BezierCurve.h"
 
 namespace smpl
 {
-	class DLL_OPTION Shape : public Object
+	class DLL_OPTION Shape : public SerializedObject
 	{
 	public:
 		/**
@@ -23,10 +23,6 @@ namespace smpl
 		 * 
 		 */
 		virtual ~Shape();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Set the Position of the shape.
@@ -91,6 +87,8 @@ namespace smpl
 		Vec3f rotation = Vec3f();
 
 		virtual void onTransformChanged();
+
+	SERIALIZE_CLASS(position, scale, rotation)
 	};
 
 	class CombinationShape : public Shape
@@ -112,10 +110,6 @@ namespace smpl
 		 * 
 		 */
 		~CombinationShape();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Adds a shape to the list.
@@ -146,6 +140,9 @@ namespace smpl
 
 	private:
 		std::vector<Shape> shapes = std::vector<Shape>();
+
+	SERIALIZE_SUPER_CLASS(Shape)
+	SERIALIZE_CLASS(shapes)
 	};
 
 	#pragma region SHAPES_2D
@@ -184,10 +181,6 @@ namespace smpl
 		 */
 		~Point2D();
 
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
-
 		/**
 		 * @brief Generates the bounding radius for the point.
 		 * 		Returns the value 0 because it is a point.
@@ -198,6 +191,9 @@ namespace smpl
 		
 	protected:
 		void onTransformChanged();
+	
+	SERIALIZE_SUPER_CLASS(Shape)
+	SERIALIZE_CLASS()
 	};
 
 	class DLL_OPTION Box2D : public Shape
@@ -224,10 +220,6 @@ namespace smpl
 		 */
 		Box2D(float leftBound, float topBound, float rightBound, float bottomBound);
 		~Box2D();
-		
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Set the Left Bound of the AABB
@@ -319,6 +311,8 @@ namespace smpl
 		Vec2f baseTopLeft;
 		Vec2f baseBottomRight;
 		
+	SERIALIZE_SUPER_CLASS(Shape)
+	SERIALIZE_CLASS(baseTopLeft, baseBottomRight)
 	};
 
 	class DLL_OPTION Circle : public Shape
@@ -362,10 +356,6 @@ namespace smpl
 		 */
 		void setRadius(float rad);
 
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
-
 		/**
 		 * @brief Generates the bounding radius for the circle.
 		 * 		Returns the radius of the circle.
@@ -380,6 +370,9 @@ namespace smpl
 	private:
 		float radius = 0;
 		float baseRadius;
+	
+	SERIALIZE_SUPER_CLASS(Shape)
+	SERIALIZE_CLASS(baseRadius)
 	};
 
 	class DLL_OPTION Ellipse : public Shape
@@ -435,10 +428,6 @@ namespace smpl
 		 * @param rad 
 		 */
 		void setYRadius(float rad);
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Generates the bounding radius of the Ellipse.
@@ -455,6 +444,9 @@ namespace smpl
 		float yRadius = 0;
 		float baseXRadius = 0;
 		float baseYRadius = 0;
+		
+	SERIALIZE_SUPER_CLASS(Shape)
+	SERIALIZE_CLASS(baseXRadius, baseYRadius)
 	};
 
 	class DLL_OPTION Line2D : public Shape
@@ -493,10 +485,6 @@ namespace smpl
 		 * 
 		 */
 		~Line2D();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Sets the first point of the line
@@ -560,8 +548,11 @@ namespace smpl
 		void onTransformChanged();
 
 	private:
-		Line baseL;
+		Line baseLine;
 		Line l;
+		
+	SERIALIZE_SUPER_CLASS(Shape)
+	SERIALIZE_CLASS(baseLine)
 	};
 
 	class DLL_OPTION Triangle2D : public Shape
@@ -603,10 +594,6 @@ namespace smpl
 		 * 
 		 */
 		~Triangle2D();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Sets the first vertex of the triangle
@@ -695,6 +682,9 @@ namespace smpl
 		Vec2f v1;
 		Vec2f v2;
 		Vec2f v3;
+		
+	SERIALIZE_SUPER_CLASS(Shape)
+	SERIALIZE_CLASS(v1, v2, v3)
 	};
 
 	class DLL_OPTION Triangle2DModel : public Shape
@@ -714,10 +704,6 @@ namespace smpl
 		 * 
 		 */
 		~Triangle2DModel();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Adds a 2D triangle to the list of triangles in the shape.
@@ -748,7 +734,10 @@ namespace smpl
 		 */
 		size_t size();
 	private:
-		std::vector<Triangle2D> tris;
+		std::vector<Triangle2D> triangleList;
+		
+	SERIALIZE_SUPER_CLASS(Shape)
+	SERIALIZE_CLASS(triangleList)
 	};
 
 	class DLL_OPTION Polygon2D : public Shape
@@ -768,10 +757,6 @@ namespace smpl
 		 * 
 		 */
 		~Polygon2D();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Adds a vertex to the polygon.
@@ -877,6 +862,9 @@ namespace smpl
 		std::vector<Vec2f> points;
 		Vec2f centerPoint;
 		bool isConvex = true;
+		
+	SERIALIZE_SUPER_CLASS(Shape)
+	SERIALIZE_CLASS(points)
 	};
 
 	// class CubicBezierCurve2D : public Shape
@@ -896,35 +884,35 @@ namespace smpl
 
 	#pragma region SHAPES_3D
 
-	class DLL_OPTION Sphere : public Shape
-	{
+	// class DLL_OPTION Sphere : public Shape
+	// {
 
-	};
+	// };
 
-	class DLL_OPTION Ellipsoid : public Shape
-	{
+	// class DLL_OPTION Ellipsoid : public Shape
+	// {
 
-	};
+	// };
 
-	class DLL_OPTION Cylinder : public Shape
-	{
+	// class DLL_OPTION Cylinder : public Shape
+	// {
 
-	};
+	// };
 
-	class DLL_OPTION Box3D : public Shape
-	{
+	// class DLL_OPTION Box3D : public Shape
+	// {
 
-	};
+	// };
 
-	class DLL_OPTION Point3D : public Shape
-	{
+	// class DLL_OPTION Point3D : public Shape
+	// {
 
-	};
+	// };
 
-	class DLL_OPTION Line3D : public Shape
-	{
+	// class DLL_OPTION Line3D : public Shape
+	// {
 
-	};
+	// };
 
 	class DLL_OPTION Triangle3D : public Shape
 	{
@@ -968,10 +956,6 @@ namespace smpl
 		 * 
 		 */
 		~Triangle3D();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Sets the first vertex of the triangle
@@ -1070,6 +1054,9 @@ namespace smpl
 		Vec3f v1;
 		Vec3f v2;
 		Vec3f v3;
+
+	SERIALIZE_SUPER_CLASS(Shape)
+	SERIALIZE_CLASS(v1, v2, v3)
 	};
 
 	class DLL_OPTION Triangle3DModel : public Shape
@@ -1089,10 +1076,6 @@ namespace smpl
 		 * 
 		 */
 		~Triangle3DModel();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Adds a 3D triangle to the list of triangles in the shape.
@@ -1123,13 +1106,16 @@ namespace smpl
 		 */
 		size_t size();
 	private:
-		std::vector<Triangle3D> tris;
+		std::vector<Triangle3D> triangleList;
+
+	SERIALIZE_SUPER_CLASS(Shape)
+	SERIALIZE_CLASS(triangleList)
 	};
 
-	class DLL_OPTION Polygon3D : public Shape
-	{
+	// class DLL_OPTION Polygon3D : public Shape
+	// {
 
-	};
+	// };
 
 	#pragma endregion
 

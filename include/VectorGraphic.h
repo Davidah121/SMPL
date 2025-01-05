@@ -18,7 +18,7 @@ namespace smpl
 		bool horizontal;
 	};
 
-	class DLL_OPTION VectorShape : public Object
+	class DLL_OPTION VectorShape : public SerializedObject
 	{
 	public:
 		/**
@@ -88,10 +88,6 @@ namespace smpl
 		 * 
 		 */
 		virtual ~VectorShape();
-		
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief An abstract draw function.
@@ -239,6 +235,8 @@ namespace smpl
 		char lineCap = 0;
 		char lineJoin = 0;
 		Mat3f transform = Mat3f();
+		
+	SERIALIZE_CLASS(fill, strokeColor, strokeWidth, fillMethod, lineCap, lineJoin, transform)
 	};
 
 	class DLL_OPTION VectorRectangle : public VectorShape
@@ -273,10 +271,6 @@ namespace smpl
 		 * 
 		 */
 		~VectorRectangle();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws the VectorRectangle
@@ -402,6 +396,9 @@ namespace smpl
 		void drawTransformed(Image* buffer, int globalWidth, int globalHeight);
 		void drawStrokeTransformed(Image* buffer, int globalWidth, int globalHeight);
 
+		
+	SERIALIZE_SUPER_CLASS(VectorShape)
+	SERIALIZE_CLASS(x, y, rx, ry, width, height)
 	};
 
 	class DLL_OPTION VectorCircle : public VectorShape
@@ -432,10 +429,6 @@ namespace smpl
 		 * 
 		 */
 		~VectorCircle();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws the VectorCircle
@@ -513,6 +506,8 @@ namespace smpl
 		void drawTransformed(Image* buffer, int globalWidth, int globalHeight);
 		void drawStrokeTransformed(Image* buffer, int globalWidth, int globalHeight);
 		
+	SERIALIZE_SUPER_CLASS(VectorShape)
+	SERIALIZE_CLASS(cx, cy, radius)
 	};
 
 	class DLL_OPTION VectorEllipse : public VectorShape
@@ -545,10 +540,6 @@ namespace smpl
 		 * 
 		 */
 		~VectorEllipse();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws a VectorEllipse
@@ -639,6 +630,8 @@ namespace smpl
 		void drawTransformed(Image* buffer, int globalWidth, int globalHeight);
 		void drawStrokeTransformed(Image* buffer, int globalWidth, int globalHeight);
 		
+	SERIALIZE_SUPER_CLASS(VectorShape)
+	SERIALIZE_CLASS(cx, cy, rx, ry)
 	};
 
 	class DLL_OPTION VectorLine : public VectorShape
@@ -671,10 +664,6 @@ namespace smpl
 		 * 
 		 */
 		~VectorLine();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws a VectorLine
@@ -764,6 +753,9 @@ namespace smpl
 		double x2 = 0;
 		double y1 = 0;
 		double y2 = 0;
+
+	SERIALIZE_SUPER_CLASS(VectorShape)
+	SERIALIZE_CLASS(x1, x2, y1, y2)
 	};
 
 	class DLL_OPTION VectorPolyline : public VectorShape
@@ -802,10 +794,6 @@ namespace smpl
 		 * 
 		 */
 		~VectorPolyline();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws the VectorPolyline.
@@ -887,6 +875,9 @@ namespace smpl
 		
 	private:
 		std::vector<Vec2f> points = std::vector<Vec2f>();
+	
+	SERIALIZE_SUPER_CLASS(VectorShape)
+	SERIALIZE_CLASS(points)
 	};
 
 	class DLL_OPTION VectorPolygon : public VectorShape
@@ -922,10 +913,6 @@ namespace smpl
 		 * 
 		 */
 		~VectorPolygon();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws the VectorPolygon.
@@ -1006,6 +993,9 @@ namespace smpl
 		
 	private:
 		std::vector<Vec2f> points = std::vector<Vec2f>();
+		
+	SERIALIZE_SUPER_CLASS(VectorShape)
+	SERIALIZE_CLASS(points)
 	};
 
 	struct PathCommand
@@ -1100,10 +1090,6 @@ namespace smpl
 		 * 
 		 */
 		~VectorPath();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Draws the VectorPath
@@ -1474,9 +1460,12 @@ namespace smpl
 		void drawCloseTo(Vec2f currentPos, Vec2f closePoint, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines);
 		
 		void copy(VectorPath& other);
+		
+	SERIALIZE_SUPER_CLASS(VectorShape)
+	SERIALIZE_CLASS(commands)
 	};
 
-	class DLL_OPTION VectorGraphic : public Object
+	class DLL_OPTION VectorGraphic : public SerializedObject
 	{
 	public:
 
@@ -1548,10 +1537,6 @@ namespace smpl
 		 * 
 		 */
 		~VectorGraphic();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Adds a VectorShape to the VectorGraphic
@@ -1713,6 +1698,8 @@ namespace smpl
 		static double toNumber(std::string value, bool* percentage);
 		static Color toColor(std::string value);
 		static unsigned char AA_LEVEL;
+
+	SERIALIZE_CLASS(width, height, transform, viewBox, AA_LEVEL)
 	};
 
 } //NAMESPACE glib END

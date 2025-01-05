@@ -1,7 +1,7 @@
 #pragma once
 #include "BuildOptions.h"
 #include <vector>
-#include "Object.h"
+#include "SimpleSerialization.h"
 #include "KDTree.h"
 #include "MathExt.h"
 #include "GeneralExceptions.h"
@@ -82,7 +82,7 @@ namespace smpl
 		}
 	};
 
-	class DLL_OPTION ColorPalette : public Object
+	class DLL_OPTION ColorPalette : public SerializedObject
 	{
 	public:
 
@@ -115,10 +115,6 @@ namespace smpl
 		 * 
 		 */
 		void dispose();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Adds a new color to the palette.
@@ -278,6 +274,8 @@ namespace smpl
 		std::vector<Color> paletteArr = std::vector<Color>();
 		KDTree<unsigned char>* paletteTree = new KDTree<unsigned char>(3);
 		bool uniquePalette = true;
+
+		SERIALIZE_CLASS()
 	};
 
 }
