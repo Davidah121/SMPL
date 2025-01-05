@@ -702,6 +702,12 @@ namespace smpl
         if(potentialProblem)
             validXml = false;
 
+        if(parseEscape)
+        {
+            for(int i=0; i<nodes.size(); i++) //WHY MORE THAN 1 ROOT ALLOWED? Probably some HTML thing.
+                fixParseOnNode(nodes[i]);
+        }
+
         return true;
     }
 

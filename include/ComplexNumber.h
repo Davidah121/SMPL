@@ -1,12 +1,12 @@
 #pragma once
 #include "BuildOptions.h"
-#include "Object.h"
+#include "SimpleSerialization.h"
 #include "Vec2f.h"
 
 namespace smpl
 {
 
-	class DLL_OPTION ComplexNumber : public Object
+	class DLL_OPTION ComplexNumber : public SerializedObject
 	{
 	public:
 		/**
@@ -44,10 +44,6 @@ namespace smpl
 		 * @return Vec2f 
 		 */
 		Vec2f toVec2f();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 		
 		ComplexNumber operator+(ComplexNumber other);
 		ComplexNumber operator-(ComplexNumber other);
@@ -76,6 +72,7 @@ namespace smpl
 		double real = 0;
 		double imaginary = 0;
 	private:
+	SERIALIZE_CLASS(real, imaginary)
 	};
 
 }

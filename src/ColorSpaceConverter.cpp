@@ -141,17 +141,17 @@ namespace smpl
                 o.z /= 108.8840;
 
                 if( o.x > 0.008856)
-                    o.x = MathExt::cubeRoot(o.x);
+                    o.x = MathExt::cuberoot(o.x);
                 else
                     o.x = (7.787 * o.x) + (16.0/116.0);
                 
                 if( o.y > 0.008856)
-                    o.y = MathExt::cubeRoot(o.y);
+                    o.y = MathExt::cuberoot(o.y);
                 else
                     o.y = (7.787 * o.y) + (16.0/116.0);
 
                 if( o.z > 0.008856)
-                    o.z = MathExt::cubeRoot(o.z);
+                    o.z = MathExt::cuberoot(o.z);
                 else
                     o.z = (7.787 * o.z) + (16.0/116.0);
 

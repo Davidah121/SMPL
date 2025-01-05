@@ -8,14 +8,12 @@
 #include "ComputerVision.h"
 #include "SimpleJobQueue.h"
 
-
-
 using namespace smpl;
 
 size_t subDivisions = 0;
 size_t subDivisionsPerSize[8];
 
-void recursivePass(Image* img, int startX, int startY, int size, int lowestSize, double threshold, BinarySet& output, Matrix& xDer, Matrix& yDer)
+void recursivePass(Image* img, int startX, int startY, int size, int lowestSize, double threshold, BinarySet& output, MatrixF& xDer, MatrixF& yDer)
 {
     subDivisions++;
     int totalSize = size*size;
@@ -112,16 +110,19 @@ void recursivePass(Image* img, int startX, int startY, int size, int lowestSize,
         }
         else
         {
-            minDot = MathExt::dot(perpendicularDirection, Vec2f(1, 0));
+            minDot = perpendicularDirection.dot(Vec2f(1, 0));
+            // minDot = MathExt::dot(perpendicularDirection, Vec2f(1, 0));
             v = 1;
             
-            d = MathExt::dot(perpendicularDirection, Vec2f(1, 1));
+            d = perpendicularDirection.dot(Vec2f(1, 1));
+            // d = MathExt::dot(perpendicularDirection, Vec2f(1, 1));
             if(d < minDot)
             {
                 v = 2;
             }
 
-            d = MathExt::dot(perpendicularDirection, Vec2f(0, 1));
+            d = perpendicularDirection.dot(Vec2f(0, 1));
+            // d = MathExt::dot(perpendicularDirection, Vec2f(0, 1));
             if(d < minDot)
             {
                 v = 3;
@@ -197,10 +198,10 @@ void testQuadTreeLikeCompression()
                         0,  0,  0,
                         -1, -2, -1);
 
-        Matrix imgAsMatrix = ComputerVision::imageToMatrix(imgs.getImage(0), ComputerVision::RED_CHANNEL);
+        MatrixF imgAsMatrix = ComputerVision::imageToMatrix(imgs.getImage(0), ComputerVision::RED_CHANNEL);
 
-        Matrix imgXDerivative = ComputerVision::convolution(&imgAsMatrix, &gx);
-        Matrix imgYDerivative = ComputerVision::convolution(&imgAsMatrix, &gy);
+        MatrixF imgXDerivative = ComputerVision::convolution(imgAsMatrix, gx);
+        MatrixF imgYDerivative = ComputerVision::convolution(imgAsMatrix, gy);
 
         //save these as images
         for(int i=64; i>=1; i/=2)
@@ -247,217 +248,6 @@ void testQuadTreeLikeCompression()
         StringTools::println("Failed to load image");
     }
 
-}
-
-void testSerialization()
-{
-    Vec2f p;
-    p.x = 0.2;
-    p.y = 3.1;
-    
-    StreamableVector<unsigned char> outputData;
-    SerializedData pSerialized = SERIALIZE(p);
-    pSerialized.serialize(&outputData);
-
-    
-}
-
-void init(SimpleWindow* win)
-{
-    // GuiButton* but = new GuiButton();
-    // but->setMinWidth(32);
-    // but->setMinHeight(32);
-    // but->setBackgroundColor({255,0,0,255});
-    
-    
-    win->getGuiManager()->loadElementsFromFile("GuiLayoutFile.xml");
-    // win->getGuiManager()->addElement(SmartMemory<GuiItem>::createNoDelete(but, false));
-    // win->getGuiManager()->addToDisposeList(SmartMemory<GuiItem>::createNoDelete(but, false));
-    // win->setActivateGui(false);
-}
-
-void testGuiPart2()
-{
-    GuiManager::initDefaultLoadFunctions();
-    SimpleGraphics::init();
-    WindowOptions options;
-    options.initFunction = init;
-    SimpleWindow win = SimpleWindow("Title", 320, 240, -1, -1, options);
-
-    win.waitTillClose();
-}
-
-void quickBezierTest()
-{
-    BezierCurve b = BezierCurve();
-    b.addPoint(0, 1);
-    b.addPoint(1.614, 0.333);
-    b.addPoint(1.84, 2.13);
-    b.addPoint(0.805, 0.228);
-
-    std::vector<BezierCurve> curveSubdivisions = b.subdivide(0.5);
-    for(BezierCurve& curve : curveSubdivisions)
-    {
-        StringTools::println("CURVE: ");
-        for(Vec2f& p : curve.getPoints())
-        {
-            StringTools::println("\t(%.3f, %.3f)", p.x, p.y);
-        }
-    }
-}
-
-void testDrawEfficiency()
-{
-    SimpleGraphics::setAntiAliasing(true);
-    Image buffer = Image(512, 512);
-    Sprite loadedSprite = Sprite();
-    loadedSprite.loadImage("Large_Scaled_Forest_Lizard.jpg");
-    //13256100ns with no simd
-    //6584300ns with sse
-    //9319300ns with avx
-    if(loadedSprite.getSize()>0)
-        loadedSprite.getImage(0)->savePNG("JPEGLOADTEST.png", true, false, true);
-    // buffer.saveBMP("testbmp.bmp", 128);
-    
-    // Image buffer = Image(1920, 1080);
-    // Image drawImg = Image(1920, 1080);
-
-    // //currently at 36 images per frame.
-    // for(int i=0; i<10; i++)
-    // {
-    //     size_t count = 0;
-    //     size_t t1 = System::getCurrentTimeMicro();
-    //     size_t timeUsed = 0;
-    //     while(true)
-    //     {
-    //         size_t t2 = System::getCurrentTimeMicro();
-    //         if(t2-t1 >= 16666)
-    //         {
-    //             timeUsed = t2-t1;
-    //             break;
-    //         }
-    //         SimpleGraphics::setColor(Color{255,255,255,255});
-    //         SimpleGraphics::drawSprite(&drawImg, 0, 0, &buffer);
-    //         count++;
-    //     }
-    //     StringTools::println("Total Time Used: %llu", timeUsed);
-    //     StringTools::println("ImagesDrawn = %llu", count);
-    // }
-    // system("pause");
-}
-
-void contourRecursiveCall(Image* img, int x, int y, int preX, int preY, std::vector<Vec2f>& points)
-{
-    //moore-neighbor tracing
-    const std::pair<int, int> boundaryPointsClockwise[8] = {{-1, -1}, {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}};
-
-    Vec2f newPoint = Vec2f(x, y);
-    Vec2f enterPoint = Vec2f(preX, preY);
-
-    while(true)
-    {
-        if(newPoint.x < 0 || newPoint.y < 0)
-            break;
-
-        //if this point is already in the list of points, return
-        for(int i=0; i<points.size(); i++)
-        {
-            if(newPoint == points[i])
-                return;
-        }
-        
-        points.push_back(newPoint);
-
-        //find start of the boundary checks
-        int tempX = enterPoint.x - newPoint.x;
-        int tempY = enterPoint.y - newPoint.y;
-        int startP = -1;
-        for(int i=0; i<8; i++)
-        {
-            if(tempX == boundaryPointsClockwise[i].first && tempY == boundaryPointsClockwise[i].second)
-            {
-                startP = i % 8;
-                break;
-            }
-        }
-
-        if(startP < 0)
-            return; //problem
-        
-        Vec2f nextPotentialPoint = {-1, -1};
-        int oldCheckX, oldCheckY;
-        for(int i=0; i<8; i++)
-        {
-            //move around pixel clockwise till a white pixel is found (white being a valid pixel and black being background).
-            std::pair<int, int> adjustments = boundaryPointsClockwise[startP];
-            int checkX = newPoint.x + adjustments.first;
-            int checkY = newPoint.y + adjustments.second;
-
-            if(checkX >= img->getWidth() || checkX < 0 || checkY >= img->getHeight() || checkY < 0)
-            {
-                //do nothing
-            }
-            else
-            {
-                //assume grayscale
-                Color c = img->getPixels()[checkX + checkY*img->getWidth()];
-                if(c.red > 0)
-                {
-                    //valid pixel. Part of boundary.
-                    nextPotentialPoint = Vec2f(checkX, checkY);
-                    enterPoint = Vec2f(oldCheckX, oldCheckY);
-                    break;
-                }
-            }
-
-            oldCheckX = checkX;
-            oldCheckY = checkY;
-            startP = (startP+1) % 8;
-        }
-
-        newPoint = nextPotentialPoint;
-    }
-}
-
-std::vector<std::vector<Vec2f>> findContours(Image* img)
-{
-    SmartMemory<Image> edgeImg;
-    edgeImg = SmartMemory<Image>::createDeleteOnLast(SimpleGraphics::cannyEdgeFilter(img, 1.0, 0.2, 0.5));
-    Image copyImg;
-    copyImg.copyImage(edgeImg.getRawPointer());
-
-    std::vector<std::vector<Vec2f>> allShapesFound;
-    for(int y=0; y<copyImg.getHeight(); y++)
-    {
-        for(int x=0; x<copyImg.getWidth(); x++)
-        {
-            if(copyImg.getPixels()[x + y*copyImg.getWidth()].red == 255)
-            {
-                std::vector<Vec2f> boundaryPoints;
-                contourRecursiveCall(&copyImg, x, y, x-1, y, boundaryPoints);
-
-                if(boundaryPoints.size() > 0)
-                {
-                    StringTools::println("FOUND SOMETHING");
-                    allShapesFound.push_back(boundaryPoints);
-                    //remove the polygon formed by connecting the points together with lines. Assume even-odd rule
-                    //Gonna cheat a little and use existing code
-                    SimpleGraphics::setColor({0, 0, 0, 0});
-                    SimpleGraphics::setBlendMode(SimpleGraphics::NO_COMPOSITE);
-                    SimpleGraphics::setFillRule(SimpleGraphics::FILL_EVEN_ODD);
-                    SimpleGraphics::drawPolygon(boundaryPoints.data(), boundaryPoints.size(), &copyImg);
-
-                    for(int i=0; i<boundaryPoints.size(); i++)
-                    {
-                        img->setPixel(boundaryPoints[i].x+1, boundaryPoints[i].y, {255, 0, 0, 255});
-                    }
-                    return allShapesFound;
-                }
-            }
-        }
-    }
-
-    return allShapesFound;
 }
 
 void removeBoundaryShape2(std::vector<Vec2f>& boundaryShape)
@@ -628,7 +418,7 @@ void removeBoundaryShape2(std::vector<Vec2f>& boundaryShape)
 
 void contourTest()
 {
-    // Matrix kernel = ComputerVision::guassianKernel(2, 1);
+    // MatrixF kernel = ComputerVision::guassianKernel(2, 1);
     // for(int y=0; y<kernel.getRows(); y++)
     // {
     //     for(int x=0; x<kernel.getCols(); x++)
@@ -648,18 +438,17 @@ void contourTest()
         return;
     }
     //make grayscale
-    Image* grayscaleImg = SimpleGraphics::convertToGrayscale(s.getImage(0));
-    // Matrix threshMatrix = ComputerVision::thresholding(grayscaleImg, 127, 0, true);
-    // Matrix threshMatrix = ComputerVision::adaptiveThresholding(grayscaleImg, 10, 5, 0, 0, true);
-    // Image* threshImg = ComputerVision::matrixToImage(&threshMatrix);
 
 
-    Image* derivativeImg = SimpleGraphics::convertToGrayscale(s.getImage(0));
-    Matrix threshMatrix = ComputerVision::adaptiveThresholding(grayscaleImg, 5, 4, 0, 0, true);
-    Image* threshImg = ComputerVision::matrixToImage(&threshMatrix);
+    Image* derivativeImg = SimpleGraphics::cannyEdgeFilter(s.getImage(0), 1, 0.05, 0.19);
+    MatrixF threshMatrix = ComputerVision::imageToMatrix(derivativeImg, 0);
+    Image* threshImg = ComputerVision::matrixToImage(threshMatrix);
 
+    StringTools::println("FINDING CONTOURS");
     std::vector<std::vector<Vec2f>> contours = ComputerVision::findContours(threshImg);
+    StringTools::println("CONTOURS FOUND");
 
+    SimpleGraphics::setColor({255, 0, 0, 255});
     for(std::vector<Vec2f>& boundary : contours)
     {
         Vec2f minPoint = Vec2f((float)INT_MAX, (float)INT_MAX);
@@ -671,73 +460,73 @@ void contourTest()
             minPoint.y = MathExt::min(minPoint.y, point.y);
             maxPoint.x = MathExt::max(maxPoint.x, point.x);
             maxPoint.y = MathExt::max(maxPoint.y, point.y);
-            // s.getImage(0)->setPixel((int)point.x, (int)point.y, {255, 0, 0, 255});
+            s.getImage(0)->setPixel((int)point.x, (int)point.y, {255, 0, 0, 255});
         }
-        SimpleGraphics::setColor({255, 0, 0, 255});
-        SimpleGraphics::drawRect((int)minPoint.x, (int)minPoint.y, (int)maxPoint.x, (int)maxPoint.y, true, s.getImage(0));
+        // SimpleGraphics::drawRect((int)minPoint.x, (int)minPoint.y, (int)maxPoint.x, (int)maxPoint.y, true, s.getImage(0));
     }
 
     s.getImage(0)->savePNG("contourStuff/FoundContours.png", false);
     threshImg->savePNG("contourStuff/preProcess.png", false);
+    delete threshImg;
     delete derivativeImg;
 }
 
-#ifndef USE_OPENGL
-    #define USE_OPENGL
-#endif
-#include "ext/GLSingleton.h"
-#include "ext/GLGraphics.h"
-#include "ext/GLWindow.h"
-#include "Input.h"
+// #ifndef USE_OPENGL
+//     #define USE_OPENGL
+// #endif
+// #include "ext/GLSingleton.h"
+// #include "ext/GLGraphics.h"
+// #include "ext/GLWindow.h"
+// #include "Input.h"
 
-void openGLTest()
-{
-    GLWindow window = GLWindow("TestOPENGL", 640, 480);
-    window.setActivateGui(false);
-    window.setVSync(1);
-    int fps = 0;
-    size_t timeEllapsed = 0;
+// void openGLTest()
+// {
+//     GLWindow window = GLWindow("TestOPENGL", 640, 480);
+//     window.setActivateGui(false);
+//     window.setVSync(1);
+//     int fps = 0;
+//     size_t timeEllapsed = 0;
 
-    while(window.getRunning())
-    {
-        size_t startTime = System::getCurrentTimeMicro();
-        Input::pollInput();
-        window.update();
+//     while(window.getRunning())
+//     {
+//         size_t startTime = System::getCurrentTimeMicro();
+//         Input::pollInput();
+//         window.update();
 
-        //other stuff
-        GLGraphics::setClearColor(Vec4f(1, 1, 1, 1));
-        GLGraphics::clear(GLGraphics::COLOR_BUFFER);
-        GLGraphics::setDrawColor(Vec4f(1, 0, 0, 1));
-        GLGraphics::drawRectangle(0, 0, 64, 64, false);
-        GLGraphics::setDrawColor(Vec4f(1, 0, 1, 1));
-        GLGraphics::drawCircle(64, 64, 32, false);
+//         //other stuff
+//         GLGraphics::setClearColor(Vec4f(1, 1, 1, 1));
+//         GLGraphics::clear(GLGraphics::COLOR_BUFFER);
+//         GLGraphics::setDrawColor(Vec4f(1, 0, 0, 1));
+//         GLGraphics::drawRectangle(0, 0, 64, 64, false);
+//         GLGraphics::setDrawColor(Vec4f(1, 0, 1, 1));
+//         GLGraphics::drawCircle(64, 64, 32, false);
 
-        window.forceRepaint();
-        window.repaint();
-        size_t timeUsed = System::getCurrentTimeMicro()-startTime;
+//         window.forceRepaint();
+//         window.repaint();
+//         size_t timeUsed = System::getCurrentTimeMicro()-startTime;
 
-        if(timeUsed < 16666) //1/60
-        {
-            size_t timeNeeded = 16666 - timeUsed;
-            System::sleep(0, timeNeeded, true);
-            timeEllapsed += 16666;
-        }
-        else
-        {
-            timeEllapsed += timeUsed;
-        }
-        fps++;
+//         if(timeUsed < 16666) //1/60
+//         {
+//             size_t timeNeeded = 16666 - timeUsed;
+//             System::sleep(0, timeNeeded, true);
+//             timeEllapsed += 16666;
+//         }
+//         else
+//         {
+//             timeEllapsed += timeUsed;
+//         }
+//         fps++;
 
-        if(timeEllapsed >= 16666*60)
-        {
-            StringTools::println("FPS: %d - %llu", fps, timeEllapsed);
-            fps = 0;
-            timeEllapsed -= 16666*60;
-            if(timeEllapsed < 16666)
-                timeEllapsed = 0; //less than 1 frame left. Consider it okay
-        }
-    }
-}
+//         if(timeEllapsed >= 16666*60)
+//         {
+//             StringTools::println("FPS: %d - %llu", fps, timeEllapsed);
+//             fps = 0;
+//             timeEllapsed -= 16666*60;
+//             if(timeEllapsed < 16666)
+//                 timeEllapsed = 0; //less than 1 frame left. Consider it okay
+//         }
+//     }
+// }
 
 #include "Graph.h"
 void testGraph()
@@ -767,16 +556,49 @@ void testGraph()
     StringTools::println("}");
 }
 
+void init(SimpleWindow* win)
+{
+    win->getGuiManager()->loadElementsFromFile("GuiLayoutFile_JustTextBox.xml");
+}
+
+#include <omp.h>
+void testGuiPart2()
+{
+    GuiManager::initDefaultLoadFunctions();
+    SimpleGraphics::init();
+    WindowOptions options;
+    options.initFunction = init;
+    SimpleWindow win = SimpleWindow("Title", 1280, 720, -1, -1, options);
+
+    win.waitTillClose();
+}
+
+void testDrawFunctions()
+{
+    //Will make into unit test somehow
+    Image img = Image(320, 240);
+    size_t t1 = System::getCurrentTimeMicro();
+    for(int i=0; i<1000000; i++)
+    {
+        SimpleGraphics::setColor(Color{255, 0, 0, 255});
+        SimpleGraphics::drawRect(15, 217, 20, 229, true, &img);
+    }
+    size_t t2 = System::getCurrentTimeMicro();
+    StringTools::println("TIME TAKEN: %llu", t2-t1);
+}
+
 int main(int argc, char** argv)
 {
     // testGraph();
-    openGLTest();
+    // openGLTest();
     // contourTest();
-    // testDrawEfficiency();
-    // quickBezierTest();
-    // testSerialization();
-    // quickMapDatastructure();
+    testGuiPart2();
+    // testSmartMem();
+    // testDrawFunctions();
+
     return 0;
 }
 
-//TODO: CONTOUR TRACING, POLYGON TRIANGULATION
+//TODO: POLYGON TRIANGULATION, MAKE MANY OPERATIONS CONST&
+//TODO: ADD LARGE ENOUGH CLAUSE BEFORE APPLYING OPENMP
+//TODO: 

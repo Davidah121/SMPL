@@ -1,7 +1,7 @@
 #pragma once
 #include "BuildOptions.h"
 #include "Image.h"
-#include "Object.h"
+#include "SimpleSerialization.h"
 #include "MathExt.h"
 #include "GeneralExceptions.h"
 #include "Shape.h"
@@ -21,7 +21,7 @@ namespace smpl
 		int yOffset = 0;
 	};
 
-	class DLL_OPTION Font : public Object
+	class DLL_OPTION Font : public SerializedObject
 	{
 	public:
 		/**
@@ -45,10 +45,6 @@ namespace smpl
 		 * @param f 
 		 */
 		void copyFont(Font& f);
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 		
 		/**
 		 * @brief Gets the character information for rendering.
@@ -241,6 +237,8 @@ namespace smpl
 
 	private:
 		bool sorted = false;
+
+	SERIALIZE_CLASS()
 	};
 
 }  //NAMESPACE smpl END

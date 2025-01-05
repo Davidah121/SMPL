@@ -12,13 +12,11 @@ namespace smpl
     class Streamable
     {
     public:
-        virtual void add(T) = 0;
-        virtual void add(T*, size_t) = 0;
-        virtual void seek(size_t) = 0;
-        virtual T get() = 0;
-        virtual void get(T*, size_t size) = 0;
-        virtual void pop() = 0;
+        virtual size_t write(T*, size_t) = 0;
+        virtual size_t read(T*, size_t size) = 0;
+        virtual bool pop() = 0;
         virtual size_t size() = 0;
+        virtual size_t getLocation() = 0;
 
     protected:
         void lock();
@@ -35,13 +33,14 @@ namespace smpl
         StreamableVector();
         ~StreamableVector();
 
-        virtual void add(T data);
-        virtual void add(T* data, size_t size);
-        virtual void seek(size_t index);
-        virtual T get();
-        virtual void get(T* input, size_t size);
-        virtual void pop();
+        virtual size_t write(T* data, size_t size);
+        virtual size_t read(T* input, size_t size);
+        virtual bool pop();
         virtual size_t size();
+        virtual void clear();
+        virtual size_t getLocation();
+
+        std::vector<T>& getBuffer();
     private:
         std::vector<T> buffer;
         size_t offset = 0;
@@ -53,16 +52,13 @@ namespace smpl
     public:
         StreamableQueue();
         ~StreamableQueue();
-
-        virtual void add(T data);
-        virtual void add(T* data, size_t size);
-
-        virtual void seek(size_t index);
-        
-        virtual T get();
-        virtual void get(T* input, size_t size);
-        virtual void pop();
+        virtual size_t write(T* data, size_t size);
+        virtual size_t read(T* input, size_t size);
+        virtual bool pop();
         virtual size_t size();
+        virtual void clear();
+        Queue<T>& getBuffer();
+        virtual size_t getLocation();
     private:
         Queue<T> buffer;
     };
@@ -74,15 +70,13 @@ namespace smpl
         StreamableStack();
         ~StreamableStack();
 
-        virtual void add(T data);
-        virtual void add(T* data, size_t size);
-
-        virtual void seek(size_t index);
-
-        virtual T get();
-        virtual void get(T* input, size_t size);
-        virtual void pop_back();
+        virtual size_t write(T* data, size_t size);
+        virtual size_t read(T* input, size_t size);
+        virtual bool pop();
         virtual size_t size();
+        virtual void clear();
+        Stack<T>& getBuffer();
+        virtual size_t getLocation();
     private:
         Stack<T> buffer;
     };
@@ -93,13 +87,12 @@ namespace smpl
         StreamableFile(std::string filename, char type);
         ~StreamableFile();
 
-        virtual void add(unsigned char data);
-        virtual void add(unsigned char* data, size_t size);
-        virtual void seek(size_t index);
-        virtual unsigned char get();
-        virtual void get(unsigned char* input, size_t size);
-        virtual void pop();
+        virtual size_t write(unsigned char* data, size_t size);
+        virtual size_t read(unsigned char* input, size_t size);
+        virtual bool pop();
         virtual size_t size();
+        SimpleFile& getBuffer();
+        virtual size_t getLocation();
     private:
         SimpleFile buffer;
     };
@@ -126,15 +119,7 @@ namespace smpl
     }
 
     template<typename T>
-    inline void StreamableVector<T>::add(T data)
-    {
-        this->lock();
-        buffer.push_back(data);
-        this->unlock();
-    }
-
-    template<typename T>
-    inline void StreamableVector<T>::add(T* data, size_t size)
+    inline size_t StreamableVector<T>::write(T* data, size_t size)
     {
         this->lock();
         for(size_t index = 0; index < size; index++)
@@ -142,41 +127,31 @@ namespace smpl
             buffer.push_back(data[index]);
         }
         this->unlock();
+        return size;
     }
 
     template<typename T>
-    inline void StreamableVector<T>::seek(size_t index)
+    inline size_t StreamableVector<T>::read(T* input, size_t size)
     {
         this->lock();
-        offset = index;
+        if(size < this->buffer.size())
+        {
+            for(size_t i=0; i<size; i++)
+                input[i] = buffer.at(offset+i);
+            offset += size;
+        }
         this->unlock();
-    }
-
-    template<typename T>
-    inline T StreamableVector<T>::get()
-    {
-        this->lock();
-        T temp = buffer.at(offset++);
-        this->unlock();
-        return temp;
-    }
-
-    template<typename T>
-    inline void StreamableVector<T>::get(T* input, size_t size)
-    {
-        this->lock();
-        for(size_t i=0; i<size; i++)
-            input[i] = buffer.at(offset+i);
-        offset += size;
-        this->unlock();
+        return 0;
     }
     
     template<typename T>
-    inline void StreamableVector<T>::pop()
+    inline bool StreamableVector<T>::pop()
     {
         this->lock();
+        bool v = buffer.size() > 0;
         buffer.pop_back();
         this->unlock();
+        return v;
     }
     template<typename T>
     inline size_t StreamableVector<T>::size()
@@ -187,6 +162,28 @@ namespace smpl
         return totalSize;
     }
     
+    template<typename T>
+    inline void StreamableVector<T>::clear()
+    {
+        this->lock();
+        buffer.clear();
+        this->unlock();
+    }
+
+    template<typename T>
+    size_t StreamableVector<T>::getLocation()
+    {
+        this->lock();
+        size_t loc = offset;
+        this->unlock();
+        return loc;
+    }
+
+    template<typename T>
+    inline std::vector<T>& StreamableVector<T>::getBuffer()
+    {
+        return buffer;
+    }
 
     template<typename T>
     inline StreamableQueue<T>::StreamableQueue()
@@ -198,54 +195,42 @@ namespace smpl
     }
 
     template<typename T>
-    inline void StreamableQueue<T>::add(T data)
-    {
-        this->lock();
-        buffer.add(data);
-        this->unlock();
-    }
-    template<typename T>
-    inline void StreamableQueue<T>::add(T* data, size_t size)
+    inline size_t StreamableQueue<T>::write(T* data, size_t size)
     {
         this->lock();
         for(size_t index = 0; index < size; index++)
         {
-            buffer.add(data[index]);
+            buffer.write(data[index]);
         }
         this->unlock();
-    }
-
-    template<typename T>
-    inline void StreamableQueue<T>::seek(size_t index)
-    {
+        return size;
     }
     
     template<typename T>
-    inline T StreamableQueue<T>::get()
+    inline size_t StreamableQueue<T>::read(T* input, size_t size)
     {
+        size_t amountRead = 0;
         this->lock();
-        T temp = buffer.get();
-        buffer.pop();
-        this->unlock();
-        return temp;
-    }
-    template<typename T>
-    inline void StreamableQueue<T>::get(T* input, size_t size)
-    {
-        this->lock();
-        for(size_t i=0; i<size; i++)
+        if(size < buffer.size())
         {
-            input[i] = buffer.get();
-            buffer.pop();
+            amountRead = size;
+            for(size_t i=0; i<size; i++)
+            {
+                input[i] = buffer.read();
+                buffer.pop();
+            }
         }
         this->unlock();
+        return amountRead;
     }
     template<typename T>
-    inline void StreamableQueue<T>::pop()
+    inline bool StreamableQueue<T>::pop()
     {
         this->lock();
+        bool v = buffer.size() > 0;
         buffer.pop();
         this->unlock();
+        return v;
     }
     template<typename T>
     inline size_t StreamableQueue<T>::size()
@@ -255,8 +240,27 @@ namespace smpl
         this->unlock();
         return totalSize;
     }
-
     
+    template<typename T>
+    inline void StreamableQueue<T>::clear()
+    {
+        this->lock();
+        buffer.clear();
+        this->unlock();
+    }
+
+    template<typename T>
+    size_t StreamableQueue<T>::getLocation()
+    {
+        return 0; //always 0. Can't seek. destructive datastructure
+    }
+    
+    template<typename T>
+    inline Queue<T>& StreamableQueue<T>::getBuffer()
+    {
+        return buffer;
+    }
+
     template<typename T>
     inline StreamableStack<T>::StreamableStack()
     {
@@ -267,54 +271,42 @@ namespace smpl
     }
 
     template<typename T>
-    inline void StreamableStack<T>::add(T data)
-    {
-        this->lock();
-        buffer.add(data);
-        this->unlock();
-    }
-    template<typename T>
-    inline void StreamableStack<T>::add(T* data, size_t size)
+    inline size_t StreamableStack<T>::write(T* data, size_t size)
     {
         this->lock();
         for(size_t index = 0; index < size; index++)
         {
-            buffer.add(data[index]);
+            buffer.write(data[index]);
         }
         this->unlock();
+        return size;
     }
 
     template<typename T>
-    inline void StreamableStack<T>::seek(size_t index)
+    inline size_t StreamableStack<T>::read(T* input, size_t size)
     {
-    }
-
-    template<typename T>
-    inline T StreamableStack<T>::get()
-    {
+        size_t amountRead = 0;
         this->lock();
-        T temp = buffer.get();
-        buffer.pop();
-        this->unlock();
-        return temp;
-    }
-    template<typename T>
-    inline void StreamableStack<T>::get(T* input, size_t size)
-    {
-        this->lock();
-        for(size_t i=0; i<size; i++)
+        if(size < buffer.size())
         {
-            input[i] = buffer.get();
-            buffer.pop();
+            amountRead = size;
+            for(size_t i=0; i<size; i++)
+            {
+                input[i] = buffer.read();
+                buffer.pop();
+            }
         }
         this->unlock();
+        return amountRead;
     }
     template<typename T>
-    inline void StreamableStack<T>::pop_back()
+    inline bool StreamableStack<T>::pop()
     {
         this->lock();
+        bool canPop = buffer.size() > 0;
         buffer.pop();
         this->unlock();
+        return canPop;
     }
     template<typename T>
     inline size_t StreamableStack<T>::size()
@@ -324,7 +316,26 @@ namespace smpl
         this->unlock();
         return totalSize;
     }
+    
+    template<typename T>
+    inline void StreamableStack<T>::clear()
+    {
+        this->lock();
+        buffer.clear();
+        this->unlock();
+    }
+    
+    template<typename T>
+    size_t StreamableStack<T>::getLocation()
+    {
+        return 0; //always 0. Can't seek. destructive datastructure
+    }
 
+    template<typename T>
+    inline Stack<T>& StreamableStack<T>::getBuffer()
+    {
+        return buffer;
+    }
 
     inline StreamableFile::StreamableFile(std::string filename, char type)
     {
@@ -334,42 +345,27 @@ namespace smpl
     {
     }
 
-    inline void StreamableFile::add(unsigned char data)
-    {
-        this->lock();
-        buffer.writeByte(data);
-        this->unlock();
-    }
-    inline void StreamableFile::add(unsigned char* data, size_t size)
+    inline size_t StreamableFile::write(unsigned char* data, size_t size)
     {
         this->lock();
         buffer.writeBytes(data, size);
         this->unlock();
+        return size;
     }
-    inline void StreamableFile::seek(size_t index)
+    inline size_t StreamableFile::read(unsigned char* input, size_t size)
     {
         this->lock();
-        buffer.seek(index);
+        size_t bytesRead = buffer.readBytes((char*)input, size);
         this->unlock();
+        return bytesRead;
     }
-    inline unsigned char StreamableFile::get()
+    inline bool StreamableFile::pop()
     {
         this->lock();
-        unsigned char temp = buffer.readByte();
-        this->unlock();
-        return temp;
-    }
-    inline void StreamableFile::get(unsigned char* input, size_t size)
-    {
-        this->lock();
-        buffer.readBytes((char*)input, size);
-        this->unlock();
-    }
-    inline void StreamableFile::pop()
-    {
-        this->lock();
+        bool canPop = buffer.getBytesLeft() > 0;
         buffer.readByte();
         this->unlock();
+        return canPop;
     }
     inline size_t StreamableFile::size()
     {
@@ -377,5 +373,18 @@ namespace smpl
         size_t totalSize = buffer.getSize();
         this->unlock();
         return totalSize;
+    }
+
+    size_t StreamableFile::getLocation()
+    {
+        this->lock();
+        size_t loc = buffer.currentLocation();
+        this->unlock();
+        return loc;
+    }
+
+    inline SimpleFile& StreamableFile::getBuffer()
+    {
+        return buffer;
     }
 }

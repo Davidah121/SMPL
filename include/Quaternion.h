@@ -1,6 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
-#include "Serializable.h"
+#include "SimpleSerialization.h"
 #include "Vec4f.h"
 
 namespace smpl
@@ -31,10 +31,6 @@ namespace smpl
          * 
          */
         ~Quaternion();
-
-        static const RootClass globalClass;
-        virtual const RootClass* getClass();
-        std::unordered_map<std::string, SerializedData> getSerializedVariables();
 
         Quaternion operator*(double val);
         void operator*=(double val);
@@ -89,6 +85,8 @@ namespace smpl
         double y=0;
         double z=0;
         double w=0;
+    
+    SERIALIZE_CLASS(x, y, z, w)
     };
 
 }

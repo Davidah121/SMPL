@@ -37,11 +37,6 @@ namespace smpl
          */
         ~PolarCoordinate();
 
-        static const RootClass globalClass;
-        virtual const RootClass* getClass();
-        
-        std::unordered_map<std::string, SerializedData> getSerializedVariables();
-
         /**
          * @brief Gets the Length of the polar coordinate
          * 
@@ -60,6 +55,8 @@ namespace smpl
     private:
         double length;
         double angle;
+        
+    SERIALIZE_CLASS(length, angle)
     };
 
 } //NAMESPACE smpl END

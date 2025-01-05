@@ -51,20 +51,21 @@ namespace smpl
             
             if(outline == false)
             {
-                GRAPHICS_SIMD_DATATYPE activeColorAsSIMD = COLOR_TO_SIMD(activeColor);
-                int stopPoint = minX + GET_GRAPHICS_SIMD_BOUND((maxX-minX));
+                SIMD_U8 activeColorAsSIMD = COLOR_TO_SIMD(activeColor);
+                int stopPoint = minX + SIMD_U8::getSIMDBound((maxX-minX));
                 if(currentComposite == NO_COMPOSITE)
                 {
-					#pragma omp parallel for
+					//#pragma omp parallel for
                     for(int tY = minY; tY <= maxY; tY++)
                     {
                         int tX = minX;
                         Color* startPoint = &otherImg->getPixels()[tX + tY*otherImg->getWidth()];
+
                         while(tX < stopPoint)
                         {
-                            GRAPHICS_SIMD_STORE((GRAPHICS_SIMD_DATATYPE*)startPoint, activeColorAsSIMD);
-                            startPoint += GRAPHICS_INC_AMOUNT;
-                            tX += GRAPHICS_INC_AMOUNT;
+                            activeColorAsSIMD.store((unsigned char*)startPoint);
+                            startPoint += SIMD_GRAPHICS_INC;
+                            tX += SIMD_GRAPHICS_INC;
                         }
                         while(tX <= maxX)
                         {
@@ -76,18 +77,18 @@ namespace smpl
                 }
                 else
                 {
-					#pragma omp parallel for
+					//#pragma omp parallel for
                     for(int tY = minY; tY <= maxY; tY++)
                     {
                         int tX = minX;
                         Color* startPoint = &otherImg->getPixels()[tX + tY*otherImg->getWidth()];
                         while(tX < stopPoint)
                         {
-                            GRAPHICS_SIMD_DATATYPE destC = GRAPHICS_SIMD_LOAD((GRAPHICS_SIMD_DATATYPE*)startPoint);
-                            GRAPHICS_SIMD_DATATYPE blendC = blend(activeColorAsSIMD, destC);
-                            GRAPHICS_SIMD_STORE((GRAPHICS_SIMD_DATATYPE*)startPoint, blendC);
-                            startPoint += GRAPHICS_INC_AMOUNT;
-                            tX += GRAPHICS_INC_AMOUNT;
+                            SIMD_U8 destC = SIMD_U8::load((unsigned char*)startPoint);
+                            SIMD_U8 blendC = blend(activeColorAsSIMD.values, destC.values);
+                            blendC.store((unsigned char*)startPoint);
+                            startPoint += SIMD_GRAPHICS_INC;
+                            tX += SIMD_GRAPHICS_INC;
                         }
                         while(tX <= maxX)
                         {

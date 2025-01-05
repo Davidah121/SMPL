@@ -1,12 +1,12 @@
 #pragma once
 #include "BuildOptions.h"
 #include "Vec2f.h"
-#include "Object.h"
+#include "SimpleSerialization.h"
 
 namespace smpl
 {
 
-	class DLL_OPTION Line : public Object
+	class DLL_OPTION Line : public SerializedObject
 	{
 	public:
 		/**
@@ -51,10 +51,6 @@ namespace smpl
 		 * 
 		 */
 		~Line();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Gets the first point of the line.
@@ -217,6 +213,7 @@ namespace smpl
 
 		double minX = 0, maxX = 0, minY = 0, maxY = 0;
 
+		SERIALIZE_CLASS(point1, point2)
 	};
 
 } //NAMESPACE smpl END

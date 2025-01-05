@@ -26,7 +26,7 @@ namespace smpl
 		 * 
 		 * @param p 
 		 */
-		void addPoint(Vec2f p);
+		void addPoint(const Vec2f& p);
 
 		/**
 		 * @brief Gets a Point in the spline.
@@ -44,7 +44,7 @@ namespace smpl
 		 * @param index 
 		 * @param p 
 		 */
-		void editPoint(size_t index, Vec2f p);
+		void editPoint(size_t index, const Vec2f& p);
 
 		/**
 		 * @brief Inserts a new point into the curve at the specified index.
@@ -54,7 +54,7 @@ namespace smpl
 		 * @return true 
 		 * @return false 
 		 */
-		bool insertPoint(size_t index, Vec2f p);
+		bool insertPoint(size_t index, const Vec2f& p);
 
 		/**
 		 * @brief Removes a point from the curve at the specified index.

@@ -6,37 +6,24 @@
 #include "Opti.h"
 #include "Shape.h"
 #include "BezierCurve.h"
+#include "SIMD.h"
 
-#ifndef GRAPHICS_SHIFT_AMOUNT
-	#if (OPTI == 0)
-		#define GRAPHICS_SHIFT_AMOUNT 0
-		#define GRAPHICS_INC_AMOUNT 1
-	#else
-		#define GRAPHICS_SHIFT_AMOUNT (1+OPTI)
-		#define GRAPHICS_INC_AMOUNT (1<<GRAPHICS_SHIFT_AMOUNT)
-		#define GET_GRAPHICS_SIMD_BOUND(x) ((x>>GRAPHICS_SHIFT_AMOUNT)<<GRAPHICS_SHIFT_AMOUNT)
-		#if (OPTI == 1)
-			#define GRAPHICS_SIMD_DATATYPE __m128i
-			#define GRAPHICS_SIMD_LOAD _mm_loadu_si128
-			#define GRAPHICS_SIMD_STORE _mm_storeu_si128
-			#define COLOR_TO_SIMD(x) _mm_set_epi8(x.alpha, x.blue, x.green, x.red,\
-													x.alpha, x.blue, x.green, x.red,\
-													x.alpha, x.blue, x.green, x.red,\
-													x.alpha, x.blue, x.green, x.red)
-		#elif (OPTI >= 2)
-			#define GRAPHICS_SIMD_DATATYPE __m256i
-			#define GRAPHICS_SIMD_LOAD _mm256_loadu_si256
-			#define GRAPHICS_SIMD_STORE _mm256_storeu_si256
-			#define COLOR_TO_SIMD(x) _mm256_set_epi8(x.alpha, x.blue, x.green, x.red,\
-													x.alpha, x.blue, x.green, x.red,\
-													x.alpha, x.blue, x.green, x.red,\
-													x.alpha, x.blue, x.green, x.red,\
-													x.alpha, x.blue, x.green, x.red,\
-													x.alpha, x.blue, x.green, x.red,\
-													x.alpha, x.blue, x.green, x.red,\
-													x.alpha, x.blue, x.green, x.red)
-		#endif
-	#endif
+#if (OPTI == 1)
+	#define SIMD_GRAPHICS_INC (SIMD_U8::SIZE/sizeof(Color))
+	#define COLOR_TO_SIMD(x) _mm_set_epi8(x.alpha, x.blue, x.green, x.red,\
+											x.alpha, x.blue, x.green, x.red,\
+											x.alpha, x.blue, x.green, x.red,\
+											x.alpha, x.blue, x.green, x.red)
+#elif (OPTI >= 2)
+	#define SIMD_GRAPHICS_INC (SIMD_U8::SIZE/sizeof(Color))
+	#define COLOR_TO_SIMD(x) _mm256_set_epi8(x.alpha, x.blue, x.green, x.red,\
+											x.alpha, x.blue, x.green, x.red,\
+											x.alpha, x.blue, x.green, x.red,\
+											x.alpha, x.blue, x.green, x.red,\
+											x.alpha, x.blue, x.green, x.red,\
+											x.alpha, x.blue, x.green, x.red,\
+											x.alpha, x.blue, x.green, x.red,\
+											x.alpha, x.blue, x.green, x.red)
 #endif
 
 namespace smpl
@@ -893,7 +880,7 @@ namespace smpl
 
 		static void floydSteinburgDithering(Image* img);
 		static void orderedBayerDithering(Image* img);
-		static Matrix generateBayerMatrix(Matrix m, int rowSize);
+		static MatrixF generateBayerMatrix(MatrixF m, int rowSize);
 
 		static Image* scaleNearestNeighbor(Image* img, double xScale, double yScale);
 		static Image* scaleBilinear(Image* img, double xScale, double yScale);

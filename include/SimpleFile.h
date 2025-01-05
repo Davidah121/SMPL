@@ -177,7 +177,7 @@ namespace smpl
 		 * 
 		 * @param index 
 		 */
-		void seek(size_t index);
+		bool seek(size_t index);
 
 		/**
 		 * @brief Reads the full file as a series of lines using the readString function.
@@ -331,6 +331,13 @@ namespace smpl
 		 * @return size_t 
 		 */
 		size_t getBytesLeft();
+
+		/**
+		 * @brief Returns the current location in the file.
+		 * 
+		 * @return size_t 
+		 */
+		size_t currentLocation();
 
 	protected:
 

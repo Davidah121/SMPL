@@ -27,7 +27,7 @@ namespace smpl
 				for(int x=minXBound; x<maxXBound; x++)
 				{
 					currPos.x = x;
-					double perc = MathExt::dot(currPos, dirVec) / maxDis;
+					double perc = currPos.dot(dirVec) / maxDis;
 					Color nColor = SimpleGraphics::lerp(c1, c2, perc);
 					SimpleGraphics::drawPixel(x, y, nColor, surf);
 				}

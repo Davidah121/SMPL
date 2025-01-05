@@ -7,13 +7,7 @@ namespace smpl
 {
     #pragma region GUI_MANAGER
 	std::unordered_map<std::string, std::function<SmartMemory<GuiItem>(SimpleHashMap<std::string, std::string>&, SmartMemory<GuiManager>)> > GuiManager::elementLoadingFunctions;
-
-	const RootClass GuiManager::globalClass = CREATE_ROOT_CLASS(GuiManager, &Object::globalClass);
-    const RootClass* GuiManager::getClass()
-	{
-		return &GuiManager::globalClass;
-	}
-
+	
 	void GuiManager::initDefaultLoadFunctions()
 	{
 		GuiManager::registerLoadFunction("Empty", GuiEmpty::loadFunction);
@@ -58,7 +52,7 @@ namespace smpl
 				if(!idPair->second.empty() && !srcPair->second.empty())
 				{
 					//Unless the file is incorrect, should be in the resource list something
-					GuiResourceManager::getResourceManager().addSprite(GraphicsInterface::createSprite(srcPair->second, graphicsInterfaceMode), idPair->second, false, false);
+					GuiResourceManager::getResourceManager().addSprite(GraphicsInterface::createSprite(srcPair->second, graphicsInterfaceMode), idPair->second, 1, false);
 					return true;
 				}
 			}
@@ -76,7 +70,7 @@ namespace smpl
 				if(!idPair->second.empty() && !srcPair->second.empty())
 				{
 					//Unless the file is incorrect, should be in the resource list something
-					GuiResourceManager::getResourceManager().addFont(GraphicsInterface::createFont(srcPair->second, graphicsInterfaceMode), idPair->second, false, false);
+					GuiResourceManager::getResourceManager().addFont(GraphicsInterface::createFont(srcPair->second, graphicsInterfaceMode), idPair->second, 1, false);
 					return true;
 				}
 			}
@@ -350,9 +344,12 @@ namespace smpl
 	
 	bool GuiManager::renderGuiElements()
 	{
+    	size_t t1 = System::getCurrentTimeMicro();
 		bool newImg = oldDrawnArea.right > 0xFFFFFF || oldDrawnArea.bottom > 0xFFFFFF;
 		if(alwaysForceRedraw || newImg)
+		{
 			forceRedraw();
+		}
 		
 		resetRenderValues();
 
@@ -369,6 +366,8 @@ namespace smpl
 		
 		if(renderCounter > 0)
 		{
+			// StringTools::println("AREA: (%d, %d, %d, %d)", newDrawnArea.left, newDrawnArea.top, newDrawnArea.right, newDrawnArea.bottom);
+
 			GraphicsInterface::setClippingRect(Box2D(newDrawnArea.left, newDrawnArea.top, newDrawnArea.right, newDrawnArea.bottom));
 			GraphicsInterface::setColor(backgroundColor);
 			GraphicsInterface::drawRect(newDrawnArea.left, newDrawnArea.top, newDrawnArea.right, newDrawnArea.bottom, false);
@@ -381,11 +380,16 @@ namespace smpl
 		GraphicsInterface::setBoundSurface(surf);
 		GraphicsInterface::setColor(Vec4f(1,1,1,1));
 		GraphicsInterface::drawToScreen();
+
+
 		
 		if(renderCounter > 0)
 			oldDrawnArea = newDrawnArea;
 		
 		shouldForceRedraw = false;
+		
+		size_t t2 = System::getCurrentTimeMicro();
+		// StringTools::println("TIME TAKEN: %llu", t2-t1);
 		return renderCounter > 0;
 	}
 
@@ -496,7 +500,7 @@ namespace smpl
 
 	void GuiManager::addToDisposeList(SmartMemory<GuiItem> k)
 	{
-		shouldDelete.push_back(SmartMemory<GuiItem>::createDeleteRights(k.getRawPointer(), false));
+		shouldDelete.push_back(SmartMemory<GuiItem>::createDeleteRights(k.getRawPointer(), 1));
 	}
 
 	void GuiManager::setObjectInFocus(SmartMemory<GuiItem> k)

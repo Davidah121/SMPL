@@ -782,10 +782,12 @@ namespace smpl
 				if(dataType == ASCII || dataType == UTF8)
 				{
 					fwrite("\r\n", sizeof(char), 2, cFile);
+					size += 2*sizeof(char);
 				}
 				else
 				{
 					fwrite(L"\r\n", sizeof(wchar_t), 2, cFile);
+					size += 2*sizeof(wchar_t);
 				}
 			}
 			else
@@ -854,10 +856,30 @@ namespace smpl
 		}
 	}
 	
-	void SimpleFile::seek(size_t index)
+	size_t SimpleFile::currentLocation()
 	{
 		if(isOpen())
-			fseek(cFile, index, SEEK_SET);
+		{
+			return ftell64(cFile);
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	
+	bool SimpleFile::seek(size_t index)
+	{
+		if(isOpen())
+		{
+			if(index >= size)
+				return false;
+			
+			int err = fseek(cFile, index, SEEK_SET);
+			return err == 0;
+		}
+		
+		return false;
 	}
 	
 } //NAMESPACE glib END

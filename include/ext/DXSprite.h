@@ -4,12 +4,12 @@
 
 	#include "Image.h"
 	#include "ext/DXTexture.h"
-	#include "Object.h"
+	#include "SimpleSerialization.h"
 
 	namespace smpl
 	{
 
-		class DXSprite : public Object
+		class DXSprite : public SerializedObject
 		{
 		public:
 			/**
@@ -39,10 +39,6 @@
 			 * 
 			 */
 			~DXSprite();
-
-			//Object and RootClass Stuff
-			static const RootClass globalClass;
-			virtual const RootClass* getClass();
 
 			/**
 			 * @brief Gets an texture from the sprite at the specified index.
@@ -125,6 +121,8 @@
 			bool loops = true;
 			std::vector<DXTexture*> images = std::vector<DXTexture*>();
 			std::vector<int> delayTimeForFrame = std::vector<int>();
+		
+		SERIALIZE_CLASS(loops, images, delayTimeForFrame)
 		};
 
 	} //NAMESPACE smpl END

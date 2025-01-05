@@ -3,17 +3,9 @@
 
 namespace smpl
 {
-
-    const RootClass Quaternion::globalClass = CREATE_ROOT_CLASS(Quaternion, &SerializedObject::globalClass);
-    const RootClass* Quaternion::getClass()
-	{
-		return &Quaternion::globalClass;
-	}
-
     Quaternion::Quaternion()
     {
     }
-
 
     Quaternion::Quaternion(double x, double y, double z, double w)
     {
@@ -27,11 +19,6 @@ namespace smpl
     {
 
     }
-
-    std::unordered_map<std::string, SerializedData> Quaternion::getSerializedVariables()
-	{
-		return {SERIALIZE_MAP(x), SERIALIZE_MAP(y), SERIALIZE_MAP(z), SERIALIZE_MAP(w)};
-	}
 
     Quaternion Quaternion::operator*(double val)
     {

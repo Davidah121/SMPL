@@ -2,15 +2,6 @@
 
 namespace smpl
 {
-
-	#pragma region ClassStuff
-	const RootClass ComplexNumber::globalClass = CREATE_ROOT_CLASS(ComplexNumber, &Object::globalClass);
-	const RootClass* ComplexNumber::getClass()
-	{
-		return &ComplexNumber::globalClass;
-	}
-	#pragma endregion
-
 	ComplexNumber::ComplexNumber()
 	{
 	}

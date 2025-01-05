@@ -10,13 +10,6 @@
 
 namespace smpl
 {
-
-	const RootClass Image::globalClass = CREATE_ROOT_CLASS(Image, &Object::globalClass);
-	const RootClass* Image::getClass()
-	{
-		return &Image::globalClass;
-	}
-
 	Image::Image()
 	{
 		width = 0;

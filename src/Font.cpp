@@ -5,13 +5,7 @@
 
 namespace smpl
 {
-		
-	const RootClass Font::globalClass = CREATE_ROOT_CLASS(Font, &Object::globalClass);
-	const RootClass* Font::getClass()
-	{
-		return &Font::globalClass;
-	}
-
+	
 	Font::Font()
 	{
 	}

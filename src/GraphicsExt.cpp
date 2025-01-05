@@ -904,7 +904,7 @@ namespace smpl
         #endif
     }
 
-    void GraphicsInterface::drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, unsigned char enteredType)
+    void GraphicsInterface::drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool canWrap, unsigned char enteredType)
     {
         int actualType = getType(enteredType);
         if(boundSurface == nullptr)
@@ -928,7 +928,7 @@ namespace smpl
 
         if(actualType == GraphicsInterface::TYPE_SOFTWARE)
         {
-            SimpleGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, useLineBreak, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, canWrap, (Image*)boundSurface->getSurface());
         }
         
         #ifdef USE_OPENGL
@@ -938,7 +938,7 @@ namespace smpl
                 {
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
-                GLGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, useLineBreak);
+                GLGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, canWrap);
             }
         #endif
 
@@ -949,12 +949,12 @@ namespace smpl
                 {
                     ((DXSurface*)boundSurface->getSurface())->bind();
                 }
-                DXGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, useLineBreak);
+                DXGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, canWrap);
             }
         #endif
     }
 
-    void GraphicsInterface::drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, unsigned char enteredType)
+    void GraphicsInterface::drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool canWrap, unsigned char enteredType)
     {
         int actualType = getType(enteredType);
         if(boundSurface == nullptr)
@@ -977,7 +977,7 @@ namespace smpl
 
         if(actualType == GraphicsInterface::TYPE_SOFTWARE)
         {
-            SimpleGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, useLineBreak, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, canWrap, (Image*)boundSurface->getSurface());
         }
         
         #ifdef USE_OPENGL
@@ -987,7 +987,7 @@ namespace smpl
                 {
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
-                GLGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, useLineBreak);
+                GLGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, canWrap);
             }
         #endif
 
@@ -998,12 +998,12 @@ namespace smpl
                 {
                     ((DXSurface*)boundSurface->getSurface())->bind();
                 }
-                DXGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, useLineBreak);
+                DXGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, canWrap);
             }
         #endif
     }
     
-    void GraphicsInterface::drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor, unsigned char enteredType)
+    void GraphicsInterface::drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool canWrap, int highlightStart, int highlightEnd, Color highlightColor, unsigned char enteredType)
     {
         int actualType = getType(enteredType);
         if(boundSurface == nullptr)
@@ -1026,7 +1026,7 @@ namespace smpl
 
         if(actualType == GraphicsInterface::TYPE_SOFTWARE)
         {
-            SimpleGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, highlightColor, (Image*)boundSurface->getSurface());
         }
         
         #ifdef USE_OPENGL
@@ -1037,7 +1037,7 @@ namespace smpl
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
                 Vec4f vColor = SimpleGraphics::convertColorToVec4f(highlightColor);
-                GLGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, vColor);
+                GLGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, vColor);
             }
         #endif
 
@@ -1049,12 +1049,12 @@ namespace smpl
                     ((DXSurface*)boundSurface->getSurface())->bind();
                 }
                 Vec4f vColor = SimpleGraphics::convertColorToVec4f(highlightColor);
-                DXGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, vColor);
+                DXGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, vColor);
             }
         #endif
     }
 
-    void GraphicsInterface::drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Color highlightColor, unsigned char enteredType)
+    void GraphicsInterface::drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool canWrap, int highlightStart, int highlightEnd, Color highlightColor, unsigned char enteredType)
     {
         int actualType = getType(enteredType);
         if(boundSurface == nullptr)
@@ -1077,7 +1077,7 @@ namespace smpl
 
         if(actualType == GraphicsInterface::TYPE_SOFTWARE)
         {
-            SimpleGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, highlightColor, (Image*)boundSurface->getSurface());
         }
         
         #ifdef USE_OPENGL
@@ -1088,7 +1088,7 @@ namespace smpl
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
                 Vec4f vColor = SimpleGraphics::convertColorToVec4f(highlightColor);
-                GLGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, vColor);
+                GLGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, vColor);
             }
         #endif
 
@@ -1100,12 +1100,12 @@ namespace smpl
                     ((DXSurface*)boundSurface->getSurface())->bind();
                 }
                 Vec4f vColor = SimpleGraphics::convertColorToVec4f(highlightColor);
-                DXGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, vColor);
+                DXGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, vColor);
             }
         #endif
     }
     
-    void GraphicsInterface::drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Vec4f highlightColor, unsigned char enteredType)
+    void GraphicsInterface::drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool canWrap, int highlightStart, int highlightEnd, Vec4f highlightColor, unsigned char enteredType)
     {
         int actualType = getType(enteredType);
         if(boundSurface == nullptr)
@@ -1129,7 +1129,7 @@ namespace smpl
         if(actualType == GraphicsInterface::TYPE_SOFTWARE)
         {
             Color cColor = SimpleGraphics::convertVec4fToColor(highlightColor);
-            SimpleGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, cColor, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, cColor, (Image*)boundSurface->getSurface());
         }
         
         #ifdef USE_OPENGL
@@ -1139,7 +1139,7 @@ namespace smpl
                 {
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
-                GLGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor);
+                GLGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, highlightColor);
             }
         #endif
 
@@ -1150,12 +1150,12 @@ namespace smpl
                 {
                     ((DXSurface*)boundSurface->getSurface())->bind();
                 }
-                DXGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor);
+                DXGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, highlightColor);
             }
         #endif
     }
 
-    void GraphicsInterface::drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Vec4f highlightColor, unsigned char enteredType)
+    void GraphicsInterface::drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool canWrap, int highlightStart, int highlightEnd, Vec4f highlightColor, unsigned char enteredType)
     {
         int actualType = getType(enteredType);
         if(boundSurface == nullptr)
@@ -1179,7 +1179,7 @@ namespace smpl
         if(actualType == GraphicsInterface::TYPE_SOFTWARE)
         {
             Color cColor = SimpleGraphics::convertVec4fToColor(highlightColor);
-            SimpleGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, cColor, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, cColor, (Image*)boundSurface->getSurface());
         }
         
         #ifdef USE_OPENGL
@@ -1189,7 +1189,7 @@ namespace smpl
                 {
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
-                GLGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor);
+                GLGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, highlightColor);
             }
         #endif
 
@@ -1200,7 +1200,7 @@ namespace smpl
                 {
                     ((DXSurface*)boundSurface->getSurface())->bind();
                 }
-                DXGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor);
+                DXGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, highlightColor);
             }
         #endif
     }

@@ -3,12 +3,6 @@
 
 namespace smpl
 {
-    const RootClass GuiItem::globalClass = CREATE_ROOT_CLASS(GuiItem, &Object::globalClass);
-    const RootClass* GuiItem::getClass()
-	{
-		return &GuiItem::globalClass;
-	}
-
     GuiItem::GuiItem()
     {
 
@@ -118,7 +112,7 @@ namespace smpl
     {
         if(!getVisible())
             return;
-        
+
         doPreRenderOperations(manager);
         determineChangeInOverlap(manager);
         updateManagerRenderCounter(manager);
@@ -232,11 +226,18 @@ namespace smpl
                 setShouldRender();
 
             if(getShouldReRender())
-                manager.getRawPointer()->addNewDrawnArea(currRect);
+            {
+                GRect bigRect = {
+                    MathExt::min(lastKnownRenderRect.left, currRect.left),
+                    MathExt::min(lastKnownRenderRect.top, currRect.top),
+                    MathExt::max(lastKnownRenderRect.right, currRect.right),
+                    MathExt::max(lastKnownRenderRect.bottom, currRect.bottom)
+                };
+                manager.getRawPointer()->addNewDrawnArea(bigRect);
+            }
         }
 
         doPreRenderOperationsForChildren(manager);
-
         lastKnownRenderRect = currRect;
     }
 

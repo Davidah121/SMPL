@@ -31,10 +31,6 @@
 			 * @brief Destroys a DXBitmapFont Object.
 			 */
 			~DXFont();
-			
-			//Object and RootClass Stuff
-			static const RootClass globalClass;
-			virtual const RootClass* getClass();
 
 			/**
 			 * @brief Get the texture where the desired character is stored.
@@ -68,6 +64,8 @@
 
 			std::vector<int> imgPage = std::vector<int>();
 
+		SERIALIZE_SUPER_CLASS(Font)
+		SERIALIZE_CLASS()
 		};
 	}
 

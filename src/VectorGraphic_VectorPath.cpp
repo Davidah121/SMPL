@@ -12,11 +12,6 @@ namespace smpl
 	int count = 0;
 
 	#pragma region VectorPath
-	const RootClass VectorPath::globalClass = CREATE_ROOT_CLASS(VectorPath, &VectorShape::globalClass);
-    const RootClass* VectorPath::getClass()
-	{
-		return &VectorPath::globalClass;
-	}
 
 	VectorPath::VectorPath() : VectorShape()
 	{
@@ -527,7 +522,7 @@ namespace smpl
 			BezierCurve strokeCurve2 = BezierCurve();
 			BezierCurve strokeCurveConn1 = BezierCurve();
 			BezierCurve strokeCurveConn2 = BezierCurve();
-			Vec2f invVec = MathExt::normalize(MathExt::inverseVec(b.getSimpleDerivativeAt(0))) * halfStrokeWidth;
+			Vec2f invVec = b.getSimpleDerivativeAt(0).inverse().normalize() * halfStrokeWidth;
 
 			strokeCurve1.addPoint( b.getPoint(0) + invVec );
 			strokeCurve2.addPoint( b.getPoint(0) - invVec );
@@ -1614,8 +1609,8 @@ namespace smpl
 			{
 				Mat3f transformMat = getTransform();
 
-				double xScale = MathExt::vecLength(Vec2f(transformMat[0][0], transformMat[0][1]));
-				double yScale = MathExt::vecLength(Vec2f(transformMat[1][0], transformMat[1][1]));
+				double xScale = Vec2f(transformMat[0][0], transformMat[0][1]).getLength();
+				double yScale = Vec2f(transformMat[1][0], transformMat[1][1]).getLength();
 				Vec3f rotPos = transformMat * Vec3f(1,0,0); 
 				
 				com.points[0] = Vec2f(com.points[0].x*xScale, com.points[0].y*yScale);

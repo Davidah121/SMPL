@@ -2,6 +2,6 @@ inc = -I ./include %WLIBPATH64% -I C:/Libraries/glew-2.1.0/include -I C:/Librari
 objDir = ./bin/Release/obj
 compiler = cmd /c clang++ 
 CXXFLAGS = -std=c++17 -O3 -mavx2
-DEFINES = -D OPTI=1 -D USE_OPENSSL -D USE_OPENGL
+DEFINES = -D OPTI=1 -D USE_OPENSSL -D USE_OPENGL -D USE_PREPROCESSOR_TRICKS=1
 OPTIONS = -g -c -fopenmp -pipe -Wno-unused-command-line-argument
 compilerFlags = $OPTIONS $CXXFLAGS $DEFINES

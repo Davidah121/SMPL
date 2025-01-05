@@ -5,12 +5,6 @@
 
 namespace smpl
 {
-    const RootClass GuiSprite::globalClass = CREATE_ROOT_CLASS(GuiSprite, &GuiContent::globalClass);
-    const RootClass* GuiSprite::getClass()
-	{
-		return &GuiSprite::globalClass;
-	}
-
     GuiSprite::GuiSprite() : GuiContent()
     {
 

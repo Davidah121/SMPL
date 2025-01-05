@@ -1,5 +1,6 @@
 #include <catch2/catch_amalgamated.hpp>
 #include "SmartMemory.h"
+#include "System.h"
 
 TEST_CASE("Testing of the SmartMemory class", "[SmartMemory]")
 {
@@ -62,5 +63,30 @@ TEST_CASE("Testing of the SmartMemory class", "[SmartMemory]")
 		//force destructor of main
 		mems.~SmartMemory();
 		REQUIRE( (counters[0] == 1 && counters[1] == 1 && counters[2] == 1 && counters[3] == 1) );
+	}
+
+	SECTION("Test Locking Smart Memory")
+	{
+		int value = 0;
+		SmartMemory<testClass> mainMemory = SmartMemory<testClass>::createDeleteRights(new testClass(&value), false);
+		SmartMemory<testClass> copyMemory = mainMemory; //a copy with no delete rights
+
+		//create a thread and make a LockingSmartMemory object from the main one.
+		std::thread t = std::thread([&mainMemory]() ->void{
+			LockingSmartMemory<testClass> lsm = mainMemory.getLockingPointer();
+			//sleep for like 5 millisecond
+			smpl::System::sleep(5);
+		});
+
+		//sleep until the thread starts. 2 milliseconds should be more than enough
+		smpl::System::sleep(2);
+		mainMemory.~SmartMemory();
+		REQUIRE(value == 0); //value changes when testClass is properly destroyed. should be 0 because it is locked
+
+		t.join();
+		REQUIRE(value == 1); //value changes when testClass is properly destroyed. should be 1 because it is not locked and was requested to be deleted.
+
+		//copy memory is holding on to deleted memory by now.
+		REQUIRE(copyMemory.isValid() == false);
 	}
 }

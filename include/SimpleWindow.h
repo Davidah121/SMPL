@@ -87,7 +87,7 @@
 			std::function<void(SimpleWindow*)> initFunction = nullptr;
 		};
 
-		class SimpleWindow : public Object
+		class SimpleWindow : public SerializedObject
 		{
 		public:
 			static const unsigned char MOUSE_LEFT = 0x00;
@@ -186,10 +186,6 @@
 			 * 
 			 */
 			~SimpleWindow();
-
-			//Object and RootClass Stuff
-			static const RootClass globalClass;
-			virtual const RootClass* getClass();
 
 			/**
 			 * @brief Sets if the window should be visible.
@@ -791,6 +787,8 @@
 			std::function<void(SimpleWindow*, int)> internalMouseWheelFunction;
 			std::function<void(SimpleWindow*, int)> internalMouseHWheelFunction;
 			std::function<void(SimpleWindow*, unsigned int, unsigned int)> internalCharValFunction;
+
+		SERIALIZE_CLASS()
 		};
 
 	} //NAMESPACE glib END

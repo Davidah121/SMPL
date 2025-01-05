@@ -98,7 +98,9 @@
         "span": "cpp",
         "variant": "cpp",
         "typeindex": "cpp",
-        "semaphore": "cpp"
+        "semaphore": "cpp",
+        "any": "cpp",
+        "bitset": "cpp"
     },
     "files.exclude": {
         "**/.classpath": true,
@@ -107,4 +109,5 @@
         "**/.factorypath": true
     },
     "cmake.configureOnOpen": false,
+    "C_Cpp.errorSquiggles": "enabled",
 }

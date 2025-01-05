@@ -60,7 +60,7 @@ namespace smpl
                 
                 if(currentComposite == NO_COMPOSITE)
                 {
-					#pragma omp parallel for
+					//#pragma omp parallel for
                     for(int tY = minY; tY <= maxY; tY++)
                     {
                         Color* startPoint = &otherImg->getPixels()[minX + tY*otherImg->getWidth()];
@@ -74,7 +74,7 @@ namespace smpl
                 }
                 else
                 {
-                    #pragma omp parallel for
+                    //#pragma omp parallel for
                     for(int tY = minY; tY <= maxY; tY++)
                     {
                         Color* startPoint = &otherImg->getPixels()[minX + tY*otherImg->getWidth()];

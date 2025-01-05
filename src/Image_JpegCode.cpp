@@ -9,10 +9,8 @@
 #include "ColorSpaceConverter.h"
 #include "System.h"
 
-//TODO: JPEG IS OFFICIALLY BROKEN. DO NOT USE UNTIL FIX
 namespace smpl
 {
-
 	struct huffThing
 	{
 		int value;
@@ -50,7 +48,7 @@ namespace smpl
 		int widthRoundedTo8;
 		int heightRoundedTo8;
 
-		std::vector<Matrix> quantizationTables;
+		std::vector<MatrixF> quantizationTables;
 		std::vector<BinaryTree<HuffmanNode>*> huffmanTreesDC;
 		std::vector<BinaryTree<HuffmanNode>*> huffmanTreesAC;
 
@@ -60,9 +58,9 @@ namespace smpl
 		std::vector<unsigned short> samplingRate;
 	};
 
-	Matrix getLuminanceQuantizationMatrix(int qualityLevel)
+	MatrixF getLuminanceQuantizationMatrix(int qualityLevel)
 	{
-		Matrix qualityMatrix = Matrix(8,8);
+		MatrixF qualityMatrix = MatrixF(8,8);
 		double qualityDouble = (double)(MathExt::clamp(qualityLevel, 1, 10)-1)/9.0;
 
 		qualityMatrix[0][0] = MathExt::lerp(16, 2, qualityDouble);     qualityMatrix[0][1] = MathExt::lerp(11, 1.5, qualityDouble);   qualityMatrix[0][2] = MathExt::lerp(10, 1.5, qualityDouble);   qualityMatrix[0][3] = MathExt::lerp(16, 2, qualityDouble);     qualityMatrix[0][4] = MathExt::lerp(24, 3.5, qualityDouble);   qualityMatrix[0][5] = MathExt::lerp(40, 5, qualityDouble);     qualityMatrix[0][6] = MathExt::lerp(51, 6, qualityDouble);     qualityMatrix[0][7] = MathExt::lerp(61, 7.5, qualityDouble); 
@@ -77,10 +75,10 @@ namespace smpl
 		return qualityMatrix;
 	}
 
-	Matrix getChrominanceQuantizationMatrix(int qualityLevel)
+	MatrixF getChrominanceQuantizationMatrix(int qualityLevel)
 	{
 		//LERP BETWEEN JPEG quality and Photoshop
-		Matrix qualityMatrix = Matrix(8,8);
+		MatrixF qualityMatrix = MatrixF(8,8);
 
 		double qualityDouble = (double)(MathExt::clamp(qualityLevel, 1, 10)-1)/9.0;
 
@@ -176,13 +174,13 @@ namespace smpl
 		int offX = 0;
 		int offY = 0;
 
-		Matrix q1 = Matrix(8,8);
-		Matrix q2 = Matrix(8,8);
-		Matrix q3 = Matrix(8,8);
+		MatrixF q1 = MatrixF(8,8);
+		MatrixF q2 = MatrixF(8,8);
+		MatrixF q3 = MatrixF(8,8);
 
-		Matrix yMat = Matrix(8,8);
-		Matrix cbMat = Matrix(8,8);
-		Matrix crMat = Matrix(8,8);
+		MatrixF yMat = MatrixF(8,8);
+		MatrixF cbMat = MatrixF(8,8);
+		MatrixF crMat = MatrixF(8,8);
 
 		//assuming imgMat is correctly setup
 		for(int y=0; y<img->getHeight(); y+=8)
@@ -933,8 +931,8 @@ namespace smpl
 			//grab a single grid and process that first
 			// int matFilled = 0; //Not used
 			quickVec3f blockAdd = quickVec3f();
-			Matrix q = Matrix(8,8);
-			Matrix m = Matrix(8,8);
+			MatrixF q = MatrixF(8,8);
+			MatrixF m = MatrixF(8,8);
 
 			int actualX = 0;
 			int actualY = 0;
@@ -1239,8 +1237,8 @@ namespace smpl
 	void HiResImage::saveJPG(File file, int quality, int subsampleMode)
 	{
 		//save using jpeg quantization matrix
-		// Matrix lum = getLuminanceQuantizationMatrix(quality);
-		// Matrix chrom = getChrominanceQuantizationMatrix(quality);
+		// MatrixF lum = getLuminanceQuantizationMatrix(quality);
+		// MatrixF chrom = getChrominanceQuantizationMatrix(quality);
 	}
 	
 	HiResImage** HiResImage::loadJPG(std::vector<unsigned char> fileData, int* amountOfImages)
@@ -1254,7 +1252,7 @@ namespace smpl
 
 
 		size_t index = 0;
-		jpegData.quantizationTables = std::vector<Matrix>(4);
+		jpegData.quantizationTables = std::vector<MatrixF>(4);
 		jpegData.huffmanTreesDC = std::vector<BinaryTree<HuffmanNode>*>(4);
 		jpegData.huffmanTreesAC = std::vector<BinaryTree<HuffmanNode>*>(4);
 
@@ -1527,7 +1525,7 @@ namespace smpl
 						return nullptr;
 					}
 
-					Matrix m = Matrix(8,8);
+					MatrixF m = MatrixF(8,8);
 
 					int r = 0;
 					int c = 0;

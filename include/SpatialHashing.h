@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include "Object.h"
 #include "Shape.h"
 
 namespace smpl

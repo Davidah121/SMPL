@@ -7,7 +7,7 @@ namespace smpl
 {
 
 	///A special Matrix that is a 2x2 matrix. Commonly used
-	class DLL_OPTION Mat2f : public Matrix
+	class DLL_OPTION Mat2f : public MatrixF
 	{
 	public:
 		/**
@@ -50,10 +50,6 @@ namespace smpl
 		 * 
 		 */
 		~Mat2f();
-		
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Returns the Identity 2x2 matrix
@@ -62,29 +58,27 @@ namespace smpl
 		 */
 		static Mat2f getIdentity();
 
-		float* operator[](int row);
+		float* operator[](int row) const;
 
-		Mat2f operator*(float value);
-
-		friend Mat2f operator*(float value, Mat2f other)
-		{
-			return other * value;
-		}
+		Mat2f operator+(const Mat2f& other) const;
+		Mat2f operator-(const Mat2f& other) const;
+		Mat2f operator*(const Mat2f& other) const;
+		Mat2f operator*(float value) const;
+		Vec2f operator*(const Vec2f& other) const;
+		bool operator==(const Mat2f& other) const;
+		bool operator!=(const Mat2f& other) const;
 
 		void operator*=(float value);
+		void operator+=(const Mat2f& other);
+		void operator-=(const Mat2f& other);
 
-		Mat2f operator+(Mat2f other);
-		void operator+=(Mat2f other);
-
-		Mat2f operator-(Mat2f other);
-		void operator-=(Mat2f other);
-
-		Mat2f operator*(Mat2f other);
-
-		Vec2f operator*(Vec2f other);
-
-		bool operator==(Mat2f other);
-		bool operator!=(Mat2f other);
+		friend Mat2f operator*(float value, const Mat2f& other)
+		{
+			return other*value;
+		}
+		
+		SERIALIZE_SUPER_CLASS(MatrixF)
+		SERIALIZE_CLASS() //Override class TypeInfo only
 	};
 
 } //NAMESPACE smpl END

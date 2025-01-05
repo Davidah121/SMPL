@@ -4,12 +4,6 @@
 
 namespace smpl
 {
-	const RootClass BezierCurve::globalClass = CREATE_ROOT_CLASS(BezierCurve, &Object::globalClass);
-	const RootClass* BezierCurve::getClass()
-	{
-		return &BezierCurve::globalClass;
-	}
-
 	BezierCurve::BezierCurve()
 	{
 	}
@@ -269,19 +263,19 @@ namespace smpl
 			//Simpson's rule
 			//subdivisions = 2 * points.size()
 			derVec = getDerivativeAt(startTime);
-			arcLength += MathExt::vecLength(derVec);
+			arcLength += derVec.getLength();
 
 			for(int i=1; i<subdivisions-1; i++)
 			{
 				derVec = getDerivativeAt(startTime + deltaX*i);
 				if(i%2 == 1)
-					arcLength += 4 * MathExt::vecLength(derVec);
+					arcLength += 4 * derVec.getLength();
 				else
-					arcLength += 2 * MathExt::vecLength(derVec);
+					arcLength += 2 * derVec.getLength();
 			}
 
 			derVec = getDerivativeAt(endTime);
-			arcLength += MathExt::vecLength(derVec);
+			arcLength += derVec.getLength();
 			
 			arcLength *= deltaX/3.0;
 			break;

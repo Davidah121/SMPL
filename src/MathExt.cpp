@@ -154,27 +154,24 @@ namespace smpl
 	{
 		return ::floorf(a);
 	}
+	double MathExt::floor(double a)
+	{
+		return std::floor(a);
+	}
 
 	float MathExt::ceil(float a)
 	{
 		return ::ceilf(a);
+	}
+	double MathExt::ceil(double a)
+	{
+		return std::ceil(a);
 	}
 
 	float MathExt::round(float a)
 	{
 		return ::roundf(a);
 	}
-
-	double MathExt::floor(double a)
-	{
-		return std::floor(a);
-	}
-
-	double MathExt::ceil(double a)
-	{
-		return std::ceil(a);
-	}
-
 	double MathExt::round(double a)
 	{
 		return std::round(a);
@@ -222,13 +219,13 @@ namespace smpl
 
 	float MathExt::fastInvSqrt(float number)
 	{
-		long i;
+		int32_t i;
 		float x2, y;
 		const float threehalfs = 1.5F;
 
 		x2 = number * 0.5F;
 		y  = number;
-		i  = * ( long * ) &y;
+		i  = * ( int32_t * ) &y;
 		i  = 0x5f3759df - ( i >> 1 );
 		y  = * ( float * ) &i;
 		y  = y * ( threehalfs - ( x2 * y * y ) );
@@ -237,12 +234,12 @@ namespace smpl
 		return y;
 	}
 
-	float MathExt::cubeRoot(float a)
+	float MathExt::cuberoot(float a)
 	{
 		return ::cbrtf(a);
 	}
 
-	double MathExt::cubeRoot(double a)
+	double MathExt::cuberoot(double a)
 	{
 		return std::cbrt(a);
 	}
@@ -786,113 +783,6 @@ namespace smpl
 		return result;
 	}
 
-	double MathExt::dot(Vec2f v1, Vec2f v2)
-	{
-		return v1.x*v2.x + v1.y*v2.y;
-	}
-
-	double MathExt::dot(Vec3f v1, Vec3f v2)
-	{
-		return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
-	}
-
-	double MathExt::dot(Vec4f v1, Vec4f v2)
-	{
-		return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z + v1.w*v2.w;
-	}
-
-	double MathExt::dot(GeneralVector v1, GeneralVector v2)
-	{
-		double result = 0;
-		if (v1.getSize() == v2.getSize())
-		{
-			for (int i = 0; i < v1.getSize(); i++)
-			{
-				result += v1.getValue(i) * v2.getValue(i);
-			}
-		}
-
-		return result;
-	}
-
-	double MathExt::vecLength(Vec2f v1)
-	{
-		return sqrt(sqr(v1.x) + sqr(v1.y));
-	}
-	double MathExt::vecLength(Vec3f v1)
-	{
-		return sqrt(sqr(v1.x) + sqr(v1.y) + sqr(v1.z));
-	}
-	double MathExt::vecLength(Vec4f v1)
-	{
-		return sqrt(sqr(v1.x) + sqr(v1.y) + sqr(v1.z) + sqr(v1.w));
-	}
-	double MathExt::vecLength(GeneralVector v1)
-	{
-		double lengthSum = 0;
-		for(int i=0; i<v1.getSize(); i++)
-		{
-			lengthSum += MathExt::sqr(v1.getValue(i));
-		}
-		return sqrt(lengthSum);
-	}
-
-	double MathExt::scalarVectorProjection(Vec2f a, Vec2f b)
-	{
-		return MathExt::dot(a, MathExt::normalize(b));
-	}
-	double MathExt::scalarVectorProjection(Vec3f a, Vec3f b)
-	{
-		return MathExt::dot(a, MathExt::normalize(b));
-	}
-	double MathExt::scalarVectorProjection(Vec4f a, Vec4f b)
-	{
-		return MathExt::dot(a, MathExt::normalize(b));
-	}
-	double MathExt::scalarVectorProjection(GeneralVector a, GeneralVector b)
-	{
-		return MathExt::dot(a, MathExt::normalize(b));
-	}
-
-	Vec2f MathExt::normalize(Vec2f v1)
-	{
-		double length = vecLength(v1);
-		if (length != 0)
-			return v1/length;
-		else
-			return Vec2f();
-	}
-
-	Vec3f MathExt::normalize(Vec3f v1)
-	{
-		double length = vecLength(v1);
-
-		if (length != 0)
-			return v1/length;
-		else
-			return Vec3f();
-	}
-
-	Vec4f MathExt::normalize(Vec4f v1)
-	{
-		double length = vecLength(v1);
-
-		if (length != 0)
-			return v1/length;
-		else
-			return Vec4f();
-	}
-
-	GeneralVector MathExt::normalize(GeneralVector v1)
-	{
-		double len = vecLength(v1);
-
-		if (len != 0)
-			return v1/len;
-		else
-			return GeneralVector(v1.getSize());
-	}
-
 	Quaternion MathExt::normalize(Quaternion q1)
 	{
 		double len = MathExt::sqrt( MathExt::sqr(q1.x) + MathExt::sqr(q1.y) + MathExt::sqr(q1.z) + MathExt::sqr(q1.w));
@@ -900,85 +790,6 @@ namespace smpl
 			return q1/len;
 		else
 			return Quaternion();
-	}
-
-	Vec3f MathExt::crossProduct(Vec3f v1, Vec3f v2)
-	{
-		Vec3f cross = Vec3f();
-		cross.x = v1.y*v2.z - v1.z*v2.y;
-		cross.y = v1.z*v2.x - v1.x*v2.z;
-		cross.z = v1.x*v2.y - v1.y*v2.x;
-		
-		return cross;
-	}
-
-	Vec2f MathExt::reflect(Vec2f v1, Vec2f v2)
-	{
-		Vec2f n = MathExt::normalize(v2);
-		return v1 - (n * (MathExt::dot(v1,n) * 2));
-	}
-
-	Vec3f MathExt::reflect(Vec3f v1, Vec3f v2)
-	{
-		Vec3f n = MathExt::normalize(v2);
-		return v1 - (n * (MathExt::dot(v1,n) * 2));
-	}
-
-	Vec4f MathExt::reflect(Vec4f v1, Vec4f v2)
-	{
-		Vec4f n = MathExt::normalize(v2);
-		return v1 - (n * (MathExt::dot(v1,n) * 2));
-	}
-
-	GeneralVector MathExt::reflect(GeneralVector v1, GeneralVector v2)
-	{
-		GeneralVector n = MathExt::normalize(v2);
-		return v1 - (n * (MathExt::dot(v1,n) * 2));
-	}
-
-	Vec2f MathExt::inverseVec(Vec2f f)
-	{
-		return Vec2f(-f.y, f.x);
-	}
-
-	double MathExt::dotNorm(Vec2f v1, Vec2f v2)
-	{
-		Vec2f normV1 = MathExt::normalize(v1);
-		Vec2f normV2 = MathExt::normalize(v2);
-		
-		return normV1.x*normV2.x + normV1.y*normV2.y;
-	}
-
-	double MathExt::dotNorm(Vec3f v1, Vec3f v2)
-	{
-		Vec3f normV1 = MathExt::normalize(v1);
-		Vec3f normV2 = MathExt::normalize(v2);
-		
-		return normV1.x*normV2.x + normV1.y*normV2.y + normV1.z*normV2.z;
-	}
-
-	double MathExt::dotNorm(Vec4f v1, Vec4f v2)
-	{
-		Vec4f normV1 = MathExt::normalize(v1);
-		Vec4f normV2 = MathExt::normalize(v2);
-		
-		return normV1.x*normV2.x + normV1.y*normV2.y + normV1.z*normV2.z + normV1.w*normV2.w;
-	}
-
-	double MathExt::dotNorm(GeneralVector v1, GeneralVector v2)
-	{
-		GeneralVector normV1 = MathExt::normalize(v1);
-		GeneralVector normV2 = MathExt::normalize(v2);
-		double result = 0;
-		if (normV1.getSize() == normV2.getSize())
-		{
-			for (int i = 0; i < normV1.getSize(); i++)
-			{
-				result += normV1.getValue(i) * normV2.getValue(i);
-			}
-		}
-
-		return result;
 	}
 
 	double MathExt::distanceTo(double x1, double y1, double x2, double y2)
@@ -1004,23 +815,6 @@ namespace smpl
 		return MathExt::sqrt(MathExt::sqr(disVec.x) + MathExt::sqr(disVec.y) + MathExt::sqr(disVec.z) + MathExt::sqr(disVec.w));
 	}
 
-	double MathExt::distanceTo(GeneralVector p1, GeneralVector p2)
-	{
-		if(p1.getSize() == p2.getSize())
-		{
-			GeneralVector disVec = p2-p1;
-			double sqrLen = 0;
-			for(int i=0; i<p1.getSize(); i++)
-			{
-				sqrLen += MathExt::sqr(disVec.getValue(i));
-			}
-
-			return MathExt::sqrt(sqrLen);
-		}
-
-		return -1;
-	}
-
 	double MathExt::distanceTo(PolarCoordinate p1, PolarCoordinate p2)
 	{
 		//law of cosines
@@ -1030,35 +824,6 @@ namespace smpl
 
 		return MathExt::sqrt(a + b + c);
 	}
-
-	#pragma region Matrix_Operations
-
-	Matrix MathExt::hadamardProduct(Matrix& a, Matrix& b)
-	{
-		return a.hadamardProduct(b);
-	}
-
-	Matrix MathExt::getInverse(Matrix& m)
-	{
-		return m.getInverse();
-	}
-
-	Matrix MathExt::getTranspose(Matrix& m)
-	{
-		return m.getTranspose();
-	}
-
-	double MathExt::getDeterminate(Matrix& m)
-	{
-		return m.getDeterminate();
-	}
-
-	Matrix MathExt::getMatrixOfMinors(Matrix& m, int row, int col)
-	{
-		return m.getMatrixOfMinors(row, col);
-	}
-
-	#pragma endregion
 
 	#pragma region Transformations_2D
 	Mat3f MathExt::rotation2D(double rotation)
@@ -1294,13 +1059,13 @@ namespace smpl
 	Mat4f MathExt::lookAtMatrix(Vec3f eyePos, Vec3f toPos, Vec3f upVec)
 	{
 		Vec3f forward = (toPos - eyePos).normalize(); 
-		Vec3f right = (crossProduct(forward, upVec)).normalize(); //right
-		Vec3f up = crossProduct(forward, right); //up
+		Vec3f right = forward.crossProduct(upVec).normalize(); //right
+		Vec3f up = forward.crossProduct(right); //up
 
 		Mat4f cameraView = Mat4f(
-			right.x, right.y, right.z, -dot(right, eyePos),
-			up.x, up.y, up.z, -dot(up, eyePos),
-			forward.x, forward.y, forward.z, -dot(forward, eyePos),
+			right.x, right.y, right.z, -right.dot(eyePos),
+			up.x, up.y, up.z, -up.dot(eyePos),
+			forward.x, forward.y, forward.z, -forward.dot(eyePos),
 			0, 0, 0, 1
 		);
 
@@ -1531,7 +1296,7 @@ namespace smpl
 				//StringTools::println("1 Solution");
 				//doesn't matter in this case whether we use + or -
 				double temp = (-q - MathExt::sqrt(q2 + (4.0*p3)/27.0))/2.0;
-				double w = MathExt::cubeRoot(temp);
+				double w = MathExt::cuberoot(temp);
 				double solution = w - p/(3.0*w);
 				double actualSolution = solution - B/(3.0*A);
 				
@@ -1718,23 +1483,22 @@ namespace smpl
 		if(points.size() <= 0)
 			return PolynomialMathFunction();
 		
-		Matrix X = Matrix(points.size(), degree+1);
-		Matrix Y = Matrix(points.size(), 1);
-
-		Matrix xTranspose = Matrix(degree+1, points.size());
+		MatrixD X = MatrixD(points.size(), degree);
+		MatrixD Y = MatrixD(points.size(), 1);
 
 		for(size_t i=0; i<points.size(); i++)
 		{
-			for(int j=0; j<degree+1; j++)
+			for(int j=0; j<degree; j++)
 			{
 				X[i][j] = MathExt::pow(points[i].x, j);
-				xTranspose[j][i] = MathExt::pow(points[i].x, j);
 			}
 
 			Y[i][0] = points[i].y;
 		}
+
+		MatrixD xTranspose = X.getTranspose();
 		
-		Matrix constants = (xTranspose*X).getInverse() * xTranspose * Y;
+		MatrixD constants = (xTranspose*X).getInverse() * xTranspose * Y;
 		PolynomialMathFunction f = PolynomialMathFunction();
 
 		for(int i=0; i<constants.getRows(); i++)
@@ -1750,8 +1514,8 @@ namespace smpl
 		if(points.size() <= 0)
 			return PolynomialMathFunction();
 
-		Matrix A = Matrix(points.size(), points.size());
-		Matrix Y = Matrix(points.size(), 1);
+		MatrixD A = MatrixD(points.size(), points.size());
+		MatrixD Y = MatrixD(points.size(), 1);
 
 		for(size_t i=0; i<points.size(); i++)
 		{
@@ -1762,7 +1526,7 @@ namespace smpl
 			Y[i][0] = points[i].y;
 		}
 
-		Matrix X = A.getInverse() * Y;
+		MatrixD X = A.getInverse() * Y;
 		if(!X.getValid())
 			return PolynomialMathFunction();
 		
@@ -1835,6 +1599,53 @@ namespace smpl
 		return {};
 	}
 
+	PolynomialMathFunction MathExt::chebyshevPolynomial(int degree, bool secondKind)
+	{
+		const PolynomialMathFunction multiplier = PolynomialMathFunction({0, 2}); //2x
+		PolynomialMathFunction f1 = PolynomialMathFunction({1}); //T[n-1] = 1
+		PolynomialMathFunction f2 = PolynomialMathFunction({0, 1}); //T[n] = x
+		if(secondKind == true)
+			f2[1] = 2;
+
+		if(degree == 0)
+			return f1;
+		if(degree == 1)
+			return f2;
+		
+		PolynomialMathFunction result; //T[n+1] = 2xT[n] - T[n-1]
+		for(int i=2; i<=degree; i++)
+		{
+			result = multiplier*f2 - f1;
+			f1 = f2;
+			f2 = result;
+		}
+
+		return result;
+	}
+
+	PolynomialMathFunction MathExt::chebyshevApproximation(MathFunction* f, double a, double b, int degree, bool secondKind)
+	{
+		//generate chebyshev nodes
+		//need n+1 nodes
+		if(f==nullptr)
+			return PolynomialMathFunction();
+		
+		int n = degree;
+		std::vector<Vec2f> pointsToFit = std::vector<Vec2f>(n+1);
+		double A = (a+b)/2;
+		double B = (b-a)/2;
+
+		for(int k=0; k<=n; k++)
+		{
+			Vec2f Xk;
+			Xk.x = A + B*cos(((2*k)*PI) / (2*n));
+			Xk.y = f->solve(Xk.x);
+			pointsToFit[k] = Xk;
+			StringTools::println("(%.9f, %.9f) -> %.9f", Xk.x, Xk.y, cos(((2*k)*PI) / (2*n)));
+		}
+
+		return fitPolynomial(pointsToFit);
+	}
 	
 	int MathExt::factorial(int k)
 	{
@@ -1854,7 +1665,7 @@ namespace smpl
 
 	double MathExt::logisticsSigmoid(double x)
 	{
-		double temp = 1.0+exp(-x);
+		double temp = 1.0+std::exp(-x);
 		return 1.0 / temp;
 	}
 
@@ -2388,9 +2199,9 @@ namespace smpl
 
 	#pragma region COSINE_TRANSFORM_2D
 
-	Matrix MathExt::cosineTransform2D(Matrix& arr, bool inverse)
+	MatrixF MathExt::cosineTransform2D(const MatrixF& arr, bool inverse)
 	{
-		Matrix finalArr = Matrix(arr.getRows(), arr.getCols());
+		MatrixF finalArr = MatrixF(arr.getRows(), arr.getCols());
 
 		//for each row
 		for(int v=0; v<arr.getRows(); v++)
@@ -2424,18 +2235,54 @@ namespace smpl
 
 		return finalArr;
 	}
+	MatrixD MathExt::cosineTransform2D(const MatrixD& arr, bool inverse)
+	{
+		MatrixD finalArr = MatrixD(arr.getRows(), arr.getCols());
 
-	Matrix MathExt::fastCosineTransform2D(Matrix& arr, bool inverse)
+		//for each row
+		for(int v=0; v<arr.getRows(); v++)
+		{
+			double* passArr = arr[v];
+			std::vector<double> newArr = MathExt::cosineTransform(passArr, arr.getCols(), inverse);
+
+			for(int i=0; i<arr.getCols(); i++)
+			{
+				finalArr[v][i] = newArr[i];
+			}
+		}
+
+		//for each column
+		for(int u=0; u<arr.getCols(); u++)
+		{
+			std::vector<double> passArr = std::vector<double>(arr.getRows());
+
+			for(int i=0; i<arr.getRows(); i++)
+			{
+				passArr[i] = finalArr[i][u];
+			}
+
+			std::vector<double> newArr = MathExt::cosineTransform(passArr.data(), arr.getCols(), inverse);
+
+			for(int i=0; i<arr.getRows(); i++)
+			{
+				finalArr[i][u] = newArr[i];
+			}
+		}
+
+		return finalArr;
+	}
+
+	MatrixF MathExt::fastCosineTransform2D(const MatrixF& arr, bool inverse)
 	{
 		if(!arr.getValid())
-			return Matrix();
+			return MatrixF();
 		if(arr.getRows() != arr.getCols())
-			return Matrix();
+			return MatrixF();
 		if(!IS_POWER_2(arr.getRows()))
-			return Matrix();
+			return MatrixF();
 		
 		//copy arr into finalArr
-		Matrix finalArr = Matrix(arr);
+		MatrixF finalArr = MatrixF(arr);
 		std::vector<float> temp = std::vector<float>(finalArr.getRows());
 		std::vector<float> columnArr = std::vector<float>(arr.getRows());
 
@@ -2492,15 +2339,16 @@ namespace smpl
 
 		return finalArr;
 	}
+	
 
 	#pragma endregion
 
 	
 	#pragma region SINE_TRANSFORM_2D
 	
-	Matrix MathExt::sineTransform2D(Matrix& arr)
+	MatrixF MathExt::sineTransform2D(const MatrixF& arr)
 	{
-		Matrix finalArr = Matrix(arr.getRows(), arr.getCols());
+		MatrixF finalArr = MatrixF(arr.getRows(), arr.getCols());
 
 		//for each row
 		for(int v=0; v<arr.getRows(); v++)
@@ -2789,7 +2637,7 @@ namespace smpl
 		}
 	}
 
-	void MathExt::FCT8x8(Matrix& arr, Matrix* output, bool inverse)
+	void MathExt::FCT8x8(const MatrixF& arr, MatrixF* output, bool inverse)
 	{
 		//for each row
 		float* outputAsDoubleArr = output->getData();
@@ -2822,12 +2670,12 @@ namespace smpl
 
 	#pragma COMPUTER_VISION_STUFF
 
-	Matrix MathExt::convolution(Matrix* baseImage, Matrix* kernel, bool normalize)
+	MatrixF MathExt::convolution(MatrixF* baseImage, MatrixF* kernel, bool normalize)
 	{
 		if(baseImage == nullptr)
-			return Matrix();
+			return MatrixF();
 		
-		Matrix output = Matrix(baseImage->getRows(), baseImage->getCols());
+		MatrixF output = MatrixF(baseImage->getRows(), baseImage->getCols());
 		int kernelRowSizeHalf = kernel->getRows()/2;
 		int kernelColSizeHalf = kernel->getCols()/2;
 		double normalizationFactor = 1.0;
@@ -2879,12 +2727,12 @@ namespace smpl
 		return output;
 	}
 
-	Matrix MathExt::crossCorrelation(Matrix* baseImage, Matrix* kernel, bool normalize)
+	MatrixF MathExt::crossCorrelation(MatrixF* baseImage, MatrixF* kernel, bool normalize)
 	{
 		if(baseImage == nullptr)
-			return Matrix();
+			return MatrixF();
 		
-		Matrix output = Matrix(baseImage->getRows(), baseImage->getCols());
+		MatrixF output = MatrixF(baseImage->getRows(), baseImage->getCols());
 		int kernelRowSizeHalf = kernel->getRows()/2;
 		int kernelColSizeHalf = kernel->getCols()/2;
 		

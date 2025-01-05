@@ -2,13 +2,6 @@
 
 namespace smpl
 {
-		
-	const RootClass Mat3f::globalClass = CREATE_ROOT_CLASS(Mat3f, &Matrix::globalClass);
-	const RootClass* Mat3f::getClass()
-	{
-		return &Mat3f::globalClass;
-	}
-	
 	Mat3f::Mat3f() : Matrix(3, 3)
 	{
 	}
@@ -53,12 +46,12 @@ namespace smpl
 		return k;
 	}
 
-	float* Mat3f::operator[](int row)
+	float* Mat3f::operator[](int row) const
 	{
 		return Matrix::operator[](row);
 	}
 
-	Mat3f Mat3f::operator+(Mat3f other)
+	Mat3f Mat3f::operator+(const Mat3f& other) const
 	{
 		Mat3f v = Mat3f();
 
@@ -68,7 +61,7 @@ namespace smpl
 		return v;
 	}
 
-	Mat3f Mat3f::operator-(Mat3f other)
+	Mat3f Mat3f::operator-(const Mat3f& other) const
 	{
 		Mat3f v = Mat3f();
 
@@ -78,7 +71,7 @@ namespace smpl
 		return v;
 	}
 
-	Mat3f Mat3f::operator*(Mat3f other)
+	Mat3f Mat3f::operator*(const Mat3f& other) const
 	{
 		Mat3f v = Mat3f();
 
@@ -90,7 +83,7 @@ namespace smpl
 		return v;
 	}
 
-	Mat3f Mat3f::operator*(float other)
+	Mat3f Mat3f::operator*(float other) const
 	{
 		Mat3f v = Mat3f();
 
@@ -106,19 +99,19 @@ namespace smpl
 			data[i] *= other;
 	}
 
-	void Mat3f::operator+=(Mat3f other)
+	void Mat3f::operator+=(const Mat3f& other)
 	{
 		for (int i = 0; i < 9; i++)
 			data[i] += other.data[i];
 	}
 
-	void Mat3f::operator-=(Mat3f other)
+	void Mat3f::operator-=(const Mat3f& other)
 	{
 		for (int i = 0; i < 9; i++)
 			data[i] -= other.data[i];
 	}
 
-	Vec3f Mat3f::operator*(Vec3f other)
+	Vec3f Mat3f::operator*(const Vec3f& other) const
 	{
 		Vec3f v = Vec3f();
 		v.x = data[0] * other.x + data[1]*other.y + data[2]*other.z;
@@ -128,12 +121,12 @@ namespace smpl
 		return v;
 	}
 
-	bool Mat3f::operator==(Mat3f other)
+	bool Mat3f::operator==(const Mat3f& other) const
 	{
 		return Matrix::operator==(other);
 	}
 
-	bool Mat3f::operator!=(Mat3f other)
+	bool Mat3f::operator!=(const Mat3f& other) const
 	{
 		return !(this->operator==(other));
 	}

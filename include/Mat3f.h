@@ -6,7 +6,7 @@
 namespace smpl
 {
 
-	class DLL_OPTION Mat3f : public Matrix
+	class DLL_OPTION Mat3f : public MatrixF
 	{
 	public:
 		/**
@@ -55,10 +55,6 @@ namespace smpl
 		 */
 		void operator=(const Mat3f& o);
 
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
-
 		/**
 		 * @brief Returns the Identity 3x3 matrix
 		 * 
@@ -66,27 +62,31 @@ namespace smpl
 		 */
 		static Mat3f getIdentity();
 
-		float* operator[](int row);
+		float* operator[](int row) const;
 
-		Mat3f operator+(Mat3f other);
-		Mat3f operator-(Mat3f other);
-		Mat3f operator*(Mat3f other);
+		Mat3f operator+(const Mat3f& other) const;
+		Mat3f operator-(const Mat3f& other) const;
+		Mat3f operator*(const Mat3f& other) const;
 
-		Mat3f operator*(float other);
-		friend Mat3f operator*(float value, Mat3f other)
+		Mat3f operator*(float other) const;
+		friend Mat3f operator*(float value, const Mat3f& other)
 		{
 			return other*value;
 		}
 		
 		void operator*=(float other);
 
-		void operator+=(Mat3f other);
-		void operator-=(Mat3f other);
+		void operator+=(const Mat3f& other);
+		void operator-=(const Mat3f& other);
 
-		Vec3f operator*(Vec3f other);
+		Vec3f operator*(const Vec3f& other) const;
 
-		bool operator==(Mat3f other);
-		bool operator!=(Mat3f other);
+		bool operator==(const Mat3f& other) const;
+		bool operator!=(const Mat3f& other) const;
+		
+		
+		SERIALIZE_SUPER_CLASS(MatrixF)
+		SERIALIZE_CLASS() //Override class TypeInfo only
 	};
 
 } //NAMESPACE smpl END

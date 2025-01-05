@@ -1,6 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
-#include "Serializable.h"
+#include "SimpleSerialization.h"
 #include "Vec3f.h"
 #include "Vec2f.h"
 
@@ -33,7 +33,7 @@ namespace smpl
 		 * 
 		 * @param other 
 		 */
-		Vec4f(Vec3f other, float w);
+		Vec4f(const Vec3f& other, float w);
 
 		/**
 		 * @brief Construct a new Vec4f object from a Vec3f object and 2 optional
@@ -41,18 +41,13 @@ namespace smpl
 		 * 
 		 * @param other 
 		 */
-		Vec4f(Vec2f other, float z, float w);
+		Vec4f(const Vec2f& other, float z, float w);
 
 		/**
 		 * @brief Destroy the Vec4f object
 		 * 
 		 */
 		~Vec4f();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
-		std::unordered_map<std::string, SerializedData> getSerializedVariables();
 
 		float x = 0;
 		float y = 0;
@@ -122,7 +117,7 @@ namespace smpl
 		 * 
 		 * @param value 
 		 */
-		void setValues(Vec2f value);
+		void setValues(const Vec2f& value);
 
 		/**
 		 * @brief Copies values from a Vec3f.
@@ -130,28 +125,28 @@ namespace smpl
 		 * 
 		 * @param value 
 		 */
-		void setValues(Vec3f value);
+		void setValues(const Vec3f& value);
 
 		/**
 		 * @brief Copies values from a Vec4f.
 		 * 
 		 * @param value 
 		 */
-		void setValues(Vec4f value);
+		void setValues(const Vec4f& value);
 
 		/**
 		 * @brief Converts the Vec4f object to a Vec3f object by dropping the w value.
 		 * 
 		 * @return Vec3f 
 		 */
-		Vec3f toVec3f();
+		Vec3f toVec3f() const;
 
 		/**
 		 * @brief Get the Length of the vector
 		 * 
 		 * @return float 
 		 */
-		float getLength();
+		float getLength() const;
 
 		/**
 		 * @brief Gets the normalized version of the vector.
@@ -159,36 +154,77 @@ namespace smpl
 		 * 
 		 * @return Vec4f 
 		 */
-		Vec4f normalize();
+		Vec4f normalize() const;
 
-		Vec4f operator-(Vec4f other);
-		Vec4f operator+(Vec4f other);
+		/**
+		 * @brief Computes the piecewise multiplication between
+		 * 		the 2 vectors
+		 * 
+		 * @param other 
+		 * @return Vec4f 
+		 */
+		Vec4f hadamardProduct(const Vec4f& b) const;
 
-		bool operator==(Vec4f other);
-		bool operator!=(Vec4f other);
-		Vec4f operator-();
+		/**
+		 * @brief Computes the dot product between this vector and another
+		 * 
+		 * @param other 
+		 * @return float 
+		 */
+		float dot(const Vec4f& b) const;
 
-		void operator+=(Vec4f other);
-		void operator-=(Vec4f other);
+		/**
+		 * @brief Computes the scalar vector projection between 2 vectors
+		 * 
+		 * @param other 
+		 * @return float 
+		 */
+		float project(const Vec4f& b) const;
+
+		/**
+		 * @brief Reflects this vector across the vector "b"
+		 * 
+		 * @param other 
+		 * @return Vec4f 
+		 */
+		Vec4f reflect(const Vec4f& b) const;
+
+		Vec4f operator-(const Vec4f& other) const;
+		Vec4f operator+(const Vec4f& other) const;
+
+		bool operator==(const Vec4f& other) const;
+		bool operator!=(const Vec4f& other) const;
+		Vec4f operator-() const;
+
+		void operator+=(const Vec4f& other);
+		void operator-=(const Vec4f& other);
 
 		void operator*=(float other);
 		void operator/=(float other);
 
-		Vec4f operator*(float other);
-		Vec4f operator/(float other);
+		Vec4f operator*(float other) const;
+		Vec4f operator/(float other) const;
 
-		friend Vec4f operator*(float value, Vec4f other)
+		friend Vec4f operator*(float value, const Vec4f& other)
 		{
 			return other*value;
 		}
 
+		
+		Vec4f broadcastAdd(float v);
+		Vec4f broadcastSubtract(float v);
+		Vec4f broadcastFunction(std::function<float(float)> func);
+		Vec4f broadcastFunction(float (*func)(float));
+
 		/**
-		 * @brief Converts the Vec4f object to a GeneralVector object
+		 * @brief Converts the Vec4f object to a Column Matrix object
 		 * 
-		 * @return GeneralVector 
+		 * @return MatrixF 
 		 */
-		GeneralVector toGeneralVector();
-		operator GeneralVector() const;
+		MatrixF toMatrix() const;
+		operator MatrixF() const;
+
+	SERIALIZE_CLASS(x, y, z, w)
 	};
 
 } //NAMESPACE glib END

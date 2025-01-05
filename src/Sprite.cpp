@@ -2,13 +2,7 @@
 
 namespace smpl
 {
-		
-	const RootClass Sprite::globalClass = CREATE_ROOT_CLASS(Sprite, &Object::globalClass);
-    const RootClass* Sprite::getClass()
-	{
-		return &Sprite::globalClass;
-	}
-
+	
 	Sprite::Sprite()
 	{
 	}

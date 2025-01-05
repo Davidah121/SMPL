@@ -2,13 +2,6 @@
 
 namespace smpl
 {
-		
-	const RootClass Mat4f::globalClass = CREATE_ROOT_CLASS(Mat4f, &Matrix::globalClass);
-	const RootClass* Mat4f::getClass()
-	{
-		return &Mat4f::globalClass;
-	}
-
 	Mat4f::Mat4f() : Matrix(4, 4)
 	{
 	}
@@ -64,27 +57,13 @@ namespace smpl
 
 		return k;
 	}
-	
-	Mat4f Mat4f::getTranspose()
-	{
-		Mat4f k = Mat4f();
-		for(int i=0; i<4; i++)
-		{
-			for(int j=0; j<4; j++)
-			{
-				k.data[i + j*columns] = data[j + i*columns];
-			}
-		}
 
-		return k;
-	}
-
-	float* Mat4f::operator[](int row)
+	float* Mat4f::operator[](int row) const
 	{
 		return Matrix::operator[](row);
 	}
 
-	Mat4f Mat4f::operator+(Mat4f other)
+	Mat4f Mat4f::operator+(const Mat4f& other) const
 	{
 		Mat4f v = Mat4f();
 
@@ -94,7 +73,7 @@ namespace smpl
 		return v;
 	}
 
-	Mat4f Mat4f::operator-(Mat4f other)
+	Mat4f Mat4f::operator-(const Mat4f& other) const
 	{
 		Mat4f v = Mat4f();
 
@@ -104,7 +83,7 @@ namespace smpl
 		return v;
 	}
 
-	Mat4f Mat4f::operator*(Mat4f other)
+	Mat4f Mat4f::operator*(const Mat4f& other) const
 	{
 		Mat4f v = Mat4f();
 
@@ -116,7 +95,7 @@ namespace smpl
 		return v;
 	}
 
-	Mat4f Mat4f::operator*(float other)
+	Mat4f Mat4f::operator*(float other) const
 	{
 		Mat4f v = Mat4f();
 
@@ -132,19 +111,19 @@ namespace smpl
 			data[i] *= other;
 	}
 
-	void Mat4f::operator+=(Mat4f other)
+	void Mat4f::operator+=(const Mat4f& other)
 	{
 		for (int i = 0; i < 16; i++)
 			data[i] += other.data[i];
 	}
 
-	void Mat4f::operator-=(Mat4f other)
+	void Mat4f::operator-=(const Mat4f& other)
 	{
 		for (int i = 0; i < 16; i++)
 			data[i] -= other.data[i];
 	}
 
-	Vec4f Mat4f::operator*(Vec4f other)
+	Vec4f Mat4f::operator*(const Vec4f& other) const
 	{
 		Vec4f v = Vec4f();
 		v.x = (data[0]*other.x) + (data[1]*other.y) + (data[2]*other.z) + (data[3]*other.w);
@@ -155,12 +134,12 @@ namespace smpl
 		return v;
 	}
 
-	bool Mat4f::operator==(Mat4f other)
+	bool Mat4f::operator==(const Mat4f& other) const
 	{
 		return Matrix::operator==(other);
 	}
 
-	bool Mat4f::operator!=(Mat4f other)
+	bool Mat4f::operator!=(const Mat4f& other) const
 	{
 		return !(this->operator==(other));
 	}

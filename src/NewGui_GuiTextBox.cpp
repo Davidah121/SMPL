@@ -4,12 +4,6 @@
 
 namespace smpl
 {
-    const RootClass GuiTextBox::globalClass = CREATE_ROOT_CLASS(GuiTextBox, &GuiLayoutList::globalClass);
-    const RootClass* GuiTextBox::getClass()
-	{
-		return &GuiTextBox::globalClass;
-	}
-
     GuiTextBox::GuiTextBox() : GuiLayoutList()
     {
         setPadding({5, 5, 5, 5});
@@ -59,9 +53,30 @@ namespace smpl
         else
             return textElement.getText();
     }
+    
+    void GuiTextBox::setTextEmpty(bool v)
+    {
+        if(textEmpty != v)
+        {
+            if(v)
+            {
+                oldFontColor = textElement.getFontColor();
+                Color newFontColor = Color{oldFontColor.red, oldFontColor.green, oldFontColor.blue, (unsigned char)(oldFontColor.alpha/2)};
+                textElement.setFontColor(newFontColor);
+                textElement.setText(defaultText);
+                textElement.setSelectIndex(0, 0);
+            }
+            else
+            {
+                textElement.setFontColor(oldFontColor);
+            }
+        }
+        textEmpty = v;
+    }
 
     void GuiTextBox::keyboardInput()
     {
+        bool textChanged = false;
         std::queue<int> chars = Input::getCharactersTyped();
         std::vector<int> str;
         if(!textEmpty)
@@ -106,6 +121,9 @@ namespace smpl
                     selectionEnd = selectionStart;
                     textElement.setCaretSide(false);
                 }
+                setShouldRender();
+                blink = true;
+                counter = 30;
             }
             else if(v == Input::KEY_RIGHT)
             {
@@ -132,6 +150,98 @@ namespace smpl
                     selectionStart = selectionEnd;
                     textElement.setCaretSide(true);
                 }
+                setShouldRender();
+                blink = true;
+                counter = 30;
+            }
+            else if(v == Input::KEY_UP)
+            {
+                // Move to the spot corresponding to the total characters from the left side. Simple. Works for monospace/equal spaced fonts
+                int firstLBreak = selectionStart;
+                int lastLBreak = selectionStart;
+                
+                for(; firstLBreak>0; firstLBreak--)
+                {
+                    if(str[firstLBreak] == '\n')
+                        break;
+                }
+
+                lastLBreak = firstLBreak-1;
+                for(; lastLBreak>0; lastLBreak--)
+                {
+                    if(str[lastLBreak] == '\n')
+                        break;
+                }
+                
+                if(firstLBreak != 0)
+                    firstLBreak++;
+                if(lastLBreak != 0)
+                    lastLBreak++;
+                
+                int distanceFromFirstLBreak = selectionStart - firstLBreak;
+                int newLocation = lastLBreak + distanceFromFirstLBreak;
+
+                if(firstLBreak == 0 && lastLBreak == 0)
+                    newLocation = 0;
+                
+                if(newLocation < 0)
+                    newLocation = 0;
+                selectionStart = newLocation;
+                
+                if(!Input::getKeyDown(Input::KEY_SHIFT))
+                {
+                    selectionEnd = newLocation;
+                }
+                textElement.setCaretSide(false);
+                setShouldRender();
+                blink = true;
+                counter = 30;
+            }
+            else if(v == Input::KEY_DOWN)
+            {
+                // Move to the spot corresponding to the total characters from the left side. Simple. Works for monospace/equal spaced fonts
+                int firstLBreak = selectionEnd;
+                int nextLBreak = selectionEnd;
+                
+                for(; firstLBreak>0; firstLBreak--)
+                {
+                    if(str[firstLBreak] == '\n')
+                        break;
+                }
+
+                if(selectionEnd < str.size())
+                {
+                    if(str[selectionEnd] == '\n')
+                        nextLBreak = selectionEnd+1;
+                }
+                else
+                    nextLBreak = selectionEnd;
+
+                for(; nextLBreak<str.size(); nextLBreak++)
+                {
+                    if(str[nextLBreak] == '\n')
+                        break;
+                }
+                if(firstLBreak != 0)
+                    firstLBreak++;
+                if(nextLBreak != 0)
+                    nextLBreak++;
+                
+                int distanceFromFirstLBreak = selectionEnd - firstLBreak;
+                int newLocation = nextLBreak + distanceFromFirstLBreak;
+
+                if(newLocation >= str.size())
+                    newLocation = str.size();
+                selectionEnd = newLocation;
+                
+                if(!Input::getKeyDown(Input::KEY_SHIFT))
+                {
+                    selectionStart = newLocation;
+                }
+                textElement.setCaretSide(true);
+                setShouldRender();
+                blink = true;
+                counter = 30;
             }
             else if(v == Input::KEY_BACKSPACE)
             {
@@ -146,6 +256,7 @@ namespace smpl
                     }
                     str = nText;
                     selectionEnd = selectionStart;
+                    textChanged = true;
                 }
                 else if(selectionStart == selectionEnd)
                 {
@@ -158,6 +269,7 @@ namespace smpl
                     str = nText;
                     selectionStart--;
                     selectionEnd--;
+                    textChanged = true;
                 }
                 if(selectionStart < 0)
                 {
@@ -177,6 +289,7 @@ namespace smpl
                     }
                     str = nText;
                     selectionEnd = selectionStart;
+                    textChanged = true;
                 }
                 else if(selectionStart == selectionEnd)
                 {
@@ -188,11 +301,12 @@ namespace smpl
                             nText.push_back(str[i]);
                     }
                     str = nText;
+                    textChanged = true;
                 }
             }
             else if(!Input::getKeyDown(Input::KEY_CONTROL))
             {
-                if(v >= ' ' || (v == '\n' && allowLineBreaks))
+                if(v >= ' ' || (v == '\n' && allowLineBreaks) || (v == '\r' && allowLineBreaks))
                 {
                     if(selectionStart <= selectionEnd)
                     {
@@ -202,7 +316,16 @@ namespace smpl
                         {
                             nText.push_back(str[i]);
                         }
-                        nText.push_back(v);
+
+                        if(v == '\r' || v == '\n')
+                        {
+                            StringTools::println("ALLOWED LINE BREAKS");
+                        }
+                        if(v == '\r')
+                            nText.push_back('\n');
+                        else
+                            nText.push_back(v);
+                        
                         for(int i=selectionEnd; i<str.size(); i++)
                         {
                             nText.push_back(str[i]);
@@ -210,6 +333,7 @@ namespace smpl
                         selectionStart++;
                         selectionEnd = selectionStart;
                         str = nText;
+                        textChanged = true;
                     }
                 }
             }
@@ -241,6 +365,7 @@ namespace smpl
 
                 std::string copiedText = StringTools::toUTF8String(removedText);
                 System::copyToClipboard(copiedText);
+                textChanged = true;
             }
         }
         else if(Input::getKeyDown(Input::KEY_CONTROL) && Input::getKeyPressed('V'))
@@ -269,20 +394,18 @@ namespace smpl
                 selectionStart += pTextAsInts.size();
                 selectionEnd = selectionStart;
                 str = nText;
+                textChanged = true;
             }
         }
         
-        textEmpty = !(str.size() > 0);
-        if(textEmpty)
+        setTextEmpty(str.empty());
+        if(!textEmpty)
         {
-            textElement.setText(defaultText);
-            selectionStart = 0;
-            selectionEnd = 0;
-        }
-        else
-        {
-            std::string finalStr = StringTools::toUTF8String(str);
-            textElement.setText(finalStr);
+            if(textChanged)
+            {
+                std::string finalStr = StringTools::toUTF8String(str);
+                textElement.setText(finalStr);
+            }
         }
         textElement.setSelectIndex(selectionStart, selectionEnd);
     }
@@ -301,6 +424,7 @@ namespace smpl
             blink = false;
             counter = 30;
         }
+        // StringTools::println("TEXTBOX: FOCUS CHANGED");
         setShouldRender();
     }
 
@@ -323,9 +447,12 @@ namespace smpl
                 blink = !blink;
                 counter = 30;
                 setShouldRender();
+                // StringTools::println("TEXTBOX: BLINK");
             }
             keyboardInput();
         }
+        if(textEmpty)
+            textElement.setSelectIndex(0);
     }
 
     void GuiTextBox::render(SmartMemory<GuiManager> manager)
@@ -363,6 +490,10 @@ namespace smpl
         if(pair != nullptr)
             defaultText = pair->second;
         attribs.remove(pair);
+
+        textEmpty = false;
+        oldFontColor = textElement.getFontColor();
+        setTextEmpty(textElement.getText().empty());
     }
 
     SmartMemory<GuiItem> GuiTextBox::loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager)

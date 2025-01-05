@@ -5,12 +5,6 @@
 
 namespace smpl
 {
-    const RootClass GuiText::globalClass = CREATE_ROOT_CLASS(GuiText, &GuiContent::globalClass);
-    const RootClass* GuiText::getClass()
-	{
-		return &GuiText::globalClass;
-	}
-
     GuiText::GuiText() : GuiContent()
     {
     }
@@ -23,6 +17,7 @@ namespace smpl
     {
         text = s;
         setShouldRender();
+        // StringTools::println("TEXT: TEXT CHANGED");
     }
 
     std::string GuiText::getText()
@@ -30,16 +25,27 @@ namespace smpl
         return text;
     }
 
-    void GuiText::setColor(Color c)
+    void GuiText::setFontColor(Color c)
     {
         fontColor = c;
         setShouldRender();
+        // StringTools::println("TEXT: FONT COLOR CHANGED");
     }
 
     void GuiText::setHighlightColor(Color c)
     {
         highlightColor = c;
         setShouldRender();
+        // StringTools::println("TEXT: HIGHLIGHT COLOR CHANGED");
+    }
+    
+    Color GuiText::getFontColor()
+    {
+        return fontColor;
+    }
+    Color GuiText::getHighlightColor()
+    {
+        return highlightColor;
     }
 
     void GuiText::setSelectable(bool s)
@@ -66,6 +72,7 @@ namespace smpl
             maxHeight = -1;
         }
         setShouldRender();
+        // StringTools::println("TEXT: WRAP CHANGED");
     }
 
     void GuiText::increaseSelectIndex()
@@ -263,7 +270,10 @@ namespace smpl
         }
 
         if(oldSelectStart != highlightStartIndex || oldSelectEnd != highlightEndIndex)
+        {
+            // StringTools::println("TEXT: HIGHLIGHT SELECTION CHANGED");
             setShouldRender();
+        }
     }
 
     void GuiText::render(SmartMemory<GuiManager> manager)

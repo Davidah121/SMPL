@@ -30,10 +30,6 @@
 			 * @brief Destroys a GLBitmapFont Object.
 			 */
 			~GLFont();
-			
-			//Object and RootClass Stuff
-			static const RootClass globalClass;
-			virtual const RootClass* getClass();
 
 			/**
 			 * @brief Get the texture where the desired character is stored.
@@ -67,6 +63,8 @@
 
 			std::vector<size_t> imgPage = std::vector<size_t>();
 
+		SERIALIZE_SUPER_CLASS(Font)
+		SERIALIZE_CLASS()
 		};
 	}
 #endif

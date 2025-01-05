@@ -3,13 +3,6 @@
 
 namespace smpl
 {
-
-    const RootClass GuiButton::globalClass = CREATE_ROOT_CLASS(GuiButton, &GuiLayoutList::globalClass);
-    const RootClass* GuiButton::getClass()
-	{
-		return &GuiButton::globalClass;
-	}
-
     GuiButton::GuiButton() : GuiLayoutList()
     {
 

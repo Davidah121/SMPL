@@ -1,6 +1,7 @@
 #pragma once
 #include "BuildOptions.h"
 #include <functional>
+#include <string>
 
 namespace smpl
 {
@@ -32,13 +33,25 @@ namespace smpl
         PolynomialMathFunction();
         PolynomialMathFunction(std::vector<double> constants);
         ~PolynomialMathFunction();
+        std::string toString() const;
 
-        PolynomialMathFunction getDerivative();
         void addConstant(double d);
-        double getConstant(int index);
-        size_t size();
+        double getConstant(int index) const;
+        size_t size() const;
 
-        virtual double solve(double x);
+        virtual double solve(double x) const;
+
+
+        PolynomialMathFunction getDerivative() const;
+        double& operator[](size_t index);
+        PolynomialMathFunction operator+(const PolynomialMathFunction& g) const;
+        PolynomialMathFunction operator-(const PolynomialMathFunction& g) const;
+        PolynomialMathFunction operator*(const PolynomialMathFunction& g) const;
+        PolynomialMathFunction operator+(double m) const;
+        PolynomialMathFunction operator-(double m) const;
+        PolynomialMathFunction operator*(double m) const;
+        PolynomialMathFunction operator/(double m) const;
+        
     private:
         std::vector<double> constants;
     };

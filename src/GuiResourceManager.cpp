@@ -2,8 +2,6 @@
 
 namespace smpl
 {
-	GuiResourceManager GuiResourceManager::singleton = GuiResourceManager();
-
 	GuiResourceManager::GuiResourceManager()
 	{
 		
@@ -14,13 +12,13 @@ namespace smpl
 		
 	}
 
-	void GuiResourceManager::addSprite(SpriteInterface* data, std::string key, bool array, bool localMemory)
+	void GuiResourceManager::addSprite(SpriteInterface* data, std::string key, size_t elements, bool localMemory)
 	{
-		spriteResources.addResource(data, key, array, localMemory);
+		spriteResources.addResource(data, key, elements, localMemory);
 	}
-	void GuiResourceManager::addFont(FontInterface* data, std::string key, bool array, bool localMemory)
+	void GuiResourceManager::addFont(FontInterface* data, std::string key, size_t elements, bool localMemory)
 	{
-		fontResources.addResource(data, key, array, localMemory);
+		fontResources.addResource(data, key, elements, localMemory);
 	}
 
 	SmartMemory<SpriteInterface> GuiResourceManager::getSprite(std::string key)
@@ -52,6 +50,7 @@ namespace smpl
 	
 	GuiResourceManager& GuiResourceManager::getResourceManager()
 	{
+		static GuiResourceManager singleton;
 		return singleton;
 	}
 };

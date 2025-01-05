@@ -54,20 +54,20 @@ namespace smpl
 		
 		if(currentComposite == NO_COMPOSITE)
 		{
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int tY=minY; tY<=maxY; tY++)
 			{
 				int imgY = startImgY + (tY-minY);
 				int imgX = startImgX; //distance from x to minX
 				int tX = minX;
-				int stopPoint = minX + GET_GRAPHICS_SIMD_BOUND((maxX-minX));
+				int stopPoint = minX + SIMD_U8::getSIMDBound((maxX-minX));
 				while(tX < stopPoint)
 				{
-					GRAPHICS_SIMD_DATATYPE loadV = GRAPHICS_SIMD_LOAD((GRAPHICS_SIMD_DATATYPE*)&drawImgPixels[imgX + imgY*img->getWidth()]);
-					GRAPHICS_SIMD_STORE((GRAPHICS_SIMD_DATATYPE*)&surfPixels[tX + tY*tempWidth], loadV);
+					SIMD_U8 loadV = SIMD_U8::load((unsigned char*)&drawImgPixels[imgX + imgY*img->getWidth()]);
+					loadV.store((unsigned char*)&surfPixels[tX + tY*tempWidth]);
 					
-					imgX += GRAPHICS_INC_AMOUNT;
-					tX += GRAPHICS_INC_AMOUNT;
+					imgX += SIMD_GRAPHICS_INC;
+					tX += SIMD_GRAPHICS_INC;
 				}
 				while(tX <= maxX)
 				{
@@ -79,22 +79,22 @@ namespace smpl
 		}
 		else
 		{
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int tY=minY; tY<=maxY; tY++)
 			{
 				int imgY = startImgY + (tY-minY);
 				int imgX = startImgX; //distance from x to minX
 				int tX = minX;
-				int stopPoint = minX + GET_GRAPHICS_SIMD_BOUND((maxX-minX));
+				int stopPoint = minX + SIMD_U8::getSIMDBound((maxX-minX));
 				while(tX < stopPoint)
 				{
-					GRAPHICS_SIMD_DATATYPE src = GRAPHICS_SIMD_LOAD((GRAPHICS_SIMD_DATATYPE*)&drawImgPixels[imgX + imgY*img->getWidth()]);
-					GRAPHICS_SIMD_DATATYPE dest = GRAPHICS_SIMD_LOAD((GRAPHICS_SIMD_DATATYPE*)&surfPixels[tX + tY*tempWidth]);
-					GRAPHICS_SIMD_DATATYPE blendV = blend(src, dest);
-					GRAPHICS_SIMD_STORE((GRAPHICS_SIMD_DATATYPE*)&surfPixels[tX + tY*tempWidth], blendV);
+					SIMD_U8 src = SIMD_U8::load((unsigned char*)&drawImgPixels[imgX + imgY*img->getWidth()]);
+					SIMD_U8 dest = SIMD_U8::load((unsigned char*)&surfPixels[tX + tY*tempWidth]);
+					SIMD_U8 blendV = blend(src.values, dest.values);
+					blendV.store((unsigned char*)&surfPixels[tX + tY*tempWidth]);
 
-					imgX += GRAPHICS_INC_AMOUNT;
-					tX += GRAPHICS_INC_AMOUNT;
+					imgX += SIMD_GRAPHICS_INC;
+					tX += SIMD_GRAPHICS_INC;
 				}
 				while(tX <= maxX)
 				{
@@ -154,23 +154,23 @@ namespace smpl
 		Color* surfPixels = surf->getPixels();
 		Color* drawImgPixels = img->getPixels(); //Not using any pixel filtering and no edge conditions
 
-		GRAPHICS_SIMD_DATATYPE activeColorAsSIMD = COLOR_TO_SIMD(activeColor);
+		SIMD_U8 activeColorAsSIMD = COLOR_TO_SIMD(activeColor);
 		if(currentComposite == NO_COMPOSITE)
 		{
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int tY=minY; tY<=maxY; tY++)
 			{
 				int v = startImgY + (tY-minY);
 				int u = startImgX; //distance from x to minX
 				int tX = minX;
-				int stopPoint = minX + GET_GRAPHICS_SIMD_BOUND((maxX-minX));
+				int stopPoint = minX + SIMD_U8::getSIMDBound((maxX-minX));
 				while(tX < stopPoint)
 				{
-					GRAPHICS_SIMD_DATATYPE src = GRAPHICS_SIMD_LOAD((GRAPHICS_SIMD_DATATYPE*)&drawImgPixels[u + v*img->getWidth()]);
-					GRAPHICS_SIMD_DATATYPE srcMultiplied = multColor(src, activeColorAsSIMD);
-					GRAPHICS_SIMD_STORE((GRAPHICS_SIMD_DATATYPE*)&surfPixels[tX + tY*tempWidth], srcMultiplied);
-					tX += GRAPHICS_INC_AMOUNT;
-					u += GRAPHICS_INC_AMOUNT;
+					SIMD_U8 src = SIMD_U8::load((unsigned char*)&drawImgPixels[u + v*img->getWidth()]);
+					SIMD_U8 srcMultiplied = multColor(src.values, activeColorAsSIMD.values);
+					srcMultiplied.store((unsigned char*)&surfPixels[tX + tY*tempWidth]);
+					tX += SIMD_GRAPHICS_INC;
+					u += SIMD_GRAPHICS_INC;
 				}
 				while(tX <= maxX)
 				{
@@ -183,23 +183,23 @@ namespace smpl
 		}
 		else
 		{
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int tY=minY; tY<=maxY; tY++)
 			{
 				int v = startImgY + (tY-minY);
 				int u = startImgX; //distance from x to minX
 				int tX = minX;
-				int stopPoint = minX + GET_GRAPHICS_SIMD_BOUND((maxX-minX));
+				int stopPoint = minX + SIMD_U8::getSIMDBound((maxX-minX));
 				while(tX < stopPoint)
 				{
-					GRAPHICS_SIMD_DATATYPE src = GRAPHICS_SIMD_LOAD((GRAPHICS_SIMD_DATATYPE*)&drawImgPixels[u + v*img->getWidth()]);
-					GRAPHICS_SIMD_DATATYPE dest = GRAPHICS_SIMD_LOAD((GRAPHICS_SIMD_DATATYPE*)&surfPixels[tX + tY*tempWidth]);
-					GRAPHICS_SIMD_DATATYPE srcMultiplied = multColor(src, activeColorAsSIMD);
-					GRAPHICS_SIMD_DATATYPE blended = blend(srcMultiplied, dest);
+					SIMD_U8 src = SIMD_U8::load((unsigned char*)&drawImgPixels[u + v*img->getWidth()]);
+					SIMD_U8 dest = SIMD_U8::load((unsigned char*)&surfPixels[tX + tY*tempWidth]);
+					SIMD_U8 srcMultiplied = multColor(src.values, activeColorAsSIMD.values);
+					SIMD_U8 blended = blend(srcMultiplied.values, dest.values);
 
-					GRAPHICS_SIMD_STORE((GRAPHICS_SIMD_DATATYPE*)&surfPixels[tX + tY*tempWidth], blended);
-					tX += GRAPHICS_INC_AMOUNT;
-					u += GRAPHICS_INC_AMOUNT;
+					blended.store((unsigned char*)&surfPixels[tX + tY*tempWidth]);
+					tX += SIMD_GRAPHICS_INC;
+					u += SIMD_GRAPHICS_INC;
 				}
 				while(tX <= maxX)
 				{
@@ -275,7 +275,7 @@ namespace smpl
 
 		if(currentComposite == NO_COMPOSITE)
 		{
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int tY=minY; tY<=maxY; tY++)
 			{
 				int imgY = startImgY + (tY-minY);
@@ -297,7 +297,7 @@ namespace smpl
 		}
 		else
 		{
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int tY=minY; tY<=maxY; tY++)
 			{
 				int imgY = startImgY + (tY-minY);
@@ -365,26 +365,26 @@ namespace smpl
 		
 		Color* surfPixels = surf->getPixels();
 		Color* drawImgPixels = img->getPixels(); //Not using any pixel filtering and no edge conditions
-		GRAPHICS_SIMD_DATATYPE activeColorAsSIMD = COLOR_TO_SIMD(activeColor);
+		SIMD_U8 activeColorAsSIMD = COLOR_TO_SIMD(activeColor);
 
 		// Vec4f colorMult = Vec4f((double)SimpleGraphics::activeColor.red / 255.0, (double)SimpleGraphics::activeColor.green / 255.0, (double)SimpleGraphics::activeColor.blue / 255.0, (double)SimpleGraphics::activeColor.alpha / 255.0);
 
 		if(currentComposite == NO_COMPOSITE)
 		{
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int tY=minY; tY<=maxY; tY++)
 			{
 				int v = startImgY + (tY-minY);
 				int u = startImgX; //distance from x to minX
 				int tX = minX;
-				int stopPoint = minX + GET_GRAPHICS_SIMD_BOUND((maxX-minX));
+				int stopPoint = minX + SIMD_U8::getSIMDBound((maxX-minX));
 				while(tX < stopPoint)
 				{
-					GRAPHICS_SIMD_DATATYPE srcC = GRAPHICS_SIMD_LOAD((GRAPHICS_SIMD_DATATYPE*)&drawImgPixels[u + v*img->getWidth()]);
-					GRAPHICS_SIMD_DATATYPE srcMultiplied = multColor(srcC, activeColorAsSIMD);
-					GRAPHICS_SIMD_STORE((GRAPHICS_SIMD_DATATYPE*)&surfPixels[tX + tY*tempWidth], srcMultiplied);
-					tX += GRAPHICS_INC_AMOUNT;
-					u += GRAPHICS_INC_AMOUNT;
+					SIMD_U8 srcC = SIMD_U8::load((unsigned char*)&drawImgPixels[u + v*img->getWidth()]);
+					SIMD_U8 srcMultiplied = multColor(srcC.values, activeColorAsSIMD.values);
+					srcMultiplied.store((unsigned char*)&surfPixels[tX + tY*tempWidth]);
+					tX += SIMD_GRAPHICS_INC;
+					u += SIMD_GRAPHICS_INC;
 				}
 
 				while(tX <= maxX)
@@ -399,22 +399,22 @@ namespace smpl
 		}
 		else
 		{
-			#pragma omp parallel for
+			//#pragma omp parallel for
 			for(int tY=minY; tY<=maxY; tY++)
 			{
 				int v = startImgY + (tY-minY);
 				int u = startImgX; //distance from x to minX
 				int tX = minX;
-				int stopPoint = minX + GET_GRAPHICS_SIMD_BOUND((maxX-minX));
+				int stopPoint = minX + SIMD_U8::getSIMDBound((maxX-minX));
 				while(tX < stopPoint)
 				{
-					GRAPHICS_SIMD_DATATYPE srcC = GRAPHICS_SIMD_LOAD((GRAPHICS_SIMD_DATATYPE*)&drawImgPixels[u + v*img->getWidth()]);
-					GRAPHICS_SIMD_DATATYPE destC = GRAPHICS_SIMD_LOAD((GRAPHICS_SIMD_DATATYPE*)&surfPixels[tX + tY*tempWidth]);
-					GRAPHICS_SIMD_DATATYPE srcMultiplied = multColor(srcC, activeColorAsSIMD);
-					GRAPHICS_SIMD_DATATYPE blendedColor = blend(srcMultiplied, destC);
-					GRAPHICS_SIMD_STORE((GRAPHICS_SIMD_DATATYPE*)&surfPixels[tX + tY*tempWidth], blendedColor);
-					tX += GRAPHICS_INC_AMOUNT;
-					u += GRAPHICS_INC_AMOUNT;
+					SIMD_U8 srcC = SIMD_U8::load((unsigned char*)&drawImgPixels[u + v*img->getWidth()]);
+					SIMD_U8 destC = SIMD_U8::load((unsigned char*)&surfPixels[tX + tY*tempWidth]);
+					SIMD_U8 srcMultiplied = multColor(srcC.values, activeColorAsSIMD.values);
+					SIMD_U8 blendedColor = blend(srcMultiplied.values, destC.values);
+					blendedColor.store((unsigned char*)&surfPixels[tX + tY*tempWidth]);
+					tX += SIMD_GRAPHICS_INC;
+					u += SIMD_GRAPHICS_INC;
 				}
 
 				while(tX <= maxX)

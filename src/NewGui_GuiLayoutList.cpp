@@ -2,12 +2,6 @@
 
 namespace smpl
 {
-    const RootClass GuiLayoutList::globalClass = CREATE_ROOT_CLASS(GuiLayoutList, &GuiLayout::globalClass);
-    const RootClass* GuiLayoutList::getClass()
-	{
-		return &GuiLayoutList::globalClass;
-	}
-
     GuiLayoutList::GuiLayoutList(bool direction, bool wrap) : GuiLayout()
     {
         this->direction = direction;

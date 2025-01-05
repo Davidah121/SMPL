@@ -1,12 +1,12 @@
 #pragma once
 #include "BuildOptions.h"
 #include "Image.h"
-#include "Object.h"
+#include "SimpleSerialization.h"
 
 namespace smpl
 {
 
-	class DLL_OPTION Sprite : public Object
+	class DLL_OPTION Sprite : public SerializedObject
 	{
 	public:
 		/**
@@ -44,10 +44,6 @@ namespace smpl
 		 * 
 		 */
 		~Sprite();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		/**
 		 * @brief Gets an image from the sprite at the specified index.
@@ -173,6 +169,8 @@ namespace smpl
 		bool loops = true;
 		std::vector<Image*> images = std::vector<Image*>();
 		std::vector<int> delayTimeForFrame = std::vector<int>();
+
+		SERIALIZE_CLASS()
 	};
 
 } //NAMESPACE glib END

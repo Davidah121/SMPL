@@ -15,7 +15,7 @@ namespace smpl
         unsigned char size = 0;
     };
 
-    class DLL_OPTION Model : public Object
+    class DLL_OPTION Model : public SerializedObject
     {
     public:
         /**
@@ -32,10 +32,6 @@ namespace smpl
          * 
          */
         ~Model();
-
-        //Object and RootClass Stuff
-        static const RootClass globalClass;
-        virtual const RootClass* getClass();
 
         static const unsigned char TYPE_INT = 0;
         static const unsigned char TYPE_FLOAT = 1;
@@ -310,6 +306,8 @@ namespace smpl
 
         unsigned char modelFormat = TRIANGLES;
         bool indexed = false;
+
+    SERIALIZE_CLASS()
     };
 
 } //NAMESPACE smpl END

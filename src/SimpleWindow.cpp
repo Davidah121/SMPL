@@ -13,13 +13,7 @@
 		std::vector<SimpleWindow*> SimpleWindow::windowList = std::vector<SimpleWindow*>();
 		int SimpleWindow::screenWidth = System::getDesktopWidth();
 		int SimpleWindow::screenHeight = System::getDesktopHeight();
-
-		const RootClass SimpleWindow::globalClass = CREATE_ROOT_CLASS(SimpleWindow, &Object::globalClass);
-		const RootClass* SimpleWindow::getClass()
-		{
-			return &SimpleWindow::globalClass;
-		}
-
+		
 		SimpleWindow* SimpleWindow::getWindowByHandle(size_t handle)
 		{
 			for (int i = 0; i < windowList.size(); i++)
@@ -1105,7 +1099,7 @@
 			{
 				while(getRunning())
 				{
-					System::sleep(1);
+					System::sleep(1, 0, false);
 				}
 			}
 			else

@@ -2,13 +2,13 @@
 #include "BuildOptions.h"
 #include <vector>
 #include "Vec2f.h"
-#include "Object.h"
+#include "SimpleSerialization.h"
 #include "GeneralExceptions.h"
 
 namespace smpl
 {
 
-	class DLL_OPTION BezierCurve : public Object
+	class DLL_OPTION BezierCurve : public SerializedObject
 	{
 	public:
 		/**
@@ -22,10 +22,6 @@ namespace smpl
 		 * @brief Destroys a BezierCurve Object freeing its memory usage
 		 */
 		~BezierCurve();
-
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
 
 		//Exception Stuff
 		struct BlendPointsError : public std::exception
@@ -376,6 +372,7 @@ namespace smpl
 	
 
 		std::vector<Vec2f> points = std::vector<Vec2f>();
+		SERIALIZE_CLASS(points)
 	};
 
 } //NAMESPACE smpl END

@@ -3,12 +3,6 @@
 #ifdef USE_OPENGL
 	namespace smpl
 	{
-		const RootClass GLSprite::globalClass = CREATE_ROOT_CLASS(GLSprite, &Object::globalClass);
-        const RootClass* GLSprite::getClass()
-        {
-            return &GLSprite::globalClass;
-        }
-
 		GLSprite::GLSprite()
 		{
 		}

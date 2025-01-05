@@ -6,12 +6,6 @@ namespace smpl
 	
 	#pragma region SHAPE
 
-	const RootClass Shape::globalClass = CREATE_ROOT_CLASS(Shape, &Object::globalClass);
-	const RootClass* Shape::getClass()
-	{
-		return &Shape::globalClass;
-	}
-
 	Shape::Shape()
 	{
 	}
@@ -67,12 +61,6 @@ namespace smpl
 
 	#pragma region POINT2D
 
-	const RootClass Point2D::globalClass = CREATE_ROOT_CLASS(Point2D, &Shape::globalClass);
-	const RootClass* Point2D::getClass()
-	{
-		return &Point2D::globalClass;
-	}
-
 	Point2D::Point2D()
 	{
 	}
@@ -105,12 +93,6 @@ namespace smpl
 	#pragma endregion
 
 	#pragma region Box2D
-
-	const RootClass Box2D::globalClass = CREATE_ROOT_CLASS(Box2D, &Shape::globalClass);
-	const RootClass* Box2D::getClass()
-	{
-		return &Box2D::globalClass;
-	}
 
 	Box2D::Box2D()
 	{
@@ -219,12 +201,6 @@ namespace smpl
 
 	#pragma region CIRCLE
 
-	const RootClass Circle::globalClass = CREATE_ROOT_CLASS(Circle, &Shape::globalClass);
-	const RootClass* Circle::getClass()
-	{
-		return &Circle::globalClass;
-	}
-
 	Circle::Circle()
 	{
 	}
@@ -263,12 +239,6 @@ namespace smpl
 	#pragma endregion
 
 	#pragma region ELLIPSE
-
-	const RootClass Ellipse::globalClass = CREATE_ROOT_CLASS(Ellipse, &Shape::globalClass);
-	const RootClass* Ellipse::getClass()
-	{
-		return &Ellipse::globalClass;
-	}
 
 	Ellipse::Ellipse()
 	{
@@ -325,25 +295,19 @@ namespace smpl
 
 	#pragma region LINE2D
 
-	const RootClass Line2D::globalClass = CREATE_ROOT_CLASS(Line2D, &Shape::globalClass);
-	const RootClass* Line2D::getClass()
-	{
-		return &Line2D::globalClass;
-	}
-
 	Line2D::Line2D()
 	{
 	}
 
 	Line2D::Line2D(float x1, float y1, float x2, float y2)
 	{
-		baseL = Line(x1, y1, x2, y2);
+		baseLine = Line(x1, y1, x2, y2);
 		l = Line(x1, y1, x2, y2);
 	}
 
 	Line2D::Line2D(Vec2f p1, Vec2f p2)
 	{
-		baseL = Line(p1, p2);
+		baseLine = Line(p1, p2);
 		l = Line(p1, p2);
 	}
 
@@ -353,25 +317,25 @@ namespace smpl
 
 	void Line2D::setPoint1(Vec2f p)
 	{
-		baseL = Line(p, baseL.getPoint2());
+		baseLine = Line(p, baseLine.getPoint2());
 		onTransformChanged();
 	}
 
 	void Line2D::setPoint1(float x, float y)
 	{
-		baseL = Line(Vec2f(x,y), baseL.getPoint2());
+		baseLine = Line(Vec2f(x,y), baseLine.getPoint2());
 		onTransformChanged();
 	}
 
 	void Line2D::setPoint2(Vec2f p)
 	{
-		baseL = Line(baseL.getPoint1(), p);
+		baseLine = Line(baseLine.getPoint1(), p);
 		onTransformChanged();
 	}
 
 	void Line2D::setPoint2(float x, float y)
 	{
-		baseL = Line(baseL.getPoint1(), Vec2f(x,y));
+		baseLine = Line(baseLine.getPoint1(), Vec2f(x,y));
 		onTransformChanged();
 	}
 
@@ -392,8 +356,8 @@ namespace smpl
 
 	void Line2D::onTransformChanged()
 	{
-		Vec2f p1 = baseL.getPoint1();
-		Vec2f p2 = baseL.getPoint2();
+		Vec2f p1 = baseLine.getPoint1();
+		Vec2f p2 = baseLine.getPoint2();
 
 		//Move to origin
 		Vec2f midPoint = (p1+p2)/2;
@@ -436,12 +400,6 @@ namespace smpl
 	#pragma endregion
 
 	#pragma region TRIANGLE2D
-
-	const RootClass Triangle2D::globalClass = CREATE_ROOT_CLASS(Triangle2D, &Shape::globalClass);
-    const RootClass* Triangle2D::getClass()
-	{
-		return &Triangle2D::globalClass;
-	}
 
 	Triangle2D::Triangle2D()
 	{
@@ -541,12 +499,6 @@ namespace smpl
 
 	#pragma region TRIANGLE2D_MODEL
 
-	const RootClass Triangle2DModel::globalClass = CREATE_ROOT_CLASS(Triangle2DModel, &Shape::globalClass);
-    const RootClass* Triangle2DModel::getClass()
-	{
-		return &Triangle2DModel::globalClass;
-	}
-
 	Triangle2DModel::Triangle2DModel()
 	{
 
@@ -558,36 +510,30 @@ namespace smpl
 
 	void Triangle2DModel::add(Triangle2D tri)
 	{
-		tris.push_back(tri);
+		triangleList.push_back(tri);
 	}
 	Triangle2D Triangle2DModel::get(size_t index)
 	{
-		if(index < tris.size())
+		if(index < triangleList.size())
 		{
-			return tris[index];
+			return triangleList[index];
 		}
 		return Triangle2D();
 	}
 	
 	std::vector<Triangle2D>& Triangle2DModel::getTriangles()
 	{
-		return tris;
+		return triangleList;
 	}
 
 	size_t Triangle2DModel::size()
 	{
-		return tris.size();
+		return triangleList.size();
 	}
 
 	#pragma endregion
 
 	#pragma region POLYGON2D
-
-	const RootClass Polygon2D::globalClass = CREATE_ROOT_CLASS(Polygon2D, &Shape::globalClass);
-    const RootClass* Polygon2D::getClass()
-	{
-		return &Polygon2D::globalClass;
-	}
 
 	Polygon2D::Polygon2D()
 	{
@@ -768,12 +714,6 @@ namespace smpl
 
 	#pragma region TRIANGLE_3D
 
-	const RootClass Triangle3D::globalClass = CREATE_ROOT_CLASS(Triangle3D, &Shape::globalClass);
-    const RootClass* Triangle3D::getClass()
-	{
-		return &Triangle3D::globalClass;
-	}
-
 	Triangle3D::Triangle3D()
 	{
 
@@ -852,7 +792,7 @@ namespace smpl
 
 	Vec3f Triangle3D::getNormal()
 	{
-		return MathExt::crossProduct(v1, v2).normalize();
+		return v1.crossProduct(v2).normalize();
 	}
 
 	float Triangle3D::generateBoundingRadius()
@@ -873,12 +813,6 @@ namespace smpl
 
 	#pragma region TRIANGLE3D_MODEL
 
-	const RootClass Triangle3DModel::globalClass = CREATE_ROOT_CLASS(Triangle3DModel, &Shape::globalClass);
-    const RootClass* Triangle3DModel::getClass()
-	{
-		return &Triangle3DModel::globalClass;
-	}
-
 	Triangle3DModel::Triangle3DModel()
 	{
 
@@ -890,25 +824,25 @@ namespace smpl
 
 	void Triangle3DModel::add(Triangle3D tri)
 	{
-		tris.push_back(tri);
+		triangleList.push_back(tri);
 	}
 	Triangle3D Triangle3DModel::get(size_t index)
 	{
-		if(index < tris.size())
+		if(index < triangleList.size())
 		{
-			return tris[index];
+			return triangleList[index];
 		}
 		return Triangle3D();
 	}
 	
 	std::vector<Triangle3D>& Triangle3DModel::getTriangles()
 	{
-		return tris;
+		return triangleList;
 	}
 
 	size_t Triangle3DModel::size()
 	{
-		return tris.size();
+		return triangleList.size();
 	}
 
 	#pragma endregion
@@ -918,8 +852,8 @@ namespace smpl
 	//Functions
 	bool CollisionMaster::getCollision(Shape* a, Shape* b, bool overrideQuickCheck)
 	{
-		const RootClass* aClass = a->getClass();
-		const RootClass* bClass = b->getClass();
+		const TypeInfo aClass = a->getClass();
+		const TypeInfo bClass = b->getClass();
 
 		if(!overrideQuickCheck)
 		{
@@ -934,174 +868,174 @@ namespace smpl
 			}
 		}
 
-		if (aClass == &Box2D::globalClass)
+		if (aClass == TypeInfo::get<Box2D>())
 		{
-			if (bClass == &Box2D::globalClass)
+			if (bClass == TypeInfo::get<Box2D>())
 			{
 				return CollisionMaster::collisionMethod((Box2D*)a, (Box2D*)b);
 			}
-			else if (bClass == &Point2D::globalClass)
+			else if (bClass == TypeInfo::get<Point2D>())
 			{
 				return CollisionMaster::collisionMethod((Point2D*)b, (Box2D*)a);
 			}
-			else if (bClass == &Circle::globalClass)
+			else if (bClass == TypeInfo::get<Circle>())
 			{
 				return CollisionMaster::collisionMethod((Box2D*)a, (Circle*)b);
 			}
-			else if (bClass == &Ellipse::globalClass)
+			else if (bClass == TypeInfo::get<Ellipse>())
 			{
 				return CollisionMaster::collisionMethod((Box2D*)a, (Ellipse*)b);
 			}
-			else if (bClass == &Triangle2D::globalClass)
+			else if (bClass == TypeInfo::get<Triangle2D>())
 			{
 				return CollisionMaster::collisionMethod((Box2D*)a, (Triangle2D*)b);
 			}
-			else if (bClass == &Line2D::globalClass)
+			else if (bClass == TypeInfo::get<Line2D>())
 			{
 				return CollisionMaster::collisionMethod((Box2D*)a, (Line2D*)b);
 			}
 
 			//No matching function found
 		}
-		else if (aClass == &Point2D::globalClass)
+		else if (aClass == TypeInfo::get<Point2D>())
 		{
-			if (bClass == &Box2D::globalClass)
+			if (bClass == TypeInfo::get<Box2D>())
 			{
 				return CollisionMaster::collisionMethod((Point2D*)a, (Box2D*)b);
 			}
-			else if (bClass == &Point2D::globalClass)
+			else if (bClass == TypeInfo::get<Point2D>())
 			{
 				return CollisionMaster::collisionMethod((Point2D*)a, (Point2D*)b);
 			}
-			else if (bClass == &Circle::globalClass)
+			else if (bClass == TypeInfo::get<Circle>())
 			{
 				return CollisionMaster::collisionMethod((Point2D*)a, (Circle*)b);
 			}
-			else if (bClass == &Ellipse::globalClass)
+			else if (bClass == TypeInfo::get<Ellipse>())
 			{
 				return CollisionMaster::collisionMethod((Point2D*)a, (Ellipse*)b);
 			}
-			else if (bClass == &Triangle2D::globalClass)
+			else if (bClass == TypeInfo::get<Triangle2D>())
 			{
 				return CollisionMaster::collisionMethod((Point2D*)a, (Triangle2D*)b);
 			}
-			else if (bClass == &Line2D::globalClass)
+			else if (bClass == TypeInfo::get<Line2D>())
 			{
 				return CollisionMaster::collisionMethod((Point2D*)a, (Line2D*)b);
 			}
 
 			//No matching function found
 		}
-		else if (aClass == &Circle::globalClass)
+		else if (aClass == TypeInfo::get<Circle>())
 		{
-			if (bClass == &Box2D::globalClass)
+			if (bClass == TypeInfo::get<Box2D>())
 			{
 				return CollisionMaster::collisionMethod((Box2D*)b, (Circle*)a);
 			}
-			else if (bClass == &Point2D::globalClass)
+			else if (bClass == TypeInfo::get<Point2D>())
 			{
 				return CollisionMaster::collisionMethod((Point2D*)b, (Circle*)a);
 			}
-			else if (bClass == &Circle::globalClass)
+			else if (bClass == TypeInfo::get<Circle>())
 			{
 				return CollisionMaster::collisionMethod((Circle*)a, (Circle*)b);
 			}
-			else if (bClass == &Ellipse::globalClass)
+			else if (bClass == TypeInfo::get<Ellipse>())
 			{
 				return CollisionMaster::collisionMethod((Circle*)a, (Ellipse*)b);
 			}
-			else if (bClass == &Triangle2D::globalClass)
+			else if (bClass == TypeInfo::get<Triangle2D>())
 			{
 				return CollisionMaster::collisionMethod((Circle*)a, (Triangle2D*)b);
 			}
-			else if (bClass == &Line2D::globalClass)
+			else if (bClass == TypeInfo::get<Line2D>())
 			{
 				return CollisionMaster::collisionMethod((Circle*)a, (Line2D*)b);
 			}
 
 			//No matching function found
 		}
-		else if (aClass == &Line2D::globalClass)
+		else if (aClass == TypeInfo::get<Line2D>())
 		{
-			if (bClass == &Box2D::globalClass)
+			if (bClass == TypeInfo::get<Box2D>())
 			{
 				return CollisionMaster::collisionMethod((Box2D*)b, (Line2D*)a);
 			}
-			else if (bClass == &Point2D::globalClass)
+			else if (bClass == TypeInfo::get<Point2D>())
 			{
 				return CollisionMaster::collisionMethod((Point2D*)b, (Line2D*)a);
 			}
-			else if (bClass == &Circle::globalClass)
+			else if (bClass == TypeInfo::get<Circle>())
 			{
 				return CollisionMaster::collisionMethod((Circle*)b, (Line2D*)a);
 			}
-			else if (bClass == &Ellipse::globalClass)
+			else if (bClass == TypeInfo::get<Ellipse>())
 			{
 				return CollisionMaster::collisionMethod((Line2D*)a, (Ellipse*)b);
 			}
-			else if (bClass == &Triangle2D::globalClass)
+			else if (bClass == TypeInfo::get<Triangle2D>())
 			{
 				return CollisionMaster::collisionMethod((Line2D*)a, (Triangle2D*)b);
 			}
-			else if (bClass == &Line2D::globalClass)
+			else if (bClass == TypeInfo::get<Line2D>())
 			{
 				return CollisionMaster::collisionMethod((Line2D*)a, (Line2D*)b);
 			}
 
 			//No matching function found
 		}
-		else if (aClass == &Triangle2D::globalClass)
+		else if (aClass == TypeInfo::get<Triangle2D>())
 		{
-			if (bClass == &Box2D::globalClass)
+			if (bClass == TypeInfo::get<Box2D>())
 			{
 				return CollisionMaster::collisionMethod((Box2D*)b, (Triangle2D*)a);
 			}
-			else if (bClass == &Point2D::globalClass)
+			else if (bClass == TypeInfo::get<Point2D>())
 			{
 				return CollisionMaster::collisionMethod((Point2D*)b, (Triangle2D*)a);
 			}
-			else if (bClass == &Circle::globalClass)
+			else if (bClass == TypeInfo::get<Circle>())
 			{
 				return CollisionMaster::collisionMethod((Circle*)b, (Triangle2D*)a);
 			}
-			else if (bClass == &Ellipse::globalClass)
+			else if (bClass == TypeInfo::get<Ellipse>())
 			{
 				return CollisionMaster::collisionMethod((Ellipse*)b, (Triangle2D*)a);
 			}
-			else if (bClass == &Triangle2D::globalClass)
+			else if (bClass == TypeInfo::get<Triangle2D>())
 			{
 				return CollisionMaster::collisionMethod((Triangle2D*)a, (Triangle2D*)b);
 			}
-			else if (bClass == &Line2D::globalClass)
+			else if (bClass == TypeInfo::get<Line2D>())
 			{
 				return CollisionMaster::collisionMethod((Line2D*)b, (Triangle2D*)a);
 			}
 
 			//No matching function found
 		}
-		else if (aClass == &Ellipse::globalClass)
+		else if (aClass == TypeInfo::get<Ellipse>())
 		{
-			if (bClass == &Box2D::globalClass)
+			if (bClass == TypeInfo::get<Box2D>())
 			{
 				return CollisionMaster::collisionMethod((Box2D*)b, (Ellipse*)a);
 			}
-			else if (bClass == &Point2D::globalClass)
+			else if (bClass == TypeInfo::get<Point2D>())
 			{
 				return CollisionMaster::collisionMethod((Point2D*)b, (Ellipse*)a);
 			}
-			else if (bClass == &Circle::globalClass)
+			else if (bClass == TypeInfo::get<Circle>())
 			{
 				return CollisionMaster::collisionMethod((Circle*)b, (Ellipse*)a);
 			}
-			else if (bClass == &Ellipse::globalClass)
+			else if (bClass == TypeInfo::get<Ellipse>())
 			{
 				return CollisionMaster::collisionMethod((Ellipse*)a, (Ellipse*)b);
 			}
-			else if (bClass == &Triangle2D::globalClass)
+			else if (bClass == TypeInfo::get<Triangle2D>())
 			{
 				return CollisionMaster::collisionMethod((Ellipse*)a, (Triangle2D*)b);
 			}
-			else if (bClass == &Line2D::globalClass)
+			else if (bClass == TypeInfo::get<Line2D>())
 			{
 				return CollisionMaster::collisionMethod((Line2D*)b, (Triangle2D*)a);
 			}
@@ -1187,7 +1121,7 @@ namespace smpl
 		//v1*v2 = v1*toPoint + v2*tPoint
 
 		
-		if (MathExt::dot(v1, v2) == MathExt::dot(v1, toPoint) + MathExt::dot(v2, toPoint))
+		if (v1.dot(v2) == v1.dot(toPoint) + v2.dot(toPoint))
 		{
 			//Possible collision
 			v1 = -v1;
@@ -1195,7 +1129,7 @@ namespace smpl
 
 			toPoint = Vec2f(a->getPosition().x - b->getVertex2().x, a->getPosition().y - b->getVertex2().y);
 
-			if (MathExt::dot(v1, v2) == MathExt::dot(v1, toPoint) + MathExt::dot(v2, toPoint))
+			if (v1.dot(v2) == v1.dot(toPoint) + v2.dot(toPoint))
 			{
 				return true;
 			}
@@ -1397,7 +1331,7 @@ namespace smpl
 		
 		toVec.z = 0;
 
-		float dis = MathExt::vecLength(toVec);
+		float dis = toVec.getLength();
 		int colCount = 0;
 
 		if(dis < b->getXRadius()+a->getRadius())
@@ -2058,14 +1992,14 @@ namespace smpl
 			
 			for(size_t i2=0; i2<b->size(); i2++)
 			{
-				float projection = MathExt::scalarVectorProjection(b->getVertex(i2), normal);
+				float projection = b->getVertex(i2).project(normal);
 				minBVal = MathExt::min(projection, minBVal);
 				maxBVal = MathExt::max(projection, maxBVal);
 			}
 
 			for(size_t i2=0; i2<a->size(); i2++)
 			{
-				float projection = MathExt::scalarVectorProjection(a->getVertex(i2), normal);
+				float projection = a->getVertex(i2).project(normal);
 				minAVal = MathExt::min(projection, minAVal);
 				maxAVal = MathExt::max(projection, maxAVal);
 			}
@@ -2100,14 +2034,14 @@ namespace smpl
 			
 			for(size_t i2=0; i2<b->size(); i2++)
 			{
-				float projection = MathExt::scalarVectorProjection(b->getVertex(i2), toVec);
+				float projection = b->getVertex(i2).project(toVec);
 				minBVal = MathExt::min(projection, minBVal);
 				maxBVal = MathExt::max(projection, maxBVal);
 			}
 
 			for(size_t i2=0; i2<a->size(); i2++)
 			{
-				float projection = MathExt::scalarVectorProjection(a->getVertex(i2), toVec);
+				float projection = a->getVertex(i2).project(toVec);
 				minAVal = MathExt::min(projection, minAVal);
 				maxAVal = MathExt::max(projection, maxAVal);
 			}

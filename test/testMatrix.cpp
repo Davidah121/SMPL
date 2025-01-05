@@ -4,10 +4,10 @@
 
 TEST_CASE("Testing Matrix Class", "[Matrix]")
 {
-    SECTION("Test Multiplication")
+    SECTION("Test Square Multiplication")
     {
-        smpl::Matrix A = smpl::Matrix(8, 8); //64 values
-        smpl::Matrix B = smpl::Matrix(8, 8); //64 values
+        smpl::MatrixF A = smpl::MatrixF(8, 8); //64 values
+        smpl::MatrixF B = smpl::MatrixF(8, 8); //64 values
 
         //determine if C has the correct values
         for(int i=0; i<8; i++)
@@ -19,7 +19,7 @@ TEST_CASE("Testing Matrix Class", "[Matrix]")
             }
         }
         
-        smpl::Matrix C = A*B;
+        smpl::MatrixF C = A*B;
         REQUIRE(C.getRows() == 8);
         REQUIRE(C.getCols() == 8);
         for(int i=0; i<8; i++)
@@ -31,10 +31,53 @@ TEST_CASE("Testing Matrix Class", "[Matrix]")
         }
     }
 
+    SECTION("Test Rectangular Multiplication")
+    {
+        smpl::MatrixF A = smpl::MatrixF(8, 4); //64 values
+        smpl::MatrixF B = smpl::MatrixF(4, 7); //64 values
+
+        //determine if C has the correct values
+        for(int i=0; i<8; i++)
+        {
+            for(int j=0; j<4; j++)
+            {
+                A[i][j] = j+i;
+            }
+        }
+        for(int i=0; i<4; i++)
+        {
+            for(int j=0; j<7; j++)
+            {
+                B[i][j] = j+1+i;
+            }
+        }
+        
+        smpl::MatrixF C = A*B;
+        smpl::MatrixF Expected = smpl::MatrixF(8, 7);
+        Expected[0][0] = 20; Expected[0][1] = 26;  Expected[0][2] = 32;  Expected[0][3] = 38;  Expected[0][4] = 44;  Expected[0][5] = 50;  Expected[0][6] = 56;
+        Expected[1][0] = 30; Expected[1][1] = 40;  Expected[1][2] = 50;  Expected[1][3] = 60;  Expected[1][4] = 70;  Expected[1][5] = 80;  Expected[1][6] = 90;
+        Expected[2][0] = 40; Expected[2][1] = 54;  Expected[2][2] = 68;  Expected[2][3] = 82;  Expected[2][4] = 96;  Expected[2][5] = 110; Expected[2][6] = 124;
+        Expected[3][0] = 50; Expected[3][1] = 68;  Expected[3][2] = 86;  Expected[3][3] = 104; Expected[3][4] = 122; Expected[3][5] = 140; Expected[3][6] = 158;
+        Expected[4][0] = 60; Expected[4][1] = 82;  Expected[4][2] = 104; Expected[4][3] = 126; Expected[4][4] = 148; Expected[4][5] = 170; Expected[4][6] = 192;
+        Expected[5][0] = 70; Expected[5][1] = 96;  Expected[5][2] = 122; Expected[5][3] = 148; Expected[5][4] = 174; Expected[5][5] = 200; Expected[5][6] = 226;
+        Expected[6][0] = 80; Expected[6][1] = 110; Expected[6][2] = 140; Expected[6][3] = 170; Expected[6][4] = 200; Expected[6][5] = 230; Expected[6][6] = 260;
+        Expected[7][0] = 90; Expected[7][1] = 124; Expected[7][2] = 158; Expected[7][3] = 192; Expected[7][4] = 226; Expected[7][5] = 260; Expected[7][6] = 294;
+        
+        REQUIRE(C.getRows() == 8);
+        REQUIRE(C.getCols() == 7);
+        for(int i=0; i<8; i++)
+        {
+            for(int j=0; j<7; j++)
+            {
+                CHECK(C[i][j] == Expected[i][j]);
+            }
+        }
+    }
+
     SECTION("Test Hadamard Product")
     {
-        smpl::Matrix A = smpl::Matrix(8, 8); //64 values
-        smpl::Matrix B = smpl::Matrix(8, 8); //64 values
+        smpl::MatrixF A = smpl::MatrixF(8, 8); //64 values
+        smpl::MatrixF B = smpl::MatrixF(8, 8); //64 values
 
         //determine if C has the correct values
         for(int i=0; i<8; i++)
@@ -46,7 +89,7 @@ TEST_CASE("Testing Matrix Class", "[Matrix]")
             }
         }
         
-        smpl::Matrix C = A.hadamardProduct(B);
+        smpl::MatrixF C = A.hadamardProduct(B);
         REQUIRE(C.getRows() == 8);
         REQUIRE(C.getCols() == 8);
         for(int i=0; i<8; i++)
@@ -60,8 +103,8 @@ TEST_CASE("Testing Matrix Class", "[Matrix]")
 
     SECTION("Test Transpose Multiplication")
     {
-        smpl::Matrix A = smpl::Matrix(8, 8); //64 values
-        smpl::Matrix B = smpl::Matrix(8, 8); //64 values
+        smpl::MatrixF A = smpl::MatrixF(8, 8); //64 values
+        smpl::MatrixF B = smpl::MatrixF(8, 8); //64 values
 
         //determine if C has the correct values
         for(int i=0; i<8; i++)
@@ -73,8 +116,8 @@ TEST_CASE("Testing Matrix Class", "[Matrix]")
             }
         }
         
-        smpl::Matrix C = A.multiplyTranspose(B);
-        smpl::Matrix C2 = A*B.getTranspose();
+        smpl::MatrixF C = A.multiplyTranspose(B);
+        smpl::MatrixF C2 = A*B.getTranspose();
         REQUIRE(C.getRows() == 8);
         REQUIRE(C.getCols() == 8);
         for(int i=0; i<8; i++)
@@ -88,7 +131,7 @@ TEST_CASE("Testing Matrix Class", "[Matrix]")
 
     SECTION("Test Inverse")
     {
-        smpl::Matrix A = smpl::Matrix(6, 6);
+        smpl::MatrixF A = smpl::MatrixF(6, 6);
         A[0][0] = 0; A[0][1] = 0; A[0][2] = 1; A[0][3] = 5; A[0][4] = 2; A[0][5] = 5;
         A[1][0] = 4; A[1][1] = 1; A[1][2] = 5; A[1][3] = 2; A[1][4] = 6; A[1][5] = 2;
         A[2][0] = 1; A[2][1] = 4; A[2][2] = 5; A[2][3] = 8; A[2][4] = 9; A[2][5] = 8;
@@ -97,11 +140,11 @@ TEST_CASE("Testing Matrix Class", "[Matrix]")
         A[5][0] = 5; A[5][1] = 9; A[5][2] = 3; A[5][3] = 5; A[5][4] = 3; A[5][5] = 2;
 
         //A*A^-1 = A^-1 * A = I
-        smpl::Matrix aInverse = A.getInverse();
+        smpl::MatrixF aInverse = A.getInverse();
         REQUIRE(aInverse.getValid() == true);
 
-        smpl::Matrix aInvMultA = aInverse * A;
-        smpl::Matrix aMultAInv = A * aInverse;
+        smpl::MatrixF aInvMultA = aInverse * A;
+        smpl::MatrixF aMultAInv = A * aInverse;
         for(int i=0; i<6; i++)
         {
             for(int j=0; j<6; j++)

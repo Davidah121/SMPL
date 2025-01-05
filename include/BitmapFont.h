@@ -28,10 +28,6 @@ namespace smpl
 		 */
 		~BitmapFont();
 
-		//Object and RootClass Stuff
-		static const RootClass globalClass;
-		virtual const RootClass* getClass();
-
 		struct InvalidFileFormat : public std::exception
 		{
 			const char* what() const noexcept { return "File format can not be read."; }
@@ -71,6 +67,9 @@ namespace smpl
 		Sprite img = Sprite();
 
 		std::vector<size_t> imgPage = std::vector<size_t>();
+
+		SERIALIZE_SUPER_CLASS(Font)
+		SERIALIZE_CLASS()
 	};
 
 }  //NAMESPACE smpl END
