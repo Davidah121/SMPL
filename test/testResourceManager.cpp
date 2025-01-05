@@ -5,7 +5,7 @@
 //Only need to test adding and deletion.
 TEST_CASE("Testing of the ResourceManager class", "[ResourceManager]")
 {
-	ResourceManager<int> man = ResourceManager<int>();
+	smpl::ResourceManager<int> man = smpl::ResourceManager<int>();
 
 	SECTION("Test adding and deletion of a resource")
 	{

@@ -26,8 +26,8 @@ TEST_CASE("Testing of the SmartMemory class", "[SmartMemory]")
 	SECTION("Test main deletion of an element")
 	{
 		int* n = new int[1];
-		SmartMemory<int> m = SmartMemory(n, false, true, true);
-		SmartMemory<int> m2 = m;
+		smpl::SmartMemory<int> m = smpl::SmartMemory(n, 1, true, true);
+		smpl::SmartMemory<int> m2 = m;
 
 		m.~SmartMemory();
 		REQUIRE(m2.getPointer() == nullptr);
@@ -36,8 +36,8 @@ TEST_CASE("Testing of the SmartMemory class", "[SmartMemory]")
 	SECTION("Test copy and main deletion of a single element")
 	{
 		int counter = 0;
-		SmartMemory<testClass> m = SmartMemory(new testClass(&counter), false, false, true);
-		SmartMemory<testClass> m2 = m;
+		smpl::SmartMemory<testClass> m = smpl::SmartMemory(new testClass(&counter), 1, false, true);
+		smpl::SmartMemory<testClass> m2 = m;
 
 		REQUIRE(counter == 0);
 		//force destructor of copy
@@ -52,8 +52,8 @@ TEST_CASE("Testing of the SmartMemory class", "[SmartMemory]")
 	SECTION("Test copy and main deletion of an array of elements")
 	{
 		std::vector<int> counters = std::vector<int>(4);
-		SmartMemory<testClass> mems = SmartMemory( new testClass[4]{testClass(&counters[0]), testClass(&counters[1]), testClass(&counters[2]), testClass(&counters[3])}, true, false, true );
-		SmartMemory<testClass> mems2 = mems;
+		smpl::SmartMemory<testClass> mems = smpl::SmartMemory( new testClass[4]{testClass(&counters[0]), testClass(&counters[1]), testClass(&counters[2]), testClass(&counters[3])}, 4, false, true );
+		smpl::SmartMemory<testClass> mems2 = mems;
 
 		REQUIRE( (counters[0] == 0 && counters[1] == 0 && counters[2] == 0 && counters[3] == 0) );
 		//force destructor of copy
@@ -68,12 +68,12 @@ TEST_CASE("Testing of the SmartMemory class", "[SmartMemory]")
 	SECTION("Test Locking Smart Memory")
 	{
 		int value = 0;
-		SmartMemory<testClass> mainMemory = SmartMemory<testClass>::createDeleteRights(new testClass(&value), false);
-		SmartMemory<testClass> copyMemory = mainMemory; //a copy with no delete rights
+		smpl::SmartMemory<testClass> mainMemory = smpl::SmartMemory<testClass>::createDeleteRights(new testClass(&value), 1);
+		smpl::SmartMemory<testClass> copyMemory = mainMemory; //a copy with no delete rights
 
 		//create a thread and make a LockingSmartMemory object from the main one.
 		std::thread t = std::thread([&mainMemory]() ->void{
-			LockingSmartMemory<testClass> lsm = mainMemory.getLockingPointer();
+			smpl::LockingSmartMemory<testClass> lsm = mainMemory.getLockingPointer();
 			//sleep for like 5 millisecond
 			smpl::System::sleep(5);
 		});
