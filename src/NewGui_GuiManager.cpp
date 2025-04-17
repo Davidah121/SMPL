@@ -52,7 +52,7 @@ namespace smpl
 				if(!idPair->second.empty() && !srcPair->second.empty())
 				{
 					//Unless the file is incorrect, should be in the resource list something
-					GuiResourceManager::getResourceManager().addSprite(GraphicsInterface::createSprite(srcPair->second, graphicsInterfaceMode), idPair->second, 1, false);
+					GuiResourceManager::getResourceManager().addSprite(GraphicsInterface::createSprite(srcPair->second), idPair->second, 1, false);
 					return true;
 				}
 			}
@@ -70,7 +70,7 @@ namespace smpl
 				if(!idPair->second.empty() && !srcPair->second.empty())
 				{
 					//Unless the file is incorrect, should be in the resource list something
-					GuiResourceManager::getResourceManager().addFont(GraphicsInterface::createFont(srcPair->second, graphicsInterfaceMode), idPair->second, 1, false);
+					GuiResourceManager::getResourceManager().addFont(GraphicsInterface::createFont(srcPair->second), idPair->second, 1, false);
 					return true;
 				}
 			}
@@ -224,6 +224,7 @@ namespace smpl
 	GuiManager::GuiManager(unsigned char type)
 	{
 		GraphicsInterface::setDefaultType(type);
+    	GraphicsInterface::setType(type);
 		surf = GraphicsInterface::createSurface(320, 240);
 		expectedSize = Vec2f(320, 240);
 	}
@@ -231,6 +232,7 @@ namespace smpl
 	GuiManager::GuiManager(unsigned char type, int width, int height)
 	{
 		GraphicsInterface::setDefaultType(type);
+    	GraphicsInterface::setType(type);
 		surf = GraphicsInterface::createSurface(width, height);
 		expectedSize = Vec2f(width, height);
 	}
@@ -253,8 +255,6 @@ namespace smpl
 		objectInFocus = nullptr;
 		rootLayout = GuiLayoutFixed(); //should be okay
 		resetRenderValues();
-		previousRectsDrawn.clear();
-		knownRectsToDraw.clear();
 		objectsByName.clear();
 		shouldDelete.clear();
 	}
@@ -285,14 +285,13 @@ namespace smpl
 	
 	void GuiManager::resetRenderValues()
 	{
-		previousRectsDrawn = knownRectsToDraw;
+		oldRectsDrawn.clear();
+		newRectsDrawn.clear();
 		renderCounter = 0;
 		currDepthCounter = 0;
-		knownRectsToDraw.clear();
-		newDrawnArea.left = INT_MAX;
-		newDrawnArea.right = INT_MIN;
-		newDrawnArea.top = INT_MAX;
-		newDrawnArea.bottom = INT_MIN;
+
+        newDrawnArea = {INT_MAX, INT_MAX, INT_MIN, INT_MIN};
+        oldDrawnArea = {INT_MAX, INT_MAX, INT_MIN, INT_MIN};
 	}
 
 	void GuiManager::updateRenderCounter()
@@ -307,10 +306,20 @@ namespace smpl
 
 	void GuiManager::addNewDrawnArea(GRect r)
 	{
+		newRectsDrawn.push_back(r);
 		newDrawnArea.left = MathExt::min(newDrawnArea.left, r.left);
 		newDrawnArea.right = MathExt::max(newDrawnArea.right, r.right);
 		newDrawnArea.top = MathExt::min(newDrawnArea.top, r.top);
 		newDrawnArea.bottom = MathExt::max(newDrawnArea.bottom, r.bottom);
+	}
+
+	void GuiManager::addOldDrawnArea(GRect r)
+	{
+		oldRectsDrawn.push_back(r);
+		oldDrawnArea.left = MathExt::min(oldDrawnArea.left, r.left);
+		oldDrawnArea.right = MathExt::max(oldDrawnArea.right, r.right);
+		oldDrawnArea.top = MathExt::min(oldDrawnArea.top, r.top);
+		oldDrawnArea.bottom = MathExt::max(oldDrawnArea.bottom, r.bottom);
 	}
 	
 	GRect GuiManager::getNewDrawnArea()
@@ -325,12 +334,12 @@ namespace smpl
 
 	std::vector<GRect>& GuiManager::getNewDrawingRects()
 	{
-		return knownRectsToDraw;
+		return newRectsDrawn;
 	}
 
 	std::vector<GRect>& GuiManager::getOldDrawingRects()
 	{
-		return previousRectsDrawn;
+		return oldRectsDrawn;
 	}
 
 	void GuiManager::updateGuiElements()
@@ -341,12 +350,25 @@ namespace smpl
 		rootLayout.doPreUpdate();
 		rootLayout.doUpdate( SmartMemory<GuiManager>::createNoDelete(this) );
 	}
+
+	void clampClipRectangle(GRect& b, int width, int height)
+	{
+		b.left = MathExt::clamp(b.left, 0, width);
+		b.right = MathExt::clamp(b.right, 0, width);
+		b.top = MathExt::clamp(b.top, 0, height);
+		b.bottom = MathExt::clamp(b.bottom, 0, height);
+	}
+
+	void fixInvalidBoxes(GRect& b)
+	{
+		if(b.left > b.right || b.top > b.bottom) //invalid box
+			b = {0, 0, 0, 0, 0};
+	}
 	
 	bool GuiManager::renderGuiElements()
 	{
     	size_t t1 = System::getCurrentTimeMicro();
-		bool newImg = oldDrawnArea.right > 0xFFFFFF || oldDrawnArea.bottom > 0xFFFFFF;
-		if(alwaysForceRedraw || newImg)
+		if(alwaysForceRedraw)
 		{
 			forceRedraw();
 		}
@@ -356,23 +378,65 @@ namespace smpl
 		int width = surf->getWidth();
 		int height = surf->getHeight();
 		
-		GraphicsInterface::setOrthoProjection(width, height);
-		GraphicsInterface::resetClippingPlane();
+		// GraphicsInterface::setOrthoProjection(width, height);
 		GraphicsInterface::setBoundSurface(surf);
+		GraphicsInterface::resetClippingPlane();
 
 		rootLayout.doPreRender( SmartMemory<GuiManager>::createNoDelete(this) );
-		if(newDrawnArea.left > newDrawnArea.right || newDrawnArea.top > newDrawnArea.bottom || newImg)
-			newDrawnArea = {0, 0, 0xFFFF, 0xFFFF};
+		clampClipRectangle(oldDrawnArea, width, height);
+		clampClipRectangle(newDrawnArea, width, height);
+
+		fixInvalidBoxes(oldDrawnArea);
+		fixInvalidBoxes(newDrawnArea);
+		
+		if(oldDrawnArea == newDrawnArea)
+			oldDrawnArea = {0, 0, 0, 0, 0};
+		
+		//prevent double rendering
+		if(shouldForceRedraw)
+		{
+			oldDrawnArea = {0, 0, 0, 0, 0};
+			newDrawnArea = {0, 0, 0xFFFF, 0xFFFF, 0};
+		}
+		
+		//combine clause. If the sum of both areas is greater than if we just combined them into 1 giant box, make 1 giant box
+		int minLeftCombined = MathExt::min(oldDrawnArea.left, newDrawnArea.left);
+		int minTopCombined = MathExt::min(oldDrawnArea.top, newDrawnArea.top);
+		int maxRightCombined = MathExt::max(oldDrawnArea.right, newDrawnArea.right);
+		int maxBottomCombined = MathExt::max(oldDrawnArea.bottom, newDrawnArea.bottom);
+		
+		int combinedArea = (maxRightCombined - minLeftCombined) * (maxBottomCombined - minTopCombined);
+		int addedSeparateArea = (oldDrawnArea.right - oldDrawnArea.left)*(oldDrawnArea.bottom - oldDrawnArea.top);
+		addedSeparateArea += (newDrawnArea.right - newDrawnArea.left)*(newDrawnArea.bottom - newDrawnArea.top);
+
+		if(combinedArea < addedSeparateArea)
+		{
+			newDrawnArea = {minLeftCombined, minTopCombined, maxRightCombined, maxBottomCombined, 0};
+			oldDrawnArea = {0, 0, 0, 0, 0};
+		}
+
 		
 		if(renderCounter > 0)
 		{
-			// StringTools::println("AREA: (%d, %d, %d, %d)", newDrawnArea.left, newDrawnArea.top, newDrawnArea.right, newDrawnArea.bottom);
-
-			GraphicsInterface::setClippingRect(Box2D(newDrawnArea.left, newDrawnArea.top, newDrawnArea.right, newDrawnArea.bottom));
-			GraphicsInterface::setColor(backgroundColor);
-			GraphicsInterface::drawRect(newDrawnArea.left, newDrawnArea.top, newDrawnArea.right, newDrawnArea.bottom, false);
+			if(oldDrawnArea != GRect{0, 0, 0, 0, 0})
+			{
+            	// StringTools::println("\tOLD AREA - (%d, %d, %d, %d)", oldDrawnArea.left, oldDrawnArea.top, oldDrawnArea.right, oldDrawnArea.bottom);
+				GraphicsInterface::setClippingRect(Box2D(oldDrawnArea.left, oldDrawnArea.top, oldDrawnArea.right, oldDrawnArea.bottom));
+				GraphicsInterface::setColor(backgroundColor);
+				GraphicsInterface::drawRect(oldDrawnArea.left, oldDrawnArea.top, oldDrawnArea.right, oldDrawnArea.bottom, false);
+				rootLayout.doRender( SmartMemory<GuiManager>::createNoDelete(this) );
+			}
 			
-			rootLayout.doRender( SmartMemory<GuiManager>::createNoDelete(this) );
+			if(newDrawnArea != GRect{0, 0, 0, 0, 0})
+			{
+            	// StringTools::println("NEW AREA - (%d, %d, %d, %d)", newDrawnArea.left, newDrawnArea.top, newDrawnArea.right, newDrawnArea.bottom);
+				GraphicsInterface::setClippingRect(Box2D(newDrawnArea.left, newDrawnArea.top, newDrawnArea.right, newDrawnArea.bottom));
+				GraphicsInterface::setColor(backgroundColor);
+				GraphicsInterface::drawRect(newDrawnArea.left, newDrawnArea.top, newDrawnArea.right, newDrawnArea.bottom, false);
+				rootLayout.doRender( SmartMemory<GuiManager>::createNoDelete(this) );
+			}
+
+			rootLayout.setFinishedRendering();
 		}
 		
 		GraphicsInterface::resetClippingPlane();
@@ -380,17 +444,12 @@ namespace smpl
 		GraphicsInterface::setBoundSurface(surf);
 		GraphicsInterface::setColor(Vec4f(1,1,1,1));
 		GraphicsInterface::drawToScreen();
-
-
-		
-		if(renderCounter > 0)
-			oldDrawnArea = newDrawnArea;
 		
 		shouldForceRedraw = false;
 		
 		size_t t2 = System::getCurrentTimeMicro();
 		// StringTools::println("TIME TAKEN: %llu", t2-t1);
-		return renderCounter > 0;
+		return true;
 	}
 
 	GuiLayoutFixed& GuiManager::getRootLayout()
@@ -410,6 +469,7 @@ namespace smpl
 
 	void GuiManager::resizeImage(int width, int height)
 	{
+		StringTools::println("RESIZE");
 		bool wasBound = (surf == GraphicsInterface::getBoundSurface());
 		
 		if(surf != nullptr)
@@ -418,14 +478,12 @@ namespace smpl
 			{
 				delete surf;
 				surf = GraphicsInterface::createSurface(width, height);
-				oldDrawnArea = {INT_MIN, INT_MAX, INT_MIN, INT_MAX};
 				forceRedraw();
 			}
 		}
 		else
 		{
 			surf = GraphicsInterface::createSurface(width, height);
-			oldDrawnArea = {INT_MIN, INT_MAX, INT_MIN, INT_MAX};
 			forceRedraw();
 		}
 

@@ -31,26 +31,10 @@ public:
             throw std::runtime_error("Failed to write string data to Streamable output. Buffer is nullptr.");
 
         size_t totalSize = type.size*elements;
+        output.write(&totalSize, sizeof(totalSize));
         bool okay = output.write(buffer, totalSize);
         if(!okay)
             throw std::runtime_error("Failed to write string data to Streamable output. Streamable reported failed write.");
-        
-        //must be null terminated.
-        bool isNullTerminated = true;
-        for(size_t i=totalSize-type.size; i<totalSize; i++)
-        {
-            if(((char*)buffer)[i] != 0)
-            {
-                isNullTerminated = false;
-                break;
-            }
-        }
-        if(isNullTerminated == false)
-        {
-            //add null terminator?
-            for(int i=0; i<type.size; i++)
-                output.write(0, 1);
-        }
     }
     virtual void writeNumber(SerializedStreamable& output, const TypeInfo& type, const void* buffer)
     {
@@ -88,26 +72,13 @@ public:
 
     virtual void readString(SerializedStreamable& input, const TypeInfo& type, std::vector<char>& buffer)
     {
-        buffer.clear();
-        //read till null char
-        std::vector<char> tempBuff = std::vector<char>(type.size);
-        while(input.peek(tempBuff.data(), tempBuff.size()))
-        {
-            input.read(tempBuff.data(), tempBuff.size()); //officially read
-            bool allZero = true;
-            for(size_t i=0; i < tempBuff.size(); i++)
-            {
-                if(tempBuff[i]!=0)
-                    allZero = false;
-                buffer.push_back(tempBuff[i]);
-            }
-            if(allZero)
-                return;
-        }
-        
-        //throw exception
-        throw std::runtime_error("Failed to read string data to Streamable input. Unable to find null character and/or input reported failed read.");
+        size_t totalSizeInBytes = 0;
+        if(!input.read(&totalSizeInBytes, sizeof(size_t)))
+            throw std::runtime_error("Failed to read size of String in Streamable input.");
 
+        buffer.resize(totalSizeInBytes);
+        if(!input.read(buffer.data(), totalSizeInBytes))
+            throw std::runtime_error("Failed to read string data to Streamable input. Unable to find null character and/or input reported failed read.");
     }
 
     virtual void readNumber(SerializedStreamable& input, const TypeInfo& type, void* buffer)

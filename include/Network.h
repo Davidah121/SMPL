@@ -24,9 +24,8 @@
 		#define INVALID_SOCKET (~0)
 	#endif
 #else
-	#pragma comment(lib, "Ws2_32.lib")
-	#pragma comment(lib, "Mswsock.lib")
 	#define _WINSOCK_DEPRECATED_NO_WARNINGS
+    #include "TargetVer.h"
 
 	#include <Winsock2.h>
 	#include <winerror.h>
@@ -112,7 +111,7 @@ namespace smpl
 		 * 		Default is 0.
 		 * @return size_t
 		 */
-		int sendMessage(std::string message, size_t id=0);
+		int sendMessage(const std::string& message, size_t id=0);
 
 		/**
 		 * @brief Sends a message to the specified connected IP.
@@ -126,7 +125,7 @@ namespace smpl
 		 * 		Default is 0.
 		 * @return int 
 		 */
-		int sendMessage(std::vector<unsigned char> message, size_t id=0);
+		int sendMessage(std::vector<unsigned char>& message, size_t id=0);
 
 		/**
 		 * @brief Sends a WebRequest. Just used to prevent errors.
@@ -173,6 +172,20 @@ namespace smpl
 		 * @return int
 		 */
 		int sendMessage(char* message, int messageSize, size_t id=0);
+
+		template<typename T>
+        int sendMessage(const T msg, size_t id)
+        {
+            //send raw bytes
+            return sendMessage((char*)&msg, sizeof(T), id);
+        }
+
+        template<typename T>
+        int sendMessage(const T* msg, int size, size_t id)
+        {
+            //send raw bytes
+            return sendMessage((char*)msg, sizeof(T)*size, id);
+        }
 
 		int sendFile(char* filename, size_t length, size_t offset, size_t id=0);
 		
@@ -278,6 +291,20 @@ namespace smpl
 		 * @return false 
 		 */
 		int receiveMessage(char* buffer, int bufferSize, size_t id=0, bool flagRead = true);
+
+		template<typename T>
+        int receiveMessage(const T msg, size_t id)
+        {
+            //send raw bytes
+            return receiveMessage((char*)&msg, sizeof(T), id);
+        }
+
+        template<typename T>
+        int receiveMessage(const T* msg, int size, size_t id)
+        {
+            //send raw bytes
+            return receiveMessage((char*)msg, sizeof(T)*size, id);
+        }
 
 		/**
 		 * @brief Receives a message from the specified connected IP.
@@ -493,6 +520,14 @@ namespace smpl
 		 * @return size_t 
 		 */
 		size_t getSocketsConnectedSize();
+
+		/**
+		 * @brief Returns whether or not this uses SSL or is just a standard TCP socket.
+		 * 
+		 * @return true 
+		 * @return false 
+		 */
+		bool isSecure();
 
 		static const bool TYPE_SERVER = false;
 		static const bool TYPE_CLIENT = true;

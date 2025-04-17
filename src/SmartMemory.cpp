@@ -184,6 +184,7 @@ namespace smpl
         deleteOnLast = other.deleteOnLast;
         deleteRights = other.deleteRights;
         hashValue = other.hashValue;
+        sizeInBytes = other.sizeInBytes;
 
         other.hashValue = nullptr;
     }
@@ -196,6 +197,7 @@ namespace smpl
         deleteOnLast = other.deleteOnLast;
         deleteRights = other.deleteRights;
         hashValue = other.hashValue;
+        sizeInBytes = other.sizeInBytes;
 
         other.hashValue = nullptr;
     }
@@ -207,6 +209,7 @@ namespace smpl
         isArray = other.isArray;
         deleteOnLast = other.deleteOnLast;
         deleteRights = false;
+        sizeInBytes = other.sizeInBytes;
     }
 
     void GenericSmartMemory::operator=(const GenericSmartMemory& other)
@@ -216,6 +219,7 @@ namespace smpl
         isArray = other.isArray;
         deleteOnLast = other.deleteOnLast;
         deleteRights = false;
+        sizeInBytes = other.sizeInBytes;
     }
 
     bool GenericSmartMemory::getDeleteRights()

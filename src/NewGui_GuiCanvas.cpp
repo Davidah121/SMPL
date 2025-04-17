@@ -9,7 +9,7 @@ namespace smpl
     
     GuiCanvas::GuiCanvas(int width, int height, int graphicsInterfaceMode) : GuiLayoutFixed()
     {
-        surf = SmartMemory<SurfaceInterface>(GraphicsInterface::createSurface(width, height, graphicsInterfaceMode), false, true, false);
+        surf = SmartMemory<SurfaceInterface>(GraphicsInterface::createSurface(width, height), false, true, false);
     }
 
     GuiCanvas::~GuiCanvas()

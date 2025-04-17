@@ -6,12 +6,25 @@
 
 namespace smpl
 {
+    NeuralLayer::~NeuralLayer()
+    {
+
+    }
     MatrixF NeuralLayer::feedForward(const MatrixF& input)
     {
         if(nextLayer != nullptr)
             return nextLayer->feedForward(solve(input));
         else
             return solve(input);
+    }
+    
+    void NeuralLayer::setPreviousLayer(NeuralLayer* layer)
+    {
+        previousLayer = layer;
+    }
+    void NeuralLayer::setNextLayer(NeuralLayer* layer)
+    {
+        nextLayer = layer;
     }
 
     SigmoidActivationLayer::SigmoidActivationLayer()
@@ -290,7 +303,20 @@ namespace smpl
     InputLayer::InputLayer(const MatrixF& trainingData)
     {
         //find mean and std dev per column
-        
+        MatrixF variance;
+
+        mean = trainingData.verticalSum() / trainingData.getRows();
+        variance = trainingData.broadcastSubtract(mean).verticalSum() / trainingData.getRows();
+        #if(OPTI >= 1)
+        stddev = variance.broadcastFunction(MathExt::sqrt, nullptr);
+        #else
+        stddev = variance.broadcastFunction(MathExt::sqrt, nullptr);
+        #endif
+
+        //prevent 0 in stddev
+        for(size_t i=0; i<stddev.getRows()*stddev.getCols(); i++)
+            if(stddev.getData()[i] == 0)
+                stddev.getData()[i] = 1;
     }
     InputLayer::~InputLayer()
     {
@@ -300,7 +326,7 @@ namespace smpl
     MatrixF InputLayer::solve(const MatrixF& input)
     {
         //zscore on each column
-        return MatrixF();
+        return input.broadcastSubtract(mean).broadcastInverseHadamardProduct(stddev);
     }
     MatrixF InputLayer::derivative(const MatrixF& input)
     {

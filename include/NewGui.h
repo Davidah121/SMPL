@@ -74,6 +74,15 @@ namespace smpl
         int32_t right;
         int32_t bottom;
         uint32_t depth;
+
+        bool operator==(const GRect& other)
+        {
+            return (left==other.left && top==other.top && right==other.right && bottom==other.bottom && depth==other.depth);
+        }
+        bool operator!=(const GRect& other)
+        {
+            return (left!=other.left || top!=other.top || right!=other.right || bottom!=other.bottom || depth!=other.depth);
+        }
     };
 
     //GuiItem - The base class that everything is built off of. It contains the static flag constants, 
@@ -147,6 +156,13 @@ namespace smpl
          * @param manager 
          */
         void doRender(SmartMemory<GuiManager> manager);
+
+        /**
+         * @brief Only called from the GuiManager to specify that no more rendering is needed this frame.
+         *      Doing it this way prevents artifacts and simplifies code.
+         * 
+         */
+        void setFinishedRendering();
 
         /**
          * @brief This is the proper method that should be called to update an object.
@@ -292,6 +308,7 @@ namespace smpl
         
         void determineChangeFromLastTime();
         
+        
         void determineChangeInOverlap(SmartMemory<GuiManager> manager);
         void determineChangeInOverlapForChildren(SmartMemory<GuiManager> manager);
 
@@ -400,8 +417,8 @@ namespace smpl
         GuiLayout();
         ~GuiLayout();
         
-        void addChild(SmartMemory<GuiItem> c);
-        void removeChild(SmartMemory<GuiItem> c);
+        virtual void addChild(SmartMemory<GuiItem> c);
+        virtual void removeChild(SmartMemory<GuiItem> c);
         
         void setLeftAlign();
         void setTopAlign();
@@ -424,12 +441,18 @@ namespace smpl
         void setBorderColor(smpl::Color c);
         void setBackgroundColor(smpl::Color c);
 
+        void setFlags(uint16_t f);
+
         uint16_t getFlags();
         GRect getMargin();
         GRect getPadding();
         GRect getBorder();
         smpl::Color getBorderColor();
         smpl::Color getBackgroundColor();
+
+        uint16_t getContentWidth();
+        uint16_t getContentHeight();
+        
         
         void setMinWidth(uint16_t v);
         void setMaxWidth(uint16_t v);
@@ -459,6 +482,10 @@ namespace smpl
         uint16_t maxHeight = 0xFFFF;
         uint16_t minWidth = 0;
         uint16_t minHeight = 0;
+
+        uint16_t contentWidth = 0; //Not necessarily equal to the total width of the object. Just what the content uses up or would use up.
+        uint16_t contentHeight = 0; //Not necessarily equal to the total height of the object. Just what the content uses up or would use up.
+        
         
         std::vector<SmartMemory<GuiItem>> children;
         
@@ -585,8 +612,22 @@ namespace smpl
     SERIALIZE_CLASS()
     };
 
-
+    class DLL_OPTION GuiClippingLayout : public GuiLayoutFixed
+    {
+    public:
+        GuiClippingLayout();
+        ~GuiClippingLayout();
+        
+        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
+        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+    protected:
+        void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
+        void render(SmartMemory<GuiManager> manager);
+    
+    SERIALIZE_CLASS()
+    }; 
     #pragma endregion
+
 
     #pragma region STANDARD_GUI_ELEMENTS
 
@@ -596,9 +637,10 @@ namespace smpl
         GuiButton();
         ~GuiButton();
 
-        void setOnClickFunction(std::function<void()> onClick);
-        void setOnMouseInFunction(std::function<void()> onMouseIn);
-        void setOnMouseOutFunction(std::function<void()> onMouseOut);
+        void setOnClickFunction(std::function<void(GuiButton*, int button)> onClick);
+        void setOnClickReleaseFunction(std::function<void(GuiButton*, int button, bool hovering)> onClick);
+        void setOnMouseInFunction(std::function<void(GuiButton*)> onMouseIn);
+        void setOnMouseOutFunction(std::function<void(GuiButton*)> onMouseOut);
 
         void setHoverColor(Color c);
         void setPressedColor(Color c);
@@ -618,10 +660,45 @@ namespace smpl
         Color hoverColor = {192, 192, 192, 255};
         Color depressedColor = {224, 224, 224, 255};
         Color originalBackgroundColor = {128, 128, 128, 255}; //will be replaced
-        std::function<void()> onClickFunc = nullptr;
-        std::function<void()> onMouseInFunc = nullptr;
-        std::function<void()> onMouseOutFunc = nullptr;
+        std::function<void(GuiButton*, int button)> onClickFunc = nullptr;
+        std::function<void(GuiButton*, int button, bool hovering)> onClickReleasedFunc = nullptr;
+        std::function<void(GuiButton*)> onMouseInFunc = nullptr;
+        std::function<void(GuiButton*)> onMouseOutFunc = nullptr;
     
+    SERIALIZE_CLASS()
+    };
+
+    class DLL_OPTION GuiScrollBar : public GuiLayoutFixed
+    {
+    public:
+        static const int SELECTED_INVALID = -1;
+        static const int SELECTED_VERTICAL_BAR = 0;
+        static const int SELECTED_HORIZONTAL_BAR = 1;
+        GuiScrollBar();
+        ~GuiScrollBar();
+
+        void addChild(SmartMemory<GuiItem> c);
+        void removeChild(SmartMemory<GuiItem> c);
+        
+        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
+        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+        
+        protected:
+        void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
+        void update(SmartMemory<GuiManager> manager);
+
+    private:
+        int offsetX = 0;
+        int offsetY = 0;
+
+        int selectedButton = -1;
+        int selectedMouseX = 0;
+        int selectedMouseY = 0;
+        
+        GuiClippingLayout clippingLayout;
+        GuiButton horizontalScrollButton;
+        GuiButton verticalScrollButton;
+        
     SERIALIZE_CLASS()
     };
 
@@ -650,7 +727,7 @@ namespace smpl
         GRect getCaretBox();
 
         void setSelectable(bool s);
-        void setCanWrap(bool w);
+        void setWrapMode(char w);
         
         void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
         static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
@@ -662,7 +739,7 @@ namespace smpl
         
     private:
         bool isSelectable = false;
-        bool canWrap = true;
+        char wrapMode = Font::WORD_WRAP;
         bool selecting = false;
         bool caretOnRight = true;
         int highlightStartIndex = -1;
@@ -691,6 +768,16 @@ namespace smpl
         void setShouldLoop(bool l);
 
         void setSpriteIndex(int i);
+
+        void setMinWidth(int v);
+        void setMaxWidth(int v);
+        void setMinHeight(int v);
+        void setMaxHeight(int v);
+        
+        int getMinWidth();
+        int getMaxWidth();
+        int getMinHeight();
+        int getMaxHeight();
         
         void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
         static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
@@ -710,8 +797,12 @@ namespace smpl
         size_t lastUpdateTime = 0;
         SmartMemory<SpriteInterface> spr = nullptr;
 
-        int maxWidth = -1;
-        int maxHeight = -1;
+        int maxWidth = 1;
+        int maxHeight = 1;
+        int minWidth = 1;
+        int minHeight = 1;
+        int scaledWidth = 1;
+        int scaledHeight = 1;
         Color imgColor = {255,255,255,255};
     
     SERIALIZE_CLASS()
@@ -748,7 +839,7 @@ namespace smpl
     SERIALIZE_CLASS()
     };
 
-    class DLL_OPTION GuiTextBox : public GuiLayoutList
+    class DLL_OPTION GuiTextBox : public GuiScrollBar
     {
     public:
         GuiTextBox();
@@ -768,44 +859,24 @@ namespace smpl
     
     protected:
         void update(SmartMemory<GuiManager> manager);
-        void render(SmartMemory<GuiManager> manager);
+        // void render(SmartMemory<GuiManager> manager);
         
         virtual void onFocusChanged(SmartMemory<GuiManager> manager, bool changedTo);
 
     private:
         void setTextEmpty(bool v);
-        void keyboardInput();
+        void keyboardInput(std::u32string& str, std::vector<FontCharBoxInfo>& boundBoxes);
+        void updateCursorElementInfo();
         bool allowLineBreaks = false;
         bool textEmpty = true;
         bool blink = false;
-        int counter = 30;
+        bool shouldUpdateCursor = false;
+        size_t startT = 0;
+        int counter = 500;
         std::string defaultText = "";
         GuiText textElement = GuiText();
+        GuiLayoutFixed cursorElement = GuiLayoutFixed();
         Color oldFontColor = {0, 0, 0, 255};
-        
-    SERIALIZE_CLASS()
-    };
-
-    class DLL_OPTION GuiScrollBar : public GuiLayoutFixed
-    {
-    public:
-        GuiScrollBar();
-        ~GuiScrollBar();
-
-        void addChild(SmartMemory<GuiItem> child);
-        
-        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
-        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
-    
-    protected:
-        void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
-        void update(SmartMemory<GuiManager> manager);
-
-    private:
-        int offsetX = 0;
-        int offsetY = 0;
-        GuiButton horizontalScrollButton;
-        GuiButton verticalScrollButton;
         
     SERIALIZE_CLASS()
     };
@@ -971,6 +1042,7 @@ namespace smpl
         uint32_t getNextDepthValue();
 
         void addNewDrawnArea(GRect r);
+        void addOldDrawnArea(GRect r);
         GRect getNewDrawnArea();
         GRect getOldDrawnArea();
         
@@ -1033,14 +1105,14 @@ namespace smpl
 		std::vector<SmartMemory<GuiItem>> shouldDelete = std::vector<SmartMemory<GuiItem>>();
 		SimpleHashMap<std::string, SmartMemory<GuiItem>> objectsByName = SimpleHashMap<std::string, SmartMemory<GuiItem>>();
 
-        GRect newDrawnArea = {INT_MAX, INT_MIN, INT_MAX, INT_MIN};
-        GRect oldDrawnArea = {INT_MIN, INT_MAX, INT_MIN, INT_MAX};
+        GRect newDrawnArea = {INT_MAX, INT_MIN, INT_MAX, INT_MIN, 0};
+        GRect oldDrawnArea = {INT_MAX, INT_MIN, INT_MAX, INT_MIN, 0};
 
         bool alwaysForceRedraw = false;
-        bool shouldForceRedraw = false;
+        bool shouldForceRedraw = true;
 
-        std::vector<GRect> previousRectsDrawn; //space that was previously used for objects that rendered. So stuff from the previous frame.
-        std::vector<GRect> knownRectsToDraw; //space allocated for objects that are going to render.
+        std::vector<GRect> oldRectsDrawn; //space that was previously used for objects that rendered. So stuff from the previous frame.
+        std::vector<GRect> newRectsDrawn; //space allocated for objects that are going to render.
         
         void resetRenderValues();
 

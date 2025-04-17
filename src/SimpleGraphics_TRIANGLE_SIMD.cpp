@@ -5,7 +5,6 @@ namespace smpl
 	#if (OPTI > 0)
 	void SimpleGraphics::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline, Image* surf)
 	{
-		int currentComposite = compositeRule;
 		Image* otherImg;
 		if(surf==nullptr)
 			return;
@@ -42,9 +41,11 @@ namespace smpl
 			minX = MathExt::clamp(minX, (int)SimpleGraphics::getClippingRect().getLeftBound(), (int)SimpleGraphics::getClippingRect().getRightBound());
 			maxX = MathExt::clamp(maxX, (int)SimpleGraphics::getClippingRect().getLeftBound(), (int)SimpleGraphics::getClippingRect().getRightBound());
 			
+			int approxArea = (maxX-minX)*(maxY-minY);
 			SIMD_U8 activeColorAsSIMD = COLOR_TO_SIMD(activeColor);
 			
-			//#pragma omp parallel for
+			LARGE_ENOUGH_CLAUSE(approxArea)
+			#pragma omp parallel for
 			for(int y=minY; y<maxY; y++)
 			{
 				double xv1 = l1.solveForX(y+0.5);
@@ -65,38 +66,22 @@ namespace smpl
 				Color* endFill = startFill + (endX-startX);
 
 				//fill from cX1 to cX2
-				if(compositeRule == NO_COMPOSITE)
+				int stopPoint = SIMD_U8::getSIMDBound((endX-startX));
+				for(int i=0; i<stopPoint; i+=SIMD_GRAPHICS_INC)
 				{
-					int stopPoint = SIMD_U8::getSIMDBound((endX-startX));
-					for(int i=0; i<stopPoint; i+=SIMD_GRAPHICS_INC)
-					{
-						activeColorAsSIMD.store((unsigned char*)startFill);
-						startFill += SIMD_GRAPHICS_INC;
-					}
-					while(startFill < endFill)
-					{
-						*startFill = activeColor;
-						startFill++;
-					}
+					SIMD_U8 destC = SIMD_U8::load((unsigned char*)startFill);
+					SIMD_U8 blendC = blend(activeColorAsSIMD.values, destC.values);
+					blendC.store((unsigned char*)startFill);
+					startFill += SIMD_GRAPHICS_INC;
 				}
-				else
+				while(startFill < endFill)
 				{
-					int stopPoint = SIMD_U8::getSIMDBound((endX-startX));
-					for(int i=0; i<stopPoint; i+=SIMD_GRAPHICS_INC)
-					{
-						SIMD_U8 destC = SIMD_U8::load((unsigned char*)startFill);
-						SIMD_U8 blendC = blend(activeColorAsSIMD.values, destC.values);
-						blendC.store((unsigned char*)startFill);
-						startFill += SIMD_GRAPHICS_INC;
-					}
-					while(startFill < endFill)
-					{
-						Color destColor = *startFill;
-						*startFill = blend(activeColor, destColor);
-						startFill++;
-					}
+					Color destColor = *startFill;
+					*startFill = blend(activeColor, destColor);
+					startFill++;
 				}
 			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 			
 		}
 	}
@@ -104,7 +89,6 @@ namespace smpl
 	//TODO: MAKE SIMD. Same problem as before with DrawSprite. Lerp, etc. are not SIMD
 	void SimpleGraphics::drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture, Image* surf)
 	{
-		int currentComposite = compositeRule;
 		Image* otherImg;
 		if(surf==nullptr)
 			return;
@@ -133,9 +117,11 @@ namespace smpl
 			minX = MathExt::clamp(minX, (int)SimpleGraphics::getClippingRect().getLeftBound(), (int)SimpleGraphics::getClippingRect().getRightBound());
 			maxX = MathExt::clamp(maxX, (int)SimpleGraphics::getClippingRect().getLeftBound(), (int)SimpleGraphics::getClippingRect().getRightBound());
 			
+			int approxArea = (maxX-minX)*(maxY-minY);
 			double det = (p2.y-p3.y)*(p1.x-p3.x) + (p3.x-p2.x)*(p1.y-p3.y);
 
-			//#pragma omp parallel for
+			LARGE_ENOUGH_CLAUSE(approxArea)
+			#pragma omp parallel for
 			for(int y=minY; y<maxY; y++)
 			{
 				double xv1 = l1.solveForX(y+0.5);
@@ -174,19 +160,11 @@ namespace smpl
 					int vInt = (int) MathExt::round(v * (texture->getHeight()));
 
 					Color c = texture->getPixel(uInt, vInt, false);
+					
+					Color destColor = otherImg->getPixel(startX, y);
+					Color finalColor = blend(c, destColor);
 
-					if(compositeRule==NO_COMPOSITE)
-					{
-						otherImg->setPixel(startX, y, c);
-					}
-					else
-					{
-						Color destColor = otherImg->getPixel(startX, y);
-						Color finalColor = blend(c, destColor);
-
-						otherImg->setPixel(startX, y, finalColor);
-					}
-
+					otherImg->setPixel(startX, y, finalColor);
 					continue;
 				}
 
@@ -221,20 +199,13 @@ namespace smpl
 
 					Color c = texture->getPixel(uInt, vInt, true);
 					
-					if(currentComposite == NO_COMPOSITE)
-					{
-						*startFill = c;
-					}
-					else
-					{
-						*startFill = blend(c, *startFill);
-					}
-					
+					*startFill = blend(c, *startFill);
 					startFill++;
 					x++;
 				}
 				
 			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 
 		}
 	}

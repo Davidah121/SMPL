@@ -2358,7 +2358,7 @@ namespace smpl
 			T sum;
 			for(size_t i=0; i<size; i++)
 			{
-				sum += data[i];
+				sum += sqr(data[i] - mean);
 			}
 			return sum / size;
 		}

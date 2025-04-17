@@ -105,6 +105,7 @@ namespace smpl
 		Matrix<T, SIMD_TYPE> operator*(const Matrix<T, SIMD_TYPE>& other) const;
 		Matrix<T, SIMD_TYPE> operator+(const Matrix<T, SIMD_TYPE>& other) const;
 		Matrix<T, SIMD_TYPE> operator-(const Matrix<T, SIMD_TYPE>& other) const;
+		Matrix<T, SIMD_TYPE> operator-() const;
 
 		bool operator==(const Matrix<T, SIMD_TYPE>& other) const;
 		bool operator!=(const Matrix<T, SIMD_TYPE>& other) const;
@@ -157,6 +158,7 @@ namespace smpl
 		
 		/**
 		 * @brief Performs an element wise subtraction.
+		 * 		Specifically does : this-v
 		 * 		Equivalent to making the input value "v" into a matrix
 		 * 		consisting of just the value "v" and subtraction.
 		 * 
@@ -164,9 +166,21 @@ namespace smpl
 		 * @return Matrix<T, SIMD_TYPE> 
 		 */
 		Matrix<T, SIMD_TYPE> broadcastSubtract(T v) const;
+
+		/**
+		 * @brief Performs an element wise subtraction.
+		 * 		Specifically does : v-this
+		 * 		Equivalent to making the input value "v" into a matrix
+		 * 		consisting of just the value "v" and subtraction.
+		 * 		
+		 * 
+		 * @param v 
+		 * @return Matrix<T, SIMD_TYPE> 
+		 */
+		Matrix<T, SIMD_TYPE> broadcastInverseSubtract(T v) const;
 		
 		/**
-		 * @brief Attempts to do an element wise addition using a
+		 * @brief Attempts to do an element wise subtraction using a
 		 * 		row or column matrix "v". Must be a row or column matrix.
 		 * 		Must be an appropriate size as well.
 		 * 
@@ -535,7 +549,7 @@ namespace smpl
 	{
 		if(data!=nullptr)
 			delete[] data;
-		
+		data = nullptr;
 		valid = false;
 	}
 	
@@ -609,6 +623,7 @@ namespace smpl
 		SIMD_TYPE simdValue = SIMD_TYPE(value);
 		simdBound = SIMD_TYPE::getSimdBound(rows*columns);
 
+		LARGE_ENOUGH_CLAUSE(simdBound)
 		#pragma omp parallel for
 		for (size_t i = 0; i < simdBound; i+=SIMD_TYPE::SIZE)
 		{
@@ -618,12 +633,14 @@ namespace smpl
 		}
 		#endif
 
+		LARGE_ENOUGH_CLAUSE((rows*columns) - simdBound)
 		#pragma omp parallel for
 		for (size_t i = simdBound; i < rows*columns; i++)
 		{
 			m.data[i] = value * data[i];
 		}
 
+		RESET_LARGE_ENOUGH_CLAUSE()
 		return m;
 	}
 
@@ -637,6 +654,7 @@ namespace smpl
 		SIMD_TYPE simdValue = SIMD_TYPE(value);
 		simdBound = SIMD_TYPE::getSimdBound(rows*columns);
 
+		LARGE_ENOUGH_CLAUSE(simdBound)
 		#pragma omp parallel for
 		for (size_t i = 0; i < simdBound; i+=SIMD_TYPE::SIZE)
 		{
@@ -646,12 +664,14 @@ namespace smpl
 		}
 		#endif
 
+		LARGE_ENOUGH_CLAUSE((rows*columns)-simdBound)
 		#pragma omp parallel for
 		for (size_t i = simdBound; i < rows*columns; i++)
 		{
 			m.data[i] = data[i] / value;
 		}
 
+		RESET_LARGE_ENOUGH_CLAUSE()
 		return m;
 	}
 
@@ -669,6 +689,7 @@ namespace smpl
 		SIMD_TYPE simdValue = SIMD_TYPE(value);
 		simdBound = SIMD_TYPE::getSimdBound(rows*columns);
 
+		LARGE_ENOUGH_CLAUSE(simdBound)
 		#pragma omp parallel for
 		for (size_t i = 0; i < simdBound; i+=SIMD_TYPE::SIZE)
 		{
@@ -678,11 +699,13 @@ namespace smpl
 		}
 		#endif
 
+		LARGE_ENOUGH_CLAUSE((rows*columns)-simdBound)
 		#pragma omp parallel for
 		for (size_t i = simdBound; i < rows*columns; i++)
 		{
 			data[i] *= value;
 		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 	}
 
 	template<typename T, typename SIMD_TYPE>
@@ -693,6 +716,7 @@ namespace smpl
 		SIMD_TYPE simdValue = SIMD_TYPE(value);
 		simdBound = SIMD_TYPE::getSimdBound(rows*columns);
 
+		LARGE_ENOUGH_CLAUSE(simdBound)
 		#pragma omp parallel for
 		for (size_t i = 0; i < simdBound; i+=SIMD_TYPE::SIZE)
 		{
@@ -702,11 +726,13 @@ namespace smpl
 		}
 		#endif
 
+		LARGE_ENOUGH_CLAUSE((rows*columns)-simdBound)
 		#pragma omp parallel for
 		for (size_t i = simdBound; i < rows*columns; i++)
 		{
 			data[i] /= value;
 		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 	}
 
 	template<typename T, typename SIMD_TYPE>
@@ -720,6 +746,7 @@ namespace smpl
 			#if (SIMD_TYPE != void)
 			simdBound = SIMD_TYPE::getSimdBound(rows*columns);
 
+			LARGE_ENOUGH_CLAUSE(simdBound)
 			#pragma omp parallel for
 			for (size_t i = 0; i < simdBound; i+=SIMD_TYPE::SIZE)
 			{
@@ -729,12 +756,15 @@ namespace smpl
 				A.store(&m.data[i]);
 			}
 			#endif
+			
+			LARGE_ENOUGH_CLAUSE((rows*columns)-simdBound)
 			#pragma omp parallel for
 			for (size_t i = simdBound; i < rows*columns; i++)
 			{
 				m.data[i] = data[i] + other.data[i];
 			}
 
+			RESET_LARGE_ENOUGH_CLAUSE()
 			return m;
 		}
 		else
@@ -752,6 +782,7 @@ namespace smpl
 			#if (SIMD_TYPE != void)
 			simdBound = SIMD_TYPE::getSimdBound(rows*columns);
 
+			LARGE_ENOUGH_CLAUSE(simdBound)
 			#pragma omp parallel for
 			for (size_t i = 0; i < simdBound; i+=SIMD_TYPE::SIZE)
 			{
@@ -761,11 +792,14 @@ namespace smpl
 				A.store(&data[i]);
 			}
 			#endif
+			
+			LARGE_ENOUGH_CLAUSE((rows*columns)-simdBound)
 			#pragma omp parallel for
 			for (size_t i = simdBound; i < rows*columns; i++)
 			{
 				data[i] += other.data[i];
 			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 		}
 	}
 
@@ -780,6 +814,7 @@ namespace smpl
 			#if (SIMD_TYPE != void)
 			simdBound = SIMD_TYPE::getSimdBound(rows*columns);
 
+			LARGE_ENOUGH_CLAUSE(simdBound)
 			#pragma omp parallel for
 			for (size_t i = 0; i < simdBound; i+=SIMD_TYPE::SIZE)
 			{
@@ -789,18 +824,51 @@ namespace smpl
 				A.store(&m.data[i]);
 			}
 			#endif
+			
+			LARGE_ENOUGH_CLAUSE((rows*columns)-simdBound)
 			#pragma omp parallel for
 			for (size_t i = simdBound; i < rows*columns; i++)
 			{
 				m.data[i] = data[i] - other.data[i];
 			}
-
+			
+			RESET_LARGE_ENOUGH_CLAUSE()
 			return m;
 		}
 		else
 		{
 			return Matrix<T, SIMD_TYPE>(0, 0); //TODO: THROW EXCEPTION. 
 		}
+	}
+
+	template<typename T, typename SIMD_TYPE>
+	Matrix<T, SIMD_TYPE> Matrix<T, SIMD_TYPE>::operator-() const
+	{
+		Matrix<T, SIMD_TYPE> m = Matrix<T, SIMD_TYPE>(rows, columns);
+
+		size_t simdBound = 0;
+		#if (SIMD_TYPE != void)
+		simdBound = SIMD_TYPE::getSimdBound(rows*columns);
+
+		LARGE_ENOUGH_CLAUSE(simdBound)
+		#pragma omp parallel for
+		for (size_t i = 0; i < simdBound; i+=SIMD_TYPE::SIZE)
+		{
+			SIMD_TYPE A = SIMD_TYPE(&data[i]);
+			A = -A;
+			A.store(&m.data[i]);
+		}
+		#endif
+
+		LARGE_ENOUGH_CLAUSE((rows*columns)-simdBound)
+		#pragma omp parallel for
+		for (size_t i = simdBound; i < rows*columns; i++)
+		{
+			m.data[i] = -data[i];
+		}
+
+		RESET_LARGE_ENOUGH_CLAUSE()
+		return m;
 	}
 
 	template<typename T, typename SIMD_TYPE>
@@ -812,6 +880,7 @@ namespace smpl
 			#if (SIMD_TYPE != void)
 			simdBound = SIMD_TYPE::getSimdBound(rows*columns);
 
+			LARGE_ENOUGH_CLAUSE(simdBound)
 			#pragma omp parallel for
 			for (size_t i = 0; i < simdBound; i+=SIMD_TYPE::SIZE)
 			{
@@ -821,11 +890,14 @@ namespace smpl
 				A.store(&data[i]);
 			}
 			#endif
+			
+			LARGE_ENOUGH_CLAUSE((rows*columns)-simdBound)
 			#pragma omp parallel for
 			for (size_t i = simdBound; i < rows*columns; i++)
 			{
 				data[i] -= other.data[i];
 			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 		}
 	}
 
@@ -863,6 +935,8 @@ namespace smpl
 		#if (SIMD_TYPE != void)
 		simdBound = SIMD_TYPE::getSIMDBound(rows*columns);
 		SIMD_TYPE setValue = v;
+
+		LARGE_ENOUGH_CLAUSE(simdBound)
 		#pragma omp parallel for
 		for (size_t i = 0; i < simdBound; i+=SIMD_TYPE::SIZE)
 		{
@@ -870,11 +944,13 @@ namespace smpl
 		}
 		#endif
 
+		LARGE_ENOUGH_CLAUSE((rows*columns)-simdBound)
 		#pragma omp parallel for
 		for (size_t i = simdBound; i < rows*columns; i++)
 		{
 			data[i] = v;
 		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 	}
 
 	
@@ -886,6 +962,8 @@ namespace smpl
 		#if (SIMD_TYPE != void)
 			simdBound = SIMD_TYPE::getSIMDBound(rows*columns);
 			SIMD_TYPE addV = v;
+			
+			LARGE_ENOUGH_CLAUSE(simdBound)
 			#pragma omp parallel for
 			for(size_t i=0; i<simdSize; i+=SIMD_TYPE::SIZE)
 			{
@@ -894,8 +972,13 @@ namespace smpl
 				v.store(&result.data[i]);
 			}
 		#endif
+
+		LARGE_ENOUGH_CLAUSE((rows*columns)-simdBound)
+		#pragma omp parallel for
 		for(size_t i=simdBound; i<rows*columns; i++)
 			result.data[i] = data[i] + v;
+		
+		RESET_LARGE_ENOUGH_CLAUSE()
 		return result;
 	}
 	
@@ -911,12 +994,14 @@ namespace smpl
 		{
 			//broadcast about the rows
 			#if (SIMD_TYPE == void)
+				LARGE_ENOUGH_CLAUSE(size)
 				#pragma omp parallel for
 				for(size_t i=0; i<size; i++)
 				{
 					result.data[i] = data[i] + B.data[i/rows];
 				}
 			#else
+				LARGE_ENOUGH_CLAUSE(rows) //NOTE: Should it be done this way? Should maybe be done using total area
 				#pragma omp parallel for
 				for(size_t i=0; i<rows; i++)
 				{
@@ -939,12 +1024,14 @@ namespace smpl
 		{
 			//broadcast about the columns
 			#if (SIMD_TYPE == void)
+				LARGE_ENOUGH_CLAUSE(size)
 				#pragma omp parallel for
 				for(size_t i=0; i<size; i++)
 				{
 					result.data[i] = data[i] + B.data[i%rows];
 				}
 			#else
+				LARGE_ENOUGH_CLAUSE(rows)
 				#pragma omp parallel for
 				for(size_t i=0; i<rows; i++)
 				{
@@ -963,6 +1050,8 @@ namespace smpl
 				}
 			#endif
 		}
+
+		RESET_LARGE_ENOUGH_CLAUSE()
 		return result;
 	}
 
@@ -975,6 +1064,8 @@ namespace smpl
 		#if (SIMD_TYPE != void)
 			simdBound = SIMD_TYPE::getSIMDBound(size);
 			SIMD_TYPE addV = v;
+			
+			LARGE_ENOUGH_CLAUSE(simdBound)
 			#pragma omp parallel for
 			for(size_t i=0; i<simdBound; i+=SIMD_TYPE::SIZE)
 			{
@@ -984,10 +1075,41 @@ namespace smpl
 			}
 		#endif
 		
+		LARGE_ENOUGH_CLAUSE(size-simdBound)
 		#pragma omp parallel for
 		for(size_t i=simdBound; i<size; i++)
 			result.data[i] = data[i] - v;
 		
+		RESET_LARGE_ENOUGH_CLAUSE()
+		return result;
+	}
+
+	template<typename T, typename SIMD_TYPE>
+	Matrix<T, SIMD_TYPE> Matrix<T, SIMD_TYPE>::broadcastInverseSubtract(T v) const
+	{
+		Matrix<T, SIMD_TYPE> result = Matrix<T, SIMD_TYPE>(rows, columns);
+		size_t size = rows*columns;
+		size_t simdBound = 0;
+		#if (SIMD_TYPE != void)
+			simdBound = SIMD_TYPE::getSIMDBound(size);
+			SIMD_TYPE addV = v;
+			
+			LARGE_ENOUGH_CLAUSE(simdBound)
+			#pragma omp parallel for
+			for(size_t i=0; i<simdBound; i+=SIMD_TYPE::SIZE)
+			{
+				SIMD_TYPE v = SIMD_TYPE::load(&data[i]);
+				v -= addV;
+				v.store(&result.data[i]);
+			}
+		#endif
+		
+		LARGE_ENOUGH_CLAUSE(size-simdBound)
+		#pragma omp parallel for
+		for(size_t i=simdBound; i<size; i++)
+			result.data[i] = data[i] - v;
+		
+		RESET_LARGE_ENOUGH_CLAUSE()
 		return result;
 	}
 	
@@ -1003,12 +1125,14 @@ namespace smpl
 		{
 			//broadcast about the rows
 			#if (SIMD_TYPE == void)
+				LARGE_ENOUGH_CLAUSE(size)
 				#pragma omp parallel for
 				for(size_t i=0; i<size; i++)
 				{
-					result.data[i] = data[i] - B.data[i/rows];
+					result.data[i] = B.data[i/rows] - data[i];
 				}
 			#else
+				LARGE_ENOUGH_CLAUSE(rows)
 				#pragma omp parallel for
 				for(size_t i=0; i<rows; i++)
 				{
@@ -1017,12 +1141,12 @@ namespace smpl
 					for(size_t j=0; j<simdSize; j+=SIMD_TYPE::SIZE)
 					{
 						SIMD_TYPE v = SIMD_TYPE::load(&data[j + i*columns]);
-						v -= subV;
+						v = subV - v;
 						v.store(&result.data[i]);
 					}
 					for(size_t j=simdSize; j<columns; j++)
 					{
-						result.data[j + i*columns] = data[j + i*columns] - B.data[i];
+						result.data[j + i*columns] = B.data[i] - data[j + i*columns];
 					}
 				}
 			#endif
@@ -1031,12 +1155,14 @@ namespace smpl
 		{
 			//broadcast about the columns
 			#if (SIMD_TYPE == void)
+				LARGE_ENOUGH_CLAUSE(size)
 				#pragma omp parallel for
 				for(size_t i=0; i<size; i++)
 				{
-					result.data[i] = data[i] - B.data[i%rows];
+					result.data[i] = B.data[i%rows] - data[i];
 				}
 			#else
+				LARGE_ENOUGH_CLAUSE(rows)
 				#pragma omp parallel for
 				for(size_t i=0; i<rows; i++)
 				{
@@ -1045,16 +1171,17 @@ namespace smpl
 					{
 						SIMD_TYPE v = SIMD_TYPE::load(&data[j + i*columns]);
 						SIMD_TYPE subV = SIMD_TYPE::load(&B.data[j]);
-						v -= subV;
+						v = subV - v;
 						v.store(&result.data[i]);
 					}
 					for(size_t j=simdSize; j<columns; j++)
 					{
-						result.data[j + i*columns] = data[j + i*columns] - B.data[j];
+						result.data[j + i*columns] = B.data[j] - data[j + i*columns];
 					}
 				}
 			#endif
 		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 		return result;
 	}
 
@@ -1076,6 +1203,8 @@ namespace smpl
 			simdBound = SIMD_TYPE::getSIMDBound(size);
 			if(simdFunc == nullptr)
 				simdBound = 0; //Don't do any SIMD work
+			
+			LARGE_ENOUGH_CLAUSE(simdBound)
 			#pragma omp parallel for
 			for(size_t i=0; i<simdBound; i+=SIMD_TYPE::SIZE)
 			{
@@ -1085,10 +1214,12 @@ namespace smpl
 			}
 		#endif
 
+		LARGE_ENOUGH_CLAUSE(size-simdBound)
 		#pragma omp parallel for
 		for(size_t i=simdBound; i<size; i++)
 			result.data[i] = func(data[i]);
 
+		RESET_LARGE_ENOUGH_CLAUSE()
 		return result;
 	}
 	
@@ -1109,6 +1240,8 @@ namespace smpl
 			simdBound = SIMD_TYPE::getSIMDBound(size);
 			if(simdFunc == nullptr)
 				simdBound = 0; //Don't do any SIMD work
+				
+			LARGE_ENOUGH_CLAUSE(simdBound)
 			#pragma omp parallel for
 			for(size_t i=0; i<simdBound; i+=SIMD_TYPE::SIZE)
 			{
@@ -1118,10 +1251,12 @@ namespace smpl
 			}
 		#endif
 
+		LARGE_ENOUGH_CLAUSE(size-simdBound)
 		#pragma omp parallel for
 		for(size_t i=simdBound; i<size; i++)
 			result.data[i] = func(data[i]);
 
+		RESET_LARGE_ENOUGH_CLAUSE()
 		return result;
 	}
 
@@ -1168,6 +1303,8 @@ namespace smpl
 		size_t simdBound = 0;
 		#if(SIMD_TYPE != void)
 		simdBound = SIMD_TYPE::getSIMDBound(rows*columns);
+		
+		LARGE_ENOUGH_CLAUSE(simdBound)
 		#pragma omp parallel for
 		for (size_t i=0; i < simdBound; i+=SIMD_TYPE::SIZE)
 		{
@@ -1177,6 +1314,8 @@ namespace smpl
 			aValues.store(&m.data[i]);
 		}
 		#endif
+		
+		LARGE_ENOUGH_CLAUSE((rows*columns)-simdBound)
 		#pragma omp parallel for
 		for(size_t i=simdBound; i<rows*columns; i++)
 		{
@@ -1184,6 +1323,88 @@ namespace smpl
 		}
 
 		return m;
+	}
+	
+	template<typename T, typename SIMD_TYPE>
+	Matrix<T, SIMD_TYPE> Matrix<T, SIMD_TYPE>::broadcastHadamardProduct(const Matrix<T, SIMD_TYPE>& B) const
+	{
+		if(B.rows != 1 && B.columns != 1)
+			return Matrix<T, SIMD_TYPE>();
+		
+		Matrix<T, SIMD_TYPE> result = Matrix<T, SIMD_TYPE>(rows, columns);
+		size_t size = rows*columns;
+
+		if(B.columns != 1)
+		{
+			size_t simdBound = 0;
+			#if(SIMD_TYPE != void)
+			simdBound = SIMD_TYPE::getSIMDBound(columns*rows);
+			//make a temporary array that duplicates data for better memory access.
+			T* duplicateColumns = new T[B.columns*SIMD_TYPE::SIZE];
+			memcpy(duplicateColumns, B.data, B.columns*sizeof(T));
+			memcpy(duplicateColumns+B.columns*sizeof(T), B.data, SIMD_TYPE::SIZE*sizeof(T));
+
+			LARGE_ENOUGH_CLAUSE(simdBound)
+			#pragma omp parallel for
+			for (size_t i=0; i < simdBound; i+=SIMD_TYPE::SIZE)
+			{
+				SIMD_TYPE aValues = SIMD_TYPE::load(&data[i]);
+				SIMD_TYPE bValues = SIMD_TYPE::load(&duplicateColumns[i%B.columns]);
+				aValues*=bValues;
+				aValues.store(&result.data[i]);
+			}
+
+			delete duplicateColumns;
+			#endif
+			
+			LARGE_ENOUGH_CLAUSE(size-simdBound)
+			#pragma omp parallel for
+			for(size_t i=simdBound; i<size; i++)
+			{
+				result.data[i] = data[i] * B.data[i%B.columns];
+			}
+		}
+		else
+		{
+			size_t simdBound = 0;
+			#if(SIMD_TYPE != void)
+			simdBound = SIMD_TYPE::getSIMDBound(rows*columns);
+			
+			//make a temporary array that duplicates data for better memory access.
+			T* duplicateRows = new T[B.rows*SIMD_TYPE::SIZE];
+			T* startDupRows = duplicateRows;
+			for(size_t i=0; i<B.rows; i++)
+			{
+				SIMD_TYPE val = SIMD_TYPE(B.data[i]);
+				val.store(&startDupRows);
+				startDupRows += SIMD_TYPE::SIZE;
+			}
+
+			LARGE_ENOUGH_CLAUSE(simdBound)
+			#pragma omp parallel for
+			for (size_t i=0; i < simdBound; i+=SIMD_TYPE::SIZE)
+			{
+				size_t left = columns - i%columns;
+				size_t offset = (left < SIMD_TYPE::SIZE) ? left : 0;
+
+				SIMD_TYPE aValues = SIMD_TYPE::load(&data[i]);
+				SIMD_TYPE bValues = SIMD_TYPE::load(&duplicateRows[offset + (i/B.rows)]);
+				aValues*=bValues;
+				aValues.store(&result.data[i]);
+			}
+
+			delete duplicateRows;
+			#endif
+			
+			LARGE_ENOUGH_CLAUSE(size-simdBound)
+			#pragma omp parallel for
+			for(size_t i=simdBound; i<size; i++)
+			{
+				result.data[i] = data[i] * B.data[i/B.rows];
+			}
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
+		return result;
 	}
 	
 	template<typename T, typename SIMD_TYPE>
@@ -1196,22 +1417,110 @@ namespace smpl
 		size_t simdBound = 0;
 		#if (SIMD_TYPE != void)
 		simdBound = SIMD_TYPE::getSIMDBound(rows*columns);
+		
+		LARGE_ENOUGH_CLAUSE(simdBound)
 		#pragma omp parallel for
 		for (size_t i=0; i < simdBound; i+=SIMD_TYPE::SIZE)
 		{
 			SIMD_TYPE aValues = SIMD_TYPE::load(&data[i]);
 			SIMD_TYPE bValues = SIMD_TYPE::load(&other.data[i]);
-			aValues *= bValues;
+			aValues /= bValues;
 			aValues.store(&m.data[i]);
 		}
 		#endif
+		
+		LARGE_ENOUGH_CLAUSE((rows*columns)-simdBound)
 		#pragma omp parallel for
 		for(size_t i=simdBound; i<rows*columns; i++)
 		{
-			m.data[i] = data[i]*other.data[i];
+			m.data[i] = data[i]/other.data[i];
 		}
 
+		RESET_LARGE_ENOUGH_CLAUSE()
 		return m;
+	}
+
+	template<typename T, typename SIMD_TYPE>
+	Matrix<T, SIMD_TYPE> Matrix<T, SIMD_TYPE>::broadcastInverseHadamardProduct(const Matrix<T, SIMD_TYPE>& B) const
+	{
+		if(B.rows != 1 && B.columns != 1)
+			return Matrix<T, SIMD_TYPE>();
+		
+		Matrix<T, SIMD_TYPE> result = Matrix<T, SIMD_TYPE>(rows, columns);
+		size_t size = rows*columns;
+
+		if(B.columns != 1)
+		{
+			size_t simdBound = 0;
+			#if(SIMD_TYPE != void)
+			simdBound = SIMD_TYPE::getSIMDBound(columns*rows);
+			//make a temporary array that duplicates data for better memory access.
+			T* duplicateColumns = new T[B.columns*SIMD_TYPE::SIZE];
+			memcpy(duplicateColumns, B.data, B.columns*sizeof(T));
+			memcpy(duplicateColumns+B.columns*sizeof(T), B.data, SIMD_TYPE::SIZE*sizeof(T));
+
+			LARGE_ENOUGH_CLAUSE(simdBound)
+			#pragma omp parallel for
+			for (size_t i=0; i < simdBound; i+=SIMD_TYPE::SIZE)
+			{
+				SIMD_TYPE aValues = SIMD_TYPE::load(&data[i]);
+				SIMD_TYPE bValues = SIMD_TYPE::load(&duplicateColumns[i%B.columns]);
+				aValues/=bValues;
+				aValues.store(&result.data[i]);
+			}
+
+			delete duplicateColumns;
+			#endif
+			
+			LARGE_ENOUGH_CLAUSE(size-simdBound)
+			#pragma omp parallel for
+			for(size_t i=simdBound; i<size; i++)
+			{
+				result.data[i] = data[i] / B.data[i%B.columns];
+			}
+		}
+		else
+		{
+			size_t simdBound = 0;
+			#if(SIMD_TYPE != void)
+			simdBound = SIMD_TYPE::getSIMDBound(rows*columns);
+			
+			//make a temporary array that duplicates data for better memory access.
+			T* duplicateRows = new T[B.rows*SIMD_TYPE::SIZE];
+			T* startDupRows = duplicateRows;
+			for(size_t i=0; i<B.rows; i++)
+			{
+				SIMD_TYPE val = SIMD_TYPE(B.data[i]);
+				val.store(&startDupRows);
+				startDupRows += SIMD_TYPE::SIZE;
+			}
+
+			LARGE_ENOUGH_CLAUSE(simdBound)
+			#pragma omp parallel for
+			for (size_t i=0; i < simdBound; i+=SIMD_TYPE::SIZE)
+			{
+				size_t left = columns - i%columns;
+				size_t offset = (left < SIMD_TYPE::SIZE) ? left : 0;
+
+				SIMD_TYPE aValues = SIMD_TYPE::load(&data[i]);
+				SIMD_TYPE bValues = SIMD_TYPE::load(&duplicateRows[offset + (i/B.rows)]);
+				aValues/=bValues;
+				aValues.store(&result.data[i]);
+			}
+
+			delete duplicateRows;
+			#endif
+			
+			LARGE_ENOUGH_CLAUSE(size-simdBound)
+			#pragma omp parallel for
+			for(size_t i=simdBound; i<size; i++)
+			{
+				result.data[i] = data[i] / B.data[i/B.rows];
+			}
+		}
+
+		RESET_LARGE_ENOUGH_CLAUSE()
+		return result;
 	}
 
 	template<typename T, typename SIMD_TYPE>
@@ -1236,6 +1545,7 @@ namespace smpl
 			else
 			{	
 				size_t totalSize = rows*columns;
+				// LARGE_ENOUGH_CLAUSE(totalSize)
 				#pragma omp parallel for
 				for(size_t index = 0; index<totalSize; index++)
 				{
@@ -1261,6 +1571,7 @@ namespace smpl
 		Matrix<T, SIMD_TYPE> m = Matrix<T, SIMD_TYPE>(columns, rows);
 		unsigned int totalSize = columns*rows;
 
+		LARGE_ENOUGH_CLAUSE(totalSize)
 		#pragma omp parallel for
 		for(size_t i=0; i<totalSize; i++)
 		{
@@ -1289,10 +1600,12 @@ namespace smpl
 				{
 					T addV = data[i] * getMatrixOfMinors(0, i).getDeterminate();
 					#pragma omp critical
-					if(i%2 == 0)
-						sumValue += addV;
-					else
-						sumValue -= addV;
+					{
+						if(i%2 == 0)
+							sumValue += addV;
+						else
+							sumValue -= addV;
+					}
 				}
 				return sumValue;
 			}
@@ -1368,10 +1681,12 @@ namespace smpl
 		size_t columnsAdjusted = SIMD_TYPE::getSIMDBound(C.columns);
 		size_t inc = SIMD_TYPE::SIZE;
 		#endif
-
+		
+		LARGE_ENOUGH_CLAUSE(C.rows)
 		#pragma omp parallel for
 		for(size_t i=0; i<C.rows; i++)
 		{
+			LARGE_ENOUGH_CLAUSE(columnsAdjusted)
 			#pragma omp parallel for
 			for(size_t j=0; j<columnsAdjusted; j+=inc) //compute 4 at once
 			{
@@ -1402,6 +1717,7 @@ namespace smpl
 				#endif
 			}
 			
+			LARGE_ENOUGH_CLAUSE(columnsAdjusted - C.columns)
 			#pragma omp parallel for
 			for(size_t j=columnsAdjusted; j<C.columns; j++)
 			{
@@ -1413,6 +1729,8 @@ namespace smpl
 				C[i][j] = sum;
 			}
 		}
+
+		RESET_LARGE_ENOUGH_CLAUSE()
 		return C;
 	}
 
@@ -1425,6 +1743,7 @@ namespace smpl
 		Matrix<T, SIMD_TYPE> C = Matrix<T, SIMD_TYPE>(rows, B.rows);
 		unsigned int totalSize = rows*B.rows;
 
+		LARGE_ENOUGH_CLAUSE(totalSize)
 		#pragma omp parallel for
 		for(size_t i=0; i<totalSize; i++)
 		{
@@ -1460,6 +1779,8 @@ namespace smpl
 			#endif
 		
 		}
+
+		RESET_LARGE_ENOUGH_CLAUSE()
 		return C;
 	}
 	
@@ -1500,9 +1821,11 @@ namespace smpl
 		size_t inc = SIMD_TYPE::SIZE;
 		#endif
 
+		LARGE_ENOUGH_CLAUSE(result.rows)
 		#pragma omp parallel for
 		for(size_t i=0; i<result.rows; i++)
 		{
+			LARGE_ENOUGH_CLAUSE(columnsAdjusted)
 			#pragma omp parallel for
 			for(size_t j=0; j<columnsAdjusted; j+=inc) //compute 4 at once
 			{
@@ -1535,6 +1858,7 @@ namespace smpl
 				#endif
 			}
 			
+			LARGE_ENOUGH_CLAUSE(result.columns - columnsAdjusted)
 			#pragma omp parallel for
 			for(size_t j=columnsAdjusted; j<result.columns; j++)
 			{
@@ -1546,6 +1870,8 @@ namespace smpl
 				result[i][j] = sum;
 			}
 		}
+
+		RESET_LARGE_ENOUGH_CLAUSE()
 		return result;
 	}
 	
@@ -1561,6 +1887,7 @@ namespace smpl
 		Matrix<T, SIMD_TYPE> result = Matrix<T, SIMD_TYPE>(rows, B.rows);
 		unsigned int totalSize = rows*B.rows;
 
+		LARGE_ENOUGH_CLAUSE(totalSize)
 		#pragma omp parallel for
 		for(size_t i=0; i<totalSize; i++)
 		{
@@ -1596,6 +1923,8 @@ namespace smpl
 			#endif
 		
 		}
+
+		RESET_LARGE_ENOUGH_CLAUSE()
 		return result;
 	}
 
@@ -1614,6 +1943,8 @@ namespace smpl
 	Matrix<T, SIMD_TYPE> Matrix<T, SIMD_TYPE>::horizontalSum() const
 	{
 		Matrix<T, SIMD_TYPE> m = Matrix<T, SIMD_TYPE>(rows, 1);
+		
+		LARGE_ENOUGH_CLAUSE(rows)
 		#pragma omp parallel for
 		for(size_t i=0; i<rows; i++)
 		{
@@ -1624,6 +1955,7 @@ namespace smpl
 			}
 			m[i][0] = sum;
 		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 		return m;
 	}
 
@@ -1654,7 +1986,7 @@ namespace smpl
 			}
 			else
 			{
-				operator/=(adjustment);
+				operator/=(sValue);
 			}
 		}
 	}

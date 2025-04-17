@@ -7,6 +7,7 @@
 #include "Shape.h"
 #include "BezierCurve.h"
 #include "SIMD.h"
+#include "Concurrency.h"
 
 #if (OPTI == 1)
 	#define SIMD_GRAPHICS_INC (SIMD_U8::SIZE/sizeof(Color))
@@ -205,17 +206,17 @@ namespace smpl
 		 * 		The x location of the rectangle.
 		 * @param y
 		 * 		The y location of the rectangle
-		 * @param x2
-		 * 		The 2nd x location of the rectangle.
-		 * @param y2
-		 * 		The 2nd y location of the rectangle.
+		 * @param width
+		 * 		The width of the rectangle.
+		 * @param height
+		 * 		The height of the rectangle.
 		 * @param outline
 		 * 		Controls whether only the outline of the rectangle should be drawn.
 		 * @param surf
 		 * 		The image to draw the rectangle onto.
 		 */
-		static void drawRect(int x, int y, int x2, int y2, bool outline, Image* surf);
-
+		static void drawRect(int x, int y, int width, int height, bool outline, Image* surf);
+		
 		/**
 		 * @brief Draws a Line using the active color.
 		 * 		If OPTI is defined as 1, SSE instructions are used.
@@ -268,10 +269,31 @@ namespace smpl
 		 * 		The radius of the circle.
 		 * @param outline
 		 * 		Controls whether only the outline of the circle should be drawn.
+		 * 			Set to true by default
 		 * @param surf
 		 * 		The image to draw the circle onto.
 		 */
 		static void drawCircle(int x, int y, int radius, bool outline, Image* surf);
+
+		/**
+		 * @brief Draws a circle using the active color.
+		 * 		If OPTI is defined as 1, SSE instructions are used.
+		 * 		If OPTI is defined as 2, AVX instructions are used.
+		 * 		Anti-Aliasing is supported.
+		 * 
+		 * 		Allows drawing a circle with an inner and outer radius giving an outline with thickness more than 1 pixel.
+		 * 		
+		 * @param x 
+		 * @param y 
+		 * @param radius 
+		 * 		Radius is the total radius of the circle
+		 * @param maxDistanceFromEdge
+		 * 		The maximum distance from the edge of the circle allowed.
+		 * 			If set to the same value or greater than radius, it draws a fully filled circle
+		 * 			If set to 1, it is an outline with the thickness of 1 pixel
+		 * @param surf 
+		 */
+		static void drawCircle(int x, int y, int radius, int maxDistanceFromEdge, Image* surf);
 		
 		/**
 		 * @brief Draws a ellipse using the active color.
@@ -374,18 +396,18 @@ namespace smpl
 		 * 		If OPTI is defined as 2, AVX instructions are used.
 		 * @param img
 		 * 		The image to draw.
-		 * @param x1
-		 * 		The x1 location to draw from.
-		 * @param y1
-		 * 		The y1 location to draw from.
-		 * @param x2
-		 * 		The x2 location to draw to.
-		 * @param y2
-		 * 		The y2 location to draw to.
+		 * @param x
+		 * 		The x location to draw from.
+		 * @param y
+		 * 		The y location to draw from.
+		 * @param width
+		 * 		The width location to draw to.
+		 * @param height
+		 * 		The height location to draw to.
 		 * @param surf
 		 * 		The image to draw onto.
 		 */
-		static void drawSprite(Image* img, int x1, int y1, int x2, int y2, Image* surf);
+		static void drawSprite(Image* img, int x, int y, int width, int height, Image* surf);
 		
 		/**
 		 * @brief Draws a part of an Image that will be modified by the active drawing color.
@@ -424,9 +446,7 @@ namespace smpl
 		 * @param surf
 		 * 		The image to draw onto.
 		 */
-		static void drawText(std::wstring str, int x, int y, Image* surf);
-		static void drawText(std::string str, int x, int y, Image* surf);
-		static void drawText(std::vector<int> str, int x, int y, Image* surf);
+		static void drawText(StringBridge strBridge, int x, int y, Image* surf);
 
 		/**
 		 * @brief Draws the specified text using the active font. It is affected by the active drawing color.
@@ -443,9 +463,7 @@ namespace smpl
 		 * @param highlightColor 
 		 * @param surf 
 		 */
-		static void drawTextHighlighted(std::wstring str, int x, int y, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
-		static void drawTextHighlighted(std::string str, int x, int y, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
-		static void drawTextHighlighted(std::vector<int> str, int x, int y, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
+		static void drawTextHighlighted(StringBridge strBridge, int x, int y, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
 
 
 		/**
@@ -469,9 +487,7 @@ namespace smpl
 		 * @param surf
 		 * 		The image to draw onto.
 		 */
-		static void drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, Image* surf);
-		static void drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, Image* surf);
-		static void drawTextLimits(std::vector<int> str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, Image* surf);
+		static void drawTextLimits(StringBridge strBridge, int x, int y, int maxWidth, int maxHeight, char wrapMode, Image* surf);
 
 		/**
 		 * @brief Draws the specified text using the active font. It is affected by the active drawing color.
@@ -500,9 +516,7 @@ namespace smpl
 		 * @param surf
 		 * 		The image to draw onto.
 		 */
-		static void drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
-		static void drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
-		static void drawTextLimitsHighlighted(std::vector<int> str, int x, int y, int maxWidth, int maxHeight, bool allowTextWrap, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
+		static void drawTextLimitsHighlighted(StringBridge strBridge, int x, int y, int maxWidth, int maxHeight, char wrapMode, int highlightStart, int highlightEnd, Color highlightColor, Image* surf);
 
 
 		/**
@@ -885,6 +899,12 @@ namespace smpl
 		static Image* scaleNearestNeighbor(Image* img, double xScale, double yScale);
 		static Image* scaleBilinear(Image* img, double xScale, double yScale);
 		static Image* scaleBicubic(Image* img, double xScale, double yScale);
+
+		//Does not check for surf == nullptr. Should only used in internal code
+		static void fillBetween(Color c, int x1, int x2, int y, Image* surf);
+		#if (OPTI>=1)
+			static void fillBetween(SIMD_U8 c, int x1, int x2, int y, Image* surf);
+		#endif
 		
 		static unsigned char defaultFontValue;
 

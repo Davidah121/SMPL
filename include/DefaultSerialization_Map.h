@@ -9,7 +9,7 @@ template<typename key, typename T>
 void staticSerializeHandler(SerializedStreamable& output, DataFormatter& formatter, const std::string varName, std::map<key, T>& var)
 {
     formatter.writeStart(output, DataFormatter::FORMAT_ARRAY, TypeInfo::get<std::map<key, T>>(), varName, var.size());
-    for(std::pair<key, T>& pair : var)
+    for(std::pair<const key, T>& pair : var)
     {
         staticSerialize(output, formatter, pair);
     }
@@ -35,7 +35,7 @@ template<typename key, typename T>
 void staticSerializeHandler(SerializedStreamable& output, DataFormatter& formatter, const std::string varName, std::multimap<key, T>& var)
 {
     formatter.writeStart(output, DataFormatter::FORMAT_ARRAY, TypeInfo::get<std::multimap<key, T>>(), varName, var.size());
-    for(std::pair<key, T>& pair : var)
+    for(std::pair<const key, T>& pair : var)
     {
         staticSerialize(output, formatter, pair);
     }
@@ -64,7 +64,7 @@ template<typename key, typename T>
 void staticSerializeHandler(SerializedStreamable& output, DataFormatter& formatter, const std::string varName, std::unordered_map<key, T>& var)
 {
     formatter.writeStart(output, DataFormatter::FORMAT_ARRAY, TypeInfo::get<std::unordered_map<key, T>>(), varName, var.size());
-    for(std::pair<key, T>& pair : var)
+    for(std::pair<const key, T>& pair : var)
     {
         staticSerialize(output, formatter, pair);
     }
@@ -90,7 +90,7 @@ template<typename key, typename T>
 void staticSerializeHandler(SerializedStreamable& output, DataFormatter& formatter, const std::string varName, std::unordered_multimap<key, T>& var)
 {
     formatter.writeStart(output, DataFormatter::FORMAT_ARRAY, TypeInfo::get<std::unordered_multimap<key, T>>(), varName, var.size());
-    for(std::pair<key, T>& pair : var)
+    for(std::pair<const key, T>& pair : var)
     {
         staticSerialize(output, formatter, pair);
     }

@@ -5,14 +5,11 @@
     #ifndef WIN32_LEAN_AND_MEAN
         #define WIN32_LEAN_AND_MEAN
     #endif
+    #include "TargetVer.h"
     #include <Windows.h>
     #include <d3d11_1.h>
     #include <dxgi1_5.h>
     #include <d3dcompiler.h>
-
-    #pragma comment(lib, "dxgi.lib")
-    #pragma comment(lib, "d3d11.lib")
-    #pragma comment(lib,"d3dcompiler.lib")
 
     class DXSingleton
     {

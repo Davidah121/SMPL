@@ -181,6 +181,16 @@ namespace smpl
     {
         postFuncMapper = func;
     }
+    
+    void HttpServer::setExtraRequestHandlerFuncMapper(std::function<bool(HttpServer*, WebRequest&, std::vector<unsigned char>&, size_t)> func)
+    {
+        extraReqHandler = func;
+    }
+    
+    void HttpServer::setResponseHandlerFuncMapper(std::function<void(HttpServer*, WebRequest&, size_t, WebRequest&)> func)
+    {
+        extraResponseHandler = func;
+    }
 
     bool HttpServer::defaultGetFunction(WebRequest& req, size_t id)
     {
@@ -220,6 +230,11 @@ namespace smpl
         {
             return handleOptions(req, id);
         }
+        else
+        {
+            if(extraReqHandler != nullptr)
+                return extraReqHandler(this, req, body, id);
+        }
         return false;
     }
 
@@ -234,7 +249,7 @@ namespace smpl
         //Lazy and will just say that by default, GET, HEAD, and OPTIONS are available
 
         WebRequest response = WebRequest();
-        response.setHeader(WebRequest::TYPE_UNKNOWN, "HTTP/1.1 200 OK", false);
+        response.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 200 OK", false);
         std::string expectedURL = req.getUrl();
         unsigned int allowFlags = WebRequest::TYPE_OPTIONS;
         std::string allowedMethodsStr = "";
@@ -270,9 +285,9 @@ namespace smpl
         if(!allowedHeaders.empty())
             response.addKeyValue("Access-Control-Allow-Headers", allowedHeaders);
         response.addKeyValue("Access-Control-Max-Age", StringTools::toString(maxAgeCache)); //In seconds. Basically 5 minutes for debugging
-        
+
         //send header first. Should be able to send the entire thing at once.
-        int bytesSent = conn->sendMessage(response, id);
+        int bytesSent = sendResponse(response, id, req);
         if(bytesSent < 0)
         {
             //problem
@@ -319,6 +334,13 @@ namespace smpl
     Network* HttpServer::getNetworkConnection()
     {
         return conn;
+    }
+    
+    bool HttpServer::isHTTPS()
+    {
+        if(conn != nullptr)
+            return conn->isSecure();
+        return false;
     }
 
     void HttpServer::setRangeRequestLimit(int bytes)
@@ -382,7 +404,7 @@ namespace smpl
             req.addKeyValue("Connection", "close");
         
         req.addKeyValue("Date", WebRequest::getDateAsGMT());
-        req.addKeyValue("Server", "SimpleHTTPServer/0.8 C++");
+        req.addKeyValue("Server", "SimpleHTTPServer/1.0 C++");
     }
 
     void HttpServer::send404Error(size_t id)
@@ -400,12 +422,12 @@ namespace smpl
         }
 
         WebRequest resp = WebRequest();
-        resp.setHeader(WebRequest::TYPE_UNKNOWN, "HTTP/1.1 404 Not Found", false);
-        resp.addKeyValue("Content-Length", "5");
+        resp.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 404 Not Found", false);
+        resp.addKeyValue("Content-Length", "0");
         fillGetResponseHeaders(resp);
 
         //send header first. Should be able to send the entire thing at once.
-        int bytesSent = conn->sendMessage(resp, id);
+        int bytesSent = sendError(resp, id);
         if(bytesSent < 0)
         {
             //problem
@@ -434,12 +456,12 @@ namespace smpl
         }
 
         WebRequest resp = WebRequest();
-        resp.setHeader(WebRequest::TYPE_UNKNOWN, "HTTP/1.1 403 Forbidden", false);
-        resp.addKeyValue("Content-Length", "5");
+        resp.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 403 Forbidden", false);
+        resp.addKeyValue("Content-Length", "0");
         fillGetResponseHeaders(resp);
         
         //send header first. Should be able to send the entire thing at once.
-        int bytesSent = conn->sendMessage(resp, id);
+        int bytesSent = sendError(resp, id);
         if(bytesSent < 0)
         {
             //problem
@@ -468,13 +490,13 @@ namespace smpl
         }
 
         WebRequest resp = WebRequest();
-        resp.setHeader(WebRequest::TYPE_UNKNOWN, "HTTP/1.1 416 Range Not Statisfiable", false);
-        resp.addKeyValue("Content-Length", "5");
+        resp.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 416 Range Not Statisfiable", false);
+        resp.addKeyValue("Content-Length", "0");
         resp.addKeyValue("Content-Range", ranges);
         fillGetResponseHeaders(resp);
 
         //send header first. Should be able to send the entire thing at once.
-        int bytesSent = conn->sendMessage(resp, id);
+        int bytesSent = sendError(resp, id);
         if(bytesSent < 0)
         {
             //problem
@@ -504,12 +526,12 @@ namespace smpl
         }
 
         WebRequest resp = WebRequest();
-        resp.setHeader(WebRequest::TYPE_UNKNOWN, "HTTP/1.1 400 Bad Request", false);
-        resp.addKeyValue("Content-Length", "5");
+        resp.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 400 Bad Request", false);
+        resp.addKeyValue("Content-Length", "0");
         fillGetResponseHeaders(resp);
 
         //send header first. Should be able to send the entire thing at once.
-        int bytesSent = conn->sendMessage(resp, id);
+        int bytesSent = sendError(resp, id);
         if(bytesSent < 0)
         {
             //problem
@@ -538,12 +560,12 @@ namespace smpl
         }
 
         WebRequest resp = WebRequest();
-        resp.setHeader(WebRequest::TYPE_UNKNOWN, "HTTP/1.1 413 Entity Too Large", false);
-        resp.addKeyValue("Content-Length", "5");
+        resp.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 413 Entity Too Large", false);
+        resp.addKeyValue("Content-Length", "0");
         fillGetResponseHeaders(resp);
 
         //send header first. Should be able to send the entire thing at once.
-        int bytesSent = conn->sendMessage(resp, id);
+        int bytesSent = sendError(resp, id);
         if(bytesSent < 0)
         {
             //problem
@@ -744,27 +766,27 @@ namespace smpl
         WebRequest resp = WebRequest();
         if(!usingRanges)
         {
-            resp.setHeader(WebRequest::TYPE_UNKNOWN, "HTTP/1.1 200 OK", false);
+            resp.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 200 OK", false);
             resp.addKeyValue("Accept-Ranges", "bytes");
             resp.addKeyValue("Content-Length", StringTools::toString(filesize));
         }
         else
         {
-            resp.setHeader(WebRequest::TYPE_UNKNOWN, "HTTP/1.1 206 Partial Content", false);
+            resp.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 206 Partial Content", false);
             resp.addKeyValue("Accept-Ranges", "bytes");
             resp.addKeyValue("Content-Range", "bytes " + StringTools::toString(startRange) + "-" + StringTools::toString(endRange)+"/"+StringTools::toString(filesize));
             resp.addKeyValue("Content-Length", StringTools::toString(desiredSize));
         }
 
         fillGetResponseHeaders(resp);
-
+        
         //determine mime type
         resp.addKeyValue("Content-Type", WebRequest::getMimeTypeFromExt(f.getExtension()));
 
         if(req.getType() == WebRequest::TYPE_HEAD)
         {
             //end early
-            int bytesSent = conn->sendMessage(resp, id);
+            int bytesSent = sendResponse(resp, id, req);
             if(bytesSent < 0)
             {
                 //problem
@@ -779,7 +801,7 @@ namespace smpl
             return true;
         }
         
-        int bytesSent = conn->sendMessage(resp, id);
+        int bytesSent = sendResponse(resp, id, req);
 
         staggeredSend(id, f, startRange, endRange);
         return true;
@@ -818,6 +840,51 @@ namespace smpl
         {
             // totalTimeForRequest += System::getCurrentTimeMillis() - timingPerRequest[id];
         }
+    }
+
+    //WRAPPERS AROUND NETWORK FOR EASIER OPERATION
+
+    int HttpServer::sendResponse(WebRequest& response, size_t id, WebRequest& req)
+    {
+        if(extraResponseHandler != nullptr)
+            extraResponseHandler(this, req, id, response);
+        return conn->sendMessage(response, id);
+    }
+    int HttpServer::sendError(WebRequest& response, size_t id)
+    {
+        return conn->sendMessage(response, id);
+    }
+    int HttpServer::sendMessage(std::vector<unsigned char>& message, size_t id)
+    {
+        return conn->sendMessage(message, id);
+    }
+    int HttpServer::sendMessage(const std::string& msg, size_t id)
+    {
+        return conn->sendMessage(msg, id);
+    }
+    int HttpServer::sendFile(char* filename, size_t length, size_t offset, size_t id)
+    {
+        return conn->sendFile(filename, length, offset, id);
+    }
+    int HttpServer::receiveMessage(std::vector<unsigned char>& message, size_t id)
+    {
+        return conn->receiveMessage(message, id);
+    }
+    int HttpServer::receiveMessage(const std::string& msg, size_t id)
+    {
+        return conn->receiveMessage(msg, id);
+    }
+    int HttpServer::peek(std::vector<unsigned char>& buffer, int expectedSize, size_t id)
+    {
+        return conn->peek(buffer, expectedSize, id);
+    }
+    int HttpServer::dumpReceiveBytes(int bytesToDump, size_t id)
+    {
+        return conn->dumpReceiveBytes(bytesToDump, id);
+    }
+    size_t HttpServer::getReadSizeAvailable(size_t id)
+    {
+        return conn->getReadSizeAvailable(id);
     }
 }
 

@@ -88,7 +88,12 @@
 
             </LayoutTable>
 
-            <TextBox margin="{4, 4, 4, 4}" border-color="green" border="{2, 2, 4, 4}" allow-linebreaks="true" default-text="TextBoxStuff"/>
+            <Button margin="{8,0,8,0}" background-color="gray" ID="WindowBar_Edit" min-width="96" min-height="24">
+                <LayoutList margin="{auto,auto,auto,auto}">
+                    <Text ID="WindowBar_EditText" text="Insert"/>
+                </LayoutList>
+            </Button>
+            <!-- <TextBox margin="{4, 4, 4, 4}" border-color="green" border="{2, 2, 4, 4}" allow-linebreaks="true" default-text="TextBoxStuff"/> -->
         </LayoutList>
     </ScrollBar>
 </SimpleGUI>

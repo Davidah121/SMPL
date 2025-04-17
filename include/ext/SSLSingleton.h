@@ -1,7 +1,6 @@
 #pragma once
 
 #ifdef USE_OPENSSL
-#pragma comment(lib, "crypt32.lib")
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 

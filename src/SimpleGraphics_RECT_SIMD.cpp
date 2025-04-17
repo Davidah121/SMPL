@@ -6,9 +6,8 @@ namespace smpl
 	#if (OPTI > 0)
 
     //works properly now
-    void SimpleGraphics::drawRect(int x, int y, int x2, int y2, bool outline, Image* surf)
+    void SimpleGraphics::drawRect(int x, int y, int width, int height, bool outline, Image* surf)
     {
-        int currentComposite = compositeRule;
         Image* otherImg;
         if (surf == nullptr)
             return;
@@ -21,14 +20,18 @@ namespace smpl
             {
                 return;
             }
+            
+            int x2 = x+width;
+            int y2 = y+height;
+            
             int tempWidth = otherImg->getWidth();
             int tempHeight = otherImg->getHeight();
 
             int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
             int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
 
-            int maxXBound = MathExt::min(tempWidth-1, (int)clippingRect.getRightBound());
-            int maxYBound = MathExt::min(tempHeight-1, (int)clippingRect.getBottomBound());
+            int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
+            int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
 
             int minX = MathExt::min(x, x2);
             int maxX = MathExt::max(x, x2);
@@ -49,55 +52,34 @@ namespace smpl
                 return;
             
             
+            int approxArea = (maxX-minX) * (maxY-minY);
             if(outline == false)
             {
                 SIMD_U8 activeColorAsSIMD = COLOR_TO_SIMD(activeColor);
                 int stopPoint = minX + SIMD_U8::getSIMDBound((maxX-minX));
-                if(currentComposite == NO_COMPOSITE)
+                
+                LARGE_ENOUGH_CLAUSE(approxArea)
+                #pragma omp parallel for
+                for(int tY = minY; tY < maxY; tY++)
                 {
-					//#pragma omp parallel for
-                    for(int tY = minY; tY <= maxY; tY++)
+                    int tX = minX;
+                    Color* startPoint = &otherImg->getPixels()[tX + tY*otherImg->getWidth()];
+                    while(tX < stopPoint)
                     {
-                        int tX = minX;
-                        Color* startPoint = &otherImg->getPixels()[tX + tY*otherImg->getWidth()];
-
-                        while(tX < stopPoint)
-                        {
-                            activeColorAsSIMD.store((unsigned char*)startPoint);
-                            startPoint += SIMD_GRAPHICS_INC;
-                            tX += SIMD_GRAPHICS_INC;
-                        }
-                        while(tX <= maxX)
-                        {
-                            *startPoint = activeColor;
-                            startPoint++;
-                            tX++;
-                        }
+                        SIMD_U8 destC = SIMD_U8::load((unsigned char*)startPoint);
+                        SIMD_U8 blendC = blend(activeColorAsSIMD.values, destC.values);
+                        blendC.store((unsigned char*)startPoint);
+                        startPoint += SIMD_GRAPHICS_INC;
+                        tX += SIMD_GRAPHICS_INC;
+                    }
+                    while(tX < maxX)
+                    {
+                        *startPoint = blend(activeColor, *startPoint);
+                        startPoint++;
+                        tX++;
                     }
                 }
-                else
-                {
-					//#pragma omp parallel for
-                    for(int tY = minY; tY <= maxY; tY++)
-                    {
-                        int tX = minX;
-                        Color* startPoint = &otherImg->getPixels()[tX + tY*otherImg->getWidth()];
-                        while(tX < stopPoint)
-                        {
-                            SIMD_U8 destC = SIMD_U8::load((unsigned char*)startPoint);
-                            SIMD_U8 blendC = blend(activeColorAsSIMD.values, destC.values);
-                            blendC.store((unsigned char*)startPoint);
-                            startPoint += SIMD_GRAPHICS_INC;
-                            tX += SIMD_GRAPHICS_INC;
-                        }
-                        while(tX <= maxX)
-                        {
-                            *startPoint = blend(activeColor, *startPoint);
-                            startPoint++;
-                            tX++;
-                        }
-                    }
-                }
+                RESET_LARGE_ENOUGH_CLAUSE()
             }
             else
             {

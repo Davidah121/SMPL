@@ -19,12 +19,10 @@
 		#ifndef NOMINMAX
 			#define NOMINMAX
 		#endif
-
+    
+		#include "TargetVer.h"
 		#include <Windows.h>
 		#include <mmeapi.h>
-
-		#pragma comment(lib,"winmm.lib")
-
 	#endif
 
 	namespace smpl

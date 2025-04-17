@@ -17,10 +17,8 @@ template<typename T>
 void staticDeserializeHandler(SerializedStreamable& input, DataFormatter& formatter, const std::string varName, std::vector<T>& var)
 {
     int64_t s = formatter.readStart(input, DataFormatter::FORMAT_ARRAY, TypeInfo::get<T>(), varName);
-    std::cout << s << std::endl;
     if(s < 0)
         return; //couldn't find it. potentially an error.
-        
     
     var = std::vector<T>(s);
     for(int64_t i=0; i<var.size(); i++)

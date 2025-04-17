@@ -8,7 +8,7 @@ void staticSerialize(SerializedStreamable& output, DataFormatter& formatter, con
     formatter.writeStart(output, DataFormatter::FORMAT_ARRAY, TypeInfo::get<std::array<T, S>>(), varName, S);
     for(size_t i=0; i<S; i++)
     {
-        staticSerialize(output, var[i]);
+        staticSerialize(output, formatter, var[i]);
     }
 }
 
@@ -24,6 +24,6 @@ void staticDeserialize(SerializedStreamable& input, DataFormatter& formatter, co
 
     for(size_t i=0; i<S; i++)
     {
-        staticDeserialize(input, var[i]);
+        staticDeserialize(input, formatter, var[i]);
     }
 }

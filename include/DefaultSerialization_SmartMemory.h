@@ -1,216 +1,141 @@
-// #pragma once
-// #include "SimpleSerialization.h"
-// #include "SmartMemory.h"
-// #include <unordered_map>
+#pragma once
+#include "SimpleSerialization.h"
+#include "SmartMemory.h"
+#include <unordered_map>
 
-// //TODO: FIX LATER
+namespace smpl
+{
+    class DeferredSerializedSmartMemory
+    {
+    public:
+        ~DeferredSerializedSmartMemory(){}
 
-// namespace smpl
-// {
-//     class DeferredSmartPointerInfo
-//     {
-//     public:
-//         /**
-//          * @brief Adds to the map of pointers.
-//          *      Used for serialization only.
-//          *      Stores the ptr reference, the actual ptr (if it exists), and the offset to that data in the Streamable Buffer if needed to deserialize
-//          * 
-//          * 
-//          * @param ptr 
-//          * @param sizeInBytes 
-//          */
-//         static void mapPointer(void* referencePtr, void* actualPtr, size_t offset);
+        template<typename T>
+        static void addPointer(DataFormatter& formatter, SmartMemory<T>& smPointer)
+        {
+            T* rawP = smPointer.getPointer();
+            if(rawP != nullptr)
+            {
+                std::pair<void*, SerializedStreamableVector> pairing = {nullptr, SerializedStreamableVector(1)};
+                for(int i=0; i<smPointer.getNumberOfElements(); i++)
+                {
+                    staticSerialize(pairing.second, formatter, rawP[i]);
+                }
+                pairing.second.seek(0);
+                singleton.pointerMappings.insert({rawP, pairing});
+            }
+        }
 
-//         /**
-//          * @brief Attempts to get a pointer from some reference ptr.
-//          *      Used for deserialization only.
-//          *          Gets the new pointer and its size in bytes.
-//          * 
-//          * @param ptr 
-//          * @return void* 
-//          */
-//         static std::pair<void*, size_t> getPointerMapping(void* referencePtr);
+        template<typename T>
+        static T* getPointer(DataFormatter& formatter, T* originalPointer, size_t elements)
+        {
+            if(originalPointer != nullptr)
+            {
+                auto it = singleton.pointerMappings.find((void*)originalPointer);
+                if(it != singleton.pointerMappings.end())
+                {
+                    //found the hash. Check if its already been created. If so, return that new pointer.
+                    if(it->second.first != nullptr)
+                        return (T*)it->second.first;
+                    else
+                    {
+                        //create it from serialized buffer
+                        //must be able to create with default constructor
+                        T* newPointer;
+                        if(elements > 1)
+                            newPointer = new T[elements];
+                        else
+                            newPointer = new T;
+                        for(int i=0; i<elements; i++)
+                        {
+                            staticDeserialize(it->second.second, formatter, newPointer[i]);
+                        }
+                        it->second.first = newPointer;
+                        return newPointer;
+                    }
+                }
+                //TODO: throw exception
+            }
+            return nullptr;
+        }
 
-//         /**
-//          * @brief Clears the mapping of pointers.
-//          * 
-//          */
-//         static void clear();
+        static void serialize(SerializedStreamable& output, DataFormatter& formatter);
+        static void deserialize(SerializedStreamable& output, DataFormatter& formatter);
 
-//         /**
-//          * @brief Attempts to serialize at the current index in output
-//          * 
-//          * @param output 
-//          */
-//         static void serialize(SerializedStreamable& output, DataFormatter& formatter);
+        static void clear();
 
-//         /**
-//          * @brief Attempts to deserialize at the current index in input.
-//          * 
-//          * @param output 
-//          */
-//         static void deserialize(SerializedStreamable& output, DataFormatter& formatter);
+    private:
+        DeferredSerializedSmartMemory(){}
+        static DeferredSerializedSmartMemory singleton;
+        std::unordered_map<void*, std::pair<void*, SerializedStreamableVector>> pointerMappings;
+    };
 
-//         static SerializedStreamableVector& getStreamableBuffer();
-        
-//     private:
-//         static DeferredSmartPointerInfo& getSingleton();
-//         DeferredSmartPointerInfo() {}
-//         ~DeferredSmartPointerInfo() {}
-//         SerializedStreamableVector buffer;
-//         std::unordered_map<void*, std::pair<void*, size_t>> pointerMappings;
-//     };
-
-//     inline DeferredSmartPointerInfo& DeferredSmartPointerInfo::getSingleton()
-//     {
-//         static DeferredSmartPointerInfo singleton;
-//         return singleton;
-//     }
+    inline DeferredSerializedSmartMemory DeferredSerializedSmartMemory::singleton = DeferredSerializedSmartMemory();
     
-//     inline SerializedStreamableVector& DeferredSmartPointerInfo::getStreamableBuffer()
-//     {
-//         return getSingleton().buffer;
-//     }
-
-//     inline void DeferredSmartPointerInfo::mapPointer(void* referencePtr, void* actualPtr, size_t offset)
-//     {
-//         DeferredSmartPointerInfo& singleton = getSingleton();
-//         singleton.pointerMappings[referencePtr] = std::pair<void*, size_t>(actualPtr, offset);
-//     }
-//     inline std::pair<void*, size_t> DeferredSmartPointerInfo::getPointerMapping(void* referencePtr)
-//     {
-//         DeferredSmartPointerInfo& singleton = getSingleton();
-//         auto it = singleton.pointerMappings.find(referencePtr);
-//         if(it != singleton.pointerMappings.end())
-//             return it->second;
-//         return std::pair<void*, size_t>(nullptr, 0);
-//     }
-//     inline void DeferredSmartPointerInfo::clear()
-//     {
-//         DeferredSmartPointerInfo& singleton = getSingleton();
-//         singleton.pointerMappings.clear();
-//         // singleton.buffer
-//     }
-//     inline void DeferredSmartPointerInfo::serialize(SerializedStreamable& output, DataFormatter& formatter)
-//     {
-//         DeferredSmartPointerInfo& singleton = getSingleton();
-//         //write out Streamable data. Already handled
-//         //writes out referencePtrKey, sizeInBytes, serialized data (must be deserialized. not read directly)
-//         //WRITE OUT TOTAL SIZE OF TABLE
-//         formatter.writeStart(output, DataFormatter::FORMAT_OBJECT, TypeInfo::get<DeferredSmartPointerInfo>(), "", 1);
-//         ::staticSerialize(output, formatter, singleton.pointerMappings);
-//         formatter.writeEnd(output);
-//     }
+    inline void DeferredSerializedSmartMemory::serialize(SerializedStreamable& output, DataFormatter& formatter)
+    {
+        //special case. must write end of the object
+        formatter.writeStart(output, DataFormatter::FORMAT_OBJECT, TypeInfo::get<DeferredSerializedSmartMemory>(), "", 1);
+        staticSerialize(output, formatter, DeferredSerializedSmartMemory::singleton.pointerMappings);
+        formatter.writeEnd(output);
+    }
+    inline void DeferredSerializedSmartMemory::deserialize(SerializedStreamable& output, DataFormatter& formatter)
+    {
+        //special case. must read end of the object
+        int64_t elements = formatter.readStart(output, DataFormatter::FORMAT_OBJECT, TypeInfo::get<DeferredSerializedSmartMemory>(), "");
+        if(elements != 1)
+            return; //error maybe.
+        staticDeserialize(output, formatter, DeferredSerializedSmartMemory::singleton.pointerMappings);
+        formatter.readEnd(output);
+    }
     
-//     inline void DeferredSmartPointerInfo::deserialize(SerializedStreamable& input, DataFormatter& formatter)
-//     {
-//         DeferredSmartPointerInfo& singleton = getSingleton();
-//         //read ptr as key, sizeInBytes, data to be deserialized.
-//         //READ TOTAL SIZE OF TABLE
-//         uint64_t elements = formatter.readStart(input, DataFormatter::FORMAT_OBJECT, TypeInfo::get<DeferredSmartPointerInfo>(), "");
-//         ::staticDeserialize(input, formatter, singleton.pointerMappings);
-//         formatter.readEnd(input);
-//     }
+    inline void DeferredSerializedSmartMemory::clear()
+    {
+        DeferredSerializedSmartMemory::singleton.pointerMappings.clear();
+    }
 
-//     //NOW THE MEAT AND POTATOES
-//     template<typename T>
-//     void staticSerialize(SerializedStreamable& output, DataFormatter& formatter, const std::string& varName, SmartMemory<T>& var)
-//     {
-//         //defer pointer. write out raw value.
-//         //IF the pointer isn't deletable, ignore. WRITE OUT NULLPTR
-//         T* varPtr = var.getPointer();
-//         void* rawPtrValue = (void*)varPtr; //the pointer as void ptr
-
-//         if(!var.getWillDeleteOnLast() && !var.getDeleteRights())
-//         {
-//             //ptr will not be deleted. Either a stack object or ptr from some unmanaged code.
-//             //Will store nullptr due to safety reasons
-//             rawPtrValue = nullptr;
-//         }
-
-//         //write ptr value
-//         ::staticSerialize(output, formatter, rawPtrValue);
+    template<typename T>
+    void staticSerializeHandler(SerializedStreamable& output, DataFormatter& formatter, const std::string varName, SmartMemory<T>& var)
+    {
+        formatter.writeStart(output, DataFormatter::FORMAT_OBJECT, TypeInfo::get<SmartMemory<T>>(), varName, 1);
         
-//         //write delete flags.
-//         bool v = var.getDeleteRights();
-//         ::staticSerialize(output, formatter, v);
+        bool isArray = var.getIsArray(); 
+        bool deleteOnLast = var.getWillDeleteOnLast(); 
+        bool deleteRights = var.getDeleteRights();
+        size_t numElements = var.getNumberOfElements();
+        T* pointerStored = var.getPointer();
+
+        staticSerialize(output, formatter, isArray);
+        staticSerialize(output, formatter, deleteOnLast);
+        staticSerialize(output, formatter, deleteRights);
+        staticSerialize(output, formatter, pointerStored);
+        staticSerialize(output, formatter, numElements);
+
+        if(deleteRights || deleteOnLast)
+            DeferredSerializedSmartMemory::addPointer(formatter, var);
+    }
+
+    template<typename T>
+    void staticDeserializeHandler(SerializedStreamable& input, DataFormatter& formatter, const std::string varName, SmartMemory<T>& var)
+    {
+        int64_t s = formatter.readStart(input, DataFormatter::FORMAT_OBJECT, TypeInfo::get<SmartMemory<T>>(), varName);
+        if(s != 1)
+            return; //couldn't find it. potentially an error.
         
-//         v = var.getWillDeleteOnLast();
-//         ::staticSerialize(output, formatter, v);
+        bool isArray, deleteOnLast, deleteRights;
+        size_t numElements;
+        T* pointerStored;
 
-//         //write number of elements
-//         size_t elements = var.getNumberOfElements();
-//         ::staticSerialize(output, formatter, elements);
+        staticDeserialize(input, formatter, isArray);
+        staticDeserialize(input, formatter, deleteOnLast);
+        staticDeserialize(input, formatter, deleteRights);
+        staticDeserialize(input, formatter, pointerStored);
+        staticDeserialize(input, formatter, numElements);
         
-//         //now defer the pointer unless its nullptr
-//         if(rawPtrValue != nullptr)
-//         {
-//             SerializedStreamableVector& buff = DeferredSmartPointerInfo::getStreamableBuffer();
-//             //write out to the streamable buffer
-//             DeferredSmartPointerInfo::mapPointer(rawPtrValue, rawPtrValue, buff.size());
-            
-//             size_t sizeInBytes = 0;
-//             ::staticSerialize(buff, formatter, rawPtrValue);
-
-//             //write out referencePtr, then data to deserialize (Note that we are writting out an array of values that is potentially 0 elements)
-//             formatter.writeStart(buff, DataFormatter::FORMAT_ARRAY, TypeInfo::get<T*>(), elements);
-//             for(size_t index=0; index<elements; index++)
-//             {
-//                 ::staticSerialize(buff, formatter, var[index]);
-//             }
-//             formatter.writeEnd(buff);
-//         }
-//     }
-
-//     template<typename T>
-//     void staticDeserialize(SerializedStreamable& input, DataFormatter& formatter, const std::string& varName, SmartMemory<T>& var)
-//     {
-//         //attempt to find the ptr
-//         T* referencePtr = nullptr;
-//         T* actualPtr = nullptr;
-//         bool deleteRights = false;
-//         bool deleteOnLast = false;
-//         size_t elements = 1;
-
-//         //read ptr value. NOT THE FINAL PTR. DO NOT USE YET
-//         ::staticDeserialize(input, formatter, referencePtr);
-
-//         //read delete flags
-//         ::staticDeserialize(input, formatter, deleteRights);
-//         ::staticDeserialize(input, formatter, deleteOnLast);
-
-//         //read number of elements
-//         ::staticDeserialize(input, formatter, elements);
-
-//         //first check if the ptr is in the deferred list.
-//         std::pair<void*, size_t> foundPtr = DeferredSmartPointerInfo::getPointerMapping(referencePtr);
-//         if(foundPtr.first == nullptr)
-//         {
-//             //did not find it. Create it and add it to the list
-//             //MUST BE ABLE TO CREATE WITH DEFAULT CONSTRUCTOR
-            
-//             if(elements > 1)
-//                 actualPtr = new T[elements]; //IS ARRAY
-//             else
-//                 actualPtr = new T;
-            
-//             //now deserialize that/them
-//             size_t oldLocation = input.getLocation();
-
-//             input.seek(foundPtr.second); //move to the position with this pointer's data
-//             for(size_t i=0; i<elements; i++)
-//             {
-//                 ::staticDeserialize(input, formatter, actualPtr[i]);
-//             }
-//             input.seek(oldLocation); //move back to the correct position
-            
-//             DeferredSmartPointerInfo::mapPointer(referencePtr, actualPtr, foundPtr.second); //offset into the buffer isn't needed anymore but whatever
-//         }
-//         else
-//         {
-//             actualPtr = foundPtr.first;
-//         }
-
-//         var = SmartMemory<T>(actualPtr, elements, deleteOnLast, deleteRights);
-//     }
-// }
+        if(deleteOnLast || deleteRights)
+        {
+            T* newPointer = DeferredSerializedSmartMemory::getPointer<T>(formatter, pointerStored, numElements);
+            var = SmartMemory<T>(newPointer, numElements, deleteOnLast, deleteRights);
+        }
+    }
+}

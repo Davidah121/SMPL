@@ -34,6 +34,15 @@
             void loadImage(File f, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});
             void setImage(Image* img, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});
 
+            /**
+             * @brief Attempts to convert the OpenGL texture to a software Image for processing.
+             *      That processing can be either saving it or certain operations that are either limited to or best done
+             *      at a CPU level.
+             * 
+             * @return Image* 
+             */
+            Image* toImage();
+
             void bind(int location = 0);
 
             int getWidth();

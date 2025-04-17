@@ -13,6 +13,7 @@
         bool subDirectoriesToo = false;
     };
 #elif defined(_WIN32)
+    #include "TargetVer.h"
     #include <Windows.h>
     struct InternalNotifyHandler
     {

@@ -65,6 +65,11 @@ SIMD_128_16 SIMD_128_16::operator-(const SIMD_128_16& other) const
 {
     return _mm_sub_epi16(values, other.values);
 }
+SIMD_128_16 SIMD_128_16::operator-() const
+{
+    const __m128i allZero = _mm_set1_epi16(0);
+    return _mm_sub_epi16(allZero, values);
+}
 SIMD_128_16 SIMD_128_16::operator*(const SIMD_128_16& other) const
 {
     return _mm_mullo_epi16(values, other.values);

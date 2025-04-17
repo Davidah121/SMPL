@@ -65,6 +65,11 @@ SIMD_128_32 SIMD_128_32::operator-(const SIMD_128_32& other) const
 {
     return _mm_sub_epi32(values, other.values);
 }
+SIMD_128_32 SIMD_128_32::operator-() const
+{
+    const __m128i allZero = _mm_set1_epi32(0);
+    return _mm_sub_epi32(allZero, values);
+}
 SIMD_128_32 SIMD_128_32::operator*(const SIMD_128_32& other) const
 {
     return _mm_mullo_epi32(values, other.values);

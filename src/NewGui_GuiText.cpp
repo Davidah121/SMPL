@@ -17,7 +17,6 @@ namespace smpl
     {
         text = s;
         setShouldRender();
-        // StringTools::println("TEXT: TEXT CHANGED");
     }
 
     std::string GuiText::getText()
@@ -29,14 +28,12 @@ namespace smpl
     {
         fontColor = c;
         setShouldRender();
-        // StringTools::println("TEXT: FONT COLOR CHANGED");
     }
 
     void GuiText::setHighlightColor(Color c)
     {
         highlightColor = c;
         setShouldRender();
-        // StringTools::println("TEXT: HIGHLIGHT COLOR CHANGED");
     }
     
     Color GuiText::getFontColor()
@@ -63,16 +60,15 @@ namespace smpl
         return highlightEndIndex;
     }
 
-    void GuiText::setCanWrap(bool w)
+    void GuiText::setWrapMode(char w)
     {
-        canWrap = w;
-        if(w == false)
+        wrapMode = w;
+        if(w == Font::NO_WRAP)
         {
             maxWidth = -1;
             maxHeight = -1;
         }
         setShouldRender();
-        // StringTools::println("TEXT: WRAP CHANGED");
     }
 
     void GuiText::increaseSelectIndex()
@@ -133,12 +129,27 @@ namespace smpl
         FontInterface* f = GraphicsInterface::getFont();
         if(f != nullptr)
         {
-            Vec2f v;
-            if(!caretOnRight)
-                v = f->getFont()->getCursorLocation(text, highlightStartIndex, maxWidth);
-            else
-                v = f->getFont()->getCursorLocation(text, highlightEndIndex, maxWidth);
-            return {(int32_t)v.x, (int32_t)v.y, (int32_t)v.x+1, (int32_t)v.y + f->getFont()->getVerticalAdvance()};
+            int indexSearchingFor = highlightStartIndex;
+            if(caretOnRight)
+                indexSearchingFor = highlightEndIndex;
+            
+            if(f->getFont() == nullptr)
+                return {0, 0, 0, 0};
+            
+            std::vector<FontCharBoxInfo> listStuff = f->getFont()->getAllCharBoxes(UnicodeStringBridge(text), maxWidth, wrapMode);
+            int lastKnownRowStartPos = -11111;
+            if(indexSearchingFor==0)
+            {
+                return {0, 0, 1, f->getFont()->getVerticalAdvance()};
+            }
+            for(size_t i=0; i<listStuff.size(); i++)
+            {
+                FontCharBoxInfo& pairs = listStuff[i];
+                if(pairs.charIndex == indexSearchingFor)
+                {
+                    return {(int32_t)pairs.boundingBox.getLeftBound(), (int32_t)pairs.rowStartPosition, (int32_t)pairs.boundingBox.getLeftBound()+1, (int32_t)pairs.rowStartPosition + f->getFont()->getVerticalAdvance()};
+                }
+            }
         }
         return {0,0,0,0};
     }
@@ -155,21 +166,21 @@ namespace smpl
         if(f->getFont() == nullptr)
             return;
         
-        if(canWrap == false)
+        if(wrapMode == Font::NO_WRAP)
         {
             //max width and height are just the fonts bounds
-            Box2D bounds = f->getFont()->getBoundingBox(text, -1, -1);
+            Box2D bounds = f->getFont()->getBoundingBox(text, -1, Font::NO_WRAP);
             width = bounds.getWidth();
             height = bounds.getHeight();
         }
         else
         {
             //max width and height are just the fonts bounds
-            Box2D bounds = f->getFont()->getBoundingBox(text, maximumWidth, maximumHeight);
+            Box2D bounds = f->getFont()->getBoundingBox(text, maximumWidth, Font::WORD_WRAP);
             width = bounds.getWidth();
             height = bounds.getHeight();
-            maxWidth = maximumWidth;
-            maxHeight = maximumHeight;
+            // maxWidth = maximumWidth;
+            // maxHeight = maximumHeight;
         }
     }
 
@@ -199,7 +210,7 @@ namespace smpl
                 {
                     selecting = true;
                     FontInterface* f = GraphicsInterface::getFont();
-                    size_t sIndex = f->getFont()->getSelectIndex(text, maxWidth, mouseX-getTrueX(), mouseY-getTrueY());
+                    size_t sIndex = f->getFont()->getSelectIndex(text, maxWidth, wrapMode, mouseX-getTrueX(), mouseY-getTrueY());
 
                     if(sIndex != SIZE_MAX)
                     {
@@ -229,7 +240,11 @@ namespace smpl
             if(selecting)
             {
                 FontInterface* f = GraphicsInterface::getFont();
-                size_t sIndex = f->getFont()->getSelectIndex(text, maxWidth,  mouseX-getTrueX(), mouseY-getTrueY());
+                if(f == nullptr)
+                    return;
+                if(f->getFont() == nullptr)
+                    return;
+                size_t sIndex = f->getFont()->getSelectIndex(UnicodeStringBridge(text).getData(), maxWidth, wrapMode, mouseX-getTrueX(), mouseY-getTrueY());
 
                 //set to endIndex
                 if(sIndex != SIZE_MAX)
@@ -275,7 +290,7 @@ namespace smpl
             setShouldRender();
         }
     }
-
+    
     void GuiText::render(SmartMemory<GuiManager> manager)
     {
         //assume that trueX and trueY have been properly updated.
@@ -290,13 +305,14 @@ namespace smpl
         }
 
         GraphicsInterface::setColor(fontColor);
+
         if(isSelectable)
         {
-            GraphicsInterface::drawTextLimitsHighlighted(text, getTrueX(), getTrueY(), actualMaxWidth, actualMaxHeight, canWrap, highlightStartIndex, highlightEndIndex, highlightColor);
+            GraphicsInterface::drawTextLimitsHighlighted(text, getTrueX(), getTrueY(), actualMaxWidth, actualMaxHeight, wrapMode, highlightStartIndex, highlightEndIndex, highlightColor);
         }
         else
         {
-            GraphicsInterface::drawTextLimits(text, getTrueX(), getTrueY(), actualMaxWidth, actualMaxHeight, canWrap);
+            GraphicsInterface::drawTextLimits(text, getTrueX(), getTrueY(), actualMaxWidth, actualMaxHeight, wrapMode);
         }
     }
 
@@ -336,9 +352,16 @@ namespace smpl
             isSelectable = (pair->second == "true");
         attribs.remove(pair);
 
-        pair = attribs.get("can-wrap");
+        pair = attribs.get("wrap-mode");
         if(pair != nullptr)
-            canWrap = (pair->second == "true");
+        {
+            if(pair->second == "character")
+                wrapMode = Font::CHARACTER_WRAP;
+            else if(pair->second == "word")
+                wrapMode = Font::WORD_WRAP;
+            else
+                wrapMode = Font::NO_WRAP;
+        }
         attribs.remove(pair);
     }
 

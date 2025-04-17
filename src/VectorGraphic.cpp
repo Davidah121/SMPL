@@ -919,6 +919,9 @@ namespace smpl
 		}
 
 		auto attrib = node->getAttribute("d");
+		if(attrib == nullptr)
+			return; //invalid node
+		
 		if(!attrib->first.empty())
 		{
 			//Method: Separate Letters from values

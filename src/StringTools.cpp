@@ -475,9 +475,9 @@ namespace smpl
 		return runningCount;
 	}
 
-	std::vector<int> StringTools::utf8ToIntString(std::string validUTF8String)
+	std::u32string StringTools::utf8ToIntString(std::string validUTF8String)
 	{
-		std::vector<int> finalChars;
+		std::u32string finalChars;
 		int bytesToRead = 0;
 		int runningCount = 0;
 		for(char& c : validUTF8String)
@@ -528,14 +528,15 @@ namespace smpl
 		return finalChars;
 	}
 	
-	std::vector<int> StringTools::wideStringToIntString(std::wstring str)
+	std::u32string StringTools::wideStringToIntString(std::wstring str)
 	{
-		std::vector<int> results = std::vector<int>(str.size());
+		std::u32string result;
+		result.reserve(str.size());
 		for(size_t i=0; i<str.size(); i++)
 		{
-			results[i] = str[i];
+			result += str[i];
 		}
-		return results;
+		return result;
 	}
 
 	int StringTools::base64CharToNum(unsigned char base64Char)
@@ -639,6 +640,10 @@ namespace smpl
 	std::vector<unsigned char> StringTools::base64Decode(std::vector<unsigned char> bytes)
 	{
 		return base64Decode(bytes.data(), bytes.size());
+	}
+	std::vector<unsigned char> StringTools::base64Decode(std::string str)
+	{
+		return base64Decode((unsigned char*)str.data(), str.size());
 	}
 	std::vector<unsigned char> StringTools::base64Decode(unsigned char* bytes, size_t size)
 	{

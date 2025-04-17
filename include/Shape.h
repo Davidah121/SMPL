@@ -82,9 +82,9 @@ namespace smpl
 		virtual float generateBoundingRadius();
 		
 	protected:
-		Vec3f position = Vec3f();
+		Vec3f position = Vec3f(0,0,0);
 		Vec3f scale = Vec3f(1,1,1);
-		Vec3f rotation = Vec3f();
+		Vec3f rotation = Vec3f(0,0,0);
 
 		virtual void onTransformChanged();
 

@@ -197,6 +197,35 @@ namespace smpl
 			surf->setPixel(x, y, newColor);
 		}
 	}
+
+	
+	void SimpleGraphics::fillBetween(Color c, int x1, int x2, int y, Image* surf)
+	{
+		for(; x1<x2; x1++)
+		{
+			surf->getPixels()[x1 + y*surf->getWidth()] = blend(c, surf->getPixels()[x1 + y*surf->getWidth()]);
+		}
+	}
+
+	#if (OPTI>=1)
+	void SimpleGraphics::fillBetween(SIMD_U8 c, int x1, int x2, int y, Image* surf)
+	{
+		int len = x2-x1;
+		int simdBound = SIMD_U8::getSIMDBound(len);
+		for(int k=0; k<simdBound; k+=SIMD_GRAPHICS_INC)
+		{
+			SIMD_U8 destColor = SIMD_U8::load((unsigned char*)&srcPixels[x1 + tY*tempWidth]);
+			SIMD_U8 blendedColor = blend(c.values, destColor.values);
+			blendedColor.store((unsigned char*)&srcPixels[x1 + tY*tempWidth]);
+			x1 += SIMD_GRAPHICS_INC;
+		}
+		for(; x1<x2; x1++)
+		{
+			surf->getPixels()[x1 + y*surf->getWidth()] = blend(c, surf->getPixels()[x1 + y*surf->getWidth()]);
+		}
+	}
+	#endif
+
 	
 	uint16_t quickDiv255(uint16_t a)
 	{
@@ -539,8 +568,8 @@ namespace smpl
 		// __m128i lowDestPreMult = _mm_srli_epi16( _mm_mullo_epi16(lowDest16, lowDestAlpha16), 8); //premultiplied alpha. Approximation by the way.
 
 		//need the alpha values to not be modified. Get them from the old values
-		// lowSrcPreMult = _mm_blend_epi16(lowSrcPreMult, lowSrc16, 0b10001000);
-		// lowDestPreMult = _mm_blend_epi16(lowDestPreMult, lowDest16, 0b10001000);
+		lowSrcPreMult = _mm_blend_epi16(lowSrcPreMult, lowSrc16, 0b10001000);
+		lowDestPreMult = _mm_blend_epi16(lowDestPreMult, lowDest16, 0b10001000);
 		
 		//now do the Fa*src + Fb*dest
 		compositeRule16Bit(compositeRule, lowSrcAlpha16, lowDestAlpha16, Fa, Fb);
@@ -561,8 +590,8 @@ namespace smpl
 		// __m128i highDestPreMult = _mm_srli_epi16( _mm_mullo_epi16(highDest16, highDestAlpha16), 8); //premultiplied alpha. Approximation by the way.
 
 		//need the alpha values to not be modified. Get them from the old values
-		// highSrcPreMult = _mm_blend_epi16(highSrcPreMult, highSrc16, 0b10001000);
-		// highDestPreMult = _mm_blend_epi16(highDestPreMult, highDest16, 0b10001000);
+		highSrcPreMult = _mm_blend_epi16(highSrcPreMult, highSrc16, 0b10001000);
+		highDestPreMult = _mm_blend_epi16(highDestPreMult, highDest16, 0b10001000);
 		
 		//now do the Fa*src + Fb*dest
 		compositeRule16Bit(compositeRule, highSrcAlpha16, highDestAlpha16, Fa, Fb);

@@ -8,6 +8,7 @@ uniform vec4 activeColor;
 uniform vec2 circleCenter;
 uniform float radius;
 uniform float maxDisFromEdge;
+uniform bool antiAlias;
 
 void main()
 {
@@ -24,13 +25,16 @@ void main()
     if(distVal < minInDis)
         discard;
 
-    if(distVal > minOutDis)
+    if(antiAlias)
     {
-        alpha = (maxOutDis - distVal);
-    }
-    else if(distVal < maxInDis)
-    {
-        alpha = (distVal - minInDis);
+        if(distVal > minOutDis)
+        {
+            alpha = (maxOutDis - distVal);
+        }
+        else if(distVal < maxInDis)
+        {
+            alpha = (distVal - minInDis);
+        }
     }
     
     frag_color = vec4(activeColor.rgb, activeColor.a*alpha);

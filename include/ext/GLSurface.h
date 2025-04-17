@@ -34,13 +34,22 @@
 
             void bind();
             void bindTexture(int location = 0);
-
+            
             void unbind();
-
+            
             bool getValid();
-
+            
             int getWidth();
             int getHeight();
+
+            /**
+             * @brief Attempts to convert the OpenGL surface to a software Image for processing.
+             *      That processing can be either saving it or certain operations that are either limited to or best done
+             *      at a CPU level.
+             * 
+             * @return Image* 
+             */
+            Image* toImage();
         private:
             void init();
             

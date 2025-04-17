@@ -63,7 +63,7 @@
             {
                 if(previousSurfaceBound == this)
                 {
-                    unbind();
+                    return;
                 }
                 else
                 {
@@ -264,6 +264,30 @@
         int GLSurface::getHeight()
         {
             return height;
+        }
+
+        
+        Image* GLSurface::toImage()
+        {
+            Image* imgPointer = new Image(width, height);
+            Color* imgPixels = imgPointer->getPixels();
+            
+            glActiveTexture(0);
+            glBindTexture(GL_TEXTURE_2D, textureID);
+            glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgPixels);
+            glBindTexture(GL_TEXTURE_2D, 0);
+
+            //flip the data.
+            for(int y=0; y<height/2; y++)
+            {
+                for(int x=0; x<width; x++)
+                {
+                    Color temp = imgPixels[x + y*width];
+                    imgPixels[x + y*width] = imgPixels[x + (height-y-1)*width];
+                    imgPixels[x + (height-y-1)*width] = temp;
+                }
+            }
+            return imgPointer;
         }
     }
     

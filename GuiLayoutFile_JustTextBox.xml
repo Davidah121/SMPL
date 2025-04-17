@@ -4,12 +4,12 @@
     <SpriteResource id="RightArrowImage" src="./Resources/DefaultArrowRight.png"/>
     <!-- <ScrollBar> -->
         <LayoutList margin="{4,4,4,4}" direction="horizontal">
-            <TextBox margin="{4, 4, 4, 4}" border-color="black" border="{1, 1, 1, 1}" default-text="01/01/1900"/>
+            <TextBox margin="{4, 4, 4, 4}" border-color="black" border="{1, 1, 1, 1}" default-text="01/01/1900" min-width="54"/>
             <Button margin="{4, 4, 4, 4}" border-color="black" border="{1, 1, 1, 1}" >
                 <Sprite src="CogWheelImage"/>
             </Button>
-            <!-- <LayoutTable>
-            </LayoutTable> -->
+            <LayoutTable>
+            </LayoutTable>
         </LayoutList>
     <!-- </ScrollBar> -->
 </SimpleGUI>

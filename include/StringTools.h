@@ -9,10 +9,10 @@
 
 #include <stdarg.h>
 #include <initializer_list>
+#include "StringBridge.h"
 
 namespace smpl
 {
-
 	class DLL_OPTION StringTools
 	{
 	public:
@@ -94,11 +94,11 @@ namespace smpl
 		 * @param s 
 		 * @return std::string 
 		 */
-		static std::string toUTF8String(std::vector<int> s)
+		static std::string toUTF8String(std::u32string s)
 		{
 			std::string finalText;
 
-			for (int& c : s)
+			for (char32_t c : s)
 			{
 				std::vector<unsigned char> values = StringTools::toUTF8(c);
 				for(unsigned char& v : values)
@@ -170,17 +170,17 @@ namespace smpl
 		 * 		a set of integers for easier parsing.
 		 * 
 		 * @param validUTF8String 
-		 * @return std::vector<int> 
+		 * @return std::u32string 
 		 */
-		static std::vector<int> utf8ToIntString(std::string validUTF8String);
+		static std::u32string utf8ToIntString(std::string validUTF8String);
 
 		/**
 		 * @brief Converts the bytes in a std::wstring into
 		 * 		a set of integers for easier parsing.
 		 * @param str 
-		 * @return std::vector<int> 
+		 * @return std::u32string 
 		 */
-		static std::vector<int> wideStringToIntString(std::wstring str);
+		static std::u32string wideStringToIntString(std::wstring str);
 
 		/**
 		 * @brief Converts a base64 character into a number. Properly handles the url safe cases as well.

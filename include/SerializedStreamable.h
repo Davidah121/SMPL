@@ -74,7 +74,11 @@ protected:
 class SerializedStreamableVector : public SerializedStreamable
 {
 public:
-    SerializedStreamableVector(){}
+    SerializedStreamableVector()
+    {
+        isReadable = true;
+        isWritable = true;
+    }
     SerializedStreamableVector(size_t size)
     {
         isReadable = true;
@@ -104,7 +108,7 @@ public:
     }
     virtual bool read(void* inputBuffer, size_t sizeInBytes)
     {
-        if(sizeInBytes + index >= buffer.size())
+        if(sizeInBytes + index > buffer.size())
             return false;
         std::memcpy(inputBuffer, (void*)&buffer[index], sizeInBytes);
         index += sizeInBytes;
@@ -113,7 +117,7 @@ public:
     
     virtual bool peek(void* inputBuffer, size_t sizeInBytes)
     {
-        if(sizeInBytes + index >= buffer.size())
+        if(sizeInBytes + index > buffer.size())
             return false;
         std::memcpy(inputBuffer, (void*)&buffer[index], sizeInBytes);
         return true;
@@ -140,8 +144,8 @@ public:
     }
     
 private:
-    size_t index;
-    std::vector<unsigned char> buffer;
+    size_t index = 0;
+    std::vector<unsigned char> buffer = std::vector<unsigned char>();
 };
 
 

@@ -55,7 +55,7 @@
             Sprite* otherImgs = p.getSprite();
             for(int i=0; i<otherImgs->getSize(); i++)
             {
-                GLTexture* nTexture = new GLTexture(otherImgs->getImage(i), true, {GLTexture::BEHAVIOR_CLAMP_TO_EDGE, GLTexture::FILTER_LINEAR});
+                GLTexture* nTexture = new GLTexture(otherImgs->getImage(i), true, {GLTexture::BEHAVIOR_CLAMP_TO_EDGE, GLTexture::FILTER_NEAREST});
                 img.addTexture(nTexture);
             }
 
@@ -78,16 +78,24 @@
                 };
 
                 //setup texture values
-                float xMultVal = 1.0 / img.getTexture(imgPage[i])->getWidth();
-                float yMultVal = 1.0 / img.getTexture(imgPage[i])->getHeight();
+                double xMultVal = 1.0 / img.getTexture(imgPage[i])->getWidth();
+                double yMultVal = 1.0 / img.getTexture(imgPage[i])->getHeight();
 
                 std::vector<float> textures = {
-                    xMultVal * fci.x, yMultVal * fci.y,
-                    xMultVal * fci.x, yMultVal * (fci.y+fci.height),
-                    xMultVal * (fci.x+fci.width), yMultVal * (fci.y+fci.height),
-                    xMultVal * (fci.x+fci.width), yMultVal * fci.y
+                    (float)(xMultVal * fci.x), (float)(yMultVal * fci.y),
+                    (float)(xMultVal * fci.x), (float)(yMultVal * (fci.y+fci.height)),
+                    (float)(xMultVal * (fci.x+fci.width)), (float)(yMultVal * (fci.y+fci.height)),
+                    (float)(xMultVal * (fci.x+fci.width)), (float)(yMultVal * fci.y)
                 };
                 
+                if(fci.unicodeValue == 'F')
+                {
+                    StringTools::println("%.3f, %.3f, %.3f, %.3f", (float)(xMultVal * fci.x), (float)(yMultVal * fci.y),
+                                                                    (float)(xMultVal * (fci.x+fci.width)), (float)(yMultVal * (fci.y+fci.height)));
+
+                    
+                    StringTools::println("%d, %d, %d, %d", fci.x, fci.y, (fci.x+fci.width), (fci.y+fci.height));
+                }
 
                 m->storeDataFloat(0, positions, 2);
                 m->storeDataFloat(1, textures, 2);

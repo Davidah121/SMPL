@@ -59,14 +59,14 @@ namespace smpl
         return attributes.get(key);
     }
 
-    std::vector<XmlNode*> XmlNode::getNodesPattern(std::vector<std::string>& nameOrder, size_t offset)
+    std::vector<XmlNode*> XmlNode::getNodesPattern(const std::vector<std::string>& nameOrder, size_t offset)
     {
         std::vector<XmlNode*> result;
         getNodesInternal(nameOrder, offset, result);
         return result;
     }
 
-    void XmlNode::getNodesInternal(std::vector<std::string>& nameOrder, size_t offset, std::vector<XmlNode*>& results)
+    void XmlNode::getNodesInternal(const std::vector<std::string>& nameOrder, size_t offset, std::vector<XmlNode*>& results)
     {
         if(offset == nameOrder.size())
         {
@@ -1188,7 +1188,7 @@ namespace smpl
         
     }
 
-    std::vector<XmlNode*> SimpleXml::getNodesPattern(std::vector<std::string>& nameOrder)
+    std::vector<XmlNode*> SimpleXml::getNodesPattern(const std::vector<std::string>& nameOrder)
     {
         std::vector<XmlNode*> results;
         if(nameOrder.size() > 0)

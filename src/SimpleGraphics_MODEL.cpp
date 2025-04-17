@@ -157,7 +157,8 @@ namespace smpl
 			{
 				//even-odd rule. Fill between even to odd indicies
 				//not odd to even indicies
-				//#pragma omp parallel for
+				LARGE_ENOUGH_CLAUSE(yDis)
+				#pragma omp parallel for
 				for(int j=0; j<yDis; j++)
 				{
 					int actualSize = scanLines[j].size();
@@ -187,13 +188,14 @@ namespace smpl
 						
 					}
 				}
-				
+				RESET_LARGE_ENOUGH_CLAUSE()
 			}
 			else
 			{
 				//non-zero rule. Fill when positive only. Not when zero or
 				//less.
-				//#pragma omp parallel for
+				LARGE_ENOUGH_CLAUSE(yDis)
+				#pragma omp parallel for
 				for(int j=0; j<yDis; j++)
 				{
 					int passCounter = 0;
@@ -226,6 +228,7 @@ namespace smpl
 						}
 					}
 				}
+				RESET_LARGE_ENOUGH_CLAUSE()
 			}
 
 		}

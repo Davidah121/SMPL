@@ -7,10 +7,84 @@ namespace smpl
 	BezierCurve::BezierCurve()
 	{
 	}
+	
+	BezierCurve::BezierCurve(const std::vector<Vec2f>& points)
+	{
+		this->points = points;
+	}
 
 	BezierCurve::~BezierCurve()
 	{
 		points.clear();
+	}
+
+	
+	BezierCurve::BezierCurve(const BezierCurve& other)
+	{
+		points = other.points;
+	}
+	void BezierCurve::operator=(const BezierCurve& other)
+	{
+		points = other.points;
+	}
+
+	BezierCurve::BezierCurve(BezierCurve&& other) noexcept
+	{
+		points = std::move(other.points);
+	}
+	void BezierCurve::operator=(BezierCurve&& other) noexcept
+	{
+		points = std::move(other.points);
+	}
+
+	void BezierCurve::operator+=(Vec2f p)
+	{
+		for(Vec2f& poi : points)
+			poi += p;
+	}
+	void BezierCurve::operator-=(Vec2f p)
+	{
+		for(Vec2f& poi : points)
+			poi -= p;
+	}
+	void BezierCurve::operator*=(float x)
+	{
+		for(Vec2f& poi : points)
+			poi *= x;
+	}
+	void BezierCurve::operator/=(float x)
+	{
+		for(Vec2f& poi : points)
+			poi /= x;
+	}
+	
+	BezierCurve BezierCurve::operator+(Vec2f p)
+	{
+		BezierCurve other;
+		for(Vec2f& poi : points)
+			other.points.push_back(poi + p);
+		return other;
+	}
+	BezierCurve BezierCurve::operator-(Vec2f p)
+	{
+		BezierCurve other;
+		for(Vec2f& poi : points)
+			other.points.push_back(poi - p);
+		return other;
+	}
+	BezierCurve BezierCurve::operator*(float x)
+	{
+		BezierCurve other;
+		for(Vec2f& poi : points)
+			other.points.push_back(poi * x);
+		return other;
+	}
+	BezierCurve BezierCurve::operator/(float x)
+	{
+		BezierCurve other;
+		for(Vec2f& poi : points)
+			other.points.push_back(poi / x);
+		return other;
 	}
 
 	void BezierCurve::addPoint(Vec2f p)
@@ -215,6 +289,11 @@ namespace smpl
 	{
 		return blendPointsDerivativeRecursive(0, (int)(points.size()-1), time);
 	}
+	
+	Vec2f BezierCurve::getSecondDerivativeAt(double time)
+	{
+		return blendPointsSecondDerivativeRecursive(0, (int)(points.size()-1), time);
+	}
 
 	Vec2f BezierCurve::getSimpleDerivativeAt(double time)
 	{
@@ -291,69 +370,47 @@ namespace smpl
 
 	double BezierCurve::findTimeForMinDis(Vec2f p, unsigned int maxIterations)
 	{
-		//use secant method to solve 
-		double xn[3] = {NAN, 1, 0};
-		double sol[3] = {NAN, 0, 0};
-
-		double solAt0 = 0;
-		double solAt1 = 0;
-
-		Vec2f bt = this->getFuctionAt(0);
-		Vec2f bpt = this->getDerivativeAt(0);
-		sol[2] = 2*(p.x - bt.x)*(-bpt.x) + 2*(p.y - bt.y)*(-bpt.y);
+		//use newton's method to solve 
+		//pick a good start point. Check distance to B(t) where t = {0, 0.25, 0.5, 0.75, 1}
+		//even better, loop over points.size() and use i/points.size()
+		double approxT = 0; //change later
+		double bestApproxLength = INFINITY;
+		int totalN = points.size()*2;
+		for(int i=0; i<=totalN; i++)
+		{
+			double nT = (double)i / totalN;
+			Vec2f testP = getFuctionAt(nT);
+			double nLength = (testP - p).getLength();
+			if(nLength < bestApproxLength)
+			{
+				bestApproxLength = nLength;
+				approxT = nT;
+			}
+		}
 		
-		bt = this->getFuctionAt(1);
-		bpt = this->getDerivativeAt(1);
-		sol[1] = 2*(p.x - bt.x)*(-bpt.x) + 2*(p.y - bt.y)*(-bpt.y);
+		//cheat a little
+		BezierCurve newB = BezierCurve(points);
+		newB -= p;
 		
-		if(sol[2] == 0)
-			return 0;
-		if(sol[1] == 0)
-			return 1;
-
-		solAt0 = sol[2];
-		solAt1 = sol[1];
+		//Note that its okay to skip the sqrt part so |B(t)| can just be B(t)*B(t)
+		//Length = |B(t)| or B(t).length()
+		//DerivativeOfLength = 2*B(t) * B`(t)
+		//2ndDerivativeOfLength = 2(B(t)*B``(t) + B`(t).length())
 		
 		for(int i=0; i<maxIterations; i++)
 		{
-			double num = sol[1]*(xn[1] - xn[2]);
-			double div = sol[1] - sol[2];
-			if(div == 0)
-			{
-				//error occured
-				xn[0] = NAN;
-				break;
-			}
-
-			xn[0] = xn[1] - num/div;
+			Vec2f Bt = newB.getFuctionAt(approxT);
+			Vec2f BtDerivative = newB.getDerivativeAt(approxT);
+			Vec2f BtDerivative2 = newB.getSecondDerivativeAt(approxT);
 			
-			bt = this->getFuctionAt(xn[0]);
-			bpt = this->getDerivativeAt(xn[0]);
-			sol[0] = 2*(p.x - bt.x)*(-bpt.x) + 2*(p.y - bt.y)*(-bpt.y);
-
-			if(sol[0] == 0)
-			{
-				break;
-			}
-
-			//move xn to xn-1 and move xn-1 to xn-2
-			xn[2] = xn[1];
-			xn[1] = xn[0];
-
-			sol[2] = sol[1];
-			sol[1] = sol[0];
-		}
-
-		if(xn[0] != NAN)
-		{
-			if(xn[0] >= 0 && xn[0] <= 1)
-				return xn[0];
+			//newton's method -> newT = oldT - F(t) / F`(t)
+			//minimize length so solve derivative for 0
+			double lDerivative = 2*(Bt.dot(BtDerivative));
+			double lDerivative2 = 2*(Bt.dot(BtDerivative2) + BtDerivative.dot(BtDerivative));
+			approxT -= lDerivative / lDerivative2;
 		}
 		
-		if(solAt0 < solAt1)
-			return 0;
-		else
-			return 1;
+		return MathExt::clamp(approxT, 0.0, 1.0);
 	}
 
 	void BezierCurve::clear()
@@ -779,6 +836,29 @@ namespace smpl
 			Vec2f v2 = blendPointsDerivativeRecursive(start, end-1, time) * (1-time);
 			Vec2f v3 = blendPointsRecursive(start+1, end, time);
 			Vec2f v4 = blendPointsDerivativeRecursive(start+1, end, time) * time;
+			return v1+v2+v3+v4;
+		}
+		else if (start==end)
+		{
+			return Vec2f(0,0);
+		}
+
+		#ifdef USE_EXCEPTIONS
+		throw BezierCurve::BlendPointsError();
+		#endif
+		
+		return Vec2f();
+	}
+
+	
+	Vec2f BezierCurve::blendPointsSecondDerivativeRecursive(int start, int end, double time)
+	{		
+		if (start<end)
+		{
+			Vec2f v1 = -blendPointsDerivativeRecursive(start, end-1, time);
+			Vec2f v2 = blendPointsSecondDerivativeRecursive(start, end-1, time) * (1-time);
+			Vec2f v3 = blendPointsDerivativeRecursive(start+1, end, time);
+			Vec2f v4 = blendPointsSecondDerivativeRecursive(start+1, end, time) * time;
 			return v1+v2+v3+v4;
 		}
 		else if (start==end)

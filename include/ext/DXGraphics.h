@@ -82,16 +82,12 @@
             static void drawSprite(double x1, double y1, double x2, double y2, DXSprite* sprite, int index);
             static void drawSprite(double x, double y, DXSprite* sprite, int index);
 
-            static void drawText(std::string text, double x, double y, DXFont* fontPointer = nullptr);
-            static void drawText(std::wstring text, double x, double y, DXFont* fontPointer = nullptr);
-
-            static void drawTextLimits(std::string text, double x, double y, double maxWidth, double maxHeight, bool useLineBreaks, DXFont* fontPointer = nullptr);
-            static void drawTextLimits(std::wstring text, double x, double y, double maxWidth, double maxHeight, bool useLineBreaks, DXFont* fontPointer = nullptr);
-
-            static void drawTextLimitsHighlighted(std::string text, double x, double y, double maxWidth, double maxHeight, bool useLineBreaks, int highlightStart, int highlightEnd, Vec4f highlightColor, DXFont* fontPointer = nullptr);
-            static void drawTextLimitsHighlighted(std::wstring text, double x, double y, double maxWidth, double maxHeight, bool useLineBreaks, int highlightStart, int highlightEnd, Vec4f highlightColor, DXFont* fontPointer = nullptr);
-
-            static void drawRectangle(double x1, double y1, double x2, double y2, bool outline);
+            static void drawText(StringBridge text, double x, double y, DXFont* fontPointer = nullptr);
+            static void drawTextHighlighted(StringBridge text, double x, double y, int highlightStart, int highlightEnd, Vec4f highlightColor, DXFont* fontPointer = nullptr);
+            static void drawTextLimits(StringBridge text, double x, double y, double maxWidth, double maxHeight, char wrapMode, DXFont* fontPointer = nullptr);
+            static void drawTextLimitsHighlighted(StringBridge text, double x, double y, double maxWidth, double maxHeight, char wrapMode, int highlightStart, int highlightEnd, Vec4f highlightColor, DXFont* fontPointer = nullptr);
+            
+            static void drawRectangle(double x1, double y1, double width, double height, bool outline);
             
             static void drawCircle(double x, double y, double radius, bool outline);
             static void drawCircle(double x, double y, double innerRadius, double outerRadius);

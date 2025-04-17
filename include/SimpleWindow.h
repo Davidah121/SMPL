@@ -40,15 +40,12 @@
 		#ifndef NOMINMAX
 			#define NOMINMAX
 		#endif
-
 		
+    	#include "TargetVer.h"
 		#include "ext/DragDrop.h"
 		
 		#include <Windows.h>
 		#include <dwmapi.h>
-		
-		#pragma comment(lib, "Msimg32.lib")
-		#pragma comment(lib, "Dwmapi.lib")
 	#endif
 
 	#include <exception>
@@ -113,6 +110,10 @@
 			static const unsigned char TYPE_NO_ROUND_CORNER = DWMWCP_DONOTROUND_CONST;
 			static const unsigned char TYPE_ROUND_CORNER = DWMWCP_ROUND_CONST;
 			static const unsigned char TYPE_SMALLROUND_CORNER = DWMWCP_ROUNDSMALL_CONST;
+
+			static int BorderHeight;
+			static int BorderWidth;
+			
 			
 			struct WindowCreationError : public std::exception
 			{
@@ -719,7 +720,7 @@
 			bool shouldRepaint = false;
 			bool autoRepaint = true;
 			bool redrawGui = false;
-			size_t sleepTimeMillis = 16;
+			size_t sleepTimeMillis = 33;
 			size_t sleepTimeMicros = 0;
 
 			

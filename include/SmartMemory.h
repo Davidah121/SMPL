@@ -233,8 +233,8 @@ namespace smpl
         {
             if(elements == 0)
                 elements = 1;
-            MemInfo m = StaticMemManager::addPointer(data, elements>1, sizeInBytes, deleteOnLast, bypassOwnership, SmartMemory<T>::deletePointer);
             sizeInBytes = elements * sizeof(T);
+            MemInfo m = StaticMemManager::addPointer(data, elements>1, sizeInBytes, deleteOnLast, bypassOwnership, SmartMemory<T>::deletePointer);
             hashValue = data;
             isArray = m.array;
             this->deleteOnLast = deleteOnLast;
@@ -310,14 +310,14 @@ namespace smpl
 
         
         /**
-         * @brief Move Constructor
+         * @brief Copy Constructor
          * 
          * @param other 
          */
         SmartMemory(const SmartMemory& other) : GenericSmartMemory(other) {}
 
         /**
-         * @brief Move Assign a new SmartMemory object from another SmartMemory object.
+         * @brief Copy Assign a new SmartMemory object from another SmartMemory object.
          * 
          * @param other 
          */
@@ -376,6 +376,66 @@ namespace smpl
         }
 
         /**
+         * @brief Compares the pointer stored to another pointer to determine
+         *      if they are the same.
+         * 
+         *      Calls getPointer() before checking if the 2 pointers are the same.
+         * 
+         * @param pointer 
+         * @return true 
+         * @return false 
+         */
+        bool operator==(const T* pointer)
+        {
+            return getPointer() == pointer;
+        }
+
+        /**
+         * @brief Compares the pointer stored to another pointer to determine
+         *      if they are the same.
+         * 
+         *      Calls getPointer() before checking if the 2 pointers are the same.
+         * 
+         * @param pointer 
+         * @return true 
+         * @return false 
+         */
+        bool operator==(SmartMemory<T>& other)
+        {
+            return getPointer() == other.getPointer();
+        }
+
+        /**
+         * @brief Compares the pointer stored to another pointer to determine
+         *      if they are not the same.
+         * 
+         *      Calls getPointer() before checking if the 2 pointers are not the same.
+         * 
+         * @param pointer 
+         * @return true 
+         * @return false 
+         */
+        bool operator!=(const T* pointer)
+        {
+            return getPointer() != pointer;
+        }
+        
+        /**
+         * @brief Compares the pointer stored to another pointer to determine
+         *      if they are not the same.
+         * 
+         *      Calls getPointer() before checking if the 2 pointers are not the same.
+         * 
+         * @param pointer 
+         * @return true 
+         * @return false 
+         */
+        bool operator!=(SmartMemory<T>& other)
+        {
+            return getPointer() != other.getPointer();
+        }
+
+        /**
          * @brief Get the Number Of Elements for this pointer.
          *      The number of elements are calculated by dividing the total bytes by the size of T (the type)
          * 
@@ -397,6 +457,12 @@ namespace smpl
         LockingSmartMemory<T> getLockingPointer()
         {
             return LockingSmartMemory<T>(*this); //fix later
+        }
+
+        template<typename K>
+        operator SmartMemory<K>() const
+        {
+            return SmartMemory<K>((K*)hashValue, sizeInBytes / sizeof(K), deleteOnLast, false);
         }
 
     private:
@@ -426,6 +492,10 @@ namespace smpl
          *      Guarantees that the pointer has not been delete nor will be deleted by
          *          any of the smart pointer system functions. If it is deleted from outside
          *          the smart pointer system, these operations may be invalid.
+         * 
+         *      Due to the nature of the locking system, this class does not check if the pointer is valid on each access.
+         *          The pointer is guaranteed to be valid, as far as the SmartMemory System is concerned, for its entire lifespan.
+         *          This means that this should be faster in situations where peformance matters while maintaining safety.
          * 
          * @param parent 
          */
@@ -488,7 +558,8 @@ namespace smpl
 
         /**
          * @brief Attempts to use the pointer as is. Does not check if it is valid or not.
-         *
+         *     Pointer is invalid if it was deleted outside of the SmartMemory System or it is nullptr.
+         * 
          * @return T* 
          */
         T* operator->()
@@ -498,6 +569,7 @@ namespace smpl
 
         /**
          * @brief Attempts to use the pointer as an array as is. Does not check if it is valid or not.
+         *      Pointer is invalid if it was deleted outside of the SmartMemory System or it is nullptr.
          * 
          * @return T* 
          */
@@ -508,12 +580,47 @@ namespace smpl
 
         /**
          * @brief Attempts to dereference the pointer. Does not check if it is valid or not.
+         *      Pointer is invalid if it was deleted outside of the SmartMemory System or it is nullptr.
          * 
          * @return T&* 
          */
         T& operator*()
         {
             return *((T*)hashValue);
+        }
+
+        /**
+         * @brief Compares the pointer stored to another pointer to determine
+         *      if they are the same.
+         * 
+         *      Unlike with SmartMemory, this class avoids the need to call getPointer as
+         *          the pointer it stores must be valid for this objects lifetime unless it is nullptr which is not valid at all.
+         *          Assuming no deletion happens outside of the SmartMemory system.
+         * 
+         * @param pointer 
+         * @return true 
+         * @return false 
+         */
+        bool operator==(T* pointer)
+        {
+            return ((T*)hashValue) == pointer;
+        }
+
+        /**
+         * @brief Compares the pointer stored to another pointer to determine
+         *      if they are not the same.
+         * 
+         *      Unlike with SmartMemory, this class avoids the need to call getPointer as
+         *          the pointer it stores must be valid for this objects lifetime unless it is nullptr which is not valid at all.
+         *          Assuming no deletion happens outside of the SmartMemory system.
+         * 
+         * @param pointer 
+         * @return true 
+         * @return false 
+         */
+        bool operator!=(T* pointer)
+        {
+            return ((T*)hashValue) != pointer;
         }
 
         /**

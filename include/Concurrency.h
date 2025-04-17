@@ -8,6 +8,17 @@
 #include <immintrin.h>
 #include <omp.h>
 
+#ifndef LARGE_ENOUGH_CLAUSE
+#ifdef DEBUG
+    #define LARGE_ENOUGH_LIMIT 128
+#else
+    #define LARGE_ENOUGH_LIMIT 4096
+#endif
+#define MAX_THREADS_KNOWN std::thread::hardware_concurrency()
+#define RESET_LARGE_ENOUGH_CLAUSE() omp_set_num_threads(MAX_THREADS_KNOWN);
+#define LARGE_ENOUGH_CLAUSE(size) omp_set_num_threads(__min(MAX_THREADS_KNOWN, ((double)size / LARGE_ENOUGH_LIMIT)));
+#endif
+
 namespace smpl
 {
     struct HybridSpinLock

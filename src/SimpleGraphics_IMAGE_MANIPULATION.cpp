@@ -246,8 +246,9 @@ namespace smpl
 				derivativeMagnitude[y][x] = MathExt::sqrt(MathExt::sqr(imgXDerivative[y][x]) + MathExt::sqr(imgYDerivative[y][x]));
 			}
 		}
-
+		
 		derivativeMagnitude = ComputerVision::readjustIntensity(derivativeMagnitude, 0.0, 1.0);
+		StringTools::println("Step2");
 
 		//non maximum suppression
 		for(int y=1; y<img->getHeight()-1; y++)
@@ -303,8 +304,7 @@ namespace smpl
 			}
 		}
 
-		// grayscaleImg->savePNG("Step3.png", false);
-
+		StringTools::println("Step3");
 		//Hysteresis
 		//note that the very edge of the image is all set to zero for convenience.
 		for(int y=1; y<img->getHeight()-1; y++)
@@ -340,6 +340,8 @@ namespace smpl
 				}
 			}
 		}
+		
+		// StringTools::println("Step4");
 
 		return grayscaleImg;
 	}

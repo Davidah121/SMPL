@@ -24,7 +24,7 @@ namespace smpl
 			static const unsigned int TYPE_OPTIONS = 0x40;
 			static const unsigned int TYPE_TRACE = 0x80;
 			static const unsigned int TYPE_PATCH = 0x100;
-			static const unsigned int TYPE_UNKNOWN = 0xFFFFFFFF;
+			static const unsigned int TYPE_SERVER = 0xFFFFFFFF;
 
 			WebRequest();
 			WebRequest(char* buffer, size_t size);
@@ -73,7 +73,7 @@ namespace smpl
 
 			/**
 			 * @brief Gets the Type of the request/response
-			 * 		Note that for responses, it will likely be TYPE_UNKNOWN
+			 * 		Note that for responses, it will likely be TYPE_SERVER
 			 * 
 			 * @return unsigned int 
 			 */
@@ -114,6 +114,26 @@ namespace smpl
 			std::string getRequestAsString();
 
 			/**
+			 * @brief Adds a cookie to the request.
+			 * 		Each pair will be added to the final header as
+			 * 			Set-Cookie: key=value; options;
+			 * 		Note that this function fails if an invalid character is found
+			 * 
+			 * @param keyValuePair 
+			 * @param options
+			 */
+			bool addCookie(std::pair<std::string, std::string> keyValuePair, std::vector<std::string> options = {});
+
+			/**
+			 * @brief Gets a cookie from the request.
+			 * 		If the key was not found, returns an empty pair.
+			 * 
+			 * @param key 
+			 * @return std::pair<std::string, std::string> 
+			 */
+			std::pair<std::string, std::string> getCookie(std::string key);
+
+			/**
 			 * @brief Returns if the request is empty.
 			 * 
 			 * @return true 
@@ -146,6 +166,16 @@ namespace smpl
 			 * @return std::string 
 			 */
 			static std::string getDateAsGMT();
+
+			/**
+			 * @brief Determines if the string is valid as a cookie key or value.
+			 * 		They can't contain certain character. They may contain the following characters
+			 * 			abdefghijklmnqrstuvxyzABDEFGHIJKLMNQRSTUVXYZ0123456789!#$%&'()*+-./:<>?@[]^_`{|}~
+			 * 
+			 * @return true 
+			 * @return false 
+			 */
+			static bool isValidCookieFormat(std::string v);
 			
 		private:
 			void reset();
@@ -155,6 +185,7 @@ namespace smpl
 			std::string header;
 			std::string url;
 			std::unordered_map<std::string, std::string> data;
+			std::unordered_map<std::string, std::pair<std::string, std::vector<std::string>>> cookieMap;
 			
         	static const std::unordered_map<std::string, std::string> mimeTypes;
 	};

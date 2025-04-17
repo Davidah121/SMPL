@@ -14,6 +14,16 @@
 		int SimpleWindow::screenWidth = System::getDesktopWidth();
 		int SimpleWindow::screenHeight = System::getDesktopHeight();
 		
+		#ifdef __unix__
+		int SimpleWindow::BorderHeight = (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) +
+							GetSystemMetrics(SM_CXPADDEDBORDER) + 8);
+		int SimpleWindow::BorderWidth = (GetSystemMetrics(SM_CXFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER))*2;
+		#else
+		int SimpleWindow::BorderHeight = (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) +
+							GetSystemMetrics(SM_CXPADDEDBORDER) + 8);
+		int SimpleWindow::BorderWidth = (GetSystemMetrics(SM_CXFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER))*2;
+		#endif
+		
 		SimpleWindow* SimpleWindow::getWindowByHandle(size_t handle)
 		{
 			for (int i = 0; i < windowList.size(); i++)
@@ -204,9 +214,6 @@
 
 
 
-				int borderHeight = (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) +
-									GetSystemMetrics(SM_CXPADDEDBORDER) + 1 + 8);
-				int borderWidth = (GetSystemMetrics(SM_CXFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER))*2;
 
 				if (currentWindow != nullptr)
 				{
@@ -368,8 +375,8 @@
 						
 						if(currentWindow->windowType.windowType == SimpleWindow::NORMAL_WINDOW)
 						{
-							currentWindow->width = rect->right - rect->left - borderWidth;
-							currentWindow->height = rect->bottom - rect->top - borderHeight;
+							currentWindow->width = rect->right - rect->left - BorderWidth;
+							currentWindow->height = rect->bottom - rect->top - BorderHeight;
 						}
 						else
 						{
@@ -392,8 +399,8 @@
 
 						if(currentWindow->windowType.windowType == SimpleWindow::NORMAL_WINDOW)
 						{
-							currentWindow->width = rect->right - rect->left - borderWidth;
-							currentWindow->height = rect->bottom - rect->top - borderHeight;
+							currentWindow->width = rect->right - rect->left - BorderWidth;
+							currentWindow->height = rect->bottom - rect->top - BorderHeight;
 						}
 						else
 						{
@@ -415,11 +422,11 @@
 
 							if(currentWindow->width != LOWORD(lparam))
 								currentWindow->setResizeMe(true);
-							if(currentWindow->height != HIWORD(lparam)-1)
+							if(currentWindow->height != HIWORD(lparam))
 								currentWindow->setResizeMe(true);
 							
 							currentWindow->width = LOWORD(lparam);
-							currentWindow->height = HIWORD(lparam)-1;
+							currentWindow->height = HIWORD(lparam);
 
 							currentWindow->redrawGui = true;
 							currentWindow->finishResize();
@@ -439,7 +446,7 @@
 							currentWindow->y = currentWindow->preY;
 							
 							currentWindow->width = LOWORD(lparam);
-							currentWindow->height = HIWORD(lparam)-1;
+							currentWindow->height = HIWORD(lparam);
 							
 							if(!currentWindow->getResizing() || currentWindow->redrawGui)
 							{
@@ -670,11 +677,6 @@
 			{
 				setWindowAsInputFocus();
 			}
-			
-			if(windowList.size() == 1)
-			{
-				setWindowAsInputFocus();
-			}
 
 			#ifdef __unix__
 
@@ -813,8 +815,8 @@
 					{
 						case SimpleWindow::NORMAL_WINDOW:
 							style = WS_OVERLAPPEDWINDOW;
-							trueWidth += 16;
-							trueHeight += 40;
+							trueWidth += BorderWidth;
+							trueHeight += BorderHeight;
 							break;
 						case SimpleWindow::BORDERLESS_WINDOW:
 							style = WS_POPUP|WS_VISIBLE|WS_SYSMENU;
@@ -824,8 +826,8 @@
 							break;
 						default:
 							style = WS_OVERLAPPEDWINDOW;
-							trueWidth += 16;
-							trueHeight += 40;
+							trueWidth += BorderWidth;
+							trueHeight += BorderHeight;
 							break;
 					}
 
@@ -861,7 +863,7 @@
 						this->x = trueX;
 						this->y = trueY;
 					}
-
+					
 					if(windowType.focusable==TYPE_NONFOCUSABLE)
 					{
 						style |= WS_EX_NOACTIVATE;
@@ -1820,6 +1822,7 @@
 		{
 			if(threadOwnership==false)
 			{
+				shouldRepaint = true;
 				threadRepaint();
 			}
 			else

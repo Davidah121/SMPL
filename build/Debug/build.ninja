@@ -87,9 +87,12 @@ build $objDir/ModelBuilder.o: buildToObject src/ModelBuilder.cpp
 build $objDir/Network.o: buildToObject src/Network.cpp
 build $objDir/NeuralNetwork.o: buildToObject src/NeuralNetwork.cpp
 build $objDir/NeuralNetwork_Layers.o: buildToObject src/NeuralNetwork_Layers.cpp
+build $objDir/NeuralNetwork_ObjectiveFunctions.o: buildToObject src/NeuralNetwork_ObjectiveFunctions.cpp
+build $objDir/NeuralNetwork_old.o: buildToObject src/NeuralNetwork_old.cpp
 build $objDir/NewGui.o: buildToObject src/NewGui.cpp
 build $objDir/NewGui_GuiButton.o: buildToObject src/NewGui_GuiButton.cpp
 build $objDir/NewGui_GuiCanvas.o: buildToObject src/NewGui_GuiCanvas.cpp
+build $objDir/NewGui_GuiClippingLayout.o: buildToObject src/NewGui_GuiClippingLayout.cpp
 build $objDir/NewGui_GuiContent.o: buildToObject src/NewGui_GuiContent.cpp
 build $objDir/NewGui_GuiEmpty.o: buildToObject src/NewGui_GuiEmpty.cpp
 build $objDir/NewGui_GuiItem.o: buildToObject src/NewGui_GuiItem.cpp
@@ -144,6 +147,7 @@ build $objDir/SmartJobQueue.o: buildToObject src/SmartJobQueue.cpp
 build $objDir/SmartMemory.o: buildToObject src/SmartMemory.cpp
 build $objDir/Sound.o: buildToObject src/Sound.cpp
 build $objDir/Sprite.o: buildToObject src/Sprite.cpp
+build $objDir/StringBridge.o: buildToObject src/StringBridge.cpp
 build $objDir/StringTools.o: buildToObject src/StringTools.cpp
 build $objDir/SuffixArray.o: buildToObject src/SuffixArray.cpp
 build $objDir/SuffixAutomaton.o: buildToObject src/SuffixAutomaton.cpp

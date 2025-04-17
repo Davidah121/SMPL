@@ -129,7 +129,7 @@ namespace smpl
 		 * @param height 
 		 * @return SurfaceInterface* 
 		 */
-		static SurfaceInterface* createSurface(int width, int height, unsigned char type = TYPE_DEFAULT);
+		static SurfaceInterface* createSurface(int width, int height);
 
 		/**
 		 * @brief Create a ImageInterface object that aligns with this
@@ -138,7 +138,7 @@ namespace smpl
 		 * @param f 
 		 * @return ImageInterface* 
 		 */
-		static ImageInterface* createImage(File f, unsigned char type = TYPE_DEFAULT);
+		static ImageInterface* createImage(File f);
 
 		/**
 		 * @brief Create a SpriteInterface object that aligns with this
@@ -147,7 +147,7 @@ namespace smpl
 		 * @param f 
 		 * @return SpriteInterface* 
 		 */
-		static SpriteInterface* createSprite(File f, unsigned char type = TYPE_DEFAULT);
+		static SpriteInterface* createSprite(File f);
 
 		/**
 		 * @brief Create a FontInterface object that aligns with this
@@ -156,7 +156,7 @@ namespace smpl
 		 * @param f 
 		 * @return FontInterface* 
 		 */
-		static FontInterface* createFont(File f, unsigned char type = TYPE_DEFAULT);
+		static FontInterface* createFont(File f);
 
 		static unsigned char getDefaultType();
 		static void setDefaultType(unsigned char type);
@@ -168,7 +168,9 @@ namespace smpl
 		 * @param v 
 		 * @return unsigned char 
 		 */
-		static unsigned char getType(unsigned char v);
+		static unsigned char getType();
+		
+		static void setType(unsigned char v);
 
 		/**
 		 * @brief Delete memory that this class allocated that has not been deleted yet.
@@ -179,47 +181,42 @@ namespace smpl
 		static void setBoundSurface(SurfaceInterface* surface);
 		static SurfaceInterface* getBoundSurface();
 
-		static void setColor(Vec4f color, unsigned char type = TYPE_DEFAULT);
-		static void setColor(Color color, unsigned char type = TYPE_DEFAULT);
-		static Color getColor(unsigned char type = TYPE_DEFAULT);
-		static Vec4f getColorVec4f(unsigned char type = TYPE_DEFAULT);
+		static void setColor(Vec4f color);
+		static void setColor(Color color);
+		static Color getColor();
+		static Vec4f getColorVec4f();
 
-		static void setFont(FontInterface* f, unsigned char type = TYPE_DEFAULT);
-		static FontInterface* getFont(unsigned char type = TYPE_DEFAULT);
+		static void setFont(FontInterface* f);
+		static FontInterface* getFont();
 
-		static void clear(unsigned char type = TYPE_DEFAULT);
+		static void clear();
 
-		static void drawRect(int x, int y, int x2, int y2, bool outline, unsigned char type = TYPE_DEFAULT);
-		static void drawLine(int x, int y, int x2, int y2, unsigned char type = TYPE_DEFAULT);
-		static void drawCircle(int x, int y, int radius, bool outline, unsigned char type = TYPE_DEFAULT);
-		static void drawEllipse(int x, int y, int xRad, int yRad, bool outline, unsigned char type = TYPE_DEFAULT);
+		static void drawRect(int x, int y, int width, int height, bool outline);
+		static void drawLine(int x, int y, int x2, int y2);
+		static void drawCircle(int x, int y, int radius, bool outline);
+		static void drawEllipse(int x, int y, int xRad, int yRad, bool outline);
 
-		static void drawSprite(ImageInterface* img, int x, int y, unsigned char type = TYPE_DEFAULT);
-		static void drawSprite(ImageInterface* img, int x1, int y1, int x2, int y2, unsigned char type = TYPE_DEFAULT);
-		static void drawSpritePart(ImageInterface* img, int x, int y, int imgX, int imgY, int imgW, int imgH, unsigned char type = TYPE_DEFAULT);
+		static void drawSprite(ImageInterface* img, int x, int y);
+		static void drawSprite(ImageInterface* img, int x1, int y1, int width, int height);
+		static void drawSpritePart(ImageInterface* img, int x, int y, int imgX, int imgY, int imgW, int imgH);
 
-		static void drawText(std::string str, int x, int y, unsigned char type = TYPE_DEFAULT);
-		static void drawText(std::wstring str, int x, int y, unsigned char type = TYPE_DEFAULT);
-
-		static void drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool canWrap, unsigned char type = TYPE_DEFAULT);
-		static void drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool canWrap, unsigned char type = TYPE_DEFAULT);
+		static void drawText(StringBridge strBridge, int x, int y);
+		static void drawTextHighlighted(StringBridge strBridge, int x, int y, int highlightStart, int highlightEnd, Color highlightColor);
+		static void drawTextHighlighted(StringBridge strBridge, int x, int y, int highlightStart, int highlightEnd, Vec4f highlightColor);
+		static void drawTextLimits(StringBridge strBridge, int x, int y, int maxWidth, int maxHeight, char wrapMode);
+		static void drawTextLimitsHighlighted(StringBridge strBridge, int x, int y, int maxWidth, int maxHeight, char wrapMode, int highlightStart, int highlightEnd, Color highlightColor);
+		static void drawTextLimitsHighlighted(StringBridge strBridge, int x, int y, int maxWidth, int maxHeight, char wrapMode, int highlightStart, int highlightEnd, Vec4f highlightColor);
 		
-		static void drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool canWrap, int highlightStart, int highlightEnd, Color highlightColor, unsigned char type = TYPE_DEFAULT);
-		static void drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool canWrap, int highlightStart, int highlightEnd, Color highlightColor, unsigned char type = TYPE_DEFAULT);
-		
-		static void drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool canWrap, int highlightStart, int highlightEnd, Vec4f highlightColor, unsigned char type = TYPE_DEFAULT);
-		static void drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool canWrap, int highlightStart, int highlightEnd, Vec4f highlightColor, unsigned char type = TYPE_DEFAULT);
-		
-		static void setClippingRect(Box2D b, unsigned char type = TYPE_DEFAULT);
+		static void setClippingRect(Box2D b);
 		static Box2D getClippingRect();
-		static void resetClippingPlane(unsigned char type = TYPE_DEFAULT);
+		static void resetClippingPlane();
 
-		static void drawSurface(SurfaceInterface* img, int x, int y, unsigned char type = TYPE_DEFAULT);
-		static void drawSurface(SurfaceInterface* img, int x1, int y1, int x2, int y2, unsigned char type = TYPE_DEFAULT);
+		static void drawSurface(SurfaceInterface* img, int x, int y);
+		static void drawSurface(SurfaceInterface* img, int x1, int y1, int width, int height); //TODO
 
-		static void drawToScreen(unsigned char type = TYPE_DEFAULT);
-		static void setProjection(Mat4f proj, unsigned char type = TYPE_DEFAULT);
-		static void setOrthoProjection(int width, int height, unsigned char type = TYPE_DEFAULT);
+		static void drawToScreen();
+		static void setProjection(Mat4f proj);
+		static void setOrthoProjection(int width, int height);
 
 		static Vec2f getTranslationFactor();
 		static void setTranslationFactor(Vec2f v);
@@ -231,6 +228,7 @@ namespace smpl
 	private:
 
 		static unsigned char type;
+		static unsigned char defaultType;
 		static SurfaceInterface* boundSurface;
 		static FontInterface* boundFont;
 		static bool ownedFont;

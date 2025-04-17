@@ -1,0 +1,137 @@
+<SimpleGUI>
+    <SpriteResource id="BackgroundImg" src="GuiStuff/Background.png"/>
+    <SpriteResource id="CancelButtonImg" src="GuiStuff/CancelButton.png"/>
+    <SpriteResource id="SortAscImg" src="GuiStuff/SortAsc.png"/>
+    <SpriteResource id="SortDescImg" src="GuiStuff/SortDesc.png"/>
+    <SpriteResource id="CogWheelImg" src="Resources/CogWheel.png"/>
+    
+    <Sprite src="BackgroundImg"/>
+    <LayoutList>
+        <!-- SECTION HEADER -->
+        <LayoutList ID="WindowBar" margin="{16,16,0,0}" padding="{16,16,16,16}" border-color="red" border="{1,1,1,1}" direction="horizontal">
+            <Button margin="{8,0,8,0}" background-color="gray" ID="WindowBar_Edit" min-width="96" min-height="24">
+                <LayoutList margin="{auto,auto,auto,auto}">
+                    <Text ID="WindowBar_EditText" text="Insert"/>
+                </LayoutList>
+            </Button>
+
+            <Button margin="{8,0,8,0}" background-color="gray" ID="WindowBar_Search" min-width="96" min-height="24">
+            
+                <LayoutList margin="{auto,auto,auto,auto}">
+                    <Text text="Search"/>
+                </LayoutList>
+
+            </Button>
+
+            <Button margin="{8,0,8,0}" background-color="gray" ID="WindowBar_Upload" min-width="96" min-height="24">
+            
+                <LayoutList margin="{auto,auto,auto,auto}">
+                    <Text text="Upload Database"/>
+                </LayoutList>
+            </Button>
+
+            <Button margin="{8,0,8,0}" background-color="gray" ID="WindowBar_Help" min-width="96" min-height="24">
+            
+                <LayoutList margin="{auto, auto, auto, auto}">
+                    <Text text="Help"/>
+                </LayoutList>
+            </Button>
+            
+            <LayoutList margin="{8,0,8,0}" direction="vertical">
+                <LayoutList margin="{auto, auto, auto, auto}">
+                    <Text text="Inserting Entry" ID="WindowBar_Status1"/>
+                </LayoutList>
+
+                <LayoutList margin="{auto, auto, auto, auto}">
+                    <Text text="Test2.0" ID="WindowBar_Status2"/>
+                </LayoutList>
+            </LayoutList>
+        </LayoutList>
+
+        <!-- SECTION LEFT MAIN -->
+        <LayoutList margin="{16, 64, 0, 0}" padding="{28, 28, 28, 28}">
+            
+            <LayoutList margin="{4, 0, 0, 0}" padding="{4, 4, 4, 4}" direction="horizontal">
+                <Button ID="ModeSwitchID" min-width="16" min-height="16" visible="true">
+                    <Sprite src="CancelButtonImg"/>
+                </Button>
+                <Text ID="MessageID" text="ID: NULL"/>
+            </LayoutList>
+            
+            <LayoutList margin="{0, 8, 0, 0}" direction="horizontal">
+                <LayoutList margin="{auto, auto, auto, auto}">
+                    <Text text="Title: "/>
+                </LayoutList>
+                <TextBox ID="MessageTitleID" margin="{8, 0, 0, 0}" border-color="black" border="{1, 1, 1, 1}" min-width="256" max-width="256" backgroundColor="Gainsboro"/>
+            </LayoutList>
+<!-- 
+            <GuiDatePicker x="8" y="0" width="96" height="24" backgroundColor="Gainsboro" ID="MessageDateID">
+                <Text x="-8" y="-16" maxwidth="96" maxheight="24" text="Date: "/>
+            </GuiDatePicker>
+            -->
+
+            <!--Temporary replacement-->
+
+            <LayoutList margin="{0, 8, 0, 0}" direction="horizontal">
+                <LayoutList margin="{auto, auto, auto, auto}">
+                    <Text text="Date Recorded: "/>
+                </LayoutList>
+
+                <LayoutList margin="{4,4,4,4}" direction="horizontal">
+                    <TextBox margin="{4, 4, 4, 4}" border-color="black" border="{1, 1, 1, 1}" default-text="01/01/1900" min-width="64" max-width="64"/>
+                    <Button margin="{4, 4, 4, 4}" border-color="black" border="{1, 1, 1, 1}" >
+                        <Sprite src="CogWheelImg"/>
+                    </Button>
+                    <LayoutTable>
+                    </LayoutTable>
+                </LayoutList>
+            </LayoutList>
+
+            <!--End of Temporary replacement-->
+            
+
+            <LayoutList margin="{0, 8, 0, 0}" direction="horizontal">
+                <LayoutList margin="{auto, auto, auto, auto}">
+                    <Text text="Video Link: "/>
+                </LayoutList>
+                <TextBox ID="VideoMessageLinkID" margin="{8, 0, 0, 0}" border-color="black" border="{1, 1, 1, 1}" min-width="256" max-width="256" backgroundColor="Gainsboro" defaultText="https://"/>
+            </LayoutList>
+            
+            <LayoutList margin="{0, 8, 0, 0}" direction="horizontal">
+                <LayoutList margin="{auto, auto, auto, auto}">
+                    <Text text="Audio Link: "/>
+                </LayoutList>
+                <TextBox ID="AudioMessageLinkID" margin="{8, 0, 0, 0}" border-color="black" border="{1, 1, 1, 1}" min-width="256" max-width="256" backgroundColor="Gainsboro" defaultText="https://"/>
+            </LayoutList>
+            
+            <LayoutList margin="{0, 8, 0, 0}" direction="horizontal">
+                <LayoutList margin="{auto, 8, auto, 0}">
+                    <Text text="Description: "/>
+                </LayoutList>
+                <TextBox ID="MessageDescriptionID" margin="{8, 0, 0, 0}" border-color="black" border="{1, 1, 1, 1}" min-width="384" max-width="384" min-height="240" max-height="240" backgroundColor="Gainsboro" allow-linebreaks="true" can-wrap="true"/>
+            </LayoutList>
+
+        </LayoutList>
+    </LayoutList>
+
+    
+    <!-- SECTION RIGHT MAIN -->
+    <!-- <Button x="928" y="8" width="32" height="32" ID="SortStyle">
+        <Sprite src="GuiStuff/SortAsc.png" ID="sortImg1"/>
+        <Sprite visible="false" src="GuiStuff/SortDsc.png" ID="sortImg2"/>
+    </Button>
+    
+    <LayoutList x="960" y="0" spacing="1" isvertical="true" ID="DatabaseElementsList">
+        
+    </LayoutList>
+
+    <Button x="960" y="680" width="24" height="24" ID="PageMinusBut">
+        <Sprite x="4" y="4" src="GuiStuff/LeftArrow.png"/>
+    </Button>
+
+    <Text x="1088" y="680" maxwidth="96" maxheight="24" text="1" ID="PageNum"/>
+
+    <Button x="1216" y="680" width="24" height="24" ID="PagePlusBut">
+        <Sprite x="4" y="4" src="GuiStuff/RightArrow.png"/>
+    </Button> -->
+</SimpleGUI>

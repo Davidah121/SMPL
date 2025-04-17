@@ -500,11 +500,11 @@ namespace smpl
 		size_t sizeOfBaseImg = baseImg.getRows() * baseImg.getCols();
 
 		std::pair<double, double> minMaxValues = baseImg.minMaxValues();
-		double minIntensityBaseImg = minMaxValues.second;
-		double maxIntensityBaseImg = minMaxValues.first;
+		double minIntensityBaseImg = minMaxValues.first;
+		double maxIntensityBaseImg = minMaxValues.second;
 		
 		double desiredRange = maxIntensity - minIntensity;
-		double currentRange = minMaxValues.second - minMaxValues.first;
+		double currentRange = maxIntensityBaseImg - minIntensityBaseImg;
 		
 		readjustedMatrix = (baseImg.broadcastSubtract(minIntensityBaseImg) * (desiredRange/currentRange)).broadcastAdd(minIntensity);
 		return readjustedMatrix;
