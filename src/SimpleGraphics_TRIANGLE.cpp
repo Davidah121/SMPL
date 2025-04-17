@@ -6,7 +6,6 @@ namespace smpl
 
 	void SimpleGraphics::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline, Image* surf)
 	{
-		int currentComposite = compositeRule;
 		Image* otherImg;
 		if(surf==nullptr)
 			return;
@@ -37,27 +36,40 @@ namespace smpl
 			int minX = MathExt::min( {x1,x2,x3} );
 			int maxX = MathExt::max( {x1,x2,x3} );
 
-			minY = MathExt::clamp(minY, (int)SimpleGraphics::getClippingRect().getTopBound(), (int)SimpleGraphics::getClippingRect().getBottomBound());
-			maxY = MathExt::clamp(maxY, (int)SimpleGraphics::getClippingRect().getTopBound(), (int)SimpleGraphics::getClippingRect().getBottomBound());
+			int minXBound = MathExt::max((int)SimpleGraphics::getClippingRect().getLeftBound(), 0);
+			int minYBound = MathExt::max((int)SimpleGraphics::getClippingRect().getTopBound(), 0);
 			
-			minX = MathExt::clamp(minX, (int)SimpleGraphics::getClippingRect().getLeftBound(), (int)SimpleGraphics::getClippingRect().getRightBound());
-			maxX = MathExt::clamp(maxX, (int)SimpleGraphics::getClippingRect().getLeftBound(), (int)SimpleGraphics::getClippingRect().getRightBound());
+			int maxXBound = MathExt::min(surf->getWidth(), (int)clippingRect.getRightBound());
+			int maxYBound = MathExt::min(surf->getHeight(), (int)clippingRect.getBottomBound());
+
+
+			minY = MathExt::clamp(minY, minYBound, maxYBound);
+			maxY = MathExt::clamp(maxY, minYBound, maxYBound);
 			
-			//#pragma omp parallel for
+			minX = MathExt::clamp(minX, minXBound, maxXBound);
+			maxX = MathExt::clamp(maxX, minXBound, maxXBound);
+			
+			int approxArea = (maxX-minX)*(maxY-minY);
+			LARGE_ENOUGH_CLAUSE(approxArea)
+			#pragma omp parallel for
 			for(int y=minY; y<maxY; y++)
 			{
 				double xv1 = l1.solveForX(y+0.5);
 				double xv2 = l2.solveForX(y+0.5);
 				double xv3 = l3.solveForX(y+0.5);
 
-				std::vector<int> solvedVals = {(int)MathExt::round(xv1), (int)MathExt::round(xv2), (int)MathExt::round(xv3)};
-
-				Sort::insertionSort<int>(solvedVals.data(), 3, [](int a, int b) -> bool{
+				std::vector<double> solvedVals = {xv1, xv2, xv3};
+				Sort::insertionSort<double>(solvedVals.data(), 3, [](int a, int b) -> bool{
 					return a < b;
 				});
 
 				int startX = solvedVals[0];
 				int endX = solvedVals[1];
+				if(startX == INT_MIN)
+				{
+					startX = solvedVals[1];
+					endX = solvedVals[2];
+				}
 
 				startX = MathExt::clamp( startX, minX, maxX);
 				endX = MathExt::clamp( endX, minX, maxX);
@@ -66,33 +78,22 @@ namespace smpl
 				Color* endFill = startFill + (endX-startX);
 
 				//fill from cX1 to cX2
-				if(compositeRule == NO_COMPOSITE)
+				while(startFill < endFill)
 				{
-					while(startFill < endFill)
-					{
-						*startFill = activeColor;
-						startFill++;
-					}
-				}
-				else
-				{
-					while(startFill < endFill)
-					{
-						Color destColor = *startFill;
-						Color finalColor = blend(activeColor, destColor);
-						*startFill = finalColor;
+					Color destColor = *startFill;
+					Color finalColor = blend(activeColor, destColor);
+					*startFill = finalColor;
 
-						startFill++;
-					}
+					startFill++;
 				}
 			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 			
 		}
 	}
 
 	void SimpleGraphics::drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture, Image* surf)
 	{
-		int currentComposite = compositeRule;
 		Image* otherImg;
 		if(surf==nullptr)
 			return;
@@ -115,29 +116,42 @@ namespace smpl
 			int minX = (int)MathExt::min( {p1.x,p2.x,p3.x} );
 			int maxX = (int)MathExt::max( {p1.x,p2.x,p3.x} );
 
-			minY = MathExt::clamp(minY, (int)SimpleGraphics::getClippingRect().getTopBound(), (int)SimpleGraphics::getClippingRect().getBottomBound());
-			maxY = MathExt::clamp(maxY, (int)SimpleGraphics::getClippingRect().getTopBound(), (int)SimpleGraphics::getClippingRect().getBottomBound());
+			int minXBound = MathExt::max((int)SimpleGraphics::getClippingRect().getLeftBound(), 0);
+			int minYBound = MathExt::max((int)SimpleGraphics::getClippingRect().getTopBound(), 0);
 			
-			minX = MathExt::clamp(minX, (int)SimpleGraphics::getClippingRect().getLeftBound(), (int)SimpleGraphics::getClippingRect().getRightBound());
-			maxX = MathExt::clamp(maxX, (int)SimpleGraphics::getClippingRect().getLeftBound(), (int)SimpleGraphics::getClippingRect().getRightBound());
+			int maxXBound = MathExt::min(surf->getWidth(), (int)clippingRect.getRightBound());
+			int maxYBound = MathExt::min(surf->getHeight(), (int)clippingRect.getBottomBound());
+
+
+			minY = MathExt::clamp(minY, minYBound, maxYBound);
+			maxY = MathExt::clamp(maxY, minYBound, maxYBound);
 			
+			minX = MathExt::clamp(minX, minXBound, maxXBound);
+			maxX = MathExt::clamp(maxX, minXBound, maxXBound);
+			
+			int approxArea = (maxX-minX)*(maxY-minY);
 			double det = (p2.y-p3.y)*(p1.x-p3.x) + (p3.x-p2.x)*(p1.y-p3.y);
 			
-			//#pragma omp parallel for
+			LARGE_ENOUGH_CLAUSE(approxArea)
+			#pragma omp parallel for
 			for(int y=minY; y<maxY; y++)
 			{
 				double xv1 = l1.solveForX(y+0.5);
 				double xv2 = l2.solveForX(y+0.5);
 				double xv3 = l3.solveForX(y+0.5);
 
-				std::vector<int> solvedVals = {(int)MathExt::round(xv1), (int)MathExt::round(xv2), (int)MathExt::round(xv3)};
-
-				Sort::insertionSort<int>(solvedVals.data(), 3, [](int a, int b) -> bool{
+				std::vector<double> solvedVals = {xv1, xv2, xv3};
+				Sort::insertionSort<double>(solvedVals.data(), 3, [](int a, int b) -> bool{
 					return a < b;
 				});
 
 				int startX = solvedVals[0];
 				int endX = solvedVals[1];
+				if(startX == INT_MIN)
+				{
+					startX = solvedVals[1];
+					endX = solvedVals[2];
+				}
 
 				startX = MathExt::clamp( startX, minX, maxX);
 				endX = MathExt::clamp( endX, minX, maxX);
@@ -162,19 +176,10 @@ namespace smpl
 					int vInt = (int) MathExt::round(v * (texture->getHeight()));
 
 					Color c = texture->getPixel(uInt, vInt, false);
+					Color destColor = otherImg->getPixel(startX, y);
+					Color finalColor = blend(c, destColor);
 
-					if(compositeRule==NO_COMPOSITE)
-					{
-						otherImg->setPixel(startX, y, c);
-					}
-					else
-					{
-						Color destColor = otherImg->getPixel(startX, y);
-						Color finalColor = blend(c, destColor);
-
-						otherImg->setPixel(startX, y, finalColor);
-					}
-
+					otherImg->setPixel(startX, y, finalColor);
 					continue;
 				}
 
@@ -208,19 +213,12 @@ namespace smpl
 
 					Color c = texture->getPixel(uInt, vInt, true);
 					
-					if(currentComposite == NO_COMPOSITE)
-					{
-						*startFill = c;
-					}
-					else
-					{
-						*startFill = blend(c, *startFill);
-					}
-					
+					*startFill = blend(c, *startFill);
 					startFill++;
 					x++;
 				}
 			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 
 		}
 	}

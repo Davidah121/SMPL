@@ -4,18 +4,24 @@
 #include <vector>
 #include "Matrix.h"
 #include "SimpleXml.h"
+#include "SimpleSerialization.h"
 
 namespace smpl
 {
+    class ObjectiveFunction;
     class NeuralLayer;
     class NerualNetwork;
 
-    class NeuralLayer
+    class NeuralLayer : public SerializedObject
     {
     public:
+        virtual ~NeuralLayer();
         MatrixF feedForward(const MatrixF& input);
         virtual MatrixF derivative(const MatrixF& input) = 0;
 
+        void setPreviousLayer(NeuralLayer* layer);
+        void setNextLayer(NeuralLayer* layer);
+        
     protected:
         virtual MatrixF solve(const MatrixF& input) = 0;
         // virtual MatrixF backpropagation(const MatrixF& input) = 0;
@@ -23,8 +29,37 @@ namespace smpl
         NeuralLayer* previousLayer = nullptr;
         NeuralLayer* nextLayer = nullptr;
     private:
+
+    SERIALIZE_CLASS()
+    };
+    
+    class ObjectiveFunction : public SerializedObject
+    {
+    public:
+        virtual MatrixF evaluate(MatrixF expected, MatrixF actual) = 0;
+        virtual MatrixF derivative(MatrixF expected, MatrixF actual) = 0;
+        
+    SERIALIZE_CLASS()
     };
 
+    class LeastSquares : public ObjectiveFunction
+    {
+    public:
+        virtual MatrixF evaluate(MatrixF expected, MatrixF actual) = 0;
+        virtual MatrixF derivative(MatrixF expected, MatrixF actual) = 0;
+
+    SERIALIZE_SUPER_CLASS(ObjectiveFunction)
+    SERIALIZE_CLASS()
+    };
+    class LogLoss : public ObjectiveFunction
+    {
+    public:
+        virtual MatrixF evaluate(MatrixF expected, MatrixF actual) = 0;
+        virtual MatrixF derivative(MatrixF expected, MatrixF actual) = 0;
+
+    SERIALIZE_SUPER_CLASS(ObjectiveFunction)
+    SERIALIZE_CLASS()
+    };
     class InputLayer : public NeuralLayer
     {
     public:
@@ -35,6 +70,11 @@ namespace smpl
         MatrixF derivative(const MatrixF& input);
     private:
         //stuff needed to zscore probably
+        MatrixF mean;
+        MatrixF stddev;
+    
+    SERIALIZE_SUPER_CLASS(NeuralLayer)
+    SERIALIZE_CLASS()
     };
 
     class FullyConnectedLayer : public NeuralLayer
@@ -57,6 +97,9 @@ namespace smpl
         MatrixF solve(const MatrixF& input);
         MatrixF derivative(const MatrixF& input);
     private:
+    
+    SERIALIZE_SUPER_CLASS(NeuralLayer)
+    SERIALIZE_CLASS()
     };
 
     class TanhActivationLayer : public NeuralLayer
@@ -67,6 +110,9 @@ namespace smpl
         MatrixF solve(const MatrixF& input);
         MatrixF derivative(const MatrixF& input);
     private:
+    
+    SERIALIZE_SUPER_CLASS(NeuralLayer)
+    SERIALIZE_CLASS()
     };
 
     class LinearActivationLayer : public NeuralLayer
@@ -77,6 +123,9 @@ namespace smpl
         MatrixF solve(const MatrixF& input);
         MatrixF derivative(const MatrixF& input);
     private:
+    
+    SERIALIZE_SUPER_CLASS(NeuralLayer)
+    SERIALIZE_CLASS()
     };
 
     class ReluActivationLayer : public NeuralLayer
@@ -87,6 +136,9 @@ namespace smpl
         MatrixF solve(const MatrixF& input);
         MatrixF derivative(const MatrixF& input);
     private:
+    
+    SERIALIZE_SUPER_CLASS(NeuralLayer)
+    SERIALIZE_CLASS()
     };
 
     class StepActivationLayer : public NeuralLayer
@@ -97,8 +149,36 @@ namespace smpl
         MatrixF solve(const MatrixF& input);
         MatrixF derivative(const MatrixF& input);
     private:
+    
+    SERIALIZE_SUPER_CLASS(NeuralLayer)
+    SERIALIZE_CLASS()
     };
 
+
+    class NeuralNetwork : public SerializedObject
+    {
+    public:
+        NeuralNetwork();
+        ~NeuralNetwork();
+
+        void addNextLayer(NeuralLayer* layer);
+        
+        void run();
+        void train();
+
+        void setLearningRate(float lr);
+        float getLearningRate();
+
+        void setObjectiveFunction(ObjectiveFunction* of);
+
+        std::vector<NeuralLayer*>& getAllLayers();
+    private:
+        //some training/hyper parameters and junk.
+        float learningRate = 1;
+        std::vector<NeuralLayer*> layers;
+
+    SERIALIZE_CLASS()
+    };
     // class NeuralLayer
     // {
     // public:

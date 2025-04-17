@@ -1,5 +1,4 @@
 #pragma once
-
 #ifdef USE_OPENGL
 
 	#include "SimpleWindow.h"
@@ -124,11 +123,6 @@
 			
 		protected:
 			
-			static std::vector<GLWindow*> windowList;
-
-			static void removeWindowFromList(GLWindow* value);
-			static GLWindow* getWindowByHandle(size_t value);
-			
 			// //CHANGE WITH OTHER OS
 
 			// #ifdef LINUX
@@ -149,7 +143,6 @@
 			
 			void dispose();
 			
-			bool virtual threadRender();
 			void virtual threadRepaint();
 			void virtual finishResize();
 

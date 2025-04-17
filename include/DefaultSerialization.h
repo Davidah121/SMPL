@@ -5,6 +5,7 @@
 #include "DefaultSerialization_String.h"
 #include "DefaultSerialization_Map.h"
 #include "DefaultSerialization_Tuple.h"
+#include "DefaultSerialization_SerializedStreamableVector.h"
 
 #if __cplusplus >= 201703
 #include "DefaultSerialization_Any.h"

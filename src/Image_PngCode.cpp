@@ -42,6 +42,8 @@ namespace smpl
 
 		BinarySet compressedData;
 		int blocks = size / 0xFFFF;
+		if(blocks <= 0)
+			blocks = 1;
 		Compression::compressDeflate(&compressedData, data, size, blocks, 7, strongCompression);
 		
 		std::vector<unsigned char> binarySetBytes = compressedData.getByteRef();

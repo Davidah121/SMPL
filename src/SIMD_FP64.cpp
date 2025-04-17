@@ -1,5 +1,5 @@
 #include "SIMD_FP64.h"
-
+#include "SEML.h"
 #if (OPTI >= 1)
 unsigned long long SIMD_128_FP64::getSIMDBound(unsigned long long s)
 {
@@ -63,6 +63,10 @@ SIMD_128_FP64 SIMD_128_FP64::operator+(const SIMD_128_FP64& other) const
 SIMD_128_FP64 SIMD_128_FP64::operator-(const SIMD_128_FP64& other) const
 {
     return _mm_sub_pd(values, other.values);
+}
+SIMD_128_FP64 SIMD_128_FP64::operator-() const
+{
+    return SEML::negate(values); //should be slightly faster than 0 - values
 }
 SIMD_128_FP64 SIMD_128_FP64::operator*(const SIMD_128_FP64& other) const
 {

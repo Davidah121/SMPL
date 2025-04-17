@@ -2,6 +2,7 @@
 
 #ifdef _WIN32
 
+    #include "TargetVer.h"
     #include <Windows.h>
     #include <vector>
 

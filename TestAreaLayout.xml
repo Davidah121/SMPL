@@ -1,0 +1,5 @@
+<SimpleGUI>
+    <LayoutList>
+        <TextBox ID="MessageDescriptionID" margin="{8, 0, 0, 0}" border-color="black" border="{1, 1, 1, 1}" min-width="384" max-width="384" min-height="240" max-height="240" backgroundColor="Gainsboro" allow-linebreaks="true" can-wrap="true"/>
+    </LayoutList>
+</SimpleGUI>

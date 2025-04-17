@@ -111,6 +111,18 @@
             return height;
         }
 
+        
+        Image* GLTexture::toImage()
+        {
+            Image* imgPointer = new Image(width, height);
+            
+            glActiveTexture(0);
+            glBindTexture(GL_TEXTURE_2D, textureID);
+            glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgPointer->getPixels());
+            glBindTexture(GL_TEXTURE_2D, 0);
+            return imgPointer;
+        }
+
     }
     
 #endif

@@ -65,6 +65,11 @@ SIMD_128_8 SIMD_128_8::operator-(const SIMD_128_8& other) const
 {
     return _mm_sub_epi8(values, other.values);
 }
+SIMD_128_8 SIMD_128_8::operator-() const
+{
+    const __m128i allZero = _mm_set1_epi8(0);
+    return _mm_sub_epi8(allZero, values);
+}
 SIMD_128_8 SIMD_128_8::operator*(const SIMD_128_8& other) const
 {
     //convert to shorts -> multiply -> convert back

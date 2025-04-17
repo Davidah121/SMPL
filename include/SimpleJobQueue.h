@@ -139,7 +139,7 @@ namespace smpl
          *      The jobs start in order of priority (higher priority starts first)
          * 
          *      A minimum of 2 threads are used.
-         *      The maximum number of threads can be set
+         *          One to add jobs and such. One to run actual jobs
          * @param minThreads
          *      If the minThreads < 1, it starts with just 1 thread.
          *      Otherwise, these are the total number of threads that will always be allocated.

@@ -17,7 +17,22 @@ namespace smpl
 		 * 		The first and last points are end points and all other points are control points.
 		 */
 		BezierCurve();
+		
+		/**
+		 * @brief Construct a new Bezier Curve object from a set of points.
+		 * 		A Bezier Curve is a parametric curve valid from t=0 to t=1
+		 * 		The first and last points are end points and all other points are control points.
+		 * 		
+		 * @param points 
+		 */
+		BezierCurve(const std::vector<Vec2f>& points);
 
+		BezierCurve(const BezierCurve& other);
+		void operator=(const BezierCurve& other);
+
+		BezierCurve(BezierCurve&& other) noexcept;
+		void operator=(BezierCurve&& other) noexcept;
+		
 		/**
 		 * @brief Destroys a BezierCurve Object freeing its memory usage
 		 */
@@ -29,6 +44,16 @@ namespace smpl
 			const char* what() const noexcept { return "ERROR ON BLENDING POINTS"; }
 		};
 
+		void operator+=(Vec2f p);
+		void operator-=(Vec2f p);
+		void operator*=(float x);
+		void operator/=(float x);
+		
+		BezierCurve operator+(Vec2f p);
+		BezierCurve operator-(Vec2f p);
+		BezierCurve operator*(float x);
+		BezierCurve operator/(float x);
+		
 		/**
 		 * @brief Adds a point to the list of points for the Bezier Curve.
 		 * 		Note that duplicate points are allowed.
@@ -164,6 +189,15 @@ namespace smpl
 		Vec2f getDerivativeAt(double time);
 
 		/**
+		 * @brief Solves the second derivative of the curve at the given time. Just like for the 1st derivative,
+		 * 		any time value can be used even if outside the bounds [0,1]
+		 * 
+		 * @param time 
+		 * @return Vec2f 
+		 */
+		Vec2f getSecondDerivativeAt(double time);
+
+		/**
 		 * @brief Solves for the simple derivative of BezierCurve for the given time.
 		 * 		Note that any time value can be used even if outside of the bounds [0,1].
 		 * 		
@@ -211,15 +245,16 @@ namespace smpl
 		 * 		to p. 
 		 * 			i.e. length( b(t) - p ) is the smallest possible
 		 * 		In other words, find the closest point on the bezier curve to p.
-		 * 		This uses secant method to approximate the answer with a default of a maximum of 10 iterations.
+		 * 		This uses Newton's method to approximate the answer with a default of a maximum of 5 iterations.
 		 * 
+		 * 		Runtime = O(3N * Iterations) where N = total number of points
 		 * @param p 
 		 * @param maxIterations
-		 * 		The maximum number of iterations of secant method to use.
+		 * 		The maximum number of iterations of Newton's method to use.
 		 * 		Default value is 10.
 		 * @return double 
 		 */
-		double findTimeForMinDis(Vec2f p, unsigned int maxIterations = 10);
+		double findTimeForMinDis(Vec2f p, unsigned int maxIterations = 5);
 
 		/**
 		 * @brief Finds a time t in the range [0, 1] such that
@@ -227,16 +262,17 @@ namespace smpl
 		 * 		to p. 
 		 * 			i.e. length( b(t) - p ) is the smallest possible
 		 * 		In other words, find the closest point on the bezier curve to p.
-		 * 		This uses secant method to approximate the answer with a default of a maximum of 10 iterations.
+		 * 		This uses Newton's method to approximate the answer with a default of a maximum of 5 iterations.
 		 * 
+		 * 		Runtime = O(3N * Iterations) where N = total number of points
 		 * @param x 
 		 * @param y 
 		 * @param maxIterations
-		 * 		The maximum number of iterations of secant method to use.
-		 * 		Default value is 10.
+		 * 		The maximum number of iterations of Newton's method to use.
+		 * 		Default value is 5.
 		 * @return double 
 		 */
-		double findTimeForMinDis(double x, double y, unsigned int maxIterations = 10);
+		double findTimeForMinDis(double x, double y, unsigned int maxIterations = 5);
 
 		/**
 		 * @brief Clears all points from the BezierCurve's list of points
@@ -367,6 +403,7 @@ namespace smpl
 		Vec2f blendPointsRecursive(int start, int end, double time);
 		Vec2f blendPointsExplicit(double time);
 		Vec2f blendPointsDerivativeRecursive(int start, int end, double time);
+		Vec2f blendPointsSecondDerivativeRecursive(int start, int end, double time);
 		bool checkForPotentialSelfIntersection();
 		void subdivideTillNoIntersection(BezierCurve c, double t1, double t2, std::vector<BezierCurve>& outputCurves, std::vector<std::pair<double, double>>& outputTimes);
 	

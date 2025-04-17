@@ -439,7 +439,10 @@ void contourTest()
     }
     //make grayscale
 
-
+    Image* temp = s.getImage(0);
+    
+    // MatrixF threshMatrix = ComputerVision::imageToMatrix(s.getImage(0), 0);
+    // Image* derivativeImg = ComputerVision::matrixToImage(threshMatrix);
     Image* derivativeImg = SimpleGraphics::cannyEdgeFilter(s.getImage(0), 1, 0.05, 0.19);
     MatrixF threshMatrix = ComputerVision::imageToMatrix(derivativeImg, 0);
     Image* threshImg = ComputerVision::matrixToImage(threshMatrix);
@@ -558,7 +561,7 @@ void testGraph()
 
 void init(SimpleWindow* win)
 {
-    win->getGuiManager()->loadElementsFromFile("GuiLayoutFile_JustTextBox.xml");
+    win->getGuiManager()->loadElementsFromFile("GuiStuff/TextBoxLayout.xml");
 }
 
 #include <omp.h>
@@ -587,18 +590,374 @@ void testDrawFunctions()
     StringTools::println("TIME TAKEN: %llu", t2-t1);
 }
 
+#include "RawDataFormatter.h"
+#include "DefaultSerialization.h"
+#include "DefaultSerialization_SmartMemory.h"
+
+class TestObject : SerializedObject
+{
+public:
+    TestObject()
+    {
+        myValue = SmartMemory<int>::createDeleteOnLast(new int, 1);
+        *myValue = 38;
+    }
+    ~TestObject(){}
+private:
+    SmartMemory<int> myValue;
+
+SERIALIZE_CLASS(myValue);
+};
+
+void testSerializationQuick()
+{
+    bool doStuff = false;
+    SmartMemory<int> v1;
+    SmartMemory<Vec4f> v2;
+    SmartMemory<TestObject> v3;
+    
+    if(doStuff)
+    {
+        SerializedStreamableFile output = SerializedStreamableFile("testSerializeFile", SerializedStreamableFile::TYPE_WRITE);
+        RawDataFormatter rawFormatter = RawDataFormatter();
+
+        v1 = SmartMemory<int>::createDeleteOnLast(new int[4], 4);
+        v2 = SmartMemory<Vec4f>::createDeleteRights(new Vec4f, 1);
+        v1[0] = 1; v1[1] = 2; v1[2] = 4; v1[3] = 6;
+        v2->setValues(Vec4f(42.1, -32, 12.3, 1));
+        v3 = SmartMemory<TestObject>::createDeleteOnLast(new TestObject, 1);
+        
+        staticSerializeVar(output, rawFormatter, SERIALIZE(v1));
+        staticSerializeVar(output, rawFormatter, SERIALIZE(v2));
+        staticSerializeVar(output, rawFormatter, SERIALIZE(v3));
+
+        StringTools::println("OFFSET: %llu", output.size());
+        DeferredSerializedSmartMemory::serialize(output, rawFormatter);
+    }
+    else
+    {
+        SerializedStreamableFile input = SerializedStreamableFile("testSerializeFile", SerializedStreamableFile::TYPE_READ);
+        RawDataFormatter rawFormatter = RawDataFormatter();
+
+        input.seek(57);
+        DeferredSerializedSmartMemory::deserialize(input, rawFormatter);
+        input.seek(0);
+
+        staticDeserializeVar(input, rawFormatter, SERIALIZE(v1));
+        staticDeserializeVar(input, rawFormatter, SERIALIZE(v2));
+        staticDeserializeVar(input, rawFormatter, SERIALIZE(v3));
+
+        StringTools::println("%p", v1.getPointer());
+        StringTools::println("\t%llu", v1.getNumberOfElements());
+        StringTools::println("\t%d", v1.getDeleteRights());
+        StringTools::println("\t%d", v1.getIsArray());
+        StringTools::println("\t%d", v1.getWillDeleteOnLast());
+        
+        StringTools::println("\t\t%d", v1[0]);
+        StringTools::println("\t\t%d", v1[1]);
+        StringTools::println("\t\t%d", v1[2]);
+        StringTools::println("\t\t%d", v1[3]);
+
+        
+        StringTools::println("%p", v2.getPointer());
+        StringTools::println("\t%llu", v2.getNumberOfElements());
+        StringTools::println("\t%d", v2.getDeleteRights());
+        StringTools::println("\t%d", v2.getIsArray());
+        StringTools::println("\t%d", v2.getWillDeleteOnLast());
+        
+        StringTools::println("\t\t%.3f", v2->x);
+        StringTools::println("\t\t%.3f", v2->y);
+        StringTools::println("\t\t%.3f", v2->z);
+        StringTools::println("\t\t%.3f", v2->w);
+
+        
+        StringTools::println("%p", v3.getPointer());
+        StringTools::println("\t%llu", v3.getNumberOfElements());
+        StringTools::println("\t%d", v3.getDeleteRights());
+        StringTools::println("\t%d", v3.getIsArray());
+        StringTools::println("\t%d", v3.getWillDeleteOnLast());
+    }
+}
+
+// #include "NeuralNetwork.h"
+// void testMLStuff()
+// {
+
+// }
+
+void testLargeEnoughClause()
+{
+    Image surf = Image(32, 32);
+    // SimpleFile hybridOMPCSV = SimpleFile("hybridOMP.csv", SimpleFile::ASCII | SimpleFile::WRITE);
+    // for(int s=1; s<512; s++)
+    // {
+    //     size_t t1 = System::getCurrentTimeMicro();
+    //     SimpleGraphics::drawRect(0, 0, s, s, false, &surf);
+    //     size_t t2 = System::getCurrentTimeMicro();
+
+    //     hybridOMPCSV.writeString(StringTools::formatString("%d, %llu", s*s, t2-t1));
+    //     hybridOMPCSV.writeLineBreak();
+    // }
+    // hybridOMPCSV.close();
+
+    SimpleGraphics::setColor({0, 0, 0, 0});
+    for(int i=0; i<32; i++)
+        SimpleGraphics::drawRect(0, 0, 32, 32, false, &surf);
+    surf.savePNG("testForAlpha.png", true);
+    
+    // SimpleFile yesOMPCSV = SimpleFile("yesOMP.csv", SimpleFile::ASCII | SimpleFile::WRITE);
+    // for(int s=1; s<512; s++)
+    // {
+    //     size_t t1 = System::getCurrentTimeMicro();
+    //     SimpleGraphics::drawRectOMP(0, 0, s, s, false, &surf);
+    //     size_t t2 = System::getCurrentTimeMicro();
+
+    //     yesOMPCSV.writeString(StringTools::formatString("%d, %llu", s*s, t2-t1));
+    //     yesOMPCSV.writeLineBreak();
+    // }
+    // yesOMPCSV.close();
+
+}
+
+#define USE_OPENGL
+#include "ext/GLWindow.h"
+#include "ext/GLGraphics.h"
+
+GLSurface* surf = nullptr;
+bool test1 = false;
+void oglPaint(SimpleWindow* win)
+{
+    surf->bind();
+    GLGraphics::setClearColor(Vec4f(0, 0, 0, 0));
+    GLGraphics::clear(GLGraphics::COLOR_BUFFER);
+    GLGraphics::setDrawColor(Vec4f(1, 0, 0, 1));
+    GLGraphics::drawRectangle(32, 32, 32, 32, false);
+    // GLGraphics::drawCircle(64, 64, 32.0f, 12.0f);
+    // GLGraphics::drawEllipse(64, 64, 32.0f, 24.0f, false);
+    surf->unbind();
+
+    GLGraphics::drawSurface(0, 0, 1280, 720, surf);
+
+    if(test1 == false)
+    {
+        Image* imgP = surf->toImage();
+        imgP->savePNG("TestOGL.png");
+        delete imgP;
+    }
+    test1 = true;
+}
+void openGLTest()
+{
+    GuiManager::initDefaultLoadFunctions();
+    SimpleGraphics::init();
+    GraphicsInterface::setType(GraphicsInterface::TYPE_OPENGL);
+    GraphicsInterface::setDefaultType(GraphicsInterface::TYPE_OPENGL);
+    WindowOptions options;
+    options.initFunction = init;
+    GLWindow win = GLWindow("Title", 1280, 720, -1, -1, options);
+    GLGraphics::init();
+    // win.setPaintFunction(oglPaint);
+    // win.setActivateGui(false);
+
+    win.waitTillClose();
+}
+
+void testString2(const StringBridge& strB)
+{
+    StringTools::println("%s", strB.toPrintableFormat().c_str());
+}
+
+void testStringStuff()
+{
+    std::string str1 = "test";
+    std::wstring str2 = L"Test2.0";
+    std::u32string str3 = U"A bigg test";
+
+    StringBridge s = str1;
+    StringBridge s2 = "test1";
+    
+    StringBridge s3 = str2;
+    StringBridge s4 = "test2";
+    
+    StringBridge s5 = str3;
+    StringBridge s6 = "test3";
+
+    testString2(str1);
+    testString2(UnicodeStringBridge(str2));
+    testString2(str3);
+
+    testString2(s);
+    testString2(s2);
+    testString2(s3);
+    testString2(s4);
+    testString2(s5);
+    testString2(s6);
+}
+
+#include "VectorFont.h"
+void testFontStuff()
+{
+    SimpleGraphics::init();
+    Image img = Image(1024, 1024);
+    VectorFont f = VectorFont();
+    f.load("SVGFonts/ARIBLK.svg");
+
+    f.setFontSize(12);
+    SimpleGraphics::setFont(&f);
+    
+    SimpleGraphics::setColor({255, 255, 255, 255});
+    SimpleGraphics::clearImage(&img);
+
+    SimpleGraphics::setColor({0,0,0,255});
+    // VectorGraphic* v = f.getGraphic(f.getCharIndex(65));
+    // v->draw(&img);
+    SimpleGraphics::drawText("ABCabc", 0, 0, &img);
+
+    img.savePNG("FontTest.png");
+}
+
+#include "LCG.h"
+
+template<typename T>
+int64_t pivotData(T* data, int64_t size, int64_t indexOfPivot)
+{
+    int64_t i = -1;
+    int64_t j = size;
+    T pivotData = data[indexOfPivot];
+
+    while(true)
+    {
+        do
+        {
+            i++;
+        } while(data[i] < pivotData);
+        
+        do
+        {
+            j--;
+        } while(pivotData < data[j]);
+
+        if(i >= j)
+            break;
+        //swap
+        T temp = data[i];
+        data[i] = data[j];
+        data[j] = temp;
+    }
+
+    return j;
+}
+
+template<typename T>
+void quickSort(T* data, int64_t size)
+{
+    if(size <= 1)
+        return;
+    if(size == 2)
+    {
+        if(data[0] > data[1])
+        {
+            T temp = data[0];
+            data[0] = data[1];
+            data[1] = temp;
+        }
+        return;
+    }
+    //create pivot point.
+    int64_t pivotPoint = size/2;
+    int64_t finalLocationOfPivotIndex = pivotData(data, size, pivotPoint);
+
+    quickSort(data, finalLocationOfPivotIndex+1);
+    quickSort(data+finalLocationOfPivotIndex+1, size - (finalLocationOfPivotIndex+1));
+}
+
+
+/*
+    start from i==0 to i==size-1
+    pivot point is given to us
+
+    if data[i] < data[pivot point] && i < pivot point
+        do nothing. Its good
+    else if data[i] < data[pivot point] && i > pivot point
+        swap data
+    
+    if data[i] > data[pivot point] && i > pivot point
+        do nothing. Its good
+    else if data[i] > data[pivot point] && i < pivot point
+        swap data
+    
+    the assumption is that everything to the left is less than or equal
+
+*/
+
+void testSort()
+{
+    //generate 100 random numbers between 0 - 0xFFF
+    LCG numGenerator = LCG(time(nullptr));
+    std::vector<int> nums;
+    for(int i=0; i<100; i++)
+        nums.push_back(numGenerator.get() % 0xFFF);
+    
+    quickSort(nums.data(), nums.size());
+
+    for(int i=0; i<100; i++)
+        std::cout << nums[i] << std::endl;
+}
+
+void testBezierCurveProjection()
+{
+    BezierCurve b = BezierCurve();
+    b.addPoint(32, 32);
+    b.addPoint(96, 16);
+    b.addPoint(96, 96);
+    b.addPoint(64, 64);
+
+    MatrixF distanceMatrix = MatrixF(128, 128);
+    double thickness = 1;
+    for(int iterations=1; iterations<=5; iterations++)
+    {
+        for(int y=0; y<128; y++)
+        {
+            for(int x=0; x<128; x++)
+            {
+                double guessT = b.findTimeForMinDis(Vec2f(x, y), iterations);
+                Vec2f pointOnCurve = b.getFuctionAt(guessT);
+                double len = (pointOnCurve - Vec2f(x,y)).getLength();
+                distanceMatrix[y][x] = (thickness+1)-len / thickness;
+                distanceMatrix[y][x] = MathExt::clamp(distanceMatrix[y][x], 0.0f, 1.0f);
+            }
+        }
+
+        ComputerVision::readjustIntensity(distanceMatrix, 0, 1);
+        StringTools::println("DONE");
+    }
+    Image* img = ComputerVision::matrixToImage(distanceMatrix);
+    img->savePNG("TEST CURVE.png");
+    delete img;
+}
+
 int main(int argc, char** argv)
 {
+    // testSort();
+    // testFontStuff();
     // testGraph();
-    // openGLTest();
+    
+    openGLTest();
+
+    // testBezierCurveProjection();
+
     // contourTest();
-    testGuiPart2();
-    // testSmartMem();
+    // testGuiPart2();
+    // testSerializationQuick();
     // testDrawFunctions();
+    // testMLStuff();
+
+    // testStringStuff();
+    // testLargeEnoughClause();
 
     return 0;
 }
 
 //TODO: POLYGON TRIANGULATION, MAKE MANY OPERATIONS CONST&
-//TODO: ADD LARGE ENOUGH CLAUSE BEFORE APPLYING OPENMP
-//TODO: 
+//TODO: Redesign GraphicsInterface. Should be able to be expanded upon without modifying source code. Should be clear and consistent as to which type is being used. (no creating assets for the wrong type)
+//TODO: Adjust Gui Layout code. Should give information about content width and height even if that isn't the actual final width and height. This also means that even with overflow, content width and height can be larger than the maximum allowed width and height.

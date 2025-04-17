@@ -115,6 +115,7 @@ public:
 	//arithmetic
 	SIMD_128_16 operator+(const SIMD_128_16& other) const;
 	SIMD_128_16 operator-(const SIMD_128_16& other) const;
+	SIMD_128_16 operator-() const;
 	SIMD_128_16 operator*(const SIMD_128_16& other) const;
 	SIMD_128_16 operator/(const SIMD_128_16& other) const;
 	

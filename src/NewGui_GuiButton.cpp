@@ -13,17 +13,21 @@ namespace smpl
 
     }
     
-    void GuiButton::setOnClickFunction(std::function<void()> onClick)
+    void GuiButton::setOnClickFunction(std::function<void(GuiButton*, int button)> onClick)
     {
         onClickFunc = onClick;
     }
+    void GuiButton::setOnClickReleaseFunction(std::function<void(GuiButton*, int button, bool hovering)> onClickReleased)
+    {
+        onClickReleasedFunc = onClickReleased;
+    }
 
-    void GuiButton::setOnMouseInFunction(std::function<void()> onMouseIn)
+    void GuiButton::setOnMouseInFunction(std::function<void(GuiButton*)> onMouseIn)
     {
         onMouseInFunc = onMouseIn;
     }
 
-    void GuiButton::setOnMouseOutFunction(std::function<void()> onMouseOut)
+    void GuiButton::setOnMouseOutFunction(std::function<void(GuiButton*)> onMouseOut)
     {
         onMouseOutFunc = onMouseOut;
     }
@@ -65,7 +69,7 @@ namespace smpl
             if(hovering == false)
             {
                 if(onMouseInFunc != nullptr)
-                    onMouseInFunc();
+                    onMouseInFunc(this);
             }
             hovering = true;
         }
@@ -74,14 +78,45 @@ namespace smpl
             if(hovering == true)
             {
                 if(onMouseOutFunc != nullptr)
-                    onMouseOutFunc();
+                    onMouseOutFunc(this);
             }
             hovering = false;
         }
         
+        if(hovering)
+        {
+            int buttonPressed = -1;
+            if(Input::getMousePressed(Input::LEFT_MOUSE_BUTTON))
+                buttonPressed = Input::LEFT_MOUSE_BUTTON;
+            if(Input::getMousePressed(Input::MIDDLE_MOUSE_BUTTON))
+                buttonPressed = Input::MIDDLE_MOUSE_BUTTON;
+            if(Input::getMousePressed(Input::RIGHT_MOUSE_BUTTON))
+                buttonPressed = Input::RIGHT_MOUSE_BUTTON;
+            
+            if(buttonPressed != -1)
+            {
+                depressed = true;
+                if(onClickFunc != nullptr)
+                    onClickFunc(this, Input::LEFT_MOUSE_BUTTON);
+            }
+        }
         if(Input::getMousePressed(Input::LEFT_MOUSE_BUTTON) && hovering == true)
         {
             depressed = true;
+            if(onClickFunc != nullptr)
+                onClickFunc(this, Input::LEFT_MOUSE_BUTTON);
+        }
+        if(Input::getMousePressed(Input::RIGHT_MOUSE_BUTTON) && hovering == true)
+        {
+            depressed = true;
+            if(onClickFunc != nullptr)
+                onClickFunc(this, Input::RIGHT_MOUSE_BUTTON);
+        }
+        if(Input::getMousePressed(Input::MIDDLE_MOUSE_BUTTON) && hovering == true)
+        {
+            depressed = true;
+            if(onClickFunc != nullptr)
+                onClickFunc(this, Input::MIDDLE_MOUSE_BUTTON);
         }
         
 
@@ -113,12 +148,21 @@ namespace smpl
             }
         }
 
+        
+        int buttonReleased = -1;
         if(Input::getMouseUp(Input::LEFT_MOUSE_BUTTON))
+            buttonReleased = Input::LEFT_MOUSE_BUTTON;
+        if(Input::getMouseUp(Input::MIDDLE_MOUSE_BUTTON))
+            buttonReleased = Input::MIDDLE_MOUSE_BUTTON;
+        if(Input::getMouseUp(Input::RIGHT_MOUSE_BUTTON))
+            buttonReleased = Input::RIGHT_MOUSE_BUTTON;
+
+        if(buttonReleased != -1)
         {
-            if(hovering == true && depressed == true)
+            if(depressed == true)
             {
-                if(onClickFunc != nullptr)
-                    onClickFunc();
+                if(onClickReleasedFunc != nullptr)
+                    onClickReleasedFunc(this, buttonReleased, hovering);
             }
             
             if(depressed == true)

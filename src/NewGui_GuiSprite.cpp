@@ -56,6 +56,40 @@ namespace smpl
         }
     }
 
+    void GuiSprite::setMinWidth(int v)
+    {
+        minWidth = v;
+    }
+    void GuiSprite::setMaxWidth(int v)
+    {
+        maxWidth = v;
+    }
+    void GuiSprite::setMinHeight(int v)
+    {
+        minHeight = v;
+    }
+    void GuiSprite::setMaxHeight(int v)
+    {
+        maxHeight = v;
+    }
+
+    int GuiSprite::getMinWidth()
+    {
+        return minWidth;
+    }
+    int GuiSprite::getMaxWidth()
+    {
+        return maxWidth;
+    }
+    int GuiSprite::getMinHeight()
+    {
+        return minHeight;
+    }
+    int GuiSprite::getMaxHeight()
+    {
+        return maxHeight;
+    }
+
     void GuiSprite::layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight)
     {
         //update width and height of text. Do wrapping if necessary
@@ -70,20 +104,42 @@ namespace smpl
 
             if(isScalable)
             {
+                double allowedMaxWidth, allowedMaxHeight;
+
+                if(maxWidth < 0)
+                    allowedMaxWidth = MathExt::clamp(maximumWidth, minWidth, maximumWidth);
+                else
+                    allowedMaxWidth = MathExt::clamp(maximumWidth, minWidth, maxWidth);
+
+                if(maxHeight < 0)
+                    allowedMaxHeight = MathExt::clamp(maximumHeight, minHeight, maximumHeight);
+                else
+                    allowedMaxHeight = MathExt::clamp(maximumHeight, minHeight, maxHeight);
+
                 if(shouldMaintainAspectRatio)
                 {
-                    double scaleValue = MathExt::min((double)maximumWidth / width, (double)maximumHeight / height);
-                    maxWidth = width*scaleValue;
-                    maxHeight = height*scaleValue;
+                    double scaleValue = MathExt::min(allowedMaxWidth / width, allowedMaxHeight / height);
+                    
+                    scaledWidth = width*scaleValue;
+                    scaledHeight = height*scaleValue;
                 }
                 else
                 {
-                    double xScale = (double)maximumWidth / width;
-                    double yScale =  (double)maximumHeight / height;
-                    maxWidth = width*xScale;
-                    maxHeight = height*yScale;
+                    double xScale = allowedMaxWidth / width;
+                    double yScale =  allowedMaxHeight / height;
+
+                    scaledWidth = width*xScale;
+                    scaledHeight = height*yScale;
                 }
+
+                width = scaledWidth;
+                height = scaledHeight;
             }
+        }
+        else
+        {
+            width = 0;
+            height = 0;
         }
     }
 
@@ -143,7 +199,7 @@ namespace smpl
 
             if(isScalable)
             {
-                GraphicsInterface::drawSprite(&shallowCopy, getTrueX(), getTrueY(), getTrueX()+maxWidth, getTrueY()+maxHeight);
+                GraphicsInterface::drawSprite(&shallowCopy, getTrueX(), getTrueY(), scaledWidth, scaledHeight);
             }
             else
             {
@@ -196,6 +252,29 @@ namespace smpl
         if(pair != nullptr)
             shouldLoop = (pair->second == "true");
         attribs.remove(pair);
+
+        
+        pair = attribs.get("min-width");
+        if(pair != nullptr)
+            if(loadValueFromAttrib(minWidth, pair->second))
+                minWidth = -1;
+        attribs.remove(pair);
+        pair = attribs.get("min-height");
+        if(pair != nullptr)
+            if(loadValueFromAttrib(minHeight, pair->second))
+                minHeight = -1;
+        attribs.remove(pair);
+        pair = attribs.get("max-width");
+        if(pair != nullptr)
+            if(loadValueFromAttrib(maxWidth, pair->second))
+                maxWidth = -1;
+        attribs.remove(pair);
+        pair = attribs.get("max-height");
+        if(pair != nullptr)
+            if(loadValueFromAttrib(maxHeight, pair->second))
+                maxHeight = -1;
+        attribs.remove(pair);
+        
     }
 
     SmartMemory<GuiItem> GuiSprite::loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager)

@@ -1,4 +1,5 @@
 #include "SIMD_FP32.h"
+#include "SEML.h"
 
 #if (OPTI >= 1)
 unsigned long long SIMD_128_FP32::getSIMDBound(unsigned long long s)
@@ -63,6 +64,10 @@ SIMD_128_FP32 SIMD_128_FP32::operator+(const SIMD_128_FP32& other) const
 SIMD_128_FP32 SIMD_128_FP32::operator-(const SIMD_128_FP32& other) const
 {
     return _mm_sub_ps(values, other.values);
+}
+SIMD_128_FP32 SIMD_128_FP32::operator-() const
+{
+    return SEML::negate(values); //should be slightly faster than 0 - values
 }
 SIMD_128_FP32 SIMD_128_FP32::operator*(const SIMD_128_FP32& other) const
 {

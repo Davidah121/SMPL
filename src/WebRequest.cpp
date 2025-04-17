@@ -64,7 +64,7 @@ namespace smpl
 
 	void WebRequest::reset()
 	{
-		type = TYPE_UNKNOWN;
+		type = TYPE_SERVER;
 		bytesInHeader = 0;
 		header = "";
 		data.clear();
@@ -115,7 +115,7 @@ namespace smpl
 		else if(typeName == "TRACE")
 			type = TYPE_TRACE;
 		else
-			type = TYPE_UNKNOWN;
+			type = TYPE_SERVER;
 		
 		//url is everything between header and http version
 		//basically, stuff between the first space and the last space
@@ -191,10 +191,10 @@ namespace smpl
 		else
 		{
 			header = "";
-			this->type = TYPE_UNKNOWN;
+			this->type = TYPE_SERVER;
 		}
 
-		if(this->type != TYPE_UNKNOWN)
+		if(this->type != TYPE_SERVER)
 			url = data; //assume url is data
 		else
 			url = "";
@@ -222,17 +222,59 @@ namespace smpl
 	void WebRequest::addKeyValue(std::string k, std::string v)
 	{
 		//if its new, add k.size() + v.size() + 4
-		auto it = data.find(k);
-		if(it != data.end())
+
+		k = StringTools::toLowercase(k);
+		if(k == "cookies")
 		{
-			bytesInHeader -= it->second.size();
-			bytesInHeader += v.size();
-			it->second = v;
+			//special case
+			std::vector<std::string> split = StringTools::splitString(v, "; ", true);
+			for(std::string& splitPairs : split)
+			{
+				std::vector<std::string> cookiePair = StringTools::splitString(splitPairs, '=', true);
+				if(cookiePair.size() == 2)
+				{
+					addCookie({cookiePair[0], cookiePair[1]}); //no options
+				}
+			}
+		}
+		else if(k == "set-cookie")
+		{
+			//special case
+			//note that folded Set-Cookie is highly discouraged so it won't be added here yet
+			std::vector<std::string> split = StringTools::splitString(v, "; ", true);
+			std::pair<std::string, std::string> actualCookie;
+			std::vector<std::string> options;
+			for(int i=0; i<split.size(); i++)
+			{
+				if(i == 0)
+				{
+					std::vector<std::string> cookiePair = StringTools::splitString(split[i], '=', true);
+					if(cookiePair.size() == 2)
+					{
+						actualCookie = {cookiePair[0], cookiePair[1]};
+					}
+				}
+				else
+				{
+					options.push_back(split[i]);
+				}
+			}
+			addCookie(actualCookie, options);
 		}
 		else
 		{
-			data[k] = v;
-			bytesInHeader += k.size() + v.size() + 4;
+			auto it = data.find(k);
+			if(it != data.end())
+			{
+				bytesInHeader -= it->second.size();
+				bytesInHeader += v.size();
+				it->second = v;
+			}
+			else
+			{
+				data[k] = v;
+				bytesInHeader += k.size() + v.size() + 4;
+			}
 		}
 	}
 
@@ -254,6 +296,26 @@ namespace smpl
 		return bytesInHeader;
 	}
 
+	bool WebRequest::addCookie(std::pair<std::string, std::string> keyValuePair, std::vector<std::string> options)
+	{
+		if(WebRequest::isValidCookieFormat(keyValuePair.first) && WebRequest::isValidCookieFormat(keyValuePair.second))
+		{
+			cookieMap.insert({keyValuePair.first, {keyValuePair.second, options}});
+			return true;
+		}
+		return false;
+	}
+
+	std::pair<std::string, std::string> WebRequest::getCookie(std::string key)
+	{
+		auto it = cookieMap.find(key);
+		if(it != cookieMap.end())
+		{
+			return {it->first, it->second.first};
+		}
+		return {};
+	}
+	
 	std::string WebRequest::getRequestAsString()
 	{
 		std::string buffer;
@@ -265,6 +327,28 @@ namespace smpl
 		for(auto it = data.begin(); it != data.end(); it++)
 		{
 			buffer += it->first + ": " + it->second + "\r\n";
+		}
+
+		//add cookies
+		if(type == TYPE_SERVER)
+		{
+			for(auto& it : cookieMap)
+			{
+				buffer += "Set-Cookie: " + it.first + "=" + it.second.first + ";";
+				for(auto& option : it.second.second)
+				{
+					buffer += option + ";";
+				}
+				buffer += "\r\n";
+			}
+		}
+		else
+		{
+			for(auto& it : cookieMap)
+			{
+				buffer += "Cookie: " + it.first + "=" + it.second.first + "; ";
+			}
+			buffer += "\r\n";
 		}
 		buffer += "\r\n";
 
@@ -301,6 +385,21 @@ namespace smpl
 
         return strBuffer.str();
     }
+
+	
+	bool WebRequest::isValidCookieFormat(std::string v)
+	{
+		//abdefghijklmnqrstuvxyzABDEFGHIJKLMNQRSTUVXYZ0123456789!#$%&'()*+-./:<>?@[]^_`{|}~
+		for(char& c : v)
+		{
+			//can't guarantee that the characters above 127 are safe to use
+			if(c <= 32 || c==';' || c== '=' || c == '\\' || c==',' || c > 127)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
 
 	const std::unordered_map<std::string, std::string> WebRequest::mimeTypes = {
         {"aac", "audio/aac"},

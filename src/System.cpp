@@ -31,8 +31,6 @@
 
 	#include <Psapi.h>
 	#include <Pdh.h>
-	#pragma comment(lib, "Pdh.lib")
-	#pragma comment(lib, "Winmm.lib")
 #endif
 
 

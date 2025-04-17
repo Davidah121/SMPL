@@ -133,7 +133,7 @@ namespace smpl
 		if(toPoint.y!=0)
 			return (slopeRelY*y) + xInt;
 		else
-			return point1.x;
+			return NAN;
 	}
 
 	double Line::solveForY(double x)
@@ -141,7 +141,7 @@ namespace smpl
 		if(toPoint.x!=0)
 			return (slope*x) + yInt;
 		else
-			return point1.y;
+			return NAN;
 	}
 
 	void Line::setSlopeStuff()

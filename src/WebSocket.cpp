@@ -420,7 +420,7 @@ namespace smpl
 
 		//Form HTTP Response
 		WebRequest response = WebRequest();
-		response.setHeader(WebRequest::TYPE_UNKNOWN, "HTTP/1.1 101 Switching Protocols", false);
+		response.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 101 Switching Protocols", false);
 		response.addKeyValue("Connection", "Upgrade");
 		response.addKeyValue("Upgrade", "websocket");
 

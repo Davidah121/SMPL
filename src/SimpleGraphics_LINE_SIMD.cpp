@@ -6,8 +6,6 @@ namespace smpl
 
 	void SimpleGraphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 	{
-		// int currentComposite = compositeRule;
-
 		if (surf != nullptr)
 		{
 			if(x1==x2 && y1==y2)

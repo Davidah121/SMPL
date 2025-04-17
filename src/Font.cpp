@@ -115,6 +115,80 @@ namespace smpl
 		return index;
 	}
 
+	std::vector<FontCharBoxInfo> Font::getAllCharBoxes(StringBridge textBridge, unsigned int maxWidth, char wrapMode)
+	{
+		size_t lastWordIndex = 0;
+		std::vector<FontCharBoxInfo> output;
+		int currX = 0;
+		int currW = 0;
+		int currY = 0;
+		int lastChar = 0;
+		bool doneWordWrap = false;
+		std::u32string text = textBridge.getData();
+		for(size_t i=0; i<text.size(); i++)
+		{
+			if(text[i] == '\n')
+			{
+				lastChar = '\n';
+				doneWordWrap = false;
+				lastWordIndex = output.size();
+				currX = 0;
+				currW = 0;
+				currY += getVerticalAdvance();
+				continue;
+			}
+
+			size_t actualIndex = getCharIndex(text[i]);
+			if(actualIndex == SIZE_MAX)
+			{
+				continue;
+			}
+			FontCharInfo fci = getFontCharInfo(actualIndex);
+
+			if(lastChar == ' ' && fci.unicodeValue > ' ')
+			{
+				doneWordWrap = false;
+				lastWordIndex = output.size();
+			}
+			lastChar = fci.unicodeValue;
+
+			if(currW + fci.width >= maxWidth && wrapMode != NO_WRAP)
+			{
+				if(wrapMode == WORD_WRAP && !doneWordWrap)
+				{
+					//move the entire word down. If it is still in violation, move the next character down
+					int offsetX = output[lastWordIndex].boundingBox.getLeftBound();
+					int tempW = 0;
+					currY += getVerticalAdvance();
+					for(size_t j=lastWordIndex; j<output.size(); j++)
+					{
+						output[j].boundingBox.setLeftBound(output[j].boundingBox.getLeftBound() - offsetX);
+						output[j].boundingBox.setRightBound(output[j].boundingBox.getRightBound() - offsetX);
+						output[j].boundingBox.setTopBound(output[j].boundingBox.getTopBound() + getVerticalAdvance());
+						output[j].boundingBox.setBottomBound(output[j].boundingBox.getBottomBound() + getVerticalAdvance());
+						output[j].rowStartPosition = currY;
+						tempW += output[j].boundingBox.getWidth();
+					}
+					doneWordWrap = true;
+				}
+				else if(wrapMode == CHARACTER_WRAP || doneWordWrap)
+				{
+					//simply move the next character over.
+					currX = 0;
+					currW = 0;
+					currY += getVerticalAdvance();
+				}
+			}
+
+			if(fci.width > 0 && fci.height > 0)
+				output.push_back({i, currY, Box2D(currX+fci.xOffset, currY+fci.yOffset, currX+fci.xOffset+fci.width, currY+fci.yOffset+fci.height)});
+
+			currX += fci.horizAdv;
+			currW += fci.horizAdv;
+		}
+		return output;
+	}
+
 	Image* Font::getImage(size_t index)
 	{
 		return nullptr;
@@ -141,266 +215,52 @@ namespace smpl
 		return (int)MathExt::round(verticalAdv*scaleVal);
 	}
 
-	Box2D Font::getBoundingBox(std::string text, int maxWidth, int maxHeight)
+	Box2D Font::getBoundingBox(StringBridge textBridge, unsigned int maxWidth, char wrapMode)
 	{
 		int totalWidth = 0;
-		int currWidth = 0;
-		int currHeight = 0;
-		
-		for(size_t i=0; i<text.size(); i++)
+		int totalHeight = 0;
+
+		auto allBoxes = getAllCharBoxes(textBridge, maxWidth, wrapMode);
+
+		for(FontCharBoxInfo& boxPair : allBoxes)
 		{
-			//Oddly, skipping over invalid characters messes up the calculations
-			//Likely due to how the width and heights are calculated.
-			//TODO - FIX SO THAT SKIPPING INVALID CHARACTER INDICES WORKS
-
-			size_t charIndex = this->getCharIndex(text[i]);
-			FontCharInfo fci = this->getFontCharInfo(charIndex);
-			
-			int newWidth = currWidth + fci.width;
-			if( (newWidth > maxWidth && maxWidth > 0) || text[i] == '\n')
-			{
-				currWidth = 0;
-				currHeight += this->getVerticalAdvance();
-
-				if(maxHeight >= 0)
-				{
-					if(currHeight >= maxHeight)
-					{
-						break;
-					}
-				}
-
-				if(text[i] == '\n')
-				{
-					continue;
-				}
-			}
-
-			//Width may have changed
-			newWidth = currWidth + fci.width;
-			totalWidth = MathExt::max(totalWidth, newWidth);
-
-			currWidth += fci.horizAdv;
-			
-			if(i == text.size()-1)
-				totalWidth = MathExt::max(totalWidth, newWidth);
+			totalWidth = MathExt::max<int>(boxPair.boundingBox.getRightBound(), totalWidth);
+			totalHeight = MathExt::max<int>(boxPair.rowStartPosition + getVerticalAdvance(), totalHeight);
 		}
 		
-		totalWidth = MathExt::max(totalWidth, currWidth);
-
-		return Box2D(0, 0, totalWidth, currHeight+this->getVerticalAdvance());
+		return Box2D(0, 0, totalWidth, totalHeight);
 	}
 
-	Box2D Font::getBoundingBox(std::wstring text, int maxWidth, int maxHeight)
+	size_t Font::getSelectIndex(StringBridge textBridge, unsigned int maxWidth, char wrapMode, int x, int y)
 	{
-		int totalWidth = 0;
-		int currWidth = 0;
-		int currHeight = 0;
-
-		for(size_t i=0; i<text.size(); i++)
-		{
-			//Oddly, skipping over invalid characters messes up the calculations
-			//Likely due to how the width and heights are calculated.
-			//TODO - FIX SO THAT SKIPPING INVALID CHARACTER INDICES WORKS
-
-			size_t charIndex = this->getCharIndex(text[i]);
-			FontCharInfo fci = this->getFontCharInfo(charIndex);
-			
-			int newWidth = currWidth + fci.width;
-			if( (newWidth > maxWidth && maxWidth > 0) || text[i] == L'\n')
-			{
-				currWidth = 0;
-				currHeight += this->getVerticalAdvance();
-
-				if(maxHeight >= 0)
-				{
-					if(currHeight >= maxHeight)
-					{
-						break;
-					}
-				}
-
-				if(text[i] == L'\n')
-				{
-					continue;
-				}
-			}
-
-			//Width may have changed
-			newWidth = currWidth + fci.width;
-			totalWidth = MathExt::max(totalWidth, newWidth);
-
-			currWidth += fci.horizAdv;
-			
-			if(i == text.size()-1)
-				totalWidth = MathExt::max(totalWidth, newWidth);
-		}
-		
-		totalWidth = MathExt::max(totalWidth, currWidth);
-
-		return Box2D(0, 0, totalWidth, currHeight+this->getVerticalAdvance());
-	}
-
-	size_t Font::getSelectIndex(std::string text, int maxWidth, int x, int y)
-	{
-		int currWidth = 0;
-		int currHeight = 0;
-
 		if(x < 0 || y < 0)
 			return SIZE_MAX;
 		if(x >= maxWidth)
 			return SIZE_MAX;
 
 		size_t currIndex = 0;
+		auto allBoxes = getAllCharBoxes(textBridge, maxWidth, wrapMode);
 
-		for(size_t i=0; i<text.size(); i++)
+		unsigned int topY = 0;
+		unsigned int bottomY = getVerticalAdvance();
+
+		size_t potentialSelectIndex = 0;
+
+		for(FontCharBoxInfo& boxPair : allBoxes)
 		{
-			size_t charIndex = this->getCharIndex(text[i]);
-			FontCharInfo fci = this->getFontCharInfo(charIndex);
+			topY = boxPair.rowStartPosition;
+			bottomY = topY + getVerticalAdvance();
 
-			//y strictly less than currHeight even with the vertical advance. Can quit early
-			if(y < currHeight)
+			if(y > bottomY || y < topY)
+				continue;
+			
+			if(x >= boxPair.boundingBox.getLeftBound())
+				potentialSelectIndex = boxPair.charIndex;
+			else
 				break;
-			
-			int newWidth = currWidth + fci.width;
-
-			if( (newWidth > maxWidth && maxWidth > 0) || text[i] == '\n')
-			{
-				currWidth = 0;
-				currHeight += this->getVerticalAdvance();
-				if(text[i] == '\n')
-				{
-					continue;
-				}
-			}
-			
-			//currWidth may have updated
-			newWidth = currWidth + fci.width;
-			
-			//case 1. X > newWidth
-			if(newWidth <= x && y < currHeight + this->getVerticalAdvance())
-				currIndex = i+1;
-			
-			//case 2. Y > currHeight
-			if(y > currHeight + this->getVerticalAdvance())
-				currIndex = i+1;
-			
-			//adjust stuff.
-			currWidth += fci.horizAdv;
 		}
-
-		return currIndex;
-	}
-
-	size_t Font::getSelectIndex(std::wstring text, int maxWidth, int x, int y)
-	{
-		int currWidth = 0;
-		int currHeight = 0;
-
-		if(x < 0 || y < 0)
-			return SIZE_MAX;
-		if(x >= maxWidth)
-			return SIZE_MAX;
-
-		size_t currIndex = 0;
-
-		for(size_t i=0; i<text.size(); i++)
-		{
-			size_t charIndex = this->getCharIndex(text[i]);
-			FontCharInfo fci = this->getFontCharInfo(charIndex);
-
-			//y strictly less than currHeight even with the vertical advance. Can quit early
-			if(y + this->getVerticalAdvance() < currHeight)
-				break;
-			
-			int newWidth = currWidth + fci.width;
-
-			if( (newWidth >= maxWidth && maxWidth > 0) || text[i] == L'\n')
-			{
-				currWidth = 0;
-				currHeight += this->getVerticalAdvance();
-				if(text[i] == '\n')
-				{
-					continue;
-				}
-			}
-			
-			//currWidth may have updated
-			newWidth = currWidth + fci.width;
-			
-			//case 1. X > newWidth
-			if(newWidth < x && y < currHeight + this->getVerticalAdvance())
-				currIndex = i+1;
-			
-			//case 2. Y > currHeight
-			if(y > currHeight + this->getVerticalAdvance())
-				currIndex = i+1;
-			
-			//adjust stuff.
-			currWidth += fci.horizAdv;
-		}
-
-		return currIndex;
-	}
-
-	Vec2f Font::getCursorLocation(std::string text, size_t charIndex, int maxWidth)
-	{
-		int currWidth = 0;
-		int currHeight = 0;
 		
-		size_t actualSize = MathExt::clamp<size_t>(charIndex, 0, text.size());
-
-		for(size_t i=0; i<actualSize; i++)
-		{
-			size_t charIndex = this->getCharIndex(text[i]);
-			FontCharInfo fci = this->getFontCharInfo(charIndex);
-
-			int newWidth = currWidth + fci.width;
-			if((newWidth >= maxWidth && maxWidth > 0) || text[i] == '\n')
-			{
-				currWidth = 0;
-				currHeight += this->getVerticalAdvance();
-				
-				if(text[i] == '\n')
-				{
-					continue;
-				}
-			}
-			
-			currWidth += fci.horizAdv;
-		}
-
-		return Vec2f(currWidth, currHeight);
-	}
-
-	Vec2f Font::getCursorLocation(std::wstring text, size_t charIndex, int maxWidth)
-	{
-		int currWidth = 0;
-		int currHeight = 0;
-		
-		size_t actualSize = MathExt::clamp<size_t>(charIndex, 0, text.size());
-
-		for(size_t i=0; i<actualSize; i++)
-		{
-			size_t charIndex = this->getCharIndex(text[i]);
-			FontCharInfo fci = this->getFontCharInfo(charIndex);
-
-			int newWidth = currWidth + fci.width;
-			if((newWidth >= maxWidth && maxWidth > 0) || text[i] == L'\n')
-			{
-				currWidth = 0;
-				currHeight += this->getVerticalAdvance();
-				
-				if(text[i] == L'\n')
-				{
-					continue;
-				}
-			}
-			
-			currWidth += fci.horizAdv;
-		}
-
-		return Vec2f(currWidth, currHeight);
+		return potentialSelectIndex;
 	}
 
 	void Font::addChar(FontCharInfo a)

@@ -2,25 +2,24 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "(MVSC) Debug Launch",
-			"type": "cppvsdbg",
+			"name": "(LLVM) Debug Launch",
+			"type": "lldb",
 			"request": "launch",
 			"program": "${workspaceFolder}/bin/Debug/Smpl.exe",
 			"args": [],
-			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",
-			"environment": [],
-			"console": "integratedTerminal"
+			"console": "integratedTerminal",
+            "initCommands": [
+                "command script import ${workspaceRoot}/debugvis.py" // <<<<< This is the important bit
+            ]
 		},
 		{
-			"name": "(MVSC) Release Launch",
-			"type": "cppvsdbg",
+			"name": "(LLVM) Release Launch",
+			"type": "lldb",
 			"request": "launch",
 			"program": "${workspaceFolder}/bin/Release/Smpl.exe",
 			"args": [],
-			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",
-			"environment": [],
 			"console": "integratedTerminal"
 		},
 		{

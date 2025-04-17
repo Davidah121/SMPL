@@ -556,16 +556,25 @@
             }
         }
 
-        void DXGraphics::drawText(std::string text, double x, double y, DXFont* fontPointer)
+        void DXGraphics::drawText(StringBridge text, double x, double y, DXFont* fontPointer)
         {
-            DXGraphics::drawText(StringTools::toWideString(text), x, y, fontPointer);
+            DXGraphics::drawTextLimitsHighlighted(text, x, y, -1, -1, Font::NO_WRAP, -1, -1, Vec4f(), fontPointer);
+        }
+        void DXGraphics::drawTextHighlighted(StringBridge text, double x, double y, int highlightStart, int highlightEnd, Vec4f highlightColor, DXFont* fontPointer)
+        {
+            DXGraphics::drawTextLimitsHighlighted(text, x, y, -1, -1, Font::NO_WRAP, highlightStart, highlightEnd, highlightColor, fontPointer);
+        }
+        
+        void DXGraphics::drawTextLimits(StringBridge text, double x, double y, double maxWidth, double maxHeight, char wrapMode, DXFont* fontPointer)
+        {
+            DXGraphics::drawTextLimitsHighlighted(text, x, y, maxWidth, maxHeight, wrapMode, -1, -1, Vec4f(), fontPointer);
         }
 
-        void DXGraphics::drawText(std::wstring text, double x, double y, DXFont* fontPointer)
+        void DXGraphics::drawTextLimitsHighlighted(StringBridge text, double x, double y, double maxWidth, double maxHeight, char wrapMode, int highlightStart, int highlightEnd, Vec4f highlightColor, DXFont* fontPointer)
         {
             if(!hasInit)
                 return; //throw error
-            
+
             DXFont* f;
             if(fontPointer!=nullptr)
                 f = fontPointer;
@@ -574,7 +583,7 @@
             
             if(f == nullptr)
                 return;
-
+            
             //setup shader
             Mat4f modelMatrix = Mat4f::getIdentity();
 
@@ -601,217 +610,61 @@
             StaticUniformBuffer staticBuffer;
             orthoMat.fillArray(staticBuffer.projectionMatrix);
             textShader->setUniformData(&staticBuffer, sizeof(StaticUniformBuffer), 0, DXShader::TYPE_VERTEX);
-
             
             MatrixUniformBuffer modelBuffer;
             
-            //draw models
-            double currX = x;
-            double currY = y;
+            std::u32string str = text.getData();
+            auto boxes = f->getAllCharBoxes(str, maxWidth, wrapMode);
             DXTexture* oldTexture = nullptr;
-            for(int i=0; i<text.length(); i++)
+
+            for(auto boxPair : boxes)
             {
-                int charIndex = f->getCharIndex(text[i]);
+                int charIndex = f->getCharIndex(str[boxPair.second]);
                 DXTexture* charTexture = f->getTexture(charIndex);
                 DXModel* charModel = f->getModel(charIndex);
                 FontCharInfo fci = f->getFontCharInfo(charIndex);
-
                 if(charModel == nullptr)
                 {
                     continue;
                 }
 
-                if(text[i] == '\n')
-                {
-                    currX = x;
-                    currY += f->getVerticalAdvance();
-                    continue;
-                }
+                if(boxPair.first.getRightBound() > maxWidth && maxWidth > 0)
+				{
+					fci.width = maxWidth - boxPair.first.getRightBound();
+				}
+				if(boxPair.first.getBottomBound() > maxHeight && maxHeight > 0)
+				{
+					fci.height = maxHeight - boxPair.first.getBottomBound();
+				}
 
-                if(text[i] == ' ')
-                {
-                    currX += fci.horizAdv;
-                    continue;
-                }
+				if(str[boxPair.second] != ' ')
+				{
+                    modelMatrix[0][3] = x + boxPair.first.getLeftBound();
+                    modelMatrix[1][3] = y + boxPair.first.getTopBound();
 
-                modelMatrix[0][3] = currX+fci.xOffset;
-                modelMatrix[1][3] = currY+fci.yOffset;
-                
-                modelMatrix.fillArray(modelBuffer.modelMatrix);
-                textShader->setUniformData(&modelBuffer, sizeof(MatrixUniformBuffer), 1, DXShader::TYPE_VERTEX);
-
-                if(charTexture != oldTexture)
-                    charTexture->bind();
-
-                charModel->draw();
-                
-                currX += fci.horizAdv;
-                oldTexture = charTexture;
-            }
-            
-            DXShader::deactivateCurrentShader();
-        }
-
-        void DXGraphics::drawTextLimits(std::string text, double x, double y, double maxWidth, double maxHeight, bool useLineBreak, DXFont* fontPointer)
-        {
-            DXGraphics::drawTextLimitsHighlighted( StringTools::toWideString(text), x, y, maxWidth, maxHeight, useLineBreak, -1, -1, Vec4f(), fontPointer);
-        }
-
-        void DXGraphics::drawTextLimits(std::wstring text, double x, double y, double maxWidth, double maxHeight, bool useLineBreak, DXFont* fontPointer)
-        {
-            DXGraphics::drawTextLimitsHighlighted( StringTools::toWideString(text), x, y, maxWidth, maxHeight, useLineBreak, -1, -1, Vec4f(), fontPointer);
-        }
-
-        void DXGraphics::drawTextLimitsHighlighted(std::string text, double x, double y, double maxWidth, double maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Vec4f highlightColor, DXFont* fontPointer)
-        {
-            DXGraphics::drawTextLimitsHighlighted( StringTools::toWideString(text), x, y, maxWidth, maxHeight, useLineBreak, highlightStart, highlightEnd, highlightColor, fontPointer);
-        }
-
-        void DXGraphics::drawTextLimitsHighlighted(std::wstring text, double x, double y, double maxWidth, double maxHeight, bool useLineBreak, int highlightStart, int highlightEnd, Vec4f highlightColor, DXFont* fontPointer)
-        {
-            if(!hasInit)
-                return; //throw error
-            
-            DXFont* f;
-            if(fontPointer!=nullptr)
-                f = fontPointer;
-            else
-                f = activeFont;
-            
-            if(f == nullptr)
-                return;
-
-            //setup shader
-            Mat4f modelMatrix = Mat4f::getIdentity();
-
-            Vec4f oldDrawColor = drawColor;
-            textShader->setAsActive();
-            struct StaticUniformBuffer
-            {
-                float projectionMatrix[16];
-            };
-            struct ColorBuffer
-            {
-                float activeColor[4];
-            };
-
-            ColorBuffer colBuffer;
-
-            drawColor.fillArray(colBuffer.activeColor);
-            textureShader->setUniformData(&colBuffer, sizeof(ColorBuffer), 0, DXShader::TYPE_FRAGMENT);
-
-            struct MatrixUniformBuffer
-            {
-                float modelMatrix[16];
-            };
-
-            StaticUniformBuffer staticBuffer;
-            orthoMat.fillArray(staticBuffer.projectionMatrix);
-            textShader->setUniformData(&staticBuffer, sizeof(StaticUniformBuffer), 0, DXShader::TYPE_VERTEX);
-
-            
-            MatrixUniformBuffer modelBuffer;
-            
-            //draw models
-            double currX = x;
-            double currY = y;
-            double currW = 0;
-            double currH = 0;
-            
-            DXTexture* oldTexture = nullptr;
-            for(int i=0; i<text.length(); i++)
-            {
-                int charIndex = f->getCharIndex(text[i]);
-                DXTexture* charTexture = f->getTexture(charIndex);
-                DXModel* charModel = f->getModel(charIndex);
-                FontCharInfo fci = f->getFontCharInfo(charIndex);
-
-                if(charModel == nullptr)
-                {
-                    continue;
-                }
-
-                if(text[i] == '\n')
-                {
-                    currX = x;
-                    currW = 0;
-
-                    if(useLineBreak)
-                    {
-                        currH += f->getVerticalAdvance();
-                        currY += f->getVerticalAdvance();
-
-                        if(currH >= maxHeight)
-                        {
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        break;
-                    }
-                    continue;
-                }
-
-                if(currW + fci.width > maxWidth)
-                {
-                    fci.width = maxWidth - currW;
-                }
-                if(currH + fci.height > maxHeight)
-                {
-                    fci.height = maxHeight - currH;
-                }
-
-                if(text[i] != ' ')
-                {
-                    modelMatrix[0][3] = currX+fci.xOffset;
-                    modelMatrix[1][3] = currY+fci.yOffset;
-                    
                     modelMatrix.fillArray(modelBuffer.modelMatrix);
                     textShader->setUniformData(&modelBuffer, sizeof(MatrixUniformBuffer), 1, DXShader::TYPE_VERTEX);
 
                     if(charTexture != oldTexture)
                         charTexture->bind();
                     charModel->draw();
+				}
 
-                    if( i >= highlightStart && i < highlightEnd)
-                    {
-                        DXGraphics::setDrawColor(highlightColor);
-                        DXGraphics::drawRectangle(currX, currY, currX + fci.horizAdv, currY + f->getVerticalAdvance(), false);
-                        DXGraphics::setDrawColor(oldDrawColor);
-                    }
-                }
-                
-                currX += fci.horizAdv;
-                currW += fci.horizAdv;
-
-                if(currW >= maxWidth)
-                {
-                    currW = 0;
-                    currX = x;
-
-                    if(useLineBreak)
-                    {
-                        currH += f->getVerticalAdvance();
-                        currY += f->getVerticalAdvance();
-
-                        if(currH >= maxHeight)
-                        {
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
+				if(boxPair.second >= highlightStart && boxPair.second < highlightEnd)
+				{
+					int x1 = x+boxPair.first.getLeftBound();
+					int y1 = x+boxPair.first.getTopBound();
+                    DXGraphics::setDrawColor(highlightColor);
+                    DXGraphics::drawRectangle(x1, y1, x1+boxPair.first.getWidth(), y1+f->getVerticalAdvance(), false);
+                    DXGraphics::setDrawColor(oldDrawColor);
+				}
                 oldTexture = charTexture;
             }
             
             DXShader::deactivateCurrentShader();
         }
 
-        void DXGraphics::drawRectangle(double x1, double y1, double x2, double y2, bool outline)
+        void DXGraphics::drawRectangle(double x1, double y1, double width, double height, bool outline)
         {
             if(!hasInit)
                 return; //throw error
@@ -819,12 +672,12 @@
             //create rectangle
             std::vector<float> positions = {
                 (float)x1, (float)y1,
-                (float)x2, (float)y2,
-                (float)x1, (float)y2,
+                (float)(x1+width), (float)(y1+height),
+                (float)x1, (float)(y1+height),
 
                 (float)x1, (float)y1,
-                (float)x2, (float)y1,
-                (float)x2, (float)y2
+                (float)(x1+width), (float)y1,
+                (float)(x1+width), (float)(y1+height)
             };
 
             drawModel.storeDataFloat(0, positions, 2);

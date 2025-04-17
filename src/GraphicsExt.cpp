@@ -15,6 +15,7 @@ namespace smpl
     #pragma region GRAPHICS_STUFF
 
     unsigned char GraphicsInterface::type = TYPE_SOFTWARE;
+    unsigned char GraphicsInterface::defaultType = TYPE_SOFTWARE;
     SurfaceInterface* GraphicsInterface::boundSurface = nullptr;
     FontInterface* GraphicsInterface::boundFont = nullptr;
     bool GraphicsInterface::ownedFont = false;
@@ -23,10 +24,9 @@ namespace smpl
     Vec2f GraphicsInterface::translationFactor = Vec2f(0, 0);
     bool GraphicsInterface::useScaling = true;
 
-
-    SurfaceInterface* GraphicsInterface::createSurface(int width, int height, unsigned char v)
+    SurfaceInterface* GraphicsInterface::createSurface(int width, int height)
     {
-        int actualType = getType(v);
+        int actualType = getType();
         
         if(actualType == TYPE_SOFTWARE)
             return SurfaceInterface::createSoftwareSurface(width, height);
@@ -42,9 +42,9 @@ namespace smpl
         return nullptr;
     }
 
-    ImageInterface* GraphicsInterface::createImage(File f, unsigned char v)
+    ImageInterface* GraphicsInterface::createImage(File f)
     {
-        int actualType = getType(v);
+        int actualType = getType();
 
         if(actualType == TYPE_SOFTWARE)
             return ImageInterface::createSoftwareImage(f);
@@ -59,9 +59,9 @@ namespace smpl
         return nullptr;
     }
 
-    SpriteInterface* GraphicsInterface::createSprite(File f, unsigned char v)
+    SpriteInterface* GraphicsInterface::createSprite(File f)
     {
-        int actualType = getType(v);
+        int actualType = getType();
 
         if(actualType == TYPE_SOFTWARE)
             return SpriteInterface::createSoftwareSprite(f);
@@ -76,9 +76,9 @@ namespace smpl
         return nullptr;
     }
 
-    FontInterface* GraphicsInterface::createFont(File f, unsigned char v)
+    FontInterface* GraphicsInterface::createFont(File f)
     {
-        int actualType = getType(v);
+        int actualType = getType();
 
         if(actualType == TYPE_SOFTWARE)
             return FontInterface::createSoftwareFont(f);
@@ -105,22 +105,24 @@ namespace smpl
 
     void GraphicsInterface::setDefaultType(unsigned char v)
     {
-        GraphicsInterface::type = v;
+        GraphicsInterface::defaultType = v;
     }
 
     unsigned char GraphicsInterface::getDefaultType()
     {
-        return GraphicsInterface::type;
+        return GraphicsInterface::defaultType;
     }
 
-    unsigned char GraphicsInterface::getType(unsigned char v)
+    unsigned char GraphicsInterface::getType()
     {
-        int actualType = v;
-        if(actualType == TYPE_DEFAULT)
-        {
-            actualType = GraphicsInterface::type;
-        }
-        return actualType;
+        if(type == TYPE_DEFAULT)
+            return GraphicsInterface::type;
+        return type;
+    }
+    
+	void GraphicsInterface::setType(unsigned char v)
+    {
+        type = v;
     }
 
     void GraphicsInterface::setBoundSurface(SurfaceInterface* surface)
@@ -133,19 +135,13 @@ namespace smpl
         return boundSurface;
     }
     
-    void GraphicsInterface::setColor(Vec4f v, unsigned char enteredType)
+    void GraphicsInterface::setColor(Vec4f v)
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
 
         if(actualType == TYPE_SOFTWARE)
         {
-            Color c;
-            c.red = (unsigned char)MathExt::clamp(v.x*255.0, 0.0, 255.0);
-            c.green = (unsigned char)MathExt::clamp(v.y*255.0, 0.0, 255.0);
-            c.blue = (unsigned char)MathExt::clamp(v.z*255.0, 0.0, 255.0);
-            c.alpha = (unsigned char)MathExt::clamp(v.w*255.0, 0.0, 255.0);
-
-            SimpleGraphics::setColor(c);
+            SimpleGraphics::setColor(SimpleGraphics::convertVec4fToColor(v));
         }
         #ifdef USE_OPENGL
             if(actualType == TYPE_OPENGL)
@@ -165,9 +161,9 @@ namespace smpl
         #endif
     }
     
-    void GraphicsInterface::setColor(Color c, unsigned char enteredType)
+    void GraphicsInterface::setColor(Color c)
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
 
         if(actualType == TYPE_SOFTWARE)
         {
@@ -177,7 +173,7 @@ namespace smpl
         #ifdef USE_OPENGL
             if(actualType == TYPE_OPENGL)
             {
-                Vec4f v = Vec4f( (double)c.red / 255.0, (double)c.green / 255.0, (double)c.blue / 255.0, (double)c.alpha / 255.0);
+                Vec4f v = SimpleGraphics::convertColorToVec4f(c);
 
                 GLGraphics::setDrawColor(v);
                 GLGraphics::setClearColor(v);
@@ -187,7 +183,7 @@ namespace smpl
         #ifdef USE_DIRECTX
             if(actualType == TYPE_DIRECTX)
             {
-                Vec4f v = Vec4f( (double)c.red / 255.0, (double)c.green / 255.0, (double)c.blue / 255.0, (double)c.alpha / 255.0);
+                Vec4f v = SimpleGraphics::convertColorToVec4f(c);
 
                 DXGraphics::setDrawColor(v);
                 DXGraphics::setClearColor(v);
@@ -195,9 +191,9 @@ namespace smpl
         #endif
     }
 
-    Color GraphicsInterface::getColor(unsigned char enteredType)
+    Color GraphicsInterface::getColor()
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
 
         if(actualType == TYPE_SOFTWARE)
         {
@@ -207,61 +203,40 @@ namespace smpl
         #ifdef USE_OPENGL
             if(actualType == TYPE_OPENGL)
             {
-                Vec4f v = GLGraphics::getDrawColor();
-
-                Color c;
-                c.red = (unsigned char)MathExt::clamp(v.x*255.0, 0.0, 255.0);
-                c.green = (unsigned char)MathExt::clamp(v.y*255.0, 0.0, 255.0);
-                c.blue = (unsigned char)MathExt::clamp(v.z*255.0, 0.0, 255.0);
-                c.alpha = (unsigned char)MathExt::clamp(v.w*255.0, 0.0, 255.0);
-
-                return c;
+                return SimpleGraphics::convertVec4fToColor(GLGraphics::getDrawColor());
             }
         #endif
 
         #ifdef USE_DIRECTX
             if(actualType == TYPE_DIRECTX)
             {
-                Vec4f v = DXGraphics::getDrawColor();
-
-                Color c;
-                c.red = (unsigned char)MathExt::clamp(v.x*255.0, 0.0, 255.0);
-                c.green = (unsigned char)MathExt::clamp(v.y*255.0, 0.0, 255.0);
-                c.blue = (unsigned char)MathExt::clamp(v.z*255.0, 0.0, 255.0);
-                c.alpha = (unsigned char)MathExt::clamp(v.w*255.0, 0.0, 255.0);
-
-                return c;
+                return SimpleGraphics::convertVec4fToColor(DXGraphics::getDrawColor());
             }
         #endif
 
         return Color();
     }
 
-    Vec4f GraphicsInterface::getColorVec4f(unsigned char enteredType)
+    Vec4f GraphicsInterface::getColorVec4f()
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
 
         if(actualType == TYPE_SOFTWARE)
         {
-            Color c = SimpleGraphics::getColor();
-            Vec4f v = Vec4f( (double)c.red / 255.0, (double)c.green / 255.0, (double)c.blue / 255.0, (double)c.alpha / 255.0);
-
-            return v;
+            return SimpleGraphics::convertColorToVec4f(SimpleGraphics::getColor());
         }
         
         #ifdef USE_OPENGL
             if(actualType == TYPE_OPENGL)
             {
-                Vec4f v = GLGraphics::getDrawColor();
-                return v;
+                return GLGraphics::getDrawColor();
             }
         #endif
 
         #ifdef USE_DIRECTX
             if(actualType == TYPE_DIRECTX)
             {
-                Vec4f v = DXGraphics::getDrawColor();
-                return v;
+                return DXGraphics::getDrawColor();
             }
         #endif
         
@@ -269,9 +244,9 @@ namespace smpl
     }
 
 
-    void GraphicsInterface::setFont(FontInterface* f, unsigned char enteredType)
+    void GraphicsInterface::setFont(FontInterface* f)
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
 
         if(f->getType() != actualType)
             return; //Should throw an error
@@ -305,9 +280,9 @@ namespace smpl
         #endif
     }
 
-    FontInterface* GraphicsInterface::getFont(unsigned char enteredType)
+    FontInterface* GraphicsInterface::getFont()
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
 
         Font* f = nullptr;
         if(actualType == TYPE_SOFTWARE)
@@ -342,7 +317,7 @@ namespace smpl
                 if(f != nullptr)
                 {
                     //create a new font interface with the font we got and bind it.
-                    setFont(FontInterface::createFromFont(f, actualType), actualType);
+                    setFont(FontInterface::createFromFont(f, actualType));
                     ownedFont = true;
                 }
             }
@@ -352,7 +327,7 @@ namespace smpl
             if(f != nullptr)
             {
                 //create a new font interface with the font we got and bind it.
-                setFont(FontInterface::createFromFont(f, actualType), actualType);
+                setFont(FontInterface::createFromFont(f, actualType));
                 ownedFont = true;
             }
         }
@@ -360,9 +335,9 @@ namespace smpl
         return boundFont;
     }
     
-    void GraphicsInterface::clear(unsigned char enteredType)
+    void GraphicsInterface::clear()
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
 
         if(boundSurface == nullptr)
         {
@@ -397,36 +372,34 @@ namespace smpl
         #endif
     }
 
-    void GraphicsInterface::drawRect(int x, int y, int x2, int y2, bool outline, unsigned char enteredType)
+    void GraphicsInterface::drawRect(int x, int y, int width, int height, bool outline)
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
         if(boundSurface == nullptr)
         {
             return; //Even though opengl does not need a bound surface, return as an error.
         }
-        int nx, ny, nx2, ny2;
+        int nx, ny, nw, nh;
         x += translationFactor.x;
-        x2 += translationFactor.x;
         y += translationFactor.y;
-        y2 += translationFactor.y;
         if(useScaling)
         {
             nx = (int)MathExt::round(x*scalingFactor.x);
             ny = (int)MathExt::round(y*scalingFactor.y);
-            nx2 = (int)MathExt::round(x2*scalingFactor.x);
-            ny2 = (int)MathExt::round(y2*scalingFactor.y);
+            nw = (int)MathExt::round(width*scalingFactor.x);
+            nh = (int)MathExt::round(height*scalingFactor.y);
         }
         else
         {
             nx = x;
             ny = y;
-            nx2 = x2;
-            ny2 = y2;
+            nw = width;
+            nh = height;
         }
 
         if(actualType == GraphicsInterface::TYPE_SOFTWARE)
         {
-            SimpleGraphics::drawRect(nx, ny, nx2, ny2, outline, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawRect(nx, ny, nw, nh, outline, (Image*)boundSurface->getSurface());
         }
         
         
@@ -437,7 +410,7 @@ namespace smpl
                 {
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
-                GLGraphics::drawRectangle(nx, ny, nx2, ny2, outline);
+                GLGraphics::drawRectangle(nx, ny, nw, nh, outline);
             }
         #endif
 
@@ -449,14 +422,14 @@ namespace smpl
                 {
                     ((DXSurface*)boundSurface->getSurface())->bind();
                 }
-                DXGraphics::drawRectangle(nx, ny, nx2, ny2, outline);
+                DXGraphics::drawRectangle(nx, ny, nw, nh, outline);
             }
         #endif
     }
 
-    void GraphicsInterface::drawLine(int x, int y, int x2, int y2, unsigned char enteredType)
+    void GraphicsInterface::drawLine(int x, int y, int x2, int y2)
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
         if(boundSurface == nullptr)
         {
             return; //Even though opengl does not need a bound surface, return as an error.
@@ -510,9 +483,9 @@ namespace smpl
         #endif
     }
 
-    void GraphicsInterface::drawCircle(int x, int y, int radius, bool outline, unsigned char enteredType)
+    void GraphicsInterface::drawCircle(int x, int y, int radius, bool outline)
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
         if(boundSurface == nullptr)
         {
             return; //Even though opengl does not need a bound surface, return as an error.
@@ -562,9 +535,9 @@ namespace smpl
         #endif
     }
     
-	void GraphicsInterface::drawEllipse(int x, int y, int xRad, int yRad, bool outline, unsigned char enteredType)
+	void GraphicsInterface::drawEllipse(int x, int y, int xRad, int yRad, bool outline)
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
         if(boundSurface == nullptr)
         {
             return; //Even though opengl does not need a bound surface, return as an error.
@@ -617,9 +590,9 @@ namespace smpl
         #endif
     }
 
-    void GraphicsInterface::drawSprite(ImageInterface* img, int x, int y, unsigned char enteredType)
+    void GraphicsInterface::drawSprite(ImageInterface* img, int x, int y)
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
         if(boundSurface == nullptr)
         {
             return; //Even though opengl does not need a bound surface, return as an error.
@@ -673,9 +646,9 @@ namespace smpl
         }
     }
 
-    void GraphicsInterface::drawSprite(ImageInterface* img, int x1, int y1, int x2, int y2, unsigned char enteredType)
+    void GraphicsInterface::drawSprite(ImageInterface* img, int x1, int y1, int width, int height)
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
         if(boundSurface == nullptr)
         {
             return; //Even though opengl does not need a bound surface, return as an error.
@@ -683,30 +656,28 @@ namespace smpl
         if(img != nullptr)
         {
             
-            int nx, ny, nx2, ny2;
+            int nx, ny, nw, nh;
             x1 += translationFactor.x;
             y1 += translationFactor.y;
-            x2 += translationFactor.x;
-            y2 += translationFactor.y;
             if(useScaling)
             {
                 nx = (int)MathExt::round(x1 * scalingFactor.x);
                 ny = (int)MathExt::round(y1 * scalingFactor.y);
-                nx2 = (int)MathExt::round(x2 * scalingFactor.x);
-                ny2 = (int)MathExt::round(y2 * scalingFactor.y);
+                nw = (int)MathExt::round(width * scalingFactor.x);
+                nh = (int)MathExt::round(height * scalingFactor.y);
             }
             else
             {
                 nx = x1;
                 ny = y1;
-                nx2 = x2;
-                ny2 = y2;
+                nw = width;
+                nh = height;
             }
 
             if(actualType == GraphicsInterface::TYPE_SOFTWARE)
             {
                 Image* imgData = (Image*)img->getImage();
-                SimpleGraphics::drawSprite(imgData, nx, ny, nx2, ny2, (Image*)boundSurface->getSurface());
+                SimpleGraphics::drawSprite(imgData, nx, ny, nw, nh, (Image*)boundSurface->getSurface());
             }
             
             
@@ -718,7 +689,7 @@ namespace smpl
                         ((GLSurface*)boundSurface->getSurface())->bind();
                     }
                     GLTexture* imgData = (GLTexture*)img->getImage();
-                    GLGraphics::drawTexture(nx, ny, nx2, ny2, imgData);
+                    GLGraphics::drawTexture(nx, ny, nw, nh, imgData);
                 }
             #endif
 
@@ -730,15 +701,15 @@ namespace smpl
                         ((DXSurface*)boundSurface->getSurface())->bind();
                     }
                     DXTexture* imgData = (DXTexture*)img->getImage();
-                    DXGraphics::drawTexture(nx, ny, nx2, ny2, imgData);
+                    DXGraphics::drawTexture(nx, ny, nw, nh, imgData);
                 }
             #endif
         }
     }
 
-    void GraphicsInterface::drawSpritePart(ImageInterface* img, int x, int y, int imgX, int imgY, int imgW, int imgH, unsigned char enteredType)
+    void GraphicsInterface::drawSpritePart(ImageInterface* img, int x, int y, int imgX, int imgY, int imgW, int imgH)
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
         if(boundSurface == nullptr)
         {
             return; //Even though opengl does not need a bound surface, return as an error.
@@ -773,14 +744,13 @@ namespace smpl
                         ((GLSurface*)boundSurface->getSurface())->bind();
                     }
                     GLTexture* imgData = (GLTexture*)img->getImage();
-                    Vec4f positionData = Vec4f(nx, ny, nx+imgW, ny+imgH);
-                    Vec4f textureData = Vec4f(imgX, imgY, imgX+imgW, imgY+imgH);
-                    textureData.x /= imgData->getWidth();
-                    textureData.y /= imgData->getHeight();
-                    textureData.z /= imgData->getWidth();
-                    textureData.w /= imgData->getHeight();
+                    Vec2f p1 = Vec2f(nx, ny);
+                    Vec2f p2 = Vec2f(nx+imgW, ny+imgH);
+                    Vec2f uv1 = Vec2f((float)imgX / imgData->getWidth(), (float)imgY / imgData->getHeight());
+                    Vec2f uv2 = Vec2f((float)(imgX+imgW) / imgData->getWidth(), (float)(imgY+imgH) / imgData->getHeight());
                     
-                    GLGraphics::drawTexturePart(positionData, textureData, imgData);
+                    
+                    GLGraphics::drawTexturePart(p1, p2, uv1, uv2, imgData);
                 }
             #endif
 
@@ -805,9 +775,9 @@ namespace smpl
         }
     }
 
-    void GraphicsInterface::drawText(std::string str, int x, int y, unsigned char enteredType)
+    void GraphicsInterface::drawText(StringBridge strBridge, int x, int y)
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
         if(boundSurface == nullptr)
         {
             return; //Even though opengl does not need a bound surface, return as an error.
@@ -829,7 +799,7 @@ namespace smpl
 
         if(actualType == GraphicsInterface::TYPE_SOFTWARE)
         {
-            SimpleGraphics::drawText(str, nx, ny, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawText(strBridge, nx, ny, (Image*)boundSurface->getSurface());
         }
         
         #ifdef USE_OPENGL
@@ -839,7 +809,7 @@ namespace smpl
                 {
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
-                GLGraphics::drawText(str, nx, ny);
+                GLGraphics::drawText(strBridge, nx, ny);
             }
         #endif
 
@@ -850,162 +820,114 @@ namespace smpl
                 {
                     ((DXSurface*)boundSurface->getSurface())->bind();
                 }
-                DXGraphics::drawText(str, nx, ny);
-            }
-        #endif
-    }
-
-    void GraphicsInterface::drawText(std::wstring str, int x, int y, unsigned char enteredType)
-    {
-        int actualType = getType(enteredType);
-        if(boundSurface == nullptr)
-        {
-            return; //Even though opengl does not need a bound surface, return as an error.
-        }
-        int nx, ny;
-        x += translationFactor.x;
-        y += translationFactor.y;
-        if(useScaling)
-        {
-            nx = (int)MathExt::round(x * scalingFactor.x);
-            ny = (int)MathExt::round(y * scalingFactor.y);
-        }
-        else
-        {
-            nx = x;
-            ny = y;
-        }
-
-        if(actualType == GraphicsInterface::TYPE_SOFTWARE)
-        {
-            SimpleGraphics::drawText(str, nx, ny, (Image*)boundSurface->getSurface());
-        }
-        
-        #ifdef USE_OPENGL
-            if(actualType == GraphicsInterface::TYPE_OPENGL)
-            {
-                if(boundSurface->getSurface() != nullptr)
-                {
-                    ((GLSurface*)boundSurface->getSurface())->bind();
-                }
-                GLGraphics::drawText(str, nx, ny);
-            }
-        #endif
-
-        #ifdef USE_DIRECTX
-            if(actualType == GraphicsInterface::TYPE_DIRECTX)
-            {
-                if(boundSurface->getSurface() != nullptr)
-                {
-                    ((DXSurface*)boundSurface->getSurface())->bind();
-                }
-                DXGraphics::drawText(str, nx, ny);
-            }
-        #endif
-    }
-
-    void GraphicsInterface::drawTextLimits(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool canWrap, unsigned char enteredType)
-    {
-        int actualType = getType(enteredType);
-        if(boundSurface == nullptr)
-        {
-            return; //Even though opengl does not need a bound surface, return as an error.
-        }
-        
-        int nx, ny;
-        x += translationFactor.x;
-        y += translationFactor.y;
-        if(useScaling)
-        {
-            nx = (int)MathExt::round(x * scalingFactor.x);
-            ny = (int)MathExt::round(y * scalingFactor.y);
-        }
-        else
-        {
-            nx = x;
-            ny = y;
-        }
-
-        if(actualType == GraphicsInterface::TYPE_SOFTWARE)
-        {
-            SimpleGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, canWrap, (Image*)boundSurface->getSurface());
-        }
-        
-        #ifdef USE_OPENGL
-            if(actualType == GraphicsInterface::TYPE_OPENGL)
-            {
-                if(boundSurface->getSurface() != nullptr)
-                {
-                    ((GLSurface*)boundSurface->getSurface())->bind();
-                }
-                GLGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, canWrap);
-            }
-        #endif
-
-        #ifdef USE_DIRECTX
-            if(actualType == GraphicsInterface::TYPE_DIRECTX)
-            {
-                if(boundSurface->getSurface() != nullptr)
-                {
-                    ((DXSurface*)boundSurface->getSurface())->bind();
-                }
-                DXGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, canWrap);
-            }
-        #endif
-    }
-
-    void GraphicsInterface::drawTextLimits(std::string str, int x, int y, int maxWidth, int maxHeight, bool canWrap, unsigned char enteredType)
-    {
-        int actualType = getType(enteredType);
-        if(boundSurface == nullptr)
-        {
-            return; //Even though opengl does not need a bound surface, return as an error.
-        }
-        int nx, ny;
-        x += translationFactor.x;
-        y += translationFactor.y;
-        if(useScaling)
-        {
-            nx = (int)MathExt::round(x * scalingFactor.x);
-            ny = (int)MathExt::round(y * scalingFactor.y);
-        }
-        else
-        {
-            nx = x;
-            ny = y;
-        }
-
-        if(actualType == GraphicsInterface::TYPE_SOFTWARE)
-        {
-            SimpleGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, canWrap, (Image*)boundSurface->getSurface());
-        }
-        
-        #ifdef USE_OPENGL
-            if(actualType == GraphicsInterface::TYPE_OPENGL)
-            {
-                if(boundSurface->getSurface() != nullptr)
-                {
-                    ((GLSurface*)boundSurface->getSurface())->bind();
-                }
-                GLGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, canWrap);
-            }
-        #endif
-
-        #ifdef USE_DIRECTX
-            if(actualType == GraphicsInterface::TYPE_DIRECTX)
-            {
-                if(boundSurface->getSurface() != nullptr)
-                {
-                    ((DXSurface*)boundSurface->getSurface())->bind();
-                }
-                DXGraphics::drawTextLimits(str, nx, ny, maxWidth, maxHeight, canWrap);
+                DXGraphics::drawText(strBridge, nx, ny);
             }
         #endif
     }
     
-    void GraphicsInterface::drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool canWrap, int highlightStart, int highlightEnd, Color highlightColor, unsigned char enteredType)
+    void GraphicsInterface::drawTextHighlighted(StringBridge strBridge, int x, int y, int highlightStart, int highlightEnd, Color highlightColor)
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
+        if(boundSurface == nullptr)
+        {
+            return; //Even though opengl does not need a bound surface, return as an error.
+        }
+        
+        int nx, ny;
+        x += translationFactor.x;
+        y += translationFactor.y;
+        if(useScaling)
+        {
+            nx = (int)MathExt::round(x * scalingFactor.x);
+            ny = (int)MathExt::round(y * scalingFactor.y);
+        }
+        else
+        {
+            nx = x;
+            ny = y;
+        }
+
+        if(actualType == GraphicsInterface::TYPE_SOFTWARE)
+        {
+            SimpleGraphics::drawTextHighlighted(strBridge, nx, ny, highlightStart, highlightEnd, highlightColor, (Image*)boundSurface->getSurface());
+        }
+        
+        #ifdef USE_OPENGL
+            if(actualType == GraphicsInterface::TYPE_OPENGL)
+            {
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((GLSurface*)boundSurface->getSurface())->bind();
+                }
+                GLGraphics::drawTextHighlighted(strBridge, nx, ny, highlightStart, highlightEnd, SimpleGraphics::convertColorToVec4f(highlightColor));
+            }
+        #endif
+
+        #ifdef USE_DIRECTX
+            if(actualType == GraphicsInterface::TYPE_DIRECTX)
+            {
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((DXSurface*)boundSurface->getSurface())->bind();
+                }
+                DXGraphics::drawTextHighlighted(strBridge, nx, ny, highlightStart, highlightEnd, SimpleGraphics::convertColorToVec4f(highlightColor));
+            }
+        #endif
+    }
+
+    void GraphicsInterface::drawTextHighlighted(StringBridge strBridge, int x, int y, int highlightStart, int highlightEnd, Vec4f highlightColor)
+    {
+        int actualType = getType();
+        if(boundSurface == nullptr)
+        {
+            return; //Even though opengl does not need a bound surface, return as an error.
+        }
+        
+        int nx, ny;
+        x += translationFactor.x;
+        y += translationFactor.y;
+        if(useScaling)
+        {
+            nx = (int)MathExt::round(x * scalingFactor.x);
+            ny = (int)MathExt::round(y * scalingFactor.y);
+        }
+        else
+        {
+            nx = x;
+            ny = y;
+        }
+
+        if(actualType == GraphicsInterface::TYPE_SOFTWARE)
+        {
+            SimpleGraphics::drawTextHighlighted(strBridge, nx, ny, highlightStart, highlightEnd, SimpleGraphics::convertVec4fToColor(highlightColor), (Image*)boundSurface->getSurface());
+        }
+        
+        #ifdef USE_OPENGL
+            if(actualType == GraphicsInterface::TYPE_OPENGL)
+            {
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((GLSurface*)boundSurface->getSurface())->bind();
+                }
+                GLGraphics::drawTextHighlighted(strBridge, nx, ny, highlightStart, highlightEnd, highlightColor);
+            }
+        #endif
+
+        #ifdef USE_DIRECTX
+            if(actualType == GraphicsInterface::TYPE_DIRECTX)
+            {
+                if(boundSurface->getSurface() != nullptr)
+                {
+                    ((DXSurface*)boundSurface->getSurface())->bind();
+                }
+                DXGraphics::drawTextHighlighted(strBridge, nx, ny, highlightStart, highlightEnd, highlightColor);
+            }
+        #endif
+    }
+
+    void GraphicsInterface::drawTextLimits(StringBridge strBridge, int x, int y, int maxWidth, int maxHeight, char wrapMode)
+    {
+        int actualType = getType();
         if(boundSurface == nullptr)
         {
             return; //Even though opengl does not need a bound surface, return as an error.
@@ -1026,7 +948,7 @@ namespace smpl
 
         if(actualType == GraphicsInterface::TYPE_SOFTWARE)
         {
-            SimpleGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, highlightColor, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawTextLimits(strBridge, nx, ny, maxWidth, maxHeight, wrapMode, (Image*)boundSurface->getSurface());
         }
         
         #ifdef USE_OPENGL
@@ -1036,8 +958,7 @@ namespace smpl
                 {
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
-                Vec4f vColor = SimpleGraphics::convertColorToVec4f(highlightColor);
-                GLGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, vColor);
+                GLGraphics::drawTextLimits(strBridge, nx, ny, maxWidth, maxHeight, wrapMode);
             }
         #endif
 
@@ -1048,15 +969,14 @@ namespace smpl
                 {
                     ((DXSurface*)boundSurface->getSurface())->bind();
                 }
-                Vec4f vColor = SimpleGraphics::convertColorToVec4f(highlightColor);
-                DXGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, vColor);
+                DXGraphics::drawTextLimits(strBridge, nx, ny, maxWidth, maxHeight, wrapMode);
             }
         #endif
     }
 
-    void GraphicsInterface::drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool canWrap, int highlightStart, int highlightEnd, Color highlightColor, unsigned char enteredType)
+    void GraphicsInterface::drawTextLimitsHighlighted(StringBridge strBridge, int x, int y, int maxWidth, int maxHeight, char wrapMode, int highlightStart, int highlightEnd, Color highlightColor)
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
         if(boundSurface == nullptr)
         {
             return; //Even though opengl does not need a bound surface, return as an error.
@@ -1077,7 +997,7 @@ namespace smpl
 
         if(actualType == GraphicsInterface::TYPE_SOFTWARE)
         {
-            SimpleGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, highlightColor, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawTextLimitsHighlighted(strBridge, nx, ny, maxWidth, maxHeight, wrapMode, highlightStart, highlightEnd, highlightColor, (Image*)boundSurface->getSurface());
         }
         
         #ifdef USE_OPENGL
@@ -1087,8 +1007,7 @@ namespace smpl
                 {
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
-                Vec4f vColor = SimpleGraphics::convertColorToVec4f(highlightColor);
-                GLGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, vColor);
+                GLGraphics::drawTextLimitsHighlighted(strBridge, nx, ny, maxWidth, maxHeight, wrapMode, highlightStart, highlightEnd, SimpleGraphics::convertColorToVec4f(highlightColor));
             }
         #endif
 
@@ -1099,15 +1018,14 @@ namespace smpl
                 {
                     ((DXSurface*)boundSurface->getSurface())->bind();
                 }
-                Vec4f vColor = SimpleGraphics::convertColorToVec4f(highlightColor);
-                DXGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, vColor);
+                DXGraphics::drawTextLimitsHighlighted(strBridge, nx, ny, maxWidth, maxHeight, wrapMode, highlightStart, highlightEnd, SimpleGraphics::convertColorToVec4f(highlightColor));
             }
         #endif
     }
-    
-    void GraphicsInterface::drawTextLimitsHighlighted(std::wstring str, int x, int y, int maxWidth, int maxHeight, bool canWrap, int highlightStart, int highlightEnd, Vec4f highlightColor, unsigned char enteredType)
+
+    void GraphicsInterface::drawTextLimitsHighlighted(StringBridge strBridge, int x, int y, int maxWidth, int maxHeight, char wrapMode, int highlightStart, int highlightEnd, Vec4f highlightColor)
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
         if(boundSurface == nullptr)
         {
             return; //Even though opengl does not need a bound surface, return as an error.
@@ -1128,8 +1046,7 @@ namespace smpl
 
         if(actualType == GraphicsInterface::TYPE_SOFTWARE)
         {
-            Color cColor = SimpleGraphics::convertVec4fToColor(highlightColor);
-            SimpleGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, cColor, (Image*)boundSurface->getSurface());
+            SimpleGraphics::drawTextLimitsHighlighted(strBridge, nx, ny, maxWidth, maxHeight, wrapMode, highlightStart, highlightEnd, SimpleGraphics::convertVec4fToColor(highlightColor), (Image*)boundSurface->getSurface());
         }
         
         #ifdef USE_OPENGL
@@ -1139,7 +1056,7 @@ namespace smpl
                 {
                     ((GLSurface*)boundSurface->getSurface())->bind();
                 }
-                GLGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, highlightColor);
+                GLGraphics::drawTextLimitsHighlighted(strBridge, nx, ny, maxWidth, maxHeight, wrapMode, highlightStart, highlightEnd, highlightColor);
             }
         #endif
 
@@ -1150,64 +1067,14 @@ namespace smpl
                 {
                     ((DXSurface*)boundSurface->getSurface())->bind();
                 }
-                DXGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, highlightColor);
+                DXGraphics::drawTextLimitsHighlighted(strBridge, nx, ny, maxWidth, maxHeight, wrapMode, highlightStart, highlightEnd, highlightColor);
             }
         #endif
     }
 
-    void GraphicsInterface::drawTextLimitsHighlighted(std::string str, int x, int y, int maxWidth, int maxHeight, bool canWrap, int highlightStart, int highlightEnd, Vec4f highlightColor, unsigned char enteredType)
+    void GraphicsInterface::setClippingRect(Box2D b)
     {
-        int actualType = getType(enteredType);
-        if(boundSurface == nullptr)
-        {
-            return; //Even though opengl does not need a bound surface, return as an error.
-        }
-        int nx, ny;
-        x += translationFactor.x;
-        y += translationFactor.y;
-        if(useScaling)
-        {
-            nx = (int)MathExt::round(x*scalingFactor.x);
-            ny = (int)MathExt::round(y*scalingFactor.y);
-        }
-        else
-        {
-            nx = x;
-            ny = y;
-        }
-
-        if(actualType == GraphicsInterface::TYPE_SOFTWARE)
-        {
-            Color cColor = SimpleGraphics::convertVec4fToColor(highlightColor);
-            SimpleGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, cColor, (Image*)boundSurface->getSurface());
-        }
-        
-        #ifdef USE_OPENGL
-            if(actualType == GraphicsInterface::TYPE_OPENGL)
-            {
-                if(boundSurface->getSurface() != nullptr)
-                {
-                    ((GLSurface*)boundSurface->getSurface())->bind();
-                }
-                GLGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, highlightColor);
-            }
-        #endif
-
-        #ifdef USE_DIRECTX
-            if(actualType == GraphicsInterface::TYPE_DIRECTX)
-            {
-                if(boundSurface->getSurface() != nullptr)
-                {
-                    ((DXSurface*)boundSurface->getSurface())->bind();
-                }
-                DXGraphics::drawTextLimitsHighlighted(str, nx, ny, maxWidth, maxHeight, canWrap, highlightStart, highlightEnd, highlightColor);
-            }
-        #endif
-    }
-
-    void GraphicsInterface::setClippingRect(Box2D b, unsigned char enteredType)
-    {
-        int actualType = getType(enteredType);
+        int actualType = getType();
         clippingRect = b;
 
         if(useScaling)
@@ -1250,9 +1117,9 @@ namespace smpl
         return clippingRect;
     }
 
-    void GraphicsInterface::resetClippingPlane(unsigned char enteredType)
+    void GraphicsInterface::resetClippingPlane()
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
         clippingRect = Box2D(0, 0, 65535, 65535);
         if(actualType == GraphicsInterface::TYPE_SOFTWARE)
         {
@@ -1274,9 +1141,9 @@ namespace smpl
         #endif
     }
 
-    void GraphicsInterface::drawSurface(SurfaceInterface* img, int x, int y, unsigned char enteredType)
+    void GraphicsInterface::drawSurface(SurfaceInterface* img, int x, int y)
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
         if(boundSurface == nullptr)
         {
             return; //Even though opengl does not need a bound surface, return as an error.
@@ -1339,38 +1206,36 @@ namespace smpl
             }
         #endif
     }
-    void GraphicsInterface::drawSurface(SurfaceInterface* img, int x1, int y1, int x2, int y2, unsigned char enteredType)
+    void GraphicsInterface::drawSurface(SurfaceInterface* img, int x1, int y1, int width, int height)
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
         if(boundSurface == nullptr)
         {
             return; //Even though opengl does not need a bound surface, return as an error.
         }
-        int nx1, ny1, nx2, ny2;
+        int nx1, ny1, nw, nh;
         x1 += translationFactor.x;
         y1 += translationFactor.y;
-        x2 += translationFactor.x;
-        y2 += translationFactor.y;
         if(useScaling)
         {
             nx1 = (int)MathExt::round(x1*scalingFactor.x);
             ny1 = (int)MathExt::round(y1*scalingFactor.y);
-            nx2 = (int)MathExt::round(x2*scalingFactor.x);
-            ny2 = (int)MathExt::round(y2*scalingFactor.y);
+            nw = (int)MathExt::round(width*scalingFactor.x);
+            nh = (int)MathExt::round(height*scalingFactor.y);
         }
         else
         {
             nx1 = x1;
             ny1 = y1;
-            nx2 = x2;
-            ny2 = y2;
+            nw = width;
+            nh = height;
         }
 
         if(actualType == GraphicsInterface::TYPE_SOFTWARE)
         {
             if(img != nullptr)
             {
-                SimpleGraphics::drawSprite((Image*)img->getSurface(), nx1, ny1, nx2, ny2, (Image*)boundSurface->getSurface());
+                SimpleGraphics::drawSprite((Image*)img->getSurface(), nx1, ny1, nw, nh, (Image*)boundSurface->getSurface());
             }
         }
         
@@ -1384,7 +1249,7 @@ namespace smpl
                 if(img != nullptr)
                 {
                     GLSurface* tempSurf = (GLSurface*)img->getSurface();
-                    GLGraphics::drawSurface(nx1, ny1, nx2, ny2, tempSurf);
+                    GLGraphics::drawSurface(nx1, ny1, nw, nh, tempSurf);
                 }
             }
         #endif
@@ -1399,15 +1264,15 @@ namespace smpl
                 if(img != nullptr)
                 {
                     DXSurface* tempSurf = (DXSurface*)img->getSurface();
-                    DXGraphics::drawSurface(nx1, ny1, nx2, ny2, tempSurf);
+                    DXGraphics::drawSurface(nx1, ny1, nw, nh, tempSurf);
                 }
             }
         #endif
     }
 
-    void GraphicsInterface::drawToScreen(unsigned char enteredType)
+    void GraphicsInterface::drawToScreen()
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
         if(boundSurface == nullptr)
         {
             return; //Even though opengl does not need a bound surface, return as an error.
@@ -1443,9 +1308,9 @@ namespace smpl
         #endif
     }
 
-    void GraphicsInterface::setOrthoProjection(int width, int height, unsigned char enteredType)
+    void GraphicsInterface::setOrthoProjection(int width, int height)
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
         if(actualType == GraphicsInterface::TYPE_SOFTWARE)
         {
         }
@@ -1490,9 +1355,9 @@ namespace smpl
         useScaling = v;
     }
 
-    void GraphicsInterface::setProjection(Mat4f proj, unsigned char enteredType)
+    void GraphicsInterface::setProjection(Mat4f proj)
     {
-        int actualType = getType(enteredType);
+        int actualType = getType();
         if(actualType == GraphicsInterface::TYPE_SOFTWARE)
         {
         }

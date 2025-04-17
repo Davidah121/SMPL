@@ -1,5 +1,4 @@
 #pragma once
-
 #ifdef USE_OPENGL
 
     #include "MathExt.h"
@@ -11,6 +10,7 @@
     #include "ext/GLModel.h"
     #include "ext/GLSprite.h"
     #include "ext/GLFont.h"
+    #include "StringBridge.h"
 
 
     namespace smpl
@@ -75,39 +75,45 @@
             static void setFont(GLFont* font);
             static GLFont* getFont();
 
-            static void drawSurface(double x1, double y1, double x2, double y2, GLSurface* s);
-            static void drawTexture(double x1, double y1, double x2, double y2, GLTexture* tex);
-            static void drawTexture(double x, double y, GLTexture* tex);
+            static void drawSurface(float x1, float y1, float width, float height, GLSurface* s);
+            static void drawTexture(float x1, float y1, float width, float height, GLTexture* tex);
+            static void drawTexture(float x, float y, GLTexture* tex);
 
-            static void drawTexturePart(Vec4f positionData, Vec4f textureData, GLTexture* tex);
+            static void drawTexturePart(Vec2f p1, Vec2f size, Vec2f uv1, Vec2f uv2, GLTexture* tex);
             
-            static void drawSprite(double x1, double y1, double x2, double y2, GLSprite* sprite, int index);
-            static void drawSprite(double x, double y, GLSprite* sprite, int index);
+            static void drawSprite(float x1, float y1, float width, float height, GLSprite* sprite, int index);
+            static void drawSprite(float x, float y, GLSprite* sprite, int index);
 
-            static void drawText(std::string text, double x, double y, GLFont* fontPointer = nullptr);
-            static void drawText(std::wstring text, double x, double y, GLFont* fontPointer = nullptr);
+            static void drawText(StringBridge text, float x, float y, GLFont* fontPointer = nullptr);
+            static void drawTextHighlighted(StringBridge text, float x, float y, int highlightStart, int highlightEnd, Vec4f highlightColor, GLFont* fontPointer = nullptr);
+            static void drawTextLimits(StringBridge text, float x, float y, float maxWidth, float maxHeight, char wrapMode, GLFont* fontPointer = nullptr);
+            static void drawTextLimitsHighlighted(StringBridge text, float x, float y, float maxWidth, float maxHeight, char wrapMode, int highlightStart, int highlightEnd, Vec4f highlightColor, GLFont* fontPointer = nullptr);
 
-            static void drawTextLimits(std::string text, double x, double y, double maxWidth, double maxHeight, bool useLineBreaks, GLFont* fontPointer = nullptr);
-            static void drawTextLimits(std::wstring text, double x, double y, double maxWidth, double maxHeight, bool useLineBreaks, GLFont* fontPointer = nullptr);
 
-            static void drawTextLimitsHighlighted(std::string text, double x, double y, double maxWidth, double maxHeight, bool useLineBreaks, int highlightStart, int highlightEnd, Vec4f highlightColor, GLFont* fontPointer = nullptr);
-            static void drawTextLimitsHighlighted(std::wstring text, double x, double y, double maxWidth, double maxHeight, bool useLineBreaks, int highlightStart, int highlightEnd, Vec4f highlightColor, GLFont* fontPointer = nullptr);
-
-            static void drawRectangle(double x1, double y1, double x2, double y2, bool outline);
+            static void drawRectangle(float x1, float y1, float width, float height, bool outline);
             
-            static void drawCircle(double x, double y, double radius, bool outline);
-            static void drawCircle(double x, double y, double innerRadius, double outerRadius);
+            static void drawCircle(float x, float y, float radius, bool outline);
+            static void drawCircle(float x, float y, float radius, float maxDisFromEdge);
 
-            static void drawEllipse(double x, double y, double xRadius, double yRadius, bool outline);
-            static void drawEllipse(double x, double y, double xRadius, double yRadius, double innerRadiusDistance);
-            static void drawEllipse(double x, double y, Vec2f dir1, Vec2f dir2, double innerRadiusDistance);
+            static void drawEllipse(float x, float y, float xRadius, float yRadius, bool outline);
+            static void drawEllipse(float x, float y, float xRadius, float yRadius, float innerRadiusDistance);
+            static void drawEllipse(float x, float y, Vec2f dir1, Vec2f dir2, float innerRadiusDistance);
 
             static void drawTriangle(Vec2f p1, Vec2f p2, Vec2f p3, bool outline);
 
-            static void drawLine(double x1, double y1, double x2, double y2);
+            static void drawLine(float x1, float y1, float x2, float y2);
             static void drawBezierCurve(BezierCurve* b, int subdivisions);
             
-            
+            /**
+             * @brief Sets whether certain methods should using AntiAliasing.
+             *      Note that this is not the same as any of the AA methods used before the fragment/pixel shader level
+             *          such as MSAA nor is it similar to FXAA or any of those methods.
+             *      Instead, it is applied in specific shader code for specific methods that support it such as circles or ellipses.
+             * 
+             * @return true 
+             * @return false 
+             */
+            static bool setAntiAliasing();
         private:
             GLGraphics();
             ~GLGraphics();
@@ -136,6 +142,8 @@
             static GLModel drawModel;
             static bool hasInit;
             static GLGraphics singleton;
+
+            static bool antiAlias;
         };
 
     }

@@ -1,4 +1,5 @@
 #ifdef _WIN32
+    #include "TargetVer.h"
     #include <ole2.h>
     #include <objidl.h>
     #include <shlObj.h>

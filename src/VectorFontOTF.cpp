@@ -219,7 +219,7 @@ namespace smpl
 
 	void readTableDir(std::vector<unsigned char>& fBytes, TableDirectoryOTF& o)
 	{
-		std::memcpy(&o, &fBytes.data()[0], 12);
+		std::memcpy((void*)&o, &fBytes.data()[0], 12);
 		o.entrySelector = StringTools::byteSwap(o.entrySelector);
 		o.numTables = StringTools::byteSwap(o.numTables);
 		o.rangeShift = StringTools::byteSwap(o.rangeShift);
@@ -569,7 +569,7 @@ namespace smpl
 
 	void readCMAP(std::vector<unsigned char>& fBytes, int offset, int length, cmapOTF& cm, std::unordered_map<uint32_t, uint32_t>& characterMapping)
 	{
-		std::memcpy(&cm, &fBytes.data()[offset], 4);
+		std::memcpy((void*)&cm, &fBytes.data()[offset], 4);
 		cm.version = StringTools::byteSwap(cm.version);
 		cm.numTables = StringTools::byteSwap(cm.numTables);
 

@@ -72,7 +72,7 @@ namespace smpl
         void addChild(XmlNode* n);
         void addValue(std::string s);
 
-        std::vector<XmlNode*> getNodesPattern(std::vector<std::string>& nameOrder, size_t offset=0);
+        std::vector<XmlNode*> getNodesPattern(const std::vector<std::string>& nameOrder, size_t offset=0);
         std::vector<ChildNode>& getChildNodes();
         SimpleHashMap<std::string, std::string>& getRawAttributes();
 
@@ -81,7 +81,7 @@ namespace smpl
     private:
         friend class SimpleXml;
 
-        void getNodesInternal(std::vector<std::string>& nameOrder, size_t offset, std::vector<XmlNode*>& results);
+        void getNodesInternal(const std::vector<std::string>& nameOrder, size_t offset, std::vector<XmlNode*>& results);
         /**
          * @brief Determines if the node an ending node. Ending nodes are only used when loading data.
          * 
@@ -188,7 +188,7 @@ namespace smpl
 
         void addNode(XmlNode* n);
 
-        std::vector<XmlNode*> getNodesPattern(std::vector<std::string>& nameOrder);
+        std::vector<XmlNode*> getNodesPattern(const std::vector<std::string>& nameOrder);
         std::vector<XmlNode*>& getNodes();
 
         bool getType();

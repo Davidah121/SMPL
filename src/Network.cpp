@@ -695,11 +695,11 @@ namespace smpl
 		return wouldConnect && secondaryStatus;
 	}
 
-	int Network::sendMessage(std::string message, size_t id)
+	int Network::sendMessage(const std::string& message, size_t id)
 	{
 		return sendMessage((char*)message.c_str(), message.size()+1, id);
 	}
-	int Network::sendMessage(std::vector<unsigned char> message, size_t id)
+	int Network::sendMessage(std::vector<unsigned char>& message, size_t id)
 	{
 		return sendMessage((char*)message.data(), message.size(), id);
 	}
@@ -1389,6 +1389,11 @@ namespace smpl
 		size_t v = connections.size();
 		releaseLock();
 		return v;
+	}
+	
+	bool Network::isSecure()
+	{
+		return isSecureNetwork;
 	}
 
 	bool Network::getShouldStart()

@@ -30,6 +30,7 @@ public:
 	//arithmetic
 	SIMD_128_FP32 operator+(const SIMD_128_FP32& other) const;
 	SIMD_128_FP32 operator-(const SIMD_128_FP32& other) const;
+	SIMD_128_FP32 operator-() const;
 	SIMD_128_FP32 operator*(const SIMD_128_FP32& other) const;
 	SIMD_128_FP32 operator/(const SIMD_128_FP32& other) const;
 	

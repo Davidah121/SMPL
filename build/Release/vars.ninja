@@ -1,4 +1,4 @@
-inc = -I ./include %WLIBPATH64% -I C:/Libraries/glew-2.1.0/include -I C:/Libraries/openssl/Static/Release/include
+inc = -I ./include  -I C:/Libraries/glew-2.1.0/include -I C:/Libraries/openssl-master/openssl/include
 objDir = ./bin/Release/obj
 compiler = cmd /c clang++ 
 CXXFLAGS = -std=c++17 -O3 -mavx2

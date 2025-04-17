@@ -9,62 +9,34 @@
 #ifdef USE_OPENGL
 	namespace smpl
 	{
-
-		std::vector<GLWindow*> GLWindow::windowList = std::vector<GLWindow*>();
-		
-		GLWindow* GLWindow::getWindowByHandle(size_t handle)
-		{
-			for (int i = 0; i < windowList.size(); i++)
-			{
-				if (handle == windowList[i]->getWindowHandle())
-				{
-					return windowList[i];
-				}
-			}
-
-			return nullptr;
-		}
-
-		void GLWindow::removeWindowFromList(GLWindow* wnd)
-		{
-			int swapIndex = -1;
-
-			for (int i = 0; i < windowList.size(); i++)
-			{
-				if (wnd == windowList[i])
-				{
-					swapIndex = i;
-				}
-			}
-
-			if (swapIndex != -1)
-			{
-				windowList[swapIndex] = windowList[windowList.size() - 1];
-				windowList.pop_back();
-			}
-		}
-
 		void GLWindow::setPixelFormat()
 		{
-			PIXELFORMATDESCRIPTOR pfd =
-			{
-				sizeof(PIXELFORMATDESCRIPTOR),
-				1,
-				PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    // Flags
-				PFD_TYPE_RGBA,        // The kind of framebuffer. RGBA or palette.
-				32,                   // Colordepth of the framebuffer.
-				0, 0, 0, 0, 0, 0,
-				0,
-				0,
-				0,
-				0, 0, 0, 0,
-				24,                   // Number of bits for the depthbuffer
-				8,                    // Number of bits for the stencilbuffer
-				0,                    // Number of Aux buffers in the framebuffer.
-				PFD_MAIN_PLANE,
-				0,
-				0, 0, 0
-			};
+			PIXELFORMATDESCRIPTOR pfd = {sizeof(PIXELFORMATDESCRIPTOR), 1};
+			pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+			pfd.cColorBits = 32;
+			pfd.cAlphaBits = 8;
+			pfd.iPixelType = PFD_TYPE_RGBA;
+			pfd.cDepthBits = 24;
+			pfd.cStencilBits = 8;
+			pfd.iLayerType = PFD_MAIN_PLANE;
+			// {
+			// 	sizeof(PIXELFORMATDESCRIPTOR),
+			// 	1,
+			// 	PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    // Flags
+			// 	PFD_TYPE_RGBA,        // The kind of framebuffer. RGBA or palette.
+			// 	32,                   // Colordepth of the framebuffer.
+			// 	0, 0, 0, 0, 0, 0,
+			// 	0,
+			// 	0,
+			// 	0,
+			// 	0, 0, 0, 0,
+			// 	24,                   // Number of bits for the depthbuffer
+			// 	8,                    // Number of bits for the stencilbuffer
+			// 	0,                    // Number of Aux buffers in the framebuffer.
+			// 	PFD_MAIN_PLANE,
+			// 	0,
+			// 	0, 0, 0
+			// };
 
 			
 			int pixelFormat = ChoosePixelFormat(ghDC, &pfd);
@@ -73,7 +45,7 @@
 			{
 				//error occured
 				setValid(false);
-				StringTools::println("cPIXEL FORMAT ERROR");
+				StringTools::println("CHOOSE PIXEL FORMAT ERROR");
 				return;
 			}
 
@@ -81,7 +53,7 @@
 			{
 				//error occured
 				setValid(false);
-				StringTools::println("sPIXEL FORMAT ERROR");
+				StringTools::println("SET PIXEL FORMAT ERROR");
 				return;
 			}
 		}
@@ -93,7 +65,7 @@
 			
 			if(getValid() == false)
 			{
-				StringTools::println("FAILED");
+				StringTools::println("INIT GL NOT VALID");
 				setShouldEnd(true);
 			}
 			else
@@ -101,7 +73,7 @@
 				ghRC = wglCreateContext(ghDC);
 				if(wglMakeCurrent(ghDC, ghRC) == false)
 				{
-					StringTools::println("FAILED2");
+					StringTools::println("FAILED TO MAKE GL CONTEXT CURRENT");
 				}
 			}
 
@@ -119,21 +91,30 @@
 			GLGraphics::clear(GLGraphics::COLOR_BUFFER | GLGraphics::DEPTH_BUFFER);
 			GLGraphics::setOrthoProjection(width, height);
 			
-			// glViewport(0, 0, width, height);
+			// glViewport(0, 0, width, height+1);
 			// glClearColor(0.0f,0.0f,0.0f,0.0f);
 			// glClearDepth(1.0f);
 		}
 
 		void GLWindow::testGL()
 		{
+			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glLoadIdentity();
 
 			glBegin(GL_TRIANGLES);
 			glColor3f(0.1, 0.2, 0.3);
-			glVertex3f(0, 0, 0);
-			glVertex3f(1, 0, 0);
-			glVertex3f(0, 1, 0);
+			glVertex3f(-1.1, 0, 0);
+			glVertex3f(1.1, 0, 0);
+			glVertex3f(0, 1.1, 0);
+			glEnd();
+
+			
+			glBegin(GL_TRIANGLES);
+			glColor3f(0.6, 0.2, 0.3);
+			glVertex3f(-1.1, 0, 0);
+			glVertex3f(1.1, 0, 0);
+			glVertex3f(0, -1.1, 0);
 			glEnd();
 
 			glFlush();
@@ -173,7 +154,6 @@
 		GLWindow::GLWindow()
 			: SimpleWindow(true)
 		{
-			GLWindow::windowList.push_back(this);
 			threadOwnership = false;
 			init(-1, -1, 320, 240, L"", windowType);
 		}
@@ -181,7 +161,6 @@
 		GLWindow::GLWindow(std::wstring title, int width, int height, int x, int y, WindowOptions windowType)
 			: SimpleWindow(true)
 		{
-			GLWindow::windowList.push_back(this);
 			threadOwnership = false;
 			init(x, y, width, height, title, windowType);
 		}
@@ -189,7 +168,6 @@
 		GLWindow::GLWindow(std::string title, int width, int height, int x, int y, WindowOptions windowType)
 			: SimpleWindow(true)
 		{
-			GLWindow::windowList.push_back(this);
 			threadOwnership = false;
 			init(x, y, width, height, StringTools::toWideString(title), windowType);
 		}
@@ -218,6 +196,7 @@
 
 		void GLWindow::init(int x, int y, int width, int height, std::wstring title, WindowOptions windowType)
 		{
+			this->noWindowProcPaint = true;
 			this->x = x;
 			this->y = y;
 			this->width = width;
@@ -242,7 +221,7 @@
 			this->title = title;
 
 			setAllFunctionsToNull();
-			if(windowList.size() == 1)
+			if(SimpleWindow::windowList.size() == 1)
 			{
 				setWindowAsInputFocus();
 			}
@@ -363,7 +342,7 @@
 					wndClass.hIcon = handleToIcon;
 				}
 				
-				wndClass.hIconSm = LoadIcon(hins, IDI_APPLICATION);
+				wndClass.hIconSm = wndClass.hIcon;
 				wndClass.hInstance = hins;
 				wndClass.lpfnWndProc = SimpleWindow::wndProc;
 				wndClass.lpszClassName = text.c_str();
@@ -384,16 +363,16 @@
 					{
 						case SimpleWindow::NORMAL_WINDOW:
 							style = WS_OVERLAPPEDWINDOW;
-							trueWidth += 16;
-							trueHeight += 40;
+							trueWidth += SimpleWindow::BorderWidth;
+							trueHeight += SimpleWindow::BorderHeight;
 							break;
 						case SimpleWindow::BORDERLESS_WINDOW:
 							style = WS_POPUP|WS_VISIBLE|WS_SYSMENU;
 							break;
 						default:
 							style = WS_OVERLAPPEDWINDOW;
-							trueWidth += 16;
-							trueHeight += 40;
+							trueWidth += SimpleWindow::BorderWidth;
+							trueHeight += SimpleWindow::BorderHeight;
 							break;
 					}
 
@@ -496,6 +475,7 @@
 		
 		void GLWindow::finishResize()
 		{
+			StringTools::println("%d, %d", width, height);
 			GLGraphics::setViewport(0, 0, width, height);
 			GLGraphics::setClearColor( Vec4f(0, 0, 0, 0) );
 			GLGraphics::clear(GLGraphics::COLOR_BUFFER | GLGraphics::DEPTH_BUFFER);
@@ -512,26 +492,6 @@
 			}
 			resizing = false;
 			resizeMe = false;
-		}
-
-		bool GLWindow::threadRender()
-		{
-			bool changed = false;
-
-			if(windowState != STATE_MINIMIZED)
-			{
-				if (gui != nullptr && activateGui)
-				{
-					changed = gui->renderGuiElements();
-				}
-			}
-
-			if (paintFunction != nullptr)
-			{
-				paintFunction(this);
-				changed = true;
-			}
-			return changed;
 		}
 
 		void GLWindow::threadRepaint()
@@ -555,11 +515,10 @@
 			if(windowState != STATE_MINIMIZED)
 			{
 				bool imgChanged = threadRender();
-
-				if(changed || imgChanged)
-				{
+				// if(changed || imgChanged)
+				// {
 					swapBuffers();
-				}
+				// }
 
 				myMutex.lock();
 				shouldRepaint=false;

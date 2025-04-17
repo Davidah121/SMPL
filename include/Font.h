@@ -5,6 +5,7 @@
 #include "MathExt.h"
 #include "GeneralExceptions.h"
 #include "Shape.h"
+#include "StringBridge.h"
 
 namespace smpl
 {
@@ -21,9 +22,20 @@ namespace smpl
 		int yOffset = 0;
 	};
 
+	struct FontCharBoxInfo
+	{
+		size_t charIndex;
+		int rowStartPosition;
+		Box2D boundingBox;
+	};
+
 	class DLL_OPTION Font : public SerializedObject
 	{
 	public:
+		static const char NO_WRAP = 0;
+		static const char CHARACTER_WRAP = 1;
+		static const char WORD_WRAP = 2;
+		
 		/**
 		 * @brief Creates a Font Object.
 		 * 		This class should never be directly instantiated.
@@ -124,24 +136,7 @@ namespace smpl
 		 * 		If the string exceeds the maximum height, it stops.
 		 * @return Box2D 
 		 */
-		Box2D getBoundingBox(std::string text, int maxWidth, int maxHeight);
-
-		/**
-		 * @brief Returns a bounding box that surrounds the text based on the given parameters.
-		 * 		Note that when a line break or wrap text occurs, it does not carry the whole word to the next line.
-		 * 		Wrapped text can be removed by setting max width to a negative value.
-		 * 		It is adjusted by the current font size vs the original font size.
-		 * 
-		 * @param text 
-		 * @param maxWidth 
-		 * 		Sets a maximum width up to 2^31 - 1. A negative value means no maximum width.
-		 * 		If the string exceeds the maximum width, it moves to a new line.
-		 * @param maxHeight 
-		 * 		Sets a maximum height up to 2^31 - 1. A negative value means no maximum height.
-		 * 		If the string exceeds the maximum height, it stops.
-		 * @return Box2D 
-		 */
-		Box2D getBoundingBox(std::wstring text, int maxWidth, int maxHeight);
+		Box2D getBoundingBox(StringBridge textBridge, unsigned int maxWidth, char wrapMode);
 
 		/**
 		 * @brief Get the Select Index at the specified position.
@@ -155,49 +150,7 @@ namespace smpl
 		 * @param y 
 		 * @return size_t 
 		 */
-		size_t getSelectIndex(std::string text, int maxWidth, int x, int y);
-
-		/**
-		 * @brief Get the Select Index at the specified position.
-		 * 		Assumes that the start position of the text is at (0,0).
-		 * 		Returns the maximum of a size_t for invalid cases.
-		 * 
-		 * @param text 
-		 * @param maxWidth 
-		 * 		Used for text wrapping.
-		 * @param x 
-		 * @param y 
-		 * @return size_t 
-		 */
-		size_t getSelectIndex(std::wstring text, int maxWidth, int x, int y);
-		
-		/**
-		 * @brief Returns the location of the cursor at the given character location.
-		 * 		Note that when a line break or wrap text occurs, it does not carry the whole word to the next line.
-		 * 		Wrapped text can be removed by setting max width to a negative value.
-		 * 		It is adjusted by the current font size vs the original font size.
-		 * 
-		 * @param text 
-		 * @param maxWidth 
-		 * 		Sets a maximum width up to 2^31 - 1. A negative value means no maximum width.
-		 * 		If the string exceeds the maximum width, it moves to a new line.
-		 * @return Vec2f 
-		 */
-		Vec2f getCursorLocation(std::string text, size_t charIndex, int maxWidth);
-		
-		/**
-		 * @brief Returns the location of the cursor at the given character location.
-		 * 		Note that when a line break or wrap text occurs, it does not carry the whole word to the next line.
-		 * 		Wrapped text can be removed by setting max width to a negative value.
-		 * 		It is adjusted by the current font size vs the original font size.
-		 * 
-		 * @param text 
-		 * @param maxWidth 
-		 * 		Sets a maximum width up to 2^31 - 1. A negative value means no maximum width.
-		 * 		If the string exceeds the maximum width, it moves to a new line.
-		 * @return Vec2f 
-		 */
-		Vec2f getCursorLocation(std::wstring text, size_t charIndex, int maxWidth);
+		size_t getSelectIndex(StringBridge textBridge, unsigned int maxWidth, char wrapMode, int x, int y);
 		
 		/**
 		 * @brief Returns the raw list of the font characters information.
@@ -206,6 +159,22 @@ namespace smpl
 		 * @return std::vector<FontCharInfo>&
 		 */
 		std::vector<FontCharInfo>& getListOfFontCharInfo();
+
+		/**
+		 * @brief Gets the bounding box for each character in the string. Useful for rendering purposes and selection purposes.
+		 * 		Features 3 modes of operation. 
+		 * 			NO_WRAP
+		 * 			CHARACTER_WRAP
+		 * 			WORD_WRAP
+		 * 		Note that maxWidth is ignored in the NO_WRAP case but required to be > 0 in all other cases.
+		 * 			Note that in WORD_WRAP, if the entire word can not fit on a single line, it will switch to CHARACTER_WRAP temporarily.
+		 * 		
+		 * @param text 
+		 * @param maxWidth 
+		 * @param wrapMode 
+		 * @return std::vector<Box2D> 
+		 */
+		std::vector<FontCharBoxInfo> getAllCharBoxes(StringBridge textBridge, unsigned int maxWidth, char wrapMode);
 		
 	protected:
 		std::vector<FontCharInfo> charInfoList = std::vector<FontCharInfo>();

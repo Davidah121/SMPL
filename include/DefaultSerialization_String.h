@@ -33,7 +33,7 @@ void staticDeserializeHandler(SerializedStreamable& input, DataFormatter& format
 void staticSerializeHandler(SerializedStreamable& output, DataFormatter& formatter, const std::string varName, std::string& var)
 {
     formatter.writeStart(output, DataFormatter::FORMAT_DATA, TypeInfo::get<std::string>(), varName, 1);
-    formatter.writeString(output, TypeInfo::get<char>(), var.data(), var.size()+1);
+    formatter.writeString(output, TypeInfo::get<char>(), var.data(), var.size());
 }
 
 void staticDeserializeHandler(SerializedStreamable& input, DataFormatter& formatter, const std::string varName, std::string& var)
@@ -50,7 +50,7 @@ void staticDeserializeHandler(SerializedStreamable& input, DataFormatter& format
 void staticSerializeHandler(SerializedStreamable& output, DataFormatter& formatter, const std::string varName, std::wstring& var)
 {
     formatter.writeStart(output, DataFormatter::FORMAT_DATA, TypeInfo::get<std::wstring>(), varName, 1);
-    formatter.writeString(output, TypeInfo::get<wchar_t>(), var.data(), var.size()+1);
+    formatter.writeString(output, TypeInfo::get<wchar_t>(), var.data(), var.size());
 }
 
 void staticDeserializeHandler(SerializedStreamable& input, DataFormatter& formatter, const std::string varName, std::wstring& var)

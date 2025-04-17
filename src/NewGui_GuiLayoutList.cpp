@@ -24,7 +24,7 @@ namespace smpl
     void GuiLayoutList::layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight)
     {
         resetPosition();
-        //margin = distance from outside content to the edge of this objects border
+
         int actualMaxW, actualMaxH;
         bool processFixed = (flags & FLAG_ABSOLUTE_POSITION) || parent.getPointer() == nullptr;
         
@@ -88,6 +88,12 @@ namespace smpl
         //padding = distance from border to content inside border. Also add in border
         int nOffX = padding.left + border.left;
         int nOffY = padding.top + border.top;
+
+        //These maximum values must actually be set to be considered.
+        if(maxHeight > 0)
+            actualMaxH = __min(maxHeight, actualMaxH);
+        if(maxWidth > 0)
+            actualMaxW = __min(maxWidth, actualMaxW);
 
         //The maximum width and height for all content this layout contains.
         int maxContentWidth = actualMaxW - nOffX - padding.right - border.right;
@@ -262,26 +268,70 @@ namespace smpl
         if(direction == DIRECTION_HORIZONTAL)
         {
             int totalChildWidth = maxXOffsetSeen;
-            int totalChildHeight = maxYOffsetSeen;
-            if(indexOfLastWrap != children.size()-1)
-            {
-                int autoMarginWidth = 0;
-                int autoMarginHeight = 0;
-                if(horizontalMarginAutoCount != 0)
-                    autoMarginWidth = (width - totalChildWidth) / horizontalMarginAutoCount;
-                if(verticalMarginAutoCount != 0)
-                    autoMarginHeight = (height - totalChildHeight) / verticalMarginAutoCount;
+            int totalChildHeight = MathExt::max(height, maxYOffsetSeen);
 
-                fixAlignmentAndLayout(autoMarginWidth, autoMarginHeight, indexOfLastWrap, childIndex);
+            if(indexOfLastWrap != children.size()-1 || children.size() == 1)
+            {
+                if(horizontalMarginAutoCount != 0)
+                {
+                    int autoMarginWidthAdjustment = (width - totalChildWidth) / horizontalMarginAutoCount;
+                    fixAlignmentAndLayout(autoMarginWidthAdjustment, 0, indexOfLastWrap, childIndex);
+                }
+            }
+            
+            childIndex = 0;
+            while(childIndex < children.size())
+            {
+                SmartMemory<GuiItem> _child = children[childIndex];
+                GuiItem* child = _child.getPointer();
+                if(child == nullptr)
+                {
+                    childIndex++;
+                    continue;
+                }
                 
-                horizontalMarginAutoCount = 0;
-                verticalMarginAutoCount = 0;
+                if(child->getType() == TYPE_LAYOUT)
+                {
+                    uint16_t childFlags = ((GuiLayout*)child)->getFlags();
+                    GRect childMargin = ((GuiLayout*)child)->getMargin();
+
+                    //Calculate auto margin width and height.
+                    //First calculate true child width and height.
+                    int childHeight = child->height;
+
+                    //Factor in margin. (IFF not auto)
+                    if(!(childFlags & FLAG_AUTO_BOTTOM_MARGIN))
+                        childHeight += childMargin.bottom;
+
+                    int autoMarginHeight = totalChildHeight - childHeight;
+
+                    //if both are auto, center it. If right is auto, ignore as it is already left aligned.
+                    if(childFlags & FLAG_AUTO_TOP_MARGIN && childFlags & FLAG_AUTO_BOTTOM_MARGIN)
+                        autoMarginHeight /= 2;
+                    else if(childFlags & FLAG_AUTO_BOTTOM_MARGIN)
+                        autoMarginHeight = 0;
+                    else if(!(childFlags & FLAG_AUTO_TOP_MARGIN) && !(childFlags & FLAG_AUTO_BOTTOM_MARGIN))
+                        autoMarginHeight = 0; //No auto margin
+                    
+                    //Add the adjustments. May add 0
+                    child->y += autoMarginHeight;
+                }
+                childIndex++;
             }
         }
         else
         {
-            int totalChildWidth = maxXOffsetSeen - padding.right - border.right;
-            int totalChildHeight = maxYOffsetSeen - padding.bottom - border.bottom;
+            int totalChildWidth = MathExt::max(width, maxXOffsetSeen);
+            int totalChildHeight = maxYOffsetSeen;
+            if(indexOfLastWrap != children.size()-1 || children.size() == 1)
+            {
+                if(verticalMarginAutoCount != 0)
+                {
+                    int autoMarginHeightAdjust = (height - totalChildHeight) / verticalMarginAutoCount;
+                    fixAlignmentAndLayout(0, autoMarginHeightAdjust, indexOfLastWrap, childIndex);
+                }
+            }
+            
             childIndex = 0;
             while(childIndex < children.size())
             {
@@ -301,16 +351,12 @@ namespace smpl
                     //Calculate auto margin width and height.
                     //First calculate true child width and height.
                     int childWidth = child->width;
-                    int childHeight = child->height;
 
                     //Factor in margin. (IFF not auto)
                     if(!(childFlags & FLAG_AUTO_RIGHT_MARGIN))
                         childWidth += childMargin.right;
-                    if(!(childFlags & FLAG_AUTO_BOTTOM_MARGIN))
-                        childHeight += childMargin.bottom;
 
                     int autoMarginWidth = totalChildWidth - childWidth;
-                    int autoMarginHeight = totalChildHeight - childHeight;
 
                     //if both are auto, center it. If right is auto, ignore as it is already left aligned.
                     if(childFlags & FLAG_AUTO_LEFT_MARGIN && childFlags & FLAG_AUTO_RIGHT_MARGIN)
@@ -320,26 +366,24 @@ namespace smpl
                     else if(!(childFlags & FLAG_AUTO_LEFT_MARGIN) && !(childFlags & FLAG_AUTO_RIGHT_MARGIN))
                         autoMarginWidth = 0; //No auto margin
                     
-                    //Same here, but if bottom is auto, ignore as it is already top aligned.
-                    if(childFlags & FLAG_AUTO_TOP_MARGIN && childFlags & FLAG_AUTO_BOTTOM_MARGIN)
-                        autoMarginHeight /= 2;
-                    else if(childFlags & FLAG_AUTO_BOTTOM_MARGIN)
-                        autoMarginHeight = 0;
-                    else if(!(childFlags & FLAG_AUTO_TOP_MARGIN) && !(childFlags & FLAG_AUTO_BOTTOM_MARGIN))
-                        autoMarginHeight = 0; //No auto margin
-                    
                     //Add the adjustments. May add 0
                     child->x += autoMarginWidth;
-                    child->y += autoMarginHeight;
                 }
                 childIndex++;
             }
+            
         }
         
         //Add in padding and border to the right and bottom edges
         width += padding.right + border.right;
         height += padding.bottom + border.bottom;
-
+        
+        //TODO: FIX THIS. CONTENT SIZE NEEDS TO BE COMPUTED ALONGSIDE WIDTH AND HEIGHT
+        //before clamping to the maximum allowed width and height. minimum width and height should be included as a part of content.
+        contentWidth = width;
+        contentHeight = height;
+        
+        // StringTools::println("width = %d | height = %d", width, height);
         // //insure that width and height have not exceeded the min and max
         // width = __min(width, actualMaxW);
         // height = __min(height, actualMaxH);
@@ -384,23 +428,29 @@ namespace smpl
                 if(autoMarginWidth != 0)
                 {
                     if(childFlags & FLAG_AUTO_LEFT_MARGIN)
+                    {
                         child->x += autoMarginWidth;
+                        remainingX += autoMarginWidth;
+                    }
                     
                     if(childFlags & FLAG_AUTO_RIGHT_MARGIN)
-                        remainingX = autoMarginWidth;
-                    else
-                        remainingX = 0;
+                        remainingX += autoMarginWidth;
+                    // else
+                    //     remainingX = 0;
                 }
                 
                 if(autoMarginHeight != 0)
                 {
                     if(childFlags & FLAG_AUTO_TOP_MARGIN)
+                    {
                         child->y += autoMarginHeight;
+                        remainingY += autoMarginHeight;
+                    }
                     
                     if(childFlags & FLAG_AUTO_BOTTOM_MARGIN)
-                        remainingY = autoMarginHeight;
-                    else
-                        remainingY = 0;
+                        remainingY += autoMarginHeight;
+                    // else
+                    //     remainingY = 0;
                 }
             }
         }

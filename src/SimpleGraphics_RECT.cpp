@@ -5,9 +5,8 @@ namespace smpl
     #if (OPTI == 0)
 
     //works properly now
-    void SimpleGraphics::drawRect(int x, int y, int x2, int y2, bool outline, Image* surf)
+    void SimpleGraphics::drawRect(int x, int y, int width, int height, bool outline, Image* surf)
     {
-        int currentComposite = compositeRule;
         Image* otherImg;
         if (surf == nullptr)
             return;
@@ -20,14 +19,18 @@ namespace smpl
             {
                 return;
             }
+            
+            int x2 = x+width;
+            int y2 = y+height;
+            
             int tempWidth = otherImg->getWidth();
             int tempHeight = otherImg->getHeight();
 
             int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
             int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
 
-            int maxXBound = MathExt::min(tempWidth-1, (int)clippingRect.getRightBound());
-            int maxYBound = MathExt::min(tempHeight-1, (int)clippingRect.getBottomBound());
+            int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
+            int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
 
             int minX = MathExt::min(x, x2);
             int maxX = MathExt::max(x, x2);
@@ -47,7 +50,7 @@ namespace smpl
             if(minX==maxX && minY==maxY)
                 return;
             
-            
+            int approxArea = (maxX-minX) * (maxY-minY);
             if(outline == false)
             {
                 int offWidth = maxX - minX;
@@ -58,34 +61,19 @@ namespace smpl
                 int actualX = minX;
                 int actualY = minY;
                 
-                if(currentComposite == NO_COMPOSITE)
+                LARGE_ENOUGH_CLAUSE(approxArea)
+                #pragma omp parallel for
+                for(int tY = minY; tY < maxY; tY++)
                 {
-					//#pragma omp parallel for
-                    for(int tY = minY; tY <= maxY; tY++)
+                    Color* startPoint = &otherImg->getPixels()[minX + tY*otherImg->getWidth()];
+                    Color* endPoint = &otherImg->getPixels()[maxX + tY*otherImg->getWidth()];
+                    while(startPoint < endPoint)
                     {
-                        Color* startPoint = &otherImg->getPixels()[minX + tY*otherImg->getWidth()];
-                        Color* endPoint = &otherImg->getPixels()[maxX + tY*otherImg->getWidth()];
-                        while(startPoint <= endPoint)
-                        {
-                            *startPoint = activeColor;
-                            startPoint++;
-                        }
+                        *startPoint = blend(activeColor, *startPoint);
+                        startPoint++;
                     }
                 }
-                else
-                {
-                    //#pragma omp parallel for
-                    for(int tY = minY; tY <= maxY; tY++)
-                    {
-                        Color* startPoint = &otherImg->getPixels()[minX + tY*otherImg->getWidth()];
-                        Color* endPoint = &otherImg->getPixels()[maxX + tY*otherImg->getWidth()];
-                        while(startPoint <= endPoint)
-                        {
-                            *startPoint = blend(activeColor, *startPoint);
-                            startPoint++;
-                        }
-                    }
-                }
+                RESET_LARGE_ENOUGH_CLAUSE()
             }
             else
             {

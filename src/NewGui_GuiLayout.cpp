@@ -36,30 +36,32 @@ namespace smpl
     {
         int tx = getTrueX();
         int ty = getTrueY();
-        int tx2 = getTrueX() + width - 1;
-        int ty2 = getTrueY() + height - 1;
+        int tx2 = getTrueX() + width;
+        int ty2 = getTrueY() + height;
+        if(tx2 < tx || ty2 < ty)
+            return;
 
         //render border first. Then background
         smpl::GraphicsInterface::setColor(borderColor);
         if(border.left > 0)
         {
             //left border
-            smpl::GraphicsInterface::drawRect(tx, ty, tx+(border.left-1), ty2, false);
+            smpl::GraphicsInterface::drawRect(tx, ty, (border.left), height, false);
         }
         if(border.right > 0)
         {
             //right border
-            smpl::GraphicsInterface::drawRect(tx2-(border.right-1), ty, tx2, ty2, false);
+            smpl::GraphicsInterface::drawRect(tx2-(border.right), ty, border.right, height, false);
         }
         if(border.top > 0)
         {
             //top border
-            smpl::GraphicsInterface::drawRect(tx, ty, tx2, ty+(border.top-1), false);
+            smpl::GraphicsInterface::drawRect(tx, ty, width, (border.top), false);
         }
         if(border.bottom > 0)
         {
             //bottom border
-            smpl::GraphicsInterface::drawRect(tx, ty2-(border.bottom-1), tx2, ty2, false);
+            smpl::GraphicsInterface::drawRect(tx, ty2-(border.bottom), width, border.bottom, false);
         }
 
         //readjust x,y,x2,y2 to remove border
@@ -69,13 +71,12 @@ namespace smpl
         ty2 -= border.bottom;
         
         smpl::GraphicsInterface::setColor(backgroundColor);
-        smpl::GraphicsInterface::drawRect(tx, ty, tx2, ty2, false);
+        smpl::GraphicsInterface::drawRect(tx, ty, (tx2-tx), (ty2-ty), false);
     }
 
     void GuiLayout::render(SmartMemory<GuiManager> manager)
     {
         baseRender();
-
         for(SmartMemory<GuiItem> child : children)
         {
             GuiItem* rawP = child.getPointer();
@@ -212,24 +213,35 @@ namespace smpl
 
     void GuiLayout::setMargin(GRect r)
     {
+        setShouldRender();
         margin = r;
     }
     void GuiLayout::setPadding(GRect r)
     {
+        setShouldRender();
         padding = r;
     }
     void GuiLayout::setBorder(GRect r)
     {
+        setShouldRender();
         border = r;
     }
 
     void GuiLayout::setBorderColor(smpl::Color c)
     {
+        setShouldRender();
         borderColor = c;
     }
     void GuiLayout::setBackgroundColor(smpl::Color c)
     {
+        setShouldRender();
         backgroundColor = c;
+    }
+
+    void GuiLayout::setFlags(uint16_t f)
+    {
+        setShouldRender();
+        flags = f;
     }
 
     uint16_t GuiLayout::getFlags()
@@ -257,6 +269,15 @@ namespace smpl
         return backgroundColor;
     }
 
+    uint16_t GuiLayout::getContentWidth()
+    {
+        return contentWidth;
+    }
+    uint16_t GuiLayout::getContentHeight()
+    {
+        return contentHeight;
+    }
+    
     void GuiLayout::setMinWidth(uint16_t v)
     {
         minWidth = v;
@@ -304,6 +325,11 @@ namespace smpl
             data.pop_back();
         
         std::vector<std::string> split = StringTools::splitString(data, ',');
+        for(std::string& arg : split)
+        {
+            arg = StringTools::removeWhitespace(arg, true, true);
+        }
+        
         if(split.size() == 4)
         {
             //parse and look for % or auto. % is not supported so skip it.
@@ -314,9 +340,10 @@ namespace smpl
             }
             else
             {
-                if(loadValueFromAttrib(input.left, data))
+                if(loadValueFromAttrib(input.left, split[0]))
                     setXPercentage(true); //Only margin can do this so far
             }
+
             if(split[1] == "auto" && autoAllowed)
             {
                 //only margin can do this
@@ -324,9 +351,10 @@ namespace smpl
             }
             else
             {
-                if(loadValueFromAttrib(input.top, data))
+                if(loadValueFromAttrib(input.top, split[1]))
                     setYPercentage(true); //Only margin can do this so far
             }
+
             if(split[2] == "auto" && autoAllowed)
             {
                 //only margin can do this
@@ -337,8 +365,9 @@ namespace smpl
             }
             else
             {
-                loadValueFromAttrib(input.right, data);
+                loadValueFromAttrib(input.right, split[2]);
             }
+
             if(split[3] == "auto" && autoAllowed)
             {
                 //only margin can do this
@@ -349,7 +378,7 @@ namespace smpl
             }
             else
             {
-                loadValueFromAttrib(input.bottom, data);
+                loadValueFromAttrib(input.bottom, split[3]);
             }
         }
     }

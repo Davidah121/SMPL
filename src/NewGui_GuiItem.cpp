@@ -110,8 +110,8 @@ namespace smpl
     
     void GuiItem::doPreRender(SmartMemory<GuiManager> manager)
     {
-        if(!getVisible())
-            return;
+        // if(!getVisible())
+        //     return;
 
         doPreRenderOperations(manager);
         determineChangeInOverlap(manager);
@@ -124,19 +124,21 @@ namespace smpl
             return;
         
         if(getShouldReRender())
-        {
-            GRect newDrawnArea = {0, 0, 65535, 65535};
-            if(manager.getPointer() != nullptr)
-            {
-                newDrawnArea = manager.getRawPointer()->getNewDrawnArea();
-            }
-            
-            smpl::GraphicsInterface::setClippingRect(Box2D(newDrawnArea.left, newDrawnArea.top, newDrawnArea.right, newDrawnArea.bottom));
-
             render(manager);
-            shouldReRender = false;
+        
+    }
+    
+    void GuiItem::setFinishedRendering()
+    {
+        shouldReRender = false;
+        if(this->type == TYPE_LAYOUT)
+        {
+            for(SmartMemory<GuiItem>& mem : ((GuiLayout*)this)->children)
+            {
+                if(mem.getPointer() != nullptr)
+                    mem.getRawPointer()->setFinishedRendering();
+            }
         }
-
     }
 
     void GuiItem::determineChangeFromLastTime()
@@ -178,20 +180,32 @@ namespace smpl
         if(!getVisible())
             return;
 
-        //Get all area known to be redrawing
+        //Get oldDrawnArea and newDrawnArea. Both are initialized to 0 before drawing starts.
         GRect newlyDrawnArea = manager.getRawPointer()->getNewDrawnArea();
-        if(newlyDrawnArea.left == newlyDrawnArea.right || newlyDrawnArea.top == newlyDrawnArea.bottom) //invalid box.
-            return;
+        GRect oldDrawnArea = manager.getRawPointer()->getOldDrawnArea();
         
+        bool checkedOneAtLeast = false;
+
         //check for overlap. If so, this item should probably be re-rendered
-        if(lastKnownRenderRect.left <= newlyDrawnArea.right && lastKnownRenderRect.right >= newlyDrawnArea.left)
-            if(lastKnownRenderRect.top <= newlyDrawnArea.bottom && lastKnownRenderRect.bottom >= newlyDrawnArea.top)
-                setShouldRender();
-        
-        if(newlyDrawnArea.left <= lastKnownRenderRect.right && newlyDrawnArea.right >= lastKnownRenderRect.left)
-            if(newlyDrawnArea.top <= lastKnownRenderRect.bottom && newlyDrawnArea.bottom >= lastKnownRenderRect.top)
-                setShouldRender();
-        
+        if(newlyDrawnArea != GRect{0, 0, 0, 0, 0})
+        {
+            checkedOneAtLeast = true;
+            if(lastKnownRenderRect.left <= newlyDrawnArea.right && lastKnownRenderRect.right >= newlyDrawnArea.left)
+                if(lastKnownRenderRect.top <= newlyDrawnArea.bottom && lastKnownRenderRect.bottom >= newlyDrawnArea.top)
+                    setShouldRender();
+        }
+        if(oldDrawnArea != GRect{0, 0, 0, 0, 0})
+        {
+            checkedOneAtLeast = true;
+            if(lastKnownRenderRect.left <= oldDrawnArea.right && lastKnownRenderRect.right >= oldDrawnArea.left)
+                if(lastKnownRenderRect.top <= oldDrawnArea.bottom && lastKnownRenderRect.bottom >= oldDrawnArea.top)
+                    setShouldRender();
+        }
+
+        //neither box is valid
+        if(checkedOneAtLeast != true)
+            return;
+
         determineChangeInOverlapForChildren(manager);
     }
 
@@ -202,52 +216,60 @@ namespace smpl
             for(SmartMemory<GuiItem>& mem : ((GuiLayout*)this)->children)
             {
                 if(mem.getPointer() != nullptr)
-                    mem.getRawPointer()->determineChangeInOverlap(manager);
+                {
+                    mem->determineChangeInOverlap(manager);
+                    if(mem->getShouldReRender())
+                        setShouldRender();
+                }
             }
         }
     }
 
     void GuiItem::doPreRenderOperations(SmartMemory<GuiManager> manager)
     {
-        if(!getVisible())
-            return;
+        // if(!getVisible())
+        //     return;
         
-        fixPosition();
-        GRect currRect = {trueX, trueY, trueX+width, trueY+height, 0};
+        GRect currRect = {0,0,0,0,0};
+        if(getVisible())
+        {
+            fixPosition();
+            currRect = {trueX, trueY, trueX+width, trueY+height, 0};
 
-        determineChangeFromLastTime();
-        if(manager.getPointer() != nullptr)
+            determineChangeFromLastTime();
+        }
+
+        LockingSmartMemory<GuiManager> lockedManager = manager.getLockingPointer();
+        if(lockedManager != nullptr)
         {
             //get this objects depth
-            uint32_t myDepth = manager.getRawPointer()->getNextDepthValue();
+            uint32_t myDepth = lockedManager->getNextDepthValue();
             currRect.depth = myDepth;
 
-            if(manager.getRawPointer()->getMustRedraw())
+            if(lockedManager->getMustRedraw())
                 setShouldRender();
 
             if(getShouldReRender())
             {
-                GRect bigRect = {
-                    MathExt::min(lastKnownRenderRect.left, currRect.left),
-                    MathExt::min(lastKnownRenderRect.top, currRect.top),
-                    MathExt::max(lastKnownRenderRect.right, currRect.right),
-                    MathExt::max(lastKnownRenderRect.bottom, currRect.bottom)
-                };
-                manager.getRawPointer()->addNewDrawnArea(bigRect);
+                lockedManager->addOldDrawnArea(lastKnownRenderRect);
+                if(getVisible())
+                    lockedManager->addNewDrawnArea(currRect);
             }
         }
 
-        doPreRenderOperationsForChildren(manager);
+        // if(getVisible())
+            doPreRenderOperationsForChildren(manager);
         lastKnownRenderRect = currRect;
     }
 
     void GuiItem::updateManagerRenderCounter(SmartMemory<GuiManager> manager)
     {
-        if(getShouldReRender())
+        if(getShouldReRender() && getVisible())
         {
-            if(manager.getPointer() != nullptr)
+            LockingSmartMemory<GuiManager> lockedManager = manager.getLockingPointer();
+            if(lockedManager != nullptr)
             {
-                manager.getRawPointer()->updateRenderCounter();
+                lockedManager->updateRenderCounter();
                 updateManagerRenderCounterForChildren(manager);
             }
         }
@@ -272,7 +294,7 @@ namespace smpl
 
     bool GuiItem::getShouldReRender()
     {
-        return shouldReRender && getVisible();
+        return shouldReRender;
     }
     
     GRect GuiItem::getPreviousRenderRect()
@@ -296,9 +318,10 @@ namespace smpl
 
     void GuiItem::setParent(SmartMemory<GuiItem> p)
     {
-        if(parent.getPointer() != nullptr)
+        LockingSmartMemory<GuiItem> lockedParent = p.getLockingPointer();
+        if(lockedParent != nullptr)
         {
-            parent.getRawPointer()->onChildRemoved( SmartMemory<GuiItem>::createNoDelete(this) );
+            lockedParent->onChildRemoved( SmartMemory<GuiItem>::createNoDelete(this) );
         }
         parent = p;
     }
@@ -320,26 +343,28 @@ namespace smpl
 
     bool GuiItem::getFocused(SmartMemory<GuiManager> manager)
     {
-        if(manager.getPointer() != nullptr)
+        LockingSmartMemory<GuiManager> lockedManager = manager.getLockingPointer();
+        if(lockedManager != nullptr)
         {
-            return manager.getRawPointer()->getObjectInFocus( SmartMemory<GuiItem>::createNoDelete(this) );
+            return lockedManager->getObjectInFocus( SmartMemory<GuiItem>::createNoDelete(this) );
         }
         return false;
     }
 
     void GuiItem::setFocused(SmartMemory<GuiManager> manager, bool f)
     {
-        if(manager.getPointer() != nullptr)
+        LockingSmartMemory<GuiManager> lockedManager = manager.getLockingPointer();
+        if(lockedManager != nullptr)
         {
             if(f)
             {
-                manager.getRawPointer()->setObjectInFocus( SmartMemory<GuiItem>::createNoDelete(this) );
+                lockedManager->setObjectInFocus( SmartMemory<GuiItem>::createNoDelete(this) );
             }
             else
             {
                 if(getFocused(manager))
                 {
-                    manager.getRawPointer()->setObjectInFocus(nullptr);
+                    lockedManager->setObjectInFocus(nullptr);
                 }
             }
         }
@@ -357,11 +382,15 @@ namespace smpl
 
     bool GuiItem::getVisible()
     {
-        return visible;
+        bool parentVisible = true;
+        auto parentPointer = parent.getLockingPointer();
+        if(parentPointer != nullptr)
+            parentVisible = parentPointer->getVisible();
+        return visible && parentVisible;
     }
     void GuiItem::setVisible(bool v)
     {
-        if(v == true && visible == false)
+        if(v != visible)
         {
             setShouldRender();
         }

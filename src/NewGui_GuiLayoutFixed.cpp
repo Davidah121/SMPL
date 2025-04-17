@@ -15,8 +15,7 @@ namespace smpl
     void GuiLayoutFixed::layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight)
     {
         resetPosition();
-        //margin = distance from outside content to the edge of this objects border
-        
+
         int actualMaxW, actualMaxH;
         bool processFixed = (flags & FLAG_ABSOLUTE_POSITION) || parent.getPointer() == nullptr;
         
@@ -81,6 +80,13 @@ namespace smpl
         int nOffX = padding.left + border.left;
         int nOffY = padding.top + border.top;
 
+        
+        //These maximum values must actually be set to be considered.
+        if(maxHeight > 0)
+            actualMaxH = __min(maxHeight, actualMaxH);
+        if(maxWidth > 0)
+            actualMaxW = __min(maxWidth, actualMaxW);
+
         //The maximum width and height for all content this layout contains.
         int maxContentWidth = actualMaxW - nOffX - padding.right - border.right;
         int maxContentHeight = actualMaxH - nOffY - padding.bottom - border.bottom;
@@ -92,6 +98,9 @@ namespace smpl
 
         int maxXOffsetSeen = 0;
         int maxYOffsetSeen = 0;
+
+        contentWidth = 0;
+        contentHeight = 0;
         
         
         //calculate child maximum width and height
@@ -151,14 +160,12 @@ namespace smpl
                 y2 = child->y + child->height; //y + height
             }
 
-            if(x2 > width)
-            {
-                width = x2;
-            }
-            if(y2 > height)
-            {
-                height = y2;
-            }
+            //contentWidth and height are not affected by the minimum width and height values.
+            contentWidth = __max(x2, contentWidth);
+            contentHeight = __max(y2, contentHeight);
+            
+            width = __max(x2, width);
+            height = __max(y2, height);
 
             childIndex++;
         }
@@ -166,6 +173,15 @@ namespace smpl
         //Add in padding and border to the right and bottom edges
         width += padding.right + border.right;
         height += padding.bottom + border.bottom;
+
+        contentWidth += border.right;
+        contentHeight += border.bottom;
+
+        // StringTools::println("Width=%d", contentWidth);
+        
+        //insure that width and height have not exceeded the min and max
+        // width = __min(width, actualMaxW);
+        // height = __min(height, actualMaxH);
     }
 
     void GuiLayoutFixed::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
