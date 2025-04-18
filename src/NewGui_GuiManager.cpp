@@ -367,7 +367,6 @@ namespace smpl
 	
 	bool GuiManager::renderGuiElements()
 	{
-    	size_t t1 = System::getCurrentTimeMicro();
 		if(alwaysForceRedraw)
 		{
 			forceRedraw();
@@ -420,7 +419,6 @@ namespace smpl
 		{
 			if(oldDrawnArea != GRect{0, 0, 0, 0, 0})
 			{
-            	// StringTools::println("\tOLD AREA - (%d, %d, %d, %d)", oldDrawnArea.left, oldDrawnArea.top, oldDrawnArea.right, oldDrawnArea.bottom);
 				GraphicsInterface::setClippingRect(Box2D(oldDrawnArea.left, oldDrawnArea.top, oldDrawnArea.right, oldDrawnArea.bottom));
 				GraphicsInterface::setColor(backgroundColor);
 				GraphicsInterface::drawRect(oldDrawnArea.left, oldDrawnArea.top, oldDrawnArea.right, oldDrawnArea.bottom, false);
@@ -429,7 +427,6 @@ namespace smpl
 			
 			if(newDrawnArea != GRect{0, 0, 0, 0, 0})
 			{
-            	// StringTools::println("NEW AREA - (%d, %d, %d, %d)", newDrawnArea.left, newDrawnArea.top, newDrawnArea.right, newDrawnArea.bottom);
 				GraphicsInterface::setClippingRect(Box2D(newDrawnArea.left, newDrawnArea.top, newDrawnArea.right, newDrawnArea.bottom));
 				GraphicsInterface::setColor(backgroundColor);
 				GraphicsInterface::drawRect(newDrawnArea.left, newDrawnArea.top, newDrawnArea.right, newDrawnArea.bottom, false);
@@ -446,9 +443,6 @@ namespace smpl
 		GraphicsInterface::drawToScreen();
 		
 		shouldForceRedraw = false;
-		
-		size_t t2 = System::getCurrentTimeMicro();
-		// StringTools::println("TIME TAKEN: %llu", t2-t1);
 		return true;
 	}
 
@@ -469,7 +463,6 @@ namespace smpl
 
 	void GuiManager::resizeImage(int width, int height)
 	{
-		StringTools::println("RESIZE");
 		bool wasBound = (surf == GraphicsInterface::getBoundSurface());
 		
 		if(surf != nullptr)

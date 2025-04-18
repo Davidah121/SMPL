@@ -14,7 +14,6 @@ namespace smpl
         
         cursorElement.setVisible(true);
         textElement.setSelectable(true);
-        textElement.setText("This is example text.\nIt does not actually exist. Probably");
     }
 
     GuiTextBox::~GuiTextBox()
@@ -75,25 +74,14 @@ namespace smpl
         textEmpty = v;
     }
 
-    void GuiTextBox::keyboardInput(std::u32string& str, std::vector<FontCharBoxInfo>& boxIndexPairs)
+    void GuiTextBox::keyboardInput(std::u32string& str)
     {
         bool textChanged = false;
         std::queue<int> chars = Input::getCharactersTyped();
-
-        //Newer system. Not all characters are represented in the boxes hence why they have a index value into string.
-        //Tracking the box index in the list and not the character indicies in the string results in a system closer to a typical system.
-        //
-        size_t boxIndexStart = SIZE_MAX;
-        size_t boxIndexEnd = SIZE_MAX;
-        for(size_t i=0; i<boxIndexPairs.size(); i++)
-        {
-            auto b = boxIndexPairs[i];
-            if(b.charIndex == textElement.getHighlightStartIndex())
-                boxIndexStart = i;
-            if(b.charIndex == textElement.getHighlightEndIndex())
-                boxIndexEnd = i;
-        }
-        
+        FontInterface* fiPtr = GraphicsInterface::getFont();
+        Font* fPtr = nullptr;
+        if(fiPtr != nullptr)
+            fPtr = fiPtr->getFont();
         
         //make modifications to str then set once at the end
         int oldSelectionStart = textElement.getHighlightStartIndex();
@@ -104,10 +92,10 @@ namespace smpl
 
         while(!chars.empty())
         {
-            if(boxIndexStart < 0)
-                boxIndexStart = 0;
-            if(boxIndexEnd < 0)
-                boxIndexEnd = 0;
+            if(selectionStart < 0)
+                selectionStart = 0;
+            if(selectionEnd < 0)
+                selectionEnd = 0;
 
             int v = chars.front();
             chars.pop();
@@ -117,250 +105,187 @@ namespace smpl
                 if(Input::getKeyDown(Input::KEY_SHIFT))
                 {
                     //selecting too
-                    if(textElement.getCaretSide() && boxIndexEnd!=boxIndexStart) //caret on the right. move selection back
+                    if(textElement.getCaretSide() && selectionEnd!=selectionStart) //caret on the right. move selection back
                     {
-                        boxIndexEnd--;
-                        if(boxIndexEnd <= boxIndexStart)
+                        selectionEnd--;
+                        if(selectionEnd <= selectionStart)
                             textElement.setCaretSide(false);
                     }
                     else
                     {
-                        if(boxIndexStart > 0)
-                            boxIndexStart--;
+                        if(selectionStart > 0)
+                            selectionStart--;
                         textElement.setCaretSide(false);
                     }
                 }
                 else
                 {
-                    if(boxIndexStart > 0 && boxIndexStart == boxIndexEnd)
-                        boxIndexStart--;
+                    if(selectionStart > 0 && selectionStart == selectionEnd)
+                        selectionStart--;
 
-                    boxIndexEnd = boxIndexStart;
+                    selectionEnd = selectionStart;
                     textElement.setCaretSide(false);
                 }
 
                 
-                selectionStart = boxIndexPairs[boxIndexStart].charIndex;
-                selectionEnd = boxIndexPairs[boxIndexEnd].charIndex;
                 setShouldRender();
                 blink = true;
                 counter = 500;
-                
-                StringTools::println("(%d, %d)", selectionStart, selectionEnd);
             }
             else if(v == Input::KEY_RIGHT)
             {
                 if(Input::getKeyDown(Input::KEY_SHIFT))
                 {
                     //selecting too
-                    if(!textElement.getCaretSide() && boxIndexEnd!=boxIndexStart) //caret on the left. move selection back
+                    if(!textElement.getCaretSide() && selectionEnd!=selectionStart) //caret on the left. move selection back
                     {
-                        boxIndexStart++;
-                        if(boxIndexStart >= boxIndexEnd)
+                        selectionStart++;
+                        if(selectionStart >= selectionEnd)
                             textElement.setCaretSide(true);
                     }
                     else
                     {
-                        if(boxIndexEnd < boxIndexPairs.size())
-                            boxIndexEnd++;
+                        if(selectionEnd < str.size())
+                        selectionEnd++;
                         textElement.setCaretSide(true);
                     }
                 }
                 else
                 {
-                    if(boxIndexEnd < boxIndexPairs.size() && boxIndexStart == boxIndexEnd)
-                        boxIndexEnd++;
-                    boxIndexStart = boxIndexEnd;
+                    if(selectionEnd < str.size() && selectionStart == selectionEnd)
+                    selectionEnd++;
+                    selectionStart = selectionEnd;
                     textElement.setCaretSide(true);
                 }
 
-                selectionStart = boxIndexPairs[boxIndexStart].charIndex;
-                selectionEnd = boxIndexPairs[boxIndexEnd].charIndex;
                 setShouldRender();
                 blink = true;
                 counter = 500;
-                
-                StringTools::println("(%d, %d)", selectionStart, selectionEnd);
             }
-            // else if(v == Input::KEY_UP)
-            // {
-            //     // Move to the spot corresponding to the total characters from the left side. Simple. Works for monospace/equal spaced fonts
-            //     int firstLBreak = selectionStart;
-            //     int lastLBreak = selectionStart;
+            else if(v == Input::KEY_UP)
+            {
+                int nextSelection = fPtr->moveSelectionUp(str, textElement.getFinalWidthOfText(), textElement.getWrapMode(), selectionStart);
+                if(nextSelection < 0)
+                    nextSelection = 0;
+                selectionStart = nextSelection;
+                if(!Input::getKeyDown(Input::KEY_SHIFT))
+                {
+                    selectionEnd = nextSelection;
+                }
+                textElement.setCaretSide(false);
+                setShouldRender();
+                blink = true;
+                counter = 500;
+            }
+            else if(v == Input::KEY_DOWN)
+            {
                 
-            //     for(; firstLBreak>0; firstLBreak--)
-            //     {
-            //         if(str[firstLBreak] == '\n')
-            //             break;
-            //     }
-
-            //     lastLBreak = firstLBreak-1;
-            //     for(; lastLBreak>0; lastLBreak--)
-            //     {
-            //         if(str[lastLBreak] == '\n')
-            //             break;
-            //     }
+                int nextSelection = fPtr->moveSelectionDown(str, textElement.getFinalWidthOfText(), textElement.getWrapMode(), selectionStart);
+                if(nextSelection >= str.size())
+                    nextSelection = str.size();
+                if(nextSelection == 0)
+                    nextSelection = str.size();
                 
-            //     if(firstLBreak != 0)
-            //         firstLBreak++;
-            //     if(lastLBreak != 0)
-            //         lastLBreak++;
-                
-            //     int distanceFromFirstLBreak = selectionStart - firstLBreak;
-            //     int newLocation = lastLBreak + distanceFromFirstLBreak;
-
-            //     if(firstLBreak == 0 && lastLBreak == 0)
-            //         newLocation = 0;
-                
-            //     if(newLocation < 0)
-            //         newLocation = 0;
-            //     selectionStart = newLocation;
-                
-            //     if(!Input::getKeyDown(Input::KEY_SHIFT))
-            //     {
-            //         selectionEnd = newLocation;
-            //     }
-            //     textElement.setCaretSide(false);
-            //     setShouldRender();
-            //     blink = true;
-            //     counter = 500;
-            // }
-            // else if(v == Input::KEY_DOWN)
-            // {
-            //     // Move to the spot corresponding to the total characters from the left side. Simple. Works for monospace/equal spaced fonts
-            //     int firstLBreak = selectionEnd;
-            //     int nextLBreak = selectionEnd;
-                
-            //     for(; firstLBreak>0; firstLBreak--)
-            //     {
-            //         if(str[firstLBreak] == '\n')
-            //             break;
-            //     }
-
-            //     if(selectionEnd < str.size())
-            //     {
-            //         if(str[selectionEnd] == '\n')
-            //             nextLBreak = selectionEnd+1;
-            //     }
-            //     else
-            //         nextLBreak = selectionEnd;
-
-            //     for(; nextLBreak<str.size(); nextLBreak++)
-            //     {
-            //         if(str[nextLBreak] == '\n')
-            //             break;
-            //     }
-            //     if(firstLBreak != 0)
-            //         firstLBreak++;
-            //     if(nextLBreak != 0)
-            //         nextLBreak++;
-                
-            //     int distanceFromFirstLBreak = selectionEnd - firstLBreak;
-            //     int newLocation = nextLBreak + distanceFromFirstLBreak;
-
-            //     if(newLocation >= str.size())
-            //         newLocation = str.size();
-            //     selectionEnd = newLocation;
-                
-            //     if(!Input::getKeyDown(Input::KEY_SHIFT))
-            //     {
-            //         selectionStart = newLocation;
-            //     }
-            //     textElement.setCaretSide(true);
-            //     setShouldRender();
-            //     blink = true;
-            //     counter = 500;
-            // }
-            // else if(v == Input::KEY_BACKSPACE)
-            // {
-            //     //remove everything between s
-            //     if(selectionStart < selectionEnd)
-            //     {
-            //         std::u32string nText;
-            //         for(int i=0; i<str.size(); i++)
-            //         {
-            //             if(i < selectionStart || i > selectionEnd-1)
-            //                 nText.push_back(str[i]);
-            //         }
-            //         str = nText;
-            //         selectionEnd = selectionStart;
-            //         textChanged = true;
-            //     }
-            //     else if(selectionStart == selectionEnd)
-            //     {
-            //         std::u32string nText;
-            //         for(int i=0; i<str.size(); i++)
-            //         {
-            //             if(i != selectionStart-1)
-            //                 nText.push_back(str[i]);
-            //         }
-            //         str = nText;
-            //         selectionStart--;
-            //         selectionEnd--;
-            //         textChanged = true;
-            //     }
-            //     if(selectionStart < 0)
-            //     {
-            //         selectionStart = 0;
-            //         selectionEnd = 0;
-            //     }
-            // }
-            // else if(v == Input::KEY_DELETE)
-            // {
-            //     if(selectionStart < selectionEnd)
-            //     {
-            //         std::u32string nText;
-            //         for(int i=0; i<str.size(); i++)
-            //         {
-            //             if(i < selectionStart || i > selectionEnd-1)
-            //                 nText.push_back(str[i]);
-            //         }
-            //         str = nText;
-            //         selectionEnd = selectionStart;
-            //         textChanged = true;
-            //     }
-            //     else if(selectionStart == selectionEnd)
-            //     {
-            //         //select index stays the same
-            //         std::u32string nText;
-            //         for(int i=0; i<str.size(); i++)
-            //         {
-            //             if(i != selectionStart)
-            //                 nText.push_back(str[i]);
-            //         }
-            //         str = nText;
-            //         textChanged = true;
-            //     }
-            // }
-            // else if(!Input::getKeyDown(Input::KEY_CONTROL))
-            // {
-            //     if(v >= ' ' || (v == '\n' && allowLineBreaks) || (v == '\r' && allowLineBreaks))
-            //     {
-            //         if(selectionStart <= selectionEnd)
-            //         {
-            //             //equivalent to a delete and insert
-            //             std::u32string nText;
-            //             for(int i=0; i<selectionStart; i++)
-            //             {
-            //                 nText.push_back(str[i]);
-            //             }
+                selectionEnd = nextSelection;
+                if(!Input::getKeyDown(Input::KEY_SHIFT))
+                {
+                    selectionStart = nextSelection;
+                }
+                textElement.setCaretSide(true);
+                setShouldRender();
+                blink = true;
+                counter = 500;
+            }
+            else if(v == Input::KEY_BACKSPACE)
+            {
+                //remove everything between s
+                if(selectionStart < selectionEnd)
+                {
+                    std::u32string nText;
+                    for(int i=0; i<str.size(); i++)
+                    {
+                        if(i < selectionStart || i > selectionEnd-1)
+                            nText += str[i];
+                    }
+                    str = nText;
+                    selectionEnd = selectionStart;
+                    textChanged = true;
+                }
+                else if(selectionStart == selectionEnd)
+                {
+                    std::u32string nText;
+                    for(int i=0; i<str.size(); i++)
+                    {
+                        if(i != selectionStart-1)
+                            nText += str[i];
+                    }
+                    str = nText;
+                    selectionStart--;
+                    selectionEnd--;
+                    textChanged = true;
+                }
+                if(selectionStart < 0)
+                {
+                    selectionStart = 0;
+                    selectionEnd = 0;
+                }
+            }
+            else if(v == Input::KEY_DELETE)
+            {
+                if(selectionStart < selectionEnd)
+                {
+                    std::u32string nText;
+                    for(int i=0; i<str.size(); i++)
+                    {
+                        if(i < selectionStart || i > selectionEnd-1)
+                            nText += str[i];
+                    }
+                    str = nText;
+                    selectionEnd = selectionStart;
+                    textChanged = true;
+                }
+                else if(selectionStart == selectionEnd)
+                {
+                    //select index stays the same
+                    std::u32string nText;
+                    for(int i=0; i<str.size(); i++)
+                    {
+                        if(i != selectionStart)
+                            nText += str[i];
+                    }
+                    str = nText;
+                    textChanged = true;
+                }
+            }
+            else if(!Input::getKeyDown(Input::KEY_CONTROL))
+            {
+                if(v >= ' ' || (v == '\n' && allowLineBreaks) || (v == '\r' && allowLineBreaks))
+                {
+                    if(selectionStart <= selectionEnd)
+                    {
+                        //equivalent to a delete and insert
+                        std::u32string nText;
+                        for(int i=0; i<selectionStart; i++)
+                        {
+                            nText += str[i];
+                        }
                         
-            //             if(v == '\r')
-            //                 nText.push_back('\n');
-            //             else
-            //                 nText.push_back(v);
+                        if(v == '\r')
+                            nText += '\n';
+                        else
+                            nText += v;
                         
-            //             for(int i=selectionEnd; i<str.size(); i++)
-            //             {
-            //                 nText.push_back(str[i]);
-            //             }
-            //             selectionStart++;
-            //             selectionEnd = selectionStart;
-            //             str = nText;
-            //             textChanged = true;
-            //         }
-            //     }
-            // }
+                        for(int i=selectionEnd; i<str.size(); i++)
+                        {
+                            nText += str[i];
+                        }
+                        selectionStart++;
+                        selectionEnd = selectionStart;
+                        str = nText;
+                        textChanged = true;
+                    }
+                }
+            }
         }
 
         //copy is already handled in the text element
@@ -461,14 +386,13 @@ namespace smpl
         if(shouldUpdateCursor)
         {
             GRect cRect = textElement.getCaretBox();
-            StringTools::println("CARET BOX: (%d, %d) - (%d, %d)", cRect.left, cRect.top, cRect.right, cRect.bottom);
             cursorElement.setMargin(GRect{cRect.left, cRect.top, 0, 0});
             cursorElement.setMinWidth(cRect.right - cRect.left);
             cursorElement.setMaxWidth(cRect.right - cRect.left);
             cursorElement.setMinHeight(cRect.bottom - cRect.top);
             cursorElement.setMaxHeight(cRect.bottom - cRect.top);
             
-            cursorElement.setBackgroundColor(Color{0,0,0,255});
+            cursorElement.setBackgroundColor(Color{255,0,255,255});
 
             cursorElement.setVisible(blink);
             shouldUpdateCursor = false;
@@ -497,7 +421,6 @@ namespace smpl
 
         if(getFocused(manager) || textElement.getFocused(manager))
         {
-            std::vector<FontCharBoxInfo> boxIndexPairs = fptr->getAllCharBoxes(str, maxWidth, Font::WORD_WRAP);
             if(Input::getMousePressed(Input::LEFT_MOUSE_BUTTON))
             {
                 int mouseX = manager.getPointer()->getMouseX();
@@ -505,7 +428,7 @@ namespace smpl
                     textElement.setSelectIndex( -1 );
             }
             
-            keyboardInput(str, boxIndexPairs);
+            keyboardInput(str);
 
             counter -= timePassed;
             if(counter < 0)

@@ -34,6 +34,7 @@ namespace smpl
 				return;
 			}
 			
+			Color oldColor = activeColor;
 			std::u32string str = strBridge.getData();
 			auto boxes = tFont->getAllCharBoxes(str, maxWidth, wrapMode);
 			for(auto boxPair : boxes)
@@ -42,8 +43,20 @@ namespace smpl
 				Image* charImg = tFont->getImage(charIndex);
 				FontCharInfo fci = tFont->getFontCharInfo(charIndex);
 				
-				if(charImg == nullptr)
+				if(charImg == nullptr || boxPair.boundingBox.getWidth() == 0 || boxPair.boundingBox.getHeight() == 0)
 				{
+					//special case for linebreaks to show highlighted sections
+					if(boxPair.charIndex >= highlightStart && boxPair.charIndex < highlightEnd)
+					{
+						int x1 = x+boxPair.boundingBox.getLeftBound();
+						int y1 = y+boxPair.rowStartPosition;
+						int highlightWidth = 4;
+
+						SimpleGraphics::setColor(highlightColor);
+						drawRect(x1, y1, highlightWidth, tFont->getVerticalAdvance(), false, surf);
+						SimpleGraphics::setColor(oldColor);
+					}
+					
 					continue;
 				}
 
@@ -70,7 +83,6 @@ namespace smpl
 					int y1 = y+boxPair.rowStartPosition;
 					int highlightWidth = boxPair.boundingBox.getWidth() + fci.horizAdv;
 
-					Color oldColor = activeColor;
 					SimpleGraphics::setColor(highlightColor);
 					drawRect(x1, y1, highlightWidth, tFont->getVerticalAdvance(), false, surf);
 					SimpleGraphics::setColor(oldColor);

@@ -442,9 +442,7 @@ namespace smpl
             }
 
             //do xAdjust stuff
-            // StringTools::println("x for %s = %d", child->getNameID().c_str(), child->x);
             child->x += xAdjust;
-            // StringTools::println("new x for %s = %d", child->getNameID().c_str(), child->x);
 
             int actualChildW = child->width;
             int actualChildH = child->height;
@@ -453,8 +451,6 @@ namespace smpl
 
             if(child->getType() == TYPE_LAYOUT)
             {
-                // StringTools::println("In table fix for %s", child->getNameID().c_str());
-
                 uint16_t childFlags = ((GuiLayout*)child)->getFlags();
                 GRect childMargin = ((GuiLayout*)child)->getMargin();
 
@@ -537,10 +533,6 @@ namespace smpl
         //Add in padding and border to the right and bottom edges
         width = actualWidth + padding.right + border.right;
         height += padding.bottom + border.bottom;
-
-        // StringTools::println("(%d, %d)", width, height);
-        // StringTools::println("\t(%d, %d)", actualMaxW, actualMaxH);
-        // StringTools::println("\t\t(%d, %d)", maxContentWidth, maxContentHeight);
 
         //May have exceeded the maximum allowed width and height.
         // //insure that width and height have not exceeded the min and max

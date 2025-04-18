@@ -66,7 +66,6 @@ namespace smpl
 			{
 				bin.add(true);
 				bin.add(data[i]);
-				// StringTools::println("LIT: %d", data[i]);
 				i++;
 			}
 			else
@@ -74,7 +73,6 @@ namespace smpl
 				bin.add(false);
 				bin.add(tempBackwards, 15);
 				bin.add(tempLength-3, 8);
-				// StringTools::println("REF: (%d, %d)", tempBackwards, tempLength);
 				i += tempLength;
 			}
 		}
@@ -121,7 +119,6 @@ namespace smpl
 			if(lit)
 			{
 				unsigned char literalValue = bin.getBits(i, i+8, false);
-				// StringTools::println("LITERAL: %d", literalValue);
 				i += 8;
 				output.push_back(literalValue);
 			}
@@ -131,8 +128,6 @@ namespace smpl
 				i += 15;
 				int copyLength = bin.getBits(i, i+8, false) + 3;
 				i += 8;
-
-				// StringTools::println("REFERENCE: (%d, %d)", backwardsDis, copyLength);
 
 				int startLoc = output.size() - backwardsDis;
 				for(int j=0; j<copyLength; j++)

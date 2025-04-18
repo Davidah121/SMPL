@@ -119,7 +119,6 @@ namespace smpl
 			}
 			else
 			{
-				//StringTools::println("%s was not loaded", imageFile.c_str());
 				delete[] tempImgPointer;
 				return;
 			}
@@ -160,7 +159,6 @@ namespace smpl
 						throw BitmapFont::InvalidFileFormat();
 						#endif
 						break;
-						//StringTools::println("Invalid string: %s| with size: %d", fileInfo[startIndex].c_str(), fileInfo.size());
 					}
 					
 				}

@@ -91,7 +91,6 @@
 
         void GLGraphics::clear(int clearCodes)
         {
-            StringTools::println("CLEARED");
             glClear(clearCodes);
         }
         
@@ -402,8 +401,19 @@
                 GLTexture* charTexture = f->getTexture(charIndex);
                 GLModel* charModel = f->getModel(charIndex);
                 FontCharInfo fci = f->getFontCharInfo(charIndex);
-                if(charModel == nullptr)
+                if(charModel == nullptr || boxPair.boundingBox.getWidth() == 0 || boxPair.boundingBox.getHeight() == 0)
                 {
+					//special case for linebreaks to show highlighted sections
+					if(boxPair.charIndex >= highlightStart && boxPair.charIndex < highlightEnd)
+					{
+						int x1 = x+boxPair.boundingBox.getLeftBound();
+						int y1 = y+boxPair.rowStartPosition;
+						int highlightWidth = 4;
+
+                        GLGraphics::setDrawColor(highlightColor);
+                        GLGraphics::drawRectangle(x1, y1, highlightWidth, f->getVerticalAdvance(), false);
+                        GLGraphics::setDrawColor(oldDrawColor);
+					}
                     continue;
                 }
 

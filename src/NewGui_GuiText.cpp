@@ -70,6 +70,11 @@ namespace smpl
         }
         setShouldRender();
     }
+    
+    char GuiText::getWrapMode()
+    {
+        return wrapMode;
+    }
 
     void GuiText::increaseSelectIndex()
     {
@@ -123,6 +128,15 @@ namespace smpl
     {
         return caretOnRight;
     }
+    
+    int GuiText::getFinalWidthOfText()
+    {
+        return finalWidthOfText;
+    }
+    int GuiText::getFinalHeightOfText()
+    {
+        return finalHeightOfText;
+    }
 
     GRect GuiText::getCaretBox()
     {
@@ -136,20 +150,8 @@ namespace smpl
             if(f->getFont() == nullptr)
                 return {0, 0, 0, 0};
             
-            std::vector<FontCharBoxInfo> listStuff = f->getFont()->getAllCharBoxes(UnicodeStringBridge(text), maxWidth, wrapMode);
-            int lastKnownRowStartPos = -11111;
-            if(indexSearchingFor==0)
-            {
-                return {0, 0, 1, f->getFont()->getVerticalAdvance()};
-            }
-            for(size_t i=0; i<listStuff.size(); i++)
-            {
-                FontCharBoxInfo& pairs = listStuff[i];
-                if(pairs.charIndex == indexSearchingFor)
-                {
-                    return {(int32_t)pairs.boundingBox.getLeftBound(), (int32_t)pairs.rowStartPosition, (int32_t)pairs.boundingBox.getLeftBound()+1, (int32_t)pairs.rowStartPosition + f->getFont()->getVerticalAdvance()};
-                }
-            }
+            Box2D b = f->getFont()->getCaretBox(UnicodeStringBridge(text), finalWidthOfText, wrapMode, indexSearchingFor);
+            return {(int32_t)b.getLeftBound(), (int32_t)b.getTopBound(), (int32_t)b.getRightBound(), (int32_t)b.getBottomBound()};
         }
         return {0,0,0,0};
     }
@@ -169,6 +171,9 @@ namespace smpl
         if(wrapMode == Font::NO_WRAP)
         {
             //max width and height are just the fonts bounds
+            finalWidthOfText = -1;
+            finalHeightOfText = -1;
+            
             Box2D bounds = f->getFont()->getBoundingBox(text, -1, Font::NO_WRAP);
             width = bounds.getWidth();
             height = bounds.getHeight();
@@ -176,11 +181,18 @@ namespace smpl
         else
         {
             //max width and height are just the fonts bounds
-            Box2D bounds = f->getFont()->getBoundingBox(text, maximumWidth, Font::WORD_WRAP);
+            if(maxWidth > -1)
+                finalWidthOfText = __min(maxWidth, maximumWidth);
+            else
+                finalWidthOfText = maximumWidth;
+            if(maxHeight > -1)
+                finalHeightOfText = __min(maxHeight, maximumHeight);
+            else
+                finalHeightOfText = maximumHeight;
+            
+            Box2D bounds = f->getFont()->getBoundingBox(text, finalWidthOfText, Font::WORD_WRAP);
             width = bounds.getWidth();
             height = bounds.getHeight();
-            // maxWidth = maximumWidth;
-            // maxHeight = maximumHeight;
         }
     }
 
@@ -210,7 +222,7 @@ namespace smpl
                 {
                     selecting = true;
                     FontInterface* f = GraphicsInterface::getFont();
-                    size_t sIndex = f->getFont()->getSelectIndex(text, maxWidth, wrapMode, mouseX-getTrueX(), mouseY-getTrueY());
+                    size_t sIndex = f->getFont()->getSelectIndex(text, finalWidthOfText, wrapMode, mouseX-getTrueX(), mouseY-getTrueY());
 
                     if(sIndex != SIZE_MAX)
                     {
@@ -220,8 +232,8 @@ namespace smpl
                     else
                     {
                         //something went wrong. should never occur
-                        highlightStartIndex = text.size()-1;
-                        highlightEndIndex = text.size()-1;
+                        highlightStartIndex = text.size();
+                        highlightEndIndex = text.size();
                     }
                     startSelectIndex = highlightStartIndex;
                 }
@@ -244,7 +256,7 @@ namespace smpl
                     return;
                 if(f->getFont() == nullptr)
                     return;
-                size_t sIndex = f->getFont()->getSelectIndex(UnicodeStringBridge(text).getData(), maxWidth, wrapMode, mouseX-getTrueX(), mouseY-getTrueY());
+                size_t sIndex = f->getFont()->getSelectIndex(UnicodeStringBridge(text).getData(), finalWidthOfText, wrapMode, mouseX-getTrueX(), mouseY-getTrueY());
 
                 //set to endIndex
                 if(sIndex != SIZE_MAX)
@@ -264,7 +276,7 @@ namespace smpl
                 }
                 else
                 {
-                    highlightEndIndex = text.size()-1;
+                    highlightEndIndex = text.size();
                     highlightStartIndex = startSelectIndex;
                 }
             }
@@ -286,33 +298,21 @@ namespace smpl
 
         if(oldSelectStart != highlightStartIndex || oldSelectEnd != highlightEndIndex)
         {
-            // StringTools::println("TEXT: HIGHLIGHT SELECTION CHANGED");
             setShouldRender();
         }
     }
     
     void GuiText::render(SmartMemory<GuiManager> manager)
     {
-        //assume that trueX and trueY have been properly updated.
-        int actualMaxWidth = maxWidth;
-        int actualMaxHeight = maxHeight;
-        if(GraphicsInterface::getBoundSurface() != nullptr)
-        {
-            if(actualMaxWidth < 0)
-                actualMaxWidth = GraphicsInterface::getBoundSurface()->getWidth();
-            if(actualMaxHeight < 0)
-                actualMaxHeight = GraphicsInterface::getBoundSurface()->getHeight();
-        }
-
         GraphicsInterface::setColor(fontColor);
 
         if(isSelectable)
         {
-            GraphicsInterface::drawTextLimitsHighlighted(text, getTrueX(), getTrueY(), actualMaxWidth, actualMaxHeight, wrapMode, highlightStartIndex, highlightEndIndex, highlightColor);
+            GraphicsInterface::drawTextLimitsHighlighted(text, getTrueX(), getTrueY(), finalWidthOfText, finalHeightOfText, wrapMode, highlightStartIndex, highlightEndIndex, highlightColor);
         }
         else
         {
-            GraphicsInterface::drawTextLimits(text, getTrueX(), getTrueY(), actualMaxWidth, actualMaxHeight, wrapMode);
+            GraphicsInterface::drawTextLimits(text, getTrueX(), getTrueY(), finalWidthOfText, finalHeightOfText, wrapMode);
         }
     }
 

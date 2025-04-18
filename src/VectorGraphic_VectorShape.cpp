@@ -23,12 +23,10 @@ namespace smpl
 
 	void VectorShape::draw(Image* buffer, int globalWidth, int globalHeight)
 	{
-		// StringTools::println("Basic one");
 	}
 
 	void VectorShape::drawStroke(Image* buffer, int globalWidth, int globalHeight)
 	{
-		// StringTools::println("Basic one");
 	}
 
 	void VectorShape::setFillMethod(bool value)

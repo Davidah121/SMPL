@@ -132,9 +132,13 @@ namespace smpl
 				lastChar = '\n';
 				doneWordWrap = false;
 				lastWordIndex = output.size();
+				if(i != text.size()-1)
+					output.push_back({i, currY, Box2D(currX, currY, currX, currY)}); //Just for convenience
 				currX = 0;
 				currW = 0;
 				currY += getVerticalAdvance();
+				if(i == text.size()-1)
+					output.push_back({i, currY, Box2D(currX, currY, currX, currY)}); //Just for convenience
 				continue;
 			}
 
@@ -179,12 +183,22 @@ namespace smpl
 					currY += getVerticalAdvance();
 				}
 			}
+			//needed to align to the left. x value of a character at the start of a line should be zero.
+			int additionalAdvance = 0;
 
 			if(fci.width > 0 && fci.height > 0)
-				output.push_back({i, currY, Box2D(currX+fci.xOffset, currY+fci.yOffset, currX+fci.xOffset+fci.width, currY+fci.yOffset+fci.height)});
+			{
+				if(currX != 0)
+					output.push_back({i, currY, Box2D(currX+fci.xOffset, currY+fci.yOffset, currX+fci.xOffset+fci.width, currY+fci.yOffset+fci.height)});
+				else
+				{
+					additionalAdvance = -fci.xOffset;
+					output.push_back({i, currY, Box2D(currX, currY+fci.yOffset, currX+fci.width, currY+fci.yOffset+fci.height)});
+				}
+			}
 
-			currX += fci.horizAdv;
-			currW += fci.horizAdv;
+			currX += fci.horizAdv + additionalAdvance;
+			currW += fci.horizAdv + additionalAdvance;
 		}
 		return output;
 	}
@@ -230,6 +244,42 @@ namespace smpl
 		
 		return Box2D(0, 0, totalWidth, totalHeight);
 	}
+	
+
+	Box2D processCharBoxesForSelectIndex(std::vector<FontCharBoxInfo>& listStuff, int verticalAdvance, size_t index)
+	{
+		// if(index==0)
+		// 	return {0.0f, 0.0f, 1.0f, (float)verticalAdvance};
+		
+		if(listStuff.empty())
+			return {0.0f, 0.0f, 1.0f, (float)verticalAdvance};
+
+		
+		for(size_t i=0; i<listStuff.size(); i++)
+		{
+			FontCharBoxInfo& pairs = listStuff[i];
+			if(pairs.charIndex == index)
+			{
+				return {(float)pairs.boundingBox.getLeftBound(), (float)pairs.rowStartPosition, (float)pairs.boundingBox.getLeftBound()+1, (float)pairs.rowStartPosition + verticalAdvance};
+			}
+			else if(pairs.charIndex > index)
+			{
+				return {(float)listStuff[i-1].boundingBox.getRightBound(), (float)listStuff[i-1].rowStartPosition, (float)listStuff[i-1].boundingBox.getRightBound()+1, (float)listStuff[i-1].rowStartPosition + verticalAdvance};
+			}
+			else if(i == listStuff.size()-1)
+			{
+				return {(float)listStuff[i].boundingBox.getRightBound(), (float)listStuff[i].rowStartPosition, (float)listStuff[i].boundingBox.getRightBound()+1, (float)listStuff[i].rowStartPosition + verticalAdvance};
+			}
+		}
+		
+        return {0.0f, 0.0f, 0.0f, 0.0f};
+	}
+
+	Box2D Font::getCaretBox(StringBridge textBridge, unsigned int maxWidth, char wrapMode, size_t index)
+	{
+		std::vector<FontCharBoxInfo> listStuff = getAllCharBoxes(textBridge, maxWidth, wrapMode);
+		return processCharBoxesForSelectIndex(listStuff, getVerticalAdvance(), index);
+	}
 
 	size_t Font::getSelectIndex(StringBridge textBridge, unsigned int maxWidth, char wrapMode, int x, int y)
 	{
@@ -261,6 +311,53 @@ namespace smpl
 		}
 		
 		return potentialSelectIndex;
+	}
+
+	
+	size_t Font::moveSelectionUp(StringBridge textBridge, unsigned int maxWidth, char wrapMode, size_t startSelectIndex)
+	{
+		auto allBoxes = getAllCharBoxes(textBridge, maxWidth, wrapMode);
+		Vec2f cursorPos = Vec2f();
+		Box2D tempBox = processCharBoxesForSelectIndex(allBoxes, getVerticalAdvance(), startSelectIndex);
+
+		cursorPos.x = tempBox.getLeftBound();
+		cursorPos.y = tempBox.getTopBound();
+
+		size_t newSelectIndex = 0;
+		for(size_t i=0; i<allBoxes.size(); i++)
+		{
+			auto& box = allBoxes[i];
+
+			if(box.boundingBox.getLeftBound() <= cursorPos.x && box.boundingBox.getTopBound() < cursorPos.y)
+				newSelectIndex = allBoxes[i].charIndex;
+			if(box.boundingBox.getTopBound() >= cursorPos.y)
+				break;
+		}
+
+		return newSelectIndex;
+	}
+
+	size_t Font::moveSelectionDown(StringBridge textBridge, unsigned int maxWidth, char wrapMode, size_t startSelectIndex)
+	{
+		auto allBoxes = getAllCharBoxes(textBridge, maxWidth, wrapMode);
+		Vec2f cursorPos = Vec2f();
+		Box2D tempBox = processCharBoxesForSelectIndex(allBoxes, getVerticalAdvance(), startSelectIndex);
+
+		cursorPos.x = tempBox.getLeftBound();
+		cursorPos.y = tempBox.getTopBound();
+
+		size_t newSelectIndex = textBridge.getData().size();
+		for(size_t i=allBoxes.size()-1; i>=0; i--)
+		{
+			auto& box = allBoxes[i];
+
+			if(box.boundingBox.getLeftBound() >= cursorPos.x && box.boundingBox.getTopBound() > cursorPos.y)
+				newSelectIndex = allBoxes[i].charIndex;
+			if(box.boundingBox.getTopBound() <= cursorPos.y)
+				break;
+		}
+
+		return newSelectIndex;
 	}
 
 	void Font::addChar(FontCharInfo a)
