@@ -30,9 +30,6 @@ namespace smpl
 		Color* nPixels = tempImg.getPixels();
 
 		bool containsTransparency = saveAlpha;
-		// time_t t1, t2;
-
-		// t1 = System::getCurrentTimeMicro();
 		if(containsTransparency)
 		{
 			if(tempImg.getPalette().getSize() > 0 && tempImg.getPalette().getSize() < (size_t)paletteSize)
@@ -59,9 +56,6 @@ namespace smpl
 				tempPalette = ColorPalette::generateOptimalPalette(nPixels, width*height, paletteSize, ColorPalette::MEAN_CUT);
 			}
 		}
-		// t2 = System::getCurrentTimeMicro();
-
-		// StringTools::println("Time to get palette: %u", t2-t1);
 
 		if(dither)
 		{
@@ -69,7 +63,6 @@ namespace smpl
 			SimpleGraphics::ditherImage(&tempImg, SimpleGraphics::FLOYD_DITHER);
 		}
 
-		// t1 = System::getCurrentTimeMicro();
 		if(containsTransparency)
 		{
 			for(int i=0; i<width*height; i++)
@@ -91,10 +84,6 @@ namespace smpl
 				pixs[i] = (unsigned char)tempPalette.getClosestColorIndex(nPixels[i]);
 			}
 		}
-
-		// t2 = System::getCurrentTimeMicro();
-
-		// StringTools::println("Time to set palette: %u", t2-t1);
 
 		//width
 		gifHeaderInfo += (char)((width) & 0xFF);
@@ -197,12 +186,8 @@ namespace smpl
 		//each block should approach the max dictionary size of 4096 entries and try not to exceed it.
 
 		//compress data
-		// size_t t1 = System::getCurrentTimeMicro();
 		std::vector<unsigned char> compressedData = Compression::compressLZW(pixs, width*height, 1, codeSize);
-		// size_t t2 = System::getCurrentTimeMicro();
-
-		// StringTools::println("Time to compress: %llu", t2-t1);
-
+		
 		for(size_t i=0; i<compressedData.size(); i++)
 		{
 			if(i % 255 == 0)

@@ -31,7 +31,6 @@ namespace smpl
 
 	void VectorGraphic::copy(const VectorGraphic& c)
 	{
-		//StringTools::println("Copy Function _ VG");
 		this->width = c.width;
 		this->height = c.height;
 
@@ -76,7 +75,6 @@ namespace smpl
 			else if(c.shapes[i]->getClass() == TypeInfo::get<VectorPath>())
 			{
 				//path
-				//StringTools::println("PATH");
 				VectorPath* g = new VectorPath(*(VectorPath*)c.shapes[i]);
 				shapes.push_back(g);
 			}

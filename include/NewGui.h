@@ -724,10 +724,14 @@ namespace smpl
         void setSelectIndex(int startIndex, int endIndex);
         void setCaretSide(bool v);
         bool getCaretSide();
+        int getFinalWidthOfText();
+        int getFinalHeightOfText();
+        
         GRect getCaretBox();
-
+        
         void setSelectable(bool s);
         void setWrapMode(char w);
+        char getWrapMode();
         
         void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
         static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
@@ -747,6 +751,10 @@ namespace smpl
         int startSelectIndex = -1;
         int maxWidth = -1;
         int maxHeight = -1;
+
+        int finalWidthOfText = -1;
+        int finalHeightOfText = -1;
+        
         std::string text;
         Color fontColor = {0,0,0,255};
         Color highlightColor = {64,128,255,128};
@@ -865,7 +873,7 @@ namespace smpl
 
     private:
         void setTextEmpty(bool v);
-        void keyboardInput(std::u32string& str, std::vector<FontCharBoxInfo>& boundBoxes);
+        void keyboardInput(std::u32string& str);
         void updateCursorElementInfo();
         bool allowLineBreaks = false;
         bool textEmpty = true;

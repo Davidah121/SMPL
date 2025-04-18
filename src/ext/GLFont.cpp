@@ -88,15 +88,6 @@
                     (float)(xMultVal * (fci.x+fci.width)), (float)(yMultVal * fci.y)
                 };
                 
-                if(fci.unicodeValue == 'F')
-                {
-                    StringTools::println("%.3f, %.3f, %.3f, %.3f", (float)(xMultVal * fci.x), (float)(yMultVal * fci.y),
-                                                                    (float)(xMultVal * (fci.x+fci.width)), (float)(yMultVal * (fci.y+fci.height)));
-
-                    
-                    StringTools::println("%d, %d, %d, %d", fci.x, fci.y, (fci.x+fci.width), (fci.y+fci.height));
-                }
-
                 m->storeDataFloat(0, positions, 2);
                 m->storeDataFloat(1, textures, 2);
                 m->setAttributeEnabled(0, true);

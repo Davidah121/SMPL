@@ -671,7 +671,6 @@ namespace smpl
 					}
 					else
 					{
-						// StringTools::println("ERROR AT %x for %x", i, bytes[i]);
 						return {}; //Error
 					}
 				}
@@ -689,7 +688,6 @@ namespace smpl
 				int charToNum = base64CharToNum(bytes[i]);
 				if(charToNum < 0)
 				{
-					// StringTools::println("ERROR AT %x for %x", i, bytes[i]);
 					return {}; //error
 				}
 				
@@ -769,7 +767,6 @@ namespace smpl
 
 	std::string StringTools::urlEncode(std::string str)
 	{
-		//Test This: ./Stuff/Stuff/Vids/Hentai/xiangweitudou/[%E7%AC%AC%E4%B8%89%E9%9B%86]%E8%9C%98%E8%9B%9B%E8%85%BF%E6%8C%91%E6%88%98%EF%BC%88English%20subtitles%EF%BC%89/1648037211_9XZ69CJvWGsZakQVK_Source.mp4
 		std::string nStr = "";
 		bool queryMode = false;
 		for(int i=0; i<str.size(); i++)

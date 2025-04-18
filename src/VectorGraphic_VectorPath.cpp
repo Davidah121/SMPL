@@ -19,19 +19,16 @@ namespace smpl
 
 	VectorPath::VectorPath(const VectorPath& other) : VectorShape()
 	{
-		//StringTools::println("Copy Constructor");
 		copy((VectorPath&)other);
 	}
 
 	void VectorPath::operator=(VectorPath& other)
 	{
-		//StringTools::println("Assignment Operator");
 		copy(other);
 	}
 
 	void VectorPath::copy(VectorPath& other)
 	{
-		//StringTools::println("Copy Function");
 		this->setFillColor( other.getFillColor() );
 		this->setStrokeColor( other.getStrokeColor() );
 		this->setFillMethod( other.getFillMethod() );
@@ -234,17 +231,6 @@ namespace smpl
 				//different for even-odd and non-zero
 				std::vector<criticalPoint> newScanLine = std::vector<criticalPoint>();
 
-				// if(i==90)
-				// {
-				// 	StringTools::print("Scanline %d: ", i);
-				// 	for(criticalPoint& cp : scanLines[i])
-				// 	{
-				// 		StringTools::print("(%.3f,%.3f,%.3f, %.3f, %d), ", cp.xValue, cp.direction.x, cp.direction.y, cp.timeVal, cp.horizontal);
-				// 	}
-				// 	StringTools::println("");
-				// 	StringTools::println("");
-				// }
-
 				if(getFillMethod() == VectorShape::EVEN_ODD_RULE)
 				{
 					//shouldn't need much if the values are recorded correctly
@@ -294,17 +280,6 @@ namespace smpl
 
 				scanLines[i] = newScanLine;
 			}
-
-			// if(i==90)
-			// {
-			// 	StringTools::print("Scanline %d: ", i);
-			// 	for(criticalPoint& cp : scanLines[i])
-			// 	{
-			// 		StringTools::print("%.3f, ", cp.xValue);
-			// 	}
-			// 	StringTools::println("");
-			// 		StringTools::println("");
-			// }
 		}
 
 		if(getFillMethod()==VectorShape::EVEN_ODD_RULE)
@@ -1040,9 +1015,6 @@ namespace smpl
 		
 		actualMinY = (int)MathExt::round(floatMinY);
 		actualMaxY = (int)MathExt::round(floatMaxY);
-
-		// StringTools::println("ArcAngles %.3f, %.3f, %.3f, %.3f, %.3f, %.3f", ang1, ang2, absoluteMinYAngle, absoluteMaxYAngle, minYAngleThing, maxYAngleThing);
-		// StringTools::println("MinMaxY (%d, %d) - Position (%.3f,%.3f)", actualMinY, actualMaxY, finalArcPosition.x, finalArcPosition.y);
 		
 		actualMinY = MathExt::clamp(actualMinY, minY, maxY);
 		actualMaxY = MathExt::clamp(actualMaxY, minY, maxY);
@@ -1617,8 +1589,7 @@ namespace smpl
 				com.points[1] = Vec2f(MathExt::angleToStandardRange(com.points[1].x + MathExt::darctan2(rotPos.y, rotPos.x), true), com.points[1].y);
 				
 				Vec3f pos = (transformMat * Vec3f(com.points[2].x, com.points[2].y, translationToo));
-
-				//StringTools::println("Position: (%.3f, %.3f)", pos.x, pos.y);
+				
 				if(translationToo==1.0)
 					currentPos = com.points[2];
 				else

@@ -139,6 +139,18 @@ namespace smpl
 		Box2D getBoundingBox(StringBridge textBridge, unsigned int maxWidth, char wrapMode);
 
 		/**
+		 * @brief Gets the bounding of the caret cursor box.
+		 * 		The width of the box will always be 1 and may extend outside the allowed bounds specified by maxWidth.
+		 * 
+		 * @param textBridge 
+		 * @param maxWidth 
+		 * @param wrapMode 
+		 * @param index 
+		 * @return Box2D 
+		 */
+		Box2D getCaretBox(StringBridge textBridge, unsigned int maxWidth, char wrapMode, size_t index);
+
+		/**
 		 * @brief Get the Select Index at the specified position.
 		 * 		Assumes that the start position of the text is at (0,0).
 		 * 		Returns the maximum of a size_t for invalid cases.
@@ -151,6 +163,30 @@ namespace smpl
 		 * @return size_t 
 		 */
 		size_t getSelectIndex(StringBridge textBridge, unsigned int maxWidth, char wrapMode, int x, int y);
+
+		/**
+		 * @brief Gets the selection index if the cursor were moved directly up.
+		 * 		When moving up, it moves to the character whose bound is less than or equal to the cursor location.
+		 * 
+		 * @param textBridge 
+		 * @param maxWidth 
+		 * @param wrapMode 
+		 * @param startSelectIndex 
+		 * @return size_t 
+		 */
+		size_t moveSelectionUp(StringBridge textBridge, unsigned int maxWidth, char wrapMode, size_t startSelectIndex);
+
+		/**
+		 * @brief Gets the selection index if the cursor were moved directly down.
+		 * 		When moving down, it moves to the character whose bound is greater than or equal to the cursor location.
+		 * 
+		 * @param textBridge 
+		 * @param maxWidth 
+		 * @param wrapMode 
+		 * @param startSelectIndex 
+		 * @return size_t 
+		 */
+		size_t moveSelectionDown(StringBridge textBridge, unsigned int maxWidth, char wrapMode, size_t startSelectIndex);
 		
 		/**
 		 * @brief Returns the raw list of the font characters information.

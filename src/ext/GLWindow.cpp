@@ -475,7 +475,6 @@
 		
 		void GLWindow::finishResize()
 		{
-			StringTools::println("%d, %d", width, height);
 			GLGraphics::setViewport(0, 0, width, height);
 			GLGraphics::setClearColor( Vec4f(0, 0, 0, 0) );
 			GLGraphics::clear(GLGraphics::COLOR_BUFFER | GLGraphics::DEPTH_BUFFER);

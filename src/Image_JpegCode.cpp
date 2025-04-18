@@ -1650,7 +1650,7 @@ namespace smpl
 				// set eobrun to 0
 				// jpegData.eobRun = 0;
 				// Not sure how to deal with this yet so assume that it can not be done.
-				StringTools::println("RST");
+				// StringTools::println("RST");
 			}
 			else if(header == 0xFF01)
 			{

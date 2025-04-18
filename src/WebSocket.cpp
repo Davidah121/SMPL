@@ -426,7 +426,6 @@ namespace smpl
 
 		//MAGIC-STRING: 258EAFA5-E914-47DA-95CA-C5AB0DC85B11
 		std::string base64Key = rec.readKeyValue("Sec-WebSocket-Key");
-		smpl::StringTools::println("Base64Key: ", base64Key.c_str());
 		base64Key += "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
 		std::vector<uint32_t> newKey = Cryptography::SHA1((unsigned char*)base64Key.data(), base64Key.size());

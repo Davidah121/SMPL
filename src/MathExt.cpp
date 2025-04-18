@@ -1274,7 +1274,6 @@ namespace smpl
 
 			if(testForSolutions < 0)
 			{
-				//StringTools::println("3 Solution");
 				//could find all solutions this way, but we have to use arccos multiple times
 				double temp1 = 2.0*MathExt::sqrt(-p/3.0);
 				double temp2 = ((3.0*q)/(2.0*p)) * MathExt::sqrt(-3.0/p);
@@ -1293,7 +1292,6 @@ namespace smpl
 			}
 			else if(testForSolutions > 0)
 			{
-				//StringTools::println("1 Solution");
 				//doesn't matter in this case whether we use + or -
 				double temp = (-q - MathExt::sqrt(q2 + (4.0*p3)/27.0))/2.0;
 				double w = MathExt::cuberoot(temp);
@@ -1641,7 +1639,6 @@ namespace smpl
 			Xk.x = A + B*cos(((2*k)*PI) / (2*n));
 			Xk.y = f->solve(Xk.x);
 			pointsToFit[k] = Xk;
-			StringTools::println("(%.9f, %.9f) -> %.9f", Xk.x, Xk.y, cos(((2*k)*PI) / (2*n)));
 		}
 
 		return fitPolynomial(pointsToFit);
