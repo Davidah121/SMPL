@@ -123,7 +123,7 @@ namespace smpl
 		 * 		Default is true.
 		 */
 		void loadSpriteSheet(File file, int width, int height, int xStride, int yStride, int count, bool clear = true);
-
+		
 		/**
 		 * @brief Saves the sprite as a APNG.
 		 * 		Whether it loops and delay time per frame are expected to be defined.

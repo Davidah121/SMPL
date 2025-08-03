@@ -9,13 +9,27 @@
 namespace smpl
 {
 
-	struct criticalPoint
+	struct PathCriticalPoint
 	{
 		double xValue;
 		Vec2f direction;
-		double timeVal;
-		Vec2f otherEndPoint;
-		bool horizontal;
+	};
+
+	struct PathScanLineInfo
+	{
+		PathScanLineInfo(int size)
+		{
+			scanLines = std::vector<std::vector<PathCriticalPoint>>(size);
+			horizontalLines = std::vector<std::vector<std::pair<double, double>>>(size);
+			strokeScanLines = std::vector<std::vector<int>>(size);
+		}
+		~PathScanLineInfo()
+		{
+
+		}
+		std::vector<std::vector<PathCriticalPoint>> scanLines;
+		std::vector<std::vector<std::pair<double, double>>> horizontalLines;
+		std::vector<std::vector<int>> strokeScanLines;
 	};
 
 	class DLL_OPTION VectorShape : public SerializedObject
@@ -1448,16 +1462,16 @@ namespace smpl
 		std::vector<PathCommand> commands = std::vector<PathCommand>();
 		std::vector<Vec2f> getArcStuff(Vec2f radi, double angle, Vec2f p1, Vec2f p2);
 		
-		void drawLineTo(Vec2f currentPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative);
-		void drawVerticalTo(Vec2f currentPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative);
-		void drawHorizontalTo(Vec2f currentPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative);
-		void drawQuadTo(Vec2f currentPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative);
-		void drawQuadShortTo(Vec2f currentPos, Vec2f extraPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative);
-		void drawCubicTo(Vec2f currentPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative);
-		void drawCubicShortTo(Vec2f currentPos, Vec2f extraPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative);
+		void drawLineTo(Vec2f currentPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative);
+		void drawVerticalTo(Vec2f currentPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative);
+		void drawHorizontalTo(Vec2f currentPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative);
+		void drawQuadTo(Vec2f currentPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative);
+		void drawQuadShortTo(Vec2f currentPos, Vec2f extraPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative);
+		void drawCubicTo(Vec2f currentPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative);
+		void drawCubicShortTo(Vec2f currentPos, Vec2f extraPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative);
 		
-		void drawArcTo(Vec2f currentPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative);
-		void drawCloseTo(Vec2f currentPos, Vec2f closePoint, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines);
+		void drawArcTo(Vec2f currentPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative);
+		void drawCloseTo(Vec2f currentPos, Vec2f closePoint, int minY, int maxY, PathScanLineInfo& scanLineInfo);
 		
 		void copy(VectorPath& other);
 		

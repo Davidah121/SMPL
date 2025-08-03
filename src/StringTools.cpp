@@ -75,11 +75,10 @@ namespace smpl
 
 
 	bool StringTools::hasInit = false;
-	wchar_t const StringTools::lineBreak = L'\n';
 
-	std::wstreambuf* StringTools::inputBuffer = std::wcin.rdbuf();
-	std::wstreambuf* StringTools::outputBuffer = std::wcout.rdbuf();
-	std::wstreambuf* StringTools::errorBuffer = std::wcerr.rdbuf();
+	std::streambuf* StringTools::inputBuffer = std::cin.rdbuf();
+	std::streambuf* StringTools::outputBuffer = std::cout.rdbuf();
+	std::streambuf* StringTools::errorBuffer = std::cerr.rdbuf();
 
 	void StringTools::init()
 	{
@@ -1852,97 +1851,6 @@ namespace smpl
 		return output;
 	}
 
-	std::string StringTools::formatString(std::string text, ...)
-	{
-		va_list args;
-		va_start(args, text);
-		std::string ret = formatStringInternal(text, args);
-		va_end(args);
-
-		return ret;
-	}
-
-	std::wstring StringTools::formatWideString(std::wstring text, ...)
-	{
-		va_list args;
-		va_start(args, text);
-		std::wstring ret = formatStringInternal(text, args);
-		va_end(args);
-
-		return ret;
-	}
-
-	
-	std::string StringTools::formatStringInternal(std::string format, va_list args)
-	{
-		int bytesWritten = 0;
-		std::vector<char> buffer = std::vector<char>(0xFFFF);
-		
-		while(true)
-		{
-			va_list copyArgs;
-			va_copy(copyArgs, args);
-			bytesWritten = vsnprintf(buffer.data(), buffer.size(), format.c_str(), args);
-			va_end(copyArgs);
-
-			if(bytesWritten < 0)
-			{
-				//error
-				break;
-			}
-			else if(bytesWritten == buffer.size()-1)
-			{
-				//potentially a problem. May need a larger buffer
-				buffer.resize( buffer.size() * 2 );
-			}
-			else
-			{
-				//probably fine
-				break;
-			}
-		}
-		
-		if(bytesWritten >= 0)
-			return buffer.data();
-		else
-			return "";
-	}
-
-	std::wstring StringTools::formatStringInternal(std::wstring format, va_list args)
-	{
-		int bytesWritten = 0;
-		std::vector<wchar_t> buffer = std::vector<wchar_t>(0xFFFF);
-		
-		while(true)
-		{
-			va_list copyArgs;
-			va_copy(copyArgs, args);
-			bytesWritten = vswprintf(buffer.data(), buffer.size(), format.c_str(), args);
-			va_end(copyArgs);
-
-			if(bytesWritten < 0)
-			{
-				//error
-				break;
-			}
-			else if(bytesWritten == buffer.size()-1)
-			{
-				//potentially a problem. May need a larger buffer
-				buffer.resize( buffer.size() * 2 );
-			}
-			else
-			{
-				//probably fine
-				break;
-			}
-		}
-		
-		if(bytesWritten >= 0)
-			return buffer.data();
-		else
-			return L"";
-	}
-
 	void StringTools::clearConsole(bool clearScrollBuffer)
 	{
 		if(clearScrollBuffer)
@@ -1982,26 +1890,26 @@ namespace smpl
 			StringTools::print("\033[2K\r");
 	}
 
-	void StringTools::reroutOutput(std::wstreambuf* file)
+	void StringTools::reroutOutput(std::streambuf* file)
 	{
-		std::wcout.rdbuf(file);
+		std::cout.rdbuf(file);
 	}
 
-	void StringTools::reroutInput(std::wstreambuf* file)
+	void StringTools::reroutInput(std::streambuf* file)
 	{
-		std::wcin.rdbuf(file);
+		std::cin.rdbuf(file);
 	}
 
-	void StringTools::reroutErrorOutput(std::wstreambuf* file)
+	void StringTools::reroutErrorOutput(std::streambuf* file)
 	{
-		std::wcerr.rdbuf(file);
+		std::cerr.rdbuf(file);
 	}
 
 	void StringTools::resetOutputInputStreams()
 	{
-		std::wcin.rdbuf(inputBuffer);
-		std::wcout.rdbuf(outputBuffer);
-		std::wcerr.rdbuf(errorBuffer);
+		std::cin.rdbuf(inputBuffer);
+		std::cout.rdbuf(outputBuffer);
+		std::cerr.rdbuf(errorBuffer);
 	}
 
 } //NAMESPACE smpl END

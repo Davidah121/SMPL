@@ -4,6 +4,7 @@ namespace smpl
 {
     GuiLayoutList::GuiLayoutList(bool direction, bool wrap) : GuiLayout()
     {
+        setFocusable(false);
         this->direction = direction;
         this->wrap = wrap;
     }

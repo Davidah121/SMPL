@@ -151,17 +151,17 @@ namespace smpl
 				int err = SSL_CTX_use_certificate_file(sslSingleton.getCTX(), certificateFile.c_str(), SSL_FILETYPE_PEM);
 				if(err != 1)
 				{
-					StringTools::println("FAILED SSL CERTIFICATE STUFF");
+					StringTools::println("FAILED SSL CERTIFICATE STUFF - %d", err);
 				}
 				err = SSL_CTX_use_PrivateKey_file(sslSingleton.getCTX(), keyFile.c_str(), SSL_FILETYPE_PEM);
 				if(err != 1)
 				{
-					StringTools::println("FAILED SSL PRIVATEKEY STUFF");
+					StringTools::println("FAILED SSL PRIVATEKEY STUFF - %d", err);
 				}
 				err = SSL_CTX_check_private_key(sslSingleton.getCTX());
 				if(err != 1)
 				{
-					StringTools::println("FAILED SSL CHECK PRIVATEKEY");
+					StringTools::println("FAILED SSL CHECK PRIVATEKEY - %d", err);
 				}
 			}
 			#endif
@@ -251,14 +251,13 @@ namespace smpl
 				int flag = MSG_NOSIGNAL;
 				return send(sock, buff, len, flag);
 			#else
-				WSABUF wsaBuff;
-				wsaBuff.buf = buff;
-				wsaBuff.len = len;
-				DWORD sentCount = 0;
-				int err = WSASend(sock, &wsaBuff, 1, &sentCount, 0, nullptr, nullptr);
+				int err = send(sock, buff, len, 0);
 				if(err == SOCKET_ERROR)
 					return -1;
-				return sentCount;
+				if(err == SOCKET_ERROR)
+					if(crossPlatformGetLastError() == WSAEWOULDBLOCK)
+						return 0;
+				return err;
 			#endif
 		}
 		else
@@ -465,18 +464,13 @@ namespace smpl
 	
 	void Network::obtainLock(bool type)
 	{
-		size_t t1 = System::getCurrentTimeMicro();
 		if(type == LOCK_TYPE_IMPORTANT)
 		{
-			networkSemaphore.lock(HybridSpinSemaphore::TYPE_WRITE, HybridSpinSemaphore::MODE_AGRESSIVE);
-			size_t t2 = System::getCurrentTimeMicro();
-			timeWaitedOnImportantLock += t2-t1;
+			networkSemaphore.lock(HybridSpinSemaphore::TYPE_WRITE);
 		}
 		else
 		{
-			networkSemaphore.lock(HybridSpinSemaphore::TYPE_READ, HybridSpinSemaphore::MODE_STANDARD);
-			size_t t2 = System::getCurrentTimeMicro();
-			timeWaitedOnNonImportantLock += t2-t1;
+			networkSemaphore.lock(HybridSpinSemaphore::TYPE_READ);
 		}
 	}
 
@@ -551,6 +545,8 @@ namespace smpl
 		if (config.type == Network::TYPE_SERVER)
 		{
 			::listen(mainSocketInfo.socket, SOMAXCONN);
+			u_long mode = 1;
+			crossPlatformIoctl(mainSocketInfo.socket, FIONBIO, &mode);
 			
 			// int i=1;
 			// setsockopt(mainSocketInfo.socket, IPPROTO_TCP, TCP_NODELAY, (const char*)&i, sizeof(i));
@@ -571,6 +567,9 @@ namespace smpl
 			if(tempSock == INVALID_SOCKET)
 				return false;
 
+			u_long mode = 1;
+			crossPlatformIoctl(tempSock, FIONBIO, &mode);
+			
 			int err = 0;
 
 			SocketInfo* inf = new SocketInfo();
@@ -612,8 +611,6 @@ namespace smpl
 				}
 			}
 
-			u_long mode = 1;
-			crossPlatformIoctl(tempSock, FIONBIO, &mode);
 			
 			// int i=1;
 			// setsockopt(tempSock, IPPROTO_TCP, TCP_NODELAY, (const char*)&i, sizeof(i));
@@ -741,13 +738,13 @@ namespace smpl
 			pollfd currSocketFD = {};
 			currSocketFD.fd = currSockInfo->socket;
 			currSocketFD.events = POLLOUT;
-			currSocketFD.revents = POLLOUT;
+			currSocketFD.revents = 0;
 			int err = crossPlatformPoll(&currSocketFD, 1, 0);
 
 			if( err == 0 )
 			{
 				releaseLock();
-				System::sleep(1, 0, false); //timeout. Should break eventually
+				//should probably sleep
 				obtainLock(LOCK_TYPE_NONIMPORTANT);
 				//verify socket is still valid
 				SocketInfo* validSocketInfo = getSocketInformation(id);
@@ -840,7 +837,6 @@ namespace smpl
 	int Network::receiveMessage(std::string& message, size_t id, bool flagRead)
 	{
 		//allocate buffer of x size. read till '\0'
-		
 		obtainLock(LOCK_TYPE_NONIMPORTANT);
 		SocketInfo* currSockInfo = getSocketInformation(id);
 
@@ -1109,7 +1105,7 @@ namespace smpl
 		}
 
 		unsigned long amount = 0;
-		int err = crossPlatformIoctl(currSockInfo->socket, FIONBIO, &amount);
+		int err = crossPlatformIoctl(currSockInfo->socket, FIONREAD, &amount);
 
 		releaseLock();
 
@@ -1454,7 +1450,7 @@ namespace smpl
 			pollfd socketFD = {};
 			socketFD.fd = mainSocketInfo.socket;
 			socketFD.events = POLLIN;
-			socketFD.revents = POLLIN;
+			socketFD.revents = 0;
 			allConnections.push_back(socketFD);
 			allConnectionsID.push_back(SIZE_MAX); //server socket ID = -1 since it doesn't actually have an ID
 			statusFlag.push_back(0);
@@ -1487,27 +1483,14 @@ namespace smpl
 				}
 			}
 			
-			int err = 0;
-			size_t t1 = System::getCurrentTimeMillis();
-			while(true)
-			{
-				err = crossPlatformPoll(allConnections.data(), allConnections.size(), 0);
-				size_t t2 = System::getCurrentTimeMillis();
-				if(t2-t1 >= 1)
-				{
-					// StringTools::println("%llu", t2-t1);
-					break;
-				}
-				if(err != 0)
-					break;
-			}
-
+			int err = crossPlatformPoll(allConnections.data(), allConnections.size(), 1);
 			releaseLock();
 
 			if(err == 0)
 			{
 				//nothing ready
 				didWork = false;
+				continue;
 			}
 			else if(err < 0)
 			{
@@ -1605,8 +1588,6 @@ namespace smpl
 						onDataFunc(allConnectionsID[i]);
 				}
 			}
-			
-			System::sleep(1, 0, false);
 		}
 	}
 	
@@ -1669,8 +1650,8 @@ namespace smpl
 
 				pollfd mainSocket = {};
 				mainSocket.fd = mainSocketInfo.socket;
-				mainSocket.events = POLLRDNORM;
-				mainSocket.revents = POLLRDNORM;
+				mainSocket.events = POLLIN;
+				mainSocket.revents = 0;
 
 				int err = crossPlatformPoll(&mainSocket, 1, 1);
 				releaseLock();
@@ -1699,7 +1680,7 @@ namespace smpl
 							break;
 						}
 					}
-					else if(mainSocket.revents & POLLRDNORM)
+					else if(mainSocket.revents & POLLIN)
 					{
 						//check for disconnect
 						bool valid = true;

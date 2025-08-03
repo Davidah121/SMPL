@@ -1,7 +1,8 @@
-inc = -I ./include -I C:/Libraries/glew-2.1.0/include -I C:/Libraries/openssl-master/openssl/include
+inc = -I ./include -I C:/Libraries/glew-2.1.0/include -I "C:/Program Files/OpenSSL-Win64/include" -I C:/Libraries/_MyLibraries/SEML -I C:/Libraries/_MyLibraries/SimpleSerialization
 objDir = ./bin/Debug/obj
 compiler = cmd /c clang++
-CXXFLAGS = -std=c++17 -mavx2
+CXXFLAGS = -std=c++17 -msse4.2 -mf16c
 DEFINES = -D OPTI=0 -D USE_OPENSSL -D USE_OPENGL -D USE_PREPROCESSOR_TRICKS=1 -D DEBUG
+DLLStuff = -fPIC -D DLL_EXPORT
 OPTIONS = -g -c -fopenmp -pipe -Wno-unused-command-line-argument
-compilerFlags = $OPTIONS $CXXFLAGS $DEFINES
+compilerFlags = $DLLStuff $OPTIONS $CXXFLAGS $DEFINES

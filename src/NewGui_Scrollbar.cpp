@@ -53,6 +53,12 @@ namespace smpl
             if(button == Input::LEFT_MOUSE_BUTTON)
                 selectedButton = SELECTED_INVALID;
         });
+
+        
+        setFocusable(true);
+        horizontalScrollButton.setFocusable(false);
+        verticalScrollButton.setFocusable(false);
+        clippingLayout.setFocusable(false);
     }
     GuiScrollBar::~GuiScrollBar()
     {
@@ -63,14 +69,18 @@ namespace smpl
     {
         //position the vertical scroll bar and the horizontal scroll bar
         GRect vbutMargins = verticalScrollButton.getMargin();
+        GRect oldVButMargins = vbutMargins;
         vbutMargins.left = __min(maxWidth, maximumWidth) - verticalScrollButton.width;
         vbutMargins.top = -clippingLayout.getPadding().top;
-        verticalScrollButton.setMargin(vbutMargins);
+        if(oldVButMargins != vbutMargins)
+            verticalScrollButton.setMargin(vbutMargins);
         
         GRect hbutMargins = horizontalScrollButton.getMargin();
+        GRect oldHButMargins = hbutMargins;
         hbutMargins.top = __min(maxHeight, maximumHeight) - horizontalScrollButton.height;
         vbutMargins.left = -clippingLayout.getPadding().left;
-        horizontalScrollButton.setMargin(hbutMargins);
+        if(oldHButMargins != hbutMargins)
+            horizontalScrollButton.setMargin(hbutMargins);
         
         GuiLayoutFixed::layoutUpdate(offX, offY, maximumWidth, maximumHeight);
     }
@@ -148,6 +158,8 @@ namespace smpl
         selectedMouseX = mouseX;
 
         GRect clipPadding = clippingLayout.getPadding();
+        GRect oldPadding = clipPadding;
+
         int xOverflow = (clippingLayout.getContentWidth() - width + border.right + border.left);
         int yOverflow = (clippingLayout.getContentHeight() - height + border.bottom + border.top);
         int xUnderflow = clipPadding.left;
@@ -193,7 +205,8 @@ namespace smpl
         verticalScrollButton.setVisible(finalHeightOfScrollBar!=maxHeight);
         horizontalScrollButton.setVisible(finalWidthOfScrollBar!=maxWidth);
 
-        clippingLayout.setPadding(clipPadding);
+        if(oldPadding != clipPadding)
+            clippingLayout.setPadding(clipPadding);
         
         //update the children
         GuiLayoutFixed::update(manager);

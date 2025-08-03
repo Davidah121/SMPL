@@ -1,4 +1,4 @@
-#include <catch2/catch_amalgamated.hpp>
+#include <catch_amalgamated.hpp>
 #include "Matrix.h"
 #include "MathExt.h"
 
@@ -21,7 +21,7 @@ TEST_CASE("Testing Matrix Class", "[Matrix]")
         
         smpl::MatrixF C = A*B;
         REQUIRE(C.getRows() == 8);
-        REQUIRE(C.getCols() == 8);
+        REQUIRE(C.getColumns() == 8);
         for(int i=0; i<8; i++)
         {
             for(int j=0; j<8; j++)
@@ -64,7 +64,7 @@ TEST_CASE("Testing Matrix Class", "[Matrix]")
         Expected[7][0] = 90; Expected[7][1] = 124; Expected[7][2] = 158; Expected[7][3] = 192; Expected[7][4] = 226; Expected[7][5] = 260; Expected[7][6] = 294;
         
         REQUIRE(C.getRows() == 8);
-        REQUIRE(C.getCols() == 7);
+        REQUIRE(C.getColumns() == 7);
         for(int i=0; i<8; i++)
         {
             for(int j=0; j<7; j++)
@@ -91,7 +91,7 @@ TEST_CASE("Testing Matrix Class", "[Matrix]")
         
         smpl::MatrixF C = A.hadamardProduct(B);
         REQUIRE(C.getRows() == 8);
-        REQUIRE(C.getCols() == 8);
+        REQUIRE(C.getColumns() == 8);
         for(int i=0; i<8; i++)
         {
             for(int j=0; j<8; j++)
@@ -119,7 +119,7 @@ TEST_CASE("Testing Matrix Class", "[Matrix]")
         smpl::MatrixF C = A.multiplyTranspose(B);
         smpl::MatrixF C2 = A*B.getTranspose();
         REQUIRE(C.getRows() == 8);
-        REQUIRE(C.getCols() == 8);
+        REQUIRE(C.getColumns() == 8);
         for(int i=0; i<8; i++)
         {
             for(int j=0; j<8; j++)

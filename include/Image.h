@@ -3,7 +3,7 @@
 #include "ColorPalette.h"
 #include "File.h"
 #include "MathExt.h"
-#include "Opti.h"
+#include "SIMD.h"
 
 namespace smpl
 {

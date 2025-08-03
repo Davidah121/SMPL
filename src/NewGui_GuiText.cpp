@@ -7,6 +7,7 @@ namespace smpl
 {
     GuiText::GuiText() : GuiContent()
     {
+        setFocusable(false);
     }
     GuiText::~GuiText()
     {

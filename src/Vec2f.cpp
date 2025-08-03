@@ -174,5 +174,14 @@ namespace smpl
 		k[0][1] = y;
 		return k;
 	}
+	
+	void formatToString(StringStream& stream, const Vec2f& v, const std::string& options)
+	{
+		stream.write('<');
+		formatToString(stream, v.x, options);
+		stream.write(", ");
+		formatToString(stream, v.y, options);
+		stream.write('>');
+	}
 
 } //NAMESPACE glib END

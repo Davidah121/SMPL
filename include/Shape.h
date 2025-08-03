@@ -91,7 +91,7 @@ namespace smpl
 	SERIALIZE_CLASS(position, scale, rotation)
 	};
 
-	class CombinationShape : public Shape
+	class DLL_OPTION CombinationShape : public Shape
 	{
 	public:
 		/**

@@ -4,6 +4,7 @@ namespace smpl
 {
     GuiContent::GuiContent() : GuiItem()
     {
+        setFocusable(false);
         type = TYPE_CONTENT;
     }
     GuiContent::~GuiContent()

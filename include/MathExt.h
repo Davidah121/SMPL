@@ -1,6 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
-#include "Opti.h"
+#include "SIMD.h"
 #include <limits>
 #include <math.h>
 #include <cmath>
@@ -16,7 +16,10 @@
 #include "ComplexNumber.h"
 #include "PolarCoordinate.h"
 #include "MathFunction.h"
+#include "Float16.h"
+
 #include "SEML.h"
+#include "SEML_256.h"
 
 #ifdef max
 	#undef max
@@ -55,286 +58,7 @@
 	#define TYPE_PUN(x, type) (*(type*)&x)
 #endif
 
-struct FP16
-{
-    int16_t a;
-    FP16() {};
-    FP16(const float b)
-	{ 
-		if(b>=1)
-			a=0x7FFF;
-		else if(b<=-1)
-			a=0x8000;
-		else
-			a = (int16_t)(b*0x7FFF);
-	}
-    FP16(const double b)
-	{ 
-		if(b>=1)
-			a=0x7FFF;
-		else if(b<=-1)
-			a=0x8000;
-		else
-			a = (int16_t)(b*0x7FFF);
-	}
-    FP16(const FP16& other) { a = other.a; }
-    void operator=(const FP16& other) { a = other.a; }
-    void operator=(const float& b)
-	{ 
-		if(b>=1)
-			a=0x7FFF;
-		else if(b<=-1)
-			a=0x8000;
-		else
-			a = (int16_t)(b*0x7FFF);
-	}
-    void operator=(const double& b)
-	{ 
-		if(b>=1)
-			a=0x7FFF;
-		else if(b<=-1)
-			a=0x8000;
-		else
-			a = (int16_t)(b*0x7FFF);
-	}
-
-    void operator+=(const float b) { a += (int16_t)(b*0x7FFF); }
-    void operator+=(const double b) { a += (int16_t)(b*0x7FFF); }
-    void operator+=(const FP16 b) { a += b.a; }
-    void operator-=(const float b) { a -= (int16_t)(b*0x7FFF); }
-    void operator-=(const double b) { a -= (int16_t)(b*0x7FFF); }
-    void operator-=(const FP16 b) { a -= b.a; }
-    void operator*=(const float b) { a = ((float)*this) * b; }
-    void operator*=(const double b) { a = ((double)*this) * b; }
-    void operator*=(const FP16 b) { a = ((float)*this) * ((float)b); }
-    void operator/=(const float b) { a = ((float)*this) / b; }
-    void operator/=(const double b) { a = ((double)*this) / b; }
-    void operator/=(const FP16 b) { a = ((float)*this) / ((float)b); }
-
-	FP16 operator-() { return -((double)*this); }
-
-    bool operator==(const FP16 b) { return a == b.a; };
-    bool operator!=(const FP16 b) { return a != b.a; };
-    bool operator<(const FP16 b) { return a < b.a; };
-    bool operator>(const FP16 b) { return a > b.a; };
-    bool operator<=(const FP16 b) { return a <= b.a; };
-    bool operator>=(const FP16 b) { return a >= b.a; };
-
-    friend double operator*(double value, FP16 other) { return value*(double)other; }
-    friend float operator*(float value, FP16 other) { return value*(float)other; }
-    friend double operator/(double value, FP16 other) { return value/(double)other; }
-    friend float operator/(float value, FP16 other) { return value/(float)other; }
-    friend double operator+(double value, FP16 other) { return value+(double)other; }
-    friend float operator+(float value, FP16 other) { return value+(float)other; }
-    friend double operator-(double value, FP16 other) { return value-(double)other; }
-    friend float operator-(float value, FP16 other) { return value-(float)other; }
-
-    FP16 operator+(const float b)
-    {
-        FP16 res;
-        res.a = a + (int16_t)(b*0x7FFF);
-        return res;
-    }
-
-    FP16 operator+(const double b)
-    {
-        FP16 res;
-        res.a = a + (int16_t)(b*0x7FFF);
-        return res;
-    }
-    
-    FP16 operator+(const FP16 b)
-    {
-        FP16 res;
-        res.a = a + b.a;
-        return res;
-    }
-
-    FP16 operator-(const float b)
-    {
-        FP16 res;
-        res.a = a - (int16_t)(b*0x7FFF);
-        return res;
-    }
-
-    FP16 operator-(const double b)
-    {
-        FP16 res;
-		double ignoreThis;
-        res.a = a - (int16_t)(b*0x7FFF);
-        return res;
-    }
-
-    FP16 operator-(const FP16 b)
-    {
-        FP16 res;
-        res.a = a - b.a;
-        return res;
-    }
-
-    FP16 operator*(const float b)
-    {
-        return ((float)*this) * b;
-    }
-
-    FP16 operator*(const double b)
-    {
-        return ((double)*this) * b;
-    }
-
-    FP16 operator*(const FP16 b)
-    {
-        return ((float)*this) * ((float)b);
-    }
-
-    FP16 operator/(const float b)
-    {
-        return ((float)*this) / b;
-    }
-
-    FP16 operator/(const double b)
-    {
-        return ((double)*this) / b;
-    }
-
-    FP16 operator/(const FP16 b)
-    {
-        return ((float)*this) / ((float)b);
-    }
-
-    operator float() const
-    {
-        return (a&0x8000) ? ((float)(a & 0x7FFF) / 0x7FFF)-1.0 : (float)(a & 0x7FFF) / 0x7FFF;
-    }
-    operator double() const
-    {
-        return (a&0x8000) ? ((double)(a & 0x7FFF) / 0x7FFF)-1.0 : (double)(a & 0x7FFF) / 0x7FFF;
-    }
-};
-
-struct UFP16
-{
-    uint16_t a;
-    UFP16() {};
-    UFP16(const float b) { a = (b<1.0) ? (uint16_t)(b*0xFFFF) : 0xFFFF; }
-    UFP16(const double b) { a = (b<1.0) ? (uint16_t)(b*0xFFFF) : 0xFFFF; }
-    UFP16(const UFP16& other) { a = other.a; }
-    void operator=(const UFP16& other) { a = other.a; }
-    void operator=(const float& b) { a = (b<1.0) ? (uint16_t)(b*0xFFFF) : 0xFFFF; }
-    void operator=(const double& b) { a = (b<1.0) ? (uint16_t)(b*0xFFFF) : 0xFFFF; }
-
-    void operator+=(const float b) { a += (uint16_t)(b*0xFFFF); }
-    void operator+=(const double b) { a += (uint16_t)(b*0xFFFF); }
-    void operator+=(const UFP16 b) { a += b.a; }
-    void operator-=(const float b) { a -= (uint16_t)(b*0xFFFF); }
-    void operator-=(const double b) { a -= (uint16_t)(b*0xFFFF); }
-    void operator-=(const UFP16 b) { a -= b.a; }
-    void operator*=(const float b) { a = ((float)*this) * b; }
-    void operator*=(const double b) { a = ((double)*this) * b; }
-    void operator*=(const UFP16 b) { a = ((float)*this) * ((float)b); }
-    void operator/=(const float b) { a = ((float)*this) / b; }
-    void operator/=(const double b) { a = ((double)*this) / b; }
-    void operator/=(const FP16 b) { a = ((float)*this) / ((float)b); }
-
-	UFP16 operator-() { return -((double)*this); }
-
-    bool operator==(const UFP16 b) { return a == b.a; };
-    bool operator!=(const UFP16 b) { return a != b.a; };
-    bool operator<(const UFP16 b) { return a < b.a; };
-    bool operator>(const UFP16 b) { return a > b.a; };
-    bool operator<=(const UFP16 b) { return a <= b.a; };
-    bool operator>=(const UFP16 b) { return a >= b.a; };
-
-    friend double operator*(double value, UFP16 other) { return value*(double)other; }
-    friend float operator*(float value, UFP16 other) { return value*(float)other; }
-    friend double operator/(double value, UFP16 other) { return value/(double)other; }
-    friend float operator/(float value, UFP16 other) { return value/(float)other; }
-    friend double operator+(double value, UFP16 other) { return value+(double)other; }
-    friend float operator+(float value, UFP16 other) { return value+(float)other; }
-    friend double operator-(double value, UFP16 other) { return value-(double)other; }
-    friend float operator-(float value, UFP16 other) { return value-(float)other; }
-
-    UFP16 operator+(const float b)
-    {
-        UFP16 res;
-        res.a = a + (uint16_t)(b*0xFFFF);
-        return res;
-    }
-
-    UFP16 operator+(const double b)
-    {
-        UFP16 res;
-        res.a = a + (uint16_t)(b*0xFFFF);
-        return res;
-    }
-    
-    UFP16 operator+(const UFP16 b)
-    {
-        UFP16 res;
-        res.a = a + b.a;
-        return res;
-    }
-
-    UFP16 operator-(const float b)
-    {
-        UFP16 res;
-        res.a = a - (uint16_t)(b*0xFFFF);
-        return res;
-    }
-
-    UFP16 operator-(const double b)
-    {
-        UFP16 res;
-        res.a = a - (uint16_t)(b*0xFFFF);
-        return res;
-    }
-
-    UFP16 operator-(const UFP16 b)
-    {
-        UFP16 res;
-        res.a = a - b.a;
-        return res;
-    }
-
-    UFP16 operator*(const float b)
-    {
-        return ((float)*this) * b;
-    }
-
-    UFP16 operator*(const double b)
-    {
-        return ((double)*this) * b;
-    }
-
-    UFP16 operator*(const UFP16 b)
-    {
-        return ((float)*this) * ((float)b);
-    }
-
-    UFP16 operator/(const float b)
-    {
-        return ((float)*this) / b;
-    }
-
-    UFP16 operator/(const double b)
-    {
-        return ((double)*this) / b;
-    }
-
-    UFP16 operator/(const UFP16 b)
-    {
-        return ((float)*this) / ((float)b);
-    }
-
-    operator float() const
-    {
-        return ((float)(a & 0xFFFF) / 0xFFFF);
-    }
-    operator double() const
-    {
-        return ((double)(a & 0xFFFF) / 0xFFFF);
-    }
-};
+#include "FixedDecimalFloat.h"
 
 namespace smpl
 {
@@ -342,6 +66,13 @@ namespace smpl
 	class DLL_OPTION MathExt
 	{
 	public:
+		static const int CONVOLVE_FULL = 0;
+		static const int CONVOLVE_SAME = 1;
+		static const int CONVOLVE_VALID = 2;
+
+		static const int CONVOLVE_ZERO_PADDING = 0;
+		static const int CONVOLVE_CLAMP = 1;
+		static const int CONVOLVE_WRAP = 2;
 
 		/**
 		 * @brief Returns the number of 1 bits in the value x.
@@ -351,48 +82,77 @@ namespace smpl
 		 * @return int 
 		 */
 		static int popcount(uint8_t x);
-		
-		/**
-		 * @brief Returns the number of 1 bits in the value x.
-		 * 		Uses some bit hacks and is cross platform.
-		 * 
-		 * @param x 
-		 * @return int 
-		 */
 		static int popcount(uint16_t x);
-
-		/**
-		 * @brief Returns the number of 1 bits in the value x.
-		 * 		Uses some bit hacks and is cross platform.
-		 * 
-		 * @param x 
-		 * @return int 
-		 */
 		static int popcount(uint32_t x);
+		static int popcount(uint64_t x);
 
 		/**
-		 * @brief Returns the number of 1 bits in the value x.
-		 * 		Uses some bit hacks and is cross platform.
+		 * @brief Reverses the bits from MSB to LSB or vice versa.
+		 * 		Takes from https://stackoverflow.com/questions/746171/efficient-algorithm-for-bit-reversal-from-msb-lsb-to-lsb-msb-in-c
+		 * 			Note that the 64 bit version does not use a larger lookup table and is not as fast as it could possibly be.
 		 * 
-		 * @param x 
-		 * @return int 
+		 * @param v1 
+		 * @return uint8_t 
 		 */
-		static int popcount(uint64_t x);
+		static uint8_t bitReversal(uint8_t v1);
+		static uint16_t bitReversal(uint16_t v1);
+		static uint32_t bitReversal(uint32_t v1);
+		static uint64_t bitReversal(uint64_t v1);
 		
 		static int hammingDistance(uint8_t v1, uint8_t v2);
 		static int hammingDistance(uint16_t v1, uint16_t v2);
 		static int hammingDistance(uint32_t v1, uint32_t v2);
 		static int hammingDistance(uint64_t v1, uint64_t v2);
 
+		/**
+		 * @brief Calculates the unsigned saturated addition of two numbers.
+		 * 		Specifically:
+		 * 			v1+v2 but if it overflows, it is set to the maximum value allowed
+		 * 		Good in scenarios where wrapping around is undesirable
+		 * 
+		 * @param v1 
+		 * @param v2 
+		 * @return uint8_t 
+		 */
 		static uint8_t saturatedAdd(uint8_t v1, uint8_t v2);
 		static uint16_t saturatedAdd(uint16_t v1, uint16_t v2);
 		static uint32_t saturatedAdd(uint32_t v1, uint32_t v2);
 		static uint64_t saturatedAdd(uint64_t v1, uint64_t v2);
 		
+		/**
+		 * @brief Calculates the unsigned saturated subtraction of two numbers.
+		 * 		Specifically:
+		 * 			v1-v2 but if it underflows, it is set to the minimum value allowed
+		 * 		Good in scenarios where wrapping around is undesirable
+		 * 
+		 * @param v1 
+		 * @param v2 
+		 * @return uint8_t 
+		 */
 		static uint8_t saturatedSub(uint8_t v1, uint8_t v2);
 		static uint16_t saturatedSub(uint16_t v1, uint16_t v2);
 		static uint32_t saturatedSub(uint32_t v1, uint32_t v2);
 		static uint64_t saturatedSub(uint64_t v1, uint64_t v2);
+
+		/**
+		 * @brief Calculates the signed saturated addition of two numbers.
+		 * 		Specifically:
+		 * 			v1+v2 but if it overflows/underflows, it is set to the maximum/minimum value allowed
+		 * 		Good in scenarios where wrapping around is undesirable
+		 * 
+		 * @param v1 
+		 * @param v2 
+		 * @return uint8_t 
+		 */
+		static int8_t saturatedAdd(int8_t v1, int8_t v2);
+		static int16_t saturatedAdd(int16_t v1, int16_t v2);
+		static int32_t saturatedAdd(int32_t v1, int32_t v2);
+		static int64_t saturatedAdd(int64_t v1, int64_t v2);
+		
+		static int8_t saturatedSub(int8_t v1, int8_t v2);
+		static int16_t saturatedSub(int16_t v1, int16_t v2);
+		static int32_t saturatedSub(int32_t v1, int32_t v2);
+		static int64_t saturatedSub(int64_t v1, int64_t v2);
 
 		/**
 		 * @brief Returns the max of the 2 template values.
@@ -523,6 +283,27 @@ namespace smpl
 					minV = elem;
 			}
 			return minV;
+		}
+		
+		/**
+		 * @brief Rounds the value up to the nearest power of 2.
+		 * 
+		 * @param a 
+		 * @return T 
+		 */
+		template<typename T>
+		static T roundToNearestPower2(T a)
+		{
+			unsigned long long v = a; // compute the next highest power of 2 of 64-bit v
+			v--;
+			v |= v >> 1;
+			v |= v >> 2;
+			v |= v >> 4;
+			v |= v >> 8;
+			v |= v >> 16;
+			v |= v >> 32;
+			v++;
+			return v;
 		}
 		
 		/**
@@ -1953,29 +1734,32 @@ namespace smpl
 		/**
 		 * @brief Computes the Fast Discrete Fourier Transform using an adaptation of the Cooley Tukey algorithm
 		 * 		Runs in O(NLogN) time.
-		 * 		Fails if the input array is not a power of 2.
+		 * 		The input is highly encouraged to be a power of 2 already. If it is not, it will be expanded to be a power of 2 by copying data to a new buffer.
+		 * 			If the size is already a power of 2, the copying process is skipped.
+		 * 		The output will be a power of 2.
 		 * 		
 		 * 		Reference: 
 		 * 			(https://cp-algorithms.com/algebra/fft.html#improved-implementation-in-place-computation)
 		 * 
 		 * @param arr 
-		 * 		An array of Complex Numbers to perform the Fourier Transform on.
+		 * 		A column matrix of Complex Numbers to perform the Fourier Transform on.
 		 * 		If not doing the inverse, the imaginary values can be ignored and set to 0.
+		 * 			Otherwise, the imaginary values must be provided to give back the correct result.
 		 * @param size 
 		 * 		The size of the array.
-		 * 		Must be a power of 2.
 		 * @param inverse 
 		 * 		Whether to solve for the inverse.
 		 * 		Default is false.
-		 * @return std::vector<ComplexNumber> 
+		 * @return Matrix<ComplexNumber> 
 		 */
-		static std::vector<ComplexNumber> fastFourierTransform(ComplexNumber* arr, size_t size, bool inverse=false);
+		static Matrix<ComplexNumber> fastFourierTransform(const Matrix<ComplexNumber>& arr, bool inverse=false);
 		
 		/**
 		 * @brief Computes the Fast Discrete Fourier Transform using an adaptation of the Cooley Tukey algorithm
 		 * 		Runs in O(NLogN) time.
-		 * 		Fails if the input array is not a power of 2.
+		 * 		Fails if the input matrix's size is not a power of 2 and the input matrix is not a column matrix.
 		 * 		This performs the operation on arr itself and therefore modifies it.
+		 * 		Unlike the normal version, this version CAN NOT just copy data into a new buffer and therefore requires proper sizing beforehand.
 		 * 		
 		 * 		Reference: 
 		 * 			(https://cp-algorithms.com/algebra/fft.html#improved-implementation-in-place-computation)
@@ -1984,9 +1768,38 @@ namespace smpl
 		 * @param arr 
 		 * @param size 
 		 * @param inverse 
-		 * @return bool
+		 * @return void
 		 */
-		static bool fastFourierTransformInline(ComplexNumber* arr, size_t size, bool inverse=false);
+		static void fastFourierTransformInline(const Matrix<ComplexNumber>& arr, bool inverse=false);
+
+		/**
+		 * @brief Computes the 2D Fast Fourier Transform utilizing the 1D versions.
+		 * 		Highly encourages a matrix that is a power of 2. Meaning the rows and columns must be a valid power of 2
+		 * 			Note that the matrix does not need to be square.
+		 * 		If the matrix rows and columns aren't the required size, they will be padded with 0s to the correct size
+		 * 			and the output will reflect that.
+		 * 
+		 * @param mat 
+		 * @param inverse 
+		 * @return Matrix<ComplexNumber> 
+		 */
+		static Matrix<ComplexNumber> fastFourierTransform2D(const Matrix<ComplexNumber>& mat, bool inverse=false);
+
+		/**
+		 * @brief Computes the 2D Fast Fourier Transform utilizing the 1D versions and modifying the input matrix itself.
+		 * 		Requires a matrix that is a power of 2. Meaning the rows and columns must be a valid power of 2
+		 * 			Note that the matrix does not need to be square.
+		 * 		THIS METHOD WILL NOT WORK WITHOUT THE PROPER SIZE.
+		 * 		
+		 * 		Returns if the operation is successful.
+		 * 
+		 * 		Useful when you don't need the original data and only need the FFT / want to minimize the total number of copies created.
+		 * @param mat 
+		 * @param inverse 
+		 * @return true 
+		 * @return false 
+		 */
+		static bool fastFourierTransform2DInline(Matrix<ComplexNumber>& mat, bool inverse = false);
 		
 		/**
 		 * @brief Computes the Discrete Cosine Transform on the array.
@@ -2166,11 +1979,21 @@ namespace smpl
 		 * 		Returns the baseImage convolved with the kernel.
 		 * @param baseImage 
 		 * @param kernel 
-		 * @param normalized
+		 * @param mode
+		 * 		Describes the mode of the convolution. These modes control the size of the output matrix
+		 * 		Valid Modes:
+		 * 			FULL - The proper convolution by definition. Returns a matrix of size N+M-1
+		 * 			SAME - Returns a Matrix that is the same size as the BaseImage. Default
+		 * 			VALID - Returns a Matrix that is only the sections that require no padding. Returns a matrix of size N-(M/2)
+		 * @param paddingMode
+		 * 		Valid Modes:
+		 * 			ZERO_PADDING - Boundary is padded with 0s
+		 * 			CLAMP - Boundary clamps to the closest valid value of the baseImage
+		 * 			WRAP - Boundary wraps around to the otherside of the baseImage
 		 * @return Matrix 
 		 */
-		static MatrixF convolution(MatrixF* baseImage, MatrixF* kernel, bool normalized);
-		static MatrixD convolution(MatrixD* baseImage, MatrixD* kernel, bool normalized);
+		template<typename T>
+		static Matrix<T> convolution(const Matrix<T>& baseImage, const Matrix<T>& kernel, int type, int paddingMode);
 
 		/**
 		 * @brief Computes the cross correlation of a matrix and a kernel (which is a matrix).
@@ -2188,8 +2011,34 @@ namespace smpl
 		 * @param normalized
 		 * @return Matrix 
 		 */
-		static MatrixF crossCorrelation(MatrixF* baseImage, MatrixF* kernel, bool normalized);
-		static MatrixD crossCorrelation(MatrixD* baseImage, MatrixD* kernel, bool normalized);
+		template<typename T>
+		static Matrix<T> crossCorrelation(const Matrix<T>& baseImage, const Matrix<T>& kernel, int type, int paddingMode);
+
+		/**
+		 * @brief Computes the convolution utilizing the Fast Fourier Transform to achieve much higher speeds.
+		 * 		Requires the matrices be composed of Complex Numbers.
+		 * 		Note that the matrices do not need to be the same size.
+		 * 
+		 * @param baseImage 
+		 * @param kernel 
+		 * @param type 
+		 * @param paddingMode 
+		 * @return Matrix<ComplexNumber> 
+		 */
+		static Matrix<ComplexNumber> convolutionFFT(const Matrix<ComplexNumber>& baseImage, const Matrix<ComplexNumber>& kernel, int type, int paddingMode);
+
+		/**
+		 * @brief Computes the convolution utilizing the Fast Fourier Transform to achieve much higher speeds.
+		 * 		Requires the matrices be composed of Complex Numbers.
+		 * 		Note that the matrices do not need to be the same size.
+		 * 
+		 * @param baseImage 
+		 * @param kernel 
+		 * @param type 
+		 * @param paddingMode 
+		 * @return Matrix<ComplexNumber> 
+		 */
+		static Matrix<ComplexNumber> crossCorrelationFFT(const Matrix<ComplexNumber>& baseImage, const Matrix<ComplexNumber>& kernel, int type, int paddingMode);
 
 		//Clustering algorigthms
 
@@ -2383,6 +2232,216 @@ namespace smpl
 		
 	private:
 		
+		template<typename T>
+		static Matrix<T> convolveValid(const Matrix<T>& input_matrix, const Matrix<T>& kernel);
+		template<typename T>
+		static Matrix<T> convolveSame(const Matrix<T>& input_matrix, const Matrix<T>& kernel, int paddingMode, bool crossCorrelation);
+		template<typename T>
+		static Matrix<T> convolveFull(const Matrix<T>& input_matrix, const Matrix<T>& kernel, int paddingMode);
 	};
 
+	
+	template<typename T>
+	inline Matrix<T> MathExt::convolveValid(const Matrix<T>& input_matrix, const Matrix<T>& kernel)
+	{
+		int kR = (kernel.getRows()/2);
+		int kC = (kernel.getColumns()/2);
+		if(kernel.getColumns() != 1 && kernel.getColumns()%2)
+			kC++;
+		if(kernel.getRows() != 1 && kernel.getRows()%2)
+			kR++;
+		Matrix<T> output = Matrix<T>(input_matrix.getRows()-kR, input_matrix.getColumns()-kC);
+
+		LARGE_ENOUGH_CLAUSE(output.getRows())
+		#pragma omp parallel for
+		for(size_t i=0; i<output.getRows(); i++)
+		{
+			int startY = i;
+			LARGE_ENOUGH_CLAUSE(output.getColumns())
+			#pragma omp parallel for
+			for(size_t j=0; j<output.getColumns(); j++)
+			{
+				int startX = j;
+				//ignore all values outside the range of the input matrix. No negatives. No values greater than rows or columns
+				float sum = 0;
+				for(int kernelY=0; kernelY<kernel.getRows(); kernelY++)
+				{
+					int currY = startY+kernelY;
+					for(int kernelX=0; kernelX<kernel.getColumns(); kernelX++)
+					{
+						int currX = startX+kernelX;
+						sum += kernel[kernelY][kernelX] * input_matrix[currY][currX];
+					}
+				}
+				output[i][j] = sum;
+			}
+		}
+		return output;
+	}
+	template<typename T>
+	inline Matrix<T> MathExt::convolveSame(const Matrix<T>& input_matrix, const Matrix<T>& kernel, int paddingMode, bool crossCorrelation)
+	{
+		int kR = (kernel.getRows()/2);
+		int kC = (kernel.getColumns()/2);
+		if(crossCorrelation)
+		{
+			if(kernel.getRows()%2 == 0)
+				kR--;
+			if(kernel.getColumns()%2 == 0)
+				kC--;
+		}
+		Matrix<T> output = Matrix<T>(input_matrix.getRows(), input_matrix.getColumns());
+		
+		LARGE_ENOUGH_CLAUSE(output.getRows())
+		#pragma omp parallel for
+		for(size_t i=0; i<output.getRows(); i++)
+		{
+			int startY = i-kR;
+			LARGE_ENOUGH_CLAUSE(output.getColumns())
+			#pragma omp parallel for
+			for(size_t j=0; j<output.getColumns(); j++)
+			{
+				int startX = j-kC;
+				//ignore all values outside the range of the input matrix. No negatives. No values greater than rows or columns
+				float sum = 0;
+				for(int kernelY=0; kernelY<kernel.getRows(); kernelY++)
+				{
+					int currY = startY+kernelY;
+					for(int kernelX=0; kernelX<kernel.getColumns(); kernelX++)
+					{
+						int currX = startX+kernelX;
+						float inputMatValue = 0;
+						if(paddingMode == 1)
+						{
+							//clamp
+							int r = MathExt::clamp<int>(currY, 0, input_matrix.getRows());
+							int c = MathExt::clamp<int>(currX, 0, input_matrix.getColumns());
+							inputMatValue = input_matrix[r][c];
+						}
+						else if(paddingMode == 2)
+						{
+							//wrap
+							int r,c;
+							// int r = wrapNumber(currY, input_matrix.getRows());
+							// int c = wrapNumber(currX, input_matrix.getColumns());
+							inputMatValue = input_matrix[r][c];
+						}
+						else
+						{
+							//zero padding
+							if(currX >= 0 && currX < input_matrix.getColumns() && currY >= 0 && currY < input_matrix.getRows())
+								inputMatValue = input_matrix[currY][currX];
+						}
+						sum += kernel[kernelY][kernelX] * inputMatValue;
+					}
+				}
+				output[i][j] = sum;
+			}
+		}
+		return output;
+	}
+	template<typename T>
+	inline Matrix<T> MathExt::convolveFull(const Matrix<T>& input_matrix, const Matrix<T>& kernel, int paddingMode)
+	{
+		int kR = (kernel.getRows()/2);
+		int kC = (kernel.getColumns()/2);
+		if(kernel.getColumns() != 1 && kernel.getColumns()%2)
+			kC++;
+		if(kernel.getRows() != 1 && kernel.getRows()%2)
+			kR++;
+		
+		Matrix<T> output = Matrix<T>(input_matrix.getRows()+kR, input_matrix.getColumns()+kC);
+		
+		LARGE_ENOUGH_CLAUSE(output.getRows())
+		#pragma omp parallel for
+		for(size_t i=0; i<output.getRows(); i++)
+		{
+			int startY = i-kR;
+			LARGE_ENOUGH_CLAUSE(output.getColumns())
+			#pragma omp parallel for
+			for(size_t j=0; j<output.getColumns(); j++)
+			{
+				int startX = j-kC;
+				//ignore all values outside the range of the input matrix. No negatives. No values greater than rows or columns
+				float sum = 0;
+				for(int kernelY=0; kernelY<kernel.getRows(); kernelY++)
+				{
+					int currY = startY+kernelY;
+					for(int kernelX=0; kernelX<kernel.getColumns(); kernelX++)
+					{
+						int currX = startX+kernelX;
+						float inputMatValue = 0;
+						if(paddingMode == 1)
+						{
+							//clamp
+							int r = MathExt::clamp<int>(currY, 0, input_matrix.getRows());
+							int c = MathExt::clamp<int>(currX, 0, input_matrix.getColumns());
+							inputMatValue = input_matrix[r][c];
+						}
+						else if(paddingMode == 2)
+						{
+							//wrap
+							int r,c;
+							// int r = wrapNumber(currY, input_matrix.getRows());
+							// int c = wrapNumber(currX, input_matrix.getColumns());
+							inputMatValue = input_matrix[r][c];
+						}
+						else
+						{
+							//zero padding
+							if(currX >= 0 && currX < input_matrix.getColumns() && currY >= 0 && currY < input_matrix.getRows())
+								inputMatValue = input_matrix[currY][currX];
+						}
+						sum += kernel[kernelY][kernelX] * inputMatValue;
+					}
+				}
+				output[i][j] = sum;
+			}
+		}
+		return output;
+	}
+
+	template<typename T>
+	inline Matrix<T> MathExt::convolution(const Matrix<T>& baseImage, const Matrix<T>& kernel, int type, int paddingMode)
+	{
+		if(!baseImage.getValid() || !kernel.getValid())
+			throw InvalidMatrix();
+		
+		Matrix<T> flippedKernel = kernel;
+		size_t i=0;
+		size_t j=0;
+		do
+		{
+			do
+			{
+				T temp = flippedKernel[flippedKernel.getRows()-i-1][flippedKernel.getColumns()-j-1];
+				flippedKernel[flippedKernel.getRows()-i-1][flippedKernel.getColumns()-j-1] = flippedKernel[i][j];
+				flippedKernel[i][j] = temp;
+				j++;
+			} while (j < flippedKernel.getColumns()/2);
+			i++;
+		} while (i < flippedKernel.getRows()/2);
+	
+		if(type == MathExt::CONVOLVE_FULL)
+			return MathExt::convolveFull(baseImage, flippedKernel, paddingMode);
+		else if(type == MathExt::CONVOLVE_VALID)
+			return MathExt::convolveValid(baseImage, flippedKernel);
+		else
+			return MathExt::convolveSame(baseImage, flippedKernel, paddingMode, false);
+	}
+	
+	template<typename T>
+	inline Matrix<T> MathExt::crossCorrelation(const Matrix<T>& baseImage, const Matrix<T>& kernel, int type, int paddingMode)
+	{
+		if(!baseImage.getValid() || !kernel.getValid())
+			throw InvalidMatrix();
+		
+		if(type == MathExt::CONVOLVE_FULL)
+			return MathExt::convolveFull(baseImage, kernel, paddingMode);
+		else if(type == MathExt::CONVOLVE_VALID)
+			return MathExt::convolveValid(baseImage, kernel);
+		else
+			return MathExt::convolveSame(baseImage, kernel, paddingMode, true);
+	}
+	
 } //NAMESPACE smpl END

@@ -73,15 +73,14 @@ namespace smpl
         int32_t top;
         int32_t right;
         int32_t bottom;
-        uint32_t depth;
 
         bool operator==(const GRect& other)
         {
-            return (left==other.left && top==other.top && right==other.right && bottom==other.bottom && depth==other.depth);
+            return (left==other.left && top==other.top && right==other.right && bottom==other.bottom);
         }
         bool operator!=(const GRect& other)
         {
-            return (left!=other.left || top!=other.top || right!=other.right || bottom!=other.bottom || depth!=other.depth);
+            return (left!=other.left || top!=other.top || right!=other.right || bottom!=other.bottom);
         }
     };
 
@@ -202,6 +201,9 @@ namespace smpl
         
         bool getFocused(SmartMemory<GuiManager> manager);
         void setFocused(SmartMemory<GuiManager> manager, bool f);
+
+        bool getFocusable();
+        void setFocusable(bool b);
         
         bool isColliding(int x, int y);
 
@@ -297,6 +299,9 @@ namespace smpl
         SmartMemory<GuiItem> parent = nullptr;
         int type = 0;
 
+    protected:
+        bool isFocusable = false;
+
     private:
         friend GuiManager;
         int32_t trueX = 0;
@@ -305,12 +310,6 @@ namespace smpl
         //The maximum allowed with and height given by the previous layout
         uint16_t currentLayoutMaxWidth = 0;
         uint16_t currentLayoutMaxHeight = 0;
-        
-        void determineChangeFromLastTime();
-        
-        
-        void determineChangeInOverlap(SmartMemory<GuiManager> manager);
-        void determineChangeInOverlapForChildren(SmartMemory<GuiManager> manager);
 
         void doPreRenderOperations(SmartMemory<GuiManager> manager);
         void doPreRenderOperationsForChildren(SmartMemory<GuiManager> manager);
@@ -318,13 +317,12 @@ namespace smpl
         void updateManagerRenderCounter(SmartMemory<GuiManager> manager);
         void updateManagerRenderCounterForChildren(SmartMemory<GuiManager> manager);
 
-        bool getShouldReRender();
+        void clearShouldRender();
 
         std::string nameID = "";
 
-        GRect lastKnownRenderRect = {-1, -1, -1, -1, 0};
+        GRect lastKnownRenderRect = {-1, -1, -1, -1};
         
-        bool overlapped = false;
         bool shouldReRender = true;
         bool visible = true;
         bool oldFocus = false;
@@ -419,6 +417,8 @@ namespace smpl
         
         virtual void addChild(SmartMemory<GuiItem> c);
         virtual void removeChild(SmartMemory<GuiItem> c);
+        size_t getChildrenSize();
+        SmartMemory<GuiItem> getChild(size_t i);
         
         void setLeftAlign();
         void setTopAlign();
@@ -914,7 +914,20 @@ namespace smpl
         void addElement(SmartMemory<GuiItem> k);
         void removeElement(SmartMemory<GuiItem> k);
 
+        /**
+         * @brief Gives the GuiItem an ID for which the GuiManager can refer to it as for searching purposes.
+         *      That ID may be shared. If it is shared, a list of objects with the same ID are returned.
+         * @param k 
+         * @param s 
+         */
         void setID(SmartMemory<GuiItem> k, std::string s);
+
+        /**
+         * @brief Adds the object K to the dispose list for the GuiManager to handle when to dispose the objects.
+         *      Note that all of the children of K will be added as well if they haven't already been added and K has children.
+         * 
+         * @param k 
+         */
         void addToDisposeList(SmartMemory<GuiItem> k);
         void setObjectInFocus(SmartMemory<GuiItem> k);
         bool getObjectInFocus(SmartMemory<GuiItem> k);
@@ -1047,8 +1060,6 @@ namespace smpl
 
         void updateRenderCounter();
 
-        uint32_t getNextDepthValue();
-
         void addNewDrawnArea(GRect r);
         void addOldDrawnArea(GRect r);
         GRect getNewDrawnArea();
@@ -1073,8 +1084,20 @@ namespace smpl
 		 * @param f 
 		 */
 		void loadElementsFromFile(File f);
-
 		void loadElementsFromXML(SimpleXml& f);
+
+        /**
+         * @brief Loads GUI elements from a file or XML. Works in a similar way to how loadElementsFromFile works but
+         *      does not put them into the GuiManager's root layout. Instead, puts them into a fixed layout and returns that.
+         *      This can be modified or put directly into the GuiManager's root layout.
+         *      Useful for creating Gui elements from a premade layout.
+         * 
+         * @param f 
+         * @return GuiLayoutFixed* 
+         */
+        GuiLayoutFixed* createFromTemplate(File f);
+        GuiLayoutFixed* createFromTemplate(SimpleXml& f);
+        
 
 		/**
 		 * @brief Adds a load function to the list of valid load functions that can be used when loading data from a file.
@@ -1113,8 +1136,8 @@ namespace smpl
 		std::vector<SmartMemory<GuiItem>> shouldDelete = std::vector<SmartMemory<GuiItem>>();
 		SimpleHashMap<std::string, SmartMemory<GuiItem>> objectsByName = SimpleHashMap<std::string, SmartMemory<GuiItem>>();
 
-        GRect newDrawnArea = {INT_MAX, INT_MIN, INT_MAX, INT_MIN, 0};
-        GRect oldDrawnArea = {INT_MAX, INT_MIN, INT_MAX, INT_MIN, 0};
+        GRect newDrawnArea = {INT_MAX, INT_MIN, INT_MAX, INT_MIN};
+        GRect oldDrawnArea = {INT_MAX, INT_MIN, INT_MAX, INT_MIN};
 
         bool alwaysForceRedraw = false;
         bool shouldForceRedraw = true;
@@ -1125,7 +1148,6 @@ namespace smpl
         void resetRenderValues();
 
         int renderCounter = 0;
-        uint32_t currDepthCounter = 0;
 
 		int windowX = 0;
 		int windowY = 0;

@@ -1,10 +1,11 @@
 #pragma once
+#include "BuildOptions.h"
 #include <iostream>
 
 namespace smpl
 {
 
-    class PCG
+    class DLL_OPTION PCG
     {
     public:
         /**

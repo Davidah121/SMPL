@@ -19,8 +19,8 @@
 
 namespace smpl
 {
-    class StaticMemManager;
-    class GenericSmartMemory;
+    class DLL_OPTION StaticMemManager;
+    class DLL_OPTION GenericSmartMemory;
 
     template<class T>
     class SmartMemory;
@@ -38,7 +38,7 @@ namespace smpl
         size_t sizeInBytes = 0;
     };
 
-    class StaticMemManager
+    class DLL_OPTION StaticMemManager
     {
     public:
         static MemInfo addPointer(void* p, bool isArray, size_t sizeInBytes, bool deleteOnLast, bool bypassOwnership, void (*deleteFunc)(void*, bool));
@@ -54,7 +54,7 @@ namespace smpl
         static smpl::HybridSpinSemaphore staticMemSemaphore;
     };
 
-    class GenericSmartMemory
+    class DLL_OPTION GenericSmartMemory
     {
     public:
         /**

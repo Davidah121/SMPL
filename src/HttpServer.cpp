@@ -40,7 +40,7 @@ namespace smpl
         conn->setOnDataAvailableFunction([this](size_t id) -> void {
             //put the whole function in the job queue. Return immediately
             this->jobMutex.lock();
-            this->jobPointers[id] = this->jobQueue->addJob( [this, id]() ->void { this->onDataArrived(id); } );
+            this->jobPointers[id] = this->jobQueue->addJob( [this, id]() ->void { this->onDataArrived(id); });
             this->jobMutex.unlock();
         });
 
@@ -91,6 +91,7 @@ namespace smpl
         //This is consistent across most servers. Apache limits to 8KB by default.
         std::vector<unsigned char> buffer = std::vector<unsigned char>(8192);
         std::vector<unsigned char> body;
+        
         int size = this->getNetworkConnection()->peek(buffer, buffer.size(), id);
 
         if(size == 0)
@@ -106,9 +107,12 @@ namespace smpl
 
             //read body next
             int contentSize = 0;
-            
-            contentSize = StringTools::toInt(req.readKeyValue("Content-Length"));
-            body.resize(contentSize);
+            std::string contentSizeStr = req.readKeyValue("Content-Length");
+            if(!contentSizeStr.empty())
+            {
+                contentSize = StringTools::toInt(req.readKeyValue("Content-Length"));
+                body.resize(contentSize);
+            }
             
             //read from connection
             bytesReadIntoBody = this->getNetworkConnection()->receiveMessage(body.data(), contentSize, id);
@@ -138,9 +142,9 @@ namespace smpl
             StringTools::println("%s on port %d as ID = %llu : %s", ipString.c_str(), portNum, id, req.getHeader().c_str());
             logMutex.unlock();
         }
-        
-        // ///no need to read, send 404
-        // send404Error(id);
+
+        //handling recv should be a separate job altogether
+        //priority can be given for individual files, APIs, ip addresses, etc.
         bool status = this->handleRecv(req, body, id);
 
         if(!allowKeepAlive || !status)
@@ -802,7 +806,6 @@ namespace smpl
         }
         
         int bytesSent = sendResponse(resp, id, req);
-
         staggeredSend(id, f, startRange, endRange);
         return true;
     }
@@ -833,12 +836,8 @@ namespace smpl
         {
             //add to jobs
             this->jobMutex.lock();
-            this->jobSendPointers[id] = this->jobQueue->addJob( [this, id, f, startPoint, endPoint, bytesSent]() ->void { this->staggeredSend(id, f, startPoint + bytesSent, endPoint); } );
+            this->jobSendPointers[id] = this->jobQueue->addJob( [this, id, f, startPoint, endPoint, bytesSent]() ->void { this->staggeredSend(id, f, startPoint + bytesSent, endPoint); });
             this->jobMutex.unlock();
-        }
-        else
-        {
-            // totalTimeForRequest += System::getCurrentTimeMillis() - timingPerRequest[id];
         }
     }
 

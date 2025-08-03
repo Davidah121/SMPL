@@ -4,6 +4,7 @@ namespace smpl
 {
     GuiLayout::GuiLayout() : GuiItem()
     {
+        setFocusable(false);
         type = TYPE_LAYOUT;
     }
     GuiLayout::~GuiLayout()
@@ -125,6 +126,15 @@ namespace smpl
             children = nChildren;
         }
     }
+    
+    size_t GuiLayout::getChildrenSize()
+    {
+        return children.size();
+    }
+    SmartMemory<GuiItem> GuiLayout::getChild(size_t i)
+    {
+        return children[i];
+    }
 
     void GuiLayout::setLeftAlign()
     {
@@ -164,7 +174,7 @@ namespace smpl
     void GuiLayout::setRightAlign()
     {
         uint16_t temp = flags & 0b1100111111;
-        temp |= GuiItem::FLAG_AUTO_LEFT_MARGIN;
+        temp |= GuiItem::FLAG_AUTO_RIGHT_MARGIN;
         flags = temp;
     }
 

@@ -14,6 +14,9 @@ namespace smpl
         
         cursorElement.setVisible(true);
         textElement.setSelectable(true);
+
+        textElement.setFocusable(false);
+        cursorElement.setFocusable(false);
     }
 
     GuiTextBox::~GuiTextBox()
@@ -392,7 +395,7 @@ namespace smpl
             cursorElement.setMinHeight(cRect.bottom - cRect.top);
             cursorElement.setMaxHeight(cRect.bottom - cRect.top);
             
-            cursorElement.setBackgroundColor(Color{255,0,255,255});
+            cursorElement.setBackgroundColor(Color{0,0,0,255});
 
             cursorElement.setVisible(blink);
             shouldUpdateCursor = false;
@@ -419,7 +422,8 @@ namespace smpl
         if(!textEmpty)
             str = UnicodeStringBridge(textElement.getText()).getData();
 
-        if(getFocused(manager) || textElement.getFocused(manager))
+        // StringTools::println("%d, %d", width, height);
+        if(getFocused(manager))
         {
             if(Input::getMousePressed(Input::LEFT_MOUSE_BUTTON))
             {

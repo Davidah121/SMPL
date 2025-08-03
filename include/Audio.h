@@ -28,7 +28,7 @@
 	namespace smpl
 	{
 
-		struct DLL_OPTION AudioSegment
+		struct AudioSegment
 		{
 			void* audioStuff;
 			bool used;

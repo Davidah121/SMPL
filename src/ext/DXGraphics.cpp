@@ -810,7 +810,7 @@
             std::vector<float> positions;
             for(int i=0; i<subdivisions; i++)
             {
-                Vec2f bPos = b->getFuctionAt((double)i/subdivisions);
+                Vec2f bPos = b->getFunctionAt((double)i/subdivisions);
                 positions.push_back((float)bPos.x);
                 positions.push_back((float)bPos.y);
             }

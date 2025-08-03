@@ -5,7 +5,7 @@ namespace smpl
 {
     GuiButton::GuiButton() : GuiLayoutList()
     {
-
+        setFocusable(false);
     }
     
     GuiButton::~GuiButton()

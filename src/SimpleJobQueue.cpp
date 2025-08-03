@@ -22,6 +22,7 @@ namespace smpl
         running = false;
         jobQueueMutex.unlock();
 
+        cv.notify_all();
         for(int i=0; i<jobThreads.size(); i++)
         {
             jobThreads[i]->join();
@@ -37,10 +38,12 @@ namespace smpl
     {
         JobInfo info;
         info.func = j;
-        jobQueueMutex.lock(HybridSpinLock::MODE_AGRESSIVE);
+        jobQueueMutex.lock();
         info.ID = jobID++;
         jobs.add(info);
         jobQueueMutex.unlock();
+
+        cv.notify_all();
         return info.ID;
     }
     
@@ -50,7 +53,7 @@ namespace smpl
         JobInfo info;
         info.ID = ID;
 
-        jobQueueMutex.lock(HybridSpinLock::MODE_AGRESSIVE);
+        jobQueueMutex.lock();
         jobs.erase(info);
         jobQueueMutex.unlock();
     }
@@ -108,7 +111,7 @@ namespace smpl
     
     void SimpleJobQueue::removeAllJobs()
     {
-        jobQueueMutex.lock(HybridSpinLock::MODE_AGRESSIVE);
+        jobQueueMutex.lock();
         jobs.clear();
         jobQueueMutex.unlock();
     }
@@ -139,9 +142,12 @@ namespace smpl
             JobInfo node;
 
             if(!knownToHaveMoreWork)
-                System::sleep(1, 0, false);
+            {
+                std::unique_lock<std::mutex> temporaryLock(haltMutex);
+                cv.wait(temporaryLock);
+            }
             
-            jobQueueMutex.lock(HybridSpinLock::MODE_STANDARD);
+            jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
             if(jobs.size() > 0)
             {
                 //get job and remove from queue. Mark as busy
@@ -159,7 +165,7 @@ namespace smpl
                 node.func();
             }
             
-            jobQueueMutex.lock(HybridSpinLock::MODE_STANDARD);
+            jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
             jobsInProgress[id] = SIZE_MAX;
             jobQueueMutex.unlock();
         }

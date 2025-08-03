@@ -3,20 +3,16 @@
         {
             "name": "Clang LLVM",
             "includePath": [
-                "${workspaceFolder}/include/*",
-                "C:/Libraries/glew-2.1.0/include/*",
-                "C:/Libraries/catch2_UnitTest",
-                "C:/Libraries/openssl/Static/Release/include/"
+                "${workspaceFolder}\\include\\",
+                "C:\\Libraries\\glew-2.1.0\\include",
+                "C:\\Libraries\\catch2",
+                "C:\\Program Files\\OpenSSL-Win64\\include",
+                "C:\\Libraries\\_MyLibraries\\SEML",
+                "C:\\Libraries\\_MyLibraries\\SimpleSerialization"
             ],
-            "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
-            ],
-            "windowsSdkVersion": "10.0.22621.0",
             "cStandard": "c11",
-            "intelliSenseMode": "windows-clang-x64",
-            "cppStandard": "c++17"
+            "cppStandard": "c++17",
+            "compilerPath": "C:/MINGW_LLVM/bin/clang++"
         }
     ],
     "version": 4

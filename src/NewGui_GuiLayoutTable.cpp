@@ -4,6 +4,7 @@ namespace smpl
 {
     GuiLayoutTable::GuiLayoutTable(uint16_t numColumns) : GuiLayout()
     {
+        setFocusable(false);
         columns = numColumns;
     }
 

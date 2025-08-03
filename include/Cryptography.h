@@ -2,14 +2,102 @@
 #include "BuildOptions.h"
 #include <iostream>
 #include <vector>
+#include <exception>
+#include "File.h"
 
 namespace smpl
 {
+	class DLL_OPTION MD5Streamable
+	{
+	public:
+		MD5Streamable();
+		~MD5Streamable();
+
+		void addData(unsigned char* buffer, size_t s);
+		void endData();
+
+		std::vector<unsigned int> getOutputHash();
+	private:
+		void computeChunk(unsigned int* buffer);
+		
+		size_t totalSizeAccumulated = 0;
+		bool endFlagSet = false;
+		std::vector<unsigned char> leftoverBuffer;
+		std::vector<unsigned int> digest;
+	};
+
+	class DLL_OPTION SHA1Streamable
+	{
+	public:
+		SHA1Streamable();
+		~SHA1Streamable();
+
+		void addData(unsigned char* buffer, size_t s);
+		void endData();
+
+		std::vector<unsigned int> getOutputHash();
+	private:
+		void computeChunk(unsigned int* buffer);
+		
+		size_t totalSizeAccumulated = 0;
+		bool endFlagSet = false;
+		std::vector<unsigned char> leftoverBuffer;
+		std::vector<unsigned int> digest;
+	};
+
+	class DLL_OPTION SHA2Streamable
+	{
+	public:
+		static const unsigned char SHA_224 = 0;
+		static const unsigned char SHA_256 = 1;
+		static const unsigned char SHA_384 = 2;
+		static const unsigned char SHA_512 = 3;
+		
+		SHA2Streamable(unsigned char type);
+		~SHA2Streamable();
+
+		void addData(unsigned char* buffer, size_t s);
+		void endData();
+
+		std::vector<unsigned int> getOutputHash();
+	private:
+		void computeChunk256(unsigned int* buffer);
+		void computeChunk512(uint64_t* buffer);
+		
+		size_t totalSizeAccumulated = 0;
+		bool endFlagSet = false;
+		unsigned char type = SHA_224;
+		std::vector<unsigned char> leftoverBuffer;
+		std::vector<unsigned int> digest;
+		std::vector<uint64_t> digest64;
+	};
+
     class DLL_OPTION Cryptography
     {
     public:
+	
         /**
-         * @brief Generates a SHA1 Hash. The return value is a 160 bit number (20 bytes).
+         * @brief Generates a MD5 Hash.
+		 * 		 Internally uses the MD5Stream class to compute the hash.
+         * 
+         * @param bytes 
+         * @param size 
+         * @return std::vector<uint32_t> 
+         */
+        static std::vector<uint32_t> MD5(unsigned char* bytes, size_t size);
+
+		/**
+		 * @brief Computes the MD5 Hash for a file. 
+		 * 		Internally uses the MD5Stream class to compute the hash.
+		 * 
+		 * @param filename 
+		 * @return std::vector<uint32_t> 
+		 */
+		static std::vector<uint32_t> MD5File(File filename);
+
+        /**
+         * @brief Generates a SHA1 Hash.
+		 * 		Internally uses the SHA1Stream class to compute the hash.
          * 
          * @param bytes 
          * @param size 
@@ -18,29 +106,45 @@ namespace smpl
         static std::vector<uint32_t> SHA1(unsigned char* bytes, size_t size);
 
 		/**
-		 * @brief Generates a SHA1 Hash using stream of bytes. This method is continuous and does not require all data to be in memory first.
-		 * 		The function needs a buffer of bytes, the number of bytes in that buffer, the ongoing hash value, and whether this is the end of the stream of data.
-		 * 		The function returns how many bytes were processed. The data left over should be included in the next pass.
-		 * 		
-		 * 		On the first function call, hashValue must be empty. On successive calls, the hashValue should not be modified by outside sources and should be 5 elements.
-		 * 		On the last call, end must be set and totalSize must be set. 
-		 * 
-		 * @param bytes 
-		 * @param size 
-		 * @param hashValue 
-		 * @param end
-		 * @param totalSize
-		 * @return size_t 
-		 */
-		static size_t SHA1Stream(unsigned char* bytes, size_t size, std::vector<uint32_t>& hashValue, bool end, size_t totalSize);
-
-		/**
-		 * @brief Computes the SHA1 Hash for a file. This method uses the SHA1Stream function to compute the hash.
+		 * @brief Computes the SHA1 Hash for a file.
+		 * 		Internally uses the SHA1Stream class to compute the hash.
 		 * 
 		 * @param filename 
 		 * @return std::vector<uint32_t> 
 		 */
-		static std::vector<uint32_t> SHA1(std::string filename);
+		static std::vector<uint32_t> SHA1File(File filename);
+
+		
+        /**
+         * @brief Generates a SHA2 Hash.
+		 * 		Internally uses the SHA2Stream class to compute the hash.
+		 * 
+         * @param type
+		 * 		The type of SHA2 hash to use. Valid options are:
+		 * 			SHA2Streamable::SHA_224
+		 * 			SHA2Streamable::SHA_256
+		 * 			SHA2Streamable::SHA_384
+		 * 			SHA2Streamable::SHA_512
+         * @param bytes 
+         * @param size 
+         * @return std::vector<uint32_t> 
+         */
+        static std::vector<uint32_t> SHA2(unsigned char type, unsigned char* bytes, size_t size);
+
+		/**
+		 * @brief Computes the SHA2 Hash for a file.
+		 * 		Internally uses the SHA2Stream class to compute the hash.
+		 * 
+         * @param type
+		 * 		The type of SHA2 hash to use. Valid options are:
+		 * 			SHA2Streamable::SHA_224
+		 * 			SHA2Streamable::SHA_256
+		 * 			SHA2Streamable::SHA_384
+		 * 			SHA2Streamable::SHA_512
+		 * @param filename 
+		 * @return std::vector<uint32_t> 
+		 */
+		static std::vector<uint32_t> SHA2File(unsigned char type, File filename);
 
         /**
 		 * @brief Generates a checksum using ADLER32.

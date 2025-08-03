@@ -283,34 +283,13 @@ namespace smpl
 				{
 					break;
 				}
-
-				if (c != LINE_BREAK_1)
-				{
+				if(c >= 32)
 					p += c;
-				}
-				else
+				if(c == LINE_BREAK_1 || c == LINE_BREAK_2)
 				{
-					c = getChar();
-					if(isEndOfFile())
-					{
-						break;
-					}
-
-					if (c == LINE_BREAK_2)
-					{
-						//Hit a line break
-						break;
-					}
-					else
-					{
-						//Hit something else.
-						//Fix later I guess.
-						p += LINE_BREAK_1;
-						p += c;
-					}
-					
+					if(!p.empty())
+						return p;
 				}
-				
 			}
 		}
 		else
@@ -340,37 +319,16 @@ namespace smpl
 			while (!isEndOfFile())
 			{
 				c = getChar();
-
 				if(isEndOfFile())
 				{
 					break;
 				}
-
-				if (c != LINE_BREAK_1)
-				{
+				if(c >= 32)
 					p += c;
-				}
-				else
+				if(c == LINE_BREAK_1 || c == LINE_BREAK_2)
 				{
-					n = getChar();
-
-					if(isEndOfFile())
-					{
-						break;
-					}
-
-					if (n == LINE_BREAK_2)
-					{
-						//Hit a line break
-						break;
-					}
-					else
-					{
-						//Hit something else.
-						//Fix later I guess.
-						p += c;
-						p += n;
-					}
+					if(!p.empty())
+						return p;
 				}
 			}
 

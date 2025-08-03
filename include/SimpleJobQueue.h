@@ -127,6 +127,10 @@ namespace smpl
         Queue<JobInfo> jobs;
         std::vector<size_t> jobsInProgress;
         std::vector<std::thread*> jobThreads;
+
+        //Used for efficient halting and interrupts
+        std::condition_variable cv;
+        std::mutex haltMutex;
     };
 
     class DLL_OPTION SmartJobQueue
@@ -253,5 +257,8 @@ namespace smpl
         uint64_t threadLoad = 0;
         uint16_t maxThreadsAllowed = -1;
         
+        //Used for efficient halting and interrupts
+        std::condition_variable cv;
+        std::mutex haltMutex;
     };
 }

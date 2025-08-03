@@ -4,7 +4,7 @@ namespace smpl
 {
     GuiClippingLayout::GuiClippingLayout() : GuiLayoutFixed()
     {
-
+        setFocusable(false);
     }
 
     GuiClippingLayout::~GuiClippingLayout()

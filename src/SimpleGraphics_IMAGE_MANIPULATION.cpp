@@ -224,7 +224,7 @@ namespace smpl
 		MatrixF grayscaleMatrix = ComputerVision::imageToMatrix(grayscaleImg, ComputerVision::RED_CHANNEL);
 		MatrixF imgXDerivative = ComputerVision::convolution(grayscaleMatrix, gx);
 		MatrixF imgYDerivative = ComputerVision::convolution(grayscaleMatrix, gy);
-		MatrixF derivativeMagnitude = MatrixF(imgXDerivative.getRows(), imgXDerivative.getCols());
+		MatrixF derivativeMagnitude = MatrixF(imgXDerivative.getRows(), imgXDerivative.getColumns());
 
 		//remove the pixels on the edge of the image.
 		for(int x=0; x<img->getWidth(); x++)
@@ -497,7 +497,7 @@ namespace smpl
 	MatrixF SimpleGraphics::generateBayerMatrix(MatrixF mat, int rowSize)
 	{
 		MatrixF mat2;
-		if(mat.getCols() == 0 || mat.getRows() == 0)
+		if(mat.getColumns() == 0 || mat.getRows() == 0)
 		{
 			mat2 = MatrixF(2, 2);
 			mat2[0][0] = 0;
@@ -507,12 +507,12 @@ namespace smpl
 		}
 		else
 		{
-			mat2 = MatrixF(mat.getRows()*2, mat.getCols()*2);
+			mat2 = MatrixF(mat.getRows()*2, mat.getColumns()*2);
 
 			int inc = mat.getRows();
 			for(int y=0; y<mat.getRows(); y++)
 			{
-				for(int x=0; x<mat.getCols(); x++)
+				for(int x=0; x<mat.getColumns(); x++)
 				{
 					mat2[y][x] = 4*mat[y][x] + 0;
 					mat2[y][x+inc] = 4*mat[y][x] + 2;

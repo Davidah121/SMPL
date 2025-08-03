@@ -52,7 +52,7 @@ namespace smpl
 		count = 0;
 		VectorPath copyVal = VectorPath(*this);
 
-		applyTransform();
+		// applyTransform();
 
 		Vec2f currentPos;
 		Vec2f extraPos;
@@ -71,9 +71,7 @@ namespace smpl
 
 		bool endOfCommands=false;
 		
-		std::vector<criticalPoint>* scanLines = new std::vector<criticalPoint>[yDis]();
-		std::vector<int>* strokeScanLines = new std::vector<int>[yDis]();
-
+		PathScanLineInfo scanLineInfo = PathScanLineInfo(yDis);
 		
 		for(int i=0; i<commands.size(); i++)
 		{
@@ -91,47 +89,47 @@ namespace smpl
 					break;
 				case 'L':
 					//record
-					drawLineTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
+					drawLineTo(currentPos, commands[i], minY, maxY, scanLineInfo, false);
 					currentPos = commands[i].points[0];
 					break;
 				case 'l':
 					//record
-					drawLineTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
+					drawLineTo(currentPos, commands[i], minY, maxY, scanLineInfo, true);
 					currentPos += commands[i].points[0];
 					break;
 				case 'H':
 					//no drawing
-					drawHorizontalTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
+					drawHorizontalTo(currentPos, commands[i], minY, maxY, scanLineInfo, false);
 					// drawLineTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
 					currentPos.x = commands[i].points[0].x;
 					break;
 				case 'h':
 					//no drawing
-					drawHorizontalTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
+					drawHorizontalTo(currentPos, commands[i], minY, maxY, scanLineInfo, true);
 					// drawLineTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
 					currentPos += commands[i].points[0];
 					break;
 				case 'V':
 					//record
 					//drawVerticalTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
-					drawLineTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
+					drawLineTo(currentPos, commands[i], minY, maxY, scanLineInfo, false);
 					currentPos.y = commands[i].points[0].y;
 					break;
 				case 'v':
 					//record
 					//drawVerticalTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
-					drawLineTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
+					drawLineTo(currentPos, commands[i], minY, maxY, scanLineInfo, true);
 					currentPos += commands[i].points[0];
 					break;
 				case 'Q':
 					//record
-					drawQuadTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
+					drawQuadTo(currentPos, commands[i], minY, maxY, scanLineInfo, false);
 					extraPos = commands[i].points[0];
 					currentPos = commands[i].points[1];
 					break;
 				case 'q':
 					//record
-					drawQuadTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
+					drawQuadTo(currentPos, commands[i], minY, maxY, scanLineInfo, true);
 					extraPos = currentPos+commands[i].points[0];
 					currentPos += commands[i].points[1];
 					break;
@@ -145,7 +143,7 @@ namespace smpl
 					{
 						extraPos = currentPos;
 					}
-					drawQuadShortTo(currentPos, extraPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
+					drawQuadShortTo(currentPos, extraPos, commands[i], minY, maxY, scanLineInfo, false);
 
 					currentPos = commands[i].points[0];
 					break;
@@ -158,19 +156,19 @@ namespace smpl
 					{
 						extraPos = currentPos;
 					}
-					drawQuadShortTo(currentPos, extraPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
+					drawQuadShortTo(currentPos, extraPos, commands[i], minY, maxY, scanLineInfo, true);
 					
 					currentPos += commands[i].points[0];
 					break;
 				case 'C':
 					//record
-					drawCubicTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
+					drawCubicTo(currentPos, commands[i], minY, maxY, scanLineInfo, false);
 					extraPos = commands[i].points[1];
 					currentPos = commands[i].points[2];
 					break;
 				case 'c':
 					//record
-					drawCubicTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
+					drawCubicTo(currentPos, commands[i], minY, maxY, scanLineInfo, true);
 					extraPos = currentPos + commands[i].points[1];
 					currentPos += commands[i].points[2];
 					break;
@@ -181,7 +179,7 @@ namespace smpl
 					else
 						extraPos = currentPos;
 
-					drawCubicShortTo(currentPos, extraPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
+					drawCubicShortTo(currentPos, extraPos, commands[i], minY, maxY, scanLineInfo, false);
 					extraPos = commands[i].points[0];
 					currentPos = commands[i].points[1];
 					break;
@@ -192,23 +190,23 @@ namespace smpl
 					else
 						extraPos = currentPos;
 						
-					drawCubicShortTo(currentPos, extraPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
+					drawCubicShortTo(currentPos, extraPos, commands[i], minY, maxY, scanLineInfo, true);
 					extraPos = currentPos + commands[i].points[0];
 					currentPos += commands[i].points[1];
 					break;
 				case 'A':
 					//record. Also difficult
-					drawArcTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
+					drawArcTo(currentPos, commands[i], minY, maxY, scanLineInfo, false);
 					currentPos = commands[i].points[2];
 					break;
 				case 'a':
 					//record. Also difficult
-					drawArcTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
+					drawArcTo(currentPos, commands[i], minY, maxY, scanLineInfo, true);
 					currentPos += commands[i].points[2];
 					break;
 				case 'Z':
 					//record
-					drawCloseTo(currentPos, closeTo, minY, maxY, scanLines, strokeScanLines);
+					drawCloseTo(currentPos, closeTo, minY, maxY, scanLineInfo);
 					currentPos = closeTo;
 					break;
 				default:
@@ -222,154 +220,167 @@ namespace smpl
 
 		for(int i=0; i<yDis; i++)
 		{
-			if(scanLines[i].size()>0)
+			if(scanLineInfo.scanLines[i].size()>0)
 			{
 				//sort by xValue. Sort by end point or not
-				Sort::insertionSort<criticalPoint>(scanLines[i].data(), scanLines[i].size(), [](criticalPoint a, criticalPoint b) -> bool {return a.xValue<b.xValue;});
+				Sort::insertionSort<PathCriticalPoint>(scanLineInfo.scanLines[i].data(), scanLineInfo.scanLines[i].size(), [](PathCriticalPoint a, PathCriticalPoint b) -> bool {return a.xValue<b.xValue;});
 
+
+				std::vector<PathCriticalPoint> newScanLine = std::vector<PathCriticalPoint>();
+				//may need to insert a points to handle horizontal line cases
+				{
+					std::vector<PathCriticalPoint> tempLines;
+					int j=0;
+					while(j < scanLineInfo.scanLines[i].size())
+					{
+						if(j == scanLineInfo.scanLines[i].size()-1)
+						{
+							tempLines.push_back(scanLineInfo.scanLines[i][j]);
+							j++;
+							break;
+						}
+						
+						bool isConnected = false;
+						for(std::pair<double, double> p : scanLineInfo.horizontalLines[i])
+						{
+							if(p.first == scanLineInfo.scanLines[i][j].xValue && p.second == scanLineInfo.scanLines[i][j+1].xValue)
+							{
+								//this is part of a horizontal line. do extra stuff
+								isConnected = true;
+							}
+						}
+						
+						if(isConnected)
+						{
+							//do extra stuff
+							if(scanLineInfo.scanLines[i][j].direction != scanLineInfo.scanLines[i][j+1].direction)
+							{
+								tempLines.push_back(scanLineInfo.scanLines[i][j]);
+							}
+							j++;
+						}
+						else
+						{
+							//add single point
+							tempLines.push_back(scanLineInfo.scanLines[i][j]);
+							j++;
+						}
+					}
+					scanLineInfo.scanLines[i] = tempLines;
+				}
+
+				
 				//rule, can not be the same if you are filling to it.
 				//different for even-odd and non-zero
-				std::vector<criticalPoint> newScanLine = std::vector<criticalPoint>();
 
-				if(getFillMethod() == VectorShape::EVEN_ODD_RULE)
+				if(getFillMethod() == SimpleGraphics::FILL_EVEN_ODD)
 				{
-					//shouldn't need much if the values are recorded correctly
-					bool skipped = false;
-					if(scanLines[i].size() >= 2)
+					for(int j=1; j<scanLineInfo.scanLines[i].size(); j+=2)
 					{
-						for(int j=0; j<scanLines[i].size(); j+=1)
+						//check if its apart of a horizontal line. IE, both xValues at this y value are apart of the points exactly
+						if(scanLineInfo.scanLines[i][j].xValue != scanLineInfo.scanLines[i][j-1].xValue)
 						{
-							criticalPoint newPoint = scanLines[i][j];
-
-							if(newPoint.timeVal == 0 || newPoint.timeVal == 1)
+							newScanLine.push_back(scanLineInfo.scanLines[i][j-1]);
+							newScanLine.push_back(scanLineInfo.scanLines[i][j]);
+						}
+						else
+						{
+							if(scanLineInfo.scanLines[i][j].direction != scanLineInfo.scanLines[i][j-1].direction)
 							{
-								if(newPoint.otherEndPoint.y < i)
-								{
-									newScanLine.push_back(newPoint);
-								}
-							}
-							else
-							{
-								newScanLine.push_back(newPoint);
+								newScanLine.push_back(scanLineInfo.scanLines[i][j-1]);
+								newScanLine.push_back(scanLineInfo.scanLines[i][j]);
 							}
 						}
 					}
 				}
 				else
 				{
-					newScanLine.push_back(scanLines[i][0]);
-					for(int j=1; j<scanLines[i].size(); j++)
+					newScanLine.push_back(scanLineInfo.scanLines[i][0]);
+					for(int j=1; j<scanLineInfo.scanLines[i].size(); j++)
 					{
-						if(scanLines[i][j].xValue != scanLines[i][j-1].xValue)
+						if(scanLineInfo.scanLines[i][j].xValue != scanLineInfo.scanLines[i][j-1].xValue)
 						{
-							newScanLine.push_back(scanLines[i][j]);
+							newScanLine.push_back(scanLineInfo.scanLines[i][j]);
 						}
 						else
 						{
-							bool newDir = scanLines[i][j].direction.y > 0;
-							bool oldDir = scanLines[i][j-1].direction.y > 0;
-
-							if(newDir != oldDir)
+							if(scanLineInfo.scanLines[i][j].direction != scanLineInfo.scanLines[i][j-1].direction)
 							{
-								newScanLine.push_back(scanLines[i][j]);
+								newScanLine.push_back(scanLineInfo.scanLines[i][j]);
 							}
-							
 						}
 					}
 				}
 
-				scanLines[i] = newScanLine;
+				scanLineInfo.scanLines[i] = newScanLine;
 			}
 		}
 
-		if(getFillMethod()==VectorShape::EVEN_ODD_RULE)
+		
+		if(getFillMethod()==SimpleGraphics::FILL_EVEN_ODD)
 		{
 			//even-odd rule. Fill between even to odd indicies
 			//not odd to even indicies
+			LARGE_ENOUGH_CLAUSE(yDis)
+			#pragma omp parallel for
 			for(int j=0; j<yDis; j++)
 			{
-				if(scanLines[j].size()>1)
+				int actualSize = scanLineInfo.scanLines[j].size();
+				if(actualSize%2 == 1)
 				{
-					int actualSize = scanLines[j].size();
-					if(actualSize%2 == 1)
-					{
-						actualSize-=2;
-					}
-					else
-					{
-						actualSize-=1;
-					}
-					
-					for(int i=0; i<actualSize; i+=2)
-					{
-						//fill between spots
-						double startX = scanLines[j][i].xValue;
-						double endX = scanLines[j][i+1].xValue;
+					actualSize-=2;
+				}
+				else
+				{
+					actualSize-=1;
+				}
+				
 
-						
-						double yVal = j+minY;
-						int intYVal = (int)j+minY;
-
-						Color col = getFillColor();
-						
-						int fillX = (int)MathExt::round(startX);
-						int endFillX = (int)MathExt::round(endX);
-						
-						for(int m = fillX; m<endFillX; m++)
-						{
-							SimpleGraphics::drawPixel(m, intYVal, col, img);
-						}
-					}
+				for(int i=0; i<actualSize; i+=2)
+				{
+					//fill between spots
+					double fracStartX, fracEndX;
+					int startX = MathExt::floor(scanLineInfo.scanLines[j][i].xValue);
+					int endX = MathExt::ceil(scanLineInfo.scanLines[j][i+1].xValue);
+					SIMD_U32 simdColor = getFillColor().toUInt();
+					SimpleGraphics::fillBetween(simdColor, startX, endX, j+minY, surfImg);
 				}
 			}
-			
+			RESET_LARGE_ENOUGH_CLAUSE()
 		}
 		else
 		{
 			//non-zero rule. Fill when positive only. Not when zero or
 			//less.
+			LARGE_ENOUGH_CLAUSE(yDis)
+			#pragma omp parallel for
 			for(int j=0; j<yDis; j++)
 			{
 				int passCounter = 0;
-				if(scanLines[j].size()>1)
+				for(int i=0; i<scanLineInfo.scanLines[j].size()-1; i++)
 				{
-					for(int i=0; i<scanLines[j].size()-1; i++)
+					//fill between spots
+					int startX = MathExt::floor(scanLineInfo.scanLines[j][i].xValue);
+					int endX = MathExt::ceil(scanLineInfo.scanLines[j][i+1].xValue);
+					if(scanLineInfo.scanLines[j][i].direction.y > 0)
 					{
-						//fill between spots
-						double startX = scanLines[j][i].xValue;
-						double endX = scanLines[j][i+1].xValue;
-
-						bool dir = scanLines[j][i].direction.y > 0;
-
-						double yVal = j+minY;
-						int intYVal = (int)j+minY;
-
-						if(dir == true)
-						{
-							//positive y direction
-							passCounter++;
-						}
-						else
-						{
-							//negative y direction
-							passCounter--;
-						}
-						
-						if(passCounter!=0)
-						{
-							Color col = getFillColor();
-							
-							int fillX = (int)MathExt::round(startX);
-							int endFillX = (int)MathExt::round(endX);
-							for(int m = fillX; m<endFillX; m++)
-							{
-								SimpleGraphics::drawPixel(m, intYVal, col, img);
-							}
-							
-						}
+						//positive y direction
+						passCounter++;
+					}
+					else
+					{
+						//negative y direction
+						passCounter--;
+					}
+					
+					if(passCounter!=0)
+					{
+						SIMD_U32 simdColor = getFillColor().toUInt();
+						SimpleGraphics::fillBetween(simdColor, startX, endX, j+minY, surfImg);
 					}
 				}
 			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 		}
 
 		//strokes
@@ -423,9 +434,6 @@ namespace smpl
 			
 		}
 		*/
-
-		delete[] scanLines;
-		delete[] strokeScanLines;
 		copy(copyVal);
 	}
 
@@ -435,7 +443,7 @@ namespace smpl
 
 	#pragma region PATH_DRAW_FUNCTIONS
 
-	void VectorPath::drawLineTo(Vec2f currentPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative)
+	void VectorPath::drawLineTo(Vec2f currentPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative)
 	{
 		int actualMinY = 0;
 		int actualMaxY = 0;
@@ -466,57 +474,27 @@ namespace smpl
 			//horizontal line
 			//because it is only 2 points, we can use get simple derivative and it will be accurate.
 			Vec2f dir = b.getSimpleDerivativeAt(0);
-			
-			scanLines[actualMinY].push_back({b.getPoint(0).x, dir, 0, b.getPoint(1), true});
-			scanLines[actualMinY].push_back({b.getPoint(1).x, dir, 1, b.getPoint(0), true});
+			double minX = MathExt::min(b.getPoint(0).x, b.getPoint(1).x);
+			double maxX = MathExt::max(b.getPoint(0).x, b.getPoint(1).x);
+			scanLineInfo.horizontalLines[actualMinY].push_back({minX, maxX});
 			return;
 		}
 
 		for(int y=actualMinY; y<=actualMaxY; y++)
 		{
 			std::vector<double> times = b.findTimeForY(y, true);
-			double previousTimes = INFINITY;
 			for(int t=0; t<times.size(); t++)
 			{
-				Vec2f v = b.getFuctionAt(times[t]);
 				//because it is only 2 points, we can use get simple derivative and it will be accurate.
+				Vec2f v = b.getFunctionAt(times[t]);
 				Vec2f dir = b.getDerivativeAt(times[t]);
-				Vec2f otherEndPoint = b.getPoint(0);
-				if(times[t] == 0)
-					otherEndPoint = b.getPoint(1);
 				
-				scanLines[y].push_back({v.x, dir, times[t], otherEndPoint, false});
+				scanLineInfo.scanLines[y].push_back({v.x, dir});
 			}
-		}
-
-		//Stroke drawing
-		if(getStrokeWidth()>0)
-		{
-			double halfStrokeWidth = getStrokeWidth()/2;
-			BezierCurve strokeCurve1 = BezierCurve();
-			BezierCurve strokeCurve2 = BezierCurve();
-			BezierCurve strokeCurveConn1 = BezierCurve();
-			BezierCurve strokeCurveConn2 = BezierCurve();
-			Vec2f invVec = b.getSimpleDerivativeAt(0).inverse().normalize() * halfStrokeWidth;
-
-			strokeCurve1.addPoint( b.getPoint(0) + invVec );
-			strokeCurve2.addPoint( b.getPoint(0) - invVec );
-
-			strokeCurve1.addPoint( b.getPoint(1) + invVec );
-			strokeCurve2.addPoint( b.getPoint(1) - invVec );
-
-			strokeCurveConn1.addPoint( strokeCurve1.getPoint(0) );
-			strokeCurveConn1.addPoint( strokeCurve2.getPoint(0) );
-
-			strokeCurveConn2.addPoint( strokeCurve1.getPoint(1) );
-			strokeCurveConn2.addPoint( strokeCurve2.getPoint(1) );
-			
-			actualMinY = (int)MathExt::ceil(MathExt::min( strokeCurve1.getPoint(0).y, strokeCurve1.getPoint(1).y));
-			actualMaxY = (int)MathExt::floor(MathExt::max( strokeCurve1.getPoint(0).y, strokeCurve1.getPoint(1).y));
 		}
 	}
 
-	void VectorPath::drawVerticalTo(Vec2f currentPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative)
+	void VectorPath::drawVerticalTo(Vec2f currentPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative)
 	{
 		int actualMinY, actualMaxY;
 		if(!relative)
@@ -538,67 +516,37 @@ namespace smpl
 		{
 			for(int y=actualMinY; y<=actualMaxY; y++)
 			{
-				scanLines[y].push_back({currentPos.x, dir, (double)(y-actualMinY)/(actualMaxY-actualMinY)});
+				scanLineInfo.scanLines[y].push_back({currentPos.x, dir});
 			}
 		}
 		else
 		{
 			for(int y=actualMinY; y<=actualMaxY; y++)
 			{
-				scanLines[y].push_back({currentPos.x, dir, (double)(y-actualMinY)/(actualMaxY-actualMinY)});
+				scanLineInfo.scanLines[y].push_back({currentPos.x, dir});
 			}
 		}
 		
 	}
 
-	void VectorPath::drawHorizontalTo(Vec2f currentPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative)
+	void VectorPath::drawHorizontalTo(Vec2f currentPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative)
 	{
 		int yVal = (int)MathExt::floor(currentPos.y);
-
-		//horizontal line
-		//because it is only 2 points, we can use get simple derivative and it will be accurate.
-		Vec2f dir = Vec2f(1,0);
-		if(command.points[0].x < 0)
-			dir = Vec2f(-1, 0);
-		
+		double minX, maxX;
 		if(!relative)
 		{
-			scanLines[yVal].push_back({currentPos.x, dir, 0, Vec2f(), true});
-			scanLines[yVal].push_back({command.points[0].x, dir, 1, Vec2f(), true});
+			minX = MathExt::min(currentPos.x, command.points[0].x);
+			maxX = MathExt::max(currentPos.x, command.points[0].x);
 		}
 		else
 		{
-			scanLines[yVal].push_back({currentPos.x, dir, 0, Vec2f(), true});
-			scanLines[yVal].push_back({currentPos.x + command.points[0].x, dir, 1, Vec2f(), true});
+			minX = MathExt::min(currentPos.x, currentPos.x + command.points[0].x);
+			maxX = MathExt::max(currentPos.x, currentPos.x + command.points[0].x);
 		}
-
-		if(getStrokeWidth()>0)
-		{
-			double halfStrokeWidth = getStrokeWidth()/2;
-			//stroke stuff
-			int actualMinY = MathExt::clamp((int)MathExt::ceil(currentPos.y-halfStrokeWidth ), minY, maxY);
-			int actualMaxY = MathExt::clamp((int)MathExt::floor(currentPos.y+halfStrokeWidth ), minY, maxY);
-
-			if(!relative)
-			{
-				for(int y=actualMinY; y<=actualMaxY; y++)
-				{
-					strokeScanLines[y].push_back((int)MathExt::round(currentPos.x));
-					strokeScanLines[y].push_back((int)MathExt::round(command.points[0].x));
-				}
-			}
-			else
-			{
-				for(int y=actualMinY; y<=actualMaxY; y++)
-				{
-					strokeScanLines[y].push_back((int)MathExt::round(currentPos.x));
-					strokeScanLines[y].push_back((int)MathExt::round(currentPos.x+command.points[0].x));
-				}
-			}
-		}
+		scanLineInfo.horizontalLines[yVal].push_back({minX, maxX});
 	}
 
-	void VectorPath::drawQuadTo(Vec2f currentPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative)
+	void VectorPath::drawQuadTo(Vec2f currentPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative)
 	{
 		BezierCurve b = BezierCurve();
 		b.addPoint(currentPos);
@@ -643,31 +591,26 @@ namespace smpl
 			//horizontal line
 			//because it is only 2 points, we can use get simple derivative and it will be accurate.
 			Vec2f dir = b.getSimpleDerivativeAt(0);
-			
-			scanLines[actualMinY].push_back({b.getPoint(0).x, dir, 0, Vec2f(), true});
-			scanLines[actualMinY].push_back({b.getPoint(2).x, dir, 1, Vec2f(), true});
+			double minX = MathExt::min(b.getPoint(0).x, b.getPoint(2).x);
+			double maxX = MathExt::max(b.getPoint(0).x, b.getPoint(2).x);
+			scanLineInfo.horizontalLines[actualMinY].push_back({minX, maxX});
 			return;
 		}
 
 		for(int y=actualMinY; y<=actualMaxY; y++)
 		{
 			std::vector<double> times = b.findTimeForY(y, true);
-			double previousTimes = INFINITY;
 			for(int t=0; t<times.size(); t++)
 			{
-				Vec2f v = b.getFuctionAt(times[t]);
+				Vec2f v = b.getFunctionAt(times[t]);
 				Vec2f dir = b.getDerivativeAt(times[t]);
 				
-				Vec2f otherEndPoint = b.getPoint(0);
-				if(times[t] == 0)
-					otherEndPoint = b.getPoint(2);
-				
-				scanLines[y].push_back({v.x, dir, times[t], otherEndPoint, false});
+				scanLineInfo.scanLines[y].push_back({v.x, dir});
 			}
 		}
 	}
 
-	void VectorPath::drawQuadShortTo(Vec2f currentPos, Vec2f extraPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative)
+	void VectorPath::drawQuadShortTo(Vec2f currentPos, Vec2f extraPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative)
 	{
 		BezierCurve b = BezierCurve();
 		b.addPoint(currentPos);
@@ -702,34 +645,27 @@ namespace smpl
 		//check if horizontal line
 		if(actualMaxY == actualMinY)
 		{
-			//horizontal line
-			//because it is only 2 points, we can use get simple derivative and it will be accurate.
 			Vec2f dir = b.getSimpleDerivativeAt(0);
-			
-			scanLines[actualMinY].push_back({b.getPoint(0).x, dir, 0, Vec2f(), true});
-			scanLines[actualMinY].push_back({b.getPoint(2).x, dir, 1, Vec2f(), true});
+			double minX = MathExt::min(b.getPoint(0).x, b.getPoint(2).x);
+			double maxX = MathExt::max(b.getPoint(0).x, b.getPoint(2).x);
+			scanLineInfo.horizontalLines[actualMinY].push_back({minX, maxX});
 			return;
 		}
 
 		for(int y=actualMinY; y<=actualMaxY; y++)
 		{
 			std::vector<double> times = b.findTimeForY(y, true);
-			double previousTime = INFINITY;
 			for(int t=0; t<times.size(); t++)
 			{
-				Vec2f v = b.getFuctionAt(times[t]);
+				Vec2f v = b.getFunctionAt(times[t]);
 				Vec2f dir = b.getDerivativeAt(times[t]);
 				
-				Vec2f otherEndPoint = b.getPoint(0);
-				if(times[t] == 0)
-					otherEndPoint = b.getPoint(2);
-				
-				scanLines[y].push_back({v.x, dir, times[t], otherEndPoint, false});
+				scanLineInfo.scanLines[y].push_back({v.x, dir});
 			}
 		}
 	}
 
-	void VectorPath::drawCubicTo(Vec2f currentPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative)
+	void VectorPath::drawCubicTo(Vec2f currentPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative)
 	{
 		BezierCurve b = BezierCurve();
 		b.addPoint(currentPos);
@@ -774,31 +710,26 @@ namespace smpl
 			//horizontal line
 			//because it is only 2 points, we can use get simple derivative and it will be accurate.
 			Vec2f dir = b.getSimpleDerivativeAt(0);
-			
-			scanLines[actualMinY].push_back({b.getPoint(0).x, dir, 0, Vec2f(), true});
-			scanLines[actualMinY].push_back({b.getPoint(3).x, dir, 1, Vec2f(), true});
+			double minX = MathExt::min(b.getPoint(0).x, b.getPoint(3).x);
+			double maxX = MathExt::max(b.getPoint(0).x, b.getPoint(3).x);
+			scanLineInfo.horizontalLines[actualMinY].push_back({minX, maxX});
 			return;
 		}
 
 		for(int y=actualMinY; y<=actualMaxY; y++)
 		{
 			std::vector<double> times = b.findTimeForY(y, true);
-			double previousTime = INFINITY;
 			for(int t=0; t<times.size(); t++)
 			{
-				Vec2f v = b.getFuctionAt(times[t]);
+				Vec2f v = b.getFunctionAt(times[t]);
 				Vec2f dir = b.getDerivativeAt(times[t]);
 				
-				Vec2f otherEndPoint = b.getPoint(0);
-				if(times[t] == 0)
-					otherEndPoint = b.getPoint(3);
-				
-				scanLines[y].push_back({v.x, dir, times[t], otherEndPoint, false});
+				scanLineInfo.scanLines[y].push_back({v.x, dir});
 			}
 		}
 	}
 
-	void VectorPath::drawCubicShortTo(Vec2f currentPos, Vec2f extraPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative)
+	void VectorPath::drawCubicShortTo(Vec2f currentPos, Vec2f extraPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative)
 	{
 		BezierCurve b = BezierCurve();
 		b.addPoint(currentPos);
@@ -840,31 +771,26 @@ namespace smpl
 			//horizontal line
 			//because it is only 2 points, we can use get simple derivative and it will be accurate.
 			Vec2f dir = b.getSimpleDerivativeAt(0);
-			
-			scanLines[actualMinY].push_back({b.getPoint(0).x, dir, 0, Vec2f(), true});
-			scanLines[actualMinY].push_back({b.getPoint(3).x, dir, 1, Vec2f(), true});
+			double minX = MathExt::min(b.getPoint(0).x, b.getPoint(3).x);
+			double maxX = MathExt::max(b.getPoint(0).x, b.getPoint(3).x);
+			scanLineInfo.horizontalLines[actualMinY].push_back({minX, maxX});
 			return;
 		}
 
 		for(int y=actualMinY; y<=actualMaxY; y++)
 		{
 			std::vector<double> times = b.findTimeForY(y, true);
-			double previousTime = INFINITY;
 			for(int t=0; t<times.size(); t++)
 			{
-				Vec2f v = b.getFuctionAt(times[t]);
+				Vec2f v = b.getFunctionAt(times[t]);
 				Vec2f dir = b.getDerivativeAt(times[t]);
 
-				Vec2f otherEndPoint = b.getPoint(0);
-				if(times[t] == 0)
-					otherEndPoint = b.getPoint(3);
-				
-				scanLines[y].push_back({v.x, dir, times[t], otherEndPoint, false});
+				scanLineInfo.scanLines[y].push_back({v.x, dir});
 			}
 		}
 	}
 
-	void VectorPath::drawArcTo(Vec2f currentPos, PathCommand command, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines, bool relative)
+	void VectorPath::drawArcTo(Vec2f currentPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative)
 	{
 		//first, parse information from command
 		Vec2f arcRadi = command.points[0];
@@ -1080,44 +1006,44 @@ namespace smpl
 				//TODO: FIX DIRECTION LATER
 				if(times.size()>0)
 				{
-					double solveX = separatingLine.getFuctionAt(times[0]).x;
+					double solveX = separatingLine.getFunctionAt(times[0]).x;
 					if(!minSide)
 					{
 						if(solveX > minX)
 						{
-							scanLines[y].push_back({maxX, Vec2f(0,1), false});
+							scanLineInfo.scanLines[y].push_back({maxX, Vec2f(0,1)});
 						}
 						else
 						{
-							scanLines[y].push_back({minX, Vec2f(0,-1), false});
-							scanLines[y].push_back({maxX, Vec2f(0,1), false});
+							scanLineInfo.scanLines[y].push_back({minX, Vec2f(0,-1)});
+							scanLineInfo.scanLines[y].push_back({maxX, Vec2f(0,1)});
 						}
 					}
 					else
 					{
 						if(solveX < maxX)
 						{
-							scanLines[y].push_back({minX, Vec2f(0,-1), false});
+							scanLineInfo.scanLines[y].push_back({minX, Vec2f(0,-1)});
 						}
 						else
 						{
-							scanLines[y].push_back({minX, Vec2f(0,-1), false});
-							scanLines[y].push_back({maxX, Vec2f(0,1), false});
+							scanLineInfo.scanLines[y].push_back({minX, Vec2f(0,-1)});
+							scanLineInfo.scanLines[y].push_back({maxX, Vec2f(0,1)});
 						}
 					}
 					
 				}
 				else
 				{
-					scanLines[y].push_back({minX, Vec2f(0,-1), false});
-					scanLines[y].push_back({maxX, Vec2f(0,1), false});
+					scanLineInfo.scanLines[y].push_back({minX, Vec2f(0,-1)});
+					scanLineInfo.scanLines[y].push_back({maxX, Vec2f(0,1)});
 				}
 			}
 			
 		}				
 	}
 
-	void VectorPath::drawCloseTo(Vec2f currentPos, Vec2f closePoint, int minY, int maxY, std::vector<criticalPoint>* scanLines, std::vector<int>* strokeScanLines)
+	void VectorPath::drawCloseTo(Vec2f currentPos, Vec2f closePoint, int minY, int maxY, PathScanLineInfo& scanLineInfo)
 	{
 		BezierCurve b = BezierCurve();
 		b.addPoint(currentPos);
@@ -1137,8 +1063,10 @@ namespace smpl
 			
 			if(b.getPoint(0) != b.getPoint(1))
 			{
-				scanLines[actualMinY].push_back({b.getPoint(0).x, dir, 0, Vec2f(), true});
-				scanLines[actualMinY].push_back({b.getPoint(1).x, dir, 1, Vec2f(), true});
+				Vec2f dir = b.getSimpleDerivativeAt(0);
+				double minX = MathExt::min(b.getPoint(0).x, b.getPoint(1).x);
+				double maxX = MathExt::max(b.getPoint(0).x, b.getPoint(1).x);
+				scanLineInfo.horizontalLines[actualMinY].push_back({minX, maxX});
 			}
 			return;
 		}
@@ -1146,17 +1074,12 @@ namespace smpl
 		for(int y=actualMinY; y<=actualMaxY; y++)
 		{
 			std::vector<double> times = b.findTimeForY(y, true);
-			double previousTime = INFINITY;
 			for(int t=0; t<times.size(); t++)
 			{
-				Vec2f v = b.getFuctionAt(times[t]);
+				Vec2f v = b.getFunctionAt(times[t]);
 				Vec2f dir = b.getDerivativeAt(times[t]);
 				
-				Vec2f otherEndPoint = b.getPoint(0);
-				if(times[t] == 0)
-					otherEndPoint = b.getPoint(1);
-				
-				scanLines[y].push_back({v.x, dir, times[t], otherEndPoint, false});
+				scanLineInfo.scanLines[y].push_back({v.x, dir});
 			}
 		}
 	}

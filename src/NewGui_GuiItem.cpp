@@ -5,7 +5,7 @@ namespace smpl
 {
     GuiItem::GuiItem()
     {
-
+        setFocusable(false);
     }
     
     GuiItem::~GuiItem()
@@ -75,7 +75,7 @@ namespace smpl
         fixPosition();
         if(getVisible())
         {
-            if(rawGPointer != nullptr)
+            if(rawGPointer != nullptr && isFocusable)
             {
                 //do focused stuff
                 if(Input::getMousePressed(Input::LEFT_MOUSE_BUTTON))
@@ -114,8 +114,9 @@ namespace smpl
         //     return;
 
         doPreRenderOperations(manager);
-        determineChangeInOverlap(manager);
         updateManagerRenderCounter(manager);
+
+        clearShouldRender();
     }
 
     void GuiItem::doRender(SmartMemory<GuiManager> manager)
@@ -123,9 +124,7 @@ namespace smpl
         if(!getVisible())
             return;
         
-        if(getShouldReRender())
-            render(manager);
-        
+        render(manager);
     }
     
     void GuiItem::setFinishedRendering()
@@ -140,18 +139,18 @@ namespace smpl
             }
         }
     }
-
-    void GuiItem::determineChangeFromLastTime()
+    
+    void GuiItem::clearShouldRender()
     {
-        //check if old render rect is the same as the current one
-        if(lastKnownRenderRect.left != trueX)
-            setShouldRender();
-        if(lastKnownRenderRect.right != trueX+width)
-            setShouldRender();
-        if(lastKnownRenderRect.top != trueY)
-            setShouldRender();
-        if(lastKnownRenderRect.bottom != trueY+height)
-            setShouldRender();
+        shouldReRender = false;
+        if(this->type == TYPE_LAYOUT)
+        {
+            for(SmartMemory<GuiItem>& mem : ((GuiLayout*)this)->children)
+            {
+                if(mem.getPointer() != nullptr)
+                    mem.getRawPointer()->clearShouldRender();
+            }
+        }
     }
 
     void GuiItem::doPreRenderOperationsForChildren(SmartMemory<GuiManager> manager)
@@ -175,81 +174,27 @@ namespace smpl
         }
     }
 
-    void GuiItem::determineChangeInOverlap(SmartMemory<GuiManager> manager)
-    {
-        if(!getVisible())
-            return;
-
-        //Get oldDrawnArea and newDrawnArea. Both are initialized to 0 before drawing starts.
-        GRect newlyDrawnArea = manager.getRawPointer()->getNewDrawnArea();
-        GRect oldDrawnArea = manager.getRawPointer()->getOldDrawnArea();
-        
-        bool checkedOneAtLeast = false;
-
-        //check for overlap. If so, this item should probably be re-rendered
-        if(newlyDrawnArea != GRect{0, 0, 0, 0, 0})
-        {
-            checkedOneAtLeast = true;
-            if(lastKnownRenderRect.left <= newlyDrawnArea.right && lastKnownRenderRect.right >= newlyDrawnArea.left)
-                if(lastKnownRenderRect.top <= newlyDrawnArea.bottom && lastKnownRenderRect.bottom >= newlyDrawnArea.top)
-                    setShouldRender();
-        }
-        if(oldDrawnArea != GRect{0, 0, 0, 0, 0})
-        {
-            checkedOneAtLeast = true;
-            if(lastKnownRenderRect.left <= oldDrawnArea.right && lastKnownRenderRect.right >= oldDrawnArea.left)
-                if(lastKnownRenderRect.top <= oldDrawnArea.bottom && lastKnownRenderRect.bottom >= oldDrawnArea.top)
-                    setShouldRender();
-        }
-
-        //neither box is valid
-        if(checkedOneAtLeast != true)
-            return;
-
-        determineChangeInOverlapForChildren(manager);
-    }
-
-    void GuiItem::determineChangeInOverlapForChildren(SmartMemory<GuiManager> manager)
-    {
-        if(this->type == TYPE_LAYOUT)
-        {
-            for(SmartMemory<GuiItem>& mem : ((GuiLayout*)this)->children)
-            {
-                if(mem.getPointer() != nullptr)
-                {
-                    mem->determineChangeInOverlap(manager);
-                    if(mem->getShouldReRender())
-                        setShouldRender();
-                }
-            }
-        }
-    }
-
     void GuiItem::doPreRenderOperations(SmartMemory<GuiManager> manager)
     {
         // if(!getVisible())
         //     return;
         
-        GRect currRect = {0,0,0,0,0};
+        GRect currRect = {0,0,0,0};
         if(getVisible())
         {
             fixPosition();
-            currRect = {trueX, trueY, trueX+width, trueY+height, 0};
-
-            determineChangeFromLastTime();
+            currRect = {trueX, trueY, trueX+width, trueY+height};
+            if(shouldReRender == false)
+                shouldReRender = lastKnownRenderRect != currRect;
         }
 
         LockingSmartMemory<GuiManager> lockedManager = manager.getLockingPointer();
         if(lockedManager != nullptr)
         {
-            //get this objects depth
-            uint32_t myDepth = lockedManager->getNextDepthValue();
-            currRect.depth = myDepth;
-
             if(lockedManager->getMustRedraw())
                 setShouldRender();
 
-            if(getShouldReRender())
+            if(shouldReRender)
             {
                 lockedManager->addOldDrawnArea(lastKnownRenderRect);
                 if(getVisible())
@@ -258,20 +203,19 @@ namespace smpl
         }
 
         // if(getVisible())
-            doPreRenderOperationsForChildren(manager);
+        doPreRenderOperationsForChildren(manager);
         lastKnownRenderRect = currRect;
     }
 
     void GuiItem::updateManagerRenderCounter(SmartMemory<GuiManager> manager)
     {
-        if(getShouldReRender() && getVisible())
+        LockingSmartMemory<GuiManager> lockedManager = manager.getLockingPointer();
+        if(getVisible() && lockedManager != nullptr)
         {
-            LockingSmartMemory<GuiManager> lockedManager = manager.getLockingPointer();
-            if(lockedManager != nullptr)
-            {
+            if(shouldReRender)
                 lockedManager->updateRenderCounter();
-                updateManagerRenderCounterForChildren(manager);
-            }
+            
+            updateManagerRenderCounterForChildren(manager);
         }
     }
 
@@ -289,12 +233,8 @@ namespace smpl
 
     void GuiItem::setShouldRender()
     {
+        // StringTools::println("PICK ME");
         shouldReRender = true;
-    }
-
-    bool GuiItem::getShouldReRender()
-    {
-        return shouldReRender;
     }
     
     GRect GuiItem::getPreviousRenderRect()
@@ -368,6 +308,15 @@ namespace smpl
                 }
             }
         }
+    }
+    
+    bool GuiItem::getFocusable()
+    {
+        return isFocusable;
+    }
+    void GuiItem::setFocusable(bool b)
+    {
+        isFocusable = b;
     }
 
     int GuiItem::getTrueX()

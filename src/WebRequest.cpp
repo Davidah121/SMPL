@@ -224,7 +224,7 @@ namespace smpl
 		//if its new, add k.size() + v.size() + 4
 
 		k = StringTools::toLowercase(k);
-		if(k == "cookies")
+		if(k == "cookie")
 		{
 			//special case
 			std::vector<std::string> split = StringTools::splitString(v, "; ", true);
@@ -280,7 +280,7 @@ namespace smpl
 
 	std::string WebRequest::readKeyValue(std::string k)
 	{
-		auto it = data.find(k);
+		auto it = data.find(StringTools::toLowercase(k));
 		if(it != data.end())
 			return it->second;
 		return "";

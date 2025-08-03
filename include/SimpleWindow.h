@@ -71,7 +71,7 @@
 
 	namespace smpl
 	{
-		class SimpleWindow;
+		class DLL_OPTION SimpleWindow;
 		
 		struct WindowOptions
 		{
@@ -84,7 +84,7 @@
 			std::function<void(SimpleWindow*)> initFunction = nullptr;
 		};
 
-		class SimpleWindow : public SerializedObject
+		class DLL_OPTION SimpleWindow : public SerializedObject
 		{
 		public:
 			static const unsigned char MOUSE_LEFT = 0x00;

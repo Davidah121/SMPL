@@ -10,22 +10,6 @@
 
 #ifndef NO_SOCKETS
 
-//A bit on Range Size Limit:
-//
-//      This is the maximum size of a buffer to be sent. Must be greater than 64KB. A good size is about 16MB as shown below.
-//
-//      The following is done assuming 16MB size limit.
-//      Assuming 10 milliseconds between sends and time for reading and loading a new job is negligable,
-//          This hits 1.6 Gigabytes per second or 12.8 Gigabit per second
-//      Adding in the other things for usb 2.0 hard drive speeds (about 140 Megabytes per second) and a max of 10 milliseconds between jobs (assuming no real load),
-//          110 milliseconds to load data, 10 to get to the job, 10 milliseconds to send so approx = 130 milliseconds per 16MB
-//          which is about 123 Megabytes per second or 984 Megabit per second
-//          If sends are buffered, as long as you load in enough data into the socket and the time to load the data is fast enough, the network will be saturated.
-//              IFF sends are buffered. (Data is not sent directly but put into a buffer for the kernel to send later).
-//      Switching to a faster medium like an SATA SSD (about 550 Megabytes per second),
-//          30 milliseconds to load data, 10 millis to get to the job, 10 millis to send so approx = 50 milliseconds per 16MB
-//          which is about 320 Megabytes per second or 2560 Megabit per second
-
 namespace smpl
 {
     class DLL_OPTION HttpServer
@@ -574,8 +558,8 @@ namespace smpl
     private:
         SimpleJobQueue* jobQueue = nullptr;
         Network* conn = nullptr;
-        std::mutex logMutex;
-        std::mutex jobMutex;
+        HybridSpinLock logMutex;
+        HybridSpinLock jobMutex;
 
         std::map< size_t, size_t > jobPointers;
         std::map< size_t, size_t > jobSendPointers;

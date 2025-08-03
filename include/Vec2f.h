@@ -6,7 +6,7 @@
 namespace smpl
 {
 		
-	class DLL_OPTION Vec2f : public SerializedObject
+	class DLL_OPTION Vec2f
 	{
 	public:
 		/**
@@ -159,7 +159,8 @@ namespace smpl
 		MatrixF toMatrix() const;
 		operator MatrixF() const;
 
-	SERIALIZE_CLASS(x, y)
+	SERIALIZE_CLASS_LIGHT(Vec2f, x, y)
 	};
 
+	void formatToString(StringStream& stream, const Vec2f& v, const std::string& options);
 } //NAMESPACE glib END

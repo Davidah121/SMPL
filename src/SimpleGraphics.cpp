@@ -201,30 +201,32 @@ namespace smpl
 	
 	void SimpleGraphics::fillBetween(Color c, int x1, int x2, int y, Image* surf)
 	{
-		for(; x1<x2; x1++)
-		{
-			surf->getPixels()[x1 + y*surf->getWidth()] = blend(c, surf->getPixels()[x1 + y*surf->getWidth()]);
-		}
+		SimpleGraphics::fillBetween(c.toUInt(), x1, x2, y, surf);
 	}
-
-	#if (OPTI>=1)
-	void SimpleGraphics::fillBetween(SIMD_U8 c, int x1, int x2, int y, Image* surf)
+	
+	void SimpleGraphics::fillBetween(SIMD_U32 c, int x1, int x2, int y, Image* surf)
 	{
+		Color arr[8]; //Needed for sse/avx. Slower
+		c.store((unsigned int*)arr);
+		Color nonSSEColor = arr[0];
+
+		Color* srcPixels = surf->getPixels();
 		int len = x2-x1;
-		int simdBound = SIMD_U8::getSIMDBound(len);
-		for(int k=0; k<simdBound; k+=SIMD_GRAPHICS_INC)
+		int simdBound = SIMD_U32::getSIMDBound(len);
+		unsigned int* startOfSrcPixelFillSpot = (unsigned int*)&srcPixels[x1 + y*surf->getWidth()];
+		for(int k=0; k<simdBound; k+=SIMD_U32::SIZE)
 		{
-			SIMD_U8 destColor = SIMD_U8::load((unsigned char*)&srcPixels[x1 + tY*tempWidth]);
-			SIMD_U8 blendedColor = blend(c.values, destColor.values);
-			blendedColor.store((unsigned char*)&srcPixels[x1 + tY*tempWidth]);
-			x1 += SIMD_GRAPHICS_INC;
+			SIMD_U32 destColor = SIMD_U32::load(startOfSrcPixelFillSpot);
+			SIMD_U32 blendedColor = blend(c.values, destColor.values);
+			blendedColor.store(startOfSrcPixelFillSpot);
+			startOfSrcPixelFillSpot += SIMD_U32::SIZE;
 		}
 		for(; x1<x2; x1++)
 		{
-			surf->getPixels()[x1 + y*surf->getWidth()] = blend(c, surf->getPixels()[x1 + y*surf->getWidth()]);
+			*((Color*)startOfSrcPixelFillSpot) = blend(nonSSEColor, *((Color*)startOfSrcPixelFillSpot));
+			startOfSrcPixelFillSpot++;
 		}
 	}
-	#endif
 
 	
 	uint16_t quickDiv255(uint16_t a)
@@ -232,6 +234,8 @@ namespace smpl
 		uint32_t b = (uint32_t)a*0x8081;
 		return b>>23;
 	}
+	
+	#ifdef __SSE4_2__
 	__m128i quickDiv255(__m128i A)
 	{
 		const __m128i intMagicNumber = _mm_set1_epi32(0x8081);
@@ -245,6 +249,10 @@ namespace smpl
 		
 		return _mm_packus_epi32(lowAsInt, highAsInt);
 	}
+	#endif
+	
+	
+	#ifdef __AVX2__
 	__m256i quickDiv255(__m256i A)
 	{
 		const __m256i intMagicNumber = _mm256_set1_epi32(0x8081);
@@ -260,6 +268,7 @@ namespace smpl
 		__m256i packedOutput = _mm256_packus_epi32(lowShortsAsInt, highShortsAsInt);
 		return _mm256_permute4x64_epi64(packedOutput, 0b11011000);
 	}
+	#endif
 
 	Color SimpleGraphics::blend(Color src, Color dest)
 	{
@@ -479,13 +488,19 @@ namespace smpl
 		
 		src.alpha = 1.0f;
 		dest.alpha = 1.0f;
-		retValue = tempSrcAlpha*src*Fa + tempDestAlpha*dest*Fb;
+		retValue = tempSrcAlpha*Fa*src + tempDestAlpha*Fb*dest;
 		return retValue;
+	}
+
+	
+	uint32_t SimpleGraphics::blend(uint32_t src, uint32_t multiplier)
+	{
+		return blend(*((Color*)&src), *((Color*)&multiplier)).toUInt();
 	}
 
 	#pragma region SSE_AND_AVX_BLENDS
 
-	#if (OPTI>=1)
+	#ifdef __SSE4_2__
 	void compositeRule16Bit(unsigned char composite, __m128i srcAlpha, __m128i destAlpha, __m128i& Fa, __m128i& Fb)
 	{
 		const __m128i v255 = _mm_set1_epi16(255);
@@ -563,9 +578,6 @@ namespace smpl
 
 		__m128i lowSrcPreMult = quickDiv255( _mm_mullo_epi16(lowSrc16, lowSrcAlpha16)); //premultiplied alpha. Approximation by the way.
 		__m128i lowDestPreMult = quickDiv255( _mm_mullo_epi16(lowDest16, lowDestAlpha16)); //premultiplied alpha. Approximation by the way.
-		
-		// __m128i lowSrcPreMult = _mm_srli_epi16( _mm_mullo_epi16(lowSrc16, lowSrcAlpha16), 8); //premultiplied alpha. Approximation by the way.
-		// __m128i lowDestPreMult = _mm_srli_epi16( _mm_mullo_epi16(lowDest16, lowDestAlpha16), 8); //premultiplied alpha. Approximation by the way.
 
 		//need the alpha values to not be modified. Get them from the old values
 		lowSrcPreMult = _mm_blend_epi16(lowSrcPreMult, lowSrc16, 0b10001000);
@@ -574,8 +586,7 @@ namespace smpl
 		//now do the Fa*src + Fb*dest
 		compositeRule16Bit(compositeRule, lowSrcAlpha16, lowDestAlpha16, Fa, Fb);
 		__m128i outputLow = quickDiv255(_mm_adds_epi16(_mm_mullo_epi16(lowSrcPreMult, Fa), _mm_mullo_epi16(lowDestPreMult, Fb)));
-		// __m128i outputLow = _mm_srli_epi16(_mm_adds_epi16(_mm_mullo_epi16(lowSrcPreMult, Fa), _mm_mullo_epi16(lowDestPreMult, Fb)), 8);
-		
+
 		//now do high
 		__m128i highSrc16 = _mm_cvtepu8_epi16(_mm_srli_si128(src, 8)); //only 2 colors now.
 		__m128i highDest16 = _mm_cvtepu8_epi16(_mm_srli_si128(dest, 8)); //only 2 colors now.
@@ -586,9 +597,6 @@ namespace smpl
 		__m128i highSrcPreMult = quickDiv255( _mm_mullo_epi16(highSrc16, highSrcAlpha16)); //premultiplied alpha. Approximation by the way.
 		__m128i highDestPreMult = quickDiv255( _mm_mullo_epi16(highDest16, highDestAlpha16)); //premultiplied alpha. Approximation by the way.
 
-		// __m128i highSrcPreMult = _mm_srli_epi16( _mm_mullo_epi16(highSrc16, highSrcAlpha16), 8); //premultiplied alpha. Approximation by the way.
-		// __m128i highDestPreMult = _mm_srli_epi16( _mm_mullo_epi16(highDest16, highDestAlpha16), 8); //premultiplied alpha. Approximation by the way.
-
 		//need the alpha values to not be modified. Get them from the old values
 		highSrcPreMult = _mm_blend_epi16(highSrcPreMult, highSrc16, 0b10001000);
 		highDestPreMult = _mm_blend_epi16(highDestPreMult, highDest16, 0b10001000);
@@ -596,13 +604,12 @@ namespace smpl
 		//now do the Fa*src + Fb*dest
 		compositeRule16Bit(compositeRule, highSrcAlpha16, highDestAlpha16, Fa, Fb);
 		__m128i outputHigh = quickDiv255(_mm_adds_epi16(_mm_mullo_epi16(highSrcPreMult, Fa), _mm_mullo_epi16(highDestPreMult, Fb)));
-		// __m128i outputHigh = _mm_srli_epi16(_mm_adds_epi16(_mm_mullo_epi16(highSrcPreMult, Fa), _mm_mullo_epi16(highDestPreMult, Fb)), 8);
-		
+
 		return _mm_packus_epi16(outputLow, outputHigh);
 	}
 	#endif
 
-	#if (OPTI>=2)
+	#ifdef __AVX2__
 	void compositeRule16Bit(unsigned char composite, __m256i srcAlpha, __m256i destAlpha, __m256i& Fa, __m256i& Fb)
 	{
 		const __m256i v255 = _mm256_set1_epi16(255);
@@ -687,9 +694,6 @@ namespace smpl
 		__m256i lowSrcPreMult = quickDiv255( _mm256_mullo_epi16(lowSrc16, lowSrcAlpha16)); //premultiplied alpha. Approximation by the way.
 		__m256i lowDestPreMult = quickDiv255( _mm256_mullo_epi16(lowDest16, lowDestAlpha16)); //premultiplied alpha. Approximation by the way.
 
-		// __m256i lowSrcPreMult = _mm256_srli_epi16( _mm256_mullo_epi16(lowSrc16, lowSrcAlpha16), 8); //premultiplied alpha. Approximation by the way.
-		// __m256i lowDestPreMult = _mm256_srli_epi16( _mm256_mullo_epi16(lowDest16, lowDestAlpha16), 8); //premultiplied alpha. Approximation by the way.
-
 		//need the alpha values to not be modified. Get them from the old values
 		lowSrcPreMult = _mm256_blend_epi16(lowSrcPreMult, lowSrc16, 0b10001000);
 		lowDestPreMult = _mm256_blend_epi16(lowDestPreMult, lowDest16, 0b10001000);
@@ -697,8 +701,7 @@ namespace smpl
 		//now do the Fa*src + Fb*dest
 		compositeRule16Bit(compositeRule, lowSrcAlpha16, lowDestAlpha16, Fa, Fb);
 		__m256i outputLow = quickDiv255(_mm256_adds_epi16(_mm256_mullo_epi16(lowSrcPreMult, Fa), _mm256_mullo_epi16(lowDestPreMult, Fb)));
-		// __m256i outputLow = _mm256_srli_epi16(_mm256_adds_epi16(_mm256_mullo_epi16(lowSrcPreMult, Fa), _mm256_mullo_epi16(lowDestPreMult, Fb)), 8);
-		
+
 		//now do high
 		
 		m128Src = _mm256_extracti128_si256(src, 1);
@@ -715,21 +718,17 @@ namespace smpl
 		__m256i highSrcPreMult = quickDiv255( _mm256_mullo_epi16(highSrc16, highSrcAlpha16)); //premultiplied alpha. Approximation by the way.
 		__m256i highDestPreMult = quickDiv255( _mm256_mullo_epi16(highDest16, highDestAlpha16)); //premultiplied alpha. Approximation by the way.
 
-		// __m256i highSrcPreMult = _mm256_srli_epi16( _mm256_mullo_epi16(highSrc16, highSrcAlpha16), 8); //premultiplied alpha. Approximation by the way.
-		// __m256i highDestPreMult = _mm256_srli_epi16( _mm256_mullo_epi16(highDest16, highDestAlpha16), 8); //premultiplied alpha. Approximation by the way.
-
 		//need the alpha values to not be modified. Get them from the old values
 		highSrcPreMult = _mm256_blend_epi16(highSrcPreMult, highSrc16, 0b10001000);
 		highDestPreMult = _mm256_blend_epi16(highDestPreMult, highDest16, 0b10001000);
 		
 		//now do the Fa*src + Fb*dest
 		compositeRule16Bit(compositeRule, highSrcAlpha16, highDestAlpha16, Fa, Fb);
-
 		__m256i outputHigh = quickDiv255(_mm256_adds_epi16(_mm256_mullo_epi16(highSrcPreMult, Fa), _mm256_mullo_epi16(highDestPreMult, Fb)));
-		// __m256i outputHigh = _mm256_srli_epi16(_mm256_adds_epi16(_mm256_mullo_epi16(highSrcPreMult, Fa), _mm256_mullo_epi16(highDestPreMult, Fb)), 8);
-		__m256i packedOutput = _mm256_packus_epi16(outputLow, outputHigh);
 
-		return _mm256_permute4x64_epi64(packedOutput, 0b11011000);
+		__m256i packedOutput = _mm256_packus_epi16(outputLow, outputHigh);
+		// return packedOutput;
+		return _mm256_permute4x64_epi64(packedOutput, 0b11011000); //0 - 2 - 1 - 3
 	}
 
 	#endif
@@ -768,6 +767,11 @@ namespace smpl
 			(unsigned char)(((uint16_t)src.alpha * multiplier.alpha)>>8)
 		};
 	}
+	uint32_t SimpleGraphics::multColor(uint32_t src, uint32_t multiplier)
+	{
+		return multColor(*((Color*)&src), *((Color*)&multiplier)).toUInt();
+	}
+
 	Color4f SimpleGraphics::multColor(Color4f src, Color4f multiplier)
 	{
 		return Color4f{
@@ -787,7 +791,7 @@ namespace smpl
 		);
 	}
 	
-	#if (OPTI>=1)
+	#ifdef __SSE4_2__
 	__m128i SimpleGraphics::multColor(__m128i src, __m128i multiplier)
 	{
 		__m128i lowSrc = _mm_cvtepu8_epi16(src);
@@ -802,15 +806,15 @@ namespace smpl
 	}
 	#endif
 
-	#if (OPTI>=2)
+	#ifdef __AVX2__
 	__m256i SimpleGraphics::multColor(__m256i src, __m256i multiplier)
 	{
 		__m256i lowSrc = _mm256_cvtepu8_epi16(_mm256_extractf128_si256(src, 0));
 		__m256i lowMult = _mm256_cvtepu8_epi16(_mm256_extractf128_si256(multiplier, 0));
 		__m256i resultLow = _mm256_srli_epi16(_mm256_mullo_epi16(lowSrc, lowMult), 8);
 
-		__m256i highSrc = _mm256_cvtepu8_epi16(_mm256_extractf128_si256(src, 0));
-		__m256i highMult = _mm256_cvtepu8_epi16(_mm256_extractf128_si256(multiplier, 0));
+		__m256i highSrc = _mm256_cvtepu8_epi16(_mm256_extractf128_si256(src, 1));
+		__m256i highMult = _mm256_cvtepu8_epi16(_mm256_extractf128_si256(multiplier, 1));
 		__m256i resultHigh = _mm256_srli_epi16(_mm256_mullo_epi16(highSrc, highMult), 8);
 		
 		__m256i packedOutput = _mm256_packus_epi16(resultLow, resultHigh);

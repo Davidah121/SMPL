@@ -20,7 +20,10 @@
 			"program": "${workspaceFolder}/bin/Release/Smpl.exe",
 			"args": [],
 			"cwd": "${workspaceFolder}",
-			"console": "integratedTerminal"
+			"console": "integratedTerminal",
+            "initCommands": [
+                "command script import ${workspaceRoot}/debugvis.py" // <<<<< This is the important bit
+            ]
 		},
 		{
 			"name": "(Catch2) Unit Test",
