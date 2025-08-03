@@ -23,6 +23,7 @@ namespace smpl
         running = false;
         jobQueueMutex.unlock();
 
+        cv.notify_all();
         analysisThread.join();
         for(auto p : jobThreads)
         {
@@ -43,10 +44,12 @@ namespace smpl
     {
         JobInfo info;
         info.func = j;
-        jobQueueMutex.lock(HybridSpinLock::MODE_AGRESSIVE);
+        jobQueueMutex.lock();
         info.ID = jobID++;
         jobs.add(priority, info);
         jobQueueMutex.unlock();
+
+        cv.notify_all();
         return info.ID;
     }
     
@@ -56,7 +59,7 @@ namespace smpl
         JobInfo info;
         info.ID = ID;
 
-        jobQueueMutex.lock(HybridSpinLock::MODE_AGRESSIVE);
+        jobQueueMutex.lock();
         jobs.erase(info);
         jobQueueMutex.unlock();
     }
@@ -115,7 +118,7 @@ namespace smpl
     
     void SmartJobQueue::removeAllJobs()
     {
-        jobQueueMutex.lock(HybridSpinLock::MODE_AGRESSIVE);
+        jobQueueMutex.lock();
         jobs.clear();
         jobQueueMutex.unlock();
     }
@@ -147,12 +150,20 @@ namespace smpl
             //try to get a job from the queue
             JobInfo node;
 
+            
             if(!knownToHaveMoreWork)
             {
-                System::sleep(1, 0, false);
-                size_t currTime = System::getCurrentTimeMillis() - lastTime;
-                if(temporary && (currTime >= 100)) //100 milliseconds of nothing. Probably not needed
-                    break;
+                std::unique_lock<std::mutex> temporaryLock(haltMutex);
+                if(temporary)
+                {
+                    auto waitStatus = cv.wait_for(temporaryLock, std::chrono::milliseconds(100));
+                    if(waitStatus == std::cv_status::timeout) //100 milliseconds of nothing. Probably not needed
+                        break;
+                }
+                else
+                {
+                    cv.wait(temporaryLock);
+                }
             }
             
             jobQueueMutex.lock(HybridSpinLock::MODE_STANDARD);
@@ -198,6 +209,8 @@ namespace smpl
 
             //check 
             jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
+
+            //readjust job queue priority. Lower priority jobs should be bumped up to prevent starvation
 
             //also, remove threads that are done if possible
             for(auto it : threadDone)

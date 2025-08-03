@@ -314,7 +314,7 @@ void removeBoundaryShape2(std::vector<Vec2f>& boundaryShape)
             {
                 if(d >= 0 && d <= 1)
                 {
-                    Vec2f intersection = b.getFuctionAt(d);
+                    Vec2f intersection = b.getFunctionAt(d);
                     if(toPoint.y > 0)
                     {
                         if(d > 0 && d < 1)
@@ -421,7 +421,7 @@ void contourTest()
     // MatrixF kernel = ComputerVision::guassianKernel(2, 1);
     // for(int y=0; y<kernel.getRows(); y++)
     // {
-    //     for(int x=0; x<kernel.getCols(); x++)
+    //     for(int x=0; x<kernel.getColumns(); x++)
     //     {
     //         StringTools::print("%.4f\t", kernel[y][x]);
     //     }
@@ -474,63 +474,6 @@ void contourTest()
     delete derivativeImg;
 }
 
-// #ifndef USE_OPENGL
-//     #define USE_OPENGL
-// #endif
-// #include "ext/GLSingleton.h"
-// #include "ext/GLGraphics.h"
-// #include "ext/GLWindow.h"
-// #include "Input.h"
-
-// void openGLTest()
-// {
-//     GLWindow window = GLWindow("TestOPENGL", 640, 480);
-//     window.setActivateGui(false);
-//     window.setVSync(1);
-//     int fps = 0;
-//     size_t timeEllapsed = 0;
-
-//     while(window.getRunning())
-//     {
-//         size_t startTime = System::getCurrentTimeMicro();
-//         Input::pollInput();
-//         window.update();
-
-//         //other stuff
-//         GLGraphics::setClearColor(Vec4f(1, 1, 1, 1));
-//         GLGraphics::clear(GLGraphics::COLOR_BUFFER);
-//         GLGraphics::setDrawColor(Vec4f(1, 0, 0, 1));
-//         GLGraphics::drawRectangle(0, 0, 64, 64, false);
-//         GLGraphics::setDrawColor(Vec4f(1, 0, 1, 1));
-//         GLGraphics::drawCircle(64, 64, 32, false);
-
-//         window.forceRepaint();
-//         window.repaint();
-//         size_t timeUsed = System::getCurrentTimeMicro()-startTime;
-
-//         if(timeUsed < 16666) //1/60
-//         {
-//             size_t timeNeeded = 16666 - timeUsed;
-//             System::sleep(0, timeNeeded, true);
-//             timeEllapsed += 16666;
-//         }
-//         else
-//         {
-//             timeEllapsed += timeUsed;
-//         }
-//         fps++;
-
-//         if(timeEllapsed >= 16666*60)
-//         {
-//             StringTools::println("FPS: %d - %llu", fps, timeEllapsed);
-//             fps = 0;
-//             timeEllapsed -= 16666*60;
-//             if(timeEllapsed < 16666)
-//                 timeEllapsed = 0; //less than 1 frame left. Consider it okay
-//         }
-//     }
-// }
-
 #include "Graph.h"
 void testGraph()
 {
@@ -561,7 +504,8 @@ void testGraph()
 
 void init(SimpleWindow* win)
 {
-    win->getGuiManager()->loadElementsFromFile("GuiStuff/TextBoxLayout.xml");
+    win->getGuiManager()->loadElementsFromFile("GuiStuff/New_layout.xml");
+    // win->getGuiManager()->alwaysRedraw(true);
 }
 
 #include <omp.h>
@@ -569,114 +513,13 @@ void testGuiPart2()
 {
     GuiManager::initDefaultLoadFunctions();
     SimpleGraphics::init();
+    GraphicsInterface::setType(GraphicsInterface::TYPE_SOFTWARE);
+    GraphicsInterface::setDefaultType(GraphicsInterface::TYPE_SOFTWARE);
     WindowOptions options;
     options.initFunction = init;
     SimpleWindow win = SimpleWindow("Title", 1280, 720, -1, -1, options);
 
     win.waitTillClose();
-}
-
-void testDrawFunctions()
-{
-    //Will make into unit test somehow
-    Image img = Image(320, 240);
-    size_t t1 = System::getCurrentTimeMicro();
-    for(int i=0; i<1000000; i++)
-    {
-        SimpleGraphics::setColor(Color{255, 0, 0, 255});
-        SimpleGraphics::drawRect(15, 217, 20, 229, true, &img);
-    }
-    size_t t2 = System::getCurrentTimeMicro();
-    StringTools::println("TIME TAKEN: %llu", t2-t1);
-}
-
-#include "RawDataFormatter.h"
-#include "DefaultSerialization.h"
-#include "DefaultSerialization_SmartMemory.h"
-
-class TestObject : SerializedObject
-{
-public:
-    TestObject()
-    {
-        myValue = SmartMemory<int>::createDeleteOnLast(new int, 1);
-        *myValue = 38;
-    }
-    ~TestObject(){}
-private:
-    SmartMemory<int> myValue;
-
-SERIALIZE_CLASS(myValue);
-};
-
-void testSerializationQuick()
-{
-    bool doStuff = false;
-    SmartMemory<int> v1;
-    SmartMemory<Vec4f> v2;
-    SmartMemory<TestObject> v3;
-    
-    if(doStuff)
-    {
-        SerializedStreamableFile output = SerializedStreamableFile("testSerializeFile", SerializedStreamableFile::TYPE_WRITE);
-        RawDataFormatter rawFormatter = RawDataFormatter();
-
-        v1 = SmartMemory<int>::createDeleteOnLast(new int[4], 4);
-        v2 = SmartMemory<Vec4f>::createDeleteRights(new Vec4f, 1);
-        v1[0] = 1; v1[1] = 2; v1[2] = 4; v1[3] = 6;
-        v2->setValues(Vec4f(42.1, -32, 12.3, 1));
-        v3 = SmartMemory<TestObject>::createDeleteOnLast(new TestObject, 1);
-        
-        staticSerializeVar(output, rawFormatter, SERIALIZE(v1));
-        staticSerializeVar(output, rawFormatter, SERIALIZE(v2));
-        staticSerializeVar(output, rawFormatter, SERIALIZE(v3));
-
-        StringTools::println("OFFSET: %llu", output.size());
-        DeferredSerializedSmartMemory::serialize(output, rawFormatter);
-    }
-    else
-    {
-        SerializedStreamableFile input = SerializedStreamableFile("testSerializeFile", SerializedStreamableFile::TYPE_READ);
-        RawDataFormatter rawFormatter = RawDataFormatter();
-
-        input.seek(57);
-        DeferredSerializedSmartMemory::deserialize(input, rawFormatter);
-        input.seek(0);
-
-        staticDeserializeVar(input, rawFormatter, SERIALIZE(v1));
-        staticDeserializeVar(input, rawFormatter, SERIALIZE(v2));
-        staticDeserializeVar(input, rawFormatter, SERIALIZE(v3));
-
-        StringTools::println("%p", v1.getPointer());
-        StringTools::println("\t%llu", v1.getNumberOfElements());
-        StringTools::println("\t%d", v1.getDeleteRights());
-        StringTools::println("\t%d", v1.getIsArray());
-        StringTools::println("\t%d", v1.getWillDeleteOnLast());
-        
-        StringTools::println("\t\t%d", v1[0]);
-        StringTools::println("\t\t%d", v1[1]);
-        StringTools::println("\t\t%d", v1[2]);
-        StringTools::println("\t\t%d", v1[3]);
-
-        
-        StringTools::println("%p", v2.getPointer());
-        StringTools::println("\t%llu", v2.getNumberOfElements());
-        StringTools::println("\t%d", v2.getDeleteRights());
-        StringTools::println("\t%d", v2.getIsArray());
-        StringTools::println("\t%d", v2.getWillDeleteOnLast());
-        
-        StringTools::println("\t\t%.3f", v2->x);
-        StringTools::println("\t\t%.3f", v2->y);
-        StringTools::println("\t\t%.3f", v2->z);
-        StringTools::println("\t\t%.3f", v2->w);
-
-        
-        StringTools::println("%p", v3.getPointer());
-        StringTools::println("\t%llu", v3.getNumberOfElements());
-        StringTools::println("\t%d", v3.getDeleteRights());
-        StringTools::println("\t%d", v3.getIsArray());
-        StringTools::println("\t%d", v3.getWillDeleteOnLast());
-    }
 }
 
 // #include "NeuralNetwork.h"
@@ -685,39 +528,6 @@ void testSerializationQuick()
 
 // }
 
-void testLargeEnoughClause()
-{
-    Image surf = Image(32, 32);
-    // SimpleFile hybridOMPCSV = SimpleFile("hybridOMP.csv", SimpleFile::ASCII | SimpleFile::WRITE);
-    // for(int s=1; s<512; s++)
-    // {
-    //     size_t t1 = System::getCurrentTimeMicro();
-    //     SimpleGraphics::drawRect(0, 0, s, s, false, &surf);
-    //     size_t t2 = System::getCurrentTimeMicro();
-
-    //     hybridOMPCSV.writeString(StringTools::formatString("%d, %llu", s*s, t2-t1));
-    //     hybridOMPCSV.writeLineBreak();
-    // }
-    // hybridOMPCSV.close();
-
-    SimpleGraphics::setColor({0, 0, 0, 0});
-    for(int i=0; i<32; i++)
-        SimpleGraphics::drawRect(0, 0, 32, 32, false, &surf);
-    surf.savePNG("testForAlpha.png", true);
-    
-    // SimpleFile yesOMPCSV = SimpleFile("yesOMP.csv", SimpleFile::ASCII | SimpleFile::WRITE);
-    // for(int s=1; s<512; s++)
-    // {
-    //     size_t t1 = System::getCurrentTimeMicro();
-    //     SimpleGraphics::drawRectOMP(0, 0, s, s, false, &surf);
-    //     size_t t2 = System::getCurrentTimeMicro();
-
-    //     yesOMPCSV.writeString(StringTools::formatString("%d, %llu", s*s, t2-t1));
-    //     yesOMPCSV.writeLineBreak();
-    // }
-    // yesOMPCSV.close();
-
-}
 
 #define USE_OPENGL
 #include "ext/GLWindow.h"
@@ -762,47 +572,15 @@ void openGLTest()
     win.waitTillClose();
 }
 
-void testString2(const StringBridge& strB)
-{
-    StringTools::println("%s", strB.toPrintableFormat().c_str());
-}
-
-void testStringStuff()
-{
-    std::string str1 = "test";
-    std::wstring str2 = L"Test2.0";
-    std::u32string str3 = U"A bigg test";
-
-    StringBridge s = str1;
-    StringBridge s2 = "test1";
-    
-    StringBridge s3 = str2;
-    StringBridge s4 = "test2";
-    
-    StringBridge s5 = str3;
-    StringBridge s6 = "test3";
-
-    testString2(str1);
-    testString2(UnicodeStringBridge(str2));
-    testString2(str3);
-
-    testString2(s);
-    testString2(s2);
-    testString2(s3);
-    testString2(s4);
-    testString2(s5);
-    testString2(s6);
-}
-
 #include "VectorFont.h"
 void testFontStuff()
 {
     SimpleGraphics::init();
     Image img = Image(1024, 1024);
     VectorFont f = VectorFont();
-    f.load("SVGFonts/ARIBLK.svg");
+    f.load("C:\\Users\\Alan\\Pictures\\SMPLStuff\\SVGFonts/ARIBLK.svg");
 
-    f.setFontSize(12);
+    f.setFontSize(48);
     SimpleGraphics::setFont(&f);
     
     SimpleGraphics::setColor({255, 255, 255, 255});
@@ -816,138 +594,442 @@ void testFontStuff()
     img.savePNG("FontTest.png");
 }
 
-#include "LCG.h"
-
-template<typename T>
-int64_t pivotData(T* data, int64_t size, int64_t indexOfPivot)
+void testMLStuff()
 {
-    int64_t i = -1;
-    int64_t j = size;
-    T pivotData = data[indexOfPivot];
-
-    while(true)
-    {
-        do
-        {
-            i++;
-        } while(data[i] < pivotData);
-        
-        do
-        {
-            j--;
-        } while(pivotData < data[j]);
-
-        if(i >= j)
-            break;
-        //swap
-        T temp = data[i];
-        data[i] = data[j];
-        data[j] = temp;
-    }
-
-    return j;
+    
 }
 
-template<typename T>
-void quickSort(T* data, int64_t size)
+int wrapNumber(int v, int bound)
 {
-    if(size <= 1)
-        return;
-    if(size == 2)
-    {
-        if(data[0] > data[1])
-        {
-            T temp = data[0];
-            data[0] = data[1];
-            data[1] = temp;
-        }
-        return;
-    }
-    //create pivot point.
-    int64_t pivotPoint = size/2;
-    int64_t finalLocationOfPivotIndex = pivotData(data, size, pivotPoint);
-
-    quickSort(data, finalLocationOfPivotIndex+1);
-    quickSort(data+finalLocationOfPivotIndex+1, size - (finalLocationOfPivotIndex+1));
+    return ((unsigned int)v) % bound;
 }
 
-
-/*
-    start from i==0 to i==size-1
-    pivot point is given to us
-
-    if data[i] < data[pivot point] && i < pivot point
-        do nothing. Its good
-    else if data[i] < data[pivot point] && i > pivot point
-        swap data
-    
-    if data[i] > data[pivot point] && i > pivot point
-        do nothing. Its good
-    else if data[i] > data[pivot point] && i < pivot point
-        swap data
-    
-    the assumption is that everything to the left is less than or equal
-
-*/
-
-void testSort()
+MatrixF convolveFull(const MatrixF& input_matrix, const MatrixF& kernel, int paddingMode)
 {
-    //generate 100 random numbers between 0 - 0xFFF
-    LCG numGenerator = LCG(time(nullptr));
-    std::vector<int> nums;
-    for(int i=0; i<100; i++)
-        nums.push_back(numGenerator.get() % 0xFFF);
+    int kR = (kernel.getRows()/2);
+    int kC = (kernel.getColumns()/2);
+    if(kernel.getColumns() != 1 && kernel.getColumns()%2)
+        kC++;
+    if(kernel.getRows() != 1 && kernel.getRows()%2)
+        kR++;
     
-    quickSort(nums.data(), nums.size());
-
-    for(int i=0; i<100; i++)
-        std::cout << nums[i] << std::endl;
-}
-
-void testBezierCurveProjection()
-{
-    BezierCurve b = BezierCurve();
-    b.addPoint(32, 32);
-    b.addPoint(96, 16);
-    b.addPoint(96, 96);
-    b.addPoint(64, 64);
-
-    MatrixF distanceMatrix = MatrixF(128, 128);
-    double thickness = 1;
-    for(int iterations=1; iterations<=5; iterations++)
+    MatrixF output = MatrixF(input_matrix.getRows()+kR, input_matrix.getColumns()+kC);
+    for(size_t i=0; i<output.getRows(); i++)
     {
-        for(int y=0; y<128; y++)
+        int startY = i-kR;
+        for(size_t j=0; j<output.getColumns(); j++)
         {
-            for(int x=0; x<128; x++)
+            int startX = j-kC;
+            //ignore all values outside the range of the input matrix. No negatives. No values greater than rows or columns
+            float sum = 0;
+            for(int kernelY=0; kernelY<kernel.getRows(); kernelY++)
             {
-                double guessT = b.findTimeForMinDis(Vec2f(x, y), iterations);
-                Vec2f pointOnCurve = b.getFuctionAt(guessT);
-                double len = (pointOnCurve - Vec2f(x,y)).getLength();
-                distanceMatrix[y][x] = (thickness+1)-len / thickness;
-                distanceMatrix[y][x] = MathExt::clamp(distanceMatrix[y][x], 0.0f, 1.0f);
+                int currY = startY+kernelY;
+                for(int kernelX=0; kernelX<kernel.getColumns(); kernelX++)
+                {
+                    int currX = startX+kernelX;
+                    float inputMatValue = 0;
+                    if(paddingMode == 1)
+                    {
+                        //clamp
+                        int r = MathExt::clamp<int>(currY, 0, input_matrix.getRows());
+                        int c = MathExt::clamp<int>(currX, 0, input_matrix.getColumns());
+                        inputMatValue = input_matrix[r][c];
+                    }
+                    else if(paddingMode == 2)
+                    {
+                        //wrap
+                        int r = wrapNumber(currY, input_matrix.getRows());
+                        int c = wrapNumber(currX, input_matrix.getColumns());
+                        inputMatValue = input_matrix[r][c];
+                    }
+                    else
+                    {
+                        //zero padding
+                        if(currX >= 0 && currX < input_matrix.getColumns() && currY >= 0 && currY < input_matrix.getRows())
+                            inputMatValue = input_matrix[currY][currX];
+                    }
+                    sum += kernel[kernelY][kernelX] * inputMatValue;
+                }
             }
+            output[i][j] = sum;
+        }
+    }
+    return output;
+}
+
+MatrixF convolveSame(const MatrixF& input_matrix, const MatrixF& kernel, int paddingMode, bool crossCorrelation)
+{
+    int kR = (kernel.getRows()/2);
+    int kC = (kernel.getColumns()/2);
+    if(crossCorrelation)
+    {
+        if(kernel.getRows()%2 == 0)
+            kR--;
+        if(kernel.getColumns()%2 == 0)
+            kC--;
+    }
+    MatrixF output = MatrixF(input_matrix.getRows(), input_matrix.getColumns());
+    for(size_t i=0; i<output.getRows(); i++)
+    {
+        int startY = i-kR;
+
+        for(size_t j=0; j<output.getColumns(); j++)
+        {
+            int startX = j-kC;
+
+            //ignore all values outside the range of the input matrix. No negatives. No values greater than rows or columns
+            float sum = 0;
+            for(int kernelY=0; kernelY<kernel.getRows(); kernelY++)
+            {
+                int currY = startY+kernelY;
+                for(int kernelX=0; kernelX<kernel.getColumns(); kernelX++)
+                {
+                    int currX = startX+kernelX;
+                    float inputMatValue = 0;
+                    if(paddingMode == 1)
+                    {
+                        //clamp
+                        int r = MathExt::clamp<int>(currY, 0, input_matrix.getRows());
+                        int c = MathExt::clamp<int>(currX, 0, input_matrix.getColumns());
+                        inputMatValue = input_matrix[r][c];
+                    }
+                    else if(paddingMode == 2)
+                    {
+                        //wrap
+                        int r = wrapNumber(currY, input_matrix.getRows());
+                        int c = wrapNumber(currX, input_matrix.getColumns());
+                        inputMatValue = input_matrix[r][c];
+                    }
+                    else
+                    {
+                        //zero padding
+                        if(currX >= 0 && currX < input_matrix.getColumns() && currY >= 0 && currY < input_matrix.getRows())
+                            inputMatValue = input_matrix[currY][currX];
+                    }
+                    sum += kernel[kernelY][kernelX] * inputMatValue;
+                }
+            }
+            output[i][j] = sum;
+        }
+    }
+    return output;
+}
+
+MatrixF convolveValid(const MatrixF& input_matrix, const MatrixF& kernel)
+{
+    int kR = (kernel.getRows()/2);
+    int kC = (kernel.getColumns()/2);
+    if(kernel.getColumns() != 1 && kernel.getColumns()%2)
+        kC++;
+    if(kernel.getRows() != 1 && kernel.getRows()%2)
+        kR++;
+    MatrixF output = MatrixF(input_matrix.getRows()-kR, input_matrix.getColumns()-kC);
+    for(size_t i=0; i<output.getRows(); i++)
+    {
+        int startY = i;
+        for(size_t j=0; j<output.getColumns(); j++)
+        {
+            int startX = j;
+            //ignore all values outside the range of the input matrix. No negatives. No values greater than rows or columns
+            float sum = 0;
+            for(int kernelY=0; kernelY<kernel.getRows(); kernelY++)
+            {
+                int currY = startY+kernelY;
+                for(int kernelX=0; kernelX<kernel.getColumns(); kernelX++)
+                {
+                    int currX = startX+kernelX;
+                    sum += kernel[kernelY][kernelX] * input_matrix[currY][currX];
+                }
+            }
+            output[i][j] = sum;
+        }
+    }
+    return output;
+}
+
+void convolveStuff(const MatrixF& input, const MatrixF& kernel, bool crossCorrelation, int paddingMode)
+{
+    if(!input.getValid() || !kernel.getValid())
+        return; //THROW EXCEPTION LOSER
+    MatrixF tempKernel = kernel;
+
+    if(!crossCorrelation)
+    {
+        size_t i=0;
+        size_t j=0;
+        do
+        {
+            do
+            {
+                float temp = tempKernel[tempKernel.getRows()-i-1][tempKernel.getColumns()-j-1];
+                tempKernel[tempKernel.getRows()-i-1][tempKernel.getColumns()-j-1] = tempKernel[i][j];
+                tempKernel[i][j] = temp;
+                j++;
+            } while (j < tempKernel.getColumns()/2);
+            i++;
+        } while (i < tempKernel.getRows()/2);
+    }
+
+    MatrixF outputFull = convolveFull(input, tempKernel, paddingMode);
+    StringTools::println("Output Matrix Convolution Full Mode");
+    StringTools::println("%.3f", outputFull);
+
+    MatrixF outputSame = convolveSame(input, tempKernel, paddingMode, crossCorrelation);
+    StringTools::println("Output Matrix Convolution Same Mode");
+    StringTools::println("%.3f", outputSame);
+
+    MatrixF outputValid = convolveValid(input, tempKernel);
+    StringTools::println("Output Matrix Convolution Valid Mode");
+    StringTools::println("%.3f", outputValid);
+}
+
+void testConvolution()
+{
+    MatrixF input, kernel;
+    StringTools::println("1D EXAMPLE:");
+    input = std::vector<std::vector<float>>{{1, 2, 3, 4}};
+    kernel = std::vector<std::vector<float>>{{1, 2}};
+    convolveStuff(input, kernel, true, 1);
+    
+    StringTools::println("\n____________________________");
+    
+    StringTools::println("2D EXAMPLE:");
+    input = std::vector<std::vector<float>>{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+    kernel = std::vector<std::vector<float>>{{1, 0}, {0, -1}};
+    convolveStuff(input, kernel, true, 1);
+}
+
+#include "Tensor.h"
+void testTensor()
+{
+    Tensor<float> tensor3 = std::vector<std::vector<std::vector<float>>>{
+        {{1.0f, 1.0f, 1.0f}, 
+        {1.0f, 1.0f, 1.0f}},
+
+        {{2.0f, 2.0f, 2.0f}, 
+        {2.0f, 2.0f, 2.0f}},
+
+        {{3.0f, 3.0f, 3.0f}, 
+        {3.0f, 3.0f, 3.0f}},
+
+        {{4.0f, 4.0f, 4.0f}, 
+        {4.0f, 4.0f, 4.0f}}
+    };
+    MatrixF singleMat2 = std::vector<std::vector<float>>{
+        {0.1, 0.2},
+        {0.3, 0.4},
+        {0.5, 0.6}
+    };
+
+    Tensor<float> result = tensor3 * singleMat2;
+    StringTools::println("%.3f", result);
+}
+
+int testTemplateMatching()
+{
+    Sprite templateImg;
+    templateImg.loadImage("template.png");
+
+    Sprite source;
+    source.loadImage("source.png");
+
+    if(templateImg.getSize() == 0)
+    {
+        printf("Template Image not found\n");
+        return -1;
+    }
+
+    if(source.getSize() == 0)
+    {
+        printf("Source Image not found\n");
+        return -2;
+    }
+
+    MatrixF templateKernel = ComputerVision::imageToMatrix(templateImg.getImage(0), 0);
+    MatrixF sourceMat = ComputerVision::imageToMatrix(source.getImage(0), 0);
+    
+    templateKernel = templateKernel.broadcastSubtract(templateKernel.mean());
+    sourceMat = sourceMat.broadcastSubtract(sourceMat.mean());
+
+    Matrix<ComplexNumber> matchingMat = MathExt::crossCorrelationFFT(sourceMat, templateKernel, MathExt::CONVOLVE_SAME, 0);
+    MatrixF outputSimilarity = ComputerVision::readjustIntensity((MatrixF)matchingMat, 0.0, 1.0);
+    StringTools::println("DONE");
+    return 0;
+}
+
+void testFFT2D()
+{
+
+    // [[ 1  4  7  6  0]
+    // [ 6 20 28 21  0]
+    // [15 44 52 36  0]
+    // [14 37 42 27  0]
+    // [ 0  0  0  0  0]]
+    Matrix<ComplexNumber> temp = std::vector<std::vector<ComplexNumber>>{
+        {ComplexNumber(1, 0), ComplexNumber(2, 0), ComplexNumber(3, 0), ComplexNumber(0, 0)},
+        {ComplexNumber(4, 0), ComplexNumber(5, 0), ComplexNumber(6, 0), ComplexNumber(0, 0)},
+        {ComplexNumber(7, 0), ComplexNumber(8, 0), ComplexNumber(9, 0), ComplexNumber(0, 0)},
+        {ComplexNumber(0, 0), ComplexNumber(0, 0), ComplexNumber(0, 0), ComplexNumber(0, 0)}
+    };
+    Matrix<ComplexNumber> kernel = std::vector<std::vector<ComplexNumber>>{
+        {ComplexNumber(1, 0), ComplexNumber(2, 0)},
+        {ComplexNumber(2, 0), ComplexNumber(3, 0)}
+    };
+    // Matrix<ComplexNumber> frequency_matrix = MathExt::fastFourierTransform2D(temp, false);
+    // Matrix<ComplexNumber> inverse_matrix = MathExt::fastFourierTransform2D(frequency_matrix, true);
+
+    // StringTools::println("Frequency Matrix:\n%.3f\n\nInverse Matrix:\n%.3f", frequency_matrix, inverse_matrix);
+
+    Matrix<ComplexNumber> result = MathExt::convolutionFFT(temp, kernel, MathExt::CONVOLVE_FULL, 0);
+    StringTools::println("%.0f", result);
+}
+
+void testNewPrint()
+{
+    std::vector<Vec2f> numbers = {Vec2f(1.2, 3.42), Vec2f(1.1111, 81.23)};
+    std::vector<std::string> names = {"Name1", "Name2"};
+
+    std::string test1 = "numbers";
+    std::string test2 = "names";
+    
+    MatrixF temp = std::vector<std::vector<float>>{
+        {1, 2, 3, 0},
+        {4, 5, 6, 0},
+        {7, 8, 9, 0},
+        {0, 0, 0, 0}
+    };
+    
+    StringTools::println("String example \"%s\", \"%s\"\n List of numbers: %.3f", test1, test2, numbers);
+    StringTools::println("List of names: %s", names);
+    StringTools::println("%f", temp);
+
+    ComplexNumber test = (ComplexNumber)1;
+    StringTools::println("ComplexNumber Test = %f", test);
+    
+}
+
+void doFFT(ComplexNumber* arr, int size, bool inverse)
+{
+    if(size>=4)
+    {
+        int newSize = (size/2);
+        doFFT(arr, newSize, inverse);
+        doFFT(arr+newSize, newSize, inverse);
+        
+        double angle = 0;
+        angle = (-2.0*PI)/size;
+
+        SIMD_SSE<ComplexNumber> multiplier = ComplexNumber(1, 0);
+        SIMD_SSE<ComplexNumber> multInc = ComplexNumber(MathExt::cos(angle), MathExt::sin(angle));
+        multInc *= ComplexNumber(MathExt::cos(angle), MathExt::sin(angle));
+        for(int i=0; i<newSize; i+=2)
+        {
+            SIMD_SSE<ComplexNumber> even=SIMD_SSE<ComplexNumber>::load(&arr[i]);
+            SIMD_SSE<ComplexNumber> odd=SIMD_SSE<ComplexNumber>::load(&arr[i+1])*multiplier;
+            (even+odd).store(&arr[i]);
+            (even-odd).store(&arr[i+1]);
+            multiplier *= multInc;
         }
 
-        ComputerVision::readjustIntensity(distanceMatrix, 0, 1);
-        StringTools::println("DONE");
     }
-    Image* img = ComputerVision::matrixToImage(distanceMatrix);
-    img->savePNG("TEST CURVE.png");
-    delete img;
+    else if(size==2)
+    {
+        SIMD_SSE<ComplexNumber> even=SIMD_SSE<ComplexNumber>::load(&arr[0]);
+        SIMD_SSE<ComplexNumber> odd=SIMD_SSE<ComplexNumber>::load(&arr[1]);
+        (even+odd).store(&arr[0]);
+        (even-odd).store(&arr[1]);
+    }
+}
+
+void testSIMDStuff()
+{
+    Matrix<ComplexNumber> arr = Matrix<ComplexNumber>(1, 0x1000000);
+    for(int i=0; i<arr.getRows()*arr.getColumns(); i++)
+    {
+        arr[0][i].real = rand();
+        arr[0][i].imaginary = 0;
+    }
+    size_t startTime = System::getCurrentTimeMicro();
+    for(int i=0; i<10; i++)
+    {
+        // MathExt::fastFourierTransform2DInline(arr, false);
+        MathExt::fastFourierTransformInline(arr, true);
+    }
+    size_t totalTime = System::getCurrentTimeMicro() - startTime;
+    StringTools::println("TotalTime: %llu", totalTime);
+    StringTools::println("AverageTime: %llu", totalTime/10);
+}
+
+#include "HttpServer.h"
+void testHttpStuff()
+{
+    NetworkConfig config;
+    config.amountOfConnectionsAllowed = 4096;
+    config.location = "0.0.0.0";
+    config.port = 12345;
+    config.TCP = true;
+    config.type = Network::TYPE_SERVER;
+    HttpServer sab = HttpServer(config, 8);
+    sab.setAllowPersistentConnection(false);
+    sab.start();
+
+    while(sab.getRunning())
+    {
+        System::sleep(1, 0, false);
+    }
+}
+
+#include "CatmullRom.h"
+void testCatmullRom()
+{
+    CatmullRom cr = CatmullRom();
+    cr.addPoint(Vec2f(32, 32));
+    cr.addPoint(Vec2f(64, 12));
+    cr.addPoint(Vec2f(96, 64));
+    cr.addPoint(Vec2f(32, 96));
+    cr.setTension(0.5);
+
+    BezierCurve curve1 = cr.getCurve(0);
+    BezierCurve curve2 = cr.getCurve(1);
+    BezierCurve curve3 = cr.getCurve(2);
+    
+    StringTools::println("Curve1: %.3f\n", curve1.getPoints());
+    StringTools::println("Curve2: %.3f\n", curve2.getPoints());
+    StringTools::println("Curve3: %.3f\n", curve3.getPoints());
+}
+
+void testPolygonStuff()
+{
+    VectorGraphic v = VectorGraphic(512, 512);
+    v.load("C:/Users/Alan/Pictures/SMPLStuff/SVGs/_ionicons_svg_md-call.svg");
+
+
+    Image surf = Image(v.getWidth(), v.getHeight());
+    v.draw(&surf);
+    surf.savePNG("output_1.png", true, false, false);
 }
 
 int main(int argc, char** argv)
 {
-    // testSort();
+    // testPolygonStuff();
+    testHttpStuff();
+    // testSIMDStuff();
+    // testTemplateMatching();
+    // testFFT2D();
+    // testNewPrint();
+    // testTensor();
+	// testNetworkStuff();
+	// testHashStuff();
     // testFontStuff();
     // testGraph();
     
-    openGLTest();
+    // openGLTest();
+    // testGuiPart2();
 
     // testBezierCurveProjection();
 
     // contourTest();
-    // testGuiPart2();
     // testSerializationQuick();
     // testDrawFunctions();
     // testMLStuff();
@@ -955,9 +1037,15 @@ int main(int argc, char** argv)
     // testStringStuff();
     // testLargeEnoughClause();
 
+	// testSSEStuff();
+
     return 0;
 }
 
 //TODO: POLYGON TRIANGULATION, MAKE MANY OPERATIONS CONST&
 //TODO: Redesign GraphicsInterface. Should be able to be expanded upon without modifying source code. Should be clear and consistent as to which type is being used. (no creating assets for the wrong type)
-//TODO: Adjust Gui Layout code. Should give information about content width and height even if that isn't the actual final width and height. This also means that even with overflow, content width and height can be larger than the maximum allowed width and height.
+//TODO: Adjust Gui Layout code. Should give informatigrayscaleSourceon about content width and height even if that isn't the actual final width and height. This also means that even with overflow, content width and height can be larger than the maximum allowed width and height.
+
+
+
+//TODO: Serialized Code should be updated to add the option to generate Serializer code for non SerializedObjects. Also should allow 

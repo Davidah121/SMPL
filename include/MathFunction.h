@@ -3,6 +3,14 @@
 #include <functional>
 #include <string>
 
+#ifndef __min
+#define __min(a, b) (((a) < (b)) ? (a) : (b))
+#endif
+
+#ifndef __max
+#define __max(a, b) (((a) > (b)) ? (a) : (b))
+#endif
+
 namespace smpl
 {
     class DLL_OPTION MathFunction

@@ -7,7 +7,7 @@ namespace smpl
 {
     GuiSprite::GuiSprite() : GuiContent()
     {
-
+        setFocusable(false);
     }
 
     GuiSprite::~GuiSprite()

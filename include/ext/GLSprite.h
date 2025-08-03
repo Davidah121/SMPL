@@ -111,7 +111,31 @@
 			 * 
 			 * @param file 
 			 */
-			void loadImage(File file);
+			void loadImage(File file, bool clear=false);
+			
+			/**
+			 * @brief Loads an image that contains a sprite sheet/atlas. These images contain smaller images separated
+			 * 		from each other by empty space typically and is common for 2D animations.
+			 * 
+			 * @param file 
+			 * @param width 
+			 * 		The width of each image in the sprite sheet. Assumed that all have equal width.
+			 * @param height 
+			 * 		The height of each image in the sprite sheet. Assumed that all have equal height.
+			 * @param xStride 
+			 * 		The additional horizontal space between each column in the sprite sheet.
+			 * @param yStride 
+			 * 		The additional vertical space between each row in the sprite sheet.
+			 * @param count
+			 * 		This specifies how many images are in the sprite sheet.
+			 * 		Set to a negative number to just process each spot as a sprite.
+			 * 			Note that this can result in completely empty images. 
+			 * @param clear 
+			 * 		Clears the sprite when called
+			 * 		Default is true.
+			 */
+			void loadSpriteSheet(File file, int width, int height, int xStride, int yStride, int count, bool clear=false);
+			
 
 			/**
 			 * @brief Deletes the images from the sprite. Any images added to the sprite, including those that were loaded,

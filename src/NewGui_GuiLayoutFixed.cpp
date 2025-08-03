@@ -4,7 +4,7 @@ namespace smpl
 {
     GuiLayoutFixed::GuiLayoutFixed() : GuiLayout()
     {
-
+        setFocusable(false);
     }
 
     GuiLayoutFixed::~GuiLayoutFixed()

@@ -291,7 +291,7 @@ namespace smpl
 		float avgValue = 1.0/n*n;
 		MatrixF kernel = MatrixF(n, n);
 		float* kernelData = kernel.getData();
-		float* kernelDataEnd = kernelData + kernel.getCols()*kernel.getRows();
+		float* kernelDataEnd = kernelData + kernel.getColumns()*kernel.getRows();
 		while(kernelData != kernelDataEnd)
 		{
 			*kernelData = avgValue;
@@ -324,10 +324,10 @@ namespace smpl
 	
 	Image* ComputerVision::matrixToImage(const MatrixF& mat)
 	{
-		Image* img = new Image(mat.getCols(), mat.getRows());
+		Image* img = new Image(mat.getColumns(), mat.getRows());
 		for(int y=0; y<mat.getRows(); y++)
 		{
-			for(int x=0; x<mat.getCols(); x++)
+			for(int x=0; x<mat.getColumns(); x++)
 			{
 				Color c;
 				c.red = (unsigned char)MathExt::clamp(mat[y][x]*255.0, 0.0, 255.0);
@@ -351,7 +351,7 @@ namespace smpl
 
 		for(int y=0; y<mat.getRows(); y++)
 		{
-			for(int x=0; x<mat.getCols(); x++)
+			for(int x=0; x<mat.getColumns(); x++)
 			{
 				*imgPixels = (unsigned char)MathExt::clamp(mat[y][x]*255.0, 0.0, 255.0);
 				imgPixels += 4;
@@ -392,9 +392,9 @@ namespace smpl
 
 	MatrixF ComputerVision::thresholding(const MatrixF& img, float threshold, bool inverse)
 	{
-		MatrixF m = MatrixF(img.getRows(), img.getCols());
+		MatrixF m = MatrixF(img.getRows(), img.getColumns());
 		float* matrixValues = m.getData();
-		float* endMatrixValues = m.getData()+(img.getRows()*img.getCols());
+		float* endMatrixValues = m.getData()+(img.getRows()*img.getColumns());
 		float* otherMatrixValues = img.getData();
 
 		if(!inverse)
@@ -432,7 +432,7 @@ namespace smpl
 		if(mode == THRESH_ADAPTIVE_MEAN)
 		{
 			weights = MatrixF(2*radius + 1, 2*radius + 1);
-			float weightValue = 1.0 / (weights.getRows()*weights.getCols());
+			float weightValue = 1.0 / (weights.getRows()*weights.getColumns());
 			for(int i=0; i<2*radius+1; i++)
 			{
 				for(int j=0; j<2*radius+1; j++)
@@ -496,8 +496,8 @@ namespace smpl
 	MatrixF ComputerVision::readjustIntensity(const MatrixF& baseImg, double minIntensity, double maxIntensity)
 	{
 		//find min and max of baseImg
-		MatrixF readjustedMatrix = MatrixF(baseImg.getRows(), baseImg.getCols());
-		size_t sizeOfBaseImg = baseImg.getRows() * baseImg.getCols();
+		MatrixF readjustedMatrix = MatrixF(baseImg.getRows(), baseImg.getColumns());
+		size_t sizeOfBaseImg = baseImg.getRows() * baseImg.getColumns();
 
 		std::pair<double, double> minMaxValues = baseImg.minMaxValues();
 		double minIntensityBaseImg = minMaxValues.first;
@@ -512,15 +512,15 @@ namespace smpl
 
 	MatrixF ComputerVision::convolution(const MatrixF& baseImage, const MatrixF& kernel)
 	{
-		MatrixF output = MatrixF(baseImage.getRows(), baseImage.getCols());
+		MatrixF output = MatrixF(baseImage.getRows(), baseImage.getColumns());
 
 		float* baseImagePixels = baseImage.getData();
 		int kernelRowSizeHalf = kernel.getRows()/2;
-		int kernelColSizeHalf = kernel.getCols()/2;
+		int kernelColSizeHalf = kernel.getColumns()/2;
 		
 		for(int r=0; r<output.getRows(); r++)
 		{
-			for(int c=0; c<output.getCols(); c++)
+			for(int c=0; c<output.getColumns(); c++)
 			{
 				double sum = 0;
 				for(int kernelY=kernelRowSizeHalf; kernelY >= -kernelRowSizeHalf; kernelY--)
@@ -533,10 +533,10 @@ namespace smpl
 						{
 							int newImgX = c + kernelX;
 							int actualKernelX = kernelX + kernelColSizeHalf;
-							if(newImgX >= 0 && newImgX < baseImage.getCols())
+							if(newImgX >= 0 && newImgX < baseImage.getColumns())
 							{
-								float baseImgValue = baseImagePixels[newImgX + newImgY*baseImage.getCols()];
-								float kernelValue = kernel.getData()[actualKernelX + actualKernelY*kernel.getCols()];
+								float baseImgValue = baseImagePixels[newImgX + newImgY*baseImage.getColumns()];
+								float kernelValue = kernel.getData()[actualKernelX + actualKernelY*kernel.getColumns()];
 								sum += kernelValue * baseImgValue;
 							}
 						}
@@ -552,13 +552,13 @@ namespace smpl
 	
 	MatrixF ComputerVision::crossCorrelation(const MatrixF& baseImage, const MatrixF& kernel, bool normalized)
 	{
-		MatrixF output = MatrixF(baseImage.getRows(), baseImage.getCols());
+		MatrixF output = MatrixF(baseImage.getRows(), baseImage.getColumns());
 		int kernelRowSizeHalf = kernel.getRows()/2;
-		int kernelColSizeHalf = kernel.getCols()/2;
+		int kernelColSizeHalf = kernel.getColumns()/2;
 		
 		for(int r=0; r<output.getRows(); r++)
 		{
-			for(int c=0; c<output.getCols(); c++)
+			for(int c=0; c<output.getColumns(); c++)
 			{
 				double sum = 0;
 				double kernelEnergy = 0;
@@ -574,7 +574,7 @@ namespace smpl
 						{
 							int newImgX = c + kernelX;
 							int actualKernelX = kernelX + kernelColSizeHalf;
-							if(newImgX >= 0 && newImgX < baseImage.getCols())
+							if(newImgX >= 0 && newImgX < baseImage.getColumns())
 							{
 								float baseImgValue = baseImage.getData()[newImgX + newImgY*baseImage.getRows()];
 								float kernelMultiplier = kernel.getData()[actualKernelX + actualKernelY*kernel.getRows()];
@@ -676,7 +676,7 @@ namespace smpl
 				{
 					if(d >= 0 && d <= 1)
 					{
-						Vec2f intersection = b.getFuctionAt(d);
+						Vec2f intersection = b.getFunctionAt(d);
 						if(d >= 0 && d <= 1)
 							criticalPoints[y].push_back({(int)intersection.x, (toPoint.y > 0)});
 					}
@@ -869,7 +869,7 @@ namespace smpl
 
 		for(int y=0; y<thresholdedMat.getRows(); y++)
 		{
-			for(int x=0; x<thresholdedMat.getCols(); x++)
+			for(int x=0; x<thresholdedMat.getColumns(); x++)
 			{
 				if(thresholdedMat[y][x] != 0.0)
 				{
@@ -901,7 +901,7 @@ namespace smpl
 		for(int y=0; y<thresholdedMat.getRows(); y++)
 		{
 			mode = true;
-			for(int x=0; x<thresholdedMat.getCols(); x++)
+			for(int x=0; x<thresholdedMat.getColumns(); x++)
 			{
 				if(mode)
 				{

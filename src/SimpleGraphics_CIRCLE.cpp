@@ -2,8 +2,7 @@
 
 namespace smpl
 {
-	#if (OPTI == 0)
-
+	
     void SimpleGraphics::drawCircle(int x, int y, int radius, bool outline, Image* surf)
 	{
 		if(outline)
@@ -45,8 +44,9 @@ namespace smpl
 			// int tY = minY;
 			double radSqr = MathExt::sqr(absRad-1);
 			double radSqr2 = MathExt::sqr(absRad);
-			
 			int approxArea = (maxX-minX)*(maxY-minY);
+
+			SIMD_U32 activeColorAsSIMD = activeColor.toUInt();
 			
 			double A = 1;
 			double B = -2*x;
@@ -60,6 +60,7 @@ namespace smpl
 				for(int tY=minY; tY<maxY; tY++)
 				{
 					double C = MathExt::sqr(y-tY-0.5) + MathExt::sqr(x)+1;
+
 					std::vector<double> xRangeInCircle = MathExt::solveQuadraticReal(A, B, C-radSqr2);
 
 					if(xRangeInCircle.size()<=0)
@@ -73,10 +74,7 @@ namespace smpl
 					x1 = MathExt::clamp( x1, minX, maxX);
 					x2 = MathExt::clamp( x2, minX, maxX);
 
-					for(int i=x1; i<x2; i++)
-					{
-						srcPixels[i + tY*tempWidth] = blend(activeColor, srcPixels[i + tY*tempWidth]);
-					}
+					fillBetween(activeColorAsSIMD.values, x1, x2, tY, surf);
 				}
 				RESET_LARGE_ENOUGH_CLAUSE()
 			}
@@ -91,7 +89,7 @@ namespace smpl
 
 					std::vector<double> xRangeInnerCircle = MathExt::solveQuadraticReal(A, B, C-radSqr);
 					std::vector<double> xRangeOuterCircle = MathExt::solveQuadraticReal(A, B, C-radSqr2);
-					
+
 					int x1 = (int)MathExt::round(xRangeOuterCircle[1]);
 					int x2 = (int)MathExt::round(xRangeOuterCircle[0]);
 					x1 = MathExt::clamp( x1, minX, maxX);
@@ -159,17 +157,14 @@ namespace smpl
 						
 						srcPixels[tX + tY*tempWidth] = blend(newBlendColor, srcPixels[tX + tY*tempWidth]);
 					}
-					
-					for(int i=x3; i<x4; i++)
-					{
-						srcPixels[i + tY*tempWidth] = blend(activeColor, srcPixels[i + tY*tempWidth]);
-					}
+
+					fillBetween(activeColorAsSIMD.values, x3, x4, tY, surf);
 				}
 				RESET_LARGE_ENOUGH_CLAUSE()
 			}
 		}
 	}
-	
+
 	void SimpleGraphics::drawCircle(int x, int y, int radius, int maxDistanceFromEdge, Image* surf)
 	{
 		Image* otherImg;
@@ -218,6 +213,7 @@ namespace smpl
 			double A = 1;
 			double B = -2*x;
 			Color* srcPixels = otherImg->getPixels();
+			SIMD_U32 activeColorAsSIMD = activeColor.toUInt();
 
 			if(!antiAliasing)
 			{
@@ -251,58 +247,32 @@ namespace smpl
 					//Space between outer circle and innerEdge is antialiased for sure
 					//Everything else is filled fully. Nothing that would be in the inner circle is filled
 					
-					if(xRangeOuterCircle.size() < 2)
+					if(xRangeOuterCircle.size() < 2 || xRangeInnerEdgeCircle.size() < 2)
 					{
 						//very edge. Interpolate all values
-						for(int tX = xRangeOuterEdgeCircle[1]; tX < xRangeOuterEdgeCircle[0]; tX++)
-						{
-							srcPixels[tX + tY*tempWidth] = blend(activeColor, srcPixels[tX + tY*tempWidth]);
-						}
-					}
-					else if(xRangeInnerEdgeCircle.size() < 2)
-					{
-						//before the inner circle exists. Same as drawing normal circle
-						for(int i=xRangeOuterEdgeCircle[1]; i<xRangeOuterEdgeCircle[0]; i++)
-						{
-							srcPixels[i + tY*tempWidth] = blend(activeColor, srcPixels[i + tY*tempWidth]);
-						}
+						fillBetween(activeColorAsSIMD.values, xRangeOuterEdgeCircle[1], xRangeOuterEdgeCircle[0], tY, surf);
 					}
 					else
 					{
 						//fill between the outer and inner edge.
 						//before the inner circle exists.
 						//draw left side
-						for(int i=xRangeOuterEdgeCircle[1]; i<xRangeInnerEdgeCircle[1]; i++)
-						{
-							srcPixels[i + tY*tempWidth] = blend(activeColor, srcPixels[i + tY*tempWidth]);
-						}
+						fillBetween(activeColorAsSIMD.values, xRangeOuterEdgeCircle[1], xRangeInnerEdgeCircle[1], tY, surf);
 						
 						if(xRangeInnerCircle.size() < 2)
 						{
-							for(int tX = xRangeInnerEdgeCircle[1]; tX < xRangeInnerEdgeCircle[0]; tX++)
-							{
-								srcPixels[tX + tY*tempWidth] = blend(activeColor, srcPixels[tX + tY*tempWidth]);
-							}
+							fillBetween(activeColorAsSIMD.values, xRangeInnerEdgeCircle[1], xRangeInnerEdgeCircle[0], tY, surf);
 						}
 						else
 						{
-							for(int tX = xRangeInnerEdgeCircle[1]; tX < xRangeInnerCircle[1]; tX++)
-							{
-								srcPixels[tX + tY*tempWidth] = blend(activeColor, srcPixels[tX + tY*tempWidth]);
-							}
+							fillBetween(activeColorAsSIMD.values, xRangeInnerEdgeCircle[1], xRangeInnerCircle[0], tY, surf);
 
 							//draw right side
-							for(int tX = xRangeInnerCircle[0]; tX < xRangeInnerEdgeCircle[0]; tX++)
-							{
-								srcPixels[tX + tY*tempWidth] = blend(activeColor, srcPixels[tX + tY*tempWidth]);
-							}
+							fillBetween(activeColorAsSIMD.values, xRangeInnerCircle[0], xRangeInnerEdgeCircle[0], tY, surf);
 						}
 
 						//draw right side
-						for(int tX = xRangeInnerEdgeCircle[0]; tX < xRangeOuterEdgeCircle[0]; tX++)
-						{
-							srcPixels[tX + tY*tempWidth] = blend(activeColor, srcPixels[tX + tY*tempWidth]);
-						}
+						fillBetween(activeColorAsSIMD.values, xRangeInnerEdgeCircle[0], xRangeOuterEdgeCircle[0], tY, surf);
 					}
 					
 				}
@@ -396,10 +366,7 @@ namespace smpl
 							srcPixels[tX + tY*tempWidth] = blend(newBlendColor, srcPixels[tX + tY*tempWidth]);
 						}
 						
-						for(int i=xRangeOuterCircle[1]; i<xRangeOuterCircle[0]; i++)
-						{
-							srcPixels[i + tY*tempWidth] = blend(activeColor, srcPixels[i + tY*tempWidth]);
-						}
+						fillBetween(activeColorAsSIMD.values, xRangeOuterCircle[1], xRangeOuterCircle[0], tY, surf);
 					}
 					else
 					{
@@ -421,10 +388,7 @@ namespace smpl
 							
 							srcPixels[tX + tY*tempWidth] = blend(newBlendColor, srcPixels[tX + tY*tempWidth]);
 						}
-						for(int i=xRangeOuterCircle[1]; i<xRangeInnerEdgeCircle[1]; i++)
-						{
-							srcPixels[i + tY*tempWidth] = blend(activeColor, srcPixels[i + tY*tempWidth]);
-						}
+						fillBetween(activeColorAsSIMD.values, xRangeOuterCircle[1], xRangeInnerEdgeCircle[1], tY, surf);
 						
 						if(xRangeInnerCircle.size() < 2)
 						{
@@ -479,11 +443,7 @@ namespace smpl
 								srcPixels[tX + tY*tempWidth] = blend(newBlendColor, srcPixels[tX + tY*tempWidth]);
 							}
 						}
-
-						for(int i=xRangeInnerEdgeCircle[0]; i<xRangeOuterCircle[0]; i++)
-						{
-							srcPixels[i + tY*tempWidth] = blend(activeColor, srcPixels[i + tY*tempWidth]);
-						}
+						fillBetween(activeColorAsSIMD.values, xRangeInnerEdgeCircle[0], xRangeOuterCircle[0], tY, surf);
 						
 						//draw right side
 						for(int tX = xRangeOuterCircle[0]; tX < xRangeOuterEdgeCircle[0]; tX++)
@@ -508,6 +468,5 @@ namespace smpl
 			}
 		}
 	}
-    #endif
 
 } //NAMESPACE glib END

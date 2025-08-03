@@ -11,12 +11,15 @@
 #include <initializer_list>
 #include "StringBridge.h"
 
+#include "NewStringFormatting.h"
+
 namespace smpl
 {
 	class DLL_OPTION StringTools
 	{
 	public:
 
+		static const wchar_t lineBreak;
 		/**
 		 * @brief Initializes the StringTools class.
 		 * 		Specifically, it sets up the console to accept wstring data properly.
@@ -983,25 +986,24 @@ namespace smpl
 		 */
 		static std::vector<int> findAllMatchDFA(unsigned char* base, int baseSize, unsigned char* match, int matchSize);
 
-		/**
-		 * @brief Formats a string like printf() would but converts std::wstring to std::string to avoid errors.
-		 * 		For formating information, check https://www.cplusplus.com/reference/cstdio/printf/
-		 * @param text 
-		 * @param ... 
-		 * 		The list of parameters to use.
-		 * @return std::string 
-		 */
-		static std::string formatString(std::string text, ...);
 
 		/**
-		 * @brief Formats a string like wprintf() would but converts std::string to std::wstring to avoid errors.
-		 * 		For formating information, check https://www.cplusplus.com/reference/cstdio/printf/
-		 * @param text 
-		 * @param ... 
-		 * 		The list of parameters to use.
-		 * @return std::wstring 
+		 * @brief Attempts to format a string similar to how sprintf works but utilizing variadic templates
+		 * 		making it easy to extend for any custom datatype. Internally, it uses sprintf for all primitive types or types that aren't
+		 * 		matched with a printToString() function. This may and likely will cause errors if the type isn't already handled
+		 * 		
+		 * @tparam Args 
+		 * @param format 
+		 * @param args 
+		 * @return std::string 
 		 */
-		static std::wstring formatWideString(std::wstring text, ...);
+		template<typename... Args>
+		static std::string formatString(const std::string& format, const Args&... args)
+		{
+			StringStream output;
+			formatStringInternal(output, format.c_str(), args...);
+			return output.getBuffer();
+		}
 
 		/**
 		 * @brief Converts a keyboard press to the Ascii key it represents. 
@@ -1014,72 +1016,30 @@ namespace smpl
 		static int convertKeyToAscii(int keyVal, bool shiftHeld);
 		
 		/**
-		 * @brief Prints information to the console using the same format as printf()
+		 * @brief Prints information to a console using the formatString function and std::cout
 		 * 
+		 * @tparam Args 
 		 * @param fmt 
-		 * @param ... 
+		 * @param args 
 		 */
-		static void print(std::string fmt, ...)
+		template<typename... Args>
+		static void print(const std::string& fmt, const Args&... args)
 		{
-			va_list args;
-			va_start(args, fmt);
-			std::string finalString = formatStringInternal( fmt, args);
-			va_end(args);
-
-			std::cout << finalString;
+			std::cout << formatString(fmt, args...);
 		}
 
 		/**
-		 * @brief Prints information to the console using the same format as printf().
-		 * 		Also prints a line break at the end.
+		 * @brief Prints information to a console using the formatString function and std::cout
 		 * 
+		 * @tparam Args 
 		 * @param fmt 
-		 * @param ... 
+		 * @param args 
 		 */
-		static void println(std::string fmt, ...)
+		template<typename... Args>
+		static void println(const std::string& fmt, const Args&... args)
 		{
-			va_list args;
-			va_start(args, fmt);
-			std::string finalString = formatStringInternal(fmt, args);
-			va_end(args);
-
-			std::cout << finalString << std::endl;
+			std::cout << formatString(fmt, args...) << std::endl;
 		}
-
-		/**
-		 * @brief Prints information to the console using the same format as printf()
-		 * 
-		 * @param fmt 
-		 * @param ... 
-		 */
-		static void print(std::wstring fmt, ...)
-		{
-			va_list args;
-			va_start(args, fmt);
-			std::string finalString = formatStringInternal( StringTools::toUTF8String(fmt), args);
-			va_end(args);
-
-			std::cout << finalString;
-		}
-
-		/**
-		 * @brief Prints information to the console using the same format as printf().
-		 * 		Also prints a line break at the end.
-		 * 
-		 * @param fmt 
-		 * @param ... 
-		 */
-		static void println(std::wstring fmt, ...)
-		{
-			va_list args;
-			va_start(args, fmt);
-			std::string finalString = formatStringInternal( StringTools::toUTF8String(fmt), args);
-			va_end(args);
-
-			std::cout << finalString << std::endl;
-		}
-
-		static const wchar_t lineBreak;
 
 		/**
 		 * @brief Clears the console display
@@ -1142,7 +1102,7 @@ namespace smpl
 		 * 
 		 * @param file 
 		 */
-		static void reroutOutput(std::wstreambuf* file);
+		static void reroutOutput(std::streambuf* file);
 
 		/**
 		 * @brief Rerouts the input of the get functions to somewhere else such as a file.
@@ -1150,7 +1110,7 @@ namespace smpl
 		 * 
 		 * @param file 
 		 */
-		static void reroutInput(std::wstreambuf* file);
+		static void reroutInput(std::streambuf* file);
 
 		/**
 		 * @brief Rerouts the error output of the printErr functions to somewhere else such as a file.
@@ -1158,21 +1118,15 @@ namespace smpl
 		 * 
 		 * @param file 
 		 */
-		static void reroutErrorOutput(std::wstreambuf* file);
+		static void reroutErrorOutput(std::streambuf* file);
 		
 		static void resetOutputInputStreams();
-
-		
-
 	private:
 
-		static std::wstreambuf* inputBuffer;
-		static std::wstreambuf* outputBuffer;
-		static std::wstreambuf* errorBuffer;
-
-		static std::string formatStringInternal(std::string format, va_list args);
-		static std::wstring formatStringInternal(std::wstring format, va_list args);
-
+		static std::streambuf* inputBuffer;
+		static std::streambuf* outputBuffer;
+		static std::streambuf* errorBuffer;
+		
 		/**
 		 * @brief Pre Processing for the KMP string matching algorithm.
 		 * 
@@ -1194,5 +1148,6 @@ namespace smpl
 
 		static bool hasInit;
 	};
+
 
 } //NAMESPACE glib END

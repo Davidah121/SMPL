@@ -3,7 +3,7 @@
 namespace smpl
 {
     
-    class LCG
+    class DLL_OPTION LCG
     {
     public:
         /**

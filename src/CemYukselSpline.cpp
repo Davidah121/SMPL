@@ -151,7 +151,7 @@ namespace smpl
 		c.addPoint(b1);
 		c.addPoint(b2);
 		
-		return c.getFuctionAt(normalizedWeight);
+		return c.getFunctionAt(normalizedWeight);
 	}
 
 	Vec2f CemYukselSpline::circularFormulation(size_t index, double weight)

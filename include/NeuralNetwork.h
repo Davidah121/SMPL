@@ -12,7 +12,7 @@ namespace smpl
     class NeuralLayer;
     class NerualNetwork;
 
-    class NeuralLayer : public SerializedObject
+    class DLL_OPTION NeuralLayer : public SerializedObject
     {
     public:
         virtual ~NeuralLayer();
@@ -33,7 +33,7 @@ namespace smpl
     SERIALIZE_CLASS()
     };
     
-    class ObjectiveFunction : public SerializedObject
+    class DLL_OPTION ObjectiveFunction : public SerializedObject
     {
     public:
         virtual MatrixF evaluate(MatrixF expected, MatrixF actual) = 0;
@@ -42,7 +42,7 @@ namespace smpl
     SERIALIZE_CLASS()
     };
 
-    class LeastSquares : public ObjectiveFunction
+    class DLL_OPTION LeastSquares : public ObjectiveFunction
     {
     public:
         virtual MatrixF evaluate(MatrixF expected, MatrixF actual) = 0;
@@ -51,7 +51,7 @@ namespace smpl
     SERIALIZE_SUPER_CLASS(ObjectiveFunction)
     SERIALIZE_CLASS()
     };
-    class LogLoss : public ObjectiveFunction
+    class DLL_OPTION LogLoss : public ObjectiveFunction
     {
     public:
         virtual MatrixF evaluate(MatrixF expected, MatrixF actual) = 0;
@@ -60,7 +60,7 @@ namespace smpl
     SERIALIZE_SUPER_CLASS(ObjectiveFunction)
     SERIALIZE_CLASS()
     };
-    class InputLayer : public NeuralLayer
+    class DLL_OPTION InputLayer : public NeuralLayer
     {
     public:
         InputLayer(const MatrixF& trainingData);
@@ -77,7 +77,7 @@ namespace smpl
     SERIALIZE_CLASS()
     };
 
-    class FullyConnectedLayer : public NeuralLayer
+    class DLL_OPTION FullyConnectedLayer : public NeuralLayer
     {
     public:
         FullyConnectedLayer(size_t inputNeurons, size_t outputNeurons);
@@ -89,7 +89,7 @@ namespace smpl
         MatrixF bias;
     };
 
-    class SigmoidActivationLayer : public NeuralLayer
+    class DLL_OPTION SigmoidActivationLayer : public NeuralLayer
     {
     public:
         SigmoidActivationLayer();
@@ -102,7 +102,7 @@ namespace smpl
     SERIALIZE_CLASS()
     };
 
-    class TanhActivationLayer : public NeuralLayer
+    class DLL_OPTION TanhActivationLayer : public NeuralLayer
     {
     public:
         TanhActivationLayer();
@@ -115,7 +115,7 @@ namespace smpl
     SERIALIZE_CLASS()
     };
 
-    class LinearActivationLayer : public NeuralLayer
+    class DLL_OPTION LinearActivationLayer : public NeuralLayer
     {
     public:
         LinearActivationLayer();
@@ -128,7 +128,7 @@ namespace smpl
     SERIALIZE_CLASS()
     };
 
-    class ReluActivationLayer : public NeuralLayer
+    class DLL_OPTION ReluActivationLayer : public NeuralLayer
     {
     public:
         ReluActivationLayer();
@@ -141,7 +141,7 @@ namespace smpl
     SERIALIZE_CLASS()
     };
 
-    class StepActivationLayer : public NeuralLayer
+    class DLL_OPTION StepActivationLayer : public NeuralLayer
     {
     public:
         StepActivationLayer();
@@ -155,7 +155,7 @@ namespace smpl
     };
 
 
-    class NeuralNetwork : public SerializedObject
+    class DLL_OPTION NeuralNetwork : public SerializedObject
     {
     public:
         NeuralNetwork();

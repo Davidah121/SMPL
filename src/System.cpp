@@ -16,6 +16,7 @@
 	#include <sys/types.h>
 	#include <sys/sysinfo.h>
 	#include <sys/times.h>
+	#include <unistd.h>
 #endif
 
 #ifdef _WIN32
@@ -41,7 +42,7 @@ namespace smpl
 	unsigned int System::numberOfThreads = std::thread::hardware_concurrency();
 	bool System::hasInit = false;
 	System System::singleton = System();
-
+	std::function<void()> System::interruptFunction = nullptr;
 
 	const FileFilter System::ALL_FILTER = {"All Files", "."};
 	const FileFilter System::IMAGE_FILTER = {"Image", ".bmp;.gif;.png;.jpg;.jpeg"};
@@ -49,6 +50,7 @@ namespace smpl
 	const FileFilter System::SOUND_FILTER = {"Sound", ".wav;.ogg;.mp3"};
 	const FileFilter System::VIDEO_FILTER = {"Video", ".mp4;.flv;.m4a;.wmv"};
 
+	
 	//Non static but global
 	std::mutex lock;
 	
@@ -57,19 +59,12 @@ namespace smpl
 	PDH_HCOUNTER cpuTotal;
 	#endif
 
-
 	System::System()
 	{
-		#ifdef _WIN32
-    	// timeBeginPeriod(1);
-		#endif
 	}
 
 	System::~System()
 	{
-		#ifdef _WIN32
-    	// timeEndPeriod(1);
-		#endif
 	}
 
 	void System::init()
@@ -215,13 +210,40 @@ namespace smpl
 		return numberOfThreads;
 	}
 	
-	void System::mapInteruptSignal(void(*func)(int))
+	#ifdef _WIN32
+	int __stdcall System::signalHandler(unsigned long ctrlType)
 	{
-		if(func == nullptr)
-			signal(SIGINT, SIG_DFL);
-		else
-			signal(SIGINT, func);
+		if(ctrlType == CTRL_C_EVENT)
+		{
+			if(System::interruptFunction != nullptr)
+				System::interruptFunction();
+			return TRUE;
+		}
+		return FALSE;
 	}
+
+	void System::mapInteruptSignal(void(*func)())
+	{
+		System::interruptFunction = func;
+		SetConsoleCtrlHandler(signalHandler, TRUE);
+	}
+	#endif
+
+	#ifdef __unix__
+	void System::signalHandler(int ctrlType)
+	{
+		if(ctrlType == SIGINT && System::interruptFunction != nullptr)
+			System::interruptFunction();
+	}
+
+	void System::mapInteruptSignal(void(*func)())
+	{
+		System::interruptFunction = func;
+		struct sigaction action;
+		action.sa_handler = System::signalHandler;
+		sigaction(SIGINT, &action, nullptr);
+	}
+	#endif
 
 	int System::getMouseX()
 	{

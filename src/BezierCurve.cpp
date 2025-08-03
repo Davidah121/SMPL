@@ -273,7 +273,7 @@ namespace smpl
 		return {};
 	}
 
-	Vec2f BezierCurve::getFuctionAt(double time)
+	Vec2f BezierCurve::getFunctionAt(double time)
 	{
 		//recursive definition that takes n^2 time
 		//blend P[n] with P[n+1] to form C[n]
@@ -367,6 +367,12 @@ namespace smpl
 	{
 		return findTimeForMinDis( Vec2f(x, y), maxIterations );
 	}
+	
+	Vec2f BezierCurve::project(Vec2f p, unsigned int maxIterations)
+	{
+		double t = findTimeForMinDis(p, maxIterations);
+		return getFunctionAt(t);
+	}
 
 	double BezierCurve::findTimeForMinDis(Vec2f p, unsigned int maxIterations)
 	{
@@ -379,7 +385,7 @@ namespace smpl
 		for(int i=0; i<=totalN; i++)
 		{
 			double nT = (double)i / totalN;
-			Vec2f testP = getFuctionAt(nT);
+			Vec2f testP = getFunctionAt(nT);
 			double nLength = (testP - p).getLength();
 			if(nLength < bestApproxLength)
 			{
@@ -399,7 +405,7 @@ namespace smpl
 		
 		for(int i=0; i<maxIterations; i++)
 		{
-			Vec2f Bt = newB.getFuctionAt(approxT);
+			Vec2f Bt = newB.getFunctionAt(approxT);
 			Vec2f BtDerivative = newB.getDerivativeAt(approxT);
 			Vec2f BtDerivative2 = newB.getSecondDerivativeAt(approxT);
 			
@@ -432,7 +438,7 @@ namespace smpl
 		
 		GeneralMathFunction f = GeneralMathFunction();
 		f.setFunction( [this, Y](double t) -> double{
-			return this->getFuctionAt(t).y - Y;
+			return this->getFunctionAt(t).y - Y;
 		});
 
 		switch (points.size())
@@ -530,7 +536,7 @@ namespace smpl
 		
 		GeneralMathFunction f = GeneralMathFunction();
 		f.setFunction( [this, X](double t) -> double{
-			return this->getFuctionAt(t).x - X;
+			return this->getFunctionAt(t).x - X;
 		});
 
 		switch (points.size())

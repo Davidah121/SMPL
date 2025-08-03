@@ -1,9 +1,10 @@
 #pragma once
+#include "BuildOptions.h"
 #include <string>
 
 namespace smpl
 {
-    class StringBridge
+    class DLL_OPTION StringBridge
     {
     public:
         StringBridge(const std::string& s);
@@ -20,7 +21,7 @@ namespace smpl
         std::u32string data;
     };
 
-    class UnicodeStringBridge : public StringBridge
+    class DLL_OPTION UnicodeStringBridge : public StringBridge
     {
     public:
         UnicodeStringBridge(const std::string& s);

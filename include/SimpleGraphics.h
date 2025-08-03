@@ -3,33 +3,20 @@
 #include "Image.h"
 #include "Font.h"
 #include "Model.h"
-#include "Opti.h"
 #include "Shape.h"
 #include "BezierCurve.h"
 #include "SIMD.h"
 #include "Concurrency.h"
 
-#if (OPTI == 1)
-	#define SIMD_GRAPHICS_INC (SIMD_U8::SIZE/sizeof(Color))
-	#define COLOR_TO_SIMD(x) _mm_set_epi8(x.alpha, x.blue, x.green, x.red,\
-											x.alpha, x.blue, x.green, x.red,\
-											x.alpha, x.blue, x.green, x.red,\
-											x.alpha, x.blue, x.green, x.red)
-#elif (OPTI >= 2)
-	#define SIMD_GRAPHICS_INC (SIMD_U8::SIZE/sizeof(Color))
-	#define COLOR_TO_SIMD(x) _mm256_set_epi8(x.alpha, x.blue, x.green, x.red,\
-											x.alpha, x.blue, x.green, x.red,\
-											x.alpha, x.blue, x.green, x.red,\
-											x.alpha, x.blue, x.green, x.red,\
-											x.alpha, x.blue, x.green, x.red,\
-											x.alpha, x.blue, x.green, x.red,\
-											x.alpha, x.blue, x.green, x.red,\
-											x.alpha, x.blue, x.green, x.red)
-#endif
-
 namespace smpl
 {
-
+	struct PolyCriticalPoint
+	{
+		double xValue;
+		bool direction;
+	};
+	void formatToString(StringStream& stream, const PolyCriticalPoint& v, const std::string& options);
+	
 	class DLL_OPTION SimpleGraphics
 	{
 	public:
@@ -148,12 +135,13 @@ namespace smpl
 		static Color blend(Color src, Color dest);
 		static Vec4f blend(Vec4f src, Vec4f dest);
 		static Color4f blend(Color4f src, Color4f dest);
+		static uint32_t blend(uint32_t src, uint32_t dest); //Same as blend(Color, Color) but just needs to recast
 
-		#if (OPTI>=1)
+		#ifdef __SSE4_2__
 			static __m128i blend(__m128i src, __m128i dest);
 		#endif
 
-		#if (OPTI>=2)
+		#ifdef __AVX2__
 			static __m256i blend(__m256i src, __m256i dest);
 		#endif
 
@@ -186,11 +174,12 @@ namespace smpl
 		static Color multColor(Color src, Color multiplier);
 		static Color4f multColor(Color4f src, Color4f multiplier);
 		static Vec4f multColor(Vec4f src, Vec4f multiplier);
-		#if (OPTI>=1)
+		static uint32_t multColor(uint32_t src, uint32_t multiplier); //Same as multColor(Color, Color) but just needs to recast
+		#ifdef __SSE4_2__
 			static __m128i multColor(__m128i src, __m128i multiplier); //4 Colors. Uses 8 bits per channel
 		#endif
 
-		#if (OPTI>=2)
+		#ifdef __AVX2__
 			static __m256i multColor(__m256i src, __m256i multiplier); //8 Colors. Uses 8 bits per channel
 		#endif
 		
@@ -888,6 +877,10 @@ namespace smpl
 		 */
 		static Image* scaleImage(Image* img, double xScale, double yScale, unsigned char filterMethod = NEAREST_NEIGHBOR_FILTER);
 
+		
+		//Does not check for surf == nullptr. Should only used in internal code
+		static void fillBetween(Color c, int x1, int x2, int y, Image* surf);
+		static void fillBetween(SIMD_U32 sseC, int x1, int x2, int y, Image* surf);
 	private:
 		SimpleGraphics();
 		~SimpleGraphics();
@@ -900,11 +893,6 @@ namespace smpl
 		static Image* scaleBilinear(Image* img, double xScale, double yScale);
 		static Image* scaleBicubic(Image* img, double xScale, double yScale);
 
-		//Does not check for surf == nullptr. Should only used in internal code
-		static void fillBetween(Color c, int x1, int x2, int y, Image* surf);
-		#if (OPTI>=1)
-			static void fillBetween(SIMD_U8 c, int x1, int x2, int y, Image* surf);
-		#endif
 		
 		static unsigned char defaultFontValue;
 

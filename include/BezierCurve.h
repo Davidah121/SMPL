@@ -176,7 +176,7 @@ namespace smpl
 		 * @return Vec2f
 		 * 		returns the point as a Vec2f.
 		 */
-		Vec2f getFuctionAt(double time);
+		Vec2f getFunctionAt(double time);
 
 		/**
 		 * @brief Solves the derivative of BezierCurve for the given time. Note that any time
@@ -238,6 +238,18 @@ namespace smpl
 		 * 		returns the measured arc length.
 		 */
 		double getArcLengthAt(double startTime, double endTime);
+
+		/**
+		 * @brief Projects a point onto the curve. Ideally, that point will result in the shortest distance
+		 * 		to the curve from the given point.
+		 * 			Interally, uses findTimeForMinDis to find a time point.
+		 * 			That method uses Newton's Method to approximate the answer
+		 * 
+		 * @param p 
+		 * @param maxIterations 
+		 * @return Vec2f 
+		 */
+		Vec2f project(Vec2f p, unsigned int maxIterations = 5);
 
 		/**
 		 * @brief Finds a time t in the range [0, 1] such that

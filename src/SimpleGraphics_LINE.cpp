@@ -2,8 +2,6 @@
 
 namespace smpl
 {
-	#if (OPTI == 0)
-
 	void SimpleGraphics::drawLine(int x1, int y1, int x2, int y2, Image* surf)
 	{
 		if (surf != nullptr)
@@ -60,15 +58,7 @@ namespace smpl
 				{
 					return;
 				}
-
-				Color* startPoint = surf->getPixels() + minX + (surf->getWidth()*y1);
-				Color* endPoint = surf->getPixels() + maxX + (surf->getWidth()*y1);
-
-				while(startPoint <= endPoint)
-				{
-					*startPoint = blend(activeColor, *startPoint);
-					startPoint++;
-				}
+				SimpleGraphics::fillBetween(activeColor, minX, maxX, y1, surf);
 			}
 			else if(dx == 0 && dy != 0)
 			{
@@ -300,7 +290,7 @@ namespace smpl
 
 			for(int i=1; i<=subdivisions; i++)
 			{
-				Vec2f p2 = b.getFuctionAt( equalLengthT[i] );
+				Vec2f p2 = b.getFunctionAt( equalLengthT[i] );
 				SimpleGraphics::drawLine((int)MathExt::round(p1.x), (int)MathExt::round(p1.y), (int)MathExt::round(p2.x), (int)MathExt::round(p2.y), surf);
 				
 				p1 = p2;
@@ -313,7 +303,7 @@ namespace smpl
 
 			for(int i=1; i<=subdivisions; i++)
 			{
-				Vec2f p2 = b.getFuctionAt( i*du );
+				Vec2f p2 = b.getFunctionAt( i*du );
 				SimpleGraphics::drawLine((int)MathExt::round(p1.x), (int)MathExt::round(p1.y), (int)MathExt::round(p2.x), (int)MathExt::round(p2.y), surf);
 				
 				p1 = p2;
@@ -321,6 +311,4 @@ namespace smpl
 		}
 
 	}
-    
-	#endif
 } //NAMESPACE glib END

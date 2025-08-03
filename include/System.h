@@ -133,7 +133,7 @@ namespace smpl
 		 * 
 		 * @param func 
 		 */
-		static void mapInteruptSignal(void(*func)(int));
+		static void mapInteruptSignal(void(*func)());
 
 		static const long NANOSECOND_SEC = 1000000000L;
 		static const long MICROSECOND_SEC = 1000000L;
@@ -405,11 +405,22 @@ namespace smpl
 		 */
 		static double getCpuUsage(); //TODO
 	private:
+		
 		System();
 		~System();
+
 		static System singleton;
 		static unsigned int numberOfThreads;
 		static bool hasInit;
+
+		#ifdef _WIN32
+		static int __stdcall signalHandler(unsigned long ctrlType);
+		#endif
+		#ifdef __unix__
+		static void signalHandler(int ctrlType);
+		#endif
+
+		static std::function<void()> interruptFunction;
 	};
 
 } //NAMESPACE glib END

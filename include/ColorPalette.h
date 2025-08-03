@@ -16,22 +16,26 @@ namespace smpl
 		unsigned char blue = 0;
 		unsigned char alpha = 0;
 
-		bool const operator==(const Color& o)
+		bool operator==(const Color& o) const
 		{
-			return memcmp(this, &o, sizeof(Color)) == 0;
+			return toUInt() == o.toUInt();
 		}
-		bool const operator!=(const Color& o)
+		bool operator!=(const Color& o) const
 		{
-			return memcmp(this, &o, sizeof(Color)) != 0;
+			return toUInt() != o.toUInt();
+		}
+		uint32_t toUInt() const
+		{
+			return *((uint32_t*)this);
 		}
 	};
 
 	struct Color4f
 	{
-		UFP16 red;
-		UFP16 green;
-		UFP16 blue;
-		UFP16 alpha;
+		Saturated_UFP16 red;
+		Saturated_UFP16 green;
+		Saturated_UFP16 blue;
+		Saturated_UFP16 alpha;
 		
 		Color4f operator-(Color4f other) { return Color4f{red - other.red, green - other.green, blue - other.blue, alpha - other.alpha}; }
 		Color4f operator+(Color4f other) { return Color4f{red + other.red, green + other.green, blue + other.blue, alpha + other.alpha}; }
@@ -72,13 +76,18 @@ namespace smpl
 		Color4f operator*(double other) { return Color4f{red * other, green * other, blue * other, alpha * other}; }
 		Color4f operator/(double other) { return Color4f{red / other, green / other, blue / other, alpha / other}; }
 
-		bool const operator==(const Color4f& o)
+		bool operator==(const Color4f& o) const
 		{
-			return memcmp(this, &o, sizeof(Color4f)) == 0;
+			return toULong() == o.toULong();
 		}
-		bool const operator!=(const Color4f& o)
+		bool operator!=(const Color4f& o) const
 		{
-			return memcmp(this, &o, sizeof(Color4f)) != 0;
+			return toULong() != o.toULong();
+		}
+		
+		uint64_t toULong() const
+		{
+			return *((uint64_t*)this);
 		}
 	};
 

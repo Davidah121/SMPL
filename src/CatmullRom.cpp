@@ -75,7 +75,7 @@ namespace smpl
 	Vec2f CatmullRom::solve(size_t curveSegment, double weight)
 	{
 		BezierCurve b = getCurve(curveSegment);
-		return b.getFuctionAt(weight);
+		return b.getFunctionAt(weight);
 	}
 	
 	BezierCurve CatmullRom::getCurve(size_t index)
@@ -98,8 +98,8 @@ namespace smpl
 				
 				BezierCurve b;
 				b.addPoint(points[index]);
-				b.addPoint(points[index] + t0);
-				b.addPoint(points[index+1] - t1);
+				b.addPoint(points[index] + (1.0/3.0)*t0);
+				b.addPoint(points[index+1] - (1.0/3.0)*t1);
 				b.addPoint(points[index+1]);
 
 				return b;
@@ -111,40 +111,43 @@ namespace smpl
 
 	Vec2f CatmullRom::getTangent(size_t index)
 	{
-		// if(index < size())
-		// {
-		// 	//special case
-		// 	if(size() == 2)
-		// 	{
-		// 		//is a line
-		// 		return (1.0-tension) * 0.5 * (points[1] - points[0]);
-		// 	}
-		// 	else if(index == 0)
-		// 	{
-		// 		//create polynomial or something and get derivative.
-		// 		//could create a bezier curve from the points and get the derivative too.
-		// 		PolynomialMathFunction f = MathExt::fitPolynomial({ points[index], points[index+1], points[index+2] });
-		// 		PolynomialMathFunction derivative = f.getDerivative();
-		// 		double yder = derivative.solve(points[index].x);
+		if(index < size())
+		{
+			//special case
+			if(size() == 2)
+			{
+				//is a line
+				return (1.0-tension) * 0.5 * (points[1] - points[0]);
+			}
+			else if(index == 0)
+			{
+				//create polynomial or something and get derivative.
+				//could create a bezier curve from the points and get the derivative too.
+				Vec2f C = points[0];
+				Vec2f B = -points[2] + 4*points[1] - 3*points[0];
+				Vec2f A = points[2] - points[0] - B;
 
-		// 		Vec2f potentialDerivative = Vec2f((points[index+1]-points[index]).x, yder);
-		// 		return (1.0-tension) * 0.5 * potentialDerivative;
-		// 	}
-		// 	else if(index == size()-1)
-		// 	{
-		// 		//create polynomial or something and get derivative.
-		// 		PolynomialMathFunction f = MathExt::fitPolynomial({ points[index], points[index-1], points[index-2] });
-		// 		PolynomialMathFunction derivative = f.getDerivative();
-		// 		double yder = derivative.solve(points[index].x);
+				//derivative
+				Vec2f der = B;
+				return (1.0-tension) * 0.5 * der;
+			}
+			else if(index == size()-1)
+			{
+				//create polynomial or something and get derivative.
+				//could create a bezier curve from the points and get the derivative too.
+				Vec2f C = points[index-2];
+				Vec2f B = -points[index] + 4*points[index-1] - 3*points[index-2];
+				Vec2f A = points[index] - points[index-2] - B;
 
-		// 		Vec2f potentialDerivative = Vec2f((points[index]-points[index-1]).x, yder);
-		// 		return potentialDerivative;
-		// 	}
-		// 	else
-		// 	{
-		// 		return (1.0-tension) * 0.5 * (points[index+1] - points[index-1]);
-		// 	}
-		// }
+				//derivative
+				Vec2f der = 2*A + B;
+				return (1.0-tension) * 0.5 * der;
+			}
+			else
+			{
+				return (1.0-tension) * 0.5 * (points[index+1] - points[index-1]);
+			}
+		}
 		return Vec2f();
 	}
 

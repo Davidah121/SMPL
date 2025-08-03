@@ -11,6 +11,26 @@
 namespace smpl
 {
 
+	static const unsigned char BitReverseTable256[] = 
+	{
+	0x00, 0x80, 0x40, 0xC0, 0x20, 0xA0, 0x60, 0xE0, 0x10, 0x90, 0x50, 0xD0, 0x30, 0xB0, 0x70, 0xF0, 
+	0x08, 0x88, 0x48, 0xC8, 0x28, 0xA8, 0x68, 0xE8, 0x18, 0x98, 0x58, 0xD8, 0x38, 0xB8, 0x78, 0xF8, 
+	0x04, 0x84, 0x44, 0xC4, 0x24, 0xA4, 0x64, 0xE4, 0x14, 0x94, 0x54, 0xD4, 0x34, 0xB4, 0x74, 0xF4, 
+	0x0C, 0x8C, 0x4C, 0xCC, 0x2C, 0xAC, 0x6C, 0xEC, 0x1C, 0x9C, 0x5C, 0xDC, 0x3C, 0xBC, 0x7C, 0xFC, 
+	0x02, 0x82, 0x42, 0xC2, 0x22, 0xA2, 0x62, 0xE2, 0x12, 0x92, 0x52, 0xD2, 0x32, 0xB2, 0x72, 0xF2, 
+	0x0A, 0x8A, 0x4A, 0xCA, 0x2A, 0xAA, 0x6A, 0xEA, 0x1A, 0x9A, 0x5A, 0xDA, 0x3A, 0xBA, 0x7A, 0xFA,
+	0x06, 0x86, 0x46, 0xC6, 0x26, 0xA6, 0x66, 0xE6, 0x16, 0x96, 0x56, 0xD6, 0x36, 0xB6, 0x76, 0xF6, 
+	0x0E, 0x8E, 0x4E, 0xCE, 0x2E, 0xAE, 0x6E, 0xEE, 0x1E, 0x9E, 0x5E, 0xDE, 0x3E, 0xBE, 0x7E, 0xFE,
+	0x01, 0x81, 0x41, 0xC1, 0x21, 0xA1, 0x61, 0xE1, 0x11, 0x91, 0x51, 0xD1, 0x31, 0xB1, 0x71, 0xF1,
+	0x09, 0x89, 0x49, 0xC9, 0x29, 0xA9, 0x69, 0xE9, 0x19, 0x99, 0x59, 0xD9, 0x39, 0xB9, 0x79, 0xF9, 
+	0x05, 0x85, 0x45, 0xC5, 0x25, 0xA5, 0x65, 0xE5, 0x15, 0x95, 0x55, 0xD5, 0x35, 0xB5, 0x75, 0xF5,
+	0x0D, 0x8D, 0x4D, 0xCD, 0x2D, 0xAD, 0x6D, 0xED, 0x1D, 0x9D, 0x5D, 0xDD, 0x3D, 0xBD, 0x7D, 0xFD,
+	0x03, 0x83, 0x43, 0xC3, 0x23, 0xA3, 0x63, 0xE3, 0x13, 0x93, 0x53, 0xD3, 0x33, 0xB3, 0x73, 0xF3, 
+	0x0B, 0x8B, 0x4B, 0xCB, 0x2B, 0xAB, 0x6B, 0xEB, 0x1B, 0x9B, 0x5B, 0xDB, 0x3B, 0xBB, 0x7B, 0xFB,
+	0x07, 0x87, 0x47, 0xC7, 0x27, 0xA7, 0x67, 0xE7, 0x17, 0x97, 0x57, 0xD7, 0x37, 0xB7, 0x77, 0xF7, 
+	0x0F, 0x8F, 0x4F, 0xCF, 0x2F, 0xAF, 0x6F, 0xEF, 0x1F, 0x9F, 0x5F, 0xDF, 0x3F, 0xBF, 0x7F, 0xFF
+	};
+
 	int MathExt::popcount(uint8_t x)
 	{
 		#ifdef _MSC_VER
@@ -47,6 +67,41 @@ namespace smpl
 		#endif
 	}
 
+
+	uint8_t MathExt::bitReversal(uint8_t a)
+	{
+		return BitReverseTable256[a];
+	}
+
+	uint16_t MathExt::bitReversal(uint16_t a)
+	{
+		uint16_t c =(BitReverseTable256[a & 0xff] << 8) | 
+					(BitReverseTable256[(a >> 8) & 0xff]);
+		return c;
+	}
+
+	uint32_t MathExt::bitReversal(uint32_t a)
+	{
+		uint32_t c =(BitReverseTable256[a & 0xff] << 24) | 
+					(BitReverseTable256[(a >> 8) & 0xff] << 16) | 
+					(BitReverseTable256[(a >> 16) & 0xff] << 8) |
+					(BitReverseTable256[(a >> 24) & 0xff]);
+		return c;
+	}
+	
+	uint64_t MathExt::bitReversal(uint64_t a)
+	{
+		uint64_t c =((uint64_t)BitReverseTable256[a & 0xff] << 56) | 
+					((uint64_t)BitReverseTable256[(a >> 8) & 0xff] << 48) | 
+					((uint64_t)BitReverseTable256[(a >> 16) & 0xff] << 40) |
+					((uint64_t)BitReverseTable256[(a >> 24) & 0xff] << 32)|
+					((uint64_t)BitReverseTable256[(a >> 32) & 0xff] << 24) | 
+					((uint64_t)BitReverseTable256[(a >> 40) & 0xff] << 16) | 
+					((uint64_t)BitReverseTable256[(a >> 48) & 0xff] << 8) |
+					((uint64_t)BitReverseTable256[(a >> 56) & 0xff]);
+		return c;
+	}
+
 	
 	int MathExt::hammingDistance(uint8_t v1, uint8_t v2)
 	{
@@ -68,87 +123,160 @@ namespace smpl
 	
 	uint8_t MathExt::saturatedAdd(uint8_t v1, uint8_t v2)
 	{
+		//https://locklessinc.com/articles/sat_arithmetic/
 		uint8_t c = v1+v2;
-		if(c < v1)
-			c = -1;
+		c |= -(c < v1);
 		return c;
 	}
 	uint16_t MathExt::saturatedAdd(uint16_t v1, uint16_t v2)
 	{
+		//https://locklessinc.com/articles/sat_arithmetic/
 		uint16_t c = v1+v2;
-		if(c < v1)
-			c = -1;
+		c |= -(c < v1);
 		return c;
 	}
 	uint32_t MathExt::saturatedAdd(uint32_t v1, uint32_t v2)
 	{
+		//https://locklessinc.com/articles/sat_arithmetic/
 		uint32_t c = v1+v2;
-		if(c < v1)
-			c = -1;
+		c |= -(c < v1);
 		return c;
 	}
 	uint64_t MathExt::saturatedAdd(uint64_t v1, uint64_t v2)
 	{
+		//https://locklessinc.com/articles/sat_arithmetic/
 		uint64_t c = v1+v2;
-		if(c < v1)
-			c = -1;
+		c |= -(c < v1);
 		return c;
 	}
 	
 	uint8_t MathExt::saturatedSub(uint8_t v1, uint8_t v2)
 	{
+		//https://locklessinc.com/articles/sat_arithmetic/
 		uint8_t c = v1-v2;
-		if(c > v1)
-			c = 0;
+		c &= -(c <= v1);
 		return c;
 	}
 	uint16_t MathExt::saturatedSub(uint16_t v1, uint16_t v2)
 	{
+		//https://locklessinc.com/articles/sat_arithmetic/
 		uint16_t c = v1-v2;
-		if(c > v1)
-			c = 0;
+		c &= -(c <= v1);
 		return c;
 	}
 	uint32_t MathExt::saturatedSub(uint32_t v1, uint32_t v2)
 	{
+		//https://locklessinc.com/articles/sat_arithmetic/
 		uint32_t c = v1-v2;
-		if(c > v1)
-			c = 0;
+		c &= -(c <= v1);
 		return c;
 	}
 	uint64_t MathExt::saturatedSub(uint64_t v1, uint64_t v2)
 	{
+		//https://locklessinc.com/articles/sat_arithmetic/
 		uint64_t c = v1-v2;
-		if(c > v1)
-			c = 0;
+		c &= -(c <= v1);
 		return c;
 	}
 
-	// int MathExt::hammingDistance(uint8_t v1, uint8_t v2)
-	// {
-	// 	int counter = 0;
-	// 	for(int i=0; i<8; i++)
-	// 	{
-	// 		if((v1 & 0x01) != (v2 & 0x01))
-	// 			counter++;
-	// 		v1 = v1 >> 1;
-	// 		v2 = v2 >> 1;
-	// 	}
-	// 	return counter;
-	// }
+	
+	int8_t MathExt::saturatedAdd(int8_t v1, int8_t v2)
+	{
+		//https://locklessinc.com/articles/sat_arithmetic/
+		uint8_t a = v1;
+		uint8_t b = v2;
+		uint8_t res = a + b;
 
-	// int MathExt::hammingDistance(uint64_t v1, uint64_t v2)
-	// {
-	// 	int counter = 0;
-	// 	for(int i=0; i<64; i++)
-	// 	{
-	// 		if((v1 & 0x01) != (v2 & 0x01))
-	// 			counter++;
-	// 		v1 = v1 >> 1;
-	// 		v2 = v2 >> 1;
-	// 	}
-	// 	return counter;
-	// }
+		a = (a>>7) + INT8_MAX; //overflow stuff
+		if( (int8_t)((a^b) | ~(b^res)) >= 0) //force cmovns
+			res = a;
+		return res;
+	}
+	int16_t MathExt::saturatedAdd(int16_t v1, int16_t v2)
+	{
+		//https://locklessinc.com/articles/sat_arithmetic/
+		uint16_t a = v1;
+		uint16_t b = v2;
+		uint16_t res = a + b;
+
+		a = (a>>15) + INT16_MAX; //overflow stuff
+		if( (int16_t)((a^b) | ~(b^res)) >= 0) //force cmovns
+			res = a;
+		return res;
+	}
+	int32_t MathExt::saturatedAdd(int32_t v1, int32_t v2)
+	{
+		//https://locklessinc.com/articles/sat_arithmetic/
+		uint32_t a = v1;
+		uint32_t b = v2;
+		uint32_t res = a + b;
+
+		a = (a>>31) + INT32_MAX; //overflow stuff
+		if( (int32_t)((a^b) | ~(b^res)) >= 0) //force cmovns
+			res = a;
+		return res;
+	}
+	int64_t MathExt::saturatedAdd(int64_t v1, int64_t v2)
+	{
+		//https://locklessinc.com/articles/sat_arithmetic/
+		uint64_t a = v1;
+		uint64_t b = v2;
+		uint64_t res = a + b;
+
+		a = (a>>63) + INT64_MAX; //overflow stuff
+		if( (int64_t)((a^b) | ~(b^res)) >= 0) //force cmovns
+			res = a;
+		return res;
+	}
+
+	int8_t MathExt::saturatedSub(int8_t v1, int8_t v2)
+	{
+		//https://locklessinc.com/articles/sat_arithmetic/
+		uint8_t a = v1;
+		uint8_t b = v2;
+		uint8_t res = a - b;
+
+		a = (a>>7) + INT8_MAX; //overflow stuff
+		if( (int8_t)((a^b) & (a^res)) < 0) //force cmovns
+			res = a;
+		return res;
+	}
+	int16_t MathExt::saturatedSub(int16_t v1, int16_t v2)
+	{
+		//https://locklessinc.com/articles/sat_arithmetic/
+		uint16_t a = v1;
+		uint16_t b = v2;
+		uint16_t res = a - b;
+
+		a = (a>>15) + INT16_MAX; //overflow stuff
+		if( (int16_t)((a^b) & (a^res)) < 0) //force cmovns
+			res = a;
+		return res;
+	}
+	int32_t MathExt::saturatedSub(int32_t v1, int32_t v2)
+	{
+		//https://locklessinc.com/articles/sat_arithmetic/
+		uint32_t a = v1;
+		uint32_t b = v2;
+		uint32_t res = a - b;
+
+		a = (a>>31) + INT32_MAX; //overflow stuff
+		if( (int32_t)((a^b) & (a^res)) < 0) //force cmovns
+			res = a;
+		return res;
+	}
+	int64_t MathExt::saturatedSub(int64_t v1, int64_t v2)
+	{
+		//https://locklessinc.com/articles/sat_arithmetic/
+		uint64_t a = v1;
+		uint64_t b = v2;
+		uint64_t res = a - b;
+
+		a = (a>>63) + INT64_MAX; //overflow stuff
+		if( (int64_t)((a^b) & (a^res)) < 0) //force cmovns
+			res = a;
+		return res;
+	}
 	
 	float MathExt::floor(float a)
 	{
@@ -1665,109 +1793,158 @@ namespace smpl
 		double temp = 1.0+std::exp(-x);
 		return 1.0 / temp;
 	}
+	
+	Matrix<ComplexNumber> MathExt::crossCorrelationFFT(const Matrix<ComplexNumber>& baseImage, const Matrix<ComplexNumber>& kernel, int type, int paddingMode)
+	{
+		if(!baseImage.getValid() || !kernel.getValid())
+			throw InvalidMatrix();
+		
+		Matrix<ComplexNumber> flippedKernel = kernel;
+		size_t i=0;
+		size_t j=0;
+		do
+		{
+			do
+			{
+				ComplexNumber temp = flippedKernel[flippedKernel.getRows()-i-1][flippedKernel.getColumns()-j-1];
+				flippedKernel[flippedKernel.getRows()-i-1][flippedKernel.getColumns()-j-1] = flippedKernel[i][j];
+				flippedKernel[i][j] = temp;
+				j++;
+			} while (j < flippedKernel.getColumns()/2);
+			i++;
+		} while (i < flippedKernel.getRows()/2);
+
+		return convolutionFFT(baseImage, kernel, type, paddingMode);
+	}
+
+	Matrix<ComplexNumber> MathExt::convolutionFFT(const Matrix<ComplexNumber>& baseImage, const Matrix<ComplexNumber>& kernel, int type, int paddingMode)
+	{
+		if(!baseImage.getValid() || !kernel.getValid())
+			throw InvalidMatrix();
+		//compute the 2D FFT of both the baseImage and kernel
+		//ignore padding mode
+
+		//force padding needed for full then extract later
+		size_t newRowSize = baseImage.getRows()+kernel.getRows()-1;
+		size_t newColSize = baseImage.getColumns()+kernel.getColumns()-1;
+		
+		size_t rowPadSize = newRowSize - baseImage.getRows();
+		size_t colPadSize = newColSize - baseImage.getColumns();
+
+		size_t trueRowSize = roundToNearestPower2(baseImage.getRows()+rowPadSize);
+		size_t trueColSize = roundToNearestPower2(baseImage.getColumns()+colPadSize);
+		
+		size_t baseFFTRowPadding = trueRowSize - baseImage.getRows();
+		size_t baseFFTColPadding = trueColSize - baseImage.getColumns();
+		Matrix<ComplexNumber> baseFFT = baseImage.pad(baseFFTRowPadding, baseFFTColPadding, 0);
+
+		size_t kernelFFTRowPadding = trueRowSize - kernel.getRows();
+		size_t kernelFFTColPadding = trueColSize - kernel.getColumns();
+		Matrix<ComplexNumber> kernelFFT = kernel.pad(kernelFFTRowPadding, kernelFFTColPadding, 0);
+		
+		MathExt::fastFourierTransform2DInline(baseFFT, false);
+		MathExt::fastFourierTransform2DInline(kernelFFT, false);
+		baseFFT = baseFFT.hadamardProduct(kernelFFT);
+
+		MathExt::fastFourierTransform2DInline(baseFFT, true);
+
+		//now extract the part you want
+		if(type == CONVOLVE_FULL)
+		{
+			return baseFFT.extract(0, 0, newRowSize-1, newColSize-1);
+		}
+		else if(type == CONVOLVE_VALID)
+		{
+			size_t validRowSize = baseImage.getRows()-kernel.getRows()+1;
+			size_t validColSize = baseImage.getColumns()-kernel.getColumns()+1;
+			return baseFFT.extract(0, 0, validRowSize-1, validColSize-1);
+		}
+		//assume same size as base image
+		return baseFFT.extract(0, 0, baseImage.getRows()-1, baseImage.getColumns()-1);
+	}
 
 	#pragma region FOURIER_TRANSFORM_1D
 
-	//Should run faster. It still is faster than the normal naive way, but it is not
-	//on par with other modern implementations
-	std::vector<ComplexNumber> doFFT(ComplexNumber* arr, int size, bool inverse)
-	{
-		//split into even and odd indicies.
-		//regroup them by adding them with a root of unity multiplied to the odd indicies.
-		//root of unity chosen is e^(2*PI*j/N)
-
-		if(size>1)
-		{
-			int newSize = (size/2);
-
-			ComplexNumber* evens = new ComplexNumber[newSize];
-			ComplexNumber* odds = new ComplexNumber[newSize];
-
-			for(int i=0; i<newSize; i++)
-			{
-				evens[i] = arr[2*i];
-				odds[i] = arr[2*i + 1];
-			}
-
-			std::vector<ComplexNumber> split1 = doFFT(evens, newSize, inverse);
-			std::vector<ComplexNumber> split2 = doFFT(odds, newSize, inverse);
-			
-			double angle = 0;
-			if(!inverse)
-				angle = (-2.0*PI)/size;
-			else
-				angle = (2.0*PI)/size;
-
-			std::vector<ComplexNumber> output = std::vector<ComplexNumber>(size);
-			
-			for(int i=0; i<newSize; i++)
-			{
-				ComplexNumber multiplier = ComplexNumber( MathExt::cos(angle*i), MathExt::sin(angle*i) );
-				output[i] = split1[i] + (split2[i]*multiplier);
-				output[i+newSize] = split1[i] - (split2[i]*multiplier);
-
-				if(inverse)
-				{
-					output[i] /= 2;
-					output[i+newSize] /= 2;
-				}
-			}
-
-			delete[] evens;
-			delete[] odds;
-
-			return output;
-		}
-		else if(size==1)
-		{
-			return {arr[0]};
-		}
-		else
-		{
-			return {};
-		}
-	}
-
-	//Not sure how this works just yet. Will keep old code for the recursive call. I worked hard on understanding that.
 	void doFFTInline(ComplexNumber* output, size_t size, bool inverse)
 	{
 		//Reference: (https://cp-algorithms.com/algebra/fft.html#improved-implementation-in-place-computation)
-		for(int i=1, j=0; i<size; i++)
+		int bitShift = 32-log2(size)+1;
+		for(uint32_t i=0; i<size/2; i++)
 		{
-			int bit = size >> 1;
-			for(; j & bit; bit >>=1)
-				j ^= bit;
-			j ^= bit;
-
-			if(i<j)
-				std::swap(output[i], output[j]);
+        	uint32_t newIndex = MathExt::bitReversal(i)>>bitShift;
+			std::swap(output[i], output[newIndex]);
 		}
 
 		double angle = (inverse) ? -2*PI : 2*PI;
 		for(int l = 2; l<=size; l<<=1)
 		{
 			double ang = angle/l;
+			size_t divSize = l/2;
 			ComplexNumber wLen = ComplexNumber(MathExt::cos(ang), MathExt::sin(ang));
+			ComplexNumber wLenSqr = wLen*wLen;
+			ComplexNumber Ws[2] = {ComplexNumber(1, 0), ComplexNumber(1, 0)*wLen};
+
+			if(l==2)
+			{
+				SIMD_SSE<ComplexNumber> wAsSIMD = SIMD_SSE<ComplexNumber>::load(Ws);
+				
+				ComplexNumber* startOutputU = &output[0];
+				ComplexNumber* startOutputV = &output[divSize];
+				for(int i=0; i<size; i+=2)
+				{
+					SIMD_SSE<ComplexNumber> uAsSIMD = SIMD_SSE<ComplexNumber>::load(startOutputU);
+					SIMD_SSE<ComplexNumber> vAsSIMD = SIMD_SSE<ComplexNumber>::load(startOutputV);
+
+					(uAsSIMD+vAsSIMD).store(startOutputU);
+					(uAsSIMD-vAsSIMD).store(startOutputV);
+					startOutputU += 2;
+					startOutputV += 2;
+				}
+				continue;
+			}
+			
+			size_t simdBound = SIMD_TEMPLATE<ComplexNumber>::getSIMDBound(divSize);
+			SIMD_TEMPLATE<ComplexNumber> multAsSIMD = wLenSqr;
+
 			for(int i=0; i<size; i+=l)
 			{
-				ComplexNumber w = ComplexNumber(1, 0);
-				for(int j=0; j<l/2; j++)
+				SIMD_TEMPLATE<ComplexNumber> twiddleAsSIMD = SIMD_TEMPLATE<ComplexNumber>::load(Ws);
+				ComplexNumber* startOutputU = &output[i];
+				ComplexNumber* startOutputV = &output[i+divSize];
+
+				for(size_t j=0; j<simdBound; j += SIMD_TEMPLATE<ComplexNumber>::SIZE)
 				{
-					ComplexNumber u = output[i+j];
-					ComplexNumber v = output[i+j+l/2] * w;
-					output[i+j] = u+v;
-					output[i+j+l/2] = u-v;
-					w *= wLen;
+					SIMD_TEMPLATE<ComplexNumber> uAsSIMD = SIMD_TEMPLATE<ComplexNumber>::load(startOutputU);
+					SIMD_TEMPLATE<ComplexNumber> vAsSIMD = SIMD_TEMPLATE<ComplexNumber>::load(startOutputV);
+					vAsSIMD *= twiddleAsSIMD;
+
+					(uAsSIMD+vAsSIMD).store(startOutputU);
+					(uAsSIMD-vAsSIMD).store(startOutputV);
+
+					twiddleAsSIMD *= multAsSIMD;
+					startOutputU += SIMD_TEMPLATE<ComplexNumber>::SIZE;
+					startOutputV += SIMD_TEMPLATE<ComplexNumber>::SIZE;
 				}
 			}
 		}
 
 		if(inverse)
 		{
-			for(int i=0; i<size; i++)
+			//cheating. Division by a single number and not a complex number can take a shortcut.
+			SIMD_TEMPLATE<double> divValue = size;
+			SIMD_TEMPLATE<double> outputAsRawDoubles;
+			double* tempOutputPointer = (double*)output;
+			size_t simdBound = SIMD_TEMPLATE<double>::getSIMDBound(size);
+			for(size_t j=0; j<simdBound; j += SIMD_TEMPLATE<double>::SIZE)
 			{
-				output[i] /= size;
+				outputAsRawDoubles = SIMD_TEMPLATE<double>::load((double*)tempOutputPointer);
+				(outputAsRawDoubles/divValue).store(tempOutputPointer);
+				tempOutputPointer += SIMD_TEMPLATE<double>::SIZE;
 			}
+			// for(int i=0; i<size; i++)
+			// {
+			// 	output[i] /= size;
+			// }
 		}
 	}
 
@@ -1811,43 +1988,101 @@ namespace smpl
 		return output;
 	}
 
-	std::vector<ComplexNumber> MathExt::fastFourierTransform(ComplexNumber* arr, size_t size, bool inverse)
+	Matrix<ComplexNumber> MathExt::fastFourierTransform(const Matrix<ComplexNumber>& arr,  bool inverse)
 	{
 		//cooley tukey algorithm
 		//must be a power of 2
 
-		std::vector<ComplexNumber> output;
-		if(size == 0 || !IS_POWER_2(size))
+		if(!arr.getValid())
+			throw 0;
+		if(arr.getRows()!=1)
+			throw arr.getRows();
+
+		if(IS_POWER_2(arr.getColumns()))
 		{
-			//can't do unless it is a power of 2
+			Matrix<ComplexNumber> output = arr;
+			doFFTInline(output.getData(), arr.getColumns(), inverse);
 			return output;
 		}
 		else
 		{
-			//copy into output
-			output.resize(size);
-			for(int i=0; i<size; i++)
+			size_t newSize = roundToNearestPower2(arr.getColumns());
+			Matrix<ComplexNumber> output = Matrix<ComplexNumber>(1, newSize);
+			for(int i=0; i<arr.getColumns(); i++)
 			{
-				output[i] = arr[i];
+				output[0][i] = arr[0][i];
 			}
-			doFFTInline(output.data(), size, inverse);
+			doFFTInline(output.getData(), newSize, inverse);
+			return output;
 		}
-
-		return output;
 	}
 
-	bool MathExt::fastFourierTransformInline(ComplexNumber* arr, size_t size, bool inverse)
+	void MathExt::fastFourierTransformInline(const Matrix<ComplexNumber>& arr, bool inverse)
 	{
 		//cooley tukey algorithm
 		//must be a power of 2
-		if(size == 0 || !IS_POWER_2(size))
-		{
-			//can't do unless it is a power of 2
+		if(!arr.getValid())
+			throw 0;
+		if(arr.getRows()!=1)
+			throw arr.getRows();
+		if(!IS_POWER_2(arr.getColumns()!=1))
+			throw arr.getColumns();
+		
+		doFFTInline(arr.getData(), arr.getColumns(), inverse);
+	}
+
+	#pragma endregion
+
+	#pragma region FFT_2D
+	
+	Matrix<ComplexNumber> MathExt::fastFourierTransform2D(const Matrix<ComplexNumber>& mat, bool inverse)
+	{
+		if(!mat.getValid())
+			return Matrix<ComplexNumber>();
+
+		//need to force rows and columns to nearest power of 2.
+		size_t newRows = roundToNearestPower2(mat.getRows());
+		size_t newColumns = roundToNearestPower2(mat.getColumns());
+		
+		//copy arr into finalArr
+		Matrix<ComplexNumber> finalArr = mat.pad(newRows, newColumns, 0);
+		bool errFree = fastFourierTransform2DInline(finalArr);
+		if(errFree)
+			return finalArr;
+		return Matrix<ComplexNumber>();
+	}
+	
+	bool MathExt::fastFourierTransform2DInline(Matrix<ComplexNumber>& mat, bool inverse)
+	{
+		if(!mat.getValid())
 			return false;
-		}
-		else
+		if(!IS_POWER_2(mat.getRows()) || !IS_POWER_2(mat.getColumns()))
+			return false;
+		
+		std::vector<ComplexNumber> outputColumn = std::vector<ComplexNumber>(mat.getRows());
+		//for each row
+		#pragma omp parallel for
+		for(int v=0; v<mat.getRows(); v++)
 		{
-			doFFTInline(arr, size, inverse);
+			ComplexNumber* outputRow = mat[v];
+			doFFTInline(outputRow, mat.getColumns(), inverse);
+		}
+
+		//for each column
+		#pragma omp parallel for
+		for(int u=0; u<mat.getColumns(); u++)
+		{
+			for(int i=0; i<mat.getRows(); i++)
+			{
+				outputColumn[i] = mat[i][u];
+			}
+			doFFTInline(outputColumn.data(), outputColumn.size(), inverse);
+
+			//copy into final arr column
+			for(int i=0; i<mat.getRows(); i++)
+			{
+				mat[i][u] = outputColumn[i];
+			}
 		}
 
 		return true;
@@ -2198,22 +2433,22 @@ namespace smpl
 
 	MatrixF MathExt::cosineTransform2D(const MatrixF& arr, bool inverse)
 	{
-		MatrixF finalArr = MatrixF(arr.getRows(), arr.getCols());
+		MatrixF finalArr = MatrixF(arr.getRows(), arr.getColumns());
 
 		//for each row
 		for(int v=0; v<arr.getRows(); v++)
 		{
 			float* passArr = arr[v];
-			std::vector<float> newArr = MathExt::cosineTransform(passArr, arr.getCols(), inverse);
+			std::vector<float> newArr = MathExt::cosineTransform(passArr, arr.getColumns(), inverse);
 
-			for(int i=0; i<arr.getCols(); i++)
+			for(int i=0; i<arr.getColumns(); i++)
 			{
 				finalArr[v][i] = newArr[i];
 			}
 		}
 
 		//for each column
-		for(int u=0; u<arr.getCols(); u++)
+		for(int u=0; u<arr.getColumns(); u++)
 		{
 			std::vector<float> passArr = std::vector<float>(arr.getRows());
 
@@ -2222,7 +2457,7 @@ namespace smpl
 				passArr[i] = finalArr[i][u];
 			}
 
-			std::vector<float> newArr = MathExt::cosineTransform(passArr.data(), arr.getCols(), inverse);
+			std::vector<float> newArr = MathExt::cosineTransform(passArr.data(), arr.getColumns(), inverse);
 
 			for(int i=0; i<arr.getRows(); i++)
 			{
@@ -2234,22 +2469,22 @@ namespace smpl
 	}
 	MatrixD MathExt::cosineTransform2D(const MatrixD& arr, bool inverse)
 	{
-		MatrixD finalArr = MatrixD(arr.getRows(), arr.getCols());
+		MatrixD finalArr = MatrixD(arr.getRows(), arr.getColumns());
 
 		//for each row
 		for(int v=0; v<arr.getRows(); v++)
 		{
 			double* passArr = arr[v];
-			std::vector<double> newArr = MathExt::cosineTransform(passArr, arr.getCols(), inverse);
+			std::vector<double> newArr = MathExt::cosineTransform(passArr, arr.getColumns(), inverse);
 
-			for(int i=0; i<arr.getCols(); i++)
+			for(int i=0; i<arr.getColumns(); i++)
 			{
 				finalArr[v][i] = newArr[i];
 			}
 		}
 
 		//for each column
-		for(int u=0; u<arr.getCols(); u++)
+		for(int u=0; u<arr.getColumns(); u++)
 		{
 			std::vector<double> passArr = std::vector<double>(arr.getRows());
 
@@ -2258,7 +2493,7 @@ namespace smpl
 				passArr[i] = finalArr[i][u];
 			}
 
-			std::vector<double> newArr = MathExt::cosineTransform(passArr.data(), arr.getCols(), inverse);
+			std::vector<double> newArr = MathExt::cosineTransform(passArr.data(), arr.getColumns(), inverse);
 
 			for(int i=0; i<arr.getRows(); i++)
 			{
@@ -2273,7 +2508,7 @@ namespace smpl
 	{
 		if(!arr.getValid())
 			return MatrixF();
-		if(arr.getRows() != arr.getCols())
+		if(arr.getRows() != arr.getColumns())
 			return MatrixF();
 		if(!IS_POWER_2(arr.getRows()))
 			return MatrixF();
@@ -2293,7 +2528,7 @@ namespace smpl
 			}
 
 			//for each column
-			for(int u=0; u<finalArr.getCols(); u++)
+			for(int u=0; u<finalArr.getColumns(); u++)
 			{
 				for(int i=0; i<finalArr.getRows(); i++)
 				{
@@ -2318,7 +2553,7 @@ namespace smpl
 			}
 
 			//for each column
-			for(int u=0; u<finalArr.getCols(); u++)
+			for(int u=0; u<finalArr.getColumns(); u++)
 			{
 				for(int i=0; i<finalArr.getRows(); i++)
 				{
@@ -2345,22 +2580,22 @@ namespace smpl
 	
 	MatrixF MathExt::sineTransform2D(const MatrixF& arr)
 	{
-		MatrixF finalArr = MatrixF(arr.getRows(), arr.getCols());
+		MatrixF finalArr = MatrixF(arr.getRows(), arr.getColumns());
 
 		//for each row
 		for(int v=0; v<arr.getRows(); v++)
 		{
 			float* passArr = arr[v];
-			std::vector<float> newArr = MathExt::sineTransform(passArr, arr.getCols());
+			std::vector<float> newArr = MathExt::sineTransform(passArr, arr.getColumns());
 
-			for(int i=0; i<arr.getCols(); i++)
+			for(int i=0; i<arr.getColumns(); i++)
 			{
 				finalArr[v][i] = newArr[i];
 			}
 		}
 
 		//for each column
-		for(int u=0; u<arr.getCols(); u++)
+		for(int u=0; u<arr.getColumns(); u++)
 		{
 			std::vector<float> passArr = std::vector<float>(arr.getRows());
 
@@ -2369,7 +2604,7 @@ namespace smpl
 				passArr[i] = finalArr[i][u];
 			}
 
-			std::vector<float> newArr = MathExt::sineTransform(passArr.data(), arr.getCols());
+			std::vector<float> newArr = MathExt::sineTransform(passArr.data(), arr.getColumns());
 
 			for(int i=0; i<arr.getRows(); i++)
 			{
@@ -2384,7 +2619,7 @@ namespace smpl
 	// {
 	// 	if(!arr.getValid())
 	// 		return Matrix();
-	// 	if(arr.getRows() != arr.getCols())
+	// 	if(arr.getRows() != arr.getColumns())
 	// 		return Matrix();
 	// 	if(!IS_POWER_2(arr.getRows()))
 	// 		return Matrix();
@@ -2404,7 +2639,7 @@ namespace smpl
 	// 		}
 
 	// 		//for each column
-	// 		for(int u=0; u<finalArr.getCols(); u++)
+	// 		for(int u=0; u<finalArr.getColumns(); u++)
 	// 		{
 	// 			for(int i=0; i<finalArr.getRows(); i++)
 	// 			{
@@ -2429,7 +2664,7 @@ namespace smpl
 	// 		}
 
 	// 		//for each column
-	// 		for(int u=0; u<finalArr.getCols(); u++)
+	// 		for(int u=0; u<finalArr.getColumns(); u++)
 	// 		{
 	// 			for(int i=0; i<finalArr.getRows(); i++)
 	// 			{
@@ -2647,7 +2882,7 @@ namespace smpl
 		}
 
 		//for each column
-		for(int u=0; u<arr.getCols(); u++)
+		for(int u=0; u<arr.getColumns(); u++)
 		{
 			for(int i=0; i<arr.getRows(); i++)
 			{
@@ -2664,127 +2899,4 @@ namespace smpl
 	}
 
 	#pragma endregion
-
-	#pragma COMPUTER_VISION_STUFF
-
-	MatrixF MathExt::convolution(MatrixF* baseImage, MatrixF* kernel, bool normalize)
-	{
-		if(baseImage == nullptr)
-			return MatrixF();
-		
-		MatrixF output = MatrixF(baseImage->getRows(), baseImage->getCols());
-		int kernelRowSizeHalf = kernel->getRows()/2;
-		int kernelColSizeHalf = kernel->getCols()/2;
-		double normalizationFactor = 1.0;
-
-		if(normalize)
-		{
-			double kernelSum = 0;
-			for(int r=0; r<kernel->getRows(); r++)
-			{
-				for(int c=0; c<kernel->getCols(); c++)
-				{
-					kernelSum += kernel->getData()[c + r*kernel->getCols()];
-				}
-			}
-
-			if(kernelSum != 0.0)
-				normalizationFactor *= 1.0/normalizationFactor;
-		}
-		
-		for(int r=0; r<output.getRows(); r++)
-		{
-			for(int c=0; c<output.getCols(); c++)
-			{
-				double sum = 0;
-				for(int kernelY=kernelRowSizeHalf; kernelY >= -kernelRowSizeHalf; kernelY--)
-				{
-					int newImgY = r + kernelY;
-					int actualKernelY = kernelY + kernelRowSizeHalf;
-					if(newImgY >= 0 && newImgY < baseImage->getRows())
-					{
-						for(int kernelX=kernelColSizeHalf; kernelX >= -kernelColSizeHalf; kernelX--)
-						{
-							int newImgX = c + kernelX;
-							int actualKernelX = kernelX + kernelColSizeHalf;
-							if(newImgX >= 0 && newImgX < baseImage->getCols())
-							{
-								double baseImgValue = baseImage->getData()[newImgX + newImgY*baseImage->getCols()];
-								double kernelValue = kernel->getData()[actualKernelX + actualKernelY*kernel->getCols()] * normalizationFactor;
-								sum += kernelValue * baseImgValue;
-							}
-						}
-					}
-				}
-
-				output[r][c] = sum;
-			}
-		}
-		
-		return output;
-	}
-
-	MatrixF MathExt::crossCorrelation(MatrixF* baseImage, MatrixF* kernel, bool normalize)
-	{
-		if(baseImage == nullptr)
-			return MatrixF();
-		
-		MatrixF output = MatrixF(baseImage->getRows(), baseImage->getCols());
-		int kernelRowSizeHalf = kernel->getRows()/2;
-		int kernelColSizeHalf = kernel->getCols()/2;
-		
-		for(int r=0; r<output.getRows(); r++)
-		{
-			for(int c=0; c<output.getCols(); c++)
-			{
-				double sum = 0;
-				double kernelEnergy = 0;
-				double baseImgEnergy = 0;
-
-				for(int kernelY=-kernelRowSizeHalf; kernelY <= kernelRowSizeHalf; kernelY++)
-				{
-					int newImgY = r + kernelY;
-					int actualKernelY = kernelY + kernelRowSizeHalf;
-					if(newImgY >= 0 && newImgY < baseImage->getRows())
-					{
-						for(int kernelX=-kernelColSizeHalf; kernelX <= kernelColSizeHalf; kernelX++)
-						{
-							int newImgX = c + kernelX;
-							int actualKernelX = kernelX + kernelColSizeHalf;
-							if(newImgX >= 0 && newImgX < baseImage->getCols())
-							{
-								double baseImgValue = baseImage->getData()[newImgX + newImgY*baseImage->getCols()];
-								double kernelMultiplier = kernel->getData()[actualKernelX + actualKernelY*kernel->getCols()];
-								if(normalize)
-								{
-									kernelEnergy += MathExt::sqr(kernelMultiplier);
-									baseImgEnergy += MathExt::sqr(baseImgValue);
-								}
-								
-								sum += kernelMultiplier * baseImgValue;
-							}
-						}
-					}
-				}
-
-				if(normalize)
-				{
-					double totalEnergy = MathExt::sqrt(kernelEnergy + baseImgEnergy);
-					if(totalEnergy != 0)
-						output[r][c] = sum / totalEnergy;
-					else
-						output[r][c] = sum;
-				}
-				else
-				{
-					output[r][c] = sum;
-				}
-			}
-		}
-		
-		return output;
-	}
-
-	#pragma endregion
-
 } //NAMESPACE glib END

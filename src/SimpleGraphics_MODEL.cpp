@@ -2,6 +2,15 @@
 
 namespace smpl
 {
+	
+	void formatToString(StringStream& stream, const PolyCriticalPoint& v, const std::string& options)
+	{
+		stream.write('(');
+		formatToString(stream, v.xValue, "%.3f");
+		stream.write(" | ");
+		formatToString(stream, v.direction, "%d");
+		stream.write(")");
+	}
 	void SimpleGraphics::drawPolygon(Vec2f* points, int size, Image* surf)
 	{
 		Image* otherImg;
@@ -45,13 +54,9 @@ namespace smpl
 			maxY = MathExt::clamp(maxY, 0, otherImg->getHeight()-1);
 
 			int yDis = 1+maxY-minY;
-			struct criticalPoint
-			{
-				int xValue;
-				bool direction;
-			};
 
-			std::vector<criticalPoint>* scanLines = new std::vector<criticalPoint>[yDis];
+			std::vector<std::vector<PolyCriticalPoint>> scanLines = std::vector<std::vector<PolyCriticalPoint>>(yDis);
+			std::vector<std::vector<std::pair<double, double>>> horizontalLinesFound = std::vector<std::vector<std::pair<double, double>>>(yDis);
 
 			for(int i=0; i<size; i++)
 			{
@@ -78,16 +83,16 @@ namespace smpl
 				if(A!=0)
 				{
 					//vertical line or some other valid line
-					int thisMinY = (int)MathExt::ceil( MathExt::min( actualPoints[i].y, actualPoints[i+1].y));
-					int thisMaxY = (int)MathExt::floor( MathExt::max( actualPoints[i].y, actualPoints[i+1].y));
+					int thisMinY = (int)MathExt::round( MathExt::min( actualPoints[i].y, actualPoints[i+1].y));
+					int thisMaxY = (int)MathExt::round( MathExt::max( actualPoints[i].y, actualPoints[i+1].y));
 
 					thisMinY = MathExt::clamp(thisMinY, minY, maxY);
 					thisMaxY = MathExt::clamp(thisMaxY, minY, maxY);
 
 					for(int j=thisMinY; j<=thisMaxY; j++)
 					{
-						int xValue = (int)MathExt::round(-(B*j + C) / A);
-						xValue = MathExt::clamp(xValue, 0, otherImg->getWidth());
+						double xValue = -(B*j + C) / A;
+						xValue = MathExt::clamp<double>(xValue, 0, otherImg->getWidth());
 						
 						scanLines[j-minY].push_back({xValue,posDir});
 					}
@@ -96,6 +101,10 @@ namespace smpl
 				{
 					//horizontal line or invalid
 					//do nothing
+					int thisMinY = (int)MathExt::round( MathExt::min( actualPoints[i].y, actualPoints[i+1].y));
+					double thisMinX = MathExt::min( actualPoints[i].x, actualPoints[i+1].x);
+					double thisMaxX = MathExt::max( actualPoints[i].x, actualPoints[i+1].x);
+					horizontalLinesFound[thisMinY-minY].push_back({thisMinX,thisMaxX});
 				}
 			}
 
@@ -105,16 +114,59 @@ namespace smpl
 			{
 				if(scanLines[i].size()>0)
 				{
-					Sort::insertionSort<criticalPoint>(scanLines[i].data(), scanLines[i].size(), [](criticalPoint a, criticalPoint b) -> bool {return a.xValue<b.xValue;});
+					Sort::insertionSort<PolyCriticalPoint>(scanLines[i].data(), scanLines[i].size(), [](PolyCriticalPoint a, PolyCriticalPoint b) -> bool {return a.xValue<b.xValue;});
+					
+					//may need to insert a points to handle horizontal line cases
+					{
+						std::vector<PolyCriticalPoint> tempLines;
+						int j=0;
+						while(j < scanLines[i].size())
+						{
+							if(j == scanLines[i].size()-1)
+							{
+								tempLines.push_back(scanLines[i][j]);
+								j++;
+								break;
+							}
+							
+							bool isConnected = false;
+							for(std::pair<double, double> p : horizontalLinesFound[i])
+							{
+								if(p.first == scanLines[i][j].xValue && p.second == scanLines[i][j+1].xValue)
+								{
+									//this is part of a horizontal line. do extra stuff
+									isConnected = true;
+								}
+							}
+							
+							if(isConnected)
+							{
+								//do extra stuff
+								if(scanLines[i][j].direction != scanLines[i][j+1].direction)
+								{
+									tempLines.push_back(scanLines[i][j]);
+								}
+								j++;
+							}
+							else
+							{
+								//add single point
+								tempLines.push_back(scanLines[i][j]);
+								j++;
+							}
+						}
+						scanLines[i] = tempLines;
+					}
 					
 					//rule, can not be the same if you are filling to it.
 					//different for even-odd and non-zero
-					std::vector<criticalPoint> newScanLine = std::vector<criticalPoint>();
+					std::vector<PolyCriticalPoint> newScanLine = std::vector<PolyCriticalPoint>();
 
 					if(fillRule == SimpleGraphics::FILL_EVEN_ODD)
 					{
 						for(int j=1; j<scanLines[i].size(); j+=2)
 						{
+							//check if its apart of a horizontal line. IE, both xValues at this y value are apart of the points exactly
 							if(scanLines[i][j].xValue != scanLines[i][j-1].xValue)
 							{
 								newScanLine.push_back(scanLines[i][j-1]);
@@ -175,17 +227,40 @@ namespace smpl
 					for(int i=0; i<actualSize; i+=2)
 					{
 						//fill between spots
-						int startX = scanLines[j][i].xValue;
-						int endX = scanLines[j][i+1].xValue;
+						double fracStartX, fracEndX;
+						int startX = MathExt::floor(scanLines[j][i].xValue);
+						int endX = MathExt::ceil(scanLines[j][i+1].xValue);
 
 						int fillX = startX;
-
 						do
 						{
 							SimpleGraphics::drawPixel(fillX, j+minY, SimpleGraphics::activeColor, otherImg);
 							fillX++;
 						} while (fillX<=endX);
+
+						// fracStartX = 1.0-MathExt::frac(scanLines[j][i].xValue);
+						// fracEndX = MathExt::frac(scanLines[j][i+1].xValue);
+						// if(fracEndX <= 0.0)
+						// 	fracEndX = 1.0;
 						
+						// fracStartX = 1;
+						// fracEndX = 1;
+						// Color startBlend = activeColor;
+						// Color endBlend = activeColor;
+						// startBlend.alpha = fracStartX*255;
+						// endBlend.alpha = fracEndX*255;
+						
+						// SimpleGraphics::drawPixel(startX, j+minY, startBlend, otherImg);
+						// if(fracStartX >= 1.0)
+						// 	SimpleGraphics::drawPixel(startX, j+minY, SimpleGraphics::activeColor, otherImg);
+						
+						// int fillX = startX+1;
+						// while(fillX <= endX-1)
+						// {
+						// 	SimpleGraphics::drawPixel(fillX, j+minY, SimpleGraphics::activeColor, otherImg);
+						// 	fillX++;
+						// }
+						// SimpleGraphics::drawPixel(endX, j+minY, endBlend, otherImg);
 					}
 				}
 				RESET_LARGE_ENOUGH_CLAUSE()
@@ -202,8 +277,8 @@ namespace smpl
 					for(int i=0; i<scanLines[j].size()-1; i++)
 					{
 						//fill between spots
-						int startX = scanLines[j][i].xValue;
-						int endX = scanLines[j][i+1].xValue;
+						int startX = MathExt::floor(scanLines[j][i].xValue);
+						int endX = MathExt::ceil(scanLines[j][i+1].xValue);
 						if(scanLines[j][i].direction == true)
 						{
 							//positive y direction

@@ -105,27 +105,34 @@
 			}
 		}
 
-		void GLSprite::loadImage(File file)
+		void GLSprite::loadImage(File file, bool clear)
 		{
-			dispose();
-			int amountOfImages = 0;
-
-			std::vector<int> extraData;
-			Image** imgs = Image::loadImage(file, &amountOfImages, &extraData);
+			if(clear)
+				dispose();
 			
-			if(extraData.size()>=1)
+			Sprite s;
+			s.loadImage(file);
+			for (size_t i=0; i<s.getSize(); i++)
 			{
-				this->loops = extraData[0] == 1;
-			}
-
-			for (int i = 0; i < amountOfImages; i++)
-			{
-				GLTexture* k = new GLTexture(imgs[i], true);
+				GLTexture* k = new GLTexture(s.getImage(i), true);
 				addTexture(k);
-				if(extraData.size() == (size_t)amountOfImages+1)
-					delayTimeForFrame.push_back(extraData[i]);
-				else
-					delayTimeForFrame.push_back(100);
+				delayTimeForFrame.push_back(s.getDelayTime(i));
+			}
+		}
+
+		
+		void GLSprite::loadSpriteSheet(File file, int width, int height, int xStride, int yStride, int count, bool clear)
+		{
+			if(clear)
+				dispose();
+			
+			Sprite s;
+			s.loadSpriteSheet(file, width, height, xStride, yStride, count);
+			for (size_t i=0; i<s.getSize(); i++)
+			{
+				GLTexture* k = new GLTexture(s.getImage(i), true);
+				addTexture(k);
+				delayTimeForFrame.push_back(s.getDelayTime(i));
 			}
 		}
 

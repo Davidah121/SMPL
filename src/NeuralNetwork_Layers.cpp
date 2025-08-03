@@ -38,8 +38,8 @@ namespace smpl
     
     MatrixF SigmoidActivationLayer::solve(const MatrixF& input)
     {
-        MatrixF output = MatrixF(input.getRows(), input.getCols());
-        size_t totalSize = input.getRows() * input.getCols();
+        MatrixF output = MatrixF(input.getRows(), input.getColumns());
+        size_t totalSize = input.getRows() * input.getColumns();
         float* inputData = input.getData();
         float* outputData = output.getData();
 
@@ -73,7 +73,7 @@ namespace smpl
 
     MatrixF SigmoidActivationLayer::derivative(const MatrixF& input)
     {
-        MatrixF matrixOf1s = MatrixF(input.getRows(), input.getCols());
+        MatrixF matrixOf1s = MatrixF(input.getRows(), input.getColumns());
         matrixOf1s.setAllValues(1);
 
         //Fully multithreaded.
@@ -91,8 +91,8 @@ namespace smpl
     
     MatrixF TanhActivationLayer::solve(const MatrixF& input)
     {
-        MatrixF output = MatrixF(input.getRows(), input.getCols());
-        size_t totalSize = input.getRows() * input.getCols();
+        MatrixF output = MatrixF(input.getRows(), input.getColumns());
+        size_t totalSize = input.getRows() * input.getColumns();
         float* inputData = input.getData();
         float* outputData = output.getData();
 
@@ -126,7 +126,7 @@ namespace smpl
 
     MatrixF TanhActivationLayer::derivative(const MatrixF& input)
     {
-        MatrixF matrixOf1s = MatrixF(input.getRows(), input.getCols());
+        MatrixF matrixOf1s = MatrixF(input.getRows(), input.getColumns());
         matrixOf1s.setAllValues(1);
 
         //Fully multithreaded.
@@ -149,7 +149,7 @@ namespace smpl
 
     MatrixF LinearActivationLayer::derivative(const MatrixF& input)
     {
-        MatrixF matrixOf1s = MatrixF(input.getRows(), input.getCols());
+        MatrixF matrixOf1s = MatrixF(input.getRows(), input.getColumns());
         matrixOf1s.setAllValues(1);
         return matrixOf1s;
     }
@@ -165,8 +165,8 @@ namespace smpl
     
     MatrixF ReluActivationLayer::solve(const MatrixF& input)
     {
-        MatrixF output = MatrixF(input.getRows(), input.getCols());
-        size_t totalSize = input.getRows() * input.getCols();
+        MatrixF output = MatrixF(input.getRows(), input.getColumns());
+        size_t totalSize = input.getRows() * input.getColumns();
         float* inputData = input.getData();
         float* outputData = output.getData();
 
@@ -198,8 +198,8 @@ namespace smpl
 
     MatrixF ReluActivationLayer::derivative(const MatrixF& input)
     {
-        MatrixF output = MatrixF(input.getRows(), input.getCols());
-        size_t totalSize = input.getRows() * input.getCols();
+        MatrixF output = MatrixF(input.getRows(), input.getColumns());
+        size_t totalSize = input.getRows() * input.getColumns();
         float* inputData = input.getData();
         float* outputData = output.getData();
 
@@ -241,8 +241,8 @@ namespace smpl
     
     MatrixF StepActivationLayer::solve(const MatrixF& input)
     {
-        MatrixF output = MatrixF(input.getRows(), input.getCols());
-        size_t totalSize = input.getRows() * input.getCols();
+        MatrixF output = MatrixF(input.getRows(), input.getColumns());
+        size_t totalSize = input.getRows() * input.getColumns();
         float* inputData = input.getData();
         float* outputData = output.getData();
 
@@ -275,7 +275,7 @@ namespace smpl
 
     MatrixF StepActivationLayer::derivative(const MatrixF& input)
     {
-        return MatrixF(input.getRows(), input.getCols()); //initialized to all 0s
+        return MatrixF(input.getRows(), input.getColumns()); //initialized to all 0s
     }
 
     
@@ -314,7 +314,7 @@ namespace smpl
         #endif
 
         //prevent 0 in stddev
-        for(size_t i=0; i<stddev.getRows()*stddev.getCols(); i++)
+        for(size_t i=0; i<stddev.getRows()*stddev.getColumns(); i++)
             if(stddev.getData()[i] == 0)
                 stddev.getData()[i] = 1;
     }

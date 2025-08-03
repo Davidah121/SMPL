@@ -4,7 +4,7 @@ namespace smpl
 {
     GuiCanvas::GuiCanvas() : GuiLayoutFixed()
     {
-
+        setFocusable(false);
     }
     
     GuiCanvas::GuiCanvas(int width, int height, int graphicsInterfaceMode) : GuiLayoutFixed()

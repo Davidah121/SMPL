@@ -11,38 +11,50 @@ namespace smpl
 		this->real = real;
 		this->imaginary = imaginary;
 	}
-
-	ComplexNumber::ComplexNumber(const ComplexNumber& other)
-	{
-		real = other.real;
-		imaginary = other.imaginary;
-	}
-
+	
 	ComplexNumber::~ComplexNumber()
 	{
 	}
 
-	Vec2f ComplexNumber::toVec2f()
+	ComplexNumber ComplexNumber::conjugate() const
+	{
+		return ComplexNumber(real, -imaginary);
+	}
+	
+	ComplexNumber ComplexNumber::normalize() const
+	{
+		double len = length();
+		if(len != 0)
+			return ComplexNumber(real/len, imaginary/len);
+		return ComplexNumber();
+	}
+	
+	double ComplexNumber::length() const
+	{
+		return sqrt(real*real + imaginary*imaginary);
+	}
+
+	Vec2f ComplexNumber::toVec2f() const
 	{
 		return Vec2f(real, imaginary);
 	}
 
-	ComplexNumber ComplexNumber::operator+(ComplexNumber other)
+	ComplexNumber ComplexNumber::operator+(const ComplexNumber& other) const
 	{
 		return ComplexNumber(real+other.real, imaginary+other.imaginary);
 	}
 
-	ComplexNumber ComplexNumber::operator-(ComplexNumber other)
+	ComplexNumber ComplexNumber::operator-(const ComplexNumber& other) const
 	{
 		return ComplexNumber(real-other.real, imaginary-other.imaginary);
 	}
 
-	ComplexNumber ComplexNumber::operator-()
+	ComplexNumber ComplexNumber::operator-() const
 	{
 		return ComplexNumber(-real, -imaginary);
 	}
 
-	ComplexNumber ComplexNumber::operator*(ComplexNumber other)
+	ComplexNumber ComplexNumber::operator*(const ComplexNumber& other) const
 	{
 		//(a+bi)*(c+di)
 		//(a*c + a*di + bi*c + bi*di)
@@ -56,29 +68,37 @@ namespace smpl
 		return k;
 	}
 
-	ComplexNumber ComplexNumber::operator*(double other)
+	ComplexNumber ComplexNumber::operator*(const double& other) const
 	{
 		return ComplexNumber(real*other,imaginary*other);
 	}
 
-	ComplexNumber ComplexNumber::operator/(double other)
+	ComplexNumber ComplexNumber::operator/(const double& other) const
 	{
 		return ComplexNumber(real/other,imaginary/other);
 	}
+	
+	ComplexNumber ComplexNumber::operator/(const ComplexNumber& other) const
+	{
+		ComplexNumber numerator = operator*(other.conjugate());
+		ComplexNumber denominator = other*other.conjugate();
+		//should be left with just a real number in the denominator
+		return ComplexNumber(numerator.real / denominator.real, numerator.imaginary / denominator.real);
+	}
 
-	void ComplexNumber::operator+=(ComplexNumber other)
+	void ComplexNumber::operator+=(const ComplexNumber& other)
 	{
 		real += other.real;
 		imaginary += other.imaginary;
 	}
 
-	void ComplexNumber::operator-=(ComplexNumber other)
+	void ComplexNumber::operator-=(const ComplexNumber& other)
 	{
 		real -= other.real;
 		imaginary -= other.imaginary;
 	}
 
-	void ComplexNumber::operator*=(ComplexNumber other)
+	void ComplexNumber::operator*=(const ComplexNumber& other)
 	{
 		double newReal = (real*other.real) - (imaginary*other.imaginary);
 		double newImag = (real*other.imaginary) + (imaginary*other.real);
@@ -99,14 +119,23 @@ namespace smpl
 		imaginary/=other;
 	}
 
-	bool ComplexNumber::operator==(ComplexNumber other)
+	bool ComplexNumber::operator==(const ComplexNumber& other) const
 	{
 		return (real==other.real && imaginary==other.imaginary);
 	}
 
-	bool ComplexNumber::operator!=(ComplexNumber other)
+	bool ComplexNumber::operator!=(const ComplexNumber& other) const
 	{
 		return (real!=other.real || imaginary!=other.imaginary);
+	}
+	
+	void formatToString(StringStream& stream, const ComplexNumber& v, const std::string& options)
+	{
+		stream.write('(');
+		formatToString(stream, v.real, options);
+		stream.write(" + ");
+		formatToString(stream, v.imaginary, options);
+		stream.write("i)");
 	}
 
 } //NAMESPACE glib END

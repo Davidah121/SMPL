@@ -32,6 +32,16 @@
 			"problemMatcher": []
 		},
 		{
+			"label": "Export Dynamic Libraries",
+			"type": "shell",
+			"command": "${workspaceFolder}/DynamicLib/exportAllDynamicLibs.bat",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": []
+		},
+		{
 			"label": "Unit Test Library",
 			"type": "shell",
 			"command": "${workspaceFolder}/test/build.bat",

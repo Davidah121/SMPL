@@ -10,7 +10,7 @@ namespace smpl
         Stack() {}
         ~Stack() {}
 
-        void add(T data)
+        void add(const T& data)
         {
             buffer.push_back(data);
         }
@@ -18,7 +18,7 @@ namespace smpl
         {
             buffer.pop_back();
         }
-        T get()
+        T& get()
         {
             return buffer.back();
         }

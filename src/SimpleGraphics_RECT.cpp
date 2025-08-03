@@ -2,8 +2,6 @@
 
 namespace smpl
 {
-    #if (OPTI == 0)
-
     //works properly now
     void SimpleGraphics::drawRect(int x, int y, int width, int height, bool outline, Image* surf)
     {
@@ -50,27 +48,32 @@ namespace smpl
             if(minX==maxX && minY==maxY)
                 return;
             
+            
             int approxArea = (maxX-minX) * (maxY-minY);
             if(outline == false)
             {
-                int offWidth = maxX - minX;
-                int addAmount = (tempWidth - offWidth)-1;
-
-                int tX = 0;
-
-                int actualX = minX;
-                int actualY = minY;
+                SIMD_U32 activeColorAsSIMD = activeColor.toUInt();
+                int stopPoint = minX + SIMD_U32::getSIMDBound((maxX-minX));
                 
                 LARGE_ENOUGH_CLAUSE(approxArea)
                 #pragma omp parallel for
                 for(int tY = minY; tY < maxY; tY++)
                 {
-                    Color* startPoint = &otherImg->getPixels()[minX + tY*otherImg->getWidth()];
-                    Color* endPoint = &otherImg->getPixels()[maxX + tY*otherImg->getWidth()];
-                    while(startPoint < endPoint)
+                    int tX = minX;
+                    Color* startPoint = &otherImg->getPixels()[tX + tY*otherImg->getWidth()];
+                    while(tX < stopPoint)
+                    {
+                        SIMD_U32 destC = SIMD_U32::load((unsigned int*)startPoint);
+                        SIMD_U32 blendC = blend(activeColorAsSIMD.values, destC.values);
+                        blendC.store((unsigned int*)startPoint);
+                        startPoint += SIMD_U32::SIZE;
+                        tX += SIMD_U32::SIZE;
+                    }
+                    while(tX < maxX)
                     {
                         *startPoint = blend(activeColor, *startPoint);
                         startPoint++;
+                        tX++;
                     }
                 }
                 RESET_LARGE_ENOUGH_CLAUSE()
@@ -87,5 +90,5 @@ namespace smpl
             }
         }
     }
-    #endif
+    
 } //NAMESPACE glib END

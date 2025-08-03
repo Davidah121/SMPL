@@ -1,4 +1,5 @@
 #pragma once
+#include "TargetVer.h"
 #ifndef DLL_OPTION
     #if defined(DLL_EXPORT)
         #if defined(_MSC_VER)

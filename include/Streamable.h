@@ -14,15 +14,19 @@ namespace smpl
     public:
         virtual size_t write(T*, size_t) = 0;
         virtual size_t read(T*, size_t size) = 0;
+        size_t waitRead(T*, size_t size);
         virtual bool pop() = 0;
         virtual size_t size() = 0;
         virtual size_t getLocation() = 0;
+        void setEOF();
+        bool getEOF();
 
     protected:
         void lock();
         void unlock();
 
     private:
+        bool isEnd = true;
         HybridSpinLock commonMutex;
     };
 
@@ -31,6 +35,7 @@ namespace smpl
     {
     public:
         StreamableVector();
+        StreamableVector(const std::vector<T>& arr);
         ~StreamableVector();
 
         virtual size_t write(T* data, size_t size);
@@ -51,6 +56,7 @@ namespace smpl
     {
     public:
         StreamableQueue();
+        StreamableQueue(const Queue<T>& arr);
         ~StreamableQueue();
         virtual size_t write(T* data, size_t size);
         virtual size_t read(T* input, size_t size);
@@ -68,6 +74,7 @@ namespace smpl
     {
     public:
         StreamableStack();
+        StreamableStack(const Stack<T>& arr);
         ~StreamableStack();
 
         virtual size_t write(T* data, size_t size);
@@ -107,10 +114,43 @@ namespace smpl
     {
         commonMutex.unlock();
     }
+    template<typename T>
+    inline size_t Streamable<T>::waitRead(T* data, size_t size)
+    {
+        while(!getEOF())
+        {
+            size_t readSize = read(data, size);
+            if(readSize > 0)
+                return readSize;
+        }
+        return 0;
+    }
+    template<typename T>
+    inline void Streamable<T>::setEOF()
+    {
+        commonMutex.lock();
+        isEnd = true;
+        commonMutex.unlock();
+    }
+    template<typename T>
+    inline bool Streamable<T>::getEOF()
+    {
+        commonMutex.lock();
+        bool v = isEnd;
+        commonMutex.unlock();
+        return v;
+    }
 
     template<typename T>
     inline StreamableVector<T>::StreamableVector()
     {
+    }
+
+    template<typename T>
+    inline StreamableVector<T>::StreamableVector(const std::vector<T>& arr)
+    {
+        buffer = arr;
+        offset = 0;
     }
 
     template<typename T>
@@ -190,6 +230,11 @@ namespace smpl
     {
     }
     template<typename T>
+    inline StreamableQueue<T>::StreamableQueue(const Queue<T>& arr)
+    {
+        buffer = arr;
+    }
+    template<typename T>
     inline StreamableQueue<T>::~StreamableQueue()
     {
     }
@@ -264,6 +309,11 @@ namespace smpl
     template<typename T>
     inline StreamableStack<T>::StreamableStack()
     {
+    }
+    template<typename T>
+    inline StreamableStack<T>::StreamableStack(const Stack<T>& arr)
+    {
+        buffer = arr;
     }
     template<typename T>
     inline StreamableStack<T>::~StreamableStack()

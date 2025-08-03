@@ -2,8 +2,6 @@
 
 namespace smpl
 {
-	#if (OPTI==0)
-
 	void SimpleGraphics::drawTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool outline, Image* surf)
 	{
 		Image* otherImg;
@@ -36,20 +34,15 @@ namespace smpl
 			int minX = MathExt::min( {x1,x2,x3} );
 			int maxX = MathExt::max( {x1,x2,x3} );
 
-			int minXBound = MathExt::max((int)SimpleGraphics::getClippingRect().getLeftBound(), 0);
-			int minYBound = MathExt::max((int)SimpleGraphics::getClippingRect().getTopBound(), 0);
+			minY = MathExt::clamp(minY, (int)SimpleGraphics::getClippingRect().getTopBound(), (int)SimpleGraphics::getClippingRect().getBottomBound());
+			maxY = MathExt::clamp(maxY, (int)SimpleGraphics::getClippingRect().getTopBound(), (int)SimpleGraphics::getClippingRect().getBottomBound());
 			
-			int maxXBound = MathExt::min(surf->getWidth(), (int)clippingRect.getRightBound());
-			int maxYBound = MathExt::min(surf->getHeight(), (int)clippingRect.getBottomBound());
-
-
-			minY = MathExt::clamp(minY, minYBound, maxYBound);
-			maxY = MathExt::clamp(maxY, minYBound, maxYBound);
-			
-			minX = MathExt::clamp(minX, minXBound, maxXBound);
-			maxX = MathExt::clamp(maxX, minXBound, maxXBound);
+			minX = MathExt::clamp(minX, (int)SimpleGraphics::getClippingRect().getLeftBound(), (int)SimpleGraphics::getClippingRect().getRightBound());
+			maxX = MathExt::clamp(maxX, (int)SimpleGraphics::getClippingRect().getLeftBound(), (int)SimpleGraphics::getClippingRect().getRightBound());
 			
 			int approxArea = (maxX-minX)*(maxY-minY);
+			SIMD_U32 activeColorAsSIMD = activeColor.toUInt();
+			
 			LARGE_ENOUGH_CLAUSE(approxArea)
 			#pragma omp parallel for
 			for(int y=minY; y<maxY; y++)
@@ -58,18 +51,12 @@ namespace smpl
 				double xv2 = l2.solveForX(y+0.5);
 				double xv3 = l3.solveForX(y+0.5);
 
-				std::vector<double> solvedVals = {xv1, xv2, xv3};
-				Sort::insertionSort<double>(solvedVals.data(), 3, [](int a, int b) -> bool{
-					return a < b;
-				});
+				std::vector<int> solvedVals = {(int)MathExt::round(xv1), (int)MathExt::round(xv2), (int)MathExt::round(xv3)};
+
+				Sort::insertionSort<int>(solvedVals.data(), 3);
 
 				int startX = solvedVals[0];
 				int endX = solvedVals[1];
-				if(startX == INT_MIN)
-				{
-					startX = solvedVals[1];
-					endX = solvedVals[2];
-				}
 
 				startX = MathExt::clamp( startX, minX, maxX);
 				endX = MathExt::clamp( endX, minX, maxX);
@@ -78,12 +65,18 @@ namespace smpl
 				Color* endFill = startFill + (endX-startX);
 
 				//fill from cX1 to cX2
+				int stopPoint = SIMD_U32::getSIMDBound((endX-startX));
+				for(int i=0; i<stopPoint; i+=SIMD_U32::SIZE)
+				{
+					SIMD_U32 destC = SIMD_U32::load((unsigned int*)startFill);
+					SIMD_U32 blendC = blend(activeColorAsSIMD.values, destC.values);
+					blendC.store((unsigned int*)startFill);
+					startFill += SIMD_U32::SIZE;
+				}
 				while(startFill < endFill)
 				{
 					Color destColor = *startFill;
-					Color finalColor = blend(activeColor, destColor);
-					*startFill = finalColor;
-
+					*startFill = blend(activeColor, destColor);
 					startFill++;
 				}
 			}
@@ -92,6 +85,7 @@ namespace smpl
 		}
 	}
 
+	//TODO: MAKE SIMD. Same problem as before with DrawSprite. Lerp, etc. are not SIMD
 	void SimpleGraphics::drawTexturedTriangle(Vec4f p1, Vec4f p2, Vec4f p3, Image* texture, Image* surf)
 	{
 		Image* otherImg;
@@ -116,22 +110,15 @@ namespace smpl
 			int minX = (int)MathExt::min( {p1.x,p2.x,p3.x} );
 			int maxX = (int)MathExt::max( {p1.x,p2.x,p3.x} );
 
-			int minXBound = MathExt::max((int)SimpleGraphics::getClippingRect().getLeftBound(), 0);
-			int minYBound = MathExt::max((int)SimpleGraphics::getClippingRect().getTopBound(), 0);
+			minY = MathExt::clamp(minY, (int)SimpleGraphics::getClippingRect().getTopBound(), (int)SimpleGraphics::getClippingRect().getBottomBound());
+			maxY = MathExt::clamp(maxY, (int)SimpleGraphics::getClippingRect().getTopBound(), (int)SimpleGraphics::getClippingRect().getBottomBound());
 			
-			int maxXBound = MathExt::min(surf->getWidth(), (int)clippingRect.getRightBound());
-			int maxYBound = MathExt::min(surf->getHeight(), (int)clippingRect.getBottomBound());
-
-
-			minY = MathExt::clamp(minY, minYBound, maxYBound);
-			maxY = MathExt::clamp(maxY, minYBound, maxYBound);
-			
-			minX = MathExt::clamp(minX, minXBound, maxXBound);
-			maxX = MathExt::clamp(maxX, minXBound, maxXBound);
+			minX = MathExt::clamp(minX, (int)SimpleGraphics::getClippingRect().getLeftBound(), (int)SimpleGraphics::getClippingRect().getRightBound());
+			maxX = MathExt::clamp(maxX, (int)SimpleGraphics::getClippingRect().getLeftBound(), (int)SimpleGraphics::getClippingRect().getRightBound());
 			
 			int approxArea = (maxX-minX)*(maxY-minY);
 			double det = (p2.y-p3.y)*(p1.x-p3.x) + (p3.x-p2.x)*(p1.y-p3.y);
-			
+
 			LARGE_ENOUGH_CLAUSE(approxArea)
 			#pragma omp parallel for
 			for(int y=minY; y<maxY; y++)
@@ -140,18 +127,14 @@ namespace smpl
 				double xv2 = l2.solveForX(y+0.5);
 				double xv3 = l3.solveForX(y+0.5);
 
-				std::vector<double> solvedVals = {xv1, xv2, xv3};
-				Sort::insertionSort<double>(solvedVals.data(), 3, [](int a, int b) -> bool{
+				std::vector<int> solvedVals = {(int)MathExt::round(xv1), (int)MathExt::round(xv2), (int)MathExt::round(xv3)};
+
+				Sort::insertionSort<int>(solvedVals.data(), 3, [](int a, int b) -> bool{
 					return a < b;
 				});
 
 				int startX = solvedVals[0];
 				int endX = solvedVals[1];
-				if(startX == INT_MIN)
-				{
-					startX = solvedVals[1];
-					endX = solvedVals[2];
-				}
 
 				startX = MathExt::clamp( startX, minX, maxX);
 				endX = MathExt::clamp( endX, minX, maxX);
@@ -176,6 +159,7 @@ namespace smpl
 					int vInt = (int) MathExt::round(v * (texture->getHeight()));
 
 					Color c = texture->getPixel(uInt, vInt, false);
+					
 					Color destColor = otherImg->getPixel(startX, y);
 					Color finalColor = blend(c, destColor);
 
@@ -193,6 +177,7 @@ namespace smpl
 				double e1 = ((p2.y-p3.y)*(endX-p3.x) + (p3.x-p2.x)*(y-p3.y)) / det;
 				double e2 = ((p3.y-p1.y)*(endX-p3.x) + (p1.x-p3.x)*(y-p3.y)) / det;
 				double e3 = 1.0 - e1 - e2;
+
 
 				int x = 0;
 				int dis = (endX - startX);
@@ -217,11 +202,10 @@ namespace smpl
 					startFill++;
 					x++;
 				}
+				
 			}
 			RESET_LARGE_ENOUGH_CLAUSE()
 
 		}
 	}
-	
-	#endif
 } //NAMESPACE glib END

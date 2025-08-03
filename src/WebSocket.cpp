@@ -20,20 +20,23 @@ namespace smpl
 		config.type = type;
 		config.TCP = true;
 		conn = new smpl::Network(config);
-
+		
 		srand(time(0));
 		maskRandom = smpl::LCG(rand());
 
 		packetQueue = std::vector<std::list<WebSocketPacket>>(amountOfConnectionsAllowed);
 		clients = std::vector<ClientInfo>(amountOfConnectionsAllowed);
 		
-		conn->setOnConnectFunction([this](int id) ->void{
+		conn->setOnConnectFunction([this](size_t id) ->void{
 			optMutex.lock();
 			//clear previous packet queue.
 			this->packetQueue[id].clear();
 			this->clients[id].connected = false;
 			this->clients[id].buffer = false;
 			this->clients[id].first = true;
+			this->clients[id].timeSinceLastPing = System::getCurrentTimeMillis();
+			this->clients[id].waitingResponse = false;
+			this->clients[id].sentKeepAlive = false;
 
 			if(this->type == TYPE_CLIENT)
 			{
@@ -45,7 +48,8 @@ namespace smpl
 			optMutex.unlock();
 		});
 
-		conn->setOnDataAvailableFunction([this](int id) ->void{
+		conn->setOnDataAvailableFunction([this](size_t id) ->void{
+			
 			bool shouldCall = false;
 			optMutex.lock();
 			//check if it is the first message
@@ -58,6 +62,9 @@ namespace smpl
 					this->clients[id].connected = true;
 					this->clients[id].first = false;
 					this->clientsConnected++;
+
+					if(this->onConnectFunc != nullptr)
+						this->onConnectFunc(id);
 				}
 				else
 				{
@@ -66,6 +73,9 @@ namespace smpl
 					this->clients[id].connected = true;
 					this->clients[id].first = false;
 					this->clientsConnected++;
+					
+					if(this->onConnectFunc != nullptr)
+						this->onConnectFunc(id);
 				}
 			}
 			else
@@ -76,12 +86,14 @@ namespace smpl
 				if(shouldCall == true)
 					shouldCall = this->onNewPacketFunc != nullptr; //Must have a valid callback
 			}
+			clients[id].timeSinceLastPing = System::getCurrentTimeMillis();
 			optMutex.unlock();
 			
-			this->onNewPacketFunc(id);
+			if(shouldCall)
+				this->onNewPacketFunc(id);
 		});
 
-		conn->setOnDisconnectFunction([this](int id) ->void{
+		conn->setOnDisconnectFunction([this](size_t id) ->void{
 			optMutex.lock();
 			//Shouldn't have to do anything special here
 			this->packetQueue[id].clear();
@@ -122,6 +134,39 @@ namespace smpl
 			conn->startNetwork();
 	}
 
+	void WebSocket::setKeepAliveTime(size_t millis)
+	{
+		keepAliveTime = millis/2;
+	}
+	
+	void WebSocket::keepConnectionsAlive()
+	{
+		if(conn == nullptr)
+			return;
+		
+		optMutex.lock();
+		for(size_t i=0; i<clients.size(); i++)
+		{
+			if(!clients[i].connected)
+				continue;
+			
+			size_t timeWaited = System::getCurrentTimeMillis() - clients[i].timeSinceLastPing;
+			//send ping or if they recently sent a ping, send pong
+			if(clients[i].waitingResponse == false && timeWaited > keepAliveTime)
+				sendPing(i);
+			
+			if(clients[i].waitingResponse == true)
+			{
+				timeWaited = System::getCurrentTimeMillis() - clients[i].timeSinceLastPing;
+				if(timeWaited > keepAliveTime) //make adjustable
+				{
+					disconnect(i);
+				}
+			}
+		}
+		optMutex.unlock();
+	}
+
 	uint32_t WebSocket::getRandomMask()
 	{
 		//May not need this
@@ -146,9 +191,116 @@ namespace smpl
 		optMutex.unlock();
 		return word;
 	}
-
-	bool WebSocket::sendText(std::string s, int id)
+	
+	bool WebSocket::sendPing(size_t id)
 	{
+		bool status = false;
+		WebSocketPacket pingPacket;
+		pingPacket.type = WebSocket::TYPE_PING_MSG;
+
+		pingPacket.buffer.push_back(0b10001001); //last message and is a ping msg
+		unsigned char tempBuffer = 'A';
+		bool noErr = formBuffer(pingPacket.buffer, &tempBuffer, 1);
+		if(noErr)
+		{
+			status = conn->sendMessage(pingPacket.buffer, id);
+		}
+
+		clients[id].sentKeepAlive = ClientInfo::TYPE_PING;
+		clients[id].waitingResponse = true;
+		clients[id].timeSinceLastPing = System::getCurrentTimeMillis();
+		return status;
+	}
+	bool WebSocket::sendPong(size_t id, WebSocketPacket& p)
+	{
+		bool status = false;
+		//p.buffer only contains application data
+		WebSocketPacket pongPacket;
+		pongPacket.type = WebSocket::TYPE_PONG_MSG;
+
+		pongPacket.buffer.push_back(0b10001010); //last message and is a pong msg
+		bool noErr = formBuffer(pongPacket.buffer, p.buffer.data(), p.buffer.size());
+		if(noErr)
+		{
+			status = conn->sendMessage(pongPacket.buffer, id);
+		}
+
+		clients[id].sentKeepAlive = ClientInfo::TYPE_PONG;
+		clients[id].waitingResponse = false;
+		clients[id].timeSinceLastPing = System::getCurrentTimeMillis();
+		return status;
+	}
+
+	
+	bool WebSocket::formBuffer(std::vector<unsigned char>& outputBuffer, unsigned char* data, size_t len)
+	{
+		//send as a single and not fragmented cause I'm lazy
+		unsigned int mask = 0;
+		unsigned char tmp = 0; //No mask
+		if(type == TYPE_CLIENT)
+		{
+			mask = maskRandom.get();
+			tmp = 128;
+		}
+
+		if(len <= 125)
+		{
+			tmp |= (unsigned char)(len & 0xFF);
+			outputBuffer.push_back(tmp);
+		}
+		else if(len <= 65535)
+		{
+			tmp |= 126;
+			outputBuffer.push_back(tmp);
+			outputBuffer.push_back((len>>8) & 0xFF);
+			outputBuffer.push_back(len & 0xFF);
+		}
+		else if(len <= 0xFFFFFFFF)
+		{
+			tmp |= 127;
+			outputBuffer.push_back(tmp);
+			outputBuffer.push_back((len>>24) & 0xFF);
+			outputBuffer.push_back((len>>16) & 0xFF);
+			outputBuffer.push_back((len>>8) & 0xFF);
+			outputBuffer.push_back(len & 0xFF);
+		}
+		else
+		{
+			return false; //unsupported size
+		}
+
+		if(type == TYPE_CLIENT)
+		{
+			outputBuffer.push_back((mask >> 24) & 0xFF);
+			outputBuffer.push_back((mask >> 16) & 0xFF);
+			outputBuffer.push_back((mask >> 8) & 0xFF);
+			outputBuffer.push_back((mask >> 0) & 0xFF);
+		}
+
+		unsigned char* maskAsBytes = (unsigned char*)&mask;
+		int maskIndex = 3;
+
+		if(data != nullptr)
+		{
+			for(size_t i=0; i<len; i++)
+			{
+				outputBuffer.push_back( data[i] ^ maskAsBytes[maskIndex] );
+				maskIndex -= 1;
+				if(maskIndex < 0)
+					maskIndex = 3;
+			}
+		}
+
+		return true;
+	}
+
+	bool WebSocket::sendText(std::string s, size_t id)
+	{
+		//send as a single and not fragmented cause I'm lazy
+		std::vector<unsigned char> sendBuffer;
+		unsigned int mask = 0;
+		bool status = false;
+
 		optMutex.lock();
 		if(conn == nullptr)
 		{
@@ -166,76 +318,28 @@ namespace smpl
 			return false;
 		}
 		
-		//send as a single and not fragmented cause I'm lazy
-		std::vector<unsigned char> sendBuffer;
-		unsigned int mask = 0;
 		sendBuffer.push_back(0b10000001); //last message and is text
+		bool err = formBuffer(sendBuffer, (unsigned char*)s.data(), s.size());
 
-		unsigned char tmp = 0; //No mask
-		if(type == TYPE_CLIENT)
-		{
-			mask = maskRandom.get();
-			tmp = 128;
-		}
+		if(!err)
+			status = conn->sendMessage(sendBuffer, id);
 		
-		size_t len = s.size();
-		if(len <= 125)
-		{
-			tmp |= (unsigned char)(len & 0xFF);
-			sendBuffer.push_back(tmp);
-		}
-		else if(len <= 65535)
-		{
-			tmp |= 126;
-			sendBuffer.push_back(tmp);
-			sendBuffer.push_back((len>>8) & 0xFF);
-			sendBuffer.push_back(len & 0xFF);
-		}
-		else if(len <= 0xFFFFFFFF)
-		{
-			tmp |= 127;
-			sendBuffer.push_back(tmp);
-			sendBuffer.push_back((len>>24) & 0xFF);
-			sendBuffer.push_back((len>>16) & 0xFF);
-			sendBuffer.push_back((len>>8) & 0xFF);
-			sendBuffer.push_back(len & 0xFF);
-		}
-		else
-		{
-			optMutex.unlock();
-			return false; //unsupported size
-		}
-
-		if(type == TYPE_CLIENT)
-		{
-			sendBuffer.push_back((mask >> 24) & 0xFF);
-			sendBuffer.push_back((mask >> 16) & 0xFF);
-			sendBuffer.push_back((mask >> 8) & 0xFF);
-			sendBuffer.push_back((mask >> 0) & 0xFF);
-		}
-
-		unsigned char* maskAsBytes = (unsigned char*)&mask;
-		int maskIndex = 3;
-		for(char c : s)
-		{
-			sendBuffer.push_back( (unsigned char)c ^ maskAsBytes[maskIndex] );
-			maskIndex -= 1;
-			if(maskIndex < 0)
-				maskIndex = 3;
-		}
-
-		bool status = conn->sendMessage(sendBuffer, id);
 		optMutex.unlock();
 		return status;
 	}
 
-	bool WebSocket::sendRawData(std::vector<unsigned char> buffer, int id)
+	bool WebSocket::sendRawData(std::vector<unsigned char> buffer, size_t id)
 	{
 		return sendRawData(buffer.data(), buffer.size(), id);
 	}
 
-	bool WebSocket::sendRawData(unsigned char* buffer, size_t size, int id)
+	bool WebSocket::sendRawData(unsigned char* buffer, size_t size, size_t id)
 	{	
+		//send as a single and not fragmented cause I'm lazy
+		std::vector<unsigned char> sendBuffer;
+		unsigned int mask = 0;
+		bool status = false;
+
 		optMutex.lock();
 		if(conn == nullptr)
 		{
@@ -253,71 +357,17 @@ namespace smpl
 			return false;
 		}
 
-		//send as a single and not fragmented cause I'm lazy
-		std::vector<unsigned char> sendBuffer;
-		unsigned int mask = 0;
 		sendBuffer.push_back(0b10000010); //last message and is text
+		bool err = formBuffer(sendBuffer, buffer, size);
 
-		unsigned char tmp = 0; //No mask
-		if(type == TYPE_CLIENT)
-		{
-			mask = maskRandom.get();
-			tmp = 128;
-		}
-
-		size_t len = size;
-		if(len <= 125)
-		{
-			tmp |= (unsigned char)(len & 0xFF);
-			sendBuffer.push_back(tmp);
-		}
-		else if(len <= 65535)
-		{
-			tmp |= 126;
-			sendBuffer.push_back(tmp);
-			sendBuffer.push_back((len>>8) & 0xFF);
-			sendBuffer.push_back(len & 0xFF);
-		}
-		else if(len <= 0xFFFFFFFF)
-		{
-			tmp |= 127;
-			sendBuffer.push_back(tmp);
-			sendBuffer.push_back((len>>24) & 0xFF);
-			sendBuffer.push_back((len>>16) & 0xFF);
-			sendBuffer.push_back((len>>8) & 0xFF);
-			sendBuffer.push_back(len & 0xFF);
-		}
-		else
-		{
-			optMutex.unlock();
-			return false; //unsupported size
-		}
-
-		if(type == TYPE_CLIENT)
-		{
-			sendBuffer.push_back((mask >> 24) & 0xFF);
-			sendBuffer.push_back((mask >> 16) & 0xFF);
-			sendBuffer.push_back((mask >> 8) & 0xFF);
-			sendBuffer.push_back((mask >> 0) & 0xFF);
-		}
-
-		unsigned char* maskAsBytes = (unsigned char*)&mask;
-		int maskIndex = 3;
-
-		for(size_t i=0; i<size; i++)
-		{
-			sendBuffer.push_back( (unsigned char)buffer[i] ^ maskAsBytes[maskIndex] );
-			maskIndex -= 1;
-			if(maskIndex < 0)
-				maskIndex = 3;
-		}
-
-		bool status = conn->sendMessage(buffer, id);
+		if(!err)
+			status = conn->sendMessage(sendBuffer, id);
+		
 		optMutex.unlock();
 		return status;
 	}
 
-	WebSocketPacket WebSocket::receivePacket(int id)
+	WebSocketPacket WebSocket::receivePacket(size_t id)
 	{
 		optMutex.lock();
 		if(id >= 0 && id < packetQueue.size())
@@ -335,7 +385,7 @@ namespace smpl
 		return { TYPE_UNKNOWN, {} };
 	}
 
-	WebSocketPacket WebSocket::peekPacket(int id)
+	WebSocketPacket WebSocket::peekPacket(size_t id)
 	{
 		optMutex.lock();
 		if(id >= 0 && id < packetQueue.size())
@@ -351,19 +401,19 @@ namespace smpl
 		return { TYPE_UNKNOWN, {} };
 	}
 
-	void WebSocket::setOnConnectFunction(std::function<void(int a)> func)
+	void WebSocket::setOnConnectFunction(std::function<void(size_t id)> func)
 	{
 		optMutex.lock();
 		this->onConnectFunc = func;
 		optMutex.unlock();
 	}
-	void WebSocket::setOnDisconnectFunction(std::function<void(int a)> func)
+	void WebSocket::setOnDisconnectFunction(std::function<void(size_t id)> func)
 	{
 		optMutex.lock();
 		this->onDisconnectFunc = func;
 		optMutex.unlock();
 	}
-	void WebSocket::setNewPacketFunction(std::function<void(int a)> func)
+	void WebSocket::setNewPacketFunction(std::function<void(size_t id)> func)
 	{
 		optMutex.lock();
 		this->onNewPacketFunc = func;
@@ -378,7 +428,7 @@ namespace smpl
 		return c;
 	}
 
-	size_t WebSocket::getPacketsAvailable(int id)
+	size_t WebSocket::getPacketsAvailable(size_t id)
 	{
 		size_t c;
 
@@ -390,7 +440,7 @@ namespace smpl
 		return c;
 	}
 
-	bool WebSocket::getConnected(int id)
+	bool WebSocket::getConnected(size_t id)
 	{	
 		bool c = false;
 
@@ -401,13 +451,12 @@ namespace smpl
 		return c;
 	}
 
-	void WebSocket::firstConnectServer(int id)
+	void WebSocket::firstConnectServer(size_t id)
 	{
 		if(conn == nullptr)
 			return; //error
-
 		//Get their HTTP GET Request
-		std::vector<unsigned char> buffer = std::vector<unsigned char>();
+		std::vector<unsigned char> buffer = std::vector<unsigned char>(8192);
 		bool err = this->conn->receiveMessage(buffer, id) <= 0;
 
 		if(err)
@@ -417,7 +466,7 @@ namespace smpl
 		WebRequest rec = WebRequest(buffer);
 		if(rec.getType() != WebRequest::TYPE_GET)
 			return; //error
-
+		
 		//Form HTTP Response
 		WebRequest response = WebRequest();
 		response.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 101 Switching Protocols", false);
@@ -436,13 +485,10 @@ namespace smpl
 		std::string base64NewKey = smpl::StringTools::base64Encode((unsigned char*)newKey.data(), newKey.size()*4, false);
 
 		response.addKeyValue("Sec-WebSocket-Accept", base64NewKey);
-		
-		std::string responseStr = response.getRequestAsString();
-
-		this->conn->sendMessage((unsigned char*)responseStr.data(), responseStr.size(), id);
+		int sentStuff = this->conn->sendMessage(response, id);
 	}
 
-	void WebSocket::firstConnectClient(int id)
+	void WebSocket::firstConnectClient(size_t id)
 	{
 		if(conn == nullptr)
 			return; //error
@@ -474,7 +520,7 @@ namespace smpl
 		this->conn->sendMessage(rec, id);
 	}
 
-	void WebSocket::firstConnectClientPart2(int id)
+	void WebSocket::firstConnectClientPart2(size_t id)
 	{
 		if(conn == nullptr)
 			return; //error
@@ -493,7 +539,7 @@ namespace smpl
 		}
 	}
 
-	bool WebSocket::specialRecv(int id)
+	bool WebSocket::specialRecv(size_t id)
 	{
 		if(conn == nullptr)
 			return false; //error
@@ -539,6 +585,14 @@ namespace smpl
 			specialDisconnect(id);
 			return false;
 		}
+		else if(opCode == 0x09)
+		{
+			p.type = TYPE_PING_MSG;
+		}
+		else if(opCode == 0x0A)
+		{
+			p.type = TYPE_PONG_MSG;
+		}
 		else
 		{
 			p.type = TYPE_UNKNOWN;
@@ -575,6 +629,17 @@ namespace smpl
 			}
 		}
 
+		if(p.type == TYPE_PING_MSG)
+		{
+			sendPong(id, p);
+			return false;
+		}
+		else if(p.type == TYPE_PONG_MSG)
+		{
+			clients[id].waitingResponse = false;
+			return false;
+		}
+
 		if(newPacket)
 		{
 			this->packetQueue[id].push_back(p);
@@ -590,14 +655,14 @@ namespace smpl
 		return false;
 	}
 
-	void WebSocket::disconnect(int id)
+	void WebSocket::disconnect(size_t id)
 	{
 		optMutex.lock();
 		specialDisconnect(id);
 		optMutex.unlock();
 	}
 
-	void WebSocket::specialDisconnect(int id)
+	void WebSocket::specialDisconnect(size_t id)
 	{
 		if(conn == nullptr)
 			return; //error

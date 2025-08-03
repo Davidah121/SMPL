@@ -133,47 +133,7 @@ namespace smpl
 	void GuiManager::loadElementsFromFile(File f)
 	{
 		SimpleXml xmlFile = SimpleXml(f);
-		
-		//Everything must be encapsulated in the tag <SimpleGUI> or something
-		XmlNode* parentNode = nullptr;
-
-		for(XmlNode* n : xmlFile.getNodes())
-		{
-			if(StringTools::equalsIgnoreCase<char>(n->getTitle(), "SimpleGUI"))
-			{
-				parentNode = n;
-				break;
-			}
-		}
-
-		if(parentNode != nullptr)
-		{
-			auto wAttrib = parentNode->getAttribute("width");
-			auto hAttrib = parentNode->getAttribute("height");
-
-			if(wAttrib != nullptr && hAttrib != nullptr)
-			{
-				int w = StringTools::toInt(wAttrib->second);
-				int h = StringTools::toInt(hAttrib->second);
-				resizeImage(w, h);
-			}
-
-			for(ChildNode& c : parentNode->getChildNodes())
-			{
-				if(c.type != ChildNode::TYPE_NODE)
-					continue;
-				
-				bool successful = loadElement(c.node, nullptr);
-				if(!successful)
-				{
-					StringTools::println("ERROR LOADING NODE: %ls", c.node->getTitle().c_str());
-				}
-			}
-		}
-		else
-		{
-			StringTools::println("Expected Root Node SimpleGUI was not found.");
-		}
+		loadElementsFromXML(xmlFile);
 	}
 
 	void GuiManager::loadElementsFromXML(SimpleXml& xmlFile)
@@ -219,6 +179,49 @@ namespace smpl
 		{
 			StringTools::println("Expected Root Node SimpleGUI was not found.");
 		}
+	}
+	
+	GuiLayoutFixed* GuiManager::createFromTemplate(File f)
+	{
+		SimpleXml xmlFile = SimpleXml(f);
+		return createFromTemplate(xmlFile);
+	}
+	
+	GuiLayoutFixed* GuiManager::createFromTemplate(SimpleXml& xmlFile)
+	{
+		GuiLayoutFixed* tempRootLayout = new GuiLayoutFixed();
+		XmlNode* parentNode = nullptr;
+
+		for(XmlNode* n : xmlFile.getNodes())
+		{
+			if(StringTools::equalsIgnoreCase<char>(n->getTitle(), "SimpleGUI"))
+			{
+				parentNode = n;
+				break;
+			}
+		}
+
+		if(parentNode != nullptr)
+		{
+			for(ChildNode& c : parentNode->getChildNodes())
+			{
+				if(c.type != ChildNode::TYPE_NODE)
+					continue;
+				
+				XmlNode* n = c.node;
+				bool successful = loadElement(n, tempRootLayout);
+				if(!successful)
+				{
+					StringTools::println("ERROR LOADING NODE: %ls", n->getTitle().c_str());
+				}
+			}
+		}
+		else
+		{
+			StringTools::println("Expected Root Node SimpleGUI was not found.");
+		}
+
+		return tempRootLayout;
 	}
 
 	GuiManager::GuiManager(unsigned char type)
@@ -288,7 +291,6 @@ namespace smpl
 		oldRectsDrawn.clear();
 		newRectsDrawn.clear();
 		renderCounter = 0;
-		currDepthCounter = 0;
 
         newDrawnArea = {INT_MAX, INT_MAX, INT_MIN, INT_MIN};
         oldDrawnArea = {INT_MAX, INT_MAX, INT_MIN, INT_MIN};
@@ -297,11 +299,6 @@ namespace smpl
 	void GuiManager::updateRenderCounter()
 	{
 		renderCounter++;
-	}
-
-	uint32_t GuiManager::getNextDepthValue()
-	{
-		return currDepthCounter++;
 	}
 
 	void GuiManager::addNewDrawnArea(GRect r)
@@ -362,7 +359,7 @@ namespace smpl
 	void fixInvalidBoxes(GRect& b)
 	{
 		if(b.left > b.right || b.top > b.bottom) //invalid box
-			b = {0, 0, 0, 0, 0};
+			b = {0, 0, 0, 0};
 	}
 	
 	bool GuiManager::renderGuiElements()
@@ -389,13 +386,13 @@ namespace smpl
 		fixInvalidBoxes(newDrawnArea);
 		
 		if(oldDrawnArea == newDrawnArea)
-			oldDrawnArea = {0, 0, 0, 0, 0};
+			oldDrawnArea = {0, 0, 0, 0};
 		
 		//prevent double rendering
 		if(shouldForceRedraw)
 		{
-			oldDrawnArea = {0, 0, 0, 0, 0};
-			newDrawnArea = {0, 0, 0xFFFF, 0xFFFF, 0};
+			oldDrawnArea = {0, 0, 0, 0};
+			newDrawnArea = {0, 0, 0xFFFF, 0xFFFF};
 		}
 		
 		//combine clause. If the sum of both areas is greater than if we just combined them into 1 giant box, make 1 giant box
@@ -410,14 +407,13 @@ namespace smpl
 
 		if(combinedArea < addedSeparateArea)
 		{
-			newDrawnArea = {minLeftCombined, minTopCombined, maxRightCombined, maxBottomCombined, 0};
-			oldDrawnArea = {0, 0, 0, 0, 0};
+			newDrawnArea = {minLeftCombined, minTopCombined, maxRightCombined, maxBottomCombined};
+			oldDrawnArea = {0, 0, 0, 0};
 		}
-
 		
 		if(renderCounter > 0)
 		{
-			if(oldDrawnArea != GRect{0, 0, 0, 0, 0})
+			if(oldDrawnArea != GRect{0, 0, 0, 0})
 			{
 				GraphicsInterface::setClippingRect(Box2D(oldDrawnArea.left, oldDrawnArea.top, oldDrawnArea.right, oldDrawnArea.bottom));
 				GraphicsInterface::setColor(backgroundColor);
@@ -425,7 +421,7 @@ namespace smpl
 				rootLayout.doRender( SmartMemory<GuiManager>::createNoDelete(this) );
 			}
 			
-			if(newDrawnArea != GRect{0, 0, 0, 0, 0})
+			if(newDrawnArea != GRect{0, 0, 0, 0})
 			{
 				GraphicsInterface::setClippingRect(Box2D(newDrawnArea.left, newDrawnArea.top, newDrawnArea.right, newDrawnArea.bottom));
 				GraphicsInterface::setColor(backgroundColor);
@@ -443,7 +439,7 @@ namespace smpl
 		GraphicsInterface::drawToScreen();
 		
 		shouldForceRedraw = false;
-		return true;
+		return renderCounter > 0;
 	}
 
 	GuiLayoutFixed& GuiManager::getRootLayout()
@@ -551,7 +547,17 @@ namespace smpl
 
 	void GuiManager::addToDisposeList(SmartMemory<GuiItem> k)
 	{
+		LockingSmartMemory lockedMem = k.getLockingPointer();
+		if(lockedMem == nullptr)
+			return;
 		shouldDelete.push_back(SmartMemory<GuiItem>::createDeleteRights(k.getRawPointer(), 1));
+		if(lockedMem->getType() == GuiItem::TYPE_LAYOUT)
+		{
+			GuiLayout* layoutP = (GuiLayout*)lockedMem.getRawPointer();
+			size_t maxSize = layoutP->getChildrenSize();
+			for(size_t i=0; i<maxSize; i++)
+				addToDisposeList(layoutP->getChild(i));
+		}
 	}
 
 	void GuiManager::setObjectInFocus(SmartMemory<GuiItem> k)

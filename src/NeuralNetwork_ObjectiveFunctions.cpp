@@ -2,6 +2,25 @@
 #include "MathExt.h"
 namespace smpl
 {
+    #ifdef __SSE4_2__
+    SIMD_SSE<float> simdLog(SIMD_SSE<float> v)
+    {
+        return SEML::log(v.values);
+    }
+    #endif
+    
+    #ifdef __AVX2__
+    SIMD_AVX<float> simdLog(SIMD_AVX<float> v)
+    {
+        return SEML::log(v.values);
+    }
+    #endif
+
+    SIMD_RAW<float> simdLog(SIMD_RAW<float> v)
+    {
+        return log(v.values);
+    }
+    
     MatrixF LeastSquares::evaluate(MatrixF expected, MatrixF actual)
     {
         //(y-yHat)^2 / size
@@ -17,18 +36,12 @@ namespace smpl
     MatrixF LogLoss::evaluate(MatrixF expected, MatrixF actual)
     {
         // TODO: FIX THIS
-        // MatrixF A, B;
-        // #if (OPTI>=1)
-        //     #define SIMD_LOG SEML::log
-        // #else
-        //     #define SIMD_LOG nullptr
-        // #endif
+        MatrixF A, B;
 
-        // A = expected.getTranspose()*actual.broadcastAdd(EPSILON).broadcastFunction(log, SIMD_LOG);
-        // B = expected.broadcastInverseSubtract(1).getTranspose() * actual.broadcastInverseSubtract(1).broadcastAdd(EPSILON).broadcastFunction(log, SIMD_LOG);
+        A = expected.getTranspose()*actual.broadcastAdd(EPSILON).broadcastFunction(log, simdLog);
+        B = expected.broadcastInverseSubtract(1).getTranspose() * actual.broadcastInverseSubtract(1).broadcastAdd(EPSILON).broadcastFunction(log, simdLog);
         
-        // #undef SIMD_LOG
-        // return -(A+B);
+        return -(A+B);
         return MatrixF();
     }
     MatrixF LogLoss::derivative(MatrixF expected, MatrixF actual)

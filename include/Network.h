@@ -66,7 +66,7 @@ namespace smpl
 		std::string location = "";
 	};
 
-	class Network
+	class DLL_OPTION Network
 	{
 	public:
 
