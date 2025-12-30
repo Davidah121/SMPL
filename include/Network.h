@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 
 #ifndef NO_SOCKETS
 
@@ -467,30 +468,33 @@ namespace smpl
 		/**
 		 * @brief Sets the On Connection Function.
 		 * 		This is called as soon as a connection is established.
-		 * 		The int passed into the function is the ID of the connection.
+		 * 		The string passed into the function is the IP address of the connection
+		 * 		The size_t passed into the function is the ID of the connection.
 		 * 
 		 * @param func 
 		 */
-		void setOnConnectFunction(std::function<void(size_t)> func);
+		void setOnConnectFunction(std::function<void(std::string, size_t)> func);
 
 		/**
 		 * @brief Sets the On Data Available Function.
 		 * 		This is called whenever data is available to be read and has not been read yet.
+		 * 		The string passed into the function is the IP address of the connection
 		 * 		The int passed into the function is the ID of the connection that sent the message.
 		 * 			Note that this does not mean new data. So, if you got 12 bytes but only read 8, then this will be called again.
 		 * 			Note that this is only called once between reads.
 		 * @param func 
 		 */
-		void setOnDataAvailableFunction(std::function<void(size_t)> func);
+		void setOnDataAvailableFunction(std::function<void(std::string, size_t)> func);
 
 		/**
 		 * @brief Sets the On Disconnection Function.
 		 * 		This is called as soon as a disconnection is found.
+		 * 		The string passed into the function is the IP address of the connection
 		 * 		The int passed into the function is the ID that disconnected.
 		 * 
 		 * @param func 
 		 */
-		void setOnDisconnectFunction(std::function<void(size_t)> func);
+		void setOnDisconnectFunction(std::function<void(std::string, size_t)> func);
 		
 		/**
 		 * @brief Starts up the network allowing it to connect 
@@ -572,20 +576,20 @@ namespace smpl
 		
 		SocketInfo* getSocketInformation(size_t id);
 
-		std::function<void(size_t)> getConnectFunc();
-		std::function<void(size_t)> getDataAvailableFunc();
-		std::function<void(size_t)> getDisconnectFunc();
+		std::function<void(std::string, size_t)> getConnectFunc();
+		std::function<void(std::string, size_t)> getDataAvailableFunc();
+		std::function<void(std::string, size_t)> getDisconnectFunc();
 		
 
-		std::function<void(size_t)> onConnectFunc;
-		std::function<void(size_t)> onDataAvailableFunc;
-		std::function<void(size_t)> onDisconnectFunc;
+		std::function<void(std::string, size_t)> onConnectFunc;
+		std::function<void(std::string, size_t)> onDataAvailableFunc;
+		std::function<void(std::string, size_t)> onDisconnectFunc;
 
 		static const bool LOCK_TYPE_IMPORTANT = true;
 		static const bool LOCK_TYPE_NONIMPORTANT = false;
 		
 		void obtainLock(bool type); //Important = true | Non Important = false
-		void releaseLock();
+		void releaseLock(bool type);
 
 		#ifndef __unix__
 			WSADATA wsaData;
@@ -627,9 +631,8 @@ namespace smpl
 		std::map<SOCKET_TYPE, SSL*> sslConnectionMapping;
 		#endif
 
-		HybridSpinSemaphore networkSemaphore;
-		std::atomic_ullong timeWaitedOnImportantLock = 0;
-		std::atomic_ullong timeWaitedOnNonImportantLock = 0;
+		// ReadWriterLock networkLock;
+		std::shared_mutex networkLock;
 	};
 
 } //NAMESPACE smpl END

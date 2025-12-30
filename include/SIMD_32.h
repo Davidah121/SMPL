@@ -1,5 +1,6 @@
 #pragma once
-#include <immintrin.h>
+#include "StandardTypes.h"
+#include <intrin.h>
 #include "SIMD_Template.h"
 
 namespace smpl
@@ -9,7 +10,7 @@ namespace smpl
 	class SIMD_SSE<int>
 	{
 	public:
-		static const int SIZE = 4;
+		static const int SIZE;
 		static unsigned long long getSIMDBound(unsigned long long s) {return (s>>2)<<2;}
 
 		SIMD_SSE(){}
@@ -25,7 +26,7 @@ namespace smpl
 		~SIMD_SSE(){}
 
 		//load / store
-		static SIMD_SSE<int> load(int* pointer){return _mm_loadu_si128((__m128i*)pointer);}
+		static SIMD_SSE<int> load(const int* pointer){return _mm_loadu_si128((__m128i*)pointer);}
 		void store(int* pointer){_mm_storeu_si128((__m128i*)pointer, values);}
 		
 		//arithmetic
@@ -39,7 +40,9 @@ namespace smpl
 			__m128 A = _mm_cvtepi32_ps(values);
 			__m128 B = _mm_cvtepi32_ps(other.values);
 			__m128 result = _mm_div_ps(A,B);
-			return _mm_cvtps_epi32(result);
+
+			__m128i finalRes = SEML::floatToInt32(result);
+			return finalRes;
 		}
 		
 		void operator+=(const SIMD_SSE<int>& other) {values = operator+(other).values;}
@@ -88,6 +91,10 @@ namespace smpl
 			__m128i temp = _mm_cmpeq_epi32(values, other.values);
 			return _mm_andnot_si128(temp, temp); //does not bitwise not
 		}
+		SIMD_SSE<int> blend(const SIMD_SSE<int>& other, const SIMD_SSE<int>& blendFactor) const
+		{
+			return _mm_castps_si128(_mm_blendv_ps(_mm_castsi128_ps(values), _mm_castsi128_ps(other.values), _mm_castsi128_ps(blendFactor.values)));
+		}
 		
 		//special case functions
 		SIMD_SSE<int> horizontalAdd(const SIMD_SSE<int>& other) const {return _mm_hadd_epi32(values, other.values);}
@@ -105,8 +112,11 @@ namespace smpl
 			return temp[0] + temp[1];
 		}
 
+		operator SIMD_SSE<unsigned int>() const;
+		operator SIMD_SSE<float>() const;
 		__m128i values;
 	};
+	inline const int SIMD_SSE<int>::SIZE = 4;
 
 	template<>
 	class SIMD_SSE<unsigned int> : public SIMD_SSE<int>
@@ -125,20 +135,21 @@ namespace smpl
 		~SIMD_SSE(){}
 
 		SIMD_SSE<unsigned int> operator/(const SIMD_SSE<unsigned int>& other) const
-		{       
+		{
 			//To utilize the entire range and do it in a small number of instructions, use 64 bit (yes its probably faster)
 			__m128d A1 = SEML::fastInt64ToDouble(_mm_cvtepu32_epi64(values));
 			__m128d A2 = SEML::fastInt64ToDouble(_mm_cvtepu32_epi64(_mm_srli_si128(values, 8)));
-			__m128d B1 = SEML::fastInt64ToDouble(_mm_cvtepu32_epi64(values));
-			__m128d B2 = SEML::fastInt64ToDouble(_mm_cvtepu32_epi64(_mm_srli_si128(values, 8)));
+			__m128d B1 = SEML::fastInt64ToDouble(_mm_cvtepu32_epi64(other.values));
+			__m128d B2 = SEML::fastInt64ToDouble(_mm_cvtepu32_epi64(_mm_srli_si128(other.values, 8)));
 			
 			__m128d res1 = _mm_div_pd(A1, B1);
 			__m128d res2 = _mm_div_pd(A2, B2);
+			
 			__m128i low = _mm_cvtpd_epi32(res1);
 			__m128i high = _mm_cvtpd_epi32(res2);
 
 			//cheat because the proper shuffle function doesn't exist for integers
-			__m128 result = _mm_shuffle_ps(_mm_castsi128_ps(high), _mm_castsi128_ps(low), 0b01000100);
+			__m128 result = _mm_shuffle_ps(_mm_castsi128_ps(low), _mm_castsi128_ps(high), 0b01000100);
 			return _mm_castps_si128(result);
 		}
 		
@@ -161,6 +172,10 @@ namespace smpl
 		{
 			return _mm_cmpeq_epi32(_mm_min_epu32(values, other.values), values);
 		}
+		SIMD_SSE<unsigned int> blend(const SIMD_SSE<unsigned int>& other, const SIMD_SSE<unsigned int>& blendFactor) const
+		{
+			return _mm_castps_si128(_mm_blendv_ps(_mm_castsi128_ps(values), _mm_castsi128_ps(other.values), _mm_castsi128_ps(blendFactor.values)));
+		}
 
 		unsigned long long sum() const
 		{
@@ -177,8 +192,10 @@ namespace smpl
 		}
 
 		//load / store
-		static SIMD_SSE<unsigned int>load(unsigned int* pointer){return _mm_loadu_si128((__m128i*)pointer);}
+		static SIMD_SSE<unsigned int>load(const unsigned int* pointer){return _mm_loadu_si128((__m128i*)pointer);}
 		void store(unsigned int* pointer){_mm_storeu_si128((__m128i*)pointer, values);}
+		
+		operator SIMD_SSE<float>() const;
 	};
 
 	#endif
@@ -189,7 +206,7 @@ namespace smpl
 	class SIMD_AVX<int>
 	{
 	public:
-		static const int SIZE = 8;
+		static const int SIZE;
 		static unsigned long long getSIMDBound(unsigned long long s) {return (s>>3)<<3;}
 
 		SIMD_AVX(){}
@@ -205,7 +222,7 @@ namespace smpl
 		~SIMD_AVX(){}
 
 		//load / store
-		static SIMD_AVX<int>load(int* pointer){return _mm256_loadu_si256((__m256i*)pointer);}
+		static SIMD_AVX<int>load(const int* pointer){return _mm256_loadu_si256((__m256i*)pointer);}
 		void store(int* pointer){_mm256_storeu_si256((__m256i*)pointer, values);}
 		
 		//arithmetic
@@ -220,7 +237,8 @@ namespace smpl
 			__m256 A1 = _mm256_cvtepi32_ps(values);
 			__m256 B1 = _mm256_cvtepi32_ps(other.values);
 			__m256 res1 = _mm256_div_ps(A1, B1);
-			return _mm256_cvtps_epi32(res1);
+			
+			return SEML::floatToInt32(res1);
 		}
 		
 		void operator+=(const SIMD_AVX<int>& other) {values = operator+(other).values;}
@@ -269,6 +287,10 @@ namespace smpl
 			__m256i temp = _mm256_cmpeq_epi32(values, other.values);
 			return _mm256_andnot_si256(temp, temp); //does not bitwise not
 		}
+		SIMD_AVX<int> blend(const SIMD_AVX<int>& other, const SIMD_AVX<int>& blendFactor) const
+		{
+			return _mm256_castps_si256(_mm256_blendv_ps(_mm256_castsi256_ps(values), _mm256_castsi256_ps(other.values), _mm256_castsi256_ps(blendFactor.values)));
+		}
 		
 		//special case functions
 		SIMD_AVX<int> horizontalAdd(const SIMD_AVX<int>& other) const {return _mm256_hadd_epi32(values, other.values);}
@@ -282,16 +304,22 @@ namespace smpl
 
 			//add 64 bit values
 			__m256i result = _mm256_add_epi64(low, high); //(A1+A5, ... , A4+A8) Pairs of 2
-			result = _mm256_hadd_epi32(result, result); //Pairs of 4
-			result = _mm256_hadd_epi32(result, result); //Pairs of 8
-			_mm256_storeu_si256((__m256i*)temp, result);
-			return temp[0] + temp[1];
+			
+			//the same as the AVX<int64_t> version from here
+			__m256i blendedA = _mm256_castpd_si256(_mm256_shuffle_pd(_mm256_castsi256_pd(result), _mm256_castsi256_pd(result), 0b0101)); //B,A,D,C
+			__m256i A = _mm256_add_epi64(result, blendedA); //A+B, B+A, C+D, D+C
+			_mm256_storeu_si256((__m256i*)temp, A);
+
+			return temp[0] + temp[2];
 		}
 
+		operator SIMD_AVX<unsigned int>() const;
+		operator SIMD_AVX<float>() const;
 		__m256i values;
 
 	private:
 	};
+	inline const int SIMD_AVX<int>::SIZE = 8;
 
 	template<>
 	class SIMD_AVX<unsigned int> : public SIMD_AVX<int>
@@ -311,7 +339,11 @@ namespace smpl
 
 		SIMD_AVX<unsigned int> operator/(const SIMD_AVX<unsigned int>& other) const
 		{
-			return 0; //TODO: FIX LATER
+			__m256 A = SEML::uint32ToFloat(values);
+			__m256 B = SEML::uint32ToFloat(other.values);
+			__m256 res1 = _mm256_div_ps(A, B);
+			
+			return SEML::floatToUInt32(res1);
 		}
 		
 		SIMD_AVX<unsigned int> operator>(const unsigned int byte) const
@@ -333,6 +365,10 @@ namespace smpl
 		{
 			return _mm256_cmpeq_epi32(_mm256_min_epu32(values, other.values), values);
 		}
+		SIMD_AVX<unsigned int> blend(const SIMD_AVX<unsigned int>& other, const SIMD_AVX<unsigned int>& blendFactor) const
+		{
+			return _mm256_castps_si256(_mm256_blendv_ps(_mm256_castsi256_ps(values), _mm256_castsi256_ps(other.values), _mm256_castsi256_ps(blendFactor.values)));
+		}
 
 		unsigned long long sum() const
 		{
@@ -344,14 +380,20 @@ namespace smpl
 
 			//add 64 bit values
 			__m256i result = _mm256_add_epi64(low, high); //(A1+A5, ... , A4+A8) Pairs of 2
-			result = _mm256_hadd_epi32(result, result); //Pairs of 4
-			_mm256_storeu_si256((__m256i*)temp, result);
-			return temp[0] + temp[1];
+			
+			//the same as the AVX<int64_t> version from here
+			__m256i blendedA = _mm256_castpd_si256(_mm256_shuffle_pd(_mm256_castsi256_pd(result), _mm256_castsi256_pd(result), 0b0101)); //B,A,D,C
+			__m256i A = _mm256_add_epi64(result, blendedA); //A+B, B+A, C+D, D+C
+			_mm256_storeu_si256((__m256i*)temp, A);
+
+			return temp[0] + temp[2];
 		}
 
 		//load / store
-		static SIMD_AVX<unsigned int>load(unsigned int* pointer){return _mm256_loadu_si256((__m256i*)pointer);}
+		static SIMD_AVX<unsigned int>load(const unsigned int* pointer){return _mm256_loadu_si256((__m256i*)pointer);}
 		void store(unsigned int* pointer){_mm256_storeu_si256((__m256i*)pointer, values);}
+		
+		operator SIMD_AVX<float>() const;
 	};
 	#endif
 }

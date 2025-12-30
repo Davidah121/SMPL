@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include <vector>
 #include <string>
 #include "Tree.h"
@@ -319,6 +320,13 @@ namespace smpl
 		 * @return size_t 
 		 */
 		size_t size();
+
+		/**
+		 * @brief Resets the class to its initial form.
+		 * 		An optimization that avoids creating and deleting data that could be reused.
+		 * 
+		 */
+		void reset();
 
 	private:
 		void addDataCompression(unsigned char* data, int length);

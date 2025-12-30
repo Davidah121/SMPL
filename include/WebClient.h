@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include "Network.h"
 #include "WebRequest.h"
 
@@ -35,7 +36,79 @@ namespace smpl
         void disconnect();
 
         bool sendRequest(WebRequest& req);
-        
+
+        /**
+         * @brief A wrapper around network to send message data.
+         * 
+         * @param message 
+         * @param id 
+         * @return int 
+         */
+        int sendMessage(std::vector<unsigned char>& message);
+
+        /**
+         * @brief A wrapper around network to send message data.
+         * 
+         * @param msg 
+         * @param id 
+         * @return int 
+         */
+        int sendMessage(const std::string& msg);
+
+        /**
+         * @brief A wrapper around network to send message data.
+         *      Specifically for sending files which (if available) uses the faster
+         *          sendfile function for sockets.
+         * 
+         * @param filename 
+         * @param length 
+         * @param offset 
+         * @param id 
+         * @return int 
+         */
+        int sendFile(char* filename, size_t length, size_t offset);
+
+        /**
+         * @brief Attempts to send a generic type. Sends it over as raw bytes.
+         *      Equivalent to sendMessage((char*)&msg, sizeof(T), id)
+         * 
+         * @tparam T 
+         * @param msg 
+         * @param id 
+         * @return int 
+         */
+        template<typename T>
+        int sendMessage(const T msg)
+        {
+            //send raw bytes
+            if(network != nullptr)
+            {
+                return network->sendMessage(msg, 0);
+            }
+            return -1;
+        }
+
+        /**
+         * @brief Attempts to send a pointer to a generic type. Sends it over as raw bytes.
+         *      Equivalent to sendMessage((char*)msg, sizeof(T)*elements, id)
+         * 
+         * @tparam T 
+         * @param msg 
+         * @param elements 
+         * @param id 
+         * @return int 
+         */
+        template<typename T>
+        int sendMessage(const T* msg, int elements)
+        {
+            //send raw bytes
+            if(network != nullptr)
+            {
+                return network->sendMessage((char*)msg, sizeof(T)*elements, 0);
+            }
+            return -1;
+        }
+
         void setOnConnectFunc(std::function<void(WebClient*)> func);
         void setOnDisconnectFunc(std::function<void(WebClient*)> func);
         void setOnBufferChangedFunc(std::function<void(WebClient*, WebRequest& response, unsigned char*, size_t)> func);

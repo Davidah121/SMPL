@@ -5,19 +5,16 @@
 			"name": "(LLVM) Debug Launch",
 			"type": "lldb",
 			"request": "launch",
-			"program": "${workspaceFolder}/bin/Debug/Smpl.exe",
+			"program": "${workspaceFolder}/bin/Debug/test.exe",
 			"args": [],
 			"cwd": "${workspaceFolder}",
-			"console": "integratedTerminal",
-            "initCommands": [
-                "command script import ${workspaceRoot}/debugvis.py" // <<<<< This is the important bit
-            ]
+			"console": "integratedTerminal"
 		},
 		{
 			"name": "(LLVM) Release Launch",
 			"type": "lldb",
 			"request": "launch",
-			"program": "${workspaceFolder}/bin/Release/Smpl.exe",
+			"program": "${workspaceFolder}/bin/Release/test.exe",
 			"args": [],
 			"cwd": "${workspaceFolder}",
 			"console": "integratedTerminal",
@@ -27,13 +24,11 @@
 		},
 		{
 			"name": "(Catch2) Unit Test",
-			"type": "cppvsdbg",
+			"type": "lldb",
 			"request": "launch",
 			"program": "${workspaceFolder}/test/TestExe.exe",
 			"args": [],
-			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",
-			"environment": [],
 			"console": "integratedTerminal"
 		}
 	]

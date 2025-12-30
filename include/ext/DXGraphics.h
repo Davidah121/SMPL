@@ -2,6 +2,7 @@
 
 #ifdef USE_DIRECTX
 
+    #include "StandardTypes.h"
     #include "MathExt.h"
     #include "ext/DXSingleton.h"
     #include "ext/DXWindow.h"

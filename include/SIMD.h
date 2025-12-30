@@ -1,4 +1,5 @@
 #pragma once
+#include "StandardTypes.h"
 #include "BuildOptions.h"
 #include "SIMD_Template.h"
 #include "SIMD_8.h"
@@ -6,6 +7,8 @@
 #include "SIMD_32.h"
 #include "SIMD_64.h"
 #include "SIMD_FP.h"
+#include "SEML.h"
+#include "SEML_256.h"
 
 #define ROUNDING_RULE _MM_FROUND_TO_NEAREST_INT
 
@@ -85,3 +88,5 @@ namespace smpl
 	typedef SIMD_RAW<double>			SIMD_FP64;
 	#endif
 }
+
+#include "SIMD_Cast.h"

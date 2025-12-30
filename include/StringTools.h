@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include <string.h>
 #include <iostream>
 #include <sstream>
@@ -114,7 +115,22 @@ namespace smpl
 		}
 
 		/**
-		 * @brief Converts any string to lowercase
+		 * @brief Converts a character to lowercase using UTF8 as the locale.
+		 * 		Should work on all languages
+		 * 
+		 * @tparam T 
+		 * @param c 
+		 * @return T 
+		 */
+		template<typename T>
+		static T toLowercase(T c)
+		{
+			auto& f = std::use_facet<std::ctype<T>>(currentLocale);
+			return f.tolower(c);
+		}
+
+		/**
+		 * @brief Converts any string to lowercase using UTF8 as the locale.
 		 * 
 		 * @tparam T 
 		 * @param text 
@@ -123,17 +139,30 @@ namespace smpl
 		template<typename T>
 		static std::basic_string<T> toLowercase(std::basic_string<T> text)
 		{
-			std::basic_string<T> finalText;
-			for (size_t i = 0; i < text.size(); i++)
-			{
-				finalText += tolower(text[i]);
-			}
-
-			return finalText;
+			std::basic_string<T> output;
+			auto& f = std::use_facet<std::ctype<T>>(currentLocale);
+			for(T& c : text)
+				output += f.tolower(c);
+			return output;
 		}
 
 		/**
-		 * @brief Converts any string to uppercase
+		 * @brief Converts a character to uppercase using UTF8 as the locale.
+		 * 		Should work on all languages
+		 * 
+		 * @tparam T 
+		 * @param c 
+		 * @return T 
+		 */
+		template<typename T>
+		static T toUppercase(T c)
+		{
+			auto& f = std::use_facet<std::ctype<T>>(currentLocale);
+			return f.toupper(c);
+		}
+
+		/**
+		 * @brief Converts any string to uppercase using UTF8 as the locale.
 		 * 
 		 * @tparam T 
 		 * @param text 
@@ -142,13 +171,11 @@ namespace smpl
 		template<typename T>
 		static std::basic_string<T> toUppercase(std::basic_string<T> text)
 		{
-			std::basic_string<T> finalText = "";
-			for (size_t i = 0; i < text.size(); i++)
-			{
-				finalText += toupper(text[i]);
-			}
-
-			return finalText;
+			std::basic_string<T> output;
+			auto& f = std::use_facet<std::ctype<T>>(currentLocale);
+			for(T& c : text)
+				output += f.toupper(c);
+			return output;
 		}
 
 		/**
@@ -396,18 +423,9 @@ namespace smpl
 		{
 			if(a.size() == b.size())
 			{
-				for(size_t i=0; i<a.size(); i++)
-				{
-					if( toupper(a[i]) != toupper(b[i]))
-						return false;
-				}
+				return StringTools::toLowercase(a) == StringTools::toLowercase(b);
 			}
-			else
-			{
-				return false;
-			}
-			
-			return true;
+			return false;
 		}
 
 		/**
@@ -1123,6 +1141,7 @@ namespace smpl
 		static void resetOutputInputStreams();
 	private:
 
+		static std::locale currentLocale;
 		static std::streambuf* inputBuffer;
 		static std::streambuf* outputBuffer;
 		static std::streambuf* errorBuffer;

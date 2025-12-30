@@ -1,6 +1,7 @@
 #pragma once
 //TODO: REWRITE THIS
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include <vector>
 #include "Matrix.h"
 #include "SimpleXml.h"

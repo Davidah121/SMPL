@@ -1,4 +1,5 @@
 #include "ext/KeyboardSimulator.h"
+#include "StringTools.h"
 
 #ifdef _WIN32
 
@@ -11,12 +12,12 @@ namespace smpl
 
 			INPUT i;
 			ZeroMemory(&i, sizeof(INPUT));
-
+			
 			i.type = INPUT_KEYBOARD;
 			i.ki.wVk = key;
 			i.ki.dwFlags = NULL;
 
-			SendInput(1, &i, sizeof(INPUT));
+			uint32_t err = SendInput(1, &i, sizeof(INPUT));
 
 		#endif
 	}
@@ -33,7 +34,7 @@ namespace smpl
 			i.ki.wVk = key;
 			i.ki.dwFlags = KEYEVENTF_KEYUP;
 
-			SendInput(1, &i, sizeof(INPUT));
+			uint32_t err = SendInput(1, &i, sizeof(INPUT));
 
 		#endif
 	}

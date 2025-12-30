@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
@@ -9,9 +10,77 @@
 #include <vector>
 #include <string>
 #include <ctime>
+#include <limits.h>
 
 namespace smpl
 {
+	class DLL_OPTION WebCookie
+	{
+	public:
+		WebCookie();
+		WebCookie(std::string name, std::string value);
+		~WebCookie();
+
+		void setDomain(std::string dm);
+		void setIncludeSubdomains(bool b);
+		void setPath(std::string path);
+		void setSecure(bool v);
+		void setHttpOnly(bool v);
+		void setPartitioned(bool v);
+		void setExpiresDate(size_t date);
+		void setMaxAge(size_t timeInSeconds);
+
+		std::string getName();
+		std::string getValue();
+		std::string getDomain();
+		bool getIncludeSubdomains();
+		std::string getPath();
+		bool getSecure();
+		bool getHttpOnly();
+		bool getPartitioned();
+		size_t getExpiresTime();
+		bool getIsMaxAge();
+
+		std::string getCookieAsString(bool isServerSide);
+		
+	private:
+		std::string name;
+		std::string value;
+
+		//all optional. Not all included as this isn't a web browser
+		bool includeSubdomains = false;
+		std::string domain;
+		std::string path;
+		
+		bool isMaxAge = false; //false==date
+		size_t expiresTime = SIZE_MAX;
+
+		bool secure = false;
+		bool httpOnly = false;
+		bool partitioned = false;
+	};
+
+	class DLL_OPTION CookieManager
+	{
+	public:
+		CookieManager();
+		~CookieManager();
+		void addCookie(WebCookie c);
+		WebCookie& getCookie(std::string name);
+		std::unordered_map<std::string, WebCookie>& getAllCookies();
+
+		void loadServerSentCookie(std::string line);
+		void loadClientSentCookies(std::string line);
+		
+		void loadCookiesJSON(std::string file);
+		void loadCookiesNetscape(std::string file);
+
+		void saveCookiesJSON(std::string file);
+		void saveCookiesNetscape(std::string file);
+	private:
+		std::unordered_map<std::string, WebCookie> cookieMap;
+	};
+
 	class DLL_OPTION WebRequest
 	{
 		public:
@@ -170,7 +239,7 @@ namespace smpl
 			/**
 			 * @brief Determines if the string is valid as a cookie key or value.
 			 * 		They can't contain certain character. They may contain the following characters
-			 * 			abdefghijklmnqrstuvxyzABDEFGHIJKLMNQRSTUVXYZ0123456789!#$%&'()*+-./:<>?@[]^_`{|}~
+			 * 			abdefghijklmnqrstuvxyzABDEFGHIJKLMNQRSTUVXYZ0123456789!#$%&'()*+-./:<>?@[]^_`{|}~=
 			 * 
 			 * @return true 
 			 * @return false 
@@ -181,7 +250,7 @@ namespace smpl
 			void reset();
 			
 			unsigned int type;
-			size_t bytesInHeader;
+			size_t bytesInHeader = 0;
 			std::string header;
 			std::string url;
 			std::unordered_map<std::string, std::string> data;

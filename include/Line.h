@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include "Vec2f.h"
 #include "SimpleSerialization.h"
 
@@ -178,7 +179,7 @@ namespace smpl
 		 * @param y 
 		 * @return double 
 		 */
-		double getPointAsParamtetricValue(double x, double y);
+		double getPointAsParametricValue(double x, double y);
 
 		/**
 		 * @brief Get the point on the line as Paramtetric time value.
@@ -187,7 +188,7 @@ namespace smpl
 		 * @param p 
 		 * @return double 
 		 */
-		double getPointAsParamtetricValue(Vec2f p);
+		double getPointAsParametricValue(Vec2f p);
 
 		/**
 		 * @brief Gets the line that is Perpendicular to the current line and crosses
@@ -196,6 +197,22 @@ namespace smpl
 		 * @return Line 
 		 */
 		Line getPerpendicularBisector();
+
+		/**
+		 * @brief Projects a point onto this line and returns that point
+		 * 
+		 * @param p 
+		 * @return Vec2f 
+		 */
+		Vec2f projectOntoLine(Vec2f p);
+
+		/**
+		 * @brief Projects a point onto this line and returns the parametric value needed to get to that point
+		 * 
+		 * @param p 
+		 * @return double 
+		 */
+		double projectOntoLineParametric(Vec2f p);
 
 
 	private:
@@ -210,6 +227,7 @@ namespace smpl
 		Vec2f point1 = Vec2f(0,0);
 		Vec2f point2 = Vec2f(0, 0);
 		Vec2f toPoint = Vec2f(0, 0);
+		double length = 0;
 
 		double minX = 0, maxX = 0, minY = 0, maxY = 0;
 

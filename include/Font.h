@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include "Image.h"
 #include "SimpleSerialization.h"
 #include "MathExt.h"

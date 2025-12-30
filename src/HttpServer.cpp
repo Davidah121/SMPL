@@ -33,19 +33,19 @@ namespace smpl
         jobSendPointers = std::map<size_t, size_t>();
 
         //setup connection functions
-        conn->setOnConnectFunction([this](size_t id) -> void {
-            this->onConnection(id);
+        conn->setOnConnectFunction([this](std::string ip, size_t id) -> void {
+            this->onConnection(ip, id);
         });
 
-        conn->setOnDataAvailableFunction([this](size_t id) -> void {
+        conn->setOnDataAvailableFunction([this](std::string ip, size_t id) -> void {
             //put the whole function in the job queue. Return immediately
             this->jobMutex.lock();
-            this->jobPointers[id] = this->jobQueue->addJob( [this, id]() ->void { this->onDataArrived(id); });
+            this->jobPointers[id] = this->jobQueue->addJob( [this, ip, id]() ->void { this->onDataArrived(ip, id); });
             this->jobMutex.unlock();
         });
 
-        conn->setOnDisconnectFunction([this](size_t id) -> void {
-            this->onDisconnection(id);
+        conn->setOnDisconnectFunction([this](std::string ip, size_t id) -> void {
+            this->onDisconnection(ip, id);
         });
     }
 
@@ -66,21 +66,19 @@ namespace smpl
         }
     }
 
-    void HttpServer::onConnection(size_t id)
+    void HttpServer::onConnection(std::string ip, size_t id)
     {
         //does not need to go into the job queue
         if(this->getLoggingInfo())
         {
             logMutex.lock();
-            std::string ipString = this->getNetworkConnection()->getIPFromConnection(id);
             int portNum = this->getNetworkConnection()->getPort();
-
-            StringTools::println("CONNECTION ESTABLISHED WITH %s on port %d as ID = %llu\n", ipString.c_str(), portNum, id);
+            StringTools::println("CONNECTION ESTABLISHED WITH %s on port %d as ID = %llu\n", ip.c_str(), portNum, id);
             logMutex.unlock();
         }
     }
 
-    void HttpServer::onDataArrived(size_t id)
+    void HttpServer::onDataArrived(std::string ip, size_t id)
     {
         //Recv WebRequest
         this->jobMutex.lock();
@@ -92,9 +90,9 @@ namespace smpl
         std::vector<unsigned char> buffer = std::vector<unsigned char>(8192);
         std::vector<unsigned char> body;
         
-        int size = this->getNetworkConnection()->peek(buffer, buffer.size(), id);
+        int size = this->getNetworkConnection()->peek(buffer, 8192, id);
 
-        if(size == 0)
+        if(size <= 0)
             return;
 
         size_t actualBytesUsedInRequest = 0;
@@ -115,10 +113,23 @@ namespace smpl
             }
             
             //read from connection
-            bytesReadIntoBody = this->getNetworkConnection()->receiveMessage(body.data(), contentSize, id);
-            
-            if(bytesReadIntoBody != contentSize && this->getLoggingInfo())
-                StringTools::println("%d - SIZE READ DOES NOT MATCH REQUESTED SIZE: %d vs %d", id, contentSize, bytesReadIntoBody);
+            while(true)
+            {
+                int actualBytesRead = this->getNetworkConnection()->receiveMessage(body.data()+bytesReadIntoBody, contentSize-bytesReadIntoBody, id);
+
+                if(actualBytesRead < 0)
+                {
+                    StringTools::println("%d - ERROR ATTEMPTING TO READ FROM BODY.", id);
+                    this->getNetworkConnection()->disconnect(id);
+                    return;
+                }
+
+                bytesReadIntoBody += actualBytesRead;
+                if(bytesReadIntoBody == contentSize)
+                    break;
+                
+                System::sleep(1);
+            }
         }
         else
         {
@@ -136,24 +147,22 @@ namespace smpl
         if(this->getLoggingInfo())
         {
             logMutex.lock();
-            std::string ipString = this->getNetworkConnection()->getIPFromConnection(id);
             int portNum = this->getNetworkConnection()->getPort();
-
-            StringTools::println("%s on port %d as ID = %llu : %s", ipString.c_str(), portNum, id, req.getHeader().c_str());
+            StringTools::println("%s on port %d as ID = %llu : %s", ip.c_str(), portNum, id, req.getHeader().c_str());
             logMutex.unlock();
         }
 
         //handling recv should be a separate job altogether
         //priority can be given for individual files, APIs, ip addresses, etc.
-        bool status = this->handleRecv(req, body, id);
+        char status = this->handleRecv(req, body, ip, id);
 
-        if(!allowKeepAlive || !status)
+        if(status == STATUS_ERROR || (status == STATUS_DONE && !allowKeepAlive))
         {
             this->getNetworkConnection()->disconnect(id);
         }
     }
 
-    void HttpServer::onDisconnection(size_t id)
+    void HttpServer::onDisconnection(std::string ip, size_t id)
     {
         //does not need to go into the job queue
         //May need to adjust job queue to remove a job. It may have already been removed though.
@@ -168,78 +177,75 @@ namespace smpl
         if(this->getLoggingInfo())
         {
             logMutex.lock();
-            std::string ipString = this->getNetworkConnection()->getIPFromConnection(id);
             int portNum = this->getNetworkConnection()->getPort();
 
-            StringTools::println("DISCONNECTION FROM %s on port %d as ID = %d BY CLIENT\n", ipString.c_str(), portNum, id);
+            StringTools::println("DISCONNECTION FROM %s on port %d as ID = %d BY CLIENT\n", ip.c_str(), portNum, id);
             logMutex.unlock();
         }
     }
     
-    void HttpServer::setGetFuncMapper(std::function<bool(HttpServer*, WebRequest&, std::vector<unsigned char>&, size_t)> func)
+    void HttpServer::setGetFuncMapper(std::function<char(HttpServer*, WebRequest&, std::vector<unsigned char>&, std::string, size_t)> func)
     {
         getFuncMapper = func;
     }
 
-    void HttpServer::setPostFuncMapper(std::function<bool(HttpServer*, WebRequest&, std::vector<unsigned char>&, size_t)> func)
+    void HttpServer::setPostFuncMapper(std::function<char(HttpServer*, WebRequest&, std::vector<unsigned char>&, std::string, size_t)> func)
     {
         postFuncMapper = func;
     }
     
-    void HttpServer::setExtraRequestHandlerFuncMapper(std::function<bool(HttpServer*, WebRequest&, std::vector<unsigned char>&, size_t)> func)
+    void HttpServer::setExtraRequestHandlerFuncMapper(std::function<char(HttpServer*, WebRequest&, std::vector<unsigned char>&, std::string, size_t)> func)
     {
         extraReqHandler = func;
     }
     
-    void HttpServer::setResponseHandlerFuncMapper(std::function<void(HttpServer*, WebRequest&, size_t, WebRequest&)> func)
+    void HttpServer::setResponseHandlerFuncMapper(std::function<void(HttpServer*, WebRequest&, std::string, size_t, WebRequest&)> func)
     {
         extraResponseHandler = func;
     }
 
-    bool HttpServer::defaultGetFunction(WebRequest& req, size_t id)
+    char HttpServer::defaultGetFunction(WebRequest& req, std::string ip, size_t id)
     {
         if(conn == nullptr)
         {
             return false;
         }
-
-        return sendFile(req, id);
+        return internalSendFile(req, ip, id);
     }
 
-    bool HttpServer::defaultGetFunction(WebRequest& req, File f, size_t id)
+    char HttpServer::defaultGetFunction(WebRequest& req, File f, std::string ip, size_t id)
     {
         if(conn == nullptr)
         {
             return false;
         }
-
-        return sendFile(req, f, id);
+        return internalSendFile(req, f, ip, id);
     }
 
-    bool HttpServer::handleRecv(WebRequest& req, std::vector<unsigned char>& body, size_t id)
+    char HttpServer::handleRecv(WebRequest& req, std::vector<unsigned char>& body, std::string ip, size_t id)
     {
         if(req.getType() == WebRequest::TYPE_GET || req.getType() == WebRequest::TYPE_HEAD)
         {
             if(getFuncMapper != nullptr)
-                return getFuncMapper(this, req, body, id);
+                return getFuncMapper(this, req, body, ip, id);
             else
-                return defaultGetFunction(req, id);
+                return defaultGetFunction(req, ip, id);
         }
         else if(req.getType() == WebRequest::TYPE_POST)
         {
             if(postFuncMapper != nullptr)
-                return postFuncMapper(this, req, body, id);
+                return postFuncMapper(this, req, body, ip, id);
         }
         else if(req.getType() == WebRequest::TYPE_OPTIONS)
         {
-            return handleOptions(req, id);
+            return handleOptions(req, ip, id);
         }
         else
         {
             if(extraReqHandler != nullptr)
-                return extraReqHandler(this, req, body, id);
+                return extraReqHandler(this, req, body, ip, id);
         }
-        return false;
+        return STATUS_ERROR;
     }
 
     void HttpServer::setOptionsForURL(std::string url, unsigned int allowedRequestFlags, std::string allowedCustomHeaders)
@@ -247,7 +253,7 @@ namespace smpl
         urlsAndAllowedMethodsAndHeaders[url] = {allowedRequestFlags, allowedCustomHeaders};
     }
     
-    bool HttpServer::handleOptions(WebRequest& req, size_t id)
+    char HttpServer::handleOptions(WebRequest& req, std::string ip, size_t id)
     {
         //Must return allowed methods and request headers.
         //Lazy and will just say that by default, GET, HEAD, and OPTIONS are available
@@ -291,7 +297,7 @@ namespace smpl
         response.addKeyValue("Access-Control-Max-Age", StringTools::toString(maxAgeCache)); //In seconds. Basically 5 minutes for debugging
 
         //send header first. Should be able to send the entire thing at once.
-        int bytesSent = sendResponse(response, id, req);
+        int bytesSent = sendResponse(response, ip, id, req);
         if(bytesSent < 0)
         {
             //problem
@@ -301,10 +307,10 @@ namespace smpl
                 StringTools::println("ERROR ON SEND OPTIONS - 200 ID = %llu", id);
                 logMutex.unlock();
             }
-            return false;
+            return STATUS_ERROR;
         }
 
-        return true;
+        return STATUS_DONE;
     }
     
     void HttpServer::start()
@@ -583,18 +589,18 @@ namespace smpl
         }
     }
 
-    bool HttpServer::sendFile(WebRequest& req, size_t id)
+    char HttpServer::internalSendFile(WebRequest& req, std::string ip, size_t id)
     {
         if(conn == nullptr)
         {
-            return false;
+            return STATUS_ERROR;
         }
 
         if(req.getType() != WebRequest::TYPE_GET && req.getType() != WebRequest::TYPE_HEAD)
         {
             //problem. send error. Must be a get request
             send404Error(id);
-            return false;
+            return STATUS_ERROR;
         }
                 
         //parse the request for the resource name
@@ -642,7 +648,7 @@ namespace smpl
             //probably not a local path.
             //reject
             send403Error(id);
-            return false;
+            return STATUS_ERROR;
         }
 
         //check for alt as well
@@ -663,25 +669,25 @@ namespace smpl
         {
             //problem. send 404 error.
             send404Error(id);
-            return false;
+            return STATUS_ERROR;
         }
 
         //use other send function
-        return sendFile(req, validFName, id);
+        return internalSendFile(req, validFName, ip, id);
     }
     
-    bool HttpServer::sendFile(WebRequest& req, File f, size_t id)
+    char HttpServer::internalSendFile(WebRequest& req, File f, std::string ip, size_t id)
     {
         if(conn == nullptr)
         {
-            return false;
+            return STATUS_ERROR;
         }
 
         if(req.getType() != WebRequest::TYPE_GET && req.getType() != WebRequest::TYPE_HEAD)
         {
             //problem. send error. Must be a get request
             send404Error(id);
-            return false;
+            return STATUS_ERROR;
         }
                 
         //use f regardless of what the request was.
@@ -691,7 +697,7 @@ namespace smpl
         {
             //problem. send 404 error.
             send404Error(id);
-            return false;
+            return STATUS_ERROR;
         }
 
         //get content length
@@ -713,7 +719,7 @@ namespace smpl
             {
                 //problem. send error.
                 sendRangeError(id, ranges);
-                return false;
+                return STATUS_ERROR;
             }
 
             if(splitRanges.size() == 2 && splitRanges[0].empty())
@@ -735,7 +741,7 @@ namespace smpl
         {
             //problem send error
             sendRangeError(id, ranges);
-            return false;
+            return STATUS_ERROR;
         }
 
         //check user agent. Browser should have Mozilla in it.
@@ -790,7 +796,7 @@ namespace smpl
         if(req.getType() == WebRequest::TYPE_HEAD)
         {
             //end early
-            int bytesSent = sendResponse(resp, id, req);
+            int bytesSent = sendResponse(resp, ip, id, req);
             if(bytesSent < 0)
             {
                 //problem
@@ -800,17 +806,16 @@ namespace smpl
                     StringTools::println("ERROR ON SEND HEAD - 200 ID = %llu", id);
                     logMutex.unlock();
                 }
-                return false;
+                return STATUS_ERROR;
             }
-            return true;
+            return STATUS_DONE;
         }
         
-        int bytesSent = sendResponse(resp, id, req);
-        staggeredSend(id, f, startRange, endRange);
-        return true;
+        int bytesSent = sendResponse(resp, ip, id, req);
+        return staggeredSend(id, f, startRange, endRange);
     }
 
-    void HttpServer::staggeredSend(size_t id, File f, size_t startPoint, size_t endPoint)
+    char HttpServer::staggeredSend(size_t id, File f, size_t startPoint, size_t endPoint)
     {
         this->jobMutex.lock();
         this->jobSendPointers.erase(id);
@@ -827,26 +832,35 @@ namespace smpl
                 logMutex.unlock();
             }
 
-            //should close socket
-            conn->disconnect(id);
-            return;
+            return STATUS_ERROR;
         }
 
         if(startPoint + bytesSent < endPoint)
         {
             //add to jobs
             this->jobMutex.lock();
-            this->jobSendPointers[id] = this->jobQueue->addJob( [this, id, f, startPoint, endPoint, bytesSent]() ->void { this->staggeredSend(id, f, startPoint + bytesSent, endPoint); });
+            this->jobSendPointers[id] = this->jobQueue->addJob( [this, id, f, startPoint, endPoint, bytesSent]() ->void { 
+                char status = this->staggeredSend(id, f, startPoint + bytesSent, endPoint);
+                if((status == STATUS_DONE && !allowKeepAlive) || status == STATUS_ERROR)
+                {
+                    //should close socket
+                    conn->disconnect(id);
+                }
+            });
             this->jobMutex.unlock();
         }
+        else
+            return STATUS_DONE;
+        
+        return STATUS_CONTINUE;
     }
 
     //WRAPPERS AROUND NETWORK FOR EASIER OPERATION
 
-    int HttpServer::sendResponse(WebRequest& response, size_t id, WebRequest& req)
+    int HttpServer::sendResponse(WebRequest& response, std::string ip, size_t id, WebRequest& req)
     {
         if(extraResponseHandler != nullptr)
-            extraResponseHandler(this, req, id, response);
+            extraResponseHandler(this, req, ip, id, response);
         return conn->sendMessage(response, id);
     }
     int HttpServer::sendError(WebRequest& response, size_t id)

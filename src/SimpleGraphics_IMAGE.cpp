@@ -246,19 +246,23 @@ namespace smpl
 
 		int x2 = x1+width;
 		int y2 = y1+height;
+		bool flipX = false;
+		bool flipY = false;
 
-		if(x1 < x2)
+		if(x1 > x2)
 		{
 			int temp = x2;
 			x2 = x1;
 			x1 = temp;
+			flipX = true;
 		}
 
-		if(y1 < y2)
+		if(y1 > y2)
 		{
 			int temp = y2;
 			y2 = y1;
 			y1 = temp;
+			flipY = true;
 		}
 
 		int tempWidth = surf->getWidth();
@@ -283,34 +287,76 @@ namespace smpl
 		int imgDrawHeight = img->getHeight();
 		
 		
-		if(y1 >= maxY || x1 >= maxX || x2 <= minX || y2 <= minY)
+		if(y1 >= maxYBound || x1 >= maxXBound || x2 <= minXBound || y2 <= minYBound)
 			return; //Outside of the bounds that can be rendered
 		
 		int approxArea = (maxX-minX)*(maxY-minY);
 		Color* surfPixels = surf->getPixels();
-		Vec4f colorMult = Vec4f((double)SimpleGraphics::activeColor.red / 255.0, (double)SimpleGraphics::activeColor.green / 255.0, (double)SimpleGraphics::activeColor.blue / 255.0, (double)SimpleGraphics::activeColor.alpha / 255.0);
+		SIMD_U32 activeColorAsSIMD = activeColor.toUInt();
+		Vec4f colorMult = Vec4f((float)SimpleGraphics::activeColor.red / 255.0, (float)SimpleGraphics::activeColor.green / 255.0, (float)SimpleGraphics::activeColor.blue / 255.0, (float)SimpleGraphics::activeColor.alpha / 255.0);
 		
-		LARGE_ENOUGH_CLAUSE(approxArea)
-		#pragma omp parallel for
+		// LARGE_ENOUGH_CLAUSE(approxArea)
+		// // #pragma omp parallel for
+		// for(int tY=minY; tY<maxY; tY++)
+		// {
+		// 	int imgY = startImgY + (tY-minY);
+		// 	double v = imgDrawHeight * ((float)(imgY-0.5) / (y2-y1));
+		// 	int imgX = startImgX;
+		// 	for(int tX=minX; tX<maxX; tX++)
+		// 	{
+		// 		double u = imgDrawWidth * ((float)imgX / (x2-x1));
+		// 		Color c = img->getPixel(u, v, Image::CLAMP);
+		// 		c.red = (unsigned char)MathExt::clamp<float>(c.red * colorMult.x, 0.0, 255.0);
+		// 		c.green = (unsigned char)MathExt::clamp<float>(c.green * colorMult.y, 0.0, 255.0);
+		// 		c.blue = (unsigned char)MathExt::clamp<float>(c.blue * colorMult.z, 0.0, 255.0);
+		// 		c.alpha = (unsigned char)MathExt::clamp<float>(c.alpha * colorMult.w, 0.0, 255.0);
+		// 		drawPixel(tX, tY, c, surf);
+
+		// 		imgX++;
+		// 	}
+		// }
+		// RESET_LARGE_ENOUGH_CLAUSE()
+
+		const uint32_t offsetArray[16] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}; //More than enough for future expansion. Only need 8
+		SIMD_U32 offsetLoadedAsSIMD = SIMD_U32::load(offsetArray);
+		SIMD_FP32 widthOfDesiredArea = (x2-x1);
+		
 		for(int tY=minY; tY<maxY; tY++)
 		{
 			int imgY = startImgY + (tY-minY);
-			double v = imgDrawHeight * (imgY / (y2-y1));
-			int imgX = startImgX;
-			for(int tX=minX; tX<maxX; tX++)
+			float v = imgDrawHeight * ((float)(imgY) / (y2-y1));
+			SIMD_FP32 vAsSIMD = v;
+
+			int tX=minX;
+			size_t endPoint = minX + SIMD_U32::getSIMDBound(maxX-minX);
+			for(; tX < endPoint; tX += SIMD_U32::SIZE)
 			{
-				double u = imgDrawWidth * (imgX / (x2-x1));
+				SIMD_FP32 floatXIndexValues = SIMD_FP32((float)imgDrawWidth) * (SIMD_FP32)(offsetLoadedAsSIMD + SIMD_U32(tX));
+				SIMD_FP32 u = floatXIndexValues / widthOfDesiredArea;
+				
+				#if (OPTI==0)
+				SIMD_U32 src = img->getPixel(u.values, vAsSIMD.values, Image::CLAMP).toUInt();
+				#else
+				SIMD_U32 src = img->getPixel(u.values, vAsSIMD.values, Image::CLAMP);
+				#endif
+				
+				SIMD_U32 dest = SIMD_U32::load((unsigned int*)&surfPixels[tX + tY*tempWidth]);
+				SIMD_U32 srcMultiplied = multColor(src.values, activeColorAsSIMD.values);
+				SIMD_U32 blended = blend(srcMultiplied.values, dest.values);
+
+				blended.store((unsigned int*)&surfPixels[tX + tY*tempWidth]);
+			}
+			for(; tX < maxX; tX++)
+			{
+				double u = imgDrawWidth * ((float)tX / (x2-x1));
 				Color c = img->getPixel(u, v, Image::CLAMP);
 				c.red = (unsigned char)MathExt::clamp<float>(c.red * colorMult.x, 0.0, 255.0);
 				c.green = (unsigned char)MathExt::clamp<float>(c.green * colorMult.y, 0.0, 255.0);
 				c.blue = (unsigned char)MathExt::clamp<float>(c.blue * colorMult.z, 0.0, 255.0);
 				c.alpha = (unsigned char)MathExt::clamp<float>(c.alpha * colorMult.w, 0.0, 255.0);
 				drawPixel(tX, tY, c, surf);
-
-				imgX++;
 			}
 		}
-		RESET_LARGE_ENOUGH_CLAUSE()
 	}
 
 	void SimpleGraphics::drawSpritePart(Image* img, int x, int y, int imgX, int imgY, int imgW, int imgH, Image* surf)

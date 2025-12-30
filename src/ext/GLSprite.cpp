@@ -28,7 +28,7 @@
 			images = o.images;
 		}
 
-		GLSprite::GLSprite(Sprite& o)
+		GLSprite::GLSprite(const Sprite& o)
 		{
 			for(size_t i=0; i<o.getSize(); i++)
 			{
@@ -105,7 +105,7 @@
 			}
 		}
 
-		void GLSprite::loadImage(File file, bool clear)
+		void GLSprite::loadImage(File file, bool clear, bool includeAlpha, GLTextureParams params)
 		{
 			if(clear)
 				dispose();
@@ -114,14 +114,14 @@
 			s.loadImage(file);
 			for (size_t i=0; i<s.getSize(); i++)
 			{
-				GLTexture* k = new GLTexture(s.getImage(i), true);
+				GLTexture* k = new GLTexture(s.getImage(i), includeAlpha, params);
 				addTexture(k);
 				delayTimeForFrame.push_back(s.getDelayTime(i));
 			}
 		}
 
 		
-		void GLSprite::loadSpriteSheet(File file, int width, int height, int xStride, int yStride, int count, bool clear)
+		void GLSprite::loadSpriteSheet(File file, int width, int height, int xStride, int yStride, int count, bool clear, bool includeAlpha, GLTextureParams params)
 		{
 			if(clear)
 				dispose();
@@ -130,7 +130,7 @@
 			s.loadSpriteSheet(file, width, height, xStride, yStride, count);
 			for (size_t i=0; i<s.getSize(); i++)
 			{
-				GLTexture* k = new GLTexture(s.getImage(i), true);
+				GLTexture* k = new GLTexture(s.getImage(i), includeAlpha, params);
 				addTexture(k);
 				delayTimeForFrame.push_back(s.getDelayTime(i));
 			}

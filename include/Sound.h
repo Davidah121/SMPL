@@ -1,7 +1,9 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include "Vec2f.h"
 #include "File.h"
+#include "Streamable.h"
 
 namespace smpl
 {
@@ -378,7 +380,7 @@ namespace smpl
 		void saveWAV(File file);
 
 	private:
-		void loadWAV(std::vector<unsigned char> data);
+		void loadWAV(StreamableFile& f);
 		
 		void dispose();
 

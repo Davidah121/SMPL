@@ -3,6 +3,7 @@
 
 namespace smpl
 {
+
     SimpleJobQueue::SimpleJobQueue(int threads)
     {
         running = true;
@@ -144,7 +145,7 @@ namespace smpl
             if(!knownToHaveMoreWork)
             {
                 std::unique_lock<std::mutex> temporaryLock(haltMutex);
-                cv.wait(temporaryLock);
+                cv.wait_for(temporaryLock, std::chrono::milliseconds(10));
             }
             
             jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
@@ -157,6 +158,7 @@ namespace smpl
             }
 
             knownToHaveMoreWork = jobs.size() > 0;
+            
             jobQueueMutex.unlock();
 
             //execute job if we got one
@@ -168,6 +170,7 @@ namespace smpl
             jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
             jobsInProgress[id] = SIZE_MAX;
             jobQueueMutex.unlock();
+
         }
     }
     

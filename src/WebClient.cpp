@@ -66,17 +66,17 @@ namespace smpl
         
         if(network != nullptr)
         {
-            network->setOnConnectFunction( [this](size_t id) ->void{
+            network->setOnConnectFunction( [this](std::string ip, size_t id) ->void{
                 if(this->onConnectionFunction != nullptr)
                     this->onConnectionFunction(this);
                 if(shouldResendRequest)
                     resendRequest();
             });
-            network->setOnDisconnectFunction( [this](size_t id) ->void{
+            network->setOnDisconnectFunction( [this](std::string ip, size_t id) ->void{
                 if(this->onDisconnectionFunction != nullptr)
                     this->onDisconnectionFunction(this);
             });
-            network->setOnDataAvailableFunction( [this](size_t id) ->void{
+            network->setOnDataAvailableFunction( [this](std::string ip, size_t id) ->void{
                 this->internalOnDataAvailable();
             });
         }
@@ -98,7 +98,7 @@ namespace smpl
     
     bool WebClient::isValid()
     {
-        return network == nullptr;
+        return network != nullptr;
     }
 
     void WebClient::setMaxBufferSize(int size)
@@ -210,21 +210,36 @@ namespace smpl
         {
             internalTimeout = false;
             sentRequest = WebRequest(req); //make a copy of the request
-            sentRequest.addKeyValue("User-Agent", userAgent); //assuming it doesn't exist already
-            if(alwaysKeepAlive)
-                sentRequest.addKeyValue("Connection", "keep-alive");
-            sentRequest.addKeyValue("Cache-Control", "no-cache");
-            sentRequest.addKeyValue("Pragma", "no-cache");
-            sentRequest.addKeyValue("Host", hostStr);
+            // sentRequest.addKeyValue("User-Agent", userAgent); //assuming it doesn't exist already
+            // if(alwaysKeepAlive)
+            //     sentRequest.addKeyValue("Connection", "keep-alive");
+            // sentRequest.addKeyValue("Cache-Control", "no-cache");
+            // sentRequest.addKeyValue("Pragma", "no-cache");
+            // sentRequest.addKeyValue("Host", hostStr);
 
             
             int sentAmount = network->sendMessage(sentRequest, 0);
-            if(sentAmount != req.getBytesInRequest())
+            if(sentAmount != sentRequest.getBytesInRequest())
                 return false;
             else
                 return true;
         }
         return false;
+    }
+
+    int WebClient::sendMessage(std::vector<unsigned char>& message)
+    {
+        return network->sendMessage(message);
+    }
+
+    int WebClient::sendMessage(const std::string& msg)
+    {
+        return network->sendMessage(msg);
+    }
+
+    int WebClient::sendFile(char* filename, size_t length, size_t offset)
+    {
+        return network->sendFile(filename, length, offset);
     }
     
     void WebClient::resendRequest()

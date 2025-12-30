@@ -142,14 +142,15 @@
 			int b=0;
 			int totalLength = bufferSize;
 			int totalBuffers = amtBuffers;
+			Vec2f* audioData = new Vec2f[totalLength];
 
-			while(true)
+			while(getRunning())
 			{
 				prepareSounds();
 
 				if(copySounds.size()>0)
 				{
-					Vec2f* audioData = new Vec2f[totalLength];
+					memset((void*)audioData, 0, sizeof(Vec2f)*totalLength);
 					
 					for(Sound* s : copySounds)
 					{
@@ -212,7 +213,6 @@
 					if(!getRunning())
 					{
 						delete[] finalData;
-						delete[] audioData;
 						break;
 					}
 
@@ -226,24 +226,24 @@
 					catch(AudioOutError& e)
 					{
 						StringTools::println(e.what());
-						delete[] audioData;
+						delete[] finalData;
 						break;
 					}
 					catch(...)
 					{
 						//do nothing.
 						StringTools::println("EXCEPTION THROWN");
-						delete[] audioData;
+						delete[] finalData;
 						break;
 					}
-
-					delete[] audioData;
 				}
 				else
 				{
 					System::sleep(0,1);
 				}
 			}
+
+			delete[] audioData;
 		}
 
 		void AudioOut::unprepareData(int b)

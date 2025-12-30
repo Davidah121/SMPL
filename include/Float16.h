@@ -1,5 +1,6 @@
 #pragma once
-#include <immintrin.h>
+#include <intrin.h>
+#include "StandardTypes.h"
 struct Float16
 {
     Float16(){}

@@ -50,7 +50,7 @@ namespace smpl
 		delayTimeForFrame.clear();
 	}
 
-	Image* Sprite::getImage(size_t index)
+	Image* Sprite::getImage(size_t index) const
 	{
 		if (index < images.size())
 		{
@@ -59,7 +59,7 @@ namespace smpl
 		return nullptr;
 	}
 
-	int Sprite::getDelayTime(size_t index)
+	int Sprite::getDelayTime(size_t index) const
 	{
 		if(index < delayTimeForFrame.size())
 			return delayTimeForFrame[index];
@@ -71,7 +71,7 @@ namespace smpl
 		delayTimeForFrame[index] = milliSecondsDelay;
 	}
 
-	size_t Sprite::getSize()
+	size_t Sprite::getSize() const
 	{
 		return images.size();
 	}
@@ -191,17 +191,17 @@ namespace smpl
 		}
 	}
 
-	bool Sprite::saveAGIF(File f, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold)
+	bool Sprite::saveAGIF(File f, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold) const
 	{
-		return Image::saveAGIF(f, images.data(), images.size(), delayTimeForFrame.data(), loops, paletteSize, dither, saveAlpha, alphaThreshold);
+		return Image::saveAGIF(f, (const Image**)images.data(), images.size(), delayTimeForFrame.data(), loops, paletteSize, dither, saveAlpha, alphaThreshold);
 	}
 
-	bool Sprite::saveAPNG(File f, bool saveAlpha, bool greyscale, bool strongCompression)
+	bool Sprite::saveAPNG(File f, bool saveAlpha, bool greyscale, bool strongCompression) const
 	{
-		return Image::saveAPNG(f, images.data(), images.size(), delayTimeForFrame.data(), loops, saveAlpha, greyscale, strongCompression);
+		return Image::saveAPNG(f, (const Image**)images.data(), images.size(), delayTimeForFrame.data(), loops, saveAlpha, greyscale, strongCompression);
 	}
 
-	bool Sprite::shouldLoop()
+	bool Sprite::shouldLoop() const
 	{
 		return loops;
 	}

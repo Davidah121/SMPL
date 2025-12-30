@@ -2,6 +2,7 @@
 
 #ifdef USE_OPENGL
 
+    #include "StandardTypes.h"
 	#include "Image.h"
 	#include "ext/GLTexture.h"
 	#include "SimpleSerialization.h"
@@ -28,7 +29,7 @@
 			 * 
 			 * @param o 
 			 */
-			GLSprite(Sprite& o);
+			GLSprite(const Sprite& o);
 
 			/**
 			 * @brief Construct a new GLSprite object from another GLSprite object
@@ -111,7 +112,7 @@
 			 * 
 			 * @param file 
 			 */
-			void loadImage(File file, bool clear=false);
+			void loadImage(File file, bool clear=false, bool includeAlpha=true, GLTextureParams params = {GLTexture::BEHAVIOR_CLAMP_TO_EDGE, GLTexture::FILTER_LINEAR});
 			
 			/**
 			 * @brief Loads an image that contains a sprite sheet/atlas. These images contain smaller images separated
@@ -134,7 +135,7 @@
 			 * 		Clears the sprite when called
 			 * 		Default is true.
 			 */
-			void loadSpriteSheet(File file, int width, int height, int xStride, int yStride, int count, bool clear=false);
+			void loadSpriteSheet(File file, int width, int height, int xStride, int yStride, int count, bool clear=false, bool includeAlpha=true, GLTextureParams params = {GLTexture::BEHAVIOR_CLAMP_TO_EDGE, GLTexture::FILTER_LINEAR});
 			
 
 			/**

@@ -1,4 +1,4 @@
-#include <catch2/catch_amalgamated.hpp>
+#include <catch_amalgamated.hpp>
 #include "ColorNameConverter.h"
 
 TEST_CASE("Test the ColorNameConverter class" "[ColorNameConverter]")

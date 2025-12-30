@@ -10,7 +10,7 @@
 
 namespace smpl
 {
-	void Image::saveBMP(File file, unsigned char alphaThreshold, bool greyscale)
+	void Image::saveBMP(File file, unsigned char alphaThreshold, bool greyscale) const
 	{
 		//save header
 		//save pixel data

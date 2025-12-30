@@ -6,7 +6,6 @@ namespace smpl
 {
 	WebRequest::WebRequest()
 	{
-
 	}
 
 	WebRequest::WebRequest(char* buffer, size_t size)
@@ -32,6 +31,8 @@ namespace smpl
 		bytesInHeader = other.bytesInHeader;
 		header = other.header;
 		data = other.data;
+		url = other.url;
+		cookieMap = other.cookieMap;
 	}
 
 	void WebRequest::operator=(WebRequest& other)
@@ -41,6 +42,8 @@ namespace smpl
 		bytesInHeader = other.bytesInHeader;
 		header = other.header;
 		data = other.data;
+		url = other.url;
+		cookieMap = other.cookieMap;
 	}
 	
 	WebRequest::WebRequest(WebRequest&& other) noexcept
@@ -50,6 +53,8 @@ namespace smpl
 		bytesInHeader = std::move(other.bytesInHeader);
 		header = std::move(other.header);
 		data = std::move(other.data);
+		url = std::move(other.url);
+		cookieMap = std::move(other.cookieMap);
 		other.reset();
 	}
 	void WebRequest::operator=(WebRequest&& other) noexcept
@@ -59,6 +64,8 @@ namespace smpl
 		bytesInHeader = std::move(other.bytesInHeader);
 		header = std::move(other.header);
 		data = std::move(other.data);
+		url = std::move(other.url);
+		cookieMap = std::move(other.cookieMap);
 		other.reset();
 	}
 
@@ -67,6 +74,7 @@ namespace smpl
 		type = TYPE_SERVER;
 		bytesInHeader = 0;
 		header = "";
+		cookieMap.clear();
 		data.clear();
 	}
 
@@ -329,26 +337,29 @@ namespace smpl
 			buffer += it->first + ": " + it->second + "\r\n";
 		}
 
-		//add cookies
-		if(type == TYPE_SERVER)
+		if(!cookieMap.empty())
 		{
-			for(auto& it : cookieMap)
+			//add cookies
+			if(type == TYPE_SERVER)
 			{
-				buffer += "Set-Cookie: " + it.first + "=" + it.second.first + ";";
-				for(auto& option : it.second.second)
+				for(auto& it : cookieMap)
 				{
-					buffer += option + ";";
+					buffer += "Set-Cookie: " + it.first + "=" + it.second.first + ";";
+					for(auto& option : it.second.second)
+					{
+						buffer += option + ";";
+					}
+					buffer += "\r\n";
+				}
+			}
+			else
+			{
+				for(auto& it : cookieMap)
+				{
+					buffer += "Cookie: " + it.first + "=" + it.second.first + "; ";
 				}
 				buffer += "\r\n";
 			}
-		}
-		else
-		{
-			for(auto& it : cookieMap)
-			{
-				buffer += "Cookie: " + it.first + "=" + it.second.first + "; ";
-			}
-			buffer += "\r\n";
 		}
 		buffer += "\r\n";
 

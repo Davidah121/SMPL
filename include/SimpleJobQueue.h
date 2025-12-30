@@ -1,6 +1,7 @@
 #pragma once
 #include "PriorityQueue.h"
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include "Concurrency.h"
 #include "Queue.h"
 #include <thread>

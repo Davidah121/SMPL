@@ -1,6 +1,7 @@
 #pragma once
 #ifdef USE_OPENGL
 
+    #include "StandardTypes.h"
     #include "MathExt.h"
     #include "ext/GLSingleton.h"
     #include "ext/GLWindow.h"

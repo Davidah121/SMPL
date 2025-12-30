@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include "SIMD.h"
 #include <limits>
 #include <math.h>

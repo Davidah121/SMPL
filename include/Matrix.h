@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include "Concurrency.h"
 #include <math.h>
 #include "SimpleSerialization.h"
@@ -1794,14 +1795,14 @@ namespace smpl
 			inc = SIMD_TEMPLATE<T>::SIZE;
 		}
 		
-		LARGE_ENOUGH_CLAUSE(C.rows)
-		#pragma omp parallel for
+		// LARGE_ENOUGH_CLAUSE(C.rows)
+		// #pragma omp parallel for
 		for(size_t i=0; i<C.rows; i++)
 		{
 			LARGE_ENOUGH_CLAUSE(columnsAdjusted)
 			if(SIMD_TEMPLATE<T>::SIZE == 1)
 			{
-				#pragma omp parallel for
+				// #pragma omp parallel for
 				for(size_t j=0; j<columnsAdjusted; j+=inc) //compute 4 at once
 				{
 					T sums[4] = {T(), T(), T(), T()}; //defaults to 0 for all primitive types or the equivalent 0 in other types.
@@ -1821,23 +1822,22 @@ namespace smpl
 			}
 			else
 			{
-				#pragma omp parallel for
+				// #pragma omp parallel for
 				for(size_t j=0; j<columnsAdjusted; j+=inc) //compute 4 at once
 				{
 					SIMD_TEMPLATE<T> sums = T();
 					for(size_t k=0; k<columns; k++)
 					{
 						SIMD_TEMPLATE<T> aValue = data[k + i*columns];
-						SIMD_TEMPLATE<T> bValue;
-						bValue.load(&B.data[j + k*B.columns]);
+						SIMD_TEMPLATE<T> bValue = SIMD_TEMPLATE<T>::load(&B.data[j + k*B.columns]);
 						sums += aValue * bValue;
 					}
 					sums.store(&C[i][j]);
 				}
 			}
 			
-			LARGE_ENOUGH_CLAUSE(columnsAdjusted - C.columns)
-			#pragma omp parallel for
+			// LARGE_ENOUGH_CLAUSE(columnsAdjusted - C.columns)
+			// #pragma omp parallel for
 			for(size_t j=columnsAdjusted; j<C.columns; j++)
 			{
 				T sum = T();
@@ -1964,14 +1964,12 @@ namespace smpl
 				#pragma omp parallel for
 				for(size_t j=0; j<columnsAdjusted; j+=inc) //compute 4 at once
 				{
-					SIMD_TEMPLATE<T> sums = T();
-					sums.load(&C.data[i + j*result.columns]);
+					SIMD_TEMPLATE<T> sums = SIMD_TEMPLATE<T>::load(&C.data[i + j*result.columns]);
 					
 					for(size_t k=0; k<columns; k++)
 					{
 						SIMD_TEMPLATE<T> aValue = data[k + i*columns];
-						SIMD_TEMPLATE<T> bValue;
-						bValue.load(&B.data[j + k*B.columns]);
+						SIMD_TEMPLATE<T> bValue = SIMD_TEMPLATE<T>::load(&B.data[j + k*B.columns]);
 						sums += aValue * bValue;
 					}
 					sums.store(&result[i][j]);

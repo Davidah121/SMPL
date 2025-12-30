@@ -41,9 +41,10 @@ namespace smpl
 		unsigned int adlerValue = Cryptography::adler32(data, size);
 
 		BinarySet compressedData;
-		int blocks = size / 0xFFFF;
+		int blocks = (int)MathExt::ceil((double)size / 1000000);
 		if(blocks <= 0)
 			blocks = 1;
+		blocks = 1;
 		Compression::compressDeflate(&compressedData, data, size, blocks, 7, strongCompression);
 		
 		std::vector<unsigned char> binarySetBytes = compressedData.getByteRef();
@@ -162,7 +163,7 @@ namespace smpl
 		f.writeBytes((unsigned char*)FDATHeader.data(), FDATHeader.size());
 	}
 
-	void Image::savePNG(File file, bool saveAlpha, bool greyscale, bool strongCompression)
+	void Image::savePNG(File file, bool saveAlpha, bool greyscale, bool strongCompression) const
 	{
 		SimpleFile f = SimpleFile(file, SimpleFile::WRITE);
 
@@ -317,7 +318,7 @@ namespace smpl
 		f.close();
 	}
 
-	bool Image::saveAPNG(File file, Image** images, int size, int* delayTimePerFrame, bool loops, bool saveAlpha, bool greyscale, bool strongCompression)
+	bool Image::saveAPNG(File file, const Image** images, int size, const int* delayTimePerFrame, bool loops, bool saveAlpha, bool greyscale, bool strongCompression)
 	{
 		if(images == nullptr || size == 0)
 			return false; //No images to save

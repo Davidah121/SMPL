@@ -1,0 +1,39 @@
+Should be able to import them from json or netscape format
+Should be able to store and send them out.
+    New datatype that just stores cookies and can be added to any webrequest
+
+Client and server no longer needs an intermediate step between send to include cookies
+    Each client in a server has its own cookies.
+    A Client Network (dev side class) also has its own cookies so managing them separately is not required
+
+
+
+Netscape Format:
+Number	    Type Example	    Description
+string	    example.com	        the domain name
+boolean	    FALSE	            include subdomains
+string	    /foobar/	        path
+boolean	    TRUE	            send/receive over HTTPS only
+number	    1462299217	        expires at - seconds since Jan 1st 1970, or 0
+string	    person	            name of the cookie
+string	    daniel	            value of the cookie
+
+
+
+JSON Format:
+{
+    "name": "_GRECAPTCHA",
+    "value": "09AEj1J2N-1_VuwV2tsi-bPaWdK_xINTDsR2X9bEr2Kx1HHOkf6jJ59kNc45Kv_r1dY_VJ-xdmGBDw4YFxNv3w6-A",
+    "domain": "www.google.com",
+    "path": "/recaptcha",
+    "expires": 1645971811,
+    "httpOnly": false,
+    "secure": true
+},
+
+
+demo.cyotek.com	FALSE	/features/	FALSE	1678706015	CrawlDemo_Path	gamma
+demo.cyotek.com	FALSE	/	FALSE	1678706015	CrawlDemo_Domain	delta
+demo.cyotek.com	FALSE	/	TRUE	1678706015	CrawlDemo_Secure	epsilon
+#HttpOnly_demo.cyotek.com	FALSE	/	FALSE	1678706015	CrawlDemo_HttpOnly	zeta
+demo.cyotek.com	FALSE	/features/	FALSE	0	CrawlDemo_Session	alpha

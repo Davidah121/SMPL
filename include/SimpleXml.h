@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include "SimpleFile.h"
 #include "SimpleHashMap.h"
 // #include <unordered_map>
@@ -74,6 +75,7 @@ namespace smpl
 
         std::vector<XmlNode*> getNodesPattern(const std::vector<std::string>& nameOrder, size_t offset=0);
         std::vector<ChildNode>& getChildNodes();
+        
         SimpleHashMap<std::string, std::string>& getRawAttributes();
 
         void setTitle(std::string s);

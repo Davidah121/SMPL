@@ -2,6 +2,7 @@
 
 #ifdef USE_DIRECTX
 
+    #include "StandardTypes.h"
     #include "ext/DXSingleton.h"
     #include "Image.h"
 

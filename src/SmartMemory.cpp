@@ -3,7 +3,7 @@
 namespace smpl
 {
     std::unordered_map<void*, MemInfo> StaticMemManager::pointerData;
-    smpl::HybridSpinSemaphore StaticMemManager::staticMemSemaphore;
+    smpl::ReadWriterLock StaticMemManager::staticMemSemaphore;
 
     MemInfo StaticMemManager::addPointer(void* p, bool isArray, size_t sizeInBytes, bool deleteOnLast, bool bypassOwnership, void (*deleteFunc)(void*, bool))
     {
@@ -11,7 +11,7 @@ namespace smpl
             return {};
 
         MemInfo m;
-        staticMemSemaphore.lock(smpl::HybridSpinSemaphore::TYPE_WRITE);
+        staticMemSemaphore.lock(smpl::ReadWriterLock::TYPE_WRITE);
         auto it = pointerData.find(p);
         if(it != pointerData.end())
         {
@@ -39,7 +39,7 @@ namespace smpl
             return;
             
         MemInfo mInfo = MemInfo(); //default
-        staticMemSemaphore.lock(smpl::HybridSpinSemaphore::TYPE_WRITE);
+        staticMemSemaphore.lock(smpl::ReadWriterLock::TYPE_WRITE);
         //decrement the counter.
         auto it = pointerData.find(p);
         if(it != pointerData.end())
@@ -67,7 +67,7 @@ namespace smpl
             return;
             
         MemInfo mInfo = MemInfo(); //default
-        staticMemSemaphore.lock(smpl::HybridSpinSemaphore::TYPE_WRITE);
+        staticMemSemaphore.lock(smpl::ReadWriterLock::TYPE_WRITE);
         //decrement the counter.
         auto it = pointerData.find(p);
         if(it != pointerData.end())
@@ -97,7 +97,7 @@ namespace smpl
             return nullptr;
 
         void* v = nullptr;
-        staticMemSemaphore.lock(smpl::HybridSpinSemaphore::TYPE_WRITE);
+        staticMemSemaphore.lock(smpl::ReadWriterLock::TYPE_WRITE);
         auto it = pointerData.find(p);
         if(it != pointerData.end())
         {
@@ -114,7 +114,7 @@ namespace smpl
             return false;
         
         bool valid = false;
-        staticMemSemaphore.lock(smpl::HybridSpinSemaphore::TYPE_READ);
+        staticMemSemaphore.lock(smpl::ReadWriterLock::TYPE_READ);
         auto it = pointerData.find(p);
         if(it != pointerData.end())
             valid = true;
@@ -128,7 +128,7 @@ namespace smpl
             return false;
         
         bool success = false;
-        staticMemSemaphore.lock(smpl::HybridSpinSemaphore::TYPE_WRITE);
+        staticMemSemaphore.lock(smpl::ReadWriterLock::TYPE_WRITE);
         auto it = pointerData.find(p);
         if(it != pointerData.end())
         {
@@ -145,7 +145,7 @@ namespace smpl
             return false;
         
         bool success = false;
-        staticMemSemaphore.lock(smpl::HybridSpinSemaphore::TYPE_WRITE);
+        staticMemSemaphore.lock(smpl::ReadWriterLock::TYPE_WRITE);
         auto it = pointerData.find(p);
         if(it != pointerData.end())
         {

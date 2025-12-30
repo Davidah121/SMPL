@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include "Font.h"
 #include "Sprite.h"
 #include "GeneralExceptions.h"

@@ -1,4 +1,6 @@
+#pragma once
 #ifdef _WIN32
+    #include "StandardTypes.h"
     #include "TargetVer.h"
     #include <ole2.h>
     #include <objidl.h>

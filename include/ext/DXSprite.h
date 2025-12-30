@@ -2,6 +2,7 @@
 
 #ifdef USE_DIRECTX
 
+    #include "StandardTypes.h"
 	#include "Image.h"
 	#include "ext/DXTexture.h"
 	#include "SimpleSerialization.h"

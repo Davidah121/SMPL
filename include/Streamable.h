@@ -1,4 +1,5 @@
 #pragma once
+#include "StandardTypes.h"
 #include <vector>
 #include <memory>
 #include "Concurrency.h"
@@ -12,6 +13,7 @@ namespace smpl
     class Streamable
     {
     public:
+        virtual ~Streamable();
         virtual size_t write(T*, size_t) = 0;
         virtual size_t read(T*, size_t size) = 0;
         size_t waitRead(T*, size_t size);
@@ -21,6 +23,7 @@ namespace smpl
         void setEOF();
         bool getEOF();
 
+        virtual bool isValid();
     protected:
         void lock();
         void unlock();
@@ -28,6 +31,29 @@ namespace smpl
     private:
         bool isEnd = true;
         HybridSpinLock commonMutex;
+    };
+
+    template<typename T>
+    class StreamableArray : public Streamable<T>
+    {
+    public:
+        StreamableArray(T* buffer, size_t size, bool ownership);
+        ~StreamableArray();
+
+        virtual size_t write(T* data, size_t size);
+        virtual size_t read(T* input, size_t size);
+        virtual bool pop();
+        virtual size_t size();
+        virtual void clear();
+        virtual size_t getLocation();
+        virtual bool isValid();
+
+        T* getBuffer();
+    private:
+        T* buffer;
+        size_t totalSize;
+        bool ownership = false;
+        size_t offset = 0;
     };
 
     template<typename T>
@@ -88,7 +114,7 @@ namespace smpl
         Stack<T> buffer;
     };
 
-    class StreamableFile : Streamable<unsigned char>
+    class StreamableFile : public Streamable<unsigned char>
     {
     public:
         StreamableFile(std::string filename, char type);
@@ -100,10 +126,16 @@ namespace smpl
         virtual size_t size();
         SimpleFile& getBuffer();
         virtual size_t getLocation();
+        virtual bool isValid();
     private:
         SimpleFile buffer;
     };
 
+    template<typename T>
+    inline Streamable<T>::~Streamable()
+    {
+        
+    }
     template<typename T>
     inline void Streamable<T>::lock()
     {
@@ -139,6 +171,103 @@ namespace smpl
         bool v = isEnd;
         commonMutex.unlock();
         return v;
+    }
+
+    template<typename T>
+    inline bool Streamable<T>::isValid()
+    {
+        return true;
+    }
+
+    template<typename T>
+    inline StreamableArray<T>::StreamableArray(T* arr, size_t totalSize, bool ownership)
+    {
+        buffer = arr;
+        this->totalSize = totalSize;
+        this->ownership = ownership;
+        offset = 0;
+    }
+
+    template<typename T>
+    inline StreamableArray<T>::~StreamableArray()
+    {
+        if(ownership && buffer != nullptr)
+            delete buffer;
+        buffer = nullptr;
+    }
+
+    template<typename T>
+    inline size_t StreamableArray<T>::write(T* data, size_t size)
+    {
+        this->lock();
+        size_t writableSize = totalSize - offset;
+        size_t actualWriteSize = __min(writableSize, size);
+        for(size_t index = 0; index < actualWriteSize; index++)
+        {
+            buffer[offset + index] = data[index];
+        }
+        offset += actualWriteSize;
+        this->unlock();
+        return actualWriteSize;
+    }
+
+    template<typename T>
+    inline size_t StreamableArray<T>::read(T* input, size_t size)
+    {
+        this->lock();
+        size_t readableSize = totalSize - offset;
+        size_t actualReadSize = __min(readableSize, size);
+        for(size_t i=0; i<actualReadSize; i++)
+            input[i] = buffer[offset+i];
+        offset += actualReadSize;
+    
+        this->unlock();
+        return actualReadSize;
+    }
+    
+    template<typename T>
+    inline bool StreamableArray<T>::pop()
+    {
+        this->lock();
+        bool v = offset > 0;
+        if(v)
+            offset--;
+        this->unlock();
+        return v;
+    }
+    template<typename T>
+    inline size_t StreamableArray<T>::size()
+    {
+        return totalSize;
+    }
+    
+    template<typename T>
+    inline void StreamableArray<T>::clear()
+    {
+        // this->lock();
+        // buffer.clear();
+        // this->unlock();
+    }
+
+    template<typename T>
+    inline size_t StreamableArray<T>::getLocation()
+    {
+        this->lock();
+        size_t loc = offset;
+        this->unlock();
+        return loc;
+    }
+
+    template<typename T>
+    inline bool StreamableArray<T>::isValid()
+    {
+        return buffer != nullptr && totalSize > 0;
+    }
+
+    template<typename T>
+    inline T* StreamableArray<T>::getBuffer()
+    {
+        return buffer;
     }
 
     template<typename T>
@@ -404,8 +533,15 @@ namespace smpl
     }
     inline size_t StreamableFile::read(unsigned char* input, size_t size)
     {
+        size_t bytesRead = 0;
         this->lock();
-        size_t bytesRead = buffer.readBytes((char*)input, size);
+        if(input == nullptr)
+        {
+            buffer.seek(buffer.currentLocation() + size);
+            bytesRead = size;
+        }
+        else
+            bytesRead = buffer.readBytes((char*)input, size);
         this->unlock();
         return bytesRead;
     }
@@ -425,7 +561,7 @@ namespace smpl
         return totalSize;
     }
 
-    size_t StreamableFile::getLocation()
+    inline size_t StreamableFile::getLocation()
     {
         this->lock();
         size_t loc = buffer.currentLocation();
@@ -436,5 +572,13 @@ namespace smpl
     inline SimpleFile& StreamableFile::getBuffer()
     {
         return buffer;
+    }
+
+    inline bool StreamableFile::isValid()
+    {
+        this->lock();
+        bool isOpen = buffer.isOpen();
+        this->unlock();
+        return isOpen;
     }
 }

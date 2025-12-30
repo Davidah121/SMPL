@@ -108,7 +108,9 @@
 		"__verbose_abort": "cpp",
 		"execution": "cpp",
 		"print": "cpp",
-		"__locale": "cpp"
+		"__locale": "cpp",
+		"shared_mutex": "cpp",
+		"cwctype": "cpp"
 	},
     "files.exclude": {
         "**/.classpath": true,

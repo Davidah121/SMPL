@@ -214,6 +214,8 @@ namespace smpl
 		int len = x2-x1;
 		int simdBound = SIMD_U32::getSIMDBound(len);
 		unsigned int* startOfSrcPixelFillSpot = (unsigned int*)&srcPixels[x1 + y*surf->getWidth()];
+		unsigned int* endOfSrcPixelFillSpot = (unsigned int*)&srcPixels[x2 + y*surf->getWidth()];
+		
 		for(int k=0; k<simdBound; k+=SIMD_U32::SIZE)
 		{
 			SIMD_U32 destColor = SIMD_U32::load(startOfSrcPixelFillSpot);
@@ -221,11 +223,71 @@ namespace smpl
 			blendedColor.store(startOfSrcPixelFillSpot);
 			startOfSrcPixelFillSpot += SIMD_U32::SIZE;
 		}
-		for(; x1<x2; x1++)
+		while(startOfSrcPixelFillSpot < endOfSrcPixelFillSpot)
 		{
 			*((Color*)startOfSrcPixelFillSpot) = blend(nonSSEColor, *((Color*)startOfSrcPixelFillSpot));
 			startOfSrcPixelFillSpot++;
 		}
+	}
+
+	
+	void SimpleGraphics::fillBetweenAntiAliased(Color c, double x1, double x2, int y, Image* surf)
+	{
+		SimpleGraphics::fillBetweenAntiAliased(c.toUInt(), x1, x2, y, surf);
+	}
+	void SimpleGraphics::fillBetweenAntiAliased(SIMD_U32 c, double x1, double x2, int y, Image* surf)
+	{
+		const float MIN_ALPHA_VALUE = 1.0/255.0;
+
+		Color arr[8]; //Needed for sse/avx. Slower
+		c.store((unsigned int*)arr);
+		Color nonSSEColor = arr[0];
+
+		//bounds solving
+		int reducedX1 = MathExt::floor(x1);
+		float fracX1 = 1-(x1 - reducedX1);
+		int reducedX2 = MathExt::ceil(x2);
+		float fracX2 = 1-(reducedX2 - x2);
+		
+
+		if(fracX1 > MIN_ALPHA_VALUE)
+		{
+			reducedX1++;
+		}
+
+		Color* srcPixels = surf->getPixels();
+		int len = reducedX2-reducedX1;
+		int simdBound = SIMD_U32::getSIMDBound(len);
+		unsigned int* startOfSrcPixelFillSpot = (unsigned int*)&srcPixels[reducedX1 + y*surf->getWidth()];
+		unsigned int* endOfSrcPixelFillSpot = (unsigned int*)&srcPixels[reducedX2 + y*surf->getWidth()];
+		
+		for(int k=0; k<simdBound; k+=SIMD_U32::SIZE)
+		{
+			SIMD_U32 destColor = SIMD_U32::load(startOfSrcPixelFillSpot);
+			SIMD_U32 blendedColor = blend(c.values, destColor.values);
+			blendedColor.store(startOfSrcPixelFillSpot);
+			startOfSrcPixelFillSpot += SIMD_U32::SIZE;
+		}
+		while(startOfSrcPixelFillSpot < endOfSrcPixelFillSpot)
+		{
+			*((Color*)startOfSrcPixelFillSpot) = blend(nonSSEColor, *((Color*)startOfSrcPixelFillSpot));
+			startOfSrcPixelFillSpot++;
+		}
+
+		//draw at start pos and end pos with the fractional amount of color.
+		if(fracX1 > MIN_ALPHA_VALUE)
+		{
+			//draw fractional pixel at reducedX1-1
+			nonSSEColor.alpha = fracX1*255;
+			drawPixel(reducedX1-1, y, nonSSEColor, surf);
+		}
+		if(fracX2 > MIN_ALPHA_VALUE)
+		{
+			//draw fractional pixel at reducedX2
+			nonSSEColor.alpha = fracX2*255;
+			drawPixel(reducedX2, y, nonSSEColor, surf);
+		}
+		
 	}
 
 	
@@ -737,15 +799,16 @@ namespace smpl
 
 	Color SimpleGraphics::lerp(Color src, Color dest, double lerpVal)
 	{
-		Vec4f v1 = Vec4f(src.red, src.green, src.blue, src.alpha);
-		Vec4f v2 = Vec4f(dest.red, dest.green, dest.blue, dest.alpha);
+		uint16_t blendV = MathExt::round(lerpVal*255);
+		uint16_t r = (255-blendV)*src.red + blendV*dest.red;
+		uint16_t g = (255-blendV)*src.green + blendV*dest.green;
+		uint16_t b = (255-blendV)*src.blue + blendV*dest.blue;
+		uint16_t a = (255-blendV)*src.alpha + blendV*dest.alpha;
 		
-		Vec4f v3 = v1*(1.0-lerpVal) + v2*(lerpVal);
-
-		return {(unsigned char)MathExt::clamp<float>(v3.x, 0.0, 255.0),
-				(unsigned char)MathExt::clamp<float>(v3.y, 0.0, 255.0),
-				(unsigned char)MathExt::clamp<float>(v3.z, 0.0, 255.0),
-				(unsigned char)MathExt::clamp<float>(v3.w, 0.0, 255.0) };
+		return Color{(unsigned char)quickDiv255(r), 
+					 (unsigned char)quickDiv255(g), 
+					 (unsigned char)quickDiv255(b), 
+					 (unsigned char)quickDiv255(a)};
 	}
 	
 	Color4f SimpleGraphics::lerp(Color4f src, Color4f dest, double lerpVal)
@@ -757,6 +820,83 @@ namespace smpl
 	{
 		return src*(1.0-lerpVal) + dest*(lerpVal);
 	}
+	
+	uint32_t SimpleGraphics::lerp(uint32_t src, uint32_t dest, double lerpVal)
+	{
+		return lerp(*((Color*)&src), *((Color*)&dest), lerpVal).toUInt();
+	}
+
+
+	#ifdef __SSE4_2__
+	__m128i SimpleGraphics::lerp(__m128i src, __m128i dest, __m128 lerpVal)
+	{
+		SIMD_SSE<float> blendV = lerpVal;
+		SIMD_SSE<float> A1 = _mm_cvtepi32_ps(_mm_cvtepu8_epi32(src));
+		SIMD_SSE<float> B1 = _mm_cvtepi32_ps(_mm_cvtepu8_epi32(dest));
+		
+		SIMD_SSE<float> A2 = _mm_cvtepi32_ps(_mm_cvtepu8_epi32(_mm_srli_si128(src, 4)));
+		SIMD_SSE<float> B2 = _mm_cvtepi32_ps(_mm_cvtepu8_epi32(_mm_srli_si128(dest, 4)));
+		
+		SIMD_SSE<float> A3 = _mm_cvtepi32_ps(_mm_cvtepu8_epi32(_mm_srli_si128(src, 8)));
+		SIMD_SSE<float> B3 = _mm_cvtepi32_ps(_mm_cvtepu8_epi32(_mm_srli_si128(dest, 8)));
+		
+		SIMD_SSE<float> A4 = _mm_cvtepi32_ps(_mm_cvtepu8_epi32(_mm_srli_si128(src, 12)));
+		SIMD_SSE<float> B4 = _mm_cvtepi32_ps(_mm_cvtepu8_epi32(_mm_srli_si128(dest, 12)));
+
+		SIMD_SSE<float> res1 = A1*(SIMD_SSE<float>(1.0f)-blendV) + B1*blendV;
+		SIMD_SSE<float> res2 = A2*(SIMD_SSE<float>(1.0f)-blendV) + B2*blendV;
+		SIMD_SSE<float> res3 = A3*(SIMD_SSE<float>(1.0f)-blendV) + B3*blendV;
+		SIMD_SSE<float> res4 = A4*(SIMD_SSE<float>(1.0f)-blendV) + B4*blendV;
+		
+		__m128i output1 = SEML::floatToInt32(res1.values);
+		__m128i output2 = SEML::floatToInt32(res2.values);
+		__m128i output3 = SEML::floatToInt32(res3.values);
+		__m128i output4 = SEML::floatToInt32(res4.values);
+
+		__m128i pack16Low = _mm_packus_epi32(output1, output2);
+		__m128i pack16High = _mm_packus_epi32(output3, output4);
+
+		return _mm_packs_epi16(pack16Low, pack16High);
+	}
+	#endif
+
+	#ifdef __AVX2__
+	__m256i SimpleGraphics::lerp(__m256i src, __m256i dest, __m256 lerpVal)
+	{
+		SIMD_AVX<float> blendV = lerpVal;
+		__m128i A1_Extracted128 = _mm256_extracti128_si256(src, 0);
+		__m128i A2_Extracted128 = _mm256_extracti128_si256(src, 1);
+		__m128i B1_Extracted128 = _mm256_extracti128_si256(dest, 0);
+		__m128i B2_Extracted128 = _mm256_extracti128_si256(dest, 1);
+		
+		SIMD_AVX<float> A1 = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(A1_Extracted128));
+		SIMD_AVX<float> B1 = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(B1_Extracted128));
+		
+		SIMD_AVX<float> A2 = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(_mm_srli_si128(A1_Extracted128, 8)));
+		SIMD_AVX<float> B2 = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(_mm_srli_si128(B1_Extracted128, 8)));
+		
+		SIMD_AVX<float> A3 = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(A2_Extracted128));
+		SIMD_AVX<float> B3 = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(B2_Extracted128));
+
+		SIMD_AVX<float> A4 = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(_mm_srli_si128(A2_Extracted128, 8)));
+		SIMD_AVX<float> B4 = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(_mm_srli_si128(B2_Extracted128, 8)));
+
+		SIMD_AVX<float> res1 = A1*(SIMD_AVX<float>(1.0f)-blendV) + B1*blendV;
+		SIMD_AVX<float> res2 = A2*(SIMD_AVX<float>(1.0f)-blendV) + B2*blendV;
+		SIMD_AVX<float> res3 = A3*(SIMD_AVX<float>(1.0f)-blendV) + B3*blendV;
+		SIMD_AVX<float> res4 = A4*(SIMD_AVX<float>(1.0f)-blendV) + B4*blendV;
+		
+		__m256i output1 = SEML::floatToInt32(res1.values);
+		__m256i output2 = SEML::floatToInt32(res2.values);
+		__m256i output3 = SEML::floatToInt32(res3.values);
+		__m256i output4 = SEML::floatToInt32(res4.values);
+
+		__m256i pack16Low = _mm256_packs_epi32(output1, output2);
+		__m256i pack16High = _mm256_packs_epi32(output3, output4);
+
+		return _mm256_packs_epi16(pack16Low, pack16High);
+	}
+	#endif
 	
 	Color SimpleGraphics::multColor(Color src, Color multiplier)
 	{

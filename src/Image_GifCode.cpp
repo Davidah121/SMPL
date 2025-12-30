@@ -12,7 +12,7 @@
 
 namespace smpl
 {
-	void Image::saveGIF(File file, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold)
+	void Image::saveGIF(File file, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold) const
 	{
 		SimpleFile f = SimpleFile(file, SimpleFile::WRITE);
 
@@ -217,7 +217,7 @@ namespace smpl
 		f.close();
 	}
 
-	bool Image::saveAGIF(File file, Image** images, int size, int* delayTimePerFrame, bool loops, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold)
+	bool Image::saveAGIF(File file, const Image** images, int size, const int* delayTimePerFrame, bool loops, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold)
 	{
 		SimpleFile f = SimpleFile(file, SimpleFile::WRITE);
 

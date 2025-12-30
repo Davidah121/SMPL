@@ -1,9 +1,26 @@
 #pragma once
+#include "StandardTypes.h"
 #include "SEML.h"
 #include "SEML_256.h"
 
 namespace smpl
 {
+	class SIMD_Singleton
+	{
+	private:
+		SIMD_Singleton()
+		{
+			//Default the rounding to round down which is the default for non SIMD functions
+			SEML::setRoundingMode(SEML_ROUND_DOWN);
+		}
+		~SIMD_Singleton()
+		{
+
+		}
+		static SIMD_Singleton singleton;
+	};
+	inline SIMD_Singleton SIMD_Singleton::singleton = SIMD_Singleton();
+
 	template<typename T>
 	class SIMD_RAW;
 	template<typename T>
@@ -23,10 +40,25 @@ namespace smpl
 			indexArr[i] = ((T*)pointer)[indexArr[i]];
 		return _mm_loadu_si128((__m128i*)indexArr);
 	}
+	
+	template<typename T>
+	void scatterSSE(T* pointer, __m128i indices, __m128i values)
+	{
+		const int maxSize = 16/sizeof(T);
+		T indexArr[maxSize];
+		_mm_storeu_si128((__m128i*)indexArr, indices);
+		
+		T valuesAsArr[16];
+		_mm_storeu_si128((__m128i*)indexArr, values);
+		
+		for(int i=0; i<maxSize; i++)
+			pointer[indexArr[i]] = valuesAsArr[i];
+	}
 	#endif
 
 
 	#ifdef __AVX2__
+	//GATHER FUNCTIONS
 	template<>
 	inline __m128i gatherSSE<int>(int* pointer, __m128i indices)
 	{
@@ -71,6 +103,20 @@ namespace smpl
 		for(int i=0; i<maxSize; i++)
 			indexArr[i] = ((T*)pointer)[indexArr[i]];
 		return _mm256_loadu_si256((__m256i*)indexArr);
+	}
+
+	template<typename T>
+	void scatterSSE(T* pointer, __m256i indices, __m256i values)
+	{
+		const int maxSize = 32/sizeof(T);
+		T indexArr[maxSize];
+		_mm256_storeu_si256((__m256i*)indexArr, indices);
+		
+		T valuesAsArr[32];
+		_mm256_storeu_si256((__m256i*)indexArr, values);
+		
+		for(int i=0; i<maxSize; i++)
+			pointer[indexArr[i]] = valuesAsArr[i];
 	}
 
 	template<>
@@ -119,7 +165,7 @@ namespace smpl
 		~SIMD_RAW(){}
 
 		//load / store
-		static SIMD_RAW<T>load(T* pointer){return *pointer;}
+		static SIMD_RAW<T>load(const T* pointer){return *pointer;}
 		void store(T* pointer){*pointer = values;}
 		
 		//arithmetic
@@ -143,35 +189,33 @@ namespace smpl
 		void operator>>=(const int shift) {values <<= shift;}
 		void operator<<=(const int shift) {values >>= shift;}
 		
-		SIMD_RAW<T> operator&(const int v) const {return values & v;}
 		SIMD_RAW<T> operator&(const SIMD_RAW<T>& other) const {return values & other.values;}
-		
-		void operator&=(const int v) {values &= v;}
 		void operator&=(const SIMD_RAW<T>& other) {values &= other.values;}
-		
-		SIMD_RAW<T> bitwiseAndNot(const int v) const {return ~(values & v);}
+
 		SIMD_RAW<T> bitwiseAndNot(const SIMD_RAW<T>& other) const {return ~(values & other.values);}
 		
-		void bitwiseAndNot(const int v) {values = ~(values & v);}
-		void bitwiseAndNot(const SIMD_RAW<T>& other) {values = ~(values & other.values);}
-		
 		//comparison
-		SIMD_RAW<T> operator>(const unsigned char byte) const {return values > byte;}
 		SIMD_RAW<T> operator>(const SIMD_RAW<T>& other) const {return values > other.values;}
-		
-		SIMD_RAW<T> operator<(const unsigned char byte) const {return values < byte;}
 		SIMD_RAW<T> operator<(const SIMD_RAW<T>& other) const {return values < other.values;}
-		
-		SIMD_RAW<T> operator==(const unsigned char byte) const {return values == byte;}
 		SIMD_RAW<T> operator==(const SIMD_RAW<T>& other) const {return values == other.values;}
-		
-		SIMD_RAW<T> operator!=(const unsigned char byte) const {return values != byte;}
 		SIMD_RAW<T> operator!=(const SIMD_RAW<T>& other) const {return values != other.values;}
 		
+		SIMD_RAW<T> blend(const SIMD_RAW<T>& other, const SIMD_RAW<T>& blendFactor) const
+		{
+			if(blendFactor.values != 0) 
+				return other; 
+			return values;
+		}
 		//special case functions
 		SIMD_RAW<T> horizontalAdd(const SIMD_RAW<T>& other) const {return values;}
 		T sum() const {return values;}
 
+		//cast function
+		template<typename K>
+		operator SIMD_RAW<K>() const
+		{
+			return SIMD_RAW<K>((K)values);
+		}
 		T values;
 	};
 
@@ -189,6 +233,12 @@ namespace smpl
 		SIMD_SSE(const SIMD_RAW<T>&& other) noexcept : SIMD_RAW<T>(other){}
 		
 		~SIMD_SSE(){}
+
+		// template<typename K>
+		// operator SIMD_SSE<K>() const
+		// {
+		// 	return SIMD_RAW<K>((K)values);
+		// }
 	};
 
 	template<typename T>
@@ -205,6 +255,12 @@ namespace smpl
 		SIMD_AVX(const SIMD_RAW<T>&& other) noexcept : SIMD_RAW<T>(other){}
 		
 		~SIMD_AVX(){}
+
+		// template<typename K>
+		// operator SIMD_AVX<K>() const
+		// {
+		// 	return SIMD_RAW<K>((K)values);
+		// }
 	};
 
 	template<typename T>
@@ -215,4 +271,32 @@ namespace smpl
 
 	template<typename T>
 	const int SIMD_AVX<T>::SIZE = 1;
+
+
+
+
+
+	//DEFAULT EXPECTED TEMPLATE SPECIALIZATIONS
+	
+	template<> class SIMD_SSE<char>;
+	template<> class SIMD_SSE<unsigned char>;
+	template<> class SIMD_SSE<short>;
+	template<> class SIMD_SSE<unsigned short>;
+	template<> class SIMD_SSE<int>;
+	template<> class SIMD_SSE<unsigned int>;
+	template<> class SIMD_SSE<int64_t>;
+	template<> class SIMD_SSE<uint64_t>;
+	template<> class SIMD_SSE<float>;
+	template<> class SIMD_SSE<double>;
+	
+	template<> class SIMD_AVX<char>;
+	template<> class SIMD_AVX<unsigned char>;
+	template<> class SIMD_AVX<short>;
+	template<> class SIMD_AVX<unsigned short>;
+	template<> class SIMD_AVX<int>;
+	template<> class SIMD_AVX<unsigned int>;
+	template<> class SIMD_AVX<int64_t>;
+	template<> class SIMD_AVX<uint64_t>;
+	template<> class SIMD_AVX<float>;
+	template<> class SIMD_AVX<double>;
 };

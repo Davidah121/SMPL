@@ -1,4 +1,4 @@
-#include <catch2/catch_amalgamated.hpp>
+#include <catch_amalgamated.hpp>
 #include "CachedDataList.h"
 
 TEST_CASE("Test CachedDataList for data pointers." "[CachedDataList]")

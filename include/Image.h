@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include "ColorPalette.h"
 #include "File.h"
 #include "MathExt.h"
@@ -86,21 +87,21 @@ namespace smpl
 		 * 
 		 * @return int 
 		 */
-		int getSamplingMethod();
+		int getSamplingMethod() const;
 
 		/**
 		 * @brief Get the Width of the image.
 		 * 
 		 * @return int 
 		 */
-		int getWidth();
+		int getWidth() const;
 
 		/**
 		 * @brief Get the Height of the image.
 		 * 
 		 * @return int 
 		 */
-		int getHeight();
+		int getHeight() const;
 
 		/**
 		 * @brief Get the Pixels of the image.
@@ -111,7 +112,7 @@ namespace smpl
 		 * 
 		 * @return Color* 
 		 */
-		Color* getPixels();
+		Color* getPixels() const;
 
 		/**
 		 * @brief Gets a pixel in the image.
@@ -125,10 +126,10 @@ namespace smpl
 		 * @return Color 
 		 * 		If unsuccessful, the default Color is return with the value RGBA(0,0,0,0)
 		 */
-		Color getPixel(int x, int y, int edgeBehavior = NONE);
+		Color getPixel(int x, int y, int edgeBehavior = NONE) const;
 
 		/**
-		 * @brief Geta pixel in the image.
+		 * @brief Gets a pixel in the image.
 		 * 		Uses the image's filter method to blend pixels for the final output.
 		 * 
 		 * @param x 
@@ -138,7 +139,73 @@ namespace smpl
 		 * @return Color 
 		 * 		If unsuccessful, the default Color is return with the value RGBA(0,0,0,0)
 		 */
-		Color getPixel(double x, double y, int edgeBehavior = NONE);
+		Color getPixel(double x, double y, int edgeBehavior = NONE) const;
+
+		/**
+		 * @brief Gets a Pixel using Nearest Neighbor Sampling
+		 * 		As opposed to getPixel, this is explicit about which sampling method to use.
+		 * 
+		 * @param x 
+		 * @param y 
+		 * @param edgeBehavior 
+		 * @return Color 
+		 */
+		Color getPixelNearestSampling(double x, double y, int edgeBehavior) const;
+
+		/**
+		 * @brief Gets a Pixel using Bi-Linear Sampling
+		 * 		As opposed to getPixel, this is explicit about which sampling method to use.
+		 * 
+		 * @param x 
+		 * @param y 
+		 * @param edgeBehavior 
+		 * @return Color 
+		 */
+		Color getPixelLinearSampling(double x, double y, int edgeBehavior) const;
+
+		/**
+		 * @brief Gets a Pixel using Bi-Cubic Sampling
+		 * 		As opposed to getPixel, this is explicit about which sampling method to use.
+		 * 
+		 * @param x 
+		 * @param y 
+		 * @param edgeBehavior 
+		 * @return Color 
+		 */
+		Color getPixelCubicSampling(double x, double y, int edgeBehavior) const;
+
+		#ifdef __SSE4_2__
+		/**
+		 * @brief Gathers 4 pixels from the corresponding floating point indices values.
+		 * 		This will properly filter and handle edge behavior
+		 * 
+		 * @param x
+		 * @param y 
+		 * @param edgeBehavior 
+		 * @return __m128i 
+		 */
+		__m128i getPixel(__m128 x, __m128 y, int edgeBehavior = Image::NONE) const;
+		__m128i getPixelNearestSampling(__m128 x, __m128 y, int edgeBehavior) const;
+		__m128i getPixelLinearSampling(__m128 x, __m128 y, int edgeBehavior) const;
+		__m128i getPixelCubicSampling(__m128 x, __m128 y, int edgeBehavior) const;
+		#endif
+
+		#ifdef __AVX2__
+		/**
+		 * @brief Gathers 8 pixels from the corresponding floating point indices values.
+		 * 		This will properly filter and handle edge behavior
+		 * 
+		 * @param x
+		 * @param y
+		 * @param edgeBehavior 
+		 * @return __m256i 
+		 */
+		__m256i getPixel(__m256 x, __m256 y, int edgeBehavior = Image::NONE) const;
+		__m256i getPixelNearestSampling(__m256 x, __m256 y, int edgeBehavior) const;
+		__m256i getPixelLinearSampling(__m256 x, __m256 y, int edgeBehavior) const;
+		__m256i getPixelCubicSampling(__m256 x, __m256 y, int edgeBehavior) const;
+		#endif
+		
 
 		/**
 		 * @brief Set the Pixel at the specified location
@@ -166,7 +233,7 @@ namespace smpl
 		 * @param v 
 		 * 		The Image to copy.
 		 */
-		void copyImage(Image* v);
+		void copyImage(const Image* v);
 
 		/**
 		 * @brief Copies a HiResImage object to this.
@@ -174,7 +241,7 @@ namespace smpl
 		 * 
 		 * @param v 
 		 */
-		void copyImage(HiResImage* v);
+		void copyImage(const HiResImage* v);
 
 		/**
 		 * @brief Sets the Palette for the image.
@@ -190,6 +257,7 @@ namespace smpl
 		 * @return ColorPalette& 
 		 */
 		ColorPalette& getPalette();
+		const ColorPalette getPalette() const;
 
 		/**
 		 * @brief Enforces the Color Palette for the image. 
@@ -228,7 +296,7 @@ namespace smpl
 		 * 		and not the image data in memory.
 		 * 		Default is false
 		 */
-		void saveBMP(File file, unsigned char alphaThreshold = 255, bool greyscale = false);
+		void saveBMP(File file, unsigned char alphaThreshold = 255, bool greyscale = false) const;
 
 		/**
 		 * @brief Save an image as a .gif file.
@@ -255,7 +323,7 @@ namespace smpl
 		 * 		and not the image data in memory.
 		 * 		Default is false
 		 */
-		void saveGIF(File file, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127);
+		void saveGIF(File file, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127) const;
 
 		/**
 		 * @brief Save an image as a .png file.
@@ -276,7 +344,7 @@ namespace smpl
 		 * 		and custom huffman tables in the deflate method.
 		 * 		Default is false
 		 */
-		void savePNG(File file, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false);
+		void savePNG(File file, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false) const;
 
 		/**
 		 * @brief Not implemented. Do not use.
@@ -292,7 +360,7 @@ namespace smpl
 		 * 		Mode 1: Basic sub sampling (4:2:2)
 		 * 		Mode 2: Best Compression (4:2:0)
 		 */
-		void saveJPG(File file, int quality = 8, int subsampleMode = 0);
+		void saveJPG(File file, int quality = 8, int subsampleMode = 0) const;
 
 		/**
 		 * @brief Attempts to save an animated gif. It uses the same options as the normal GIF save function but
@@ -314,7 +382,7 @@ namespace smpl
 		 * @param alphaThreshold 
 		 * @param greyscale 
 		 */
-		static bool saveAGIF(File file, Image** images, int size, int* delayTimePerFrame, bool loops, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127);
+		static bool saveAGIF(File file, const Image** images, int size, const int* delayTimePerFrame, bool loops, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127);
 
 		/**
 		 * @brief Attempts to save an animated png. It uses the same options as the normal PNG save function. This will be the lazy
@@ -334,7 +402,7 @@ namespace smpl
 		 * @return true 
 		 * @return false 
 		 */
-		static bool saveAPNG(File file, Image** images, int size, int* delayTimePerFrame, bool loops, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false);
+		static bool saveAPNG(File file, const Image** images, int size, const int* delayTimePerFrame, bool loops, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false);
 		
 	private:
 		int width = 0;
@@ -422,21 +490,21 @@ namespace smpl
 		 * 
 		 * @return int 
 		 */
-		int getSamplingMethod();
+		int getSamplingMethod() const;
 
 		/**
 		 * @brief Get the Width of the image.
 		 * 
 		 * @return int 
 		 */
-		int getWidth();
+		int getWidth() const;
 
 		/**
 		 * @brief Get the Height of the image.
 		 * 
 		 * @return int 
 		 */
-		int getHeight();
+		int getHeight() const;
 
 		/**
 		 * @brief Get the Pixels of the image.
@@ -444,7 +512,7 @@ namespace smpl
 		 * 
 		 * @return Color4f* 
 		 */
-		Color4f* getPixels();
+		Color4f* getPixels() const;
 
 		/**
 		 * @brief Gets a pixel in the image.
@@ -458,7 +526,7 @@ namespace smpl
 		 * @return Vec4f 
 		 * 		If unsuccessful, the default Color4f is return with the value RGBA(0,0,0,0)
 		 */
-		Color4f getPixel(int x, int y, int edgeBehavior = NONE);
+		Color4f getPixel(int x, int y, int edgeBehavior = NONE) const;
 
 		/**
 		 * @brief Geta pixel in the image.
@@ -471,7 +539,7 @@ namespace smpl
 		 * @return Color4f 
 		 * 		If unsuccessful, the default Color4f is return with the value RGBA(0,0,0,0)
 		 */
-		Color4f getPixel(double x, double y, int edgeBehavior = NONE);
+		Color4f getPixel(double x, double y, int edgeBehavior = NONE) const;
 
 		/**
 		 * @brief Set the Pixel at the specified location
@@ -499,7 +567,7 @@ namespace smpl
 		 * @param v 
 		 * 		The HiResImage to copy.
 		 */
-		void copyImage(HiResImage* v);
+		void copyImage(const HiResImage* v);
 
 		
 		/**
@@ -516,6 +584,7 @@ namespace smpl
 		 * @return ColorPalette& 
 		 */
 		ColorPalette& getPalette();
+		const ColorPalette getPalette() const;
 
 		/**
 		 * @brief Enforces the Color Palette for the image. 
@@ -554,7 +623,7 @@ namespace smpl
 		 * 		and not the image data in memory.
 		 * 		Default is false
 		 */
-		void saveBMP(File file, unsigned char alphaThreshold = 255, bool greyscale = false);
+		void saveBMP(File file, unsigned char alphaThreshold = 255, bool greyscale = false) const;
 
 		/**
 		 * @brief Save an image as a .gif file.
@@ -581,7 +650,7 @@ namespace smpl
 		 * 		and not the image data in memory.
 		 * 		Default is false
 		 */
-		void saveGIF(File file, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127);
+		void saveGIF(File file, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127) const;
 
 		/**
 		 * @brief Save an image as a .png file.
@@ -602,7 +671,7 @@ namespace smpl
 		 * 		and custom huffman tables in the deflate method.
 		 * 		Default is false
 		 */
-		void savePNG(File file, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false);
+		void savePNG(File file, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false) const;
 
 		/**
 		 * @brief Not implemented. Do not use.
@@ -618,7 +687,7 @@ namespace smpl
 		 * 		Mode 1: Basic sub sampling (4:2:2)
 		 * 		Mode 2: Best Compression (4:2:0)
 		 */
-		void saveJPG(File file, int quality = 8, int subsampleMode = 0);
+		void saveJPG(File file, int quality = 8, int subsampleMode = 0) const;
 
 		/**
 		 * @brief Attempts to save an animated gif. It uses the same options as the normal GIF save function but
@@ -640,7 +709,7 @@ namespace smpl
 		 * @param alphaThreshold 
 		 * @param greyscale 
 		 */
-		static bool saveAGIF(File file, HiResImage** images, int size, int* delayTimePerFrame, bool loops, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127);
+		static bool saveAGIF(File file, const HiResImage** images, int size, const int* delayTimePerFrame, bool loops, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127);
 
 		/**
 		 * @brief Attempts to save an animated png. It uses the same options as the normal PNG save function. This will be the lazy
@@ -660,7 +729,7 @@ namespace smpl
 		 * @return true 
 		 * @return false 
 		 */
-		static bool saveAPNG(File file, HiResImage** images, int size, int* delayTimePerFrame, bool loops, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false);
+		static bool saveAPNG(File file, const HiResImage** images, int size, const int* delayTimePerFrame, bool loops, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false);
 		
 	private:
 		int width = 0;

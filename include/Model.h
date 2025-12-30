@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include "MathExt.h"
 #include "File.h"
 #include "Shape.h"

@@ -1,4 +1,5 @@
 #pragma once
+#include "StandardTypes.h"
 #include <unordered_map>
 #include "Concurrency.h"
 
@@ -51,7 +52,7 @@ namespace smpl
 
     protected:
         static std::unordered_map<void*, MemInfo> pointerData;
-        static smpl::HybridSpinSemaphore staticMemSemaphore;
+        static smpl::ReadWriterLock staticMemSemaphore;
     };
 
     class DLL_OPTION GenericSmartMemory

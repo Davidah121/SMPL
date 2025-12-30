@@ -39,3 +39,11 @@
 # Build files
 *.ninja_deps
 *.ninja_log
+
+# Random things to be removed later anyways
+cert.pem
+client_secret.json
+checks.json
+key.pem
+openssl_2.crt
+openssl_2.key

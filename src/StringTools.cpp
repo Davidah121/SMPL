@@ -74,6 +74,7 @@ namespace smpl
 									'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_'};
 
 
+	std::locale StringTools::currentLocale = std::locale("en_US.UTF8");
 	bool StringTools::hasInit = false;
 
 	std::streambuf* StringTools::inputBuffer = std::cin.rdbuf();

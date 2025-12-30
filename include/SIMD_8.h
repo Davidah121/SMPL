@@ -1,10 +1,12 @@
 #pragma once
-#include <immintrin.h>
+#include "StandardTypes.h"
+#include <intrin.h>
 #include "SIMD_Template.h"
 
 namespace smpl
 {
 	#ifdef __SSE4_2__
+
 	template<>
 	class SIMD_SSE<char>
 	{
@@ -25,7 +27,7 @@ namespace smpl
 		~SIMD_SSE(){}
 
 		//load / store
-		static SIMD_SSE<char>load(char* pointer){return _mm_loadu_si128((__m128i*)pointer);}
+		static SIMD_SSE<char>load(const char* pointer){return _mm_loadu_si128((__m128i*)pointer);}
 		void store(char* pointer){_mm_storeu_si128((__m128i*)pointer, values);}
 		
 		//arithmetic
@@ -140,10 +142,15 @@ namespace smpl
 			__m128i temp = _mm_cmpeq_epi8(values, other.values);
 			return _mm_andnot_si128(temp, temp); //does not bitwise not
 		}
-		
+		SIMD_SSE<char> blend(const SIMD_SSE<char>& other, const SIMD_SSE<char>& blendFactor) const
+		{
+			return _mm_blendv_epi8(values, other.values, blendFactor.values);
+		}
+
 		//special case functions
 		SIMD_SSE<char> horizontalAdd(const SIMD_SSE<char>& other) const 
 		{
+			//TODO: INCORRECT. FIX LATER
 			//shuffle then add
 			const __m128i shuffle1 = _mm_set_epi8(14, 12, 10, 8, 6, 4, 2, 0, 14, 12, 10, 8, 6, 4, 2, 0);
 			const __m128i shuffle2 = _mm_set_epi8(15, 13, 11, 9, 7, 5, 3, 1, 15, 13, 11, 9, 7, 5, 3, 1);
@@ -153,7 +160,7 @@ namespace smpl
 		}
 		short sum() const
 		{
-			//sum of all items into the largest datatype NEEDED to avoid overflow.
+			//sum of all items into the largest datatype NEEDED and available to avoid overflow.
 			//Ensures no overflow
 			short temp[8];
 			__m128i low = _mm_cvtepi8_epi16(values); //(A1, A2, A3, A4, A5, A6, A7, A8)
@@ -163,10 +170,12 @@ namespace smpl
 			__m128i result = _mm_add_epi16(low, high); //(A1+A9, A2+A10, A3+A11, A4+A12, A5+A13, A6+A14, A7+A15, A8+A16)
 			result = _mm_hadd_epi16(result, result); //(A1+A9+A2+10, A3+A11+A4+12, A5+A13+A6+A14, A7+A15+A8+A16, dups, dups, dups, dups)
 			result = _mm_hadd_epi16(result, result); //first 2 elements contain the working sum
-			_mm_storeu_si128((__m128i*)temp, values);
+			
+			_mm_storeu_si128((__m128i*)temp, result);
 			return temp[0] + temp[1];
 		}
-
+		
+		operator SIMD_SSE<unsigned char>() const;
 		__m128i values;
 	};
 
@@ -224,7 +233,7 @@ namespace smpl
 			__m128i output2 = SEML::floatToInt32(res2);
 			__m128i output3 = SEML::floatToInt32(res3);
 			__m128i output4 = SEML::floatToInt32(res4);
-
+			
 			__m128i pack16Low = _mm_packus_epi32(output1, output2);
 			__m128i pack16High = _mm_packus_epi32(output3, output4);
 
@@ -269,6 +278,10 @@ namespace smpl
 		{
 			return _mm_cmpeq_epi8(_mm_min_epu8(values, other.values), values);
 		}
+		SIMD_SSE<unsigned char> blend(const SIMD_SSE<unsigned char>& other, const SIMD_SSE<unsigned char>& blendFactor) const
+		{
+			return _mm_blendv_epi8(values, other.values, blendFactor.values);
+		}
 
 		unsigned short sum() const
 		{
@@ -282,13 +295,14 @@ namespace smpl
 			__m128i result = _mm_add_epi16(low, high); //(A1+A9, A2+A10, A3+A11, A4+A12, A5+A13, A6+A14, A7+A15, A8+A16)
 			result = _mm_hadd_epi16(result, result); //(A1+A9+A2+10, A3+A11+A4+12, A5+A13+A6+A14, A7+A15+A8+A16, dups, dups, dups, dups)
 			result = _mm_hadd_epi16(result, result); //first 2 elements contain the working sum
-			_mm_storeu_si128((__m128i*)temp, values);
+			_mm_storeu_si128((__m128i*)temp, result);
 			return temp[0] + temp[1];
 		}
 
 		//load / store
-		static SIMD_SSE<unsigned char>load(unsigned char* pointer){return _mm_loadu_si128((__m128i*)pointer);}
+		static SIMD_SSE<unsigned char>load(const unsigned char* pointer){return _mm_loadu_si128((__m128i*)pointer);}
 		void store(unsigned char* pointer){_mm_storeu_si128((__m128i*)pointer, values);}
+		
 	};
 
 	#endif
@@ -315,7 +329,7 @@ namespace smpl
 		~SIMD_AVX(){}
 
 		//load / store
-		static SIMD_AVX<char>load(char* pointer){return _mm256_loadu_si256((__m256i*)pointer);}
+		static SIMD_AVX<char>load(const char* pointer){return _mm256_loadu_si256((__m256i*)pointer);}
 		void store(char* pointer){_mm256_storeu_si256((__m256i*)pointer, values);}
 		
 		//arithmetic
@@ -334,7 +348,8 @@ namespace smpl
 			__m256i lowShortMult = _mm256_mullo_epi16(lowShortsA, lowShortsB);
 			__m256i highShortMult = _mm256_mullo_epi16(highShortsA, highShortsB);
 			
-			return _mm256_packs_epi16(lowShortMult, highShortMult);
+			__m256i packedData = _mm256_packs_epi16(lowShortMult, highShortMult);
+			return _mm256_permute4x64_epi64(packedData, 0b11011000);
 		}
 		SIMD_AVX<char> operator/(const SIMD_AVX<char>& other) const
 		{
@@ -361,16 +376,19 @@ namespace smpl
 			__m256 res2 = _mm256_div_ps(A2, B2);
 			__m256 res3 = _mm256_div_ps(A3, B3);
 			__m256 res4 = _mm256_div_ps(A4, B4);
+
+			__m256i output1 = SEML::floatToInt32(res1);
+			__m256i output2 = SEML::floatToInt32(res2);
+			__m256i output3 = SEML::floatToInt32(res3);
+			__m256i output4 = SEML::floatToInt32(res4);
 			
-			__m256i output1 = _mm256_cvtps_epi32(res1);
-			__m256i output2 = _mm256_cvtps_epi32(res2);
-			__m256i output3 = _mm256_cvtps_epi32(res3);
-			__m256i output4 = _mm256_cvtps_epi32(res4);
-
 			__m256i pack16Low = _mm256_packs_epi32(output1, output2);
+			pack16Low = _mm256_permute4x64_epi64(pack16Low, 0b11011000);
 			__m256i pack16High = _mm256_packs_epi32(output3, output4);
-
-			return _mm256_packs_epi16(pack16Low, pack16High);
+			pack16High = _mm256_permute4x64_epi64(pack16High, 0b11011000);
+			__m256i packedData = _mm256_packs_epi16(pack16Low, pack16High);
+			
+			return _mm256_permute4x64_epi64(packedData, 0b11011000);
 		}
 		
 		void operator+=(const SIMD_AVX<char>& other) {values = operator+(other).values;}
@@ -436,6 +454,11 @@ namespace smpl
 			return _mm256_andnot_si256(temp, temp); //does not bitwise not
 		}
 		
+		SIMD_AVX<char> blend(const SIMD_AVX<char>& other, const SIMD_AVX<char>& blendFactor) const
+		{
+			return _mm256_blendv_epi8(values, other.values, blendFactor.values);
+		}
+		
 		//special case functions
 		SIMD_AVX<char> horizontalAdd(const SIMD_AVX<char>& other) const 
 		{
@@ -459,12 +482,12 @@ namespace smpl
 			result = _mm256_hadd_epi16(result, result);//(A1+A17+A2+A18, ... , A15+A31+A16+A32, duplicates). Pairs of 4
 			result = _mm256_hadd_epi16(result, result);//Pairs of 8
 			result = _mm256_hadd_epi16(result, result);//Pairs of 16
-			result = _mm256_hadd_epi16(result, result);//Pairs of 32
 			
 			_mm256_storeu_si256((__m256i*)temp, result);
-			return temp[0] + temp[1];
+			return temp[0] + temp[8];
 		}
 
+		operator SIMD_AVX<unsigned char>() const;
 		__m256i values;
 
 	private:
@@ -497,7 +520,8 @@ namespace smpl
 			__m256i lowShortMult = _mm256_mullo_epi16(lowShortsA, lowShortsB);
 			__m256i highShortMult = _mm256_mullo_epi16(highShortsA, highShortsB);
 			
-			return _mm256_packus_epi16(lowShortMult, highShortMult);
+			__m256i packedData = _mm256_packus_epi16(lowShortMult, highShortMult);
+			return _mm256_permute4x64_epi64(packedData, 0b11011000);
 		}
 		SIMD_AVX<unsigned char> operator/(const SIMD_AVX<unsigned char>& other) const
 		{
@@ -525,15 +549,18 @@ namespace smpl
 			__m256 res3 = _mm256_div_ps(A3, B3);
 			__m256 res4 = _mm256_div_ps(A4, B4);
 			
-			__m256i output1 = _mm256_cvtps_epi32(res1);
-			__m256i output2 = _mm256_cvtps_epi32(res2);
-			__m256i output3 = _mm256_cvtps_epi32(res3);
-			__m256i output4 = _mm256_cvtps_epi32(res4);
-
+			__m256i output1 = SEML::floatToInt32(res1);
+			__m256i output2 = SEML::floatToInt32(res2);
+			__m256i output3 = SEML::floatToInt32(res3);
+			__m256i output4 = SEML::floatToInt32(res4);
+			
 			__m256i pack16Low = _mm256_packus_epi32(output1, output2);
+			pack16Low = _mm256_permute4x64_epi64(pack16Low, 0b11011000);
 			__m256i pack16High = _mm256_packus_epi32(output3, output4);
-
-			return _mm256_packus_epi16(pack16Low, pack16High);
+			pack16High = _mm256_permute4x64_epi64(pack16High, 0b11011000);
+			__m256i packedData = _mm256_packus_epi16(pack16Low, pack16High);
+			
+			return _mm256_permute4x64_epi64(packedData, 0b11011000);
 		}
 
 		SIMD_AVX<unsigned char> operator>>(const int shift) const 
@@ -574,6 +601,10 @@ namespace smpl
 		{
 			return _mm256_cmpeq_epi8(_mm256_min_epu8(values, other.values), values);
 		}
+		SIMD_AVX<unsigned char> blend(const SIMD_AVX<unsigned char>& other, const SIMD_AVX<unsigned char>& blendFactor) const
+		{
+			return _mm256_blendv_epi8(values, other.values, blendFactor.values);
+		}
 
 		unsigned short sum() const
 		{
@@ -587,14 +618,13 @@ namespace smpl
 			result = _mm256_hadd_epi16(result, result);//(A1+A17+A2+A18, ... , A15+A31+A16+A32, duplicates). Pairs of 4
 			result = _mm256_hadd_epi16(result, result);//Pairs of 8
 			result = _mm256_hadd_epi16(result, result);//Pairs of 16
-			result = _mm256_hadd_epi16(result, result);//Pairs of 32
 			
 			_mm256_storeu_si256((__m256i*)temp, result);
-			return temp[0] + temp[1];
+			return temp[0] + temp[8];
 		}
 
 		//load / store
-		static SIMD_AVX<unsigned char>load(unsigned char* pointer){return _mm256_loadu_si256((__m256i*)pointer);}
+		static SIMD_AVX<unsigned char>load(const unsigned char* pointer){return _mm256_loadu_si256((__m256i*)pointer);}
 		void store(unsigned char* pointer){_mm256_storeu_si256((__m256i*)pointer, values);}
 	};
 	#endif

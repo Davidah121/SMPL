@@ -17,34 +17,62 @@ namespace smpl
 		return nullptr;
 	}
 
-	void SimpleGraphics::replaceColor(Image* img, Color oldColor, Color newColor, bool ignoreAlpha)
+	void SimpleGraphics::replaceColor(Image* img, const std::vector<Color>& oldColors, Color newColor, bool ignoreAlpha)
 	{
-		if(img!=nullptr)
+		if(img != nullptr)
 		{
 			Color* startPix = img->getPixels();
-			Color* endPix = startPix + (img->getWidth() * img->getHeight());
-			while(startPix < endPix)
+			size_t length = (img->getWidth() * img->getHeight());
+			size_t simdBound = SIMD_U32::getSIMDBound(length);
+			size_t index=0;
+			//to avoid if statements, force ALPHA to be 0
+			uint32_t considerAlpha;
+			if(ignoreAlpha == true)
+				considerAlpha = 0xFFFFFFFF;
+			else
+				considerAlpha = 0xFFFFFF00;
+			
+			SIMD_U32 considerAlphaAsSIMD = considerAlpha;
+			SIMD_U32 newColorAsInt = newColor.toUInt();
+
+			for(; index<simdBound; index+=SIMD_U32::SIZE)
 			{
-				bool same = true;
+				SIMD_U32 srcColor = SIMD_U32::load((uint32_t*)&startPix[index]);
+				SIMD_U32 outputColor = srcColor;
 
-				if(startPix->red != oldColor.red)
-					same = false;
-				if(startPix->green != oldColor.green)
-					same = false;
-				if(startPix->blue != oldColor.blue)
-					same = false;
+				srcColor &= considerAlphaAsSIMD;
+				for(Color compareTo : oldColors)
+				{
+					SIMD_U32 compareToAsInt = compareTo.toUInt();
+					compareToAsInt &= considerAlphaAsSIMD;
+
+					SIMD_U32 compareValues = (srcColor == compareToAsInt);
+					// outputColor.blend(newColor, compareValues);
+				}
+
+				outputColor.store((uint32_t*)&startPix[index]);
+			}
+
+			for(; index<length; index++)
+			{
+				uint32_t srcColor = startPix[index].toUInt();
+				uint32_t outputColor = srcColor;
+				srcColor &= considerAlpha;
+
+				for(Color compareTo : oldColors)
+				{
+					uint32_t compareToAsInt = compareTo.toUInt();
+					compareToAsInt &= considerAlpha;
+
+					uint32_t compareValues = (srcColor == compareToAsInt);
+					if(compareValues)
+					{
+						outputColor = newColor.toUInt();
+						break;
+					}
+				}
 				
-				if(!ignoreAlpha)
-				{
-					if(startPix->alpha != oldColor.alpha)
-						same = false;
-				}
-
-				if(!same)
-				{
-					*startPix = newColor;
-				}
-				startPix++;
+				*((uint32_t*)&startPix[index]) = outputColor;
 			}
 		}
 	}

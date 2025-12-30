@@ -40,11 +40,12 @@ namespace smpl
 		{
 			leftoverBuffer.push_back(0x00);
 		}
+		size_t sizeLocation = leftoverBuffer.size();
 		for(int i=0; i<8; i++)
 			leftoverBuffer.push_back(0);
 		
 		//add size
-		((size_t*)leftoverBuffer.data())[7] = BitwiseTools::byteSwap(totalSizeAccumulated*8);
+		*((size_t*)&leftoverBuffer[sizeLocation]) = BitwiseTools::byteSwap(totalSizeAccumulated*8);
 		
 
 		computeChunk((unsigned int*)leftoverBuffer.data());

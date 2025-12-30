@@ -3,6 +3,7 @@
 //ONLY FOR INTERNAL USE WITH COMPRESSION FILES
 
 #include "Compression.h"
+#include "StandardTypes.h"
 #include <iostream>
 #include "LinkedList.h"
 #include "BinarySet.h"

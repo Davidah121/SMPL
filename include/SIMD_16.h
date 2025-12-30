@@ -1,5 +1,6 @@
 #pragma once
-#include <immintrin.h>
+#include "StandardTypes.h"
+#include <intrin.h>
 #include "SIMD_Template.h"
 
 namespace smpl
@@ -25,7 +26,7 @@ namespace smpl
 		~SIMD_SSE(){}
 
 		//load / store
-		static SIMD_SSE<short>load(short* pointer){return _mm_loadu_si128((__m128i*)pointer);}
+		static SIMD_SSE<short>load(const short* pointer){return _mm_loadu_si128((__m128i*)pointer);}
 		void store(short* pointer){_mm_storeu_si128((__m128i*)pointer, values);}
 		
 		//arithmetic
@@ -102,6 +103,12 @@ namespace smpl
 			__m128i temp = _mm_cmpeq_epi16(values, other.values);
 			return _mm_andnot_si128(temp, temp); //does not bitwise not
 		}
+
+		//requires that blendFactor is either 0x0000 or 0xFFFF to work properly which I believe is required already
+		SIMD_SSE<short> blend(const SIMD_SSE<short>& other, const SIMD_SSE<short>& blendFactor) const
+		{
+			return _mm_blendv_epi8(values, other.values, blendFactor.values);
+		}
 		
 		//special case functions
 		SIMD_SSE<short> horizontalAdd(const SIMD_SSE<short>& other) const 
@@ -123,6 +130,7 @@ namespace smpl
 			return temp[0] + temp[1];
 		}
 
+		operator SIMD_SSE<unsigned short>() const;
 		__m128i values;
 	};
 
@@ -183,6 +191,12 @@ namespace smpl
 			return _mm_cmpeq_epi16(_mm_min_epu16(values, other.values), values);
 		}
 
+		//requires that blendFactor is either 0x0000 or 0xFFFF to work properly which I believe is required already
+		SIMD_SSE<unsigned short> blend(const SIMD_SSE<unsigned short>& other, const SIMD_SSE<unsigned short>& blendFactor) const
+		{
+			return _mm_blendv_epi8(values, other.values, blendFactor.values);
+		}
+
 		unsigned int sum() const
 		{
 			//sum of all items into the largest datatype NEEDED to avoid overflow.
@@ -199,7 +213,7 @@ namespace smpl
 		}
 
 		//load / store
-		static SIMD_SSE<unsigned short>load(unsigned short* pointer){return _mm_loadu_si128((__m128i*)pointer);}
+		static SIMD_SSE<unsigned short>load(const unsigned short* pointer){return _mm_loadu_si128((__m128i*)pointer);}
 		void store(unsigned short* pointer){_mm_storeu_si128((__m128i*)pointer, values);}
 	};
 
@@ -211,7 +225,7 @@ namespace smpl
 	class SIMD_AVX<short>
 	{
 	public:
-		static const int SIZE = 32;
+		static const int SIZE = 16;
 		static unsigned long long getSIMDBound(unsigned long long s) {return (s>>4)<<4;}
 
 		SIMD_AVX(){}
@@ -227,7 +241,7 @@ namespace smpl
 		~SIMD_AVX(){}
 
 		//load / store
-		static SIMD_AVX<short>load(short* pointer){return _mm256_loadu_si256((__m256i*)pointer);}
+		static SIMD_AVX<short>load(const short* pointer){return _mm256_loadu_si256((__m256i*)pointer);}
 		void store(short* pointer){_mm256_storeu_si256((__m256i*)pointer, values);}
 		
 		//arithmetic
@@ -248,11 +262,12 @@ namespace smpl
 			__m256 res1 = _mm256_div_ps(A1, B1);
 			__m256 res2 = _mm256_div_ps(A2, B2);
 			
-			__m256i output1 = _mm256_cvtps_epi32(res1);
-			__m256i output2 = _mm256_cvtps_epi32(res2);
+			__m256i output1 = SEML::floatToInt32(res1);
+			__m256i output2 = SEML::floatToInt32(res2);
 
 			__m256i pack16Low = _mm256_packs_epi32(output1, output2);
-			return pack16Low;
+
+			return _mm256_permute4x64_epi64(pack16Low, 0b11011000);
 		}
 		
 		void operator+=(const SIMD_AVX<short>& other) {values = operator+(other).values;}
@@ -301,6 +316,12 @@ namespace smpl
 			__m256i temp = _mm256_cmpeq_epi16(values, other.values);
 			return _mm256_andnot_si256(temp, temp); //does not bitwise not
 		}
+
+		//requires that blendFactor is either 0x0000 or 0xFFFF to work properly which I believe is required already
+		SIMD_AVX<short> blend(const SIMD_AVX<short>& other, const SIMD_AVX<short>& blendFactor) const
+		{
+			return _mm256_blendv_epi8(values, other.values, blendFactor.values);
+		}
 		
 		//special case functions
 		SIMD_AVX<short> horizontalAdd(const SIMD_AVX<short>& other) const {return _mm256_hadd_epi16(values, other.values);}
@@ -316,11 +337,11 @@ namespace smpl
 			__m256i result = _mm256_add_epi32(low, high); //(A1+A9, ... , A8+A16) Pairs of 2
 			result = _mm256_hadd_epi32(result, result); //Pairs of 4
 			result = _mm256_hadd_epi32(result, result); //Pairs of 8
-			result = _mm256_hadd_epi32(result, result); //Pairs of 16
 			_mm256_storeu_si256((__m256i*)temp, result);
-			return temp[0] + temp[1];
+			return temp[0] + temp[4];
 		}
 
+		operator SIMD_AVX<unsigned short>() const;
 		__m256i values;
 
 	private:
@@ -354,12 +375,12 @@ namespace smpl
 			__m256 res1 = _mm256_div_ps(A1, B1);
 			__m256 res2 = _mm256_div_ps(A2, B2);
 			
-			__m256i output1 = _mm256_cvtps_epi32(res1);
-			__m256i output2 = _mm256_cvtps_epi32(res2);
-
+			__m256i output1 = SEML::floatToInt32(res1);
+			__m256i output2 = SEML::floatToInt32(res2);
+			
 			__m256i pack16Low = _mm256_packus_epi32(output1, output2);
 
-			return pack16Low;
+			return _mm256_permute4x64_epi64(pack16Low, 0b11011000);
 		}
 		
 		SIMD_AVX<unsigned short> operator>(const unsigned short byte) const
@@ -382,6 +403,12 @@ namespace smpl
 			return _mm256_cmpeq_epi16(_mm256_min_epu16(values, other.values), values);
 		}
 
+		//requires that blendFactor is either 0x0000 or 0xFFFF to work properly which I believe is required already
+		SIMD_AVX<unsigned short> blend(const SIMD_AVX<unsigned short>& other, const SIMD_AVX<unsigned short>& blendFactor) const
+		{
+			return _mm256_blendv_epi8(values, other.values, blendFactor.values);
+		}
+
 		unsigned int sum() const
 		{
 			//sum of all items into the largest datatype NEEDED to avoid overflow.
@@ -395,11 +422,11 @@ namespace smpl
 			result = _mm256_hadd_epi32(result, result); //Pairs of 4
 			result = _mm256_hadd_epi32(result, result); //Pairs of 8
 			_mm256_storeu_si256((__m256i*)temp, result);
-			return temp[0] + temp[1];
+			return temp[0] + temp[4];
 		}
 
 		//load / store
-		static SIMD_AVX<unsigned short>load(unsigned short* pointer){return _mm256_loadu_si256((__m256i*)pointer);}
+		static SIMD_AVX<unsigned short>load(const unsigned short* pointer){return _mm256_loadu_si256((__m256i*)pointer);}
 		void store(unsigned short* pointer){_mm256_storeu_si256((__m256i*)pointer, values);}
 	};
 	#endif

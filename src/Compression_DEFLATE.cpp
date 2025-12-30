@@ -607,15 +607,14 @@ namespace smpl
 		
 		if(blocks == 1)
 		{
-			std::vector<lengthPair> info = std::vector<lengthPair>();
-			getLZ77RefPairsCHash(data, size, &info, compressionLevel);
-			// getLZ77RefPairsCSA(data, size, &info, compressionLevel);
-			refPairToDeflateBlocks(&info, outputData, customTable, true);
+			StreamCompressionLZ77 compressor = StreamCompressionLZ77(StreamCompressionLZ77::TYPE_COMPRESSION);
+			compressor.addData(data, size);
+			compressor.endData();
+			refPairToDeflateBlocks(&compressor.getBuffer(), outputData, customTable, true);
 			outputData->setAddBitOrder(BinarySet::LMSB);
 			return;
 		}
 
-		std::vector<std::vector<lengthPair>> info = std::vector<std::vector<lengthPair>>(blocks);
 		std::vector<BinarySet> threadBinData = std::vector<BinarySet>(blocks);
 		BinarySet bin = BinarySet();
 
@@ -632,9 +631,10 @@ namespace smpl
 			{
 				nSize = size - (block*sizeOfBlock);
 			}
-			info[block].clear();
-			getLZ77RefPairsCSA(nData, nSize, &info[block], compressionLevel);
-			refPairToDeflateBlocks(&info[block], &threadBinData[block], customTable, block == (blocks-1) );
+			StreamCompressionLZ77 compressor = StreamCompressionLZ77(StreamCompressionLZ77::TYPE_COMPRESSION);
+			compressor.addData(nData, nSize);
+			compressor.endData();
+			refPairToDeflateBlocks(&compressor.getBuffer(), &threadBinData[block], customTable, block == (blocks-1) );
 		}
 
 		//Construct

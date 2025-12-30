@@ -37,6 +37,7 @@ build $objDir/Compression_StreamLZW.o: buildToObject src/Compression_StreamLZW.c
 build $objDir/Compression_StreamRLE.o: buildToObject src/Compression_StreamRLE.cpp
 build $objDir/ComputerVision.o: buildToObject src/ComputerVision.cpp
 build $objDir/Cryptography.o: buildToObject src/Cryptography.cpp
+build $objDir/DCEL.o: buildToObject src/DCEL.cpp
 build $objDir/DirectoryNotifier.o: buildToObject src/ext/DirectoryNotifier.cpp
 build $objDir/DragDrop.o: buildToObject src/ext/DragDrop.cpp
 build $objDir/DXFont.o: buildToObject src/ext/DXFont.cpp
@@ -59,6 +60,7 @@ build $objDir/KeyboardSimulator.o: buildToObject src/ext/KeyboardSimulator.cpp
 build $objDir/MouseSimulator.o: buildToObject src/ext/MouseSimulator.cpp
 build $objDir/TouchSimulator.o: buildToObject src/ext/TouchSimulator.cpp
 build $objDir/File.o: buildToObject src/File.cpp
+build $objDir/FillFunction.o: buildToObject src/FillFunction.cpp
 build $objDir/Font.o: buildToObject src/Font.cpp
 build $objDir/GamepadDInput.o: buildToObject src/GamepadDInput.cpp
 build $objDir/GamepadXInput.o: buildToObject src/GamepadXInput.cpp
@@ -115,6 +117,7 @@ build $objDir/SHA1Streamble.o: buildToObject src/SHA1Streamble.cpp
 build $objDir/SHA2Streamble.o: buildToObject src/SHA2Streamble.cpp
 build $objDir/Shape.o: buildToObject src/Shape.cpp
 build $objDir/SIMD.o: buildToObject src/SIMD.cpp
+build $objDir/SIMD_Cast.o : buildToObject src/SIMD_Cast.cpp
 build $objDir/SimpleDir.o: buildToObject src/SimpleDir.cpp
 build $objDir/SimpleFile.o: buildToObject src/SimpleFile.cpp
 build $objDir/SimpleGraphics.o: buildToObject src/SimpleGraphics.cpp
@@ -137,6 +140,7 @@ build $objDir/SmartJobQueue.o: buildToObject src/SmartJobQueue.cpp
 build $objDir/SmartMemory.o: buildToObject src/SmartMemory.cpp
 build $objDir/Sound.o: buildToObject src/Sound.cpp
 build $objDir/Sprite.o: buildToObject src/Sprite.cpp
+build $objDir/SSLSingleton.o: buildToObject src/ext/SSLSingleton.cpp
 build $objDir/StringBridge.o: buildToObject src/StringBridge.cpp
 build $objDir/StringTools.o: buildToObject src/StringTools.cpp
 build $objDir/SuffixArray.o: buildToObject src/SuffixArray.cpp
@@ -159,5 +163,7 @@ build $objDir/VectorGraphic_VectorRectangle.o: buildToObject src/VectorGraphic_V
 build $objDir/VectorGraphic_VectorShape.o: buildToObject src/VectorGraphic_VectorShape.cpp
 build $objDir/VectorSprite.o: buildToObject src/VectorSprite.cpp
 build $objDir/WebClient.o: buildToObject src/WebClient.cpp
+build $objDir/WebCookie.o: buildToObject src/WebCookie.cpp
 build $objDir/WebRequest.o: buildToObject src/WebRequest.cpp
 build $objDir/WebSocket.o: buildToObject src/WebSocket.cpp
+build $objDir/WavLoader.o: buildToObject src/WavLoader.cpp

@@ -53,7 +53,7 @@ namespace smpl
 			break;
 		default:
 			digest = {0xc1059ed8, 0x367cd507, 0x3070dd17, 0xf70e5939, 0xffc00b31, 0x68581511, 0x64f98fa7, 0xbefa4fa4};
-			type = 0;
+			type = SHA2Streamable::SHA_224;
 			break;
 		}
 	}
@@ -104,12 +104,12 @@ namespace smpl
 			{
 				leftoverBuffer.push_back(0x00);
 			}
+			size_t sizeLocation = leftoverBuffer.size();
 			for(int i=0; i<8; i++)
 				leftoverBuffer.push_back(0);
-		
-			//add size
-			((size_t*)leftoverBuffer.data())[15] = BitwiseTools::byteSwap(totalSizeAccumulated*8);
 			
+			//add size
+			*((size_t*)&leftoverBuffer[sizeLocation]) = BitwiseTools::byteSwap(totalSizeAccumulated*8);
 			
 			computeChunk512((uint64_t*)leftoverBuffer.data());
 			if(leftoverBuffer.size() > 128)
@@ -122,11 +122,12 @@ namespace smpl
 			{
 				leftoverBuffer.push_back(0x00);
 			}
+			size_t sizeLocation = leftoverBuffer.size();
 			for(int i=0; i<8; i++)
 				leftoverBuffer.push_back(0);
-		
+			
 			//add size
-			((size_t*)leftoverBuffer.data())[7] = BitwiseTools::byteSwap(totalSizeAccumulated*8);
+			*((size_t*)&leftoverBuffer[sizeLocation]) = BitwiseTools::byteSwap(totalSizeAccumulated*8);
 			
 			computeChunk256((unsigned int*)leftoverBuffer.data());
 			if(leftoverBuffer.size() > 64)

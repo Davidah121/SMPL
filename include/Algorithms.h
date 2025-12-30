@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include "MathExt.h"
 #include "Sort.h"
 
@@ -34,9 +35,62 @@ namespace smpl
 		 */
         static std::vector<Grouping> packageMergeAlgorithm(std::vector<Grouping> baseItems, size_t desiredTotal);
         
+        /**
+         * @brief Attempts to find the value in the sorted array in O(LogN)
+         *      using the Binary Search Algorithm
+         *      Utilizes templates so operator< and operator== must be defined
+         * 
+         * @tparam T 
+         * @param data 
+         * @param size 
+         * @param value 
+         * @return size_t 
+         */
+        template<typename T>
+        static size_t binarySearch(T* data, size_t size, T value);
+
+        // /**
+        //  * @brief Attempts to find a range of indicies that satisfies the desired value in O(LogN)
+        //  *      utilizing the Binary Search Algorithm with extra steps
+        //  *      Utilizes templates so operator< and operator== must be defined
+        //  * 
+        //  * @tparam T 
+        //  * @param data 
+        //  * @param size 
+        //  * @param min 
+        //  * @param max 
+        //  * @return std::pair<size_t, size_t> 
+        //  */
+        // template<typename T>
+        // static std::pair<size_t, size_t> binaryRangeSearch(T* data, size_t size, T value);
     private:
 
     };
+    
+    template<typename T>
+    inline size_t Algorithms::binarySearch(T* data, size_t size, T value)
+    {
+        size_t startIndex = 0;
+        size_t endIndex = size-1;
+
+        if(data[startIndex] == value)
+            return startIndex;
+        if(data[endIndex] == value)
+            return endIndex;
+
+        while(endIndex - startIndex > 1)
+        {
+            size_t midPoint = (startIndex+endIndex)/2;
+            if(data[midPoint] == value)
+                return midPoint;
+            if(data[midPoint] < value)
+                endIndex = midPoint;
+            else
+                startIndex = midPoint;
+        }
+
+        return SIZE_MAX;
+    }
 
 } //NAMESPACE smpl END
 

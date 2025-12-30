@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include "Image.h"
 #include "SimpleSerialization.h"
 
@@ -51,7 +52,7 @@ namespace smpl
 		 * @param index 
 		 * @return Image* 
 		 */
-		Image* getImage(size_t index);
+		Image* getImage(size_t index) const;
 
 		/**
 		 * @brief Gets the Delay Time for the image.
@@ -60,7 +61,7 @@ namespace smpl
 		 * @param index 
 		 * @return size_t 
 		 */
-		int getDelayTime(size_t index);
+		int getDelayTime(size_t index) const;
 
 		/**
 		 * @brief Set the Delay Time in milliseconds.
@@ -75,7 +76,7 @@ namespace smpl
 		 * 
 		 * @return size_t 
 		 */
-		size_t getSize();
+		size_t getSize() const;
 
 		/**
 		 * @brief Adds a new image to the sprite with a delay value.
@@ -133,7 +134,7 @@ namespace smpl
 		 * @param greyscale
 		 * @param strongCompression
 		 */
-		bool saveAPNG(File file, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false);
+		bool saveAPNG(File file, bool saveAlpha = true, bool greyscale = false, bool strongCompression = false) const;
 
 		/**
 		 * @brief Saves the sprite as a Animated GIF.
@@ -141,7 +142,7 @@ namespace smpl
 		 * 
 		 * @param file 
 		 */
-		bool saveAGIF(File file, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127);
+		bool saveAGIF(File file, int paletteSize = 256, bool dither = false, bool saveAlpha = true, unsigned char alphaThreshold = 127) const;
 
 		/**
 		 * @brief Deletes the images from the sprite. Any images added to the sprite, including those that were loaded,
@@ -156,7 +157,7 @@ namespace smpl
 		 * @return true 
 		 * @return false 
 		 */
-		bool shouldLoop();
+		bool shouldLoop() const;
 
 		/**
 		 * @brief Sets whether the sprite should loop.
