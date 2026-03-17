@@ -2,7 +2,6 @@
 
 //ONLY FOR INTERNAL USE WITH GUIMANAGER FILES
 
-#include "GuiManager.h"
 #include "StandardTypes.h"
 #include "Input.h"
 #include "MathExt.h"

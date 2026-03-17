@@ -16,10 +16,10 @@ using namespace smpl;
 bool firstConnect = true;
 void testWebClient()
 {
-    // WebClient client = WebClient("https://www.google.com");
-    WebClient client = WebClient("http://developer.mozilla.org");
-    // WebClient client = WebClient("https://stackoverflow.com/questions/73916302/how-can-i-use-an-https-client-certificate-protected-api-with-firefox");
-    client.setOnConnectFunc([](WebClient* wc) ->void {
+    // HttpClient client = HttpClient("https://www.google.com");
+    HttpClient client = HttpClient("http://developer.mozilla.org");
+    // HttpClient client = HttpClient("https://stackoverflow.com/questions/73916302/how-can-i-use-an-https-client-certificate-protected-api-with-firefox");
+    client.setOnConnectFunc([](HttpClient* wc) ->void {
         StringTools::println("CONNECTED TO %s", wc->getWebname().c_str());
         
         if(firstConnect)
@@ -31,7 +31,7 @@ void testWebClient()
         }
     });
 
-    client.setOnBufferChangedFunc([](WebClient* wc, WebRequest& response, unsigned char* buffer, size_t sizeOfBuffer) ->void {
+    client.setOnBufferChangedFunc([](HttpClient* wc, WebRequest& response, unsigned char* buffer, size_t sizeOfBuffer) ->void {
         if(wc->getLastResponseCode() == 200)
         {
             StringTools::println("Writing %llu bytes", sizeOfBuffer);
@@ -60,7 +60,7 @@ void testWebClient()
         }
     });
 
-    client.setOnDisconnectFunc([](WebClient* wc) ->void {
+    client.setOnDisconnectFunc([](HttpClient* wc) ->void {
         StringTools::println("DISCONNECTED From %s", wc->getHost().c_str());
     });
     

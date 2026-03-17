@@ -1,4 +1,5 @@
 #include <catch_amalgamated.hpp>
+#include <chrono>
 #include "SimpleJobQueue.h"
 #include "System.h"
 
@@ -94,5 +95,41 @@ TEST_CASE("Testing of the SimpleJobQueue class", "[SimpleJobQueue]")
 		REQUIRE(data[2] == 96);
 		REQUIRE(data[3] == 128);
 		REQUIRE(data[4] == 5);
+	}
+
+	SECTION("Test Yield Functionality of JobQueue")
+	{
+		std::vector<unsigned int> data = {1, 2, 3, 4, 5};
+		smpl::SimpleJobQueue jobQueue = smpl::SimpleJobQueue(1);
+		jobQueue.addJob([&data]()->void{
+			data[0] = 32;
+			smpl::ThisFiberTask::sleep_for(std::chrono::milliseconds(1000));
+		});
+		jobQueue.addJob([&data]()->void{
+			data[1] = 64;
+			smpl::ThisFiberTask::sleep_for(std::chrono::milliseconds(1000));
+		});
+		jobQueue.addJob([&data]()->void{
+			data[2] = 96;
+			smpl::ThisFiberTask::sleep_for(std::chrono::milliseconds(1000));
+		});
+		jobQueue.addJob([&data]()->void{
+			data[3] = 128;
+			smpl::ThisFiberTask::sleep_for(std::chrono::milliseconds(1000));
+		});
+		
+		smpl::System::sleep(200, 0, true);
+		//check data to determine if all things are set but not done. Surely after 200 milliseconds, this will be true
+		REQUIRE(data[0] == 32);
+		REQUIRE(data[1] == 64);
+		REQUIRE(data[2] == 96);
+		REQUIRE(data[3] == 128);
+		bool hadToWait = false;
+		while(!jobQueue.allJobsDone())
+		{
+			hadToWait = true;
+			smpl::System::sleep(1);
+		}
+		REQUIRE(hadToWait == true);
 	}
 }

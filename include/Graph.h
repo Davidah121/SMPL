@@ -3,7 +3,7 @@
 #include "StandardTypes.h"
 #include <iostream>
 #include <vector>
-#include <unordered_map>
+#include "SimpleHashTable.h"
 #include <functional>
 
 namespace smpl
@@ -37,7 +37,7 @@ namespace smpl
         UndirectedListGraph(size_t numberOfVerticies);
         ~UndirectedListGraph();
 
-        std::unordered_map<size_t, double>& getEdges(size_t vertex);
+        SimpleHashMap<size_t, double>& getEdges(size_t vertex);
         double getEdgeWeight(size_t mainVertex, size_t connectedVertex);
         void addVertex();
         void addEdge(size_t mainVertex, size_t connectedVertex, double weight);
@@ -45,6 +45,6 @@ namespace smpl
 
         PathInfo shortestPath(size_t startVertex, size_t endVertex, std::function<double(size_t, size_t)> heuristic);
     private:
-        std::vector<std::unordered_map<size_t, double>> adjList;
+        std::vector<SimpleHashMap<size_t, double>> adjList;
     };
 }

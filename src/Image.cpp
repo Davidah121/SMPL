@@ -60,6 +60,27 @@ namespace smpl
 		p = other.p;
 	}
 	
+	Image::Image(Image&& other) noexcept
+	{
+		width = std::move(other.width);
+		height = std::move(other.height);
+		samplingMethod = std::move(samplingMethod);
+		pixels = std::move(other.pixels);
+		p = std::move(other.p);
+		other.pixels = nullptr;
+	}
+
+	void Image::operator=(Image&& other) noexcept
+	{
+		width = std::move(other.width);
+		height = std::move(other.height);
+		samplingMethod = std::move(samplingMethod);
+		pixels = std::move(other.pixels);
+		p = std::move(other.p);
+		other.pixels = nullptr;
+	}
+
+	
 	// Image::Image(Image&& other)
 	// {
 	// 	width = other.width;

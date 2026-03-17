@@ -1,5 +1,4 @@
 #include "Shape.h"
-#include "StringTools.h"
 
 namespace smpl
 {

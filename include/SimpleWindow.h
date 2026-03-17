@@ -1,10 +1,8 @@
 #pragma once
-//TODO: REMOVE OS SPECIFIC CODE FROM HEADER
 #include "BuildOptions.h"
 #include "StandardTypes.h"
 #include "Image.h"
 #include "NewGui.h"
-// #include "GuiManager.h"
 
 #ifndef NO_WINDOW
 

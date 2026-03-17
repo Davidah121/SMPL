@@ -8,7 +8,7 @@
 #include "BinarySearchTree.h"
 #include "BinarySet.h"
 #include "FrequencyTable.h"
-#include "SimpleHashMap.h"
+#include "SimpleHashTable.h"
 #include "GeneralExceptions.h"
 #include "SuffixAutomaton.h"
 
@@ -17,8 +17,8 @@ namespace smpl
 
 	struct HuffmanNode
 	{
-		int frequency = 0;
-		int value = 0;
+		size_t frequency = 0;
+		size_t value = 0;
 	};
 
 	struct HuffmanCodeData
@@ -33,35 +33,6 @@ namespace smpl
 		bool literal;
 		unsigned int v1;	//if literal, this is the value else it is length
 		unsigned int v2;	//backwards distance if not literal; otherwise 0
-	};
-
-	struct streamSavedData
-	{
-		int type;
-		union unknown
-		{
-			unsigned char bytes[16]; //16 bytes to do whatever may be neeeded
-		};
-		union rle
-		{
-			unsigned char byte;
-			unsigned char length;
-		};
-		union lzw
-		{
-			//Using Linear LZW approach so each step should be constant
-			Tree<int>* dictionaryTree;
-			TreeNode<int>* lastTreeNode;
-			int count;
-		};
-		union lzss
-		{
-
-		};
-		union deflate
-		{
-
-		};
 	};
 
 	class DLL_OPTION StreamCompressionRLE
@@ -1133,8 +1104,8 @@ namespace smpl
 
 	private:
 
-		static BinaryTree<HuffmanNode>* buildHuffmanTreeSubFunc(FrequencyTable<int>* freqTable);
-		static BinaryTree<HuffmanNode>* buildLimitedHuffmanTreeSubFunc(FrequencyTable<int>* freqTable, int maxCodeLength);
+		static BinaryTree<HuffmanNode>* buildHuffmanTreeSubFunc(const FrequencyTable<size_t>& freqTable);
+		static BinaryTree<HuffmanNode>* buildLimitedHuffmanTreeSubFunc(const FrequencyTable<size_t>& freqTable, int maxCodeLength);
 		
 		static void fillHuffmanTable(BinaryTreeNode<HuffmanNode>* treeNode, unsigned int* table, int length, int code);
 
@@ -1169,20 +1140,20 @@ namespace smpl
 		}
 
 		//First pass is to fill the frequency table
-		FrequencyTable<int> freqTable = FrequencyTable<int>();
-		for (int i = 0; i < size; i++)
+		FrequencyTable<size_t> freqTable = FrequencyTable<size_t>();
+		for (size_t i = 0; i < size; i++)
 		{
-			freqTable.add((int)data[i]);
+			freqTable.add((size_t)data[i]);
 		}
 
 		if(maxCodeLength<=0)
 		{
-			BinaryTree<HuffmanNode>* retVal = buildHuffmanTreeSubFunc(&freqTable);
+			BinaryTree<HuffmanNode>* retVal = buildHuffmanTreeSubFunc(freqTable);
 			return retVal;
 		}
 		else
 		{
-			BinaryTree<HuffmanNode>* retVal = buildLimitedHuffmanTreeSubFunc(&freqTable, maxCodeLength);
+			BinaryTree<HuffmanNode>* retVal = buildLimitedHuffmanTreeSubFunc(freqTable, maxCodeLength);
 			return retVal;
 		}
 	}

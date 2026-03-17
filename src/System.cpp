@@ -5,7 +5,6 @@
 #include <mutex>
 #include "SimpleFile.h"
 #include "Input.h"
-#include <signal.h>
 
 #ifdef __unix__
 	

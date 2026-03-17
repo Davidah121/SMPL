@@ -26,6 +26,7 @@
 		std::vector< DIJOYSTATE > GamepadDInput::currentState = std::vector< DIJOYSTATE >();
 		std::vector< bool > GamepadDInput::connected = std::vector< bool >();
 
+		//Copied from Microsoft I'm certain
 		//-----------------------------------------------------------------------------
 		// Enum each PNP device using WMI and check each device ID to see if it contains 
 		// "IG_" (ex. "VID_045E&PID_028E&IG_00").  If it does, then it's an XInput device

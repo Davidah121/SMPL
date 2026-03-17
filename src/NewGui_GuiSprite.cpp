@@ -212,18 +212,18 @@ namespace smpl
     {
         GuiContent::loadDataFromXML(attribs, manager);
         
-        auto pair = attribs.get("src");
-        if(pair != nullptr)
+        auto pair = attribs.find("src");
+        if(pair != attribs.end())
             spr = GuiResourceManager::getResourceManager().getSprite(pair->second);
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("color");
-        if(pair != nullptr)
+        pair = attribs.find("color");
+        if(pair != attribs.end())
             imgColor = loadColor(pair->second);
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("sprite-index");
-        if(pair != nullptr)
+        pair = attribs.find("sprite-index");
+        if(pair != attribs.end())
         {
             try
             {
@@ -231,49 +231,49 @@ namespace smpl
             }
             catch(...) { }
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("scalable");
-        if(pair != nullptr)
+        pair = attribs.find("scalable");
+        if(pair != attribs.end())
             isScalable = (pair->second == "true");
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("maintain-aspect-ratio");
-        if(pair != nullptr)
+        pair = attribs.find("maintain-aspect-ratio");
+        if(pair != attribs.end())
             shouldMaintainAspectRatio = (pair->second == "true");
-        attribs.remove(pair);
+        attribs.erase(pair);
         
-        pair = attribs.get("auto-animate");
-        if(pair != nullptr)
+        pair = attribs.find("auto-animate");
+        if(pair != attribs.end())
             autoAnimate = (pair->second == "true");
-        attribs.remove(pair);
+        attribs.erase(pair);
         
-        pair = attribs.get("loop");
-        if(pair != nullptr)
+        pair = attribs.find("loop");
+        if(pair != attribs.end())
             shouldLoop = (pair->second == "true");
-        attribs.remove(pair);
+        attribs.erase(pair);
 
         
-        pair = attribs.get("min-width");
-        if(pair != nullptr)
+        pair = attribs.find("min-width");
+        if(pair != attribs.end())
             if(loadValueFromAttrib(minWidth, pair->second))
                 minWidth = -1;
-        attribs.remove(pair);
-        pair = attribs.get("min-height");
-        if(pair != nullptr)
+        attribs.erase(pair);
+        pair = attribs.find("min-height");
+        if(pair != attribs.end())
             if(loadValueFromAttrib(minHeight, pair->second))
                 minHeight = -1;
-        attribs.remove(pair);
-        pair = attribs.get("max-width");
-        if(pair != nullptr)
+        attribs.erase(pair);
+        pair = attribs.find("max-width");
+        if(pair != attribs.end())
             if(loadValueFromAttrib(maxWidth, pair->second))
                 maxWidth = -1;
-        attribs.remove(pair);
-        pair = attribs.get("max-height");
-        if(pair != nullptr)
+        attribs.erase(pair);
+        pair = attribs.find("max-height");
+        if(pair != attribs.end())
             if(loadValueFromAttrib(maxHeight, pair->second))
                 maxHeight = -1;
-        attribs.remove(pair);
+        attribs.erase(pair);
         
     }
 

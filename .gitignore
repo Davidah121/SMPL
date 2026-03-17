@@ -47,3 +47,6 @@ checks.json
 key.pem
 openssl_2.crt
 openssl_2.key
+.cache/
+.vscode/
+.bin/

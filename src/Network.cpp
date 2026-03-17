@@ -1,4 +1,6 @@
 #include "Network.h"
+#include <cstdint>
+#include <cstdlib>
 
 #ifndef NO_SOCKETS
 
@@ -51,6 +53,11 @@ namespace smpl
 		{
 			setRunning(true);
 			networkThread = std::thread(&Network::threadRun, this);
+
+			while(!hasInit)
+			{
+
+			}
 		}
 	}
 
@@ -262,7 +269,7 @@ namespace smpl
 		return -1;
 	}
 
-	int Network::internalSend(SOCKET_TYPE sock, char* buff, int len)
+	int Network::internalSend(SOCKET_TYPE sock, const char* buff, int len)
 	{
 		size_t t1 = System::getCurrentTimeMicro();
 		if(!isSecureNetwork)
@@ -310,7 +317,7 @@ namespace smpl
 		return -1;
 	}
 	
-	int Network::internalSendfile(SOCKET_TYPE sock, char* filename, long offset, size_t length)
+	int Network::internalSendfile(SOCKET_TYPE sock, const char* filename, long offset, size_t length)
 	{
 		size_t t1 = System::getCurrentTimeMicro();
 		int64_t bytesSent = length;
@@ -568,12 +575,18 @@ namespace smpl
 				
 				if(config.type == TYPE_SERVER)
 				{
-					bindSocket();
+					if(!bindSocket())
+					{
+						closesocket(temporarySocket);
+						temporarySocket = INVALID_SOCKET;
+					}
 				}
 			}
 			
 			freeaddrinfo(result);
 		}
+		else
+			temporarySocket = INVALID_SOCKET;
 	}
 
 	bool Network::bindSocket()
@@ -581,11 +594,15 @@ namespace smpl
 		if (config.type == Network::TYPE_SERVER)
 		{
 			int error = bind(temporarySocket, &sockAddrInfo, sizeAddress);
-
 			if (error == SOCKET_ERROR)
 			{
 				return false;
 			}
+
+			int nameLen = sizeof(sockaddr);
+			error = getsockname(temporarySocket, &sockAddrInfo, &nameLen);
+			if(error == ERROR_SUCCESS)
+				config.port = StringTools::byteSwap(*((uint16_t*)sockAddrInfo.sa_data));
 			
 			return true;
 		}
@@ -727,24 +744,24 @@ namespace smpl
 
 	int Network::sendMessage(const std::string& message, size_t id)
 	{
-		return sendMessage((char*)message.c_str(), message.size()+1, id);
+		return sendMessage((const char*)message.c_str(), message.size()+1, id);
 	}
-	int Network::sendMessage(std::vector<unsigned char>& message, size_t id)
+	int Network::sendMessage(const std::vector<unsigned char>& message, size_t id)
 	{
-		return sendMessage((char*)message.data(), message.size(), id);
+		return sendMessage((const char*)message.data(), message.size(), id);
 	}
-	int Network::sendMessage(unsigned char* message, int size, size_t id)
+	int Network::sendMessage(const unsigned char* message, int size, size_t id)
 	{
-		return sendMessage((char*)message, size, id);
+		return sendMessage((const char*)message, size, id);
 	}
 	
-	int Network::sendMessage(WebRequest& message, size_t id)
+	int Network::sendMessage(const WebRequest& message, size_t id)
 	{
 		std::string s = message.getRequestAsString();
 		return sendMessage(s.data(), s.size(), id);
 	}
 
-	int Network::sendMessage(char * message, int messageSize, size_t id)
+	int Network::sendMessage(const char * message, int messageSize, size_t id)
 	{
 		//It is okay to do this but makes no sense. No error though.
 		if(messageSize == 0)
@@ -838,7 +855,7 @@ namespace smpl
 		return bytesWritten;
 	}
 	
-	int Network::sendFile(char* filename, size_t length, size_t offset, size_t id)
+	int Network::sendFile(const char* filename, size_t length, size_t offset, size_t id)
 	{
 		int64_t bytesSent = length;
 		obtainLock(LOCK_TYPE_NONIMPORTANT);
@@ -1128,6 +1145,22 @@ namespace smpl
 				return bytesToDump - totalBytesLeft;
 			return -1;
 		}
+	}
+
+	int Network::readIntoStreamable(StreamableVector<unsigned char>& buffer, size_t id)
+	{
+		//read up to the max read size available currently. Should only do this for bytes
+		//IMPORTANT. NEED TO OBTAIN LOCKS SINCE WE ARE DOING A SMALL WORK AROUND FOR EFFICIENCY
+		size_t totalReadAvail = getReadSizeAvailable(id);
+		if(totalReadAvail > 0)
+		{
+			auto lock = buffer.obtainLockGuard();
+			auto& rawBuffer = buffer.getBuffer();
+			unsigned char* startPtr = rawBuffer.data() + rawBuffer.size();
+			rawBuffer.resize(rawBuffer.size() + totalReadAvail);
+			return receiveMessage(startPtr, totalReadAvail, id, true);
+		}
+		return 0;
 	}
 	
 	size_t Network::getReadSizeAvailable(size_t id)
@@ -1428,6 +1461,14 @@ namespace smpl
 		return isSecureNetwork;
 	}
 
+	bool Network::setupSuccessful()
+	{
+		obtainLock(LOCK_TYPE_IMPORTANT);
+		bool v = mainSocketInfo.socket != INVALID_SOCKET;
+		releaseLock(LOCK_TYPE_IMPORTANT);
+		return v;
+	}
+
 	bool Network::getShouldStart()
 	{
 		obtainLock(LOCK_TYPE_NONIMPORTANT);
@@ -1448,6 +1489,7 @@ namespace smpl
 	void Network::threadRun()
 	{
 		initNetwork(); //must now be done here for SSL purposes
+		hasInit = true;
 		while(!getShouldStart())
 		{
 			System::sleep(1, 0, false);
@@ -1461,13 +1503,7 @@ namespace smpl
 	
 	void Network::runServer()
 	{
-		bool init = false;
-		if(!init)
-		{
-			listen();
-			init = true;
-		}
-
+		listen();
 		int counter = 0;
 		while(getRunning())
 		{

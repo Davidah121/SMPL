@@ -6,7 +6,7 @@
 
 namespace smpl
 {
-    class DLL_OPTION WebClient
+    class DLL_OPTION HttpClient
     {
     public:
         static const int TYPE_NO_ERROR = 0;
@@ -14,8 +14,8 @@ namespace smpl
         static const int TYPE_RECEIVE_ERROR = -2;
         static const int TYPE_SEND_ERROR = -3;
 
-        WebClient(std::string location);
-        ~WebClient();
+        HttpClient(std::string location);
+        ~HttpClient();
 
         bool isValid();
         bool getTimeoutOccurred();
@@ -30,6 +30,7 @@ namespace smpl
         int getLastResponseCode();
         std::string getHost();
         std::string getWebname();
+        CookieManager& getCookies();
 
         void start();
         void reconnect();
@@ -109,14 +110,14 @@ namespace smpl
             return -1;
         }
 
-        void setOnConnectFunc(std::function<void(WebClient*)> func);
-        void setOnDisconnectFunc(std::function<void(WebClient*)> func);
-        void setOnBufferChangedFunc(std::function<void(WebClient*, WebRequest& response, unsigned char*, size_t)> func);
+        void setOnConnectFunc(std::function<void(HttpClient*)> func);
+        void setOnDisconnectFunc(std::function<void(HttpClient*)> func);
+        void setOnBufferChangedFunc(std::function<void(HttpClient*, WebRequest& response, unsigned char*, size_t)> func);
         
         void handleReceivedResponse(WebRequest& response);
 
         /**
-         * @brief Determines whether the WebClient needs to do an absolute redirect.
+         * @brief Determines whether the HttpClient needs to do an absolute redirect.
          *      These are not automatically handled like relative redirects and must be handled
          *      by the user.
          *      Absolute redirects go to a different webpage typically (though not required).
@@ -146,18 +147,19 @@ namespace smpl
         
         void resendRequest();
         
-        std::function<void(WebClient*)> onConnectionFunction;
-        std::function<void(WebClient*)> onDisconnectionFunction;
-        std::function<void(WebClient*, WebRequest& response, unsigned char*, size_t)> onBufferChanged;
+        std::function<void(HttpClient*)> onConnectionFunction;
+        std::function<void(HttpClient*)> onDisconnectionFunction;
+        std::function<void(HttpClient*, WebRequest& response, unsigned char*, size_t)> onBufferChanged;
         
         NetworkConfig config;
 
         Network* network = nullptr;
         bool started = false;
-        std::string userAgent = "SMPL C++ WebClient";
+        std::string userAgent = "SMPL C++ HttpClient";
 
         WebRequest response;
         WebRequest sentRequest;
+        CookieManager currentCookies;
 
         std::string hostStr = "";
         std::string webName = "";

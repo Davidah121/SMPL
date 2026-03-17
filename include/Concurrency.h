@@ -9,6 +9,7 @@
 #include <chrono>
 #include <immintrin.h>
 #include <omp.h>
+#include "FiberTask.h"
 
 #ifndef __min
 #define __min(a, b) (((a) < (b)) ? (a) : (b))
@@ -31,12 +32,15 @@
 
 namespace smpl
 {
-    struct HybridSpinLock
+    class HybridSpinLock
     {
+	public:
         static const int MAX_ATTEMPTS = 8;
         static const int MODE_STANDARD = 0;
         static const int MODE_LOWPRIORITY = 1;
-        std::mutex lockVar;
+		HybridSpinLock() = default;
+		~HybridSpinLock() = default;
+
         void lock(int mode = MODE_STANDARD)
         {
             int attempts = 0;
@@ -45,23 +49,37 @@ namespace smpl
             
             while(!lockVar.try_lock())
             {
-                if(attempts > MAX_ATTEMPTS)
+                if(attempts >= MAX_ATTEMPTS)
                 {
-                    lockVar.lock();
+                    lockVar.lock(); //Note that this does not workout that well for fibers
+					locker = std::this_thread::get_id();
+					isLocked = true;
                     break;
                 }
                 else
+				{
+					attempts++;
+					//failing to get lock means that other threads/fibers are using it. Yield to other threads so they may run while you wait.
+					//If its a fiber, it may make more sense to yield to the caller which may schedule other fibers.
+					ThisFiberTask::yield();
                     std::this_thread::yield();
+				}
             }
         }
         void unlock()
         {
+			isLocked = false;
             lockVar.unlock();
         }
         bool tryLock()
         {
             return lockVar.try_lock();
         }
+	
+	private:
+		bool isLocked = false;
+        std::mutex lockVar;
+		std::thread::id locker;
     };
 
     struct ReadWriterLock

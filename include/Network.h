@@ -45,6 +45,7 @@
 #include "WebRequest.h"
 #include "ext/SSLSingleton.h"
 #include "Concurrency.h"
+#include "Streamable.h"
 
 namespace smpl
 {
@@ -126,7 +127,7 @@ namespace smpl
 		 * 		Default is 0.
 		 * @return int 
 		 */
-		int sendMessage(std::vector<unsigned char>& message, size_t id=0);
+		int sendMessage(const std::vector<unsigned char>& message, size_t id=0);
 
 		/**
 		 * @brief Sends a WebRequest. Just used to prevent errors.
@@ -140,7 +141,7 @@ namespace smpl
 		 * 		Default is 0.
 		 * @return int 
 		 */
-		int sendMessage(WebRequest& message, size_t id=0);
+		int sendMessage(const WebRequest& message, size_t id=0);
 
 		/**
 		 * @brief Sends a message to the specified connected IP.
@@ -156,7 +157,7 @@ namespace smpl
 		 * 		Default is 0.
 		 * @return int 
 		 */
-		int sendMessage(unsigned char* message, int size, size_t id=0);
+		int sendMessage(const unsigned char* message, int size, size_t id=0);
 
 		/**
 		 * @brief Sends a message to the specified connected IP.
@@ -172,23 +173,23 @@ namespace smpl
 		 * 		Default is 0.
 		 * @return int
 		 */
-		int sendMessage(char* message, int messageSize, size_t id=0);
+		int sendMessage(const char* message, int messageSize, size_t id=0);
 
 		template<typename T>
         int sendMessage(const T msg, size_t id)
         {
             //send raw bytes
-            return sendMessage((char*)&msg, sizeof(T), id);
+            return sendMessage((const char*)&msg, sizeof(T), id);
         }
 
         template<typename T>
         int sendMessage(const T* msg, int size, size_t id)
         {
             //send raw bytes
-            return sendMessage((char*)msg, sizeof(T)*size, id);
+            return sendMessage((const char*)msg, sizeof(T)*size, id);
         }
 
-		int sendFile(char* filename, size_t length, size_t offset, size_t id=0);
+		int sendFile(const char* filename, size_t length, size_t offset, size_t id=0);
 		
 		/**
 		 * @brief Receives a message from the specified connected IP.
@@ -337,6 +338,17 @@ namespace smpl
 		 * @return int 
 		 */
 		int dumpReceiveBytes(int bytesToDump, size_t id=0);
+
+		/**
+		 * @brief Reads data into a streamable vector.
+		 *		Returns the amount of data actually read.
+		 *		Useful if you are reading some data where you are unaware of the size and may find yourself not reading enough due to not requesting enough or
+		 *			the sender not sending enough yet.
+		 * 
+		 * @param buffer 
+		 * @param id 
+		 */
+		int readIntoStreamable(StreamableVector<unsigned char>& buffer, size_t id=0);
 
 		/**
 		 * @brief Gets the amount of bytes available for receiving currently for
@@ -533,6 +545,16 @@ namespace smpl
 		 */
 		bool isSecure();
 
+		/**
+		 * @brief Returs whether setup was successful. This is due to not being able to throw exceptions
+		 * 		on the main thread since these are all multi-threaded 
+		 * 		(and windows is not a fan of passing around sockets or handles to different threads than the one that created it)
+		 * 
+		 * @return true
+		 * @return false
+		 */
+		bool setupSuccessful();
+
 		static const bool TYPE_SERVER = false;
 		static const bool TYPE_CLIENT = true;
 		
@@ -541,8 +563,8 @@ namespace smpl
 		void sslInit();
 		int internalRecv(SOCKET_TYPE sock, char* buff, int len); //negative value == problem. zero == fail but okay. positive value == success.
 		int internalPeek(SOCKET_TYPE sock, char* buff, int len); //negative value == problem. zero == fail but okay. positive value == success.
-		int internalSend(SOCKET_TYPE sock, char* buff, int len); //negative value == problem. zero == fail but okay. positive value == success.
-		int internalSendfile(SOCKET_TYPE sock, char* filename, long offset, size_t length);
+		int internalSend(SOCKET_TYPE sock, const char* buff, int len); //negative value == problem. zero == fail but okay. positive value == success.
+		int internalSendfile(SOCKET_TYPE sock, const char* filename, long offset, size_t length);
 		int internalOnAccept(SOCKET_TYPE sock); //negative value == problem. zero == fail but okay. positive value == success.
 		int internalOnConnect(SOCKET_TYPE sock); //negative value == problem. zero == fail but okay. positive value == success.
 		void internalOnDelete(SOCKET_TYPE sock);
@@ -595,7 +617,7 @@ namespace smpl
 			WSADATA wsaData;
 		#endif
 		
-		SOCKET_TYPE temporarySocket;
+		SOCKET_TYPE temporarySocket = INVALID_SOCKET;
 		sockaddr sockAddrInfo;
 		
 		std::map<size_t, SocketInfo*> connections;
@@ -616,6 +638,7 @@ namespace smpl
 		size_t runningID = 0;
 		
 		std::thread networkThread;
+		std::atomic_bool hasInit = false;
 
 		bool inDispose = false;
 		bool running = false;

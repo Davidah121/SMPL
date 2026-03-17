@@ -13,7 +13,7 @@ namespace smpl
 {
 	struct huffThing
 	{
-		int value;
+		size_t value;
 		BinarySet codeVal;
 	};
 

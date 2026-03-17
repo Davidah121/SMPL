@@ -1,9 +1,7 @@
 #pragma once
 #include "BuildOptions.h"
-#include "StandardTypes.h"
 #include "SimpleFile.h"
-#include "SimpleHashMap.h"
-// #include <unordered_map>
+#include "SimpleHashTable.h"
 
 namespace smpl
 {
@@ -65,7 +63,7 @@ namespace smpl
 
         void addAttribute(std::string key, std::string value);
         void addAttribute(std::pair<std::string, std::string> p);
-        std::pair<std::string, std::string>* getAttribute(std::string key);
+        SimpleHashMap<std::string, std::string>::Iterator getAttribute(std::string key);
 
         std::string getTitle();
         std::string getValue();
@@ -95,10 +93,10 @@ namespace smpl
         
         std::string title;
 
-        SimpleHashMap<std::string, std::string> attributes = SimpleHashMap<std::string, std::string>(true); //Unique only
+        SimpleHashMap<std::string, std::string> attributes = SimpleHashMap<std::string, std::string>();
         std::vector<ChildNode> childNodes = std::vector<ChildNode>();
         XmlNode* parentNode = nullptr;
-        SimpleHashMap<std::string, size_t> nameToIndexMap = SimpleHashMap<std::string, size_t>(false); //Multimap
+        SimpleHashMultiMap<std::string, size_t> nameToIndexMap = SimpleHashMultiMap<std::string, size_t>();
     };
 
     class DLL_OPTION SimpleXml
@@ -216,7 +214,7 @@ namespace smpl
 
         bool shouldParseEscape = true;
         std::vector<XmlNode*> nodes = std::vector<XmlNode*>();
-        SimpleHashMap<std::string, size_t> nameToIndexMap = SimpleHashMap<std::string, size_t>(false); //Multimap
+        SimpleHashMultiMap<std::string, size_t> nameToIndexMap = SimpleHashMultiMap<std::string, size_t>();
 
         std::vector<unsigned char> removeCommentsAndInvalidChars(std::vector<unsigned char> fileBytes);
         std::vector<unsigned char> removeCommentsAndInvalidChars(unsigned char* fileBytes, size_t size);

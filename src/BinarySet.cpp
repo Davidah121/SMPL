@@ -1,5 +1,4 @@
 #include "BinarySet.h"
-#include <iostream>
 
 namespace smpl
 {

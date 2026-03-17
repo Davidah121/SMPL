@@ -700,95 +700,350 @@
 
 
 
+#include "FiberTask.h"
+#include "SimplePipe.h"
+#include "SimpleWindow.h"
 #include "Streamable.h"
 #include <System.h>
 #include <WebRequest.h>
 #include <File.h>
 #include <StringTools.h>
 #include <Network.h>
-#include <WebClient.h>
+#include <HttpClient.h>
+#include <HttpServer.h>
 #include <SimpleJSON.h>
 #include <atomic>
+#include <chrono>
+#include <handleapi.h>
+#include <minwinbase.h>
+#include <mutex>
+#include <processthreadsapi.h>
+#include <vector>
 
-smpl::SimpleJSON setupOAUTH(smpl::File clientSecretJSON, std::string scopeURL)
+using namespace smpl;
+
+// smpl::SimpleJSON setupOAuth(SimpleJSON clientSecretJSON, std::string scopeURL, int type)
+// {
+//     smpl::SimpleJSON outputJSON;
+//     std::string clientID = ((smpl::JPair&)clientSecretJSON["installed"]["client_id"]).getValue();
+//     std::string clientSecret = ((smpl::JPair&)clientSecretJSON["installed"]["client_secret"]).getValue();
+//     std::string authURL = ((smpl::JPair&)clientSecretJSON["installed"]["auth_uri"]).getValue();
+//     std::string tokenURL = ((smpl::JPair&)clientSecretJSON["installed"]["token_uri"]).getValue();
+//     std::string redirect_uri = "urn:ietf:wg:oauth:2.0:oob"; //if type is manual code auth
+
+//     std::string finalURL = authURL + "?client_id=" + clientID
+//                      + "&response_type=code&scope=" + scopeURL
+//                      + "&access_type=offline&redirect_uri=";
+//     std::string finalAuthCode = "";
+    
+//     if(type == 0)
+//     {
+//         NetworkConfig config;
+//         config.amountOfConnectionsAllowed = 4;
+//         config.location = "127.0.0.1";
+//         config.port = 0;
+//         config.secure = false;
+//         config.TCP = true;
+//         config.type = Network::TYPE_SERVER;
+
+//         std::mutex quickMut;
+//         std::string responseURL = "";
+
+//         std::string indexHTML = "<!DOCTYPE html><html><body><h1>Safe to close now</h1></body></html>";
+//         HttpServer server = HttpServer(config, 1);
+//         server.setGetFuncMapper([&indexHTML, &responseURL, &quickMut](HttpServer* servP, WebRequest& req, std::vector<unsigned char>& body, std::string location, size_t id) -> char{
+            
+//             // url should contain the response code needed
+//             // DO NOT LET THE USER GO TO THE LOCAL HOST AS IT WILL MESS UP THIS PROCESS. SERVER WILL CLOSE RIGHT AFTER DOING THIS
+//             quickMut.lock();
+//             responseURL = req.getUrl();
+//             quickMut.unlock();
+
+//             //send html response back. Doesn't matter if they asked for index.html or anything. Always send this. Make it look pretty one day
+//             WebRequest response;
+//             response.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 200 OK", false);
+//             response.addKeyValue("Content-Type", WebRequest::getMimeTypeFromExt("html"));
+//             response.addKeyValue("Content-Length", StringTools::toString(indexHTML.size()));
+            
+//             servP->sendResponse(response, location, id, req);
+//             servP->sendMessage(indexHTML.c_str(), indexHTML.size(), id);
+            
+//             return HttpServer::STATUS_DONE;
+//         });
+
+//         server.start();
+//         int actualPort = server.getNetworkConnection()->getPort();
+        
+//         finalURL += "http://127.0.0.1:" + StringTools::toString(actualPort);
+//         system(("start msedge \"" + finalURL + "\"").c_str());
+
+//         while(server.getRunning())
+//         {
+//             System::sleep(10, 0, false);
+
+//             quickMut.lock();
+//             bool canQuit = !responseURL.empty();
+//             quickMut.unlock();
+
+//             if(canQuit)
+//                 break;
+//         }
+
+//         //parse URL
+        
+//     }
+//     else
+//     {
+//         finalURL += "urn:ietf:wg:oauth:2.0:oob";
+//         system(("start msedge \"" + finalURL + "\"").c_str());
+
+//         smpl::StringTools::print("ENTER AUTH CODE: ");
+//         finalAuthCode = smpl::StringTools::getString();
+//     }
+// }
+
+// smpl::SimpleJSON setupOAUTH(smpl::File clientSecretJSON, std::string scopeURL)
+// {
+//     smpl::SimpleJSON outputJSON;
+
+//     smpl::SimpleJSON clientInfo = smpl::SimpleJSON(clientSecretJSON.getFullFileName());
+//     std::string clientID = ((smpl::JPair&)clientInfo["installed"]["client_id"]).getValue();
+//     std::string clientSecret = ((smpl::JPair&)clientInfo["installed"]["client_secret"]).getValue();
+//     std::string authURL = ((smpl::JPair&)clientInfo["installed"]["auth_uri"]).getValue();
+//     std::string tokenURL = "https://www.googleapis.com/oauth2/v4/token";
+    
+//     std::string finalURL = authURL + "?client_id=" + clientID
+//                      + "&response_type=code&scope=" + scopeURL
+//                      + "&access_type=offline&redirect_uri=urn:ietf:wg:oauth:2.0:oob";
+    
+//     system(("start msedge \"" + finalURL + "\"").c_str());
+
+//     smpl::StringTools::print("ENTER AUTH CODE: ");
+//     std::string finalAuthCode = smpl::StringTools::getString();
+    
+//     if(finalAuthCode.empty())
+//         return outputJSON;
+    
+//     std::string body = "client_id="+clientID+"&client_secret="+clientSecret+"&code="+finalAuthCode
+//                     + "&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code";
+
+//     smpl::HttpClient client = smpl::HttpClient(tokenURL);
+//     smpl::WebRequest requestAuthHeaders = smpl::WebRequest();
+//     requestAuthHeaders.setHeader(smpl::WebRequest::TYPE_POST, "/oauth2/v4/token");
+//     requestAuthHeaders.addKeyValue("Host", "www.googleapis.com");
+//     requestAuthHeaders.addKeyValue("User-Agent", "TestApplication1");
+//     requestAuthHeaders.addKeyValue("Content-Length", smpl::StringTools::toString(body.size()));
+//     requestAuthHeaders.addKeyValue("Content-Type", "application/x-www-form-urlencoded");
+
+//     std::atomic_bool isConnected = true;
+//     client.setOnConnectFunc([&requestAuthHeaders, &body](smpl::HttpClient* clientPointer) -> void{
+//         int bytesSent = clientPointer->sendRequest(requestAuthHeaders);
+//         smpl::StringTools::println("BYTES SENT: %d vs EXPECTED: %llu", bytesSent, requestAuthHeaders.getBytesInRequest());
+//         bytesSent = clientPointer->sendMessage(body.c_str(), body.size());
+//         smpl::StringTools::println("BYTES SENT: %d vs EXPECTED: %llu", bytesSent, body.size());
+//         smpl::StringTools::println("CONNECTED");
+//     });
+    
+//     client.setOnBufferChangedFunc([&outputJSON, &isConnected](smpl::HttpClient* clientPointer, smpl::WebRequest& request, unsigned char* buffer, size_t bufferSize) ->void {
+//         //should be a json. Load as one. Should disconnect right after too
+//         smpl::StringTools::println("DATA RECEIVED");
+//         smpl::StreamableArray<unsigned char> streamableBuffer(buffer, bufferSize, false);
+//         outputJSON = smpl::SimpleJSON(&streamableBuffer);
+//         clientPointer->disconnect();
+//         isConnected = false;
+//     });
+
+//     client.setOnDisconnectFunc([&isConnected](smpl::HttpClient* clientPointer) ->void{
+//         isConnected = false;
+//         smpl::StringTools::println("DISCONNECTED");
+//     });
+//     client.start();
+
+//     if(client.getTimeoutOccurred())
+//     {
+//         smpl::StringTools::println("FAILED TO CONNECT");
+//         isConnected = false;
+//     }
+
+//     while(client.isValid() && isConnected)
+//     {
+//         if(client.getShouldRedirect())
+//             client.completeRedirect();
+//         smpl::System::sleep(10, 0, false);
+//     }
+
+//     return outputJSON;
+// }
+
+// void createOAuthServer(smpl::File clientSecretJSON, std::string scopeURL)
+// {
+
+
+//     NetworkConfig config;
+//     config.amountOfConnectionsAllowed = 4;
+//     config.location = "127.0.0.1";
+//     config.port = 0;
+//     config.secure = false;
+//     config.TCP = true;
+//     config.type = Network::TYPE_SERVER;
+
+//     std::string indexHTML = "<!DOCTYPE html><html><body><p>Safe to close now</p></body></html>";
+//     HttpServer server = HttpServer(config, 2);
+//     server.setGetFuncMapper([&indexHTML](HttpServer* servP, WebRequest& req, std::vector<unsigned char>& body, std::string location, size_t id) -> char{
+//         StringTools::println(req.getUrl());
+//         WebRequest response;
+//         response.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 200 OK", false);
+//         response.addKeyValue("Content-Type", WebRequest::getMimeTypeFromExt("html"));
+//         response.addKeyValue("Content-Length", StringTools::toString(indexHTML.size()));
+        
+//         servP->sendResponse(response, location, id, req);
+//         servP->sendMessage(indexHTML.c_str(), indexHTML.size(), id);
+        
+//         return HttpServer::STATUS_DONE;
+//     });
+
+//     server.start();
+//     int actualPort = server.getNetworkConnection()->getPort();
+
+//     StringTools::println("Server on: http://127.0.0.1:%d", actualPort);
+
+//     smpl::SimpleJSON clientInfo = smpl::SimpleJSON(clientSecretJSON.getFullFileName());
+//     std::string clientID = ((smpl::JPair&)clientInfo["installed"]["client_id"]).getValue();
+//     std::string clientSecret = ((smpl::JPair&)clientInfo["installed"]["client_secret"]).getValue();
+//     std::string authURL = ((smpl::JPair&)clientInfo["installed"]["auth_uri"]).getValue();
+//     std::string tokenURL = "https://www.googleapis.com/oauth2/v4/token";
+    
+//     std::string finalURL = authURL + "?client_id=" + clientID
+//                      + "&response_type=code&scope=" + scopeURL
+//                      + "&access_type=offline&redirect_uri=http://127.0.0.1:" + StringTools::toString(actualPort);
+    
+//     StringTools::println(finalURL);
+    
+//     system(("start msedge \"" + finalURL + "\"").c_str());
+
+//     while(server.getRunning())
+//     {
+//         System::sleep(10, 0, false);
+//     }
+// }
+
+// #include <Windows.h>
+
+// void EmbedCalc(HWND hWnd)
+// {
+//     HWND calcHwnd = FindWindow(NULL, "Calculator");
+//     if(calcHwnd != NULL)
+//     {
+//         // Change the parent so the calc window belongs to our apps main window 
+//         SetParent(calcHwnd, hWnd);
+
+//         // Update the style so the calc window is embedded in our main window
+//         SetWindowLong(calcHwnd, GWL_STYLE, GetWindowLong(calcHwnd, GWL_STYLE) | WS_CHILD);
+
+//         // We need to update the position as well since changing the parent does not
+//         // adjust it automatically.
+//         SetWindowPos(calcHwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE);
+        
+//     }
+//     else {
+//         StringTools::println("Failed to find window");
+//     }
+// }
+
+void runBasicHTTPServer()
 {
-    smpl::SimpleJSON outputJSON;
+	NetworkConfig config;
+	config.amountOfConnectionsAllowed = 64;
+	config.location = "127.0.0.1";
+	config.port = 80;
+	config.secure = false;
+	config.TCP = true;
+	config.type = Network::TYPE_SERVER;
+	HttpServer serv = HttpServer(config, 2);
+	serv.start();
 
-    smpl::SimpleJSON clientInfo = smpl::SimpleJSON(clientSecretJSON.getFullFileName());
-    std::string clientID = ((smpl::JPair&)clientInfo["installed"]["client_id"]).getValue();
-    std::string clientSecret = ((smpl::JPair&)clientInfo["installed"]["client_secret"]).getValue();
-    std::string authURL = ((smpl::JPair&)clientInfo["installed"]["auth_uri"]).getValue();
-    std::string tokenURL = "https://www.googleapis.com/oauth2/v4/token";
-    
-    std::string finalURL = authURL + "?client_id=" + clientID
-                     + "&response_type=code&scope=" + scopeURL
-                     + "&access_type=offline&redirect_uri=urn:ietf:wg:oauth:2.0:oob";
-    
-    system(("start msedge \"" + finalURL + "\"").c_str());
-
-    smpl::StringTools::print("ENTER AUTH CODE: ");
-    std::string finalAuthCode = smpl::StringTools::getString();
-    
-    if(finalAuthCode.empty())
-        return outputJSON;
-    
-    std::string body = "client_id="+clientID+"&client_secret="+clientSecret+"&code="+finalAuthCode
-                    + "&redirect_uri=urn:ietf:wg:oauth:2.0:oob&grant_type=authorization_code";
-
-    smpl::WebClient client = smpl::WebClient(tokenURL);
-    smpl::WebRequest requestAuthHeaders = smpl::WebRequest();
-    requestAuthHeaders.setHeader(smpl::WebRequest::TYPE_POST, "/oauth2/v4/token");
-    requestAuthHeaders.addKeyValue("Host", "www.googleapis.com");
-    requestAuthHeaders.addKeyValue("User-Agent", "TestApplication1");
-    requestAuthHeaders.addKeyValue("Content-Length", smpl::StringTools::toString(body.size()));
-    requestAuthHeaders.addKeyValue("Content-Type", "application/x-www-form-urlencoded");
-
-    std::atomic_bool isConnected = true;
-    client.setOnConnectFunc([&requestAuthHeaders, &body](smpl::WebClient* clientPointer) -> void{
-        int bytesSent = clientPointer->sendRequest(requestAuthHeaders);
-        smpl::StringTools::println("BYTES SENT: %d vs EXPECTED: %llu", bytesSent, requestAuthHeaders.getBytesInRequest());
-        bytesSent = clientPointer->sendMessage(body.c_str(), body.size());
-        smpl::StringTools::println("BYTES SENT: %d vs EXPECTED: %llu", bytesSent, body.size());
-        smpl::StringTools::println("CONNECTED");
-    });
-    
-    client.setOnBufferChangedFunc([&outputJSON, &isConnected](smpl::WebClient* clientPointer, smpl::WebRequest& request, unsigned char* buffer, size_t bufferSize) ->void {
-        //should be a json. Load as one. Should disconnect right after too
-        smpl::StringTools::println("DATA RECEIVED");
-        smpl::StreamableArray<unsigned char> streamableBuffer(buffer, bufferSize, false);
-        outputJSON = smpl::SimpleJSON(&streamableBuffer);
-        clientPointer->disconnect();
-        isConnected = false;
-    });
-
-    client.setOnDisconnectFunc([&isConnected](smpl::WebClient* clientPointer) ->void{
-        isConnected = false;
-        smpl::StringTools::println("DISCONNECTED");
-    });
-    client.start();
-
-    if(client.getTimeoutOccurred())
-    {
-        smpl::StringTools::println("FAILED TO CONNECT");
-        isConnected = false;
-    }
-
-    while(client.isValid() && isConnected)
-    {
-        if(client.getShouldRedirect())
-            client.completeRedirect();
-        smpl::System::sleep(10, 0, false);
-    }
-
-    return outputJSON;
+	while(serv.getRunning())
+	{
+		System::sleep(1, 0, false);
+	}
 }
 
+std::vector<size_t> times;
+void test1()
+{
+	for(int i=0; i<100; i++)
+	{
+		std::cout << "Test1() = " << i << std::endl;
+		times.push_back(System::getCurrentTimeNano());
+		ThisFiberTask::yield();
+		times.push_back(System::getCurrentTimeNano());
+	}
+}
+
+void test2()
+{
+	for(int i=0; i<100; i++)
+	{
+		std::cout << "Test2() = " << i << std::endl;
+		times.push_back(System::getCurrentTimeNano());
+		ThisFiberTask::yield();
+		times.push_back(System::getCurrentTimeNano());
+	}
+}
+
+void test3()
+{
+	while(true)
+	{
+		ThisFiberTask::yield();
+	}
+}
+void quickYieldingTest()
+{
+	// FiberTask task1 = FiberTask(test1);
+	// FiberTask task2 = FiberTask(test2);
+
+	// FiberTaskScheduler::addTask(&task1);
+	// FiberTaskScheduler::addTask(&task2);
+
+	// //run all task till completion
+	// FiberTaskScheduler::run();
+
+	// for(int i=2; i<times.size()-2; i+=2)
+	// {
+	// 	StringTools::println("Time to context switch: %llu", times[i+1] - times[i]);
+	// }
+	
+	FiberTask task1 = FiberTask(test3);
+	size_t t1 = System::getCurrentTimeNano();
+	for(int i=0; i<1000000; i++)
+	{
+		task1.run();
+	}
+	size_t t2 = System::getCurrentTimeNano();
+	StringTools::println("Time to complete: %llu", t2-t1);
+	StringTools::println("AVG Time to Context switch round trip: %llu", (t2-t1)/1000000);
+	StringTools::println("AVG Time to Context switch: %llu", (t2-t1)/1000000/2);
+
+}
 
 int main()
 {
-    smpl::SimpleJSON authStuff = setupOAUTH("client_secret_1026698443020-koitvd4a1e0nq0ad7b5drs6qmquibtn3.apps.googleusercontent.com.json", 
-                                            "https://www.googleapis.com/auth/youtube");
+    // smpl::SimpleJSON authStuff = setupOAUTH("client_secret.json", 
+    //                                         "https://www.googleapis.com/auth/youtube");
     
-    smpl::StringTools::println("%s", authStuff.getString(true));
+    // // smpl::StringTools::println("%s", authStuff.getString(true));
+    // createOAuthServer("client_secret.json", "https://www.googleapis.com/auth/youtube");
+
+    // auto output = StringTools::parseURLArguments("/?code=4/0ATX87lOb7x-IZz7zUHd7I_kfdejcagXqNZV0KQkFhlXTbCuL9yErhU2GtIcyUYOX9N2icQ&scope=https://www.googleapis.com/auth/youtube");
+    // StringTools::println("%s", output);
+	
+	runBasicHTTPServer();
+    // quickYieldingTest();
     return 0;
 }
+
+//client_id: Kd4Ue8jYiWhocNK1eSuE1WZ7
+//client_secret: lPktggkJ7GIt8Jg9wexta1506Pyv22Z3uAXgbRAb590G1W7q
+//login: bewildered-skylark@example.com
+//password: Powerful-Partridge-56

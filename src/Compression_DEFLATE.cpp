@@ -132,8 +132,8 @@ namespace smpl
 			//Helpful structure for sorting
 			struct HCStruct
 			{
-				int value;
-				int length;
+				size_t value;
+				size_t length;
 			};
 
 			//generate canonical huffman tables for the literals
@@ -232,7 +232,7 @@ namespace smpl
 
 			for(TraverseInfo<HuffmanNode>& tInfo : litTreeTraversal)
 			{
-				litStuff[tInfo.node->data.value] = {tInfo.node->data.value, (int)tInfo.path.size()};
+				litStuff[tInfo.node->data.value] = {tInfo.node->data.value, tInfo.path.size()};
 			}
 		
 			Sort::quickSort<HCStruct>(litStuff, amountOfLitCodes, [](HCStruct a, HCStruct b) -> bool{
@@ -250,7 +250,7 @@ namespace smpl
 
 			for(TraverseInfo<HuffmanNode>& tInfo : distTreeTraversal)
 			{
-				distStuff[tInfo.node->data.value] = {tInfo.node->data.value, (int)tInfo.path.size()};
+				distStuff[tInfo.node->data.value] = {tInfo.node->data.value, tInfo.path.size()};
 			}
 
 			Sort::quickSort<HCStruct>(distStuff, amountOfDistCodes, [](HCStruct a, HCStruct b) -> bool{

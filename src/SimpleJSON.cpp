@@ -59,9 +59,9 @@ namespace smpl
             if(type != JPair::TYPE)
             {
                 JNodeWithChildren* obj = (JNodeWithChildren*)this;
-                auto pairIt = obj->nameToIndexMap.equal_range(s[offset]);
+				auto pairIt = obj->nameToIndexMap.find(s[offset]);
 
-                for(auto p=pairIt.first; p!=pairIt.second; p++)
+                for(auto p=pairIt; p!=obj->nameToIndexMap.end(); ++p)
                 {
                     obj->vars[p->second]->getNodesPatternInternal(s, offset+1, results);
                 }
@@ -74,7 +74,8 @@ namespace smpl
     {
         if(type != JPair::TYPE)
         {
-            return *((JNodeWithChildren*)this)->vars[location];
+			if(location < ((JNodeWithChildren*)this)->vars.size())
+            	return *((JNodeWithChildren*)this)->vars[location];
             throw std::out_of_range("Index: " + std::to_string(location) + " is out of range.");
         }
         throw std::runtime_error("JNode is a Pair and does not have children.");

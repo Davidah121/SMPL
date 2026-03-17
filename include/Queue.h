@@ -12,7 +12,12 @@ namespace smpl
         Queue() {}
         ~Queue() {}
 
-        void add(T data)
+        void add(T&& data)
+		{
+			buffer.addNode(std::move(data));
+			totalSize++;
+		}
+        void add(const T& data)
         {
             buffer.addNode(data);
             totalSize++;
@@ -29,11 +34,6 @@ namespace smpl
                 buffer.removeFirst();
                 totalSize--;
             }
-            // if(buffer.getRootNode() != nullptr)
-            // {
-            //     buffer.removeNode(buffer.getRootNode());
-            //     totalSize--;
-            // }
         }
 
         /**
@@ -57,7 +57,7 @@ namespace smpl
          * @return true 
          * @return false 
          */
-        bool find(T data)
+        bool find(const T& data)
         {
             LinkNode<T>* currNode = buffer.getRootNode();
             while(currNode != nullptr)
@@ -77,7 +77,7 @@ namespace smpl
          * @return true 
          * @return false 
          */
-        bool erase(T data)
+        bool erase(const T& data)
         {
             LinkNode<T>* nodeToRemove = nullptr;
             LinkNode<T>* currNode = buffer.getRootNode();
@@ -101,7 +101,7 @@ namespace smpl
          * @return true 
          * @return false 
          */
-        bool eraseAll(T data)
+        bool eraseAll(const T& data)
         {
             std::vector<LinkNode<T>*> nodesToRemove;
             LinkNode<T>* currNode = buffer.getRootNode();
@@ -121,7 +121,7 @@ namespace smpl
             totalSize -= nodesToRemove.size();
             return nodesToRemove.size() > 0;
         }
-        T get()
+        T& get()
         {
             return buffer.getRootNode()->value;
         }

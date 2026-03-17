@@ -9,12 +9,19 @@ rule buildToObject
    depfile = $out.d
    command = $compiler $compilerFlags $inc $in -o $out -MMD -MF $out.d
 
+## for the final exe
+rule buildToEXE
+   deps = gcc
+   depfile = $out.d
+   command = $compiler $EXECompilerFlags $inc ${objDir}/*.o -o $out -MMD -MF $out.d
+
 ## build all of the objects and the executable
 build $objDir/Algorithms.o: buildToObject src/Algorithms.cpp
 build $objDir/AudioIn.o: buildToObject src/AudioIn.cpp
 build $objDir/AudioOut.o: buildToObject src/AudioOut.cpp
 build $objDir/BezierCurve.o: buildToObject src/BezierCurve.cpp
 build $objDir/BinarySet.o: buildToObject src/BinarySet.cpp
+build $objDir/BitBltCapturer.o : buildToObject src/ext/BitBltCapturer.cpp
 build $objDir/BitmapFont.o: buildToObject src/BitmapFont.cpp
 build $objDir/BitwiseTools.o: buildToObject src/BitwiseTools.cpp
 build $objDir/CatmullRom.o: buildToObject src/CatmullRom.cpp
@@ -40,6 +47,7 @@ build $objDir/Cryptography.o: buildToObject src/Cryptography.cpp
 build $objDir/DCEL.o: buildToObject src/DCEL.cpp
 build $objDir/DirectoryNotifier.o: buildToObject src/ext/DirectoryNotifier.cpp
 build $objDir/DragDrop.o: buildToObject src/ext/DragDrop.cpp
+build $objDir/DXCapturer.o : buildToObject src/ext/DXCapturer.cpp
 build $objDir/DXFont.o: buildToObject src/ext/DXFont.cpp
 build $objDir/DXGraphics.o: buildToObject src/ext/DXGraphics.cpp
 build $objDir/DXModel.o: buildToObject src/ext/DXModel.cpp
@@ -59,6 +67,7 @@ build $objDir/GLWindow.o: buildToObject src/ext/GLWindow.cpp
 build $objDir/KeyboardSimulator.o: buildToObject src/ext/KeyboardSimulator.cpp
 build $objDir/MouseSimulator.o: buildToObject src/ext/MouseSimulator.cpp
 build $objDir/TouchSimulator.o: buildToObject src/ext/TouchSimulator.cpp
+build $objDir/FiberTask.o: buildToObject src/FiberTask.cpp
 build $objDir/File.o: buildToObject src/File.cpp
 build $objDir/FillFunction.o: buildToObject src/FillFunction.cpp
 build $objDir/Font.o: buildToObject src/Font.cpp
@@ -69,6 +78,7 @@ build $objDir/Graph.o: buildToObject src/Graph.cpp
 build $objDir/GraphicsExt.o: buildToObject src/GraphicsExt.cpp
 build $objDir/GuiResourceManager.o: buildToObject src/GuiResourceManager.cpp
 build $objDir/HiResImage.o: buildToObject src/HiResImage.cpp
+build $objDir/HttpClient.o: buildToObject src/HttpClient.cpp
 build $objDir/HttpServer.o: buildToObject src/HttpServer.cpp
 build $objDir/Image.o: buildToObject src/Image.cpp
 build $objDir/Image_BitmapCode.o: buildToObject src/Image_BitmapCode.cpp
@@ -162,8 +172,170 @@ build $objDir/VectorGraphic_VectorPolyline.o: buildToObject src/VectorGraphic_Ve
 build $objDir/VectorGraphic_VectorRectangle.o: buildToObject src/VectorGraphic_VectorRectangle.cpp
 build $objDir/VectorGraphic_VectorShape.o: buildToObject src/VectorGraphic_VectorShape.cpp
 build $objDir/VectorSprite.o: buildToObject src/VectorSprite.cpp
-build $objDir/WebClient.o: buildToObject src/WebClient.cpp
 build $objDir/WebCookie.o: buildToObject src/WebCookie.cpp
 build $objDir/WebRequest.o: buildToObject src/WebRequest.cpp
 build $objDir/WebSocket.o: buildToObject src/WebSocket.cpp
 build $objDir/WavLoader.o: buildToObject src/WavLoader.cpp
+
+## build final exe. Depends on all files in the object directory 
+build $exeDir/smpl.exe: buildToEXE $
+$objDir/Algorithms.o $
+$objDir/AudioIn.o $
+$objDir/AudioOut.o $
+$objDir/BezierCurve.o $
+$objDir/BinarySet.o $
+$objDir/BitBltCapturer.o $
+$objDir/BitmapFont.o $
+$objDir/BitwiseTools.o $
+$objDir/CatmullRom.o $
+$objDir/CemYukselSpline.o $
+$objDir/ColorNameConverter.o $
+$objDir/ColorPalette.o $
+$objDir/ColorSpaceConverter.o $
+$objDir/ComplexNumber.o $
+$objDir/Compression.o $
+$objDir/Compression_ARITHMETIC.o $
+$objDir/Compression_DEFLATE.o $
+$objDir/Compression_HUFFMAN.o $
+$objDir/Compression_LZ77.o $
+$objDir/Compression_LZSS.o $
+$objDir/Compression_LZW.o $
+$objDir/Compression_RLE.o $
+$objDir/Compression_StreamLZ77.o $
+$objDir/Compression_StreamLZSS.o $
+$objDir/Compression_StreamLZW.o $
+$objDir/Compression_StreamRLE.o $
+$objDir/ComputerVision.o $
+$objDir/Cryptography.o $
+$objDir/DCEL.o $
+$objDir/DirectoryNotifier.o $
+$objDir/DragDrop.o $
+$objDir/DXCapturer.o $
+$objDir/DXFont.o $
+$objDir/DXGraphics.o $
+$objDir/DXModel.o $
+$objDir/DXShader.o $
+$objDir/DXSprite.o $
+$objDir/DXSurface.o $
+$objDir/DXTexture.o $
+$objDir/DXWindow.o $
+$objDir/GLFont.o $
+$objDir/GLGraphics.o $
+$objDir/GLModel.o $
+$objDir/GLShader.o $
+$objDir/GLSprite.o $
+$objDir/GLSurface.o $
+$objDir/GLTexture.o $
+$objDir/GLWindow.o $
+$objDir/KeyboardSimulator.o $
+$objDir/MouseSimulator.o $
+$objDir/TouchSimulator.o $
+$objDir/FiberTask.o $
+$objDir/File.o $
+$objDir/FillFunction.o $
+$objDir/Font.o $
+$objDir/GamepadDInput.o $
+$objDir/GamepadXInput.o $
+$objDir/GeneralSpline.o $
+$objDir/Graph.o $
+$objDir/GraphicsExt.o $
+$objDir/GuiResourceManager.o $
+$objDir/HiResImage.o $
+$objDir/HttpClient.o $
+$objDir/HttpServer.o $
+$objDir/Image.o $
+$objDir/Image_BitmapCode.o $
+$objDir/Image_GifCode.o $
+$objDir/Image_JpegCode.o $
+$objDir/Image_PngCode.o $
+$objDir/IniFile.o $
+$objDir/Input.o $
+$objDir/Line.o $
+$objDir/Main.o $
+$objDir/Mat2f.o $
+$objDir/Mat3f.o $
+$objDir/Mat4f.o $
+$objDir/MathExt.o $
+$objDir/MathExt_Clustering.o $
+$objDir/MathFunction.o $
+$objDir/MD5Streamable.o $
+$objDir/Model.o $
+$objDir/ModelBuilder.o $
+$objDir/Network.o $
+$objDir/NeuralNetwork.o $
+$objDir/NeuralNetwork_Layers.o $
+$objDir/NeuralNetwork_ObjectiveFunctions.o $
+$objDir/NeuralNetwork_old.o $
+$objDir/NewGui.o $
+$objDir/NewGui_GuiButton.o $
+$objDir/NewGui_GuiCanvas.o $
+$objDir/NewGui_GuiClippingLayout.o $
+$objDir/NewGui_GuiContent.o $
+$objDir/NewGui_GuiEmpty.o $
+$objDir/NewGui_GuiItem.o $
+$objDir/NewGui_GuiLayout.o $
+$objDir/NewGui_GuiLayoutFixed.o $
+$objDir/NewGui_GuiLayoutList.o $
+$objDir/NewGui_GuiLayoutTable.o $
+$objDir/NewGui_GuiManager.o $
+$objDir/NewGui_GuiSprite.o $
+$objDir/NewGui_GuiText.o $
+$objDir/NewGui_GuiTextBox.o $
+$objDir/NewGui_Scrollbar.o $
+$objDir/NewStringFormatting.o $
+$objDir/PolarCoordinate.o $
+$objDir/Quaternion.o $
+$objDir/RadixTree.o $
+$objDir/SHA1Streamble.o $
+$objDir/SHA2Streamble.o $
+$objDir/Shape.o $
+$objDir/SIMD.o $
+$objDir/SIMD_Cast.o $
+$objDir/SimpleDir.o $
+$objDir/SimpleFile.o $
+$objDir/SimpleGraphics.o $
+$objDir/SimpleGraphics_CIRCLE.o $
+$objDir/SimpleGraphics_ELLIPSE.o $
+$objDir/SimpleGraphics_GRADIENTS.o $
+$objDir/SimpleGraphics_IMAGE.o $
+$objDir/SimpleGraphics_IMAGE_MANIPULATION.o $
+$objDir/SimpleGraphics_LINE.o $
+$objDir/SimpleGraphics_MODEL.o $
+$objDir/SimpleGraphics_RECT.o $
+$objDir/SimpleGraphics_TEXT.o $
+$objDir/SimpleGraphics_TRIANGLE.o $
+$objDir/SimpleJobQueue.o $
+$objDir/SimpleJSON.o $
+$objDir/SimplePipe.o $
+$objDir/SimpleWindow.o $
+$objDir/SimpleXml.o $
+$objDir/SmartJobQueue.o $
+$objDir/SmartMemory.o $
+$objDir/Sound.o $
+$objDir/Sprite.o $
+$objDir/SSLSingleton.o $
+$objDir/StringBridge.o $
+$objDir/StringTools.o $
+$objDir/SuffixArray.o $
+$objDir/SuffixAutomaton.o $
+$objDir/System.o $
+$objDir/TypeInfo.o $
+$objDir/Vec2f.o $
+$objDir/Vec3f.o $
+$objDir/Vec4f.o $
+$objDir/VectorFont.o $
+$objDir/VectorFontOTF.o $
+$objDir/VectorGraphic.o $
+$objDir/VectorGraphic_VectorCircle.o $
+$objDir/VectorGraphic_VectorEllipse.o $
+$objDir/VectorGraphic_VectorLine.o $
+$objDir/VectorGraphic_VectorPath.o $
+$objDir/VectorGraphic_VectorPolygon.o $
+$objDir/VectorGraphic_VectorPolyline.o $
+$objDir/VectorGraphic_VectorRectangle.o $
+$objDir/VectorGraphic_VectorShape.o $
+$objDir/VectorSprite.o $
+$objDir/WebCookie.o $
+$objDir/WebRequest.o $
+$objDir/WebSocket.o $
+$objDir/WavLoader.o

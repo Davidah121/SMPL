@@ -1,5 +1,4 @@
 #include "CatmullRom.h"
-#include "MathExt.h"
 
 namespace smpl
 {

@@ -1218,24 +1218,24 @@ namespace smpl
 		);
 	}
 
-	Mat4f MathExt::perspectiveProjectionMatrix(double width, double height, double near, double far, double fov)
+	Mat4f MathExt::perspectiveProjectionMatrix(double width, double height, double znear, double zfar, double fov)
 	{
 		double tanVal = MathExt::dtan(fov/2);
 		double aspectRatio = height/width;
 		double S1 = aspectRatio / tanVal;
 		double S2 = 1.0 / tanVal;
-		double zRange = far-near;
+		double zRange = zfar-znear;
 
 		return Mat4f( 
 			S1, 0, 0, 0,
 			0, S2, 0, 0,
-			0, 0, -(far)/zRange, -(far*near)/zRange,
+			0, 0, -(zfar)/zRange, -(zfar*znear)/zRange,
 			0, 0, -1, 0);
 	}
 
-	Mat4f MathExt::orthographicProjectionMatrix(double width, double height, double near, double far)
+	Mat4f MathExt::orthographicProjectionMatrix(double width, double height, double znear, double zfar)
 	{
-		if(near == far)
+		if(znear == zfar)
 		{
 			//x` = 2x/width + 0y + 0z + -1w
 			//y` = 0x -2y/height + 0z + 1w
@@ -1250,19 +1250,19 @@ namespace smpl
 		}
 		else
 		{
-			double zRange = far-near;
+			double zRange = zfar-znear;
 			return Mat4f(
 				2.0/width, 0, 0, -1,
 				0, -2.0/height, 0, -1,
-				0, 0, 2.0/zRange, -(far+near)/zRange,
+				0, 0, 2.0/zRange, -(zfar+znear)/zRange,
 				0, 0, 0, 1
 			);
 		}
 	}
 
-	Mat4f MathExt::orthographicProjectionMatrix2(double left, double right, double top, double bottom, double near, double far)
+	Mat4f MathExt::orthographicProjectionMatrix2(double left, double right, double top, double bottom, double znear, double zfar)
 	{
-		if(near == far)
+		if(znear == zfar)
 		{
 			return Mat4f(
 				2.0/(right-left), 0, 0, -(right+left) / (right-left),
@@ -1273,11 +1273,11 @@ namespace smpl
 		}
 		else
 		{
-			double zRange = far-near;
+			double zRange = zfar-znear;
 			return Mat4f(
 				2.0/(right-left), 0, 0, -(right+left) / (right-left),
 				0, 2.0/(top-bottom), 0, (top+bottom) / (top-bottom),
-				0, 0, 2.0/zRange, -(far+near)/zRange,
+				0, 0, 2.0/zRange, -(zfar+znear)/zRange,
 				0, 0, 0, 1
 			);
 		}

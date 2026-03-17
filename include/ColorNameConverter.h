@@ -2,7 +2,7 @@
 #include "BuildOptions.h"
 #include "StandardTypes.h"
 #include <iostream>
-#include <unordered_map>
+#include "SimpleHashTable.h"
 #include "ColorPalette.h"
 
 namespace smpl
@@ -36,7 +36,7 @@ namespace smpl
 		 */
 		static std::string ColorToName(Color c);
 	private:
-		static const std::unordered_map<std::string, Color> colorNamePair;
+		static const SimpleHashMap<std::string, Color> colorNamePair;
 	};
 
 }  //NAMESPACE smpl END

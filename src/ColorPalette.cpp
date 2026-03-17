@@ -1,8 +1,6 @@
 #include "ColorPalette.h"
 #include "MathExt.h"
 #include "Sort.h"
-#include "StringTools.h"
-#include "SimpleFile.h"
 #include "LCG.h"
 #include "System.h"
 #include "ColorSpaceConverter.h"
@@ -57,13 +55,22 @@ namespace smpl
 		}
 	}
 	
-	// ColorPalette::ColorPalette(ColorPalette&& other)
-	// {
-	// 	paletteArr = other.paletteArr;
-	// 	paletteTree = other.paletteTree;
-	// 	uniquePalette = other.uniquePalette;
-	// 	other.paletteTree = nullptr;
-	// }
+	
+	ColorPalette::ColorPalette(ColorPalette&& other) noexcept
+	{
+		paletteArr = std::move(other.paletteArr);
+		paletteTree = std::move(other.paletteTree);
+		uniquePalette = std::move(other.uniquePalette);
+		other.paletteTree = nullptr;
+	}
+
+	void ColorPalette::operator==(ColorPalette&& other) noexcept
+	{
+		paletteArr = std::move(other.paletteArr);
+		paletteTree = std::move(other.paletteTree);
+		uniquePalette = std::move(other.uniquePalette);
+		other.paletteTree = nullptr;
+	}
 
 	ColorPalette ColorPalette::createColorPalette(int reds, int greens, int blues)
 	{

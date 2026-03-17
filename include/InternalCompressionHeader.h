@@ -14,7 +14,7 @@
 #include "Concurrency.h"
 #include "SimpleFile.h"
 
-#include "SimpleHashMap.h"
+#include "SimpleHashTable.h"
 
 #ifndef min
 	#define min(a,b) (a<b)? a:b

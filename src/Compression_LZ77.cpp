@@ -372,9 +372,7 @@ namespace smpl
 		//If not found, add the 4 values to the hashmap and write the first byte to the output
 
 		//Method 5 - SIMPLE_HASH_MAP : Best Performance and Good Size.
-		SimpleHashMap<int, int> map = SimpleHashMap<int, int>( SimpleHashMap<int, int>::MODE_KEEP_ALL );
-		// map.setMaxLoadFactor(-1);
-		std::vector<std::pair<int, int>*> deleteRefs;
+		SimpleHashMultiMap<int, int> map = SimpleHashMultiMap<int, int>();
 
 		size_t totalOutputSize = 0;
 		size_t refs = 0;
@@ -385,13 +383,13 @@ namespace smpl
 		while(i < size-3)
 		{
 			int key = *(int*)&data[i];
-			std::pair<int, int>* k = map.get(key);
+			auto it = map.find(key);
 
-			if(k == nullptr)
+			if(it == map.end())
 			{
 				//not found or size too small
 				//always insert
-				map.add(key, i);
+				map.insert({key, i});
 
 				outputData->push_back( {true, data[i], 0} );
 				lits++;
@@ -403,15 +401,12 @@ namespace smpl
 				int lowestPoint = max(i-maxDistance, 0);
 				int bestLength = 0;
 				int bestLocation = 0;
-
-				do
+				while(it != map.end())
 				{
-					int locationOfMatch = k->second;
+					int locationOfMatch = it->second;
 					if(locationOfMatch < lowestPoint)
 					{
-						//maximum backwards distance reached
-						deleteRefs.push_back(k);
-						k = map.getNext();
+						it = map.erase(it);
 						continue;
 					}
 
@@ -452,21 +447,16 @@ namespace smpl
 					if(bestLength == 258)
 						break;
 					
-					k = map.getNext();
-				} while(k != nullptr);
-
-				for(int j=0; j<deleteRefs.size(); j++)
-				{
-					map.remove(deleteRefs[j]);
+					++it;
 				}
-				deleteRefs.clear();
+
 
 				//always insert
-				map.add( key, i );
+				map.insert( {key, i} );
 				for(int j=1; j<bestLength-3; j++)
 				{
 					int nkey = *(int*)&data[i+j];
-					map.add( nkey, i+j );
+					map.insert( {nkey, i+j} );
 				}
 
 				unsigned int backwardsDis = i - bestLocation;

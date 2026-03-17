@@ -7,9 +7,9 @@ namespace smpl
 	template<typename T>
 	struct LinkNode
 	{
+		T value;
 		LinkNode* parentNode = nullptr;
 		LinkNode* nextNode = nullptr;
-		T value;
 	};
 
 	template<typename T>
@@ -64,7 +64,8 @@ namespace smpl
 		 * @param n 
 		 * 		The data to add.
 		 */
-		void addNode(T n);
+		void addNode(const T& n);
+		void addNode(T&& n);
 
 		/**
 		 * @brief Adds a new node right after the parent node specified.
@@ -73,7 +74,8 @@ namespace smpl
 		 * @param n 
 		 * @param parentNode 
 		 */
-		void addNode(T n, LinkNode<T>* parentNode);
+		void addNode(const T& n, LinkNode<T>* parentNode);
+		void addNode(T&& n, LinkNode<T>* parentNode);
 
 		/**
 		 * @brief Removes a node from the list.
@@ -210,12 +212,11 @@ namespace smpl
 	}
 
 	template<typename T>
-	inline void LinkedList<T>::addNode(T n)
+	inline void LinkedList<T>::addNode(const T& n)
 	{
 		LinkNode<T>* lNode = getLastNode();
 
-		LinkNode<T>* newNode = new LinkNode<T>;
-		newNode->value = n;
+		LinkNode<T>* newNode = new LinkNode<T>{n, nullptr, nullptr};
 
 		if (lNode != nullptr)
 		{
@@ -232,7 +233,28 @@ namespace smpl
 	}
 
 	template<typename T>
-	inline void LinkedList<T>::addNode(T n, LinkNode<T>* parentNode)
+	inline void LinkedList<T>::addNode(T&& n)
+	{
+		LinkNode<T>* lNode = getLastNode();
+
+		LinkNode<T>* newNode = new LinkNode<T>{std::move(n), nullptr, nullptr};
+
+		if (lNode != nullptr)
+		{
+			lNode->nextNode = newNode;
+			newNode->parentNode = lNode;
+
+			lastNode = newNode;
+		}
+		else
+		{
+			rootNode = newNode;
+			lastNode = newNode;
+		}
+	}
+
+	template<typename T>
+	inline void LinkedList<T>::addNode(const T& n, LinkNode<T>* parentNode)
 	{
 		if(parentNode == nullptr)
 			return;
@@ -245,10 +267,26 @@ namespace smpl
 		//set parent of newNode and set its next link
 		//set parent's next node to be newNode
 		//set newNode's next link parent to newNode
-		LinkNode<T>* newNode = new LinkNode<T>;
-		newNode->value = n;
-		newNode->parentNode = parentNode;
-		newNode->nextNode = parentNode->nextNode;
+		LinkNode<T>* newNode = new LinkNode<T>{n, parentNode, parentNode->nextNode};
+		parentNode->nextNode = newNode;
+		newNode->nextNode->parentNode = newNode;
+	}
+
+	template<typename T>
+	inline void LinkedList<T>::addNode(T&& n, LinkNode<T>* parentNode)
+	{
+		if(parentNode == nullptr)
+			return;
+		if(parentNode == lastNode)
+		{
+			addNode(std::move(n));
+			return;
+		}
+
+		//set parent of newNode and set its next link
+		//set parent's next node to be newNode
+		//set newNode's next link parent to newNode
+		LinkNode<T>* newNode = new LinkNode<T>{std::move(n), parentNode, parentNode->nextNode};
 		parentNode->nextNode = newNode;
 		newNode->nextNode->parentNode = newNode;
 	}

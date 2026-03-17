@@ -321,40 +321,40 @@ namespace smpl
     {
         GuiContent::loadDataFromXML(attribs, manager);
         
-        auto pair = attribs.get("text");
-        if(pair != nullptr)
+        auto pair = attribs.find("text");
+        if(pair != attribs.end())
             text = pair->second;
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("font-color");
-        if(pair != nullptr)
+        pair = attribs.find("font-color");
+        if(pair != attribs.end())
             fontColor = loadColor(pair->second);
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("highlight-color");
-        if(pair != nullptr)
+        pair = attribs.find("highlight-color");
+        if(pair != attribs.end())
             highlightColor = loadColor(pair->second);
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("max-width");
-        if(pair != nullptr)
+        pair = attribs.find("max-width");
+        if(pair != attribs.end())
             if(loadValueFromAttrib(maxWidth, pair->second))
                 maxWidth = -1;
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("max-height");
-        if(pair != nullptr)
+        pair = attribs.find("max-height");
+        if(pair != attribs.end())
             if(loadValueFromAttrib(maxHeight, pair->second))
                 maxHeight = -1;
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("selectable");
-        if(pair != nullptr)
+        pair = attribs.find("selectable");
+        if(pair != attribs.end())
             isSelectable = (pair->second == "true");
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("wrap-mode");
-        if(pair != nullptr)
+        pair = attribs.find("wrap-mode");
+        if(pair != attribs.end())
         {
             if(pair->second == "character")
                 wrapMode = Font::CHARACTER_WRAP;
@@ -363,7 +363,7 @@ namespace smpl
             else
                 wrapMode = Font::NO_WRAP;
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
     }
 
     SmartMemory<GuiItem> GuiText::loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager)

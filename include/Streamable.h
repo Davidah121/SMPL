@@ -1,5 +1,7 @@
 #pragma once
+#include "FiberTask.h"
 #include "StandardTypes.h"
+#include <mutex>
 #include <vector>
 #include <memory>
 #include "Concurrency.h"
@@ -24,6 +26,8 @@ namespace smpl
         bool getEOF();
 
         virtual bool isValid();
+
+		std::lock_guard<HybridSpinLock> obtainLockGuard();
     protected:
         void lock();
         void unlock();
@@ -146,6 +150,12 @@ namespace smpl
     {
         commonMutex.unlock();
     }
+	template<typename T>
+	inline std::lock_guard<HybridSpinLock> Streamable<T>::obtainLockGuard()
+	{
+		return std::lock_guard<HybridSpinLock>(commonMutex);
+	}
+
     template<typename T>
     inline size_t Streamable<T>::waitRead(T* data, size_t size)
     {
@@ -154,6 +164,9 @@ namespace smpl
             size_t readSize = read(data, size);
             if(readSize > 0)
                 return readSize;
+			
+			//Make this Fiber Aware.
+			ThisFiberTask::yield();
         }
         return 0;
     }

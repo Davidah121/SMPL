@@ -60,7 +60,19 @@ namespace smpl
 		 */
 		void operator=(const Image& other);
 
-		// Image(Image&& other);
+		/**
+		 * @brief Move Construct a new Image object
+		 * 
+		 * @param other 
+		 */
+		Image(Image&& other) noexcept;
+
+		/**
+		 * @brief Move Assign a new Image Object
+		 * 
+		 * @param other 
+		 */
+		void operator=(Image&& other) noexcept;
 
 		/**
 		 * @brief Destroy the Image object

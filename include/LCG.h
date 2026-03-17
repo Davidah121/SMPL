@@ -1,5 +1,6 @@
 #pragma once
 #include "StandardTypes.h"
+#include "BuildOptions.h"
 
 namespace smpl
 {

@@ -1,6 +1,8 @@
 #pragma once
 #include "StandardTypes.h"
 #include "Heap.h"
+#include <cstddef>
+#include <cstdint>
 
 namespace smpl
 {
@@ -9,23 +11,23 @@ namespace smpl
     {
         double priority;
         T data;
-        bool operator<(PQData& other)
+        bool operator<(const PQData& other) const
         {
             return priority < other.priority;
         }
-        bool operator<=(PQData& other)
+        bool operator<=(const PQData& other) const
         {
             return priority <= other.priority;
         }
-        bool operator>(PQData& other)
+        bool operator>(const PQData& other) const
         {
             return priority > other.priority;
         }
-        bool operator>=(PQData& other)
+        bool operator>=(const PQData& other) const
         {
             return priority >= other.priority;
         }
-        bool operator==(PQData& other)
+        bool operator==(const PQData& other) const
         {
             return data == other.data; //ignore priority
         }
@@ -40,18 +42,25 @@ namespace smpl
         
         PriorityQueue();
         PriorityQueue(bool heapType);
+
+		PriorityQueue(const PriorityQueue<T>& other) = default;
+		PriorityQueue& operator=(const PriorityQueue<T>& other) = default;
+		PriorityQueue(PriorityQueue<T>&& other) = default;
+		PriorityQueue& operator=(PriorityQueue<T>&& other) = default;
+
         ~PriorityQueue();
-        void add(double priority, T data);
+        void add(const PQData<T>& data);
+        void add(PQData<T>&& data);
         void pop();
         bool get(T& data);
         bool peek(T& data);
-        bool get(T& data, double& priority);
-        bool peek(T& data, double& priority);
-        void erase(T data);
+        bool get(PQData<T>& data);
+        bool peek(PQData<T>& data);
+        void erase(const T& data);
         void clear();
         size_t size();
         bool empty();
-        bool find(T data);
+        bool find(const T& data);
         
     private:
         Heap<PQData<T>> buffer = Heap<PQData<T>>(Heap<PQData<T>>::TYPE_MAX);
@@ -75,9 +84,14 @@ namespace smpl
         
     }
     template<typename T>
-    inline void PriorityQueue<T>::add(double priority, T data)
+    inline void PriorityQueue<T>::add(const PQData<T>& data)
     {
-        buffer.insert(PQData<T>{priority, data});
+        buffer.insert(data);
+    }
+    template<typename T>
+    inline void PriorityQueue<T>::add(PQData<T>&& data)
+    {
+        buffer.insert(std::move(data));
     }
     template<typename T>
     inline void PriorityQueue<T>::pop()
@@ -102,25 +116,19 @@ namespace smpl
     }
 
     template<typename T>
-    inline bool PriorityQueue<T>::get(T& data, double& priority)
+    inline bool PriorityQueue<T>::get(PQData<T>& data)
     {
-        PQData<T> temp;
-        bool retValue = buffer.extract(temp);
-        data = temp.data;
-        priority = temp.priority;
+        bool retValue = buffer.extract(data);
         return retValue;
     }
     template<typename T>
-    inline bool PriorityQueue<T>::peek(T& data, double& priority)
+    inline bool PriorityQueue<T>::peek(PQData<T>& data)
     {
-        PQData<T> temp;
-        bool retValue = buffer.peek(temp);
-        data = temp.data;
-        priority = temp.priority;
+        bool retValue = buffer.peek(data);
         return retValue;
     }
     template<typename T>
-    inline void PriorityQueue<T>::erase(T data)
+    inline void PriorityQueue<T>::erase(const T& data)
     {
         buffer.erase(PQData<T>{0, data});
     }
@@ -140,7 +148,7 @@ namespace smpl
         return buffer.empty();
     }
     template<typename T>
-    inline bool PriorityQueue<T>::find(T data)
+    inline bool PriorityQueue<T>::find(const T& data)
     {
         return buffer.find(PQData<T>{0, data});
     }

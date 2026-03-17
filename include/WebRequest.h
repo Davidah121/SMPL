@@ -1,12 +1,11 @@
 #pragma once
 #include "BuildOptions.h"
-#include "StandardTypes.h"
 
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include <unordered_map>
+#include "SimpleHashTable.h"
 #include <vector>
 #include <string>
 #include <ctime>
@@ -18,30 +17,30 @@ namespace smpl
 	{
 	public:
 		WebCookie();
-		WebCookie(std::string name, std::string value);
+		WebCookie(const std::string& name, const std::string& value);
 		~WebCookie();
 
-		void setDomain(std::string dm);
+		void setDomain(const std::string& dm);
 		void setIncludeSubdomains(bool b);
-		void setPath(std::string path);
+		void setPath(const std::string& path);
 		void setSecure(bool v);
 		void setHttpOnly(bool v);
 		void setPartitioned(bool v);
 		void setExpiresDate(size_t date);
 		void setMaxAge(size_t timeInSeconds);
 
-		std::string getName();
-		std::string getValue();
-		std::string getDomain();
-		bool getIncludeSubdomains();
-		std::string getPath();
-		bool getSecure();
-		bool getHttpOnly();
-		bool getPartitioned();
-		size_t getExpiresTime();
-		bool getIsMaxAge();
+		std::string getName() const;
+		std::string getValue() const;
+		std::string getDomain() const;
+		bool getIncludeSubdomains() const;
+		std::string getPath() const;
+		bool getSecure() const;
+		bool getHttpOnly() const;
+		bool getPartitioned() const;
+		size_t getExpiresTime() const;
+		bool getIsMaxAge() const;
 
-		std::string getCookieAsString(bool isServerSide);
+		std::string getCookieAsString(bool isServerSide) const;
 		
 	private:
 		std::string name;
@@ -65,20 +64,27 @@ namespace smpl
 	public:
 		CookieManager();
 		~CookieManager();
-		void addCookie(WebCookie c);
-		WebCookie& getCookie(std::string name);
-		std::unordered_map<std::string, WebCookie>& getAllCookies();
 
-		void loadServerSentCookie(std::string line);
-		void loadClientSentCookies(std::string line);
+		void addCookies(const CookieManager& cm);
+		void addCookie(const WebCookie& c);
+		WebCookie& getCookie(const std::string& name);
+		SimpleHashMap<std::string, WebCookie>& getAllCookies();
 		
-		void loadCookiesJSON(std::string file);
-		void loadCookiesNetscape(std::string file);
+		const WebCookie& getCookie(const std::string& name) const;
+		const SimpleHashMap<std::string, WebCookie>& getAllCookies() const;
+		void clear();
+		bool empty() const;
 
-		void saveCookiesJSON(std::string file);
-		void saveCookiesNetscape(std::string file);
+		void loadServerSentCookie(const std::string& line);
+		void loadClientSentCookies(const std::string& line);
+		
+		void loadCookiesJSON(const std::string& file);
+		void loadCookiesNetscape(const std::string& file);
+
+		void saveCookiesJSON(const std::string& file);
+		void saveCookiesNetscape(const std::string& file);
 	private:
-		std::unordered_map<std::string, WebCookie> cookieMap;
+		SimpleHashMap<std::string, WebCookie> cookieMap;
 	};
 
 	class DLL_OPTION WebRequest
@@ -95,10 +101,12 @@ namespace smpl
 			static const unsigned int TYPE_PATCH = 0x100;
 			static const unsigned int TYPE_SERVER = 0xFFFFFFFF;
 
+			static const std::string MIME_FORM_DATA;
+
 			WebRequest();
 			WebRequest(char* buffer, size_t size);
-			WebRequest(std::string buffer);
-			WebRequest(std::vector<unsigned char> buffer);
+			WebRequest(const std::string& buffer);
+			WebRequest(const std::vector<unsigned char>& buffer);
 
 			WebRequest(WebRequest& other);
 			void operator=(WebRequest& other);
@@ -131,14 +139,14 @@ namespace smpl
 			 * @param data 
 			 * @param includeHTTP 
 			 */
-			void setHeader(unsigned int type, std::string data, bool includeHTTP = true);
+			void setHeader(unsigned int type, const std::string& data, bool includeHTTP = true);
 
 			/**
 			 * @brief Gets the full Header of the request/response
 			 * 
 			 * @return std::string 
 			 */
-			std::string getHeader();
+			std::string getHeader() const;
 
 			/**
 			 * @brief Gets the Type of the request/response
@@ -146,7 +154,7 @@ namespace smpl
 			 * 
 			 * @return unsigned int 
 			 */
-			unsigned int getType();
+			unsigned int getType() const;
 
 			/**
 			 * @brief Gets the url from the header of the request/response
@@ -154,7 +162,7 @@ namespace smpl
 			 * 
 			 * @return std::string 
 			 */
-			std::string getUrl();
+			std::string getUrl() const;
 
 			/**
 			 * @brief Adds a key value pair to the web request.
@@ -163,7 +171,7 @@ namespace smpl
 			 * @param key 
 			 * @param value 
 			 */
-			void addKeyValue(std::string key, std::string value);
+			void addKeyValue(const std::string& key, const std::string& value);
 
 			/**
 			 * @brief Attempts to read a key value pair. If the key does not
@@ -172,7 +180,7 @@ namespace smpl
 			 * @param key 
 			 * @return std::string 
 			 */
-			std::string readKeyValue(std::string key);
+			std::string readKeyValue(const std::string& key) const;
 			
 			/**
 			 * @brief Gets the entire request as a string that can be sent
@@ -180,27 +188,15 @@ namespace smpl
 			 * 
 			 * @return std::string 
 			 */
-			std::string getRequestAsString();
+			std::string getRequestAsString() const;
 
 			/**
-			 * @brief Adds a cookie to the request.
-			 * 		Each pair will be added to the final header as
-			 * 			Set-Cookie: key=value; options;
-			 * 		Note that this function fails if an invalid character is found
-			 * 
-			 * @param keyValuePair 
-			 * @param options
-			 */
-			bool addCookie(std::pair<std::string, std::string> keyValuePair, std::vector<std::string> options = {});
-
-			/**
-			 * @brief Gets a cookie from the request.
-			 * 		If the key was not found, returns an empty pair.
+			 * @brief Gets all cookies for the request.
 			 * 
 			 * @param key 
-			 * @return std::pair<std::string, std::string> 
+			 * @return CookieMap
 			 */
-			std::pair<std::string, std::string> getCookie(std::string key);
+			CookieManager& getCookieMap();
 
 			/**
 			 * @brief Returns if the request is empty.
@@ -208,7 +204,7 @@ namespace smpl
 			 * @return true 
 			 * @return false 
 			 */
-			bool empty();
+			bool empty() const;
 
 			/**
 			 * @brief Get the total number of bytes used in the request.
@@ -217,7 +213,7 @@ namespace smpl
 			 * 
 			 * @return size_t 
 			 */
-			size_t getBytesInRequest();
+			size_t getBytesInRequest() const;
 
 			/**
 			 * @brief Gets the Mime Type From the extension of a file.
@@ -226,7 +222,7 @@ namespace smpl
 			 * @param ext 
 			 * @return std::string 
 			 */
-			static std::string getMimeTypeFromExt(std::string ext);
+			static std::string getMimeTypeFromExt(const std::string& ext);
 
 			/**
 			 * @brief Get the Date in GMT format.
@@ -244,7 +240,7 @@ namespace smpl
 			 * @return true 
 			 * @return false 
 			 */
-			static bool isValidCookieFormat(std::string v);
+			static bool isValidCookieFormat(const std::string& v);
 			
 		private:
 			void reset();
@@ -253,9 +249,9 @@ namespace smpl
 			size_t bytesInHeader = 0;
 			std::string header;
 			std::string url;
-			std::unordered_map<std::string, std::string> data;
-			std::unordered_map<std::string, std::pair<std::string, std::vector<std::string>>> cookieMap;
+			SimpleHashMap<std::string, std::string> data;
 			
-        	static const std::unordered_map<std::string, std::string> mimeTypes;
+			CookieManager cookieMap; //Should manage your own cookies
+        	static const SimpleHashMap<std::string, std::string> mimeTypes;
 	};
 }

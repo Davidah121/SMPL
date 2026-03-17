@@ -397,96 +397,96 @@ namespace smpl
     {
         GuiItem::loadDataFromXML(attribs, manager);
 
-        auto pair = attribs.get("margin");
-        if(pair != nullptr)
+        auto pair = attribs.find("margin");
+        if(pair != attribs.end())
         {
             loadRectStuff(margin, pair->second, true);
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("padding");
-        if(pair != nullptr)
+        pair = attribs.find("padding");
+        if(pair != attribs.end())
         {
             loadRectStuff(padding, pair->second, false);
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("border");
-        if(pair != nullptr)
+        pair = attribs.find("border");
+        if(pair != attribs.end())
         {
             loadRectStuff(border, pair->second, false);
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("max-width");
-        if(pair != nullptr)
+        pair = attribs.find("max-width");
+        if(pair != attribs.end())
         {
             if(loadValueFromAttrib(maxWidth, pair->second))
                 setMaxWidthPercentage(true);
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("min-width");
-        if(pair != nullptr)
+        pair = attribs.find("min-width");
+        if(pair != attribs.end())
         {
             if(loadValueFromAttrib(minWidth, pair->second))
                 setMinWidthPercentage(true);
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("max-height");
-        if(pair != nullptr)
+        pair = attribs.find("max-height");
+        if(pair != attribs.end())
         {
             if(loadValueFromAttrib(maxHeight, pair->second))
                 setMaxHeightPercentage(true);
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("min-height");
-        if(pair != nullptr)
+        pair = attribs.find("min-height");
+        if(pair != attribs.end())
         {
             if(loadValueFromAttrib(minHeight, pair->second))
                 setMinHeightPercentage(true);
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("background-color");
-        if(pair != nullptr)
+        pair = attribs.find("background-color");
+        if(pair != attribs.end())
         {
             backgroundColor = loadColor(pair->second);
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("border-color");
-        if(pair != nullptr)
+        pair = attribs.find("border-color");
+        if(pair != attribs.end())
         {
             borderColor = loadColor(pair->second);
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("col-span");
-        if(pair != nullptr)
+        pair = attribs.find("col-span");
+        if(pair != attribs.end())
         {
             if(loadValueFromAttrib(colSpan, pair->second))
                 colSpan = 1;
             colSpan = __max(colSpan, 1);
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("row-span");
-        if(pair != nullptr)
+        pair = attribs.find("row-span");
+        if(pair != attribs.end())
         {
             if(loadValueFromAttrib(rowSpan, pair->second))
                 rowSpan = 1;
             rowSpan = __max(rowSpan, 1);
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("absolute");
-        if(pair != nullptr)
+        pair = attribs.find("absolute");
+        if(pair != attribs.end())
         {
             setAbsolutePosition(true);
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
     }
 }

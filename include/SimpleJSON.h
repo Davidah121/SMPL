@@ -4,7 +4,7 @@
 #include "Streamable.h"
 #include <fstream>
 #include <vector>
-#include <unordered_map>
+#include "SimpleHashTable.h"
 #include <string>
 
 namespace smpl
@@ -71,7 +71,7 @@ namespace smpl
     protected:
         friend JNode;
         std::vector<JNode*> vars;
-        std::unordered_multimap<std::string, size_t> nameToIndexMap;
+        SimpleHashMultiMap<std::string, size_t> nameToIndexMap;
     
         JNodeWithChildren(int type, std::string name = "");
         JNodeWithChildren(const JNodeWithChildren& other);

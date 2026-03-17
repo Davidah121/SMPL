@@ -1,6 +1,5 @@
 #include "BezierCurve.h"
 #include "MathExt.h"
-#include "StringTools.h"
 
 namespace smpl
 {

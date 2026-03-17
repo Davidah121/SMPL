@@ -18,7 +18,7 @@ namespace smpl
          * @param compareFunc
          */
         template<typename T>
-        static void mergeSort(T* list, size_t size, std::function<bool(T,T)> compareFunc);
+        static void mergeSort(T* list, size_t size, std::function<bool(const T&, const T&)> compareFunc);
 
         template<typename T>
         static void mergeSort(T* list, size_t size);
@@ -31,7 +31,7 @@ namespace smpl
          * @param compareFunc 
          */
         template<typename T>
-        static void insertionSort(T* list, size_t size, std::function<bool(T,T)> compareFunc);
+        static void insertionSort(T* list, size_t size, std::function<bool(const T&, const T&)> compareFunc);
         
         template<typename T>
         static void insertionSort(T* list, size_t size);
@@ -45,7 +45,7 @@ namespace smpl
          * @param compareFunc 
          */
         template<typename T>
-        static void quickSort(T* list, size_t size, std::function<bool(T,T)> compareFunc);
+        static void quickSort(T* list, size_t size, std::function<bool(const T&, const T&)> compareFunc);
 
         template<typename T>
         static void quickSort(T* list, size_t size);
@@ -66,37 +66,37 @@ namespace smpl
         static void insertionSortSubFunction(T* list, size_t size);
 
         template<typename T>
-        static void insertionSortSubFunction(T* list, size_t size, std::function<bool(T,T)> compareFunc);
+        static void insertionSortSubFunction(T* list, size_t size, std::function<bool(const T&, const T&)> compareFunc);
 
         template<typename T>
         static void mergeSortRecursive(T* list, size_t start, size_t end);
 
         template<typename T>
-        static void mergeSortRecursive(T* list, size_t start, size_t end, std::function<bool(T,T)> compareFunc);
+        static void mergeSortRecursive(T* list, size_t start, size_t end, std::function<bool(const T&, const T&)> compareFunc);
         
         template<typename T>
         static void merge(T* list, size_t start, size_t mid, size_t end);
 
         template<typename T>
-        static void merge(T* list, size_t start, size_t mid, size_t end, std::function<bool(T,T)> compareFunc);
+        static void merge(T* list, size_t start, size_t mid, size_t end, std::function<bool(const T&, const T&)> compareFunc);
 
         template<typename T>
         static void quickSortRecursive(T* list, size_t start, size_t end);
 
         template<typename T>
-        static void quickSortRecursive(T* list, size_t start, size_t end, std::function<bool(T,T)> compareFunc);
+        static void quickSortRecursive(T* list, size_t start, size_t end, std::function<bool(const T&, const T&)> compareFunc);
         
         template<typename T>
         static size_t quickSortPartition(T* list, size_t start, size_t end);
 
         template<typename T>
-        static size_t quickSortPartition(T* list, size_t start, size_t end, std::function<bool(T,T)> compareFunc);
+        static size_t quickSortPartition(T* list, size_t start, size_t end, std::function<bool(const T&, const T&)> compareFunc);
     };
 
     #pragma region MERGESORT
 
     template<typename T>
-    inline void Sort::mergeSort(T* list, size_t size, std::function<bool(T,T)> compareFunc)
+    inline void Sort::mergeSort(T* list, size_t size, std::function<bool(const T&, const T&)> compareFunc)
     {
         if(compareFunc!=nullptr)
             Sort::mergeSortRecursive<T>(list, 0, size, compareFunc);
@@ -122,7 +122,7 @@ namespace smpl
     }
 
     template<typename T>
-    inline void Sort::mergeSortRecursive(T* list, size_t start, size_t end, std::function<bool(T,T)> compareFunc)
+    inline void Sort::mergeSortRecursive(T* list, size_t start, size_t end, std::function<bool(const T&, const T&)> compareFunc)
     {
         if(end-start>1)
         {
@@ -200,7 +200,7 @@ namespace smpl
     }
 
     template<typename T>
-    inline void Sort::merge(T* list, size_t start, size_t mid, size_t end, std::function<bool(T,T)> compareFunc)
+    inline void Sort::merge(T* list, size_t start, size_t mid, size_t end, std::function<bool(const T&, const T&)> compareFunc)
     {
         size_t leftSize = mid-start;
         size_t rightSize = end-mid;
@@ -268,7 +268,7 @@ namespace smpl
 
     #pragma region INSERTIONSORT
     template<typename T>
-    inline void Sort::insertionSort(T* list, size_t size, std::function<bool(T,T)> compareFunc)
+    inline void Sort::insertionSort(T* list, size_t size, std::function<bool(const T&, const T&)> compareFunc)
     {
         if(compareFunc!=nullptr)
             Sort::insertionSortSubFunction(list, size, compareFunc);
@@ -303,7 +303,7 @@ namespace smpl
     }
 
     template<typename T>
-    inline void Sort::insertionSortSubFunction(T* list, size_t size, std::function<bool(T,T)> compareFunc)
+    inline void Sort::insertionSortSubFunction(T* list, size_t size, std::function<bool(const T&, const T&)> compareFunc)
     {
         for(size_t i=1; i<size; i++)
         {
@@ -330,7 +330,7 @@ namespace smpl
     #pragma region QUICKSORT
 
     template<typename T>
-    void Sort::quickSort(T* list, size_t size, std::function<bool(T,T)> compareFunc)
+    void Sort::quickSort(T* list, size_t size, std::function<bool(const T&, const T&)> compareFunc)
     {
         if(compareFunc!=nullptr)
             Sort::quickSortRecursive<T>(list, 0, size-1, compareFunc);
@@ -358,7 +358,7 @@ namespace smpl
     }
 
     template<typename T>
-    void Sort::quickSortRecursive(T* list, size_t start, size_t end, std::function<bool(T,T)> compareFunc)
+    void Sort::quickSortRecursive(T* list, size_t start, size_t end, std::function<bool(const T&, const T&)> compareFunc)
     {
         if(start < end)
         {
@@ -373,7 +373,7 @@ namespace smpl
     }
 
     template<typename T>
-    size_t Sort::quickSortPartition(T* list, size_t start, size_t end, std::function<bool(T,T)> compareFunc)
+    size_t Sort::quickSortPartition(T* list, size_t start, size_t end, std::function<bool(const T&, const T&)> compareFunc)
     {
         //pick a pivot
         //way to divide and not have an infinite loop

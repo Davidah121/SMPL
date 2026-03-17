@@ -25,7 +25,7 @@ TEST_CASE("Test CachedDataList for data pointers." "[CachedDataList]")
 
 	SECTION("Add data")
 	{
-		CachedDataList<TestClass> cdl = CachedDataList<TestClass>(4);
+		smpl::CachedDataList<TestClass> cdl = smpl::CachedDataList<TestClass>(4);
 
 		cdl.addData(0, new TestClass(0), true);
 		REQUIRE(cdl.getData(0) != nullptr);
@@ -42,7 +42,7 @@ TEST_CASE("Test CachedDataList for data pointers." "[CachedDataList]")
 
 	SECTION("Remove data")
 	{
-		CachedDataList<TestClass> cdl = CachedDataList<TestClass>(4);
+		smpl::CachedDataList<TestClass> cdl = smpl::CachedDataList<TestClass>(4);
 
 		cdl.addData(0, new TestClass(0), true);
 		cdl.addData(1, new TestClass(1), true);
@@ -59,7 +59,7 @@ TEST_CASE("Test CachedDataList for data pointers." "[CachedDataList]")
 
 	SECTION("Run out of cache")
 	{
-		CachedDataList<TestClass> cdl = CachedDataList<TestClass>(4);
+		smpl::CachedDataList<TestClass> cdl = smpl::CachedDataList<TestClass>(4);
 
 		cdl.addData(1, new TestClass(1), true);
 		cdl.addData(0, new TestClass(0), true);

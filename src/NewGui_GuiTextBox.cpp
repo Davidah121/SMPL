@@ -149,14 +149,14 @@ namespace smpl
                     else
                     {
                         if(selectionEnd < str.size())
-                        selectionEnd++;
+                        	selectionEnd++;
                         textElement.setCaretSide(true);
                     }
                 }
                 else
                 {
                     if(selectionEnd < str.size() && selectionStart == selectionEnd)
-                    selectionEnd++;
+                    	selectionEnd++;
                     selectionStart = selectionEnd;
                     textElement.setCaretSide(true);
                 }
@@ -457,15 +457,15 @@ namespace smpl
         GuiScrollBar::loadDataFromXML(attribs, manager);
         textElement.loadDataFromXML(attribs, manager);
 
-        auto pair = attribs.get("allow-linebreaks");
-        if(pair != nullptr)
+        auto pair = attribs.find("allow-linebreaks");
+        if(pair != attribs.end())
             allowLineBreaks = (pair->second == "true");
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("default-text");
-        if(pair != nullptr)
+        pair = attribs.find("default-text");
+        if(pair != attribs.end())
             defaultText = pair->second;
-        attribs.remove(pair);
+        attribs.erase(pair);
 
         textEmpty = false;
         oldFontColor = textElement.getFontColor();

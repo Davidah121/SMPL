@@ -460,25 +460,25 @@ namespace smpl
     void GuiLayoutList::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
     {
         GuiLayout::loadDataFromXML(attribs, manager);
-        auto pair = attribs.get("direction");
-        if(pair != nullptr)
+        auto pair = attribs.find("direction");
+        if(pair != attribs.end())
         {
             if(pair->second == "horizontal")
                 setDirection(DIRECTION_HORIZONTAL);
             else
                 setDirection(DIRECTION_VERTICAL);
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
         
-        pair = attribs.get("wrap");
-        if(pair != nullptr)
+        pair = attribs.find("wrap");
+        if(pair != attribs.end())
         {
             if(pair->second == "true")
                 setWrap(true);
             else
                 setWrap(false);
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
     }
 
     SmartMemory<GuiItem> GuiLayoutList::loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager)
