@@ -1,6 +1,8 @@
 #pragma once
 #include "BuildOptions.h"
+#include "Concurrency.h"
 #include "StandardTypes.h"
+#include <mutex>
 #include <queue>
 #include "Network.h"
 #include "SmartMemory.h"
@@ -538,7 +540,6 @@ namespace smpl
 		HybridSpinLock jobMutex;
 
 		SimpleHashMap< size_t, size_t > jobPointers;
-		SimpleHashMap< size_t, bool > readAvailable;
 		
 		bool logInfo = false;
 		bool redirectToIndex = true;
@@ -548,7 +549,7 @@ namespace smpl
 		int knownTimeout = 5000;
 		unsigned int maxAgeCache = 300; //In seconds. Will be converted to string
 
-		int rangeLimit = 0x1000000; //16MB - Should saturate any network thrown at it unless network speed is like more than 10 Gigabit
+		int rangeLimit = 0x1000000; //16MB - Should saturate any network thrown at it unless network speed is like more than 10 Gigabit assumimng request are done every millisecond
 
 		void onConnection(std::string ip, size_t id);
 		void onDataArrived(std::string ip, size_t id);

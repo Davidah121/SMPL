@@ -5,6 +5,8 @@
 #include <mutex>
 #include "SimpleFile.h"
 #include "Input.h"
+#include <signal.h>
+#include <iomanip>
 
 #ifdef __unix__
 	

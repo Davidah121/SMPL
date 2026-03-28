@@ -1,6 +1,11 @@
 #include "Network.h"
+#include "openssl/bio.h"
+#include "openssl/ssl.h"
 #include <cstdint>
 #include <cstdlib>
+#include <shared_mutex>
+#include <thread>
+#include <winsock.h>
 
 #ifndef NO_SOCKETS
 
@@ -10,6 +15,7 @@
 
 #ifdef _WIN32
 	#include <io.h>
+	#include <ws2tcpip.h>
 	#define crossPlatformPoll(socketInfo, size, timeout) WSAPoll(socketInfo, size, timeout)
 	#define crossPlatformIoctl(socketInfo, request, mode) ioctlsocket(socketInfo, request, mode)
 	#define crossPlatformClose(socketInfo) closesocket(socketInfo)
@@ -36,6 +42,62 @@
 namespace smpl
 {
 	unsigned int Network::totalNetworks = 0;
+
+	struct NetworkSharedLock
+	{
+	public:
+		NetworkSharedLock(std::shared_mutex* ptr)
+		{
+			this->ptr = ptr;
+			lock();
+		}
+		~NetworkSharedLock()
+		{
+			if(isLocked == true)
+				unlock();
+		}
+		void lock()
+		{
+			ptr->lock_shared();
+			isLocked = true;
+		}
+		void unlock()
+		{
+			ptr->unlock_shared();
+			isLocked = false;
+		}
+	private:
+		bool isLocked = false;
+		std::shared_mutex* ptr;
+	};
+	
+	struct NetworkExclusiveLock
+	{
+	public:
+		NetworkExclusiveLock(std::shared_mutex* ptr)
+		{
+			this->ptr = ptr;
+			lock();
+		}
+		~NetworkExclusiveLock()
+		{
+			if(isLocked == true)
+				unlock();
+		}
+		void lock()
+		{
+			ptr->lock();
+			isLocked = true;
+		}
+		void unlock()
+		{
+			ptr->unlock();
+			isLocked = false;
+		}
+	private:
+		bool isLocked = false;
+		std::shared_mutex* ptr;
+	};
 
 	Network::Network(NetworkConfig config, std::string certificateFile, std::string keyFile)
 	{
@@ -96,7 +158,7 @@ namespace smpl
 		{
 			auto it = connections.find(id);
 			if(it != connections.end())
-				return it->second;
+				return &it->second;
 			
 			return nullptr;
 		}
@@ -271,7 +333,6 @@ namespace smpl
 
 	int Network::internalSend(SOCKET_TYPE sock, const char* buff, int len)
 	{
-		size_t t1 = System::getCurrentTimeMicro();
 		if(!isSecureNetwork)
 		{
 			#ifdef __unix__
@@ -301,7 +362,6 @@ namespace smpl
 				int err = SSL_get_error(conn, sentAmount);
 				if(err == SSL_ERROR_WANT_WRITE || err == SSL_ERROR_WANT_READ)
 				{
-					StringTools::println("WANT_SEND");
 					sentAmount = 0;
 				}
 				else
@@ -310,7 +370,6 @@ namespace smpl
 					sentAmount = -1;
 				}
 			}
-			StringTools::println("Time to send over ssl: %lluus", System::getCurrentTimeMicro()-t1);
 			return sentAmount;
 			#endif
 		}
@@ -319,7 +378,6 @@ namespace smpl
 	
 	int Network::internalSendfile(SOCKET_TYPE sock, const char* filename, long offset, size_t length)
 	{
-		size_t t1 = System::getCurrentTimeMicro();
 		int64_t bytesSent = length;
 		if(!isSecureNetwork)
 		{
@@ -355,7 +413,7 @@ namespace smpl
 				if(conn == nullptr)
 					return -1;
 
-				#if (BIO_get_ktls_send() == 1)
+				#ifndef OPENSSL_NO_KTLS
 					#ifdef __unix__
 						int fd = open(filename, O_RDONLY | O_LARGEFILE);
 					#else
@@ -382,7 +440,6 @@ namespace smpl
 					#else
 						_close(fd);
 					#endif
-				StringTools::println("Time to send file over ssl: %lluus", System::getCurrentTimeMicro()-t1);
 				#else
 					//DO IT RAW
 					FILE* f = fopen(filename, "rb");
@@ -403,7 +460,6 @@ namespace smpl
 							bytesSent = -1;
 						}
 					}
-				StringTools::println("Time to send file over ssl: %lluus", System::getCurrentTimeMicro()-t1);
 				#endif
 				return bytesSent;
 			#endif
@@ -510,39 +566,10 @@ namespace smpl
 	}
 	#endif
 	
-	void Network::obtainLock(bool type)
-	{
-		if(type == LOCK_TYPE_IMPORTANT)
-		{
-			// networkLock.lock(ReadWriterLock::TYPE_WRITE);
-			networkLock.lock();
-
-		}
-		else
-		{
-			// networkLock.lock(ReadWriterLock::TYPE_READ);
-			networkLock.lock_shared();
-		}
-	}
-
-	void Network::releaseLock(bool type)
-	{
-		if(type == LOCK_TYPE_IMPORTANT)
-		{
-			networkLock.unlock();
-		}
-		else
-		{
-			// networkLock.unlock();
-			networkLock.unlock_shared();
-		}
-	}
-
 	void Network::createSocket(int fam, int sockType, int protocol)
 	{
 		temporarySocket = socket(fam, sockType, protocol);
 	}
-
 
 	void Network::setupSocket()
 	{
@@ -599,9 +626,9 @@ namespace smpl
 				return false;
 			}
 
-			int nameLen = sizeof(sockaddr);
+			socklen_t nameLen = sizeof(sockaddr);
 			error = getsockname(temporarySocket, &sockAddrInfo, &nameLen);
-			if(error == ERROR_SUCCESS)
+			if(error == crossPlatform_NoError)
 				config.port = StringTools::byteSwap(*((uint16_t*)sockAddrInfo.sa_data));
 			
 			return true;
@@ -622,7 +649,7 @@ namespace smpl
 		}
 	}
 	
-	bool Network::acceptConnection()
+	bool Network::acceptConnection(std::string& ipOut)
 	{
 		bool valid = false;
 		bool secondaryStatus = true;
@@ -639,11 +666,11 @@ namespace smpl
 
 			int err = 0;
 
-			SocketInfo* inf = new SocketInfo();
-			inf->socket = tempSock;
-			inf->id = runningID;
-			inf->waitingOnRead = false;
-			inf->lastInteractTime = std::chrono::system_clock::now();
+			SocketInfo inf = SocketInfo();
+			inf.socket = tempSock;
+			inf.id = runningID;
+			inf.waitingOnRead = false;
+			inf.lastInteractTime = std::chrono::system_clock::now();
 
 			sockaddr_in addr;
 			socklen_t len = sizeof(sockaddr_in);
@@ -651,13 +678,15 @@ namespace smpl
 
 			if(err == 0)
 			{
-				inf->ip = inet_ntoa(addr.sin_addr);
+				inf.ip = inet_ntoa(addr.sin_addr);
 			}
 
+			ipOut = inf.ip;
 			runningID = (runningID + 1) % (SIZE_MAX-1);
-			connections.insert(std::pair<size_t, SocketInfo*>{inf->id, inf});
 			
-			secondaryStatus = internalOnAccept(inf->socket) > 0;
+			connections.insert({inf.id, inf});
+			
+			secondaryStatus = internalOnAccept(inf.socket) > 0;
 			
 			u_long mode = 1;
 			crossPlatformIoctl(tempSock, FIONBIO, &mode);
@@ -672,15 +701,12 @@ namespace smpl
 
 	void Network::closeSocket()
 	{
-		obtainLock(LOCK_TYPE_IMPORTANT);
+		NetworkExclusiveLock l(&this->networkLock);
 
-		for(std::pair<const size_t, SocketInfo*>& s : connections)
+		for(auto& s : connections)
 		{
-			internalOnDelete(s.second->socket);
-			crossPlatformClose(s.second->socket);
-
-			delete s.second;
-			s.second = 0;
+			internalOnDelete(s.second.socket);
+			crossPlatformClose(s.second.socket);
 		}
 		connections.clear();
 		
@@ -695,8 +721,6 @@ namespace smpl
 		isConnected = false;
 		timeWaited = 0;
 		shouldConnect = false;
-
-		releaseLock(LOCK_TYPE_IMPORTANT);
 	}
 
 	bool Network::connect()
@@ -766,15 +790,11 @@ namespace smpl
 		//It is okay to do this but makes no sense. No error though.
 		if(messageSize == 0)
 			return 0;
-		
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		SocketInfo* currSockInfo = getSocketInformation(id);
 
 		if(currSockInfo == nullptr)
-		{
-			releaseLock(LOCK_TYPE_NONIMPORTANT);
 			return -1; //SOCKET does not exist
-		}
 
 		int bytesWritten = 0;
 		int status = SOCKET_ERROR;
@@ -793,10 +813,10 @@ namespace smpl
 
 			if( err == 0 )
 			{
-				releaseLock(LOCK_TYPE_NONIMPORTANT);
+				l.unlock();
 				//should probably sleep
 				// System::sleep(1,0,false);
-				obtainLock(LOCK_TYPE_NONIMPORTANT);
+				l.lock();
 				//verify socket is still valid
 				SocketInfo* validSocketInfo = getSocketInformation(id);
 				if(validSocketInfo == nullptr)
@@ -844,8 +864,6 @@ namespace smpl
 		if(currSockInfo != nullptr)
 			currSockInfo->lastInteractTime = std::chrono::system_clock::now();
 		
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
-		
 		if(status == 0 || status == SOCKET_ERROR)
 		{
 			//error, if 0, closed
@@ -858,14 +876,11 @@ namespace smpl
 	int Network::sendFile(const char* filename, size_t length, size_t offset, size_t id)
 	{
 		int64_t bytesSent = length;
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		SocketInfo* currSockInfo = getSocketInformation(id);
 
 		if(currSockInfo == nullptr)
-		{
-			releaseLock(LOCK_TYPE_NONIMPORTANT);
 			return -1; //SOCKET does not exist
-		}
 
 		bytesSent = internalSendfile(currSockInfo->socket, filename, offset, length);
 
@@ -873,12 +888,10 @@ namespace smpl
 		if(currSockInfo != nullptr)
 			currSockInfo->lastInteractTime = std::chrono::system_clock::now();
 		
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
-		
 		if(bytesSent < 0)
 		{
 			//error, if 0, closed
-			StringTools::println("%d", crossPlatformGetLastError());
+			StringTools::println("SENDFILE: %d", crossPlatformGetLastError());
 			return -1;
 		}
 		return bytesSent;
@@ -887,12 +900,11 @@ namespace smpl
 	int Network::receiveMessage(std::string& message, size_t id, bool flagRead)
 	{
 		//allocate buffer of x size. read till '\0'
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		SocketInfo* currSockInfo = getSocketInformation(id);
 
 		if(currSockInfo == nullptr)
 		{
-			releaseLock(LOCK_TYPE_NONIMPORTANT);
 			return -1; //SOCKET IS CLOSED AND SET TO ZERO. CAN'T SEND
 		}
 
@@ -948,7 +960,6 @@ namespace smpl
 		
 		//update last interact time		
 		currSockInfo->lastInteractTime = std::chrono::system_clock::now();
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 
 		delete[] tempBuffer;
 
@@ -967,15 +978,11 @@ namespace smpl
 	int Network::receiveMessage(std::vector<unsigned char>& buffer, size_t id, bool flagRead)
 	{
 		//allocate buffer of x size. read till status == 0
-		
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		SocketInfo* currSockInfo = getSocketInformation(id);
 
 		if(currSockInfo == nullptr)
-		{
-			releaseLock(LOCK_TYPE_NONIMPORTANT);
 			return -1; //SOCKET IS CLOSED AND SET TO ZERO. CAN'T SEND
-		}
 
 		char* tempBuffer = new char[4096];
 		std::memset(tempBuffer, 0, 4096);
@@ -1005,7 +1012,6 @@ namespace smpl
 
 		//update last interact time		
 		currSockInfo->lastInteractTime = std::chrono::system_clock::now();
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 
 		delete[] tempBuffer;
 
@@ -1028,12 +1034,11 @@ namespace smpl
 
 	int Network::receiveMessage(char * buffer, int bufferSize, size_t id, bool flagRead)
 	{
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		SocketInfo* currSockInfo = getSocketInformation(id);
 
 		if(currSockInfo == nullptr)
 		{
-			releaseLock(LOCK_TYPE_NONIMPORTANT);
 			return -1; //SOCKET IS CLOSED AND SET TO ZERO. CAN'T SEND
 		}
 
@@ -1045,7 +1050,6 @@ namespace smpl
 		
 		//update last interact time		
 		currSockInfo->lastInteractTime = std::chrono::system_clock::now();
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 
 		if(status > 0)
 			return status;
@@ -1061,12 +1065,11 @@ namespace smpl
 	
 	int Network::peek(std::vector<unsigned char>& buffer, int expectedSize, size_t id)
 	{
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		SocketInfo* currSockInfo = getSocketInformation(id);
 
 		if(currSockInfo == nullptr)
 		{
-			releaseLock(LOCK_TYPE_NONIMPORTANT);
 			return -1; //SOCKET IS CLOSED AND SET TO ZERO. CAN'T SEND
 		}
 
@@ -1081,7 +1084,6 @@ namespace smpl
 		
 		//update last interact time		
 		currSockInfo->lastInteractTime = std::chrono::system_clock::now();
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 
 		if(status > 0)
 			return status;
@@ -1094,7 +1096,7 @@ namespace smpl
 				return 0;
 			else
 			{
-				printf("ERROR PEEK: %d\n", err);
+				StringTools::println("ERROR PEEK: %d\n", err);
 			}
 			return -1;
 		}
@@ -1103,12 +1105,11 @@ namespace smpl
 	
 	int Network::dumpReceiveBytes(int bytesToDump, size_t id)
 	{
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		SocketInfo* currSockInfo = getSocketInformation(id);
 
 		if(currSockInfo == nullptr)
 		{
-			releaseLock(LOCK_TYPE_NONIMPORTANT);
 			return -1; //SOCKET IS CLOSED AND SET TO ZERO. CAN'T SEND
 		}
 
@@ -1133,7 +1134,6 @@ namespace smpl
 		
 		//update last interact time		
 		currSockInfo->lastInteractTime = std::chrono::system_clock::now();
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 
 		if(status > 0)
 			return bytesToDump - totalBytesLeft;
@@ -1165,20 +1165,17 @@ namespace smpl
 	
 	size_t Network::getReadSizeAvailable(size_t id)
 	{
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 
 		SocketInfo* currSockInfo = getSocketInformation(id);
 
 		if(currSockInfo == nullptr)
 		{
-			releaseLock(LOCK_TYPE_NONIMPORTANT);
 			return 0; //SOCKET IS CLOSED AND SET TO ZERO. CAN'T SEND
 		}
 
 		unsigned long amount = 0;
 		int err = crossPlatformIoctl(currSockInfo->socket, FIONREAD, &amount);
-
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 
 		if(err == 0)
 			return amount;
@@ -1204,24 +1201,20 @@ namespace smpl
 
 	void Network::reconnect()
 	{
-		obtainLock(LOCK_TYPE_IMPORTANT);
+		NetworkExclusiveLock l(&this->networkLock);
 		shouldConnect = true;
-		releaseLock(LOCK_TYPE_IMPORTANT);
 	}
 
 	void Network::disconnect()
 	{
-		obtainLock(LOCK_TYPE_IMPORTANT);
-		for(std::pair<const size_t, SocketInfo*>& inf : connections)
+		NetworkExclusiveLock l(&this->networkLock);
+		for(auto& inf : connections)
 		{
-			if(inf.second->socket != 0)
+			if(inf.second.socket != 0)
 			{
-				removeSocketInternal(inf.second->socket);
-				inf.second->socket = 0;
+				removeSocketInternal(inf.second.socket);
+				inf.second.socket = 0;
 			}
-
-			delete inf.second;
-			inf.second = nullptr;
 		}
 		connections.clear();
 
@@ -1235,7 +1228,6 @@ namespace smpl
 		shouldConnect = false;
 		isConnected = false;
 		timeWaited = 0;
-		releaseLock(LOCK_TYPE_IMPORTANT);
 	}
 
 	std::atomic_int disconnectCount = 0;
@@ -1249,13 +1241,12 @@ namespace smpl
 	{
 		std::string s;
 
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		SocketInfo* inf = getSocketInformation(id);
 		if(inf != nullptr)
 		{
 			s = inf->ip;
 		}
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 
 		return s;
 	}
@@ -1263,36 +1254,41 @@ namespace smpl
 	size_t Network::getIDFromIP(std::string s)
 	{
 		size_t id = SIZE_MAX;
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
-		for(std::pair<const size_t, SocketInfo*>& inf : connections)
+		NetworkSharedLock l(&this->networkLock);
+		for(auto& inf : connections)
 		{
-			if(inf.second->ip == s)
+			if(inf.second.ip == s)
 			{
 				id = inf.first;
 				break;
 			}
 		}
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 		return id;
 	}
 
 	void Network::removeSocket(size_t s)
 	{
-		obtainLock(LOCK_TYPE_IMPORTANT);
+		std::string ip = "";
+		size_t id = 0;
+		std::function<void(std::string, size_t)> disconFunc;
+		
+		NetworkExclusiveLock l(&this->networkLock);
+
 		SocketInfo* inf = getSocketInformation(s);
 		if(inf != nullptr)
 		{
-			//call disconnect function
-			if(onDisconnectFunc!=nullptr)
-				onDisconnectFunc(inf->ip, inf->id);
-			
+			disconFunc = onDisconnectFunc;
+			ip = inf->ip;
+			id = inf->id;
 			removeSocketInternal(inf->socket);
-			inf->socket = 0;
-			delete inf;
-			int d = connections.erase(s);
-			SocketInfo* inf = getSocketInformation(s);
+			connections.erase(s);
 		}
-		releaseLock(LOCK_TYPE_IMPORTANT);
+
+		l.unlock(); //early unlock
+	
+		//call disconnect function
+		if(disconFunc!=nullptr)
+			disconFunc(ip, id);
 	}
 
 	//With the emergence of the internalOnDelete() function, it may cause issues with the shutdown sequence.
@@ -1342,104 +1338,90 @@ namespace smpl
 
 	void Network::setOnConnectFunction(std::function<void(std::string, size_t)> func)
 	{
-		obtainLock(LOCK_TYPE_IMPORTANT);
+		NetworkExclusiveLock l(&this->networkLock);
 		onConnectFunc = func;
-		releaseLock(LOCK_TYPE_IMPORTANT);
 	}
 	void Network::setOnDataAvailableFunction(std::function<void(std::string, size_t)> func)
 	{
-		obtainLock(LOCK_TYPE_IMPORTANT);
+		NetworkExclusiveLock l(&this->networkLock);
 		onDataAvailableFunc = func;
-		releaseLock(LOCK_TYPE_IMPORTANT);
 	}
 	void Network::setOnDisconnectFunction(std::function<void(std::string, size_t)> func)
 	{
-		obtainLock(LOCK_TYPE_IMPORTANT);
+		NetworkExclusiveLock l(&this->networkLock);
 		onDisconnectFunc = func;
-		releaseLock(LOCK_TYPE_IMPORTANT);
 	}
 
 	std::function<void(std::string, size_t)> Network::getConnectFunc()
 	{
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		std::function<void(std::string, size_t)> cpy = onConnectFunc;
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 		return cpy;
 	}
 	std::function<void(std::string, size_t)> Network::getDataAvailableFunc()
 	{
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		std::function<void(std::string, size_t)> cpy = onDataAvailableFunc;
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 		return cpy;
 	}
 	std::function<void(std::string, size_t)> Network::getDisconnectFunc()
 	{
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		std::function<void(std::string, size_t)> cpy = onDisconnectFunc;
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 		return cpy;
 	}
 
 	void Network::setRunning(bool v)
 	{
-		obtainLock(LOCK_TYPE_IMPORTANT);
+		NetworkExclusiveLock l(&this->networkLock);
 		running = v;
-		releaseLock(LOCK_TYPE_IMPORTANT);
 	}
 	bool Network::getRunning()
 	{
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		bool v = running;
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 		return v;
 	}
 
 	bool Network::getClientConnected()
 	{
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		bool v = isConnected;
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 		return v;
 	}
 	
 	bool Network::getTimeoutOccurred()
 	{
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		bool v = timeoutOccurred;
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 		return v;
 	}
 	
 	void Network::setTimeoutLength(long millis)
 	{
-		obtainLock(LOCK_TYPE_IMPORTANT);
+		NetworkExclusiveLock l(&this->networkLock);
 		timeoutTimer = millis;
-		releaseLock(LOCK_TYPE_IMPORTANT);
 	}
 	
 	long Network::getTimeoutLength()
 	{
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		long retVal = timeoutTimer;
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 		return retVal;
 	}
 
 	bool Network::getReconnect()
 	{
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		bool v = shouldConnect;
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 		return v;
 	}
 
 	void Network::startNetwork()
 	{
-		obtainLock(LOCK_TYPE_IMPORTANT);
+		NetworkExclusiveLock l(&this->networkLock);
 		shouldStart = true;
 		sslInit();
-		releaseLock(LOCK_TYPE_IMPORTANT);
 	}
 
 	void Network::endNetwork()
@@ -1450,9 +1432,8 @@ namespace smpl
 	
 	size_t Network::getSocketsConnectedSize()
 	{
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		size_t v = connections.size();
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 		return v;
 	}
 	
@@ -1463,27 +1444,24 @@ namespace smpl
 
 	bool Network::setupSuccessful()
 	{
-		obtainLock(LOCK_TYPE_IMPORTANT);
+		NetworkExclusiveLock l(&this->networkLock);
 		bool v = mainSocketInfo.socket != INVALID_SOCKET;
-		releaseLock(LOCK_TYPE_IMPORTANT);
 		return v;
 	}
 
 	bool Network::getShouldStart()
 	{
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		bool v = shouldStart;
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 		return v;
 	}
 
 	void Network::setDoneReceiving(size_t id)
 	{
-		obtainLock(LOCK_TYPE_NONIMPORTANT);
+		NetworkSharedLock l(&this->networkLock);
 		SocketInfo* inf = getSocketInformation(id);
 		if(inf != nullptr)
 			inf->waitingOnRead = false;
-		releaseLock(LOCK_TYPE_NONIMPORTANT);
 	}
 	
 	void Network::threadRun()
@@ -1511,13 +1489,14 @@ namespace smpl
 			bool didWork = true;
 			std::vector<pollfd> allConnections;
 			std::vector<size_t> allConnectionsID;
+			std::vector<std::string> allConnectionsIP;
 			std::vector<size_t> removeThese;
 			std::vector<int> statusFlag;
 			
 			std::function<void(std::string, size_t)> onAcceptFunc = getConnectFunc();
 			std::function<void(std::string, size_t)> onDataFunc = getDataAvailableFunc();
 
-			obtainLock(LOCK_TYPE_IMPORTANT);
+			NetworkExclusiveLock l(&this->networkLock);
 
 			pollfd socketFD = {};
 			socketFD.fd = mainSocketInfo.socket;
@@ -1525,17 +1504,18 @@ namespace smpl
 			socketFD.revents = 0;
 			allConnections.push_back(socketFD);
 			allConnectionsID.push_back(SIZE_MAX); //server socket ID = -1 since it doesn't actually have an ID
+			allConnectionsIP.push_back("");
 			statusFlag.push_back(0);
 
 			for(auto sockInfo : connections)
 			{
-				if(sockInfo.second != nullptr)
+				if(sockInfo.second.socket != 0)
 				{
 					bool flagForRemoval = false;
 					if(timeoutTimer > 0)
 					{
 						auto t1 = std::chrono::system_clock::now();
-						std::chrono::duration<double> elapsedTime = t1 - sockInfo.second->lastInteractTime;
+						std::chrono::duration<double> elapsedTime = t1 - sockInfo.second.lastInteractTime;
 						if(elapsedTime.count() > (double)timeoutTimer/1000)
 						{
 							flagForRemoval = true;
@@ -1543,17 +1523,18 @@ namespace smpl
 					}
 
 					pollfd socketFD = {};
-					socketFD.fd = sockInfo.second->socket;
+					socketFD.fd = sockInfo.second.socket;
 					socketFD.events = POLLIN;
 					socketFD.revents = 0;
 
-					if(sockInfo.second->waitingOnRead == true)
+					if(sockInfo.second.waitingOnRead == true)
 					{
 						//ignore unless it is flagged for removal
 						if(flagForRemoval)
 						{
 							allConnections.push_back(socketFD);
 							allConnectionsID.push_back(sockInfo.first);
+							allConnectionsIP.push_back(sockInfo.second.ip);
 							statusFlag.push_back(1);
 						}
 					}
@@ -1561,6 +1542,7 @@ namespace smpl
 					{
 						allConnections.push_back(socketFD);
 						allConnectionsID.push_back(sockInfo.first);
+						allConnectionsIP.push_back(sockInfo.second.ip);
 						if(!flagForRemoval)
 							statusFlag.push_back(0);
 						else
@@ -1569,24 +1551,29 @@ namespace smpl
 				}
 			}
 			
-			releaseLock(LOCK_TYPE_IMPORTANT);
-			int err = crossPlatformPoll(allConnections.data(), allConnections.size(), 10);
+			int err = crossPlatformPoll(allConnections.data(), allConnections.size(), 0);
+			
 
 			if(err == 0)
 			{
 				//nothing ready
 				didWork = false;
+				l.unlock();
+				System::sleep(3, 0, true);
 				continue;
 			}
 			else if(err < 0)
 			{
 				//error
-				disconnect(); 
+				StringTools::println("POLL ERR %d", WSAGetLastError());
+				disconnect();
+				l.unlock();
+				continue;
 			}
 
-			obtainLock(LOCK_TYPE_IMPORTANT);
-
 			size_t currentConnectionIndex = 0;
+			bool gotConnection = false;
+			std::string acceptedIP = "";
 			while(currentConnectionIndex < allConnections.size())
 			{
 				if(statusFlag[currentConnectionIndex] == 1) //already flagged for disconnect. skip
@@ -1601,16 +1588,10 @@ namespace smpl
 					if(allConnectionsID[currentConnectionIndex] == SIZE_MAX)
 					{
 						//accept ready
-						bool gotConnection = acceptConnection(); //uhhh should use this I guess.
-						if(gotConnection)
-						{
-							if(onAcceptFunc!=nullptr)
-								onAcceptFunc(connections[runningID-1]->ip, runningID-1);
-						}
+						gotConnection = acceptConnection(acceptedIP); //will call accept function later. Not fully safe to call it now
 					}
 					else
 					{
-						// StringTools::println("READ AVAILABLE");
 						//read ready
 						SocketInfo* inf = getSocketInformation( allConnectionsID[currentConnectionIndex] );
 						if(inf == nullptr)
@@ -1659,13 +1640,20 @@ namespace smpl
 				currentConnectionIndex++;
 			}
 
-			releaseLock(LOCK_TYPE_IMPORTANT);
+			l.unlock();
 
 			if(statusFlag[0] == 1) //main socket problem
 			{
 				//error
+				StringTools::println("MAIN SOCKET ERROR");
 				disconnect();
 				continue; //uhhh not sure what to do here yet
+			}
+
+			if(gotConnection)
+			{
+				if(onAcceptFunc!=nullptr)
+					onAcceptFunc(acceptedIP, runningID-1);
 			}
 
 			for(size_t i=1; i<allConnections.size(); i++)
@@ -1679,15 +1667,17 @@ namespace smpl
 				{
 					//data avail
 					if(onDataFunc!=nullptr)
-						onDataFunc(connections[allConnectionsID[i]]->ip, allConnectionsID[i]);
+						onDataFunc(allConnectionsIP[i], allConnectionsID[i]);
 				}
 			}
-
+			
 		}
 	}
 	
 	void Network::runClient()
 	{
+		NetworkExclusiveLock l(&this->networkLock); //reusable
+		l.unlock();
 		while(getRunning())
 		{
 			bool wouldConnect = false;
@@ -1704,9 +1694,9 @@ namespace smpl
 					bool testConnection = connect();
 					if(testConnection)
 					{
-						obtainLock(LOCK_TYPE_IMPORTANT);
+						l.lock();
 						isConnected = true;
-						releaseLock(LOCK_TYPE_IMPORTANT);
+						l.unlock();
 
 						std::function<void(std::string, size_t)> cpy = getConnectFunc();
 						
@@ -1715,18 +1705,18 @@ namespace smpl
 						break;
 					}
 					
-					obtainLock(LOCK_TYPE_IMPORTANT);
+					l.lock();
 					timeoutOccurred = false;
 					long knownTimeoutLength = timeoutTimer;
-					releaseLock(LOCK_TYPE_IMPORTANT);
+					l.unlock();
 
 					size_t timeWaited = (System::getCurrentTimeMillis() - startConnectTime);
 					if(timeWaited >= knownTimeoutLength)
 					{
 						disconnect();
-						obtainLock(LOCK_TYPE_IMPORTANT);
+						l.lock();
 						timeoutOccurred = true;
-						releaseLock(LOCK_TYPE_IMPORTANT);
+						l.unlock();
 					}
 				}
 				else
@@ -1741,7 +1731,7 @@ namespace smpl
 			while(getRunning())
 			{
 				bool didWork = true;
-				obtainLock(LOCK_TYPE_IMPORTANT);
+				l.lock();
 
 				pollfd mainSocket = {};
 				mainSocket.fd = mainSocketInfo.socket;
@@ -1749,7 +1739,7 @@ namespace smpl
 				mainSocket.revents = 0;
 
 				int err = crossPlatformPoll(&mainSocket, 1, 10);
-				releaseLock(LOCK_TYPE_IMPORTANT);
+				l.unlock();
 
 				//Note retVal of 0 means timeout
 				if(err>0)
@@ -1779,21 +1769,21 @@ namespace smpl
 					{
 						//check for disconnect
 						bool valid = true;
-						obtainLock(LOCK_TYPE_IMPORTANT);
+						l.lock();
 
 						unsigned long amountAvailable = 0;
 						crossPlatformIoctl(mainSocket.fd, FIONREAD, &amountAvailable);
 
 						bool skip = mainSocketInfo.waitingOnRead;
 
-						releaseLock(LOCK_TYPE_IMPORTANT);
+						l.unlock();
 
 						if(!skip && amountAvailable > 0)
 						{
-							obtainLock(LOCK_TYPE_IMPORTANT);
+							l.lock();
 							mainSocketInfo.waitingOnRead = true;
 							mainSocketInfo.lastInteractTime = std::chrono::system_clock::now();
-							releaseLock(LOCK_TYPE_IMPORTANT);
+							l.unlock();
 
 							//can receive message
 							std::function<void(std::string, size_t)> cpy = getDataAvailableFunc();

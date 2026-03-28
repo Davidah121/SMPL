@@ -5,11 +5,13 @@
 #include "StandardTypes.h"
 #include "Concurrency.h"
 #include "Queue.h"
+#include <atomic>
 #include <cstdint>
 #include <thread>
 #include <vector>
 #include <functional>
 #include "SimpleHashTable.h"
+#include <unordered_set>
 
 namespace smpl
 {
@@ -107,6 +109,7 @@ namespace smpl
 	template<>
 	struct RapidHash<JobTask> {
 		using is_transparent = void;
+		using transparent_key_equal = CompareJobTask;
 		size_t operator()(const JobTask& p) const noexcept
 		{
 			return RapidHash<size_t>{}(p.getID());
@@ -226,7 +229,7 @@ namespace smpl
 		 */
 		FiberTask* getFreeFiberTask(const JobInfo& jbInfo);
         
-        HybridSpinLock jobQueueMutex;
+        std::mutex jobQueueMutex;
         bool running = false;
         size_t jobID = 0;
 
@@ -242,7 +245,8 @@ namespace smpl
 
         //Used for efficient halting and interrupts
         std::condition_variable cv;
-        // std::mutex haltMutex;
+		std::atomic_uint64_t knownJobCount = {0};
+        std::mutex haltMutex;
     };
 
     class DLL_OPTION SmartJobQueue

@@ -1,6 +1,10 @@
 #pragma once
 #include "StandardTypes.h"
+#ifdef __WIN32
 #include <intrin.h>
+#else
+#include <immintrin.h>
+#endif
 #include "SIMD_Template.h"
 
 namespace smpl

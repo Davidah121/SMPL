@@ -700,7 +700,9 @@
 
 
 
+#include <Network.h>
 #include "FiberTask.h"
+#include "SimpleFile.h"
 #include "SimplePipe.h"
 #include "SimpleWindow.h"
 #include "Streamable.h"
@@ -708,7 +710,6 @@
 #include <WebRequest.h>
 #include <File.h>
 #include <StringTools.h>
-#include <Network.h>
 #include <HttpClient.h>
 #include <HttpServer.h>
 #include <SimpleJSON.h>
@@ -953,13 +954,15 @@ using namespace smpl;
 void runBasicHTTPServer()
 {
 	NetworkConfig config;
-	config.amountOfConnectionsAllowed = 64;
+	config.amountOfConnectionsAllowed = 65535;
 	config.location = "127.0.0.1";
-	config.port = 80;
+	config.port = 4040;
 	config.secure = false;
 	config.TCP = true;
 	config.type = Network::TYPE_SERVER;
-	HttpServer serv = HttpServer(config, 2);
+	HttpServer serv = HttpServer(config, 8, false, "cert.pem", "key.pem");
+	serv.setAllowPersistentConnection(false);
+	// serv.setLogInfo(true);
 	serv.start();
 
 	while(serv.getRunning())

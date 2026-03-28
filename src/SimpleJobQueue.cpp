@@ -3,7 +3,10 @@
 #include "FiberTask.h"
 #include "StringTools.h"
 #include "System.h"
+#include <atomic>
+#include <chrono>
 #include <mutex>
+#include <unordered_set>
 
 namespace smpl
 {
@@ -24,7 +27,7 @@ namespace smpl
 	
 	SimpleJobQueue::~SimpleJobQueue()
 	{
-		jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
+		jobQueueMutex.lock();
 		running = false;
 		jobQueueMutex.unlock();
 
@@ -56,7 +59,8 @@ namespace smpl
 		jobs.add(info);
 		jobQueueMutex.unlock();
 
-		cv.notify_one();
+		knownJobCount++;
+		cv.notify_all();
 		return info.getID();
 	}
 	
@@ -64,14 +68,16 @@ namespace smpl
 	void SimpleJobQueue::removeJob(size_t ID)
 	{
 		jobQueueMutex.lock();
-		jobs.erase(JobInfo(ID, nullptr));
+		bool deletedSomething = jobs.erase(JobInfo(ID, nullptr));
+		if(deletedSomething)
+			knownJobCount--;
 		jobQueueMutex.unlock();
 	}
 
 	bool SimpleJobQueue::jobDone(size_t ID)
 	{
 		bool found = false;
-		std::lock_guard<HybridSpinLock> lock(jobQueueMutex);
+		std::lock_guard<std::mutex> lock(jobQueueMutex);
 
 		//check if its in the list of suspended jobs
 		if(postponedJobs.find(ID) != postponedJobs.end())
@@ -90,7 +96,7 @@ namespace smpl
 	
 	bool SimpleJobQueue::allJobsDone()
 	{
-		jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
+		jobQueueMutex.lock();
 		bool finishedEverything = (jobs.size() == 0) && postponedJobs.empty() && jobsBeingRun.empty();
 		jobQueueMutex.unlock();
 		return finishedEverything;
@@ -99,13 +105,14 @@ namespace smpl
 	void SimpleJobQueue::removeAllJobs()
 	{
 		jobQueueMutex.lock();
+		knownJobCount -= jobs.size(); //Not necessarily gonna go to 0. May have existing Task that have been started that were suspended. Can't get rid of those yet.
 		jobs.clear();
 		jobQueueMutex.unlock();
 	}
 	
 	bool SimpleJobQueue::getRunning()
 	{
-		jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
+		jobQueueMutex.lock();
 		bool res = running;
 		jobQueueMutex.unlock();
 		return res;
@@ -122,7 +129,6 @@ namespace smpl
 
 	void SimpleJobQueue::threadRun(int id)
 	{
-		bool knownToHaveMoreWork = false;
 		bool taskPriority = false; //FALSE = job queue first. TRUE = Existing jobs first
 		while(getRunning())
 		{
@@ -130,14 +136,13 @@ namespace smpl
 			FiberTask* taskPtr = nullptr;
 
 			//try to get a job from the queue
-			if(!knownToHaveMoreWork)
+			if(knownJobCount <= 0)
 			{
-				std::mutex haltMutex;
 				std::unique_lock<std::mutex> temporaryLock(haltMutex);
 				cv.wait_for(temporaryLock, std::chrono::milliseconds(1));
 			}
 			
-			jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
+			jobQueueMutex.lock();
 			
 			auto taskIterator = postponedJobs.end();
 			
@@ -169,9 +174,10 @@ namespace smpl
 			}
 
 			if(jobID != -1)
+			{
 				jobsBeingRun.insert(jobID);
-			
-			knownToHaveMoreWork = jobs.size() > 0 || postponedJobs.size() >= jobThreads.size(); //either there is a new job or there is enough existing jobs 
+				knownJobCount--;
+			}
 			
 			jobQueueMutex.unlock();
 
@@ -181,13 +187,13 @@ namespace smpl
 				taskPtr->run();
 
 				//check if the job is done.
-				jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
+				jobQueueMutex.lock();
 				if(taskPtr->getStatus() == FiberTask::STATUS_DONE)
 					availableFiberTask.push_back(taskPtr);
 				else
 				{
 					postponedJobs.insert(JobTask(jobID, taskPtr)); //add it into the jobs in progress
-					knownToHaveMoreWork = true; //Since we added it back in, you know for a fact that their is work left to do. You just may not get this task again. Matters more with a very small job queue.
+					knownJobCount++; //Since we added it back in, we must add that to the knownJobCount as we initially removed it under the assumption it would finish in one go
 				}
 				jobsBeingRun.erase(jobID);
 				jobQueueMutex.unlock();

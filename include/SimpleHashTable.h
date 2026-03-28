@@ -67,13 +67,13 @@ namespace smpl
 
 		SimpleHashTableIterator(){}
 		
-		SimpleHashTableIterator(SimpleHashTable<Key, Value, MULTI, HashFunc, KeyEqual, BIG>* ptr, size_t index, size_t bucketIndex, size_t rehashCounter, bool all, typename std::list<KeyValueType>::iterator desiredListIterator)
+		SimpleHashTableIterator(SimpleHashTable<Key, Value, MULTI, HashFunc, KeyEqual, BIG>* ptr, size_t index, size_t bucketIndex, size_t critChangeCounter, bool all, typename std::list<KeyValueType>::iterator desiredListIterator)
 		{
 			this->all = all;
 			this->ptr = ptr;
 			this->index = index;
 			this->bucketIndex = bucketIndex;
-			this->rehashCounter = rehashCounter;
+			this->criticalChangeCounter = critChangeCounter;
 			this->listIterator = desiredListIterator;
 		}
 
@@ -215,7 +215,7 @@ namespace smpl
 		uint64_t index;
 		
 		//Allowing deletion of a specific element fast
-		uint64_t rehashCounter;
+		uint64_t criticalChangeCounter;
 		uint64_t bucketIndex = -1;
 	};
 
@@ -236,17 +236,17 @@ namespace smpl
 
 		ConstSimpleHashTableIterator(){}
 
-		ConstSimpleHashTableIterator(const SimpleHashTable<Key, Value, MULTI, HashFunc, KeyEqual, BIG>* ptr, size_t index, size_t bucketIndex, size_t rehashCounter, bool all, typename std::list<KeyValueType>::const_iterator desiredListIterator)
+		ConstSimpleHashTableIterator(const SimpleHashTable<Key, Value, MULTI, HashFunc, KeyEqual, BIG>* ptr, size_t index, size_t bucketIndex, size_t critChangeCounter, bool all, typename std::list<KeyValueType>::const_iterator desiredListIterator)
 		{
 			this->all = all;
 			this->ptr = ptr;
 			this->index = index;
 			this->bucketIndex = bucketIndex;
-			this->rehashCounter = rehashCounter;
+			this->criticalChangeCounter = critChangeCounter;
 			this->listIterator = desiredListIterator;
 			if(ptr != nullptr)
 			{
-				this->rehashCounter = ptr->rehashCounter;
+				this->criticalChangeCounter = ptr->criticalChangeCounter;
 			}
 		}
 		
@@ -256,7 +256,7 @@ namespace smpl
 			this->listIterator = other.listIterator;
 			this->bucketIndex = other.bucketIndex;
 			this->index = other.index;
-			this->rehashCounter = other.rehashCounter;
+			this->criticalChangeCounter = other.criticalChangeCounter;
 			this->ptr = other.ptr;
 		}
 
@@ -306,7 +306,7 @@ namespace smpl
 		typename std::enable_if<!M, ConstSimpleHashTableIterator&>::type
 		operator++() const
 		{
-			return ConstSimpleHashTableIterator(ptr, this->index+1, -1, this->rehashCounter, this->all, listIterator);
+			return ConstSimpleHashTableIterator(ptr, this->index+1, -1, this->criticalChangeCounter, this->all, listIterator);
 		}
 		
 		template<bool M = MULTI>
@@ -405,7 +405,7 @@ namespace smpl
 		uint64_t index;
 		
 		//Allowing deletion of a specific element fast
-		uint64_t rehashCounter;
+		uint64_t criticalChangeCounter;
 		uint64_t bucketIndex = -1;
 	};
 
@@ -423,7 +423,7 @@ namespace smpl
 		using Iterator = SimpleHashTableIterator<Key, Value, MULTI, HashFunc, KeyEqual, BIG>;
 		using ConstIterator = ConstSimpleHashTableIterator<Key, Value, MULTI, HashFunc, KeyEqual, BIG>;
 		
-		static const size_t MINIMUM_BUCKETS = 256;
+		static const size_t MINIMUM_BUCKETS = 32;
 
 
 		/**
@@ -507,7 +507,7 @@ namespace smpl
 			fastHashInfo = other.fastHashInfo;
 			redirectInfo = other.redirectInfo;
 			totalElements = other.totalElements;
-			rehashCounter = other.rehashCounter;
+			criticalChangeCounter = other.criticalChangeCounter;
 		}
 		/**
 		* @brief Copy Assign a new Hash Table object
@@ -521,7 +521,7 @@ namespace smpl
 			fastHashInfo = other.fastHashInfo;
 			redirectInfo = other.redirectInfo;
 			totalElements = other.totalElements;
-			rehashCounter = other.rehashCounter;
+			criticalChangeCounter = other.criticalChangeCounter;
 		}
 
 		/**
@@ -537,7 +537,7 @@ namespace smpl
 			fastHashInfo = std::move(other.fastHashInfo);
 			redirectInfo = std::move(other.redirectInfo);
 			totalElements = std::move(other.totalElements);
-			rehashCounter = std::move(other.rehashCounter);
+			criticalChangeCounter = std::move(other.criticalChangeCounter);
 		}
 		
 		/**
@@ -553,7 +553,7 @@ namespace smpl
 			fastHashInfo = std::move(other.fastHashInfo);
 			redirectInfo = std::move(other.redirectInfo);
 			totalElements = std::move(other.totalElements);
-			rehashCounter = std::move(other.rehashCounter);
+			criticalChangeCounter = std::move(other.criticalChangeCounter);
 		}
 
 		/**
@@ -567,7 +567,7 @@ namespace smpl
 			arr.clear();
 			extraKeyStorage.clear();
 			totalElements = 0;
-			rehashCounter++;
+			criticalChangeCounter++;
 		}
 
 		/**
@@ -583,7 +583,7 @@ namespace smpl
 			arr.clear();
 			extraKeyStorage.clear();
 			totalElements = 0;
-			rehashCounter++;
+			criticalChangeCounter++;
 		}
 
 		//enable if map meaning that Value is not void.
@@ -747,6 +747,7 @@ namespace smpl
 			if(fastHashInfo.size() == 0)
 			{
 				fastHashInfo = std::vector<uint8_t>(MINIMUM_BUCKETS);
+				memset(fastHashInfo.data(), 0, MINIMUM_BUCKETS);
 				redirectInfo = std::vector<HashRedirectPair>(MINIMUM_BUCKETS);
 			}
 			
@@ -792,6 +793,7 @@ namespace smpl
 			if(fastHashInfo.size() == 0)
 			{
 				fastHashInfo = std::vector<uint8_t>(MINIMUM_BUCKETS);
+				memset(fastHashInfo.data(), 0, MINIMUM_BUCKETS);
 				redirectInfo = std::vector<HashRedirectPair>(MINIMUM_BUCKETS);
 			}
 			
@@ -1100,6 +1102,7 @@ namespace smpl
 			if(fastHashInfo.size() == 0)
 			{
 				fastHashInfo = std::vector<uint8_t>(MINIMUM_BUCKETS);
+				memset(fastHashInfo.data(), 0, MINIMUM_BUCKETS);
 				redirectInfo = std::vector<HashRedirectPair>(MINIMUM_BUCKETS);
 			}
 			
@@ -1220,9 +1223,12 @@ namespace smpl
 			if(UNLIKELY(it == end()))
 				return end();
 
+			if(it.index >= arr.size())
+				return end();
 			//check if iterator's bucket index is valid. It must not be -1 (SIZE_MAX) and it must be before a rehash.
 			//If failed, recompute the bucket index.
 			//NOTE: an invalid iterator will have an invalid bucket index and can not recompute the bucket index.
+
 
 			//will attempt to delete from the spot first. Can get away with it if its more than 1 thing in the list
 			size_t elementCounter = elementsAtLocation(it.index);
@@ -1238,7 +1244,7 @@ namespace smpl
 
 			Iterator newIT = it;
 			//slower path
-			if(it.rehashCounter != rehashCounter || it.bucketIndex == -1)
+			if(it.criticalChangeCounter != criticalChangeCounter || it.bucketIndex == -1)
 			{
 				//invalid bucket index. Recompute (search for it again)
 				newIT = find(getKey(*it));
@@ -1249,8 +1255,11 @@ namespace smpl
 			if(UNLIKELY(newIT == end()))
 				return end(); //something very very odd happened.
 
+			if(UNLIKELY(getLocationEmpty(newIT.bucketIndex) || getRedirectInfo(newIT.bucketIndex) != newIT.index))
+				return end(); //probably doesn't exist or this iterator is invalid
+
 			uint64_t bucketLocation = newIT.bucketIndex;
-			
+
 			//if found, find the location of the last item in arr and swap that with our current spot
 
 			uint64_t lastSpotHash = hasher(getKey(arr.back()));
@@ -1258,7 +1267,7 @@ namespace smpl
 			RedirectType lastSpotExtraHash = extractPartialHashEx(lastSpotHash);
 			uint64_t lastSpotLocation = lastSpotHash % fastHashInfo.size();
 			
-			//it exists so we can skip the extra work of checking free slots.
+			//it exists so we can skip the extra work of checking free slots. A little different than checkDuplicate() so can't use that
 			while(true)
 			{
 				if(getPartialHash(lastSpotLocation) == lastSpotPartialHash) //fast path but 2 checks which may be unnecessary
@@ -1272,35 +1281,43 @@ namespace smpl
 				lastSpotLocation = (lastSpotLocation+1) % fastHashInfo.size();
 			}
 
+
 			//set current location to be deleted
-			fastHashInfo[bucketLocation] = 0;
+			fastHashInfo[bucketLocation] = EMPTY_SLOT;
 			
 			//swap data and pop back which completes the deletion
-			swapDataStorageAndDelete(it.index);
-			swapExtraKeyStorageAndDelete(it.index);
+			swapDataStorageAndDelete(newIT.index);
+			swapExtraKeyStorageAndDelete(newIT.index);
 
 			//swap locations too
 			redirectInfo[lastSpotLocation].second = redirectInfo[bucketLocation].second;
-
-			//extra step. shift data back till we hit an empty spot or we hit a node that is in its desired spot
-			uint64_t previousLocation = bucketLocation;
+			redirectInfo[bucketLocation] = {0, 0};
+			
+			//extra step. shift data back till we hit an empty spot. Note that we need to keep track of the last known empty spot too so previousLocation shouldn't always be updated.
+			//shiftback is not directly back but a swap with the last spot we care about
+			uint64_t shiftBackDistance = 1;
+			uint64_t swapLocation = bucketLocation;
 			bucketLocation = (bucketLocation+1) % fastHashInfo.size();
 
 			while(!getLocationEmpty(bucketLocation))
 			{
-				if(getDistanceFromDesiredSpot(bucketLocation) > 0)
+				//calculate distance from desired spot. Calculate distance from swap location. If they are the same or distanceToDesired spot is greater, swapping is okay to do
+				size_t dis = getDistanceFromDesiredSpot(bucketLocation);
+				
+				if(dis >= shiftBackDistance)
 				{
-					fastHashInfo[previousLocation] = fastHashInfo[bucketLocation];
-					redirectInfo[previousLocation] = redirectInfo[bucketLocation];
+					std::swap(fastHashInfo[swapLocation], fastHashInfo[bucketLocation]);
+					std::swap(redirectInfo[swapLocation], redirectInfo[bucketLocation]);
+					swapLocation = bucketLocation;
+					shiftBackDistance = 0; //will be set to 1 right after
 				}
-				else
-					break;
-
-				previousLocation = bucketLocation;
+				
+				shiftBackDistance++;
 				bucketLocation = (bucketLocation+1) % fastHashInfo.size();
 			}
 
 			totalElements -= elementCounter;
+			criticalChangeCounter++; //bucket locations have changed. TotalElements have changed. Last element in arr has changed location. Should consider all iterators invalid that rely on bucketIndex. So any iterators used for deletion
 
 			//IMPORTANT. There are cases where you'd want the next valid spot even if its not apart of the same list.
 			//example: iterating from begin() to end() over all elements (not caring about the key) and deleting certain elements based on some criteria that is not strictly the key.
@@ -1359,8 +1376,9 @@ namespace smpl
 			newSize = __max(newSize, MINIMUM_BUCKETS); //not allowed to have less than MINIMUM_BUCKETS which is set to 256
 
 			std::vector<uint8_t> newHashInfo = std::vector<uint8_t>(newSize);
+			memset(newHashInfo.data(), 0, newSize);
 			std::vector<HashRedirectPair> newRedirectInfo = std::vector<HashRedirectPair>(newSize);
-			rehashCounter++;
+			criticalChangeCounter++;
 
 			for(size_t i=0; i<fastHashInfo.size(); i++)
 			{
@@ -1536,7 +1554,8 @@ namespace smpl
 
 		void swapDataStorageAndDelete(uint64_t index)
 		{
-			std::swap(arr.back(), arr[index]);
+			if(index != arr.size()-1)
+				std::swap(arr[arr.size()-1], arr[index]);
 			arr.pop_back();
 		}
 		
@@ -1544,7 +1563,8 @@ namespace smpl
 		typename std::enable_if<M, void>::type
 		swapExtraKeyStorageAndDelete(uint64_t index)
 		{
-			std::swap(extraKeyStorage.back(), extraKeyStorage[index]);
+			if(index != arr.size()-1)
+				std::swap(extraKeyStorage[extraKeyStorage.size()-1], extraKeyStorage[index]);
 			extraKeyStorage.pop_back();
 		}
 
@@ -1623,18 +1643,19 @@ namespace smpl
 
 		Iterator constructIterator(size_t index, size_t bucketIndex, bool all, typename std::list<KeyValueType>::iterator desiredListIterator)
 		{
-			return Iterator(this, index, bucketIndex, rehashCounter, all, desiredListIterator);
+			return Iterator(this, index, bucketIndex, criticalChangeCounter, all, desiredListIterator);
 		}
 		
 		ConstIterator constructIterator(size_t index, size_t bucketIndex, bool all, typename std::list<KeyValueType>::const_iterator desiredListIterator) const
 		{
-			return ConstIterator(this, index, bucketIndex, rehashCounter, all, desiredListIterator);
+			return ConstIterator(this, index, bucketIndex, criticalChangeCounter, all, desiredListIterator);
 		}
 
 		friend ConstSimpleHashTableIterator<Key, Value, MULTI, HashFunc, KeyEqual, BIG>;
 		friend SimpleHashTableIterator<Key, Value, MULTI, HashFunc, KeyEqual, BIG>;
 
 		static const uint8_t VALID_BIT = 0x80;
+		static const uint8_t EMPTY_SLOT = 0x00;
 		static const float MaxLoadBalance;
 
 		std::vector<uint8_t> fastHashInfo; //0x00 == empty. 0x7F == deleted (only first bit empty)
@@ -1644,7 +1665,7 @@ namespace smpl
 
 		//Typically in sync with arr but for a multimap, must also keep track of all the elements in each list. Ideally, size() = O(1)
 		size_t totalElements = 0;
-		uint64_t rehashCounter = 0;
+		uint64_t criticalChangeCounter = 0;
 
 		HashFunc hasher{};
 		KeyEqual keyEqualFunc{};

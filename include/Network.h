@@ -1,6 +1,9 @@
 #pragma once
 #include "BuildOptions.h"
 #include "StandardTypes.h"
+#include "SimpleHashTable.h"
+#include <cstddef>
+#include <unordered_map>
 
 #ifndef NO_SOCKETS
 
@@ -583,7 +586,7 @@ namespace smpl
 
 
 		void listen();
-		bool acceptConnection();
+		bool acceptConnection(std::string& ipOut);
 		bool connect();
 
 		void setRunning(bool v);
@@ -606,13 +609,7 @@ namespace smpl
 		std::function<void(std::string, size_t)> onConnectFunc;
 		std::function<void(std::string, size_t)> onDataAvailableFunc;
 		std::function<void(std::string, size_t)> onDisconnectFunc;
-
-		static const bool LOCK_TYPE_IMPORTANT = true;
-		static const bool LOCK_TYPE_NONIMPORTANT = false;
 		
-		void obtainLock(bool type); //Important = true | Non Important = false
-		void releaseLock(bool type);
-
 		#ifndef __unix__
 			WSADATA wsaData;
 		#endif
@@ -620,7 +617,7 @@ namespace smpl
 		SOCKET_TYPE temporarySocket = INVALID_SOCKET;
 		sockaddr sockAddrInfo;
 		
-		std::map<size_t, SocketInfo*> connections;
+		SimpleHashMap<size_t, SocketInfo> connections;
 
 		void removeSocket(size_t id);
 		void removeSocketInternal(SOCKET_TYPE s);
@@ -651,7 +648,7 @@ namespace smpl
 		//Secure Socket stuff (SSL) Must have OpenSSL
 		#ifdef USE_OPENSSL
 		SSL* getSSLFromSocket(SOCKET_TYPE s);
-		std::map<SOCKET_TYPE, SSL*> sslConnectionMapping;
+		SimpleHashMap<SOCKET_TYPE, SSL*> sslConnectionMapping;
 		#endif
 
 		// ReadWriterLock networkLock;

@@ -1,4 +1,5 @@
 #include <catch_amalgamated.hpp>
+#include <cstddef>
 #include "SimpleHashTable.h"
 
 TEST_CASE("Testing of the SimpleHashTable class", "[SimpleHashMap]")
@@ -75,6 +76,26 @@ TEST_CASE("Testing of the SimpleHashTable class", "[SimpleHashMap]")
 		REQUIRE(it1 == map.end());
 		REQUIRE(it2 != map.end());
 		REQUIRE(it3 == map.end());
+
+		
+		smpl::SimpleHashMap<size_t, size_t, std::hash<size_t>> map2 = {{0, 0}, {1, 0}, {smpl::SimpleHashMap<size_t, size_t>::MINIMUM_BUCKETS, 0}};
+		//this causes the 3rd value to attempt to go to the same location as the first value. This is important because it gets offset by 2 locations as we are using the identity hash.
+		//upon deletion of the first element, we should still be able to access every element.
+		auto it1_2 = map2.find(0);
+		auto it2_2 = map2.find(1);
+		auto it3_2 = map2.find(smpl::SimpleHashMap<size_t, size_t>::MINIMUM_BUCKETS);
+
+		REQUIRE(it1_2 != map2.end());
+		REQUIRE(it2_2 != map2.end());
+		REQUIRE(it3_2 != map2.end());
+		
+		map2.erase(0);
+		it1_2 = map2.find(0);
+		it2_2 = map2.find(1);
+		it3_2 = map2.find(smpl::SimpleHashMap<size_t, size_t>::MINIMUM_BUCKETS);
+		REQUIRE(it1_2 == map2.end());
+		REQUIRE(it2_2 != map2.end());
+		REQUIRE(it3_2 != map2.end());
 	}
 
 	SECTION("Test copy")
@@ -169,6 +190,25 @@ TEST_CASE("Testing of the SimpleHashTable class", "[SimpleHashSet]")
 		REQUIRE(it1 == map.end());
 		REQUIRE(it2 != map.end());
 		REQUIRE(it3 == map.end());
+		
+		smpl::SimpleHashSet<size_t, std::hash<size_t>> map2 = {0, 1, smpl::SimpleHashSet<size_t>::MINIMUM_BUCKETS};
+		//this causes the 3rd value to attempt to go to the same location as the first value. This is important because it gets offset by 2 locations as we are using the identity hash.
+		//upon deletion of the first element, we should still be able to access every element.
+		auto it1_2 = map2.find(0);
+		auto it2_2 = map2.find(1);
+		auto it3_2 = map2.find(smpl::SimpleHashSet<size_t>::MINIMUM_BUCKETS);
+
+		REQUIRE(it1_2 != map2.end());
+		REQUIRE(it2_2 != map2.end());
+		REQUIRE(it3_2 != map2.end());
+		
+		map2.erase(0);
+		it1_2 = map2.find(0);
+		it2_2 = map2.find(1);
+		it3_2 = map2.find(smpl::SimpleHashSet<size_t>::MINIMUM_BUCKETS);
+		REQUIRE(it1_2 == map2.end());
+		REQUIRE(it2_2 != map2.end());
+		REQUIRE(it3_2 != map2.end());
 	}
 
 	SECTION("Test copy")

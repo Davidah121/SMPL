@@ -4,6 +4,7 @@
 #include "SimpleDir.h"
 #include "StringTools.h"
 #include "System.h"
+#include <unordered_map>
 
 #ifndef __min
 #define __min(a, b) (((a) < (b)) ? (a) : (b))
@@ -17,8 +18,6 @@
 
 namespace smpl
 {
-	std::map<size_t, size_t> timingPerRequest;
-	
 	HttpServer::HttpServer(NetworkConfig config, int threads, bool useHTTPS, std::string certificateFile, std::string keyFile)
 	{
 		//create new job queue
@@ -87,6 +86,8 @@ namespace smpl
 	{
 		//Try to get as much as possible. Should be no more than 8KB bytes. If so, send entity too large.
 		//This is consistent across most servers. Apache limits to 8KB by default.
+		// bool shouldRemoveJobInfo = true;
+		removeJobInfo(id);
 		std::vector<unsigned char> buffer = std::vector<unsigned char>(8192);
 		std::vector<unsigned char> body;
 		
@@ -94,7 +95,7 @@ namespace smpl
 		
 		if(size <= 0)
 		{
-			removeJobInfo(id);
+			// removeJobInfo(id);
 			return;
 		}
 
@@ -114,27 +115,29 @@ namespace smpl
 				contentSize = StringTools::toInt(req.readKeyValue("Content-Length"));
 				body.resize(contentSize);
 			}
-			
-			//read from connection
-			while(true)
+
+			if(contentSize > 0)
 			{
-				int actualBytesRead = this->getNetworkConnection()->receiveMessage(body.data()+bytesReadIntoBody, contentSize-bytesReadIntoBody, id);
-
-				if(actualBytesRead < 0)
+				//read from connection
+				while(true)
 				{
-					StringTools::println("%d - ERROR ATTEMPTING TO READ FROM BODY.", id);
-					this->getNetworkConnection()->disconnect(id);
-					removeJobInfo(id); //redundant
-					return;
-				}
+					int actualBytesRead = this->getNetworkConnection()->receiveMessage(body.data()+bytesReadIntoBody, contentSize-bytesReadIntoBody, id);
 
-				bytesReadIntoBody += actualBytesRead;
-				if(bytesReadIntoBody == contentSize)
-					break;
-				
-				//Couldn't get it all immediately, yield the task which causes you to wait a little.
-				//Does not work if this isn't in a job queue already.
-				ThisFiberTask::yield();
+					if(actualBytesRead < 0)
+					{
+						StringTools::println("%d - ERROR ATTEMPTING TO READ FROM BODY.", id);
+						this->getNetworkConnection()->disconnect(id);
+						return;
+					}
+
+					bytesReadIntoBody += actualBytesRead;
+					if(bytesReadIntoBody == contentSize)
+						break;
+					
+					//Couldn't get it all immediately, yield the task which causes you to wait a little.
+					//Does not work if this isn't in a job queue already.
+					ThisFiberTask::yield();
+				}
 			}
 		}
 		else
@@ -145,10 +148,12 @@ namespace smpl
 				//Disconnect to remove all from the queue.
 				send413Error(id);
 				this->getNetworkConnection()->disconnect(id);
+				// shouldRemoveJobInfo = false;
 			}
 
 			//Couldn't read everything.
-			removeJobInfo(id); //potentially redundant. Disconnection automatically handles removing job info
+			// if(shouldRemoveJobInfo)
+			// 	removeJobInfo(id);
 			return;
 		}
 
@@ -167,15 +172,17 @@ namespace smpl
 		if(status == STATUS_ERROR || (status == STATUS_DONE && !allowKeepAlive))
 		{
 			this->getNetworkConnection()->disconnect(id);
+			// shouldRemoveJobInfo = false;
 		}
-		removeJobInfo(id); //potentially redundant. Disconnection automatically handles removing job info
+		// if(shouldRemoveJobInfo)
+		// 	removeJobInfo(id);
 	}
 
 	void HttpServer::onDisconnection(std::string ip, size_t id)
 	{
 		//does not need to go into the job queue
 		//May need to adjust job queue to remove a job. It may have already been removed though.
-		removeJobInfo(id);
+		// removeJobInfo(id);
 		
 		if(this->getLoggingInfo())
 		{
@@ -200,6 +207,15 @@ namespace smpl
 			this->jobPointers.erase(it->second);
 		}
 		this->jobMutex.unlock();
+		
+		if(this->getLoggingInfo())
+		{
+			logMutex.lock();
+			int portNum = this->getNetworkConnection()->getPort();
+
+			StringTools::println("REMOVING JOB FROM ID = %d\n", id);
+			logMutex.unlock();
+		}
 	}
 	
 	void HttpServer::setGetFuncMapper(std::function<char(HttpServer*, const WebRequest&, const std::vector<unsigned char>&, const std::string, const size_t)> func)
@@ -818,16 +834,12 @@ namespace smpl
 
 	char HttpServer::staggeredSend(size_t id, unsigned char* buffer, size_t startPoint, size_t endPoint)
 	{
-		bool canEnd = false;
-		while(!canEnd)
+		while(true)
 		{
 			//Note that this is not the entire file but some buffer that is large enough to saturate a network if given priority.
 			size_t calculatedLength = rangeLimit;
 			if(endPoint - startPoint < rangeLimit)
-			{
 				calculatedLength = 1 + endPoint - startPoint;
-				canEnd = true;
-			}
 
 			int bytesSent = conn->sendMessage(buffer, calculatedLength, id);
 			buffer += calculatedLength; //remember that this is fine. Its not a const pointer and its a copy of the original pointer.
@@ -856,16 +868,12 @@ namespace smpl
 
 	char HttpServer::staggeredSendFile(size_t id, File f, size_t startPoint, size_t endPoint)
 	{
-		bool canEnd = false;
-		while(!canEnd)
+		while(true)
 		{
 			//Note that this is not the entire file but some buffer that is large enough to saturate a network if given priority.
 			size_t calculatedLength = rangeLimit;
 			if(endPoint - startPoint < rangeLimit)
-			{
 				calculatedLength = 1 + endPoint - startPoint;
-				canEnd = true;
-			}
 
 			int bytesSent = conn->sendFile((char*)f.getFullFileName().c_str(), calculatedLength, startPoint, id);
 
@@ -888,6 +896,7 @@ namespace smpl
 			//Sent some data, yield to other task that may be running or want to run. We sent 16 MB. Don't be greedy.
 			ThisFiberTask::yield();
 		}
+		
 		return STATUS_DONE;
 	}
 
