@@ -1,6 +1,8 @@
 #pragma once
 #include <iostream>
 #include "BuildOptions.h"
+#include "StandardTypes.h"
+
 namespace smpl
 {
 	class DLL_OPTION BitwiseTools

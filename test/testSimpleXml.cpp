@@ -1,4 +1,4 @@
-#include <catch2/catch_amalgamated.hpp>
+#include <catch_amalgamated.hpp>
 #include "SimpleXml.h"
 
 //Relies on SmartMemory so if that has been properly unit tested, this becomes redundant
@@ -50,7 +50,9 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 		REQUIRE(xml.getNodes().size() == 2);
 		REQUIRE(xml.getNodes()[0]->getTitle() == "!doctype");
 		REQUIRE(xml.getNodes()[0]->getRawAttributes().size() > 0);
-		REQUIRE(xml.getNodes()[0]->getAttribute("html") != nullptr);
+		
+		auto currentNode = xml.getNodes()[0];
+		REQUIRE(currentNode->getAttribute("html") != currentNode->getRawAttributes().end());
 		REQUIRE(xml.getNodes()[1]->getTitle() == "html");
 
 		REQUIRE(xml.getNodes()[1]->getChildNodes().size() == 2);
@@ -66,8 +68,10 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes().size() == 2);
 		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[0].node->getTitle() == "p");
 		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[0].node->getValue() == "This is text");
-		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[0].node->getAttribute("class") != nullptr);
-		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[0].node->getAttribute("id") != nullptr);
+
+		currentNode = xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[0].node;
+		REQUIRE(currentNode->getAttribute("class") != currentNode->getRawAttributes().end());
+		REQUIRE(currentNode->getAttribute("id") != currentNode->getRawAttributes().end());
 		
 		//Test where value and child nodes appear together and make sure that they appear one after the other.
 		REQUIRE(xml.getNodes()[1]->getChildNodes()[1].node->getChildNodes()[1].node->getTitle() == "p");
@@ -119,8 +123,8 @@ TEST_CASE("Testing of the SimpleXml class", "[SimpleXml]")
 		std::vector<smpl::XmlNode*> result = xml.getNodesPattern(searches);
 		REQUIRE(result.size() == 1);
 
-		std::pair<std::string, std::string>* attribs = result[0]->getAttribute("type");
-		REQUIRE(attribs != nullptr);
+		auto attribs = result[0]->getAttribute("type");
+		REQUIRE(attribs != result[0]->getRawAttributes().end());
 		REQUIRE(attribs->second == "touch");
 	}
 

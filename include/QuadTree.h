@@ -1,5 +1,6 @@
 #pragma once
 //TODO: Implement
+#include "StandardTypes.h"
 #include "Tree.h"
 #include "Shape.h"
 

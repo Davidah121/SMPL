@@ -1,9 +1,11 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include <string.h>
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
+#include "SimpleHashTable.h"
 #include <vector>
 #include <fcntl.h>
 
@@ -38,7 +40,7 @@ namespace smpl
 		 * @return std::wstring 
 		 */
 		template<typename T>
-		static std::wstring toWideString(std::basic_string<T> text)
+		static std::wstring toWideString(const std::basic_string<T>& text)
 		{
 			std::wstring finalText;
 			for (size_t i = 0; i < text.size(); i++)
@@ -57,7 +59,7 @@ namespace smpl
 		 * @return std::string 
 		 */
 		template<typename T>
-		static std::string toCString(std::basic_string<T> text)
+		static std::string toCString(const std::basic_string<T>& text)
 		{
 			std::string finalText;
 
@@ -75,11 +77,11 @@ namespace smpl
 		 * @param s 
 		 * @return std::string 
 		 */
-		static std::string toUTF8String(std::wstring s)
+		static std::string toUTF8String(const std::wstring& s)
 		{
 			std::string finalText;
 
-			for (wchar_t& c : s)
+			for (wchar_t c : s)
 			{
 				std::vector<unsigned char> values = StringTools::toUTF8(c);
 				for(unsigned char& v : values)
@@ -97,7 +99,7 @@ namespace smpl
 		 * @param s 
 		 * @return std::string 
 		 */
-		static std::string toUTF8String(std::u32string s)
+		static std::string toUTF8String(const std::u32string& s)
 		{
 			std::string finalText;
 
@@ -114,41 +116,67 @@ namespace smpl
 		}
 
 		/**
-		 * @brief Converts any string to lowercase
+		 * @brief Converts a character to lowercase using UTF8 as the locale.
+		 * 		Should work on all languages
 		 * 
 		 * @tparam T 
-		 * @param text 
-		 * @return std::basic_string<T>
+		 * @param c 
+		 * @return T 
 		 */
 		template<typename T>
-		static std::basic_string<T> toLowercase(std::basic_string<T> text)
+		static T toLowercase(const T& c)
 		{
-			std::basic_string<T> finalText;
-			for (size_t i = 0; i < text.size(); i++)
-			{
-				finalText += tolower(text[i]);
-			}
-
-			return finalText;
+			auto& f = std::use_facet<std::ctype<T>>(currentLocale);
+			return f.tolower(c);
 		}
 
 		/**
-		 * @brief Converts any string to uppercase
+		 * @brief Converts any string to lowercase using UTF8 as the locale.
 		 * 
 		 * @tparam T 
 		 * @param text 
 		 * @return std::basic_string<T>
 		 */
 		template<typename T>
-		static std::basic_string<T> toUppercase(std::basic_string<T> text)
+		static std::basic_string<T> toLowercase(const std::basic_string<T>& text)
 		{
-			std::basic_string<T> finalText = "";
-			for (size_t i = 0; i < text.size(); i++)
-			{
-				finalText += toupper(text[i]);
-			}
+			std::basic_string<T> output;
+			auto& f = std::use_facet<std::ctype<T>>(currentLocale);
+			for(const T& c : text)
+				output += f.tolower(c);
+			return output;
+		}
 
-			return finalText;
+		/**
+		 * @brief Converts a character to uppercase using UTF8 as the locale.
+		 * 		Should work on all languages
+		 * 
+		 * @tparam T 
+		 * @param c 
+		 * @return T 
+		 */
+		template<typename T>
+		static T toUppercase(const T& c)
+		{
+			auto& f = std::use_facet<std::ctype<T>>(currentLocale);
+			return f.toupper(c);
+		}
+
+		/**
+		 * @brief Converts any string to uppercase using UTF8 as the locale.
+		 * 
+		 * @tparam T 
+		 * @param text 
+		 * @return std::basic_string<T>
+		 */
+		template<typename T>
+		static std::basic_string<T> toUppercase(const std::basic_string<T>& text)
+		{
+			std::basic_string<T> output;
+			auto& f = std::use_facet<std::ctype<T>>(currentLocale);
+			for(const T& c : text)
+				output += f.toupper(c);
+			return output;
 		}
 
 		/**
@@ -166,7 +194,7 @@ namespace smpl
 		 * @param utf8Char 
 		 * @return int 
 		 */
-		static int utf8ToChar(std::vector<unsigned char> utf8Char);
+		static int utf8ToChar(const std::vector<unsigned char>& utf8Char);
 
 		/**
 		 * @brief Converts the bytes in a std::string or any utf8 compliant string into
@@ -175,7 +203,7 @@ namespace smpl
 		 * @param validUTF8String 
 		 * @return std::u32string 
 		 */
-		static std::u32string utf8ToIntString(std::string validUTF8String);
+		static std::u32string utf8ToIntString(const std::string& validUTF8String);
 
 		/**
 		 * @brief Converts the bytes in a std::wstring into
@@ -183,7 +211,7 @@ namespace smpl
 		 * @param str 
 		 * @return std::u32string 
 		 */
-		static std::u32string wideStringToIntString(std::wstring str);
+		static std::u32string wideStringToIntString(const std::wstring& str);
 
 		/**
 		 * @brief Converts a base64 character into a number. Properly handles the url safe cases as well.
@@ -202,7 +230,7 @@ namespace smpl
 		 * 			Specifically replaces '+' and '/'
 		 * @return std::string 
 		 */
-		static std::string base64Encode(std::vector<unsigned char> bytes, bool urlSafe);
+		static std::string base64Encode(const std::vector<unsigned char>& bytes, bool urlSafe);
 
 		/**
 		 * @brief Converts a set of bytes into base64 encoding.
@@ -214,7 +242,7 @@ namespace smpl
 		 * 			Specifically replaces '+' and '/'
 		 * @return std::string 
 		 */
-		static std::string base64Encode(unsigned char* bytes, size_t size, bool urlSafe);
+		static std::string base64Encode(const unsigned char* bytes, size_t size, bool urlSafe);
 
 		/**
 		 * @brief Converts a base64 encoded string or set of bytes back into the original byte data.
@@ -222,7 +250,7 @@ namespace smpl
 		 * @param bytes 
 		 * @return std::vector<unsigned char> 
 		 */
-		static std::vector<unsigned char> base64Decode(std::vector<unsigned char> bytes);
+		static std::vector<unsigned char> base64Decode(const std::vector<unsigned char>& bytes);
 
 		/**
 		 * @brief Converts a base64 encoded string or set of bytes back into the original byte data.
@@ -230,7 +258,7 @@ namespace smpl
 		 * @param bytes 
 		 * @return std::vector<unsigned char> 
 		 */
-		static std::vector<unsigned char> base64Decode(std::string bytes);
+		static std::vector<unsigned char> base64Decode(const std::string& bytes);
 
 		/**
 		 * @brief Converts a base64 encoded string or set of bytes back into the original byte data.
@@ -239,7 +267,7 @@ namespace smpl
 		 * @param size
 		 * @return std::vector<unsigned char> 
 		 */
-		static std::vector<unsigned char> base64Decode(unsigned char* bytes, size_t size);
+		static std::vector<unsigned char> base64Decode(const unsigned char* bytes, size_t size);
 
 		/**
 		 * @brief Encodes the data to be URL safe.
@@ -249,7 +277,7 @@ namespace smpl
 		 * @param str 
 		 * @return std::string 
 		 */
-		static std::string urlEncode(std::string str);
+		static std::string urlEncode(const std::string& str);
 
 		/**
 		 * @brief Decodes the data from a URL to a normal string.
@@ -258,7 +286,19 @@ namespace smpl
 		 * @param str 
 		 * @return std::string 
 		 */
-		static std::string urlDecode(std::string str);
+		static std::string urlDecode(const std::string& str);
+
+		/**
+		 * @brief Returns all arguments from a URL string as pairs in an Hashmap if they exist.
+		 *		Arguments in a url come in the following form:
+		 *			http://localhost/index?arg1=value1&arg2=value2
+		 *		where arguments start after the '?' and the separator between arguments is '&'
+		 * 		
+		 		Note that this assumes that the url has not been decoded yet
+		 * @param url 
+		 * @return SimpleHashMap<std::string, std::string> 
+		 */
+		static SimpleHashMap<std::string, std::string> parseURLArguments(const std::string& url);
 
 		
 		/**
@@ -268,7 +308,7 @@ namespace smpl
 		 * @param n 
 		 * @return std::string 
 		 */
-		static std::string translateEnvironmentVariables(std::string n);
+		static std::string translateEnvironmentVariables(const std::string& n);
 
 		/**
 		 * @brief Performs a bitwise left rotate on the data type.
@@ -392,22 +432,13 @@ namespace smpl
 		 * @return false 
 		 */
 		template<typename T>
-		static bool equalsIgnoreCase(std::basic_string<T> a, std::basic_string<T> b)
+		static bool equalsIgnoreCase(const std::basic_string<T>& a, const std::basic_string<T>& b)
 		{
 			if(a.size() == b.size())
 			{
-				for(size_t i=0; i<a.size(); i++)
-				{
-					if( toupper(a[i]) != toupper(b[i]))
-						return false;
-				}
+				return StringTools::toLowercase(a) == StringTools::toLowercase(b);
 			}
-			else
-			{
-				return false;
-			}
-			
-			return true;
+			return false;
 		}
 
 		/**
@@ -469,7 +500,7 @@ namespace smpl
 		 * @return char* 
 		 */
 		template<class T>
-		static std::string toHexString(T value)
+		static std::string toHexString(const T& value)
 		{
 			int size = sizeof(T) * 2;
 			std::string hexString;
@@ -499,7 +530,7 @@ namespace smpl
 		 * @param v 
 		 * @return size_t 
 		 */
-		static size_t fromHexString(std::string v)
+		static size_t fromHexString(const std::string& v)
 		{
 			//check for 0x at the front
 			size_t result = 0;
@@ -561,7 +592,7 @@ namespace smpl
 		 * 		Default is true.
 		 * @return std::vector<std::string> 
 		 */
-		static std::vector<std::string> splitString(std::string s, const char delim, bool removeEmpty=true);
+		static std::vector<std::string> splitString(const std::string& s, const char delim, bool removeEmpty=true);
 
 		/**
 		 * @brief Splits a string using a string as the deliminator.
@@ -573,7 +604,7 @@ namespace smpl
 		 * 		Default is true.
 		 * @return std::vector<std::string> 
 		 */
-		static std::vector<std::string> splitString(std::string s, std::string delim, bool removeEmpty=true);
+		static std::vector<std::string> splitString(const std::string& s, const std::string& delim, bool removeEmpty=true);
 
 		/**
 		 * @brief Splits a string using multiple single character deliminators.
@@ -586,7 +617,7 @@ namespace smpl
 		 * 		Default is true.
 		 * @return std::vector<std::string> 
 		 */
-		static std::vector<std::string> splitStringMultipleDeliminators(std::string s, std::string delim, bool removeEmpty=true);
+		static std::vector<std::string> splitStringMultipleDeliminators(const std::string& s, const std::string& delim, bool removeEmpty=true);
 		
 		/**
 		 * @brief Splits a string using a single character deliminator.
@@ -598,7 +629,7 @@ namespace smpl
 		 * 		Default is true.
 		 * @return std::vector<std::wstring> 
 		 */
-		static std::vector<std::wstring> splitString(std::wstring s, const wchar_t delim, bool removeEmpty=true);
+		static std::vector<std::wstring> splitString(const std::wstring& s, const wchar_t delim, bool removeEmpty=true);
 
 		/**
 		 * @brief Splits a string using a string as the deliminator.
@@ -610,7 +641,7 @@ namespace smpl
 		 * 		Default is true.
 		 * @return std::vector<std::wstring> 
 		 */
-		static std::vector<std::wstring> splitString(std::wstring s, std::wstring delim, bool removeEmpty=true);
+		static std::vector<std::wstring> splitString(const std::wstring& s, const std::wstring& delim, bool removeEmpty=true);
 
 		/**
 		 * @brief Splits a string using multiple single character deliminators.
@@ -622,7 +653,7 @@ namespace smpl
 		 * 		Default is true.
 		 * @return std::vector<std::wstring> 
 		 */
-		static std::vector<std::wstring> splitStringMultipleDeliminators(std::wstring s, std::wstring delim, bool removeEmpty=true);
+		static std::vector<std::wstring> splitStringMultipleDeliminators(const std::wstring& s, const std::wstring& delim, bool removeEmpty=true);
 
 		/**
 		 * @brief Removes all white space from the string.
@@ -635,7 +666,7 @@ namespace smpl
 		 * 		Keeps whitespace between data.
 		 * @return std::string 
 		 */
-		static std::string removeWhitespace(std::string originalStr, bool removeTabs = false, bool onlyLeadingAndTrailing = false);
+		static std::string removeWhitespace(const std::string& originalStr, bool removeTabs = false, bool onlyLeadingAndTrailing = false);
 
 		/**
 		 * @brief Removes all white space from the string.
@@ -648,7 +679,7 @@ namespace smpl
 		 * 		Keeps whitespace between data.
 		 * @return std::wstring 
 		 */
-		static std::wstring removeWhitespace(std::wstring originalStr, bool removeTabs = false, bool onlyLeadingAndTrailing = false);
+		static std::wstring removeWhitespace(const std::wstring& originalStr, bool removeTabs = false, bool onlyLeadingAndTrailing = false);
 		
 		/**
 		 * @brief Converts a string into an integer.
@@ -657,7 +688,7 @@ namespace smpl
 		 * @return int 
 		 */
 		template<typename T>
-		static int toInt(std::basic_string<T> s, bool* err = nullptr)
+		static int toInt(const std::basic_string<T>& s, bool* err = nullptr)
 		{
 			int ret = 0;
 			try
@@ -682,7 +713,7 @@ namespace smpl
 		 * @return long 
 		 */
 		template<typename T>
-		static long toLong(std::basic_string<T> s, bool* err = nullptr)
+		static long toLong(const std::basic_string<T>& s, bool* err = nullptr)
 		{
 			long ret = 0;
 			try
@@ -707,7 +738,7 @@ namespace smpl
 		 * @return long 
 		 */
 		template<typename T>
-		static unsigned long long toULongLong(std::basic_string<T> s, bool* err = nullptr)
+		static unsigned long long toULongLong(const std::basic_string<T>& s, bool* err = nullptr)
 		{
 			unsigned long long ret = 0;
 			try
@@ -732,7 +763,7 @@ namespace smpl
 		 * @return double 
 		 */
 		template<typename T>
-		static double toDouble(std::basic_string<T> s, bool* err = nullptr)
+		static double toDouble(const std::basic_string<T>& s, bool* err = nullptr)
 		{
 			double ret = 0;
 			try
@@ -757,7 +788,7 @@ namespace smpl
 		 * @return float 
 		 */
 		template<typename T>
-		static float toFloat(std::basic_string<T> s, bool* err = nullptr)
+		static float toFloat(const std::basic_string<T>& s, bool* err = nullptr)
 		{
 			float ret = 0;
 			try
@@ -917,7 +948,7 @@ namespace smpl
 		 * @param length 
 		 * 		A pointer to an int that will record the length of the longest match
 		 */
-		static void findLongestMatch(std::string base, std::string match, int* index, int* length);
+		static void findLongestMatch(const std::string& base, const std::string& match, int* index, int* length);
 
 		/**
 		 * @brief Finds the longest match in the string base.
@@ -1123,6 +1154,7 @@ namespace smpl
 		static void resetOutputInputStreams();
 	private:
 
+		static std::locale currentLocale;
 		static std::streambuf* inputBuffer;
 		static std::streambuf* outputBuffer;
 		static std::streambuf* errorBuffer;

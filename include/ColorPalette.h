@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include <vector>
 #include "SimpleSerialization.h"
 #include "KDTree.h"
@@ -112,7 +113,19 @@ namespace smpl
 		 */
 		void operator=(const ColorPalette& other);
 
-		// ColorPalette(ColorPalette&& other);
+		/**
+		 * @brief Move Construct a new Color Palette object
+		 * 
+		 * @param other 
+		 */
+		ColorPalette(ColorPalette&& other) noexcept;
+
+		/**
+		 * @brief Move Assign a new Color Palette object
+		 * 
+		 * @param other 
+		 */
+		void operator==(ColorPalette&& other) noexcept;
 
 		/**
 		 * @brief Destroys a ColorPalette Object.

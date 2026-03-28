@@ -6,7 +6,6 @@ namespace smpl
 {
 	WebRequest::WebRequest()
 	{
-
 	}
 
 	WebRequest::WebRequest(char* buffer, size_t size)
@@ -14,12 +13,12 @@ namespace smpl
 		init((unsigned char*)buffer, size, nullptr);
 	}
 
-	WebRequest::WebRequest(std::string buffer)
+	WebRequest::WebRequest(const std::string& buffer)
 	{
 		init((unsigned char*)buffer.data(), buffer.size(), nullptr);
 	}
 
-	WebRequest::WebRequest(std::vector<unsigned char> buffer)
+	WebRequest::WebRequest(const std::vector<unsigned char>& buffer)
 	{
 		//fill out data using buffer
 		init((unsigned char*)buffer.data(), buffer.size(), nullptr);
@@ -32,6 +31,8 @@ namespace smpl
 		bytesInHeader = other.bytesInHeader;
 		header = other.header;
 		data = other.data;
+		url = other.url;
+		cookieMap = other.cookieMap;
 	}
 
 	void WebRequest::operator=(WebRequest& other)
@@ -41,6 +42,8 @@ namespace smpl
 		bytesInHeader = other.bytesInHeader;
 		header = other.header;
 		data = other.data;
+		url = other.url;
+		cookieMap = other.cookieMap;
 	}
 	
 	WebRequest::WebRequest(WebRequest&& other) noexcept
@@ -50,6 +53,8 @@ namespace smpl
 		bytesInHeader = std::move(other.bytesInHeader);
 		header = std::move(other.header);
 		data = std::move(other.data);
+		url = std::move(other.url);
+		cookieMap = std::move(other.cookieMap);
 		other.reset();
 	}
 	void WebRequest::operator=(WebRequest&& other) noexcept
@@ -59,6 +64,8 @@ namespace smpl
 		bytesInHeader = std::move(other.bytesInHeader);
 		header = std::move(other.header);
 		data = std::move(other.data);
+		url = std::move(other.url);
+		cookieMap = std::move(other.cookieMap);
 		other.reset();
 	}
 
@@ -67,6 +74,7 @@ namespace smpl
 		type = TYPE_SERVER;
 		bytesInHeader = 0;
 		header = "";
+		cookieMap.clear();
 		data.clear();
 	}
 
@@ -167,7 +175,7 @@ namespace smpl
 		return properEnd;
 	}
 
-	void WebRequest::setHeader(unsigned int type, std::string data, bool includeHTTP)
+	void WebRequest::setHeader(unsigned int type, const std::string& data, bool includeHTTP)
 	{
 		this->type = type;
 		if(type == TYPE_CONNECT)
@@ -204,81 +212,39 @@ namespace smpl
 			header += " HTTP/1.1";
 	}
 
-	std::string WebRequest::getHeader()
+	std::string WebRequest::getHeader() const
 	{
 		return header;
 	}
 
-	std::string WebRequest::getUrl()
+	std::string WebRequest::getUrl() const
 	{
 		return url;
 	}
 
-	unsigned int WebRequest::getType()
+	unsigned int WebRequest::getType() const
 	{
 		return type;
 	}
 
-	void WebRequest::addKeyValue(std::string k, std::string v)
+	void WebRequest::addKeyValue(const std::string& k, const std::string& v)
 	{
-		//if its new, add k.size() + v.size() + 4
-
-		k = StringTools::toLowercase(k);
+		std::string lowerK = StringTools::toLowercase(k);
 		if(k == "cookie")
 		{
-			//special case
-			std::vector<std::string> split = StringTools::splitString(v, "; ", true);
-			for(std::string& splitPairs : split)
-			{
-				std::vector<std::string> cookiePair = StringTools::splitString(splitPairs, '=', true);
-				if(cookiePair.size() == 2)
-				{
-					addCookie({cookiePair[0], cookiePair[1]}); //no options
-				}
-			}
+			cookieMap.loadClientSentCookies(k+": "+v);
 		}
 		else if(k == "set-cookie")
 		{
-			//special case
-			//note that folded Set-Cookie is highly discouraged so it won't be added here yet
-			std::vector<std::string> split = StringTools::splitString(v, "; ", true);
-			std::pair<std::string, std::string> actualCookie;
-			std::vector<std::string> options;
-			for(int i=0; i<split.size(); i++)
-			{
-				if(i == 0)
-				{
-					std::vector<std::string> cookiePair = StringTools::splitString(split[i], '=', true);
-					if(cookiePair.size() == 2)
-					{
-						actualCookie = {cookiePair[0], cookiePair[1]};
-					}
-				}
-				else
-				{
-					options.push_back(split[i]);
-				}
-			}
-			addCookie(actualCookie, options);
+			cookieMap.loadServerSentCookie(k+": "+v);
 		}
 		else
 		{
-			auto it = data.find(k);
-			if(it != data.end())
-			{
-				bytesInHeader -= it->second.size();
-				bytesInHeader += v.size();
-				it->second = v;
-			}
-			else
-			{
-				data[k] = v;
-				bytesInHeader += k.size() + v.size() + 4;
-			}
+			data[k] = v;
 		}
 	}
 
-	std::string WebRequest::readKeyValue(std::string k)
+	std::string WebRequest::readKeyValue(const std::string& k) const
 	{
 		auto it = data.find(StringTools::toLowercase(k));
 		if(it != data.end())
@@ -286,37 +252,55 @@ namespace smpl
 		return "";
 	}
 
-	bool WebRequest::empty()
+	bool WebRequest::empty() const
 	{
 		return header.empty() && data.empty();
 	}
 
-	size_t WebRequest::getBytesInRequest()
+	size_t WebRequest::getBytesInRequest() const
 	{
+		size_t bytesInHeader = 0;
+		if(header.empty())
+			return 0;
+		
+		bytesInHeader += header.size() + 2;
+		
+		for(auto it = data.begin(); it != data.end(); ++it)
+		{
+			bytesInHeader += it->first.size() + 2 + it->second.size() + 2;
+		}
+
+		if(!cookieMap.empty())
+		{
+			//add cookies
+			if(type == TYPE_SERVER)
+			{
+				for(auto& it : cookieMap.getAllCookies())
+				{
+					WebCookie wc = it.second;
+					bytesInHeader += it.second.getCookieAsString(true).size() + 2;
+				}
+			}
+			else
+			{
+				for(auto& it : cookieMap.getAllCookies())
+				{
+					WebCookie wc = it.second;
+					bytesInHeader += it.second.getCookieAsString(false).size() + 1;
+				}
+				bytesInHeader += 2;
+			}
+		}
+		bytesInHeader += 2;
 		return bytesInHeader;
 	}
 
-	bool WebRequest::addCookie(std::pair<std::string, std::string> keyValuePair, std::vector<std::string> options)
+	CookieManager& WebRequest::getCookieMap()
 	{
-		if(WebRequest::isValidCookieFormat(keyValuePair.first) && WebRequest::isValidCookieFormat(keyValuePair.second))
-		{
-			cookieMap.insert({keyValuePair.first, {keyValuePair.second, options}});
-			return true;
-		}
-		return false;
-	}
-
-	std::pair<std::string, std::string> WebRequest::getCookie(std::string key)
-	{
-		auto it = cookieMap.find(key);
-		if(it != cookieMap.end())
-		{
-			return {it->first, it->second.first};
-		}
-		return {};
+		return cookieMap;
 	}
 	
-	std::string WebRequest::getRequestAsString()
+	std::string WebRequest::getRequestAsString() const
 	{
 		std::string buffer;
 		if(header.empty())
@@ -324,49 +308,52 @@ namespace smpl
 		
 		buffer += header + "\r\n";
 		
-		for(auto it = data.begin(); it != data.end(); it++)
+		for(auto it = data.begin(); it != data.end(); ++it)
 		{
 			buffer += it->first + ": " + it->second + "\r\n";
 		}
 
-		//add cookies
-		if(type == TYPE_SERVER)
+		if(!cookieMap.empty())
 		{
-			for(auto& it : cookieMap)
+			//add cookies
+			if(type == TYPE_SERVER)
 			{
-				buffer += "Set-Cookie: " + it.first + "=" + it.second.first + ";";
-				for(auto& option : it.second.second)
+				for(auto& it : cookieMap.getAllCookies())
 				{
-					buffer += option + ";";
+					WebCookie wc = it.second;
+					buffer += it.second.getCookieAsString(true);
+					buffer += "\r\n";
+				}
+			}
+			else
+			{
+				for(auto& it : cookieMap.getAllCookies())
+				{
+					WebCookie wc = it.second;
+					buffer += it.second.getCookieAsString(false) + " ";
 				}
 				buffer += "\r\n";
 			}
 		}
-		else
-		{
-			for(auto& it : cookieMap)
-			{
-				buffer += "Cookie: " + it.first + "=" + it.second.first + "; ";
-			}
-			buffer += "\r\n";
-		}
 		buffer += "\r\n";
 
+		// bytesInHeader = buffer.size();
 		return buffer;
 	}
 
-	std::string WebRequest::getMimeTypeFromExt(std::string ext)
+	std::string WebRequest::getMimeTypeFromExt(const std::string& ext)
     {
         if(ext.empty())
             return "application/octet-stream";
-        
-        if(ext.front() == '.')
-        {
-            ext = ext.substr(1);
-        }
-        ext = StringTools::toLowercase(ext);
 
-        auto it = mimeTypes.find(ext);
+        std::string actualExt = ext;
+        if(actualExt.front() == '.')
+        {
+            actualExt = actualExt.substr(1);
+        }
+        actualExt = StringTools::toLowercase(actualExt);
+
+        auto it = mimeTypes.find(actualExt);
         if(it != mimeTypes.end())
         {
             return it->second;
@@ -387,10 +374,10 @@ namespace smpl
     }
 
 	
-	bool WebRequest::isValidCookieFormat(std::string v)
+	bool WebRequest::isValidCookieFormat(const std::string& v)
 	{
 		//abdefghijklmnqrstuvxyzABDEFGHIJKLMNQRSTUVXYZ0123456789!#$%&'()*+-./:<>?@[]^_`{|}~
-		for(char& c : v)
+		for(char c : v)
 		{
 			//can't guarantee that the characters above 127 are safe to use
 			if(c <= 32 || c==';' || c== '=' || c == '\\' || c==',' || c > 127)
@@ -401,7 +388,8 @@ namespace smpl
 		return true;
 	}
 
-	const std::unordered_map<std::string, std::string> WebRequest::mimeTypes = {
+	const std::string WebRequest::MIME_FORM_DATA = "application/x-www-form-urlencoded";
+	const SimpleHashMap<std::string, std::string> WebRequest::mimeTypes = {
         {"aac", "audio/aac"},
         {"apng", "image/apng"},
         {"avif", "image/avif"},

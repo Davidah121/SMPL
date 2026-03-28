@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include "SimpleGraphics.h"
 #include "ColorSpaceConverter.h"
 

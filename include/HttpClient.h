@@ -1,11 +1,12 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include "Network.h"
 #include "WebRequest.h"
 
 namespace smpl
 {
-    class DLL_OPTION WebClient
+    class DLL_OPTION HttpClient
     {
     public:
         static const int TYPE_NO_ERROR = 0;
@@ -13,8 +14,8 @@ namespace smpl
         static const int TYPE_RECEIVE_ERROR = -2;
         static const int TYPE_SEND_ERROR = -3;
 
-        WebClient(std::string location);
-        ~WebClient();
+        HttpClient(std::string location);
+        ~HttpClient();
 
         bool isValid();
         bool getTimeoutOccurred();
@@ -29,21 +30,94 @@ namespace smpl
         int getLastResponseCode();
         std::string getHost();
         std::string getWebname();
+        CookieManager& getCookies();
 
         void start();
         void reconnect();
         void disconnect();
 
         bool sendRequest(WebRequest& req);
-        
-        void setOnConnectFunc(std::function<void(WebClient*)> func);
-        void setOnDisconnectFunc(std::function<void(WebClient*)> func);
-        void setOnBufferChangedFunc(std::function<void(WebClient*, WebRequest& response, unsigned char*, size_t)> func);
+
+        /**
+         * @brief A wrapper around network to send message data.
+         * 
+         * @param message 
+         * @param id 
+         * @return int 
+         */
+        int sendMessage(std::vector<unsigned char>& message);
+
+        /**
+         * @brief A wrapper around network to send message data.
+         * 
+         * @param msg 
+         * @param id 
+         * @return int 
+         */
+        int sendMessage(const std::string& msg);
+
+        /**
+         * @brief A wrapper around network to send message data.
+         *      Specifically for sending files which (if available) uses the faster
+         *          sendfile function for sockets.
+         * 
+         * @param filename 
+         * @param length 
+         * @param offset 
+         * @param id 
+         * @return int 
+         */
+        int sendFile(char* filename, size_t length, size_t offset);
+
+        /**
+         * @brief Attempts to send a generic type. Sends it over as raw bytes.
+         *      Equivalent to sendMessage((char*)&msg, sizeof(T), id)
+         * 
+         * @tparam T 
+         * @param msg 
+         * @param id 
+         * @return int 
+         */
+        template<typename T>
+        int sendMessage(const T msg)
+        {
+            //send raw bytes
+            if(network != nullptr)
+            {
+                return network->sendMessage(msg, 0);
+            }
+            return -1;
+        }
+
+        /**
+         * @brief Attempts to send a pointer to a generic type. Sends it over as raw bytes.
+         *      Equivalent to sendMessage((char*)msg, sizeof(T)*elements, id)
+         * 
+         * @tparam T 
+         * @param msg 
+         * @param elements 
+         * @param id 
+         * @return int 
+         */
+        template<typename T>
+        int sendMessage(const T* msg, int elements)
+        {
+            //send raw bytes
+            if(network != nullptr)
+            {
+                return network->sendMessage((char*)msg, sizeof(T)*elements, 0);
+            }
+            return -1;
+        }
+
+        void setOnConnectFunc(std::function<void(HttpClient*)> func);
+        void setOnDisconnectFunc(std::function<void(HttpClient*)> func);
+        void setOnBufferChangedFunc(std::function<void(HttpClient*, WebRequest& response, unsigned char*, size_t)> func);
         
         void handleReceivedResponse(WebRequest& response);
 
         /**
-         * @brief Determines whether the WebClient needs to do an absolute redirect.
+         * @brief Determines whether the HttpClient needs to do an absolute redirect.
          *      These are not automatically handled like relative redirects and must be handled
          *      by the user.
          *      Absolute redirects go to a different webpage typically (though not required).
@@ -73,18 +147,19 @@ namespace smpl
         
         void resendRequest();
         
-        std::function<void(WebClient*)> onConnectionFunction;
-        std::function<void(WebClient*)> onDisconnectionFunction;
-        std::function<void(WebClient*, WebRequest& response, unsigned char*, size_t)> onBufferChanged;
+        std::function<void(HttpClient*)> onConnectionFunction;
+        std::function<void(HttpClient*)> onDisconnectionFunction;
+        std::function<void(HttpClient*, WebRequest& response, unsigned char*, size_t)> onBufferChanged;
         
         NetworkConfig config;
 
         Network* network = nullptr;
         bool started = false;
-        std::string userAgent = "SMPL C++ WebClient";
+        std::string userAgent = "SMPL C++ HttpClient";
 
         WebRequest response;
         WebRequest sentRequest;
+        CookieManager currentCookies;
 
         std::string hostStr = "";
         std::string webName = "";

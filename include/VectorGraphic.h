@@ -1,7 +1,7 @@
 #pragma once
 #include "BuildOptions.h"
-#include<vector>
-#include<map>
+#include "StandardTypes.h"
+#include <vector>
 #include "Image.h"
 #include "MathExt.h"
 #include "SimpleXml.h"

@@ -1,6 +1,8 @@
 #pragma once
+#include "StandardTypes.h"
 #include <iostream>
 #include <vector>
+#include <unordered_map>
 
 namespace smpl
 {
@@ -89,7 +91,17 @@ namespace smpl
 	}
 	
 	void formatToString(StringStream& stream, const std::string& v, const std::string& options);
-	
+
+	template<typename K, typename T>
+	void formatToString(StringStream& stream, const std::pair<K, T>& v, const std::string& options)
+	{
+		stream.write("<");
+		formatToString(stream, v.first, options);
+		stream.write(", ");
+		formatToString(stream, v.second, options);
+		stream.write(">");
+	}
+
 	template<typename T>
 	void formatToString(StringStream& stream, const std::vector<T>& v, const std::string& options)
 	{
@@ -103,6 +115,18 @@ namespace smpl
 		{
 			stream.pop();
 			stream.pop();
+		}
+		stream.write("}");
+	}
+
+	template<typename K, typename T>
+	void formatToString(StringStream& stream, const std::unordered_map<K, T>& v, const std::string& options)
+	{
+		stream.write("{\n");
+		for(auto& a : v)
+		{
+			formatToString(stream, a, options);
+			stream.write("\n");
 		}
 		stream.write("}");
 	}

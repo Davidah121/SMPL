@@ -244,6 +244,7 @@ namespace smpl
 		return tempBuff;
 	}
 
+	//TODO: Fix this. Why include a window pointer but not use it?
 	void Input::adjustVerticalScroll(void* windowPointer, int v)
 	{
 		inputMutex.lock();

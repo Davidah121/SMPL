@@ -1,3 +1,5 @@
+#pragma once
+#include "StandardTypes.h"
 #include <iostream>
 #include <vector>
 #include <map>

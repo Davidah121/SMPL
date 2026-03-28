@@ -1606,12 +1606,12 @@
 							if(tX>=width)
 							{
 								tX=0;
-								wndPixelsStart += scanLinePadding;
 							}
 						}
 					}
 					else
 					{
+						memset(wndPixels, 0, wndPixelsSize);
 						Color* imgPixelsStart = g->getPixels();
 						Color* imgPixelsEnds = g->getPixels() + (g->getWidth()*g->getHeight());
 						unsigned char* wndPixelsStart = wndPixels;
@@ -1644,7 +1644,7 @@
 							if(tX >= minWidth)
 							{
 								tX = 0;
-								wndPixelsStart += wndPixelWidthPadding + scanLinePadding;
+								wndPixelsStart += wndPixelWidthPadding*4;
 								imgPixelsStart += imgWidthPadding;
 							}
 						}

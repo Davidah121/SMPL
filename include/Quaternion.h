@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include "SimpleSerialization.h"
 #include "Vec4f.h"
 

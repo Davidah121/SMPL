@@ -2,6 +2,7 @@
 #ifndef NO_AUDIO
 
 	#include "BuildOptions.h"
+	#include "StandardTypes.h"
 	#include <vector>
 	#include "Sound.h"
 	#include <thread>

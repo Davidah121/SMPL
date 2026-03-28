@@ -1,5 +1,6 @@
 #pragma once
 #include "SimpleSerialization.h"
+#include "StandardTypes.h"
 #include "SmartMemory.h"
 #include <unordered_map>
 

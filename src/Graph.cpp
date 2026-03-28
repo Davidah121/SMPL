@@ -70,7 +70,7 @@ namespace smpl
                     guess = heuristic(i, endVertex);
 
                 double priority = p.cost+guess;
-                pq.add(priority, p);
+				pq.add({priority, p});
             }
         }
 
@@ -129,7 +129,7 @@ namespace smpl
                                 if(heuristic != nullptr)
                                     guess = heuristic(i, endVertex);
                                 double priority = newPathInfo.cost + guess;
-                                pq.add(priority, newPathInfo);
+                                pq.add({priority, newPathInfo});
                             }
                         }
                     }
@@ -147,14 +147,14 @@ namespace smpl
 
     UndirectedListGraph::UndirectedListGraph(size_t numberOfVerticies)
     {
-        adjList = std::vector<std::unordered_map<size_t, double>>(numberOfVerticies);
+        adjList = std::vector<SimpleHashMap<size_t, double>>(numberOfVerticies);
     }
     UndirectedListGraph::~UndirectedListGraph()
     {
         
     }
 
-    std::unordered_map<size_t, double>& UndirectedListGraph::getEdges(size_t vertex)
+    SimpleHashMap<size_t, double>& UndirectedListGraph::getEdges(size_t vertex)
     {
         return adjList[vertex];
     }
@@ -167,7 +167,7 @@ namespace smpl
     }
     void UndirectedListGraph::addVertex()
     {
-        adjList.push_back(std::unordered_map<size_t, double>());
+        adjList.push_back(SimpleHashMap<size_t, double>());
     }
     void UndirectedListGraph::addEdge(size_t mainVertex, size_t connectedVertex, double weight)
     {
@@ -206,7 +206,7 @@ namespace smpl
                     guess = heuristic(i, endVertex);
 
                 double priority = p.cost+guess;
-                pq.add(priority, p);
+                pq.add({priority, p});
             }
         }
 
@@ -265,7 +265,7 @@ namespace smpl
                                 if(heuristic != nullptr)
                                     guess = heuristic(i, endVertex);
                                 double priority = newPathInfo.cost + guess;
-                                pq.add(priority, newPathInfo);
+                                pq.add({priority, newPathInfo});
                             }
                         }
                     }

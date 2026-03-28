@@ -1,4 +1,5 @@
 #pragma once
+#include "StandardTypes.h"
 #include "Matrix.h"
 
 namespace smpl

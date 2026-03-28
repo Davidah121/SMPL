@@ -1,33 +1,25 @@
 #include "ColorNameConverter.h"
-#include <algorithm>
 #include "StringTools.h"
 
 namespace smpl
 {
     std::string ColorNameConverter::ColorToName(Color c)
     {
-        auto it = std::find_if( colorNamePair.begin(), colorNamePair.end(), [c](auto&& p) { return *((int*)&p.second) == *((int*)&c); });
-        if(it == colorNamePair.end())
-        {
-            return "";
-        }
-
-        return it->first;
+		for(auto& it : colorNamePair)
+		{
+			if(it.second == c)
+				return it.first;
+		}
+		return "";
     }
 
     Color ColorNameConverter::NameToColor(std::string n)
     {
         std::string lowerString = StringTools::toLowercase(n);
-        Color p = {0,0,0,0};
-        try
-        {
-            p = colorNamePair.at(lowerString);
-        }
-        catch(const std::exception& e)
-        {
-            // std::cerr << e.what() << '\n';
-        }
-        return p;
+		auto it = colorNamePair.find(lowerString);
+		if(it != colorNamePair.end())
+			return it->second;
+		return Color{0,0,0,0};
     }
 
     Color ColorNameConverter::NameToColor(std::wstring n)
@@ -35,7 +27,7 @@ namespace smpl
         return ColorNameConverter::NameToColor( StringTools::toCString(n) );
     }
 
-    const std::unordered_map<std::string, Color> ColorNameConverter::colorNamePair = {
+    const SimpleHashMap<std::string, Color> ColorNameConverter::colorNamePair = {
         {"indianred",{205,92,92,255}},
         {"lightcoral",{240,128,128,255}},
         {"salmon",{250,128,114,255}},

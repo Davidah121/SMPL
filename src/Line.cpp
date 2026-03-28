@@ -16,6 +16,7 @@ namespace smpl
 		point2.y = y2;
 
 		toPoint = point2 - point1;
+		length = toPoint.getLength();
 		setMinMax();
 		setSlopeStuff();
 	}
@@ -28,6 +29,7 @@ namespace smpl
 		point2.y = y2;
 
 		toPoint = point2 - point1;
+		length = toPoint.getLength();
 		setMinMax();
 		setSlopeStuff();
 	}
@@ -38,6 +40,7 @@ namespace smpl
 		point2 = p2;
 
 		toPoint = point2 - point1;
+		length = toPoint.getLength();
 		setMinMax();
 		setSlopeStuff();
 	}
@@ -244,7 +247,7 @@ namespace smpl
 		return false;
 	}
 
-	double Line::getPointAsParamtetricValue(double x, double y)
+	double Line::getPointAsParametricValue(double x, double y)
 	{
 		//assuming point x,y is on the line
 		//x = P1x + dirX * t
@@ -286,9 +289,9 @@ namespace smpl
 		return NAN;
 	}
 
-	double Line::getPointAsParamtetricValue(Vec2f p)
+	double Line::getPointAsParametricValue(Vec2f p)
 	{
-		return getPointAsParamtetricValue(p.x, p.y);
+		return getPointAsParametricValue(p.x, p.y);
 	}
 	
 	Line Line::getPerpendicularBisector()
@@ -297,6 +300,18 @@ namespace smpl
 		Vec2f directionHalf = Vec2f(toPoint.y, -toPoint.x)/2;
 
 		return Line(midPoint + directionHalf, midPoint - directionHalf);
+	}
+
+	Vec2f Line::projectOntoLine(Vec2f p)
+	{
+		Vec2f normalizedToPoint = toPoint.normalize();
+		return (((p-point1).dot(normalizedToPoint)) * normalizedToPoint) + point1;
+	}
+	double Line::projectOntoLineParametric(Vec2f p)
+	{
+		Vec2f normalizedToPoint = toPoint.normalize();
+		double projectedScalarLength = (p-point1).dot(normalizedToPoint);
+		return projectedScalarLength / length;
 	}
 
 } //NAMESPACE glib END

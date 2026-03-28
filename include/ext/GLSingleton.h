@@ -1,6 +1,7 @@
 #pragma once
 
 #ifdef USE_OPENGL
+    #include "StandardTypes.h"
     #include "TargetVer.h"
 
     #include <GL/glew.h>

@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS

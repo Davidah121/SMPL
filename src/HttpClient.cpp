@@ -1,16 +1,16 @@
-#include "WebClient.h"
+#include "HttpClient.h"
 #include "StringTools.h"
 #include "System.h"
 
 namespace smpl
 {
-    WebClient::WebClient(std::string location)
+    HttpClient::HttpClient(std::string location)
     {
         setupNewConfig(location);
         internalConnect();
     }
     
-    void WebClient::setupNewConfig(std::string location)
+    void HttpClient::setupNewConfig(std::string location)
     {
         config = {}; 
         config.amountOfConnectionsAllowed = 1;
@@ -28,7 +28,7 @@ namespace smpl
             config.port = StringTools::toInt( webName.substr(locationOfPort+1) );
     }
 
-    void WebClient::internalConnect()
+    void HttpClient::internalConnect()
     {
         bool valid = false;
         if(config.location.substr(0, 4) != "http")
@@ -66,17 +66,17 @@ namespace smpl
         
         if(network != nullptr)
         {
-            network->setOnConnectFunction( [this](size_t id) ->void{
+            network->setOnConnectFunction( [this](std::string ip, size_t id) ->void{
                 if(this->onConnectionFunction != nullptr)
                     this->onConnectionFunction(this);
                 if(shouldResendRequest)
                     resendRequest();
             });
-            network->setOnDisconnectFunction( [this](size_t id) ->void{
+            network->setOnDisconnectFunction( [this](std::string ip, size_t id) ->void{
                 if(this->onDisconnectionFunction != nullptr)
                     this->onDisconnectionFunction(this);
             });
-            network->setOnDataAvailableFunction( [this](size_t id) ->void{
+            network->setOnDataAvailableFunction( [this](std::string ip, size_t id) ->void{
                 this->internalOnDataAvailable();
             });
         }
@@ -87,7 +87,7 @@ namespace smpl
         }
     }
 
-    WebClient::~WebClient()
+    HttpClient::~HttpClient()
     {
         if(network != nullptr)
             delete network;
@@ -96,76 +96,81 @@ namespace smpl
     }
 
     
-    bool WebClient::isValid()
+    bool HttpClient::isValid()
     {
-        return network == nullptr;
+        return network != nullptr;
     }
 
-    void WebClient::setMaxBufferSize(int size)
+    void HttpClient::setMaxBufferSize(int size)
     {
         maxBufferSize = size;
     }
-    void WebClient::setMaxRequestHeaderSize(int size)
+    void HttpClient::setMaxRequestHeaderSize(int size)
     {
         maxHeaderSize = size;
     }
 
-    void WebClient::setUserAgent(std::string str)
+    void HttpClient::setUserAgent(std::string str)
     {
         userAgent = str;
     }
 
-    void WebClient::allowRedirection(bool v)
+    void HttpClient::allowRedirection(bool v)
     {
         canRedirect = v;
     }
     
-    void WebClient::alwaysSendKeepAlive(bool v)
+    void HttpClient::alwaysSendKeepAlive(bool v)
     {
         alwaysKeepAlive = v;
     }
 
-    void WebClient::setRedirectLimit(int v)
+    void HttpClient::setRedirectLimit(int v)
     {
         redirectLimit = v;
     }
 
-    int WebClient::getLastResponseCode()
+    int HttpClient::getLastResponseCode()
     {
         return responseStatusCode;
     }
     
-    std::string WebClient::getHost()
+    std::string HttpClient::getHost()
     {
         return hostStr;
     }
 
-    std::string WebClient::getWebname()
+    std::string HttpClient::getWebname()
     {
         return webName;
     }
+    
+    CookieManager& HttpClient::getCookies()
+    {
+        return currentCookies;
+    }
 
-    bool WebClient::getTimeoutOccurred()
+    bool HttpClient::getTimeoutOccurred()
     {
         return internalTimeout || network->getTimeoutOccurred();
     }
 
-    void WebClient::start()
+    void HttpClient::start()
     {
         started = true;
         network->startNetwork();
     }
-    void WebClient::reconnect()
+    void HttpClient::reconnect()
     {
         network->reconnect();
     }
-    void WebClient::disconnect()
+    void HttpClient::disconnect()
     {
         if(network != nullptr)
             network->disconnect();
     }
     
-    void WebClient::internalOnDataAvailable()
+    void HttpClient::internalOnDataAvailable()
     {
         //try to grab data till there is none left + make sure its a full request
         internalTimeout = false;
@@ -204,30 +209,45 @@ namespace smpl
         //wait otherwise
     }
 
-    bool WebClient::sendRequest(WebRequest& req)
+    bool HttpClient::sendRequest(WebRequest& req)
     {
         if(network != nullptr)
         {
             internalTimeout = false;
             sentRequest = WebRequest(req); //make a copy of the request
-            sentRequest.addKeyValue("User-Agent", userAgent); //assuming it doesn't exist already
-            if(alwaysKeepAlive)
-                sentRequest.addKeyValue("Connection", "keep-alive");
-            sentRequest.addKeyValue("Cache-Control", "no-cache");
-            sentRequest.addKeyValue("Pragma", "no-cache");
-            sentRequest.addKeyValue("Host", hostStr);
+            // sentRequest.addKeyValue("User-Agent", userAgent); //assuming it doesn't exist already
+            // if(alwaysKeepAlive)
+            //     sentRequest.addKeyValue("Connection", "keep-alive");
+            // sentRequest.addKeyValue("Cache-Control", "no-cache");
+            // sentRequest.addKeyValue("Pragma", "no-cache");
+            // sentRequest.addKeyValue("Host", hostStr);
 
             
             int sentAmount = network->sendMessage(sentRequest, 0);
-            if(sentAmount != req.getBytesInRequest())
+            if(sentAmount != sentRequest.getBytesInRequest())
                 return false;
             else
                 return true;
         }
         return false;
     }
+
+    int HttpClient::sendMessage(std::vector<unsigned char>& message)
+    {
+        return network->sendMessage(message);
+    }
+
+    int HttpClient::sendMessage(const std::string& msg)
+    {
+        return network->sendMessage(msg);
+    }
+
+    int HttpClient::sendFile(char* filename, size_t length, size_t offset)
+    {
+        return network->sendFile(filename, length, offset);
+    }
     
-    void WebClient::resendRequest()
+    void HttpClient::resendRequest()
     {
         if(network != nullptr)
         {
@@ -237,25 +257,28 @@ namespace smpl
         shouldResendRequest = false;
     }
 
-    void WebClient::setOnConnectFunc(std::function<void(WebClient*)> func)
+    void HttpClient::setOnConnectFunc(std::function<void(HttpClient*)> func)
     {
         onConnectionFunction = func;
     }
-    void WebClient::setOnDisconnectFunc(std::function<void(WebClient*)> func)
+    void HttpClient::setOnDisconnectFunc(std::function<void(HttpClient*)> func)
     {
         onDisconnectionFunction = func;
     }
-    void WebClient::setOnBufferChangedFunc(std::function<void(WebClient*, WebRequest& response, unsigned char*, size_t)> func)
+    void HttpClient::setOnBufferChangedFunc(std::function<void(HttpClient*, WebRequest& response, unsigned char*, size_t)> func)
     {
         onBufferChanged = func;
     }
     
-    void WebClient::handleReceivedResponse(WebRequest& response)
+    void HttpClient::handleReceivedResponse(WebRequest& response)
     {
         //Success = 200, 201, 206
         //Redirection = 300, 301, 302, 307, 308
         //Client Error = 400, 401, 403, 404, 405, 408, 410, 411, 414, 415, 416, 426, 429
         //Server Error = 500, 501, 502, 503, 504, 505
+
+        //adjust existing cookies
+        currentCookies.addCookies(response.getCookieMap());
         
         std::vector<std::string> splitHeader = StringTools::splitString(response.getHeader(), ' ');
         responseStatusCode = -1;
@@ -348,7 +371,7 @@ namespace smpl
         }
     }
     
-    bool WebClient::chunkedPreProcess(WebRequest& response, unsigned char* bodyBuffer, size_t size)
+    bool HttpClient::chunkedPreProcess(WebRequest& response, unsigned char* bodyBuffer, size_t size)
     {
         //read chunk size
         size_t index = 0;
@@ -401,7 +424,7 @@ namespace smpl
         return false;
     }
 
-    void WebClient::handleRedirect(WebRequest& response)
+    void HttpClient::handleRedirect(WebRequest& response)
     {
         currentRedirectCount++;
         std::string newLocation = response.readKeyValue("Location");
@@ -428,12 +451,12 @@ namespace smpl
         }
     }
     
-    bool WebClient::getShouldRedirect()
+    bool HttpClient::getShouldRedirect()
     {
         return waitingOnRedirect;
     }
 
-    void WebClient::completeRedirect()
+    void HttpClient::completeRedirect()
     {
         if(waitingOnRedirect)
             internalConnect();

@@ -1,6 +1,7 @@
 #pragma once
 #ifdef USE_OPENGL
 
+    #include "StandardTypes.h"
 	#include "SimpleWindow.h"
 
 	#ifdef __unix__

@@ -1,5 +1,9 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
+#include "SimpleHashTable.h"
+#include <cstddef>
+#include <unordered_map>
 
 #ifndef NO_SOCKETS
 
@@ -44,6 +48,7 @@
 #include "WebRequest.h"
 #include "ext/SSLSingleton.h"
 #include "Concurrency.h"
+#include "Streamable.h"
 
 namespace smpl
 {
@@ -125,7 +130,7 @@ namespace smpl
 		 * 		Default is 0.
 		 * @return int 
 		 */
-		int sendMessage(std::vector<unsigned char>& message, size_t id=0);
+		int sendMessage(const std::vector<unsigned char>& message, size_t id=0);
 
 		/**
 		 * @brief Sends a WebRequest. Just used to prevent errors.
@@ -139,7 +144,7 @@ namespace smpl
 		 * 		Default is 0.
 		 * @return int 
 		 */
-		int sendMessage(WebRequest& message, size_t id=0);
+		int sendMessage(const WebRequest& message, size_t id=0);
 
 		/**
 		 * @brief Sends a message to the specified connected IP.
@@ -155,7 +160,7 @@ namespace smpl
 		 * 		Default is 0.
 		 * @return int 
 		 */
-		int sendMessage(unsigned char* message, int size, size_t id=0);
+		int sendMessage(const unsigned char* message, int size, size_t id=0);
 
 		/**
 		 * @brief Sends a message to the specified connected IP.
@@ -171,23 +176,23 @@ namespace smpl
 		 * 		Default is 0.
 		 * @return int
 		 */
-		int sendMessage(char* message, int messageSize, size_t id=0);
+		int sendMessage(const char* message, int messageSize, size_t id=0);
 
 		template<typename T>
         int sendMessage(const T msg, size_t id)
         {
             //send raw bytes
-            return sendMessage((char*)&msg, sizeof(T), id);
+            return sendMessage((const char*)&msg, sizeof(T), id);
         }
 
         template<typename T>
         int sendMessage(const T* msg, int size, size_t id)
         {
             //send raw bytes
-            return sendMessage((char*)msg, sizeof(T)*size, id);
+            return sendMessage((const char*)msg, sizeof(T)*size, id);
         }
 
-		int sendFile(char* filename, size_t length, size_t offset, size_t id=0);
+		int sendFile(const char* filename, size_t length, size_t offset, size_t id=0);
 		
 		/**
 		 * @brief Receives a message from the specified connected IP.
@@ -338,6 +343,17 @@ namespace smpl
 		int dumpReceiveBytes(int bytesToDump, size_t id=0);
 
 		/**
+		 * @brief Reads data into a streamable vector.
+		 *		Returns the amount of data actually read.
+		 *		Useful if you are reading some data where you are unaware of the size and may find yourself not reading enough due to not requesting enough or
+		 *			the sender not sending enough yet.
+		 * 
+		 * @param buffer 
+		 * @param id 
+		 */
+		int readIntoStreamable(StreamableVector<unsigned char>& buffer, size_t id=0);
+
+		/**
 		 * @brief Gets the amount of bytes available for receiving currently for
 		 * 		the specified ID.
 		 * 
@@ -467,30 +483,33 @@ namespace smpl
 		/**
 		 * @brief Sets the On Connection Function.
 		 * 		This is called as soon as a connection is established.
-		 * 		The int passed into the function is the ID of the connection.
+		 * 		The string passed into the function is the IP address of the connection
+		 * 		The size_t passed into the function is the ID of the connection.
 		 * 
 		 * @param func 
 		 */
-		void setOnConnectFunction(std::function<void(size_t)> func);
+		void setOnConnectFunction(std::function<void(std::string, size_t)> func);
 
 		/**
 		 * @brief Sets the On Data Available Function.
 		 * 		This is called whenever data is available to be read and has not been read yet.
+		 * 		The string passed into the function is the IP address of the connection
 		 * 		The int passed into the function is the ID of the connection that sent the message.
 		 * 			Note that this does not mean new data. So, if you got 12 bytes but only read 8, then this will be called again.
 		 * 			Note that this is only called once between reads.
 		 * @param func 
 		 */
-		void setOnDataAvailableFunction(std::function<void(size_t)> func);
+		void setOnDataAvailableFunction(std::function<void(std::string, size_t)> func);
 
 		/**
 		 * @brief Sets the On Disconnection Function.
 		 * 		This is called as soon as a disconnection is found.
+		 * 		The string passed into the function is the IP address of the connection
 		 * 		The int passed into the function is the ID that disconnected.
 		 * 
 		 * @param func 
 		 */
-		void setOnDisconnectFunction(std::function<void(size_t)> func);
+		void setOnDisconnectFunction(std::function<void(std::string, size_t)> func);
 		
 		/**
 		 * @brief Starts up the network allowing it to connect 
@@ -529,6 +548,16 @@ namespace smpl
 		 */
 		bool isSecure();
 
+		/**
+		 * @brief Returs whether setup was successful. This is due to not being able to throw exceptions
+		 * 		on the main thread since these are all multi-threaded 
+		 * 		(and windows is not a fan of passing around sockets or handles to different threads than the one that created it)
+		 * 
+		 * @return true
+		 * @return false
+		 */
+		bool setupSuccessful();
+
 		static const bool TYPE_SERVER = false;
 		static const bool TYPE_CLIENT = true;
 		
@@ -537,8 +566,8 @@ namespace smpl
 		void sslInit();
 		int internalRecv(SOCKET_TYPE sock, char* buff, int len); //negative value == problem. zero == fail but okay. positive value == success.
 		int internalPeek(SOCKET_TYPE sock, char* buff, int len); //negative value == problem. zero == fail but okay. positive value == success.
-		int internalSend(SOCKET_TYPE sock, char* buff, int len); //negative value == problem. zero == fail but okay. positive value == success.
-		int internalSendfile(SOCKET_TYPE sock, char* filename, long offset, size_t length);
+		int internalSend(SOCKET_TYPE sock, const char* buff, int len); //negative value == problem. zero == fail but okay. positive value == success.
+		int internalSendfile(SOCKET_TYPE sock, const char* filename, long offset, size_t length);
 		int internalOnAccept(SOCKET_TYPE sock); //negative value == problem. zero == fail but okay. positive value == success.
 		int internalOnConnect(SOCKET_TYPE sock); //negative value == problem. zero == fail but okay. positive value == success.
 		void internalOnDelete(SOCKET_TYPE sock);
@@ -557,7 +586,7 @@ namespace smpl
 
 
 		void listen();
-		bool acceptConnection();
+		bool acceptConnection(std::string& ipOut);
 		bool connect();
 
 		void setRunning(bool v);
@@ -572,29 +601,23 @@ namespace smpl
 		
 		SocketInfo* getSocketInformation(size_t id);
 
-		std::function<void(size_t)> getConnectFunc();
-		std::function<void(size_t)> getDataAvailableFunc();
-		std::function<void(size_t)> getDisconnectFunc();
+		std::function<void(std::string, size_t)> getConnectFunc();
+		std::function<void(std::string, size_t)> getDataAvailableFunc();
+		std::function<void(std::string, size_t)> getDisconnectFunc();
 		
 
-		std::function<void(size_t)> onConnectFunc;
-		std::function<void(size_t)> onDataAvailableFunc;
-		std::function<void(size_t)> onDisconnectFunc;
-
-		static const bool LOCK_TYPE_IMPORTANT = true;
-		static const bool LOCK_TYPE_NONIMPORTANT = false;
+		std::function<void(std::string, size_t)> onConnectFunc;
+		std::function<void(std::string, size_t)> onDataAvailableFunc;
+		std::function<void(std::string, size_t)> onDisconnectFunc;
 		
-		void obtainLock(bool type); //Important = true | Non Important = false
-		void releaseLock();
-
 		#ifndef __unix__
 			WSADATA wsaData;
 		#endif
 		
-		SOCKET_TYPE temporarySocket;
+		SOCKET_TYPE temporarySocket = INVALID_SOCKET;
 		sockaddr sockAddrInfo;
 		
-		std::map<size_t, SocketInfo*> connections;
+		SimpleHashMap<size_t, SocketInfo> connections;
 
 		void removeSocket(size_t id);
 		void removeSocketInternal(SOCKET_TYPE s);
@@ -612,6 +635,7 @@ namespace smpl
 		size_t runningID = 0;
 		
 		std::thread networkThread;
+		std::atomic_bool hasInit = false;
 
 		bool inDispose = false;
 		bool running = false;
@@ -624,12 +648,11 @@ namespace smpl
 		//Secure Socket stuff (SSL) Must have OpenSSL
 		#ifdef USE_OPENSSL
 		SSL* getSSLFromSocket(SOCKET_TYPE s);
-		std::map<SOCKET_TYPE, SSL*> sslConnectionMapping;
+		SimpleHashMap<SOCKET_TYPE, SSL*> sslConnectionMapping;
 		#endif
 
-		HybridSpinSemaphore networkSemaphore;
-		std::atomic_ullong timeWaitedOnImportantLock = 0;
-		std::atomic_ullong timeWaitedOnNonImportantLock = 0;
+		// ReadWriterLock networkLock;
+		std::shared_mutex networkLock;
 	};
 
 } //NAMESPACE smpl END

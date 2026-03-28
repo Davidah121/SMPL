@@ -1,6 +1,5 @@
 #include "BezierCurve.h"
 #include "MathExt.h"
-#include "StringTools.h"
 
 namespace smpl
 {
@@ -678,8 +677,8 @@ namespace smpl
 				Vec2f intersectionPoint;
 				if(l1.getIntersection(l2, intersectionPoint))
 				{
-					double t1 = l1.getPointAsParamtetricValue(intersectionPoint);
-					double t2 = l2.getPointAsParamtetricValue(intersectionPoint);
+					double t1 = l1.getPointAsParametricValue(intersectionPoint);
+					double t2 = l2.getPointAsParametricValue(intersectionPoint);
 					if(t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1)
 						return true;
 				}

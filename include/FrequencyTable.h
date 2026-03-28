@@ -1,18 +1,10 @@
 #pragma once
-#include<vector>
+#include "StandardTypes.h"
 #include "GeneralExceptions.h"
-#include "Sort.h"
+#include "SimpleHashTable.h"
 
 namespace smpl
 {
-
-	template<typename T>
-	struct freqPair
-	{
-		size_t frequency;
-		T data;
-	};
-
 	template<typename T>
 	class FrequencyTable
 	{
@@ -34,7 +26,8 @@ namespace smpl
 		 * @param value
 		 * 		The value to add to the table.
 		 */
-		void add(T value);
+		void add(const T& value);
+		void add(T&& value);
 
 		/**
 		 * @brief Returns the frequency of the value.
@@ -45,31 +38,17 @@ namespace smpl
 		 * @return size_t
 		 * 		Returns a value greater than 0 if the value was found.
 		 */
-		size_t getFrequency(T value);
+		size_t getFrequency(const T& value) const;
 
-		/**
-		 * @brief Gets the value at the specified location in the list.
-		 * 		Location may change after sorting.
-		 * 		If the location is invalid and USE_EXCEPTIONS is defined, an OutOfBounds Error is thrown.
-		 * 	
-		 * @param location 
-		 * 		The location to check.
-		 * @return T 
-		 * 		The value returned. If the function fails, returns the default constructed value if possible.
-		 */
-		T getValueAtLocation(size_t location);
+		auto begin() const
+		{
+			return values.begin();
+		}
 
-		/**
-		 * @brief Gets the frequency at the specified location in the list.
-		 * 		Location may change after sorting.
-		 * 		If the location is invalid and USE_EXCEPTIONS is defined, an OutOfBounds Error is thrown.
-		 * 	
-		 * @param location 
-		 * 		The location to check.
-		 * @return size_t
-		 * 		If the function fails, returns a frequency value of 0.
-		 */
-		size_t getFrequencyAtLocation(size_t location);
+		auto end() const
+		{
+			return values.end();
+		}
 
 		/**
 		 * @brief Clears the frequency table.
@@ -81,25 +60,17 @@ namespace smpl
 		 * 
 		 * @return size_t 
 		 */
-		size_t sumOfFrequencies();
+		size_t sumOfFrequencies() const;
 
 		/**
 		 * @brief Returns the size of the frequency table.
 		 * 
 		 * @return size_t 
 		 */
-		size_t size();
-
-		/**
-		 * @brief Sorts the frequency table.
-		 * 
-		 * @param insertionSort 
-		 * 		If set to true, Insertion Sort is used. Otherwise, Merge Sort is used.
-		 */
-		void sort(bool insertionSort);
+		size_t size() const;
 
 	private:
-		std::vector<freqPair<T>> values = std::vector<freqPair<T>>();
+		SimpleHashMap<T, size_t> values;
 		bool sorted = false;
 	};
 
@@ -111,125 +82,26 @@ namespace smpl
 	template<typename T>
 	inline FrequencyTable<T>::~FrequencyTable()
 	{
-		clear();
 	}
 
 	template<typename T>
-	inline void FrequencyTable<T>::add(T value)
+	inline void FrequencyTable<T>::add(const T& value)
 	{
-		//check if the value exists
-		bool exists = false;
-		size_t index = -1;
-
-		if(sorted == false)
-		{
-			for (size_t i = 0; i < values.size(); i++)
-			{
-				if (value == values[i].data)
-				{
-					exists = true;
-					index = i;
-					break;
-				}
-			}
-		}
-		else
-		{
-			size_t l = 0;
-			size_t r = values.size()-1;
-
-			while(l < r)
-			{
-				size_t m = (l+r) / 2;
-
-				if(values[m].data == value)
-				{
-					index = m;
-					break;
-				}
-				else if(value < values[m].data)
-					r = m;
-				else
-					l = m;
-			}
-		}
-		
-
-		if (exists == false)
-		{
-			values.push_back({1, value});
-		}
-		else
-		{
-			values[index].frequency++;
-		}
+		values[value]++;
 	}
 
 	template<typename T>
-	inline size_t FrequencyTable<T>::getFrequency(T value)
+	inline void FrequencyTable<T>::add(T&& value)
 	{
-		//Find the frequency if the value exists
-		size_t freq = 0;
-
-		if(sorted == false)
-		{
-			for (size_t i = 0; i < values.size(); i++)
-			{
-				if (value == values[i].data)
-				{
-					freq = values[i].frequency;
-					break;
-				}
-			}
-		}
-		else
-		{
-			size_t l = 0;
-			size_t r = values.size()-1;
-
-			while(l < r)
-			{
-				size_t m = (l+r) / 2;
-
-				if(values[m].data == value)
-					return values[m].frequency;
-				else if(value < values[m].data)
-					r = m;
-				else
-					l = m;
-			}
-		}
-
-		return freq;
+		values[value]++;
 	}
 
 	template<typename T>
-	inline T FrequencyTable<T>::getValueAtLocation(size_t location)
+	inline size_t FrequencyTable<T>::getFrequency(const T& value) const
 	{
-		if (location >= 0 && location < values.size())
-			return values[location].data;
-		else
-		{
-			#ifdef USE_EXCEPTIONS
-			throw OutOfBoundsError();
-			#endif
-		}
-		
-		return T();
-	}
-
-	template<typename T>
-	inline size_t FrequencyTable<T>::getFrequencyAtLocation(size_t location)
-	{
-		if (location >= 0 && location < values.size())
-			return values[location].frequency;
-		else
-		{
-			#ifdef USE_EXCEPTIONS
-			throw OutOfBoundsError();
-			#endif
-		}
-
+		auto it = values.find(value);
+		if(it != values.end())
+			return it->second;
 		return 0;
 	}
 
@@ -240,40 +112,21 @@ namespace smpl
 	}
 
 	template<typename T>
-	inline size_t FrequencyTable<T>::sumOfFrequencies()
+	inline size_t FrequencyTable<T>::sumOfFrequencies() const
 	{
 		size_t sum = 0;
-		for (size_t i = 0; i < values.size(); i++)
+		for(auto& it : values)
 		{
-			sum += values[i].frequency;
+			sum += it.second;
 		}
 
 		return sum;
 	}
 
 	template<typename T>
-	inline size_t FrequencyTable<T>::size()
+	inline size_t FrequencyTable<T>::size() const
 	{
 		return values.size();
-	}
-
-	template<typename T>
-	inline void FrequencyTable<T>::sort(bool insertionSort)
-	{
-		if(insertionSort)
-		{
-			Sort::insertionSort<freqPair<T>>(values.data(), values.size(), [](freqPair<T> a, freqPair<T> b) ->bool{
-				return a.data < b.data;
-			});
-		}
-		else
-		{
-			//MergeSort
-			Sort::mergeSort<freqPair<T>>(values.data(), values.size(), [](freqPair<T> a, freqPair<T> b) ->bool{
-				return a.data < b.data;
-			});
-		}
-		
 	}
 
 } //NAMESPACE smpl END

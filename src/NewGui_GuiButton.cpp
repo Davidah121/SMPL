@@ -190,18 +190,18 @@ namespace smpl
     {
         GuiLayoutList::loadDataFromXML(attribs, manager);
 
-        std::pair<std::string, std::string>* hoverColorInfo = attribs.get("hover-color");
-        std::pair<std::string, std::string>* pressedColorInfo = attribs.get("pressed-color");
+        auto hoverColorInfo = attribs.find("hover-color");
+        auto pressedColorInfo = attribs.find("pressed-color");
 
-        if(hoverColorInfo != nullptr)
+        if(hoverColorInfo != attribs.end())
         {
             hoverColor = loadColor(hoverColorInfo->second);
-            attribs.remove(hoverColorInfo);
+            attribs.erase(hoverColorInfo);
         }
-        if(pressedColorInfo != nullptr)
+        if(pressedColorInfo != attribs.end())
         {
             depressedColor = loadColor(pressedColorInfo->second);
-            attribs.remove(pressedColorInfo);
+            attribs.erase(pressedColorInfo);
         }
     }
 

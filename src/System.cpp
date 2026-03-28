@@ -6,6 +6,7 @@
 #include "SimpleFile.h"
 #include "Input.h"
 #include <signal.h>
+#include <iomanip>
 
 #ifdef __unix__
 	
@@ -137,6 +138,33 @@ namespace smpl
 		
 		return currentStoredDate;
 	}
+	
+	std::string System::timeToDateString(time_t timeValue)
+	{
+        std::stringstream strBuffer;
+        strBuffer << std::put_time(std::localtime(&timeValue), "%a, %d %b %Y %H:%M:%S");
+        return strBuffer.str();
+	}
+	
+	std::string System::timeAsUTC(time_t timeValue)
+    {
+        //get date time as UTC. No ending marker
+        std::stringstream strBuffer;
+        strBuffer << std::put_time(std::gmtime(&timeValue), "%a, %d %b %Y %H:%M:%S");
+        return strBuffer.str();
+    }
+	
+	time_t System::timeFromDateString(std::string format, std::string str)
+	{
+		
+		std::tm t = {0};
+		std::istringstream strBuffer(str);
+		strBuffer >> std::get_time(&t, format.c_str());
+		if(strBuffer.fail())
+			return 0;
+		
+		return std::mktime(&t);
+	}
 
 	void System::sleep(int millis, int micros, bool accurate)
 	{
@@ -211,21 +239,29 @@ namespace smpl
 	}
 	
 	#ifdef _WIN32
-	int __stdcall System::signalHandler(unsigned long ctrlType)
+	int __stdcall win32SignalHandler(unsigned long ctrlType)
 	{
 		if(ctrlType == CTRL_C_EVENT)
 		{
-			if(System::interruptFunction != nullptr)
-				System::interruptFunction();
+			if(System::getInterruptFunction() != nullptr)
+				(System::getInterruptFunction())();
+			Sleep(10000);
 			return TRUE;
 		}
 		return FALSE;
 	}
 
+	std::function<void()> System::getInterruptFunction()
+	{
+		return interruptFunction;
+	}
+
 	void System::mapInteruptSignal(void(*func)())
 	{
 		System::interruptFunction = func;
-		SetConsoleCtrlHandler(signalHandler, TRUE);
+		int err = SetConsoleCtrlHandler(win32SignalHandler, TRUE);
+		if(err == 0)
+			printf("%lu\n", GetLastError());
 	}
 	#endif
 

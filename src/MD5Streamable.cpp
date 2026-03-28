@@ -34,7 +34,7 @@ namespace smpl
 	}
 	unsigned int MD5_InternalG(unsigned int b, unsigned int c, unsigned int d)
 	{
-		return (b & d) | (c & (~d));
+		return (b & d) | ((~d) & c);
 	}
 	unsigned int MD5_InternalH(unsigned int b, unsigned int c, unsigned int d)
 	{
@@ -82,11 +82,12 @@ namespace smpl
 		{
 			leftoverBuffer.push_back(0x00);
 		}
+		size_t sizeLocation = leftoverBuffer.size();
 		for(int i=0; i<8; i++)
 			leftoverBuffer.push_back(0);
 		
 		//add size
-		((size_t*)leftoverBuffer.data())[7] = totalSizeAccumulated*8;
+		*((size_t*)&leftoverBuffer[sizeLocation]) = totalSizeAccumulated*8;
 		
 		computeChunk((unsigned int*)leftoverBuffer.data());
 		if(leftoverBuffer.size() > 64)
@@ -100,6 +101,7 @@ namespace smpl
 		unsigned int B = digest[1];
 		unsigned int C = digest[2];
 		unsigned int D = digest[3];
+		
 		for(int i=0; i<64; i++)
 		{
 			unsigned int fVal, gVal;

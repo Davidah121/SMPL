@@ -101,7 +101,7 @@ namespace smpl
         
         XmlNode* rootNode = rootNodeList.front();
         auto temp = rootNode->getAttribute("horiz-adv-x");
-        if(temp != nullptr)
+        if(temp != rootNode->getRawAttributes().end())
             baseHorizontalAdvance = (int)MathExt::ceil( StringTools::toDouble(temp->second) );
         
         int width = 0;
@@ -136,7 +136,7 @@ namespace smpl
                 fc.unicodeValue = -1;   //assuming missing-glyph
 
                 temp = fontChild->getAttribute("unicode");
-                if(temp != nullptr)
+        		if(temp != fontChild->getRawAttributes().end())
                 {
                     auto stuff = StringTools::utf8ToIntString(temp->second);
                     if(stuff.size() > 0)
@@ -144,7 +144,7 @@ namespace smpl
                 }
 
                 temp = fontChild->getAttribute("horiz-adv-x");
-                if(temp != nullptr)
+        		if(temp != fontChild->getRawAttributes().end())
                 {
                     fc.horizAdv = (int)MathExt::ceil( stod(temp->second) );
                 }
@@ -171,7 +171,7 @@ namespace smpl
             else if(StringTools::equalsIgnoreCase<char>(fontChild->getTitle(), "font-face"))
             {
                 temp = fontChild->getAttribute("bbox");
-                if(temp != nullptr)
+        		if(temp != fontChild->getRawAttributes().end())
                 {
                     //Note that minX and minY do not contribute to the viewBox. Just the transform
                     auto lazyCode = StringTools::splitStringMultipleDeliminators(temp->second, " ,");
@@ -190,7 +190,7 @@ namespace smpl
                 }
 
                 temp = fontChild->getAttribute("ascent");
-                if(temp != nullptr)
+        		if(temp != fontChild->getRawAttributes().end())
                 {
                     transformValue = "translate(0," + temp->second + ") scale(1,-1)";
                 }

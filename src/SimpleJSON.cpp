@@ -7,10 +7,18 @@ namespace smpl
 
     #pragma region JNODE
 
-    JNode::JNode(int type)
+    JNode::JNode(int type, std::string name)
     {
+        this->name = name;
         this->type = type;
     }
+    
+    JNode::JNode(const JNode& other)
+    {
+        this->name = other.name;
+        this->type = other.type;
+    }
+
     JNode::~JNode()
     {
         
@@ -23,19 +31,24 @@ namespace smpl
     {
         return name;
     }
-    void JNode::setName(std::string n)
+    JNode* JNode::getParent()
     {
-        name = n;
+        return parent;
+    }
+    
+    void JNode::setParent(JNode* p)
+    {
+        parent = p;
     }
 
-    std::vector<JNode*> JNode::getNodesPattern(std::vector<std::string> s, int offset)
+    std::vector<JNode*> JNode::getNodesPattern(const std::vector<std::string>& s)
     {
         std::vector<JNode*> nodes;
-        getNodesPatternInternal(s, offset, nodes);
+        getNodesPatternInternal(s, 0, nodes);
         return nodes;
     }
 
-    void JNode::getNodesPatternInternal(std::vector<std::string> s, int offset, std::vector<JNode*>& results)
+    void JNode::getNodesPatternInternal(const std::vector<std::string>& s, int offset, std::vector<JNode*>& results)
     {
         if(offset == s.size())
         {
@@ -43,22 +56,12 @@ namespace smpl
         }
         else if(offset < s.size())
         {
-            if(type == SimpleJSON::TYPE_OBJECT)
+            if(type != JPair::TYPE)
             {
-                JObject* obj = (JObject*)this;
-                auto pairIt = obj->nameToIndexMap.equal_range(s[offset]);
+                JNodeWithChildren* obj = (JNodeWithChildren*)this;
+				auto pairIt = obj->nameToIndexMap.find(s[offset]);
 
-                for(auto p=pairIt.first; p!=pairIt.second; p++)
-                {
-                    obj->vars[p->second]->getNodesPatternInternal(s, offset+1, results);
-                }
-            }
-            else if(type == SimpleJSON::TYPE_ARRAY)
-            {
-                JArray* obj = (JArray*)this;
-                auto pairIt = obj->nameToIndexMap.equal_range(s[offset]);
-
-                for(auto p=pairIt.first; p!=pairIt.second; p++)
+                for(auto p=pairIt; p!=obj->nameToIndexMap.end(); ++p)
                 {
                     obj->vars[p->second]->getNodesPatternInternal(s, offset+1, results);
                 }
@@ -66,13 +69,105 @@ namespace smpl
         }
     }
 
+
+    JNode& JNode::operator[](int location)
+    {
+        if(type != JPair::TYPE)
+        {
+			if(location < ((JNodeWithChildren*)this)->vars.size())
+            	return *((JNodeWithChildren*)this)->vars[location];
+            throw std::out_of_range("Index: " + std::to_string(location) + " is out of range.");
+        }
+        throw std::runtime_error("JNode is a Pair and does not have children.");
+    }
+    JNode& JNode::operator[](std::string key)
+    {
+        if(type != JPair::TYPE)
+        {
+            JNodeWithChildren* castedThis = ((JNodeWithChildren*)this);
+            auto pairIt = castedThis->nameToIndexMap.find(key);
+            if(pairIt != castedThis->nameToIndexMap.end())
+                return *(castedThis->vars[pairIt->second]);
+            throw std::runtime_error("Failed to find node with key: " + key);
+        }
+        throw std::runtime_error("JNode is a Pair and does not have children.");
+    }
+    size_t JNode::size()
+    {
+        if(type != JPair::TYPE)
+            return ((JNodeWithChildren*)this)->vars.size();
+        return 0;
+    }
+
     #pragma endregion
+
+    
+    JNodeWithChildren::JNodeWithChildren(int type, std::string name) : JNode(type, name)
+    {
+
+    }
+    
+    JNodeWithChildren::JNodeWithChildren(const JNodeWithChildren& other) : JNode(other)
+    {
+        nameToIndexMap = other.nameToIndexMap;
+        for(JNode* node : other.vars)
+        {
+            if(node != nullptr)
+            {
+                JNode* newNode = nullptr;
+                if(node->getType() == JPair::TYPE)
+                    newNode = new JPair(*(JPair*)node);
+                else if(node->getType() == JArray::TYPE)
+                    newNode = new JArray(*(JArray*)node);
+                else if(node->getType() == JObject::TYPE)
+                    newNode = new JObject(*(JObject*)node);
+                if(newNode != nullptr)
+                {
+                    vars.push_back(newNode);
+                    newNode->setParent(this);
+                }
+            }
+        }
+    }
+    JNodeWithChildren::~JNodeWithChildren()
+    {
+        for(int i=0; i<vars.size(); i++)
+        {
+            if(vars[i]!=nullptr)
+                delete vars[i];
+        }
+    }
+    
+    void JNodeWithChildren::addNode(JNode* o)
+    {
+        if(o != nullptr)
+        {
+            std::pair<std::string, size_t> p;
+            p.first = o->getName();
+            p.second = vars.size();
+            nameToIndexMap.insert( p );
+
+            //always add new entry. It is a multimap so all can be referenced/obtained.
+            vars.push_back(o);
+            o->setParent(this);
+        }
+    }
+
+    std::vector<JNode*>& JNodeWithChildren::getNodes()
+    {
+        return vars;
+    }
 
     #pragma region JPAIR
 
-    JPair::JPair() : JNode(1)
+    JPair::JPair(std::string name, std::string value) : JNode(1, name)
     {
-
+        this->value = value;
+        replaceEscapeCodes();
+    }
+    JPair::JPair(const JPair& other) : JNode(other)
+    {
+        value = other.value;
     }
     JPair::~JPair()
     {
@@ -86,19 +181,96 @@ namespace smpl
     void JPair::setValue(std::string n)
     {
         value = n;
+        replaceEscapeCodes();
     }
-    std::string JPair::getString(bool last)
+
+    
+    std::string JPair::escapeInvalidChars()
+    {
+        //all values under 32 (space) are invalid in the value part when converting to a valid JSON string. escape those values (note that escaping linebreaks and tabs should be \n and \t respectively)
+        std::string outputString = "";
+        for(char& c : value)
+        {
+            if(c < 32)
+            {
+                //escape these
+                if(c == '\n')
+                    outputString += "\\n";
+                else if(c == '\t')
+                    outputString += "\\t";
+                else if(c == '\r')
+                    outputString += "\\r";
+                else
+                    outputString += "\\u" + StringTools::toHexString((short)c);
+            }
+            else
+                outputString += c;
+        }
+        return outputString;
+    }
+
+    void JPair::replaceEscapeCodes()
+    {
+        //For the purposes of C++ processing, it is unnecessary to keep the escaped characters so replace them with valid utf-8 in the string
+        std::string outputString = "";
+        size_t i=0;
+
+        while(i<value.size())
+        {
+            if(value[i] == '\\')
+            {
+                if(i+1 < value.size())
+                {
+                    if(value[i+1] == 'n')
+                    {
+                        outputString += '\n';
+                        i++;
+                    }
+                    else if(value[i+1] == 't')
+                    {
+                        outputString += '\t';
+                        i++;
+                    }
+                    else if(value[i+1] == 'r')
+                    {
+                        outputString += '\r';
+                        i++;
+                    }
+                    else if(value[i+1] == 'u')
+                    {
+                        if(i+5 < value.size())
+                        {
+                            size_t unicodeValue = StringTools::fromHexString(value.substr(i+2, 4));
+                            std::vector<unsigned char> utfValues = StringTools::toUTF8(unicodeValue);
+                            for(char c : utfValues)
+                                outputString += c;
+                            i += 5;
+                        }
+                    }
+                }
+            }
+            else
+                outputString += value[i];
+            i++;
+        }
+
+        value = outputString;
+    }
+    
+    std::string JPair::getString(bool last, bool prettyPrinting, std::string extraTabsString)
     {
         std::string result;
+        if(prettyPrinting)
+            result = extraTabsString;
+
         if(getName() != "")
-        {
-            result += getName() + ": ";
-        }
-        result += value;
-        if(last)
-            result += "\n";
-        else
-            result += ", \n";
+            result += "\"" + getName() + "\": ";
+        result += "\"" + escapeInvalidChars() + "\"";
+
+        if(!last)
+            result += ", ";
+        if(prettyPrinting)
+            result += '\n';
         return result;
     }
 
@@ -106,70 +278,49 @@ namespace smpl
 
     #pragma region JOBJECT
 
-    JObject::JObject() : JNode(2)
+    JObject::JObject(std::string name) : JNodeWithChildren(2, name)
     {
 
     }
+    
+    JObject::JObject(const JObject& other) : JNodeWithChildren(other)
+    {
+    }
+
     JObject::~JObject()
     {
-        for(int i=0; i<vars.size(); i++)
-        {
-            if(vars[i]!=nullptr)
-                delete vars[i];
-        }
     }
 
-    void JObject::addNode(JNode* o)
-    {
-        if(o != nullptr)
-        {
-            std::pair<std::string, size_t> p;
-            p.first = o->getName();
-            p.second = vars.size();
-            nameToIndexMap.insert( p );
-
-            //always add new entry. It is a multimap so all can be referenced/obtained.
-            vars.push_back(o);
-        }
-    }
-
-    std::vector<JNode*>& JObject::getNodes()
-    {
-        return vars;
-    }
-    std::string JObject::getString(bool last)
+    std::string JObject::getString(bool last, bool prettyPrinting, std::string extraTabsString)
     {
         std::string result;
+        std::string nextExtraTabStr = "";
+        if(prettyPrinting)
+            nextExtraTabStr = extraTabsString + '\t';
+
+        if(prettyPrinting)
+            result = extraTabsString;
+        
         if(getName() != "")
-        {
-            result += getName() + ": ";
-        }
-        result += "{\n";
+            result += "\"" + getName() + "\": ";
+        result += '{';
+        
+        if(prettyPrinting)
+            result += '\n';
         for(int i=0; i<vars.size(); i++)
         {
             JNode* o = vars[i];
             bool lastOne = (i == vars.size()-1);
-
-            if(o->getType() == SimpleJSON::TYPE_PAIR)
-            {
-                JPair* pair = (JPair*)o;
-                result += pair->getString(lastOne);
-            }
-            else if(o->getType() == SimpleJSON::TYPE_OBJECT)
-            {
-                JObject* object = (JObject*)o;
-                result += object->getString(lastOne);
-            }
-            else if(o->getType() == SimpleJSON::TYPE_ARRAY)
-            {
-                JArray* arr = (JArray*)o;
-                result += arr->getString(lastOne);
-            }
+            result += o->getString(lastOne, prettyPrinting, nextExtraTabStr);
         }
-        if(last)
-            result += "}\n";
-        else
-            result += "},\n";
+        if(prettyPrinting)
+            result += extraTabsString;
+        result += '}';
+            
+        if(!last)
+            result += ',';
+        if(prettyPrinting)
+            result += '\n';
         return result;
     }
 
@@ -177,72 +328,49 @@ namespace smpl
 
     #pragma region JARRAY
 
-    JArray::JArray() : JNode(3)
+    JArray::JArray(std::string name) : JNodeWithChildren(3, name)
     {
 
     }
+    
+    JArray::JArray(const JArray& other) : JNodeWithChildren(other)
+    {
+    }
+
     JArray::~JArray()
     {
-        for(int i=0; i<vars.size(); i++)
-        {
-            if(vars[i]!=nullptr)
-                delete vars[i];
-        }
     }
 
-    void JArray::addNode(JNode* o)
-    {
-        if(o != nullptr)
-        {
-            std::pair<std::string, size_t> p;
-            p.first = o->getName();
-            p.second = vars.size();
-            nameToIndexMap.insert( p );
-
-            //always add new entry. It is a multimap so all can be referenced/obtained.
-            vars.push_back(o);
-        }
-    }
-
-    std::vector<JNode*>& JArray::getNodes()
-    {
-        return vars;
-    }
-
-    std::string JArray::getString(bool last)
+    std::string JArray::getString(bool last, bool prettyPrinting, std::string extraTabsString)
     {
         std::string result;
+        std::string nextExtraTabStr = "";
+        if(prettyPrinting)
+            nextExtraTabStr = extraTabsString + '\t';
+
+        if(prettyPrinting)
+            result = extraTabsString;
+        
         if(getName() != "")
-        {
-            result += getName() + ": ";
-        }
-        result += "[\n";
+            result += "\"" + getName() + "\": ";
+        result += '[';
+        
+        if(prettyPrinting)
+            result += '\n';
         for(int i=0; i<vars.size(); i++)
         {
             JNode* o = vars[i];
             bool lastOne = (i == vars.size()-1);
-
-            if(o->getType() == SimpleJSON::TYPE_PAIR)
-            {
-                JPair* pair = (JPair*)o;
-                result += pair->getString(lastOne);
-            }
-            else if(o->getType() == SimpleJSON::TYPE_OBJECT)
-            {
-                JObject* object = (JObject*)o;
-                result += object->getString(lastOne);
-            }
-            else if(o->getType() == SimpleJSON::TYPE_ARRAY)
-            {
-                JArray* arr = (JArray*)o;
-                result += arr->getString(lastOne);
-            }
+            result += o->getString(lastOne, prettyPrinting, nextExtraTabStr);
         }
-
-        if(last)
-            result += "]\n";
-        else
-            result += "],\n";
+        if(prettyPrinting)
+            result += extraTabsString;
+        result += ']';
+            
+        if(!last)
+            result += ',';
+        if(prettyPrinting)
+            result += '\n';
         return result;
     }
 
@@ -252,8 +380,73 @@ namespace smpl
 
     SimpleJSON::SimpleJSON()
     {
-
+        rootNode = new JObject();
     }
+    
+    SimpleJSON::SimpleJSON(Streamable<unsigned char>* data)
+    {
+        if(!load(data))
+        {
+            throw std::runtime_error("Failed to load JSON");
+        }
+    }
+    SimpleJSON::SimpleJSON(const std::string& filename)
+    {
+        if(!load(filename))
+        {
+            throw std::runtime_error("Failed to load JSON");
+        }
+    }
+    SimpleJSON::SimpleJSON(unsigned char* data, size_t size)
+    {
+        if(!load(data, size))
+        {
+            throw std::runtime_error("Failed to load JSON");
+        }
+    }
+    
+    SimpleJSON::SimpleJSON(const SimpleJSON& other)
+    {
+        if(other.rootNode != nullptr)
+        {
+            if(other.rootNode->getType() == JObject::TYPE)
+                rootNode = new JObject(*(JObject*)other.rootNode);
+            else if(other.rootNode->getType() == JArray::TYPE)
+                rootNode = new JArray(*(JArray*)other.rootNode);
+            else
+                throw JSONInvalidRootElement();
+        }
+        else
+            throw JSONInvalidRootElement();
+    }
+
+    void SimpleJSON::operator=(const SimpleJSON& other)
+    {
+        if(other.rootNode != nullptr)
+        {
+            if(other.rootNode->getType() == JObject::TYPE)
+                rootNode = new JObject(*(JObject*)other.rootNode);
+            else if(other.rootNode->getType() == JArray::TYPE)
+                rootNode = new JArray(*(JArray*)other.rootNode);
+            else
+                throw JSONInvalidRootElement();
+        }
+        else
+            throw JSONInvalidRootElement();
+    }
+    
+    SimpleJSON::SimpleJSON(SimpleJSON&& other)
+    {
+        rootNode = other.rootNode;
+        other.rootNode = nullptr;
+    }
+
+    void SimpleJSON::operator=(SimpleJSON&& other)
+    {
+        rootNode = other.rootNode;
+        other.rootNode = nullptr;
+    }
+
     SimpleJSON::~SimpleJSON()
     {
         if(rootNode != nullptr)
@@ -261,110 +454,100 @@ namespace smpl
         rootNode = nullptr;
     }
 
-    std::string SimpleJSON::getString()
+    std::string SimpleJSON::getString(bool prettyPrinting)
     {
-        if(rootNode->getType() == SimpleJSON::TYPE_ARRAY)
-            return ((JArray*)rootNode)->getString(true);
-        else if(rootNode->getType() == SimpleJSON::TYPE_OBJECT)
-            return ((JObject*)rootNode)->getString(true);
-        else
-            return "";
+        return rootNode->getString(true, prettyPrinting, "");
+    }
+
+    bool SimpleJSON::load(Streamable<unsigned char>* data)
+    {
+        datasource = data;
+        bool isValid = datasource->isValid();
+        if(isValid)
+        {
+            initLoad();
+        }
+        datasource = nullptr;
+        return isValid;
     }
 
     bool SimpleJSON::load(std::string filename)
     {
-        std::fstream file = std::fstream(filename, std::fstream::in | std::fstream::binary);
-        if(file.is_open())
+        datasource = new StreamableFile(filename, SimpleFile::READ);
+        bool isValid = datasource->isValid();
+        if(isValid)
         {
-            setDataSource(&file);
             initLoad();
-            file.close();
         }
-        else
-            return false;
-        return true;
+        delete datasource;
+        return isValid;
     }
 
     bool SimpleJSON::load(unsigned char* data, size_t size)
     {
-        if(data != nullptr && size > 0)
+        datasource = new StreamableArray<unsigned char>(data, size, false);
+        bool isValid = datasource->isValid();
+
+        if(isValid)
         {
-            setDataSource(data, size);
             initLoad();
         }
-        else
-            return false;
-        return true;
+        delete datasource;
+        return isValid;
     }
 
     JNode* SimpleJSON::getRootNode()
     {
         return rootNode;
     }
-
-    std::vector<JNode*> SimpleJSON::getNodesPattern(std::vector<std::string> s, int offset)
+    
+    JNode& SimpleJSON::operator[](int location)
     {
         if(rootNode != nullptr)
-            return rootNode->getNodesPattern(s, offset);
+            return rootNode->operator[](location);
+        throw std::runtime_error("JSON Root Node is a nullptr.");
+    }
+    JNode& SimpleJSON::operator[](std::string key)
+    {
+        if(rootNode != nullptr)
+            return rootNode->operator[](key);
+        throw std::runtime_error("JSON Root Node is a nullptr.");
+    }
+    size_t SimpleJSON::size()
+    {
+        return rootNode->size();
+    }
+
+    std::vector<JNode*> SimpleJSON::getNodesPattern(const std::vector<std::string>& s)
+    {
+        if(rootNode != nullptr)
+            return rootNode->getNodesPattern(s);
         
         return {};
     }
 
     bool SimpleJSON::getNextCharacter(char& c)
     {
-        if(otherDataSource != nullptr)
+        if(readIndex >= readSize)
         {
-            if(otherDataSourceIndex < otherDataSourceSize)
-            {
-                c = otherDataSource[otherDataSourceIndex];
-                otherDataSourceIndex++;
-            }
-            else
+            readSize = datasource->read(readBuffer, 4096);
+            readIndex = 0;
+            if(readSize == 0)
             {
                 continueProcessing = false;
                 return false;
             }
         }
-        else if(fileDataSource != nullptr)
+
+        if(readIndex < readSize)
         {
-            c = fileDataSource->get();
-            if(fileDataSource->eof())
-            {
-                continueProcessing = false;
-                return false;
-            }
+            c = readBuffer[readIndex];
+            readIndex++;
+            return true;
         }
-        else
-        {
-            continueProcessing = false;
-            return false;
-        }
-        
-        return true;
-    }
 
-    void SimpleJSON::setDataSource(unsigned char* data, size_t size)
-    {
-        clearDataSource();
-        otherDataSource = data;
-        otherDataSourceSize = size;
-        continueProcessing = true;
-    }
-
-    void SimpleJSON::setDataSource(std::fstream* file)
-    {
-        clearDataSource();
-        fileDataSource = file;
-        continueProcessing = true;
-    }
-
-    void SimpleJSON::clearDataSource()
-    {
-        otherDataSource = nullptr;
-        fileDataSource = nullptr;
-        otherDataSourceSize = 0;
-        otherDataSourceIndex = 0;
         continueProcessing = false;
+        return false;
     }
 
     void SimpleJSON::initLoad()
@@ -374,6 +557,11 @@ namespace smpl
         bool inP = false;
         bool separatorHit = false;
         char lastChar = 0;
+
+        readBuffer = new unsigned char[4096];
+        readSize = 0;
+        readIndex = 0;
+
         while(continueProcessing)
         {
             char c;
@@ -416,20 +604,21 @@ namespace smpl
             }
             lastChar = c;
         }
+
+        delete readBuffer;
+        readBuffer = nullptr;
     }
 
     JObject* SimpleJSON::loadJObject(std::string name)
     {
-        JObject* newObject = new JObject();
-        newObject->setName(name);
+        JObject* newObject = new JObject(name);
         loadJObjectOrJArray(newObject);
         return newObject;
     }
 
     JArray* SimpleJSON::loadJArray(std::string name)
     {
-        JArray* newArray = new JArray();
-        newArray->setName(name);
+        JArray* newArray = new JArray(name);
         loadJObjectOrJArray(newArray);
         return newArray;
     }
@@ -439,7 +628,7 @@ namespace smpl
     {
         if(node == nullptr)
             return;
-        if(node->getType() != SimpleJSON::TYPE_ARRAY && node->getType() != SimpleJSON::TYPE_OBJECT)
+        if(node->getType() != JArray::TYPE && node->getType() != JObject::TYPE)
             return;
         
         std::string temp;
@@ -447,6 +636,7 @@ namespace smpl
         bool inP = false;
         bool separatorHit = false;
         char lastChar = 0;
+        bool validEnd = false;
         while(continueProcessing)
         {
             char c;
@@ -471,10 +661,8 @@ namespace smpl
                     if(!temp.empty())
                     {
                         //separator between pairs or items
-                        JPair* pair = new JPair();
-                        pair->setName(temp);
-                        pair->setValue(temp2);
-                        if(node->getType() == SimpleJSON::TYPE_ARRAY)
+                        JPair* pair = new JPair(temp, temp2);
+                        if(node->getType() == JArray::TYPE)
                             ((JArray*)node)->addNode(pair);
                         else
                             ((JObject*)node)->addNode(pair);
@@ -487,7 +675,7 @@ namespace smpl
                 else if(c == '{')
                 {
                     //begin of object
-                    if(node->getType() == SimpleJSON::TYPE_ARRAY)
+                    if(node->getType() == JArray::TYPE)
                         ((JArray*)node)->addNode(loadJObject(temp));
                     else
                         ((JObject*)node)->addNode(loadJObject(temp));
@@ -498,7 +686,7 @@ namespace smpl
                 else if(c == '[')
                 {
                     //begin of array
-                    if(node->getType() == SimpleJSON::TYPE_ARRAY)
+                    if(node->getType() == JArray::TYPE)
                         ((JArray*)node)->addNode(loadJArray(temp));
                     else
                         ((JObject*)node)->addNode(loadJArray(temp));
@@ -506,14 +694,16 @@ namespace smpl
                     temp = "";
                     temp2 = "";
                 }
-                else if(c == ']' && node->getType() == SimpleJSON::TYPE_ARRAY)
+                else if(c == ']' && node->getType() == JArray::TYPE)
                 {
                     //end of array
+                    validEnd = true;
                     break;
                 }
-                else if(c == '}' && node->getType() == SimpleJSON::TYPE_OBJECT)
+                else if(c == '}' && node->getType() == JObject::TYPE)
                 {
                     //end of object
+                    validEnd = true;
                     break;
                 }
                 else
@@ -537,13 +727,16 @@ namespace smpl
             lastChar = c;
         }
 
+        if(validEnd != true)
+        {
+            throw JSONParsingError();
+        }
+
         if(!temp.empty())
         {
             //separator between pairs or items
-            JPair* pair = new JPair();
-            pair->setName(temp);
-            pair->setValue(temp2);
-            if(node->getType() == SimpleJSON::TYPE_ARRAY)
+            JPair* pair = new JPair(temp, temp2);
+            if(node->getType() == JArray::TYPE)
                 ((JArray*)node)->addNode(pair);
             else
                 ((JObject*)node)->addNode(pair);

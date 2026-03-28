@@ -2,6 +2,7 @@
 
 #ifdef USE_OPENGL
 
+    #include "StandardTypes.h"
     #include "ext/GLTexture.h"
 
     namespace smpl

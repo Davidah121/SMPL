@@ -1,0 +1,20 @@
+-I./include
+-IC:/Libraries/glew-2.1.0/include
+-IC:/Program Files/OpenSSL-Win64/include
+-IC:/Libraries/_MyLibraries/SEML
+-IC:/Libraries/_MyLibraries/SimpleSerialization
+-IC:/Libraries/catch2
+-xc++
+-std=c++17
+-O3
+-mavx2
+-mf16c
+-DOPTI=2
+-DUSE_OPENSSL
+-DUSE_PREPROCESSOR_TRICKS=1
+-fPIC
+-DDLL_EXPORT
+-c
+-fopenmp
+-pipe
+-Wno-unused-command-line-argument

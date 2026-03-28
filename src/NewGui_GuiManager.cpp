@@ -6,7 +6,7 @@
 namespace smpl
 {
     #pragma region GUI_MANAGER
-	std::unordered_map<std::string, std::function<SmartMemory<GuiItem>(SimpleHashMap<std::string, std::string>&, SmartMemory<GuiManager>)> > GuiManager::elementLoadingFunctions;
+	SimpleHashMap<std::string, std::function<SmartMemory<GuiItem>(SimpleHashMap<std::string, std::string>&, SmartMemory<GuiManager>)> > GuiManager::elementLoadingFunctions;
 	
 	void GuiManager::initDefaultLoadFunctions()
 	{
@@ -44,9 +44,9 @@ namespace smpl
 		if(StringTools::equalsIgnoreCase<char>(node->getTitle(), "SpriteResource"))
 		{
 			//separate processing
-			std::pair<std::string, std::string>* idPair = node->getAttribute("id");
-			std::pair<std::string, std::string>* srcPair = node->getAttribute("src");
-			if(idPair != nullptr && srcPair != nullptr )
+			auto idPair = node->getAttribute("id");
+			auto srcPair = node->getAttribute("src");
+			if(idPair != node->getRawAttributes().end() && srcPair != node->getRawAttributes().end())
 			{
 				//can probably load stuff
 				if(!idPair->second.empty() && !srcPair->second.empty())
@@ -62,9 +62,9 @@ namespace smpl
 		else if(StringTools::equalsIgnoreCase<char>(node->getTitle(), "FontResource"))
 		{
 			//separate processing
-			std::pair<std::string, std::string>* idPair = node->getAttribute("id");
-			std::pair<std::string, std::string>* srcPair = node->getAttribute("src");
-			if(idPair != nullptr && srcPair != nullptr )
+			auto idPair = node->getAttribute("id");
+			auto srcPair = node->getAttribute("src");
+			if(idPair != node->getRawAttributes().end() && srcPair != node->getRawAttributes().end())
 			{
 				//can probably load stuff
 				if(!idPair->second.empty() && !srcPair->second.empty())
@@ -155,7 +155,7 @@ namespace smpl
 			auto wAttrib = parentNode->getAttribute("width");
 			auto hAttrib = parentNode->getAttribute("height");
 
-			if(wAttrib != nullptr && hAttrib != nullptr)
+			if(wAttrib != parentNode->getRawAttributes().end() && hAttrib != parentNode->getRawAttributes().end())
 			{
 				int w = StringTools::toInt(wAttrib->second);
 				int h = StringTools::toInt(hAttrib->second);
@@ -277,7 +277,19 @@ namespace smpl
 			rootLayout.removeChild(k);
 
 			//also remove from name list
-			objectsByName.remove(k.getRawPointer()->nameID, k);
+			
+			//need to remove that item from the list and then re-insert it with the desired ID
+			auto it = objectsByName.find(k.getRawPointer()->nameID);
+			while(it != objectsByName.end())
+			{
+				if(it->second == k)
+				{
+					objectsByName.erase(it);
+					break;
+				}
+				++it;
+			}
+			
 			if(k.getDeleteRights())
 			{
 				//dispose of this object.
@@ -447,9 +459,15 @@ namespace smpl
 		return rootLayout;
 	}
 	
-	std::vector< std::pair<std::string, SmartMemory<GuiItem>>* > GuiManager::getItemsByName(std::string name)
+	SimpleHashMultiMap<std::string, SmartMemory<GuiItem>>::Iterator GuiManager::getItemsByName(std::string name)
 	{
-		return objectsByName.getAll(name);
+		return objectsByName.find(name);
+	}
+
+	
+	SimpleHashMultiMap<std::string, SmartMemory<GuiItem>>& GuiManager::getRawItemNameMap()
+	{
+		return objectsByName;
 	}
 
 	SurfaceInterface* GuiManager::getSurface()
@@ -540,9 +558,26 @@ namespace smpl
 		return graphicsInterfaceMode;
 	}
 
-	void GuiManager::setID(SmartMemory<GuiItem> k, std::string s)
+	void GuiManager::setID(SmartMemory<GuiItem> k, const std::string& s)
 	{
-		objectsByName.add(s, k);
+		if(k->getNameID().empty())
+			objectsByName.insert({s, k});
+		else
+		{
+			//need to remove that item from the list and then re-insert it with the desired ID
+			auto it = objectsByName.find(s);
+			while(it != objectsByName.end())
+			{
+				if(it->second == k)
+				{
+					objectsByName.erase(it);
+					objectsByName.insert({s, k});
+					break;
+				}
+				++it;
+			}
+		}
+		k->nameID = s;
 	}
 
 	void GuiManager::addToDisposeList(SmartMemory<GuiItem> k)

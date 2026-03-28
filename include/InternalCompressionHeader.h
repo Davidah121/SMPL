@@ -3,6 +3,7 @@
 //ONLY FOR INTERNAL USE WITH COMPRESSION FILES
 
 #include "Compression.h"
+#include "StandardTypes.h"
 #include <iostream>
 #include "LinkedList.h"
 #include "BinarySet.h"
@@ -13,7 +14,7 @@
 #include "Concurrency.h"
 #include "SimpleFile.h"
 
-#include "SimpleHashMap.h"
+#include "SimpleHashTable.h"
 
 #ifndef min
 	#define min(a,b) (a<b)? a:b

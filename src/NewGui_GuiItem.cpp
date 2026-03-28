@@ -363,14 +363,14 @@ namespace smpl
 
     void GuiItem::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
     {
-        std::pair<std::string, std::string>* pair = attribs.get("id");
-        if(pair != nullptr)
+        auto pair = attribs.find("id");
+        if(pair != attribs.end())
             nameID = pair->second;
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("visible");
-        if(pair != nullptr)
+        pair = attribs.find("visible");
+        if(pair != attribs.end())
             setVisible(pair->second == "true");
-        attribs.remove(pair);
+        attribs.erase(pair);
     }
 }

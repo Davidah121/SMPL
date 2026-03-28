@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <time.h>
 #include <chrono>
@@ -17,6 +18,10 @@ namespace smpl
 		std::string extensions;
 	};
 
+	#ifdef _WIN32
+	int __stdcall win32SignalHandler(unsigned long ctrlType);
+	#endif
+	
 	class DLL_OPTION System
 	{
 	public:
@@ -73,6 +78,10 @@ namespace smpl
 		 * @return std::tm 
 		 */
 		static std::tm convertTimeToDate(time_t t);
+		static std::string timeToDateString(time_t timeValue);
+
+		static std::string timeAsUTC(time_t timeValue);
+		static time_t timeFromDateString(std::string format, std::string str);
 
 		/**
 		 * @brief Sleeps for the specified amount of time.
@@ -404,6 +413,8 @@ namespace smpl
 		 * @return double 
 		 */
 		static double getCpuUsage(); //TODO
+
+		static std::function<void()> getInterruptFunction();
 	private:
 		
 		System();
@@ -413,14 +424,14 @@ namespace smpl
 		static unsigned int numberOfThreads;
 		static bool hasInit;
 
-		#ifdef _WIN32
-		static int __stdcall signalHandler(unsigned long ctrlType);
-		#endif
+
+
 		#ifdef __unix__
 		static void signalHandler(int ctrlType);
 		#endif
 
 		static std::function<void()> interruptFunction;
 	};
+
 
 } //NAMESPACE glib END

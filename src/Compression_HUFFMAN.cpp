@@ -1,4 +1,6 @@
+#include "FrequencyTable.h"
 #include "InternalCompressionHeader.h"
+#include <vector>
 
 namespace smpl
 {
@@ -189,23 +191,31 @@ namespace smpl
 	}
 
 
-	BinaryTree<HuffmanNode>* Compression::buildHuffmanTreeSubFunc(FrequencyTable<int>* freqTable)
+	BinaryTree<HuffmanNode>* Compression::buildHuffmanTreeSubFunc(const FrequencyTable<size_t>& freqTable)
 	{
 		//Next pass is to build the huffmanTree
-		//First sort it
-		freqTable->sort(false);
-		int fSize = freqTable->size();
-		int maxFrequency = freqTable->sumOfFrequencies();
+		//First sort it. Must also maintain the appropriate id values so you know what that frequency refers to
+		size_t sumOfFrequencies = 0;
+		size_t actualSize = 0;
+		std::vector<std::pair<size_t, size_t>> idToFrequencies = std::vector<std::pair<size_t, size_t>>(256);
+		for(auto it : freqTable)
+		{
+			idToFrequencies.push_back(it);
+		}
+
+		Sort::mergeSort<std::pair<size_t, size_t>>(idToFrequencies.data(), idToFrequencies.size(), [](const std::pair<size_t, size_t>& A, const std::pair<size_t, size_t>& B) ->bool{
+			return A.second < B.second;
+		});
 
 		std::vector<BinaryTreeNode<HuffmanNode>*> nodes = std::vector<BinaryTreeNode<HuffmanNode>*>();
 
 		//LinkedList< BinaryTreeNode<HuffmanNode>* > nodes = LinkedList<BinaryTreeNode<HuffmanNode>*>();
 
 		//Next, make the nodes
-		for (int i = 0; i < fSize; i++)
+		for (int i = 0; i < actualSize; i++)
 		{
 			BinaryTreeNode<HuffmanNode>* test = new BinaryTreeNode<HuffmanNode>();
-			test->data = { (int)freqTable->getFrequencyAtLocation(i), freqTable->getValueAtLocation(i) };
+			test->data = {idToFrequencies[i].second, idToFrequencies[i].first};
 			test->leftChild = nullptr;
 			test->rightChild = nullptr;
 
@@ -219,12 +229,12 @@ namespace smpl
 
 		BinaryTree<HuffmanNode>* huffmanTree = new BinaryTree<HuffmanNode>();
 
-		if(fSize<=1)
+		if(actualSize<=1)
 		{
 			//must be have at least 2 nodes
 			BinaryTreeNode<HuffmanNode>* rNode = new BinaryTreeNode<HuffmanNode>();
 
-			rNode->data.frequency = maxFrequency;
+			rNode->data.frequency = sumOfFrequencies;
 			huffmanTree->setLeftNode(nodes[0], rNode);
 			// rNode->leftChild = nodes[0];
 			// rNode->rightChild = nullptr;
@@ -267,7 +277,7 @@ namespace smpl
 
 			nodes.push_back(newTreeNode);
 			
-			if (newTreeNode->data.frequency == maxFrequency)
+			if (newTreeNode->data.frequency == sumOfFrequencies)
 			{
 				//done
 				huffmanTree->setRootNode(newTreeNode);
@@ -286,11 +296,17 @@ namespace smpl
 	}
 
 
-	BinaryTree<HuffmanNode>* Compression::buildLimitedHuffmanTreeSubFunc(FrequencyTable<int>* freqTable, int maxCodeLength)
+	BinaryTree<HuffmanNode>* Compression::buildLimitedHuffmanTreeSubFunc(const FrequencyTable<size_t>& freqTable, int maxCodeLength)
 	{
 		//setup
 		size_t totalRepresentable = 1 << maxCodeLength;
-		if(freqTable->size() > totalRepresentable)
+		size_t actualSize = 0;
+		std::vector<std::pair<size_t, size_t>> idToFrequencies;
+		for(auto it : idToFrequencies)
+		{
+			idToFrequencies.push_back(it);
+		}
+		if(actualSize > totalRepresentable)
 		{
 			//Error. Max Code Length not usable to represent the entire set of values.
 			//Throw error if enabled
@@ -299,23 +315,23 @@ namespace smpl
 
 		//Use Package merge with adjusted weights and widths. Done on a different computer.
 
-		std::vector<int> dataValues = std::vector<int>(freqTable->size());
-		std::vector<int> codeLengths = std::vector<int>(freqTable->size());
+		std::vector<int> dataValues = std::vector<int>(idToFrequencies.size());
+		std::vector<int> codeLengths = std::vector<int>(idToFrequencies.size());
 
-		for(size_t i=0; i<freqTable->size(); i++)
+		for(size_t i=0; i<idToFrequencies.size(); i++)
 		{
-			dataValues[i] = freqTable->getValueAtLocation(i);
+			dataValues[i] = idToFrequencies[i].first;
 		}
 
 		std::vector<Grouping> nList;
 		for(int j=0; j<maxCodeLength; j++)
 		{
-			for(size_t i=0; i<freqTable->size(); i++)
+			for(size_t i=0; i<idToFrequencies.size(); i++)
 			{
 				Grouping k;
 				k.valid = true;
 				k.ids = { (int)i };
-				k.weight = freqTable->getFrequencyAtLocation(i);
+				k.weight = idToFrequencies[i].second;
 				k.width = 1;
 				k.width <<= (31-j);
 
@@ -325,7 +341,7 @@ namespace smpl
 
 		size_t val1 = 0x100000000; //Change. Must be possible on 32 bit systems.
 
-		std::vector<Grouping> results = Algorithms::packageMergeAlgorithm(nList, val1 * (freqTable->size()-1)); //copying the results and deleting the list grouping list causes slowness
+		std::vector<Grouping> results = Algorithms::packageMergeAlgorithm(nList, val1 * (actualSize-1)); //copying the results and deleting the list grouping list causes slowness
 
 		for(Grouping& g : results)
 		{

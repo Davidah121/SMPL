@@ -5,6 +5,9 @@
 #include "SimpleGraphics.h"
 #include <iostream>
 #include "StringTools.h"
+#include "SIMD.h"
+#include "SEML.h"
+#include "SEML_256.h"
 
 #define min(a,b) ((a<b) ? a:b)
 
@@ -21,6 +24,8 @@ namespace smpl
 	{
 		this->width = width;
 		this->height = height;
+		if(width*height <= 0)
+			throw 0;
 		pixels = new Color[width * height];
 		memset(pixels, 0, width*height*sizeof(Color));
 	}
@@ -55,6 +60,27 @@ namespace smpl
 		p = other.p;
 	}
 	
+	Image::Image(Image&& other) noexcept
+	{
+		width = std::move(other.width);
+		height = std::move(other.height);
+		samplingMethod = std::move(samplingMethod);
+		pixels = std::move(other.pixels);
+		p = std::move(other.p);
+		other.pixels = nullptr;
+	}
+
+	void Image::operator=(Image&& other) noexcept
+	{
+		width = std::move(other.width);
+		height = std::move(other.height);
+		samplingMethod = std::move(samplingMethod);
+		pixels = std::move(other.pixels);
+		p = std::move(other.p);
+		other.pixels = nullptr;
+	}
+
+	
 	// Image::Image(Image&& other)
 	// {
 	// 	width = other.width;
@@ -84,27 +110,27 @@ namespace smpl
 		samplingMethod = m;
 	}
 
-	int Image::getSamplingMethod()
+	int Image::getSamplingMethod() const
 	{
 		return samplingMethod;
 	}
 
-	int Image::getWidth()
+	int Image::getWidth() const
 	{
 		return width;
 	}
 
-	int Image::getHeight()
+	int Image::getHeight() const
 	{
 		return height;
 	}
 
-	Color* Image::getPixels()
+	Color* Image::getPixels() const
 	{
 		return pixels;
 	}
 
-	Color Image::getPixel(int x, int y, int edgeBehavior)
+	Color Image::getPixel(int x, int y, int edgeBehavior) const
 	{
 		if(pixels == nullptr)
 			return Color();
@@ -137,102 +163,250 @@ namespace smpl
 		return Color();
 	}
 
-	Color Image::getPixel(double x, double y, int edgeBehavior)
+	Color Image::getPixel(double x, double y, int edgeBehavior) const
 	{
 		if(samplingMethod == NEAREST)
 		{
-			int nX = (int)round(x);
-			int nY = (int)round(y);
-			
-			return getPixel(nX, nY, edgeBehavior);
+			return getPixelNearestSampling(x, y, edgeBehavior);
 		}
 		else if(samplingMethod == BILINEAR)
 		{
-			//average 4 pixels
-			int nX = (int)floor(x);
-			int nY = (int)floor(y);
-			int nX2 = (int)ceil(x);
-			int nY2 = (int)ceil(y);
-			double xFrac = MathExt::frac(x);
-			double yFrac = MathExt::frac(y);
-			
-			if(nX < 0 || nX >= width)
-				return Color();
-			if(nX2 < 0 || nX2 >= width)
-				return Color();
-			if(nY < 0 || nY >= height)
-				return Color();
-			if(nY2 < 0 || nY2 >= height)
-				return Color();
-			
-			Color p1 = getPixel(nX, nY, edgeBehavior);
-			Color p2 = getPixel(nX2, nY, edgeBehavior);
-			Color p3 = getPixel(nX, nY2, edgeBehavior);
-			Color p4 = getPixel(nX2, nY2, edgeBehavior);
-			
-			Color blend1 = SimpleGraphics::lerp(p1, p2, xFrac);
-			Color blend2 = SimpleGraphics::lerp(p3, p4, xFrac);
-			
-			return SimpleGraphics::lerp(blend1, blend2, yFrac);
+			return getPixelLinearSampling(x, y, edgeBehavior);
 		}
 		else if(samplingMethod == BICUBIC)
 		{
-			//Same as a 3D bezier patch. (Bicubic Patch)
-			//Need 16 points
-			double yFrac = MathExt::frac(y);
-			double xFrac = MathExt::frac(x);
-
-			int yPoints[4];
-			yPoints[1] = (int)MathExt::floor(y);
-			yPoints[0] = yPoints[1]-1;
-			yPoints[2] = (int)MathExt::ceil(y);
-			yPoints[3] = yPoints[2]+1;
-			int xPoints[4];
-			xPoints[1] = (int)MathExt::floor(x);
-			xPoints[0] = xPoints[1]-1;
-			xPoints[2] = (int)MathExt::ceil(x);
-			xPoints[3] = xPoints[2]+1;
-			
-			Vec4f arr[16];
-			for(int j=0; j<16; j++)
-			{
-				int xV = j%4;
-				int yV = j/4;
-				Color c = getPixel(xPoints[xV], yPoints[yV], edgeBehavior);
-				arr[j] = Vec4f(c.red, c.green, c.blue, c.alpha);
-			}
-
-			Vec4f polys[4];
-			for(int j=0; j<4; j++)
-			{
-				Vec4f a, b, c, d;
-				a = (arr[j*4 + 0]*-0.5) + (arr[j*4 + 1]*1.5) + (arr[j*4 + 2]*-1.5) + (arr[j*4 + 3]*0.5);
-				b = (arr[j*4 + 0]) + (arr[j*4 + 1]*-2.5) + (arr[j*4 + 2]*2) + (arr[j*4 + 3]*-0.5);
-				c = (arr[j*4 + 0]*-0.5) + (arr[j*4 + 2]*0.5);
-				d = arr[j*4 + 1];
-
-				polys[j] = ((a*xFrac + b)*xFrac + c)*xFrac + d;
-			}
-			
-			Vec4f a, b, c, d;
-			a = (polys[0]*-0.5) + (polys[1]*1.5) + (polys[2]*-1.5) + (polys[3]*0.5);
-			b = (polys[0]) + (polys[1]*-2.5) + (polys[2]*2) + (polys[3]*-0.5);
-			c = (polys[0]*-0.5) + (polys[2]*0.5);
-			d = polys[1];
-
-			Vec4f finalC = ((a*yFrac + b)*yFrac + c)*yFrac + d;
-
-			return {
-				(unsigned char)MathExt::clamp(finalC.x, 0.0f, 255.0f),
-				(unsigned char)MathExt::clamp(finalC.y, 0.0f, 255.0f),
-				(unsigned char)MathExt::clamp(finalC.z, 0.0f, 255.0f),
-				(unsigned char)MathExt::clamp(finalC.w, 0.0f, 255.0f)
-			};
+			return getPixelCubicSampling(x, y, edgeBehavior);
 		}
-		
 		
 		return Color();
 	}
+	
+	Color Image::getPixelNearestSampling(double x, double y, int edgeBehavior) const
+	{
+		int nX = (int)round(x);
+		int nY = (int)round(y);
+		return getPixel(nX, nY, edgeBehavior);
+	}
+
+	Color Image::getPixelLinearSampling(double x, double y, int edgeBehavior) const
+	{
+		//average 4 pixels
+		int nX = (int)floor(x);
+		int nY = (int)floor(y);
+		int nX2 = (int)ceil(x);
+		int nY2 = (int)ceil(y);
+		double xFrac = MathExt::frac(x);
+		double yFrac = MathExt::frac(y);
+		
+		if(nX < 0 || nX >= width)
+			return Color();
+		if(nX2 < 0 || nX2 >= width)
+			return Color();
+		if(nY < 0 || nY >= height)
+			return Color();
+		if(nY2 < 0 || nY2 >= height)
+			return Color();
+		
+		Color p1 = getPixel(nX, nY, edgeBehavior);
+		Color p2 = getPixel(nX2, nY, edgeBehavior);
+		Color p3 = getPixel(nX, nY2, edgeBehavior);
+		Color p4 = getPixel(nX2, nY2, edgeBehavior);
+		
+		Color blend1 = SimpleGraphics::lerp(p1, p2, xFrac);
+		Color blend2 = SimpleGraphics::lerp(p3, p4, xFrac);
+		
+		return SimpleGraphics::lerp(blend1, blend2, yFrac);
+	}
+
+	Color Image::getPixelCubicSampling(double x, double y, int edgeBehavior) const
+	{
+		//Same as a 3D bezier patch. (Bicubic Patch)
+		//Need 16 points
+		double yFrac = MathExt::frac(y);
+		double xFrac = MathExt::frac(x);
+
+		int yPoints[4];
+		yPoints[1] = (int)MathExt::floor(y);
+		yPoints[0] = yPoints[1]-1;
+		yPoints[2] = (int)MathExt::ceil(y);
+		yPoints[3] = yPoints[2]+1;
+		int xPoints[4];
+		xPoints[1] = (int)MathExt::floor(x);
+		xPoints[0] = xPoints[1]-1;
+		xPoints[2] = (int)MathExt::ceil(x);
+		xPoints[3] = xPoints[2]+1;
+		
+		Vec4f arr[16];
+		for(int j=0; j<16; j++)
+		{
+			int xV = j%4;
+			int yV = j/4;
+			Color c = getPixel(xPoints[xV], yPoints[yV], edgeBehavior);
+			arr[j] = Vec4f(c.red, c.green, c.blue, c.alpha);
+		}
+
+		Vec4f polys[4];
+		for(int j=0; j<4; j++)
+		{
+			Vec4f a, b, c, d;
+			a = (arr[j*4 + 0]*-0.5) + (arr[j*4 + 1]*1.5) + (arr[j*4 + 2]*-1.5) + (arr[j*4 + 3]*0.5);
+			b = (arr[j*4 + 0]) + (arr[j*4 + 1]*-2.5) + (arr[j*4 + 2]*2) + (arr[j*4 + 3]*-0.5);
+			c = (arr[j*4 + 0]*-0.5) + (arr[j*4 + 2]*0.5);
+			d = arr[j*4 + 1];
+
+			polys[j] = ((a*xFrac + b)*xFrac + c)*xFrac + d;
+		}
+		
+		Vec4f a, b, c, d;
+		a = (polys[0]*-0.5) + (polys[1]*1.5) + (polys[2]*-1.5) + (polys[3]*0.5);
+		b = (polys[0]) + (polys[1]*-2.5) + (polys[2]*2) + (polys[3]*-0.5);
+		c = (polys[0]*-0.5) + (polys[2]*0.5);
+		d = polys[1];
+
+		Vec4f finalC = ((a*yFrac + b)*yFrac + c)*yFrac + d;
+
+		return {
+			(unsigned char)MathExt::clamp(finalC.x, 0.0f, 255.0f),
+			(unsigned char)MathExt::clamp(finalC.y, 0.0f, 255.0f),
+			(unsigned char)MathExt::clamp(finalC.z, 0.0f, 255.0f),
+			(unsigned char)MathExt::clamp(finalC.w, 0.0f, 255.0f)
+		};
+	}
+
+
+	#ifdef __SSE4_2__
+	__m128i Image::getPixel(__m128 x, __m128 y, int edgeBehavior) const
+	{
+		if(samplingMethod == NEAREST)
+		{
+			return getPixelNearestSampling(x, y, edgeBehavior);
+		}
+		else if(samplingMethod == BILINEAR)
+		{
+			return getPixelLinearSampling(x, y, edgeBehavior);
+		}
+		else if(samplingMethod == BICUBIC)
+		{
+			return getPixelCubicSampling(x, y, edgeBehavior);
+		}
+		return _mm_set1_epi32(0);
+	}
+	
+	__m128i Image::getPixelNearestSampling(__m128 x, __m128 y, int edgeBehavior) const
+	{
+		int oldRoundingMode = _MM_GET_ROUNDING_MODE();
+		_MM_SET_ROUNDING_MODE(_MM_ROUND_NEAREST);
+		__m128i xIndices = _mm_cvtps_epi32(x);
+		__m128i yIndices = _mm_cvtps_epi32(y);
+		_MM_SET_ROUNDING_MODE(oldRoundingMode);
+		__m128i finalIndices = _mm_add_ps(xIndices, _mm_mul_ps(yIndices, _mm_set1_ps(width)));
+		return gatherSSE((int*)pixels, finalIndices);
+	}
+
+	__m128i Image::getPixelLinearSampling(__m128 x, __m128 y, int edgeBehavior) const
+	{
+		int oldRoundingMode = _MM_GET_ROUNDING_MODE();
+
+		_MM_SET_ROUNDING_MODE(_MM_ROUND_DOWN);
+		__m128i xFloor = _mm_cvtps_epi32(x);
+		__m128i yFloor = _mm_cvtps_epi32(y);
+
+		_MM_SET_ROUNDING_MODE(_MM_ROUND_UP);
+		__m128i xCeiling = _mm_cvtps_epi32(x);
+		__m128i yCeiling = _mm_cvtps_epi32(y);
+
+		_MM_SET_ROUNDING_MODE(oldRoundingMode);
+
+		__m128 xFrac = _mm_sub_ps(_mm_ceil_ps(x), x);
+		__m128 yFrac = _mm_sub_ps(_mm_ceil_ps(y), y);
+
+		__m128i p1Indices = _mm_add_ps(xFloor, _mm_mul_ps(yFloor, _mm_set1_ps(width)));
+		__m128i p2Indices = _mm_add_ps(xCeiling, _mm_mul_ps(yFloor, _mm_set1_ps(width)));
+		__m128i p3Indices = _mm_add_ps(xFloor, _mm_mul_ps(yCeiling, _mm_set1_ps(width)));
+		__m128i p4Indices = _mm_add_ps(xCeiling, _mm_mul_ps(yCeiling, _mm_set1_ps(width)));
+
+		__m128i p1Pixels = gatherSSE((int*)pixels, p1Indices);
+		__m128i p2Pixels = gatherSSE((int*)pixels, p2Indices);
+		__m128i p3Pixels = gatherSSE((int*)pixels, p3Indices);
+		__m128i p4Pixels = gatherSSE((int*)pixels, p4Indices);
+
+		__m128i blend1 = SimpleGraphics::lerp(p1Pixels, p2Pixels, xFrac);
+		__m128i blend2 = SimpleGraphics::lerp(p3Pixels, p4Pixels, xFrac);
+
+		return SimpleGraphics::lerp(blend1, blend2, yFrac);
+	}
+	__m128i Image::getPixelCubicSampling(__m128 x, __m128 y, int edgeBehavior) const
+	{
+		return _mm_set1_epi32(0);
+	}
+	#endif
+
+	#ifdef __AVX2__
+	__m256i Image::getPixel(__m256 x, __m256 y, int edgeBehavior) const
+	{
+		if(samplingMethod == NEAREST)
+		{
+			return getPixelNearestSampling(x, y, edgeBehavior);
+		}
+		else if(samplingMethod == BILINEAR)
+		{
+			return getPixelLinearSampling(x, y, edgeBehavior);
+		}
+		else if(samplingMethod == BICUBIC)
+		{
+			return getPixelCubicSampling(x, y, edgeBehavior);
+		}
+		return _mm256_set1_epi32(0);
+	}
+	
+	__m256i Image::getPixelNearestSampling(__m256 x, __m256 y, int edgeBehavior) const
+	{
+		int oldRoundingMode = _MM_GET_ROUNDING_MODE();
+		_MM_SET_ROUNDING_MODE(_MM_ROUND_NEAREST);
+		__m256i xIndices = _mm256_cvtps_epi32(x);
+		__m256i yIndices = _mm256_cvtps_epi32(y);
+		_MM_SET_ROUNDING_MODE(oldRoundingMode);
+		__m256i finalIndices = _mm256_add_ps(xIndices, _mm256_mul_ps(yIndices, _mm256_set1_ps(width)));
+		return gatherAVX((int*)pixels, finalIndices);
+	}
+
+	__m256i Image::getPixelLinearSampling(__m256 x, __m256 y, int edgeBehavior) const
+	{
+		int oldRoundingMode = _MM_GET_ROUNDING_MODE();
+
+		_MM_SET_ROUNDING_MODE(_MM_ROUND_DOWN);
+		__m256i xFloor = _mm256_cvtps_epi32(x);
+		__m256i yFloor = _mm256_cvtps_epi32(y);
+
+		_MM_SET_ROUNDING_MODE(_MM_ROUND_UP);
+		__m256i xCeiling = _mm256_cvtps_epi32(x);
+		__m256i yCeiling = _mm256_cvtps_epi32(y);
+
+		_MM_SET_ROUNDING_MODE(oldRoundingMode);
+
+		__m256 xFrac = _mm256_sub_ps(_mm256_ceil_ps(x), x);
+		__m256 yFrac = _mm256_sub_ps(_mm256_ceil_ps(y), y);
+
+		__m256i p1Indices = _mm256_add_ps(xFloor, _mm256_mul_ps(yFloor, _mm256_set1_ps(width)));
+		__m256i p2Indices = _mm256_add_ps(xCeiling, _mm256_mul_ps(yFloor, _mm256_set1_ps(width)));
+		__m256i p3Indices = _mm256_add_ps(xFloor, _mm256_mul_ps(yCeiling, _mm256_set1_ps(width)));
+		__m256i p4Indices = _mm256_add_ps(xCeiling, _mm256_mul_ps(yCeiling, _mm256_set1_ps(width)));
+
+		__m256i p1Pixels = gatherAVX((int*)pixels, p1Indices);
+		__m256i p2Pixels = gatherAVX((int*)pixels, p2Indices);
+		__m256i p3Pixels = gatherAVX((int*)pixels, p3Indices);
+		__m256i p4Pixels = gatherAVX((int*)pixels, p4Indices);
+
+		__m256i blend1 = SimpleGraphics::lerp(p1Pixels, p2Pixels, xFrac);
+		__m256i blend2 = SimpleGraphics::lerp(p3Pixels, p4Pixels, xFrac);
+
+		return SimpleGraphics::lerp(blend1, blend2, yFrac);
+	}
+	__m256i Image::getPixelCubicSampling(__m256 x, __m256 y, int edgeBehavior) const
+	{
+		return _mm256_set1_epi32(0);
+	}
+	#endif
 
 	void Image::setPixel(int x, int y, Color c)
 	{
@@ -311,7 +485,7 @@ namespace smpl
 		#endif
 	}
 
-	void Image::copyImage(Image* v)
+	void Image::copyImage(const Image* v)
 	{
 		dispose();
 		this->width = v->width;
@@ -324,7 +498,7 @@ namespace smpl
 	}
 
 	
-	void Image::copyImage(HiResImage* v)
+	void Image::copyImage(const HiResImage* v)
 	{
 		dispose();
 		this->width = v->getWidth();
@@ -351,6 +525,11 @@ namespace smpl
 	}
 
 	ColorPalette& Image::getPalette()
+	{
+		return p;
+	}
+	
+	const ColorPalette Image::getPalette() const
 	{
 		return p;
 	}

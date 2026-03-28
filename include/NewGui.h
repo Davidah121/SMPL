@@ -1,12 +1,11 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 
 #include "GraphicsExt.h"
 #include "ColorNameConverter.h"
 #include "SimpleXml.h"
-#include "SimpleHashMap.h"
-#include <unordered_map>
-#include <unordered_set>
+#include "SimpleHashTable.h"
 #include <limits.h>
 #include <cstddef>
 #include "SmartMemory.h"
@@ -920,7 +919,7 @@ namespace smpl
          * @param k 
          * @param s 
          */
-        void setID(SmartMemory<GuiItem> k, std::string s);
+        void setID(SmartMemory<GuiItem> k, const std::string& s);
 
         /**
          * @brief Adds the object K to the dispose list for the GuiManager to handle when to dispose the objects.
@@ -1072,9 +1071,16 @@ namespace smpl
 		 * @brief Gets a list of GuiInstances with the specified name/id.
 		 * 
 		 * @param name 
-		 * @return std::vector<std::pair<std::string, SmartMemory<GuiItem>>*> 
+		 * @return SimpleHashMultiMap<std::string, SmartMemory<GuiItem>>::Iterator
 		 */
-		std::vector< std::pair<std::string, SmartMemory<GuiItem>>* > getItemsByName(std::string name);
+		SimpleHashMultiMap<std::string, SmartMemory<GuiItem>>::Iterator getItemsByName(std::string name);
+
+		/**
+		 * @brief Gets the raw datastructure used to store the name to item mapping. Needed when incrementing iterators returned from getItemsByName()
+		 * 
+		 * @return SimpleHashMultiMap<std::string, SmartMemory<GuiItem>>& 
+		 */
+		SimpleHashMultiMap<std::string, SmartMemory<GuiItem>>& getRawItemNameMap();
 
         /**
 		 * @brief Loads a series of GuiInstances from a file. All instances loaded from the file are managed by the
@@ -1101,7 +1107,7 @@ namespace smpl
 
 		/**
 		 * @brief Adds a load function to the list of valid load functions that can be used when loading data from a file.
-		 * 		The function must take in a unordered_map (hashmap) of parameters to be set.
+		 * 		The function must take in a SimpleHashMap of parameters to be set.
 		 * 		Not all parameters must be set and some are expected to be passed to the parent class.
 		 * 
 		 *  	The function must return a pointer of newly created memory as it will be added to a delete later list.
@@ -1132,9 +1138,9 @@ namespace smpl
         
         GuiLayoutFixed rootLayout = GuiLayoutFixed();
 
-		static std::unordered_map<std::string, std::function<SmartMemory<GuiItem>(SimpleHashMap<std::string, std::string>&, SmartMemory<GuiManager>)> > elementLoadingFunctions;
+		static SimpleHashMap<std::string, std::function<SmartMemory<GuiItem>(SimpleHashMap<std::string, std::string>&, SmartMemory<GuiManager>)> > elementLoadingFunctions;
 		std::vector<SmartMemory<GuiItem>> shouldDelete = std::vector<SmartMemory<GuiItem>>();
-		SimpleHashMap<std::string, SmartMemory<GuiItem>> objectsByName = SimpleHashMap<std::string, SmartMemory<GuiItem>>();
+		SimpleHashMultiMap<std::string, SmartMemory<GuiItem>> objectsByName = SimpleHashMultiMap<std::string, SmartMemory<GuiItem>>();
 
         GRect newDrawnArea = {INT_MAX, INT_MIN, INT_MAX, INT_MIN};
         GRect oldDrawnArea = {INT_MAX, INT_MIN, INT_MAX, INT_MIN};

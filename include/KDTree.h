@@ -1,5 +1,6 @@
 #pragma once
 #include "BinaryTree.h"
+#include "StandardTypes.h"
 #include "MathExt.h"
 #include "Sort.h"
 #include <cstring>

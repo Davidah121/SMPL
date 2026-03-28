@@ -1,8 +1,26 @@
 inc = -I ./include  -I C:/Libraries/glew-2.1.0/include -I "C:/Program Files/OpenSSL-Win64/include" -I C:/Libraries/_MyLibraries/SEML -I C:/Libraries/_MyLibraries/SimpleSerialization
+
+windowsSDKLibs = -l kernel32 -l user32 -l gdi32 -l winspool -l comdlg32 -l advapi32 -l shell32 -l ole32 -l oleaut32 -l uuid -l odbc32 -l odbccp32
+dxLibs = -l dxgi -l d3d11 -l d3dcompiler
+sslLibs = -L "C:\Program Files\OpenSSL-Win64\lib\VC\x64\MT" -l libssl -l libcrypto -l crypt32
+oglLibs = -L C:/Libraries/glew-2.1.0/lib/Release/x64 -l glew32 -l opengl32
+audioLibs = -l winmm
+xinputLibs = -l xinput
+dinputLibs = -l dinput8 -l dxguid
+networkLibs = -l ws2_32 -l mswsock
+windowLibs = -l msimg32 -l dwmapi
+performanceLibs = -l pdh -l winmm
+semlLibs = -L C:/Libraries/_MyLibraries/SEML -l SEML
+serializationLibs = -L C:/Libraries/_MyLibraries/SimpleSerialization -l SimpleSerialization
+linkOptions = $windowsSDKLibs $sslLibs $oglLibs $networkLibs $windowLibs $audioLibs $xinputLibs $dinputLibs $performanceLibs $semlLibs $serializationLibs
+
 objDir = ./bin/Release/obj
-compiler = cmd /c clang++ 
+exeDir = ./bin/Release
+compiler = clang++
 CXXFLAGS = -std=c++17 -O3 -mavx2 -mf16c
-DEFINES = -D OPTI=2 -D USE_OPENSSL -D USE_OPENGL -D USE_PREPROCESSOR_TRICKS=1
+DEFINES = -D OPTI=2 -D USE_OPENSSL -D USE_PREPROCESSOR_TRICKS=1
 DLLStuff = -fPIC -D DLL_EXPORT
 OPTIONS = -g -c -fopenmp -pipe -Wno-unused-command-line-argument
+EXEOPTIONS = -g -fopenmp
 compilerFlags = $DLLStuff $OPTIONS $CXXFLAGS $DEFINES
+EXECompilerFlags = $DLLStuff $EXEOPTIONS $CXXFLAGS $DEFINES $linkOptions

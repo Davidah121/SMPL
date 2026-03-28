@@ -2,6 +2,7 @@
 
 #ifdef USE_OPENGL
 
+    #include "StandardTypes.h"
     #include "ext/GLSingleton.h"
 
     #include "MathExt.h"

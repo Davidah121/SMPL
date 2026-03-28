@@ -1,6 +1,8 @@
 #pragma once
+#include "StandardTypes.h"
 #include "SmartMemory.h"
 #include <string>
+#include "SimpleHashTable.h"
 
 namespace smpl
 {
@@ -74,6 +76,6 @@ namespace smpl
 		}
 		
 	private:
-		std::unordered_map<std::string, SmartMemory<T>> resourceList = std::unordered_map<std::string, SmartMemory<T>>();
+		SimpleHashMap<std::string, SmartMemory<T>> resourceList = SimpleHashMap<std::string, SmartMemory<T>>();
 	};
 }

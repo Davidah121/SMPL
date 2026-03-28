@@ -98,27 +98,27 @@ namespace smpl
 		samplingMethod = m;
 	}
 
-	int HiResImage::getSamplingMethod()
+	int HiResImage::getSamplingMethod() const
 	{
 		return samplingMethod;
 	}
 
-	int HiResImage::getWidth()
+	int HiResImage::getWidth() const
 	{
 		return width;
 	}
 
-	int HiResImage::getHeight()
+	int HiResImage::getHeight() const
 	{
 		return height;
 	}
 
-	Color4f* HiResImage::getPixels()
+	Color4f* HiResImage::getPixels() const
 	{
 		return pixels;
 	}
 
-	Color4f HiResImage::getPixel(int x, int y, int edgeBehavior)
+	Color4f HiResImage::getPixel(int x, int y, int edgeBehavior) const
 	{
 		if(pixels == nullptr)
 			return Color4f();
@@ -151,7 +151,7 @@ namespace smpl
 		return Color4f();
 	}
 
-	Color4f HiResImage::getPixel(double x, double y, int edgeBehavior)
+	Color4f HiResImage::getPixel(double x, double y, int edgeBehavior) const
 	{
 		if(samplingMethod == NEAREST)
 		{
@@ -269,7 +269,7 @@ namespace smpl
 		}
 	}
 
-	void HiResImage::copyImage(HiResImage* v)
+	void HiResImage::copyImage(const HiResImage* v)
 	{
 		dispose();
 		if(v == nullptr)
@@ -294,6 +294,11 @@ namespace smpl
 		return p;
 	}
 
+	const ColorPalette HiResImage::getPalette() const
+	{
+		return p;
+	}
+	
 	void HiResImage::enforcePalette()
 	{
 		if(p.getSize()>0)

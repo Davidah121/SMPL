@@ -544,28 +544,28 @@ namespace smpl
     void GuiLayoutTable::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
     {
         GuiLayout::loadDataFromXML(attribs, manager);
-        auto pair = attribs.get("inner-padding");
-        if(pair != nullptr)
+        auto pair = attribs.find("inner-padding");
+        if(pair != attribs.end())
         {
             if(loadValueFromAttrib(innerTablePadding, pair->second))
                 innerTablePadding = 0;
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
         
-        pair = attribs.get("num-columns");
-        if(pair != nullptr)
+        pair = attribs.find("num-columns");
+        if(pair != attribs.end())
         {
             if(loadValueFromAttrib(columns, pair->second))
                 columns = 1;
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
 
-        pair = attribs.get("show-inner-grid");
-        if(pair != nullptr)
+        pair = attribs.find("show-inner-grid");
+        if(pair != attribs.end())
         {
             showInnerGrid = (pair->second == "true");
         }
-        attribs.remove(pair);
+        attribs.erase(pair);
     }
 
     SmartMemory<GuiItem> GuiLayoutTable::loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager)

@@ -46,17 +46,17 @@ namespace smpl
 
     void XmlNode::addAttribute(std::string key, std::string value)
     {
-        attributes.add(StringTools::toLowercase(key), value);
+        attributes.insert({StringTools::toLowercase(key), value});
     }
 
     void XmlNode::addAttribute(std::pair<std::string, std::string> p)
     {
-        attributes.add(StringTools::toLowercase(p.first), p.second);
+        attributes.insert({StringTools::toLowercase(p.first), p.second});
     }
 
-    std::pair<std::string, std::string>* XmlNode::getAttribute(std::string key)
+    SimpleHashMap<std::string, std::string>::Iterator XmlNode::getAttribute(std::string key)
     {
-        return attributes.get(key);
+        return attributes.find(key);
     }
 
     std::vector<XmlNode*> XmlNode::getNodesPattern(const std::vector<std::string>& nameOrder, size_t offset)
@@ -76,16 +76,12 @@ namespace smpl
         if(offset < nameOrder.size())
         {
             //attempt to find nameOrder[offset] in the nameToIndexMap
-            std::vector<std::pair<std::string, size_t>*> it = nameToIndexMap.getAll(nameOrder[offset]);
-            for(std::pair<std::string, size_t>* c : it)
+            for(auto it = nameToIndexMap.find(nameOrder[offset]); it != nameToIndexMap.end(); ++it)
             {
-                if(c != nullptr)
+                ChildNode n = childNodes[it->second];
+                if(n.type == ChildNode::TYPE_NODE && n.node != nullptr)
                 {
-                    ChildNode n = childNodes[c->second];
-                    if( n.type == ChildNode::TYPE_NODE && n.node != nullptr)
-                    {
-                        n.node->getNodesInternal(nameOrder, offset+1, results);
-                    }
+                    n.node->getNodesInternal(nameOrder, offset+1, results);
                 }
             }
         }
@@ -105,7 +101,7 @@ namespace smpl
     {
         if(n != nullptr)
         {
-            nameToIndexMap.add(n->getTitle(), childNodes.size());
+            nameToIndexMap.insert({n->getTitle(), childNodes.size()});
             childNodes.push_back(ChildNode(n)); //Create a child node using n as the XMLNode
             n->parentNode = this;
         }
@@ -125,7 +121,7 @@ namespace smpl
         }
 
         //add new one
-        nameToIndexMap.add("", childNodes.size());
+        nameToIndexMap.insert({"", childNodes.size()});
         childNodes.push_back(ChildNode(s));
     }
 
@@ -137,16 +133,12 @@ namespace smpl
     std::string XmlNode::getValue()
     {
         std::string finalStr = "";
-        std::vector<std::pair<std::string, size_t>*> it = nameToIndexMap.getAll("");
-        for(std::pair<std::string, size_t>* c : it)
+        for(auto it = nameToIndexMap.find(""); it != nameToIndexMap.end(); ++it)
         {
-            if(c != nullptr)
+            ChildNode n = childNodes[it->second];
+            if( n.type == ChildNode::TYPE_VALUE)
             {
-                ChildNode n = childNodes[c->second];
-                if( n.type == ChildNode::TYPE_VALUE)
-                {
-                    finalStr += n.value;
-                }
+                finalStr += n.value;
             }
         }
         return finalStr;
@@ -267,29 +259,24 @@ namespace smpl
         line += "<";
 
         //has no child nodes, no attributes, and no value
-        std::vector<std::vector<std::pair<std::string, std::string>*>> attribsAsArr = node->attributes.getRawData();
-
-        if(node->childNodes.size()==0 && attribsAsArr.size()==0)
+        if(node->childNodes.size()==0 && node->attributes.size()==0)
         {
             line+="/";
         }
 
         line += node->title;
 
-        for(std::vector<std::pair<std::string, std::string>*>& bucket : attribsAsArr)
+        for(std::pair<std::string, std::string>& p : node->attributes)
         {
-            for(std::pair<std::string, std::string>* a : bucket)
-            {
-                line += " ";
-                line += a->first;
-                line += "=\"";
-                line += a->second;
-                line += "\"";
-            }
+            line += " ";
+            line += p.first;
+            line += "=\"";
+            line += p.second;
+            line += "\"";
         }
         
         //has no child nodes and no value, but has at least one attribute.
-        if(node->childNodes.size()==0 && attribsAsArr.size()>0)
+        if(node->childNodes.size()==0 && node->attributes.size()>0)
         {
             line += "/";
         }
@@ -340,29 +327,24 @@ namespace smpl
         line += "<";
 
         //has no child nodes, no attributes, and no value
-        std::vector<std::vector<std::pair<std::string, std::string>*>> attribsAsArr = node->attributes.getRawData();
-        
-        if(node->childNodes.size()==0 && attribsAsArr.size()==0)
+        if(node->childNodes.size()==0 && node->attributes.size()==0)
         {
             line+="/";
         }
 
         line += node->title;
 
-        for(std::vector<std::pair<std::string, std::string>*>& bucket : attribsAsArr)
+        for(std::pair<std::string, std::string>& p : node->attributes)
         {
-            for(std::pair<std::string, std::string>* a : bucket)
-            {
-                line += " ";
-                line += a->first;
-                line += "=\"";
-                line += a->second;
-                line += "\"";
-            }
+            line += " ";
+            line += p.first;
+            line += "=\"";
+            line += p.second;
+            line += "\"";
         }
 
         //has no child nodes and no value, but has at least one attribute
-        if(node->childNodes.size()==0 && attribsAsArr.size()>0)
+        if(node->childNodes.size()==0 && node->attributes.size()>0)
         {
             line += "/";
         }
@@ -981,7 +963,7 @@ namespace smpl
         if(checkDoctype)
         {
             //check if html
-            if(node->getAttribute("html") != nullptr)
+            if(node->getAttribute("html") != node->attributes.end())
                 type = TYPE_HTML;
         }
 
@@ -1081,59 +1063,50 @@ namespace smpl
         std::string tempString = "";
         bool proc = false;
 
-        std::vector<std::vector<std::pair<std::string, std::string>*>> attribsAsArr = n->attributes.getRawData();
-
-
-        for(std::vector<std::pair<std::string, std::string>*>& bucket : attribsAsArr)
+        for(std::pair<std::string, std::string>& k : n->attributes)
         {
-            for(std::pair<std::string, std::string>* k : bucket)
+            actualString = "";
+            tempString = "";
+            proc = false;
+            for(char c : k.second)
             {
-                actualString = "";
-                tempString = "";
-                proc = false;
-                for(char c : k->second)
+                if(!proc)
                 {
-                    if(!proc)
+                    if(c != '&')
                     {
-                        if(c != '&')
-                        {
-                            actualString += c;
-                        }
-                        else
-                        {
-                            tempString += c;
-                            proc=true;
-                        }
+                        actualString += c;
                     }
                     else
                     {
-                        if(c==';')
-                        {
-                            tempString += ';';
-                            int t = parseEscapeString(tempString);
-                            std::vector<unsigned char> asUTFSet = StringTools::toUTF8(t);
-
-                            for(unsigned char& c : asUTFSet)
-                            {
-                                actualString += c;
-                            }
-                            proc=false;
-                            tempString = "";
-                        }
-                        else
-                        {
-                            tempString += c;
-                        }
+                        tempString += c;
+                        proc=true;
                     }
                 }
-                actualString += tempString;
-                k->second = actualString;
+                else
+                {
+                    if(c==';')
+                    {
+                        tempString += ';';
+                        int t = parseEscapeString(tempString);
+                        std::vector<unsigned char> asUTFSet = StringTools::toUTF8(t);
 
-                //No longer done through references so this is required.
-                // n->addAttribute(k->key, k->data);
+                        for(unsigned char& c : asUTFSet)
+                        {
+                            actualString += c;
+                        }
+                        proc=false;
+                        tempString = "";
+                    }
+                    else
+                    {
+                        tempString += c;
+                    }
+                }
             }
+            actualString += tempString;
+            k.second = actualString;
         }
-
+        
         for(ChildNode& child : n->childNodes)
         {
             if(child.type == ChildNode::TYPE_VALUE)
@@ -1193,13 +1166,9 @@ namespace smpl
         std::vector<XmlNode*> results;
         if(nameOrder.size() > 0)
         {
-            std::vector<std::pair<std::string, size_t>*> it = nameToIndexMap.getAll(nameOrder[0]);
-            for(std::pair<std::string, size_t>* c : it)
+            for(auto it = nameToIndexMap.find(nameOrder[0]); it != nameToIndexMap.end(); ++it)
             {
-                if(c != nullptr)
-                {
-                    nodes[c->second]->getNodesInternal(nameOrder, 1, results);
-                }
+                nodes[it->second]->getNodesInternal(nameOrder, 1, results);
             }
         }
         return results;
@@ -1213,7 +1182,7 @@ namespace smpl
     {
         if( n != nullptr )
         {
-            nameToIndexMap.add(n->getTitle(), nodes.size());
+            nameToIndexMap.insert({n->getTitle(), nodes.size()});
             nodes.push_back(n);
         }
     }

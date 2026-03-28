@@ -11,6 +11,306 @@ namespace smpl
 		formatToString(stream, v.direction, "%d");
 		stream.write(")");
 	}
+	
+	// void SimpleGraphics::drawPolygon(Vec2f* points, int size, Image* surf)
+	// {
+	// 	Image* otherImg;
+	// 	if (surf == nullptr)
+	// 		return;
+	// 	else
+	// 		otherImg = surf;
+
+	// 	if (otherImg != nullptr)
+	// 	{
+	// 		if(otherImg->getWidth()<=0 || otherImg->getHeight()<=0)
+	// 		{
+	// 			return;
+	// 		}
+	// 		//similar in nature to the vector graphic version
+	// 		//always connects the last point to the first
+
+	// 		std::vector<Vec2f> actualPoints = std::vector<Vec2f>();
+	// 		for(int i=0; i<size; i++)
+	// 		{
+	// 			actualPoints.push_back(points[i]);
+	// 		}
+	// 		actualPoints.push_back(points[0]);
+			
+	// 		int minY = (int)points[0].y;
+	// 		int maxY = (int)points[0].y;
+
+	// 		for(int i=0; i<size; i++)
+	// 		{
+	// 			if((int)points[i].y < minY)
+	// 			{
+	// 				minY = (int)points[i].y;
+	// 			}
+	// 			if((int)points[i].y > maxY)
+	// 			{
+	// 				maxY = (int)points[i].y;
+	// 			}
+	// 		}
+
+	// 		minY = MathExt::clamp(minY, 0, otherImg->getHeight()-1);
+	// 		maxY = MathExt::clamp(maxY, 0, otherImg->getHeight()-1);
+
+	// 		int yDis = 1+maxY-minY;
+
+	// 		std::vector<std::vector<PolyCriticalPoint>> scanLines = std::vector<std::vector<PolyCriticalPoint>>(yDis);
+	// 		std::vector<std::vector<std::pair<double, double>>> horizontalLinesFound = std::vector<std::vector<std::pair<double, double>>>(yDis);
+
+	// 		for(int i=0; i<size; i++)
+	// 		{
+	// 			//Ax + By + C = 0
+	// 			//A=(y1-y2)
+	// 			//B=(x2-x1)
+	// 			//C=(x1*y2 - x2*y1)
+	// 			double A = (actualPoints[i].y - actualPoints[i+1].y);
+	// 			double B = (actualPoints[i+1].x - actualPoints[i].x);
+	// 			double C = (actualPoints[i].x*actualPoints[i+1].y - actualPoints[i+1].x*actualPoints[i].y);
+	// 			bool posDir = true;
+
+	// 			//AFAIK, if the y is going up in some way, the direction is positive
+	// 			//otherwise, it is negative.
+	// 			if(A<=0)
+	// 			{
+	// 				posDir = true;
+	// 			}
+	// 			else
+	// 			{
+	// 				posDir = false;
+	// 			}
+				
+	// 			if(A!=0)
+	// 			{
+	// 				//vertical line or some other valid line
+	// 				int thisMinY = (int)MathExt::round( MathExt::min( actualPoints[i].y, actualPoints[i+1].y));
+	// 				int thisMaxY = (int)MathExt::round( MathExt::max( actualPoints[i].y, actualPoints[i+1].y));
+
+	// 				thisMinY = MathExt::clamp(thisMinY, minY, maxY);
+	// 				thisMaxY = MathExt::clamp(thisMaxY, minY, maxY);
+
+	// 				for(int j=thisMinY; j<=thisMaxY; j++)
+	// 				{
+	// 					double xValue = -(B*j + C) / A;
+	// 					xValue = MathExt::clamp<double>(xValue, 0, otherImg->getWidth());
+						
+	// 					scanLines[j-minY].push_back({xValue,posDir});
+	// 				}
+	// 			}
+	// 			else
+	// 			{
+	// 				//horizontal line or invalid
+	// 				//do nothing
+	// 				int thisMinY = (int)MathExt::round( MathExt::min( actualPoints[i].y, actualPoints[i+1].y));
+	// 				double thisMinX = MathExt::min( actualPoints[i].x, actualPoints[i+1].x);
+	// 				double thisMaxX = MathExt::max( actualPoints[i].x, actualPoints[i+1].x);
+	// 				horizontalLinesFound[thisMinY-minY].push_back({thisMinX,thisMaxX});
+	// 			}
+	// 		}
+
+	// 		//sort the points on the scanlines
+	// 		//#pragma omp parallel for
+	// 		for(int i=0; i<yDis; i++)
+	// 		{
+	// 			if(scanLines[i].size()>0)
+	// 			{
+	// 				Sort::insertionSort<PolyCriticalPoint>(scanLines[i].data(), scanLines[i].size(), [](PolyCriticalPoint a, PolyCriticalPoint b) -> bool {return a.xValue<b.xValue;});
+					
+	// 				//may need to insert a points to handle horizontal line cases
+	// 				{
+	// 					std::vector<PolyCriticalPoint> tempLines;
+	// 					int j=0;
+	// 					while(j < scanLines[i].size())
+	// 					{
+	// 						if(j == scanLines[i].size()-1)
+	// 						{
+	// 							tempLines.push_back(scanLines[i][j]);
+	// 							j++;
+	// 							break;
+	// 						}
+							
+	// 						bool isConnected = false;
+	// 						for(std::pair<double, double> p : horizontalLinesFound[i])
+	// 						{
+	// 							if(p.first == scanLines[i][j].xValue && p.second == scanLines[i][j+1].xValue)
+	// 							{
+	// 								//this is part of a horizontal line. do extra stuff
+	// 								isConnected = true;
+	// 							}
+	// 						}
+							
+	// 						if(isConnected)
+	// 						{
+	// 							//do extra stuff
+	// 							if(scanLines[i][j].direction != scanLines[i][j+1].direction)
+	// 							{
+	// 								tempLines.push_back(scanLines[i][j]);
+	// 							}
+	// 							j++;
+	// 						}
+	// 						else
+	// 						{
+	// 							//add single point
+	// 							tempLines.push_back(scanLines[i][j]);
+	// 							j++;
+	// 						}
+	// 					}
+	// 					scanLines[i] = tempLines;
+	// 				}
+					
+	// 				//rule, can not be the same if you are filling to it.
+	// 				//different for even-odd and non-zero
+	// 				std::vector<PolyCriticalPoint> newScanLine = std::vector<PolyCriticalPoint>();
+
+	// 				if(fillRule == SimpleGraphics::FILL_EVEN_ODD)
+	// 				{
+	// 					for(int j=1; j<scanLines[i].size(); j+=2)
+	// 					{
+	// 						//check if its apart of a horizontal line. IE, both xValues at this y value are apart of the points exactly
+	// 						if(scanLines[i][j].xValue != scanLines[i][j-1].xValue)
+	// 						{
+	// 							newScanLine.push_back(scanLines[i][j-1]);
+	// 							newScanLine.push_back(scanLines[i][j]);
+	// 						}
+	// 						else
+	// 						{
+	// 							if(scanLines[i][j].direction != scanLines[i][j-1].direction)
+	// 							{
+	// 								newScanLine.push_back(scanLines[i][j-1]);
+	// 								newScanLine.push_back(scanLines[i][j]);
+	// 							}
+	// 						}
+	// 					}
+	// 				}
+	// 				else
+	// 				{
+	// 					newScanLine.push_back(scanLines[i][0]);
+	// 					for(int j=1; j<scanLines[i].size(); j++)
+	// 					{
+	// 						if(scanLines[i][j].xValue != scanLines[i][j-1].xValue)
+	// 						{
+	// 							newScanLine.push_back(scanLines[i][j]);
+	// 						}
+	// 						else
+	// 						{
+	// 							if(scanLines[i][j].direction != scanLines[i][j-1].direction)
+	// 							{
+	// 								newScanLine.push_back(scanLines[i][j]);
+	// 							}
+	// 						}
+	// 					}
+	// 				}
+
+	// 				scanLines[i] = newScanLine;
+	// 			}
+	// 		}
+
+	// 		if(fillRule==SimpleGraphics::FILL_EVEN_ODD)
+	// 		{
+	// 			//even-odd rule. Fill between even to odd indicies
+	// 			//not odd to even indicies
+	// 			LARGE_ENOUGH_CLAUSE(yDis)
+	// 			#pragma omp parallel for
+	// 			for(int j=0; j<yDis; j++)
+	// 			{
+	// 				int actualSize = scanLines[j].size();
+	// 				if(actualSize%2 == 1)
+	// 				{
+	// 					actualSize-=2;
+	// 				}
+	// 				else
+	// 				{
+	// 					actualSize-=1;
+	// 				}
+					
+
+	// 				for(int i=0; i<actualSize; i+=2)
+	// 				{
+	// 					//fill between spots
+	// 					double fracStartX, fracEndX;
+	// 					int startX = MathExt::floor(scanLines[j][i].xValue);
+	// 					int endX = MathExt::ceil(scanLines[j][i+1].xValue);
+
+	// 					int fillX = startX;
+	// 					do
+	// 					{
+	// 						SimpleGraphics::drawPixel(fillX, j+minY, SimpleGraphics::activeColor, otherImg);
+	// 						fillX++;
+	// 					} while (fillX<=endX);
+
+	// 					// fracStartX = 1.0-MathExt::frac(scanLines[j][i].xValue);
+	// 					// fracEndX = MathExt::frac(scanLines[j][i+1].xValue);
+	// 					// if(fracEndX <= 0.0)
+	// 					// 	fracEndX = 1.0;
+						
+	// 					// fracStartX = 1;
+	// 					// fracEndX = 1;
+	// 					// Color startBlend = activeColor;
+	// 					// Color endBlend = activeColor;
+	// 					// startBlend.alpha = fracStartX*255;
+	// 					// endBlend.alpha = fracEndX*255;
+						
+	// 					// SimpleGraphics::drawPixel(startX, j+minY, startBlend, otherImg);
+	// 					// if(fracStartX >= 1.0)
+	// 					// 	SimpleGraphics::drawPixel(startX, j+minY, SimpleGraphics::activeColor, otherImg);
+						
+	// 					// int fillX = startX+1;
+	// 					// while(fillX <= endX-1)
+	// 					// {
+	// 					// 	SimpleGraphics::drawPixel(fillX, j+minY, SimpleGraphics::activeColor, otherImg);
+	// 					// 	fillX++;
+	// 					// }
+	// 					// SimpleGraphics::drawPixel(endX, j+minY, endBlend, otherImg);
+	// 				}
+	// 			}
+	// 			RESET_LARGE_ENOUGH_CLAUSE()
+	// 		}
+	// 		else
+	// 		{
+	// 			//non-zero rule. Fill when positive only. Not when zero or
+	// 			//less.
+	// 			LARGE_ENOUGH_CLAUSE(yDis)
+	// 			#pragma omp parallel for
+	// 			for(int j=0; j<yDis; j++)
+	// 			{
+	// 				int passCounter = 0;
+	// 				for(int i=0; i<scanLines[j].size()-1; i++)
+	// 				{
+	// 					//fill between spots
+	// 					int startX = MathExt::floor(scanLines[j][i].xValue);
+	// 					int endX = MathExt::ceil(scanLines[j][i+1].xValue);
+	// 					if(scanLines[j][i].direction == true)
+	// 					{
+	// 						//positive y direction
+	// 						passCounter++;
+	// 					}
+	// 					else
+	// 					{
+	// 						//negative y direction
+	// 						passCounter--;
+	// 					}
+						
+	// 					if(passCounter!=0)
+	// 					{
+	// 						int fillX = startX;
+
+	// 						do
+	// 						{
+	// 							SimpleGraphics::drawPixel(fillX, j+minY, SimpleGraphics::activeColor, otherImg);
+	// 							fillX++;
+	// 						} while (fillX<=endX);
+							
+	// 					}
+	// 				}
+	// 			}
+	// 			RESET_LARGE_ENOUGH_CLAUSE()
+	// 		}
+
+	// 	}
+
+	// }
+
 	void SimpleGraphics::drawPolygon(Vec2f* points, int size, Image* surf)
 	{
 		Image* otherImg;
@@ -25,287 +325,153 @@ namespace smpl
 			{
 				return;
 			}
-			//similar in nature to the vector graphic version
-			//always connects the last point to the first
 
-			std::vector<Vec2f> actualPoints = std::vector<Vec2f>();
-			for(int i=0; i<size; i++)
-			{
-				actualPoints.push_back(points[i]);
-			}
-			actualPoints.push_back(points[0]);
+			if(size < 3)
+				return;
 			
-			int minY = (int)points[0].y;
-			int maxY = (int)points[0].y;
-
-			for(int i=0; i<size; i++)
+			struct CriticalPointOrLine
 			{
-				if((int)points[i].y < minY)
+				bool isHorizontalLine = false;
+				bool slopeGoingUp = false;
+				double p1;
+				double p2;
+				bool operator<(const CriticalPointOrLine& other)
 				{
-					minY = (int)points[i].y;
+					if(p1 == other.p1)
+						return other.isHorizontalLine;
+					return p1 < other.p1;
 				}
-				if((int)points[i].y > maxY)
+				bool operator==(const CriticalPointOrLine& other)
 				{
-					maxY = (int)points[i].y;
+					return p1 == other.p1 && p2 == other.p2 && isHorizontalLine == other.isHorizontalLine;
 				}
+			};
+
+			std::vector<Line> polyLines = std::vector<Line>(size);
+			float minY = points[0].y;
+			float maxY = points[0].y;
+			float minX = points[0].x;
+			float maxX = points[0].x;
+			for(size_t i=0; i<size-1; i++)
+			{
+				minY = __min(points[i].y, minY);
+				maxY = __max(points[i].y, maxY);
+				minX = __min(points[i].x, minX);
+				maxX = __max(points[i].x, maxX);
+				polyLines[i] = Line(points[i], points[i+1]);
 			}
+			minY = __min(points[size-1].y, minY);
+			maxY = __max(points[size-1].y, maxY);
+			minX = __min(points[size-1].x, minX);
+			maxX = __max(points[size-1].x, maxX);
+			polyLines.back() = Line(points[size-1], points[0]);
 
-			minY = MathExt::clamp(minY, 0, otherImg->getHeight()-1);
-			maxY = MathExt::clamp(maxY, 0, otherImg->getHeight()-1);
+			Sort::mergeSort<Line>(polyLines.data(), polyLines.size(), [](Line l1, Line l2) ->bool{
+				return l1.getMinY() < l2.getMinY();
+			});
 
-			int yDis = 1+maxY-minY;
-
-			std::vector<std::vector<PolyCriticalPoint>> scanLines = std::vector<std::vector<PolyCriticalPoint>>(yDis);
-			std::vector<std::vector<std::pair<double, double>>> horizontalLinesFound = std::vector<std::vector<std::pair<double, double>>>(yDis);
-
-			for(int i=0; i<size; i++)
+			size_t indexInLines = 0;
+			std::vector<Line> processingLines = std::vector<Line>();
+			for(int y=(int)minY; y<=(int)maxY; y++)
 			{
-				//Ax + By + C = 0
-				//A=(y1-y2)
-				//B=(x2-x1)
-				//C=(x1*y2 - x2*y1)
-				double A = (actualPoints[i].y - actualPoints[i+1].y);
-				double B = (actualPoints[i+1].x - actualPoints[i].x);
-				double C = (actualPoints[i].x*actualPoints[i+1].y - actualPoints[i+1].x*actualPoints[i].y);
-				bool posDir = true;
-
-				//AFAIK, if the y is going up in some way, the direction is positive
-				//otherwise, it is negative.
-				if(A<=0)
+				for(; indexInLines < polyLines.size(); indexInLines++)
 				{
-					posDir = true;
-				}
-				else
-				{
-					posDir = false;
-				}
-				
-				if(A!=0)
-				{
-					//vertical line or some other valid line
-					int thisMinY = (int)MathExt::round( MathExt::min( actualPoints[i].y, actualPoints[i+1].y));
-					int thisMaxY = (int)MathExt::round( MathExt::max( actualPoints[i].y, actualPoints[i+1].y));
-
-					thisMinY = MathExt::clamp(thisMinY, minY, maxY);
-					thisMaxY = MathExt::clamp(thisMaxY, minY, maxY);
-
-					for(int j=thisMinY; j<=thisMaxY; j++)
+					if(y >= polyLines[indexInLines].getMinY())
 					{
-						double xValue = -(B*j + C) / A;
-						xValue = MathExt::clamp<double>(xValue, 0, otherImg->getWidth());
-						
-						scanLines[j-minY].push_back({xValue,posDir});
+						processingLines.push_back(polyLines[indexInLines]);
 					}
+					else
+						break;
 				}
-				else
-				{
-					//horizontal line or invalid
-					//do nothing
-					int thisMinY = (int)MathExt::round( MathExt::min( actualPoints[i].y, actualPoints[i+1].y));
-					double thisMinX = MathExt::min( actualPoints[i].x, actualPoints[i+1].x);
-					double thisMaxX = MathExt::max( actualPoints[i].x, actualPoints[i+1].x);
-					horizontalLinesFound[thisMinY-minY].push_back({thisMinX,thisMaxX});
-				}
-			}
 
-			//sort the points on the scanlines
-			//#pragma omp parallel for
-			for(int i=0; i<yDis; i++)
-			{
-				if(scanLines[i].size()>0)
-				{
-					Sort::insertionSort<PolyCriticalPoint>(scanLines[i].data(), scanLines[i].size(), [](PolyCriticalPoint a, PolyCriticalPoint b) -> bool {return a.xValue<b.xValue;});
-					
-					//may need to insert a points to handle horizontal line cases
-					{
-						std::vector<PolyCriticalPoint> tempLines;
-						int j=0;
-						while(j < scanLines[i].size())
-						{
-							if(j == scanLines[i].size()-1)
-							{
-								tempLines.push_back(scanLines[i][j]);
-								j++;
-								break;
-							}
-							
-							bool isConnected = false;
-							for(std::pair<double, double> p : horizontalLinesFound[i])
-							{
-								if(p.first == scanLines[i][j].xValue && p.second == scanLines[i][j+1].xValue)
-								{
-									//this is part of a horizontal line. do extra stuff
-									isConnected = true;
-								}
-							}
-							
-							if(isConnected)
-							{
-								//do extra stuff
-								if(scanLines[i][j].direction != scanLines[i][j+1].direction)
-								{
-									tempLines.push_back(scanLines[i][j]);
-								}
-								j++;
-							}
-							else
-							{
-								//add single point
-								tempLines.push_back(scanLines[i][j]);
-								j++;
-							}
-						}
-						scanLines[i] = tempLines;
-					}
-					
-					//rule, can not be the same if you are filling to it.
-					//different for even-odd and non-zero
-					std::vector<PolyCriticalPoint> newScanLine = std::vector<PolyCriticalPoint>();
+				size_t i = 0;
 
-					if(fillRule == SimpleGraphics::FILL_EVEN_ODD)
+				std::vector<CriticalPointOrLine> criticalPoints;
+				while(i < processingLines.size())
+				{
+					if(y > processingLines[i].getMaxY())
 					{
-						for(int j=1; j<scanLines[i].size(); j+=2)
-						{
-							//check if its apart of a horizontal line. IE, both xValues at this y value are apart of the points exactly
-							if(scanLines[i][j].xValue != scanLines[i][j-1].xValue)
-							{
-								newScanLine.push_back(scanLines[i][j-1]);
-								newScanLine.push_back(scanLines[i][j]);
-							}
-							else
-							{
-								if(scanLines[i][j].direction != scanLines[i][j-1].direction)
-								{
-									newScanLine.push_back(scanLines[i][j-1]);
-									newScanLine.push_back(scanLines[i][j]);
-								}
-							}
-						}
+						std::swap(processingLines[i], processingLines.back());
+						processingLines.pop_back();
 					}
 					else
 					{
-						newScanLine.push_back(scanLines[i][0]);
-						for(int j=1; j<scanLines[i].size(); j++)
+						//process line
+						if(processingLines[i].getSlope() != 0)
 						{
-							if(scanLines[i][j].xValue != scanLines[i][j-1].xValue)
-							{
-								newScanLine.push_back(scanLines[i][j]);
-							}
-							else
-							{
-								if(scanLines[i][j].direction != scanLines[i][j-1].direction)
-								{
-									newScanLine.push_back(scanLines[i][j]);
-								}
-							}
-						}
-					}
-
-					scanLines[i] = newScanLine;
-				}
-			}
-
-			if(fillRule==SimpleGraphics::FILL_EVEN_ODD)
-			{
-				//even-odd rule. Fill between even to odd indicies
-				//not odd to even indicies
-				LARGE_ENOUGH_CLAUSE(yDis)
-				#pragma omp parallel for
-				for(int j=0; j<yDis; j++)
-				{
-					int actualSize = scanLines[j].size();
-					if(actualSize%2 == 1)
-					{
-						actualSize-=2;
-					}
-					else
-					{
-						actualSize-=1;
-					}
-					
-
-					for(int i=0; i<actualSize; i+=2)
-					{
-						//fill between spots
-						double fracStartX, fracEndX;
-						int startX = MathExt::floor(scanLines[j][i].xValue);
-						int endX = MathExt::ceil(scanLines[j][i+1].xValue);
-
-						int fillX = startX;
-						do
-						{
-							SimpleGraphics::drawPixel(fillX, j+minY, SimpleGraphics::activeColor, otherImg);
-							fillX++;
-						} while (fillX<=endX);
-
-						// fracStartX = 1.0-MathExt::frac(scanLines[j][i].xValue);
-						// fracEndX = MathExt::frac(scanLines[j][i+1].xValue);
-						// if(fracEndX <= 0.0)
-						// 	fracEndX = 1.0;
-						
-						// fracStartX = 1;
-						// fracEndX = 1;
-						// Color startBlend = activeColor;
-						// Color endBlend = activeColor;
-						// startBlend.alpha = fracStartX*255;
-						// endBlend.alpha = fracEndX*255;
-						
-						// SimpleGraphics::drawPixel(startX, j+minY, startBlend, otherImg);
-						// if(fracStartX >= 1.0)
-						// 	SimpleGraphics::drawPixel(startX, j+minY, SimpleGraphics::activeColor, otherImg);
-						
-						// int fillX = startX+1;
-						// while(fillX <= endX-1)
-						// {
-						// 	SimpleGraphics::drawPixel(fillX, j+minY, SimpleGraphics::activeColor, otherImg);
-						// 	fillX++;
-						// }
-						// SimpleGraphics::drawPixel(endX, j+minY, endBlend, otherImg);
-					}
-				}
-				RESET_LARGE_ENOUGH_CLAUSE()
-			}
-			else
-			{
-				//non-zero rule. Fill when positive only. Not when zero or
-				//less.
-				LARGE_ENOUGH_CLAUSE(yDis)
-				#pragma omp parallel for
-				for(int j=0; j<yDis; j++)
-				{
-					int passCounter = 0;
-					for(int i=0; i<scanLines[j].size()-1; i++)
-					{
-						//fill between spots
-						int startX = MathExt::floor(scanLines[j][i].xValue);
-						int endX = MathExt::ceil(scanLines[j][i+1].xValue);
-						if(scanLines[j][i].direction == true)
-						{
-							//positive y direction
-							passCounter++;
+							criticalPoints.push_back({false, processingLines[i].getToPoint().y > 0, processingLines[i].solveForX(y), 0});
 						}
 						else
 						{
-							//negative y direction
-							passCounter--;
+							criticalPoints.push_back({true, false, processingLines[i].getMinX(), processingLines[i].getMaxX()});
 						}
-						
-						if(passCounter!=0)
-						{
-							int fillX = startX;
-
-							do
-							{
-								SimpleGraphics::drawPixel(fillX, j+minY, SimpleGraphics::activeColor, otherImg);
-								fillX++;
-							} while (fillX<=endX);
-							
-						}
+						i++;
 					}
 				}
-				RESET_LARGE_ENOUGH_CLAUSE()
-			}
 
+				Sort::mergeSort<CriticalPointOrLine>(criticalPoints.data(), criticalPoints.size());
+				
+				std::vector<double> finalPairs;
+				if(fillRule == FILL_EVEN_ODD)
+				{
+					//fixing things up. for now, assume only even-odd works if at all
+					for(size_t j=0; j<criticalPoints.size(); j++)
+					{
+						CriticalPointOrLine critPoint = criticalPoints[j];
+						if(critPoint.isHorizontalLine && (j % 2) == 1)
+						{
+							//if last point is on an odd index, duplicate previous point (minX of this line). Otherwise, skip
+							//also handle the case where the horizontal line's end point is not the next point.
+							if(criticalPoints[j+1].p1 != critPoint.p1)
+							{
+								finalPairs.push_back(critPoint.p2);
+							}
+							continue;
+						}
+						finalPairs.push_back(critPoint.p1);
+					}
+
+				}
+				else
+				{
+					//fill as long as the total number of slope changes is not zero
+					//ignore horizontal lines
+					int slopeCounter = 0;
+					// finalPairs.push_back(criticalPoints[0].p1);
+
+					for(CriticalPointOrLine critPoint : criticalPoints)
+					{
+						if(critPoint.isHorizontalLine)
+							continue;
+						
+						if(slopeCounter != 0)
+							finalPairs.push_back(critPoint.p1);
+
+						slopeCounter += critPoint.slopeGoingUp ? 1 : -1;
+						
+						//duplicate last point since stuff between the next point should be included in the fill.
+						//done to reduce duplicate code
+						if(slopeCounter != 0)
+							finalPairs.push_back(critPoint.p1);
+					}
+				}
+				
+				//fill between end points.
+				if(SimpleGraphics::antiAliasing == true)
+				{
+					for(size_t j=1; j<finalPairs.size(); j+=2)
+					{
+						SimpleGraphics::fillBetweenAntiAliased(activeColor, finalPairs[j-1] - minX, finalPairs[j] - minX, y-minY, otherImg);
+					}
+				}
+				else
+				{
+					for(size_t j=1; j<finalPairs.size(); j+=2)
+					{
+						SimpleGraphics::fillBetween(activeColor, MathExt::floor(finalPairs[j-1] - minX), MathExt::ceil(finalPairs[j] - minX), y-minY, otherImg);
+					}
+				}
+			}
 		}
 
 	}

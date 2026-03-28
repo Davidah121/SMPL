@@ -1,12 +1,11 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include <vector>
 #include <iostream>
 #include <cstring>
 #include <cstdio>
 #include <array>
-#include <unordered_map>
-#include "SimpleHashMap.h"
 
 #ifndef __max
 #define __max(a, b) (((a) >= (b)) ? (a) : (b))

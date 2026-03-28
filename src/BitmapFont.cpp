@@ -229,7 +229,7 @@ namespace smpl
 				{
 					//Can simplify
 					auto temp = n->getAttribute("size");
-					if(temp != nullptr)
+					if(temp != n->getRawAttributes().end())
 					{
 						fontSize = abs(std::stoi(temp->second));
 						originalFontSize = fontSize;
@@ -238,7 +238,7 @@ namespace smpl
 				else if(n->getTitle() == "common")
 				{
 					auto temp = n->getAttribute("lineheight");
-					if(temp != nullptr)
+					if(temp != n->getRawAttributes().end())
 						verticalAdv = abs(std::stoi(temp->second));
 					
 				}
@@ -251,7 +251,7 @@ namespace smpl
 						XmlNode* n2 = c2.node;
 
 						auto temp = n2->getAttribute("file");
-						if(temp != nullptr)
+						if(temp != n2->getRawAttributes().end())
 						{
 							int imgCount = 0;
 							//Is local image so full path is needed
@@ -277,39 +277,39 @@ namespace smpl
 						int page = 0;
 
 						auto attrib = n2->getAttribute("id");
-						if(attrib != nullptr)
+						if(attrib != n2->getRawAttributes().end())
 							fci.unicodeValue = StringTools::toInt(attrib->second);
 						
 						attrib = n2->getAttribute("x");
-						if(attrib != nullptr)
+						if(attrib != n2->getRawAttributes().end())
 							fci.x = StringTools::toInt(attrib->second);
 						
 						attrib = n2->getAttribute("y");
-						if(attrib != nullptr)
+						if(attrib != n2->getRawAttributes().end())
 							fci.y = StringTools::toInt(attrib->second);
 						
 						attrib = n2->getAttribute("width");
-						if(attrib != nullptr)
+						if(attrib != n2->getRawAttributes().end())
 							fci.width = StringTools::toInt(attrib->second);
 						
 						attrib = n2->getAttribute("height");
-						if(attrib != nullptr)
+						if(attrib != n2->getRawAttributes().end())
 							fci.height = StringTools::toInt(attrib->second);
 						
 						attrib = n2->getAttribute("xadvance");
-						if(attrib != nullptr)
+						if(attrib != n2->getRawAttributes().end())
 							fci.horizAdv = StringTools::toInt(attrib->second);
 						
 						attrib = n2->getAttribute("page");
-						if(attrib != nullptr)
+						if(attrib != n2->getRawAttributes().end())
 							page = StringTools::toInt(attrib->second);
 						
 						attrib = n2->getAttribute("xoffset");
-						if(attrib != nullptr)
+						if(attrib != n2->getRawAttributes().end())
 							fci.xOffset = StringTools::toInt(attrib->second);
 						
 						attrib = n2->getAttribute("yoffset");
-						if(attrib != nullptr)
+						if(attrib != n2->getRawAttributes().end())
 							fci.yOffset = StringTools::toInt(attrib->second);
 
 						this->addChar(fci);

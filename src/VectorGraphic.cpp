@@ -1,8 +1,5 @@
 #include "VectorGraphic.h"
-#include "SimpleGraphics.h"
-#include "Sort.h"
 #include "StringTools.h"
-#include "BezierCurve.h"
 #include "ColorNameConverter.h"
 
 namespace smpl
@@ -215,55 +212,51 @@ namespace smpl
 		{
 			XmlNode* parentNode = svgParentNode;
 			
-			auto attribsAsArr = parentNode->getRawAttributes().getRawData();
-			for(std::vector<std::pair<std::string, std::string>*>& bucket : attribsAsArr)
+			for(std::pair<std::string, std::string>& attrib : parentNode->getRawAttributes())
 			{
-				for(std::pair<std::string, std::string>* attrib : bucket)
+				if(StringTools::equalsIgnoreCase<char>("width", attrib.first))
 				{
-					if(StringTools::equalsIgnoreCase<char>("width", attrib->first))
-					{
-						bool percent = false;
-						double value = toNumber(StringTools::toCString(attrib->second), &percent);
-						if(percent)
-							this->width = (int)MathExt::ceil(this->width * value);
-						else
-							this->width = (int)MathExt::ceil(value);
-						
-					}
-					else if(StringTools::equalsIgnoreCase<char>("height", attrib->first))
-					{
-						bool percent = false;
-						double value = toNumber(StringTools::toCString(attrib->second), &percent);
-						if(percent)
-							this->height = (int)MathExt::ceil(this->height * value);
-						else
-							this->height = (int)MathExt::ceil(value);
-					}
-					else if(StringTools::equalsIgnoreCase<char>("viewbox", attrib->first))
-					{
-						//for now, if width and height have not been defined, set them here
-						std::vector<std::string> split = StringTools::splitStringMultipleDeliminators(attrib->second, " ,");
-						bool percent = false;
-						int minX, minY, tempWidth, tempHeight;
+					bool percent = false;
+					double value = toNumber(StringTools::toCString(attrib.second), &percent);
+					if(percent)
+						this->width = (int)MathExt::ceil(this->width * value);
+					else
+						this->width = (int)MathExt::ceil(value);
+					
+				}
+				else if(StringTools::equalsIgnoreCase<char>("height", attrib.first))
+				{
+					bool percent = false;
+					double value = toNumber(StringTools::toCString(attrib.second), &percent);
+					if(percent)
+						this->height = (int)MathExt::ceil(this->height * value);
+					else
+						this->height = (int)MathExt::ceil(value);
+				}
+				else if(StringTools::equalsIgnoreCase<char>("viewbox", attrib.first))
+				{
+					//for now, if width and height have not been defined, set them here
+					std::vector<std::string> split = StringTools::splitStringMultipleDeliminators(attrib.second, " ,");
+					bool percent = false;
+					int minX, minY, tempWidth, tempHeight;
 
-						if(split.size() == 4)
-						{
-							minX = (int)MathExt::ceil(toNumber(StringTools::toCString(split[0]), &percent));
-							minY = (int)MathExt::ceil(toNumber(StringTools::toCString(split[1]), &percent));
-							tempWidth = (int)MathExt::ceil(toNumber(StringTools::toCString(split[2]), &percent));
-							tempHeight = (int)MathExt::ceil(toNumber(StringTools::toCString(split[3]), &percent));
-						}
-						
-						if(this->width == 0)
-							width = MathExt::abs(tempWidth);
-						if(this->height == 0)
-							height = MathExt::abs(tempHeight);
-						
-						double xScale = (double)this->width / tempWidth;
-						double yScale = (double)this->height / tempHeight;
-
-						viewBox = MathExt::scale2D(xScale, yScale) * MathExt::translation2D(-minX, -minY);
+					if(split.size() == 4)
+					{
+						minX = (int)MathExt::ceil(toNumber(StringTools::toCString(split[0]), &percent));
+						minY = (int)MathExt::ceil(toNumber(StringTools::toCString(split[1]), &percent));
+						tempWidth = (int)MathExt::ceil(toNumber(StringTools::toCString(split[2]), &percent));
+						tempHeight = (int)MathExt::ceil(toNumber(StringTools::toCString(split[3]), &percent));
 					}
+					
+					if(this->width == 0)
+						width = MathExt::abs(tempWidth);
+					if(this->height == 0)
+						height = MathExt::abs(tempHeight);
+					
+					double xScale = (double)this->width / tempWidth;
+					double yScale = (double)this->height / tempHeight;
+
+					viewBox = MathExt::scale2D(xScale, yScale) * MathExt::translation2D(-minX, -minY);
 				}
 			}
 
@@ -391,188 +384,184 @@ namespace smpl
 			shape->setTransform( groupPointer->getTransform() );
 		}
 		
-		auto attribsAsArr = node->getRawAttributes().getRawData();
-		
-		for(std::vector<std::pair<std::string, std::string>*>& bucket : attribsAsArr)
+		for(std::pair<std::string, std::string>& attrib : node->getRawAttributes())
 		{
-			for(std::pair<std::string, std::string>* attrib : bucket)
+			if(StringTools::equalsIgnoreCase<char>(attrib.first, "fill"))
 			{
-				if(StringTools::equalsIgnoreCase<char>(attrib->first, "fill"))
+				Color c = toColor(StringTools::toCString(attrib.second));
+				shape->setFillColor( c );
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "fill-opacity"))
+			{
+				Color c = shape->getFillColor();
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				c.alpha = (unsigned char)(255*value);
+				shape->setFillColor( c );
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "fill-rule"))
+			{
+				if(StringTools::equalsIgnoreCase<char>(attrib.second, "nonzero"))
 				{
-					Color c = toColor(StringTools::toCString(attrib->second));
-					shape->setFillColor( c );
+					shape->setFillMethod(VectorShape::NON_ZERO_RULE);
 				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "fill-opacity"))
+				else
 				{
-					Color c = shape->getFillColor();
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					c.alpha = (unsigned char)(255*value);
-					shape->setFillColor( c );
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "fill-rule"))
-				{
-					if(StringTools::equalsIgnoreCase<char>(attrib->second, "nonzero"))
-					{
-						shape->setFillMethod(VectorShape::NON_ZERO_RULE);
-					}
-					else
-					{
-						shape->setFillMethod(VectorShape::EVEN_ODD_RULE);
-					}
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "stroke"))
-				{
-					Color c = toColor(StringTools::toCString(attrib->second));
-					shape->setStrokeColor( c );
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "stroke-opacity"))
-				{
-					Color c = shape->getStrokeColor();
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					c.alpha = (unsigned char)(255*value);
-					shape->setStrokeColor( c );
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "stroke-width"))
-				{
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					if(percentValue)
-						shape->setStrokeWidth( width* value );
-					else
-						shape->setStrokeWidth( value );
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "stroke-linecap"))
-				{
-					if(attrib->second=="butt")
-					{
-						shape->setLineCap(VectorShape::LINE_CAP_BUTT);
-					}
-					else if(attrib->second=="square")
-					{
-						shape->setLineCap(VectorShape::LINE_CAP_SQUARE);
-					}
-					else if(attrib->second=="round")
-					{
-						shape->setLineCap(VectorShape::LINE_CAP_ROUND);
-					}
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "stroke-linejoin"))
-				{
-					if(attrib->second=="arcs")
-					{
-						//shape->setLineCap(NULL);
-					}
-					else if(attrib->second=="bevel")
-					{
-						shape->setLineJoin(VectorShape::LINE_JOIN_BEVEL);
-					}
-					else if(attrib->second=="miter")
-					{
-						shape->setLineJoin(VectorShape::LINE_JOIN_MITER);
-					}
-					else if(attrib->second=="miter-clip")
-					{
-						//shape->setLineCap(NULL);
-					}
-					else if(attrib->second=="round")
-					{
-						shape->setLineJoin(VectorShape::LINE_JOIN_ROUND);
-					}
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "stroke-dasharray"))
-				{
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "transform"))
-				{
-					Mat3f thisTransform = shape->getTransform();
-
-					std::vector<std::string> splitString = StringTools::splitStringMultipleDeliminators(attrib->second, "()");
-					
-					for(int index=0; index<splitString.size()-1; index+=2)
-					{
-						std::string subName = splitString[index];
-						std::string subArgs = splitString[index+1];
-						subName = StringTools::removeWhitespace(subName, true, true);
-
-						std::vector<std::string> args = StringTools::splitStringMultipleDeliminators(subArgs, " ,");
-
-						if(subName == "translate")
-						{
-							switch(args.size())
-							{
-								case 1:
-									thisTransform = MathExt::translation2D( std::stod(args[0]), 0) * thisTransform;
-									break;
-								case 2:
-									thisTransform = MathExt::translation2D( std::stod(args[0]), std::stod(args[1])) * thisTransform;
-									break;
-								default:
-									break;
-							}
-						}
-						else if(subName == "scale")
-						{
-							switch(args.size())
-							{
-								case 1:
-									thisTransform = MathExt::scale2D( std::stod(args[0]), 1) * thisTransform;
-									break;
-								case 2:
-									thisTransform = MathExt::scale2D( std::stod(args[0]), std::stod(args[1])) * thisTransform;
-									break;
-								default:
-									break;
-							}
-						}
-						else if(subName == "rotate")
-						{
-							switch(args.size())
-							{
-								case 1:
-									thisTransform = MathExt::rotation2D( std::stod(args[0]), 0, 0) * thisTransform;
-									break;
-								case 3:
-									thisTransform = MathExt::rotation2D( std::stod(args[0]), std::stod(args[1]), std::stod(args[2])) * thisTransform;
-									break;
-								default:
-									break;
-							}
-						}
-						else if(subName == "skewX")
-						{
-							if(args.size() == 1)
-							{
-								thisTransform = MathExt::skew2D( std::stod(args[0]), 0) * thisTransform;
-							}
-						}
-						else if(subName == "skewY")
-						{
-							if(args.size() == 1)
-							{
-								thisTransform = MathExt::skew2D( 0, std::stod(args[0])) * thisTransform;
-							}
-						}
-						else if(subName == "matrix")
-						{
-							if(args.size() == 6)
-							{
-								Mat3f m = Mat3f::getIdentity();
-								m[0][0] = std::stod(args[0]);
-								m[0][1] = std::stod(args[2]);
-								m[0][2] = std::stod(args[4]);
-
-								m[1][0] = std::stod(args[1]);
-								m[1][1] = std::stod(args[3]);
-								m[1][2] = std::stod(args[5]);
-
-								thisTransform = m * thisTransform;
-							}
-						}
-					}
-
-					shape->setTransform(thisTransform);
+					shape->setFillMethod(VectorShape::EVEN_ODD_RULE);
 				}
 			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "stroke"))
+			{
+				Color c = toColor(StringTools::toCString(attrib.second));
+				shape->setStrokeColor( c );
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "stroke-opacity"))
+			{
+				Color c = shape->getStrokeColor();
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				c.alpha = (unsigned char)(255*value);
+				shape->setStrokeColor( c );
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "stroke-width"))
+			{
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				if(percentValue)
+					shape->setStrokeWidth( width* value );
+				else
+					shape->setStrokeWidth( value );
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "stroke-linecap"))
+			{
+				if(attrib.second=="butt")
+				{
+					shape->setLineCap(VectorShape::LINE_CAP_BUTT);
+				}
+				else if(attrib.second=="square")
+				{
+					shape->setLineCap(VectorShape::LINE_CAP_SQUARE);
+				}
+				else if(attrib.second=="round")
+				{
+					shape->setLineCap(VectorShape::LINE_CAP_ROUND);
+				}
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "stroke-linejoin"))
+			{
+				if(attrib.second=="arcs")
+				{
+					//shape->setLineCap(NULL);
+				}
+				else if(attrib.second=="bevel")
+				{
+					shape->setLineJoin(VectorShape::LINE_JOIN_BEVEL);
+				}
+				else if(attrib.second=="miter")
+				{
+					shape->setLineJoin(VectorShape::LINE_JOIN_MITER);
+				}
+				else if(attrib.second=="miter-clip")
+				{
+					//shape->setLineCap(NULL);
+				}
+				else if(attrib.second=="round")
+				{
+					shape->setLineJoin(VectorShape::LINE_JOIN_ROUND);
+				}
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "stroke-dasharray"))
+			{
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "transform"))
+			{
+				Mat3f thisTransform = shape->getTransform();
+
+				std::vector<std::string> splitString = StringTools::splitStringMultipleDeliminators(attrib.second, "()");
+				
+				for(int index=0; index<splitString.size()-1; index+=2)
+				{
+					std::string subName = splitString[index];
+					std::string subArgs = splitString[index+1];
+					subName = StringTools::removeWhitespace(subName, true, true);
+
+					std::vector<std::string> args = StringTools::splitStringMultipleDeliminators(subArgs, " ,");
+
+					if(subName == "translate")
+					{
+						switch(args.size())
+						{
+							case 1:
+								thisTransform = MathExt::translation2D( std::stod(args[0]), 0) * thisTransform;
+								break;
+							case 2:
+								thisTransform = MathExt::translation2D( std::stod(args[0]), std::stod(args[1])) * thisTransform;
+								break;
+							default:
+								break;
+						}
+					}
+					else if(subName == "scale")
+					{
+						switch(args.size())
+						{
+							case 1:
+								thisTransform = MathExt::scale2D( std::stod(args[0]), 1) * thisTransform;
+								break;
+							case 2:
+								thisTransform = MathExt::scale2D( std::stod(args[0]), std::stod(args[1])) * thisTransform;
+								break;
+							default:
+								break;
+						}
+					}
+					else if(subName == "rotate")
+					{
+						switch(args.size())
+						{
+							case 1:
+								thisTransform = MathExt::rotation2D( std::stod(args[0]), 0, 0) * thisTransform;
+								break;
+							case 3:
+								thisTransform = MathExt::rotation2D( std::stod(args[0]), std::stod(args[1]), std::stod(args[2])) * thisTransform;
+								break;
+							default:
+								break;
+						}
+					}
+					else if(subName == "skewX")
+					{
+						if(args.size() == 1)
+						{
+							thisTransform = MathExt::skew2D( std::stod(args[0]), 0) * thisTransform;
+						}
+					}
+					else if(subName == "skewY")
+					{
+						if(args.size() == 1)
+						{
+							thisTransform = MathExt::skew2D( 0, std::stod(args[0])) * thisTransform;
+						}
+					}
+					else if(subName == "matrix")
+					{
+						if(args.size() == 6)
+						{
+							Mat3f m = Mat3f::getIdentity();
+							m[0][0] = std::stod(args[0]);
+							m[0][1] = std::stod(args[2]);
+							m[0][2] = std::stod(args[4]);
+
+							m[1][0] = std::stod(args[1]);
+							m[1][1] = std::stod(args[3]);
+							m[1][2] = std::stod(args[5]);
+
+							thisTransform = m * thisTransform;
+						}
+					}
+				}
+
+				shape->setTransform(thisTransform);
+			}
 		}
+	
 	}
 
 	void VectorGraphic::loadRectangle(XmlNode* node, VectorRectangle* shape)
@@ -597,61 +586,58 @@ namespace smpl
 			return;
 		}
 		
-		auto attribsAsArr = node->getRawAttributes().getRawData();
-		for(std::vector<std::pair<std::string, std::string>*>& bucket : attribsAsArr)
+		for(std::pair<std::string, std::string>& attrib : node->getRawAttributes())
 		{
-			for(std::pair<std::string, std::string>* attrib : bucket)
+			if(StringTools::equalsIgnoreCase<char>(attrib.first, "x"))
 			{
-				if(StringTools::equalsIgnoreCase<char>(attrib->first, "x"))
-				{
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					if(percentValue)
-						shape->setX( width*value );
-					else
-						shape->setX( value );
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "y"))
-				{
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					if(percentValue)
-						shape->setY( height*value );
-					else
-						shape->setY( value );
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "rx"))
-				{
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					if(percentValue)
-						shape->setRX( width*value );
-					else
-						shape->setRX( value );
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "ry"))
-				{
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					if(percentValue)
-						shape->setRY( height*value );
-					else
-						shape->setRY( value );
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "width"))
-				{
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					if(percentValue)
-						shape->setWidth( width*value );
-					else
-						shape->setWidth( value );
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "height"))
-				{
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					if(percentValue)
-						shape->setHeight( height*value );
-					else
-						shape->setHeight( value );
-				}
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				if(percentValue)
+					shape->setX( width*value );
+				else
+					shape->setX( value );
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "y"))
+			{
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				if(percentValue)
+					shape->setY( height*value );
+				else
+					shape->setY( value );
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "rx"))
+			{
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				if(percentValue)
+					shape->setRX( width*value );
+				else
+					shape->setRX( value );
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "ry"))
+			{
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				if(percentValue)
+					shape->setRY( height*value );
+				else
+					shape->setRY( value );
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "width"))
+			{
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				if(percentValue)
+					shape->setWidth( width*value );
+				else
+					shape->setWidth( value );
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "height"))
+			{
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				if(percentValue)
+					shape->setHeight( height*value );
+				else
+					shape->setHeight( value );
 			}
 		}
+	
 	}
 
 	void VectorGraphic::loadCircle(XmlNode* node, VectorCircle* shape)
@@ -675,35 +661,31 @@ namespace smpl
 			return;
 		}
 
-		auto attribsAsArr = node->getRawAttributes().getRawData();
-		for(std::vector<std::pair<std::string, std::string>*>& bucket : attribsAsArr)
+		for(std::pair<std::string, std::string>& attrib : node->getRawAttributes())
 		{
-			for(std::pair<std::string, std::string>* attrib : bucket)
+			if(StringTools::equalsIgnoreCase<char>(attrib.first, "cx"))
 			{
-				if(StringTools::equalsIgnoreCase<char>(attrib->first, "cx"))
-				{
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					if(percentValue)
-						shape->setX( width*value );
-					else
-						shape->setX( value );
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "cy"))
-				{
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					if(percentValue)
-						shape->setY( height*value );
-					else
-						shape->setY( value );
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "r"))
-				{
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					if(percentValue)
-						shape->setRadius( width*value );
-					else
-						shape->setRadius( value );
-				}
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				if(percentValue)
+					shape->setX( width*value );
+				else
+					shape->setX( value );
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "cy"))
+			{
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				if(percentValue)
+					shape->setY( height*value );
+				else
+					shape->setY( value );
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "r"))
+			{
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				if(percentValue)
+					shape->setRadius( width*value );
+				else
+					shape->setRadius( value );
 			}
 		}
 	}
@@ -729,43 +711,39 @@ namespace smpl
 			return;
 		}
 
-		auto attribsAsArr = node->getRawAttributes().getRawData();
-		for(std::vector<std::pair<std::string, std::string>*>& bucket : attribsAsArr)
+		for(std::pair<std::string, std::string>& attrib : node->getRawAttributes())
 		{
-			for(std::pair<std::string, std::string>* attrib : bucket)
+			if(StringTools::equalsIgnoreCase<char>(attrib.first, "cx"))
 			{
-				if(StringTools::equalsIgnoreCase<char>(attrib->first, "cx"))
-				{
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					if(percentValue)
-						shape->setX( width*value );
-					else
-						shape->setX( value );
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "cy"))
-				{
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					if(percentValue)
-						shape->setY( height*value );
-					else
-						shape->setY( value );
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "rx"))
-				{
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					if(percentValue)
-						shape->setXRadius( width*value );
-					else
-						shape->setXRadius( value );
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "ry"))
-				{
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					if(percentValue)
-						shape->setYRadius( height*value );
-					else
-						shape->setYRadius( value );
-				}
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				if(percentValue)
+					shape->setX( width*value );
+				else
+					shape->setX( value );
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "cy"))
+			{
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				if(percentValue)
+					shape->setY( height*value );
+				else
+					shape->setY( value );
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "rx"))
+			{
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				if(percentValue)
+					shape->setXRadius( width*value );
+				else
+					shape->setXRadius( value );
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "ry"))
+			{
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				if(percentValue)
+					shape->setYRadius( height*value );
+				else
+					shape->setYRadius( value );
 			}
 		}
 	}
@@ -791,43 +769,39 @@ namespace smpl
 			return;
 		}
 
-		auto attribsAsArr = node->getRawAttributes().getRawData();
-		for(std::vector<std::pair<std::string, std::string>*>& bucket : attribsAsArr)
+		for(std::pair<std::string, std::string>& attrib : node->getRawAttributes())
 		{
-			for(std::pair<std::string, std::string>* attrib : bucket)
+			if(StringTools::equalsIgnoreCase<char>(attrib.first, "x1"))
 			{
-				if(StringTools::equalsIgnoreCase<char>(attrib->first, "x1"))
-				{
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					if(percentValue)
-						shape->setX1( width*value );
-					else
-						shape->setX1( value );
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "y1"))
-				{
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					if(percentValue)
-						shape->setY1( height*value );
-					else
-						shape->setY1( value );
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "x2"))
-				{
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					if(percentValue)
-						shape->setX2( width*value );
-					else
-						shape->setX2( value );
-				}
-				else if(StringTools::equalsIgnoreCase<char>(attrib->first, "y2"))
-				{
-					value = toNumber(StringTools::toCString(attrib->second), &percentValue);
-					if(percentValue)
-						shape->setY2( height*value );
-					else
-						shape->setY2( value );
-				}
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				if(percentValue)
+					shape->setX1( width*value );
+				else
+					shape->setX1( value );
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "y1"))
+			{
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				if(percentValue)
+					shape->setY1( height*value );
+				else
+					shape->setY1( value );
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "x2"))
+			{
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				if(percentValue)
+					shape->setX2( width*value );
+				else
+					shape->setX2( value );
+			}
+			else if(StringTools::equalsIgnoreCase<char>(attrib.first, "y2"))
+			{
+				value = toNumber(StringTools::toCString(attrib.second), &percentValue);
+				if(percentValue)
+					shape->setY2( height*value );
+				else
+					shape->setY2( value );
 			}
 		}
 	}
@@ -851,7 +825,7 @@ namespace smpl
 		}
 
 		auto tempAttrib = node->getAttribute("points");
-		if(tempAttrib != nullptr)
+		if(tempAttrib != node->getRawAttributes().end())
 		{
 			std::vector<std::string> splits = StringTools::splitString(tempAttrib->second, ' ');
 			for(std::string point : splits)
@@ -882,7 +856,7 @@ namespace smpl
 		}
 
 		auto tempAttrib = node->getAttribute("points");
-		if(tempAttrib != nullptr)
+		if(tempAttrib != node->getRawAttributes().end())
 		{
 			std::vector<std::string> splits = StringTools::splitString(tempAttrib->second, ' ');
 			for(std::string point : splits)
@@ -917,7 +891,7 @@ namespace smpl
 		}
 
 		auto attrib = node->getAttribute("d");
-		if(attrib == nullptr)
+		if(attrib != node->getRawAttributes().end())
 			return; //invalid node
 		
 		if(!attrib->first.empty())

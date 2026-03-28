@@ -1,3 +1,5 @@
+#pragma once
+#include "StandardTypes.h"
 #include "DataFormatter.h"
 #include "SimpleXml.h"
 #include "Stack.h"

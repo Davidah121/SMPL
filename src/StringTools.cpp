@@ -74,6 +74,7 @@ namespace smpl
 									'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_'};
 
 
+	std::locale StringTools::currentLocale = std::locale("en_US.UTF8");
 	bool StringTools::hasInit = false;
 
 	std::streambuf* StringTools::inputBuffer = std::cin.rdbuf();
@@ -395,7 +396,7 @@ namespace smpl
 		#endif
 	}
 
-	int StringTools::utf8ToChar(std::vector<unsigned char> utf8Char)
+	int StringTools::utf8ToChar(const std::vector<unsigned char>& utf8Char)
 	{
 		// BinarySet b;
 		// b.setBitOrder(BinarySet::RMSB);
@@ -431,7 +432,7 @@ namespace smpl
 
 		int bytesToRead = 0;
 		int runningCount = 0;
-		for(unsigned char& c : utf8Char)
+		for(unsigned char c : utf8Char)
 		{
 			if(bytesToRead < 0)
 			{
@@ -474,12 +475,12 @@ namespace smpl
 		return runningCount;
 	}
 
-	std::u32string StringTools::utf8ToIntString(std::string validUTF8String)
+	std::u32string StringTools::utf8ToIntString(const std::string& validUTF8String)
 	{
 		std::u32string finalChars;
 		int bytesToRead = 0;
 		int runningCount = 0;
-		for(char& c : validUTF8String)
+		for(char c : validUTF8String)
 		{
 			unsigned char v = (unsigned char)c;
 			if(bytesToRead <= 0)
@@ -527,7 +528,7 @@ namespace smpl
 		return finalChars;
 	}
 	
-	std::u32string StringTools::wideStringToIntString(std::wstring str)
+	std::u32string StringTools::wideStringToIntString(const std::wstring& str)
 	{
 		std::u32string result;
 		result.reserve(str.size());
@@ -553,11 +554,11 @@ namespace smpl
 			
 		return -1;
 	}
-	std::string StringTools::base64Encode(std::vector<unsigned char> bytes, bool urlSafe)
+	std::string StringTools::base64Encode(const std::vector<unsigned char>& bytes, bool urlSafe)
 	{
 		return base64Encode(bytes.data(), bytes.size(), urlSafe);
 	}
-	std::string StringTools::base64Encode(unsigned char* bytes, size_t size, bool urlSafe)
+	std::string StringTools::base64Encode(const unsigned char* bytes, size_t size, bool urlSafe)
 	{
 		std::string result;
 		
@@ -636,15 +637,15 @@ namespace smpl
 		return result;
 	}
 
-	std::vector<unsigned char> StringTools::base64Decode(std::vector<unsigned char> bytes)
+	std::vector<unsigned char> StringTools::base64Decode(const std::vector<unsigned char>& bytes)
 	{
 		return base64Decode(bytes.data(), bytes.size());
 	}
-	std::vector<unsigned char> StringTools::base64Decode(std::string str)
+	std::vector<unsigned char> StringTools::base64Decode(const std::string& str)
 	{
 		return base64Decode((unsigned char*)str.data(), str.size());
 	}
-	std::vector<unsigned char> StringTools::base64Decode(unsigned char* bytes, size_t size)
+	std::vector<unsigned char> StringTools::base64Decode(const unsigned char* bytes, size_t size)
 	{
 		std::vector<unsigned char> result;
 		if(size == 0)
@@ -729,7 +730,7 @@ namespace smpl
 		return result;
 	}
 
-	std::vector<std::string> StringTools::splitString(std::string s, const char delim, bool removeEmpty)
+	std::vector<std::string> StringTools::splitString(const std::string& s, const char delim, bool removeEmpty)
 	{
 		std::vector<std::string> stringArray = std::vector<std::string>();
 
@@ -764,7 +765,7 @@ namespace smpl
 		return stringArray;
 	}
 
-	std::string StringTools::urlEncode(std::string str)
+	std::string StringTools::urlEncode(const std::string& str)
 	{
 		std::string nStr = "";
 		bool queryMode = false;
@@ -804,7 +805,7 @@ namespace smpl
 		return nStr;
 	}
 
-	std::string StringTools::urlDecode(std::string str)
+	std::string StringTools::urlDecode(const std::string& str)
 	{
 		std::string nStr = "";
 		bool queryMode = false;
@@ -852,7 +853,50 @@ namespace smpl
 		return nStr;
 	}
 
-	std::string StringTools::translateEnvironmentVariables(std::string n)
+	
+	SimpleHashMap<std::string, std::string> StringTools::parseURLArguments(const std::string& url)
+	{
+		//find the first '?' Everything after that is a part of the arguments
+		//for each &, that is a name value pair
+		size_t indexOfStart = url.find('?');
+		if(indexOfStart == SIZE_MAX)
+			return {};
+
+		SimpleHashMap<std::string, std::string> output;
+
+		std::string name="";
+		std::string value="";
+		bool processingName = true;
+		for(size_t i=indexOfStart+1; i<url.size(); i++)
+		{
+			if(url[i] == '&')
+			{
+				output[name] = value;
+				name = "";
+				value = "";
+				processingName = true;
+			}
+			else if(url[i] == '=')
+			{
+				processingName = false;
+			}
+			else
+			{
+				if(processingName)
+					name += url[i];
+				else
+					value += url[i];
+			}
+		}
+		if(!name.empty() && !value.empty())
+		{
+			output[name] = value;
+		}
+
+		return output;
+	}
+
+	std::string StringTools::translateEnvironmentVariables(const std::string& n)
 	{
 		std::string finalStr = "";
 		std::string temp = "";
@@ -977,7 +1021,7 @@ namespace smpl
 		return binString;
 	}
 
-	std::vector<std::string> StringTools::splitStringMultipleDeliminators(std::string s, std::string delim, bool removeEmpty)
+	std::vector<std::string> StringTools::splitStringMultipleDeliminators(const std::string& s, const std::string& delim, bool removeEmpty)
 	{
 		std::vector<std::string> stringArray = std::vector<std::string>();
 
@@ -1025,7 +1069,7 @@ namespace smpl
 		return stringArray;
 	}
 
-	std::vector<std::string> StringTools::splitString(std::string s, std::string delim, bool removeEmpty)
+	std::vector<std::string> StringTools::splitString(const std::string& s, const std::string& delim, bool removeEmpty)
 	{
 		std::vector<std::string> stringArray = std::vector<std::string>();
 
@@ -1103,7 +1147,7 @@ namespace smpl
 	}
 
 
-	std::vector<std::wstring> StringTools::splitString(std::wstring s, const wchar_t delim, bool removeEmpty)
+	std::vector<std::wstring> StringTools::splitString(const std::wstring& s, const wchar_t delim, bool removeEmpty)
 	{
 		std::vector<std::wstring> stringArray = std::vector<std::wstring>();
 
@@ -1138,7 +1182,7 @@ namespace smpl
 		return stringArray;
 	}
 
-	std::vector<std::wstring> StringTools::splitStringMultipleDeliminators(std::wstring s, std::wstring delim, bool removeEmpty)
+	std::vector<std::wstring> StringTools::splitStringMultipleDeliminators(const std::wstring& s, const std::wstring& delim, bool removeEmpty)
 	{
 		std::vector<std::wstring> stringArray = std::vector<std::wstring>();
 
@@ -1186,7 +1230,7 @@ namespace smpl
 		return stringArray;
 	}
 
-	std::vector<std::wstring> StringTools::splitString(std::wstring s, std::wstring delim, bool removeEmpty)
+	std::vector<std::wstring> StringTools::splitString(const std::wstring& s, const std::wstring& delim, bool removeEmpty)
 	{
 		std::vector<std::wstring> stringArray = std::vector<std::wstring>();
 
@@ -1263,12 +1307,12 @@ namespace smpl
 		return stringArray;
 	}
 
-	std::string StringTools::removeWhitespace(std::string originalStr, bool removeTabs, bool onlyLeadingAndTrailing)
+	std::string StringTools::removeWhitespace(const std::string& originalStr, bool removeTabs, bool onlyLeadingAndTrailing)
 	{
 		std::string nStr;
 		if(!onlyLeadingAndTrailing)
 		{
-			for(char& c : originalStr)
+			for(char c : originalStr)
 			{
 				if(c == ' ')
 					continue;
@@ -1337,12 +1381,12 @@ namespace smpl
 		return nStr;
 	}
 
-	std::wstring StringTools::removeWhitespace(std::wstring originalStr, bool removeTabs, bool onlyLeadingAndTrailing)
+	std::wstring StringTools::removeWhitespace(const std::wstring& originalStr, bool removeTabs, bool onlyLeadingAndTrailing)
 	{
 		std::wstring nStr;
 		if(!onlyLeadingAndTrailing)
 		{
-			for(wchar_t& c : originalStr)
+			for(wchar_t c : originalStr)
 			{
 				if(c == L' ')
 					continue;
@@ -1679,7 +1723,7 @@ namespace smpl
 		}
 	}
 
-	void StringTools::findLongestMatch(std::string base, std::string match, int* index, int* length)
+	void StringTools::findLongestMatch(const std::string& base, const std::string& match, int* index, int* length)
 	{
 		StringTools::findLongestMatchKMP((unsigned char*)base.data(), base.size(), (unsigned char*)match.data(), match.size(), index, length);
 	}

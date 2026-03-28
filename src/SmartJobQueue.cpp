@@ -1,18 +1,26 @@
 #include "SimpleJobQueue.h"
 #include "System.h"
+#include <thread>
 
 namespace smpl
 {
-    SmartJobQueue::SmartJobQueue(int minThreads, int maxThreads)
+    SmartJobQueue::SmartJobQueue(size_t minThreads, size_t maxThreads)
     {
         running = true;
         analysisThread = std::thread(&SmartJobQueue::analysisThreadRun, this);
+
+		if(minThreads <= 0 )
+			minThreads = 1;
+		jobThreads = std::vector<std::thread>(minThreads);
+
+		createdTask = std::vector<FiberTask*>();
+		postponedJobs = SimpleHashSet<JobTask, RapidHash<JobTask>, CompareJobTask>(); //no task in progress at the start.
+		jobsBeingRun = SimpleHashSet<size_t>();
+
         maxThreadsAllowed = maxThreads; 
         for(size_t i=0; i<minThreads; i++)
         {
-            jobsInProgress[threadID] = SIZE_MAX;
-            threadDone[threadID] = false;
-            jobThreads[threadID] = new std::thread(&SmartJobQueue::threadRun, this, threadID, false);
+            jobThreads[threadID] = std::thread(&SmartJobQueue::threadRun, this, threadID, false);
             threadID++;
         }
     }
@@ -25,95 +33,73 @@ namespace smpl
 
         cv.notify_all();
         analysisThread.join();
-        for(auto p : jobThreads)
-        {
-            p.second->join();
-            delete p.second;
-        }
+		for(int i=0; i<jobThreads.size(); i++)
+		{
+			jobThreads[i].join();
+		}
+		
+		for(FiberTask* tPointer : createdTask)
+		{
+			if(tPointer != nullptr)
+				delete tPointer;
+		}
 
-        jobThreads.clear();
-        jobsInProgress.clear();
-        threadDone.clear();
+		createdTask.clear();
+		availableFiberTask.clear();
+		postponedJobs.clear();
+		jobsBeingRun.clear();
+		jobThreads.clear();
+		jobs.clear();
         jobsDoneSinceCheck = 0;
         threadID = 0;
         threadLoad = 0;
         jobID = 0;
     }
 
-    size_t SmartJobQueue::addJob(std::function<void()> j, double priority)
+    size_t SmartJobQueue::addJob(const std::function<void()>& j, double priority)
     {
-        JobInfo info;
-        info.func = j;
         jobQueueMutex.lock();
-        info.ID = jobID++;
-        jobs.add(priority, info);
+		jobs.add({priority, JobInfo(jobID, j)});
         jobQueueMutex.unlock();
 
         cv.notify_all();
-        return info.ID;
+        return jobID++;
     }
     
 
     void SmartJobQueue::removeJob(size_t ID)
     {
-        JobInfo info;
-        info.ID = ID;
-
-        jobQueueMutex.lock();
-        jobs.erase(info);
-        jobQueueMutex.unlock();
+		jobQueueMutex.lock();
+		jobs.erase(JobInfo(ID, nullptr));
+		jobQueueMutex.unlock();
     }
 
     bool SmartJobQueue::jobDone(size_t ID)
     {
-        bool found = false;
-        jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
+		bool found = false;
+		std::lock_guard<HybridSpinLock> lock(jobQueueMutex);
 
-        //check if its in the list of inprogress functions
-        for(auto o : jobsInProgress)
-        {
-            if(o.second == ID)
-            {
-                found = true;
-                break;
-            }
-        }
-        if(found)
-        {
-            jobQueueMutex.unlock();
-            return false;
-        }
-        
-        //check if its in the list of remaining functions
-        JobInfo temp = {ID, nullptr};
-        if(jobs.find(temp))
-        {
-            jobQueueMutex.unlock();
-            return false;
-        }
+		//check if its in the list of suspended jobs
+		if(postponedJobs.find(ID) != postponedJobs.end())
+			return false;
 
-        jobQueueMutex.unlock();
-        return true;
+		//check if its in the list of inprogress jobs
+		if(jobsBeingRun.find(ID) != jobsBeingRun.end())
+			return false;
+
+		//check if its in the list of jobs not queued up
+		if(jobs.find({ID, nullptr}))
+			return false;
+
+		return true;
     }
     
     bool SmartJobQueue::allJobsDone()
     {
-        bool finishedEverything = true;
-        jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
-        for(auto o : jobsInProgress)
-        {
-            if(o.second != SIZE_MAX)
-            {
-                finishedEverything = false;
-                break;
-            }
-        }
-        
-        if(jobs.size() > 0)
-            finishedEverything = false;
-        
-        jobQueueMutex.unlock();
-        return finishedEverything;
+		jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
+		bool finishedEverything = (jobs.size() == 0) && postponedJobs.empty() && jobsBeingRun.empty();
+		jobQueueMutex.unlock();
+		return finishedEverything;
     }
     
     void SmartJobQueue::removeAllJobs()
@@ -143,13 +129,13 @@ namespace smpl
     void SmartJobQueue::threadRun(size_t ID, bool temporary)
     {
         bool knownToHaveMoreWork = false;
-        size_t lastTime = System::getCurrentTimeMillis();
+		bool taskPriority = false; //FALSE = job queue first. TRUE = Existing jobs first
 
         while(getRunning())
         {
             //try to get a job from the queue
-            JobInfo node;
-
+			size_t jobID = -1;
+			FiberTask* taskPtr = nullptr;
             
             if(!knownToHaveMoreWork)
             {
@@ -162,39 +148,71 @@ namespace smpl
                 }
                 else
                 {
-                    cv.wait(temporaryLock);
+					cv.wait_for(temporaryLock, std::chrono::milliseconds(1));
                 }
             }
             
             jobQueueMutex.lock(HybridSpinLock::MODE_STANDARD);
-            bool gotStuff = jobs.get(node);
-            if(gotStuff)
-            {
-                jobsInProgress[ID] = node.ID;
-                threadLoad++;
-            }
+			
+			auto taskIterator = postponedJobs.end();
+			
+			//check for jobs in the in progress list. These should be done with the same priority as the others
+			if(taskPriority == true)
+				taskIterator = postponedJobs.begin();
+			
 
-            knownToHaveMoreWork = !jobs.empty();
-            jobQueueMutex.unlock();
+			if(jobs.size() > 0 && taskIterator == postponedJobs.end())
+			{
+				//get job and remove from queue. Mark as busy
+				JobInfo node;
+				jobs.get(node);
+				
+				//create task from this node
+				jobID = node.getID();
+				taskPtr = getFreeFiberTask(node);
+				jobs.pop();
+			}
 
-            //execute job if we got one
-            if(node.ID != SIZE_MAX && node.func != nullptr)
-            {
-                node.func();
-                lastTime = System::getCurrentTimeMillis();
-            }
-            
-            jobQueueMutex.lock(HybridSpinLock::MODE_STANDARD);
-            jobsInProgress[ID] = SIZE_MAX;
-            jobsDoneSinceCheck++;
-            if(node.ID != SIZE_MAX && node.func != nullptr)
-                threadLoad--; //actually got a function to execute
-            jobQueueMutex.unlock();
-        }
+			if(taskPriority == false && taskIterator == postponedJobs.end() && jobID == -1)
+				taskIterator = postponedJobs.begin();
 
-        jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
-        threadDone[ID] = true;
-        jobQueueMutex.unlock();
+			if(taskIterator != postponedJobs.end())
+			{
+				//if you got task iterator and didn't have to create one
+				jobID = taskIterator->getID();
+				taskPtr = &taskIterator->getTask();
+				postponedJobs.erase(taskIterator); //remove the task from the list as we are working on it. (Can't have multiple threads trying to work on it at once)
+			}
+
+			if(jobID != -1)
+				jobsBeingRun.insert(jobID);
+			
+			knownToHaveMoreWork = jobs.size() > 0 || postponedJobs.size() >= jobThreads.size(); //either there is a new job or there is enough existing jobs 
+			
+			jobQueueMutex.unlock();
+
+			//execute job if we got one
+			if(jobID != SIZE_MAX && taskPtr != nullptr)
+			{
+				taskPtr->run();
+
+				//check if the job is done.
+				jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
+				if(taskPtr->getStatus() == FiberTask::STATUS_DONE)
+					availableFiberTask.push_back(taskPtr);
+				else
+				{
+					postponedJobs.insert(JobTask(jobID, taskPtr)); //add it into the jobs in progress
+					knownToHaveMoreWork = true; //Since we added it back in, you know for a fact that their is work left to do. You just may not get this task again. Matters more with a very small job queue.
+					// cv.notify_all(); //It is possible that we wish to awaken all threads to catch any strays that slip through unnoticed. This is mainly for temporary threads
+				}
+				jobsBeingRun.erase(jobID);
+				jobQueueMutex.unlock();
+			}
+			
+			//ensure fairness by allowing swaping priority of task execution (existing or new task first)
+			taskPriority = !taskPriority;
+		}
     }
 
     void SmartJobQueue::analysisThreadRun()
@@ -210,23 +228,12 @@ namespace smpl
             //check 
             jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
 
-            //readjust job queue priority. Lower priority jobs should be bumped up to prevent starvation
+            //readjust job queue priority. Lower priority jobs should be bumped up to prevent starvation.... do this later?
+			//TODO: Add job priority adjustments (Note that once a job has been started, priority does not matter. They are all treated the same)
 
-            //also, remove threads that are done if possible
-            for(auto it : threadDone)
-            {
-                if(it.second == true)
-                {
-                    if(jobThreads[threadID] != nullptr)
-                    {
-                        jobThreads[threadID]->join();
-                        delete jobThreads[threadID];
-                    }
-                    jobThreads.erase(threadID);
-                }
-            }
+            //No need to remove threads. They are detached so they will be disposed of automatically
 
-            double jobsCreated = jobs.size() - oldJobSize;
+            double jobsCreated = (jobs.size() + postponedJobs.size()) - oldJobSize;
             if(jobsCreated < 0)
                 jobsCreated = 0;
             
@@ -241,10 +248,9 @@ namespace smpl
             
             if(createNewThread && jobThreads.size() < maxThreadsAllowed)
             {
-                jobsInProgress[threadID] = SIZE_MAX;
-                threadDone[threadID] = false;
-                jobThreads[threadID] = new std::thread(&SmartJobQueue::threadRun, this, threadID, true);
-                threadID++;
+				std::thread t = std::thread(&SmartJobQueue::threadRun, this, threadID, true);
+				t.detach(); //once detached, you no longer need to worry about it. Destructor will not break the thread. Thread will auto exit upon reaching the end of its function
+				threadID++;
             }
             jobsDoneSinceCheck = 0;
             jobQueueMutex.unlock();
@@ -259,4 +265,25 @@ namespace smpl
         jobQueueMutex.unlock();
         return !v;
     }
+	
+	FiberTask* SmartJobQueue::getFreeFiberTask(const JobInfo& jbInfo)
+	{
+		//DO NOT LOCK. THIS SHOULD ONLY BE RUN FROM INSIDE AN EXISTING CRITICAL SECTION
+		//attempt to grab an existing available fiber task.
+		FiberTask* ptr = nullptr;
+		if(!availableFiberTask.empty())
+		{
+			ptr = availableFiberTask.back();
+			availableFiberTask.pop_back();
+			ptr->changeTask(jbInfo.getFunction());
+		}
+		else
+		{
+			//create new task
+			createdTask.push_back(new FiberTask(jbInfo.getFunction()));
+			ptr = createdTask.back();
+		}
+
+		return ptr;
+	}
 }

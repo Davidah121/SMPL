@@ -13,7 +13,7 @@ namespace smpl
 {
 	struct huffThing
 	{
-		int value;
+		size_t value;
 		BinarySet codeVal;
 	};
 
@@ -1234,7 +1234,7 @@ namespace smpl
 		}
 	}
 
-	void HiResImage::saveJPG(File file, int quality, int subsampleMode)
+	void HiResImage::saveJPG(File file, int quality, int subsampleMode) const
 	{
 		//save using jpeg quantization matrix
 		// MatrixF lum = getLuminanceQuantizationMatrix(quality);

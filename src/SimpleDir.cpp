@@ -88,13 +88,13 @@ namespace smpl
 			std::string s;
 			try
 			{
-				s = std::filesystem::canonical( p ).u8string();
+				s = std::filesystem::canonical( p ).string();
 			}
 			catch(const std::exception& e)
 			{
 				//error. Likely access denied but can't print errors. Causes another fatal error.
 				//Shouldn't keep it but it will be kept.
-				s = p.u8string();
+				s = p.string();
 			}
 			return s;
 		}
@@ -113,13 +113,13 @@ namespace smpl
 		std::string s;
 		try
 		{
-			s = std::filesystem::canonical( p ).u8string();
+			s = std::filesystem::canonical( p ).string();
 		}
 		catch(const std::exception& e)
 		{
 			//error. Likely access denied but can't print errors. Causes another fatal error.
 			//Shouldn't keep it but it will be kept.
-			s = p.u8string();
+			s = p.string();
 		}
 		return s;
 	}
@@ -267,7 +267,7 @@ namespace smpl
 		{
 			if (names[i].is_directory())
 			{
-				dirs.push_back(names[i].path().filename().u8string());
+				dirs.push_back(names[i].path().filename().string());
 			}
 		}
 
@@ -286,7 +286,7 @@ namespace smpl
 		{
 			if (names[i].is_regular_file())
 			{
-				files.push_back(names[i].path().filename().u8string());
+				files.push_back(names[i].path().filename().string());
 			}
 		}
 

@@ -1,4 +1,4 @@
-#include <catch2/catch_amalgamated.hpp>
+#include <catch_amalgamated.hpp>
 #include "ResourceManager.h"
 
 //Relies on SmartMemory so if that has been properly unit tested, this becomes redundant

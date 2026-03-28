@@ -27,7 +27,7 @@ namespace smpl
 		packetQueue = std::vector<std::list<WebSocketPacket>>(amountOfConnectionsAllowed);
 		clients = std::vector<ClientInfo>(amountOfConnectionsAllowed);
 		
-		conn->setOnConnectFunction([this](size_t id) ->void{
+		conn->setOnConnectFunction([this](std::string ip, size_t id) ->void{
 			optMutex.lock();
 			//clear previous packet queue.
 			this->packetQueue[id].clear();
@@ -48,7 +48,7 @@ namespace smpl
 			optMutex.unlock();
 		});
 
-		conn->setOnDataAvailableFunction([this](size_t id) ->void{
+		conn->setOnDataAvailableFunction([this](std::string ip, size_t id) ->void{
 			
 			bool shouldCall = false;
 			optMutex.lock();
@@ -93,7 +93,7 @@ namespace smpl
 				this->onNewPacketFunc(id);
 		});
 
-		conn->setOnDisconnectFunction([this](size_t id) ->void{
+		conn->setOnDisconnectFunction([this](std::string ip, size_t id) ->void{
 			optMutex.lock();
 			//Shouldn't have to do anything special here
 			this->packetQueue[id].clear();
@@ -319,9 +319,9 @@ namespace smpl
 		}
 		
 		sendBuffer.push_back(0b10000001); //last message and is text
-		bool err = formBuffer(sendBuffer, (unsigned char*)s.data(), s.size());
+		bool noError = formBuffer(sendBuffer, (unsigned char*)s.data(), s.size());
 
-		if(!err)
+		if(noError)
 			status = conn->sendMessage(sendBuffer, id);
 		
 		optMutex.unlock();
@@ -358,9 +358,9 @@ namespace smpl
 		}
 
 		sendBuffer.push_back(0b10000010); //last message and is text
-		bool err = formBuffer(sendBuffer, buffer, size);
+		bool noError = formBuffer(sendBuffer, buffer, size);
 
-		if(!err)
+		if(noError)
 			status = conn->sendMessage(sendBuffer, id);
 		
 		optMutex.unlock();

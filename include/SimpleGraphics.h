@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildOptions.h"
+#include "StandardTypes.h"
 #include "Image.h"
 #include "Font.h"
 #include "Model.h"
@@ -15,8 +16,81 @@ namespace smpl
 		double xValue;
 		bool direction;
 	};
+	
+	struct GradientKeyPoint
+	{
+		float keyPoint;
+		Color color;
+		bool operator<(const GradientKeyPoint& other){return keyPoint < other.keyPoint;}
+		bool operator<=(const GradientKeyPoint& other){return keyPoint <= other.keyPoint;}
+		bool operator>(const GradientKeyPoint& other){return keyPoint > other.keyPoint;}
+		bool operator>=(const GradientKeyPoint& other){return keyPoint >= other.keyPoint;}
+		bool operator==(const GradientKeyPoint& other){return keyPoint == other.keyPoint;}
+		bool operator!=(const GradientKeyPoint& other){return keyPoint != other.keyPoint;}
+	};
+
 	void formatToString(StringStream& stream, const PolyCriticalPoint& v, const std::string& options);
 	
+	class DLL_OPTION FillFunction
+	{
+	public:
+		virtual ~FillFunction();
+		
+		virtual void drawColor(int x, int y, Image* surf);
+		virtual void fillBetween(int x1, int x2, int y, Image* surf);
+		
+	protected:
+		FillFunction();
+	};
+
+	class DLL_OPTION FlatFillFunction
+	{
+	public:
+		FlatFillFunction(Color fillColor);
+		virtual ~FlatFillFunction();
+
+		virtual void drawColor(int x, int y, Image* surf);
+		virtual void fillBetween(int x1, int x2, int y, Image* surf);
+	private:
+		Color fillColor;
+	};
+	
+	class DLL_OPTION LinearGradientFillFunction
+	{
+	public:
+		LinearGradientFillFunction(Vec2f startPoint, Vec2f endPoint, const std::vector<GradientKeyPoint>& keyPoints);
+		virtual ~LinearGradientFillFunction();
+
+		virtual void drawColor(int x, int y, Image* surf);
+		virtual void fillBetween(int x1, int x2, int y, Image* surf);
+	private:
+		Line gradientLine;
+		std::vector<GradientKeyPoint> keyPoints;
+	};
+	
+	class DLL_OPTION RadialGradientFillFunction
+	{
+	public:
+		RadialGradientFillFunction(Color fillColor);
+		virtual ~RadialGradientFillFunction();
+
+		virtual Color getColor(int x, int y);
+		virtual void fillBetween(int x1, int x2, int y);
+	private:
+	};
+	
+	class DLL_OPTION TextureFillFunction
+	{
+	public:
+		TextureFillFunction(Image* texture);
+		virtual ~TextureFillFunction();
+
+		virtual Color getColor(int x, int y);
+		virtual void fillBetween(int x1, int x2, int y);
+	private:
+		Image* texture = nullptr;
+	};
+
 	class DLL_OPTION SimpleGraphics
 	{
 	public:
@@ -162,6 +236,14 @@ namespace smpl
 		static Color lerp(Color src, Color dest, double lerpVal);
 		static Color4f lerp(Color4f src, Color4f dest, double lerpVal);
 		static Vec4f lerp(Vec4f src, Vec4f dest, double lerpVal);
+		static uint32_t lerp(uint32_t src, uint32_t dest, double lerpVal); //Same as lerp(Color, Color, double) but just needs to recast
+		#ifdef __SSE4_2__
+			static __m128i lerp(__m128i src, __m128i dest, __m128 lerpVal); //4 Colors. Uses 8 bits per channel
+		#endif
+
+		#ifdef __AVX2__
+			static __m256i lerp(__m256i src, __m256i dest, __m256 lerpVal); //8 Colors. Uses 8 bits per channel
+		#endif
 
 		/**
 		 * @brief Multiplies a color with another. This behaves similarly to a mask.
@@ -742,7 +824,7 @@ namespace smpl
 		 * 		Whether to ignore alpha when checking to replace.
 		 * 		Note that the alpha will be set to the new colors alpha.
 		 */
-		static void replaceColor(Image* img, Color oldColor, Color newColor, bool ignoreAlpha = false);
+		static void replaceColor(Image* img, const std::vector<Color>& oldColors, Color newColor, bool ignoreAlpha = false);
 
 		/**
 		 * @brief Removes all colors from the image except the specified color.
@@ -881,6 +963,11 @@ namespace smpl
 		//Does not check for surf == nullptr. Should only used in internal code
 		static void fillBetween(Color c, int x1, int x2, int y, Image* surf);
 		static void fillBetween(SIMD_U32 sseC, int x1, int x2, int y, Image* surf);
+
+		static void fillBetweenAntiAliased(Color c, double x1, double x2, int y, Image* surf);
+		static void fillBetweenAntiAliased(SIMD_U32 sseC, double x1, double x2, int y, Image* surf);
+
+		
 	private:
 		SimpleGraphics();
 		~SimpleGraphics();
