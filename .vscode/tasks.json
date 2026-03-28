@@ -4,7 +4,7 @@
 		{
 			"label": "Build Debug with Clang",
 			"type": "shell",
-			"command": "${workspaceFolder}/build/Debug/build.bat",
+			"command": "ninja -f ${workspaceFolder}/build/Debug/build.ninja",
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -14,7 +14,17 @@
 		{
 			"label": "Build Release with Clang",
 			"type": "shell",
-			"command": "${workspaceFolder}/build/Release/build.bat",
+			"command": "ninja -f ${workspaceFolder}/build/Release/build.ninja",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Generate Compilation Database",
+			"type": "shell",
+			"command": "ninja -f ${workspaceFolder}\\build\\Release\\build.ninja -t compdb > compile_commands.json",
 			"group": {
 				"kind": "build",
 				"isDefault": true

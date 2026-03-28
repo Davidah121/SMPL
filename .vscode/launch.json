@@ -5,7 +5,7 @@
 			"name": "(LLVM) Debug Launch",
 			"type": "lldb",
 			"request": "launch",
-			"program": "${workspaceFolder}/bin/Debug/test.exe",
+			"program": "${workspaceFolder}/bin/Debug/smpl.exe",
 			"args": [],
 			"cwd": "${workspaceFolder}",
 			"console": "integratedTerminal"
@@ -14,7 +14,7 @@
 			"name": "(LLVM) Release Launch",
 			"type": "lldb",
 			"request": "launch",
-			"program": "${workspaceFolder}/bin/Release/test.exe",
+			"program": "${workspaceFolder}/bin/Release/smpl.exe",
 			"args": [],
 			"cwd": "${workspaceFolder}",
 			"console": "integratedTerminal",
