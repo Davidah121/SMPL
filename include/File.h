@@ -94,33 +94,33 @@ namespace smpl
          *      The extension is not included.
          * @return std::string
          */
-        std::string getFileName();
+        std::string getFileName() const;
 
         /**
          * @brief Returns the full reference to the file.
          *      Has the full path, filename, and extension.
          * @return std::string
          */
-        std::string getFullFileName();
+        std::string getFullFileName() const;
 
         /**
          * @brief Returns the path to the file.
          * @return std::string
          */
-        std::string getPath();
+        std::string getPath() const;
 
         /**
          * @brief Returns just the extension of the file.
          * @return std::string
          */
-        std::string getExtension();
+        std::string getExtension() const;
 
         /**
          * @brief Returns the filename with the extension.
          * 
          * @return std::string 
          */
-        std::string getFileNameWithExt();
+        std::string getFileNameWithExt() const;
 
         /**
          * @brief Returns if the object represents a directory.
@@ -129,7 +129,7 @@ namespace smpl
          * @return true 
          * @return false 
          */
-        bool isDirectory();
+        bool isDirectory() const;
 
         /**
          * @brief Returns if the object represents a normal file.
@@ -138,7 +138,7 @@ namespace smpl
          * @return true 
          * @return false 
          */
-        bool isFile();
+        bool isFile() const;
 
         /**
          * @brief Returns if the object represents something that exists.
@@ -147,7 +147,7 @@ namespace smpl
          * @return true 
          * @return false 
          */
-        bool doesExist();
+        bool doesExist() const;
 
     private:
         void init(std::string filename);

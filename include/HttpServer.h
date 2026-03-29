@@ -77,7 +77,7 @@ namespace smpl
 		* @return true 
 		* @return false 
 		*/
-		char defaultGetFunction(WebRequest& req, std::string ip, size_t id);
+		char defaultGetFunction(const WebRequest& req, const std::string ip, const size_t id);
 
 		/**
 		* @brief The default GET Request function.
@@ -103,7 +103,7 @@ namespace smpl
 		* @return true 
 		* @return false 
 		*/
-		char defaultGetFunction(WebRequest& req, File f, std::string ip, size_t id);
+		char defaultGetFunction(const WebRequest& req, const File f, const std::string ip, const size_t id);
 
 		/**
 		* @brief Sends a 404 ERROR. 
@@ -564,11 +564,11 @@ namespace smpl
 
 		SimpleHashMap<std::string, std::pair<unsigned int, std::string>> urlsAndAllowedMethodsAndHeaders;
 
-		char handleRecv(WebRequest& req, std::vector<unsigned char>& body, std::string ip, size_t id);
-		char internalSendFile(WebRequest& req, std::string ip, size_t id);
-		char internalSendFile(WebRequest& req, File f, std::string ip, size_t id);
+		char handleRecv(const WebRequest& req, const std::vector<unsigned char>& body, const std::string ip, const size_t id);
+		char internalSendFile(const WebRequest& req, const std::string ip, const size_t id);
+		char internalSendFile(const WebRequest& req, const File f, const std::string ip, const size_t id);
 
-		char handleOptions(WebRequest& req, std::string ip, size_t id);
+		char handleOptions(const WebRequest& req, const std::string ip, const size_t id);
 
 	};
 }

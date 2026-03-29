@@ -5,7 +5,6 @@
 #include <cstdlib>
 #include <shared_mutex>
 #include <thread>
-#include <winsock.h>
 
 #ifndef NO_SOCKETS
 
@@ -14,6 +13,7 @@
 #include "System.h"
 
 #ifdef _WIN32
+	#include <winsock.h>
 	#include <io.h>
 	#include <ws2tcpip.h>
 	#define crossPlatformPoll(socketInfo, size, timeout) WSAPoll(socketInfo, size, timeout)
@@ -604,7 +604,7 @@ namespace smpl
 				{
 					if(!bindSocket())
 					{
-						closesocket(temporarySocket);
+						crossPlatformClose(temporarySocket);
 						temporarySocket = INVALID_SOCKET;
 					}
 				}
@@ -1565,7 +1565,7 @@ namespace smpl
 			else if(err < 0)
 			{
 				//error
-				StringTools::println("POLL ERR %d", WSAGetLastError());
+				StringTools::println("POLL ERR %d", crossPlatformGetLastError());
 				disconnect();
 				l.unlock();
 				continue;

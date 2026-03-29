@@ -146,24 +146,24 @@ namespace smpl
 	{
 		cookieMap[c.getName()] = c;
 	}
-	WebCookie& CookieManager::getCookie(const std::string& name)
+	SimpleHashMap<std::string, WebCookie>::Iterator CookieManager::getCookie(const std::string& name)
 	{
-		return cookieMap[name];
+		return cookieMap.find(name);
 	}
 	SimpleHashMap<std::string, WebCookie>& CookieManager::getAllCookies()
 	{
 		return cookieMap;
 	}
 
-	const WebCookie& CookieManager::getCookie(const std::string& name) const
+	const SimpleHashMap<std::string, WebCookie>::ConstIterator CookieManager::getCookie(const std::string& name) const
 	{
-		return cookieMap[name];
+		return cookieMap.find(name);
 	}
 	const SimpleHashMap<std::string, WebCookie>& CookieManager::getAllCookies() const
 	{
 		return cookieMap;
 	}
-
+		
 	void CookieManager::clear()
 	{
 		cookieMap.clear();

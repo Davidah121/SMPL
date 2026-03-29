@@ -28,6 +28,14 @@
 #define SHTABLE_CONSTEXPR
 #endif
 
+#ifndef __min
+#define __min(a, b) (((a) < (b)) ? (a) : (b))
+#endif
+
+#ifndef __max
+#define __max(a, b) (((a) > (b)) ? (a) : (b))
+#endif
+
 namespace smpl
 {
 	template<typename Key, typename Value, bool MULTI, class HashFunc = RapidHash<Key>, typename KeyEqual = std::equal_to<Key>, bool BIG = false>

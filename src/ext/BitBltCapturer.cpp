@@ -1,5 +1,6 @@
 #include "ext/ScreenCapturer.h"
 
+#ifdef __WIN32
 namespace smpl
 {
     BitBltCapturer::BitBltCapturer()
@@ -86,3 +87,4 @@ namespace smpl
         return finalImage;
     }
 }
+#endif

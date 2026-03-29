@@ -1,5 +1,9 @@
 #pragma once
+#ifdef __WIN32
 #include <intrin.h>
+#else
+#include <immintrin.h>
+#endif
 #include "StandardTypes.h"
 struct Float16
 {
