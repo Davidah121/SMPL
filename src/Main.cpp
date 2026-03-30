@@ -1030,6 +1030,11 @@ void quickYieldingTest()
 
 }
 
+void testJSON()
+{
+	std::string body = "{\"Username\": \"user\", \"Password\": \"password\"}";
+	SimpleJSON j = SimpleJSON((unsigned char*)body.c_str(), body.size());
+}
 int main()
 {
     // smpl::SimpleJSON authStuff = setupOAUTH("client_secret.json", 
@@ -1043,6 +1048,7 @@ int main()
 	
 	runBasicHTTPServer();
     // quickYieldingTest();
+	// testJSON();
     return 0;
 }
 

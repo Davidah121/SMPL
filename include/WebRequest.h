@@ -67,11 +67,16 @@ namespace smpl
 
 		void addCookies(const CookieManager& cm);
 		void addCookie(const WebCookie& c);
-		WebCookie& getCookie(const std::string& name);
+		SimpleHashMap<std::string, WebCookie>::Iterator getCookie(const std::string& name);
 		SimpleHashMap<std::string, WebCookie>& getAllCookies();
 		
-		const WebCookie& getCookie(const std::string& name) const;
+		const SimpleHashMap<std::string, WebCookie>::ConstIterator getCookie(const std::string& name) const;
 		const SimpleHashMap<std::string, WebCookie>& getAllCookies() const;
+		auto begin() {return cookieMap.begin();}
+		auto end() {return cookieMap.end();}
+		auto begin() const {return cookieMap.begin();}
+		auto end() const {return cookieMap.end();}
+
 		void clear();
 		bool empty() const;
 
@@ -197,6 +202,7 @@ namespace smpl
 			 * @return CookieMap
 			 */
 			CookieManager& getCookieMap();
+			const CookieManager& getCookieMap() const;
 
 			/**
 			 * @brief Returns if the request is empty.

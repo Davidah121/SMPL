@@ -53,19 +53,19 @@ namespace smpl
         fullFileName = filename;
     }
 
-    std::string File::getFileName()
+    std::string File::getFileName() const
     {
         if(locationOfFileName < fullFileName.size())
             return fullFileName.substr(locationOfFileName, locationOfExtension-(locationOfFileName));
         return "";
     }
 
-    std::string File::getFullFileName()
+    std::string File::getFullFileName() const
     {
         return fullFileName;
     }
 
-    std::string File::getPath()
+    std::string File::getPath() const
     {
         std::string path = fullFileName.substr(0, locationOfFileName);
         if(path.empty())
@@ -74,31 +74,31 @@ namespace smpl
             return path;
     }
 
-    std::string File::getExtension()
+    std::string File::getExtension() const
     {
         if(locationOfExtension < fullFileName.size())
             return fullFileName.substr(locationOfExtension, fullFileName.size());
         return "";
     }
 
-    std::string File::getFileNameWithExt()
+    std::string File::getFileNameWithExt() const
     {
         if(locationOfFileName < fullFileName.size())
             return fullFileName.substr(locationOfFileName, fullFileName.size());
         return "";
     }
 
-    bool File::isDirectory()
+    bool File::isDirectory() const
     {
         return SimpleDir::isDirectory(fullFileName);
     }
 
-    bool File::isFile()
+    bool File::isFile() const
     {
         return SimpleDir::isFile(fullFileName);
     }
 
-    bool File::doesExist()
+    bool File::doesExist() const
     {
         return SimpleDir::doesExist(fullFileName);
     }

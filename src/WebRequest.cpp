@@ -230,17 +230,17 @@ namespace smpl
 	void WebRequest::addKeyValue(const std::string& k, const std::string& v)
 	{
 		std::string lowerK = StringTools::toLowercase(k);
-		if(k == "cookie")
+		if(lowerK == "cookie")
 		{
 			cookieMap.loadClientSentCookies(k+": "+v);
 		}
-		else if(k == "set-cookie")
+		else if(lowerK == "set-cookie")
 		{
 			cookieMap.loadServerSentCookie(k+": "+v);
 		}
 		else
 		{
-			data[k] = v;
+			data[lowerK] = v;
 		}
 	}
 
@@ -299,7 +299,11 @@ namespace smpl
 	{
 		return cookieMap;
 	}
-	
+	const CookieManager& WebRequest::getCookieMap() const
+	{
+		return cookieMap;
+	}
+
 	std::string WebRequest::getRequestAsString() const
 	{
 		std::string buffer;

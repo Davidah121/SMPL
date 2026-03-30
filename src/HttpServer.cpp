@@ -238,7 +238,7 @@ namespace smpl
 		extraResponseHandler = func;
 	}
 
-	char HttpServer::defaultGetFunction(WebRequest& req, std::string ip, size_t id)
+	char HttpServer::defaultGetFunction(const WebRequest& req, const std::string ip, const size_t id)
 	{
 		if(conn == nullptr)
 		{
@@ -247,7 +247,7 @@ namespace smpl
 		return internalSendFile(req, ip, id);
 	}
 
-	char HttpServer::defaultGetFunction(WebRequest& req, File f, std::string ip, size_t id)
+	char HttpServer::defaultGetFunction(const WebRequest& req, const File f, const std::string ip, const size_t id)
 	{
 		if(conn == nullptr)
 		{
@@ -256,7 +256,7 @@ namespace smpl
 		return internalSendFile(req, f, ip, id);
 	}
 
-	char HttpServer::handleRecv(WebRequest& req, std::vector<unsigned char>& body, std::string ip, size_t id)
+	char HttpServer::handleRecv(const WebRequest& req, const std::vector<unsigned char>& body, const std::string ip, const size_t id)
 	{
 		if(req.getType() == WebRequest::TYPE_GET || req.getType() == WebRequest::TYPE_HEAD)
 		{
@@ -287,7 +287,7 @@ namespace smpl
 		urlsAndAllowedMethodsAndHeaders[url] = {allowedRequestFlags, allowedCustomHeaders};
 	}
 	
-	char HttpServer::handleOptions(WebRequest& req, std::string ip, size_t id)
+	char HttpServer::handleOptions(const WebRequest& req, const std::string ip, const size_t id)
 	{
 		//Must return allowed methods and request headers.
 		//Lazy and will just say that by default, GET, HEAD, and OPTIONS are available
@@ -623,7 +623,7 @@ namespace smpl
 		}
 	}
 
-	char HttpServer::internalSendFile(WebRequest& req, std::string ip, size_t id)
+	char HttpServer::internalSendFile(const WebRequest& req, const std::string ip, const size_t id)
 	{
 		if(conn == nullptr)
 		{
@@ -710,7 +710,7 @@ namespace smpl
 		return internalSendFile(req, validFName, ip, id);
 	}
 	
-	char HttpServer::internalSendFile(WebRequest& req, File f, std::string ip, size_t id)
+	char HttpServer::internalSendFile(const WebRequest& req, const File f, const std::string ip, const size_t id)
 	{
 		if(conn == nullptr)
 		{

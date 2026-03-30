@@ -2,6 +2,7 @@
 #include "System.h"
 
 
+#ifdef __WIN32
 namespace smpl
 {
     
@@ -191,3 +192,4 @@ namespace smpl
     }
     #endif
 }
+#endif
