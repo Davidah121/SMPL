@@ -119,14 +119,14 @@ namespace smpl
 					if(l.front() == '[' && l.back() == ']')
 					{
 						//Insert always - should automatically replace the data at that point too.
-						std::string sectionName = l.substr(1, l.size()-2);
+						std::string sectionName = StringTools::toLowercase(l.substr(1, l.size()-2));
 						sectionIterator = sectionTable.insertOrReplace(IniSectionData(sectionName));
 					}
 
 					size_t equalsIndex = l.find('=');
 					if(equalsIndex != (size_t)-1)
 					{
-						if(sectionIterator != end())
+						if(sectionIterator == end())
 						{
 							//error in the file probably
 							continue;
@@ -135,7 +135,7 @@ namespace smpl
 
 						if(equalsIndex >= 1)
 						{
-							keyName = l.substr(0, equalsIndex);
+							keyName = StringTools::toLowercase(l.substr(0, equalsIndex));
 						}
 						else
 						{

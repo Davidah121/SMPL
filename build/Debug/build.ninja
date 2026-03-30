@@ -13,7 +13,7 @@ rule buildToObject
 rule buildToEXE
    deps = gcc
    depfile = $out.d
-   command = $compiler $EXECompilerFlags $inc ${objDir}/*.o -o $out -MMD -MF $out.d
+   command = $compiler $inc ${objDir}/*.o -o $out $EXECompilerFlags -MMD -MF $out.d
 
 ## build all of the objects and the executable
 build $objDir/Algorithms.o: buildToObject src/Algorithms.cpp
