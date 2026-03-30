@@ -17,7 +17,7 @@ namespace smpl
 	public:
 		IniKeyData(const std::string& name, const std::string& value)
 		{
-			this->name = name;
+			this->name = StringTools::toLowercase(name);
 			this->value = value;
 		}
 		IniKeyData(const IniKeyData& other) = default;
