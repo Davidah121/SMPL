@@ -1,5 +1,6 @@
 #pragma once
 #include "StandardTypes.h"
+#include <emmintrin.h>
 #ifdef __WIN32
 #include <intrin.h>
 #else
@@ -31,7 +32,7 @@ namespace smpl
 
 		//load / store
 		static SIMD_SSE<short>load(const short* pointer){return _mm_loadu_si128((__m128i*)pointer);}
-		void store(short* pointer){_mm_storeu_si128((__m128i*)pointer, values);}
+		void store(short* pointer) const {_mm_storeu_si128((__m128i*)pointer, values);}
 		
 		//arithmetic
 		SIMD_SSE<short> operator-() const {return _mm_sub_epi16(_mm_set1_epi16(0), values);}
@@ -75,33 +76,27 @@ namespace smpl
 		void operator>>=(const int shift) {values = operator>>(shift).values;}
 		void operator<<=(const int shift) {values = operator<<(shift).values;}
 		
-		SIMD_SSE<short> operator&(const int v) const {return _mm_and_si128(values, _mm_set1_epi16(v));}
 		SIMD_SSE<short> operator&(const SIMD_SSE<short>& other) const {return _mm_and_si128(values, other.values);}
-		
-		void operator&=(const int v) {values = operator&(v).values;}
 		void operator&=(const SIMD_SSE<short>& other) {values = operator&(other).values;}
 		
-		SIMD_SSE<short> bitwiseAndNot(const int v) const {return _mm_andnot_si128(values, _mm_set1_epi16(v));}
 		SIMD_SSE<short> bitwiseAndNot(const SIMD_SSE<short>& other) const {return _mm_andnot_si128(values, other.values);}
 		
-		void bitwiseAndNot(const int v) {values = _mm_andnot_si128(values, _mm_set1_epi16(v));}
-		void bitwiseAndNot(const SIMD_SSE<short>& other) {values = _mm_andnot_si128(values, other.values);}
-		
 		//comparison
-		SIMD_SSE<short> operator>(const unsigned short byte) const {return _mm_cmpgt_epi16(values, _mm_set1_epi16(byte));}
 		SIMD_SSE<short> operator>(const SIMD_SSE<short>& other) const {return _mm_cmpgt_epi16(values, other.values);}
-		
-		SIMD_SSE<short> operator<(const unsigned short byte) const {return _mm_cmplt_epi16(values, _mm_set1_epi16(byte));}
-		SIMD_SSE<short> operator<(const SIMD_SSE<short>& other) const {return _mm_cmplt_epi16(values, other.values);}
-		
-		SIMD_SSE<short> operator==(const unsigned short byte) const {return _mm_cmpeq_epi16(values, _mm_set1_epi16(byte));}
-		SIMD_SSE<short> operator==(const SIMD_SSE<short>& other) const {return _mm_cmpeq_epi16(values, other.values);}
-		
-		SIMD_SSE<short> operator!=(const unsigned short byte) const 
+		SIMD_SSE<short> operator>=(const SIMD_SSE<short>& other) const
 		{
-			__m128i temp = _mm_cmpeq_epi16(values, _mm_set1_epi16(byte));
-			return _mm_andnot_si128(temp, temp); //does not bitwise not
+			__m128i temp = operator<(other).values;
+			return _mm_andnot_si128(temp, temp);
 		}
+		
+		SIMD_SSE<short> operator<(const SIMD_SSE<short>& other) const {return _mm_cmplt_epi16(values, other.values);}
+		SIMD_SSE<short> operator<=(const SIMD_SSE<short>& other) const
+		{
+			__m128i temp = operator>(other).values;
+			return _mm_andnot_si128(temp, temp);
+		}
+
+		SIMD_SSE<short> operator==(const SIMD_SSE<short>& other) const {return _mm_cmpeq_epi16(values, other.values);}
 		SIMD_SSE<short> operator!=(const SIMD_SSE<short>& other) const
 		{
 			__m128i temp = _mm_cmpeq_epi16(values, other.values);
@@ -132,6 +127,20 @@ namespace smpl
 			result = _mm_hadd_epi32(result, result); //(A1+A5+A2+A6, A3+A7+A4+A8, duplicates)
 			_mm_storeu_si128((__m128i*)temp, result);
 			return temp[0] + temp[1];
+		}
+		
+		//additional arithmetic functions
+		SIMD_SSE<short> max(const SIMD_SSE<short>& other) const
+		{
+			return _mm_max_epi16(values, other.values);
+		}
+		SIMD_SSE<short> min(const SIMD_SSE<short>& other) const
+		{
+			return _mm_min_epi16(values, other.values);
+		}
+		SIMD_SSE<short> clamp(const SIMD_SSE<short>& min, const SIMD_SSE<short>& max) const
+		{
+			return _mm_min_epi16(_mm_max_epi16(values, min.values), max.values);
 		}
 
 		operator SIMD_SSE<unsigned short>() const;
@@ -175,24 +184,24 @@ namespace smpl
 			return pack16Low;
 		}
 		
-		SIMD_SSE<unsigned short> operator>(const unsigned short byte) const
-		{
-			__m128i data = _mm_set1_epi16(byte);
-			return _mm_cmpeq_epi16(_mm_max_epu16(values, data), values);
-		}
 		SIMD_SSE<unsigned short> operator>(const SIMD_SSE<unsigned short>& other) const
 		{
 			return _mm_cmpeq_epi16(_mm_max_epu16(values, other.values), values);
 		}
-		
-		SIMD_SSE<unsigned short> operator<(const unsigned short byte) const
+		SIMD_SSE<unsigned short> operator>=(const SIMD_SSE<unsigned short>& other) const
 		{
-			__m128i data = _mm_set1_epi16(byte);
-			return _mm_cmpeq_epi16(_mm_min_epu16(values, data), values);
+			__m128i temp = operator<(other).values;
+			return _mm_andnot_si128(temp, temp);
 		}
+		
 		SIMD_SSE<unsigned short> operator<(const SIMD_SSE<unsigned short>& other) const
 		{
 			return _mm_cmpeq_epi16(_mm_min_epu16(values, other.values), values);
+		}
+		SIMD_SSE<unsigned short> operator<=(const SIMD_SSE<unsigned short>& other) const
+		{
+			__m128i temp = operator>(other).values;
+			return _mm_andnot_si128(temp, temp);
 		}
 
 		//requires that blendFactor is either 0x0000 or 0xFFFF to work properly which I believe is required already
@@ -215,10 +224,24 @@ namespace smpl
 			_mm_storeu_si128((__m128i*)temp, result);
 			return temp[0] + temp[1];
 		}
+		
+		//additional arithmetic functions
+		SIMD_SSE<unsigned short> max(const SIMD_SSE<unsigned short>& other) const
+		{
+			return _mm_max_epu16(values, other.values);
+		}
+		SIMD_SSE<unsigned short> min(const SIMD_SSE<unsigned short>& other) const
+		{
+			return _mm_min_epu16(values, other.values);
+		}
+		SIMD_SSE<unsigned short> clamp(const SIMD_SSE<unsigned short>& min, const SIMD_SSE<unsigned short>& max) const
+		{
+			return _mm_min_epu16(_mm_max_epu16(values, min.values), max.values);
+		}
 
 		//load / store
 		static SIMD_SSE<unsigned short>load(const unsigned short* pointer){return _mm_loadu_si128((__m128i*)pointer);}
-		void store(unsigned short* pointer){_mm_storeu_si128((__m128i*)pointer, values);}
+		void store(unsigned short* pointer) const {_mm_storeu_si128((__m128i*)pointer, values);}
 	};
 
 	#endif
@@ -246,7 +269,7 @@ namespace smpl
 
 		//load / store
 		static SIMD_AVX<short>load(const short* pointer){return _mm256_loadu_si256((__m256i*)pointer);}
-		void store(short* pointer){_mm256_storeu_si256((__m256i*)pointer, values);}
+		void store(short* pointer) const {_mm256_storeu_si256((__m256i*)pointer, values);}
 		
 		//arithmetic
 		SIMD_AVX<short> operator-() const {return _mm256_sub_epi16(_mm256_set1_epi16(0), values);}
@@ -288,33 +311,27 @@ namespace smpl
 		void operator>>=(const int shift) {values = operator>>(shift).values;}
 		void operator<<=(const int shift) {values = operator<<(shift).values;}
 		
-		SIMD_AVX<short> operator&(const int v) const {return _mm256_and_si256(values, _mm256_set1_epi16(v));}
 		SIMD_AVX<short> operator&(const SIMD_AVX<short>& other) const {return _mm256_and_si256(values, other.values);}
-		
-		void operator&=(const int v) {values = operator&(v).values;}
 		void operator&=(const SIMD_AVX<short>& other) {values = operator&(other).values;}
 		
-		SIMD_AVX<short> bitwiseAndNot(const int v) const {return _mm256_andnot_si256(values, _mm256_set1_epi16(v));}
 		SIMD_AVX<short> bitwiseAndNot(const SIMD_AVX<short>& other) const {return _mm256_andnot_si256(values, other.values);}
 		
-		void bitwiseAndNot(const int v) {values = _mm256_andnot_si256(values, _mm256_set1_epi16(v));}
-		void bitwiseAndNot(const SIMD_AVX<short>& other) {values = _mm256_andnot_si256(values, other.values);}
-		
 		//comparison
-		SIMD_AVX<short> operator>(const unsigned short byte) const {return _mm256_cmpgt_epi16(values, _mm256_set1_epi16(byte));}
 		SIMD_AVX<short> operator>(const SIMD_AVX<short>& other) const {return _mm256_cmpgt_epi16(values, other.values);}
-		
-		SIMD_AVX<short> operator<(const unsigned short byte) const {return _mm256_cmpgt_epi16(_mm256_set1_epi16(byte), values);}
-		SIMD_AVX<short> operator<(const SIMD_AVX<short>& other) const {return _mm256_cmpgt_epi16(other.values, values);}
-		
-		SIMD_AVX<short> operator==(const unsigned short byte) const {return _mm256_cmpeq_epi16(values, _mm256_set1_epi16(byte));}
-		SIMD_AVX<short> operator==(const SIMD_AVX<short>& other) const {return _mm256_cmpeq_epi16(values, other.values);}
-		
-		SIMD_AVX<short> operator!=(const unsigned short byte) const 
+		SIMD_AVX<short> operator>=(const SIMD_AVX<short>& other) const
 		{
-			__m256i temp = _mm256_cmpeq_epi16(values, _mm256_set1_epi16(byte));
-			return _mm256_andnot_si256(temp, temp); //does not bitwise not
+			__m256i temp = operator<(other).values;
+			return _mm256_andnot_si256(temp, temp);
 		}
+
+		SIMD_AVX<short> operator<(const SIMD_AVX<short>& other) const {return _mm256_cmpgt_epi16(other.values, values);}
+		SIMD_AVX<short> operator<=(const SIMD_AVX<short>& other) const
+		{
+			__m256i temp = operator>(other).values;
+			return _mm256_andnot_si256(temp, temp);
+		}
+		
+		SIMD_AVX<short> operator==(const SIMD_AVX<short>& other) const {return _mm256_cmpeq_epi16(values, other.values);}
 		SIMD_AVX<short> operator!=(const SIMD_AVX<short>& other) const
 		{
 			__m256i temp = _mm256_cmpeq_epi16(values, other.values);
@@ -343,6 +360,20 @@ namespace smpl
 			result = _mm256_hadd_epi32(result, result); //Pairs of 8
 			_mm256_storeu_si256((__m256i*)temp, result);
 			return temp[0] + temp[4];
+		}
+		
+		//additional arithmetic functions
+		SIMD_AVX<short> max(const SIMD_AVX<short>& other) const
+		{
+			return _mm256_max_epi16(values, other.values);
+		}
+		SIMD_AVX<short> min(const SIMD_AVX<short>& other) const
+		{
+			return _mm256_min_epi16(values, other.values);
+		}
+		SIMD_AVX<short> clamp(const SIMD_AVX<short>& min, const SIMD_AVX<short>& max) const
+		{
+			return _mm256_min_epi16(_mm256_max_epi16(values, min.values), max.values);
 		}
 
 		operator SIMD_AVX<unsigned short>() const;
@@ -387,26 +418,25 @@ namespace smpl
 			return _mm256_permute4x64_epi64(pack16Low, 0b11011000);
 		}
 		
-		SIMD_AVX<unsigned short> operator>(const unsigned short byte) const
-		{
-			__m256i data = _mm256_set1_epi16(byte);
-			return _mm256_cmpeq_epi16(_mm256_max_epu16(values, data), values);
-		}
 		SIMD_AVX<unsigned short> operator>(const SIMD_AVX<unsigned short>& other) const
 		{
 			return _mm256_cmpeq_epi16(_mm256_max_epu16(values, other.values), values);
 		}
-		
-		SIMD_AVX<unsigned short> operator<(const unsigned short byte) const
+		SIMD_AVX<unsigned short> operator>=(const SIMD_AVX<unsigned short>& other) const
 		{
-			__m256i data = _mm256_set1_epi16(byte);
-			return _mm256_cmpeq_epi16(_mm256_min_epu16(values, data), values);
+			__m256i temp = operator<(other).values;
+			return _mm256_andnot_si256(temp, temp);
 		}
+
 		SIMD_AVX<unsigned short> operator<(const SIMD_AVX<unsigned short>& other) const
 		{
 			return _mm256_cmpeq_epi16(_mm256_min_epu16(values, other.values), values);
 		}
-
+		SIMD_AVX<unsigned short> operator<=(const SIMD_AVX<unsigned short>& other) const
+		{
+			__m256i temp = operator>(other).values;
+			return _mm256_andnot_si256(temp, temp);
+		}
 		//requires that blendFactor is either 0x0000 or 0xFFFF to work properly which I believe is required already
 		SIMD_AVX<unsigned short> blend(const SIMD_AVX<unsigned short>& other, const SIMD_AVX<unsigned short>& blendFactor) const
 		{
@@ -428,10 +458,24 @@ namespace smpl
 			_mm256_storeu_si256((__m256i*)temp, result);
 			return temp[0] + temp[4];
 		}
+		
+		//additional arithmetic functions
+		SIMD_AVX<unsigned short> max(const SIMD_AVX<unsigned short>& other) const
+		{
+			return _mm256_max_epu16(values, other.values);
+		}
+		SIMD_AVX<unsigned short> min(const SIMD_AVX<unsigned short>& other) const
+		{
+			return _mm256_min_epu16(values, other.values);
+		}
+		SIMD_AVX<unsigned short> clamp(const SIMD_AVX<unsigned short>& min, const SIMD_AVX<unsigned short>& max) const
+		{
+			return _mm256_min_epu16(_mm256_max_epu16(values, min.values), max.values);
+		}
 
 		//load / store
 		static SIMD_AVX<unsigned short>load(const unsigned short* pointer){return _mm256_loadu_si256((__m256i*)pointer);}
-		void store(unsigned short* pointer){_mm256_storeu_si256((__m256i*)pointer, values);}
+		void store(unsigned short* pointer) const {_mm256_storeu_si256((__m256i*)pointer, values);}
 	};
 	#endif
 }

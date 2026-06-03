@@ -53,6 +53,23 @@ namespace smpl
 		 */
 		~Line();
 
+		Line operator+(const Vec2f& other) const
+		{
+			return Line(point1 + other, point2 + other);
+		}
+		Line operator-(const Vec2f& other) const
+		{
+			return Line(point1 - other, point2 - other);
+		}
+		friend Line operator+(const Vec2f& other, const Line& l)
+		{
+			return l + other;
+		}
+		friend Line operator-(const Vec2f& other, const Line& l)
+		{
+			return l - other;
+		}
+
 		/**
 		 * @brief Gets the first point of the line.
 		 * 
@@ -66,6 +83,13 @@ namespace smpl
 		 * @return Vec2f 
 		 */
 		Vec2f getPoint2();
+
+		/**
+		 * @brief Gets the Mid Point of the line
+		 * 
+		 * @return Vec2f 
+		 */
+		Vec2f getMidPoint();
 
 		/**
 		 * @brief Returns a vector that represent the change from point1 to point2.

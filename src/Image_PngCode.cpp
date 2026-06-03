@@ -1085,7 +1085,7 @@ namespace smpl
 						paletteIndex = pixelBits.getBits(i, i+bitDepth, true);
 
 						Color pColor = p->getColor(paletteIndex);
-						Color4f c = SimpleGraphics::convertColorToColor4f(pColor);
+						Color4f c = pColor;
 						if(!interlace)
 						{
 							rawPixs[rawIndex] = c;
@@ -1105,7 +1105,7 @@ namespace smpl
 						paletteIndex = scanLine[i];
 
 						Color pColor = p->getColor(paletteIndex);
-						Color4f c = SimpleGraphics::convertColorToColor4f(pColor);
+						Color4f c = pColor;
 						if(!interlace)
 						{
 							rawPixs[rawIndex] = c;

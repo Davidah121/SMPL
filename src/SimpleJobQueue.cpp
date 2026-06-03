@@ -60,10 +60,54 @@ namespace smpl
 		jobQueueMutex.unlock();
 
 		knownJobCount++;
-		cv.notify_all();
+		cv.notify_one();
 		return info.getID();
 	}
-	
+
+	void SimpleJobQueue::parallelize(const std::function<void(size_t, size_t, size_t)>& func, size_t start, size_t end, size_t incr, size_t threadsWanted)
+	{
+		// size_t t1 = System::getCurrentTimeNano();
+		if(threadsWanted < 1)
+			threadsWanted = jobThreads.size();
+		if(threadsWanted == 1)
+		{
+			func(start, end, incr);
+			return;
+		}
+
+		std::vector<std::function<void()>> jobsToAdd;
+		size_t max = end;
+		size_t indexIncr = (end-start)/threadsWanted;
+		indexIncr -= indexIncr % incr;
+
+		if(indexIncr < incr)
+		{
+			func(start, end, incr); //Change this behavior. Should reduce the total number of threads instead of making it all single threaded.
+			return;
+		}
+		
+		size_t tStart = start;
+		size_t tEnd = start+indexIncr;
+		for(size_t i=0; i<threadsWanted-1; i++)
+		{
+			addJob([func, tStart, tEnd, incr]() ->void{
+				func(tStart, tEnd, incr);
+			});
+			
+			tStart += indexIncr;
+			tEnd += indexIncr;
+		}
+
+		tEnd = end;
+		
+		addJob([func, tStart, tEnd, incr]() ->void{
+			func(tStart, tEnd, incr);
+		});
+
+		// size_t t2 = System::getCurrentTimeNano();
+		waitForAllJobs(); //should actually use a different approach
+		// StringTools::println("Time allocating jobs: %lluns", t2-t1);
+	}
 
 	void SimpleJobQueue::removeJob(size_t ID)
 	{
@@ -123,7 +167,8 @@ namespace smpl
 		while(!allJobsDone())
 		{
 			//Otherwise, wait.
-			System::sleep(1, 0, false);
+			std::unique_lock<std::mutex> temporaryLock(jobWaitHaltMutex);
+			jobWaitCV.wait_for(temporaryLock, std::chrono::milliseconds(1));
 		}
 	}
 
@@ -136,10 +181,11 @@ namespace smpl
 			FiberTask* taskPtr = nullptr;
 
 			//try to get a job from the queue
-			if(knownJobCount <= 0)
+			if(knownJobCount == 0)
 			{
 				std::unique_lock<std::mutex> temporaryLock(haltMutex);
 				cv.wait_for(temporaryLock, std::chrono::milliseconds(1));
+				// cv.wait(temporaryLock);
 			}
 			
 			jobQueueMutex.lock();
@@ -196,6 +242,8 @@ namespace smpl
 					knownJobCount++; //Since we added it back in, we must add that to the knownJobCount as we initially removed it under the assumption it would finish in one go
 				}
 				jobsBeingRun.erase(jobID);
+				if(knownJobCount == 0)
+					jobWaitCV.notify_one();
 				jobQueueMutex.unlock();
 			}
 			

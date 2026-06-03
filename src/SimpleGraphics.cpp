@@ -1,4 +1,7 @@
 #include "InternalGraphicsHeader.h"
+#include "SEML.h"
+#include <immintrin.h>
+#include <smmintrin.h>
 
 namespace smpl
 {
@@ -17,6 +20,8 @@ namespace smpl
 	Font* SimpleGraphics::defaultFontMedium = nullptr;
 	Font* SimpleGraphics::defaultFontLarge = nullptr;
 
+	
+	Image SimpleGraphics::maskImage = Image();
 	Box2D SimpleGraphics::clippingRect = Box2D(0, 0, 0xFFFF, 0xFFFF);
 
 	SimpleGraphics SimpleGraphics::g = SimpleGraphics();
@@ -77,16 +82,6 @@ namespace smpl
 		return result;
 	}
 	
-	Color4f SimpleGraphics::convertColorToColor4f(Color c)
-	{
-		Color4f result;
-		result.red = (double)c.red / 255.0;
-		result.green = (double)c.green / 255.0;
-		result.blue = (double)c.blue / 255.0;
-		result.alpha = (double)c.alpha / 255.0;
-		return result;
-	}
-
 	Color SimpleGraphics::convertVec4fToColor(Vec4f v)
 	{
 		Color result;
@@ -94,17 +89,6 @@ namespace smpl
 		result.green = (unsigned char)MathExt::clamp<float>(v.y*255, 0.0, 255.0);
 		result.blue = (unsigned char)MathExt::clamp<float>(v.z*255, 0.0, 255.0);
 		result.alpha = (unsigned char)MathExt::clamp<float>(v.w*255, 0.0, 255.0);
-		return result;
-	}
-	
-	Color SimpleGraphics::convertColor4fToColor(Color4f c)
-	{
-		Color result;
-		//cheating a bit. just take the upper 8 bits
-		result.red = (unsigned char)(c.red.a>>8);
-		result.green = (unsigned char)(c.green.a>>8);
-		result.blue = (unsigned char)(c.blue.a>>8);
-		result.alpha = (unsigned char)(c.alpha.a>>8);
 		return result;
 	}
 
@@ -173,12 +157,15 @@ namespace smpl
 
 		if(compositeRule == NO_COMPOSITE)
 		{
-			otherImg->setPixel(x, y, c);
+			Color maskedColor = SimpleGraphics::maskPixel(c, maskImage.getPixel(x, y));
+			if(maskedColor.alpha != 0)
+				otherImg->setPixel(x, y, maskedColor);
 		}
 		else
 		{
-			Color newColor = blend(c, otherImg->getPixel(x,y));
-			otherImg->setPixel(x, y, newColor);
+			Color maskedColor = SimpleGraphics::maskPixel(c, maskImage.getPixel(x, y));
+			Color outputColor = blend(maskedColor, otherImg->getPixel(x,y));
+			otherImg->setPixel(x, y, outputColor);
 		}
 	}
 
@@ -189,12 +176,15 @@ namespace smpl
 
 		if(compositeRule == NO_COMPOSITE)
 		{
-			surf->setPixel(x, y, c);
+			Color4f maskedColor = SimpleGraphics::maskPixel(c, (Color4f)maskImage.getPixel(x, y));
+			if(maskedColor.alpha.a != 0)
+				surf->setPixel(x, y, maskedColor);
 		}
 		else
 		{
-			Color4f newColor = blend(c, surf->getPixel(x,y));
-			surf->setPixel(x, y, newColor);
+			Color4f maskedColor = SimpleGraphics::maskPixel(c, (Color4f)maskImage.getPixel(x, y));
+			Color4f outputColor = blend(maskedColor, surf->getPixel(x,y));
+			surf->setPixel(x, y, outputColor);
 		}
 	}
 
@@ -209,24 +199,42 @@ namespace smpl
 		Color arr[8]; //Needed for sse/avx. Slower
 		c.store((unsigned int*)arr);
 		Color nonSSEColor = arr[0];
-
-		Color* srcPixels = surf->getPixels();
+		
 		int len = x2-x1;
 		int simdBound = SIMD_U32::getSIMDBound(len);
+
+		Color* srcPixels = surf->getPixels();
 		unsigned int* startOfSrcPixelFillSpot = (unsigned int*)&srcPixels[x1 + y*surf->getWidth()];
 		unsigned int* endOfSrcPixelFillSpot = (unsigned int*)&srcPixels[x2 + y*surf->getWidth()];
+
+		if(maskImage.getWidth() < surf->getWidth() || maskImage.getHeight() < surf->getHeight())
+		{
+			maskImage = Image(surf->getWidth(), surf->getHeight());
+			maskImage.setAllPixels({255, 255, 255, 255});
+		}
+
+		Color* maskImagePixels = maskImage.getPixels();
+		unsigned int* startOfMaskPixelFillSpot = (unsigned int*)&maskImagePixels[x1 + y*maskImage.getWidth()];
+		unsigned int* endOfMaskPixelFillSpot = (unsigned int*)&maskImagePixels[x2 + y*maskImage.getWidth()];
 		
 		for(int k=0; k<simdBound; k+=SIMD_U32::SIZE)
 		{
 			SIMD_U32 destColor = SIMD_U32::load(startOfSrcPixelFillSpot);
-			SIMD_U32 blendedColor = blend(c.values, destColor.values);
+			SIMD_U32 maskValue = SIMD_U32::load(startOfMaskPixelFillSpot);
+			SIMD_U32 outputColor = SimpleGraphics::maskPixel(c.values, maskValue.values);
+			SIMD_U32 blendedColor = blend(outputColor.values, destColor.values);
+			
 			blendedColor.store(startOfSrcPixelFillSpot);
 			startOfSrcPixelFillSpot += SIMD_U32::SIZE;
+			startOfMaskPixelFillSpot += SIMD_U32::SIZE;
 		}
+
 		while(startOfSrcPixelFillSpot < endOfSrcPixelFillSpot)
 		{
-			*((Color*)startOfSrcPixelFillSpot) = blend(nonSSEColor, *((Color*)startOfSrcPixelFillSpot));
+			Color outputColor = SimpleGraphics::maskPixel(nonSSEColor, *(Color*)startOfMaskPixelFillSpot);
+			*((Color*)startOfSrcPixelFillSpot) = blend(outputColor, *((Color*)startOfSrcPixelFillSpot));
 			startOfSrcPixelFillSpot++;
+			startOfMaskPixelFillSpot++;
 		}
 	}
 
@@ -289,7 +297,6 @@ namespace smpl
 		}
 		
 	}
-
 	
 	uint16_t quickDiv255(uint16_t a)
 	{
@@ -830,7 +837,13 @@ namespace smpl
 	#ifdef __SSE4_2__
 	__m128i SimpleGraphics::lerp(__m128i src, __m128i dest, __m128 lerpVal)
 	{
-		SIMD_SSE<float> blendV = lerpVal;
+		float extractedLerps[4];
+		_mm_storeu_ps(extractedLerps, lerpVal);
+		SIMD_SSE<float> blendV1 = extractedLerps[0];
+		SIMD_SSE<float> blendV2 = extractedLerps[1];
+		SIMD_SSE<float> blendV3 = extractedLerps[2];
+		SIMD_SSE<float> blendV4 = extractedLerps[3];
+		
 		SIMD_SSE<float> A1 = _mm_cvtepi32_ps(_mm_cvtepu8_epi32(src));
 		SIMD_SSE<float> B1 = _mm_cvtepi32_ps(_mm_cvtepu8_epi32(dest));
 		
@@ -843,26 +856,37 @@ namespace smpl
 		SIMD_SSE<float> A4 = _mm_cvtepi32_ps(_mm_cvtepu8_epi32(_mm_srli_si128(src, 12)));
 		SIMD_SSE<float> B4 = _mm_cvtepi32_ps(_mm_cvtepu8_epi32(_mm_srli_si128(dest, 12)));
 
-		SIMD_SSE<float> res1 = A1*(SIMD_SSE<float>(1.0f)-blendV) + B1*blendV;
-		SIMD_SSE<float> res2 = A2*(SIMD_SSE<float>(1.0f)-blendV) + B2*blendV;
-		SIMD_SSE<float> res3 = A3*(SIMD_SSE<float>(1.0f)-blendV) + B3*blendV;
-		SIMD_SSE<float> res4 = A4*(SIMD_SSE<float>(1.0f)-blendV) + B4*blendV;
+		SIMD_SSE<float> res1 = A1*(SIMD_SSE<float>(1.0f)-blendV1) + B1*blendV1;
+		SIMD_SSE<float> res2 = A2*(SIMD_SSE<float>(1.0f)-blendV2) + B2*blendV2;
+		SIMD_SSE<float> res3 = A3*(SIMD_SSE<float>(1.0f)-blendV3) + B3*blendV3;
+		SIMD_SSE<float> res4 = A4*(SIMD_SSE<float>(1.0f)-blendV4) + B4*blendV4;
 		
+		int oldRoundingMode = SEML::getRoundingMode();
+		SEML::setRoundingMode(SEML_ROUND_NEAREST);
 		__m128i output1 = SEML::floatToInt32(res1.values);
 		__m128i output2 = SEML::floatToInt32(res2.values);
 		__m128i output3 = SEML::floatToInt32(res3.values);
 		__m128i output4 = SEML::floatToInt32(res4.values);
+		SEML::setRoundingMode(oldRoundingMode);
 
 		__m128i pack16Low = _mm_packus_epi32(output1, output2);
 		__m128i pack16High = _mm_packus_epi32(output3, output4);
 
-		return _mm_packs_epi16(pack16Low, pack16High);
+		return _mm_packus_epi16(pack16Low, pack16High);
 	}
 	#endif
 
 	#ifdef __AVX2__
 	__m256i SimpleGraphics::lerp(__m256i src, __m256i dest, __m256 lerpVal)
 	{
+		float extractedLerps[8];
+		_mm256_storeu_ps(extractedLerps, lerpVal);
+		
+		SIMD_AVX<float> blendV1 = _mm256_set_m128(_mm_set1_ps(extractedLerps[1]), _mm_set1_ps(extractedLerps[0]));
+		SIMD_AVX<float> blendV2 = _mm256_set_m128(_mm_set1_ps(extractedLerps[3]), _mm_set1_ps(extractedLerps[2]));
+		SIMD_AVX<float> blendV3 = _mm256_set_m128(_mm_set1_ps(extractedLerps[5]), _mm_set1_ps(extractedLerps[4]));
+		SIMD_AVX<float> blendV4 = _mm256_set_m128(_mm_set1_ps(extractedLerps[7]), _mm_set1_ps(extractedLerps[6]));
+
 		SIMD_AVX<float> blendV = lerpVal;
 		__m128i A1_Extracted128 = _mm256_extracti128_si256(src, 0);
 		__m128i A2_Extracted128 = _mm256_extracti128_si256(src, 1);
@@ -881,20 +905,25 @@ namespace smpl
 		SIMD_AVX<float> A4 = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(_mm_srli_si128(A2_Extracted128, 8)));
 		SIMD_AVX<float> B4 = _mm256_cvtepi32_ps(_mm256_cvtepu8_epi32(_mm_srli_si128(B2_Extracted128, 8)));
 
-		SIMD_AVX<float> res1 = A1*(SIMD_AVX<float>(1.0f)-blendV) + B1*blendV;
-		SIMD_AVX<float> res2 = A2*(SIMD_AVX<float>(1.0f)-blendV) + B2*blendV;
-		SIMD_AVX<float> res3 = A3*(SIMD_AVX<float>(1.0f)-blendV) + B3*blendV;
-		SIMD_AVX<float> res4 = A4*(SIMD_AVX<float>(1.0f)-blendV) + B4*blendV;
+		SIMD_AVX<float> res1 = A1*(SIMD_AVX<float>(1.0f)-blendV1) + B1*blendV1;
+		SIMD_AVX<float> res2 = A2*(SIMD_AVX<float>(1.0f)-blendV2) + B2*blendV2;
+		SIMD_AVX<float> res3 = A3*(SIMD_AVX<float>(1.0f)-blendV3) + B3*blendV3;
+		SIMD_AVX<float> res4 = A4*(SIMD_AVX<float>(1.0f)-blendV4) + B4*blendV4;
 		
+		int oldRoundingMode = SEML::getRoundingMode();
+		SEML::setRoundingMode(SEML_ROUND_NEAREST);
 		__m256i output1 = SEML::floatToInt32(res1.values);
 		__m256i output2 = SEML::floatToInt32(res2.values);
 		__m256i output3 = SEML::floatToInt32(res3.values);
 		__m256i output4 = SEML::floatToInt32(res4.values);
+		SEML::setRoundingMode(oldRoundingMode);
 
-		__m256i pack16Low = _mm256_packs_epi32(output1, output2);
-		__m256i pack16High = _mm256_packs_epi32(output3, output4);
+		__m256i pack16Low = _mm256_packus_epi32(output1, output2);
+		__m256i pack16High = _mm256_packus_epi32(output3, output4);
 
-		return _mm256_packs_epi16(pack16Low, pack16High);
+		__m256i packedOutput = _mm256_packus_epi16(pack16Low, pack16High);
+		packedOutput = _mm256_permutevar8x32_epi32(packedOutput, _mm256_set_epi32(7, 3, 6, 2, 5, 1, 4, 0));
+		return packedOutput;
 	}
 	#endif
 	
@@ -936,11 +965,11 @@ namespace smpl
 	{
 		__m128i lowSrc = _mm_cvtepu8_epi16(src);
 		__m128i lowMult = _mm_cvtepu8_epi16(multiplier);
-		__m128i resultLow = _mm_srli_epi16(_mm_mullo_epi16(lowSrc, lowMult), 8);
+		__m128i resultLow = quickDiv255(_mm_mullo_epi16(lowSrc, lowMult));
 		
 		__m128i highSrc = _mm_cvtepu8_epi16(_mm_srli_si128(src, 8));
 		__m128i highMult = _mm_cvtepu8_epi16(_mm_srli_si128(multiplier, 8));
-		__m128i resultHigh = _mm_srli_epi16(_mm_mullo_epi16(highSrc, highMult), 8);
+		__m128i resultHigh = quickDiv255(_mm_mullo_epi16(highSrc, highMult));
 		
 		return _mm_packus_epi16(resultLow, resultHigh);
 	}
@@ -951,16 +980,64 @@ namespace smpl
 	{
 		__m256i lowSrc = _mm256_cvtepu8_epi16(_mm256_extractf128_si256(src, 0));
 		__m256i lowMult = _mm256_cvtepu8_epi16(_mm256_extractf128_si256(multiplier, 0));
-		__m256i resultLow = _mm256_srli_epi16(_mm256_mullo_epi16(lowSrc, lowMult), 8);
+		__m256i resultLow = quickDiv255(_mm256_mullo_epi16(lowSrc, lowMult));
 
 		__m256i highSrc = _mm256_cvtepu8_epi16(_mm256_extractf128_si256(src, 1));
 		__m256i highMult = _mm256_cvtepu8_epi16(_mm256_extractf128_si256(multiplier, 1));
-		__m256i resultHigh = _mm256_srli_epi16(_mm256_mullo_epi16(highSrc, highMult), 8);
+		__m256i resultHigh = quickDiv255(_mm256_mullo_epi16(highSrc, highMult));
 		
 		__m256i packedOutput = _mm256_packus_epi16(resultLow, resultHigh);
 		return _mm256_permute4x64_epi64(packedOutput, 0b11011000);
 	}
 	#endif
+
+		Color SimpleGraphics::maskPixel(Color src, Color maskValue)
+		{
+			return Color{
+				src.red,
+				src.green,
+				src.blue,
+				(unsigned char)quickDiv255((uint16_t)src.alpha * maskValue.alpha)
+			};
+		}
+		Color4f SimpleGraphics::maskPixel(Color4f src, Color4f maskValue)
+		{
+			return Color4f{
+				src.red,
+				src.green,
+				src.blue,
+				src.alpha * maskValue.alpha
+			};
+		}
+		Vec4f SimpleGraphics::maskPixel(Vec4f src, Vec4f maskValue)
+		{
+			return Vec4f(
+				src.x, 
+				src.y, 
+				src.z, 
+				src.w*maskValue.w
+			);
+		}
+		uint32_t SimpleGraphics::maskPixel(uint32_t src, uint32_t maskValue)
+		{
+			return maskPixel(*(Color*)&src, *(Color*)&maskValue).toUInt();
+		}
+		#ifdef __SSE4_2__
+			__m128i SimpleGraphics::maskPixel(__m128i src, __m128i maskValue)
+			{
+				//src is 4 individual pixels (16 bytes)
+				//mask needs to be 255,255,255,mask1 | 255,255,255,mask2 | 255,255,255,mask3 | 255,255,255,mask4
+				//This makes the math easy
+				return multColor(src, maskValue); //lazy
+			}
+		#endif
+
+		#ifdef __AVX2__
+			__m256i SimpleGraphics::maskPixel(__m256i src, __m256i maskValue)
+			{
+				return multColor(src, maskValue); //lazy
+			}
+		#endif
 
 	void SimpleGraphics::setClippingRect(Box2D b)
 	{
@@ -1067,6 +1144,19 @@ namespace smpl
 	bool SimpleGraphics::getAntiAliasing()
 	{
 		return antiAliasing;
+	}
+
+	void SimpleGraphics::setMask(Image img)
+	{
+		maskImage = img;
+	}
+	Image& SimpleGraphics::getMask()
+	{
+		return maskImage;
+	}
+	void SimpleGraphics::clearMask()
+	{
+		maskImage.setAllPixels({255, 255, 255, 255});
 	}
 
 	#pragma endregion

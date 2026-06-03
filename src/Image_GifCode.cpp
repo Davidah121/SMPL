@@ -602,14 +602,14 @@ namespace smpl
 
 								if(c.alpha!=0)
 								{
-									tempImage->setPixel(x + leftScreenPos, y + topScreenPos, SimpleGraphics::convertColorToColor4f(c));
+									tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
 								}
 								else
 								{
 									if(disposeMethod==0)
 									{
 										c.alpha=255;
-										tempImage->setPixel(x + leftScreenPos, y + topScreenPos, SimpleGraphics::convertColorToColor4f(c));
+										tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
 									}
 									else if(disposeMethod==2)
 									{
@@ -621,7 +621,7 @@ namespace smpl
 											c.alpha = 0;
 										}
 										
-										tempImage->setPixel(x + leftScreenPos, y + topScreenPos, SimpleGraphics::convertColorToColor4f(c));
+										tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
 									}
 									else if(disposeMethod==3)
 									{
@@ -663,14 +663,14 @@ namespace smpl
 
 								if(c.alpha!=0)
 								{
-									tempImage->setPixel(x + leftScreenPos, y + topScreenPos, SimpleGraphics::convertColorToColor4f(c));
+									tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
 								}
 								else
 								{
 									if(disposeMethod==0)
 									{
 										c.alpha=255;
-										tempImage->setPixel(x + leftScreenPos, y + topScreenPos, SimpleGraphics::convertColorToColor4f(c));
+										tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
 									}
 									else if(disposeMethod==2)
 									{
@@ -682,7 +682,7 @@ namespace smpl
 											c.alpha = 0;
 										}
 										
-										tempImage->setPixel(x + leftScreenPos, y + topScreenPos, SimpleGraphics::convertColorToColor4f(c));
+										tempImage->setPixel(x + leftScreenPos, y + topScreenPos, c);
 									}
 									else if(disposeMethod==3)
 									{

@@ -26,8 +26,8 @@ namespace smpl
 	class SIMD_SSE<float>
 	{
 	public:
-		static const int SIZE = 4;
-		static const int SIZE_FP16 = 8;
+		static const int SIZE;
+		static const int SIZE_FP16;
 		static unsigned long long getSIMDBound(unsigned long long s) {return (s>>2)<<2;}
 		static unsigned long long getSIMDBoundFP16(unsigned long long s) {return (s>>3)<<3;}
 
@@ -61,8 +61,14 @@ namespace smpl
 			_mm_storeu_si128((__m128i*)pointer, result);
 		}
 
-		static SIMD_SSE<float>load(const float* pointer){return _mm_loadu_ps(pointer);}
-		void store(float* pointer){_mm_storeu_ps(pointer, values);}
+		static SIMD_SSE<float> load(const float* pointer){return _mm_loadu_ps(pointer);}
+		static SIMD_SSE<float> gather(const float* pointer, const int* indices)
+		{
+			__m128i indicesSSE = _mm_loadu_si128((__m128i*)indices);
+			return gatherSSE(pointer, indicesSSE);
+		}
+		static SIMD_SSE<float> gather(const float* pointer, const __m128i& indices){return gatherSSE(pointer, indices);}
+		void store(float* pointer) const {_mm_storeu_ps(pointer, values);}
 		
 		//arithmetic
 		SIMD_SSE<float> operator-() const {return SEML::negate(values);}
@@ -87,13 +93,29 @@ namespace smpl
 		
 		//comparison
 		SIMD_SSE<float> operator>(const SIMD_SSE<float>& other) const {return _mm_cmpgt_ps(values, other.values);}
+		SIMD_SSE<float> operator>=(const SIMD_SSE<float>& other) const {return _mm_cmpge_ps(values, other.values);}
 		SIMD_SSE<float> operator<(const SIMD_SSE<float>& other) const {return _mm_cmplt_ps(values, other.values);}
+		SIMD_SSE<float> operator<=(const SIMD_SSE<float>& other) const {return _mm_cmple_ps(values, other.values);}
 		SIMD_SSE<float> operator==(const SIMD_SSE<float>& other) const {return _mm_cmpeq_ps(values, other.values);}
 		SIMD_SSE<float> operator!=(const SIMD_SSE<float>& other) const {return _mm_cmpneq_ps(values, other.values);}
 		
 		SIMD_SSE<float> blend(const SIMD_SSE<float>& other, const SIMD_SSE<float>& blendFactor) const
 		{
 			return _mm_blendv_ps(values, other.values, blendFactor.values);
+		}
+
+		//additional arithmetic functions
+		SIMD_SSE<float> max(const SIMD_SSE<float>& other) const
+		{
+			return _mm_max_ps(values, other.values);
+		}
+		SIMD_SSE<float> min(const SIMD_SSE<float>& other) const
+		{
+			return _mm_min_ps(values, other.values);
+		}
+		SIMD_SSE<float> clamp(const SIMD_SSE<float>& min, const SIMD_SSE<float>& max) const
+		{
+			return _mm_min_ps(_mm_max_ps(values, min.values), max.values);
 		}
 
 		//special case functions
@@ -116,12 +138,15 @@ namespace smpl
 		operator SIMD_SSE<unsigned int>() const;
 		__m128 values;
 	};
+	
+	inline const int SIMD_SSE<float>::SIZE = 4;
+	inline const int SIMD_SSE<float>::SIZE_FP16 = 8;
 
 	template<>
 	class SIMD_SSE<double>
 	{
 	public:
-		static const int SIZE = 2;
+		static const int SIZE;
 		static unsigned long long getSIMDBound(unsigned long long s) {return (s>>1)<<1;}
 
 		SIMD_SSE(){}
@@ -137,8 +162,16 @@ namespace smpl
 		~SIMD_SSE(){}
 
 		//load / store
-		static SIMD_SSE<double>load(const double* pointer){return _mm_loadu_pd(pointer);}
-		void store(double* pointer){_mm_storeu_pd(pointer, values);}
+		static SIMD_SSE<double> load(const double* pointer){return _mm_loadu_pd(pointer);}
+		
+		static SIMD_SSE<double> gather(const double* pointer, const int* indices)
+		{
+			__m128i indicesSSE = _mm_loadu_si128((__m128i*)indices);
+			return gatherSSE(pointer, indicesSSE);
+		}
+		static SIMD_SSE<double> gather(const double* pointer, const __m128i& indices){return gatherSSE(pointer, indices);}
+
+		void store(double* pointer) const {_mm_storeu_pd(pointer, values);}
 		
 		//arithmetic
 		SIMD_SSE<double> operator-() const {return SEML::negate(values);}
@@ -163,7 +196,9 @@ namespace smpl
 		
 		//comparison
 		SIMD_SSE<double> operator>(const SIMD_SSE<double>& other) const {return _mm_cmpgt_pd(values, other.values);}
+		SIMD_SSE<double> operator>=(const SIMD_SSE<double>& other) const {return _mm_cmpge_pd(values, other.values);}
 		SIMD_SSE<double> operator<(const SIMD_SSE<double>& other) const {return _mm_cmplt_pd(values, other.values);}
+		SIMD_SSE<double> operator<=(const SIMD_SSE<double>& other) const {return _mm_cmple_pd(values, other.values);}
 		SIMD_SSE<double> operator==(const SIMD_SSE<double>& other) const {return _mm_cmpeq_pd(values, other.values);}
 		SIMD_SSE<double> operator!=(const SIMD_SSE<double>& other) const {return _mm_cmpneq_pd(values, other.values);}
 		
@@ -171,6 +206,21 @@ namespace smpl
 		{
 			return _mm_blendv_pd(values, other.values, blendFactor.values);
 		}
+
+		//additional arithmetic functions
+		SIMD_SSE<double> max(const SIMD_SSE<double>& other) const
+		{
+			return _mm_max_pd(values, other.values);
+		}
+		SIMD_SSE<double> min(const SIMD_SSE<double>& other) const
+		{
+			return _mm_min_pd(values, other.values);
+		}
+		SIMD_SSE<double> clamp(const SIMD_SSE<double>& min, const SIMD_SSE<double>& max) const
+		{
+			return _mm_min_pd(_mm_max_pd(values, min.values), max.values);
+		}
+
 		//special case functions
 		SIMD_SSE<double> horizontalAdd(const SIMD_SSE<double>& other) const 
 		{
@@ -186,6 +236,7 @@ namespace smpl
 		operator SIMD_SSE<uint64_t>() const;
 		__m128d values;
 	};
+	inline const int SIMD_SSE<double>::SIZE = 2;
 
 	#endif
 
@@ -203,8 +254,8 @@ namespace smpl
 	class SIMD_AVX<float>
 	{
 	public:
-		static const int SIZE = 8;
-		static const int SIZE_FP16 = 16;
+		static const int SIZE;
+		static const int SIZE_FP16;
 		static unsigned long long getSIMDBound(unsigned long long s) {return (s>>3)<<3;}
 		static unsigned long long getSIMDBoundFP16(unsigned long long s) {return (s>>4)<<4;}
 
@@ -235,8 +286,15 @@ namespace smpl
 			_mm256_storeu_si256((__m256i*)pointer, result);
 		}
 		
-		static SIMD_AVX<float>load(const float* pointer){return _mm256_loadu_ps(pointer);}
-		void store(float* pointer){_mm256_storeu_ps(pointer, values);}
+		static SIMD_AVX<float> load(const float* pointer){return _mm256_loadu_ps(pointer);}
+
+		static SIMD_AVX<float> gather(const float* pointer, const int* indices)
+		{
+			__m256i indicesAVX = _mm256_loadu_si256((__m256i*)indices);
+			return gatherAVX(pointer, indicesAVX);
+		}
+		static SIMD_AVX<float> gather(const float* pointer, const __m256i& indices){return gatherAVX(pointer, indices);}
+		void store(float* pointer) const {_mm256_storeu_ps(pointer, values);}
 		
 		//arithmetic
 		SIMD_AVX<float> operator-() const {return SEML::negate(values);}
@@ -260,7 +318,9 @@ namespace smpl
 		
 		//comparison
 		SIMD_AVX<float> operator>(const SIMD_AVX<float>& other) const {return _mm256_cmp_ps(values, other.values, _CMP_GT_OQ);}
+		SIMD_AVX<float> operator>=(const SIMD_AVX<float>& other) const {return _mm256_cmp_ps(values, other.values, _CMP_GE_OQ);}
 		SIMD_AVX<float> operator<(const SIMD_AVX<float>& other) const {return _mm256_cmp_ps(values, other.values, _CMP_LT_OQ);}
+		SIMD_AVX<float> operator<=(const SIMD_AVX<float>& other) const {return _mm256_cmp_ps(values, other.values, _CMP_LE_OQ);}
 		SIMD_AVX<float> operator==(const SIMD_AVX<float>& other) const {return _mm256_cmp_ps(values, other.values, _CMP_EQ_OQ);}
 		SIMD_AVX<float> operator!=(const SIMD_AVX<float>& other) const {return _mm256_cmp_ps(values, other.values, _CMP_NEQ_OQ);}
 		
@@ -268,6 +328,21 @@ namespace smpl
 		{
 			return _mm256_blendv_ps(values, other.values, blendFactor.values);
 		}
+		
+		//additional arithmetic functions
+		SIMD_AVX<float> max(const SIMD_AVX<float>& other) const
+		{
+			return _mm256_max_ps(values, other.values);
+		}
+		SIMD_AVX<float> min(const SIMD_AVX<float>& other) const
+		{
+			return _mm256_min_ps(values, other.values);
+		}
+		SIMD_AVX<float> clamp(const SIMD_AVX<float>& min, const SIMD_AVX<float>& max) const
+		{
+			return _mm256_min_ps(_mm256_max_ps(values, min.values), max.values);
+		}
+
 		//special case functions
 		SIMD_AVX<float> horizontalAdd(const SIMD_AVX<float>& other) const 
 		{
@@ -284,12 +359,15 @@ namespace smpl
 		operator SIMD_AVX<unsigned int>() const;
 		__m256 values;
 	};
+	
+	inline const int SIMD_AVX<float>::SIZE = 8;
+	inline const int SIMD_AVX<float>::SIZE_FP16 = 16;
 
 	template<>
 	class SIMD_AVX<double>
 	{
 	public:
-		static const int SIZE = 4;
+		static const int SIZE;
 		static unsigned long long getSIMDBound(unsigned long long s) {return (s>>2)<<2;}
 
 		SIMD_AVX(){}
@@ -305,8 +383,15 @@ namespace smpl
 		~SIMD_AVX(){}
 
 		//load / store
-		static SIMD_AVX<double>load(const double* pointer){return _mm256_loadu_pd(pointer);}
-		void store(double* pointer){_mm256_storeu_pd(pointer, values);}
+		static SIMD_AVX<double> load(const double* pointer){return _mm256_loadu_pd(pointer);}
+		
+		static SIMD_AVX<double> gather(const double* pointer, const int* indices)
+		{
+			__m256i indicesAVX = _mm256_loadu_si256((__m256i*)indices);
+			return gatherAVX(pointer, indicesAVX);
+		}
+		static SIMD_AVX<double> gather(const double* pointer, const __m256i& indices){return gatherAVX(pointer, indices);}
+		void store(double* pointer) const {_mm256_storeu_pd(pointer, values);}
 		
 		//arithmetic
 		SIMD_AVX<double> operator-() const {return SEML::negate(values);}
@@ -330,7 +415,9 @@ namespace smpl
 		
 		//comparison
 		SIMD_AVX<double> operator>(const SIMD_AVX<double>& other) const {return _mm256_cmp_pd(values, other.values, _CMP_GT_OQ);}
+		SIMD_AVX<double> operator>=(const SIMD_AVX<double>& other) const {return _mm256_cmp_pd(values, other.values, _CMP_GE_OQ);}
 		SIMD_AVX<double> operator<(const SIMD_AVX<double>& other) const {return _mm256_cmp_pd(values, other.values, _CMP_LT_OQ);}
+		SIMD_AVX<double> operator<=(const SIMD_AVX<double>& other) const {return _mm256_cmp_pd(values, other.values, _CMP_LE_OQ);}
 		SIMD_AVX<double> operator==(const SIMD_AVX<double>& other) const {return _mm256_cmp_pd(values, other.values, _CMP_EQ_OQ);}
 		SIMD_AVX<double> operator!=(const SIMD_AVX<double>& other) const {return _mm256_cmp_pd(values, other.values, _CMP_NEQ_OQ);}
 		
@@ -338,6 +425,21 @@ namespace smpl
 		{
 			return _mm256_blendv_pd(values, other.values, blendFactor.values);
 		}
+
+		//additional arithmetic functions
+		SIMD_AVX<double> max(const SIMD_AVX<double>& other) const
+		{
+			return _mm256_max_pd(values, other.values);
+		}
+		SIMD_AVX<double> min(const SIMD_AVX<double>& other) const
+		{
+			return _mm256_min_pd(values, other.values);
+		}
+		SIMD_AVX<double> clamp(const SIMD_AVX<double>& min, const SIMD_AVX<double>& max) const
+		{
+			return _mm256_min_pd(_mm256_max_pd(values, min.values), max.values);
+		}
+
 		//special case functions
 		SIMD_AVX<double> horizontalAdd(const SIMD_AVX<double>& other) const 
 		{
@@ -356,5 +458,6 @@ namespace smpl
 		operator SIMD_AVX<uint64_t>() const;
 		__m256d values;
 	};
+	inline const int SIMD_AVX<double>::SIZE = 4;
 	#endif
 }

@@ -34,11 +34,12 @@ namespace smpl
 	{
 		//unsure if you can do this
 		const int maxSize = 16/sizeof(T);
-		T indexArr[maxSize];
+		uint32_t indexArr[maxSize];
+		typename std::remove_const<T>::type dataArr[maxSize];
 		_mm_storeu_si128((__m128i*)indexArr, indices);
 		for(int i=0; i<maxSize; i++)
-			indexArr[i] = ((T*)pointer)[indexArr[i]];
-		return _mm_loadu_si128((__m128i*)indexArr);
+			dataArr[i] = ((T*)pointer)[indexArr[i]];
+		return _mm_loadu_si128((__m128i*)dataArr);
 	}
 	
 	template<typename T>
@@ -49,7 +50,7 @@ namespace smpl
 		_mm_storeu_si128((__m128i*)indexArr, indices);
 		
 		T valuesAsArr[16];
-		_mm_storeu_si128((__m128i*)indexArr, values);
+		_mm_storeu_si128((__m128i*)valuesAsArr, values);
 		
 		for(int i=0; i<maxSize; i++)
 			pointer[indexArr[i]] = valuesAsArr[i];
@@ -98,11 +99,12 @@ namespace smpl
 	{
 		//unsure if you can do this
 		const int maxSize = 32/sizeof(T);
-		T indexArr[maxSize];
+		uint32_t indexArr[maxSize];
+		typename std::remove_const<T>::type dataArr[maxSize];
 		_mm256_storeu_si256((__m256i*)indexArr, indices);
 		for(int i=0; i<maxSize; i++)
-			indexArr[i] = ((T*)pointer)[indexArr[i]];
-		return _mm256_loadu_si256((__m256i*)indexArr);
+			dataArr[i] = ((T*)pointer)[indexArr[i]];
+		return _mm256_loadu_si256((__m256i*)dataArr);
 	}
 
 	template<typename T>
@@ -113,7 +115,7 @@ namespace smpl
 		_mm256_storeu_si256((__m256i*)indexArr, indices);
 		
 		T valuesAsArr[32];
-		_mm256_storeu_si256((__m256i*)indexArr, values);
+		_mm256_storeu_si256((__m256i*)valuesAsArr, values);
 		
 		for(int i=0; i<maxSize; i++)
 			pointer[indexArr[i]] = valuesAsArr[i];
@@ -166,7 +168,7 @@ namespace smpl
 
 		//load / store
 		static SIMD_RAW<T>load(const T* pointer){return *pointer;}
-		void store(T* pointer){*pointer = values;}
+		void store(T* pointer) const {*pointer = values;}
 		
 		//arithmetic
 		SIMD_RAW<T> operator-() const {return -values;}

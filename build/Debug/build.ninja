@@ -150,6 +150,7 @@ build $objDir/SmartJobQueue.o: buildToObject src/SmartJobQueue.cpp
 build $objDir/SmartMemory.o: buildToObject src/SmartMemory.cpp
 build $objDir/Sound.o: buildToObject src/Sound.cpp
 build $objDir/Sprite.o: buildToObject src/Sprite.cpp
+build $objDir/SJQ_OMP_Replacement.o: buildToObject src/SJQ_OMP_Replacement.cpp
 build $objDir/SSLSingleton.o: buildToObject src/ext/SSLSingleton.cpp
 build $objDir/StringBridge.o: buildToObject src/StringBridge.cpp
 build $objDir/StringTools.o: buildToObject src/StringTools.cpp
@@ -313,6 +314,7 @@ $objDir/SmartJobQueue.o $
 $objDir/SmartMemory.o $
 $objDir/Sound.o $
 $objDir/Sprite.o $
+$objDir/SJQ_OMP_Replacement.o $
 $objDir/SSLSingleton.o $
 $objDir/StringBridge.o $
 $objDir/StringTools.o $

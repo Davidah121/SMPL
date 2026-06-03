@@ -59,6 +59,11 @@ namespace smpl
 		return point2;
 	}
 
+	Vec2f Line::getMidPoint()
+	{
+		return (point1+point2) / 2;
+	}
+	
 	Vec2f Line::getToPoint()
 	{
 		return toPoint;

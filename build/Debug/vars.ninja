@@ -18,9 +18,9 @@ objDir = ./bin/Debug/obj
 exeDir = ./bin/Debug
 compiler = clang++
 CXXFLAGS = -std=c++17 -mavx2 -mf16c
-DEFINES = -D OPTI=1 -D USE_OPENSSL -D USE_PREPROCESSOR_TRICKS=1 -D DEBUG
+DEFINES = -D OPTI=2 -D USE_OPENSSL -D USE_PREPROCESSOR_TRICKS=1 -D DEBUG
 DLLStuff = -fPIC -D DLL_EXPORT
-OPTIONS = -g -c -fopenmp -pipe -Wno-unused-command-line-argument
-EXEOPTIONS = -g -fopenmp
+OPTIONS = -g -c -fopenmp -pipe -Wno-unused-command-line-argument -fsanitize=address
+EXEOPTIONS = -g -fopenmp -fsanitize=address
 compilerFlags = $DLLStuff $OPTIONS $CXXFLAGS $DEFINES
 EXECompilerFlags = $DLLStuff $EXEOPTIONS $CXXFLAGS $DEFINES $linkOptions
