@@ -277,21 +277,23 @@ namespace smpl
 		cookieMap.clear();
 		SimpleJSON json = SimpleJSON(file);
 
-		std::vector<JNode*> nodes = json.getNodesPattern({""});//should be an array at the start so this should ideally get every object
-		for(JNode* obj : nodes)
+		JArray& arr = (JArray&)json.getRootNode(); //an array of objects
+		for(size_t i=0; i<arr.size(); i++)
 		{
+			JObject& obj = (JObject&)arr[i];
 			try
 			{
-				std::string name = ((JPair*)obj->getNodesPattern({"name"})[0])->getValue();
-				std::string value = ((JPair*)obj->getNodesPattern({"value"})[0])->getValue();
-				std::string domain = ((JPair*)obj->getNodesPattern({"domain"})[0])->getValue();
-				std::string path = ((JPair*)obj->getNodesPattern({"path"})[0])->getValue();
-				std::string expires = ((JPair*)obj->getNodesPattern({"expires"})[0])->getValue();
-				std::string httpOnly = ((JPair*)obj->getNodesPattern({"httponly"})[0])->getValue();
-				std::string secure = ((JPair*)obj->getNodesPattern({"secure"})[0])->getValue();
+				
+				std::string name = obj["name"].getPair().getValue();
+				std::string value = obj["value"].getPair().getValue();
+				std::string domain = obj["domain"].getPair().getValue();
+				std::string path = obj["path"].getPair().getValue();
+				std::string expires = obj["expires"].getPair().getValue();
+				std::string httpOnly = obj["httponly"].getPair().getValue();
+				std::string secure = obj["secure"].getPair().getValue();
 
 				//may not even exist. Doesn't have to either
-				std::string hostOnly  = ((JPair*)obj->getNodesPattern({"hostonly"})[0])->getValue();
+				std::string hostOnly  = obj["hostonly"].getPair().getValue();
 
 				WebCookie newCookie = WebCookie(name, value);
 				newCookie.setDomain(domain);

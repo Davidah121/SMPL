@@ -493,26 +493,28 @@ namespace smpl
 
 			std::vector<VertexFormat> modelVertFormat = model->getVertexFormatInfomation();
 
-			int startOfPosition = -1; //must be >= 0
-			int startOfTexture = -1; //Can be -1 but must be >= 0 for textures to work
+			bool setPos = false;
+			bool setTex = false;
+			int startOfPosition = 0; //must be >= 0
+			int startOfTexture = 0; //Can be -1 but must be >= 0 for textures to work
 			
 			for(int i=0; i<modelVertFormat.size(); i++)
 			{
 				if(modelVertFormat[i].usage == Model::USAGE_POSITION)
-				{
 					if(modelVertFormat[i].type == Model::TYPE_VEC2)
-					{
-						startOfPosition = i;
-					}
-				}
+						setPos = true;
 
 				if(modelVertFormat[i].usage == Model::USAGE_TEXTURE)
-				{
 					if(modelVertFormat[i].type == Model::TYPE_VEC2)
-					{
-						startOfTexture = i;
-					}
-				}
+						setTex = true;
+
+				if(!setPos)
+					setPos += modelVertFormat[i].size;
+				if(!setTex)
+					setTex += modelVertFormat[i].size;
+
+				if(setPos && setTex)
+					break;
 			}
 
 			int amtVert = model->size();
@@ -529,8 +531,8 @@ namespace smpl
 				//draw pixel at point x,y
 				for(int i=0; i<amtVert; i++)
 				{
-					std::vector<std::vector<int>> vertInfo = model->getVertex(i);
-					float* positionData = (float*)vertInfo[startOfPosition].data();
+					std::vector<int> vertInfo = model->getVertex(i);
+					float* positionData = (float*)&vertInfo[startOfPosition];
 
 					Vec2f pos = Vec2f( positionData[0], positionData[1] );
 					
@@ -541,11 +543,11 @@ namespace smpl
 				//draw lines at point x,y to point x2,y2
 				for(int i=1; i<amtVert; i+=2)
 				{
-					std::vector<std::vector<int>> vertInfo = model->getVertex(i-1);
-					std::vector<std::vector<int>> vertInfo2 = model->getVertex(i);
+					std::vector<int> vertInfo = model->getVertex(i-1);
+					std::vector<int> vertInfo2 = model->getVertex(i);
 
-					float* positionData1 = (float*)vertInfo[startOfPosition].data();
-					float* positionData2 = (float*)vertInfo2[startOfPosition].data();
+					float* positionData1 = (float*)&vertInfo[startOfPosition];
+					float* positionData2 = (float*)&vertInfo2[startOfPosition];
 
 					Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
 					Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
@@ -557,11 +559,11 @@ namespace smpl
                 //draw lines at point x,y to point x2,y2
 				for(int i=1; i<amtVert; i++)
 				{
-					std::vector<std::vector<int>> vertInfo = model->getVertex(i-1);
-					std::vector<std::vector<int>> vertInfo2 = model->getVertex(i);
+					std::vector<int> vertInfo = model->getVertex(i-1);
+					std::vector<int> vertInfo2 = model->getVertex(i);
 
-					float* positionData1 = (float*)vertInfo[startOfPosition].data();
-					float* positionData2 = (float*)vertInfo2[startOfPosition].data();
+					float* positionData1 = (float*)&vertInfo[startOfPosition];
+					float* positionData2 = (float*)&vertInfo2[startOfPosition];
 
 					Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
 					Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
@@ -573,15 +575,15 @@ namespace smpl
                 //draw lines at point x,y to point x2,y2
 				for(int i=1; i<amtVert+1; i++)
 				{
-					std::vector<std::vector<int>> vertInfo = model->getVertex(i-1);
-					std::vector<std::vector<int>> vertInfo2;
+					std::vector<int> vertInfo = model->getVertex(i-1);
+					std::vector<int> vertInfo2;
 					if( i == amtVert)
 						vertInfo2 = model->getVertex(0);
 					else
 						vertInfo2 = model->getVertex(i);
 
-					float* positionData1 = (float*)vertInfo[startOfPosition].data();
-					float* positionData2 = (float*)vertInfo2[startOfPosition].data();
+					float* positionData1 = (float*)&vertInfo[startOfPosition];
+					float* positionData2 = (float*)&vertInfo2[startOfPosition];
 
 					Vec2f pos = Vec2f( positionData1[0], positionData1[1] );
 					Vec2f pos2 = Vec2f( positionData2[0], positionData2[1] );
@@ -593,13 +595,13 @@ namespace smpl
 				//draw triangles at point x,y to point x2,y2 to point x3,y3
 				for(int i=2; i<amtVert; i+=3)
 				{
-					std::vector<std::vector<int>> vertInfo = model->getVertex(i-2);
-					std::vector<std::vector<int>> vertInfo2 = model->getVertex(i-1);
-					std::vector<std::vector<int>> vertInfo3 = model->getVertex(i);
+					std::vector<int> vertInfo = model->getVertex(i-2);
+					std::vector<int> vertInfo2 = model->getVertex(i-1);
+					std::vector<int> vertInfo3 = model->getVertex(i);
 
-					float* positionData1 = (float*)vertInfo[startOfPosition].data();
-					float* positionData2 = (float*)vertInfo2[startOfPosition].data();
-					float* positionData3 = (float*)vertInfo3[startOfPosition].data();
+					float* positionData1 = (float*)&vertInfo[startOfPosition];
+					float* positionData2 = (float*)&vertInfo2[startOfPosition];
+					float* positionData3 = (float*)&vertInfo3[startOfPosition];
 
 					if(startOfTexture<0)
 					{
@@ -611,9 +613,9 @@ namespace smpl
 					}
 					else
 					{
-						float* textureData1 = (float*)vertInfo[startOfTexture].data();
-						float* textureData2 = (float*)vertInfo2[startOfTexture].data();
-						float* textureData3 = (float*)vertInfo3[startOfTexture].data();
+						float* textureData1 = (float*)&vertInfo[startOfTexture];
+						float* textureData2 = (float*)&vertInfo2[startOfTexture];
+						float* textureData3 = (float*)&vertInfo3[startOfTexture];
 						
 						Vec4f pos = Vec4f( positionData1[0], positionData1[1], textureData1[0], textureData1[1] );
 						Vec4f pos2 = Vec4f( positionData2[0], positionData2[1], textureData2[0], textureData2[1] );
@@ -628,13 +630,13 @@ namespace smpl
 				
 				for(int i=2; i<amtVert; i+=1)
 				{
-					std::vector<std::vector<int>> vertInfo = model->getVertex(0);
-					std::vector<std::vector<int>> vertInfo2 = model->getVertex(i-1);
-					std::vector<std::vector<int>> vertInfo3 = model->getVertex(i);
+					std::vector<int> vertInfo = model->getVertex(0);
+					std::vector<int> vertInfo2 = model->getVertex(i-1);
+					std::vector<int> vertInfo3 = model->getVertex(i);
 
-					float* positionData1 = (float*)vertInfo[startOfPosition].data();
-					float* positionData2 = (float*)vertInfo2[startOfPosition].data();
-					float* positionData3 = (float*)vertInfo3[startOfPosition].data();
+					float* positionData1 = (float*)&vertInfo[startOfPosition];
+					float* positionData2 = (float*)&vertInfo2[startOfPosition];
+					float* positionData3 = (float*)&vertInfo3[startOfPosition];
 					
 					if(startOfTexture<0)
 					{
@@ -646,9 +648,9 @@ namespace smpl
 					}
 					else
 					{
-						float* textureData1 = (float*)vertInfo[startOfTexture].data();
-						float* textureData2 = (float*)vertInfo2[startOfTexture].data();
-						float* textureData3 = (float*)vertInfo3[startOfTexture].data();
+						float* textureData1 = (float*)&vertInfo[startOfTexture];
+						float* textureData2 = (float*)&vertInfo2[startOfTexture];
+						float* textureData3 = (float*)&vertInfo3[startOfTexture];
 						
 						Vec4f pos = Vec4f( positionData1[0], positionData1[1], textureData1[0], textureData1[1] );
 						Vec4f pos2 = Vec4f( positionData2[0], positionData2[1], textureData2[0], textureData2[1] );
@@ -661,7 +663,7 @@ namespace smpl
             case Model::TRIANGLE_STRIP:
                 for(int i=2; i<amtVert; i++)
                 {
-					std::vector<std::vector<int>> vertInfo, vertInfo2, vertInfo3;
+					std::vector<int> vertInfo, vertInfo2, vertInfo3;
 
 					if(!order)
 					{
@@ -676,9 +678,9 @@ namespace smpl
 
 					vertInfo3 = model->getVertex(i);
 					
-					float* positionData1 = (float*)vertInfo[startOfPosition].data();
-					float* positionData2 = (float*)vertInfo2[startOfPosition].data();
-					float* positionData3 = (float*)vertInfo3[startOfPosition].data();
+					float* positionData1 = (float*)&vertInfo[startOfPosition];
+					float* positionData2 = (float*)&vertInfo2[startOfPosition];
+					float* positionData3 = (float*)&vertInfo3[startOfPosition];
 
 					if(startOfTexture<0)
 					{
@@ -690,9 +692,9 @@ namespace smpl
 					}
 					else
 					{
-						float* textureData1 = (float*)vertInfo[startOfTexture].data();
-						float* textureData2 = (float*)vertInfo2[startOfTexture].data();
-						float* textureData3 = (float*)vertInfo3[startOfTexture].data();
+						float* textureData1 = (float*)&vertInfo[startOfTexture];
+						float* textureData2 = (float*)&vertInfo2[startOfTexture];
+						float* textureData3 = (float*)&vertInfo3[startOfTexture];
 						
 						Vec4f pos = Vec4f( positionData1[0], positionData1[1], textureData1[0], textureData1[1] );
 						Vec4f pos2 = Vec4f( positionData2[0], positionData2[1], textureData2[0], textureData2[1] );
@@ -708,7 +710,7 @@ namespace smpl
 				//draw 2 triangles using 4 points
 				for(int i=3; i<amtVert; i+=4)
 				{
-					std::vector<std::vector<int>> vertInfo, vertInfo2, vertInfo3, vertInfo4;
+					std::vector<int> vertInfo, vertInfo2, vertInfo3, vertInfo4;
 
 					vertInfo = model->getVertex(i-3);
 					vertInfo2 = model->getVertex(i-2);
@@ -716,10 +718,10 @@ namespace smpl
 					vertInfo4 = model->getVertex(i);
 					
 					
-					float* positionData1 = (float*)vertInfo[startOfPosition].data();
-					float* positionData2 = (float*)vertInfo2[startOfPosition].data();
-					float* positionData3 = (float*)vertInfo3[startOfPosition].data();
-					float* positionData4 = (float*)vertInfo4[startOfPosition].data();
+					float* positionData1 = (float*)&vertInfo[startOfPosition];
+					float* positionData2 = (float*)&vertInfo2[startOfPosition];
+					float* positionData3 = (float*)&vertInfo3[startOfPosition];
+					float* positionData4 = (float*)&vertInfo4[startOfPosition];
 					
 					if(startOfTexture<0)
 					{
@@ -737,10 +739,10 @@ namespace smpl
 					}
 					else
 					{
-						float* textureData1 = (float*)vertInfo[startOfTexture].data();
-						float* textureData2 = (float*)vertInfo2[startOfTexture].data();
-						float* textureData3 = (float*)vertInfo3[startOfTexture].data();
-						float* textureData4 = (float*)vertInfo4[startOfTexture].data();
+						float* textureData1 = (float*)&vertInfo[startOfTexture];
+						float* textureData2 = (float*)&vertInfo2[startOfTexture];
+						float* textureData3 = (float*)&vertInfo3[startOfTexture];
+						float* textureData4 = (float*)&vertInfo4[startOfTexture];
 
 						Vec4f pos = Vec4f( positionData1[0], positionData1[1], textureData1[0], textureData1[1] );
 						Vec4f pos2 = Vec4f( positionData2[0], positionData2[1], textureData2[0], textureData2[1] );
@@ -761,7 +763,7 @@ namespace smpl
 
 				for(int i=3; i<amtVert; i+=2)
 				{
-					std::vector<std::vector<int>> vertInfo, vertInfo2, vertInfo3, vertInfo4;
+					std::vector<int> vertInfo, vertInfo2, vertInfo3, vertInfo4;
 
 					if(!order)
 					{
@@ -778,10 +780,10 @@ namespace smpl
 						vertInfo4 = model->getVertex(i);
                     }
 
-					float* positionData1 = (float*)vertInfo[startOfPosition].data();
-					float* positionData2 = (float*)vertInfo2[startOfPosition].data();
-					float* positionData3 = (float*)vertInfo3[startOfPosition].data();
-					float* positionData4 = (float*)vertInfo4[startOfPosition].data();
+					float* positionData1 = (float*)&vertInfo[startOfPosition];
+					float* positionData2 = (float*)&vertInfo2[startOfPosition];
+					float* positionData3 = (float*)&vertInfo3[startOfPosition];
+					float* positionData4 = (float*)&vertInfo4[startOfPosition];
 					
 					if(startOfTexture<0)
 					{
@@ -799,10 +801,10 @@ namespace smpl
 					}
 					else
 					{
-						float* textureData1 = (float*)vertInfo[startOfTexture].data();
-						float* textureData2 = (float*)vertInfo2[startOfTexture].data();
-						float* textureData3 = (float*)vertInfo3[startOfTexture].data();
-						float* textureData4 = (float*)vertInfo4[startOfTexture].data();
+						float* textureData1 = (float*)&vertInfo[startOfTexture];
+						float* textureData2 = (float*)&vertInfo2[startOfTexture];
+						float* textureData3 = (float*)&vertInfo3[startOfTexture];
+						float* textureData4 = (float*)&vertInfo4[startOfTexture];
 
 						Vec4f pos = Vec4f( positionData1[0], positionData1[1], textureData1[0], textureData1[1] );
 						Vec4f pos2 = Vec4f( positionData2[0], positionData2[1], textureData2[0], textureData2[1] );

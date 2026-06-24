@@ -1,10 +1,16 @@
 #include "File.h"
 #include "StringTools.h"
 #include "SimpleDir.h"
+#include <stdio.h>
 
 namespace smpl
 {
+	
+	File::File()
+	{
 
+	}
+	
     File::~File()
     {
         
@@ -51,6 +57,25 @@ namespace smpl
         }
 
         fullFileName = filename;
+
+		FILE* f = fopen(filename.c_str(), "rb");
+		cachedExistance = f!=nullptr;
+		if(f != nullptr)
+		{
+			cachedIsFileType = true;
+			fseek(f, 0, SEEK_END);
+			cachedFileSize = _ftelli64(f);
+			fclose(f);
+		}
+
+		// cachedExistance = SimpleDir::doesExist(fullFileName);
+		// if(cachedExistance)
+		// {
+		// 	cachedIsFileType = SimpleDir::isFile(fullFileName);
+		// 	cachedFileSize = SimpleDir::getReferenceSize(fullFileName);
+		// 	cachedFileTime = SimpleDir::getLastChangeTime(fullFileName);
+		// 	cachedIsDirectoryType = SimpleDir::isDirectory(fullFileName);
+		// }
     }
 
     std::string File::getFileName() const
@@ -90,17 +115,27 @@ namespace smpl
 
     bool File::isDirectory() const
     {
-        return SimpleDir::isDirectory(fullFileName);
+        return cachedIsDirectoryType;
     }
 
     bool File::isFile() const
     {
-        return SimpleDir::isFile(fullFileName);
+        return cachedIsFileType;
     }
 
     bool File::doesExist() const
     {
-        return SimpleDir::doesExist(fullFileName);
+        return cachedExistance;
     }
+	
+	size_t File::getFileSize() const
+	{
+		return cachedFileSize;
+	}
+	
+	size_t File::getFileTime() const
+	{
+		return cachedFileTime;
+	}
 
 } //NAMESPACE glib END

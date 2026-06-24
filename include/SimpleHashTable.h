@@ -16,6 +16,8 @@
 #include <initializer_list>
 #include <list>
 
+#include "NewStringFormatting.h"
+
 
 #ifndef LIKELY
 #define LIKELY(x)      __builtin_expect(!!(x), 1)
@@ -431,7 +433,7 @@ namespace smpl
 		using Iterator = SimpleHashTableIterator<Key, Value, MULTI, HashFunc, KeyEqual, BIG>;
 		using ConstIterator = ConstSimpleHashTableIterator<Key, Value, MULTI, HashFunc, KeyEqual, BIG>;
 		
-		static const size_t MINIMUM_BUCKETS = 32;
+		static const size_t MINIMUM_BUCKETS = 4;
 
 
 		/**
@@ -1085,6 +1087,32 @@ namespace smpl
 			arr.shrink_to_fit();
 			extraKeyStorage.shrink_to_fit();
 		}
+
+		template<bool M = MULTI>
+		typename std::enable_if<!M, std::vector<KeyValueType>&>::type
+		getInternalData()
+		{
+			return arr;
+		}
+		template<bool M = MULTI>
+		typename std::enable_if<!M, const std::vector<KeyValueType>&>::type
+		getInternalData() const
+		{
+			return arr;
+		}
+
+		template<bool M = MULTI>
+		typename std::enable_if<M, std::vector<std::list<KeyValueType>>&>::type
+		getInternalData()
+		{
+			return arr;
+		}
+		template<bool M = MULTI>
+		typename std::enable_if<M, const std::vector<std::list<KeyValueType>>&>::type
+		getInternalData() const
+		{
+			return arr;
+		}
 		
 	private:
 		
@@ -1682,4 +1710,17 @@ namespace smpl
 
 	template<typename Key, typename Value, bool MULTI, class HashFunc, typename KeyEqual, bool BIG>
 	const float SimpleHashTable<Key,Value,MULTI,HashFunc,KeyEqual,BIG>::MaxLoadBalance = 0.80;
+
+	
+	template<typename Key, typename Value, bool MULTI, class HashFunc, typename KeyEqual, bool BIG>
+	void formatToString(StringStream& stream, const SimpleHashTable<Key, Value, MULTI, HashFunc, KeyEqual, BIG>& table, const std::string& options)
+	{
+		stream.write("{\n");
+		for(auto& a : table)
+		{
+			formatToString(stream, a, options);
+			stream.write("\n");
+		}
+		stream.write("}");
+	}
 }

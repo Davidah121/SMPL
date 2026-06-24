@@ -49,42 +49,42 @@ namespace smpl
 	{
 	}
 
-	Vec2f Line::getPoint1()
+	Vec2f Line::getPoint1() const
 	{
 		return point1;
 	}
 
-	Vec2f Line::getPoint2()
+	Vec2f Line::getPoint2() const
 	{
 		return point2;
 	}
 
-	Vec2f Line::getMidPoint()
+	Vec2f Line::getMidPoint() const
 	{
 		return (point1+point2) / 2;
 	}
 	
-	Vec2f Line::getToPoint()
+	Vec2f Line::getToPoint() const
 	{
 		return toPoint;
 	}
 
-	double Line::getMaxX()
+	double Line::getMaxX() const
 	{
 		return maxX;
 	}
 
-	double Line::getMinX()
+	double Line::getMinX() const
 	{
 		return minX;
 	}
 
-	double Line::getMinY()
+	double Line::getMinY() const
 	{
 		return minY;
 	}
 
-	double Line::getMaxY()
+	double Line::getMaxY() const
 	{
 		return maxY;
 	}
@@ -114,29 +114,29 @@ namespace smpl
 		}
 	}
 
-	double Line::getSlope()
+	double Line::getSlope() const
 	{
 		return slope;
 	}
 
-	double Line::getSlopeRelativeY()
+	double Line::getSlopeRelativeY() const
 	{
 		return slopeRelY;
 	}
 
 
-	double Line::getYInt()
+	double Line::getYInt() const
 	{
 		return yInt;
 	}
 
-	double Line::getXInt()
+	double Line::getXInt() const
 	{
 		return xInt;
 	}
 
 
-	double Line::solveForX(double y)
+	double Line::solveForX(double y) const
 	{
 		if(toPoint.y!=0)
 			return (slopeRelY*y) + xInt;
@@ -144,7 +144,7 @@ namespace smpl
 			return NAN;
 	}
 
-	double Line::solveForY(double x)
+	double Line::solveForY(double x) const
 	{
 		if(toPoint.x!=0)
 			return (slope*x) + yInt;
@@ -177,7 +177,7 @@ namespace smpl
 		}
 	}
 
-	bool Line::getIntersection(Line other, Vec2f& output)
+	bool Line::getIntersection(const Line& other, Vec2f& output) const
 	{
 		if(toPoint.x == 0)
 		{
@@ -234,7 +234,7 @@ namespace smpl
 		return false;
 	}
 
-	bool Line::getIntersectionParametric(Line other, double& timePoint)
+	bool Line::getIntersectionParametric(const Line& other, double& timePoint) const
 	{
 		Vec2f point;
 		if(getIntersection(other, point))
@@ -252,7 +252,7 @@ namespace smpl
 		return false;
 	}
 
-	double Line::getPointAsParametricValue(double x, double y)
+	double Line::getPointAsParametricValue(double x, double y) const
 	{
 		//assuming point x,y is on the line
 		//x = P1x + dirX * t
@@ -294,12 +294,12 @@ namespace smpl
 		return NAN;
 	}
 
-	double Line::getPointAsParametricValue(Vec2f p)
+	double Line::getPointAsParametricValue(const Vec2f& p) const
 	{
 		return getPointAsParametricValue(p.x, p.y);
 	}
 	
-	Line Line::getPerpendicularBisector()
+	Line Line::getPerpendicularBisector() const
 	{
 		Vec2f midPoint = (point1+point2)/2;
 		Vec2f directionHalf = Vec2f(toPoint.y, -toPoint.x)/2;
@@ -307,12 +307,12 @@ namespace smpl
 		return Line(midPoint + directionHalf, midPoint - directionHalf);
 	}
 
-	Vec2f Line::projectOntoLine(Vec2f p)
+	Vec2f Line::projectOntoLine(const Vec2f& p) const
 	{
 		Vec2f normalizedToPoint = toPoint.normalize();
 		return (((p-point1).dot(normalizedToPoint)) * normalizedToPoint) + point1;
 	}
-	double Line::projectOntoLineParametric(Vec2f p)
+	double Line::projectOntoLineParametric(const Vec2f& p) const
 	{
 		Vec2f normalizedToPoint = toPoint.normalize();
 		double projectedScalarLength = (p-point1).dot(normalizedToPoint);

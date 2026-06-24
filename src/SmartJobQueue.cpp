@@ -27,10 +27,7 @@ namespace smpl
     
     SmartJobQueue::~SmartJobQueue()
     {
-        jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
         running = false;
-        jobQueueMutex.unlock();
-
         cv.notify_all();
         analysisThread.join();
 		for(int i=0; i<jobThreads.size(); i++)
@@ -58,26 +55,98 @@ namespace smpl
 
     size_t SmartJobQueue::addJob(const std::function<void()>& j, double priority)
     {
+		PQData<JobInfo> info = PQData<JobInfo>{priority, JobInfo(jobID++, j)};
+		size_t tempID = info.data.getID();
         jobQueueMutex.lock();
-		jobs.add({priority, JobInfo(jobID, j)});
+		jobs.add(std::move(info));
         jobQueueMutex.unlock();
 
-        cv.notify_all();
-        return jobID++;
+		knownJobCount++;
+        cv.notify_one();
+        return tempID;
     }
     
+	size_t SmartJobQueue::addJobs(const std::vector<std::pair<std::function<void()>, double>>& jobList)
+	{
+		if(jobList.empty())
+			return -1;
+
+		jobQueueMutex.lock();
+		size_t startID = jobID;
+		for(size_t i=0; i<jobList.size(); i++)
+		{
+			jobs.add({jobList[i].second, JobInfo(jobID++, jobList[i].first)});
+		}
+		jobQueueMutex.unlock();
+
+		knownJobCount+=jobList.size();
+		// if(jobList.size() >= jobThreads.size())
+		// 	cv.notify_all();
+		// else
+		// {
+		// 	for(size_t i=0; i<jobList.size(); i++)
+		// 	{
+		// 		cv.notify_one();
+		// 	}
+		// }
+		cv.notify_one();
+		return startID;
+	}
+
+	void SmartJobQueue::parallelize(const std::function<void(size_t, size_t, size_t)>& func, size_t start, size_t end, size_t incr, size_t threadsWanted)
+	{
+		if(threadsWanted < 1)
+			threadsWanted = jobThreads.size();
+		if(threadsWanted == 1)
+		{
+			func(start, end, incr);
+			return;
+		}
+
+		std::vector<std::function<void()>> jobsToAdd;
+		size_t max = end;
+		size_t indexIncr = (end-start)/threadsWanted;
+		indexIncr -= indexIncr % incr;
+
+		if(indexIncr < incr)
+		{
+			func(start, end, incr); //Change this behavior. Should reduce the total number of threads instead of making it all single threaded.
+			return;
+		}
+		
+		size_t tStart = start;
+		size_t tEnd = start+indexIncr;
+		for(size_t i=0; i<threadsWanted-1; i++)
+		{
+			addJob([func, tStart, tEnd, incr]() ->void{
+				func(tStart, tEnd, incr);
+			}, 0);
+			
+			tStart += indexIncr;
+			tEnd += indexIncr;
+		}
+
+		tEnd = end;
+		
+		addJob([func, tStart, tEnd, incr]() ->void{
+			func(tStart, tEnd, incr);
+		}, 0);
+		waitForAllJobs(); //should actually use a different approach
+	}
 
     void SmartJobQueue::removeJob(size_t ID)
     {
 		jobQueueMutex.lock();
-		jobs.erase(JobInfo(ID, nullptr));
+		bool deletedSomething = jobs.erase(JobInfo(ID, nullptr));
+		if(deletedSomething)
+			knownJobCount--;
 		jobQueueMutex.unlock();
     }
 
     bool SmartJobQueue::jobDone(size_t ID)
     {
 		bool found = false;
-		std::lock_guard<HybridSpinLock> lock(jobQueueMutex);
+		std::lock_guard<std::mutex> lock(jobQueueMutex);
 
 		//check if its in the list of suspended jobs
 		if(postponedJobs.find(ID) != postponedJobs.end())
@@ -96,7 +165,7 @@ namespace smpl
     
     bool SmartJobQueue::allJobsDone()
     {
-		jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
+		jobQueueMutex.lock();
 		bool finishedEverything = (jobs.size() == 0) && postponedJobs.empty() && jobsBeingRun.empty();
 		jobQueueMutex.unlock();
 		return finishedEverything;
@@ -105,30 +174,28 @@ namespace smpl
     void SmartJobQueue::removeAllJobs()
     {
         jobQueueMutex.lock();
+		knownJobCount -= jobs.size(); //Not necessarily gonna go to 0. May have existing Task that have been started that were suspended. Can't get rid of those yet.
         jobs.clear();
         jobQueueMutex.unlock();
     }
     
     bool SmartJobQueue::getRunning()
     {
-        jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
-        bool res = running;
-        jobQueueMutex.unlock();
-        return res;
+        return running;
     }
 
     void SmartJobQueue::waitForAllJobs()
     {
         while(!allJobsDone())
         {
-            //Otherwise, wait.
-            System::sleep(1, 0, false);
+			//Otherwise, wait.
+			std::unique_lock<std::mutex> temporaryLock(jobWaitHaltMutex);
+			jobWaitCV.wait_for(temporaryLock, std::chrono::milliseconds(1));
         }
     }
 
     void SmartJobQueue::threadRun(size_t ID, bool temporary)
     {
-        bool knownToHaveMoreWork = false;
 		bool taskPriority = false; //FALSE = job queue first. TRUE = Existing jobs first
 
         while(getRunning())
@@ -137,22 +204,36 @@ namespace smpl
 			size_t jobID = -1;
 			FiberTask* taskPtr = nullptr;
             
-            if(!knownToHaveMoreWork)
-            {
-                std::unique_lock<std::mutex> temporaryLock(haltMutex);
-                if(temporary)
-                {
-                    auto waitStatus = cv.wait_for(temporaryLock, std::chrono::milliseconds(100));
-                    if(waitStatus == std::cv_status::timeout) //100 milliseconds of nothing. Probably not needed
-                        break;
-                }
-                else
-                {
+			//try to get a job from the queue
+			if(knownJobCount > 0)
+			{
+				if(!jobQueueMutex.try_lock())
+				{
+					//Wait to be notified that the jobQueueMutex is free. Will almost certainly grab something out of the jobQueue
+					std::unique_lock<std::mutex> temporaryLock(haltMutex);
 					cv.wait_for(temporaryLock, std::chrono::milliseconds(1));
-                }
-            }
-            
-            jobQueueMutex.lock(HybridSpinLock::MODE_STANDARD);
+					jobQueueMutex.lock();
+				}
+			}
+			else
+			{
+				//Wait to be notified of a job
+				if(temporary)
+				{
+					std::unique_lock<std::mutex> temporaryLock(haltMutex);
+					auto waitStatus = cv.wait_for(temporaryLock, std::chrono::milliseconds(100));
+					if(waitStatus == std::cv_status::timeout) //100 milliseconds of nothing. Thread probably not needed anymore. Discard it
+                        break;
+				}
+				else
+				{
+					std::unique_lock<std::mutex> temporaryLock(haltMutex);
+					cv.wait_for(temporaryLock, std::chrono::milliseconds(1)); //may result in more fighting over the mutex but the mutex itself still results in a sleep if failed
+					// cv.wait(temporaryLock);
+				
+				}
+				jobQueueMutex.lock();
+			}
 			
 			auto taskIterator = postponedJobs.end();
 			
@@ -185,11 +266,14 @@ namespace smpl
 			}
 
 			if(jobID != -1)
+			{
 				jobsBeingRun.insert(jobID);
-			
-			knownToHaveMoreWork = jobs.size() > 0 || postponedJobs.size() >= jobThreads.size(); //either there is a new job or there is enough existing jobs 
+				knownJobCount--;
+			}
 			
 			jobQueueMutex.unlock();
+			if(knownJobCount > 0)
+				cv.notify_one(); //notify anything that is waiting that its okay to grab the mutex
 
 			//execute job if we got one
 			if(jobID != SIZE_MAX && taskPtr != nullptr)
@@ -197,17 +281,22 @@ namespace smpl
 				taskPtr->run();
 
 				//check if the job is done.
-				jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
+				jobQueueMutex.lock();
 				if(taskPtr->getStatus() == FiberTask::STATUS_DONE)
 					availableFiberTask.push_back(taskPtr);
 				else
 				{
 					postponedJobs.insert(JobTask(jobID, taskPtr)); //add it into the jobs in progress
-					knownToHaveMoreWork = true; //Since we added it back in, you know for a fact that their is work left to do. You just may not get this task again. Matters more with a very small job queue.
+					knownJobCount++;; //Since we added it back in, you know for a fact that their is work left to do. You just may not get this task again. Matters more with a very small job queue.
 					// cv.notify_all(); //It is possible that we wish to awaken all threads to catch any strays that slip through unnoticed. This is mainly for temporary threads
 				}
 				jobsBeingRun.erase(jobID);
 				jobQueueMutex.unlock();
+				
+				cv.notify_one();
+				
+				if(knownJobCount == 0)
+					jobWaitCV.notify_one();
 			}
 			
 			//ensure fairness by allowing swaping priority of task execution (existing or new task first)
@@ -226,7 +315,7 @@ namespace smpl
             bool createNewThread = false;
 
             //check 
-            jobQueueMutex.lock(HybridSpinLock::MODE_LOWPRIORITY);
+            jobQueueMutex.lock();
 
             //readjust job queue priority. Lower priority jobs should be bumped up to prevent starvation.... do this later?
 			//TODO: Add job priority adjustments (Note that once a job has been started, priority does not matter. They are all treated the same)

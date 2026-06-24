@@ -126,6 +126,7 @@ build $objDir/RadixTree.o: buildToObject src/RadixTree.cpp
 build $objDir/SHA1Streamble.o: buildToObject src/SHA1Streamble.cpp
 build $objDir/SHA2Streamble.o: buildToObject src/SHA2Streamble.cpp
 build $objDir/Shape.o: buildToObject src/Shape.cpp
+build $objDir/Shape3D.o: buildToObject src/Shape3D.cpp
 build $objDir/SIMD.o: buildToObject src/SIMD.cpp
 build $objDir/SIMD_Cast.o : buildToObject src/SIMD_Cast.cpp
 build $objDir/SimpleDir.o: buildToObject src/SimpleDir.cpp
@@ -290,6 +291,7 @@ $objDir/RadixTree.o $
 $objDir/SHA1Streamble.o $
 $objDir/SHA2Streamble.o $
 $objDir/Shape.o $
+$objDir/Shape3D.o $
 $objDir/SIMD.o $
 $objDir/SIMD_Cast.o $
 $objDir/SimpleDir.o $

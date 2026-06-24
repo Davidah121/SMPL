@@ -149,9 +149,9 @@ namespace smpl
          *          Either int* or float*
          * 
          * @param i 
-         * @return std::vector<std::vector<int>>
+         * @return std::vector<int>
          */
-        std::vector<std::vector<int>> getVertex(size_t i);
+        std::vector<int> getVertex(size_t i);
 
         int getInt(size_t index, size_t list);
         float getFloat(size_t index, size_t list);

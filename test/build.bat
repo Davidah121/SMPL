@@ -14,9 +14,10 @@ set windowLibs=-l Msimg32 -l Dwmapi
 set performanceLibs=-l Pdh -l Winmm
 set semlLibs=-L C:/Libraries/_MyLibraries/SEML -l SEML
 set serializationLibs=-L C:/Libraries/_MyLibraries/SimpleSerialization -l SimpleSerialization
+set wepollLibs=-L C:/Libraries/wepoll-dist -l wepoll
 set catch2Options=-I C:/Libraries/catch2 -L C:/Libraries/catch2 -l catch
-set linkOptions=%windowsSDKLibs% %sslLibs% %oglLibs%  %networkLibs% %windowLibs% %audioLibs% %xinputLibs% %dinputLibs% %performanceLibs% %semlLibs% %serializationLibs% %catch2Options%
+set linkOptions=%windowsSDKLibs% %sslLibs% %oglLibs%  %networkLibs% %windowLibs% %audioLibs% %xinputLibs% %dinputLibs% %performanceLibs% %semlLibs% %serializationLibs% %wepollLibs% %catch2Options%
 set extraOptions=-O3 -fopenmp -pipe -D OPTI=2 -std=c++17 -mavx2
-set includeOptions=-I ./include -I C:/Libraries/glew-2.1.0/include -I C:/Libraries/openssl-master/openssl/include -I C:/Libraries/_MyLibraries/SEML -I C:/Libraries/_MyLibraries/SimpleSerialization
+set includeOptions=-I ./include -I C:/Libraries/glew-2.1.0/include -I C:/Libraries/openssl-master/openssl/include -I C:/Libraries/_MyLibraries/SEML -I C:/Libraries/_MyLibraries/SimpleSerialization -I C:/Libraries/wepoll-dist
 set projectCommand=./bin/Release/obj/*.o ./test/*.cpp -o ./test/TestExe.exe
 clang++ %debugOptions% %linkOptions% %includeOptions% %extraOptions% %projectCommand%

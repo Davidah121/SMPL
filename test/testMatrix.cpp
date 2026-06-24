@@ -169,7 +169,7 @@ TEST_CASE("Testing Matrix Class", "[Matrix]")
 		{
 			for(int j=0; j<7; j++)
 			{
-				CHECK(C[i][j] == Expected[i][j]);
+				REQUIRE(C[i][j] == Expected[i][j]);
 			}
 		}
 	}

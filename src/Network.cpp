@@ -115,6 +115,7 @@ namespace smpl
 		{
 			setRunning(true);
 			networkThread = std::thread(&Network::threadRun, this);
+			
 
 			while(!hasInit)
 			{
@@ -497,7 +498,7 @@ namespace smpl
 				}
 				else
 					break;
-				System::sleep(1, 0, false);
+				System::sleep(1, 0, true);
 			}
 			return err;
 			#endif
@@ -575,15 +576,15 @@ namespace smpl
 	{
 		addrinfo hints;
 		
-		addrinfo* result;
+		addrinfo* result = nullptr;
 		memset(&hints, 0, sizeof(hints));
-		memset(&result, 0, sizeof(result));
 		
 		hints.ai_family = AF_INET;
 		if(config.TCP)
 		{
 			hints.ai_socktype = SOCK_STREAM;
 			hints.ai_protocol = IPPROTO_TCP;
+			
 		}
 		else
 		{
@@ -649,7 +650,7 @@ namespace smpl
 		}
 	}
 	
-	bool Network::acceptConnection(std::string& ipOut)
+	bool Network::acceptConnection(std::string& ipOut, SOCKET_TYPE& sockRef)
 	{
 		bool valid = false;
 		bool secondaryStatus = true;
@@ -663,7 +664,6 @@ namespace smpl
 			if(tempSock == INVALID_SOCKET)
 				return false;
 			
-
 			int err = 0;
 
 			SocketInfo inf = SocketInfo();
@@ -688,6 +688,8 @@ namespace smpl
 			
 			secondaryStatus = internalOnAccept(inf.socket) > 0;
 			
+			sockRef = tempSock;
+
 			u_long mode = 1;
 			crossPlatformIoctl(tempSock, FIONBIO, &mode);
 
@@ -816,6 +818,8 @@ namespace smpl
 				l.unlock();
 				//should probably sleep
 				// System::sleep(1,0,false);
+				ThisFiberTask::yield();
+				// ThisFiberTask::sleep_for(std::chrono::milliseconds(1));
 				l.lock();
 				//verify socket is still valid
 				SocketInfo* validSocketInfo = getSocketInformation(id);
@@ -1268,27 +1272,9 @@ namespace smpl
 
 	void Network::removeSocket(size_t s)
 	{
-		std::string ip = "";
-		size_t id = 0;
-		std::function<void(std::string, size_t)> disconFunc;
-		
-		NetworkExclusiveLock l(&this->networkLock);
-
-		SocketInfo* inf = getSocketInformation(s);
-		if(inf != nullptr)
-		{
-			disconFunc = onDisconnectFunc;
-			ip = inf->ip;
-			id = inf->id;
-			removeSocketInternal(inf->socket);
-			connections.erase(s);
-		}
-
-		l.unlock(); //early unlock
-	
-		//call disconnect function
-		if(disconFunc!=nullptr)
-			disconFunc(ip, id);
+		networkDeleteLock.lock();
+		deleteList.insert(s);
+		networkDeleteLock.unlock();
 	}
 
 	//With the emergence of the internalOnDelete() function, it may cause issues with the shutdown sequence.
@@ -1336,39 +1322,36 @@ namespace smpl
 		}
 	}
 
-	void Network::setOnConnectFunction(std::function<void(std::string, size_t)> func)
+	void Network::setOnConnectFunction(std::function<void(const std::vector<std::pair<std::string, size_t>>&)> func)
 	{
 		NetworkExclusiveLock l(&this->networkLock);
 		onConnectFunc = func;
 	}
-	void Network::setOnDataAvailableFunction(std::function<void(std::string, size_t)> func)
+	void Network::setOnDataAvailableFunction(std::function<void(const std::vector<std::pair<std::string, size_t>>&)> func)
 	{
 		NetworkExclusiveLock l(&this->networkLock);
 		onDataAvailableFunc = func;
 	}
-	void Network::setOnDisconnectFunction(std::function<void(std::string, size_t)> func)
+	void Network::setOnDisconnectFunction(std::function<void(const std::vector<std::pair<std::string, size_t>>&)> func)
 	{
 		NetworkExclusiveLock l(&this->networkLock);
 		onDisconnectFunc = func;
 	}
 
-	std::function<void(std::string, size_t)> Network::getConnectFunc()
+	std::function<void(const std::vector<std::pair<std::string, size_t>>&)> Network::getConnectFunc()
 	{
 		NetworkSharedLock l(&this->networkLock);
-		std::function<void(std::string, size_t)> cpy = onConnectFunc;
-		return cpy;
+		return onConnectFunc;
 	}
-	std::function<void(std::string, size_t)> Network::getDataAvailableFunc()
+	std::function<void(const std::vector<std::pair<std::string, size_t>>&)> Network::getDataAvailableFunc()
 	{
 		NetworkSharedLock l(&this->networkLock);
-		std::function<void(std::string, size_t)> cpy = onDataAvailableFunc;
-		return cpy;
+		return onDataAvailableFunc;
 	}
-	std::function<void(std::string, size_t)> Network::getDisconnectFunc()
+	std::function<void(const std::vector<std::pair<std::string, size_t>>&)> Network::getDisconnectFunc()
 	{
 		NetworkSharedLock l(&this->networkLock);
-		std::function<void(std::string, size_t)> cpy = onDisconnectFunc;
-		return cpy;
+		return onDisconnectFunc;
 	}
 
 	void Network::setRunning(bool v)
@@ -1478,36 +1461,37 @@ namespace smpl
 		else
 			runClient();
 	}
-	
+
 	void Network::runServer()
 	{
 		listen();
 		int counter = 0;
+
+		auto epollFD = epoll_create(64); //just needs to be none zero
+		epoll_event ev;
+		ev.events = EPOLLIN;
+		ev.data.u64 = UINT64_MAX;
+		epoll_ctl(epollFD, EPOLL_CTL_ADD, mainSocketInfo.socket, &ev); //should check errors
+
+		const int MAX_LIST_OF_EVENTS = 64;
+		epoll_event listOfEPollEvents[MAX_LIST_OF_EVENTS]; //this will receive all events that happened up to a maximum of MAX_LIST_OF_EVENTS
+		
 		while(getRunning())
 		{
 			//check for timeout
-			bool didWork = true;
-			std::vector<pollfd> allConnections;
-			std::vector<size_t> allConnectionsID;
-			std::vector<std::string> allConnectionsIP;
-			std::vector<size_t> removeThese;
-			std::vector<int> statusFlag;
+			SimpleHashSet<size_t> knownDeleteList;
+			std::vector<SocketInfo> removeTheseSockets;
 			
-			std::function<void(std::string, size_t)> onAcceptFunc = getConnectFunc();
-			std::function<void(std::string, size_t)> onDataFunc = getDataAvailableFunc();
+			std::function<void(const std::vector<std::pair<std::string, size_t>>&)> onAcceptFunc = getConnectFunc();
+			std::function<void(const std::vector<std::pair<std::string, size_t>>&)> onDataFunc = getDataAvailableFunc();
+			std::function<void(const std::vector<std::pair<std::string, size_t>>&)> disconFunc = getDisconnectFunc();
 
-			NetworkExclusiveLock l(&this->networkLock);
+			networkDeleteLock.lock();
+			knownDeleteList = deleteList;
+			deleteList.fastClear();
+			networkDeleteLock.unlock();
 
-			pollfd socketFD = {};
-			socketFD.fd = mainSocketInfo.socket;
-			socketFD.events = POLLIN;
-			socketFD.revents = 0;
-			allConnections.push_back(socketFD);
-			allConnectionsID.push_back(SIZE_MAX); //server socket ID = -1 since it doesn't actually have an ID
-			allConnectionsIP.push_back("");
-			statusFlag.push_back(0);
-
-			for(auto sockInfo : connections)
+			for(auto& sockInfo : connections)
 			{
 				if(sockInfo.second.socket != 0)
 				{
@@ -1522,160 +1506,183 @@ namespace smpl
 						}
 					}
 
-					pollfd socketFD = {};
-					socketFD.fd = sockInfo.second.socket;
-					socketFD.events = POLLIN;
-					socketFD.revents = 0;
-
-					if(sockInfo.second.waitingOnRead == true)
+					auto it = knownDeleteList.find(sockInfo.second.id);
+					if(it != knownDeleteList.end())
 					{
-						//ignore unless it is flagged for removal
-						if(flagForRemoval)
-						{
-							allConnections.push_back(socketFD);
-							allConnectionsID.push_back(sockInfo.first);
-							allConnectionsIP.push_back(sockInfo.second.ip);
-							statusFlag.push_back(1);
-						}
+						flagForRemoval = true;
 					}
-					else
+
+					if(flagForRemoval)
 					{
-						allConnections.push_back(socketFD);
-						allConnectionsID.push_back(sockInfo.first);
-						allConnectionsIP.push_back(sockInfo.second.ip);
-						if(!flagForRemoval)
-							statusFlag.push_back(0);
-						else
-							statusFlag.push_back(1);
+						removeTheseSockets.push_back(sockInfo.second);
 					}
 				}
 			}
 			
-			int err = crossPlatformPoll(allConnections.data(), allConnections.size(), 0);
-			
+			int count = epoll_wait(epollFD, listOfEPollEvents, MAX_LIST_OF_EVENTS, 0);
 
-			if(err == 0)
+			if(count == 0)
 			{
-				//nothing ready
-				didWork = false;
-				l.unlock();
-				System::sleep(3, 0, true);
+				if(!removeTheseSockets.empty())
+				{
+					NetworkExclusiveLock l(&this->networkLock);
+					//nothing ready
+					//remove sockets here then instead of later
+					std::vector<std::pair<std::string, size_t>> removedSockIPList;
+					for(auto& sock : removeTheseSockets)
+					{
+						removedSockIPList.push_back({sock.ip, sock.id});
+						connections.erase(sock.id);
+					}
+					
+					l.unlock();
+
+					for(auto& sock : removeTheseSockets)
+					{
+						epoll_ctl(epollFD, EPOLL_CTL_DEL, sock.socket, nullptr);
+						removeSocketInternal(sock.socket);
+					}
+
+					if(disconFunc!=nullptr)
+						disconFunc(removedSockIPList);
+				}
+
+				System::sleep(1, 0, true);
 				continue;
 			}
-			else if(err < 0)
+			else if(count < 0)
 			{
 				//error
-				StringTools::println("POLL ERR %d", crossPlatformGetLastError());
+				NetworkExclusiveLock l(&this->networkLock);
+				StringTools::println("MAJOR EPOLL ERR %d", crossPlatformGetLastError());
+				epoll_ctl(epollFD, EPOLL_CTL_DEL, mainSocketInfo.socket, nullptr);
 				disconnect();
 				l.unlock();
 				continue;
 			}
 
 			size_t currentConnectionIndex = 0;
+			size_t startRunningID = runningID;
 			bool gotConnection = false;
 			std::string acceptedIP = "";
-			while(currentConnectionIndex < allConnections.size())
-			{
-				if(statusFlag[currentConnectionIndex] == 1) //already flagged for disconnect. skip
-				{
-					currentConnectionIndex++;
-					continue;
-				}
 
-				if(allConnections[currentConnectionIndex].revents & POLLIN)
+			std::vector<std::pair<std::string, size_t>> connectList;
+			std::vector<std::pair<std::string, size_t>> dataAvailList;
+			
+			size_t timeToAccept = 0;
+			size_t timeToRead = 0;
+			size_t timeToDelete = 0;
+			SOCKET_TYPE sockRef;
+			bool bricked = false;
+
+			NetworkExclusiveLock l(&this->networkLock);
+			for(int i=0; i<count; i++)
+			{
+				epoll_event& epollEvent = listOfEPollEvents[i];
+				if(epollEvent.data.u64 == SIZE_MAX)
 				{
-					//something ready
-					if(allConnectionsID[currentConnectionIndex] == SIZE_MAX)
+					//main socket for accepting connections
+					if((epollEvent.events & EPOLLIN) != 0)
 					{
-						//accept ready
-						gotConnection = acceptConnection(acceptedIP); //will call accept function later. Not fully safe to call it now
+						//connections ready
+						while(acceptConnection(acceptedIP, sockRef))
+						{
+							connectList.push_back({acceptedIP, runningID-1});
+							
+							epoll_event ev;
+							ev.events = EPOLLIN;
+							ev.data.u64 = runningID-1;
+							epoll_ctl(epollFD, EPOLL_CTL_ADD, sockRef, &ev); //should check errors
+						}
 					}
 					else
 					{
+						//some error occured.
+						bricked = true;
+					}
+				}
+				else
+				{
+					SocketInfo* inf = getSocketInformation( epollEvent.data.u64 );
+					if(inf == nullptr)
+						continue;
+					if((epollEvent.events & EPOLLIN) != 0)
+					{
 						//read ready
-						SocketInfo* inf = getSocketInformation( allConnectionsID[currentConnectionIndex] );
-						if(inf == nullptr)
+						bool skip = inf->waitingOnRead;
+						if(!skip)
 						{
-							currentConnectionIndex++;
-							continue;
-						}
-						bool skip = inf->waitingOnRead == true;
-
-						//check
-						unsigned long readAmount = 0;
-						int err = crossPlatformIoctl(allConnections[currentConnectionIndex].fd, FIONREAD, &readAmount);
-
-						if(err == 0)
-						{
-							if(readAmount > 0 && !skip)
+							//check
+							unsigned long readAmount;
+							int err = crossPlatformIoctl(inf->socket, FIONREAD, &readAmount);
+							if(err != 0)
 							{
-								inf->lastInteractTime  = std::chrono::system_clock::now();
-								inf->waitingOnRead = true;
-								statusFlag[currentConnectionIndex] = 2; //READ AVAILABLE
+								//something went wrong
+								removeTheseSockets.push_back(*inf);
 							}
 							else
 							{
-								if(readAmount == 0)
-								{
-									statusFlag[currentConnectionIndex] = 1; //Disconnect - Clean shutdown
-								}
+								inf->lastInteractTime = std::chrono::system_clock::now();
+								inf->waitingOnRead = true;
+								dataAvailList.push_back({inf->ip, inf->id});
 							}
 						}
-						else
-						{
-							statusFlag[currentConnectionIndex] = 1; //Disconnect - POSSIBLE ERROR
-						}
 					}
-				}
-				if(allConnections[currentConnectionIndex].revents & POLLERR || allConnections[currentConnectionIndex].revents & POLLHUP || allConnections[currentConnectionIndex].revents & POLLNVAL)
-				{
-					//error or disconnect
-					statusFlag[currentConnectionIndex] = 1; //disconnect
-					if(allConnectionsID[currentConnectionIndex] == SIZE_MAX)
+					else if((epollEvent.events & EPOLLHUP) != 0 || (epollEvent.events & EPOLLERR) != 0)
 					{
-						//big problem. Main socket borken
-						break;
+						removeTheseSockets.push_back(*inf);
 					}
 				}
-				currentConnectionIndex++;
 			}
 
+			std::vector<std::pair<std::string, size_t>> removedSockIPList;
+			for(auto& sock : removeTheseSockets)
+			{
+				removedSockIPList.push_back({sock.ip, sock.id});
+				connections.erase(sock.id);
+			}
 			l.unlock();
-
-			if(statusFlag[0] == 1) //main socket problem
+			
+			for(auto& sock : removeTheseSockets)
+			{
+				epoll_ctl(epollFD, EPOLL_CTL_DEL, sock.socket, nullptr);
+				removeSocketInternal(sock.socket);
+			}
+			if(bricked) //main socket problem
 			{
 				//error
-				StringTools::println("MAIN SOCKET ERROR");
+				StringTools::println("MAIN SOCKET ERROR. BRICKED");
+				epoll_ctl(epollFD, EPOLL_CTL_DEL, mainSocketInfo.socket, nullptr);
 				disconnect();
 				continue; //uhhh not sure what to do here yet
 			}
 
-			if(gotConnection)
+			int threadsNotified = 0;
+			if(connectList.size() > 0)
 			{
 				if(onAcceptFunc!=nullptr)
-					onAcceptFunc(acceptedIP, runningID-1);
+					onAcceptFunc(connectList);
 			}
-
-			for(size_t i=1; i<allConnections.size(); i++)
+			if(dataAvailList.size() > 0)
 			{
-				if(statusFlag[i] == 1)
-				{
-					//disconnect
-					disconnect(allConnectionsID[i]);
-				}
-				else if(statusFlag[i] == 2)
-				{
-					//data avail
-					if(onDataFunc!=nullptr)
-						onDataFunc(allConnectionsIP[i], allConnectionsID[i]);
-				}
+				if(onDataFunc!=nullptr)
+					onDataFunc(dataAvailList);
 			}
 			
+			if(removedSockIPList.size() > 0)
+			{
+				if(disconFunc!=nullptr)
+					disconFunc(removedSockIPList);
+			}
 		}
+
+		epoll_ctl(epollFD, EPOLL_CTL_DEL, mainSocketInfo.socket, nullptr);
+		epoll_close(epollFD);
 	}
 	
 	void Network::runClient()
 	{
+		//Fine to use Poll as before as it does not affect anything with regards to efficiency.
 		NetworkExclusiveLock l(&this->networkLock); //reusable
 		l.unlock();
 		while(getRunning())
@@ -1698,10 +1705,10 @@ namespace smpl
 						isConnected = true;
 						l.unlock();
 
-						std::function<void(std::string, size_t)> cpy = getConnectFunc();
+						auto cpy = getConnectFunc();
 						
 						if(cpy!=nullptr)
-							cpy(mainSocketInfo.ip, 0);
+							cpy({{mainSocketInfo.ip, 0}});
 						break;
 					}
 					
@@ -1749,7 +1756,7 @@ namespace smpl
 					{
 						//error occured or graceful exit
 						//disconnected
-						std::function<void(std::string, size_t)> cpy = getDisconnectFunc();
+						auto cpy = getDisconnectFunc();
 
 						int finalErr = crossPlatformGetLastError();
 						int errChecking = crossPlatform_WouldBlockError;
@@ -1760,7 +1767,7 @@ namespace smpl
 						else
 						{
 							if(cpy!=nullptr)
-								cpy(mainSocketInfo.ip, 0);
+								cpy({{mainSocketInfo.ip, 0}});
 							disconnect();
 							break;
 						}
@@ -1786,9 +1793,9 @@ namespace smpl
 							l.unlock();
 
 							//can receive message
-							std::function<void(std::string, size_t)> cpy = getDataAvailableFunc();
+							auto cpy = getDataAvailableFunc();
 							if(cpy!=nullptr)
-								cpy(mainSocketInfo.ip, 0);
+								cpy({{mainSocketInfo.ip, 0}});
 						}
 					
 					}
@@ -1797,7 +1804,7 @@ namespace smpl
 				{
 					//error occured
 					//disconnected
-					std::function<void(std::string, size_t)> cpy = getDisconnectFunc();
+					auto cpy = getDisconnectFunc();
 					
 					int finalErr = crossPlatformGetLastError();
 					int errChecking = crossPlatform_WouldBlockError;
@@ -1809,7 +1816,7 @@ namespace smpl
 					else
 					{
 						if(cpy!=nullptr)
-							cpy(mainSocketInfo.ip, 0);
+							cpy({{mainSocketInfo.ip, 0}});
 						disconnect();
 						break;
 					}

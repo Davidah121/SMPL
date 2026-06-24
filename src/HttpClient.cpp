@@ -66,17 +66,17 @@ namespace smpl
         
         if(network != nullptr)
         {
-            network->setOnConnectFunction( [this](std::string ip, size_t id) ->void{
+            network->setOnConnectFunction( [this](const std::vector<std::pair<std::string, size_t>>& connList) ->void{
                 if(this->onConnectionFunction != nullptr)
                     this->onConnectionFunction(this);
                 if(shouldResendRequest)
                     resendRequest();
             });
-            network->setOnDisconnectFunction( [this](std::string ip, size_t id) ->void{
+            network->setOnDisconnectFunction( [this](const std::vector<std::pair<std::string, size_t>>& connList) ->void{
                 if(this->onDisconnectionFunction != nullptr)
                     this->onDisconnectionFunction(this);
             });
-            network->setOnDataAvailableFunction( [this](std::string ip, size_t id) ->void{
+            network->setOnDataAvailableFunction( [this](const std::vector<std::pair<std::string, size_t>>& connList) ->void{
                 this->internalOnDataAvailable();
             });
         }

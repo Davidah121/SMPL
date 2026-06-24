@@ -107,7 +107,7 @@ namespace smpl
 		}
 	}
 
-	std::string SimpleDir::getReferenceFullPath(std::string n)
+	std::string SimpleDir::getReferenceFullPath(const std::string& n)
 	{
 		std::filesystem::path p = n;
 		std::string s;
@@ -128,7 +128,7 @@ namespace smpl
 		Gets the file size of a reference at the index if possible.
 		Returns an size_t.
 	*/
-	uintmax_t SimpleDir::getReferenceSize(std::string name)
+	uintmax_t SimpleDir::getReferenceSize(const std::string& name)
 	{
 		if(SimpleDir::doesExist(name))
 		{
@@ -141,12 +141,12 @@ namespace smpl
 		return 0;
 	}
 	
-	uintmax_t SimpleDir::getFileSize(std::filesystem::directory_entry f)
+	uintmax_t SimpleDir::getFileSize(const std::filesystem::directory_entry& f)
 	{
 		return std::filesystem::file_size(f);
 	}
 
-	uintmax_t SimpleDir::getFolderSize(std::filesystem::directory_entry f)
+	uintmax_t SimpleDir::getFolderSize(const std::filesystem::directory_entry& f)
 	{
 		uintmax_t totalSize = 0;
 		for (auto& entry: std::filesystem::directory_iterator(f))
@@ -166,7 +166,7 @@ namespace smpl
 	/*
 		Returns a time_t that represents the last time it was changed.
 	*/
-	time_t SimpleDir::getLastChangeTime(std::string name)
+	time_t SimpleDir::getLastChangeTime(const std::string& name)
 	{
 		if(SimpleDir::doesExist(name))
 		{
@@ -188,7 +188,7 @@ namespace smpl
 		Changes the name to the new name specified.
 		The new name should not contain the path.
 	*/
-	void SimpleDir::renameResource(std::string oldName, std::string newName)
+	void SimpleDir::renameResource(const std::string& oldName, const std::string& newName)
 	{
 		try
 		{
@@ -205,7 +205,7 @@ namespace smpl
 	/*
 		Attempts to delete a resource at the specified location.
 	*/
-	void SimpleDir::deleteResource(std::string n)
+	void SimpleDir::deleteResource(const std::string& n)
 	{
 		try
 		{
@@ -232,7 +232,7 @@ namespace smpl
 		ends with a / or \, then it will use the current name of the file.
 		Otherwise, it will use the name and file extension you specify.
 	*/
-	void SimpleDir::copyResource(std::string oldName, std::string newName)
+	void SimpleDir::copyResource(const std::string& oldName, const std::string& newName)
 	{
 		try
 		{
@@ -301,7 +301,7 @@ namespace smpl
 	/*
 		Creates a directory
 	*/
-	void SimpleDir::createDirectory(std::string n)
+	void SimpleDir::createDirectory(const std::string& n)
 	{
 		if(!doesExist(n))
 			std::filesystem::create_directory(n);
@@ -315,17 +315,17 @@ namespace smpl
 		return location;
 	}
 
-	bool SimpleDir::isDirectory(std::string n)
+	bool SimpleDir::isDirectory(const std::string& n)
 	{
 		return std::filesystem::is_directory(n);
 	}
 
-	bool SimpleDir::isFile(std::string n)
+	bool SimpleDir::isFile(const std::string& n)
 	{
 		return std::filesystem::is_regular_file(n);
 	}
 	
-	bool SimpleDir::doesExist(std::string n)
+	bool SimpleDir::doesExist(const std::string& n)
 	{
 		return std::filesystem::exists(n);
 	}

@@ -157,6 +157,8 @@ namespace smpl
          */
         size_t addJob(const std::function<void()>& j);
 
+		size_t addJobs(const std::vector<std::function<void()>>& jobs);
+
         /**
          * @brief Attempts to remove a job with the specified ID.
          *      The expected input here is returned from addJob()
@@ -245,8 +247,8 @@ namespace smpl
 		FiberTask* getFreeFiberTask(const JobInfo& jbInfo);
         
         std::mutex jobQueueMutex;
-        bool running = false;
-        size_t jobID = 0;
+        std::atomic_bool running = false;
+        std::atomic_size_t jobID = 0;
 
         Queue<JobInfo> jobs; //queue of jobs that you want to be run but are not yet started.
 
@@ -261,12 +263,10 @@ namespace smpl
         //Used for efficient halting and interrupts
         std::condition_variable cv;
 		std::atomic_uint64_t knownJobCount = {0};
-        std::mutex haltMutex;
+		std::mutex haltMutex;
 		
         std::condition_variable jobWaitCV;
 		std::mutex jobWaitHaltMutex;
-
-		
     };
 
     class DLL_OPTION SmartJobQueue
@@ -310,6 +310,7 @@ namespace smpl
          * @return size_t
          */
         size_t addJob(const std::function<void()>& j, double priority);
+		size_t addJobs(const std::vector<std::pair<std::function<void()>, double>>& jobs);
 
         /**
          * @brief Attempts to remove a job with the specified ID.
@@ -360,6 +361,19 @@ namespace smpl
          */
         bool allJobsDone();
 
+		/**
+		 * @brief Attempts to take an assumed for loop and parallelize it.
+		 *		The assumption is that the loop is defined from a start to an end with a custom increment.
+		 *			This is not strictly required but that is the assumption.
+		 *		
+		 *		The total number of loops are broken up for all threads evenly and are not interlaced which helps with false sharing assuming that is a potential issue.
+		 * 
+		 * @param func 
+		 * @param start 
+		 * @param end 
+		 */
+		void parallelize(const std::function<void(size_t, size_t, size_t)>& func, size_t start, size_t end, size_t incr, size_t threadsWanted);
+
     private:
         /**
          * @brief An internal function for the created threads.
@@ -391,9 +405,10 @@ namespace smpl
 		FiberTask* getFreeFiberTask(const JobInfo& jbInfo);
 
 
-        HybridSpinLock jobQueueMutex;
-        bool running = false;
-        size_t jobID = 0;
+        std::mutex jobQueueMutex;
+        std::atomic_bool running = false;
+        std::atomic_size_t jobID = 0;
+
         size_t threadID = 0;
         PriorityQueue<JobInfo> jobs; //queue of jobs to be run that haven't started
 
@@ -410,10 +425,15 @@ namespace smpl
         uint64_t jobsDoneSinceCheck = 0;
         uint64_t threadLoad = 0;
         uint16_t maxThreadsAllowed = -1;
-        
+
+		
         //Used for efficient halting and interrupts
         std::condition_variable cv;
-        std::mutex haltMutex;
+		std::atomic_uint64_t knownJobCount = {0};
+		std::mutex haltMutex;
+		
+        std::condition_variable jobWaitCV;
+		std::mutex jobWaitHaltMutex;
     };
 
 	class SJQ_OMP_Replacement
@@ -438,7 +458,7 @@ namespace smpl
 
 	#ifdef USE_OMP_REPLACEMENT
 		#ifndef SJQ_MAX_THREADS
-			#define SJQ_MAX_THREADS MAX_THREADS_KNOWN
+			#define SJQ_MAX_THREADS 1
 		#endif
 		#ifndef SJQ_THREAD_ADJUSTMENTS
 			#define SJQ_THREAD_ADJUSTMENTS

@@ -50,10 +50,10 @@ namespace smpl
 		void operator*=(float x);
 		void operator/=(float x);
 		
-		BezierCurve operator+(Vec2f p);
-		BezierCurve operator-(Vec2f p);
-		BezierCurve operator*(float x);
-		BezierCurve operator/(float x);
+		BezierCurve operator+(Vec2f p) const;
+		BezierCurve operator-(Vec2f p) const;
+		BezierCurve operator*(float x) const;
+		BezierCurve operator/(float x) const;
 		
 		/**
 		 * @brief Adds a point to the list of points for the Bezier Curve.
@@ -130,7 +130,7 @@ namespace smpl
 		 * 		OutOfBoundsError will be thrown.
 		 * 		Otherwise, the default Vec2f is returned.
 		 */
-		Vec2f getPoint(size_t index);
+		Vec2f getPoint(size_t index) const;
 
 		/**
 		 * @brief Get the Points used by the Bezier Curve
@@ -138,6 +138,7 @@ namespace smpl
 		 * @return std::vector<Vec2f>& 
 		 */
 		std::vector<Vec2f>& getPoints();
+		const std::vector<Vec2f>& getPoints() const;
 
 		/**
 		 * @brief Subdivides the Bezier Curve from [0, 1] into 2 separate Bezier Curves.
@@ -147,7 +148,7 @@ namespace smpl
 		 * 
 		 * @return std::vector<BezierCurve> 
 		 */
-		std::vector<BezierCurve> subdivide(double t);
+		std::pair<BezierCurve, BezierCurve> subdivide(double t) const;
 
 		/**
 		 * @brief Extracts the segment from [a, b] as a new Bezier Curve.
@@ -158,7 +159,7 @@ namespace smpl
 		 * 		The end time value. Must be between [0, 1]
 		 * @return BezierCurve
 		 */
-		BezierCurve extract(double a, double b);
+		BezierCurve extract(double a, double b) const;
 
 		/**
 		 * @brief Gets an Axis Aligned Bounding Box for the Bezier Curve.
@@ -167,7 +168,7 @@ namespace smpl
 		 * 
 		 * @return std::vector<Vec2f> 
 		 */
-		std::vector<Vec2f> getBoundingBox();
+		std::pair<Vec2f, Vec2f> getBoundingBox() const;
 
 		/**
 		 * @brief Solves the BezierCurve for the given time. Note that any time
@@ -177,7 +178,7 @@ namespace smpl
 		 * @return Vec2f
 		 * 		returns the point as a Vec2f.
 		 */
-		Vec2f getFunctionAt(double time);
+		Vec2f getFunctionAt(double time) const;
 
 		/**
 		 * @brief Solves the derivative of BezierCurve for the given time. Note that any time
@@ -187,7 +188,7 @@ namespace smpl
 		 * @return Vec2f
 		 * 		returns the derivative as a Vec2f.
 		 */
-		Vec2f getDerivativeAt(double time);
+		Vec2f getDerivativeAt(double time) const;
 
 		/**
 		 * @brief Solves the second derivative of the curve at the given time. Just like for the 1st derivative,
@@ -196,7 +197,7 @@ namespace smpl
 		 * @param time 
 		 * @return Vec2f 
 		 */
-		Vec2f getSecondDerivativeAt(double time);
+		Vec2f getSecondDerivativeAt(double time) const;
 
 		/**
 		 * @brief Solves for the simple derivative of BezierCurve for the given time.
@@ -210,7 +211,7 @@ namespace smpl
 		 * @return Vec2f
 		 * 		returns the simple derivative as a Vec2f.
 		 */
-		Vec2f getSimpleDerivativeAt(double time);
+		Vec2f getSimpleDerivativeAt(double time) const;
 
 		/**
 		 * @brief Solves for the Arc Length of the Bezier curve from 0 to the given time.
@@ -223,7 +224,7 @@ namespace smpl
 		 * @return double
 		 * 		returns the measured arc length.
 		 */
-		double getArcLengthAt(double time);
+		double getArcLengthAt(double time) const;
 
 		/**
 		 * @brief Solves for the Arc Length of the Bezier curve from start time to end time.
@@ -238,7 +239,7 @@ namespace smpl
 		 * @return double
 		 * 		returns the measured arc length.
 		 */
-		double getArcLengthAt(double startTime, double endTime);
+		double getArcLengthAt(double startTime, double endTime) const;
 
 		/**
 		 * @brief Projects a point onto the curve. Ideally, that point will result in the shortest distance
@@ -250,7 +251,7 @@ namespace smpl
 		 * @param maxIterations 
 		 * @return Vec2f 
 		 */
-		Vec2f project(Vec2f p, unsigned int maxIterations = 5);
+		Vec2f project(Vec2f p, unsigned int maxIterations = 5) const;
 
 		/**
 		 * @brief Finds a time t in the range [0, 1] such that
@@ -267,7 +268,7 @@ namespace smpl
 		 * 		Default value is 10.
 		 * @return double 
 		 */
-		double findTimeForMinDis(Vec2f p, unsigned int maxIterations = 5);
+		double findTimeForMinDis(Vec2f p, unsigned int maxIterations = 5) const;
 
 		/**
 		 * @brief Finds a time t in the range [0, 1] such that
@@ -285,7 +286,7 @@ namespace smpl
 		 * 		Default value is 5.
 		 * @return double 
 		 */
-		double findTimeForMinDis(double x, double y, unsigned int maxIterations = 5);
+		double findTimeForMinDis(double x, double y, unsigned int maxIterations = 5) const;
 
 		/**
 		 * @brief Clears all points from the BezierCurve's list of points
@@ -296,7 +297,7 @@ namespace smpl
 		 * @brief Returns the amount of points the bezier curve has.
 		 * @return size_t
 		 */
-		size_t size();
+		size_t size() const;
 
 		/**
 		 * @brief Solves the function all times where the solution has the specified y value.
@@ -308,7 +309,7 @@ namespace smpl
 		 * 		returns a list of all solutions. Can return an empty list if there is no
 		 * 		solution.
 		 */
-		std::vector<double> findTimeForY(double y, bool removeDuplicates = false);
+		std::vector<double> findTimeForY(double y, bool removeDuplicates = false) const;
 
 		/**
 		 * @brief Solves the function all times where the solution has the specified x value.
@@ -320,7 +321,7 @@ namespace smpl
 		 * 		returns a list of all solutions. Can return an empty list if there is no
 		 * 		solution.
 		 */
-		std::vector<double> findTimeForX(double x, bool removeDuplicates = false);
+		std::vector<double> findTimeForX(double x, bool removeDuplicates = false) const;
 
 		/**
 		 * @brief Solves the function all times where the solution has the specified x,y value.
@@ -332,7 +333,7 @@ namespace smpl
 		 * 		returns a list of all solutions. Can return an empty list if there is no
 		 * 		solution.
 		 */
-		std::vector<double> findTimeForPoint(double x, double y, bool removeDuplicates = false);
+		std::vector<double> findTimeForPoint(double x, double y, bool removeDuplicates = false) const;
 
 		/**
 		 * @brief Finds the times at which this bezier curve intersects with the other bezier curve in space.
@@ -343,7 +344,7 @@ namespace smpl
 		 * @param tolerance 
 		 * @return std::vector<double> 
 		 */
-		std::vector<double> findIntersectionPoints(BezierCurve& other, double tolerance);
+		std::vector<double> findIntersectionPoints(BezierCurve& other, double tolerance) const;
 
 		/**
 		 * @brief Finds all points where the curve intersects itself.
@@ -354,7 +355,7 @@ namespace smpl
 		 * @param tolerance 
 		 * @return std::vector<double> 
 		 */
-		std::vector<double> findSelfIntersection(double tolerance); //TODO
+		std::vector<double> findSelfIntersection(double tolerance) const; //TODO
 
 
 		/**
@@ -412,13 +413,13 @@ namespace smpl
 		
 		
 	private:
-		static void findIntersectionPoints(BezierCurve c1, BezierCurve c2, double tolerance, std::pair<double, double> timePoints, std::vector<double>& output);
-		Vec2f blendPointsRecursive(int start, int end, double time);
-		Vec2f blendPointsExplicit(double time);
-		Vec2f blendPointsDerivativeRecursive(int start, int end, double time);
-		Vec2f blendPointsSecondDerivativeRecursive(int start, int end, double time);
-		bool checkForPotentialSelfIntersection();
-		void subdivideTillNoIntersection(BezierCurve c, double t1, double t2, std::vector<BezierCurve>& outputCurves, std::vector<std::pair<double, double>>& outputTimes);
+		static void findIntersectionPoints(BezierCurve c1, BezierCurve c2, double tolerance, std::pair<double, double> timePoints, std::pair<double, double> timePoints2, std::vector<double>& output, std::vector<double>& output2);
+		Vec2f blendPointsRecursive(int start, int end, double time) const;
+		Vec2f blendPointsExplicit(double time) const;
+		Vec2f blendPointsDerivativeRecursive(int start, int end, double time) const;
+		Vec2f blendPointsSecondDerivativeRecursive(int start, int end, double time) const;
+		bool checkForPotentialSelfIntersection() const;
+		void subdivideTillNoIntersection(BezierCurve c, double t1, double t2, std::vector<BezierCurve>& outputCurves, std::vector<std::pair<double, double>>& outputTimes) const;
 	
 
 		std::vector<Vec2f> points = std::vector<Vec2f>();

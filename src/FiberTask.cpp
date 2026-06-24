@@ -110,6 +110,11 @@ namespace smpl
 	{
 		return taskStatus;
 	}
+	
+	bool FiberTask::isFiberRunning()
+	{
+		return currentTask == nullptr || currentTask == &rootTask;
+	}
 
 	void FiberTask::resume()
 	{

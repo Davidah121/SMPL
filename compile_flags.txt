@@ -5,6 +5,7 @@
 -IC:/Libraries/_MyLibraries/SimpleSerialization
 -IC:/Libraries/catch2
 -IC:/Libraries/SQLite
+-IC:/Libraries/wepoll-dist
 -xc++
 -std=c++17
 -O3

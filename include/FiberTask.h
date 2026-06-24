@@ -9,6 +9,7 @@
 #include <ratio>
 #include <thread>
 #include "external/tiny_fiber.h"
+#include "StringTools.h"
 
 namespace smpl
 {
@@ -76,6 +77,8 @@ namespace smpl
 		}
 		
 		int getStatus();
+
+		static bool isFiberRunning();
 	private:
 		void resume();
 		void internalRun();

@@ -49,7 +49,7 @@ namespace smpl
             
             while(!lockVar.try_lock())
             {
-                if(attempts >= MAX_ATTEMPTS)
+                if(attempts >= MAX_ATTEMPTS && !FiberTask::isFiberRunning())
                 {
                     lockVar.lock(); //Note that this does not workout that well for fibers
 					locker = std::this_thread::get_id();
@@ -61,8 +61,10 @@ namespace smpl
 					attempts++;
 					//failing to get lock means that other threads/fibers are using it. Yield to other threads so they may run while you wait.
 					//If its a fiber, it may make more sense to yield to the caller which may schedule other fibers.
-					ThisFiberTask::yield();
-                    std::this_thread::yield();
+					if(FiberTask::isFiberRunning())
+						ThisFiberTask::yield();
+					else
+                    	std::this_thread::yield();
 				}
             }
         }

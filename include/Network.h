@@ -12,6 +12,7 @@
 	#include <sys/types.h>
 	#include <sys/socket.h>
 	#include <sys/sendfile.h>
+	#include <sys/epoll.h>
 	#include <poll.h>
 	#include <netinet/in.h>
 	#include <netinet/tcp.h>
@@ -35,6 +36,7 @@
 	#include <winerror.h>
 	#include <ws2tcpip.h>
 	#include <MSWSock.h>
+	#include <wepoll.h>
 	
 	#define SOCKET_TYPE SOCKET
 #endif
@@ -488,18 +490,17 @@ namespace smpl
 		 * 
 		 * @param func 
 		 */
-		void setOnConnectFunction(std::function<void(std::string, size_t)> func);
+		void setOnConnectFunction(std::function<void(const std::vector<std::pair<std::string, size_t>>&)> func);
 
 		/**
 		 * @brief Sets the On Data Available Function.
 		 * 		This is called whenever data is available to be read and has not been read yet.
-		 * 		The string passed into the function is the IP address of the connection
-		 * 		The int passed into the function is the ID of the connection that sent the message.
+		 *		A list of valid IDs and their IPs are given that can be read.
 		 * 			Note that this does not mean new data. So, if you got 12 bytes but only read 8, then this will be called again.
 		 * 			Note that this is only called once between reads.
 		 * @param func 
 		 */
-		void setOnDataAvailableFunction(std::function<void(std::string, size_t)> func);
+		void setOnDataAvailableFunction(std::function<void(const std::vector<std::pair<std::string, size_t>>&)> func);
 
 		/**
 		 * @brief Sets the On Disconnection Function.
@@ -509,7 +510,7 @@ namespace smpl
 		 * 
 		 * @param func 
 		 */
-		void setOnDisconnectFunction(std::function<void(std::string, size_t)> func);
+		void setOnDisconnectFunction(std::function<void(const std::vector<std::pair<std::string, size_t>>&)> func);
 		
 		/**
 		 * @brief Starts up the network allowing it to connect 
@@ -586,7 +587,7 @@ namespace smpl
 
 
 		void listen();
-		bool acceptConnection(std::string& ipOut);
+		bool acceptConnection(std::string& ipOut, SOCKET_TYPE& sockRef);
 		bool connect();
 
 		void setRunning(bool v);
@@ -601,14 +602,14 @@ namespace smpl
 		
 		SocketInfo* getSocketInformation(size_t id);
 
-		std::function<void(std::string, size_t)> getConnectFunc();
-		std::function<void(std::string, size_t)> getDataAvailableFunc();
-		std::function<void(std::string, size_t)> getDisconnectFunc();
+		std::function<void(const std::vector<std::pair<std::string, size_t>>&)> getConnectFunc();
+		std::function<void(const std::vector<std::pair<std::string, size_t>>&)> getDataAvailableFunc();
+		std::function<void(const std::vector<std::pair<std::string, size_t>>&)> getDisconnectFunc();
 		
 
-		std::function<void(std::string, size_t)> onConnectFunc;
-		std::function<void(std::string, size_t)> onDataAvailableFunc;
-		std::function<void(std::string, size_t)> onDisconnectFunc;
+		std::function<void(const std::vector<std::pair<std::string, size_t>>&)> onConnectFunc;
+		std::function<void(const std::vector<std::pair<std::string, size_t>>&)> onDataAvailableFunc;
+		std::function<void(const std::vector<std::pair<std::string, size_t>>&)> onDisconnectFunc;
 		
 		#ifndef __unix__
 			WSADATA wsaData;
@@ -618,6 +619,7 @@ namespace smpl
 		sockaddr sockAddrInfo;
 		
 		SimpleHashMap<size_t, SocketInfo> connections;
+		SimpleHashSet<size_t> deleteList;
 
 		void removeSocket(size_t id);
 		void removeSocketInternal(SOCKET_TYPE s);
@@ -653,6 +655,7 @@ namespace smpl
 
 		// ReadWriterLock networkLock;
 		std::shared_mutex networkLock;
+		std::mutex networkDeleteLock;
 	};
 
 } //NAMESPACE smpl END

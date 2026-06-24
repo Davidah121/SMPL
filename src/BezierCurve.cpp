@@ -57,31 +57,31 @@ namespace smpl
 			poi /= x;
 	}
 	
-	BezierCurve BezierCurve::operator+(Vec2f p)
+	BezierCurve BezierCurve::operator+(Vec2f p) const
 	{
 		BezierCurve other;
-		for(Vec2f& poi : points)
+		for(const Vec2f& poi : points)
 			other.points.push_back(poi + p);
 		return other;
 	}
-	BezierCurve BezierCurve::operator-(Vec2f p)
+	BezierCurve BezierCurve::operator-(Vec2f p) const
 	{
 		BezierCurve other;
-		for(Vec2f& poi : points)
+		for(const Vec2f& poi : points)
 			other.points.push_back(poi - p);
 		return other;
 	}
-	BezierCurve BezierCurve::operator*(float x)
+	BezierCurve BezierCurve::operator*(float x) const
 	{
 		BezierCurve other;
-		for(Vec2f& poi : points)
+		for(const Vec2f& poi : points)
 			other.points.push_back(poi * x);
 		return other;
 	}
-	BezierCurve BezierCurve::operator/(float x)
+	BezierCurve BezierCurve::operator/(float x) const
 	{
 		BezierCurve other;
-		for(Vec2f& poi : points)
+		for(const Vec2f& poi : points)
 			other.points.push_back(poi / x);
 		return other;
 	}
@@ -154,7 +154,7 @@ namespace smpl
 			points[index] = Vec2f(x, y);
 	}
 
-	Vec2f BezierCurve::getPoint(size_t index)
+	Vec2f BezierCurve::getPoint(size_t index) const
 	{
 		if (index < points.size())
 			return points[index];
@@ -171,8 +171,13 @@ namespace smpl
 	{
 		return points;
 	}
+	
+	const std::vector<Vec2f>& BezierCurve::getPoints() const
+	{
+		return points;
+	}
 
-	std::vector<BezierCurve> BezierCurve::subdivide(double t)
+	std::pair<BezierCurve, BezierCurve> BezierCurve::subdivide(double t) const
 	{
 		if(points.size() < 2)
 			return {};
@@ -229,26 +234,26 @@ namespace smpl
 		return {b1, b2};
 	}
 
-	BezierCurve BezierCurve::extract(double a, double b)
+	BezierCurve BezierCurve::extract(double a, double b) const
 	{
 		if(a < 0 || a > 1 || b < 0 || b > 1)
 		{
 			return BezierCurve();
 		}
 
-		std::vector<BezierCurve> tempSubdivision = subdivide(b);
+		std::pair<BezierCurve, BezierCurve> tempSubdivision = subdivide(b);
 
 		//discard the second subdivision
 		//subdivide the first BezierCurve at new 'a' point
 
 		double newABlend = 1.0/b * a;
 
-		std::vector<BezierCurve> newSubDivision = tempSubdivision[0].subdivide(newABlend);
+		std::pair<BezierCurve, BezierCurve> newSubDivision = tempSubdivision.first.subdivide(newABlend);
 
-		return newSubDivision[1];
+		return newSubDivision.second;
 	}
 
-	std::vector<Vec2f> BezierCurve::getBoundingBox()
+	std::pair<Vec2f, Vec2f> BezierCurve::getBoundingBox() const
 	{
 		Vec2f minPoint, maxPoint;
 
@@ -257,7 +262,7 @@ namespace smpl
 			minPoint = points[0];
 			maxPoint = points[0];
 
-			for(Vec2f& v : points)
+			for(const Vec2f& v : points)
 			{
 				minPoint.x = MathExt::min(v.x, minPoint.x);
 				maxPoint.x = MathExt::max(v.x, maxPoint.x);
@@ -272,7 +277,7 @@ namespace smpl
 		return {};
 	}
 
-	Vec2f BezierCurve::getFunctionAt(double time)
+	Vec2f BezierCurve::getFunctionAt(double time) const
 	{
 		//recursive definition that takes n^2 time
 		//blend P[n] with P[n+1] to form C[n]
@@ -284,17 +289,17 @@ namespace smpl
 		return blendPointsRecursive(0, (int)(points.size()-1), time);
 	}
 
-	Vec2f BezierCurve::getDerivativeAt(double time)
+	Vec2f BezierCurve::getDerivativeAt(double time) const
 	{
 		return blendPointsDerivativeRecursive(0, (int)(points.size()-1), time);
 	}
 	
-	Vec2f BezierCurve::getSecondDerivativeAt(double time)
+	Vec2f BezierCurve::getSecondDerivativeAt(double time) const
 	{
 		return blendPointsSecondDerivativeRecursive(0, (int)(points.size()-1), time);
 	}
 
-	Vec2f BezierCurve::getSimpleDerivativeAt(double time)
+	Vec2f BezierCurve::getSimpleDerivativeAt(double time) const
 	{
 		//assume the points are separated by time segments
 		//here, we just return the rate of change to the next time segment.
@@ -310,12 +315,12 @@ namespace smpl
 		return points[currentSegment+1] - points[currentSegment];
 	}
 
-	double BezierCurve::getArcLengthAt(double time)
+	double BezierCurve::getArcLengthAt(double time) const
 	{
 		return getArcLengthAt(0, time);
 	}
 
-	double BezierCurve::getArcLengthAt(double startTime, double endTime)
+	double BezierCurve::getArcLengthAt(double startTime, double endTime) const
 	{
 		//Using Simpson's rule for anything above degree 1
 		double arcLength = 0;
@@ -362,18 +367,18 @@ namespace smpl
 		return arcLength;
 	}
 
-	double BezierCurve::findTimeForMinDis(double x, double y, unsigned int maxIterations)
+	double BezierCurve::findTimeForMinDis(double x, double y, unsigned int maxIterations) const
 	{
 		return findTimeForMinDis( Vec2f(x, y), maxIterations );
 	}
 	
-	Vec2f BezierCurve::project(Vec2f p, unsigned int maxIterations)
+	Vec2f BezierCurve::project(Vec2f p, unsigned int maxIterations) const
 	{
 		double t = findTimeForMinDis(p, maxIterations);
 		return getFunctionAt(t);
 	}
 
-	double BezierCurve::findTimeForMinDis(Vec2f p, unsigned int maxIterations)
+	double BezierCurve::findTimeForMinDis(Vec2f p, unsigned int maxIterations) const
 	{
 		//use newton's method to solve 
 		//pick a good start point. Check distance to B(t) where t = {0, 0.25, 0.5, 0.75, 1}
@@ -423,12 +428,12 @@ namespace smpl
 		points.clear();
 	}
 
-	size_t BezierCurve::size()
+	size_t BezierCurve::size() const
 	{
 		return points.size();
 	}
 
-	std::vector<double> BezierCurve::findTimeForY(double Y, bool removeDuplicates)
+	std::vector<double> BezierCurve::findTimeForY(double Y, bool removeDuplicates) const
 	{
 		std::vector<double> timeValues = std::vector<double>();
 		double A,B,C,D;
@@ -526,7 +531,7 @@ namespace smpl
 		return realTimeValues;
 	}
 
-	std::vector<double> BezierCurve::findTimeForX(double X, bool removeDuplicates)
+	std::vector<double> BezierCurve::findTimeForX(double X, bool removeDuplicates) const
 	{
 		std::vector<double> timeValues = std::vector<double>();
 		double A,B,C,D;
@@ -624,7 +629,7 @@ namespace smpl
 		return realTimeValues;
 	}
 
-	std::vector<double> BezierCurve::findTimeForPoint(double x, double y, bool removeDuplicates)
+	std::vector<double> BezierCurve::findTimeForPoint(double x, double y, bool removeDuplicates) const
 	{
 		std::vector<double> xTimes = findTimeForX(x);
 		std::vector<double> yTimes = findTimeForY(y);
@@ -660,9 +665,8 @@ namespace smpl
 
 		return finalTimes;
 	}
-
 	
-	bool BezierCurve::checkForPotentialSelfIntersection()
+	bool BezierCurve::checkForPotentialSelfIntersection() const
 	{
 		//check if the polyline intersects. O(N^2)
 		if(points.size() < 4)
@@ -688,14 +692,14 @@ namespace smpl
 	}
 
 	
-	void BezierCurve::subdivideTillNoIntersection(BezierCurve c, double t1, double t2, std::vector<BezierCurve>& outputCurves, std::vector<std::pair<double, double>>& outputTimes)
+	void BezierCurve::subdivideTillNoIntersection(BezierCurve c, double t1, double t2, std::vector<BezierCurve>& outputCurves, std::vector<std::pair<double, double>>& outputTimes) const
 	{
 		if(c.checkForPotentialSelfIntersection())
 		{
-			std::vector<BezierCurve> splits = subdivide(0.5);
+			std::pair<BezierCurve, BezierCurve> splits = subdivide(0.5);
 			double midPoint = (t1+t2)/2;
-			subdivideTillNoIntersection(splits[0], t1, midPoint, outputCurves, outputTimes);
-			subdivideTillNoIntersection(splits[1], midPoint, t2, outputCurves, outputTimes);
+			subdivideTillNoIntersection(splits.first, t1, midPoint, outputCurves, outputTimes);
+			subdivideTillNoIntersection(splits.second, midPoint, t2, outputCurves, outputTimes);
 		}
 		else
 		{
@@ -704,7 +708,7 @@ namespace smpl
 		}
 	}
 	
-	std::vector<double> BezierCurve::findSelfIntersection(double tolerance)
+	std::vector<double> BezierCurve::findSelfIntersection(double tolerance) const
 	{
 		//check if it could even self intersect.
 		std::vector<BezierCurve> allCurves;
@@ -720,77 +724,106 @@ namespace smpl
 		return {};
 	}
 	
-	std::vector<double> BezierCurve::findIntersectionPoints(BezierCurve& other, double tolerance)
+	std::vector<double> BezierCurve::findIntersectionPoints(BezierCurve& other, double tolerance) const
 	{
 		std::vector<double> output;
+		std::vector<double> output2;
 		//sanity check
 		if(size() < 2 || other.size() < 2)
 			return {};
 		
-		findIntersectionPoints(*this, other, tolerance, {0, 1}, output);
+		findIntersectionPoints(*this, other, tolerance, {0, 1}, {0, 1}, output, output2);
+
+		//copy output2 into output1. MUST BE THE SAME SIZE
+		for(double d : output2)
+		{
+			output.push_back(d);
+		}
 		return output;
 	}
 	
-	void BezierCurve::findIntersectionPoints(BezierCurve c1, BezierCurve c2, double tolerance, std::pair<double, double> timePoints, std::vector<double>& output)
+	void BezierCurve::findIntersectionPoints(BezierCurve c1, BezierCurve c2, double tolerance, std::pair<double, double> timePoints, std::pair<double, double> timePoints2, std::vector<double>& output, std::vector<double>& output2)
 	{
 		//get bounding boxes
-		std::vector<Vec2f> box1Corners = c1.getBoundingBox();
-		std::vector<Vec2f> box2Corners = c2.getBoundingBox();
+		std::pair<Vec2f, Vec2f> box1Corners = c1.getBoundingBox();
+		std::pair<Vec2f, Vec2f> box2Corners = c2.getBoundingBox();
 
 		//If they collide, its possible there is a collision. Otherwise, just return
 		bool possible = false;
-		if(box1Corners[0].x <= box2Corners[1].x && box1Corners[1].x >= box2Corners[0].x)
-			if(box1Corners[0].y <= box2Corners[1].y && box1Corners[1].y >= box2Corners[0].y)
+		if(box1Corners.first.x <= box2Corners.second.x && box1Corners.second.x >= box2Corners.first.x)
+			if(box1Corners.first.y <= box2Corners.second.y && box1Corners.second.y >= box2Corners.first.y)
 				possible = true;
 				
-		if(box2Corners[0].x <= box1Corners[1].x && box2Corners[1].x >= box1Corners[0].x)
-			if(box2Corners[0].y <= box1Corners[1].y && box2Corners[1].y >= box1Corners[0].y)
+		if(box2Corners.first.x <= box1Corners.second.x && box2Corners.second.x >= box1Corners.first.x)
+			if(box2Corners.first.y <= box1Corners.second.y && box2Corners.second.y >= box1Corners.first.y)
 				possible = true;
 		
 		if(!possible)
 			return;
 		
-		double area1 = MathExt::abs((box1Corners[1].x - box1Corners[0].x) * (box1Corners[1].y - box1Corners[1].y));
-		double area2 = MathExt::abs((box2Corners[1].x - box2Corners[0].x) * (box2Corners[1].y - box2Corners[1].y));
+		Vec2f diff1 = box1Corners.second-box1Corners.first;
+		Vec2f diff2 = box2Corners.second-box2Corners.first;
+		float area1 = MathExt::abs(diff1.x*diff1.y);
+		float area2 = MathExt::abs(diff2.x*diff2.y);
+		
 		if(area1 < tolerance && area2 < tolerance)
 		{
 			//return the middle of the 2 time points
 			output.push_back((timePoints.first + timePoints.second)/2.0);
+			output2.push_back((timePoints2.first + timePoints2.second)/2.0);
 			return;
 		}
 
 		//split each into 2. Repeat
-		std::vector<BezierCurve> split1;
-		std::vector<BezierCurve> split2;
-		std::vector<std::pair<double, double>> newTimePoints;
+		int split1Size = 0;
+		int split2Size = 0;
+		std::pair<BezierCurve, BezierCurve> split1;
+		std::pair<BezierCurve, BezierCurve> split2;
+		std::pair<double, double> newTimePoints[2];
+		std::pair<double, double> newTimePoints2[2];
 		if(area1 < tolerance)
 		{
-			split1.push_back(c1);
-			newTimePoints.push_back(timePoints);
+			split1Size = 1;
+			split1.first = c1;
+			newTimePoints[0] = timePoints;
 		}
 		else
 		{
+			split1Size = 2;
 			split1 = c1.subdivide(0.5);
 			double midPoint = (timePoints.first + timePoints.second)/2;
-			newTimePoints.push_back({timePoints.first, midPoint});
-			newTimePoints.push_back({midPoint, timePoints.second});
+			newTimePoints[0] = {timePoints.first, midPoint};
+			newTimePoints[1] = {midPoint, timePoints.second};
 		}
+
 		if(area2 < tolerance)
-			split2.push_back(c2);
-		else
-			split2 = c2.subdivide(0.5);
-
-
-		for(int i=0; i<split1.size(); i++)
 		{
-			for(int j=0; j<split2.size(); j++)
-			{
-				findIntersectionPoints(split1[i], split2[j], tolerance, newTimePoints[i], output);
-			}
+			split2Size = 1;
+			split2.first = c2;
+			newTimePoints2[0] = timePoints2;
+		}
+		else
+		{
+			split2Size = 2;
+			split2 = c2.subdivide(0.5);
+			double midPoint = (timePoints2.first + timePoints2.second)/2;
+			newTimePoints2[0] = {timePoints2.first, midPoint};
+			newTimePoints2[1] = {midPoint, timePoints2.second};
+		}
+
+		findIntersectionPoints(split1.first, split2.first, tolerance, newTimePoints[0], newTimePoints2[0], output, output2);
+		if(split2Size == 2)
+			findIntersectionPoints(split1.first, split2.second, tolerance, newTimePoints[0], newTimePoints2[1], output, output2);
+
+		if(split1Size == 2)
+		{
+			findIntersectionPoints(split1.second, split2.first, tolerance, newTimePoints[1], newTimePoints2[0], output, output2);
+			if(split2Size == 2)
+				findIntersectionPoints(split1.second, split2.second, tolerance, newTimePoints[1], newTimePoints2[1], output, output2);
 		}
 	}
 
-	Vec2f BezierCurve::blendPointsRecursive(int start, int end, double time)
+	Vec2f BezierCurve::blendPointsRecursive(int start, int end, double time) const
 	{
 		if (start<end)
 		{
@@ -819,7 +852,7 @@ namespace smpl
 		return Vec2f();
 	}
 
-	Vec2f BezierCurve::blendPointsExplicit(double time)
+	Vec2f BezierCurve::blendPointsExplicit(double time) const
 	{
 		Vec2f finalValue = Vec2f();
 		double tInverse = 1 - time;
@@ -833,7 +866,7 @@ namespace smpl
 		return finalValue;
 	}
 
-	Vec2f BezierCurve::blendPointsDerivativeRecursive(int start, int end, double time)
+	Vec2f BezierCurve::blendPointsDerivativeRecursive(int start, int end, double time) const
 	{
 		if (start<end)
 		{
@@ -856,7 +889,7 @@ namespace smpl
 	}
 
 	
-	Vec2f BezierCurve::blendPointsSecondDerivativeRecursive(int start, int end, double time)
+	Vec2f BezierCurve::blendPointsSecondDerivativeRecursive(int start, int end, double time) const
 	{		
 		if (start<end)
 		{

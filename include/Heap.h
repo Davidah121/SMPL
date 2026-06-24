@@ -24,7 +24,7 @@ namespace smpl
 		void removeFirst();
 		void insert(const T& data);
 		void insert(T&& data);
-		void erase(const T& data);
+		bool erase(const T& data);
 
 		bool find(const T& data);
 
@@ -250,10 +250,11 @@ namespace smpl
 	}
 
 	template<typename T>
-	inline void Heap<T>::erase(const T& data)
+	inline bool Heap<T>::erase(const T& data)
 	{
 		//special case.
 		//O(1) find + O(LogN) delete if an additional hashmap (multimap) is used.
+		//	Note that O(1) find is on average and not always true. May be O(N) still if a bad hash or hashmap is used.
 		//without hashmap, O(N) find + O(LogN) delete
 		for(size_t i=0; i < buffer.size(); i++)
 		{
@@ -263,7 +264,7 @@ namespace smpl
 				if(i == buffer.size()-1)
 				{
 					buffer.pop_back();
-					break;
+					return true;
 				}
 
 				std::swap(buffer[i], buffer[buffer.size()-1]);
@@ -273,9 +274,10 @@ namespace smpl
 				else
 					siftDownMaxHeap(i);
 				
-				break;
+				return true;
 			}
 		}
+		return false;
 	}
 
 	template<typename T>

@@ -19,7 +19,7 @@ namespace smpl
 		onTransformChanged();
 	}
 
-	Vec3f Shape::getPosition()
+	Vec3f Shape::getPosition() const
 	{
 		return position;
 	}
@@ -30,7 +30,7 @@ namespace smpl
 		onTransformChanged();
 	}
 
-	Vec3f Shape::getScale()
+	Vec3f Shape::getScale() const
 	{
 		return scale;
 	}
@@ -41,7 +41,7 @@ namespace smpl
 		onTransformChanged();
 	}
 
-	Vec3f Shape::getRotation()
+	Vec3f Shape::getRotation() const
 	{
 		return rotation;
 	}
@@ -51,7 +51,7 @@ namespace smpl
 		
 	}
 
-	float Shape::generateBoundingRadius()
+	float Shape::generateBoundingRadius() const
 	{
 		return 0;
 	}
@@ -79,7 +79,7 @@ namespace smpl
 	{
 	}
 
-	float Point2D::generateBoundingRadius()
+	float Point2D::generateBoundingRadius() const
 	{
 		return 0;
 	}
@@ -118,7 +118,7 @@ namespace smpl
 		onTransformChanged();
 	}
 
-	float Box2D::getLeftBound()
+	float Box2D::getLeftBound() const
 	{
 		return topLeft.x;
 	}
@@ -129,7 +129,7 @@ namespace smpl
 		onTransformChanged();
 	}
 
-	float Box2D::getTopBound()
+	float Box2D::getTopBound() const
 	{
 		return topLeft.y;
 	}
@@ -140,7 +140,7 @@ namespace smpl
 		onTransformChanged();
 	}
 
-	float Box2D::getRightBound()
+	float Box2D::getRightBound() const
 	{
 		return bottomRight.x;
 	}
@@ -151,17 +151,17 @@ namespace smpl
 		onTransformChanged();
 	}
 
-	float Box2D::getBottomBound()
+	float Box2D::getBottomBound() const
 	{
 		return bottomRight.y;
 	}
 	
-	float Box2D::getWidth()
+	float Box2D::getWidth() const
 	{
 		return bottomRight.x - topLeft.x;
 	}
 	
-	float Box2D::getHeight()
+	float Box2D::getHeight() const
 	{
 		return bottomRight.y - topLeft.y;
 	}
@@ -177,7 +177,7 @@ namespace smpl
 		bottomRight += getPosition().toVec2f();
 	}	
 
-	float Box2D::generateBoundingRadius()
+	float Box2D::generateBoundingRadius() const
 	{
 		Vec2f midPoint = (topLeft + bottomRight)/2.0;
 		Vec2f toTopLeft = topLeft - midPoint;
@@ -186,12 +186,12 @@ namespace smpl
 	}
 
 	
-	bool Box2D::operator==(Box2D other)
+	bool Box2D::operator==(Box2D other) const
 	{
 		return (topLeft == other.topLeft && bottomRight == other.bottomRight);
 	}
 
-	bool Box2D::operator!=(Box2D other)
+	bool Box2D::operator!=(Box2D other) const
 	{
 		return !operator==(other);
 	}
@@ -214,7 +214,7 @@ namespace smpl
 	{
 	}
 
-	float Circle::getRadius()
+	float Circle::getRadius() const
 	{
 		return radius;
 	}
@@ -230,7 +230,7 @@ namespace smpl
 		radius = baseRadius*getScale().x;
 	}
 
-	float Circle::generateBoundingRadius()
+	float Circle::generateBoundingRadius() const
 	{
 		return radius;
 	}
@@ -257,7 +257,7 @@ namespace smpl
 
 	}
 
-	float Ellipse::getXRadius()
+	float Ellipse::getXRadius() const
 	{
 		return xRadius;
 	}
@@ -268,7 +268,7 @@ namespace smpl
 		onTransformChanged();
 	}
 
-	float Ellipse::getYRadius()
+	float Ellipse::getYRadius() const
 	{
 		return yRadius;
 	}
@@ -285,7 +285,7 @@ namespace smpl
 		yRadius = baseYRadius*getScale().y;
 	}
 
-	float Ellipse::generateBoundingRadius()
+	float Ellipse::generateBoundingRadius() const
 	{
 		return MathExt::max(xRadius, yRadius);
 	}
@@ -338,17 +338,17 @@ namespace smpl
 		onTransformChanged();
 	}
 
-	Vec2f Line2D::getPoint1()
+	Vec2f Line2D::getPoint1() const
 	{
 		return l.getPoint1();
 	}
 
-	Vec2f Line2D::getPoint2()
+	Vec2f Line2D::getPoint2() const
 	{
 		return l.getPoint2();
 	}
 
-	Line Line2D::getLine()
+	Line Line2D::getLine() const
 	{
 		return l;
 	}
@@ -390,7 +390,7 @@ namespace smpl
 		l = Line(p1, p2);
 	}
 
-	float Line2D::generateBoundingRadius()
+	float Line2D::generateBoundingRadius() const
 	{
 		Vec2f dir = l.getToPoint()/2;
 		return dir.getLength();
@@ -458,25 +458,25 @@ namespace smpl
 		v3.y = y;
 	}
 
-	Vec2f Triangle2D::getVertex1()
+	Vec2f Triangle2D::getVertex1() const
 	{
 		Vec2f nPos = Vec2f(getPosition().x, getPosition().y);
 		return v1 + nPos;
 	}
 
-	Vec2f Triangle2D::getVertex2()
+	Vec2f Triangle2D::getVertex2() const
 	{
 		Vec2f nPos = Vec2f(getPosition().x, getPosition().y);
 		return v2 + nPos;
 	}
 
-	Vec2f Triangle2D::getVertex3()
+	Vec2f Triangle2D::getVertex3() const
 	{
 		Vec2f nPos = Vec2f(getPosition().x, getPosition().y);
 		return v3 + nPos;
 	}
 
-	Vec2f Triangle2D::getCenterPosition()
+	Vec2f Triangle2D::getCenterPosition() const
 	{
 		Vec2f nPos = Vec2f(getPosition().x, getPosition().y);
 		Vec2f centerPos = (v1+v2+v3)/3;
@@ -489,9 +489,31 @@ namespace smpl
 		
 	}
 
-	float Triangle2D::generateBoundingRadius()
+	float Triangle2D::generateBoundingRadius() const
 	{
-		return 0;
+		Vec2f centerPos = (v1+v2+v3)/3;
+		float dis = (v1-centerPos).getLength(); //should be equal distance from each point no?
+		return dis;
+	}
+
+	
+	Vec2f Triangle2D::getMinimumBound() const
+	{
+		Vec2f tempV1 = getVertex1();
+		Vec2f tempV2 = getVertex2();
+		Vec2f tempV3 = getVertex3();
+		float minX = __min(__min(tempV1.x, tempV2.x), tempV3.x);
+		float minY = __min(__min(tempV1.y, tempV2.y), tempV3.y);
+		return Vec2f(minX, minY);
+	}
+	Vec2f Triangle2D::getMaximumBound() const
+	{
+		Vec2f tempV1 = getVertex1();
+		Vec2f tempV2 = getVertex2();
+		Vec2f tempV3 = getVertex3();
+		float maxX = __max(__max(tempV1.x, tempV2.x), tempV3.x);
+		float maxY = __max(__max(tempV1.y, tempV2.y), tempV3.y);
+		return Vec2f(maxX, maxY);
 	}
 
 	#pragma endregion
@@ -510,8 +532,15 @@ namespace smpl
 	void Triangle2DModel::add(Triangle2D tri)
 	{
 		triangleList.push_back(tri);
+
+		Vec2f mins = tri.getMinimumBound();
+		Vec2f maxs = tri.getMaximumBound();
+		minBound.x = __min(mins.x, minBound.x);
+		minBound.y = __min(mins.y, minBound.y);
+		maxBound.x = __max(maxs.x, maxBound.x);
+		maxBound.y = __max(maxs.y, maxBound.y);
 	}
-	Triangle2D Triangle2DModel::get(size_t index)
+	Triangle2D Triangle2DModel::get(size_t index) const
 	{
 		if(index < triangleList.size())
 		{
@@ -524,10 +553,33 @@ namespace smpl
 	{
 		return triangleList;
 	}
+	
+	const std::vector<Triangle2D>& Triangle2DModel::getTriangles() const
+	{
+		return triangleList;
+	}
 
-	size_t Triangle2DModel::size()
+	size_t Triangle2DModel::size() const
 	{
 		return triangleList.size();
+	}
+
+	Vec2f Triangle2DModel::getMinimumBound() const
+	{
+		return minBound;
+	}
+
+	Vec2f Triangle2DModel::getMaximumBound() const
+	{
+		return maxBound;
+	}
+
+	float Triangle2DModel::generateBoundingRadius() const
+	{
+		Vec2f midPoint = (minBound + maxBound)/2.0;
+		Vec2f toTopLeft = minBound - midPoint;
+		
+		return toTopLeft.getLength();
 	}
 
 	#pragma endregion
@@ -537,7 +589,12 @@ namespace smpl
 	Polygon2D::Polygon2D()
 	{
 	}
-
+	
+	Polygon2D::Polygon2D(const std::vector<Vec2f>& points)
+	{
+		this->points = points;
+	}
+	
 	Polygon2D::~Polygon2D()
 	{
 	}
@@ -552,7 +609,7 @@ namespace smpl
 		checkConcave();
 	}
 
-	Vec2f Polygon2D::getVertex(size_t index)
+	Vec2f Polygon2D::getVertex(size_t index) const
 	{
 		if(index < points.size())
 		{
@@ -564,7 +621,7 @@ namespace smpl
 		return Vec2f();
 	}
 
-	Vec2f Polygon2D::getCenterPoint()
+	Vec2f Polygon2D::getCenterPoint() const
 	{
 		Vec2f finalPoint = centerPoint;
 		finalPoint.x += getPosition().x;
@@ -577,16 +634,27 @@ namespace smpl
 		points.clear();
 	}
 
-	size_t Polygon2D::size()
+	size_t Polygon2D::size() const
 	{
 		return points.size();
 	}
+	
+	std::vector<Vec2f>& Polygon2D::getPoints()
+	{
+		return points;
+	}
 
-	bool Polygon2D::getConvex()
+	const std::vector<Vec2f>& Polygon2D::getPoints() const
+	{
+		return points;
+	}
+
+	bool Polygon2D::getConvex() const
 	{
 		return isConvex;
 	}
 
+	//INCORRECT. CHANGE THIS
 	void Polygon2D::checkConcave()
 	{
 		if(points.size()>3)
@@ -704,144 +772,12 @@ namespace smpl
 		
 	}
 
-	float Polygon2D::generateBoundingRadius()
+	float Polygon2D::generateBoundingRadius() const
 	{
-		return 0;
-	}
-
-	#pragma endregion
-
-	#pragma region TRIANGLE_3D
-
-	Triangle3D::Triangle3D()
-	{
-
-	}
-
-	Triangle3D::Triangle3D(Vec3f p1, Vec3f p2, Vec3f p3)
-	{
-		v1 = p1;
-		v2 = p2;
-		v3 = p3;
-	}
-
-	Triangle3D::Triangle3D(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3)
-	{
-		v1 = Vec3f(x1,y1,z1);
-		v2 = Vec3f(x2,y2,z2);
-		v3 = Vec3f(x3,y3,z3);
-	}
-
-	Triangle3D::~Triangle3D()
-	{
-
-	}
-
-	//Object and RootClass Stuff
-
-	void Triangle3D::setVertex1(Vec3f p)
-	{
-		v1 = p;
-	}
-
-	void Triangle3D::setVertex1(float x, float y, float z)
-	{
-		v1 = Vec3f(x,y,z);
-	}
-
-	void Triangle3D::setVertex2(Vec3f p)
-	{
-		v2 = p;
-	}
-
-	void Triangle3D::setVertex2(float x, float y, float z)
-	{
-		v2 = Vec3f(x,y,z);
-	}
-
-	void Triangle3D::setVertex3(Vec3f p)
-	{
-		v3 = p;
-	}
-
-	void Triangle3D::setVertex3(float x, float y, float z)
-	{
-		v3 = Vec3f(x,y,z);
-	}
-
-	Vec3f Triangle3D::getVertex1()
-	{
-		return v1;
-	}
-
-	Vec3f Triangle3D::getVertex2()
-	{
-		return v2;
-	}
-
-	Vec3f Triangle3D::getVertex3()
-	{
-		return v3;
-	}
-
-	Vec3f Triangle3D::getCenterPosition()
-	{
-		return (v1+v2+v3)/3;
-	}
-
-	Vec3f Triangle3D::getNormal()
-	{
-		return v1.crossProduct(v2).normalize();
-	}
-
-	float Triangle3D::generateBoundingRadius()
-	{
-		Vec3f midP = getCenterPosition();
-		float maxDis = (v1-midP).getLength();
-		maxDis = MathExt::max( maxDis, (v2-midP).getLength() );
-		maxDis = MathExt::max( maxDis, (v3-midP).getLength() );
-		return maxDis;
-	}
-
-	void Triangle3D::onTransformChanged()
-	{
-
-	}
-
-	#pragma endregion
-
-	#pragma region TRIANGLE3D_MODEL
-
-	Triangle3DModel::Triangle3DModel()
-	{
-
-	}
-	Triangle3DModel::~Triangle3DModel()
-	{
-
-	}
-
-	void Triangle3DModel::add(Triangle3D tri)
-	{
-		triangleList.push_back(tri);
-	}
-	Triangle3D Triangle3DModel::get(size_t index)
-	{
-		if(index < triangleList.size())
-		{
-			return triangleList[index];
-		}
-		return Triangle3D();
-	}
-	
-	std::vector<Triangle3D>& Triangle3DModel::getTriangles()
-	{
-		return triangleList;
-	}
-
-	size_t Triangle3DModel::size()
-	{
-		return triangleList.size();
+		//just like with all shapes, measure the distance from the center to any point.
+		if(this->points.empty())
+			return 0;
+		return (this->points.front()-centerPoint).getLength();
 	}
 
 	#pragma endregion
@@ -849,17 +785,17 @@ namespace smpl
 	#pragma region COLLISION_MASTER
 
 	//Functions
-	bool CollisionMaster::getCollision(Shape* a, Shape* b, bool overrideQuickCheck)
+	bool CollisionMaster::getCollision(const Shape& a, const Shape& b, bool overrideQuickCheck)
 	{
-		const TypeInfo aClass = a->getClass();
-		const TypeInfo bClass = b->getClass();
+		const TypeInfo aClass = a.getClass();
+		const TypeInfo bClass = b.getClass();
 
 		if(!overrideQuickCheck)
 		{
 			//check if the bounding radius collides before continuing
-			float r1 = a->generateBoundingRadius();
-			float r2 = b->generateBoundingRadius();
-			Vec3f toB = b->getPosition() - a->getPosition();
+			float r1 = a.generateBoundingRadius();
+			float r2 = b.generateBoundingRadius();
+			Vec3f toB = b.getPosition() - a.getPosition();
 			if(toB.getLength() > r1+r2)
 			{
 				//no collision unless radius values are incorrect
@@ -871,27 +807,27 @@ namespace smpl
 		{
 			if (bClass == TypeInfo::get<Box2D>())
 			{
-				return CollisionMaster::collisionMethod((Box2D*)a, (Box2D*)b);
+				return CollisionMaster::collisionMethod(*(Box2D*)&a, *(Box2D*)&b);
 			}
 			else if (bClass == TypeInfo::get<Point2D>())
 			{
-				return CollisionMaster::collisionMethod((Point2D*)b, (Box2D*)a);
+				return CollisionMaster::collisionMethod(*(Point2D*)&b, *(Box2D*)&a);
 			}
 			else if (bClass == TypeInfo::get<Circle>())
 			{
-				return CollisionMaster::collisionMethod((Box2D*)a, (Circle*)b);
+				return CollisionMaster::collisionMethod(*(Box2D*)&a, *(Circle*)&b);
 			}
 			else if (bClass == TypeInfo::get<Ellipse>())
 			{
-				return CollisionMaster::collisionMethod((Box2D*)a, (Ellipse*)b);
+				return CollisionMaster::collisionMethod(*(Box2D*)&a, *(Ellipse*)&b);
 			}
 			else if (bClass == TypeInfo::get<Triangle2D>())
 			{
-				return CollisionMaster::collisionMethod((Box2D*)a, (Triangle2D*)b);
+				return CollisionMaster::collisionMethod(*(Box2D*)&a, *(Triangle2D*)&b);
 			}
 			else if (bClass == TypeInfo::get<Line2D>())
 			{
-				return CollisionMaster::collisionMethod((Box2D*)a, (Line2D*)b);
+				return CollisionMaster::collisionMethod(*(Box2D*)&a, *(Line2D*)&b);
 			}
 
 			//No matching function found
@@ -900,27 +836,27 @@ namespace smpl
 		{
 			if (bClass == TypeInfo::get<Box2D>())
 			{
-				return CollisionMaster::collisionMethod((Point2D*)a, (Box2D*)b);
+				return CollisionMaster::collisionMethod(*(Point2D*)&a, *(Box2D*)&b);
 			}
 			else if (bClass == TypeInfo::get<Point2D>())
 			{
-				return CollisionMaster::collisionMethod((Point2D*)a, (Point2D*)b);
+				return CollisionMaster::collisionMethod(*(Point2D*)&a, *(Point2D*)&b);
 			}
 			else if (bClass == TypeInfo::get<Circle>())
 			{
-				return CollisionMaster::collisionMethod((Point2D*)a, (Circle*)b);
+				return CollisionMaster::collisionMethod(*(Point2D*)&a, *(Circle*)&b);
 			}
 			else if (bClass == TypeInfo::get<Ellipse>())
 			{
-				return CollisionMaster::collisionMethod((Point2D*)a, (Ellipse*)b);
+				return CollisionMaster::collisionMethod(*(Point2D*)&a, *(Ellipse*)&b);
 			}
 			else if (bClass == TypeInfo::get<Triangle2D>())
 			{
-				return CollisionMaster::collisionMethod((Point2D*)a, (Triangle2D*)b);
+				return CollisionMaster::collisionMethod(*(Point2D*)&a, *(Triangle2D*)&b);
 			}
 			else if (bClass == TypeInfo::get<Line2D>())
 			{
-				return CollisionMaster::collisionMethod((Point2D*)a, (Line2D*)b);
+				return CollisionMaster::collisionMethod(*(Point2D*)&a, *(Line2D*)&b);
 			}
 
 			//No matching function found
@@ -929,27 +865,27 @@ namespace smpl
 		{
 			if (bClass == TypeInfo::get<Box2D>())
 			{
-				return CollisionMaster::collisionMethod((Box2D*)b, (Circle*)a);
+				return CollisionMaster::collisionMethod(*(Box2D*)&b, *(Circle*)&a);
 			}
 			else if (bClass == TypeInfo::get<Point2D>())
 			{
-				return CollisionMaster::collisionMethod((Point2D*)b, (Circle*)a);
+				return CollisionMaster::collisionMethod(*(Point2D*)&b, *(Circle*)&a);
 			}
 			else if (bClass == TypeInfo::get<Circle>())
 			{
-				return CollisionMaster::collisionMethod((Circle*)a, (Circle*)b);
+				return CollisionMaster::collisionMethod(*(Circle*)&a, *(Circle*)&b);
 			}
 			else if (bClass == TypeInfo::get<Ellipse>())
 			{
-				return CollisionMaster::collisionMethod((Circle*)a, (Ellipse*)b);
+				return CollisionMaster::collisionMethod(*(Circle*)&a, *(Ellipse*)&b);
 			}
 			else if (bClass == TypeInfo::get<Triangle2D>())
 			{
-				return CollisionMaster::collisionMethod((Circle*)a, (Triangle2D*)b);
+				return CollisionMaster::collisionMethod(*(Circle*)&a, *(Triangle2D*)&b);
 			}
 			else if (bClass == TypeInfo::get<Line2D>())
 			{
-				return CollisionMaster::collisionMethod((Circle*)a, (Line2D*)b);
+				return CollisionMaster::collisionMethod(*(Circle*)&a, *(Line2D*)&b);
 			}
 
 			//No matching function found
@@ -958,27 +894,27 @@ namespace smpl
 		{
 			if (bClass == TypeInfo::get<Box2D>())
 			{
-				return CollisionMaster::collisionMethod((Box2D*)b, (Line2D*)a);
+				return CollisionMaster::collisionMethod(*(Box2D*)&b, *(Line2D*)&a);
 			}
 			else if (bClass == TypeInfo::get<Point2D>())
 			{
-				return CollisionMaster::collisionMethod((Point2D*)b, (Line2D*)a);
+				return CollisionMaster::collisionMethod(*(Point2D*)&b, *(Line2D*)&a);
 			}
 			else if (bClass == TypeInfo::get<Circle>())
 			{
-				return CollisionMaster::collisionMethod((Circle*)b, (Line2D*)a);
+				return CollisionMaster::collisionMethod(*(Circle*)&b, *(Line2D*)&a);
 			}
 			else if (bClass == TypeInfo::get<Ellipse>())
 			{
-				return CollisionMaster::collisionMethod((Line2D*)a, (Ellipse*)b);
+				return CollisionMaster::collisionMethod(*(Line2D*)&a, *(Ellipse*)&b);
 			}
 			else if (bClass == TypeInfo::get<Triangle2D>())
 			{
-				return CollisionMaster::collisionMethod((Line2D*)a, (Triangle2D*)b);
+				return CollisionMaster::collisionMethod(*(Line2D*)&a, *(Triangle2D*)&b);
 			}
 			else if (bClass == TypeInfo::get<Line2D>())
 			{
-				return CollisionMaster::collisionMethod((Line2D*)a, (Line2D*)b);
+				return CollisionMaster::collisionMethod(*(Line2D*)&a, *(Line2D*)&b);
 			}
 
 			//No matching function found
@@ -987,27 +923,27 @@ namespace smpl
 		{
 			if (bClass == TypeInfo::get<Box2D>())
 			{
-				return CollisionMaster::collisionMethod((Box2D*)b, (Triangle2D*)a);
+				return CollisionMaster::collisionMethod(*(Box2D*)&b, *(Triangle2D*)&a);
 			}
 			else if (bClass == TypeInfo::get<Point2D>())
 			{
-				return CollisionMaster::collisionMethod((Point2D*)b, (Triangle2D*)a);
+				return CollisionMaster::collisionMethod(*(Point2D*)&b, *(Triangle2D*)&a);
 			}
 			else if (bClass == TypeInfo::get<Circle>())
 			{
-				return CollisionMaster::collisionMethod((Circle*)b, (Triangle2D*)a);
+				return CollisionMaster::collisionMethod(*(Circle*)&b, *(Triangle2D*)&a);
 			}
 			else if (bClass == TypeInfo::get<Ellipse>())
 			{
-				return CollisionMaster::collisionMethod((Ellipse*)b, (Triangle2D*)a);
+				return CollisionMaster::collisionMethod(*(Ellipse*)&b, *(Triangle2D*)&a);
 			}
 			else if (bClass == TypeInfo::get<Triangle2D>())
 			{
-				return CollisionMaster::collisionMethod((Triangle2D*)a, (Triangle2D*)b);
+				return CollisionMaster::collisionMethod(*(Triangle2D*)&a, *(Triangle2D*)&b);
 			}
 			else if (bClass == TypeInfo::get<Line2D>())
 			{
-				return CollisionMaster::collisionMethod((Line2D*)b, (Triangle2D*)a);
+				return CollisionMaster::collisionMethod(*(Line2D*)&b, *(Triangle2D*)&a);
 			}
 
 			//No matching function found
@@ -1016,27 +952,27 @@ namespace smpl
 		{
 			if (bClass == TypeInfo::get<Box2D>())
 			{
-				return CollisionMaster::collisionMethod((Box2D*)b, (Ellipse*)a);
+				return CollisionMaster::collisionMethod(*(Box2D*)&b, *(Ellipse*)&a);
 			}
 			else if (bClass == TypeInfo::get<Point2D>())
 			{
-				return CollisionMaster::collisionMethod((Point2D*)b, (Ellipse*)a);
+				return CollisionMaster::collisionMethod(*(Point2D*)&b, *(Ellipse*)&a);
 			}
 			else if (bClass == TypeInfo::get<Circle>())
 			{
-				return CollisionMaster::collisionMethod((Circle*)b, (Ellipse*)a);
+				return CollisionMaster::collisionMethod(*(Circle*)&b, *(Ellipse*)&a);
 			}
 			else if (bClass == TypeInfo::get<Ellipse>())
 			{
-				return CollisionMaster::collisionMethod((Ellipse*)a, (Ellipse*)b);
+				return CollisionMaster::collisionMethod(*(Ellipse*)&a, *(Ellipse*)&b);
 			}
 			else if (bClass == TypeInfo::get<Triangle2D>())
 			{
-				return CollisionMaster::collisionMethod((Ellipse*)a, (Triangle2D*)b);
+				return CollisionMaster::collisionMethod(*(Ellipse*)&a, *(Triangle2D*)&b);
 			}
 			else if (bClass == TypeInfo::get<Line2D>())
 			{
-				return CollisionMaster::collisionMethod((Line2D*)b, (Triangle2D*)a);
+				return CollisionMaster::collisionMethod(*(Line2D*)&b, *(Triangle2D*)&a);
 			}
 
 			//No matching function found
@@ -1051,11 +987,11 @@ namespace smpl
 
 	#pragma region POINT_COLLISIONS
 
-	bool CollisionMaster::collisionMethod(Point2D* a, Point2D* b)
+	bool CollisionMaster::collisionMethod(const Point2D& a, const Point2D& b)
 	{
-		if (a->getPosition().x == b->getPosition().x)
+		if (a.getPosition().x == b.getPosition().x)
 		{
-			if (a->getPosition().y == b->getPosition().y)
+			if (a.getPosition().y == b.getPosition().y)
 			{
 				return true;
 			}
@@ -1063,30 +999,30 @@ namespace smpl
 		return false;
 	}
 
-	bool CollisionMaster::collisionMethod(Point2D* a, Circle* b)
+	bool CollisionMaster::collisionMethod(const Point2D& a, const Circle& b)
 	{
-		float dX = MathExt::sqr(a->getPosition().x - b->getPosition().x);
-		float dY = MathExt::sqr(a->getPosition().y - b->getPosition().y);
+		float dX = MathExt::sqr(a.getPosition().x - b.getPosition().x);
+		float dY = MathExt::sqr(a.getPosition().y - b.getPosition().y);
 
-		if (dX + dY <= MathExt::sqr(b->getRadius()))
+		if (dX + dY <= MathExt::sqr(b.getRadius()))
 		{
 			return true;
 		}
 		return false;
 	}
 
-	bool CollisionMaster::collisionMethod(Point2D* a, Ellipse* b)
+	bool CollisionMaster::collisionMethod(const Point2D& a, const Ellipse& b)
 	{
-		float dX = MathExt::sqr(a->getPosition().x - b->getPosition().x);
-		float dY = MathExt::sqr(a->getPosition().y - b->getPosition().y);
+		float dX = MathExt::sqr(a.getPosition().x - b.getPosition().x);
+		float dY = MathExt::sqr(a.getPosition().y - b.getPosition().y);
 
-		if(b->getXRadius()!=0)
-			dX /= MathExt::sqr(b->getXRadius());
+		if(b.getXRadius()!=0)
+			dX /= MathExt::sqr(b.getXRadius());
 		else
 			return false;
 
-		if(b->getYRadius()!=0)
-			dY /= MathExt::sqr(b->getYRadius());
+		if(b.getYRadius()!=0)
+			dY /= MathExt::sqr(b.getYRadius());
 		else
 			return false;
 		
@@ -1097,13 +1033,13 @@ namespace smpl
 		return false;
 	}
 
-	bool CollisionMaster::collisionMethod(Point2D* a, Box2D* b)
+	bool CollisionMaster::collisionMethod(const Point2D& a, const Box2D& b)
 	{
-		if (a->getPosition().x >= b->getLeftBound() &&
-			a->getPosition().x <= b->getRightBound())
+		if (a.getPosition().x >= b.getLeftBound() &&
+			a.getPosition().x <= b.getRightBound())
 		{
-			if (a->getPosition().y >= b->getTopBound() &&
-				a->getPosition().y <= b->getBottomBound())
+			if (a.getPosition().y >= b.getTopBound() &&
+				a.getPosition().y <= b.getBottomBound())
 			{
 				return true;
 			}
@@ -1111,12 +1047,12 @@ namespace smpl
 		return false;
 	}
 
-	bool CollisionMaster::collisionMethod(Point2D* a, Triangle2D* b)
+	bool CollisionMaster::collisionMethod(const Point2D& a, const Triangle2D& b)
 	{
-		Vec2f v1 = b->getVertex2() - b->getVertex1();
-		Vec2f v2 = b->getVertex3() - b->getVertex1();
+		Vec2f v1 = b.getVertex2() - b.getVertex1();
+		Vec2f v2 = b.getVertex3() - b.getVertex1();
 
-		Vec2f toPoint = Vec2f(a->getPosition().x - b->getVertex1().x, a->getPosition().y - b->getVertex1().y);
+		Vec2f toPoint = a.getPosition().toVec2f() - b.getVertex1();
 		//v1*v2 = v1*toPoint + v2*tPoint
 
 		
@@ -1124,9 +1060,9 @@ namespace smpl
 		{
 			//Possible collision
 			v1 = -v1;
-			v2 = Vec2f(b->getVertex3() - b->getVertex2());
+			v2 = Vec2f(b.getVertex3() - b.getVertex2());
 
-			toPoint = Vec2f(a->getPosition().x - b->getVertex2().x, a->getPosition().y - b->getVertex2().y);
+			toPoint = Vec2f(a.getPosition().x - b.getVertex2().x, a.getPosition().y - b.getVertex2().y);
 
 			if (v1.dot(v2) == v1.dot(toPoint) + v2.dot(toPoint))
 			{
@@ -1137,17 +1073,17 @@ namespace smpl
 		return false;
 	}
 
-	bool CollisionMaster::collisionMethod(Point2D* a, Line2D* b)
+	bool CollisionMaster::collisionMethod(const Point2D& a, const Line2D& b)
 	{
-		Line bLine = b->getLine();
+		Line bLine = b.getLine();
 
 		if (bLine.getMinX() == bLine.getMaxX())
 		{
 			//Vertical line
-			if (a->getPosition().x == bLine.getMaxX())
+			if (a.getPosition().x == bLine.getMaxX())
 			{
-				if (a->getPosition().y >= bLine.getMinY() &&
-					a->getPosition().y <= bLine.getMaxY())
+				if (a.getPosition().y >= bLine.getMinY() &&
+					a.getPosition().y <= bLine.getMaxY())
 				{
 					return true;
 				}
@@ -1155,9 +1091,9 @@ namespace smpl
 		}
 		else
 		{
-			float yNeeded = bLine.solveForY( a->getPosition().x);
+			float yNeeded = bLine.solveForY( a.getPosition().x);
 
-			if (yNeeded == a->getPosition().y)
+			if (yNeeded == a.getPosition().y)
 			{
 				return true;
 			}
@@ -1170,19 +1106,19 @@ namespace smpl
 
 	#pragma region BOX2D_COLLISIONS
 
-	bool CollisionMaster::collisionMethod(Box2D* a, Box2D* b)
+	bool CollisionMaster::collisionMethod(const Box2D& a, const Box2D& b)
 	{
-		if (a->getLeftBound() <= b->getRightBound() && a->getRightBound() >= b->getLeftBound())
+		if (a.getLeftBound() <= b.getRightBound() && a.getRightBound() >= b.getLeftBound())
 		{
-			if (a->getTopBound() <= b->getBottomBound() && a->getBottomBound() >= b->getTopBound())
+			if (a.getTopBound() <= b.getBottomBound() && a.getBottomBound() >= b.getTopBound())
 			{
 				return true;
 			}
 		}
 
-		if (b->getLeftBound() <= a->getRightBound() && b->getRightBound() >= a->getLeftBound())
+		if (b.getLeftBound() <= a.getRightBound() && b.getRightBound() >= a.getLeftBound())
 		{
-			if (b->getTopBound() <= a->getBottomBound() && b->getBottomBound() >= a->getTopBound())
+			if (b.getTopBound() <= a.getBottomBound() && b.getBottomBound() >= a.getTopBound())
 			{
 				return true;
 			}
@@ -1190,42 +1126,40 @@ namespace smpl
 		return false;
 	}
 
-	bool CollisionMaster::collisionMethod(Box2D* a, Circle* b)
+	bool CollisionMaster::collisionMethod(const Box2D& a, const Circle& b)
 	{
-		float curX = MathExt::clamp(b->getPosition().x, a->getLeftBound(), a->getRightBound());
-		float curY = MathExt::clamp(b->getPosition().y, a->getTopBound(), a->getBottomBound());
+		float curX = MathExt::clamp(b.getPosition().x, a.getLeftBound(), a.getRightBound());
+		float curY = MathExt::clamp(b.getPosition().y, a.getTopBound(), a.getBottomBound());
 
-		float length = MathExt::sqr(curX - b->getPosition().x) + MathExt::sqr(curY - b->getPosition().y);
-		
-		if (length <= MathExt::sqr(b->getRadius()))
-		{
+		float sqrLength = MathExt::sqr(curX - b.getPosition().x) + MathExt::sqr(curY - b.getPosition().y);
+		if (sqrLength <= MathExt::sqr(b.getRadius()))
 			return true;
-		}
+
 		return false;
 	}
 
-	bool CollisionMaster::collisionMethod(Box2D* a, Ellipse* b)
+	bool CollisionMaster::collisionMethod(const Box2D& a, const Ellipse& b)
 	{
-		float curX = MathExt::clamp(b->getPosition().x, a->getLeftBound(), a->getRightBound());
-		float curY = MathExt::clamp(b->getPosition().y, a->getTopBound(), a->getBottomBound());
+		float curX = MathExt::clamp(b.getPosition().x, a.getLeftBound(), a.getRightBound());
+		float curY = MathExt::clamp(b.getPosition().y, a.getTopBound(), a.getBottomBound());
 
 		Point2D tempPoint(Vec2f(curX, curY));
 
-		return CollisionMaster::collisionMethod( &tempPoint, b);
+		return CollisionMaster::collisionMethod( tempPoint, b);
 	}
 
-	bool CollisionMaster::collisionMethod(Box2D* a, Triangle2D* b)
+	bool CollisionMaster::collisionMethod(const Box2D& a, const Triangle2D& b)
 	{
-		Line triLine1 = Line( b->getVertex1(), b->getVertex2());
-		Line triLine2 = Line( b->getVertex2(), b->getVertex3());
-		Line triLine3 = Line( b->getVertex3(), b->getVertex1());
+		Line triLine1 = Line( b.getVertex1(), b.getVertex2());
+		Line triLine2 = Line( b.getVertex2(), b.getVertex3());
+		Line triLine3 = Line( b.getVertex3(), b.getVertex1());
 
 		Line boxLines[4];
 		
-		boxLines[0] = Line( a->getLeftBound(), a->getTopBound(), a->getLeftBound(), a->getBottomBound());
-		boxLines[1] = Line( a->getRightBound(), a->getTopBound(), a->getRightBound(), a->getBottomBound());
-		boxLines[2] = Line( a->getLeftBound(), a->getTopBound(), a->getRightBound(), a->getTopBound());
-		boxLines[3] = Line( a->getLeftBound(), a->getBottomBound(), a->getRightBound(), a->getBottomBound());
+		boxLines[0] = Line( a.getLeftBound(), a.getTopBound(), a.getLeftBound(), a.getBottomBound());
+		boxLines[1] = Line( a.getRightBound(), a.getTopBound(), a.getRightBound(), a.getBottomBound());
+		boxLines[2] = Line( a.getLeftBound(), a.getTopBound(), a.getRightBound(), a.getTopBound());
+		boxLines[3] = Line( a.getLeftBound(), a.getBottomBound(), a.getRightBound(), a.getBottomBound());
 		
 		for(int i=0; i<4; i++)
 		{
@@ -1234,33 +1168,33 @@ namespace smpl
 			bool valid2 = triLine2.getIntersection(boxLines[i], pos2);
 			bool valid3 = triLine3.getIntersection(boxLines[i], pos3);
 
-			if(pos1.x >= a->getLeftBound() && pos1.x <= a->getRightBound())
-				if(pos1.y >= a->getTopBound() && pos1.y <= a->getBottomBound())
+			if(pos1.x >= a.getLeftBound() && pos1.x <= a.getRightBound())
+				if(pos1.y >= a.getTopBound() && pos1.y <= a.getBottomBound())
 					return true;
 
-			if(pos2.x >= a->getLeftBound() && pos2.x <= a->getRightBound())
-				if(pos2.y >= a->getTopBound() && pos2.y <= a->getBottomBound())
+			if(pos2.x >= a.getLeftBound() && pos2.x <= a.getRightBound())
+				if(pos2.y >= a.getTopBound() && pos2.y <= a.getBottomBound())
 					return true;
 
-			if(pos3.x >= a->getLeftBound() && pos3.x <= a->getRightBound())
-				if(pos3.y >= a->getTopBound() && pos3.y <= a->getBottomBound())
+			if(pos3.x >= a.getLeftBound() && pos3.x <= a.getRightBound())
+				if(pos3.y >= a.getTopBound() && pos3.y <= a.getBottomBound())
 					return true;
 		}
 		
 		return false;
 	}
 
-	bool CollisionMaster::collisionMethod(Box2D* a, Line2D* b)
+	bool CollisionMaster::collisionMethod(const Box2D& a, const Line2D& b)
 	{
-		Line bLine = b->getLine();
+		Line bLine = b.getLine();
 		if (bLine.getMinX() == bLine.getMaxX())
 		{
 			//Vertical line
-			if (bLine.getMinX() >= a->getLeftBound() &&
-				bLine.getMinX() <= a->getRightBound())
+			if (bLine.getMinX() >= a.getLeftBound() &&
+				bLine.getMinX() <= a.getRightBound())
 			{
-				if (bLine.getMinY() <= a->getBottomBound() &&
-					bLine.getMaxY() >= a->getTopBound())
+				if (bLine.getMinY() <= a.getBottomBound() &&
+					bLine.getMaxY() >= a.getTopBound())
 				{
 					return true;
 				}
@@ -1268,8 +1202,8 @@ namespace smpl
 		}
 		else
 		{
-			float yNeeded1 = bLine.solveForY(a->getLeftBound());
-			float yNeeded2 = bLine.solveForY(a->getRightBound());
+			float yNeeded1 = bLine.solveForY(a.getLeftBound());
+			float yNeeded2 = bLine.solveForY(a.getRightBound());
 
 			float maY = MathExt::max(yNeeded1, yNeeded2);
 			float miY = MathExt::min(yNeeded1, yNeeded2);
@@ -1277,20 +1211,20 @@ namespace smpl
 			maY = MathExt::clamp<float>(maY, bLine.getMinY(), bLine.getMaxY());
 			miY = MathExt::clamp<float>(miY, bLine.getMinY(), bLine.getMaxY());
 			
-			float maX = MathExt::clamp<float>(a->getLeftBound(), bLine.getMinX(), bLine.getMaxX());
-			float miX = MathExt::clamp<float>(a->getRightBound(), bLine.getMinX(), bLine.getMaxX());
+			float maX = MathExt::clamp<float>(a.getLeftBound(), bLine.getMinX(), bLine.getMaxX());
+			float miX = MathExt::clamp<float>(a.getRightBound(), bLine.getMinX(), bLine.getMaxX());
 
-			if (a->getLeftBound() <= maX && a->getRightBound() >= miX)
+			if (a.getLeftBound() <= maX && a.getRightBound() >= miX)
 			{
-				if (a->getTopBound() <= maY && a->getBottomBound() >= miY)
+				if (a.getTopBound() <= maY && a.getBottomBound() >= miY)
 				{
 					return true;
 				}
 			}
 
-			if (miX <= a->getRightBound() && maX >= a->getLeftBound())
+			if (miX <= a.getRightBound() && maX >= a.getLeftBound())
 			{
-				if (miY <= a->getBottomBound() && maY >= a->getTopBound())
+				if (miY <= a.getBottomBound() && maY >= a.getTopBound())
 				{
 					return true;
 				}
@@ -1304,13 +1238,13 @@ namespace smpl
 
 	#pragma region CIRCLE_COLLISIONS
 
-	bool CollisionMaster::collisionMethod(Circle* a, Circle* b)
+	bool CollisionMaster::collisionMethod(const Circle& a, const Circle& b)
 	{
-		float disX = MathExt::sqr(a->getPosition().x - b->getPosition().x);
-		float disY = MathExt::sqr(a->getPosition().y - b->getPosition().y);
+		float disX = MathExt::sqr(a.getPosition().x - b.getPosition().x);
+		float disY = MathExt::sqr(a.getPosition().y - b.getPosition().y);
 		float len1 = disX + disY;
 
-		float len2 = MathExt::sqr(a->getRadius()) + MathExt::sqr(b->getRadius());
+		float len2 = MathExt::sqr(a.getRadius()) + MathExt::sqr(b.getRadius());
 
 		if (len1 <= len2)
 		{
@@ -1319,24 +1253,24 @@ namespace smpl
 		return false;
 	}
 
-	bool CollisionMaster::collisionMethod(Circle* a, Ellipse* b)
+	bool CollisionMaster::collisionMethod(const Circle& a, const Ellipse& b)
 	{
 		//Convert ellipse to 2 separate circles using both its radius values.
 		//If the circle collides with both, a collision has occured.
 		//If the circle collides with one, possible collision
 		//If the circle collides with none, no collision
 
-		Vec3f toVec = a->getPosition() - b->getPosition();
+		Vec3f toVec = a.getPosition() - b.getPosition();
 		
 		toVec.z = 0;
 
 		float dis = toVec.getLength();
 		int colCount = 0;
 
-		if(dis < b->getXRadius()+a->getRadius())
+		if(dis < b.getXRadius()+a.getRadius())
 			colCount++;
 
-		if(dis < b->getYRadius()+a->getRadius())
+		if(dis < b.getYRadius()+a.getRadius())
 			colCount++;
 
 		if(colCount == 0)
@@ -1350,8 +1284,8 @@ namespace smpl
 			//Find closest point within reason.
 			//actual closest point is described by this: -sin(t)*(sqr(ry) - sqr(rx)) = x*rx*tan(t) - y*ry
 			GeneralMathFunction f = GeneralMathFunction();
-			float rx = b->getXRadius();
-			float ry = b->getYRadius();
+			float rx = b.getXRadius();
+			float ry = b.getYRadius();
 			float x = toVec.x;
 			float y = toVec.y;
 
@@ -1366,8 +1300,8 @@ namespace smpl
 			//reduce [0, 2*PI] to a smaller range of values
 			float minRange, maxRange;
 			float offset = 0.000001;
-			Vec2f circlePos = Vec2f(a->getPosition().x, a->getPosition().y);
-			Vec2f ellipsePos = Vec2f(b->getPosition().x, b->getPosition().y);
+			Vec2f circlePos = Vec2f(a.getPosition().x, a.getPosition().y);
+			Vec2f ellipsePos = Vec2f(b.getPosition().x, b.getPosition().y);
 
 			//NOTE: Adjustments need to be made as to not land on an invalid point.
 			//tan(PI/2) is undefined. This works due to PI being defined to a limited set of numbers.
@@ -1415,7 +1349,7 @@ namespace smpl
 			Vec2f closestPoint = ellipsePos + Vec2f(rx*MathExt::cos(angleValue),
 												ry*MathExt::sin(angleValue));
 
-			if(MathExt::distanceTo(closestPoint, circlePos) <= a->getRadius())
+			if(MathExt::distanceTo(closestPoint, circlePos) <= a.getRadius())
 			{
 				return true;
 			}
@@ -1424,7 +1358,7 @@ namespace smpl
 			closestPoint = ellipsePos + Vec2f(rx*MathExt::cos(PI/2),
 									ry*MathExt::sin(PI/2));
 
-			if(MathExt::distanceTo(closestPoint, circlePos) <= a->getRadius())
+			if(MathExt::distanceTo(closestPoint, circlePos) <= a.getRadius())
 			{
 				return true;
 			}
@@ -1432,7 +1366,7 @@ namespace smpl
 			closestPoint = ellipsePos + Vec2f(rx*MathExt::cos(3*PI/2),
 						ry*MathExt::sin(3*PI/2));
 
-			if(MathExt::distanceTo(closestPoint, circlePos) <= a->getRadius())
+			if(MathExt::distanceTo(closestPoint, circlePos) <= a.getRadius())
 			{
 				return true;
 			}
@@ -1441,19 +1375,19 @@ namespace smpl
 		return false;
 	}
 
-	bool CollisionMaster::collisionMethod(Circle* a, Triangle2D* b)
+	bool CollisionMaster::collisionMethod(const Circle& a, const Triangle2D& b)
 	{
 		//Find the closest point to the circle on each line segment in the triangle
 		//Will not determine if a is inside of b.
 		//Check if circle's center is in b to do that
 
-		Line l1 = Line(b->getVertex1(), b->getVertex2());
-		Line l2 = Line(b->getVertex2(), b->getVertex3());
-		Line l3 = Line(b->getVertex3(), b->getVertex1());
+		Line l1 = Line(b.getVertex1(), b.getVertex2());
+		Line l2 = Line(b.getVertex2(), b.getVertex3());
+		Line l3 = Line(b.getVertex3(), b.getVertex1());
 
 		Line lineArr[3] = {l1, l2, l3};
 
-		Vec2f circlePos = a->getPosition().toVec2f();
+		Vec2f circlePos = a.getPosition().toVec2f();
 
 		//check if circle collides with lines in the triangle
 		for(int i=0; i<3; i++)
@@ -1469,7 +1403,7 @@ namespace smpl
 
 				Vec2f nPoint = lineArr[i].getPoint1() + lineArr[i].getToPoint()*t;
 
-				if( (circlePos - nPoint).getLength() <= a->getRadius() )
+				if( (circlePos - nPoint).getLength() <= a.getRadius() )
 				{
 					return true;
 				}
@@ -1485,10 +1419,10 @@ namespace smpl
 
 		//check if circle is inside triangle
 		Point2D p = Point2D(circlePos);
-		return collisionMethod(&p, b);
+		return collisionMethod(p, b);
 	}
 
-	bool CollisionMaster::collisionMethod(Circle* a, Line2D* b)
+	bool CollisionMaster::collisionMethod(const Circle& a, const Line2D& b)
 	{
 		//Why this method works and why use this method.
 		/*
@@ -1506,7 +1440,7 @@ namespace smpl
 			informs us on where to apply the force.
 		*/
 
-		Line bLine = b->getLine();
+		Line bLine = b.getLine();
 		if (bLine.getMaxX() == bLine.getMinX())
 		{
 			//vertical line
@@ -1514,17 +1448,17 @@ namespace smpl
 			// y = (py + slope*px - slope*b) / (1+slope*slope)
 
 			//find the point with the minimum distance
-			float y = (a->getPosition().y + bLine.getSlopeRelativeY() * (a->getPosition().x - bLine.getXInt())) / (1 + MathExt::sqr(bLine.getSlopeRelativeY()));
+			float y = (a.getPosition().y + bLine.getSlopeRelativeY() * (a.getPosition().x - bLine.getXInt())) / (1 + MathExt::sqr(bLine.getSlopeRelativeY()));
 
 			//clamp it down to the max or min possible x value then solve for y
 			y = MathExt::clamp<float>(y, bLine.getMinY(), bLine.getMaxY());
 			float x = y * bLine.getSlopeRelativeY() + bLine.getXInt();
 
 			//now solve distance
-			float disX = MathExt::sqr(a->getPosition().x - x);
-			float disY = MathExt::sqr(a->getPosition().y - y);
+			float disX = MathExt::sqr(a.getPosition().x - x);
+			float disY = MathExt::sqr(a.getPosition().y - y);
 
-			if (disX + disY <= MathExt::sqr(a->getRadius()))
+			if (disX + disY <= MathExt::sqr(a.getRadius()))
 			{
 				//There is a collision
 				return true;
@@ -1539,17 +1473,17 @@ namespace smpl
 			// x = (px + slope*py - slope*b) / (1 + slope * slope)
 
 			//find the point with the minimum distance
-			float x = (a->getPosition().x + bLine.getSlope() * (a->getPosition().y - bLine.getYInt())) / (1 + MathExt::sqr(bLine.getSlope()));
+			float x = (a.getPosition().x + bLine.getSlope() * (a.getPosition().y - bLine.getYInt())) / (1 + MathExt::sqr(bLine.getSlope()));
 
 			//clamp it down to the max or min possible x value then solve for y
 			x = MathExt::clamp<float>(x, bLine.getMinX(), bLine.getMaxX());
 			float y = x * bLine.getSlope() + bLine.getYInt();
 
 			//now solve distance
-			float disX = MathExt::sqr(a->getPosition().x - x);
-			float disY = MathExt::sqr(a->getPosition().y - y);
+			float disX = MathExt::sqr(a.getPosition().x - x);
+			float disY = MathExt::sqr(a.getPosition().y - y);
 
-			if (disX + disY <= MathExt::sqr(a->getRadius()))
+			if (disX + disY <= MathExt::sqr(a.getRadius()))
 			{
 				//There is a collision
 				return true;
@@ -1562,12 +1496,12 @@ namespace smpl
 
 	#pragma region LINE2D_COLLISIONS
 
-	bool CollisionMaster::collisionMethod(Line2D* a, Line2D* b)
+	bool CollisionMaster::collisionMethod(const Line2D& a, const Line2D& b)
 	{
 		//We want to look for the point of intersection
 
-		Line l1 = Line(a->getPoint1(), a->getPoint2());
-		Line l2 = Line(b->getPoint1(), b->getPoint2());
+		Line l1 = Line(a.getPoint1(), a.getPoint2());
+		Line l2 = Line(b.getPoint1(), b.getPoint2());
 
 		Vec2f pointOfCol;
 		bool couldCollide = l1.getIntersection(l2, pointOfCol);
@@ -1597,20 +1531,20 @@ namespace smpl
 		return true;
 	}
 
-	bool CollisionMaster::collisionMethod(Line2D* a, Ellipse* b)
+	bool CollisionMaster::collisionMethod(const Line2D& a, const Ellipse& b)
 	{
 		//Can't determine if line is in ellipse
 		
-		if(a->getPoint1().x == a->getPoint2().x)
+		if(a.getPoint1().x == a.getPoint2().x)
 		{
 			//vertical line, do quicker method
-			float xRadSqr = MathExt::sqr(b->getXRadius());
-			float yRadSqr = MathExt::sqr(b->getYRadius());
+			float xRadSqr = MathExt::sqr(b.getXRadius());
+			float yRadSqr = MathExt::sqr(b.getYRadius());
 
-			float H = b->getPosition().x;
-			float K = b->getPosition().y;
+			float H = b.getPosition().x;
+			float K = b.getPosition().y;
 
-			float xCheck = a->getPoint1().x;
+			float xCheck = a.getPoint1().x;
 
 			float v1 = (xCheck-H);
 			// float v2 = 0;
@@ -1630,7 +1564,7 @@ namespace smpl
 				//possible collision
 				for(size_t i=0; i<solutions.size(); i++)
 				{
-					Line l = a->getLine();
+					Line l = a.getLine();
 					if( solutions[i] >= l.getMinY() && solutions[i] <= l.getMaxY())
 					{
 						return true;
@@ -1643,18 +1577,18 @@ namespace smpl
 				return false;
 			}
 		}
-		else if(a->getPoint1().y == a->getPoint2().y)
+		else if(a.getPoint1().y == a.getPoint2().y)
 		{
 			//horizontal line, do quicker method
-			float xRadSqr = MathExt::sqr(b->getXRadius());
-			float yRadSqr = MathExt::sqr(b->getYRadius());
+			float xRadSqr = MathExt::sqr(b.getXRadius());
+			float yRadSqr = MathExt::sqr(b.getYRadius());
 
-			// float rot = b->getRotation().x;
+			// float rot = b.getRotation().x;
 
-			// float H = b->getPosition().x;
-			float K = b->getPosition().y;
+			// float H = b.getPosition().x;
+			float K = b.getPosition().y;
 
-			float yCheck = a->getPoint1().y;
+			float yCheck = a.getPoint1().y;
 
 			// float v1 = 0; //Not used
 			float v2 = (yCheck-K);
@@ -1674,7 +1608,7 @@ namespace smpl
 				//possible collision
 				for(size_t i=0; i<solutions.size(); i++)
 				{
-					Line l = a->getLine();
+					Line l = a.getLine();
 					if( solutions[i] >= l.getMinX() && solutions[i] <= l.getMaxX())
 					{
 						return true;
@@ -1692,17 +1626,17 @@ namespace smpl
 			//Convert line to general equation
 			//Assume no rotation currently but factor it in
 			
-			float A = a->getPoint2().y - a->getPoint1().y;
-			float B = a->getPoint1().x - a->getPoint2().x;
-			float C = a->getPoint2().x*a->getPoint1().y - a->getPoint2().y*a->getPoint1().x;
+			float A = a.getPoint2().y - a.getPoint1().y;
+			float B = a.getPoint1().x - a.getPoint2().x;
+			float C = a.getPoint2().x*a.getPoint1().y - a.getPoint2().y*a.getPoint1().x;
 
-			float xRadSqr = MathExt::sqr(b->getXRadius());
-			float yRadSqr = MathExt::sqr(b->getYRadius());
+			float xRadSqr = MathExt::sqr(b.getXRadius());
+			float yRadSqr = MathExt::sqr(b.getYRadius());
 
-			// float rot = b->getRotation().x;
+			// float rot = b.getRotation().x;
 
-			float H = b->getPosition().x;
-			float K = b->getPosition().y;
+			float H = b.getPosition().x;
+			float K = b.getPosition().y;
 
 			float V1 = -( (C/A) + H );
 			float V2 = -(B/A);
@@ -1720,7 +1654,7 @@ namespace smpl
 				//possible collision
 				for(size_t i=0; i<solutions.size(); i++)
 				{
-					Line l = a->getLine();
+					Line l = a.getLine();
 					if( solutions[i] >= l.getMinY() && solutions[i] <= l.getMaxY())
 					{
 						return true;
@@ -1738,14 +1672,14 @@ namespace smpl
 		return false;
 	}
 
-	bool CollisionMaster::collisionMethod(Line2D* a, Triangle2D* b)
+	bool CollisionMaster::collisionMethod(const Line2D& a, const Triangle2D& b)
 	{
 		//check for line intersection with any line in Triangle2D
-		Line l = a->getLine();
+		Line l = a.getLine();
 
-		Line tl1 = Line(b->getVertex1(), b->getVertex2());
-		Line tl2 = Line(b->getVertex2(), b->getVertex3());
-		Line tl3 = Line(b->getVertex3(), b->getVertex1());
+		Line tl1 = Line(b.getVertex1(), b.getVertex2());
+		Line tl2 = Line(b.getVertex2(), b.getVertex3());
+		Line tl3 = Line(b.getVertex3(), b.getVertex1());
 		
 		Vec2f posColPoint1, posColPoint2, posColPoint3;
 		bool couldCol1 = l.getIntersection(tl1, posColPoint1);
@@ -1768,8 +1702,8 @@ namespace smpl
 					return true;
 		
 		//potentially inside triangle
-		Point2D p = Point2D(a->getPoint1());
-		bool col = collisionMethod(&p, b);
+		Point2D p = Point2D(a.getPoint1());
+		bool col = collisionMethod(p, b);
 
 		return col;
 	}
@@ -1778,14 +1712,14 @@ namespace smpl
 
 	#pragma region ELLIPSE_COLLISIONS
 
-	bool CollisionMaster::collisionMethod(Ellipse* a, Ellipse* b)
+	bool CollisionMaster::collisionMethod(const Ellipse& a, const Ellipse& b)
 	{
 		//Option 1: Convert to bezier curves and check collision
 		//Option 2: Convert to polygon and check collision
 
 		//Using option 1 cause it will be more accurate but probably slower
-		std::vector<BezierCurve> aCurve = BezierCurve::approximateEllipse(a->getXRadius(), a->getYRadius(), a->getPosition().x, a->getPosition().y, true);
-		std::vector<BezierCurve> bCurve = BezierCurve::approximateEllipse(b->getXRadius(), b->getYRadius(), b->getPosition().x, b->getPosition().y, true);
+		std::vector<BezierCurve> aCurve = BezierCurve::approximateEllipse(a.getXRadius(), a.getYRadius(), a.getPosition().x, a.getPosition().y, true);
+		std::vector<BezierCurve> bCurve = BezierCurve::approximateEllipse(b.getXRadius(), b.getYRadius(), b.getPosition().x, b.getPosition().y, true);
 
 		for(size_t i=0; i<aCurve.size(); i++)
 		{
@@ -1800,34 +1734,34 @@ namespace smpl
 		return false;
 	}
 
-	bool CollisionMaster::collisionMethod(Ellipse* a, Triangle2D* b)
+	bool CollisionMaster::collisionMethod(const Ellipse& a, const Triangle2D& b)
 	{
 		//3 line collisions
 		//2 point collision
-		Line2D lineArr[3] = { Line2D(b->getVertex1(), b->getVertex2()), Line2D(b->getVertex2(), b->getVertex3()), Line2D(b->getVertex3(), b->getVertex1())};
+		Line2D lineArr[3] = { Line2D(b.getVertex1(), b.getVertex2()), Line2D(b.getVertex2(), b.getVertex3()), Line2D(b.getVertex3(), b.getVertex1())};
 		for(int i=0; i<3; i++)
 		{
-			if( collisionMethod(&lineArr[i], a) )
+			if( collisionMethod(lineArr[i], a) )
 			{
 				return true;
 			}
 		}
 
 		//check if triangle is inside ellipse
-		Point2D p = Point2D( b->getVertex1() );
-		if(collisionMethod(&p, a))
+		Point2D p = Point2D( b.getVertex1() );
+		if(collisionMethod(p, a))
 			return true;
 
 		//check if ellipse is inside triangle
-		p = Point2D( a->getPosition().toVec2f() );
-		return collisionMethod( &p, b );
+		p = Point2D( a.getPosition().toVec2f() );
+		return collisionMethod( p, b );
 	}
 
 	#pragma endregion
 
 	#pragma region TRIANGLE2D_COLLISIONS
 
-	bool CollisionMaster::collisionMethod(Triangle2D* a, Triangle2D* b)
+	bool CollisionMaster::collisionMethod(const Triangle2D& a, const Triangle2D& b)
 	{
 		//Barycentric Coordinates
 		//w1*P1x + w2*P2x + w3*P3x = Px
@@ -1836,12 +1770,12 @@ namespace smpl
 		
 		Vec2f p1, p2, p3;
 		float det,w1,w2,w3;
-		p1 = a->getVertex1();
-		p2 = a->getVertex2();
-		p3 = a->getVertex3();
+		p1 = a.getVertex1();
+		p2 = a.getVertex2();
+		p3 = a.getVertex3();
 		det = (p2.y - p3.y)*(p1.x - p3.x) + (p3.x - p2.x)*(p1.y - p3.y);
 
-		Vec2f point[3] = {b->getVertex1(), b->getVertex2(), b->getVertex3()};
+		Vec2f point[3] = {b.getVertex1(), b.getVertex2(), b.getVertex3()};
 		
 		for(int i=0; i<3; i++)
 		{
@@ -1857,14 +1791,14 @@ namespace smpl
 		}
 
 		//Check from other side
-		p1 = b->getVertex1();
-		p2 = b->getVertex2();
-		p3 = b->getVertex3();
+		p1 = b.getVertex1();
+		p2 = b.getVertex2();
+		p3 = b.getVertex3();
 		det = (p2.y - p3.y)*(p1.x - p3.x) + (p3.x - p2.x)*(p1.y - p3.y);
 
-		point[0] = a->getVertex1();
-		point[1] = a->getVertex2();
-		point[2] = a->getVertex3();
+		point[0] = a.getVertex1();
+		point[1] = a.getVertex2();
+		point[2] = a.getVertex3();
 		
 		for(int i=0; i<3; i++)
 		{
@@ -1883,8 +1817,8 @@ namespace smpl
 		//By this point, if there is a collision, 2 lines from A will intersect with 2 lines from B
 		//Max possible line checks needed is 4
 
-		Line aArr[2] = { Line(a->getVertex1(), a->getVertex2()), Line(a->getVertex2(), a->getVertex3()) };
-		Line bArr[2] = { Line(b->getVertex1(), b->getVertex2()), Line(b->getVertex2(), b->getVertex3()) };
+		Line aArr[2] = { Line(a.getVertex1(), a.getVertex2()), Line(a.getVertex2(), a.getVertex3()) };
+		Line bArr[2] = { Line(b.getVertex1(), b.getVertex2()), Line(b.getVertex2(), b.getVertex3()) };
 
 		for(int i=0; i<2; i++)
 		{
@@ -1907,24 +1841,21 @@ namespace smpl
 
 	#pragma region POLYGON2D_COLLISIONS
 
-	bool CollisionMaster::collisionMethod(Polygon2D* a, Point2D* b)
+	bool CollisionMaster::collisionMethod(const Polygon2D& a, const Point2D& b)
 	{
-		if(a == nullptr || b == nullptr)
-		{
-			return false;
-		}
-		
-		Line2D toPoint = Line2D(a->getCenterPoint(), Vec2f(b->getPosition().x, b->getPosition().y) );
+		//incorrect. Do Scanline rendering technique. Count the total number of intersections up to that point and after that point.
+		//Even-odd rule
+		Line2D toPoint = Line2D(a.getCenterPoint(), Vec2f(b.getPosition().x, b.getPosition().y) );
 
-		for(size_t i=0; i<a->size(); i++)
+		for(size_t i=0; i<a.size(); i++)
 		{
 			Line2D colLine;
-			if(i < a->size()-1 )
-				colLine = Line2D(a->getVertex(i), a->getVertex(i+1));
+			if(i < a.size()-1 )
+				colLine = Line2D(a.getVertex(i), a.getVertex(i+1));
 			else
-				colLine = Line2D(a->getVertex(i), a->getVertex(0));
+				colLine = Line2D(a.getVertex(i), a.getVertex(0));
 			
-			if(collisionMethod(&toPoint, &colLine))
+			if(collisionMethod(toPoint, colLine))
 			{
 				return false;
 			}
@@ -1933,177 +1864,160 @@ namespace smpl
 		return true;
 	}
 
-	bool CollisionMaster::collisionMethod(Polygon2D* a, Circle* b)
+	bool CollisionMaster::collisionMethod(const Polygon2D& a, const Circle& b)
 	{
 		//n line collisions with a circle
 		//1 point in polygon check
 
-		for(size_t i=0; i<a->size(); i++)
+		for(size_t i=0; i<a.size(); i++)
 		{
-			Line2D l = Line2D(a->getVertex(i), a->getVertex(i+1));
-			if(collisionMethod(b, &l))
+			Line2D l = Line2D(a.getVertex(i), a.getVertex(i+1));
+			if(collisionMethod(b, l))
 				return true;
 		}
 
 		//check if circle is in the polygon
-		Point2D p = Point2D(b->getPosition().toVec2f());
-		return collisionMethod(&p, b);
+		Point2D p = Point2D(b.getPosition().toVec2f());
+		return collisionMethod(p, b);
 	}
 
-	bool CollisionMaster::collisionMethod(Polygon2D* a, Ellipse* b)
+	bool CollisionMaster::collisionMethod(const Polygon2D& a, const Ellipse& b)
 	{
 		//n line collisions with a ellipse
 		//1 point in polygon check
 
-		for(size_t i=0; i<a->size(); i++)
+		for(size_t i=0; i<a.size(); i++)
 		{
-			Line2D l = Line2D(a->getVertex(i), a->getVertex(i+1));
-			if(collisionMethod(&l, b))
+			Line2D l = Line2D(a.getVertex(i), a.getVertex(i+1));
+			if(collisionMethod(l, b))
 				return true;
 		}
 
 		//check if ellipse is in the polygon
-		Point2D p = Point2D(b->getPosition().toVec2f());
-		return collisionMethod(&p, b);
+		Point2D p = Point2D(b.getPosition().toVec2f());
+		return collisionMethod(p, b);
 	}
 
-	bool CollisionMaster::SeparatingAxisTheorem(Polygon2D* a, Polygon2D* b)
+	bool CollisionMaster::SeparatingAxisTheorem(const Polygon2D& a, const Polygon2D& b)
 	{
-		if(a == nullptr || b == nullptr)
-		{
-			return false;
-		}
-
-		for(size_t i=0; i<b->size(); i++)
+		for(size_t i=0; i<a.size(); i++)
 		{
 			Vec2f toVec;
-			if(i<b->size()-1)
-				toVec = b->getVertex(i+1) - b->getVertex(i);
+			if(i<a.size()-1)
+				toVec = a.getVertex(i+1) - a.getVertex(i);
 			else
-				toVec = b->getVertex(0) - b->getVertex(i);
+				toVec = a.getVertex(0) - a.getVertex(i);
 
-			Vec2f normal = Vec2f(-toVec.y, toVec.x);
-
-			float minAVal = INFINITY;
-			float maxAVal = -INFINITY;
-			float minBVal = INFINITY;
-			float maxBVal = -INFINITY;
-			
-			for(size_t i2=0; i2<b->size(); i2++)
-			{
-				float projection = b->getVertex(i2).project(normal);
-				minBVal = MathExt::min(projection, minBVal);
-				maxBVal = MathExt::max(projection, maxBVal);
-			}
-
-			for(size_t i2=0; i2<a->size(); i2++)
-			{
-				float projection = a->getVertex(i2).project(normal);
-				minAVal = MathExt::min(projection, minAVal);
-				maxAVal = MathExt::max(projection, maxAVal);
-			}
-
-			//find percentage of overlap
-			float overlapVal = maxAVal - minBVal;
-			float overlapVal2 = maxBVal - minAVal;
-			
-			if(overlapVal >= 0 && overlapVal2 >= 0)
-			{
-				//overlap
-			}
-			else
-			{
-				//No collision
+			if(!SATTest(toVec, a.getPoints(), b.getPoints()))
 				return false;
-			}
 		}
 
-		for(size_t i=0; i<a->size(); i++)
+		for(size_t i=0; i<b.size(); i++)
 		{
 			Vec2f toVec;
-			if(i<a->size()-1)
-				toVec = a->getVertex(i+1) - a->getVertex(i);
+			if(i<b.size()-1)
+				toVec = b.getVertex(i+1) - b.getVertex(i);
 			else
-				toVec = a->getVertex(0) - a->getVertex(i);
-
-			float minAVal = -INFINITY;
-			float maxAVal = INFINITY;
-			float minBVal = -INFINITY;
-			float maxBVal = INFINITY;
+				toVec = b.getVertex(0) - b.getVertex(i);
 			
-			for(size_t i2=0; i2<b->size(); i2++)
-			{
-				float projection = b->getVertex(i2).project(toVec);
-				minBVal = MathExt::min(projection, minBVal);
-				maxBVal = MathExt::max(projection, maxBVal);
-			}
-
-			for(size_t i2=0; i2<a->size(); i2++)
-			{
-				float projection = a->getVertex(i2).project(toVec);
-				minAVal = MathExt::min(projection, minAVal);
-				maxAVal = MathExt::max(projection, maxAVal);
-			}
-
-			//find percentage of overlap
-			float overlapVal = maxAVal - minBVal;
-			float overlapVal2 = maxBVal - minAVal;
-			
-			if(overlapVal >= 0 && overlapVal2 >= 0)
-			{
-				//overlap
-			}
-			else
-			{
-				//No collision
+			if(!SATTest(toVec, a.getPoints(), b.getPoints()))
 				return false;
-			}
 		}
+
 		return true;
 	}
-
-	bool CollisionMaster::AlternatingDiagonals(Polygon2D* a, Polygon2D* b)
+	
+	bool CollisionMaster::SATTest(const Vec2f& axis, const std::vector<Vec2f>& points1, const std::vector<Vec2f>& points2)
 	{
-		if(a == nullptr || b == nullptr)
+		float minAVal = -INFINITY;
+		float maxAVal = INFINITY;
+		float minBVal = -INFINITY;
+		float maxBVal = INFINITY;
+
+		for(Vec2f v : points1)
 		{
-			return false;
+			float projection = v.project(axis);
+			minAVal = MathExt::min(projection, minAVal);
+			maxAVal = MathExt::max(projection, maxAVal);
+		}
+		
+		for(Vec2f v : points2)
+		{
+			float projection = v.project(axis);
+			minBVal = MathExt::min(projection, minBVal);
+			maxBVal = MathExt::max(projection, maxBVal);
 		}
 
-		Vec2f aCenter = a->getCenterPoint();
-		Vec2f bCenter = b->getCenterPoint();
+		float overlapVal1 = maxAVal - minBVal;
+		float overlapVal2 = maxBVal - minAVal;
 
-		for(size_t i=0; i<a->size(); i++)
+		return (overlapVal1>=0) && (overlapVal2>=0);
+	}
+
+	bool CollisionMaster::SATTest(const Vec3f& axis, const std::vector<Vec3f>& points1, const std::vector<Vec3f>& points2)
+	{
+		float minAVal = -INFINITY;
+		float maxAVal = INFINITY;
+		float minBVal = -INFINITY;
+		float maxBVal = INFINITY;
+
+		for(Vec3f v : points1)
 		{
-			Line2D colLine = Line2D(aCenter, a->getVertex(i));
+			float projection = v.project(axis);
+			minAVal = MathExt::min(projection, minAVal);
+			maxAVal = MathExt::max(projection, maxAVal);
+		}
+		
+		for(Vec3f v : points2)
+		{
+			float projection = v.project(axis);
+			minBVal = MathExt::min(projection, minBVal);
+			maxBVal = MathExt::max(projection, maxBVal);
+		}
 
-			for(size_t i2=0; i2<b->size(); i2++)
+		float overlapVal1 = maxAVal - minBVal;
+		float overlapVal2 = maxBVal - minAVal;
+
+		return (overlapVal1>=0) && (overlapVal2>=0);
+	}
+
+	bool CollisionMaster::AlternatingDiagonals(const Polygon2D& a, const Polygon2D& b)
+	{
+		Vec2f aCenter = a.getCenterPoint();
+		Vec2f bCenter = b.getCenterPoint();
+
+		for(size_t i=0; i<a.size(); i++)
+		{
+			Line2D colLine = Line2D(aCenter, a.getVertex(i));
+
+			for(size_t i2=0; i2<b.size(); i2++)
 			{
 				Line2D bLine;
-				if(i2 == b->size()-1)
-					bLine = Line2D(b->getVertex(i2), b->getVertex(0));
+				if(i2 == b.size()-1)
+					bLine = Line2D(b.getVertex(i2), b.getVertex(0));
 				else
-					bLine = Line2D(b->getVertex(i2), b->getVertex(i2+1));
+					bLine = Line2D(b.getVertex(i2), b.getVertex(i2+1));
 				
-				bool isCollision = CollisionMaster::getCollision(&colLine, &bLine);
+				bool isCollision = CollisionMaster::getCollision(colLine, bLine);
 
 				if(isCollision)
 					return true;
 			}
 		}
 
-		for(size_t i=0; i<b->size(); i++)
+		for(size_t i=0; i<b.size(); i++)
 		{
-			Line2D colLine = Line2D(bCenter, b->getVertex(i));
+			Line2D colLine = Line2D(bCenter, b.getVertex(i));
 
-			for(size_t i2=0; i2<a->size(); i2++)
+			for(size_t i2=0; i2<a.size(); i2++)
 			{
 				Line2D aLine;
-				if(i2 == a->size()-1)
-					aLine = Line2D(a->getVertex(i2), a->getVertex(0));
+				if(i2 == a.size()-1)
+					aLine = Line2D(a.getVertex(i2), a.getVertex(0));
 				else
-					aLine = Line2D(a->getVertex(i2), a->getVertex(i2+1));
+					aLine = Line2D(a.getVertex(i2), a.getVertex(i2+1));
 				
-				bool isCollision = CollisionMaster::getCollision(&colLine, &aLine);
+				bool isCollision = CollisionMaster::getCollision(colLine, aLine);
 
 				if(isCollision)
 					return true;
@@ -2117,11 +2031,11 @@ namespace smpl
 		Point2D p1 = Point2D(aCenter);
 		Point2D p2 = Point2D(bCenter);
 		
-		if(CollisionMaster::collisionMethod(a, &p2))
+		if(CollisionMaster::collisionMethod(a, p2))
 		{
 			return true;
 		}
-		if(CollisionMaster::collisionMethod(b, &p1))
+		if(CollisionMaster::collisionMethod(b, p1))
 		{
 			return true;
 		}
@@ -2133,55 +2047,50 @@ namespace smpl
 
 	#pragma region BEZIER_CURVE_STUFF
 
-	bool CollisionMaster::bezierCurveCollision(BezierCurve& a, BezierCurve& b, double tolerance)
+	bool CollisionMaster::bezierCurveCollision(const BezierCurve& a, const BezierCurve& b, double tolerance)
 	{
 		//collision through subdivision
-		std::vector<Vec2f> box1 = a.getBoundingBox();
-		std::vector<Vec2f> box2 = b.getBoundingBox();
+		std::pair<Vec2f, Vec2f> box1 = a.getBoundingBox();
+		std::pair<Vec2f, Vec2f> box2 = b.getBoundingBox();
 		
-		if(box1.size() == 2 && box2.size() == 2)
+		
+		//check collision
+		Box2D b1 = Box2D(box1.first.x, box1.first.y, box1.second.x, box1.second.y);
+		Box2D b2 = Box2D(box2.first.x, box2.first.y, box2.second.x, box2.second.y);
+		
+		if( collisionMethod(b1, b2) )
 		{
-			//check collision
-			Box2D b1 = Box2D(box1[0].x, box1[0].y, box1[1].x, box1[1].y);
-			Box2D b2 = Box2D(box2[0].x, box2[0].y, box2[1].x, box2[1].y);
-			
-			if( collisionMethod(&b1, &b2) )
+			//potential collision
+			//If size of box is less than 1 in both the x and y, consider it a collision
+			float b1Area = MathExt::abs((box1.second.x - box1.first.x)*(box1.second.y - box1.first.y));
+			float b2Area = MathExt::abs((box2.second.x - box2.first.x)*(box2.second.y - box2.first.y));
+
+			if(b1Area + b2Area <= tolerance)
 			{
-				//potential collision
-				//If size of box is less than 1 in both the x and y, consider it a collision
-				float b1Area = MathExt::abs((box1[1].x - box1[0].x)*(box1[1].y - box1[0].y));
-				float b2Area = MathExt::abs((box2[1].x - box2[0].x)*(box2[1].y - box2[0].y));
-
-				if(b1Area + b2Area <= tolerance)
-				{
-					return true;
-				}
-
-				std::vector<BezierCurve> aSub = a.subdivide(0.5);
-				std::vector<BezierCurve> bSub = b.subdivide(0.5);
-				bool col = false;
-				
-				for(int i=0; i<2; i++)
-				{
-					for(int i2=0; i2<2; i2++)
-					{
-						col = bezierCurveCollision(aSub[i], bSub[i2]);
-						
-						if(col)
-							break;
-					}
-
-					if(col)
-						break;
-				}
-
-				return col;
+				return true;
 			}
-		}
-		else
-		{
-			//error with bezier curve size
-			return false;
+
+			std::pair<BezierCurve, BezierCurve> aSub = a.subdivide(0.5);
+			std::pair<BezierCurve, BezierCurve> bSub = b.subdivide(0.5);
+			bool col = false;
+			
+			col = bezierCurveCollision(aSub.first, bSub.first);
+			if(col)
+				return true;
+			
+			col = bezierCurveCollision(aSub.first, bSub.second);
+			if(col)
+				return true;
+			
+			col = bezierCurveCollision(aSub.second, bSub.first);
+			if(col)
+				return true;
+			
+			col = bezierCurveCollision(aSub.second, bSub.second);
+			if(col)
+				return true;
+			
+			return col;
 		}
 
 		return false;
