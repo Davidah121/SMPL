@@ -56,7 +56,7 @@ namespace smpl
         bool peek(T& data);
         bool get(PQData<T>& data);
         bool peek(PQData<T>& data);
-        void erase(const T& data);
+        bool erase(const T& data);
         void clear();
         size_t size();
         bool empty();
@@ -128,9 +128,9 @@ namespace smpl
         return retValue;
     }
     template<typename T>
-    inline void PriorityQueue<T>::erase(const T& data)
+    inline bool PriorityQueue<T>::erase(const T& data)
     {
-        buffer.erase(PQData<T>{0, data});
+        return buffer.erase(PQData<T>{0, data});
     }
     template<typename T>
     inline void PriorityQueue<T>::clear()

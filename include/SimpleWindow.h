@@ -68,6 +68,16 @@
 	#endif
 
 
+	#ifndef WDA_NONE
+		#define WDA_NONE 0
+	#endif
+	#ifndef WDA_MONITOR
+		#define WDA_MONITOR 1
+	#endif
+	#ifndef WDA_EXCLUDEFROMCAPTURE
+		#define WDA_EXCLUDEFROMCAPTURE 3
+	#endif
+
 	namespace smpl
 	{
 		class DLL_OPTION SimpleWindow;
@@ -109,6 +119,11 @@
 			static const unsigned char TYPE_NO_ROUND_CORNER = DWMWCP_DONOTROUND_CONST;
 			static const unsigned char TYPE_ROUND_CORNER = DWMWCP_ROUND_CONST;
 			static const unsigned char TYPE_SMALLROUND_CORNER = DWMWCP_ROUNDSMALL_CONST;
+
+			static const int HIDE_NONE = 0;
+			static const int HIDE_ONLY_MONITOR = WDA_MONITOR;
+			static const int HIDE_NO_CAPTURE = WDA_EXCLUDEFROMCAPTURE;
+			
 
 			static int BorderHeight;
 			static int BorderWidth;
@@ -634,8 +649,18 @@
 				 * @param function 
 				 */
 				void setGestureInputFunction(std::function<void(SimpleWindow*, GESTUREINFO)> function);
+
 				
 			#endif
+
+			/**
+				* @brief Attempts to hide the display content from capture.
+				*		This does NOT prevent all methods of capture (any thing driver level) but does prevent capture from bitblt and DirectX approaches
+				*		For now, only valid in Win32.
+				* 
+				* @param v 
+				*/
+			void hideDisplayContent(int v);
 
 		protected:
 			

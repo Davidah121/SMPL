@@ -38,7 +38,7 @@ namespace smpl
 		 * 
 		 * @return Vec3f 
 		 */
-		Vec3f getPosition();
+		Vec3f getPosition() const;
 
 		/**
 		 * @brief Set the Scale of the shape.
@@ -55,7 +55,7 @@ namespace smpl
 		 * 
 		 * @return Vec3f 
 		 */
-		Vec3f getScale();
+		Vec3f getScale() const;
 
 		/**
 		 * @brief Set the Rotation of the shape.
@@ -72,7 +72,7 @@ namespace smpl
 		 * 
 		 * @return Vec3f 
 		 */
-		Vec3f getRotation();
+		Vec3f getRotation() const;
 
 		/**
 		 * @brief A virtual function to create either a bounding circle or bounding sphere.
@@ -80,7 +80,7 @@ namespace smpl
 		 * 
 		 * @return double 
 		 */
-		virtual float generateBoundingRadius();
+		virtual float generateBoundingRadius() const;
 		
 	protected:
 		Vec3f position = Vec3f(0,0,0);
@@ -127,14 +127,14 @@ namespace smpl
 		 * 		The index of the shape.
 		 * @return Shape 
 		 */
-		Shape getShape(int i);
+		Shape getShape(int i) const;
 
 		/**
 		 * @brief Returns the amount of shapes in the list.
 		 * 
 		 * @return int 
 		 */
-		int size();
+		int size() const;
 
 	protected:
 		void onTransformChanged();
@@ -188,7 +188,7 @@ namespace smpl
 		 * 
 		 * @return float 
 		 */
-		float generateBoundingRadius();
+		float generateBoundingRadius() const;
 		
 	protected:
 		void onTransformChanged();
@@ -234,7 +234,7 @@ namespace smpl
 		 * 
 		 * @return float 
 		 */
-		float getLeftBound();
+		float getLeftBound() const;
 
 		/**
 		 * @brief Set the Top Bound of the AABB
@@ -248,7 +248,7 @@ namespace smpl
 		 * 
 		 * @return float 
 		 */
-		float getTopBound();
+		float getTopBound() const;
 
 		/**
 		 * @brief Set the Right Bound of the AABB
@@ -262,7 +262,7 @@ namespace smpl
 		 * 
 		 * @return float 
 		 */
-		float getRightBound();
+		float getRightBound() const;
 
 		/**
 		 * @brief Set the Bottom Bound of the AABB
@@ -276,31 +276,31 @@ namespace smpl
 		 * 
 		 * @return float 
 		 */
-		float getBottomBound();
+		float getBottomBound() const;
 
 		/**
 		 * @brief Gets the Width of the AABB
 		 * 
 		 * @return float 
 		 */
-		float getWidth();
+		float getWidth() const;
 
 		/**
 		 * @brief Gets the Height of the AABB
 		 * 
 		 * @return float 
 		 */
-		float getHeight();
+		float getHeight() const;
 
 		/**
 		 * @brief Generates a bounding radius for the AABB.
 		 * 		(Implement later)
 		 * @return float 
 		 */
-		float generateBoundingRadius();
+		float generateBoundingRadius() const;
 
-		bool operator==(Box2D other);
-		bool operator!=(Box2D other);
+		bool operator==(Box2D other) const;
+		bool operator!=(Box2D other) const;
 		
 	protected:
 		void onTransformChanged();
@@ -348,7 +348,7 @@ namespace smpl
 		 * 
 		 * @return float 
 		 */
-		float getRadius();
+		float getRadius() const;
 
 		/**
 		 * @brief Set the Radius of the Circle
@@ -363,7 +363,7 @@ namespace smpl
 		 * 
 		 * @return float 
 		 */
-		float generateBoundingRadius();
+		float generateBoundingRadius() const;
 		
 	protected:
 		void onTransformChanged();
@@ -407,7 +407,7 @@ namespace smpl
 		 * 
 		 * @return float 
 		 */
-		float getXRadius();
+		float getXRadius() const;
 
 		/**
 		 * @brief Sets the X radius of the Ellipse.
@@ -421,7 +421,7 @@ namespace smpl
 		 * 
 		 * @return float 
 		 */
-		float getYRadius();
+		float getYRadius() const;
 
 		/**
 		 * @brief Sets the Y radius of the Ellipse.
@@ -435,7 +435,7 @@ namespace smpl
 		 * 
 		 * @return float 
 		 */
-		float generateBoundingRadius();
+		float generateBoundingRadius() const;
 	
 	protected:
 		void onTransformChanged();
@@ -522,28 +522,28 @@ namespace smpl
 		 * 
 		 * @return Vec2f 
 		 */
-		Vec2f getPoint1();
+		Vec2f getPoint1() const;
 
 		/**
 		 * @brief Gets the second point of the line
 		 * 
 		 * @return Vec2f 
 		 */
-		Vec2f getPoint2();
+		Vec2f getPoint2() const;
 
 		/**
 		 * @brief Gets the Line that is represented by the 2 points.
 		 * 
 		 * @return Line 
 		 */
-		Line getLine();
+		Line getLine() const;
 
 		/**
 		 * @brief Generates a bounding radius for the Line.
 		 * 
 		 * @return float 
 		 */
-		float generateBoundingRadius();
+		float generateBoundingRadius() const;
 
 	protected:
 		void onTransformChanged();
@@ -646,35 +646,39 @@ namespace smpl
 		 * 
 		 * @return Vec2f 
 		 */
-		Vec2f getVertex1();
+		Vec2f getVertex1() const;
 
 		/**
 		 * @brief Gets the first vertex of the triangle after transforms
 		 * 
 		 * @return Vec2f 
 		 */
-		Vec2f getVertex2();
+		Vec2f getVertex2() const;
 
 		/**
 		 * @brief Gets the first vertex of the triangle after transforms
 		 * 
 		 * @return Vec2f 
 		 */
-		Vec2f getVertex3();
+		Vec2f getVertex3() const;
 
 		/**
 		 * @brief Get the Center Position of the triangle after transforms
 		 * 
 		 * @return Vec2f 
 		 */
-		Vec2f getCenterPosition();
+		Vec2f getCenterPosition() const;
 
 		/**
 		 * @brief Generates a bounding radius for the triangle.
 		 * 
 		 * @return float 
 		 */
-		float generateBoundingRadius();
+		float generateBoundingRadius() const;
+
+		
+		Vec2f getMinimumBound() const;
+		Vec2f getMaximumBound() const;
 	
 	protected:
 		void onTransformChanged(); //TODO
@@ -719,7 +723,7 @@ namespace smpl
 		 * @param index 
 		 * @return Triangle2D 
 		 */
-		Triangle2D get(size_t index);
+		Triangle2D get(size_t index) const;
 
 		/**
 		 * @brief Get the raw list of triangles
@@ -727,14 +731,41 @@ namespace smpl
 		 * @return std::vector<Triangle2D>& 
 		 */
 		std::vector<Triangle2D>& getTriangles();
+		const std::vector<Triangle2D>& getTriangles() const;
 
 		/**
 		 * @brief Returns the number of triangles in the model.
 		 * 
 		 * @return size_t 
 		 */
-		size_t size();
+		size_t size() const;
+
+		/**
+		 * @brief Gets the Minimum Bounds of the triangle model. This plus the maximum bounds will form an axis aligned bounding box
+		 *		that surrounds the entire shape. It is not guaranteed to be close fitting since it is axis aligned
+		 * 
+		 * @return Vec2f 
+		 */
+		Vec2f getMinimumBound() const;
+		
+		/**
+		 * @brief Gets the Maximum Bounds of the triangle model. This plus the minimum bounds will form an axis aligned bounding box
+		 *		that surrounds the entire shape. It is not guaranteed to be close fitting since it is axis aligned
+		 * 
+		 * @return Vec2f 
+		 */
+		Vec2f getMaximumBound() const;
+		
+		/**
+		 * @brief Generates a bounding radius for the triangle.
+		 * 
+		 * @return float 
+		 */
+		float generateBoundingRadius() const;
 	private:
+		Vec2f minBound;
+		Vec2f maxBound;
+		
 		std::vector<Triangle2D> triangleList;
 		
 	SERIALIZE_SUPER_CLASS(Shape)
@@ -752,6 +783,8 @@ namespace smpl
 		 * 
 		 */
 		Polygon2D();
+
+		Polygon2D(const std::vector<Vec2f>& points);
 
 		/**
 		 * @brief Destroy the Polygon2D object
@@ -773,14 +806,14 @@ namespace smpl
 		 * @param index 
 		 * @return Vec2f 
 		 */
-		Vec2f getVertex(size_t index);
+		Vec2f getVertex(size_t index) const;
 
 		/**
 		 * @brief Gets the Center Point of the polygon.
 		 * 
 		 * @return Vec2f 
 		 */
-		Vec2f getCenterPoint();
+		Vec2f getCenterPoint() const;
 
 		/**
 		 * @brief Clears the list of vertices
@@ -793,7 +826,15 @@ namespace smpl
 		 * 
 		 * @return size_t 
 		 */
-		size_t size();
+		size_t size() const;
+
+		/**
+		 * @brief Gets the list of points for the polygon
+		 * 
+		 * @return std::vector<Vec2f>& 
+		 */
+		std::vector<Vec2f>& getPoints();
+		const std::vector<Vec2f>& getPoints() const;
 
 		/**
 		 * @brief Returns whether the polygon is convex or concave.
@@ -802,14 +843,14 @@ namespace smpl
 		 * @return true 
 		 * @return false 
 		 */
-		bool getConvex();
+		bool getConvex() const;
 
 		/**
 		 * @brief Generates a bounding radius for the polygon.
 		 * 
 		 * @return float 
 		 */
-		float generateBoundingRadius();
+		float generateBoundingRadius() const;
 
 		/**
 		 * @brief Generates a 2D polygon that approximates a circle.
@@ -884,11 +925,126 @@ namespace smpl
 	#pragma endregion
 
 	#pragma region SHAPES_3D
+	
+	class DLL_OPTION Point3D : public Shape
+	{
+	public:
+		/**
+		 * @brief Construct a new Point3D object
+		 * 		Default position is (0,0,0)
+		 * 
+		 */
+		Point3D();
 
-	// class DLL_OPTION Sphere : public Shape
-	// {
+		/**
+		 * @brief Construct a new Point3D object
+		 * 
+		 * @param x
+		 * 		The x position
+		 * @param y
+		 * 		The y position
+		 */
+		Point3D(float x, float y, float z);
 
-	// };
+		/**
+		 * @brief Construct a new Point3D object
+		 * 
+		 * @param pos
+		 * 		The position to set the point at.
+		 */
+		Point3D(const Vec3f& pos);
+
+		/**
+		 * @brief Destroy the Point3D object
+		 * 
+		 */
+		~Point3D();
+
+		/**
+		 * @brief Generates the bounding radius for the point.
+		 * 		Returns the value 0 because it is a point.
+		 * 
+		 * @return float 
+		 */
+		float generateBoundingRadius() const;
+		
+	protected:
+		void onTransformChanged();
+	
+	SERIALIZE_SUPER_CLASS(Shape)
+	SERIALIZE_CLASS()
+	};
+
+	class DLL_OPTION Line3D : public Shape
+	{
+	public:
+
+	private:
+		Vec3f startPoint;
+		Vec3f endPoint;
+	SERIALIZE_SUPER_CLASS(Shape)
+	SERIALIZE_CLASS(startPoint, endPoint)
+	};
+
+	class DLL_OPTION Sphere : public Shape
+	{
+	public:
+		/**
+		 * @brief Construct a new Sphere object
+		 * 		A Sphere is separate from an Ellipsoid so scale will not affect this shape.
+		 * 		Rotation will not affect the shape either.
+		 * 		Default radius is 0.
+		 * 
+		 */
+		Sphere();
+
+		/**
+		 * @brief Construct a new Sphere object
+		 * 		A Sphere is separate from an Ellipsoid so scale will not affect this shape.
+		 * 		Rotation will not affect the shape either.
+		 * 
+		 * @param rad 
+		 */
+		Sphere(float rad);
+
+		/**
+		 * @brief Destroy the Sphere object
+		 * 
+		 */
+		~Sphere();
+
+		/**
+		 * @brief Get the Radius of the Sphere
+		 * 
+		 * @return float 
+		 */
+		float getRadius() const;
+
+		/**
+		 * @brief Set the Radius of the Sphere
+		 * 
+		 * @param rad 
+		 */
+		void setRadius(float rad);
+
+		/**
+		 * @brief Generates the bounding radius for the Sphere.
+		 * 		Returns the radius of the Sphere.
+		 * 
+		 * @return float 
+		 */
+		float generateBoundingRadius() const;
+		
+	protected:
+		void onTransformChanged();
+
+	private:
+		float radius = 0;
+		float baseRadius;
+	
+	SERIALIZE_SUPER_CLASS(Shape)
+	SERIALIZE_CLASS(baseRadius)
+	};
 
 	// class DLL_OPTION Ellipsoid : public Shape
 	// {
@@ -900,20 +1056,82 @@ namespace smpl
 
 	// };
 
-	// class DLL_OPTION Box3D : public Shape
-	// {
+	class DLL_OPTION Box3D : public Shape
+	{
+	public:
+		/**
+		* @brief Construct a new Box2D object
+		* 		It represents an Axis Aligned Bounding Box (AABB) so rotation does not
+		* 		affect the shape.
+		* 		Default bounds are all 0.
+		* 		
+		*/
+		Box3D();
 
-	// };
+		/**
+		* @brief Construct a new Box2D object
+		* 		It represents an Axis Aligned Bounding Box (AABB) so rotation does not
+		* 		affect the shape.
+		* 
+		* @param leftBound 
+		* @param topBound 
+		* @param rightBound 
+		* @param bottomBound 
+		*/
+		Box3D(const Vec3f& minValues, const Vec3f& maxValues);
+		~Box3D();
+		
+		void setMinBound(const Vec3f& v);
+		void setMaxBound(const Vec3f& v);
 
-	// class DLL_OPTION Point3D : public Shape
-	// {
+		
+		Vec3f getMinBound() const;
+		Vec3f getMaxBound() const;
+		
+		/**
+		* @brief Gets the Width of the AABB
+		* 
+		* @return float 
+		*/
+		float getWidth() const;
 
-	// };
+		/**
+		* @brief Gets the Height of the AABB
+		* 
+		* @return float 
+		*/
+		float getHeight() const;
+		
+		/**
+		* @brief Gets the Height of the AABB
+		* 
+		* @return float 
+		*/
+		float getDepth() const;
 
-	// class DLL_OPTION Line3D : public Shape
-	// {
+		/**
+		* @brief Generates a bounding radius for the AABB.
+		* 		(Implement later)
+		* @return float 
+		*/
+		float generateBoundingRadius() const;
 
-	// };
+		bool operator==(Box3D other) const;
+		bool operator!=(Box3D other) const;
+		
+	protected:
+		void onTransformChanged();
+
+	private:
+		Vec3f topLeft;
+		Vec3f bottomRight;
+
+		Vec3f baseTopLeft;
+		Vec3f baseBottomRight;
+		
+	SERIALIZE_SUPER_CLASS(Shape)
+	SERIALIZE_CLASS(baseTopLeft, baseBottomRight)
+	};
 
 	class DLL_OPTION Triangle3D : public Shape
 	{
@@ -937,22 +1155,6 @@ namespace smpl
 		Triangle3D(Vec3f p1, Vec3f p2, Vec3f p3);
 
 		/**
-		 * @brief Construct a new Triangle3D object
-		 * 		All transforms affect this shape.
-		 * 
-		 * @param x1 
-		 * @param y1 
-		 * @param z1
-		 * @param x2 
-		 * @param y2 
-		 * @param z2
-		 * @param x3 
-		 * @param y3 
-		 * @param z3
-		 */
-		Triangle3D(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3);
-
-		/**
 		 * @brief Destroy the Triangle3D object
 		 * 
 		 */
@@ -966,29 +1168,11 @@ namespace smpl
 		void setVertex1(Vec3f p);
 
 		/**
-		 * @brief Sets the first vertex of the triangle
-		 * 
-		 * @param x 
-		 * @param y 
-		 * @param z
-		 */
-		void setVertex1(float x, float y, float z);
-
-		/**
 		 * @brief Sets the second vertex of the triangle
 		 * 
 		 * @param p 
 		 */
 		void setVertex2(Vec3f p);
-
-		/**
-		 * @brief Sets the second vertex of the triangle
-		 * 
-		 * @param x 
-		 * @param y 
-		 * @param z
-		 */
-		void setVertex2(float x, float y, float z);
 
 		/**
 		 * @brief Sets the third vertex of the triangle
@@ -998,66 +1182,65 @@ namespace smpl
 		void setVertex3(Vec3f p);
 
 		/**
-		 * @brief Sets the third vertex of the triangle
+		 * @brief Gets the first vertex of the triangle after transforms
 		 * 
-		 * @param x 
-		 * @param y 
-		 * @param z
+		 * @return Vec3f 
 		 */
-		void setVertex3(float x, float y, float z);
+		Vec3f getVertex1() const;
 
 		/**
 		 * @brief Gets the first vertex of the triangle after transforms
 		 * 
 		 * @return Vec3f 
 		 */
-		Vec3f getVertex1();
+		Vec3f getVertex2() const;
 
 		/**
 		 * @brief Gets the first vertex of the triangle after transforms
 		 * 
 		 * @return Vec3f 
 		 */
-		Vec3f getVertex2();
-
-		/**
-		 * @brief Gets the first vertex of the triangle after transforms
-		 * 
-		 * @return Vec3f 
-		 */
-		Vec3f getVertex3();
+		Vec3f getVertex3() const;
 
 		/**
 		 * @brief Get the Center Position of the triangle after transforms
 		 * 
 		 * @return Vec3f 
 		 */
-		Vec3f getCenterPosition();
+		Vec3f getCenterPosition() const;
 		
 		/**
 		 * @brief Gets the Normal vector for the triangle
 		 * 
 		 * @return Vec3f 
 		 */
-		Vec3f getNormal();
+		Vec3f getNormal() const;
 
 		/**
 		 * @brief Generates a bounding radius for the triangle.
 		 * 
 		 * @return float 
 		 */
-		float generateBoundingRadius();
+		float generateBoundingRadius() const;
+
+		Vec3f getMinimumBound() const;
+		Vec3f getMaximumBound() const;
+		
 	
 	protected:
 		void onTransformChanged(); //TODO
 
 	private:
+
 		Vec3f v1;
 		Vec3f v2;
 		Vec3f v3;
+		Vec3f baseV1;
+		Vec3f baseV2;
+		Vec3f baseV3;
 
 	SERIALIZE_SUPER_CLASS(Shape)
-	SERIALIZE_CLASS(v1, v2, v3)
+	SERIALIZE_CLASS(baseV1, baseV2, baseV3)
 	};
 
 	class DLL_OPTION Triangle3DModel : public Shape
@@ -1091,7 +1274,7 @@ namespace smpl
 		 * @param index 
 		 * @return Triangle3D 
 		 */
-		Triangle3D get(size_t index);
+		Triangle3D get(size_t index) const;
 
 		/**
 		 * @brief Get the raw list of triangles
@@ -1099,14 +1282,40 @@ namespace smpl
 		 * @return std::vector<Triangle3D>& 
 		 */
 		std::vector<Triangle3D>& getTriangles();
+		const std::vector<Triangle3D>& getTriangles() const;
 
 		/**
 		 * @brief Returns the number of triangles in the model.
 		 * 
 		 * @return size_t 
 		 */
-		size_t size();
+		size_t size() const;
+
+		/**
+		 * @brief Generates a bounding radius for the triangle.
+		 * 
+		 * @return float 
+		 */
+		float generateBoundingRadius() const;
+		
+		/**
+		 * @brief Gets the Minimum Bounds of the triangle model. This plus the maximum bounds will form an axis aligned bounding box
+		 *		that surrounds the entire shape. It is not guaranteed to be close fitting since it is axis aligned
+		 * 
+		 * @return Vec3f 
+		 */
+		Vec3f getMinimumBound() const;
+		
+		/**
+		 * @brief Gets the Maximum Bounds of the triangle model. This plus the minimum bounds will form an axis aligned bounding box
+		 *		that surrounds the entire shape. It is not guaranteed to be close fitting since it is axis aligned
+		 * 
+		 * @return Vec3f 
+		 */
+		Vec3f getMaximumBound() const;
 	private:
+		Vec3f minBound;
+		Vec3f maxBound;
 		std::vector<Triangle3D> triangleList;
 
 	SERIALIZE_SUPER_CLASS(Shape)
@@ -1142,43 +1351,43 @@ namespace smpl
 		 * @return true 
 		 * @return false 
 		 */
-		static bool getCollision(Shape* a, Shape* b, bool overrideQuickCheck = false);
+		static bool getCollision(const Shape& a, const Shape& b, bool overrideQuickCheck = false);
 
 		//Pre made collision functions
 
 		//2D stuff
 		//Point2D
-		static bool collisionMethod(Point2D* a, Point2D* b);
-		static bool collisionMethod(Point2D* a, Circle* b);
-		static bool collisionMethod(Point2D* a, Ellipse* b);
-		static bool collisionMethod(Point2D* a, Box2D* b);
-		static bool collisionMethod(Point2D* a, Triangle2D* b);
-		static bool collisionMethod(Point2D* a, Line2D* b);
+		static bool collisionMethod(const Point2D& a, const Point2D& b);
+		static bool collisionMethod(const Point2D& a, const Circle& b);
+		static bool collisionMethod(const Point2D& a, const Ellipse& b);
+		static bool collisionMethod(const Point2D& a, const Box2D& b);
+		static bool collisionMethod(const Point2D& a, const Triangle2D& b);
+		static bool collisionMethod(const Point2D& a, const Line2D& b);
 
 		//Box2D
-		static bool collisionMethod(Box2D* a, Box2D* b);
-		static bool collisionMethod(Box2D* a, Circle* b);
-		static bool collisionMethod(Box2D* a, Ellipse* b);
-		static bool collisionMethod(Box2D* a, Triangle2D* b); //TEST
-		static bool collisionMethod(Box2D* a, Line2D* b);
+		static bool collisionMethod(const Box2D& a, const Box2D& b);
+		static bool collisionMethod(const Box2D& a, const Circle& b);
+		static bool collisionMethod(const Box2D& a, const Ellipse& b);
+		static bool collisionMethod(const Box2D& a, const Triangle2D& b); //TEST
+		static bool collisionMethod(const Box2D& a, const Line2D& b);
 
 		//Circle
-		static bool collisionMethod(Circle* a, Circle* b);
-		static bool collisionMethod(Circle* a, Ellipse* b);
-		static bool collisionMethod(Circle* a, Triangle2D* b);
-		static bool collisionMethod(Circle* a, Line2D* b);
+		static bool collisionMethod(const Circle& a, const Circle& b);
+		static bool collisionMethod(const Circle& a, const Ellipse& b);
+		static bool collisionMethod(const Circle& a, const Triangle2D& b);
+		static bool collisionMethod(const Circle& a, const Line2D& b);
 
 		//Line2D
-		static bool collisionMethod(Line2D* a, Line2D* b);
-		static bool collisionMethod(Line2D* a, Ellipse* b);
-		static bool collisionMethod(Line2D* a, Triangle2D* b);
+		static bool collisionMethod(const Line2D& a, const Line2D& b);
+		static bool collisionMethod(const Line2D& a, const Ellipse& b);
+		static bool collisionMethod(const Line2D& a, const Triangle2D& b);
 
 		//Ellipse
-		static bool collisionMethod(Ellipse* a, Ellipse* b);
-		static bool collisionMethod(Ellipse* a, Triangle2D* b);
+		static bool collisionMethod(const Ellipse& a, const Ellipse& b);
+		static bool collisionMethod(const Ellipse& a, const Triangle2D& b);
 
 		//Triangle2D
-		static bool collisionMethod(Triangle2D* a, Triangle2D* b); //TEST
+		static bool collisionMethod(const Triangle2D& a, const Triangle2D& b); //TEST
 
 		//Polygon Stuff
 		/**
@@ -1190,7 +1399,7 @@ namespace smpl
 		 * @return true 
 		 * @return false 
 		 */
-		static bool SeparatingAxisTheorem(Polygon2D* a, Polygon2D* b);
+		static bool SeparatingAxisTheorem(const Polygon2D& a, const Polygon2D& b);
 
 		/**
 		 * @brief Uses a method called Alternating Diagonals to determine if the 2 polygons are colliding.
@@ -1204,14 +1413,33 @@ namespace smpl
 		 * @return true 
 		 * @return false 
 		 */
-		static bool AlternatingDiagonals(Polygon2D* a, Polygon2D* b);
+		static bool AlternatingDiagonals(const Polygon2D& a, const Polygon2D& b);
 		
-		static bool collisionMethod(Polygon2D* a, Point2D* b);
-		static bool collisionMethod(Polygon2D* a, Circle* b);
-		static bool collisionMethod(Polygon2D* a, Ellipse* b);
+		static bool collisionMethod(const Polygon2D& a, const Point2D& b);
+		static bool collisionMethod(const Polygon2D& a, const Circle& b);
+		static bool collisionMethod(const Polygon2D& a, const Ellipse& b);
 		
+
+		//3D stuff
+		static bool collisionMethod(const Point3D& a, const Point3D& b);
+		static bool collisionMethod(const Point3D& a, const Box3D& b);
+		static bool collisionMethod(const Point3D& a, const Sphere& b);
+		static bool collisionMethod(const Point3D& a, const Triangle3D& b);
+		
+		static bool collisionMethod(const Box3D& a, const Box3D& b);
+		static bool collisionMethod(const Box3D& a, const Sphere& b);
+		static bool collisionMethod(const Box3D& a, const Triangle3D& b); //SAT
+
+		static bool collisionMethod(const Sphere& a, const Sphere& b);
+		static bool collisionMethod(const Sphere& a, const Triangle3D& b);
+
+		static bool collisionMethod(const Triangle3D& a, const Triangle3D& b); //SAT
+
+		//Generic Stuff
+		static bool SATTest(const Vec2f& axis, const std::vector<Vec2f>& points1, const std::vector<Vec2f>& points2);
+		static bool SATTest(const Vec3f& axis, const std::vector<Vec3f>& points1, const std::vector<Vec3f>& points2);
+		static bool bezierCurveCollision(const BezierCurve& a, const BezierCurve& b, double tolerance=1.0);
 	private:
-		static bool bezierCurveCollision(BezierCurve& a, BezierCurve& b, double tolerance=1.0);
 	};
 
 }  //NAMESPACE glib END

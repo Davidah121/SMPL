@@ -17,7 +17,7 @@ namespace smpl
          * @param filename
          *      The filename or path.
          */
-        File(std::string filename)
+        File(const std::string& filename)
         {
             init( filename );
         }
@@ -29,22 +29,9 @@ namespace smpl
          * @param filename
          *      The filename or path.
          */
-        File(std::wstring filename)
+        File(const std::wstring& filename)
         {
             init( StringTools::toUTF8String(filename) );
-        }
-
-        /**
-         * @brief Creates a File Object.
-         *      Allows easy access to the file name, path, full path with name, and extension.
-         *      Uses a utf8 string to store data.
-         * @param filename
-         *      The filename or path.
-         */
-        File(char* filename)
-        {
-            std::string s = filename;
-            init( s );
         }
 
         /**
@@ -72,18 +59,13 @@ namespace smpl
             init( StringTools::toUTF8String(filename) );
         }
 
-        /**
-         * @brief Creates a File Object.
-         *      Allows easy access to the file name, path, full path with name, and extension.
-         *      Uses a utf8 string to store data.
-         * @param filename
-         *      The filename or path.
-         */
-        File(wchar_t* filename)
-        {
-            init( StringTools::toUTF8String(filename) );
-        }
+		File();
+		
+		File(const File& other) = default;
+		File& operator=(const File& other) = default;
 
+		File(File&& other) = default;
+		File& operator=(File&& other) = default;
         /**
          * @brief Destroys a File Object.
          */
@@ -124,7 +106,7 @@ namespace smpl
 
         /**
          * @brief Returns if the object represents a directory.
-         *      It is a wrapper around SimpleDir::isDirectory
+         *      This value is cached and found upon creation of the object. May not represent current situations
          * 
          * @return true 
          * @return false 
@@ -133,7 +115,7 @@ namespace smpl
 
         /**
          * @brief Returns if the object represents a normal file.
-         *      It is a wrapper around SimpleDir::isFile
+         *      This value is cached and found upon creation of the object. May not represent current situations
          * 
          * @return true 
          * @return false 
@@ -142,12 +124,28 @@ namespace smpl
 
         /**
          * @brief Returns if the object represents something that exists.
-         *      It is a wrapper around SimpleDir::doesExist
+         *      This value is cached and found upon creation of the object. May not represent current situations
          * 
          * @return true 
          * @return false 
          */
         bool doesExist() const;
+
+		/**
+		 * @brief Gets the cached file size. Size of the file is computed upon creation of the object.
+		 * 		May not represent current situations
+		 *
+		 * @return size_t 
+		 */
+		size_t getFileSize() const;
+		
+		/**
+		 * @brief Gets the cached Time for the file. That time being the last time the file was modified.
+		 *		This time value is calculated upon creation of the object. May not represent current situations
+		 * 
+		 * @return size_t 
+		 */
+		size_t getFileTime() const;
 
     private:
         void init(std::string filename);
@@ -155,7 +153,12 @@ namespace smpl
         std::string fullFileName;
         size_t locationOfExtension;
         size_t locationOfFileName;
-        
+
+		size_t cachedFileSize;
+		size_t cachedFileTime;
+		bool cachedExistance;
+		bool cachedIsFileType;
+		bool cachedIsDirectoryType;
     };
     
 }  //NAMESPACE glib END

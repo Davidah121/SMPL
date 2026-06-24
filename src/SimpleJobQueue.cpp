@@ -10,6 +10,7 @@
 
 namespace smpl
 {
+	
 	SimpleJobQueue::SimpleJobQueue(int threads)
 	{
 		running = true;
@@ -27,16 +28,13 @@ namespace smpl
 	
 	SimpleJobQueue::~SimpleJobQueue()
 	{
-		jobQueueMutex.lock();
 		running = false;
-		jobQueueMutex.unlock();
-
 		cv.notify_all();
 		for(int i=0; i<jobThreads.size(); i++)
 		{
 			jobThreads[i].join();
 		}
-		
+
 		for(FiberTask* tPointer : createdTask)
 		{
 			if(tPointer != nullptr)
@@ -54,16 +52,84 @@ namespace smpl
 
 	size_t SimpleJobQueue::addJob(const std::function<void()>& j)
 	{
-		jobQueueMutex.lock();
 		JobInfo info = JobInfo(jobID++, j);
+		jobQueueMutex.lock();
 		jobs.add(info);
 		jobQueueMutex.unlock();
 
 		knownJobCount++;
-		cv.notify_all();
+		cv.notify_one();
 		return info.getID();
 	}
+
 	
+	size_t SimpleJobQueue::addJobs(const std::vector<std::function<void()>>& jobList)
+	{
+		if(jobList.empty())
+			return -1;
+
+		jobQueueMutex.lock();
+		size_t startID = jobID;
+		for(size_t i=0; i<jobList.size(); i++)
+		{
+			jobs.add(JobInfo(jobID++, jobList[i]));
+		}
+		jobQueueMutex.unlock();
+
+		knownJobCount+=jobList.size();
+		// if(jobList.size() >= jobThreads.size())
+		// 	cv.notify_all();
+		// else
+		// {
+		// 	for(size_t i=0; i<jobList.size(); i++)
+		// 	{
+		// 		cv.notify_one();
+		// 	}
+		// }
+		cv.notify_one();
+		return startID;
+	}
+
+	void SimpleJobQueue::parallelize(const std::function<void(size_t, size_t, size_t)>& func, size_t start, size_t end, size_t incr, size_t threadsWanted)
+	{
+		if(threadsWanted < 1)
+			threadsWanted = jobThreads.size();
+		if(threadsWanted == 1)
+		{
+			func(start, end, incr);
+			return;
+		}
+
+		std::vector<std::function<void()>> jobsToAdd;
+		size_t max = end;
+		size_t indexIncr = (end-start)/threadsWanted;
+		indexIncr -= indexIncr % incr;
+
+		if(indexIncr < incr)
+		{
+			func(start, end, incr); //Change this behavior. Should reduce the total number of threads instead of making it all single threaded.
+			return;
+		}
+		
+		size_t tStart = start;
+		size_t tEnd = start+indexIncr;
+		for(size_t i=0; i<threadsWanted-1; i++)
+		{
+			addJob([func, tStart, tEnd, incr]() ->void{
+				func(tStart, tEnd, incr);
+			});
+			
+			tStart += indexIncr;
+			tEnd += indexIncr;
+		}
+
+		tEnd = end;
+		
+		addJob([func, tStart, tEnd, incr]() ->void{
+			func(tStart, tEnd, incr);
+		});
+		waitForAllJobs(); //should actually use a different approach
+	}
 
 	void SimpleJobQueue::removeJob(size_t ID)
 	{
@@ -112,10 +178,7 @@ namespace smpl
 	
 	bool SimpleJobQueue::getRunning()
 	{
-		jobQueueMutex.lock();
-		bool res = running;
-		jobQueueMutex.unlock();
-		return res;
+		return running;
 	}
 
 	void SimpleJobQueue::waitForAllJobs()
@@ -123,7 +186,8 @@ namespace smpl
 		while(!allJobsDone())
 		{
 			//Otherwise, wait.
-			System::sleep(1, 0, false);
+			std::unique_lock<std::mutex> temporaryLock(jobWaitHaltMutex);
+			jobWaitCV.wait_for(temporaryLock, std::chrono::milliseconds(1));
 		}
 	}
 
@@ -134,16 +198,26 @@ namespace smpl
 		{
 			size_t jobID = -1;
 			FiberTask* taskPtr = nullptr;
-
+			
 			//try to get a job from the queue
-			if(knownJobCount <= 0)
+			if(knownJobCount > 0)
 			{
-				std::unique_lock<std::mutex> temporaryLock(haltMutex);
-				cv.wait_for(temporaryLock, std::chrono::milliseconds(1));
+				if(!jobQueueMutex.try_lock())
+				{
+					//Wait to be notified of a job completion
+					std::unique_lock<std::mutex> temporaryLock(haltMutex);
+					cv.wait_for(temporaryLock, std::chrono::milliseconds(1));
+					jobQueueMutex.lock();
+				}
 			}
-			
-			jobQueueMutex.lock();
-			
+			else
+			{
+				//Wait to be notified of a job
+				std::unique_lock<std::mutex> temporaryLock(haltMutex);
+				cv.wait_for(temporaryLock, std::chrono::milliseconds(1)); //may result in more fighting over the mutex but the mutex itself still results in a sleep if failed
+				// cv.wait(temporaryLock);
+				jobQueueMutex.lock();
+			}
 			auto taskIterator = postponedJobs.end();
 			
 			//check for jobs in the in progress list. These should be done with the same priority as the others
@@ -180,12 +254,14 @@ namespace smpl
 			}
 			
 			jobQueueMutex.unlock();
+			if(knownJobCount > 0)
+				cv.notify_one(); //notify anything that is waiting that its okay to grab the mutex
 
 			//execute job if we got one
 			if(jobID != SIZE_MAX && taskPtr != nullptr)
 			{
 				taskPtr->run();
-
+				
 				//check if the job is done.
 				jobQueueMutex.lock();
 				if(taskPtr->getStatus() == FiberTask::STATUS_DONE)
@@ -197,6 +273,10 @@ namespace smpl
 				}
 				jobsBeingRun.erase(jobID);
 				jobQueueMutex.unlock();
+				cv.notify_one();
+				
+				if(knownJobCount == 0)
+					jobWaitCV.notify_one();
 			}
 			
 			//ensure fairness by allowing swaping priority of task execution (existing or new task first)

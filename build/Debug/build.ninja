@@ -126,6 +126,7 @@ build $objDir/RadixTree.o: buildToObject src/RadixTree.cpp
 build $objDir/SHA1Streamble.o: buildToObject src/SHA1Streamble.cpp
 build $objDir/SHA2Streamble.o: buildToObject src/SHA2Streamble.cpp
 build $objDir/Shape.o: buildToObject src/Shape.cpp
+build $objDir/Shape3D.o: buildToObject src/Shape3D.cpp
 build $objDir/SIMD.o: buildToObject src/SIMD.cpp
 build $objDir/SIMD_Cast.o : buildToObject src/SIMD_Cast.cpp
 build $objDir/SimpleDir.o: buildToObject src/SimpleDir.cpp
@@ -150,6 +151,7 @@ build $objDir/SmartJobQueue.o: buildToObject src/SmartJobQueue.cpp
 build $objDir/SmartMemory.o: buildToObject src/SmartMemory.cpp
 build $objDir/Sound.o: buildToObject src/Sound.cpp
 build $objDir/Sprite.o: buildToObject src/Sprite.cpp
+build $objDir/SJQ_OMP_Replacement.o: buildToObject src/SJQ_OMP_Replacement.cpp
 build $objDir/SSLSingleton.o: buildToObject src/ext/SSLSingleton.cpp
 build $objDir/StringBridge.o: buildToObject src/StringBridge.cpp
 build $objDir/StringTools.o: buildToObject src/StringTools.cpp
@@ -289,6 +291,7 @@ $objDir/RadixTree.o $
 $objDir/SHA1Streamble.o $
 $objDir/SHA2Streamble.o $
 $objDir/Shape.o $
+$objDir/Shape3D.o $
 $objDir/SIMD.o $
 $objDir/SIMD_Cast.o $
 $objDir/SimpleDir.o $
@@ -313,6 +316,7 @@ $objDir/SmartJobQueue.o $
 $objDir/SmartMemory.o $
 $objDir/Sound.o $
 $objDir/Sprite.o $
+$objDir/SJQ_OMP_Replacement.o $
 $objDir/SSLSingleton.o $
 $objDir/StringBridge.o $
 $objDir/StringTools.o $

@@ -85,7 +85,7 @@ namespace smpl
 		 * @param n 
 		 * @return std::string 
 		 */
-		static std::string getReferenceFullPath(std::string n);
+		static std::string getReferenceFullPath(const std::string& n);
 
 		/**
 		 * @brief Get the size of the file or folder
@@ -93,7 +93,7 @@ namespace smpl
 		 * @param index 
 		 * @return size_t 
 		 */
-		static uintmax_t getReferenceSize(std::string name);
+		static uintmax_t getReferenceSize(const std::string& name);
 
 		/**
 		 * @brief Gets the Last Change Time for the file or folder
@@ -102,7 +102,7 @@ namespace smpl
 		 * @param index 
 		 * @return time_t 
 		 */
-		static time_t getLastChangeTime(std::string name);
+		static time_t getLastChangeTime(const std::string& name);
 		
 		/**
 		 * @brief Attempts to rename the reference.
@@ -113,7 +113,7 @@ namespace smpl
 		 * @param newFileName 
 		 * @param index 
 		 */
-		static void renameResource(std::string oldFileName, std::string newFileName);
+		static void renameResource(const std::string& oldFileName, const std::string& newFileName);
 
 		/**
 		 * @brief Attempts to delete the reference.
@@ -124,7 +124,7 @@ namespace smpl
 		 * 		Note that deleting in this way will not move the data to the recycle bin.
 		 * @param index 
 		 */
-		static void deleteResource(std::string filename);
+		static void deleteResource(const std::string& filename);
 
 		/**
 		 * @brief Attempts to copy the reference at the index.
@@ -134,7 +134,7 @@ namespace smpl
 		 * @param newFileName 
 		 * @param index 
 		 */
-		static void copyResource(std::string oldFileName, std::string newFileName);
+		static void copyResource(const std::string& oldFileName, const std::string& newFileName);
 
 		//Directory Stuff
 
@@ -174,7 +174,7 @@ namespace smpl
 		 * @brief Creates a Directory with the path that the object was created with.
 		 * 
 		 */
-		static void createDirectory(std::string n);
+		static void createDirectory(const std::string& n);
 
 		/**
 		 * @brief Gets the name of the directory.
@@ -193,7 +193,7 @@ namespace smpl
 		 * @return true 
 		 * @return false 
 		 */
-		static bool isDirectory(std::string n);
+		static bool isDirectory(const std::string& n);
 
 		/**
 		 * @brief Returns if the input is a normal file.
@@ -203,7 +203,7 @@ namespace smpl
 		 * @return true 
 		 * @return false 
 		 */
-		static bool isFile(std::string n);
+		static bool isFile(const std::string& n);
 		
 		/**
 		 * @brief Returns if the input does exist.
@@ -212,11 +212,11 @@ namespace smpl
 		 * @return true 
 		 * @return false 
 		 */
-		static bool doesExist(std::string n);
+		static bool doesExist(const std::string& n);
 
 	private:
-		static uintmax_t getFileSize(std::filesystem::directory_entry f);
-		static uintmax_t getFolderSize(std::filesystem::directory_entry f);
+		static uintmax_t getFileSize(const std::filesystem::directory_entry& f);
+		static uintmax_t getFolderSize(const std::filesystem::directory_entry& f);
 
 		std::vector<std::filesystem::directory_entry> names = std::vector<std::filesystem::directory_entry>();
 		std::string location = "";

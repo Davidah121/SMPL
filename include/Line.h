@@ -53,68 +53,92 @@ namespace smpl
 		 */
 		~Line();
 
+		Line operator+(const Vec2f& other) const
+		{
+			return Line(point1 + other, point2 + other);
+		}
+		Line operator-(const Vec2f& other) const
+		{
+			return Line(point1 - other, point2 - other);
+		}
+		friend Line operator+(const Vec2f& other, const Line& l)
+		{
+			return l + other;
+		}
+		friend Line operator-(const Vec2f& other, const Line& l)
+		{
+			return l - other;
+		}
+
 		/**
 		 * @brief Gets the first point of the line.
 		 * 
 		 * @return Vec2f 
 		 */
-		Vec2f getPoint1();
+		Vec2f getPoint1() const;
 
 		/**
 		 * @brief Get the second point of the line.
 		 * 
 		 * @return Vec2f 
 		 */
-		Vec2f getPoint2();
+		Vec2f getPoint2() const;
+
+		/**
+		 * @brief Gets the Mid Point of the line
+		 * 
+		 * @return Vec2f 
+		 */
+		Vec2f getMidPoint() const;
 
 		/**
 		 * @brief Returns a vector that represent the change from point1 to point2.
 		 * 
 		 * @return Vec2f 
 		 */
-		Vec2f getToPoint();
+		Vec2f getToPoint() const;
 		
 		/**
 		 * @brief Get the max X between the defined points.
 		 * 
 		 * @return double 
 		 */
-		double getMaxX();
+		double getMaxX() const;
 
 		/**
 		 * @brief Get the min X between the defined points.
 		 * 
 		 * @return double 
 		 */
-		double getMinX();
+		double getMinX() const;
 
 		/**
 		 * @brief Get the min Y between the defined points.
 		 * 
 		 * @return double 
 		 */
-		double getMinY();
+		double getMinY() const;
 
 		/**
 		 * @brief Get the max Y between the defined points.
 		 * 
 		 * @return double 
 		 */
-		double getMaxY();
+		double getMaxY() const;
 
 		/**
 		 * @brief Returns the slope of the line.
 		 * 		The slope may be invalid if the line is a vertical line.
 		 * @return double 
 		 */
-		double getSlope();
+		double getSlope() const;
 
 		/**
 		 * @brief Returns the slope of the line relative to the y direction.
 		 * 		The slope may be invalid if the line is a horizontal line.
 		 * @return double 
 		 */
-		double getSlopeRelativeY();
+		double getSlopeRelativeY() const;
 
 		/**
 		 * @brief Returns the Y intersection point of the line.
@@ -122,7 +146,7 @@ namespace smpl
 		 * 
 		 * @return double 
 		 */
-		double getYInt();
+		double getYInt() const;
 
 		/**
 		 * @brief Returns the X intersection point of the line.
@@ -130,7 +154,7 @@ namespace smpl
 		 * 
 		 * @return double 
 		 */
-		double getXInt();
+		double getXInt() const;
 
 		/**
 		 * @brief Solves the line for an X value using a y value.
@@ -139,7 +163,7 @@ namespace smpl
 		 * 		The y value to check.
 		 * @return double 
 		 */
-		double solveForX(double y);
+		double solveForX(double y) const;
 
 		/**
 		 * @brief Solves the line for an Y value using a x value.
@@ -149,7 +173,7 @@ namespace smpl
 		 * 		The x value to check.
 		 * @return double 
 		 */
-		double solveForY(double x);
+		double solveForY(double x) const;
 
 		/**
 		 * @brief Gets a point of intersection with another line.
@@ -159,7 +183,7 @@ namespace smpl
 		 * 		The other line to check for intersection with.
 		 * @return bool 
 		 */
-		bool getIntersection(Line other, Vec2f& output);
+		bool getIntersection(const Line& other, Vec2f& output) const;
 		
 		/**
 		 * @brief Get the point of intersection with another line as a time value.
@@ -169,7 +193,7 @@ namespace smpl
 		 * @param other 
 		 * @return bool 
 		 */
-		bool getIntersectionParametric(Line other, double& timePoint);
+		bool getIntersectionParametric(const Line& other, double& timePoint) const;
 
 		/**
 		 * @brief Get the point on the line as Paramtetric time value.
@@ -179,7 +203,7 @@ namespace smpl
 		 * @param y 
 		 * @return double 
 		 */
-		double getPointAsParametricValue(double x, double y);
+		double getPointAsParametricValue(double x, double y) const;
 
 		/**
 		 * @brief Get the point on the line as Paramtetric time value.
@@ -188,7 +212,7 @@ namespace smpl
 		 * @param p 
 		 * @return double 
 		 */
-		double getPointAsParametricValue(Vec2f p);
+		double getPointAsParametricValue(const Vec2f& p) const;
 
 		/**
 		 * @brief Gets the line that is Perpendicular to the current line and crosses
@@ -196,7 +220,7 @@ namespace smpl
 		 * 
 		 * @return Line 
 		 */
-		Line getPerpendicularBisector();
+		Line getPerpendicularBisector() const;
 
 		/**
 		 * @brief Projects a point onto this line and returns that point
@@ -204,7 +228,7 @@ namespace smpl
 		 * @param p 
 		 * @return Vec2f 
 		 */
-		Vec2f projectOntoLine(Vec2f p);
+		Vec2f projectOntoLine(const Vec2f& p) const;
 
 		/**
 		 * @brief Projects a point onto this line and returns the parametric value needed to get to that point
@@ -212,7 +236,7 @@ namespace smpl
 		 * @param p 
 		 * @return double 
 		 */
-		double projectOntoLineParametric(Vec2f p);
+		double projectOntoLineParametric(const Vec2f& p) const;
 
 
 	private:

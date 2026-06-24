@@ -1,4 +1,5 @@
 #include "SimpleWindow.h"
+#include <Windows.h>
 #include <iostream>
 #include <string.h>
 #include "MathExt.h"
@@ -1512,6 +1513,13 @@
 			b = processKeyInputs;
 			myMutex.unlock();
 			return b;
+		}
+
+		void SimpleWindow::hideDisplayContent(int v)
+		{
+			#ifdef _WIN32
+			SetWindowDisplayAffinity((HWND)windowHandle, v);
+			#endif
 		}
 
 		void SimpleWindow::setThreadUpdateTime(size_t millis, size_t micros)

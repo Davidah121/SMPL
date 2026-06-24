@@ -511,7 +511,7 @@ namespace smpl
 		
 		while(sPixels < ePixels)
 		{
-			*sPixels = SimpleGraphics::convertColor4fToColor(*oPixels);
+			*sPixels = *oPixels;
 			sPixels++;
 			oPixels++;
 		}

@@ -100,20 +100,19 @@ TEST_CASE("Testing of the BezierCurve class", "[BezierCurve]")
 	{
 		SECTION("SUBDIVIDE")
 		{
-			std::vector<smpl::BezierCurve> splitCurves = mainCurve.subdivide(0.5);
+			std::pair<smpl::BezierCurve, smpl::BezierCurve> splitCurves = mainCurve.subdivide(0.5);
 			
-			REQUIRE( splitCurves.size() == 2);
-			REQUIRE( splitCurves[0].size() == 3 );
-			REQUIRE( splitCurves[1].size() == 3 );
+			REQUIRE( splitCurves.first.size() == 3 );
+			REQUIRE( splitCurves.second.size() == 3 );
 
 			//Test
-			REQUIRE( (splitCurves[0].getPoint(0) == smpl::Vec2f(0, 0)) );
-			REQUIRE( (splitCurves[0].getPoint(1) == smpl::Vec2f(0.5, 0)) );
-			REQUIRE( (splitCurves[0].getPoint(2) == smpl::Vec2f(0.75, 0.25)) );
+			REQUIRE( (splitCurves.first.getPoint(0) == smpl::Vec2f(0, 0)) );
+			REQUIRE( (splitCurves.first.getPoint(1) == smpl::Vec2f(0.5, 0)) );
+			REQUIRE( (splitCurves.first.getPoint(2) == smpl::Vec2f(0.75, 0.25)) );
 
-			REQUIRE( (splitCurves[1].getPoint(0) == smpl::Vec2f(0.75, 0.25)) );
-			REQUIRE( (splitCurves[1].getPoint(1) == smpl::Vec2f(1, 0.5)) );
-			REQUIRE( (splitCurves[1].getPoint(2) == smpl::Vec2f(1, 1)) );
+			REQUIRE( (splitCurves.second.getPoint(0) == smpl::Vec2f(0.75, 0.25)) );
+			REQUIRE( (splitCurves.second.getPoint(1) == smpl::Vec2f(1, 0.5)) );
+			REQUIRE( (splitCurves.second.getPoint(2) == smpl::Vec2f(1, 1)) );
 		}
 
 		SECTION("EXTRACT")
@@ -130,11 +129,10 @@ TEST_CASE("Testing of the BezierCurve class", "[BezierCurve]")
 
 		SECTION("BOUNDING BOX")
 		{
-			std::vector<smpl::Vec2f> corners = mainCurve.getBoundingBox();
+			std::pair<smpl::Vec2f, smpl::Vec2f> corners = mainCurve.getBoundingBox();
 
-			REQUIRE( corners.size() == 2 );
-			REQUIRE( (corners[0] == smpl::Vec2f(0, 0)) );
-			REQUIRE( (corners[1] == smpl::Vec2f(1, 1)) );
+			REQUIRE( (corners.first == smpl::Vec2f(0, 0)) );
+			REQUIRE( (corners.second == smpl::Vec2f(1, 1)) );
 		}
 	}
 }

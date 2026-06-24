@@ -65,18 +65,23 @@ namespace smpl
 		virtual void fillBetween(int x1, int x2, int y, Image* surf);
 	private:
 		Line gradientLine;
-		std::vector<GradientKeyPoint> keyPoints;
+		std::vector<float> keyPointValues;
+		std::vector<Color> keyPointColors;
+		
 	};
 	
 	class DLL_OPTION RadialGradientFillFunction
 	{
 	public:
-		RadialGradientFillFunction(Color fillColor);
+		RadialGradientFillFunction(Vec2f pos, const std::vector<GradientKeyPoint>& keyPoints);
 		virtual ~RadialGradientFillFunction();
 
-		virtual Color getColor(int x, int y);
-		virtual void fillBetween(int x1, int x2, int y);
+		virtual void drawColor(int x, int y, Image* surf);
+		virtual void fillBetween(int x1, int x2, int y, Image* surf);
 	private:
+		Vec2f pos;
+		std::vector<float> keyPointValues;
+		std::vector<Color> keyPointColors;
 	};
 	
 	class DLL_OPTION TextureFillFunction
@@ -153,8 +158,6 @@ namespace smpl
 		 */
 		static Vec4f convertColorToVec4f(Color c);
 
-		static Color4f convertColorToColor4f(Color c);
-
 		/**
 		 * @brief Converts a Vec4f (which is 4 doubles) to a Color.
 		 * 		Each color channel is converted from [0, 1] to [0, 255]
@@ -163,8 +166,6 @@ namespace smpl
 		 * @return Color 
 		 */
 		static Color convertVec4fToColor(Vec4f v);
-		
-		static Color convertColor4fToColor(Color4f c);
 
 		/**
 		 * @brief Draws a pixel to the specified image using Porter Duff rules.
@@ -265,7 +266,18 @@ namespace smpl
 			static __m256i multColor(__m256i src, __m256i multiplier); //8 Colors. Uses 8 bits per channel
 		#endif
 		
+		static Color maskPixel(Color src, Color maskValue);
+		static Color4f maskPixel(Color4f src, Color4f maskValue);
+		static Vec4f maskPixel(Vec4f src, Vec4f maskValue);
+		static uint32_t maskPixel(uint32_t src, uint32_t maskValue); //Same as multColor(Color, Color) but just needs to recast
+		#ifdef __SSE4_2__
+			static __m128i maskPixel(__m128i src, __m128i maskValue); //4 Colors. Uses 8 bits per channel
+		#endif
 
+		#ifdef __AVX2__
+			static __m256i maskPixel(__m256i src, __m256i maskValue); //8 Colors. Uses 8 bits per channel
+		#endif
+		
 		/**
 		 * @brief Draws a rectangle using the active color.
 		 * 		If OPTI is defined as 1, SSE instructions are used.
@@ -661,6 +673,29 @@ namespace smpl
 		//Getters and Setters
 
 		/**
+		 * @brief Sets the Mask that all drawing will utilize. This mask is an image that MUST be the same width and height or greater.
+		 *			The width may be greater than future image widths. Same with height but never smaller.
+		 *		The mask will determine which pixels should be drawn and how varied it is meaning alpha transparency works in the way you expect.
+		 * 
+		 * @param img 
+		 */
+		static void setMask(Image img);
+
+		/**
+		 * @brief Gets the mask image that drawing utilizes. This is so you may modify that mask directly and so that you may also utilize it in
+		 *		rendering methods that aren't implemented here.
+		 * 
+		 * @return Image& 
+		 */
+		static Image& getMask();
+
+		/**
+		 * @brief Removes the mask so that all drawing operations afterwards will no longer be affected by it.
+		 * 
+		 */
+		static void clearMask();
+
+		/**
 		 * @brief Sets a rectangle where drawing will be allowed for the following drawing operations.
 		 * 		Anything outside of the rectangle is not drawn.
 		 * @param b
@@ -979,8 +1014,9 @@ namespace smpl
 		static Image* scaleNearestNeighbor(Image* img, double xScale, double yScale);
 		static Image* scaleBilinear(Image* img, double xScale, double yScale);
 		static Image* scaleBicubic(Image* img, double xScale, double yScale);
-
 		
+		static Image maskImage;
+
 		static unsigned char defaultFontValue;
 
 		static Font* defaultFont;

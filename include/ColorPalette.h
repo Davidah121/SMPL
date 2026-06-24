@@ -9,6 +9,8 @@
 
 namespace smpl
 {
+	struct Color;
+	struct Color4f;
 
 	struct Color
 	{
@@ -29,6 +31,8 @@ namespace smpl
 		{
 			return *((uint32_t*)this);
 		}
+		
+		operator Color4f() const;
 	};
 
 	struct Color4f
@@ -90,7 +94,28 @@ namespace smpl
 		{
 			return *((uint64_t*)this);
 		}
+
+		operator Color() const;
 	};
+
+	inline Color::operator Color4f() const
+	{
+		Color4f result;
+		result.red.a = (red<<8) + red;
+		result.green.a = (green<<8) + green;
+		result.blue.a = (blue<<8) + blue;
+		result.alpha.a = (alpha<<8) + alpha;
+		return result;
+	}
+	inline Color4f::operator Color() const
+	{
+		return Color{
+			(unsigned char)(red.a>>8),
+			(unsigned char)(green.a>>8),
+			(unsigned char)(blue.a>>8),
+			(unsigned char)(alpha.a>>8)
+		};
+	}
 
 	class DLL_OPTION ColorPalette : public SerializedObject
 	{

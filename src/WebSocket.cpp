@@ -27,84 +27,98 @@ namespace smpl
 		packetQueue = std::vector<std::list<WebSocketPacket>>(amountOfConnectionsAllowed);
 		clients = std::vector<ClientInfo>(amountOfConnectionsAllowed);
 		
-		conn->setOnConnectFunction([this](std::string ip, size_t id) ->void{
+		conn->setOnConnectFunction([this](const std::vector<std::pair<std::string, size_t>>& connList) ->void{
 			optMutex.lock();
-			//clear previous packet queue.
-			this->packetQueue[id].clear();
-			this->clients[id].connected = false;
-			this->clients[id].buffer = false;
-			this->clients[id].first = true;
-			this->clients[id].timeSinceLastPing = System::getCurrentTimeMillis();
-			this->clients[id].waitingResponse = false;
-			this->clients[id].sentKeepAlive = false;
-
-			if(this->type == TYPE_CLIENT)
+			for(auto& conn : connList)
 			{
-				//send upgrade request
-				this->firstConnectClient(id);
+				size_t id = conn.second;
+				//clear previous packet queue.
+				this->packetQueue[id].clear();
+				this->clients[id].connected = false;
+				this->clients[id].buffer = false;
+				this->clients[id].first = true;
+				this->clients[id].timeSinceLastPing = System::getCurrentTimeMillis();
+				this->clients[id].waitingResponse = false;
+				this->clients[id].sentKeepAlive = false;
+
+				if(this->type == TYPE_CLIENT)
+				{
+					//send upgrade request
+					this->firstConnectClient(id);
+				}
 			}
 			
 			//wait on first message received then call on the firstConnect
 			optMutex.unlock();
 		});
 
-		conn->setOnDataAvailableFunction([this](std::string ip, size_t id) ->void{
+		conn->setOnDataAvailableFunction([this](const std::vector<std::pair<std::string, size_t>>& connList) ->void{
 			
-			bool shouldCall = false;
+			std::vector<bool> shouldCall = std::vector<bool>(connList.size());
 			optMutex.lock();
-			//check if it is the first message
-			if(this->clients[id].first)
+			for(size_t i=0; i<shouldCall.size(); i++)
 			{
-				if(this->type == TYPE_SERVER)
+				size_t id = connList[i].second;
+				//check if it is the first message
+				if(this->clients[id].first)
 				{
-					//first message is a connection message requesting upgrade
-					this->firstConnectServer(id);
-					this->clients[id].connected = true;
-					this->clients[id].first = false;
-					this->clientsConnected++;
+					if(this->type == TYPE_SERVER)
+					{
+						//first message is a connection message requesting upgrade
+						this->firstConnectServer(id);
+						this->clients[id].connected = true;
+						this->clients[id].first = false;
+						this->clientsConnected++;
 
-					if(this->onConnectFunc != nullptr)
-						this->onConnectFunc(id);
+						if(this->onConnectFunc != nullptr)
+							this->onConnectFunc(id);
+					}
+					else
+					{
+						//first message is a confirmation of the upgrade or refusal
+						this->firstConnectClientPart2(id);
+						this->clients[id].connected = true;
+						this->clients[id].first = false;
+						this->clientsConnected++;
+						
+						if(this->onConnectFunc != nullptr)
+							this->onConnectFunc(id);
+					}
 				}
 				else
 				{
-					//first message is a confirmation of the upgrade or refusal
-					this->firstConnectClientPart2(id);
-					this->clients[id].connected = true;
-					this->clients[id].first = false;
-					this->clientsConnected++;
-					
-					if(this->onConnectFunc != nullptr)
-						this->onConnectFunc(id);
+					//process the message into a WebSocketPacket.
+					//calls packetArrivedFunction when neccessary.
+					shouldCall[i] = this->specialRecv(id);
+					if(shouldCall[i] == true)
+						shouldCall[i] = this->onNewPacketFunc != nullptr; //Must have a valid callback
 				}
+				clients[id].timeSinceLastPing = System::getCurrentTimeMillis();
 			}
-			else
-			{
-				//process the message into a WebSocketPacket.
-				//calls packetArrivedFunction when neccessary.
-				shouldCall = this->specialRecv(id);
-				if(shouldCall == true)
-					shouldCall = this->onNewPacketFunc != nullptr; //Must have a valid callback
-			}
-			clients[id].timeSinceLastPing = System::getCurrentTimeMillis();
 			optMutex.unlock();
 			
-			if(shouldCall)
-				this->onNewPacketFunc(id);
+			for(size_t i=0; i<shouldCall.size(); i++)
+			{
+				if(shouldCall[i])
+					this->onNewPacketFunc(connList[i].second);
+			}
 		});
 
-		conn->setOnDisconnectFunction([this](std::string ip, size_t id) ->void{
+		conn->setOnDisconnectFunction([this](const std::vector<std::pair<std::string, size_t>>& connList) ->void{
 			optMutex.lock();
-			//Shouldn't have to do anything special here
-			this->packetQueue[id].clear();
-			this->clients[id].connected = false;
-			this->clients[id].buffer = false;
-			this->clients[id].first = true;
-			this->clientsConnected--;
+			for(auto& conn : connList)
+			{
+				size_t id = conn.second;
+				//Shouldn't have to do anything special here
+				this->packetQueue[id].clear();
+				this->clients[id].connected = false;
+				this->clients[id].buffer = false;
+				this->clients[id].first = true;
+				this->clientsConnected--;
 
-			if(this->onDisconnectFunc != nullptr)
-				this->onDisconnectFunc(id);
-			
+				if(this->onDisconnectFunc != nullptr)
+					this->onDisconnectFunc(id);
+			}
 			optMutex.unlock();
 		});
 	}

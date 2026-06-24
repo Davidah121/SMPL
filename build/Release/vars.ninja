@@ -1,4 +1,4 @@
-inc = -I ./include  -I C:/Libraries/glew-2.1.0/include -I "C:/Program Files/OpenSSL-Win64/include" -I C:/Libraries/_MyLibraries/SEML -I C:/Libraries/_MyLibraries/SimpleSerialization
+inc = -I ./include  -I C:/Libraries/glew-2.1.0/include -I "C:/Program Files/OpenSSL-Win64/include" -I C:/Libraries/_MyLibraries/SEML -I C:/Libraries/_MyLibraries/SimpleSerialization -I C:/Libraries/wepoll-dist
 
 windowsSDKLibs = -l kernel32 -l user32 -l gdi32 -l winspool -l comdlg32 -l advapi32 -l shell32 -l ole32 -l oleaut32 -l uuid -l odbc32 -l odbccp32
 dxLibs = -l dxgi -l d3d11 -l d3dcompiler
@@ -12,7 +12,8 @@ windowLibs = -l msimg32 -l dwmapi
 performanceLibs = -l pdh -l winmm
 semlLibs = -L C:/Libraries/_MyLibraries/SEML -l SEML
 serializationLibs = -L C:/Libraries/_MyLibraries/SimpleSerialization -l SimpleSerialization
-linkOptions = $windowsSDKLibs $sslLibs $oglLibs $networkLibs $windowLibs $audioLibs $xinputLibs $dinputLibs $performanceLibs $semlLibs $serializationLibs
+pollLibs = -L C:/Libraries/wepoll-dist -lwepoll
+linkOptions = $windowsSDKLibs $sslLibs $oglLibs $networkLibs $windowLibs $audioLibs $xinputLibs $dinputLibs $performanceLibs $semlLibs $serializationLibs $pollLibs
 
 objDir = ./bin/Release/obj
 exeDir = ./bin/Release
